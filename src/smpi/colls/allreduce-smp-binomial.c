@@ -36,16 +36,6 @@ int smpi_coll_tuned_allreduce_smp_binomial(void *send_buf, void *recv_buf,
   int mask, src, dst;
   int num_core = NUM_CORE;
   MPI_Status status;
-  /*
-     #ifdef MPICH2_REDUCTION
-     MPI_User_function * uop = MPIR_Op_table[op % 16 - 1];
-     #else
-     MPI_User_function *uop;
-     struct MPIR_OP *op_ptr;
-     op_ptr = MPIR_ToPointer(op);
-     uop  = op_ptr->op;
-     #endif
-   */
 
   comm_size=smpi_comm_size(comm);
   rank=smpi_comm_rank(comm);

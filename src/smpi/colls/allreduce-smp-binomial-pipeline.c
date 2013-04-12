@@ -29,18 +29,6 @@ int allreduce_smp_binomial_pipeline_segment_size = 4096;
    This code assume commutative and associative reduce operator (MPI_SUM, MPI_MAX, etc).
 */
 
-#ifndef MPICH2
-extern void *MPIR_ToPointer();
-
-struct MPIR_OP {
-  MPI_User_function *op;
-  int commute, permanent;
-};
-
-#else
-extern MPI_User_function *MPIR_Op_table[];
-#endif
-
 /*
 This fucntion performs all-reduce operation as follow. ** in a pipeline fashion **
 1) binomial_tree reduce inside each SMP node
@@ -59,14 +47,6 @@ int smpi_coll_tuned_allreduce_smp_binomial_pipeline(void *send_buf,
   int mask, src, dst;
   MPI_Status status;
   int num_core = NUM_CORE;
-
-  MPI_User_function *uop;
-#ifndef MPICH2
-  struct MPIR_OP *op_ptr = MPIR_ToPointer(op);
-  uop = (MPI_User_function *) op_ptr->op;
-#else
-  uop = MPIR_Op_table[op % 16 - 1];
-#endif
 
   comm_size = smpi_comm_size(comm);
   rank = smpi_comm_rank(comm);
@@ -111,7 +91,7 @@ int smpi_coll_tuned_allreduce_smp_binomial_pipeline(void *send_buf,
           if (src < comm_size) {
             recv_offset = phase * pcount * extent;
             smpi_mpi_recv(tmp_buf, pcount, dtype, src, tag, comm, &status);
-            (*uop) (tmp_buf, (char *)recv_buf + recv_offset, &pcount, &dtype);
+            smpi_op_apply(op, tmp_buf, (char *)recv_buf + recv_offset, &pcount, &dtype);
           }
         } else {
           send_offset = phase * pcount * extent;
@@ -135,7 +115,7 @@ int smpi_coll_tuned_allreduce_smp_binomial_pipeline(void *send_buf,
             if (src < comm_size) {
               recv_offset = (phase - 1) * pcount * extent;
               smpi_mpi_recv(tmp_buf, pcount, dtype, src, tag, comm, &status);
-              (*uop) (tmp_buf, (char *)recv_buf + recv_offset, &pcount, &dtype);
+              smpi_op_apply(op, tmp_buf, (char *)recv_buf + recv_offset, &pcount, &dtype);
             }
           } else {
             dst = (inter_rank & (~mask)) * num_core;

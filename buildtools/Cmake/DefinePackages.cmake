@@ -111,9 +111,9 @@ set(SMPI_SRC
   src/smpi/smpi_pmpi.c
   src/smpi/smpi_replay.c
   src/smpi/colls/colls_global.c
-  #src/smpi/colls/allgather-2dmesh.c
-  #src/smpi/colls/allgather-3dmesh.c
-  #src/smpi/colls/allgather-bruck.c
+  src/smpi/colls/allgather-2dmesh.c
+  src/smpi/colls/allgather-3dmesh.c
+  src/smpi/colls/allgather-bruck.c
   src/smpi/colls/allgather-GB.c
   src/smpi/colls/allgather-loosely-lr.c
   src/smpi/colls/allgather-lr.c
@@ -132,13 +132,13 @@ set(SMPI_SRC
   src/smpi/colls/allreduce-NTS.c
   src/smpi/colls/allreduce-rab1.c
   src/smpi/colls/allreduce-rab2.c
-  #src/smpi/colls/allreduce-rab-rdb.c
+  src/smpi/colls/allreduce-rab-rdb.c
   #src/smpi/colls/allreduce-rab-reduce-scatter.c
   src/smpi/colls/allreduce-rab-rsag.c
   src/smpi/colls/allreduce-rdb.c
   src/smpi/colls/allreduce-redbcast.c
   src/smpi/colls/allreduce-smp-binomial.c
-  #src/smpi/colls/allreduce-smp-binomial-pipeline.c
+  src/smpi/colls/allreduce-smp-binomial-pipeline.c
   src/smpi/colls/allreduce-smp-rdb.c
   src/smpi/colls/allreduce-smp-rsag.c
   src/smpi/colls/allreduce-smp-rsag-lr.c

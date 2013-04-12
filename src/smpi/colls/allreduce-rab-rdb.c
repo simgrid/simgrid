@@ -4,21 +4,12 @@ int smpi_coll_tuned_allreduce_rab_rdb(void *sbuff, void *rbuff, int count,
                                       MPI_Datatype dtype, MPI_Op op,
                                       MPI_Comm comm)
 {
-  int nprocs, rank, type_size, tag = 543;
+  int nprocs, rank, tag = 543;
   int mask, dst, pof2, newrank, rem, newdst, i,
       send_idx, recv_idx, last_idx, send_cnt, recv_cnt, *cnts, *disps;
-  MPI_Aint lb, extent;
+  MPI_Aint extent;
   MPI_Status status;
   void *tmp_buf = NULL;
-
-#ifdef MPICH2_REDUCTION
-  MPI_User_function *uop = MPIR_Op_table[op % 16 - 1];
-#else
-  MPI_User_function *uop;
-  struct MPIR_OP *op_ptr;
-  op_ptr = (MPI_User_function *) MPIR_ToPointer(op);
-  uop = op_ptr->op;
-#endif
 
   nprocs = smpi_comm_size(comm);
   rank = smpi_comm_rank(comm);
@@ -26,9 +17,7 @@ int smpi_coll_tuned_allreduce_rab_rdb(void *sbuff, void *rbuff, int count,
   extent = smpi_datatype_get_extent(dtype);
   tmp_buf = (void *) xbt_malloc(count * extent);
 
-  MPIR_Localcopy(sbuff, count, dtype, rbuff, count, dtype);
-
-  type_size = smpi_datatype_size(dtype);
+  smpi_datatype_copy(sbuff, count, dtype, rbuff, count, dtype);
 
   // find nearest power-of-two less than or equal to comm_size
   pof2 = 1;
@@ -60,7 +49,7 @@ int smpi_coll_tuned_allreduce_rab_rdb(void *sbuff, void *rbuff, int count,
       // do the reduction on received data. since the
       // ordering is right, it doesn't matter whether
       // the operation is commutative or not.
-      (*uop) (tmp_buf, rbuff, &count, &dtype);
+       smpi_op_apply(op, tmp_buf, rbuff, &count, &dtype);
 
       // change the rank 
       newrank = rank / 2;
@@ -129,8 +118,8 @@ int smpi_coll_tuned_allreduce_rab_rdb(void *sbuff, void *rbuff, int count,
 
       // This algorithm is used only for predefined ops
       // and predefined ops are always commutative.
-      (*uop) ((char *) tmp_buf + disps[recv_idx] * extent,
-              (char *) rbuff + disps[recv_idx] * extent, &recv_cnt, &dtype);
+      smpi_op_apply(op, (char *) tmp_buf + disps[recv_idx] * extent,
+                        (char *) rbuff + disps[recv_idx] * extent, &recv_cnt, &dtype);
 
       // update send_idx for next iteration 
       send_idx = recv_idx;

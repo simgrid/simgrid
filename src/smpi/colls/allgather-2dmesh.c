@@ -110,8 +110,6 @@ smpi_coll_tuned_allgather_2dmesh(void *send_buff, int send_count, MPI_Datatype
   int i, src, dst, rank, num_procs;
   int X, Y, send_offset, recv_offset;
   int my_row_base, my_col_base, src_row_base, block_size, num_reqs;
-  int success = 0;
-  int failure = 1;
   int tag = 1;
 
   rank = smpi_comm_rank(comm);
@@ -135,7 +133,7 @@ smpi_coll_tuned_allgather_2dmesh(void *send_buff, int send_count, MPI_Datatype
 
   // do local allgather/local copy 
   recv_offset = rank * block_size;
-  MPIR_Localcopy(send_buff, send_count, send_type, (char *)recv_buff + recv_offset,
+  smpi_datatype_copy(send_buff, send_count, send_type, (char *)recv_buff + recv_offset,
                  recv_count, recv_type);
 
   // do row-wise comm
@@ -144,8 +142,8 @@ smpi_coll_tuned_allgather_2dmesh(void *send_buff, int send_count, MPI_Datatype
     if (src == rank)
       continue;
     recv_offset = src * block_size;
-    MPIC_Irecv((char *)recv_buff + recv_offset, recv_count, recv_type, src, tag,
-               comm, req_ptr++);
+    *(req_ptr++) = smpi_mpi_irecv((char *)recv_buff + recv_offset, recv_count, recv_type, src, tag,
+               comm);
   }
 
 
@@ -153,7 +151,7 @@ smpi_coll_tuned_allgather_2dmesh(void *send_buff, int send_count, MPI_Datatype
     dst = i + my_row_base;
     if (dst == rank)
       continue;
-    MPIC_Send(send_buff, send_count, send_type, dst, tag, comm);
+    smpi_mpi_send(send_buff, send_count, send_type, dst, tag, comm);
   }
 
   smpi_mpi_waitall(Y - 1, req, MPI_STATUSES_IGNORE);
@@ -167,8 +165,8 @@ smpi_coll_tuned_allgather_2dmesh(void *send_buff, int send_count, MPI_Datatype
       continue;
     src_row_base = (src / Y) * Y;
     recv_offset = src_row_base * block_size;
-    MPIC_Irecv((char *)recv_buff + recv_offset, recv_count * Y, recv_type, src, tag,
-               comm, req_ptr++);
+    *(req_ptr++) = smpi_mpi_irecv((char *)recv_buff + recv_offset, recv_count * Y, recv_type, src, tag,
+               comm);
   }
 
   for (i = 0; i < X; i++) {
@@ -176,7 +174,7 @@ smpi_coll_tuned_allgather_2dmesh(void *send_buff, int send_count, MPI_Datatype
     if (dst == rank)
       continue;
     send_offset = my_row_base * block_size;
-    MPIC_Send((char *)recv_buff + send_offset, send_count * Y, send_type, dst, tag,
+    smpi_mpi_send((char *)recv_buff + send_offset, send_count * Y, send_type, dst, tag,
               comm);
   }
 
@@ -184,5 +182,5 @@ smpi_coll_tuned_allgather_2dmesh(void *send_buff, int send_count, MPI_Datatype
 
   free(req);
 
-  return success;
+  return MPI_SUCCESS;
 }

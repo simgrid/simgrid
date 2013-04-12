@@ -370,15 +370,17 @@ if(NOT enable_memcheck)
       ADD_TEST(smpi-replay                      ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/smpi --cd ${CMAKE_BINARY_DIR}/examples/smpi ${CMAKE_HOME_DIRECTORY}/examples/smpi/replay/smpi_replay.tesh)
     endif()
 
-    FOREACH (ALLGATHER_COLL default GB loosely_lr lr NTSLR NTSLR_NB pair rdb  rhv ring SMP_NTS
+    FOREACH (ALLGATHER_COLL default  2dmesh 3dmesh bruck GB loosely_lr lr
+		            NTSLR NTSLR_NB pair rdb  rhv ring SMP_NTS
 		            smp_simple spreading_simple)
         ADD_TEST(smpi-allgather-coll-${ALLGATHER_COLL} ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg smpi/allgather:${ALLGATHER_COLL} --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/allgather_coll.tesh)
     ENDFOREACH()
     FOREACH (ALLGATHERV_COLL default pair ring)
         ADD_TEST(smpi-allgatherv-coll-${ALLGATHERV_COLL} ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg smpi/allgatherv:${ALLGATHERV_COLL} --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/allgatherv_coll.tesh)
     ENDFOREACH()
-    FOREACH (ALLREDUCE_COLL default lr NTS rab1 rab2 rab_rsag rdb smp_binomial smp_rdb smp_rsag
-		            smp_rsag_lr smp_rsag_rab redbcast)
+    FOREACH (ALLREDUCE_COLL default lr NTS rab1 rab2 rab_rdb
+		            rab_rsag rdb smp_binomial smp_binomial_pipeline
+			    smp_rdb smp_rsag smp_rsag_lr smp_rsag_rab redbcast)
         ADD_TEST(smpi-allreduce-coll-${ALLREDUCE_COLL} ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg smpi/allreduce:${ALLREDUCE_COLL} --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/allreduce_coll.tesh)
     ENDFOREACH()
     FOREACH (ALLTOALL_COLL 2dmesh 3dmesh pair pair_one_barrier pair_light_barrier

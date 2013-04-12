@@ -97,8 +97,6 @@ int smpi_coll_tuned_allgather_3dmesh(void *send_buff, int send_count,
   int i, src, dst, rank, num_procs, block_size, my_z_base;
   int my_z, X, Y, Z, send_offset, recv_offset;
   int two_dsize, my_row_base, my_col_base, src_row_base, src_z_base, num_reqs;
-  int success = 0;
-  int failure = 1;
   int tag = 1;
 
   rank = smpi_comm_rank(comm);
@@ -124,17 +122,12 @@ int smpi_coll_tuned_allgather_3dmesh(void *send_buff, int send_count,
   block_size = extent * send_count;
 
   req = (MPI_Request *) xbt_malloc(num_reqs * sizeof(MPI_Request));
-  if (!req) {
-    printf("allgather-3dmesh-shoot.c:85: cannot allocate memory\n");
-    MPI_Finalize();
-    exit(failure);
-  }
 
   req_ptr = req;
 
   // do local allgather/local copy 
   recv_offset = rank * block_size;
-  MPIR_Localcopy(send_buff, send_count, send_type, (char *)recv_buff + recv_offset,
+  smpi_datatype_copy(send_buff, send_count, send_type, (char *)recv_buff + recv_offset,
                  recv_count, recv_type);
 
   // do rowwise comm 
@@ -143,15 +136,15 @@ int smpi_coll_tuned_allgather_3dmesh(void *send_buff, int send_count,
     if (src == rank)
       continue;
     recv_offset = src * block_size;
-    MPIC_Irecv((char *)recv_buff + recv_offset, send_count, recv_type, src, tag,
-               comm, req_ptr++);
+    *(req_ptr++) = smpi_mpi_irecv((char *)recv_buff + recv_offset, send_count, recv_type, src, tag,
+               comm);
   }
 
   for (i = 0; i < Y; i++) {
     dst = i + my_row_base;
     if (dst == rank)
       continue;
-    MPIC_Send(send_buff, send_count, send_type, dst, tag, comm);
+    smpi_mpi_send(send_buff, send_count, send_type, dst, tag, comm);
   }
 
   smpi_mpi_waitall(Y - 1, req, MPI_STATUSES_IGNORE);
@@ -166,8 +159,8 @@ int smpi_coll_tuned_allgather_3dmesh(void *send_buff, int send_count,
 
     src_row_base = (src / X) * X;
     recv_offset = src_row_base * block_size;
-    MPIC_Irecv((char *)recv_buff + recv_offset, recv_count * Y, recv_type, src, tag,
-               comm, req_ptr++);
+    *(req_ptr++) = smpi_mpi_irecv((char *)recv_buff + recv_offset, recv_count * Y, recv_type, src, tag,
+               comm);
   }
 
   send_offset = my_row_base * block_size;
@@ -176,7 +169,7 @@ int smpi_coll_tuned_allgather_3dmesh(void *send_buff, int send_count,
     dst = (i * Y + my_col_base);
     if (dst == rank)
       continue;
-    MPIC_Send((char *)recv_buff + send_offset, send_count * Y, send_type, dst, tag,
+    smpi_mpi_send((char *)recv_buff + send_offset, send_count * Y, send_type, dst, tag,
               comm);
   }
 
@@ -189,19 +182,19 @@ int smpi_coll_tuned_allgather_3dmesh(void *send_buff, int send_count,
 
     recv_offset = (src_z_base * block_size);
 
-    MPIC_Irecv((char *)recv_buff + recv_offset, recv_count * two_dsize, recv_type,
-               src, tag, comm, req_ptr++);
+    *(req_ptr++) = smpi_mpi_irecv((char *)recv_buff + recv_offset, recv_count * two_dsize, recv_type,
+               src, tag, comm);
   }
 
   for (i = 1; i < Z; i++) {
     dst = (rank + i * two_dsize) % num_procs;
     send_offset = my_z_base * block_size;
-    MPIC_Send((char *)recv_buff + send_offset, send_count * two_dsize, send_type,
+    smpi_mpi_send((char *)recv_buff + send_offset, send_count * two_dsize, send_type,
               dst, tag, comm);
   }
   smpi_mpi_waitall(Z - 1, req, MPI_STATUSES_IGNORE);
 
   free(req);
 
-  return success;
+  return MPI_SUCCESS;
 }

@@ -71,10 +71,9 @@ int smpi_coll_tuned_allgather_bruck(void *send_buff, int send_count,
   MPI_Aint recv_extent;
 
   // local int variables
-  int i, src, dst, rank, num_procs, count, remainder;
+  int src, dst, rank, num_procs, count, remainder;
   int tag = 1;
   int pof2 = 1;
-  int success = 0;
 
   // local string variables
   char *tmp_buff;
@@ -91,20 +90,15 @@ int smpi_coll_tuned_allgather_bruck(void *send_buff, int send_count,
   count = recv_count;
 
   tmp_buff = (char *) xbt_malloc(num_procs * recv_count * recv_extent);
-  if (!tmp_buff) {
-    printf("allgather-bruck:54: cannot allocate memory\n");
-    MPI_Finalize();
-    exit(0);
-  }
-  // perform a local copy
-  MPIR_Localcopy(send_ptr, send_count, send_type, tmp_buff, recv_count,
-                 recv_type);
 
+  // perform a local copy
+  smpi_datatype_copy(send_ptr, send_count, send_type,
+		     tmp_buff, recv_count, recv_type);
   while (pof2 <= (num_procs / 2)) {
     src = (rank + pof2) % num_procs;
     dst = (rank - pof2 + num_procs) % num_procs;
 
-    MPIC_Sendrecv(tmp_buff, count, recv_type, dst, tag,
+    smpi_mpi_sendrecv(tmp_buff, count, recv_type, dst, tag,
                   tmp_buff + count * recv_extent, count, recv_type,
                   src, tag, comm, &status);
     count *= 2;
@@ -116,76 +110,20 @@ int smpi_coll_tuned_allgather_bruck(void *send_buff, int send_count,
     src = (rank + pof2) % num_procs;
     dst = (rank - pof2 + num_procs) % num_procs;
 
-    MPIC_Sendrecv(tmp_buff, remainder * recv_count, recv_type, dst, tag,
+    smpi_mpi_sendrecv(tmp_buff, remainder * recv_count, recv_type, dst, tag,
                   tmp_buff + count * recv_extent, remainder * recv_count,
                   recv_type, src, tag, comm, &status);
   }
 
-  MPIC_Sendrecv(tmp_buff, (num_procs - rank) * recv_count, recv_type, rank,
+  smpi_mpi_sendrecv(tmp_buff, (num_procs - rank) * recv_count, recv_type, rank,
                 tag, recv_ptr + rank * recv_count * recv_extent,
                 (num_procs - rank) * recv_count, recv_type, rank, tag, comm,
                 &status);
 
   if (rank)
-    MPIC_Sendrecv(tmp_buff + (num_procs - rank) * recv_count * recv_extent,
+    smpi_mpi_sendrecv(tmp_buff + (num_procs - rank) * recv_count * recv_extent,
                   rank * recv_count, recv_type, rank, tag, recv_ptr,
                   rank * recv_count, recv_type, rank, tag, comm, &status);
   free(tmp_buff);
-  return success;
+  return MPI_SUCCESS;
 }
-
-/*#include "ompi_bindings.h"
-
-int ompi_coll_tuned_alltoall_intra_pairwise(void *sbuf, int scount, 
-                                            MPI_Datatype sdtype,
-                                            void* rbuf, int rcount,
-                                            MPI_Datatype rdtype,
-                                            MPI_Comm comm)
-{
-    int line = -1, err = 0;
-    int rank, size, step;
-    int sendto, recvfrom;
-    void * tmpsend, *tmprecv;
-    ptrdiff_t lb, sext, rext;
-
-    size = ompi_comm_size(comm);
-    rank = ompi_comm_rank(comm);
-
-    OPAL_OUTPUT((ompi_coll_tuned_stream,
-                 "coll:tuned:alltoall_intra_pairwise rank %d", rank));
-
-    err = ompi_datatype_get_extent (sdtype, &lb, &sext);
-    if (err != MPI_SUCCESS) { line = __LINE__; goto err_hndl; }
-    err = ompi_datatype_get_extent (rdtype, &lb, &rext);
-    if (err != MPI_SUCCESS) { line = __LINE__; goto err_hndl; }
-
-    
-    // Perform pairwise exchange - starting from 1 so the local copy is last 
-    for (step = 1; step < size + 1; step++) {
-
-        // Determine sender and receiver for this step. 
-        sendto  = (rank + step) % size;
-        recvfrom = (rank + size - step) % size;
-
-        // Determine sending and receiving locations 
-        tmpsend = (char*)sbuf + sendto * sext * scount;
-        tmprecv = (char*)rbuf + recvfrom * rext * rcount;
-
-        // send and receive 
-        err = ompi_coll_tuned_sendrecv( tmpsend, scount, sdtype, sendto, 
-                                        MCA_COLL_BASE_TAG_ALLTOALL,
-                                        tmprecv, rcount, rdtype, recvfrom, 
-                                        MCA_COLL_BASE_TAG_ALLTOALL,
-                                        comm, MPI_STATUS_IGNORE, rank);
-        if (err != MPI_SUCCESS) { line = __LINE__; goto err_hndl;  }
-    }
-
-    return MPI_SUCCESS;
- 
- err_hndl:
-    OPAL_OUTPUT((ompi_coll_tuned_stream,
-                 "%s:%4d\tError occurred %d, rank %2d", __FILE__, line, 
-                 err, rank));
-    return err;
-}
-*/
