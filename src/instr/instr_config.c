@@ -32,6 +32,8 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_config, instr, "Configuration");
 #define OPT_TRACING_COMMENT_FILE  "tracing/comment_file"
 #define OPT_VIVA_UNCAT_CONF      "viva/uncategorized"
 #define OPT_VIVA_CAT_CONF        "viva/categorized"
+#define OPT_TRACING_DISABLE_LINK        "tracing/disable_link"
+#define OPT_TRACING_DISABLE_POWER       "tracing/disable_power"
 
 static int trace_enabled;
 static int trace_platform;
@@ -47,6 +49,8 @@ static int trace_buffer;
 static int trace_onelink_only;
 static int trace_disable_destroy;
 static int trace_basic;
+static int trace_disable_link;
+static int trace_disable_power;
 
 static int trace_configured = 0;
 static int trace_active = 0;
@@ -69,6 +73,8 @@ static void TRACE_getopts(void)
   trace_onelink_only = xbt_cfg_get_int(_sg_cfg_set, OPT_TRACING_ONELINK_ONLY);
   trace_disable_destroy = xbt_cfg_get_int(_sg_cfg_set, OPT_TRACING_DISABLE_DESTROY);
   trace_basic = xbt_cfg_get_int(_sg_cfg_set, OPT_TRACING_BASIC);
+  trace_disable_link = xbt_cfg_get_int(_sg_cfg_set, OPT_TRACING_DISABLE_LINK);
+  trace_disable_power = xbt_cfg_get_int(_sg_cfg_set, OPT_TRACING_DISABLE_POWER);
 }
 
 static xbt_dynar_t TRACE_start_functions = NULL;
@@ -240,6 +246,15 @@ int TRACE_msg_vm_is_enabled(void)
   return trace_msg_vm_enabled && TRACE_is_enabled();
 }
 
+int TRACE_disable_link(void)
+{
+  return trace_disable_link && TRACE_is_enabled();
+}
+
+int TRACE_disable_power(void)
+{
+  return trace_disable_power && TRACE_is_enabled();
+}
 
 int TRACE_buffer (void)
 {
@@ -364,6 +379,21 @@ void TRACE_global_init(int *argc, char **argv)
                    "Tracing of MSG process behavior.",
                    xbt_cfgelm_int, &default_tracing_msg_vm, 0, 1,
                    NULL, NULL);
+
+  /* disable tracing link */
+  int default_tracing_disable_link = 0;
+  xbt_cfg_register(&_sg_cfg_set, OPT_TRACING_DISABLE_LINK,
+                   "Do not trace link bandwidth and latency.",
+                   xbt_cfgelm_int, &default_tracing_disable_link, 0, 1,
+                   NULL, NULL);
+
+  /* disable tracing link */
+  int default_tracing_disable_power = 0;
+  xbt_cfg_register(&_sg_cfg_set, OPT_TRACING_DISABLE_POWER,
+                   "Do not trace host power.",
+                   xbt_cfgelm_int, &default_tracing_disable_power, 0, 1,
+                   NULL, NULL);
+
 
   /* tracing buffer */
   int default_buffer = 1;

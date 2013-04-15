@@ -235,7 +235,7 @@ static void instr_routing_parse_start_link (sg_platf_link_cbarg_t link)
 
     container_t new = PJ_container_new (link_name, INSTR_LINK, father);
 
-    if (TRACE_categorized() || TRACE_uncategorized() || TRACE_platform()){
+    if ((TRACE_categorized() || TRACE_uncategorized() || TRACE_platform()) && (! TRACE_disable_link())) {
       type_t bandwidth = PJ_type_get_or_null ("bandwidth", new->type);
       if (bandwidth == NULL){
         bandwidth = PJ_type_variable_new ("bandwidth", NULL, new->type);
@@ -263,7 +263,7 @@ static void instr_routing_parse_start_host (sg_platf_host_cbarg_t host)
   container_t father = *(container_t*)xbt_dynar_get_ptr(currentContainer, xbt_dynar_length(currentContainer)-1);
   container_t new = PJ_container_new (host->id, INSTR_HOST, father);
 
-  if (TRACE_categorized() || TRACE_uncategorized() || TRACE_platform()) {
+  if ((TRACE_categorized() || TRACE_uncategorized() || TRACE_platform()) && (! TRACE_disable_power)) {
     type_t power = PJ_type_get_or_null ("power", new->type);
     if (power == NULL){
       power = PJ_type_variable_new ("power", NULL, new->type);
