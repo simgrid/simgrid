@@ -119,7 +119,9 @@ smpi_coll_tuned_allgather_2dmesh(void *send_buff, int send_count, MPI_Datatype
 
   block_size = extent * send_count;
 
-  is_2dmesh(num_procs, &X, &Y);
+  if (!is_2dmesh(num_procs, &X, &Y))
+    return MPI_ERR_COMM;
+
   my_row_base = (rank / Y) * Y;
   my_col_base = rank % Y;
 
