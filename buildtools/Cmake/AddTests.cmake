@@ -369,6 +369,40 @@ if(NOT enable_memcheck)
       ADD_TEST(smpi-tracing-ptp                 ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cd ${CMAKE_BINARY_DIR}/examples/smpi ${CMAKE_HOME_DIRECTORY}/examples/smpi/tracing/smpi_traced.tesh)
       ADD_TEST(smpi-replay                      ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/smpi --cd ${CMAKE_BINARY_DIR}/examples/smpi ${CMAKE_HOME_DIRECTORY}/examples/smpi/replay/smpi_replay.tesh)
     endif()
+
+    FOREACH (ALLGATHER_COLL default  2dmesh 3dmesh bruck GB loosely_lr lr
+		            NTSLR NTSLR_NB pair rdb  rhv ring SMP_NTS
+		            smp_simple spreading_simple)
+        ADD_TEST(smpi-allgather-coll-${ALLGATHER_COLL} ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg smpi/allgather:${ALLGATHER_COLL} --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/allgather_coll.tesh)
+    ENDFOREACH()
+    FOREACH (ALLGATHERV_COLL default GB pair ring)
+        ADD_TEST(smpi-allgatherv-coll-${ALLGATHERV_COLL} ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg smpi/allgatherv:${ALLGATHERV_COLL} --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/allgatherv_coll.tesh)
+    ENDFOREACH()
+    FOREACH (ALLREDUCE_COLL default lr NTS rab1 rab2 rab_rdb
+		            rab_rsag rdb smp_binomial smp_binomial_pipeline
+			    smp_rdb smp_rsag smp_rsag_lr smp_rsag_rab redbcast)
+        ADD_TEST(smpi-allreduce-coll-${ALLREDUCE_COLL} ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg smpi/allreduce:${ALLREDUCE_COLL} --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/allreduce_coll.tesh)
+    ENDFOREACH()
+    FOREACH (ALLTOALL_COLL 2dmesh 3dmesh pair pair_one_barrier pair_light_barrier
+		           pair_mpi_barrier rdb ring ring_light_barrier
+			   ring_mpi_barrier ring_one_barrier
+			   simple bruck basic_linear)
+        ADD_TEST(smpi-alltoall-coll-${ALLTOALL_COLL} ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg smpi/alltoall:${ALLTOALL_COLL} --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/alltoall_coll.tesh)
+    ENDFOREACH()
+    FOREACH (ALLTOALLV_COLL default pair pair_light_barrier pair_mpi_barrier
+		            pair_one_barrier  ring ring_light_barrier
+			    ring_mpi_barrier ring_one_barrier bruck)
+        ADD_TEST(smpi-alltoallv-coll-${ALLTOALLV_COLL} ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg smpi/alltoallv:${ALLTOALLV_COLL} --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/alltoallv_coll.tesh)
+    ENDFOREACH()
+    FOREACH (BCAST_COLL default arrival_nb arrival_pattern_aware arrival_pattern_aware_wait arrival_scatter
+		        binomial_tree flattree flattree_pipeline NTSB NTSL NTSL_Isend scatter_LR_allgather
+		        scatter_rdb_allgather SMP_binary SMP_binomial SMP_linear)
+		ADD_TEST(smpi-bcast-coll-${BCAST_COLL} ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg smpi/bcast:${BCAST_COLL} --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/bcast_coll.tesh)
+    ENDFOREACH()
+    FOREACH (REDUCE_COLL default arrival_pattern_aware binomial flat_tree NTSL scatter_gather)
+        ADD_TEST(smpi-reduce-coll-${REDUCE_COLL} ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg smpi/reduce:${REDUCE_COLL} --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/reduce_coll.tesh)
+    ENDFOREACH()
+
   endif()
 
   # END TESH TESTS
@@ -415,13 +449,15 @@ if(NOT enable_memcheck)
       ADD_TEST(mc-bugged1-ucontext              ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg contexts/factory:ucontext --setenv bindir=${CMAKE_BINARY_DIR}/examples/msg/mc --cd ${CMAKE_HOME_DIRECTORY}/examples/msg/mc bugged1.tesh)
       ADD_TEST(mc-centralized-ucontext          ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg contexts/factory:ucontext --setenv bindir=${CMAKE_BINARY_DIR}/examples/msg/mc --cd ${CMAKE_HOME_DIRECTORY}/examples/msg/mc centralized.tesh)
       if(PROCESSOR_x86_64) # liveness model-checking works only on 64bits (for now ...)
-        ADD_TEST(mc-bugged1-liveness-ucontext     ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg contexts/factory:ucontext --setenv bindir=${CMAKE_BINARY_DIR}/examples/msg/mc --cd ${CMAKE_HOME_DIRECTORY}/examples/msg/mc bugged1_liveness.tesh)
-        ADD_TEST(mc-chord-neverjoin-ucontext      ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg contexts/factory:ucontext --setenv bindir=${CMAKE_BINARY_DIR}/examples/msg/mc/chord --cd ${CMAKE_HOME_DIRECTORY}/examples/msg/mc/chord chord_neverjoin.tesh)
-        ADD_TEST(mc-test-snapshot-comparison1     ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg contexts/factory:ucontext --setenv bindir=${CMAKE_BINARY_DIR}/examples/msg/mc/test --cd ${CMAKE_HOME_DIRECTORY}/examples/msg/mc/test snapshot_comparison1.tesh)
-        ADD_TEST(mc-test-snapshot-comparison2     ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg contexts/factory:ucontext --setenv bindir=${CMAKE_BINARY_DIR}/examples/msg/mc/test --cd ${CMAKE_HOME_DIRECTORY}/examples/msg/mc/test snapshot_comparison2.tesh)
-        ADD_TEST(mc-test-snapshot-comparison3     ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg contexts/factory:ucontext --setenv bindir=${CMAKE_BINARY_DIR}/examples/msg/mc/test --cd ${CMAKE_HOME_DIRECTORY}/examples/msg/mc/test snapshot_comparison3.tesh)
-        ADD_TEST(mc-test-snapshot-comparison4     ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg contexts/factory:ucontext --setenv bindir=${CMAKE_BINARY_DIR}/examples/msg/mc/test --cd ${CMAKE_HOME_DIRECTORY}/examples/msg/mc/test snapshot_comparison4.tesh)
-        ADD_TEST(mc-test-snapshot-comparison5     ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg contexts/factory:ucontext --setenv bindir=${CMAKE_BINARY_DIR}/examples/msg/mc/test --cd ${CMAKE_HOME_DIRECTORY}/examples/msg/mc/test snapshot_comparison5.tesh)
+        ADD_TEST(mc-bugged1-liveness-ucontext                  ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg contexts/factory:ucontext --setenv bindir=${CMAKE_BINARY_DIR}/examples/msg/mc --cd ${CMAKE_HOME_DIRECTORY}/examples/msg/mc bugged1_liveness.tesh)
+        ADD_TEST(mc-chord-neverjoin-ucontext                   ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg contexts/factory:ucontext --setenv bindir=${CMAKE_BINARY_DIR}/examples/msg/mc/chord_liveness --cd ${CMAKE_HOME_DIRECTORY}/examples/msg/mc/chord_liveness chord_neverjoin.tesh)
+        ADD_TEST(mc-chord-neverdeliver-ucontext                ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg contexts/factory:ucontext --setenv bindir=${CMAKE_BINARY_DIR}/examples/msg/mc/chord_liveness --cd ${CMAKE_HOME_DIRECTORY}/examples/msg/mc/chord_liveness chord_neverdeliver.tesh)
+        ADD_TEST(mc-chord-neverjoin-timeout-visited-ucontext   ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg contexts/factory:ucontext --setenv bindir=${CMAKE_BINARY_DIR}/examples/msg/mc/chord_liveness --cd ${CMAKE_HOME_DIRECTORY}/examples/msg/mc/chord_liveness chord_neverjoin_timeout_visited.tesh)
+        ADD_TEST(mc-test-snapshot-comparison1                  ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg contexts/factory:ucontext --setenv bindir=${CMAKE_BINARY_DIR}/examples/msg/mc/test --cd ${CMAKE_HOME_DIRECTORY}/examples/msg/mc/test snapshot_comparison1.tesh)
+        ADD_TEST(mc-test-snapshot-comparison2                  ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg contexts/factory:ucontext --setenv bindir=${CMAKE_BINARY_DIR}/examples/msg/mc/test --cd ${CMAKE_HOME_DIRECTORY}/examples/msg/mc/test snapshot_comparison2.tesh)
+        ADD_TEST(mc-test-snapshot-comparison3                  ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg contexts/factory:ucontext --setenv bindir=${CMAKE_BINARY_DIR}/examples/msg/mc/test --cd ${CMAKE_HOME_DIRECTORY}/examples/msg/mc/test snapshot_comparison3.tesh)
+        ADD_TEST(mc-test-snapshot-comparison4                  ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg contexts/factory:ucontext --setenv bindir=${CMAKE_BINARY_DIR}/examples/msg/mc/test --cd ${CMAKE_HOME_DIRECTORY}/examples/msg/mc/test snapshot_comparison4.tesh)
+        ADD_TEST(mc-test-snapshot-comparison5                  ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg contexts/factory:ucontext --setenv bindir=${CMAKE_BINARY_DIR}/examples/msg/mc/test --cd ${CMAKE_HOME_DIRECTORY}/examples/msg/mc/test snapshot_comparison5.tesh)
       endif()
     endif()
     if(HAVE_RAWCTX)

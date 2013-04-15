@@ -742,7 +742,7 @@ void *rctx_wait(void *r)
      return NULL;
      xbt_os_mutex_acquire(rctx->interruption); */
 
-  {
+  { // Sorting output got
     xbt_dynar_t a = xbt_str_split(rctx->output_got->data, "\n");
     xbt_dynar_t b = xbt_dynar_new(sizeof(char *), NULL);
     unsigned cpt;
@@ -777,6 +777,22 @@ void *rctx_wait(void *r)
     xbt_dynar_free(&a);
   }
 
+  if (rctx->output_sort) { // Sorting output wanted
+    char *newbuf;
+    xbt_dynar_t a = xbt_str_split(rctx->output_wanted->data, "\n");
+
+    stable_sort(a);
+    /* If empty lines moved in first position, remove them */
+    while (!xbt_dynar_is_empty(a) && *xbt_dynar_getfirst_as(a, char*) == '\0')
+        xbt_dynar_shift(a, NULL);
+
+    newbuf = xbt_str_join(a, "\n");
+    strcpy(rctx->output_wanted->data, newbuf);
+    rctx->output_wanted->used = strlen(newbuf);
+    xbt_free(newbuf);
+
+    xbt_dynar_free(&a);
+  }
   xbt_strbuff_chomp(rctx->output_got);
   xbt_strbuff_chomp(rctx->output_wanted);
   xbt_strbuff_trim(rctx->output_got);

@@ -82,6 +82,9 @@
 <!ATTLIST cluster availability_file CDATA "">
 <!ATTLIST cluster state_file CDATA "">
 <!ATTLIST cluster router_id CDATA "">
+<!ATTLIST cluster limiter_link CDATA "">
+<!ATTLIST cluster loopback_bw CDATA "">
+<!ATTLIST cluster loopback_lat CDATA "">
 
 <!ELEMENT cabinet EMPTY>
 <!ATTLIST cabinet id CDATA #REQUIRED>

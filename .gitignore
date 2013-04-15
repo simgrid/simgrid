@@ -144,12 +144,6 @@ examples/msg/tracing/volume
 examples/msg/io/file
 examples/msg/io/file_unlink
 examples/msg/mc/bugged3
-examples/msg/mc/random_test
-examples/msg/mc/bugged1_for_liveness
-examples/msg/mc/bugged1_while_liveness
-examples/msg/mc/centralized_liveness_deadlock
-examples/msg/mc/test/test_heap_comparison
-examples/msg/mc/chord_liveness
 examples/msg/mc/test/snapshot_comparison1
 examples/msg/mc/test/snapshot_comparison2
 examples/msg/mc/test/snapshot_comparison3

@@ -582,6 +582,7 @@ static void xbt_log_connect_categories(void)
   XBT_LOG_CONNECT(instr_config);
   XBT_LOG_CONNECT(instr_msg);
   XBT_LOG_CONNECT(instr_msg_process);
+  XBT_LOG_CONNECT(instr_msg_vm);
   XBT_LOG_CONNECT(instr_paje_containers);
   XBT_LOG_CONNECT(instr_paje_header);
   XBT_LOG_CONNECT(instr_paje_trace);
@@ -589,6 +590,7 @@ static void xbt_log_connect_categories(void)
   XBT_LOG_CONNECT(instr_paje_values);
   XBT_LOG_CONNECT(instr_resource);
   XBT_LOG_CONNECT(instr_routing);
+  XBT_LOG_CONNECT(instr_sd);
   XBT_LOG_CONNECT(instr_surf);
 #endif
 

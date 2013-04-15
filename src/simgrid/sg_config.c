@@ -226,8 +226,9 @@ static void _sg_cfg_cb__weight_S(const char *name, int pos)
   sg_weight_S_parameter = xbt_cfg_get_double(_sg_cfg_set, name);
 }
 
+#ifdef HAVE_SMPI
 /* callback of the mpi collectives */
-static void _sg_cfg_cb__coll(char *category,
+static void _sg_cfg_cb__coll(const char *category,
 		             s_mpi_coll_description_t * table,
 		             const char *name, int pos)
 {
@@ -246,14 +247,33 @@ static void _sg_cfg_cb__coll(char *category,
   /* New Module missing */
   find_coll_description(table, val);
 }
+static void _sg_cfg_cb__coll_allgather(const char *name, int pos){
+  _sg_cfg_cb__coll("allgather", mpi_coll_allgather_description, name, pos);
+}
+static void _sg_cfg_cb__coll_allgatherv(const char *name, int pos){
+  _sg_cfg_cb__coll("allgatherv", mpi_coll_allgatherv_description, name, pos);
+}
+static void _sg_cfg_cb__coll_allreduce(const char *name, int pos)
+{
+  _sg_cfg_cb__coll("allreduce", mpi_coll_allreduce_description, name, pos);
+}
 static void _sg_cfg_cb__coll_alltoall(const char *name, int pos)
 {
   _sg_cfg_cb__coll("alltoall", mpi_coll_alltoall_description, name, pos);  
 }
-static void _sg_cfg_cb__coll_allgather(const char *name, int pos){
-  _sg_cfg_cb__coll("allgather", mpi_coll_allgather_description, name, pos);
+static void _sg_cfg_cb__coll_alltoallv(const char *name, int pos)
+{
+  _sg_cfg_cb__coll("alltoallv", mpi_coll_alltoallv_description, name, pos);  
 }
-
+static void _sg_cfg_cb__coll_bcast(const char *name, int pos)
+{
+  _sg_cfg_cb__coll("bcast", mpi_coll_bcast_description, name, pos);  
+}
+static void _sg_cfg_cb__coll_reduce(const char *name, int pos)
+{
+  _sg_cfg_cb__coll("reduce", mpi_coll_reduce_description, name, pos);  
+}
+#endif
 
 /* callback of the inclusion path */
 static void _sg_cfg_cb__surf_path(const char *name, int pos)
@@ -674,7 +694,7 @@ void sg_config_init(int *argc, char **argv)
     xbt_cfg_setdefault_string(_sg_cfg_set, "ns3/TcpModel", "default");
 #endif
 
-//SMPI
+#ifdef HAVE_SMPI
     double default_reference_speed = 20000.0;
     xbt_cfg_register(&_sg_cfg_set, "smpi/running_power",
                      "Power of the host running the simulation (in flop/s). Used to bench the operations.",
@@ -740,19 +760,49 @@ void sg_config_init(int *argc, char **argv)
                      NULL);
     xbt_cfg_setdefault_string(_sg_cfg_set, "smpi/or", "1:0:0:0:0");
 
-    default_value = xbt_strdup("ompi");    
+    default_value = xbt_strdup("default");
+    xbt_cfg_register(&_sg_cfg_set, "smpi/allgather",
+		     "Which collective to use for allgather",
+		     xbt_cfgelm_string, &default_value, 1, 1, &_sg_cfg_cb__coll_allgather,
+		     NULL);
+
+    default_value = xbt_strdup("default");
+    xbt_cfg_register(&_sg_cfg_set, "smpi/allgatherv",
+		     "Which collective to use for allgatherv",
+		     xbt_cfgelm_string, &default_value, 1, 1, &_sg_cfg_cb__coll_allgatherv,
+		     NULL);
+
+    default_value = xbt_strdup("default");
+    xbt_cfg_register(&_sg_cfg_set, "smpi/allreduce",
+		     "Which collective to use for allreduce",
+		     xbt_cfgelm_string, &default_value, 1, 1, &_sg_cfg_cb__coll_allreduce,
+		     NULL);
+
+    default_value = xbt_strdup("ompi");
     xbt_cfg_register(&_sg_cfg_set, "smpi/alltoall",
 		     "Which collective to use for alltoall",
 		     xbt_cfgelm_string, &default_value, 1, 1, &_sg_cfg_cb__coll_alltoall,
 		     NULL);
 
-    default_value = xbt_strdup("default");    
-    xbt_cfg_register(&_sg_cfg_set, "smpi/allgather",
-		     "Which collective to use for allgather",
-		     xbt_cfgelm_string, &default_value, 1, 1, &_sg_cfg_cb__coll_allgather,
+    default_value = xbt_strdup("default");
+    xbt_cfg_register(&_sg_cfg_set, "smpi/alltoallv",
+		     "Which collective to use for alltoallv",
+		     xbt_cfgelm_string, &default_value, 1, 1, &_sg_cfg_cb__coll_alltoallv,
 		     NULL);
-    //END SMPI
 
+    default_value = xbt_strdup("default");
+    xbt_cfg_register(&_sg_cfg_set, "smpi/bcast",
+		     "Which collective to use for bcast",
+		     xbt_cfgelm_string, &default_value, 1, 1, &_sg_cfg_cb__coll_bcast,
+		     NULL);
+
+
+    default_value = xbt_strdup("default");
+    xbt_cfg_register(&_sg_cfg_set, "smpi/reduce",
+		     "Which collective to use for reduce",
+		     xbt_cfgelm_string, &default_value, 1, 1, &_sg_cfg_cb__coll_reduce,
+		     NULL);
+#endif // HAVE_SMPI
 
     if (!surf_path) {
       /* retrieves the current directory of the        current process */

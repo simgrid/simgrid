@@ -32,6 +32,16 @@ The tree is not split on projects, but on file finality:
  examples/ -> Supposed to be copy/pastable by the user, so keep it clear and
                 avoid any kind of trick. In particular, do only include the
                 public headers here.
+
+ teshsuite/ -> The more test the better. Put in there any strange test
+	       doing things that the users are not supposed to do,
+	       just to see if our framework is robust to incorrect and
+	       unusual behaviors. All tests written in this section
+	       should leverage our tesh(1) utility.
+ 
+ testsuite/ -> Old test suite, that should be converted to tesh and
+               moved to teshsuite at some point.
+
 **
 ** Indentation standard
 **
@@ -174,6 +184,9 @@ investigating the portability of the thing to windows.
       cmake -Denable_compile_optimizations=ON \
             -Denable_compile_warnings=ON
 
+* Your commit message should follow the git habits, explained eg here:
+  http://tbaggery.com/2008/04/19/a-note-about-git-commit-messages.html
+
 * If you want to debug memory allocation problems, here are a few hints:
   - disable compiler optimizations, to have better backtraces;
   - disable the mallocators, or it will be hard to match malloc's with
@@ -191,3 +204,4 @@ investigating the portability of the thing to windows.
   deactivate the whole logging mechanism, switching to printfs
   instead. SimGrid becomes incredibly verbose when doing so, but it
   you let you fixing the dynars.
+  

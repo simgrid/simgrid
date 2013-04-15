@@ -605,6 +605,7 @@ void MC_ddfs(int search_cycle){
   xbt_automaton_transition_t transition_succ;
   unsigned int cursor = 0;
   int res;
+  int reached_num;
 
   mc_pair_t next_pair = NULL;
   mc_pair_t pair_succ;
@@ -694,9 +695,9 @@ void MC_ddfs(int search_cycle){
 
             if((pair_succ->automaton_state->type == 1) || (pair_succ->automaton_state->type == 2)){ 
           
-              if(is_reached_acceptance_pair(pair_succ->num, pair_succ->automaton_state) != -1){
+              if((reached_num = is_reached_acceptance_pair(pair_succ->num, pair_succ->automaton_state)) != -1){
         
-                XBT_INFO("Next pair (depth = %d, %u interleave) already reached !", xbt_fifo_size(mc_stack_liveness) + 1, MC_state_interleave_size(pair_succ->graph_state));
+                XBT_INFO("Next pair (depth = %d, %u interleave) already reached (equal to state %d) !", xbt_fifo_size(mc_stack_liveness) + 1, MC_state_interleave_size(pair_succ->graph_state), reached_num);
 
                 XBT_INFO("*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*");
                 XBT_INFO("|             ACCEPTANCE CYCLE            |");
@@ -845,9 +846,9 @@ void MC_ddfs(int search_cycle){
 
           if((pair_succ->automaton_state->type == 1) || (pair_succ->automaton_state->type == 2)){ 
 
-            if(is_reached_acceptance_pair(pair_succ->num, pair_succ->automaton_state) != -1){
+            if((reached_num = is_reached_acceptance_pair(pair_succ->num, pair_succ->automaton_state)) != -1){
            
-              XBT_INFO("Next pair (depth = %d) already reached !", xbt_fifo_size(mc_stack_liveness) + 1);
+              XBT_INFO("Next pair (depth = %d) already reached (equal to state %d)!", xbt_fifo_size(mc_stack_liveness) + 1, reached_num);
         
               XBT_INFO("*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*");
               XBT_INFO("|             ACCEPTANCE CYCLE            |");

@@ -685,6 +685,7 @@ INPUT                  = doxygen/index.doc \
                            doxygen/module-sd.doc \
                            doxygen/module-surf.doc \
                            doxygen/module-simix.doc \
+                           doxygen/module-smpi.doc \
                            doxygen/module-trace.doc \
                            index-API.doc \
                          @top_srcdir@/doc/doxygen/logcategories.doc \

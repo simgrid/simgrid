@@ -197,7 +197,7 @@ static MPI_Request build_request(void *buf, int count,
   if(datatype->has_subtype == 1){
     // This part handles the problem of non-contiguous memory
     old_buf = buf;
-    buf = xbt_malloc(count*smpi_datatype_size(datatype));
+    buf = count==0 ? NULL : xbt_malloc(count*smpi_datatype_size(datatype));
     if (flags & SEND) {
       subtype->serialize(old_buf, buf, count, datatype->substruct);
     }
@@ -336,7 +336,15 @@ void smpi_mpi_start(MPI_Request request)
 
   } else {
 
+
     int receiver = smpi_group_index(smpi_comm_group(request->comm), request->dst);
+
+    #ifdef HAVE_TRACING
+      int rank = smpi_process_index();
+      if (TRACE_smpi_view_internals()) {
+        TRACE_smpi_send(rank, rank, receiver);
+      }
+    #endif
 /*    if(receiver == MPI_UNDEFINED) {*/
 /*      XBT_WARN("Trying to send a message to a wrong rank");*/
 /*      return;*/
@@ -354,13 +362,14 @@ void smpi_mpi_start(MPI_Request request)
       request->refcount++;
       if(request->old_type->has_subtype == 0){
         oldbuf = request->buf;
-        if (oldbuf){
+        if (oldbuf && request->size!=0){
           request->buf = xbt_malloc(request->size);
           memcpy(request->buf,oldbuf,request->size);
         }
       }
       XBT_DEBUG("Send request %p is detached; buf %p copied into %p",request,oldbuf,request->buf);
     }
+
     // we make a copy here, as the size is modified by simix, and we may reuse the request in another receive later
     request->real_size=request->size;
     smpi_datatype_use(request->old_type);
@@ -390,6 +399,7 @@ void smpi_mpi_start(MPI_Request request)
     /* FIXME: detached sends are not traceable (request->action == NULL) */
     if (request->action)
       simcall_set_category(request->action, TRACE_internal_smpi_get_category());
+
 #endif
 
   }
@@ -499,8 +509,11 @@ void smpi_mpi_send(void *buf, int count, MPI_Datatype datatype, int dst,
 void smpi_mpi_ssend(void *buf, int count, MPI_Datatype datatype,
                            int dst, int tag, MPI_Comm comm)
 {
-  MPI_Request request = smpi_mpi_issend(buf, count, datatype, dst, tag, comm);
-  smpi_mpi_wait(&request, MPI_STATUS_IGNORE);
+  MPI_Request request =
+      build_request(buf, count, datatype, smpi_comm_rank(comm), dst, tag,
+                    comm, NON_PERSISTENT | SSEND | SEND);
+
+  smpi_mpi_start(request);  smpi_mpi_wait(&request, MPI_STATUS_IGNORE);
 }
 
 void smpi_mpi_sendrecv(void *sendbuf, int sendcount, MPI_Datatype sendtype,
@@ -558,7 +571,18 @@ static void finish_wait(MPI_Request * request, MPI_Status * status)
       if(req->detached == 0) free(req->buf);
     }
     smpi_datatype_unuse(datatype);
+
   }
+
+#ifdef HAVE_TRACING
+    if (TRACE_smpi_view_internals()) {
+      if(req->flags & RECV){
+        int rank = smpi_process_index();
+        int  src_traced = smpi_group_index(smpi_comm_group(req->comm), req->src == MPI_ANY_SOURCE ? req->real_src : req->src);
+        TRACE_smpi_recv(rank, src_traced, rank);
+      }
+    }
+#endif
 
   if(req->detached_sender!=NULL){
     smpi_mpi_request_free(&(req->detached_sender));
@@ -580,8 +604,8 @@ int smpi_mpi_test(MPI_Request * request, MPI_Status * status) {
   else
     flag = simcall_comm_test((*request)->action);
   if(flag) {
-    (*request)->refcount++;
     finish_wait(request, status);
+    request=MPI_REQUEST_NULL;
   }else{
     smpi_empty_status(status);
   }
@@ -787,6 +811,7 @@ int smpi_mpi_waitall(int count, MPI_Request requests[],
       index = smpi_mpi_waitany(count, requests, pstat);
       if (index == MPI_UNDEFINED)
         break;
+      requests[index]=MPI_REQUEST_NULL;
     }
     if (status != MPI_STATUSES_IGNORE) {
       status[index] = *pstat;
@@ -815,6 +840,7 @@ int smpi_mpi_waitsome(int incount, MPI_Request requests[], int *indices,
       if(status != MPI_STATUSES_IGNORE) {
         status[index] = *pstat;
       }
+     requests[index]=MPI_REQUEST_NULL;
     }else{
       return MPI_UNDEFINED;
     }
@@ -839,6 +865,8 @@ int smpi_mpi_testsome(int incount, MPI_Request requests[], int *indices,
          if(status != MPI_STATUSES_IGNORE) {
            status[i] = *pstat;
          }
+         requests[i]=MPI_REQUEST_NULL;
+
       }
     }else{
       count_dead++;

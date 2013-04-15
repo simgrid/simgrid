@@ -80,7 +80,7 @@ int main( int argc, char **argv )
 {
     int    err = 0;
     void *v;
-    int  flag;
+    int  flag=0;
     int  vval;
     int  rank;
     double t1;

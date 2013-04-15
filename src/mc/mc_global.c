@@ -138,9 +138,6 @@ void MC_do_the_modelcheck_for_real() {
   mc_comp_times = xbt_new0(s_mc_comparison_times_t, 1);
   MC_UNSET_RAW_MEM;
   
-  if((_sg_mc_dot_output_file != NULL) && (_sg_mc_dot_output_file[0]!='\0'))
-    MC_init_dot_output();
-
   if (!_sg_mc_property_file || _sg_mc_property_file[0]=='\0') {
     if (mc_reduce_kind==e_mc_reduce_unset)
       mc_reduce_kind=e_mc_reduce_dpor;
@@ -213,6 +210,9 @@ void MC_init(){
   MC_ignore_stack("next_context", "smx_ctx_sysv_suspend_serial");
   MC_ignore_stack("i", "smx_ctx_sysv_suspend_serial");
 
+  /* Ignore local variable about time used for tracing */
+  MC_ignore_stack("start_time", "*"); 
+
   MC_ignore_data_bss(&mc_comp_times, sizeof(mc_comp_times));
   MC_ignore_data_bss(&mc_snapshot_comparison_time, sizeof(mc_snapshot_comparison_time)); 
   MC_ignore_data_bss(&mc_time, sizeof(mc_time));
@@ -269,6 +269,9 @@ void MC_modelcheck_safety(void)
   /* Create exploration stack */
   mc_stack_safety = xbt_fifo_new();
 
+  if((_sg_mc_dot_output_file != NULL) && (_sg_mc_dot_output_file[0]!='\0'))
+    MC_init_dot_output();
+
   MC_UNSET_RAW_MEM;
 
   if(_sg_mc_visited > 0){
@@ -320,6 +323,9 @@ void MC_modelcheck_liveness(){
   /* Create the initial state */
   initial_state_liveness = xbt_new0(s_mc_global_t, 1);
 
+  if((_sg_mc_dot_output_file != NULL) && (_sg_mc_dot_output_file[0]!='\0'))
+    MC_init_dot_output();
+  
   MC_UNSET_RAW_MEM;
 
   MC_ddfs_init();
@@ -336,13 +342,6 @@ void MC_modelcheck_liveness(){
 
 void MC_exit(void)
 {
-  MC_SET_RAW_MEM;
-  if((_sg_mc_dot_output_file != NULL) && (_sg_mc_dot_output_file[0]!='\0')){
-    fprintf(dot_output, "}\n");
-    fclose(dot_output);
-  }
-  MC_UNSET_RAW_MEM;
-
   xbt_free(mc_time);
   MC_memory_exit();
   xbt_abort();
@@ -738,6 +737,12 @@ void MC_print_statistics(mc_stats_t stats)
     XBT_INFO("Visited pairs = %lu", stats->visited_pairs);
   }
   XBT_INFO("Executed transitions = %lu", stats->executed_transitions);
+  MC_SET_RAW_MEM;
+  if((_sg_mc_dot_output_file != NULL) && (_sg_mc_dot_output_file[0]!='\0')){
+    fprintf(dot_output, "}\n");
+    fclose(dot_output);
+  }
+  MC_UNSET_RAW_MEM;
 }
 
 void MC_assert(int prop)
@@ -844,10 +849,10 @@ void MC_ignore_heap(void *address, size_t size){
   
   if(((xbt_mheap_t)std_heap)->heapinfo[region->block].type == 0){
     region->fragment = -1;
-    ((xbt_mheap_t)std_heap)->heapinfo[region->block].busy_block.ignore = 1;
+    ((xbt_mheap_t)std_heap)->heapinfo[region->block].busy_block.ignore++;
   }else{
     region->fragment = ((uintptr_t) (ADDR2UINT (address) % (BLOCKSIZE))) >> ((xbt_mheap_t)std_heap)->heapinfo[region->block].type;
-    ((xbt_mheap_t)std_heap)->heapinfo[region->block].busy_frag.ignore[region->fragment] = 1;
+    ((xbt_mheap_t)std_heap)->heapinfo[region->block].busy_frag.ignore[region->fragment]++;
   }
   
   if(mc_heap_comparison_ignore == NULL){

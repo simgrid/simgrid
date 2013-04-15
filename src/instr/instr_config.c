@@ -19,6 +19,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_config, instr, "Configuration");
 #define OPT_TRACING_SMPI          "tracing/smpi"
 #define OPT_TRACING_SMPI_GROUP    "tracing/smpi/group"
 #define OPT_TRACING_SMPI_COMPUTING "tracing/smpi/computing"
+#define OPT_TRACING_SMPI_INTERNALS "tracing/smpi/internals"
 #define OPT_TRACING_CATEGORIZED   "tracing/categorized"
 #define OPT_TRACING_UNCATEGORIZED "tracing/uncategorized"
 #define OPT_TRACING_MSG_PROCESS   "tracing/msg/process"
@@ -41,6 +42,7 @@ static int trace_platform_topology;
 static int trace_smpi_enabled;
 static int trace_smpi_grouped;
 static int trace_smpi_computing;
+static int trace_view_internals;
 static int trace_categorized;
 static int trace_uncategorized;
 static int trace_msg_process_enabled;
@@ -65,6 +67,7 @@ static void TRACE_getopts(void)
   trace_smpi_enabled = xbt_cfg_get_int(_sg_cfg_set, OPT_TRACING_SMPI);
   trace_smpi_grouped = xbt_cfg_get_int(_sg_cfg_set, OPT_TRACING_SMPI_GROUP);
   trace_smpi_computing = xbt_cfg_get_int(_sg_cfg_set, OPT_TRACING_SMPI_COMPUTING);
+  trace_view_internals = xbt_cfg_get_int(_sg_cfg_set, OPT_TRACING_SMPI_INTERNALS);
   trace_categorized = xbt_cfg_get_int(_sg_cfg_set, OPT_TRACING_CATEGORIZED);
   trace_uncategorized = xbt_cfg_get_int(_sg_cfg_set, OPT_TRACING_UNCATEGORIZED);
   trace_msg_process_enabled = xbt_cfg_get_int(_sg_cfg_set, OPT_TRACING_MSG_PROCESS);
@@ -225,6 +228,10 @@ int TRACE_smpi_is_computing(void)
   return trace_smpi_computing;
 }
 
+int TRACE_smpi_view_internals(void)
+{
+  return trace_view_internals;
+}
 
 int TRACE_categorized (void)
 {
@@ -350,6 +357,13 @@ void TRACE_global_init(int *argc, char **argv)
   xbt_cfg_register(&_sg_cfg_set, OPT_TRACING_SMPI_COMPUTING,
                    "Generate states for timing out of SMPI parts of the application",
                    xbt_cfgelm_int, &default_tracing_smpi_computing, 0, 1,
+                   NULL, NULL);
+
+  /* smpi internals */
+  int default_tracing_smpi_internals = 0;
+  xbt_cfg_register(&_sg_cfg_set, OPT_TRACING_SMPI_INTERNALS,
+                   "View internal messages sent by Collective communications in SMPI",
+                   xbt_cfgelm_int, &default_tracing_smpi_internals, 0, 1,
                    NULL, NULL);
 
   /* tracing categorized resource utilization traces */
@@ -505,6 +519,9 @@ void TRACE_help (int detailed)
   print_line (OPT_TRACING_SMPI_COMPUTING, "Generates a \" Computing \" State",
       "  This option aims at tracing computations in the application, outside SMPI\n"
       "  to allow further study of simulated or real computation time",
+      detailed);
+  print_line (OPT_TRACING_SMPI_INTERNALS, "Generates tracing events corresponding",
+      "  to point-to-point messages sent by collective communications",
       detailed);
   print_line (OPT_TRACING_MSG_PROCESS, "Trace processes behavior (MSG)",
       "  This option only has effect if this simulator is MSG-based. It traces the\n"

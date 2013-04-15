@@ -1263,18 +1263,18 @@ int PMPI_Sendrecv_replace(void *buf, int count, MPI_Datatype datatype,
   //TODO: suboptimal implementation
   void *recvbuf;
   int retval;
-  if ((datatype == MPI_DATATYPE_NULL)||(datatype->has_subtype==1)) {
+  if (datatype == MPI_DATATYPE_NULL) {
       retval = MPI_ERR_TYPE;
   } else if (count < 0) {
       retval = MPI_ERR_COUNT;
   } else {
-    int size = smpi_datatype_size(datatype) * count;
+    int size = smpi_datatype_get_extent(datatype) * count;
     recvbuf = xbt_new(char, size);
     retval =
         MPI_Sendrecv(buf, count, datatype, dst, sendtag, recvbuf, count,
                      datatype, src, recvtag, comm, status);
     if(retval==MPI_SUCCESS){
-        memcpy(buf, recvbuf, size * sizeof(char));
+        smpi_datatype_copy(recvbuf, count, datatype, buf, count, datatype);
     }
     xbt_free(recvbuf);
 
@@ -1479,7 +1479,7 @@ int PMPI_Waitall(int count, MPI_Request requests[], MPI_Status status[])
   int valid_count = 0;
   for (i = 0; i < count; i++) {
     MPI_Request req = requests[i];
-    if(req){
+    if(req!=MPI_REQUEST_NULL){
       srcs[valid_count] = req->src;
       dsts[valid_count] = req->dst;
       recvs[valid_count] = req->recv;
@@ -1558,7 +1558,7 @@ int PMPI_Bcast(void *buf, int count, MPI_Datatype datatype, int root, MPI_Comm c
   if (comm == MPI_COMM_NULL) {
     retval = MPI_ERR_COMM;
   } else {
-    smpi_mpi_bcast(buf, count, datatype, root, comm);
+    mpi_coll_bcast_fun(buf, count, datatype, root, comm);
     retval = MPI_SUCCESS;
   }
 #ifdef HAVE_TRACING
@@ -1675,8 +1675,8 @@ int PMPI_Allgather(void *sendbuf, int sendcount, MPI_Datatype sendtype,
              || recvtype == MPI_DATATYPE_NULL) {
     retval = MPI_ERR_TYPE;
   } else {
-    smpi_mpi_allgather(sendbuf, sendcount, sendtype, recvbuf, recvcount,
-                       recvtype, comm);
+    mpi_coll_allgather_fun(sendbuf, sendcount, sendtype, recvbuf, recvcount,
+                           recvtype, comm);
     retval = MPI_SUCCESS;
   }
 #ifdef HAVE_TRACING
@@ -1706,7 +1706,7 @@ int PMPI_Allgatherv(void *sendbuf, int sendcount, MPI_Datatype sendtype,
   } else if (recvcounts == NULL || displs == NULL) {
     retval = MPI_ERR_ARG;
   } else {
-    smpi_mpi_allgatherv(sendbuf, sendcount, sendtype, recvbuf, recvcounts,
+    mpi_coll_allgatherv_fun(sendbuf, sendcount, sendtype, recvbuf, recvcounts,
                         displs, recvtype, comm);
     retval = MPI_SUCCESS;
   }
@@ -1800,7 +1800,7 @@ int PMPI_Reduce(void *sendbuf, void *recvbuf, int count,
   } else if (datatype == MPI_DATATYPE_NULL || op == MPI_OP_NULL) {
     retval = MPI_ERR_ARG;
   } else {
-    smpi_mpi_reduce(sendbuf, recvbuf, count, datatype, op, root, comm);
+    mpi_coll_reduce_fun(sendbuf, recvbuf, count, datatype, op, root, comm);
     retval = MPI_SUCCESS;
   }
 #ifdef HAVE_TRACING
@@ -1829,7 +1829,7 @@ int PMPI_Allreduce(void *sendbuf, void *recvbuf, int count,
   } else if (op == MPI_OP_NULL) {
     retval = MPI_ERR_OP;
   } else {
-    smpi_mpi_allreduce(sendbuf, recvbuf, count, datatype, op, comm);
+      mpi_coll_allreduce_fun(sendbuf, recvbuf, count, datatype, op, comm);
     retval = MPI_SUCCESS;
   }
 #ifdef HAVE_TRACING
@@ -1899,7 +1899,7 @@ int PMPI_Reduce_scatter(void *sendbuf, void *recvbuf, int *recvcounts,
       count += recvcounts[i];
       displs[i] = 0;
     }
-    smpi_mpi_reduce(sendbuf, recvbuf, count, datatype, op, 0, comm);
+    mpi_coll_reduce_fun(sendbuf, recvbuf, count, datatype, op, 0, comm);
     smpi_mpi_scatterv(recvbuf, recvcounts, displs, datatype, recvbuf,
                       recvcounts[rank], datatype, 0, comm);
     xbt_free(displs);
@@ -1963,7 +1963,7 @@ int PMPI_Alltoallv(void *sendbuf, int *sendcounts, int *senddisps,
     retval = MPI_ERR_ARG;
   } else {
     retval =
-        smpi_coll_basic_alltoallv(sendbuf, sendcounts, senddisps, sendtype,
+        mpi_coll_alltoallv_fun(sendbuf, sendcounts, senddisps, sendtype,
                                   recvbuf, recvcounts, recvdisps, recvtype,
                                   comm);
   }
@@ -2334,4 +2334,32 @@ int PMPI_Dims_create(int nnodes, int ndims, int* dims) {
    return not_yet_implemented();
 }
 
+int PMPI_Win_fence( int assert,  MPI_Win win){
+   return not_yet_implemented();
+}
+
+int PMPI_Win_free( MPI_Win* win){
+   return not_yet_implemented();
+}
+
+int PMPI_Win_create( void *base, MPI_Aint size, int disp_unit, MPI_Info info, MPI_Comm comm, MPI_Win *win){
+  return not_yet_implemented();
+}
+
+int PMPI_Info_create( MPI_Info *info){
+  return not_yet_implemented();
+}
+
+int PMPI_Info_set( MPI_Info *info, char *key, char *value){
+  return not_yet_implemented();
+}
+
+int PMPI_Info_free( MPI_Info *info){
+  return not_yet_implemented();
+}
+
+int PMPI_Get( void *origin_addr, int origin_count, MPI_Datatype origin_datatype, int target_rank,
+    MPI_Aint target_disp, int target_count, MPI_Datatype target_datatype, MPI_Win win){
+  return not_yet_implemented();
+}
 

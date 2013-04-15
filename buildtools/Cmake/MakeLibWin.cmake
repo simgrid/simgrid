@@ -41,14 +41,3 @@ if(PEXPORTS_PATH)
   add_custom_command(TARGET simgrid POST_BUILD
     COMMAND ${PEXPORTS_PATH}/pexports.exe ${CMAKE_BINARY_DIR}/lib/libsimgrid.dll > ${CMAKE_BINARY_DIR}/lib/libsimgrid.def)
 endif()
-
-if(enable_smpi)
-  set(SMPI_DEP "${LIBRARY_OUTPUT_PATH}/libsimgrid.dll")
-  add_library(smpi SHARED ${SMPI_SRC})
-  set_target_properties(smpi PROPERTIES COMPILE_FLAGS "-D_XBT_DLL_EXPORT -DDLL_EXPORT" LINK_FLAGS "-shared" VERSION ${libsmpi_version} PREFIX "lib" SUFFIX ".dll" IMPORT_PREFIX "lib" IMPORT_SUFFIX ".dll")
-  target_link_libraries(smpi ${SMPI_DEP})
-  if(PEXPORTS_PATH)
-    add_custom_command(TARGET smpi POST_BUILD
-     COMMAND ${PEXPORTS_PATH}/pexports.exe ${CMAKE_BINARY_DIR}/lib/libsmpi.dll > ${CMAKE_BINARY_DIR}/lib/libsmpi.def)
-  endif()
-endif()

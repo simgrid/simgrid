@@ -247,14 +247,14 @@ void MC_dpor(void)
 {
 
   char *req_str;
-  int value, value2;
-  smx_simcall_t req = NULL, prev_req = NULL, req2 = NULL;
-  s_smx_simcall_t req3;
+  int value;
+  smx_simcall_t req = NULL, prev_req = NULL;
   mc_state_t state = NULL, prev_state = NULL, next_state = NULL, restore_state=NULL;
   smx_process_t process = NULL;
   xbt_fifo_item_t item = NULL;
   int pos;
   int visited_state;
+  int enabled = 0, max_depth_reached = 0;
 
   while (xbt_fifo_size(mc_stack_safety) > 0) {
 
@@ -282,7 +282,8 @@ void MC_dpor(void)
         xbt_free(req_str);
       }
         
-      req_str = MC_request_get_dot_output(req, value);
+      if(dot_output != NULL)
+        req_str = MC_request_get_dot_output(req, value);
 
       MC_state_set_executed_request(state, req, value);
       mc_stats->executed_transitions++;
@@ -292,8 +293,6 @@ void MC_dpor(void)
       xbt_dict_remove(first_enabled_state, key); 
       xbt_free(key);
       MC_UNSET_RAW_MEM;
-
-      MC_state_set_executed_request(state, req, value);
 
       /* Answer the request */
       SIMIX_simcall_pre(req, value); /* After this call req is no longer usefull */
@@ -347,24 +346,64 @@ void MC_dpor(void)
 
       MC_UNSET_RAW_MEM;
 
-      xbt_free(req_str);
+      if(dot_output != NULL)
+        xbt_free(req_str);
 
       /* Let's loop again */
 
       /* The interleave set is empty or the maximum depth is reached, let's back-track */
     } else {
 
-      if(xbt_fifo_size(mc_stack_safety) == _sg_mc_max_depth)  
+      if(xbt_fifo_size(mc_stack_safety) > _sg_mc_max_depth){  
+
         XBT_WARN("/!\\ Max depth reached ! /!\\ ");
-      else
+
+        /* Interleave enabled processes in the state in which they have been enabled for the first time */
+        xbt_swag_foreach(process, simix_global->process_list){
+          if(MC_process_is_enabled(process)){
+            char *key = bprintf("%lu", process->pid);
+            enabled = (int)strtoul(xbt_dict_get_or_null(first_enabled_state, key), 0, 10);
+            xbt_free(key);
+            mc_state_t state_test = NULL;
+            xbt_fifo_item_t item = NULL;
+            int cursor = xbt_fifo_size(mc_stack_safety);
+            xbt_fifo_foreach(mc_stack_safety, item, state_test, mc_state_t){
+              if(cursor-- == enabled){ 
+                if(!MC_state_process_is_done(state_test, process)){ 
+                  MC_state_interleave_process(state_test, process);
+                  break;
+                }
+              }
+            } 
+          }
+        }
+
+        if(MC_state_interleave_size(state) > 0){
+          max_depth_reached = 1;
+        }else{
+          /* Trash the current state, no longer needed */
+          MC_SET_RAW_MEM;
+          xbt_fifo_shift(mc_stack_safety);
+          MC_state_delete(state);
+          MC_UNSET_RAW_MEM;
+
+          max_depth_reached = 0;
+        }
+        
+
+      }else{
+
         XBT_DEBUG("There are no more processes to interleave.");
 
-      /* Trash the current state, no longer needed */
-      MC_SET_RAW_MEM;
-      xbt_fifo_shift(mc_stack_safety);
-      MC_state_delete(state);
-      MC_UNSET_RAW_MEM;
+        /* Trash the current state, no longer needed */
+        MC_SET_RAW_MEM;
+        xbt_fifo_shift(mc_stack_safety);
+        MC_state_delete(state);
+        MC_UNSET_RAW_MEM;
 
+        max_depth_reached = 0;
+      }
+      
       /* Check for deadlocks */
       if(MC_deadlock_check()){
         MC_show_deadlock(NULL);
@@ -381,33 +420,11 @@ void MC_dpor(void)
       
       while ((state = xbt_fifo_shift(mc_stack_safety)) != NULL) {
         if(mc_reduce_kind != e_mc_reduce_none){
-          req = MC_state_get_internal_request(state);
-          /* If max_depth reached, check only for the last state if the request that has generated
-             it, depends on any other processes still enabled when max_depth reached */
-          if(xbt_fifo_size(mc_stack_safety) == _sg_mc_max_depth - 1){
-            req3 = *req;
-            xbt_swag_foreach(process, simix_global->process_list){
-              if(MC_process_is_enabled(process) && !MC_state_process_is_done(state, process)){
-                MC_state_interleave_process(state, process);
-                req2 = MC_state_get_request(state, &value2);
-                MC_state_set_executed_request(state, req2, value2);
-                req2 = MC_state_get_internal_request(state);
-                if(MC_request_depend(&req3, req2)){
-                  if(XBT_LOG_ISENABLED(mc_dpor, xbt_log_priority_debug)){
-                    XBT_DEBUG("Dependent Transitions:");
-                    req_str = MC_request_to_string(&req3, value);
-                    XBT_DEBUG("%s (state=%p)", req_str, state);
-                    xbt_free(req_str);
-                    req_str = MC_request_to_string(req2, value);
-                    XBT_DEBUG("%s (state=%p)", req_str, state);
-                    xbt_free(req_str);              
-                  } 
-                  MC_state_interleave_process(state, process);
-                  break;
-                }
-              }
-            }
+          if((xbt_fifo_size(mc_stack_safety) == _sg_mc_max_depth) && max_depth_reached){
+            req = MC_state_get_request(state, &value);
+            MC_state_set_executed_request(state, req, value);
           }
+          req = MC_state_get_internal_request(state);
           xbt_fifo_foreach(mc_stack_safety, item, prev_state, mc_state_t) {
             if(MC_request_depend(req, MC_state_get_internal_request(prev_state))){
               if(XBT_LOG_ISENABLED(mc_dpor, xbt_log_priority_debug)){
@@ -438,8 +455,9 @@ void MC_dpor(void)
           }
         }
              
-        if (MC_state_interleave_size(state)) {
+        if (MC_state_interleave_size(state) && xbt_fifo_size(mc_stack_safety) < _sg_mc_max_depth) {
           /* We found a back-tracking point, let's loop */
+          XBT_DEBUG("Back-tracking to depth %d", xbt_fifo_size(mc_stack_safety) + 1);
           if(_sg_mc_checkpoint){
             if(state->system_state != NULL){
               MC_restore_snapshot(state->system_state);

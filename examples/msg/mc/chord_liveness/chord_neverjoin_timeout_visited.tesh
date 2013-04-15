@@ -1,0 +1,105 @@
+#! ./tesh
+
+! expect signal SIGABRT
+! timeout 200
+$ ${bindir:=.}/chord_liveness ../../msg_platform.xml deploy_chord_liveness.xml --cfg=model-check:1 "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n" --cfg=contexts/factory:ucontext --cfg=model-check/property:promela_chord_neverjoin --cfg=model-check/timeout:1 --cfg=model-check/visited:100
+> [  0.000000] (0:@) Configuration change: Set 'model-check' to '1'
+> [  0.000000] (0:@) Configuration change: Set 'model-check/property' to 'promela_chord_neverjoin'
+> [  0.000000] (0:@) Configuration change: Set 'model-check/timeout' to '1'
+> [  0.000000] (0:@) Configuration change: Set 'model-check/visited' to '100'
+> [  0.000000] (0:@) Check the liveness property promela_chord_neverjoin
+> [  0.000000] (1:node@Jean_Yves) Joining the ring with id 14, knowing node 1
+> [  0.000000] (2:node@Boivin) Joining the ring with id 8, knowing node 1
+> [  0.000000] (1:node@Jean_Yves) Cannot join the ring.
+> [  0.000000] (2:node@Boivin) Cannot join the ring.
+> [  0.000000] (1:node@Jean_Yves) Cannot join the ring.
+> [  0.000000] (2:node@Boivin) Cannot join the ring.
+> [  0.000000] (1:node@Jean_Yves) Cannot join the ring.
+> [  0.000000] (2:node@Boivin) Cannot join the ring.
+> [  0.000000] (1:node@Jean_Yves) Cannot join the ring.
+> [  0.000000] (2:node@Boivin) Cannot join the ring.
+> [  0.000000] (1:node@Jean_Yves) Cannot join the ring.
+> [  0.000000] (2:node@Boivin) Cannot join the ring.
+> [  0.000000] (1:node@Jean_Yves) Cannot join the ring.
+> [  0.000000] (2:node@Boivin) Cannot join the ring.
+> [  0.000000] (1:node@Jean_Yves) Cannot join the ring.
+> [  0.000000] (2:node@Boivin) Cannot join the ring.
+> [  0.000000] (1:node@Jean_Yves) Cannot join the ring.
+> [  0.000000] (2:node@Boivin) Cannot join the ring.
+> [  0.000000] (1:node@Jean_Yves) Cannot join the ring.
+> [  0.000000] (2:node@Boivin) Cannot join the ring.
+> [  0.000000] (1:node@Jean_Yves) Cannot join the ring.
+> [  0.000000] (2:node@Boivin) Cannot join the ring.
+> [  0.000000] (1:node@Jean_Yves) Cannot join the ring.
+> [  0.000000] (2:node@Boivin) Cannot join the ring.
+> [  0.000000] (1:node@Jean_Yves) Cannot join the ring.
+> [  0.000000] (2:node@Boivin) Cannot join the ring.
+> [  0.000000] (1:node@Jean_Yves) Cannot join the ring.
+> [  0.000000] (2:node@Boivin) Cannot join the ring.
+> [  0.000000] (1:node@Jean_Yves) Cannot join the ring.
+> [  0.000000] (2:node@Boivin) Cannot join the ring.
+> [  0.000000] (3:node@Jacquelin) A transfer has occured
+> [  0.000000] (3:node@Jacquelin) The task was successfully received by node 1
+> [  0.000000] (1:node@Jean_Yves) Cannot join the ring.
+> [  0.000000] (2:node@Boivin) Cannot join the ring.
+> [  0.000000] (3:node@Jacquelin) A transfer has occured
+> [  0.000000] (3:node@Jacquelin) The task was successfully received by node 1
+> [  0.000000] (1:node@Jean_Yves) Cannot join the ring.
+> [  0.000000] (2:node@Boivin) Cannot join the ring.
+> [  0.000000] (3:node@Jacquelin) A transfer has occured
+> [  0.000000] (3:node@Jacquelin) The task was successfully received by node 1
+> [  0.000000] (1:node@Jean_Yves) Cannot join the ring.
+> [  0.000000] (2:node@Boivin) Cannot join the ring.
+> [  0.000000] (3:node@Jacquelin) A transfer has occured
+> [  0.000000] (3:node@Jacquelin) The task was successfully received by node 1
+> [  0.000000] (1:node@Jean_Yves) Cannot join the ring.
+> [  0.000000] (2:node@Boivin) Cannot join the ring.
+> [  0.000000] (3:node@Jacquelin) A transfer has occured
+> [  0.000000] (3:node@Jacquelin) The task was successfully received by node 1
+> [  0.000000] (1:node@Jean_Yves) Cannot join the ring.
+> [  0.000000] (2:node@Boivin) Cannot join the ring.
+> [  0.000000] (3:node@Jacquelin) A transfer has occured
+> [  0.000000] (3:node@Jacquelin) The task was successfully received by node 1
+> [  0.000000] (1:node@Jean_Yves) Cannot join the ring.
+> [  0.000000] (2:node@Boivin) Cannot join the ring.
+> [  0.000000] (3:node@Jacquelin) A transfer has occured
+> [  0.000000] (3:node@Jacquelin) The task was successfully received by node 1
+> [  0.000000] (1:node@Jean_Yves) Cannot join the ring.
+> [  0.000000] (2:node@Boivin) Cannot join the ring.
+> [  0.000000] (3:node@Jacquelin) A transfer has occured
+> [  0.000000] (3:node@Jacquelin) The task was successfully received by node 1
+> [  0.000000] (1:node@Jean_Yves) Cannot join the ring.
+> [  0.000000] (2:node@Boivin) Cannot join the ring.
+> [  0.000000] (3:node@Jacquelin) A transfer has occured
+> [  0.000000] (3:node@Jacquelin) The task was successfully received by node 1
+> [  0.000000] (1:node@Jean_Yves) Cannot join the ring.
+> [  0.000000] (3:node@Jacquelin) A transfer has occured
+> [  0.000000] (3:node@Jacquelin) The task was successfully received by node 1
+> [  0.000000] (2:node@Boivin) Cannot join the ring.
+> [  0.000000] (1:node@Jean_Yves) Cannot join the ring.
+> [  0.000000] (3:node@Jacquelin) A transfer has occured
+> [  0.000000] (3:node@Jacquelin) The task was successfully received by node 1
+> [  0.000000] (2:node@Boivin) Node 8 joined the ring
+> [  0.000000] (0:@) Next pair (depth = 16, 2 interleave) already reached (equal to state 71) !
+> [  0.000000] (0:@) *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+> [  0.000000] (0:@) |             ACCEPTANCE CYCLE            |
+> [  0.000000] (0:@) *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+> [  0.000000] (0:@) Counter-example that violates formula :
+> [  0.000000] (0:@) [(1)node] iSend (src=node, buff=(verbose only), size=(verbose only))
+> [  0.000000] (0:@) [(1)node] WaitTimeout (comm=(verbose only))
+> [  0.000000] (0:@) [(2)node] iSend (src=node, buff=(verbose only), size=(verbose only))
+> [  0.000000] (0:@) [(3)node] iRecv (dst=node, buff=(verbose only), size=(verbose only))
+> [  0.000000] (0:@) [(2)node] Wait (comm=(verbose only) [(2)node -> (3)node])
+> [  0.000000] (0:@) [(2)node] iRecv (dst=node, buff=(verbose only), size=(verbose only))
+> [  0.000000] (0:@) [(3)node] Test TRUE (comm=(verbose only) [(2)node -> (3)node])
+> [  0.000000] (0:@) [(3)node] iSend (src=node, buff=(verbose only), size=(verbose only))
+> [  0.000000] (0:@) [(2)node] Wait (comm=(verbose only) [(3)node -> (2)node])
+> [  0.000000] (0:@) [(2)node] iRecv (dst=node, buff=(verbose only), size=(verbose only))
+> [  0.000000] (0:@) [(2)node] Test FALSE (comm=(verbose only))
+> [  0.000000] (0:@) [(2)node] MC_RANDOM (0)
+> [  0.000000] (0:@) [(2)node] MC_RANDOM (0)
+> [  0.000000] (0:@) [(2)node] MC_RANDOM (0)
+> [  0.000000] (0:@) [(2)node] MC_RANDOM (0)
+> [  0.000000] (0:@) Expanded pairs = 82
+> [  0.000000] (0:@) Visited pairs = 337
+> [  0.000000] (0:@) Executed transitions = 360

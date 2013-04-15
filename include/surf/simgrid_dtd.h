@@ -179,6 +179,8 @@ typedef int AT_surfxml_cluster_bb___bw;
 typedef int AT_surfxml_argument_value;
 #define AU_surfxml_argument_value NULL
 typedef enum { AU_surfxml_link_state, A_surfxml_link_state_ON,A_surfxml_link_state_OFF } AT_surfxml_link_state;
+typedef int AT_surfxml_cluster_loopback___bw;
+#define AU_surfxml_cluster_loopback___bw NULL
 typedef int AT_surfxml_ASroute_gw___src;
 #define AU_surfxml_ASroute_gw___src NULL
 typedef enum { AU_surfxml_AS_routing, A_surfxml_AS_routing_Full,A_surfxml_AS_routing_Floyd,A_surfxml_AS_routing_Dijkstra,A_surfxml_AS_routing_DijkstraCache,A_surfxml_AS_routing_None,A_surfxml_AS_routing_RuleBased,A_surfxml_AS_routing_Vivaldi,A_surfxml_AS_routing_Cluster } AT_surfxml_AS_routing;
@@ -263,6 +265,8 @@ typedef int AT_surfxml_peer_id;
 #define AU_surfxml_peer_id NULL
 typedef int AT_surfxml_cluster_router___id;
 #define AU_surfxml_cluster_router___id NULL
+typedef int AT_surfxml_cluster_loopback___lat;
+#define AU_surfxml_cluster_loopback___lat NULL
 typedef int AT_surfxml_cabinet_radical;
 #define AU_surfxml_cabinet_radical NULL
 typedef enum { AU_surfxml_cluster_sharing___policy, A_surfxml_cluster_sharing___policy_SHARED,A_surfxml_cluster_sharing___policy_FULLDUPLEX,A_surfxml_cluster_sharing___policy_FATPIPE } AT_surfxml_cluster_sharing___policy;
@@ -304,6 +308,8 @@ typedef int AT_surfxml_random_std___deviation;
 #define AU_surfxml_random_std___deviation NULL
 typedef int AT_surfxml_cluster_core;
 #define AU_surfxml_cluster_core NULL
+typedef int AT_surfxml_cluster_limiter___link;
+#define AU_surfxml_cluster_limiter___link NULL
 typedef int AT_surfxml_host_state___file;
 #define AU_surfxml_host_state___file NULL
 typedef int AT_surfxml_route_dst;
@@ -437,6 +443,9 @@ XBT_PUBLIC_DATA(short int) surfxml_argument_value_isset;
 XBT_PUBLIC_DATA(AT_surfxml_link_state) AX_surfxml_link_state;
 #define A_surfxml_link_state AX_surfxml_link_state
 XBT_PUBLIC_DATA(short int) surfxml_link_state_isset;
+XBT_PUBLIC_DATA(AT_surfxml_cluster_loopback___bw) AX_surfxml_cluster_loopback___bw;
+#define A_surfxml_cluster_loopback___bw (surfxml_bufferstack + AX_surfxml_cluster_loopback___bw)
+XBT_PUBLIC_DATA(short int) surfxml_cluster_loopback___bw_isset;
 XBT_PUBLIC_DATA(AT_surfxml_ASroute_gw___src) AX_surfxml_ASroute_gw___src;
 #define A_surfxml_ASroute_gw___src (surfxml_bufferstack + AX_surfxml_ASroute_gw___src)
 XBT_PUBLIC_DATA(short int) surfxml_ASroute_gw___src_isset;
@@ -569,6 +578,9 @@ XBT_PUBLIC_DATA(short int) surfxml_peer_id_isset;
 XBT_PUBLIC_DATA(AT_surfxml_cluster_router___id) AX_surfxml_cluster_router___id;
 #define A_surfxml_cluster_router___id (surfxml_bufferstack + AX_surfxml_cluster_router___id)
 XBT_PUBLIC_DATA(short int) surfxml_cluster_router___id_isset;
+XBT_PUBLIC_DATA(AT_surfxml_cluster_loopback___lat) AX_surfxml_cluster_loopback___lat;
+#define A_surfxml_cluster_loopback___lat (surfxml_bufferstack + AX_surfxml_cluster_loopback___lat)
+XBT_PUBLIC_DATA(short int) surfxml_cluster_loopback___lat_isset;
 XBT_PUBLIC_DATA(AT_surfxml_cabinet_radical) AX_surfxml_cabinet_radical;
 #define A_surfxml_cabinet_radical (surfxml_bufferstack + AX_surfxml_cabinet_radical)
 XBT_PUBLIC_DATA(short int) surfxml_cabinet_radical_isset;
@@ -632,6 +644,9 @@ XBT_PUBLIC_DATA(short int) surfxml_random_std___deviation_isset;
 XBT_PUBLIC_DATA(AT_surfxml_cluster_core) AX_surfxml_cluster_core;
 #define A_surfxml_cluster_core (surfxml_bufferstack + AX_surfxml_cluster_core)
 XBT_PUBLIC_DATA(short int) surfxml_cluster_core_isset;
+XBT_PUBLIC_DATA(AT_surfxml_cluster_limiter___link) AX_surfxml_cluster_limiter___link;
+#define A_surfxml_cluster_limiter___link (surfxml_bufferstack + AX_surfxml_cluster_limiter___link)
+XBT_PUBLIC_DATA(short int) surfxml_cluster_limiter___link_isset;
 XBT_PUBLIC_DATA(AT_surfxml_host_state___file) AX_surfxml_host_state___file;
 #define A_surfxml_host_state___file (surfxml_bufferstack + AX_surfxml_host_state___file)
 XBT_PUBLIC_DATA(short int) surfxml_host_state___file_isset;

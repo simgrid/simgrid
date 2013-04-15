@@ -292,30 +292,30 @@ int __attribute__((weak)) xargc;
 char** __attribute__((weak)) xargv;
 
 #ifndef WIN32
-void __attribute__((weak)) user_main__(){
+void __attribute__((weak)) user_main_(){
   xbt_die("Should not be in this smpi_simulated_main");
   return;
 }
-int __attribute__((weak)) smpi_simulated_main__(int argc, char** argv) {
+int __attribute__((weak)) smpi_simulated_main_(int argc, char** argv) {
   smpi_process_init(&argc, &argv);
-  user_main__();
+  user_main_();
   //xbt_die("Should not be in this smpi_simulated_main");
   return 0;
 }
 
 int __attribute__((weak)) main(int argc, char** argv) {
-   return smpi_main(smpi_simulated_main__,argc,argv);
+   return smpi_main(smpi_simulated_main_,argc,argv);
 }
 
 int __attribute__((weak)) MAIN__(){
-  return smpi_main(smpi_simulated_main__,xargc, xargv);
+  return smpi_main(smpi_simulated_main_,xargc, xargv);
 };
 #endif
 
 int smpi_main(int (*realmain) (int argc, char *argv[]),int argc, char *argv[])
 {
   srand(SMPI_RAND_SEED);
-
+  
   if(getenv("SMPI_PRETEND_CC") != NULL) {
   /* Hack to ensure that smpicc can pretend to be a simple compiler. Particularly handy to pass it to the configuration tools */
     return 0;
@@ -339,6 +339,7 @@ int smpi_main(int (*realmain) (int argc, char *argv[]),int argc, char *argv[])
   XBT_LOG_CONNECT(smpi_mpi_dt);
   XBT_LOG_CONNECT(smpi_pmpi);
   XBT_LOG_CONNECT(smpi_replay);
+  XBT_LOG_CONNECT(smpi_colls);
 
 #ifdef HAVE_TRACING
   TRACE_global_init(&argc, argv);
@@ -358,6 +359,48 @@ int smpi_main(int (*realmain) (int argc, char *argv[]),int argc, char *argv[])
 
   SIMIX_function_register_default(realmain);
   SIMIX_launch_application(argv[2]);
+
+  int allgather_id = find_coll_description(mpi_coll_allgather_description,
+                                           sg_cfg_get_string("smpi/allgather"));
+  mpi_coll_allgather_fun = (int (*)(void *, int, MPI_Datatype,
+		                    void*, int, MPI_Datatype, MPI_Comm))
+	                   mpi_coll_allgather_description[allgather_id].coll;
+
+  int allgatherv_id = find_coll_description(mpi_coll_allgatherv_description,
+                                           sg_cfg_get_string("smpi/allgatherv"));
+  mpi_coll_allgatherv_fun = (int (*)(void *, int, MPI_Datatype,
+		                    void*, int*, int*, MPI_Datatype, MPI_Comm))
+	                   mpi_coll_allgatherv_description[allgatherv_id].coll;
+
+  int allreduce_id = find_coll_description(mpi_coll_allreduce_description,
+                                           sg_cfg_get_string("smpi/allreduce"));
+  mpi_coll_allreduce_fun = (int (*)(void *sbuf, void *rbuf, int rcount, \
+                                    MPI_Datatype dtype, MPI_Op op, MPI_Comm comm))
+	                   mpi_coll_allreduce_description[allreduce_id].coll;
+
+  int alltoall_id = find_coll_description(mpi_coll_alltoall_description,
+                                          sg_cfg_get_string("smpi/alltoall"));
+  mpi_coll_alltoall_fun = (int (*)(void *, int, MPI_Datatype,
+			           void*, int, MPI_Datatype, MPI_Comm))
+	                  mpi_coll_alltoall_description[alltoall_id].coll;
+
+  int alltoallv_id = find_coll_description(mpi_coll_alltoallv_description,
+                                          sg_cfg_get_string("smpi/alltoallv"));
+  mpi_coll_alltoallv_fun = (int (*)(void *, int*, int*, MPI_Datatype,
+			            void*, int*, int*, MPI_Datatype, MPI_Comm))
+	                  mpi_coll_alltoallv_description[alltoallv_id].coll;
+
+  int bcast_id = find_coll_description(mpi_coll_bcast_description,
+                                          sg_cfg_get_string("smpi/bcast"));
+  mpi_coll_bcast_fun = (int (*)(void *buf, int count, MPI_Datatype datatype, \
+	                        int root, MPI_Comm com))
+	               mpi_coll_bcast_description[bcast_id].coll;
+
+  int reduce_id = find_coll_description(mpi_coll_reduce_description,
+                                          sg_cfg_get_string("smpi/reduce"));
+  mpi_coll_reduce_fun = (int (*)(void *buf, void *rbuf, int count, MPI_Datatype datatype, \
+                                 MPI_Op op, int root, MPI_Comm comm))
+	                mpi_coll_reduce_description[reduce_id].coll;
 
   smpi_global_init();
 

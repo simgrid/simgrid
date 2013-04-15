@@ -187,6 +187,9 @@ typedef struct s_sg_platf_cluster_cbarg {
   double lat;
   double bb_bw;
   double bb_lat;
+  double loopback_bw;
+  double loopback_lat;
+  double limiter_link;
   const char* router_id;
   e_surf_link_sharing_policy_t sharing_policy;
   e_surf_link_sharing_policy_t bb_sharing_policy;

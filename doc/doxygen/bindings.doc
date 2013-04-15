@@ -1,9 +1,9 @@
 /*! \page bindings Bindings
 
-\section bindings_binding_Ruby Ruby Binding
+\section MSG_Ruby Ruby Binding
 Check online for our specific [Simgrid-Ruby documentation](http://simgrid.gforge.inria.fr/documentation.html).
 
-\section bindings_binding_Java Java Binding
+\section MSG_Java Java Binding
 Simgrid-java is a java API that let you use [Simgrid](http://simgrid.gforge.inria.fr/)
 MSG API in your favorite language (java). Without it, you would be forced to
 use C or one of the other bindings provided.
