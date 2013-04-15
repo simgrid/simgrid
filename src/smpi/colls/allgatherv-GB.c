@@ -12,9 +12,10 @@ int smpi_coll_tuned_allgatherv_GB(void *send_buff, int send_count,
   num_procs = smpi_comm_size(comm);
   for (i = 0; i < num_procs; i++) {
     current = recv_disps[i] + recv_counts[i];
-    if (current > max) max = current;
+    if (current > max)
+      max = current;
   }
-  mpi_coll_bcast_fun(recv_buff, current, recv_type, 0, comm);
+  mpi_coll_bcast_fun(recv_buff, max, recv_type, 0, comm);
 
   return MPI_SUCCESS;
 }
