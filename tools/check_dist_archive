@@ -86,7 +86,13 @@ diffcmd() {
         echo "The archive looks good."
     else
         status=1
-        echo "Some files are missing and/or unexpected in the archive."
+        cat <<EOF
+ERROR: Some files are missing and/or unexpected in the archive.
+* lines beginning with '-' give files that are unexpected in the archive
+* lines beginning with '+' give files that are missing from the archive
+Please fix CMake files (e.g. "buildtools/Cmake/DefinePackages.cmake"),
+and/or "tools/check_dist_archive.exclude".
+EOF
         diff -u "$fa" "$fb"
     fi
 }

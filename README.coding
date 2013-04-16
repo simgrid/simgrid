@@ -187,6 +187,10 @@ investigating the portability of the thing to windows.
 * Your commit message should follow the git habits, explained eg here:
   http://tbaggery.com/2008/04/19/a-note-about-git-commit-messages.html
 
+* When you add/remove files, and/or make changes in the lists of files to build,
+  please check that "make distcheck" still succeeds.  This is needed to ensure
+  that the generated archive is consistent.
+
 * If you want to debug memory allocation problems, here are a few hints:
   - disable compiler optimizations, to have better backtraces;
   - disable the mallocators, or it will be hard to match malloc's with
