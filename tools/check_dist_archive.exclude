@@ -28,12 +28,7 @@
 + src/simix/simix_network\.tla
 
 + src/smpi/BUGS
-+ src/smpi/colls/allgather-2dmesh\.c
-+ src/smpi/colls/allgather-3dmesh\.c
-+ src/smpi/colls/allgather-bruck\.c
-+ src/smpi/colls/allreduce-rab-rdb\.c
 + src/smpi/colls/allreduce-rab-reduce-scatter\.c
-+ src/smpi/colls/allreduce-smp-binomial-pipeline\.c
 + src/smpi/colls/alltoall-bruck\.c
 + src/smpi/fixsrc\.pl
 + src/smpi/myprintloc\.cocci
