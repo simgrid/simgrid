@@ -771,6 +771,7 @@ configure_file("${CMAKE_HOME_DIRECTORY}/include/simgrid_config.h.in" 		"${CMAKE_
 
 set(top_srcdir "${CMAKE_HOME_DIRECTORY}")
 set(srcdir "${CMAKE_HOME_DIRECTORY}/src")
+set(bindir "${CMAKE_BINARY_DIR}")
 
 ### Script used when simgrid is installed
 set(exec_prefix ${CMAKE_INSTALL_PREFIX})

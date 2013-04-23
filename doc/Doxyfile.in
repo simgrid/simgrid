@@ -690,6 +690,7 @@ INPUT                  = doxygen/index.doc \
                            index-API.doc \
                          @top_srcdir@/doc/doxygen/logcategories.doc \
                          @top_srcdir@/src/instr/ \
+                         @bindir@/include \
                          @top_srcdir@/include/ \
                          @top_srcdir@/include/msg \
                          @top_srcdir@/include/xbt \
@@ -700,7 +701,8 @@ INPUT                  = doxygen/index.doc \
                          @top_srcdir@/src/surf/ \
                          @top_srcdir@/src/msg/ \
                          @top_srcdir@/src/simdag \
-                         @top_srcdir@/src/simix
+                         @top_srcdir@/src/simix \
+                         @bindir@/src
 
 
 ###################################################
