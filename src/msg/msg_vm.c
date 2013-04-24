@@ -169,7 +169,7 @@ int MSG_vm_is_restoring(msg_vm_t vm)
  *
  */
 msg_vm_t MSG_vm_create(msg_host_t ind_pm, const char *name,
-	                                     int ncpus, int ramsize, int net_cap, char *disk_path, int disksize)
+	                                     int ncpus, long ramsize, long net_cap, char *disk_path, long disksize)
 {
   msg_vm_t vm = MSG_vm_create_core(ind_pm, name);
 

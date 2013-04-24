@@ -381,7 +381,7 @@ XBT_PUBLIC(const char*) MSG_vm_get_name(msg_vm_t);
 // TODO add VDI later
 XBT_PUBLIC(msg_vm_t) MSG_vm_create_core(msg_host_t location, const char *name);
 XBT_PUBLIC(msg_vm_t) MSG_vm_create(msg_host_t ind_pm, const char *name,
-    int core_nb, int mem_cap, int net_cap, char *disk_path, int disk_size);
+    int core_nb, long mem_cap, long net_cap, char *disk_path, long disk_size);
 
 XBT_PUBLIC(void) MSG_vm_destroy(msg_vm_t vm);
 
