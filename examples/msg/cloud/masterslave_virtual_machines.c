@@ -60,7 +60,7 @@ int master_fun(int argc, char *argv[])
 
   /* Launch VMs and worker processes. One VM per PM, and one worker process per VM. */
 
-  XBT_INFO("Launch %ld VMs", workers_count);
+  XBT_INFO("Launch %d VMs", workers_count);
   for (i=0; i< workers_count; i++) {
     char *vm_name = bprintf("VM%02d", i);
     char *pr_name = bprintf("WRK%02d", i);
