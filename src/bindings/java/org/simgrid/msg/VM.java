@@ -21,6 +21,9 @@ public class VM extends Host{
 	// GetByName is inherited from the super class Host
 	
 
+	 private static VM[] vms=null; 	  
+    private Host currentHost; 
+    
 	/* Constructors / destructors */
     /**
 	 * Create a `basic' VM (i.e. 1 core, 1GB of RAM, other values are not taken into account).
@@ -36,9 +39,35 @@ public class VM extends Host{
 			 long netCap, String diskPath, long diskSize){
 		super();
 		super.name = name; 
+		this.currentHost = host; 
 		create(host, name, nCore, ramSize, netCap, diskPath, diskSize);
+		VM.addVM(this);
 	}
 
+	private static void addVM(VM vm){
+		VM[] vmsN=null; 
+	  	int i=0;
+		if(VM.vms == null)
+			vmsN = new VM[1]; 
+		else
+			vmsN = new VM[vms.length+1]; 
+		
+		for (i=0; i<vmsN.length-1 ; i ++){
+			vmsN[i]=vms[i];	
+		} 
+		vmsN[i]=vm;
+		vms=vmsN;
+	}
+   public static VM[] all(){
+		return vms;
+	}
+	public static VM getVMByName(String name){
+		for (int i=0 ; i < vms.length ; i++){
+			  if (vms[i].getName().equals(name))
+					return vms[i];		
+		}
+		return null; 
+	}
 	protected void finalize() {
 		destroy();
 	}
@@ -98,14 +127,36 @@ public class VM extends Host{
 	 */
 	public native void shutdown();
 	
+	/**  
+	 * Invoke native migration routine
+	*/
+	public native void internalmig(Host destination);
+
 	
-	/** Immediately change the host on which all processes are running
-	 *
-	 * No migration cost occurs. If you want to simulate this too, you want to use a
-	 * Task.send() before or after, depending on whether you want to do cold or hot
-	 * migration.
+	/** Change the host on which all processes are running
+	 * (pre-copy is implemented)
 	 */	
-	public native void migrate(Host destination);
+	public void migrate(Host destination){
+//		String[] argsRx = new String[5];
+//		argsRx[1] = this.getName();
+//		argsRx[2] = this.currentHost.getName();
+//		argsRx[3] = destination.getName();
+//		argsRx[0] =  "__pr_mig_rx:"+argsRx[1]+"("+argsRx[2]+"-"+argsRx[3]+")";
+//		argsRx[4] = null; // TODO: Why ? 
+//		
+//		//Process rx = new Process(destination, argsRx[0], argsRx );
+//		
+//		String[] argsTx = new String[5];
+//		argsTx[1] = this.getName();
+//		argsTx[2] = this.currentHost.getName();
+//		argsTx[3] = destination.getName();
+//		argsTx[0] =  "__pr_mig_tx:"+argsTx[1]+"("+argsTx[2]+"-"+argsTx[3]+")";
+//		argsTx[4] = null; // TODO: Why ? 
+//		
+//		//Process tx = new Process(this.currentHost, argsTx[0], argsRx ); 
+//		
+		this.internalmig(destination);
+	}
 	
 	/** Immediately suspend the execution of all processes within the given VM
 	 *
@@ -146,7 +197,7 @@ public class VM extends Host{
 	/**
 	 * Destroy the VM
 	 */
-	protected native void destroy();
+	public native void destroy();
 
 	
 

@@ -16,7 +16,7 @@ import org.simgrid.msg.MsgException;
 public class Cloud {
 	public static final double task_comp_size = 10;
 	public static final double task_comm_size = 10;
-
+	public static final int hostNB = 3 ; 
 	public static void main(String[] args) throws MsgException {       
 	    Msg.init(args); 
 	    
@@ -27,12 +27,12 @@ public class Cloud {
 	    }
 	    /* Construct the platform */
 		Msg.createEnvironment(args[0]);
-		  /* Retrieve the 5 first hosts of the platform file */
 		Host[] hosts = Host.all();
-		if (hosts.length < 5) {
-			Msg.info("I need at least 10 hosts in the platform file, but " + args[0] + " contains only " + hosts.length + " hosts");
+		if (hosts.length < hostNB+1) {
+			Msg.info("I need at least "+ (hostNB+1) +"  hosts in the platform file, but " + args[0] + " contains only " + hosts.length + " hosts");
 			System.exit(42);
 		}
+		Msg.info("Start"+ hostNB +"  hosts");
 		new Master(hosts[0],"Master",hosts).start();
 		/* Execute the simulation */
 		Msg.run();

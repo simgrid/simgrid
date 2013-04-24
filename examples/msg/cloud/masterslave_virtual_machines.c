@@ -53,7 +53,7 @@ int master_fun(int argc, char *argv[])
   msg_host_t *pms = xbt_new(msg_host_t, workers_count);
   xbt_dynar_t vms = xbt_dynar_new(sizeof(msg_vm_t), NULL);
 
-  /* Retrive the PMs that will launch worker processes. */
+  /* Retrieve the PMs that will launch worker processes. */
   for (i = 1; i < argc; i++)
     pms[i - 1] = MSG_get_host_by_name(argv[i]);
 
@@ -73,6 +73,12 @@ int master_fun(int argc, char *argv[])
 
     XBT_INFO("create %s", vm_name);
     msg_vm_t vm = MSG_vm_create_core(pms[i], vm_name);
+
+    s_ws_params_t params;
+    memset(&params, 0, sizeof(params));
+    params.ramsize = 1L * 1024 * 1024 * 1024; // 1Gbytes
+    MSG_host_set_params(vm, &params);
+
     MSG_vm_start(vm);
     xbt_dynar_push(vms, &vm);
 
