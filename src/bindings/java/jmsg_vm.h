@@ -105,11 +105,11 @@ JNIEXPORT void JNICALL
 Java_org_simgrid_msg_VM_start(JNIEnv *env, jobject jvm);
 /**
  * Class			org_simgrid_msg_VM
- * Method			migrate
+ * Method			nativeMigrate
  * Signature	(Lorg/simgrid/msg/Host;)V
  */
 JNIEXPORT void JNICALL
-Java_org_simgrid_msg_VM_migrate(JNIEnv *env, jobject jvm, jobject jhost);
+Java_org_simgrid_msg_VM_internalmig(JNIEnv *env, jobject jvm, jobject jhost);
 /**
  * Class			org_simgrid_msg_VM
  * Method			suspend

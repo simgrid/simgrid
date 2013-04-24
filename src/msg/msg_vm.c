@@ -177,7 +177,7 @@ msg_vm_t MSG_vm_create(msg_host_t ind_pm, const char *name,
     s_ws_params_t params;
     memset(&params, 0, sizeof(params));
     params.ramsize = ramsize;
-    params.overcommit = 0;
+    //params.overcommit = 0;
     simcall_host_set_params(vm, &params);
   }
 
@@ -665,7 +665,6 @@ static void do_migration(msg_vm_t vm, msg_host_t src_pm, msg_host_t dst_pm)
     argv[2] = xbt_strdup(sg_host_name(src_pm));
     argv[3] = xbt_strdup(sg_host_name(dst_pm));
     argv[4] = NULL;
-
     msg_process_t pr = MSG_process_create_with_arguments(pr_name, migration_tx_fun, NULL, src_pm, nargvs - 1, argv);
 
     xbt_free(pr_name);
