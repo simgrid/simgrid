@@ -561,12 +561,20 @@ static int migration_tx_fun(int argc, char *argv[])
   const long ramsize        = params.ramsize;
   const long devsize        = params.devsize;
   const int skip_stage2     = params.skip_stage2;
-  const double max_downtime = params.max_downtime;
   const double dp_rate      = params.dp_rate;
   const double dp_cap       = params.dp_cap;
   const double mig_speed    = params.mig_speed;
   double remaining_size = ramsize + devsize;
-  double threshold = max_downtime * 125 * 1000 * 1000;
+
+  double max_downtime = params.max_downtime;
+  if (max_downtime == 0) {
+    XBT_WARN("use the default max_downtime value 30ms");
+    max_downtime = 0.03;
+  }
+
+  double threshold = max_downtime * 125 * 1024 * 1024;
+
+  /* setting up parameters has done */
 
 
   if (ramsize == 0)
