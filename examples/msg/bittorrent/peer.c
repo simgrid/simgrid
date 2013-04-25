@@ -34,8 +34,7 @@ static const int FILE_SIZE = FILE_PIECES * PIECES_BLOCKS * BLOCK_SIZE;
 
 void request_new_piece_to_peer(peer_t peer, connection_t remote_peer);
 void send_request_to_peer(peer_t peer, connection_t remote_peer, int piece);
-void remove_current_piece(peer_t peer, connection_t remote_peer,
-			  int current_piece);
+void remove_current_piece(peer_t peer, connection_t remote_peer, int current_piece);
 
 
   /**
@@ -554,42 +553,110 @@ void update_pieces_count_from_bitfield(peer_t peer, char *bitfield)
 /**
  * Return the piece to be downloaded
  * There are two cases (as described in "Bittorrent Architecture Protocol", Ryan Toole :
+ * If a piece is partially downloaded, this piece will be selected prioritarily
  * If the peer has strictly less than 4 pieces, he chooses a piece at random.
  * If the peer has more than pieces, he downloads the pieces that are the less
- * replicated
- * Note: "end game mode" policy is not implemented
+ * replicated (rarest policy).
+ * If all pieces have been downloaded or requested, we select a random requested piece (endgame mode).
+
  * @param peer: local peer
  * @param remote_peer: information about the connection
  * @return the piece to download if possible. -1 otherwise
  */
 int select_piece_to_download(peer_t peer, connection_t remote_peer)
 {
-  // TODO : add strict priority policy
+  int piece = -1;
 
-  if (xbt_dynar_length(peer->current_pieces) >= (FILE_PIECES - peer->pieces)) {	// end game mode
-    return -1;
-  }
-  if (peer->pieces < 4 && is_interested_and_free(peer, remote_peer)) {	// Random first policy
-    int piece = 0;
-    do {
-      piece = RngStream_RandInt(peer->stream, 0, FILE_PIECES - 1);;
-    } while (!
-	     (peer->bitfield[piece] == '0'
-	      && remote_peer->bitfield[piece] == '1'
-	      && !in_current_pieces(peer, piece)));
+  piece = partially_downloaded_piece(peer, remote_peer);
+  // strict priority policy
+  if (piece != -1)
     return piece;
-  } else {			// Rarest first policy
-    int i, min_piece = -1;
-    short min = SHRT_MAX;
+
+  // end game mode
+  if (xbt_dynar_length(peer->current_pieces) >= (FILE_PIECES - peer->pieces) && is_interested(peer, remote_peer)) {
+    int i;
+    int nb_interesting_pieces = 0;
+    int random_piece_index, current_index = 0;
+    // compute the number of interesting pieces
     for (i = 0; i < FILE_PIECES; i++) {
-      if (peer->pieces_count[i] < min && peer->bitfield[i] == '0'
-	  && remote_peer->bitfield[i] == '1' && !in_current_pieces(peer, i)) {
-	min = peer->pieces_count[i];
-	min_piece = i;
+      if (peer->bitfield[i] == '0' && remote_peer->bitfield[i] == '1') {
+        nb_interesting_pieces++;
       }
     }
-    // TODO: add randomness when selecting a rarest piece
-    return min_piece;
+    xbt_assert(nb_interesting_pieces != 0, "WTF !!!");
+    // get a random interesting piece
+    random_piece_index = RngStream_RandInt(peer->stream, 0, nb_interesting_pieces-1);
+    for (i = 0; i < FILE_PIECES; i++) {
+      if (peer->bitfield[i] == '0' && remote_peer->bitfield[i] == '1') {
+        if (random_piece_index == current_index) {
+          piece = i;
+          break;
+        }
+        current_index++;
+      }
+    }
+    xbt_assert(piece != -1,"WTF !!!");
+    return piece;
+  }
+
+  // Random first policy
+  if (peer->pieces < 4 && is_interested_and_free(peer, remote_peer)) {
+    int i;
+    int nb_interesting_pieces = 0;
+    int random_piece_index, current_index = 0;
+    // compute the number of interesting pieces
+    for (i = 0; i < FILE_PIECES; i++) {
+      if (peer->bitfield[i] == '0' && remote_peer->bitfield[i] == '1' && !in_current_pieces(peer, i)) {
+        nb_interesting_pieces++;
+      }
+    }
+    xbt_assert(nb_interesting_pieces != 0, "WTF !!!");
+    // get a random interesting piece
+    random_piece_index = RngStream_RandInt(peer->stream, 0, nb_interesting_pieces-1);
+    for (i = 0; i < FILE_PIECES; i++) {
+      if (peer->bitfield[i] == '0' && remote_peer->bitfield[i] == '1' && !in_current_pieces(peer, i)) {
+        if (random_piece_index == current_index) {
+          piece = i;
+          break;
+        }
+        current_index++;
+      }
+    }
+    xbt_assert(piece != -1,"WTF !!!");
+    return piece;
+  } else {			// Rarest first policy
+    int i;
+    short min = SHRT_MAX;
+    int nb_min_pieces = 0;
+    int random_rarest_index, current_index = 0;
+    // compute the smallest number of copies of available pieces
+    for (i = 0; i < FILE_PIECES; i++) {
+      if (peer->pieces_count[i] < min && peer->bitfield[i] == '0'
+          && remote_peer->bitfield[i] == '1' && !in_current_pieces(peer, i))
+        min = peer->pieces_count[i];
+    }
+    xbt_assert(min != SHRT_MAX || !is_interested_and_free(peer, remote_peer), "WTF !!!");
+    // compute the number of rarest pieces
+    for (i = 0; i < FILE_PIECES; i++) {
+      if (peer->pieces_count[i] == min && peer->bitfield[i] == '0'
+          && remote_peer->bitfield[i] == '1' && !in_current_pieces(peer, i))
+        nb_min_pieces++;
+    }
+    xbt_assert(nb_min_pieces != 0 || !is_interested_and_free(peer, remote_peer), "WTF !!!");
+    // get a random rarest piece
+    random_rarest_index = RngStream_RandInt(peer->stream, 0, nb_min_pieces-1);
+    for (i = 0; i < FILE_PIECES; i++) {
+      if (peer->pieces_count[i] == min && peer->bitfield[i] == '0'
+          && remote_peer->bitfield[i] == '1' && !in_current_pieces(peer, i)) {
+        if (random_rarest_index == current_index) {
+          piece = i;
+          break;
+        }
+        current_index++;
+      }
+    }
+    xbt_assert(piece != -1 || !is_interested_and_free(peer, remote_peer),"WTF !!!");
+    return piece;
   }
 }
 
@@ -789,8 +856,7 @@ int get_first_block(peer_t peer, int piece)
 }
 
 /**
- * Returns a piece that is stored by the remote peer but not by the local peer.
- * -1 otherwise.
+ * Indicates if the remote peer has a piece not stored by the local peer
  */
 int is_interested(peer_t peer, connection_t remote_peer)
 {
@@ -804,6 +870,9 @@ int is_interested(peer_t peer, connection_t remote_peer)
   return 0;
 }
 
+/**
+ * Indicates if the remote peer has a piece not stored by the local peer nor requested by the local peer
+ */
 int is_interested_and_free(peer_t peer, connection_t remote_peer)
 {
   xbt_assert(remote_peer->bitfield, "Bitfield not received");
@@ -828,9 +897,9 @@ int partially_downloaded_piece(peer_t peer, connection_t remote_peer)
   int i;
   for (i = 0; i < FILE_PIECES; i++) {
     if (remote_peer->bitfield[i] == '1' && peer->bitfield[i] == '0'
-	&& !in_current_pieces(peer, i)) {
+        && !in_current_pieces(peer, i)) {
       if (get_first_block(peer, i) > 0)
-	return i;
+        return i;
     }
   }
   return -1;
