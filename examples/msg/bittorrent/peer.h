@@ -16,34 +16,34 @@
  * Peer data
  */
 typedef struct s_peer {
-  int id;                       //peer id
+  int id;			//peer id
 
-  int pieces;                   //number of pieces the peer has.
-  char *bitfield;               //list of pieces the peer has.
-  char *bitfield_blocks;        //list of blocks the peer has.
-  short *pieces_count;          //number of peers that have each piece.
+  int pieces;			//number of pieces the peer has.
+  char *bitfield;		//list of pieces the peer has.
+  char *bitfield_blocks;	//list of blocks the peer has.
+  short *pieces_count;		//number of peers that have each piece.
 
-  xbt_dynar_t current_pieces;   //current pieces the peer is downloading
-  int current_piece;            //current pieces
-  int pieces_requested;         //number of pieces the peer has requested
+  xbt_dynar_t current_pieces;	//current pieces the peer is downloading
+  int current_piece;		//current pieces
+  int pieces_requested;		//number of pieces the peer has requested
 
-  xbt_dict_t peers;             //peers list
-  xbt_dict_t active_peers;      //active peers list
+  xbt_dict_t peers;		//peers list
+  xbt_dict_t active_peers;	//active peers list
 
-  char mailbox[MAILBOX_SIZE];   //peer mailbox.
-  char mailbox_tracker[MAILBOX_SIZE];   //pair mailbox while communicating with the tracker.
-  const char *hostname;         //peer hostname
+  char mailbox[MAILBOX_SIZE];	//peer mailbox.
+  char mailbox_tracker[MAILBOX_SIZE];	//pair mailbox while communicating with the tracker.
+  const char *hostname;		//peer hostname
 
-  msg_task_t task_received;     //current task being received
-  msg_comm_t comm_received;     //current comm
+  msg_task_t task_received;	//current task being received
+  msg_comm_t comm_received;	//current comm
 
-  int round;                    //current round for the chocking algortihm.
+  int round;			//current round for the chocking algortihm.
 
-  RngStream stream;             //RngStream for
+  RngStream stream;		//RngStream for
 
-  double begin_receive_time;    //time when the receiving communication has begun, useful for calculating host speed.
+  double begin_receive_time;	//time when the receiving communication has begun, useful for calculating host speed.
 
-  xbt_dynar_t pending_sends;    // list of sends being delivered
+  xbt_dynar_t pending_sends;	// list of sends being delivered
 } s_peer_t, *peer_t;
 
 /**
@@ -72,7 +72,7 @@ void update_choked_peers(peer_t peer);
 void update_interested_after_receive(peer_t peer);
 
 void update_bitfield_blocks(peer_t peer, int index, int block_index,
-                            int block_length);
+			    int block_length);
 int piece_complete(peer_t peer, int index);
 int get_first_block(peer_t peer, int piece);
 
@@ -91,10 +91,10 @@ void send_choked(peer_t peer, const char *mailbox);
 void send_unchoked(peer_t peer, const char *mailbox);
 void send_have(peer_t peer, int piece);
 
-void send_request(peer_t peer, const char *mailbox, int piece, int block_index,
-                  int block_length);
+void send_request(peer_t peer, const char *mailbox, int piece,
+		  int block_index, int block_length);
 void send_piece(peer_t peer, const char *mailbox, int piece, int stalled,
-                int block_index, int block_length);
+		int block_index, int block_length);
 
 int in_current_pieces(peer_t peer, int piece);
-#endif                          /* BITTORRENT_PEER_H */
+#endif /* BITTORRENT_PEER_H */
