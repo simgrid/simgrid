@@ -190,10 +190,16 @@ if [ -z "${EXEC}" ] ; then
     exit 1
 fi
 
-if [ -z "${HOSTFILE}" ] ; then
-    echo "No hostfile specified."
+if [ -z "${HOSTFILE}" ] && [ -z "${PLATFORM}" ] ; then
+    echo "No hostfile nor platform specified."
     usage
     exit 1
+fi
+
+if [ -z "${HOSTFILE}" ] ; then
+    HOSTFILETMP=1
+    HOSTFILE="$(mktemp tmphostXXXXXX)"
+    perl -ne 'print "$1\n" if /.*<host.*?id="(.*?)".*?\/>.*/' ${PLATFORM} > ${HOSTFILE}
 fi
 
 # Don't use wc -l to compute it to avoid issues with trailing \n at EOF
@@ -364,6 +370,9 @@ fi
 export SMPI_GLOBAL_SIZE=${NUMPROCS}
 if [ -n "${KEEP}" ] ; then
   echo ${EXEC} ${TRACEOPTIONS} ${SIMOPTS} ${PLATFORMTMP} ${APPLICATIONTMP}
+  if [ ${HOSTFILETMP} == 1 ] ; then
+    echo "Generated hostfile ${HOSTFILE} keeped."
+  fi
 fi
 ${EXEC} ${TRACEOPTIONS} ${SIMOPTS} ${PLATFORMTMP} ${APPLICATIONTMP}
 status=$?
@@ -371,6 +380,9 @@ status=$?
 if [ -z "${KEEP}" ] ; then
    if [ -z "${PLATFORM}" ]; then
 	rm ${PLATFORMTMP}
+   fi
+   if [ ${HOSTFILETMP} == 1 ] ; then
+        rm ${HOSTFILE}
    fi
    rm ${APPLICATIONTMP}
 fi
