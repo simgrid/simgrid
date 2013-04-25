@@ -58,40 +58,40 @@ typedef struct s_message {
  * Builds a new value-less message
  */
 msg_task_t task_message_new(e_message_type type,
-                                       const char *issuer_host_name,
-                                       const char *mailbox, int peer_id, 
-                                       int size);
+			    const char *issuer_host_name,
+			    const char *mailbox, int peer_id, int size);
 /**
  * Builds a new "have/piece" message
  */
 msg_task_t task_message_index_new(e_message_type type,
-                                             const char *issuer_host_name,
-                                             const char *mailbox, int peer_id,
-                                             int index, int varsize);
+				  const char *issuer_host_name,
+				  const char *mailbox, int peer_id,
+				  int index, int varsize);
 /**
  * Builds a new bitfield message
  */
 msg_task_t task_message_bitfield_new(const char *issuer_host_name,
-                                     const char *mailbox, int peer_id,
-                                     char *bitfield, int bitfield_size);
+				     const char *mailbox, int peer_id,
+				     char *bitfield, int bitfield_size);
 /**
  * Builds a new "request" message
  */
 msg_task_t task_message_request_new(const char *issuer_host_name,
-                                    const char *mailbox, int peer_id, int index,
-                                    int block_index, int block_length);
+				    const char *mailbox, int peer_id,
+				    int index, int block_index,
+				    int block_length);
 
 /**
  * Build a new "piece" message
  */
 msg_task_t task_message_piece_new(const char *issuer_host_name,
-                                  const char *mailbox, int peer_id, int index,
-                                  int stalled, int block_index,
-                                  int block_length, int block_size);
+				  const char *mailbox, int peer_id, int index,
+				  int stalled, int block_index,
+				  int block_length, int block_size);
 /**
  * Free a message task
  */
 void task_message_free(void *);
 
 int task_message_size(e_message_type type);
-#endif                          /* BITTORRENT_MESSAGES_H_ */
+#endif /* BITTORRENT_MESSAGES_H_ */

@@ -54,4 +54,4 @@
  */
 #define MAX_PIECES 1
 
-#endif                          /* BITTORRENT_BITTORRENT_H_ */
+#endif /* BITTORRENT_BITTORRENT_H_ */
