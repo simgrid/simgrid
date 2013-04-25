@@ -24,11 +24,11 @@ typedef struct s_peer {
   short *pieces_count;		//number of peers that have each piece.
 
   xbt_dynar_t current_pieces;	//current pieces the peer is downloading
-  int current_piece;		//current pieces
-  int pieces_requested;		//number of pieces the peer has requested
 
   xbt_dict_t peers;		//peers list
   xbt_dict_t active_peers;	//active peers list
+  int round;			//current round for the chocking algortihm.
+
 
   char mailbox[MAILBOX_SIZE];	//peer mailbox.
   char mailbox_tracker[MAILBOX_SIZE];	//pair mailbox while communicating with the tracker.
@@ -37,7 +37,6 @@ typedef struct s_peer {
   msg_task_t task_received;	//current task being received
   msg_comm_t comm_received;	//current comm
 
-  int round;			//current round for the chocking algortihm.
 
   RngStream stream;		//RngStream for
 
