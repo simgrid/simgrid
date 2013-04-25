@@ -9,8 +9,7 @@
 
 static void task_free(void *data);
 
-XBT_LOG_NEW_DEFAULT_CATEGORY(msg_tracker,
-			     "Messages specific for the tracker");
+XBT_LOG_NEW_DEFAULT_CATEGORY(msg_tracker, "Messages specific for the tracker");
 /**
  * Tracker main function
  * @param argc number of arguments
@@ -42,29 +41,29 @@ int tracker(int argc, char *argv[])
     if (MSG_comm_test(comm_received)) {
       //Check for correct status
       if (MSG_comm_get_status(comm_received) == MSG_OK) {
-	//Retrieve the data sent by the peer.
-	tracker_task_data_t data = MSG_task_get_data(task_received);
-	//Add the peer to our peer list.
-	if (!is_in_list(peers_list, data->peer_id)) {
-	  xbt_dynar_push_as(peers_list, int, data->peer_id);
-	}
-	//Sending peers to the peer
-	int next_peer;
-	int peers_length = xbt_dynar_length(peers_list);
-	for (i = 0; i < MAXIMUM_PAIRS && i < peers_length; i++) {
-	  do {
-	    next_peer =
-	      xbt_dynar_get_as(peers_list,
-			       RngStream_RandInt(stream, 0, peers_length - 1),
-			       int);
-	  } while (is_in_list(data->peers, next_peer));
-	  xbt_dynar_push_as(data->peers, int, next_peer);
-	}
-	//setting the interval
-	data->interval = TRACKER_QUERY_INTERVAL;
-	//sending the task back to the peer.
-	MSG_task_dsend(task_received, data->mailbox, task_free);
-	//destroy the communication.
+        //Retrieve the data sent by the peer.
+        tracker_task_data_t data = MSG_task_get_data(task_received);
+        //Add the peer to our peer list.
+        if (!is_in_list(peers_list, data->peer_id)) {
+          xbt_dynar_push_as(peers_list, int, data->peer_id);
+        }
+        //Sending peers to the peer
+        int next_peer;
+        int peers_length = xbt_dynar_length(peers_list);
+        for (i = 0; i < MAXIMUM_PAIRS && i < peers_length; i++) {
+          do {
+            next_peer =
+                xbt_dynar_get_as(peers_list,
+                                 RngStream_RandInt(stream, 0, peers_length - 1),
+                                 int);
+          } while (is_in_list(data->peers, next_peer));
+          xbt_dynar_push_as(data->peers, int, next_peer);
+        }
+        //setting the interval
+        data->interval = TRACKER_QUERY_INTERVAL;
+        //sending the task back to the peer.
+        MSG_task_dsend(task_received, data->mailbox, task_free);
+        //destroy the communication.
       }
       MSG_comm_destroy(comm_received);
       comm_received = NULL;
@@ -90,9 +89,9 @@ int tracker(int argc, char *argv[])
  * @param issuer_host_name Hostname of the issuer. For debugging purposes
  */
 tracker_task_data_t tracker_task_data_new(const char *issuer_host_name,
-					  const char *mailbox, int peer_id,
-					  int uploaded, int downloaded,
-					  int left)
+                                          const char *mailbox, int peer_id,
+                                          int uploaded, int downloaded,
+                                          int left)
 {
   tracker_task_data_t task = xbt_new(s_tracker_task_data_t, 1);
 

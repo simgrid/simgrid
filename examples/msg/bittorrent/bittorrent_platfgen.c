@@ -17,7 +17,7 @@ void promoter(context_node_t node);
 void labeler(context_edge_t edge);
 void create_environment(int node_count);
 void dispatch_jobs(double tracker_deadline, double peer_deadline,
-		   double seed_percentage);
+                   double seed_percentage);
 
 void promoter(context_node_t node)
 {
@@ -31,7 +31,7 @@ void promoter(context_node_t node)
 
     //Power from 3,000,000 to 10,000,000
     host_parameters.power_peak =
-      7000000 * RngStream_RandU01(rng_stream) + 3000000;
+        7000000 * RngStream_RandU01(rng_stream) + 3000000;
     host_parameters.core_amount = 1;
     host_parameters.power_scale = 1;
     host_parameters.power_trace = NULL;
@@ -51,8 +51,7 @@ void labeler(context_edge_t edge)
   link_parameters.id = NULL;
 
   //bandwidth from 3,000,000 to 10,000,000
-  link_parameters.bandwidth =
-    7000000 * RngStream_RandU01(rng_stream) + 3000000;
+  link_parameters.bandwidth = 7000000 * RngStream_RandU01(rng_stream) + 3000000;
   link_parameters.bandwidth_trace = NULL;
 
   //Latency from 0ms to 100ms
@@ -88,7 +87,7 @@ void create_environment(int node_count)
 }
 
 void dispatch_jobs(double tracker_deadline, double peer_deadline,
-		   double seed_percentage)
+                   double seed_percentage)
 {
 
   xbt_dynar_t available_nodes = MSG_hosts_as_dynar();
@@ -99,7 +98,7 @@ void dispatch_jobs(double tracker_deadline, double peer_deadline,
   char **arguments_peer;
 
   unsigned int seed_count =
-    (seed_percentage / 100.0) * xbt_dynar_length(available_nodes);
+      (seed_percentage / 100.0) * xbt_dynar_length(available_nodes);
 
   xbt_dynar_foreach(available_nodes, i, host) {
     if (i == 0) {
@@ -108,7 +107,7 @@ void dispatch_jobs(double tracker_deadline, double peer_deadline,
       arguments_tracker[0] = xbt_strdup("tracker");
       arguments_tracker[1] = bprintf("%f", tracker_deadline);
       MSG_process_create_with_arguments("tracker", tracker, NULL, host, 2,
-					arguments_tracker);
+                                        arguments_tracker);
     } else {
       //Other nodes are peers
       int argument_size;
@@ -119,16 +118,16 @@ void dispatch_jobs(double tracker_deadline, double peer_deadline,
 
       //The first peers will be seeders
       if (seed_count > 0) {
-	seed_count--;
-	arguments_peer[3] = xbt_strdup("1");
-	argument_size = 4;
+        seed_count--;
+        arguments_peer[3] = xbt_strdup("1");
+        argument_size = 4;
       } else {
-	//Other ars leechers
-	arguments_peer[3] = NULL;
-	argument_size = 3;
+        //Other ars leechers
+        arguments_peer[3] = NULL;
+        argument_size = 3;
       }
       MSG_process_create_with_arguments("peer", peer, NULL, host,
-					argument_size, arguments_peer);
+                                        argument_size, arguments_peer);
     }
   }
 }
