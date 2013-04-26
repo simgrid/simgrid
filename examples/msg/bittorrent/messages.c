@@ -77,14 +77,13 @@ msg_task_t task_message_request_new(const char *issuer_host_name,
 
 msg_task_t task_message_piece_new(const char *issuer_host_name,
                                   const char *mailbox, int peer_id, int index,
-                                  int stalled, int block_index,
+                                  int block_index,
                                   int block_length, int block_size)
 {
   msg_task_t task =
       task_message_index_new(MESSAGE_PIECE, issuer_host_name, mailbox, peer_id,
                              index, block_length * block_size);
   message_t message = MSG_task_get_data(task);
-  message->stalled = stalled;
   message->block_index = block_index;
   message->block_length = block_length;
   return task;

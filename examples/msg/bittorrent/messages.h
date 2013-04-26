@@ -52,7 +52,6 @@ typedef struct s_message {
   int index;
   int block_index;
   int block_length;
-  int stalled:1;
 } s_message_t, *message_t;
 /**
  * Builds a new value-less message
@@ -86,7 +85,7 @@ msg_task_t task_message_request_new(const char *issuer_host_name,
  */
 msg_task_t task_message_piece_new(const char *issuer_host_name,
                                   const char *mailbox, int peer_id, int index,
-                                  int stalled, int block_index,
+                                  int block_index,
                                   int block_length, int block_size);
 /**
  * Free a message task

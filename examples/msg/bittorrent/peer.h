@@ -75,7 +75,21 @@ int piece_complete(peer_t peer, int index);
 int get_first_block(peer_t peer, int piece);
 
 
-void send_requests_to_peer(peer_t peer, connection_t remote_peer);
+int nb_interested_peers(peer_t peer);
+int is_interested(peer_t peer, connection_t remote_peer);
+int is_interested_and_free(peer_t peer, connection_t remote_peer);
+int in_current_pieces(peer_t peer, int piece);
+int partially_downloaded_piece(peer_t peer, connection_t remote_peer);
+
+void request_new_piece_to_peer(peer_t peer, connection_t remote_peer);
+void send_request_to_peer(peer_t peer, connection_t remote_peer, int piece);
+void remove_current_piece(peer_t peer, connection_t remote_peer,
+                          int current_piece);
+
+void update_active_peers_set(peer_t peer, connection_t remote_peer);
+int select_piece_to_download(peer_t peer, connection_t remote_peer);
+
+
 
 void send_interested_to_peers(peer_t peer);
 void send_handshake_all(peer_t peer);
@@ -91,8 +105,7 @@ void send_have(peer_t peer, int piece);
 
 void send_request(peer_t peer, const char *mailbox, int piece,
                   int block_index, int block_length);
-void send_piece(peer_t peer, const char *mailbox, int piece, int stalled,
+void send_piece(peer_t peer, const char *mailbox, int piece,
                 int block_index, int block_length);
 
-int in_current_pieces(peer_t peer, int piece);
 #endif                          /* BITTORRENT_PEER_H */
