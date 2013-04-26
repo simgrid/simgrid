@@ -68,7 +68,6 @@ int peer(int argc, char *argv[])
       seed_loop(&peer, deadline);
     } else {
       leech_loop(&peer, deadline);
-//      XBT_INFO("%d becomes a seeder", peer.id);
       seed_loop(&peer, deadline);
     }
   } else {
@@ -104,12 +103,10 @@ void leech_loop(peer_t peer, double deadline)
 
   while (MSG_get_clock() < deadline && peer->pieces < FILE_PIECES) {
     if (peer->comm_received == NULL) {
-//      XBT_INFO("irecv");
       peer->task_received = NULL;
       peer->comm_received = MSG_task_irecv(&peer->task_received, peer->mailbox);
     }
     if (MSG_comm_test(peer->comm_received)) {
-//      XBT_INFO("comm_test OK");
       msg_error_t status = MSG_comm_get_status(peer->comm_received);
       MSG_comm_destroy(peer->comm_received);
       peer->comm_received = NULL;
@@ -117,7 +114,6 @@ void leech_loop(peer_t peer, double deadline)
         handle_message(peer, peer->task_received);
       }
     } else {
-      handle_pending_sends(peer);
       //We don't execute the choke algorithm if we don't already have a piece
       if (MSG_get_clock() >= next_choked_update && peer->pieces > 0) {
         update_choked_peers(peer);
@@ -127,6 +123,9 @@ void leech_loop(peer_t peer, double deadline)
       }
     }
   }
+//  if (peer->pieces == FILE_PIECES)
+//    XBT_INFO("%d becomes a seeder", peer->id);
+
 }
 
 /**
@@ -251,7 +250,6 @@ void peer_init(peer_t peer, int id, int seed)
 
   peer->round = 0;
 
-  peer->pending_sends = xbt_dynar_new(sizeof(msg_comm_t), NULL);
 }
 
 /**
@@ -268,7 +266,6 @@ void peer_free(peer_t peer)
   xbt_dict_free(&peer->peers);
   xbt_dict_free(&peer->active_peers);
   xbt_dynar_free(&peer->current_pieces);
-  xbt_dynar_free(&peer->pending_sends);
   xbt_free(peer->pieces_count);
   xbt_free(peer->bitfield);
   xbt_free(peer->bitfield_blocks);
@@ -298,31 +295,6 @@ int nb_interested_peers(peer_t peer)
   return nb;
 }
 
-/**
- * Handle pending sends and remove those which are done
- * @param peer Peer data
- */
-void handle_pending_sends(peer_t peer)
-{
-  int index;
-
-  while ((index = MSG_comm_testany(peer->pending_sends)) != -1) {
-    msg_comm_t comm_send =
-        xbt_dynar_get_as(peer->pending_sends, index, msg_comm_t);
-    int status = MSG_comm_get_status(comm_send);
-    xbt_dynar_remove_at(peer->pending_sends, index, &comm_send);
-    XBT_DEBUG
-        ("Communication %p is finished with status %d, dynar size is now %lu",
-         comm_send, status, xbt_dynar_length(peer->pending_sends));
-
-    msg_task_t task = MSG_comm_get_task(comm_send);
-    MSG_comm_destroy(comm_send);
-
-    if (status != MSG_OK) {
-      task_message_free(task);
-    }
-  }
-}
 
 void update_active_peers_set(peer_t peer, connection_t remote_peer)
 {
@@ -554,7 +526,6 @@ void update_pieces_count_from_bitfield(peer_t peer, char *bitfield)
  * If the peer has more than pieces, he downloads the pieces that are the less
  * replicated (rarest policy).
  * If all pieces have been downloaded or requested, we select a random requested piece (endgame mode).
-
  * @param peer: local peer
  * @param remote_peer: information about the connection
  * @return the piece to download if possible. -1 otherwise
@@ -1070,9 +1041,7 @@ void send_bitfield(peer_t peer, const char *mailbox)
   msg_task_t task =
       task_message_bitfield_new(peer->hostname, peer->mailbox, peer->id,
                                 peer->bitfield, FILE_PIECES);
-  //Async send and append to pending sends
-  msg_comm_t comm = MSG_task_isend(task, mailbox);
-  xbt_dynar_push(peer->pending_sends, &comm);
+  MSG_task_dsend(task, mailbox, task_message_free);
 }
 
 /**

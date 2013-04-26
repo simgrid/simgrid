@@ -42,7 +42,6 @@ typedef struct s_peer {
 
   double begin_receive_time;    //time when the receiving communication has begun, useful for calculating host speed.
 
-  xbt_dynar_t pending_sends;    // list of sends being delivered
 } s_peer_t, *peer_t;
 
 /**
