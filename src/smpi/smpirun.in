@@ -196,6 +196,7 @@ if [ -z "${HOSTFILE}" ] && [ -z "${PLATFORM}" ] ; then
     exit 1
 fi
 
+HOSTFILETMP=0
 if [ -z "${HOSTFILE}" ] ; then
     HOSTFILETMP=1
     HOSTFILE="$(mktemp tmphostXXXXXX)"
@@ -370,7 +371,7 @@ fi
 export SMPI_GLOBAL_SIZE=${NUMPROCS}
 if [ -n "${KEEP}" ] ; then
   echo ${EXEC} ${TRACEOPTIONS} ${SIMOPTS} ${PLATFORMTMP} ${APPLICATIONTMP}
-  if [ ${HOSTFILETMP} == 1 ] ; then
+  if [ ${HOSTFILETMP} = 1 ] ; then
     echo "Generated hostfile ${HOSTFILE} keeped."
   fi
 fi
@@ -381,7 +382,7 @@ if [ -z "${KEEP}" ] ; then
    if [ -z "${PLATFORM}" ]; then
 	rm ${PLATFORMTMP}
    fi
-   if [ ${HOSTFILETMP} == 1 ] ; then
+   if [ ${HOSTFILETMP} = 1 ] ; then
         rm ${HOSTFILE}
    fi
    rm ${APPLICATIONTMP}
