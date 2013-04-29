@@ -1,0 +1,80 @@
+#! ./tesh
+
+! expect signal SIGABRT
+! timeout 200
+$ ${bindir:=.}/chord ../../msg_platform.xml deploy_chord4.xml --cfg=model-check:1 "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n" --cfg=contexts/factory:ucontext --cfg=model-check/timeout:1 --cfg=model-check/visited:100
+> [  0.000000] (0:@) Configuration change: Set 'model-check' to '1'
+> [  0.000000] (0:@) Configuration change: Set 'model-check/timeout' to '1'
+> [  0.000000] (0:@) Configuration change: Set 'model-check/visited' to '100'
+> [  0.000000] (0:@) Check a safety property
+> [  0.000000] (1:node@Jean_Yves) Joining the ring with id 6, knowing node 16
+> [  0.000000] (2:node@Boivin) Joining the ring with id 10, knowing node 16
+> [  0.000000] (3:node@TeX) Joining the ring with id 8, knowing node 16
+> [  0.000000] (1:node@Jean_Yves) Cannot join the ring.
+> [  0.000000] (2:node@Boivin) Cannot join the ring.
+> [  0.000000] (3:node@TeX) Cannot join the ring.
+> [  0.000000] (1:node@Jean_Yves) Cannot join the ring.
+> [  0.000000] (2:node@Boivin) Cannot join the ring.
+> [  0.000000] (3:node@TeX) Cannot join the ring.
+> [  0.000000] (1:node@Jean_Yves) Cannot join the ring.
+> [  0.000000] (2:node@Boivin) Cannot join the ring.
+> [  0.000000] (3:node@TeX) Cannot join the ring.
+> [  0.000000] (1:node@Jean_Yves) Cannot join the ring.
+> [  0.000000] (2:node@Boivin) Cannot join the ring.
+> [  0.000000] (3:node@TeX) Cannot join the ring.
+> [  0.000000] (1:node@Jean_Yves) Cannot join the ring.
+> [  0.000000] (2:node@Boivin) Cannot join the ring.
+> [  0.000000] (3:node@TeX) Cannot join the ring.
+> [  0.000000] (1:node@Jean_Yves) Cannot join the ring.
+> [  0.000000] (2:node@Boivin) Cannot join the ring.
+> [  0.000000] (3:node@TeX) Cannot join the ring.
+> [  0.000000] (4:node@Jacquelin) A transfer has occured
+> [  0.000000] (4:node@Jacquelin) The task was successfully received by node 16
+> [  0.000000] (1:node@Jean_Yves) Cannot join the ring.
+> [  0.000000] (2:node@Boivin) Cannot join the ring.
+> [  0.000000] (3:node@TeX) Cannot join the ring.
+> [  0.000000] (4:node@Jacquelin) A transfer has occured
+> [  0.000000] (4:node@Jacquelin) The task was successfully received by node 16
+> [  0.000000] (1:node@Jean_Yves) Cannot join the ring.
+> [  0.000000] (2:node@Boivin) Cannot join the ring.
+> [  0.000000] (3:node@TeX) Cannot join the ring.
+> [  0.000000] (4:node@Jacquelin) A transfer has occured
+> [  0.000000] (4:node@Jacquelin) The task was successfully received by node 16
+> [  0.000000] (1:node@Jean_Yves) Cannot join the ring.
+> [  0.000000] (2:node@Boivin) Cannot join the ring.
+> [  0.000000] (3:node@TeX) Cannot join the ring.
+> [  0.000000] (4:node@Jacquelin) A transfer has occured
+> [  0.000000] (4:node@Jacquelin) The task was successfully received by node 16
+> [  0.000000] (1:node@Jean_Yves) Cannot join the ring.
+> [  0.000000] (2:node@Boivin) Cannot join the ring.
+> [  0.000000] (3:node@TeX) Cannot join the ring.
+> [  0.000000] (4:node@Jacquelin) A transfer has occured
+> [  0.000000] (4:node@Jacquelin) The task was successfully received by node 16
+> [  0.000000] (1:node@Jean_Yves) Cannot join the ring.
+> [  0.000000] (2:node@Boivin) Cannot join the ring.
+> [  0.000000] (4:node@Jacquelin) A transfer has occured
+> [  0.000000] (4:node@Jacquelin) The task was successfully received by node 16
+> [  0.000000] (3:node@TeX) Cannot join the ring.
+> [  0.000000] (1:node@Jean_Yves) Cannot join the ring.
+> [  0.000000] (2:node@Boivin) Cannot join the ring.
+> [  0.000000] (4:node@Jacquelin) A transfer has occured
+> [  0.000000] (4:node@Jacquelin) The task was successfully received by node 16
+> [  0.000000] (3:node@TeX) Node 8 joined the ring
+> [  0.000000] (3:node@TeX) **************************
+> [  0.000000] (3:node@TeX) *** PROPERTY NOT VALID ***
+> [  0.000000] (3:node@TeX) **************************
+> [  0.000000] (3:node@TeX) Counter-example execution trace:
+> [  0.000000] (3:node@TeX) [(1)node] iSend (src=node, buff=(verbose only), size=(verbose only))
+> [  0.000000] (3:node@TeX) [(1)node] WaitTimeout (comm=(verbose only))
+> [  0.000000] (3:node@TeX) [(2)node] iSend (src=node, buff=(verbose only), size=(verbose only))
+> [  0.000000] (3:node@TeX) [(2)node] WaitTimeout (comm=(verbose only))
+> [  0.000000] (3:node@TeX) [(3)node] iSend (src=node, buff=(verbose only), size=(verbose only))
+> [  0.000000] (3:node@TeX) [(4)node] iRecv (dst=node, buff=(verbose only), size=(verbose only))
+> [  0.000000] (3:node@TeX) [(3)node] Wait (comm=(verbose only) [(3)node -> (4)node])
+> [  0.000000] (3:node@TeX) [(4)node] Test TRUE (comm=(verbose only) [(3)node -> (4)node])
+> [  0.000000] (3:node@TeX) [(3)node] iRecv (dst=node, buff=(verbose only), size=(verbose only))
+> [  0.000000] (3:node@TeX) [(4)node] iSend (src=node, buff=(verbose only), size=(verbose only))
+> [  0.000000] (3:node@TeX) [(3)node] Wait (comm=(verbose only) [(4)node -> (3)node])
+> [  0.000000] (3:node@TeX) Expanded states = 42
+> [  0.000000] (3:node@TeX) Visited states = 170
+> [  0.000000] (3:node@TeX) Executed transitions = 159

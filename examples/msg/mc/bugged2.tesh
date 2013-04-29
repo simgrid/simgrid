@@ -1,0 +1,64 @@
+#! ./tesh
+
+! expect signal SIGABRT
+$ ${bindir:=.}/bugged2 --cfg=model-check:1 "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+> [  0.000000] (0:@) Configuration change: Set 'model-check' to '1'
+> [  0.000000] (0:@) Check a safety property
+> [  0.000000] (2:client@HostB) Send 1!
+> [  0.000000] (3:client@HostC) Send 2!
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (2:client@HostB) Send 1!
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (3:client@HostC) Send 2!
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) OK
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (2:client@HostB) Send 1!
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (3:client@HostC) Send 2!
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) OK
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (2:client@HostB) Send 1!
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (2:client@HostB) Send 1!
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (3:client@HostC) Send 2!
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) OK
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (2:client@HostB) Send 1!
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (3:client@HostC) Send 2!
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) OK
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (2:client@HostB) Send 1!
+> [  0.000000] (3:client@HostC) Send 2!
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) OK
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (2:client@HostB) Send 1!
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (3:client@HostC) Send 2!
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) OK
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (2:client@HostB) Send 1!
+> [  0.000000] (3:client@HostC) Send 2!
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) OK
+> [  0.000000] (0:@) Expanded states = 68
+> [  0.000000] (0:@) Visited states = 132
+> [  0.000000] (0:@) Executed transitions = 124

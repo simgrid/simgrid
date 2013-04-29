@@ -334,6 +334,8 @@ int node(int argc, char *argv[])
     }
   }
 
+  MC_assert(!node_join);
+
   if (join_success) {
 
     while (MSG_get_clock() < init_time + deadline
@@ -831,7 +833,7 @@ int closest_preceding_node(node_t node, int id)
  */
 static void stabilize(node_t node)
 {
-  XBT_DEBUG("Stabilizing node");
+  XBT_DEBUG("Stabilizing node %d", node->id);
 
   // get the predecessor of my immediate successor
   int candidate_id;
@@ -859,6 +861,8 @@ static void stabilize(node_t node)
  * \param candidate_id the possible new predecessor
  */
 static void notify(node_t node, int predecessor_candidate_id) {
+
+  XBT_DEBUG("Notifying node %d", node->id);
 
   if (node->pred_id == -1
     || is_in_interval(predecessor_candidate_id, node->pred_id + 1, node->id - 1)) {
