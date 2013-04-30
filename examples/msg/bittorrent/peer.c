@@ -95,8 +95,6 @@ void leech_loop(peer_t peer, double deadline)
    * (since it couldn't have gotten more than 50 peers)
    */
   send_handshake_all(peer);
-  //Wait for at least one "bitfield" message.
-//  wait_for_pieces(peer, deadline);
   XBT_DEBUG("Starting main leech loop");
 
   while (MSG_get_clock() < deadline && peer->pieces < FILE_PIECES) {

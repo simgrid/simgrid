@@ -58,13 +58,9 @@ void peer_free(peer_t peer);
 
 int has_finished(char *bitfield);
 
-void handle_pending_sends(peer_t peer);
 void handle_message(peer_t peer, msg_task_t task);
 
-void wait_for_pieces(peer_t peer, double deadline);
-
 void update_pieces_count_from_bitfield(peer_t peer, char *bitfield);
-void update_current_piece(peer_t peer);
 void update_choked_peers(peer_t peer);
 
 void update_interested_after_receive(peer_t peer);
@@ -89,9 +85,6 @@ void remove_current_piece(peer_t peer, connection_t remote_peer,
 void update_active_peers_set(peer_t peer, connection_t remote_peer);
 int select_piece_to_download(peer_t peer, connection_t remote_peer);
 
-
-
-void send_interested_to_peers(peer_t peer);
 void send_handshake_all(peer_t peer);
 
 void send_interested(peer_t peer, const char *mailbox);
