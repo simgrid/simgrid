@@ -4,7 +4,7 @@ if(HAVE_MC)
   set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}")
 
   file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/test/")
-  file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/chord_liveness/")
+  file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/chord/")
 
   add_executable(centralized centralized_mutex.c)
   add_executable(bugged1     bugged1.c)
@@ -13,7 +13,7 @@ if(HAVE_MC)
   add_executable(electric_fence	   electric_fence.c)
   add_executable(bugged1_liveness bugged1_liveness.c)
   add_executable(bugged2_liveness bugged2_liveness.c)
-  add_executable(chord_liveness/chord_liveness chord_liveness/chord_liveness.c)
+  add_executable(chord/chord chord/chord.c)
   add_executable(test/snapshot_comparison1 test/snapshot_comparison1.c)
   add_executable(test/snapshot_comparison2 test/snapshot_comparison2.c)
   add_executable(test/snapshot_comparison3 test/snapshot_comparison3.c)
@@ -27,7 +27,7 @@ if(HAVE_MC)
   target_link_libraries(electric_fence     simgrid )
   target_link_libraries(bugged1_liveness     simgrid )
   target_link_libraries(bugged2_liveness     simgrid )
-  target_link_libraries(chord_liveness/chord_liveness     simgrid )
+  target_link_libraries(chord/chord     simgrid )
   target_link_libraries(test/snapshot_comparison1     simgrid )
   target_link_libraries(test/snapshot_comparison2     simgrid )
   target_link_libraries(test/snapshot_comparison3     simgrid )
@@ -39,11 +39,11 @@ endif()
 set(tesh_files
   ${tesh_files}
   ${CMAKE_CURRENT_SOURCE_DIR}/bugged1.tesh
+  ${CMAKE_CURRENT_SOURCE_DIR}/bugged2.tesh
   ${CMAKE_CURRENT_SOURCE_DIR}/bugged1_liveness.tesh
   ${CMAKE_CURRENT_SOURCE_DIR}/centralized.tesh
-  ${CMAKE_CURRENT_SOURCE_DIR}/chord_liveness/chord_neverjoin.tesh
-  ${CMAKE_CURRENT_SOURCE_DIR}/chord_liveness/chord_neverdeliver.tesh 
-  ${CMAKE_CURRENT_SOURCE_DIR}/chord_liveness/chord_neverjoin_timeout_visited.tesh 
+  ${CMAKE_CURRENT_SOURCE_DIR}/chord/chord_neverjoin.tesh 
+  ${CMAKE_CURRENT_SOURCE_DIR}/chord/chord_neverjoin_timeout_visited.tesh 
   ${CMAKE_CURRENT_SOURCE_DIR}/test/snapshot_comparison1.tesh
   ${CMAKE_CURRENT_SOURCE_DIR}/test/snapshot_comparison2.tesh
   ${CMAKE_CURRENT_SOURCE_DIR}/test/snapshot_comparison3.tesh
@@ -61,7 +61,7 @@ set(xml_files
   ${CMAKE_CURRENT_SOURCE_DIR}/deploy_electric_fence.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/deploy_mutex.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/platform.xml
-  ${CMAKE_CURRENT_SOURCE_DIR}/chord_liveness/deploy_chord_liveness.xml
+  ${CMAKE_CURRENT_SOURCE_DIR}/chord/deploy_chord4.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/test/deploy_snapshot_comparison.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/test/snapshot_comparison_platform.xml
   PARENT_SCOPE
@@ -77,7 +77,7 @@ set(examples_src
   ${CMAKE_CURRENT_SOURCE_DIR}/centralized_mutex.c
   ${CMAKE_CURRENT_SOURCE_DIR}/bugged1_liveness.h
   ${CMAKE_CURRENT_SOURCE_DIR}/bugged2_liveness.h
-  ${CMAKE_CURRENT_SOURCE_DIR}/chord_liveness/chord_liveness.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/chord/chord.c
   ${CMAKE_CURRENT_SOURCE_DIR}/test/snapshot_comparison1.c
   ${CMAKE_CURRENT_SOURCE_DIR}/test/snapshot_comparison2.c
   ${CMAKE_CURRENT_SOURCE_DIR}/test/snapshot_comparison3.c
@@ -90,8 +90,6 @@ set(bin_files
   ${CMAKE_CURRENT_SOURCE_DIR}/parse_dwarf
   ${CMAKE_CURRENT_SOURCE_DIR}/promela_bugged1_liveness
   ${CMAKE_CURRENT_SOURCE_DIR}/promela_bugged2_liveness
-  ${CMAKE_CURRENT_SOURCE_DIR}/chord_liveness/promela_chord_neverjoin
-  ${CMAKE_CURRENT_SOURCE_DIR}/chord_liveness/promela_chord_neverdeliver
   ${CMAKE_CURRENT_SOURCE_DIR}/test/promela
   PARENT_SCOPE
   )
