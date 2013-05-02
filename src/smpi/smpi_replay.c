@@ -625,5 +625,6 @@ int smpi_replay_finalize(){
     xbt_free(reqq);
     reqq = NULL;
   }
+  smpi_mpi_barrier(MPI_COMM_WORLD);
   return PMPI_Finalize();
 }
