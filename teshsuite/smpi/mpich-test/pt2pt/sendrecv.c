@@ -541,10 +541,11 @@ count argument, datatype argument, tag, rank, buffer send and buffer recv\n" );
 	Test_Passed("Invalid Buffer Test (recv)");
 
     /* Just to keep things happy, see if there is a message to receive */
-    { int flag, ibuf[10];
+    { //int flag, 
+    int ibuf[10];
 
-    MPI_Iprobe( src, 15, MPI_COMM_WORLD, &flag, &status );
-    if (flag) 
+    //MPI_Iprobe( src, 15, MPI_COMM_WORLD, &flag, &status );
+    //if (flag) 
 	MPI_Recv( ibuf, 10, MPI_INT, src, 15, MPI_COMM_WORLD, &status );
     }
     MPI_Errhandler_set(MPI_COMM_WORLD, MPI_ERRORS_ARE_FATAL );
