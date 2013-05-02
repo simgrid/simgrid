@@ -759,7 +759,11 @@ void sg_config_init(int *argc, char **argv)
                      xbt_cfgelm_string, NULL, 1, 1, NULL,
                      NULL);
     xbt_cfg_setdefault_string(_sg_cfg_set, "smpi/or", "1:0:0:0:0");
-
+    double default_iprobe_time = 1e-4;
+    xbt_cfg_register(&_sg_cfg_set, "smpi/iprobe",
+                     "Minimum time to inject inside a call to MPI_Iprobe",
+                     xbt_cfgelm_double, &default_iprobe_time, 1, 1, NULL,
+                     NULL);
     default_value = xbt_strdup("default");
     xbt_cfg_register(&_sg_cfg_set, "smpi/allgather",
 		     "Which collective to use for allgather",

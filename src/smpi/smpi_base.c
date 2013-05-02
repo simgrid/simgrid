@@ -682,15 +682,19 @@ void smpi_mpi_probe(int source, int tag, MPI_Comm comm, MPI_Status* status){
   while(flag==0){
     smpi_mpi_iprobe(source, tag, comm, &flag, status);
     XBT_DEBUG("Busy Waiting on probing : %d", flag);
-    if(!flag) {
-      simcall_process_sleep(0.0001);
-    }
   }
 }
 
 void smpi_mpi_iprobe(int source, int tag, MPI_Comm comm, int* flag, MPI_Status* status){
   MPI_Request request =build_request(NULL, 0, MPI_CHAR, source, smpi_comm_rank(comm), tag,
             comm, NON_PERSISTENT | RECV);
+
+  //to avoid deadlock, we have to sleep some time here, or the timer won't advance and we will only do iprobe simcalls
+  double sleeptime= sg_cfg_get_double("smpi/iprobe");
+  //multiplier to the sleeptime, to increase speed of execution, each failed iprobe will increase it
+  static int nsleeps = 1;
+
+  simcall_process_sleep(sleeptime);
 
   // behave like a receive, but don't do it
   smx_rdv_t mailbox;
@@ -717,8 +721,12 @@ void smpi_mpi_iprobe(int source, int tag, MPI_Comm comm, int* flag, MPI_Status* 
       status->MPI_ERROR = MPI_SUCCESS;
       status->count = req->real_size;
     }
+    nsleeps=1;//reset the number of sleeps we will do next time
   }
-  else *flag = 0;
+  else {
+      *flag = 0;
+      nsleeps++;
+  }
   smpi_mpi_request_free(&request);
 
   return;
