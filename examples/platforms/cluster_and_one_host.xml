@@ -3,14 +3,14 @@
 <platform version="3">
  <AS id="AS0"  routing="Full">   
   <cluster id="my_cluster_1" prefix="c-" suffix=".me"
-    	   radical="0-1" power="1000000000" bw="125000000" lat="5E-5"
+    	   radical="0-1" power="1gf" bw="125MBps" lat="50us"
            router_id="router1"/>
 
   <AS id="AS1" routing="none">
-    <host id="host1" power="1000000000"/>
+    <host id="host1" power="1gf"/>
   </AS>
 
-  <link id="link1" bandwidth="100000" latency="0.01"/>
+  <link id="link1" bandwidth="100KBps" latency="10ms"/>
   
   <ASroute src="my_cluster_1" dst="AS1"
     gw_src="router1" gw_dst="host1">

@@ -49,6 +49,7 @@ double surf_parse_get_double(const char *string) {
   int ret = sscanf(string, "%lg", &res);
   if (ret != 1)
     surf_parse_error("%s is not a double", string);
+  //printf("Parsed double [%lg] %s\n", res, string);  
   return res;
 }
 
@@ -60,6 +61,174 @@ int surf_parse_get_int(const char *string) {
   return res;
 }
 
+double surf_parse_get_time(const char *string) {
+  size_t len = strlen(string);
+  char* tmp = xbt_malloc(sizeof(char) * (len + 1));
+  strcpy(tmp, string);
+  if (!strcmp(tmp + len - 2, "ps")) {
+    tmp[len-2] = 0;
+    return surf_parse_get_double(tmp) * 1E-12;
+  }
+  if (!strcmp(tmp + len - 2, "ns")) {
+    tmp[len-2] = 0;
+    return surf_parse_get_double(tmp) * 1E-9;
+  }
+  if (!strcmp(tmp + len - 2, "us")) {
+    tmp[len-2] = 0;
+    return surf_parse_get_double(tmp) * 1E-6;
+  }
+  if (!strcmp(tmp + len - 2, "ms")) {
+    tmp[len-2] = 0;
+    return surf_parse_get_double(tmp) * 1E-3;
+  }
+  if (!strcmp(tmp + len - 1, "s")) {
+    tmp[len-1] = 0;    
+    return surf_parse_get_double(tmp);
+  }
+  if (!strcmp(tmp + len - 1, "m")) {
+    tmp[len-1] = 0;    
+    return surf_parse_get_double(tmp) * 60;
+  }
+  if (!strcmp(tmp + len - 1, "h")) {
+    tmp[len-1] = 0;    
+    return surf_parse_get_double(tmp) * 3600;
+  }
+  if (!strcmp(tmp + len - 1, "d")) {
+    tmp[len-1] = 0;    
+    return surf_parse_get_double(tmp) * 86400;
+  }
+  if (!strcmp(tmp + len - 1, "w")) {
+    tmp[len-1] = 0;    
+    return surf_parse_get_double(tmp) * 604800;
+  }
+  return surf_parse_get_double(tmp);
+}
+
+double surf_parse_get_bandwidth(const char *string) {
+  size_t len = strlen(string);
+  char* tmp = xbt_malloc(sizeof(char) * (len + 1));
+  strcpy(tmp, string);
+  if (!strcmp(tmp + len - 4, "KBps")) {
+    tmp[len-4] = 0;
+    return surf_parse_get_double(tmp) * 1E3;
+  }
+  if (!strcmp(tmp + len - 4, "MBps")) {
+    tmp[len-4] = 0;
+    return surf_parse_get_double(tmp) * 1E6;
+  }
+  if (!strcmp(tmp + len - 4, "GBps")) {
+    tmp[len-4] = 0;
+    return surf_parse_get_double(tmp) * 1E9;
+  }
+  if (!strcmp(tmp + len - 4, "TBps")) {
+    tmp[len-4] = 0;
+    return surf_parse_get_double(tmp) * 1E12;
+  }
+  if (!strcmp(tmp + len - 3, "Bps")) {
+    tmp[len-3] = 0;
+    return surf_parse_get_double(tmp);
+  }
+  if (!strcmp(tmp + len - 4, "kbps")) {
+    tmp[len-4] = 0;
+    return surf_parse_get_double(tmp) * 0.125 * 1E3;
+  }
+  if (!strcmp(tmp + len - 4, "mbps")) {
+    tmp[len-4] = 0;
+    return surf_parse_get_double(tmp) * 0.125 * 1E6;
+  }
+  if (!strcmp(tmp + len - 4, "gbps")) {
+    tmp[len-4] = 0;
+    return surf_parse_get_double(tmp) * 0.125 * 1E9;
+  }
+  if (!strcmp(tmp + len - 4, "tbps")) {
+    tmp[len-4] = 0;
+    return surf_parse_get_double(tmp) * 0.125 * 1E12;
+  }
+  if (!strcmp(tmp + len - 3, "bps")) {
+    tmp[len-3] = 0;
+    return surf_parse_get_double(tmp) * 0.125;
+  }
+  return surf_parse_get_double(tmp);
+}
+
+double surf_parse_get_power(const char *string) {
+  size_t len = strlen(string);
+  char* tmp = xbt_malloc(sizeof(char) * (len + 1));
+  strcpy(tmp, string);
+  if (!strcmp(tmp + len - 9, "kiloflops")) {
+    tmp[len-9] = 0;
+    return surf_parse_get_double(tmp) * 1E3;
+  }
+  if (!strcmp(tmp + len - 9, "megaflops")) {
+    tmp[len-9] = 0;
+    return surf_parse_get_double(tmp) * 1E6;
+  }
+  if (!strcmp(tmp + len - 9, "gigaflops")) {
+    tmp[len-9] = 0;
+    return surf_parse_get_double(tmp) * 1E9;
+  }
+  if (!strcmp(tmp + len - 9, "teraflops")) {
+    tmp[len-9] = 0;
+    return surf_parse_get_double(tmp) * 1E12;
+  }
+  if (!strcmp(tmp + len - 9, "petaflops")) {
+    tmp[len-9] = 0;
+    return surf_parse_get_double(tmp) * 1E15;
+  }
+  if (!strcmp(tmp + len - 9, "exaflops")) {
+    tmp[len-9] = 0;
+    return surf_parse_get_double(tmp) * 1E18;
+  }
+  if (!strcmp(tmp + len - 9, "zettaflops")) {
+    tmp[len-9] = 0;
+    return surf_parse_get_double(tmp) * 1E21;
+  }
+  if (!strcmp(tmp + len - 9, "yottaflops")) {
+    tmp[len-9] = 0;
+    return surf_parse_get_double(tmp) * 1E24;
+  }
+  if (!strcmp(tmp + len - 5, "flops")) {
+    tmp[len-5] = 0;
+    return surf_parse_get_double(tmp);
+  }
+  if (!strcmp(tmp + len - 2, "kf")) {
+    tmp[len-2] = 0;
+    return surf_parse_get_double(tmp) * 1E3;
+  }
+  if (!strcmp(tmp + len - 2, "mf")) {
+    tmp[len-2] = 0;
+    return surf_parse_get_double(tmp) * 1E6;
+  }
+  if (!strcmp(tmp + len - 2, "gf")) {
+    tmp[len-2] = 0;
+    return surf_parse_get_double(tmp) * 1E9;
+  }
+  if (!strcmp(tmp + len - 2, "tf")) {
+    tmp[len-2] = 0;
+    return surf_parse_get_double(tmp) * 1E12;
+  }
+  if (!strcmp(tmp + len - 2, "pf")) {
+    tmp[len-2] = 0;
+    return surf_parse_get_double(tmp) * 1E15;
+  }
+  if (!strcmp(tmp + len - 2, "ef")) {
+    tmp[len-2] = 0;
+    return surf_parse_get_double(tmp) * 1E18;
+  }
+  if (!strcmp(tmp + len - 2, "zf")) {
+    tmp[len-2] = 0;
+    return surf_parse_get_double(tmp) * 1E21;
+  }
+  if (!strcmp(tmp + len - 2, "yf")) {
+    tmp[len-2] = 0;
+    return surf_parse_get_double(tmp) * 1E24;
+  }
+  if (!strcmp(tmp + len - 1, "f")) {
+    tmp[len-1] = 0;
+    return surf_parse_get_double(tmp);
+  }
+  return surf_parse_get_double(tmp);
+}
 
 /*
  * All the callback lists that can be overridden anywhere.
@@ -340,20 +509,20 @@ void STag_surfxml_cluster(void){
   cluster.prefix = A_surfxml_cluster_prefix;
   cluster.suffix = A_surfxml_cluster_suffix;
   cluster.radical = A_surfxml_cluster_radical;
-  cluster.power= surf_parse_get_double(A_surfxml_cluster_power);
+  cluster.power = surf_parse_get_power(A_surfxml_cluster_power);
   cluster.core_amount = surf_parse_get_int(A_surfxml_cluster_core);
-  cluster.bw =   surf_parse_get_double(A_surfxml_cluster_bw);
-  cluster.lat =  surf_parse_get_double(A_surfxml_cluster_lat);
+  cluster.bw =   surf_parse_get_bandwidth(A_surfxml_cluster_bw);
+  cluster.lat =  surf_parse_get_time(A_surfxml_cluster_lat);
   if(strcmp(A_surfxml_cluster_bb___bw,""))
-    cluster.bb_bw = surf_parse_get_double(A_surfxml_cluster_bb___bw);
+    cluster.bb_bw = surf_parse_get_bandwidth(A_surfxml_cluster_bb___bw);
   if(strcmp(A_surfxml_cluster_bb___lat,""))
-    cluster.bb_lat = surf_parse_get_double(A_surfxml_cluster_bb___lat);
+    cluster.bb_lat = surf_parse_get_time(A_surfxml_cluster_bb___lat);
   if(strcmp(A_surfxml_cluster_limiter___link,""))
     cluster.limiter_link = surf_parse_get_double(A_surfxml_cluster_limiter___link);
   if(strcmp(A_surfxml_cluster_loopback___bw,""))
-    cluster.loopback_bw = surf_parse_get_double(A_surfxml_cluster_loopback___bw);
+    cluster.loopback_bw = surf_parse_get_bandwidth(A_surfxml_cluster_loopback___bw);
   if(strcmp(A_surfxml_cluster_loopback___lat,""))
-    cluster.loopback_lat = surf_parse_get_double(A_surfxml_cluster_loopback___lat);
+    cluster.loopback_lat = surf_parse_get_time(A_surfxml_cluster_loopback___lat);
   cluster.router_id = A_surfxml_cluster_router___id;
 
   switch (AX_surfxml_cluster_sharing___policy) {
@@ -395,9 +564,9 @@ void STag_surfxml_cabinet(void){
   cabinet.id = A_surfxml_cabinet_id;
   cabinet.prefix = A_surfxml_cabinet_prefix;
   cabinet.suffix = A_surfxml_cabinet_suffix;
-  cabinet.power = surf_parse_get_double(A_surfxml_cabinet_power);
-  cabinet.bw = surf_parse_get_double(A_surfxml_cabinet_bw);
-  cabinet.lat = surf_parse_get_double(A_surfxml_cabinet_lat);
+  cabinet.power = surf_parse_get_power(A_surfxml_cabinet_power);
+  cabinet.bw = surf_parse_get_bandwidth(A_surfxml_cabinet_bw);
+  cabinet.lat = surf_parse_get_time(A_surfxml_cabinet_lat);
   cabinet.radical = A_surfxml_cabinet_radical;
 
   sg_platf_new_cabinet(&cabinet);
@@ -407,10 +576,10 @@ void STag_surfxml_peer(void){
   s_sg_platf_peer_cbarg_t peer;
   memset(&peer,0,sizeof(peer));
   peer.id = A_surfxml_peer_id;
-  peer.power = surf_parse_get_double(A_surfxml_peer_power);
-  peer.bw_in = surf_parse_get_double(A_surfxml_peer_bw___in);
-  peer.bw_out = surf_parse_get_double(A_surfxml_peer_bw___out);
-  peer.lat = surf_parse_get_double(A_surfxml_peer_lat);
+  peer.power = surf_parse_get_power(A_surfxml_peer_power);
+  peer.bw_in = surf_parse_get_bandwidth(A_surfxml_peer_bw___in);
+  peer.bw_out = surf_parse_get_bandwidth(A_surfxml_peer_bw___out);
+  peer.lat = surf_parse_get_time(A_surfxml_peer_lat);
   peer.coord = A_surfxml_peer_coordinates;
   peer.availability_trace = tmgr_trace_new_from_file(A_surfxml_peer_availability___file);
   peer.state_trace = tmgr_trace_new_from_file(A_surfxml_peer_state___file);
@@ -430,9 +599,11 @@ void ETag_surfxml_link(void){
   link.properties = current_property_set;
 
   link.id = A_surfxml_link_id;
-  link.bandwidth = surf_parse_get_double(A_surfxml_link_bandwidth);
+  link.bandwidth = surf_parse_get_bandwidth(A_surfxml_link_bandwidth);
+  //printf("Link bandwidth [%lg]\n", link.bandwidth);  
   link.bandwidth_trace = tmgr_trace_new_from_file(A_surfxml_link_bandwidth___file);
-  link.latency = surf_parse_get_double(A_surfxml_link_latency);
+  link.latency = surf_parse_get_time(A_surfxml_link_latency);
+  //printf("Link latency [%lg]\n", link.latency);  
   link.latency_trace = tmgr_trace_new_from_file(A_surfxml_link_latency___file);
 
   switch (A_surfxml_link_state) {
@@ -496,8 +667,8 @@ void ETag_surfxml_backbone(void){
   link.properties = NULL;
 
   link.id = A_surfxml_backbone_id;
-  link.bandwidth = surf_parse_get_double(A_surfxml_backbone_bandwidth);
-  link.latency = surf_parse_get_double(A_surfxml_backbone_latency);
+  link.bandwidth = surf_parse_get_bandwidth(A_surfxml_backbone_bandwidth);
+  link.latency = surf_parse_get_time(A_surfxml_backbone_latency);
   link.state = SURF_RESOURCE_ON;
   link.policy = SURF_LINK_SHARED;
 
@@ -890,7 +1061,7 @@ double get_cpu_power(const char *power)
       power_scale = random_generate(random);
     }
   } else {
-    power_scale = surf_parse_get_double(power);
+    power_scale = surf_parse_get_power(power);
   }
   return power_scale;
 }

@@ -3,9 +3,9 @@
  <platform version="3">
  <AS  id="AS0"  routing="Full">
    <!-- For using with ping_pong example, very simple platform -->
-   <host id="Inmos" power="98095000"/>
-   <host id="Bellevue" power="76296000"/>
-   <link id="link" bandwidth="1000000" latency="0.1"/>
+   <host id="Inmos" power="98.095mf"/>
+   <host id="Bellevue" power="76.296mf"/>
+   <link id="link" bandwidth="1MBps" latency="100ms"/>
    <route src="Inmos" dst="Bellevue">
      <link_ctn id="link"/>
    </route>

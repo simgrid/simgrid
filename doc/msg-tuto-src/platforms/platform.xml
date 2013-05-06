@@ -2,21 +2,21 @@
  <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">
  <platform version="3">
  <AS  id="AS0"  routing="Full">
-   <host id="Tremblay" power="98095000"/>
-   <host id="Jupiter" power="76296000"/>
-   <host id="Fafard" power="76296000"/>
-   <host id="Ginette" power="48492000"/>
-   <host id="Bourassa" power="48492000"/>
-   <link id="6" bandwidth="41279125" latency="5.9904e-05"/>
-   <link id="3" bandwidth="34285625" latency="0.000514433"/>
-   <link id="7" bandwidth="11618875" latency="0.00018998"/>
-   <link id="9" bandwidth="7209750" latency="0.001461517"/>
-   <link id="2" bandwidth="118682500" latency="0.000136931"/>
-   <link id="8" bandwidth="8158000" latency="0.000270544"/>
-   <link id="1" bandwidth="34285625" latency="0.000514433"/>
-   <link id="4" bandwidth="10099625" latency="0.00047978"/>
-   <link id="0" bandwidth="41279125" latency="5.9904e-05"/>
-   <link id="5" bandwidth="27946250" latency="0.000278066"/>
+   <host id="Tremblay" power="98.095mf"/>
+   <host id="Jupiter" power="76.296mf"/>
+   <host id="Fafard" power="76.296mf"/>
+   <host id="Ginette" power="48.492mf"/>
+   <host id="Bourassa" power="48.492mf"/>
+   <link id="6" bandwidth="41.279125MBps" latency="59.904us"/>
+   <link id="3" bandwidth="34.285625MBps" latency="514.433us"/>
+   <link id="7" bandwidth="11.618875MBps" latency="189.98us"/>
+   <link id="9" bandwidth="7.20975MBps" latency="1.461517ms"/>
+   <link id="2" bandwidth="118.6825MBps" latency="136.931us"/>
+   <link id="8" bandwidth="8.158MBps" latency="270.544us"/>
+   <link id="1" bandwidth="34.285625MBps" latency="514.433us"/>
+   <link id="4" bandwidth="10.099625MBps" latency="479.78us"/>
+   <link id="0" bandwidth="41.279125MBps" latency="59.904us"/>
+   <link id="5" bandwidth="27.94625MBps" latency="278.066us"/>
    <route src="Tremblay" dst="Jupiter">
      <link_ctn id="9"/>
    </route>

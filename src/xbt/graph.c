@@ -724,7 +724,7 @@ void xbt_graph_export_graphxml(xbt_graph_t g, const char *filename,
       fprintf(file, "label=\"%s\" ", name);
     if ((node_data_print) && ((name = node_data_print(node->data))))
       fprintf(file, "data=\"%s\" ", name);
-    fprintf(file, ">\n");
+    fprintf(file, "/>\n");
   }
   xbt_dynar_foreach(g->edges, cursor, edge) {
     fprintf(file, "  <edge source=\"%p\" target =\"%p\" ",
@@ -735,7 +735,7 @@ void xbt_graph_export_graphxml(xbt_graph_t g, const char *filename,
       fprintf(file, "length=\"%g\" ", edge->length);
     if ((edge_data_print) && ((name = edge_data_print(edge->data))))
       fprintf(file, "data=\"%s\" ", name);
-    fprintf(file, ">\n");
+    fprintf(file, "/>\n");
   }
   fprintf(file, "</graph>\n");
   fclose(file);

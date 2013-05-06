@@ -5,16 +5,16 @@
 <AS  id="AS0"  routing="Vivaldi">	 
 	<peer id="100030591"
 		coordinates="25.5 9.4 1.4"
-		power="1500000000.0"
-		bw_in="2250000000"
-		bw_out="2250000000"
-		lat="5E-4" />
+		power="1.5gf"
+		bw_in="2.25GBps"
+		bw_out="2.25GBps"
+		lat="500us" />
 		
 	<peer id="100036570"
 		coordinates="-12.7 -9.9 2.1"
-		power="730000000.0"	
-		bw_in="2250000000"
-		bw_out="2250000000"
-		lat="5E-4" />
+		power="730mf"	
+		bw_in="2.25GBps"
+		bw_out="2.25GBps"
+		lat="500us" />
 </AS>
 </platform>

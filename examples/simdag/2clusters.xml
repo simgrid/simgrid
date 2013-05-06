@@ -2,31 +2,31 @@
  <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">
  <platform version="3">
  <AS  id="AS0"  routing="Full">
-   <host id="C2-06" power="5000000000"/>
-   <host id="C1-03" power="1000000000"/>
-   <host id="C2-07" power="5000000000"/>
-   <host id="C2-09" power="5000000000"/>
-   <host id="C1-02" power="1000000000"/>
-   <host id="C2-08" power="5000000000"/>
-   <host id="C1-01" power="1000000000"/>
-   <host id="C1-04" power="1000000000"/>
-   <host id="C1-00" power="1000000000"/>
-   <host id="C2-05" power="5000000000"/>
-   <link id="6" bandwidth="125000000" latency="0.000100"/>
-   <link id="11" bandwidth="125000000" latency="0.000100" sharing_policy="FATPIPE" />
-   <link id="3" bandwidth="125000000" latency="0.000100"/>
-   <link id="7" bandwidth="125000000" latency="0.000100"/>
-   <link id="9" bandwidth="125000000" latency="0.000100"/>
-   <link id="12" bandwidth="1250000000" latency="0.000100"/>
-   <link id="2" bandwidth="125000000" latency="0.000100"/>
-   <link id="14" bandwidth="1250000000" latency="0.050000"/>
-   <link id="8" bandwidth="125000000" latency="0.000100"/>
-   <link id="1" bandwidth="125000000" latency="0.000100"/>
-   <link id="4" bandwidth="125000000" latency="0.000100"/>
-   <link id="0" bandwidth="125000000" latency="0.000100"/>
-   <link id="13" bandwidth="1250000000" latency="0.000100"/>
-   <link id="10" bandwidth="125000000" latency="0.000100" sharing_policy="FATPIPE" />
-   <link id="5" bandwidth="125000000" latency="0.000100"/>
+   <host id="C2-06" power="5gf"/>
+   <host id="C1-03" power="1gf"/>
+   <host id="C2-07" power="5gf"/>
+   <host id="C2-09" power="5gf"/>
+   <host id="C1-02" power="1gf"/>
+   <host id="C2-08" power="5gf"/>
+   <host id="C1-01" power="1gf"/>
+   <host id="C1-04" power="1gf"/>
+   <host id="C1-00" power="1gf"/>
+   <host id="C2-05" power="5gf"/>
+   <link id="6" bandwidth="125MBps" latency="100us"/>
+   <link id="11" bandwidth="125MBps" latency="100us" sharing_policy="FATPIPE" />
+   <link id="3" bandwidth="125MBps" latency="100us"/>
+   <link id="7" bandwidth="125MBps" latency="100us"/>
+   <link id="9" bandwidth="125MBps" latency="100us"/>
+   <link id="12" bandwidth="1.25GBps" latency="100us"/>
+   <link id="2" bandwidth="125MBps" latency="100us"/>
+   <link id="14" bandwidth="1.25GBps" latency="50ms"/>
+   <link id="8" bandwidth="125MBps" latency="100us"/>
+   <link id="1" bandwidth="125MBps" latency="100us"/>
+   <link id="4" bandwidth="125MBps" latency="100us"/>
+   <link id="0" bandwidth="125MBps" latency="100us"/>
+   <link id="13" bandwidth="1.25GBps" latency="100us"/>
+   <link id="10" bandwidth="125MBps" latency="100us" sharing_policy="FATPIPE" />
+   <link id="5" bandwidth="125MBps" latency="100us"/>
    <route src="C2-06" dst="C1-03"><link_ctn id="6"/><link_ctn id="11"/><link_ctn id="13"/><link_ctn id="14"/><link_ctn id="12"/><link_ctn id="10"/><link_ctn id="3"/>  </route>
    <route src="C2-06" dst="C2-07"><link_ctn id="6"/><link_ctn id="11"/><link_ctn id="7"/>  </route>
    <route src="C2-06" dst="C2-09"><link_ctn id="6"/><link_ctn id="11"/><link_ctn id="9"/>  </route>

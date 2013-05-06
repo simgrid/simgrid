@@ -5,14 +5,14 @@
  <AS  id="AS0"  routing="Full">
    	
      <cluster id="bob_cluster" prefix="bob" suffix=".hamburger.edu"
- 	    radical="0-4" power="1000000000" bw="125000000" lat="5E-5"
- 	    bb_bw="2250000000" bb_lat="5E-4"/>
+ 	    radical="0-4" power="1gf" bw="125MBps" lat="50us"
+ 	    bb_bw="2.25GBps" bb_lat="500us"/>
    
      <cluster id="alice_cluster" prefix="alice" suffix=".crepe.fr"
- 	    radical="0-4" power="1000000000" bw="125000000" lat="5E-5"
- 	    bb_bw="2250000000" bb_lat="5E-4"/>  
+ 	    radical="0-4" power="1gf" bw="125MBps" lat="50us"
+ 	    bb_bw="2.25GBps" bb_lat="500us"/>  
        
-     <link id="backbone" bandwidth="1250000000" latency="5E-4"/>  
+     <link id="backbone" bandwidth="1.25GBps" latency="500us"/>  
  	
      <ASroute src="bob_cluster" dst="alice_cluster" 
 	 gw_src="bobbob_cluster_router.hamburger.edu" 

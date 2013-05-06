@@ -3,23 +3,23 @@
  <platform version="3">
  <AS  id="AS0"  routing="Floyd">
    <!-- For using with chainsend, very simple 8-node platform -->
-   <host id="host0" power="98095000"/>
-   <host id="host1" power="76296000"/>
-   <host id="host2" power="96296000"/>
-   <host id="host3" power="97296000"/>
-   <host id="host4" power="97296000"/>
-   <host id="host5" power="97296000"/>
-   <host id="host6" power="97296000"/>
-   <host id="host7" power="97296000"/>
-   <host id="host8" power="97296000"/>
-   <link id="link1" bandwidth="1000000000" latency="0.00001"/>
-   <link id="link2" bandwidth="1000000000" latency="0.00002"/>
-   <link id="link3" bandwidth="1000000000" latency="0.00002"/>
-   <link id="link4" bandwidth="1000000000" latency="0.000015"/>
-   <link id="link5" bandwidth="1000000000" latency="0.00004"/>
-   <link id="link6" bandwidth="1000000000" latency="0.00001"/>
-   <link id="link7" bandwidth="1000000000" latency="0.000015"/>
-   <link id="link8" bandwidth="1000000000" latency="0.00003"/>
+   <host id="host0" power="98.095mf"/>
+   <host id="host1" power="76.296mf"/>
+   <host id="host2" power="96.296mf"/>
+   <host id="host3" power="97.296mf"/>
+   <host id="host4" power="97.296mf"/>
+   <host id="host5" power="97.296mf"/>
+   <host id="host6" power="97.296mf"/>
+   <host id="host7" power="97.296mf"/>
+   <host id="host8" power="97.296mf"/>
+   <link id="link1" bandwidth="1GBps" latency="10us"/>
+   <link id="link2" bandwidth="1GBps" latency="20us"/>
+   <link id="link3" bandwidth="1GBps" latency="20us"/>
+   <link id="link4" bandwidth="1GBps" latency="15us"/>
+   <link id="link5" bandwidth="1GBps" latency="40us"/>
+   <link id="link6" bandwidth="1GBps" latency="10us"/>
+   <link id="link7" bandwidth="1GBps" latency="15us"/>
+   <link id="link8" bandwidth="1GBps" latency="30us"/>
    <route src="host0" dst="host1">
      <link_ctn id="link1"/>
    </route>

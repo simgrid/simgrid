@@ -3,18 +3,18 @@
 <platform version="3">
 <AS  id="AS0"  routing="Full">
   <cluster id="my_cluster_1" prefix="" suffix=""
-  		radical="1"	power="1000000000"    bw="125000000"     lat="5E-5"/>
+  		radical="1"	power="1gf"    bw="125MBps"     lat="50us"/>
 		
   <cluster id="my_cluster_2" prefix="" suffix=""
- 	    radical="2" power="1000000000"	bw="125000000"	lat="5E-5"/>  
+ 	    radical="2" power="1gf"	bw="125MBps"	lat="50us"/>  
  	    
   <cluster id="my_cluster_3" prefix="" suffix=""
-        radical="3" power="1000000000"    bw="125000000"  lat="5E-5"/>  
+        radical="3" power="1gf"    bw="125MBps"  lat="50us"/>  
        
-     <link id="link1" bandwidth="1250000000" latency="5E-4"/>  
- 	 <link id="link2" bandwidth="1250000000" latency="5E-4"/>
- 	 <link id="link3" bandwidth="1250000000" latency="5E-4"/>
- 	 <link id="link_tmp"  bandwidth="1250000000" latency="5E-4"/>
+     <link id="link1" bandwidth="1.25GBps" latency="500us"/>  
+ 	 <link id="link2" bandwidth="1.25GBps" latency="500us"/>
+ 	 <link id="link3" bandwidth="1.25GBps" latency="500us"/>
+ 	 <link id="link_tmp"  bandwidth="1.25GBps" latency="500us"/>
  	
      <ASroute src="my_cluster_1" dst="my_cluster_2" 
 	 gw_src="my_cluster_1_router" 

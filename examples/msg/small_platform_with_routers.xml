@@ -2,31 +2,31 @@
  <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">
  <platform version="3">
  <AS  id="AS0"  routing="Full">
-   <host id="Tremblay" power="98095000"/>
-   <host id="Jupiter" power="76296000"/>
-   <host id="Fafard" power="76296000"/>
-   <host id="Ginette" power="48492000"/>
-   <host id="Bourassa" power="48492000"/>
+   <host id="Tremblay" power="98.095mf"/>
+   <host id="Jupiter" power="76.296mf"/>
+   <host id="Fafard" power="76.296mf"/>
+   <host id="Ginette" power="48.492mf"/>
+   <host id="Bourassa" power="48.492mf"/>
    <router id="R.4-3"/>
    <router id="R.3-2-5"/>
    <router id="R.2-0"/>
    <router id="R.1-0"/>
    <router id="R.1-8-6"/>
    <router id="R.6-7"/>
-   <link id="6"  bandwidth="41279125" latency="5.9904e-05"/>
-   <link id="11" bandwidth="252750" latency="0.00570455"/>
-   <link id="3"  bandwidth="34285622" latency="0.000514433"/>
-   <link id="7"  bandwidth="11618875" latency="0.00018998"/>
-   <link id="9"  bandwidth="7209750" latency="0.001461517"/>
-   <link id="12" bandwidth="1792625" latency="0.007877863"/>
-   <link id="2"  bandwidth="22222222" latency="0.000136931"/>
-   <link id="8"  bandwidth="8158000" latency="0.000270544"/>
-   <link id="1"  bandwidth="34285625" latency="0.000514433"/>
-   <link id="4"  bandwidth="10099625" latency="0.00047978"/>
-   <link id="0"  bandwidth="41279125" latency="5.9904e-05"/>
-   <link id="10" bandwidth="4679750" latency="0.000848712"/>
-   <link id="5"  bandwidth="27946250" latency="0.000278066"/>
-   <link id="loopback" bandwidth="498000000" latency="0.000015" sharing_policy="FATPIPE"/>
+   <link id="6"  bandwidth="41.279125MBps" latency="59.904us"/>
+   <link id="11" bandwidth="252.75KBps" latency="5.70455ms"/>
+   <link id="3"  bandwidth="34.285622MBps" latency="514.433us"/>
+   <link id="7"  bandwidth="11.618875MBps" latency="189.98us"/>
+   <link id="9"  bandwidth="7.20975MBps" latency="1.461517ms"/>
+   <link id="12" bandwidth="1.792625MBps" latency="7.877863ms"/>
+   <link id="2"  bandwidth="22.222222MBps" latency="136.931us"/>
+   <link id="8"  bandwidth="8.158MBps" latency="270.544us"/>
+   <link id="1"  bandwidth="34.285625MBps" latency="514.433us"/>
+   <link id="4"  bandwidth="10.099625MBps" latency="479.78us"/>
+   <link id="0"  bandwidth="41.279125MBps" latency="59.904us"/>
+   <link id="10" bandwidth="4.67975MBps" latency="848.712us"/>
+   <link id="5"  bandwidth="27.94625MBps" latency="278.066us"/>
+   <link id="loopback" bandwidth="498MBps" latency="15us" sharing_policy="FATPIPE"/>
    <route src="Tremblay" dst="Tremblay"><link_ctn id="loopback"/></route>
    <route src="Jupiter" dst="Jupiter"><link_ctn id="loopback"/></route>
    <route src="Fafard" dst="Fafard"><link_ctn id="loopback"/></route>

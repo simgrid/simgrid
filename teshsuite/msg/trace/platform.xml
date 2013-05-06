@@ -2,6 +2,6 @@
 <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">
 <platform version="3">
   <AS  id="AS0"  routing="Full">
-  <host id="CPU1" power="20" availability_file="trace/file.trace"/>
+  <host id="CPU1" power="20f" availability_file="trace/file.trace"/>
   </AS>
 </platform>

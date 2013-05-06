@@ -6,18 +6,18 @@
  -->
  
  
-   <host id="S1" power="1000000000"/>
-   <host id="C1" power="1000000000"/>
-   <host id="S2" power="1000000000"/>
-   <host id="C2" power="1000000000"/>
+   <host id="S1" power="1gf"/>
+   <host id="C1" power="1gf"/>
+   <host id="S2" power="1gf"/>
+   <host id="C2" power="1gf"/>
    <router id="R1"/>
    <router id="R2"/>
  
-   <link id="1" bandwidth="100000000" latency="0.00001"/>
-   <link id="2" bandwidth="10000000"  latency="0.00001"/>
-   <link id="3" bandwidth="100000000" latency="0.00001"/>
-   <link id="4" bandwidth="100000000" latency="0.00001"/>
-   <link id="5" bandwidth="100000000" latency="0.00001"/>
+   <link id="1" bandwidth="100MBps" latency="10us"/>
+   <link id="2" bandwidth="10MBps"  latency="10us"/>
+   <link id="3" bandwidth="100MBps" latency="10us"/>
+   <link id="4" bandwidth="100MBps" latency="10us"/>
+   <link id="5" bandwidth="100MBps" latency="10us"/>
  
  
    <route src="S1" dst="C1">

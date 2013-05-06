@@ -10,12 +10,12 @@
       
     <!-- 3 cabinets, no zone dist area, 1 horiz dist area, no multi-homing, telecom and operation rooms omitted because not a part of the production platform  -->
     <!-- cabinets -->
-    <cluster id="cabinet1" prefix="cb1-" suffix=".dc1.acloud.com" radical="1-40" power="5.2297E9" bw="1.25E8" lat="1.0E-4" bb_bw="1.25E9" bb_lat="1.0E-4"></cluster>
-    <link   id="link_dc1_cb1" bandwidth="1.25E9" latency="1.0E-4"/>
-    <cluster id="cabinet2" prefix="cb2-" suffix=".dc1.acloud.com" radical="1-50" power="8.8925E9" bw="1.25E8" lat="1.0E-4" bb_bw="1.25E9" bb_lat="1.0E-4"></cluster>
-    <link   id="link_dc1_cb2" bandwidth="1.25E9" latency="1.0E-4"/>
-    <cluster id="cabinet3" prefix="cb3-" suffix=".dc1.acloud.com" radical="1-30" power="13.357E9" bw="1.25E8" lat="1.0E-4" bb_bw="1.25E9" bb_lat="1.0E-4"></cluster>
-    <link   id="link_dc1_cb3" bandwidth="1.25E9" latency="1.0E-4"/>
+    <cluster id="cabinet1" prefix="cb1-" suffix=".dc1.acloud.com" radical="1-40" power="5.2297gf" bw="125MBps" lat="100us" bb_bw="1.25GBps" bb_lat="100us"></cluster>
+    <link   id="link_dc1_cb1" bandwidth="1.25GBps" latency="100us"/>
+    <cluster id="cabinet2" prefix="cb2-" suffix=".dc1.acloud.com" radical="1-50" power="8.8925gf" bw="125MBps" lat="100us" bb_bw="1.25GBps" bb_lat="100us"></cluster>
+    <link   id="link_dc1_cb2" bandwidth="1.25GBps" latency="100us"/>
+    <cluster id="cabinet3" prefix="cb3-" suffix=".dc1.acloud.com" radical="1-30" power="13.357gf" bw="125MBps" lat="100us" bb_bw="1.25GBps" bb_lat="100us"></cluster>
+    <link   id="link_dc1_cb3" bandwidth="1.25GBps" latency="100us"/>
  
     <!-- horiz dist area switch, main dist area switch, entrance room switch, end point for ISP  -->
     <AS id="gw_dataCenter1" routing="Floyd">
@@ -28,9 +28,9 @@
         <router id="router_dataCenter1" coordinates="25.5 9.4 1.4" />
                     
         <!-- links -->
-        <link id="dc1_horizdist_maindist"        bandwidth="1.25E9" latency="1.0E-4"/>        
-        <link id="dc1_maindist_entranceroom"        bandwidth="1.25E9" latency="1.0E-4"/>  
-        <link id="dc1_entranceroom_ISP"        bandwidth="1.25E9" latency="1.0E-4"/> 
+        <link id="dc1_horizdist_maindist"        bandwidth="1.25GBps" latency="100us"/>        
+        <link id="dc1_maindist_entranceroom"        bandwidth="1.25GBps" latency="100us"/>  
+        <link id="dc1_entranceroom_ISP"        bandwidth="1.25GBps" latency="100us"/> 
                      
         <!-- links to router relationships -->
         <route src="gw_dc1_horizdist" dst="gw_dc1_maindist"><link_ctn id="dc1_horizdist_maindist"/></route>

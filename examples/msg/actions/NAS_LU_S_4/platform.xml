@@ -6,9 +6,9 @@
   <cluster id="AS_bordereau-0" 
  	   prefix="bordereau-" suffix=".bordeaux.grid5000.fr"
 	   radical="1-10" 
-	   power="1.17E9" 
-	   bw="1.25E8" lat="16.67E-6" 
-	   bb_bw="1.25E9" bb_lat="16.67E-6">
+	   power="1.17gf" 
+	   bw="125MBps" lat="16.67us" 
+	   bb_bw="1.25GBps" bb_lat="16.67us">
   </cluster> 
  </AS>
 </platform>

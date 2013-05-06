@@ -13,7 +13,7 @@
 60  0.5
 </trace>
   <AS  id="AS0"  routing="Full">
- <host id="CPU1" power="20"/>
+ <host id="CPU1" power="20f"/>
   </AS>
 
 <trace_connect kind="POWER" trace="1" element="CPU1"/>
