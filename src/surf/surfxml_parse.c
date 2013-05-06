@@ -62,172 +62,101 @@ int surf_parse_get_int(const char *string) {
 }
 
 double surf_parse_get_time(const char *string) {
-  size_t len = strlen(string);
-  char* tmp = xbt_malloc(sizeof(char) * (len + 1));
-  strcpy(tmp, string);
-  if (!strcmp(tmp + len - 2, "ps")) {
-    tmp[len-2] = 0;
-    return surf_parse_get_double(tmp) * 1E-12;
-  }
-  if (!strcmp(tmp + len - 2, "ns")) {
-    tmp[len-2] = 0;
-    return surf_parse_get_double(tmp) * 1E-9;
-  }
-  if (!strcmp(tmp + len - 2, "us")) {
-    tmp[len-2] = 0;
-    return surf_parse_get_double(tmp) * 1E-6;
-  }
-  if (!strcmp(tmp + len - 2, "ms")) {
-    tmp[len-2] = 0;
-    return surf_parse_get_double(tmp) * 1E-3;
-  }
-  if (!strcmp(tmp + len - 1, "s")) {
-    tmp[len-1] = 0;    
-    return surf_parse_get_double(tmp);
-  }
-  if (!strcmp(tmp + len - 1, "m")) {
-    tmp[len-1] = 0;    
-    return surf_parse_get_double(tmp) * 60;
-  }
-  if (!strcmp(tmp + len - 1, "h")) {
-    tmp[len-1] = 0;    
-    return surf_parse_get_double(tmp) * 3600;
-  }
-  if (!strcmp(tmp + len - 1, "d")) {
-    tmp[len-1] = 0;    
-    return surf_parse_get_double(tmp) * 86400;
-  }
-  if (!strcmp(tmp + len - 1, "w")) {
-    tmp[len-1] = 0;    
-    return surf_parse_get_double(tmp) * 604800;
-  }
-  return surf_parse_get_double(tmp);
+  char* ptr;
+  double res = strtod(string, &ptr);
+  if (ptr == string)
+    surf_parse_error("This is not a time: %s", string);
+  else if (strcmp(ptr, "ps") == 0)
+    res *= 1E-12;
+  else if (strcmp(ptr, "ns") == 0)
+    res *= 1E-9;
+  else if (strcmp(ptr, "us") == 0)
+    res *= 1E-6;
+  else if (strcmp(ptr, "ms") == 0)
+    res *= 1E-3;
+  else if (strcmp(ptr, "s") == 0)
+    res *= 1;
+  else if (strcmp(ptr, "m") == 0)
+    res *= 60;
+  else if (strcmp(ptr, "h") == 0)
+    res *= 3600;
+  else if (strcmp(ptr, "d") == 0)
+    res *= 86400;
+  else if (strcmp(ptr, "w") == 0)
+    res *= 604800;
+  return res;
 }
 
 double surf_parse_get_bandwidth(const char *string) {
-  size_t len = strlen(string);
-  char* tmp = xbt_malloc(sizeof(char) * (len + 1));
-  strcpy(tmp, string);
-  if (!strcmp(tmp + len - 4, "KBps")) {
-    tmp[len-4] = 0;
-    return surf_parse_get_double(tmp) * 1E3;
-  }
-  if (!strcmp(tmp + len - 4, "MBps")) {
-    tmp[len-4] = 0;
-    return surf_parse_get_double(tmp) * 1E6;
-  }
-  if (!strcmp(tmp + len - 4, "GBps")) {
-    tmp[len-4] = 0;
-    return surf_parse_get_double(tmp) * 1E9;
-  }
-  if (!strcmp(tmp + len - 4, "TBps")) {
-    tmp[len-4] = 0;
-    return surf_parse_get_double(tmp) * 1E12;
-  }
-  if (!strcmp(tmp + len - 3, "Bps")) {
-    tmp[len-3] = 0;
-    return surf_parse_get_double(tmp);
-  }
-  if (!strcmp(tmp + len - 4, "kbps")) {
-    tmp[len-4] = 0;
-    return surf_parse_get_double(tmp) * 0.125 * 1E3;
-  }
-  if (!strcmp(tmp + len - 4, "mbps")) {
-    tmp[len-4] = 0;
-    return surf_parse_get_double(tmp) * 0.125 * 1E6;
-  }
-  if (!strcmp(tmp + len - 4, "gbps")) {
-    tmp[len-4] = 0;
-    return surf_parse_get_double(tmp) * 0.125 * 1E9;
-  }
-  if (!strcmp(tmp + len - 4, "tbps")) {
-    tmp[len-4] = 0;
-    return surf_parse_get_double(tmp) * 0.125 * 1E12;
-  }
-  if (!strcmp(tmp + len - 3, "bps")) {
-    tmp[len-3] = 0;
-    return surf_parse_get_double(tmp) * 0.125;
-  }
-  return surf_parse_get_double(tmp);
+  char* ptr;
+  double res = strtod(string, &ptr);
+  if (ptr == string)
+    surf_parse_error("This is not a bandwidth: %s", string);
+  else if (strcmp(ptr, "KBps") == 0)
+    res *= 1E3;
+  else if (strcmp(ptr, "MBps") == 0) 
+    res *= 1E6;
+  else if (strcmp(ptr, "GBps") == 0)
+    res *= 1E9;
+  else if (strcmp(ptr, "TBps") == 0)
+    res *= 1E12;
+  else if (strcmp(ptr, "Bps") == 0)
+    res *= 1;
+  else if (strcmp(ptr, "kbps") == 0)
+    res *= 0.125 * 1E3;
+  else if (strcmp(ptr, "mbps") == 0)
+    res *= 0.125 * 1E6;
+  else if (strcmp(ptr, "gbps") == 0)
+    res *= 0.125 * 1E9;
+  else if (strcmp(ptr, "tbps") == 0)
+    res *= 0.125 * 1E12;
+  else if (strcmp(ptr, "bps") == 0)
+    res *= 0.125;
+  return res;
 }
 
 double surf_parse_get_power(const char *string) {
-  size_t len = strlen(string);
-  char* tmp = xbt_malloc(sizeof(char) * (len + 1));
-  strcpy(tmp, string);
-  if (!strcmp(tmp + len - 9, "kiloflops")) {
-    tmp[len-9] = 0;
-    return surf_parse_get_double(tmp) * 1E3;
-  }
-  if (!strcmp(tmp + len - 9, "megaflops")) {
-    tmp[len-9] = 0;
-    return surf_parse_get_double(tmp) * 1E6;
-  }
-  if (!strcmp(tmp + len - 9, "gigaflops")) {
-    tmp[len-9] = 0;
-    return surf_parse_get_double(tmp) * 1E9;
-  }
-  if (!strcmp(tmp + len - 9, "teraflops")) {
-    tmp[len-9] = 0;
-    return surf_parse_get_double(tmp) * 1E12;
-  }
-  if (!strcmp(tmp + len - 9, "petaflops")) {
-    tmp[len-9] = 0;
-    return surf_parse_get_double(tmp) * 1E15;
-  }
-  if (!strcmp(tmp + len - 9, "exaflops")) {
-    tmp[len-9] = 0;
-    return surf_parse_get_double(tmp) * 1E18;
-  }
-  if (!strcmp(tmp + len - 9, "zettaflops")) {
-    tmp[len-9] = 0;
-    return surf_parse_get_double(tmp) * 1E21;
-  }
-  if (!strcmp(tmp + len - 9, "yottaflops")) {
-    tmp[len-9] = 0;
-    return surf_parse_get_double(tmp) * 1E24;
-  }
-  if (!strcmp(tmp + len - 5, "flops")) {
-    tmp[len-5] = 0;
-    return surf_parse_get_double(tmp);
-  }
-  if (!strcmp(tmp + len - 2, "kf")) {
-    tmp[len-2] = 0;
-    return surf_parse_get_double(tmp) * 1E3;
-  }
-  if (!strcmp(tmp + len - 2, "mf")) {
-    tmp[len-2] = 0;
-    return surf_parse_get_double(tmp) * 1E6;
-  }
-  if (!strcmp(tmp + len - 2, "gf")) {
-    tmp[len-2] = 0;
-    return surf_parse_get_double(tmp) * 1E9;
-  }
-  if (!strcmp(tmp + len - 2, "tf")) {
-    tmp[len-2] = 0;
-    return surf_parse_get_double(tmp) * 1E12;
-  }
-  if (!strcmp(tmp + len - 2, "pf")) {
-    tmp[len-2] = 0;
-    return surf_parse_get_double(tmp) * 1E15;
-  }
-  if (!strcmp(tmp + len - 2, "ef")) {
-    tmp[len-2] = 0;
-    return surf_parse_get_double(tmp) * 1E18;
-  }
-  if (!strcmp(tmp + len - 2, "zf")) {
-    tmp[len-2] = 0;
-    return surf_parse_get_double(tmp) * 1E21;
-  }
-  if (!strcmp(tmp + len - 2, "yf")) {
-    tmp[len-2] = 0;
-    return surf_parse_get_double(tmp) * 1E24;
-  }
-  if (!strcmp(tmp + len - 1, "f")) {
-    tmp[len-1] = 0;
-    return surf_parse_get_double(tmp);
-  }
-  return surf_parse_get_double(tmp);
+  char* ptr;
+  double res = strtod(string, &ptr);
+  if (ptr == string)
+    surf_parse_error("This is not a power: %s", string);
+  else if (strcmp(ptr, "kiloflops") == 0)
+    res *= 1E3;
+  else if (strcmp(ptr, "megaflops") == 0)
+    res *= 1E6;
+  else if (strcmp(ptr, "gigaflops") == 0)
+    res *= 1E9;
+  else if (strcmp(ptr, "teraflops") == 0)
+    res *= 1E12;
+  else if (strcmp(ptr, "petaflops") == 0)
+    res *= 1E15;
+  else if (strcmp(ptr, "exaflops") == 0)
+    res *= 1E18;
+  else if (strcmp(ptr, "zettaflops") == 0)
+    res *= 1E21;
+  else if (strcmp(ptr, "yottaflops") == 0)
+    res *= 1E24;
+  else if (strcmp(ptr, "flops") == 0)
+    res *= 1;
+  else if (strcmp(ptr, "kf") == 0)
+    res *= 1E3;
+  else if (strcmp(ptr, "mf") == 0)
+    res *= 1E6;
+  else if (strcmp(ptr, "gf") == 0)
+    res *= 1E9;
+  else if (strcmp(ptr, "tf") == 0)
+    res *= 1E12;
+  else if (strcmp(ptr, "pf") == 0)
+    res *= 1E15;
+  else if (strcmp(ptr, "ef") == 0)
+    res *= 1E18;
+  else if (strcmp(ptr, "zf") == 0)
+    res *= 1E21;
+  else if (strcmp(ptr, "yf") == 0)
+    res *= 1E24;
+  else if (strcmp(ptr, "f") == 0)
+    res *= 1;
+  return res;
 }
 
 /*
