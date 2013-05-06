@@ -463,7 +463,7 @@ static xbt_strbuff_t get_local_variables_values(void *stack_context, void *heap)
     to_append = bprintf("frame_name=%s\n", frame_name);
     xbt_strbuff_append(variables, to_append);
     xbt_free(to_append);
-    to_append = bprintf("ip=%lx\n", ip);
+    to_append = bprintf("ip=%lx\n", (unsigned long)ip);
     xbt_strbuff_append(variables, to_append);
     xbt_free(to_append);
     

@@ -264,7 +264,7 @@ static void smx_ctx_cojava_create_coroutine(smx_ctx_cojava_t context) {
      FILE *conf= fopen("/proc/sys/vm/max_map_count","r");
      if (conf) {
 	int limit=-1;
-        if(!fscanf(conf,"%d",&limit))
+        if(fscanf(conf,"%d",&limit) != 1)
            xbt_die("Error while creating a new coroutine. Parse error.");
 	fclose(conf);
 	if (limit!=-1 && SIMIX_process_count() > (limit - 100) /2)
