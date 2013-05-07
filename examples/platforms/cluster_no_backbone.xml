@@ -16,6 +16,6 @@
 <platform version="3">
 <AS  id="AS0"  routing="Full">
   <cluster id="my_cluster_1" prefix="" suffix=""
-  		radical="0-262144"	power="1gf"    bw="125MBps"     lat="50us"/>
+  		radical="0-262144"	power="1Gf"    bw="125MBps"     lat="50us"/>
 </AS>
 </platform>

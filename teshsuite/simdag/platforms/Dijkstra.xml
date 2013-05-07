@@ -4,8 +4,8 @@
 
  <AS  id="AS0"  routing="Dijkstra">
 
-   <host id="NODO01" power="10mf"/>
-   <host id="NODO02" power="10mf"/>
+   <host id="NODO01" power="10Mf"/>
+   <host id="NODO02" power="10Mf"/>
    
    <router id="ROUTER" />
    

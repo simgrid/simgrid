@@ -36,17 +36,17 @@
 		</AS>
 		<AS id="AS_bordeaux" routing="RuleBased" >
 			<cluster id="AS_bordeplage" prefix="bordeplage-" suffix=".bordeaux.grid5000.fr"
-				radical="1-51" power="5.2297gf" bw="125MBps" lat="100us"
+				radical="1-51" power="5.2297Gf" bw="125MBps" lat="100us"
 				bb_bw="1.25GBps" bb_lat="100us"></cluster>
 			<link   id="link_bordeplage" bandwidth="1.25GBps" latency="100us"/>
 
 			<cluster id="AS_bordereau" prefix="bordereau-" suffix=".bordeaux.grid5000.fr"
-				radical="1-93" power="8.8925gf" bw="125MBps" lat="100us"
+				radical="1-93" power="8.8925Gf" bw="125MBps" lat="100us"
 				bb_bw="1.25GBps" bb_lat="100us"></cluster>
 			<link   id="link_bordereau" bandwidth="1.25GBps" latency="100us"/>
 
 			<cluster id="AS_borderline" prefix="borderline-" suffix=".bordeaux.grid5000.fr"
-				radical="1-10" power="13.357gf" bw="125MBps" lat="100us"
+				radical="1-10" power="13.357Gf" bw="125MBps" lat="100us"
 				bb_bw="1.25GBps" bb_lat="100us"></cluster>
 			<link   id="link_borderline" bandwidth="1.25GBps" latency="100us"/>
 
@@ -80,17 +80,17 @@
 		</AS>
 		<AS id="AS_grenoble" routing="RuleBased" >
 			<cluster id="AS_adonis" prefix="adonis-" suffix=".grenoble.grid5000.fr"
-				radical="1-12" power="23.681gf" bw="125MBps" lat="100us"
+				radical="1-12" power="23.681Gf" bw="125MBps" lat="100us"
 				bb_bw="1.25GBps" bb_lat="100us"></cluster>
 			<link   id="link_adonis" bandwidth="1.25GBps" latency="100us"/>
 
 			<cluster id="AS_edel" prefix="edel-" suffix=".grenoble.grid5000.fr"
-				radical="1-72" power="23.492gf" bw="125MBps" lat="100us"
+				radical="1-72" power="23.492Gf" bw="125MBps" lat="100us"
 				bb_bw="1.25GBps" bb_lat="100us"></cluster>
 			<link   id="link_edel" bandwidth="1.25GBps" latency="100us"/>
 
 			<cluster id="AS_genepi" prefix="genepi-" suffix=".grenoble.grid5000.fr"
-				radical="1-34" power="21.175gf" bw="125MBps" lat="100us"
+				radical="1-34" power="21.175Gf" bw="125MBps" lat="100us"
 				bb_bw="1.25GBps" bb_lat="100us"></cluster>
 			<link   id="link_genepi" bandwidth="1.25GBps" latency="100us"/>
 
@@ -124,22 +124,22 @@
 		</AS>
 		<AS id="AS_lille" routing="RuleBased" >
 			<cluster id="AS_chicon" prefix="chicon-" suffix=".lille.grid5000.fr"
-				radical="1-26" power="8.9618gf" bw="125MBps" lat="100us"
+				radical="1-26" power="8.9618Gf" bw="125MBps" lat="100us"
 				bb_bw="1.25GBps" bb_lat="100us"></cluster>
 			<link   id="link_chicon" bandwidth="1.25GBps" latency="100us"/>
 
 			<cluster id="AS_chimint" prefix="chimint-" suffix=".lille.grid5000.fr"
-				radical="1-20" power="23.531gf" bw="125MBps" lat="100us"
+				radical="1-20" power="23.531Gf" bw="125MBps" lat="100us"
 				bb_bw="1.25GBps" bb_lat="100us"></cluster>
 			<link   id="link_chimint" bandwidth="1.25GBps" latency="100us"/>
 
 			<cluster id="AS_chinqchint" prefix="chinqchint-" suffix=".lille.grid5000.fr"
-				radical="1-46" power="22.27gf" bw="125MBps" lat="100us"
+				radical="1-46" power="22.27Gf" bw="125MBps" lat="100us"
 				bb_bw="1.25GBps" bb_lat="100us"></cluster>
 			<link   id="link_chinqchint" bandwidth="1.25GBps" latency="100us"/>
 
 			<cluster id="AS_chirloute" prefix="chirloute-" suffix=".lille.grid5000.fr"
-				radical="1-8" power="24.473gf" bw="125MBps" lat="100us"
+				radical="1-8" power="24.473Gf" bw="125MBps" lat="100us"
 				bb_bw="1.25GBps" bb_lat="100us"></cluster>
 			<link   id="link_chirloute" bandwidth="1.25GBps" latency="100us"/>
 
@@ -173,12 +173,12 @@
 		</AS>
 		<AS id="AS_lyon" routing="RuleBased" >
 			<cluster id="AS_capricorne" prefix="capricorne-" suffix=".lyon.grid5000.fr"
-				radical="1-56" power="4.7233gf" bw="125MBps" lat="100us"
+				radical="1-56" power="4.7233Gf" bw="125MBps" lat="100us"
 				bb_bw="1.25GBps" bb_lat="100us"></cluster>
 			<link   id="link_capricorne" bandwidth="1.25GBps" latency="100us"/>
 
 			<cluster id="AS_sagittaire" prefix="sagittaire-" suffix=".lyon.grid5000.fr"
-				radical="1-79" power="5.6693gf" bw="125MBps" lat="100us"
+				radical="1-79" power="5.6693Gf" bw="125MBps" lat="100us"
 				bb_bw="1.25GBps" bb_lat="100us"></cluster>
 			<link   id="link_sagittaire" bandwidth="1.25GBps" latency="100us"/>
 
@@ -213,16 +213,16 @@
 		<AS id="AS_nancy" routing="RuleBased" >
 			<AS id="AS_graphene" routing="RuleBased" >
 				<cluster id="AS_sgraphene1" prefix="graphene-" suffix=".nancy.grid5000.fr"
-					radical="1-39" power="16.673gf" bw="125MBps" lat="100us"
+					radical="1-39" power="16.673Gf" bw="125MBps" lat="100us"
 					bb_bw="1.25GBps" bb_lat="100us"></cluster>
 				<cluster id="AS_sgraphene2" prefix="graphene-" suffix=".nancy.grid5000.fr"
-					radical="40-74" power="16.673gf" bw="125MBps" lat="100us"
+					radical="40-74" power="16.673Gf" bw="125MBps" lat="100us"
 					bb_bw="1.25GBps" bb_lat="100us"></cluster>
 				<cluster id="AS_sgraphene3" prefix="graphene-" suffix=".nancy.grid5000.fr"
-					radical="75-104" power="16.673gf" bw="125MBps" lat="100us"
+					radical="75-104" power="16.673Gf" bw="125MBps" lat="100us"
 					bb_bw="1.25GBps" bb_lat="100us"></cluster>
 				<cluster id="AS_sgraphene4" prefix="graphene-" suffix=".nancy.grid5000.fr"
-					radical="105-144" power="16.673gf" bw="125MBps" lat="100us"
+					radical="105-144" power="16.673Gf" bw="125MBps" lat="100us"
 					bb_bw="1.25GBps" bb_lat="100us"></cluster>
 
 				<AS id="gw_AS_graphene" routing="Full">
@@ -250,13 +250,13 @@
 
 			<AS id="AS_griffon" routing="RuleBased" >
 				<cluster id="AS_sgriffon1" prefix="griffon-" suffix=".nancy.grid5000.fr"
-					radical="1-29,58-60" power="20.678gf" bw="125MBps" lat="100us"
+					radical="1-29,58-60" power="20.678Gf" bw="125MBps" lat="100us"
 					bb_bw="1.25GBps" bb_lat="100us"></cluster>
 				<cluster id="AS_sgriffon2" prefix="griffon-" suffix=".nancy.grid5000.fr"
-					radical="30-57" power="20.678gf" bw="125MBps" lat="100us"
+					radical="30-57" power="20.678Gf" bw="125MBps" lat="100us"
 					bb_bw="1.25GBps" bb_lat="100us"></cluster>
 				<cluster id="AS_sgriffon3" prefix="griffon-" suffix=".nancy.grid5000.fr"
-					radical="61-92" power="20.678gf" bw="125MBps" lat="100us"
+					radical="61-92" power="20.678Gf" bw="125MBps" lat="100us"
 					bb_bw="1.25GBps" bb_lat="100us"></cluster>
 
 				<AS id="gw_AS_griffon" routing="Full">
@@ -313,37 +313,37 @@
 		<AS id="AS_orsay" routing="RuleBased" >
 			<AS id="AS_gdx" routing="RuleBased" >
 				<cluster id="AS_netgear01.orsay.grid5000.fr" prefix="gdx-" suffix=".orsay.grid5000.fr"
-					radical="1-36" power="4.7153gf" bw="125MBps" lat="100us"
+					radical="1-36" power="4.7153Gf" bw="125MBps" lat="100us"
 					bb_bw="1.25GBps" bb_lat="100us"></cluster>
 				<cluster id="AS_netgear02.orsay.grid5000.fr" prefix="gdx-" suffix=".orsay.grid5000.fr"
-					radical="37-72" power="4.7153gf" bw="125MBps" lat="100us"
+					radical="37-72" power="4.7153Gf" bw="125MBps" lat="100us"
 					bb_bw="1.25GBps" bb_lat="100us"></cluster>
 				<cluster id="AS_netgear03.orsay.grid5000.fr" prefix="gdx-" suffix=".orsay.grid5000.fr"
-					radical="73-108" power="4.7153gf" bw="125MBps" lat="100us"
+					radical="73-108" power="4.7153Gf" bw="125MBps" lat="100us"
 					bb_bw="1.25GBps" bb_lat="100us"></cluster>
 				<cluster id="AS_netgear04.orsay.grid5000.fr" prefix="gdx-" suffix=".orsay.grid5000.fr"
-					radical="109-144" power="4.7153gf" bw="125MBps" lat="100us"
+					radical="109-144" power="4.7153Gf" bw="125MBps" lat="100us"
 					bb_bw="1.25GBps" bb_lat="100us"></cluster>
 				<cluster id="AS_netgear05.orsay.grid5000.fr" prefix="gdx-" suffix=".orsay.grid5000.fr"
-					radical="145-180" power="4.7153gf" bw="125MBps" lat="100us"
+					radical="145-180" power="4.7153Gf" bw="125MBps" lat="100us"
 					bb_bw="1.25GBps" bb_lat="100us"></cluster>
 				<cluster id="AS_netgear06.orsay.grid5000.fr" prefix="gdx-" suffix=".orsay.grid5000.fr"
-					radical="193-216" power="4.7153gf" bw="125MBps" lat="100us"
+					radical="193-216" power="4.7153Gf" bw="125MBps" lat="100us"
 					bb_bw="1.25GBps" bb_lat="100us"></cluster>
 				<cluster id="AS_netgear07.orsay.grid5000.fr" prefix="gdx-" suffix=".orsay.grid5000.fr"
-					radical="217-252" power="4.7153gf" bw="125MBps" lat="100us"
+					radical="217-252" power="4.7153Gf" bw="125MBps" lat="100us"
 					bb_bw="1.25GBps" bb_lat="100us"></cluster>
 				<cluster id="AS_netgear08.orsay.grid5000.fr" prefix="gdx-" suffix=".orsay.grid5000.fr"
-					radical="253-288" power="4.7153gf" bw="125MBps" lat="100us"
+					radical="253-288" power="4.7153Gf" bw="125MBps" lat="100us"
 					bb_bw="1.25GBps" bb_lat="100us"></cluster>
 				<cluster id="AS_procurve-bmc-09.orsay.grid5000.fr" prefix="gdx-" suffix=".orsay.grid5000.fr"
-					radical="289-310" power="4.7153gf" bw="125MBps" lat="100us"
+					radical="289-310" power="4.7153Gf" bw="125MBps" lat="100us"
 					bb_bw="1.25GBps" bb_lat="100us"></cluster>
 				<cluster id="AS_switch14.orsay.grid5000.fr" prefix="gdx-" suffix=".orsay.grid5000.fr"
-					radical="181-186" power="4.7153gf" bw="125MBps" lat="100us"
+					radical="181-186" power="4.7153Gf" bw="125MBps" lat="100us"
 					bb_bw="1.25GBps" bb_lat="100us"></cluster>
 				<cluster id="AS_switch15.orsay.grid5000.fr" prefix="gdx-" suffix=".orsay.grid5000.fr"
-					radical="187-192" power="4.7153gf" bw="125MBps" lat="100us"
+					radical="187-192" power="4.7153Gf" bw="125MBps" lat="100us"
 					bb_bw="1.25GBps" bb_lat="100us"></cluster>
 
 				<AS id="gw_AS_gdx" routing="Full">
@@ -370,7 +370,7 @@
 			<link   id="link_gdx" bandwidth="1.25GBps" latency="100us"/>
 
 			<cluster id="AS_netgdx" prefix="netgdx-" suffix=".orsay.grid5000.fr"
-				radical="1-30" power="4.7144gf" bw="125MBps" lat="100us"
+				radical="1-30" power="4.7144Gf" bw="125MBps" lat="100us"
 				bb_bw="1.25GBps" bb_lat="100us"></cluster>
 			<link   id="link_netgdx" bandwidth="1.25GBps" latency="100us"/>
 
@@ -404,22 +404,22 @@
 		</AS>
 		<AS id="AS_rennes" routing="RuleBased" >
 			<cluster id="AS_paradent" prefix="paradent-" suffix=".rennes.grid5000.fr"
-				radical="1-64" power="21.496gf" bw="125MBps" lat="100us"
+				radical="1-64" power="21.496Gf" bw="125MBps" lat="100us"
 				bb_bw="1.25GBps" bb_lat="100us"></cluster>
 			<link   id="link_paradent" bandwidth="1.25GBps" latency="100us"/>
 
 			<cluster id="AS_paramount" prefix="paramount-" suffix=".rennes.grid5000.fr"
-				radical="1-33" power="12.91gf" bw="125MBps" lat="100us"
+				radical="1-33" power="12.91Gf" bw="125MBps" lat="100us"
 				bb_bw="1.25GBps" bb_lat="100us"></cluster>
 			<link   id="link_paramount" bandwidth="1.25GBps" latency="100us"/>
 
 			<cluster id="AS_parapide" prefix="parapide-" suffix=".rennes.grid5000.fr"
-				radical="1-25" power="30.13gf" bw="125MBps" lat="100us"
+				radical="1-25" power="30.13Gf" bw="125MBps" lat="100us"
 				bb_bw="1.25GBps" bb_lat="100us"></cluster>
 			<link   id="link_parapide" bandwidth="1.25GBps" latency="100us"/>
 
 			<cluster id="AS_parapluie" prefix="parapluie-" suffix=".rennes.grid5000.fr"
-				radical="1-40" power="27.391gf" bw="125MBps" lat="100us"
+				radical="1-40" power="27.391Gf" bw="125MBps" lat="100us"
 				bb_bw="1.25GBps" bb_lat="100us"></cluster>
 			<link   id="link_parapluie" bandwidth="1.25GBps" latency="100us"/>
 
@@ -453,17 +453,17 @@
 		</AS>
 		<AS id="AS_sophia" routing="RuleBased" >
 			<cluster id="AS_helios" prefix="helios-" suffix=".sophia.grid5000.fr"
-				radical="1-56" power="7.7318gf" bw="125MBps" lat="100us"
+				radical="1-56" power="7.7318Gf" bw="125MBps" lat="100us"
 				bb_bw="1.25GBps" bb_lat="100us"></cluster>
 			<link   id="link_helios" bandwidth="1.25GBps" latency="100us"/>
 
 			<cluster id="AS_sol" prefix="sol-" suffix=".sophia.grid5000.fr"
-				radical="1-50" power="8.9388gf" bw="125MBps" lat="100us"
+				radical="1-50" power="8.9388Gf" bw="125MBps" lat="100us"
 				bb_bw="1.25GBps" bb_lat="100us"></cluster>
 			<link   id="link_sol" bandwidth="1.25GBps" latency="100us"/>
 
 			<cluster id="AS_suno" prefix="suno-" suffix=".sophia.grid5000.fr"
-				radical="1-45" power="23.53gf" bw="125MBps" lat="100us"
+				radical="1-45" power="23.53Gf" bw="125MBps" lat="100us"
 				bb_bw="1.25GBps" bb_lat="100us"></cluster>
 			<link   id="link_suno" bandwidth="1.25GBps" latency="100us"/>
 
@@ -497,12 +497,12 @@
 		</AS>
 		<AS id="AS_toulouse" routing="RuleBased" >
 			<cluster id="AS_pastel" prefix="pastel-" suffix=".toulouse.grid5000.fr"
-				radical="1-80" power="9.5674gf" bw="125MBps" lat="100us"
+				radical="1-80" power="9.5674Gf" bw="125MBps" lat="100us"
 				bb_bw="1.25GBps" bb_lat="100us"></cluster>
 			<link   id="link_pastel" bandwidth="1.25GBps" latency="100us"/>
 
 			<cluster id="AS_violette" prefix="violette-" suffix=".toulouse.grid5000.fr"
-				radical="1-52" power="5.1143gf" bw="125MBps" lat="100us"
+				radical="1-52" power="5.1143Gf" bw="125MBps" lat="100us"
 				bb_bw="1.25GBps" bb_lat="100us"></cluster>
 			<link   id="link_violette" bandwidth="1.25GBps" latency="100us"/>
 

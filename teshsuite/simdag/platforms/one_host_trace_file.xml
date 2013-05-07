@@ -2,7 +2,7 @@
 <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">
 <platform version="3">
 <AS  id="AS0"  routing="Full">
-  <host id="bob" power="1gf"/>  
+  <host id="bob" power="1Gf"/>  
 </AS>
   <trace id="myTrace" file="bob.trace" periodicity="1.0"/>
   <trace_connect trace="myTrace" element="bob" kind="POWER"/>

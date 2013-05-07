@@ -6,10 +6,10 @@
  -->
  
  
-   <host id="S1" power="1gf"/>
-   <host id="C1" power="1gf"/>
-   <host id="S2" power="1gf"/>
-   <host id="C2" power="1gf"/>
+   <host id="S1" power="1Gf"/>
+   <host id="C1" power="1Gf"/>
+   <host id="S2" power="1Gf"/>
+   <host id="C2" power="1Gf"/>
    <router id="R1"/>
    <router id="R2"/>
  

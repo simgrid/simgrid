@@ -4,37 +4,37 @@
 <AS id="AS_orsay" routing="RuleBased">
 
 	<cluster id="AS_gdx-switch15" prefix="gdx-" suffix=".orsay.grid5000.fr"
-	radical="181-186" power="3.388gf" bw="125MBps" lat="17.8us"
+	radical="181-186" power="3.388Gf" bw="125MBps" lat="17.8us"
 	bb_bw="125MBps" bb_lat="17.8us"/>
 	<cluster id="AS_gdx-switch18" prefix="gdx-" suffix=".orsay.grid5000.fr"
-	radical="145-162" power="3.388gf" bw="125MBps" lat="17.8us"
+	radical="145-162" power="3.388Gf" bw="125MBps" lat="17.8us"
 	bb_bw="125MBps" bb_lat="17.8us"/>
 	<cluster id="AS_gdx-switch17" prefix="gdx-" suffix=".orsay.grid5000.fr"
-	radical="163-180" power="3.388gf" bw="125MBps" lat="17.8us"
+	radical="163-180" power="3.388Gf" bw="125MBps" lat="17.8us"
 	bb_bw="125MBps" bb_lat="17.8us"/>	
 	<cluster id="AS_gdx-switch05" prefix="gdx-" suffix=".orsay.grid5000.fr"
-	radical="91-108" power="3.388gf" bw="125MBps" lat="17.8us"
+	radical="91-108" power="3.388Gf" bw="125MBps" lat="17.8us"
 	bb_bw="125MBps" bb_lat="17.8us"/>
 	<cluster id="AS_gdx-switch03" prefix="gdx-" suffix=".orsay.grid5000.fr"
-	radical="109-126" power="3.388gf" bw="125MBps" lat="17.8us"
+	radical="109-126" power="3.388Gf" bw="125MBps" lat="17.8us"
 	bb_bw="125MBps" bb_lat="17.8us"/>
 	<cluster id="AS_gdx-switch02" prefix="gdx-" suffix=".orsay.grid5000.fr"
-	radical="127-144" power="3.388gf" bw="125MBps" lat="17.8us"
+	radical="127-144" power="3.388Gf" bw="125MBps" lat="17.8us"
 	bb_bw="125MBps" bb_lat="17.8us"/>
 	<cluster id="AS_gdx-switch08" prefix="gdx-" suffix=".orsay.grid5000.fr"
-	radical="55-72" power="3.388gf" bw="125MBps" lat="17.8us"
+	radical="55-72" power="3.388Gf" bw="125MBps" lat="17.8us"
 	bb_bw="125MBps" bb_lat="17.8us"/>
 	<cluster id="AS_gdx-switch06" prefix="gdx-" suffix=".orsay.grid5000.fr"
-	radical="73-90" power="3.388gf" bw="125MBps" lat="17.8us"
+	radical="73-90" power="3.388Gf" bw="125MBps" lat="17.8us"
 	bb_bw="125MBps" bb_lat="17.8us"/>
 	<cluster id="AS_gdx-switch09" prefix="gdx-" suffix=".orsay.grid5000.fr"
-	radical="37-54" power="3.388gf" bw="125MBps" lat="17.8us"
+	radical="37-54" power="3.388Gf" bw="125MBps" lat="17.8us"
 	bb_bw="125MBps" bb_lat="17.8us"/>
 	<cluster id="AS_gdx-switch12" prefix="gdx-" suffix=".orsay.grid5000.fr"
-	radical="19-36" power="3.388gf" bw="125MBps" lat="17.8us"
+	radical="19-36" power="3.388Gf" bw="125MBps" lat="17.8us"
 	bb_bw="125MBps" bb_lat="17.8us"/>
 	<cluster id="AS_gdx-switch11" prefix="gdx-" suffix=".orsay.grid5000.fr"
-	radical="1-18" power="3.388gf" bw="125MBps" lat="17.8us"
+	radical="1-18" power="3.388Gf" bw="125MBps" lat="17.8us"
 	bb_bw="125MBps" bb_lat="17.8us"/>
 
   	<AS id="AS_network" routing="Floyd" >

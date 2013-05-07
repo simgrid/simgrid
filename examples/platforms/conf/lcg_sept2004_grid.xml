@@ -2,74 +2,74 @@
 <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">
 <platform version="3">
 <AS  id="AS0"  routing="Floyd">
-	<host id="0" power="1.47tf"/>
-	<host id="1" power="1.82gf"/>
+	<host id="0" power="1.47Tf"/>
+	<host id="1" power="1.82Gf"/>
 	<host id="2" power="1f"/>
-	<host id="4" power="593.46gf"/>
-	<host id="5" power="560mf"/>
-	<host id="6" power="560mf"/>
-	<host id="7" power="560mf"/>
-	<host id="8" power="96mf"/>
-	<host id="9" power="7.68gf"/>
-	<host id="10" power="910mf"/>
-	<host id="12" power="250mf"/>
-	<host id="13" power="448mf"/>
-	<host id="15" power="12.5mf"/>
-	<host id="16" power="12.5mf"/>
-	<host id="18" power="78mf"/>
-	<host id="20" power="560mf"/>
-	<host id="23" power="60mf"/>
-	<host id="24" power="154.524gf"/>
-	<host id="25" power="60mf"/>
-	<host id="26" power="60mf"/>
-	<host id="27" power="60mf"/>
-	<host id="28" power="60mf"/>
-	<host id="29" power="60mf"/>
-	<host id="30" power="60mf"/>
+	<host id="4" power="593.46Gf"/>
+	<host id="5" power="560Mf"/>
+	<host id="6" power="560Mf"/>
+	<host id="7" power="560Mf"/>
+	<host id="8" power="96Mf"/>
+	<host id="9" power="7.68Gf"/>
+	<host id="10" power="910Mf"/>
+	<host id="12" power="250Mf"/>
+	<host id="13" power="448Mf"/>
+	<host id="15" power="12.5Mf"/>
+	<host id="16" power="12.5Mf"/>
+	<host id="18" power="78Mf"/>
+	<host id="20" power="560Mf"/>
+	<host id="23" power="60Mf"/>
+	<host id="24" power="154.524Gf"/>
+	<host id="25" power="60Mf"/>
+	<host id="26" power="60Mf"/>
+	<host id="27" power="60Mf"/>
+	<host id="28" power="60Mf"/>
+	<host id="29" power="60Mf"/>
+	<host id="30" power="60Mf"/>
 	<host id="31" power="1f"/>
-	<host id="32" power="2.1gf"/>
-	<host id="33" power="21gf"/>
-	<host id="35" power="442mf"/>
-	<host id="36" power="6.5gf"/>
-	<host id="38" power="300mf"/>
-	<host id="39" power="1.2gf"/>
-	<host id="42" power="540mf"/>
-	<host id="43" power="390mf"/>
-	<host id="44" power="208mf"/>
-	<host id="45" power="600mf"/>
-	<host id="49" power="44.352gf"/>
-	<host id="50" power="4.564gf"/>
-	<host id="52" power="78.522gf"/>
-	<host id="54" power="9.2gf"/>
-	<host id="56" power="142.476gf"/>
-	<host id="57" power="448mf"/>
-	<host id="59" power="3.78gf"/>
-	<host id="60" power="250mf"/>
-	<host id="61" power="650mf"/>
-	<host id="64" power="9.2gf"/>
-	<host id="65" power="250mf"/>
-	<host id="66" power="250mf"/>
-	<host id="67" power="592mf"/>
-	<host id="68" power="250mf"/>
-	<host id="69" power="250mf"/>
-	<host id="70" power="250mf"/>
-	<host id="71" power="4mf"/>
-	<host id="72" power="250mf"/>
-	<host id="73" power="250mf"/>
+	<host id="32" power="2.1Gf"/>
+	<host id="33" power="21Gf"/>
+	<host id="35" power="442Mf"/>
+	<host id="36" power="6.5Gf"/>
+	<host id="38" power="300Mf"/>
+	<host id="39" power="1.2Gf"/>
+	<host id="42" power="540Mf"/>
+	<host id="43" power="390Mf"/>
+	<host id="44" power="208Mf"/>
+	<host id="45" power="600Mf"/>
+	<host id="49" power="44.352Gf"/>
+	<host id="50" power="4.564Gf"/>
+	<host id="52" power="78.522Gf"/>
+	<host id="54" power="9.2Gf"/>
+	<host id="56" power="142.476Gf"/>
+	<host id="57" power="448Mf"/>
+	<host id="59" power="3.78Gf"/>
+	<host id="60" power="250Mf"/>
+	<host id="61" power="650Mf"/>
+	<host id="64" power="9.2Gf"/>
+	<host id="65" power="250Mf"/>
+	<host id="66" power="250Mf"/>
+	<host id="67" power="592Mf"/>
+	<host id="68" power="250Mf"/>
+	<host id="69" power="250Mf"/>
+	<host id="70" power="250Mf"/>
+	<host id="71" power="4Mf"/>
+	<host id="72" power="250Mf"/>
+	<host id="73" power="250Mf"/>
 	<host id="74" power="1f"/>
-	<host id="75" power="53.6gf"/>
-	<host id="77" power="14.248gf"/>
-	<host id="79" power="24mf"/>
-	<host id="82" power="240mf"/>
-	<host id="83" power="2.56gf"/>
-	<host id="86" power="2.28gf"/>
-	<host id="89" power="20mf"/>
-	<host id="93" power="250mf"/>
-	<host id="95" power="8.636gf"/>
-	<host id="97" power="250mf"/>
-	<host id="98" power="250mf"/>
-	<host id="99" power="28.098gf"/>
-	<host id="100" power="250mf"/>
+	<host id="75" power="53.6Gf"/>
+	<host id="77" power="14.248Gf"/>
+	<host id="79" power="24Mf"/>
+	<host id="82" power="240Mf"/>
+	<host id="83" power="2.56Gf"/>
+	<host id="86" power="2.28Gf"/>
+	<host id="89" power="20Mf"/>
+	<host id="93" power="250Mf"/>
+	<host id="95" power="8.636Gf"/>
+	<host id="97" power="250Mf"/>
+	<host id="98" power="250Mf"/>
+	<host id="99" power="28.098Gf"/>
+	<host id="100" power="250Mf"/>
 
 	<router id="3"/>
 	<router id="11"/>
@@ -105,13 +105,13 @@
 	<router id="94"/>
 	<router id="96"/>
 
-	<link id="link0" bandwidth="1KBps"/>
-	<link id="link1" bandwidth="10KBps"/>
-	<link id="link2" bandwidth="10KBps"/>
+	<link id="link0" bandwidth="1kBps"/>
+	<link id="link1" bandwidth="10kBps"/>
+	<link id="link2" bandwidth="10kBps"/>
 	<link id="link3" bandwidth="155Bps"/>
-	<link id="link4" bandwidth="10KBps"/>
-	<link id="link5" bandwidth="10KBps"/>
-	<link id="link6" bandwidth="10KBps"/>
+	<link id="link4" bandwidth="10kBps"/>
+	<link id="link5" bandwidth="10kBps"/>
+	<link id="link6" bandwidth="10kBps"/>
 	<link id="link7" bandwidth="155Bps"/>
 	<link id="link8" bandwidth="155Bps"/>
 	<link id="link9" bandwidth="155Bps"/>
@@ -120,8 +120,8 @@
 	<link id="link12" bandwidth="155Bps"/>
 	<link id="link13" bandwidth="155Bps"/>
 	<link id="link14" bandwidth="155Bps"/>
-	<link id="link15" bandwidth="10KBps"/>
-	<link id="link16" bandwidth="10KBps"/>
+	<link id="link15" bandwidth="10kBps"/>
+	<link id="link16" bandwidth="10kBps"/>
 	<link id="link17" bandwidth="155Bps"/>
 	<link id="link18" bandwidth="155Bps"/>
 	<link id="link19" bandwidth="155Bps"/>
@@ -130,59 +130,59 @@
 	<link id="link22" bandwidth="622Bps"/>
 	<link id="link23" bandwidth="622Bps"/>
 	<link id="link24" bandwidth="155Bps"/>
-	<link id="link25" bandwidth="10KBps"/>
-	<link id="link26" bandwidth="2.5KBps"/>
+	<link id="link25" bandwidth="10kBps"/>
+	<link id="link26" bandwidth="2.5kBps"/>
 	<link id="link27" bandwidth="155Bps"/>
-	<link id="link28" bandwidth="2.5KBps"/>
-	<link id="link29" bandwidth="1KBps"/>
-	<link id="link30" bandwidth="10KBps"/>
-	<link id="link31" bandwidth="10KBps"/>
+	<link id="link28" bandwidth="2.5kBps"/>
+	<link id="link29" bandwidth="1kBps"/>
+	<link id="link30" bandwidth="10kBps"/>
+	<link id="link31" bandwidth="10kBps"/>
 	<link id="link32" bandwidth="155Bps"/>
-	<link id="link33" bandwidth="1KBps"/>
+	<link id="link33" bandwidth="1kBps"/>
 	<link id="link34" bandwidth="155Bps"/>
 	<link id="link35" bandwidth="155Bps"/>
 	<link id="link36" bandwidth="155Bps"/>
 	<link id="link37" bandwidth="155Bps"/>
 	<link id="link38" bandwidth="155Bps"/>
 	<link id="link39" bandwidth="155Bps"/>
-	<link id="link40" bandwidth="1KBps"/>
-	<link id="link41" bandwidth="1KBps"/>
-	<link id="link42" bandwidth="10KBps"/>
-	<link id="link43" bandwidth="2.5KBps"/>
-	<link id="link44" bandwidth="10KBps"/>
+	<link id="link40" bandwidth="1kBps"/>
+	<link id="link41" bandwidth="1kBps"/>
+	<link id="link42" bandwidth="10kBps"/>
+	<link id="link43" bandwidth="2.5kBps"/>
+	<link id="link44" bandwidth="10kBps"/>
 	<link id="link45" bandwidth="155Bps"/>
 	<link id="link46" bandwidth="155Bps"/>
-	<link id="link47" bandwidth="2.5KBps"/>
+	<link id="link47" bandwidth="2.5kBps"/>
 	<link id="link48" bandwidth="155Bps"/>
 	<link id="link49" bandwidth="155Bps"/>
-	<link id="link50" bandwidth="10KBps"/>
+	<link id="link50" bandwidth="10kBps"/>
 	<link id="link51" bandwidth="155Bps"/>
-	<link id="link52" bandwidth="10KBps"/>
+	<link id="link52" bandwidth="10kBps"/>
 	<link id="link53" bandwidth="155Bps"/>
 	<link id="link54" bandwidth="155Bps"/>
 	<link id="link55" bandwidth="155Bps"/>
 	<link id="link56" bandwidth="155Bps"/>
-	<link id="link57" bandwidth="2.5KBps"/>
-	<link id="link58" bandwidth="1KBps"/>
-	<link id="link59" bandwidth="10KBps"/>
-	<link id="link60" bandwidth="2.5KBps"/>
-	<link id="link61" bandwidth="2.5KBps"/>
+	<link id="link57" bandwidth="2.5kBps"/>
+	<link id="link58" bandwidth="1kBps"/>
+	<link id="link59" bandwidth="10kBps"/>
+	<link id="link60" bandwidth="2.5kBps"/>
+	<link id="link61" bandwidth="2.5kBps"/>
 	<link id="link62" bandwidth="155Bps"/>
-	<link id="link63" bandwidth="10KBps"/>
-	<link id="link64" bandwidth="10KBps"/>
-	<link id="link65" bandwidth="1KBps"/>
+	<link id="link63" bandwidth="10kBps"/>
+	<link id="link64" bandwidth="10kBps"/>
+	<link id="link65" bandwidth="1kBps"/>
 	<link id="link66" bandwidth="155Bps"/>
-	<link id="link67" bandwidth="10KBps"/>
-	<link id="link68" bandwidth="10KBps"/>
-	<link id="link69" bandwidth="1KBps"/>
-	<link id="link70" bandwidth="10KBps"/>
-	<link id="link71" bandwidth="1KBps"/>
-	<link id="link72" bandwidth="10KBps"/>
+	<link id="link67" bandwidth="10kBps"/>
+	<link id="link68" bandwidth="10kBps"/>
+	<link id="link69" bandwidth="1kBps"/>
+	<link id="link70" bandwidth="10kBps"/>
+	<link id="link71" bandwidth="1kBps"/>
+	<link id="link72" bandwidth="10kBps"/>
 	<link id="link73" bandwidth="622Bps"/>
-	<link id="link74" bandwidth="1KBps"/>
-	<link id="link75" bandwidth="1KBps"/>
-	<link id="link76" bandwidth="1KBps"/>
-	<link id="link77" bandwidth="10KBps"/>
+	<link id="link74" bandwidth="1kBps"/>
+	<link id="link75" bandwidth="1kBps"/>
+	<link id="link76" bandwidth="1kBps"/>
+	<link id="link77" bandwidth="10kBps"/>
 	<link id="link78" bandwidth="155Bps"/>
 	<link id="link79" bandwidth="155Bps"/>
 	<link id="link80" bandwidth="155Bps"/>
@@ -194,38 +194,38 @@
 	<link id="link86" bandwidth="155Bps"/>
 	<link id="link87" bandwidth="155Bps"/>
 	<link id="link88" bandwidth="155Bps"/>
-	<link id="link89" bandwidth="2.5KBps"/>
-	<link id="link90" bandwidth="10KBps"/>
-	<link id="link91" bandwidth="3KBps"/>
-	<link id="link92" bandwidth="3KBps"/>
-	<link id="link93" bandwidth="10KBps"/>
-	<link id="link94" bandwidth="10KBps"/>
+	<link id="link89" bandwidth="2.5kBps"/>
+	<link id="link90" bandwidth="10kBps"/>
+	<link id="link91" bandwidth="3kBps"/>
+	<link id="link92" bandwidth="3kBps"/>
+	<link id="link93" bandwidth="10kBps"/>
+	<link id="link94" bandwidth="10kBps"/>
 	<link id="link95" bandwidth="622Bps"/>
 	<link id="link96" bandwidth="622Bps"/>
-	<link id="link97" bandwidth="1KBps"/>
-	<link id="link98" bandwidth="3KBps"/>
-	<link id="link99" bandwidth="3KBps"/>
-	<link id="link100" bandwidth="10KBps"/>
-	<link id="link101" bandwidth="2.5KBps"/>
+	<link id="link97" bandwidth="1kBps"/>
+	<link id="link98" bandwidth="3kBps"/>
+	<link id="link99" bandwidth="3kBps"/>
+	<link id="link100" bandwidth="10kBps"/>
+	<link id="link101" bandwidth="2.5kBps"/>
 	<link id="link102" bandwidth="155Bps"/>
-	<link id="link103" bandwidth="10KBps"/>
-	<link id="link104" bandwidth="10KBps"/>
+	<link id="link103" bandwidth="10kBps"/>
+	<link id="link104" bandwidth="10kBps"/>
 	<link id="link105" bandwidth="155Bps"/>
 	<link id="link106" bandwidth="155Bps"/>
-	<link id="link107" bandwidth="10KBps"/>
-	<link id="link108" bandwidth="10KBps"/>
-	<link id="link109" bandwidth="10KBps"/>
+	<link id="link107" bandwidth="10kBps"/>
+	<link id="link108" bandwidth="10kBps"/>
+	<link id="link109" bandwidth="10kBps"/>
 	<link id="link110" bandwidth="155Bps"/>
-	<link id="link111" bandwidth="10KBps"/>
-	<link id="link112" bandwidth="10KBps"/>
-	<link id="link113" bandwidth="3KBps"/>
+	<link id="link111" bandwidth="10kBps"/>
+	<link id="link112" bandwidth="10kBps"/>
+	<link id="link113" bandwidth="3kBps"/>
 	<link id="link114" bandwidth="155Bps"/>
-	<link id="link115" bandwidth="3KBps"/>
-	<link id="link116" bandwidth="10KBps"/>
+	<link id="link115" bandwidth="3kBps"/>
+	<link id="link116" bandwidth="10kBps"/>
 	<link id="link117" bandwidth="622Bps"/>
 	<link id="link118" bandwidth="155Bps"/>
 	<link id="link119" bandwidth="33Bps"/>
-	<link id="link120" bandwidth="1KBps"/>
+	<link id="link120" bandwidth="1kBps"/>
 	<link id="link121" bandwidth="622Bps"/>
 	<link id="link122" bandwidth="155Bps"/>
 	<link id="link123" bandwidth="155Bps"/>

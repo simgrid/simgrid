@@ -2,11 +2,11 @@
  <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">
  <platform version="3">
  <AS  id="AS0"  routing="Full">
-   <host id="Tremblay" power="98.095mf"/>
-   <host id="Jupiter" power="76.296mf"/>
-   <host id="Fafard" power="76.296mf"/>
-   <host id="Ginette" power="48.492mf"/>
-   <host id="Bourassa" power="48.492mf"/>
+   <host id="Tremblay" power="98.095Mf"/>
+   <host id="Jupiter" power="76.296Mf"/>
+   <host id="Fafard" power="76.296Mf"/>
+   <host id="Ginette" power="48.492Mf"/>
+   <host id="Bourassa" power="48.492Mf"/>
    <link id="6" bandwidth="41.279125MBps" latency="59.904us"/>
    <link id="3" bandwidth="34.285625MBps" latency="514.433us"/>
    <link id="7" bandwidth="11.618875MBps" latency="189.98us"/>

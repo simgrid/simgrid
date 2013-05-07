@@ -22,12 +22,12 @@
    </AS>
    
    <AS  id="AS4"  routing="Full">
-	   <host id="host1" power="1gf">
+	   <host id="host1" power="1Gf">
 	     <prop id="Hdd" value="180"/>
 	     <prop id="mem" value="4"/>
 	   </host>
 	   
-	   <host id="host2" power="1gf">
+	   <host id="host2" power="1Gf">
 	     <prop id="Hdd" value="120"/>
 	   </host>
 	   

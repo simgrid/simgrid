@@ -3,10 +3,10 @@
  <platform version="3">
  <AS  id="AS0"  routing="Full">
    <!-- ljlkj -->
-   <host id="Tremblay" power="1gf"/>
-   <host id="Jupiter" power="1gf"/>
-   <host id="Fafard" power="1gf"/>
-   <host id="Ginette" power="1gf"/>
+   <host id="Tremblay" power="1Gf"/>
+   <host id="Jupiter" power="1Gf"/>
+   <host id="Fafard" power="1Gf"/>
+   <host id="Ginette" power="1Gf"/>
    <link id="0" bandwidth="100MBps" latency="100us"/>
    <link id="1" bandwidth="100MBps" latency="100us"/>
    <link id="2" bandwidth="100MBps" latency="100us"/>

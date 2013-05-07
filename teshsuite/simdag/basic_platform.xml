@@ -4,8 +4,8 @@
  <AS  id="AS0"  routing="Full">
  
  
-   <host id="cpu0" power="4gf"/>
-   <host id="cpu1" power="4gf"/>
+   <host id="cpu0" power="4Gf"/>
+   <host id="cpu1" power="4Gf"/>
    <link id="link0" bandwidth="125MBps" latency="100us" sharing_policy="SHARED"/>
    <route src="cpu0" dst="cpu0">
      <link_ctn id="link0"/>

@@ -3,11 +3,11 @@
  <platform version="3">
  <AS  id="AS0"  routing="Full">
    <!-- ljlkj -->
-   <host id="Tremblay" power="25mf"/>
-   <host id="Jupiter" power="25mf" state_file="jupiter_state.trace"/>
-   <host id="Fafard" power="25mf" state_file="fafard_state.trace" />
-   <host id="Ginette" power="25mf" state_file="ginette_state.trace"/>
-   <host id="Bourassa" power="25mf"state_file="bourassa_state.trace"/>
+   <host id="Tremblay" power="25Mf"/>
+   <host id="Jupiter" power="25Mf" state_file="jupiter_state.trace"/>
+   <host id="Fafard" power="25Mf" state_file="fafard_state.trace" />
+   <host id="Ginette" power="25Mf" state_file="ginette_state.trace"/>
+   <host id="Bourassa" power="25Mf"state_file="bourassa_state.trace"/>
    <link id="1" bandwidth="1MBps" latency="0"/>
    <link id="2" bandwidth="1MBps" latency="0"/>
    <link id="3" bandwidth="1MBps" latency="0" state_file="link3_state.trace" />

@@ -12,12 +12,12 @@
  -->
 	
  <AS  id="AS0"  routing="Full">
-   <host id="S1" power="1gf"/>
-   <host id="C1" power="1gf"/>
-   <host id="S2" power="1gf"/>
-   <host id="C2" power="1gf"/>
-   <host id="S3" power="1gf"/>
-   <host id="C3" power="1gf"/>
+   <host id="S1" power="1Gf"/>
+   <host id="C1" power="1Gf"/>
+   <host id="S2" power="1Gf"/>
+   <host id="C2" power="1Gf"/>
+   <host id="S3" power="1Gf"/>
+   <host id="C3" power="1Gf"/>
  
    <link id="1" bandwidth="1MBps" latency="10us"/>
    <link id="2" bandwidth="1MBps" latency="10us"/>

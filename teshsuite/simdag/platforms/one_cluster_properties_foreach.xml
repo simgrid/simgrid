@@ -5,7 +5,7 @@
        radical="0,2-4,6"/>
 
   <foreach set_id="myCluster">
-    <host id="$1" power="1gf">
+    <host id="$1" power="1Gf">
       <prop id="cores" value="2"/>
       <prop id="os" value="Linux"/>
     </host>

@@ -46,16 +46,16 @@ for root, dirnames, filenames in os.walk(sys.argv[1]):
       
     power_formats = formats([( "1E0",  "f"),
                              ( "1E3", "kf"),
-                             ( "1E6", "mf"),
-                             ( "1E9", "gf"),
-                             ("1E12", "tf"),
-                             ("1E15", "pt"),
-                             ("1E18", "ef"),
-                             ("1E21", "zf")])
+                             ( "1E6", "Mf"),
+                             ( "1E9", "Gf"),
+                             ("1E12", "Tf"),
+                             ("1E15", "Pt"),
+                             ("1E18", "Ef"),
+                             ("1E21", "Zf")])
     xml = format(xml, power_formats, "power")
     
     bandwidth_formats = formats([( "1E0",  "Bps"),
-                                 ( "1E3", "KBps"),
+                                 ( "1E3", "kBps"),
                                  ( "1E6", "MBps"),                     
                                  ( "1E9", "GBps"),
                                  ("1E12", "TBps")])

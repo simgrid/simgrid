@@ -3,15 +3,15 @@
  <platform version="3">
  <AS  id="AS0"  routing="Floyd">
    <!-- For using with chainsend, very simple 8-node platform -->
-   <host id="host0" power="98.095mf"/>
-   <host id="host1" power="76.296mf"/>
-   <host id="host2" power="96.296mf"/>
-   <host id="host3" power="97.296mf"/>
-   <host id="host4" power="97.296mf"/>
-   <host id="host5" power="97.296mf"/>
-   <host id="host6" power="97.296mf"/>
-   <host id="host7" power="97.296mf"/>
-   <host id="host8" power="97.296mf"/>
+   <host id="host0" power="98.095Mf"/>
+   <host id="host1" power="76.296Mf"/>
+   <host id="host2" power="96.296Mf"/>
+   <host id="host3" power="97.296Mf"/>
+   <host id="host4" power="97.296Mf"/>
+   <host id="host5" power="97.296Mf"/>
+   <host id="host6" power="97.296Mf"/>
+   <host id="host7" power="97.296Mf"/>
+   <host id="host8" power="97.296Mf"/>
    <link id="link1" bandwidth="1GBps" latency="10us"/>
    <link id="link2" bandwidth="1GBps" latency="20us"/>
    <link id="link3" bandwidth="1GBps" latency="20us"/>

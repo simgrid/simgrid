@@ -3,7 +3,7 @@
 <platform version="3">
 	<AS  id="AS_Big"  routing="Dijkstra">
 	  <AS id="AS_1" routing="Full">    
-	     <host id="AS_1_host1" power="1gf"/>	
+	     <host id="AS_1_host1" power="1Gf"/>	
 	     <link id="AS_1_link" bandwidth="1.25GBps" latency="500us"/>  
 	     <router id="AS_1_gateway"/>
 	     <route src="AS_1_host1" dst="AS_1_gateway">
@@ -11,9 +11,9 @@
 	     </route>	
 	  </AS>
 	  <AS id="AS_2" routing="Floyd">    
-	     <host id="AS_2_host1" power="1gf"/>	
-	     <host id="AS_2_host2" power="1gf"/>	
-	     <host id="AS_2_host3" power="1gf"/>	
+	     <host id="AS_2_host1" power="1Gf"/>	
+	     <host id="AS_2_host2" power="1Gf"/>	
+	     <host id="AS_2_host3" power="1Gf"/>	
 	    
 	     <link id="AS_2_link1" bandwidth="1.25GBps" latency="500us"/>  
 	     <link id="AS_2_link2" bandwidth="1.25GBps" latency="500us"/>  

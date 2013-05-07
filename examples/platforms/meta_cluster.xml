@@ -6,11 +6,11 @@
 
   <AS  id="my_cluster1"  routing="Cluster">
     <cabinet id="cabinet1" prefix="host-" suffix=".cluster1" 
-      power="1gf" bw="125MBps" lat="100us" radical="1-10"/>
+      power="1Gf" bw="125MBps" lat="100us" radical="1-10"/>
     <cabinet id="cabinet2" prefix="host-" suffix=".cluster1" 
-      power="1gf" bw="125MBps" lat="100us" radical="11-20"/>
+      power="1Gf" bw="125MBps" lat="100us" radical="11-20"/>
     <cabinet id="cabinet3" prefix="host-" suffix=".cluster1" 
-      power="1gf" bw="125MBps" lat="100us" radical="21-30"/>
+      power="1Gf" bw="125MBps" lat="100us" radical="21-30"/>
     
     <router  id="router1"/>
     <backbone id="backbone1" bandwidth="2.25GBps" latency="500us"/>
@@ -18,11 +18,11 @@
   
   <AS  id="my_cluster2"  routing="Cluster">
     <cabinet id="cabinet1" prefix="host-" suffix=".cluster2" 
-      power="1gf" bw="125MBps" lat="100us" radical="1-10"/>
+      power="1Gf" bw="125MBps" lat="100us" radical="1-10"/>
     <cabinet id="cabinet2" prefix="host-" suffix=".cluster2" 
-      power="1gf" bw="125MBps" lat="100us" radical="11-20"/>
+      power="1Gf" bw="125MBps" lat="100us" radical="11-20"/>
     <cabinet id="cabinet3" prefix="host-" suffix=".cluster2" 
-      power="1gf" bw="125MBps" lat="100us" radical="21-30"/>
+      power="1Gf" bw="125MBps" lat="100us" radical="21-30"/>
     
     <router  id="router2"/>
     <backbone id="backbone2" bandwidth="2.25GBps" latency="500us"/>

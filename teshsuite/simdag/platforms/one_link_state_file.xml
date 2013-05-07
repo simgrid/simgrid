@@ -2,7 +2,7 @@
 <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">
 <platform version="3">
 	 <AS  id="AS0"  routing="Full">
-  <host id="bob" power="500mf"/>
+  <host id="bob" power="500Mf"/>
   <link id="link1" bandwidth="80MBps" latency="100us"
         state_file="link1.fail"/>
 		</AS>

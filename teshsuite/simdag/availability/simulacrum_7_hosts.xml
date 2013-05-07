@@ -2,13 +2,13 @@
 <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">
 <platform version="3">
  <AS  id="AS0"  routing="Full">
-  <host id="Host 26" power="3.300140519709234gf" />
-  <host id="Host 27" power="3.867398877553016gf" />
-  <host id="Host 28" power="1.6522665718098645gf" />
-  <host id="Host 29" power="1.0759376792481766gf" />
-  <host id="Host 30" power="2.4818410475340424gf" />
-  <host id="Host 31" power="1.773869555571436gf" />
-  <host id="Host 32" power="1.7843609176927505gf" />
+  <host id="Host 26" power="3.300140519709234Gf" />
+  <host id="Host 27" power="3.867398877553016Gf" />
+  <host id="Host 28" power="1.6522665718098645Gf" />
+  <host id="Host 29" power="1.0759376792481766Gf" />
+  <host id="Host 30" power="2.4818410475340424Gf" />
+  <host id="Host 31" power="1.773869555571436Gf" />
+  <host id="Host 32" power="1.7843609176927505Gf" />
 
   <link id="l152" bandwidth="125MBps"  latency="100us" />
   <link id="l153" bandwidth="125MBps"  latency="100us" />

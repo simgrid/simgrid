@@ -4,11 +4,11 @@
 <platform version="3">
 <AS  id="AS0"  routing="RuleBased">
   <cluster id="my_cluster_1" prefix="c-" suffix=".me"
-        radical="0-1" power="1gf"    bw="125MBps"     lat="50us"
+        radical="0-1" power="1Gf"    bw="125MBps"     lat="50us"
         bb_bw="2.25GBps" bb_lat="500us"/>
         
   <cluster id="my_cluster_2" prefix="c-" suffix=".me"
-        radical="2-3" power="1gf"    bw="125MBps"  lat="50us"
+        radical="2-3" power="1Gf"    bw="125MBps"  lat="50us"
         bb_bw="2.25GBps" bb_lat="500us"/>  
        
      <link id="backbone" bandwidth="1.25GBps" latency="500us"/>  

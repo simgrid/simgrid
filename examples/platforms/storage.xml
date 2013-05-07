@@ -32,19 +32,19 @@
 		<storage id="Disk3" typeId="wdigital"/>
 		<storage id="Disk4" typeId="wdigital"/>
 
-		<host id="bob" power="1gf">
+		<host id="bob" power="1Gf">
 			<mount id="Disk1" name="/home"/>			
 		</host>		
 		
-		<host id="alice" power="1gf">
+		<host id="alice" power="1Gf">
 			<mount id="Disk2" name="/home"/>
 		</host>
 
-		<host id="carl" power="1gf">		
+		<host id="carl" power="1Gf">		
 			<mount id="Disk3" name="/home"/>		
 		</host>
 		
-		<host id="denise" power="1gf">
+		<host id="denise" power="1Gf">
 			<mount id="Disk4" name="/home"/>	
 		</host>
 

@@ -3,10 +3,10 @@
  <platform version="3">
  <AS  id="AS0"  routing="Full">
    <!-- ljlkj -->
-   <host id="Tremblay" power="98.095mf"/>
-   <host id="Ruby" power="98.095mf"/>
-   <host id="Perl" power="98.095mf"/>
-   <host id="Java" power="98.095mf"/>
+   <host id="Tremblay" power="98.095Mf"/>
+   <host id="Ruby" power="98.095Mf"/>
+   <host id="Perl" power="98.095Mf"/>
+   <host id="Java" power="98.095Mf"/>
    <link id="1" bandwidth="498MBps" latency="150us" sharing_policy="FATPIPE"/>
    <link id="2" bandwidth="498MBps" latency="150us" sharing_policy="FATPIPE"/>
    <link id="3" bandwidth="498MBps" latency="150us" sharing_policy="FATPIPE"/>

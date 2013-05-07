@@ -10,11 +10,11 @@
       
     <!-- 3 cabinets, no zone dist area, 1 horiz dist area, no multi-homing, telecom and operation rooms omitted because not a part of the production platform  -->
     <!-- cabinets -->
-    <cluster id="cabinet1" prefix="cb1-" suffix=".dc1.acloud.com" radical="1-40" power="5.2297gf" bw="125MBps" lat="100us" bb_bw="1.25GBps" bb_lat="100us"></cluster>
+    <cluster id="cabinet1" prefix="cb1-" suffix=".dc1.acloud.com" radical="1-40" power="5.2297Gf" bw="125MBps" lat="100us" bb_bw="1.25GBps" bb_lat="100us"></cluster>
     <link   id="link_dc1_cb1" bandwidth="1.25GBps" latency="100us"/>
-    <cluster id="cabinet2" prefix="cb2-" suffix=".dc1.acloud.com" radical="1-50" power="8.8925gf" bw="125MBps" lat="100us" bb_bw="1.25GBps" bb_lat="100us"></cluster>
+    <cluster id="cabinet2" prefix="cb2-" suffix=".dc1.acloud.com" radical="1-50" power="8.8925Gf" bw="125MBps" lat="100us" bb_bw="1.25GBps" bb_lat="100us"></cluster>
     <link   id="link_dc1_cb2" bandwidth="1.25GBps" latency="100us"/>
-    <cluster id="cabinet3" prefix="cb3-" suffix=".dc1.acloud.com" radical="1-30" power="13.357gf" bw="125MBps" lat="100us" bb_bw="1.25GBps" bb_lat="100us"></cluster>
+    <cluster id="cabinet3" prefix="cb3-" suffix=".dc1.acloud.com" radical="1-30" power="13.357Gf" bw="125MBps" lat="100us" bb_bw="1.25GBps" bb_lat="100us"></cluster>
     <link   id="link_dc1_cb3" bandwidth="1.25GBps" latency="100us"/>
  
     <!-- horiz dist area switch, main dist area switch, entrance room switch, end point for ISP  -->

@@ -3,13 +3,13 @@
 <platform version="3">
 <AS  id="AS0"  routing="Full">
   <cluster id="my_cluster_1" prefix="" suffix=""
-  		radical="1"	power="1gf"    bw="125MBps"     lat="50us"/>
+  		radical="1"	power="1Gf"    bw="125MBps"     lat="50us"/>
 		
   <cluster id="my_cluster_2" prefix="" suffix=""
- 	    radical="2" power="1gf"	bw="125MBps"	lat="50us"/>  
+ 	    radical="2" power="1Gf"	bw="125MBps"	lat="50us"/>  
  	    
   <cluster id="my_cluster_3" prefix="" suffix=""
-        radical="3" power="1gf"    bw="125MBps"  lat="50us"/>  
+        radical="3" power="1Gf"    bw="125MBps"  lat="50us"/>  
        
      <link id="link1" bandwidth="1.25GBps" latency="500us"/>  
  	 <link id="link2" bandwidth="1.25GBps" latency="500us"/>
