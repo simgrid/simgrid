@@ -121,7 +121,7 @@ double surf_parse_get_bandwidth(const char *string)
     { "MBps",  1e6 },
     { "kBps",  1e3 },
     { "Bps",   1.0 },
-    { "",      1.0 },           /* default unit is bytes ber second */
+    { "",      1.0 },           /* default unit is bytes per second */
     { "Tibps", 0.125 * pow(1024, 4) },
     { "Gibps", 0.125 * pow(1024, 3) },
     { "Mibps", 0.125 * pow(1024, 2) },
