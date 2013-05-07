@@ -684,7 +684,7 @@ void *xbt_cfg_set_as_string(xbt_cfg_t cfg, const char *key, const char *value) {
 
   case xbt_cfgelm_int:
     i = strtol(value, &ret, 0);
-    if (value == NULL) {
+    if (ret == value) {
       xbt_die("Value of option %s not valid. Should be an integer", key);
     }
 
@@ -693,7 +693,7 @@ void *xbt_cfg_set_as_string(xbt_cfg_t cfg, const char *key, const char *value) {
 
   case xbt_cfgelm_double:
     d = strtod(value, &ret);
-    if (value == NULL) {
+    if (ret == value) {
       xbt_die("Value of option %s not valid. Should be a double", key);
     }
 
@@ -710,7 +710,7 @@ void *xbt_cfg_set_as_string(xbt_cfg_t cfg, const char *key, const char *value) {
 
     *(val++) = '\0';
     i = strtol(val, &ret, 0);
-    if (val == NULL) {
+    if (ret == val) {
       xbt_die("Value of option %s not valid. Should be an peer (machine:port)", key);
     }
 
