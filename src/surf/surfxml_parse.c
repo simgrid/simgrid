@@ -112,12 +112,20 @@ double surf_parse_get_time(const char *string)
 double surf_parse_get_bandwidth(const char *string)
 {
   const struct unit_scale units[] = {
+    { "TiBps", pow(1024, 4) },
+    { "GiBps", pow(1024, 3) },
+    { "MiBps", pow(1024, 2) },
+    { "KiBps", 1024 },
     { "TBps",  1e12 },
     { "GBps",  1e9 },
     { "MBps",  1e6 },
     { "kBps",  1e3 },
     { "Bps",   1.0 },
     { "",      1.0 },           /* default unit is bytes ber second */
+    { "Tibps", 0.125 * pow(1024, 4) },
+    { "Gibps", 0.125 * pow(1024, 3) },
+    { "Mibps", 0.125 * pow(1024, 2) },
+    { "Kibps", 0.125 * 1024 },
     { "Tbps",  0.125 * 1e12 },
     { "Gbps",  0.125 * 1e9 },
     { "Mbps",  0.125 * 1e6 },
