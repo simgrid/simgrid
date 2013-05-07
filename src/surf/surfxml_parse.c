@@ -4,6 +4,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include <errno.h>
+#include <math.h>
 #include <stdarg.h> /* va_arg */
 
 #include "xbt/misc.h"
@@ -61,102 +63,96 @@ int surf_parse_get_int(const char *string) {
   return res;
 }
 
-double surf_parse_get_time(const char *string) {
+struct unit_scale {
+  const char *unit;
+  double scale;
+};
+
+/* Note: field `unit' for the last element of parametre `units' should be
+ * NULL. */
+static double surf_parse_get_value_with_unit(const char *string,
+                                             const struct unit_scale *units)
+{
   char* ptr;
-  double res = strtod(string, &ptr);
+  double res;
+  int i;
+  errno = 0;
+  res = strtod(string, &ptr);
+  if (errno == ERANGE)
+    surf_parse_error("value out of range: %s", string);
   if (ptr == string)
-    surf_parse_error("This is not a time: %s", string);
-  else if (strcmp(ptr, "ps") == 0)
-    res *= 1E-12;
-  else if (strcmp(ptr, "ns") == 0)
-    res *= 1E-9;
-  else if (strcmp(ptr, "us") == 0)
-    res *= 1E-6;
-  else if (strcmp(ptr, "ms") == 0)
-    res *= 1E-3;
-  else if (strcmp(ptr, "s") == 0)
-    res *= 1;
-  else if (strcmp(ptr, "m") == 0)
-    res *= 60;
-  else if (strcmp(ptr, "h") == 0)
-    res *= 3600;
-  else if (strcmp(ptr, "d") == 0)
-    res *= 86400;
-  else if (strcmp(ptr, "w") == 0)
-    res *= 604800;
+    surf_parse_error("cannot parse number: %s", string);
+  for (i = 0; units[i].unit != NULL && strcmp(ptr, units[i].unit) != 0; i++) {
+  }
+  if (units[i].unit != NULL)
+    res *= units[i].scale;
+  else
+    surf_parse_error("unknown unit: %s", ptr);
   return res;
 }
 
-double surf_parse_get_bandwidth(const char *string) {
-  char* ptr;
-  double res = strtod(string, &ptr);
-  if (ptr == string)
-    surf_parse_error("This is not a bandwidth: %s", string);
-  else if (strcmp(ptr, "KBps") == 0)
-    res *= 1E3;
-  else if (strcmp(ptr, "MBps") == 0) 
-    res *= 1E6;
-  else if (strcmp(ptr, "GBps") == 0)
-    res *= 1E9;
-  else if (strcmp(ptr, "TBps") == 0)
-    res *= 1E12;
-  else if (strcmp(ptr, "Bps") == 0)
-    res *= 1;
-  else if (strcmp(ptr, "kbps") == 0)
-    res *= 0.125 * 1E3;
-  else if (strcmp(ptr, "mbps") == 0)
-    res *= 0.125 * 1E6;
-  else if (strcmp(ptr, "gbps") == 0)
-    res *= 0.125 * 1E9;
-  else if (strcmp(ptr, "tbps") == 0)
-    res *= 0.125 * 1E12;
-  else if (strcmp(ptr, "bps") == 0)
-    res *= 0.125;
-  return res;
+double surf_parse_get_time(const char *string)
+{
+  const struct unit_scale units[] = {
+    { "w",  7 * 24 * 60 * 60 },
+    { "d",  24 * 60 * 60 },
+    { "h",  60 * 60 },
+    { "m",  60 },
+    { "s",  1.0 },
+    { "",   1.0 },              /* default unit is seconds */
+    { "ms", 1e-3 },
+    { "us", 1e-6 },
+    { "ns", 1e-9 },
+    { "ps", 1e-12 },
+    { NULL, 0 }
+  };
+  return surf_parse_get_value_with_unit(string, units);
 }
 
-double surf_parse_get_power(const char *string) {
-  char* ptr;
-  double res = strtod(string, &ptr);
-  if (ptr == string)
-    surf_parse_error("This is not a power: %s", string);
-  else if (strcmp(ptr, "kiloflops") == 0)
-    res *= 1E3;
-  else if (strcmp(ptr, "megaflops") == 0)
-    res *= 1E6;
-  else if (strcmp(ptr, "gigaflops") == 0)
-    res *= 1E9;
-  else if (strcmp(ptr, "teraflops") == 0)
-    res *= 1E12;
-  else if (strcmp(ptr, "petaflops") == 0)
-    res *= 1E15;
-  else if (strcmp(ptr, "exaflops") == 0)
-    res *= 1E18;
-  else if (strcmp(ptr, "zettaflops") == 0)
-    res *= 1E21;
-  else if (strcmp(ptr, "yottaflops") == 0)
-    res *= 1E24;
-  else if (strcmp(ptr, "flops") == 0)
-    res *= 1;
-  else if (strcmp(ptr, "kf") == 0)
-    res *= 1E3;
-  else if (strcmp(ptr, "mf") == 0)
-    res *= 1E6;
-  else if (strcmp(ptr, "gf") == 0)
-    res *= 1E9;
-  else if (strcmp(ptr, "tf") == 0)
-    res *= 1E12;
-  else if (strcmp(ptr, "pf") == 0)
-    res *= 1E15;
-  else if (strcmp(ptr, "ef") == 0)
-    res *= 1E18;
-  else if (strcmp(ptr, "zf") == 0)
-    res *= 1E21;
-  else if (strcmp(ptr, "yf") == 0)
-    res *= 1E24;
-  else if (strcmp(ptr, "f") == 0)
-    res *= 1;
-  return res;
+double surf_parse_get_bandwidth(const char *string)
+{
+  const struct unit_scale units[] = {
+    { "TBps",  1e12 },
+    { "GBps",  1e9 },
+    { "MBps",  1e6 },
+    { "KBps",  1e3 },
+    { "Bps",   1.0 },
+    { "",      1.0 },           /* default unit is bytes ber second */
+    { "tbps",  0.125 * 1e12 },
+    { "gbps",  0.125 * 1e9 },
+    { "mbps",  0.125 * 1e6 },
+    { "kbps",  0.125 * 1e3 },
+    { "bps",   0.125 },
+    { NULL,    0 }
+  };
+  return surf_parse_get_value_with_unit(string, units);
+}
+
+double surf_parse_get_power(const char *string)
+{
+  const struct unit_scale units[] = {
+    { "yottaflops", 1e24 },
+    { "yf",         1e24 },
+    { "zettaflops", 1e21 },
+    { "zf",         1e21 },
+    { "exaflops",   1e18 },
+    { "ef",         1e18 },
+    { "petaflops",  1e15 },
+    { "pf",         1e15 },
+    { "teraflops",  1e12 },
+    { "tf",         1e12 },
+    { "gigaflops",  1e9 },
+    { "gf",         1e9 },
+    { "megaflops",  1e6 },
+    { "mf",         1e6 },
+    { "kiloflops",  1e3 },
+    { "kf",         1e3 },
+    { "flops",      1.0 },
+    { "f",          1.0 },
+    { "",           1.0 },      /* default unit is flops */
+    { NULL,         0 }
+  };
+  return surf_parse_get_value_with_unit(string, units);
 }
 
 /*
