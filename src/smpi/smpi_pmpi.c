@@ -1391,8 +1391,8 @@ int PMPI_Wait(MPI_Request * request, MPI_Status * status)
   TRACE_smpi_computing_out(rank);
 
   MPI_Group group = smpi_comm_group((*request)->comm);
-  int src_traced = smpi_group_index(group, (*request)->src);
-  int dst_traced = smpi_group_index(group, (*request)->dst);
+  int src_traced = (*request)->src;
+  int dst_traced = (*request)->dst;
   int is_wait_for_receive = (*request)->recv;
   TRACE_smpi_ptp_in(rank, src_traced, dst_traced, __FUNCTION__);
 #endif
