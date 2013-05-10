@@ -45,7 +45,15 @@ typedef struct {
 } s_xbt_cfgelm_t, *xbt_cfgelm_t;
 
 static const char *xbt_cfgelm_type_name[xbt_cfgelm_type_count] =
-    { "int", "double", "string", "peer", "any" };
+    { "int", "double", "string", "boolean", "peer", "any" };
+
+const struct xbt_boolean_couple xbt_cfgelm_boolean_values[] = {
+  { "yes",    "no"},
+  {  "on",   "off"},
+  {"true", "false"},
+  {   "1",     "0"},
+  {  NULL,    NULL}
+};
 
 /* Internal stuff used in cache to free a variable */
 static void xbt_cfgelm_free(void *data);
@@ -154,6 +162,13 @@ void xbt_cfg_dump(const char *name, const char *indent, xbt_cfg_t cfg)
       }
       break;
 
+    case xbt_cfgelm_boolean:
+      for (i = 0; i < size; i++) {
+        ival = xbt_dynar_get_as(variable->content, i, int);
+        printf("%s    %d\n", indent, ival);
+      }
+      break;
+
     case xbt_cfgelm_peer:
       for (i = 0; i < size; i++) {
         hval = xbt_dynar_get_as(variable->content, i, xbt_peer_t);
@@ -249,6 +264,12 @@ xbt_cfg_register(xbt_cfg_t * cfg,
 
   case xbt_cfgelm_string:
     res->content = xbt_dynar_new(sizeof(char *), xbt_free_ref);
+    if (default_value)
+      xbt_dynar_push(res->content, default_value);
+    break;
+
+  case xbt_cfgelm_boolean:
+    res->content = xbt_dynar_new(sizeof(int), NULL);
     if (default_value)
       xbt_dynar_push(res->content, default_value);
     break;
@@ -389,6 +410,10 @@ void xbt_cfg_help(xbt_cfg_t cfg)
 
       case xbt_cfgelm_string:
         printf("'%s'%s", xbt_dynar_get_as(variable->content, i, char *), sep);
+        break;
+
+      case xbt_cfgelm_boolean:
+        printf("'%d'%s", xbt_dynar_get_as(variable->content, i, int), sep);
         break;
 
       case xbt_cfgelm_peer: {
@@ -535,6 +560,11 @@ void xbt_cfg_set_vargs(xbt_cfg_t cfg, const char *name, va_list pa)
   case xbt_cfgelm_double:
     d = va_arg(pa, double);
     xbt_cfg_set_double(cfg, name, d);
+    break;
+
+  case xbt_cfgelm_boolean:
+    str = va_arg(pa, char *);
+    xbt_cfg_set_boolean(cfg, name, str);
     break;
 
   default:
@@ -700,6 +730,10 @@ void *xbt_cfg_set_as_string(xbt_cfg_t cfg, const char *key, const char *value) {
     xbt_cfg_set_double(cfg, key, d);       /* throws */
     break;
 
+  case xbt_cfgelm_boolean:
+    xbt_cfg_set_boolean(cfg, key, value);  /* throws */
+    break;
+
   case xbt_cfgelm_peer:
     val = xbt_strdup(value);
     str = val;
@@ -779,6 +813,26 @@ void xbt_cfg_setdefault_string(xbt_cfg_t cfg, const char *name,
     variable->isdefault = 1;
   }
   else
+    XBT_DEBUG
+        ("Do not override configuration variable '%s' with value '%s' because it was already set.",
+         name, val);
+}
+
+
+/** @brief Set an boolean value to \a name within \a cfg if it wasn't changed yet
+ *
+ * This is useful to change the default value of a variable while allowing
+ * users to override it with command line arguments
+ */
+void xbt_cfg_setdefault_boolean(xbt_cfg_t cfg, const char *name, const char *val)
+{
+  xbt_cfgelm_t variable = xbt_cfgelm_get(cfg, name, xbt_cfgelm_boolean);
+
+  if (variable->isdefault){
+    xbt_cfg_set_boolean(cfg, name, val);
+    variable->isdefault = 1;
+  }
+   else
     XBT_DEBUG
         ("Do not override configuration variable '%s' with value '%s' because it was already set.",
          name, val);
@@ -910,6 +964,55 @@ void xbt_cfg_set_string(xbt_cfg_t cfg, const char *name, const char *val)
              name, val, variable->max);
 
     xbt_dynar_push(variable->content, &newval);
+  }
+
+  if (variable->cb_set)
+    variable->cb_set(name, xbt_dynar_length(variable->content) - 1);
+  variable->isdefault = 0;
+}
+
+/** @brief Set or add a boolean value to \a name within \a cfg
+ *
+ * \arg cfg the config set
+ * \arg name the name of the variable
+ * \arg val the value of the variable
+ */
+void xbt_cfg_set_boolean(xbt_cfg_t cfg, const char *name, const char *val)
+{
+  xbt_cfgelm_t variable;
+  int i, bval;
+
+  XBT_VERB("Configuration setting: %s=%s", name, val);
+  variable = xbt_cfgelm_get(cfg, name, xbt_cfgelm_boolean);
+
+  for (i = 0; xbt_cfgelm_boolean_values[i].true_val != NULL; i++) {
+	if (strcmp(val, xbt_cfgelm_boolean_values[i].true_val) == 0){
+	  bval = 1;
+	  break;
+	}
+	if (strcmp(val, xbt_cfgelm_boolean_values[i].false_val) == 0){
+	  bval = 0;
+	  break;
+	}
+  }
+  if (xbt_cfgelm_boolean_values[i].true_val == NULL) {
+    xbt_die("Value of option '%s' not valid. Should be a boolean (yes,no,on,off,true,false,0,1)", val);
+  }
+
+  if (variable->max == 1) {
+    if (variable->cb_rm && !xbt_dynar_is_empty(variable->content))
+      variable->cb_rm(name, 0);
+
+    xbt_dynar_set(variable->content, 0, &bval);
+  } else {
+    if (variable->max
+        && xbt_dynar_length(variable->content) ==
+        (unsigned long) variable->max)
+      THROWF(mismatch_error, 0,
+             "Cannot add value %s to the config element %s since it's already full (size=%d)",
+             val, name, variable->max);
+
+    xbt_dynar_push(variable->content, &bval);
   }
 
   if (variable->cb_set)
@@ -1058,6 +1161,40 @@ void xbt_cfg_rm_string(xbt_cfg_t cfg, const char *name, const char *val)
 
   THROWF(not_found_error, 0,
          "Can't remove the value %s of config element %s: value not found.",
+         val, name);
+}
+
+/** @brief Remove the provided \e val boolean value from a variable
+ *
+ * \arg cfg the config set
+ * \arg name the name of the variable
+ * \arg val the value to be removed
+ */
+void xbt_cfg_rm_boolean(xbt_cfg_t cfg, const char *name, int val)
+{
+
+  xbt_cfgelm_t variable;
+  unsigned int cpt;
+  int seen;
+
+  variable = xbt_cfgelm_get(cfg, name, xbt_cfgelm_boolean);
+
+  if (xbt_dynar_length(variable->content) == variable->min)
+    THROWF(mismatch_error, 0,
+           "Cannot remove value %d from the config element %s since it's already at its minimal size (=%d)",
+           val, name, variable->min);
+
+  xbt_dynar_foreach(variable->content, cpt, seen) {
+    if (seen == val) {
+      if (variable->cb_rm)
+        variable->cb_rm(name, cpt);
+      xbt_dynar_cursor_rm(variable->content, &cpt);
+      return;
+    }
+  }
+
+  THROWF(not_found_error, 0,
+         "Can't remove the value %d of config element %s: value not found.",
          val, name);
 }
 
@@ -1242,6 +1379,31 @@ char *xbt_cfg_get_string(xbt_cfg_t cfg, const char *name)
   return xbt_dynar_get_as(variable->content, 0, char *);
 }
 
+/** @brief Retrieve a boolean value of a variable (get a warning if not uniq)
+ *
+ * \arg cfg the config set
+ * \arg name the name of the variable
+ * \arg val the wanted value
+ *
+ * Returns the first value from the config set under the given name.
+ * If there is more than one value, it will issue a warning. Consider using
+ * xbt_cfg_get_dynar() instead.
+ *
+ * \warning the returned value is the actual content of the config set
+ */
+int xbt_cfg_get_boolean(xbt_cfg_t cfg, const char *name)
+{
+  xbt_cfgelm_t variable = xbt_cfgelm_get(cfg, name, xbt_cfgelm_boolean);
+
+  if (xbt_dynar_length(variable->content) > 1) {
+    XBT_WARN
+        ("You asked for the first value of the config element '%s', but there is %lu values",
+         name, xbt_dynar_length(variable->content));
+  }
+
+  return xbt_dynar_get_as(variable->content, 0, int);
+}
+
 /** @brief Retrieve an peer value of a variable (get a warning if not uniq)
  *
  * \arg cfg the config set
@@ -1329,6 +1491,14 @@ char *xbt_cfg_get_string_at(xbt_cfg_t cfg, const char *name, int pos)
 
   xbt_cfgelm_t variable = xbt_cfgelm_get(cfg, name, xbt_cfgelm_string);
   return xbt_dynar_get_as(variable->content, pos, char *);
+}
+
+/** @brief Retrieve one of the boolean value of a variable */
+int xbt_cfg_get_boolean_at(xbt_cfg_t cfg, const char *name, int pos)
+{
+
+  xbt_cfgelm_t variable = xbt_cfgelm_get(cfg, name, xbt_cfgelm_boolean);
+  return xbt_dynar_get_as(variable->content, pos, int);
 }
 
 /** @brief Retrieve one of the peer value of a variable */

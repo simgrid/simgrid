@@ -413,7 +413,7 @@ int smpi_main(int (*realmain) (int argc, char *argv[]),int argc, char *argv[])
   else
     SIMIX_run();
 
-  if (sg_cfg_get_int("smpi/display_timing"))
+  if (sg_cfg_get_boolean("smpi/display_timing"))
     XBT_INFO("Simulation time: %g seconds.", SIMIX_get_clock());
 
   smpi_global_destroy();

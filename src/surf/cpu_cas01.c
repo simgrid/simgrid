@@ -327,7 +327,7 @@ static void surf_cpu_model_init_internal()
 
   char *optim = xbt_cfg_get_string(_sg_cfg_set, "cpu/optim");
   int select =
-      xbt_cfg_get_int(_sg_cfg_set, "cpu/maxmin_selective_update");
+      xbt_cfg_get_boolean(_sg_cfg_set, "cpu/maxmin_selective_update");
 
   surf_cpu_model = surf_model_init();
 

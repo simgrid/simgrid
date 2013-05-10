@@ -291,9 +291,9 @@ extern int _sg_do_model_check;   /* this variable lives in xbt_main until I find
 static void _sg_cfg_cb_model_check(const char *name, int pos)
 {
 #ifdef HAVE_MC
-  _sg_do_model_check = xbt_cfg_get_int(_sg_cfg_set, name);
+  _sg_do_model_check = xbt_cfg_get_boolean(_sg_cfg_set, name);
 #else
-  if (xbt_cfg_get_int(_sg_cfg_set, name)) {
+  if (xbt_cfg_get_boolean(_sg_cfg_set, name)) {
     xbt_die("You tried to activate the model-checking from the command line, but it was not compiled in. Change your settings in cmake, recompile and try again");
   }
 #endif
@@ -303,7 +303,7 @@ extern int _sg_do_verbose_exit;
 
 static void _sg_cfg_cb_verbose_exit(const char *name, int pos)
 {
-  _sg_do_verbose_exit = xbt_cfg_get_int(_sg_cfg_set, name);
+  _sg_do_verbose_exit = xbt_cfg_get_boolean(_sg_cfg_set, name);
 }
 
 
@@ -348,18 +348,15 @@ static void _sg_cfg_cb_contexts_parallel_mode(const char *name, int pos)
 static void _sg_cfg_cb__surf_network_coordinates(const char *name,
                                                    int pos)
 {
-  char *val = xbt_cfg_get_string(_sg_cfg_set, name);
-  if (!strcmp(val, "yes")) {
+  int val = xbt_cfg_get_boolean(_sg_cfg_set, name);
+  if (val) {
     if (!COORD_HOST_LEVEL) {
       COORD_HOST_LEVEL = xbt_lib_add_level(host_lib,xbt_dynar_free_voidp);
       COORD_ASR_LEVEL  = xbt_lib_add_level(as_router_lib,xbt_dynar_free_voidp);
     }
-  } else if (!strcmp(val, "no")) {
+  } else
     if (COORD_HOST_LEVEL)
       xbt_die("Setting of whether to use coordinate cannot be disabled once set.");
-  } else {
-    xbt_die("Command line setting of whether to use coordinates must be either \"yes\" or \"no\"");
-  }
 }
 
 static void _sg_cfg_cb_surf_nthreads(const char *name, int pos)
@@ -370,7 +367,7 @@ static void _sg_cfg_cb_surf_nthreads(const char *name, int pos)
 static void _sg_cfg_cb__surf_network_crosstraffic(const char *name,
                                                   int pos)
 {
-  sg_network_crosstraffic = xbt_cfg_get_int(_sg_cfg_set, name);
+  sg_network_crosstraffic = xbt_cfg_get_boolean(_sg_cfg_set, name);
 }
 
 #ifdef HAVE_GTNETS
@@ -536,32 +533,34 @@ void sg_config_init(int *argc, char **argv)
                      xbt_cfgelm_string, NULL, 0, 0,
                      _sg_cfg_cb__surf_path, NULL);
 
-    default_value_int = 0;
+    default_value = xbt_strdup("off");
     xbt_cfg_register(&_sg_cfg_set, "cpu/maxmin_selective_update",
-                     "Update the constraint set propagating recursively to others constraints (1 by default when optim is set to lazy)",
-                     xbt_cfgelm_int, &default_value_int, 0, 1,
+                     "Update the constraint set propagating recursively to others constraints (off by default when optim is set to lazy)",
+                     xbt_cfgelm_boolean, &default_value, 0, 1,
                      NULL, NULL);
-    default_value_int = 0;
+    default_value = xbt_strdup("off");
     xbt_cfg_register(&_sg_cfg_set, "network/maxmin_selective_update",
-                     "Update the constraint set propagating recursively to others constraints (1 by default when optim is set to lazy)",
-                     xbt_cfgelm_int, &default_value_int, 0, 1,
+                     "Update the constraint set propagating recursively to others constraints (off by default when optim is set to lazy)",
+                     xbt_cfgelm_boolean, &default_value, 0, 1,
                      NULL, NULL);
 
 #ifdef HAVE_MC
     /* do model-checking */
+    default_value = xbt_strdup("off");
     xbt_cfg_register(&_sg_cfg_set, "model-check",
                      "Verify the system through model-checking instead of simulating it (EXPERIMENTAL)",
-                     xbt_cfgelm_int, NULL, 0, 1,
+                     xbt_cfgelm_boolean, NULL, 0, 1,
                      _sg_cfg_cb_model_check, NULL);
-    xbt_cfg_setdefault_int(_sg_cfg_set, "model-check", 0);
+    xbt_cfg_setdefault_boolean(_sg_cfg_set, "model-check", default_value);
 
     /* do stateful model-checking */
+    default_value = xbt_strdup("off");
     xbt_cfg_register(&_sg_cfg_set, "model-check/checkpoint",
-                     "Specify the amount of steps between checkpoints during stateful model-checking (default: 0 => stateless verification). "
-                     "If value=1, one checkpoint is saved for each step => faster verification, but huge memory consumption; higher values are good compromises between speed and memory consumption.",
-                     xbt_cfgelm_int, NULL, 0, 1,
+                     "Specify the amount of steps between checkpoints during stateful model-checking (default: off => stateless verification). "
+                     "If value=on, one checkpoint is saved for each step => faster verification, but huge memory consumption; higher values are good compromises between speed and memory consumption.",
+                     xbt_cfgelm_boolean, NULL, 0, 1,
                      _mc_cfg_cb_checkpoint, NULL);
-    xbt_cfg_setdefault_int(_sg_cfg_set, "model-check/checkpoint", 0);
+    xbt_cfg_setdefault_boolean(_sg_cfg_set, "model-check/checkpoint", default_value);
     
     /* do liveness model-checking */
     xbt_cfg_register(&_sg_cfg_set, "model-check/property",
@@ -578,11 +577,12 @@ void sg_config_init(int *argc, char **argv)
     xbt_cfg_setdefault_string(_sg_cfg_set, "model-check/reduction", "dpor");
 
     /* Enable/disable timeout for wait requests with model-checking */
+    default_value = xbt_strdup("off");
     xbt_cfg_register(&_sg_cfg_set, "model-check/timeout",
                      "Enable/Disable timeout for wait requests",
-                     xbt_cfgelm_int, NULL, 0, 1,
+                     xbt_cfgelm_boolean, NULL, 0, 1,
                      _mc_cfg_cb_timeout, NULL);
-    xbt_cfg_setdefault_int(_sg_cfg_set, "model-check/timeout", 0);
+    xbt_cfg_setdefault_boolean(_sg_cfg_set, "model-check/timeout", default_value);
 
     /* Set max depth exploration */
     xbt_cfg_register(&_sg_cfg_set, "model-check/max_depth",
@@ -607,10 +607,10 @@ void sg_config_init(int *argc, char **argv)
 #endif
 
     /* do verbose-exit */
-    default_value_int = 1;
+    default_value = xbt_strdup("on");
     xbt_cfg_register(&_sg_cfg_set, "verbose-exit",
                      "Activate the \"do nothing\" mode in Ctrl-C",
-                     xbt_cfgelm_int, &default_value_int, 0, 1,
+                     xbt_cfgelm_boolean, &default_value, 0, 1,
                      _sg_cfg_cb_verbose_exit, NULL);
     
     
@@ -662,16 +662,16 @@ void sg_config_init(int *argc, char **argv)
     default_value = xbt_strdup("no");
     xbt_cfg_register(&_sg_cfg_set, "network/coordinates",
                      "\"yes\" or \"no\", specifying whether we use a coordinate-based routing (as Vivaldi)",
-                     xbt_cfgelm_string, &default_value, 1, 1,
+                     xbt_cfgelm_boolean, &default_value, 1, 1,
                      _sg_cfg_cb__surf_network_coordinates, NULL);
-    xbt_cfg_setdefault_string(_sg_cfg_set, "network/coordinates", default_value);
+    xbt_cfg_setdefault_boolean(_sg_cfg_set, "network/coordinates", default_value);
 
-    default_value_int = 0;
+    default_value = xbt_strdup("no");
     xbt_cfg_register(&_sg_cfg_set, "network/crosstraffic",
                      "Activate the interferences between uploads and downloads for fluid max-min models (LV08, CM02)",
-                     xbt_cfgelm_int, &default_value_int, 0, 1,
+                     xbt_cfgelm_boolean, &default_value, 0, 1,
                      _sg_cfg_cb__surf_network_crosstraffic, NULL);
-    xbt_cfg_setdefault_int(_sg_cfg_set, "network/crosstraffic", default_value_int);
+    xbt_cfg_setdefault_boolean(_sg_cfg_set, "network/crosstraffic", default_value);
 
 #ifdef HAVE_GTNETS
     xbt_cfg_register(&_sg_cfg_set, "gtnets/jitter",
@@ -701,11 +701,12 @@ void sg_config_init(int *argc, char **argv)
                      xbt_cfgelm_double, &default_reference_speed, 1, 1, NULL,
                      NULL);
 
-    int default_display_timing = 0;
+    default_value = xbt_strdup("no");
     xbt_cfg_register(&_sg_cfg_set, "smpi/display_timing",
                      "Boolean indicating whether we should display the timing after simulation.",
-                     xbt_cfgelm_int, &default_display_timing, 1, 1, NULL,
+                     xbt_cfgelm_boolean, &default_value, 1, 1, NULL,
                      NULL);
+    xbt_cfg_setdefault_boolean(_sg_cfg_set, "smpi/display_timing", default_value);
 
     double default_threshold = 1e-6;
     xbt_cfg_register(&_sg_cfg_set, "smpi/cpu_threshold",
@@ -923,6 +924,10 @@ double sg_cfg_get_double(const char* name)
 char* sg_cfg_get_string(const char* name)
 {
 	return xbt_cfg_get_string(_sg_cfg_set,name);
+}
+int sg_cfg_get_boolean(const char* name)
+{
+	return xbt_cfg_get_boolean(_sg_cfg_set,name);
 }
 void sg_cfg_get_peer(const char *name, char **peer, int *port)
 {

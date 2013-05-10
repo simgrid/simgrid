@@ -4,6 +4,7 @@ SimGrid (3.10) NOT RELEASED; urgency=low
  * Our own implementation of getline is renamed xbt_getline, and gets
    used even if the OS provide a getline(). This should reduce the
    configuration complexity by using the same code on all platforms.
+ * new xbt_cfg_elm_boolean type
 
  Java:
  * Reintegrate Java to the main archive as desynchronizing these
@@ -23,6 +24,8 @@ SimGrid (3.10) NOT RELEASED; urgency=low
      version of MPE.
    - Bug Fix: the compute part of the reduce action is now taken into account.
 
+ PLATFORM:
+ * Handle units for values (10ms, 10kiloflops, 10Bps, …)
 -- $date Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
 
 SimGrid (3.9) stable; urgency=low

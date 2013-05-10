@@ -736,7 +736,7 @@ static void set_update_mechanism(void)
 {
   char *optim = xbt_cfg_get_string(_sg_cfg_set, "network/optim");
   int select =
-      xbt_cfg_get_int(_sg_cfg_set, "network/maxmin_selective_update");
+      xbt_cfg_get_boolean(_sg_cfg_set, "network/maxmin_selective_update");
 
   if (!strcmp(optim, "Full")) {
     surf_network_model->model_private->update_mechanism = UM_FULL;
