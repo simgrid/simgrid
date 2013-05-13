@@ -13,8 +13,8 @@ SimGrid (3.10) NOT RELEASED; urgency=low
    cached in the Java world
 
  SMPI:
- * SMPI is not built as a separate library anymore, it's now included in
-   libsimgrid.
+ * SMPI is now included directly in the libsimgrid as the windows
+   linker dont forces us on splitting it anymore.
  * Improvements of the SMPI replay tool:
    - Most of the collective communications are now rooted in the same process as
      in the original application.
@@ -23,6 +23,7 @@ SimGrid (3.10) NOT RELEASED; urgency=low
    - The replay tool now supports traces produce either by TAU or a modified
      version of MPE.
    - Bug Fix: the compute part of the reduce action is now taken into account.
+ * smpirun generates the hostfile if needed (with given hostcount and platform)
 
  PLATFORM:
  * Handle units for values (10ms, 10kiloflops, 10Bps, ...)
