@@ -359,11 +359,6 @@ static void _sg_cfg_cb__surf_network_coordinates(const char *name,
       xbt_die("Setting of whether to use coordinate cannot be disabled once set.");
 }
 
-static void _sg_cfg_cb_surf_nthreads(const char *name, int pos)
-{
-  surf_set_nthreads(xbt_cfg_get_int(_sg_cfg_set, name));
-}
-
 static void _sg_cfg_cb__surf_network_crosstraffic(const char *name,
                                                   int pos)
 {
@@ -651,13 +646,6 @@ void sg_config_init(int *argc, char **argv)
         "Synchronization mode to use when running contexts in parallel (either futex, posix or busy_wait)",
         xbt_cfgelm_string, &default_value, 1, 1,
         _sg_cfg_cb_contexts_parallel_mode, NULL);
-
-    /* number of parallel threads for Surf */
-    default_value_int = surf_get_nthreads();
-    xbt_cfg_register(&_sg_cfg_set, "surf/nthreads",
-                     "Number of parallel threads used to update Surf models",
-                     xbt_cfgelm_int, &default_value_int, 1, 1,
-                     _sg_cfg_cb_surf_nthreads, NULL);
 
     default_value = xbt_strdup("no");
     xbt_cfg_register(&_sg_cfg_set, "network/coordinates",

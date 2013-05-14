@@ -556,20 +556,9 @@ double surf_solve(double max_date)
   }
   surf_min_index = 0;
 
-
-  if (surf_get_nthreads() > 1) {
-    /* parallel version */
-#ifdef CONTEXT_THREADS
-    xbt_parmap_apply(surf_parmap, (void_f_pvoid_t) surf_share_resources, model_list);
-#else
-    xbt_die("Asked to run in parallel, but no thread at hand...");
-#endif
-  }
-  else {
-    /* sequential version */
-    xbt_dynar_foreach(model_list, iter, model) {
-      surf_share_resources(model);
-    }
+  /* sequential version */
+  xbt_dynar_foreach(model_list, iter, model) {
+    surf_share_resources(model);
   }
 
   unsigned i;
@@ -645,17 +634,9 @@ double surf_solve(double max_date)
 
   NOW = NOW + min;
 
-  if (surf_get_nthreads() > 1) {
-    /* parallel version */
-#ifdef CONTEXT_THREADS
-    xbt_parmap_apply(surf_parmap, (void_f_pvoid_t) surf_update_actions_state, model_list);
-#endif
-  }
-  else {
-    /* sequential version */
-    xbt_dynar_foreach(model_list, iter, model) {
-      surf_update_actions_state(model);
-    }
+  /* sequential version */
+  xbt_dynar_foreach(model_list, iter, model) {
+    surf_update_actions_state(model);
   }
 
 #ifdef HAVE_TRACING
@@ -688,43 +669,6 @@ static void surf_update_actions_state(surf_model_t model)
   model->model_private->update_actions_state(NOW, min);
 }
 
-/**
- * \brief Returns the number of parallel threads used to update the models.
- * \return the number of threads (1 means no parallelism)
- */
-int surf_get_nthreads(void) {
-  return surf_nthreads;
-}
-
-/**
- * \brief Sets the number of parallel threads used to update the models.
- *
- * A value of 1 means no parallelism.
- *
- * \param nb_threads the number of threads to use
- */
-void surf_set_nthreads(int nthreads) {
-
-  if (nthreads<=0) {
-     nthreads = xbt_os_get_numcores();
-     XBT_INFO("Auto-setting surf/nthreads to %d",nthreads);
-  }
-
-#ifdef CONTEXT_THREADS
-  xbt_parmap_destroy(surf_parmap);
-  surf_parmap = NULL;
-#endif
-
-  if (nthreads > 1) {
-#ifdef CONTEXT_THREADS
-    surf_parmap = xbt_parmap_new(nthreads, XBT_PARMAP_DEFAULT);
-#else
-    THROWF(arg_error, 0, "Cannot activate parallel threads in Surf: your architecture does not support threads");
-#endif
-  }
-
-  surf_nthreads = nthreads;
-}
 
 /* This function is a pimple that we ought to fix. But it won't be easy.
  *
