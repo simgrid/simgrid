@@ -25,8 +25,9 @@ SimGrid (3.10) NOT RELEASED; urgency=low
    - Bug Fix: the compute part of the reduce action is now taken into account.
 
  PLATFORM:
- * Handle units for values (10ms, 10kiloflops, 10Bps, …)
+ * Handle units for values (10ms, 10kiloflops, 10Bps, ...)
  * Remove rule based routing (no more pcre dependency)
+
 -- $date Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
 
 SimGrid (3.9) stable; urgency=low
