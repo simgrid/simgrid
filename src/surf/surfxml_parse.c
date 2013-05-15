@@ -677,17 +677,8 @@ void ETag_surfxml_ASroute(void){
   ASroute.src = A_surfxml_ASroute_src;
   ASroute.dst = A_surfxml_ASroute_dst;
 
-  if (!strcmp(current_routing->model_desc->name,"RuleBased")) {
-    // DIRTY PERL HACK AHEAD: with the rulebased routing, the {src,dst}_gateway fields
-    // store the provided name instead of the entity directly (model_rulebased_parse_ASroute knows)
-    //
-    // This is because the user will provide something like "^AS_(.*)$" instead of the proper name of a given entity
-    ASroute.gw_src = (sg_routing_edge_t) A_surfxml_ASroute_gw___src;
-    ASroute.gw_dst = (sg_routing_edge_t) A_surfxml_ASroute_gw___dst;
-  } else {
-    ASroute.gw_src = sg_routing_edge_by_name_or_null(A_surfxml_ASroute_gw___src);
-    ASroute.gw_dst = sg_routing_edge_by_name_or_null(A_surfxml_ASroute_gw___dst);
-  }
+  ASroute.gw_src = sg_routing_edge_by_name_or_null(A_surfxml_ASroute_gw___src);
+  ASroute.gw_dst = sg_routing_edge_by_name_or_null(A_surfxml_ASroute_gw___dst);
 
   ASroute.link_list = parsed_link_list;
 
@@ -729,17 +720,8 @@ void ETag_surfxml_bypassASroute(void){
   ASroute.link_list = parsed_link_list;
   ASroute.symmetrical = FALSE;
 
-  if (!strcmp(current_routing->model_desc->name,"RuleBased")) {
-    // DIRTY PERL HACK AHEAD: with the rulebased routing, the {src,dst}_gateway fields
-    // store the provided name instead of the entity directly (model_rulebased_parse_ASroute knows)
-    //
-    // This is because the user will provide something like "^AS_(.*)$" instead of the proper name of a given entity
-    ASroute.gw_src = (sg_routing_edge_t) A_surfxml_bypassASroute_gw___src;
-    ASroute.gw_dst = (sg_routing_edge_t) A_surfxml_bypassASroute_gw___dst;
-  } else {
-    ASroute.gw_src = sg_routing_edge_by_name_or_null(A_surfxml_bypassASroute_gw___src);
-    ASroute.gw_dst = sg_routing_edge_by_name_or_null(A_surfxml_bypassASroute_gw___dst);
-  }
+  ASroute.gw_src = sg_routing_edge_by_name_or_null(A_surfxml_bypassASroute_gw___src);
+  ASroute.gw_dst = sg_routing_edge_by_name_or_null(A_surfxml_bypassASroute_gw___dst);
 
   sg_platf_new_bypassASroute(&ASroute);
   parsed_link_list = NULL;

@@ -75,7 +75,6 @@ set(xml_files
   ${CMAKE_CURRENT_SOURCE_DIR}/three_hosts_non_symmetric_route.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/two_clusters_one_name.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/two_clusters_router_id.xml
-  ${CMAKE_CURRENT_SOURCE_DIR}/Two_clusters_rulebased.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/two_clusters_symmetric.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/two_clusters.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/two_hosts_asymetric_BOGUS2.xml

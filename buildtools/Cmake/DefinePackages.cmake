@@ -288,7 +288,6 @@ set(SURF_SRC
   src/surf/surf_routing_full.c
   src/surf/surf_routing_generic.c
   src/surf/surf_routing_none.c
-  src/surf/surf_routing_rulebased.c
   src/surf/surf_routing_vivaldi.c
   src/surf/surfxml_parse.c
   src/surf/surfxml_parseplatf.c
@@ -703,7 +702,6 @@ set(DOC_SOURCES
 
   doc/HelloWorld/CMakeLists.txt
   doc/HelloWorld/HelloWorld.c
-  doc/HelloWorld/FindPcreWin.cmake
   doc/HelloWorld/README
 
   doc/doxygen/FAQ.doc
@@ -926,8 +924,6 @@ set(CMAKE_SOURCE_FILES
   buildtools/Cmake/Modules/FindLibunwind.cmake
   buildtools/Cmake/Modules/FindLua51Simgrid.cmake
   buildtools/Cmake/Modules/FindNS3.cmake
-  buildtools/Cmake/Modules/FindPCRE.cmake
-  buildtools/Cmake/Modules/FindPcreWin.cmake
   buildtools/Cmake/Modules/FindRngStream.cmake
   buildtools/Cmake/Modules/FindRubySimgrid.cmake
   buildtools/Cmake/Modules/FindSimGrid.cmake
@@ -971,7 +967,6 @@ set(PLATFORMS_EXAMPLES
   examples/platforms/cluster.xml
   examples/platforms/cluster_and_one_host.xml
   examples/platforms/cluster_no_backbone.xml
-  examples/platforms/cluster_routing_rulebased.xml
   examples/platforms/clusters_routing_full.xml
   examples/platforms/conf/gridpp_grid_2004.conf
   examples/platforms/conf/gridpp_grid_2004.xml

@@ -1,7 +1,6 @@
 #!/bin/bash
 
 #sudo port install wget
-#sudo port install pcre
 #sudo port install gcc46
 #sudo port install graphviz-devel
 #sudo port install lua

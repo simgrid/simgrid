@@ -685,7 +685,6 @@ static void xbt_log_connect_categories(void)
   XBT_LOG_CONNECT(surf_route_floyd);
   XBT_LOG_CONNECT(surf_route_full);
   XBT_LOG_CONNECT(surf_route_none);
-  XBT_LOG_CONNECT(surf_route_rulebased);
   XBT_LOG_CONNECT(surf_route_vivaldi);
   XBT_LOG_CONNECT(surf_storage);
   XBT_LOG_CONNECT(surf_trace);

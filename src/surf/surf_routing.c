@@ -75,7 +75,6 @@ typedef enum {
   SURF_MODEL_DIJKSTRA,
   SURF_MODEL_DIJKSTRACACHE,
   SURF_MODEL_NONE,
-  SURF_MODEL_RULEBASED,
   SURF_MODEL_VIVALDI,
   SURF_MODEL_CLUSTER
 } e_routing_types;
@@ -95,8 +94,6 @@ struct s_model_type routing_models[] = {
    model_dijkstracache_create, model_dijkstra_both_end},
   {"none", "No routing (Unless you know what you are doing, avoid using this mode in combination with a non Constant network model).",
    model_none_create,  NULL},
-  {"RuleBased", "Rule-Based routing data (...)",
-   model_rulebased_create, NULL},
   {"Vivaldi", "Vivaldi routing",
    model_vivaldi_create, NULL},
   {"Cluster", "Cluster routing",
@@ -356,7 +353,6 @@ void routing_AS_begin(sg_platf_AS_cbarg_t AS)
     case A_surfxml_AS_routing_Floyd:         model = &routing_models[SURF_MODEL_FLOYD];break;
     case A_surfxml_AS_routing_Full:          model = &routing_models[SURF_MODEL_FULL];break;
     case A_surfxml_AS_routing_None:          model = &routing_models[SURF_MODEL_NONE];break;
-    case A_surfxml_AS_routing_RuleBased:     model = &routing_models[SURF_MODEL_RULEBASED];break;
     case A_surfxml_AS_routing_Vivaldi:       model = &routing_models[SURF_MODEL_VIVALDI];break;
     default: xbt_die("Not a valid model!!!");
     break;
