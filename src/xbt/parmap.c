@@ -24,7 +24,6 @@
 #include "simix/smx_private.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_parmap, xbt, "parmap: parallel map");
-XBT_LOG_NEW_SUBCATEGORY(xbt_parmap_unit, xbt_parmap, "parmap unit testing");
 
 typedef enum {
   XBT_PARMAP_WORK,
