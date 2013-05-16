@@ -204,7 +204,6 @@ s_surf_model_description_t surf_new_model_description[] = {
 static xbt_parmap_t surf_parmap = NULL; /* parallel map on models */
 #endif
 
-static int surf_nthreads = 1;    /* number of threads of the parmap (1 means no parallelism) */
 static double *surf_mins = NULL; /* return value of share_resources for each model */
 static int surf_min_index;       /* current index in surf_mins */
 static double min;               /* duration determined by surf_solve */
