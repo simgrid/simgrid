@@ -58,6 +58,7 @@ if(NOT enable_memcheck)
       ADD_TEST(xbt-mmalloc-64                    ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cd ${CMAKE_BINARY_DIR}/teshsuite ${CMAKE_HOME_DIRECTORY}/teshsuite/xbt/mmalloc_64.tesh)
     ENDIF()
   ENDIF()
+  ADD_TEST(xbt-parmap                           ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cd ${CMAKE_BINARY_DIR}/teshsuite ${CMAKE_HOME_DIRECTORY}/teshsuite/xbt/parmap_test.tesh)
 
   # BEGIN CONTEXTS FACTORY
   ADD_TEST(tesh-msg-get-sender-thread           ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg contexts/factory:thread --setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite --cd ${CMAKE_BINARY_DIR}/teshsuite ${CMAKE_HOME_DIRECTORY}/teshsuite/msg/get_sender.tesh)

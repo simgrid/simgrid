@@ -7,6 +7,7 @@ if(NOT WIN32)
   if(HAVE_MMAP)
     add_executable(mmalloc_test mmalloc_test.c)
   endif()
+  add_executable(parmap_test parmap_test.c)
 endif()
 
 ### Add definitions for compile
@@ -16,6 +17,7 @@ if(NOT WIN32)
   if(HAVE_MMAP)
     target_link_libraries(mmalloc_test simgrid m pthread )
   endif()
+  target_link_libraries(parmap_test simgrid m pthread )
 endif()
 
 set(tesh_files
@@ -25,6 +27,7 @@ set(tesh_files
   ${CMAKE_CURRENT_SOURCE_DIR}/xbt.tesh
   ${CMAKE_CURRENT_SOURCE_DIR}/mmalloc_64.tesh
   ${CMAKE_CURRENT_SOURCE_DIR}/mmalloc_32.tesh
+  ${CMAKE_CURRENT_SOURCE_DIR}/parmap_test.tesh
   PARENT_SCOPE
   )
 set(xml_files
@@ -36,6 +39,7 @@ set(teshsuite_src
   ${CMAKE_CURRENT_SOURCE_DIR}/log_large_test.c
   ${CMAKE_CURRENT_SOURCE_DIR}/parallel_log_crashtest.c
   ${CMAKE_CURRENT_SOURCE_DIR}/mmalloc_test.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/parmap_test.c
   PARENT_SCOPE
   )
 set(bin_files
