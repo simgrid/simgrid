@@ -1,13 +1,11 @@
 #!/bin/bash
 
-if [ -d $WORKSPACE/build ]
-then
-  rm -rf $WORKSPACE/build
-fi
-if [ -d $WORKSPACE/install ]
-then
-  rm -rf $WORKSPACE/install
-fi
+WORKSPACE=$1
+build_mode=$2
+
+rm -rf $WORKSPACE/build
+rm -rf $WORKSPACE/install
+
 mkdir $WORKSPACE/build
 mkdir $WORKSPACE/install
 cd $WORKSPACE/build
