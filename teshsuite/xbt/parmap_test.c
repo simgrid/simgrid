@@ -20,8 +20,9 @@ static void fun_double(void *arg)
   *u = 2 * *u + 1;
 }
 
-static void test_parmap_basic(e_xbt_parmap_mode_t mode)
+static int test_parmap_basic(e_xbt_parmap_mode_t mode)
 {
+  int ret = 0;
   unsigned num_workers;
   for (num_workers = 1 ; num_workers <= 16 ; num_workers *= 2) {
     const unsigned len = 1033;
@@ -45,20 +46,25 @@ static void test_parmap_basic(e_xbt_parmap_mode_t mode)
 
     for (i = 0; i < len; i++) {
       unsigned expected = (1U << num) * (i + 1) - 1;
-      xbt_test_assert(a[i] == expected,
-                      "a[%u]: expected %u, got %u", i, expected, a[i]);
+      if (a[i] != expected) {
+        XBT_CRITICAL("with %u threads, a[%u]: expected %u, got %u",
+                     num_workers, i, expected, a[i]);
+        ret = 1;
+        break;
+      }
     }
 
     xbt_dynar_free(&data);
     xbt_free(a);
     xbt_parmap_destroy(parmap);
   }
+  return ret;
 }
 
 static void fun_get_id(void *arg)
 {
   *(uintptr_t *)arg = (uintptr_t)xbt_os_thread_self();
-  xbt_os_sleep(0.5);
+  xbt_os_sleep(0.05);
 }
 
 static int fun_compare(const void *pa, const void *pb)
@@ -68,8 +74,9 @@ static int fun_compare(const void *pa, const void *pb)
   return a < b ? -1 : a > b ? 1 : 0;
 }
 
-static void test_parmap_extended(e_xbt_parmap_mode_t mode)
+static int test_parmap_extended(e_xbt_parmap_mode_t mode)
 {
+  int ret = 0;
   unsigned num_workers;
 
   for (num_workers = 1 ; num_workers <= 16 ; num_workers *= 2) {
@@ -94,36 +101,40 @@ static void test_parmap_extended(e_xbt_parmap_mode_t mode)
     for (i = 1; i < len; i++)
       if (a[i] != a[i - 1])
         count++;
-    xbt_test_assert(count == num_workers,
-                    "only %u/%u threads did some work", count, num_workers);
+    if (count != num_workers) {
+      XBT_CRITICAL("only %u/%u threads did some work", count, num_workers);
+      ret = 1;
+    }
 
     xbt_dynar_free(&data);
     xbt_free(a);
     xbt_parmap_destroy(parmap);
   }
+  return ret;
 }
 
 int main(int argc, char** argv)
 {
+  int status = 0;
   SIMIX_global_init(&argc, argv);
 
   XBT_INFO("Basic testing posix");
-  test_parmap_basic(XBT_PARMAP_POSIX);
+  status += test_parmap_basic(XBT_PARMAP_POSIX);
   XBT_INFO("Basic testing futex");
 #ifdef HAVE_FUTEX_H
-  test_parmap_basic(XBT_PARMAP_FUTEX);
+  status += test_parmap_basic(XBT_PARMAP_FUTEX);
 #endif
   XBT_INFO("Basic testing busy wait");
-  test_parmap_basic(XBT_PARMAP_BUSY_WAIT);
+  status += test_parmap_basic(XBT_PARMAP_BUSY_WAIT);
 
   XBT_INFO("Extended testing posix");
-  test_parmap_extended(XBT_PARMAP_POSIX);
+  status += test_parmap_extended(XBT_PARMAP_POSIX);
   XBT_INFO("Extended testing futex");
 #ifdef HAVE_FUTEX_H
-  test_parmap_extended(XBT_PARMAP_FUTEX);
+  status += test_parmap_extended(XBT_PARMAP_FUTEX);
 #endif
   XBT_INFO("Extended testing busy wait");
-  test_parmap_extended(XBT_PARMAP_BUSY_WAIT);
+  status += test_parmap_extended(XBT_PARMAP_BUSY_WAIT);
 
-  return 0;
+  return status == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
