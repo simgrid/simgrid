@@ -1,0 +1,114 @@
+<?xml version='1.0'?>
+<!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">
+<platform version="3">
+  <!-- The master process (with some arguments) -->
+
+  <process host="Jacquelin" function="masterslave.Master">
+     <argument value="10"/>       <!-- Number of tasks -->
+     <argument value="50000000"/>  <!-- Computation size of tasks -->
+     <argument value="1000000"/>   <!-- Communication size of tasks -->
+     <argument value="2"/>  <!-- Number of masterslave.Slaves -->
+  </process>
+  <!-- The masterslave.Slave process (with no argument) -->
+  <process host="Jacquelin" function="masterslave.Slave"><argument value="0"/></process>
+  <process host="Boivin" function="masterslave.Slave" start_time="5"><argument value="1"/></process>
+<!--  <process host="Jean_Yves" function="masterslave.Slave"><argument value="2"/></process>
+  <process host="TeX" function="masterslave.Slave"><argument value="3"/></process>
+  <process host="Geoff" function="masterslave.Slave"><argument value="4"/></process>
+  <process host="Disney" function="masterslave.Slave"><argument value="5"/></process>
+  <process host="iRMX" function="masterslave.Slave"><argument value="6"/></process>
+  <process host="McGee" function="masterslave.Slave"><argument value="7"/></process>
+  <process host="Gatien" function="masterslave.Slave"><argument value="8"/></process>
+  <process host="Laroche" function="masterslave.Slave"><argument value="9"/></process>
+  <process host="Tanguay" function="masterslave.Slave"><argument value="10"/></process>
+  <process host="Morin" function="masterslave.Slave"><argument value="11"/></process>
+  <process host="Ethernet" function="masterslave.Slave"><argument value="12"/></process>
+  <process host="Bellemarre" function="masterslave.Slave"><argument value="13"/></process>
+  <process host="Kuenning" function="masterslave.Slave"><argument value="14"/></process>
+  <process host="Gaston" function="masterslave.Slave"><argument value="15"/></process>
+  <process host="Harry" function="masterslave.Slave"><argument value="16"/></process>
+  <process host="Bousquet" function="masterslave.Slave"><argument value="17"/></process>
+  <process host="Paul" function="masterslave.Slave"><argument value="18"/></process>
+  <process host="St_Jean" function="masterslave.Slave"><argument value="19"/></process>
+  <process host="Jill" function="masterslave.Slave"><argument value="20"/></process>
+  <process host="Marcel" function="masterslave.Slave"><argument value="21"/></process>
+  <process host="Wright" function="masterslave.Slave"><argument value="22"/></process>
+  <process host="Jackson" function="masterslave.Slave"><argument value="23"/></process>
+  <process host="Fernand" function="masterslave.Slave"><argument value="24"/></process>
+  <process host="Soucy" function="masterslave.Slave"><argument value="25"/></process>
+  <process host="Ste_Julie" function="masterslave.Slave"><argument value="26"/></process>
+  <process host="Victoria" function="masterslave.Slave"><argument value="27"/></process>
+  <process host="Lessard" function="masterslave.Slave"><argument value="28"/></process>
+  <process host="Florient" function="masterslave.Slave"><argument value="29"/></process>
+  <process host="Marcoux" function="masterslave.Slave"><argument value="30"/></process>
+  <process host="Gavrel" function="masterslave.Slave"><argument value="31"/></process>
+  <process host="Bescherelle" function="masterslave.Slave"><argument value="32"/></process>
+  <process host="Pierre" function="masterslave.Slave"><argument value="33"/></process>
+  <process host="Jamie" function="masterslave.Slave"><argument value="34"/></process>
+  <process host="Rubin" function="masterslave.Slave"><argument value="35"/></process>
+  <process host="Olivier" function="masterslave.Slave"><argument value="36"/></process>
+  <process host="Boucherville" function="masterslave.Slave"><argument value="37"/></process>
+  <process host="Pointe_Claire" function="masterslave.Slave"><argument value="38"/></process>
+  <process host="Kansas" function="masterslave.Slave"><argument value="39"/></process>
+  <process host="King" function="masterslave.Slave"><argument value="40"/></process>
+  <process host="Lapointe" function="masterslave.Slave"><argument value="41"/></process>
+  <process host="Julian" function="masterslave.Slave"><argument value="42"/></process>
+  <process host="Lafontaine" function="masterslave.Slave"><argument value="43"/></process>
+  <process host="Gordon" function="masterslave.Slave"><argument value="44"/></process>
+  <process host="Drouin" function="masterslave.Slave"><argument value="45"/></process>
+  <process host="Robert" function="masterslave.Slave"><argument value="46"/></process>
+  <process host="Jocelyne" function="masterslave.Slave"><argument value="47"/></process>
+  <process host="Stephen" function="masterslave.Slave"><argument value="48"/></process>
+  <process host="Provost" function="masterslave.Slave"><argument value="49"/></process>
+  <process host="Juneau" function="masterslave.Slave"><argument value="50"/></process>
+  <process host="Casavant" function="masterslave.Slave"><argument value="51"/></process>
+  <process host="St_Antoine" function="masterslave.Slave"><argument value="52"/></process>
+  <process host="Louis" function="masterslave.Slave"><argument value="53"/></process>
+  <process host="Julien" function="masterslave.Slave"><argument value="54"/></process>
+  <process host="St_Paul" function="masterslave.Slave"><argument value="55"/></process>
+  <process host="Mathematica" function="masterslave.Slave"><argument value="56"/></process>
+  <process host="LaTeX" function="masterslave.Slave"><argument value="57"/></process>
+  <process host="Sirois" function="masterslave.Slave"><argument value="58"/></process>
+  <process host="Monique" function="masterslave.Slave"><argument value="59"/></process>
+  <process host="Audy" function="masterslave.Slave"><argument value="60"/></process>
+  <process host="Bourassa" function="masterslave.Slave"><argument value="61"/></process>
+  <process host="OHara" function="masterslave.Slave"><argument value="62"/></process>
+  <process host="Boston" function="masterslave.Slave"><argument value="63"/></process>
+  <process host="Papineau" function="masterslave.Slave"><argument value="64"/></process>
+  <process host="Fraser" function="masterslave.Slave"><argument value="65"/></process>
+  <process host="Browne" function="masterslave.Slave"><argument value="66"/></process>
+  <process host="SunOS" function="masterslave.Slave"><argument value="67"/></process>
+  <process host="Varennes" function="masterslave.Slave"><argument value="68"/></process>
+  <process host="Jacques" function="masterslave.Slave"><argument value="69"/></process>
+  <process host="Thierry" function="masterslave.Slave"><argument value="70"/></process>
+  <process host="Lachapelle" function="masterslave.Slave"><argument value="71"/></process>
+  <process host="kV" function="masterslave.Slave"><argument value="72"/></process>
+  <process host="Yolande" function="masterslave.Slave"><argument value="73"/></process>
+  <process host="Pronovost" function="masterslave.Slave"><argument value="74"/></process>
+  <process host="SPICE" function="masterslave.Slave"><argument value="75"/></process>
+  <process host="Europe" function="masterslave.Slave"><argument value="76"/></process>
+  <process host="Roy" function="masterslave.Slave"><argument value="77"/></process>
+  <process host="Amadeus" function="masterslave.Slave"><argument value="78"/></process>
+  <process host="Intel" function="masterslave.Slave"><argument value="79"/></process>
+  <process host="Cambridge" function="masterslave.Slave"><argument value="80"/></process>
+  <process host="Tremblay" function="masterslave.Slave"><argument value="81"/></process>
+  <process host="UNIX" function="masterslave.Slave"><argument value="82"/></process>
+  <process host="Domey" function="masterslave.Slave"><argument value="83"/></process>
+  <process host="St_Bruno" function="masterslave.Slave"><argument value="84"/></process>
+  <process host="Jean_Claude" function="masterslave.Slave"><argument value="85"/></process>
+  <process host="Doyon" function="masterslave.Slave"><argument value="86"/></process>
+  <process host="Fafard" function="masterslave.Slave"><argument value="87"/></process>
+  <process host="Croteau" function="masterslave.Slave"><argument value="88"/></process>
+  <process host="Dodge" function="masterslave.Slave"><argument value="89"/></process>
+  <process host="Jacquelin" function="masterslave.Slave"><argument value="90"/></process>
+  <process host="Boivin" function="masterslave.Slave"><argument value="91"/></process>
+  <process host="Jean_Yves" function="masterslave.Slave"><argument value="92"/></process>
+  <process host="TeX" function="masterslave.Slave"><argument value="93"/></process>
+  <process host="Geoff" function="masterslave.Slave"><argument value="94"/></process>
+  <process host="Disney" function="masterslave.Slave"><argument value="95"/></process>
+  <process host="iRMX" function="masterslave.Slave"><argument value="96"/></process>
+  <process host="McGee" function="masterslave.Slave"><argument value="97"/></process>
+  <process host="Gatien" function="masterslave.Slave"><argument value="98"/></process>
+  <process host="Laroche" function="masterslave.Slave"><argument value="99"/></process>
+  <process host="Tanguay" function="masterslave.Slave"><argument value="100"/></process> -->
+</platform>

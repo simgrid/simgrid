@@ -52,6 +52,9 @@ add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/java/startKillTime)
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/java/suspend)
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/java/tracing)
 
+add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/scala)
+add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/scala/masterslave)
+
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/msg/properties)
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/msg/actions)
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/msg/migration)

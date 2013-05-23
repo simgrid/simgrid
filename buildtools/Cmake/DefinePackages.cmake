@@ -832,6 +832,8 @@ set(EXAMPLES_CMAKEFILES_TXT
   examples/java/startKillTime/CMakeLists.txt
   examples/java/suspend/CMakeLists.txt
   examples/java/tracing/CMakeLists.txt
+  examples/scala/CMakeLists.txt
+  examples/scala/masterslave/CMakeLists.txt
   examples/lua/CMakeLists.txt
   examples/msg/CMakeLists.txt
   examples/msg/actions/CMakeLists.txt
@@ -925,6 +927,7 @@ set(CMAKE_SOURCE_FILES
   buildtools/Cmake/Modules/FindNS3.cmake
   buildtools/Cmake/Modules/FindRngStream.cmake
   buildtools/Cmake/Modules/FindRubySimgrid.cmake
+  buildtools/Cmake/Modules/FindScala.cmake
   buildtools/Cmake/Modules/FindSimGrid.cmake
   buildtools/Cmake/Modules/FindValgrind.cmake
   buildtools/Cmake/Option.cmake
