@@ -54,6 +54,8 @@ add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/java/tracing)
 
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/scala)
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/scala/masterslave)
+add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/scala/master_slave_bypass)
+add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/scala/master_slave_kill)
 
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/msg/properties)
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/msg/actions)

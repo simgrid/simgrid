@@ -445,6 +445,8 @@ if(NOT enable_memcheck)
   # Scala examples
   if(enable_scala)
     set(TESH_CLASSPATH "${CMAKE_BINARY_DIR}/examples/scala/:${SIMGRID_JAR}:${SCALA_JARS}")
+    ADD_TEST(scala-bypass                        ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/scala --setenv classpath=${TESH_CLASSPATH} --cd ${CMAKE_BINARY_DIR}/examples/scala ${CMAKE_HOME_DIRECTORY}/examples/scala/master_slave_bypass/bypass.tesh)
+    ADD_TEST(scala-kill                          ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/scala --setenv classpath=${TESH_CLASSPATH} --cd ${CMAKE_BINARY_DIR}/examples/scala ${CMAKE_HOME_DIRECTORY}/examples/scala/master_slave_kill/kill.tesh)
     ADD_TEST(scala-masterslave                   ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/scala --setenv classpath=${TESH_CLASSPATH} --cd ${CMAKE_BINARY_DIR}/examples/scala ${CMAKE_HOME_DIRECTORY}/examples/scala/masterslave/masterslave.tesh)
   endif()
 

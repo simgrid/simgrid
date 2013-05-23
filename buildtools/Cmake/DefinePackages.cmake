@@ -834,6 +834,8 @@ set(EXAMPLES_CMAKEFILES_TXT
   examples/java/tracing/CMakeLists.txt
   examples/scala/CMakeLists.txt
   examples/scala/masterslave/CMakeLists.txt
+  examples/scala/master_slave_bypass/CMakeLists.txt
+  examples/scala/master_slave_kill/CMakeLists.txt
   examples/lua/CMakeLists.txt
   examples/msg/CMakeLists.txt
   examples/msg/actions/CMakeLists.txt
