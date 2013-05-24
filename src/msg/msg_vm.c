@@ -324,6 +324,12 @@ static int migration_rx_fun(int argc, char *argv[])
   msg_vm_t vm = MSG_get_host_by_name(vm_name);
   msg_vm_t dst_pm = MSG_get_host_by_name(dst_pm_name);
 
+
+  s_ws_params_t params;
+  simcall_host_get_params(vm, &params);
+  const double xfer_cpu_overhead = params.xfer_cpu_overhead;
+
+
   int need_exit = 0;
 
   char *mbox = get_mig_mbox_src_dst(vm_name, src_pm_name, dst_pm_name);
@@ -335,9 +341,9 @@ static int migration_rx_fun(int argc, char *argv[])
     MSG_task_recv(&task, mbox);
     {
       double received = MSG_task_get_data_size(task);
-      /* TODO */
-      const double alpha = 0.22L * 1.0E8 / (80L * 1024 * 1024);
-      launch_deferred_exec_process(vm, received * alpha);
+      /* TODO: clean up */
+      // const double alpha = 0.22L * 1.0E8 / (80L * 1024 * 1024);
+      launch_deferred_exec_process(vm, received * xfer_cpu_overhead);
     }
 
     if (strcmp(task->name, finalize_task_name) == 0)
@@ -755,31 +761,37 @@ static void make_cpu_overhead_of_data_transfer(msg_task_t comm_task, double init
 
 #define USE_MICRO_TASK 1
 
+#if 0
+// const double alpha = 0.1L * 1.0E8 / (32L * 1024 * 1024);
+// const double alpha = 0.25L * 1.0E8 / (85L * 1024 * 1024);
+// const double alpha = 0.20L * 1.0E8 / (85L * 1024 * 1024);
+// const double alpha = 0.25L * 1.0E8 / (85L * 1024 * 1024);
+// const double alpha = 0.32L * 1.0E8 / (24L * 1024 * 1024);   // makes super good values for 32 mbytes/s
+//const double alpha = 0.32L * 1.0E8 / (32L * 1024 * 1024);
+// const double alpha = 0.56L * 1.0E8 / (80L * 1024 * 1024);
+////const double alpha = 0.20L * 1.0E8 / (80L * 1024 * 1024);
+// const double alpha = 0.56L * 1.0E8 / (90L * 1024 * 1024);
+// const double alpha = 0.66L * 1.0E8 / (90L * 1024 * 1024);
+// const double alpha = 0.20L * 1.0E8 / (80L * 1024 * 1024);
+
+/* CPU 22% when 80Mbyte/s */
+const double alpha = 0.22L * 1.0E8 / (80L * 1024 * 1024);
+#endif
+
+
 static void send_migration_data(const char *vm_name, const char *src_pm_name, const char *dst_pm_name,
-    double size, char *mbox, int stage, int stage2_round, double mig_speed)
+    double size, char *mbox, int stage, int stage2_round, double mig_speed, double xfer_cpu_overhead)
 {
   char *task_name = get_mig_task_name(vm_name, src_pm_name, dst_pm_name, stage);
   msg_task_t task = MSG_task_create(task_name, 0, size, NULL);
 
+  /* TODO: clean up */
 
   double clock_sta = MSG_get_clock();
 
 #ifdef USE_MICRO_TASK
-  // const double alpha = 0.1L * 1.0E8 / (32L * 1024 * 1024);
-  // const double alpha = 0.25L * 1.0E8 / (85L * 1024 * 1024);
-  // const double alpha = 0.20L * 1.0E8 / (85L * 1024 * 1024);
-  // const double alpha = 0.25L * 1.0E8 / (85L * 1024 * 1024);
-  // const double alpha = 0.32L * 1.0E8 / (24L * 1024 * 1024);   // makes super good values for 32 mbytes/s
-  //const double alpha = 0.32L * 1.0E8 / (32L * 1024 * 1024);
-  // const double alpha = 0.56L * 1.0E8 / (80L * 1024 * 1024);
-  ////const double alpha = 0.20L * 1.0E8 / (80L * 1024 * 1024);
-  // const double alpha = 0.56L * 1.0E8 / (90L * 1024 * 1024);
-  // const double alpha = 0.66L * 1.0E8 / (90L * 1024 * 1024);
-  
-  // const double alpha = 0.20L * 1.0E8 / (80L * 1024 * 1024);
-  const double alpha = 0.22L * 1.0E8 / (80L * 1024 * 1024);
 
-  task_send_bounded_with_cpu_overhead(task, mbox, mig_speed, alpha);
+  task_send_bounded_with_cpu_overhead(task, mbox, mig_speed, xfer_cpu_overhead);
 
 #else
   msg_error_t ret;
@@ -794,7 +806,7 @@ static void send_migration_data(const char *vm_name, const char *src_pm_name, co
   double duration = clock_end - clock_sta;
   double actual_speed = size / duration;
 #ifdef USE_MICRO_TASK
-  double cpu_utilization = size * alpha / duration / 1.0E8;
+  double cpu_utilization = size * xfer_cpu_overhead / duration / 1.0E8;
 #else
   double cpu_utilization = 0;
 #endif
@@ -851,6 +863,8 @@ static int migration_tx_fun(int argc, char *argv[])
   const double dp_rate      = params.dp_rate;
   const double dp_cap       = params.dp_cap;
   const double mig_speed    = params.mig_speed;
+  const double xfer_cpu_overhead = params.xfer_cpu_overhead;
+
   double remaining_size = ramsize + devsize;
 
   double max_downtime = params.max_downtime;
@@ -876,7 +890,7 @@ static int migration_tx_fun(int argc, char *argv[])
   start_dirty_page_tracking(vm);
 
   if (!skip_stage1) {
-    send_migration_data(vm_name, src_pm_name, dst_pm_name, ramsize, mbox, 1, 0, mig_speed);
+    send_migration_data(vm_name, src_pm_name, dst_pm_name, ramsize, mbox, 1, 0, mig_speed, xfer_cpu_overhead);
     remaining_size -= ramsize;
   }
 
@@ -920,7 +934,7 @@ static int migration_tx_fun(int argc, char *argv[])
     if (remaining_size < threshold)
       break;
 
-    send_migration_data(vm_name, src_pm_name, dst_pm_name, updated_size, mbox, 2, stage2_round, mig_speed);
+    send_migration_data(vm_name, src_pm_name, dst_pm_name, updated_size, mbox, 2, stage2_round, mig_speed, xfer_cpu_overhead);
 
     remaining_size -= updated_size;
     stage2_round += 1;
@@ -933,7 +947,7 @@ stage3:
   simcall_vm_suspend(vm);
   stop_dirty_page_tracking(vm);
 
-  send_migration_data(vm_name, src_pm_name, dst_pm_name, remaining_size, mbox, 3, 0, mig_speed);
+  send_migration_data(vm_name, src_pm_name, dst_pm_name, remaining_size, mbox, 3, 0, mig_speed, xfer_cpu_overhead);
 
   xbt_free(mbox);
 
