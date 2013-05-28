@@ -284,32 +284,19 @@ extern xbt_dynar_t mc_stack_comparison_ignore;
 extern xbt_dynar_t mc_data_bss_comparison_ignore;
 
 typedef struct s_mc_pair{
-  mc_snapshot_t system_state;
-  mc_state_t graph_state;
-  xbt_automaton_state_t automaton_state;
-  int requests;
   int num;
+  mc_state_t graph_state; /* System state included */
+  xbt_automaton_state_t automaton_state;
+  xbt_dynar_t atomic_propositions;
+  int requests;
+  size_t heap_bytes_used;
+  int nb_processes;
+  int stack_removed;
+  int visited_removed;
+  int acceptance_removed;
 }s_mc_pair_t, *mc_pair_t;
 
-typedef struct s_mc_acceptance_pair{
-  int num;
-  xbt_automaton_state_t automaton_state;
-  xbt_dynar_t prop_ato;
-  mc_snapshot_t system_state;
-  size_t heap_bytes_used;
-  int nb_processes;
-}s_mc_acceptance_pair_t, *mc_acceptance_pair_t;
-
-typedef struct s_mc_visited_pair{
-  xbt_automaton_state_t automaton_state;
-  xbt_dynar_t prop_ato;
-  mc_snapshot_t system_state;
-  int num;
-  size_t heap_bytes_used;
-  int nb_processes;
-}s_mc_visited_pair_t, *mc_visited_pair_t;
-
-mc_pair_t MC_pair_new(mc_state_t sg, xbt_automaton_state_t st, int r);
+mc_pair_t MC_pair_new(void);
 void MC_pair_delete(mc_pair_t);
 
 void MC_ddfs_init(void);
