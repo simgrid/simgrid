@@ -231,6 +231,7 @@ void MC_free_snapshot(mc_snapshot_t snapshot)
   for(i=0; i < NB_REGIONS; i++)
     MC_region_destroy(snapshot->regions[i]);
 
+  xbt_free(snapshot->stack_sizes);
   xbt_dynar_free(&(snapshot->stacks));
   xbt_dynar_free(&(snapshot->to_ignore));
   xbt_free(snapshot);
@@ -500,6 +501,7 @@ static xbt_strbuff_t get_local_variables_values(void *stack_context, void *heap)
 
             if(!xbt_dynar_is_empty(compose)){
               frame_pointer_address = xbt_dynar_get_as(compose, xbt_dynar_length(compose) - 1, variable_value_t)->value.address ; 
+              xbt_dynar_reset(compose);
             }
             break;
           default :
@@ -566,6 +568,7 @@ static xbt_strbuff_t get_local_variables_values(void *stack_context, void *heap)
                 xbt_free(to_append);
               }
             }
+            xbt_dynar_reset(compose);
           }else{
             to_append = bprintf("%s=undefined\n", current_variable->name);
             xbt_strbuff_append(variables, to_append);

@@ -936,6 +936,14 @@ void MC_remove_ignore_heap(void *address, size_t size){
 
 }
 
+void data_bss_ignore_variable_free(mc_data_bss_ignore_variable_t v){
+  xbt_free(v);
+}
+
+void data_bss_ignore_variable_free_voidp(void *v){
+  data_bss_ignore_variable_free((mc_data_bss_ignore_variable_t) * (void **) v);
+}
+
 void MC_ignore_data_bss(void *address, size_t size){
 
   int raw_mem_set = (mmalloc_get_current_heap() == raw_heap);
@@ -943,7 +951,7 @@ void MC_ignore_data_bss(void *address, size_t size){
   MC_SET_RAW_MEM;
   
   if(mc_data_bss_comparison_ignore == NULL)
-    mc_data_bss_comparison_ignore = xbt_dynar_new(sizeof(mc_data_bss_ignore_variable_t), NULL);
+    mc_data_bss_comparison_ignore = xbt_dynar_new(sizeof(mc_data_bss_ignore_variable_t), data_bss_ignore_variable_free_voidp);
 
   mc_data_bss_ignore_variable_t var = NULL;
   var = xbt_new0(s_mc_data_bss_ignore_variable_t, 1);
@@ -965,6 +973,7 @@ void MC_ignore_data_bss(void *address, size_t size){
       cursor = (start + end) / 2;
       current_var = (mc_data_bss_ignore_variable_t)xbt_dynar_get_as(mc_data_bss_comparison_ignore, cursor, mc_data_bss_ignore_variable_t);
       if(current_var->address == address){
+        data_bss_ignore_variable_free(var);
         MC_UNSET_RAW_MEM;
         if(raw_mem_set)
           MC_SET_RAW_MEM;
@@ -1041,7 +1050,15 @@ static size_t data_bss_ignore_size(void *address){
   return 0;
 }
 
+void stack_ignore_variable_free(mc_stack_ignore_variable_t v){
+  xbt_free(v->var_name);
+  xbt_free(v->frame);
+  xbt_free(v);
+}
 
+void stack_ignore_variable_free_voidp(void *v){
+  stack_ignore_variable_free((mc_stack_ignore_variable_t) * (void **) v);
+}
 
 void MC_ignore_stack(const char *var_name, const char *frame_name){
   
@@ -1050,14 +1067,14 @@ void MC_ignore_stack(const char *var_name, const char *frame_name){
   MC_SET_RAW_MEM;
 
   if(mc_stack_comparison_ignore == NULL)
-    mc_stack_comparison_ignore = xbt_dynar_new(sizeof(mc_stack_ignore_variable_t), NULL);
-
+    mc_stack_comparison_ignore = xbt_dynar_new(sizeof(mc_stack_ignore_variable_t), stack_ignore_variable_free_voidp);
+  
+  mc_stack_ignore_variable_t var = NULL;
+  var = xbt_new0(s_mc_stack_ignore_variable_t, 1);
+  var->var_name = strdup(var_name);
+  var->frame = strdup(frame_name);
+  
   if(xbt_dynar_is_empty(mc_stack_comparison_ignore)){
-
-    mc_stack_ignore_variable_t var = NULL;
-    var = xbt_new0(s_mc_stack_ignore_variable_t, 1);
-    var->var_name = strdup(var_name);
-    var->frame = strdup(frame_name);
 
     xbt_dynar_insert_at(mc_stack_comparison_ignore, 0, &var);
 
@@ -1073,6 +1090,7 @@ void MC_ignore_stack(const char *var_name, const char *frame_name){
       current_var = (mc_stack_ignore_variable_t)xbt_dynar_get_as(mc_stack_comparison_ignore, cursor, mc_stack_ignore_variable_t);
       if(strcmp(current_var->frame, frame_name) == 0){
         if(strcmp(current_var->var_name, var_name) == 0){
+          stack_ignore_variable_free(var);
           MC_UNSET_RAW_MEM;
           if(raw_mem_set)
             MC_SET_RAW_MEM;
@@ -1088,11 +1106,6 @@ void MC_ignore_stack(const char *var_name, const char *frame_name){
       if(strcmp(current_var->frame, frame_name) > 0)
         end = cursor - 1;
     }
-
-    mc_stack_ignore_variable_t var = NULL;
-    var = xbt_new0(s_mc_stack_ignore_variable_t, 1);
-    var->var_name = strdup(var_name);
-    var->frame = strdup(frame_name);
 
     if(strcmp(current_var->frame, frame_name) < 0)
       xbt_dynar_insert_at(mc_stack_comparison_ignore, cursor + 1, &var);
