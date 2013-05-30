@@ -78,12 +78,114 @@ static void MC_snapshot_add_region(mc_snapshot_t snapshot, int type, void *start
   return;
 } 
 
-void MC_init_memory_map_info(){
+static void get_memory_regions(mc_snapshot_t snapshot){
 
-  int raw_mem_set = (mmalloc_get_current_heap() == raw_heap);
-
-  MC_SET_RAW_MEM;
+  FILE *fp;
+  char *line = NULL;
+  ssize_t read;
+  size_t n = 0;
   
+  char *lfields[6], *tok;
+  void *start_addr, *start_addr1, *end_addr;
+  size_t size;
+  int i;
+
+  fp = fopen("/proc/self/maps", "r");
+  
+  xbt_assert(fp, 
+             "Cannot open /proc/self/maps to investigate the memory map of the process. Please report this bug.");
+
+  setbuf(fp, NULL);
+
+  while((read = xbt_getline(&line, &n, fp)) != -1){
+
+    /* Wipeout the new line character */
+    line[read - 1] = '\0';
+
+    /* Tokenize the line using spaces as delimiters and store each token */
+    lfields[0] = strtok(line, " ");
+
+    for (i = 1; i < 6 && lfields[i - 1] != NULL; i++) {
+      lfields[i] = strtok(NULL, " ");
+    }
+
+    /* First get the permissions flags, need write permission */
+    if(lfields[1][1] == 'w'){
+
+      /* Get the start address of the map */
+      tok = strtok(lfields[0], "-");
+      start_addr = (void *)strtoul(tok, NULL, 16);
+    
+      if(start_addr == std_heap){     /* Std_heap ? */
+        tok = strtok(NULL, "-");
+        end_addr = (void *)strtoul(tok, NULL, 16);
+        MC_snapshot_add_region(snapshot, 0, start_addr, (char*)end_addr - (char*)start_addr);
+        snapshot->heap_bytes_used = mmalloc_get_bytes_used(std_heap);
+      }else{ /* map name == libsimgrid || binary_name ? */
+        if(lfields[5] != NULL){
+          if(!memcmp(basename(lfields[5]), "libsimgrid", 10)){
+            tok = strtok(NULL, "-");
+            end_addr = (void *)strtoul(tok, NULL, 16);
+            size = (char*)end_addr - (char*)start_addr;
+            /* BSS and data segments may be separated according to the OS */
+            if((read = xbt_getline(&line, &n, fp)) != -1){
+              line[read - 1] = '\0';
+              lfields[0] = strtok(line, " ");
+              for (i = 1; i < 6 && lfields[i - 1] != NULL; i++) {
+                lfields[i] = strtok(NULL, " ");
+              }
+              if(lfields[1][1] == 'w' && lfields[5] == NULL){
+                tok = strtok(lfields[0], "-");
+                start_addr1 = (void *)strtoul(tok, NULL, 16);
+                tok = strtok(NULL, "-");
+                size += (char *)(void *)strtoul(tok, NULL, 16) - (char*)start_addr1;
+              }
+            }
+            MC_snapshot_add_region(snapshot, 1, start_addr, size);
+          }else if(!memcmp(basename(lfields[5]), basename(xbt_binary_name), strlen(basename(xbt_binary_name)))){
+            tok = strtok(NULL, "-");
+            end_addr = (void *)strtoul(tok, NULL, 16);
+            size = (char*)end_addr - (char*)start_addr;
+             /* BSS and data segments may be separated according to the OS */
+            if((read = xbt_getline(&line, &n, fp)) != -1){
+              line[read - 1] = '\0';
+              lfields[0] = strtok(line, " ");
+              for (i = 1; i < 6 && lfields[i - 1] != NULL; i++) {
+                lfields[i] = strtok(NULL, " ");
+              }
+              tok = strtok(lfields[0], "-");
+              start_addr1 = (void *)strtoul(tok, NULL, 16);
+              if(lfields[1][1] == 'w' && lfields[5] == NULL){
+                if(start_addr1 == std_heap){     /* Std_heap ? */
+                  tok = strtok(NULL, "-");
+                  end_addr = (void *)strtoul(tok, NULL, 16);
+                  MC_snapshot_add_region(snapshot, 0, start_addr1, (char*)end_addr - (char*)start_addr1);
+                  snapshot->heap_bytes_used = mmalloc_get_bytes_used(std_heap);
+                }else if(start_addr1 != raw_heap){
+                  tok = strtok(NULL, "-");
+                  size += (char *)(void *)strtoul(tok, NULL, 16) - (char *)start_addr1;
+                }
+              }
+            }
+            MC_snapshot_add_region(snapshot, 2, start_addr, size);
+          }else if (!memcmp(lfields[5], "[stack]", 7)){
+            maestro_stack_start = start_addr;
+            tok = strtok(NULL, "-");
+            maestro_stack_end = (void *)strtoul(tok, NULL, 16);
+          }
+        }
+      }
+    }
+    
+  }
+
+  free(line);
+  fclose(fp);
+
+}
+
+void MC_init_memory_map_info(){
+ 
   unsigned int i = 0;
   s_map_region_t reg;
   memory_map_t maps = get_memory_map();
@@ -124,18 +226,14 @@ void MC_init_memory_map_info(){
     }
     i++;
   }
-  
+   
   free_memory_map(maps);
-
-  MC_UNSET_RAW_MEM;
-
-  if(raw_mem_set)
-    MC_SET_RAW_MEM;
 
 }
 
 mc_snapshot_t MC_take_snapshot()
 {
+
   int raw_mem = (mmalloc_get_current_heap() == raw_heap);
   
   MC_SET_RAW_MEM;
@@ -143,69 +241,16 @@ mc_snapshot_t MC_take_snapshot()
   mc_snapshot_t snapshot = xbt_new0(s_mc_snapshot_t, 1);
   snapshot->nb_processes = xbt_swag_size(simix_global->process_list);
 
-  unsigned int i = 0;
-  s_map_region_t reg;
-  memory_map_t maps = get_memory_map();
-  void *heap = NULL;
-  size_t size = 0;
-  void *start = NULL;
-
-  /* Save the std heap and the writable mapped pages of libsimgrid */
-  while (i < maps->mapsize) {
-    reg = maps->regions[i];
-    if ((reg.prot & PROT_WRITE)){
-      if (maps->regions[i].pathname == NULL){
-        if (reg.start_addr == std_heap){ // only save the std heap (and not the raw one)
-          MC_snapshot_add_region(snapshot, 0, reg.start_addr, (char*)reg.end_addr - (char*)reg.start_addr);
-          snapshot->heap_bytes_used = mmalloc_get_bytes_used(std_heap);
-          heap = snapshot->regions[0]->data;
-        }
-        i++;
-      } else{ 
-        if (!memcmp(basename(maps->regions[i].pathname), "libsimgrid", 10)){
-          size = (char*)reg.end_addr - (char*)reg.start_addr;
-          start = reg.start_addr;
-          i++;
-          reg = maps->regions[i];
-          if(reg.pathname == NULL && (reg.prot & PROT_WRITE) && i < maps->mapsize){
-            size += (char*)reg.end_addr - (char*)reg.start_addr;
-            reg = maps->regions[i];
-            i++;
-          }
-          MC_snapshot_add_region(snapshot, 1, start, size);
-        }else if(!memcmp(maps->regions[i].pathname, "[stack]", 7)){
-          maestro_stack_start = reg.start_addr;
-          maestro_stack_end = reg.end_addr;
-          i++;
-        } else if (!memcmp(basename(maps->regions[i].pathname), basename(xbt_binary_name), strlen(basename(xbt_binary_name)))){
-          size = (char*)reg.end_addr - (char*)reg.start_addr;
-          start = reg.start_addr;
-          i++;
-          reg = maps->regions[i];
-          if(reg.pathname == NULL && (reg.prot & PROT_WRITE) && reg.start_addr != std_heap && reg.start_addr != raw_heap && i < maps->mapsize){
-            size += (char*)reg.end_addr - (char*)reg.start_addr;
-            reg = maps->regions[i];
-            i++;
-          }
-          MC_snapshot_add_region(snapshot, 2, start, size);
-        }else{
-          i++;
-        }
-      }
-    }else{
-      i++;
-    }
-  }
+  /* Save the std heap and the writable mapped pages of libsimgrid and binary */
+  get_memory_regions(snapshot);
 
   snapshot->to_ignore = take_snapshot_ignore();
 
   if(_sg_mc_visited > 0 || strcmp(_sg_mc_property_file,"")){
-    snapshot->stacks = take_snapshot_stacks(&snapshot, heap);
+    snapshot->stacks = take_snapshot_stacks(&snapshot, snapshot->regions[0]->data);
     get_hash_global(snapshot->hash_global, snapshot->regions[1]->data, snapshot->regions[2]->data);
     get_hash_local(snapshot->hash_local, snapshot->stacks);
   }
-
-  free_memory_map(maps);
 
   MC_UNSET_RAW_MEM;
 
