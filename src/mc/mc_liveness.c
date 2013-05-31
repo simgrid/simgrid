@@ -616,7 +616,7 @@ void MC_ddfs(){
   int new_pair = 0;
 
   mc_pair_t next_pair = NULL;
-  xbt_dynar_t prop_value = NULL;
+  xbt_dynar_t prop_values = NULL;
   
   if(xbt_fifo_size(mc_stack_liveness) < _sg_mc_max_depth){
 
