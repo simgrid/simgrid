@@ -77,8 +77,6 @@ static int is_visited_state(){
     int nb_processes_test;
     int same_processes_and_bytes_not_found = 1;
 
-    //XBT_INFO("Is visited state (2) - bytes used in std_heap : %d, bytes used in raw_heap : %d", mmalloc_get_bytes_used(std_heap), mmalloc_get_bytes_used(raw_heap));
-
     while(start <= end && same_processes_and_bytes_not_found){
       cursor = (start + end) / 2;
       state_test = (mc_visited_state_t)xbt_dynar_get_as(visited_states, cursor, mc_visited_state_t);
@@ -490,6 +488,7 @@ void MC_dpor(void)
           XBT_DEBUG("Back-tracking to depth %d", xbt_fifo_size(mc_stack_safety));
           break;
         } else {
+          XBT_DEBUG("Delete state at depth %d",xbt_fifo_size(mc_stack_safety) + 1); 
           MC_state_delete(state);
         }
       }
