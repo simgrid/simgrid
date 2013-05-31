@@ -85,7 +85,7 @@ static void get_memory_regions(mc_snapshot_t snapshot){
   ssize_t read;
   size_t n = 0;
   
-  char *lfields[6], *tok;
+  char *lfields[6] = {0}, *tok;
   void *start_addr, *start_addr1, *end_addr;
   size_t size;
   int i;

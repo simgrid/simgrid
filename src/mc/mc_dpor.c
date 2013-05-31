@@ -246,7 +246,7 @@ void MC_dpor_init()
 void MC_dpor(void)
 {
 
-  char *req_str;
+  char *req_str = NULL;
   int value;
   smx_simcall_t req = NULL, prev_req = NULL;
   mc_state_t state = NULL, prev_state = NULL, next_state = NULL, restore_state=NULL;
