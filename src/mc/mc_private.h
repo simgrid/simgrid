@@ -285,6 +285,7 @@ extern xbt_dynar_t mc_data_bss_comparison_ignore;
 
 typedef struct s_mc_pair{
   int num;
+  int search_cycle;
   mc_state_t graph_state; /* System state included */
   xbt_automaton_state_t automaton_state;
   xbt_dynar_t atomic_propositions;
@@ -300,7 +301,7 @@ mc_pair_t MC_pair_new(void);
 void MC_pair_delete(mc_pair_t);
 
 void MC_ddfs_init(void);
-void MC_ddfs(int search_cycle);
+void MC_ddfs(void);
 void MC_show_stack_liveness(xbt_fifo_t stack);
 void MC_dump_stack_liveness(xbt_fifo_t stack);
 

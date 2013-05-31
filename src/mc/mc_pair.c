@@ -8,15 +8,19 @@
 mc_pair_t MC_pair_new(){
   mc_pair_t p = NULL;
   p = xbt_new0(s_mc_pair_t, 1);
-  p->heap_bytes_used = mmalloc_get_bytes_used(std_heap);
   p->nb_processes = xbt_swag_size(simix_global->process_list);
   p->num = ++mc_stats->expanded_pairs;
+  p->search_cycle = 0;
   return p;
 }
 
 void MC_pair_delete(mc_pair_t p){
   p->automaton_state = NULL;
   MC_state_delete(p->graph_state);
+  p->stack_removed = 0;
+  p->visited_removed = 0;
+  p->acceptance_removed = 0;
   xbt_dynar_free(&(p->atomic_propositions));
   xbt_free(p);
+  p = NULL;
 }

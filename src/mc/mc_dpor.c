@@ -77,16 +77,18 @@ static int is_visited_state(){
     int nb_processes_test;
     int same_processes_and_bytes_not_found = 1;
 
+    //XBT_INFO("Is visited state (2) - bytes used in std_heap : %d, bytes used in raw_heap : %d", mmalloc_get_bytes_used(std_heap), mmalloc_get_bytes_used(raw_heap));
+
     while(start <= end && same_processes_and_bytes_not_found){
       cursor = (start + end) / 2;
       state_test = (mc_visited_state_t)xbt_dynar_get_as(visited_states, cursor, mc_visited_state_t);
       bytes_used_test = state_test->heap_bytes_used;
       nb_processes_test = state_test->nb_processes;
-      if(nb_processes_test < current_nb_processes)
+      if(nb_processes_test < current_nb_processes){
         start = cursor + 1;
-      if(nb_processes_test > current_nb_processes)
-        end = cursor - 1; 
-      if(nb_processes_test == current_nb_processes){
+      }else if(nb_processes_test > current_nb_processes){
+        end = cursor - 1;
+      }else if(nb_processes_test == current_nb_processes){
         if(bytes_used_test < current_bytes_used)
           start = cursor + 1;
         if(bytes_used_test > current_bytes_used)
