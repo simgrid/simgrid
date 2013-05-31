@@ -6,17 +6,24 @@ include(UseJava)
 #
 add_library(SG_java SHARED ${JMSG_C_SRC})
 set_target_properties(SG_java PROPERTIES VERSION ${libSG_java_version})
-get_target_property(COMMON_INCLUDES SG_java INCLUDE_DIRECTORIES)
-if (COMMON_INCLUDES)
-  set_target_properties(SG_java PROPERTIES
-    INCLUDE_DIRECTORIES "${COMMON_INCLUDES};${JNI_INCLUDE_DIRS}")
-else()
-  set_target_properties(SG_java PROPERTIES
-    INCLUDE_DIRECTORIES "${JNI_INCLUDE_DIRS}")
-endif()
-add_dependencies(SG_java simgrid)
+if (CMAKE_VERSION VERSION_LESS "2.8.8")
+  include_directories(${JNI_INCLUDE_DIRS})
 
-get_target_property(CHECK_INCLUDES SG_java INCLUDE_DIRECTORIES)
+  message(WARNING "[Java] Try to workaround missing feature in older CMake.  You should better update CMake to version 2.8.8 or above.")
+  get_directory_property(CHECK_INCLUDES INCLUDE_DIRECTORIES)
+else()
+  get_target_property(COMMON_INCLUDES SG_java INCLUDE_DIRECTORIES)
+  if (COMMON_INCLUDES)
+    set_target_properties(SG_java PROPERTIES
+      INCLUDE_DIRECTORIES "${COMMON_INCLUDES};${JNI_INCLUDE_DIRS}")
+  else()
+    set_target_properties(SG_java PROPERTIES
+      INCLUDE_DIRECTORIES "${JNI_INCLUDE_DIRS}")
+  endif()
+  add_dependencies(SG_java simgrid)
+
+  get_target_property(CHECK_INCLUDES SG_java INCLUDE_DIRECTORIES)
+endif()
 message("-- [Java] SG_java includes: ${CHECK_INCLUDES}")
 
 if(WIN32)
