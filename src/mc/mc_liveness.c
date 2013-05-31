@@ -911,8 +911,7 @@ void MC_ddfs(){
 
   
   MC_SET_RAW_MEM;
-  if(prop_values != NULL)
-    xbt_dynar_free(&prop_values);
+  xbt_dynar_free(&prop_values);
   current_pair = xbt_fifo_shift(mc_stack_liveness);
   current_pair->stack_removed = 1;
   if((current_pair->automaton_state->type == 1) || (current_pair->automaton_state->type == 2)){
