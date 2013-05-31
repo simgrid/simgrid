@@ -1,19 +1,19 @@
 #! ./tesh
 
 ! expect signal SIGABRT
-! timeout 200
+! timeout 20
 $ ${bindir:=.}/bugged1_liveness --cfg=model-check:1 "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n" --cfg=contexts/factory:ucontext
 > [  0.000000] (0:@) Configuration change: Set 'model-check' to '1'
 > [  0.000000] (0:@) Check the liveness property promela_bugged1_liveness
-> [  0.000000] (2:client@Fafard) Ask the request
-> [  0.000000] (3:client@Boivin) Ask the request
-> [  0.000000] (2:client@Fafard) Propositions changed : r=1, cs=0
+> [  0.000000] (2:client@Boivin) Ask the request
+> [  0.000000] (3:client@Fafard) Ask the request
+> [  0.000000] (2:client@Boivin) Propositions changed : r=1, cs=0
 > [  0.000000] (1:coordinator@Tremblay) CS idle. Grant immediatly
-> [  0.000000] (3:client@Boivin) 2 got the answer. Sleep a bit and release it
+> [  0.000000] (3:client@Fafard) 2 got the answer. Sleep a bit and release it
 > [  0.000000] (1:coordinator@Tremblay) CS release. resource now idle
-> [  0.000000] (3:client@Boivin) Ask the request
+> [  0.000000] (3:client@Fafard) Ask the request
 > [  0.000000] (1:coordinator@Tremblay) CS idle. Grant immediatly
-> [  0.000000] (0:@) Next pair (depth = 22, 1 interleave) already reached (equal to state 11) !
+> [  0.000000] (0:@) Pair 22 already reached (equal to pair 10) !
 > [  0.000000] (0:@) *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 > [  0.000000] (0:@) |             ACCEPTANCE CYCLE            |
 > [  0.000000] (0:@) *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
@@ -39,7 +39,7 @@ $ ${bindir:=.}/bugged1_liveness --cfg=model-check:1 "--log=root.fmt:[%10.6r]%e(%
 > [  0.000000] (0:@) [(3)client] iSend (src=client, buff=(verbose only), size=(verbose only))
 > [  0.000000] (0:@) [(1)coordinator] Wait (comm=(verbose only) [(3)client -> (1)coordinator])
 > [  0.000000] (0:@) [(1)coordinator] iSend (src=coordinator, buff=(verbose only), size=(verbose only))
-> [  0.000000] (0:@) Expanded pairs = 23
-> [  0.000000] (0:@) Visited pairs = 21
+> [  0.000000] (0:@) Expanded pairs = 22
+> [  0.000000] (0:@) Visited pairs = 22
 > [  0.000000] (0:@) Executed transitions = 21
 
