@@ -914,7 +914,7 @@ void MC_ddfs(){
   xbt_dynar_free(&prop_values);
   current_pair = xbt_fifo_shift(mc_stack_liveness);
   current_pair->stack_removed = 1;
-  if((current_pair->automaton_state->type == 1) || (current_pair->automaton_state->type == 2)){
+  if(current_pair->search_cycle){
     remove_acceptance_pair(current_pair);
   }else{
     if(_sg_mc_visited == 0)
