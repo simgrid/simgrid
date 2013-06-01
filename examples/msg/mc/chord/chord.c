@@ -22,7 +22,7 @@
  */
 
  
-XBT_LOG_NEW_DEFAULT_CATEGORY(chord_liveness,
+XBT_LOG_NEW_DEFAULT_CATEGORY(mc_chord,
                              "Messages specific for this example");
 
 #define COMM_SIZE 10
@@ -32,11 +32,18 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(chord_liveness,
 static int nb_bits = 24;
 static int nb_keys = 0;
 static int timeout = 50;
-static int max_simulation_time = 1000;
+//static int max_simulation_time = 1000;
 static int periodic_stabilize_delay = 20;
 static int periodic_fix_fingers_delay = 120;
 static int periodic_check_predecessor_delay = 120;
 static int periodic_lookup_delay = 10;
+
+// Liveness properties verification
+static int j = 0;
+
+static int predJ(){
+  return j;
+}
 
 //extern long int smx_total_comms;
 
@@ -120,9 +127,6 @@ static void check_predecessor(node_t node);
 static void random_lookup(node_t);
 static void quit_notify(node_t node);
 
-/* Global variables corresponding to atomic propositions */
-int node_join = 0;
-int node_deliver = 0;
 
 /**
  * \brief Global initialization of the Chord simulation.
@@ -222,7 +226,7 @@ static void task_free(void* task)
  */
 static void print_finger_table(node_t node)
 {
-  if (XBT_LOG_ISENABLED(chord_liveness, xbt_log_priority_verbose)) {
+  if (XBT_LOG_ISENABLED(mc_chord, xbt_log_priority_verbose)) {
     int i;
     XBT_VERB("My finger table:");
     XBT_VERB("Start | Succ ");
@@ -288,11 +292,14 @@ int node(int argc, char *argv[])
   msg_task_t task_received = NULL;
   int i;
   int join_success = 0;
-  double deadline;
+  //double deadline;
   double next_stabilize_date = init_time + periodic_stabilize_delay;
   double next_fix_fingers_date = init_time + periodic_fix_fingers_delay;
   double next_check_predecessor_date = init_time + periodic_check_predecessor_delay;
   double next_lookup_date = init_time + periodic_lookup_delay;
+
+  //int stab = 0, fix = 0, check = 0, rand_look = 0;
+  int end = 0;
 
   xbt_assert(argc == 3 || argc == 5, "Wrong number of arguments for this node");
 
@@ -310,14 +317,14 @@ int node(int argc, char *argv[])
   }
 
   if (argc == 3) { // first ring
-    deadline = atof(argv[2]);
+    //deadline = atof(argv[2]);
     create(&node);
     join_success = 1;
   }
   else {
     int known_id = atoi(argv[2]);
     //double sleep_time = atof(argv[3]);
-    deadline = atof(argv[4]);
+    //deadline = atof(argv[4]);
 
     /*
     // sleep before starting
@@ -328,19 +335,24 @@ int node(int argc, char *argv[])
 
     join_success = join(&node, known_id);
 
-    if(join_success){
-      XBT_INFO("Node %d joined the ring", node.id);
-      node_join = 1; 
-    }
-  }
+    if(join_success)
+      j = 1;
 
-  MC_assert(!node_join);
+    //MC_assert(!join_success);
+
+  }
 
   if (join_success) {
 
-    while (MSG_get_clock() < init_time + deadline
-//      && MSG_get_clock() < node.last_change_date + 1000
-        && MSG_get_clock() < max_simulation_time) {
+    XBT_INFO("Node %d joined the ring", node.id);
+
+    //while (MSG_get_clock() < init_time + deadline
+    //      && MSG_get_clock() < node.last_change_date + 1000
+    //&& MSG_get_clock() < max_simulation_time) {
+
+    //while (!(stab == 1 || fix == 1 || check == 1 || rand_look == 1)) {
+
+    while(1){
 
       if (node.comm_receive == NULL) {
         task_received = NULL;
@@ -352,14 +364,18 @@ int node(int argc, char *argv[])
 
         #ifdef HAVE_MC
           if(MC_is_active()){
-            if(MC_random()){
+            if(end == 0 && MC_random()){
               stabilize(&node);
-            }else if(MC_random()){
+              end = 1;
+            }else if(end == 0 && MC_random()){
               fix_fingers(&node);
-            }else if(MC_random()){
+              end = 1;
+            }else if(end == 0 && MC_random()){
               check_predecessor(&node);
-            }else if(MC_random()){
+              end = 1;
+            }else if(end == 0 && MC_random()){
               random_lookup(&node);
+              end = 1;
             }else{
               MSG_process_sleep(5);
             }
@@ -412,8 +428,6 @@ int node(int argc, char *argv[])
 
         if (node.comm_receive) {
 
-          node_deliver = 0;
-
           XBT_INFO("A transfer has occured");
 
           // a transfer has occured
@@ -443,6 +457,9 @@ int node(int argc, char *argv[])
 
     // leave the ring
     leave(&node);
+
+    XBT_INFO("Node %d leave the ring", node.id);
+    //sleep(15);
   }
 
   // stop the simulation
@@ -466,7 +483,6 @@ static void handle_task(node_t node, msg_task_t task) {
   switch (type) {
 
     case TASK_FIND_SUCCESSOR:
-      node_deliver = 1;
       XBT_DEBUG("Receiving a 'Find Successor' request from %s for id %d",
           task_data->issuer_host_name, task_data->request_id);
       // is my successor the successor?
@@ -938,15 +954,6 @@ static void random_lookup(node_t node)
   find_successor(node, id);
 }
 
-static int predJoin(void){
-  return node_join;
-}
-
-static int predDeliver(void){
-  return node_deliver;
-}
-
-
 /**
  * \brief Main function.
  */
@@ -955,7 +962,7 @@ int main(int argc, char *argv[])
   MSG_init(&argc, argv);
   if (argc < 3) {
     printf("Usage: %s [-nb_bits=n] [-timeout=t] platform_file deployment_file\n", argv[0]);
-    printf("example: %s ../../msg_platform.xml deploy_chord_liveness.xml\n", argv[0]);
+    printf("example: %s ../../msg_platform.xml deploy_chord1.xml\n", argv[0]);
     exit(1);
   }
 
@@ -986,8 +993,8 @@ int main(int argc, char *argv[])
 
   chord_initialize();
 
-  MC_automaton_new_propositional_symbol("join", &predJoin);
-  MC_automaton_new_propositional_symbol("deliver", &predDeliver);
+  //MSG_config("model-check/property","promela_join");
+  MC_automaton_new_propositional_symbol("j", &predJ);
 
   MSG_create_environment(platform_file);
   
