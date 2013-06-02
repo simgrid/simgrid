@@ -506,6 +506,7 @@ void MC_ddfs_init(void){
   successors = xbt_dynar_new(sizeof(mc_pair_t), NULL);
 
   initial_state_liveness->snapshot = MC_take_snapshot();
+  initial_state_liveness->prev_pair = 0;
 
   MC_UNSET_RAW_MEM; 
   
@@ -632,6 +633,8 @@ void MC_ddfs(){
             
             MC_SET_RAW_MEM;
             xbt_fifo_shift(mc_stack_liveness);
+            if(dot_output != NULL)
+              fprintf(dot_output, "\"%d\" -> \"%d\" [%s];\n", initial_state_liveness->prev_pair, reached_num, initial_state_liveness->prev_req);
             MC_UNSET_RAW_MEM;
 
             XBT_INFO("*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*");
@@ -650,18 +653,41 @@ void MC_ddfs(){
       if((visited_num = is_visited_pair(current_pair)) != -1){
 
         XBT_DEBUG("Pair %d already visited ! (equal to pair %d)", current_pair->num, visited_num);
+
+        MC_SET_RAW_MEM;
+        if(dot_output != NULL)
+          fprintf(dot_output, "\"%d\" -> \"%d\" [%s];\n", initial_state_liveness->prev_pair, visited_num, initial_state_liveness->prev_req);
+        MC_UNSET_RAW_MEM;
+        
       
-      }else{            
+      }else{  
 
         while((req = MC_state_get_request(current_pair->graph_state, &value)) != NULL){
-   
+
+          MC_SET_RAW_MEM;
+          if(dot_output != NULL){
+            if(initial_state_liveness->prev_pair != 0 && initial_state_liveness->prev_pair != current_pair->num){
+              fprintf(dot_output, "\"%d\" -> \"%d\" [%s];\n", initial_state_liveness->prev_pair, current_pair->num, initial_state_liveness->prev_req);
+              xbt_free(initial_state_liveness->prev_req);
+            }
+            initial_state_liveness->prev_pair = current_pair->num;
+          }
+          MC_UNSET_RAW_MEM;
+
           /* Debug information */
-          
           if(XBT_LOG_ISENABLED(mc_liveness, xbt_log_priority_debug)){
             req_str = MC_request_to_string(req, value);
             XBT_DEBUG("Execute: %s", req_str);
             xbt_free(req_str);
           }
+
+          MC_SET_RAW_MEM;
+          if(dot_output != NULL){
+            initial_state_liveness->prev_req = MC_request_get_dot_output(req, value);
+            if(current_pair->search_cycle)
+              fprintf(dot_output, "%d [shape=doublecircle];\n", current_pair->num);
+          }
+          MC_UNSET_RAW_MEM; 
           
           MC_state_set_executed_request(current_pair->graph_state, req, value);  
           mc_stats->executed_transitions++;
@@ -843,6 +869,9 @@ void MC_ddfs(){
             if(mc_stats->expanded_pairs%1000 == 0)
               XBT_INFO("Expanded pairs : %lu", mc_stats->expanded_pairs);
 
+            if(dot_output != NULL)
+              fprintf(dot_output, "\"%d\" -> \"%d\" [%s];\n", current_pair->num, next_pair->num, "");
+
             MC_UNSET_RAW_MEM;
 
             new_pair = 1;
@@ -880,6 +909,9 @@ void MC_ddfs(){
             if(mc_stats->expanded_pairs%1000 == 0)
               XBT_INFO("Expanded pairs : %lu", mc_stats->expanded_pairs);
             
+            if(dot_output != NULL)
+              fprintf(dot_output, "\"%d\" -> \"%d\" [%s];\n", current_pair->num, next_pair->num, "");
+
             MC_UNSET_RAW_MEM;
 
             new_pair = 1;

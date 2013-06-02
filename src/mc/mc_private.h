@@ -53,6 +53,8 @@ typedef struct s_mc_snapshot_stack{
 typedef struct s_mc_global_t{
   mc_snapshot_t snapshot;
   int raw_mem_set;
+  int prev_pair;
+  char *prev_req;
 }s_mc_global_t, *mc_global_t;
 
 mc_snapshot_t SIMIX_pre_mc_snapshot(smx_simcall_t simcall);
