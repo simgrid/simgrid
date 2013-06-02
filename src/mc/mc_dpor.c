@@ -29,7 +29,7 @@ static mc_visited_state_t visited_state_new(){
   new_state->heap_bytes_used = mmalloc_get_bytes_used(std_heap);
   new_state->nb_processes = xbt_swag_size(simix_global->process_list);
   new_state->system_state = MC_take_snapshot();
-  new_state->num = mc_stats->expanded_states - 1;
+  new_state->num = mc_stats->expanded_states;
 
   return new_state;
   
@@ -94,8 +94,6 @@ static int is_visited_state(){
         if(bytes_used_test == current_bytes_used){
           same_processes_and_bytes_not_found = 0;
           if(snapshot_compare(new_state->system_state, state_test->system_state) == 0){
-            xbt_dynar_remove_at(visited_states, cursor, NULL);
-            xbt_dynar_insert_at(visited_states, cursor, &new_state);
             XBT_DEBUG("State %d already visited ! (equal to state %d)", new_state->num, state_test->num);
             if(raw_mem_set)
               MC_SET_RAW_MEM;
@@ -111,8 +109,6 @@ static int is_visited_state(){
               if(bytes_used_test != current_bytes_used)
                 break;
               if(snapshot_compare(new_state->system_state, state_test->system_state) == 0){
-                xbt_dynar_remove_at(visited_states, previous_cursor, NULL);
-                xbt_dynar_insert_at(visited_states, previous_cursor, &new_state);
                 XBT_DEBUG("State %d already visited ! (equal to state %d)", new_state->num, state_test->num);
                 if(raw_mem_set)
                   MC_SET_RAW_MEM;
@@ -129,8 +125,6 @@ static int is_visited_state(){
               if(bytes_used_test != current_bytes_used)
                 break;
               if(snapshot_compare(new_state->system_state, state_test->system_state) == 0){
-                xbt_dynar_remove_at(visited_states, next_cursor, NULL);
-                xbt_dynar_insert_at(visited_states, next_cursor, &new_state);
                 XBT_DEBUG("State %d already visited ! (equal to state %d)", new_state->num, state_test->num);
                 if(raw_mem_set)
                   MC_SET_RAW_MEM;
@@ -263,8 +257,8 @@ void MC_dpor(void)
       xbt_fifo_get_item_content(xbt_fifo_get_first_item(mc_stack_safety));
 
     XBT_DEBUG("**************************************************");
-    XBT_DEBUG("Exploration depth=%d (state=%p)(%u interleave)",
-              xbt_fifo_size(mc_stack_safety), state,
+    XBT_DEBUG("Exploration depth=%d (state=%p, num %d)(%u interleave)",
+              xbt_fifo_size(mc_stack_safety), state, state->num,
               MC_state_interleave_size(state));
 
     /* Update statistics */
@@ -282,8 +276,10 @@ void MC_dpor(void)
         xbt_free(req_str);
       }
         
+      MC_SET_RAW_MEM;
       if(dot_output != NULL)
         req_str = MC_request_get_dot_output(req, value);
+      MC_UNSET_RAW_MEM;
 
       MC_state_set_executed_request(state, req, value);
       mc_stats->executed_transitions++;
@@ -343,11 +339,11 @@ void MC_dpor(void)
           xbt_free(key);
         }
       }
-
-      MC_UNSET_RAW_MEM;
-
+      
       if(dot_output != NULL)
         xbt_free(req_str);
+
+      MC_UNSET_RAW_MEM;
 
       /* Let's loop again */
 
