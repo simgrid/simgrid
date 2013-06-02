@@ -83,14 +83,14 @@ static int is_reached_acceptance_pair(mc_pair_t pair){
       nb_processes_test = pair_test->nb_processes;
       if(nb_processes_test < current_nb_processes)
         start = cursor + 1;
-      if(nb_processes_test > current_nb_processes)
+      else if(nb_processes_test > current_nb_processes)
         end = cursor - 1; 
-      if(nb_processes_test == current_nb_processes){
+      else if(nb_processes_test == current_nb_processes){
         if(bytes_used_test < current_bytes_used)
           start = cursor + 1;
-        if(bytes_used_test > current_bytes_used)
+        else if(bytes_used_test > current_bytes_used)
           end = cursor - 1;
-        if(bytes_used_test == current_bytes_used){
+        else if(bytes_used_test == current_bytes_used){
           same_processes_and_bytes_not_found = 0;
           if(xbt_automaton_state_compare(pair_test->automaton_state, pair->automaton_state) == 0){
             if(xbt_automaton_propositional_symbols_compare_value(pair_test->atomic_propositions, pair->atomic_propositions) == 0){
@@ -310,14 +310,14 @@ static int is_visited_pair(mc_pair_t pair){
       nb_processes_test = pair_test->nb_processes;
       if(nb_processes_test < current_nb_processes)
         start = cursor + 1;
-      if(nb_processes_test > current_nb_processes)
+      else if(nb_processes_test > current_nb_processes)
         end = cursor - 1; 
-      if(nb_processes_test == current_nb_processes){
+      else if(nb_processes_test == current_nb_processes){
         if(bytes_used_test < current_bytes_used)
           start = cursor + 1;
-        if(bytes_used_test > current_bytes_used)
+        else if(bytes_used_test > current_bytes_used)
           end = cursor - 1;
-        if(bytes_used_test == current_bytes_used){
+        else if(bytes_used_test == current_bytes_used){
           same_processes_and_bytes_not_found = 0;
           if(xbt_automaton_state_compare(pair_test->automaton_state, pair->automaton_state) == 0){
             if(xbt_automaton_propositional_symbols_compare_value(pair_test->atomic_propositions, pair->atomic_propositions) == 0){
