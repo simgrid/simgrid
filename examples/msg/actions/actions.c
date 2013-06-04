@@ -489,7 +489,11 @@ int main(int argc, char *argv[])
          argv[0]);
     exit(1);
   }
-
+  printf("WARNING: THIS BINARY IS KINDA DEPRECATED\n"
+	 "This example is still relevant if you want to learn about MSG-based trace replay, "
+	 "but if you want to simulate MPI-like traces, you should use the newer version "
+	 "that is in the examples/smpi/replay directory instead.\n");
+   
   /*  Simulation setting */
   MSG_create_environment(argv[1]);
 
