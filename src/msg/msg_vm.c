@@ -308,7 +308,7 @@ static inline char *get_mig_task_name(const char *vm_name, const char *src_pm_na
   return bprintf("__task_mig_stage%d:%s(%s-%s)", stage, vm_name, src_pm_name, dst_pm_name);
 }
 
-static void launch_deferred_exec_process(msg_host_t host, double computation);
+static void launch_deferred_exec_process(msg_host_t host, double computation, double prio);
 
 static int migration_rx_fun(int argc, char *argv[])
 {
@@ -343,7 +343,7 @@ static int migration_rx_fun(int argc, char *argv[])
       double received = MSG_task_get_data_size(task);
       /* TODO: clean up */
       // const double alpha = 0.22L * 1.0E8 / (80L * 1024 * 1024);
-      launch_deferred_exec_process(vm, received * xfer_cpu_overhead);
+      launch_deferred_exec_process(vm, received * xfer_cpu_overhead, 1);
     }
 
     if (strcmp(task->name, finalize_task_name) == 0)
@@ -447,7 +447,7 @@ double get_computed(char *key, msg_vm_t vm, dirty_page_t dp, double remaining, d
   return computed;
 }
 
-static double lookup_computed_flop_counts(msg_vm_t vm, int stage2_round_for_fancy_debug)
+static double lookup_computed_flop_counts(msg_vm_t vm, int stage_for_fancy_debug, int stage2_round_for_fancy_debug)
 {
   msg_host_priv_t priv = msg_host_resource_priv(vm);
   double total = 0;
@@ -468,7 +468,8 @@ static double lookup_computed_flop_counts(msg_vm_t vm, int stage2_round_for_fanc
 
   total += priv->dp_updated_by_deleted_tasks;
 
-  XBT_INFO("mig-stage2.%d: computed %f flop_counts (including %f by deleted tasks)",
+  XBT_INFO("mig-stage%d.%d: computed %f flop_counts (including %f by deleted tasks)",
+      stage_for_fancy_debug,
       stage2_round_for_fancy_debug,
       total, priv->dp_updated_by_deleted_tasks);
 
@@ -536,15 +537,17 @@ void MSG_host_del_task(msg_host_t host, msg_task_t task)
 
 static int deferred_exec_fun(int argc, char *argv[])
 {
-  xbt_assert(argc == 2);
+  xbt_assert(argc == 3);
   const char *comp_str = argv[1];
   double computaion = atof(comp_str);
+  const char *prio_str = argv[2];
+  double prio = atof(prio_str);
 
   msg_task_t task = MSG_task_create("__task_deferred", computaion, 0, NULL);
   // XBT_INFO("exec deferred %f", computaion);
 
   /* dpt is the results of the VM activity */
-  MSG_task_set_priority(task, 1000000);
+  MSG_task_set_priority(task, prio);
   MSG_task_execute(task);
 
 
@@ -554,15 +557,16 @@ static int deferred_exec_fun(int argc, char *argv[])
   return 0;
 }
 
-static void launch_deferred_exec_process(msg_host_t host, double computation)
+static void launch_deferred_exec_process(msg_host_t host, double computation, double prio)
 {
   char *pr_name = bprintf("__pr_deferred_exec_%s", MSG_host_get_name(host));
 
-  int nargvs = 3;
+  int nargvs = 4;
   char **argv = xbt_new(char *, nargvs);
   argv[0] = xbt_strdup(pr_name);
   argv[1] = bprintf("%lf", computation);
-  argv[2] = NULL;
+  argv[2] = bprintf("%lf", prio);
+  argv[3] = NULL;
 
   msg_process_t pr = MSG_process_create_with_arguments(pr_name, deferred_exec_fun, NULL, host, nargvs - 1, argv);
 
@@ -577,7 +581,7 @@ static int task_tx_overhead_fun(int argc, char *argv[])
 
   int need_exit = 0;
 
-  XBT_INFO("start %s", mbox);
+  // XBT_INFO("start %s", mbox);
 
   for (;;) {
     msg_task_t task = NULL;
@@ -589,6 +593,7 @@ static int task_tx_overhead_fun(int argc, char *argv[])
       need_exit = 1;
 
     // XBT_INFO("exec");
+    // MSG_task_set_priority(task, 1000000);
     MSG_task_execute(task);
     MSG_task_destroy(task);
 
@@ -596,7 +601,7 @@ static int task_tx_overhead_fun(int argc, char *argv[])
       break;
   }
 
-  XBT_INFO("bye");
+  // XBT_INFO("bye");
 
   return 0;
 }
@@ -612,7 +617,7 @@ static void start_overhead_process(msg_task_t comm_task)
   argv[1] = xbt_strdup(mbox);
   argv[2] = NULL;
 
-  XBT_INFO("micro start: mbox %s", mbox);
+  // XBT_INFO("micro start: mbox %s", mbox);
   msg_process_t pr = MSG_process_create_with_arguments(pr_name, task_tx_overhead_fun, NULL, MSG_host_self(), nargvs - 1, argv);
 
   xbt_free(pr_name);
@@ -625,12 +630,12 @@ static void shutdown_overhead_process(msg_task_t comm_task)
 
   msg_task_t task = MSG_task_create("finalize_making_overhead", 0, 0, NULL);
 
-  XBT_INFO("micro shutdown: mbox %s", mbox);
+  // XBT_INFO("micro shutdown: mbox %s", mbox);
   msg_error_t ret = MSG_task_send(task, mbox);
   xbt_assert(ret == MSG_OK);
 
   xbt_free(mbox);
-  XBT_INFO("shutdown done");
+  // XBT_INFO("shutdown done");
 }
 
 static void request_overhead(msg_task_t comm_task, double computation)
@@ -639,7 +644,7 @@ static void request_overhead(msg_task_t comm_task, double computation)
 
   msg_task_t task = MSG_task_create("micro", computation, 0, NULL);
 
-  XBT_INFO("req overhead");
+  // XBT_INFO("req overhead");
   msg_error_t ret = MSG_task_send(task, mbox);
   xbt_assert(ret == MSG_OK);
 
@@ -656,7 +661,7 @@ static void request_overhead(msg_task_t comm_task, double computation)
  * */
 static void task_send_bounded_with_cpu_overhead(msg_task_t comm_task, char *mbox, double mig_speed, double alpha)
 {
-  const double chunk_size = 1024 * 1024;
+  const double chunk_size = 1024 * 1024 * 10;
   double remaining = MSG_task_get_data_size(comm_task);
 
   start_overhead_process(comm_task);
@@ -669,7 +674,7 @@ static void task_send_bounded_with_cpu_overhead(msg_task_t comm_task, char *mbox
 
     remaining -= data_size;
 
-    XBT_INFO("remaining %f bytes", remaining);
+    // XBT_INFO("remaining %f bytes", remaining);
 
 
     double clock_sta = MSG_get_clock();
@@ -718,12 +723,12 @@ static void task_send_bounded_with_cpu_overhead(msg_task_t comm_task, char *mbox
         MSG_process_sleep(time_to_sleep);
 
 
-      XBT_INFO("duration %f", clock_end - clock_sta);
-      XBT_INFO("time_to_sleep %f", time_to_sleep);
+      //XBT_INFO("duration %f", clock_end - clock_sta);
+      //XBT_INFO("time_to_sleep %f", time_to_sleep);
     }
   }
 
-  XBT_INFO("%s", MSG_task_get_name(comm_task));
+  // XBT_INFO("%s", MSG_task_get_name(comm_task));
   shutdown_overhead_process(comm_task);
 
 }
@@ -839,6 +844,53 @@ static void send_migration_data(const char *vm_name, const char *src_pm_name, co
 #endif
 }
 
+double get_updated_size(double computed, double dp_rate, double dp_cap)
+{
+  double updated_size = computed * dp_rate;
+  XBT_INFO("updated_size %f dp_rate %f", updated_size, dp_rate);
+  if (updated_size > dp_cap) {
+    // XBT_INFO("mig-stage2.%d: %f bytes updated, but cap it with the working set size %f", stage2_round, updated_size, dp_cap);
+    updated_size = dp_cap;
+  }
+
+  return updated_size;
+}
+
+static double send_stage1(msg_host_t vm, const char *src_pm_name, const char *dst_pm_name,
+    long ramsize, double mig_speed, double xfer_cpu_overhead, double dp_rate, double dp_cap, double dpt_cpu_overhead)
+{
+  const char *vm_name = MSG_host_get_name(vm);
+  char *mbox = get_mig_mbox_src_dst(vm_name, src_pm_name, dst_pm_name);
+
+  const long chunksize = 1024 * 1024 * 100;
+  long remaining = ramsize;
+  double computed_total = 0;
+
+  while (remaining > 0) {
+    long datasize = chunksize;
+    if (remaining < chunksize)
+      datasize = remaining;
+
+    remaining -= datasize;
+
+    send_migration_data(vm_name, src_pm_name, dst_pm_name, datasize, mbox, 1, 0, mig_speed, xfer_cpu_overhead);
+
+    double computed = lookup_computed_flop_counts(vm, 1, 0);
+    computed_total += computed;
+
+    {
+      double updated_size = get_updated_size(computed, dp_rate, dp_cap);
+
+      double overhead = dpt_cpu_overhead * updated_size;
+      launch_deferred_exec_process(vm, overhead, 10000);
+    }
+  }
+
+  return computed_total;
+}
+
+
+
 
 static int migration_tx_fun(int argc, char *argv[])
 {
@@ -864,6 +916,7 @@ static int migration_tx_fun(int argc, char *argv[])
   const double dp_cap       = params.dp_cap;
   const double mig_speed    = params.mig_speed;
   const double xfer_cpu_overhead = params.xfer_cpu_overhead;
+  const double dpt_cpu_overhead = params.dpt_cpu_overhead;
 
   double remaining_size = ramsize + devsize;
 
@@ -889,11 +942,14 @@ static int migration_tx_fun(int argc, char *argv[])
   /* Stage1: send all memory pages to the destination. */
   start_dirty_page_tracking(vm);
 
+  double computed_during_stage1 = 0;
   if (!skip_stage1) {
-    send_migration_data(vm_name, src_pm_name, dst_pm_name, ramsize, mbox, 1, 0, mig_speed, xfer_cpu_overhead);
+    // send_migration_data(vm_name, src_pm_name, dst_pm_name, ramsize, mbox, 1, 0, mig_speed, xfer_cpu_overhead);
+
+    /* send ramsize, but split it */
+    computed_during_stage1 = send_stage1(vm, src_pm_name, dst_pm_name, ramsize, mig_speed, xfer_cpu_overhead, dp_rate, dp_cap, dpt_cpu_overhead);
     remaining_size -= ramsize;
   }
-
 
 
   /* Stage2: send update pages iteratively until the size of remaining states
@@ -908,31 +964,38 @@ static int migration_tx_fun(int argc, char *argv[])
 
   int stage2_round = 0;
   for (;;) {
-    // long updated_size = lookup_dirty_pages(vm);
-    double updated_size = lookup_computed_flop_counts(vm, stage2_round) * dp_rate;
-    if (updated_size > dp_cap) {
-      XBT_INFO("mig-stage2.%d: %f bytes updated, but cap it with the working set size %f",
-          stage2_round, updated_size, dp_cap);
-      updated_size = dp_cap;
+
+    double updated_size = 0;
+    if (stage2_round == 0)  {
+      /* just after stage1, nothing has been updated. But, we have to send the data updated during stage1 */
+      updated_size = get_updated_size(computed_during_stage1, dp_rate, dp_cap);
+    } else {
+      double computed = lookup_computed_flop_counts(vm, 2, stage2_round);
+      updated_size = get_updated_size(computed, dp_rate, dp_cap);
+    }
+
+    XBT_INFO("%d updated_size %f computed_during_stage1 %f dp_rate %f dp_cap %f",
+        stage2_round, updated_size, computed_during_stage1, dp_rate, dp_cap);
+
+
+    if (stage2_round != 0) {
+      /* during stage1, we have already created overhead tasks */
+      double overhead = dpt_cpu_overhead * updated_size;
+      XBT_INFO("updated %f overhead %f", updated_size, overhead);
+      launch_deferred_exec_process(vm, overhead, 10000);
     }
 
 
-    // double dpt_overhead_parameter = 1.0L * 1E8 / 0.5 / 40 / 1024 / 1024 * 1000 * 1000 * 1000 * 1000 * 1000; // super cool, but 520 for 0 32 8g 75%
-    // double dpt_overhead_parameter = 1.0L * 1E8 / 0.5 / 40 / 1024 / 1024 * 1000 * 1000 * 1000 * 1000 * 1000 * 1000 * 1000; 
-    // double dpt_overhead_parameter = 1.0L * 1E8 / 0.5 / 40 / 1024 / 1024 * 1000 * 1000 * 1000 * 1000;
-    double dpt_overhead_parameter = 1.0L * 1E8 / 0.5 / 40 / 1024 / 1024 * 1000 * 1000 * 1000 * 1000 * 1000 * 1000;
+    {
+      remaining_size += updated_size;
 
-    double overhead = dpt_overhead_parameter * updated_size;
-    XBT_INFO("updated %f overhead %f", updated_size, overhead);
-    launch_deferred_exec_process(vm, overhead);
+      XBT_INFO("mig-stage2.%d: remaining_size %f (%s threshold %f)", stage2_round,
+          remaining_size, (remaining_size < threshold) ? "<" : ">", threshold);
 
-    remaining_size += updated_size;
+      if (remaining_size < threshold)
+        break;
+    }
 
-    XBT_INFO("mig-stage2.%d: remaining_size %f (%s threshold %f)", stage2_round,
-        remaining_size, (remaining_size < threshold) ? "<" : ">", threshold);
-
-    if (remaining_size < threshold)
-      break;
 
     send_migration_data(vm_name, src_pm_name, dst_pm_name, updated_size, mbox, 2, stage2_round, mig_speed, xfer_cpu_overhead);
 

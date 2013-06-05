@@ -67,11 +67,15 @@ typedef struct ws_params {
   /* The size of other states than memory pages, which is out-of-scope of dirty
    * page tracking. */
   long devsize;
+  int skip_stage1;
   int skip_stage2;
   double max_downtime;
 
   double dp_rate;
-  double dp_cap;
+  double dp_cap; /* bytes per 1 flop execution */
+
+  double xfer_cpu_overhead;
+  double dpt_cpu_overhead;
 
   /* set migration speed */
   double mig_speed;
