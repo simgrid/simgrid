@@ -380,10 +380,9 @@ static double vm_ws_share_resources(surf_model_t workstation_model, double now)
       continue;
 
     /* It is a virtual machine, so we can cast it to workstation_VM2013_t */
-    workstation_VM2013_t ws_vm2013 = (workstation_VM2013_t) ws_clm03;
     {
-      void *ind_sub_host = xbt_lib_get_elm_or_null(host_lib, ws_vm2013->sub_ws->generic_resource.name);
 #if 0
+      workstation_VM2013_t ws_vm2013 = (workstation_VM2013_t) ws_clm03;	    
       XBT_INFO("cost %f remains %f start %f finish %f", ws_vm2013->cpu_action->cost,
           ws_vm2013->cpu_action->remains,
           ws_vm2013->cpu_action->start,
@@ -391,6 +390,7 @@ static double vm_ws_share_resources(surf_model_t workstation_model, double now)
           );
 #endif
 #if 0
+      void *ind_sub_host = xbt_lib_get_elm_or_null(host_lib, ws_vm2013->sub_ws->generic_resource.name);      
       surf_cpu_model_pm->action_unref(ws_vm2013->cpu_action);
       /* FIXME: this means busy loop? */
       // ws_vm2013->cpu_action = surf_cpu_model_pm->extension.cpu.execute(ind_sub_host, GUESTOS_NOISE);
@@ -420,7 +420,7 @@ static void *vm_ws_get_pm(void *ind_vm_ws)
 
 
 /* Adding a task to a VM updates the VCPU task on its physical machine. */
-surf_action_t vm_ws_execute(void *workstation, double size)
+static surf_action_t vm_ws_execute(void *workstation, double size)
 {
   surf_resource_t ws = ((surf_resource_t) surf_workstation_resource_priv(workstation));
 

@@ -74,7 +74,7 @@ static int __can_be_started(smx_host_t vm)
   long total_ramsize_of_vms = 0;
   xbt_dynar_t dyn_vms = surf_workstation_model->extension.workstation.get_vms(pm);
   {
-    int cursor = 0;
+    unsigned int cursor = 0;
     smx_host_t another_vm;
     xbt_dynar_foreach(dyn_vms, cursor, another_vm) {
       long another_vm_ramsize = host_get_ramsize(vm, NULL);
@@ -139,8 +139,6 @@ int SIMIX_pre_vm_get_state(smx_simcall_t simcall, smx_host_t ind_vm)
  */
 void SIMIX_vm_migrate(smx_host_t ind_vm, smx_host_t ind_dst_pm)
 {
-  const char *name = SIMIX_host_get_name(ind_vm);
-
   /* precopy migration makes the VM temporally paused */
   e_surf_vm_state_t state = SIMIX_vm_get_state(ind_vm);
   xbt_assert(state == SURF_VM_STATE_SUSPENDED);
@@ -361,8 +359,6 @@ void SIMIX_vm_destroy(smx_host_t ind_vm)
 
   xbt_assert((ind_vm != NULL), "Invalid parameters");
   const char *hostname = SIMIX_host_get_name(ind_vm);
-
-  smx_host_priv_t host_priv = SIMIX_host_priv(ind_vm);
 
   /* this will call the registered callback function, i.e., SIMIX_host_destroy().  */
   xbt_lib_unset(host_lib, hostname, SIMIX_HOST_LEVEL, 1);

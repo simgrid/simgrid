@@ -312,9 +312,6 @@ static void launch_deferred_exec_process(msg_host_t host, double computation, do
 
 static int migration_rx_fun(int argc, char *argv[])
 {
-  const char *pr_name = MSG_process_get_name(MSG_process_self());
-  const char *host_name = MSG_host_get_name(MSG_host_self());
-
   XBT_DEBUG("mig: rx_start");
 
   xbt_assert(argc == 4);
@@ -378,14 +375,6 @@ static int migration_rx_fun(int argc, char *argv[])
 
   return 0;
 }
-
-
-typedef struct dirty_page {
-  double prev_clock;
-  double prev_remaining;
-  msg_task_t task;
-} s_dirty_page, *dirty_page_t;
-
 
 static void reset_dirty_pages(msg_vm_t vm)
 {
@@ -894,9 +883,6 @@ static double send_stage1(msg_host_t vm, const char *src_pm_name, const char *ds
 
 static int migration_tx_fun(int argc, char *argv[])
 {
-  const char *pr_name = MSG_process_get_name(MSG_process_self());
-  const char *host_name = MSG_host_get_name(MSG_host_self());
-
   XBT_DEBUG("mig: tx_start");
 
   xbt_assert(argc == 4);
@@ -1035,7 +1021,7 @@ static void do_migration(msg_vm_t vm, msg_host_t src_pm, msg_host_t dst_pm)
     argv[3] = xbt_strdup(sg_host_name(dst_pm));
     argv[4] = NULL;
 
-    msg_process_t pr = MSG_process_create_with_arguments(pr_name, migration_rx_fun, NULL, dst_pm, nargvs - 1, argv);
+    MSG_process_create_with_arguments(pr_name, migration_rx_fun, NULL, dst_pm, nargvs - 1, argv);
 
     xbt_free(pr_name);
   }
@@ -1049,7 +1035,7 @@ static void do_migration(msg_vm_t vm, msg_host_t src_pm, msg_host_t dst_pm)
     argv[2] = xbt_strdup(sg_host_name(src_pm));
     argv[3] = xbt_strdup(sg_host_name(dst_pm));
     argv[4] = NULL;
-    msg_process_t pr = MSG_process_create_with_arguments(pr_name, migration_tx_fun, NULL, src_pm, nargvs - 1, argv);
+    MSG_process_create_with_arguments(pr_name, migration_tx_fun, NULL, src_pm, nargvs - 1, argv);
 
     xbt_free(pr_name);
   }

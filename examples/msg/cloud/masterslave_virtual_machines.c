@@ -228,7 +228,7 @@ int main(int argc, char *argv[])
     return 1;
   }
 
-  msg_host_t master_pm;
+  msg_host_t master_pm = NULL;
   char **master_argv = xbt_new(char *, 12);
   master_argv[0] = xbt_strdup("master");
   master_argv[11] = NULL;
@@ -247,12 +247,13 @@ int main(int argc, char *argv[])
       break;
   }
 
+  msg_error_t res = 1;
+  if (master_pm!=NULL){
+    MSG_process_create_with_arguments("master", master_fun, NULL, master_pm, nb_hosts + 1, master_argv);
 
-  MSG_process_create_with_arguments("master", master_fun, NULL, master_pm, nb_hosts + 1, master_argv);
-
-  msg_error_t res = MSG_main();
-  XBT_INFO("Bye (simulation time %g)", MSG_get_clock());
-
+    res = MSG_main();
+    XBT_INFO("Bye (simulation time %g)", MSG_get_clock());
+  }
   xbt_dynar_free(&hosts_dynar);
 
   return !(res == MSG_OK);

@@ -770,7 +770,7 @@ static void cpu_ti_finalize(surf_model_t cpu_model)
   xbt_heap_free(cpu_ti_action_heap);
 }
 
-surf_model_t surf_cpu_ti_model_init_internal(void)
+static surf_model_t surf_cpu_ti_model_init_internal(void)
 {
   s_surf_action_t action;
   s_cpu_ti_t cpu;
