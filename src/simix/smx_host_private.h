@@ -74,6 +74,7 @@ void SIMIX_pre_host_execution_cancel(smx_simcall_t, smx_action_t);
 double SIMIX_pre_host_execution_get_remains(smx_simcall_t, smx_action_t);
 e_smx_state_t SIMIX_pre_host_execution_get_state(smx_simcall_t, smx_action_t);
 void SIMIX_pre_host_execution_set_priority(smx_simcall_t, smx_action_t, double);
+void SIMIX_pre_host_execution_set_bound(smx_simcall_t simcall, smx_action_t action, double bound);
 
 void SIMIX_host_execution_suspend(smx_action_t action);
 void SIMIX_host_execution_resume(smx_action_t action);

@@ -102,7 +102,6 @@ XBT_PUBLIC_DATA(xbt_dict_t) MSG_vm_get_properties(msg_vm_t vm);
 XBT_PUBLIC_DATA(void) MSG_vm_set_property_value(msg_vm_t vm, const char *name, void *value, void_f_pvoid_t free_ctn);
 XBT_PUBLIC_DATA(msg_vm_t) MSG_vm_get_by_name(const char *name);
 XBT_PUBLIC_DATA(const char*) MSG_vm_get_name(msg_vm_t vm);
-XBT_PUBLIC_DATA(double) get_computed(char *key, msg_vm_t vm, dirty_page_t dp, double remaining, double clock);
 
 /************************** Global variables ********************************/
 typedef struct MSG_Global {

@@ -425,7 +425,7 @@ double calc_updated_pages(char *key, msg_vm_t vm, dirty_page_t dp, double remain
 }
 #endif
 
-double get_computed(char *key, msg_vm_t vm, dirty_page_t dp, double remaining, double clock)
+static double get_computed(char *key, msg_vm_t vm, dirty_page_t dp, double remaining, double clock)
 {
   double computed = dp->prev_remaining - remaining;
   double duration = clock - dp->prev_clock;
@@ -557,7 +557,7 @@ static void launch_deferred_exec_process(msg_host_t host, double computation, do
   argv[2] = bprintf("%lf", prio);
   argv[3] = NULL;
 
-  msg_process_t pr = MSG_process_create_with_arguments(pr_name, deferred_exec_fun, NULL, host, nargvs - 1, argv);
+  MSG_process_create_with_arguments(pr_name, deferred_exec_fun, NULL, host, nargvs - 1, argv);
 
   xbt_free(pr_name);
 }
@@ -607,7 +607,7 @@ static void start_overhead_process(msg_task_t comm_task)
   argv[2] = NULL;
 
   // XBT_INFO("micro start: mbox %s", mbox);
-  msg_process_t pr = MSG_process_create_with_arguments(pr_name, task_tx_overhead_fun, NULL, MSG_host_self(), nargvs - 1, argv);
+  MSG_process_create_with_arguments(pr_name, task_tx_overhead_fun, NULL, MSG_host_self(), nargvs - 1, argv);
 
   xbt_free(pr_name);
   xbt_free(mbox);
@@ -833,7 +833,7 @@ static void send_migration_data(const char *vm_name, const char *src_pm_name, co
 #endif
 }
 
-double get_updated_size(double computed, double dp_rate, double dp_cap)
+static double get_updated_size(double computed, double dp_rate, double dp_cap)
 {
   double updated_size = computed * dp_rate;
   XBT_INFO("updated_size %f dp_rate %f", updated_size, dp_rate);
