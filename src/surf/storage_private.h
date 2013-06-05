@@ -20,15 +20,10 @@ typedef struct s_mount {
   char *name;
 } s_mount_t, *mount_t;
 
-typedef struct surf_stat { /* file status structure */
-  s_file_stat_t stat;
-  /* possible additional fields (e.g., popularity, last access time to know whether the file is in cache, ...) */
-} s_surf_stat_t;
-
 typedef struct surf_file {
   char *name;
-  surf_stat_t content;
   const char* storage;
+  double size;
 } s_surf_file_t;
 
 typedef struct storage {
