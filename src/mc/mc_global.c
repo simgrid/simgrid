@@ -222,17 +222,22 @@ void MC_init(){
 
 }
 
-void MC_init_dot_output(){
+void MC_init_dot_output(){ /* FIXME : more colors */
 
   colors[0] = "blue";
   colors[1] = "red";
-  colors[2] = "green";
-  colors[3] = "pink";
+  colors[2] = "green3";
+  colors[3] = "goldenrod";
   colors[4] = "brown";
   colors[5] = "purple";
-  colors[6] = "yellow";
-  colors[7] = "orange";
-  
+  colors[6] = "magenta";
+  colors[7] = "turquoise4";
+  colors[8] = "gray25";
+  colors[9] = "forestgreen";
+  colors[10] = "hotpink";
+  colors[11] = "lightblue";
+  colors[12] = "tan";
+
   dot_output = fopen(_sg_mc_dot_output_file, "w");
   
   if(dot_output == NULL){
@@ -684,6 +689,7 @@ void MC_show_deadlock(smx_simcall_t req)
     xbt_free(req_str);*/
   XBT_INFO("Counter-example execution trace:");
   MC_dump_stack_safety(mc_stack_safety);
+  MC_print_statistics(mc_stats);
 }
 
 
