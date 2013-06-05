@@ -147,13 +147,13 @@ void simcall_host_set_data(smx_host_t host, void *data)
 
 smx_action_t simcall_host_execute(const char *name, smx_host_t host,
                                     double computation_amount,
-                                    double priority)
+                                    double priority, double bound)
 {
   /* checking for infinite values */
   xbt_assert(isfinite(computation_amount), "computation_amount is not finite!");
   xbt_assert(isfinite(priority), "priority is not finite!");
   
-  return simcall_BODY_host_execute(name, host, computation_amount, priority);
+  return simcall_BODY_host_execute(name, host, computation_amount, priority, bound);
 }
 
 /**
@@ -261,6 +261,19 @@ void simcall_host_execution_set_priority(smx_action_t execution, double priority
   xbt_assert(isfinite(priority), "priority is not finite!");
   
   simcall_BODY_host_execution_set_priority(execution, priority);
+}
+
+/**
+ * \ingroup simix_host_management
+ * \brief Changes the capping (the maximum CPU utilization) of an execution action.
+ *
+ * This functions changes the capping only. It calls a surf function.
+ * \param execution The execution action
+ * \param bound The new bound
+ */
+void simcall_host_execution_set_bound(smx_action_t execution, double bound)
+{
+  simcall_BODY_host_execution_set_bound(execution, bound);
 }
 
 /**

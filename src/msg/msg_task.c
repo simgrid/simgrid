@@ -62,6 +62,7 @@ msg_task_t MSG_task_create(const char *name, double compute_duration,
   simdata->receiver = NULL;
   simdata->source = NULL;
   simdata->priority = 1.0;
+  simdata->bound = 0;
   simdata->rate = -1.0;
   simdata->isused = 0;
 
@@ -437,4 +438,24 @@ void MSG_task_set_priority(msg_task_t task, double priority)
   if (task->simdata->compute)
     simcall_host_execution_set_priority(task->simdata->compute,
                                       task->simdata->priority);
+}
+
+
+/** \ingroup m_task_management
+ * \brief Changes the maximum CPU utilization of a computation task.
+ *        Unit is flops/s.
+ *
+ */
+void MSG_task_set_bound(msg_task_t task, double bound)
+{
+  xbt_assert(task, "Invalid parameter");
+  xbt_assert(task->simdata, "Invalid parameter");
+
+  if (bound == 0)
+    XBT_INFO("bound == 0 means no capping");
+
+  task->simdata->bound = bound;
+  if (task->simdata->compute)
+    simcall_host_execution_set_bound(task->simdata->compute,
+                                      task->simdata->bound);
 }

@@ -381,6 +381,7 @@ static surf_model_t surf_cpu_model_init_cas01(void)
   cpu_model->is_suspended = surf_action_is_suspended;
   cpu_model->set_max_duration = surf_action_set_max_duration;
   cpu_model->set_priority = surf_action_set_priority;
+  cpu_model->set_bound = surf_action_set_bound;
 #ifdef HAVE_TRACING
   cpu_model->set_category = surf_action_set_category;
 #endif

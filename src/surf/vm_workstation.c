@@ -472,6 +472,7 @@ static void surf_vm_workstation_model_init_internal(void)
 //   model->is_suspended     = ws_action_is_suspended;
 //   model->set_max_duration = ws_action_set_max_duration;
   model->set_priority     = ws_action_set_priority;
+  model->set_bound        = ws_action_set_bound;
 // #ifdef HAVE_TRACING
 //   model->set_category     = ws_action_set_category;
 // #endif
@@ -492,7 +493,7 @@ static void surf_vm_workstation_model_init_internal(void)
   model->extension.workstation.execute   = vm_ws_execute;
   model->extension.workstation.sleep     = ws_action_sleep;
   model->extension.workstation.get_state = ws_get_state;
-  // model->extension.workstation.get_speed = ws_get_speed;
+  model->extension.workstation.get_speed = ws_get_speed;
   // model->extension.workstation.get_available_speed = ws_get_available_speed;
 
   // model->extension.workstation.communicate           = ws_communicate;

@@ -42,7 +42,7 @@ double SIMIX_host_get_speed(smx_host_t host);
 double SIMIX_host_get_available_speed(smx_host_t host);
 int SIMIX_host_get_state(smx_host_t host);
 smx_action_t SIMIX_host_execute(const char *name,
-    smx_host_t host, double computation_amount, double priority);
+    smx_host_t host, double computation_amount, double priority, double bound);
 smx_action_t SIMIX_host_parallel_execute(const char *name,
     int host_nb, smx_host_t *host_list,
     double *computation_amount, double *communication_amount,
@@ -52,6 +52,7 @@ void SIMIX_host_execution_cancel(smx_action_t action);
 double SIMIX_host_execution_get_remains(smx_action_t action);
 e_smx_state_t SIMIX_host_execution_get_state(smx_action_t action);
 void SIMIX_host_execution_set_priority(smx_action_t action, double priority);
+void SIMIX_host_execution_set_bound(smx_action_t action, double bound);
 void SIMIX_pre_host_execution_wait(smx_simcall_t simcall, smx_action_t action);
 
 // pre prototypes
@@ -65,7 +66,7 @@ int SIMIX_pre_host_get_state(smx_simcall_t, smx_host_t);
 void* SIMIX_pre_host_self_get_data(smx_simcall_t);
 void* SIMIX_pre_host_get_data(smx_simcall_t, smx_host_t);
 void SIMIX_pre_host_set_data(smx_simcall_t, smx_host_t, void*);
-smx_action_t SIMIX_pre_host_execute(smx_simcall_t, const char*, smx_host_t, double, double);
+smx_action_t SIMIX_pre_host_execute(smx_simcall_t, const char*, smx_host_t, double, double, double);
 smx_action_t SIMIX_pre_host_parallel_execute(smx_simcall_t, const char*, int, smx_host_t*,
                                              double*, double*, double, double);
 void SIMIX_pre_host_execution_destroy(smx_simcall_t, smx_action_t);

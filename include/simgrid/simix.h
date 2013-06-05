@@ -307,7 +307,7 @@ XBT_PUBLIC(void) simcall_host_set_data(smx_host_t host, void *data);
 
 XBT_PUBLIC(smx_action_t) simcall_host_execute(const char *name, smx_host_t host,
                                                 double computation_amount,
-                                                double priority);
+                                                double priority, double bound);
 XBT_PUBLIC(smx_action_t) simcall_host_parallel_execute(const char *name,
                                                      int host_nb,
                                                      smx_host_t *host_list,
@@ -320,6 +320,7 @@ XBT_PUBLIC(void) simcall_host_execution_cancel(smx_action_t execution);
 XBT_PUBLIC(double) simcall_host_execution_get_remains(smx_action_t execution);
 XBT_PUBLIC(e_smx_state_t) simcall_host_execution_get_state(smx_action_t execution);
 XBT_PUBLIC(void) simcall_host_execution_set_priority(smx_action_t execution, double priority);
+XBT_PUBLIC(void) simcall_host_execution_set_bound(smx_action_t execution, double bound);
 XBT_PUBLIC(e_smx_state_t) simcall_host_execution_wait(smx_action_t execution);
 XBT_PUBLIC(void) simcall_host_get_params(smx_host_t vm, ws_params_t param);
 XBT_PUBLIC(void) simcall_host_set_params(smx_host_t vm, ws_params_t param);

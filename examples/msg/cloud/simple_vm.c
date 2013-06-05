@@ -283,6 +283,7 @@ int main(int argc, char *argv[])
   MSG_init(&argc, argv);
 
   /* load the platform file */
+  xbt_assert(argc == 2);
   MSG_create_environment(argv[1]);
 
   xbt_dynar_t hosts_dynar = MSG_hosts_as_dynar();

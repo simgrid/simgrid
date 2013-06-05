@@ -268,6 +268,17 @@ void ws_action_set_priority(surf_action_t action, double priority)
     DIE_IMPOSSIBLE;
 }
 
+void ws_action_set_bound(surf_action_t action, double bound)
+{
+  /* FIXME: only for CPU model object? */
+  if (action->model_obj->type == SURF_MODEL_TYPE_NETWORK)
+    surf_network_model->set_bound(action, bound);
+  else if (action->model_obj->type == SURF_MODEL_TYPE_CPU)
+    action->model_obj->set_bound(action, bound);
+  else
+    DIE_IMPOSSIBLE;
+}
+
 #ifdef HAVE_TRACING
 static void ws_action_set_category(surf_action_t action, const char *category)
 {
@@ -317,7 +328,7 @@ e_surf_resource_state_t ws_get_state(void *workstation)
   return cpu->model->extension.cpu.get_state(workstation);
 }
 
-static double ws_get_speed(void *workstation, double load)
+double ws_get_speed(void *workstation, double load)
 {
   surf_resource_t cpu = ((surf_resource_t) surf_cpu_resource_priv(workstation));
   return cpu->model->extension.cpu.get_speed(workstation, load);
@@ -532,6 +543,7 @@ static void surf_workstation_model_init_internal(void)
   model->is_suspended     = ws_action_is_suspended;
   model->set_max_duration = ws_action_set_max_duration;
   model->set_priority     = ws_action_set_priority;
+  model->set_bound        = ws_action_set_bound;
   #ifdef HAVE_TRACING
   model->set_category     = ws_action_set_category;
   #endif

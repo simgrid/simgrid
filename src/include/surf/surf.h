@@ -100,6 +100,7 @@ typedef struct surf_action {
   xbt_swag_t state_set;
   double cost;                  /**< cost        */
   double priority;              /**< priority (1.0 by default) */
+  double bound;              /**< the capping of the CPU use  */
   double max_duration;          /**< max_duration (may fluctuate until
            the task is completed) */
   double remains;               /**< How much of that cost remains to
@@ -370,6 +371,7 @@ typedef struct surf_model {
   int (*is_suspended) (surf_action_t action);     /**< Return whether an action is suspended */
   void (*set_max_duration) (surf_action_t action, double duration);     /**< Set the max duration of an action*/
   void (*set_priority) (surf_action_t action, double priority);     /**< Set the priority of an action */
+  void (*set_bound) (surf_action_t action, double bound);     /**< Set the bound (the maximum CPU utilization) of an action */
 #ifdef HAVE_TRACING
   void (*set_category) (surf_action_t action, const char *category); /**< Set the category of an action */
 #endif

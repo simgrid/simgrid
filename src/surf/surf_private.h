@@ -75,6 +75,7 @@ void surf_action_resume(surf_action_t action);
 int surf_action_is_suspended(surf_action_t action);
 void surf_action_set_max_duration(surf_action_t action, double duration);
 void surf_action_set_priority(surf_action_t action, double priority);
+void surf_action_set_bound(surf_action_t action, double bound);
 #ifdef HAVE_TRACING
 void surf_action_set_category(surf_action_t action,
                                     const char *category);

@@ -5,11 +5,13 @@ set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}")
 add_executable(masterslave_virtual_machines "masterslave_virtual_machines.c")
 add_executable(simple_vm "simple_vm.c")
 add_executable(migrate_vm "migrate_vm.c")
+add_executable(bound "bound.c")
 
 ### Add definitions for compile
 target_link_libraries(masterslave_virtual_machines simgrid)
 target_link_libraries(simple_vm simgrid)
 target_link_libraries(migrate_vm simgrid)
+target_link_libraries(bound simgrid)
 
 set(tesh_files
   ${tesh_files}
@@ -27,6 +29,7 @@ set(examples_src
   ${CMAKE_CURRENT_SOURCE_DIR}/masterslave_virtual_machines.c
   ${CMAKE_CURRENT_SOURCE_DIR}/simple_vm.c
   ${CMAKE_CURRENT_SOURCE_DIR}/migrate_vm.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/bound.c
   PARENT_SCOPE
   )
 set(bin_files

@@ -31,7 +31,8 @@ typedef struct simdata_task {
   msg_process_t receiver;
   msg_host_t source;
   double priority;
-  double rate;
+  double bound; /* Capping for CPU resource */
+  double rate;  /* Capping for network resource */
   int isused;  /* Indicates whether the task is used in SIMIX currently */
   int host_nb;                  /* ==0 if sequential task; parallel task if not */
   /*******  Parallel Tasks Only !!!! *******/

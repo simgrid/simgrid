@@ -205,6 +205,7 @@ XBT_PUBLIC(msg_error_t) MSG_task_receive_from_host_bounded(msg_task_t * task, co
 XBT_PUBLIC(msg_error_t) MSG_task_execute(msg_task_t task);
 XBT_PUBLIC(msg_error_t) MSG_parallel_task_execute(msg_task_t task);
 XBT_PUBLIC(void) MSG_task_set_priority(msg_task_t task, double priority);
+XBT_PUBLIC(void) MSG_task_set_bound(msg_task_t task, double bound);
 
 XBT_PUBLIC(msg_error_t) MSG_process_sleep(double nb_sec);
 

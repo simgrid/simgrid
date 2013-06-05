@@ -85,7 +85,8 @@ msg_error_t MSG_parallel_task_execute(msg_task_t task)
       simdata->compute = simcall_host_execute(task->name,
                                               p_simdata->m_host,
                                               simdata->computation_amount,
-                                              simdata->priority);
+                                              simdata->priority,
+                                              simdata->bound);
 
     }
 #ifdef HAVE_TRACING

@@ -25,6 +25,7 @@ void ws_update_resource_state(void *id, tmgr_trace_event_t event_type, double va
 void ws_finalize(surf_model_t workstation_model);
 
 void ws_action_set_priority(surf_action_t action, double priority);
+void ws_action_set_bound(surf_action_t action, double bound);
 
 surf_action_t ws_execute(void *workstation, double size);
 surf_action_t ws_action_sleep(void *workstation, double duration);
@@ -32,6 +33,7 @@ void ws_action_suspend(surf_action_t action);
 void ws_action_resume(surf_action_t action);
 void ws_action_cancel(surf_action_t action);
 e_surf_resource_state_t ws_get_state(void *workstation);
+double ws_get_speed(void *workstation, double load);
 double ws_action_get_remains(surf_action_t action);
 
 void ws_get_params(void *ws, ws_params_t params);

@@ -278,6 +278,18 @@ void surf_action_set_priority(surf_action_t action, double priority)
   XBT_OUT();
 }
 
+void surf_action_set_bound(surf_action_t action, double bound)
+{
+  surf_model_t model = action->model_obj;
+  XBT_IN("(%p,%g)", action, bound);
+  action->bound = bound;
+  lmm_update_variable_bound(model->model_private->maxmin_system, ((surf_action_lmm_t) action)->variable, bound);
+
+  if (model->model_private->update_mechanism == UM_LAZY)
+    surf_action_lmm_heap_remove(model->model_private->action_heap, (surf_action_lmm_t) action);
+  XBT_OUT();
+}
+
 #ifdef HAVE_TRACING
 void surf_action_set_category(surf_action_t action,
                                     const char *category)

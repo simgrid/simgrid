@@ -305,11 +305,11 @@ void SIMIX_host_set_data(smx_host_t host, void *data){
 }
 
 smx_action_t SIMIX_pre_host_execute(smx_simcall_t simcall,const char *name,
-    smx_host_t host, double computation_amount, double priority){
-  return SIMIX_host_execute(name, host, computation_amount, priority);
+    smx_host_t host, double computation_amount, double priority, double bound){
+  return SIMIX_host_execute(name, host, computation_amount, priority, bound);
 }
 smx_action_t SIMIX_host_execute(const char *name,
-    smx_host_t host, double computation_amount, double priority){
+    smx_host_t host, double computation_amount, double priority, double bound){
 
   /* alloc structures and initialize */
   smx_action_t action = xbt_mallocator_get(simix_global->action_mallocator);
@@ -328,6 +328,7 @@ smx_action_t SIMIX_host_execute(const char *name,
     action->execution.surf_exec = ws_model->extension.workstation.execute(host, computation_amount);
     ws_model->action_data_set(action->execution.surf_exec, action);
     ws_model->set_priority(action->execution.surf_exec, priority);
+    ws_model->set_bound(action->execution.surf_exec, bound);
   }
 
   XBT_DEBUG("Create execute action %p", action);
@@ -454,13 +455,24 @@ e_smx_state_t SIMIX_host_execution_get_state(smx_action_t action){
 
 void SIMIX_pre_host_execution_set_priority(smx_simcall_t simcall, smx_action_t action,
 		                        double priority){
-  return SIMIX_host_execution_set_priority(action, priority);
+  SIMIX_host_execution_set_priority(action, priority);
 }
 void SIMIX_host_execution_set_priority(smx_action_t action, double priority){
   surf_model_t ws_model = get_ws_model_from_action(action);
 
   if(action->execution.surf_exec)
     ws_model->set_priority(action->execution.surf_exec, priority);
+}
+
+void SIMIX_pre_host_execution_set_bound(smx_simcall_t simcall, smx_action_t action,
+		                        double bound){
+  SIMIX_host_execution_set_bound(action, bound);
+}
+void SIMIX_host_execution_set_bound(smx_action_t action, double bound){
+  surf_model_t ws_model = get_ws_model_from_action(action);
+
+  if(action->execution.surf_exec)
+    ws_model->set_bound(action->execution.surf_exec, bound);
 }
 
 void SIMIX_pre_host_execution_wait(smx_simcall_t simcall, smx_action_t action){

@@ -267,13 +267,14 @@ ACTION(SIMCALL_HOST_GET_AVAILABLE_SPEED, host_get_available_speed, WITH_ANSWER, 
 ACTION(SIMCALL_HOST_GET_STATE, host_get_state, WITH_ANSWER, TINT(result), TSPEC(host, smx_host_t)) sep \
 ACTION(SIMCALL_HOST_GET_DATA, host_get_data, WITH_ANSWER, TPTR(result), TSPEC(host, smx_host_t)) sep \
 ACTION(SIMCALL_HOST_SET_DATA, host_set_data, WITH_ANSWER, TVOID(result), TSPEC(host, smx_host_t), TPTR(data)) sep \
-ACTION(SIMCALL_HOST_EXECUTE, host_execute, WITH_ANSWER, TSPEC(result, smx_action_t), TSTRING(name), TSPEC(host, smx_host_t), TDOUBLE(computation_amount), TDOUBLE(priority)) sep \
+ACTION(SIMCALL_HOST_EXECUTE, host_execute, WITH_ANSWER, TSPEC(result, smx_action_t), TSTRING(name), TSPEC(host, smx_host_t), TDOUBLE(computation_amount), TDOUBLE(priority), TDOUBLE(bound)) sep \
 ACTION(SIMCALL_HOST_PARALLEL_EXECUTE, host_parallel_execute, WITH_ANSWER, TSPEC(result, smx_action_t), TSTRING(name), TINT(host_nb), TSPEC(host_list, smx_host_t*), TSPEC(computation_amount, double*), TSPEC(communication_amount, double*), TDOUBLE(amount), TDOUBLE(rate)) sep \
 ACTION(SIMCALL_HOST_EXECUTION_DESTROY, host_execution_destroy, WITH_ANSWER, TVOID(result), TSPEC(execution, smx_action_t)) sep \
 ACTION(SIMCALL_HOST_EXECUTION_CANCEL, host_execution_cancel, WITH_ANSWER, TVOID(result), TSPEC(execution, smx_action_t)) sep \
 ACTION(SIMCALL_HOST_EXECUTION_GET_REMAINS, host_execution_get_remains, WITH_ANSWER, TDOUBLE(result), TSPEC(execution, smx_action_t)) sep \
 ACTION(SIMCALL_HOST_EXECUTION_GET_STATE, host_execution_get_state, WITH_ANSWER, TINT(result), TSPEC(execution, smx_action_t)) sep \
 ACTION(SIMCALL_HOST_EXECUTION_SET_PRIORITY, host_execution_set_priority, WITH_ANSWER, TVOID(result), TSPEC(execution, smx_action_t), TDOUBLE(priority)) sep \
+ACTION(SIMCALL_HOST_EXECUTION_SET_BOUND, host_execution_set_bound, WITHOUT_ANSWER, TVOID(result), TSPEC(execution, smx_action_t), TDOUBLE(bound)) sep \
 ACTION(SIMCALL_HOST_EXECUTION_WAIT, host_execution_wait, WITHOUT_ANSWER, TINT(result), TSPEC(execution, smx_action_t)) sep \
 ACTION(SIMCALL_HOST_GET_PARAMS, host_get_params, WITHOUT_ANSWER, TVOID(result), TSPEC(ind_vm, smx_host_t), TSPEC(params, ws_params_t)) sep \
 ACTION(SIMCALL_HOST_SET_PARAMS, host_set_params, WITHOUT_ANSWER, TVOID(result), TSPEC(ind_vm, smx_host_t), TSPEC(params, ws_params_t)) sep \
