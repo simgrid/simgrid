@@ -30,19 +30,13 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(io_file,
 int host(int argc, char *argv[])
 {
   msg_file_t file = NULL;
-  s_msg_stat_t stat;
   void *ptr = NULL;
   char* mount = xbt_strdup("/home");
-  double write;
+  size_t write;
 
   // First open
   XBT_INFO("\tOpen file '%s'",FILENAME1);
   file = MSG_file_open(mount,FILENAME1,"rw");
-
-  // Print stat
-  MSG_file_stat(file,&stat);
-  XBT_INFO("\tFile stat %s Size %.1f",file->name,stat.size);
-  MSG_file_free_stat(&stat);
 
   // Unlink the file
   XBT_INFO("\tUnlink file '%s'",file->name);
@@ -52,19 +46,9 @@ int host(int argc, char *argv[])
   XBT_INFO("\tOpen file '%s'",FILENAME1);
   file = MSG_file_open(mount,FILENAME1,"rw");
 
-  // Print stat
-  MSG_file_stat(file,&stat);
-  XBT_INFO("\tFile stat %s Size %.1f",file->name,stat.size);
-  MSG_file_free_stat(&stat);
-
   // Write into the new file
   write = MSG_file_write(ptr,100000,sizeof(char*),file);  // Write for 100Ko
-  XBT_INFO("\tHave written %8.1f on %s",write,file->name);
-
-  // Print the stat
-  MSG_file_stat(file,&stat);
-  XBT_INFO("\tFile stat %s Size %.1f",file->name,stat.size);
-  MSG_file_free_stat(&stat);
+  XBT_INFO("\tHave written %zu on %s",write,file->name);
 
   // Close the file
   XBT_INFO("\tClose file '%s'",file->name);
