@@ -14,7 +14,7 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test,
                              "Messages specific for this msg example");
 
 
-int computation_fun(int argc, char *argv[])
+static int computation_fun(int argc, char *argv[])
 {
   const char *pr_name = MSG_process_get_name(MSG_process_self());
   const char *host_name = MSG_host_get_name(MSG_host_self());
@@ -32,7 +32,7 @@ int computation_fun(int argc, char *argv[])
   return 0;
 }
 
-void launch_computation_worker(msg_host_t host)
+static void launch_computation_worker(msg_host_t host)
 {
   const char *pr_name = "compute";
   char **argv = xbt_new(char *, 2);
@@ -48,7 +48,7 @@ struct task_priv {
   double clock_sta;
 };
 
-int communication_tx_fun(int argc, char *argv[])
+static int communication_tx_fun(int argc, char *argv[])
 {
   xbt_assert(argc == 2);
   const char *mbox = argv[1];
@@ -67,7 +67,7 @@ int communication_tx_fun(int argc, char *argv[])
   return 0;
 }
 
-int communication_rx_fun(int argc, char *argv[])
+static int communication_rx_fun(int argc, char *argv[])
 {
   const char *pr_name = MSG_process_get_name(MSG_process_self());
   const char *host_name = MSG_host_get_name(MSG_host_self());
@@ -90,35 +90,34 @@ int communication_rx_fun(int argc, char *argv[])
   return 0;
 }
 
-void launch_communication_worker(msg_host_t tx_host, msg_host_t rx_host)
+static void launch_communication_worker(msg_host_t tx_host, msg_host_t rx_host)
 {
   char *mbox = bprintf("MBOX:%s-%s",
       MSG_host_get_name(tx_host),
       MSG_host_get_name(rx_host));
   char **argv = NULL;
-  char *pr_name = NULL;
-
-  pr_name = "comm_tx";
+  
+  const char *pr_name_tx =  "comm_tx";
   argv = xbt_new(char *, 3);
-  argv[0] = xbt_strdup(pr_name);
+  argv[0] = xbt_strdup(pr_name_tx);
   argv[1] = xbt_strdup(mbox);
   argv[2] = NULL;
 
-  MSG_process_create_with_arguments(pr_name, communication_tx_fun, NULL, tx_host, 2, argv);
+  MSG_process_create_with_arguments(pr_name_tx, communication_tx_fun, NULL, tx_host, 2, argv);
 
-  pr_name = "comm_rx";
+  const char *pr_name_rx =  "comm_rx";  
   argv = xbt_new(char *, 3);
-  argv[0] = xbt_strdup(pr_name);
+  argv[0] = xbt_strdup(pr_name_rx);
   argv[1] = xbt_strdup(mbox);
   argv[2] = NULL;
 
-  MSG_process_create_with_arguments(pr_name, communication_rx_fun, NULL, rx_host, 2, argv);
+  MSG_process_create_with_arguments(pr_name_rx, communication_rx_fun, NULL, rx_host, 2, argv);
 
   xbt_free(mbox);
 }
 
 
-int master_main(int argc, char *argv[])
+static int master_main(int argc, char *argv[])
 {
   xbt_dynar_t hosts_dynar = MSG_hosts_as_dynar();
   msg_host_t pm0 = xbt_dynar_get_as(hosts_dynar, 0, msg_host_t);
@@ -266,14 +265,14 @@ int master_main(int argc, char *argv[])
   return 0;
 }
 
-void launch_master(msg_host_t host)
+static void launch_master(msg_host_t host)
 {
   const char *pr_name = "master_";
   char **argv = xbt_new(char *, 2);
   argv[0] = xbt_strdup(pr_name);
   argv[1] = NULL;
 
-  msg_process_t pr = MSG_process_create_with_arguments(pr_name, master_main, NULL, host, 1, argv);
+  MSG_process_create_with_arguments(pr_name, master_main, NULL, host, 1, argv);
 }
 
 

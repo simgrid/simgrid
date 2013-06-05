@@ -14,7 +14,7 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test,
                              "Messages specific for this msg example");
 
 
-void vm_migrate(msg_vm_t vm, msg_host_t dst_pm)
+static void vm_migrate(msg_vm_t vm, msg_host_t dst_pm)
 {
   msg_host_t src_pm = MSG_vm_get_pm(vm);
   double mig_sta = MSG_get_clock();
@@ -26,7 +26,7 @@ void vm_migrate(msg_vm_t vm, msg_host_t dst_pm)
 		  mig_end - mig_sta);
 }
 
-int migration_worker_main(int argc, char *argv[])
+static int migration_worker_main(int argc, char *argv[])
 {
   xbt_assert(argc == 3);
   char *vm_name = argv[1];
@@ -40,7 +40,7 @@ int migration_worker_main(int argc, char *argv[])
   return 0;
 }
 
-void vm_migrate_async(msg_vm_t vm, msg_host_t dst_pm)
+static void vm_migrate_async(msg_vm_t vm, msg_host_t dst_pm)
 {
   const char *vm_name = MSG_vm_get_name(vm);
   const char *dst_pm_name = MSG_host_get_name(dst_pm);
@@ -56,7 +56,7 @@ void vm_migrate_async(msg_vm_t vm, msg_host_t dst_pm)
   MSG_process_create_with_arguments(pr_name, migration_worker_main, NULL, host, 3, argv);
 }
 
-int master_main(int argc, char *argv[])
+static int master_main(int argc, char *argv[])
 {
   xbt_dynar_t hosts_dynar = MSG_hosts_as_dynar();
   msg_host_t pm0 = xbt_dynar_get_as(hosts_dynar, 0, msg_host_t);
@@ -132,7 +132,7 @@ int master_main(int argc, char *argv[])
   return 0;
 }
 
-void launch_master(msg_host_t host)
+static void launch_master(msg_host_t host)
 {
   const char *pr_name = "master_";
   char **argv = xbt_new(char *, 2);

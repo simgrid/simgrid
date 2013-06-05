@@ -757,8 +757,6 @@ void SIMIX_process_sleep_destroy(smx_action_t action)
 {
   XBT_DEBUG("Destroy action %p", action);
   xbt_assert(action->type == SIMIX_ACTION_SLEEP);
-  smx_host_t host = action->sleep.host;
-  surf_model_t ws_model = surf_resource_model(host, SURF_WKS_LEVEL);
 
   if (action->sleep.surf_sleep)
     action->sleep.surf_sleep->model_obj->action_unref(action->sleep.surf_sleep);
