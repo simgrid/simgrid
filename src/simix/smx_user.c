@@ -1127,15 +1127,6 @@ int simcall_file_close(smx_file_t fp)
  * \ingroup simix_file_management
  *
  */
-int simcall_file_stat(smx_file_t fd, s_file_stat_t *buf)
-{
-  return simcall_BODY_file_stat(fd, buf);
-}
-
-/**
- * \ingroup simix_file_management
- *
- */
 int simcall_file_unlink(smx_file_t fd)
 {
   return simcall_BODY_file_unlink(fd);

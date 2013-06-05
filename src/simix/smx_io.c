@@ -161,40 +161,6 @@ smx_action_t SIMIX_file_close(smx_process_t process, smx_file_t fp)
   return action;
 }
 
-//SIMIX FILE STAT
-void SIMIX_pre_file_stat(smx_simcall_t simcall, smx_file_t fd, s_file_stat_t *buf)
-{
-  smx_action_t action = SIMIX_file_stat(simcall->issuer, fd, *buf);
-  xbt_fifo_push(action->simcalls, simcall);
-  simcall->issuer->waiting_action = action;
-}
-
-smx_action_t SIMIX_file_stat(smx_process_t process, smx_file_t fd, s_file_stat_t buf)
-{
-  smx_action_t action;
-  smx_host_t host = process->smx_host;
-  /* check if the host is active */
-  if (surf_workstation_model->extension.
-      workstation.get_state(host) != SURF_RESOURCE_ON) {
-    THROWF(host_error, 0, "Host %s failed, you cannot call this function",
-           sg_host_name(host));
-  }
-
-  action = xbt_mallocator_get(simix_global->action_mallocator);
-  action->type = SIMIX_ACTION_IO;
-  action->name = NULL;
-#ifdef HAVE_TRACING
-  action->category = NULL;
-#endif
-
-  action->io.host = host;
-  action->io.surf_io = surf_workstation_model->extension.workstation.stat(host, fd->surf_file);
-
-  surf_workstation_model->action_data_set(action->io.surf_io, action);
-  XBT_DEBUG("Create io action %p", action);
-
-  return action;
-}
 
 //SIMIX FILE UNLINK
 void SIMIX_pre_file_unlink(smx_simcall_t simcall, smx_file_t fd)
@@ -264,25 +230,14 @@ smx_action_t SIMIX_file_ls(smx_process_t process, const char* mount, const char 
   return action;
 }
 
-static void free_file_stat(void *p)
-{
-  file_stat_t fs = p;
-  xbt_free(fs->date);
-  xbt_free(fs->group);
-  xbt_free(fs->time);
-  xbt_free(fs->user);
-  xbt_free(fs->user_rights);
-  xbt_free(fs);
-}
-
 void SIMIX_post_io(smx_action_t action)
 {
   xbt_fifo_item_t i;
   smx_simcall_t simcall;
-  char* key;
-  xbt_dict_cursor_t cursor = NULL;
-  s_file_stat_t *dst = NULL;
-  s_file_stat_t *src = NULL;
+//  char* key;
+//  xbt_dict_cursor_t cursor = NULL;
+//  s_file_stat_t *dst = NULL;
+//  s_file_stat_t *src = NULL;
 
   xbt_fifo_foreach(action->simcalls,i,simcall,smx_simcall_t) {
     switch (simcall->call) {
@@ -305,27 +260,20 @@ void SIMIX_post_io(smx_action_t action)
       simcall_file_read__set__result(simcall, (action->io.surf_io)->cost);
       break;
 
-    case SIMCALL_FILE_STAT:
-      simcall_file_stat__set__result(simcall, 0);
-      dst = simcall_file_stat__get__buf(simcall);
-      src = &((action->io.surf_io)->stat);
-      file_stat_copy(src,dst);
-      break;
-
     case SIMCALL_FILE_UNLINK:
       xbt_free(simcall_file_unlink__get__fd(simcall));
       simcall_file_unlink__set__result(simcall, 0);
       break;
 
     case SIMCALL_FILE_LS:
-      xbt_dict_foreach((action->io.surf_io)->ls_dict,cursor,key, src){
-        // if there is a stat we have to duplicate it
-        if(src){
-          dst = xbt_new0(s_file_stat_t,1);
-          file_stat_copy(src, dst);
-          xbt_dict_set((action->io.surf_io)->ls_dict,key,dst,free_file_stat);
-        }
-      }
+//      xbt_dict_foreach((action->io.surf_io)->ls_dict,cursor,key, src){
+//        // if there is a stat we have to duplicate it
+//        if(src){
+//          dst = xbt_new0(s_file_stat_t,1);
+//          file_stat_copy(src, dst);
+//          xbt_dict_set((action->io.surf_io)->ls_dict,key,dst,xbt_free);
+//        }
+//      }
       simcall_file_ls__set__result(simcall, (action->io.surf_io)->ls_dict);
       break;
 
