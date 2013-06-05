@@ -22,7 +22,7 @@ typedef struct s_mount {
 
 typedef struct surf_stat { /* file status structure */
   s_file_stat_t stat;
-  /* possible additionnal fields (e.g., popularity, last access time to know whether the file is in cache, ...) */
+  /* possible additional fields (e.g., popularity, last access time to know whether the file is in cache, ...) */
 } s_surf_stat_t;
 
 typedef struct surf_file {
@@ -32,9 +32,9 @@ typedef struct surf_file {
 } s_surf_file_t;
 
 typedef struct storage {
-  s_surf_resource_t generic_resource;   /*< Structure with generic data. Needed at begin to interate with SURF */
+  s_surf_resource_t generic_resource;   /*< Structure with generic data. Needed at begin to interact with SURF */
   e_surf_resource_state_t state_current;        /*< STORAGE current state (ON or OFF) */
-  lmm_constraint_t constraint;          /* Constraint for maximum bandwidth from connexion */
+  lmm_constraint_t constraint;          /* Constraint for maximum bandwidth from connection */
   lmm_constraint_t constraint_write;    /* Constraint for maximum write bandwidth*/
   lmm_constraint_t constraint_read;     /* Constraint for maximum write bandwidth*/
   xbt_dict_t content; /* char * -> s_surf_stat_t */
