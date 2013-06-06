@@ -456,7 +456,6 @@ void SIMIX_sem_release(smx_sem_t sem)
 
   XBT_DEBUG("Sem release semaphore %p", sem);
   if ((proc = xbt_swag_extract(sem->sleeping))) {
-    proc = xbt_swag_extract(sem->sleeping);
     SIMIX_synchro_destroy(proc->waiting_action);
     proc->waiting_action = NULL;
     SIMIX_simcall_answer(&proc->simcall);
