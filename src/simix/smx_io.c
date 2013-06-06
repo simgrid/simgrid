@@ -5,6 +5,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "smx_private.h"
+#include "surf/storage_private.h"
 #include "xbt/sysdep.h"
 #include "xbt/log.h"
 #include "xbt/dict.h"
@@ -313,7 +314,8 @@ void SIMIX_post_io(smx_action_t action)
       simcall_file_ls__set__result(simcall, (action->io.surf_io)->ls_dict);
       break;
     case SIMCALL_FILE_GET_SIZE:
-      simcall_file_get_size__set__result(simcall, 0);
+      simcall_file_get_size__set__result(simcall,
+          ((action->io.surf_io)->file->size));
       break;
 
     default:

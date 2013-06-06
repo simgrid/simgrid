@@ -84,6 +84,7 @@ static surf_action_t storage_action_ls(void *storage, const char* path)
 static surf_action_t storage_action_get_size(void *storage, surf_file_t stream)
 {
   surf_action_t action = storage_action_execute(storage,0,GET_SIZE);
+  action->file = stream;
   return action;
 }
 
