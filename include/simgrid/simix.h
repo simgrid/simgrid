@@ -10,7 +10,6 @@
 #include "xbt/misc.h"
 #include "xbt/fifo.h"
 #include "xbt/dict.h"
-#include "xbt/file_stat.h"
 #include "xbt/function_types.h"
 #include "xbt/parmap.h"
 #include "xbt/swag.h"

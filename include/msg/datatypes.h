@@ -6,7 +6,6 @@
 #ifndef MSG_DATATYPE_H
 #define MSG_DATATYPE_H
 #include "xbt/misc.h"
-#include "xbt/file_stat.h"
 #include "xbt/lib.h"
 #include "simgrid/simix.h"
 #include "simgrid_config.h"     // for HAVE_TRACING

@@ -12,7 +12,6 @@
 #include "xbt/dict.h"
 #include "xbt/graph.h"
 #include "xbt/misc.h"
-#include "xbt/file_stat.h"
 #include "portable.h"
 #include "xbt/config.h"
 #include "surf/datatypes.h"

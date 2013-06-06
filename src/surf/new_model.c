@@ -10,7 +10,6 @@
 
 #include "xbt/ex.h"
 #include "xbt/dict.h"
-#include "xbt/file_stat.h"
 #include "portable.h"
 #include "surf_private.h"
 #include "new_model_private.h"
