@@ -11,6 +11,11 @@ SimGrid (3.10) NOT RELEASED; urgency=low
  * Bugfix: Task.setDataSize() only changed the C world, not the value
    cached in the Java world
 
+ MSG:
+ * Dramatically change the way files are handled. API and internals changed, but
+   this part of MSG was not considered as production grade either.
+ * Add explicit synchronization facilities through semaphores
+
  SMPI:
  * SMPI is not built as a separate library anymore, it's now included in
    libsimgrid.

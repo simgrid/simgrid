@@ -51,7 +51,7 @@ static void graph_node_map_elem_free(void *e)
   xbt_free(elm);
 }
 
-static void graph_edge_data_free(void *e) // FIXME: useless code dupplication
+static void graph_edge_data_free(void *e) // FIXME: useless code duplication
 {
   sg_platf_route_cbarg_t e_route = (sg_platf_route_cbarg_t) e;
   if (e_route) {

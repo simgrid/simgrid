@@ -363,6 +363,19 @@ XBT_PUBLIC(msg_error_t) MSG_set_channel_number(int number);
 XBT_PUBLIC(int) MSG_get_channel_number(void);
 #endif
 
+/** @brief Opaque type representing a semaphore
+ *  @ingroup msg_synchro
+ *  @hideinitializer
+ */
+typedef struct s_smx_sem *msg_sem_t; // Yeah that's a rename of the smx_sem_t which doesnt require smx_sem_t to be declared here
+XBT_PUBLIC(msg_sem_t) MSG_sem_init(int initial_value);
+XBT_PUBLIC(void) MSG_sem_acquire(msg_sem_t sem);
+XBT_PUBLIC(msg_error_t) MSG_sem_acquire_timeout(msg_sem_t sem, double timeout);
+XBT_PUBLIC(void) MSG_sem_release(msg_sem_t sem);
+XBT_PUBLIC(void) MSG_sem_get_capacity(msg_sem_t sem);
+XBT_PUBLIC(void) MSG_sem_destroy(msg_sem_t sem);
+XBT_PUBLIC(int) MSG_sem_would_block(msg_sem_t sem);
+
 /** @brief Opaque type describing a Virtual Machine.
  *  @ingroup msg_VMs
  *
