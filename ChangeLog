@@ -14,7 +14,8 @@ SimGrid (3.10) NOT RELEASED; urgency=low
 
  MSG:
  * Dramatically change the way files are handled. API and internals changed, but
-   this part of MSG was not considered as production grade either. 
+   this part of MSG was not considered as production grade either.
+ * Add explicit synchronization facilities through semaphores
 
  SMPI:
  * SMPI is now included directly in the libsimgrid as the windows

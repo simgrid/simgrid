@@ -330,6 +330,7 @@ set(MSG_SRC
   src/msg/msg_io.c
   src/msg/msg_mailbox.c
   src/msg/msg_process.c
+  src/msg/msg_synchro.c
   src/msg/msg_task.c
   src/msg/msg_vm.c
   )
