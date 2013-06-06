@@ -81,6 +81,12 @@ static surf_action_t storage_action_ls(void *storage, const char* path)
   return action;
 }
 
+static surf_action_t storage_action_get_size(void *storage, surf_file_t stream)
+{
+  surf_action_t action = storage_action_execute(storage,0,GET_SIZE);
+  return action;
+}
+
 static surf_action_t storage_action_unlink(void *storage, surf_file_t stream)
 {
   surf_action_t action = storage_action_execute(storage,0, UNLINK);
@@ -189,6 +195,7 @@ static surf_action_t storage_action_execute (void *storage, double size, e_surf_
   case STAT:
   case UNLINK:
   case LS:
+  case GET_SIZE:
     break;
   case READ:
     lmm_expand(storage_maxmin_system, STORAGE->constraint_read,
@@ -494,6 +501,7 @@ static void surf_storage_model_init_internal(void)
   surf_storage_model->extension.storage.write = storage_action_write;
   surf_storage_model->extension.storage.unlink = storage_action_unlink;
   surf_storage_model->extension.storage.ls = storage_action_ls;
+  surf_storage_model->extension.storage.get_size = storage_action_get_size;
 
   if (!storage_maxmin_system) {
     storage_maxmin_system = lmm_system_new(storage_selective_update);

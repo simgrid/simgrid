@@ -342,9 +342,10 @@ ACTION(SIMCALL_SEM_GET_CAPACITY, sem_get_capacity, WITH_ANSWER, TINT(result), TS
 ACTION(SIMCALL_FILE_READ, file_read, WITHOUT_ANSWER, TDOUBLE(result), TPTR(ptr), TSIZE(size), TSIZE(nmemb), TSPEC(stream, smx_file_t)) sep \
 ACTION(SIMCALL_FILE_WRITE, file_write, WITHOUT_ANSWER, TSIZE(result), TCPTR(ptr), TSIZE(size), TSIZE(nmemb), TSPEC(stream, smx_file_t)) sep \
 ACTION(SIMCALL_FILE_OPEN, file_open, WITHOUT_ANSWER, TSPEC(result, smx_file_t), TSTRING(mount), TSTRING(path), TSTRING(mode)) sep \
-ACTION(SIMCALL_FILE_CLOSE, file_close, WITHOUT_ANSWER, TINT(result), TSPEC(fp, smx_file_t)) sep \
+ACTION(SIMCALL_FILE_CLOSE, file_close, WITHOUT_ANSWER, TINT(result), TSPEC(fd, smx_file_t)) sep \
 ACTION(SIMCALL_FILE_UNLINK, file_unlink, WITHOUT_ANSWER, TINT(result), TSPEC(fd, smx_file_t)) sep \
 ACTION(SIMCALL_FILE_LS, file_ls, WITHOUT_ANSWER, TSPEC(result, xbt_dict_t), TSTRING(mount), TSTRING(path)) sep \
+ACTION(SIMCALL_FILE_GET_SIZE, file_get_size, WITHOUT_ANSWER, TSIZE(result), TSPEC(fd, smx_file_t)) sep \
 ACTION(SIMCALL_ASR_GET_PROPERTIES, asr_get_properties, WITH_ANSWER, TSPEC(result, xbt_dict_t), TSTRING(name)) sep 
 
 /* SIMCALL_COMM_IS_LATENCY_BOUNDED and SIMCALL_SET_CATEGORY make things complicated

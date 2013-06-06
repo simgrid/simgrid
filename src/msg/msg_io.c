@@ -111,7 +111,8 @@ int MSG_file_unlink(msg_file_t fd)
  */
 
 size_t MSG_file_get_size(msg_file_t fd){
-  return fd->simdata->smx_file->surf_file->size;
+  size_t size = simcall_file_get_size(fd->simdata->smx_file);
+  return size;
 }
 
 /** \ingroup msg_file_management

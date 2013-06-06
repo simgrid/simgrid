@@ -126,14 +126,14 @@ smx_action_t SIMIX_file_open(smx_process_t process ,const char* mount, const cha
 }
 
 //SIMIX FILE CLOSE
-void SIMIX_pre_file_close(smx_simcall_t simcall, smx_file_t fp)
+void SIMIX_pre_file_close(smx_simcall_t simcall, smx_file_t fd)
 {
-  smx_action_t action = SIMIX_file_close(simcall->issuer, fp);
+  smx_action_t action = SIMIX_file_close(simcall->issuer, fd);
   xbt_fifo_push(action->simcalls, simcall);
   simcall->issuer->waiting_action = action;
 }
 
-smx_action_t SIMIX_file_close(smx_process_t process, smx_file_t fp)
+smx_action_t SIMIX_file_close(smx_process_t process, smx_file_t fd)
 {
   smx_action_t action;
   smx_host_t host = process->smx_host;
@@ -153,7 +153,7 @@ smx_action_t SIMIX_file_close(smx_process_t process, smx_file_t fp)
 #endif
 
   action->io.host = host;
-  action->io.surf_io = surf_workstation_model->extension.workstation.close(host, fp->surf_file);
+  action->io.surf_io = surf_workstation_model->extension.workstation.close(host, fd->surf_file);
 
   surf_workstation_model->action_data_set(action->io.surf_io, action);
   XBT_DEBUG("Create io action %p", action);
@@ -230,6 +230,42 @@ smx_action_t SIMIX_file_ls(smx_process_t process, const char* mount, const char 
   return action;
 }
 
+void SIMIX_pre_file_get_size(smx_simcall_t simcall, smx_file_t fd)
+{
+  smx_action_t action = SIMIX_file_get_size(simcall->issuer, fd);
+  xbt_fifo_push(action->simcalls, simcall);
+  simcall->issuer->waiting_action = action;
+}
+
+smx_action_t SIMIX_file_get_size(smx_process_t process, smx_file_t fd)
+{
+  smx_action_t action;
+  smx_host_t host = process->smx_host;
+
+  /* check if the host is active */
+  if (surf_workstation_model->extension.
+      workstation.get_state(host) != SURF_RESOURCE_ON) {
+    THROWF(host_error, 0, "Host %s failed, you cannot call this function",
+           sg_host_name(host));
+  }
+
+  action = xbt_mallocator_get(simix_global->action_mallocator);
+  action->type = SIMIX_ACTION_IO;
+  action->name = NULL;
+#ifdef HAVE_TRACING
+  action->category = NULL;
+#endif
+
+  action->io.host = host;
+  action->io.surf_io = surf_workstation_model->extension.workstation.get_size(host, fd->surf_file);
+
+  surf_workstation_model->action_data_set(action->io.surf_io, action);
+  XBT_DEBUG("Create io action %p", action);
+
+  return action;
+}
+
+
 void SIMIX_post_io(smx_action_t action)
 {
   xbt_fifo_item_t i;
@@ -248,7 +284,7 @@ void SIMIX_post_io(smx_action_t action)
       break;
 
     case SIMCALL_FILE_CLOSE:
-      xbt_free(simcall_file_close__get__fp(simcall));
+      xbt_free(simcall_file_close__get__fd(simcall));
       simcall_file_close__set__result(simcall, 0);
       break;
 
@@ -275,6 +311,10 @@ void SIMIX_post_io(smx_action_t action)
 //        }
 //      }
       simcall_file_ls__set__result(simcall, (action->io.surf_io)->ls_dict);
+      break;
+    case SIMCALL_FILE_GET_SIZE:
+      xbt_free(simcall_file_close__get__fd(simcall));
+      simcall_file_close__set__result(simcall, 0);
       break;
 
     default:
