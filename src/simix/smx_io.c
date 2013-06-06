@@ -313,8 +313,8 @@ void SIMIX_post_io(smx_action_t action)
       simcall_file_ls__set__result(simcall, (action->io.surf_io)->ls_dict);
       break;
     case SIMCALL_FILE_GET_SIZE:
-      xbt_free(simcall_file_close__get__fd(simcall));
-      simcall_file_close__set__result(simcall, 0);
+      xbt_free(simcall_file_get_size__get__fd(simcall));
+      simcall_file_get_size__set__result(simcall, 0);
       break;
 
     default:
