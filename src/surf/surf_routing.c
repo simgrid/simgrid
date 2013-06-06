@@ -1229,3 +1229,17 @@ void routing_exit(void) {
   finalize_rec(routing_platf->root);
   xbt_free(routing_platf);
 }
+
+AS_t surf_AS_get_routing_root() {
+  return routing_platf->root;  
+}
+
+const char *surf_AS_get_name(AS_t as) {
+  return as->name;
+}
+
+xbt_dict_t surf_AS_get_routing_sons(AS_t as) {
+  return as->routing_sons;
+}
+
+

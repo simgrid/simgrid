@@ -183,6 +183,8 @@ public final class Msg {
 	 */
 	public final static native void createEnvironment(String platformFile);
 
+	public final static native As environmentGetRoutingRoot();
+
 	/**
 	 * The method to deploy the simulation.
 	 *
