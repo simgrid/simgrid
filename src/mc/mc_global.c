@@ -659,6 +659,11 @@ void MC_dump_stack_safety(xbt_fifo_t stack)
 
 void MC_show_stack_safety(xbt_fifo_t stack)
 {
+
+  int raw_mem_set = (mmalloc_get_current_heap() == raw_heap);
+
+  MC_SET_RAW_MEM;
+
   int value;
   mc_state_t state;
   xbt_fifo_item_t item;
@@ -675,6 +680,9 @@ void MC_show_stack_safety(xbt_fifo_t stack)
       xbt_free(req_str);
     }
   }
+
+  if(!raw_mem_set)
+    MC_UNSET_RAW_MEM;
 }
 
 void MC_show_deadlock(smx_simcall_t req)
