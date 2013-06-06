@@ -232,7 +232,7 @@ typedef struct surf_storage_model_extension_public {
   surf_action_t(*stat) (void *storage, surf_file_t stream);
   surf_action_t(*unlink) (void *storage, surf_file_t stream);
   surf_action_t(*ls) (void *storage, const char *path);
-  surf_action_t(*get_size) (void *storage, surf_file_t stream);
+  surf_action_t(*get_size) (void *storage, surf_file_t fd);
 } s_surf_model_extension_storage_t;
 
      /** \ingroup SURF_models
