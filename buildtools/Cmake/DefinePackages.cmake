@@ -323,6 +323,7 @@ set(MSG_SRC
   src/msg/msg_io.c
   src/msg/msg_mailbox.c
   src/msg/msg_process.c
+  src/msg/msg_synchro.c
   src/msg/msg_task.c
   src/msg/msg_vm.c
   )
@@ -423,6 +424,7 @@ set(JMSG_JAVA_SRC
   src/bindings/java/org/simgrid/msg/Msg.java
   src/bindings/java/org/simgrid/msg/MsgException.java
   src/bindings/java/org/simgrid/msg/Mutex.java
+  src/bindings/java/org/simgrid/msg/Semaphore.java
   src/bindings/java/org/simgrid/msg/NativeException.java
   src/bindings/java/org/simgrid/msg/Process.java
   src/bindings/java/org/simgrid/msg/ProcessKilledError.java
