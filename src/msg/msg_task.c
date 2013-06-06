@@ -445,6 +445,7 @@ void MSG_task_set_priority(msg_task_t task, double priority)
  * \brief Changes the maximum CPU utilization of a computation task.
  *        Unit is flops/s.
  *
+ * For VMs, there is a pitfall. Please see MSG_vm_set_bound().
  */
 void MSG_task_set_bound(msg_task_t task, double bound)
 {
@@ -452,7 +453,7 @@ void MSG_task_set_bound(msg_task_t task, double bound)
   xbt_assert(task->simdata, "Invalid parameter");
 
   if (bound == 0)
-    XBT_INFO("bound == 0 means no capping");
+    XBT_INFO("bound == 0 means no capping (i.e., unlimited).");
 
   task->simdata->bound = bound;
   if (task->simdata->compute)

@@ -340,6 +340,12 @@ void *simcall_vm_get_pm(smx_host_t vm)
   return simcall_BODY_vm_get_pm(vm);
 }
 
+void simcall_vm_set_bound(smx_host_t vm, double bound)
+{
+  /* will jump to SIMIX_pre_vm_set_bound in src/simix/smx_smurf_private.h */
+  simcall_BODY_vm_set_bound(vm, bound);
+}
+
 void simcall_host_get_params(smx_host_t vm, ws_params_t params)
 {
   /* will jump to SIMIX_pre_host_get_params in src/simix/smx_smurf_private.h */

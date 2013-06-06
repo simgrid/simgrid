@@ -121,6 +121,10 @@ static int constraint_is_active(cpu_Cas01_t cpu_cas01)
   return found;
 }
 
+/* Each VM has a dummy CPU action on the PM layer. This CPU action works as the
+ * constraint (capacity) of the VM in the PM layer. If the VM does not have any
+ * active task, the dummy CPU action must be deactivated, so that the VM does
+ * not get any CPU share in the PM layer. */
 static void adjust_weight_of_dummy_cpu_actions(void)
 {
   /* iterate for all hosts including virtual machines */

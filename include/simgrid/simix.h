@@ -332,6 +332,7 @@ XBT_PUBLIC(int) simcall_vm_get_state(smx_host_t vm);
 XBT_PUBLIC(void) simcall_vm_start(smx_host_t vm);
 XBT_PUBLIC(void) simcall_vm_migrate(smx_host_t vm, smx_host_t dst_pm);
 XBT_PUBLIC(void *) simcall_vm_get_pm(smx_host_t vm);
+XBT_PUBLIC(void) simcall_vm_set_bound(smx_host_t vm, double bound);
 XBT_PUBLIC(void) simcall_vm_resume(smx_host_t vm);
 XBT_PUBLIC(void) simcall_vm_save(smx_host_t vm);
 XBT_PUBLIC(void) simcall_vm_restore(smx_host_t vm);

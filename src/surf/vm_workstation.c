@@ -288,7 +288,8 @@ static double get_solved_value(surf_action_t cpu_action)
  * degraded due to virtualization overhead. The total CPU share that these
  * processes get is smaller than that of the VM process gets on a host
  * operating system. */
-const double virt_overhead = 0.95;
+// const double virt_overhead = 0.95;
+const double virt_overhead = 1;
 
 static double vm_ws_share_resources(surf_model_t workstation_model, double now)
 {
@@ -447,6 +448,21 @@ static void vm_ws_action_cancel(surf_action_t action)
 }
 
 
+/* Now we can set bound for each task by using MSG_task_set_bound. But, it does
+ * not work for the dummy CPU action of a VM. Here, we add the set_bound
+ * function for the dummy CPU action. */
+static void vm_ws_set_vm_bound(void *workstation, double bound)
+{
+  surf_resource_t ws = ((surf_resource_t) surf_workstation_resource_priv(workstation));
+  xbt_assert(ws->model->type == SURF_MODEL_TYPE_VM_WORKSTATION);
+  workstation_VM2013_t vm_ws = (workstation_VM2013_t) ws;
+
+  XBT_INFO("%p bound %f", vm_ws->cpu_action, bound);
+  surf_action_set_bound(vm_ws->cpu_action, bound);
+  get_bound(vm_ws->cpu_action);
+}
+
+
 static void surf_vm_workstation_model_init_internal(void)
 {
   surf_model_t model = surf_model_init();
@@ -523,6 +539,7 @@ static void surf_vm_workstation_model_init_internal(void)
   model->extension.vm_workstation.save          = vm_ws_save;
   model->extension.vm_workstation.restore       = vm_ws_restore;
   model->extension.vm_workstation.get_pm        = vm_ws_get_pm;
+  model->extension.vm_workstation.set_vm_bound  = vm_ws_set_vm_bound;
 
   model->extension.workstation.set_params    = ws_set_params;
   model->extension.workstation.get_params    = ws_get_params;

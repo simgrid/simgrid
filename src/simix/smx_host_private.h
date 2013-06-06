@@ -126,6 +126,9 @@ void SIMIX_pre_vm_migrate(smx_simcall_t simcall, smx_host_t ind_vm, smx_host_t i
 void *SIMIX_vm_get_pm(smx_host_t ind_vm);
 void *SIMIX_pre_vm_get_pm(smx_simcall_t simcall, smx_host_t ind_vm);
 
+void SIMIX_vm_set_bound(smx_host_t ind_vm, double bound);
+void SIMIX_pre_vm_set_bound(smx_simcall_t simcall, smx_host_t ind_vm, double bound);
+
 void SIMIX_host_get_params(smx_host_t ind_vm, ws_params_t params);
 void SIMIX_pre_host_get_params(smx_simcall_t simcall, smx_host_t ind_vm, ws_params_t params);
 

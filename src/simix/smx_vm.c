@@ -155,7 +155,7 @@ void SIMIX_pre_vm_migrate(smx_simcall_t simcall, smx_host_t ind_vm, smx_host_t i
 
 
 /**
- * \brief Function to get the physical host of the given the SIMIX VM host.
+ * \brief Function to get the physical host of the given SIMIX VM host.
  *
  * \param host the vm host to get_phys_host (a smx_host_t)
  */
@@ -168,6 +168,25 @@ void *SIMIX_vm_get_pm(smx_host_t ind_vm)
 void *SIMIX_pre_vm_get_pm(smx_simcall_t simcall, smx_host_t ind_vm)
 {
   return SIMIX_vm_get_pm(ind_vm);
+}
+
+
+/**
+ * \brief Function to set the CPU bound of the given SIMIX VM host.
+ *
+ * \param host the vm host (a smx_host_t)
+ * \param bound bound (a double)
+ */
+void SIMIX_vm_set_bound(smx_host_t ind_vm, double bound)
+{
+  /* jump to vm_ws_set_vm_bound(). */
+  surf_vm_workstation_model->extension.vm_workstation.set_vm_bound(ind_vm, bound);
+}
+
+void SIMIX_pre_vm_set_bound(smx_simcall_t simcall, smx_host_t ind_vm, double bound)
+{
+  SIMIX_vm_set_bound(ind_vm, bound);
+  SIMIX_simcall_answer(simcall);
 }
 
 
