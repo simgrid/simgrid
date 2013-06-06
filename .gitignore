@@ -104,7 +104,6 @@ doc/simgrid_modules.map
 
 ################################################
 ### Specific of project 
-.cproject
 .project
 .settings/
 .anjuta
@@ -233,6 +232,13 @@ examples/msg/mc/centralized_liveness
 
 src/replay/replay
 src/testall
+teshsuite/smpi/allgather_coll
+teshsuite/smpi/allgatherv_coll
+teshsuite/smpi/allreduce_coll
+teshsuite/smpi/alltoall_coll
+teshsuite/smpi/alltoallv_coll
+teshsuite/smpi/bcast_coll
+teshsuite/smpi/reduce_coll
 teshsuite/smpi/allreduce
 teshsuite/smpi/alltoall2
 teshsuite/smpi/alltoall_basic
@@ -395,8 +401,10 @@ teshsuite/smpi/mpich-test/pt2pt/waitall2
 teshsuite/smpi/mpich-test/pt2pt/waitall3
 teshsuite/smpi/mpich-test/pt2pt/waitall4
 teshsuite/smpi/mpich-test/pt2pt/waitany
+teshsuite/msg/pid
 teshsuite/msg/get_sender
 teshsuite/msg/trace/test_trace_integration
+teshsuite/simdag/availability/availability_test
 teshsuite/simdag/basic0
 teshsuite/simdag/basic1
 teshsuite/simdag/basic2
@@ -425,6 +433,7 @@ teshsuite/xbt/log_large_test
 teshsuite/xbt/parallel_log_crashtest
 testsuite/xbt/parmap_bench
 teshsuite/xbt/mmalloc_test
+teshsuite/xbt/parmap_test
 testsuite/run_tests
 testsuite/simdag/sd_test
 testsuite/surf/lmm_usage
