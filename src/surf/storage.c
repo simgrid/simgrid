@@ -124,22 +124,22 @@ static surf_action_t storage_action_open(void *storage, const char* mount, const
   return action;
 }
 
-static surf_action_t storage_action_close(void *storage, surf_file_t fp)
+static surf_action_t storage_action_close(void *storage, surf_file_t fd)
 {
-  char *filename = fp->name;
-  XBT_DEBUG("\tClose file '%s' size '%zu'",filename,fp->size);
+  char *filename = fd->name;
+  XBT_DEBUG("\tClose file '%s' size '%zu'",filename,fd->size);
   // unref write actions from storage
   surf_action_storage_t write_action;
   unsigned int i;
   xbt_dynar_foreach(((storage_t)storage)->write_actions,i,write_action) {
-    if ((write_action->generic_lmm_action.generic_action.file) == fp) {
+    if ((write_action->generic_lmm_action.generic_action.file) == fd) {
       xbt_dynar_cursor_rm(((storage_t)storage)->write_actions, &i);
       storage_action_unref((surf_action_t) write_action);
     }
   }
 
-  free(fp->name);
-  xbt_free(fp);
+  free(fd->name);
+  xbt_free(fd);
   surf_action_t action = storage_action_execute(storage,0, CLOSE);
   return action;
 }

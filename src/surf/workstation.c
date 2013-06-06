@@ -334,12 +334,12 @@ static surf_action_t ws_action_open(void *workstation, const char* mount, const 
   return model->extension.storage.open(st, mount, path, mode);
 }
 
-static surf_action_t ws_action_close(void *workstation, surf_file_t fp)
+static surf_action_t ws_action_close(void *workstation, surf_file_t fd)
 {
-  storage_t st = find_storage_on_mount_list(workstation, fp->storage);
+  storage_t st = find_storage_on_mount_list(workstation, fd->storage);
   XBT_DEBUG("CLOSE on disk '%s'",st->generic_resource.name);
   surf_model_t model = st->generic_resource.model;
-  return model->extension.storage.close(st, fp);
+  return model->extension.storage.close(st, fd);
 }
 
 static surf_action_t ws_action_read(void *workstation, void* ptr, size_t size, size_t nmemb, surf_file_t stream)

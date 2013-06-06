@@ -226,7 +226,7 @@ typedef struct surf_network_model_extension_public {
 
 typedef struct surf_storage_model_extension_public {
   surf_action_t(*open) (void *storage, const char* mount, const char* path, const char* mode);
-  surf_action_t(*close) (void *storage, surf_file_t fp);
+  surf_action_t(*close) (void *storage, surf_file_t fd);
   surf_action_t(*read) (void *storage, void* ptr, double size, size_t nmemb, surf_file_t stream);
   surf_action_t(*write) (void *storage, const void* ptr, size_t size, size_t nmemb, surf_file_t stream);
   surf_action_t(*stat) (void *storage, surf_file_t stream);

@@ -76,15 +76,15 @@ msg_file_t MSG_file_open(const char* mount, const char* path, const char* mode)
 /** \ingroup msg_file_management
  * \brief Close the file
  *
- * \param fp is the file to close
+ * \param fd is the file to close
  * \return 0 on success or 1 on error
  */
-int MSG_file_close(msg_file_t fp)
+int MSG_file_close(msg_file_t fd)
 {
-  int res = simcall_file_close(fp->simdata->smx_file);
-  free(fp->name);
-  xbt_free(fp->simdata);
-  xbt_free(fp);
+  int res = simcall_file_close(fd->simdata->smx_file);
+  free(fd->name);
+  xbt_free(fd->simdata);
+  xbt_free(fd);
   return res;
 }
 
