@@ -104,6 +104,17 @@ int MSG_file_unlink(msg_file_t fd)
 }
 
 /** \ingroup msg_file_management
+ * \brief Return the size of a file
+ *
+ * \param fd is the file descriptor (#msg_file_t)
+ * \return the size of the file (as a size_t)
+ */
+
+size_t MSG_file_get_size(msg_file_t fd){
+  return fd->simdata->smx_file->surf_file->size;
+}
+
+/** \ingroup msg_file_management
  * \brief Search for file
  *
  * \param mount is the mount point where find the file is located
