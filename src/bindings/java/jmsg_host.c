@@ -278,3 +278,12 @@ Java_org_simgrid_msg_Host_all(JNIEnv * env, jclass cls_arg)
   xbt_dynar_free(&table);
   return jtable;
 }
+
+JNIEXPORT void JNICALL 
+Java_org_simgrid_msg_Host_setAsyncMailbox(JNIEnv * env, jclass cls_arg, jobject jname){
+
+  const char *name = (*env)->GetStringUTFChars(env, jname, 0);
+  MSG_mailbox_set_async(name);
+  (*env)->ReleaseStringUTFChars(env, jname, name);
+
+}
