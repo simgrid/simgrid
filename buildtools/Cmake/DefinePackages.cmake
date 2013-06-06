@@ -532,7 +532,6 @@ set(headers_to_install
   include/xbt/dynar.h
   include/xbt/ex.h
   include/xbt/fifo.h
-  include/xbt/file_stat.h
   include/xbt/function_types.h
   include/xbt/graph.h
   include/xbt/graphxml.h
