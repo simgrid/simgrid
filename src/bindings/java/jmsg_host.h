@@ -171,4 +171,10 @@ JNIEXPORT jboolean JNICALL Java_org_simgrid_msg_Host_isAvail
 JNIEXPORT jobjectArray JNICALL
 Java_org_simgrid_msg_Host_all(JNIEnv *, jclass);
 
+JNIEXPORT void JNICALL 
+Java_org_simgrid_msg_Host_setAsyncMailbox(JNIEnv * env, jclass cls_arg, jobject jname);
+
+
+
 #endif                          /*!MSG_JHOST_H */
+
