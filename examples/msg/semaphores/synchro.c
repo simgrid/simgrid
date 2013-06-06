@@ -15,17 +15,18 @@ int peer(int argc, char* argv[]){
   while(i < argc) {
     double wait_time = atof(argv[i++]);
     MSG_process_sleep(wait_time);
-    XBT_INFO("Trying to acquire");
+    XBT_INFO("Trying to acquire %d", i);
     MSG_sem_acquire(sem);
-    XBT_INFO("Acquired");
+    XBT_INFO("Acquired %d", i);
 
     wait_time = atof(argv[i++]);
     MSG_process_sleep(wait_time);
-    XBT_INFO("Releasing");
+    XBT_INFO("Releasing %d", i);
     MSG_sem_release(sem);
-    XBT_INFO("Released");
+    XBT_INFO("Released %d", i);
   }
-
+  MSG_process_sleep(50);
+  XBT_INFO("Done");
 }
 
 int main(int argc, char* argv[]) {
@@ -37,15 +38,37 @@ int main(int argc, char* argv[]) {
   msg_host_t h = xbt_dynar_get_as(hosts,0,msg_host_t);
 
   sem = MSG_sem_init(1);
-  char* aliceTimes[] = {"0", "1", "3", "5", "1", "2", "5", "0"};
-  char* bobTimes[] = {"1", "1", "1", "2", "2", "0", "0", "5"};
+  char** aliceTimes = xbt_new(char*, 9);
+  int nbAlice = 0;
+  aliceTimes[nbAlice++] = xbt_strdup("0"); 
+  aliceTimes[nbAlice++] = xbt_strdup("1");
+  aliceTimes[nbAlice++] = xbt_strdup("3");
+  aliceTimes[nbAlice++] = xbt_strdup("5");
+  aliceTimes[nbAlice++] = xbt_strdup("1");
+  aliceTimes[nbAlice++] = xbt_strdup("2");
+  aliceTimes[nbAlice++] = xbt_strdup("5");
+  aliceTimes[nbAlice++] = xbt_strdup("0");
+  aliceTimes[nbAlice++] = NULL;
 
+  char** bobTimes = xbt_new(char*, 9);
+  int nbBob = 0;
+  bobTimes[nbBob++] = xbt_strdup("0.9"); 
+  bobTimes[nbBob++] = xbt_strdup("1");
+  bobTimes[nbBob++] = xbt_strdup("1");
+  bobTimes[nbBob++] = xbt_strdup("2");
+  bobTimes[nbBob++] = xbt_strdup("2");
+  bobTimes[nbBob++] = xbt_strdup("0");
+  bobTimes[nbBob++] = xbt_strdup("0");
+  bobTimes[nbBob++] = xbt_strdup("5");
+  bobTimes[nbBob++] = NULL;
+ 
 
-  MSG_process_create_with_arguments("Alice", peer, NULL, 
+  MSG_process_create_with_arguments(xbt_strdup("Alice"), peer, NULL, 
 				    h, 8, aliceTimes);
-  MSG_process_create_with_arguments("Bob", peer, NULL, 
+  MSG_process_create_with_arguments(xbt_strdup("Bob"), peer, NULL, 
 				    h, 8, bobTimes);
 
-  MSG_main();
-
+  msg_error_t res = MSG_main();
+  printf("Finished\n");
+  return 0;
 }
