@@ -36,7 +36,7 @@ int main(int argc, char* argv[]) {
   xbt_dynar_t hosts = MSG_hosts_as_dynar();
   msg_host_t h = xbt_dynar_get_as(hosts,0,msg_host_t);
 
-
+  sem = MSG_sem_init(1);
   char* aliceTimes[] = {"0", "1", "3", "5", "1", "2", "5", "0"};
   char* bobTimes[] = {"1", "1", "1", "2", "2", "0", "0", "5"};
 
