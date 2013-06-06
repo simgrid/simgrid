@@ -72,6 +72,7 @@ static int worker_busy_loop_main(int argc, char *argv[])
   return 0;
 }
 
+/* FIXME: */
 #define DOUBLE_MAX 100000000000L
 
 static void test_dynamic_change(void)
@@ -108,8 +109,8 @@ static void test_dynamic_change(void)
       double task0_flops_per_sec = task0_remain_prev - task0_remain_now;
       double task1_flops_per_sec = task1_remain_prev - task1_remain_now;
 
-      XBT_INFO("VM0: %f flops/s", task0_flops_per_sec / 100);
-      XBT_INFO("VM1: %f flops/s", task1_flops_per_sec / 100);
+      XBT_INFO("Task0@VM0: %f flops/s", task0_flops_per_sec / 100);
+      XBT_INFO("Task1@VM1: %f flops/s", task1_flops_per_sec / 100);
 
       task0_remain_prev = task0_remain_now;
       task1_remain_prev = task1_remain_now;
@@ -338,7 +339,7 @@ static int master_main(int argc, char *argv[])
   }
 
 
-  XBT_INFO("# 10. Change a bound dynamically");
+  XBT_INFO("# 10. Change a bound dynamically.");
   test_dynamic_change();
 
   return 0;
@@ -360,7 +361,11 @@ int main(int argc, char *argv[])
   MSG_init(&argc, argv);
 
   /* load the platform file */
-  xbt_assert(argc == 2);
+  if (argc != 2) {
+    printf("Usage: %s example/msg/cloud/simple_plat.xml\n", argv[0]);
+    return 1;
+  }
+
   MSG_create_environment(argv[1]);
 
   xbt_dynar_t hosts_dynar = MSG_hosts_as_dynar();

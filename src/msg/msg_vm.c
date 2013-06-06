@@ -1184,6 +1184,7 @@ msg_host_t MSG_vm_get_pm(msg_vm_t vm)
 /** @brief Set a CPU bound for a given VM.
  *  @ingroup msg_VMs
  *
+ * 1.
  * Note that in some cases MSG_task_set_bound() may not intuitively work for VMs.
  *
  * For example,
@@ -1207,6 +1208,10 @@ msg_host_t MSG_vm_get_pm(msg_vm_t vm)
  *
  * The current solution is to use MSG_vm_set_bound(), which allows us to
  * directly set the bound of the dummy CPU action.
+ *
+ *
+ * 2.
+ * Note that bound == 0 means no bound (i.e., unlimited).
  */
 void MSG_vm_set_bound(msg_vm_t vm, double bound)
 {
