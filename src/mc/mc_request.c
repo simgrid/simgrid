@@ -181,14 +181,20 @@ char *MC_request_to_string(smx_simcall_t req, int value)
     type = xbt_strdup("iSend");
     p = pointer_to_string(simcall_comm_isend__get__src_buff(req));
     bs = buff_size_to_string(simcall_comm_isend__get__src_buff_size(req));
-    args = bprintf("src=(%lu)%s (%s), buff=%s, size=%s", req->issuer->pid, MSG_host_get_name(req->issuer->smx_host), req->issuer->name, p, bs);
+    if(req->issuer->smx_host)
+      args = bprintf("src=(%lu)%s (%s), buff=%s, size=%s", req->issuer->pid, MSG_host_get_name(req->issuer->smx_host), req->issuer->name, p, bs);
+    else
+      args = bprintf("src=(%lu)%s, buff=%s, size=%s", req->issuer->pid, req->issuer->name, p, bs);
     break;
   case SIMCALL_COMM_IRECV:
     size = simcall_comm_irecv__get__dst_buff_size(req) ? *simcall_comm_irecv__get__dst_buff_size(req) : 0;
     type = xbt_strdup("iRecv");
     p = pointer_to_string(simcall_comm_irecv__get__dst_buff(req)); 
     bs = buff_size_to_string(size);
-    args = bprintf("dst=(%lu)%s (%s), buff=%s, size=%s", req->issuer->pid, MSG_host_get_name(req->issuer->smx_host), req->issuer->name, p, bs);
+    if(req->issuer->smx_host)
+      args = bprintf("dst=(%lu)%s (%s), buff=%s, size=%s", req->issuer->pid, MSG_host_get_name(req->issuer->smx_host), req->issuer->name, p, bs);
+    else
+      args = bprintf("dst=(%lu)%s, buff=%s, size=%s", req->issuer->pid, req->issuer->name, p, bs);
     break;
   case SIMCALL_COMM_WAIT:
     act = simcall_comm_wait__get__comm(req);
@@ -225,9 +231,13 @@ char *MC_request_to_string(smx_simcall_t req, int value)
 
   case SIMCALL_COMM_WAITANY:
     type = xbt_strdup("WaitAny");
-    p = pointer_to_string(xbt_dynar_get_as(simcall_comm_waitany__get__comms(req), value, smx_action_t));
-    args = bprintf("comm=%s (%d of %lu)", p,
-                   value+1, xbt_dynar_length(simcall_comm_waitany__get__comms(req)));
+    if(!xbt_dynar_is_empty(simcall_comm_waitany__get__comms(req))){
+      p = pointer_to_string(xbt_dynar_get_as(simcall_comm_waitany__get__comms(req), value, smx_action_t));
+      args = bprintf("comm=%s (%d of %lu)", p, 
+                     value+1, xbt_dynar_length(simcall_comm_waitany__get__comms(req)));
+    }else{
+      args = bprintf("comm at idx %d", value);
+    }
     break;
 
   case SIMCALL_COMM_TESTANY:
@@ -263,7 +273,7 @@ char *MC_request_to_string(smx_simcall_t req, int value)
     str = bprintf("[(%lu)%s (%s)] %s (%s)", req->issuer->pid , MSG_host_get_name(req->issuer->smx_host), req->issuer->name, type, args);
     xbt_free(args);
   }else{
-    str = bprintf("[(%lu)%s] %s ", req->issuer->pid ,req->issuer->name, type);
+    str = bprintf("[(%lu)%s (%s)] %s ", req->issuer->pid , MSG_host_get_name(req->issuer->smx_host), req->issuer->name, type);
   }
   xbt_free(type);
   xbt_free(p);
@@ -378,46 +388,99 @@ char *MC_request_get_dot_output(smx_simcall_t req, int value){
 
   char *str = NULL, *label = NULL;
   smx_action_t act = NULL;
-  const char *host_name = MSG_host_get_name(MSG_process_get_host(req->issuer));
 
   switch(req->call){
   case SIMCALL_COMM_ISEND:
-    label = bprintf("[(%lu)%s] iSend", req->issuer->pid, host_name);
+    if(req->issuer->smx_host)
+      label = bprintf("[(%lu)%s] iSend", req->issuer->pid, MSG_host_get_name(req->issuer->smx_host));
+    else
+      label = bprintf("[(%lu)] iSend", req->issuer->pid);
     break;
     
   case SIMCALL_COMM_IRECV:
-    label = bprintf("[(%lu)%s] iRecv", req->issuer->pid, host_name);
-    break;
- 
- case SIMCALL_COMM_WAIT:
-   act = simcall_comm_wait__get__comm(req);
-   if(value == -1)
-     label = bprintf("[(%lu)%s] WaitTimeout", req->issuer->pid, host_name);
+    if(req->issuer->smx_host)
+      label = bprintf("[(%lu)%s] iRecv", req->issuer->pid, MSG_host_get_name(req->issuer->smx_host));
     else
-      label = bprintf("[(%lu)%s] Wait [(%lu)->(%lu)]", req->issuer->pid, host_name, act->comm.src_proc ? act->comm.src_proc->pid : 0, act->comm.dst_proc ? act->comm.dst_proc->pid : 0);
+      label = bprintf("[(%lu)] iRecv", req->issuer->pid);
     break;
-
+    
+  case SIMCALL_COMM_WAIT:
+    act = simcall_comm_wait__get__comm(req);
+    if(value == -1){
+      if(req->issuer->smx_host)
+        label = bprintf("[(%lu)%s] WaitTimeout", req->issuer->pid, MSG_host_get_name(req->issuer->smx_host));
+      else
+        label = bprintf("[(%lu)] WaitTimeout", req->issuer->pid);
+    }else{
+      if(req->issuer->smx_host)
+        label = bprintf("[(%lu)%s] Wait [(%lu)->(%lu)]", req->issuer->pid, MSG_host_get_name(req->issuer->smx_host), act->comm.src_proc ? act->comm.src_proc->pid : 0, act->comm.dst_proc ? act->comm.dst_proc->pid : 0);
+      else
+        label = bprintf("[(%lu)] Wait [(%lu)->(%lu)]", req->issuer->pid, act->comm.src_proc ? act->comm.src_proc->pid : 0, act->comm.dst_proc ? act->comm.dst_proc->pid : 0);
+    }
+    break;
+    
   case SIMCALL_COMM_TEST:
     act = simcall_comm_test__get__comm(req);
-    if(act->comm.src_proc == NULL || act->comm.dst_proc == NULL)
-      label = bprintf("[(%lu)%s] Test FALSE", req->issuer->pid, host_name);
+    if(act->comm.src_proc == NULL || act->comm.dst_proc == NULL){
+      if(req->issuer->smx_host)
+        label = bprintf("[(%lu)%s] Test FALSE", req->issuer->pid, MSG_host_get_name(req->issuer->smx_host));
+      else
+        label = bprintf("[(%lu)] Test FALSE", req->issuer->pid);
+    }else{
+      if(req->issuer->smx_host)
+        label = bprintf("[(%lu)%s] Test TRUE", req->issuer->pid, MSG_host_get_name(req->issuer->smx_host));
+      else
+        label = bprintf("[(%lu)] Test TRUE", req->issuer->pid);
+    }
+    break;
+
+  case SIMCALL_COMM_WAITANY:
+    if(req->issuer->smx_host)
+      label = bprintf("[(%lu)%s] WaitAny [%d of %lu]", req->issuer->pid, MSG_host_get_name(req->issuer->smx_host), value+1, xbt_dynar_length(simcall_comm_waitany__get__comms(req)));
     else
-      label = bprintf("[(%lu)%s] Test TRUE", req->issuer->pid, host_name);
+      label = bprintf("[(%lu)] WaitAny [%d of %lu]", req->issuer->pid, value+1, xbt_dynar_length(simcall_comm_waitany__get__comms(req)));
+    break;
+    
+  case SIMCALL_COMM_TESTANY:
+    if(value == -1){
+      if(req->issuer->smx_host)
+        label = bprintf("[(%lu)%s] TestAny FALSE", req->issuer->pid, MSG_host_get_name(req->issuer->smx_host));
+      else
+        label = bprintf("[(%lu)] TestAny FALSE", req->issuer->pid);
+    }else{
+      if(req->issuer->smx_host)
+        label = bprintf("[(%lu)%s] TestAny TRUE [%d of %lu]", req->issuer->pid, MSG_host_get_name(req->issuer->smx_host), value+1, xbt_dynar_length(simcall_comm_testany__get__comms(req)));
+      else
+        label = bprintf("[(%lu)] TestAny TRUE [%d of %lu]", req->issuer->pid, value+1, xbt_dynar_length(simcall_comm_testany__get__comms(req)));
+    }
     break;
 
   case SIMCALL_MC_RANDOM:
-    if(value == 0)
-      label = bprintf("[(%lu)%s] MC_RANDOM (0)", req->issuer->pid, host_name);
-    else
-      label = bprintf("[(%lu)%s] MC_RANDOM (1)", req->issuer->pid, host_name);
+    if(value == 0){
+      if(req->issuer->smx_host)
+        label = bprintf("[(%lu)%s] MC_RANDOM (0)", req->issuer->pid, MSG_host_get_name(req->issuer->smx_host));
+      else
+        label = bprintf("[(%lu)] MC_RANDOM (0)", req->issuer->pid);
+    }else{
+      if(req->issuer->smx_host)
+        label = bprintf("[(%lu)%s] MC_RANDOM (1)", req->issuer->pid, MSG_host_get_name(req->issuer->smx_host));
+      else
+        label = bprintf("[(%lu)] MC_RANDOM (1)", req->issuer->pid);
+    }
     break;
 
   case SIMCALL_MC_SNAPSHOT:
-    label = bprintf("[(%lu)%s] MC_SNAPSHOT", req->issuer->pid, host_name);
+    if(req->issuer->smx_host)
+      label = bprintf("[(%lu)%s] MC_SNAPSHOT", req->issuer->pid, MSG_host_get_name(req->issuer->smx_host));
+    else
+      label = bprintf("[(%lu)] MC_SNAPSHOT", req->issuer->pid);
     break;
 
   case SIMCALL_MC_COMPARE_SNAPSHOTS:
-    label = bprintf("((%lu)%s) MC_COMPARE_SNAPSHOTS", req->issuer->pid, host_name);
+    if(req->issuer->smx_host)
+      label = bprintf("[(%lu)%s] MC_COMPARE_SNAPSHOTS", req->issuer->pid, MSG_host_get_name(req->issuer->smx_host));
+    else
+      label = bprintf("[(%lu)] MC_COMPARE_SNAPSHOTS", req->issuer->pid);
     break;
 
   default:
