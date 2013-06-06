@@ -719,9 +719,10 @@ XBT_PUBLIC_DATA(xbt_dynar_t) model_list_invoke;
 typedef struct s_as *AS_t;
 
 XBT_PUBLIC_DATA(AS_t) surf_AS_get_routing_root(void); 
-XBT_PUBLIC_DATA(const char *)surf_AS_get_name(AS_t as);
+XBT_PUBLIC_DATA(const char *) surf_AS_get_name(AS_t as);
 XBT_PUBLIC_DATA(xbt_dict_t) surf_AS_get_routing_sons(AS_t as);
-
+XBT_PUBLIC_DATA(const char *) surf_AS_get_model(AS_t as);
+XBT_PUBLIC_DATA(xbt_dynar_t) surf_AS_get_hosts(AS_t as);
 
 /*******************************************/
 /*** SURF Globals **************************/

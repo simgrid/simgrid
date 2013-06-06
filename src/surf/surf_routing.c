@@ -1242,4 +1242,24 @@ xbt_dict_t surf_AS_get_routing_sons(AS_t as) {
   return as->routing_sons;
 }
 
+const char *surf_AS_get_model(AS_t as) {
+  return as->model_desc->name;
+}
 
+xbt_dynar_t surf_AS_get_hosts(AS_t as) {
+  xbt_dynar_t elms = as->index_network_elm;
+  sg_routing_edge_t relm;
+  xbt_dictelm_t delm;
+  int index;
+  int count = xbt_dynar_length(elms);
+  xbt_dynar_t res =  xbt_dynar_new(sizeof(xbt_dictelm_t), NULL);
+  for (index = 0; index < count; index++) {
+     relm = xbt_dynar_get_as(elms, index, sg_routing_edge_t);
+     printf("relm:%s\n", relm->name);
+     delm = xbt_lib_get_elm_or_null(host_lib, relm->name);
+     if (delm!=NULL) {
+       xbt_dynar_push(res, &delm);
+     }
+  }
+  return res;
+}
