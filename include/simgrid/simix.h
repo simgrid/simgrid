@@ -69,7 +69,6 @@ typedef struct s_smx_sem *smx_sem_t;
 
 /********************************** File *************************************/
 typedef struct s_smx_file *smx_file_t;
-typedef struct s_smx_stat *smx_stat_t;
 
 /********************************** Action *************************************/
 typedef struct s_smx_action *smx_action_t; /* FIXME: replace by specialized action handlers */
@@ -465,7 +464,6 @@ XBT_PUBLIC(double) simcall_file_read(void* ptr, size_t size, size_t nmemb, smx_f
 XBT_PUBLIC(size_t) simcall_file_write(const void* ptr, size_t size, size_t nmemb, smx_file_t stream);
 XBT_PUBLIC(smx_file_t) simcall_file_open(const char* storage, const char* path, const char* mode);
 XBT_PUBLIC(int) simcall_file_close(smx_file_t fp);
-XBT_PUBLIC(int) simcall_file_stat(smx_file_t fd, s_file_stat_t *buf);
 XBT_PUBLIC(int) simcall_file_unlink(smx_file_t fd);
 XBT_PUBLIC(xbt_dict_t) simcall_file_ls(const char* mount, const char* path);
 
