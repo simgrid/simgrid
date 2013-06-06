@@ -24,7 +24,6 @@
 #include "xbt/dynar.h"
 #include "xbt/xbt_os_thread.h"
 
-XBT_PUBLIC_DATA(int) (*xbt_pid) ();
 int xbt_log_no_loc = 0;         /* if set to true (with --log=no_loc), file localization will be omitted (for tesh tests) */
 static xbt_os_rmutex_t log_cat_init_mutex = NULL;
 
