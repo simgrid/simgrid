@@ -463,9 +463,10 @@ XBT_PUBLIC(int) simcall_sem_get_capacity(smx_sem_t sem);
 XBT_PUBLIC(double) simcall_file_read(void* ptr, size_t size, size_t nmemb, smx_file_t stream);
 XBT_PUBLIC(size_t) simcall_file_write(const void* ptr, size_t size, size_t nmemb, smx_file_t stream);
 XBT_PUBLIC(smx_file_t) simcall_file_open(const char* storage, const char* path, const char* mode);
-XBT_PUBLIC(int) simcall_file_close(smx_file_t fp);
+XBT_PUBLIC(int) simcall_file_close(smx_file_t fd);
 XBT_PUBLIC(int) simcall_file_unlink(smx_file_t fd);
 XBT_PUBLIC(xbt_dict_t) simcall_file_ls(const char* mount, const char* path);
+XBT_PUBLIC(size_t) simcall_file_get_size(smx_file_t fd);
 
 /************************** AS router   **********************************/
 XBT_PUBLIC(xbt_dict_t) SIMIX_asr_get_properties(const char *name);

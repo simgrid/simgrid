@@ -226,12 +226,13 @@ typedef struct surf_network_model_extension_public {
 
 typedef struct surf_storage_model_extension_public {
   surf_action_t(*open) (void *storage, const char* mount, const char* path, const char* mode);
-  surf_action_t(*close) (void *storage, surf_file_t fp);
+  surf_action_t(*close) (void *storage, surf_file_t fd);
   surf_action_t(*read) (void *storage, void* ptr, double size, size_t nmemb, surf_file_t stream);
   surf_action_t(*write) (void *storage, const void* ptr, size_t size, size_t nmemb, surf_file_t stream);
   surf_action_t(*stat) (void *storage, surf_file_t stream);
   surf_action_t(*unlink) (void *storage, surf_file_t stream);
   surf_action_t(*ls) (void *storage, const char *path);
+  surf_action_t(*get_size) (void *storage, surf_file_t fd);
 } s_surf_model_extension_storage_t;
 
      /** \ingroup SURF_models
@@ -260,12 +261,13 @@ typedef struct surf_workstation_model_extension_public {
   double (*get_link_bandwidth) (const void *link);                                         /**< Return the current bandwidth of a network link */
   double (*get_link_latency) (const void *link);                                           /**< Return the current latency of a network link */
   surf_action_t(*open) (void *workstation, const char* storage, const char* path, const char* mode);
-  surf_action_t(*close) (void *workstation, surf_file_t fp);
+  surf_action_t(*close) (void *workstation, surf_file_t fd);
   surf_action_t(*read) (void *workstation, void* ptr, size_t size, size_t nmemb, surf_file_t stream);
   surf_action_t(*write) (void *workstation, const void* ptr, size_t size, size_t nmemb, surf_file_t stream);
   surf_action_t(*stat) (void *workstation, surf_file_t stream);
   surf_action_t(*unlink) (void *workstation, surf_file_t stream);
   surf_action_t(*ls) (void *workstation, const char* mount, const char *path);
+  surf_action_t(*get_size) (void *workstation, surf_file_t fd);
 
   int (*link_shared) (const void *link);
    xbt_dict_t(*get_properties) (const void *resource);

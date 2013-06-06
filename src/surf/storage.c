@@ -81,6 +81,13 @@ static surf_action_t storage_action_ls(void *storage, const char* path)
   return action;
 }
 
+static surf_action_t storage_action_get_size(void *storage, surf_file_t stream)
+{
+  surf_action_t action = storage_action_execute(storage,0,GET_SIZE);
+  action->file = stream;
+  return action;
+}
+
 static surf_action_t storage_action_unlink(void *storage, surf_file_t stream)
 {
   surf_action_t action = storage_action_execute(storage,0, UNLINK);
@@ -102,7 +109,7 @@ static surf_action_t storage_action_open(void *storage, const char* mount, const
 {
   XBT_DEBUG("\tOpen file '%s'",path);
   xbt_dict_t content_dict = ((storage_t)storage)->content;
-  unsigned long size = (unsigned long) xbt_dict_get_or_null(content_dict,path);
+  size_t size = (size_t) xbt_dict_get_or_null(content_dict,path);
   // if file does not exist create an empty file
   if(!size){
     xbt_dict_set(content_dict,path,&size,NULL);
@@ -118,22 +125,22 @@ static surf_action_t storage_action_open(void *storage, const char* mount, const
   return action;
 }
 
-static surf_action_t storage_action_close(void *storage, surf_file_t fp)
+static surf_action_t storage_action_close(void *storage, surf_file_t fd)
 {
-  char *filename = fp->name;
-  XBT_DEBUG("\tClose file '%s' size '%zu'",filename,fp->size);
+  char *filename = fd->name;
+  XBT_DEBUG("\tClose file '%s' size '%zu'",filename,fd->size);
   // unref write actions from storage
   surf_action_storage_t write_action;
   unsigned int i;
   xbt_dynar_foreach(((storage_t)storage)->write_actions,i,write_action) {
-    if ((write_action->generic_lmm_action.generic_action.file) == fp) {
+    if ((write_action->generic_lmm_action.generic_action.file) == fd) {
       xbt_dynar_cursor_rm(((storage_t)storage)->write_actions, &i);
       storage_action_unref((surf_action_t) write_action);
     }
   }
 
-  free(fp->name);
-  xbt_free(fp);
+  free(fd->name);
+  xbt_free(fd);
   surf_action_t action = storage_action_execute(storage,0, CLOSE);
   return action;
 }
@@ -189,6 +196,7 @@ static surf_action_t storage_action_execute (void *storage, double size, e_surf_
   case STAT:
   case UNLINK:
   case LS:
+  case GET_SIZE:
     break;
   case READ:
     lmm_expand(storage_maxmin_system, STORAGE->constraint_read,
@@ -494,6 +502,7 @@ static void surf_storage_model_init_internal(void)
   surf_storage_model->extension.storage.write = storage_action_write;
   surf_storage_model->extension.storage.unlink = storage_action_unlink;
   surf_storage_model->extension.storage.ls = storage_action_ls;
+  surf_storage_model->extension.storage.get_size = storage_action_get_size;
 
   if (!storage_maxmin_system) {
     storage_maxmin_system = lmm_system_new(storage_selective_update);

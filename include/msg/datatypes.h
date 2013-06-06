@@ -102,6 +102,7 @@ typedef struct simdata_file *simdata_file_t;
 
 typedef struct msg_file {
   char *name;                   /**< @brief file name */
+  size_t size;
   simdata_file_t simdata;                /**< @brief simulator data  */
   void *data;                   /**< @brief user data */
 } s_msg_file_t;

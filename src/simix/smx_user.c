@@ -1118,9 +1118,9 @@ smx_file_t simcall_file_open(const char* mount, const char* path, const char* mo
  * \ingroup simix_file_management
  *
  */
-int simcall_file_close(smx_file_t fp)
+int simcall_file_close(smx_file_t fd)
 {
-  return simcall_BODY_file_close(fp);  
+  return simcall_BODY_file_close(fd);
 }
 
 /**
@@ -1139,6 +1139,13 @@ int simcall_file_unlink(smx_file_t fd)
 xbt_dict_t simcall_file_ls(const char* mount, const char* path)
 {
   return simcall_BODY_file_ls(mount, path);
+}
+/**
+ * \ingroup simix_file_management
+ *
+ */
+size_t simcall_file_get_size (smx_file_t fd){
+  return simcall_BODY_file_get_size(fd);
 }
 
 #ifdef HAVE_MC

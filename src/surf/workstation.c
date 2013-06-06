@@ -334,12 +334,12 @@ static surf_action_t ws_action_open(void *workstation, const char* mount, const 
   return model->extension.storage.open(st, mount, path, mode);
 }
 
-static surf_action_t ws_action_close(void *workstation, surf_file_t fp)
+static surf_action_t ws_action_close(void *workstation, surf_file_t fd)
 {
-  storage_t st = find_storage_on_mount_list(workstation, fp->storage);
+  storage_t st = find_storage_on_mount_list(workstation, fd->storage);
   XBT_DEBUG("CLOSE on disk '%s'",st->generic_resource.name);
   surf_model_t model = st->generic_resource.model;
-  return model->extension.storage.close(st, fp);
+  return model->extension.storage.close(st, fd);
 }
 
 static surf_action_t ws_action_read(void *workstation, void* ptr, size_t size, size_t nmemb, surf_file_t stream)
@@ -380,6 +380,14 @@ static surf_action_t ws_action_ls(void *workstation, const char* mount, const ch
   storage_t st = find_storage_on_mount_list(workstation, mount);
   surf_model_t model = st->generic_resource.model;
   return model->extension.storage.ls(st, path);
+}
+
+static surf_action_t ws_action_get_size(void *workstation, surf_file_t stream)
+{
+  storage_t st = find_storage_on_mount_list(workstation, stream->storage);
+  XBT_DEBUG("GET SIZE on disk '%s'",st->generic_resource.name);
+  surf_model_t model = st->generic_resource.model;
+  return model->extension.storage.get_size(st,  stream);
 }
 
 static void surf_workstation_model_init_internal(void)
@@ -441,6 +449,7 @@ static void surf_workstation_model_init_internal(void)
   surf_workstation_model->extension.workstation.stat = ws_action_stat;
   surf_workstation_model->extension.workstation.unlink = ws_action_unlink;
   surf_workstation_model->extension.workstation.ls = ws_action_ls;
+  surf_workstation_model->extension.workstation.get_size = ws_action_get_size;
 }
 
 void surf_workstation_model_init_current_default(void)
