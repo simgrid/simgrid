@@ -26,6 +26,8 @@ SG_BEGIN_DECL()
  * want to send your task, but only the name of this mailbox. */
 typedef struct s_smx_rvpoint *msg_mailbox_t;
 
+/* ******************************** Environment ************************************ */
+typedef struct s_as *msg_as_t;
 
 /* ******************************** Host ************************************ */
 

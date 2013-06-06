@@ -401,6 +401,8 @@ set(BINDINGS_SRC
 set(JMSG_C_SRC
   src/bindings/java/jmsg.c
   src/bindings/java/jmsg.h
+  src/bindings/java/jmsg_as.c
+  src/bindings/java/jmsg_as.h
   src/bindings/java/jmsg_comm.c
   src/bindings/java/jmsg_comm.h
   src/bindings/java/jmsg_file.c
@@ -426,6 +428,7 @@ set(JMSG_C_SRC
 )
 
 set(JMSG_JAVA_SRC
+  src/bindings/java/org/simgrid/msg/As.java	
   src/bindings/java/org/simgrid/msg/Comm.java
   src/bindings/java/org/simgrid/msg/File.java
   src/bindings/java/org/simgrid/msg/Host.java
