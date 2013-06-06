@@ -18,9 +18,6 @@ public class As {
     protected As() {
 	};
 
-    
-    public long getBind() { return bind; }
-
     public String toString (){
 	return this.getName(); 
     }
@@ -30,11 +27,15 @@ public class As {
 
     public native String getProperty(String name);
 
-    	/**
-	 * Class initializer, to initialize various JNI stuff
-	 */
-	public static native void nativeInit();
-	static {
-		nativeInit();
-	}
+    public native String getModel();
+
+    public native Host[] getHosts();
+
+    /**
+      * Class initializer, to initialize various JNI stuff
+      */
+    public static native void nativeInit();
+    static {
+	nativeInit();
+    }
 }

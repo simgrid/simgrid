@@ -73,7 +73,9 @@ XBT_PUBLIC(unsigned long int) MSG_get_sent_msg(void);
 XBT_PUBLIC(msg_as_t) MSG_environment_get_routing_root(void);
 XBT_PUBLIC(const char *) MSG_environment_as_get_name(msg_as_t as);
 XBT_PUBLIC(xbt_dict_t) MSG_environment_as_get_routing_sons(msg_as_t as);
-XBT_PUBLIC(const char *)MSG_environment_as_get_property_value(msg_as_t as, const char *name);
+XBT_PUBLIC(const char *) MSG_environment_as_get_property_value(msg_as_t as, const char *name);
+XBT_PUBLIC(const char *) MSG_environment_as_get_model(msg_as_t as);
+XBT_PUBLIC(xbt_dynar_t) MSG_environment_as_get_hosts(msg_as_t as);
 
 /************************** File handling ***********************************/
 XBT_PUBLIC(size_t) MSG_file_read(void* ptr, size_t size, size_t nmemb,
