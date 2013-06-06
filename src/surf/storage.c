@@ -102,7 +102,7 @@ static surf_action_t storage_action_open(void *storage, const char* mount, const
 {
   XBT_DEBUG("\tOpen file '%s'",path);
   xbt_dict_t content_dict = ((storage_t)storage)->content;
-  unsigned long size = (unsigned long) xbt_dict_get_or_null(content_dict,path);
+  size_t size = (size_t) xbt_dict_get_or_null(content_dict,path);
   // if file does not exist create an empty file
   if(!size){
     xbt_dict_set(content_dict,path,&size,NULL);
