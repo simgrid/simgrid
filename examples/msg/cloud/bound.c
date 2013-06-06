@@ -61,30 +61,18 @@ static void launch_worker(msg_host_t host, const char *pr_name, double computati
   MSG_process_create_with_arguments(pr_name, worker_main, NULL, host, 4, argv);
 }
 
-#if 0
+
+
 static int worker_busy_loop_main(int argc, char *argv[])
 {
-  double clock_sta = MSG_get_clock();
-
-  msg_task_t task = MSG_task_create("Task", 100, 0, NULL);
-  MSG_task_execute(task);
-  MSG_task_destroy(task);
-
-  double clock_sta = MSG_get_clock();
+  msg_task_t *task = MSG_process_get_data(MSG_process_self());
+  for (;;)
+    MSG_task_execute(*task);
 
   return 0;
 }
 
-
-static msg_process_t launch_busy_loop_worker(msg_host_t host, const char *pr_name)
-{
-  char **argv = xbt_new(char *, 2);
-  argv[0] = xbt_strdup(pr_name);
-  argv[1] = NULL;
-
-  msg_process_t pr = MSG_process_create_with_arguments(pr_name, worker_busy_loop_main, NULL, host, 1, argv);
-  return pr;
-}
+#define DOUBLE_MAX 100000000000L
 
 static void test_dynamic_change(void)
 {
@@ -95,9 +83,45 @@ static void test_dynamic_change(void)
   msg_host_t vm1 = MSG_vm_create_core(pm0, "VM1");
   MSG_vm_start(vm0);
   MSG_vm_start(vm1);
-#endif
 
+  msg_task_t task0 = MSG_task_create("Task0", DOUBLE_MAX, 0, NULL);
+  msg_task_t task1 = MSG_task_create("Task1", DOUBLE_MAX, 0, NULL);
+  msg_process_t pr0 = MSG_process_create("worker0", worker_busy_loop_main, &task0, vm0);
+  msg_process_t pr1 = MSG_process_create("worker1", worker_busy_loop_main, &task1, vm1);
+
+
+  double task0_remain_prev = MSG_task_get_remaining_computation(task0);
+  double task1_remain_prev = MSG_task_get_remaining_computation(task1);
+
+  {
+    const double cpu_speed = MSG_get_host_speed(pm0);
+    int i = 0;
+    for (i = 0; i < 10; i++) {
+      double new_bound = (cpu_speed / 10) * i;
+      XBT_INFO("set bound of VM1 to %f", new_bound);
+      MSG_vm_set_bound(vm1, new_bound);
+      MSG_process_sleep(100);
+
+      double task0_remain_now = MSG_task_get_remaining_computation(task0);
+      double task1_remain_now = MSG_task_get_remaining_computation(task1);
+
+      double task0_flops_per_sec = task0_remain_prev - task0_remain_now;
+      double task1_flops_per_sec = task1_remain_prev - task1_remain_now;
+
+      XBT_INFO("VM0: %f flops/s", task0_flops_per_sec / 100);
+      XBT_INFO("VM1: %f flops/s", task1_flops_per_sec / 100);
+
+      task0_remain_prev = task0_remain_now;
+      task1_remain_prev = task1_remain_now;
+    }
+  }
+
+  MSG_process_kill(pr0);
+  MSG_process_kill(pr1);
   
+  MSG_vm_destroy(vm0);
+  MSG_vm_destroy(vm1);
+}
 
 
 
@@ -313,6 +337,9 @@ static int master_main(int argc, char *argv[])
     MSG_vm_destroy(vm0);
   }
 
+
+  XBT_INFO("# 10. Change a bound dynamically");
+  test_dynamic_change();
 
   return 0;
 }

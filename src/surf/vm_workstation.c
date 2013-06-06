@@ -457,9 +457,7 @@ static void vm_ws_set_vm_bound(void *workstation, double bound)
   xbt_assert(ws->model->type == SURF_MODEL_TYPE_VM_WORKSTATION);
   workstation_VM2013_t vm_ws = (workstation_VM2013_t) ws;
 
-  XBT_INFO("%p bound %f", vm_ws->cpu_action, bound);
   surf_action_set_bound(vm_ws->cpu_action, bound);
-  get_bound(vm_ws->cpu_action);
 }
 
 
