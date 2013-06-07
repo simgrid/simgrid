@@ -44,7 +44,8 @@ COLL_APPLY(action, COLL_ALLGATHER_SIG, rhv) COLL_sep \
 COLL_APPLY(action, COLL_ALLGATHER_SIG, ring) COLL_sep \
 COLL_APPLY(action, COLL_ALLGATHER_SIG, SMP_NTS) COLL_sep \
 COLL_APPLY(action, COLL_ALLGATHER_SIG, smp_simple) COLL_sep \
-COLL_APPLY(action, COLL_ALLGATHER_SIG, spreading_simple)
+COLL_APPLY(action, COLL_ALLGATHER_SIG, spreading_simple) COLL_sep \
+COLL_APPLY(action, COLL_ALLGATHER_SIG, ompi)
 
 COLL_ALLGATHERS(COLL_PROTO, COLL_NOsep)
 
@@ -59,7 +60,8 @@ COLL_ALLGATHERS(COLL_PROTO, COLL_NOsep)
 #define COLL_ALLGATHERVS(action, COLL_sep) \
 COLL_APPLY(action, COLL_ALLGATHERV_SIG, GB) COLL_sep \
 COLL_APPLY(action, COLL_ALLGATHERV_SIG, pair) COLL_sep \
-COLL_APPLY(action, COLL_ALLGATHERV_SIG, ring)
+COLL_APPLY(action, COLL_ALLGATHERV_SIG, ring) COLL_sep \
+COLL_APPLY(action, COLL_ALLGATHERV_SIG, ompi)
 
 COLL_ALLGATHERVS(COLL_PROTO, COLL_NOsep)
 
@@ -85,7 +87,8 @@ COLL_APPLY(action, COLL_ALLREDUCE_SIG, smp_rdb) COLL_sep \
 COLL_APPLY(action, COLL_ALLREDUCE_SIG, smp_rsag) COLL_sep \
 COLL_APPLY(action, COLL_ALLREDUCE_SIG, smp_rsag_lr) COLL_sep \
 COLL_APPLY(action, COLL_ALLREDUCE_SIG, smp_rsag_rab) COLL_sep \
-COLL_APPLY(action, COLL_ALLREDUCE_SIG, redbcast)
+COLL_APPLY(action, COLL_ALLREDUCE_SIG, redbcast) COLL_sep \
+COLL_APPLY(action, COLL_ALLREDUCE_SIG, ompi)
 
 COLL_ALLREDUCES(COLL_PROTO, COLL_NOsep)
 
@@ -111,7 +114,8 @@ COLL_APPLY(action, COLL_ALLTOALL_SIG, ring) COLL_sep \
 COLL_APPLY(action, COLL_ALLTOALL_SIG, ring_light_barrier) COLL_sep \
 COLL_APPLY(action, COLL_ALLTOALL_SIG, ring_mpi_barrier) COLL_sep \
 COLL_APPLY(action, COLL_ALLTOALL_SIG, ring_one_barrier) COLL_sep \
-COLL_APPLY(action, COLL_ALLTOALL_SIG, simple)
+COLL_APPLY(action, COLL_ALLTOALL_SIG, simple) COLL_sep \
+COLL_APPLY(action, COLL_ALLTOALL_SIG, ompi)
 
 COLL_ALLTOALLS(COLL_PROTO, COLL_NOsep)
 
@@ -132,7 +136,8 @@ COLL_APPLY(action, COLL_ALLTOALLV_SIG, pair_one_barrier) COLL_sep \
 COLL_APPLY(action, COLL_ALLTOALLV_SIG, ring) COLL_sep \
 COLL_APPLY(action, COLL_ALLTOALLV_SIG, ring_light_barrier) COLL_sep \
 COLL_APPLY(action, COLL_ALLTOALLV_SIG, ring_mpi_barrier) COLL_sep \
-COLL_APPLY(action, COLL_ALLTOALLV_SIG, ring_one_barrier)
+COLL_APPLY(action, COLL_ALLTOALLV_SIG, ring_one_barrier) COLL_sep \
+COLL_APPLY(action, COLL_ALLTOALLV_SIG, ompi)
 
 COLL_ALLTOALLVS(COLL_PROTO, COLL_NOsep)
 
@@ -158,7 +163,8 @@ COLL_APPLY(action, COLL_BCAST_SIG, scatter_LR_allgather) COLL_sep \
 COLL_APPLY(action, COLL_BCAST_SIG, scatter_rdb_allgather) COLL_sep \
 COLL_APPLY(action, COLL_BCAST_SIG, SMP_binary) COLL_sep \
 COLL_APPLY(action, COLL_BCAST_SIG, SMP_binomial) COLL_sep \
-COLL_APPLY(action, COLL_BCAST_SIG, SMP_linear)
+COLL_APPLY(action, COLL_BCAST_SIG, SMP_linear) COLL_sep \
+COLL_APPLY(action, COLL_BCAST_SIG, ompi)
 
 COLL_BCASTS(COLL_PROTO, COLL_NOsep)
 
@@ -175,7 +181,8 @@ COLL_APPLY(action, COLL_REDUCE_SIG, arrival_pattern_aware) COLL_sep \
 COLL_APPLY(action, COLL_REDUCE_SIG, binomial) COLL_sep \
 COLL_APPLY(action, COLL_REDUCE_SIG, flat_tree) COLL_sep \
 COLL_APPLY(action, COLL_REDUCE_SIG, NTSL) COLL_sep \
-COLL_APPLY(action, COLL_REDUCE_SIG, scatter_gather)
+COLL_APPLY(action, COLL_REDUCE_SIG, scatter_gather) COLL_sep \
+COLL_APPLY(action, COLL_REDUCE_SIG, ompi)
 
 COLL_REDUCES(COLL_PROTO, COLL_NOsep)
 

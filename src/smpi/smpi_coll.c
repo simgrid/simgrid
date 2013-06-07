@@ -12,6 +12,7 @@
 
 #include "private.h"
 #include "colls/colls.h"
+#include "simgrid/sg_config.h"
 
 s_mpi_coll_description_t mpi_coll_allgather_description[] = {
   {"default",
@@ -88,15 +89,28 @@ void coll_help(const char *category, s_mpi_coll_description_t * table)
 }
 
 int find_coll_description(s_mpi_coll_description_t * table,
-                           const char *name)
+                           char *name)
 {
   int i;
   char *name_list = NULL;
-
+  int selector_on=0;
+  if(name==NULL){//no argument provided, use active selector's algorithm
+    name=(char*)sg_cfg_get_string("smpi/coll_selector");
+    selector_on=1;
+  }
   for (i = 0; table[i].name; i++)
     if (!strcmp(name, table[i].name)) {
       return i;
     }
+
+  if(selector_on){
+    // collective seems not handled by the active selector, try with default one
+    name=(char*)"default";
+    for (i = 0; table[i].name; i++)
+      if (!strcmp(name, table[i].name)) {
+        return i;
+    }
+  }
   name_list = strdup(table[0].name);
   for (i = 1; table[i].name; i++) {
     name_list =
@@ -108,8 +122,6 @@ int find_coll_description(s_mpi_coll_description_t * table,
   xbt_die("Model '%s' is invalid! Valid models are: %s.", name, name_list);
   return -1;
 }
-
-
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_coll, smpi,
                                 "Logging specific to SMPI (coll)");

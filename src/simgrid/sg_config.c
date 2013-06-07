@@ -754,46 +754,43 @@ void sg_config_init(int *argc, char **argv)
                      xbt_cfgelm_double, &default_iprobe_time, 1, 1, NULL,
                      NULL);
     default_value = xbt_strdup("default");
+    xbt_cfg_register(&_sg_cfg_set, "smpi/coll_selector",
+		     "Which collective selector to use",
+		     xbt_cfgelm_string, &default_value, 1, 1, NULL,
+		     NULL);
     xbt_cfg_register(&_sg_cfg_set, "smpi/allgather",
 		     "Which collective to use for allgather",
-		     xbt_cfgelm_string, &default_value, 1, 1, &_sg_cfg_cb__coll_allgather,
+		     xbt_cfgelm_string, NULL, 1, 1, &_sg_cfg_cb__coll_allgather,
 		     NULL);
 
-    default_value = xbt_strdup("default");
     xbt_cfg_register(&_sg_cfg_set, "smpi/allgatherv",
 		     "Which collective to use for allgatherv",
-		     xbt_cfgelm_string, &default_value, 1, 1, &_sg_cfg_cb__coll_allgatherv,
+		     xbt_cfgelm_string, NULL, 1, 1, &_sg_cfg_cb__coll_allgatherv,
 		     NULL);
 
-    default_value = xbt_strdup("default");
     xbt_cfg_register(&_sg_cfg_set, "smpi/allreduce",
 		     "Which collective to use for allreduce",
-		     xbt_cfgelm_string, &default_value, 1, 1, &_sg_cfg_cb__coll_allreduce,
+		     xbt_cfgelm_string, NULL, 1, 1, &_sg_cfg_cb__coll_allreduce,
 		     NULL);
 
-    default_value = xbt_strdup("ompi");
     xbt_cfg_register(&_sg_cfg_set, "smpi/alltoall",
 		     "Which collective to use for alltoall",
-		     xbt_cfgelm_string, &default_value, 1, 1, &_sg_cfg_cb__coll_alltoall,
+		     xbt_cfgelm_string, NULL, 1, 1, &_sg_cfg_cb__coll_alltoall,
 		     NULL);
 
-    default_value = xbt_strdup("default");
     xbt_cfg_register(&_sg_cfg_set, "smpi/alltoallv",
 		     "Which collective to use for alltoallv",
-		     xbt_cfgelm_string, &default_value, 1, 1, &_sg_cfg_cb__coll_alltoallv,
+		     xbt_cfgelm_string, NULL, 1, 1, &_sg_cfg_cb__coll_alltoallv,
 		     NULL);
 
-    default_value = xbt_strdup("default");
     xbt_cfg_register(&_sg_cfg_set, "smpi/bcast",
 		     "Which collective to use for bcast",
-		     xbt_cfgelm_string, &default_value, 1, 1, &_sg_cfg_cb__coll_bcast,
+		     xbt_cfgelm_string, NULL, 1, 1, &_sg_cfg_cb__coll_bcast,
 		     NULL);
 
-
-    default_value = xbt_strdup("default");
     xbt_cfg_register(&_sg_cfg_set, "smpi/reduce",
 		     "Which collective to use for reduce",
-		     xbt_cfgelm_string, &default_value, 1, 1, &_sg_cfg_cb__coll_reduce,
+		     xbt_cfgelm_string, NULL, 1, 1, &_sg_cfg_cb__coll_reduce,
 		     NULL);
 #endif // HAVE_SMPI
 

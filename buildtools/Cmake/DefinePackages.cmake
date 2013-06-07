@@ -110,6 +110,7 @@ set(SMPI_SRC
   src/smpi/smpi_mpi_dt.c
   src/smpi/smpi_pmpi.c
   src/smpi/smpi_replay.c
+  src/smpi/colls/smpi_openmpi_selector.c
   src/smpi/colls/colls_global.c
   src/smpi/colls/allgather-2dmesh.c
   src/smpi/colls/allgather-3dmesh.c
