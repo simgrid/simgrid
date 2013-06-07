@@ -81,7 +81,6 @@ Java_org_simgrid_msg_As_getSons(JNIEnv * env, jobject jas) {
   char *key;
 
   xbt_dict_foreach(dict,cursor,key,tmp_as) {
-    printf("Son: %s\n", key);
     tmp_jas = jas_new_instance(env);
     if (!tmp_jas) {
       jxbt_throw_jni(env, "java As instantiation failed");
@@ -94,7 +93,7 @@ Java_org_simgrid_msg_As_getSons(JNIEnv * env, jobject jas) {
     }
     jas_bind(tmp_jas, tmp_as, env);
 
-    (*env)->SetObjectArrayElement(env, jtable, index, jas);
+    (*env)->SetObjectArrayElement(env, jtable, index, tmp_jas);
     index++;
 
   }
