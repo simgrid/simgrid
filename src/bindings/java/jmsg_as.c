@@ -137,11 +137,9 @@ Java_org_simgrid_msg_As_getHosts(JNIEnv * env, jobject jas)
   jstring jname;
   msg_host_t host;
   msg_as_t as = jas_get_native(env, jas);
-  printf("t5\n");
 
   xbt_dynar_t table =  MSG_environment_as_get_hosts(as);
   int count = xbt_dynar_length(table);
-  printf("t6-count: %d\n", count);
 
   jclass cls = jxbt_get_class(env, "org/simgrid/msg/Host");
 
@@ -150,36 +148,27 @@ Java_org_simgrid_msg_As_getHosts(JNIEnv * env, jobject jas)
   }
   
   jtable = (*env)->NewObjectArray(env, (jsize) count, cls, NULL);
-  printf("t7\n");
 
   if (!jtable) {
     jxbt_throw_jni(env, "Hosts table allocation failed");
     return NULL;
   }
-  printf("t8\n");
 
   for (index = 0; index < count; index++) {
-  printf("t9\n");
 
     host = xbt_dynar_get_as(table,index,msg_host_t);
-  printf("t9: %p\n", host);
 
     jhost = (jobject) (MSG_host_get_data(host));
-  printf("t9\n");
-  printf("name: %s\n", MSG_host_get_name(host));
     if (!jhost) {
       jname = (*env)->NewStringUTF(env, MSG_host_get_name(host));
-  printf("t10\n");
 
       jhost = Java_org_simgrid_msg_Host_getByName(env, cls, jname);
-  printf("t11\n");
 
       /* FIXME: leak of jname ? */
     }
 
     (*env)->SetObjectArrayElement(env, jtable, index, jhost);
   }
-  printf("t9\n");
   xbt_dynar_free(&table);
   return jtable;
 }
