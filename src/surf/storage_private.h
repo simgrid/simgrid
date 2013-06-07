@@ -39,7 +39,7 @@ typedef struct storage {
 } s_storage_t, *storage_t;
 
 typedef enum {
-  READ=0, WRITE, STAT, OPEN, CLOSE, UNLINK, LS, GET_SIZE
+  READ=0, WRITE, STAT, OPEN, CLOSE, UNLINK, LS
 } e_surf_action_storage_type_t;
 
 typedef struct surf_action_storage {
