@@ -39,9 +39,9 @@ COLL_ALLREDUCES(COLL_DESCRIPTION, COLL_COMMA),
 };
 
 s_mpi_coll_description_t mpi_coll_alltoall_description[] = {
-  {"ompi",
+  {"default",
    "Ompi alltoall default collective",
-   smpi_coll_tuned_alltoall_ompi},
+   smpi_coll_tuned_alltoall_ompi2},
 COLL_ALLTOALLS(COLL_DESCRIPTION, COLL_COMMA),
   {"bruck",
    "Alltoall Bruck (SG) collective",
@@ -311,7 +311,7 @@ void nary_tree_barrier(MPI_Comm comm, int arity)
   free_tree(tree);
 }
 
-int smpi_coll_tuned_alltoall_ompi(void *sendbuf, int sendcount,
+int smpi_coll_tuned_alltoall_ompi2(void *sendbuf, int sendcount,
                                    MPI_Datatype sendtype, void *recvbuf,
                                    int recvcount, MPI_Datatype recvtype,
                                    MPI_Comm comm)

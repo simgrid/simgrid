@@ -239,7 +239,7 @@ void nary_tree_bcast(void *buf, int count, MPI_Datatype datatype, int root,
                      MPI_Comm comm, int arity);
 void nary_tree_barrier(MPI_Comm comm, int arity);
 
-int smpi_coll_tuned_alltoall_ompi(void *sendbuf, int sendcount,
+int smpi_coll_tuned_alltoall_ompi2(void *sendbuf, int sendcount,
                                       MPI_Datatype sendtype, void *recvbuf,
                                       int recvcount, MPI_Datatype recvtype,
                                       MPI_Comm comm);
