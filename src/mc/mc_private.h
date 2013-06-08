@@ -68,7 +68,7 @@ int is_stack_ignore_variable(char *frame, char *var_name);
 
 extern double *mc_time;
 extern FILE *dot_output;
-extern const char* colors[10];
+extern const char* colors[13];
 
 int MC_deadlock_check(void);
 void MC_replay(xbt_fifo_t stack, int start);

@@ -120,7 +120,7 @@ extern xbt_dynar_t mc_heap_comparison_ignore;
 extern xbt_dynar_t stacks_areas;
 
 FILE *dot_output = NULL;
-const char* colors[10];
+const char* colors[13];
 
 xbt_automaton_t _mc_property_automaton = NULL;
 
