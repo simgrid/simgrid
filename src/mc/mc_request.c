@@ -271,10 +271,11 @@ char *MC_request_to_string(smx_simcall_t req, int value)
 
   if(args != NULL){
     str = bprintf("[(%lu)%s (%s)] %s (%s)", req->issuer->pid , MSG_host_get_name(req->issuer->smx_host), req->issuer->name, type, args);
-    xbt_free(args);
   }else{
     str = bprintf("[(%lu)%s (%s)] %s ", req->issuer->pid , MSG_host_get_name(req->issuer->smx_host), req->issuer->name, type);
   }
+
+  xbt_free(args);
   xbt_free(type);
   xbt_free(p);
   xbt_free(bs);
