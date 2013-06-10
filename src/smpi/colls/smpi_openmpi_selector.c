@@ -32,7 +32,7 @@ int smpi_coll_tuned_allreduce_ompi(void *sbuf, void *rbuf, int count,
                                                                    op, comm));
     } 
 
-    if( /*smpi_op_is_commute(op) && */(count > comm_size) ) {
+    if( smpi_op_is_commute(op) && (count > comm_size) ) {
         const size_t segment_size = 1 << 20; /* 1 MB */
         if ((comm_size * segment_size >= block_dsize)) {
             //FIXME: ok, these are not the right algorithms, try to find closer ones
@@ -41,7 +41,7 @@ int smpi_coll_tuned_allreduce_ompi(void *sbuf, void *rbuf, int count,
                                               op, comm);
         } else {
            // return (smpi_coll_tuned_allreduce_intra_ring_segmented (sbuf, rbuf, 
-           return (smpi_coll_tuned_allreduce_rab2 (sbuf, rbuf,
+           return (smpi_coll_tuned_allreduce_ompi_ring_segmented (sbuf, rbuf,
                                                                     count, dtype, 
                                                                     op, comm 
                                                                     /*segment_size*/));

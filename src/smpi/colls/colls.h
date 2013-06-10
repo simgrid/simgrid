@@ -88,7 +88,8 @@ COLL_APPLY(action, COLL_ALLREDUCE_SIG, smp_rsag) COLL_sep \
 COLL_APPLY(action, COLL_ALLREDUCE_SIG, smp_rsag_lr) COLL_sep \
 COLL_APPLY(action, COLL_ALLREDUCE_SIG, smp_rsag_rab) COLL_sep \
 COLL_APPLY(action, COLL_ALLREDUCE_SIG, redbcast) COLL_sep \
-COLL_APPLY(action, COLL_ALLREDUCE_SIG, ompi)
+COLL_APPLY(action, COLL_ALLREDUCE_SIG, ompi) COLL_sep \
+COLL_APPLY(action, COLL_ALLREDUCE_SIG, ompi_ring_segmented)
 
 COLL_ALLREDUCES(COLL_PROTO, COLL_NOsep)
 
