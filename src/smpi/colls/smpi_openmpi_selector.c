@@ -35,8 +35,8 @@ int smpi_coll_tuned_allreduce_ompi(void *sbuf, void *rbuf, int count,
     if( /*smpi_op_is_commute(op) && */(count > comm_size) ) {
         const size_t segment_size = 1 << 20; /* 1 MB */
         if ((comm_size * segment_size >= block_dsize)) {
-            //return (smpi_coll_tuned_allreduce_intra_ring (sbuf, rbuf, count, dtype, 
             //FIXME: ok, these are not the right algorithms, try to find closer ones
+            // lr is a good match for allreduce_ring (difference is mainly the use of sendrecv)
             return smpi_coll_tuned_allreduce_lr(sbuf, rbuf, count, dtype,
                                               op, comm);
         } else {
@@ -138,11 +138,11 @@ int smpi_coll_tuned_bcast_ompi(void *buff, int count,
     //const double a_p128 = 1.6134e-6; /* [1 / byte] */
     //const double b_p128 = 2.1102;
 
-    int communicator_size;
-    int segsize = 0;
+    //int communicator_size;
+    //int segsize = 0;
     size_t message_size, dsize;
 
-    communicator_size = smpi_comm_size(comm);
+    //communicator_size = smpi_comm_size(comm);
 
     /* else we need data size for decision function */
     dsize = smpi_datatype_size(datatype);
@@ -152,7 +152,7 @@ int smpi_coll_tuned_bcast_ompi(void *buff, int count,
        single-element broadcasts */
     if ((message_size < /*small_message_size*/intermediate_message_size) || (count <= 1)) {
         /* Binomial without segmentation */
-        segsize = 0;
+        //segsize = 0;
         return  smpi_coll_tuned_bcast_binomial_tree (buff, count, datatype, 
                                                       root, comm/*
                                                       segsize*/);
