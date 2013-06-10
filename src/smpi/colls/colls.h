@@ -185,7 +185,13 @@ COLL_APPLY(action, COLL_REDUCE_SIG, binomial) COLL_sep \
 COLL_APPLY(action, COLL_REDUCE_SIG, flat_tree) COLL_sep \
 COLL_APPLY(action, COLL_REDUCE_SIG, NTSL) COLL_sep \
 COLL_APPLY(action, COLL_REDUCE_SIG, scatter_gather) COLL_sep \
-COLL_APPLY(action, COLL_REDUCE_SIG, ompi)
+COLL_APPLY(action, COLL_REDUCE_SIG, ompi) COLL_sep \
+COLL_APPLY(action, COLL_REDUCE_SIG, ompi_chain) COLL_sep \
+COLL_APPLY(action, COLL_REDUCE_SIG, ompi_pipeline) COLL_sep \
+COLL_APPLY(action, COLL_REDUCE_SIG, ompi_basic_linear) COLL_sep \
+COLL_APPLY(action, COLL_REDUCE_SIG, ompi_in_order_binary) COLL_sep \
+COLL_APPLY(action, COLL_REDUCE_SIG, ompi_binary) COLL_sep \
+COLL_APPLY(action, COLL_REDUCE_SIG, ompi_binomial)
 
 COLL_REDUCES(COLL_PROTO, COLL_NOsep)
 

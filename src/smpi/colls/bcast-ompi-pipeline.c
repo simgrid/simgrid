@@ -1,184 +1,10 @@
  #include "colls_private.h"
-
+ #include "coll_tuned_topo.h"
 
 #define MAXTREEFANOUT 32
 
-#define COLL_TUNED_COMPUTED_SEGCOUNT(SEGSIZE, TYPELNG, SEGCOUNT)        \
-    if( ((SEGSIZE) >= (TYPELNG)) &&                                     \
-        ((SEGSIZE) < ((TYPELNG) * (SEGCOUNT))) ) {                      \
-        size_t residual;                                                \
-        (SEGCOUNT) = (int)((SEGSIZE) / (TYPELNG));                      \
-        residual = (SEGSIZE) - (SEGCOUNT) * (TYPELNG);                  \
-        if( residual > ((TYPELNG) >> 1) )                               \
-            (SEGCOUNT)++;                                               \
-    }                                                                   \
 
- typedef struct ompi_coll_tree_t {
-        int32_t tree_root;
-        int32_t tree_fanout;
-        int32_t tree_bmtree;
-        int32_t tree_prev;
-        int32_t tree_next[MAXTREEFANOUT];
-        int32_t tree_nextsize;
-    } ompi_coll_tree_t;
-
-    ompi_coll_tree_t*
-    ompi_coll_tuned_topo_build_chain( int fanout,
-                                     MPI_Comm com,
-                                     int root );
-
-ompi_coll_tree_t*
-ompi_coll_tuned_topo_build_chain( int fanout,
-                                  MPI_Comm comm,
-                                  int root )
-{
-    int rank, size;
-    int srank; /* shifted rank */
-    int i,maxchainlen;
-    int mark,head,len;
-    ompi_coll_tree_t *chain;
-
-    XBT_DEBUG("coll:tuned:topo:build_chain fo %d rt %d", fanout, root);
-
-    /* 
-     * Get size and rank of the process in this communicator 
-     */
-    size = smpi_comm_size(comm);
-    rank = smpi_comm_rank(comm);
-
-    if( fanout < 1 ) {
-        XBT_DEBUG("coll:tuned:topo:build_chain WARNING invalid fanout of ZERO, forcing to 1 (pipeline)!");
-        fanout = 1;
-    }
-    if (fanout>MAXTREEFANOUT) {
-        XBT_DEBUG("coll:tuned:topo:build_chain WARNING invalid fanout %d bigger than max %d, forcing to max!", fanout, MAXTREEFANOUT);
-        fanout = MAXTREEFANOUT;
-    }
-
-    /*
-     * Allocate space for topology arrays if needed 
-     */
-    chain = (ompi_coll_tree_t*)malloc( sizeof(ompi_coll_tree_t) );
-    if (!chain) {
-        XBT_DEBUG("coll:tuned:topo:build_chain PANIC out of memory");
-        fflush(stdout);
-        return NULL;
-    }
-    chain->tree_root     = MPI_UNDEFINED;
-    chain->tree_nextsize = -1;
-    for(i=0;i<fanout;i++) chain->tree_next[i] = -1;
-
-    /* 
-     * Set root & numchain
-     */
-    chain->tree_root = root;
-    if( (size - 1) < fanout ) { 
-        chain->tree_nextsize = size-1;
-        fanout = size-1;
-    } else {
-        chain->tree_nextsize = fanout;
-    }
-    
-    /*
-     * Shift ranks
-     */
-    srank = rank - root;
-    if (srank < 0) srank += size;
-
-    /*
-     * Special case - fanout == 1
-     */
-    if( fanout == 1 ) {
-        if( srank == 0 ) chain->tree_prev = -1;
-        else chain->tree_prev = (srank-1+root)%size;
-
-        if( (srank + 1) >= size) {
-            chain->tree_next[0] = -1;
-            chain->tree_nextsize = 0;
-        } else {
-            chain->tree_next[0] = (srank+1+root)%size;
-            chain->tree_nextsize = 1;
-        }
-        return chain;
-    }
-
-    /* Let's handle the case where there is just one node in the communicator */
-    if( size == 1 ) {
-        chain->tree_next[0] = -1;
-        chain->tree_nextsize = 0;
-        chain->tree_prev = -1;
-        return chain;
-    }
-    /*
-     * Calculate maximum chain length
-     */
-    maxchainlen = (size-1) / fanout;
-    if( (size-1) % fanout != 0 ) {
-        maxchainlen++;
-        mark = (size-1)%fanout;
-    } else {
-        mark = fanout+1;
-    }
-
-    /*
-     * Find your own place in the list of shifted ranks
-     */
-    if( srank != 0 ) {
-        int column;
-        if( srank-1 < (mark * maxchainlen) ) {
-            column = (srank-1)/maxchainlen;
-            head = 1+column*maxchainlen;
-            len = maxchainlen;
-        } else {
-            column = mark + (srank-1-mark*maxchainlen)/(maxchainlen-1);
-            head = mark*maxchainlen+1+(column-mark)*(maxchainlen-1);
-            len = maxchainlen-1;
-        }
-
-        if( srank == head ) {
-            chain->tree_prev = 0; /*root*/
-        } else {
-            chain->tree_prev = srank-1; /* rank -1 */
-        }
-        if( srank == (head + len - 1) ) {
-            chain->tree_next[0] = -1;
-            chain->tree_nextsize = 0;
-        } else {
-            if( (srank + 1) < size ) {
-                chain->tree_next[0] = srank+1;
-                chain->tree_nextsize = 1;
-            } else {
-                chain->tree_next[0] = -1;
-                chain->tree_nextsize = 0;    
-            }
-        }
-    }
-    
-    /*
-     * Unshift values 
-     */
-    if( rank == root ) {
-        chain->tree_prev = -1;
-        chain->tree_next[0] = (root+1)%size;
-        for( i = 1; i < fanout; i++ ) {
-            chain->tree_next[i] = chain->tree_next[i-1] + maxchainlen;
-            if( i > mark ) {
-                chain->tree_next[i]--;
-            }
-            chain->tree_next[i] %= size;
-        }
-        chain->tree_nextsize = fanout;
-    } else {
-        chain->tree_prev = (chain->tree_prev+root)%size;
-        if( chain->tree_next[0] != -1 ) {
-            chain->tree_next[0] = (chain->tree_next[0]+root)%size;
-        }
-    }
-
-    return chain;
-}
-
-smpi_coll_tuned_bcast_ompi_pipeline( void* buffer,
+int smpi_coll_tuned_bcast_ompi_pipeline( void* buffer,
                                       int original_count, 
                                       MPI_Datatype datatype, 
                                       int root,
@@ -186,14 +12,14 @@ smpi_coll_tuned_bcast_ompi_pipeline( void* buffer,
 {
     int count_by_segment = original_count;
     size_t type_size;
-    int segsize;
+    int segsize =1024  << 7;
     //mca_coll_tuned_module_t *tuned_module = (mca_coll_tuned_module_t*) module;
     //mca_coll_tuned_comm_t *data = tuned_module->tuned_data;
     
 //    return ompi_coll_tuned_bcast_intra_generic( buffer, count, datatype, root, comm, module,
 //                                                count_by_segment, data->cached_pipeline );
     ompi_coll_tree_t * tree = ompi_coll_tuned_topo_build_chain( 1, comm, root );
-    int err = 0, line, i;
+    int i;
     int rank, size;
     int segindex;
     int num_segments; /* Number of segments */

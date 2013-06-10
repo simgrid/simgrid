@@ -183,6 +183,7 @@ set(SMPI_SRC
   src/smpi/colls/bcast-SMP-binary.c
   src/smpi/colls/bcast-SMP-binomial.c
   src/smpi/colls/bcast-SMP-linear.c
+  src/smpi/colls/coll_tuned_topo.c
   src/smpi/colls/bcast-ompi-split-bintree.c
   src/smpi/colls/bcast-ompi-pipeline.c
   src/smpi/colls/reduce-arrival-pattern-aware.c
@@ -190,6 +191,7 @@ set(SMPI_SRC
   src/smpi/colls/reduce-flat-tree.c
   src/smpi/colls/reduce-NTSL.c
   src/smpi/colls/reduce-scatter-gather.c
+  src/smpi/colls/reduce-ompi.c
   )
 
 if(SMPI_F2C)

@@ -232,12 +232,12 @@ int smpi_coll_tuned_reduce_ompi( void *sendbuf, void *recvbuf,
     int communicator_size=0;
     //int segsize = 0;
     size_t message_size, dsize;
-    //const double a1 =  0.6016 / 1024.0; /* [1/B] */
-    //const double b1 =  1.3496;
-    //const double a2 =  0.0410 / 1024.0; /* [1/B] */
-    //const double b2 =  9.7128;
-    //const double a3 =  0.0422 / 1024.0; /* [1/B] */
-    //const double b3 =  1.1614;
+    const double a1 =  0.6016 / 1024.0; /* [1/B] */
+    const double b1 =  1.3496;
+    const double a2 =  0.0410 / 1024.0; /* [1/B] */
+    const double b2 =  9.7128;
+    const double a3 =  0.0422 / 1024.0; /* [1/B] */
+    const double b3 =  1.1614;
     //const double a4 =  0.0033 / 1024.0; /* [1/B] */
     //const double b4 =  1.6761;
 
@@ -253,47 +253,47 @@ int smpi_coll_tuned_reduce_ompi( void *sendbuf, void *recvbuf,
      * If the operation is non commutative we currently have choice of linear 
      * or in-order binary tree algorithm.
      */
-/*    if( !ompi_op_is_commute(op) ) {
+    if( !smpi_op_is_commute(op) ) {
         if ((communicator_size < 12) && (message_size < 2048)) {
-            return smpi_coll_tuned_reduce_intra_basic_linear (sendbuf, recvbuf, count, datatype, op, root, comm, module); 
+            return smpi_coll_tuned_reduce_ompi_basic_linear (sendbuf, recvbuf, count, datatype, op, root, comm/*, module*/); 
         } 
-        return smpi_coll_tuned_reduce_intra_in_order_binary (sendbuf, recvbuf, count, datatype, op, root, comm, module,
-                                                             0, max_requests); 
-    }*/
+        return smpi_coll_tuned_reduce_ompi_in_order_binary (sendbuf, recvbuf, count, datatype, op, root, comm/*, module,
+                                                             0, max_requests*/); 
+    }
 
     if ((communicator_size < 8) && (message_size < 512)){
         /* Linear_0K */
-        return smpi_coll_tuned_reduce_flat_tree (sendbuf, recvbuf, count, datatype, op, root, comm); 
+        return smpi_coll_tuned_reduce_ompi_basic_linear (sendbuf, recvbuf, count, datatype, op, root, comm); 
     } else if (((communicator_size < 8) && (message_size < 20480)) ||
                (message_size < 2048) || (count <= 1)) {
         /* Binomial_0K */
         //segsize = 0;
-        return smpi_coll_tuned_reduce_binomial(sendbuf, recvbuf, count, datatype, op, root, comm/*, module,
+        return smpi_coll_tuned_reduce_ompi_binomial(sendbuf, recvbuf, count, datatype, op, root, comm/*, module,
                                                      segsize, max_requests*/);
-    } /*else if (communicator_size > (a1 * message_size + b1)) {
+    } else if (communicator_size > (a1 * message_size + b1)) {
         // Binomial_1K 
-        segsize = 1024;
-        return smpi_coll_tuned_reduce_intra_binomial(sendbuf, recvbuf, count, datatype, op, root, comm, module,
-                                                     segsize, max_requests);
+        //segsize = 1024;
+        return smpi_coll_tuned_reduce_ompi_binomial(sendbuf, recvbuf, count, datatype, op, root, comm/*, module,
+                                                     segsize, max_requests*/);
     } else if (communicator_size > (a2 * message_size + b2)) {
         // Pipeline_1K 
-        segsize = 1024;
-        return smpi_coll_tuned_reduce_NTSL (sendbuf, recvbuf, count, datatype, op, root, comm, module, 
-                                                      segsize, max_requests);
+        //segsize = 1024;
+        return smpi_coll_tuned_reduce_ompi_pipeline (sendbuf, recvbuf, count, datatype, op, root, comm/*, module, 
+                                                      segsize, max_requests*/);
     } else if (communicator_size > (a3 * message_size + b3)) {
         // Binary_32K 
-        segsize = 32*1024;
-        return smpi_coll_tuned_reduce_intra_binary( sendbuf, recvbuf, count, datatype, op, root,
-                                                    comm, module, segsize, max_requests);
+        //segsize = 32*1024;
+        return smpi_coll_tuned_reduce_ompi_binary( sendbuf, recvbuf, count, datatype, op, root,
+                                                    comm/*, module, segsize, max_requests*/);
     }
-    if (communicator_size > (a4 * message_size + b4)) {
+    /*if (communicator_size > (a4 * message_size + b4)) {
         // Pipeline_32K 
         segsize = 32*1024;
     } else {
         // Pipeline_64K 
         segsize = 64*1024;
     }*/
-    return smpi_coll_tuned_reduce_NTSL (sendbuf, recvbuf, count, datatype, op, root, comm/*, module, 
+    return smpi_coll_tuned_reduce_ompi_pipeline (sendbuf, recvbuf, count, datatype, op, root, comm/*, module, 
                                                   segsize, max_requests*/);
 
 #if 0
