@@ -135,6 +135,7 @@ void smpi_datatype_commit(MPI_Datatype* datatype);
 
 void smpi_empty_status(MPI_Status * status);
 MPI_Op smpi_op_new(MPI_User_function * function, int commute);
+int smpi_op_is_commute(MPI_Op op);
 void smpi_op_destroy(MPI_Op op);
 void smpi_op_apply(MPI_Op op, void *invec, void *inoutvec, int *len,
                    MPI_Datatype * datatype);

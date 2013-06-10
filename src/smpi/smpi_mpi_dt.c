@@ -1005,6 +1005,7 @@ void smpi_datatype_commit(MPI_Datatype *datatype)
 
 typedef struct s_smpi_mpi_op {
   MPI_User_function *func;
+  int is_commute;
 } s_smpi_mpi_op_t;
 
 #define MAX_OP(a, b)  (b) = (a) < (b) ? (b) : (a)
@@ -1326,7 +1327,7 @@ static void maxloc_func(void *a, void *b, int *length,
 
 
 #define CREATE_MPI_OP(name, func)                             \
-  static s_smpi_mpi_op_t mpi_##name = { &(func) /* func */ }; \
+  static s_smpi_mpi_op_t mpi_##name = { &(func) /* func */, TRUE }; \
 MPI_Op name = &mpi_##name;
 
 CREATE_MPI_OP(MPI_MAX, max_func);
@@ -1345,11 +1346,15 @@ CREATE_MPI_OP(MPI_MINLOC, minloc_func);
 MPI_Op smpi_op_new(MPI_User_function * function, int commute)
 {
   MPI_Op op;
-
-  //FIXME: add commute param
   op = xbt_new(s_smpi_mpi_op_t, 1);
   op->func = function;
+  op-> is_commute = commute;
   return op;
+}
+
+int smpi_op_is_commute(MPI_Op op)
+{
+  return op-> is_commute;
 }
 
 void smpi_op_destroy(MPI_Op op)
