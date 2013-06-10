@@ -558,11 +558,10 @@ static void action_gather(const char *const *action) {
   int root=atoi(action[4]);
   int rank = smpi_process_index();
 
-  if(rank==root) recv = calloc(recv_size*comm_size, smpi_datatype_size(MPI_CURRENT_TYPE2));  
+  if(rank==root)
+    recv = calloc(recv_size*comm_size, smpi_datatype_size(MPI_CURRENT_TYPE2));
 
-   
 #ifdef HAVE_TRACING
-  int rank = smpi_process_index();
   TRACE_smpi_computing_out(rank);
   TRACE_smpi_collective_in(rank, -1, __FUNCTION__);
 #endif
@@ -606,21 +605,23 @@ static void action_reducescatter(const char *const *action) {
   int root=0;
   int rank = smpi_process_index();
 
-  if(action[3+comm_size]) MPI_CURRENT_TYPE=decode_datatype(action[3+comm_size]);
-  else MPI_CURRENT_TYPE= MPI_DEFAULT_TYPE;
+  if(action[3+comm_size])
+    MPI_CURRENT_TYPE=decode_datatype(action[3+comm_size]);
+  else
+    MPI_CURRENT_TYPE= MPI_DEFAULT_TYPE;
 
   for(i=0;i<comm_size;i++) {
     recvcounts[i] = atoi(action[i+2]);
     recv_sum=recv_sum+recvcounts[i];
     disps[i] = 0;
   }
- 
+
 #ifdef HAVE_TRACING
-  int rank = smpi_process_index();
   TRACE_smpi_computing_out(rank);
   TRACE_smpi_collective_in(rank, -1, __FUNCTION__);
 #endif
-   mpi_coll_reduce_fun(NULL, NULL, recv_sum, MPI_CURRENT_TYPE, MPI_OP_NULL, root, MPI_COMM_WORLD);
+   mpi_coll_reduce_fun(NULL, NULL, recv_sum, MPI_CURRENT_TYPE, MPI_OP_NULL,
+       root, MPI_COMM_WORLD);
    smpi_mpi_scatterv(NULL, recvcounts, disps, MPI_CURRENT_TYPE, NULL,
                       recvcounts[rank], MPI_CURRENT_TYPE, 0, MPI_COMM_WORLD);
    smpi_execute_flops(comp_size);
