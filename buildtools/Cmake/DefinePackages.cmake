@@ -184,6 +184,7 @@ set(SMPI_SRC
   src/smpi/colls/bcast-SMP-binomial.c
   src/smpi/colls/bcast-SMP-linear.c
   src/smpi/colls/bcast-ompi-split-bintree.c
+  src/smpi/colls/bcast-ompi-pipeline.c
   src/smpi/colls/reduce-arrival-pattern-aware.c
   src/smpi/colls/reduce-binomial.c
   src/smpi/colls/reduce-flat-tree.c

@@ -131,12 +131,12 @@ int smpi_coll_tuned_bcast_ompi(void *buff, int count,
        messages up to 36MB and communicator sizes up to 64 nodes */
     const size_t small_message_size = 2048;
     const size_t intermediate_message_size = 370728;
-    //const double a_p16  = 3.2118e-6; /* [1 / byte] */
-    //const double b_p16  = 8.7936;   
-    //const double a_p64  = 2.3679e-6; /* [1 / byte] */
-    //const double b_p64  = 1.1787;     
-    //const double a_p128 = 1.6134e-6; /* [1 / byte] */
-    //const double b_p128 = 2.1102;
+    const double a_p16  = 3.2118e-6; /* [1 / byte] */
+    const double b_p16  = 8.7936;   
+    const double a_p64  = 2.3679e-6; /* [1 / byte] */
+    const double b_p64  = 1.1787;     
+    const double a_p128 = 1.6134e-6; /* [1 / byte] */
+    const double b_p128 = 2.1102;
 
     int communicator_size;
     //int segsize = 0;
@@ -160,36 +160,35 @@ int smpi_coll_tuned_bcast_ompi(void *buff, int count,
         return smpi_coll_tuned_bcast_ompi_split_bintree(buff, count, datatype, 
                                                          root, comm);
 
-    } /*
-     Handle large message sizes 
+    }
+     //Handle large message sizes 
     else if (communicator_size < (a_p128 * message_size + b_p128)) {
-         Pipeline with 128KB segments 
-        segsize = 1024  << 7;
-        return smpi_coll_tuned_bcast_flattree_pipeline (buff, count, datatype, 
-                                                     root, comm, module,
-                                                     segsize);
+        //Pipeline with 128KB segments 
+        //segsize = 1024  << 7;
+        return smpi_coll_tuned_bcast_ompi_pipeline (buff, count, datatype, 
+                                                     root, comm);
+                                                     
 
-    }*/ else if (communicator_size < 13) {
+    } else if (communicator_size < 13) {
         // Split Binary with 8KB segments 
         return smpi_coll_tuned_bcast_ompi_split_bintree(buff, count, datatype, 
                                                          root, comm);
        
-    } /*else if (communicator_size < (a_p64 * message_size + b_p64)) {
+    } else if (communicator_size < (a_p64 * message_size + b_p64)) {
         // Pipeline with 64KB segments 
-        segsize = 1024 << 6;
-        return smpi_coll_tuned_bcast_intra_pipeline (buff, count, datatype, 
-                                                     root, comm, module,
-                                                     segsize);
+        //segsize = 1024 << 6;
+        return smpi_coll_tuned_bcast_ompi_pipeline (buff, count, datatype, 
+                                                     root, comm);
+                                                     
 
     } else if (communicator_size < (a_p16 * message_size + b_p16)) {
-         Pipeline with 16KB segments 
+        //Pipeline with 16KB segments 
         //segsize = 1024 << 4;
-        return smpi_coll_tuned_bcast_flattree_pipeline (buff, count, datatype, 
-                                                     root, comm, module,
-                                                     segsize);
+        return smpi_coll_tuned_bcast_ompi_pipeline (buff, count, datatype, 
+                                                     root, comm);
+                                                     
 
-    }*/
-
+    }
     /* Pipeline with 8KB segments */
     //segsize = 1024 << 3;
     return smpi_coll_tuned_bcast_flattree_pipeline (buff, count, datatype, 

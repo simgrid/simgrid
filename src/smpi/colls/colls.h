@@ -166,7 +166,8 @@ COLL_APPLY(action, COLL_BCAST_SIG, SMP_binary) COLL_sep \
 COLL_APPLY(action, COLL_BCAST_SIG, SMP_binomial) COLL_sep \
 COLL_APPLY(action, COLL_BCAST_SIG, SMP_linear) COLL_sep \
 COLL_APPLY(action, COLL_BCAST_SIG, ompi) COLL_sep \
-COLL_APPLY(action, COLL_BCAST_SIG, ompi_split_bintree)
+COLL_APPLY(action, COLL_BCAST_SIG, ompi_split_bintree) COLL_sep \
+COLL_APPLY(action, COLL_BCAST_SIG, ompi_pipeline)
 
 COLL_BCASTS(COLL_PROTO, COLL_NOsep)
 
