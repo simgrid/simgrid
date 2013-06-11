@@ -114,7 +114,7 @@ void smpi_datatype_use(MPI_Datatype type);
 void smpi_datatype_unuse(MPI_Datatype type);
 
 int smpi_datatype_contiguous(int count, MPI_Datatype old_type,
-                       MPI_Datatype* new_type);
+                       MPI_Datatype* new_type, MPI_Aint lb);
 int smpi_datatype_vector(int count, int blocklen, int stride,
                       MPI_Datatype old_type, MPI_Datatype* new_type);
 

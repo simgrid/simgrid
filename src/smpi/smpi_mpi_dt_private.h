@@ -40,6 +40,14 @@ extern MPI_Datatype MPI_PTR;
   used for serialization/unserialization of messages
 */
 
+typedef struct s_smpi_mpi_contiguous{
+  s_smpi_subtype_t base;
+  MPI_Datatype old_type;
+  MPI_Aint lb;
+  size_t size_oldtype;
+  size_t block_count;
+} s_smpi_mpi_contiguous_t;
+
 typedef struct s_smpi_mpi_vector{
   s_smpi_subtype_t base;
   MPI_Datatype old_type;
@@ -90,7 +98,23 @@ typedef struct s_smpi_mpi_struct{
   Functions to handle serialization/unserialization of messages, 3 for each type of MPI_Type
   One for creating the substructure to handle, one for serialization, one for unserialization
 */
+void unserialize_contiguous( const void *contiguous_vector,
+                         void *noncontiguous_vector,
+                         size_t count,
+                         void *type);
 
+void serialize_contiguous( const void *noncontiguous_vector,
+                       void *contiguous_vector,
+                       size_t count,
+                       void *type);
+
+void free_contiguous(MPI_Datatype* type);
+
+s_smpi_mpi_contiguous_t* smpi_datatype_contiguous_create( MPI_Aint lb,
+                                                  int block_count,
+                                                  MPI_Datatype old_type,
+                                                  int size_oldtype);
+                                                  
 void unserialize_vector( const void *contiguous_vector,
                          void *noncontiguous_vector,
                          size_t count,

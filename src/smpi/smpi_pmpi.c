@@ -2023,7 +2023,7 @@ int PMPI_Type_contiguous(int count, MPI_Datatype old_type, MPI_Datatype* new_typ
   } else if (count<0){
     retval = MPI_ERR_COUNT;
   } else {
-    retval = smpi_datatype_contiguous(count, old_type, new_type);
+    retval = smpi_datatype_contiguous(count, old_type, new_type, 0);
   }
   smpi_bench_begin();
   return retval;
