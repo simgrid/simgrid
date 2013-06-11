@@ -48,7 +48,6 @@ int smpi_coll_tuned_ompi_reduce_generic( void* sendbuf, void* recvbuf, int origi
     char *accumbuf = NULL, *accumbuf_free = NULL;
     char *local_op_buffer = NULL, *sendtmpbuf = NULL;
     ptrdiff_t extent, lower_bound, segment_increment;
-    size_t typelng;
     MPI_Request  reqs[2] = {MPI_REQUEST_NULL, MPI_REQUEST_NULL};
     int num_segments, line, ret, segindex, i, rank;
     int recvcount, prevcount, inbi;
@@ -58,7 +57,6 @@ int smpi_coll_tuned_ompi_reduce_generic( void* sendbuf, void* recvbuf, int origi
      * sent per operation
      */
     smpi_datatype_extent( datatype, &lower_bound, &extent);
-    typelng = smpi_datatype_size( datatype );
     num_segments = (original_count + count_by_segment - 1) / count_by_segment;
     segment_increment = count_by_segment * extent;
 
