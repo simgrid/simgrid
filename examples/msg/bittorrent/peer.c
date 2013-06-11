@@ -658,7 +658,7 @@ void update_choked_peers(peer_t peer)
             xbt_dict_size(peer->active_peers));
   //update the current round
   peer->round = (peer->round + 1) % 3;
-  char *key, *key_choked;
+  char *key, *key_choked=NULL;
   connection_t peer_choosed = NULL;
   connection_t peer_choked = NULL;
   //remove a peer from the list
