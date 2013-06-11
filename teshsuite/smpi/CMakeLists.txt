@@ -10,7 +10,7 @@ if(enable_smpi)
   set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}")
   
   include_directories("${CMAKE_HOME_DIRECTORY}/include/smpi")
-
+  add_executable(gather_coll gather_coll.c)
   add_executable(allgather_coll allgather_coll.c)
   add_executable(allgatherv_coll allgatherv_coll.c)
   add_executable(alltoall2 alltoall2.c)
@@ -36,6 +36,7 @@ if(enable_smpi)
   add_executable(indexed_test indexed_test.c)
   add_executable(struct_test struct_test.c)
 
+  target_link_libraries(gather_coll simgrid)
   target_link_libraries(allgather_coll simgrid)
   target_link_libraries(allgatherv_coll simgrid)
   target_link_libraries(alltoall2 simgrid)
@@ -73,6 +74,7 @@ endif()
 
 set(tesh_files
   ${tesh_files}
+  ${CMAKE_CURRENT_SOURCE_DIR}/gather_coll.tesh
   ${CMAKE_CURRENT_SOURCE_DIR}/allgather_coll.tesh
   ${CMAKE_CURRENT_SOURCE_DIR}/allgatherv_coll.tesh  
   ${CMAKE_CURRENT_SOURCE_DIR}/allreduce_coll.tesh
@@ -96,6 +98,7 @@ set(xml_files
   )
 set(examples_src
   ${examples_src}
+  ${CMAKE_CURRENT_SOURCE_DIR}/gather_coll.c
   ${CMAKE_CURRENT_SOURCE_DIR}/allgather_coll.c
   ${CMAKE_CURRENT_SOURCE_DIR}/allgatherv_coll.c  
   ${CMAKE_CURRENT_SOURCE_DIR}/allreduce_coll.c
