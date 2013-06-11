@@ -439,7 +439,6 @@ static void surf_workstation_model_init_internal(void)
   surf_workstation_model->extension.workstation.close = ws_action_close;
   surf_workstation_model->extension.workstation.read = ws_action_read;
   surf_workstation_model->extension.workstation.write = ws_action_write;
-  surf_workstation_model->extension.workstation.stat = ws_action_stat;
   surf_workstation_model->extension.workstation.unlink = ws_action_unlink;
   surf_workstation_model->extension.workstation.ls = ws_action_ls;
   surf_workstation_model->extension.workstation.get_size = ws_file_get_size;
