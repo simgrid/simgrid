@@ -539,7 +539,7 @@ static xbt_dict_t parse_storage_content(char *filename, size_t *used_size)
 
   while ((read = xbt_getline(&line, &len, file)) != -1) {
     if (read){
-    if(sscanf(line,"%s %lu",path, &size)==2) {
+    if(sscanf(line,"%s %lu",path, (unsigned long*)&size)==2) {
         *used_size += size;
         xbt_dict_set(parse_content,path,(void*) size,NULL);
       } else {
