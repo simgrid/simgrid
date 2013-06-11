@@ -58,7 +58,7 @@ size_t MSG_file_write(const void* ptr, size_t size, size_t nmemb, msg_file_t fd)
 msg_file_t MSG_file_open(const char* mount, const char* path)
 {
   msg_file_t file = xbt_new(s_msg_file_t,1);
-  file->name = strdup(path);
+  file->name = xbt_strdup(path);
   file->simdata = xbt_new0(s_simdata_file_t,1);
   file->simdata->smx_file = simcall_file_open(mount, path);
   return file;
@@ -87,11 +87,7 @@ int MSG_file_close(msg_file_t fd)
  */
 int MSG_file_unlink(msg_file_t fd)
 {
-  int res = simcall_file_unlink(fd->simdata->smx_file);
-  free(fd->name);
-  xbt_free(fd->simdata);
-  xbt_free(fd);
-  return res;
+  return simcall_file_unlink(fd->simdata->smx_file);
 }
 
 /** \ingroup msg_file_management

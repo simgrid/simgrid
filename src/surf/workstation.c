@@ -361,12 +361,33 @@ static surf_action_t ws_action_write(void *workstation, const void* ptr,
   return model->extension.storage.write(st,  ptr, size, nmemb, fd);
 }
 
-static surf_action_t ws_action_unlink(void *workstation, surf_file_t fd)
+static int ws_file_unlink(void *workstation, surf_file_t fd)
 {
-  storage_t st = find_storage_on_mount_list(workstation, fd->storage);
-  XBT_DEBUG("UNLINK on disk '%s'",st->generic_resource.name);
-  surf_model_t model = st->generic_resource.model;
-  return model->extension.storage.unlink(st, fd);
+  if (!fd){
+    XBT_WARN("No such file descriptor. Impossible to unlink");
+    return 0;
+  } else {
+//    XBT_INFO("%s %zu", fd->storage, fd->size);
+    storage_t st = find_storage_on_mount_list(workstation, fd->storage);
+    xbt_dict_t content_dict = (st)->content;
+    /* Check if the file is on this storage */
+    if (!xbt_dict_get_or_null(content_dict, fd->name)){
+      XBT_WARN("File %s is not on disk %s. Impossible to unlink", fd->name,
+          st->generic_resource.name);
+      return 0;
+    } else {
+      XBT_DEBUG("UNLINK on disk '%s'",st->generic_resource.name);
+      st->used_size -= fd->size;
+
+      // Remove the file from storage
+      xbt_dict_remove(content_dict,fd->name);
+
+      free(fd->name);
+      free(fd->storage);
+      xbt_free(fd);
+      return 1;
+    }
+  }
 }
 
 static surf_action_t ws_action_ls(void *workstation, const char* mount,
@@ -439,7 +460,7 @@ static void surf_workstation_model_init_internal(void)
   surf_workstation_model->extension.workstation.close = ws_action_close;
   surf_workstation_model->extension.workstation.read = ws_action_read;
   surf_workstation_model->extension.workstation.write = ws_action_write;
-  surf_workstation_model->extension.workstation.unlink = ws_action_unlink;
+  surf_workstation_model->extension.workstation.unlink = ws_file_unlink;
   surf_workstation_model->extension.workstation.ls = ws_action_ls;
   surf_workstation_model->extension.workstation.get_size = ws_file_get_size;
 }

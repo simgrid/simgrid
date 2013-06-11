@@ -172,16 +172,13 @@ smx_action_t SIMIX_file_close(smx_process_t process, smx_file_t fd)
 
 
 //SIMIX FILE UNLINK
-void SIMIX_pre_file_unlink(smx_simcall_t simcall, smx_file_t fd)
+int SIMIX_pre_file_unlink(smx_simcall_t simcall, smx_file_t fd)
 {
-  smx_action_t action = SIMIX_file_unlink(simcall->issuer, fd);
-  xbt_fifo_push(action->simcalls, simcall);
-  simcall->issuer->waiting_action = action;
+  return SIMIX_file_unlink(simcall->issuer, fd);
 }
 
-smx_action_t SIMIX_file_unlink(smx_process_t process, smx_file_t fd)
+int SIMIX_file_unlink(smx_process_t process, smx_file_t fd)
 {
-  smx_action_t action;
   smx_host_t host = process->smx_host;
   /* check if the host is active */
   if (surf_workstation_model->extension.
@@ -190,20 +187,11 @@ smx_action_t SIMIX_file_unlink(smx_process_t process, smx_file_t fd)
            sg_host_name(host));
   }
 
-  action = xbt_mallocator_get(simix_global->action_mallocator);
-  action->type = SIMIX_ACTION_IO;
-  action->name = NULL;
-#ifdef HAVE_TRACING
-  action->category = NULL;
-#endif
-
-  action->io.host = host;
-  action->io.surf_io = surf_workstation_model->extension.workstation.unlink(host, fd->surf_file);
-
-  surf_workstation_model->action_data_set(action->io.surf_io, action);
-  XBT_DEBUG("Create io action %p", action);
-
-  return action;
+  if (surf_workstation_model->extension.workstation.unlink(host, fd->surf_file)){
+    fd->surf_file = NULL;
+    return 1;
+  } else
+    return 0;
 }
 
 //SIMIX FILE LS
@@ -280,11 +268,6 @@ void SIMIX_post_io(smx_action_t action)
 
     case SIMCALL_FILE_READ:
       simcall_file_read__set__result(simcall, (action->io.surf_io)->cost);
-      break;
-
-    case SIMCALL_FILE_UNLINK:
-      xbt_free(simcall_file_unlink__get__fd(simcall));
-      simcall_file_unlink__set__result(simcall, 0);
       break;
 
     case SIMCALL_FILE_LS:

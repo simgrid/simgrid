@@ -22,7 +22,7 @@ typedef struct s_mount {
 
 typedef struct surf_file {
   char *name;
-  const char* storage;
+  char *storage;
   size_t size;
 } s_surf_file_t;
 
@@ -39,7 +39,7 @@ typedef struct storage {
 } s_storage_t, *storage_t;
 
 typedef enum {
-  READ=0, WRITE, STAT, OPEN, CLOSE, UNLINK, LS
+  READ=0, WRITE, STAT, OPEN, CLOSE, LS
 } e_surf_action_storage_type_t;
 
 typedef struct surf_action_storage {
