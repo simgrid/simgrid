@@ -81,19 +81,19 @@ static surf_action_t storage_action_ls(void *storage, const char* path)
   return action;
 }
 
-static surf_action_t storage_action_unlink(void *storage, surf_file_t stream)
+static surf_action_t storage_action_unlink(void *storage, surf_file_t fd)
 {
   surf_action_t action = storage_action_execute(storage,0, UNLINK);
 
   // Add memory to storage
-  ((storage_t)storage)->used_size -= stream->size;
+  ((storage_t)storage)->used_size -= fd->size;
 
   // Remove the file from storage
   xbt_dict_t content_dict = ((storage_t)storage)->content;
-  xbt_dict_remove(content_dict,stream->name);
+  xbt_dict_remove(content_dict,fd->name);
 
-  free(stream->name);
-  xbt_free(stream);
+  free(fd->name);
+  xbt_free(fd);
 
   return action;
 }
@@ -139,21 +139,24 @@ static surf_action_t storage_action_close(void *storage, surf_file_t fd)
   return action;
 }
 
-static surf_action_t storage_action_read(void *storage, void* ptr, double size, size_t nmemb, surf_file_t stream)
+static surf_action_t storage_action_read(void *storage, void* ptr, double size,
+                                         size_t nmemb, surf_file_t fd)
 {
-  if(size > stream->size)
-    size = stream->size;
+  if(size > fd->size)
+    size = fd->size;
   surf_action_t action = storage_action_execute(storage,size,READ);
   return action;
 }
 
-static surf_action_t storage_action_write(void *storage, const void* ptr, size_t size, size_t nmemb, surf_file_t stream)
+static surf_action_t storage_action_write(void *storage, const void* ptr,
+                                          size_t size, size_t nmemb,
+                                          surf_file_t fd)
 {
-  char *filename = stream->name;
-  XBT_DEBUG("\tWrite file '%s' size '%zu/%zu'",filename,size,stream->size);
+  char *filename = fd->name;
+  XBT_DEBUG("\tWrite file '%s' size '%zu/%zu'",filename,size,fd->size);
 
   surf_action_t action = storage_action_execute(storage,size,WRITE);
-  action->file = stream;
+  action->file = fd;
 
   // If the storage is full
   if(((storage_t)storage)->used_size==((storage_t)storage)->size) {

@@ -7,8 +7,8 @@
 #include "jmsg_file.h"
 #include "jxbt_utilities.h"
 
-void jfile_bind(JNIEnv *env, jobject jfile, msg_file_t stream) {
-  (*env)->SetLongField(env, jfile, jfile_field_bind, (intptr_t)stream);
+void jfile_bind(JNIEnv *env, jobject jfile, msg_file_t fd) {
+  (*env)->SetLongField(env, jfile, jfile_field_bind, (intptr_t)fd);
 }
 
 msg_file_t jfile_get_native(JNIEnv *env, jobject jfile) {

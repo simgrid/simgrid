@@ -25,12 +25,12 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_io, msg,
  * \param ptr buffer to where the data is copied
  * \param size of each element
  * \param nmemb is the number of elements of data to read
- * \param stream to read
+ * \param fd is a the file descriptor
  * \return the number of items successfully read
  */
-size_t MSG_file_read(void* ptr, size_t size, size_t nmemb,  msg_file_t stream)
+size_t MSG_file_read(void* ptr, size_t size, size_t nmemb, msg_file_t fd)
 {
-  return simcall_file_read(ptr, size, nmemb, stream->simdata->smx_file);
+  return simcall_file_read(ptr, size, nmemb, fd->simdata->smx_file);
 }
 
 /** \ingroup msg_file_management
@@ -39,12 +39,12 @@ size_t MSG_file_read(void* ptr, size_t size, size_t nmemb,  msg_file_t stream)
  * \param ptr buffer from where the data is copied
  * \param size of each element
  * \param nmemb is the number of elements of data to write
- * \param stream to write
+ * \param fd is a the file descriptor
  * \return the number of items successfully write
  */
-size_t MSG_file_write(const void* ptr, size_t size, size_t nmemb, msg_file_t stream)
+size_t MSG_file_write(const void* ptr, size_t size, size_t nmemb, msg_file_t fd)
 {
-  return simcall_file_write(ptr, size, nmemb, stream->simdata->smx_file);
+  return simcall_file_write(ptr, size, nmemb, fd->simdata->smx_file);
 }
 
 /** \ingroup msg_file_management
