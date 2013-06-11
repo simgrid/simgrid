@@ -91,14 +91,15 @@ smx_action_t SIMIX_file_write(smx_process_t process, const void* ptr, size_t siz
 
 //SIMIX FILE OPEN
 void SIMIX_pre_file_open(smx_simcall_t simcall, const char* mount,
-		         const char* path, const char* mode)
+                         const char* path)
 {
-  smx_action_t action = SIMIX_file_open(simcall->issuer, mount, path, mode);
+  smx_action_t action = SIMIX_file_open(simcall->issuer, mount, path);
   xbt_fifo_push(action->simcalls, simcall);
   simcall->issuer->waiting_action = action;
 }
 
-smx_action_t SIMIX_file_open(smx_process_t process ,const char* mount, const char* path, const char* mode)
+smx_action_t SIMIX_file_open(smx_process_t process ,const char* mount,
+                             const char* path)
 {
   smx_action_t action;
   smx_host_t host = process->smx_host;
@@ -118,7 +119,8 @@ smx_action_t SIMIX_file_open(smx_process_t process ,const char* mount, const cha
 #endif
 
   action->io.host = host;
-  action->io.surf_io = surf_workstation_model->extension.workstation.open(host, mount, path, mode);
+  action->io.surf_io =
+      surf_workstation_model->extension.workstation.open(host, mount, path);
 
   surf_workstation_model->action_data_set(action->io.surf_io, action);
   XBT_DEBUG("Create io action %p", action);

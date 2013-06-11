@@ -341,7 +341,7 @@ ACTION(SIMCALL_SEM_ACQUIRE_TIMEOUT, sem_acquire_timeout, WITHOUT_ANSWER, TVOID(r
 ACTION(SIMCALL_SEM_GET_CAPACITY, sem_get_capacity, WITH_ANSWER, TINT(result), TSPEC(sem, smx_sem_t)) sep \
 ACTION(SIMCALL_FILE_READ, file_read, WITHOUT_ANSWER, TDOUBLE(result), TPTR(ptr), TSIZE(size), TSIZE(nmemb), TSPEC(stream, smx_file_t)) sep \
 ACTION(SIMCALL_FILE_WRITE, file_write, WITHOUT_ANSWER, TSIZE(result), TCPTR(ptr), TSIZE(size), TSIZE(nmemb), TSPEC(stream, smx_file_t)) sep \
-ACTION(SIMCALL_FILE_OPEN, file_open, WITHOUT_ANSWER, TSPEC(result, smx_file_t), TSTRING(mount), TSTRING(path), TSTRING(mode)) sep \
+ACTION(SIMCALL_FILE_OPEN, file_open, WITHOUT_ANSWER, TSPEC(result, smx_file_t), TSTRING(mount), TSTRING(path)) sep \
 ACTION(SIMCALL_FILE_CLOSE, file_close, WITHOUT_ANSWER, TINT(result), TSPEC(fd, smx_file_t)) sep \
 ACTION(SIMCALL_FILE_UNLINK, file_unlink, WITHOUT_ANSWER, TINT(result), TSPEC(fd, smx_file_t)) sep \
 ACTION(SIMCALL_FILE_LS, file_ls, WITHOUT_ANSWER, TSPEC(result, xbt_dict_t), TSTRING(mount), TSTRING(path)) sep \

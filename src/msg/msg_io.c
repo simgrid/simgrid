@@ -1,8 +1,8 @@
-/* Copyright (c) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012. The SimGrid Team.
- * All rights reserved.                                                                  */
+/* Copyright (c) 2004 - 2013. The SimGrid Team.
+ * All rights reserved.                                                       */
 
 /* This program is free software; you can redistribute it and/or modify it
- * under the terms of the license (GNU LGPL) which comes with this package.              */
+ * under the terms of the license (GNU LGPL) which comes with this package.   */
 
 #include "msg_private.h"
 #include "xbt/log.h"
@@ -52,24 +52,15 @@ size_t MSG_file_write(const void* ptr, size_t size, size_t nmemb, msg_file_t str
  *
  * \param mount is the mount point where find the file is located
  * \param path is the file location on the storage
- * \param mode points to a string beginning with one of the following sequences (Additional characters may follow these sequences.):
- *      r      Open text file for reading.  The stream is positioned at the beginning of the file.
- *      r+     Open for reading and writing.  The stream is positioned at the beginning of the file.
- *      w      Truncate file to zero length or create text file for writing.  The stream is positioned at the beginning of the file.
- *      w+     Open for reading and writing.  The file is created if it does not exist, otherwise it is truncated.  The stream is positioned at the
- *             beginning of the file.
- *      a      Open for appending (writing at end of file).  The file is created if it does not exist.  The stream is positioned at the end of the file.
- *      a+     Open for reading and appending (writing at end of file).  The file is created if it does not exist.  The initial file position for  reading
- *             is at the beginning of the file, but output is always appended to the end of the file.
  *
  * \return An #msg_file_t associated to the file
  */
-msg_file_t MSG_file_open(const char* mount, const char* path, const char* mode)
+msg_file_t MSG_file_open(const char* mount, const char* path)
 {
   msg_file_t file = xbt_new(s_msg_file_t,1);
   file->name = strdup(path);
   file->simdata = xbt_new0(s_simdata_file_t,1);
-  file->simdata->smx_file = simcall_file_open(mount, path, mode);
+  file->simdata->smx_file = simcall_file_open(mount, path);
   return file;
 }
 

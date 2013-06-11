@@ -98,7 +98,8 @@ static surf_action_t storage_action_unlink(void *storage, surf_file_t stream)
   return action;
 }
 
-static surf_action_t storage_action_open(void *storage, const char* mount, const char* path, const char* mode)
+static surf_action_t storage_action_open(void *storage, const char* mount,
+                                         const char* path)
 {
   XBT_DEBUG("\tOpen file '%s'",path);
   xbt_dict_t content_dict = ((storage_t)storage)->content;

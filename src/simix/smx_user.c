@@ -1109,9 +1109,9 @@ size_t simcall_file_write(const void* ptr, size_t size, size_t nmemb, smx_file_t
  * \ingroup simix_file_management
  * \brief
  */
-smx_file_t simcall_file_open(const char* mount, const char* path, const char* mode)
+smx_file_t simcall_file_open(const char* mount, const char* path)
 {
-  return simcall_BODY_file_open(mount, path, mode);
+  return simcall_BODY_file_open(mount, path);
 }
 
 /**

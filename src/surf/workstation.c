@@ -326,12 +326,13 @@ static storage_t find_storage_on_mount_list(void *workstation,const char* storag
   return st;
 }
 
-static surf_action_t ws_action_open(void *workstation, const char* mount, const char* path, const char* mode)
+static surf_action_t ws_action_open(void *workstation, const char* mount,
+                                    const char* path)
 {
   storage_t st = find_storage_on_mount_list(workstation, mount);
   XBT_DEBUG("OPEN on disk '%s'",st->generic_resource.name);
   surf_model_t model = st->generic_resource.model;
-  return model->extension.storage.open(st, mount, path, mode);
+  return model->extension.storage.open(st, mount, path);
 }
 
 static surf_action_t ws_action_close(void *workstation, surf_file_t fd)
