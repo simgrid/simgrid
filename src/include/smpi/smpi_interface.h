@@ -22,6 +22,15 @@ typedef struct mpi_coll_description {
   void *coll;
 } s_mpi_coll_description_t, *mpi_coll_description_t;
 
+
+/** \ingroup MPI gather
+ *  \brief The list of all available allgather collectives
+ */
+XBT_PUBLIC_DATA(s_mpi_coll_description_t) mpi_coll_gather_description[];
+XBT_PUBLIC_DATA(int (*mpi_coll_gather_fun)
+                (void *, int, MPI_Datatype, void *, int, MPI_Datatype,
+                 int, MPI_Comm));
+                 
 /** \ingroup MPI allgather
  *  \brief The list of all available allgather collectives
  */

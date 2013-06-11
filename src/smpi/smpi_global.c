@@ -360,6 +360,12 @@ int smpi_main(int (*realmain) (int argc, char *argv[]),int argc, char *argv[])
   SIMIX_function_register_default(realmain);
   SIMIX_launch_application(argv[2]);
 
+  int gather_id = find_coll_description(mpi_coll_gather_description,
+                                           sg_cfg_get_string("smpi/gather"));
+  mpi_coll_gather_fun = (int (*)(void *, int, MPI_Datatype,
+		                    void*, int, MPI_Datatype, int, MPI_Comm))
+	                   mpi_coll_gather_description[gather_id].coll;
+
   int allgather_id = find_coll_description(mpi_coll_allgather_description,
                                            sg_cfg_get_string("smpi/allgather"));
   mpi_coll_allgather_fun = (int (*)(void *, int, MPI_Datatype,

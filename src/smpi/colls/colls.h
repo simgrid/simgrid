@@ -20,6 +20,22 @@
 #define COLL_NOsep 
 #define COLL_NOTHING(...) 
 
+/*************
+ * GATHER *
+ *************/
+#define COLL_GATHER_SIG gather, int, \
+	                  (void *send_buff, int send_count, MPI_Datatype send_type, \
+	                   void *recv_buff, int recv_count, MPI_Datatype recv_type, \
+                           int root, MPI_Comm comm)
+
+#define COLL_GATHERS(action, COLL_sep) \
+COLL_APPLY(action, COLL_GATHER_SIG, ompi) COLL_sep \
+COLL_APPLY(action, COLL_GATHER_SIG, ompi_basic_linear) COLL_sep \
+COLL_APPLY(action, COLL_GATHER_SIG, ompi_binomial) COLL_sep \
+COLL_APPLY(action, COLL_GATHER_SIG, ompi_linear_sync) \
+
+
+COLL_GATHERS(COLL_PROTO, COLL_NOsep)
 
 /*************
  * ALLGATHER *
