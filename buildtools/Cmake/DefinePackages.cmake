@@ -38,6 +38,7 @@ set(EXTRA_DIST
   src/smpi/colls/COPYRIGHTS
   src/smpi/colls/colls.h
   src/smpi/colls/colls_private.h
+  src/smpi/colls/coll_tuned_topo.h
   src/smpi/private.h
   src/smpi/smpi_mpi_dt_private.h
   src/surf/cpu_ti_private.h

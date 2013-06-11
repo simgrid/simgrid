@@ -40,7 +40,6 @@ int smpi_coll_tuned_allreduce_ompi(void *sbuf, void *rbuf, int count,
             return smpi_coll_tuned_allreduce_lr(sbuf, rbuf, count, dtype,
                                               op, comm);
         } else {
-           // return (smpi_coll_tuned_allreduce_intra_ring_segmented (sbuf, rbuf, 
            return (smpi_coll_tuned_allreduce_ompi_ring_segmented (sbuf, rbuf,
                                                                     count, dtype, 
                                                                     op, comm 
