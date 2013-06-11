@@ -34,7 +34,7 @@ static xbt_dynar_t storage_list;
 #define GENERIC_LMM_ACTION(action) action->generic_lmm_action
 #define GENERIC_ACTION(action) GENERIC_LMM_ACTION(action).generic_action
 
-static xbt_dict_t parse_storage_content(char *filename, unsigned long *used_size);
+static xbt_dict_t parse_storage_content(char *filename, size_t *used_size);
 static int storage_action_unref(surf_action_t action);
 static void storage_action_state_set(surf_action_t action, e_surf_action_state_t state);
 static surf_action_t storage_action_execute (void *storage, double size, e_surf_action_storage_type_t type);
@@ -46,7 +46,7 @@ static surf_action_t storage_action_ls(void *storage, const char* path)
   xbt_dict_t ls_dict = xbt_dict_new();
 
   char* key;
-  unsigned long size = 0;
+  size_t size = 0;
   xbt_dict_cursor_t cursor = NULL;
 
   xbt_dynar_t dyn = NULL;
@@ -517,7 +517,7 @@ static void storage_parse_storage(sg_platf_storage_cbarg_t storage)
       (void *) xbt_strdup(storage->type_id));
 }
 
-static xbt_dict_t parse_storage_content(char *filename, unsigned long *used_size)
+static xbt_dict_t parse_storage_content(char *filename, size_t *used_size)
 {
   *used_size = 0;
   if ((!filename) || (strcmp(filename, "") == 0))
@@ -534,7 +534,7 @@ static xbt_dict_t parse_storage_content(char *filename, unsigned long *used_size
   size_t len = 0;
   ssize_t read;
   char path[1024];
-  unsigned long size;
+  size_t size;
 
 
   while ((read = xbt_getline(&line, &len, file)) != -1) {
