@@ -426,15 +426,15 @@ int smpi_coll_tuned_allgather_ompi(void *sbuf, int scount,
                                                          comm);
         }
     } else {
-        //if (communicator_size % 2) {
+        if (communicator_size % 2) {
             return smpi_coll_tuned_allgather_ring(sbuf, scount, sdtype, 
                                                         rbuf, rcount, rdtype, 
                                                         comm);
-        /*} else {
-            return  smpi_coll_tuned_allgather_intra_neighborexchange(sbuf, scount, sdtype,
+        } else {
+            return  smpi_coll_tuned_allgather_ompi_neighborexchange(sbuf, scount, sdtype,
                                                                      rbuf, rcount, rdtype,
-                                                                     comm, module);
-        }*/
+                                                                     comm);
+        }
     }
    
 #if defined(USE_MPICH2_DECISION)

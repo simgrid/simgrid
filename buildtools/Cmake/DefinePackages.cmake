@@ -128,6 +128,7 @@ set(SMPI_SRC
   src/smpi/colls/allgather-SMP-NTS.c
   src/smpi/colls/allgather-smp-simple.c
   src/smpi/colls/allgather-spreading-simple.c
+  src/smpi/colls/allgather-ompi-neighborexchange.c
   src/smpi/colls/allgatherv-GB.c  
   src/smpi/colls/allgatherv-pair.c
   src/smpi/colls/allgatherv-ring.c

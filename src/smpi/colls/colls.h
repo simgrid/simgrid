@@ -45,7 +45,8 @@ COLL_APPLY(action, COLL_ALLGATHER_SIG, ring) COLL_sep \
 COLL_APPLY(action, COLL_ALLGATHER_SIG, SMP_NTS) COLL_sep \
 COLL_APPLY(action, COLL_ALLGATHER_SIG, smp_simple) COLL_sep \
 COLL_APPLY(action, COLL_ALLGATHER_SIG, spreading_simple) COLL_sep \
-COLL_APPLY(action, COLL_ALLGATHER_SIG, ompi)
+COLL_APPLY(action, COLL_ALLGATHER_SIG, ompi) COLL_sep \
+COLL_APPLY(action, COLL_ALLGATHER_SIG, ompi_neighborexchange)
 
 COLL_ALLGATHERS(COLL_PROTO, COLL_NOsep)
 
