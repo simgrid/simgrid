@@ -132,6 +132,7 @@ set(SMPI_SRC
   src/smpi/colls/allgatherv-GB.c  
   src/smpi/colls/allgatherv-pair.c
   src/smpi/colls/allgatherv-ring.c
+  src/smpi/colls/allgatherv-ompi-neighborexchange.c
   src/smpi/colls/allreduce-lr.c
   src/smpi/colls/allreduce-NTS.c
   src/smpi/colls/allreduce-rab1.c

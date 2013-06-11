@@ -376,7 +376,7 @@ if(NOT enable_memcheck)
 		            smp_simple spreading_simple ompi ompi_neighborexchange)
         ADD_TEST(smpi-allgather-coll-${ALLGATHER_COLL} ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg smpi/allgather:${ALLGATHER_COLL} --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/allgather_coll.tesh)
     ENDFOREACH()
-    FOREACH (ALLGATHERV_COLL default GB pair ring ompi)
+    FOREACH (ALLGATHERV_COLL default GB pair ring ompi ompi_neighborexchange)
         ADD_TEST(smpi-allgatherv-coll-${ALLGATHERV_COLL} ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg smpi/allgatherv:${ALLGATHERV_COLL} --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/allgatherv_coll.tesh)
     ENDFOREACH()
     FOREACH (ALLREDUCE_COLL default lr NTS rab1 rab2 rab_rdb

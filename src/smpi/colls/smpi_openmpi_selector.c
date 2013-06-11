@@ -448,17 +448,17 @@ int smpi_coll_tuned_allgather_ompi(void *sbuf, int scount,
        - for everything else use ring.
     */
     if ((pow2_size == communicator_size) && (total_dsize < 524288)) {
-        return smpi_coll_tuned_allgather_intra_recursivedoubling(sbuf, scount, sdtype, 
+        return smpi_coll_tuned_allgather_rdb(sbuf, scount, sdtype, 
                                                                  rbuf, rcount, rdtype, 
-                                                                 comm, module);
+                                                                 comm);
     } else if (total_dsize <= 81920) { 
-        return smpi_coll_tuned_allgather_intra_bruck(sbuf, scount, sdtype, 
+        return smpi_coll_tuned_allgather_bruck(sbuf, scount, sdtype, 
                                                      rbuf, rcount, rdtype,
-                                                     comm, module);
+                                                     comm);
     } 
-    return smpi_coll_tuned_allgather_intra_ring(sbuf, scount, sdtype, 
+    return smpi_coll_tuned_allgather_ring(sbuf, scount, sdtype, 
                                                 rbuf, rcount, rdtype,
-                                                comm, module);
+                                                comm);
 #endif  /* defined(USE_MPICH2_DECISION) */
 }
 
@@ -500,15 +500,15 @@ int smpi_coll_tuned_allgatherv_ompi(void *sbuf, int scount,
                                                       comm);
 
     } else {
-//        if (communicator_size % 2) {
+        if (communicator_size % 2) {
             return smpi_coll_tuned_allgatherv_ring(sbuf, scount, sdtype, 
                                                          rbuf, rcounts, rdispls, rdtype, 
                                                          comm);
-/*        } else {
-            return  smpi_coll_tuned_allgatherv_intra_neighborexchange(sbuf, scount, sdtype,
+        } else {
+            return  smpi_coll_tuned_allgatherv_ompi_neighborexchange(sbuf, scount, sdtype,
                                                                       rbuf, rcounts, rdispls, rdtype, 
-                                                                      comm, module);
-        }*/
+                                                                      comm);
+        }
     }
 }
 /*
