@@ -115,20 +115,7 @@ Java_org_simgrid_msg_VM_shutdown(JNIEnv *env, jobject jvm) {
   }
 }
 JNIEXPORT void JNICALL
-<<<<<<< HEAD
 Java_org_simgrid_msg_VM_reboot(JNIEnv *env, jobject jvm) {
-=======
-Java_org_simgrid_msg_VM_restore(JNIEnv *env, jobject jvm) {
-  msg_vm_t vm = jvm_get_native(env,jvm);
-  MSG_vm_restore(vm);
-}
-
-
-
-JNIEXPORT jobject JNICALL
-Java_org_simgrid_msg_VM_get_pm(JNIEnv *env, jobject jvm) {
-  jobject jhost;
->>>>>>> db82f9e... Add AS support in MSG and java bindings
   msg_vm_t vm = jvm_get_native(env,jvm);
   xbt_ex_t e;
   TRY {
