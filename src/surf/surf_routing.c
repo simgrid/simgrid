@@ -1253,7 +1253,6 @@ xbt_dynar_t surf_AS_get_hosts(AS_t as) {
   xbt_dynar_t res =  xbt_dynar_new(sizeof(xbt_dictelm_t), NULL);
   for (index = 0; index < count; index++) {
      relm = xbt_dynar_get_as(elms, index, sg_routing_edge_t);
-     printf("relm:%s\n", relm->name);
      delm = xbt_lib_get_elm_or_null(host_lib, relm->name);
      if (delm!=NULL) {
        xbt_dynar_push(res, &delm);
