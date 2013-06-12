@@ -395,8 +395,9 @@ void MC_dpor(void)
         MC_SET_RAW_MEM;
         xbt_fifo_shift(mc_stack_safety);
         MC_state_delete(state);
+        XBT_DEBUG("Delete state %d at depth %d", state->num, xbt_fifo_size(mc_stack_safety) + 1);
         MC_UNSET_RAW_MEM;
-
+        
         max_depth_reached = 0;
       }
       
@@ -427,11 +428,11 @@ void MC_dpor(void)
                 XBT_DEBUG("Dependent Transitions:");
                 prev_req = MC_state_get_executed_request(prev_state, &value);
                 req_str = MC_request_to_string(prev_req, value);
-                XBT_DEBUG("%s (state=%p)", req_str, prev_state);
+                XBT_DEBUG("%s (state=%d)", req_str, prev_state->num);
                 xbt_free(req_str);
                 prev_req = MC_state_get_executed_request(state, &value);
                 req_str = MC_request_to_string(prev_req, value);
-                XBT_DEBUG("%s (state=%p)", req_str, state);
+                XBT_DEBUG("%s (state=%d)", req_str, state->num);
                 xbt_free(req_str);              
               }
 
@@ -447,13 +448,17 @@ void MC_dpor(void)
               XBT_DEBUG("Simcall %d and %d with same issuer", req->call, MC_state_get_internal_request(prev_state)->call);
               break;
 
+            }else{
+
+              XBT_DEBUG("Simcall %d, process %lu (state %d) and simcall %d, process %lu (state %d) are independant", req->call, req->issuer->pid, state->num, MC_state_get_internal_request(prev_state)->call, MC_state_get_internal_request(prev_state)->issuer->pid, prev_state->num);
+
             }
           }
         }
              
         if (MC_state_interleave_size(state) && xbt_fifo_size(mc_stack_safety) < _sg_mc_max_depth) {
           /* We found a back-tracking point, let's loop */
-          XBT_DEBUG("Back-tracking to depth %d", xbt_fifo_size(mc_stack_safety) + 1);
+          XBT_DEBUG("Back-tracking to state %d at depth %d", state->num, xbt_fifo_size(mc_stack_safety) + 1);
           if(_sg_mc_checkpoint){
             if(state->system_state != NULL){
               MC_restore_snapshot(state->system_state);
@@ -481,10 +486,10 @@ void MC_dpor(void)
             MC_UNSET_RAW_MEM;
             MC_replay(mc_stack_safety, -1);
           }
-          XBT_DEBUG("Back-tracking to depth %d", xbt_fifo_size(mc_stack_safety));
+          XBT_DEBUG("Back-tracking to state %d at depth %d", state->num, xbt_fifo_size(mc_stack_safety));
           break;
         } else {
-          XBT_DEBUG("Delete state at depth %d",xbt_fifo_size(mc_stack_safety) + 1); 
+          XBT_DEBUG("Delete state %d at depth %d", state->num, xbt_fifo_size(mc_stack_safety) + 1); 
           MC_state_delete(state);
         }
       }
