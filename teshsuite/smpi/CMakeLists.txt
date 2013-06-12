@@ -28,6 +28,7 @@ if(enable_smpi)
   add_executable(scatter scatter.c)
   add_executable(reduce reduce.c)
   add_executable(reduce_coll reduce_coll.c)
+  add_executable(reduce_scatter_coll reduce_scatter_coll.c)
   add_executable(split split.c)
   add_executable(smpi_sendrecv sendrecv.c)
   add_executable(ttest01 ttest01.c)
@@ -54,6 +55,7 @@ if(enable_smpi)
   target_link_libraries(scatter simgrid)
   target_link_libraries(reduce simgrid)
   target_link_libraries(reduce_coll simgrid)      
+  target_link_libraries(reduce_scatter_coll simgrid)      
   target_link_libraries(split simgrid)
   target_link_libraries(smpi_sendrecv simgrid)
   target_link_libraries(ttest01 simgrid)
@@ -88,6 +90,7 @@ set(tesh_files
   ${CMAKE_CURRENT_SOURCE_DIR}/pt2pt.tesh
   ${CMAKE_CURRENT_SOURCE_DIR}/reduce.tesh
   ${CMAKE_CURRENT_SOURCE_DIR}/reduce_coll.tesh  
+  ${CMAKE_CURRENT_SOURCE_DIR}/reduce_scatter_coll.tesh  
   ${CMAKE_CURRENT_SOURCE_DIR}/struct.tesh
   ${CMAKE_CURRENT_SOURCE_DIR}/vector.tesh  
   PARENT_SCOPE
@@ -106,6 +109,7 @@ set(examples_src
   ${CMAKE_CURRENT_SOURCE_DIR}/alltoallv_coll.c  
   ${CMAKE_CURRENT_SOURCE_DIR}/bcast_coll.c
   ${CMAKE_CURRENT_SOURCE_DIR}/reduce_coll.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/reduce_scatter_coll.c
   ${CMAKE_CURRENT_SOURCE_DIR}/alltoallv_coll.c
   ${CMAKE_CURRENT_SOURCE_DIR}/get_processor_name.c
   ${CMAKE_CURRENT_SOURCE_DIR}/pingpong.c

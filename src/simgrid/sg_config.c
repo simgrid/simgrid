@@ -276,6 +276,9 @@ static void _sg_cfg_cb__coll_reduce(const char *name, int pos)
 {
   _sg_cfg_cb__coll("reduce", mpi_coll_reduce_description, name, pos);  
 }
+static void _sg_cfg_cb__coll_reduce_scatter(const char *name, int pos){
+  _sg_cfg_cb__coll("reduce_scatter", mpi_coll_reduce_scatter_description, name, pos);
+}
 #endif
 
 /* callback of the inclusion path */
@@ -770,6 +773,11 @@ void sg_config_init(int *argc, char **argv)
     xbt_cfg_register(&_sg_cfg_set, "smpi/allgather",
 		     "Which collective to use for allgather",
 		     xbt_cfgelm_string, NULL, 1, 1, &_sg_cfg_cb__coll_allgather,
+		     NULL);
+
+    xbt_cfg_register(&_sg_cfg_set, "smpi/reduce_scatter",
+		     "Which collective to use for reduce_scatter",
+		     xbt_cfgelm_string, NULL, 1, 1, &_sg_cfg_cb__coll_reduce_scatter,
 		     NULL);
 
     xbt_cfg_register(&_sg_cfg_set, "smpi/allgatherv",

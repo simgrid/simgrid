@@ -196,6 +196,7 @@ set(SMPI_SRC
   src/smpi/colls/reduce-scatter-gather.c
   src/smpi/colls/reduce-ompi.c
   src/smpi/colls/gather-ompi.c
+  src/smpi/colls/reduce_scatter-ompi.c
   )
 
 if(SMPI_F2C)

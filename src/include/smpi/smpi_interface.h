@@ -91,6 +91,13 @@ XBT_PUBLIC_DATA(int (*mpi_coll_reduce_fun)
                 (void *buf, void *rbuf, int count, MPI_Datatype datatype,
                  MPI_Op op, int root, MPI_Comm comm));
 
+/** \ingroup MPI reduce_scatter
+ *  \brief The list of all available allgather collectives
+ */
+XBT_PUBLIC_DATA(s_mpi_coll_description_t) mpi_coll_reduce_scatter_description[];
+XBT_PUBLIC_DATA(int (*mpi_coll_reduce_scatter_fun)
+                (void *sbuf, void *rbuf, int *rcounts,
+                 MPI_Datatype dtype, MPI_Op op,MPI_Comm comm));
 
 XBT_PUBLIC(void) coll_help(const char *category,
                            s_mpi_coll_description_t * table);

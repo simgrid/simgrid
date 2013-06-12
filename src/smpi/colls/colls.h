@@ -213,4 +213,18 @@ COLL_APPLY(action, COLL_REDUCE_SIG, ompi_binomial)
 
 COLL_REDUCES(COLL_PROTO, COLL_NOsep)
 
+/*************
+ * REDUCE_SCATTER *
+ *************/
+#define COLL_REDUCE_SCATTER_SIG reduce_scatter, int, \
+	                  (void *sbuf, void *rbuf, int *rcounts,\
+                    MPI_Datatype dtype,MPI_Op  op,MPI_Comm  comm)
+
+#define COLL_REDUCE_SCATTERS(action, COLL_sep) \
+COLL_APPLY(action, COLL_REDUCE_SCATTER_SIG, ompi) COLL_sep \
+COLL_APPLY(action, COLL_REDUCE_SCATTER_SIG, ompi_basic_recursivehalving) COLL_sep \
+COLL_APPLY(action, COLL_REDUCE_SCATTER_SIG, ompi_ring) 
+
+COLL_REDUCE_SCATTERS(COLL_PROTO, COLL_NOsep)
+
 #endif

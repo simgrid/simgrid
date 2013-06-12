@@ -324,11 +324,11 @@ int smpi_coll_tuned_reduce_ompi( void *sendbuf, void *recvbuf,
 #endif  /* 0 */
 }
 
-/*int smpi_coll_tuned_reduce_scatter_ompi( void *sbuf, void *rbuf,
+int smpi_coll_tuned_reduce_scatter_ompi( void *sbuf, void *rbuf,
                                                     int *rcounts,
                                                     MPI_Datatype dtype,
                                                     MPI_Op  op,
-                                                    MPI_Comm  comm,
+                                                    MPI_Comm  comm
                                                     )
 {
     int comm_size, i, pow2;
@@ -337,25 +337,26 @@ int smpi_coll_tuned_reduce_ompi( void *sendbuf, void *recvbuf,
     const double b = 8.0;
     const size_t small_message_size = 12 * 1024;
     const size_t large_message_size = 256 * 1024;
-    bool zerocounts = false;
+    int zerocounts = 0;
 
-    OPAL_OUTPUT((smpi_coll_tuned_stream, "smpi_coll_tuned_reduce_scatter_ompi"));
-
+    XBT_DEBUG("smpi_coll_tuned_reduce_scatter_ompi");
+    
     comm_size = smpi_comm_size(comm);
     // We need data size for decision function 
-    ompi_datatype_type_size(dtype, &dsize);
+    dsize=smpi_datatype_size(dtype);
     total_message_size = 0;
     for (i = 0; i < comm_size; i++) { 
         total_message_size += rcounts[i];
         if (0 == rcounts[i]) {
-            zerocounts = true;
+            zerocounts = 1;
         }
     }
 
-    if( !ompi_op_is_commute(op) || (zerocounts)) {
-        return smpi_coll_tuned_reduce_scatter_intra_nonoverlapping (sbuf, rbuf, rcounts, 
+    if( !smpi_op_is_commute(op) || (zerocounts)) {
+        smpi_mpi_reduce_scatter (sbuf, rbuf, rcounts, 
                                                                     dtype, op, 
-                                                                    comm, module); 
+                                                                    comm); 
+        return MPI_SUCCESS;
     }
    
     total_message_size *= dsize;
@@ -367,20 +368,17 @@ int smpi_coll_tuned_reduce_ompi( void *sendbuf, void *recvbuf,
         ((total_message_size <= large_message_size) && (pow2 == comm_size)) ||
         (comm_size >= a * total_message_size + b)) {
         return 
-            smpi_coll_tuned_reduce_scatter_intra_basic_recursivehalving(sbuf, rbuf, rcounts,
+            smpi_coll_tuned_reduce_scatter_ompi_basic_recursivehalving(sbuf, rbuf, rcounts,
                                                                         dtype, op,
-                                                                        comm, module);
+                                                                        comm);
     } 
-    return smpi_coll_tuned_reduce_scatter_intra_ring(sbuf, rbuf, rcounts,
+    return smpi_coll_tuned_reduce_scatter_ompi_ring(sbuf, rbuf, rcounts,
                                                      dtype, op,
-                                                     comm, module);
+                                                     comm);
 
-  
-    return smpi_coll_tuned_reduce_scatter(sbuf, rbuf, rcounts,
-                                                     dtype, op,
-                                                     comm;
 
-}*/
+
+}
 
 int smpi_coll_tuned_allgather_ompi(void *sbuf, int scount, 
                                               MPI_Datatype sdtype,

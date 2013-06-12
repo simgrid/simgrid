@@ -155,7 +155,7 @@ RunTest allred2 4 "*** Allred2 ***"
 RunTest scattern 4 "*** Scattern ***"
 
 #fails, more debug needed to understand
-#RunTest redscat 4 "*** Reduce_scatter ***"
+RunTest redscat 4 "*** Reduce_scatter ***"
 
 RunTest alltoallv_mpich 4 "*** Alltoallv ***"
 echo "runtests: fortran ($have_fortran)"
