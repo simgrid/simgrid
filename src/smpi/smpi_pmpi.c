@@ -1609,7 +1609,7 @@ int PMPI_Gather(void *sendbuf, int sendcount, MPI_Datatype sendtype,
              || recvtype == MPI_DATATYPE_NULL) {
     retval = MPI_ERR_TYPE;
   } else {
-    smpi_mpi_gather(sendbuf, sendcount, sendtype, recvbuf, recvcount,
+    mpi_coll_gather_fun(sendbuf, sendcount, sendtype, recvbuf, recvcount,
                     recvtype, root, comm);
     retval = MPI_SUCCESS;
   }
@@ -2023,7 +2023,7 @@ int PMPI_Type_contiguous(int count, MPI_Datatype old_type, MPI_Datatype* new_typ
   } else if (count<0){
     retval = MPI_ERR_COUNT;
   } else {
-    retval = smpi_datatype_contiguous(count, old_type, new_type);
+    retval = smpi_datatype_contiguous(count, old_type, new_type, 0);
   }
   smpi_bench_begin();
   return retval;

@@ -110,7 +110,7 @@ public class Host {
      * If there is a need to receive some messages asynchronously, and some not, 
      * two different mailboxes should be used.
      *
-     * @param alias The name of the mailbox 
+     * @param mailboxName The name of the mailbox
      */
     public static native void setAsyncMailbox(String mailboxName);
 

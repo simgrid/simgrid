@@ -128,9 +128,11 @@ set(SMPI_SRC
   src/smpi/colls/allgather-SMP-NTS.c
   src/smpi/colls/allgather-smp-simple.c
   src/smpi/colls/allgather-spreading-simple.c
+  src/smpi/colls/allgather-ompi-neighborexchange.c
   src/smpi/colls/allgatherv-GB.c  
   src/smpi/colls/allgatherv-pair.c
   src/smpi/colls/allgatherv-ring.c
+  src/smpi/colls/allgatherv-ompi-neighborexchange.c
   src/smpi/colls/allreduce-lr.c
   src/smpi/colls/allreduce-NTS.c
   src/smpi/colls/allreduce-rab1.c
@@ -193,6 +195,7 @@ set(SMPI_SRC
   src/smpi/colls/reduce-NTSL.c
   src/smpi/colls/reduce-scatter-gather.c
   src/smpi/colls/reduce-ompi.c
+  src/smpi/colls/gather-ompi.c
   )
 
 if(SMPI_F2C)
@@ -843,14 +846,11 @@ set(EXAMPLES_CMAKEFILES_TXT
   examples/java/startKillTime/CMakeLists.txt
   examples/java/suspend/CMakeLists.txt
   examples/java/tracing/CMakeLists.txt
-  examples/scala/CMakeLists.txt
-  examples/scala/masterslave/CMakeLists.txt
-  examples/scala/master_slave_bypass/CMakeLists.txt
-  examples/scala/master_slave_kill/CMakeLists.txt
   examples/lua/CMakeLists.txt
   examples/msg/CMakeLists.txt
   examples/msg/actions/CMakeLists.txt
   examples/msg/bittorrent/CMakeLists.txt
+  examples/msg/chainsend/CMakeLists.txt
   examples/msg/chord/CMakeLists.txt
   examples/msg/cloud/CMakeLists.txt
   examples/msg/gpu/CMakeLists.txt
@@ -866,12 +866,16 @@ set(EXAMPLES_CMAKEFILES_TXT
   examples/msg/pmm/CMakeLists.txt
   examples/msg/priority/CMakeLists.txt
   examples/msg/properties/CMakeLists.txt
+  examples/msg/semaphores/CMakeLists.txt
   examples/msg/sendrecv/CMakeLists.txt
-  examples/msg/chainsend/CMakeLists.txt
   examples/msg/start_kill_time/CMakeLists.txt
   examples/msg/suspend/CMakeLists.txt
   examples/msg/token_ring/CMakeLists.txt
   examples/msg/tracing/CMakeLists.txt
+  examples/scala/CMakeLists.txt
+  examples/scala/master_slave_bypass/CMakeLists.txt
+  examples/scala/master_slave_kill/CMakeLists.txt
+  examples/scala/masterslave/CMakeLists.txt
   examples/simdag/CMakeLists.txt
   examples/simdag/dax/CMakeLists.txt
   examples/simdag/dot/CMakeLists.txt
@@ -889,20 +893,20 @@ set(TESHSUITE_CMAKEFILES_TXT
   teshsuite/msg/CMakeLists.txt
   teshsuite/msg/trace/CMakeLists.txt
   teshsuite/simdag/CMakeLists.txt
+  teshsuite/simdag/availability/CMakeLists.txt
   teshsuite/simdag/network/CMakeLists.txt
   teshsuite/simdag/network/mxn/CMakeLists.txt
   teshsuite/simdag/network/p2p/CMakeLists.txt
   teshsuite/simdag/partask/CMakeLists.txt
   teshsuite/simdag/platforms/CMakeLists.txt
-  teshsuite/simdag/availability/CMakeLists.txt
-  teshsuite/xbt/CMakeLists.txt
   teshsuite/smpi/CMakeLists.txt
   teshsuite/smpi/mpich-test/CMakeLists.txt
-  teshsuite/smpi/mpich-test/env/CMakeLists.txt
   teshsuite/smpi/mpich-test/coll/CMakeLists.txt
   teshsuite/smpi/mpich-test/context/CMakeLists.txt
+  teshsuite/smpi/mpich-test/env/CMakeLists.txt
   teshsuite/smpi/mpich-test/profile/CMakeLists.txt
   teshsuite/smpi/mpich-test/pt2pt/CMakeLists.txt
+  teshsuite/xbt/CMakeLists.txt
   )
 
 set(TOOLS_CMAKEFILES_TXT

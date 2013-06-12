@@ -34,7 +34,7 @@ static xbt_dynar_t storage_list;
 #define GENERIC_LMM_ACTION(action) action->generic_lmm_action
 #define GENERIC_ACTION(action) GENERIC_LMM_ACTION(action).generic_action
 
-static xbt_dict_t parse_storage_content(char *filename, unsigned long *used_size);
+static xbt_dict_t parse_storage_content(char *filename, size_t *used_size);
 static int storage_action_unref(surf_action_t action);
 static void storage_action_state_set(surf_action_t action, e_surf_action_state_t state);
 static surf_action_t storage_action_execute (void *storage, double size, e_surf_action_storage_type_t type);
@@ -46,7 +46,7 @@ static surf_action_t storage_action_ls(void *storage, const char* path)
   xbt_dict_t ls_dict = xbt_dict_new();
 
   char* key;
-  unsigned long size = 0;
+  size_t size = 0;
   xbt_dict_cursor_t cursor = NULL;
 
   xbt_dynar_t dyn = NULL;
@@ -123,8 +123,8 @@ static surf_action_t storage_action_close(void *storage, surf_file_t fd)
   return action;
 }
 
-static surf_action_t storage_action_read(void *storage, void* ptr, double size,
-                                         size_t nmemb, surf_file_t fd)
+static surf_action_t storage_action_read(void *storage, void* ptr, 
+					 size_t size, surf_file_t fd)
 {
   if(size > fd->size)
     size = fd->size;
@@ -133,8 +133,7 @@ static surf_action_t storage_action_read(void *storage, void* ptr, double size,
 }
 
 static surf_action_t storage_action_write(void *storage, const void* ptr,
-                                          size_t size, size_t nmemb,
-                                          surf_file_t fd)
+                                          size_t size, surf_file_t fd)
 {
   char *filename = fd->name;
   XBT_DEBUG("\tWrite file '%s' size '%zu/%zu'",filename,size,fd->size);
@@ -212,7 +211,7 @@ static void* storage_create_resource(const char* id, const char* model,const cha
   double Bread  = atof(xbt_dict_get(storage_type->properties,"Bread"));
   double Bwrite = atof(xbt_dict_get(storage_type->properties,"Bwrite"));
   double Bconnection   = atof(xbt_dict_get(storage_type->properties,"Bconnection"));
-  XBT_DEBUG("Create resource with Bconnection '%f' Bread '%f' Bwrite '%f' and Size '%ld'",Bconnection,Bread,Bwrite,storage_type->size);
+  XBT_DEBUG("Create resource with Bconnection '%f' Bread '%f' Bwrite '%f' and Size '%lu'",Bconnection,Bread,Bwrite,(unsigned long)storage_type->size);
   storage->constraint       = lmm_constraint_new(storage_maxmin_system, storage, Bconnection);
   storage->constraint_read  = lmm_constraint_new(storage_maxmin_system, storage, Bread);
   storage->constraint_write = lmm_constraint_new(storage_maxmin_system, storage, Bwrite);
@@ -517,7 +516,7 @@ static void storage_parse_storage(sg_platf_storage_cbarg_t storage)
       (void *) xbt_strdup(storage->type_id));
 }
 
-static xbt_dict_t parse_storage_content(char *filename, unsigned long *used_size)
+static xbt_dict_t parse_storage_content(char *filename, size_t *used_size)
 {
   *used_size = 0;
   if ((!filename) || (strcmp(filename, "") == 0))
@@ -534,12 +533,12 @@ static xbt_dict_t parse_storage_content(char *filename, unsigned long *used_size
   size_t len = 0;
   ssize_t read;
   char path[1024];
-  unsigned long size;
+  size_t size;
 
 
   while ((read = xbt_getline(&line, &len, file)) != -1) {
     if (read){
-    if(sscanf(line,"%s %ld",path, &size)==2) {
+    if(sscanf(line,"%s %zu",path, &size)==2) {
         *used_size += size;
         xbt_dict_set(parse_content,path,(void*) size,NULL);
       } else {

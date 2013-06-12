@@ -26,10 +26,11 @@ else()
 endif()
 message("-- [Java] SG_java includes: ${CHECK_INCLUDES}")
 
+target_link_libraries(SG_java simgrid)
+
 if(WIN32)
-  get_target_property(SIMGRID_LIB_NAME_NAME SG_java LIBRARY_OUTPUT_NAME)
   set_target_properties(SG_java PROPERTIES
-    LINK_FLAGS "-Wl,--subsystem,windows,--kill-at ${SIMGRID_LIB_NAME}"
+    LINK_FLAGS "-Wl,--subsystem,windows,--kill-at"
     PREFIX "")
   find_path(PEXPORTS_PATH NAMES pexports.exe PATHS NO_DEFAULT_PATHS)
   message(STATUS "pexports: ${PEXPORTS_PATH}")
@@ -37,8 +38,6 @@ if(WIN32)
     add_custom_command(TARGET SG_java POST_BUILD
       COMMAND ${PEXPORTS_PATH}/pexports.exe ${CMAKE_BINARY_DIR}/SG_java.dll > ${CMAKE_BINARY_DIR}/SG_java.def)
   endif(PEXPORTS_PATH)
-else()
-  target_link_libraries(SG_java simgrid)
 endif()
 
 # Rules to build simgrid.jar

@@ -62,11 +62,14 @@ set(txt_files
   ${CMAKE_CURRENT_SOURCE_DIR}/replay/actions0.txt
   ${CMAKE_CURRENT_SOURCE_DIR}/replay/actions1.txt
   ${CMAKE_CURRENT_SOURCE_DIR}/replay/actions_allReduce.txt
+  ${CMAKE_CURRENT_SOURCE_DIR}/replay/actions_allgatherv.txt
   ${CMAKE_CURRENT_SOURCE_DIR}/replay/actions_alltoall.txt
   ${CMAKE_CURRENT_SOURCE_DIR}/replay/actions_alltoallv.txt
   ${CMAKE_CURRENT_SOURCE_DIR}/replay/actions_barrier.txt
   ${CMAKE_CURRENT_SOURCE_DIR}/replay/actions_bcast.txt
   ${CMAKE_CURRENT_SOURCE_DIR}/replay/actions_bcast_reduce_datatypes.txt
+  ${CMAKE_CURRENT_SOURCE_DIR}/replay/actions_gather.txt
+  ${CMAKE_CURRENT_SOURCE_DIR}/replay/actions_reducescatter.txt
   ${CMAKE_CURRENT_SOURCE_DIR}/replay/actions_waitall.txt
   ${CMAKE_CURRENT_SOURCE_DIR}/replay/actions_with_isend.txt
   ${CMAKE_CURRENT_SOURCE_DIR}/replay/split_traces

@@ -14,6 +14,15 @@
 #include "colls/colls.h"
 #include "simgrid/sg_config.h"
 
+s_mpi_coll_description_t mpi_coll_gather_description[] = {
+  {"default",
+   "gather default collective",
+   smpi_mpi_gather},
+COLL_GATHERS(COLL_DESCRIPTION, COLL_COMMA),
+  {NULL, NULL, NULL}      /* this array must be NULL terminated */
+};
+
+
 s_mpi_coll_description_t mpi_coll_allgather_description[] = {
   {"default",
    "allgather default collective",
@@ -62,7 +71,7 @@ COLL_ALLTOALLVS(COLL_DESCRIPTION, COLL_COMMA),
 
 s_mpi_coll_description_t mpi_coll_bcast_description[] = {
   {"default",
-   "allgather default collective",
+   "bcast default collective",
    smpi_mpi_bcast},
 COLL_BCASTS(COLL_DESCRIPTION, COLL_COMMA),
   {NULL, NULL, NULL}      /* this array must be NULL terminated */
@@ -70,7 +79,7 @@ COLL_BCASTS(COLL_DESCRIPTION, COLL_COMMA),
 
 s_mpi_coll_description_t mpi_coll_reduce_description[] = {
   {"default",
-   "allgather default collective",
+   "reduce default collective",
    smpi_mpi_reduce},
 COLL_REDUCES(COLL_DESCRIPTION, COLL_COMMA),
   {NULL, NULL, NULL}      /* this array must be NULL terminated */
@@ -126,6 +135,7 @@ int find_coll_description(s_mpi_coll_description_t * table,
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_coll, smpi,
                                 "Logging specific to SMPI (coll)");
 
+int (*mpi_coll_gather_fun)(void *, int, MPI_Datatype, void*, int, MPI_Datatype, int root, MPI_Comm);
 int (*mpi_coll_allgather_fun)(void *, int, MPI_Datatype, void*, int, MPI_Datatype, MPI_Comm);
 int (*mpi_coll_allgatherv_fun)(void *, int, MPI_Datatype, void*, int*, int*, MPI_Datatype, MPI_Comm);
 int (*mpi_coll_allreduce_fun)(void *sbuf, void *rbuf, int rcount, MPI_Datatype dtype, MPI_Op op, MPI_Comm comm);

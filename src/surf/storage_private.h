@@ -12,7 +12,7 @@ typedef struct s_storage_type {
   char *content;
   char *type_id;
   xbt_dict_t properties;
-  unsigned long size;
+  size_t size;
 } s_storage_type_t, *storage_type_t;
 
 typedef struct s_mount {
@@ -33,8 +33,8 @@ typedef struct storage {
   lmm_constraint_t constraint_write;    /* Constraint for maximum write bandwidth*/
   lmm_constraint_t constraint_read;     /* Constraint for maximum write bandwidth*/
   xbt_dict_t content; /* char * -> s_surf_file_t */
-  unsigned long size;
-  unsigned long used_size;
+  size_t size;
+  size_t used_size;
   xbt_dynar_t write_actions;
 } s_storage_t, *storage_t;
 

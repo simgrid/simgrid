@@ -426,15 +426,15 @@ int smpi_coll_tuned_allgather_ompi(void *sbuf, int scount,
                                                          comm);
         }
     } else {
-        //if (communicator_size % 2) {
+        if (communicator_size % 2) {
             return smpi_coll_tuned_allgather_ring(sbuf, scount, sdtype, 
                                                         rbuf, rcount, rdtype, 
                                                         comm);
-        /*} else {
-            return  smpi_coll_tuned_allgather_intra_neighborexchange(sbuf, scount, sdtype,
+        } else {
+            return  smpi_coll_tuned_allgather_ompi_neighborexchange(sbuf, scount, sdtype,
                                                                      rbuf, rcount, rdtype,
-                                                                     comm, module);
-        }*/
+                                                                     comm);
+        }
     }
    
 #if defined(USE_MPICH2_DECISION)
@@ -448,17 +448,17 @@ int smpi_coll_tuned_allgather_ompi(void *sbuf, int scount,
        - for everything else use ring.
     */
     if ((pow2_size == communicator_size) && (total_dsize < 524288)) {
-        return smpi_coll_tuned_allgather_intra_recursivedoubling(sbuf, scount, sdtype, 
+        return smpi_coll_tuned_allgather_rdb(sbuf, scount, sdtype, 
                                                                  rbuf, rcount, rdtype, 
-                                                                 comm, module);
+                                                                 comm);
     } else if (total_dsize <= 81920) { 
-        return smpi_coll_tuned_allgather_intra_bruck(sbuf, scount, sdtype, 
+        return smpi_coll_tuned_allgather_bruck(sbuf, scount, sdtype, 
                                                      rbuf, rcount, rdtype,
-                                                     comm, module);
+                                                     comm);
     } 
-    return smpi_coll_tuned_allgather_intra_ring(sbuf, scount, sdtype, 
+    return smpi_coll_tuned_allgather_ring(sbuf, scount, sdtype, 
                                                 rbuf, rcount, rdtype,
-                                                comm, module);
+                                                comm);
 #endif  /* defined(USE_MPICH2_DECISION) */
 }
 
@@ -500,30 +500,30 @@ int smpi_coll_tuned_allgatherv_ompi(void *sbuf, int scount,
                                                       comm);
 
     } else {
-//        if (communicator_size % 2) {
+        if (communicator_size % 2) {
             return smpi_coll_tuned_allgatherv_ring(sbuf, scount, sdtype, 
                                                          rbuf, rcounts, rdispls, rdtype, 
                                                          comm);
-/*        } else {
-            return  smpi_coll_tuned_allgatherv_intra_neighborexchange(sbuf, scount, sdtype,
+        } else {
+            return  smpi_coll_tuned_allgatherv_ompi_neighborexchange(sbuf, scount, sdtype,
                                                                       rbuf, rcounts, rdispls, rdtype, 
-                                                                      comm, module);
-        }*/
+                                                                      comm);
+        }
     }
 }
-/*
+
 int smpi_coll_tuned_gather_ompi(void *sbuf, int scount, 
                                            MPI_Datatype sdtype,
                                            void* rbuf, int rcount, 
                                            MPI_Datatype rdtype, 
                                            int root,
-                                           MPI_Comm  comm,
+                                           MPI_Comm  comm
                                            )
 {
-    const int large_segment_size = 32768;
-    const int small_segment_size = 1024;
+    //const int large_segment_size = 32768;
+    //const int small_segment_size = 1024;
 
-    const size_t large_block_size = 92160;
+    //const size_t large_block_size = 92160;
     const size_t intermediate_block_size = 6000;
     const size_t small_block_size = 1024;
 
@@ -533,46 +533,43 @@ int smpi_coll_tuned_gather_ompi(void *sbuf, int scount,
     int communicator_size, rank;
     size_t dsize, block_size;
 
-    OPAL_OUTPUT((smpi_coll_tuned_stream, 
-                 "smpi_coll_tuned_gather_ompi"));
+    XBT_DEBUG("smpi_coll_tuned_gather_ompi");
 
     communicator_size = smpi_comm_size(comm);
-    rank = ompi_comm_rank(comm);
+    rank = smpi_comm_rank(comm);
 
     // Determine block size 
     if (rank == root) {
-        ompi_datatype_type_size(rdtype, &dsize);
+        dsize = smpi_datatype_size(rdtype);
         block_size = dsize * rcount;
     } else {
-        ompi_datatype_type_size(sdtype, &dsize);
+        dsize = smpi_datatype_size(sdtype);
         block_size = dsize * scount;
     }
 
-    if (block_size > large_block_size) {
-        return smpi_coll_tuned_gather_intra_linear_sync (sbuf, scount, sdtype, 
-                                                         rbuf, rcount, rdtype, 
-                                                         root, comm, module,
-                                                         large_segment_size);
+/*    if (block_size > large_block_size) {*/
+/*        return smpi_coll_tuned_gather_ompi_linear_sync (sbuf, scount, sdtype, */
+/*                                                         rbuf, rcount, rdtype, */
+/*                                                         root, comm);*/
 
-    } else if (block_size > intermediate_block_size) {
-        return smpi_coll_tuned_gather_intra_linear_sync (sbuf, scount, sdtype, 
+/*    } else*/ if (block_size > intermediate_block_size) {
+        return smpi_coll_tuned_gather_ompi_linear_sync (sbuf, scount, sdtype, 
                                                          rbuf, rcount, rdtype, 
-                                                         root, comm, module,
-                                                         small_segment_size);
+                                                         root, comm);
 
     } else if ((communicator_size > large_communicator_size) ||
                ((communicator_size > small_communicator_size) &&
                 (block_size < small_block_size))) {
-        return smpi_coll_tuned_gather_intra_binomial (sbuf, scount, sdtype, 
+        return smpi_coll_tuned_gather_ompi_binomial (sbuf, scount, sdtype, 
                                                       rbuf, rcount, rdtype, 
-                                                      root, comm, module);
+                                                      root, comm);
 
     }
     // Otherwise, use basic linear 
-    return smpi_coll_tuned_gather_intra_basic_linear (sbuf, scount, sdtype, 
+    return smpi_coll_tuned_gather_ompi_basic_linear (sbuf, scount, sdtype, 
                                                       rbuf, rcount, rdtype, 
-                                                      root, comm, module);
-}*/
+                                                      root, comm);
+}
 /*
 int smpi_coll_tuned_scatter_ompi(void *sbuf, int scount, 
                                             MPI_Datatype sdtype,

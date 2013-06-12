@@ -247,6 +247,9 @@ static void _sg_cfg_cb__coll(const char *category,
   /* New Module missing */
   find_coll_description(table, val);
 }
+static void _sg_cfg_cb__coll_gather(const char *name, int pos){
+  _sg_cfg_cb__coll("gather", mpi_coll_gather_description, name, pos);
+}
 static void _sg_cfg_cb__coll_allgather(const char *name, int pos){
   _sg_cfg_cb__coll("allgather", mpi_coll_allgather_description, name, pos);
 }
@@ -758,6 +761,12 @@ void sg_config_init(int *argc, char **argv)
 		     "Which collective selector to use",
 		     xbt_cfgelm_string, &default_value, 1, 1, NULL,
 		     NULL);
+		     
+		xbt_cfg_register(&_sg_cfg_set, "smpi/gather",
+		     "Which collective to use for gather",
+		     xbt_cfgelm_string, NULL, 1, 1, &_sg_cfg_cb__coll_gather,
+		     NULL);
+		     
     xbt_cfg_register(&_sg_cfg_set, "smpi/allgather",
 		     "Which collective to use for allgather",
 		     xbt_cfgelm_string, NULL, 1, 1, &_sg_cfg_cb__coll_allgather,
