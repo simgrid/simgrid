@@ -8,7 +8,7 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(msg_semaphore_example,
 
 msg_sem_t sem;
 
-int peer(int argc, char* argv[]){
+static int peer(int argc, char* argv[]){
 
   int i = 0; 
   
@@ -27,6 +27,8 @@ int peer(int argc, char* argv[]){
   }
   MSG_process_sleep(50);
   XBT_INFO("Done");
+
+  return 0;
 }
 
 int main(int argc, char* argv[]) {
@@ -70,5 +72,5 @@ int main(int argc, char* argv[]) {
 
   msg_error_t res = MSG_main();
   printf("Finished\n");
-  return 0;
+  return (res != MSG_OK);
 }
