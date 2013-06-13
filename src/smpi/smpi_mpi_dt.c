@@ -424,7 +424,7 @@ int smpi_datatype_contiguous(int count, MPI_Datatype old_type, MPI_Datatype* new
 int smpi_datatype_vector(int count, int blocklen, int stride, MPI_Datatype old_type, MPI_Datatype* new_type)
 {
   int retval;
-  if (blocklen<=0) return MPI_ERR_ARG;
+  if (blocklen<0) return MPI_ERR_ARG;
   MPI_Aint lb = 0;
   MPI_Aint ub = 0;
   if(count>0){
@@ -565,7 +565,7 @@ void free_hvector(MPI_Datatype* d){
 int smpi_datatype_hvector(int count, int blocklen, MPI_Aint stride, MPI_Datatype old_type, MPI_Datatype* new_type)
 {
   int retval;
-  if (blocklen<=0) return MPI_ERR_ARG;
+  if (blocklen<0) return MPI_ERR_ARG;
   MPI_Aint lb = 0;
   MPI_Aint ub = 0;
   if(count>0){
@@ -726,7 +726,7 @@ int smpi_datatype_indexed(int count, int* blocklens, int* indices, MPI_Datatype 
   }
 
   for(i=0; i< count; i++){
-    if   (blocklens[i]<=0)
+    if   (blocklens[i]<0)
       return MPI_ERR_ARG;
     size += blocklens[i];
 
@@ -886,7 +886,7 @@ int smpi_datatype_hindexed(int count, int* blocklens, MPI_Aint* indices, MPI_Dat
     ub=indices[0] + blocklens[0]*smpi_datatype_ub(old_type);
   }
   for(i=0; i< count; i++){
-    if   (blocklens[i]<=0)
+    if   (blocklens[i]<0)
       return MPI_ERR_ARG;
     size += blocklens[i];
 
@@ -1054,7 +1054,7 @@ int smpi_datatype_struct(int count, int* blocklens, MPI_Aint* indices, MPI_Datat
   int forced_lb=0;
   int forced_ub=0;
   for(i=0; i< count; i++){
-    if (blocklens[i]<=0)
+    if (blocklens[i]<0)
       return MPI_ERR_ARG;
     if (old_types[i]->has_subtype == 1)
       contiguous=0;

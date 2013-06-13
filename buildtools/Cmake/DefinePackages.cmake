@@ -112,6 +112,7 @@ set(SMPI_SRC
   src/smpi/smpi_pmpi.c
   src/smpi/smpi_replay.c
   src/smpi/colls/smpi_openmpi_selector.c
+  src/smpi/colls/smpi_mpich_selector.c
   src/smpi/colls/colls_global.c
   src/smpi/colls/allgather-2dmesh.c
   src/smpi/colls/allgather-3dmesh.c
@@ -133,6 +134,8 @@ set(SMPI_SRC
   src/smpi/colls/allgatherv-pair.c
   src/smpi/colls/allgatherv-ring.c
   src/smpi/colls/allgatherv-ompi-neighborexchange.c
+  src/smpi/colls/allgatherv-ompi-bruck.c
+  src/smpi/colls/allgatherv-mpich-rdb.c
   src/smpi/colls/allreduce-lr.c
   src/smpi/colls/allreduce-NTS.c
   src/smpi/colls/allreduce-rab1.c
@@ -197,6 +200,7 @@ set(SMPI_SRC
   src/smpi/colls/reduce-ompi.c
   src/smpi/colls/gather-ompi.c
   src/smpi/colls/reduce_scatter-ompi.c
+  src/smpi/colls/reduce_scatter-mpich.c
   src/smpi/colls/scatter-ompi.c
   src/smpi/colls/barrier-ompi.c
   )
