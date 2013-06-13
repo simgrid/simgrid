@@ -11,9 +11,6 @@
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(bugged1_liveness, "my log messages");
 
-#define NB_REQUESTS 3
-#define NB_CLIENTS 3
-
 int r=0; 
 int cs=0;
 
@@ -32,18 +29,16 @@ int coordinator(int argc, char *argv[])
   int CS_used = 0;   
   msg_task_t task = NULL, answer = NULL;        
 
-  int i;
-
-  for(i=0; i<(NB_REQUESTS * NB_CLIENTS); i++){
+  while(1){  
     MSG_task_receive(&task, "coordinator");
     const char *kind = MSG_task_get_name(task); 
     if (!strcmp(kind, "request")) {    
       char *req = MSG_task_get_data(task);
       if (CS_used) {           
-        //XBT_INFO("CS already used.");
+        XBT_INFO("CS already used.");
       } else {               
         if(strcmp(req, "1") != 0){
-          //XBT_INFO("CS idle. Grant immediatly");
+          XBT_INFO("CS idle. Grant immediatly");
           answer = MSG_task_create("grant", 0, 1000, NULL);
           MSG_task_send(answer, req);
           CS_used = 1;
@@ -51,7 +46,7 @@ int coordinator(int argc, char *argv[])
         }
       }
     } else {         
-      //XBT_INFO("CS release. resource now idle");
+      XBT_INFO("CS release. resource now idle");
       CS_used = 0;
     }
     MSG_task_destroy(task);
@@ -68,18 +63,15 @@ int client(int argc, char *argv[])
 
   char *my_mailbox = xbt_strdup(argv[1]);
   msg_task_t grant = NULL, release = NULL;
-  
-  int i;
-
-  for(i=0; i<NB_REQUESTS; i++){
-      
-    //XBT_INFO("Ask the request");
+    
+  while(1){
+    XBT_INFO("Ask the request");
     MSG_task_send(MSG_task_create("request", 0, 1000, my_mailbox), "coordinator");
 
     if(strcmp(my_mailbox, "1") == 0){
       r = 1;
       cs = 0;
-      //XBT_INFO("Propositions changed : r=1, cs=0");
+      XBT_INFO("Propositions changed : r=1, cs=0");
     }
 
     MSG_task_receive(&grant, my_mailbox);
@@ -88,14 +80,14 @@ int client(int argc, char *argv[])
     if((strcmp(my_mailbox, "1") == 0) && (strcmp("grant", kind) == 0)){
       cs = 1;
       r = 0;
-      //XBT_INFO("Propositions changed : r=0, cs=1");
+      XBT_INFO("Propositions changed : r=0, cs=1");
     }
 
     MSG_task_destroy(grant);
     grant = NULL;
     kind = NULL;
 
-    //XBT_INFO("%s got the answer. Sleep a bit and release it", argv[1]);
+    XBT_INFO("%s got the answer. Sleep a bit and release it", argv[1]);
 
     MSG_process_sleep(1);
 
@@ -109,7 +101,7 @@ int client(int argc, char *argv[])
     if(strcmp(my_mailbox, "1") == 0){
       cs=0;
       r=0;
-      //XBT_INFO("Propositions changed : r=0, cs=0");
+      XBT_INFO("Propositions changed : r=0, cs=0");
     }
     
   }
