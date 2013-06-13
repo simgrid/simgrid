@@ -1579,7 +1579,7 @@ int PMPI_Barrier(MPI_Comm comm)
   if (comm == MPI_COMM_NULL) {
     retval = MPI_ERR_COMM;
   } else {
-    smpi_mpi_barrier(comm);
+    mpi_coll_barrier_fun(comm);
     retval = MPI_SUCCESS;
   }
 #ifdef HAVE_TRACING

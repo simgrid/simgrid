@@ -282,6 +282,9 @@ static void _sg_cfg_cb__coll_reduce_scatter(const char *name, int pos){
 static void _sg_cfg_cb__coll_scatter(const char *name, int pos){
   _sg_cfg_cb__coll("scatter", mpi_coll_scatter_description, name, pos);
 }
+static void _sg_cfg_cb__coll_barrier(const char *name, int pos){
+  _sg_cfg_cb__coll("barrier", mpi_coll_barrier_description, name, pos);
+}
 #endif
 
 /* callback of the inclusion path */
@@ -776,6 +779,11 @@ void sg_config_init(int *argc, char **argv)
     xbt_cfg_register(&_sg_cfg_set, "smpi/allgather",
 		     "Which collective to use for allgather",
 		     xbt_cfgelm_string, NULL, 1, 1, &_sg_cfg_cb__coll_allgather,
+		     NULL);
+
+    xbt_cfg_register(&_sg_cfg_set, "smpi/barrier",
+		     "Which collective to use for barrier",
+		     xbt_cfgelm_string, NULL, 1, 1, &_sg_cfg_cb__coll_barrier,
 		     NULL);
 
     xbt_cfg_register(&_sg_cfg_set, "smpi/reduce_scatter",

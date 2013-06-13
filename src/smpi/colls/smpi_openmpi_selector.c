@@ -99,27 +99,27 @@ int smpi_coll_tuned_alltoallv_ompi(void *sbuf, int *scounts, int *sdisps,
                                                         comm);
 }
 
-/*
-void smpi_coll_tuned_barrier_ompi(MPI_Comm  comm)
+
+int smpi_coll_tuned_barrier_ompi(MPI_Comm  comm)
 {    int communicator_size = smpi_comm_size(comm);
 
     if( 2 == communicator_size )
-        return smpi_coll_tuned_barrier_intra_two_procs(comm, module);
-     * Basic optimisation. If we have a power of 2 number of nodes
-     * the use the recursive doubling algorithm, otherwise
-     * bruck is the one we want.
+        return smpi_coll_tuned_barrier_ompi_two_procs(comm);
+/*     * Basic optimisation. If we have a power of 2 number of nodes*/
+/*     * the use the recursive doubling algorithm, otherwise*/
+/*     * bruck is the one we want.*/
     {
-        bool has_one = false;
+        int has_one = 0;
         for( ; communicator_size > 0; communicator_size >>= 1 ) {
             if( communicator_size & 0x1 ) {
                 if( has_one )
-                    return smpi_coll_tuned_barrier_intra_bruck(comm, module);
-                has_one = true;
+                    return smpi_coll_tuned_barrier_ompi_bruck(comm);
+                has_one = 1;
             }
         }
     }
-    return smpi_coll_tuned_barrier_intra_recursivedoubling(comm, module);
-}*/
+    return smpi_coll_tuned_barrier_ompi_recursivedoubling(comm);
+}
 
 int smpi_coll_tuned_bcast_ompi(void *buff, int count,
                                           MPI_Datatype datatype, int root,

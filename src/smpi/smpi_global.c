@@ -420,6 +420,12 @@ int smpi_main(int (*realmain) (int argc, char *argv[]),int argc, char *argv[])
                 void *recvbuf, int recvcount, MPI_Datatype recvtype,\
                 int root, MPI_Comm comm))
 	                   mpi_coll_scatter_description[scatter_id].coll;
+
+  int barrier_id = find_coll_description(mpi_coll_barrier_description,
+                                           sg_cfg_get_string("smpi/barrier"));
+  mpi_coll_barrier_fun = (int (*)(MPI_Comm comm))
+	                   mpi_coll_barrier_description[barrier_id].coll;
+
   smpi_global_init();
 
   /* Clean IO before the run */

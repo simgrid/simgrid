@@ -229,7 +229,7 @@ COLL_REDUCE_SCATTERS(COLL_PROTO, COLL_NOsep)
 
 
 /*************
- * REDUCE_SCATTER *
+ * SCATTER *
  *************/
 #define COLL_SCATTER_SIG scatter, int, \
                 (void *sendbuf, int sendcount, MPI_Datatype sendtype,\
@@ -242,5 +242,23 @@ COLL_APPLY(action, COLL_SCATTER_SIG, ompi_basic_linear) COLL_sep \
 COLL_APPLY(action, COLL_SCATTER_SIG, ompi_binomial) 
 
 COLL_SCATTERS(COLL_PROTO, COLL_NOsep)
+
+/*************
+ * SCATTER *
+ *************/
+#define COLL_BARRIER_SIG barrier, int, \
+                (MPI_Comm comm)
+
+#define COLL_BARRIERS(action, COLL_sep) \
+COLL_APPLY(action, COLL_BARRIER_SIG, ompi) COLL_sep \
+COLL_APPLY(action, COLL_BARRIER_SIG, ompi_basic_linear) COLL_sep \
+COLL_APPLY(action, COLL_BARRIER_SIG, ompi_two_procs)  COLL_sep \
+COLL_APPLY(action, COLL_BARRIER_SIG, ompi_tree)  COLL_sep \
+COLL_APPLY(action, COLL_BARRIER_SIG, ompi_bruck)  COLL_sep \
+COLL_APPLY(action, COLL_BARRIER_SIG, ompi_recursivedoubling) COLL_sep \
+COLL_APPLY(action, COLL_BARRIER_SIG, ompi_doublering)  
+
+COLL_BARRIERS(COLL_PROTO, COLL_NOsep)
+
 
 #endif

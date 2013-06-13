@@ -108,6 +108,14 @@ XBT_PUBLIC_DATA(int (*mpi_coll_scatter_fun)
                 void *recvbuf, int recvcount, MPI_Datatype recvtype,
                 int root, MPI_Comm comm));
 
+/** \ingroup MPI barrier
+ *  \brief The list of all available allgather collectives
+ */
+XBT_PUBLIC_DATA(s_mpi_coll_description_t) mpi_coll_barrier_description[];
+XBT_PUBLIC_DATA(int (*mpi_coll_barrier_fun)
+                (MPI_Comm comm));
+
+
 XBT_PUBLIC(void) coll_help(const char *category,
                            s_mpi_coll_description_t * table);
 XBT_PUBLIC(int) find_coll_description(s_mpi_coll_description_t * table,
