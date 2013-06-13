@@ -193,6 +193,7 @@ typedef struct surf_cpu_model_extension_public {
   surf_action_t(*execute) (void *cpu, double size);
   surf_action_t(*sleep) (void *cpu, double duration);
   e_surf_resource_state_t(*get_state) (void *cpu);
+  int (*get_core) (void *cpu);
   double (*get_speed) (void *cpu, double load);
   double (*get_available_speed) (void *cpu);
   void (*add_traces) (void);
@@ -245,6 +246,7 @@ typedef struct surf_workstation_model_extension_public {
                                       and create the corresponding action */
   surf_action_t(*sleep) (void *workstation, double duration);                              /**< Make a workstation sleep during a given duration */
   e_surf_resource_state_t(*get_state) (void *workstation);                                      /**< Return the CPU state of a workstation */
+  int (*get_core) (void *workstation); 
   double (*get_speed) (void *workstation, double load);                                    /**< Return the speed of a workstation */
   double (*get_available_speed) (void *workstation);                                       /**< Return tha available speed of a workstation */
    surf_action_t(*communicate) (void *workstation_src,                                     /**< Execute a communication amount between two workstations */

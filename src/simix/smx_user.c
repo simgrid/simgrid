@@ -84,6 +84,20 @@ double simcall_host_get_speed(smx_host_t host)
 
 /**
  * \ingroup simix_host_management
+ * \brief Returns the number of core of the processor.
+ *
+ * \param host A SIMIX host
+ * \return The number of core
+ */
+int simcall_host_get_core(smx_host_t host)
+{
+  return simcall_BODY_host_get_core(host);
+}
+
+
+
+/**
+ * \ingroup simix_host_management
  * \brief Returns the available speed of the processor.
  *
  * \return Speed currently available (in Mflop/s)

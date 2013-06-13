@@ -174,6 +174,20 @@ Java_org_simgrid_msg_Host_getSpeed(JNIEnv * env,
 
   return (jdouble) MSG_get_host_speed(host);
 }
+
+JNIEXPORT jdouble JNICALL
+Java_org_simgrid_msg_Host_getCore(JNIEnv * env,
+                                        jobject jhost) {
+  msg_host_t host = jhost_get_native(env, jhost);
+
+  if (!host) {
+    jxbt_throw_notbound(env, "host", jhost);
+    return -1;
+  }
+
+  return (jdouble) MSG_get_host_core(host);
+}
+
 JNIEXPORT jint JNICALL
 Java_org_simgrid_msg_Host_getLoad(JNIEnv * env, jobject jhost) {
   msg_host_t host = jhost_get_native(env, jhost);

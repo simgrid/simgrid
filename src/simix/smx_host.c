@@ -148,6 +148,18 @@ double SIMIX_host_get_speed(smx_host_t host){
       get_speed(host, 1.0);
 }
 
+int SIMIX_pre_host_get_core(smx_simcall_t simcall, smx_host_t host){
+  return SIMIX_host_get_core(host);
+}
+int SIMIX_host_get_core(smx_host_t host){
+  xbt_assert((host != NULL), "Invalid parameters (simix host is NULL)");
+
+  return surf_workstation_model->extension.workstation.
+      get_core(host);
+}
+
+
+
 double SIMIX_pre_host_get_available_speed(smx_simcall_t simcall, smx_host_t host){
   return SIMIX_host_get_available_speed(host);
 }

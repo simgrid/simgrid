@@ -164,6 +164,15 @@ public class Host {
 	 *
 	 */ 
 	public native double getSpeed();
+
+	/**
+	 * This method returns the number of core of a host.
+	 *
+	 * @return			The speed of the processor of the host in flops.
+	 *
+	 */ 
+	public native double getCore();
+
 	/**
 	 * Returns the value of a given host property. 
 	 */

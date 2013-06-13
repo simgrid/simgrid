@@ -227,6 +227,14 @@ static double ws_get_speed(void *workstation, double load)
       get_speed(workstation, load);
 }
 
+static int ws_get_core(void *workstation)
+{
+  return surf_cpu_model->extension.cpu.
+      get_core(workstation);
+}
+
+
+
 static double ws_get_available_speed(void *workstation)
 {
   return surf_cpu_model->extension.cpu.
@@ -438,6 +446,7 @@ static void surf_workstation_model_init_internal(void)
   surf_workstation_model->extension.workstation.execute = ws_execute;
   surf_workstation_model->extension.workstation.sleep = ws_action_sleep;
   surf_workstation_model->extension.workstation.get_state = ws_get_state;
+  surf_workstation_model->extension.workstation.get_core = ws_get_core;
   surf_workstation_model->extension.workstation.get_speed = ws_get_speed;
   surf_workstation_model->extension.workstation.get_available_speed =
       ws_get_available_speed;
