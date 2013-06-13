@@ -405,6 +405,8 @@ set(BINDINGS_SRC
 set(JMSG_C_SRC
   src/bindings/java/jmsg.c
   src/bindings/java/jmsg.h
+  src/bindings/java/jmsg_as.c
+  src/bindings/java/jmsg_as.h
   src/bindings/java/jmsg_comm.c
   src/bindings/java/jmsg_comm.h
   src/bindings/java/jmsg_file.c
@@ -430,6 +432,7 @@ set(JMSG_C_SRC
 )
 
 set(JMSG_JAVA_SRC
+  src/bindings/java/org/simgrid/msg/As.java	
   src/bindings/java/org/simgrid/msg/Comm.java
   src/bindings/java/org/simgrid/msg/File.java
   src/bindings/java/org/simgrid/msg/Host.java
@@ -844,14 +847,11 @@ set(EXAMPLES_CMAKEFILES_TXT
   examples/java/startKillTime/CMakeLists.txt
   examples/java/suspend/CMakeLists.txt
   examples/java/tracing/CMakeLists.txt
-  examples/scala/CMakeLists.txt
-  examples/scala/masterslave/CMakeLists.txt
-  examples/scala/master_slave_bypass/CMakeLists.txt
-  examples/scala/master_slave_kill/CMakeLists.txt
   examples/lua/CMakeLists.txt
   examples/msg/CMakeLists.txt
   examples/msg/actions/CMakeLists.txt
   examples/msg/bittorrent/CMakeLists.txt
+  examples/msg/chainsend/CMakeLists.txt
   examples/msg/chord/CMakeLists.txt
   examples/msg/cloud/CMakeLists.txt
   examples/msg/gpu/CMakeLists.txt
@@ -867,12 +867,16 @@ set(EXAMPLES_CMAKEFILES_TXT
   examples/msg/pmm/CMakeLists.txt
   examples/msg/priority/CMakeLists.txt
   examples/msg/properties/CMakeLists.txt
+  examples/msg/semaphores/CMakeLists.txt
   examples/msg/sendrecv/CMakeLists.txt
-  examples/msg/chainsend/CMakeLists.txt
   examples/msg/start_kill_time/CMakeLists.txt
   examples/msg/suspend/CMakeLists.txt
   examples/msg/token_ring/CMakeLists.txt
   examples/msg/tracing/CMakeLists.txt
+  examples/scala/CMakeLists.txt
+  examples/scala/master_slave_bypass/CMakeLists.txt
+  examples/scala/master_slave_kill/CMakeLists.txt
+  examples/scala/masterslave/CMakeLists.txt
   examples/simdag/CMakeLists.txt
   examples/simdag/dax/CMakeLists.txt
   examples/simdag/dot/CMakeLists.txt
@@ -890,20 +894,20 @@ set(TESHSUITE_CMAKEFILES_TXT
   teshsuite/msg/CMakeLists.txt
   teshsuite/msg/trace/CMakeLists.txt
   teshsuite/simdag/CMakeLists.txt
+  teshsuite/simdag/availability/CMakeLists.txt
   teshsuite/simdag/network/CMakeLists.txt
   teshsuite/simdag/network/mxn/CMakeLists.txt
   teshsuite/simdag/network/p2p/CMakeLists.txt
   teshsuite/simdag/partask/CMakeLists.txt
   teshsuite/simdag/platforms/CMakeLists.txt
-  teshsuite/simdag/availability/CMakeLists.txt
-  teshsuite/xbt/CMakeLists.txt
   teshsuite/smpi/CMakeLists.txt
   teshsuite/smpi/mpich-test/CMakeLists.txt
-  teshsuite/smpi/mpich-test/env/CMakeLists.txt
   teshsuite/smpi/mpich-test/coll/CMakeLists.txt
   teshsuite/smpi/mpich-test/context/CMakeLists.txt
+  teshsuite/smpi/mpich-test/env/CMakeLists.txt
   teshsuite/smpi/mpich-test/profile/CMakeLists.txt
   teshsuite/smpi/mpich-test/pt2pt/CMakeLists.txt
+  teshsuite/xbt/CMakeLists.txt
   )
 
 set(TOOLS_CMAKEFILES_TXT

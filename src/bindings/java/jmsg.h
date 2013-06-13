@@ -56,6 +56,8 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Msg_critical(JNIEnv *, jclass,
 JNIEXPORT void JNICALL
 Java_org_simgrid_msg_Msg_createEnvironment(JNIEnv * env, jclass cls,
                                        jstring jplatformFile);
+JNIEXPORT jobject JNICALL
+Java_org_simgrid_msg_Msg_environmentGetRoutingRoot(JNIEnv * env, jclass cls);
 JNIEXPORT void JNICALL
 Java_org_simgrid_msg_Msg_deployApplication(JNIEnv * env, jclass cls,
                                        jstring jdeploymentFile);

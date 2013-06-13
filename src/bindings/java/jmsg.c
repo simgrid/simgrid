@@ -16,6 +16,8 @@
 
 #include "jmsg_process.h"
 
+#include "jmsg_as.h"
+
 #include "jmsg_host.h"
 #include "jmsg_task.h"
 #include "jxbt_utilities.h"
@@ -170,6 +172,26 @@ Java_org_simgrid_msg_Msg_createEnvironment(JNIEnv * env, jclass cls,
 
   (*env)->ReleaseStringUTFChars(env, jplatformFile, platformFile);
 }
+
+JNIEXPORT jobject JNICALL
+Java_org_simgrid_msg_Msg_environmentGetRoutingRoot(JNIEnv * env, jclass cls)
+{
+  msg_as_t as = MSG_environment_get_routing_root();
+  jobject jas = jas_new_instance(env);
+  if (!jas) {
+    jxbt_throw_jni(env, "java As instantiation failed");
+    return NULL;
+  }
+  jas = jas_ref(env, jas);
+  if (!jas) {
+    jxbt_throw_jni(env, "new global ref allocation failed");
+    return NULL;
+  }
+  jas_bind(jas, as, env);
+
+  return (jobject) jas;
+}
+
 JNIEXPORT void JNICALL
 Java_org_simgrid_msg_Msg_debug(JNIEnv * env, jclass cls, jstring js)
 {

@@ -227,10 +227,10 @@ typedef struct surf_network_model_extension_public {
 typedef struct surf_storage_model_extension_public {
   surf_action_t(*open) (void *storage, const char* mount, const char* path);
   surf_action_t(*close) (void *storage, surf_file_t fd);
-  surf_action_t(*read) (void *storage, void* ptr, double size, size_t nmemb,
+  surf_action_t(*read) (void *storage, void* ptr, size_t size,
                         surf_file_t fd);
   surf_action_t(*write) (void *storage, const void* ptr, size_t size,
-                         size_t nmemb, surf_file_t fd);
+                         surf_file_t fd);
   surf_action_t(*stat) (void *storage, surf_file_t fd);
   surf_action_t(*ls) (void *storage, const char *path);
 } s_surf_model_extension_storage_t;
@@ -263,10 +263,10 @@ typedef struct surf_workstation_model_extension_public {
   surf_action_t(*open) (void *workstation, const char* storage,
                         const char* path);
   surf_action_t(*close) (void *workstation, surf_file_t fd);
-  surf_action_t(*read) (void *workstation, void* ptr, size_t size, size_t nmemb,
+  surf_action_t(*read) (void *workstation, void* ptr, size_t size,
                         surf_file_t fd);
   surf_action_t(*write) (void *workstation, const void* ptr, size_t size,
-                         size_t nmemb, surf_file_t fd);
+                         surf_file_t fd);
   surf_action_t(*stat) (void *workstation, surf_file_t fd);
   int(*unlink) (void *workstation, surf_file_t fd);
   surf_action_t(*ls) (void *workstation, const char* mount, const char *path);
@@ -625,6 +625,17 @@ XBT_PUBLIC_DATA(s_surf_model_description_t) surf_new_model_description[];
  *  \brief List of initialized models
  */
 XBT_PUBLIC_DATA(xbt_dynar_t) model_list;
+
+/*******************************************/
+/*** SURF Platform *************************/
+/*******************************************/
+typedef struct s_as *AS_t;
+
+XBT_PUBLIC_DATA(AS_t) surf_AS_get_routing_root(void); 
+XBT_PUBLIC_DATA(const char *) surf_AS_get_name(AS_t as);
+XBT_PUBLIC_DATA(xbt_dict_t) surf_AS_get_routing_sons(AS_t as);
+XBT_PUBLIC_DATA(const char *) surf_AS_get_model(AS_t as);
+XBT_PUBLIC_DATA(xbt_dynar_t) surf_AS_get_hosts(AS_t as);
 
 /*******************************************/
 /*** SURF Globals **************************/

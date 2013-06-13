@@ -54,6 +54,6 @@ public class Node extends Process {
 		Msg.info("Having write " + write + " on " + filename);
 
 		read = file.read(10000000,1);
-		Msg.info("Having read " + read + " on " + filename);		
+		Msg.info("Having read " + read + " on " + filename);	
 	}
 }
