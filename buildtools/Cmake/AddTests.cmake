@@ -418,6 +418,10 @@ if(NOT enable_memcheck)
     FOREACH (REDUCE_SCATTER_COLL default  ompi ompi_basic_recursivehalving ompi_ring)
         ADD_TEST(smpi-reduce_scatter-coll-${REDUCE_SCATTER_COLL} ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg smpi/reduce_scatter:${REDUCE_SCATTER_COLL} --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/reduce_scatter_coll.tesh)
     ENDFOREACH()
+
+    FOREACH (SCATTER_COLL default  ompi ompi_basic_linear ompi_binomial)
+        ADD_TEST(smpi-scatter-coll-${SCATTER_COLL} ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg smpi/scatter:${SCATTER_COLL} --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/scatter_coll.tesh)
+    ENDFOREACH()
   endif()
 
   # END TESH TESTS
