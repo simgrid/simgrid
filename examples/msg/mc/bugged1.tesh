@@ -10,6 +10,13 @@ $ ${bindir:=.}/bugged1 --cfg=model-check:1 "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%
 > [  0.000000] (1:server@HostA) OK
 > [  0.000000] (4:client@HostD) Sent!
 > [  0.000000] (2:client@HostB) Sent!
+> [  0.000000] (3:client@HostC) Sent!
+> [  0.000000] (2:client@HostB) Sent!
+> [  0.000000] (3:client@HostC) Sent!
+> [  0.000000] (1:server@HostA) OK
+> [  0.000000] (4:client@HostD) Sent!
+> [  0.000000] (2:client@HostB) Sent!
+> [  0.000000] (3:client@HostC) Sent!
 > [  0.000000] (2:client@HostB) Sent!
 > [  0.000000] (1:server@HostA) **************************
 > [  0.000000] (1:server@HostA) *** PROPERTY NOT VALID ***
@@ -25,6 +32,6 @@ $ ${bindir:=.}/bugged1 --cfg=model-check:1 "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%
 > [  0.000000] (1:server@HostA) [(1)HostA (server)] iRecv (dst=(1)HostA (server), buff=(verbose only), size=(verbose only))
 > [  0.000000] (1:server@HostA) [(3)HostC (client)] iSend (src=(3)HostC (client), buff=(verbose only), size=(verbose only))
 > [  0.000000] (1:server@HostA) [(1)HostA (server)] Wait (comm=(verbose only) [(3)HostC (client)-> (1)HostA (server)])
-> [  0.000000] (1:server@HostA) Expanded states = 17
-> [  0.000000] (1:server@HostA) Visited states = 32
-> [  0.000000] (1:server@HostA) Executed transitions = 30
+> [  0.000000] (1:server@HostA) Expanded states = 22
+> [  0.000000] (1:server@HostA) Visited states = 56
+> [  0.000000] (1:server@HostA) Executed transitions = 52
