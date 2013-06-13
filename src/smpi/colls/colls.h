@@ -227,4 +227,20 @@ COLL_APPLY(action, COLL_REDUCE_SCATTER_SIG, ompi_ring)
 
 COLL_REDUCE_SCATTERS(COLL_PROTO, COLL_NOsep)
 
+
+/*************
+ * REDUCE_SCATTER *
+ *************/
+#define COLL_SCATTER_SIG scatter, int, \
+                (void *sendbuf, int sendcount, MPI_Datatype sendtype,\
+                void *recvbuf, int recvcount, MPI_Datatype recvtype,\
+                int root, MPI_Comm comm)
+
+#define COLL_SCATTERS(action, COLL_sep) \
+COLL_APPLY(action, COLL_SCATTER_SIG, ompi) COLL_sep \
+COLL_APPLY(action, COLL_SCATTER_SIG, ompi_basic_linear) COLL_sep \
+COLL_APPLY(action, COLL_SCATTER_SIG, ompi_binomial) 
+
+COLL_SCATTERS(COLL_PROTO, COLL_NOsep)
+
 #endif

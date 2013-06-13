@@ -568,12 +568,12 @@ int smpi_coll_tuned_gather_ompi(void *sbuf, int scount,
                                                       rbuf, rcount, rdtype, 
                                                       root, comm);
 }
-/*
+
 int smpi_coll_tuned_scatter_ompi(void *sbuf, int scount, 
                                             MPI_Datatype sdtype,
                                             void* rbuf, int rcount, 
                                             MPI_Datatype rdtype, 
-                                            int root, MPI_Comm  comm,
+                                            int root, MPI_Comm  comm
                                             )
 {
     const size_t small_block_size = 300;
@@ -581,28 +581,27 @@ int smpi_coll_tuned_scatter_ompi(void *sbuf, int scount,
     int communicator_size, rank;
     size_t dsize, block_size;
 
-    OPAL_OUTPUT((smpi_coll_tuned_stream, 
-                 "smpi_coll_tuned_scatter_ompi"));
+    XBT_DEBUG("smpi_coll_tuned_scatter_ompi");
 
     communicator_size = smpi_comm_size(comm);
-    rank = ompi_comm_rank(comm);
+    rank = smpi_comm_rank(comm);
     // Determine block size 
     if (root == rank) {
-        ompi_datatype_type_size(sdtype, &dsize);
+        dsize=smpi_datatype_size(sdtype);
         block_size = dsize * scount;
     } else {
-        ompi_datatype_type_size(rdtype, &dsize);
+        dsize=smpi_datatype_size(rdtype);
         block_size = dsize * rcount;
     } 
 
     if ((communicator_size > small_comm_size) &&
         (block_size < small_block_size)) {
-        return smpi_coll_tuned_scatter_intra_binomial (sbuf, scount, sdtype, 
+        return smpi_coll_tuned_scatter_ompi_binomial (sbuf, scount, sdtype, 
                                                        rbuf, rcount, rdtype, 
-                                                       root, comm, module);
+                                                       root, comm);
     }
-    return smpi_coll_tuned_scatter_intra_basic_linear (sbuf, scount, sdtype, 
+    return smpi_coll_tuned_scatter_ompi_basic_linear (sbuf, scount, sdtype, 
                                                        rbuf, rcount, rdtype, 
-                                                       root, comm, module);
-}*/
+                                                       root, comm);
+}
 
