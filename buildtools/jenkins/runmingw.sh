@@ -16,7 +16,7 @@ fi
 
 if [ "$build_mode" = "ModelChecker" ]
 then
-cmake -G "MSYS Makefiles" -Denable_model-checking=ON ..
+cmake -G "MSYS Makefiles" -Denable_model-checking=ON -Denable_compile_optimizations=OFF ..
 fi
 
 make

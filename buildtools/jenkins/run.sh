@@ -22,7 +22,7 @@ fi
 
 if [ "$build_mode" = "ModelChecker" ]
 then
-cmake -Denable_coverage=ON -Denable_java=ON -Denable_model-checking=ON -Denable_lua=ON -Denable_compile_optimizations=ON -Denable_compile_warnings=ON .
+cmake -Denable_coverage=ON -Denable_java=ON -Denable_model-checking=ON -Denable_lua=ON -Denable_compile_optimizations=OFF -Denable_compile_warnings=ON .
 fi
 
 if [ "$build_mode" = "DynamicAnalysis" ]
@@ -47,7 +47,7 @@ fi
 
 if [ "$build_mode" = "ModelChecker" ]
 then
-cmake -Denable_coverage=ON -Denable_java=ON -Denable_model-checking=ON -Denable_lua=ON -Denable_compile_optimizations=ON -Denable_compile_warnings=ON .
+cmake -Denable_coverage=ON -Denable_java=ON -Denable_model-checking=ON -Denable_lua=ON -Denable_compile_optimizations=OFF -Denable_compile_warnings=ON .
 fi
 
 if [ "$build_mode" = "DynamicAnalysis" ]
