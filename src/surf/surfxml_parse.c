@@ -435,9 +435,11 @@ void STag_surfxml_router(void){
   sg_platf_new_router(&router);
 }
 
-void STag_surfxml_cluster(void){
+void ETag_surfxml_cluster(void){
   s_sg_platf_cluster_cbarg_t cluster;
   memset(&cluster,0,sizeof(cluster));
+  cluster.properties = current_property_set;
+
   cluster.id = A_surfxml_cluster_id;
   cluster.prefix = A_surfxml_cluster_prefix;
   cluster.suffix = A_surfxml_cluster_suffix;
@@ -489,6 +491,12 @@ void STag_surfxml_cluster(void){
   cluster.availability_trace = A_surfxml_cluster_availability___file;
   cluster.state_trace = A_surfxml_cluster_state___file;
   sg_platf_new_cluster(&cluster);
+  
+  current_property_set = NULL;
+}
+
+void STag_surfxml_cluster(void){ 
+  xbt_assert(current_property_set == NULL, "Someone forgot to reset the property set to NULL in its closing tag (or XML malformed)");
 }
 
 void STag_surfxml_cabinet(void){
@@ -888,7 +896,6 @@ void ETag_surfxml_trace___connect(void){}
 void STag_surfxml_trace(void){}
 void ETag_surfxml_router(void){}
 void ETag_surfxml_host___link(void){}
-void ETag_surfxml_cluster(void){}
 void ETag_surfxml_cabinet(void){}
 void ETag_surfxml_peer(void){}
 void STag_surfxml_backbone(void){}

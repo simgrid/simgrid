@@ -206,6 +206,7 @@ Java_org_simgrid_msg_Host_getProperty(JNIEnv *env, jobject jhost, jobject jname)
 
   return jproperty;
 }
+
 JNIEXPORT void JNICALL
 Java_org_simgrid_msg_Host_setProperty(JNIEnv *env, jobject jhost, jobject jname, jobject jvalue) {
   msg_host_t host = jhost_get_native(env, jhost);
