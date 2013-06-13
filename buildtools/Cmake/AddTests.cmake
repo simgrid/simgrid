@@ -422,6 +422,11 @@ if(NOT enable_memcheck)
     FOREACH (SCATTER_COLL default  ompi ompi_basic_linear ompi_binomial)
         ADD_TEST(smpi-scatter-coll-${SCATTER_COLL} ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg smpi/scatter:${SCATTER_COLL} --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/scatter_coll.tesh)
     ENDFOREACH()
+
+    FOREACH (BARRIER_COLL default  ompi ompi_basic_linear ompi_tree ompi_bruck ompi_recursivedoubling ompi_doublering)
+        ADD_TEST(smpi-barrier-coll-${BARRIER_COLL} ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg smpi/barrier:${BARRIER_COLL} --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/barrier_coll.tesh)
+    ENDFOREACH()
+
   endif()
 
   # END TESH TESTS

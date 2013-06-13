@@ -20,7 +20,8 @@ if(enable_smpi)
   add_executable(allreduce allreduce.c)
   add_executable(allreduce_coll allreduce_coll.c)  
   add_executable(bcast bcast.c)
-  add_executable(bcast_coll bcast_coll.c)  
+  add_executable(bcast_coll bcast_coll.c) 
+  add_executable(barrier_coll barrier.c )
   add_executable(compute compute.c)
   add_executable(compute2 compute2.c)
   add_executable(compute3 compute3.c)
@@ -82,6 +83,8 @@ set(tesh_files
   ${CMAKE_CURRENT_SOURCE_DIR}/allreduce_coll.tesh
   ${CMAKE_CURRENT_SOURCE_DIR}/alltoall_coll.tesh
   ${CMAKE_CURRENT_SOURCE_DIR}/alltoallv_coll.tesh
+  ${CMAKE_CURRENT_SOURCE_DIR}/scatter_coll.tesh
+  ${CMAKE_CURRENT_SOURCE_DIR}/barrier_coll.tesh
   ${CMAKE_CURRENT_SOURCE_DIR}/bcast.tesh
   ${CMAKE_CURRENT_SOURCE_DIR}/bcast_coll.tesh  
   ${CMAKE_CURRENT_SOURCE_DIR}/compute.tesh
