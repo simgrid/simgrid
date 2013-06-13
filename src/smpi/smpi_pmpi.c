@@ -1579,7 +1579,7 @@ int PMPI_Barrier(MPI_Comm comm)
   if (comm == MPI_COMM_NULL) {
     retval = MPI_ERR_COMM;
   } else {
-    smpi_mpi_barrier(comm);
+    mpi_coll_barrier_fun(comm);
     retval = MPI_SUCCESS;
   }
 #ifdef HAVE_TRACING
@@ -1735,7 +1735,7 @@ int PMPI_Scatter(void *sendbuf, int sendcount, MPI_Datatype sendtype,
              || recvtype == MPI_DATATYPE_NULL) {
     retval = MPI_ERR_TYPE;
   } else {
-    smpi_mpi_scatter(sendbuf, sendcount, sendtype, recvbuf, recvcount,
+    mpi_coll_scatter_fun(sendbuf, sendcount, sendtype, recvbuf, recvcount,
                      recvtype, root, comm);
     retval = MPI_SUCCESS;
   }
@@ -1869,12 +1869,10 @@ int PMPI_Scan(void *sendbuf, void *recvbuf, int count,
 int PMPI_Reduce_scatter(void *sendbuf, void *recvbuf, int *recvcounts,
                        MPI_Datatype datatype, MPI_Op op, MPI_Comm comm)
 {
-  int retval, i, size, count;
-  int *displs;
-  int rank = comm != MPI_COMM_NULL ? smpi_process_index() : -1;
-
+  int retval;
   smpi_bench_end();
 #ifdef HAVE_TRACING
+  int rank = comm != MPI_COMM_NULL ? smpi_process_index() : -1;
   TRACE_smpi_computing_out(rank);
   TRACE_smpi_collective_in(rank, -1, __FUNCTION__);
 #endif
@@ -1887,19 +1885,9 @@ int PMPI_Reduce_scatter(void *sendbuf, void *recvbuf, int *recvcounts,
   } else if (recvcounts == NULL) {
     retval = MPI_ERR_ARG;
   } else {
-    /* arbitrarily choose root as rank 0 */
-    /* TODO: faster direct implementation ? */
-    size = smpi_comm_size(comm);
-    count = 0;
-    displs = xbt_new(int, size);
-    for (i = 0; i < size; i++) {
-      count += recvcounts[i];
-      displs[i] = 0;
-    }
-    mpi_coll_reduce_fun(sendbuf, recvbuf, count, datatype, op, 0, comm);
-    smpi_mpi_scatterv(recvbuf, recvcounts, displs, datatype, recvbuf,
-                      recvcounts[rank], datatype, 0, comm);
-    xbt_free(displs);
+
+    mpi_coll_reduce_scatter_fun(sendbuf, recvbuf, recvcounts,
+                       datatype,  op, comm);
     retval = MPI_SUCCESS;
   }
 #ifdef HAVE_TRACING

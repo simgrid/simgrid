@@ -415,6 +415,18 @@ if(NOT enable_memcheck)
         ADD_TEST(smpi-reduce-coll-${REDUCE_COLL} ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg smpi/reduce:${REDUCE_COLL} --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/reduce_coll.tesh)
     ENDFOREACH()
 
+    FOREACH (REDUCE_SCATTER_COLL default  ompi ompi_basic_recursivehalving ompi_ring)
+        ADD_TEST(smpi-reduce_scatter-coll-${REDUCE_SCATTER_COLL} ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg smpi/reduce_scatter:${REDUCE_SCATTER_COLL} --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/reduce_scatter_coll.tesh)
+    ENDFOREACH()
+
+    FOREACH (SCATTER_COLL default  ompi ompi_basic_linear ompi_binomial)
+        ADD_TEST(smpi-scatter-coll-${SCATTER_COLL} ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg smpi/scatter:${SCATTER_COLL} --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/scatter_coll.tesh)
+    ENDFOREACH()
+
+    FOREACH (BARRIER_COLL default  ompi ompi_basic_linear ompi_tree ompi_bruck ompi_recursivedoubling ompi_doublering)
+        ADD_TEST(smpi-barrier-coll-${BARRIER_COLL} ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg smpi/barrier:${BARRIER_COLL} --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/barrier_coll.tesh)
+    ENDFOREACH()
+
   endif()
 
   # END TESH TESTS
@@ -463,12 +475,9 @@ if(NOT enable_memcheck)
 
   # examples/msg/mc
   if(HAVE_MC)
-    ADD_TEST(mc-bugged1-thread                  ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg contexts/factory:thread --setenv bindir=${CMAKE_BINARY_DIR}/examples/msg/mc --cd ${CMAKE_HOME_DIRECTORY}/examples/msg/mc bugged1.tesh)
-    ADD_TEST(mc-centralized-thread              ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg contexts/factory:thread --setenv bindir=${CMAKE_BINARY_DIR}/examples/msg/mc --cd ${CMAKE_HOME_DIRECTORY}/examples/msg/mc centralized.tesh)
     if(CONTEXT_UCONTEXT)
       ADD_TEST(mc-bugged1-ucontext              ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg contexts/factory:ucontext --setenv bindir=${CMAKE_BINARY_DIR}/examples/msg/mc --cd ${CMAKE_HOME_DIRECTORY}/examples/msg/mc bugged1.tesh)
       ADD_TEST(mc-bugged2-ucontext              ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg contexts/factory:ucontext --setenv bindir=${CMAKE_BINARY_DIR}/examples/msg/mc --cd ${CMAKE_HOME_DIRECTORY}/examples/msg/mc bugged2.tesh)
-      ADD_TEST(mc-centralized-ucontext          ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg contexts/factory:ucontext --setenv bindir=${CMAKE_BINARY_DIR}/examples/msg/mc --cd ${CMAKE_HOME_DIRECTORY}/examples/msg/mc centralized.tesh)
       if(PROCESSOR_x86_64) # liveness model-checking works only on 64bits (for now ...)
         ADD_TEST(mc-bugged1-liveness-ucontext   ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg contexts/factory:ucontext --setenv bindir=${CMAKE_BINARY_DIR}/examples/msg/mc --cd ${CMAKE_HOME_DIRECTORY}/examples/msg/mc bugged1_liveness.tesh)
       endif()
@@ -476,25 +485,6 @@ if(NOT enable_memcheck)
     if(HAVE_RAWCTX)
       ADD_TEST(mc-bugged1-raw                   ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg contexts/factory:raw --setenv bindir=${CMAKE_BINARY_DIR}/examples/msg/mc --cd ${CMAKE_HOME_DIRECTORY}/examples/msg/mc bugged1.tesh)
       ADD_TEST(mc-bugged2-raw                   ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg contexts/factory:raw --setenv bindir=${CMAKE_BINARY_DIR}/examples/msg/mc --cd ${CMAKE_HOME_DIRECTORY}/examples/msg/mc bugged2.tesh)
-      ADD_TEST(mc-centralized-raw               ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg contexts/factory:raw --setenv bindir=${CMAKE_BINARY_DIR}/examples/msg/mc --cd ${CMAKE_HOME_DIRECTORY}/examples/msg/mc centralized.tesh)
-    endif()
-  endif()
-
-  ###
-  ### Declare that we know that some tests are broken
-  ###
-
-  # Those tests are broken : set to "fail" for release v3.6
-  if(release)
-    if(HAVE_MC)
-      set_tests_properties(mc-bugged1-thread PROPERTIES WILL_FAIL true)
-      set_tests_properties(mc-centralized-thread PROPERTIES WILL_FAIL true)
-      if(CONTEXT_UCONTEXT)
-        set_tests_properties(mc-centralized-ucontext PROPERTIES WILL_FAIL true)
-      endif()
-      if(HAVE_RAWCTX)
-        set_tests_properties(mc-centralized-raw PROPERTIES WILL_FAIL true)
-      endif()
     endif()
   endif()
 

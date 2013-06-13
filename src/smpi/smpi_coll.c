@@ -47,6 +47,29 @@ COLL_ALLREDUCES(COLL_DESCRIPTION, COLL_COMMA),
   {NULL, NULL, NULL}      /* this array must be NULL terminated */
 };
 
+s_mpi_coll_description_t mpi_coll_reduce_scatter_description[] = {
+  {"default",
+   "reduce_scatter default collective",
+   smpi_mpi_reduce_scatter},
+COLL_REDUCE_SCATTERS(COLL_DESCRIPTION, COLL_COMMA),
+  {NULL, NULL, NULL}      /* this array must be NULL terminated */
+};
+
+s_mpi_coll_description_t mpi_coll_scatter_description[] = {
+  {"default",
+   "scatter default collective",
+   smpi_mpi_scatter},
+COLL_SCATTERS(COLL_DESCRIPTION, COLL_COMMA),
+  {NULL, NULL, NULL}      /* this array must be NULL terminated */
+};
+
+s_mpi_coll_description_t mpi_coll_barrier_description[] = {
+  {"default",
+   "barrier default collective",
+   smpi_mpi_barrier},
+COLL_BARRIERS(COLL_DESCRIPTION, COLL_COMMA),
+  {NULL, NULL, NULL}      /* this array must be NULL terminated */
+};
 s_mpi_coll_description_t mpi_coll_alltoall_description[] = {
   {"default",
    "Ompi alltoall default collective",
@@ -143,7 +166,9 @@ int (*mpi_coll_alltoall_fun)(void *, int, MPI_Datatype, void*, int, MPI_Datatype
 int (*mpi_coll_alltoallv_fun)(void *, int*, int*, MPI_Datatype, void*, int*, int*, MPI_Datatype, MPI_Comm);
 int (*mpi_coll_bcast_fun)(void *buf, int count, MPI_Datatype datatype, int root, MPI_Comm com);
 int (*mpi_coll_reduce_fun)(void *buf, void *rbuf, int count, MPI_Datatype datatype, MPI_Op op, int root, MPI_Comm comm);
-
+int (*mpi_coll_reduce_scatter_fun)(void *sbuf, void *rbuf, int *rcounts,MPI_Datatype dtype,MPI_Op  op,MPI_Comm  comm);
+int (*mpi_coll_scatter_fun)(void *sendbuf, int sendcount, MPI_Datatype sendtype,void *recvbuf, int recvcount, MPI_Datatype recvtype,int root, MPI_Comm comm);
+int (*mpi_coll_barrier_fun)(MPI_Comm comm);
 struct s_proc_tree {
   int PROCTREE_A;
   int numChildren;

@@ -199,6 +199,9 @@ smx_action_t SIMIX_fifo_get_comm(xbt_fifo_t fifo, e_smx_comm_type_t type,
       xbt_fifo_remove_item(fifo, item);
       xbt_fifo_free_item(item);
       action->comm.refcount++;
+#ifdef HAVE_MC
+      action->comm.rdv_cpy = action->comm.rdv;
+#endif
       action->comm.rdv = NULL;
       return action;
     }
