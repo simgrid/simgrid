@@ -367,7 +367,6 @@ smpi_coll_tuned_reduce_scatter_ompi_ring(void *sbuf, void *rbuf, int *rcounts,
     char *inbuf_free[2] = {NULL, NULL}, *inbuf[2] = {NULL, NULL};
     ptrdiff_t true_lb, true_extent, lb, extent, max_real_segsize;
     MPI_Request reqs[2] = {NULL, NULL};
-    size_t typelng;
 
     size = smpi_comm_size(comm);
     rank = smpi_comm_rank(comm);
@@ -406,7 +405,6 @@ smpi_coll_tuned_reduce_scatter_ompi_ring(void *sbuf, void *rbuf, int *rcounts,
     */
     smpi_datatype_extent(dtype, &lb, &extent);
     smpi_datatype_extent(dtype, &true_lb, &true_extent);
-    typelng = smpi_datatype_size(dtype);
 
     max_real_segsize = true_extent + (ptrdiff_t)(max_block_count - 1) * extent;
 
