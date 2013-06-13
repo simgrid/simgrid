@@ -1870,9 +1870,9 @@ int PMPI_Reduce_scatter(void *sendbuf, void *recvbuf, int *recvcounts,
                        MPI_Datatype datatype, MPI_Op op, MPI_Comm comm)
 {
   int retval;
-  int rank = comm != MPI_COMM_NULL ? smpi_process_index() : -1;
   smpi_bench_end();
 #ifdef HAVE_TRACING
+  int rank = comm != MPI_COMM_NULL ? smpi_process_index() : -1;
   TRACE_smpi_computing_out(rank);
   TRACE_smpi_collective_in(rank, -1, __FUNCTION__);
 #endif
