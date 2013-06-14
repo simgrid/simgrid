@@ -74,9 +74,9 @@ static void create_environment(xbt_os_timer_t parse_time, const char *platformFi
 {
   xbt_ex_t e;
   TRY {
-    xbt_os_timer_start(parse_time);
+    xbt_os_cputimer_start(parse_time);
     SD_create_environment(platformFile);
-    xbt_os_timer_stop(parse_time);
+    xbt_os_cputimer_stop(parse_time);
   }
   CATCH(e) {
     xbt_die("Error while loading %s: %s", platformFile, e.msg);

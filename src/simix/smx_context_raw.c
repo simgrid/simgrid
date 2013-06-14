@@ -447,9 +447,9 @@ static void smx_ctx_raw_runall_serial(xbt_dynar_t processes)
       time_thread_sr[t] = 0;
     }
 
-    xbt_os_timer_start(timer);
+    xbt_os_cputimer_start(timer);
     smx_ctx_raw_resume(process);
-    xbt_os_timer_stop(timer);
+    xbt_os_cputimer_stop(timer);
     elapsed = xbt_os_timer_elapsed(timer);
     time_thread_ssr[t] += elapsed;
     time_thread_sr[((smx_ctx_raw_t)process->context)->thread] += elapsed;
@@ -524,8 +524,10 @@ static void smx_ctx_raw_suspend_parallel(smx_context_t context)
   else {
     /* all processes were run, go to the barrier */
     XBT_DEBUG("No more processes to run");
+
     unsigned long worker_id =
         (unsigned long) xbt_os_thread_get_specific(raw_worker_id_key);
+
     next_context = (smx_context_t)raw_workers_context[worker_id];
     XBT_DEBUG("Restoring worker stack %lu (working threads = %lu)",
         worker_id, raw_threads_working);

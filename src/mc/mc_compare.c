@@ -173,16 +173,16 @@ int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2){
   xbt_os_timer_t global_timer = xbt_os_timer_new();
   xbt_os_timer_t timer = xbt_os_timer_new();
 
-  xbt_os_timer_start(global_timer);
+  xbt_os_walltimer_start(global_timer);
 
   #ifdef MC_DEBUG
-    xbt_os_timer_start(timer);
+    xbt_os_walltimer_start(timer);
   #endif
 
   /* Compare number of processes */
   if(s1->nb_processes != s2->nb_processes){
     #ifdef MC_DEBUG
-      xbt_os_timer_stop(timer);
+      xbt_os_walltimer_stop(timer);
       mc_comp_times->nb_processes_comparison_time =  xbt_os_timer_elapsed(timer);
       XBT_DEBUG("Different number of processes : %d - %d", s1->nb_processes, s2->nb_processes);
       errors++;
@@ -192,7 +192,7 @@ int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2){
       #endif
 
       xbt_os_timer_free(timer);
-      xbt_os_timer_stop(global_timer);
+      xbt_os_walltimer_stop(global_timer);
       mc_snapshot_comparison_time = xbt_os_timer_elapsed(global_timer);
       xbt_os_timer_free(global_timer);
 
@@ -204,13 +204,13 @@ int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2){
   }
 
   #ifdef MC_DEBUG
-    xbt_os_timer_start(timer);
+    xbt_os_walltimer_start(timer);
   #endif
 
   /* Compare number of bytes used in each heap */
   if(s1->heap_bytes_used != s2->heap_bytes_used){
     #ifdef MC_DEBUG
-      xbt_os_timer_stop(timer);
+      xbt_os_walltimer_stop(timer);
       mc_comp_times->bytes_used_comparison_time = xbt_os_timer_elapsed(timer);
       XBT_DEBUG("Different number of bytes used in each heap : %zu - %zu", s1->heap_bytes_used, s2->heap_bytes_used);
       errors++;
@@ -220,7 +220,7 @@ int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2){
       #endif
 
       xbt_os_timer_free(timer);
-      xbt_os_timer_stop(global_timer);
+      xbt_os_walltimer_stop(global_timer);
       mc_snapshot_comparison_time = xbt_os_timer_elapsed(global_timer);
       xbt_os_timer_free(global_timer);
 
@@ -231,12 +231,12 @@ int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2){
     #endif
   }else{
     #ifdef MC_DEBUG
-      xbt_os_timer_stop(timer);
+      xbt_os_walltimer_stop(timer);
     #endif
   }
   
   #ifdef MC_DEBUG
-    xbt_os_timer_start(timer);
+    xbt_os_walltimer_start(timer);
   #endif
   
   /* Compare size of stacks */
@@ -249,7 +249,7 @@ int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2){
     if(size_used1 != size_used2){
     #ifdef MC_DEBUG
       if(is_diff == 0){
-        xbt_os_timer_stop(timer);
+        xbt_os_walltimer_stop(timer);
         mc_comp_times->stacks_sizes_comparison_time = xbt_os_timer_elapsed(timer);
       }
       XBT_DEBUG("Different size used in stacks : %zu - %zu", size_used1, size_used2);
@@ -261,7 +261,7 @@ int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2){
       #endif
 
       xbt_os_timer_free(timer);
-      xbt_os_timer_stop(global_timer);
+      xbt_os_walltimer_stop(global_timer);
       mc_snapshot_comparison_time = xbt_os_timer_elapsed(global_timer);
       xbt_os_timer_free(global_timer);
 
@@ -276,15 +276,15 @@ int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2){
 
   #ifdef MC_DEBUG
     if(is_diff == 0)
-      xbt_os_timer_stop(timer);
-    xbt_os_timer_start(timer);
+      xbt_os_walltimer_stop(timer);
+    xbt_os_walltimer_start(timer);
   #endif
 
   /* Compare hash of global variables */
   if(s1->hash_global != NULL && s2->hash_global != NULL){
     if(strcmp(s1->hash_global, s2->hash_global) != 0){
       #ifdef MC_DEBUG
-        xbt_os_timer_stop(timer);
+        xbt_os_walltimer_stop(timer);
         mc_comp_times->hash_global_variables_comparison_time = xbt_os_timer_elapsed(timer);
         XBT_DEBUG("Different hash of global variables : %s - %s", s1->hash_global, s2->hash_global); 
         errors++; 
@@ -294,7 +294,7 @@ int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2){
         #endif
 
         xbt_os_timer_free(timer);
-        xbt_os_timer_stop(global_timer);
+        xbt_os_walltimer_stop(global_timer);
         mc_snapshot_comparison_time = xbt_os_timer_elapsed(global_timer);
         xbt_os_timer_free(global_timer);
     
@@ -307,14 +307,14 @@ int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2){
   }
 
   #ifdef MC_DEBUG
-    xbt_os_timer_start(timer);
+    xbt_os_walltimer_start(timer);
   #endif
 
   /* Compare hash of local variables */
   if(s1->hash_local != NULL && s2->hash_local != NULL){
     if(strcmp(s1->hash_local, s2->hash_local) != 0){
       #ifdef MC_DEBUG
-        xbt_os_timer_stop(timer);
+        xbt_os_walltimer_stop(timer);
         mc_comp_times->hash_local_variables_comparison_time = xbt_os_timer_elapsed(timer);
         XBT_DEBUG("Different hash of local variables : %s - %s", s1->hash_local, s2->hash_local); 
         errors++; 
@@ -324,7 +324,7 @@ int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2){
         #endif
 
         xbt_os_timer_free(timer);
-        xbt_os_timer_stop(global_timer);
+        xbt_os_walltimer_stop(global_timer);
         mc_snapshot_comparison_time = xbt_os_timer_elapsed(global_timer);
         xbt_os_timer_free(global_timer);
         
@@ -337,7 +337,7 @@ int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2){
   }
 
   #ifdef MC_DEBUG
-    xbt_os_timer_start(timer);
+    xbt_os_walltimer_start(timer);
   #endif
 
   /* Init heap information used in heap comparison algorithm */
@@ -347,7 +347,7 @@ int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2){
   is_diff = compare_global_variables(2, s1->regions[2]->data, s2->regions[2]->data);
   if(is_diff != 0){
     #ifdef MC_DEBUG
-      xbt_os_timer_stop(timer);
+      xbt_os_walltimer_stop(timer);
       mc_comp_times->binary_global_variables_comparison_time = xbt_os_timer_elapsed(timer);
       XBT_DEBUG("Different global variables in binary"); 
       errors++; 
@@ -358,7 +358,7 @@ int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2){
 
       reset_heap_information();
       xbt_os_timer_free(timer);
-      xbt_os_timer_stop(global_timer);
+      xbt_os_walltimer_stop(global_timer);
       mc_snapshot_comparison_time = xbt_os_timer_elapsed(global_timer);
       xbt_os_timer_free(global_timer);
     
@@ -371,15 +371,15 @@ int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2){
 
   #ifdef MC_DEBUG
     if(is_diff == 0)
-      xbt_os_timer_stop(timer);
-    xbt_os_timer_start(timer);
+      xbt_os_walltimer_stop(timer);
+    xbt_os_walltimer_start(timer);
   #endif
 
   /* Compare libsimgrid global variables */
   is_diff = compare_global_variables(1, s1->regions[1]->data, s2->regions[1]->data);
   if(is_diff != 0){
     #ifdef MC_DEBUG
-      xbt_os_timer_stop(timer);
+      xbt_os_walltimer_stop(timer);
       mc_comp_times->libsimgrid_global_variables_comparison_time = xbt_os_timer_elapsed(timer); 
       XBT_DEBUG("Different global variables in libsimgrid"); 
       errors++; 
@@ -390,7 +390,7 @@ int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2){
         
       reset_heap_information();
       xbt_os_timer_free(timer);
-      xbt_os_timer_stop(global_timer);
+      xbt_os_walltimer_stop(global_timer);
       mc_snapshot_comparison_time = xbt_os_timer_elapsed(global_timer);
       xbt_os_timer_free(global_timer);
     
@@ -403,8 +403,8 @@ int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2){
 
   #ifdef MC_DEBUG
     if(is_diff == 0)
-      xbt_os_timer_stop(timer);
-    xbt_os_timer_start(timer);
+      xbt_os_walltimer_stop(timer);
+    xbt_os_walltimer_start(timer);
   #endif
 
   /* Stacks comparison */
@@ -417,7 +417,7 @@ int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2){
     if(diff_local > 0){
       #ifdef MC_DEBUG
         if(is_diff == 0){
-          xbt_os_timer_stop(timer);
+          xbt_os_walltimer_stop(timer);
           mc_comp_times->stacks_comparison_time = xbt_os_timer_elapsed(timer); 
         }
         XBT_DEBUG("Different local variables between stacks %d", cursor + 1);
@@ -431,7 +431,7 @@ int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2){
           
         reset_heap_information();
         xbt_os_timer_free(timer);
-        xbt_os_timer_stop(global_timer);
+        xbt_os_walltimer_stop(global_timer);
         mc_snapshot_comparison_time = xbt_os_timer_elapsed(global_timer);
         xbt_os_timer_free(global_timer);
         
@@ -445,14 +445,14 @@ int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2){
   }
     
   #ifdef MC_DEBUG
-    xbt_os_timer_start(timer);
+    xbt_os_walltimer_start(timer);
   #endif
 
   /* Compare heap */
   if(mmalloc_compare_heap((xbt_mheap_t)s1->regions[0]->data, (xbt_mheap_t)s2->regions[0]->data)){
 
     #ifdef MC_DEBUG
-      xbt_os_timer_stop(timer);
+      xbt_os_walltimer_stop(timer);
       mc_comp_times->heap_comparison_time = xbt_os_timer_elapsed(timer); 
       XBT_DEBUG("Different heap (mmalloc_compare)");
       errors++;
@@ -465,7 +465,7 @@ int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2){
       #endif
        
       reset_heap_information();
-      xbt_os_timer_stop(global_timer);
+      xbt_os_walltimer_stop(global_timer);
       mc_snapshot_comparison_time = xbt_os_timer_elapsed(global_timer);
       xbt_os_timer_free(global_timer);
 
@@ -476,7 +476,7 @@ int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2){
     #endif
   }else{
     #ifdef MC_DEBUG
-      xbt_os_timer_stop(timer);
+      xbt_os_walltimer_stop(timer);
     #endif
   }
 
@@ -485,7 +485,7 @@ int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2){
   xbt_os_timer_free(timer);
 
   #ifdef MC_VERBOSE
-    xbt_os_timer_stop(global_timer);
+    xbt_os_walltimer_stop(global_timer);
     mc_snapshot_comparison_time = xbt_os_timer_elapsed(global_timer);
   #endif
 

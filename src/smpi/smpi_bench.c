@@ -149,7 +149,7 @@ static void smpi_execute(double duration)
 
 void smpi_bench_begin(void)
 {
-  xbt_os_timer_start(smpi_process_timer());
+  xbt_os_threadtimer_start(smpi_process_timer());
   smpi_current_rank = smpi_process_index();
 }
 
@@ -157,7 +157,7 @@ void smpi_bench_end(void)
 {
   xbt_os_timer_t timer = smpi_process_timer();
 
-  xbt_os_timer_stop(timer);
+  xbt_os_threadtimer_stop(timer);
   smpi_execute(xbt_os_timer_elapsed(timer));
 }
 
@@ -320,7 +320,7 @@ void smpi_sample_3(int global, const char *file, int line)
   }
 
   // ok, benchmarking this loop is over
-  xbt_os_timer_stop(smpi_process_timer());
+  xbt_os_threadtimer_stop(smpi_process_timer());
 
   // update the stats
   double sample, n;

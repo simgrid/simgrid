@@ -271,7 +271,7 @@ static void task_cleanup(void *arg){
 int main(int argc, char *argv[])
 {
 #ifdef BENCH_THIS_CODE
-  xbt_os_timer_t timer = xbt_os_timer_new();
+  xbt_os_cputimer_t timer = xbt_os_timer_new();
 #endif
 
   MSG_init(&argc, argv);
@@ -286,11 +286,11 @@ int main(int argc, char *argv[])
   MSG_launch_application(application_file);
 
 #ifdef BENCH_THIS_CODE
-  xbt_os_timer_start(timer);
+  xbt_os_cputimer_start(timer);
 #endif
   msg_error_t res = MSG_main();
 #ifdef BENCH_THIS_CODE
-  xbt_os_timer_stop(timer);
+  xbt_os_cputimer_stop(timer);
 #endif
   XBT_CRITICAL("Simulated time: %g", MSG_get_clock());
 

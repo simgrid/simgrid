@@ -109,51 +109,6 @@ void xbt_os_timer_free(xbt_os_timer_t timer)
   free(timer);
 }
 
-void xbt_os_timer_resume(xbt_os_timer_t timer)
-{
-#ifdef HAVE_POSIX_GETTIME
-  timer->elapse.tv_sec += timer->stop.tv_sec - timer->start.tv_sec;
-
-   timer->elapse.tv_nsec += timer->stop.tv_nsec - timer->start.tv_nsec;
-  clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &(timer->start));
-#elif defined(HAVE_GETTIMEOFDAY)
-  timer->elapse.tv_sec += timer->stop.tv_sec - timer->start.tv_sec;
-
-   timer->elapse.tv_usec += timer->stop.tv_usec - timer->start.tv_usec;
-  gettimeofday(&(timer->start), NULL);
-#else
-  timer->elapse = timer->stop - timer->start;
-  timer->start = (unsigned long int) (time(NULL));
-#endif
-}
-
-void xbt_os_timer_start(xbt_os_timer_t timer)
-{
-#ifdef HAVE_POSIX_GETTIME
-  timer->elapse.tv_sec = 0;
-  timer->elapse.tv_nsec = 0;
-  clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &(timer->start));
-#elif defined(HAVE_GETTIMEOFDAY)
-  timer->elapse.tv_sec = 0;
-  timer->elapse.tv_usec = 0;
-  gettimeofday(&(timer->start), NULL);
-#else
-  timer->elapse = 0;
-  timer->start = (unsigned long int) (time(NULL));
-#endif
-}
-
-void xbt_os_timer_stop(xbt_os_timer_t timer)
-{
-#ifdef HAVE_POSIX_GETTIME
-  clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &(timer->stop));
-#elif defined(HAVE_GETTIMEOFDAY)
-  gettimeofday(&(timer->stop), NULL);
-#else
-  timer->stop = (unsigned long int) (time(NULL));
-#endif
-}
-
 double xbt_os_timer_elapsed(xbt_os_timer_t timer)
 {
 #ifdef HAVE_POSIX_GETTIME
@@ -161,7 +116,7 @@ double xbt_os_timer_elapsed(xbt_os_timer_t timer)
                                           ((double) timer->elapse.tv_sec ) +
       ((((double) timer->stop.tv_nsec) -
         ((double) timer->start.tv_nsec) + ((double) timer->elapse.tv_nsec )) / 1e9);
-#elif defined(HAVE_GETTIMEOFDAY)
+#elif defined(HAVE_GETTIMEOFDAY) || defined(_XBT_WIN32)
   return ((double) timer->stop.tv_sec) - ((double) timer->start.tv_sec)
     + ((double) timer->elapse.tv_sec ) +
       ((((double) timer->stop.tv_usec) -
@@ -169,5 +124,279 @@ double xbt_os_timer_elapsed(xbt_os_timer_t timer)
 #else
   return (double) timer->stop - (double) timer->start + (double)
     timer->elapse;
+#endif
+}
+
+void xbt_os_walltimer_start(xbt_os_timer_t timer)
+{
+#ifdef HAVE_POSIX_GETTIME
+  timer->elapse.tv_sec = 0;
+  timer->elapse.tv_nsec = 0;
+  clock_gettime(CLOCK_REALTIME, &(timer->start));
+#elif defined(HAVE_GETTIMEOFDAY)
+  timer->elapse.tv_sec = 0;
+  timer->elapse.tv_usec = 0;
+  gettimeofday(&(timer->start), NULL);
+#elif defined(_XBT_WIN32)
+  timer->elapse.tv_sec = 0;
+  timer->elapse.tv_usec = 0;
+#  if defined(WIN32_WCE) || (_WIN32_WINNT < 0x0400)
+  struct _timeb tm;
+
+  _ftime(&tm);
+
+  timer->start.tv_sec = tm.time;
+  timer->start.tv_usec = tm.millitm * 1000;
+
+#  else
+  FILETIME ft;
+  unsigned __int64 tm;
+
+  GetSystemTimeAsFileTime(&ft);
+  tm = (unsigned __int64) ft.dwHighDateTime << 32;
+  tm |= ft.dwLowDateTime;
+  tm /= 10;
+  tm -= 11644473600000000ULL;
+
+  timer->start.tv_sec = (long) (tm / 1000000L);
+  timer->start.tv_usec = (long) (tm % 1000000L);
+#  endif                        /* windows version checker */
+#else
+  timer->elapse = 0;
+  timer->start = (unsigned long int) (time(NULL));
+#endif
+}
+
+void xbt_os_walltimer_resume(xbt_os_timer_t timer)
+{
+#ifdef HAVE_POSIX_GETTIME
+  timer->elapse.tv_sec += timer->stop.tv_sec - timer->start.tv_sec;
+
+   timer->elapse.tv_nsec += timer->stop.tv_nsec - timer->start.tv_nsec;
+  clock_gettime(CLOCK_REALTIME, &(timer->start));
+#elif defined(HAVE_GETTIMEOFDAY)
+  timer->elapse.tv_sec += timer->stop.tv_sec - timer->start.tv_sec;
+  timer->elapse.tv_usec += timer->stop.tv_usec - timer->start.tv_usec;
+  gettimeofday(&(timer->start), NULL);
+#elif defined(_XBT_WIN32)
+  timer->elapse.tv_sec += timer->stop.tv_sec - timer->start.tv_sec;
+  timer->elapse.tv_usec += timer->stop.tv_usec - timer->start.tv_usec;
+#  if defined(WIN32_WCE) || (_WIN32_WINNT < 0x0400)
+  struct _timeb tm;
+
+  _ftime(&tm);
+
+  timer->start.tv_sec = tm.time;
+  timer->start.tv_usec = tm.millitm * 1000;
+
+#  else
+  FILETIME ft;
+  unsigned __int64 tm;
+
+  GetSystemTimeAsFileTime(&ft);
+  tm = (unsigned __int64) ft.dwHighDateTime << 32;
+  tm |= ft.dwLowDateTime;
+  tm /= 10;
+  tm -= 11644473600000000ULL;
+
+  timer->start.tv_sec = (long) (tm / 1000000L);
+  timer->start.tv_usec = (long) (tm % 1000000L);
+#  endif
+#else
+  timer->elapse = timer->stop - timer->start;
+  timer->start = (unsigned long int) (time(NULL));
+#endif
+}
+
+void xbt_os_walltimer_stop(xbt_os_timer_t timer)
+{
+#ifdef HAVE_POSIX_GETTIME
+  clock_gettime(CLOCK_REALTIME, &(timer->stop));
+#elif defined(HAVE_GETTIMEOFDAY)
+  gettimeofday(&(timer->stop), NULL);
+#elif defined(_XBT_WIN32)
+#  if defined(WIN32_WCE) || (_WIN32_WINNT < 0x0400)
+  struct _timeb tm;
+
+  _ftime(&tm);
+
+  timer->stop.tv_sec = tm.time;
+  timer->stop.tv_usec = tm.millitm * 1000;
+
+#  else
+  FILETIME ft;
+  unsigned __int64 tm;
+
+  GetSystemTimeAsFileTime(&ft);
+  tm = (unsigned __int64) ft.dwHighDateTime << 32;
+  tm |= ft.dwLowDateTime;
+  tm /= 10;
+  tm -= 11644473600000000ULL;
+
+  timer->stop.tv_sec = (long) (tm / 1000000L);
+  timer->stop.tv_usec = (long) (tm % 1000000L);
+#  endif
+#else
+  timer->stop = (unsigned long int) (time(NULL));
+#endif
+}
+
+void xbt_os_cputimer_start(xbt_os_timer_t timer)
+{
+#ifdef HAVE_POSIX_GETTIME
+  timer->elapse.tv_sec = 0;
+  timer->elapse.tv_nsec = 0;
+  clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &(timer->start));
+#elif defined(_XBT_WIN32)
+  timer->elapse.tv_sec = 0;
+  timer->elapse.tv_nsec = 0;
+#  if defined(WIN32_WCE) || (_WIN32_WINNT < 0x0400)
+  THROW_UNIMPLEMENTED;
+#  else
+  HANDLE h = GetCurrentProcess();
+  FILETIME creationTime, exitTime, kernelTime, userTime;
+  GetProcessTimes(h, &creationTime, &exitTime, &kernelTime, &userTime);
+  unsigned __int64 ktm, utm;
+  ktm = (unsigned __int64) kernelTime.dwHighDateTime << 32;
+  ktm |= kernelTime.dwLowDateTime;
+  ktm /= 10;
+  utm = (unsigned __int64) userTime.dwHighDateTime << 32;
+  utm |= userTime.dwLowDateTime;
+  utm /= 10;
+  timer->start.tv_sec = (long) (ktm / 1000000L) + (long) (utm / 1000000L);
+  timer->start.tv_usec = (long) (ktm % 1000000L) + (long) (utm % 1000000L);
+#  endif                        /* windows version checker */
+#endif
+}
+
+void xbt_os_cputimer_resume(xbt_os_timer_t timer)
+{
+#ifdef HAVE_POSIX_GETTIME
+  timer->elapse.tv_sec += timer->stop.tv_sec - timer->start.tv_sec;
+  timer->elapse.tv_nsec += timer->stop.tv_nsec - timer->start.tv_nsec;
+  clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &(timer->start));
+#elif defined(_XBT_WIN32)
+  timer->elapse.tv_sec += timer->stop.tv_sec - timer->start.tv_sec;
+  timer->elapse.tv_nsec += timer->stop.tv_nsec - timer->start.tv_nsec;
+#  if defined(WIN32_WCE) || (_WIN32_WINNT < 0x0400)
+  THROW_UNIMPLEMENTED;
+#  else
+  HANDLE h = GetCurrentProcess();
+  FILETIME creationTime, exitTime, kernelTime, userTime;
+  GetProcessTimes(h, &creationTime, &exitTime, &kernelTime, &userTime);
+  unsigned __int64 ktm, utm;
+  ktm = (unsigned __int64) kernelTime.dwHighDateTime << 32;
+  ktm |= kernelTime.dwLowDateTime;
+  ktm /= 10;
+  utm = (unsigned __int64) userTime.dwHighDateTime << 32;
+  utm |= userTime.dwLowDateTime;
+  utm /= 10;
+  timer->start.tv_sec = (long) (ktm / 1000000L) + (long) (utm / 1000000L);
+  timer->start.tv_usec = (long) (ktm % 1000000L) + (long) (utm % 1000000L);
+#  endif                        /* windows version checker */
+
+#endif
+}
+
+void xbt_os_cputimer_stop(xbt_os_timer_t timer)
+{
+#ifdef HAVE_POSIX_GETTIME
+  clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &(timer->stop));
+#elif defined(_XBT_WIN32)
+#  if defined(WIN32_WCE) || (_WIN32_WINNT < 0x0400)
+  THROW_UNIMPLEMENTED;
+#  else
+  HANDLE h = GetCurrentProcess();
+  FILETIME creationTime, exitTime, kernelTime, userTime;
+  GetProcessTimes(h, &creationTime, &exitTime, &kernelTime, &userTime);
+  unsigned __int64 ktm, utm;
+  ktm = (unsigned __int64) kernelTime.dwHighDateTime << 32;
+  ktm |= kernelTime.dwLowDateTime;
+  ktm /= 10;
+  utm = (unsigned __int64) userTime.dwHighDateTime << 32;
+  utm |= userTime.dwLowDateTime;
+  utm /= 10;
+  timer->stop.tv_sec = (long) (ktm / 1000000L) + (long) (utm / 1000000L);
+  timer->stop.tv_usec = (long) (ktm % 1000000L) + (long) (utm % 1000000L);
+#  endif                        /* windows version checker */
+#endif
+}
+
+void xbt_os_threadtimer_start(xbt_os_timer_t timer)
+{
+#ifdef HAVE_POSIX_GETTIME
+  timer->elapse.tv_sec = 0;
+  timer->elapse.tv_nsec = 0;
+  clock_gettime(CLOCK_THREAD_CPUTIME_ID, &(timer->start));
+#elif defined(_XBT_WIN32)
+  struct timeval tv;
+#  if defined(WIN32_WCE) || (_WIN32_WINNT < 0x0400)
+  THROW_UNIMPLEMENTED;
+#  else
+  HANDLE h = GetCurrentThread();
+  FILETIME creationTime, exitTime, kernelTime, userTime;
+  GetThreadTimes(h, &creationTime, &exitTime, &kernelTime, &userTime);
+  unsigned __int64 ktm, utm;
+  ktm = (unsigned __int64) kernelTime.dwHighDateTime << 32;
+  ktm |= kernelTime.dwLowDateTime;
+  ktm /= 10;
+  utm = (unsigned __int64) userTime.dwHighDateTime << 32;
+  utm |= userTime.dwLowDateTime;
+  utm /= 10;
+  timer->start.tv_sec = (long) (ktm / 1000000L) + (long) (utm / 1000000L);
+  timer->start.tv_usec = (long) (ktm % 1000000L) + (long) (utm % 1000000L);
+#  endif                        /* windows version checker */
+#endif
+}
+
+void xbt_os_threadtimer_resume(xbt_os_timer_t timer)
+{
+#ifdef HAVE_POSIX_GETTIME
+  timer->elapse.tv_sec += timer->stop.tv_sec - timer->start.tv_sec;
+  timer->elapse.tv_nsec += timer->stop.tv_nsec - timer->start.tv_nsec;
+  clock_gettime(CLOCK_THREAD_CPUTIME_ID, &(timer->start));
+#elif defined(_XBT_WIN32)
+  timer->elapse.tv_sec += timer->stop.tv_sec - timer->start.tv_sec;
+  timer->elapse.tv_nsec += timer->stop.tv_nsec - timer->start.tv_nsec;
+#  if defined(WIN32_WCE) || (_WIN32_WINNT < 0x0400)
+  THROW_UNIMPLEMENTED;
+#  else
+  HANDLE h = GetCurrentThread();
+  FILETIME creationTime, exitTime, kernelTime, userTime;
+  GetThreadTimes(h, &creationTime, &exitTime, &kernelTime, &userTime);
+  unsigned __int64 ktm, utm;
+  ktm = (unsigned __int64) kernelTime.dwHighDateTime << 32;
+  ktm |= kernelTime.dwLowDateTime;
+  ktm /= 10;
+  utm = (unsigned __int64) userTime.dwHighDateTime << 32;
+  utm |= userTime.dwLowDateTime;
+  utm /= 10;
+  timer->start.tv_sec = (long) (ktm / 1000000L) + (long) (utm / 1000000L);
+  timer->start.tv_usec = (long) (ktm % 1000000L) + (long) (utm % 1000000L);
+#  endif                        /* windows version checker */
+#endif
+}
+
+void xbt_os_threadtimer_stop(xbt_os_timer_t timer)
+{
+#ifdef HAVE_POSIX_GETTIME
+  clock_gettime(CLOCK_THREAD_CPUTIME_ID, &(timer->stop));
+#elif defined(_XBT_WIN32)
+#  if defined(WIN32_WCE) || (_WIN32_WINNT < 0x0400)
+  THROW_UNIMPLEMENTED;
+#  else
+  HANDLE h = GetCurrentThread();
+  FILETIME creationTime, exitTime, kernelTime, userTime;
+  GetThreadTimes(h, &creationTime, &exitTime, &kernelTime, &userTime);
+  unsigned __int64 ktm, utm;
+  ktm = (unsigned __int64) kernelTime.dwHighDateTime << 32;
+  ktm |= kernelTime.dwLowDateTime;
+  ktm /= 10;
+  utm = (unsigned __int64) userTime.dwHighDateTime << 32;
+  utm |= userTime.dwLowDateTime;
+  utm /= 10;
+  timer->stop.tv_sec = (long) (ktm / 1000000L) + (long) (utm / 1000000L);
+  timer->stop.tv_usec = (long) (ktm % 1000000L) + (long) (utm % 1000000L);
+#  endif                        /* windows version checker */
 #endif
 }

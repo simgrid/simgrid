@@ -45,9 +45,9 @@ int main(int argc, char **argv)
   w2 = workstations[j];
   printf("%d\tand\t%d\t\t",i,j);
 
-  xbt_os_timer_start(timer);
+  xbt_os_cputimer_start(timer);
   SD_route_get_list(w1, w2);
-  xbt_os_timer_stop(timer);
+  xbt_os_cputimer_stop(timer);
 
   printf("%lf\n", xbt_os_timer_elapsed(timer) );
 
