@@ -261,8 +261,11 @@ static void storage_update_actions_state(double now, double delta)
     if(action->type == WRITE)
     {
       double rate = lmm_variable_getvalue(GENERIC_LMM_ACTION(action).variable);
-      ((storage_t)(action->storage))->used_size += delta * rate; // disk usage
-      ((surf_action_t)action)->file->size += delta * rate; // file size
+      /* Hack to avoid rounding differences between x86 and x86_64
+       * (note that the next sizes are of type size_t). */
+      long incr = delta * rate + MAXMIN_PRECISION;
+      ((storage_t)(action->storage))->used_size += incr; // disk usage
+      ((surf_action_t)action)->file->size += incr; // file size
     }
   }
 
