@@ -100,6 +100,7 @@ XBT_PUBLIC(msg_host_t) MSG_host_self(void);
 XBT_PUBLIC(int) MSG_get_host_msgload(msg_host_t host);
 /* int MSG_get_msgload(void); This function lacks specification; discard it */
 XBT_PUBLIC(double) MSG_get_host_speed(msg_host_t h);
+XBT_PUBLIC(int) MSG_get_host_core(msg_host_t h);
 XBT_PUBLIC(int) MSG_host_is_avail(msg_host_t h);
 XBT_PUBLIC(void) __MSG_host_destroy(msg_host_priv_t host);
 
