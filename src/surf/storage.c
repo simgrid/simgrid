@@ -37,7 +37,7 @@ static xbt_dynar_t storage_list;
 static xbt_dict_t parse_storage_content(char *filename, size_t *used_size);
 static int storage_action_unref(surf_action_t action);
 static void storage_action_state_set(surf_action_t action, e_surf_action_state_t state);
-static surf_action_t storage_action_execute (void *storage, double size, e_surf_action_storage_type_t type);
+static surf_action_t storage_action_execute (void *storage, size_t size, e_surf_action_storage_type_t type);
 
 static surf_action_t storage_action_ls(void *storage, const char* path)
 {
@@ -148,12 +148,12 @@ static surf_action_t storage_action_write(void *storage, const void* ptr,
   return action;
 }
 
-static surf_action_t storage_action_execute (void *storage, double size, e_surf_action_storage_type_t type)
+static surf_action_t storage_action_execute (void *storage, size_t size, e_surf_action_storage_type_t type)
 {
   surf_action_storage_t action = NULL;
   storage_t STORAGE = storage;
 
-  XBT_IN("(%s,%f", surf_resource_name(STORAGE), size);
+  XBT_IN("(%s,%zu", surf_resource_name(STORAGE), size);
   action =
       surf_action_new(sizeof(s_surf_action_storage_t), size, surf_storage_model,
           STORAGE->state_current != SURF_RESOURCE_ON);
