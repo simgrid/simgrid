@@ -13,7 +13,7 @@ fi
 
 if [ $# -lt 1 -o $# -gt 3 ]; then
     cat <<EOF
-Usage: $0 [-batch] archive.tar.gz [git_url [git_branch]]
+Usage: $0 [-batch] archive.tar.gz [git_url [git_reference]]
 EOF
     exit 1
 fi
@@ -26,10 +26,10 @@ fi
 
 if [ $# -ge 2 ]; then
     giturl=$2
-    gitbranch=${3:-master}
+    gitref=${3:-master}
 else
     giturl=$(git rev-parse --show-toplevel)
-    gitbranch=$(git branch | sed -n '/^\*/{s/^..//;p;}')
+    gitref=HEAD
 fi
 
 tmpdir=$(mktemp -d)
@@ -60,8 +60,8 @@ tar --directory "$tmpdir" \
     --transform 's!^[^/]*!a!' \
     --extract --gunzip --file "$archive"
 
-echo "Copying git repository: $giturl/$gitbranch -> $git_dir"
-git archive --format=tar --prefix="b/" --remote="$giturl" "$gitbranch" \
+echo "Copying git repository: $giturl/$gitref -> $git_dir"
+git archive --format=tar --prefix="b/" --remote="$giturl" "$gitref" \
     | tar --directory "$tmpdir" --extract --file -
 
 fa=from_tgz
