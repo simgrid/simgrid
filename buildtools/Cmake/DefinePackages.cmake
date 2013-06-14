@@ -870,6 +870,7 @@ set(EXAMPLES_CMAKEFILES_TXT
   examples/msg/migration/CMakeLists.txt
   examples/msg/ns3/CMakeLists.txt
   examples/msg/parallel_task/CMakeLists.txt
+  examples/msg/pastry/CMakeLists.txt
   examples/msg/pmm/CMakeLists.txt
   examples/msg/priority/CMakeLists.txt
   examples/msg/properties/CMakeLists.txt
