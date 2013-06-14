@@ -25,7 +25,7 @@ int smpi_coll_tuned_reduce_scatter_mpich_pair(void *sendbuf, void *recvbuf, int 
     int  *disps;
     void *tmp_recvbuf;
     int mpi_errno = MPI_SUCCESS;
-    int type_size, total_count, nbytes, dst, src;
+    int total_count, dst, src;
     int is_commutative;
     comm_size = smpi_comm_size(comm);
     rank = smpi_comm_rank(comm);
@@ -48,10 +48,6 @@ int smpi_coll_tuned_reduce_scatter_mpich_pair(void *sendbuf, void *recvbuf, int 
     if (total_count == 0) {
         return MPI_ERR_COUNT;
     }
-
-    type_size= smpi_datatype_size(datatype);
-    nbytes = total_count * type_size;
-    
 
         if (sendbuf != MPI_IN_PLACE) {
             /* copy local data into recvbuf */
@@ -264,7 +260,7 @@ int smpi_coll_tuned_reduce_scatter_mpich_rdb(void *sendbuf, void *recvbuf, int r
     int  *disps;
     void *tmp_recvbuf, *tmp_results;
     int mpi_errno = MPI_SUCCESS;
-    int type_size, dis[2], blklens[2], total_count, nbytes, dst;
+    int dis[2], blklens[2], total_count, dst;
     int mask, dst_tree_root, my_tree_root, j, k;
     int received;
     MPI_Datatype sendtype, recvtype;
@@ -287,10 +283,6 @@ int smpi_coll_tuned_reduce_scatter_mpich_rdb(void *sendbuf, void *recvbuf, int r
         total_count += recvcounts[i];
     }
     
-    type_size= smpi_datatype_size(datatype);
-    nbytes = total_count * type_size;
-    
-
             /* noncommutative and (non-pof2 or block irregular), use recursive doubling. */
 
             /* need to allocate temporary buffer to receive incoming data*/

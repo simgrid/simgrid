@@ -424,20 +424,15 @@ int smpi_coll_tuned_reduce_scatter_mpich( void *sbuf, void *rbuf,
                                                     )
 {
     int comm_size, i;
-    size_t total_message_size, dsize;
-    int zerocounts = 0;
+    size_t total_message_size;
 
     XBT_DEBUG("smpi_coll_tuned_reduce_scatter_mpich");
     
     comm_size = smpi_comm_size(comm);
     // We need data size for decision function 
-    dsize=smpi_datatype_size(dtype);
     total_message_size = 0;
     for (i = 0; i < comm_size; i++) { 
         total_message_size += rcounts[i];
-        if (0 == rcounts[i]) {
-            zerocounts = 1;
-        }
     }
 
     if( smpi_op_is_commute(op) &&  total_message_size > 524288) { 
