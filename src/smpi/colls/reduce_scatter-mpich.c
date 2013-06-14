@@ -228,7 +228,7 @@ int smpi_coll_tuned_reduce_scatter_mpich_noncomm(void *sendbuf, void *recvbuf, i
                    incoming_data + recv_offset*true_extent,
                      outgoing_data + recv_offset*true_extent,
                      &size, &datatype );
-            buf0_was_inout = buf0_was_inout;
+            /* buf0_was_inout = buf0_was_inout; */
         }
         else {
             /* lower ranked value so need to call op(my_data, received_data) */
