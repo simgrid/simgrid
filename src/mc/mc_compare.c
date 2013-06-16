@@ -179,66 +179,6 @@ int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2){
     xbt_os_walltimer_start(timer);
   #endif
 
-  /* Compare number of processes */
-  if(s1->nb_processes != s2->nb_processes){
-    #ifdef MC_DEBUG
-      xbt_os_walltimer_stop(timer);
-      mc_comp_times->nb_processes_comparison_time =  xbt_os_timer_elapsed(timer);
-      XBT_DEBUG("Different number of processes : %d - %d", s1->nb_processes, s2->nb_processes);
-      errors++;
-    #else
-      #ifdef MC_VERBOSE
-        XBT_VERB("Different number of processes : %d - %d", s1->nb_processes, s2->nb_processes);
-      #endif
-
-      xbt_os_timer_free(timer);
-      xbt_os_walltimer_stop(global_timer);
-      mc_snapshot_comparison_time = xbt_os_timer_elapsed(global_timer);
-      xbt_os_timer_free(global_timer);
-
-      if(!raw_mem)
-        MC_UNSET_RAW_MEM;
-
-      return 1;
-    #endif
-  }
-
-  #ifdef MC_DEBUG
-    xbt_os_walltimer_start(timer);
-  #endif
-
-  /* Compare number of bytes used in each heap */
-  if(s1->heap_bytes_used != s2->heap_bytes_used){
-    #ifdef MC_DEBUG
-      xbt_os_walltimer_stop(timer);
-      mc_comp_times->bytes_used_comparison_time = xbt_os_timer_elapsed(timer);
-      XBT_DEBUG("Different number of bytes used in each heap : %zu - %zu", s1->heap_bytes_used, s2->heap_bytes_used);
-      errors++;
-    #else
-      #ifdef MC_VERBOSE
-        XBT_VERB("Different number of bytes used in each heap : %zu - %zu", s1->heap_bytes_used, s2->heap_bytes_used);
-      #endif
-
-      xbt_os_timer_free(timer);
-      xbt_os_walltimer_stop(global_timer);
-      mc_snapshot_comparison_time = xbt_os_timer_elapsed(global_timer);
-      xbt_os_timer_free(global_timer);
-
-      if(!raw_mem)
-        MC_UNSET_RAW_MEM;
-
-      return 1;
-    #endif
-  }else{
-    #ifdef MC_DEBUG
-      xbt_os_walltimer_stop(timer);
-    #endif
-  }
-  
-  #ifdef MC_DEBUG
-    xbt_os_walltimer_start(timer);
-  #endif
-  
   /* Compare size of stacks */
   int i = 0;
   size_t size_used1, size_used2;
