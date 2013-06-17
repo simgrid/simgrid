@@ -350,42 +350,47 @@ void *smpi_shared_malloc(size_t size, const char *file, int line)
   int fd;
   void* mem;
   shared_data_t *data;
-
-  for(i = 0; i < len; i++) {
-    /* Make the 'loc' ID be a flat filename */
-    if(loc[i] == '/') {
-      loc[i] = '_';
-    }
-  }
-  if (!allocs) {
-    allocs = xbt_dict_new_homogeneous(free);
-  }
-  data = xbt_dict_get_or_null(allocs, loc);
-  if(!data) {
-    fd = shm_open(loc, O_RDWR | O_CREAT | O_EXCL, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
-    if(fd < 0) {
-      switch(errno) {
-        case EEXIST:
-          xbt_die("Please cleanup /dev/shm/%s", loc);
-        default:
-          xbt_die("An unhandled error occured while opening %s: %s", loc, strerror(errno));
+  if (sg_cfg_get_boolean("smpi/use_shared_malloc")){
+    for(i = 0; i < len; i++) {
+      /* Make the 'loc' ID be a flat filename */
+      if(loc[i] == '/') {
+        loc[i] = '_';
       }
     }
-    data = xbt_new(shared_data_t, 1);
-    data->fd = fd;
-    data->count = 1;
-    data->loc = loc;
-    mem = shm_map(fd, size, data);
-    if(shm_unlink(loc) < 0) {
-      XBT_WARN("Could not early unlink %s: %s", loc, strerror(errno));
+    if (!allocs) {
+      allocs = xbt_dict_new_homogeneous(free);
     }
-    xbt_dict_set(allocs, loc, data, NULL);
-    XBT_DEBUG("Mapping %s at %p through %d", loc, mem, fd);
-  } else {
-    mem = shm_map(data->fd, size, data);
-    data->count++;
+    data = xbt_dict_get_or_null(allocs, loc);
+    if(!data) {
+      fd = shm_open(loc, O_RDWR | O_CREAT | O_EXCL, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
+      if(fd < 0) {
+        switch(errno) {
+          case EEXIST:
+            xbt_die("Please cleanup /dev/shm/%s", loc);
+          default:
+            xbt_die("An unhandled error occured while opening %s: %s", loc, strerror(errno));
+        }
+      }
+      data = xbt_new(shared_data_t, 1);
+      data->fd = fd;
+      data->count = 1;
+      data->loc = loc;
+      mem = shm_map(fd, size, data);
+      if(shm_unlink(loc) < 0) {
+        XBT_WARN("Could not early unlink %s: %s", loc, strerror(errno));
+      }
+      xbt_dict_set(allocs, loc, data, NULL);
+      XBT_DEBUG("Mapping %s at %p through %d", loc, mem, fd);
+    } else {
+      mem = shm_map(data->fd, size, data);
+      data->count++;
+    }
+    XBT_DEBUG("Shared malloc %zu in %p (metadata at %p)", size, mem, data);
+  }else{
+    mem = xbt_malloc(size);
+    XBT_DEBUG("Classic malloc %zu in %p", size, mem);
   }
-  XBT_DEBUG("Malloc %zu in %p (metadata at %p)", size, mem, data);
+
   return mem;
 }
 void smpi_shared_free(void *ptr)
@@ -393,33 +398,40 @@ void smpi_shared_free(void *ptr)
   char loc[PTR_STRLEN];
   shared_metadata_t* meta;
   shared_data_t* data;
-
-  if (!allocs) {
-    XBT_WARN("Cannot free: nothing was allocated");
-    return;
-  }
-  if(!allocs_metadata) {
-    XBT_WARN("Cannot free: no metadata was allocated");
-  }
-  snprintf(loc, PTR_STRLEN, "%p", ptr);
-  meta = (shared_metadata_t*)xbt_dict_get_or_null(allocs_metadata, loc);
-  if (!meta) {
-    XBT_WARN("Cannot free: %p was not shared-allocated by SMPI", ptr);
-    return;
-  }
-  data = meta->data;
-  if(!data) {
-    XBT_WARN("Cannot free: something is broken in the metadata link");
-    return;
-  }
-  if(munmap(ptr, meta->size) < 0) {
-    XBT_WARN("Unmapping of fd %d failed: %s", data->fd, strerror(errno));
-  }
-  data->count--;
-  if (data->count <= 0) {
-    close(data->fd);
-    xbt_dict_remove(allocs, data->loc);
-    free(data->loc);
+  if (sg_cfg_get_boolean("smpi/use_shared_malloc")){
+  
+    if (!allocs) {
+      XBT_WARN("Cannot free: nothing was allocated");
+      return;
+    }
+    if(!allocs_metadata) {
+      XBT_WARN("Cannot free: no metadata was allocated");
+    }
+    snprintf(loc, PTR_STRLEN, "%p", ptr);
+    meta = (shared_metadata_t*)xbt_dict_get_or_null(allocs_metadata, loc);
+    if (!meta) {
+      XBT_WARN("Cannot free: %p was not shared-allocated by SMPI", ptr);
+      return;
+    }
+    data = meta->data;
+    if(!data) {
+      XBT_WARN("Cannot free: something is broken in the metadata link");
+      return;
+    }
+    if(munmap(ptr, meta->size) < 0) {
+      XBT_WARN("Unmapping of fd %d failed: %s", data->fd, strerror(errno));
+    }
+    data->count--;
+    XBT_DEBUG("Shared free - no removal - of %p, count = %d", ptr, data->count);
+    if (data->count <= 0) {
+      close(data->fd);
+      xbt_dict_remove(allocs, data->loc);
+      free(data->loc);
+      XBT_DEBUG("Shared free - with removal - of %p", ptr);
+    }
+  }else{
+    XBT_DEBUG("Classic free of %p", ptr);
+    xbt_free(ptr);
   }
 }
 #endif

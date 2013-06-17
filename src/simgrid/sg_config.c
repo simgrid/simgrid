@@ -708,6 +708,13 @@ void sg_config_init(int *argc, char **argv)
                      NULL);
     xbt_cfg_setdefault_boolean(_sg_cfg_set, "smpi/display_timing", default_value);
 
+    default_value = xbt_strdup("yes");
+    xbt_cfg_register(&_sg_cfg_set, "smpi/use_shared_malloc",
+                     "Boolean indicating whether we should use shared memory when using SMPI_SHARED_MALLOC. Allows user to disable it for debug purposes.",
+                     xbt_cfgelm_boolean, &default_value, 1, 1, NULL,
+                     NULL);
+    xbt_cfg_setdefault_boolean(_sg_cfg_set, "smpi/use_shared_malloc", default_value);
+    
     double default_threshold = 1e-6;
     xbt_cfg_register(&_sg_cfg_set, "smpi/cpu_threshold",
                      "Minimal computation time (in seconds) not discarded.",
