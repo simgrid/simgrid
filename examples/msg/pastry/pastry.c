@@ -29,15 +29,11 @@
 #define MAILBOX_NAME_SIZE 10
 
 static int nb_bits = 16;
-static int nb_keys = 0;
 static int timeout = 50;
 static int max_simulation_time = 1000;
 
 extern long int smx_total_comms;
 
-
-
-static int domain_mask = pow(2, DOMAIN_SIZE) - 1;
 
 typedef struct s_node {
   int id;                                 //128bits generated random(2^128 -1)
@@ -79,6 +75,7 @@ typedef struct s_task_data {
   state_t state;
 } s_task_data_t, *task_data_t;
 
+
 static void print_node(node_t node);
 static void print_node_id(node_t node);
 static void print_node_neighborood_set(node_t node);
@@ -108,7 +105,10 @@ static void get_mailbox(int node_id, char* mailbox)
 /**
  * Get the specific level of a node id
  */
+int domain_mask = 0;
 static int domain(int a, int level) {
+  if (domain_mask == 0)
+    domain_mask = pow(2, DOMAIN_SIZE) - 1;
   int shift = (LEVELS_COUNT-level-1)*DOMAIN_SIZE;
   return (a >> shift) & domain_mask;
 }
@@ -129,7 +129,7 @@ static int shl(int a, int b) {
 static int closest_in_namespace_set(node_t node, int dest) {
   int best_dist;
   int res = -1;
-  if (node->namespace_set[NAMESPACE_SIZE-1] <= dest & dest <= node->namespace_set[0]) {
+  if ((node->namespace_set[NAMESPACE_SIZE-1] <= dest) & (dest <= node->namespace_set[0])) {
     best_dist = abs(node->id - dest);
     res = node->id;
     int i, dist;
@@ -327,7 +327,8 @@ static void handle_task(node_t node, msg_task_t task) {
       max = -1;
       for (i=0; i<=NAMESPACE_SIZE; i++) {
 	j = task_namespace_set[i];
-	printf("%08x %08x | ", j, curr_namespace_set[i]);
+        if (i<NAMESPACE_SIZE)
+	  printf("%08x %08x | ", j, curr_namespace_set[i]);
 	if (j != -1 && j < node->id) min = i;
 	if (j != -1 && max == -1 && j > node->id) max = i;
       }
@@ -502,7 +503,7 @@ static state_t node_get_state(node_t node) {
  * - the time to sleep before I join (except for the first node)
  * - the deadline time
  */
-int node(int argc, char *argv[])
+static int node(int argc, char *argv[])
 {
   double init_time = MSG_get_clock();
   msg_task_t task_received = NULL;  
@@ -583,6 +584,7 @@ int node(int argc, char *argv[])
     }
     print_node(&node);
   }
+  return 1;
 }
 
 /*
