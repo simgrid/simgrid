@@ -286,7 +286,7 @@ void smpi_datatype_create(MPI_Datatype* new_type, int size,int lb, int ub, int h
                           void *struct_type, int flags){
   MPI_Datatype new_t= xbt_new(s_smpi_mpi_datatype_t,1);
   new_t->size = size;
-  new_t->has_subtype = has_subtype;
+  new_t->has_subtype = size>0? has_subtype:0;
   new_t->lb = lb;
   new_t->ub = ub;
   new_t->flags = flags;
