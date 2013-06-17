@@ -948,6 +948,8 @@ void smpi_mpi_reduce_scatter(void *sendbuf, void *recvbuf, int *recvcounts,
     int i, size, count;
     int *displs;
     int rank = smpi_process_index();
+    void *tmpbuf;
+
     /* arbitrarily choose root as rank 0 */
     size = smpi_comm_size(comm);
     count = 0;
@@ -956,10 +958,12 @@ void smpi_mpi_reduce_scatter(void *sendbuf, void *recvbuf, int *recvcounts,
       displs[i] = count;
       count += recvcounts[i];
     }
-    mpi_coll_reduce_fun(sendbuf, recvbuf, count, datatype, op, 0, comm);
-    smpi_mpi_scatterv(recvbuf, recvcounts, displs, datatype, recvbuf,
+    tmpbuf=(void*)xbt_malloc(count*smpi_datatype_get_extent(datatype));
+    mpi_coll_reduce_fun(sendbuf, tmpbuf, count, datatype, op, 0, comm);
+    smpi_mpi_scatterv(tmpbuf, recvcounts, displs, datatype, recvbuf,
                       recvcounts[rank], datatype, 0, comm);
     xbt_free(displs);
+    xbt_free(tmpbuf);
 }
 
 void smpi_mpi_gatherv(void *sendbuf, int sendcount, MPI_Datatype sendtype,
