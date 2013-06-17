@@ -294,6 +294,11 @@ static e_surf_resource_state_t cpu_get_state(void *cpu)
   return ((cpu_Cas01_t)surf_cpu_resource_priv(cpu))->state_current;
 }
 
+static void cpu_set_state(void *cpu, e_surf_resource_state_t state)
+{
+  ((cpu_Cas01_t)surf_cpu_resource_priv(cpu))->state_current = state;
+}
+
 static double cpu_get_speed(void *cpu, double load)
 {
   return load * ((cpu_Cas01_t)surf_cpu_resource_priv(cpu))->power_peak;
@@ -391,6 +396,7 @@ static surf_model_t surf_cpu_model_init_cas01(void)
   cpu_model->extension.cpu.sleep = cpu_action_sleep;
 
   cpu_model->extension.cpu.get_state = cpu_get_state;
+  cpu_model->extension.cpu.set_state = cpu_set_state;
   cpu_model->extension.cpu.get_speed = cpu_get_speed;
   cpu_model->extension.cpu.get_available_speed =
       cpu_get_available_speed;

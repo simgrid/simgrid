@@ -332,6 +332,12 @@ e_surf_resource_state_t ws_get_state(void *workstation)
   return cpu->model->extension.cpu.get_state(workstation);
 }
 
+void ws_set_state(void *workstation, e_surf_resource_state_t state)
+{
+  surf_resource_t cpu = ((surf_resource_t) surf_cpu_resource_priv(workstation));
+  cpu->model->extension.cpu.set_state(workstation, state);
+}
+
 double ws_get_speed(void *workstation, double load)
 {
   surf_resource_t cpu = ((surf_resource_t) surf_cpu_resource_priv(workstation));
@@ -565,6 +571,7 @@ static void surf_workstation_model_init_internal(void)
   model->extension.workstation.execute   = ws_execute;
   model->extension.workstation.sleep     = ws_action_sleep;
   model->extension.workstation.get_state = ws_get_state;
+  model->extension.workstation.set_state = ws_set_state;
   model->extension.workstation.get_speed = ws_get_speed;
   model->extension.workstation.get_available_speed = ws_get_available_speed;
 

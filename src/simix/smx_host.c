@@ -38,6 +38,62 @@ smx_host_t SIMIX_host_create(const char *name,
   return xbt_lib_get_elm_or_null(host_lib, name);
 }
 
+void SIMIX_pre_host_on(smx_host_t h)
+{
+  SIMIX_host_on(h);
+}
+
+/**
+ * \brief Start the host if it is off
+ *
+ */
+void SIMIX_host_on(smx_host_t h)
+{
+  smx_host_priv_t host = (smx_host_priv_t) h;
+
+  xbt_assert((host != NULL), "Invalid parameters");
+  
+  surf_model_t ws_model = surf_resource_model(h, SURF_WKS_LEVEL);
+  ws_model->extension.workstation.set_state(host, SURF_RESOURCE_ON);
+
+  SIMIX_host_restart_processes(h);
+}
+
+void SIMIX_pre_host_off(smx_host_t h)
+{
+  SIMIX_host_off(h);
+}
+
+/**
+ * \brief Stop the host if it is on
+ *
+ */
+void SIMIX_host_off(smx_host_t h)
+{
+  smx_host_priv_t host = (smx_host_priv_t) h;
+
+  xbt_assert((host != NULL), "Invalid parameters");
+
+  /* Clean Simulator data */
+  if (xbt_swag_size(host->process_list) != 0) {
+    char *msg = xbt_strdup("Shutting down host, but it's not empty:");
+    char *tmp;
+    smx_process_t process = NULL;
+
+    xbt_swag_foreach(process, host->process_list) {
+      tmp = bprintf("%s\n\t%s", msg, process->name);
+      free(msg);
+      msg = tmp;
+    }
+    SIMIX_display_process_status();
+    THROWF(arg_error, 0, "%s", msg);
+  }
+  xbt_swag_free(host->process_list);
+
+  surf_model_t ws_model = surf_resource_model(h, SURF_WKS_LEVEL);
+  ws_model->extension.workstation.set_state(host, SURF_RESOURCE_OFF);
+}
+
 /**
  * \brief Internal function to destroy a SIMIX host.
  *

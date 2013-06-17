@@ -46,6 +46,28 @@ const char* simcall_host_get_name(smx_host_t host)
 
 /**
  * \ingroup simix_host_management
+ * \brief Start the host if it is off
+ *
+ * \param host A SIMIX host
+ */
+void simcall_host_on(smx_host_t host)
+{
+  simcall_BODY_host_on(host);
+}
+
+/**
+ * \ingroup simix_host_management
+ * \brief Stop the host if it is on
+ *
+ * \param host A SIMIX host
+ */
+void simcall_host_off(smx_host_t host)
+{
+  simcall_BODY_host_off(host);
+}
+
+/**
+ * \ingroup simix_host_management
  * \brief Returns a dict of the properties assigned to a host.
  *
  * \param host A host

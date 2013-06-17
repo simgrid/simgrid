@@ -116,6 +116,23 @@ msg_host_t MSG_host_self(void)
   return MSG_process_get_host(NULL);
 }
 
+
+/*
+ * \brief Start the host if it is off
+ */
+void MSG_host_on(msg_host_t host)
+{
+  simcall_host_on(host);
+}
+
+/*
+ * \brief Stop the host if it is on
+ */
+void MSG_host_off(msg_host_t host)
+{ 
+  simcall_host_off(host);
+}
+
 /*
  * \brief Frees private data of a host (internal call only)
  */

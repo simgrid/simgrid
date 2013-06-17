@@ -261,6 +261,8 @@
 #define SIMCALL_LIST1(ACTION, sep) \
 ACTION(SIMCALL_HOST_GET_BY_NAME, host_get_by_name, WITH_ANSWER, TSPEC(result, smx_host_t), TSTRING(name)) sep \
 ACTION(SIMCALL_HOST_GET_NAME, host_get_name, WITH_ANSWER, TSTRING(result), TSPEC(host, smx_host_t)) sep \
+ACTION(SIMCALL_HOST_ON, host_on, WITH_ANSWER, TVOID(result), TSPEC(host, smx_host_t)) sep \
+ACTION(SIMCALL_HOST_OFF, host_off, WITH_ANSWER, TVOID(result), TSPEC(host, smx_host_t)) sep \
 ACTION(SIMCALL_HOST_GET_PROPERTIES, host_get_properties, WITH_ANSWER, TSPEC(result, xbt_dict_t), TSPEC(host, smx_host_t)) sep \
 ACTION(SIMCALL_HOST_GET_SPEED, host_get_speed, WITH_ANSWER, TDOUBLE(result), TSPEC(host, smx_host_t)) sep \
 ACTION(SIMCALL_HOST_GET_AVAILABLE_SPEED, host_get_available_speed, WITH_ANSWER, TDOUBLE(result), TSPEC(host, smx_host_t)) sep \
