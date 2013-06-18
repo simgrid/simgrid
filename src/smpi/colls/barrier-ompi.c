@@ -52,8 +52,8 @@ int smpi_coll_tuned_barrier_ompi_doublering(MPI_Comm comm
     size = smpi_comm_size(comm);
 
     XBT_DEBUG("ompi_coll_tuned_barrier_ompi_doublering rank %d", rank);
-  
-    left = ((rank-1)%size);
+
+    left = ((rank-1+size)%size);
     right = ((rank+1)%size);
 
     if (rank > 0) { /* receive message from the left */
