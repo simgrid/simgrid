@@ -313,7 +313,7 @@ static xbt_dict_t ws_get_properties(const void *ws)
   return surf_resource_properties(surf_cpu_resource_priv(ws));
 }
 
-static storage_t find_storage_on_mount_list(void *workstation,const char* storage)
+static storage_t find_storage_on_mount_list(void *workstation,const char* mount)
 {
   storage_t st = NULL;
   s_mount_t mnt;
@@ -321,16 +321,16 @@ static storage_t find_storage_on_mount_list(void *workstation,const char* storag
   workstation_CLM03_t ws = (workstation_CLM03_t) surf_workstation_resource_priv(workstation);
   xbt_dynar_t storage_list = ws->storage;
 
-  XBT_DEBUG("Search for storage name '%s' on '%s'",storage,ws->generic_resource.name);
+  XBT_DEBUG("Search for storage name '%s' on '%s'",mount,ws->generic_resource.name);
   xbt_dynar_foreach(storage_list,cursor,mnt)
   {
     XBT_DEBUG("See '%s'",mnt.name);
-    if(!strcmp(storage,mnt.name)){
+    if(!strcmp(mount,mnt.name)){
       st = mnt.id;
       break;
     }
   }
-  if(!st) xbt_die("Can't find mount '%s' for '%s'",storage,ws->generic_resource.name);
+  if(!st) xbt_die("Can't find mount '%s' for '%s'",mount,ws->generic_resource.name);
   return st;
 }
 
