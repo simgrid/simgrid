@@ -345,7 +345,7 @@ static surf_action_t ws_action_open(void *workstation, const char* mount,
 
 static surf_action_t ws_action_close(void *workstation, surf_file_t fd)
 {
-  storage_t st = find_storage_on_mount_list(workstation, fd->storage);
+  storage_t st = find_storage_on_mount_list(workstation, fd->mount);
   XBT_DEBUG("CLOSE on disk '%s'",st->generic_resource.name);
   surf_model_t model = st->generic_resource.model;
   return model->extension.storage.close(st, fd);
@@ -354,7 +354,7 @@ static surf_action_t ws_action_close(void *workstation, surf_file_t fd)
 static surf_action_t ws_action_read(void *workstation, size_t size,
                                     surf_file_t fd)
 {
-  storage_t st = find_storage_on_mount_list(workstation, fd->storage);
+  storage_t st = find_storage_on_mount_list(workstation, fd->mount);
   XBT_DEBUG("READ on disk '%s'",st->generic_resource.name);
   surf_model_t model = st->generic_resource.model;
   return model->extension.storage.read(st, size, fd);
@@ -363,7 +363,7 @@ static surf_action_t ws_action_read(void *workstation, size_t size,
 static surf_action_t ws_action_write(void *workstation, size_t size, 
                                      surf_file_t fd)
 {
-  storage_t st = find_storage_on_mount_list(workstation, fd->storage);
+  storage_t st = find_storage_on_mount_list(workstation, fd->mount);
   XBT_DEBUG("WRITE on disk '%s'",st->generic_resource.name);
   surf_model_t model = st->generic_resource.model;
   return model->extension.storage.write(st, size, fd);
@@ -376,7 +376,7 @@ static int ws_file_unlink(void *workstation, surf_file_t fd)
     return 0;
   } else {
 //    XBT_INFO("%s %zu", fd->storage, fd->size);
-    storage_t st = find_storage_on_mount_list(workstation, fd->storage);
+    storage_t st = find_storage_on_mount_list(workstation, fd->mount);
     xbt_dict_t content_dict = (st)->content;
     /* Check if the file is on this storage */
     if (!xbt_dict_get_or_null(content_dict, fd->name)){
@@ -391,7 +391,7 @@ static int ws_file_unlink(void *workstation, surf_file_t fd)
       xbt_dict_remove(content_dict,fd->name);
 
       free(fd->name);
-      free(fd->storage);
+      free(fd->mount);
       xbt_free(fd);
       return 1;
     }

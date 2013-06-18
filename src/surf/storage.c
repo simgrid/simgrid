@@ -95,7 +95,7 @@ static surf_action_t storage_action_open(void *storage, const char* mount,
   surf_file_t file = xbt_new0(s_surf_file_t,1);
   file->name = xbt_strdup(path);
   file->size = size;
-  file->storage = xbt_strdup(mount);
+  file->mount = xbt_strdup(mount);
 
   surf_action_t action = storage_action_execute(storage,0, OPEN);
   action->file = (void *)file;
@@ -117,7 +117,7 @@ static surf_action_t storage_action_close(void *storage, surf_file_t fd)
   }
 
   free(fd->name);
-  free(fd->storage);
+  free(fd->mount);
   xbt_free(fd);
   surf_action_t action = storage_action_execute(storage,0, CLOSE);
   return action;

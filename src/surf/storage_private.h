@@ -22,7 +22,7 @@ typedef struct s_mount {
 
 typedef struct surf_file {
   char *name;
-  char *storage;
+  char *mount;
   size_t size;
 } s_surf_file_t;
 
