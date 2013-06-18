@@ -176,7 +176,7 @@ Java_org_simgrid_msg_Host_getSpeed(JNIEnv * env,
 }
 
 JNIEXPORT jdouble JNICALL
-Java_org_simgrid_msg_Host_getCore(JNIEnv * env,
+Java_org_simgrid_msg_Host_getCoreNumber(JNIEnv * env,
                                         jobject jhost) {
   msg_host_t host = jhost_get_native(env, jhost);
 
@@ -185,7 +185,7 @@ Java_org_simgrid_msg_Host_getCore(JNIEnv * env,
     return -1;
   }
 
-  return (jdouble) MSG_get_host_core(host);
+  return (jdouble) MSG_host_get_core_number(host);
 }
 
 JNIEXPORT jint JNICALL

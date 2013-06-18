@@ -206,7 +206,7 @@ double MSG_get_host_speed(msg_host_t h)
 /** \ingroup m_host_management
  * \brief Return the number of core.
  */
-int MSG_get_host_core(msg_host_t h)
+int MSG_host_get_core_number(msg_host_t h)
 {
   xbt_assert((h != NULL), "Invalid parameters");
 

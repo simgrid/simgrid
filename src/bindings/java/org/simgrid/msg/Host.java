@@ -171,7 +171,7 @@ public class Host {
 	 * @return			The speed of the processor of the host in flops.
 	 *
 	 */ 
-	public native double getCore();
+	public native double getCoreNumber();
 
 	/**
 	 * Returns the value of a given host property. 
