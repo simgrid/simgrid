@@ -2,42 +2,9 @@
 ! setenv LD_LIBRARY_PATH=../../lib
 ! output sort
 
-p Test scatter
-$ ../../bin/smpirun -map -hostfile ${srcdir:=.}/hostfile -platform ${srcdir:=.}/../../examples/msg/small_platform.xml -np 16 --log=xbt_cfg.thres:critical ./scatter 
-> 	[0] ok.
-> 	[0] ok.
-> 	[10] ok.
-> 	[10] ok.
-> 	[11] ok.
-> 	[11] ok.
-> 	[12] ok.
-> 	[12] ok.
-> 	[13] ok.
-> 	[13] ok.
-> 	[14] ok.
-> 	[14] ok.
-> 	[15] ok.
-> 	[15] ok.
-> 	[1] ok.
-> 	[1] ok.
-> 	[2] ok.
-> 	[2] ok.
-> 	[3] ok.
-> 	[3] ok.
-> 	[4] ok.
-> 	[4] ok.
-> 	[5] ok.
-> 	[5] ok.
-> 	[6] ok.
-> 	[6] ok.
-> 	[7] ok.
-> 	[7] ok.
-> 	[8] ok.
-> 	[8] ok.
-> 	[9] ok.
-> 	[9] ok.
-> ** IBM Test Result: ... 
-> ** Small Test Result: ... 
+p Test barrier
+$ ../../bin/smpirun -map -hostfile ${srcdir:=.}/hostfile -platform ${srcdir:=.}/../../examples/msg/small_platform.xml -np 16 --log=xbt_cfg.thres:critical ./barrier_coll
+> ... Barrier ....
 > You requested to use 16 processes, but there is only 5 processes in your hostfile...
 > [0.000000] [surf_config/INFO] Switching workstation model to compound since you changed the network and/or cpu model(s)
 > [rank 0] -> Tremblay
