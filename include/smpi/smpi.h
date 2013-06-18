@@ -38,12 +38,12 @@ SG_BEGIN_DECL()
 #define MPI_MAX_OBJECT_NAME    100
 #define MPI_MAX_PORT_NAME      100
 #define SMPI_RAND_SEED 5
-#define MPI_ANY_SOURCE -1
+#define MPI_ANY_SOURCE -555
 #define MPI_BOTTOM (void *)0
-#define MPI_PROC_NULL -2
-#define MPI_ANY_TAG -1
-#define MPI_UNDEFINED -3
-#define MPI_IN_PLACE (void *)-4
+#define MPI_PROC_NULL -666
+#define MPI_ANY_TAG -444
+#define MPI_UNDEFINED -333
+#define MPI_IN_PLACE (void *)-222
 // errorcodes
 #define MPI_SUCCESS       0
 #define MPI_ERR_COMM      1

@@ -18,7 +18,7 @@
       integer MPI_MAX_DATAREP_STRIN, MPI_MAX_INFO_KEY
       integer MPI_MAX_INFO_VAL, MPI_MAX_OBJECT_NAME, MPI_MAX_PORT_NAME
       integer MPI_ANY_SOURCE, MPI_PROC_NULL, MPI_ANY_TAG, MPI_UNDEFINED
-      integer MPI_TAG_UB, MPI_TAG_LB
+      integer MPI_IN_PLACE, MPI_TAG_UB, MPI_TAG_LB
       parameter(MPI_MAX_PROCESSOR_NAME=100)
       parameter(MPI_MAX_ERROR_STRING=100)
       parameter(MPI_MAX_DATAREP_STRIN =100)
@@ -26,10 +26,11 @@
       parameter(MPI_MAX_INFO_VAL=100)
       parameter(MPI_MAX_OBJECT_NAME=100)
       parameter(MPI_MAX_PORT_NAME=100)
-      parameter(MPI_ANY_SOURCE=-1)
-      parameter(MPI_PROC_NULL=-2)
-      parameter(MPI_ANY_TAG=-1)
-      parameter(MPI_UNDEFINED=-1)
+      parameter(MPI_ANY_SOURCE=-555)
+      parameter(MPI_PROC_NULL=-666)
+      parameter(MPI_ANY_TAG=-444)
+      parameter(MPI_UNDEFINED=-333)
+      parameter(MPI_IN_PLACE=-222)
       parameter(MPI_TAG_UB=0)
       parameter(MPI_TAG_LB=0)
 
