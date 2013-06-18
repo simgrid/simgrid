@@ -986,7 +986,7 @@ int PMPI_Isend(void *buf, int count, MPI_Datatype datatype, int dst,
     *request = MPI_REQUEST_NULL;
     retval = MPI_SUCCESS;
   } else if (dst >= smpi_group_size(smpi_comm_group(comm)) || dst <0){
-    retval = MPI_ERR_COMM;
+    retval = MPI_ERR_RANK;
   } else if (count < 0) {
     retval = MPI_ERR_COUNT;
   } else if (buf==NULL && count > 0) {
@@ -1031,7 +1031,7 @@ int PMPI_Issend(void* buf, int count, MPI_Datatype datatype, int dst, int tag, M
     *request = MPI_REQUEST_NULL;
     retval = MPI_SUCCESS;
   } else if (dst >= smpi_group_size(smpi_comm_group(comm)) || dst <0){
-    retval = MPI_ERR_COMM;
+    retval = MPI_ERR_RANK;
   } else if (count < 0) {
     retval = MPI_ERR_COUNT;
   } else if (buf==NULL && count > 0) {
@@ -1077,7 +1077,7 @@ int PMPI_Recv(void *buf, int count, MPI_Datatype datatype, int src, int tag,
     status->MPI_SOURCE = MPI_PROC_NULL;
     retval = MPI_SUCCESS;
   } else if (src!=MPI_ANY_SOURCE && (src >= smpi_group_size(smpi_comm_group(comm)) || src <0)){
-    retval = MPI_ERR_COMM;
+    retval = MPI_ERR_RANK;
   } else if (count < 0) {
     retval = MPI_ERR_COUNT;
   } else if (buf==NULL && count > 0) {
@@ -1123,7 +1123,7 @@ int PMPI_Send(void *buf, int count, MPI_Datatype datatype, int dst, int tag,
   } else if (dst == MPI_PROC_NULL) {
     retval = MPI_SUCCESS;
   } else if (dst >= smpi_group_size(smpi_comm_group(comm)) || dst <0){
-    retval = MPI_ERR_COMM;
+    retval = MPI_ERR_RANK;
   } else if (count < 0) {
     retval = MPI_ERR_COUNT;
   } else if (buf==NULL && count > 0) {
@@ -1167,7 +1167,7 @@ int PMPI_Ssend(void* buf, int count, MPI_Datatype datatype, int dst, int tag, MP
    } else if (dst == MPI_PROC_NULL) {
      retval = MPI_SUCCESS;
    } else if (dst >= smpi_group_size(smpi_comm_group(comm)) || dst <0){
-     retval = MPI_ERR_COMM;
+     retval = MPI_ERR_RANK;
    } else if (count < 0) {
      retval = MPI_ERR_COUNT;
    } else if (buf==NULL && count > 0) {
@@ -1219,7 +1219,7 @@ int PMPI_Sendrecv(void *sendbuf, int sendcount, MPI_Datatype sendtype,
       retval = MPI_SUCCESS;
   }else if (dst >= smpi_group_size(smpi_comm_group(comm)) || dst <0 ||
       (src!=MPI_ANY_SOURCE && (src >= smpi_group_size(smpi_comm_group(comm)) || src <0))){
-    retval = MPI_ERR_COMM;
+    retval = MPI_ERR_RANK;
   } else if (sendcount < 0 || recvcount<0) {
       retval = MPI_ERR_COUNT;
   } else if ((sendbuf==NULL && sendcount > 0)||(recvbuf==NULL && recvcount>0)) {
