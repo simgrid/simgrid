@@ -20,29 +20,27 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_io, msg,
 /********************************* File **************************************/
 
 /** \ingroup msg_file_management
- * \brief Read elements of a file
+ * \brief Read a file
  *
- * \param ptr buffer to where the data is copied
  * \param size of the file to read
  * \param fd is a the file descriptor
- * \return the number of items successfully read
+ * \return the number of bytes successfully read
  */
-size_t MSG_file_read(void* ptr, size_t size, msg_file_t fd)
+size_t MSG_file_read(size_t size, msg_file_t fd)
 {
-  return simcall_file_read(ptr, size, fd->simdata->smx_file);
+  return simcall_file_read(size, fd->simdata->smx_file);
 }
 
 /** \ingroup msg_file_management
- * \brief Write elements into a file
+ * \brief Write into a file
  *
- * \param ptr buffer from where the data is copied
  * \param size of the file to write
  * \param fd is a the file descriptor
- * \return the number of items successfully write
+ * \return the number of bytes successfully write
  */
-size_t MSG_file_write(const void* ptr, size_t size, msg_file_t fd)
+size_t MSG_file_write(size_t size, msg_file_t fd)
 {
-  return simcall_file_write(ptr, size, fd->simdata->smx_file);
+  return simcall_file_write(size, fd->simdata->smx_file);
 }
 
 /** \ingroup msg_file_management

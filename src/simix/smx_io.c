@@ -16,15 +16,15 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_io, simix,
 
 
 //SIMIX FILE READ
-void SIMIX_pre_file_read(smx_simcall_t simcall, void *ptr, size_t size,
+void SIMIX_pre_file_read(smx_simcall_t simcall, size_t size,
 		        smx_file_t fd)
 {
-  smx_action_t action = SIMIX_file_read(simcall->issuer, ptr, size, fd);
+  smx_action_t action = SIMIX_file_read(simcall->issuer, size, fd);
   xbt_fifo_push(action->simcalls, simcall);
   simcall->issuer->waiting_action = action;
 }
 
-smx_action_t SIMIX_file_read(smx_process_t process, void* ptr, size_t size,
+smx_action_t SIMIX_file_read(smx_process_t process, size_t size,
                              smx_file_t fd)
 {
   smx_action_t action;
@@ -46,7 +46,7 @@ smx_action_t SIMIX_file_read(smx_process_t process, void* ptr, size_t size,
 
   action->io.host = host;
   action->io.surf_io =
-      surf_workstation_model->extension.workstation.read(host, ptr, size,
+      surf_workstation_model->extension.workstation.read(host, size,
                                                          fd->surf_file);
 
   surf_workstation_model->action_data_set(action->io.surf_io, action);
@@ -56,15 +56,15 @@ smx_action_t SIMIX_file_read(smx_process_t process, void* ptr, size_t size,
 }
 
 //SIMIX FILE WRITE
-void SIMIX_pre_file_write(smx_simcall_t simcall, const void *ptr, size_t size,
+void SIMIX_pre_file_write(smx_simcall_t simcall, size_t size,
 	                  smx_file_t fd)
 {
-  smx_action_t action = SIMIX_file_write(simcall->issuer, ptr, size, fd);
+  smx_action_t action = SIMIX_file_write(simcall->issuer, size, fd);
   xbt_fifo_push(action->simcalls, simcall);
   simcall->issuer->waiting_action = action;
 }
 
-smx_action_t SIMIX_file_write(smx_process_t process, const void* ptr,
+smx_action_t SIMIX_file_write(smx_process_t process,
                               size_t size, smx_file_t fd)
 {
   smx_action_t action;
@@ -86,7 +86,7 @@ smx_action_t SIMIX_file_write(smx_process_t process, const void* ptr,
 
   action->io.host = host;
   action->io.surf_io =
-      surf_workstation_model->extension.workstation.write(host, ptr, size,
+      surf_workstation_model->extension.workstation.write(host, size,
                                                           fd->surf_file);
 
   surf_workstation_model->action_data_set(action->io.surf_io, action);

@@ -39,7 +39,7 @@ JNIEXPORT jlong JNICALL
 Java_org_simgrid_msg_File_read(JNIEnv *env, jobject jfile, jlong jsize) {
   msg_file_t file = jfile_get_native(env, jfile);
   size_t n;
-  n = MSG_file_read(NULL,(size_t)jsize, file);
+  n = MSG_file_read((size_t)jsize, file);
   return (jlong)n;
 }
 
@@ -47,7 +47,7 @@ JNIEXPORT jlong JNICALL
 Java_org_simgrid_msg_File_write(JNIEnv *env, jobject jfile, jlong jsize) {
   msg_file_t file = jfile_get_native(env, jfile);
   size_t n;
-  n = MSG_file_write(NULL, (size_t)jsize, file);
+  n = MSG_file_write((size_t)jsize, file);
   return (jlong)n;
 }
 JNIEXPORT void JNICALL

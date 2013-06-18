@@ -1105,19 +1105,18 @@ int simcall_sem_get_capacity(smx_sem_t sem)
  * \ingroup simix_file_management
  *
  */
-size_t simcall_file_read(void* ptr, size_t size, smx_file_t fd)
+size_t simcall_file_read(size_t size, smx_file_t fd)
 {
-  return simcall_BODY_file_read(ptr, size, fd);
+  return simcall_BODY_file_read(size, fd);
 }
 
 /**
  * \ingroup simix_file_management
  *
  */
-size_t simcall_file_write(const void* ptr, size_t size,
-                          smx_file_t fd)
+size_t simcall_file_write(size_t size, smx_file_t fd)
 {
-  return simcall_BODY_file_write(ptr, size, fd);
+  return simcall_BODY_file_write(size, fd);
 }
 
 /**

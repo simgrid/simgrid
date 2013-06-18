@@ -33,7 +33,6 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(io_file,
 int host(int argc, char *argv[])
 {
   msg_file_t file = NULL;
-  void *ptr = NULL;
   char* mount = xbt_strdup("/home");
   size_t read,write;
 
@@ -49,13 +48,13 @@ int host(int argc, char *argv[])
 
   XBT_INFO("\tOpen file '%s'",file->name);
 
-  read = MSG_file_read(ptr,10000000,file);     // Read for 10MB
+  read = MSG_file_read(10000000,file);     // Read for 10MB
   XBT_INFO("\tHave read    %zu on %s",read,file->name);
 
-  write = MSG_file_write(ptr,100000,file);  // Write for 100KB
+  write = MSG_file_write(100000,file);  // Write for 100KB
   XBT_INFO("\tHave written %zu on %s",write,file->name);
 
-  read = MSG_file_read(ptr,110000,file);     // Read for 110KB
+  read = MSG_file_read(110000,file);     // Read for 110KB
   XBT_INFO("\tHave read    %zu on %s (of size %zu)",read,file->name,
       MSG_file_get_size(file));
 

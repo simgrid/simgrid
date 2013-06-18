@@ -461,9 +461,8 @@ XBT_PUBLIC(void) simcall_sem_acquire_timeout(smx_sem_t sem,
                                              double max_duration);
 XBT_PUBLIC(int) simcall_sem_get_capacity(smx_sem_t sem);
 
-XBT_PUBLIC(size_t) simcall_file_read(void* ptr, size_t size, smx_file_t fd);
-XBT_PUBLIC(size_t) simcall_file_write(const void* ptr, size_t size,
-                                      smx_file_t fd);
+XBT_PUBLIC(size_t) simcall_file_read(size_t size, smx_file_t fd);
+XBT_PUBLIC(size_t) simcall_file_write(size_t size, smx_file_t fd);
 XBT_PUBLIC(smx_file_t) simcall_file_open(const char* storage, const char* path);
 XBT_PUBLIC(int) simcall_file_close(smx_file_t fd);
 XBT_PUBLIC(int) simcall_file_unlink(smx_file_t fd);

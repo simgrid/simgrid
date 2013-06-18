@@ -228,10 +228,8 @@ typedef struct surf_network_model_extension_public {
 typedef struct surf_storage_model_extension_public {
   surf_action_t(*open) (void *storage, const char* mount, const char* path);
   surf_action_t(*close) (void *storage, surf_file_t fd);
-  surf_action_t(*read) (void *storage, void* ptr, size_t size,
-                        surf_file_t fd);
-  surf_action_t(*write) (void *storage, const void* ptr, size_t size,
-                         surf_file_t fd);
+  surf_action_t(*read) (void *storage, size_t size, surf_file_t fd);
+  surf_action_t(*write) (void *storage, size_t size, surf_file_t fd);
   surf_action_t(*stat) (void *storage, surf_file_t fd);
   surf_action_t(*ls) (void *storage, const char *path);
 } s_surf_model_extension_storage_t;
@@ -265,10 +263,8 @@ typedef struct surf_workstation_model_extension_public {
   surf_action_t(*open) (void *workstation, const char* storage,
                         const char* path);
   surf_action_t(*close) (void *workstation, surf_file_t fd);
-  surf_action_t(*read) (void *workstation, void* ptr, size_t size,
-                        surf_file_t fd);
-  surf_action_t(*write) (void *workstation, const void* ptr, size_t size,
-                         surf_file_t fd);
+  surf_action_t(*read) (void *workstation, size_t size, surf_file_t fd);
+  surf_action_t(*write) (void *workstation, size_t size, surf_file_t fd);
   surf_action_t(*stat) (void *workstation, surf_file_t fd);
   int(*unlink) (void *workstation, surf_file_t fd);
   surf_action_t(*ls) (void *workstation, const char* mount, const char *path);

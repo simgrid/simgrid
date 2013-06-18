@@ -30,7 +30,6 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(io_file,
 int host(int argc, char *argv[])
 {
   msg_file_t file = NULL;
-  void *ptr = NULL;
   char* mount = xbt_strdup("/home");
   size_t write;
 
@@ -47,7 +46,7 @@ int host(int argc, char *argv[])
   file = MSG_file_open(mount,FILENAME1);
 
   // Write into the new file
-  write = MSG_file_write(ptr,100000,file);  // Write for 100Ko
+  write = MSG_file_write(100000,file);  // Write for 100Ko
   XBT_INFO("\tHave written %zu on %s",write,file->name);
 
   // Close the file

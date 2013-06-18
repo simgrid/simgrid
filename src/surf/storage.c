@@ -123,8 +123,8 @@ static surf_action_t storage_action_close(void *storage, surf_file_t fd)
   return action;
 }
 
-static surf_action_t storage_action_read(void *storage, void* ptr, 
-					 size_t size, surf_file_t fd)
+static surf_action_t storage_action_read(void *storage, size_t size,
+                                         surf_file_t fd)
 {
   if(size > fd->size)
     size = fd->size;
@@ -132,8 +132,8 @@ static surf_action_t storage_action_read(void *storage, void* ptr,
   return action;
 }
 
-static surf_action_t storage_action_write(void *storage, const void* ptr,
-                                          size_t size, surf_file_t fd)
+static surf_action_t storage_action_write(void *storage, size_t size, 
+                                          surf_file_t fd)
 {
   char *filename = fd->name;
   XBT_DEBUG("\tWrite file '%s' size '%zu/%zu'",filename,size,fd->size);

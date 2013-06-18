@@ -351,22 +351,22 @@ static surf_action_t ws_action_close(void *workstation, surf_file_t fd)
   return model->extension.storage.close(st, fd);
 }
 
-static surf_action_t ws_action_read(void *workstation, void* ptr, size_t size,
+static surf_action_t ws_action_read(void *workstation, size_t size,
                                     surf_file_t fd)
 {
   storage_t st = find_storage_on_mount_list(workstation, fd->storage);
   XBT_DEBUG("READ on disk '%s'",st->generic_resource.name);
   surf_model_t model = st->generic_resource.model;
-  return model->extension.storage.read(st, ptr, size, fd);
+  return model->extension.storage.read(st, size, fd);
 }
 
-static surf_action_t ws_action_write(void *workstation, const void* ptr,
-                                     size_t size, surf_file_t fd)
+static surf_action_t ws_action_write(void *workstation, size_t size, 
+                                     surf_file_t fd)
 {
   storage_t st = find_storage_on_mount_list(workstation, fd->storage);
   XBT_DEBUG("WRITE on disk '%s'",st->generic_resource.name);
   surf_model_t model = st->generic_resource.model;
-  return model->extension.storage.write(st,  ptr, size, fd);
+  return model->extension.storage.write(st, size, fd);
 }
 
 static int ws_file_unlink(void *workstation, surf_file_t fd)
