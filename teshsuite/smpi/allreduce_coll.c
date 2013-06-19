@@ -15,6 +15,8 @@
 #define EXIT_FAILURE 1
 #endif
 
+#define MAXLEN  300000
+
 int main(int argc, char *argv[])
 {
   int rank, size;
@@ -27,23 +29,23 @@ int main(int argc, char *argv[])
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
   MPI_Comm_size(MPI_COMM_WORLD, &size);
 
-  sb = (int *) xbt_malloc(size * sizeof(int));
-  rb = (int *) xbt_malloc(size * sizeof(int));
+  sb = (int *) xbt_malloc(size *MAXLEN * sizeof(int));
+  rb = (int *) xbt_malloc(size *MAXLEN * sizeof(int));
   
-  for (i = 0; i < size; ++i) {
+  for (i = 0; i < size *MAXLEN; ++i) {
     sb[i] = rank*size + i;
     rb[i] = 0;
   }
 
   printf("[%d] sndbuf=[", rank);
-  for (i = 0; i < size; i++)
+  for (i = 0; i < size *size; i++)
     printf("%d ", sb[i]);
   printf("]\n");
 
-  status = MPI_Allreduce(sb, rb, size, MPI_INT, MPI_SUM, MPI_COMM_WORLD);
+  status = MPI_Allreduce(sb, rb, size *MAXLEN, MPI_INT, MPI_SUM, MPI_COMM_WORLD);
 
   printf("[%d] rcvbuf=[", rank);
-  for (i = 0; i < size; i++)
+  for (i = 0; i < size *size; i++)//do not print everything
     printf("%d ", rb[i]);
   printf("]\n");
 
