@@ -27,7 +27,7 @@ int smpi_coll_tuned_bcast_arrival_pattern_aware(void *buf, int count,
   int header_index;
   int flag_array[MAX_NODE];
   int already_sent[MAX_NODE];
-
+  int to_clean[MAX_NODE];
   int header_buf[HEADER_SIZE];
   char temp_buf[MAX_NODE];
 
@@ -70,6 +70,7 @@ int smpi_coll_tuned_bcast_arrival_pattern_aware(void *buf, int count,
   /* value == 0 means root has not send data (or header) to the node yet */
   for (i = 0; i < MAX_NODE; i++) {
     already_sent[i] = 0;
+    to_clean[i] = 0;
   }
 
   /* when a message is smaller than a block size => no pipeline */
@@ -274,6 +275,7 @@ int smpi_coll_tuned_bcast_arrival_pattern_aware(void *buf, int count,
 
 
               already_sent[i] = 1;
+              to_clean[i]=1;
               sent_count++;
               break;
             }
@@ -282,6 +284,9 @@ int smpi_coll_tuned_bcast_arrival_pattern_aware(void *buf, int count,
 
       }                         /* while loop */
 
+      for(i=0; i<size; i++)
+        if(to_clean[i]!=0)smpi_mpi_recv(&temp_buf[i], 1, MPI_CHAR, i, tag, MPI_COMM_WORLD,
+                     &status);
       //total = MPI_Wtime() - start2;
       //total *= 1000;
       //printf("Node zero iter = %d time = %.2f\n",iteration,total);
@@ -331,8 +336,10 @@ int smpi_coll_tuned_bcast_arrival_pattern_aware(void *buf, int count,
                     header_buf[myordering + 1], tag, comm);
         }
         smpi_mpi_waitall((pipe_length), send_request_array, send_status_array);
-      }
-
+      }else{
+          smpi_mpi_waitall(pipe_length, recv_request_array, recv_status_array);
+          }
+    
     }
 
     free(send_request_array);

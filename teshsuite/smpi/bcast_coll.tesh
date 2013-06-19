@@ -22,18 +22,35 @@ $ ../../bin/smpirun -map -hostfile ${srcdir:=.}/hostfile -platform ${srcdir:=.}/
 > [rank 15] -> Tremblay
 > [0.000000] [surf_config/INFO] Switching workstation model to compound since you changed the network and/or cpu model(s)
 > [0] number of values equals to 17: 2048
-> [1] number of values equals to 17: 2048
-> [2] number of values equals to 17: 2048
-> [3] number of values equals to 17: 2048
-> [4] number of values equals to 17: 2048
-> [5] number of values equals to 17: 2048
-> [6] number of values equals to 17: 2048
-> [7] number of values equals to 17: 2048
-> [8] number of values equals to 17: 2048
-> [9] number of values equals to 17: 2048
+> [0] number of values equals to 17: 4096
 > [10] number of values equals to 17: 2048
+> [10] number of values equals to 17: 4096
 > [11] number of values equals to 17: 2048
+> [11] number of values equals to 17: 4096
 > [12] number of values equals to 17: 2048
+> [12] number of values equals to 17: 4096
 > [13] number of values equals to 17: 2048
+> [13] number of values equals to 17: 4096
 > [14] number of values equals to 17: 2048
+> [14] number of values equals to 17: 4096
 > [15] number of values equals to 17: 2048
+> [15] number of values equals to 17: 4096
+> [1] number of values equals to 17: 2048
+> [1] number of values equals to 17: 4096
+> [2] number of values equals to 17: 2048
+> [2] number of values equals to 17: 4096
+> [3] number of values equals to 17: 2048
+> [3] number of values equals to 17: 4096
+> [4] number of values equals to 17: 2048
+> [4] number of values equals to 17: 4096
+> [5] number of values equals to 17: 2048
+> [5] number of values equals to 17: 4096
+> [6] number of values equals to 17: 2048
+> [6] number of values equals to 17: 4096
+> [7] number of values equals to 17: 2048
+> [7] number of values equals to 17: 4096
+> [8] number of values equals to 17: 2048
+> [8] number of values equals to 17: 4096
+> [9] number of values equals to 17: 2048
+> [9] number of values equals to 17: 4096
+

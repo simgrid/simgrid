@@ -27,7 +27,7 @@ int smpi_coll_tuned_bcast_arrival_nb(void *buf, int count,
   int header_index;
   int flag_array[MAX_NODE];
   int already_sent[MAX_NODE];
-
+  int to_clean[MAX_NODE];
   int header_buf[HEADER_SIZE];
   char temp_buf[MAX_NODE];
 
@@ -70,6 +70,7 @@ int smpi_coll_tuned_bcast_arrival_nb(void *buf, int count,
   /* value == 0 means root has not send data (or header) to the node yet */
   for (i = 0; i < MAX_NODE; i++) {
     already_sent[i] = 0;
+    to_clean[i]=0;
   }
   //  printf("YYY\n");
 
@@ -123,6 +124,7 @@ int smpi_coll_tuned_bcast_arrival_nb(void *buf, int count,
               smpi_mpi_send(buf, count, datatype, i, tag, comm);
               already_sent[i] = 1;
               sent_count++;
+              to_clean[i]=0;
               break;
             }
           }
@@ -130,6 +132,9 @@ int smpi_coll_tuned_bcast_arrival_nb(void *buf, int count,
 
 
       }                         /* while loop */
+      
+      for(i=0; i<size; i++)
+        if(to_clean[i]!=0)smpi_mpi_recv(temp_buf, 1, MPI_CHAR, i, tag, MPI_COMM_WORLD, &status);
     }
 
     /* non-root */
@@ -366,6 +371,9 @@ int smpi_coll_tuned_bcast_arrival_nb(void *buf, int count,
                     header_buf[myordering + 1], tag, comm);
         }
         smpi_mpi_waitall((pipe_length), send_request_array, send_status_array);
+      }else{
+        for (i = 0; i < pipe_length; i++) 
+          smpi_mpi_wait(&recv_request_array[i], &recv_status_array[i]);
       }
 
     }
