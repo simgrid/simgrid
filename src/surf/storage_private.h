@@ -12,7 +12,7 @@ typedef struct s_storage_type {
   char *content;
   char *type_id;
   xbt_dict_t properties;
-  unsigned long size;
+  size_t size;
 } s_storage_type_t, *storage_type_t;
 
 typedef struct s_mount {
@@ -20,31 +20,26 @@ typedef struct s_mount {
   char *name;
 } s_mount_t, *mount_t;
 
-typedef struct surf_stat { /* file status structure */
-  s_file_stat_t stat;
-  /* possible additionnal fields (e.g., popularity, last access time to know whether the file is in cache, ...) */
-} s_surf_stat_t;
-
 typedef struct surf_file {
   char *name;
-  surf_stat_t content;
-  const char* storage;
+  char *storage;
+  size_t size;
 } s_surf_file_t;
 
 typedef struct storage {
-  s_surf_resource_t generic_resource;   /*< Structure with generic data. Needed at begin to interate with SURF */
+  s_surf_resource_t generic_resource;   /*< Structure with generic data. Needed at begin to interact with SURF */
   e_surf_resource_state_t state_current;        /*< STORAGE current state (ON or OFF) */
-  lmm_constraint_t constraint;          /* Constraint for maximum bandwidth from connexion */
+  lmm_constraint_t constraint;          /* Constraint for maximum bandwidth from connection */
   lmm_constraint_t constraint_write;    /* Constraint for maximum write bandwidth*/
   lmm_constraint_t constraint_read;     /* Constraint for maximum write bandwidth*/
-  xbt_dict_t content; /* char * -> s_surf_stat_t */
-  unsigned long size;
-  unsigned long used_size;
+  xbt_dict_t content; /* char * -> s_surf_file_t */
+  size_t size;
+  size_t used_size;
   xbt_dynar_t write_actions;
 } s_storage_t, *storage_t;
 
 typedef enum {
-  READ=0, WRITE, STAT, OPEN, CLOSE, UNLINK, LS
+  READ=0, WRITE, STAT, OPEN, CLOSE, LS
 } e_surf_action_storage_type_t;
 
 typedef struct surf_action_storage {

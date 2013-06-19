@@ -53,6 +53,8 @@ typedef struct s_mc_snapshot_stack{
 typedef struct s_mc_global_t{
   mc_snapshot_t snapshot;
   int raw_mem_set;
+  int prev_pair;
+  char *prev_req;
 }s_mc_global_t, *mc_global_t;
 
 mc_snapshot_t SIMIX_pre_mc_snapshot(smx_simcall_t simcall);
@@ -66,7 +68,7 @@ int is_stack_ignore_variable(char *frame, char *var_name);
 
 extern double *mc_time;
 extern FILE *dot_output;
-extern const char* colors[10];
+extern const char* colors[13];
 
 int MC_deadlock_check(void);
 void MC_replay(xbt_fifo_t stack, int start);
@@ -284,36 +286,24 @@ extern xbt_dynar_t mc_stack_comparison_ignore;
 extern xbt_dynar_t mc_data_bss_comparison_ignore;
 
 typedef struct s_mc_pair{
-  mc_snapshot_t system_state;
-  mc_state_t graph_state;
-  xbt_automaton_state_t automaton_state;
-  int requests;
   int num;
+  int search_cycle;
+  mc_state_t graph_state; /* System state included */
+  xbt_automaton_state_t automaton_state;
+  xbt_dynar_t atomic_propositions;
+  int requests;
+  size_t heap_bytes_used;
+  int nb_processes;
+  int stack_removed;
+  int visited_removed;
+  int acceptance_removed;
 }s_mc_pair_t, *mc_pair_t;
 
-typedef struct s_mc_acceptance_pair{
-  int num;
-  xbt_automaton_state_t automaton_state;
-  xbt_dynar_t prop_ato;
-  mc_snapshot_t system_state;
-  size_t heap_bytes_used;
-  int nb_processes;
-}s_mc_acceptance_pair_t, *mc_acceptance_pair_t;
-
-typedef struct s_mc_visited_pair{
-  xbt_automaton_state_t automaton_state;
-  xbt_dynar_t prop_ato;
-  mc_snapshot_t system_state;
-  int num;
-  size_t heap_bytes_used;
-  int nb_processes;
-}s_mc_visited_pair_t, *mc_visited_pair_t;
-
-mc_pair_t MC_pair_new(mc_state_t sg, xbt_automaton_state_t st, int r);
+mc_pair_t MC_pair_new(void);
 void MC_pair_delete(mc_pair_t);
 
 void MC_ddfs_init(void);
-void MC_ddfs(int search_cycle);
+void MC_ddfs(void);
 void MC_show_stack_liveness(xbt_fifo_t stack);
 void MC_dump_stack_liveness(xbt_fifo_t stack);
 

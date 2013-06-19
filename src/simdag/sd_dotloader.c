@@ -170,7 +170,7 @@ xbt_dynar_t SD_dotload_generic(const char * filename, seq_par_t seq_or_par){
 
     char *name = agnameof(node);
     double amount = atof(agget(node, (char *) "size"));
-    double alpha;
+    double alpha = 0.0;
 
     if (seq_or_par == sequential){
       XBT_DEBUG("See <job id=%s amount =%.0f>", name, amount);

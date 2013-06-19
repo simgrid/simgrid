@@ -11,6 +11,6 @@
 </config>
 	
 <AS  id="AS0"  routing="Full">
-	<host id="bob" power="500000000"/>
+	<host id="bob" power="500Mf"/>
 </AS>
 </platform>

@@ -15,6 +15,7 @@ connection_t connection_new(int id)
   connection->id = id;
   connection->mailbox = bprintf("%d", id);
   connection->bitfield = NULL;
+  connection->current_piece = -1;
   connection->interested = 0;
   connection->am_interested = 0;
   connection->choked_upload = 1;

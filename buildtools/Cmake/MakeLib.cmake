@@ -38,7 +38,7 @@ endif()
 
 # Compute the dependencies of SimGrid
 #####################################
-set(SIMGRID_DEP "-lm -lpcre")
+set(SIMGRID_DEP "-lm")
 
 if(pthread)
   if(${CONTEXT_THREADS})

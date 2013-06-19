@@ -64,7 +64,7 @@ void SIMIX_global_init(int *argc, char **argv)
 #ifdef TIME_BENCH_AMDAHL
     simix_global->timer_seq = xbt_os_timer_new();
     simix_global->timer_par = xbt_os_timer_new();
-    xbt_os_timer_start(simix_global->timer_seq);
+    xbt_os_cputimer_start(simix_global->timer_seq);
 #endif
     simix_global->process_to_run = xbt_dynar_new(sizeof(smx_process_t), NULL);
     simix_global->process_that_ran = xbt_dynar_new(sizeof(smx_process_t), NULL);
@@ -156,7 +156,7 @@ static void SIMIX_clean(void)
   surf_exit();
 
 #ifdef TIME_BENCH_AMDAHL
-  xbt_os_timer_stop(simix_global->timer_seq);
+  xbt_os_cputimer_stop(simix_global->timer_seq);
   XBT_INFO("Amdhal timing informations. Sequential time: %lf; Parallel time: %lf",
            xbt_os_timer_elapsed(simix_global->timer_seq),
            xbt_os_timer_elapsed(simix_global->timer_par));
@@ -226,13 +226,13 @@ void SIMIX_run(void)
 
       /* Run all processes that are ready to run, possibly in parallel */
 #ifdef TIME_BENCH_AMDAHL
-      xbt_os_timer_stop(simix_global->timer_seq);
-      xbt_os_timer_resume(simix_global->timer_par);
+      xbt_os_cputimer_stop(simix_global->timer_seq);
+      xbt_os_cputimer_resume(simix_global->timer_par);
 #endif
       SIMIX_process_runall();
 #ifdef TIME_BENCH_AMDAHL
-      xbt_os_timer_stop(simix_global->timer_par);
-      xbt_os_timer_resume(simix_global->timer_seq);
+      xbt_os_cputimer_stop(simix_global->timer_par);
+      xbt_os_cputimer_resume(simix_global->timer_seq);
 #endif
 
       /* Move all killing processes to the end of the list, because killing a process that have an ongoing simcall is a bad idea */

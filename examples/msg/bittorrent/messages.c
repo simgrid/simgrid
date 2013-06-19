@@ -6,7 +6,8 @@
 #include "messages.h"
 #include "bittorrent.h"
 
-XBT_LOG_NEW_DEFAULT_CATEGORY(msg_messages, "Messages specific for the message factory");
+XBT_LOG_NEW_DEFAULT_CATEGORY(msg_messages,
+                             "Messages specific for the message factory");
 
 #define BITS_TO_BYTES(x) ((x / 8) + (x % 8) ? 1 : 0)
 
@@ -27,7 +28,7 @@ msg_task_t task_message_new(e_message_type type, const char *issuer_host_name,
   message->mailbox = mailbox;
   message->type = type;
   msg_task_t task = MSG_task_create(NULL, 0, size, message);
-  XBT_DEBUG("type: %d size: %d", (int)type, size);
+  XBT_DEBUG("type: %d size: %d", (int) type, size);
   return task;
 }
 
@@ -36,7 +37,7 @@ msg_task_t task_message_new(e_message_type type, const char *issuer_host_name,
  */
 msg_task_t task_message_index_new(e_message_type type,
                                   const char *issuer_host_name,
-                                  const char *mailbox, int peer_id, 
+                                  const char *mailbox, int peer_id,
                                   int index, int varsize)
 {
   msg_task_t task = task_message_new(type, issuer_host_name, mailbox, peer_id,
@@ -52,8 +53,8 @@ msg_task_t task_message_bitfield_new(const char *issuer_host_name,
 {
   msg_task_t task =
       task_message_new(MESSAGE_BITFIELD, issuer_host_name, mailbox, peer_id,
-                       task_message_size(MESSAGE_BITFIELD) + 
-                       /* Size of bitfield in bytes */ 
+                       task_message_size(MESSAGE_BITFIELD) +
+                       /* Size of bitfield in bytes */
                        BITS_TO_BYTES(bitfield_size));
   message_t message = MSG_task_get_data(task);
   message->bitfield = bitfield;
@@ -61,8 +62,9 @@ msg_task_t task_message_bitfield_new(const char *issuer_host_name,
 }
 
 msg_task_t task_message_request_new(const char *issuer_host_name,
-                                    const char *mailbox, int peer_id, int index,
-                                    int block_index, int block_length)
+                                    const char *mailbox, int peer_id,
+                                    int index, int block_index,
+                                    int block_length)
 {
   msg_task_t task =
       task_message_index_new(MESSAGE_REQUEST, issuer_host_name, mailbox,
@@ -75,14 +77,13 @@ msg_task_t task_message_request_new(const char *issuer_host_name,
 
 msg_task_t task_message_piece_new(const char *issuer_host_name,
                                   const char *mailbox, int peer_id, int index,
-                                  int stalled, int block_index,
+                                  int block_index,
                                   int block_length, int block_size)
 {
   msg_task_t task =
       task_message_index_new(MESSAGE_PIECE, issuer_host_name, mailbox, peer_id,
                              index, block_length * block_size);
   message_t message = MSG_task_get_data(task);
-  message->stalled = stalled;
   message->block_index = block_index;
   message->block_length = block_length;
   return task;
@@ -99,16 +100,36 @@ int task_message_size(e_message_type type)
 {
   int size = 0;
   switch (type) {
-    case MESSAGE_HANDSHAKE: size = MESSAGE_HANDSHAKE_SIZE; break;
-    case MESSAGE_CHOKE: size = MESSAGE_CHOKE_SIZE; break;
-    case MESSAGE_UNCHOKE: size = MESSAGE_UNCHOKE_SIZE; break;
-    case MESSAGE_INTERESTED: size = MESSAGE_INTERESTED_SIZE; break;
-    case MESSAGE_NOTINTERESTED: size = MESSAGE_INTERESTED_SIZE; break;
-    case MESSAGE_HAVE: size = MESSAGE_HAVE_SIZE; break;
-    case MESSAGE_BITFIELD: size = MESSAGE_BITFIELD_SIZE; break;
-    case MESSAGE_REQUEST: size = MESSAGE_REQUEST_SIZE; break;
-    case MESSAGE_PIECE: size = MESSAGE_PIECE_SIZE; break;
-    case MESSAGE_CANCEL: size = MESSAGE_CANCEL_SIZE; break;
+  case MESSAGE_HANDSHAKE:
+    size = MESSAGE_HANDSHAKE_SIZE;
+    break;
+  case MESSAGE_CHOKE:
+    size = MESSAGE_CHOKE_SIZE;
+    break;
+  case MESSAGE_UNCHOKE:
+    size = MESSAGE_UNCHOKE_SIZE;
+    break;
+  case MESSAGE_INTERESTED:
+    size = MESSAGE_INTERESTED_SIZE;
+    break;
+  case MESSAGE_NOTINTERESTED:
+    size = MESSAGE_INTERESTED_SIZE;
+    break;
+  case MESSAGE_HAVE:
+    size = MESSAGE_HAVE_SIZE;
+    break;
+  case MESSAGE_BITFIELD:
+    size = MESSAGE_BITFIELD_SIZE;
+    break;
+  case MESSAGE_REQUEST:
+    size = MESSAGE_REQUEST_SIZE;
+    break;
+  case MESSAGE_PIECE:
+    size = MESSAGE_PIECE_SIZE;
+    break;
+  case MESSAGE_CANCEL:
+    size = MESSAGE_CANCEL_SIZE;
+    break;
   }
   return size;
 }

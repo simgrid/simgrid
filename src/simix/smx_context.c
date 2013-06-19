@@ -36,6 +36,11 @@ static e_xbt_parmap_mode_t smx_parallel_synchronization_mode = XBT_PARMAP_DEFAUL
  */
 void SIMIX_context_mod_init(void)
 {
+#if defined(CONTEXT_THREADS) && !defined(HAVE_THREAD_LOCAL_STORAGE)
+  /* the __thread storage class is not available on this platform:
+   * use getspecific/setspecific instead to store the current context in each thread */
+  xbt_os_thread_key_create(&smx_current_context_key);
+#endif
   if (!simix_global->context_factory) {
     /* select the context factory to use to create the contexts */
     if (smx_factory_initializer_to_use) {
@@ -86,12 +91,6 @@ void SIMIX_context_mod_init(void)
       }
     }
   }
-
-#if defined(CONTEXT_THREADS) && !defined(HAVE_THREAD_LOCAL_STORAGE)
-  /* the __thread storage class is not available on this platform:
-   * use getspecific/setspecific instead to store the current context in each thread */
-  xbt_os_thread_key_create(&smx_current_context_key);
-#endif
 }
 
 /**
@@ -138,7 +137,6 @@ XBT_INLINE int SIMIX_context_get_nthreads(void) {
  * \param nb_threads the number of threads to use
  */
 XBT_INLINE void SIMIX_context_set_nthreads(int nb_threads) {
-
   if (nb_threads<=0) {  
      nb_threads = xbt_os_get_numcores();
      XBT_INFO("Auto-setting contexts/nthreads to %d",nb_threads);
@@ -149,7 +147,6 @@ XBT_INLINE void SIMIX_context_set_nthreads(int nb_threads) {
     THROWF(arg_error, 0, "The thread factory cannot be run in parallel");
 #endif
   }
- 
   smx_parallel_contexts = nb_threads;
 }
 

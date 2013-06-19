@@ -38,7 +38,7 @@ smx_host_t SIMIX_host_create(const char *name,
   return xbt_lib_get_elm_or_null(host_lib, name);
 }
 
-void SIMIX_pre_host_on(smx_host_t h)
+void SIMIX_pre_host_on(smx_simcall_t simcall, smx_host_t h)
 {
   SIMIX_host_on(h);
 }
@@ -59,7 +59,7 @@ void SIMIX_host_on(smx_host_t h)
   SIMIX_host_restart_processes(h);
 }
 
-void SIMIX_pre_host_off(smx_host_t h)
+void SIMIX_pre_host_off(smx_simcall_t simcall, smx_host_t h)
 {
   SIMIX_host_off(h);
 }
@@ -204,6 +204,18 @@ double SIMIX_host_get_speed(smx_host_t host){
   surf_model_t ws_model = surf_resource_model(host, SURF_WKS_LEVEL);
   return ws_model->extension.workstation.get_speed(host, 1.0);
 }
+
+int SIMIX_pre_host_get_core(smx_simcall_t simcall, smx_host_t host){
+  return SIMIX_host_get_core(host);
+}
+int SIMIX_host_get_core(smx_host_t host){
+  xbt_assert((host != NULL), "Invalid parameters (simix host is NULL)");
+
+  return surf_workstation_model->extension.workstation.
+      get_core(host);
+}
+
+
 
 double SIMIX_pre_host_get_available_speed(smx_simcall_t simcall, smx_host_t host){
   return SIMIX_host_get_available_speed(host);

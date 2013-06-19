@@ -1,0 +1,11 @@
+#! tesh
+
+! output sort
+$ java -cp ${classpath:=.} master_slave_bypass/MsBypass ${srcdir:=.}/master_slave_bypass/platform.xml
+> [0.000000] [jmsg/INFO] Using regular java threads. Coroutines could speed your simulation up.
+> [0.013010] [jmsg/INFO] MSG_main finished; Cleaning up the simulation...
+> [alice:process2:(2) 0.000000] [jmsg/INFO] Slave Hello!
+> [alice:process2:(2) 0.000000] [jmsg/INFO] Send finalize!
+> [bob:process1:(1) 0.000000] [jmsg/INFO] Master Hello!
+> [bob:process1:(1) 0.000000] [jmsg/INFO] Create process on host 'alice'
+> [bob:process1:(1) 0.013010] [jmsg/INFO] Received Finalize. I'm done. See you!

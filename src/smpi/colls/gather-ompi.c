@@ -1,0 +1,410 @@
+/*
+ * Copyright (c) 2004-2005 The Trustees of Indiana University and Indiana
+ *                         University Research and Technology
+ *                         Corporation.  All rights reserved.
+ * Copyright (c) 2004-2009 The University of Tennessee and The University
+ *                         of Tennessee Research Foundation.  All rights
+ *                         reserved.
+ * Copyright (c) 2004-2005 High Performance Computing Center Stuttgart,
+ *                         University of Stuttgart.  All rights reserved.
+ * Copyright (c) 2004-2005 The Regents of the University of California.
+ *                         All rights reserved.
+ * $COPYRIGHT$
+ *
+ * Additional copyrights may follow
+ *
+ * $HEADER$
+ */
+
+#include "colls_private.h"
+#include "coll_tuned_topo.h"
+
+#define MCA_COLL_BASE_TAG_GATHER 333
+/* Todo: gather_intra_generic, gather_intra_binary, gather_intra_chain,
+ * gather_intra_pipeline, segmentation? */
+int
+smpi_coll_tuned_gather_ompi_binomial(void *sbuf, int scount,
+				      MPI_Datatype sdtype,
+				      void *rbuf, int rcount,
+				      MPI_Datatype rdtype,
+				      int root,
+				      MPI_Comm comm)
+{
+    int line = -1;
+    int i;
+    int rank;
+    int vrank;
+    int size;
+    int total_recv = 0;
+    char *ptmp     = NULL;
+    char *tempbuf  = NULL;
+    int err;
+    ompi_coll_tree_t* bmtree;
+    MPI_Status status;
+    MPI_Aint sextent, slb, strue_lb, strue_extent; 
+    MPI_Aint rextent, rlb, rtrue_lb, rtrue_extent;
+
+
+    size = smpi_comm_size(comm);
+    rank = smpi_comm_rank(comm);
+
+    XBT_DEBUG(
+		 "smpi_coll_tuned_gather_ompi_binomial rank %d", rank);
+
+    /* create the binomial tree */
+   // COLL_TUNED_UPDATE_IN_ORDER_BMTREE( comm, tuned_module, root );
+    bmtree = ompi_coll_tuned_topo_build_in_order_bmtree(comm, root);
+    // data->cached_in_order_bmtree;
+
+    smpi_datatype_extent(sdtype, &slb, &sextent);
+    smpi_datatype_extent(sdtype, &strue_lb, &strue_extent);
+
+    vrank = (rank - root + size) % size;
+
+    if (rank == root) {
+        smpi_datatype_extent(rdtype, &rlb, &rextent);
+        smpi_datatype_extent(rdtype, &rtrue_lb, &rtrue_extent);
+	if (0 == root){
+	    /* root on 0, just use the recv buffer */
+	    ptmp = (char *) rbuf;
+	    if (sbuf != MPI_IN_PLACE) {
+		err = smpi_datatype_copy(sbuf, scount, sdtype,
+				      ptmp, rcount, rdtype);
+		if (MPI_SUCCESS != err) { line = __LINE__; goto err_hndl; }
+	    }
+	} else {
+	    /* root is not on 0, allocate temp buffer for recv,
+	     * rotate data at the end */
+	    tempbuf = (char *) malloc(rtrue_extent + (rcount*size - 1) * rextent);
+	    if (NULL == tempbuf) {
+		err= MPI_ERR_OTHER; line = __LINE__; goto err_hndl;
+	    }
+
+	    ptmp = tempbuf - rlb;
+	    if (sbuf != MPI_IN_PLACE) {
+		/* copy from sbuf to temp buffer */
+		err = smpi_datatype_copy(sbuf, scount, sdtype,
+				      ptmp, rcount, rdtype);
+		if (MPI_SUCCESS != err) { line = __LINE__; goto err_hndl; }
+	    } else {
+		/* copy from rbuf to temp buffer  */
+		err = smpi_datatype_copy((char *) rbuf + rank*rextent*rcount, rcount, rdtype, ptmp, rcount, rdtype );
+		if (MPI_SUCCESS != err) { line = __LINE__; goto err_hndl; }
+	    }
+	}
+	total_recv = rcount;
+    } else if (!(vrank % 2)) {
+	/* other non-leaf nodes, allocate temp buffer for data received from
+	 * children, the most we need is half of the total data elements due
+	 * to the property of binimoal tree */
+	tempbuf = (char *) malloc(strue_extent + (scount*size - 1) * sextent);
+	if (NULL == tempbuf) {
+	    err= MPI_ERR_OTHER; line = __LINE__; goto err_hndl;
+	}
+
+	ptmp = tempbuf - slb;
+	/* local copy to tempbuf */
+	err = smpi_datatype_copy(sbuf, scount, sdtype,
+                                   ptmp, scount, sdtype);
+	if (MPI_SUCCESS != err) { line = __LINE__; goto err_hndl; }
+
+	/* use sdtype,scount as rdtype,rdcount since they are ignored on
+	 * non-root procs */
+	rdtype = sdtype;
+	rcount = scount;
+	rextent = sextent;
+	total_recv = rcount;
+    } else {
+	/* leaf nodes, no temp buffer needed, use sdtype,scount as
+	 * rdtype,rdcount since they are ignored on non-root procs */
+	ptmp = (char *) sbuf;
+	total_recv = scount;
+    }
+
+    if (!(vrank % 2)) {
+	/* all non-leaf nodes recv from children */
+	for (i = 0; i < bmtree->tree_nextsize; i++) {
+	    int mycount = 0, vkid;
+	    /* figure out how much data I have to send to this child */
+	    vkid = (bmtree->tree_next[i] - root + size) % size;
+	    mycount = vkid - vrank;
+	    if (mycount > (size - vkid))
+		mycount = size - vkid;
+	    mycount *= rcount;
+
+	    XBT_DEBUG(
+			 "smpi_coll_tuned_gather_ompi_binomial rank %d recv %d mycount = %d",
+			 rank, bmtree->tree_next[i], mycount);
+
+	    smpi_mpi_recv(ptmp + total_recv*rextent, rcount*size-total_recv, rdtype,
+				    bmtree->tree_next[i], MCA_COLL_BASE_TAG_GATHER,
+				    comm, &status);
+
+	    total_recv += mycount;
+	}
+    }
+
+    if (rank != root) {
+	/* all nodes except root send to parents */
+	XBT_DEBUG(
+		     "smpi_coll_tuned_gather_ompi_binomial rank %d send %d count %d\n",
+		     rank, bmtree->tree_prev, total_recv);
+
+	smpi_mpi_send(ptmp, total_recv, sdtype,
+				bmtree->tree_prev,
+				MCA_COLL_BASE_TAG_GATHER,
+				 comm);
+  }
+    if (rank == root) {
+	if (root != 0) {
+	    /* rotate received data on root if root != 0 */
+	    err = smpi_datatype_copy(ptmp, rcount*(size - root), rdtype,
+						 (char *) rbuf + rextent*root*rcount, rcount*(size - root), rdtype );
+	    if (MPI_SUCCESS != err) { line = __LINE__; goto err_hndl; }
+
+
+	    err = smpi_datatype_copy( ptmp + rextent*rcount*(size-root), rcount*root,rdtype, 
+						 (char *) rbuf,rcount*root,rdtype);
+	    if (MPI_SUCCESS != err) { line = __LINE__; goto err_hndl; }
+
+	    free(tempbuf);
+	}
+    } else if (!(vrank % 2)) {
+	/* other non-leaf nodes */
+	free(tempbuf);
+    }
+    return MPI_SUCCESS;
+
+ err_hndl:
+    if (NULL != tempbuf)
+	free(tempbuf);
+
+    XBT_DEBUG(  "%s:%4d\tError occurred %d, rank %2d",
+		 __FILE__, line, err, rank);
+    return err;
+}
+
+/*
+ *	gather_intra_linear_sync
+ *
+ *	Function:	- synchronized gather operation with
+ *	Accepts:	- same arguments as MPI_Gather(), first segment size
+ *	Returns:	- MPI_SUCCESS or error code
+ */
+int
+smpi_coll_tuned_gather_ompi_linear_sync(void *sbuf, int scount,
+                                         MPI_Datatype sdtype,
+                                         void *rbuf, int rcount,
+                                         MPI_Datatype rdtype,
+                                         int root, 
+                                         MPI_Comm comm)
+{
+    int i;
+    int ret, line;
+    int rank, size;
+    int first_segment_count;
+    size_t typelng;
+    MPI_Aint extent;
+    MPI_Aint lb;
+
+    int first_segment_size=0;
+    size = smpi_comm_size(comm);
+    rank = smpi_comm_rank(comm);
+    
+    size_t dsize, block_size;
+    if (rank == root) {
+        dsize= smpi_datatype_size(rdtype);
+        block_size = dsize * rcount;
+    } else {
+        dsize=smpi_datatype_size(sdtype);
+        block_size = dsize * scount;
+    }
+    
+     if (block_size > 92160){
+     first_segment_size = 32768;
+     }else{
+     first_segment_size = 1024;
+     }
+
+    XBT_DEBUG(
+		 "smpi_coll_tuned_gather_ompi_linear_sync rank %d, segment %d", rank, first_segment_size);
+
+    if (rank != root) {
+        /* Non-root processes:
+           - receive zero byte message from the root,
+           - send the first segment of the data synchronously,
+           - send the second segment of the data.
+        */
+
+        typelng= smpi_datatype_size(sdtype);
+        smpi_datatype_extent(sdtype, &lb, &extent);
+        first_segment_count = scount;
+        COLL_TUNED_COMPUTED_SEGCOUNT( (size_t) first_segment_size, typelng, 
+                                      first_segment_count );
+
+        smpi_mpi_recv(sbuf, 0, MPI_BYTE, root, 
+                                MCA_COLL_BASE_TAG_GATHER,
+                                comm, MPI_STATUS_IGNORE);
+
+        smpi_mpi_send(sbuf, first_segment_count, sdtype, root,
+                                MCA_COLL_BASE_TAG_GATHER,
+                                 comm);
+
+        smpi_mpi_send((char*)sbuf + extent * first_segment_count, 
+                                (scount - first_segment_count), sdtype, 
+                                root, MCA_COLL_BASE_TAG_GATHER,
+                                 comm);
+    }
+
+    else {
+        /* Root process, 
+           - For every non-root node:
+	   - post irecv for the first segment of the message
+	   - send zero byte message to signal node to send the message
+	   - post irecv for the second segment of the message
+	   - wait for the first segment to complete
+           - Copy local data if necessary
+           - Waitall for all the second segments to complete.
+	*/
+        char *ptmp;
+        MPI_Request *reqs = NULL, first_segment_req;
+        reqs = (MPI_Request *) calloc(size, sizeof(MPI_Request ));
+        if (NULL == reqs) { ret = -1; line = __LINE__; goto error_hndl; }
+        
+        typelng=smpi_datatype_size(rdtype);
+        smpi_datatype_extent(rdtype, &lb, &extent);
+        first_segment_count = rcount;
+        COLL_TUNED_COMPUTED_SEGCOUNT( (size_t)first_segment_size, typelng, 
+                                      first_segment_count );
+
+        ptmp = (char *) rbuf;
+        for (i = 0; i < size; ++i) {
+            if (i == rank) {  
+                /* skip myself */
+                reqs[i] = MPI_REQUEST_NULL; 
+                continue; 
+            } 
+
+            /* irecv for the first segment from i */
+            ptmp = (char*)rbuf + i * rcount * extent;
+            first_segment_req = smpi_mpi_irecv(ptmp, first_segment_count, rdtype, i,
+                                     MCA_COLL_BASE_TAG_GATHER, comm
+                                     );
+            
+            /* send sync message */
+            smpi_mpi_send(rbuf, 0, MPI_BYTE, i,
+                                    MCA_COLL_BASE_TAG_GATHER,
+                                     comm);
+
+            /* irecv for the second segment */
+            ptmp = (char*)rbuf + (i * rcount + first_segment_count) * extent;
+            reqs[i]=smpi_mpi_irecv(ptmp, (rcount - first_segment_count), 
+                                     rdtype, i, MCA_COLL_BASE_TAG_GATHER, comm
+                                     );
+
+            /* wait on the first segment to complete */
+            smpi_mpi_wait(&first_segment_req, MPI_STATUS_IGNORE);
+        }
+
+        /* copy local data if necessary */
+        if (MPI_IN_PLACE != sbuf) {
+            ret = smpi_datatype_copy(sbuf, scount, sdtype,
+                                  (char*)rbuf + rank * rcount * extent, 
+                                  rcount, rdtype);
+            if (ret != MPI_SUCCESS) { line = __LINE__; goto error_hndl; }
+        }
+        
+        /* wait all second segments to complete */
+        ret = smpi_mpi_waitall(size, reqs, MPI_STATUSES_IGNORE);
+
+        free(reqs);
+    }
+
+    /* All done */
+
+    return MPI_SUCCESS;
+ error_hndl:
+    XBT_DEBUG( 
+                   "ERROR_HNDL: node %d file %s line %d error %d\n", 
+                   rank, __FILE__, line, ret );
+    return ret;
+}
+
+/*
+ * Linear functions are copied from the BASIC coll module
+ * they do not segment the message and are simple implementations
+ * but for some small number of nodes and/or small data sizes they 
+ * are just as fast as tuned/tree based segmenting operations 
+ * and as such may be selected by the decision functions
+ * These are copied into this module due to the way we select modules
+ * in V1. i.e. in V2 we will handle this differently and so will not
+ * have to duplicate code.
+ * JPG following the examples from other coll_tuned implementations. Dec06.
+ */
+
+/* copied function (with appropriate renaming) starts here */
+/*
+ *	gather_intra
+ *
+ *	Function:	- basic gather operation
+ *	Accepts:	- same arguments as MPI_Gather()
+ *	Returns:	- MPI_SUCCESS or error code
+ */
+int
+smpi_coll_tuned_gather_ompi_basic_linear(void *sbuf, int scount,
+					  MPI_Datatype sdtype,
+					  void *rbuf, int rcount,
+					  MPI_Datatype rdtype,
+					  int root,
+					  MPI_Comm comm)
+{
+    int i;
+    int err;
+    int rank;
+    int size;
+    char *ptmp;
+    MPI_Aint incr;
+    MPI_Aint extent;
+    MPI_Aint lb;
+
+    size = smpi_comm_size(comm);
+    rank = smpi_comm_rank(comm);
+
+    /* Everyone but root sends data and returns. */
+    XBT_DEBUG(
+		 "ompi_coll_tuned_gather_intra_basic_linear rank %d", rank);
+
+    if (rank != root) {
+        smpi_mpi_send(sbuf, scount, sdtype, root,
+                                 MCA_COLL_BASE_TAG_GATHER,
+                                  comm);
+        return MPI_SUCCESS;
+    }
+
+    /* I am the root, loop receiving the data. */
+
+    smpi_datatype_extent(rdtype, &lb, &extent);
+    incr = extent * rcount;
+    for (i = 0, ptmp = (char *) rbuf; i < size; ++i, ptmp += incr) {
+        if (i == rank) {
+            if (MPI_IN_PLACE != sbuf) {
+                err = smpi_datatype_copy(sbuf, scount, sdtype,
+                                      ptmp, rcount, rdtype);
+            } else {
+                err = MPI_SUCCESS;
+            }
+        } else {
+            smpi_mpi_recv(ptmp, rcount, rdtype, i,
+                                    MCA_COLL_BASE_TAG_GATHER,
+                                    comm, MPI_STATUS_IGNORE);
+            err = MPI_SUCCESS;
+        }
+        if (MPI_SUCCESS != err) {
+            return err;
+        }
+    }
+
+    /* All done */
+
+    return MPI_SUCCESS;
+}

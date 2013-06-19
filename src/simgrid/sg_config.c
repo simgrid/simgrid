@@ -248,16 +248,26 @@ static void _sg_cfg_cb__coll(const char *category,
   /* New Module missing */
   find_coll_description(table, val);
 }
+static void _sg_cfg_cb__coll_gather(const char *name, int pos){
+  _sg_cfg_cb__coll("gather", mpi_coll_gather_description, name, pos);
+}
 static void _sg_cfg_cb__coll_allgather(const char *name, int pos){
   _sg_cfg_cb__coll("allgather", mpi_coll_allgather_description, name, pos);
 }
+static void _sg_cfg_cb__coll_allgatherv(const char *name, int pos){
+  _sg_cfg_cb__coll("allgatherv", mpi_coll_allgatherv_description, name, pos);
+}
 static void _sg_cfg_cb__coll_allreduce(const char *name, int pos)
 {
-  _sg_cfg_cb__coll("allreduce", mpi_coll_allreduce_description, name, pos);  
+  _sg_cfg_cb__coll("allreduce", mpi_coll_allreduce_description, name, pos);
 }
 static void _sg_cfg_cb__coll_alltoall(const char *name, int pos)
 {
   _sg_cfg_cb__coll("alltoall", mpi_coll_alltoall_description, name, pos);  
+}
+static void _sg_cfg_cb__coll_alltoallv(const char *name, int pos)
+{
+  _sg_cfg_cb__coll("alltoallv", mpi_coll_alltoallv_description, name, pos);  
 }
 static void _sg_cfg_cb__coll_bcast(const char *name, int pos)
 {
@@ -266,6 +276,15 @@ static void _sg_cfg_cb__coll_bcast(const char *name, int pos)
 static void _sg_cfg_cb__coll_reduce(const char *name, int pos)
 {
   _sg_cfg_cb__coll("reduce", mpi_coll_reduce_description, name, pos);  
+}
+static void _sg_cfg_cb__coll_reduce_scatter(const char *name, int pos){
+  _sg_cfg_cb__coll("reduce_scatter", mpi_coll_reduce_scatter_description, name, pos);
+}
+static void _sg_cfg_cb__coll_scatter(const char *name, int pos){
+  _sg_cfg_cb__coll("scatter", mpi_coll_scatter_description, name, pos);
+}
+static void _sg_cfg_cb__coll_barrier(const char *name, int pos){
+  _sg_cfg_cb__coll("barrier", mpi_coll_barrier_description, name, pos);
 }
 #endif
 
@@ -285,9 +304,9 @@ extern int _sg_do_model_check;   /* this variable lives in xbt_main until I find
 static void _sg_cfg_cb_model_check(const char *name, int pos)
 {
 #ifdef HAVE_MC
-  _sg_do_model_check = xbt_cfg_get_int(_sg_cfg_set, name);
+  _sg_do_model_check = xbt_cfg_get_boolean(_sg_cfg_set, name);
 #else
-  if (xbt_cfg_get_int(_sg_cfg_set, name)) {
+  if (xbt_cfg_get_boolean(_sg_cfg_set, name)) {
     xbt_die("You tried to activate the model-checking from the command line, but it was not compiled in. Change your settings in cmake, recompile and try again");
   }
 #endif
@@ -297,7 +316,7 @@ extern int _sg_do_verbose_exit;
 
 static void _sg_cfg_cb_verbose_exit(const char *name, int pos)
 {
-  _sg_do_verbose_exit = xbt_cfg_get_int(_sg_cfg_set, name);
+  _sg_do_verbose_exit = xbt_cfg_get_boolean(_sg_cfg_set, name);
 }
 
 
@@ -342,29 +361,21 @@ static void _sg_cfg_cb_contexts_parallel_mode(const char *name, int pos)
 static void _sg_cfg_cb__surf_network_coordinates(const char *name,
                                                    int pos)
 {
-  char *val = xbt_cfg_get_string(_sg_cfg_set, name);
-  if (!strcmp(val, "yes")) {
+  int val = xbt_cfg_get_boolean(_sg_cfg_set, name);
+  if (val) {
     if (!COORD_HOST_LEVEL) {
       COORD_HOST_LEVEL = xbt_lib_add_level(host_lib,xbt_dynar_free_voidp);
       COORD_ASR_LEVEL  = xbt_lib_add_level(as_router_lib,xbt_dynar_free_voidp);
     }
-  } else if (!strcmp(val, "no")) {
+  } else
     if (COORD_HOST_LEVEL)
       xbt_die("Setting of whether to use coordinate cannot be disabled once set.");
-  } else {
-    xbt_die("Command line setting of whether to use coordinates must be either \"yes\" or \"no\"");
-  }
-}
-
-static void _sg_cfg_cb_surf_nthreads(const char *name, int pos)
-{
-  surf_set_nthreads(xbt_cfg_get_int(_sg_cfg_set, name));
 }
 
 static void _sg_cfg_cb__surf_network_crosstraffic(const char *name,
                                                   int pos)
 {
-  sg_network_crosstraffic = xbt_cfg_get_int(_sg_cfg_set, name);
+  sg_network_crosstraffic = xbt_cfg_get_boolean(_sg_cfg_set, name);
 }
 
 #ifdef HAVE_GTNETS
@@ -530,32 +541,34 @@ void sg_config_init(int *argc, char **argv)
                      xbt_cfgelm_string, NULL, 0, 0,
                      _sg_cfg_cb__surf_path, NULL);
 
-    default_value_int = 0;
+    default_value = xbt_strdup("off");
     xbt_cfg_register(&_sg_cfg_set, "cpu/maxmin_selective_update",
-                     "Update the constraint set propagating recursively to others constraints (1 by default when optim is set to lazy)",
-                     xbt_cfgelm_int, &default_value_int, 0, 1,
+                     "Update the constraint set propagating recursively to others constraints (off by default when optim is set to lazy)",
+                     xbt_cfgelm_boolean, &default_value, 0, 1,
                      NULL, NULL);
-    default_value_int = 0;
+    default_value = xbt_strdup("off");
     xbt_cfg_register(&_sg_cfg_set, "network/maxmin_selective_update",
-                     "Update the constraint set propagating recursively to others constraints (1 by default when optim is set to lazy)",
-                     xbt_cfgelm_int, &default_value_int, 0, 1,
+                     "Update the constraint set propagating recursively to others constraints (off by default when optim is set to lazy)",
+                     xbt_cfgelm_boolean, &default_value, 0, 1,
                      NULL, NULL);
 
 #ifdef HAVE_MC
     /* do model-checking */
+    default_value = xbt_strdup("off");
     xbt_cfg_register(&_sg_cfg_set, "model-check",
                      "Verify the system through model-checking instead of simulating it (EXPERIMENTAL)",
-                     xbt_cfgelm_int, NULL, 0, 1,
+                     xbt_cfgelm_boolean, NULL, 0, 1,
                      _sg_cfg_cb_model_check, NULL);
-    xbt_cfg_setdefault_int(_sg_cfg_set, "model-check", 0);
+    xbt_cfg_setdefault_boolean(_sg_cfg_set, "model-check", default_value);
 
     /* do stateful model-checking */
+    default_value = xbt_strdup("off");
     xbt_cfg_register(&_sg_cfg_set, "model-check/checkpoint",
-                     "Specify the amount of steps between checkpoints during stateful model-checking (default: 0 => stateless verification). "
-                     "If value=1, one checkpoint is saved for each step => faster verification, but huge memory consumption; higher values are good compromises between speed and memory consumption.",
-                     xbt_cfgelm_int, NULL, 0, 1,
+                     "Specify the amount of steps between checkpoints during stateful model-checking (default: off => stateless verification). "
+                     "If value=on, one checkpoint is saved for each step => faster verification, but huge memory consumption; higher values are good compromises between speed and memory consumption.",
+                     xbt_cfgelm_boolean, NULL, 0, 1,
                      _mc_cfg_cb_checkpoint, NULL);
-    xbt_cfg_setdefault_int(_sg_cfg_set, "model-check/checkpoint", 0);
+    xbt_cfg_setdefault_boolean(_sg_cfg_set, "model-check/checkpoint", default_value);
     
     /* do liveness model-checking */
     xbt_cfg_register(&_sg_cfg_set, "model-check/property",
@@ -572,11 +585,12 @@ void sg_config_init(int *argc, char **argv)
     xbt_cfg_setdefault_string(_sg_cfg_set, "model-check/reduction", "dpor");
 
     /* Enable/disable timeout for wait requests with model-checking */
+    default_value = xbt_strdup("off");
     xbt_cfg_register(&_sg_cfg_set, "model-check/timeout",
                      "Enable/Disable timeout for wait requests",
-                     xbt_cfgelm_int, NULL, 0, 1,
+                     xbt_cfgelm_boolean, NULL, 0, 1,
                      _mc_cfg_cb_timeout, NULL);
-    xbt_cfg_setdefault_int(_sg_cfg_set, "model-check/timeout", 0);
+    xbt_cfg_setdefault_boolean(_sg_cfg_set, "model-check/timeout", default_value);
 
     /* Set max depth exploration */
     xbt_cfg_register(&_sg_cfg_set, "model-check/max_depth",
@@ -601,10 +615,10 @@ void sg_config_init(int *argc, char **argv)
 #endif
 
     /* do verbose-exit */
-    default_value_int = 1;
+    default_value = xbt_strdup("on");
     xbt_cfg_register(&_sg_cfg_set, "verbose-exit",
                      "Activate the \"do nothing\" mode in Ctrl-C",
-                     xbt_cfgelm_int, &default_value_int, 0, 1,
+                     xbt_cfgelm_boolean, &default_value, 0, 1,
                      _sg_cfg_cb_verbose_exit, NULL);
     
     
@@ -646,26 +660,19 @@ void sg_config_init(int *argc, char **argv)
         xbt_cfgelm_string, &default_value, 1, 1,
         _sg_cfg_cb_contexts_parallel_mode, NULL);
 
-    /* number of parallel threads for Surf */
-    default_value_int = surf_get_nthreads();
-    xbt_cfg_register(&_sg_cfg_set, "surf/nthreads",
-                     "Number of parallel threads used to update Surf models",
-                     xbt_cfgelm_int, &default_value_int, 1, 1,
-                     _sg_cfg_cb_surf_nthreads, NULL);
-
     default_value = xbt_strdup("no");
     xbt_cfg_register(&_sg_cfg_set, "network/coordinates",
                      "\"yes\" or \"no\", specifying whether we use a coordinate-based routing (as Vivaldi)",
-                     xbt_cfgelm_string, &default_value, 1, 1,
+                     xbt_cfgelm_boolean, &default_value, 1, 1,
                      _sg_cfg_cb__surf_network_coordinates, NULL);
-    xbt_cfg_setdefault_string(_sg_cfg_set, "network/coordinates", default_value);
+    xbt_cfg_setdefault_boolean(_sg_cfg_set, "network/coordinates", default_value);
 
-    default_value_int = 0;
+    default_value = xbt_strdup("no");
     xbt_cfg_register(&_sg_cfg_set, "network/crosstraffic",
                      "Activate the interferences between uploads and downloads for fluid max-min models (LV08, CM02)",
-                     xbt_cfgelm_int, &default_value_int, 0, 1,
+                     xbt_cfgelm_boolean, &default_value, 0, 1,
                      _sg_cfg_cb__surf_network_crosstraffic, NULL);
-    xbt_cfg_setdefault_int(_sg_cfg_set, "network/crosstraffic", default_value_int);
+    xbt_cfg_setdefault_boolean(_sg_cfg_set, "network/crosstraffic", default_value);
 
 #ifdef HAVE_GTNETS
     xbt_cfg_register(&_sg_cfg_set, "gtnets/jitter",
@@ -695,11 +702,12 @@ void sg_config_init(int *argc, char **argv)
                      xbt_cfgelm_double, &default_reference_speed, 1, 1, NULL,
                      NULL);
 
-    int default_display_timing = 0;
+    default_value = xbt_strdup("no");
     xbt_cfg_register(&_sg_cfg_set, "smpi/display_timing",
                      "Boolean indicating whether we should display the timing after simulation.",
-                     xbt_cfgelm_int, &default_display_timing, 1, 1, NULL,
+                     xbt_cfgelm_boolean, &default_value, 1, 1, NULL,
                      NULL);
+    xbt_cfg_setdefault_boolean(_sg_cfg_set, "smpi/display_timing", default_value);
 
     double default_threshold = 1e-6;
     xbt_cfg_register(&_sg_cfg_set, "smpi/cpu_threshold",
@@ -753,37 +761,70 @@ void sg_config_init(int *argc, char **argv)
                      xbt_cfgelm_string, NULL, 1, 1, NULL,
                      NULL);
     xbt_cfg_setdefault_string(_sg_cfg_set, "smpi/or", "1:0:0:0:0");
-
+    double default_iprobe_time = 1e-4;
+    xbt_cfg_register(&_sg_cfg_set, "smpi/iprobe",
+                     "Minimum time to inject inside a call to MPI_Iprobe",
+                     xbt_cfgelm_double, &default_iprobe_time, 1, 1, NULL,
+                     NULL);
     default_value = xbt_strdup("default");
+    xbt_cfg_register(&_sg_cfg_set, "smpi/coll_selector",
+		     "Which collective selector to use",
+		     xbt_cfgelm_string, &default_value, 1, 1, NULL,
+		     NULL);
+		     
+		xbt_cfg_register(&_sg_cfg_set, "smpi/gather",
+		     "Which collective to use for gather",
+		     xbt_cfgelm_string, NULL, 1, 1, &_sg_cfg_cb__coll_gather,
+		     NULL);
+		     
     xbt_cfg_register(&_sg_cfg_set, "smpi/allgather",
 		     "Which collective to use for allgather",
-		     xbt_cfgelm_string, &default_value, 1, 1, &_sg_cfg_cb__coll_allgather,
+		     xbt_cfgelm_string, NULL, 1, 1, &_sg_cfg_cb__coll_allgather,
 		     NULL);
 
-    default_value = xbt_strdup("default");
+    xbt_cfg_register(&_sg_cfg_set, "smpi/barrier",
+		     "Which collective to use for barrier",
+		     xbt_cfgelm_string, NULL, 1, 1, &_sg_cfg_cb__coll_barrier,
+		     NULL);
+
+    xbt_cfg_register(&_sg_cfg_set, "smpi/reduce_scatter",
+		     "Which collective to use for reduce_scatter",
+		     xbt_cfgelm_string, NULL, 1, 1, &_sg_cfg_cb__coll_reduce_scatter,
+		     NULL);
+
+    xbt_cfg_register(&_sg_cfg_set, "smpi/scatter",
+		     "Which collective to use for scatter",
+		     xbt_cfgelm_string, NULL, 1, 1, &_sg_cfg_cb__coll_scatter,
+		     NULL);
+
+    xbt_cfg_register(&_sg_cfg_set, "smpi/allgatherv",
+		     "Which collective to use for allgatherv",
+		     xbt_cfgelm_string, NULL, 1, 1, &_sg_cfg_cb__coll_allgatherv,
+		     NULL);
+
     xbt_cfg_register(&_sg_cfg_set, "smpi/allreduce",
 		     "Which collective to use for allreduce",
-		     xbt_cfgelm_string, &default_value, 1, 1, &_sg_cfg_cb__coll_allreduce,
+		     xbt_cfgelm_string, NULL, 1, 1, &_sg_cfg_cb__coll_allreduce,
 		     NULL);
 
-    default_value = xbt_strdup("ompi");
     xbt_cfg_register(&_sg_cfg_set, "smpi/alltoall",
 		     "Which collective to use for alltoall",
-		     xbt_cfgelm_string, &default_value, 1, 1, &_sg_cfg_cb__coll_alltoall,
+		     xbt_cfgelm_string, NULL, 1, 1, &_sg_cfg_cb__coll_alltoall,
 		     NULL);
 
+    xbt_cfg_register(&_sg_cfg_set, "smpi/alltoallv",
+		     "Which collective to use for alltoallv",
+		     xbt_cfgelm_string, NULL, 1, 1, &_sg_cfg_cb__coll_alltoallv,
+		     NULL);
 
-    default_value = xbt_strdup("default");
     xbt_cfg_register(&_sg_cfg_set, "smpi/bcast",
 		     "Which collective to use for bcast",
-		     xbt_cfgelm_string, &default_value, 1, 1, &_sg_cfg_cb__coll_bcast,
+		     xbt_cfgelm_string, NULL, 1, 1, &_sg_cfg_cb__coll_bcast,
 		     NULL);
 
-
-    default_value = xbt_strdup("default");
     xbt_cfg_register(&_sg_cfg_set, "smpi/reduce",
 		     "Which collective to use for reduce",
-		     xbt_cfgelm_string, &default_value, 1, 1, &_sg_cfg_cb__coll_reduce,
+		     xbt_cfgelm_string, NULL, 1, 1, &_sg_cfg_cb__coll_reduce,
 		     NULL);
 #endif // HAVE_SMPI
 
@@ -905,6 +946,10 @@ double sg_cfg_get_double(const char* name)
 char* sg_cfg_get_string(const char* name)
 {
 	return xbt_cfg_get_string(_sg_cfg_set,name);
+}
+int sg_cfg_get_boolean(const char* name)
+{
+	return xbt_cfg_get_boolean(_sg_cfg_set,name);
 }
 void sg_cfg_get_peer(const char *name, char **peer, int *port)
 {

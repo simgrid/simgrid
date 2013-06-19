@@ -237,6 +237,17 @@ double MSG_get_host_speed(msg_host_t h)
   return (simcall_host_get_speed(h));
 }
 
+
+/** \ingroup m_host_management
+ * \brief Return the number of core.
+ */
+int MSG_get_host_core(msg_host_t h)
+{
+  xbt_assert((h != NULL), "Invalid parameters");
+
+  return (simcall_host_get_core(h));
+}
+
 /** \ingroup m_host_management
  * \brief Returns the value of a given host property
  *

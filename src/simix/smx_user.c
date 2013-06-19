@@ -106,6 +106,20 @@ double simcall_host_get_speed(smx_host_t host)
 
 /**
  * \ingroup simix_host_management
+ * \brief Returns the number of core of the processor.
+ *
+ * \param host A SIMIX host
+ * \return The number of core
+ */
+int simcall_host_get_core(smx_host_t host)
+{
+  return simcall_BODY_host_get_core(host);
+}
+
+
+
+/**
+ * \ingroup simix_host_management
  * \brief Returns the available speed of the processor.
  *
  * \return Speed currently available (in Mflop/s)
@@ -1283,45 +1297,37 @@ int simcall_sem_get_capacity(smx_sem_t sem)
  * \ingroup simix_file_management
  *
  */
-double simcall_file_read(void* ptr, size_t size, size_t nmemb, smx_file_t stream)
+size_t simcall_file_read(void* ptr, size_t size, smx_file_t fd)
 {
-  return simcall_BODY_file_read(ptr, size, nmemb, stream);
+  return simcall_BODY_file_read(ptr, size, fd);
 }
 
 /**
  * \ingroup simix_file_management
  *
  */
-size_t simcall_file_write(const void* ptr, size_t size, size_t nmemb, smx_file_t stream)
+size_t simcall_file_write(const void* ptr, size_t size,
+                          smx_file_t fd)
 {
-  return simcall_BODY_file_write(ptr, size, nmemb, stream);
+  return simcall_BODY_file_write(ptr, size, fd);
 }
 
 /**
  * \ingroup simix_file_management
  * \brief
  */
-smx_file_t simcall_file_open(const char* mount, const char* path, const char* mode)
+smx_file_t simcall_file_open(const char* mount, const char* path)
 {
-  return simcall_BODY_file_open(mount, path, mode);
+  return simcall_BODY_file_open(mount, path);
 }
 
 /**
  * \ingroup simix_file_management
  *
  */
-int simcall_file_close(smx_file_t fp)
+int simcall_file_close(smx_file_t fd)
 {
-  return simcall_BODY_file_close(fp);  
-}
-
-/**
- * \ingroup simix_file_management
- *
- */
-int simcall_file_stat(smx_file_t fd, s_file_stat_t *buf)
-{
-  return simcall_BODY_file_stat(fd, buf);
+  return simcall_BODY_file_close(fd);
 }
 
 /**
@@ -1340,6 +1346,13 @@ int simcall_file_unlink(smx_file_t fd)
 xbt_dict_t simcall_file_ls(const char* mount, const char* path)
 {
   return simcall_BODY_file_ls(mount, path);
+}
+/**
+ * \ingroup simix_file_management
+ *
+ */
+size_t simcall_file_get_size (smx_file_t fd){
+  return simcall_BODY_file_get_size(fd);
 }
 
 #ifdef HAVE_MC

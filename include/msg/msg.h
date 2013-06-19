@@ -78,12 +78,11 @@ XBT_PUBLIC(const char *) MSG_environment_as_get_model(msg_as_t as);
 XBT_PUBLIC(xbt_dynar_t) MSG_environment_as_get_hosts(msg_as_t as);
 
 /************************** File handling ***********************************/
-XBT_PUBLIC(double) MSG_file_read(void* ptr, size_t size, size_t nmemb, msg_file_t stream);
-XBT_PUBLIC(size_t) MSG_file_write(const void* ptr, size_t size, size_t nmemb, msg_file_t stream);
-XBT_PUBLIC(msg_file_t) MSG_file_open(const char* mount, const char* path, const char* mode);
-XBT_PUBLIC(int) MSG_file_close(msg_file_t fp);
-XBT_PUBLIC(int) MSG_file_stat(msg_file_t fd, s_msg_stat_t *buf);
-XBT_PUBLIC(void) MSG_file_free_stat(s_msg_stat_t *stat);
+XBT_PUBLIC(size_t) MSG_file_read(void* ptr, size_t size, msg_file_t fd);
+XBT_PUBLIC(size_t) MSG_file_write(const void* ptr, size_t size, msg_file_t fd);
+XBT_PUBLIC(msg_file_t) MSG_file_open(const char* mount, const char* path);
+XBT_PUBLIC(int) MSG_file_close(msg_file_t fd);
+XBT_PUBLIC(size_t) MSG_file_get_size(msg_file_t fd);
 
 XBT_PUBLIC(int) MSG_file_unlink(msg_file_t fd);
 XBT_PUBLIC(xbt_dict_t) MSG_file_ls(const char *mount, const char *path);
@@ -103,6 +102,7 @@ XBT_PUBLIC(msg_host_t) MSG_host_self(void);
 XBT_PUBLIC(int) MSG_get_host_msgload(msg_host_t host);
 /* int MSG_get_msgload(void); This function lacks specification; discard it */
 XBT_PUBLIC(double) MSG_get_host_speed(msg_host_t h);
+XBT_PUBLIC(int) MSG_get_host_core(msg_host_t h);
 XBT_PUBLIC(int) MSG_host_is_avail(msg_host_t h);
 XBT_PUBLIC(void) __MSG_host_priv_free(msg_host_priv_t priv);
 XBT_PUBLIC(void) __MSG_host_destroy(msg_host_t host);

@@ -304,6 +304,10 @@ static double cpu_get_speed(void *cpu, double load)
   return load * ((cpu_Cas01_t)surf_cpu_resource_priv(cpu))->power_peak;
 }
 
+static int cpu_get_core(void *cpu)
+{
+  return ((cpu_Cas01_t)surf_cpu_resource_priv(cpu))->core;
+}
 static double cpu_get_available_speed(void *cpu)
 {
   /* number between 0 and 1 */
@@ -333,7 +337,7 @@ static surf_model_t surf_cpu_model_init_cas01(void)
 
   char *optim = xbt_cfg_get_string(_sg_cfg_set, "cpu/optim");
   int select =
-      xbt_cfg_get_int(_sg_cfg_set, "cpu/maxmin_selective_update");
+      xbt_cfg_get_boolean(_sg_cfg_set, "cpu/maxmin_selective_update");
 
   surf_model_t cpu_model = surf_model_init();
 
@@ -397,6 +401,7 @@ static surf_model_t surf_cpu_model_init_cas01(void)
 
   cpu_model->extension.cpu.get_state = cpu_get_state;
   cpu_model->extension.cpu.set_state = cpu_set_state;
+  cpu_model->extension.cpu.get_core = cpu_get_core;
   cpu_model->extension.cpu.get_speed = cpu_get_speed;
   cpu_model->extension.cpu.get_available_speed =
       cpu_get_available_speed;

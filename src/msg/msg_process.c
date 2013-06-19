@@ -140,7 +140,7 @@ msg_process_t MSG_process_create_with_arguments(const char *name,
    be retrieved with the function \ref MSG_process_get_data.
  * \param host the location where the new process is executed.
  * \param argc first argument passed to \a code
- * \param argv second argument passed to \a code
+ * \param argv second argument passed to \a code. WARNING, these strings are freed by the SimGrid kernel when the process exits, so they cannot be static nor shared between several processes.
  * \param properties list a properties defined for this process
  * \see msg_process_t
  * \return The new corresponding object.

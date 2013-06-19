@@ -37,7 +37,6 @@ static void workstation_new(sg_platf_host_cbarg_t host)
   xbt_lib_set(host_lib, name, SURF_WKS_LEVEL, ws);
 }
 
-
 static void ws_parallel_action_cancel(surf_action_t action)
 {
   THROW_UNIMPLEMENTED;          /* This model does not implement parallel tasks */
@@ -332,7 +331,7 @@ e_surf_resource_state_t ws_get_state(void *workstation)
   return cpu->model->extension.cpu.get_state(workstation);
 }
 
-void ws_set_state(void *workstation, e_surf_resource_state_t state)
+static void ws_set_state(void *workstation, e_surf_resource_state_t state)
 {
   surf_resource_t cpu = ((surf_resource_t) surf_cpu_resource_priv(workstation));
   cpu->model->extension.cpu.set_state(workstation, state);
@@ -344,6 +343,11 @@ double ws_get_speed(void *workstation, double load)
   return cpu->model->extension.cpu.get_speed(workstation, load);
 }
 
+static int ws_get_core(void *workstation)
+{
+  surf_resource_t cpu = ((surf_resource_t) surf_cpu_resource_priv(workstation));
+  return cpu->model->extension.cpu.get_core(workstation);
+}
 static double ws_get_available_speed(void *workstation)
 {
   surf_resource_t cpu = ((surf_resource_t) surf_cpu_resource_priv(workstation));
@@ -437,60 +441,82 @@ static storage_t find_storage_on_mount_list(void *workstation,const char* storag
   return st;
 }
 
-static surf_action_t ws_action_open(void *workstation, const char* mount, const char* path, const char* mode)
+static surf_action_t ws_action_open(void *workstation, const char* mount,
+                                    const char* path)
 {
   storage_t st = find_storage_on_mount_list(workstation, mount);
   XBT_DEBUG("OPEN on disk '%s'",st->generic_resource.name);
   surf_model_t model = st->generic_resource.model;
-  return model->extension.storage.open(st, mount, path, mode);
+  return model->extension.storage.open(st, mount, path);
 }
 
-static surf_action_t ws_action_close(void *workstation, surf_file_t fp)
+static surf_action_t ws_action_close(void *workstation, surf_file_t fd)
 {
-  storage_t st = find_storage_on_mount_list(workstation, fp->storage);
+  storage_t st = find_storage_on_mount_list(workstation, fd->storage);
   XBT_DEBUG("CLOSE on disk '%s'",st->generic_resource.name);
   surf_model_t model = st->generic_resource.model;
-  return model->extension.storage.close(st, fp);
+  return model->extension.storage.close(st, fd);
 }
 
-static surf_action_t ws_action_read(void *workstation, void* ptr, size_t size, size_t nmemb, surf_file_t stream)
+static surf_action_t ws_action_read(void *workstation, void* ptr, size_t size,
+                                    surf_file_t fd)
 {
-  storage_t st = find_storage_on_mount_list(workstation, stream->storage);
+  storage_t st = find_storage_on_mount_list(workstation, fd->storage);
   XBT_DEBUG("READ on disk '%s'",st->generic_resource.name);
   surf_model_t model = st->generic_resource.model;
-  return model->extension.storage.read(st, ptr, (double)size, nmemb, stream);
+  return model->extension.storage.read(st, ptr, size, fd);
 }
 
-static surf_action_t ws_action_write(void *workstation, const void* ptr, size_t size, size_t nmemb, surf_file_t stream)
+static surf_action_t ws_action_write(void *workstation, const void* ptr,
+                                     size_t size, surf_file_t fd)
 {
-  storage_t st = find_storage_on_mount_list(workstation, stream->storage);
+  storage_t st = find_storage_on_mount_list(workstation, fd->storage);
   XBT_DEBUG("WRITE on disk '%s'",st->generic_resource.name);
   surf_model_t model = st->generic_resource.model;
-  return model->extension.storage.write(st,  ptr, size, nmemb, stream);
+  return model->extension.storage.write(st,  ptr, size, fd);
 }
 
-static surf_action_t ws_action_stat(void *workstation, surf_file_t stream)
+static int ws_file_unlink(void *workstation, surf_file_t fd)
 {
-  storage_t st = find_storage_on_mount_list(workstation, stream->storage);
-  XBT_DEBUG("STAT on disk '%s'",st->generic_resource.name);
-  surf_model_t model = st->generic_resource.model;
-  return model->extension.storage.stat(st,  stream);
+  if (!fd){
+    XBT_WARN("No such file descriptor. Impossible to unlink");
+    return 0;
+  } else {
+//    XBT_INFO("%s %zu", fd->storage, fd->size);
+    storage_t st = find_storage_on_mount_list(workstation, fd->storage);
+    xbt_dict_t content_dict = (st)->content;
+    /* Check if the file is on this storage */
+    if (!xbt_dict_get_or_null(content_dict, fd->name)){
+      XBT_WARN("File %s is not on disk %s. Impossible to unlink", fd->name,
+          st->generic_resource.name);
+      return 0;
+    } else {
+      XBT_DEBUG("UNLINK on disk '%s'",st->generic_resource.name);
+      st->used_size -= fd->size;
+
+      // Remove the file from storage
+      xbt_dict_remove(content_dict,fd->name);
+
+      free(fd->name);
+      free(fd->storage);
+      xbt_free(fd);
+      return 1;
+    }
+  }
 }
 
-static surf_action_t ws_action_unlink(void *workstation, surf_file_t stream)
-{
-  storage_t st = find_storage_on_mount_list(workstation, stream->storage);
-  XBT_DEBUG("UNLINK on disk '%s'",st->generic_resource.name);
-  surf_model_t model = st->generic_resource.model;
-  return model->extension.storage.unlink(st,  stream);
-}
-
-static surf_action_t ws_action_ls(void *workstation, const char* mount, const char *path)
+static surf_action_t ws_action_ls(void *workstation, const char* mount,
+                                  const char *path)
 {
   XBT_DEBUG("LS on mount '%s' and file '%s'",mount, path);
   storage_t st = find_storage_on_mount_list(workstation, mount);
   surf_model_t model = st->generic_resource.model;
   return model->extension.storage.ls(st, path);
+}
+
+static size_t ws_file_get_size(void *workstation, surf_file_t fd)
+{
+  return fd->size;
 }
 
 void ws_get_params(void *ws, ws_params_t params)
@@ -572,8 +598,10 @@ static void surf_workstation_model_init_internal(void)
   model->extension.workstation.sleep     = ws_action_sleep;
   model->extension.workstation.get_state = ws_get_state;
   model->extension.workstation.set_state = ws_set_state;
+  model->extension.workstation.get_core  = ws_get_core;
   model->extension.workstation.get_speed = ws_get_speed;
-  model->extension.workstation.get_available_speed = ws_get_available_speed;
+  model->extension.workstation.get_available_speed =
+      ws_get_available_speed;
 
   model->extension.workstation.communicate           = ws_communicate;
   model->extension.workstation.get_route             = ws_get_route;
@@ -587,8 +615,7 @@ static void surf_workstation_model_init_internal(void)
   model->extension.workstation.close  = ws_action_close;
   model->extension.workstation.read   = ws_action_read;
   model->extension.workstation.write  = ws_action_write;
-  model->extension.workstation.stat   = ws_action_stat;
-  model->extension.workstation.unlink = ws_action_unlink;
+  model->extension.workstation.unlink = ws_file_unlink;
   model->extension.workstation.ls     = ws_action_ls;
 
   model->extension.workstation.get_params = ws_get_params;
@@ -600,7 +627,7 @@ static void surf_workstation_model_init_internal(void)
 
 void surf_workstation_model_init_current_default(void)
 {
-  xbt_cfg_setdefault_int(_sg_cfg_set, "network/crosstraffic", 1);
+  xbt_cfg_setdefault_boolean(_sg_cfg_set, "network/crosstraffic", xbt_strdup("yes"));
   surf_cpu_model_init_Cas01();
   surf_network_model_init_LegrandVelho();
 

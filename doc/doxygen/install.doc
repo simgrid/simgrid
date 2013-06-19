@@ -86,8 +86,7 @@ have access to your architecture to build SimGrid on it.
 
 SimGrid only uses very standard tools: 
   @li C compiler, C++ compiler, make and friends.
-  @li perl (but you may try to go without it) and libpcre (but we are
-      working on removing this dependency)
+  @li perl (but you may try to go without it)
   @li We use cmake to configure our compilation 
       (<a href="http://www.cmake.org/cmake/resources/software.html">download page</a>).
       You need cmake version 2.8 or higher. You may want to use ccmake
@@ -442,8 +441,6 @@ compiling a source file. There are:
 \verbatim
 - HelloWorld.c		The example source file.
 - CMakeLists.txt	It allows to configure the project.
-- FindPCRE.cmake	This finds and links to the pcre library (Normally included
-                        into Simgrid directory "GnuWin32").
 - README 		This explaination.
 \endverbatim
 
@@ -469,8 +466,8 @@ create a target with the same name of the source.
 ################
 #It creates a target called 'TARGET_NAME.exe' with the sources 'SOURCES'
 add_executable(TARGET_NAME SOURCES)
-#Links TARGET_NAME with simgrid and pcre
-target_link_libraries(TARGET_NAME simgrid pcre)
+#Links TARGET_NAME with simgrid
+target_link_libraries(TARGET_NAME simgrid)
 \endverbatim
 \li To initialize and build your project, you'll need to run
 \verbatim

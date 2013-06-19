@@ -44,6 +44,7 @@ int main(int argc, char *argv[])
     sb[i] = rank + 1;
     rb[i] = 0;
   }
+
   status = MPI_Alltoall(sb, 1, MPI_INT, rb, 1, MPI_INT, MPI_COMM_WORLD);
 
   printf("[%d] rcvbuf=[", rank);
@@ -53,7 +54,7 @@ int main(int argc, char *argv[])
 
 
   if (rank == 0) {
-    if (status != 0) {
+    if (status != MPI_SUCCESS) {
       printf("all_to_all returned %d\n", status);
       fflush(stdout);
     }

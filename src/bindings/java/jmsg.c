@@ -257,7 +257,7 @@ static int create_jprocess(int argc, char *argv[]) {
   jclass class_Process = (*env)->FindClass(env, argv[0]);
   xbt_str_subst(argv[0],'/','.',0);
   //Retrieve the methodID for the constructor
-  xbt_assert((class_Process != NULL), "Class not found.");
+  xbt_assert((class_Process != NULL), "Class not found (%s).", argv[0]);
   jmethodID constructor_Process = (*env)->GetMethodID(env, class_Process, "<init>", "(Lorg/simgrid/msg/Host;Ljava/lang/String;[Ljava/lang/String;)V");
   xbt_assert((constructor_Process != NULL), "Constructor not found for class %s. Is there a (Host, String ,String[]) constructor in your class ?", argv[0]);
 

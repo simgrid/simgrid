@@ -1,21 +1,20 @@
-<?xml version='1.0'?>
 <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">
 <platform version="3">
 <config id="General">
-    <prop id="network/coordinates" value="yes"></prop>
+    <prop id="network/coordinates" value="yes"/>
 </config>
 
-<AS  id="AS0"  routing="Vivaldi">
-    <AS  id="dataCenter1"  routing="RuleBased">
+<AS id="AS0" routing="Vivaldi">
+    <AS id="dataCenter1" routing="Full">
       
     <!-- 3 cabinets, no zone dist area, 1 horiz dist area, no multi-homing, telecom and operation rooms omitted because not a part of the production platform  -->
     <!-- cabinets -->
-    <cluster id="cabinet1" prefix="cb1-" suffix=".dc1.acloud.com" radical="1-40" power="5.2297E9" bw="1.25E8" lat="1.0E-4" bb_bw="1.25E9" bb_lat="1.0E-4"></cluster>
-    <link   id="link_dc1_cb1" bandwidth="1.25E9" latency="1.0E-4"/>
-    <cluster id="cabinet2" prefix="cb2-" suffix=".dc1.acloud.com" radical="1-50" power="8.8925E9" bw="1.25E8" lat="1.0E-4" bb_bw="1.25E9" bb_lat="1.0E-4"></cluster>
-    <link   id="link_dc1_cb2" bandwidth="1.25E9" latency="1.0E-4"/>
-    <cluster id="cabinet3" prefix="cb3-" suffix=".dc1.acloud.com" radical="1-30" power="13.357E9" bw="1.25E8" lat="1.0E-4" bb_bw="1.25E9" bb_lat="1.0E-4"></cluster>
-    <link   id="link_dc1_cb3" bandwidth="1.25E9" latency="1.0E-4"/>
+    <cluster id="cabinet1" prefix="cb1-" suffix=".dc1.acloud.com" radical="1-40" power="5.2297Gf" bw="125MBps" lat="100us" bb_bw="1.25GBps" bb_lat="100us"/>
+    <link id="link_dc1_cb1" bandwidth="1.25GBps" latency="100us"/>
+    <cluster id="cabinet2" prefix="cb2-" suffix=".dc1.acloud.com" radical="1-50" power="8.8925Gf" bw="125MBps" lat="100us" bb_bw="1.25GBps" bb_lat="100us"/>
+    <link id="link_dc1_cb2" bandwidth="1.25GBps" latency="100us"/>
+    <cluster id="cabinet3" prefix="cb3-" suffix=".dc1.acloud.com" radical="1-30" power="13.357Gf" bw="125MBps" lat="100us" bb_bw="1.25GBps" bb_lat="100us"/>
+    <link id="link_dc1_cb3" bandwidth="1.25GBps" latency="100us"/>
  
     <!-- horiz dist area switch, main dist area switch, entrance room switch, end point for ISP  -->
     <AS id="gw_dataCenter1" routing="Floyd">
@@ -25,12 +24,12 @@
         <router id="gw_dc1_entranceroom"/>
                     
         <!-- ISP end point, entering the cloud, so it has coordinates -->
-        <router id="router_dataCenter1" coordinates="25.5 9.4 1.4" />
+        <router id="router_dataCenter1" coordinates="25.5 9.4 1.4"/>
                     
         <!-- links -->
-        <link id="dc1_horizdist_maindist"        bandwidth="1.25E9" latency="1.0E-4"/>        
-        <link id="dc1_maindist_entranceroom"        bandwidth="1.25E9" latency="1.0E-4"/>  
-        <link id="dc1_entranceroom_ISP"        bandwidth="1.25E9" latency="1.0E-4"/> 
+        <link id="dc1_horizdist_maindist" bandwidth="1.25GBps" latency="100us"/>        
+        <link id="dc1_maindist_entranceroom" bandwidth="1.25GBps" latency="100us"/>  
+        <link id="dc1_entranceroom_ISP" bandwidth="1.25GBps" latency="100us"/> 
                      
         <!-- links to router relationships -->
         <route src="gw_dc1_horizdist" dst="gw_dc1_maindist"><link_ctn id="dc1_horizdist_maindist"/></route>
@@ -39,18 +38,27 @@
     </AS>
            
     <!-- internal routes between cabinets -->
-    <ASroute src="cabinet(.*)" dst="cabinet(.*)" gw_src="cb$1src-cabinet$1src_router.dc1.acloud.com" gw_dst="cb$1dst-cabinet$1dst_router.dc1.acloud.com" symmetrical="YES">
-        <link_ctn id="link_dc1_cb$1src"/>
-        <link_ctn id="link_dc1_cb$1dst"/>
+    <ASroute src="cabinet3" dst="cabinet3" gw_src="cb3-cabinet3_router.dc1.acloud.com" gw_dst="cb3-cabinet3_router.dc1.acloud.com" symmetrical="YES">
+        <link_ctn id="link_dc1_cb3"/>
+        <link_ctn id="link_dc1_cb3"/>
+    </ASroute><ASroute src="cabinet2" dst="cabinet3" gw_src="cb2-cabinet2_router.dc1.acloud.com" gw_dst="cb3-cabinet3_router.dc1.acloud.com" symmetrical="YES">
+        <link_ctn id="link_dc1_cb2"/>
+        <link_ctn id="link_dc1_cb3"/>
+    </ASroute><ASroute src="cabinet2" dst="cabinet2" gw_src="cb2-cabinet2_router.dc1.acloud.com" gw_dst="cb2-cabinet2_router.dc1.acloud.com" symmetrical="YES">
+        <link_ctn id="link_dc1_cb2"/>
+        <link_ctn id="link_dc1_cb2"/>
+    </ASroute><ASroute src="cabinet1" dst="cabinet3" gw_src="cb1-cabinet1_router.dc1.acloud.com" gw_dst="cb3-cabinet3_router.dc1.acloud.com" symmetrical="YES">
+        <link_ctn id="link_dc1_cb1"/>
+        <link_ctn id="link_dc1_cb3"/>
+    </ASroute><ASroute src="cabinet1" dst="cabinet2" gw_src="cb1-cabinet1_router.dc1.acloud.com" gw_dst="cb2-cabinet2_router.dc1.acloud.com" symmetrical="YES">
+        <link_ctn id="link_dc1_cb1"/>
+        <link_ctn id="link_dc1_cb2"/>
+    </ASroute><ASroute src="cabinet1" dst="cabinet1" gw_src="cb1-cabinet1_router.dc1.acloud.com" gw_dst="cb1-cabinet1_router.dc1.acloud.com" symmetrical="YES">
+        <link_ctn id="link_dc1_cb1"/>
+        <link_ctn id="link_dc1_cb1"/>
     </ASroute>
     <!-- cabinets to exit AS -->
-    <ASroute src="cabinet(.*)" dst="gw_AS1_(.*)" gw_src="cb$1src-cabinet$1src_router.dc1.acloud.com" gw_dst="gw_dc1_horizdist" symmetrical="NO">
-        <link_ctn id="link_dc1_cb$1src"/>
-    </ASroute> 
-    <ASroute src="gw_AS1_(.*)" dst="cabinet(.*)" gw_src="gw_dc1_horizdist" gw_dst="cb$1dst-cabinet$1dst_router.dc1.acloud.com" symmetrical="NO">
-        <link_ctn id="link_dc1_cb$1dst"/>
-    </ASroute>    
-   </AS>
+    </AS>
 
 </AS>
 </platform>

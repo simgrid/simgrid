@@ -1,4 +1,4 @@
-#include "colls.h"
+#include "colls_private.h"
 
 /*****************************************************************************
 
@@ -73,18 +73,18 @@ smpi_coll_tuned_allgather_pair(void *send_buff, int send_count,
   char *send_ptr = (char *) send_buff;
   char *recv_ptr = (char *) recv_buff;
 
-  MPI_Comm_rank(comm, &rank);
-  MPI_Comm_size(comm, &num_procs);
-  MPI_Type_extent(send_type, &extent);
+  rank = smpi_comm_rank(comm);
+  num_procs = smpi_comm_size(comm);
+  extent = smpi_datatype_get_extent(send_type);
 
   // local send/recv
-  MPI_Sendrecv(send_ptr, send_count, send_type, rank, tag,
+  smpi_mpi_sendrecv(send_ptr, send_count, send_type, rank, tag,
                recv_ptr + rank * recv_count * extent,
                recv_count, recv_type, rank, tag, comm, &status);
 
   for (i = 1; i < num_procs; i++) {
     src = dst = rank ^ i;
-    MPI_Sendrecv(send_ptr, send_count, send_type, dst, tag,
+    smpi_mpi_sendrecv(send_ptr, send_count, send_type, dst, tag,
                  recv_ptr + src * recv_count * extent, recv_count, recv_type,
                  src, tag, comm, &status);
   }

@@ -75,7 +75,6 @@ typedef enum {
   SURF_MODEL_DIJKSTRA,
   SURF_MODEL_DIJKSTRACACHE,
   SURF_MODEL_NONE,
-  SURF_MODEL_RULEBASED,
   SURF_MODEL_VIVALDI,
   SURF_MODEL_CLUSTER
 } e_routing_types;
@@ -95,8 +94,6 @@ struct s_model_type routing_models[] = {
    model_dijkstracache_create, model_dijkstra_both_end},
   {"none", "No routing (Unless you know what you are doing, avoid using this mode in combination with a non Constant network model).",
    model_none_create,  NULL},
-  {"RuleBased", "Rule-Based routing data (...)",
-   model_rulebased_create, NULL},
   {"Vivaldi", "Vivaldi routing",
    model_vivaldi_create, NULL},
   {"Cluster", "Cluster routing",
@@ -119,6 +116,8 @@ static void parse_S_host_link(sg_platf_host_link_cbarg_t host)
   s_surf_parsing_link_up_down_t link_up_down;
   link_up_down.link_up = xbt_lib_get_or_null(link_lib, host->link_up, SURF_LINK_LEVEL);
   link_up_down.link_down = xbt_lib_get_or_null(link_lib, host->link_down, SURF_LINK_LEVEL);
+  link_up_down.limiter_link = NULL;
+  link_up_down.loopback_link = NULL;
 
   xbt_assert(link_up_down.link_up, "Link '%s' not found!",host->link_up);
   xbt_assert(link_up_down.link_down, "Link '%s' not found!",host->link_down);
@@ -354,7 +353,6 @@ void routing_AS_begin(sg_platf_AS_cbarg_t AS)
     case A_surfxml_AS_routing_Floyd:         model = &routing_models[SURF_MODEL_FLOYD];break;
     case A_surfxml_AS_routing_Full:          model = &routing_models[SURF_MODEL_FULL];break;
     case A_surfxml_AS_routing_None:          model = &routing_models[SURF_MODEL_NONE];break;
-    case A_surfxml_AS_routing_RuleBased:     model = &routing_models[SURF_MODEL_RULEBASED];break;
     case A_surfxml_AS_routing_Vivaldi:       model = &routing_models[SURF_MODEL_VIVALDI];break;
     default: xbt_die("Not a valid model!!!");
     break;
@@ -1255,7 +1253,6 @@ xbt_dynar_t surf_AS_get_hosts(AS_t as) {
   xbt_dynar_t res =  xbt_dynar_new(sizeof(xbt_dictelm_t), NULL);
   for (index = 0; index < count; index++) {
      relm = xbt_dynar_get_as(elms, index, sg_routing_edge_t);
-     printf("relm:%s\n", relm->name);
      delm = xbt_lib_get_elm_or_null(host_lib, relm->name);
      if (delm!=NULL) {
        xbt_dynar_push(res, &delm);

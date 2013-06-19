@@ -199,6 +199,9 @@ smx_action_t SIMIX_fifo_get_comm(xbt_fifo_t fifo, e_smx_comm_type_t type,
       xbt_fifo_remove_item(fifo, item);
       xbt_fifo_free_item(item);
       action->comm.refcount++;
+#ifdef HAVE_MC
+      action->comm.rdv_cpy = action->comm.rdv;
+#endif
       action->comm.rdv = NULL;
       return action;
     }
@@ -400,7 +403,6 @@ smx_action_t SIMIX_comm_isend(smx_process_t src_proc, smx_rdv_t rdv,
       other_action->state = SIMIX_READY;
       other_action->comm.dst_proc=rdv->permanent_receiver;
       other_action->comm.refcount++;
-      other_action->comm.rdv = rdv;
       xbt_fifo_push(rdv->done_comm_fifo,other_action);
       other_action->comm.rdv=rdv;
       XBT_DEBUG("pushing a message into the permanent receive fifo %p, comm %p \n", rdv, &(other_action->comm));

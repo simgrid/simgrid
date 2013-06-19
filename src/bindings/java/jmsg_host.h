@@ -136,6 +136,13 @@ JNIEXPORT jdouble JNICALL Java_org_simgrid_msg_Host_getSpeed
     (JNIEnv *, jobject);
 /*
  * Class		org_simgrid_msg_Host
+ * Method		getCore
+ * Signature	()D
+ */
+JNIEXPORT jdouble JNICALL Java_org_simgrid_msg_Host_getCore
+    (JNIEnv *, jobject);
+/*
+ * Class		org_simgrid_msg_Host
  * Method		getLoad
  * Signature	()I
  */
@@ -171,4 +178,10 @@ JNIEXPORT jboolean JNICALL Java_org_simgrid_msg_Host_isAvail
 JNIEXPORT jobjectArray JNICALL
 Java_org_simgrid_msg_Host_all(JNIEnv *, jclass);
 
+JNIEXPORT void JNICALL 
+Java_org_simgrid_msg_Host_setAsyncMailbox(JNIEnv * env, jclass cls_arg, jobject jname);
+
+
+
 #endif                          /*!MSG_JHOST_H */
+

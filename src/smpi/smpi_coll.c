@@ -12,12 +12,30 @@
 
 #include "private.h"
 #include "colls/colls.h"
+#include "simgrid/sg_config.h"
+
+s_mpi_coll_description_t mpi_coll_gather_description[] = {
+  {"default",
+   "gather default collective",
+   smpi_mpi_gather},
+COLL_GATHERS(COLL_DESCRIPTION, COLL_COMMA),
+  {NULL, NULL, NULL}      /* this array must be NULL terminated */
+};
+
 
 s_mpi_coll_description_t mpi_coll_allgather_description[] = {
   {"default",
    "allgather default collective",
    smpi_mpi_allgather},
 COLL_ALLGATHERS(COLL_DESCRIPTION, COLL_COMMA),
+  {NULL, NULL, NULL}      /* this array must be NULL terminated */
+};
+
+s_mpi_coll_description_t mpi_coll_allgatherv_description[] = {
+  {"default",
+   "allgatherv default collective",
+   smpi_mpi_allgatherv},
+COLL_ALLGATHERVS(COLL_DESCRIPTION, COLL_COMMA),
   {NULL, NULL, NULL}      /* this array must be NULL terminated */
 };
 
@@ -29,10 +47,33 @@ COLL_ALLREDUCES(COLL_DESCRIPTION, COLL_COMMA),
   {NULL, NULL, NULL}      /* this array must be NULL terminated */
 };
 
+s_mpi_coll_description_t mpi_coll_reduce_scatter_description[] = {
+  {"default",
+   "reduce_scatter default collective",
+   smpi_mpi_reduce_scatter},
+COLL_REDUCE_SCATTERS(COLL_DESCRIPTION, COLL_COMMA),
+  {NULL, NULL, NULL}      /* this array must be NULL terminated */
+};
+
+s_mpi_coll_description_t mpi_coll_scatter_description[] = {
+  {"default",
+   "scatter default collective",
+   smpi_mpi_scatter},
+COLL_SCATTERS(COLL_DESCRIPTION, COLL_COMMA),
+  {NULL, NULL, NULL}      /* this array must be NULL terminated */
+};
+
+s_mpi_coll_description_t mpi_coll_barrier_description[] = {
+  {"default",
+   "barrier default collective",
+   smpi_mpi_barrier},
+COLL_BARRIERS(COLL_DESCRIPTION, COLL_COMMA),
+  {NULL, NULL, NULL}      /* this array must be NULL terminated */
+};
 s_mpi_coll_description_t mpi_coll_alltoall_description[] = {
-  {"ompi",
+  {"default",
    "Ompi alltoall default collective",
-   smpi_coll_tuned_alltoall_ompi},
+   smpi_coll_tuned_alltoall_ompi2},
 COLL_ALLTOALLS(COLL_DESCRIPTION, COLL_COMMA),
   {"bruck",
    "Alltoall Bruck (SG) collective",
@@ -40,15 +81,20 @@ COLL_ALLTOALLS(COLL_DESCRIPTION, COLL_COMMA),
   {"basic_linear",
    "Alltoall basic linear (SG) collective",
    smpi_coll_tuned_alltoall_basic_linear},
-  {"pairwise",
-   "Alltoall pairwise (SG) collective",
-   smpi_coll_tuned_alltoall_pairwise},
+  {NULL, NULL, NULL}      /* this array must be NULL terminated */
+};
+
+s_mpi_coll_description_t mpi_coll_alltoallv_description[] = {
+  {"default",
+   "Ompi alltoallv default collective",
+   smpi_coll_basic_alltoallv},
+COLL_ALLTOALLVS(COLL_DESCRIPTION, COLL_COMMA),
   {NULL, NULL, NULL}      /* this array must be NULL terminated */
 };
 
 s_mpi_coll_description_t mpi_coll_bcast_description[] = {
   {"default",
-   "allgather default collective",
+   "bcast default collective",
    smpi_mpi_bcast},
 COLL_BCASTS(COLL_DESCRIPTION, COLL_COMMA),
   {NULL, NULL, NULL}      /* this array must be NULL terminated */
@@ -56,7 +102,7 @@ COLL_BCASTS(COLL_DESCRIPTION, COLL_COMMA),
 
 s_mpi_coll_description_t mpi_coll_reduce_description[] = {
   {"default",
-   "allgather default collective",
+   "reduce default collective",
    smpi_mpi_reduce},
 COLL_REDUCES(COLL_DESCRIPTION, COLL_COMMA),
   {NULL, NULL, NULL}      /* this array must be NULL terminated */
@@ -75,15 +121,28 @@ void coll_help(const char *category, s_mpi_coll_description_t * table)
 }
 
 int find_coll_description(s_mpi_coll_description_t * table,
-                           const char *name)
+                           char *name)
 {
   int i;
   char *name_list = NULL;
-
+  int selector_on=0;
+  if(name==NULL){//no argument provided, use active selector's algorithm
+    name=(char*)sg_cfg_get_string("smpi/coll_selector");
+    selector_on=1;
+  }
   for (i = 0; table[i].name; i++)
     if (!strcmp(name, table[i].name)) {
       return i;
     }
+
+  if(selector_on){
+    // collective seems not handled by the active selector, try with default one
+    name=(char*)"default";
+    for (i = 0; table[i].name; i++)
+      if (!strcmp(name, table[i].name)) {
+        return i;
+    }
+  }
   name_list = strdup(table[0].name);
   for (i = 1; table[i].name; i++) {
     name_list =
@@ -96,17 +155,20 @@ int find_coll_description(s_mpi_coll_description_t * table,
   return -1;
 }
 
-
-
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_coll, smpi,
                                 "Logging specific to SMPI (coll)");
 
+int (*mpi_coll_gather_fun)(void *, int, MPI_Datatype, void*, int, MPI_Datatype, int root, MPI_Comm);
 int (*mpi_coll_allgather_fun)(void *, int, MPI_Datatype, void*, int, MPI_Datatype, MPI_Comm);
+int (*mpi_coll_allgatherv_fun)(void *, int, MPI_Datatype, void*, int*, int*, MPI_Datatype, MPI_Comm);
 int (*mpi_coll_allreduce_fun)(void *sbuf, void *rbuf, int rcount, MPI_Datatype dtype, MPI_Op op, MPI_Comm comm);
 int (*mpi_coll_alltoall_fun)(void *, int, MPI_Datatype, void*, int, MPI_Datatype, MPI_Comm);
+int (*mpi_coll_alltoallv_fun)(void *, int*, int*, MPI_Datatype, void*, int*, int*, MPI_Datatype, MPI_Comm);
 int (*mpi_coll_bcast_fun)(void *buf, int count, MPI_Datatype datatype, int root, MPI_Comm com);
 int (*mpi_coll_reduce_fun)(void *buf, void *rbuf, int count, MPI_Datatype datatype, MPI_Op op, int root, MPI_Comm comm);
-
+int (*mpi_coll_reduce_scatter_fun)(void *sbuf, void *rbuf, int *rcounts,MPI_Datatype dtype,MPI_Op  op,MPI_Comm  comm);
+int (*mpi_coll_scatter_fun)(void *sendbuf, int sendcount, MPI_Datatype sendtype,void *recvbuf, int recvcount, MPI_Datatype recvtype,int root, MPI_Comm comm);
+int (*mpi_coll_barrier_fun)(MPI_Comm comm);
 struct s_proc_tree {
   int PROCTREE_A;
   int numChildren;
@@ -284,7 +346,7 @@ void nary_tree_barrier(MPI_Comm comm, int arity)
   free_tree(tree);
 }
 
-int smpi_coll_tuned_alltoall_ompi(void *sendbuf, int sendcount,
+int smpi_coll_tuned_alltoall_ompi2(void *sendbuf, int sendcount,
                                    MPI_Datatype sendtype, void *recvbuf,
                                    int recvcount, MPI_Datatype recvtype,
                                    MPI_Comm comm)
@@ -304,9 +366,9 @@ int smpi_coll_tuned_alltoall_ompi(void *sendbuf, int sendcount,
                                               recvcount, recvtype, comm);
   } else {
     return
-        smpi_coll_tuned_alltoall_pairwise(sendbuf, sendcount, sendtype,
-                                          recvbuf, recvcount, recvtype,
-                                          comm);
+        smpi_coll_tuned_alltoall_ring(sendbuf, sendcount, sendtype,
+                                      recvbuf, recvcount, recvtype,
+                                      comm);
   }
 }
 
@@ -432,44 +494,6 @@ int smpi_coll_tuned_alltoall_basic_linear(void *sendbuf, int sendcount,
     xbt_free(requests);
   }
   return err;
-}
-
-/**
- * Alltoall pairwise
- *
- * this algorithm performs size steps (1<=s<=size) and
- * at each step s, a process p sends iand receive to.from a unique distinct remote process
- * size=5 : s=1:  4->0->1, 0->1->2, 1->2->3, ...
- *          s=2:  3->0->2, 4->1->3, 0->2->4, 1->3->0 , 2->4->1
- *          ....
- * Openmpi calls this routine when the message size sent to each rank is greater than 3000 bytes
- **/
-int smpi_coll_tuned_alltoall_pairwise(void *sendbuf, int sendcount,
-                                      MPI_Datatype sendtype, void *recvbuf,
-                                      int recvcount, MPI_Datatype recvtype,
-                                      MPI_Comm comm)
-{
-  int system_tag = 999;
-  int rank, size, step, sendto, recvfrom, sendsize, recvsize;
-
-  rank = smpi_comm_rank(comm);
-  size = smpi_comm_size(comm);
-  XBT_DEBUG("<%d> algorithm alltoall_pairwise() called.", rank);
-  sendsize = smpi_datatype_size(sendtype);
-  recvsize = smpi_datatype_size(recvtype);
-  /* Perform pairwise exchange - starting from 1 so the local copy is last */
-  for (step = 1; step < size + 1; step++) {
-    /* who do we talk to in this step? */
-    sendto = (rank + step) % size;
-    recvfrom = (rank + size - step) % size;
-    /* send and receive */
-    smpi_mpi_sendrecv(&((char *) sendbuf)[sendto * sendsize * sendcount],
-                      sendcount, sendtype, sendto, system_tag,
-                      &((char *) recvbuf)[recvfrom * recvsize * recvcount],
-                      recvcount, recvtype, recvfrom, system_tag, comm,
-                      MPI_STATUS_IGNORE);
-  }
-  return MPI_SUCCESS;
 }
 
 int smpi_coll_basic_alltoallv(void *sendbuf, int *sendcounts,

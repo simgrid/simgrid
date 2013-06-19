@@ -2,9 +2,9 @@
  <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">
  <platform version="3">
  <AS  id="AS0"  routing="Full">
-   <host id="Faulty Host" power="1E9"
+   <host id="Faulty Host" power="1Gf"
          state_file="faulty_host.trace"/>
-   <host id="Safe Host" power="5E8"/>
+   <host id="Safe Host" power="500Mf"/>
  </AS>
  </platform>
  

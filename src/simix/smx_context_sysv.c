@@ -37,7 +37,7 @@ typedef struct s_smx_ctx_sysv {
 
 #ifdef CONTEXT_THREADS
 static xbt_parmap_t sysv_parmap;
-static ucontext_t* sysv_workers_stacks;        /* space to save the worker's stack in each thread */
+static smx_ctx_sysv_t* sysv_workers_context;   /* space to save the worker's context in each thread */
 static unsigned long sysv_threads_working;     /* number of threads that have started their work */
 static xbt_os_thread_key_t sysv_worker_id_key; /* thread-specific storage for the thread id */
 #endif
@@ -90,7 +90,8 @@ void SIMIX_ctx_sysv_factory_init(smx_context_factory_t *factory)
 #ifdef CONTEXT_THREADS  /* To use parallel ucontexts a thread pool is needed */
     int nthreads = SIMIX_context_get_nthreads();
     sysv_parmap = xbt_parmap_new(nthreads, SIMIX_context_get_parallel_mode());
-    sysv_workers_stacks = xbt_new(ucontext_t, nthreads);
+    sysv_workers_context = xbt_new(smx_ctx_sysv_t, nthreads);
+    sysv_maestro_context = NULL;
     xbt_os_thread_key_create(&sysv_worker_id_key);
     (*factory)->stop = smx_ctx_sysv_stop_parallel;
     (*factory)->suspend = smx_ctx_sysv_suspend_parallel;
@@ -110,7 +111,7 @@ static int smx_ctx_sysv_factory_finalize(smx_context_factory_t *factory)
 #ifdef CONTEXT_THREADS
   if (sysv_parmap)
     xbt_parmap_destroy(sysv_parmap);
-  xbt_free(sysv_workers_stacks);
+  xbt_free(sysv_workers_context);
 #endif
   return smx_ctx_base_factory_finalize(factory);
 }
@@ -165,7 +166,8 @@ smx_ctx_sysv_create_context_sized(size_t size, xbt_main_func_t code,
               sizeof(smx_ctx_sysv_t), sizeof(int), CTX_ADDR_LEN);
     }
   } else {
-    sysv_maestro_context = context;
+    if(data != NULL && sysv_maestro_context == NULL)
+      sysv_maestro_context = context;
   }
 
   if(MC_is_active() && code)
@@ -289,10 +291,10 @@ static void smx_ctx_sysv_suspend_parallel(smx_context_t context)
   else {
     /* all processes were run, go to the barrier */
     XBT_DEBUG("No more processes to run");
-    next_context = (smx_context_t) sysv_maestro_context;
     unsigned long worker_id =
         (unsigned long) xbt_os_thread_get_specific(sysv_worker_id_key);
-    next_stack = &sysv_workers_stacks[worker_id];
+    next_context = (smx_context_t)sysv_workers_context[worker_id];
+    next_stack = &((smx_ctx_sysv_t)next_context)->uc;
   }
 
   SIMIX_context_set_current(next_context);
@@ -305,7 +307,9 @@ static void smx_ctx_sysv_resume_parallel(smx_process_t first_process)
 #ifdef CONTEXT_THREADS
   unsigned long worker_id = __sync_fetch_and_add(&sysv_threads_working, 1);
   xbt_os_thread_set_specific(sysv_worker_id_key, (void*) worker_id);
-  ucontext_t* worker_stack = &sysv_workers_stacks[worker_id];
+  smx_ctx_sysv_t worker_context = (smx_ctx_sysv_t)SIMIX_context_self();
+  sysv_workers_context[worker_id] = worker_context;
+  ucontext_t* worker_stack = &worker_context->uc;
 
   smx_context_t context = first_process->context;
   SIMIX_context_set_current(context);

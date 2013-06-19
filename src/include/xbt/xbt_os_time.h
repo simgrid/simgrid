@@ -22,9 +22,18 @@ XBT_PUBLIC(void) xbt_os_sleep(double sec);
 typedef struct s_xbt_os_timer *xbt_os_timer_t;
 XBT_PUBLIC(xbt_os_timer_t) xbt_os_timer_new(void);
 XBT_PUBLIC(void) xbt_os_timer_free(xbt_os_timer_t timer);
-XBT_PUBLIC(void) xbt_os_timer_start(xbt_os_timer_t timer);
-XBT_PUBLIC(void) xbt_os_timer_resume(xbt_os_timer_t timer);
-XBT_PUBLIC(void) xbt_os_timer_stop(xbt_os_timer_t timer);
 XBT_PUBLIC(double) xbt_os_timer_elapsed(xbt_os_timer_t timer);
 
+
+XBT_PUBLIC(void) xbt_os_walltimer_start(xbt_os_timer_t timer);
+XBT_PUBLIC(void) xbt_os_walltimer_resume(xbt_os_timer_t timer);
+XBT_PUBLIC(void) xbt_os_walltimer_stop(xbt_os_timer_t timer);
+
+XBT_PUBLIC(void) xbt_os_cputimer_start(xbt_os_timer_t timer);
+XBT_PUBLIC(void) xbt_os_cputimer_resume(xbt_os_timer_t timer);
+XBT_PUBLIC(void) xbt_os_cputimer_stop(xbt_os_timer_t timer);
+
+XBT_PUBLIC(void) xbt_os_threadtimer_start(xbt_os_timer_t timer);
+XBT_PUBLIC(void) xbt_os_threadtimer_resume(xbt_os_timer_t timer);
+XBT_PUBLIC(void) xbt_os_threadtimer_stop(xbt_os_timer_t timer);
 #endif

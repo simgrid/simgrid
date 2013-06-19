@@ -38,9 +38,12 @@ void SIMIX_host_add_auto_restart_process(smx_host_t host,
 void SIMIX_host_restart_processes(smx_host_t host);
 void SIMIX_host_autorestart(smx_host_t host);
 xbt_dict_t SIMIX_host_get_properties(smx_host_t host);
+int SIMIX_host_get_core(smx_host_t host);
 double SIMIX_host_get_speed(smx_host_t host);
 double SIMIX_host_get_available_speed(smx_host_t host);
 int SIMIX_host_get_state(smx_host_t host);
+void SIMIX_host_on(smx_host_t host);
+void SIMIX_host_off(smx_host_t host);
 smx_action_t SIMIX_host_execute(const char *name,
     smx_host_t host, double computation_amount, double priority, double bound);
 smx_action_t SIMIX_host_parallel_execute(const char *name,
@@ -59,7 +62,10 @@ void SIMIX_pre_host_execution_wait(smx_simcall_t simcall, smx_action_t action);
 smx_host_t SIMIX_pre_host_get_by_name(smx_simcall_t, const char*);
 const char* SIMIX_pre_host_self_get_name(smx_simcall_t);
 const char* SIMIX_pre_host_get_name(smx_simcall_t, smx_host_t);
+void SIMIX_pre_host_on(smx_simcall_t, smx_host_t host);
+void SIMIX_pre_host_off(smx_simcall_t, smx_host_t host);
 xbt_dict_t SIMIX_pre_host_get_properties(smx_simcall_t, smx_host_t);
+int SIMIX_pre_host_get_core(smx_simcall_t, smx_host_t);
 double SIMIX_pre_host_get_speed(smx_simcall_t, smx_host_t);
 double SIMIX_pre_host_get_available_speed(smx_simcall_t, smx_host_t);
 int SIMIX_pre_host_get_state(smx_simcall_t, smx_host_t);

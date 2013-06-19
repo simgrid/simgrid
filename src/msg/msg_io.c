@@ -1,8 +1,8 @@
-/* Copyright (c) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012. The SimGrid Team.
- * All rights reserved.                                                                  */
+/* Copyright (c) 2004 - 2013. The SimGrid Team.
+ * All rights reserved.                                                       */
 
 /* This program is free software; you can redistribute it and/or modify it
- * under the terms of the license (GNU LGPL) which comes with this package.              */
+ * under the terms of the license (GNU LGPL) which comes with this package.   */
 
 #include "msg_private.h"
 #include "xbt/log.h"
@@ -23,28 +23,26 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_io, msg,
  * \brief Read elements of a file
  *
  * \param ptr buffer to where the data is copied
- * \param size of each element
- * \param nmemb is the number of elements of data to read
- * \param stream to read
+ * \param size of the file to read
+ * \param fd is a the file descriptor
  * \return the number of items successfully read
  */
-double MSG_file_read(void* ptr, size_t size, size_t nmemb,  msg_file_t stream)
+size_t MSG_file_read(void* ptr, size_t size, msg_file_t fd)
 {
-  return simcall_file_read(ptr, size, nmemb, stream->simdata->smx_file);
+  return simcall_file_read(ptr, size, fd->simdata->smx_file);
 }
 
 /** \ingroup msg_file_management
  * \brief Write elements into a file
  *
  * \param ptr buffer from where the data is copied
- * \param size of each element
- * \param nmemb is the number of elements of data to write
- * \param stream to write
+ * \param size of the file to write
+ * \param fd is a the file descriptor
  * \return the number of items successfully write
  */
-size_t MSG_file_write(const void* ptr, size_t size, size_t nmemb, msg_file_t stream)
+size_t MSG_file_write(const void* ptr, size_t size, msg_file_t fd)
 {
-  return simcall_file_write(ptr, size, nmemb, stream->simdata->smx_file);
+  return simcall_file_write(ptr, size, fd->simdata->smx_file);
 }
 
 /** \ingroup msg_file_management
@@ -52,68 +50,31 @@ size_t MSG_file_write(const void* ptr, size_t size, size_t nmemb, msg_file_t str
  *
  * \param mount is the mount point where find the file is located
  * \param path is the file location on the storage
- * \param mode points to a string beginning with one of the following sequences (Additional characters may follow these sequences.):
- *      r      Open text file for reading.  The stream is positioned at the beginning of the file.
- *      r+     Open for reading and writing.  The stream is positioned at the beginning of the file.
- *      w      Truncate file to zero length or create text file for writing.  The stream is positioned at the beginning of the file.
- *      w+     Open for reading and writing.  The file is created if it does not exist, otherwise it is truncated.  The stream is positioned at the
- *             beginning of the file.
- *      a      Open for appending (writing at end of file).  The file is created if it does not exist.  The stream is positioned at the end of the file.
- *      a+     Open for reading and appending (writing at end of file).  The file is created if it does not exist.  The initial file position for  reading
- *             is at the beginning of the file, but output is always appended to the end of the file.
  *
  * \return An #msg_file_t associated to the file
  */
-msg_file_t MSG_file_open(const char* mount, const char* path, const char* mode)
+msg_file_t MSG_file_open(const char* mount, const char* path)
 {
   msg_file_t file = xbt_new(s_msg_file_t,1);
-  file->name = strdup(path);
+  file->name = xbt_strdup(path);
   file->simdata = xbt_new0(s_simdata_file_t,1);
-  file->simdata->smx_file = simcall_file_open(mount, path, mode);
+  file->simdata->smx_file = simcall_file_open(mount, path);
   return file;
 }
 
 /** \ingroup msg_file_management
  * \brief Close the file
  *
- * \param fp is the file to close
+ * \param fd is the file to close
  * \return 0 on success or 1 on error
  */
-int MSG_file_close(msg_file_t fp)
+int MSG_file_close(msg_file_t fd)
 {
-  int res = simcall_file_close(fp->simdata->smx_file);
-  free(fp->name);
-  xbt_free(fp->simdata);
-  xbt_free(fp);
+  int res = simcall_file_close(fd->simdata->smx_file);
+  free(fd->name);
+  xbt_free(fd->simdata);
+  xbt_free(fd);
   return res;
-}
-
-/** \ingroup msg_file_management
- * \brief Stats the file pointed by fd
- *
- * \param fd is the file descriptor (#msg_file_t)
- * \param buf is the return structure with informations
- * \return 0 on success or 1 on error
- */
-int MSG_file_stat(msg_file_t fd, s_msg_stat_t *buf)
-{
-  int res;
-  res = simcall_file_stat(fd->simdata->smx_file, buf);
-  return res;
-}
-
-/** \ingroup msg_file_management
- * \brief Free the stat structure
- *
- * \param stat the #s_msg_stat_t to free
- */
-void MSG_file_free_stat(s_msg_stat_t *stat)
-{
-  free(stat->date);
-  free(stat->group);
-  free(stat->time);
-  free(stat->user);
-  free(stat->user_rights);
 }
 
 /** \ingroup msg_file_management
@@ -124,11 +85,18 @@ void MSG_file_free_stat(s_msg_stat_t *stat)
  */
 int MSG_file_unlink(msg_file_t fd)
 {
-  int res = simcall_file_unlink(fd->simdata->smx_file);
-  free(fd->name);
-  xbt_free(fd->simdata);
-  xbt_free(fd);
-  return res;
+  return simcall_file_unlink(fd->simdata->smx_file);
+}
+
+/** \ingroup msg_file_management
+ * \brief Return the size of a file
+ *
+ * \param fd is the file descriptor (#msg_file_t)
+ * \return the size of the file (as a size_t)
+ */
+
+size_t MSG_file_get_size(msg_file_t fd){
+  return simcall_file_get_size(fd->simdata->smx_file);
 }
 
 /** \ingroup msg_file_management

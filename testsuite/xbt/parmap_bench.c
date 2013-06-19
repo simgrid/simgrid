@@ -4,6 +4,7 @@
 #include <xbt/parmap.h>
 #include <xbt/sysdep.h>
 #include <internal_config.h>        /* HAVE_FUTEX_H */
+#include "simgrid/simix.h"
 #include "xbt/xbt_os_time.h"
 
 #define MODES_DEFAULT 0x7
@@ -165,6 +166,8 @@ int main(int argc, char *argv[])
 {
   int nthreads;
   unsigned modes = MODES_DEFAULT;
+
+  SIMIX_global_init(&argc, argv);
 
   if (argc != 2 && argc != 3) {
     fprintf(stderr,

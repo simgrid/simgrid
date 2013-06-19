@@ -1,4 +1,4 @@
-#include "colls.h"
+#include "colls_private.h"
 /*****************************************************************************
 
  * Function: alltoall_pair_mpi_barrier
@@ -30,24 +30,24 @@ smpi_coll_tuned_alltoall_pair_mpi_barrier(void *send_buff, int send_count,
   MPI_Status s;
   MPI_Aint send_chunk, recv_chunk;
   int i, src, dst, rank, num_procs;
-  int tag = 101, success = 1;   /*, failure = 0, pof2 = 1; */
+  int tag = 101;
   char *send_ptr = (char *) send_buff;
   char *recv_ptr = (char *) recv_buff;
 
-  MPI_Comm_rank(comm, &rank);
-  MPI_Comm_size(comm, &num_procs);
-  MPI_Type_extent(send_type, &send_chunk);
-  MPI_Type_extent(recv_type, &recv_chunk);
+  rank = smpi_comm_rank(comm);
+  num_procs = smpi_comm_size(comm);
+  send_chunk = smpi_datatype_get_extent(send_type);
+  recv_chunk = smpi_datatype_get_extent(recv_type);
 
   send_chunk *= send_count;
   recv_chunk *= recv_count;
 
   for (i = 0; i < num_procs; i++) {
     src = dst = rank ^ i;
-    MPI_Barrier(comm);
-    MPI_Sendrecv(send_ptr + dst * send_chunk, send_count, send_type, dst,
+    smpi_mpi_barrier(comm);
+    smpi_mpi_sendrecv(send_ptr + dst * send_chunk, send_count, send_type, dst,
                  tag, recv_ptr + src * recv_chunk, recv_count, recv_type,
                  src, tag, comm, &s);
   }
-  return success;
+  return MPI_SUCCESS;
 }

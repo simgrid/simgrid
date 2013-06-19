@@ -1,0 +1,11 @@
+This is a somehow basic master/slaves example.
+
+There is 3 kind of processes:
+ * Master: creates some tasks, and dispatches them to its slaves
+ * Forwarder: get tasks from master, and dispatch them further
+ * Slave: get tasks from either master or forwarder, and run them
+ 
+At the end of the execution:
+ - the master sends FinalizeTask to every known slave to stop them
+ - On reception of FT, forwarders send FT to every slave, and stop.
+ - On reception of FinalizeTask, slaves stop.

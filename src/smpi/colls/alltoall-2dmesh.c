@@ -1,8 +1,5 @@
-#include "colls.h"
+#include "colls_private.h"
 #include <math.h>
-
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_colls, smpi,
-                                "Logging specific to SMPI collectives");
 
 /*****************************************************************************
 
@@ -63,47 +60,29 @@ int smpi_coll_tuned_alltoall_2dmesh(void *send_buff, int send_count,
   int i, j, src, dst, rank, num_procs, count, num_reqs;
   int X, Y, send_offset, recv_offset;
   int my_row_base, my_col_base, src_row_base, block_size;
-  int tag = 1, failure = 0, success = 1;
+  int tag = 1;
 
-  MPI_Comm_rank(comm, &rank);
-  MPI_Comm_size(comm, &num_procs);
-  MPI_Type_extent(send_type, &extent);
+  rank = smpi_comm_rank(comm);
+  num_procs = smpi_comm_size(comm);
+  extent = smpi_datatype_get_extent(send_type);
 
   if (!alltoall_check_is_2dmesh(num_procs, &X, &Y))
-    return failure;
+    return MPI_ERR_OTHER;
 
   my_row_base = (rank / Y) * Y;
   my_col_base = rank % Y;
 
   block_size = extent * send_count;
 
-  tmp_buff1 = (char *) malloc(block_size * num_procs * Y);
-  if (!tmp_buff1) {
-    XBT_DEBUG("alltoall-2dmesh_shoot.c:88: cannot allocate memory");
-    MPI_Finalize();
-    exit(failure);
-  }
-
-  tmp_buff2 = (char *) malloc(block_size * Y);
-  if (!tmp_buff2) {
-    XBT_WARN("alltoall-2dmesh_shoot.c:88: cannot allocate memory");
-    MPI_Finalize();
-    exit(failure);
-  }
-
-
+  tmp_buff1 = (char *) xbt_malloc(block_size * num_procs * Y);
+  tmp_buff2 = (char *) xbt_malloc(block_size * Y);
 
   num_reqs = X;
   if (Y > X)
     num_reqs = Y;
 
-  statuses = (MPI_Status *) malloc(num_reqs * sizeof(MPI_Status));
-  reqs = (MPI_Request *) malloc(num_reqs * sizeof(MPI_Request));
-  if (!reqs) {
-    XBT_WARN("alltoall-2dmesh_shoot.c:88: cannot allocate memory");
-    MPI_Finalize();
-    exit(failure);
-  }
+  statuses = (MPI_Status *) xbt_malloc(num_reqs * sizeof(MPI_Status));
+  reqs = (MPI_Request *) xbt_malloc(num_reqs * sizeof(MPI_Request));
 
   req_ptr = reqs;
 
@@ -117,18 +96,17 @@ int smpi_coll_tuned_alltoall_2dmesh(void *send_buff, int send_count,
       continue;
 
     recv_offset = (src % Y) * block_size * num_procs;
-    MPI_Irecv(tmp_buff1 + recv_offset, count, recv_type, src, tag, comm,
-              req_ptr++);
+    *(req_ptr++) = smpi_mpi_irecv(tmp_buff1 + recv_offset, count, recv_type, src, tag, comm);
   }
 
   for (i = 0; i < Y; i++) {
     dst = i + my_row_base;
     if (dst == rank)
       continue;
-    MPI_Send(send_buff, count, send_type, dst, tag, comm);
+    smpi_mpi_send(send_buff, count, send_type, dst, tag, comm);
   }
 
-  MPI_Waitall(Y - 1, reqs, statuses);
+  smpi_mpi_waitall(Y - 1, reqs, statuses);
   req_ptr = reqs;
 
   for (i = 0; i < Y; i++) {
@@ -136,13 +114,13 @@ int smpi_coll_tuned_alltoall_2dmesh(void *send_buff, int send_count,
     recv_offset = (my_row_base * block_size) + (i * block_size);
 
     if (i + my_row_base == rank)
-      MPI_Sendrecv((char *) send_buff + recv_offset, send_count, send_type,
+      smpi_mpi_sendrecv((char *) send_buff + recv_offset, send_count, send_type,
                    rank, tag,
                    (char *) recv_buff + recv_offset, recv_count, recv_type,
                    rank, tag, comm, &s);
 
     else
-      MPI_Sendrecv(tmp_buff1 + send_offset, send_count, send_type,
+      smpi_mpi_sendrecv(tmp_buff1 + send_offset, send_count, send_type,
                    rank, tag,
                    (char *) recv_buff + recv_offset, recv_count, recv_type,
                    rank, tag, comm, &s);
@@ -155,8 +133,8 @@ int smpi_coll_tuned_alltoall_2dmesh(void *send_buff, int send_count,
       continue;
     src_row_base = (src / Y) * Y;
 
-    MPI_Irecv((char *) recv_buff + src_row_base * block_size, recv_count * Y,
-              recv_type, src, tag, comm, req_ptr++);
+    *(req_ptr++) = smpi_mpi_irecv((char *) recv_buff + src_row_base * block_size, recv_count * Y,
+              recv_type, src, tag, comm);
   }
 
   for (i = 0; i < X; i++) {
@@ -169,11 +147,11 @@ int smpi_coll_tuned_alltoall_2dmesh(void *send_buff, int send_count,
       send_offset = (dst + j * num_procs) * block_size;
 
       if (j + my_row_base == rank)
-        MPI_Sendrecv((char *) send_buff + dst * block_size, send_count,
+        smpi_mpi_sendrecv((char *) send_buff + dst * block_size, send_count,
                      send_type, rank, tag, tmp_buff2 + recv_offset, recv_count,
                      recv_type, rank, tag, comm, &s);
       else
-        MPI_Sendrecv(tmp_buff1 + send_offset, send_count, send_type,
+        smpi_mpi_sendrecv(tmp_buff1 + send_offset, send_count, send_type,
                      rank, tag,
                      tmp_buff2 + recv_offset, recv_count, recv_type,
                      rank, tag, comm, &s);
@@ -181,12 +159,12 @@ int smpi_coll_tuned_alltoall_2dmesh(void *send_buff, int send_count,
       recv_offset += block_size;
     }
 
-    MPI_Send(tmp_buff2, send_count * Y, send_type, dst, tag, comm);
+    smpi_mpi_send(tmp_buff2, send_count * Y, send_type, dst, tag, comm);
   }
-  MPI_Waitall(X - 1, reqs, statuses);
+  smpi_mpi_waitall(X - 1, reqs, statuses);
   free(reqs);
   free(statuses);
   free(tmp_buff1);
   free(tmp_buff2);
-  return success;
+  return MPI_SUCCESS;
 }

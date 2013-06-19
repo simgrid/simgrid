@@ -1,4 +1,4 @@
-#include "colls.h"
+#include "colls_private.h"
 
 /*****************************************************************************
 
@@ -74,12 +74,12 @@ smpi_coll_tuned_allgather_spreading_simple(void *send_buff, int send_count,
   MPI_Status status;
   char *recv_ptr = (char *) recv_buff;
 
-  MPI_Comm_rank(comm, &rank);
-  MPI_Comm_size(comm, &num_procs);
-  MPI_Type_extent(send_type, &extent);
+  rank = smpi_comm_rank(comm);
+  num_procs = smpi_comm_size(comm);
+  extent = smpi_datatype_get_extent(send_type);
 
   num_reqs = (2 * num_procs) - 2;
-  reqs = (MPI_Request *) malloc(num_reqs * sizeof(MPI_Request));
+  reqs = (MPI_Request *) xbt_malloc(num_reqs * sizeof(MPI_Request));
   if (!reqs) {
     printf("allgather-spreading-simple.c:40: cannot allocate memory\n");
     MPI_Finalize();
@@ -87,7 +87,7 @@ smpi_coll_tuned_allgather_spreading_simple(void *send_buff, int send_count,
   }
 
   req_ptr = reqs;
-  MPI_Sendrecv(send_buff, send_count, send_type, rank, tag,
+  smpi_mpi_sendrecv(send_buff, send_count, send_type, rank, tag,
                (char *) recv_buff + rank * recv_count * extent, recv_count,
                recv_type, rank, tag, comm, &status);
 
@@ -95,18 +95,18 @@ smpi_coll_tuned_allgather_spreading_simple(void *send_buff, int send_count,
     src = (rank + i) % num_procs;
     if (src == rank)
       continue;
-    MPI_Irecv(recv_ptr + src * recv_count * extent, recv_count, recv_type,
-              src, tag, comm, req_ptr++);
+    *(req_ptr++) = smpi_mpi_irecv(recv_ptr + src * recv_count * extent, recv_count, recv_type,
+              src, tag, comm);
   }
 
   for (i = 0; i < num_procs; i++) {
     dst = (rank + i) % num_procs;
     if (dst == rank)
       continue;
-    MPI_Isend(send_buff, send_count, send_type, dst, tag, comm, req_ptr++);
+    *(req_ptr++) = smpi_mpi_isend(send_buff, send_count, send_type, dst, tag, comm);
   }
 
-  MPI_Waitall(num_reqs, reqs, MPI_STATUSES_IGNORE);
+  smpi_mpi_waitall(num_reqs, reqs, MPI_STATUSES_IGNORE);
   free(reqs);
 
   return MPI_SUCCESS;

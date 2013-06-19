@@ -4,9 +4,9 @@ cmake_minimum_required(VERSION 2.8)
 ### Need to set rc ccompiler before enable language
 if(WIN32)
   SET(CMAKE_RC_COMPILER "windres")
-  set(LIBRARIES_DEP simgrid pcre ws2_32 pthread)
+  set(LIBRARIES_DEP simgrid ws2_32 pthread)
 else()
-  set(LIBRARIES_DEP simgrid pcre pthread)
+  set(LIBRARIES_DEP simgrid pthread)
 endif()
 
 project(MY_SIMGRID_PROJECT C)
@@ -17,7 +17,6 @@ set(CMAKE_EXE_LINKER_FLAGS "" CACHE TYPE INTERNAL FORCE)
 ###############################
 # Test the build dependencies #
 ###############################
-include(FindPcreWin.cmake)
 message(STATUS "Looking for lib Simgrid")
 if("$ENV{SIMGRID_ROOT}" STREQUAL "")
   message(STATUS "Looking for lib Simgrid - Not found")

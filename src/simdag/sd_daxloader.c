@@ -361,6 +361,16 @@ xbt_dynar_t SD_daxload(const char *filename)
   xbt_dynar_foreach(result, cpt, file) {
     if (SD_task_get_kind(file) == SD_TASK_COMM_E2E) {
       uniq_transfer_task_name(file);
+    } else if (SD_task_get_kind(file) == SD_TASK_COMP_SEQ){
+      /* If some tasks do not take files as input, connect them to the root, if
+       * they don't produce files, connect them to the end node.
+       */
+      if ((file != root_task) && xbt_dynar_is_empty(file->tasks_before)) {
+        SD_task_dependency_add(NULL, NULL, root_task, file);
+      }
+      if ((file != end_task) && xbt_dynar_is_empty(file->tasks_after)) {
+        SD_task_dependency_add(NULL, NULL, file, end_task);
+      }
     }
   }
 

@@ -24,7 +24,6 @@
 #include "xbt/dynar.h"
 #include "xbt/xbt_os_thread.h"
 
-XBT_PUBLIC_DATA(int) (*xbt_pid) ();
 int xbt_log_no_loc = 0;         /* if set to true (with --log=no_loc), file localization will be omitted (for tesh tests) */
 static xbt_os_rmutex_t log_cat_init_mutex = NULL;
 
@@ -256,7 +255,7 @@ XBT_LOG_NEW_CATEGORY(VSS);
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(SA, VSS);
 
 int main() {
-       / * Now set the parent's priority.  (the string would typcially be a runtime option) * /
+       / * Now set the parent's priority.  (the string would typically be a runtime option) * /
        xbt_log_control_set("SA.thresh:3");
 
        / * This request is enabled, because WARNING >= INFO. * /
@@ -288,12 +287,29 @@ checks and deals properly with such arguments.
 
 The most common setting is to control which logging event will get
 displayed by setting a threshold to each category through the
-<tt>thres</tt> keyword.
+<tt>threshold</tt> keyword.
 
-For example, \verbatim --log=root.thres:debug\endverbatim will make
+For example, \verbatim --log=root.threshold:debug\endverbatim will make
 SimGrid <b>extremely</b> verbose while \verbatim
 --log=root.thres:critical\endverbatim should shut it almost
-completely off. The full list of recognized thresholds is the following:
+completely off.
+
+Note that the <tt>threshold</tt> keyword can be abbreviated here. For example,
+all the following notations have the same result.
+\verbatim
+--log=root.threshold:debug
+--log=root.threshol:debug
+--log=root.thresho:debug
+--log=root.thresh:debug
+--log=root.thres:debug
+--log=root.thre:debug
+--log=root.thr:debug
+--log=root.th:debug
+--log=root.t:debug
+--log=root.:debug     <--- That's obviously really ugly, but it actually works.
+\endverbatim
+
+The full list of recognized thresholds is the following:
 
  - trace: enter and return of some functions
  - debug: crufty output
@@ -553,7 +569,6 @@ static void xbt_log_connect_categories(void)
   XBT_LOG_CONNECT(xbt_mallocator);
   XBT_LOG_CONNECT(xbt_matrix);
   XBT_LOG_CONNECT(xbt_parmap);
-  XBT_LOG_CONNECT(xbt_parmap_unit);
   XBT_LOG_CONNECT(xbt_queue);
   XBT_LOG_CONNECT(xbt_set);
   XBT_LOG_CONNECT(xbt_sync);
@@ -582,6 +597,7 @@ static void xbt_log_connect_categories(void)
   XBT_LOG_CONNECT(instr_config);
   XBT_LOG_CONNECT(instr_msg);
   XBT_LOG_CONNECT(instr_msg_process);
+  XBT_LOG_CONNECT(instr_msg_vm);
   XBT_LOG_CONNECT(instr_paje_containers);
   XBT_LOG_CONNECT(instr_paje_header);
   XBT_LOG_CONNECT(instr_paje_trace);
@@ -589,6 +605,7 @@ static void xbt_log_connect_categories(void)
   XBT_LOG_CONNECT(instr_paje_values);
   XBT_LOG_CONNECT(instr_resource);
   XBT_LOG_CONNECT(instr_routing);
+  XBT_LOG_CONNECT(instr_sd);
   XBT_LOG_CONNECT(instr_surf);
 #endif
 
@@ -684,7 +701,6 @@ static void xbt_log_connect_categories(void)
   XBT_LOG_CONNECT(surf_route_floyd);
   XBT_LOG_CONNECT(surf_route_full);
   XBT_LOG_CONNECT(surf_route_none);
-  XBT_LOG_CONNECT(surf_route_rulebased);
   XBT_LOG_CONNECT(surf_route_vivaldi);
   XBT_LOG_CONNECT(surf_storage);
   XBT_LOG_CONNECT(surf_trace);
@@ -1066,7 +1082,7 @@ static xbt_log_setting_t _xbt_log_parse_setting(const char *control_string)
   xbt_assert(*dot == '.' && (*eq == '=' || *eq == ':'),
               "Invalid control string '%s'", control_string);
 
-  if (!strncmp(dot + 1, "thresh", (size_t) (eq - dot - 1))) {
+  if (!strncmp(dot + 1, "threshold", (size_t) (eq - dot - 1))) {
     int i;
     char *neweq = xbt_strdup(eq + 1);
     char *p = neweq - 1;

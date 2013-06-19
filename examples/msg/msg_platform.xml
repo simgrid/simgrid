@@ -2,288 +2,288 @@
  <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">
  <platform version="3">
  <AS  id="AS0"  routing="Full">
-   <host id="Jacquelin" power="137333000"/>
-   <host id="Boivin" power="98095000"/>
-   <host id="Jean_Yves" power="98095000"/>
-   <host id="TeX" power="68667000"/>
-   <host id="Geoff" power="42917000"/>
-   <host id="Disney" power="114444000"/>
-   <host id="iRMX" power="68667000"/>
-   <host id="McGee" power="42917000"/>
-   <host id="Gatien" power="114444000"/>
-   <host id="Laroche" power="98095000"/>
-   <host id="Tanguay" power="68667000"/>
-   <host id="Morin" power="85833000"/>
-   <host id="Ethernet" power="98095000"/>
-   <host id="Bellemarre" power="34333000"/>
-   <host id="Kuenning" power="85833000"/>
-   <host id="Gaston" power="98095000"/>
-   <host id="Harry" power="42917000"/>
-   <host id="Bousquet" power="42917000"/>
-   <host id="Paul" power="76296000"/>
-   <host id="St_Jean" power="76296000"/>
-   <host id="Jill" power="114444000"/>
-   <host id="Marcel" power="171667000"/>
-   <host id="Wright" power="48492000"/>
-   <host id="Jackson" power="48492000"/>
-   <host id="Fernand" power="22151000"/>
-   <host id="Soucy" power="137333000"/>
-   <host id="Ste_Julie" power="85833000"/>
-   <host id="Victoria" power="85833000"/>
-   <host id="Lessard" power="85833000"/>
-   <host id="Florient" power="114444000"/>
-   <host id="Marcoux" power="98095000"/>
-   <host id="Gavrel" power="85833000"/>
-   <host id="Bescherelle" power="137333000"/>
-   <host id="Pierre" power="114444000"/>
-   <host id="Jamie" power="76296000"/>
-   <host id="Rubin" power="42917000"/>
-   <host id="Olivier" power="114444000"/>
-   <host id="Boucherville" power="48492000"/>
-   <host id="Pointe_Claire" power="48492000"/>
-   <host id="Kansas" power="137333000"/>
-   <host id="King" power="114444000"/>
-   <host id="Lapointe" power="68667000"/>
-   <host id="Julian" power="114444000"/>
-   <host id="Lafontaine" power="68667000"/>
-   <host id="Gordon" power="76296000"/>
-   <host id="Drouin" power="42917000"/>
-   <host id="Robert" power="137333000"/>
-   <host id="Jocelyne" power="34333000"/>
-   <host id="Stephen" power="68667000"/>
-   <host id="Provost" power="137333000"/>
-   <host id="Juneau" power="22151000"/>
-   <host id="Casavant" power="48492000"/>
-   <host id="St_Antoine" power="34333000"/>
-   <host id="Louis" power="98095000"/>
-   <host id="Julien" power="22151000"/>
-   <host id="St_Paul" power="114444000"/>
-   <host id="Mathematica" power="137333000"/>
-   <host id="LaTeX" power="85833000"/>
-   <host id="Sirois" power="114444000"/>
-   <host id="Monique" power="114444000"/>
-   <host id="Audy" power="34333000"/>
-   <host id="Bourassa" power="85833000"/>
-   <host id="OHara" power="42917000"/>
-   <host id="Boston" power="42917000"/>
-   <host id="Papineau" power="85833000"/>
-   <host id="Fraser" power="98095000"/>
-   <host id="Browne" power="137333000"/>
-   <host id="SunOS" power="34333000"/>
-   <host id="Varennes" power="68667000"/>
-   <host id="Jacques" power="98095000"/>
-   <host id="Thierry" power="137333000"/>
-   <host id="Lachapelle" power="42917000"/>
-   <host id="kV" power="68667000"/>
-   <host id="Yolande" power="42917000"/>
-   <host id="Pronovost" power="114444000"/>
-   <host id="SPICE" power="68667000"/>
-   <host id="Europe" power="48492000"/>
-   <host id="Roy" power="34333000"/>
-   <host id="Amadeus" power="114444000"/>
-   <host id="Intel" power="137333000"/>
-   <host id="Cambridge" power="114444000"/>
-   <host id="Tremblay" power="171667000"/>
-   <host id="UNIX" power="76296000"/>
-   <host id="Domey" power="76296000"/>
-   <host id="St_Bruno" power="42917000"/>
-   <host id="Jean_Claude" power="85833000"/>
-   <host id="Doyon" power="68667000"/>
-   <host id="Fafard" power="137333000"/>
-   <host id="Croteau" power="42917000"/>
-   <host id="Dodge" power="114444000"/>
-   <link id="127" bandwidth="3430125" latency="0.000536941"/>
-   <link id="32" bandwidth="11618875" latency="0.00018998"/>
-   <link id="90" bandwidth="10314625" latency="0.006932556"/>
-   <link id="118" bandwidth="1467625" latency="0.000869727"/>
-   <link id="71" bandwidth="8427250" latency="0.000156056"/>
-   <link id="102" bandwidth="4817000" latency="0.000117352"/>
-   <link id="18" bandwidth="34285625" latency="0.000514433"/>
-   <link id="125" bandwidth="5574625" latency="0.00022743"/>
-   <link id="16" bandwidth="34285625" latency="0.000514433"/>
-   <link id="44" bandwidth="10314625" latency="0.006932556"/>
-   <link id="55" bandwidth="10314625" latency="0.006932556"/>
-   <link id="84" bandwidth="15376875" latency="0.035083019"/>
-   <link id="27" bandwidth="8015125" latency="0.035076518"/>
-   <link id="190" bandwidth="1230250" latency="0.001502106"/>
-   <link id="161" bandwidth="1469125" latency="0.001114548"/>
-   <link id="95" bandwidth="5758500" latency="0.004760145"/>
-   <link id="57" bandwidth="15376875" latency="0.035083019"/>
-   <link id="20" bandwidth="255228625" latency="0.007413073"/>
-   <link id="163" bandwidth="2583375" latency="0.000410463"/>
-   <link id="109" bandwidth="1858000" latency="0.000820952"/>
-   <link id="151" bandwidth="1564125" latency="0.000788956"/>
-   <link id="89" bandwidth="34285625" latency="0.000514433"/>
-   <link id="175" bandwidth="1376750" latency="0.000449267"/>
-   <link id="148" bandwidth="578625" latency="0.005473705"/>
-   <link id="31" bandwidth="34285625" latency="0.000514433"/>
-   <link id="35" bandwidth="34285625" latency="0.000514433"/>
-   <link id="11" bandwidth="118682500" latency="0.000136931"/>
-   <link id="78" bandwidth="27946250" latency="0.000278066"/>
-   <link id="93" bandwidth="2608000" latency="0.000637001"/>
-   <link id="106" bandwidth="251625" latency="0.004455826"/>
-   <link id="157" bandwidth="274375" latency="0.004669142"/>
-   <link id="65" bandwidth="10314625" latency="0.006932556"/>
-   <link id="29" bandwidth="8158000" latency="0.000270544"/>
-   <link id="138" bandwidth="253125" latency="0.005652577"/>
-   <link id="114" bandwidth="253125" latency="0.005652577"/>
-   <link id="58" bandwidth="21414750" latency="0.0295890617"/>
-   <link id="153" bandwidth="4817000" latency="0.000117352"/>
-   <link id="15" bandwidth="132977875" latency="0.000131098"/>
-   <link id="137" bandwidth="4416625" latency="0.000019773"/>
-   <link id="81" bandwidth="15376875" latency="0.035083019"/>
-   <link id="60" bandwidth="21414750" latency="0.0295890617"/>
-   <link id="101" bandwidth="290125" latency="0.004522355"/>
-   <link id="73" bandwidth="15376875" latency="0.035083019"/>
-   <link id="86" bandwidth="8427250" latency="0.000156056"/>
-   <link id="76" bandwidth="27946250" latency="0.000278066"/>
-   <link id="62" bandwidth="8015125" latency="0.035076518"/>
-   <link id="67" bandwidth="27946250" latency="0.000278066"/>
-   <link id="165" bandwidth="253125" latency="0.005652577"/>
-   <link id="139" bandwidth="1888875" latency="0.001081287"/>
-   <link id="129" bandwidth="1467625" latency="0.000869727"/>
-   <link id="2" bandwidth="132977875" latency="0.000131098"/>
-   <link id="17" bandwidth="118682500" latency="0.000136931"/>
-   <link id="186" bandwidth="4397250" latency="0.000677601"/>
-   <link id="110" bandwidth="5574625" latency="0.00022743"/>
-   <link id="82" bandwidth="15376875" latency="0.035083019"/>
-   <link id="147" bandwidth="2368000" latency="0.009547561"/>
-   <link id="168" bandwidth="1858000" latency="0.000820952"/>
-   <link id="184" bandwidth="303375" latency="0.004062241"/>
-   <link id="135" bandwidth="1376750" latency="0.000449267"/>
-   <link id="14" bandwidth="118682500" latency="0.000136931"/>
-   <link id="112" bandwidth="4133375" latency="0.009693542"/>
-   <link id="69" bandwidth="8427250" latency="0.000156056"/>
-   <link id="191" bandwidth="1467625" latency="0.000869727"/>
-   <link id="172" bandwidth="605000" latency="0.087981858"/>
-   <link id="145" bandwidth="2583375" latency="0.000410463"/>
-   <link id="49" bandwidth="27946250" latency="0.000278066"/>
-   <link id="178" bandwidth="1469125" latency="0.001114548"/>
-   <link id="24" bandwidth="10099625" latency="0.00047978"/>
-   <link id="187" bandwidth="1467625" latency="0.000869727"/>
-   <link id="140" bandwidth="1465500" latency="0.000863872"/>
-   <link id="124" bandwidth="556000" latency="0.003101854"/>
-   <link id="104" bandwidth="4485125" latency="0.000126045"/>
-   <link id="131" bandwidth="317375" latency="0.004583831"/>
-   <link id="181" bandwidth="4485125" latency="0.000126045"/>
-   <link id="121" bandwidth="4817000" latency="0.000117352"/>
-   <link id="79" bandwidth="8427250" latency="0.000156056"/>
-   <link id="154" bandwidth="272375" latency="0.005922616"/>
-   <link id="0" bandwidth="255228625" latency="0.007413073"/>
-   <link id="23" bandwidth="10099625" latency="0.00047978"/>
-   <link id="96" bandwidth="4978250" latency="0.007164412"/>
-   <link id="126" bandwidth="3995500" latency="0.000678645"/>
-   <link id="159" bandwidth="4817000" latency="0.000117352"/>
-   <link id="160" bandwidth="274375" latency="0.004669142"/>
-   <link id="176" bandwidth="3175500" latency="0.000472524"/>
-   <link id="47" bandwidth="10314625" latency="0.006932556"/>
-   <link id="8" bandwidth="34285625" latency="0.000514433"/>
-   <link id="98" bandwidth="556000" latency="0.003101854"/>
-   <link id="37" bandwidth="10314625" latency="0.006932556"/>
-   <link id="117" bandwidth="1515250" latency="0.000844683"/>
-   <link id="43" bandwidth="27946250" latency="0.000278066"/>
-   <link id="5" bandwidth="41279125" latency="0.000059904"/>
-   <link id="170" bandwidth="4485125" latency="0.000126045"/>
-   <link id="33" bandwidth="34285625" latency="0.000514433"/>
-   <link id="21" bandwidth="41279125" latency="0.000059904"/>
-   <link id="63" bandwidth="15376875" latency="0.035083019"/>
-   <link id="7" bandwidth="34285625" latency="0.000514433"/>
-   <link id="26" bandwidth="21414750" latency="0.0295890617"/>
-   <link id="80" bandwidth="15376875" latency="0.035083019"/>
-   <link id="119" bandwidth="317375" latency="0.004583831"/>
-   <link id="180" bandwidth="251625" latency="0.004455826"/>
-   <link id="99" bandwidth="253125" latency="0.005652577"/>
-   <link id="179" bandwidth="5816375" latency="0.000164758"/>
-   <link id="162" bandwidth="556000" latency="0.003101854"/>
-   <link id="72" bandwidth="41279125" latency="0.000059904"/>
-   <link id="74" bandwidth="10314625" latency="0.006932556"/>
-   <link id="182" bandwidth="4416625" latency="0.000019773"/>
-   <link id="61" bandwidth="8015125" latency="0.035076518"/>
-   <link id="108" bandwidth="990500" latency="0.001742977"/>
-   <link id="115" bandwidth="926625" latency="0.000601375"/>
-   <link id="92" bandwidth="1564125" latency="0.000788956"/>
-   <link id="103" bandwidth="472125" latency="0.005161451"/>
-   <link id="10" bandwidth="34285625" latency="0.000514433"/>
-   <link id="113" bandwidth="1858000" latency="0.000820952"/>
-   <link id="152" bandwidth="7209750" latency="0.001461517"/>
-   <link id="189" bandwidth="251625" latency="0.004455826"/>
-   <link id="142" bandwidth="1627750" latency="0.000278175"/>
-   <link id="91" bandwidth="8427250" latency="0.000156056"/>
-   <link id="167" bandwidth="768750" latency="0.00876244"/>
-   <link id="48" bandwidth="41279125" latency="0.000059904"/>
-   <link id="107" bandwidth="1281875" latency="0.006104672"/>
-   <link id="87" bandwidth="8158000" latency="0.000270544"/>
-   <link id="174" bandwidth="290875" latency="0.00447727"/>
-   <link id="77" bandwidth="27946250" latency="0.000278066"/>
-   <link id="133" bandwidth="1469125" latency="0.001114548"/>
-   <link id="149" bandwidth="1049250" latency="0.009647856"/>
-   <link id="123" bandwidth="3430125" latency="0.000536941"/>
-   <link id="50" bandwidth="15376875" latency="0.035083019"/>
-   <link id="39" bandwidth="8015125" latency="0.035076518"/>
-   <link id="64" bandwidth="21414750" latency="0.0295890617"/>
-   <link id="97" bandwidth="7534000" latency="0.000125428"/>
-   <link id="12" bandwidth="41279125" latency="0.000059904"/>
-   <link id="41" bandwidth="34285625" latency="0.000514433"/>
-   <link id="52" bandwidth="8427250" latency="0.000156056"/>
-   <link id="173" bandwidth="7534000" latency="0.000125428"/>
-   <link id="56" bandwidth="21414750" latency="0.0295890617"/>
-   <link id="45" bandwidth="8158000" latency="0.000270544"/>
-   <link id="66" bandwidth="11618875" latency="0.00018998"/>
-   <link id="19" bandwidth="34285625" latency="0.000514433"/>
-   <link id="54" bandwidth="15376875" latency="0.035083019"/>
-   <link id="70" bandwidth="41279125" latency="0.000059904"/>
-   <link id="188" bandwidth="3175500" latency="0.000472524"/>
-   <link id="68" bandwidth="41279125" latency="0.000059904"/>
-   <link id="166" bandwidth="3995500" latency="0.000678645"/>
-   <link id="1" bandwidth="34285625" latency="0.000514433"/>
-   <link id="136" bandwidth="926625" latency="0.000601375"/>
-   <link id="88" bandwidth="10314625" latency="0.006932556"/>
-   <link id="116" bandwidth="2368000" latency="0.009547561"/>
-   <link id="144" bandwidth="259125" latency="0.004460898"/>
-   <link id="141" bandwidth="472125" latency="0.005161451"/>
-   <link id="30" bandwidth="10099625" latency="0.00047978"/>
-   <link id="100" bandwidth="721625" latency="0.000006406"/>
-   <link id="25" bandwidth="8015125" latency="0.035076518"/>
-   <link id="128" bandwidth="1469125" latency="0.001114548"/>
-   <link id="28" bandwidth="15376875" latency="0.035083019"/>
-   <link id="120" bandwidth="4461125" latency="0.000106949"/>
-   <link id="156" bandwidth="4485125" latency="0.000126045"/>
-   <link id="134" bandwidth="259125" latency="0.004460898"/>
-   <link id="40" bandwidth="21414750" latency="0.0295890617"/>
-   <link id="75" bandwidth="11618875" latency="0.00018998"/>
-   <link id="83" bandwidth="10314625" latency="0.006932556"/>
-   <link id="59" bandwidth="11845375" latency="0.000370788"/>
-   <link id="177" bandwidth="990500" latency="0.001742977"/>
-   <link id="150" bandwidth="4270250" latency="0.000672289"/>
-   <link id="155" bandwidth="1376750" latency="0.000449267"/>
-   <link id="130" bandwidth="4485125" latency="0.000126045"/>
-   <link id="53" bandwidth="11618875" latency="0.00018998"/>
-   <link id="122" bandwidth="1126875" latency="0.00028784"/>
-   <link id="143" bandwidth="7209750" latency="0.001461517"/>
-   <link id="158" bandwidth="3028375" latency="0.000677908"/>
-   <link id="42" bandwidth="34285625" latency="0.000514433"/>
-   <link id="22" bandwidth="11618875" latency="0.00018998"/>
-   <link id="46" bandwidth="8158000" latency="0.000270544"/>
-   <link id="13" bandwidth="255228625" latency="0.007413073"/>
-   <link id="105" bandwidth="117125" latency="0.053930106"/>
-   <link id="6" bandwidth="34285625" latency="0.000514433"/>
-   <link id="85" bandwidth="15376875" latency="0.035083019"/>
-   <link id="185" bandwidth="2348500" latency="0.000259761"/>
-   <link id="36" bandwidth="11618875" latency="0.00018998"/>
-   <link id="3" bandwidth="255228625" latency="0.007413073"/>
-   <link id="183" bandwidth="3995500" latency="0.000678645"/>
-   <link id="94" bandwidth="4485125" latency="0.000126045"/>
-   <link id="146" bandwidth="3371250" latency="0.000666676"/>
-   <link id="51" bandwidth="8427250" latency="0.000156056"/>
-   <link id="9" bandwidth="34285625" latency="0.000514433"/>
-   <link id="111" bandwidth="3275625" latency="0.000658142"/>
-   <link id="38" bandwidth="41279125" latency="0.000059904"/>
-   <link id="4" bandwidth="132977875" latency="0.000131098"/>
-   <link id="34" bandwidth="11845375" latency="0.000370788"/>
-   <link id="169" bandwidth="1376750" latency="0.000449267"/>
-   <link id="164" bandwidth="768750" latency="0.00876244"/>
-   <link id="132" bandwidth="2179125" latency="0.000320114"/>
-   <link id="171" bandwidth="3297750" latency="0.000595883"/>
+   <host id="Jacquelin" power="137.333Mf"/>
+   <host id="Boivin" power="98.095Mf"/>
+   <host id="Jean_Yves" power="98.095Mf"/>
+   <host id="TeX" power="68.667Mf"/>
+   <host id="Geoff" power="42.917Mf"/>
+   <host id="Disney" power="114.444Mf"/>
+   <host id="iRMX" power="68.667Mf"/>
+   <host id="McGee" power="42.917Mf"/>
+   <host id="Gatien" power="114.444Mf"/>
+   <host id="Laroche" power="98.095Mf"/>
+   <host id="Tanguay" power="68.667Mf"/>
+   <host id="Morin" power="85.833Mf"/>
+   <host id="Ethernet" power="98.095Mf"/>
+   <host id="Bellemarre" power="34.333Mf"/>
+   <host id="Kuenning" power="85.833Mf"/>
+   <host id="Gaston" power="98.095Mf"/>
+   <host id="Harry" power="42.917Mf"/>
+   <host id="Bousquet" power="42.917Mf"/>
+   <host id="Paul" power="76.296Mf"/>
+   <host id="St_Jean" power="76.296Mf"/>
+   <host id="Jill" power="114.444Mf"/>
+   <host id="Marcel" power="171.667Mf"/>
+   <host id="Wright" power="48.492Mf"/>
+   <host id="Jackson" power="48.492Mf"/>
+   <host id="Fernand" power="22.151Mf"/>
+   <host id="Soucy" power="137.333Mf"/>
+   <host id="Ste_Julie" power="85.833Mf"/>
+   <host id="Victoria" power="85.833Mf"/>
+   <host id="Lessard" power="85.833Mf"/>
+   <host id="Florient" power="114.444Mf"/>
+   <host id="Marcoux" power="98.095Mf"/>
+   <host id="Gavrel" power="85.833Mf"/>
+   <host id="Bescherelle" power="137.333Mf"/>
+   <host id="Pierre" power="114.444Mf"/>
+   <host id="Jamie" power="76.296Mf"/>
+   <host id="Rubin" power="42.917Mf"/>
+   <host id="Olivier" power="114.444Mf"/>
+   <host id="Boucherville" power="48.492Mf"/>
+   <host id="Pointe_Claire" power="48.492Mf"/>
+   <host id="Kansas" power="137.333Mf"/>
+   <host id="King" power="114.444Mf"/>
+   <host id="Lapointe" power="68.667Mf"/>
+   <host id="Julian" power="114.444Mf"/>
+   <host id="Lafontaine" power="68.667Mf"/>
+   <host id="Gordon" power="76.296Mf"/>
+   <host id="Drouin" power="42.917Mf"/>
+   <host id="Robert" power="137.333Mf"/>
+   <host id="Jocelyne" power="34.333Mf"/>
+   <host id="Stephen" power="68.667Mf"/>
+   <host id="Provost" power="137.333Mf"/>
+   <host id="Juneau" power="22.151Mf"/>
+   <host id="Casavant" power="48.492Mf"/>
+   <host id="St_Antoine" power="34.333Mf"/>
+   <host id="Louis" power="98.095Mf"/>
+   <host id="Julien" power="22.151Mf"/>
+   <host id="St_Paul" power="114.444Mf"/>
+   <host id="Mathematica" power="137.333Mf"/>
+   <host id="LaTeX" power="85.833Mf"/>
+   <host id="Sirois" power="114.444Mf"/>
+   <host id="Monique" power="114.444Mf"/>
+   <host id="Audy" power="34.333Mf"/>
+   <host id="Bourassa" power="85.833Mf"/>
+   <host id="OHara" power="42.917Mf"/>
+   <host id="Boston" power="42.917Mf"/>
+   <host id="Papineau" power="85.833Mf"/>
+   <host id="Fraser" power="98.095Mf"/>
+   <host id="Browne" power="137.333Mf"/>
+   <host id="SunOS" power="34.333Mf"/>
+   <host id="Varennes" power="68.667Mf"/>
+   <host id="Jacques" power="98.095Mf"/>
+   <host id="Thierry" power="137.333Mf"/>
+   <host id="Lachapelle" power="42.917Mf"/>
+   <host id="kV" power="68.667Mf"/>
+   <host id="Yolande" power="42.917Mf"/>
+   <host id="Pronovost" power="114.444Mf"/>
+   <host id="SPICE" power="68.667Mf"/>
+   <host id="Europe" power="48.492Mf"/>
+   <host id="Roy" power="34.333Mf"/>
+   <host id="Amadeus" power="114.444Mf"/>
+   <host id="Intel" power="137.333Mf"/>
+   <host id="Cambridge" power="114.444Mf"/>
+   <host id="Tremblay" power="171.667Mf"/>
+   <host id="UNIX" power="76.296Mf"/>
+   <host id="Domey" power="76.296Mf"/>
+   <host id="St_Bruno" power="42.917Mf"/>
+   <host id="Jean_Claude" power="85.833Mf"/>
+   <host id="Doyon" power="68.667Mf"/>
+   <host id="Fafard" power="137.333Mf"/>
+   <host id="Croteau" power="42.917Mf"/>
+   <host id="Dodge" power="114.444Mf"/>
+   <link id="127" bandwidth="3.430125MBps" latency="536.941us"/>
+   <link id="32" bandwidth="11.618875MBps" latency="189.98us"/>
+   <link id="90" bandwidth="10.314625MBps" latency="6.932556ms"/>
+   <link id="118" bandwidth="1.467625MBps" latency="869.727us"/>
+   <link id="71" bandwidth="8.42725MBps" latency="156.056us"/>
+   <link id="102" bandwidth="4.817MBps" latency="117.352us"/>
+   <link id="18" bandwidth="34.285625MBps" latency="514.433us"/>
+   <link id="125" bandwidth="5.574625MBps" latency="227.43us"/>
+   <link id="16" bandwidth="34.285625MBps" latency="514.433us"/>
+   <link id="44" bandwidth="10.314625MBps" latency="6.932556ms"/>
+   <link id="55" bandwidth="10.314625MBps" latency="6.932556ms"/>
+   <link id="84" bandwidth="15.376875MBps" latency="35.083019ms"/>
+   <link id="27" bandwidth="8.015125MBps" latency="35.076518ms"/>
+   <link id="190" bandwidth="1.23025MBps" latency="1.502106ms"/>
+   <link id="161" bandwidth="1.469125MBps" latency="1.114548ms"/>
+   <link id="95" bandwidth="5.7585MBps" latency="4.760145ms"/>
+   <link id="57" bandwidth="15.376875MBps" latency="35.083019ms"/>
+   <link id="20" bandwidth="255.228625MBps" latency="7.413073ms"/>
+   <link id="163" bandwidth="2.583375MBps" latency="410.463us"/>
+   <link id="109" bandwidth="1.858MBps" latency="820.952us"/>
+   <link id="151" bandwidth="1.564125MBps" latency="788.956us"/>
+   <link id="89" bandwidth="34.285625MBps" latency="514.433us"/>
+   <link id="175" bandwidth="1.37675MBps" latency="449.267us"/>
+   <link id="148" bandwidth="578.625kBps" latency="5.473705ms"/>
+   <link id="31" bandwidth="34.285625MBps" latency="514.433us"/>
+   <link id="35" bandwidth="34.285625MBps" latency="514.433us"/>
+   <link id="11" bandwidth="118.6825MBps" latency="136.931us"/>
+   <link id="78" bandwidth="27.94625MBps" latency="278.066us"/>
+   <link id="93" bandwidth="2.608MBps" latency="637.001us"/>
+   <link id="106" bandwidth="251.625kBps" latency="4.455826ms"/>
+   <link id="157" bandwidth="274.375kBps" latency="4.669142ms"/>
+   <link id="65" bandwidth="10.314625MBps" latency="6.932556ms"/>
+   <link id="29" bandwidth="8.158MBps" latency="270.544us"/>
+   <link id="138" bandwidth="253.125kBps" latency="5.652577ms"/>
+   <link id="114" bandwidth="253.125kBps" latency="5.652577ms"/>
+   <link id="58" bandwidth="21.41475MBps" latency="29.5890617ms"/>
+   <link id="153" bandwidth="4.817MBps" latency="117.352us"/>
+   <link id="15" bandwidth="132.977875MBps" latency="131.098us"/>
+   <link id="137" bandwidth="4.416625MBps" latency="19.773us"/>
+   <link id="81" bandwidth="15.376875MBps" latency="35.083019ms"/>
+   <link id="60" bandwidth="21.41475MBps" latency="29.5890617ms"/>
+   <link id="101" bandwidth="290.125kBps" latency="4.522355ms"/>
+   <link id="73" bandwidth="15.376875MBps" latency="35.083019ms"/>
+   <link id="86" bandwidth="8.42725MBps" latency="156.056us"/>
+   <link id="76" bandwidth="27.94625MBps" latency="278.066us"/>
+   <link id="62" bandwidth="8.015125MBps" latency="35.076518ms"/>
+   <link id="67" bandwidth="27.94625MBps" latency="278.066us"/>
+   <link id="165" bandwidth="253.125kBps" latency="5.652577ms"/>
+   <link id="139" bandwidth="1.888875MBps" latency="1.081287ms"/>
+   <link id="129" bandwidth="1.467625MBps" latency="869.727us"/>
+   <link id="2" bandwidth="132.977875MBps" latency="131.098us"/>
+   <link id="17" bandwidth="118.6825MBps" latency="136.931us"/>
+   <link id="186" bandwidth="4.39725MBps" latency="677.601us"/>
+   <link id="110" bandwidth="5.574625MBps" latency="227.43us"/>
+   <link id="82" bandwidth="15.376875MBps" latency="35.083019ms"/>
+   <link id="147" bandwidth="2.368MBps" latency="9.547561ms"/>
+   <link id="168" bandwidth="1.858MBps" latency="820.952us"/>
+   <link id="184" bandwidth="303.375kBps" latency="4.062241ms"/>
+   <link id="135" bandwidth="1.37675MBps" latency="449.267us"/>
+   <link id="14" bandwidth="118.6825MBps" latency="136.931us"/>
+   <link id="112" bandwidth="4.133375MBps" latency="9.693542ms"/>
+   <link id="69" bandwidth="8.42725MBps" latency="156.056us"/>
+   <link id="191" bandwidth="1.467625MBps" latency="869.727us"/>
+   <link id="172" bandwidth="605kBps" latency="87.981858ms"/>
+   <link id="145" bandwidth="2.583375MBps" latency="410.463us"/>
+   <link id="49" bandwidth="27.94625MBps" latency="278.066us"/>
+   <link id="178" bandwidth="1.469125MBps" latency="1.114548ms"/>
+   <link id="24" bandwidth="10.099625MBps" latency="479.78us"/>
+   <link id="187" bandwidth="1.467625MBps" latency="869.727us"/>
+   <link id="140" bandwidth="1.4655MBps" latency="863.872us"/>
+   <link id="124" bandwidth="556kBps" latency="3.101854ms"/>
+   <link id="104" bandwidth="4.485125MBps" latency="126.045us"/>
+   <link id="131" bandwidth="317.375kBps" latency="4.583831ms"/>
+   <link id="181" bandwidth="4.485125MBps" latency="126.045us"/>
+   <link id="121" bandwidth="4.817MBps" latency="117.352us"/>
+   <link id="79" bandwidth="8.42725MBps" latency="156.056us"/>
+   <link id="154" bandwidth="272.375kBps" latency="5.922616ms"/>
+   <link id="0" bandwidth="255.228625MBps" latency="7.413073ms"/>
+   <link id="23" bandwidth="10.099625MBps" latency="479.78us"/>
+   <link id="96" bandwidth="4.97825MBps" latency="7.164412ms"/>
+   <link id="126" bandwidth="3.9955MBps" latency="678.645us"/>
+   <link id="159" bandwidth="4.817MBps" latency="117.352us"/>
+   <link id="160" bandwidth="274.375kBps" latency="4.669142ms"/>
+   <link id="176" bandwidth="3.1755MBps" latency="472.524us"/>
+   <link id="47" bandwidth="10.314625MBps" latency="6.932556ms"/>
+   <link id="8" bandwidth="34.285625MBps" latency="514.433us"/>
+   <link id="98" bandwidth="556kBps" latency="3.101854ms"/>
+   <link id="37" bandwidth="10.314625MBps" latency="6.932556ms"/>
+   <link id="117" bandwidth="1.51525MBps" latency="844.683us"/>
+   <link id="43" bandwidth="27.94625MBps" latency="278.066us"/>
+   <link id="5" bandwidth="41.279125MBps" latency="59.904us"/>
+   <link id="170" bandwidth="4.485125MBps" latency="126.045us"/>
+   <link id="33" bandwidth="34.285625MBps" latency="514.433us"/>
+   <link id="21" bandwidth="41.279125MBps" latency="59.904us"/>
+   <link id="63" bandwidth="15.376875MBps" latency="35.083019ms"/>
+   <link id="7" bandwidth="34.285625MBps" latency="514.433us"/>
+   <link id="26" bandwidth="21.41475MBps" latency="29.5890617ms"/>
+   <link id="80" bandwidth="15.376875MBps" latency="35.083019ms"/>
+   <link id="119" bandwidth="317.375kBps" latency="4.583831ms"/>
+   <link id="180" bandwidth="251.625kBps" latency="4.455826ms"/>
+   <link id="99" bandwidth="253.125kBps" latency="5.652577ms"/>
+   <link id="179" bandwidth="5.816375MBps" latency="164.758us"/>
+   <link id="162" bandwidth="556kBps" latency="3.101854ms"/>
+   <link id="72" bandwidth="41.279125MBps" latency="59.904us"/>
+   <link id="74" bandwidth="10.314625MBps" latency="6.932556ms"/>
+   <link id="182" bandwidth="4.416625MBps" latency="19.773us"/>
+   <link id="61" bandwidth="8.015125MBps" latency="35.076518ms"/>
+   <link id="108" bandwidth="990.5kBps" latency="1.742977ms"/>
+   <link id="115" bandwidth="926.625kBps" latency="601.375us"/>
+   <link id="92" bandwidth="1.564125MBps" latency="788.956us"/>
+   <link id="103" bandwidth="472.125kBps" latency="5.161451ms"/>
+   <link id="10" bandwidth="34.285625MBps" latency="514.433us"/>
+   <link id="113" bandwidth="1.858MBps" latency="820.952us"/>
+   <link id="152" bandwidth="7.20975MBps" latency="1.461517ms"/>
+   <link id="189" bandwidth="251.625kBps" latency="4.455826ms"/>
+   <link id="142" bandwidth="1.62775MBps" latency="278.175us"/>
+   <link id="91" bandwidth="8.42725MBps" latency="156.056us"/>
+   <link id="167" bandwidth="768.75kBps" latency="8.76244ms"/>
+   <link id="48" bandwidth="41.279125MBps" latency="59.904us"/>
+   <link id="107" bandwidth="1.281875MBps" latency="6.104672ms"/>
+   <link id="87" bandwidth="8.158MBps" latency="270.544us"/>
+   <link id="174" bandwidth="290.875kBps" latency="4.47727ms"/>
+   <link id="77" bandwidth="27.94625MBps" latency="278.066us"/>
+   <link id="133" bandwidth="1.469125MBps" latency="1.114548ms"/>
+   <link id="149" bandwidth="1.04925MBps" latency="9.647856ms"/>
+   <link id="123" bandwidth="3.430125MBps" latency="536.941us"/>
+   <link id="50" bandwidth="15.376875MBps" latency="35.083019ms"/>
+   <link id="39" bandwidth="8.015125MBps" latency="35.076518ms"/>
+   <link id="64" bandwidth="21.41475MBps" latency="29.5890617ms"/>
+   <link id="97" bandwidth="7.534MBps" latency="125.428us"/>
+   <link id="12" bandwidth="41.279125MBps" latency="59.904us"/>
+   <link id="41" bandwidth="34.285625MBps" latency="514.433us"/>
+   <link id="52" bandwidth="8.42725MBps" latency="156.056us"/>
+   <link id="173" bandwidth="7.534MBps" latency="125.428us"/>
+   <link id="56" bandwidth="21.41475MBps" latency="29.5890617ms"/>
+   <link id="45" bandwidth="8.158MBps" latency="270.544us"/>
+   <link id="66" bandwidth="11.618875MBps" latency="189.98us"/>
+   <link id="19" bandwidth="34.285625MBps" latency="514.433us"/>
+   <link id="54" bandwidth="15.376875MBps" latency="35.083019ms"/>
+   <link id="70" bandwidth="41.279125MBps" latency="59.904us"/>
+   <link id="188" bandwidth="3.1755MBps" latency="472.524us"/>
+   <link id="68" bandwidth="41.279125MBps" latency="59.904us"/>
+   <link id="166" bandwidth="3.9955MBps" latency="678.645us"/>
+   <link id="1" bandwidth="34.285625MBps" latency="514.433us"/>
+   <link id="136" bandwidth="926.625kBps" latency="601.375us"/>
+   <link id="88" bandwidth="10.314625MBps" latency="6.932556ms"/>
+   <link id="116" bandwidth="2.368MBps" latency="9.547561ms"/>
+   <link id="144" bandwidth="259.125kBps" latency="4.460898ms"/>
+   <link id="141" bandwidth="472.125kBps" latency="5.161451ms"/>
+   <link id="30" bandwidth="10.099625MBps" latency="479.78us"/>
+   <link id="100" bandwidth="721.625kBps" latency="6.406us"/>
+   <link id="25" bandwidth="8.015125MBps" latency="35.076518ms"/>
+   <link id="128" bandwidth="1.469125MBps" latency="1.114548ms"/>
+   <link id="28" bandwidth="15.376875MBps" latency="35.083019ms"/>
+   <link id="120" bandwidth="4.461125MBps" latency="106.949us"/>
+   <link id="156" bandwidth="4.485125MBps" latency="126.045us"/>
+   <link id="134" bandwidth="259.125kBps" latency="4.460898ms"/>
+   <link id="40" bandwidth="21.41475MBps" latency="29.5890617ms"/>
+   <link id="75" bandwidth="11.618875MBps" latency="189.98us"/>
+   <link id="83" bandwidth="10.314625MBps" latency="6.932556ms"/>
+   <link id="59" bandwidth="11.845375MBps" latency="370.788us"/>
+   <link id="177" bandwidth="990.5kBps" latency="1.742977ms"/>
+   <link id="150" bandwidth="4.27025MBps" latency="672.289us"/>
+   <link id="155" bandwidth="1.37675MBps" latency="449.267us"/>
+   <link id="130" bandwidth="4.485125MBps" latency="126.045us"/>
+   <link id="53" bandwidth="11.618875MBps" latency="189.98us"/>
+   <link id="122" bandwidth="1.126875MBps" latency="287.84us"/>
+   <link id="143" bandwidth="7.20975MBps" latency="1.461517ms"/>
+   <link id="158" bandwidth="3.028375MBps" latency="677.908us"/>
+   <link id="42" bandwidth="34.285625MBps" latency="514.433us"/>
+   <link id="22" bandwidth="11.618875MBps" latency="189.98us"/>
+   <link id="46" bandwidth="8.158MBps" latency="270.544us"/>
+   <link id="13" bandwidth="255.228625MBps" latency="7.413073ms"/>
+   <link id="105" bandwidth="117.125kBps" latency="53.930106ms"/>
+   <link id="6" bandwidth="34.285625MBps" latency="514.433us"/>
+   <link id="85" bandwidth="15.376875MBps" latency="35.083019ms"/>
+   <link id="185" bandwidth="2.3485MBps" latency="259.761us"/>
+   <link id="36" bandwidth="11.618875MBps" latency="189.98us"/>
+   <link id="3" bandwidth="255.228625MBps" latency="7.413073ms"/>
+   <link id="183" bandwidth="3.9955MBps" latency="678.645us"/>
+   <link id="94" bandwidth="4.485125MBps" latency="126.045us"/>
+   <link id="146" bandwidth="3.37125MBps" latency="666.676us"/>
+   <link id="51" bandwidth="8.42725MBps" latency="156.056us"/>
+   <link id="9" bandwidth="34.285625MBps" latency="514.433us"/>
+   <link id="111" bandwidth="3.275625MBps" latency="658.142us"/>
+   <link id="38" bandwidth="41.279125MBps" latency="59.904us"/>
+   <link id="4" bandwidth="132.977875MBps" latency="131.098us"/>
+   <link id="34" bandwidth="11.845375MBps" latency="370.788us"/>
+   <link id="169" bandwidth="1.37675MBps" latency="449.267us"/>
+   <link id="164" bandwidth="768.75kBps" latency="8.76244ms"/>
+   <link id="132" bandwidth="2.179125MBps" latency="320.114us"/>
+   <link id="171" bandwidth="3.29775MBps" latency="595.883us"/>
    <route src="Jacquelin" dst="Boivin" symmetrical="NO"><link_ctn id="145"/><link_ctn id="59"/><link_ctn id="56"/><link_ctn id="54"/><link_ctn id="17"/><link_ctn id="16"/><link_ctn id="10"/><link_ctn id="11"/><link_ctn id="44"/><link_ctn id="47"/></route>
    <route src="Jacquelin" dst="Jean_Yves" symmetrical="NO"><link_ctn id="145"/><link_ctn id="59"/><link_ctn id="58"/><link_ctn id="63"/><link_ctn id="138"/></route>
    <route src="Jacquelin" dst="TeX" symmetrical="NO"><link_ctn id="145"/><link_ctn id="59"/><link_ctn id="56"/><link_ctn id="54"/><link_ctn id="17"/><link_ctn id="16"/><link_ctn id="10"/><link_ctn id="6"/><link_ctn id="7"/><link_ctn id="19"/><link_ctn id="28"/><link_ctn id="27"/><link_ctn id="30"/><link_ctn id="35"/><link_ctn id="100"/></route>

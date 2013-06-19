@@ -269,9 +269,10 @@ int mmalloc_compare_heap(xbt_mheap_t heap1, xbt_mheap_t heap2){
       }
 
       if(!equal){
-        XBT_DEBUG("Block %zu not found (size_used = %zu, addr = %p)", i1, heapinfo1[i1].busy_block.busy_size, addr_block1);
+        /*XBT_DEBUG("Block %zu not found (size_used = %zu, addr = %p)", i1, heapinfo1[i1].busy_block.busy_size, addr_block1);
         i1 = heaplimit + 1;
-        nb_diff1++;
+        nb_diff1++;*/
+        i1++;
       }
       
     }else{ /* Fragmented block */
@@ -345,13 +346,13 @@ int mmalloc_compare_heap(xbt_mheap_t heap1, xbt_mheap_t heap2){
 
         }
 
-        if(heapinfo1[i1].busy_frag.equal_to[j1] == NULL){
-          XBT_DEBUG("Block %zu, fragment %zu not found (size_used = %zd, address = %p, ignore %d)", i1, j1, heapinfo1[i1].busy_frag.frag_size[j1], addr_frag1, heapinfo1[i1].busy_frag.ignore[j1]);
+        /*if(heapinfo1[i1].busy_frag.equal_to[j1] == NULL){
+          fprintf(stderr,"Block %zu, fragment %zu not found (size_used = %zd, address = %p, ignore %d)\n", i1, j1, heapinfo1[i1].busy_frag.frag_size[j1], addr_frag1, heapinfo1[i1].busy_frag.ignore[j1]);
           i2 = heaplimit + 1;
           i1 = heaplimit + 1;
           nb_diff1++;
           break;
-        }
+          }*/
 
       }
 

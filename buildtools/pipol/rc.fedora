@@ -14,7 +14,6 @@ sudo yum -y -q install wget
 sudo yum -y -q install perl
 sudo yum -y -q install graphviz-dev graphviz
 sudo yum -y -q install f2c
-sudo yum -y -q install pcre-devel pcre-static
 sudo yum -y -q install git-core
 sudo yum -y -q install ruby ruby-devel
 sudo yum -y -q install libunwind libunwind-devel

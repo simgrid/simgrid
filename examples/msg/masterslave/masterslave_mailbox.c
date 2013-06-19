@@ -16,9 +16,6 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test,
 
 int master(int argc, char *argv[]);
 int slave(int argc, char *argv[]);
-int forwarder(int argc, char *argv[]);
-msg_error_t test_all(const char *platform_file,
-                     const char *application_file);
 
 /** Emitter function  */
 int master(int argc, char *argv[])
