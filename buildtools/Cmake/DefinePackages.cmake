@@ -174,6 +174,7 @@ set(SMPI_SRC
   src/smpi/colls/alltoallv-ring-mpi-barrier.c
   src/smpi/colls/alltoallv-ring-one-barrier.c
   src/smpi/colls/alltoallv-bruck.c
+  src/smpi/colls/alltoallv-ompi-basic-linear.c
   src/smpi/colls/bcast-arrival-nb.c
   src/smpi/colls/bcast-arrival-pattern-aware.c
   src/smpi/colls/bcast-arrival-pattern-aware-wait.c

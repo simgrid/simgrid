@@ -166,7 +166,8 @@ COLL_APPLY(action, COLL_ALLTOALLV_SIG, ring_light_barrier) COLL_sep \
 COLL_APPLY(action, COLL_ALLTOALLV_SIG, ring_mpi_barrier) COLL_sep \
 COLL_APPLY(action, COLL_ALLTOALLV_SIG, ring_one_barrier) COLL_sep \
 COLL_APPLY(action, COLL_ALLTOALLV_SIG, ompi) COLL_sep \
-COLL_APPLY(action, COLL_ALLTOALLV_SIG, mpich)
+COLL_APPLY(action, COLL_ALLTOALLV_SIG, mpich)COLL_sep \
+COLL_APPLY(action, COLL_ALLTOALLV_SIG, ompi_basic_linear)
 
 COLL_ALLTOALLVS(COLL_PROTO, COLL_NOsep)
 

@@ -94,7 +94,7 @@ int smpi_coll_tuned_alltoallv_ompi(void *sbuf, int *scounts, int *sdisps,
                                               )
 {
     /* For starters, just keep the original algorithm. */
-    return smpi_coll_tuned_alltoallv_pair(sbuf, scounts, sdisps, sdtype, 
+    return smpi_coll_tuned_alltoallv_ompi_basic_linear(sbuf, scounts, sdisps, sdtype, 
                                                         rbuf, rcounts, rdisps,rdtype,
                                                         comm);
 }
