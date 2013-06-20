@@ -143,7 +143,8 @@ COLL_APPLY(action, COLL_ALLTOALL_SIG, ring_mpi_barrier) COLL_sep \
 COLL_APPLY(action, COLL_ALLTOALL_SIG, ring_one_barrier) COLL_sep \
 COLL_APPLY(action, COLL_ALLTOALL_SIG, simple) COLL_sep \
 COLL_APPLY(action, COLL_ALLTOALL_SIG, ompi) COLL_sep \
-COLL_APPLY(action, COLL_ALLTOALL_SIG, mpich)
+COLL_APPLY(action, COLL_ALLTOALL_SIG, mpich)COLL_sep \
+COLL_APPLY(action, COLL_ALLTOALL_SIG, ompi_pairwise)
 
 COLL_ALLTOALLS(COLL_PROTO, COLL_NOsep)
 

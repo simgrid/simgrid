@@ -81,7 +81,7 @@ int smpi_coll_tuned_alltoall_ompi( void *sbuf, int scount,
                                                            comm);
     }
 
-    return smpi_coll_tuned_alltoall_pair (sbuf, scount, sdtype, 
+    return smpi_coll_tuned_alltoall_ompi_pairwise (sbuf, scount, sdtype, 
                                                     rbuf, rcount, rdtype,
                                                     comm);
 }
