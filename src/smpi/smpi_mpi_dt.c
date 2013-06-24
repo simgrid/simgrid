@@ -180,9 +180,9 @@ int smpi_datatype_copy(void *sendbuf, int sendcount, MPI_Datatype sendtype,
 
       void * buf_tmp = xbt_malloc(count);
 
-      subtype->serialize( sendbuf, buf_tmp,1, subtype);
+      subtype->serialize( sendbuf, buf_tmp,count/smpi_datatype_size(sendtype), subtype);
       subtype =  recvtype->substruct;
-      subtype->unserialize( buf_tmp, recvbuf,1, subtype);
+      subtype->unserialize( buf_tmp, recvbuf,count/smpi_datatype_size(recvtype), subtype);
 
       free(buf_tmp);
     }
@@ -221,6 +221,9 @@ void serialize_vector( const void *noncontiguous_vector,
                                                                      type_c->old_type->substruct);
 
     contiguous_vector_char += type_c->block_length*type_c->size_oldtype;
+    if((i+1)%type_c->block_count ==0)
+    noncontiguous_vector_char += type_c->block_length*smpi_datatype_get_extent(type_c->old_type);
+    else
     noncontiguous_vector_char += type_c->block_stride*smpi_datatype_get_extent(type_c->old_type);
   }
 }
@@ -255,6 +258,9 @@ void unserialize_vector( const void *contiguous_vector,
                                                                      type_c->block_length,
                                                                      type_c->old_type->substruct);
     contiguous_vector_char += type_c->block_length*type_c->size_oldtype;
+    if((i+1)%type_c->block_count ==0)
+    noncontiguous_vector_char += type_c->block_length*smpi_datatype_get_extent(type_c->old_type);
+    else
     noncontiguous_vector_char += type_c->block_stride*smpi_datatype_get_extent(type_c->old_type);
   }
 }
@@ -498,6 +504,9 @@ void serialize_hvector( const void *noncontiguous_hvector,
                                                                    type_c->old_type->substruct);
 
     contiguous_vector_char += type_c->block_length*type_c->size_oldtype;
+    if((i+1)%type_c->block_count ==0)
+    noncontiguous_vector_char += type_c->block_length*type_c->size_oldtype;
+    else
     noncontiguous_vector_char += type_c->block_stride;
   }
 }
@@ -531,6 +540,9 @@ void unserialize_hvector( const void *contiguous_vector,
                                                                      type_c->block_length,
                                                                      type_c->old_type->substruct);
     contiguous_vector_char += type_c->block_length*type_c->size_oldtype;
+    if((i+1)%type_c->block_count ==0)
+    noncontiguous_vector_char += type_c->block_length*type_c->size_oldtype;
+    else
     noncontiguous_vector_char += type_c->block_stride;
   }
 }
