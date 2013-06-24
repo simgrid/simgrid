@@ -17,6 +17,7 @@ runtests=1
 makeeach=0
 writesummaryfile=no
 have_fortran=0
+have_selector="no"
 quiet=0
 MAKE="make --no-print-directory"
 for arg in "$@" ; do
@@ -29,6 +30,9 @@ for arg in "$@" ; do
 	;; 
 	-fort=* )
 	have_fortran=`echo $arg | sed 's/-fort=//'`
+	;;
+	-selector=* )
+	have_selector=`echo $arg | sed 's/-selector=//'`
 	;;
 	-checkonly )
 	runtests=0
@@ -73,7 +77,13 @@ if [ ! -x coll1 -a $makeeach = 0 -a $runtests = 1 ] ; then
     $MAKE
 fi
 
-mpirun=" ${basedir}/bin/smpirun -platform ${srcdir}/../../../../examples/msg/small_platform_with_routers.xml -hostfile ${srcdir}/../../hostfile  --log=root.thres:critical"
+if [ $have_selector -eq "" ] ; then 
+selector=""
+else
+selector="--cfg=smpi/coll_selector:$have_selector"
+fi
+
+mpirun=" ${basedir}/bin/smpirun -platform ${srcdir}/../../../../examples/msg/small_platform_with_routers.xml -hostfile ${srcdir}/../../hostfile  --log=root.thres:critical  --cfg=network/optim:Full $selector "
 testfiles=""
 if [ $runtests = 1 ] ; then
 echo '**** Testing MPI Collective routines ****'
