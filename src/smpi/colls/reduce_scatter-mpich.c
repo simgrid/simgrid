@@ -478,7 +478,9 @@ int smpi_coll_tuned_reduce_scatter_mpich_rdb(void *sendbuf, void *recvbuf, int r
                                        recvcounts[rank], datatype, recvbuf,
                                        recvcounts[rank], datatype);
             if (mpi_errno) return(mpi_errno);
-
+    xbt_free(disps);
+    xbt_free(tmp_recvbuf);
+    xbt_free(tmp_results);
     return MPI_SUCCESS;
         }
 
