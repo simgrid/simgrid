@@ -82,6 +82,7 @@ set(tesh_files
   ${CMAKE_CURRENT_SOURCE_DIR}/allgather_coll.tesh
   ${CMAKE_CURRENT_SOURCE_DIR}/allgatherv_coll.tesh  
   ${CMAKE_CURRENT_SOURCE_DIR}/allreduce_coll.tesh
+  ${CMAKE_CURRENT_SOURCE_DIR}/allreduce_coll_large.tesh
   ${CMAKE_CURRENT_SOURCE_DIR}/alltoall_coll.tesh
   ${CMAKE_CURRENT_SOURCE_DIR}/alltoallv_coll.tesh
   ${CMAKE_CURRENT_SOURCE_DIR}/scatter_coll.tesh
