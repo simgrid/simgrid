@@ -25,6 +25,7 @@ if(enable_smpi)
   add_executable(compute compute.c)
   add_executable(compute2 compute2.c)
   add_executable(compute3 compute3.c)
+  add_executable(shared shared.c)
   add_executable(pingpong pingpong.c)
   add_executable(scatter scatter.c)
   add_executable(reduce reduce.c)
@@ -51,6 +52,7 @@ if(enable_smpi)
   target_link_libraries(bcast_coll simgrid)      
   target_link_libraries(barrier_coll simgrid)
   target_link_libraries(compute simgrid)
+  target_link_libraries(shared simgrid)
   target_link_libraries(compute2 simgrid)
   target_link_libraries(compute3 simgrid)
   target_link_libraries(pingpong simgrid)
@@ -90,6 +92,7 @@ set(tesh_files
   ${CMAKE_CURRENT_SOURCE_DIR}/bcast.tesh
   ${CMAKE_CURRENT_SOURCE_DIR}/bcast_coll.tesh  
   ${CMAKE_CURRENT_SOURCE_DIR}/compute.tesh
+  ${CMAKE_CURRENT_SOURCE_DIR}/shared.tesh
   ${CMAKE_CURRENT_SOURCE_DIR}/hvector.tesh
   ${CMAKE_CURRENT_SOURCE_DIR}/indexed.tesh
   ${CMAKE_CURRENT_SOURCE_DIR}/pt2pt.tesh
@@ -124,6 +127,7 @@ set(examples_src
   ${CMAKE_CURRENT_SOURCE_DIR}/sendrecv.c
   ${CMAKE_CURRENT_SOURCE_DIR}/reduce.c
   ${CMAKE_CURRENT_SOURCE_DIR}/compute2.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/shared.c
   ${CMAKE_CURRENT_SOURCE_DIR}/split.c
   ${CMAKE_CURRENT_SOURCE_DIR}/dsend.c
   ${CMAKE_CURRENT_SOURCE_DIR}/ttest01.c
