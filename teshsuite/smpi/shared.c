@@ -39,7 +39,7 @@ int main(int argc, char *argv[])
   
   MPI_Barrier(MPI_COMM_WORLD);
   //everyobne reads from it. 
-  printf("[%d] The value in the shared buffer is: %llu\n", rank, (unsigned long long)*buf);
+  printf("[%d] The value in the shared buffer is: %" PRIu64"\n", rank, *buf);
   
   
   MPI_Barrier(MPI_COMM_WORLD);
