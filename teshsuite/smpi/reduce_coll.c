@@ -34,18 +34,39 @@ int main(int argc, char *argv[])
     sb[i] = rank*size + i;
     rb[i] = 0;
   }
-
   printf("[%d] sndbuf=[", rank);
   for (i = 0; i < size; i++)
     printf("%d ", sb[i]);
   printf("]\n");
-
-  status = MPI_Reduce(sb, rb, size, MPI_INT, MPI_SUM, 0, MPI_COMM_WORLD);
+  
+  int root=0;
+  status = MPI_Reduce(sb, rb, size, MPI_INT, MPI_SUM, root, MPI_COMM_WORLD);
   MPI_Barrier(MPI_COMM_WORLD);
 
-  if (rank == 0) {
+  if (rank == root) {
     printf("[%d] rcvbuf=[", rank);
     for (i = 0; i < size; i++)
+      printf("%d ", rb[i]);
+    printf("]\n");
+    if (status != MPI_SUCCESS) {
+      printf("all_to_all returned %d\n", status);
+      fflush(stdout);
+    }
+  }
+  
+  
+  printf("[%d] second sndbuf=[", rank);
+  for (i = 0; i < 1; i++)
+    printf("%d ", sb[i]);
+  printf("]\n");
+  
+  root=size-1;
+  status = MPI_Reduce(sb, rb, 1, MPI_INT, MPI_PROD, root, MPI_COMM_WORLD);
+  MPI_Barrier(MPI_COMM_WORLD);
+
+  if (rank == root) {
+    printf("[%d] rcvbuf=[", rank);
+    for (i = 0; i < 1; i++)
       printf("%d ", rb[i]);
     printf("]\n");
     if (status != MPI_SUCCESS) {
