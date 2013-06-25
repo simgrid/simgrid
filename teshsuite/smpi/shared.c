@@ -8,12 +8,13 @@
 
 #include <stdio.h>
 #include <mpi.h>
+#include <stdint.h>
 
 unsigned long hash(char *str);
 
-unsigned long hash(char *str)
+uint64_t hash(char *str)
 {
-  unsigned long hash = 5381;
+  uint64_t hash = 5381;
   int c;
   printf("hashing !\n");
   while ((c = *str++)!=0)
@@ -29,7 +30,7 @@ int main(int argc, char *argv[])
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
   MPI_Comm_size(MPI_COMM_WORLD, &size);
   //Let's Allocate a shared memory buffer
-  unsigned long* buf = SMPI_SHARED_MALLOC(sizeof(unsigned long));
+  uint64_t* buf = SMPI_SHARED_MALLOC(sizeof(uint64_t));
   //one writes data in it
   if(rank==0){
     *buf=size;  
@@ -37,14 +38,14 @@ int main(int argc, char *argv[])
   
   MPI_Barrier(MPI_COMM_WORLD);
   //everyobne reads from it. 
-  printf("[%d] The value in the shared buffer is: %lu\n", rank, *buf);
+  printf("[%d] The value in the shared buffer is: %zu\n", rank, *buf);
   
   
   MPI_Barrier(MPI_COMM_WORLD);
   //Try SMPI_SHARED_CALL function, which should call hash only once and for all.
   char *str = strdup("onceandforall");
   if(rank==size-1){
-    *buf=(unsigned long)SMPI_SHARED_CALL(hash,str,str);  
+    *buf=(uint64_t)SMPI_SHARED_CALL(hash,str,str);  
   }
   
   MPI_Barrier(MPI_COMM_WORLD);
