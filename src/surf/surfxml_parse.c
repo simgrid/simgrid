@@ -109,6 +109,33 @@ double surf_parse_get_time(const char *string)
   return surf_parse_get_value_with_unit(string, units);
 }
 
+double surf_parse_get_size(const char *string)
+{
+  const struct unit_scale units[] = {
+    { "TiB", pow(1024, 4) },
+    { "GiB", pow(1024, 3) },
+    { "MiB", pow(1024, 2) },
+    { "KiB", 1024 },
+    { "TB",  1e12 },
+    { "GB",  1e9 },
+    { "MB",  1e6 },
+    { "kB",  1e3 },
+    { "B",   1.0 },
+    { "",      1.0 },           /* default unit is bytes*/
+    { "Tib", 0.125 * pow(1024, 4) },
+    { "Gib", 0.125 * pow(1024, 3) },
+    { "Mib", 0.125 * pow(1024, 2) },
+    { "Kib", 0.125 * 1024 },
+    { "Tb",  0.125 * 1e12 },
+    { "Gb",  0.125 * 1e9 },
+    { "Mb",  0.125 * 1e6 },
+    { "kb",  0.125 * 1e3 },
+    { "b",   0.125 },
+    { NULL,    0 }
+  };
+  return surf_parse_get_value_with_unit(string, units);
+}
+
 double surf_parse_get_bandwidth(const char *string)
 {
   const struct unit_scale units[] = {
@@ -224,7 +251,7 @@ void ETag_surfxml_storage___type(void)
   storage_type.id = A_surfxml_storage___type_id;
   storage_type.model = A_surfxml_storage___type_model;
   storage_type.properties = current_property_set;
-  storage_type.size = surf_parse_get_int(A_surfxml_storage___type_size);
+  storage_type.size = surf_parse_get_size(A_surfxml_storage___type_size);
   sg_platf_new_storage_type(&storage_type);
   current_property_set = NULL;
 }

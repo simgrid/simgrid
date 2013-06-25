@@ -25,6 +25,7 @@ XBT_PUBLIC(void) surf_parse_warn(const char *msg,...) _XBT_GNUC_PRINTF(1,2);
 XBT_PUBLIC(double) surf_parse_get_double(const char *string);
 XBT_PUBLIC(int) surf_parse_get_int(const char *string);
 XBT_PUBLIC(double) surf_parse_get_time(const char *string);
+XBT_PUBLIC(double) surf_parse_get_size(const char *string);
 XBT_PUBLIC(double) surf_parse_get_bandwidth(const char *string);
 XBT_PUBLIC(double) surf_parse_get_power(const char *string);
 
