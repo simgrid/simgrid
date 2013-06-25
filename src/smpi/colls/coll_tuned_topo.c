@@ -421,7 +421,7 @@ ompi_coll_tuned_topo_build_in_order_bmtree( MPI_Comm comm,
 
     vrank = (rank - root + size) % size;
 
-    bmtree = (ompi_coll_tree_t*)malloc(sizeof(ompi_coll_tree_t));
+    bmtree = (ompi_coll_tree_t*)xbt_malloc(sizeof(ompi_coll_tree_t));
     if (!bmtree) {
         XBT_DEBUG("coll:tuned:topo:build_bmtree PANIC out of memory");
         return NULL;

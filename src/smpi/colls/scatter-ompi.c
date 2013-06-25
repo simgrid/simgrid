@@ -153,6 +153,8 @@ smpi_coll_tuned_scatter_ompi_binomial(void *sbuf, int scount,
 	smpi_mpi_recv(ptmp, rcount, rdtype, bmtree->tree_prev,
 				MCA_COLL_BASE_TAG_SCATTER, comm, &status);
     }
+    //!FIXME : store the tree, as done in ompi, instead of calculating it each time ?
+    xbt_free(bmtree);
 
     return MPI_SUCCESS;
 
