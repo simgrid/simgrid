@@ -4,33 +4,29 @@
 <platform version="3">
 
 <config>
-	<prop id="path" value="../examples/platforms/"/>
+  <prop id="path" value="../examples/platforms/"/>
 </config>
 
-	<AS id="AS0" routing="Full">
+  <AS id="AS0" routing="Full">
 
-		<storage_type id="samsung" model="RAID5" content="content/storage_content.txt" size="500">
-			<prop id="Bwrite" value="30000000" /> <!-- 30Mo/s -->
-			<prop id="Bread" value="100000000" /> <!-- 100Mo/s -->
-			<prop id="Bconnection" value="150000000" /> <!-- 150Mo/s -->
-		</storage_type>
+   <storage_type id="single_HDD" model="linear_no_lat" 
+                 content="content/storage_content.txt" size="500GiB">
+			<prop id="Bwrite" value="30000000" />
+			<prop id="Bread" value="100000000" />
+			<prop id="Bconnection" value="150000000" />
+   </storage_type>
 
-		<storage_type id="crucial" model="SSD" content="content/storage_content.txt" size="500">
+   <storage_type id="single_SSD" model="linear_no_lat"
+                 content="content/storage_content.txt" size="500GiB">
 			<prop id="Bwrite" value="30000000" />
 			<prop id="Bread" value="100000000" />
 			<prop id="Bconnection" value="150000000" />
 		</storage_type>
 
-		<storage_type id="wdigital" model="RAID0" content="content/storage_content.txt" size="500">
-			<prop id="Bwrite" value="30000000" />
-			<prop id="Bread" value="100000000" />
-			<prop id="Bconnection" value="150000000" />
-		</storage_type>
-
-		<storage id="Disk1" typeId="crucial"/>
-		<storage id="Disk2" typeId="samsung"/>
-		<storage id="Disk3" typeId="wdigital"/>
-		<storage id="Disk4" typeId="wdigital"/>
+		<storage id="Disk1" typeId="single_HDD"/>
+		<storage id="Disk2" typeId="single_SSD"/>
+		<storage id="Disk3" typeId="single_HDD"/>
+		<storage id="Disk4" typeId="single_SSD"/>
 
 		<host id="bob" power="1Gf">
 			<mount id="Disk1" name="/home"/>			
