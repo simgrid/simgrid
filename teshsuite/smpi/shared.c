@@ -9,8 +9,9 @@
 #include <stdio.h>
 #include <mpi.h>
 #include <stdint.h>
+#include <inttypes.h>
 
-unsigned long hash(char *str);
+uint64_t hash(char *str);
 
 uint64_t hash(char *str)
 {
@@ -38,7 +39,7 @@ int main(int argc, char *argv[])
   
   MPI_Barrier(MPI_COMM_WORLD);
   //everyobne reads from it. 
-  printf("[%d] The value in the shared buffer is: %zu\n", rank, *buf);
+  printf("[%d] The value in the shared buffer is: %llu\n", rank, (unsigned long long)*buf);
   
   
   MPI_Barrier(MPI_COMM_WORLD);
