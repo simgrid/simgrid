@@ -564,7 +564,7 @@ static void storage_parse_storage_type(sg_platf_storage_type_cbarg_t storage_typ
   stype->properties = storage_type->properties;
   stype->content = xbt_strdup(storage_type->content);
   stype->type_id = xbt_strdup(storage_type->id);
-  stype->size = storage_type->size * 1000000000; /* storage_type->size is in Gbytes and stype->sizeis in bytes */
+  stype->size = storage_type->size;
 
   XBT_DEBUG("ROUTING Create a storage type id '%s' with model '%s' content '%s'",
       stype->type_id,
