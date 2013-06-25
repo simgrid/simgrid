@@ -516,7 +516,7 @@ XBT_PUBLIC(void*) smpi_shared_get_call(const char* func, const char* input);
 XBT_PUBLIC(void*) smpi_shared_set_call(const char* func, const char* input, void* data);
 #define SMPI_SHARED_CALL(func, input, ...) \
    (smpi_shared_known_call(#func, input) ? smpi_shared_get_call(#func, input) \
-                                         : smpi_shared_set_call(#func, input, (void*)(func(__VA_ARGS__))))
+                                         : smpi_shared_set_call(#func, input, (func(__VA_ARGS__))))
 
 /* Fortran specific stuff */
 XBT_PUBLIC(int) __attribute__((weak)) smpi_simulated_main_(int argc, char** argv);

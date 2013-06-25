@@ -11,16 +11,16 @@
 #include <stdint.h>
 #include <inttypes.h>
 
-uint64_t hash(char *str);
+void* hash(char *str, uint64_t* ans);
 
-uint64_t hash(char *str)
+void* hash(char *str, uint64_t* ans)
 {
-  uint64_t hash = 5381;
+  *ans=5381;
   int c;
   printf("hashing !\n");
   while ((c = *str++)!=0)
-    hash = ((hash << 5) + hash) + c; /* hash * 33 + c */
-  return hash;
+    *ans = ((*ans << 5) + *ans) + c; /* hash * 33 + c */
+  return NULL;
 }
 
 
@@ -46,15 +46,16 @@ int main(int argc, char *argv[])
   //Try SMPI_SHARED_CALL function, which should call hash only once and for all.
   char *str = strdup("onceandforall");
   if(rank==size-1){
-    *buf=(uint64_t)SMPI_SHARED_CALL(hash,str,str);  
+    SMPI_SHARED_CALL(hash,str,str,buf);  
   }
   
   MPI_Barrier(MPI_COMM_WORLD);
   
-  printf("[%d] After change, the value in the shared buffer is: %lu\n", rank, *buf);
-  
+  printf("[%d] After change, the value in the shared buffer is: %" PRIu64"\n", rank, *buf);
   
   SMPI_SHARED_FREE(buf);  
+  buf=NULL;  
+  free(str);
     
   MPI_Finalize();
   return 0;
