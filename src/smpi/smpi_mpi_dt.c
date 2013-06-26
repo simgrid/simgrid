@@ -1460,7 +1460,7 @@ MPI_Op smpi_op_new(MPI_User_function * function, int commute)
 
 int smpi_op_is_commute(MPI_Op op)
 {
-  return op-> is_commute;
+  return (op==MPI_OP_NULL) ? 1 : op-> is_commute;
 }
 
 void smpi_op_destroy(MPI_Op op)
