@@ -92,8 +92,8 @@ int smpi_coll_tuned_ompi_reduce_generic( void* sendbuf, void* recvbuf, int origi
            sendbuf to the accumbuf, in order to simplfy the loops */
         if (!smpi_op_is_commute(op)) {
             smpi_datatype_copy(
-                                                (char*)accumbuf, original_count, datatype,
-                                                (char*)sendtmpbuf, original_count, datatype);
+                                                (char*)sendtmpbuf, original_count, datatype,
+                                                (char*)accumbuf, original_count, datatype);
         }
         /* Allocate two buffers for incoming segments */
         real_segment_size = true_extent + (count_by_segment - 1) * extent;
@@ -521,8 +521,8 @@ int smpi_coll_tuned_reduce_ompi_in_order_binary( void *sendbuf, void *recvbuf,
                 return MPI_ERR_INTERN;
             }
             smpi_datatype_copy (
-                                                (char*)tmpbuf, count, datatype,
-                                                (char*)recvbuf, count, datatype);
+                                                (char*)recvbuf, count, datatype,
+                                                (char*)tmpbuf, count, datatype);
             use_this_sendbuf = tmpbuf;
         } else if (io_root == rank) {
             tmpbuf = (char *) malloc(text + (count - 1) * ext);
@@ -639,8 +639,7 @@ smpi_coll_tuned_reduce_ompi_basic_linear(void *sbuf, void *rbuf, int count,
     /* Initialize the receive buffer. */
 
     if (rank == (size - 1)) {
-        smpi_datatype_copy((char*)rbuf, count, dtype,
-                                                  (char*)sbuf, count, dtype);
+        smpi_datatype_copy((char*)sbuf, count, dtype,(char*)rbuf, count, dtype);
     } else {
         smpi_mpi_recv(rbuf, count, dtype, size - 1,
                                 MCA_COLL_BASE_TAG_REDUCE, comm,
@@ -664,8 +663,8 @@ smpi_coll_tuned_reduce_ompi_basic_linear(void *sbuf, void *rbuf, int count,
     }
 
     if (NULL != inplace_temp) {
-        smpi_datatype_copy((char*)sbuf, count, dtype,
-                                                  inplace_temp,count , dtype);
+        smpi_datatype_copy(inplace_temp, count, dtype,(char*)sbuf
+                                                  ,count , dtype);
         free(inplace_temp);
     }
     if (NULL != free_buffer) {

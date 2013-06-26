@@ -12,7 +12,7 @@
 #include "simix/smx_private.h"
 #include "surf/surf.h"
 #include "simgrid/sg_config.h"
-
+#include "colls/colls.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_base, smpi, "Logging specific to SMPI (base)");
 
@@ -1173,6 +1173,13 @@ void smpi_mpi_reduce(void *sendbuf, void *recvbuf, int count,
 
   rank = smpi_comm_rank(comm);
   size = smpi_comm_size(comm);
+  //non commutative case, use a working algo from openmpi
+  if(!smpi_op_is_commute(op)){
+    smpi_coll_tuned_reduce_ompi_basic_linear(sendbuf, recvbuf, count,
+                     datatype, op, root, comm);
+    return;
+  }
+  
   if(rank != root) {
     // Send buffer to root
     smpi_mpi_send(sendbuf, count, datatype, root, system_tag, comm);

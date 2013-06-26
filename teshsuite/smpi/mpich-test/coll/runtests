@@ -114,10 +114,8 @@ RunTest coll8 4
 
 RunTest coll9 4
 
-#smpi does not handle non commutative operations, removed
-#RunTest coll10 4
+RunTest coll10 4
 
-#smpi does not handle non commutative operations, removed
 RunTest coll11 4
 
 #weird manipulations of ranks in split, and comms -> deadlock, removed
