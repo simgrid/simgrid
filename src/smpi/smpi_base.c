@@ -527,7 +527,12 @@ void smpi_mpi_sendrecv(void *sendbuf, int sendcount, MPI_Datatype sendtype,
 {
   MPI_Request requests[2];
   MPI_Status stats[2];
-
+  int myid=smpi_process_index();
+  if ((dst == myid) && (src == myid)) {
+      smpi_datatype_copy(sendbuf, sendcount, sendtype,
+                                     recvbuf, recvcount, recvtype);
+      return;
+  }
   requests[0] =
     smpi_isend_init(sendbuf, sendcount, sendtype, dst, sendtag, comm);
   requests[1] =

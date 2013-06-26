@@ -83,7 +83,7 @@ else
 selector="--cfg=smpi/coll_selector:$have_selector"
 fi
 
-mpirun=" ${basedir}/bin/smpirun -platform ${srcdir}/../../../../examples/msg/small_platform_with_routers.xml -hostfile ${srcdir}/../../hostfile  --log=root.thres:critical  --cfg=network/optim:Full $selector "
+mpirun=" ${basedir}/bin/smpirun -platform ${srcdir}/../../../../examples/msg/small_platform_with_routers.xml -hostfile ${srcdir}/../../hostfile  --log=root.thres:critical  $selector "
 testfiles=""
 if [ $runtests = 1 ] ; then
 echo '**** Testing MPI Collective routines ****'
