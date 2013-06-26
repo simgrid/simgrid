@@ -164,7 +164,7 @@ void smpi_bench_end(void)
 unsigned int smpi_sleep(unsigned int secs)
 {
   smpi_bench_end();
-  smpi_execute((double) secs);
+  smpi_execute_flops((double) secs*simcall_host_get_speed(SIMIX_host_self()));
   smpi_bench_begin();
   return secs;
 }

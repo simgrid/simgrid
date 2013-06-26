@@ -153,7 +153,7 @@ rm -f longuser1
 #CleanExe allredmany
 
 RunTest grouptest 4
-#uses MPI_Dims_create, MPI_Cart_create ... removed
+
 RunTest allred 4 "*** Allred ***"
 
 RunTest allred2 4 "*** Allred2 ***"
@@ -162,7 +162,6 @@ RunTest allred2 4 "*** Allred2 ***"
 
 RunTest scattern 4 "*** Scattern ***"
 
-#fails, more debug needed to understand
 RunTest redscat 4 "*** Reduce_scatter ***"
 
 RunTest alltoallv_mpich 4 "*** Alltoallv ***"
