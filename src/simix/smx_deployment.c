@@ -36,6 +36,23 @@ static void parse_process(sg_platf_process_cbarg_t process)
   smx_process_arg_t arg = NULL;
   smx_process_t process_created = NULL;
 
+  arg = xbt_new0(s_smx_process_arg_t, 1);
+  arg->code = parse_code;
+  arg->data = NULL;
+  arg->hostname = sg_host_name(host);
+  arg->argc = process->argc;
+  arg->argv = xbt_new(char *,process->argc);
+  int i;
+  for (i=0; i<process->argc; i++)
+    arg->argv[i] = xbt_strdup(process->argv[i]);
+  arg->name = (char*)(arg->argv)[0];
+  arg->kill_time = kill_time;
+  arg->properties = current_property_set;
+  if (!SIMIX_host_priv(host)->boot_processes) {
+    SIMIX_host_priv(host)->boot_processes = xbt_dynar_new(sizeof(smx_process_arg_t), _SIMIX_host_free_process_arg);
+  }
+  xbt_dynar_push_as(SIMIX_host_priv(host)->boot_processes,smx_process_arg_t,arg);
+
   if (start_time > SIMIX_get_clock()) {
     arg = xbt_new0(s_smx_process_arg_t, 1);
     arg->name = (char*)(process->argv)[0];
@@ -67,7 +84,7 @@ static void parse_process(sg_platf_process_cbarg_t process)
     else
       simcall_process_create(&process_created, (char*)(process->argv)[0], parse_code, NULL, sg_host_name(host), kill_time, process->argc,
           (char**)process->argv, current_property_set,auto_restart);
-
+    
     /* verify if process has been created (won't be the case if the host is currently dead, but that's fine) */
     if (!process_created) {
       return;

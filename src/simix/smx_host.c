@@ -49,49 +49,75 @@ void SIMIX_pre_host_on(smx_simcall_t simcall, smx_host_t h)
  */
 void SIMIX_host_on(smx_host_t h)
 {
-  smx_host_priv_t host = (smx_host_priv_t) h;
+  smx_host_priv_t host = SIMIX_host_priv(h);
 
   xbt_assert((host != NULL), "Invalid parameters");
-  
-  surf_model_t ws_model = surf_resource_model(h, SURF_WKS_LEVEL);
-  ws_model->extension.workstation.set_state(host, SURF_RESOURCE_ON);
 
-  SIMIX_host_restart_processes(h);
+  surf_model_t ws_model = surf_resource_model(h, SURF_WKS_LEVEL);
+  if (ws_model->extension.workstation.get_state(h)==SURF_RESOURCE_OFF) {
+    ws_model->extension.workstation.set_state(h, SURF_RESOURCE_ON);
+    unsigned int cpt;
+    smx_process_arg_t arg;
+    xbt_dynar_foreach(host->boot_processes,cpt,arg) {
+      smx_process_t process;
+
+      XBT_DEBUG("Booting Process %s(%s) right now", arg->argv[0], arg->hostname);
+      if (simix_global->create_process_function) {
+        simix_global->create_process_function(&process,
+                                              arg->argv[0],
+                                              arg->code,
+                                              NULL,
+                                              arg->hostname,
+                                              arg->kill_time,
+                                              arg->argc,
+                                              arg->argv,
+                                              arg->properties,
+                                              arg->auto_restart);
+      }
+      else {
+        simcall_process_create(&process,
+                                              arg->argv[0],
+                                              arg->code,
+                                              NULL,
+                                              arg->hostname,
+                                              arg->kill_time,
+                                              arg->argc,
+                                              arg->argv,
+                                              arg->properties,
+                                              arg->auto_restart);
+      }
+    }
+  }
 }
 
 void SIMIX_pre_host_off(smx_simcall_t simcall, smx_host_t h)
 {
-  SIMIX_host_off(h);
+  SIMIX_host_off(h, simcall->issuer);
 }
 
 /**
  * \brief Stop the host if it is on
  *
  */
-void SIMIX_host_off(smx_host_t h)
+void SIMIX_host_off(smx_host_t h, smx_process_t issuer)
 {
-  smx_host_priv_t host = (smx_host_priv_t) h;
+  smx_host_priv_t host = SIMIX_host_priv(h);
 
   xbt_assert((host != NULL), "Invalid parameters");
-
-  /* Clean Simulator data */
-  if (xbt_swag_size(host->process_list) != 0) {
-    char *msg = xbt_strdup("Shutting down host, but it's not empty:");
-    char *tmp;
-    smx_process_t process = NULL;
-
-    xbt_swag_foreach(process, host->process_list) {
-      tmp = bprintf("%s\n\t%s", msg, process->name);
-      free(msg);
-      msg = tmp;
-    }
-    SIMIX_display_process_status();
-    THROWF(arg_error, 0, "%s", msg);
-  }
-  xbt_swag_free(host->process_list);
-
+  
   surf_model_t ws_model = surf_resource_model(h, SURF_WKS_LEVEL);
-  ws_model->extension.workstation.set_state(host, SURF_RESOURCE_OFF);
+  if (ws_model->extension.workstation.get_state(h)==SURF_RESOURCE_ON) {
+    ws_model->extension.workstation.set_state(h, SURF_RESOURCE_OFF);
+
+    /* Clean Simulator data */
+    if (xbt_swag_size(host->process_list) != 0) {
+      smx_process_t process = NULL;
+      xbt_swag_foreach(process, host->process_list) {
+        SIMIX_process_kill(process, issuer);
+	XBT_DEBUG("Killing %s on %s by %s", process->name,  sg_host_name(process->smx_host), issuer->name);
+      }
+    }
+  }
 }
 
 /**
@@ -120,6 +146,7 @@ void SIMIX_host_destroy(void *h)
     THROWF(arg_error, 0, "%s", msg);
   }
   xbt_dynar_free(&host->auto_restart_processes);
+  xbt_dynar_free(&host->boot_processes);
   xbt_swag_free(host->process_list);
 
   /* Clean host structure */
@@ -260,7 +287,7 @@ void* SIMIX_host_get_data(smx_host_t host){
 
   return SIMIX_host_priv(host)->data;
 }
-void _SIMIX_host_free_process_arg(void *);
+
 void _SIMIX_host_free_process_arg(void *data)
 {
   smx_process_arg_t arg = *(void**)data;

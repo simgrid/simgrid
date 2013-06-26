@@ -128,6 +128,7 @@ public class Host {
 	public String getName() {
 		return name;
 	}
+
 	/**
 	 * Sets the data of the host.
      * @param data
@@ -152,6 +153,17 @@ public class Host {
 	public boolean hasData() {
 		return null != this.data;
 	}
+
+	/**
+	 * This method start the host if it is off
+	 */ 
+	public native void on();
+
+	/**
+	 * This method stop the host if it is on
+	 */ 
+	public native void off();
+
 
 	/**
 	 * This method returns the number of tasks currently running on a host.

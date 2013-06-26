@@ -49,6 +49,8 @@ void SIMIX_simcall_pre(smx_simcall_t simcall, int value)
 {
   XBT_DEBUG("Handling simcall %p: %s", simcall, SIMIX_simcall_name(simcall->call));
   simcall->mc_value = value;
+  if (simcall->issuer->context->iwannadie && simcall->call != SIMCALL_PROCESS_CLEANUP)
+    return;
   switch (simcall->call) {
 SIMCALL_LIST(SIMCALL_CASE, SIMCALL_SEP_NOTHING)
     case NUM_SIMCALLS:;

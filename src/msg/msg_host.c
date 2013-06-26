@@ -129,7 +129,7 @@ void MSG_host_on(msg_host_t host)
  * \brief Stop the host if it is on
  */
 void MSG_host_off(msg_host_t host)
-{ 
+{
   simcall_host_off(host);
 }
 
