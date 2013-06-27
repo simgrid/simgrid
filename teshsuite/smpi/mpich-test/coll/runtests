@@ -77,11 +77,7 @@ if [ ! -x coll1 -a $makeeach = 0 -a $runtests = 1 ] ; then
     $MAKE
 fi
 
-if [ $have_selector -eq "" ] ; then 
-selector=""
-else
-selector="--cfg=smpi/coll_selector:$have_selector"
-fi
+selector=${have_selector:+--cfg=smpi/coll_selector:$have_selector}
 
 mpirun=" ${basedir}/bin/smpirun -platform ${srcdir}/../../../../examples/msg/small_platform_with_routers.xml -hostfile ${srcdir}/../../hostfile  --log=root.thres:critical  $selector "
 testfiles=""
