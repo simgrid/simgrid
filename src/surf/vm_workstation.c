@@ -258,31 +258,12 @@ static void vm_ws_restore(void *ind_vm_ws)
   vm_ws->current_state = SURF_VM_STATE_RUNNING;
 }
 
-
 static double get_solved_value(surf_action_t cpu_action)
 {
-  int found = 0;
-  /* NOTE: Do not use surf_workstation_model's maxmin_system. It is not used. */
-  lmm_system_t pm_system = surf_cpu_model_pm->model_private->maxmin_system;
-  lmm_variable_t var = NULL;
+  lmm_variable_t var = ((surf_action_lmm_t) cpu_action)->variable;
 
-  xbt_swag_foreach(var, &pm_system->variable_set) {
-    XBT_DEBUG("var id %p id_int %d double %f", var->id, var->id_int, var->value);
-    if (var->id == cpu_action) {
-      found = 1;
-      break;
-    }
-  }
-
-  if (found)
-    return var->value;
-
-  XBT_CRITICAL("bug: cannot found the solved variable of the action %p", cpu_action);
-  DIE_IMPOSSIBLE;
-  return -1; /* NOT REACHED */
+  return var->value;
 }
-
-
 
 /* In the real world, processes on the guest operating system will be somewhat
  * degraded due to virtualization overhead. The total CPU share that these
@@ -369,7 +350,7 @@ static double vm_ws_share_resources(surf_model_t workstation_model, double now)
 
 
   /* FIXME: 3. do we have to re-initialize our cpu_action object? */
-#if 1
+#if 0
   /* iterate for all hosts including virtual machines */
   xbt_lib_foreach(host_lib, cursor, key, ind_host) {
     workstation_CLM03_t ws_clm03 = ind_host[SURF_WKS_LEVEL];
