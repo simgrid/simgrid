@@ -30,10 +30,23 @@ SimGrid (3.10) NOT RELEASED; urgency=low
      version of MPE.
    - Bug Fix: the compute part of the reduce action is now taken into account.
  * smpirun generates the hostfile if needed (with given hostcount and platform)
+ * Integration of more than 100 STAR-MPI, mpich, OpenMPI collective algorithms
+   - allows to select one in particular with --cfg=smpi/coll_name:algorithm
+   - allows to use the decision logic of OpenMPI(1.7) or MPICH(3.0.4) by setting
+     --cfg=smpi/coll_selector:(mpich/ompi)
+ * Support for new functions : MPI_Issend, MPI_Ssend, Commutative operations in 
+   Reduce
+ * Add a --cfg:tracing/smpi/internals option, to trace internal communications 
+   happening inside a collective SMPI call.
+ * Fix the behavior of complex datatypes handling
+   
 
  PLATFORM:
  * Handle units for values (10ms, 10kiloflops, 10Bps, ...)
  * Remove rule based routing (no more pcre dependency)
+ * Add a limiter_link option to cluster tag, to specify a maximum reachable
+  bandwidth in fullduplex mode when it is < 2*nominal bw
+ * Add a loopback_bw and loopback_lat options to cluster tag. 
 
 -- $date Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
 
