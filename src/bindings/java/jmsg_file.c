@@ -7,8 +7,8 @@
 #include "jmsg_file.h"
 #include "jxbt_utilities.h"
 
-void jfile_bind(JNIEnv *env, jobject jfile, msg_file_t stream) {
-  (*env)->SetLongField(env, jfile, jfile_field_bind, (intptr_t)stream);
+void jfile_bind(JNIEnv *env, jobject jfile, msg_file_t fd) {
+  (*env)->SetLongField(env, jfile, jfile_field_bind, (intptr_t)fd);
 }
 
 msg_file_t jfile_get_native(JNIEnv *env, jobject jfile) {
@@ -24,32 +24,30 @@ Java_org_simgrid_msg_File_nativeInit(JNIEnv *env, jclass cls) {
   xbt_assert((jfile_field_bind != NULL), "Can't find \"bind\" field in File class.");
 }
 JNIEXPORT void JNICALL
-Java_org_simgrid_msg_File_open(JNIEnv *env, jobject jfile, jobject jstorage, jobject jpath, jobject jmode) {
+Java_org_simgrid_msg_File_open(JNIEnv *env, jobject jfile, jobject jstorage, jobject jpath) {
   const char *storage = (*env)->GetStringUTFChars(env, jstorage, 0);
   const char *path = (*env)->GetStringUTFChars(env, jpath, 0);
-  const char *mode = (*env)->GetStringUTFChars(env, jmode, 0);
   msg_file_t file;
 
-  file = MSG_file_open(storage, path, mode);
+  file = MSG_file_open(storage, path);
   jfile_bind(env, jfile, file);
 
   (*env)->ReleaseStringUTFChars(env, jstorage, storage);
   (*env)->ReleaseStringUTFChars(env, jpath, path);
-  (*env)->ReleaseStringUTFChars(env, jmode, mode);
 }
 JNIEXPORT jlong JNICALL
-Java_org_simgrid_msg_File_read(JNIEnv *env, jobject jfile, jlong jsize, jlong jnmemb) {
+Java_org_simgrid_msg_File_read(JNIEnv *env, jobject jfile, jlong jsize) {
   msg_file_t file = jfile_get_native(env, jfile);
   size_t n;
-  n = MSG_file_read(NULL,(size_t)jsize, (size_t)jnmemb, file);
+  n = MSG_file_read(NULL,(size_t)jsize, file);
   return (jlong)n;
 }
 
 JNIEXPORT jlong JNICALL
-Java_org_simgrid_msg_File_write(JNIEnv *env, jobject jfile, jlong jsize, jlong jnmemb) {
+Java_org_simgrid_msg_File_write(JNIEnv *env, jobject jfile, jlong jsize) {
   msg_file_t file = jfile_get_native(env, jfile);
   size_t n;
-  n = MSG_file_write(NULL, (size_t)jsize, (size_t)jnmemb, file);
+  n = MSG_file_write(NULL, (size_t)jsize, file);
   return (jlong)n;
 }
 JNIEXPORT void JNICALL

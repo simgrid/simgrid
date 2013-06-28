@@ -34,16 +34,6 @@ static XBT_INLINE void _check_inbound_idx(xbt_dynar_t dynar, int idx)
   }
 }
 
-static XBT_INLINE void _check_sloppy_inbound_idx(xbt_dynar_t dynar,
-                                                 int idx)
-{
-  if (idx > dynar->used) {
-    THROWF(bound_error, idx,
-           "dynar is not that long. You asked %d, but it's only %lu long (could have been equal to it)",
-           (int) (idx), (unsigned long) dynar->used);
-  }
-}
-
 static XBT_INLINE void _check_populated_dynar(xbt_dynar_t dynar)
 {
   if (dynar->used == 0) {

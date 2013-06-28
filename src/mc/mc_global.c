@@ -51,7 +51,7 @@ void _mc_cfg_cb_checkpoint(const char *name, int pos) {
   if (_sg_init_status && !_sg_do_model_check) {
     xbt_die("You are specifying a checkpointing value after the initialization (through MSG_config?), but model-checking was not activated at config time (through --cfg=model-check:1). This won't work, sorry.");
   }
-  _sg_mc_checkpoint = xbt_cfg_get_int(_sg_cfg_set, name);
+  _sg_mc_checkpoint = xbt_cfg_get_boolean(_sg_cfg_set, name);
 }
 void _mc_cfg_cb_property(const char *name, int pos) {
   if (_sg_init_status && !_sg_do_model_check) {
@@ -64,7 +64,7 @@ void _mc_cfg_cb_timeout(const char *name, int pos) {
   if (_sg_init_status && !_sg_do_model_check) {
     xbt_die("You are specifying a value to enable/disable timeout for wait requests after the initialization (through MSG_config?), but model-checking was not activated at config time (through --cfg=model-check:1). This won't work, sorry.");
   }
-  _sg_mc_timeout= xbt_cfg_get_int(_sg_cfg_set, name);
+  _sg_mc_timeout= xbt_cfg_get_boolean(_sg_cfg_set, name);
 }
 
 void _mc_cfg_cb_max_depth(const char *name, int pos) {
@@ -120,7 +120,7 @@ extern xbt_dynar_t mc_heap_comparison_ignore;
 extern xbt_dynar_t stacks_areas;
 
 FILE *dot_output = NULL;
-const char* colors[10];
+const char* colors[13];
 
 xbt_automaton_t _mc_property_automaton = NULL;
 
@@ -222,17 +222,22 @@ void MC_init(){
 
 }
 
-void MC_init_dot_output(){
+void MC_init_dot_output(){ /* FIXME : more colors */
 
   colors[0] = "blue";
   colors[1] = "red";
-  colors[2] = "green";
-  colors[3] = "pink";
+  colors[2] = "green3";
+  colors[3] = "goldenrod";
   colors[4] = "brown";
   colors[5] = "purple";
-  colors[6] = "yellow";
-  colors[7] = "orange";
-  
+  colors[6] = "magenta";
+  colors[7] = "turquoise4";
+  colors[8] = "gray25";
+  colors[9] = "forestgreen";
+  colors[10] = "hotpink";
+  colors[11] = "lightblue";
+  colors[12] = "tan";
+
   dot_output = fopen(_sg_mc_dot_output_file, "w");
   
   if(dot_output == NULL){
@@ -240,7 +245,7 @@ void MC_init_dot_output(){
     xbt_abort();
   }
 
-  fprintf(dot_output, "digraph graphname{\n fixedsize=true; rankdir=TB; ranksep=.20; edge [fontsize=12]; node [fontsize=10, shape=circle,width=.5 ]; graph [resolution=20, fontsize=10];\n");
+  fprintf(dot_output, "digraph graphname{\n fixedsize=true; rankdir=TB; ranksep=.25; edge [fontsize=12]; node [fontsize=10, shape=circle,width=.5 ]; graph [resolution=20, fontsize=10];\n");
 
 }
 
@@ -654,6 +659,11 @@ void MC_dump_stack_safety(xbt_fifo_t stack)
 
 void MC_show_stack_safety(xbt_fifo_t stack)
 {
+
+  int raw_mem_set = (mmalloc_get_current_heap() == raw_heap);
+
+  MC_SET_RAW_MEM;
+
   int value;
   mc_state_t state;
   xbt_fifo_item_t item;
@@ -670,6 +680,9 @@ void MC_show_stack_safety(xbt_fifo_t stack)
       xbt_free(req_str);
     }
   }
+
+  if(!raw_mem_set)
+    MC_UNSET_RAW_MEM;
 }
 
 void MC_show_deadlock(smx_simcall_t req)
@@ -684,6 +697,7 @@ void MC_show_deadlock(smx_simcall_t req)
     xbt_free(req_str);*/
   XBT_INFO("Counter-example execution trace:");
   MC_dump_stack_safety(mc_stack_safety);
+  MC_print_statistics(mc_stats);
 }
 
 
@@ -936,6 +950,14 @@ void MC_remove_ignore_heap(void *address, size_t size){
 
 }
 
+void data_bss_ignore_variable_free(mc_data_bss_ignore_variable_t v){
+  xbt_free(v);
+}
+
+void data_bss_ignore_variable_free_voidp(void *v){
+  data_bss_ignore_variable_free((mc_data_bss_ignore_variable_t) * (void **) v);
+}
+
 void MC_ignore_data_bss(void *address, size_t size){
 
   int raw_mem_set = (mmalloc_get_current_heap() == raw_heap);
@@ -943,7 +965,7 @@ void MC_ignore_data_bss(void *address, size_t size){
   MC_SET_RAW_MEM;
   
   if(mc_data_bss_comparison_ignore == NULL)
-    mc_data_bss_comparison_ignore = xbt_dynar_new(sizeof(mc_data_bss_ignore_variable_t), NULL);
+    mc_data_bss_comparison_ignore = xbt_dynar_new(sizeof(mc_data_bss_ignore_variable_t), data_bss_ignore_variable_free_voidp);
 
   mc_data_bss_ignore_variable_t var = NULL;
   var = xbt_new0(s_mc_data_bss_ignore_variable_t, 1);
@@ -965,6 +987,7 @@ void MC_ignore_data_bss(void *address, size_t size){
       cursor = (start + end) / 2;
       current_var = (mc_data_bss_ignore_variable_t)xbt_dynar_get_as(mc_data_bss_comparison_ignore, cursor, mc_data_bss_ignore_variable_t);
       if(current_var->address == address){
+        data_bss_ignore_variable_free(var);
         MC_UNSET_RAW_MEM;
         if(raw_mem_set)
           MC_SET_RAW_MEM;
@@ -1041,7 +1064,15 @@ static size_t data_bss_ignore_size(void *address){
   return 0;
 }
 
+void stack_ignore_variable_free(mc_stack_ignore_variable_t v){
+  xbt_free(v->var_name);
+  xbt_free(v->frame);
+  xbt_free(v);
+}
 
+void stack_ignore_variable_free_voidp(void *v){
+  stack_ignore_variable_free((mc_stack_ignore_variable_t) * (void **) v);
+}
 
 void MC_ignore_stack(const char *var_name, const char *frame_name){
   
@@ -1050,14 +1081,14 @@ void MC_ignore_stack(const char *var_name, const char *frame_name){
   MC_SET_RAW_MEM;
 
   if(mc_stack_comparison_ignore == NULL)
-    mc_stack_comparison_ignore = xbt_dynar_new(sizeof(mc_stack_ignore_variable_t), NULL);
-
+    mc_stack_comparison_ignore = xbt_dynar_new(sizeof(mc_stack_ignore_variable_t), stack_ignore_variable_free_voidp);
+  
+  mc_stack_ignore_variable_t var = NULL;
+  var = xbt_new0(s_mc_stack_ignore_variable_t, 1);
+  var->var_name = strdup(var_name);
+  var->frame = strdup(frame_name);
+  
   if(xbt_dynar_is_empty(mc_stack_comparison_ignore)){
-
-    mc_stack_ignore_variable_t var = NULL;
-    var = xbt_new0(s_mc_stack_ignore_variable_t, 1);
-    var->var_name = strdup(var_name);
-    var->frame = strdup(frame_name);
 
     xbt_dynar_insert_at(mc_stack_comparison_ignore, 0, &var);
 
@@ -1073,6 +1104,7 @@ void MC_ignore_stack(const char *var_name, const char *frame_name){
       current_var = (mc_stack_ignore_variable_t)xbt_dynar_get_as(mc_stack_comparison_ignore, cursor, mc_stack_ignore_variable_t);
       if(strcmp(current_var->frame, frame_name) == 0){
         if(strcmp(current_var->var_name, var_name) == 0){
+          stack_ignore_variable_free(var);
           MC_UNSET_RAW_MEM;
           if(raw_mem_set)
             MC_SET_RAW_MEM;
@@ -1088,11 +1120,6 @@ void MC_ignore_stack(const char *var_name, const char *frame_name){
       if(strcmp(current_var->frame, frame_name) > 0)
         end = cursor - 1;
     }
-
-    mc_stack_ignore_variable_t var = NULL;
-    var = xbt_new0(s_mc_stack_ignore_variable_t, 1);
-    var->var_name = strdup(var_name);
-    var->frame = strdup(frame_name);
 
     if(strcmp(current_var->frame, frame_name) < 0)
       xbt_dynar_insert_at(mc_stack_comparison_ignore, cursor + 1, &var);

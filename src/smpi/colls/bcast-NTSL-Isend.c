@@ -1,4 +1,4 @@
-#include "colls.h"
+#include "colls_private.h"
 
 static int bcast_NTSL_segment_size_in_byte = 8192;
 
@@ -18,10 +18,10 @@ int smpi_coll_tuned_bcast_NTSL_Isend(void *buf, int count, MPI_Datatype datatype
   int rank, size;
   int i;
   MPI_Aint extent;
-  MPI_Type_extent(datatype, &extent);
+  extent = smpi_datatype_get_extent(datatype);
 
-  MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-  MPI_Comm_size(MPI_COMM_WORLD, &size);
+  rank = smpi_comm_rank(MPI_COMM_WORLD);
+  size = smpi_comm_size(MPI_COMM_WORLD);
 
   /* source node and destination nodes (same through out the functions) */
   int to = (rank + 1) % size;
@@ -45,23 +45,23 @@ int smpi_coll_tuned_bcast_NTSL_Isend(void *buf, int count, MPI_Datatype datatype
    */
   if (root != 0) {
     if (rank == root) {
-      MPI_Send(buf, count, datatype, 0, tag, comm);
+      smpi_mpi_send(buf, count, datatype, 0, tag, comm);
     } else if (rank == 0) {
-      MPI_Recv(buf, count, datatype, root, tag, comm, &status);
+      smpi_mpi_recv(buf, count, datatype, root, tag, comm, &status);
     }
   }
 
   /* when a message is smaller than a block size => no pipeline */
   if (count <= segment) {
     if (rank == 0) {
-      MPI_Send(buf, count, datatype, to, tag, comm);
+      smpi_mpi_send(buf, count, datatype, to, tag, comm);
     } else if (rank == (size - 1)) {
-      MPI_Irecv(buf, count, datatype, from, tag, comm, &request);
-      MPI_Wait(&request, &status);
+      request = smpi_mpi_irecv(buf, count, datatype, from, tag, comm);
+      smpi_mpi_wait(&request, &status);
     } else {
-      MPI_Irecv(buf, count, datatype, from, tag, comm, &request);
-      MPI_Wait(&request, &status);
-      MPI_Send(buf, count, datatype, to, tag, comm);
+      request = smpi_mpi_irecv(buf, count, datatype, from, tag, comm);
+      smpi_mpi_wait(&request, &status);
+      smpi_mpi_send(buf, count, datatype, to, tag, comm);
     }
     return MPI_SUCCESS;
   }
@@ -69,44 +69,44 @@ int smpi_coll_tuned_bcast_NTSL_Isend(void *buf, int count, MPI_Datatype datatype
   /* pipeline bcast */
   else {
     send_request_array =
-        (MPI_Request *) malloc((size + pipe_length) * sizeof(MPI_Request));
+        (MPI_Request *) xbt_malloc((size + pipe_length) * sizeof(MPI_Request));
     recv_request_array =
-        (MPI_Request *) malloc((size + pipe_length) * sizeof(MPI_Request));
+        (MPI_Request *) xbt_malloc((size + pipe_length) * sizeof(MPI_Request));
     send_status_array =
-        (MPI_Status *) malloc((size + pipe_length) * sizeof(MPI_Status));
+        (MPI_Status *) xbt_malloc((size + pipe_length) * sizeof(MPI_Status));
     recv_status_array =
-        (MPI_Status *) malloc((size + pipe_length) * sizeof(MPI_Status));
+        (MPI_Status *) xbt_malloc((size + pipe_length) * sizeof(MPI_Status));
 
     /* root send data */
     if (rank == 0) {
       for (i = 0; i < pipe_length; i++) {
-        MPI_Isend((char *) buf + (i * increment), segment, datatype, to,
-                  (tag + i), comm, &send_request_array[i]);
+        send_request_array[i] = smpi_mpi_isend((char *) buf + (i * increment), segment, datatype, to,
+                  (tag + i), comm);
       }
-      MPI_Waitall((pipe_length), send_request_array, send_status_array);
+      smpi_mpi_waitall((pipe_length), send_request_array, send_status_array);
     }
 
     /* last node only receive data */
     else if (rank == (size - 1)) {
       for (i = 0; i < pipe_length; i++) {
-        MPI_Irecv((char *) buf + (i * increment), segment, datatype, from,
-                  (tag + i), comm, &recv_request_array[i]);
+        recv_request_array[i] = smpi_mpi_irecv((char *) buf + (i * increment), segment, datatype, from,
+                  (tag + i), comm);
       }
-      MPI_Waitall((pipe_length), recv_request_array, recv_status_array);
+      smpi_mpi_waitall((pipe_length), recv_request_array, recv_status_array);
     }
 
     /* intermediate nodes relay (receive, then send) data */
     else {
       for (i = 0; i < pipe_length; i++) {
-        MPI_Irecv((char *) buf + (i * increment), segment, datatype, from,
-                  (tag + i), comm, &recv_request_array[i]);
+        recv_request_array[i] = smpi_mpi_irecv((char *) buf + (i * increment), segment, datatype, from,
+                  (tag + i), comm);
       }
       for (i = 0; i < pipe_length; i++) {
-        MPI_Wait(&recv_request_array[i], &status);
-        MPI_Isend((char *) buf + (i * increment), segment, datatype, to,
-                  (tag + i), comm, &send_request_array[i]);
+        smpi_mpi_wait(&recv_request_array[i], &status);
+        send_request_array[i] = smpi_mpi_isend((char *) buf + (i * increment), segment, datatype, to,
+                  (tag + i), comm);
       }
-      MPI_Waitall((pipe_length), send_request_array, send_status_array);
+      smpi_mpi_waitall((pipe_length), send_request_array, send_status_array);
     }
 
     free(send_request_array);
@@ -117,7 +117,8 @@ int smpi_coll_tuned_bcast_NTSL_Isend(void *buf, int count, MPI_Datatype datatype
 
   /* when count is not divisible by block size, use default BCAST for the remainder */
   if ((remainder != 0) && (count > segment)) {
-    MPI_Bcast((char *) buf + (pipe_length * increment), remainder, datatype,
+    XBT_WARN("MPI_bcast_NTSL_Isend_nb use default MPI_bcast.");	  	  
+    smpi_mpi_bcast((char *) buf + (pipe_length * increment), remainder, datatype,
               root, comm);
   }
 

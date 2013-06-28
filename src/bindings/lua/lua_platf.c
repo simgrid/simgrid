@@ -320,7 +320,6 @@ int console_AS_open(lua_State *L) {
  else if(!strcmp(mode,"Floyd")) mode_int = A_surfxml_AS_routing_Floyd;
  else if(!strcmp(mode,"Dijkstra")) mode_int = A_surfxml_AS_routing_Dijkstra;
  else if(!strcmp(mode,"DijkstraCache")) mode_int = A_surfxml_AS_routing_DijkstraCache;
- else if(!strcmp(mode,"RuleBased")) mode_int = A_surfxml_AS_routing_RuleBased;
  else if(!strcmp(mode,"Vivaldi")) mode_int = A_surfxml_AS_routing_Vivaldi;
  else if(!strcmp(mode,"Cluster")) mode_int = A_surfxml_AS_routing_Cluster;
  else if(!strcmp(mode,"none")) mode_int = A_surfxml_AS_routing_None;

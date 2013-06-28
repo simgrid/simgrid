@@ -37,6 +37,8 @@ set(EXTRA_DIST
   src/smpi/README
   src/smpi/colls/COPYRIGHTS
   src/smpi/colls/colls.h
+  src/smpi/colls/colls_private.h
+  src/smpi/colls/coll_tuned_topo.h
   src/smpi/private.h
   src/smpi/smpi_mpi_dt_private.h
   src/surf/cpu_ti_private.h
@@ -109,9 +111,12 @@ set(SMPI_SRC
   src/smpi/smpi_mpi_dt.c
   src/smpi/smpi_pmpi.c
   src/smpi/smpi_replay.c
-  #src/smpi/colls/allgather-2dmesh.c
-  #src/smpi/colls/allgather-3dmesh.c
-  #src/smpi/colls/allgather-bruck.c
+  src/smpi/colls/smpi_openmpi_selector.c
+  src/smpi/colls/smpi_mpich_selector.c
+  src/smpi/colls/colls_global.c
+  src/smpi/colls/allgather-2dmesh.c
+  src/smpi/colls/allgather-3dmesh.c
+  src/smpi/colls/allgather-bruck.c
   src/smpi/colls/allgather-GB.c
   src/smpi/colls/allgather-loosely-lr.c
   src/smpi/colls/allgather-lr.c
@@ -119,28 +124,34 @@ set(SMPI_SRC
   src/smpi/colls/allgather-NTSLR-NB.c
   src/smpi/colls/allgather-pair.c
   src/smpi/colls/allgather-rdb.c
-  src/smpi/colls/allgather-RDB.c
   src/smpi/colls/allgather-rhv.c
   src/smpi/colls/allgather-ring.c
   src/smpi/colls/allgather-SMP-NTS.c
   src/smpi/colls/allgather-smp-simple.c
-  src/smpi/colls/allgather-SMP-simple.c
   src/smpi/colls/allgather-spreading-simple.c
+  src/smpi/colls/allgather-ompi-neighborexchange.c
+  src/smpi/colls/allgatherv-GB.c  
+  src/smpi/colls/allgatherv-pair.c
+  src/smpi/colls/allgatherv-ring.c
+  src/smpi/colls/allgatherv-ompi-neighborexchange.c
+  src/smpi/colls/allgatherv-ompi-bruck.c
+  src/smpi/colls/allgatherv-mpich-rdb.c
   src/smpi/colls/allreduce-lr.c
   src/smpi/colls/allreduce-NTS.c
   src/smpi/colls/allreduce-rab1.c
   src/smpi/colls/allreduce-rab2.c
-  #src/smpi/colls/allreduce-rab-rdb.c
+  src/smpi/colls/allreduce-rab-rdb.c
   #src/smpi/colls/allreduce-rab-reduce-scatter.c
   src/smpi/colls/allreduce-rab-rsag.c
   src/smpi/colls/allreduce-rdb.c
   src/smpi/colls/allreduce-redbcast.c
   src/smpi/colls/allreduce-smp-binomial.c
-  #src/smpi/colls/allreduce-smp-binomial-pipeline.c
+  src/smpi/colls/allreduce-smp-binomial-pipeline.c
   src/smpi/colls/allreduce-smp-rdb.c
   src/smpi/colls/allreduce-smp-rsag.c
   src/smpi/colls/allreduce-smp-rsag-lr.c
   src/smpi/colls/allreduce-smp-rsag-rab.c
+  src/smpi/colls/allreduce-ompi-ring-segmented.c
   src/smpi/colls/alltoall-2dmesh.c
   src/smpi/colls/alltoall-3dmesh.c
   #src/smpi/colls/alltoall-bruck.c
@@ -154,6 +165,15 @@ set(SMPI_SRC
   src/smpi/colls/alltoall-ring-mpi-barrier.c
   src/smpi/colls/alltoall-ring-one-barrier.c
   src/smpi/colls/alltoall-simple.c
+  src/smpi/colls/alltoallv-pair.c   
+  src/smpi/colls/alltoallv-pair-light-barrier.c
+  src/smpi/colls/alltoallv-pair-mpi-barrier.c
+  src/smpi/colls/alltoallv-pair-one-barrier.c 
+  src/smpi/colls/alltoallv-ring.c
+  src/smpi/colls/alltoallv-ring-light-barrier.c
+  src/smpi/colls/alltoallv-ring-mpi-barrier.c
+  src/smpi/colls/alltoallv-ring-one-barrier.c
+  src/smpi/colls/alltoallv-bruck.c
   src/smpi/colls/bcast-arrival-nb.c
   src/smpi/colls/bcast-arrival-pattern-aware.c
   src/smpi/colls/bcast-arrival-pattern-aware-wait.c
@@ -169,13 +189,20 @@ set(SMPI_SRC
   src/smpi/colls/bcast-SMP-binary.c
   src/smpi/colls/bcast-SMP-binomial.c
   src/smpi/colls/bcast-SMP-linear.c
-  src/smpi/colls/bcast-TSB.c
+  src/smpi/colls/coll_tuned_topo.c
+  src/smpi/colls/bcast-ompi-split-bintree.c
+  src/smpi/colls/bcast-ompi-pipeline.c
   src/smpi/colls/reduce-arrival-pattern-aware.c
   src/smpi/colls/reduce-binomial.c
   src/smpi/colls/reduce-flat-tree.c
   src/smpi/colls/reduce-NTSL.c
   src/smpi/colls/reduce-scatter-gather.c
-  src/smpi/colls/star-reduction.c
+  src/smpi/colls/reduce-ompi.c
+  src/smpi/colls/gather-ompi.c
+  src/smpi/colls/reduce_scatter-ompi.c
+  src/smpi/colls/reduce_scatter-mpich.c
+  src/smpi/colls/scatter-ompi.c
+  src/smpi/colls/barrier-ompi.c
   )
 
 if(SMPI_F2C)
@@ -278,7 +305,6 @@ set(SURF_SRC
   src/surf/surf_routing_full.c
   src/surf/surf_routing_generic.c
   src/surf/surf_routing_none.c
-  src/surf/surf_routing_rulebased.c
   src/surf/surf_routing_vivaldi.c
   src/surf/surfxml_parse.c
   src/surf/surfxml_parseplatf.c
@@ -323,6 +349,7 @@ set(MSG_SRC
   src/msg/msg_io.c
   src/msg/msg_mailbox.c
   src/msg/msg_process.c
+  src/msg/msg_synchro.c
   src/msg/msg_task.c
   src/msg/msg_vm.c
   )
@@ -386,6 +413,8 @@ set(BINDINGS_SRC
 set(JMSG_C_SRC
   src/bindings/java/jmsg.c
   src/bindings/java/jmsg.h
+  src/bindings/java/jmsg_as.c
+  src/bindings/java/jmsg_as.h
   src/bindings/java/jmsg_comm.c
   src/bindings/java/jmsg_comm.h
   src/bindings/java/jmsg_file.c
@@ -411,6 +440,7 @@ set(JMSG_C_SRC
 )
 
 set(JMSG_JAVA_SRC
+  src/bindings/java/org/simgrid/msg/As.java	
   src/bindings/java/org/simgrid/msg/Comm.java
   src/bindings/java/org/simgrid/msg/File.java
   src/bindings/java/org/simgrid/msg/Host.java
@@ -420,6 +450,7 @@ set(JMSG_JAVA_SRC
   src/bindings/java/org/simgrid/msg/Msg.java
   src/bindings/java/org/simgrid/msg/MsgException.java
   src/bindings/java/org/simgrid/msg/Mutex.java
+  src/bindings/java/org/simgrid/msg/Semaphore.java
   src/bindings/java/org/simgrid/msg/NativeException.java
   src/bindings/java/org/simgrid/msg/Process.java
   src/bindings/java/org/simgrid/msg/ProcessKilledError.java
@@ -525,7 +556,6 @@ set(headers_to_install
   include/xbt/dynar.h
   include/xbt/ex.h
   include/xbt/fifo.h
-  include/xbt/file_stat.h
   include/xbt/function_types.h
   include/xbt/graph.h
   include/xbt/graphxml.h
@@ -608,7 +638,6 @@ set(simgrid_sources
   ${SIMGRID_SRC}
   ${SIMIX_SRC}
   ${SURF_SRC}
-  ${TRACING_SRC}
   ${XBT_SRC}
   )
 
@@ -695,7 +724,6 @@ set(DOC_SOURCES
 
   doc/HelloWorld/CMakeLists.txt
   doc/HelloWorld/HelloWorld.c
-  doc/HelloWorld/FindPcreWin.cmake
   doc/HelloWorld/README
 
   doc/doxygen/FAQ.doc
@@ -831,6 +859,7 @@ set(EXAMPLES_CMAKEFILES_TXT
   examples/msg/CMakeLists.txt
   examples/msg/actions/CMakeLists.txt
   examples/msg/bittorrent/CMakeLists.txt
+  examples/msg/chainsend/CMakeLists.txt
   examples/msg/chord/CMakeLists.txt
   examples/msg/cloud/CMakeLists.txt
   examples/msg/gpu/CMakeLists.txt
@@ -843,15 +872,20 @@ set(EXAMPLES_CMAKEFILES_TXT
   examples/msg/migration/CMakeLists.txt
   examples/msg/ns3/CMakeLists.txt
   examples/msg/parallel_task/CMakeLists.txt
+  examples/msg/pastry/CMakeLists.txt
   examples/msg/pmm/CMakeLists.txt
   examples/msg/priority/CMakeLists.txt
   examples/msg/properties/CMakeLists.txt
+  examples/msg/semaphores/CMakeLists.txt
   examples/msg/sendrecv/CMakeLists.txt
-  examples/msg/chainsend/CMakeLists.txt
   examples/msg/start_kill_time/CMakeLists.txt
   examples/msg/suspend/CMakeLists.txt
   examples/msg/token_ring/CMakeLists.txt
   examples/msg/tracing/CMakeLists.txt
+  examples/scala/CMakeLists.txt
+  examples/scala/master_slave_bypass/CMakeLists.txt
+  examples/scala/master_slave_kill/CMakeLists.txt
+  examples/scala/masterslave/CMakeLists.txt
   examples/simdag/CMakeLists.txt
   examples/simdag/dax/CMakeLists.txt
   examples/simdag/dot/CMakeLists.txt
@@ -869,20 +903,20 @@ set(TESHSUITE_CMAKEFILES_TXT
   teshsuite/msg/CMakeLists.txt
   teshsuite/msg/trace/CMakeLists.txt
   teshsuite/simdag/CMakeLists.txt
+  teshsuite/simdag/availability/CMakeLists.txt
   teshsuite/simdag/network/CMakeLists.txt
   teshsuite/simdag/network/mxn/CMakeLists.txt
   teshsuite/simdag/network/p2p/CMakeLists.txt
   teshsuite/simdag/partask/CMakeLists.txt
   teshsuite/simdag/platforms/CMakeLists.txt
-  teshsuite/simdag/availability/CMakeLists.txt
-  teshsuite/xbt/CMakeLists.txt
   teshsuite/smpi/CMakeLists.txt
   teshsuite/smpi/mpich-test/CMakeLists.txt
-  teshsuite/smpi/mpich-test/env/CMakeLists.txt
   teshsuite/smpi/mpich-test/coll/CMakeLists.txt
   teshsuite/smpi/mpich-test/context/CMakeLists.txt
+  teshsuite/smpi/mpich-test/env/CMakeLists.txt
   teshsuite/smpi/mpich-test/profile/CMakeLists.txt
   teshsuite/smpi/mpich-test/pt2pt/CMakeLists.txt
+  teshsuite/xbt/CMakeLists.txt
   )
 
 set(TOOLS_CMAKEFILES_TXT
@@ -918,10 +952,9 @@ set(CMAKE_SOURCE_FILES
   buildtools/Cmake/Modules/FindLibunwind.cmake
   buildtools/Cmake/Modules/FindLua51Simgrid.cmake
   buildtools/Cmake/Modules/FindNS3.cmake
-  buildtools/Cmake/Modules/FindPCRE.cmake
-  buildtools/Cmake/Modules/FindPcreWin.cmake
   buildtools/Cmake/Modules/FindRngStream.cmake
   buildtools/Cmake/Modules/FindRubySimgrid.cmake
+  buildtools/Cmake/Modules/FindScala.cmake
   buildtools/Cmake/Modules/FindSimGrid.cmake
   buildtools/Cmake/Modules/FindValgrind.cmake
   buildtools/Cmake/Option.cmake
@@ -963,7 +996,6 @@ set(PLATFORMS_EXAMPLES
   examples/platforms/cluster.xml
   examples/platforms/cluster_and_one_host.xml
   examples/platforms/cluster_no_backbone.xml
-  examples/platforms/cluster_routing_rulebased.xml
   examples/platforms/clusters_routing_full.xml
   examples/platforms/conf/gridpp_grid_2004.conf
   examples/platforms/conf/gridpp_grid_2004.xml

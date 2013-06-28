@@ -6,7 +6,6 @@
 #ifndef MSG_DATATYPE_H
 #define MSG_DATATYPE_H
 #include "xbt/misc.h"
-#include "xbt/file_stat.h"
 #include "xbt/lib.h"
 #include "simgrid/simix.h"
 #include "simgrid_config.h"     // for HAVE_TRACING
@@ -27,6 +26,8 @@ SG_BEGIN_DECL()
  * want to send your task, but only the name of this mailbox. */
 typedef struct s_smx_rvpoint *msg_mailbox_t;
 
+/* ******************************** Environment ************************************ */
+typedef struct s_as *msg_as_t;
 
 /* ******************************** Host ************************************ */
 
@@ -97,6 +98,7 @@ typedef struct simdata_file *simdata_file_t;
 
 typedef struct msg_file {
   char *name;                   /**< @brief file name */
+  size_t size;
   simdata_file_t simdata;                /**< @brief simulator data  */
   void *data;                   /**< @brief user data */
 } s_msg_file_t;
@@ -107,15 +109,6 @@ typedef struct msg_file {
     You should consider this as an opaque object.
  */
 typedef struct msg_file *msg_file_t;
-
-
-/** @brief File datatype.
-    @ingroup msg_file_management
-
-    You should consider this as an opaque object.
- */
-typedef s_file_stat_t s_msg_stat_t, *msg_stat_t;
-
 
 /*************** Begin GPU ***************/
 typedef struct simdata_gpu_task *simdata_gpu_task_t;

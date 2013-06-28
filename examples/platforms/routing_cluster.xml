@@ -18,42 +18,42 @@ l1_up / / l1_down  | l3   l2_up\ \ l2_down   l4_up / / l4_down  | l6   l5_up\ \ 
   <AS  id="my_cluster1"  routing="Cluster">
     <router id="router1"/>
 
-    <host id="host1" power="1000000000"/>
-    <link id="l1_UP" bandwidth="125000000" latency="0.000100"/>
-    <link id="l1_DOWN" bandwidth="125000000" latency="0.000100"/>
+    <host id="host1" power="1Gf"/>
+    <link id="l1_UP" bandwidth="125MBps" latency="100us"/>
+    <link id="l1_DOWN" bandwidth="125MBps" latency="100us"/>
     <host_link id="host1" up="l1_UP" down="l1_DOWN"/>
 
-    <host id="host2" power="1000000000"/>
-    <link id="l2" bandwidth="125000000" latency="0.000100" sharing_policy="FULLDUPLEX"/>
+    <host id="host2" power="1Gf"/>
+    <link id="l2" bandwidth="125MBps" latency="100us" sharing_policy="FULLDUPLEX"/>
     <host_link id="host2" up="l2_UP" down="l2_DOWN"/>
 
-    <host id="host3" power="1000000000"/>
-    <link id="l3" bandwidth="125000000" latency="0.000100"/>
+    <host id="host3" power="1Gf"/>
+    <link id="l3" bandwidth="125MBps" latency="100us"/>
     <host_link id="host3" up="l3" down="l3"/>
 
-    <backbone id="backbone1" bandwidth="2250000000" latency="5E-4"/>
+    <backbone id="backbone1" bandwidth="2.25GBps" latency="500us"/>
   </AS>
 
   <AS  id="my_cluster2"  routing="Cluster">
     <router id="router2"/>
 
-    <host id="host4" power="1000000000"/>
-    <link id="l4_UP" bandwidth="125000000" latency="0.000100"/>
-    <link id="l4_DOWN" bandwidth="125000000" latency="0.000100"/>
+    <host id="host4" power="1Gf"/>
+    <link id="l4_UP" bandwidth="125MBps" latency="100us"/>
+    <link id="l4_DOWN" bandwidth="125MBps" latency="100us"/>
     <host_link id="host4" up="l4_UP" down="l4_DOWN"/>
 
-    <host id="host5" power="1000000000"/>
-    <link id="l5" bandwidth="125000000" latency="0.000100" sharing_policy="FULLDUPLEX"/>
+    <host id="host5" power="1Gf"/>
+    <link id="l5" bandwidth="125MBps" latency="100us" sharing_policy="FULLDUPLEX"/>
     <host_link id="host5" up="l5_UP" down="l5_DOWN"/>
 
-    <host id="host6" power="1000000000"/>
-    <link id="l6" bandwidth="125000000" latency="0.000100"/>
+    <host id="host6" power="1Gf"/>
+    <link id="l6" bandwidth="125MBps" latency="100us"/>
     <host_link id="host6" up="l6" down="l6"/>
  
-    <backbone id="backbone2" bandwidth="2250000000" latency="5E-4"/>
+    <backbone id="backbone2" bandwidth="2.25GBps" latency="500us"/>
   </AS>
   
-  <link id="link1-2" bandwidth="2250000000" latency="5E-4"/>
+  <link id="link1-2" bandwidth="2.25GBps" latency="500us"/>
   
   <ASroute src="my_cluster1" dst="my_cluster2"
     gw_src="router1"

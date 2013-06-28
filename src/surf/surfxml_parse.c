@@ -4,6 +4,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include <errno.h>
+#include <math.h>
 #include <stdarg.h> /* va_arg */
 
 #include "xbt/misc.h"
@@ -49,6 +51,7 @@ double surf_parse_get_double(const char *string) {
   int ret = sscanf(string, "%lg", &res);
   if (ret != 1)
     surf_parse_error("%s is not a double", string);
+  //printf("Parsed double [%lg] %s\n", res, string);  
   return res;
 }
 
@@ -60,6 +63,105 @@ int surf_parse_get_int(const char *string) {
   return res;
 }
 
+struct unit_scale {
+  const char *unit;
+  double scale;
+};
+
+/* Note: field `unit' for the last element of parametre `units' should be
+ * NULL. */
+static double surf_parse_get_value_with_unit(const char *string,
+                                             const struct unit_scale *units)
+{
+  char* ptr;
+  double res;
+  int i;
+  errno = 0;
+  res = strtod(string, &ptr);
+  if (errno == ERANGE)
+    surf_parse_error("value out of range: %s", string);
+  if (ptr == string)
+    surf_parse_error("cannot parse number: %s", string);
+  for (i = 0; units[i].unit != NULL && strcmp(ptr, units[i].unit) != 0; i++) {
+  }
+  if (units[i].unit != NULL)
+    res *= units[i].scale;
+  else
+    surf_parse_error("unknown unit: %s", ptr);
+  return res;
+}
+
+double surf_parse_get_time(const char *string)
+{
+  const struct unit_scale units[] = {
+    { "w",  7 * 24 * 60 * 60 },
+    { "d",  24 * 60 * 60 },
+    { "h",  60 * 60 },
+    { "m",  60 },
+    { "s",  1.0 },
+    { "",   1.0 },              /* default unit is seconds */
+    { "ms", 1e-3 },
+    { "us", 1e-6 },
+    { "ns", 1e-9 },
+    { "ps", 1e-12 },
+    { NULL, 0 }
+  };
+  return surf_parse_get_value_with_unit(string, units);
+}
+
+double surf_parse_get_bandwidth(const char *string)
+{
+  const struct unit_scale units[] = {
+    { "TiBps", pow(1024, 4) },
+    { "GiBps", pow(1024, 3) },
+    { "MiBps", pow(1024, 2) },
+    { "KiBps", 1024 },
+    { "TBps",  1e12 },
+    { "GBps",  1e9 },
+    { "MBps",  1e6 },
+    { "kBps",  1e3 },
+    { "Bps",   1.0 },
+    { "",      1.0 },           /* default unit is bytes per second */
+    { "Tibps", 0.125 * pow(1024, 4) },
+    { "Gibps", 0.125 * pow(1024, 3) },
+    { "Mibps", 0.125 * pow(1024, 2) },
+    { "Kibps", 0.125 * 1024 },
+    { "Tbps",  0.125 * 1e12 },
+    { "Gbps",  0.125 * 1e9 },
+    { "Mbps",  0.125 * 1e6 },
+    { "kbps",  0.125 * 1e3 },
+    { "bps",   0.125 },
+    { NULL,    0 }
+  };
+  return surf_parse_get_value_with_unit(string, units);
+}
+
+double surf_parse_get_power(const char *string)
+{
+  const struct unit_scale units[] = {
+    { "yottaflops", 1e24 },
+    { "Yf",         1e24 },
+    { "zettaflops", 1e21 },
+    { "Zf",         1e21 },
+    { "exaflops",   1e18 },
+    { "Ef",         1e18 },
+    { "petaflops",  1e15 },
+    { "Pf",         1e15 },
+    { "teraflops",  1e12 },
+    { "Tf",         1e12 },
+    { "gigaflops",  1e9 },
+    { "Gf",         1e9 },
+    { "megaflops",  1e6 },
+    { "Mf",         1e6 },
+    { "kiloflops",  1e3 },
+    { "kf",         1e3 },
+    { "flops",      1.0 },
+    { "f",          1.0 },
+    { "",           1.0 },      /* default unit is flops */
+    { NULL,         0 }
+  };
+  return surf_parse_get_value_with_unit(string, units);
+}
 
 /*
  * All the callback lists that can be overridden anywhere.
@@ -333,27 +435,29 @@ void STag_surfxml_router(void){
   sg_platf_new_router(&router);
 }
 
-void STag_surfxml_cluster(void){
+void ETag_surfxml_cluster(void){
   s_sg_platf_cluster_cbarg_t cluster;
   memset(&cluster,0,sizeof(cluster));
+  cluster.properties = current_property_set;
+
   cluster.id = A_surfxml_cluster_id;
   cluster.prefix = A_surfxml_cluster_prefix;
   cluster.suffix = A_surfxml_cluster_suffix;
   cluster.radical = A_surfxml_cluster_radical;
-  cluster.power= surf_parse_get_double(A_surfxml_cluster_power);
+  cluster.power = surf_parse_get_power(A_surfxml_cluster_power);
   cluster.core_amount = surf_parse_get_int(A_surfxml_cluster_core);
-  cluster.bw =   surf_parse_get_double(A_surfxml_cluster_bw);
-  cluster.lat =  surf_parse_get_double(A_surfxml_cluster_lat);
+  cluster.bw =   surf_parse_get_bandwidth(A_surfxml_cluster_bw);
+  cluster.lat =  surf_parse_get_time(A_surfxml_cluster_lat);
   if(strcmp(A_surfxml_cluster_bb___bw,""))
-    cluster.bb_bw = surf_parse_get_double(A_surfxml_cluster_bb___bw);
+    cluster.bb_bw = surf_parse_get_bandwidth(A_surfxml_cluster_bb___bw);
   if(strcmp(A_surfxml_cluster_bb___lat,""))
-    cluster.bb_lat = surf_parse_get_double(A_surfxml_cluster_bb___lat);
+    cluster.bb_lat = surf_parse_get_time(A_surfxml_cluster_bb___lat);
   if(strcmp(A_surfxml_cluster_limiter___link,""))
     cluster.limiter_link = surf_parse_get_double(A_surfxml_cluster_limiter___link);
   if(strcmp(A_surfxml_cluster_loopback___bw,""))
-    cluster.loopback_bw = surf_parse_get_double(A_surfxml_cluster_loopback___bw);
+    cluster.loopback_bw = surf_parse_get_bandwidth(A_surfxml_cluster_loopback___bw);
   if(strcmp(A_surfxml_cluster_loopback___lat,""))
-    cluster.loopback_lat = surf_parse_get_double(A_surfxml_cluster_loopback___lat);
+    cluster.loopback_lat = surf_parse_get_time(A_surfxml_cluster_loopback___lat);
   cluster.router_id = A_surfxml_cluster_router___id;
 
   switch (AX_surfxml_cluster_sharing___policy) {
@@ -387,6 +491,12 @@ void STag_surfxml_cluster(void){
   cluster.availability_trace = A_surfxml_cluster_availability___file;
   cluster.state_trace = A_surfxml_cluster_state___file;
   sg_platf_new_cluster(&cluster);
+  
+  current_property_set = NULL;
+}
+
+void STag_surfxml_cluster(void){ 
+  xbt_assert(current_property_set == NULL, "Someone forgot to reset the property set to NULL in its closing tag (or XML malformed)");
 }
 
 void STag_surfxml_cabinet(void){
@@ -395,9 +505,9 @@ void STag_surfxml_cabinet(void){
   cabinet.id = A_surfxml_cabinet_id;
   cabinet.prefix = A_surfxml_cabinet_prefix;
   cabinet.suffix = A_surfxml_cabinet_suffix;
-  cabinet.power = surf_parse_get_double(A_surfxml_cabinet_power);
-  cabinet.bw = surf_parse_get_double(A_surfxml_cabinet_bw);
-  cabinet.lat = surf_parse_get_double(A_surfxml_cabinet_lat);
+  cabinet.power = surf_parse_get_power(A_surfxml_cabinet_power);
+  cabinet.bw = surf_parse_get_bandwidth(A_surfxml_cabinet_bw);
+  cabinet.lat = surf_parse_get_time(A_surfxml_cabinet_lat);
   cabinet.radical = A_surfxml_cabinet_radical;
 
   sg_platf_new_cabinet(&cabinet);
@@ -407,10 +517,10 @@ void STag_surfxml_peer(void){
   s_sg_platf_peer_cbarg_t peer;
   memset(&peer,0,sizeof(peer));
   peer.id = A_surfxml_peer_id;
-  peer.power = surf_parse_get_double(A_surfxml_peer_power);
-  peer.bw_in = surf_parse_get_double(A_surfxml_peer_bw___in);
-  peer.bw_out = surf_parse_get_double(A_surfxml_peer_bw___out);
-  peer.lat = surf_parse_get_double(A_surfxml_peer_lat);
+  peer.power = surf_parse_get_power(A_surfxml_peer_power);
+  peer.bw_in = surf_parse_get_bandwidth(A_surfxml_peer_bw___in);
+  peer.bw_out = surf_parse_get_bandwidth(A_surfxml_peer_bw___out);
+  peer.lat = surf_parse_get_time(A_surfxml_peer_lat);
   peer.coord = A_surfxml_peer_coordinates;
   peer.availability_trace = tmgr_trace_new_from_file(A_surfxml_peer_availability___file);
   peer.state_trace = tmgr_trace_new_from_file(A_surfxml_peer_state___file);
@@ -430,9 +540,11 @@ void ETag_surfxml_link(void){
   link.properties = current_property_set;
 
   link.id = A_surfxml_link_id;
-  link.bandwidth = surf_parse_get_double(A_surfxml_link_bandwidth);
+  link.bandwidth = surf_parse_get_bandwidth(A_surfxml_link_bandwidth);
+  //printf("Link bandwidth [%lg]\n", link.bandwidth);  
   link.bandwidth_trace = tmgr_trace_new_from_file(A_surfxml_link_bandwidth___file);
-  link.latency = surf_parse_get_double(A_surfxml_link_latency);
+  link.latency = surf_parse_get_time(A_surfxml_link_latency);
+  //printf("Link latency [%lg]\n", link.latency);  
   link.latency_trace = tmgr_trace_new_from_file(A_surfxml_link_latency___file);
 
   switch (A_surfxml_link_state) {
@@ -496,8 +608,8 @@ void ETag_surfxml_backbone(void){
   link.properties = NULL;
 
   link.id = A_surfxml_backbone_id;
-  link.bandwidth = surf_parse_get_double(A_surfxml_backbone_bandwidth);
-  link.latency = surf_parse_get_double(A_surfxml_backbone_latency);
+  link.bandwidth = surf_parse_get_bandwidth(A_surfxml_backbone_bandwidth);
+  link.latency = surf_parse_get_time(A_surfxml_backbone_latency);
   link.state = SURF_RESOURCE_ON;
   link.policy = SURF_LINK_SHARED;
 
@@ -573,17 +685,8 @@ void ETag_surfxml_ASroute(void){
   ASroute.src = A_surfxml_ASroute_src;
   ASroute.dst = A_surfxml_ASroute_dst;
 
-  if (!strcmp(current_routing->model_desc->name,"RuleBased")) {
-    // DIRTY PERL HACK AHEAD: with the rulebased routing, the {src,dst}_gateway fields
-    // store the provided name instead of the entity directly (model_rulebased_parse_ASroute knows)
-    //
-    // This is because the user will provide something like "^AS_(.*)$" instead of the proper name of a given entity
-    ASroute.gw_src = (sg_routing_edge_t) A_surfxml_ASroute_gw___src;
-    ASroute.gw_dst = (sg_routing_edge_t) A_surfxml_ASroute_gw___dst;
-  } else {
-    ASroute.gw_src = sg_routing_edge_by_name_or_null(A_surfxml_ASroute_gw___src);
-    ASroute.gw_dst = sg_routing_edge_by_name_or_null(A_surfxml_ASroute_gw___dst);
-  }
+  ASroute.gw_src = sg_routing_edge_by_name_or_null(A_surfxml_ASroute_gw___src);
+  ASroute.gw_dst = sg_routing_edge_by_name_or_null(A_surfxml_ASroute_gw___dst);
 
   ASroute.link_list = parsed_link_list;
 
@@ -625,17 +728,8 @@ void ETag_surfxml_bypassASroute(void){
   ASroute.link_list = parsed_link_list;
   ASroute.symmetrical = FALSE;
 
-  if (!strcmp(current_routing->model_desc->name,"RuleBased")) {
-    // DIRTY PERL HACK AHEAD: with the rulebased routing, the {src,dst}_gateway fields
-    // store the provided name instead of the entity directly (model_rulebased_parse_ASroute knows)
-    //
-    // This is because the user will provide something like "^AS_(.*)$" instead of the proper name of a given entity
-    ASroute.gw_src = (sg_routing_edge_t) A_surfxml_bypassASroute_gw___src;
-    ASroute.gw_dst = (sg_routing_edge_t) A_surfxml_bypassASroute_gw___dst;
-  } else {
-    ASroute.gw_src = sg_routing_edge_by_name_or_null(A_surfxml_bypassASroute_gw___src);
-    ASroute.gw_dst = sg_routing_edge_by_name_or_null(A_surfxml_bypassASroute_gw___dst);
-  }
+  ASroute.gw_src = sg_routing_edge_by_name_or_null(A_surfxml_bypassASroute_gw___src);
+  ASroute.gw_dst = sg_routing_edge_by_name_or_null(A_surfxml_bypassASroute_gw___dst);
 
   sg_platf_new_bypassASroute(&ASroute);
   parsed_link_list = NULL;
@@ -802,7 +896,6 @@ void ETag_surfxml_trace___connect(void){}
 void STag_surfxml_trace(void){}
 void ETag_surfxml_router(void){}
 void ETag_surfxml_host___link(void){}
-void ETag_surfxml_cluster(void){}
 void ETag_surfxml_cabinet(void){}
 void ETag_surfxml_peer(void){}
 void STag_surfxml_backbone(void){}
@@ -890,7 +983,7 @@ double get_cpu_power(const char *power)
       power_scale = random_generate(random);
     }
   } else {
-    power_scale = surf_parse_get_double(power);
+    power_scale = surf_parse_get_power(power);
   }
   return power_scale;
 }

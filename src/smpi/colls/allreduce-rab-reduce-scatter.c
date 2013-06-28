@@ -1,4 +1,4 @@
-#include "colls.h"
+#include "colls_private.h"
 #ifndef REDUCE_STUFF
 #define REDUCE_STUFF
 /*****************************************************************************
@@ -341,19 +341,15 @@ int smpi_coll_tuned_allreduce_rab_reduce_scatter(void *sbuff, void *rbuff,
   MPI_Status status;
   void *tmp_buf = NULL;
   MPI_User_function *func = get_op_func(op);
-  MPI_Comm_size(comm, &nprocs);
-  MPI_Comm_rank(comm, &rank);
+  nprocs = smpi_comm_size(comm);
+  rank = smpi_comm_rank(comm);
 
-  MPI_Type_extent(dtype, &extent);
-  tmp_buf = (void *) malloc(count * extent);
-  if (!tmp_buf) {
-    printf("Could not allocate memory for tmp_buf\n");
-    return 1;
-  }
+  extent = smpi_datatype_get_extent(dtype);
+  tmp_buf = (void *) xbt_malloc(count * extent);
 
   MPIR_Localcopy(sbuff, count, dtype, rbuff, count, dtype);
 
-  MPI_Type_size(dtype, &type_size);
+  type_size = smpi_datatype_size(dtype);
 
   // find nearest power-of-two less than or equal to comm_size
   pof2 = 1;
@@ -409,8 +405,8 @@ int smpi_coll_tuned_allreduce_rab_reduce_scatter(void *sbuff, void *rbuff,
     // reduce-scatter, calculate the count that each process receives
     // and the displacement within the buffer 
 
-    cnts = (int *) malloc(pof2 * sizeof(int));
-    disps = (int *) malloc(pof2 * sizeof(int));
+    cnts = (int *) xbt_malloc(pof2 * sizeof(int));
+    disps = (int *) xbt_malloc(pof2 * sizeof(int));
 
     for (i = 0; i < (pof2 - 1); i++)
       cnts[i] = count / pof2;
@@ -521,5 +517,5 @@ int smpi_coll_tuned_allreduce_rab_reduce_scatter(void *sbuff, void *rbuff,
   }
 
   free(tmp_buf);
-  return 0;
+  return MPI_SUCCESS;
 }

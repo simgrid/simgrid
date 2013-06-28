@@ -31,10 +31,8 @@ int main( int argc, char **argv )
     recvcounts = (int *)malloc( size * sizeof(int) );
         recvbuf = (int *)malloc( size * sizeof(int) );
     for (i=0; i<size; i++) 
-	recvcounts[i] = 1;
-printf("rank : %d\n", rank);
+    recvcounts[i] = 1;
     MPI_Reduce_scatter( sendbuf, recvbuf, recvcounts, MPI_INT, MPI_SUM, comm );
-printf("rankt : %d\n", rank);
     sumval = size * rank + ((size - 1) * size)/2;
 /* recvbuf should be size * (rank + i) */
     if (recvbuf[0] != sumval) {

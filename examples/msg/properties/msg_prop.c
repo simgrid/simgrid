@@ -31,7 +31,6 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(test, "Property test");
 int alice(int argc, char *argv[]);
 int bob(int argc, char *argv[]);
 int carole(int argc, char *argv[]);
-int forwarder(int argc, char *argv[]);
 msg_error_t test_all(const char *platform_file,
                      const char *application_file);
 

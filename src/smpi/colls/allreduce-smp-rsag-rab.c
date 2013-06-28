@@ -1,4 +1,4 @@
-#include "colls.h"
+#include "colls_private.h"
 /* 
  * implemented by Pitch Patarasuk, 07/01/2007
  */
@@ -28,11 +28,11 @@ int smpi_coll_tuned_allreduce_smp_rsag_rab(void *sbuf, void *rbuf, int count,
   MPI_Status status;
   int num_core = NUM_CORE;
 
-  MPI_Comm_size(comm, &comm_size);
-  MPI_Comm_rank(comm, &rank);
+  comm_size = smpi_comm_size(comm);
+  rank = smpi_comm_rank(comm);
   MPI_Aint extent;
-  MPI_Type_extent(dtype, &extent);
-  tmp_buf = (void *) malloc(count * extent);
+  extent = smpi_datatype_get_extent(dtype);
+  tmp_buf = (void *) xbt_malloc(count * extent);
 
   int intra_rank, inter_rank;
   intra_rank = rank % num_core;
@@ -42,7 +42,7 @@ int smpi_coll_tuned_allreduce_smp_rsag_rab(void *sbuf, void *rbuf, int count,
 
   int inter_comm_size = (comm_size + num_core - 1) / num_core;
 
-  MPI_Sendrecv(sbuf, count, dtype, rank, tag,
+  smpi_mpi_sendrecv(sbuf, count, dtype, rank, tag,
                rbuf, count, dtype, rank, tag, comm, &status);
 
   // SMP_binomial_reduce
@@ -52,14 +52,14 @@ int smpi_coll_tuned_allreduce_smp_rsag_rab(void *sbuf, void *rbuf, int count,
       src = (inter_rank * num_core) + (intra_rank | mask);
       //      if (src < ((inter_rank + 1) * num_core)) {
       if (src < comm_size) {
-        MPI_Recv(tmp_buf, count, dtype, src, tag, comm, &status);
-        star_reduction(op, tmp_buf, rbuf, &count, &dtype);
+        smpi_mpi_recv(tmp_buf, count, dtype, src, tag, comm, &status);
+        smpi_op_apply(op, tmp_buf, rbuf, &count, &dtype);
         //printf("Node %d recv from node %d when mask is %d\n", rank, src, mask);
       }
     } else {
 
       dst = (inter_rank * num_core) + (intra_rank & (~mask));
-      MPI_Send(rbuf, count, dtype, dst, tag, comm);
+      smpi_mpi_send(rbuf, count, dtype, dst, tag, comm);
       //printf("Node %d send to node %d when mask is %d\n", rank, dst, mask);
       break;
     }
@@ -108,11 +108,11 @@ int smpi_coll_tuned_allreduce_smp_rsag_rab(void *sbuf, void *rbuf, int count,
       //      if (rank==7)
       //      printf("node %d send to %d in phase %d s_offset = %d r_offset = %d count = %d\n",rank,dst,phase, send_offset, recv_offset, curr_count);
 
-      MPI_Sendrecv((char *)rbuf + send_offset, curr_count, dtype, (dst * num_core), tag,
+      smpi_mpi_sendrecv((char *)rbuf + send_offset, curr_count, dtype, (dst * num_core), tag,
                    tmp_buf, curr_count, dtype, (dst * num_core), tag,
                    comm, &status);
 
-      star_reduction(op, tmp_buf, (char *)rbuf + recv_offset, &curr_count, &dtype);
+      smpi_op_apply(op, tmp_buf, (char *)rbuf + recv_offset, &curr_count, &dtype);
 
       mask *= 2;
       curr_count /= 2;
@@ -155,7 +155,7 @@ int smpi_coll_tuned_allreduce_smp_rsag_rab(void *sbuf, void *rbuf, int count,
       //      if (rank==7)
       //printf("node %d send to %d in phase %d s_offset = %d r_offset = %d count = %d\n",rank,dst,phase, send_offset, recv_offset, curr_count);
 
-      MPI_Sendrecv((char *)rbuf + send_offset, curr_count, dtype, (dst * num_core), tag,
+      smpi_mpi_sendrecv((char *)rbuf + send_offset, curr_count, dtype, (dst * num_core), tag,
                    (char *)rbuf + recv_offset, curr_count, dtype, (dst * num_core), tag,
                    comm, &status);
 
@@ -181,7 +181,7 @@ int smpi_coll_tuned_allreduce_smp_rsag_rab(void *sbuf, void *rbuf, int count,
     if (intra_rank & mask) {
       src = (inter_rank * num_core) + (intra_rank - mask);
       //printf("Node %d recv from node %d when mask is %d\n", rank, src, mask);
-      MPI_Recv(rbuf, count, dtype, src, tag, comm, &status);
+      smpi_mpi_recv(rbuf, count, dtype, src, tag, comm, &status);
       break;
     }
     mask <<= 1;
@@ -194,7 +194,7 @@ int smpi_coll_tuned_allreduce_smp_rsag_rab(void *sbuf, void *rbuf, int count,
     dst = (inter_rank * num_core) + (intra_rank + mask);
     if (dst < comm_size) {
       //printf("Node %d send to node %d when mask is %d\n", rank, dst, mask);
-      MPI_Send(rbuf, count, dtype, dst, tag, comm);
+      smpi_mpi_send(rbuf, count, dtype, dst, tag, comm);
     }
     mask >>= 1;
   }

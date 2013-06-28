@@ -1,0 +1,14 @@
+0 init
+1 init
+2 init
+3 init
+
+0 reduceScatter 275427 275427 275427 204020 11349173 0
+1 reduceScatter 275427 275427 275427 204020 12396024 0
+2 reduceScatter 275427 275427 275427 204020 12501522 0
+3 reduceScatter 275427 275427 275427 204020 12403123 0
+~                                                                    
+0 finalize
+1 finalize
+2 finalize
+3 finalize

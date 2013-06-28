@@ -163,24 +163,12 @@ Section "Examples" ExamplesSection
 	file @CMAKE_HOME_DIRECTORY@\examples\msg\masterslave\deployment_masterslave_forwarder.xml
 	file @CMAKE_HOME_DIRECTORY@\examples\msg\msg_platform.xml
 	file @CMAKE_HOME_DIRECTORY@\doc\HelloWorld\CMakeLists.txt
-	file @CMAKE_HOME_DIRECTORY@\doc\HelloWorld\FindPcreWin.cmake
-
 
 	# create shortcuts in the start menu programs directory
 	CreateDirectory "$SMPROGRAMS\SimGrid @SIMGRID_VERSION_MAJOR@.@SIMGRID_VERSION_MINOR@.@SIMGRID_VERSION_PATCH@\Examples\"
 	createShortCut  "$SMPROGRAMS\SimGrid @SIMGRID_VERSION_MAJOR@.@SIMGRID_VERSION_MINOR@.@SIMGRID_VERSION_PATCH@\Examples\HelloWorld project.lnk"	"$INSTDIR\examples\HelloWorld"
 	createShortCut  "$SMPROGRAMS\SimGrid @SIMGRID_VERSION_MAJOR@.@SIMGRID_VERSION_MINOR@.@SIMGRID_VERSION_PATCH@\Examples\MasterSlave project.lnk"	"$INSTDIR\examples\MasterSlave"
 	
-SectionEnd
-Section "Pcre library" PCRESection	
-	# install pcre library
-	CreateDirectory $INSTDIR\GnuWin32
-	setOutPath $INSTDIR\GnuWin32
-	file /r "@PCRE_LIBRARY_PATH@\lib"
-	file /r "@PCRE_LIBRARY_PATH@\include"
-	file /r "@PCRE_LIBRARY_PATH@\bin"
-	file /r "@PCRE_LIBRARY_PATH@\man"
-	file /r "@PCRE_LIBRARY_PATH@\share"
 SectionEnd
 
 Section "Java Bindings" JavaSection	
@@ -230,7 +218,6 @@ Section "SMPI Library" SMPISection
 	file @CMAKE_HOME_DIRECTORY@\examples\smpi\hostfile
 	file @CMAKE_HOME_DIRECTORY@\examples\msg\small_platform_with_routers.xml
 	file @CMAKE_HOME_DIRECTORY@\examples\smpi\CMakeLists.txt
-	file @CMAKE_HOME_DIRECTORY@\doc\HelloWorld\FindPcreWin.cmake
 SectionEnd
 
 # default section start
@@ -250,8 +237,6 @@ section
 	# Set Variables
 	WriteRegExpandStr ${env_hkcu} SIMGRID_ROOT $INSTDIR
 	WriteRegExpandStr ${env_hkcu} SIMGRID_VERSION @SIMGRID_VERSION_MAJOR@.@SIMGRID_VERSION_MINOR@.@SIMGRID_VERSION_PATCH@
-	WriteRegExpandStr ${env_hkcu} SIMGRID_PCRE_LIBRARY_PATH $INSTDIR\GnuWin32
-	WriteRegExpandStr ${env_hkcu} SIMGRID_PCRE_LIBRARY_VERSION "8.21"
 	
 	WriteRegStr HKCU "SOFTWARE\SimGrid" "Version" "@SIMGRID_VERSION_MAJOR@.@SIMGRID_VERSION_MINOR@.@SIMGRID_VERSION_PATCH@"
 	WriteRegStr HKCU "SOFTWARE\SimGrid" "InstallPath" "$INSTDIR"
@@ -268,25 +253,22 @@ LangString DESC_LibSection 		${LANG_ENGLISH} "Install Simgrid libraries with ass
 LangString DESC_BinSection 		${LANG_ENGLISH} "Install some useful tools for Simgrid."
 LangString DESC_DocSection 		${LANG_ENGLISH} "Generated (doxygen) documentation."
 LangString DESC_ExamplesSection ${LANG_ENGLISH} "Simgrid's HelloWorld example and some classical platforms."
-LangString DESC_PCRESection 	${LANG_ENGLISH} "Install the PCRE and PCREPOSIX libraries for SimGrid."
 LangString DESC_JAVASection 	${LANG_ENGLISH} "Install the Java binding and examples."
 LangString DESC_SMPISection 	${LANG_ENGLISH} "Install the SMPI library, headers, and examples."
 
 
-LangString DESC_LibSection 		${LANG_FRENCH} 	"Installer les librairies Simgrid et leurs Entêtes."
+LangString DESC_LibSection 		${LANG_FRENCH} 	"Installer les librairies Simgrid et leurs Entï¿½tes."
 LangString DESC_BinSection 		${LANG_FRENCH} 	"Installer les outils optionnels."
 LangString DESC_DocSection 		${LANG_FRENCH} 	"Installer la documentation."
 LangString DESC_ExamplesSection ${LANG_FRENCH} 	"Installer un exemple 'HelloWorld' et des fichiers de plate-formes types."
-LangString DESC_PCRESection 	${LANG_FRENCH}  "Installer les librairies PCRE et PCREPOSIX for SimGrid."
 LangString DESC_JAVASection 	${LANG_FRENCH}  "Installer la librairie Simgrid-java et les exemples."
-LangString DESC_SMPISection 	${LANG_FRENCH}  "Installer la librairie SMPI, ses en-têtes, et ses exemples."
+LangString DESC_SMPISection 	${LANG_FRENCH}  "Installer la librairie SMPI, ses en-tï¿½tes, et ses exemples."
 
 !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
   !insertmacro MUI_DESCRIPTION_TEXT ${LibSection} 		$(DESC_LibSection)
   !insertmacro MUI_DESCRIPTION_TEXT ${BinSection} 		$(DESC_BinSection)
   !insertmacro MUI_DESCRIPTION_TEXT ${DocSection} 		$(DESC_DocSection)
   !insertmacro MUI_DESCRIPTION_TEXT ${ExamplesSection} 	$(DESC_ExamplesSection)
-  !insertmacro MUI_DESCRIPTION_TEXT ${PCRESection} 		$(DESC_PCRESection)
   !insertmacro MUI_DESCRIPTION_TEXT ${JAVASection} 		$(DESC_JAVASection)
   !insertmacro MUI_DESCRIPTION_TEXT ${SMPISection} 		$(DESC_SMPISection)
 !insertmacro MUI_FUNCTION_DESCRIPTION_END
@@ -394,14 +376,9 @@ section "Uninstall"
 	RMDir  /r "$INSTDIR\examples"
 	RMDir  /r "$SMPROGRAMS\SimGrid @SIMGRID_VERSION_MAJOR@.@SIMGRID_VERSION_MINOR@.@SIMGRID_VERSION_PATCH@"
 	
-	# delete PCRE
-	RMDir   /r "$INSTDIR\GnuWin32"
-	
 	# Delete variable
 	DeleteRegValue ${env_hkcu} SIMGRID_ROOT
 	DeleteRegValue ${env_hkcu} SIMGRID_VERSION
-	DeleteRegValue ${env_hkcu} SIMGRID_PCRE_LIBRARY_PATH
-	DeleteRegValue ${env_hkcu} SIMGRID_PCRE_LIBRARY_VERSION
     DeleteRegKey HKCU "SOFTWARE\SimGrid"
     
     # delete JAVA-bindings

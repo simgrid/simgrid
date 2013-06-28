@@ -116,6 +116,23 @@ msg_host_t MSG_host_self(void)
   return MSG_process_get_host(NULL);
 }
 
+
+/*
+ * \brief Start the host if it is off
+ */
+void MSG_host_on(msg_host_t host)
+{
+  simcall_host_on(host);
+}
+
+/*
+ * \brief Stop the host if it is on
+ */
+void MSG_host_off(msg_host_t host)
+{
+  simcall_host_off(host);
+}
+
 /*
  * \brief Frees private data of a host (internal call only)
  */
@@ -218,6 +235,17 @@ double MSG_get_host_speed(msg_host_t h)
   xbt_assert((h != NULL), "Invalid parameters");
 
   return (simcall_host_get_speed(h));
+}
+
+
+/** \ingroup m_host_management
+ * \brief Return the number of core.
+ */
+int MSG_get_host_core(msg_host_t h)
+{
+  xbt_assert((h != NULL), "Invalid parameters");
+
+  return (simcall_host_get_core(h));
 }
 
 /** \ingroup m_host_management

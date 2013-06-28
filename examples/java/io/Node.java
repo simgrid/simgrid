@@ -45,7 +45,7 @@ public class Node extends Process {
 				filename = FILENAME1;
 		}
 		Msg.info("Open file " + filename);
-		File file = new File(mount,filename, "rw");
+		File file = new File(mount,filename);
 
 		long read = file.read(10000000,1);
 		Msg.info("Having read " + read + " on " + filename);
@@ -54,6 +54,6 @@ public class Node extends Process {
 		Msg.info("Having write " + write + " on " + filename);
 
 		read = file.read(10000000,1);
-		Msg.info("Having read " + read + " on " + filename);		
+		Msg.info("Having read " + read + " on " + filename);	
 	}
 }

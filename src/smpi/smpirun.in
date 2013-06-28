@@ -163,6 +163,24 @@ else
 fi
 shift
 
+# steel --cfg and --logs options
+while [ $# -gt 0 ]; do
+  case "$1" in
+   "--cfg="*|"--log="*)
+     for OPT in ${1#*=}
+     do
+       SIMOPTS="$SIMOPTS ${1%%=*}=$OPT"
+     done
+     shift 1
+   ;;
+    *)
+      PROC_ARGS="${PROC_ARGS:+$PROC_ARGS }$1"
+      shift      
+    ;;
+  esac
+done
+
+
 ##-----------------------------------
 
 # Basic checks on the provided arguments
@@ -172,10 +190,17 @@ if [ -z "${EXEC}" ] ; then
     exit 1
 fi
 
-if [ -z "${HOSTFILE}" ] ; then
-    echo "No hostfile specified."
+if [ -z "${HOSTFILE}" ] && [ -z "${PLATFORM}" ] ; then
+    echo "No hostfile nor platform specified."
     usage
     exit 1
+fi
+
+HOSTFILETMP=0
+if [ -z "${HOSTFILE}" ] ; then
+    HOSTFILETMP=1
+    HOSTFILE="$(mktemp tmphostXXXXXX)"
+    perl -ne 'print "$1\n" if /.*<host.*?id="(.*?)".*?\/>.*/' ${PLATFORM} > ${HOSTFILE}
 fi
 
 # Don't use wc -l to compute it to avoid issues with trailing \n at EOF
@@ -246,7 +271,7 @@ if [ -n "${HOSTFILE}" ] && [ -f ${HOSTFILE} ]; then
 fi
 
 if [ "${EXTOPT}" = "smpi_replay" ]; then
-  APP_TRACES=$1;
+  APP_TRACES=$PROC_ARGS
   if [ -n "${APP_TRACES}" ] && [ -f "${APP_TRACES}" ]; then
      hosttraces=(`cat ${APP_TRACES} | tr \\\n " "`)
      NUMTRACES=`cat ${APP_TRACES} | wc -l`
@@ -301,7 +326,7 @@ do
       echo "    <argument value=\"${hosttraces[0]}\"/>" >> ${APPLICATIONTMP}
     fi
   else 
-    for ARG in $*; do
+    for ARG in $PROC_ARGS; do
        echo "    <argument value=\"${ARG}\"/>" >> ${APPLICATIONTMP}
     done
   fi
@@ -346,6 +371,9 @@ fi
 export SMPI_GLOBAL_SIZE=${NUMPROCS}
 if [ -n "${KEEP}" ] ; then
   echo ${EXEC} ${TRACEOPTIONS} ${SIMOPTS} ${PLATFORMTMP} ${APPLICATIONTMP}
+  if [ ${HOSTFILETMP} = 1 ] ; then
+    echo "Generated hostfile ${HOSTFILE} keeped."
+  fi
 fi
 ${EXEC} ${TRACEOPTIONS} ${SIMOPTS} ${PLATFORMTMP} ${APPLICATIONTMP}
 status=$?
@@ -353,6 +381,9 @@ status=$?
 if [ -z "${KEEP}" ] ; then
    if [ -z "${PLATFORM}" ]; then
 	rm ${PLATFORMTMP}
+   fi
+   if [ ${HOSTFILETMP} = 1 ] ; then
+        rm ${HOSTFILE}
    fi
    rm ${APPLICATIONTMP}
 fi

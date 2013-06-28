@@ -1,4 +1,4 @@
-#include "colls.h"
+#include "colls_private.h"
 #ifndef NUM_CORE
 #define NUM_CORE 8
 #endif
@@ -9,11 +9,11 @@ int smpi_coll_tuned_allgather_smp_simple(void *send_buf, int scount,
                                          MPI_Comm comm)
 {
   int src, dst, comm_size, rank;
-  MPI_Comm_size(comm, &comm_size);
-  MPI_Comm_rank(comm, &rank);
+  comm_size = smpi_comm_size(comm);
+  rank = smpi_comm_rank(comm);
   MPI_Aint rextent, sextent;
-  MPI_Type_extent(rtype, &rextent);
-  MPI_Type_extent(stype, &sextent);
+  rextent = smpi_datatype_get_extent(rtype);
+  sextent = smpi_datatype_get_extent(stype);
   int tag = 50;
   MPI_Status status;
   int i, send_offset, recv_offset;
@@ -30,7 +30,7 @@ int smpi_coll_tuned_allgather_smp_simple(void *send_buf, int scount,
   }
   //INTRA-SMP-ALLGATHER
   recv_offset = rank * rextent * rcount;
-  MPI_Sendrecv(send_buf, scount, stype, rank, tag,
+  smpi_mpi_sendrecv(send_buf, scount, stype, rank, tag,
                ((char *) recv_buf + recv_offset), rcount, rtype, rank, tag,
                comm, &status);
   for (i = 1; i < num_core_in_current_smp; i++) {
@@ -43,7 +43,7 @@ int smpi_coll_tuned_allgather_smp_simple(void *send_buf, int scount,
         (num_core_in_current_smp);
     recv_offset = src * rextent * rcount;
 
-    MPI_Sendrecv(send_buf, scount, stype, dst, tag,
+    smpi_mpi_sendrecv(send_buf, scount, stype, dst, tag,
                  ((char *) recv_buf + recv_offset), rcount, rtype, src, tag,
                  comm, &status);
 
@@ -57,10 +57,10 @@ int smpi_coll_tuned_allgather_smp_simple(void *send_buf, int scount,
   if (intra_rank == 0) {
     MPI_Request *reqs, *req_ptr;
     int num_req = (inter_comm_size - 1) * 2;
-    reqs = (MPI_Request *) malloc(num_req * sizeof(MPI_Request));
+    reqs = (MPI_Request *) xbt_malloc(num_req * sizeof(MPI_Request));
     req_ptr = reqs;
     MPI_Status *stat;
-    stat = (MPI_Status *) malloc(num_req * sizeof(MPI_Status));
+    stat = (MPI_Status *) xbt_malloc(num_req * sizeof(MPI_Status));
 
     for (i = 1; i < inter_comm_size; i++) {
 
@@ -68,11 +68,11 @@ int smpi_coll_tuned_allgather_smp_simple(void *send_buf, int scount,
       src = ((inter_rank - i + inter_comm_size) % inter_comm_size) * num_core;
       //send_offset = (rank * sextent * scount);
       recv_offset = (src * sextent * scount);
-      //      MPI_Sendrecv((recv_buf+send_offset), (scount * num_core), stype, dst, tag, 
+      //      smpi_mpi_sendrecv((recv_buf+send_offset), (scount * num_core), stype, dst, tag, 
       //             (recv_buf+recv_offset), (rcount * num_core), rtype, src, tag, comm, &status);
       //MPIC_Isend((recv_buf+send_offset), (scount * num_core), stype, dst, tag, comm, req_ptr++);
-      MPI_Irecv(((char *) recv_buf + recv_offset), (rcount * num_core), rtype,
-                src, tag, comm, req_ptr++);
+      *(req_ptr++) = smpi_mpi_irecv(((char *) recv_buf + recv_offset), (rcount * num_core), rtype,
+                src, tag, comm);
     }
     for (i = 1; i < inter_comm_size; i++) {
 
@@ -80,13 +80,13 @@ int smpi_coll_tuned_allgather_smp_simple(void *send_buf, int scount,
       //src = ((inter_rank-i+inter_comm_size)%inter_comm_size) * num_core;
       send_offset = (rank * sextent * scount);
       //recv_offset = (src * sextent * scount);
-      //      MPI_Sendrecv((recv_buf+send_offset), (scount * num_core), stype, dst, tag, 
+      //      smpi_mpi_sendrecv((recv_buf+send_offset), (scount * num_core), stype, dst, tag, 
       //             (recv_buf+recv_offset), (rcount * num_core), rtype, src, tag, comm, &status);
-      MPI_Isend(((char *) recv_buf + send_offset), (scount * num_core), stype,
-                dst, tag, comm, req_ptr++);
+      *(req_ptr++) = smpi_mpi_isend(((char *) recv_buf + send_offset), (scount * num_core), stype,
+                dst, tag, comm);
       //MPIC_Irecv((recv_buf+recv_offset), (rcount * num_core), rtype, src, tag, comm, req_ptr++);
     }
-    MPI_Waitall(num_req, reqs, stat);
+    smpi_mpi_waitall(num_req, reqs, stat);
     free(reqs);
     free(stat);
 
@@ -96,11 +96,11 @@ int smpi_coll_tuned_allgather_smp_simple(void *send_buf, int scount,
   if (intra_rank == 0) {
     for (i = 1; i < num_core_in_current_smp; i++) {
       //printf("rank = %d, num = %d send to %d\n",rank, num_core_in_current_smp, (rank + i));
-      MPI_Send(recv_buf, (scount * comm_size), stype, (rank + i), tag, comm);
+      smpi_mpi_send(recv_buf, (scount * comm_size), stype, (rank + i), tag, comm);
     }
   } else {
     //printf("rank = %d recv from %d\n",rank, (inter_rank * num_core));
-    MPI_Recv(recv_buf, (rcount * comm_size), rtype, (inter_rank * num_core),
+    smpi_mpi_recv(recv_buf, (rcount * comm_size), rtype, (inter_rank * num_core),
              tag, comm, &status);
   }
 

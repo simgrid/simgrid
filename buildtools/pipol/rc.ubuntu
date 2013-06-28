@@ -10,7 +10,6 @@ sudo apt-get -y -qq install gcc
 sudo apt-get -y -qq install git-core
 sudo apt-get -y -qq install graphviz-dev graphviz
 sudo apt-get -y -qq install liblua5.1-dev lua5.1
-sudo apt-get -y -qq install libpcre3-dev
 sudo apt-get -y -qq install libunwind7-dev
 sudo apt-get -y -qq install make
 sudo apt-get -y -qq install perl

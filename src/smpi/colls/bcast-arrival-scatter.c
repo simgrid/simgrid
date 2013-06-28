@@ -1,4 +1,4 @@
-#include "colls.h"
+#include "colls_private.h"
 
 #ifndef BCAST_ARRIVAL_PATTERN_AWARE_HEADER_SIZE
 #define BCAST_ARRIVAL_PATTERN_AWARE_HEADER_SIZE 128
@@ -41,18 +41,20 @@ int smpi_coll_tuned_bcast_arrival_scatter(void *buf, int count,
   int header_size = BCAST_ARRIVAL_PATTERN_AWARE_HEADER_SIZE;
 
   MPI_Aint extent;
-  MPI_Type_extent(datatype, &extent);
+  extent = smpi_datatype_get_extent(datatype);
 
 
   /* source and destination */
   int to, from;
 
-  MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-  MPI_Comm_size(MPI_COMM_WORLD, &size);
+  rank = smpi_comm_rank(MPI_COMM_WORLD);
+  size = smpi_comm_size(MPI_COMM_WORLD);
 
   /* message too small */
   if (count < size) {
-    return MPI_Bcast(buf, count, datatype, root, comm);
+    XBT_WARN("MPI_bcast_arrival_scatter use default MPI_bcast.");
+    smpi_mpi_bcast(buf, count, datatype, root, comm);
+    return MPI_SUCCESS;        
   }
 
 
@@ -62,9 +64,9 @@ int smpi_coll_tuned_bcast_arrival_scatter(void *buf, int count,
    */
   if (root != 0) {
     if (rank == root) {
-      MPI_Send(buf, count, datatype, 0, tag - 1, comm);
+      smpi_mpi_send(buf, count, datatype, 0, tag - 1, comm);
     } else if (rank == 0) {
-      MPI_Recv(buf, count, datatype, root, tag - 1, comm, &status);
+      smpi_mpi_recv(buf, count, datatype, root, tag - 1, comm, &status);
     }
   }
 
@@ -88,11 +90,11 @@ int smpi_coll_tuned_bcast_arrival_scatter(void *buf, int count,
       for (k = 0; k < 3; k++) {
         for (i = 1; i < size; i++) {
           if ((already_sent[i] == 0) && (will_send[i] == 0)) {
-            MPI_Iprobe(i, MPI_ANY_TAG, MPI_COMM_WORLD, &flag_array[i],
+            smpi_mpi_iprobe(i, MPI_ANY_TAG, MPI_COMM_WORLD, &flag_array[i],
                        &temp_status_array[i]);
             if (flag_array[i] == 1) {
               will_send[i] = 1;
-              MPI_Recv(&temp_buf[i], 1, MPI_CHAR, i, tag, MPI_COMM_WORLD,
+              smpi_mpi_recv(&temp_buf[i], 1, MPI_CHAR, i, tag, MPI_COMM_WORLD,
                        &status);
               i = 0;
             }
@@ -131,7 +133,7 @@ int smpi_coll_tuned_bcast_arrival_scatter(void *buf, int count,
         /* send header */
         for (i = 0; i < header_index; i++) {
           to = header_buf[i];
-          MPI_Send(header_buf, header_size, MPI_INT, to, header_tag, comm);
+          smpi_mpi_send(header_buf, header_size, MPI_INT, to, header_tag, comm);
         }
 
         curr_remainder = count % header_index;
@@ -145,7 +147,7 @@ int smpi_coll_tuned_bcast_arrival_scatter(void *buf, int count,
           if ((i == (header_index - 1)) || (curr_size == 0))
             curr_size += curr_remainder;
           //printf("Root send to %d index %d\n",to,(i*curr_increment));
-          MPI_Send((char *) buf + (i * curr_increment), curr_size, datatype, to,
+          smpi_mpi_send((char *) buf + (i * curr_increment), curr_size, datatype, to,
                    tag, comm);
         }
       }
@@ -156,10 +158,10 @@ int smpi_coll_tuned_bcast_arrival_scatter(void *buf, int count,
   /* none root */
   else {
     /* send 1-byte message to root */
-    MPI_Send(temp_buf, 1, MPI_CHAR, 0, tag, comm);
+    smpi_mpi_send(temp_buf, 1, MPI_CHAR, 0, tag, comm);
 
     /* wait for header forward when required */
-    MPI_Recv(header_buf, header_size, MPI_INT, 0, header_tag, comm, &status);
+    smpi_mpi_recv(header_buf, header_size, MPI_INT, 0, header_tag, comm, &status);
 
     /* search for where it is */
     int myordering = 0;
@@ -180,7 +182,7 @@ int smpi_coll_tuned_bcast_arrival_scatter(void *buf, int count,
     /* receive data */
     if (myordering == (total_nodes - 1))
       recv_size += curr_remainder;
-    MPI_Recv((char *) buf + (myordering * curr_increment), recv_size, datatype,
+    smpi_mpi_recv((char *) buf + (myordering * curr_increment), recv_size, datatype,
              0, tag, comm, &status);
 
     /* at this point all nodes in this set perform all-gather operation */
@@ -218,7 +220,7 @@ int smpi_coll_tuned_bcast_arrival_scatter(void *buf, int count,
       //printf("\tnode %d sent_offset %d send_count %d\n",rank,send_offset,send_count);
 
 
-      MPI_Sendrecv((char *) buf + send_offset, send_count, datatype, to,
+      smpi_mpi_sendrecv((char *) buf + send_offset, send_count, datatype, to,
                    tag + i, (char *) buf + recv_offset, recv_count, datatype,
                    from, tag + i, comm, &status);
     }

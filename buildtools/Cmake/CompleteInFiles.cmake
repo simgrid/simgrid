@@ -68,11 +68,6 @@ include(TestBigEndian)
 TEST_BIG_ENDIAN(BIGENDIAN)
 
 include(FindGraphviz)
-if(WIN32)
-  include(FindPcreWin)
-else()
-  include(FindPCRE)
-endif()
 
 set(HAVE_GTNETS 0)
 if(enable_gtnets)
@@ -88,6 +83,11 @@ if(enable_java)
   message("-- [Java] JNI found: ${JNI_FOUND}")
   message("-- [Java] JNI include dirs: ${JNI_INCLUDE_DIRS}")
   set(HAVE_Java 1)
+endif()
+if(enable_scala)
+  find_package(Scala REQUIRED)
+  message("-- [Scala] scalac found: ${SCALA_COMPILE}")
+  set(HAVE_Scala 1)
 endif()
 if(enable_lua)
   include(FindLua51Simgrid)
@@ -771,6 +771,7 @@ configure_file("${CMAKE_HOME_DIRECTORY}/include/simgrid_config.h.in" 		"${CMAKE_
 
 set(top_srcdir "${CMAKE_HOME_DIRECTORY}")
 set(srcdir "${CMAKE_HOME_DIRECTORY}/src")
+set(bindir "${CMAKE_BINARY_DIR}")
 
 ### Script used when simgrid is installed
 set(exec_prefix ${CMAKE_INSTALL_PREFIX})
@@ -855,6 +856,9 @@ else()
   configure_file(${CMAKE_HOME_DIRECTORY}/examples/smpi/replay/actions_alltoall.txt ${CMAKE_BINARY_DIR}/examples/smpi/replay/actions_alltoall.txt COPYONLY)
   configure_file(${CMAKE_HOME_DIRECTORY}/examples/smpi/replay/actions_alltoallv.txt ${CMAKE_BINARY_DIR}/examples/smpi/replay/actions_alltoallv.txt COPYONLY)
   configure_file(${CMAKE_HOME_DIRECTORY}/examples/smpi/replay/actions_waitall.txt ${CMAKE_BINARY_DIR}/examples/smpi/replay/actions_waitall.txt COPYONLY)
+  configure_file(${CMAKE_HOME_DIRECTORY}/examples/smpi/replay/actions_reducescatter.txt ${CMAKE_BINARY_DIR}/examples/smpi/replay/actions_reducescatter.txt COPYONLY)
+  configure_file(${CMAKE_HOME_DIRECTORY}/examples/smpi/replay/actions_gather.txt ${CMAKE_BINARY_DIR}/examples/smpi/replay/actions_gather.txt COPYONLY)
+  configure_file(${CMAKE_HOME_DIRECTORY}/examples/smpi/replay/actions_allgatherv.txt ${CMAKE_BINARY_DIR}/examples/smpi/replay/actions_allgatherv.txt COPYONLY)
   configure_file(${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/hostfile ${CMAKE_BINARY_DIR}/teshsuite/smpi/hostfile COPYONLY)
 
   set(generated_files_to_clean

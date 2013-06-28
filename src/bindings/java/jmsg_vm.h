@@ -146,4 +146,6 @@ Java_org_simgrid_msg_VM_save(JNIEnv *env, jobject jvm);
 JNIEXPORT void JNICALL
 Java_org_simgrid_msg_VM_restore(JNIEnv *env, jobject jvm);
 
+JNIEXPORT jobject JNICALL
+Java_org_simgrid_msg_VM_get_pm(JNIEnv *env, jobject jvm);
 #endif

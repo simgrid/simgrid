@@ -98,7 +98,7 @@ public abstract class Process implements Runnable {
 
 	
 	/**
-	 * Default constructor (used in ApplicationHandler to initialize it)
+	 * Default constructor
 	 */
 	protected Process() {
 		this.id = nextProcessId++;

@@ -53,6 +53,10 @@ void stack_region_free_voidp(void *s);
 
 void heap_ignore_region_free(mc_heap_ignore_region_t r);
 void heap_ignore_region_free_voidp(void *r);
+void data_bss_ignore_variable_free(mc_data_bss_ignore_variable_t v);
+void data_bss_ignore_variable_free_voidp(void *v);
+void stack_ignore_variable_free(mc_stack_ignore_variable_t v);
+void stack_ignore_variable_free_voidp(void *v);
 
 SG_END_DECL()
 #endif                          /* _MC_MC_H */

@@ -16,19 +16,22 @@ static RngStream rng_stream;
 void promoter(context_node_t node);
 void labeler(context_edge_t edge);
 void create_environment(int node_count);
-void dispatch_jobs(double tracker_deadline, double peer_deadline, double seed_percentage);
+void dispatch_jobs(double tracker_deadline, double peer_deadline,
+                   double seed_percentage);
 
-void promoter(context_node_t node) {
+void promoter(context_node_t node)
+{
   s_sg_platf_host_cbarg_t host_parameters;
 
-  if(node->degree == 1) {
+  if (node->degree == 1) {
     //We promote only the leaf; as we use a star topology, all the nodes
     //will be promoted except the first one, which will be a router with
     //every hosts connected on.
     host_parameters.id = NULL;
 
     //Power from 3,000,000 to 10,000,000
-    host_parameters.power_peak = 7000000 * RngStream_RandU01(rng_stream) + 3000000;
+    host_parameters.power_peak =
+        7000000 * RngStream_RandU01(rng_stream) + 3000000;
     host_parameters.core_amount = 1;
     host_parameters.power_scale = 1;
     host_parameters.power_trace = NULL;
@@ -41,7 +44,8 @@ void promoter(context_node_t node) {
   }
 }
 
-void labeler(context_edge_t edge) {
+void labeler(context_edge_t edge)
+{
 
   s_sg_platf_link_cbarg_t link_parameters;
   link_parameters.id = NULL;
@@ -61,7 +65,8 @@ void labeler(context_edge_t edge) {
   platf_graph_link_label(edge, &link_parameters);
 }
 
-void create_environment(int node_count) {
+void create_environment(int node_count)
+{
 
   platf_graph_uniform(node_count);
 
@@ -81,34 +86,38 @@ void create_environment(int node_count) {
   platf_generate();
 }
 
-void dispatch_jobs(double tracker_deadline, double peer_deadline, double seed_percentage) {
+void dispatch_jobs(double tracker_deadline, double peer_deadline,
+                   double seed_percentage)
+{
 
   xbt_dynar_t available_nodes = MSG_hosts_as_dynar();
   msg_host_t host;
   unsigned int i;
 
-  char** arguments_tracker;
-  char** arguments_peer;
+  char **arguments_tracker;
+  char **arguments_peer;
 
-  unsigned int seed_count = (seed_percentage/100.0) * xbt_dynar_length(available_nodes);
+  unsigned int seed_count =
+      (seed_percentage / 100.0) * xbt_dynar_length(available_nodes);
 
   xbt_dynar_foreach(available_nodes, i, host) {
-    if(i==0) {
+    if (i == 0) {
       //The fisrt node is the tracker
-      arguments_tracker = xbt_malloc0(sizeof(char*) * 2);
+      arguments_tracker = xbt_malloc0(sizeof(char *) * 2);
       arguments_tracker[0] = xbt_strdup("tracker");
       arguments_tracker[1] = bprintf("%f", tracker_deadline);
-      MSG_process_create_with_arguments("tracker", tracker, NULL, host, 2, arguments_tracker);
+      MSG_process_create_with_arguments("tracker", tracker, NULL, host, 2,
+                                        arguments_tracker);
     } else {
       //Other nodes are peers
       int argument_size;
-      arguments_peer = xbt_malloc0(sizeof(char*) * 4);
+      arguments_peer = xbt_malloc0(sizeof(char *) * 4);
       arguments_peer[0] = xbt_strdup("peer");
       arguments_peer[1] = bprintf("%d", i);
       arguments_peer[2] = bprintf("%f", peer_deadline);
 
       //The first peers will be seeders
-      if(seed_count > 0) {
+      if (seed_count > 0) {
         seed_count--;
         arguments_peer[3] = xbt_strdup("1");
         argument_size = 4;
@@ -117,7 +126,8 @@ void dispatch_jobs(double tracker_deadline, double peer_deadline, double seed_pe
         arguments_peer[3] = NULL;
         argument_size = 3;
       }
-      MSG_process_create_with_arguments("peer", peer, NULL, host, argument_size, arguments_peer);
+      MSG_process_create_with_arguments("peer", peer, NULL, host,
+                                        argument_size, arguments_peer);
     }
   }
 }

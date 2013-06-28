@@ -22,9 +22,9 @@ int main(int argc, char **argv)
   SD_init(&argc, argv);
 
   /* creation of the environment, timed */
-  xbt_os_timer_start(timer);
+  xbt_os_cputimer_start(timer);
   SD_create_environment(argv[1]);
-  xbt_os_timer_stop(timer);
+  xbt_os_cputimer_stop(timer);
 
   /* Display the result and exit after cleanup */
   printf( "%lf\n", xbt_os_timer_elapsed(timer) );

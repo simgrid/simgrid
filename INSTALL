@@ -45,7 +45,6 @@ SimGrid archives do not have any firm dependencies.
 
 If you want to compile, you must have installed perl and cmake version 2.6 or
 above.
-In order to improve memory management you should install libpcre.
 
 If you want to compile the java bindings, you have to have a java compiler, and
 the jni.h header file (available from the JDK).

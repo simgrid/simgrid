@@ -2,9 +2,9 @@
 \page inside_extending Extending SimGrid 
 
 We start to put TAGS in simgrid source code for having tutorials to see where is the important parts ans steps to create:
-\li a new MSG functions or a new API.
-\li a new model in surf.
-\li new tags in xml files
+\li \ref simgrid_dev_guide_api
+\li \ref simgrid_dev_guide_model
+\li \ref simgrid_dev_guide_tag
 
 \section simgrid_dev_guide_api How to add a new MSG function?
 Search for expression \"TUTORIAL: New API\".

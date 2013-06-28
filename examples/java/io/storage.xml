@@ -28,25 +28,25 @@
 		<storage id="Disk3" typeId="wdigital"/>
 		<storage id="Disk4" typeId="wdigital"/>
 
-		<host id="bob" power="1000000000">
+		<host id="bob" power="1Gf">
 			<mount id="Disk1" name="C:"/>			
 		</host>		
 		
-		<host id="alice" power="1000000000">
+		<host id="alice" power="1Gf">
 			<mount id="Disk2" name="C:"/>
 		</host>
 
-		<host id="carl" power="1000000000">		
+		<host id="carl" power="1Gf">		
 			<mount id="Disk3" name="C:"/>		
 		</host>
 		
-		<host id="denise" power="1000000000">
+		<host id="denise" power="1Gf">
 			<mount id="Disk4" name="C:"/>	
 		</host>
 
-		<link id="link1" bandwidth="125000000" latency="5E-5" />
-		<link id="link2" bandwidth="125000000" latency="5E-5" />
-		<link id="link3" bandwidth="125000000" latency="5E-5" />
+		<link id="link1" bandwidth="125MBps" latency="50us" />
+		<link id="link2" bandwidth="125MBps" latency="50us" />
+		<link id="link3" bandwidth="125MBps" latency="50us" />
 	
 		<route src="bob" dst="alice" symmetrical="YES">
 			<link_ctn id="link1" />

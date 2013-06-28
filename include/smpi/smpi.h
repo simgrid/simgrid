@@ -43,6 +43,7 @@ SG_BEGIN_DECL()
 #define MPI_PROC_NULL -2
 #define MPI_ANY_TAG -1
 #define MPI_UNDEFINED -3
+#define MPI_IN_PLACE (void *)-4
 // errorcodes
 #define MPI_SUCCESS       0
 #define MPI_ERR_COMM      1

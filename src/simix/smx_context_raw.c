@@ -31,7 +31,7 @@ typedef struct s_smx_ctx_raw {
 
 #ifdef CONTEXT_THREADS
 static xbt_parmap_t raw_parmap;
-static raw_stack_t* raw_workers_stacks;       /* space to save the worker stack in each thread */
+static smx_ctx_raw_t* raw_workers_context;    /* space to save the worker context in each thread */
 static unsigned long raw_threads_working;     /* number of threads that have started their work */
 static xbt_os_thread_key_t raw_worker_id_key; /* thread-specific storage for the thread id */
 #endif
@@ -241,9 +241,11 @@ void SIMIX_ctx_raw_factory_init(smx_context_factory_t *factory)
   if (SIMIX_context_is_parallel()) {
 #ifdef CONTEXT_THREADS
     int nthreads = SIMIX_context_get_nthreads();
-    raw_parmap = xbt_parmap_new(nthreads, SIMIX_context_get_parallel_mode());
-    raw_workers_stacks = xbt_new(raw_stack_t, nthreads);
     xbt_os_thread_key_create(&raw_worker_id_key);
+    raw_parmap = xbt_parmap_new(nthreads, SIMIX_context_get_parallel_mode());
+    raw_workers_context = xbt_new(smx_ctx_raw_t, nthreads);
+    raw_maestro_context=NULL;
+
 #endif
     if (SIMIX_context_get_parallel_threshold() > 1) {
       /* choose dynamically */
@@ -280,7 +282,7 @@ static int smx_ctx_raw_factory_finalize(smx_context_factory_t *factory)
 #ifdef CONTEXT_THREADS
   if (raw_parmap)
     xbt_parmap_destroy(raw_parmap);
-  xbt_free(raw_workers_stacks);
+  xbt_free(raw_workers_context);
 #endif
   return smx_ctx_base_factory_finalize(factory);
 }
@@ -325,7 +327,8 @@ smx_ctx_raw_create_context(xbt_main_func_t code, int argc, char **argv,
 #endif                          /* HAVE_VALGRIND_VALGRIND_H */
 
      } else {
-       raw_maestro_context = context;
+       if(data != NULL && raw_maestro_context==NULL)
+         raw_maestro_context = context;
 
        if(MC_is_active())
          MC_ignore_heap(&(raw_maestro_context->stack_top), sizeof(raw_maestro_context->stack_top));
@@ -444,9 +447,9 @@ static void smx_ctx_raw_runall_serial(xbt_dynar_t processes)
       time_thread_sr[t] = 0;
     }
 
-    xbt_os_timer_start(timer);
+    xbt_os_cputimer_start(timer);
     smx_ctx_raw_resume(process);
-    xbt_os_timer_stop(timer);
+    xbt_os_cputimer_stop(timer);
     elapsed = xbt_os_timer_elapsed(timer);
     time_thread_ssr[t] += elapsed;
     time_thread_sr[((smx_ctx_raw_t)process->context)->thread] += elapsed;
@@ -521,12 +524,14 @@ static void smx_ctx_raw_suspend_parallel(smx_context_t context)
   else {
     /* all processes were run, go to the barrier */
     XBT_DEBUG("No more processes to run");
-    next_context = (smx_context_t) raw_maestro_context;
+
     unsigned long worker_id =
         (unsigned long) xbt_os_thread_get_specific(raw_worker_id_key);
+
+    next_context = (smx_context_t)raw_workers_context[worker_id];
     XBT_DEBUG("Restoring worker stack %lu (working threads = %lu)",
         worker_id, raw_threads_working);
-    next_stack = raw_workers_stacks[worker_id];
+    next_stack = ((smx_ctx_raw_t)next_context)->stack_top;
   }
 
   SIMIX_context_set_current(next_context);
@@ -544,8 +549,11 @@ static void smx_ctx_raw_resume_parallel(smx_process_t first_process)
 #ifdef CONTEXT_THREADS
   unsigned long worker_id = __sync_fetch_and_add(&raw_threads_working, 1);
   xbt_os_thread_set_specific(raw_worker_id_key, (void*) worker_id);
+  smx_ctx_raw_t worker_context = (smx_ctx_raw_t)SIMIX_context_self();
+  raw_workers_context[worker_id] = worker_context;
   XBT_DEBUG("Saving worker stack %lu", worker_id);
-  raw_stack_t* worker_stack = &raw_workers_stacks[worker_id];
+  raw_stack_t* worker_stack = &(worker_context)->stack_top;
+
 
   smx_context_t context = first_process->context;
   SIMIX_context_set_current(context);

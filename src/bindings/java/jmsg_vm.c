@@ -135,7 +135,7 @@ Java_org_simgrid_msg_VM_save(JNIEnv *env, jobject jvm) {
   MSG_vm_save(vm);
 }
 JNIEXPORT void JNICALL
-Java_org_simgrid_msg_VM_retore(JNIEnv *env, jobject jvm) {
+Java_org_simgrid_msg_VM_restore(JNIEnv *env, jobject jvm) {
   msg_vm_t vm = jvm_get_native(env,jvm);
   MSG_vm_restore(vm);
 }

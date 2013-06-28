@@ -106,6 +106,20 @@ public class Host {
 	 */ 
 	public native static Host[] all();
 
+    /** 
+     * This static method sets a mailbox to receive in asynchronous mode.
+     * 
+     * All messages sent to this mailbox will be transferred to 
+     * the receiver without waiting for the receive call. 
+     * The receive call will still be necessary to use the received data.
+     * If there is a need to receive some messages asynchronously, and some not, 
+     * two different mailboxes should be used.
+     *
+     * @param mailboxName The name of the mailbox
+     */
+    public static native void setAsyncMailbox(String mailboxName);
+
+
 	/**
 	 * This method returns the name of a host.
 	 * @return			The name of the host.
@@ -114,6 +128,7 @@ public class Host {
 	public String getName() {
 		return name;
 	}
+
 	/**
 	 * Sets the data of the host.
      * @param data
@@ -140,6 +155,17 @@ public class Host {
 	}
 
 	/**
+	 * This method start the host if it is off
+	 */ 
+	public native void on();
+
+	/**
+	 * This method stop the host if it is on
+	 */ 
+	public native void off();
+
+
+	/**
 	 * This method returns the number of tasks currently running on a host.
 	 * The external load is not taken in account.
 	 *
@@ -155,7 +181,15 @@ public class Host {
 	 *
 	 */ 
 	public native double getSpeed();
-	
+
+	/**
+	 * This method returns the number of core of a host.
+	 *
+	 * @return			The speed of the processor of the host in flops.
+	 *
+	 */ 
+	public native double getCore();
+
 	/**
 	 * Returns the value of a given host property. 
 	 */

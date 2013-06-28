@@ -102,7 +102,8 @@ static int vivaldi_parse_PU(AS_t rc, sg_routing_edge_t elm) {
 /* Creation routing model functions */
 AS_t model_vivaldi_create(void)
 {
-  AS_t new_component = model_rulebased_create();
+  AS_t new_component = model_generic_create_sized(sizeof *new_component);
+  
   new_component->get_route_and_latency = vivaldi_get_route_and_latency;
   new_component->parse_PU = vivaldi_parse_PU;
   new_component->get_graph = generic_get_graph;

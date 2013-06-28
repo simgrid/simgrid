@@ -230,6 +230,7 @@ typedef struct s_sg_platf_cluster_cbarg {
   double loopback_bw;
   double loopback_lat;
   double limiter_link;
+  xbt_dict_t properties;
   const char* router_id;
   e_surf_link_sharing_policy_t sharing_policy;
   e_surf_link_sharing_policy_t bb_sharing_policy;
@@ -238,7 +239,7 @@ typedef struct s_sg_platf_cluster_cbarg {
 } s_sg_platf_cluster_cbarg_t;
 
 #define SG_PLATF_CLUSTER_INITIALIZER {NULL,NULL,NULL,NULL,NULL,NULL \
-  ,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL}
+  ,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL}
 
 typedef struct s_sg_platf_cabinet_cbarg *sg_platf_cabinet_cbarg_t;
 typedef struct s_sg_platf_cabinet_cbarg {

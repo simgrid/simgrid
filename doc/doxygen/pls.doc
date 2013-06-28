@@ -195,7 +195,6 @@ Configuration of package `simgrid' on arch (=4):
 	Compile Lua    :
 	Compile Smpi   :    	OFF
 	Compile Static :    	OFF
-	Compile pcre   :    	AUTO
 
 	Maintainer mode:	OFF
 	Supernovae mode:	OFF
@@ -205,7 +204,7 @@ Configuration of package `simgrid' on arch (=4):
 	Latency bound  :	OFF
         Graphviz mode  :
 
-	Simgrid dependencies: 	-lm -lpcre -lpthread -lns3 -lrt
+	Simgrid dependencies: 	-lm -lpthread -lns3 -lrt
 	Smpi dependencies   :
 
 	INSTALL_PREFIX: 	/usr/local

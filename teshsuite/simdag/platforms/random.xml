@@ -33,17 +33,17 @@ mode="linear" base="NBcore" linear_a="0.5" linear_b="1000" noise="white"/>
 
 <AS  id="AS0"  routing="Full">
   <!-- Horizontal streams -->
-  <host id="foo" power="123121" state_trace="mystate" availability_trace="mypow_avail"/> 
+  <host id="foo" power="123.121kf" state_trace="mystate" availability_trace="mypow_avail"/> 
   <link id="bar" bandwidth=""   bandwidth_trace="mybw" latency_trace="mylat"/>
   <cluster  id="bob_cluster"
         prefix="bob"
         suffix=".hamburger.edu"
         radical="0-1"
-        power="100000"
+        power="100kf"
         bw=""
-        lat="5e-5"
-        bb_bw="2250000000.00"
-        bb_lat="5e-4"
+        lat="50us"
+        bb_bw="2.25GBps"
+        bb_lat="500us"
         bw_trace="mybw"
         availability_trace="mywpow_avail"
         state_trace="mystate"
@@ -57,7 +57,7 @@ mode="linear" base="NBcore" linear_a="0.5" linear_b="1000" noise="white"/>
         power="CustomPower"
         bw_in_trace="mybw"
         bw_out="CustomBWval"
-        lat="5e-5"
+        lat="50us"
         />
    <peer_set 
      />

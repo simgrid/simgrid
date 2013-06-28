@@ -1,4 +1,4 @@
-#include "colls.h"
+#include "colls_private.h"
 
 int bcast_arrival_pattern_aware_wait_segment_size_in_byte = 8192;
 
@@ -42,15 +42,15 @@ int smpi_coll_tuned_bcast_arrival_pattern_aware_wait(void *buf, int count,
   int header_size = BCAST_ARRIVAL_PATTERN_AWARE_HEADER_SIZE;
 
   MPI_Aint extent;
-  MPI_Type_extent(datatype, &extent);
+  extent = smpi_datatype_get_extent(datatype);
 
   /* source and destination */
   int to, from;
 
 
 
-  MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-  MPI_Comm_size(MPI_COMM_WORLD, &size);
+  rank = smpi_comm_rank(MPI_COMM_WORLD);
+  size = smpi_comm_size(MPI_COMM_WORLD);
 
 
   /* segment is segment size in number of elements (not bytes) */
@@ -71,9 +71,9 @@ int smpi_coll_tuned_bcast_arrival_pattern_aware_wait(void *buf, int count,
    */
   if (root != 0) {
     if (rank == root) {
-      MPI_Send(buf, count, datatype, 0, tag, comm);
+      smpi_mpi_send(buf, count, datatype, 0, tag, comm);
     } else if (rank == 0) {
-      MPI_Recv(buf, count, datatype, root, tag, comm, &status);
+      smpi_mpi_recv(buf, count, datatype, root, tag, comm, &status);
     }
   }
 
@@ -92,13 +92,13 @@ int smpi_coll_tuned_bcast_arrival_pattern_aware_wait(void *buf, int count,
   /* start pipeline bcast */
 
   send_request_array =
-      (MPI_Request *) malloc((size + pipe_length) * sizeof(MPI_Request));
+      (MPI_Request *) xbt_malloc((size + pipe_length) * sizeof(MPI_Request));
   recv_request_array =
-      (MPI_Request *) malloc((size + pipe_length) * sizeof(MPI_Request));
+      (MPI_Request *) xbt_malloc((size + pipe_length) * sizeof(MPI_Request));
   send_status_array =
-      (MPI_Status *) malloc((size + pipe_length) * sizeof(MPI_Status));
+      (MPI_Status *) xbt_malloc((size + pipe_length) * sizeof(MPI_Status));
   recv_status_array =
-      (MPI_Status *) malloc((size + pipe_length) * sizeof(MPI_Status));
+      (MPI_Status *) xbt_malloc((size + pipe_length) * sizeof(MPI_Status));
 
   /* root */
   if (rank == 0) {
@@ -114,11 +114,11 @@ int smpi_coll_tuned_bcast_arrival_pattern_aware_wait(void *buf, int count,
       for (k = 0; k < 3; k++) {
         for (i = 1; i < size; i++) {
           if ((already_sent[i] == 0) && (will_send[i] == 0)) {
-            MPI_Iprobe(i, MPI_ANY_TAG, MPI_COMM_WORLD, &flag_array[i],
+            smpi_mpi_iprobe(i, MPI_ANY_TAG, MPI_COMM_WORLD, &flag_array[i],
                        &temp_status_array[i]);
             if (flag_array[i] == 1) {
               will_send[i] = 1;
-              MPI_Recv(&temp_buf[i], 1, MPI_CHAR, i, tag, MPI_COMM_WORLD,
+              smpi_mpi_recv(&temp_buf[i], 1, MPI_CHAR, i, tag, MPI_COMM_WORLD,
                        &status);
               i = 0;
             }
@@ -147,14 +147,13 @@ int smpi_coll_tuned_bcast_arrival_pattern_aware_wait(void *buf, int count,
         to = header_buf[0];
 
         /* send header */
-        MPI_Send(header_buf, header_size, MPI_INT, to, tag, comm);
+        smpi_mpi_send(header_buf, header_size, MPI_INT, to, tag, comm);
 
         /* send data - pipeline */
         for (i = 0; i < pipe_length; i++) {
-          MPI_Isend((char *)buf + (i * increment), segment, datatype, to, tag, comm,
-                    &send_request_array[i]);
+          send_request_array[i] = smpi_mpi_isend((char *)buf + (i * increment), segment, datatype, to, tag, comm);
         }
-        MPI_Waitall((pipe_length), send_request_array, send_status_array);
+        smpi_mpi_waitall((pipe_length), send_request_array, send_status_array);
       }
 
 
@@ -171,11 +170,11 @@ int smpi_coll_tuned_bcast_arrival_pattern_aware_wait(void *buf, int count,
             header_buf[1] = -1;
             to = i;
 
-            MPI_Send(header_buf, header_size, MPI_INT, to, tag, comm);
+            smpi_mpi_send(header_buf, header_size, MPI_INT, to, tag, comm);
 
             /* still need to chop data so that we can use the same non-root code */
             for (j = 0; j < pipe_length; j++) {
-              MPI_Send((char *)buf + (j * increment), segment, datatype, to, tag, comm);
+              smpi_mpi_send((char *)buf + (j * increment), segment, datatype, to, tag, comm);
             }
           }
         }
@@ -188,12 +187,11 @@ int smpi_coll_tuned_bcast_arrival_pattern_aware_wait(void *buf, int count,
   else {
 
     /* send 1-byte message to root */
-    MPI_Send(temp_buf, 1, MPI_CHAR, 0, tag, comm);
+    smpi_mpi_send(temp_buf, 1, MPI_CHAR, 0, tag, comm);
 
     /* wait for header forward when required */
-    MPI_Irecv(header_buf, header_size, MPI_INT, MPI_ANY_SOURCE, tag, comm,
-              &request);
-    MPI_Wait(&request, MPI_STATUS_IGNORE);
+    request = smpi_mpi_irecv(header_buf, header_size, MPI_INT, MPI_ANY_SOURCE, tag, comm);
+    smpi_mpi_wait(&request, MPI_STATUS_IGNORE);
 
     /* search for where it is */
     int myordering = 0;
@@ -210,29 +208,27 @@ int smpi_coll_tuned_bcast_arrival_pattern_aware_wait(void *buf, int count,
 
     /* send header when required */
     if (to != -1) {
-      MPI_Send(header_buf, header_size, MPI_INT, to, tag, comm);
+      smpi_mpi_send(header_buf, header_size, MPI_INT, to, tag, comm);
     }
 
     /* receive data */
 
     for (i = 0; i < pipe_length; i++) {
-      MPI_Irecv((char *)buf + (i * increment), segment, datatype, from, tag, comm,
-                &recv_request_array[i]);
+      recv_request_array[i] = smpi_mpi_irecv((char *)buf + (i * increment), segment, datatype, from, tag, comm);
     }
 
     /* forward data */
     if (to != -1) {
       for (i = 0; i < pipe_length; i++) {
-        MPI_Wait(&recv_request_array[i], MPI_STATUS_IGNORE);
-        MPI_Isend((char *)buf + (i * increment), segment, datatype, to, tag, comm,
-                  &send_request_array[i]);
+        smpi_mpi_wait(&recv_request_array[i], MPI_STATUS_IGNORE);
+        send_request_array[i] = smpi_mpi_isend((char *)buf + (i * increment), segment, datatype, to, tag, comm);
       }
-      MPI_Waitall((pipe_length), send_request_array, send_status_array);
+      smpi_mpi_waitall((pipe_length), send_request_array, send_status_array);
     }
 
     /* recv only */
     else {
-      MPI_Waitall((pipe_length), recv_request_array, recv_status_array);
+      smpi_mpi_waitall((pipe_length), recv_request_array, recv_status_array);
     }
   }
 
@@ -244,7 +240,8 @@ int smpi_coll_tuned_bcast_arrival_pattern_aware_wait(void *buf, int count,
 
   /* when count is not divisible by block size, use default BCAST for the remainder */
   if ((remainder != 0) && (count > segment)) {
-    MPI_Bcast((char *)buf + (pipe_length * increment), remainder, datatype, root, comm);
+    XBT_WARN("MPI_bcast_arrival_pattern_aware_wait use default MPI_bcast.");	  	  
+    smpi_mpi_bcast((char *)buf + (pipe_length * increment), remainder, datatype, root, comm);
   }
 
   return MPI_SUCCESS;

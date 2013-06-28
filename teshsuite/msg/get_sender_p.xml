@@ -3,8 +3,8 @@
  <platform version="3">
  <AS  id="AS0"  routing="Full">
 
-   <host id="toto" power="1000000"/>
-   <link id="lb" bandwidth="100000000" latency="0.000000"/>
+   <host id="toto" power="1Mf"/>
+   <link id="lb" bandwidth="100MBps" latency="0"/>
    <route src="toto" dst="toto"><link_ctn id="lb"/></route>
 
  </AS>

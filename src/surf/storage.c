@@ -1,4 +1,4 @@
-/* Copyright (c) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012. The SimGrid Team.
+/* Copyright (c) 2004 - 2013. The SimGrid Team.
  * All rights reserved.                                                                 */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -6,7 +6,6 @@
 
 #include "xbt/ex.h"
 #include "xbt/dict.h"
-#include "xbt/file_stat.h"
 #include "portable.h"
 #include "surf_private.h"
 #include "storage_private.h"
@@ -35,19 +34,10 @@ static xbt_dynar_t storage_list;
 #define GENERIC_LMM_ACTION(action) action->generic_lmm_action
 #define GENERIC_ACTION(action) GENERIC_LMM_ACTION(action).generic_action
 
-static xbt_dict_t parse_storage_content(char *filename, unsigned long *used_size);
+static xbt_dict_t parse_storage_content(char *filename, size_t *used_size);
 static int storage_action_unref(surf_action_t action);
 static void storage_action_state_set(surf_action_t action, e_surf_action_state_t state);
-static surf_action_t storage_action_execute (void *storage, double size, e_surf_action_storage_type_t type);
-static void free_storage_content(void *p);
-
-static surf_action_t storage_action_stat(void *storage, surf_file_t stream)
-{
-  surf_action_t action = storage_action_execute(storage,0, STAT);
-  action->file = stream;
-  action->stat = stream->content->stat;
-  return action;
-}
+static surf_action_t storage_action_execute (void *storage, size_t size, e_surf_action_storage_type_t type);
 
 static surf_action_t storage_action_ls(void *storage, const char* path)
 {
@@ -56,14 +46,14 @@ static surf_action_t storage_action_ls(void *storage, const char* path)
   xbt_dict_t ls_dict = xbt_dict_new();
 
   char* key;
-  surf_stat_t data = NULL;
+  size_t size = 0;
   xbt_dict_cursor_t cursor = NULL;
 
   xbt_dynar_t dyn = NULL;
   char* file = NULL;
 
-  // foreach file int the storage
-  xbt_dict_foreach(((storage_t)storage)->content,cursor,key,data){
+  // for each file in the storage content
+  xbt_dict_foreach(((storage_t)storage)->content,cursor,key,size){
     // Search if file start with the prefix 'path'
     if(xbt_str_start_with(key,path)){
       file = &key[strlen(path)];
@@ -74,12 +64,12 @@ static surf_action_t storage_action_ls(void *storage, const char* path)
 
       // file
       if(xbt_dynar_length(dyn) == 1){
-        xbt_dict_set(ls_dict,file,&(data->stat),NULL);
+        xbt_dict_set(ls_dict,file,&size,NULL);
       }
       // Directory
       else
       {
-        // if directory does not exist yet in dict
+        // if directory does not exist yet in the dictionary
         if(!xbt_dict_get_or_null(ls_dict,file))
           xbt_dict_set(ls_dict,file,NULL,NULL);
       }
@@ -91,88 +81,65 @@ static surf_action_t storage_action_ls(void *storage, const char* path)
   return action;
 }
 
-static surf_action_t storage_action_unlink(void *storage, surf_file_t stream)
-{
-  surf_action_t action = storage_action_execute(storage,0, UNLINK);
-
-  // Add memory to storage
-  ((storage_t)storage)->used_size -= stream->content->stat.size;
-
-  // Remove the file from storage
-  xbt_dict_t content_dict = ((storage_t)storage)->content;
-  xbt_dict_remove(content_dict,stream->name);
-
-  free(stream->name);
-  xbt_free(stream);
-
-  return action;
-}
-
-static surf_action_t storage_action_open(void *storage, const char* mount, const char* path, const char* mode)
+static surf_action_t storage_action_open(void *storage, const char* mount,
+                                         const char* path)
 {
   XBT_DEBUG("\tOpen file '%s'",path);
   xbt_dict_t content_dict = ((storage_t)storage)->content;
-  surf_stat_t content = xbt_dict_get_or_null(content_dict,path);
-
+  size_t size = (size_t) xbt_dict_get_or_null(content_dict,path);
   // if file does not exist create an empty file
-  if(!content){
-    content = xbt_new0(s_surf_stat_t,1);
-    content->stat.date = xbt_strdup("");
-    content->stat.group = xbt_strdup("");
-    content->stat.size = 0;
-    content->stat.time = xbt_strdup("");
-    content->stat.user = xbt_strdup("");
-    content->stat.user_rights = xbt_strdup("");
-    xbt_dict_set(content_dict,path,content,NULL);
+  if(!size){
+    xbt_dict_set(content_dict,path,&size,NULL);
     XBT_DEBUG("File '%s' was not found, file created.",path);
   }
   surf_file_t file = xbt_new0(s_surf_file_t,1);
   file->name = xbt_strdup(path);
-  file->content = content;
-  file->storage = mount;
+  file->size = size;
+  file->storage = xbt_strdup(mount);
 
   surf_action_t action = storage_action_execute(storage,0, OPEN);
   action->file = (void *)file;
   return action;
 }
 
-static surf_action_t storage_action_close(void *storage, surf_file_t fp)
+static surf_action_t storage_action_close(void *storage, surf_file_t fd)
 {
-  char *filename = fp->name;
-  XBT_DEBUG("\tClose file '%s' size '%f'",filename,fp->content->stat.size);
+  char *filename = fd->name;
+  XBT_DEBUG("\tClose file '%s' size '%zu'",filename,fd->size);
   // unref write actions from storage
   surf_action_storage_t write_action;
   unsigned int i;
   xbt_dynar_foreach(((storage_t)storage)->write_actions,i,write_action) {
-    if ((write_action->generic_lmm_action.generic_action.file) == fp) {
+    if ((write_action->generic_lmm_action.generic_action.file) == fd) {
       xbt_dynar_cursor_rm(((storage_t)storage)->write_actions, &i);
       storage_action_unref((surf_action_t) write_action);
     }
   }
 
-  free(fp->name);
-  xbt_free(fp);
+  free(fd->name);
+  free(fd->storage);
+  xbt_free(fd);
   surf_action_t action = storage_action_execute(storage,0, CLOSE);
   return action;
 }
 
-static surf_action_t storage_action_read(void *storage, void* ptr, double size, size_t nmemb, surf_file_t stream)
+static surf_action_t storage_action_read(void *storage, void* ptr, 
+					 size_t size, surf_file_t fd)
 {
-  surf_stat_t content = stream->content;
-  if(size > content->stat.size)
-    size = content->stat.size;
+  if(size > fd->size)
+    size = fd->size;
   surf_action_t action = storage_action_execute(storage,size,READ);
   return action;
 }
 
-static surf_action_t storage_action_write(void *storage, const void* ptr, size_t size, size_t nmemb, surf_file_t stream)
+static surf_action_t storage_action_write(void *storage, const void* ptr,
+                                          size_t size, surf_file_t fd)
 {
-  char *filename = stream->name;
-  surf_stat_t content = stream->content;
-  XBT_DEBUG("\tWrite file '%s' size '%zu/%f'",filename,size,content->stat.size);
+  char *filename = fd->name;
+  XBT_DEBUG("\tWrite file '%s' size '%zu/%zu'",filename,size,fd->size);
 
   surf_action_t action = storage_action_execute(storage,size,WRITE);
-  action->file = stream;
+  action->file = fd;
 
   // If the storage is full
   if(((storage_t)storage)->used_size==((storage_t)storage)->size) {
@@ -181,12 +148,12 @@ static surf_action_t storage_action_write(void *storage, const void* ptr, size_t
   return action;
 }
 
-static surf_action_t storage_action_execute (void *storage, double size, e_surf_action_storage_type_t type)
+static surf_action_t storage_action_execute (void *storage, size_t size, e_surf_action_storage_type_t type)
 {
   surf_action_storage_t action = NULL;
   storage_t STORAGE = storage;
 
-  XBT_IN("(%s,%f)", surf_resource_name(STORAGE), size);
+  XBT_IN("(%s,%zu", surf_resource_name(STORAGE), size);
   action =
       surf_action_new(sizeof(s_surf_action_storage_t), size, surf_storage_model,
           STORAGE->state_current != SURF_RESOURCE_ON);
@@ -207,7 +174,6 @@ static surf_action_t storage_action_execute (void *storage, double size, e_surf_
   case OPEN:
   case CLOSE:
   case STAT:
-  case UNLINK:
   case LS:
     break;
   case READ:
@@ -245,7 +211,7 @@ static void* storage_create_resource(const char* id, const char* model,const cha
   double Bread  = atof(xbt_dict_get(storage_type->properties,"Bread"));
   double Bwrite = atof(xbt_dict_get(storage_type->properties,"Bwrite"));
   double Bconnection   = atof(xbt_dict_get(storage_type->properties,"Bconnection"));
-  XBT_DEBUG("Create resource with Bconnection '%f' Bread '%f' Bwrite '%f' and Size '%ld'",Bconnection,Bread,Bwrite,storage_type->size);
+  XBT_DEBUG("Create resource with Bconnection '%f' Bread '%f' Bwrite '%f' and Size '%lu'",Bconnection,Bread,Bwrite,(unsigned long)storage_type->size);
   storage->constraint       = lmm_constraint_new(storage_maxmin_system, storage, Bconnection);
   storage->constraint_read  = lmm_constraint_new(storage_maxmin_system, storage, Bread);
   storage->constraint_write = lmm_constraint_new(storage_maxmin_system, storage, Bwrite);
@@ -290,13 +256,16 @@ static void storage_update_actions_state(surf_model_t storage_model, double now,
 
   // Update the disk usage
   // Update the file size
-  // Foreach action of type write
+  // For each action of type write
   xbt_swag_foreach_safe(action, next_action, running_actions) {
     if(action->type == WRITE)
     {
       double rate = lmm_variable_getvalue(GENERIC_LMM_ACTION(action).variable);
-      ((storage_t)(action->storage))->used_size += delta * rate; // disk usage
-      ((surf_action_t)action)->file->content->stat.size += delta * rate; // file size
+      /* Hack to avoid rounding differences between x86 and x86_64
+       * (note that the next sizes are of type size_t). */
+      long incr = delta * rate + MAXMIN_PRECISION;
+      ((storage_t)(action->storage))->used_size += incr; // disk usage
+      ((surf_action_t)action)->file->size += incr; // file size
     }
   }
 
@@ -513,8 +482,6 @@ static void surf_storage_model_init_internal(void)
   surf_storage_model->extension.storage.close = storage_action_close;
   surf_storage_model->extension.storage.read = storage_action_read;
   surf_storage_model->extension.storage.write = storage_action_write;
-  surf_storage_model->extension.storage.stat = storage_action_stat;
-  surf_storage_model->extension.storage.unlink = storage_action_unlink;
   surf_storage_model->extension.storage.ls = storage_action_ls;
 
   if (!storage_maxmin_system) {
@@ -553,24 +520,13 @@ static void storage_parse_storage(sg_platf_storage_cbarg_t storage)
       (void *) xbt_strdup(storage->type_id));
 }
 
-static void free_storage_content(void *p)
-{
-  surf_stat_t content = p;
-  free(content->stat.date);
-  free(content->stat.group);
-  free(content->stat.time);
-  free(content->stat.user);
-  free(content->stat.user_rights);
-  free(content);
-}
-
-static xbt_dict_t parse_storage_content(char *filename, unsigned long *used_size)
+static xbt_dict_t parse_storage_content(char *filename, size_t *used_size)
 {
   *used_size = 0;
   if ((!filename) || (strcmp(filename, "") == 0))
     return NULL;
 
-  xbt_dict_t parse_content = xbt_dict_new_homogeneous(free_storage_content);
+  xbt_dict_t parse_content = xbt_dict_new_homogeneous(NULL);
   FILE *file = NULL;
 
   file = surf_fopen(filename, "r");
@@ -580,33 +536,17 @@ static xbt_dict_t parse_storage_content(char *filename, unsigned long *used_size
   char *line = NULL;
   size_t len = 0;
   ssize_t read;
-  char user_rights[12];
-  char user[100];
-  char group[100];
-  char date[12];
-  char time[12];
   char path[1024];
-  int nb;
-  unsigned long size;
+  size_t size;
 
-  surf_stat_t content;
 
   while ((read = xbt_getline(&line, &len, file)) != -1) {
     if (read){
-    content = xbt_new0(s_surf_stat_t,1);
-    if(sscanf(line,"%s %d %s %s %ld %s %s %s",user_rights,&nb,user,group,&size,date,time,path)==8) {
-        content->stat.date = xbt_strdup(date);
-        content->stat.group = xbt_strdup(group);
-        content->stat.size = size;
-        content->stat.time = xbt_strdup(time);
-        content->stat.user = xbt_strdup(user);
-        content->stat.user_rights = xbt_strdup(user_rights);
-        *used_size += content->stat.size;
-        xbt_dict_set(parse_content,path,content,NULL);
+    if(sscanf(line,"%s %zu",path, &size)==2) {
+        *used_size += size;
+        xbt_dict_set(parse_content,path,(void*) size,NULL);
       } else {
         xbt_die("Be sure of passing a good format for content file.\n");
-        // You can generate this kind of file with command line:
-        // find /path/you/want -type f -exec ls -l {} \; 2>/dev/null > ./content.txt
       }
     }
   }

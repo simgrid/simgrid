@@ -12,7 +12,7 @@
 
 jfieldID jfile_field_bind;
 
-void jfile_bind(JNIEnv *env, jobject jfile, msg_file_t stream);
+void jfile_bind(JNIEnv *env, jobject jfile, msg_file_t fd);
 msg_file_t jfile_get_native(JNIEnv *env, jobject jfile);
 /**
  * Class			org_simgrid_msg_File
@@ -27,19 +27,19 @@ Java_org_simgrid_msg_File_nativeInit(JNIEnv*, jclass);
  * Signature	(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
  */
 JNIEXPORT void JNICALL
-Java_org_simgrid_msg_File_open(JNIEnv*, jobject, jobject, jobject, jobject);
+Java_org_simgrid_msg_File_open(JNIEnv*, jobject, jobject, jobject);
 /**
  * Class 			org_simgrid_msg_File
  * Method			read
  */
 JNIEXPORT jlong JNICALL
-Java_org_simgrid_msg_File_read(JNIEnv*, jobject, jlong, jlong);
+Java_org_simgrid_msg_File_read(JNIEnv*, jobject, jlong);
 /**
  * Class			org_simgrid_msg_File
  * Method			write
  */
 JNIEXPORT jlong JNICALL
-Java_org_simgrid_msg_File_write(JNIEnv*, jobject, jlong, jlong);
+Java_org_simgrid_msg_File_write(JNIEnv*, jobject, jlong);
 /**
  * Class			org_simgrid_msg_File
  * Method			close

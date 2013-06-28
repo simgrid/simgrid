@@ -104,7 +104,6 @@ int net_get_link_latency_limited(surf_action_t action);
  */
 int __surf_is_absolute_file_path(const char *file_path);
 
-typedef struct s_as *AS_t;
 typedef struct s_routing_edge {
   AS_t rc_component;
   e_surf_network_element_type_t rc_type;

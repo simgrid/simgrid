@@ -6,12 +6,12 @@
 
 	<AS id="AS0" routing="Full">
 
-		<host id="a" power="1000000000" />
-		<host id="b" power="1000000000" />
-		<host id="c" power="1000000000" />
+		<host id="a" power="1Gf" />
+		<host id="b" power="1Gf" />
+		<host id="c" power="1Gf" />
 
-		<link id="1" bandwidth="1000" latency="0.01" />
-		<link id="2" bandwidth="1000" latency="0.01" />
+		<link id="1" bandwidth="1kBps" latency="10ms" />
+		<link id="2" bandwidth="1kBps" latency="10ms" />
 
 		<route src="a" dst="b">
 			<link_ctn id="1" />

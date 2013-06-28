@@ -29,7 +29,7 @@ int coordinator(int argc, char *argv[])
   int CS_used = 0;   
   msg_task_t task = NULL, answer = NULL;        
 
-  while (1) {
+  while(1){  
     MSG_task_receive(&task, "coordinator");
     const char *kind = MSG_task_get_name(task); 
     if (!strcmp(kind, "request")) {    
@@ -37,7 +37,7 @@ int coordinator(int argc, char *argv[])
       if (CS_used) {           
         XBT_INFO("CS already used.");
       } else {               
-        if(strcmp(req, "2") == 0){
+        if(strcmp(req, "1") != 0){
           XBT_INFO("CS idle. Grant immediatly");
           answer = MSG_task_create("grant", 0, 1000, NULL);
           MSG_task_send(answer, req);
@@ -63,10 +63,8 @@ int client(int argc, char *argv[])
 
   char *my_mailbox = xbt_strdup(argv[1]);
   msg_task_t grant = NULL, release = NULL;
-
-
-  while(1) {
-      
+    
+  while(1){
     XBT_INFO("Ask the request");
     MSG_task_send(MSG_task_create("request", 0, 1000, my_mailbox), "coordinator");
 

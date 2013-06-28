@@ -131,7 +131,7 @@ FULL_PATH_NAMES        = YES
 # If left blank the directory from which doxygen is run is used as the
 # path to strip.
 
-STRIP_FROM_PATH        = @srcdir@
+STRIP_FROM_PATH        = @top_srcdir@
 
 # The STRIP_FROM_INC_PATH tag can be used to strip a user-defined part of
 # the path mentioned in the documentation of a class, which tells
@@ -690,6 +690,7 @@ INPUT                  = doxygen/index.doc \
                            index-API.doc \
                          @top_srcdir@/doc/doxygen/logcategories.doc \
                          @top_srcdir@/src/instr/ \
+                         @bindir@/include \
                          @top_srcdir@/include/ \
                          @top_srcdir@/include/msg \
                          @top_srcdir@/include/xbt \
@@ -700,7 +701,8 @@ INPUT                  = doxygen/index.doc \
                          @top_srcdir@/src/surf/ \
                          @top_srcdir@/src/msg/ \
                          @top_srcdir@/src/simdag \
-                         @top_srcdir@/src/simix
+                         @top_srcdir@/src/simix \
+                         @bindir@/src
 
 
 ###################################################

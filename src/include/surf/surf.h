@@ -12,7 +12,6 @@
 #include "xbt/dict.h"
 #include "xbt/graph.h"
 #include "xbt/misc.h"
-#include "xbt/file_stat.h"
 #include "portable.h"
 #include "xbt/config.h"
 #include "surf/datatypes.h"
@@ -124,7 +123,6 @@ typedef struct surf_action {
   char *category;               /**< tracing category for categorized resource utilization monitoring */
 #endif
   surf_file_t file;        /**< surf_file_t for storage model */
-  s_file_stat_t stat;        /**< surf_file_t for storage model */
   xbt_dict_t ls_dict;
 } s_surf_action_t;
 
@@ -208,6 +206,9 @@ typedef struct surf_cpu_model_extension_public {
   surf_action_t(*execute) (void *cpu, double size);
   surf_action_t(*sleep) (void *cpu, double duration);
   e_surf_resource_state_t(*get_state) (void *cpu);
+  void(*set_state) (void *cpu, e_surf_resource_state_t state);
+
+  int (*get_core) (void *cpu);
   double (*get_speed) (void *cpu, double load);
   double (*get_available_speed) (void *cpu);
   void (*add_traces) (void);
@@ -240,12 +241,13 @@ typedef struct surf_network_model_extension_public {
  */
 
 typedef struct surf_storage_model_extension_public {
-  surf_action_t(*open) (void *storage, const char* mount, const char* path, const char* mode);
-  surf_action_t(*close) (void *storage, surf_file_t fp);
-  surf_action_t(*read) (void *storage, void* ptr, double size, size_t nmemb, surf_file_t stream);
-  surf_action_t(*write) (void *storage, const void* ptr, size_t size, size_t nmemb, surf_file_t stream);
-  surf_action_t(*stat) (void *storage, surf_file_t stream);
-  surf_action_t(*unlink) (void *storage, surf_file_t stream);
+  surf_action_t(*open) (void *storage, const char* mount, const char* path);
+  surf_action_t(*close) (void *storage, surf_file_t fd);
+  surf_action_t(*read) (void *storage, void* ptr, size_t size,
+                        surf_file_t fd);
+  surf_action_t(*write) (void *storage, const void* ptr, size_t size,
+                         surf_file_t fd);
+  surf_action_t(*stat) (void *storage, surf_file_t fd);
   surf_action_t(*ls) (void *storage, const char *path);
 } s_surf_model_extension_storage_t;
 
@@ -262,6 +264,8 @@ typedef struct surf_workstation_model_extension_public {
                                       and create the corresponding action */
   surf_action_t(*sleep) (void *workstation, double duration);                              /**< Make a workstation sleep during a given duration */
   e_surf_resource_state_t(*get_state) (void *workstation);                                      /**< Return the CPU state of a workstation */
+  void(*set_state) (void *workstation, e_surf_resource_state_t state);
+  int (*get_core) (void *workstation); 
   double (*get_speed) (void *workstation, double load);                                    /**< Return the speed of a workstation */
   double (*get_available_speed) (void *workstation);                                       /**< Return tha available speed of a workstation */
    surf_action_t(*communicate) (void *workstation_src,                                     /**< Execute a communication amount between two workstations */
@@ -277,13 +281,17 @@ typedef struct surf_workstation_model_extension_public {
                                           double rate);
   double (*get_link_bandwidth) (const void *link);                                         /**< Return the current bandwidth of a network link */
   double (*get_link_latency) (const void *link);                                           /**< Return the current latency of a network link */
-  surf_action_t(*open) (void *workstation, const char* storage, const char* path, const char* mode);
-  surf_action_t(*close) (void *workstation, surf_file_t fp);
-  surf_action_t(*read) (void *workstation, void* ptr, size_t size, size_t nmemb, surf_file_t stream);
-  surf_action_t(*write) (void *workstation, const void* ptr, size_t size, size_t nmemb, surf_file_t stream);
-  surf_action_t(*stat) (void *workstation, surf_file_t stream);
-  surf_action_t(*unlink) (void *workstation, surf_file_t stream);
+  surf_action_t(*open) (void *workstation, const char* storage,
+                        const char* path);
+  surf_action_t(*close) (void *workstation, surf_file_t fd);
+  surf_action_t(*read) (void *workstation, void* ptr, size_t size,
+                        surf_file_t fd);
+  surf_action_t(*write) (void *workstation, const void* ptr, size_t size,
+                         surf_file_t fd);
+  surf_action_t(*stat) (void *workstation, surf_file_t fd);
+  int(*unlink) (void *workstation, surf_file_t fd);
   surf_action_t(*ls) (void *workstation, const char* mount, const char *path);
+  size_t (*get_size) (void *workstation, surf_file_t fd);
 
   int (*link_shared) (const void *link);
    xbt_dict_t(*get_properties) (const void *resource);
@@ -712,6 +720,17 @@ XBT_PUBLIC_DATA(s_surf_model_description_t) surf_new_model_description[];
  */
 XBT_PUBLIC_DATA(xbt_dynar_t) model_list;
 XBT_PUBLIC_DATA(xbt_dynar_t) model_list_invoke;
+
+/*******************************************/
+/*** SURF Platform *************************/
+/*******************************************/
+typedef struct s_as *AS_t;
+
+XBT_PUBLIC_DATA(AS_t) surf_AS_get_routing_root(void); 
+XBT_PUBLIC_DATA(const char *) surf_AS_get_name(AS_t as);
+XBT_PUBLIC_DATA(xbt_dict_t) surf_AS_get_routing_sons(AS_t as);
+XBT_PUBLIC_DATA(const char *) surf_AS_get_model(AS_t as);
+XBT_PUBLIC_DATA(xbt_dynar_t) surf_AS_get_hosts(AS_t as);
 
 /*******************************************/
 /*** SURF Globals **************************/

@@ -24,7 +24,7 @@ else()
     )
 endif()
 
-set(SIMGRID_DEP "-lws2_32 -L${PATH_PCRE_LIB} -L${PATH_PTHREAD_LIB} -lm -lpcre -lpthreadGC2")
+set(SIMGRID_DEP "-lws2_32 -L${PATH_PTHREAD_LIB} -lm -lpthreadGC2")
 
 if(ARCH_32_BITS)
   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -m32 -march=i486")

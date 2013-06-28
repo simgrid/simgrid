@@ -1,6 +1,7 @@
 #! ./tesh
 
 ! expect signal SIGABRT
+! timeout 20
 $ ${bindir:=.}/bugged1 --cfg=model-check:1 "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (0:@) Configuration change: Set 'model-check' to '1'
 > [  0.000000] (0:@) Check a safety property
@@ -9,21 +10,28 @@ $ ${bindir:=.}/bugged1 --cfg=model-check:1 "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%
 > [  0.000000] (1:server@HostA) OK
 > [  0.000000] (4:client@HostD) Sent!
 > [  0.000000] (2:client@HostB) Sent!
+> [  0.000000] (3:client@HostC) Sent!
+> [  0.000000] (2:client@HostB) Sent!
+> [  0.000000] (3:client@HostC) Sent!
+> [  0.000000] (1:server@HostA) OK
+> [  0.000000] (4:client@HostD) Sent!
+> [  0.000000] (2:client@HostB) Sent!
+> [  0.000000] (3:client@HostC) Sent!
 > [  0.000000] (2:client@HostB) Sent!
 > [  0.000000] (1:server@HostA) **************************
 > [  0.000000] (1:server@HostA) *** PROPERTY NOT VALID ***
 > [  0.000000] (1:server@HostA) **************************
 > [  0.000000] (1:server@HostA) Counter-example execution trace:
-> [  0.000000] (1:server@HostA) [(1)server] iRecv (dst=server, buff=(verbose only), size=(verbose only))
-> [  0.000000] (1:server@HostA) [(2)client] iSend (src=client, buff=(verbose only), size=(verbose only))
-> [  0.000000] (1:server@HostA) [(1)server] Wait (comm=(verbose only) [(2)client -> (1)server])
-> [  0.000000] (1:server@HostA) [(1)server] iRecv (dst=server, buff=(verbose only), size=(verbose only))
-> [  0.000000] (1:server@HostA) [(2)client] Wait (comm=(verbose only) [(2)client -> (1)server])
-> [  0.000000] (1:server@HostA) [(4)client] iSend (src=client, buff=(verbose only), size=(verbose only))
-> [  0.000000] (1:server@HostA) [(1)server] Wait (comm=(verbose only) [(4)client -> (1)server])
-> [  0.000000] (1:server@HostA) [(1)server] iRecv (dst=server, buff=(verbose only), size=(verbose only))
-> [  0.000000] (1:server@HostA) [(3)client] iSend (src=client, buff=(verbose only), size=(verbose only))
-> [  0.000000] (1:server@HostA) [(1)server] Wait (comm=(verbose only) [(3)client -> (1)server])
-> [  0.000000] (1:server@HostA) Expanded states = 17
-> [  0.000000] (1:server@HostA) Visited states = 32
-> [  0.000000] (1:server@HostA) Executed transitions = 30
+> [  0.000000] (1:server@HostA) [(1)HostA (server)] iRecv (dst=(1)HostA (server), buff=(verbose only), size=(verbose only))
+> [  0.000000] (1:server@HostA) [(2)HostB (client)] iSend (src=(2)HostB (client), buff=(verbose only), size=(verbose only))
+> [  0.000000] (1:server@HostA) [(1)HostA (server)] Wait (comm=(verbose only) [(2)HostB (client)-> (1)HostA (server)])
+> [  0.000000] (1:server@HostA) [(1)HostA (server)] iRecv (dst=(1)HostA (server), buff=(verbose only), size=(verbose only))
+> [  0.000000] (1:server@HostA) [(2)HostB (client)] Wait (comm=(verbose only) [(2)HostB (client)-> (1)HostA (server)])
+> [  0.000000] (1:server@HostA) [(4)HostD (client)] iSend (src=(4)HostD (client), buff=(verbose only), size=(verbose only))
+> [  0.000000] (1:server@HostA) [(1)HostA (server)] Wait (comm=(verbose only) [(4)HostD (client)-> (1)HostA (server)])
+> [  0.000000] (1:server@HostA) [(1)HostA (server)] iRecv (dst=(1)HostA (server), buff=(verbose only), size=(verbose only))
+> [  0.000000] (1:server@HostA) [(3)HostC (client)] iSend (src=(3)HostC (client), buff=(verbose only), size=(verbose only))
+> [  0.000000] (1:server@HostA) [(1)HostA (server)] Wait (comm=(verbose only) [(3)HostC (client)-> (1)HostA (server)])
+> [  0.000000] (1:server@HostA) Expanded states = 22
+> [  0.000000] (1:server@HostA) Visited states = 56
+> [  0.000000] (1:server@HostA) Executed transitions = 52

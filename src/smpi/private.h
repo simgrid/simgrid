@@ -114,7 +114,7 @@ void smpi_datatype_use(MPI_Datatype type);
 void smpi_datatype_unuse(MPI_Datatype type);
 
 int smpi_datatype_contiguous(int count, MPI_Datatype old_type,
-                       MPI_Datatype* new_type);
+                       MPI_Datatype* new_type, MPI_Aint lb);
 int smpi_datatype_vector(int count, int blocklen, int stride,
                       MPI_Datatype old_type, MPI_Datatype* new_type);
 
@@ -135,6 +135,7 @@ void smpi_datatype_commit(MPI_Datatype* datatype);
 
 void smpi_empty_status(MPI_Status * status);
 MPI_Op smpi_op_new(MPI_User_function * function, int commute);
+int smpi_op_is_commute(MPI_Op op);
 void smpi_op_destroy(MPI_Op op);
 void smpi_op_apply(MPI_Op op, void *invec, void *inoutvec, int *len,
                    MPI_Datatype * datatype);
@@ -210,6 +211,8 @@ void smpi_mpi_barrier(MPI_Comm comm);
 void smpi_mpi_gather(void *sendbuf, int sendcount, MPI_Datatype sendtype,
                      void *recvbuf, int recvcount, MPI_Datatype recvtype,
                      int root, MPI_Comm comm);
+void smpi_mpi_reduce_scatter(void *sendbuf, void *recvbuf, int *recvcounts,
+                       MPI_Datatype datatype, MPI_Op op, MPI_Comm comm);
 void smpi_mpi_gatherv(void *sendbuf, int sendcount, MPI_Datatype sendtype,
                       void *recvbuf, int *recvcounts, int *displs,
                       MPI_Datatype recvtype, int root, MPI_Comm comm);
@@ -239,7 +242,7 @@ void nary_tree_bcast(void *buf, int count, MPI_Datatype datatype, int root,
                      MPI_Comm comm, int arity);
 void nary_tree_barrier(MPI_Comm comm, int arity);
 
-int smpi_coll_tuned_alltoall_ompi(void *sendbuf, int sendcount,
+int smpi_coll_tuned_alltoall_ompi2(void *sendbuf, int sendcount,
                                       MPI_Datatype sendtype, void *recvbuf,
                                       int recvcount, MPI_Datatype recvtype,
                                       MPI_Comm comm);
@@ -252,10 +255,6 @@ int smpi_coll_tuned_alltoall_basic_linear(void *sendbuf, int sendcount,
                                           void *recvbuf, int recvcount,
                                           MPI_Datatype recvtype,
                                           MPI_Comm comm);
-int smpi_coll_tuned_alltoall_pairwise(void *sendbuf, int sendcount,
-                                      MPI_Datatype sendtype, void *recvbuf,
-                                      int recvcount, MPI_Datatype recvtype,
-                                      MPI_Comm comm);
 int smpi_coll_basic_alltoallv(void *sendbuf, int *sendcounts,
                               int *senddisps, MPI_Datatype sendtype,
                               void *recvbuf, int *recvcounts,

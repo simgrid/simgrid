@@ -10,7 +10,6 @@
 #include "xbt/misc.h"
 #include "xbt/fifo.h"
 #include "xbt/dict.h"
-#include "xbt/file_stat.h"
 #include "xbt/function_types.h"
 #include "xbt/parmap.h"
 #include "xbt/swag.h"
@@ -72,7 +71,6 @@ typedef struct s_smx_sem *smx_sem_t;
 
 /********************************** File *************************************/
 typedef struct s_smx_file *smx_file_t;
-typedef struct s_smx_stat *smx_stat_t;
 
 /********************************** Action *************************************/
 typedef struct s_smx_action *smx_action_t; /* FIXME: replace by specialized action handlers */
@@ -258,6 +256,8 @@ XBT_PUBLIC(smx_host_t) SIMIX_host_get_by_name(const char *name);
 XBT_PUBLIC(smx_host_t) SIMIX_host_self(void);
 XBT_PUBLIC(const char*) SIMIX_host_self_get_name(void);
 XBT_PUBLIC(const char*) SIMIX_host_get_name(smx_host_t host); /* FIXME: make private: only the name of SIMIX_host_self() should be public without request */
+XBT_PUBLIC(void) SIMIX_host_on(smx_host_t host);
+XBT_PUBLIC(void) SIMIX_host_off(smx_host_t host, smx_process_t issuer);
 XBT_PUBLIC(void) SIMIX_host_self_set_data(void *data);
 XBT_PUBLIC(void*) SIMIX_host_self_get_data(void);
 XBT_PUBLIC(void*) SIMIX_host_get_data(smx_host_t host);
@@ -297,6 +297,9 @@ XBT_PUBLIC(void) SIMIX_comm_finish(smx_action_t action);
 XBT_PUBLIC(smx_host_t) simcall_host_get_by_name(const char *name);
 XBT_PUBLIC(const char *) simcall_host_get_name(smx_host_t host);
 XBT_PUBLIC(xbt_dict_t) simcall_host_get_properties(smx_host_t host);
+XBT_PUBLIC(void) simcall_host_on(smx_host_t host);
+XBT_PUBLIC(void) simcall_host_off(smx_host_t host);
+XBT_PUBLIC(int) simcall_host_get_core(smx_host_t host);
 XBT_PUBLIC(double) simcall_host_get_speed(smx_host_t host);
 XBT_PUBLIC(double) simcall_host_get_available_speed(smx_host_t host);
 /* Two possible states, 1 - CPU ON and 0 CPU OFF */
@@ -478,16 +481,17 @@ XBT_PUBLIC(void) simcall_sem_release(smx_sem_t sem);
 XBT_PUBLIC(int) simcall_sem_would_block(smx_sem_t sem);
 XBT_PUBLIC(void) simcall_sem_acquire(smx_sem_t sem);
 XBT_PUBLIC(void) simcall_sem_acquire_timeout(smx_sem_t sem,
-                                           double max_duration);
+                                             double max_duration);
 XBT_PUBLIC(int) simcall_sem_get_capacity(smx_sem_t sem);
 
-XBT_PUBLIC(double) simcall_file_read(void* ptr, size_t size, size_t nmemb, smx_file_t stream);
-XBT_PUBLIC(size_t) simcall_file_write(const void* ptr, size_t size, size_t nmemb, smx_file_t stream);
-XBT_PUBLIC(smx_file_t) simcall_file_open(const char* storage, const char* path, const char* mode);
-XBT_PUBLIC(int) simcall_file_close(smx_file_t fp);
-XBT_PUBLIC(int) simcall_file_stat(smx_file_t fd, s_file_stat_t *buf);
+XBT_PUBLIC(size_t) simcall_file_read(void* ptr, size_t size, smx_file_t fd);
+XBT_PUBLIC(size_t) simcall_file_write(const void* ptr, size_t size,
+                                      smx_file_t fd);
+XBT_PUBLIC(smx_file_t) simcall_file_open(const char* storage, const char* path);
+XBT_PUBLIC(int) simcall_file_close(smx_file_t fd);
 XBT_PUBLIC(int) simcall_file_unlink(smx_file_t fd);
 XBT_PUBLIC(xbt_dict_t) simcall_file_ls(const char* mount, const char* path);
+XBT_PUBLIC(size_t) simcall_file_get_size(smx_file_t fd);
 
 /************************** AS router   **********************************/
 XBT_PUBLIC(xbt_dict_t) SIMIX_asr_get_properties(const char *name);

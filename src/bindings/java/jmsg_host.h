@@ -112,6 +112,24 @@ Java_org_simgrid_msg_Host_nativeInit(JNIEnv *env, jclass cls);
 JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Host_getByName
     (JNIEnv *, jclass, jstring);
 
+/**
+ * This function start the host if it is off
+ *
+ * @param jhost			The host to test the validity.
+ * @param env			The environment of the current thread
+ *
+ */
+JNIEXPORT void JNICALL Java_org_simgrid_msg_Host_on(JNIEnv *env, jobject jhost);
+
+/**
+ * This function stop the host if it is on
+ *
+ * @param jhost			The host to test the validity.
+ * @param env			The environment of the current thread
+ *
+ */
+JNIEXPORT void JNICALL Java_org_simgrid_msg_Host_off(JNIEnv *env, jobject jhost);
+
 /*
  * Class		org_simgrid_msg_Host
  * Method		currentHost
@@ -133,6 +151,13 @@ JNIEXPORT jint JNICALL Java_org_simgrid_msg_Host_getCount
  * Signature	()D
  */
 JNIEXPORT jdouble JNICALL Java_org_simgrid_msg_Host_getSpeed
+    (JNIEnv *, jobject);
+/*
+ * Class		org_simgrid_msg_Host
+ * Method		getCore
+ * Signature	()D
+ */
+JNIEXPORT jdouble JNICALL Java_org_simgrid_msg_Host_getCore
     (JNIEnv *, jobject);
 /*
  * Class		org_simgrid_msg_Host
@@ -171,4 +196,10 @@ JNIEXPORT jboolean JNICALL Java_org_simgrid_msg_Host_isAvail
 JNIEXPORT jobjectArray JNICALL
 Java_org_simgrid_msg_Host_all(JNIEnv *, jclass);
 
+JNIEXPORT void JNICALL 
+Java_org_simgrid_msg_Host_setAsyncMailbox(JNIEnv * env, jclass cls_arg, jobject jname);
+
+
+
 #endif                          /*!MSG_JHOST_H */
+

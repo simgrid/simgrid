@@ -2,6 +2,6 @@
 <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">
 <platform version="3">
 	 <AS  id="AS0"  routing="Full">
-  <host id="bob" power="500000000"/>
+  <host id="bob" power="500Mf"/>
   </AS>
 </platform>

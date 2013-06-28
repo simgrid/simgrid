@@ -69,14 +69,20 @@ XBT_PUBLIC(void) MSG_set_function(const char *host_id,
 XBT_PUBLIC(double) MSG_get_clock(void);
 XBT_PUBLIC(unsigned long int) MSG_get_sent_msg(void);
 
+/************************** Environment ***********************************/
+XBT_PUBLIC(msg_as_t) MSG_environment_get_routing_root(void);
+XBT_PUBLIC(const char *) MSG_environment_as_get_name(msg_as_t as);
+XBT_PUBLIC(xbt_dict_t) MSG_environment_as_get_routing_sons(msg_as_t as);
+XBT_PUBLIC(const char *) MSG_environment_as_get_property_value(msg_as_t as, const char *name);
+XBT_PUBLIC(const char *) MSG_environment_as_get_model(msg_as_t as);
+XBT_PUBLIC(xbt_dynar_t) MSG_environment_as_get_hosts(msg_as_t as);
 
 /************************** File handling ***********************************/
-XBT_PUBLIC(double) MSG_file_read(void* ptr, size_t size, size_t nmemb, msg_file_t stream);
-XBT_PUBLIC(size_t) MSG_file_write(const void* ptr, size_t size, size_t nmemb, msg_file_t stream);
-XBT_PUBLIC(msg_file_t) MSG_file_open(const char* mount, const char* path, const char* mode);
-XBT_PUBLIC(int) MSG_file_close(msg_file_t fp);
-XBT_PUBLIC(int) MSG_file_stat(msg_file_t fd, s_msg_stat_t *buf);
-XBT_PUBLIC(void) MSG_file_free_stat(s_msg_stat_t *stat);
+XBT_PUBLIC(size_t) MSG_file_read(void* ptr, size_t size, msg_file_t fd);
+XBT_PUBLIC(size_t) MSG_file_write(const void* ptr, size_t size, msg_file_t fd);
+XBT_PUBLIC(msg_file_t) MSG_file_open(const char* mount, const char* path);
+XBT_PUBLIC(int) MSG_file_close(msg_file_t fd);
+XBT_PUBLIC(size_t) MSG_file_get_size(msg_file_t fd);
 
 XBT_PUBLIC(int) MSG_file_unlink(msg_file_t fd);
 XBT_PUBLIC(xbt_dict_t) MSG_file_ls(const char *mount, const char *path);
@@ -90,10 +96,13 @@ XBT_PUBLIC(void) MSG_as_router_set_property_value(const char* asr, const char *n
 XBT_PUBLIC(msg_error_t) MSG_host_set_data(msg_host_t host, void *data);
 XBT_PUBLIC(void *) MSG_host_get_data(msg_host_t host);
 XBT_PUBLIC(const char *) MSG_host_get_name(msg_host_t host);
+XBT_PUBLIC(void) MSG_host_on(msg_host_t host);
+XBT_PUBLIC(void) MSG_host_off(msg_host_t host);
 XBT_PUBLIC(msg_host_t) MSG_host_self(void);
 XBT_PUBLIC(int) MSG_get_host_msgload(msg_host_t host);
 /* int MSG_get_msgload(void); This function lacks specification; discard it */
 XBT_PUBLIC(double) MSG_get_host_speed(msg_host_t h);
+XBT_PUBLIC(int) MSG_get_host_core(msg_host_t h);
 XBT_PUBLIC(int) MSG_host_is_avail(msg_host_t h);
 XBT_PUBLIC(void) __MSG_host_priv_free(msg_host_priv_t priv);
 XBT_PUBLIC(void) __MSG_host_destroy(msg_host_t host);
@@ -357,6 +366,19 @@ XBT_PUBLIC(int) MSG_task_probe_from_host(int channel, msg_host_t host);
 XBT_PUBLIC(msg_error_t) MSG_set_channel_number(int number);
 XBT_PUBLIC(int) MSG_get_channel_number(void);
 #endif
+
+/** @brief Opaque type representing a semaphore
+ *  @ingroup msg_synchro
+ *  @hideinitializer
+ */
+typedef struct s_smx_sem *msg_sem_t; // Yeah that's a rename of the smx_sem_t which doesnt require smx_sem_t to be declared here
+XBT_PUBLIC(msg_sem_t) MSG_sem_init(int initial_value);
+XBT_PUBLIC(void) MSG_sem_acquire(msg_sem_t sem);
+XBT_PUBLIC(msg_error_t) MSG_sem_acquire_timeout(msg_sem_t sem, double timeout);
+XBT_PUBLIC(void) MSG_sem_release(msg_sem_t sem);
+XBT_PUBLIC(void) MSG_sem_get_capacity(msg_sem_t sem);
+XBT_PUBLIC(void) MSG_sem_destroy(msg_sem_t sem);
+XBT_PUBLIC(int) MSG_sem_would_block(msg_sem_t sem);
 
 /** @brief Opaque type describing a Virtual Machine.
  *  @ingroup msg_VMs

@@ -2,6 +2,8 @@
 
 ! output sort
 $ ${bindir:=.}/actions --log=actions.thres=verbose homogeneous_3_hosts.xml deployment_split.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+> This example is still relevant if you want to learn about MSG-based trace replay, but if you want to simulate MPI-like traces, you should use the newer version that is in the examples/smpi/replay directory instead.
+> WARNING: THIS BINARY IS KINDA DEPRECATED
 > [ 10.831247] (1:p0@host0) p0 recv p1 10.831247
 > [ 10.831247] (2:p1@host1) p1 send p0 1e10 10.831247
 > [ 10.831248] (1:p0@host0) p0 compute 12 0.000001
@@ -10,6 +12,8 @@ $ ${bindir:=.}/actions --log=actions.thres=verbose homogeneous_3_hosts.xml deplo
 
 ! output sort
 $ ${bindir:=.}/actions --log=actions.thres=verbose homogeneous_3_hosts.xml deployment.xml actions_allReduce.txt "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+> This example is still relevant if you want to learn about MSG-based trace replay, but if you want to simulate MPI-like traces, you should use the newer version that is in the examples/smpi/replay directory instead.
+> WARNING: THIS BINARY IS KINDA DEPRECATED
 > [  0.000000] (1:p0@host0) p0 comm_size 3 0.000000
 > [ 51.095484] (1:p0@host0) p0 allReduce 5e8 5e8 51.095484
 > [ 51.095484] (2:p1@host1) p1 allReduce 5e8 5e8 51.095484
@@ -21,6 +25,8 @@ $ ${bindir:=.}/actions --log=actions.thres=verbose homogeneous_3_hosts.xml deplo
 
 ! output sort
 $ ${bindir:=.}/actions --log=actions.thres=verbose homogeneous_3_hosts.xml deployment.xml actions_barrier.txt "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+> This example is still relevant if you want to learn about MSG-based trace replay, but if you want to simulate MPI-like traces, you should use the newer version that is in the examples/smpi/replay directory instead.
+> WARNING: THIS BINARY IS KINDA DEPRECATED
 > [  0.000000] (1:p0@host0) p0 comm_size 3 0.000000
 > [  0.000000] (2:p1@host1) p1 comm_size 3 0.000000
 > [  0.000000] (3:p2@host2) p2 comm_size 3 0.000000
@@ -33,6 +39,8 @@ $ ${bindir:=.}/actions --log=actions.thres=verbose homogeneous_3_hosts.xml deplo
 
 ! output sort
 $ ${bindir:=.}/actions --log=actions.thres=verbose homogeneous_3_hosts.xml deployment.xml actions_bcast.txt "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+> This example is still relevant if you want to learn about MSG-based trace replay, but if you want to simulate MPI-like traces, you should use the newer version that is in the examples/smpi/replay directory instead.
+> WARNING: THIS BINARY IS KINDA DEPRECATED
 > [  0.000000] (1:p0@host0) p0 comm_size 3 0.000000
 > [  0.547742] (1:p0@host0) p0 bcast 5e8 0.547742
 > [  0.547742] (2:p1@host1) p1 bcast 5e8 0.547742
@@ -53,6 +61,8 @@ $ ${bindir:=.}/actions --log=actions.thres=verbose homogeneous_3_hosts.xml deplo
 
 ! output sort
 $ ${bindir:=.}/actions --log=actions.thres=verbose homogeneous_3_hosts.xml deployment.xml actions_reduce.txt "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+> This example is still relevant if you want to learn about MSG-based trace replay, but if you want to simulate MPI-like traces, you should use the newer version that is in the examples/smpi/replay directory instead.
+> WARNING: THIS BINARY IS KINDA DEPRECATED
 > [  0.000000] (1:p0@host0) p0 comm_size 3 0.000000
 > [  0.547742] (2:p1@host1) p1 reduce 5e8 5e8 0.547742
 > [  0.547742] (3:p2@host2) p2 reduce 5e8 5e8 0.547742
@@ -64,6 +74,8 @@ $ ${bindir:=.}/actions --log=actions.thres=verbose homogeneous_3_hosts.xml deplo
 
 ! output sort
 $ ${bindir:=.}/actions --log=actions.thres=verbose homogeneous_3_hosts.xml deployment.xml actions_with_isend.txt "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+> This example is still relevant if you want to learn about MSG-based trace replay, but if you want to simulate MPI-like traces, you should use the newer version that is in the examples/smpi/replay directory instead.
+> WARNING: THIS BINARY IS KINDA DEPRECATED
 > [  0.000000] (2:p1@host1) p1 Irecv p0 0.000000
 > [  0.000000] (3:p2@host2) p2 Irecv p1 0.000000
 > [  1.088979] (1:p0@host0) p0 send p1 1e9 1.088979

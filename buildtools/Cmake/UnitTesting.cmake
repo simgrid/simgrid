@@ -12,7 +12,6 @@ set(TEST_CFILES
   src/xbt/xbt_strbuff.c
   src/xbt/xbt_sha.c
   src/xbt/config.c
-  src/xbt/parmap.c
   )
 set(TEST_UNITS
   ${CMAKE_CURRENT_BINARY_DIR}/src/cunit_unit.c
@@ -25,7 +24,6 @@ set(TEST_UNITS
   ${CMAKE_CURRENT_BINARY_DIR}/src/xbt_strbuff_unit.c
   ${CMAKE_CURRENT_BINARY_DIR}/src/xbt_sha_unit.c
   ${CMAKE_CURRENT_BINARY_DIR}/src/config_unit.c
-  ${CMAKE_CURRENT_BINARY_DIR}/src/parmap_unit.c
 
   ${CMAKE_CURRENT_BINARY_DIR}/src/simgrid_units_main.c
   )

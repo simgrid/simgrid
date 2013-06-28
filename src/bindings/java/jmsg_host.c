@@ -154,6 +154,19 @@ Java_org_simgrid_msg_Host_currentHost(JNIEnv * env, jclass cls) {
 
   return jhost;
 }
+
+JNIEXPORT void JNICALL
+Java_org_simgrid_msg_Host_on(JNIEnv *env, jobject jhost) {
+  msg_host_t host = jhost_get_native(env, jhost);
+  MSG_host_on(host);
+}
+
+JNIEXPORT void JNICALL
+Java_org_simgrid_msg_Host_off(JNIEnv *env, jobject jhost) {
+  msg_host_t host = jhost_get_native(env, jhost);
+  MSG_host_off(host);
+}
+
 JNIEXPORT jint JNICALL
 Java_org_simgrid_msg_Host_getCount(JNIEnv * env, jclass cls) {
   xbt_dynar_t hosts =  MSG_hosts_as_dynar();
@@ -174,6 +187,20 @@ Java_org_simgrid_msg_Host_getSpeed(JNIEnv * env,
 
   return (jdouble) MSG_get_host_speed(host);
 }
+
+JNIEXPORT jdouble JNICALL
+Java_org_simgrid_msg_Host_getCore(JNIEnv * env,
+                                        jobject jhost) {
+  msg_host_t host = jhost_get_native(env, jhost);
+
+  if (!host) {
+    jxbt_throw_notbound(env, "host", jhost);
+    return -1;
+  }
+
+  return (jdouble) MSG_get_host_core(host);
+}
+
 JNIEXPORT jint JNICALL
 Java_org_simgrid_msg_Host_getLoad(JNIEnv * env, jobject jhost) {
   msg_host_t host = jhost_get_native(env, jhost);
@@ -206,6 +233,7 @@ Java_org_simgrid_msg_Host_getProperty(JNIEnv *env, jobject jhost, jobject jname)
 
   return jproperty;
 }
+
 JNIEXPORT void JNICALL
 Java_org_simgrid_msg_Host_setProperty(JNIEnv *env, jobject jhost, jobject jname, jobject jvalue) {
   msg_host_t host = jhost_get_native(env, jhost);
@@ -277,4 +305,13 @@ Java_org_simgrid_msg_Host_all(JNIEnv * env, jclass cls_arg)
   }
   xbt_dynar_free(&table);
   return jtable;
+}
+
+JNIEXPORT void JNICALL 
+Java_org_simgrid_msg_Host_setAsyncMailbox(JNIEnv * env, jclass cls_arg, jobject jname){
+
+  const char *name = (*env)->GetStringUTFChars(env, jname, 0);
+  MSG_mailbox_set_async(name);
+  (*env)->ReleaseStringUTFChars(env, jname, name);
+
 }

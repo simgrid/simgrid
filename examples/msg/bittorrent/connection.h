@@ -15,6 +15,7 @@ typedef struct s_connection {
   int messages_count;
   double peer_speed;
   double last_unchoke;
+  int current_piece;
   int am_interested:1;          //Indicates if we are interested in something the peer has
   int interested:1;             //Indicates if the peer is interested in one of our pieces
   int choked_upload:1;          //Indicates if the peer is choked for the current peer
