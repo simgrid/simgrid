@@ -2249,474 +2249,474 @@ int PMPI_Initialized(int* flag) {
 /* The following calls are not yet implemented and will fail at runtime. */
 /* Once implemented, please move them above this notice. */
 
-static inline int not_yet_implemented(void) {
-	  XBT_WARN("Not yet implemented : line %d in %s", __LINE__, __FUNCTION__);
-   return MPI_SUCCESS;
-}
+#define NOT_YET_IMPLEMENTED {\
+	XBT_WARN("Not yet implemented : %s. Please contact the Simgrid team if support is needed", __FUNCTION__);\
+	return MPI_SUCCESS;\
+        }
 
 
 int PMPI_Type_dup(MPI_Datatype datatype, MPI_Datatype *newtype){
-  return not_yet_implemented();
+  NOT_YET_IMPLEMENTED
 }
 
 int PMPI_Type_set_name(MPI_Datatype  datatype, char * name)
 {
-  return not_yet_implemented();
+  NOT_YET_IMPLEMENTED
 }
 
 int PMPI_Type_get_name(MPI_Datatype  datatype, char * name, int* len)
 {
-  return not_yet_implemented();
+  NOT_YET_IMPLEMENTED
 }
 
 int PMPI_Pack_size(int incount, MPI_Datatype datatype, MPI_Comm comm, int* size) {
-   return not_yet_implemented();
+   NOT_YET_IMPLEMENTED
 }
 
 int PMPI_Cart_coords(MPI_Comm comm, int rank, int maxdims, int* coords) {
-   return not_yet_implemented();
+   NOT_YET_IMPLEMENTED
 }
 
 int PMPI_Cart_create(MPI_Comm comm_old, int ndims, int* dims, int* periods, int reorder, MPI_Comm* comm_cart) {
-   return not_yet_implemented();
+   NOT_YET_IMPLEMENTED
 }
 
 int PMPI_Cart_get(MPI_Comm comm, int maxdims, int* dims, int* periods, int* coords) {
-   return not_yet_implemented();
+   NOT_YET_IMPLEMENTED
 }
 
 int PMPI_Cart_map(MPI_Comm comm_old, int ndims, int* dims, int* periods, int* newrank) {
-   return not_yet_implemented();
+   NOT_YET_IMPLEMENTED
 }
 
 int PMPI_Cart_rank(MPI_Comm comm, int* coords, int* rank) {
-   return not_yet_implemented();
+   NOT_YET_IMPLEMENTED
 }
 
 int PMPI_Cart_shift(MPI_Comm comm, int direction, int displ, int* source, int* dest) {
-   return not_yet_implemented();
+   NOT_YET_IMPLEMENTED
 }
 
 int PMPI_Cart_sub(MPI_Comm comm, int* remain_dims, MPI_Comm* comm_new) {
-   return not_yet_implemented();
+   NOT_YET_IMPLEMENTED
 }
 
 int PMPI_Cartdim_get(MPI_Comm comm, int* ndims) {
-   return not_yet_implemented();
+   NOT_YET_IMPLEMENTED
 }
 
 int PMPI_Graph_create(MPI_Comm comm_old, int nnodes, int* index, int* edges, int reorder, MPI_Comm* comm_graph) {
-   return not_yet_implemented();
+   NOT_YET_IMPLEMENTED
 }
 
 int PMPI_Graph_get(MPI_Comm comm, int maxindex, int maxedges, int* index, int* edges) {
-   return not_yet_implemented();
+   NOT_YET_IMPLEMENTED
 }
 
 int PMPI_Graph_map(MPI_Comm comm_old, int nnodes, int* index, int* edges, int* newrank) {
-   return not_yet_implemented();
+   NOT_YET_IMPLEMENTED
 }
 
 int PMPI_Graph_neighbors(MPI_Comm comm, int rank, int maxneighbors, int* neighbors) {
-   return not_yet_implemented();
+   NOT_YET_IMPLEMENTED
 }
 
 int PMPI_Graph_neighbors_count(MPI_Comm comm, int rank, int* nneighbors) {
-   return not_yet_implemented();
+   NOT_YET_IMPLEMENTED
 }
 
 int PMPI_Graphdims_get(MPI_Comm comm, int* nnodes, int* nedges) {
-   return not_yet_implemented();
+   NOT_YET_IMPLEMENTED
 }
 
 int PMPI_Topo_test(MPI_Comm comm, int* top_type) {
-   return not_yet_implemented();
+   NOT_YET_IMPLEMENTED
 }
 
 int PMPI_Errhandler_create(MPI_Handler_function* function, MPI_Errhandler* errhandler) {
-   return not_yet_implemented();
+   NOT_YET_IMPLEMENTED
 }
 
 int PMPI_Errhandler_free(MPI_Errhandler* errhandler) {
-   return not_yet_implemented();
+   NOT_YET_IMPLEMENTED
 }
 
 int PMPI_Errhandler_get(MPI_Comm comm, MPI_Errhandler* errhandler) {
-   return not_yet_implemented();
+   NOT_YET_IMPLEMENTED
 }
 
 int PMPI_Error_string(int errorcode, char* string, int* resultlen) {
-   return not_yet_implemented();
+   NOT_YET_IMPLEMENTED
 }
 
 int PMPI_Errhandler_set(MPI_Comm comm, MPI_Errhandler errhandler) {
-   return not_yet_implemented();
+   NOT_YET_IMPLEMENTED
 }
 
 int PMPI_Comm_set_errhandler(MPI_Comm comm, MPI_Errhandler errhandler) {
-   return not_yet_implemented();
+   NOT_YET_IMPLEMENTED
 }
 
 int PMPI_Cancel(MPI_Request* request) {
-   return not_yet_implemented();
+   NOT_YET_IMPLEMENTED
 }
 
 int PMPI_Buffer_attach(void* buffer, int size) {
-   return not_yet_implemented();
+   NOT_YET_IMPLEMENTED
 }
 
 int PMPI_Buffer_detach(void* buffer, int* size) {
-   return not_yet_implemented();
+   NOT_YET_IMPLEMENTED
 }
 
 int PMPI_Comm_test_inter(MPI_Comm comm, int* flag) {
-   return not_yet_implemented();
+   NOT_YET_IMPLEMENTED
 }
 
 int PMPI_Comm_get_attr (MPI_Comm comm, int comm_keyval, void *attribute_val, int *flag)
 {
-   return not_yet_implemented();
+   NOT_YET_IMPLEMENTED
 }
 
 int PMPI_Comm_set_attr (MPI_Comm comm, int comm_keyval, void *attribute_val)
 {
-   return not_yet_implemented();
+   NOT_YET_IMPLEMENTED
 }
 
 int PMPI_Comm_delete_attr (MPI_Comm comm, int comm_keyval)
 {
-   return not_yet_implemented();
+   NOT_YET_IMPLEMENTED
 }
 
 int PMPI_Comm_create_keyval(MPI_Comm_copy_attr_function* copy_fn, MPI_Comm_delete_attr_function* delete_fn, int* keyval, void* extra_state)
 {
-   return not_yet_implemented();
+   NOT_YET_IMPLEMENTED
 }
 
 int PMPI_Comm_free_keyval(int* keyval) {
-   return not_yet_implemented();
+   NOT_YET_IMPLEMENTED
 }
 
 int PMPI_Pcontrol(const int level )
 {
-   return not_yet_implemented();
+   NOT_YET_IMPLEMENTED
 }
 
 int PMPI_Unpack(void* inbuf, int insize, int* position, void* outbuf, int outcount, MPI_Datatype type, MPI_Comm comm) {
-   return not_yet_implemented();
+   NOT_YET_IMPLEMENTED
 }
 
 int PMPI_Type_get_attr (MPI_Datatype type, int type_keyval, void *attribute_val, int* flag)
 {
-  return not_yet_implemented();
+  NOT_YET_IMPLEMENTED
 }
 
 int PMPI_Type_set_attr (MPI_Datatype type, int type_keyval, void *attribute_val)
 {
-  return not_yet_implemented();
+  NOT_YET_IMPLEMENTED
 }
 
 int PMPI_Type_delete_attr (MPI_Datatype type, int comm_keyval)
 {
-  return not_yet_implemented();
+  NOT_YET_IMPLEMENTED
 }
 
 int PMPI_Type_create_keyval(MPI_Type_copy_attr_function* copy_fn, MPI_Type_delete_attr_function* delete_fn, int* keyval, void* extra_state)
 {
-  return not_yet_implemented();
+  NOT_YET_IMPLEMENTED
 }
 
 int PMPI_Type_free_keyval(int* keyval) {
-  return not_yet_implemented();
+  NOT_YET_IMPLEMENTED
 }
 
 int PMPI_Intercomm_create(MPI_Comm local_comm, int local_leader, MPI_Comm peer_comm, int remote_leader, int tag, MPI_Comm* comm_out) {
-   return not_yet_implemented();
+   NOT_YET_IMPLEMENTED
 }
 
 int PMPI_Intercomm_merge(MPI_Comm comm, int high, MPI_Comm* comm_out) {
-   return not_yet_implemented();
+   NOT_YET_IMPLEMENTED
 }
 
 int PMPI_Bsend(void* buf, int count, MPI_Datatype datatype, int dest, int tag, MPI_Comm comm) {
-   return not_yet_implemented();
+   NOT_YET_IMPLEMENTED
 }
 
 int PMPI_Bsend_init(void* buf, int count, MPI_Datatype datatype, int dest, int tag, MPI_Comm comm, MPI_Request* request) {
-   return not_yet_implemented();
+   NOT_YET_IMPLEMENTED
 }
 
 int PMPI_Ibsend(void* buf, int count, MPI_Datatype datatype, int dest, int tag, MPI_Comm comm, MPI_Request* request) {
-   return not_yet_implemented();
+   NOT_YET_IMPLEMENTED
 }
 
 int PMPI_Comm_remote_group(MPI_Comm comm, MPI_Group* group) {
-   return not_yet_implemented();
+   NOT_YET_IMPLEMENTED
 }
 
 int PMPI_Comm_remote_size(MPI_Comm comm, int* size) {
-   return not_yet_implemented();
+   NOT_YET_IMPLEMENTED
 }
 
 int PMPI_Attr_delete(MPI_Comm comm, int keyval) {
-   return not_yet_implemented();
+   NOT_YET_IMPLEMENTED
 }
 
 int PMPI_Attr_get(MPI_Comm comm, int keyval, void* attr_value, int* flag) {
-   return not_yet_implemented();
+   NOT_YET_IMPLEMENTED
 }
 
 int PMPI_Attr_put(MPI_Comm comm, int keyval, void* attr_value) {
-   return not_yet_implemented();
+   NOT_YET_IMPLEMENTED
 }
 
 int PMPI_Rsend(void* buf, int count, MPI_Datatype datatype, int dest, int tag, MPI_Comm comm) {
-   return not_yet_implemented();
+   NOT_YET_IMPLEMENTED
 }
 
 int PMPI_Rsend_init(void* buf, int count, MPI_Datatype datatype, int dest, int tag, MPI_Comm comm, MPI_Request* request) {
-   return not_yet_implemented();
+   NOT_YET_IMPLEMENTED
 }
 
 int PMPI_Irsend(void* buf, int count, MPI_Datatype datatype, int dest, int tag, MPI_Comm comm, MPI_Request* request) {
-   return not_yet_implemented();
+   NOT_YET_IMPLEMENTED
 }
 
 int PMPI_Keyval_create(MPI_Copy_function* copy_fn, MPI_Delete_function* delete_fn, int* keyval, void* extra_state) {
-   return not_yet_implemented();
+   NOT_YET_IMPLEMENTED
 }
 
 int PMPI_Keyval_free(int* keyval) {
-   return not_yet_implemented();
+   NOT_YET_IMPLEMENTED
 }
 
 int PMPI_Test_cancelled(MPI_Status* status, int* flag) {
-   return not_yet_implemented();
+   NOT_YET_IMPLEMENTED
 }
 
 int PMPI_Pack(void* inbuf, int incount, MPI_Datatype type, void* outbuf, int outcount, int* position, MPI_Comm comm) {
-   return not_yet_implemented();
+   NOT_YET_IMPLEMENTED
 }
 
 int PMPI_Pack_external_size(char *datarep, int incount, MPI_Datatype datatype, MPI_Aint *size){
-  return not_yet_implemented();
+  NOT_YET_IMPLEMENTED
 }
 
 int PMPI_Pack_external(char *datarep, void *inbuf, int incount, MPI_Datatype datatype, void *outbuf, MPI_Aint outcount, MPI_Aint *position){
-  return not_yet_implemented();
+  NOT_YET_IMPLEMENTED
 }
 
 int PMPI_Unpack_external( char *datarep, void *inbuf, MPI_Aint insize, MPI_Aint *position, void *outbuf, int outcount, MPI_Datatype datatype){
-  return not_yet_implemented();
+  NOT_YET_IMPLEMENTED
 }
 
 int PMPI_Get_elements(MPI_Status* status, MPI_Datatype datatype, int* elements) {
-   return not_yet_implemented();
+   NOT_YET_IMPLEMENTED
 }
 
 int PMPI_Dims_create(int nnodes, int ndims, int* dims) {
-   return not_yet_implemented();
+   NOT_YET_IMPLEMENTED
 }
 
 int PMPI_Win_fence( int assert,  MPI_Win win){
-   return not_yet_implemented();
+   NOT_YET_IMPLEMENTED
 }
 
 int PMPI_Win_free( MPI_Win* win){
-   return not_yet_implemented();
+   NOT_YET_IMPLEMENTED
 }
 
 int PMPI_Win_create( void *base, MPI_Aint size, int disp_unit, MPI_Info info, MPI_Comm comm, MPI_Win *win){
-  return not_yet_implemented();
+  NOT_YET_IMPLEMENTED
 }
 
 int PMPI_Info_create( MPI_Info *info){
-  return not_yet_implemented();
+  NOT_YET_IMPLEMENTED
 }
 
 int PMPI_Info_set( MPI_Info info, char *key, char *value){
-  return not_yet_implemented();
+  NOT_YET_IMPLEMENTED
 }
 
 int PMPI_Info_free( MPI_Info *info){
-  return not_yet_implemented();
+  NOT_YET_IMPLEMENTED
 }
 
 int PMPI_Get( void *origin_addr, int origin_count, MPI_Datatype origin_datatype, int target_rank,
     MPI_Aint target_disp, int target_count, MPI_Datatype target_datatype, MPI_Win win){
-  return not_yet_implemented();
+  NOT_YET_IMPLEMENTED
 }
 
 int PMPI_Type_get_envelope( MPI_Datatype datatype, int *num_integers,
                           int *num_addresses, int *num_datatypes, int *combiner){
-  return not_yet_implemented();
+  NOT_YET_IMPLEMENTED
 }
 
 int PMPI_Type_get_contents(MPI_Datatype datatype, int max_integers, int max_addresses,
                           int max_datatypes, int* array_of_integers, MPI_Aint* array_of_addresses,
                           MPI_Datatype* array_of_datatypes){
-  return not_yet_implemented();
+  NOT_YET_IMPLEMENTED
 }
 
 int PMPI_Type_create_darray(int size, int rank, int ndims, int* array_of_gsizes,
                             int* array_of_distribs, int* array_of_dargs, int* array_of_psizes,
                             int order, MPI_Datatype oldtype, MPI_Datatype *newtype) {
-  return not_yet_implemented();
+  NOT_YET_IMPLEMENTED
 }
 
 int PMPI_Type_create_resized(MPI_Datatype oldtype,MPI_Aint lb, MPI_Aint extent, MPI_Datatype *newtype){
-  return not_yet_implemented();
+  NOT_YET_IMPLEMENTED
 }
 
 int PMPI_Type_create_subarray(int ndims,int *array_of_sizes, int *array_of_subsizes, int *array_of_starts, int order, MPI_Datatype oldtype, MPI_Datatype *newtype){
-  return not_yet_implemented();
+  NOT_YET_IMPLEMENTED
 }
 
 int PMPI_Type_match_size(int typeclass,int size,MPI_Datatype *datatype){
-  return not_yet_implemented();
+  NOT_YET_IMPLEMENTED
 }
 
 int PMPI_Alltoallw( void *sendbuf, int *sendcnts, int *sdispls, MPI_Datatype *sendtypes,
                    void *recvbuf, int *recvcnts, int *rdispls, MPI_Datatype *recvtypes,
                    MPI_Comm comm){
-  return not_yet_implemented();
+  NOT_YET_IMPLEMENTED
 }
 
 int PMPI_Exscan(void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype,
                 MPI_Op op, MPI_Comm comm){
-  return not_yet_implemented();
+  NOT_YET_IMPLEMENTED
 }
 
 int PMPI_Comm_set_name(MPI_Comm comm, char* name){
-  return not_yet_implemented();
+  NOT_YET_IMPLEMENTED
 }
 
 int PMPI_Comm_dup_with_info(MPI_Comm comm, MPI_Info info, MPI_Comm * newcomm){
-  return not_yet_implemented();
+  NOT_YET_IMPLEMENTED
 }
 
 int PMPI_Comm_split_type(MPI_Comm comm, int split_type, int key, MPI_Info info, MPI_Comm *newcomm){
-  return not_yet_implemented();
+  NOT_YET_IMPLEMENTED
 }
 
 int PMPI_Comm_set_info (MPI_Comm comm, MPI_Info info){
-  return not_yet_implemented();
+  NOT_YET_IMPLEMENTED
 }
 
 int PMPI_Comm_get_info (MPI_Comm comm, MPI_Info* info){
-  return not_yet_implemented();
+  NOT_YET_IMPLEMENTED
 }
 
 int PMPI_Info_get(MPI_Info info,char *key,int valuelen, char *value, int *flag){
-  return not_yet_implemented();
+  NOT_YET_IMPLEMENTED
 }
 
 int PMPI_Comm_create_errhandler( MPI_Comm_errhandler_fn *function, MPI_Errhandler *errhandler){
-  return not_yet_implemented();
+  NOT_YET_IMPLEMENTED
 }
 
 int PMPI_Add_error_class( int *errorclass){
-  return not_yet_implemented();
+  NOT_YET_IMPLEMENTED
 }
 
 int PMPI_Add_error_code(  int errorclass, int *errorcode){
-  return not_yet_implemented();
+  NOT_YET_IMPLEMENTED
 }
 
 int PMPI_Add_error_string( int errorcode, char *string){
-  return not_yet_implemented();
+  NOT_YET_IMPLEMENTED
 }
 
 int PMPI_Comm_call_errhandler(MPI_Comm comm,int errorcode){
-  return not_yet_implemented();
+  NOT_YET_IMPLEMENTED
 }
 
 int PMPI_Info_dup(MPI_Info info, MPI_Info *newinfo){
-  return not_yet_implemented();
+  NOT_YET_IMPLEMENTED
 }
 
 int PMPI_Info_delete(MPI_Info info, char *key){
-  return not_yet_implemented();
+  NOT_YET_IMPLEMENTED
 }
 
 int PMPI_Info_get_nkeys( MPI_Info info, int *nkeys){
-  return not_yet_implemented();
+  NOT_YET_IMPLEMENTED
 }
 
 int PMPI_Info_get_nthkey( MPI_Info info, int n, char *key){
-  return not_yet_implemented();
+  NOT_YET_IMPLEMENTED
 }
 
 int PMPI_Info_get_valuelen( MPI_Info info, char *key, int *valuelen, int *flag){
-  return not_yet_implemented();
+  NOT_YET_IMPLEMENTED
 }
 
 int PMPI_Request_get_status( MPI_Request request, int *flag, MPI_Status *status){
-  return not_yet_implemented();
+  NOT_YET_IMPLEMENTED
 }
 
 int MPI_Request_get_status( MPI_Request request, int *flag, MPI_Status *status){
-  return not_yet_implemented();
+  NOT_YET_IMPLEMENTED
 }
 
 int PMPI_Grequest_start( MPI_Grequest_query_function *query_fn, MPI_Grequest_free_function *free_fn, MPI_Grequest_cancel_function *cancel_fn, void *extra_state, MPI_Request *request){
-  return not_yet_implemented();
+  NOT_YET_IMPLEMENTED
 }
 
 int PMPI_Grequest_complete( MPI_Request request){
-  return not_yet_implemented();
+  NOT_YET_IMPLEMENTED
 }
 
 int PMPI_Status_set_cancelled(MPI_Status *status,int flag){
-  return not_yet_implemented();
+  NOT_YET_IMPLEMENTED
 }
 
 int PMPI_Status_set_elements( MPI_Status *status, MPI_Datatype datatype, int count){
-  return not_yet_implemented();
+  NOT_YET_IMPLEMENTED
 }
 
 int PMPI_Comm_connect( char *port_name, MPI_Info info, int root, MPI_Comm comm, MPI_Comm *newcomm){
-  return not_yet_implemented();
+  NOT_YET_IMPLEMENTED
 }
 
 int PMPI_Publish_name( char *service_name, MPI_Info info, char *port_name){
-  return not_yet_implemented();
+  NOT_YET_IMPLEMENTED
 }
 
 int PMPI_Unpublish_name( char *service_name, MPI_Info info, char *port_name){
-  return not_yet_implemented();
+  NOT_YET_IMPLEMENTED
 }
 
 int PMPI_Lookup_name( char *service_name, MPI_Info info, char *port_name){
-  return not_yet_implemented();
+  NOT_YET_IMPLEMENTED
 }
 
 int PMPI_Comm_join( int fd, MPI_Comm *intercomm){
-  return not_yet_implemented();
+  NOT_YET_IMPLEMENTED
 }
 
 int PMPI_Open_port( MPI_Info info, char *port_name){
-  return not_yet_implemented();
+  NOT_YET_IMPLEMENTED
 }
 
 int PMPI_Close_port(char *port_name){
-  return not_yet_implemented();
+  NOT_YET_IMPLEMENTED
 }
 
 int PMPI_Comm_accept( char *port_name, MPI_Info info, int root, MPI_Comm comm, MPI_Comm *newcomm){
-  return not_yet_implemented();
+  NOT_YET_IMPLEMENTED
 }
 
 int PMPI_Comm_spawn( char *command, char **argv, int maxprocs, MPI_Info info, int root, MPI_Comm comm, MPI_Comm *intercomm, int* array_of_errcodes){
-  return not_yet_implemented();
+  NOT_YET_IMPLEMENTED
 }
 
 int PMPI_Comm_spawn_multiple( int count, char **array_of_commands, char*** array_of_argv,
                              int* array_of_maxprocs, MPI_Info* array_of_info, int root,
                              MPI_Comm comm, MPI_Comm *intercomm, int* array_of_errcodes){
-  return not_yet_implemented();
+  NOT_YET_IMPLEMENTED
 }
 
 int PMPI_Comm_get_parent( MPI_Comm *parent){
-  return not_yet_implemented();
+  NOT_YET_IMPLEMENTED
 }
