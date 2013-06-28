@@ -570,7 +570,7 @@ void mpi_info_create_( int *info, int* ierr){
 }
 
 void mpi_info_set_( int *info, char *key, char *value, int* ierr){
-  *ierr =  MPI_Info_set( (MPI_Info *)info, key, value);
+  *ierr =  MPI_Info_set( *(MPI_Info *)info, key, value);
 }
 
 void mpi_info_free_(int* info, int* ierr){

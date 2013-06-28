@@ -79,7 +79,7 @@ void smpi_process_init(int *argc, char ***argv)
 void smpi_process_destroy(void)
 {
   int index = smpi_process_index();
-
+  process_data[index]->index=-100;
   XBT_DEBUG("<%d> Process left the game", index);
 }
 
@@ -93,6 +93,16 @@ void smpi_process_finalize(void)
     simcall_process_sleep(0.01);
   }
 }
+
+/**
+ * @brief Check if a process is finalized
+ */
+int smpi_process_finalized()
+{
+  // If finalized, this value has been set to -100;
+  return process_data[smpi_process_index()]->index==-100;
+}
+
 
 #ifdef SMPI_F2C
 int smpi_process_argc(void) {

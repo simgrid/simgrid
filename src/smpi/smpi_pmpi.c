@@ -50,6 +50,28 @@ int PMPI_Finalize(void)
   return MPI_SUCCESS;
 }
 
+int PMPI_Finalized(int* flag)
+{
+  *flag=smpi_process_finalized();
+  return MPI_SUCCESS;
+}
+
+int PMPI_Get_version (int *version,int *subversion){
+  *version = MPI_VERSION;
+  *subversion= MPI_SUBVERSION;
+  return MPI_SUCCESS;
+}
+
+int PMPI_Get_library_version (char *version,int *len){
+  int retval = MPI_SUCCESS;
+  smpi_bench_end();
+  snprintf(version,MPI_MAX_LIBRARY_VERSION_STRING,"SMPI Version %d.%d. Copyright The Simgrid Team 2007-2013",SIMGRID_VERSION_MAJOR,
+          SIMGRID_VERSION_MINOR);
+  *len = strlen(version) > MPI_MAX_LIBRARY_VERSION_STRING ? MPI_MAX_LIBRARY_VERSION_STRING : strlen(version);
+  smpi_bench_begin();
+  return retval;
+}
+
 int PMPI_Init_thread(int *argc, char ***argv, int required, int *provided)
 {
   if (provided != NULL) {
@@ -131,6 +153,11 @@ int PMPI_Address(void *location, MPI_Aint * address)
   return retval;
 }
 
+int PMPI_Get_address(void *location, MPI_Aint * address)
+{
+  return PMPI_Address(location, address);
+}
+
 int PMPI_Type_free(MPI_Datatype * datatype)
 {
   int retval;
@@ -177,6 +204,11 @@ int PMPI_Type_get_extent(MPI_Datatype datatype, MPI_Aint * lb, MPI_Aint * extent
   }
   smpi_bench_begin();
   return retval;
+}
+
+int PMPI_Type_get_true_extent(MPI_Datatype datatype, MPI_Aint * lb, MPI_Aint * extent)
+{
+  return PMPI_Type_get_extent(datatype, lb, extent);
 }
 
 int PMPI_Type_extent(MPI_Datatype datatype, MPI_Aint * extent)
@@ -1808,6 +1840,21 @@ int PMPI_Reduce(void *sendbuf, void *recvbuf, int count,
   return retval;
 }
 
+int PMPI_Reduce_local(void *inbuf, void *inoutbuf, int count,
+    MPI_Datatype datatype, MPI_Op op){
+  int retval;
+
+    smpi_bench_end();
+    if (datatype == MPI_DATATYPE_NULL || op == MPI_OP_NULL) {
+      retval = MPI_ERR_ARG;
+    } else {
+      smpi_op_apply(op, inbuf, inoutbuf, &count, &datatype);
+      retval=MPI_SUCCESS;
+    }
+    smpi_bench_begin();
+    return retval;
+}
+
 int PMPI_Allreduce(void *sendbuf, void *recvbuf, int count,
                   MPI_Datatype datatype, MPI_Op op, MPI_Comm comm)
 {
@@ -1888,6 +1935,41 @@ int PMPI_Reduce_scatter(void *sendbuf, void *recvbuf, int *recvcounts,
 
     mpi_coll_reduce_scatter_fun(sendbuf, recvbuf, recvcounts,
                        datatype,  op, comm);
+    retval = MPI_SUCCESS;
+  }
+#ifdef HAVE_TRACING
+  TRACE_smpi_collective_out(rank, -1, __FUNCTION__);
+  TRACE_smpi_computing_in(rank);
+#endif
+  smpi_bench_begin();
+  return retval;
+}
+
+int PMPI_Reduce_scatter_block(void *sendbuf, void *recvbuf, int recvcount,
+                       MPI_Datatype datatype, MPI_Op op, MPI_Comm comm)
+{
+  int retval,i;
+  smpi_bench_end();
+#ifdef HAVE_TRACING
+  int rank = comm != MPI_COMM_NULL ? smpi_process_index() : -1;
+  TRACE_smpi_computing_out(rank);
+  TRACE_smpi_collective_in(rank, -1, __FUNCTION__);
+#endif
+  if (comm == MPI_COMM_NULL) {
+    retval = MPI_ERR_COMM;
+  } else if (datatype == MPI_DATATYPE_NULL) {
+    retval = MPI_ERR_TYPE;
+  } else if (op == MPI_OP_NULL) {
+    retval = MPI_ERR_OP;
+  } else if (recvcount < 0) {
+    retval = MPI_ERR_ARG;
+  } else {
+    int count=smpi_comm_size(comm);
+    int* recvcounts=(int*)xbt_malloc(count);
+    for (i=0; i<count;i++)recvcounts[i]=recvcount;
+    mpi_coll_reduce_scatter_fun(sendbuf, recvbuf, recvcounts,
+                       datatype,  op, comm);
+    xbt_free(recvcounts);
     retval = MPI_SUCCESS;
   }
 #ifdef HAVE_TRACING
@@ -2062,6 +2144,9 @@ int PMPI_Type_hvector(int count, int blocklen, MPI_Aint stride, MPI_Datatype old
   return retval;
 }
 
+int PMPI_Type_create_hvector(int count, int blocklen, MPI_Aint stride, MPI_Datatype old_type, MPI_Datatype* new_type) {
+  return MPI_Type_hvector(count, blocklen, stride, old_type, new_type);
+}
 
 int PMPI_Type_indexed(int count, int* blocklens, int* indices, MPI_Datatype old_type, MPI_Datatype* new_type) {
   int retval;
@@ -2078,6 +2163,25 @@ int PMPI_Type_indexed(int count, int* blocklens, int* indices, MPI_Datatype old_
   return retval;
 }
 
+int PMPI_Type_create_indexed_block(int count, int blocklength, int* indices, MPI_Datatype old_type, MPI_Datatype* new_type) {
+  int retval,i;
+
+  smpi_bench_end();
+  if (old_type == MPI_DATATYPE_NULL) {
+    retval = MPI_ERR_TYPE;
+  } else if (count<0){
+    retval = MPI_ERR_COUNT;
+  } else {
+    int* blocklens=(int*)xbt_malloc(blocklength*count);
+    for (i=0; i<count;i++)blocklens[i]=blocklength;
+    retval = smpi_datatype_indexed(count, blocklens, indices, old_type, new_type);
+    xbt_free(blocklens);
+  }
+  smpi_bench_begin();
+  return retval;
+}
+
+
 int PMPI_Type_hindexed(int count, int* blocklens, MPI_Aint* indices, MPI_Datatype old_type, MPI_Datatype* new_type) {
   int retval;
 
@@ -2088,6 +2192,24 @@ int PMPI_Type_hindexed(int count, int* blocklens, MPI_Aint* indices, MPI_Datatyp
     retval = MPI_ERR_COUNT;
   } else {
     retval = smpi_datatype_hindexed(count, blocklens, indices, old_type, new_type);
+  }
+  smpi_bench_begin();
+  return retval;
+}
+
+int PMPI_Type_create_hindexed_block(int count, int blocklength, MPI_Aint* indices, MPI_Datatype old_type, MPI_Datatype* new_type) {
+  int retval,i;
+
+  smpi_bench_end();
+  if (old_type == MPI_DATATYPE_NULL) {
+    retval = MPI_ERR_TYPE;
+  } else if (count<0){
+    retval = MPI_ERR_COUNT;
+  } else {
+    int* blocklens=(int*)xbt_malloc(blocklength*count);
+    for (i=0; i<count;i++)blocklens[i]=blocklength;
+    retval = smpi_datatype_hindexed(count, blocklens, indices, old_type, new_type);
+    xbt_free(blocklens);
   }
   smpi_bench_begin();
   return retval;
@@ -2104,7 +2226,13 @@ int PMPI_Type_struct(int count, int* blocklens, MPI_Aint* indices, MPI_Datatype*
     retval = smpi_datatype_struct(count, blocklens, indices, old_types, new_type);
   }
   smpi_bench_begin();
-  return retval;}
+  return retval;
+}
+
+int PMPI_Type_create_struct(int count, int* blocklens, MPI_Aint* indices, MPI_Datatype* old_types, MPI_Datatype* new_type) {
+  return PMPI_Type_struct(count, blocklens, indices, old_types, new_type);
+}
+
 
 int PMPI_Error_class(int errorcode, int* errorclass) {
   // assume smpi uses only standard mpi error codes
@@ -2121,9 +2249,24 @@ int PMPI_Initialized(int* flag) {
 /* The following calls are not yet implemented and will fail at runtime. */
 /* Once implemented, please move them above this notice. */
 
-static int not_yet_implemented(void) {
-	  XBT_WARN("Not yet implemented");
+static inline int not_yet_implemented(void) {
+	  XBT_WARN("Not yet implemented : line %d in %s", __LINE__, __FUNCTION__);
    return MPI_SUCCESS;
+}
+
+
+int PMPI_Type_dup(MPI_Datatype datatype, MPI_Datatype *newtype){
+  return not_yet_implemented();
+}
+
+int PMPI_Type_set_name(MPI_Datatype  datatype, char * name)
+{
+  return not_yet_implemented();
+}
+
+int PMPI_Type_get_name(MPI_Datatype  datatype, char * name, int* len)
+{
+  return not_yet_implemented();
 }
 
 int PMPI_Pack_size(int incount, MPI_Datatype datatype, MPI_Comm comm, int* size) {
@@ -2210,6 +2353,9 @@ int PMPI_Errhandler_set(MPI_Comm comm, MPI_Errhandler errhandler) {
    return not_yet_implemented();
 }
 
+int PMPI_Comm_set_errhandler(MPI_Comm comm, MPI_Errhandler errhandler) {
+   return not_yet_implemented();
+}
 
 int PMPI_Cancel(MPI_Request* request) {
    return not_yet_implemented();
@@ -2232,6 +2378,25 @@ int PMPI_Comm_get_attr (MPI_Comm comm, int comm_keyval, void *attribute_val, int
    return not_yet_implemented();
 }
 
+int PMPI_Comm_set_attr (MPI_Comm comm, int comm_keyval, void *attribute_val)
+{
+   return not_yet_implemented();
+}
+
+int PMPI_Comm_delete_attr (MPI_Comm comm, int comm_keyval)
+{
+   return not_yet_implemented();
+}
+
+int PMPI_Comm_create_keyval(MPI_Comm_copy_attr_function* copy_fn, MPI_Comm_delete_attr_function* delete_fn, int* keyval, void* extra_state)
+{
+   return not_yet_implemented();
+}
+
+int PMPI_Comm_free_keyval(int* keyval) {
+   return not_yet_implemented();
+}
+
 int PMPI_Pcontrol(const int level )
 {
    return not_yet_implemented();
@@ -2241,7 +2406,29 @@ int PMPI_Unpack(void* inbuf, int insize, int* position, void* outbuf, int outcou
    return not_yet_implemented();
 }
 
+int PMPI_Type_get_attr (MPI_Datatype type, int type_keyval, void *attribute_val, int* flag)
+{
+  return not_yet_implemented();
+}
 
+int PMPI_Type_set_attr (MPI_Datatype type, int type_keyval, void *attribute_val)
+{
+  return not_yet_implemented();
+}
+
+int PMPI_Type_delete_attr (MPI_Datatype type, int comm_keyval)
+{
+  return not_yet_implemented();
+}
+
+int PMPI_Type_create_keyval(MPI_Type_copy_attr_function* copy_fn, MPI_Type_delete_attr_function* delete_fn, int* keyval, void* extra_state)
+{
+  return not_yet_implemented();
+}
+
+int PMPI_Type_free_keyval(int* keyval) {
+  return not_yet_implemented();
+}
 
 int PMPI_Intercomm_create(MPI_Comm local_comm, int local_leader, MPI_Comm peer_comm, int remote_leader, int tag, MPI_Comm* comm_out) {
    return not_yet_implemented();
@@ -2311,6 +2498,18 @@ int PMPI_Pack(void* inbuf, int incount, MPI_Datatype type, void* outbuf, int out
    return not_yet_implemented();
 }
 
+int PMPI_Pack_external_size(char *datarep, int incount, MPI_Datatype datatype, MPI_Aint *size){
+  return not_yet_implemented();
+}
+
+int PMPI_Pack_external(char *datarep, void *inbuf, int incount, MPI_Datatype datatype, void *outbuf, MPI_Aint outcount, MPI_Aint *position){
+  return not_yet_implemented();
+}
+
+int PMPI_Unpack_external( char *datarep, void *inbuf, MPI_Aint insize, MPI_Aint *position, void *outbuf, int outcount, MPI_Datatype datatype){
+  return not_yet_implemented();
+}
+
 int PMPI_Get_elements(MPI_Status* status, MPI_Datatype datatype, int* elements) {
    return not_yet_implemented();
 }
@@ -2335,7 +2534,7 @@ int PMPI_Info_create( MPI_Info *info){
   return not_yet_implemented();
 }
 
-int PMPI_Info_set( MPI_Info *info, char *key, char *value){
+int PMPI_Info_set( MPI_Info info, char *key, char *value){
   return not_yet_implemented();
 }
 
@@ -2348,3 +2547,176 @@ int PMPI_Get( void *origin_addr, int origin_count, MPI_Datatype origin_datatype,
   return not_yet_implemented();
 }
 
+int PMPI_Type_get_envelope( MPI_Datatype datatype, int *num_integers,
+                          int *num_addresses, int *num_datatypes, int *combiner){
+  return not_yet_implemented();
+}
+
+int PMPI_Type_get_contents(MPI_Datatype datatype, int max_integers, int max_addresses,
+                          int max_datatypes, int* array_of_integers, MPI_Aint* array_of_addresses,
+                          MPI_Datatype* array_of_datatypes){
+  return not_yet_implemented();
+}
+
+int PMPI_Type_create_darray(int size, int rank, int ndims, int* array_of_gsizes,
+                            int* array_of_distribs, int* array_of_dargs, int* array_of_psizes,
+                            int order, MPI_Datatype oldtype, MPI_Datatype *newtype) {
+  return not_yet_implemented();
+}
+
+int PMPI_Type_create_resized(MPI_Datatype oldtype,MPI_Aint lb, MPI_Aint extent, MPI_Datatype *newtype){
+  return not_yet_implemented();
+}
+
+int PMPI_Type_create_subarray(int ndims,int *array_of_sizes, int *array_of_subsizes, int *array_of_starts, int order, MPI_Datatype oldtype, MPI_Datatype *newtype){
+  return not_yet_implemented();
+}
+
+int PMPI_Type_match_size(int typeclass,int size,MPI_Datatype *datatype){
+  return not_yet_implemented();
+}
+
+int PMPI_Alltoallw( void *sendbuf, int *sendcnts, int *sdispls, MPI_Datatype *sendtypes,
+                   void *recvbuf, int *recvcnts, int *rdispls, MPI_Datatype *recvtypes,
+                   MPI_Comm comm){
+  return not_yet_implemented();
+}
+
+int PMPI_Exscan(void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype,
+                MPI_Op op, MPI_Comm comm){
+  return not_yet_implemented();
+}
+
+int PMPI_Comm_set_name(MPI_Comm comm, char* name){
+  return not_yet_implemented();
+}
+
+int PMPI_Comm_dup_with_info(MPI_Comm comm, MPI_Info info, MPI_Comm * newcomm){
+  return not_yet_implemented();
+}
+
+int PMPI_Comm_split_type(MPI_Comm comm, int split_type, int key, MPI_Info info, MPI_Comm *newcomm){
+  return not_yet_implemented();
+}
+
+int PMPI_Comm_set_info (MPI_Comm comm, MPI_Info info){
+  return not_yet_implemented();
+}
+
+int PMPI_Comm_get_info (MPI_Comm comm, MPI_Info* info){
+  return not_yet_implemented();
+}
+
+int PMPI_Info_get(MPI_Info info,char *key,int valuelen, char *value, int *flag){
+  return not_yet_implemented();
+}
+
+int PMPI_Comm_create_errhandler( MPI_Comm_errhandler_fn *function, MPI_Errhandler *errhandler){
+  return not_yet_implemented();
+}
+
+int PMPI_Add_error_class( int *errorclass){
+  return not_yet_implemented();
+}
+
+int PMPI_Add_error_code(  int errorclass, int *errorcode){
+  return not_yet_implemented();
+}
+
+int PMPI_Add_error_string( int errorcode, char *string){
+  return not_yet_implemented();
+}
+
+int PMPI_Comm_call_errhandler(MPI_Comm comm,int errorcode){
+  return not_yet_implemented();
+}
+
+int PMPI_Info_dup(MPI_Info info, MPI_Info *newinfo){
+  return not_yet_implemented();
+}
+
+int PMPI_Info_delete(MPI_Info info, char *key){
+  return not_yet_implemented();
+}
+
+int PMPI_Info_get_nkeys( MPI_Info info, int *nkeys){
+  return not_yet_implemented();
+}
+
+int PMPI_Info_get_nthkey( MPI_Info info, int n, char *key){
+  return not_yet_implemented();
+}
+
+int PMPI_Info_get_valuelen( MPI_Info info, char *key, int *valuelen, int *flag){
+  return not_yet_implemented();
+}
+
+int PMPI_Request_get_status( MPI_Request request, int *flag, MPI_Status *status){
+  return not_yet_implemented();
+}
+
+int MPI_Request_get_status( MPI_Request request, int *flag, MPI_Status *status){
+  return not_yet_implemented();
+}
+
+int PMPI_Grequest_start( MPI_Grequest_query_function *query_fn, MPI_Grequest_free_function *free_fn, MPI_Grequest_cancel_function *cancel_fn, void *extra_state, MPI_Request *request){
+  return not_yet_implemented();
+}
+
+int PMPI_Grequest_complete( MPI_Request request){
+  return not_yet_implemented();
+}
+
+int PMPI_Status_set_cancelled(MPI_Status *status,int flag){
+  return not_yet_implemented();
+}
+
+int PMPI_Status_set_elements( MPI_Status *status, MPI_Datatype datatype, int count){
+  return not_yet_implemented();
+}
+
+int PMPI_Comm_connect( char *port_name, MPI_Info info, int root, MPI_Comm comm, MPI_Comm *newcomm){
+  return not_yet_implemented();
+}
+
+int PMPI_Publish_name( char *service_name, MPI_Info info, char *port_name){
+  return not_yet_implemented();
+}
+
+int PMPI_Unpublish_name( char *service_name, MPI_Info info, char *port_name){
+  return not_yet_implemented();
+}
+
+int PMPI_Lookup_name( char *service_name, MPI_Info info, char *port_name){
+  return not_yet_implemented();
+}
+
+int PMPI_Comm_join( int fd, MPI_Comm *intercomm){
+  return not_yet_implemented();
+}
+
+int PMPI_Open_port( MPI_Info info, char *port_name){
+  return not_yet_implemented();
+}
+
+int PMPI_Close_port(char *port_name){
+  return not_yet_implemented();
+}
+
+int PMPI_Comm_accept( char *port_name, MPI_Info info, int root, MPI_Comm comm, MPI_Comm *newcomm){
+  return not_yet_implemented();
+}
+
+int PMPI_Comm_spawn( char *command, char **argv, int maxprocs, MPI_Info info, int root, MPI_Comm comm, MPI_Comm *intercomm, int* array_of_errcodes){
+  return not_yet_implemented();
+}
+
+int PMPI_Comm_spawn_multiple( int count, char **array_of_commands, char*** array_of_argv,
+                             int* array_of_maxprocs, MPI_Info* array_of_info, int root,
+                             MPI_Comm comm, MPI_Comm *intercomm, int* array_of_errcodes){
+  return not_yet_implemented();
+}
+
+int PMPI_Comm_get_parent( MPI_Comm *parent){
+  return not_yet_implemented();
+}
