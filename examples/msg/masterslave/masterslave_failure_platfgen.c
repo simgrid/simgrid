@@ -41,8 +41,8 @@ void promoter_1(context_node_t node) {
   static int master_choosen = FALSE;
 
   host_parameters.id = NULL;
-  host_parameters.power_peak = 25000000;
-
+  host_parameters.power_peak = xbt_dynar_new(sizeof(double), NULL);
+  xbt_dynar_push_as(host_parameters.power_peak, double, 25000000.0);
   host_parameters.core_amount = 1;
   host_parameters.power_scale = 1;
   host_parameters.power_trace = NULL;

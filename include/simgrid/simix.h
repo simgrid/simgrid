@@ -261,6 +261,7 @@ XBT_PUBLIC(void*) SIMIX_host_self_get_data(void);
 XBT_PUBLIC(void*) SIMIX_host_get_data(smx_host_t host);
 XBT_PUBLIC(void) SIMIX_host_set_data(smx_host_t host, void *data);
 
+
 /********************************* Process ************************************/
 XBT_PUBLIC(int) SIMIX_process_count(void);
 XBT_PUBLIC(smx_process_t) SIMIX_process_self(void);
@@ -302,6 +303,12 @@ XBT_PUBLIC(int) simcall_host_get_state(smx_host_t host);
 XBT_PUBLIC(void *) simcall_host_get_data(smx_host_t host);
 
 XBT_PUBLIC(void) simcall_host_set_data(smx_host_t host, void *data);
+
+XBT_PUBLIC(double) simcall_host_get_current_power_peak(smx_host_t host);
+XBT_PUBLIC(double) simcall_host_get_power_peak_at(smx_host_t host, int pstate_index);
+XBT_PUBLIC(int) simcall_host_get_nb_pstates(smx_host_t host);
+XBT_PUBLIC(void) simcall_host_set_power_peak_at(smx_host_t host, int pstate_index);
+XBT_PUBLIC(double) simcall_host_get_consumed_energy(smx_host_t host);
 
 XBT_PUBLIC(smx_action_t) simcall_host_execute(const char *name, smx_host_t host,
                                                 double computation_amount,

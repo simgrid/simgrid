@@ -871,6 +871,7 @@ set(EXAMPLES_CMAKEFILES_TXT
   examples/smpi/CMakeLists.txt
   examples/smpi/MM/CMakeLists.txt
   examples/xbt/CMakeLists.txt
+  examples/test/CMakeLists.txt
   )
 
 set(TESHSUITE_CMAKEFILES_TXT

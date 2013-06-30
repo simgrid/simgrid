@@ -88,7 +88,8 @@ static inline char* sg_host_name(sg_host_t host) {
 
 typedef struct {
   const char* id;
-  double power_peak;
+  xbt_dynar_t power_peak;
+  int pstate;
   int core_amount;
   double power_scale;
   tmgr_trace_t power_trace;

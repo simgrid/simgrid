@@ -745,7 +745,10 @@ static void routing_parse_cabinet(sg_platf_cabinet_cbarg_t cabinet)
     s_sg_platf_host_cbarg_t host;
     memset(&host, 0, sizeof(host));
     host.initial_state = SURF_RESOURCE_ON;
-    host.power_peak = cabinet->power;
+    xbt_dynar_t power_state_list = xbt_dynar_new(sizeof(double), NULL);
+    xbt_dynar_push(power_state_list,&cabinet->power);
+    host.power_peak = power_state_list;
+    host.pstate = 0;
     host.power_scale = 1.0;
     host.core_amount = 1;
 
@@ -861,7 +864,12 @@ static void routing_parse_cluster(sg_platf_cluster_cbarg_t cluster)
         XBT_DEBUG("\tstate_file=\"\"");
       }
 
-      host.power_peak = cluster->power;
+      xbt_dynar_t power_state_list = xbt_dynar_new(sizeof(double), NULL);
+      xbt_dynar_push(power_state_list,&cluster->power);
+      host.power_peak = power_state_list;
+      host.pstate = 0;
+
+      //host.power_peak = cluster->power;
       host.power_scale = 1.0;
       host.core_amount = cluster->core_amount;
       host.initial_state = SURF_RESOURCE_ON;
@@ -1006,7 +1014,12 @@ static void routing_parse_peer(sg_platf_peer_cbarg_t peer)
   memset(&host, 0, sizeof(host));
   host.initial_state = SURF_RESOURCE_ON;
   host.id = host_id;
-  host.power_peak = peer->power;
+
+  xbt_dynar_t power_state_list = xbt_dynar_new(sizeof(double), NULL);
+  xbt_dynar_push(power_state_list,&peer->power);
+  host.power_peak = power_state_list;
+  host.pstate = 0;
+  //host.power_peak = peer->power;
   host.power_scale = 1.0;
   host.power_trace = peer->availability_trace;
   host.state_trace = peer->state_trace;

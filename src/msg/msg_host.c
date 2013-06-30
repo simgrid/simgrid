@@ -252,3 +252,52 @@ int MSG_host_is_avail(msg_host_t host)
   xbt_assert((host != NULL), "Invalid parameters (host is NULL)");
   return (simcall_host_get_state(host));
 }
+
+/**
+ * \ingroup msg_gos_functions
+ *
+ */
+double MSG_get_host_power_peak_at(msg_host_t host, int pstate_index) {
+	  xbt_assert((host != NULL), "Invalid parameters (host is NULL)");
+	  return (simcall_host_get_power_peak_at(host, pstate_index));
+}
+
+/**
+ * \ingroup msg_gos_functions
+ *
+ */
+double MSG_get_host_current_power_peak(msg_host_t host) {
+	  xbt_assert((host != NULL), "Invalid parameters (host is NULL)");
+	  return simcall_host_get_current_power_peak(host);
+}
+
+/**
+ * \ingroup msg_gos_functions
+ *
+ */
+int MSG_get_host_nb_pstates(msg_host_t host) {
+
+	  xbt_assert((host != NULL), "Invalid parameters (host is NULL)");
+	  return (simcall_host_get_nb_pstates(host));
+}
+
+/**
+ * \ingroup msg_gos_functions
+ *
+ */
+void MSG_set_host_power_peak_at(msg_host_t host, int pstate_index) {
+	  xbt_assert((host != NULL), "Invalid parameters (host is NULL)");
+
+	  simcall_host_set_power_peak_at(host, pstate_index);
+}
+
+/**
+ * \ingroup msg_gos_functions
+ *
+ */
+double MSG_get_host_consumed_energy(msg_host_t host) {
+	  xbt_assert((host != NULL), "Invalid parameters (host is NULL)");
+	  return simcall_host_get_consumed_energy(host);
+}
+
+

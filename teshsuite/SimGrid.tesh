@@ -1,4 +1,4 @@
-D Tesh tests of SimGrid library.
+#D Tesh tests of SimGrid library.
 p Command line tesh --directory=%teshsuite_dir% --include-dir=simdag --include-dir=xbt --file=SimGrid.tesh --log="log.thresh:info tesh.fmt:%m%n"
 
 $ cd ${TESHSUITE_DIR:=.}

@@ -6,6 +6,9 @@
 
 #include "surf_private.h"
 #include "network_private.h"
+#include "maxmin_private.h"
+#include "surf/datatypes.h"
+#include "cpu_cas01_private.h"
 #include "xbt/mallocator.h"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_kernel);
@@ -368,6 +371,25 @@ double surf_action_get_remains(surf_action_t action)
   return action->remains;
 }
 
+/**
+ * Update the CPU total energy for a finished action
+ *
+ */
+void update_resource_energy(surf_model_t model, surf_action_lmm_t action)
+{
+    if(model == surf_cpu_model){
+        cpu_Cas01_t cpu_model = (cpu_Cas01_t)lmm_constraint_id(lmm_get_cnst_from_var
+                	  	  	  	  	  	  	  	  (model->model_private->maxmin_system,
+                	  	  	  	  	  	  	  			  action->variable, 0));
+
+    	double load = lmm_constraint_get_usage(cpu_model->constraint) / cpu_model->power_peak;
+    	cpu_update_energy(cpu_model, load);
+    }
+}
+
+
+
+
 void generic_update_actions_state_lazy(double now, double delta, surf_model_t model)
 {
   surf_action_lmm_t action;
@@ -411,7 +433,8 @@ void generic_update_actions_state_lazy(double now, double delta, surf_model_t mo
 
     if(model == surf_cpu_model){
       action->generic_action.finish = surf_get_clock();
-      XBT_DEBUG("Action %p finished", action);
+
+      update_resource_energy(model, action);
 
       /* set the remains to 0 due to precision problems when updating the remaining amount */
       action->generic_action.remains = 0;
@@ -564,6 +587,8 @@ void generic_update_actions_state_full(double now, double delta, surf_model_t mo
       if (model->gap_remove && model == surf_network_model)
         model->gap_remove(action);
     }
+
+    update_resource_energy(model, action);
   }
 
   return;

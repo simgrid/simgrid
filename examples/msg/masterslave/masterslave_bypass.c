@@ -35,6 +35,7 @@ static int surf_parse_bypass_platform(void)
   XBT_DEBUG("<host id=\"host A\" power=\"100000000.00\"/>");
   SURFXML_BUFFER_SET(host_id, "host A");
   SURFXML_BUFFER_SET(host_power, "100000000.00");
+  SURFXML_BUFFER_SET(host_pstate, "0");
   SURFXML_BUFFER_SET(host_availability, "1.0");
   SURFXML_BUFFER_SET(host_availability___file, "");
   SURFXML_BUFFER_SET(host_core, "1");
@@ -47,6 +48,7 @@ static int surf_parse_bypass_platform(void)
   XBT_DEBUG("<host id=\"host B\" power=\"100000000.00\"/>");
   SURFXML_BUFFER_SET(host_id, "host B");
   SURFXML_BUFFER_SET(host_power, "100000000.00");
+  SURFXML_BUFFER_SET(host_pstate, "0");
   SURFXML_BUFFER_SET(host_availability, "1.0");
   SURFXML_BUFFER_SET(host_availability___file, "");
   SURFXML_BUFFER_SET(host_core, "1");

@@ -80,6 +80,7 @@ void surf_action_set_category(surf_action_t action,
                                     const char *category);
 #endif
 double surf_action_get_remains(surf_action_t action);
+void update_resource_energy(surf_model_t model, surf_action_lmm_t action);
 void generic_update_action_remaining_lazy( surf_action_lmm_t action, double now);
 void generic_update_actions_state_lazy(double now, double delta, surf_model_t model);
 void generic_update_actions_state_full(double now, double delta, surf_model_t model);

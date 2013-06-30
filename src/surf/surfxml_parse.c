@@ -392,16 +392,44 @@ void STag_surfxml_prop(void)
 
 void ETag_surfxml_host(void)    {
   s_sg_platf_host_cbarg_t host;
+  char* buf;
   memset(&host,0,sizeof(host));
+
 
   host.properties = current_property_set;
 
   host.id = A_surfxml_host_id;
-  host.power_peak = get_cpu_power(A_surfxml_host_power);
+
+  buf = A_surfxml_host_power;
+  XBT_DEBUG("Buffer: %s", buf);
+  host.power_peak = xbt_dynar_new(sizeof(double), NULL);
+  if (strchr(buf, ',') == NULL){
+	  double power_value = get_cpu_power(A_surfxml_host_power);
+	  xbt_dynar_push_as(host.power_peak,double, power_value);
+  }
+  else {
+	  xbt_dynar_t pstate_list = xbt_str_split(buf, ",");
+	  int i;
+	  for (i = 0; i < xbt_dynar_length(pstate_list); i++) {
+		  double power_value;
+		  char* power_value_str;
+
+		  xbt_dynar_get_cpy(pstate_list, i, &power_value_str);
+		  xbt_str_trim(power_value_str, NULL);
+		  power_value = get_cpu_power(power_value_str);
+		  xbt_dynar_push_as(host.power_peak, double, power_value);
+		  XBT_DEBUG("Power value: %lf", power_value);
+	  }
+  }
+
+  XBT_DEBUG("pstate: %s", A_surfxml_host_pstate);
+  //host.power_peak = get_cpu_power(A_surfxml_host_power);
   host.power_scale = surf_parse_get_double( A_surfxml_host_availability);
   host.core_amount = surf_parse_get_int(A_surfxml_host_core);
   host.power_trace = tmgr_trace_new_from_file(A_surfxml_host_availability___file);
   host.state_trace = tmgr_trace_new_from_file(A_surfxml_host_state___file);
+  host.pstate = surf_parse_get_int(A_surfxml_host_pstate);
+
   xbt_assert((A_surfxml_host_state == A_surfxml_host_state_ON) ||
         (A_surfxml_host_state == A_surfxml_host_state_OFF), "Invalid state");
   if (A_surfxml_host_state == A_surfxml_host_state_ON)
