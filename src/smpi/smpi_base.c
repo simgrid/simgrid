@@ -1176,24 +1176,29 @@ void smpi_mpi_reduce(void *sendbuf, void *recvbuf, int count,
   MPI_Request *requests;
   void **tmpbufs;
 
+  char* sendtmpbuf = (char*) sendbuf;
+  if( sendbuf == MPI_IN_PLACE ) {
+      sendtmpbuf = (char *)recvbuf;
+  }
+
   rank = smpi_comm_rank(comm);
   size = smpi_comm_size(comm);
   //non commutative case, use a working algo from openmpi
   if(!smpi_op_is_commute(op)){
-    smpi_coll_tuned_reduce_ompi_basic_linear(sendbuf, recvbuf, count,
+    smpi_coll_tuned_reduce_ompi_basic_linear(sendtmpbuf, recvbuf, count,
                      datatype, op, root, comm);
     return;
   }
   
   if(rank != root) {
     // Send buffer to root
-    smpi_mpi_send(sendbuf, count, datatype, root, system_tag, comm);
+    smpi_mpi_send(sendtmpbuf, count, datatype, root, system_tag, comm);
   } else {
     // FIXME: check for errors
     smpi_datatype_extent(datatype, &lb, &dataext);
     // Local copy from root
-    if (sendbuf && recvbuf)
-      smpi_datatype_copy(sendbuf, count, datatype, recvbuf, count, datatype);
+    if (sendtmpbuf && recvbuf)
+      smpi_datatype_copy(sendtmpbuf, count, datatype, recvbuf, count, datatype);
     // Receive buffers from senders
     //TODO: make a MPI_barrier here ?
     requests = xbt_new(MPI_Request, size - 1);
