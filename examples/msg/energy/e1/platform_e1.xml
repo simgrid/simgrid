@@ -1,0 +1,10 @@
+<?xml version='1.0'?>
+ <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">
+ <platform version="3">
+ <AS  id="AS0"  routing="Full">
+   <host id="MyHost1" power="100.0Mf,50.0Mf,20.0Mf, 10Gf" pstate="3">
+     <!--  in Watts -->
+   	 <prop id="power_per_state" value="200:250,200:220,100.0:150.0,120:250" />
+   </host>
+ </AS>
+ </platform>
