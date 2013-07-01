@@ -166,24 +166,28 @@ int MSG_vm_is_restoring(msg_vm_t vm)
 
 /** @brief Create a new VM with specified parameters.
  *  @ingroup msg_VMs*
+ *  All parameters are in MBytes
  *
  */
-msg_vm_t MSG_vm_create(msg_host_t ind_pm, const char *name,
-	                                     int ncpus, long ramsize, long net_cap, char *disk_path, long disksize)
+msg_vm_t MSG_vm_create(msg_host_t ind_pm, const char *name, int ncpus, long ramsize,
+	                                     long net_cap, char *disk_path, long disksize,
+	                                     	 long dp_rate, long mig_netspeed)
 {
-  msg_vm_t vm = MSG_vm_create_core(ind_pm, name);
+	msg_vm_t vm = MSG_vm_create_core(ind_pm, name);
+	s_ws_params_t params;
+	memset(&params, 0, sizeof(params));
+	params.ramsize = 1L * 1024 * 1024 * ramsize;
+	//params.overcommit = 0;
+	params.devsize = 0;
+	params.skip_stage2 = 0;
+	params.max_downtime = 0.03;
+	params.dp_rate = 1L * 1024 * 1024 * dp_rate;
+	params.dp_cap = params.ramsize / 0.9; // working set memory is 90%
+	params.mig_speed = 1L * 1024 * 1024 * mig_netspeed; // mig_speed
 
-  {
-    s_ws_params_t params;
-    memset(&params, 0, sizeof(params));
-    params.ramsize = ramsize;
-    //params.overcommit = 0;
-    simcall_host_set_params(vm, &params);
-  }
+	simcall_host_set_params(vm, &params);
 
-  /* TODO: Limit net capability, take into account disk considerations. */
-
-  return vm;
+	return vm;
 }
 
 

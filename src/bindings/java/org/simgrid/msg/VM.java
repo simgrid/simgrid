@@ -29,18 +29,28 @@ public class VM extends Host{
 	 * Create a `basic' VM (i.e. 1 core, 1GB of RAM, other values are not taken into account).
 	 */
 	public VM(Host host, String name) {
-		this(host,name,1,1024*1024*1024, -1, null, -1);
+		this(host,name,1,1024, -1, null, -1,0 , 0);
 	}
 
 	/**
-	 * Create a `basic' VM (i.e. 1 core, 1GB of RAM, other values are not taken into account).
+	 * Create a  VM
+	 * @param host, Host node
+	 * @param name, name of the machine
+	 * @param nCore, number of core
+	 * @param ramSize, size of the RAM that should be allocated (in MBytes) 
+	 * @param netCap (not used for the moment)
+	 * @param diskPath (not used for the moment)
+	 * @param diskSize (not used for the moment)
+	 * @param dpRate (dirty page rate MB/flop, if you don't know put zero ;))
+	 * @param migNetSpeed (network bandwith allocated for migrations in MB/s, if you don't know put zero ;))
 	 */
+	
 	public VM(Host host, String name, int nCore,  long ramSize, 
-			 long netCap, String diskPath, long diskSize){
+			long netCap, String diskPath, long diskSize, long  dpRate,long migNetSpeed){
 		super();
 		super.name = name; 
 		this.currentHost = host; 
-		create(host, name, nCore, ramSize, netCap, diskPath, diskSize);
+		create(host, name, nCore, ramSize, netCap, diskPath, diskSize, dpRate, migNetSpeed);
 		VM.addVM(this);
 	}
 
@@ -107,13 +117,15 @@ public class VM extends Host{
 	/**
 	 * Natively implemented method create the VM.
 	 * @param nCore, number of core
-	 * @param ramSize, size of the RAM that should be allocated 
+	 * @param ramSize, size of the RAM that should be allocated (in MB) 
 	 * @param netCap (not used for the moment)
 	 * @param diskPath (not used for the moment)
 	 * @param diskSize (not used for the moment)
+	 * @param dpRate (dirty page rate in MB/flop, if you don't know put zero ;))
+	 * @param migNetSpeed (network bandwith allocated for migrations in MB/s, if you don't know put zero ;))
 	 */
 	private native void create(Host host, String name, int nCore, long ramSize, 
-			 long netCap, String diskPath, long diskSize);
+			 long netCap, String diskPath, long diskSize, long dpRate, long migNetSpeed);
 	
 	/**
 	 * start the VM

@@ -165,8 +165,8 @@ static void adjust_weight_of_dummy_cpu_actions(void)
 
 double ws_share_resources(surf_model_t workstation_model, double now)
 {
-  if (workstation_model->type == SURF_MODEL_TYPE_WORKSTATION)
-    adjust_weight_of_dummy_cpu_actions();
+ if (workstation_model->type == SURF_MODEL_TYPE_WORKSTATION)
+   adjust_weight_of_dummy_cpu_actions();
 
   /* Invoke the share_resources() callback of the physical cpu model object and
    * the network model objects. */

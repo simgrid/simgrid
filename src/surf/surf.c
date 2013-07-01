@@ -546,6 +546,7 @@ void surf_presolve(void)
 
 double surf_solve(double max_date)
 {
+		  
   min = -1.0; /* duration */
   double next_event_date = -1.0;
   double model_next_action_end = -1.0;
@@ -567,10 +568,17 @@ double surf_solve(double max_date)
   surf_min_index = 0;
 
   /* sequential version */
+  struct timeval bla;
+  gettimeofday(&bla, NULL);
+  //unsigned int t = end.tv_usec - begin.tv_usec;
+  XBT_INFO("Surf_solve : bla.before iteration:%lu/%lu",bla.tv_sec, bla.tv_usec);
   xbt_dynar_foreach(model_list_invoke, iter, model) {
+  	gettimeofday(&bla, NULL);
+ 	 XBT_INFO("Surf_solve : iteration:%lu/%lu",bla.tv_sec, bla.tv_usec);
     surf_share_resources(model);
   }
-
+  gettimeofday(&bla, NULL);
+  XBT_INFO("Surf_solve : end before iteration:%lu/%lu",bla.tv_sec, bla.tv_usec);
   unsigned i;
   for (i = 0; i < xbt_dynar_length(model_list_invoke); i++) {
     if ((min < 0.0 || surf_mins[i] < min)
