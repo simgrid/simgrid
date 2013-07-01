@@ -142,7 +142,8 @@ static surf_cpu_ti_tgmr_t cpu_ti_parse_trace(tmgr_trace_t power_trace,
 }
 
 
-static void* cpu_ti_create_resource(const char *name, double power_peak,
+static void* cpu_ti_create_resource(const char *name, xbt_dynar_t power_peak,
+						   int pstate,
                            double power_scale,
                            tmgr_trace_t power_trace,
                            int core,
@@ -163,7 +164,13 @@ static void* cpu_ti_create_resource(const char *name, double power_peak,
           surf_cpu_model, name,cpu_properties);
   cpu->action_set =
       xbt_swag_new(xbt_swag_offset(ti_action, cpu_list_hookup));
-  cpu->power_peak = power_peak;
+
+
+  xbt_dynar_get_cpy(power_peak, 0, &cpu->power_peak);
+  //cpu->power_peak = power_peak;
+  cpu->pstate = pstate;
+  XBT_DEBUG("CPU create: peak=%lf, pstate=%d",cpu->power_peak, cpu->pstate);
+
   xbt_assert(cpu->power_peak > 0, "Power has to be >0");
   XBT_DEBUG("power scale %lf", power_scale);
   cpu->power_scale = power_scale;
@@ -193,6 +200,7 @@ static void parse_cpu_ti_init(sg_platf_host_cbarg_t host)
 {
   cpu_ti_create_resource(host->id,
         host->power_peak,
+        host->pstate,
         host->power_scale,
         host->power_trace,
         host->core_amount,

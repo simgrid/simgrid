@@ -196,6 +196,11 @@ typedef struct surf_cpu_model_extension_public {
   int (*get_core) (void *cpu);
   double (*get_speed) (void *cpu, double load);
   double (*get_available_speed) (void *cpu);
+  double (*get_current_power_peak) (void *cpu);
+  double (*get_power_peak_at) (void *cpu, int pstate_index);
+  int (*get_nb_pstates) (void *cpu);
+  void (*set_power_peak_at) (void *cpu, int pstate_index);
+  double (*get_consumed_energy) (void *cpu);
   void (*add_traces) (void);
 } s_surf_model_extension_cpu_t;
 
@@ -244,9 +249,18 @@ typedef struct surf_workstation_model_extension_public {
                                       and create the corresponding action */
   surf_action_t(*sleep) (void *workstation, double duration);                              /**< Make a workstation sleep during a given duration */
   e_surf_resource_state_t(*get_state) (void *workstation);                                      /**< Return the CPU state of a workstation */
+
   int (*get_core) (void *workstation); 
   double (*get_speed) (void *workstation, double load);                                    /**< Return the speed of a workstation */
   double (*get_available_speed) (void *workstation);                                       /**< Return tha available speed of a workstation */
+
+  double (*get_current_power_peak) (void *workstation);					  /**< Return the current CPU speed of a workstation */
+  double (*get_power_peak_at) (void *workstation, int pstate_index);			  /**< Return the speed of a workstation for a specific pstate,
+												 (where higher pstate values represent lower processor speeds) */
+  int (*get_nb_pstates) (void *workstation);						  /**< Return the number of pstates defined for a workstation (default is 1) */
+  void (*set_power_peak_at) (void *workstation, int pstate_index);			  /**< Set the processor speed of a workstation to the speed associated with the pstate_index pstate */
+  double (*get_consumed_energy) (void *workstation);					  /**< Return the total energy consumed by a workstation */
+
    surf_action_t(*communicate) (void *workstation_src,                                     /**< Execute a communication amount between two workstations */
                                 void *workstation_dst, double size,
                                 double max_rate);

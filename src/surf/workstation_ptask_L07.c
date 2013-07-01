@@ -446,6 +446,34 @@ static double ptask_get_available_speed(void *cpu)
   return ((cpu_L07_t)surf_workstation_resource_priv(cpu))->power_current;
 }
 
+static double ws_get_current_power_peak(void *cpu)
+{
+  return ((cpu_L07_t)surf_workstation_resource_priv(cpu))->power_current;
+}
+
+static double ws_get_power_peak_at(void *cpu, int pstate_index)
+{
+	XBT_DEBUG("[ws_get_power_peak_at] Not implemented for workstation_ptask_L07");
+	return 0.0;
+}
+
+static int ws_get_nb_pstates(void *workstation)
+{
+	XBT_DEBUG("[ws_get_nb_pstates] Not implemented for workstation_ptask_L07");
+	return 0.0;
+}
+
+static void ws_set_power_peak_at(void *cpu, int pstate_index)
+{
+	XBT_DEBUG("[ws_set_power_peak_at] Not implemented for workstation_ptask_L07");
+}
+
+static double ws_get_consumed_energy(void *cpu)
+{
+	XBT_DEBUG("[ws_get_consumed_energy] Not implemented for workstation_ptask_L07");
+	return 0.0;
+}
+
 static surf_action_t ptask_execute_parallel_task(int workstation_nb,
                                                  void **workstation_list,
                                                  double
@@ -670,9 +698,12 @@ static void* ptask_cpu_create_resource(const char *name, double power_scale,
 
 static void ptask_parse_cpu_init(sg_platf_host_cbarg_t host)
 {
+  double power_peak = xbt_dynar_get_as(host->power_peak, host->pstate, double);
+ //cpu->power_peak = power_peak;
+
   ptask_cpu_create_resource(
       host->id,
-      host->power_peak,
+      power_peak,
       host->power_scale,
       host->power_trace,
       host->initial_state,
@@ -879,6 +910,12 @@ static void ptask_model_init_internal(void)
       ptask_get_speed;
   surf_workstation_model->extension.workstation.get_available_speed =
       ptask_get_available_speed;
+  surf_workstation_model->extension.workstation.get_current_power_peak = ws_get_current_power_peak;
+  surf_workstation_model->extension.workstation.get_power_peak_at = ws_get_power_peak_at;
+  surf_workstation_model->extension.workstation.get_nb_pstates = ws_get_nb_pstates;
+  surf_workstation_model->extension.workstation.set_power_peak_at = ws_set_power_peak_at;
+  surf_workstation_model->extension.workstation.get_consumed_energy = ws_get_consumed_energy;
+
   surf_workstation_model->extension.workstation.communicate =
       ptask_communicate;
   surf_workstation_model->extension.workstation.get_route =

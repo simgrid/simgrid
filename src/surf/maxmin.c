@@ -889,3 +889,30 @@ static void lmm_remove_all_modified_set(lmm_system_t sys)
   }
   xbt_swag_reset(&sys->modified_constraint_set);
 }
+
+/**
+ *  Returns total resource load
+ *
+ *  \param cnst the lmm_constraint_t associated to the resource
+ *
+ */
+double lmm_constraint_get_usage(lmm_constraint_t cnst) {
+   double usage = 0.0;
+   xbt_swag_t elem_list = &(cnst->element_set);
+   lmm_element_t elem = NULL;
+
+   xbt_swag_foreach(elem, elem_list) {
+     /* 0-weighted elements (ie, sleep actions) are at the end of the swag and we don't want to consider them */
+     if (elem->variable->weight <= 0)
+       break;
+     if ((elem->value > 0)) {
+       if (cnst->shared)
+         usage += elem->value * elem->variable->value;
+       else if (usage < elem->value * elem->variable->value)
+         usage = elem->value * elem->variable->value;
+     }
+   }
+  return usage;
+}
+
+

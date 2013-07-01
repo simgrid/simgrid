@@ -71,7 +71,7 @@ static void test_host(const char*hostname)
               "Value of property %s is defined to %s (where it should be 250)",
               exist, value);
   XBT_INFO("   Property: %s old value: %s", exist, value);
-   
+
   /* Restore the value for the next test */
   MSG_host_set_property_value(thehost, exist, xbt_strdup("180"), NULL);
 }

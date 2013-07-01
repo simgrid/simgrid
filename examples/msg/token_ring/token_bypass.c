@@ -69,12 +69,14 @@ static int surf_parse_bypass_platform(void)
 
   s_sg_platf_host_cbarg_t bob = SG_PLATF_HOST_INITIALIZER;
   bob.id = "bob";
-  bob.power_peak = 98095000;
+  bob.power_peak = xbt_dynar_new(sizeof(double), NULL);
+  xbt_dynar_push_as(bob.power_peak, double, 98095000.0);
   sg_platf_new_host(&bob);
 
   s_sg_platf_host_cbarg_t alice = SG_PLATF_HOST_INITIALIZER;
   alice.id = "alice";
-  alice.power_peak = 98095000;
+  alice.power_peak = xbt_dynar_new(sizeof(double), NULL);
+  xbt_dynar_push_as(alice.power_peak, double, 98095000.0);
   sg_platf_new_host(&alice);
 
   s_sg_platf_link_cbarg_t link = SG_PLATF_LINK_INITIALIZER;

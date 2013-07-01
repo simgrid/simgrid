@@ -42,6 +42,8 @@ int lmm_constraint_is_shared(lmm_constraint_t cnst);
 
 void lmm_constraint_free(lmm_system_t sys, lmm_constraint_t cnst);
 
+double lmm_constraint_get_usage(lmm_constraint_t cnst);
+
 XBT_PUBLIC(lmm_variable_t) lmm_variable_new(lmm_system_t sys, void *id,
                                             double weight_value,
                                             double bound,

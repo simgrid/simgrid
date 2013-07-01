@@ -170,6 +170,55 @@ double SIMIX_host_get_available_speed(smx_host_t host){
       get_available_speed(host);
 }
 
+double SIMIX_pre_host_get_current_power_peak(smx_simcall_t simcall, smx_host_t host){
+  return SIMIX_host_get_current_power_peak(host);
+}
+double SIMIX_host_get_current_power_peak(smx_host_t host) {
+	  xbt_assert((host != NULL), "Invalid parameters (simix host is NULL)");
+	  return surf_workstation_model->extension.workstation.
+		      get_current_power_peak(host);
+}
+
+double SIMIX_pre_host_get_power_peak_at(smx_simcall_t simcall, smx_host_t host, int pstate_index){
+  return SIMIX_host_get_power_peak_at(host, pstate_index);
+}
+double SIMIX_host_get_power_peak_at(smx_host_t host, int pstate_index) {
+	  xbt_assert((host != NULL), "Invalid parameters (simix host is NULL)");
+
+	  return surf_workstation_model->extension.workstation.
+	      get_power_peak_at(host, pstate_index);
+}
+
+int SIMIX_pre_host_get_nb_pstates(smx_simcall_t simcall, smx_host_t host){
+  return SIMIX_host_get_nb_pstates(host);
+}
+int SIMIX_host_get_nb_pstates(smx_host_t host) {
+	  xbt_assert((host != NULL), "Invalid parameters (simix host is NULL)");
+
+	  return surf_workstation_model->extension.workstation.
+	      get_nb_pstates(host);
+}
+
+
+void SIMIX_pre_host_set_power_peak_at(smx_simcall_t simcall, smx_host_t host, int pstate_index){
+  SIMIX_host_set_power_peak_at(host, pstate_index);
+}
+void SIMIX_host_set_power_peak_at(smx_host_t host, int pstate_index) {
+	  xbt_assert((host != NULL), "Invalid parameters (simix host is NULL)");
+
+	  surf_workstation_model->extension.workstation.
+	      set_power_peak_at(host, pstate_index);
+}
+
+double SIMIX_pre_host_get_consumed_energy(smx_simcall_t simcall, smx_host_t host){
+  return SIMIX_host_get_consumed_energy(host);
+}
+double SIMIX_host_get_consumed_energy(smx_host_t host) {
+	  xbt_assert((host != NULL), "Invalid parameters (simix host is NULL)");
+	  return surf_workstation_model->extension.workstation.
+		      get_consumed_energy(host);
+}
+
 int SIMIX_pre_host_get_state(smx_simcall_t simcall, smx_host_t host){
   return SIMIX_host_get_state(host);
 }

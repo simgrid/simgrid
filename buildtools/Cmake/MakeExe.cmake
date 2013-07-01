@@ -60,6 +60,10 @@ add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/scala/master_slave_bypass)
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/scala/master_slave_kill)
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/scala/masterslave)
 
+add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/msg/energy/e1)
+add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/msg/energy/e2)
+add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/msg/energy/e3)
+
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/simdag)
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/simdag/dax)
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/simdag/dot)

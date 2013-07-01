@@ -37,6 +37,7 @@ typedef struct surf_cpu_ti_tgmr {
 typedef struct cpu_ti {
   s_surf_resource_t generic_resource;   /*< Structure with generic data. Needed at begin to interate with SURF */
   double power_peak;            /*< CPU power peak */
+  int pstate;
   double power_scale;           /*< Percentage of CPU disponible */
   surf_cpu_ti_tgmr_t avail_trace;       /*< Structure with data needed to integrate trace file */
   e_surf_resource_state_t state_current;        /*< CPU current state (ON or OFF) */
@@ -46,6 +47,7 @@ typedef struct cpu_ti {
   s_xbt_swag_hookup_t modified_cpu_hookup;      /*< hookup to swag that indicacates whether share resources must be recalculated or not */
   double sum_priority;          /*< the sum of actions' priority that are running on cpu */
   double last_update;           /*< last update of actions' remaining amount done */
+  double current_frequency;
 } s_cpu_ti_t, *cpu_ti_t;
 
 typedef struct surf_action_ti {
