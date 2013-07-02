@@ -53,7 +53,7 @@ int main( int argc, char **argv )
     }
 
     /* Free the communicator */
-    if (newcomm != MPI_COMM_NULL)
+    //if (newcomm != MPI_COMM_NULL)
 	//MPI_Comm_free( &newcomm );
     Test_Waitforall( );
     MPI_Finalize();
