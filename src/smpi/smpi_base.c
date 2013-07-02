@@ -528,7 +528,7 @@ void smpi_mpi_sendrecv(void *sendbuf, int sendcount, MPI_Datatype sendtype,
   MPI_Request requests[2];
   MPI_Status stats[2];
   int myid=smpi_process_index();
-  if ((dst == myid) && (src == myid)) {
+  if ((smpi_group_index(smpi_comm_group(comm), dst) == myid) && (smpi_group_index(smpi_comm_group(comm), src) == myid)) {
       smpi_datatype_copy(sendbuf, sendcount, sendtype,
                                      recvbuf, recvcount, recvtype);
       return;
