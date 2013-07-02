@@ -588,26 +588,41 @@ int PMPI_Group_range_incl(MPI_Group group, int n, int ranges[][3],
       size = 0;
       for (i = 0; i < n; i++) {
         for (rank = ranges[i][0];       /* First */
-             rank >= 0 && rank <= ranges[i][1]; /* Last */
-             rank += ranges[i][2] /* Stride */ ) {
+             rank >= 0; /* Last */
+              ) {
           size++;
+
+          rank += ranges[i][2]; /* Stride */
+	  if (ranges[i][0]<ranges[i][1]){
+	      if(rank > ranges[i][1])
+	        break;
+	  }else{
+	      if(rank < ranges[i][1])
+	        break;
+	  }
         }
       }
-      if (size == smpi_group_size(group)) {
-        *newgroup = group;
-      } else {
+
         *newgroup = smpi_group_new(size);
         j = 0;
         for (i = 0; i < n; i++) {
           for (rank = ranges[i][0];     /* First */
-               rank >= 0 && rank <= ranges[i][1];       /* Last */
-               rank += ranges[i][2] /* Stride */ ) {
+               rank >= 0; /* Last */
+               ) {
             index = smpi_group_index(group, rank);
             smpi_group_set_mapping(*newgroup, index, j);
             j++;
+            rank += ranges[i][2]; /* Stride */
+	    if (ranges[i][0]<ranges[i][1]){
+	      if(rank > ranges[i][1])
+	        break;
+	    }else{
+	      if(rank < ranges[i][1])
+	        break;
+	    }
           }
         }
-      }
+      //}
     }
     smpi_group_use(*newgroup);
     retval = MPI_SUCCESS;
