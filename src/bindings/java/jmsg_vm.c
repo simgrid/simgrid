@@ -72,7 +72,7 @@ Java_org_simgrid_msg_VM_isRestoring(JNIEnv * env, jobject jvm) {
 }
 JNIEXPORT void JNICALL
 Java_org_simgrid_msg_VM_create(JNIEnv *env, jobject jvm, jobject jhost, jstring jname,
-		               jint jncore, jlong jramsize, jlong jnetcap, jstring jdiskpath, jlong jdisksize, jlong jdprate, jlong jmig_netspeed) {
+		               jint jncore, jint jramsize, jint jnetcap, jstring jdiskpath, jint jdisksize, jint jmig_netspeed, jint jdp_intensity) {
 
   msg_host_t host = jhost_get_native(env, jhost);
 
@@ -85,8 +85,8 @@ Java_org_simgrid_msg_VM_create(JNIEnv *env, jobject jvm, jobject jhost, jstring 
   // disk_path = (*env)->GetStringUTFChars(env, jdiskpath, 0);
   // disk_path = xbt_strdup(disk_path);
 
-  msg_vm_t vm = MSG_vm_create(host, name, (int) jncore, (long) jramsize,
-		  (long) jnetcap, NULL, (long) jdisksize, (long) jdprate, (long) jmig_netspeed);
+  msg_vm_t vm = MSG_vm_create(host, name, (int) jncore, (int) jramsize,
+		  (int) jnetcap, NULL, (int) jdisksize, (int) jmig_netspeed, (int) jdp_intensity);
 
   jvm_bind(env,jvm,vm);
 }

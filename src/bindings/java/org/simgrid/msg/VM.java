@@ -41,16 +41,16 @@ public class VM extends Host{
 	 * @param netCap (not used for the moment)
 	 * @param diskPath (not used for the moment)
 	 * @param diskSize (not used for the moment)
-	 * @param dpRate (dirty page rate MB/flop, if you don't know put zero ;))
 	 * @param migNetSpeed (network bandwith allocated for migrations in MB/s, if you don't know put zero ;))
+	 * @param dpIntensity (dirty page percentage according to migNetSpeed, [0-100], if you don't know put zero ;))
 	 */
 	
-	public VM(Host host, String name, int nCore,  long ramSize, 
-			long netCap, String diskPath, long diskSize, long  dpRate,long migNetSpeed){
+	public VM(Host host, String name, int nCore,  int ramSize, 
+			int netCap, String diskPath, int diskSize, int migNetSpeed, int dpIntensity){
 		super();
 		super.name = name; 
 		this.currentHost = host; 
-		create(host, name, nCore, ramSize, netCap, diskPath, diskSize, dpRate, migNetSpeed);
+		create(host, name, nCore, ramSize, netCap, diskPath, diskSize, migNetSpeed, dpIntensity);
 		VM.addVM(this);
 	}
 
@@ -121,11 +121,11 @@ public class VM extends Host{
 	 * @param netCap (not used for the moment)
 	 * @param diskPath (not used for the moment)
 	 * @param diskSize (not used for the moment)
-	 * @param dpRate (dirty page rate in MB/flop, if you don't know put zero ;))
 	 * @param migNetSpeed (network bandwith allocated for migrations in MB/s, if you don't know put zero ;))
+	 * @param dpIntensity (dirty page intensity, a percentage of migNetSpeed [0-100],  if you don't know put zero ;))
 	 */
-	private native void create(Host host, String name, int nCore, long ramSize, 
-			 long netCap, String diskPath, long diskSize, long dpRate, long migNetSpeed);
+	private native void create(Host host, String name, int nCore, int ramSize, 
+			 int netCap, String diskPath, int diskSize, int migNetSpeed, int dpIntensity);
 	
 	/**
 	 * start the VM

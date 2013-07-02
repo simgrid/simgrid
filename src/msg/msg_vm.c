@@ -169,10 +169,14 @@ int MSG_vm_is_restoring(msg_vm_t vm)
  *  All parameters are in MBytes
  *
  */
-msg_vm_t MSG_vm_create(msg_host_t ind_pm, const char *name, int ncpus, long ramsize,
-	                                     long net_cap, char *disk_path, long disksize,
-	                                     	 long dp_rate, long mig_netspeed)
+msg_vm_t MSG_vm_create(msg_host_t ind_pm, const char *name, int ncpus, int ramsize,
+	                                     int net_cap, char *disk_path, int disksize,
+	                                     	 int mig_netspeed, int dp_intensity)
 {
+	/* For the moment, intensity_rate is the percentage against the migration bandwidth */
+	double host_speed = MSG_get_host_speed(ind_pm);
+	double update_speed = ((double)dp_intensity/100) * mig_netspeed;
+	
 	msg_vm_t vm = MSG_vm_create_core(ind_pm, name);
 	s_ws_params_t params;
 	memset(&params, 0, sizeof(params));
@@ -181,10 +185,11 @@ msg_vm_t MSG_vm_create(msg_host_t ind_pm, const char *name, int ncpus, long rams
 	params.devsize = 0;
 	params.skip_stage2 = 0;
 	params.max_downtime = 0.03;
-	params.dp_rate = 1L * 1024 * 1024 * dp_rate;
+	params.dp_rate = (update_speed * 1L * 1024 * 1024 ) / host_speed; 
 	params.dp_cap = params.ramsize / 0.9; // working set memory is 90%
 	params.mig_speed = 1L * 1024 * 1024 * mig_netspeed; // mig_speed
 
+   //XBT_INFO("dp rate %f migspeed : %f intensity mem : %d, updatespeed %f, hostspeed %f",params.dp_rate, params.mig_speed, dp_intensity, update_speed, host_speed);
 	simcall_host_set_params(vm, &params);
 
 	return vm;
@@ -1219,5 +1224,5 @@ msg_host_t MSG_vm_get_pm(msg_vm_t vm)
  */
 void MSG_vm_set_bound(msg_vm_t vm, double bound)
 {
-  return simcall_vm_set_bound(vm, bound);
+	return simcall_vm_set_bound(vm, bound);
 }

@@ -87,7 +87,7 @@ Java_org_simgrid_msg_VM_isRestoring(JNIEnv *env, jobject jvm);
  */
 JNIEXPORT void JNICALL
 Java_org_simgrid_msg_VM_create(JNIEnv *env, jobject jvm, jobject jhost, jstring jname,
-		               jint jncore, jlong jramsize, jlong jnetcap, jstring jdiskpath, jlong jdisksize, jlong dprate, jlong mig_netspeed);
+		               jint jncore, jint jramsize, jint jnetcap, jstring jdiskpath, jint jdisksize, jint dprate, jint mig_netspeed);
 
 /**
  * Class            org_simgrid_msg_VM
