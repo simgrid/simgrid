@@ -18,7 +18,6 @@
 
 #include "colls_private.h"
 #include "coll_tuned_topo.h"
-#define MCA_COLL_BASE_TAG_REDUCE 555
 
 
 
@@ -151,7 +150,7 @@ int smpi_coll_tuned_ompi_reduce_generic( void* sendbuf, void* recvbuf, int origi
 
                     reqs[inbi]=smpi_mpi_irecv(local_recvbuf, recvcount, datatype,
                                              tree->tree_next[i], 
-                                             MCA_COLL_BASE_TAG_REDUCE, comm
+                                             COLL_TAG_REDUCE, comm
                                              );
                 }
                 /* wait for previous req to complete, if any.
@@ -195,7 +194,7 @@ int smpi_coll_tuned_ompi_reduce_generic( void* sendbuf, void* recvbuf, int origi
                         /* send combined/accumulated data to parent */
                         smpi_mpi_send( accumulator, prevcount, 
                                                   datatype, tree->tree_prev, 
-                                                  MCA_COLL_BASE_TAG_REDUCE,
+                                                  COLL_TAG_REDUCE,
                                                   comm);
                     }
 
@@ -242,7 +241,7 @@ int smpi_coll_tuned_ompi_reduce_generic( void* sendbuf, void* recvbuf, int origi
                                          segindex * segment_increment,
                                          count_by_segment, datatype,
                                          tree->tree_prev, 
-                                         MCA_COLL_BASE_TAG_REDUCE,
+                                         COLL_TAG_REDUCE,
                                          comm) ;
                 segindex++;
                 original_count -= count_by_segment;
@@ -270,7 +269,7 @@ int smpi_coll_tuned_ompi_reduce_generic( void* sendbuf, void* recvbuf, int origi
                                           segindex * segment_increment,
                                           count_by_segment, datatype,
                                           tree->tree_prev, 
-                                          MCA_COLL_BASE_TAG_REDUCE,
+                                          COLL_TAG_REDUCE,
                                           comm);
                 original_count -= count_by_segment;
             }
@@ -288,7 +287,7 @@ int smpi_coll_tuned_ompi_reduce_generic( void* sendbuf, void* recvbuf, int origi
                                           segindex * segment_increment, 
                                           count_by_segment, datatype, 
                                           tree->tree_prev, 
-                                          MCA_COLL_BASE_TAG_REDUCE, 
+                                          COLL_TAG_REDUCE,
                                           comm );
                 creq = (creq + 1) % max_outstanding_reqs;
                 segindex++;
@@ -545,7 +544,7 @@ int smpi_coll_tuned_reduce_ompi_in_order_binary( void *sendbuf, void *recvbuf,
         if (root == rank) {
             /* Receive result from rank io_root to recvbuf */
             smpi_mpi_recv(recvbuf, count, datatype, io_root,
-                                    MCA_COLL_BASE_TAG_REDUCE, comm,
+                                    COLL_TAG_REDUCE, comm,
                                     MPI_STATUS_IGNORE);
             if (MPI_IN_PLACE == sendbuf) {
                 free(use_this_sendbuf);
@@ -554,7 +553,7 @@ int smpi_coll_tuned_reduce_ompi_in_order_binary( void *sendbuf, void *recvbuf,
         } else if (io_root == rank) {
             /* Send result from use_this_recvbuf to root */
             smpi_mpi_send(use_this_recvbuf, count, datatype, root,
-                                    MCA_COLL_BASE_TAG_REDUCE, 
+                                    COLL_TAG_REDUCE,
                                     comm);
             free(use_this_recvbuf);
         }
@@ -610,7 +609,7 @@ smpi_coll_tuned_reduce_ompi_basic_linear(void *sbuf, void *rbuf, int count,
 
     if (rank != root) {
         smpi_mpi_send(sbuf, count, dtype, root,
-                                MCA_COLL_BASE_TAG_REDUCE,
+                                COLL_TAG_REDUCE,
                                 comm);
         return -1;
     }
@@ -642,7 +641,7 @@ smpi_coll_tuned_reduce_ompi_basic_linear(void *sbuf, void *rbuf, int count,
         smpi_datatype_copy((char*)sbuf, count, dtype,(char*)rbuf, count, dtype);
     } else {
         smpi_mpi_recv(rbuf, count, dtype, size - 1,
-                                MCA_COLL_BASE_TAG_REDUCE, comm,
+                                COLL_TAG_REDUCE, comm,
                                 MPI_STATUS_IGNORE);
     }
 
@@ -653,7 +652,7 @@ smpi_coll_tuned_reduce_ompi_basic_linear(void *sbuf, void *rbuf, int count,
             inbuf = (char*)sbuf;
         } else {
             smpi_mpi_recv(pml_buffer, count, dtype, i,
-                                    MCA_COLL_BASE_TAG_REDUCE, comm,
+                                    COLL_TAG_REDUCE, comm,
                                     MPI_STATUS_IGNORE);
             inbuf = pml_buffer;
         }

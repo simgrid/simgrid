@@ -23,7 +23,7 @@ int smpi_coll_tuned_allreduce_smp_rsag_rab(void *sbuf, void *rbuf, int count,
 {
   int comm_size, rank;
   void *tmp_buf;
-  int tag = 50;
+  int tag = COLL_TAG_ALLREDUCE;
   int mask, src, dst;
   MPI_Status status;
   int num_core = NUM_CORE;

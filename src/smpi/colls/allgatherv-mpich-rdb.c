@@ -1,7 +1,6 @@
         /* Short or medium size message and power-of-two no. of processes. Use
          * recursive doubling algorithm */   
 #include "colls_private.h"
-#define MPIR_ALLGATHERV_TAG 222
 int smpi_coll_tuned_allgatherv_mpich_rdb ( 
     void *sendbuf,
     int sendcount,
@@ -94,10 +93,10 @@ int smpi_coll_tuned_allgatherv_mpich_rdb (
 
                     smpi_mpi_sendrecv(((char *)tmp_buf + send_offset * recvtype_extent),
                                                  curr_cnt, recvtype, dst,
-                                                 MPIR_ALLGATHERV_TAG,  
+                                                 COLL_TAG_ALLGATHERV,
                                                  ((char *)tmp_buf + recv_offset * recvtype_extent),
                                                  total_count - recv_offset, recvtype, dst,
-                                                 MPIR_ALLGATHERV_TAG,
+                                                 COLL_TAG_ALLGATHERV,
                                                  comm, &status);
                         /* for convenience, recv is posted for a bigger amount
                            than will be sent */
@@ -159,7 +158,7 @@ int smpi_coll_tuned_allgatherv_mpich_rdb (
                             smpi_mpi_send(((char *)tmp_buf + offset),
                                                      last_recv_cnt,
                                                      recvtype, dst,
-                                                     MPIR_ALLGATHERV_TAG, comm);
+                                                     COLL_TAG_ALLGATHERV, comm);
                             /* last_recv_cnt was set in the previous
                                receive. that's the amount of data to be
                                sent now. */
@@ -176,7 +175,7 @@ int smpi_coll_tuned_allgatherv_mpich_rdb (
 
                             smpi_mpi_recv(((char *)tmp_buf + offset * recvtype_extent),
                                                      total_count - offset, recvtype,
-                                                     dst, MPIR_ALLGATHERV_TAG,
+                                                     dst, COLL_TAG_ALLGATHERV,
                                                      comm, &status);
                                 /* for convenience, recv is posted for a
                                    bigger amount than will be sent */

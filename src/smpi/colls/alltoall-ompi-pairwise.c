@@ -17,7 +17,6 @@
  */
 
 #include "colls_private.h"
-#define MCA_COLL_BASE_TAG_ALLTOALL 101
 
 int smpi_coll_tuned_alltoall_ompi_pairwise(void *sbuf, int scount, 
                                             MPI_Datatype sdtype,
@@ -53,9 +52,9 @@ int smpi_coll_tuned_alltoall_ompi_pairwise(void *sbuf, int scount,
 
         /* send and receive */
         smpi_mpi_sendrecv( tmpsend, scount, sdtype, sendto, 
-                                        MCA_COLL_BASE_TAG_ALLTOALL,
+                                        COLL_TAG_ALLTOALL,
                                         tmprecv, rcount, rdtype, recvfrom, 
-                                        MCA_COLL_BASE_TAG_ALLTOALL,
+                                        COLL_TAG_ALLTOALL,
                                         comm, MPI_STATUS_IGNORE);
     }
 

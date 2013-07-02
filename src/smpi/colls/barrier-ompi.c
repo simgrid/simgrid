@@ -21,7 +21,6 @@
 #include "coll_tuned_topo.h"
 
 
-#define MCA_COLL_BASE_TAG_BARRIER 100
 /*
  * Barrier is ment to be a synchronous operation, as some BTLs can mark 
  * a request done before its passed to the NIC and progress might not be made 
@@ -58,38 +57,38 @@ int smpi_coll_tuned_barrier_ompi_doublering(MPI_Comm comm
 
     if (rank > 0) { /* receive message from the left */
         smpi_mpi_recv((void*)NULL, 0, MPI_BYTE, left, 
-                                MCA_COLL_BASE_TAG_BARRIER, comm, 
+                                COLL_TAG_BARRIER, comm,
                                 MPI_STATUS_IGNORE);
     }
 
     /* Send message to the right */
     smpi_mpi_send((void*)NULL, 0, MPI_BYTE, right, 
-                            MCA_COLL_BASE_TAG_BARRIER, 
+                            COLL_TAG_BARRIER,
                              comm);
 
     /* root needs to receive from the last node */
     if (rank == 0) {
         smpi_mpi_recv((void*)NULL, 0, MPI_BYTE, left, 
-                                MCA_COLL_BASE_TAG_BARRIER, comm, 
+                                COLL_TAG_BARRIER, comm,
                                 MPI_STATUS_IGNORE);
     }
 
     /* Allow nodes to exit */
     if (rank > 0) { /* post Receive from left */
         smpi_mpi_recv((void*)NULL, 0, MPI_BYTE, left, 
-                                MCA_COLL_BASE_TAG_BARRIER, comm, 
+                                COLL_TAG_BARRIER, comm,
                                 MPI_STATUS_IGNORE);
     }
 
     /* send message to the right one */
     smpi_mpi_send((void*)NULL, 0, MPI_BYTE, right, 
-                            MCA_COLL_BASE_TAG_BARRIER, 
+                            COLL_TAG_BARRIER,
                              comm);
  
     /* rank 0 post receive from the last node */
     if (rank == 0) {
         smpi_mpi_recv((void*)NULL, 0, MPI_BYTE, left, 
-                                MCA_COLL_BASE_TAG_BARRIER, comm, 
+                                COLL_TAG_BARRIER, comm,
                                 MPI_STATUS_IGNORE);
     }
 
@@ -124,16 +123,16 @@ int smpi_coll_tuned_barrier_ompi_recursivedoubling(MPI_Comm comm
             /* send message to lower ranked node */
             remote = rank - adjsize;
             smpi_mpi_sendrecv(NULL, 0, MPI_BYTE, remote,
-                                                  MCA_COLL_BASE_TAG_BARRIER,
+                                                  COLL_TAG_BARRIER,
                                                   NULL, 0, MPI_BYTE, remote,
-                                                  MCA_COLL_BASE_TAG_BARRIER,
+                                                  COLL_TAG_BARRIER,
                                                   comm, MPI_STATUS_IGNORE);
 
         } else if (rank < (size - adjsize)) {
 
             /* receive message from high level rank */
             smpi_mpi_recv((void*)NULL, 0, MPI_BYTE, rank+adjsize,
-                                    MCA_COLL_BASE_TAG_BARRIER, comm, 
+                                    COLL_TAG_BARRIER, comm,
                                     MPI_STATUS_IGNORE);
 
         }
@@ -149,9 +148,9 @@ int smpi_coll_tuned_barrier_ompi_recursivedoubling(MPI_Comm comm
 
             /* post receive from the remote node */
             smpi_mpi_sendrecv(NULL, 0, MPI_BYTE, remote,
-                                                  MCA_COLL_BASE_TAG_BARRIER,
+                                                  COLL_TAG_BARRIER,
                                                   NULL, 0, MPI_BYTE, remote,
-                                                  MCA_COLL_BASE_TAG_BARRIER,
+                                                  COLL_TAG_BARRIER,
                                                   comm, MPI_STATUS_IGNORE);
         }
     }
@@ -162,7 +161,7 @@ int smpi_coll_tuned_barrier_ompi_recursivedoubling(MPI_Comm comm
             /* send enter message to higher ranked node */
             remote = rank + adjsize;
             smpi_mpi_send((void*)NULL, 0, MPI_BYTE, remote, 
-                                    MCA_COLL_BASE_TAG_BARRIER, 
+                                    COLL_TAG_BARRIER,
                                      comm);
 
         }
@@ -195,9 +194,9 @@ int smpi_coll_tuned_barrier_ompi_bruck(MPI_Comm comm
 
         /* send message to lower ranked node */
         smpi_mpi_sendrecv(NULL, 0, MPI_BYTE, to, 
-                                              MCA_COLL_BASE_TAG_BARRIER,
+                                              COLL_TAG_BARRIER,
                                               NULL, 0, MPI_BYTE, from, 
-                                              MCA_COLL_BASE_TAG_BARRIER,
+                                              COLL_TAG_BARRIER,
                                               comm, MPI_STATUS_IGNORE);
     }
 
@@ -221,9 +220,9 @@ int smpi_coll_tuned_barrier_ompi_two_procs(MPI_Comm comm
     remote = (remote + 1) & 0x1;
 
     smpi_mpi_sendrecv(NULL, 0, MPI_BYTE, remote, 
-                                          MCA_COLL_BASE_TAG_BARRIER, 
+                                          COLL_TAG_BARRIER,
                                           NULL, 0, MPI_BYTE, remote, 
-                                          MCA_COLL_BASE_TAG_BARRIER,
+                                          COLL_TAG_BARRIER,
                                           comm, MPI_STATUS_IGNORE);
     return (MPI_SUCCESS);
 }
@@ -253,11 +252,11 @@ int smpi_coll_tuned_barrier_ompi_basic_linear(MPI_Comm comm)
 
     if (rank > 0) {
         smpi_mpi_send (NULL, 0, MPI_BYTE, 0, 
-                                 MCA_COLL_BASE_TAG_BARRIER,
+                                 COLL_TAG_BARRIER,
                                   comm);
 
         smpi_mpi_recv (NULL, 0, MPI_BYTE, 0, 
-                                 MCA_COLL_BASE_TAG_BARRIER,
+                                 COLL_TAG_BARRIER,
                                  comm, MPI_STATUS_IGNORE);
     }
 
@@ -269,14 +268,14 @@ int smpi_coll_tuned_barrier_ompi_basic_linear(MPI_Comm comm)
         requests = (MPI_Request*)malloc( size * sizeof(MPI_Request) );
         for (i = 1; i < size; ++i) {
             requests[i] = smpi_mpi_irecv(NULL, 0, MPI_BYTE, MPI_ANY_SOURCE,
-                                     MCA_COLL_BASE_TAG_BARRIER, comm
+                                     COLL_TAG_BARRIER, comm
                                      );
         }
         smpi_mpi_waitall( size-1, requests+1, MPI_STATUSES_IGNORE );
 
         for (i = 1; i < size; ++i) {
             requests[i] = smpi_mpi_isend(NULL, 0, MPI_BYTE, i,
-                                     MCA_COLL_BASE_TAG_BARRIER, 
+                                     COLL_TAG_BARRIER,
                                       comm
                                      );
         }
@@ -314,11 +313,11 @@ int smpi_coll_tuned_barrier_ompi_tree(MPI_Comm comm)
         if (!(partner & (jump-1)) && partner < size) {
             if (partner > rank) {
                 smpi_mpi_recv (NULL, 0, MPI_BYTE, partner, 
-                                         MCA_COLL_BASE_TAG_BARRIER, comm,
+                                         COLL_TAG_BARRIER, comm,
                                          MPI_STATUS_IGNORE);
             } else if (partner < rank) {
                 smpi_mpi_send (NULL, 0, MPI_BYTE, partner,
-                                         MCA_COLL_BASE_TAG_BARRIER, 
+                                         COLL_TAG_BARRIER,
                                           comm);
             }
         }
@@ -330,11 +329,11 @@ int smpi_coll_tuned_barrier_ompi_tree(MPI_Comm comm)
         if (!(partner & (jump-1)) && partner < size) {
             if (partner > rank) {
                 smpi_mpi_send (NULL, 0, MPI_BYTE, partner,
-                                         MCA_COLL_BASE_TAG_BARRIER,
+                                         COLL_TAG_BARRIER,
                                           comm);
             } else if (partner < rank) {
                 smpi_mpi_recv (NULL, 0, MPI_BYTE, partner, 
-                                         MCA_COLL_BASE_TAG_BARRIER, comm,
+                                         COLL_TAG_BARRIER, comm,
                                          MPI_STATUS_IGNORE);
             }
         }

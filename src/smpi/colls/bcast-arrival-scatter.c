@@ -13,7 +13,7 @@ int smpi_coll_tuned_bcast_arrival_scatter(void *buf, int count,
                                           MPI_Datatype datatype, int root,
                                           MPI_Comm comm)
 {
-  int tag = 50;
+  int tag = COLL_TAG_BCAST;
   int header_tag = 10;
   MPI_Status status;
 

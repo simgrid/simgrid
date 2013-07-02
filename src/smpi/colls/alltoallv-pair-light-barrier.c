@@ -31,7 +31,7 @@ smpi_coll_tuned_alltoallv_pair_light_barrier(void *send_buff, int *send_counts, 
   MPI_Aint send_chunk, recv_chunk;
   MPI_Status s;
   int i, src, dst, rank, num_procs, next_partner;
-  int tag = 1;     /*, failure = 0; */
+  int tag = COLL_TAG_ALLTOALLV;     /*, failure = 0; */
 
   char send_sync = 'a', recv_sync = 'b';
   char *send_ptr = (char *) send_buff;

@@ -8,7 +8,7 @@ smpi_coll_tuned_bcast_flattree_pipeline(void *buff, int count,
                                         MPI_Comm comm)
 {
   int i, j, rank, num_procs;
-  int tag = 1;
+  int tag = COLL_TAG_BCAST;
 
   MPI_Aint extent;
   extent = smpi_datatype_get_extent(data_type);

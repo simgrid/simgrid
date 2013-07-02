@@ -12,7 +12,7 @@ int smpi_coll_tuned_alltoallv_bruck(void *sendbuf, int *sendcounts, int *senddis
                                    int *recvcounts, int *recvdisps, MPI_Datatype recvtype,
                                    MPI_Comm comm)
 {
-  int system_tag = 777;
+  int system_tag = COLL_TAG_ALLTOALLV;
   int i, rank, size, err, count;
   MPI_Aint lb;
   MPI_Aint sendext = 0;

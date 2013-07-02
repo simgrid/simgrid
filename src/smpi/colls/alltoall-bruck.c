@@ -30,7 +30,7 @@ smpi_coll_tuned_alltoall_bruck(void *send_buff, int send_count,
 
   int *blocks_length, *disps;
   int i, src, dst, rank, num_procs, count, remainder, block, position;
-  int pack_size, tag = 1, pof2 = 1;
+  int pack_size, tag = COLL_TAG_ALLTOALL, pof2 = 1;
 
 
   char *tmp_buff;

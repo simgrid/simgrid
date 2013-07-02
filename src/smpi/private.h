@@ -47,6 +47,20 @@ typedef struct s_smpi_mpi_datatype{
   int in_use;
 } s_smpi_mpi_datatype_t;
 
+
+#define COLL_TAG_REDUCE 111
+#define COLL_TAG_SCATTER 222
+#define COLL_TAG_SCATTERV 333
+#define COLL_TAG_GATHER 444
+#define COLL_TAG_ALLGATHER 555
+#define COLL_TAG_ALLGATHERV 666
+#define COLL_TAG_BARRIER 777
+#define COLL_TAG_REDUCE_SCATTER 888
+#define COLL_TAG_ALLTOALLV 999
+#define COLL_TAG_ALLTOALL 1111
+#define COLL_TAG_GATHERV 2222
+#define COLL_TAG_BCAST 3333
+#define COLL_TAG_ALLREDUCE 4444
 //*****************************************************************************************
 
 typedef struct s_smpi_mpi_request {

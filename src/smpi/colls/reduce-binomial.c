@@ -10,7 +10,7 @@ int smpi_coll_tuned_reduce_binomial(void *sendbuf, void *recvbuf, int count,
   int comm_size, rank;
   int mask, relrank, source;
   int dst;
-  int tag = 4321;
+  int tag = COLL_TAG_REDUCE;
   MPI_Aint extent;
   void *tmp_buf;
   MPI_Aint true_lb, true_extent;

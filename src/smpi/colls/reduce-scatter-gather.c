@@ -15,7 +15,7 @@ int smpi_coll_tuned_reduce_scatter_gather(void *sendbuf, void *recvbuf,
   int recv_idx, last_idx = 0, newdst;
   int dst, send_cnt, recv_cnt, newroot, newdst_tree_root;
   int newroot_tree_root, new_count;
-  int tag = 4321;
+  int tag = COLL_TAG_REDUCE;
   void *send_ptr, *recv_ptr, *tmp_buf;
 
   cnts = NULL;

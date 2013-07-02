@@ -20,7 +20,6 @@
 #include "colls_private.h"
 #include "coll_tuned_topo.h"
 
-#define MCA_COLL_BASE_TAG_SCATTER 111
 
 int
 smpi_coll_tuned_scatter_ompi_binomial(void *sbuf, int scount,
@@ -123,7 +122,7 @@ smpi_coll_tuned_scatter_ompi_binomial(void *sbuf, int scount,
 	if (rank != root) {
 	    /* recv from parent on non-root */
 	    smpi_mpi_recv(ptmp, rcount*size, rdtype, bmtree->tree_prev,
-				    MCA_COLL_BASE_TAG_SCATTER, comm, &status);
+				    COLL_TAG_SCATTER, comm, &status);
 	    /* local copy to rbuf */
 	    err = smpi_datatype_copy(ptmp, scount, sdtype,
 				  rbuf, rcount, rdtype);
@@ -140,7 +139,7 @@ smpi_coll_tuned_scatter_ompi_binomial(void *sbuf, int scount,
 
 	    smpi_mpi_send(ptmp + total_send*sextent, mycount, sdtype,
 				    bmtree->tree_next[i],
-				    MCA_COLL_BASE_TAG_SCATTER,
+				    COLL_TAG_SCATTER,
 				     comm);
 
 	    total_send += mycount;
@@ -151,7 +150,7 @@ smpi_coll_tuned_scatter_ompi_binomial(void *sbuf, int scount,
     } else {
 	/* recv from parent on leaf nodes */
 	smpi_mpi_recv(ptmp, rcount, rdtype, bmtree->tree_prev,
-				MCA_COLL_BASE_TAG_SCATTER, comm, &status);
+				COLL_TAG_SCATTER, comm, &status);
     }
     //!FIXME : store the tree, as done in ompi, instead of calculating it each time ?
     xbt_free(bmtree);
@@ -209,7 +208,7 @@ smpi_coll_tuned_scatter_ompi_basic_linear(void *sbuf, int scount,
 
     if (rank != root) {
         smpi_mpi_recv(rbuf, rcount, rdtype, root,
-                                MCA_COLL_BASE_TAG_SCATTER,
+                                COLL_TAG_SCATTER,
                                 comm, MPI_STATUS_IGNORE);
         return MPI_SUCCESS;
     }
@@ -234,7 +233,7 @@ smpi_coll_tuned_scatter_ompi_basic_linear(void *sbuf, int scount,
             }
         } else {
             smpi_mpi_send(ptmp, scount, sdtype, i,
-                                    MCA_COLL_BASE_TAG_SCATTER,
+                                    COLL_TAG_SCATTER,
                                      comm);
         }
         if (MPI_SUCCESS != err) {

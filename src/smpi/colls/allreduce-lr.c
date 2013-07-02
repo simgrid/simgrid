@@ -17,7 +17,7 @@ int
 smpi_coll_tuned_allreduce_lr(void *sbuf, void *rbuf, int rcount,
                              MPI_Datatype dtype, MPI_Op op, MPI_Comm comm)
 {
-  int tag = 5000;
+  int tag = COLL_TAG_ALLREDUCE;
   MPI_Status status;
   int rank, i, size, count;
   int send_offset, recv_offset;

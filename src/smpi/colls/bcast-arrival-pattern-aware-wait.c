@@ -27,7 +27,7 @@ int smpi_coll_tuned_bcast_arrival_pattern_aware_wait(void *buf, int count,
 
   int rank, size;
   int i, j, k;
-  int tag = 50;
+  int tag = COLL_TAG_BCAST;
   int will_send[BCAST_ARRIVAL_PATTERN_AWARE_MAX_NODE];
 
   int sent_count;

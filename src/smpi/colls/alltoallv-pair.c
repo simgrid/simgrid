@@ -30,7 +30,7 @@ int smpi_coll_tuned_alltoallv_pair(void *send_buff, int *send_counts, int *send_
   MPI_Aint send_chunk, recv_chunk;
   MPI_Status s;
   int i, src, dst, rank, num_procs;
-  int tag = 1;
+  int tag = COLL_TAG_ALLTOALLV;
   char *send_ptr = (char *) send_buff;
   char *recv_ptr = (char *) recv_buff;
 

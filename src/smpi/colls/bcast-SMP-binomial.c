@@ -11,7 +11,7 @@ int smpi_coll_tuned_bcast_SMP_binomial(void *buf, int count,
   int size;
   int rank;
   MPI_Status status;
-  int tag = 50;
+  int tag = COLL_TAG_BCAST;
 
   size = smpi_comm_size(comm);
   rank = smpi_comm_rank(comm);

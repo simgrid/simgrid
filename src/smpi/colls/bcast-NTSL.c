@@ -8,7 +8,7 @@ static int bcast_NTSL_segment_size_in_byte = 8192;
 int smpi_coll_tuned_bcast_NTSL(void *buf, int count, MPI_Datatype datatype,
                                int root, MPI_Comm comm)
 {
-  int tag = 50;
+  int tag = COLL_TAG_BCAST;
   MPI_Status status;
   MPI_Request request;
   MPI_Request *send_request_array;

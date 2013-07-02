@@ -14,7 +14,7 @@ int smpi_coll_tuned_allgather_SMP_NTS(void *sbuf, int scount,
   MPI_Aint rextent, sextent;
   rextent = smpi_datatype_get_extent(rtype);
   sextent = smpi_datatype_get_extent(stype);
-  int tag = 50;
+  int tag = COLL_TAG_ALLGATHER;
   MPI_Request request;
   MPI_Request rrequest_array[128];
 

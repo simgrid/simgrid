@@ -21,7 +21,7 @@ int smpi_coll_tuned_reduce_arrival_pattern_aware(void *buf, void *rbuf,
   int rank;
   rank = smpi_comm_rank(comm);
 
-  int tag = 50;
+  int tag = COLL_TAG_REDUCE;
   MPI_Status status;
   MPI_Request request;
   MPI_Request *send_request_array;

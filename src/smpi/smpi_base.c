@@ -912,7 +912,7 @@ void smpi_mpi_gather(void *sendbuf, int sendcount, MPI_Datatype sendtype,
                      void *recvbuf, int recvcount, MPI_Datatype recvtype,
                      int root, MPI_Comm comm)
 {
-  int system_tag = 666;
+  int system_tag = COLL_TAG_GATHER;
   int rank, size, src, index;
   MPI_Aint lb = 0, recvext = 0;
   MPI_Request *requests;
@@ -975,7 +975,7 @@ void smpi_mpi_gatherv(void *sendbuf, int sendcount, MPI_Datatype sendtype,
                       void *recvbuf, int *recvcounts, int *displs,
                       MPI_Datatype recvtype, int root, MPI_Comm comm)
 {
-  int system_tag = 666;
+  int system_tag = COLL_TAG_GATHERV;
   int rank, size, src, index;
   MPI_Aint lb = 0, recvext = 0;
   MPI_Request *requests;
@@ -1015,7 +1015,7 @@ void smpi_mpi_allgather(void *sendbuf, int sendcount,
                         int recvcount, MPI_Datatype recvtype,
                         MPI_Comm comm)
 {
-  int system_tag = 666;
+  int system_tag = COLL_TAG_ALLGATHER;
   int rank, size, other, index;
   MPI_Aint lb = 0, recvext = 0;
   MPI_Request *requests;
@@ -1054,7 +1054,7 @@ void smpi_mpi_allgatherv(void *sendbuf, int sendcount,
                          int *recvcounts, int *displs,
                          MPI_Datatype recvtype, MPI_Comm comm)
 {
-  int system_tag = 666;
+  int system_tag = COLL_TAG_ALLGATHERV;
   int rank, size, other, index;
   MPI_Aint lb = 0, recvext = 0;
   MPI_Request *requests;
@@ -1092,7 +1092,7 @@ void smpi_mpi_scatter(void *sendbuf, int sendcount, MPI_Datatype sendtype,
                       void *recvbuf, int recvcount, MPI_Datatype recvtype,
                       int root, MPI_Comm comm)
 {
-  int system_tag = 666;
+  int system_tag = COLL_TAG_SCATTER;
   int rank, size, dst, index;
   MPI_Aint lb = 0, sendext = 0;
   MPI_Request *requests;
@@ -1131,7 +1131,7 @@ void smpi_mpi_scatterv(void *sendbuf, int *sendcounts, int *displs,
                        MPI_Datatype sendtype, void *recvbuf, int recvcount,
                        MPI_Datatype recvtype, int root, MPI_Comm comm)
 {
-  int system_tag = 666;
+  int system_tag = COLL_TAG_SCATTERV;
   int rank, size, dst, index;
   MPI_Aint lb = 0, sendext = 0;
   MPI_Request *requests;
@@ -1170,7 +1170,7 @@ void smpi_mpi_reduce(void *sendbuf, void *recvbuf, int count,
                      MPI_Datatype datatype, MPI_Op op, int root,
                      MPI_Comm comm)
 {
-  int system_tag = 666;
+  int system_tag = COLL_TAG_REDUCE;
   int rank, size, src, index;
   MPI_Aint lb = 0, dataext = 0;
   MPI_Request *requests;
@@ -1244,7 +1244,7 @@ void smpi_mpi_allreduce(void *sendbuf, void *recvbuf, int count,
 void smpi_mpi_scan(void *sendbuf, void *recvbuf, int count,
                    MPI_Datatype datatype, MPI_Op op, MPI_Comm comm)
 {
-  int system_tag = 666;
+  int system_tag = 888;
   int rank, size, other, index;
   MPI_Aint lb = 0, dataext = 0;
   MPI_Request *requests;

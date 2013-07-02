@@ -18,7 +18,6 @@
  */
 
 #include "colls_private.h"
-#define  MCA_COLL_BASE_TAG_ALLGATHERV 444
 /*
  * ompi_coll_tuned_allgatherv_intra_bruck
  *
@@ -159,9 +158,9 @@ int smpi_coll_tuned_allgatherv_ompi_bruck(void *sbuf, int scount,
 
       /* Sendreceive */
       smpi_mpi_sendrecv(rbuf, 1, new_sdtype, sendto,
-                                     MCA_COLL_BASE_TAG_ALLGATHERV,
+                                     COLL_TAG_ALLGATHERV,
                                      rbuf, 1, new_rdtype, recvfrom,
-                                     MCA_COLL_BASE_TAG_ALLGATHERV,
+                                     COLL_TAG_ALLGATHERV,
                                      comm, MPI_STATUS_IGNORE);
       smpi_datatype_free(&new_sdtype);
       smpi_datatype_free(&new_rdtype);

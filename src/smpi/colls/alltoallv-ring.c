@@ -29,7 +29,7 @@ smpi_coll_tuned_alltoallv_ring(void *send_buff, int *send_counts, int *send_disp
   MPI_Status s;
   MPI_Aint send_chunk, recv_chunk;
   int i, src, dst, rank, num_procs;
-  int tag = 11;
+  int tag = COLL_TAG_ALLTOALLV;
 
   char *send_ptr = (char *) send_buff;
   char *recv_ptr = (char *) recv_buff;

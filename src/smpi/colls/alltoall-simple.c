@@ -27,7 +27,7 @@ int smpi_coll_tuned_alltoall_simple(void *send_buff, int send_count,
                                     void *recv_buff, int recv_count,
                                     MPI_Datatype recv_type, MPI_Comm comm)
 {
-  int i, rank, size, nreqs, src, dst, tag = 101;
+  int i, rank, size, nreqs, src, dst, tag = COLL_TAG_ALLTOALL;
   char *psnd;
   char *prcv;
   MPI_Aint sndinc;

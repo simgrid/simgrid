@@ -10,7 +10,7 @@ smpi_coll_tuned_allgather_NTSLR(void *sbuf, int scount, MPI_Datatype stype,
   MPI_Status status;
   int i, to, from, rank, size;
   int send_offset, recv_offset;
-  int tag = 500;
+  int tag = COLL_TAG_ALLGATHER;
 
   rank = smpi_comm_rank(comm);
   size = smpi_comm_size(comm);

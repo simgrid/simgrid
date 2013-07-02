@@ -8,7 +8,7 @@ int smpi_coll_tuned_allreduce_rab1(void *sbuff, void *rbuff,
 {
   MPI_Status status;
   MPI_Aint extent;
-  int tag = 4321, rank, nprocs, send_size, newcnt, share;
+  int tag = COLL_TAG_ALLREDUCE, rank, nprocs, send_size, newcnt, share;
   int pof2 = 1, mask, send_idx, recv_idx, dst, send_cnt, recv_cnt;
 
   void *recv, *tmp_buf;

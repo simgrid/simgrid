@@ -10,7 +10,7 @@ int smpi_coll_tuned_reduce_NTSL(void *buf, void *rbuf, int count,
                                 MPI_Datatype datatype, MPI_Op op, int root,
                                 MPI_Comm comm)
 {
-  int tag = 50;
+  int tag = COLL_TAG_REDUCE;
   MPI_Status status;
   MPI_Request *send_request_array;
   MPI_Request *recv_request_array;

@@ -73,7 +73,7 @@ smpi_coll_tuned_bcast_scatter_rdb_allgather(void *buff, int count, MPI_Datatype
   int mask, relative_rank, curr_size, recv_size = 0, send_size, nbytes;
   int scatter_size, tree_root, relative_dst, dst_tree_root;
   int my_tree_root, offset, tmp_mask, num_procs_completed;
-  int tag = 1;
+  int tag = COLL_TAG_BCAST;
 
   rank = smpi_comm_rank(comm);
   num_procs = smpi_comm_size(comm);

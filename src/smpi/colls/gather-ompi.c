@@ -19,7 +19,6 @@
 #include "colls_private.h"
 #include "coll_tuned_topo.h"
 
-#define MCA_COLL_BASE_TAG_GATHER 333
 /* Todo: gather_intra_generic, gather_intra_binary, gather_intra_chain,
  * gather_intra_pipeline, segmentation? */
 int
@@ -137,7 +136,7 @@ smpi_coll_tuned_gather_ompi_binomial(void *sbuf, int scount,
 			 rank, bmtree->tree_next[i], mycount);
 
 	    smpi_mpi_recv(ptmp + total_recv*rextent, rcount*size-total_recv, rdtype,
-				    bmtree->tree_next[i], MCA_COLL_BASE_TAG_GATHER,
+				    bmtree->tree_next[i], COLL_TAG_GATHER,
 				    comm, &status);
 
 	    total_recv += mycount;
@@ -152,7 +151,7 @@ smpi_coll_tuned_gather_ompi_binomial(void *sbuf, int scount,
 
 	smpi_mpi_send(ptmp, total_recv, sdtype,
 				bmtree->tree_prev,
-				MCA_COLL_BASE_TAG_GATHER,
+				COLL_TAG_GATHER,
 				 comm);
   }
     if (rank == root) {
@@ -243,16 +242,16 @@ smpi_coll_tuned_gather_ompi_linear_sync(void *sbuf, int scount,
                                       first_segment_count );
 
         smpi_mpi_recv(sbuf, 0, MPI_BYTE, root, 
-                                MCA_COLL_BASE_TAG_GATHER,
+                                COLL_TAG_GATHER,
                                 comm, MPI_STATUS_IGNORE);
 
         smpi_mpi_send(sbuf, first_segment_count, sdtype, root,
-                                MCA_COLL_BASE_TAG_GATHER,
+                                COLL_TAG_GATHER,
                                  comm);
 
         smpi_mpi_send((char*)sbuf + extent * first_segment_count, 
                                 (scount - first_segment_count), sdtype, 
-                                root, MCA_COLL_BASE_TAG_GATHER,
+                                root, COLL_TAG_GATHER,
                                  comm);
     }
 
@@ -288,18 +287,18 @@ smpi_coll_tuned_gather_ompi_linear_sync(void *sbuf, int scount,
             /* irecv for the first segment from i */
             ptmp = (char*)rbuf + i * rcount * extent;
             first_segment_req = smpi_mpi_irecv(ptmp, first_segment_count, rdtype, i,
-                                     MCA_COLL_BASE_TAG_GATHER, comm
+                                     COLL_TAG_GATHER, comm
                                      );
             
             /* send sync message */
             smpi_mpi_send(rbuf, 0, MPI_BYTE, i,
-                                    MCA_COLL_BASE_TAG_GATHER,
+                                    COLL_TAG_GATHER,
                                      comm);
 
             /* irecv for the second segment */
             ptmp = (char*)rbuf + (i * rcount + first_segment_count) * extent;
             reqs[i]=smpi_mpi_irecv(ptmp, (rcount - first_segment_count), 
-                                     rdtype, i, MCA_COLL_BASE_TAG_GATHER, comm
+                                     rdtype, i, COLL_TAG_GATHER, comm
                                      );
 
             /* wait on the first segment to complete */
@@ -376,7 +375,7 @@ smpi_coll_tuned_gather_ompi_basic_linear(void *sbuf, int scount,
 
     if (rank != root) {
         smpi_mpi_send(sbuf, scount, sdtype, root,
-                                 MCA_COLL_BASE_TAG_GATHER,
+                                 COLL_TAG_GATHER,
                                   comm);
         return MPI_SUCCESS;
     }
@@ -395,7 +394,7 @@ smpi_coll_tuned_gather_ompi_basic_linear(void *sbuf, int scount,
             }
         } else {
             smpi_mpi_recv(ptmp, rcount, rdtype, i,
-                                    MCA_COLL_BASE_TAG_GATHER,
+                                    COLL_TAG_GATHER,
                                     comm, MPI_STATUS_IGNORE);
             err = MPI_SUCCESS;
         }

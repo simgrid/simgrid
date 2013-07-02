@@ -78,7 +78,7 @@ void smpi_comm_get_name (MPI_Comm comm, char* name, int* len)
 
 MPI_Comm smpi_comm_split(MPI_Comm comm, int color, int key)
 {
-  int system_tag = 666;
+  int system_tag = 123;
   int index, rank, size, i, j, count, reqs;
   int* sendbuf;
   int* recvbuf;

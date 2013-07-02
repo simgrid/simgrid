@@ -1,6 +1,5 @@
 
 #include "colls_private.h"
-#define MCA_COLL_BASE_TAG_ALLTOALLV 111
 /*  
  * Linear functions are copied from the basic coll module.  For
  * some small number of nodes and/or small data sizes they are just as
@@ -57,7 +56,7 @@ smpi_coll_tuned_alltoallv_ompi_basic_linear(void *sbuf, int *scounts, int *sdisp
         prcv = ((char *) rbuf) + (rdisps[i] * rext);
 
         *preq = smpi_irecv_init(prcv, rcounts[i], rdtype,
-                                      i, MCA_COLL_BASE_TAG_ALLTOALLV, comm
+                                      i, COLL_TAG_ALLTOALLV, comm
                                       );
         preq++;
         ++nreqs;
@@ -72,7 +71,7 @@ smpi_coll_tuned_alltoallv_ompi_basic_linear(void *sbuf, int *scounts, int *sdisp
 
         psnd = ((char *) sbuf) + (sdisps[i] * sext);
         *preq=smpi_isend_init(psnd, scounts[i], sdtype,
-                                      i, MCA_COLL_BASE_TAG_ALLTOALLV, comm
+                                      i, COLL_TAG_ALLTOALLV, comm
                                       );
         preq++;
         ++nreqs;
