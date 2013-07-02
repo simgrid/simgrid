@@ -792,7 +792,7 @@ int PMPI_Comm_create(MPI_Comm comm, MPI_Group group, MPI_Comm * newcomm)
     retval = MPI_ERR_GROUP;
   } else if (newcomm == NULL) {
     retval = MPI_ERR_ARG;
-  } else if(smpi_group_index(group,smpi_process_index())==MPI_UNDEFINED){
+  } else if(smpi_group_rank(group,smpi_process_index())==MPI_UNDEFINED){
     *newcomm= MPI_COMM_NULL;
     retval = MPI_SUCCESS;
   }else{
