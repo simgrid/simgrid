@@ -204,7 +204,10 @@ double MSG_get_host_speed(msg_host_t h)
 
 
 /** \ingroup m_host_management
- * \brief Return the number of core.
+ * \brief Return the number of cores.
+ *
+ * \param host a host
+ * \return the number of cores
  */
 int MSG_host_get_core_number(msg_host_t h)
 {
@@ -212,6 +215,20 @@ int MSG_host_get_core_number(msg_host_t h)
 
   return (simcall_host_get_core(h));
 }
+
+/** \ingroup m_host_management
+ * \brief Return the list of processes attached to an host.
+ *
+ * \param host a host
+ * \return a swag with the attached processes
+ */
+xbt_swag_t MSG_host_get_process_list(msg_host_t h)
+{
+  xbt_assert((h != NULL), "Invalid parameters");
+
+  return (simcall_host_get_process_list(h));
+}
+
 
 /** \ingroup m_host_management
  * \brief Returns the value of a given host property

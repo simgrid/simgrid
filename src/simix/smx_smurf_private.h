@@ -263,6 +263,7 @@ ACTION(SIMCALL_HOST_GET_BY_NAME, host_get_by_name, WITH_ANSWER, TSPEC(result, sm
 ACTION(SIMCALL_HOST_GET_NAME, host_get_name, WITH_ANSWER, TSTRING(result), TSPEC(host, smx_host_t)) sep \
 ACTION(SIMCALL_HOST_GET_PROPERTIES, host_get_properties, WITH_ANSWER, TSPEC(result, xbt_dict_t), TSPEC(host, smx_host_t)) sep \
 ACTION(SIMCALL_HOST_GET_CORE, host_get_core, WITH_ANSWER, TINT(result), TSPEC(host, smx_host_t)) sep \
+ACTION(SIMCALL_HOST_GET_PROCESS_LIST, host_get_process_list, WITH_ANSWER, TSPEC(result, xbt_swag_t), TSPEC(host, smx_host_t)) sep \
 ACTION(SIMCALL_HOST_GET_SPEED, host_get_speed, WITH_ANSWER, TDOUBLE(result), TSPEC(host, smx_host_t)) sep \
 ACTION(SIMCALL_HOST_GET_AVAILABLE_SPEED, host_get_available_speed, WITH_ANSWER, TDOUBLE(result), TSPEC(host, smx_host_t)) sep \
 ACTION(SIMCALL_HOST_GET_STATE, host_get_state, WITH_ANSWER, TINT(result), TSPEC(host, smx_host_t)) sep \

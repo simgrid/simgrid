@@ -94,6 +94,17 @@ int simcall_host_get_core(smx_host_t host)
   return simcall_BODY_host_get_core(host);
 }
 
+/**
+ * \ingroup simix_host_management
+ * \brief Returns the list of processes attached to the host.
+ *
+ * \param host A SIMIX host
+ * \return the swag of attached processes
+ */
+xbt_swag_t simcall_host_get_process_list(smx_host_t host)
+{
+  return simcall_BODY_host_get_process_list(host);
+}
 
 
 /**

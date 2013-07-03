@@ -294,6 +294,7 @@ XBT_PUBLIC(smx_host_t) simcall_host_get_by_name(const char *name);
 XBT_PUBLIC(const char *) simcall_host_get_name(smx_host_t host);
 XBT_PUBLIC(xbt_dict_t) simcall_host_get_properties(smx_host_t host);
 XBT_PUBLIC(int) simcall_host_get_core(smx_host_t host);
+XBT_PUBLIC(xbt_swag_t) simcall_host_get_process_list(smx_host_t host);
 XBT_PUBLIC(double) simcall_host_get_speed(smx_host_t host);
 XBT_PUBLIC(double) simcall_host_get_available_speed(smx_host_t host);
 /* Two possible states, 1 - CPU ON and 0 CPU OFF */

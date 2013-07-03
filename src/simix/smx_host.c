@@ -158,6 +158,16 @@ int SIMIX_host_get_core(smx_host_t host){
       get_core(host);
 }
 
+xbt_swag_t SIMIX_pre_host_get_process_list(smx_simcall_t simcall, smx_host_t host){
+  return SIMIX_host_get_process_list(host);
+}
+
+xbt_swag_t SIMIX_host_get_process_list(smx_host_t host){
+  xbt_assert((host != NULL), "Invalid parameters (simix host is NULL)");
+  smx_host_priv_t host_priv = SIMIX_host_priv(host);
+
+  return host_priv->process_list;
+}
 
 
 double SIMIX_pre_host_get_available_speed(smx_simcall_t simcall, smx_host_t host){
