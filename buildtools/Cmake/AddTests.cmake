@@ -423,7 +423,7 @@ if(NOT enable_memcheck)
     
     FOREACH (ALLTOALLV_COLL default pair pair_light_barrier pair_mpi_barrier
 		            pair_one_barrier  ring ring_light_barrier
-			    ring_mpi_barrier ring_one_barrier bruck ompi ompi_basic_linear)
+			    ring_mpi_barrier ring_one_barrier bruck ompi mpich ompi_basic_linear)
         ADD_TEST(smpi-alltoallv-coll-${ALLTOALLV_COLL} ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg smpi/alltoallv:${ALLTOALLV_COLL} --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/alltoallv_coll.tesh)
     ENDFOREACH()
     
