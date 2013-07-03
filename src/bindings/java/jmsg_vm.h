@@ -79,6 +79,13 @@ Java_org_simgrid_msg_VM_isSaved(JNIEnv *env, jobject jvm);
  */
 JNIEXPORT jint JNICALL
 Java_org_simgrid_msg_VM_isRestoring(JNIEnv *env, jobject jvm);
+/**
+ * Class			org_simgrid_msg_VM
+ * Method			setBound
+ * Signature	()B
+ */
+JNIEXPORT void JNICALL
+Java_org_simgrid_msg_VM_setBound(JNIEnv *env, jobject jvm, jint load); 
 
 /**
  * Class            org_simgrid_msg_VM

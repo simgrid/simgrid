@@ -466,7 +466,7 @@ static double lookup_computed_flop_counts(msg_vm_t vm, int stage_for_fancy_debug
 
   total += priv->dp_updated_by_deleted_tasks;
 
-  XBT_INFO("mig-stage%d.%d: computed %f flop_counts (including %f by deleted tasks)",
+  XBT_DEBUG("mig-stage%d.%d: computed %f flop_counts (including %f by deleted tasks)",
       stage_for_fancy_debug,
       stage2_round_for_fancy_debug,
       total, priv->dp_updated_by_deleted_tasks);
@@ -817,10 +817,11 @@ static void send_migration_data(const char *vm_name, const char *src_pm_name, co
 
 
 
-  if (stage == 2)
-    XBT_INFO("mig-stage%d.%d: sent %f duration %f actual_speed %f (target %f) cpu %f", stage, stage2_round, size, duration, actual_speed, mig_speed, cpu_utilization);
-  else
-    XBT_INFO("mig-stage%d: sent %f duration %f actual_speed %f (target %f) cpu %f", stage, size, duration, actual_speed, mig_speed, cpu_utilization);
+  if (stage == 2){
+    XBT_DEBUG("mig-stage%d.%d: sent %f duration %f actual_speed %f (target %f) cpu %f", stage, stage2_round, size, duration, actual_speed, mig_speed, cpu_utilization);}
+  else{
+    XBT_DEBUG("mig-stage%d: sent %f duration %f actual_speed %f (target %f) cpu %f", stage, size, duration, actual_speed, mig_speed, cpu_utilization);
+  }
 
   xbt_free(task_name);
 
@@ -845,7 +846,7 @@ static void send_migration_data(const char *vm_name, const char *src_pm_name, co
 static double get_updated_size(double computed, double dp_rate, double dp_cap)
 {
   double updated_size = computed * dp_rate;
-  XBT_INFO("updated_size %f dp_rate %f", updated_size, dp_rate);
+  XBT_DEBUG("updated_size %f dp_rate %f", updated_size, dp_rate);
   if (updated_size > dp_cap) {
     // XBT_INFO("mig-stage2.%d: %f bytes updated, but cap it with the working set size %f", stage2_round, updated_size, dp_cap);
     updated_size = dp_cap;
@@ -969,14 +970,14 @@ static int migration_tx_fun(int argc, char *argv[])
       updated_size = get_updated_size(computed, dp_rate, dp_cap);
     }
 
-    XBT_INFO("%d updated_size %f computed_during_stage1 %f dp_rate %f dp_cap %f",
+    XBT_INFO("mig-stage 2:%d updated_size %f computed_during_stage1 %f dp_rate %f dp_cap %f",
         stage2_round, updated_size, computed_during_stage1, dp_rate, dp_cap);
 
 
     if (stage2_round != 0) {
       /* during stage1, we have already created overhead tasks */
       double overhead = dpt_cpu_overhead * updated_size;
-      XBT_INFO("updated %f overhead %f", updated_size, overhead);
+      XBT_DEBUG("updated %f overhead %f", updated_size, overhead);
       launch_deferred_exec_process(vm, overhead, 10000);
     }
 
@@ -984,7 +985,7 @@ static int migration_tx_fun(int argc, char *argv[])
     {
       remaining_size += updated_size;
 
-      XBT_INFO("mig-stage2.%d: remaining_size %f (%s threshold %f)", stage2_round,
+      XBT_DEBUG("mig-stage2.%d: remaining_size %f (%s threshold %f)", stage2_round,
           remaining_size, (remaining_size < threshold) ? "<" : ">", threshold);
 
       if (remaining_size < threshold)

@@ -23,7 +23,8 @@ public class VM extends Host{
 
 	 private static VM[] vms=null; 	  
     private Host currentHost; 
-    
+    private int dpIntensity = 0 ; 
+
 	/* Constructors / destructors */
     /**
 	 * Create a `basic' VM (i.e. 1 core, 1GB of RAM, other values are not taken into account).
@@ -50,6 +51,7 @@ public class VM extends Host{
 		super();
 		super.name = name; 
 		this.currentHost = host; 
+		this.dpIntensity = dpIntensity; 
 		create(host, name, nCore, ramSize, netCap, diskPath, diskSize, migNetSpeed, dpIntensity);
 		VM.addVM(this);
 	}
@@ -126,7 +128,14 @@ public class VM extends Host{
 	 */
 	private native void create(Host host, String name, int nCore, int ramSize, 
 			 int netCap, String diskPath, int diskSize, int migNetSpeed, int dpIntensity);
-	
+
+
+	/**
+	 * Bound the VM to a certain % of its vcpu capability (e.g. 75% of vm.getSpeed())
+	 * @param load, percentage (between [0,100]
+	 */
+	public native void setBound(int load);
+
 	/**
 	 * start the VM
 	 */
@@ -149,25 +158,11 @@ public class VM extends Host{
 	 * (pre-copy is implemented)
 	 */	
 	public void migrate(Host destination){
-//		String[] argsRx = new String[5];
-//		argsRx[1] = this.getName();
-//		argsRx[2] = this.currentHost.getName();
-//		argsRx[3] = destination.getName();
-//		argsRx[0] =  "__pr_mig_rx:"+argsRx[1]+"("+argsRx[2]+"-"+argsRx[3]+")";
-//		argsRx[4] = null; // TODO: Why ? 
-//		
-//		//Process rx = new Process(destination, argsRx[0], argsRx );
-//		
-//		String[] argsTx = new String[5];
-//		argsTx[1] = this.getName();
-//		argsTx[2] = this.currentHost.getName();
-//		argsTx[3] = destination.getName();
-//		argsTx[0] =  "__pr_mig_tx:"+argsTx[1]+"("+argsTx[2]+"-"+argsTx[3]+")";
-//		argsTx[4] = null; // TODO: Why ? 
-//		
-//		//Process tx = new Process(this.currentHost, argsTx[0], argsRx ); 
-//		
+		Msg.info("Start migration of VM "+this.getName()+" to node "+destination.getName());
+		Msg.info("    dpIntensity:"+this.dpIntensity);
+		
 		this.internalmig(destination);
+		Msg.info("End of migration of VM "+this.getName()+" to node "+destination.getName());
 	}
 	
 	/** Immediately suspend the execution of all processes within the given VM

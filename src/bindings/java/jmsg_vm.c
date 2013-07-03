@@ -70,6 +70,15 @@ Java_org_simgrid_msg_VM_isRestoring(JNIEnv * env, jobject jvm) {
   msg_vm_t vm = jvm_get_native(env,jvm);
   return (jint) MSG_vm_is_restoring(vm);
 }
+
+JNIEXPORT void JNICALL
+Java_org_simgrid_msg_VM_setBound(JNIEnv *env, jobject jvm, jint load) { 
+
+	msg_vm_t vm = jvm_get_native(env,jvm);
+	double bound = MSG_get_host_speed(vm) * load / 100;
+	MSG_vm_set_bound(vm, bound); 
+}
+
 JNIEXPORT void JNICALL
 Java_org_simgrid_msg_VM_create(JNIEnv *env, jobject jvm, jobject jhost, jstring jname,
 		               jint jncore, jint jramsize, jint jnetcap, jstring jdiskpath, jint jdisksize, jint jmig_netspeed, jint jdp_intensity) {
@@ -113,10 +122,7 @@ JNIEXPORT void JNICALL
 Java_org_simgrid_msg_VM_internalmig(JNIEnv *env, jobject jvm, jobject jhost) {
   msg_vm_t vm = jvm_get_native(env,jvm);
   msg_host_t host = jhost_get_native(env, jhost);
-
-  XBT_INFO("Start migration of %s to %s", MSG_host_get_name(vm), MSG_host_get_name(host));
   MSG_vm_migrate(vm,host);
-  XBT_INFO("Migration done");
 }
 
 JNIEXPORT void JNICALL
