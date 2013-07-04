@@ -159,10 +159,11 @@ double simcall_host_get_current_power_peak(smx_host_t host)
 
 /**
  * \ingroup simix_host_management
- * \brief Returns one power peak of a host.
+ * \brief Returns one power peak (in flops/s) of a host at a given pstate
  *
  * \param host A SIMIX host
- * \return the current power peak value (double)
+ * \param pstate_index pstate to test
+ * \return the current power peak value (double) for pstate_index
  */
 double simcall_host_get_power_peak_at(smx_host_t host, int pstate_index)
 {
@@ -186,7 +187,7 @@ int simcall_host_get_nb_pstates(smx_host_t host)
  * \brief Sets a new power peak for a host.
  *
  * \param host A SIMIX host
- * \param pstate_index The state index to which the CPU power will be set
+ * \param pstate_index The pstate to which the CPU power will be set
  * \return void
  */
 void simcall_host_set_power_peak_at(smx_host_t host, int pstate_index)
@@ -196,7 +197,7 @@ void simcall_host_set_power_peak_at(smx_host_t host, int pstate_index)
 
 /**
  * \ingroup simix_host_management
- * \brief Returns the total energy consumed by the host
+ * \brief Returns the total energy consumed by the host (in Joules)
  *
  * \param host A SIMIX host
  * \return the energy consumed by the host (double)

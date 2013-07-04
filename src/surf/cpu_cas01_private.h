@@ -20,10 +20,13 @@ typedef struct surf_action_cpu_cas01 {
 } s_surf_action_cpu_Cas01_t, *surf_action_cpu_Cas01_t;
 
 
+/*
+ * Energy-related properties for the cpu_cas01 model
+ */
 typedef struct energy_cpu_cas01 {
-	xbt_dynar_t power_range_watts_list;
-	double total_energy;
-	double last_updated;
+	xbt_dynar_t power_range_watts_list;		/*< List of (min_power,max_power) pairs corresponding to each cpu pstate */
+	double total_energy;					/*< Total energy consumed by the host */
+	double last_updated;					/*< Timestamp of the last energy update event*/
 } s_energy_cpu_cas01_t, *energy_cpu_cas01_t;
 
 
@@ -38,9 +41,9 @@ typedef struct cpu_Cas01 {
   tmgr_trace_event_t state_event;
   lmm_constraint_t constraint;
 
-  xbt_dynar_t power_peak_list;
-  int pstate;
-  energy_cpu_cas01_t energy;
+  xbt_dynar_t power_peak_list;				/*< List of supported CPU capacities */
+  int pstate;								/*< Current pstate (index in the power_peak_list)*/
+  energy_cpu_cas01_t energy;				/*< Structure with energy-consumption data */
 
 } s_cpu_Cas01_t, *cpu_Cas01_t;
 

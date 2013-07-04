@@ -203,6 +203,10 @@ xbt_dynar_t cpu_get_watts_range_list(cpu_Cas01_t cpu_model)
 
 }
 
+/**
+ * Computes the power consumed by the host according to the current pstate and processor load
+ *
+ */
 static double cpu_get_current_watts_value(cpu_Cas01_t cpu_model, double cpu_load)
 {
 	xbt_dynar_t power_range_list = cpu_model->energy->power_range_watts_list;

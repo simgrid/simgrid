@@ -382,8 +382,10 @@ void update_resource_energy(surf_model_t model, surf_action_lmm_t action)
                 	  	  	  	  	  	  	  	  (model->model_private->maxmin_system,
                 	  	  	  	  	  	  	  			  action->variable, 0));
 
-    	double load = lmm_constraint_get_usage(cpu_model->constraint) / cpu_model->power_peak;
-    	cpu_update_energy(cpu_model, load);
+        if( cpu_model->energy->last_updated < surf_get_clock()) {
+        	double load = lmm_constraint_get_usage(cpu_model->constraint) / cpu_model->power_peak;
+        	cpu_update_energy(cpu_model, load);
+        }
     }
 }
 
