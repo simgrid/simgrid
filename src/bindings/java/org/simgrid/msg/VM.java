@@ -23,7 +23,6 @@ public class VM extends Host{
 
 	 private static VM[] vms=null; 	  
     private Host currentHost; 
-    private int dpIntensity = 0 ; 
 
 	/* Constructors / destructors */
     /**
@@ -51,7 +50,6 @@ public class VM extends Host{
 		super();
 		super.name = name; 
 		this.currentHost = host; 
-		this.dpIntensity = dpIntensity; 
 		create(host, name, nCore, ramSize, netCap, diskPath, diskSize, migNetSpeed, dpIntensity);
 		VM.addVM(this);
 	}
@@ -158,11 +156,7 @@ public class VM extends Host{
 	 * (pre-copy is implemented)
 	 */	
 	public void migrate(Host destination){
-		Msg.info("Start migration of VM "+this.getName()+" to node "+destination.getName());
-		Msg.info("    dpIntensity:"+this.dpIntensity);
-		
 		this.internalmig(destination);
-		Msg.info("End of migration of VM "+this.getName()+" to node "+destination.getName());
 	}
 	
 	/** Immediately suspend the execution of all processes within the given VM
