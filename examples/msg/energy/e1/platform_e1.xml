@@ -1,0 +1,11 @@
+<?xml version='1.0'?>
+ <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">
+ <platform version="3">
+ <AS  id="AS0"  routing="Full">
+   <!-- Multiple pstate processor capacities can be defined as a list of powers specified for a given host -->
+   <!-- The enabled pstate can be set through the "pstate" attribute (lowest pstate corresponds to the highest processor power) -->
+   <host id="MyHost1" power="100.0Mf,50.0Mf,20.0Mf" pstate="0" />
+   <host id="MyHost2" power="100.0Mf" />
+  
+ </AS>
+ </platform>

@@ -268,7 +268,10 @@ static void instr_routing_parse_start_host (sg_platf_host_cbarg_t host)
     if (power == NULL){
       power = PJ_type_variable_new ("power", NULL, new->type);
     }
-    new_pajeSetVariable (0, new, power, host->power_peak);
+
+    double current_power_state;
+    xbt_dynar_get_cpy(host->power_peak, host->pstate, &current_power_state);
+    new_pajeSetVariable (0, new, power, current_power_state);
   }
   if (TRACE_uncategorized()){
     type_t power_used = PJ_type_get_or_null ("power_used", new->type);

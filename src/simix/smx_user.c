@@ -158,6 +158,69 @@ void simcall_host_set_data(smx_host_t host, void *data)
 
 /**
  * \ingroup simix_host_management
+ * \brief Returns the power peak of a host.
+ *
+ * \param host A SIMIX host
+ * \return the current power peak value (double)
+ */
+double simcall_host_get_current_power_peak(smx_host_t host)
+{
+  return simcall_BODY_host_get_current_power_peak(host);
+}
+
+/**
+ * \ingroup simix_host_management
+ * \brief Returns one power peak (in flops/s) of a host at a given pstate
+ *
+ * \param host A SIMIX host
+ * \param pstate_index pstate to test
+ * \return the current power peak value (double) for pstate_index
+ */
+double simcall_host_get_power_peak_at(smx_host_t host, int pstate_index)
+{
+  return simcall_BODY_host_get_power_peak_at(host, pstate_index);
+}
+
+/**
+ * \ingroup simix_host_management
+ * \brief Returns the number of power states for a host.
+ *
+ * \param host A SIMIX host
+ * \return the number of power states
+ */
+int simcall_host_get_nb_pstates(smx_host_t host)
+{
+  return simcall_BODY_host_get_nb_pstates(host);
+}
+
+/**
+ * \ingroup simix_host_management
+ * \brief Sets a new power peak for a host.
+ *
+ * \param host A SIMIX host
+ * \param pstate_index The pstate to which the CPU power will be set
+ * \return void
+ */
+void simcall_host_set_power_peak_at(smx_host_t host, int pstate_index)
+{
+	simcall_BODY_host_set_power_peak_at(host, pstate_index);
+}
+
+/**
+ * \ingroup simix_host_management
+ * \brief Returns the total energy consumed by the host (in Joules)
+ *
+ * \param host A SIMIX host
+ * \return the energy consumed by the host (double)
+ */
+double simcall_host_get_consumed_energy(smx_host_t host)
+{
+  return simcall_BODY_host_get_consumed_energy(host);
+}
+
+
+/**
+ * \ingroup simix_host_management
  * \brief Creates an action that executes some computation of an host.
  *
  * This function creates a SURF action and allocates the data necessary
@@ -169,7 +232,6 @@ void simcall_host_set_data(smx_host_t host, void *data)
  * \param priority computation priority
  * \return A new SIMIX execution action
  */
-
 smx_action_t simcall_host_execute(const char *name, smx_host_t host,
                                     double computation_amount,
                                     double priority)

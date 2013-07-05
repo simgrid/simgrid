@@ -57,6 +57,7 @@
 <!ATTLIST host state (ON|OFF) "ON">
 <!ATTLIST host state_file CDATA "">
 <!ATTLIST host coordinates  CDATA "">
+<!ATTLIST host pstate CDATA "0.0">
 
 <!ELEMENT gpu EMPTY>
 <!ATTLIST gpu name CDATA #REQUIRED>

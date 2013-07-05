@@ -269,6 +269,11 @@ ACTION(SIMCALL_HOST_GET_AVAILABLE_SPEED, host_get_available_speed, WITH_ANSWER, 
 ACTION(SIMCALL_HOST_GET_STATE, host_get_state, WITH_ANSWER, TINT(result), TSPEC(host, smx_host_t)) sep \
 ACTION(SIMCALL_HOST_GET_DATA, host_get_data, WITH_ANSWER, TPTR(result), TSPEC(host, smx_host_t)) sep \
 ACTION(SIMCALL_HOST_SET_DATA, host_set_data, WITH_ANSWER, TVOID(result), TSPEC(host, smx_host_t), TPTR(data)) sep \
+ACTION(SIMCALL_HOST_GET_CURRENT_POWER_PEAK, host_get_current_power_peak, WITH_ANSWER, TDOUBLE(result), TSPEC(host, smx_host_t)) sep \
+ACTION(SIMCALL_HOST_GET_POWER_PEAK_AT, host_get_power_peak_at, WITH_ANSWER, TDOUBLE(result), TSPEC(host, smx_host_t), TINT(pstate_index)) sep \
+ACTION(SIMCALL_HOST_GET_NB_PSTATES, host_get_nb_pstates, WITH_ANSWER, TINT(result), TSPEC(host, smx_host_t)) sep \
+ACTION(SIMCALL_HOST_SET_POWER_PEAK_AT, host_set_power_peak_at, WITH_ANSWER, TVOID(result), TSPEC(host, smx_host_t), TINT(pstate_index)) sep \
+ACTION(SIMCALL_HOST_GET_CONSUMED_ENERGY, host_get_consumed_energy, WITH_ANSWER, TDOUBLE(result), TSPEC(host, smx_host_t)) sep \
 ACTION(SIMCALL_HOST_EXECUTE, host_execute, WITH_ANSWER, TSPEC(result, smx_action_t), TSTRING(name), TSPEC(host, smx_host_t), TDOUBLE(computation_amount), TDOUBLE(priority)) sep \
 ACTION(SIMCALL_HOST_PARALLEL_EXECUTE, host_parallel_execute, WITH_ANSWER, TSPEC(result, smx_action_t), TSTRING(name), TINT(host_nb), TSPEC(host_list, smx_host_t*), TSPEC(computation_amount, double*), TSPEC(communication_amount, double*), TDOUBLE(amount), TDOUBLE(rate)) sep \
 ACTION(SIMCALL_HOST_EXECUTION_DESTROY, host_execution_destroy, WITH_ANSWER, TVOID(result), TSPEC(execution, smx_action_t)) sep \

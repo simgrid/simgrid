@@ -1,0 +1,38 @@
+#! ./tesh
+
+p Testing the mechanism for computing host energy consumption for concurrent tasks 
+
+! output sort
+$ $SG_TEST_EXENV energy/e3/e3$EXEEXT ${srcdir:=.}/energy/e3/platform_e3.xml ${srcdir:=.}/energy/e3/deployment_e3.xml --log=surf_cpu.thres:debug --log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n
+> [  0.000000] (0:@) CPU create: peak=100000000.000000, pstate=0
+> [  0.000000] (1:dvfs_test@MyHost1) Current power peak=100000000.000000
+> [  0.000000] (1:dvfs_test@MyHost1) Total energy (Joules): 0.000000
+> [  2.000000] (0:@) [cpu_update_energy] action time interval=(0.000000-2.000000), current power peak=100000000.000000, current pstate=0
+> [  2.000000] (0:@) [get_current_watts] min_power=95.000000, max_power=200.000000, slope=105.000000
+> [  2.000000] (0:@) [get_current_watts] Current power (watts) = 200.000000, load = 1.000000
+> [  2.000000] (0:@) [cpu_update_energy] old_energy_value=0.000000, action_energy_value=400.000000
+> [  2.000000] (4:proc3@MyHost1) Process proc3 executed task sleep cpu=0.000000, duration = 2.000000
+> [  2.000000] (4:proc3@MyHost1) ==================================================
+> [  2.000000] (3:proc2@MyHost1) Process proc2 executed task sleep cpu=0.000000, duration = 2.000000
+> [  2.000000] (3:proc2@MyHost1) ==================================================
+> [  5.000000] (0:@) [cpu_update_energy] action time interval=(2.000000-5.000000), current power peak=100000000.000000, current pstate=0
+> [  5.000000] (0:@) [get_current_watts] min_power=95.000000, max_power=200.000000, slope=105.000000
+> [  5.000000] (0:@) [get_current_watts] Current power (watts) = 200.000000, load = 1.000000
+> [  5.000000] (0:@) [cpu_update_energy] old_energy_value=400.000000, action_energy_value=600.000000
+> [  5.000000] (4:proc3@MyHost1) Process proc3 executed task cpu=100000000.000000, duration = 3.000000
+> [  5.000000] (4:proc3@MyHost1) ==================================================
+> [  5.000000] (3:proc2@MyHost1) Process proc2 executed task cpu=100000000.000000, duration = 3.000000
+> [  5.000000] (3:proc2@MyHost1) ==================================================
+> [  6.000000] (0:@) [cpu_update_energy] action time interval=(5.000000-6.000000), current power peak=100000000.000000, current pstate=0
+> [  6.000000] (0:@) [get_current_watts] min_power=95.000000, max_power=200.000000, slope=105.000000
+> [  6.000000] (0:@) [get_current_watts] Current power (watts) = 200.000000, load = 1.000000
+> [  6.000000] (0:@) [cpu_update_energy] old_energy_value=1000.000000, action_energy_value=200.000000
+> [  6.000000] (2:proc1@MyHost1) Process proc1 executed task cpu=400000000.000000, duration = 6.000000
+> [  6.000000] (2:proc1@MyHost1) ==================================================
+> [  8.000000] (0:@) [cpu_update_energy] action time interval=(6.000000-8.000000), current power peak=100000000.000000, current pstate=0
+> [  8.000000] (0:@) [get_current_watts] min_power=95.000000, max_power=200.000000, slope=105.000000
+> [  8.000000] (0:@) [get_current_watts] Current power (watts) = 95.000000, load = 0.000000
+> [  8.000000] (0:@) [cpu_update_energy] old_energy_value=1200.000000, action_energy_value=190.000000
+> [  8.000000] (1:dvfs_test@MyHost1) Task simulation time: 8.000000e+00
+> [  8.000000] (1:dvfs_test@MyHost1) Total energy (Joules): 1390.000000
+> [  8.000000] (0:@) Total simulation time: 8.000000e+00

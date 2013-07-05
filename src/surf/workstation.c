@@ -241,6 +241,37 @@ static double ws_get_available_speed(void *workstation)
       get_available_speed(workstation);
 }
 
+static double ws_get_current_power_peak(void *workstation)
+{
+  return surf_cpu_model->extension.cpu.
+      get_current_power_peak(workstation);
+}
+
+static double ws_get_power_peak_at(void *workstation, int pstate_index)
+{
+  return surf_cpu_model->extension.cpu.
+      get_power_peak_at(workstation, pstate_index);
+}
+
+static int ws_get_nb_pstates(void *workstation)
+{
+  return surf_cpu_model->extension.cpu.
+      get_nb_pstates(workstation);
+}
+
+static void ws_set_power_peak_at(void *workstation, int pstate_index)
+{
+  surf_cpu_model->extension.cpu.
+      set_power_peak_at(workstation, pstate_index);
+}
+
+static double ws_get_consumed_energy(void *workstation)
+{
+  return surf_cpu_model->extension.cpu.
+      get_consumed_energy(workstation);
+}
+
+
 static surf_action_t ws_execute_parallel_task(int workstation_nb,
                                               void **workstation_list,
                                               double *computation_amount,
@@ -450,6 +481,11 @@ static void surf_workstation_model_init_internal(void)
   surf_workstation_model->extension.workstation.get_speed = ws_get_speed;
   surf_workstation_model->extension.workstation.get_available_speed =
       ws_get_available_speed;
+  surf_workstation_model->extension.workstation.get_current_power_peak = ws_get_current_power_peak;
+  surf_workstation_model->extension.workstation.get_power_peak_at = ws_get_power_peak_at;
+  surf_workstation_model->extension.workstation.get_nb_pstates = ws_get_nb_pstates;
+  surf_workstation_model->extension.workstation.set_power_peak_at = ws_set_power_peak_at;
+  surf_workstation_model->extension.workstation.get_consumed_energy = ws_get_consumed_energy;
 
   surf_workstation_model->extension.workstation.communicate =
       ws_communicate;

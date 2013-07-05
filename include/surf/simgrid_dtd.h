@@ -176,6 +176,8 @@ typedef int AT_surfxml_process_kill___time;
 #define AU_surfxml_process_kill___time NULL
 typedef int AT_surfxml_cluster_bb___bw;
 #define AU_surfxml_cluster_bb___bw NULL
+typedef int AT_surfxml_host_pstate;
+#define AU_surfxml_host_pstate NULL
 typedef int AT_surfxml_argument_value;
 #define AU_surfxml_argument_value NULL
 typedef enum { AU_surfxml_link_state, A_surfxml_link_state_ON,A_surfxml_link_state_OFF } AT_surfxml_link_state;
@@ -437,6 +439,9 @@ XBT_PUBLIC_DATA(short int) surfxml_process_kill___time_isset;
 XBT_PUBLIC_DATA(AT_surfxml_cluster_bb___bw) AX_surfxml_cluster_bb___bw;
 #define A_surfxml_cluster_bb___bw (surfxml_bufferstack + AX_surfxml_cluster_bb___bw)
 XBT_PUBLIC_DATA(short int) surfxml_cluster_bb___bw_isset;
+XBT_PUBLIC_DATA(AT_surfxml_host_pstate) AX_surfxml_host_pstate;
+#define A_surfxml_host_pstate (surfxml_bufferstack + AX_surfxml_host_pstate)
+XBT_PUBLIC_DATA(short int) surfxml_host_pstate_isset;
 XBT_PUBLIC_DATA(AT_surfxml_argument_value) AX_surfxml_argument_value;
 #define A_surfxml_argument_value (surfxml_bufferstack + AX_surfxml_argument_value)
 XBT_PUBLIC_DATA(short int) surfxml_argument_value_isset;
