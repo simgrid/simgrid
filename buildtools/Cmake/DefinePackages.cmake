@@ -41,6 +41,7 @@ set(EXTRA_DIST
   src/smpi/colls/coll_tuned_topo.h
   src/smpi/private.h
   src/smpi/smpi_mpi_dt_private.h
+  src/surf/cpu_cas01_private.h
   src/surf/cpu_ti_private.h
   src/surf/gtnets/gtnets_interface.h
   src/surf/gtnets/gtnets_simulator.h
@@ -862,6 +863,9 @@ set(EXAMPLES_CMAKEFILES_TXT
   examples/msg/chainsend/CMakeLists.txt
   examples/msg/chord/CMakeLists.txt
   examples/msg/cloud/CMakeLists.txt
+  examples/msg/energy/e1/CMakeLists.txt
+  examples/msg/energy/e2/CMakeLists.txt
+  examples/msg/energy/e3/CMakeLists.txt
   examples/msg/gpu/CMakeLists.txt
   examples/msg/gtnets/CMakeLists.txt
   examples/msg/icomms/CMakeLists.txt
