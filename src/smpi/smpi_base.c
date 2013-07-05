@@ -588,7 +588,7 @@ static void finish_wait(MPI_Request * request, MPI_Status * status)
     if (TRACE_smpi_view_internals()) {
       if(req->flags & RECV){
         int rank = smpi_process_index();
-        int  src_traced = smpi_group_index(smpi_comm_group(req->comm), req->src == MPI_ANY_SOURCE ? req->real_src : req->src);
+        int src_traced = (req->src == MPI_ANY_SOURCE ? req->real_src : req->src);
         TRACE_smpi_recv(rank, src_traced, rank);
       }
     }
