@@ -173,6 +173,8 @@ int smpi_comm_size(MPI_Comm comm);
 void smpi_comm_get_name(MPI_Comm comm, char* name, int* len);
 int smpi_comm_rank(MPI_Comm comm);
 MPI_Comm smpi_comm_split(MPI_Comm comm, int color, int key);
+void smpi_comm_use(MPI_Comm comm);
+void smpi_comm_unuse(MPI_Comm comm);
 
 MPI_Request smpi_mpi_send_init(void *buf, int count, MPI_Datatype datatype,
                                int dst, int tag, MPI_Comm comm);

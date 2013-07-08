@@ -14,6 +14,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_comm, smpi,
 
 typedef struct s_smpi_mpi_communicator {
   MPI_Group group;
+  int refcount;
 } s_smpi_mpi_communicator_t;
 
 static int smpi_compare_rankmap(const void *a, const void *b)
@@ -43,12 +44,14 @@ MPI_Comm smpi_comm_new(MPI_Group group)
   comm = xbt_new(s_smpi_mpi_communicator_t, 1);
   comm->group = group;
   smpi_group_use(comm->group);
+  smpi_comm_use(comm);
   return comm;
 }
 
 void smpi_comm_destroy(MPI_Comm comm)
 {
-  xbt_free(comm);
+  smpi_group_unuse(comm->group);
+  smpi_comm_unuse(comm);
 }
 
 MPI_Group smpi_comm_group(MPI_Comm comm)
@@ -151,4 +154,16 @@ MPI_Comm smpi_comm_split(MPI_Comm comm, int color, int key)
     } /* otherwise, exit with group_out == NULL */
   }
   return group_out ? smpi_comm_new(group_out) : MPI_COMM_NULL;
+}
+
+void smpi_comm_use(MPI_Comm comm){
+  comm->refcount++;
+  smpi_group_use(comm->group);
+}
+
+void smpi_comm_unuse(MPI_Comm comm){
+  comm->refcount--;
+  smpi_group_unuse(comm->group);
+  if(comm->refcount==0)
+    xbt_free(comm);
 }

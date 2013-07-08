@@ -327,6 +327,7 @@ void smpi_mpi_start(MPI_Request request)
     // we make a copy here, as the size is modified by simix, and we may reuse the request in another receive later
     request->real_size=request->size;
     smpi_datatype_use(request->old_type);
+    smpi_comm_use(request->comm);
     request->action = simcall_comm_irecv(mailbox, request->buf, &request->real_size, &match_recv, request);
 
     //integrate pseudo-timing for buffering of small messages, do not bother to execute the simcall if 0
@@ -375,6 +376,7 @@ void smpi_mpi_start(MPI_Request request)
     // we make a copy here, as the size is modified by simix, and we may reuse the request in another receive later
     request->real_size=request->size;
     smpi_datatype_use(request->old_type);
+    smpi_comm_use(request->comm);
 
     //if we are giving back the control to the user without waiting for completion, we have to inject timings
     double sleeptime =0.0;
@@ -582,6 +584,7 @@ static void finish_wait(MPI_Request * request, MPI_Status * status)
       }
       if(req->detached == 0) free(req->buf);
     }
+    smpi_comm_unuse(req->comm);
     smpi_datatype_unuse(datatype);
 
   }
