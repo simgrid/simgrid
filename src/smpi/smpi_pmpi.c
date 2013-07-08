@@ -1568,7 +1568,7 @@ int PMPI_Waitsome(int incount, MPI_Request requests[], int *outcount,
   int retval;
 
   smpi_bench_end();
-  if (outcount == NULL || indices == NULL) {
+  if (outcount == NULL) {
     retval = MPI_ERR_ARG;
   } else {
     *outcount = smpi_mpi_waitsome(incount, requests, indices, status);
@@ -1584,7 +1584,7 @@ int PMPI_Testsome(int incount, MPI_Request requests[], int* outcount,
   int retval;
 
    smpi_bench_end();
-   if (outcount == NULL || indices == NULL) {
+   if (outcount == NULL) {
      retval = MPI_ERR_ARG;
    } else {
      *outcount = smpi_mpi_testsome(incount, requests, indices, status);
