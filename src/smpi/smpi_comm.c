@@ -153,6 +153,7 @@ MPI_Comm smpi_comm_split(MPI_Comm comm, int color, int key)
       smpi_mpi_recv(&group_out, 1, MPI_PTR, 0, system_tag, comm, MPI_STATUS_IGNORE);
     } /* otherwise, exit with group_out == NULL */
   }
+  if(group_out)smpi_group_use(group_out);
   return group_out ? smpi_comm_new(group_out) : MPI_COMM_NULL;
 }
 
