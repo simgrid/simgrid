@@ -350,14 +350,17 @@ int PMPI_Group_translate_ranks(MPI_Group group1, int n, int *ranks1,
                               MPI_Group group2, int *ranks2)
 {
   int retval, i, index;
-
   smpi_bench_end();
   if (group1 == MPI_GROUP_NULL || group2 == MPI_GROUP_NULL) {
     retval = MPI_ERR_GROUP;
   } else {
     for (i = 0; i < n; i++) {
-      index = smpi_group_index(group1, ranks1[i]);
-      ranks2[i] = smpi_group_rank(group2, index);
+      if(ranks1[i]==MPI_PROC_NULL){
+        ranks2[i]=MPI_PROC_NULL;
+      }else{
+        index = smpi_group_index(group1, ranks1[i]);
+        ranks2[i] = smpi_group_rank(group2, index);
+      }
     }
     retval = MPI_SUCCESS;
   }
