@@ -40,7 +40,7 @@ SG_BEGIN_DECL()
 #define MPI_MAX_LIBRARY_VERSION_STRING 100
 #define SMPI_RAND_SEED 5
 #define MPI_ANY_SOURCE -555
-#define MPI_BOTTOM (void *)0
+#define MPI_BOTTOM (void *)-111
 #define MPI_PROC_NULL -666
 #define MPI_ANY_TAG -444
 #define MPI_UNDEFINED -333
