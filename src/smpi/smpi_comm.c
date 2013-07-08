@@ -44,7 +44,7 @@ MPI_Comm smpi_comm_new(MPI_Group group)
   comm = xbt_new(s_smpi_mpi_communicator_t, 1);
   comm->group = group;
   smpi_group_use(comm->group);
-  smpi_comm_use(comm);
+  comm->refcount=1;
   return comm;
 }
 
