@@ -636,33 +636,31 @@ int smpi_mpi_testany(int count, MPI_Request requests[], int *index,
 
   *index = MPI_UNDEFINED;
   flag = 0;
-  if(count > 0) {
-    comms = xbt_dynar_new(sizeof(smx_action_t), NULL);
-    map = xbt_new(int, count);
-    size = 0;
-    for(i = 0; i < count; i++) {
-      if((requests[i]!=MPI_REQUEST_NULL) && requests[i]->action) {
-         xbt_dynar_push(comms, &requests[i]->action);
-         map[size] = i;
-         size++;
-      }
+  comms = xbt_dynar_new(sizeof(smx_action_t), NULL);
+  map = xbt_new(int, count);
+  size = 0;
+  for(i = 0; i < count; i++) {
+    if((requests[i]!=MPI_REQUEST_NULL) && requests[i]->action) {
+       xbt_dynar_push(comms, &requests[i]->action);
+       map[size] = i;
+       size++;
     }
-    if(size > 0) {
-      i = simcall_comm_testany(comms);
-      // not MPI_UNDEFINED, as this is a simix return code
-      if(i != -1) {
-        *index = map[i];
-        finish_wait(&requests[*index], status);
-        flag = 1;
-      }
-    }else{
-        //all requests are null or inactive, return true
-        flag=1;
-        smpi_empty_status(status);
-    }
-    xbt_free(map);
-    xbt_dynar_free(&comms);
   }
+  if(size > 0) {
+    i = simcall_comm_testany(comms);
+    // not MPI_UNDEFINED, as this is a simix return code
+    if(i != -1) {
+      *index = map[i];
+      finish_wait(&requests[*index], status);
+      flag = 1;
+    }
+  }else{
+      //all requests are null or inactive, return true
+      flag=1;
+      smpi_empty_status(status);
+  }
+  xbt_free(map);
+  xbt_dynar_free(&comms);
 
   return flag;
 }
