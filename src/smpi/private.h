@@ -255,6 +255,8 @@ void smpi_mpi_allreduce(void *sendbuf, void *recvbuf, int count,
                         MPI_Datatype datatype, MPI_Op op, MPI_Comm comm);
 void smpi_mpi_scan(void *sendbuf, void *recvbuf, int count,
                    MPI_Datatype datatype, MPI_Op op, MPI_Comm comm);
+void smpi_mpi_exscan(void *sendbuf, void *recvbuf, int count,
+                   MPI_Datatype datatype, MPI_Op op, MPI_Comm comm);
 
 void nary_tree_bcast(void *buf, int count, MPI_Datatype datatype, int root,
                      MPI_Comm comm, int arity);

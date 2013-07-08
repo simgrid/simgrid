@@ -38,6 +38,7 @@ static const char *smpi_colors[] ={
     "reduce",        "0 1 0",
     "reducescatter", "0.52 1 0.52",
     "scan",          "1 0.58 0.23",
+    "exscan",          "1 0.54 0.25",
     "scatterv",      "0.52 0 0.52",
     "scatter",       "1 0.74 0.54",
     "computing",     "0 1 1",

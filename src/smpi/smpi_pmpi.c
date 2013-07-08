@@ -2013,6 +2013,34 @@ int PMPI_Scan(void *sendbuf, void *recvbuf, int count,
   return retval;
 }
 
+int PMPI_Exscan(void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype,
+                MPI_Op op, MPI_Comm comm){
+  int retval;
+
+  smpi_bench_end();
+#ifdef HAVE_TRACING
+  int rank = comm != MPI_COMM_NULL ? smpi_process_index() : -1;
+  TRACE_smpi_computing_out(rank);
+  TRACE_smpi_collective_in(rank, -1, __FUNCTION__);
+#endif
+  if (comm == MPI_COMM_NULL) {
+    retval = MPI_ERR_COMM;
+  } else if (datatype == MPI_DATATYPE_NULL) {
+    retval = MPI_ERR_TYPE;
+  } else if (op == MPI_OP_NULL) {
+    retval = MPI_ERR_OP;
+  } else {
+    smpi_mpi_exscan(sendbuf, recvbuf, count, datatype, op, comm);
+    retval = MPI_SUCCESS;
+  }
+#ifdef HAVE_TRACING
+  TRACE_smpi_collective_out(rank, -1, __FUNCTION__);
+  TRACE_smpi_computing_in(rank);
+#endif
+  smpi_bench_begin();
+  return retval;
+}
+
 int PMPI_Reduce_scatter(void *sendbuf, void *recvbuf, int *recvcounts,
                        MPI_Datatype datatype, MPI_Op op, MPI_Comm comm)
 {
@@ -2683,11 +2711,6 @@ int PMPI_Type_match_size(int typeclass,int size,MPI_Datatype *datatype){
 int PMPI_Alltoallw( void *sendbuf, int *sendcnts, int *sdispls, MPI_Datatype *sendtypes,
                    void *recvbuf, int *recvcnts, int *rdispls, MPI_Datatype *recvtypes,
                    MPI_Comm comm){
-  NOT_YET_IMPLEMENTED
-}
-
-int PMPI_Exscan(void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype,
-                MPI_Op op, MPI_Comm comm){
   NOT_YET_IMPLEMENTED
 }
 
