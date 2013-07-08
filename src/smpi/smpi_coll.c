@@ -243,7 +243,7 @@ static void build_tree(int root, int rank, int size, proc_tree_t * tree)
 static void tree_bcast(void *buf, int count, MPI_Datatype datatype,
                        MPI_Comm comm, proc_tree_t tree)
 {
-  int system_tag = 999;         // used negative int but smpi_create_request() declares this illegal (to be checked)
+  int system_tag = COLL_TAG_BCAST;
   int rank, i;
   MPI_Request *requests;
 
@@ -281,7 +281,7 @@ static void tree_bcast(void *buf, int count, MPI_Datatype datatype,
 static void tree_antibcast(void *buf, int count, MPI_Datatype datatype,
                            MPI_Comm comm, proc_tree_t tree)
 {
-  int system_tag = 999;         // used negative int but smpi_create_request() declares this illegal (to be checked)
+  int system_tag = COLL_TAG_BCAST;
   int rank, i;
   MPI_Request *requests;
 

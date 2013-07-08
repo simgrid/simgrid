@@ -25,7 +25,7 @@ static int match_recv(void* a, void* b, smx_action_t ignored) {
   xbt_assert(ref, "Cannot match recv against null reference");
   xbt_assert(req, "Cannot match recv against null request");
   if((ref->src == MPI_ANY_SOURCE || req->src == ref->src)
-    && (ref->tag == MPI_ANY_TAG || req->tag == ref->tag)){
+    && ((ref->tag == MPI_ANY_TAG && req->tag >=0) || req->tag == ref->tag)){
     //we match, we can transfer some values
     // FIXME : move this to the copy function ?
     if(ref->src == MPI_ANY_SOURCE)ref->real_src = req->src;
@@ -34,6 +34,7 @@ static int match_recv(void* a, void* b, smx_action_t ignored) {
     if(req->detached==1){
         ref->detached_sender=req; //tie the sender to the receiver, as it is detached and has to be freed in the receiver
     }
+    XBT_DEBUG("match succeeded");
     return 1;
   }else return 0;
 }
@@ -46,7 +47,7 @@ static int match_send(void* a, void* b,smx_action_t ignored) {
    xbt_assert(req, "Cannot match send against null request");
 
    if((req->src == MPI_ANY_SOURCE || req->src == ref->src)
-             && (req->tag == MPI_ANY_TAG || req->tag == ref->tag))
+             && ((req->tag == MPI_ANY_TAG && ref->tag >=0)|| req->tag == ref->tag))
    {
      if(req->src == MPI_ANY_SOURCE)req->real_src = ref->src;
      if(req->tag == MPI_ANY_TAG)req->real_tag = ref->tag;
@@ -54,7 +55,7 @@ static int match_send(void* a, void* b,smx_action_t ignored) {
      if(ref->detached==1){
          req->detached_sender=ref; //tie the sender to the receiver, as it is detached and has to be freed in the receiver
      }
-
+    XBT_DEBUG("match succeeded");
      return 1;
    } else return 0;
 }
