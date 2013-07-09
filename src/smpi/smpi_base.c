@@ -1366,7 +1366,7 @@ void smpi_mpi_exscan(void *sendbuf, void *recvbuf, int count,
       smpi_mpi_wait(&(requests[other]), MPI_STATUS_IGNORE);
       if(index < rank) {
           if(recvbuf_is_empty){
-            smpi_datatype_copy(tmpbufs[index], count, datatype, recvbuf, count, datatype);
+            smpi_datatype_copy(tmpbufs[other], count, datatype, recvbuf, count, datatype);
             recvbuf_is_empty=0;
           }else smpi_op_apply(op, tmpbufs[other], recvbuf, &count, &datatype);
       }
