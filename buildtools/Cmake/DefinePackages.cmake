@@ -1008,6 +1008,7 @@ set(PLATFORMS_EXAMPLES
   examples/platforms/conf/transform_optorsim_platform.pl
   examples/platforms/config.xml
   examples/platforms/content/storage_content.txt
+  examples/platforms/content/win_storage_content.txt
   examples/platforms/data_center.xml
   examples/platforms/g5k.xml
   examples/platforms/generation_scripts/create_hierarchical_clusters.pl
