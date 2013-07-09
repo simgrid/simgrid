@@ -10,7 +10,8 @@
   <AS id="AS0" routing="Full">
 
    <storage_type id="single_HDD" model="linear_no_lat" 
-                 content="content/storage_content.txt" size="500GiB">
+                 content="content/storage_content.txt" size="500GiB"
+                 content_type="txt_unix">
 			<prop id="Bwrite" value="30MBps" />
 			<prop id="Bread" value="100MBps" />
 			<prop id="Bconnection" value="150MBps" />
@@ -29,19 +30,19 @@
 		<storage id="Disk4" typeId="single_SSD"/>
 
 		<host id="bob" power="1Gf">
-			<mount id="Disk1" name="/home"/>			
+			<mount storageId="Disk1" name="/home"/>			
 		</host>		
 		
 		<host id="alice" power="1Gf">
-			<mount id="Disk2" name="/home"/>
+			<mount storageId="Disk2" name="/home"/>
 		</host>
 
 		<host id="carl" power="1Gf">		
-			<mount id="Disk3" name="/home"/>		
+			<mount storageId="Disk3" name="/home"/>		
 		</host>
 		
 		<host id="denise" power="1Gf">
-			<mount id="Disk4" name="/home"/>	
+			<mount storageId="Disk4" name="/home"/>	
 		</host>
 
 		<link id="link1" bandwidth="125MBps" latency="50us" />
