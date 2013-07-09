@@ -35,23 +35,43 @@ MPI_Group smpi_group_new(int size)
   group->size = size;
   group->rank_to_index_map = xbt_new(int, size);
   group->index_to_rank_map = xbt_new(int, count);
-  group->refcount = 0;
+  group->refcount = 1;
   for (i = 0; i < size; i++) {
     group->rank_to_index_map[i] = MPI_UNDEFINED;
   }
   for (i = 0; i < count; i++) {
     group->index_to_rank_map[i] = MPI_UNDEFINED;
   }
+
   return group;
 }
 
+MPI_Group smpi_group_copy(MPI_Group origin)
+{
+  MPI_Group group;
+  int i, count;
+
+  count = smpi_process_count();
+  group = xbt_new(s_smpi_mpi_group_t, 1);
+  group->size = origin->size;
+  group->rank_to_index_map = xbt_new(int, group->size);
+  group->index_to_rank_map = xbt_new(int, count);
+  group->refcount = 1;
+  for (i = 0; i < group->size; i++) {
+    group->rank_to_index_map[i] = origin->rank_to_index_map[i];
+  }
+  for (i = 0; i < count; i++) {
+    group->index_to_rank_map[i] = origin->index_to_rank_map[i];
+  }
+
+  return group;
+}
+
+
 void smpi_group_destroy(MPI_Group group)
 {
-  if (smpi_group_unuse(group) <= 0) {
-    xbt_free(group->rank_to_index_map);
-    xbt_free(group->index_to_rank_map);
-    xbt_free(group);
-  }
+  XBT_VERB("trying to free group %p, refcount = %d", group, group->refcount);
+  smpi_group_unuse(group);
 }
 
 void smpi_group_set_mapping(MPI_Group group, int index, int rank)
@@ -90,7 +110,12 @@ int smpi_group_use(MPI_Group group)
 
 int smpi_group_unuse(MPI_Group group)
 {
-  group->refcount--;
+  if (group->refcount-- <= 0) {
+    XBT_VERB("freeing group %p", group);
+    xbt_free(group->rank_to_index_map);
+    xbt_free(group->index_to_rank_map);
+    xbt_free(group);
+  }
   return group->refcount;
 }
 

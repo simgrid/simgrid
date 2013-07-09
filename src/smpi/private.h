@@ -157,6 +157,7 @@ void smpi_op_apply(MPI_Op op, void *invec, void *inoutvec, int *len,
                    MPI_Datatype * datatype);
 
 MPI_Group smpi_group_new(int size);
+MPI_Group smpi_group_copy(MPI_Group origin);
 void smpi_group_destroy(MPI_Group group);
 void smpi_group_set_mapping(MPI_Group group, int index, int rank);
 int smpi_group_index(MPI_Group group, int rank);
