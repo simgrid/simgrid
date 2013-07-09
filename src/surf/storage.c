@@ -192,8 +192,8 @@ static surf_action_t storage_action_execute (void *storage, size_t size, e_surf_
   return (surf_action_t) action;
 }
 
-static void* storage_create_resource(const char* id, const char* model,const char* type_id,const char* content_name)
-{
+static void* storage_create_resource(const char* id, const char* model,
+    const char* type_id,const char* content_name){
   storage_t storage = NULL;
 
   xbt_assert(!surf_storage_resource_priv(surf_storage_resource_by_name(id)),
@@ -415,14 +415,20 @@ static void parse_storage_init(sg_platf_storage_cbarg_t storage)
   // if storage content is not specified use the content of storage_type if exist
   if(!strcmp(storage->content,"") && strcmp(((storage_type_t) stype)->content,"")){
     storage->content = ((storage_type_t) stype)->content;
-    XBT_DEBUG("For disk '%s' content is empty, use the content of storage type '%s'",storage->id,((storage_type_t) stype)->type_id);
+    storage->content_type = ((storage_type_t) stype)->content_type;
+    XBT_DEBUG("For disk '%s' content is empty, inherit the content (of type %s) from storage type '%s' ",
+        storage->id,((storage_type_t) stype)->content_type,
+        ((storage_type_t) stype)->type_id);
   }
 
-  XBT_DEBUG("SURF storage create resource\n\t\tid '%s'\n\t\ttype '%s' \n\t\tmodel '%s' \n\t\tcontent '%s'\n\t\tproperties '%p'\n",
+  XBT_DEBUG("SURF storage create resource\n\t\tid '%s'\n\t\ttype '%s' "
+      "\n\t\tmodel '%s' \n\t\tcontent '%s'\n\t\tcontent_type '%s' "
+      "\n\t\tproperties '%p'\n",
       storage->id,
       ((storage_type_t) stype)->model,
       ((storage_type_t) stype)->type_id,
       storage->content,
+      storage->content_type,
       ((storage_type_t) stype)->properties);
 
   storage_create_resource(storage->id,
@@ -567,13 +573,16 @@ static void storage_parse_storage_type(sg_platf_storage_type_cbarg_t storage_typ
   stype->model = xbt_strdup(storage_type->model);
   stype->properties = storage_type->properties;
   stype->content = xbt_strdup(storage_type->content);
+  stype->content_type = xbt_strdup(storage_type->content_type);
   stype->type_id = xbt_strdup(storage_type->id);
   stype->size = storage_type->size;
 
-  XBT_DEBUG("ROUTING Create a storage type id '%s' with model '%s' content '%s'",
+  XBT_DEBUG("ROUTING Create a storage type id '%s' with model '%s', "
+      "content '%s', and content_type '%s'",
       stype->type_id,
       stype->model,
-      storage_type->content);
+      storage_type->content,
+      storage_type->content_type);
 
   xbt_lib_set(storage_type_lib,
       stype->type_id,
@@ -608,14 +617,15 @@ static void storage_parse_mount(sg_platf_mount_cbarg_t mount)
 {
   // Verification of an existing storage
 #ifndef NDEBUG
-  void* storage = xbt_lib_get_or_null(storage_lib, mount->id,ROUTING_STORAGE_LEVEL);
+  void* storage = xbt_lib_get_or_null(storage_lib, mount->storageId,ROUTING_STORAGE_LEVEL);
 #endif
-  xbt_assert(storage,"Disk id \"%s\" does not exists", mount->id);
+  xbt_assert(storage,"Disk id \"%s\" does not exists", mount->storageId);
 
-  XBT_DEBUG("ROUTING Mount '%s' on '%s'",mount->id, mount->name);
+  XBT_DEBUG("ROUTING Mount '%s' on '%s'",mount->storageId, mount->name);
 
   s_mount_t mnt;
-  mnt.id = surf_storage_resource_priv(surf_storage_resource_by_name(mount->id));
+  mnt.storage =
+    surf_storage_resource_priv(surf_storage_resource_by_name(mount->storageId));
   mnt.name = xbt_strdup(mount->name);
 
   if(!mount_list){
@@ -631,6 +641,7 @@ static XBT_INLINE void routing_storage_type_free(void *r)
   free(stype->model);
   free(stype->type_id);
   free(stype->content);
+  free(stype->content_type);
   xbt_dict_free(&(stype->properties));
   free(stype);
 }

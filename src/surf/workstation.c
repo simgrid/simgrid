@@ -357,7 +357,7 @@ static storage_t find_storage_on_mount_list(void *workstation,const char* mount)
   {
     XBT_DEBUG("See '%s'",mnt.name);
     if(!strcmp(mount,mnt.name)){
-      st = mnt.id;
+      st = mnt.storage;
       break;
     }
   }
