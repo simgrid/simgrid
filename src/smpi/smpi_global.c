@@ -99,8 +99,8 @@ void smpi_process_finalize(void)
  */
 int smpi_process_finalized()
 {
+   return (smpi_process_index()==-100);
   // If finalized, this value has been set to -100;
-  return process_data[smpi_process_index()]->index==-100;
 }
 
 
@@ -170,8 +170,8 @@ int smpi_process_count(void)
 int smpi_process_index(void)
 {
   smpi_process_data_t data = smpi_process_data();
-
-  return data->index;
+  //return -1 if not initialized
+  return data? data->index : MPI_UNDEFINED;
 }
 
 smx_rdv_t smpi_process_mailbox(void) {
