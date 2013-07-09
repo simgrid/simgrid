@@ -136,9 +136,9 @@ if(NOT enable_memcheck)
 
   ADD_TEST(msg-masterslave-virtual-machines     ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg contexts/factory:thread --setenv bindir=${CMAKE_BINARY_DIR}/examples/msg --cd ${CMAKE_HOME_DIRECTORY}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/cloud/masterslave_virtual_machines.tesh)
   
-  ADD_TEST(msg-energy-pstates                   ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg contexts/factory:thread --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg --cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/energy/e1/pstate.tesh )
-  ADD_TEST(msg-energy-consumption               ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg contexts/factory:thread --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg --cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/energy/e2/energy_consumption.tesh )
-  ADD_TEST(msg-energy-concurrent-tasks          ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg contexts/factory:thread --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg --cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/energy/e3/concurrent_tasks.tesh )
+  ADD_TEST(msg-energy-pstates                   ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg contexts/factory:thread --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg --cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/energy/e1/pstate.tesh)
+  ADD_TEST(msg-energy-consumption               ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg contexts/factory:thread --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg --cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/energy/e2/energy_consumption.tesh)
+  ADD_TEST(msg-energy-concurrent-tasks          ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg contexts/factory:thread --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg --cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/energy/e3/concurrent_tasks.tesh)
 
 
   if(CONTEXT_UCONTEXT)
@@ -161,9 +161,9 @@ if(NOT enable_memcheck)
     ADD_TEST(msg-masterslave-mailbox-ucontext   ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg contexts/factory:ucontext --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg --cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/masterslave/masterslave_mailbox_crosstraffic.tesh)
     ADD_TEST(msg-masterslave-cpu-ti-ucontext    ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg contexts/factory:ucontext --setenv bindir=${CMAKE_BINARY_DIR}/examples/msg/masterslave --cd ${CMAKE_HOME_DIRECTORY}/examples/msg masterslave/masterslave_cpu_ti_crosstraffic.tesh)
  
-    ADD_TEST(msg-energy-pstates-ucontext                ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg contexts/factory:ucontext --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg --cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/energy/e1/pstate.tesh )
-    ADD_TEST(msg-energy-consumption-ucontext            ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg contexts/factory:ucontext --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg --cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/energy/e2/energy_consumption.tesh )
-    ADD_TEST(msg-energy-concurrent-tasks-ucontext       ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg contexts/factory:ucontext --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg --cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/energy/e3/concurrent_tasks.tesh )
+    ADD_TEST(msg-energy-pstates-ucontext                ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg contexts/factory:ucontext --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg --cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/energy/e1/pstate.tesh)
+    ADD_TEST(msg-energy-consumption-ucontext            ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg contexts/factory:ucontext --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg --cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/energy/e2/energy_consumption.tesh)
+    ADD_TEST(msg-energy-concurrent-tasks-ucontext       ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg contexts/factory:ucontext --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg --cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/energy/e3/concurrent_tasks.tesh)
  
   endif()
 
@@ -187,9 +187,9 @@ if(NOT enable_memcheck)
     ADD_TEST(msg-masterslave-mailbox-raw        ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg contexts/factory:raw --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg --cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/masterslave/masterslave_mailbox_crosstraffic.tesh)
     ADD_TEST(msg-masterslave-cpu-ti-raw         ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg contexts/factory:raw --setenv bindir=${CMAKE_BINARY_DIR}/examples/msg/masterslave --cd ${CMAKE_HOME_DIRECTORY}/examples/msg masterslave/masterslave_cpu_ti_crosstraffic.tesh)
 
-    ADD_TEST(msg-energy-pstates-raw             ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg contexts/factory:raw --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg --cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/energy/e1/pstate.tesh )
-    ADD_TEST(msg-energy-consumption-raw         ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg contexts/factory:raw --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg --cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/energy/e2/energy_consumption.tesh )
-    ADD_TEST(msg-energy-concurrent-tasks-raw    ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg contexts/factory:raw --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg --cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/energy/e3/concurrent_tasks.tesh )
+    ADD_TEST(msg-energy-pstates-raw             ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg contexts/factory:raw --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg --cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/energy/e1/pstate.tesh)
+    ADD_TEST(msg-energy-consumption-raw         ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg contexts/factory:raw --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg --cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/energy/e2/energy_consumption.tesh)
+    ADD_TEST(msg-energy-concurrent-tasks-raw    ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg contexts/factory:raw --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg --cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/energy/e3/concurrent_tasks.tesh)
  
   endif()
 
@@ -458,7 +458,7 @@ if(NOT enable_memcheck)
       ADD_TEST(smpi-mpich-env-raw               ${CMAKE_COMMAND} -E chdir ${CMAKE_BINARY_DIR}/teshsuite/smpi/mpich-test/env ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich-test/env/runtests -srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich-test/env -basedir=${CMAKE_BINARY_DIR}/smpi_script/ -fort=${SMPI_F2C})
       ADD_TEST(smpi-mpich-pt2pt-raw             ${CMAKE_COMMAND} -E chdir ${CMAKE_BINARY_DIR}/teshsuite/smpi/mpich-test/pt2pt ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich-test/pt2pt/runtests -srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich-test/pt2pt -basedir=${CMAKE_BINARY_DIR}/smpi_script/ -fort=${SMPI_F2C})
       ADD_TEST(smpi-mpich-context-raw           ${CMAKE_COMMAND} -E chdir ${CMAKE_BINARY_DIR}/teshsuite/smpi/mpich-test/context ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich-test/context/runtests -srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich-test/context -basedir=${CMAKE_BINARY_DIR}/smpi_script/ -fort=${SMPI_F2C})
-      ADD_TEST(smpi-mpich-profile-raw           ${CMAKE_COMMAND} -E chdir ${CMAKE_BINARY_DIR}/teshsuite/smpi/mpich-test/profile  ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich-test/profile/runtests -srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich-test/profile -basedir=${CMAKE_BINARY_DIR}/smpi_script/ -fort=${SMPI_F2C} )
+      ADD_TEST(smpi-mpich-profile-raw           ${CMAKE_COMMAND} -E chdir ${CMAKE_BINARY_DIR}/teshsuite/smpi/mpich-test/profile  ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich-test/profile/runtests -srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich-test/profile -basedir=${CMAKE_BINARY_DIR}/smpi_script/ -fort=${SMPI_F2C})
       ADD_TEST(smpi-mpich-coll-raw              ${CMAKE_COMMAND} -E chdir ${CMAKE_BINARY_DIR}/teshsuite/smpi/mpich-test/coll ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich-test/coll/runtests -srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich-test/coll -basedir=${CMAKE_BINARY_DIR}/smpi_script/ -fort=${SMPI_F2C})
       ADD_TEST(smpi-mpich-coll-selector-mpich-raw              ${CMAKE_COMMAND} -E chdir ${CMAKE_BINARY_DIR}/teshsuite/smpi/mpich-test/coll ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich-test/coll/runtests -srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich-test/coll -basedir=${CMAKE_BINARY_DIR}/smpi_script/ -fort=${SMPI_F2C} -selector=mpich)
       ADD_TEST(smpi-mpich-coll-selector-ompi-raw              ${CMAKE_COMMAND} -E chdir ${CMAKE_BINARY_DIR}/teshsuite/smpi/mpich-test/coll ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich-test/coll/runtests -srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich-test/coll -basedir=${CMAKE_BINARY_DIR}/smpi_script/ -fort=${SMPI_F2C} -selector=ompi)
