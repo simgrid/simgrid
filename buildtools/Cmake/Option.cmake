@@ -16,8 +16,6 @@ mark_as_advanced(pipol_user)
 
 option(release "Whether Release Mode is activated (disable tests on experimental parts)" on)
 option(enable_compile_optimizations "Whether to produce efficient code for the SimGrid library" on)
-option(enable_debug "Set NDEBUG flag" on)
-
 option(enable_gtnets "Whether gtnets model is activated." off)
 option(enable_ns3    "Whether ns3 model is activated." off)
 option(enable_java   "Whether the Java bindings are activated." off)
