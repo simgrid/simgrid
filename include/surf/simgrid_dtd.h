@@ -253,24 +253,26 @@ typedef int AT_surfxml_link_state___file;
 #define AU_surfxml_link_state___file NULL
 typedef int AT_surfxml_random_radical;
 #define AU_surfxml_random_radical NULL
+typedef int AT_surfxml_mount_storageId;
+#define AU_surfxml_mount_storageId NULL
 typedef int AT_surfxml_bypassASroute_gw___src;
 #define AU_surfxml_bypassASroute_gw___src NULL
 typedef int AT_surfxml_trace___connect_trace;
 #define AU_surfxml_trace___connect_trace NULL
-typedef int AT_surfxml_mount_id;
-#define AU_surfxml_mount_id NULL
 typedef int AT_surfxml_cluster_power;
 #define AU_surfxml_cluster_power NULL
 typedef int AT_surfxml_process_function;
 #define AU_surfxml_process_function NULL
 typedef int AT_surfxml_peer_id;
 #define AU_surfxml_peer_id NULL
+typedef int AT_surfxml_cabinet_radical;
+#define AU_surfxml_cabinet_radical NULL
+typedef int AT_surfxml_storage_content___type;
+#define AU_surfxml_storage_content___type NULL
 typedef int AT_surfxml_cluster_router___id;
 #define AU_surfxml_cluster_router___id NULL
 typedef int AT_surfxml_cluster_loopback___lat;
 #define AU_surfxml_cluster_loopback___lat NULL
-typedef int AT_surfxml_cabinet_radical;
-#define AU_surfxml_cabinet_radical NULL
 typedef enum { AU_surfxml_cluster_sharing___policy, A_surfxml_cluster_sharing___policy_SHARED,A_surfxml_cluster_sharing___policy_FULLDUPLEX,A_surfxml_cluster_sharing___policy_FATPIPE } AT_surfxml_cluster_sharing___policy;
 typedef int AT_surfxml_bypassRoute_dst;
 #define AU_surfxml_bypassRoute_dst NULL
@@ -290,6 +292,8 @@ typedef int AT_surfxml_route_src;
 #define AU_surfxml_route_src NULL
 typedef int AT_surfxml_storage_id;
 #define AU_surfxml_storage_id NULL
+typedef int AT_surfxml_storage___type_content___type;
+#define AU_surfxml_storage___type_content___type NULL
 typedef int AT_surfxml_host_coordinates;
 #define AU_surfxml_host_coordinates NULL
 typedef int AT_surfxml_trace_id;
@@ -562,15 +566,15 @@ XBT_PUBLIC_DATA(short int) surfxml_link_state___file_isset;
 XBT_PUBLIC_DATA(AT_surfxml_random_radical) AX_surfxml_random_radical;
 #define A_surfxml_random_radical (surfxml_bufferstack + AX_surfxml_random_radical)
 XBT_PUBLIC_DATA(short int) surfxml_random_radical_isset;
+XBT_PUBLIC_DATA(AT_surfxml_mount_storageId) AX_surfxml_mount_storageId;
+#define A_surfxml_mount_storageId (surfxml_bufferstack + AX_surfxml_mount_storageId)
+XBT_PUBLIC_DATA(short int) surfxml_mount_storageId_isset;
 XBT_PUBLIC_DATA(AT_surfxml_bypassASroute_gw___src) AX_surfxml_bypassASroute_gw___src;
 #define A_surfxml_bypassASroute_gw___src (surfxml_bufferstack + AX_surfxml_bypassASroute_gw___src)
 XBT_PUBLIC_DATA(short int) surfxml_bypassASroute_gw___src_isset;
 XBT_PUBLIC_DATA(AT_surfxml_trace___connect_trace) AX_surfxml_trace___connect_trace;
 #define A_surfxml_trace___connect_trace (surfxml_bufferstack + AX_surfxml_trace___connect_trace)
 XBT_PUBLIC_DATA(short int) surfxml_trace___connect_trace_isset;
-XBT_PUBLIC_DATA(AT_surfxml_mount_id) AX_surfxml_mount_id;
-#define A_surfxml_mount_id (surfxml_bufferstack + AX_surfxml_mount_id)
-XBT_PUBLIC_DATA(short int) surfxml_mount_id_isset;
 XBT_PUBLIC_DATA(AT_surfxml_cluster_power) AX_surfxml_cluster_power;
 #define A_surfxml_cluster_power (surfxml_bufferstack + AX_surfxml_cluster_power)
 XBT_PUBLIC_DATA(short int) surfxml_cluster_power_isset;
@@ -580,15 +584,18 @@ XBT_PUBLIC_DATA(short int) surfxml_process_function_isset;
 XBT_PUBLIC_DATA(AT_surfxml_peer_id) AX_surfxml_peer_id;
 #define A_surfxml_peer_id (surfxml_bufferstack + AX_surfxml_peer_id)
 XBT_PUBLIC_DATA(short int) surfxml_peer_id_isset;
+XBT_PUBLIC_DATA(AT_surfxml_cabinet_radical) AX_surfxml_cabinet_radical;
+#define A_surfxml_cabinet_radical (surfxml_bufferstack + AX_surfxml_cabinet_radical)
+XBT_PUBLIC_DATA(short int) surfxml_cabinet_radical_isset;
+XBT_PUBLIC_DATA(AT_surfxml_storage_content___type) AX_surfxml_storage_content___type;
+#define A_surfxml_storage_content___type (surfxml_bufferstack + AX_surfxml_storage_content___type)
+XBT_PUBLIC_DATA(short int) surfxml_storage_content___type_isset;
 XBT_PUBLIC_DATA(AT_surfxml_cluster_router___id) AX_surfxml_cluster_router___id;
 #define A_surfxml_cluster_router___id (surfxml_bufferstack + AX_surfxml_cluster_router___id)
 XBT_PUBLIC_DATA(short int) surfxml_cluster_router___id_isset;
 XBT_PUBLIC_DATA(AT_surfxml_cluster_loopback___lat) AX_surfxml_cluster_loopback___lat;
 #define A_surfxml_cluster_loopback___lat (surfxml_bufferstack + AX_surfxml_cluster_loopback___lat)
 XBT_PUBLIC_DATA(short int) surfxml_cluster_loopback___lat_isset;
-XBT_PUBLIC_DATA(AT_surfxml_cabinet_radical) AX_surfxml_cabinet_radical;
-#define A_surfxml_cabinet_radical (surfxml_bufferstack + AX_surfxml_cabinet_radical)
-XBT_PUBLIC_DATA(short int) surfxml_cabinet_radical_isset;
 XBT_PUBLIC_DATA(AT_surfxml_cluster_sharing___policy) AX_surfxml_cluster_sharing___policy;
 #define A_surfxml_cluster_sharing___policy AX_surfxml_cluster_sharing___policy
 XBT_PUBLIC_DATA(short int) surfxml_cluster_sharing___policy_isset;
@@ -619,6 +626,9 @@ XBT_PUBLIC_DATA(short int) surfxml_route_src_isset;
 XBT_PUBLIC_DATA(AT_surfxml_storage_id) AX_surfxml_storage_id;
 #define A_surfxml_storage_id (surfxml_bufferstack + AX_surfxml_storage_id)
 XBT_PUBLIC_DATA(short int) surfxml_storage_id_isset;
+XBT_PUBLIC_DATA(AT_surfxml_storage___type_content___type) AX_surfxml_storage___type_content___type;
+#define A_surfxml_storage___type_content___type (surfxml_bufferstack + AX_surfxml_storage___type_content___type)
+XBT_PUBLIC_DATA(short int) surfxml_storage___type_content___type_isset;
 XBT_PUBLIC_DATA(AT_surfxml_host_coordinates) AX_surfxml_host_coordinates;
 #define A_surfxml_host_coordinates (surfxml_bufferstack + AX_surfxml_host_coordinates)
 XBT_PUBLIC_DATA(short int) surfxml_host_coordinates_isset;

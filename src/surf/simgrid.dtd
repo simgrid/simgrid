@@ -34,14 +34,16 @@
 <!ATTLIST storage_type model    CDATA #REQUIRED>
 <!ATTLIST storage_type size     CDATA #REQUIRED>
 <!ATTLIST storage_type content  CDATA "">
+<!ATTLIST storage_type content_type  CDATA "txt_unix">
 
 <!ELEMENT storage (prop*)>
 <!ATTLIST storage id CDATA #REQUIRED>
 <!ATTLIST storage typeId CDATA #REQUIRED>
 <!ATTLIST storage content  CDATA "">
+<!ATTLIST storage content_type  CDATA "txt_unix">
 
 <!ELEMENT mount EMPTY>
-<!ATTLIST mount id CDATA #REQUIRED>
+<!ATTLIST mount storageId CDATA #REQUIRED>
 <!ATTLIST mount name CDATA #REQUIRED>
 
 <!ELEMENT mstorage EMPTY>

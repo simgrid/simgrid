@@ -219,6 +219,7 @@ typedef struct {
   const char* id;
   const char* type_id;
   const char* content;
+  const char* content_type;
   xbt_dict_t properties;
 } s_sg_platf_storage_cbarg_t, *sg_platf_storage_cbarg_t;
 
@@ -228,6 +229,7 @@ typedef struct {
   const char* id;
   const char* model;
   const char* content;
+  const char* content_type;
   xbt_dict_t properties;
   unsigned long size; /* size in Gbytes */
 } s_sg_platf_storage_type_cbarg_t, *sg_platf_storage_type_cbarg_t;
@@ -242,7 +244,7 @@ typedef struct {
 #define SG_PLATF_MSTORAGE_INITIALIZER {NULL,NULL}
 
 typedef struct {
-  const char* id;
+  const char* storageId;
   const char* name;
 } s_sg_platf_mount_cbarg_t, *sg_platf_mount_cbarg_t;
 
