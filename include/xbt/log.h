@@ -60,7 +60,7 @@ typedef enum {
 
 /*
  * define NLOG to disable at compilation time any logging request
- * define NDEBUG to disable at compilation time any logging request of priority below INFO
+ * define NDEBUG to disable at compilation time any logging request of priority below VERBOSE
  */
 
 
