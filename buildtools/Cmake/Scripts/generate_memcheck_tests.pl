@@ -71,7 +71,7 @@ while ( defined( $line = <MAKETEST> ) ) {
                 my ( $env_var, $value_var ) = ( $1, $2 );
                 $environ{$env_var} = $value_var;
             }
-            if ( $line =~ /(\S+)\)$/ ) {
+            if ( $line =~ /(\S+)\s*\)$/ ) {
                 $tesh_file = $1;
                 $tesh_file =~ s/^[^\/\$]/$path\/$&/;
                 $tesh_file =~ s/\${CMAKE_HOME_DIRECTORY}/$proj_dir/g;
