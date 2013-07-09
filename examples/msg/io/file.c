@@ -46,19 +46,19 @@ int host(int argc, char *argv[])
     file = MSG_file_open(mount,FILENAME4);
   else xbt_die("FILENAME NOT DEFINED %s",MSG_process_get_name(MSG_process_self()));
 
-  XBT_INFO("\tOpen file '%s'",file->name);
+  XBT_INFO("\tOpen file '%s'",file->fullname);
 
   read = MSG_file_read(10000000,file);     // Read for 10MB
-  XBT_INFO("\tHave read    %zu on %s",read,file->name);
+  XBT_INFO("\tHave read    %zu on %s",read,file->fullname);
 
   write = MSG_file_write(100000,file);  // Write for 100KB
-  XBT_INFO("\tHave written %zu on %s",write,file->name);
+  XBT_INFO("\tHave written %zu on %s",write,file->fullname);
 
   read = MSG_file_read(110000,file);     // Read for 110KB
-  XBT_INFO("\tHave read    %zu on %s (of size %zu)",read,file->name,
+  XBT_INFO("\tHave read    %zu on %s (of size %zu)",read,file->fullname,
       MSG_file_get_size(file));
 
-  XBT_INFO("\tClose file '%s'",file->name);
+  XBT_INFO("\tClose file '%s'",file->fullname);
   MSG_file_close(file);
 
   free(mount);

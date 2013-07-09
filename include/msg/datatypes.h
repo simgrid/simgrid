@@ -103,8 +103,8 @@ typedef struct msg_vm {
 typedef struct simdata_file *simdata_file_t;
 
 typedef struct msg_file {
-  char *name;                   /**< @brief file name */
-  simdata_file_t simdata;                /**< @brief simulator data  */
+  char *fullname;               /**< @brief file full name (path+name)*/
+  simdata_file_t simdata;       /**< @brief simulator data  */
   void *data;                   /**< @brief user data */
 } s_msg_file_t;
 
