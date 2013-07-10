@@ -87,6 +87,7 @@ XBT_PUBLIC(void) MSG_file_dump(msg_file_t fd);
 
 XBT_PUBLIC(int) MSG_file_unlink(msg_file_t fd);
 XBT_PUBLIC(xbt_dict_t) MSG_file_ls(const char *mount, const char *path);
+XBT_PUBLIC(size_t) MSG_storage_get_free_size(msg_storage_t sd);
 
 /************************** AS Router handling ************************************/
 XBT_PUBLIC(const char *) MSG_as_router_get_property_value(const char* asr, const char *name);
