@@ -93,6 +93,7 @@ static surf_action_t storage_action_open(void *storage, const char* mount,
     XBT_DEBUG("File '%s' was not found, file created.",path);
   }
   surf_file_t file = xbt_new0(s_surf_file_t,1);
+  file->info = xbt_malloc0(sizeof(s_file_info_t));
   file->name = xbt_strdup(path);
   file->size = size;
   file->mount = xbt_strdup(mount);
@@ -193,7 +194,7 @@ static surf_action_t storage_action_execute (void *storage, size_t size, e_surf_
 }
 
 static void* storage_create_resource(const char* id, const char* model,
-    const char* type_id,const char* content_name){
+    const char* type_id, const char* content_name, const char* content_type){
   storage_t storage = NULL;
 
   xbt_assert(!surf_storage_resource_priv(surf_storage_resource_by_name(id)),
@@ -202,6 +203,7 @@ static void* storage_create_resource(const char* id, const char* model,
   storage = (storage_t) surf_resource_new(sizeof(s_storage_t),
           surf_storage_model, id,NULL);
 
+  storage->generic_resource.name = xbt_strdup(id);
   storage->state_current = SURF_RESOURCE_ON;
   storage->used_size = 0;
   storage->size = 0;
@@ -220,6 +222,7 @@ static void* storage_create_resource(const char* id, const char* model,
   storage->constraint_read  = lmm_constraint_new(storage_maxmin_system, storage, Bread);
   storage->constraint_write = lmm_constraint_new(storage_maxmin_system, storage, Bwrite);
   storage->content = parse_storage_content((char*)content_name,&(storage->used_size));
+  storage->content_type = xbt_strdup(content_type);
   storage->size = storage_type->size;
 
   xbt_lib_set(storage_lib, id, SURF_STORAGE_LEVEL, storage);
@@ -231,7 +234,8 @@ static void* storage_create_resource(const char* id, const char* model,
       storage_type->properties,
       Bread);
 
-  if(!storage_list) storage_list=xbt_dynar_new(sizeof(char *),NULL);
+  if (!storage_list)
+    storage_list = xbt_dynar_new(sizeof(char *),NULL);
   xbt_dynar_push(storage_list,&storage);
 
   return storage;
@@ -434,7 +438,8 @@ static void parse_storage_init(sg_platf_storage_cbarg_t storage)
   storage_create_resource(storage->id,
      ((storage_type_t) stype)->model,
      ((storage_type_t) stype)->type_id,
-     storage->content);
+     storage->content,
+     storage->content_type);
 }
 
 static void parse_mstorage_init(sg_platf_mstorage_cbarg_t mstorage)
