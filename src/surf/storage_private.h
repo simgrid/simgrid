@@ -47,7 +47,6 @@ typedef struct surf_storage {
   size_t size;
   size_t used_size;
   char *type_id;
-  char *content_type;
   xbt_dynar_t write_actions;
 } s_storage_t, *storage_t;
 
