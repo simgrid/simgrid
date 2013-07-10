@@ -14,6 +14,7 @@ typedef struct s_storage_type {
   char *type_id;
   xbt_dict_t properties;
   size_t size;
+  size_t used_size;
 } s_storage_type_t, *storage_type_t;
 
 typedef struct s_mount {
@@ -27,7 +28,7 @@ typedef struct surf_file {
   size_t size;
 } s_surf_file_t;
 
-typedef struct storage {
+typedef struct surf_storage {
   s_surf_resource_t generic_resource;   /*< Structure with generic data. Needed at begin to interact with SURF */
   e_surf_resource_state_t state_current;        /*< STORAGE current state (ON or OFF) */
   lmm_constraint_t constraint;          /* Constraint for maximum bandwidth from connection */
@@ -36,6 +37,8 @@ typedef struct storage {
   xbt_dict_t content; /* char * -> s_surf_file_t */
   size_t size;
   size_t used_size;
+  char *type_id;
+  char *content_type;
   xbt_dynar_t write_actions;
 } s_storage_t, *storage_t;
 

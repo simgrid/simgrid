@@ -45,6 +45,11 @@ typedef struct simdata_file {
   smx_file_t smx_file;
 } s_simdata_file_t;
 
+/********************************* Storage **************************************/
+typedef struct simdata_storage {
+  smx_storage_t smx_storage;
+} s_simdata_storage_t;
+
 /*************** Begin GPU ***************/
 typedef struct simdata_gpu_task {
   double computation_amount;    /* Computation size */

@@ -1235,6 +1235,14 @@ size_t simcall_file_get_size (smx_file_t fd){
   return simcall_BODY_file_get_size(fd);
 }
 
+/**
+ * \ingroup simix_storage_management
+ *
+ */
+size_t simcall_storage_get_free_size (smx_storage_t storage){
+  return simcall_BODY_storage_get_free_size(storage);
+}
+
 #ifdef HAVE_MC
 
 void *simcall_mc_snapshot(void)

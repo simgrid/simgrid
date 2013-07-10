@@ -75,6 +75,11 @@ typedef struct s_smx_file {
   surf_file_t surf_file;
 } s_smx_file_t;
 
+/* ******************************** Storage ************************************ */
+typedef struct s_smx_storage {
+  surf_storage_t surf_storage;
+} s_smx_storage_t;
+
 /*********************************** Time ************************************/
 
 /** @brief Timer datatype */

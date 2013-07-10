@@ -113,7 +113,23 @@ typedef struct msg_file {
  
     You should consider this as an opaque object.
  */
+
 typedef struct msg_file *msg_file_t;
+
+/* ******************************** Storage ************************************ */
+typedef struct simdata_storage *simdata_storage_t;
+
+typedef struct msg_storage {
+  char *model;
+  char *content_type;
+  char *type_id;
+  size_t size;
+  xbt_dict_t properties;
+  simdata_storage_t simdata;                /**< @brief simulator data  */
+  void *data;                   /**< @brief user data */
+} s_msg_storage_t;
+
+typedef struct msg_storage *msg_storage_t;
 
 /*************** Begin GPU ***************/
 typedef struct simdata_gpu_task *simdata_gpu_task_t;

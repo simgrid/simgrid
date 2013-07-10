@@ -239,6 +239,18 @@ size_t SIMIX_file_get_size(smx_process_t process, smx_file_t fd)
       fd->surf_file);
 }
 
+size_t SIMIX_pre_storage_get_free_size(smx_simcall_t simcall, smx_storage_t storage)
+{
+  return SIMIX_storage_get_free_size(simcall->issuer, storage);
+}
+
+size_t SIMIX_storage_get_free_size(smx_process_t process, smx_storage_t storage)
+{
+  smx_host_t host = process->smx_host;
+  return  surf_workstation_model->extension.workstation.get_free_size(host,
+      storage->surf_storage);
+}
+
 
 void SIMIX_post_io(smx_action_t action)
 {
