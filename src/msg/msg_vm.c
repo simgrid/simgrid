@@ -762,7 +762,7 @@ static void make_cpu_overhead_of_data_transfer(msg_task_t comm_task, double init
 }
 #endif
 
-#define USE_MICRO_TASK 1
+// #define USE_MICRO_TASK 1
 
 #if 0
 // const double alpha = 0.1L * 1.0E8 / (32L * 1024 * 1024);
@@ -861,7 +861,8 @@ static double send_stage1(msg_host_t vm, const char *src_pm_name, const char *ds
   const char *vm_name = MSG_host_get_name(vm);
   char *mbox = get_mig_mbox_src_dst(vm_name, src_pm_name, dst_pm_name);
 
-  const long chunksize = 1024 * 1024 * 100;
+  // const long chunksize = 1024 * 1024 * 100;
+  const long chunksize = 1024L * 1024 * 100000;
   long remaining = ramsize;
   double computed_total = 0;
 
@@ -877,12 +878,12 @@ static double send_stage1(msg_host_t vm, const char *src_pm_name, const char *ds
     double computed = lookup_computed_flop_counts(vm, 1, 0);
     computed_total += computed;
 
-    {
-      double updated_size = get_updated_size(computed, dp_rate, dp_cap);
+    // {
+    //   double updated_size = get_updated_size(computed, dp_rate, dp_cap);
 
-      double overhead = dpt_cpu_overhead * updated_size;
-      launch_deferred_exec_process(vm, overhead, 10000);
-    }
+    //   double overhead = dpt_cpu_overhead * updated_size;
+    //   launch_deferred_exec_process(vm, overhead, 10000);
+    // }
   }
 
   return computed_total;
@@ -890,6 +891,14 @@ static double send_stage1(msg_host_t vm, const char *src_pm_name, const char *ds
 
 
 
+static double get_threshold_value(double bandwidth, double max_downtime)
+{
+  /* This value assumes the network link is 1Gbps. */
+  // double threshold = max_downtime * 125 * 1024 * 1024;
+  double threshold = max_downtime * bandwidth;
+
+  return threshold;
+}
 
 static int migration_tx_fun(int argc, char *argv[])
 {
@@ -922,8 +931,7 @@ static int migration_tx_fun(int argc, char *argv[])
     max_downtime = 0.03;
   }
 
-  /* This value assumes the network link is 1Gbps. */
-  double threshold = max_downtime * 125 * 1024 * 1024;
+  double threshold = 0.00001; /* TODO: cleanup */
 
   /* setting up parameters has done */
 
@@ -943,8 +951,15 @@ static int migration_tx_fun(int argc, char *argv[])
     // send_migration_data(vm_name, src_pm_name, dst_pm_name, ramsize, mbox, 1, 0, mig_speed, xfer_cpu_overhead);
 
     /* send ramsize, but split it */
+    double clock_prev_send = MSG_get_clock();
+
     computed_during_stage1 = send_stage1(vm, src_pm_name, dst_pm_name, ramsize, mig_speed, xfer_cpu_overhead, dp_rate, dp_cap, dpt_cpu_overhead);
     remaining_size -= ramsize;
+
+    double clock_post_send = MSG_get_clock();
+    double bandwidth = ramsize / (clock_post_send - clock_prev_send);
+    threshold = get_threshold_value(bandwidth, max_downtime);
+    XBT_INFO("actual banwdidth %f, threshold %f", bandwidth / 1024 / 1024, threshold);
   }
 
 
@@ -974,26 +989,39 @@ static int migration_tx_fun(int argc, char *argv[])
         stage2_round, updated_size, computed_during_stage1, dp_rate, dp_cap);
 
 
-    if (stage2_round != 0) {
-      /* during stage1, we have already created overhead tasks */
-      double overhead = dpt_cpu_overhead * updated_size;
-      XBT_DEBUG("updated %f overhead %f", updated_size, overhead);
-      launch_deferred_exec_process(vm, overhead, 10000);
-    }
+    // if (stage2_round != 0) {
+    //   /* during stage1, we have already created overhead tasks */
+    //   double overhead = dpt_cpu_overhead * updated_size;
+    //   XBT_DEBUG("updated %f overhead %f", updated_size, overhead);
+    //   launch_deferred_exec_process(vm, overhead, 10000);
+    // }
 
 
     {
       remaining_size += updated_size;
 
-      XBT_DEBUG("mig-stage2.%d: remaining_size %f (%s threshold %f)", stage2_round,
+      XBT_INFO("mig-stage2.%d: remaining_size %f (%s threshold %f)", stage2_round,
           remaining_size, (remaining_size < threshold) ? "<" : ">", threshold);
 
       if (remaining_size < threshold)
         break;
     }
 
+    double clock_prev_send = MSG_get_clock();
 
     send_migration_data(vm_name, src_pm_name, dst_pm_name, updated_size, mbox, 2, stage2_round, mig_speed, xfer_cpu_overhead);
+
+    double clock_post_send = MSG_get_clock();
+
+    double bandwidth = updated_size / (clock_post_send - clock_prev_send);
+    threshold = get_threshold_value(bandwidth, max_downtime);
+    XBT_INFO("actual banwdidth %f, threshold %f", bandwidth / 1024 / 1024, threshold);
+
+
+
+
+
+
 
     remaining_size -= updated_size;
     stage2_round += 1;
