@@ -20,6 +20,22 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_io, msg,
 /********************************* File **************************************/
 
 /** \ingroup msg_file_management
+ * \brief Display information related to a file descriptor
+ *
+ * \param fd is a the file descriptor
+ */
+
+void MSG_file_dump (msg_file_t fd){
+   THROW_UNIMPLEMENTED;
+  /* Update the cached information first */
+//  fd->info = __MSG_file_get_info(fd);
+//  XBT_INFO("File Descriptor information:\n\t\tFull name: '%s'"
+//      "\n\t\tSize: %zu\n\t\tMount point: '%s'\n\t\t Storage Id: '%s'"
+//      "\n\t\t Content Type: '%s'", fd->fullname, fd->info->size, NULL,NULL,NULL);
+//      fd->info->mount_point, fd->info->storageId, fd->info->content_type);
+}
+
+/** \ingroup msg_file_management
  * \brief Read a file
  *
  * \param size of the file to read

@@ -83,6 +83,7 @@ XBT_PUBLIC(size_t) MSG_file_write(size_t size, msg_file_t fd);
 XBT_PUBLIC(msg_file_t) MSG_file_open(const char* mount, const char* path);
 XBT_PUBLIC(int) MSG_file_close(msg_file_t fd);
 XBT_PUBLIC(size_t) MSG_file_get_size(msg_file_t fd);
+XBT_PUBLIC(void) MSG_file_dump(msg_file_t fd);
 
 XBT_PUBLIC(int) MSG_file_unlink(msg_file_t fd);
 XBT_PUBLIC(xbt_dict_t) MSG_file_ls(const char *mount, const char *path);
