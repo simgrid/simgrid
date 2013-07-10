@@ -338,4 +338,13 @@ double MSG_get_host_consumed_energy(msg_host_t host) {
 	  return simcall_host_get_consumed_energy(host);
 }
 
-
+/** \ingroup m_host_management
+ * \brief Return the list of mounted storages on an host.
+ * \param host a host
+ * \return a dynar containing all mounted storages on the host
+ */
+xbt_dynar_t MSG_host_get_storage_list(msg_host_t host)
+{
+  xbt_assert((host != NULL), "Invalid parameters");
+  return (simcall_host_get_storage_list(host));
+}

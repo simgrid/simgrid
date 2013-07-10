@@ -623,3 +623,11 @@ void SIMIX_set_category(smx_action_t action, const char *category)
 }
 #endif
 
+xbt_dynar_t SIMIX_pre_host_get_storage_list(smx_simcall_t simcall, smx_host_t host){
+  return SIMIX_host_get_storage_list(host);
+}
+xbt_dynar_t SIMIX_host_get_storage_list(smx_host_t host){
+  xbt_assert((host != NULL), "Invalid parameters (simix host is NULL)");
+
+  return surf_workstation_model->extension.workstation.get_storage_list(host);
+}

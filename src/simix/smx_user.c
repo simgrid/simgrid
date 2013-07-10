@@ -1237,11 +1237,25 @@ size_t simcall_file_get_size (smx_file_t fd){
 
 /**
  * \ingroup simix_storage_management
- *
+ * \brief Return the free size on a given storage element.
+ * \param storage A SIMIX storage
+ * \return a dynar containing all mounted storages on the host
  */
 size_t simcall_storage_get_free_size (smx_storage_t storage){
   return simcall_BODY_storage_get_free_size(storage);
 }
+
+/**
+ * \ingroup simix_host_management
+ * \brief Return the list of storages mounted on an host.
+ * \param host A SIMIX host
+ * \return a dynar containing all storages mounted on the host
+ */
+xbt_dynar_t simcall_host_get_storage_list(smx_host_t host)
+{
+  return simcall_BODY_host_get_storage_list(host);
+}
+
 
 #ifdef HAVE_MC
 

@@ -365,6 +365,12 @@ static storage_t find_storage_on_mount_list(void *workstation,const char* mount)
   return st;
 }
 
+static xbt_dynar_t ws_get_storage_list(void *workstation)
+{
+  workstation_CLM03_t ws = (workstation_CLM03_t) surf_workstation_resource_priv(workstation);
+  return ws->storage;
+}
+
 static surf_action_t ws_action_open(void *workstation, const char* mount,
                                     const char* path)
 {
@@ -517,6 +523,7 @@ static void surf_workstation_model_init_internal(void)
   surf_workstation_model->extension.workstation.ls = ws_action_ls;
   surf_workstation_model->extension.workstation.get_size = ws_file_get_size;
   surf_workstation_model->extension.workstation.get_free_size = ws_storage_get_free_size;
+  surf_workstation_model->extension.workstation.get_storage_list = ws_get_storage_list;
 }
 
 void surf_workstation_model_init_current_default(void)

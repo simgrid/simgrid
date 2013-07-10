@@ -288,8 +288,8 @@ typedef struct surf_workstation_model_extension_public {
    xbt_dict_t(*get_properties) (const void *resource);
   void (*add_traces) (void);
 
-
   size_t (*get_free_size) (void *workstation, surf_storage_t storage);
+  xbt_dynar_t (*get_storage_list) (void *workstation);
 
 } s_surf_model_extension_workstation_t;
 
