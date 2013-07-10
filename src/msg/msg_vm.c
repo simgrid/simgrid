@@ -455,7 +455,8 @@ static double lookup_computed_flop_counts(msg_vm_t vm, int stage_for_fancy_debug
   dirty_page_t dp = NULL;
   xbt_dict_foreach(priv->dp_objs, cursor, key, dp) {
     double remaining = MSG_task_get_remaining_computation(dp->task);
-    double clock = MSG_get_clock();
+   
+	 double clock = MSG_get_clock();
 
     // total += calc_updated_pages(key, vm, dp, remaining, clock);
     total += get_computed(key, vm, dp, remaining, clock);
