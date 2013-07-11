@@ -223,7 +223,7 @@ static void* storage_create_resource(const char* id, const char* model,
   storage->content = parse_storage_content((char*)content_name,&(storage->used_size));
   storage->content_type = xbt_strdup(content_type);
   storage->size = storage_type->size;
-  storage->type_id = type_id;
+  storage->type_id = xbt_strdup(type_id);
 
   xbt_lib_set(storage_lib, id, SURF_STORAGE_LEVEL, storage);
 
