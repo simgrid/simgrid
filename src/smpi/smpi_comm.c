@@ -132,7 +132,6 @@ MPI_Comm smpi_comm_split(MPI_Comm comm, int color, int key)
       }
       for(j = 0; j < count; j++) {
         //increment refcounter in order to avoid freeing the group too quick before copy
-        smpi_group_use(group_out);
         index = smpi_group_index(group, rankmap[2 * j]);
         smpi_group_set_mapping(group_out, index, j);
       }
@@ -150,13 +149,11 @@ MPI_Comm smpi_comm_split(MPI_Comm comm, int color, int key)
     }
     xbt_free(recvbuf);
     group_out = group_root; /* exit with root's group */
-    if(group_out)smpi_group_unuse(group_out);
   } else {
     if(color != MPI_UNDEFINED) {
       smpi_mpi_recv(&group_out, 1, MPI_PTR, 0, system_tag, comm, MPI_STATUS_IGNORE);
       if(group_out){
         group_out=smpi_group_copy(group_out);
-        smpi_group_unuse(group_out);
       }
     } /* otherwise, exit with group_out == NULL */
   }

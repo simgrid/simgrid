@@ -303,7 +303,6 @@ int PMPI_Group_free(MPI_Group * group)
   if (group == NULL) {
     retval = MPI_ERR_ARG;
   } else {
-    if(*group!= smpi_comm_group(MPI_COMM_WORLD))// do not free the group of the comm_world
     smpi_group_destroy(*group);
     *group = MPI_GROUP_NULL;
     retval = MPI_SUCCESS;
@@ -419,7 +418,6 @@ int PMPI_Group_union(MPI_Group group1, MPI_Group group2,
         smpi_group_set_mapping(*newgroup, proc2, i);
       }
     }
-    smpi_group_use(*newgroup);
     retval = MPI_SUCCESS;
   }
   smpi_bench_begin();
@@ -459,7 +457,6 @@ int PMPI_Group_intersection(MPI_Group group1, MPI_Group group2,
         }
       }
     }
-    smpi_group_use(*newgroup);
     retval = MPI_SUCCESS;
   }
   smpi_bench_begin();
@@ -496,7 +493,6 @@ int PMPI_Group_difference(MPI_Group group1, MPI_Group group2, MPI_Group * newgro
         }
       }
     }
-    smpi_group_use(*newgroup);
     retval = MPI_SUCCESS;
   }
   smpi_bench_begin();
@@ -517,6 +513,11 @@ int PMPI_Group_incl(MPI_Group group, int n, int *ranks, MPI_Group * newgroup)
       *newgroup = MPI_GROUP_EMPTY;
     } else if (n == smpi_group_size(group)) {
       *newgroup = group;
+      if(group!= smpi_comm_group(MPI_COMM_WORLD)
+                && group != MPI_GROUP_NULL
+                && group != smpi_comm_group(MPI_COMM_SELF)
+                && group != MPI_GROUP_EMPTY)
+      smpi_group_use(group);
     } else {
       *newgroup = smpi_group_new(n);
       for (i = 0; i < n; i++) {
@@ -524,7 +525,6 @@ int PMPI_Group_incl(MPI_Group group, int n, int *ranks, MPI_Group * newgroup)
         smpi_group_set_mapping(*newgroup, index, i);
       }
     }
-    smpi_group_use(*newgroup);
     retval = MPI_SUCCESS;
   }
   smpi_bench_begin();
@@ -543,6 +543,11 @@ int PMPI_Group_excl(MPI_Group group, int n, int *ranks, MPI_Group * newgroup)
   } else {
     if (n == 0) {
       *newgroup = group;
+      if(group!= smpi_comm_group(MPI_COMM_WORLD)
+                && group != MPI_GROUP_NULL
+                && group != smpi_comm_group(MPI_COMM_SELF)
+                && group != MPI_GROUP_EMPTY)
+      smpi_group_use(group);
     } else if (n == smpi_group_size(group)) {
       *newgroup = MPI_GROUP_EMPTY;
     } else {
@@ -567,7 +572,6 @@ int PMPI_Group_excl(MPI_Group group, int n, int *ranks, MPI_Group * newgroup)
 
       xbt_free(to_exclude);
     }
-    smpi_group_use(*newgroup);
     retval = MPI_SUCCESS;
   }
   smpi_bench_begin();
@@ -626,7 +630,6 @@ int PMPI_Group_range_incl(MPI_Group group, int n, int ranges[][3],
         }
       }
     }
-    smpi_group_use(*newgroup);
     retval = MPI_SUCCESS;
   }
   smpi_bench_begin();
@@ -646,6 +649,11 @@ int PMPI_Group_range_excl(MPI_Group group, int n, int ranges[][3],
   } else {
     if (n == 0) {
       *newgroup = group;
+      if(group!= smpi_comm_group(MPI_COMM_WORLD)
+                && group != MPI_GROUP_NULL
+                && group != smpi_comm_group(MPI_COMM_SELF)
+                && group != MPI_GROUP_EMPTY)
+      smpi_group_use(group);
     } else {
       size = smpi_group_size(group);
       for (i = 0; i < n; i++) {
@@ -699,7 +707,6 @@ int PMPI_Group_range_excl(MPI_Group group, int n, int ranges[][3],
         }
       }
     }
-    smpi_group_use(*newgroup);
 
     retval = MPI_SUCCESS;
   }
@@ -769,6 +776,11 @@ int PMPI_Comm_group(MPI_Comm comm, MPI_Group * group)
     retval = MPI_ERR_ARG;
   } else {
     *group = smpi_comm_group(comm);
+    if(*group!= smpi_comm_group(MPI_COMM_WORLD)
+              && *group != MPI_GROUP_NULL
+              && *group != smpi_comm_group(MPI_COMM_SELF)
+              && *group != MPI_GROUP_EMPTY)
+    smpi_group_use(*group);
     retval = MPI_SUCCESS;
   }
   smpi_bench_begin();
