@@ -93,7 +93,6 @@ static surf_action_t storage_action_open(void *storage, const char* mount,
     XBT_DEBUG("File '%s' was not found, file created.",path);
   }
   surf_file_t file = xbt_new0(s_surf_file_t,1);
-  file->info = xbt_malloc0(sizeof(s_file_info_t));
   file->name = xbt_strdup(path);
   file->size = size;
   file->mount = xbt_strdup(mount);
@@ -224,6 +223,7 @@ static void* storage_create_resource(const char* id, const char* model,
   storage->content = parse_storage_content((char*)content_name,&(storage->used_size));
   storage->content_type = xbt_strdup(content_type);
   storage->size = storage_type->size;
+  storage->type_id = type_id;
 
   xbt_lib_set(storage_lib, id, SURF_STORAGE_LEVEL, storage);
 
