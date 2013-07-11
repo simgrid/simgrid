@@ -657,6 +657,8 @@ static XBT_INLINE void surf_storage_resource_free(void *r)
   storage_t storage = r;
   xbt_dict_free(&storage->content);
   xbt_dynar_free(&storage->write_actions);
+  free(storage->type_id);
+  free(storage->content_type);
   // generic resource
   surf_resource_free(r);
 }
