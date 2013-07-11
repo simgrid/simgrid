@@ -453,7 +453,7 @@ static xbt_dynar_t ws_file_get_info(void *workstation, surf_file_t fd)
 {
   storage_t st = find_storage_on_mount_list(workstation, fd->mount);
   xbt_dynar_t info = xbt_dynar_new(sizeof(void*), NULL);
-  xbt_dynar_push_as(info, void *, &(fd->size));
+  xbt_dynar_push_as(info, void *, (void*)fd->size);
   xbt_dynar_push_as(info, void *, fd->mount);
   xbt_dynar_push_as(info, void *, st->generic_resource.name);
   xbt_dynar_push_as(info, void *, st->type_id);
