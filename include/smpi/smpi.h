@@ -243,7 +243,7 @@ typedef struct s_smpi_mpi_communicator *MPI_Comm;
 
 #define MPI_COMM_NULL NULL
 XBT_PUBLIC_DATA( MPI_Comm ) MPI_COMM_WORLD;
-#define MPI_UNIVERSE_SIZE smpi_comm_size(MPI_COMM_WORLD)
+XBT_PUBLIC_DATA( int ) MPI_UNIVERSE_SIZE;
 #define MPI_COMM_SELF smpi_process_comm_self()
 
 struct s_smpi_mpi_request;

@@ -35,6 +35,7 @@ static smpi_process_data_t *process_data = NULL;
 static int process_count = 0;
 
 MPI_Comm MPI_COMM_WORLD = MPI_COMM_NULL;
+int MPI_UNIVERSE_SIZE;
 
 MPI_Errhandler* MPI_ERRORS_RETURN = NULL;
 MPI_Errhandler* MPI_ERRORS_ARE_FATAL = NULL;
@@ -267,6 +268,7 @@ void smpi_global_init(void)
   }
   group = smpi_group_new(process_count);
   MPI_COMM_WORLD = smpi_comm_new(group);
+  MPI_UNIVERSE_SIZE = smpi_comm_size(MPI_COMM_WORLD);
   for (i = 0; i < process_count; i++) {
     smpi_group_set_mapping(group, i, i);
   }
