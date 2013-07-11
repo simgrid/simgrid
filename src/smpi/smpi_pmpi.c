@@ -636,7 +636,7 @@ int PMPI_Group_range_incl(MPI_Group group, int n, int ranges[][3],
 int PMPI_Group_range_excl(MPI_Group group, int n, int ranges[][3],
                          MPI_Group * newgroup)
 {
-  int retval, i, newrank, rank, size, index, add;
+  int retval, i, rank, newrank,oldrank, size, index, add;
 
   smpi_bench_end();
   if (group == MPI_GROUP_NULL) {
@@ -650,37 +650,57 @@ int PMPI_Group_range_excl(MPI_Group group, int n, int ranges[][3],
       size = smpi_group_size(group);
       for (i = 0; i < n; i++) {
         for (rank = ranges[i][0];       /* First */
-             rank >= 0 && rank <= ranges[i][1]; /* Last */
-             rank += ranges[i][2] /* Stride */ ) {
+             rank >= 0; /* Last */
+              ) {
           size--;
+
+          rank += ranges[i][2]; /* Stride */
+	  if (ranges[i][0]<ranges[i][1]){
+	      if(rank > ranges[i][1])
+	        break;
+	  }else{
+	      if(rank < ranges[i][1])
+	        break;
+	  }
         }
       }
       if (size == 0) {
         *newgroup = MPI_GROUP_EMPTY;
       } else {
         *newgroup = smpi_group_new(size);
-        newrank = 0;
+        newrank=0;
+        oldrank=0;
         while (newrank < size) {
+          add=1;
           for (i = 0; i < n; i++) {
-            add = 1;
-            for (rank = ranges[i][0];   /* First */
-                 rank >= 0 && rank <= ranges[i][1];     /* Last */
-                 rank += ranges[i][2] /* Stride */ ) {
-              if (rank == newrank) {
-                add = 0;
-                break;
+            for (rank = ranges[i][0];rank >= 0;){
+              if(rank==oldrank){
+                  add=0;
+                  break;
+              }
+
+              rank += ranges[i][2]; /* Stride */
+
+              if (ranges[i][0]<ranges[i][1]){
+                  if(rank > ranges[i][1])
+                    break;
+              }else{
+                  if(rank < ranges[i][1])
+                    break;
               }
             }
-            if (add == 1) {
-              index = smpi_group_index(group, newrank);
-              smpi_group_set_mapping(*newgroup, index, newrank);
-            }
           }
-          newrank++; //added to avoid looping, need to be checked ..
+          if(add==1){
+            index = smpi_group_index(group, oldrank);
+            smpi_group_set_mapping(*newgroup, index, newrank);
+            newrank++;
+          }
+          oldrank++;
         }
       }
     }
     smpi_group_use(*newgroup);
+
     retval = MPI_SUCCESS;
   }
   smpi_bench_begin();
