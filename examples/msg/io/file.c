@@ -38,8 +38,8 @@ int host(int argc, char *argv[])
 
   if(!strcmp(MSG_process_get_name(MSG_process_self()),"0")){
     file = MSG_file_open(mount,FILENAME1);
-    MSG_file_dump(file);}
-  else if(!strcmp(MSG_process_get_name(MSG_process_self()),"1"))
+    MSG_file_dump(file);
+  } else if(!strcmp(MSG_process_get_name(MSG_process_self()),"1"))
     file = MSG_file_open(mount,FILENAME2);
   else if(!strcmp(MSG_process_get_name(MSG_process_self()),"2"))
     file = MSG_file_open(mount,FILENAME3);
