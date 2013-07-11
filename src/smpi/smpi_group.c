@@ -48,7 +48,7 @@ MPI_Group smpi_group_new(int size)
 
 MPI_Group smpi_group_copy(MPI_Group origin)
 {
-  MPI_Group group;
+  MPI_Group group=origin;
   int i, count;
   if(origin!= smpi_comm_group(MPI_COMM_WORLD)
             && origin != MPI_GROUP_NULL
