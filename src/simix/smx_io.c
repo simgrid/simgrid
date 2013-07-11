@@ -239,6 +239,18 @@ size_t SIMIX_file_get_size(smx_process_t process, smx_file_t fd)
       fd->surf_file);
 }
 
+xbt_dynar_t SIMIX_pre_file_get_info(smx_simcall_t simcall, smx_file_t fd)
+{
+  return SIMIX_file_get_info(simcall->issuer, fd);
+}
+
+xbt_dynar_t SIMIX_file_get_info(smx_process_t process, smx_file_t fd)
+{
+  smx_host_t host = process->smx_host;
+  return  surf_workstation_model->extension.workstation.get_info(host,
+      fd->surf_file);
+}
+
 size_t SIMIX_pre_storage_get_free_size(smx_simcall_t simcall, smx_storage_t storage)
 {
   return SIMIX_storage_get_free_size(simcall->issuer, storage);

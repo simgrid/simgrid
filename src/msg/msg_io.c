@@ -18,7 +18,16 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_io, msg,
  */
 
 /********************************* File **************************************/
+void __MSG_file_get_info(msg_file_t fd){
+  xbt_dynar_t info = simcall_file_get_info(fd->simdata->smx_file);
+  fd->info->content_type = xbt_dynar_pop_as(info, char *);
+  fd->info->storage_type = xbt_dynar_pop_as(info, char *);
+  fd->info->storageId = xbt_dynar_pop_as(info, char *);
+  fd->info->mount_point = xbt_dynar_pop_as(info, char *);
+  fd->info->size = xbt_dynar_pop_as(info, size_t);
 
+  xbt_dynar_free_container(&info);
+}
 /** \ingroup msg_file_management
  * \brief Display information related to a file descriptor
  *
@@ -26,13 +35,14 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_io, msg,
  */
 
 void MSG_file_dump (msg_file_t fd){
-   THROW_UNIMPLEMENTED;
+//   THROW_UNIMPLEMENTED;
   /* Update the cached information first */
-//  fd->info = __MSG_file_get_info(fd);
-//  XBT_INFO("File Descriptor information:\n\t\tFull name: '%s'"
-//      "\n\t\tSize: %zu\n\t\tMount point: '%s'\n\t\t Storage Id: '%s'"
-//      "\n\t\t Content Type: '%s'", fd->fullname, fd->info->size, NULL,NULL,NULL);
-//      fd->info->mount_point, fd->info->storageId, fd->info->content_type);
+  __MSG_file_get_info(fd);
+  XBT_INFO("File Descriptor information:\n\t\tFull name: '%s'"
+      "\n\t\tSize: %zu\n\t\tMount point: '%s'\n\t\tStorage Id: '%s'"
+      "\n\t\tStorage Type: '%s'\n\t\tContent Type: '%s'",
+      fd->fullname, fd->info->size, fd->info->mount_point, fd->info->storageId,
+      fd->info->storage_type, fd->info->content_type);
 }
 
 /** \ingroup msg_file_management
@@ -72,6 +82,7 @@ msg_file_t MSG_file_open(const char* mount, const char* fullname)
   msg_file_t file = xbt_new(s_msg_file_t,1);
   file->fullname = xbt_strdup(fullname);
   file->simdata = xbt_new0(s_simdata_file_t,1);
+  file->info = xbt_new0(s_file_info_t,1);
   file->simdata->smx_file = simcall_file_open(mount, fullname);
   return file;
 }
@@ -87,6 +98,7 @@ int MSG_file_close(msg_file_t fd)
   int res = simcall_file_close(fd->simdata->smx_file);
   free(fd->fullname);
   xbt_free(fd->simdata);
+  xbt_free(fd->info);
   xbt_free(fd);
   return res;
 }

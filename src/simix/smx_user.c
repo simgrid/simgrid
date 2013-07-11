@@ -1236,6 +1236,15 @@ size_t simcall_file_get_size (smx_file_t fd){
 }
 
 /**
+ * \ingroup simix_file_management
+ *
+ */
+xbt_dynar_t simcall_file_get_info(smx_file_t fd)
+{
+  return simcall_BODY_file_get_info(fd);
+}
+
+/**
  * \ingroup simix_storage_management
  * \brief Return the free size on a given storage element.
  * \param storage A SIMIX storage

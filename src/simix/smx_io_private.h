@@ -19,6 +19,7 @@ int SIMIX_pre_file_unlink(smx_simcall_t simcall, smx_file_t fd);
 void SIMIX_pre_file_ls(smx_simcall_t simcall,
                        const char* mount, const char* path);
 size_t SIMIX_pre_file_get_size(smx_simcall_t simcall, smx_file_t fd);
+xbt_dynar_t SIMIX_pre_file_get_info(smx_simcall_t simcall, smx_file_t fd);
 
 smx_action_t SIMIX_file_read(smx_process_t process, size_t size,
                              smx_file_t fd);
@@ -31,6 +32,7 @@ int SIMIX_file_unlink(smx_process_t process, smx_file_t fd);
 smx_action_t SIMIX_file_ls(smx_process_t process, const char *mount,
                            const char *path);
 size_t SIMIX_file_get_size(smx_process_t process, smx_file_t fd);
+xbt_dynar_t SIMIX_file_get_info(smx_process_t process, smx_file_t fd);
 
 size_t SIMIX_pre_storage_get_free_size(smx_simcall_t simcall, smx_storage_t storage);
 size_t SIMIX_storage_get_free_size(smx_process_t process, smx_storage_t storage);

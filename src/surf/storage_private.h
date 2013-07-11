@@ -22,18 +22,10 @@ typedef struct s_mount {
   char *name;
 } s_mount_t, *mount_t;
 
-typedef struct s_file_info {
-  size_t size;
-  char* mount_point;
-  char* storageId;
-  char* content_type;
-} s_file_info_t, *surf_file_info_t;
-
 typedef struct surf_file {
   char *name;
   char *mount;
   size_t size;
-  surf_file_info_t info;
 } s_surf_file_t;
 
 typedef struct surf_storage {

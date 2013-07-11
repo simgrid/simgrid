@@ -102,10 +102,19 @@ typedef struct msg_vm {
 /* ******************************** File ************************************ */
 typedef struct simdata_file *simdata_file_t;
 
+typedef struct s_file_info {
+  size_t size;
+  char* mount_point;
+  char* storageId;
+  char* storage_type;
+  char* content_type;
+} s_file_info_t, *msg_file_info_t;
+
 typedef struct msg_file {
   char *fullname;               /**< @brief file full name (path+name)*/
   simdata_file_t simdata;       /**< @brief simulator data  */
   void *data;                   /**< @brief user data */
+  msg_file_info_t info;
 } s_msg_file_t;
 
 /** @brief File datatype.
