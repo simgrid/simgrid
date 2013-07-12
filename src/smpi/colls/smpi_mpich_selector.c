@@ -426,6 +426,8 @@ int smpi_coll_tuned_reduce_scatter_mpich( void *sbuf, void *rbuf,
     int comm_size, i;
     size_t total_message_size;
 
+    if(sbuf==rbuf)sbuf=MPI_IN_PLACE; //restore MPI_IN_PLACE as these algos handle it
+
     XBT_DEBUG("smpi_coll_tuned_reduce_scatter_mpich");
     
     comm_size = smpi_comm_size(comm);
@@ -689,6 +691,11 @@ int smpi_coll_tuned_scatter_mpich(void *sbuf, int scount,
                                             int root, MPI_Comm  comm
                                             )
 {
+  if(smpi_comm_rank(comm)!=root){
+      sbuf=xbt_malloc(rcount*smpi_datatype_get_extent(rdtype));
+      scount=rcount;
+      sdtype=rdtype;
+  }
         return smpi_coll_tuned_scatter_ompi_binomial (sbuf, scount, sdtype, 
                                                        rbuf, rcount, rdtype, 
                                                        root, comm);

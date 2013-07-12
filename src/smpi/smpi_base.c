@@ -421,7 +421,6 @@ void smpi_mpi_startall(int count, MPI_Request * requests)
 
 void smpi_mpi_request_free(MPI_Request * request)
 {
-
   if((*request) != MPI_REQUEST_NULL){
     (*request)->refcount--;
     if((*request)->refcount<0) xbt_die("wrong refcount");
@@ -1110,8 +1109,10 @@ void smpi_mpi_scatter(void *sendbuf, int sendcount, MPI_Datatype sendtype,
     // FIXME: check for errors
     smpi_datatype_extent(sendtype, &lb, &sendext);
     // Local copy from root
-    smpi_datatype_copy((char *)sendbuf + root * sendcount * sendext,
-                       sendcount, sendtype, recvbuf, recvcount, recvtype);
+    if(recvbuf!=MPI_IN_PLACE){
+        smpi_datatype_copy((char *)sendbuf + root * sendcount * sendext,
+                           sendcount, sendtype, recvbuf, recvcount, recvtype);
+    }
     // Send buffers to receivers
     requests = xbt_new(MPI_Request, size - 1);
     index = 0;
@@ -1149,8 +1150,10 @@ void smpi_mpi_scatterv(void *sendbuf, int *sendcounts, int *displs,
     // FIXME: check for errors
     smpi_datatype_extent(sendtype, &lb, &sendext);
     // Local copy from root
-    smpi_datatype_copy((char *)sendbuf + displs[root] * sendext, sendcounts[root],
+    if(recvbuf!=MPI_IN_PLACE){
+      smpi_datatype_copy((char *)sendbuf + displs[root] * sendext, sendcounts[root],
                        sendtype, recvbuf, recvcount, recvtype);
+    }
     // Send buffers to receivers
     requests = xbt_new(MPI_Request, size - 1);
     index = 0;
@@ -1179,9 +1182,11 @@ void smpi_mpi_reduce(void *sendbuf, void *recvbuf, int count,
   MPI_Request *requests;
   void **tmpbufs;
 
+
   char* sendtmpbuf = (char*) sendbuf;
   if( sendbuf == MPI_IN_PLACE ) {
-      sendtmpbuf = (char *)recvbuf;
+    sendtmpbuf = (char *)xbt_malloc(count*smpi_datatype_get_extent(datatype));
+    smpi_datatype_copy(recvbuf, count, datatype,sendtmpbuf, count, datatype);
   }
 
   rank = smpi_comm_rank(comm);
@@ -1234,6 +1239,10 @@ void smpi_mpi_reduce(void *sendbuf, void *recvbuf, int count,
     }
     xbt_free(tmpbufs);
     xbt_free(requests);
+
+    if( sendbuf == MPI_IN_PLACE ) {
+      xbt_free(sendtmpbuf);
+    }
   }
 }
 

@@ -1865,9 +1865,9 @@ int PMPI_Scatter(void *sendbuf, int sendcount, MPI_Datatype sendtype,
              || ((recvbuf !=MPI_IN_PLACE) && (recvtype == MPI_DATATYPE_NULL))) {
     retval = MPI_ERR_TYPE;
   } else {
-
-    if(recvbuf==MPI_IN_PLACE){
-	recvcount=0;
+    if (recvbuf == MPI_IN_PLACE) {
+        recvtype=sendtype;
+        recvcount=sendcount;
     }
     mpi_coll_scatter_fun(sendbuf, sendcount, sendtype, recvbuf, recvcount,
                      recvtype, root, comm);
@@ -1902,11 +1902,10 @@ int PMPI_Scatterv(void *sendbuf, int *sendcounts, int *displs,
              || ((recvbuf !=MPI_IN_PLACE) && (recvtype == MPI_DATATYPE_NULL))) {
     retval = MPI_ERR_TYPE;
   } else {
-
-    if(recvbuf==MPI_IN_PLACE){
-	recvcount=0;
+    if (recvbuf == MPI_IN_PLACE) {
+        recvtype=sendtype;
+        recvcount=sendcounts[smpi_comm_rank(comm)];
     }
-
     smpi_mpi_scatterv(sendbuf, sendcounts, displs, sendtype, recvbuf,
                       recvcount, recvtype, root, comm);
     retval = MPI_SUCCESS;
@@ -1937,17 +1936,7 @@ int PMPI_Reduce(void *sendbuf, void *recvbuf, int count,
     retval = MPI_ERR_ARG;
   } else {
 
-    char* sendtmpbuf = (char*) sendbuf;
-    if( sendbuf == MPI_IN_PLACE ) {
-      sendtmpbuf = (char *)xbt_malloc(count*smpi_datatype_get_extent(datatype));
-      smpi_datatype_copy(recvbuf, count, datatype,sendtmpbuf, count, datatype);
-    }
-
-    mpi_coll_reduce_fun(sendtmpbuf, recvbuf, count, datatype, op, root, comm);
-
-    if( sendbuf == MPI_IN_PLACE ) {
-      xbt_free(sendtmpbuf);
-    }
+    mpi_coll_reduce_fun(sendbuf, recvbuf, count, datatype, op, root, comm);
 
     retval = MPI_SUCCESS;
   }

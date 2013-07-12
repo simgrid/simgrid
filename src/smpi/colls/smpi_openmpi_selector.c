@@ -596,6 +596,11 @@ int smpi_coll_tuned_scatter_ompi(void *sbuf, int scount,
 
     if ((communicator_size > small_comm_size) &&
         (block_size < small_block_size)) {
+        if(rank!=root){
+            sbuf=xbt_malloc(rcount*smpi_datatype_get_extent(rdtype));
+            scount=rcount;
+            sdtype=rdtype;
+        }
         return smpi_coll_tuned_scatter_ompi_binomial (sbuf, scount, sdtype, 
                                                        rbuf, rcount, rdtype, 
                                                        root, comm);
