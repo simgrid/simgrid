@@ -1,4 +1,4 @@
-#! /usr/local/bin/perl
+#! /usr/bin/perl
 # -*- Mode: perl; -*-
 #
 # This script is the beginnings of a script to run a sequence of test 
@@ -154,7 +154,7 @@ foreach $_ (@ARGV) {
     elsif (/--?maxnp=(.*)/) { $np_max = $1; }
     elsif (/--?tests=(.*)/) { $listfiles = $1; }
     elsif (/--?srcdir=(.*)/) { $srcdir = $1;
-	$mpiexec="$mpiexec  -platform ${srcdir}/../../../../examples/msg/small_platform_with_routers.xml -hostfile ${srcdir}/../hostfile --log=root.thr:critical" }
+	$mpiexec="$mpiexec  -platform ${srcdir}/../../../../examples/msg/small_platform_with_routers.xml -hostfile ${srcdir}/../hostfile --log=root.thr:critical"; }
     elsif (/--?verbose/) { $verbose = 1; }
     elsif (/--?showprogress/) { $showProgress = 1; }
     elsif (/--?debug/) { $debug = 1; }
