@@ -367,8 +367,18 @@ static storage_t find_storage_on_mount_list(void *workstation,const char* mount)
 
 static xbt_dynar_t ws_get_storage_list(void *workstation)
 {
+  s_mount_t mnt;
+  unsigned int i;
+  xbt_dynar_t storage_list = xbt_dynar_new(sizeof(void*), NULL);
+
   workstation_CLM03_t ws = (workstation_CLM03_t) surf_workstation_resource_priv(workstation);
-  return ws->storage;
+  xbt_dynar_t storages = ws->storage;
+
+  xbt_dynar_foreach(storages,i,mnt)
+  {
+    xbt_dynar_push_as(storage_list, char*, mnt.name);
+  }
+  return storage_list;
 }
 
 static surf_action_t ws_action_open(void *workstation, const char* mount,
@@ -462,13 +472,17 @@ static xbt_dynar_t ws_file_get_info(void *workstation, surf_file_t fd)
   return info;
 }
 
-static size_t ws_storage_get_free_size(void *workstation, surf_storage_t storage)
+static size_t ws_storage_get_free_size(void *workstation,const char* name)
 {
-  return storage->size - storage->used_size;
-
+  storage_t st = find_storage_on_mount_list(workstation, name);
+  return st->size - st->used_size;
 }
 
-
+static size_t ws_storage_get_used_size(void *workstation,const char* name)
+{
+  storage_t st = find_storage_on_mount_list(workstation, name);
+  return st->used_size;
+}
 
 static void surf_workstation_model_init_internal(void)
 {
@@ -537,6 +551,7 @@ static void surf_workstation_model_init_internal(void)
   surf_workstation_model->extension.workstation.get_size = ws_file_get_size;
   surf_workstation_model->extension.workstation.get_info = ws_file_get_info;
   surf_workstation_model->extension.workstation.get_free_size = ws_storage_get_free_size;
+  surf_workstation_model->extension.workstation.get_used_size = ws_storage_get_used_size;
   surf_workstation_model->extension.workstation.get_storage_list = ws_get_storage_list;
 }
 

@@ -151,9 +151,18 @@ xbt_dict_t MSG_file_ls(const char *mount, const char *path)
 
 /** \ingroup msg_storage_management
  * \brief Return the free space size of a storage element
- * \param sd is the storage descriptor (#msg_storage_t)
+ * \param the storage name (#char*)
  * \return the free space size of the storage element (as a size_t)
  */
-size_t MSG_storage_get_free_size(msg_storage_t sd){
-  return simcall_storage_get_free_size(sd->simdata->smx_storage);
+size_t MSG_storage_get_free_size(const char* name){
+  return simcall_storage_get_free_size(name);
+}
+
+/** \ingroup msg_storage_management
+ * \brief Return the used space size of a storage element
+ * \param the storage name (#char*)
+ * \return the used space size of the storage element (as a size_t)
+ */
+size_t MSG_storage_get_used_size(const char* name){
+  return simcall_storage_get_used_size(name);
 }

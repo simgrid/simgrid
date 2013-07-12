@@ -14,7 +14,6 @@ typedef struct s_storage_type {
   char *type_id;
   xbt_dict_t properties;
   size_t size;
-  size_t used_size;
 } s_storage_type_t, *storage_type_t;
 
 typedef struct s_mount {

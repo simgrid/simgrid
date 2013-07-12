@@ -251,18 +251,27 @@ xbt_dynar_t SIMIX_file_get_info(smx_process_t process, smx_file_t fd)
       fd->surf_file);
 }
 
-size_t SIMIX_pre_storage_get_free_size(smx_simcall_t simcall, smx_storage_t storage)
+size_t SIMIX_pre_storage_get_free_size(smx_simcall_t simcall, const char* name)
 {
-  return SIMIX_storage_get_free_size(simcall->issuer, storage);
+  return SIMIX_storage_get_free_size(simcall->issuer, name);
 }
 
-size_t SIMIX_storage_get_free_size(smx_process_t process, smx_storage_t storage)
+size_t SIMIX_storage_get_free_size(smx_process_t process, const char* name)
 {
   smx_host_t host = process->smx_host;
-  return  surf_workstation_model->extension.workstation.get_free_size(host,
-      storage->surf_storage);
+  return  surf_workstation_model->extension.workstation.get_free_size(host,name);
 }
 
+size_t SIMIX_pre_storage_get_used_size(smx_simcall_t simcall, const char* name)
+{
+  return SIMIX_storage_get_used_size(simcall->issuer, name);
+}
+
+size_t SIMIX_storage_get_used_size(smx_process_t process, const char* name)
+{
+  smx_host_t host = process->smx_host;
+  return  surf_workstation_model->extension.workstation.get_used_size(host,name);
+}
 
 void SIMIX_post_io(smx_action_t action)
 {

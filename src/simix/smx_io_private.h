@@ -34,8 +34,11 @@ smx_action_t SIMIX_file_ls(smx_process_t process, const char *mount,
 size_t SIMIX_file_get_size(smx_process_t process, smx_file_t fd);
 xbt_dynar_t SIMIX_file_get_info(smx_process_t process, smx_file_t fd);
 
-size_t SIMIX_pre_storage_get_free_size(smx_simcall_t simcall, smx_storage_t storage);
-size_t SIMIX_storage_get_free_size(smx_process_t process, smx_storage_t storage);
+size_t SIMIX_pre_storage_get_free_size(smx_simcall_t simcall,const char* name);
+size_t SIMIX_storage_get_free_size(smx_process_t process,const char* name);
+
+size_t SIMIX_pre_storage_get_used_size(smx_simcall_t simcall,const char* name);
+size_t SIMIX_storage_get_used_size(smx_process_t process,const char* name);
 
 void SIMIX_post_io(smx_action_t action);
 void SIMIX_io_destroy(smx_action_t action);

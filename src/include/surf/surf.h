@@ -286,10 +286,11 @@ typedef struct surf_workstation_model_extension_public {
   xbt_dynar_t (*get_info) (void *workstation, surf_file_t fd);
 
   int (*link_shared) (const void *link);
-   xbt_dict_t(*get_properties) (const void *resource);
+  xbt_dict_t(*get_properties) (const void *resource);
   void (*add_traces) (void);
 
-  size_t (*get_free_size) (void *workstation, surf_storage_t storage);
+  size_t (*get_free_size) (void *workstation,const char* name);
+  size_t (*get_used_size) (void *workstation,const char* name);
   xbt_dynar_t (*get_storage_list) (void *workstation);
 
 } s_surf_model_extension_workstation_t;
