@@ -37,6 +37,7 @@ set(txt_files
   ${CMAKE_CURRENT_SOURCE_DIR}/README
   ${CMAKE_CURRENT_SOURCE_DIR}/runtests
   ${CMAKE_CURRENT_SOURCE_DIR}/testlist
+  ${CMAKE_CURRENT_SOURCE_DIR}/hostfile
   ${CMAKE_CURRENT_SOURCE_DIR}/checktests
   ${CMAKE_CURRENT_SOURCE_DIR}/util/mtest.c
   ${CMAKE_CURRENT_SOURCE_DIR}/include/mpitestconf.h
