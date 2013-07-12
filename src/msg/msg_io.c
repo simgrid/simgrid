@@ -73,7 +73,7 @@ size_t MSG_file_write(size_t size, msg_file_t fd)
  * \brief Opens the file whose name is the string pointed to by path
  *
  * \param mount is the mount point where find the file is located
- * \param path is the file location on the storage
+ * \param fullname is the file location on the storage
  *
  * \return An #msg_file_t associated to the file
  */
