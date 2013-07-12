@@ -21,8 +21,8 @@ int smpi_coll_tuned_reduce_NTSL(void *buf, void *rbuf, int count,
   MPI_Aint extent;
   extent = smpi_datatype_get_extent(datatype);
 
-  rank = smpi_comm_rank(MPI_COMM_WORLD);
-  size = smpi_comm_size(MPI_COMM_WORLD);
+  rank = smpi_comm_rank(comm);
+  size = smpi_comm_size(comm);
 
   /* source node and destination nodes (same through out the functions) */
   int to = (rank - 1 + size) % size;

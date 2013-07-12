@@ -89,7 +89,7 @@ int smpi_coll_tuned_reduce_arrival_pattern_aware(void *buf, void *rbuf,
 
         for (i = 1; i < size; i++) {
           if (already_received[i] == 0) {
-            smpi_mpi_iprobe(i, MPI_ANY_TAG, MPI_COMM_WORLD, &flag_array[i],
+            smpi_mpi_iprobe(i, MPI_ANY_TAG, comm, &flag_array[i],
                              MPI_STATUSES_IGNORE);
             simcall_process_sleep(0.0001);
             }
@@ -103,7 +103,7 @@ int smpi_coll_tuned_reduce_arrival_pattern_aware(void *buf, void *rbuf,
 
           /* 1-byte message arrive */
           if ((flag_array[i] == 1) && (already_received[i] == 0)) {
-            smpi_mpi_recv(temp_buf, 1, MPI_CHAR, i, tag, MPI_COMM_WORLD, &status);
+            smpi_mpi_recv(temp_buf, 1, MPI_CHAR, i, tag, comm, &status);
             header_buf[header_index] = i;
             header_index++;
             sent_count++;
@@ -214,11 +214,11 @@ int smpi_coll_tuned_reduce_arrival_pattern_aware(void *buf, void *rbuf,
             //if (i == rank)
             //continue;
             if ((already_received[i] == 0) && (will_send[i] == 0)) {
-                smpi_mpi_iprobe(i, MPI_ANY_TAG, MPI_COMM_WORLD, &flag_array[i],
+                smpi_mpi_iprobe(i, MPI_ANY_TAG, comm, &flag_array[i],
                          &temp_status_array[i]);
               if (flag_array[i] == 1) {
                 will_send[i] = 1;
-                smpi_mpi_recv(&temp_buf[i], 1, MPI_CHAR, i, tag, MPI_COMM_WORLD,
+                smpi_mpi_recv(&temp_buf[i], 1, MPI_CHAR, i, tag, comm,
                          &status);
                 //printf("recv from %d\n",i);
                 i = 1;

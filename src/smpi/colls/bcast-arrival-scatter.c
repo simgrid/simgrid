@@ -47,8 +47,8 @@ int smpi_coll_tuned_bcast_arrival_scatter(void *buf, int count,
   /* source and destination */
   int to, from;
 
-  rank = smpi_comm_rank(MPI_COMM_WORLD);
-  size = smpi_comm_size(MPI_COMM_WORLD);
+  rank = smpi_comm_rank(comm);
+  size = smpi_comm_size(comm);
 
   /* message too small */
   if (count < size) {
@@ -90,11 +90,11 @@ int smpi_coll_tuned_bcast_arrival_scatter(void *buf, int count,
       for (k = 0; k < 3; k++) {
         for (i = 1; i < size; i++) {
           if ((already_sent[i] == 0) && (will_send[i] == 0)) {
-            smpi_mpi_iprobe(i, MPI_ANY_TAG, MPI_COMM_WORLD, &flag_array[i],
+            smpi_mpi_iprobe(i, MPI_ANY_TAG, comm, &flag_array[i],
                        &temp_status_array[i]);
             if (flag_array[i] == 1) {
               will_send[i] = 1;
-              smpi_mpi_recv(&temp_buf[i], 1, MPI_CHAR, i, tag, MPI_COMM_WORLD,
+              smpi_mpi_recv(&temp_buf[i], 1, MPI_CHAR, i, tag, comm,
                        &status);
               i = 0;
             }

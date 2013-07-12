@@ -39,8 +39,8 @@ int smpi_coll_tuned_bcast_arrival_pattern_aware(void *buf, int count,
 
 
 
-  rank = smpi_comm_rank(MPI_COMM_WORLD);
-  size = smpi_comm_size(MPI_COMM_WORLD);
+  rank = smpi_comm_rank(comm);
+  size = smpi_comm_size(comm);
 
 
   /* segment is segment size in number of elements (not bytes) */
@@ -80,7 +80,7 @@ int smpi_coll_tuned_bcast_arrival_pattern_aware(void *buf, int count,
 
       while (sent_count < (size - 1)) {
         for (i = 1; i < size; i++) {
-          smpi_mpi_iprobe(i, MPI_ANY_TAG, MPI_COMM_WORLD, &flag_array[i],
+          smpi_mpi_iprobe(i, MPI_ANY_TAG, comm, &flag_array[i],
                      MPI_STATUSES_IGNORE);
         }
 
@@ -90,7 +90,7 @@ int smpi_coll_tuned_bcast_arrival_pattern_aware(void *buf, int count,
 
           /* message arrive */
           if ((flag_array[i] == 1) && (already_sent[i] == 0)) {
-            smpi_mpi_recv(temp_buf, 1, MPI_CHAR, i, tag, MPI_COMM_WORLD, &status);
+            smpi_mpi_recv(temp_buf, 1, MPI_CHAR, i, tag, comm, &status);
             header_buf[header_index] = i;
             header_index++;
             sent_count++;
@@ -172,7 +172,7 @@ int smpi_coll_tuned_bcast_arrival_pattern_aware(void *buf, int count,
         //iteration++;
         //start = MPI_Wtime();
         for (i = 1; i < size; i++) {
-          smpi_mpi_iprobe(i, MPI_ANY_TAG, MPI_COMM_WORLD, &flag_array[i],
+          smpi_mpi_iprobe(i, MPI_ANY_TAG, comm, &flag_array[i],
                      &temp_status_array[i]);
         }
         //total = MPI_Wtime() - start;
@@ -185,7 +185,7 @@ int smpi_coll_tuned_bcast_arrival_pattern_aware(void *buf, int count,
         for (i = 1; i < size; i++) {
           /* message arrive */
           if ((flag_array[i] == 1) && (already_sent[i] == 0)) {
-            smpi_mpi_recv(&temp_buf[i], 1, MPI_CHAR, i, tag, MPI_COMM_WORLD,
+            smpi_mpi_recv(&temp_buf[i], 1, MPI_CHAR, i, tag, comm,
                      &status);
             header_buf[header_index] = i;
             header_index++;
@@ -285,7 +285,7 @@ int smpi_coll_tuned_bcast_arrival_pattern_aware(void *buf, int count,
       }                         /* while loop */
 
       for(i=0; i<size; i++)
-        if(to_clean[i]!=0)smpi_mpi_recv(&temp_buf[i], 1, MPI_CHAR, i, tag, MPI_COMM_WORLD,
+        if(to_clean[i]!=0)smpi_mpi_recv(&temp_buf[i], 1, MPI_CHAR, i, tag, comm,
                      &status);
       //total = MPI_Wtime() - start2;
       //total *= 1000;
