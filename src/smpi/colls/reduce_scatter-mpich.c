@@ -263,7 +263,7 @@ int smpi_coll_tuned_reduce_scatter_mpich_rdb(void *sendbuf, void *recvbuf, int r
     int mask, dst_tree_root, my_tree_root, j, k;
     int received;
     MPI_Datatype sendtype, recvtype;
-    int nprocs_completed, tmp_mask, tree_root, is_commutative;
+    int nprocs_completed, tmp_mask, tree_root, is_commutative=0;
     comm_size = smpi_comm_size(comm);
     rank = smpi_comm_rank(comm);
 
