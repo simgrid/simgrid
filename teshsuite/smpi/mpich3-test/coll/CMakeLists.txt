@@ -1,0 +1,403 @@
+cmake_minimum_required(VERSION 2.6)
+
+if(enable_smpi)
+  if(WIN32)
+    set(CMAKE_C_FLAGS "-include ${CMAKE_HOME_DIRECTORY}/include/smpi/smpi_main.h")
+  else()
+    set(CMAKE_C_COMPILER "${CMAKE_BINARY_DIR}/smpi_script/bin/smpicc")
+    set(CMAKE_Fortran_COMPILER "${CMAKE_BINARY_DIR}/smpi_script/bin/smpiff")
+  endif()
+
+  set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}")
+  set(MPICH_FLAGS "-DHAVE_STDLIB_H=1 -DHAVE_UNISTD_H=1 -DHAVE_STRING_H=1 -DUSE_STDARG=1 -DHAVE_LONG_DOUBLE=1 -DHAVE_PROTOTYPES=1 -DHAVE_SIGNAL_H=1 -DHAVE_SIGACTION=1 -DHAVE_SLEEP=1 -DHAVE_SYSCONF=1 -Wno-error=unused-variable")
+  include_directories("${CMAKE_HOME_DIRECTORY}/include/smpi")
+  include_directories("${CMAKE_CURRENT_BINARY_DIR}/../include/")
+
+
+  add_executable(allgather2 allgather2.c ../util/mtest.c)
+  add_executable(allgather3 allgather3.c ../util/mtest.c)
+  add_executable(allgatherv2 allgatherv2.c ../util/mtest.c)
+  add_executable(allgatherv3 allgatherv3.c ../util/mtest.c)
+  add_executable(allgatherv4 allgatherv4.c ../util/mtest.c)
+  add_executable(allred2 allred2.c ../util/mtest.c)
+  add_executable(allred3 allred3.c ../util/mtest.c)
+  add_executable(allred4 allred4.c ../util/mtest.c)
+  add_executable(allred5 allred5.c ../util/mtest.c)
+  add_executable(allred6 allred6.c ../util/mtest.c)
+  add_executable(allred allred.c ../util/mtest.c)
+  add_executable(allredmany allredmany.c ../util/mtest.c)
+  add_executable(alltoall1 alltoall1.c ../util/mtest.c)
+  add_executable(alltoallv0 alltoallv0.c ../util/mtest.c)
+  add_executable(alltoallv alltoallv.c ../util/mtest.c)
+  add_executable(alltoallw1 alltoallw1.c ../util/mtest.c)
+  add_executable(alltoallw2 alltoallw2.c ../util/mtest.c)
+  add_executable(alltoallw_zeros alltoallw_zeros.c ../util/mtest.c)
+  add_executable(bcast2 bcast2.c ../util/mtest.c)
+  add_executable(bcast3 bcast3.c ../util/mtest.c)
+  add_executable(bcasttest bcasttest.c ../util/mtest.c)
+  add_executable(bcastzerotype bcastzerotype.c ../util/mtest.c)
+  add_executable(coll10 coll10.c ../util/mtest.c)
+  add_executable(coll11 coll11.c ../util/mtest.c)
+  add_executable(coll12 coll12.c ../util/mtest.c)
+  add_executable(coll13 coll13.c ../util/mtest.c)
+  add_executable(coll2 coll2.c ../util/mtest.c)
+  add_executable(coll3 coll3.c ../util/mtest.c)
+  add_executable(coll4 coll4.c ../util/mtest.c)
+  add_executable(coll5 coll5.c ../util/mtest.c)
+  add_executable(coll6 coll6.c ../util/mtest.c)
+  add_executable(coll7 coll7.c ../util/mtest.c)
+  add_executable(coll8 coll8.c ../util/mtest.c)
+  add_executable(coll9 coll9.c ../util/mtest.c)
+  add_executable(exscan2 exscan2.c ../util/mtest.c)
+  add_executable(exscan exscan.c ../util/mtest.c)
+  add_executable(gather2 gather2.c ../util/mtest.c)
+  add_executable(gather2_save gather2_save.c ../util/mtest.c)
+  add_executable(gather gather.c ../util/mtest.c)
+  add_executable(iallred iallred.c ../util/mtest.c)
+  add_executable(ibarrier ibarrier.c ../util/mtest.c)
+  add_executable(icallgather icallgather.c ../util/mtest.c)
+  add_executable(icallgatherv icallgatherv.c ../util/mtest.c)
+  add_executable(icallreduce icallreduce.c ../util/mtest.c)
+  add_executable(icalltoall icalltoall.c ../util/mtest.c)
+  add_executable(icalltoallv icalltoallv.c ../util/mtest.c)
+  add_executable(icalltoallw icalltoallw.c ../util/mtest.c)
+  add_executable(icbarrier icbarrier.c ../util/mtest.c)
+  add_executable(icbcast icbcast.c ../util/mtest.c)
+  add_executable(icgather icgather.c ../util/mtest.c)
+  add_executable(icgatherv icgatherv.c ../util/mtest.c)
+  add_executable(icreduce icreduce.c ../util/mtest.c)
+  add_executable(icscatter icscatter.c ../util/mtest.c)
+  add_executable(icscatterv icscatterv.c ../util/mtest.c)
+  add_executable(longuser longuser.c ../util/mtest.c)
+  add_executable(nonblocking2 nonblocking2.c ../util/mtest.c)
+  add_executable(nonblocking3 nonblocking3.c ../util/mtest.c)
+  add_executable(nonblocking nonblocking.c ../util/mtest.c)
+  add_executable(opband opband.c ../util/mtest.c)
+  add_executable(opbor opbor.c ../util/mtest.c)
+  add_executable(opbxor opbxor.c ../util/mtest.c)
+  add_executable(op_commutative op_commutative.c ../util/mtest.c)
+  add_executable(opland opland.c ../util/mtest.c)
+  add_executable(oplor oplor.c ../util/mtest.c)
+  add_executable(oplxor oplxor.c ../util/mtest.c)
+  add_executable(opmax opmax.c ../util/mtest.c)
+  add_executable(opmaxloc opmaxloc.c ../util/mtest.c)
+  add_executable(opmin opmin.c ../util/mtest.c)
+  add_executable(opminloc opminloc.c ../util/mtest.c)
+  add_executable(opprod opprod.c ../util/mtest.c)
+  add_executable(opsum opsum.c ../util/mtest.c)
+  add_executable(red3 red3.c ../util/mtest.c)
+  add_executable(red4 red4.c ../util/mtest.c)
+  add_executable(redscat2 redscat2.c ../util/mtest.c)
+  add_executable(redscat3 redscat3.c ../util/mtest.c)
+  add_executable(redscatbkinter redscatbkinter.c ../util/mtest.c)
+  add_executable(redscatblk3 redscatblk3.c ../util/mtest.c)
+  add_executable(red_scat_block2 red_scat_block2.c ../util/mtest.c)
+  add_executable(red_scat_block red_scat_block.c ../util/mtest.c)
+  add_executable(redscat redscat.c ../util/mtest.c)
+  add_executable(redscatinter redscatinter.c ../util/mtest.c)
+  add_executable(reduce_mpich reduce.c ../util/mtest.c)
+  add_executable(reduce_local reduce_local.c ../util/mtest.c)
+  add_executable(scantst scantst.c ../util/mtest.c)
+  add_executable(scatter2 scatter2.c ../util/mtest.c)
+  add_executable(scatter3 scatter3.c ../util/mtest.c)
+  add_executable(scattern scattern.c ../util/mtest.c)
+  add_executable(scatterv scatterv.c ../util/mtest.c)
+  add_executable(uoplong uoplong.c ../util/mtest.c)
+
+
+
+  target_link_libraries(allgather2  simgrid)
+  target_link_libraries(allgather3  simgrid)
+  target_link_libraries(allgatherv2  simgrid)
+  target_link_libraries(allgatherv3  simgrid)
+  target_link_libraries(allgatherv4  simgrid)
+  target_link_libraries(allred2  simgrid)
+  target_link_libraries(allred3  simgrid)
+  target_link_libraries(allred4  simgrid)
+  target_link_libraries(allred5  simgrid)
+  target_link_libraries(allred6  simgrid)
+  target_link_libraries(allred  simgrid)
+  target_link_libraries(allredmany  simgrid)
+  target_link_libraries(alltoall1  simgrid)
+  target_link_libraries(alltoallv0  simgrid)
+  target_link_libraries(alltoallv  simgrid)
+  target_link_libraries(alltoallw1  simgrid)
+  target_link_libraries(alltoallw2  simgrid)
+  target_link_libraries(alltoallw_zeros  simgrid)
+  target_link_libraries(bcast2  simgrid)
+  target_link_libraries(bcast3  simgrid)
+  target_link_libraries(bcasttest  simgrid)
+  target_link_libraries(bcastzerotype  simgrid)
+  target_link_libraries(coll10  simgrid)
+  target_link_libraries(coll11  simgrid)
+  target_link_libraries(coll12  simgrid)
+  target_link_libraries(coll13  simgrid)
+  target_link_libraries(coll2  simgrid)
+  target_link_libraries(coll3  simgrid)
+  target_link_libraries(coll4  simgrid)
+  target_link_libraries(coll5  simgrid)
+  target_link_libraries(coll6  simgrid)
+  target_link_libraries(coll7  simgrid)
+  target_link_libraries(coll8  simgrid)
+  target_link_libraries(coll9  simgrid)
+  target_link_libraries(exscan2  simgrid)
+  target_link_libraries(exscan  simgrid)
+  target_link_libraries(gather2  simgrid)
+  target_link_libraries(gather2_save  simgrid)
+  target_link_libraries(gather  simgrid)
+  target_link_libraries(iallred  simgrid)
+  target_link_libraries(ibarrier  simgrid)
+  target_link_libraries(icallgather  simgrid)
+  target_link_libraries(icallgatherv  simgrid)
+  target_link_libraries(icallreduce  simgrid)
+  target_link_libraries(icalltoall  simgrid)
+  target_link_libraries(icalltoallv  simgrid)
+  target_link_libraries(icalltoallw  simgrid)
+  target_link_libraries(icbarrier  simgrid)
+  target_link_libraries(icbcast  simgrid)
+  target_link_libraries(icgather  simgrid)
+  target_link_libraries(icgatherv  simgrid)
+  target_link_libraries(icreduce  simgrid)
+  target_link_libraries(icscatter  simgrid)
+  target_link_libraries(icscatterv  simgrid)
+  target_link_libraries(longuser  simgrid)
+  target_link_libraries(nonblocking2  simgrid)
+  target_link_libraries(nonblocking3  simgrid)
+  target_link_libraries(nonblocking  simgrid)
+  target_link_libraries(opband  simgrid)
+  target_link_libraries(opbor  simgrid)
+  target_link_libraries(opbxor  simgrid)
+  target_link_libraries(op_commutative  simgrid)
+  target_link_libraries(opland  simgrid)
+  target_link_libraries(oplor  simgrid)
+  target_link_libraries(oplxor  simgrid)
+  target_link_libraries(opmax  simgrid)
+  target_link_libraries(opmaxloc  simgrid)
+  target_link_libraries(opmin  simgrid)
+  target_link_libraries(opminloc  simgrid)
+  target_link_libraries(opprod  simgrid)
+  target_link_libraries(opsum  simgrid)
+  target_link_libraries(red3  simgrid)
+  target_link_libraries(red4  simgrid)
+  target_link_libraries(redscat2  simgrid)
+  target_link_libraries(redscat3  simgrid)
+  target_link_libraries(redscatbkinter  simgrid)
+  target_link_libraries(redscatblk3  simgrid)
+  target_link_libraries(red_scat_block2  simgrid)
+  target_link_libraries(red_scat_block  simgrid)
+  target_link_libraries(redscat  simgrid)
+  target_link_libraries(redscatinter  simgrid)
+  target_link_libraries(reduce_mpich  simgrid)
+  target_link_libraries(reduce_local  simgrid)
+  target_link_libraries(scantst  simgrid)
+  target_link_libraries(scatter2  simgrid)
+  target_link_libraries(scatter3  simgrid)
+  target_link_libraries(scattern  simgrid)
+  target_link_libraries(scatterv  simgrid)
+  target_link_libraries(uoplong  simgrid)
+
+
+
+ set_target_properties(allgather2 PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
+ set_target_properties(allgather3 PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
+ set_target_properties(allgatherv2 PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
+ set_target_properties(allgatherv3 PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
+ set_target_properties(allgatherv4 PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
+ set_target_properties(allred2 PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
+ set_target_properties(allred3 PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
+ set_target_properties(allred4 PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
+ set_target_properties(allred5 PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
+ set_target_properties(allred6 PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
+ set_target_properties(allred PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
+ set_target_properties(allredmany PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
+ set_target_properties(alltoall1 PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
+ set_target_properties(alltoallv0 PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
+ set_target_properties(alltoallv PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
+ set_target_properties(alltoallw1 PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
+ set_target_properties(alltoallw2 PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
+ set_target_properties(alltoallw_zeros PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
+ set_target_properties(bcast2 PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
+ set_target_properties(bcast3 PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
+ set_target_properties(bcasttest PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
+ set_target_properties(bcastzerotype PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
+ set_target_properties(coll10 PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
+ set_target_properties(coll11 PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
+ set_target_properties(coll12 PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
+ set_target_properties(coll13 PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
+ set_target_properties(coll2 PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
+ set_target_properties(coll3 PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
+ set_target_properties(coll4 PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
+ set_target_properties(coll5 PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
+ set_target_properties(coll6 PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
+ set_target_properties(coll7 PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
+ set_target_properties(coll8 PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
+ set_target_properties(coll9 PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
+ set_target_properties(exscan2 PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
+ set_target_properties(exscan PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
+ set_target_properties(gather2 PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
+ set_target_properties(gather2_save PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
+ set_target_properties(gather PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
+ set_target_properties(iallred PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
+ set_target_properties(ibarrier PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
+ set_target_properties(icallgather PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
+ set_target_properties(icallgatherv PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
+ set_target_properties(icallreduce PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
+ set_target_properties(icalltoall PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
+ set_target_properties(icalltoallv PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
+ set_target_properties(icalltoallw PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
+ set_target_properties(icbarrier PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
+ set_target_properties(icbcast PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
+ set_target_properties(icgather PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
+ set_target_properties(icgatherv PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
+ set_target_properties(icreduce PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
+ set_target_properties(icscatter PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
+ set_target_properties(icscatterv PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
+ set_target_properties(longuser PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
+ set_target_properties(nonblocking2 PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
+ set_target_properties(nonblocking3 PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
+ set_target_properties(nonblocking PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
+ set_target_properties(opband PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
+ set_target_properties(opbor PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
+ set_target_properties(opbxor PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
+ set_target_properties(op_commutative PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
+ set_target_properties(opland PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
+ set_target_properties(oplor PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
+ set_target_properties(oplxor PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
+ set_target_properties(opmax PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
+ set_target_properties(opmaxloc PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
+ set_target_properties(opmin PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
+ set_target_properties(opminloc PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
+ set_target_properties(opprod PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
+ set_target_properties(opsum PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
+ set_target_properties(red3 PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
+ set_target_properties(red4 PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
+ set_target_properties(redscat2 PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
+ set_target_properties(redscat3 PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
+ set_target_properties(redscatbkinter PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
+ set_target_properties(redscatblk3 PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
+ set_target_properties(red_scat_block2 PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
+ set_target_properties(red_scat_block PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
+ set_target_properties(redscat PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
+ set_target_properties(redscatinter PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
+ set_target_properties(reduce_mpich PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
+ set_target_properties(reduce_local PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
+ set_target_properties(scantst PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
+ set_target_properties(scatter2 PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
+ set_target_properties(scatter3 PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
+ set_target_properties(scattern PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
+ set_target_properties(scatterv PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
+ set_target_properties(uoplong PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
+
+endif()
+
+set(tesh_files
+  ${tesh_files}
+  PARENT_SCOPE
+  )
+set(xml_files
+  ${xml_files}
+  PARENT_SCOPE
+  )
+set(examples_src
+  ${examples_src}
+ ${CMAKE_CURRENT_SOURCE_DIR}/allgather2.c 
+ ${CMAKE_CURRENT_SOURCE_DIR}/allgather3.c 
+ ${CMAKE_CURRENT_SOURCE_DIR}/allgatherv2.c 
+ ${CMAKE_CURRENT_SOURCE_DIR}/allgatherv3.c 
+ ${CMAKE_CURRENT_SOURCE_DIR}/allgatherv4.c 
+ ${CMAKE_CURRENT_SOURCE_DIR}/allred2.c 
+ ${CMAKE_CURRENT_SOURCE_DIR}/allred3.c 
+ ${CMAKE_CURRENT_SOURCE_DIR}/allred4.c 
+ ${CMAKE_CURRENT_SOURCE_DIR}/allred5.c 
+ ${CMAKE_CURRENT_SOURCE_DIR}/allred6.c 
+ ${CMAKE_CURRENT_SOURCE_DIR}/allred.c 
+ ${CMAKE_CURRENT_SOURCE_DIR}/allredmany.c 
+ ${CMAKE_CURRENT_SOURCE_DIR}/alltoall1.c 
+ ${CMAKE_CURRENT_SOURCE_DIR}/alltoallv0.c 
+ ${CMAKE_CURRENT_SOURCE_DIR}/alltoallv.c 
+ ${CMAKE_CURRENT_SOURCE_DIR}/alltoallw1.c 
+ ${CMAKE_CURRENT_SOURCE_DIR}/alltoallw2.c 
+ ${CMAKE_CURRENT_SOURCE_DIR}/alltoallw_zeros.c 
+ ${CMAKE_CURRENT_SOURCE_DIR}/bcast2.c 
+ ${CMAKE_CURRENT_SOURCE_DIR}/bcast3.c 
+ ${CMAKE_CURRENT_SOURCE_DIR}/bcasttest.c 
+ ${CMAKE_CURRENT_SOURCE_DIR}/bcastzerotype.c 
+ ${CMAKE_CURRENT_SOURCE_DIR}/coll10.c 
+ ${CMAKE_CURRENT_SOURCE_DIR}/coll11.c 
+ ${CMAKE_CURRENT_SOURCE_DIR}/coll12.c 
+ ${CMAKE_CURRENT_SOURCE_DIR}/coll13.c 
+ ${CMAKE_CURRENT_SOURCE_DIR}/coll2.c 
+ ${CMAKE_CURRENT_SOURCE_DIR}/coll3.c 
+ ${CMAKE_CURRENT_SOURCE_DIR}/coll4.c 
+ ${CMAKE_CURRENT_SOURCE_DIR}/coll5.c 
+ ${CMAKE_CURRENT_SOURCE_DIR}/coll6.c 
+ ${CMAKE_CURRENT_SOURCE_DIR}/coll7.c 
+ ${CMAKE_CURRENT_SOURCE_DIR}/coll8.c 
+ ${CMAKE_CURRENT_SOURCE_DIR}/coll9.c 
+ ${CMAKE_CURRENT_SOURCE_DIR}/exscan2.c 
+ ${CMAKE_CURRENT_SOURCE_DIR}/exscan.c 
+ ${CMAKE_CURRENT_SOURCE_DIR}/gather2.c 
+ ${CMAKE_CURRENT_SOURCE_DIR}/gather2_save.c 
+ ${CMAKE_CURRENT_SOURCE_DIR}/gather.c 
+ ${CMAKE_CURRENT_SOURCE_DIR}/iallred.c 
+ ${CMAKE_CURRENT_SOURCE_DIR}/ibarrier.c 
+ ${CMAKE_CURRENT_SOURCE_DIR}/icallgather.c 
+ ${CMAKE_CURRENT_SOURCE_DIR}/icallgatherv.c 
+ ${CMAKE_CURRENT_SOURCE_DIR}/icallreduce.c 
+ ${CMAKE_CURRENT_SOURCE_DIR}/icalltoall.c 
+ ${CMAKE_CURRENT_SOURCE_DIR}/icalltoallv.c 
+ ${CMAKE_CURRENT_SOURCE_DIR}/icalltoallw.c 
+ ${CMAKE_CURRENT_SOURCE_DIR}/icbarrier.c 
+ ${CMAKE_CURRENT_SOURCE_DIR}/icbcast.c 
+ ${CMAKE_CURRENT_SOURCE_DIR}/icgather.c 
+ ${CMAKE_CURRENT_SOURCE_DIR}/icgatherv.c 
+ ${CMAKE_CURRENT_SOURCE_DIR}/icreduce.c 
+ ${CMAKE_CURRENT_SOURCE_DIR}/icscatter.c 
+ ${CMAKE_CURRENT_SOURCE_DIR}/icscatterv.c 
+ ${CMAKE_CURRENT_SOURCE_DIR}/longuser.c 
+ ${CMAKE_CURRENT_SOURCE_DIR}/nonblocking2.c 
+ ${CMAKE_CURRENT_SOURCE_DIR}/nonblocking3.c 
+ ${CMAKE_CURRENT_SOURCE_DIR}/nonblocking.c 
+ ${CMAKE_CURRENT_SOURCE_DIR}/opband.c 
+ ${CMAKE_CURRENT_SOURCE_DIR}/opbor.c 
+ ${CMAKE_CURRENT_SOURCE_DIR}/opbxor.c 
+ ${CMAKE_CURRENT_SOURCE_DIR}/op_commutative.c 
+ ${CMAKE_CURRENT_SOURCE_DIR}/opland.c 
+ ${CMAKE_CURRENT_SOURCE_DIR}/oplor.c 
+ ${CMAKE_CURRENT_SOURCE_DIR}/oplxor.c 
+ ${CMAKE_CURRENT_SOURCE_DIR}/opmax.c 
+ ${CMAKE_CURRENT_SOURCE_DIR}/opmaxloc.c 
+ ${CMAKE_CURRENT_SOURCE_DIR}/opmin.c 
+ ${CMAKE_CURRENT_SOURCE_DIR}/opminloc.c 
+ ${CMAKE_CURRENT_SOURCE_DIR}/opprod.c 
+ ${CMAKE_CURRENT_SOURCE_DIR}/opsum.c 
+ ${CMAKE_CURRENT_SOURCE_DIR}/red3.c 
+ ${CMAKE_CURRENT_SOURCE_DIR}/red4.c 
+ ${CMAKE_CURRENT_SOURCE_DIR}/redscat2.c 
+ ${CMAKE_CURRENT_SOURCE_DIR}/redscat3.c 
+ ${CMAKE_CURRENT_SOURCE_DIR}/redscatbkinter.c 
+ ${CMAKE_CURRENT_SOURCE_DIR}/redscatblk3.c 
+ ${CMAKE_CURRENT_SOURCE_DIR}/red_scat_block2.c 
+ ${CMAKE_CURRENT_SOURCE_DIR}/red_scat_block.c 
+ ${CMAKE_CURRENT_SOURCE_DIR}/redscat.c 
+ ${CMAKE_CURRENT_SOURCE_DIR}/redscatinter.c 
+ ${CMAKE_CURRENT_SOURCE_DIR}/reduce.c 
+ ${CMAKE_CURRENT_SOURCE_DIR}/reduce_local.c 
+ ${CMAKE_CURRENT_SOURCE_DIR}/scantst.c 
+ ${CMAKE_CURRENT_SOURCE_DIR}/scatter2.c 
+ ${CMAKE_CURRENT_SOURCE_DIR}/scatter3.c 
+ ${CMAKE_CURRENT_SOURCE_DIR}/scattern.c 
+ ${CMAKE_CURRENT_SOURCE_DIR}/scatterv.c 
+ ${CMAKE_CURRENT_SOURCE_DIR}/uoplong.c 
+  PARENT_SCOPE
+  )
+set(bin_files
+  ${bin_files}
+  PARENT_SCOPE
+  )
+set(txt_files
+  ${txt_files}
+  ${CMAKE_CURRENT_SOURCE_DIR}/runtests
+  ${CMAKE_CURRENT_SOURCE_DIR}/testlist
+  PARENT_SCOPE
+  )

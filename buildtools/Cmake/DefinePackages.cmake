@@ -914,12 +914,20 @@ set(TESHSUITE_CMAKEFILES_TXT
   teshsuite/simdag/partask/CMakeLists.txt
   teshsuite/simdag/platforms/CMakeLists.txt
   teshsuite/smpi/CMakeLists.txt
-  teshsuite/smpi/mpich-test/CMakeLists.txt
-  teshsuite/smpi/mpich-test/coll/CMakeLists.txt
-  teshsuite/smpi/mpich-test/context/CMakeLists.txt
-  teshsuite/smpi/mpich-test/env/CMakeLists.txt
-  teshsuite/smpi/mpich-test/profile/CMakeLists.txt
-  teshsuite/smpi/mpich-test/pt2pt/CMakeLists.txt
+ # teshsuite/smpi/mpich-test/CMakeLists.txt
+ # teshsuite/smpi/mpich-test/coll/CMakeLists.txt
+ # teshsuite/smpi/mpich-test/context/CMakeLists.txt
+ # teshsuite/smpi/mpich-test/env/CMakeLists.txt
+ # teshsuite/smpi/mpich-test/profile/CMakeLists.txt
+ # teshsuite/smpi/mpich-test/pt2pt/CMakeLists.txt
+  teshsuite/smpi/mpich3-test/CMakeLists.txt
+  teshsuite/smpi/mpich3-test/attr/CMakeLists.txt
+  teshsuite/smpi/mpich3-test/comm/CMakeLists.txt
+  teshsuite/smpi/mpich3-test/coll/CMakeLists.txt
+  teshsuite/smpi/mpich3-test/datatype/CMakeLists.txt
+  teshsuite/smpi/mpich3-test/group/CMakeLists.txt
+  teshsuite/smpi/mpich3-test/init/CMakeLists.txt
+  teshsuite/smpi/mpich3-test/pt2pt/CMakeLists.txt
   teshsuite/xbt/CMakeLists.txt
   )
 

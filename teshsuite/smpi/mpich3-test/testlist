@@ -1,0 +1,23 @@
+# The next item ensures that the support routines are built first
+!util:all
+attr 
+#basic
+coll
+comm
+datatype
+#errhan
+group
+#info
+init
+#mpi_t
+pt2pt
+#
+#spawn
+#topo
+#perf
+#io
+#f77
+#cxx
+#
+#
+
