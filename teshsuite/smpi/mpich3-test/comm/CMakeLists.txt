@@ -14,7 +14,6 @@ if(enable_smpi)
   include_directories("${CMAKE_CURRENT_BINARY_DIR}/../include/")
 
 
-  add_executable(cmake_install cmake_install.cmake ../util/mtest.c)
   add_executable(cmfree cmfree.c ../util/mtest.c)
   add_executable(cmsplit2 cmsplit2.c ../util/mtest.c)
   add_executable(cmsplit cmsplit.c ../util/mtest.c)
@@ -39,9 +38,6 @@ if(enable_smpi)
   add_executable(icsplit icsplit.c ../util/mtest.c)
   add_executable(probe-intercomm probe-intercomm.c ../util/mtest.c)
 
-
-
-  target_link_libraries(cmake_install  simgrid)
   target_link_libraries(cmfree  simgrid)
   target_link_libraries(cmsplit2  simgrid)
   target_link_libraries(cmsplit  simgrid)
@@ -66,9 +62,6 @@ if(enable_smpi)
   target_link_libraries(icsplit  simgrid)
   target_link_libraries(probe-intercomm  simgrid)
 
-
-
- set_target_properties(cmake_install PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
  set_target_properties(cmfree PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
  set_target_properties(cmsplit2 PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
  set_target_properties(cmsplit PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
@@ -105,7 +98,6 @@ set(xml_files
   )
 set(examples_src
   ${examples_src}
- ${CMAKE_CURRENT_SOURCE_DIR}/cmake_install.cmake 
  ${CMAKE_CURRENT_SOURCE_DIR}/cmfree.c 
  ${CMAKE_CURRENT_SOURCE_DIR}/cmsplit2.c 
  ${CMAKE_CURRENT_SOURCE_DIR}/cmsplit.c 
@@ -137,7 +129,6 @@ set(bin_files
   )
 set(txt_files
   ${txt_files}
-  ${CMAKE_CURRENT_SOURCE_DIR}/runtests
   ${CMAKE_CURRENT_SOURCE_DIR}/testlist
   PARENT_SCOPE
   )

@@ -35,7 +35,10 @@ endif()
 set(txt_files
   ${txt_files}
   ${CMAKE_CURRENT_SOURCE_DIR}/README
-  ${CMAKE_CURRENT_SOURCE_DIR}/runtest
+  ${CMAKE_CURRENT_SOURCE_DIR}/runtests
   ${CMAKE_CURRENT_SOURCE_DIR}/testlist
-  ${CMAKE_CURRENT_SOURCE_DIR}/checktest
+  ${CMAKE_CURRENT_SOURCE_DIR}/checktests
+  ${CMAKE_CURRENT_SOURCE_DIR}/util/mtest.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/include/mpitestconf.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/include/mpitest.h
   PARENT_SCOPE)

@@ -1,0 +1,70 @@
+#needs PMPI_Type_get_envelope, PMPI_Type_get_contents
+#contents 1
+gaddress 1
+#complex games with negative extents...
+#lbub 1
+#needs MPI_Pack, MPI_Unpack
+#localpack 1
+#simple-pack 1
+#simple-pack-external 1
+#transpose-pack 1
+#slice-pack 1
+#struct-pack 1
+typecommit 1
+#needs MPI_Type_get_name
+#typename 1
+#needs MPI_Type_dup
+#typefree 1
+zeroparms 1
+#getpartelm 2
+#needs  MPI_Type_create_resized
+#tresized 2
+#tresized2 2
+#needs MPI_Type_match_size
+#tmatchsize 1
+tfree 2
+typelb 1
+#needs MPI_Pack_size
+#contigstruct 1
+struct-zero-count 1
+blockindexed-zero-count 1
+#needs MPI_Pack, MPI_unpack, MPI_Pack_size
+#blockindexed-misc 1
+#needs MPI_Pack, MPI_unpack, MPI_Pack_size
+#indexed-misc 1
+#nees MPI_Type_create_subarray
+#subarray-pack 1
+#subarray 2
+#nees MPI_Type_create_darray
+#darray-pack 1
+#darray-pack 9
+# darray-pack 72
+#darray-cyclic 12
+#gcc alignment games
+#pairtype-size-extent 1
+simple-commit 1
+simple-size-extent 1
+#struct-no-real-types 1
+#needs MPI_Get_elements
+#struct-empty-el 1
+contig-zero-count 1
+#needs MPI_Type_create_resized
+#simple-resized 1
+#needs MPI_Pack
+#unusual-noncontigs 1
+#buggy, and needs MPI_Get_elements
+#hindexed-zeros 1
+#lots-of-types 1
+#get-elements-pairtype 1
+#unpack 1
+struct-ezhov 1
+#needs MPI_Pack, MPI_Unpack
+#zeroblks 1
+struct-derived-zeros 1
+struct-verydeep 1
+#get-elements 1
+hindexed_block 1 mpiversion=3.0
+hindexed_block_contents 1 mpiversion=3.0
+longdouble 1
+#large-count 1 mpiversion=3.0 xfail=ticket1767
+cxx-types 1 mpiversion=3.0
