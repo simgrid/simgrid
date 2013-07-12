@@ -23,8 +23,6 @@ int smpi_coll_tuned_reduce_binomial(void *sendbuf, void *recvbuf, int count,
 
   tmp_buf = (void *) xbt_malloc(count * extent);
   int is_commutative = smpi_op_is_commute(op);
-  smpi_mpi_sendrecv(sendbuf, count, datatype, rank, tag,
-               recvbuf, count, datatype, rank, tag, comm, &status);
   mask = 1;
   
   int lroot;
