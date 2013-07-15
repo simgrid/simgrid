@@ -90,7 +90,7 @@ int MPI_Type_get_name(MPI_Datatype  datatype, char * name, int* len)
 
 int MPI_Type_get_attr (MPI_Datatype type, int type_keyval, void *attribute_val, int* flag)
 {
-   return PMPI_Type_set_attr ( type, type_keyval, attribute_val);
+   return PMPI_Type_get_attr ( type, type_keyval, attribute_val, flag);
 }
 
 int MPI_Type_set_attr (MPI_Datatype type, int type_keyval, void *attribute_val)
