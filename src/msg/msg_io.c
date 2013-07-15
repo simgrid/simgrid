@@ -149,6 +149,8 @@ xbt_dict_t MSG_file_ls(const char *mount, const char *path)
   return simcall_file_ls(mount, path);
 }
 
+/********************************* Storage **************************************/
+
 /** \ingroup msg_storage_management
  * \brief Return the free space size of a storage element
  * \param the storage name (#char*)
@@ -166,3 +168,29 @@ size_t MSG_storage_get_free_size(const char* name){
 size_t MSG_storage_get_used_size(const char* name){
   return simcall_storage_get_used_size(name);
 }
+
+/** \ingroup msg_storage_management
+ * \brief Returns a xbt_dict_t consisting of the list of properties assigned to this storage
+ * \param storage a storage
+ * \return a dict containing the properties
+ */
+xbt_dict_t MSG_storage_get_properties(msg_storage_t storage)
+{
+  xbt_assert((storage != NULL), "Invalid parameters (storage is NULL)");
+
+  xbt_die( "Not implemented yet");
+  return xbt_dict_new();
+  //return (simcall_host_get_properties(storage));
+}
+
+/** \ingroup msg_storage_management
+ * \brief Finds a msg_storage_t using its name.
+ * \param name the name of a storage.
+ * \return the corresponding storage
+ */
+msg_storage_t MSG_storage_get_by_name(const char *name)
+{
+  return (msg_storage_t) xbt_lib_get_elm_or_null(host_lib,name);
+}
+
+
