@@ -40,7 +40,7 @@ SimGrid (3.10) NOT RELEASED; urgency=low
  * Add a --cfg:tracing/smpi/internals option, to trace internal communications 
    happening inside a collective SMPI call.
  * Fix the behavior of complex datatypes handling
-   
+ * replace MPICH-1 test suite by the one from MPICH 3.0.4
 
  PLATFORM:
  * Handle units for values (10ms, 10kiloflops, 10Bps, ...)
