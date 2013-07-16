@@ -27,6 +27,7 @@ void TRACE_smpi_set_category(const char *category)
 int PMPI_Init(int *argc, char ***argv)
 {
   smpi_process_init(argc, argv);
+  smpi_process_mark_as_initialized();
 #ifdef HAVE_TRACING
   int rank = smpi_process_index();
   TRACE_smpi_init(rank);
@@ -2395,7 +2396,7 @@ int PMPI_Error_class(int errorcode, int* errorclass) {
 
 
 int PMPI_Initialized(int* flag) {
-   *flag=(smpi_process_data()!=NULL);
+   *flag=smpi_process_initialized();
    return MPI_SUCCESS;
 }
 

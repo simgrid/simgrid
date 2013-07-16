@@ -98,6 +98,9 @@ void smpi_process_init(int *argc, char ***argv);
 void smpi_process_destroy(void);
 void smpi_process_finalize(void);
 int smpi_process_finalized(void);
+int smpi_process_initialized(void);
+void smpi_process_mark_as_initialized(void);
+
 
 smpi_process_data_t smpi_process_data(void);
 smpi_process_data_t smpi_process_remote_data(int index);
