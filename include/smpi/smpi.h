@@ -41,10 +41,13 @@ SG_BEGIN_DECL()
 #define SMPI_RAND_SEED 5
 #define MPI_ANY_SOURCE -555
 #define MPI_BOTTOM (void *)-111
+#define MPI_FORTRAN_BOTTOM -111
 #define MPI_PROC_NULL -666
 #define MPI_ANY_TAG -444
 #define MPI_UNDEFINED -333
 #define MPI_IN_PLACE (void *)-222
+#define MPI_FORTRAN_IN_PLACE -222
+
 // errorcodes
 #define MPI_SUCCESS       0
 #define MPI_ERR_COMM      1
@@ -212,6 +215,7 @@ XBT_PUBLIC_DATA(MPI_Datatype) MPI_2DOUBLE;
 //for now we only send int values at max
 #define MPI_Count int
 #define MPI_COUNT MPI_INT
+
 typedef void MPI_User_function(void *invec, void *inoutvec, int *len,
                                MPI_Datatype * datatype);
 struct s_smpi_mpi_op;
@@ -250,6 +254,7 @@ struct s_smpi_mpi_request;
 typedef struct s_smpi_mpi_request *MPI_Request;
 
 #define MPI_REQUEST_NULL NULL
+#define MPI_FORTRAN_REQUEST_NULL -1
 
 MPI_CALL(XBT_PUBLIC(int), MPI_Init, (int *argc, char ***argv));
 MPI_CALL(XBT_PUBLIC(int), MPI_Finalize, (void));

@@ -13,113 +13,152 @@
 extern int xargc;
 extern char** xargv;
 
-static xbt_dynar_t comm_lookup = NULL;
-static xbt_dynar_t group_lookup = NULL;
+static xbt_dict_t comm_lookup = NULL;
+static xbt_dict_t group_lookup = NULL;
 static xbt_dict_t request_lookup = NULL;
-static xbt_dynar_t datatype_lookup = NULL;
-static xbt_dynar_t op_lookup = NULL;
+static xbt_dict_t datatype_lookup = NULL;
+static xbt_dict_t op_lookup = NULL;
+static int running_processes = 0;
+
+
+
+/* Convert between Fortran and C MPI_BOTTOM */
+#define F2C_BOTTOM(addr)    ((addr!=MPI_IN_PLACE && *(int*)addr == MPI_FORTRAN_BOTTOM) ? MPI_BOTTOM : (addr))
+#define F2C_IN_PLACE(addr)  ((addr!=MPI_BOTTOM &&*(int*)addr == MPI_FORTRAN_IN_PLACE) ? MPI_IN_PLACE : (addr))
 
 #define KEY_SIZE (sizeof(int) * 2 + 1)
 
+
+static char* get_key(char* key, int id) {
+  snprintf(key, KEY_SIZE, "%x",id);
+  return key;
+}
+static char* get_key_id(char* key, int id) {
+  snprintf(key, KEY_SIZE, "%x_%d",id, smpi_process_index());
+  return key;
+}
+
 static int new_comm(MPI_Comm comm) {
-  xbt_dynar_push(comm_lookup, &comm);
-  return (int)xbt_dynar_length(comm_lookup) - 1;
+  static int comm_id = 0;
+  char key[KEY_SIZE];
+  xbt_dict_set(comm_lookup, comm==MPI_COMM_WORLD? get_key(key, comm_id) : get_key_id(key, comm_id), comm, NULL);
+  comm_id++;
+  return comm_id-1;
 }
 
 static void free_comm(int comm) {
-  xbt_dynar_remove_at(comm_lookup, comm, NULL);
+  char key[KEY_SIZE];
+  xbt_dict_remove(comm_lookup, comm==0? get_key(key, comm) : get_key_id(key, comm));
 }
 
 static MPI_Comm get_comm(int comm) {
   if(comm == -2) {
     return MPI_COMM_SELF;
-  } else if(comm_lookup && comm >= 0 && comm < (int)xbt_dynar_length(comm_lookup)) {
-    return *(MPI_Comm*)xbt_dynar_get_ptr(comm_lookup, comm);
+  }else if(comm==0){
+    return MPI_COMM_WORLD;
+  }     else if(comm_lookup && comm >= 0) {
+
+      char key[KEY_SIZE];
+      MPI_Comm tmp =  (MPI_Comm)xbt_dict_get_or_null(comm_lookup,get_key_id(key, comm));
+      return tmp != NULL ? tmp : MPI_COMM_NULL ;
   }
   return MPI_COMM_NULL;
 }
 
 static int new_group(MPI_Group group) {
-  xbt_dynar_push(group_lookup, &group);
-  return (int)xbt_dynar_length(group_lookup) - 1;
+  static int group_id = 0;
+  char key[KEY_SIZE];
+  xbt_dict_set(group_lookup, get_key(key, group_id), group, NULL);
+  group_id++;
+  return group_id-1;
 }
 
 static MPI_Group get_group(int group) {
   if(group == -2) {
     return MPI_GROUP_EMPTY;
-  } else if(group_lookup && group >= 0 && group < (int)xbt_dynar_length(group_lookup)) {
-    return *(MPI_Group*)xbt_dynar_get_ptr(group_lookup, group);
+  } else if(group_lookup && group >= 0) {
+    char key[KEY_SIZE];
+    return (MPI_Group)xbt_dict_get_or_null(group_lookup, get_key(key, group));
   }
-  return MPI_COMM_NULL;
+  return MPI_GROUP_NULL;
 }
 
 static void free_group(int group) {
-  xbt_dynar_remove_at(group_lookup, group, NULL);
+  char key[KEY_SIZE];
+  xbt_dict_remove(group_lookup, get_key(key, group));
 }
 
-static char* get_key(char* key, int id) {
-  snprintf(key, KEY_SIZE, "%x", id);
-  return key;
-}
+
 
 static int new_request(MPI_Request req) {
   static int request_id = INT_MIN;
   char key[KEY_SIZE];
-
-  xbt_dict_set(request_lookup, get_key(key, request_id), req, NULL);
-  return request_id++;
+  xbt_dict_set(request_lookup, get_key_id(key, request_id), req, NULL);
+  request_id++;
+  return request_id-1;
 }
 
 static MPI_Request find_request(int req) {
   char key[KEY_SIZE];
-   
-  return (MPI_Request)xbt_dict_get(request_lookup, get_key(key, req));
+  if(req==MPI_FORTRAN_REQUEST_NULL)return MPI_REQUEST_NULL;
+  return (MPI_Request)xbt_dict_get(request_lookup, get_key_id(key, req));
 }
 
 static void free_request(int request) {
   char key[KEY_SIZE];
-  xbt_dict_remove(request_lookup, get_key(key, request));
+  if(request!=MPI_FORTRAN_REQUEST_NULL)
+  xbt_dict_remove(request_lookup, get_key_id(key, request));
 }
 
 static int new_datatype(MPI_Datatype datatype) {
-  xbt_dynar_push(datatype_lookup, &datatype);
-  return (int)xbt_dynar_length(datatype_lookup) - 1;
+  static int datatype_id = 0;
+  char key[KEY_SIZE];
+  xbt_dict_set(datatype_lookup, get_key(key, datatype_id), datatype, NULL);
+  datatype_id++;
+  return datatype_id-1;
 }
 
 static MPI_Datatype get_datatype(int datatype) {
+  char key[KEY_SIZE];
   return datatype >= 0
-         ? *(MPI_Datatype*)xbt_dynar_get_ptr(datatype_lookup, datatype)
+         ? (MPI_Datatype)xbt_dict_get_or_null(datatype_lookup, get_key(key, datatype))
          : MPI_DATATYPE_NULL;
 }
 
 static void free_datatype(int datatype) {
-  xbt_dynar_remove_at(datatype_lookup, datatype, NULL);
+  char key[KEY_SIZE];
+  xbt_dict_remove(datatype_lookup, get_key(key, datatype));
 }
 
 static int new_op(MPI_Op op) {
-  xbt_dynar_push(op_lookup, &op);
-  return (int)xbt_dynar_length(op_lookup) - 1;
+  static int op_id = 0;
+  char key[KEY_SIZE];
+  xbt_dict_set(op_lookup, get_key(key, op_id), op, NULL);
+  op_id++;
+  return op_id-1;
 }
 
 static MPI_Op get_op(int op) {
+  char key[KEY_SIZE];
    return op >= 0
-          ? *(MPI_Op*)xbt_dynar_get_ptr(op_lookup, op)
+          ? (MPI_Op)xbt_dict_get_or_null(op_lookup,  get_key(key, op))
           : MPI_OP_NULL;
 }
 
 static void free_op(int op) {
-  xbt_dynar_remove_at(op_lookup, op, NULL);
+  char key[KEY_SIZE];
+  xbt_dict_remove(op_lookup, get_key(key, op));
 }
 
 void mpi_init_(int* ierr) {
    if(!comm_lookup){
-     comm_lookup = xbt_dynar_new(sizeof(MPI_Comm), NULL);
+     comm_lookup = xbt_dict_new_homogeneous(NULL);
      new_comm(MPI_COMM_WORLD);
-     group_lookup = xbt_dynar_new(sizeof(MPI_Group), NULL);
+     group_lookup = xbt_dict_new_homogeneous(NULL);
 
      request_lookup = xbt_dict_new_homogeneous(NULL);
 
-     datatype_lookup = xbt_dynar_new(sizeof(MPI_Datatype), NULL);
+     datatype_lookup = xbt_dict_new_homogeneous(NULL);
      new_datatype(MPI_BYTE);
      new_datatype(MPI_CHAR);
      new_datatype(MPI_INT);
@@ -141,9 +180,15 @@ void mpi_init_(int* ierr) {
      new_datatype(MPI_UINT64_T);
      new_datatype(MPI_2FLOAT);
      new_datatype(MPI_2DOUBLE);
-
-
-     op_lookup = xbt_dynar_new(sizeof(MPI_Op), NULL);
+     new_datatype(MPI_DOUBLE);
+     new_datatype(MPI_DOUBLE);
+     new_datatype(MPI_INT);
+     new_datatype(MPI_DATATYPE_NULL);
+     new_datatype(MPI_DATATYPE_NULL);
+     new_datatype(MPI_DATATYPE_NULL);
+     new_datatype(MPI_DATATYPE_NULL);
+     op_lookup = xbt_dict_new_homogeneous(NULL);
+     new_op(MPI_MAX);
      new_op(MPI_MIN);
      new_op(MPI_MAXLOC);
      new_op(MPI_MINLOC);
@@ -158,18 +203,22 @@ void mpi_init_(int* ierr) {
    }
    /* smpif2c is responsible for generating a call with the final arguments */
    *ierr = MPI_Init(NULL, NULL);
+   running_processes++;
 }
 
 void mpi_finalize_(int* ierr) {
    *ierr = MPI_Finalize();
-   xbt_dynar_free(&op_lookup);
-   op_lookup = NULL;
-   xbt_dynar_free(&datatype_lookup);
-   datatype_lookup = NULL;
-   xbt_dict_free(&request_lookup);
-   request_lookup = NULL;
-   xbt_dynar_free(&comm_lookup);
-   comm_lookup = NULL;
+   running_processes--;
+   if(running_processes==0){
+     xbt_dict_free(&op_lookup);
+     op_lookup = NULL;
+     xbt_dict_free(&datatype_lookup);
+     datatype_lookup = NULL;
+     xbt_dict_free(&request_lookup);
+     request_lookup = NULL;
+     xbt_dict_free(&comm_lookup);
+     comm_lookup = NULL;
+   }
 }
 
 void mpi_abort_(int* comm, int* errorcode, int* ierr) {
@@ -267,7 +316,7 @@ void mpi_send_init_(void *buf, int* count, int* datatype, int* dst, int* tag,
 void mpi_isend_(void *buf, int* count, int* datatype, int* dst,
                  int* tag, int* comm, int* request, int* ierr) {
   MPI_Request req;
-
+  buf = (char *) F2C_BOTTOM(buf);
   *ierr = MPI_Isend(buf, *count, get_datatype(*datatype), *dst, *tag,
                     get_comm(*comm), &req);
   if(*ierr == MPI_SUCCESS) {
@@ -278,7 +327,7 @@ void mpi_isend_(void *buf, int* count, int* datatype, int* dst,
 void mpi_irsend_(void *buf, int* count, int* datatype, int* dst,
                  int* tag, int* comm, int* request, int* ierr) {
   MPI_Request req;
-
+  buf = (char *) F2C_BOTTOM(buf);
   *ierr = MPI_Irsend(buf, *count, get_datatype(*datatype), *dst, *tag,
                     get_comm(*comm), &req);
   if(*ierr == MPI_SUCCESS) {
@@ -321,7 +370,7 @@ void mpi_recv_init_(void *buf, int* count, int* datatype, int* src, int* tag,
 void mpi_irecv_(void *buf, int* count, int* datatype, int* src, int* tag,
                  int* comm, int* request, int* ierr) {
   MPI_Request req;
-
+  buf = (char *) F2C_BOTTOM(buf);
   *ierr = MPI_Irecv(buf, *count, get_datatype(*datatype), *src, *tag,
                     get_comm(*comm), &req);
   if(*ierr == MPI_SUCCESS) {
@@ -357,6 +406,10 @@ void mpi_wait_(int* request, MPI_Status* status, int* ierr) {
    MPI_Request req = find_request(*request);
    
    *ierr = MPI_Wait(&req, status);
+   if(req==MPI_REQUEST_NULL){
+     free_request(*request);
+     *request=MPI_FORTRAN_REQUEST_NULL;
+   }
 }
 
 void mpi_waitany_(int* count, int* requests, int* index, MPI_Status* status, int* ierr) {
@@ -368,6 +421,10 @@ void mpi_waitany_(int* count, int* requests, int* index, MPI_Status* status, int
     reqs[i] = find_request(requests[i]);
   }
   *ierr = MPI_Waitany(*count, reqs, index, status);
+  if(reqs[*index]==MPI_REQUEST_NULL){
+      free_request(requests[*index]);
+      requests[*index]=MPI_FORTRAN_REQUEST_NULL;
+  }
   free(reqs);
 }
 
@@ -380,6 +437,13 @@ void mpi_waitall_(int* count, int* requests, MPI_Status* status, int* ierr) {
     reqs[i] = find_request(requests[i]);
   }
   *ierr = MPI_Waitall(*count, reqs, status);
+  for(i = 0; i < *count; i++) {
+      if(reqs[i]==MPI_REQUEST_NULL){
+          free_request(requests[i]);
+          requests[i]=MPI_FORTRAN_REQUEST_NULL;
+      }
+  }
+
   free(reqs);
 }
 
@@ -393,18 +457,23 @@ void mpi_bcast_(void *buf, int* count, int* datatype, int* root, int* comm, int*
 
 void mpi_reduce_(void* sendbuf, void* recvbuf, int* count,
                   int* datatype, int* op, int* root, int* comm, int* ierr) {
+  sendbuf = (char *) F2C_IN_PLACE(sendbuf);
+  sendbuf = (char *) F2C_BOTTOM(sendbuf);
+  recvbuf = (char *) F2C_BOTTOM(recvbuf);
   *ierr = MPI_Reduce(sendbuf, recvbuf, *count,
                      get_datatype(*datatype), get_op(*op), *root, get_comm(*comm));
 }
 
 void mpi_allreduce_(void* sendbuf, void* recvbuf, int* count, int* datatype,
                      int* op, int* comm, int* ierr) {
+  sendbuf = (char *) F2C_IN_PLACE(sendbuf);
   *ierr = MPI_Allreduce(sendbuf, recvbuf, *count, get_datatype(*datatype),
                         get_op(*op), get_comm(*comm));
 }
 
 void mpi_reduce_scatter_(void* sendbuf, void* recvbuf, int* recvcounts, int* datatype,
                      int* op, int* comm, int* ierr) {
+  sendbuf = (char *) F2C_IN_PLACE(sendbuf);
   *ierr = MPI_Reduce_scatter(sendbuf, recvbuf, recvcounts, get_datatype(*datatype),
                         get_op(*op), get_comm(*comm));
 }
@@ -412,6 +481,7 @@ void mpi_reduce_scatter_(void* sendbuf, void* recvbuf, int* recvcounts, int* dat
 void mpi_scatter_(void* sendbuf, int* sendcount, int* sendtype,
                    void* recvbuf, int* recvcount, int* recvtype, 
                    int* root, int* comm, int* ierr) {
+  recvbuf = (char *) F2C_IN_PLACE(recvbuf);
   *ierr = MPI_Scatter(sendbuf, *sendcount, get_datatype(*sendtype),
                       recvbuf, *recvcount, get_datatype(*recvtype), *root, get_comm(*comm));
 }
@@ -420,6 +490,7 @@ void mpi_scatter_(void* sendbuf, int* sendcount, int* sendtype,
 void mpi_scatterv_(void* sendbuf, int* sendcounts, int* displs, int* sendtype,
                    void* recvbuf, int* recvcount, int* recvtype,
                    int* root, int* comm, int* ierr) {
+  recvbuf = (char *) F2C_IN_PLACE(recvbuf);
   *ierr = MPI_Scatterv(sendbuf, sendcounts, displs, get_datatype(*sendtype),
                       recvbuf, *recvcount, get_datatype(*recvtype), *root, get_comm(*comm));
 }
@@ -427,6 +498,9 @@ void mpi_scatterv_(void* sendbuf, int* sendcounts, int* displs, int* sendtype,
 void mpi_gather_(void* sendbuf, int* sendcount, int* sendtype,
                   void* recvbuf, int* recvcount, int* recvtype,
                   int* root, int* comm, int* ierr) {
+  sendbuf = (char *) F2C_IN_PLACE(sendbuf);
+  sendbuf = (char *) F2C_BOTTOM(sendbuf);
+  recvbuf = (char *) F2C_BOTTOM(recvbuf);
   *ierr = MPI_Gather(sendbuf, *sendcount, get_datatype(*sendtype),
                      recvbuf, *recvcount, get_datatype(*recvtype), *root, get_comm(*comm));
 }
@@ -434,6 +508,9 @@ void mpi_gather_(void* sendbuf, int* sendcount, int* sendtype,
 void mpi_gatherv_(void* sendbuf, int* sendcount, int* sendtype,
                   void* recvbuf, int* recvcounts, int* displs, int* recvtype,
                   int* root, int* comm, int* ierr) {
+  sendbuf = (char *) F2C_IN_PLACE(sendbuf);
+  sendbuf = (char *) F2C_BOTTOM(sendbuf);
+  recvbuf = (char *) F2C_BOTTOM(recvbuf);
   *ierr = MPI_Gatherv(sendbuf, *sendcount, get_datatype(*sendtype),
                      recvbuf, recvcounts, displs, get_datatype(*recvtype), *root, get_comm(*comm));
 }
@@ -441,6 +518,7 @@ void mpi_gatherv_(void* sendbuf, int* sendcount, int* sendtype,
 void mpi_allgather_(void* sendbuf, int* sendcount, int* sendtype,
                      void* recvbuf, int* recvcount, int* recvtype,
                      int* comm, int* ierr) {
+  sendbuf = (char *) F2C_IN_PLACE(sendbuf);
   *ierr = MPI_Allgather(sendbuf, *sendcount, get_datatype(*sendtype),
                         recvbuf, *recvcount, get_datatype(*recvtype), get_comm(*comm));
 }
@@ -448,6 +526,7 @@ void mpi_allgather_(void* sendbuf, int* sendcount, int* sendtype,
 void mpi_allgatherv_(void* sendbuf, int* sendcount, int* sendtype,
                      void* recvbuf, int* recvcounts,int* displs, int* recvtype,
                      int* comm, int* ierr) {
+  sendbuf = (char *) F2C_IN_PLACE(sendbuf);
   *ierr = MPI_Allgatherv(sendbuf, *sendcount, get_datatype(*sendtype),
                         recvbuf, recvcounts, displs, get_datatype(*recvtype), get_comm(*comm));
 }
@@ -473,6 +552,10 @@ void mpi_alltoallv_(void* sendbuf, int* sendcounts, int* senddisps, int* sendtyp
 void mpi_test_ (int * request, int *flag, MPI_Status * status, int* ierr){
   MPI_Request req = find_request(*request);
   *ierr= MPI_Test(&req, flag, status);
+  if(req==MPI_REQUEST_NULL){
+      free_request(*request);
+      *request=MPI_FORTRAN_REQUEST_NULL;
+  }
 }
 
 
@@ -484,6 +567,12 @@ void mpi_testall_ (int* count, int * requests,  int *flag, MPI_Status * statuses
     reqs[i] = find_request(requests[i]);
   }
   *ierr= MPI_Testall(*count, reqs, flag, statuses);
+  for(i = 0; i < *count; i++) {
+    if(reqs[i]==MPI_REQUEST_NULL){
+        free_request(requests[i]);
+        requests[i]=MPI_FORTRAN_REQUEST_NULL;
+    }
+  }
 }
 
 
@@ -604,13 +693,13 @@ void mpi_finalized_ (int * flag, int* ierr){
 
 void mpi_init_thread_ (int* required, int *provided, int* ierr){
   if(!comm_lookup){
-    comm_lookup = xbt_dynar_new(sizeof(MPI_Comm), NULL);
+    comm_lookup = xbt_dict_new_homogeneous(NULL);
     new_comm(MPI_COMM_WORLD);
-    group_lookup = xbt_dynar_new(sizeof(MPI_Group), NULL);
+    group_lookup = xbt_dict_new_homogeneous(NULL);
 
     request_lookup = xbt_dict_new_homogeneous(NULL);
 
-    datatype_lookup = xbt_dynar_new(sizeof(MPI_Datatype), NULL);
+    datatype_lookup = xbt_dict_new_homogeneous(NULL);
     new_datatype(MPI_BYTE);
     new_datatype(MPI_CHAR);
     new_datatype(MPI_INT);
@@ -633,8 +722,7 @@ void mpi_init_thread_ (int* required, int *provided, int* ierr){
     new_datatype(MPI_2FLOAT);
     new_datatype(MPI_2DOUBLE);
 
-
-    op_lookup = xbt_dynar_new(sizeof(MPI_Op), NULL);
+    op_lookup = xbt_dict_new_homogeneous( NULL);
     new_op(MPI_MAX);
     new_op(MPI_MIN);
     new_op(MPI_MAXLOC);
@@ -891,8 +979,12 @@ void mpi_testany_ (int* count, int* requests, int *index, int *flag, MPI_Status*
     reqs[i] = find_request(requests[i]);
   }
   *ierr = MPI_Testany(*count, reqs, index, flag, status);
+  if(*index!=MPI_UNDEFINED)
+  if(reqs[*index]==MPI_REQUEST_NULL){
+    free_request(requests[*index]);
+    requests[*index]=MPI_FORTRAN_REQUEST_NULL;
+  }
   free(reqs);
-
 }
 
 void mpi_waitsome_ (int* incount, int* requests, int *outcount, int *indices, MPI_Status* status, int* ierr)
@@ -905,8 +997,13 @@ void mpi_waitsome_ (int* incount, int* requests, int *outcount, int *indices, MP
     reqs[i] = find_request(requests[i]);
   }
   *ierr = MPI_Waitsome(*incount, reqs, outcount, indices, status);
+  for(i=0;i<*outcount;i++){
+    if(reqs[indices[i]]==MPI_REQUEST_NULL){
+        free_request(requests[indices[i]]);
+        requests[indices[i]]=MPI_FORTRAN_REQUEST_NULL;
+    }
+  }
   free(reqs);
-
 }
 
 void mpi_reduce_local_ (void *inbuf, void *inoutbuf, int* count, int* datatype, int* op, int* ierr){
@@ -916,7 +1013,7 @@ void mpi_reduce_local_ (void *inbuf, void *inoutbuf, int* count, int* datatype, 
 
 void mpi_reduce_scatter_block_ (void *sendbuf, void *recvbuf, int* recvcount, int* datatype, int* op, int* comm, int* ierr)
 {
-
+  sendbuf = (char *) F2C_IN_PLACE(sendbuf);
  *ierr = MPI_Reduce_scatter_block(sendbuf, recvbuf, *recvcount, get_datatype(*datatype), get_op(*op), get_comm(*comm));
 }
 
@@ -1045,7 +1142,24 @@ void mpi_buffer_detach_ (void* buffer, int* size, int* ierr) {
 }
 
 void mpi_testsome_ (int* incount, int*  requests, int* outcount, int* indices, MPI_Status*  statuses, int* ierr) {
- *ierr = MPI_Testsome(*incount, (MPI_Request*)requests, outcount, indices, statuses);
+  MPI_Request* reqs;
+  int i;
+
+  reqs = xbt_new(MPI_Request, *incount);
+  for(i = 0; i < *incount; i++) {
+    reqs[i] = find_request(requests[i]);
+    indices[i]=0;
+  }
+  *ierr = MPI_Testsome(*incount, reqs, outcount, indices, statuses);
+  for(i=0;i<*incount;i++){
+    if(indices[i]){
+      if(reqs[indices[i]]==MPI_REQUEST_NULL){
+          free_request(requests[indices[i]]);
+          requests[indices[i]]=MPI_FORTRAN_REQUEST_NULL;
+      }
+    }
+  }
+  free(reqs);
 }
 
 void mpi_comm_test_inter_ (int* comm, int* flag, int* ierr) {
