@@ -13,7 +13,6 @@ if(enable_smpi)
   include_directories("${CMAKE_HOME_DIRECTORY}/include/smpi")
   include_directories("${CMAKE_CURRENT_BINARY_DIR}/../include/")
 
-
   add_executable(allctypesf allctypesf.f ../util/mtestf.f)
   add_executable(gaddressf gaddressf.f ../util/mtestf.f)
   add_executable(hindex1f hindex1f.f ../util/mtestf.f)
@@ -26,8 +25,6 @@ if(enable_smpi)
   add_executable(typenamef typenamef.f ../util/mtestf.f)
   add_executable(typesnamef typesnamef.f ../util/mtestf.f)
   add_executable(typesubf typesubf.f ../util/mtestf.f)
-
-
 
   target_link_libraries(allctypesf  simgrid)
   target_link_libraries(gaddressf  simgrid)
@@ -42,20 +39,18 @@ if(enable_smpi)
   target_link_libraries(typesnamef  simgrid)
   target_link_libraries(typesubf  simgrid)
 
-
-
- set_target_properties(allctypesf PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
- set_target_properties(gaddressf PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
- set_target_properties(hindex1f PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
- set_target_properties(hindexed_blockf PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
- set_target_properties(packef PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
- set_target_properties(typeaints PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
- set_target_properties(typecntsf PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
- set_target_properties(typem2f PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
- set_target_properties(typename3f PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
- set_target_properties(typenamef PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
- set_target_properties(typesnamef PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
- set_target_properties(typesubf PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
+  set_target_properties(allctypesf PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
+  set_target_properties(gaddressf PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
+  set_target_properties(hindex1f PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
+  set_target_properties(hindexed_blockf PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
+  set_target_properties(packef PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
+  set_target_properties(typeaints PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
+  set_target_properties(typecntsf PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
+  set_target_properties(typem2f PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
+  set_target_properties(typename3f PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
+  set_target_properties(typenamef PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
+  set_target_properties(typesnamef PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
+  set_target_properties(typesubf PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
 
 endif()
 
@@ -89,7 +84,7 @@ set(bin_files
   )
 set(txt_files
   ${txt_files}
-  ${CMAKE_CURRENT_SOURCE_DIR}/runtests
   ${CMAKE_CURRENT_SOURCE_DIR}/testlist
+  ${CMAKE_CURRENT_SOURCE_DIR}/../util/mtestf.f
   PARENT_SCOPE
   )

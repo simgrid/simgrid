@@ -13,16 +13,9 @@ if(enable_smpi)
   include_directories("${CMAKE_HOME_DIRECTORY}/include/smpi")
   include_directories("${CMAKE_CURRENT_BINARY_DIR}/../include/")
 
-
   add_executable(baseenvf baseenvf.f ../util/mtestf.f)
-
-
-
   target_link_libraries(baseenvf  simgrid)
-
-
-
- set_target_properties(baseenvf PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
+  set_target_properties(baseenvf PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
 
 endif()
 
@@ -45,7 +38,6 @@ set(bin_files
   )
 set(txt_files
   ${txt_files}
-  ${CMAKE_CURRENT_SOURCE_DIR}/runtests
   ${CMAKE_CURRENT_SOURCE_DIR}/testlist
   PARENT_SCOPE
   )

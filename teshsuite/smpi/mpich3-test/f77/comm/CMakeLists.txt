@@ -17,15 +17,11 @@ if(enable_smpi)
  # add_executable(commerrf commerrf.f ../util/mtestf.f)
   add_executable(commnamef commnamef.f ../util/mtestf.f)
 
-
-
  # target_link_libraries(commerrf  simgrid)
   target_link_libraries(commnamef  simgrid)
 
-
-
 # set_target_properties(commerrf PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
- set_target_properties(commnamef PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
+  set_target_properties(commnamef PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
 
 endif()
 
@@ -49,7 +45,6 @@ set(bin_files
   )
 set(txt_files
   ${txt_files}
-  ${CMAKE_CURRENT_SOURCE_DIR}/runtests
   ${CMAKE_CURRENT_SOURCE_DIR}/testlist
   PARENT_SCOPE
   )

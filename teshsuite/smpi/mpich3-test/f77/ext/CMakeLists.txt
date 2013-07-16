@@ -19,14 +19,10 @@ if(enable_smpi)
 #  add_executable(c2f2cf c2f2cf.f c2f2c.c ../util/mtestf.f)
 #  add_executable(ctypesinf ctypesinf.f ctypesfromc.c ../util/mtestf.f)
 
-
-
   target_link_libraries(add1size  simgrid)
 #  target_link_libraries(allocmemf  simgrid)
 #  target_link_libraries(c2f2cf  simgrid)
 #  target_link_libraries(ctypesinf  simgrid)
-
-
 
  set_target_properties(add1size PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
 # set_target_properties(allocmemf PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
@@ -59,7 +55,6 @@ set(bin_files
   )
 set(txt_files
   ${txt_files}
-  ${CMAKE_CURRENT_SOURCE_DIR}/runtests
   ${CMAKE_CURRENT_SOURCE_DIR}/testlist
   PARENT_SCOPE
   )
