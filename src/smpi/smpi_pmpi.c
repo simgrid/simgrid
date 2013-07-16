@@ -1491,6 +1491,7 @@ int PMPI_Wait(MPI_Request * request, MPI_Status * status)
   //the src may not have been known at the beginning of the recv (MPI_ANY_SOURCE)
   TRACE_smpi_ptp_out(rank, src_traced, dst_traced, __FUNCTION__);
   if (is_wait_for_receive) {
+    if(src_traced==MPI_ANY_SOURCE)
     src_traced = (status!=MPI_STATUS_IGNORE) ?
                                 smpi_group_rank(smpi_comm_group(comm), status->MPI_SOURCE) :
                                 src_traced;
@@ -1546,9 +1547,10 @@ int PMPI_Waitany(int count, MPI_Request requests[], int *index, MPI_Status * sta
     int dst_traced = dsts[*index];
     int is_wait_for_receive = recvs[*index];
     if (is_wait_for_receive) {
-      src_traced = (status!=MPI_STATUSES_IGNORE) ?
-                          smpi_group_rank(smpi_comm_group(comms[*index]), status[*index].MPI_SOURCE) :
-                          srcs[*index];
+      if(srcs[*index]==MPI_ANY_SOURCE)
+        src_traced = (status!=MPI_STATUSES_IGNORE) ?
+                      smpi_group_rank(smpi_comm_group(comms[*index]), status[*index].MPI_SOURCE) :
+                      srcs[*index];
       TRACE_smpi_recv(rank_traced, src_traced, dst_traced);
     }
     TRACE_smpi_ptp_out(rank_traced, src_traced, dst_traced, __FUNCTION__);
@@ -1601,11 +1603,12 @@ int PMPI_Waitall(int count, MPI_Request requests[], MPI_Status status[])
     if(valid[i]){
     //int src_traced = srcs[*index];
     //the src may not have been known at the beginning of the recv (MPI_ANY_SOURCE)
-
+      int src_traced = srcs[i];
       int dst_traced = dsts[i];
       int is_wait_for_receive = recvs[i];
       if (is_wait_for_receive) {
-        int src_traced = (status!=MPI_STATUSES_IGNORE) ?
+        if(src_traced==MPI_ANY_SOURCE)
+        src_traced = (status!=MPI_STATUSES_IGNORE) ?
                           smpi_group_rank(smpi_comm_group(comms[i]), status[i].MPI_SOURCE) :
                           srcs[i];
         TRACE_smpi_recv(rank_traced, src_traced, dst_traced);
