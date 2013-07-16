@@ -279,6 +279,9 @@ MPI_CALL(XBT_PUBLIC(int), MPI_Type_commit, (MPI_Datatype* datatype));
 MPI_CALL(XBT_PUBLIC(int), MPI_Type_hindexed,
                             (int count, int* blocklens, MPI_Aint* indices,
                             MPI_Datatype old_type, MPI_Datatype* newtype));
+MPI_CALL(XBT_PUBLIC(int), MPI_Type_create_hindexed,
+                            (int count, int* blocklens, MPI_Aint* indices,
+                            MPI_Datatype old_type, MPI_Datatype* newtype));
 MPI_CALL(XBT_PUBLIC(int), MPI_Type_create_hindexed_block,
                             (int count, int blocklength, MPI_Aint* indices,
                             MPI_Datatype old_type, MPI_Datatype* newtype));
@@ -289,6 +292,9 @@ MPI_CALL(XBT_PUBLIC(int), MPI_Type_create_hvector,
                             (int count, int blocklen, MPI_Aint stride,
                              MPI_Datatype old_type, MPI_Datatype* newtype));
 MPI_CALL(XBT_PUBLIC(int), MPI_Type_indexed,
+                            (int count, int* blocklens, int* indices,
+                             MPI_Datatype old_type, MPI_Datatype* newtype));
+MPI_CALL(XBT_PUBLIC(int), MPI_Type_create_indexed,
                             (int count, int* blocklens, int* indices,
                              MPI_Datatype old_type, MPI_Datatype* newtype));
 MPI_CALL(XBT_PUBLIC(int), MPI_Type_create_indexed_block,

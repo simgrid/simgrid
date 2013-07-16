@@ -1076,6 +1076,14 @@ void mpi_type_hindexed_ (int* count, int* blocklens, MPI_Aint* indices, int* old
   }
 }
 
+void mpi_type_create_hindexed_ (int* count, int* blocklens, MPI_Aint* indices, int* old_type, int*  newtype, int* ierr) {
+  MPI_Datatype tmp;
+  *ierr = MPI_Type_create_hindexed(*count, blocklens, indices, get_datatype(*old_type), &tmp);
+  if(*ierr == MPI_SUCCESS) {
+    *newtype = new_datatype(tmp);
+  }
+}
+
 void mpi_type_create_hindexed_block_ (int* count, int* blocklength, MPI_Aint* indices, int* old_type, int*  newtype, int* ierr) {
   MPI_Datatype tmp;
   *ierr = MPI_Type_create_hindexed_block(*count, *blocklength, indices, get_datatype(*old_type), &tmp);

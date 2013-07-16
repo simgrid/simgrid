@@ -663,6 +663,10 @@ int MPI_Type_hindexed(int count, int* blocklens, MPI_Aint* indices, MPI_Datatype
   return PMPI_Type_hindexed(count, blocklens, indices, old_type, newtype);
 }
 
+int MPI_Type_create_hindexed(int count, int* blocklens, MPI_Aint* indices, MPI_Datatype old_type, MPI_Datatype* new_type) {
+  return PMPI_Type_create_hindexed(count, blocklens,indices,old_type,new_type);
+}
+
 int MPI_Type_create_hindexed_block(int count, int blocklength, MPI_Aint* indices, MPI_Datatype old_type, MPI_Datatype* newtype) {
   return PMPI_Type_create_hindexed_block(count, blocklength, indices, old_type, newtype);
 }
@@ -673,6 +677,10 @@ int MPI_Type_hvector(int count, int blocklen, MPI_Aint stride, MPI_Datatype old_
 
 int MPI_Type_indexed(int count, int* blocklens, int* indices, MPI_Datatype old_type, MPI_Datatype* newtype) {
   return PMPI_Type_indexed(count, blocklens, indices, old_type, newtype);
+}
+
+int MPI_Type_create_indexed(int count, int* blocklens, int* indices, MPI_Datatype old_type, MPI_Datatype* newtype) {
+  return PMPI_Type_create_indexed(count, blocklens, indices, old_type, newtype);
 }
 
 int MPI_Type_create_indexed_block(int count, int blocklength, int* indices,  MPI_Datatype old_type,  MPI_Datatype *newtype){

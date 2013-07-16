@@ -2317,6 +2317,21 @@ int PMPI_Type_indexed(int count, int* blocklens, int* indices, MPI_Datatype old_
   return retval;
 }
 
+int PMPI_Type_create_indexed(int count, int* blocklens, int* indices, MPI_Datatype old_type, MPI_Datatype* new_type) {
+  int retval;
+
+  smpi_bench_end();
+  if (old_type == MPI_DATATYPE_NULL) {
+    retval = MPI_ERR_TYPE;
+  } else if (count<0){
+    retval = MPI_ERR_COUNT;
+  } else {
+    retval = smpi_datatype_indexed(count, blocklens, indices, old_type, new_type);
+  }
+  smpi_bench_begin();
+  return retval;
+}
+
 int PMPI_Type_create_indexed_block(int count, int blocklength, int* indices, MPI_Datatype old_type, MPI_Datatype* new_type) {
   int retval,i;
 
@@ -2349,6 +2364,10 @@ int PMPI_Type_hindexed(int count, int* blocklens, MPI_Aint* indices, MPI_Datatyp
   }
   smpi_bench_begin();
   return retval;
+}
+
+int PMPI_Type_create_hindexed(int count, int* blocklens, MPI_Aint* indices, MPI_Datatype old_type, MPI_Datatype* new_type) {
+  return PMPI_Type_hindexed(count, blocklens,indices,old_type,new_type);
 }
 
 int PMPI_Type_create_hindexed_block(int count, int blocklength, MPI_Aint* indices, MPI_Datatype old_type, MPI_Datatype* new_type) {
