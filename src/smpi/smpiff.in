@@ -30,9 +30,11 @@ if [ -n "${SRCFILES}" ]
 then
    for SRCFILE in "${SRCFILES}"
    do
-      CFILE="${SRCFILE%.f}.c"
+      TMPFILE=$(mktemp -p .).f
+      cp ${SRCFILE} ${TMPFILE}
+      CFILE="${TMPFILE%.f}.c"
       #echo "$prefix/bin/smpif2c ${SRCFILE} && $prefix/bin/smpicc ${ARGS} ${CFILE} && rm ${CFILE}"
-      $prefix/bin/smpif2c ${SRCFILE} && $prefix/bin/smpicc ${ARGS} ${CFILE} && rm ${CFILE}
+      $prefix/bin/smpif2c ${TMPFILE} && $prefix/bin/smpicc ${ARGS} ${CFILE} && rm ${CFILE} && rm ${TMPFILE}
    done
 else
    #echo "$prefix/bin/smpicc ${ARGS}"
