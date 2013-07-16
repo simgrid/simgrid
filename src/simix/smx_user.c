@@ -1265,7 +1265,7 @@ size_t simcall_storage_get_used_size (const char* name){
 }
 
 /**
- * \ingroup simix_host_management
+ * \ingroup simix_storage_management
  * \brief Return the list of storages mounted on an host.
  * \param host A SIMIX host
  * \return a dynar containing all storages mounted on the host
