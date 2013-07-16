@@ -1,0 +1,65 @@
+cmake_minimum_required(VERSION 2.6)
+
+if(enable_smpi)
+  if(WIN32)
+    set(CMAKE_C_FLAGS "-include ${CMAKE_HOME_DIRECTORY}/include/smpi/smpi_main.h")
+  else()
+    set(CMAKE_C_COMPILER "${CMAKE_BINARY_DIR}/smpi_script/bin/smpicc")
+    set(CMAKE_Fortran_COMPILER "${CMAKE_BINARY_DIR}/smpi_script/bin/smpiff")
+  endif()
+
+  set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}")
+  set(MPICH_FLAGS "-DHAVE_STDLIB_H=1 -DHAVE_UNISTD_H=1 -DHAVE_STRING_H=1 -DUSE_STDARG=1 -DHAVE_LONG_DOUBLE=1 -DHAVE_PROTOTYPES=1 -DHAVE_SIGNAL_H=1 -DHAVE_SIGACTION=1 -DHAVE_SLEEP=1 -DHAVE_SYSCONF=1  -Wno-error=unused-variable -Wno-implicit")
+  include_directories("${CMAKE_HOME_DIRECTORY}/include/smpi")
+  include_directories("${CMAKE_CURRENT_BINARY_DIR}/../include/")
+
+
+  add_executable(add1size add1size.h ../util/mtestf.f)
+#  add_executable(allocmemf allocmemf.f ../util/mtestf.f)
+#  add_executable(c2f2cf c2f2cf.f c2f2c.c ../util/mtestf.f)
+#  add_executable(ctypesinf ctypesinf.f ctypesfromc.c ../util/mtestf.f)
+
+
+
+  target_link_libraries(add1size  simgrid)
+#  target_link_libraries(allocmemf  simgrid)
+#  target_link_libraries(c2f2cf  simgrid)
+#  target_link_libraries(ctypesinf  simgrid)
+
+
+
+ set_target_properties(add1size PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
+# set_target_properties(allocmemf PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
+# set_target_properties(c2f2cf PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
+# set_target_properties(ctypesinf PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
+
+endif()
+
+set(tesh_files
+  ${tesh_files}
+  PARENT_SCOPE
+  )
+set(xml_files
+  ${xml_files}
+  PARENT_SCOPE
+  )
+set(examples_src
+  ${examples_src}
+ ${CMAKE_CURRENT_SOURCE_DIR}/add1size.h 
+ ${CMAKE_CURRENT_SOURCE_DIR}/allocmemf.f 
+ ${CMAKE_CURRENT_SOURCE_DIR}/c2f2cf.f 
+ ${CMAKE_CURRENT_SOURCE_DIR}/c2f2c.c
+ ${CMAKE_CURRENT_SOURCE_DIR}/ctypesinf.f
+ ${CMAKE_CURRENT_SOURCE_DIR}/ctypesfromc.c
+  PARENT_SCOPE
+  )
+set(bin_files
+  ${bin_files}
+  PARENT_SCOPE
+  )
+set(txt_files
+  ${txt_files}
+  ${CMAKE_CURRENT_SOURCE_DIR}/runtests
+  ${CMAKE_CURRENT_SOURCE_DIR}/testlist
+  PARENT_SCOPE
+  )

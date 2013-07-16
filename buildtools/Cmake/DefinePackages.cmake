@@ -925,6 +925,18 @@ set(TESHSUITE_CMAKEFILES_TXT
   teshsuite/xbt/CMakeLists.txt
   )
 
+if(SMPI_F2C)
+  set(TESHSUITE_CMAKEFILES_TXT
+    ${TESHSUITE_CMAKEFILES_TXT}
+    teshsuite/smpi/mpich3-test/f77/comm/CMakeLists.txt
+    teshsuite/smpi/mpich3-test/f77/coll/CMakeLists.txt
+    teshsuite/smpi/mpich3-test/f77/pt2pt/CMakeLists.txt
+    teshsuite/smpi/mpich3-test/f77/datatype/CMakeLists.txt
+    teshsuite/smpi/mpich3-test/f77/ext/CMakeLists.txt
+    teshsuite/smpi/mpich3-test/f77/init/CMakeLists.txt
+  )
+endif()
+
 set(TOOLS_CMAKEFILES_TXT
   tools/CMakeLists.txt
   tools/graphicator/CMakeLists.txt
