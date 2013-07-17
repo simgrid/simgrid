@@ -101,6 +101,7 @@ size_t MSG_file_write(size_t size, msg_file_t fd)
  *
  * \param mount is the mount point where find the file is located
  * \param fullname is the file location on the storage
+ * \param data user data to attach to the file
  *
  * \return An #msg_file_t associated to the file
  */
