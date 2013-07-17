@@ -570,6 +570,7 @@ MPI_CALL(XBT_PUBLIC(int), MPI_Errhandler_get, (MPI_Comm comm, MPI_Errhandler* er
 MPI_CALL(XBT_PUBLIC(int), MPI_Error_string, (int errorcode, char* string, int* resultlen));
 MPI_CALL(XBT_PUBLIC(int), MPI_Errhandler_set, (MPI_Comm comm, MPI_Errhandler errhandler));
 MPI_CALL(XBT_PUBLIC(int), MPI_Comm_set_errhandler, (MPI_Comm comm, MPI_Errhandler errhandler));
+MPI_CALL(XBT_PUBLIC(int), MPI_Comm_get_errhandler, (MPI_Comm comm, MPI_Errhandler *errhandler));
 MPI_CALL(XBT_PUBLIC(int), MPI_Comm_create_errhandler,( MPI_Comm_errhandler_fn *function, MPI_Errhandler *errhandler));
 MPI_CALL(XBT_PUBLIC(int), MPI_Comm_call_errhandler,(MPI_Comm comm,int errorcode));
 MPI_CALL(XBT_PUBLIC(int), MPI_Add_error_class,( int *errorclass));

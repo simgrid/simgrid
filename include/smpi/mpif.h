@@ -111,13 +111,16 @@
 ! This should be equal to the number of int fields in MPI_Status
       integer MPI_STATUS_SIZE, MPI_STATUSES_IGNORE
       parameter(MPI_STATUS_SIZE=4)
-      parameter(MPI_STATUSES_IGNORE=0)
+      common/smpi/ MPI_STATUSES_IGNORE
 
       integer MPI_STATUS_IGNORE(MPI_STATUS_SIZE)
       common/smpi/ MPI_STATUS_IGNORE
 
       integer MPI_REQUEST_NULL
       parameter(MPI_REQUEST_NULL=-1)
+
+      integer MPI_INTEGER_KIND
+      parameter(MPI_INTEGER_KIND=4)
 
 ! These should be ordered as in smpi_f77.c
       integer MPI_DATATYPE_NULL, MPI_BYTE, MPI_CHARACTER, MPI_LOGICAL
