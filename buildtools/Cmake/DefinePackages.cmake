@@ -935,7 +935,7 @@ if(SMPI_F2C)
     teshsuite/smpi/mpich3-test/f77/ext/CMakeLists.txt
     teshsuite/smpi/mpich3-test/f77/init/CMakeLists.txt
     teshsuite/smpi/mpich3-test/f90/coll/CMakeLists.txt
-    teshsuite/smpi/mpich3-test/f9077/pt2pt/CMakeLists.txt
+    teshsuite/smpi/mpich3-test/f90/pt2pt/CMakeLists.txt
     teshsuite/smpi/mpich3-test/f90/datatype/CMakeLists.txt
     teshsuite/smpi/mpich3-test/f90/init/CMakeLists.txt
   )
