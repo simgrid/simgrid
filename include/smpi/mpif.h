@@ -111,10 +111,10 @@
 ! This should be equal to the number of int fields in MPI_Status
       integer MPI_STATUS_SIZE, MPI_STATUSES_IGNORE
       parameter(MPI_STATUS_SIZE=4)
-      common/smpi/ MPI_STATUSES_IGNORE
+      parameter(MPI_STATUSES_IGNORE=-1)
 
-      integer MPI_STATUS_IGNORE(MPI_STATUS_SIZE)
-      common/smpi/ MPI_STATUS_IGNORE
+      integer MPI_STATUS_IGNORE
+      parameter(MPI_STATUS_IGNORE=-1)
 
       integer MPI_REQUEST_NULL
       parameter(MPI_REQUEST_NULL=-1)
