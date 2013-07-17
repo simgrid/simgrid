@@ -41,6 +41,9 @@ SimGrid (3.10) NOT RELEASED; urgency=low
    happening inside a collective SMPI call.
  * Fix the behavior of complex datatypes handling
  * replace MPICH-1 test suite by the one from MPICH 3.0.4
+ * Add all missing Fortran bindings, SMPI should work with Fortran 90
+   (no privatization of global variables yet)
+
 
  PLATFORM:
  * Handle units for values (10ms, 10kiloflops, 10Bps, ...)
