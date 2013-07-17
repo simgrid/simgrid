@@ -113,7 +113,6 @@ typedef struct s_file_info {
 typedef struct msg_file {
   char *fullname;               /**< @brief file full name (path+name)*/
   simdata_file_t simdata;       /**< @brief simulator data  */
-  void *data;                   /**< @brief user data */
   msg_file_info_t info;
 } s_msg_file_t;
 

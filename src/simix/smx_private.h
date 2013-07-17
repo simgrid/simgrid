@@ -73,6 +73,7 @@ extern xbt_dict_t watched_hosts_lib;
 /* ******************************** File ************************************ */
 typedef struct s_smx_file {
   surf_file_t surf_file;
+  void* data;                   /**< @brief user data */
 } s_smx_file_t;
 
 /* ******************************** Storage ************************************ */
