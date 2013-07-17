@@ -120,7 +120,7 @@ int smpi_process_initialized(void)
 void smpi_process_mark_as_initialized(void)
 {
   int index = smpi_process_index();
-  if(index != -100)process_data[index]->initialized=1;
+  if((index != -100)&& (index!=MPI_UNDEFINED))process_data[index]->initialized=1;
 }
 
 
