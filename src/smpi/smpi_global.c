@@ -29,6 +29,7 @@ typedef struct s_smpi_process_data {
   double simulated;
   MPI_Comm comm_self;
   void *data; /* user data */
+  int initialized;
 } s_smpi_process_data_t;
 
 static smpi_process_data_t *process_data = NULL;
@@ -102,6 +103,24 @@ int smpi_process_finalized()
 {
    return (smpi_process_index()==-100);
   // If finalized, this value has been set to -100;
+}
+
+/**
+ * @brief Check if a process is initialized
+ */
+int smpi_process_initialized(void)
+{
+  int index = smpi_process_index();
+  return((index != -100) && (index!=MPI_UNDEFINED) && (process_data[index]->initialized));
+}
+
+/**
+ * @brief Mark a process as initialized (=MPI_Init called)
+ */
+void smpi_process_mark_as_initialized(void)
+{
+  int index = smpi_process_index();
+  if(index != -100)process_data[index]->initialized=1;
 }
 
 
@@ -264,6 +283,8 @@ void smpi_global_init(void)
     process_data[i]->timer = xbt_os_timer_new();
     group = smpi_group_new(1);
     process_data[i]->comm_self = smpi_comm_new(group);
+    process_data[i]->initialized =0;
+
     smpi_group_set_mapping(group, i, 0);
   }
   group = smpi_group_new(process_count);

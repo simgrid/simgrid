@@ -18,7 +18,9 @@
       integer MPI_MAX_DATAREP_STRIN, MPI_MAX_INFO_KEY
       integer MPI_MAX_INFO_VAL, MPI_MAX_OBJECT_NAME, MPI_MAX_PORT_NAME
       integer MPI_ANY_SOURCE, MPI_PROC_NULL, MPI_ANY_TAG, MPI_UNDEFINED
-      integer MPI_IN_PLACE, MPI_TAG_UB, MPI_TAG_LB
+      integer MPI_IN_PLACE, MPI_BOTTOM, MPI_TAG_UB, MPI_TAG_LB
+      integer MPI_SOURCE, MPI_TAG, MPI_ERROR
+      integer MPI_VERSION, MPI_SUBVERSION
       parameter(MPI_MAX_PROCESSOR_NAME=100)
       parameter(MPI_MAX_ERROR_STRING=100)
       parameter(MPI_MAX_DATAREP_STRIN =100)
@@ -31,13 +33,20 @@
       parameter(MPI_ANY_TAG=-444)
       parameter(MPI_UNDEFINED=-333)
       parameter(MPI_IN_PLACE=-222)
+      parameter(MPI_BOTTOM=-111)
+      parameter(MPI_SOURCE=1)
+      parameter(MPI_TAG=2)
+      parameter(MPI_ERROR=3)
       parameter(MPI_TAG_UB=0)
       parameter(MPI_TAG_LB=0)
+      parameter(MPI_VERSION=1)
+      parameter(MPI_SUBVERSION=1)
 
       integer MPI_SUCCESS, MPI_ERR_COMM, MPI_ERR_ARG, MPI_ERR_TYPE
       integer MPI_ERR_REQUEST, MPI_ERR_INTERN, MPI_ERR_COUNT
       integer MPI_ERR_RANK, MPI_ERR_OTHER, MPI_ERR_UNKNOWN
       integer MPI_ERR_TAG, MPI_ERR_TRUNCATE, MPI_ERR_GROUP, MPI_ERR_OP
+      integer MPI_LASTUSEDCODE, MPI_ERR_LASTCODE
       integer MPI_IDENT, MPI_SIMILAR, MPI_UNEQUAL, MPI_CONGRUENT
       integer MPI_WTIME_IS_GLOBAL
       parameter(MPI_SUCCESS=0)
@@ -54,21 +63,50 @@
       parameter(MPI_ERR_OP=11)
       parameter(MPI_ERR_OTHER=12)
       parameter(MPI_ERR_UNKNOWN=13)
+      parameter(MPI_LASTUSEDCODE=0)
+      parameter(MPI_ERR_LASTCODE=0)
       parameter(MPI_IDENT=0)
       parameter(MPI_SIMILAR=1)
       parameter(MPI_UNEQUAL=2)
       parameter(MPI_CONGRUENT=3)
       parameter(MPI_WTIME_IS_GLOBAL=1)
 
+      integer MPI_NULL_COPY_FN, MPI_NULL_DELETE_FN
+      parameter(MPI_NULL_COPY_FN =0)
+      parameter(MPI_NULL_DELETE_FN =0)
+      integer MPI_COMM_NULL_COPY_FN, MPI_COMM_NULL_DELETE_FN
+      parameter(MPI_COMM_NULL_COPY_FN =0)
+      parameter(MPI_COMM_NULL_DELETE_FN =0)
+      integer MPI_COMM_NULL_DUP_FN, MPI_COMM_DUP_FN
+      parameter(MPI_COMM_NULL_DUP_FN =0)
+      parameter(MPI_COMM_DUP_FN =0)
+      integer MPI_APPNUM, MPI_HOST, MPI_IO
+      parameter(MPI_APPNUM=0)
+      parameter(MPI_HOST=0)
+      parameter(MPI_IO=0)
+      integer MPI_ROOT, MPI_INFO_NULL,MPI_COMM_TYPE_SHARED
+      parameter(MPI_ROOT=0)
+      parameter(MPI_INFO_NULL=-1)
+      parameter(MPI_COMM_TYPE_SHARED=1)
+
 ! These should be ordered as in smpi_f77.c
       integer MPI_COMM_NULL, MPI_COMM_WORLD, MPI_COMM_SELF
+      integer MPI_UNIVERSE_SIZE
       parameter(MPI_COMM_NULL=-1)
       parameter(MPI_COMM_SELF=-2)
       parameter(MPI_COMM_WORLD=0)
+      parameter(MPI_UNIVERSE_SIZE=0)
+
 
       integer MPI_GROUP_NULL, MPI_GROUP_EMPTY
       parameter(MPI_GROUP_NULL=-1)
       parameter(MPI_GROUP_EMPTY=-2)
+
+      integer MPI_ERRORS_RETURN, MPI_ERRORS_ARE_FATAL
+      integer MPI_ERRHANDLER_NULL
+      parameter(MPI_ERRORS_RETURN=0)
+      parameter(MPI_ERRORS_ARE_FATAL=1)
+      parameter(MPI_ERRHANDLER_NULL=2)
 
 ! This should be equal to the number of int fields in MPI_Status
       integer MPI_STATUS_SIZE, MPI_STATUSES_IGNORE
@@ -88,6 +126,8 @@
       integer MPI_DOUBLE_PRECISION, MPI_COMPLEX, MPI_DOUBLE_COMPLEX
       integer MPI_2INTEGER, MPI_LOGICAL1, MPI_LOGICAL2, MPI_LOGICAL4
       integer MPI_LOGICAL8, MPI_2REAL, MPI_2DOUBLE_PRECISION
+      integer MPI_AINT, MPI_OFFSET, MPI_COUNT
+      integer MPI_REAL16, MPI_COMPLEX8,MPI_COMPLEX16,MPI_COMPLEX32
       parameter(MPI_DATATYPE_NULL=-1)
       parameter(MPI_BYTE=0)
       parameter(MPI_CHARACTER=1)
@@ -110,6 +150,15 @@
       parameter(MPI_LOGICAL8=18)
       parameter(MPI_2REAL=19)
       parameter(MPI_2DOUBLE_PRECISION=19)
+      parameter(MPI_AINT=20)
+      parameter(MPI_OFFSET=21)
+      parameter(MPI_COUNT=22)
+      parameter(MPI_REAL16=23)
+      parameter(MPI_COMPLEX8=24)
+      parameter(MPI_COMPLEX16=25)
+      parameter(MPI_COMPLEX32=26)
+
+
 
 ! These should be ordered as in smpi_f77.c
       integer MPI_OP_NULL,MPI_MAX, MPI_MIN, MPI_MAXLOC, MPI_MINLOC
@@ -135,6 +184,41 @@
       
       INTEGER MPI_MODE_NOPRECEDE
       PARAMETER (MPI_MODE_NOPRECEDE=8192)
+
+      integer MPI_COMBINER_NAMED, MPI_COMBINER_DUP
+      integer MPI_COMBINER_CONTIGUOUS, MPI_COMBINER_VECTOR
+      integer MPI_COMBINER_HVECTOR_INTEGER, MPI_COMBINER_HVECTOR
+      integer MPI_COMBINER_INDEXED, MPI_COMBINER_HINDEXED_INTEGER
+      integer MPI_COMBINER_HINDEXED, MPI_COMBINER_INDEXED_BLOCK
+      integer MPI_COMBINER_STRUCT_INTEGER, MPI_COMBINER_STRUCT
+      integer MPI_COMBINER_SUBARRAY, MPI_COMBINER_DARRAY
+      integer MPI_COMBINER_F90_REAL, MPI_COMBINER_F90_COMPLEX
+      integer MPI_COMBINER_F90_INTEGER, MPI_COMBINER_RESIZED
+      integer MPI_COMBINER_HINDEXED_BLOCK
+
+      parameter( MPI_COMBINER_NAMED=0)
+      parameter( MPI_COMBINER_DUP=1)
+      parameter( MPI_COMBINER_CONTIGUOUS=2)
+      parameter( MPI_COMBINER_VECTOR=3)
+      parameter( MPI_COMBINER_HVECTOR_INTEGER=4)
+      parameter( MPI_COMBINER_HVECTOR=5)
+      parameter( MPI_COMBINER_INDEXED=6)
+      parameter( MPI_COMBINER_HINDEXED_INTEGER=7)
+      parameter( MPI_COMBINER_HINDEXED=8)
+      parameter( MPI_COMBINER_INDEXED_BLOCK=9)
+      parameter( MPI_COMBINER_STRUCT_INTEGER=10)
+      parameter( MPI_COMBINER_STRUCT=11)
+      parameter( MPI_COMBINER_SUBARRAY=12)
+      parameter( MPI_COMBINER_DARRAY=13)
+      parameter( MPI_COMBINER_F90_REAL=14)
+      parameter( MPI_COMBINER_F90_COMPLEX=15)
+      parameter( MPI_COMBINER_F90_INTEGER=16)
+      parameter( MPI_COMBINER_RESIZED=17)
+      parameter( MPI_COMBINER_HINDEXED_BLOCK=18)
+
+      integer MPI_ORDER_C, MPI_ORDER_FORTRAN
+      parameter(MPI_ORDER_C=1)
+      parameter(MPI_ORDER_FORTRAN=0)
 
       external MPI_INIT, MPI_FINALIZE, MPI_ABORT
       external MPI_COMM_RANK, MPI_COMM_SIZE, MPI_COMM_DUP, MPI_COMM_SPLIT

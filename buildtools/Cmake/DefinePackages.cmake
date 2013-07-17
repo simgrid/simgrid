@@ -914,12 +914,6 @@ set(TESHSUITE_CMAKEFILES_TXT
   teshsuite/simdag/partask/CMakeLists.txt
   teshsuite/simdag/platforms/CMakeLists.txt
   teshsuite/smpi/CMakeLists.txt
- # teshsuite/smpi/mpich-test/CMakeLists.txt
- # teshsuite/smpi/mpich-test/coll/CMakeLists.txt
- # teshsuite/smpi/mpich-test/context/CMakeLists.txt
- # teshsuite/smpi/mpich-test/env/CMakeLists.txt
- # teshsuite/smpi/mpich-test/profile/CMakeLists.txt
- # teshsuite/smpi/mpich-test/pt2pt/CMakeLists.txt
   teshsuite/smpi/mpich3-test/CMakeLists.txt
   teshsuite/smpi/mpich3-test/attr/CMakeLists.txt
   teshsuite/smpi/mpich3-test/comm/CMakeLists.txt
@@ -930,6 +924,18 @@ set(TESHSUITE_CMAKEFILES_TXT
   teshsuite/smpi/mpich3-test/pt2pt/CMakeLists.txt
   teshsuite/xbt/CMakeLists.txt
   )
+
+if(SMPI_F2C)
+  set(TESHSUITE_CMAKEFILES_TXT
+    ${TESHSUITE_CMAKEFILES_TXT}
+    teshsuite/smpi/mpich3-test/f77/comm/CMakeLists.txt
+    teshsuite/smpi/mpich3-test/f77/coll/CMakeLists.txt
+    teshsuite/smpi/mpich3-test/f77/pt2pt/CMakeLists.txt
+    teshsuite/smpi/mpich3-test/f77/datatype/CMakeLists.txt
+    teshsuite/smpi/mpich3-test/f77/ext/CMakeLists.txt
+    teshsuite/smpi/mpich3-test/f77/init/CMakeLists.txt
+  )
+endif()
 
 set(TOOLS_CMAKEFILES_TXT
   tools/CMakeLists.txt

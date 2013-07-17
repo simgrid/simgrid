@@ -676,6 +676,8 @@ int smpi_mpi_testall(int count, MPI_Request requests[],
     if(requests[i]!= MPI_REQUEST_NULL){
       if (smpi_mpi_test(&requests[i], pstat)!=1){
         flag=0;
+      }else{
+          requests[i]=MPI_REQUEST_NULL;
       }
     }else{
       smpi_empty_status(pstat);
@@ -752,7 +754,7 @@ void smpi_mpi_wait(MPI_Request * request, MPI_Status * status)
     simcall_comm_wait((*request)->action, -1.0);
   }
   finish_wait(request, status);
-
+  request=MPI_REQUEST_NULL;
   // FIXME for a detached send, finish_wait is not called:
 }
 
@@ -881,7 +883,7 @@ int smpi_mpi_testsome(int incount, MPI_Request requests[], int *indices,
   for(i = 0; i < incount; i++) {
     if((requests[i] != MPI_REQUEST_NULL)) {
       if(smpi_mpi_test(&requests[i], pstat)) {
-         indices[count] = i;
+         indices[i] = 1;
          count++;
          if(status != MPI_STATUSES_IGNORE) {
            status[i] = *pstat;
