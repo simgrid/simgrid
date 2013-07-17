@@ -1549,7 +1549,7 @@ int PMPI_Waitany(int count, MPI_Request requests[], int *index, MPI_Status * sta
     if (is_wait_for_receive) {
       if(srcs[*index]==MPI_ANY_SOURCE)
         src_traced = (status!=MPI_STATUSES_IGNORE) ?
-                      smpi_group_rank(smpi_comm_group(comms[*index]), status[*index].MPI_SOURCE) :
+                      smpi_group_rank(smpi_comm_group(comms[*index]), status->MPI_SOURCE) :
                       srcs[*index];
       TRACE_smpi_recv(rank_traced, src_traced, dst_traced);
     }
