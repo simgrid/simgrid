@@ -1117,6 +1117,10 @@ void mpi_comm_set_errhandler_ (int* comm, void* errhandler, int* ierr) {
  *ierr = MPI_Errhandler_set(get_comm(*comm), *(MPI_Errhandler*)errhandler);
 }
 
+void mpi_comm_get_errhandler_ (int* comm, void* errhandler, int* ierr) {
+ *ierr = MPI_Errhandler_set(get_comm(*comm), (MPI_Errhandler*)errhandler);
+}
+
 void mpi_type_contiguous_ (int* count, int* old_type, int*  newtype, int* ierr) {
   MPI_Datatype tmp;
   *ierr = MPI_Type_contiguous(*count, get_datatype(*old_type), &tmp);

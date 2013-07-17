@@ -2563,6 +2563,10 @@ int PMPI_Comm_set_errhandler(MPI_Comm comm, MPI_Errhandler errhandler) {
    NOT_YET_IMPLEMENTED
 }
 
+int PMPI_Comm_get_errhandler(MPI_Comm comm, MPI_Errhandler* errhandler) {
+   NOT_YET_IMPLEMENTED
+}
+
 int PMPI_Cancel(MPI_Request* request) {
    NOT_YET_IMPLEMENTED
 }

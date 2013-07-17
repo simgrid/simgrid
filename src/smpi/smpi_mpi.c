@@ -615,6 +615,10 @@ int MPI_Comm_set_errhandler(MPI_Comm comm, MPI_Errhandler errhandler) {
   return PMPI_Errhandler_set(comm, errhandler);
 }
 
+int MPI_Comm_get_errhandler(MPI_Comm comm, MPI_Errhandler* errhandler) {
+  return PMPI_Errhandler_set(comm, errhandler);
+}
+
 int MPI_Type_contiguous(int count, MPI_Datatype old_type, MPI_Datatype* newtype) {
   return PMPI_Type_contiguous(count, old_type, newtype);
 }
