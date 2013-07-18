@@ -12,7 +12,7 @@ if(enable_smpi)
   set(MPICH_FLAGS "-DHAVE_STDLIB_H=1 -DHAVE_UNISTD_H=1 -DHAVE_STRING_H=1 -DUSE_STDARG=1 -DHAVE_LONG_DOUBLE=1 -DHAVE_PROTOTYPES=1 -DHAVE_SIGNAL_H=1 -DHAVE_SIGACTION=1 -DHAVE_SLEEP=1 -DHAVE_SYSCONF=1  -Wno-error=unused-variable -Wno-implicit")
   include_directories("${CMAKE_HOME_DIRECTORY}/include/smpi")
   include_directories("${CMAKE_CURRENT_SOURCE_DIR}/../include/")
-
+  include_directories("${CMAKE_CURRENT_SOURCE_DIR}")
 
   add_executable(allpairf allpairf.f ../util/mtestf.f)
   add_executable(greqf greqf.f dummyf.f ../util/mtestf.f)
