@@ -1234,7 +1234,8 @@ void xbt_os_thread_set_extra_data(void *data)
 
 void *xbt_os_thread_get_extra_data(void)
 {
-  return xbt_os_thread_self()->extra_data;
+  xbt_os_thread_t self = xbt_os_thread_self();
+  return self? self->extra_data : NULL;
 }
 
 xbt_os_rmutex_t xbt_os_rmutex_init(void)
