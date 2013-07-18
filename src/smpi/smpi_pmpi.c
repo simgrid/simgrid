@@ -925,6 +925,7 @@ int PMPI_Send_init(void *buf, int count, MPI_Datatype datatype, int dst,
     retval = MPI_SUCCESS;
   }
   smpi_bench_begin();
+  if(retval!=MPI_SUCCESS)*request=MPI_REQUEST_NULL;
   return retval;
 }
 
@@ -945,6 +946,7 @@ int PMPI_Recv_init(void *buf, int count, MPI_Datatype datatype, int src,
     retval = MPI_SUCCESS;
   }
   smpi_bench_begin();
+  if(retval!=MPI_SUCCESS)*request=MPI_REQUEST_NULL;
   return retval;
 }
 
@@ -963,6 +965,7 @@ int PMPI_Ssend_init(void* buf, int count, MPI_Datatype datatype, int dst, int ta
       retval = MPI_SUCCESS;
     }
     smpi_bench_begin();
+    if(retval!=MPI_SUCCESS)*request=MPI_REQUEST_NULL;
     return retval;
 }
 
@@ -1054,6 +1057,7 @@ int PMPI_Irecv(void *buf, int count, MPI_Datatype datatype, int src,
   }
 
   smpi_bench_begin();
+  if(retval!=MPI_SUCCESS)*request=MPI_REQUEST_NULL;
   return retval;
 }
 
@@ -1102,6 +1106,7 @@ int PMPI_Isend(void *buf, int count, MPI_Datatype datatype, int dst,
   }
 
   smpi_bench_begin();
+  if(retval!=MPI_SUCCESS)*request=MPI_REQUEST_NULL;
   return retval;
 }
 
@@ -1147,6 +1152,7 @@ int PMPI_Issend(void* buf, int count, MPI_Datatype datatype, int dst, int tag, M
   }
 
   smpi_bench_begin();
+  if(retval!=MPI_SUCCESS)*request=MPI_REQUEST_NULL;
   return retval;
 }
 
