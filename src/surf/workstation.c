@@ -101,8 +101,34 @@ int ws_resource_used(void *resource_id)
 }
 
 
-/* TODO: The current code would be slow due to the iteration. Later, we can
- * make it faster. */
+/* TODO: iterating active constraint_set may be faster? */
+#if 0
+static void deactivate_dummy_cpu_action(void)
+{
+  lmm_system_t sys = surf_cpu_model_vm->model_private->maxmin_system;
+
+  lmm_constraint_t cnst;
+  xbt_swag_foreach(cnst, &sys->active_constraint_set) {
+    /* get vcpu resource */
+    surf_resource_t cpu = lmm_constraint_id(cnst);
+    xbt_assert(cpu->model == surf_cpu_model_vm);
+
+    /* get vm_ws resource */
+    workstation_CLM03_t ws = xbt_lib_get_or_null(host_lib, cpu->name, SURF_WKS_LEVEL);
+
+    /* make sure we can cast */
+    xbt_assert(ws->generic_resouce.model == surf_vm_workstation_model);
+    workstation_VM2013_t vm_ws = (workstation_VM2013_t) ws;
+
+    /* make it active in the PM layer */
+    surf_action_set_priority(vm_ws->cpu_action, 1);
+  }
+}
+#endif
+
+
+/* TODO: Delete this unused code if everything looks good. */
+#if 0
 static int constraint_is_active(cpu_Cas01_t cpu_cas01)
 {
   surf_model_t cpu_model = cpu_cas01->generic_resource.model;
@@ -119,6 +145,8 @@ static int constraint_is_active(cpu_Cas01_t cpu_cas01)
 
   return found;
 }
+#endif
+
 
 /* Each VM has a dummy CPU action on the PM layer. This CPU action works as the
  * constraint (capacity) of the VM in the PM layer. If the VM does not have any
@@ -145,7 +173,15 @@ static void adjust_weight_of_dummy_cpu_actions(void)
     /* It is a virtual machine, so we can cast it to workstation_VM2013_t */
     workstation_VM2013_t ws_vm2013 = (workstation_VM2013_t) ws_clm03;
 
-    if (constraint_is_active(cpu_cas01)) {
+    lmm_system_t sys = surf_cpu_model_vm->model_private->maxmin_system;
+    int is_active = lmm_constraint_used(sys, cpu_cas01->constraint);
+    // int is_active_old = constraint_is_active(cpu_cas01);
+
+    // {
+    //   xbt_assert(is_active == is_active_old, "%d %d", is_active, is_active_old);
+    // }
+
+    if (is_active) {
       /* some tasks exist on this VM */
       XBT_DEBUG("set the weight of the dummy CPU action on PM to 1");
 
@@ -165,8 +201,8 @@ static void adjust_weight_of_dummy_cpu_actions(void)
 
 double ws_share_resources(surf_model_t workstation_model, double now)
 {
- if (workstation_model->type == SURF_MODEL_TYPE_WORKSTATION)
-   adjust_weight_of_dummy_cpu_actions();
+  if (workstation_model->type == SURF_MODEL_TYPE_WORKSTATION)
+    adjust_weight_of_dummy_cpu_actions();
 
   /* Invoke the share_resources() callback of the physical cpu model object and
    * the network model objects. */
