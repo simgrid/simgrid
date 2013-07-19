@@ -6,12 +6,14 @@ add_executable(masterslave_virtual_machines "masterslave_virtual_machines.c")
 add_executable(simple_vm "simple_vm.c")
 add_executable(migrate_vm "migrate_vm.c")
 add_executable(bound "bound.c")
+add_executable(scale "scale.c")
 
 ### Add definitions for compile
 target_link_libraries(masterslave_virtual_machines simgrid)
 target_link_libraries(simple_vm simgrid)
 target_link_libraries(migrate_vm simgrid)
 target_link_libraries(bound simgrid)
+target_link_libraries(scale simgrid)
 
 set(tesh_files
   ${tesh_files}
@@ -30,6 +32,7 @@ set(examples_src
   ${CMAKE_CURRENT_SOURCE_DIR}/simple_vm.c
   ${CMAKE_CURRENT_SOURCE_DIR}/migrate_vm.c
   ${CMAKE_CURRENT_SOURCE_DIR}/bound.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/scale.c
   PARENT_SCOPE
   )
 set(bin_files
