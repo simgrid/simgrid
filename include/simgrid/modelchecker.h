@@ -23,6 +23,7 @@ XBT_PUBLIC(int) MC_random(void);
 XBT_PUBLIC(void) MC_automaton_new_propositional_symbol(const char* id, void* fct);
 XBT_PUBLIC(void *) MC_snapshot(void);
 XBT_PUBLIC(int) MC_compare_snapshots(void *s1, void *s2);
+XBT_PUBLIC(void) MC_max_depth(int);
 
 #else
 

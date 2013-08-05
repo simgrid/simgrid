@@ -248,7 +248,7 @@ void MC_dpor(void)
   xbt_fifo_item_t item = NULL;
   int pos;
   int visited_state;
-  int enabled = 0, max_depth_reached = 0;
+  int enabled = 0, max_depth_reached;
 
   while (xbt_fifo_size(mc_stack_safety) > 0) {
 
@@ -257,16 +257,16 @@ void MC_dpor(void)
       xbt_fifo_get_item_content(xbt_fifo_get_first_item(mc_stack_safety));
 
     XBT_DEBUG("**************************************************");
-    XBT_DEBUG("Exploration depth=%d (state=%p, num %d)(%u interleave)",
+    XBT_DEBUG("Exploration depth=%d (state=%p, num %d)(%u interleave, user_max_depth %d)",
               xbt_fifo_size(mc_stack_safety), state, state->num,
-              MC_state_interleave_size(state));
+              MC_state_interleave_size(state), user_max_depth_reached);
 
     /* Update statistics */
     mc_stats->visited_states++;
 
     /* If there are processes to interleave and the maximum depth has not been reached
        then perform one step of the exploration algorithm */
-    if (xbt_fifo_size(mc_stack_safety) <= _sg_mc_max_depth &&
+    if (xbt_fifo_size(mc_stack_safety) <= _sg_mc_max_depth && !user_max_depth_reached &&
         (req = MC_state_get_request(state, &value))) {
 
       /* Debug information */
@@ -349,10 +349,13 @@ void MC_dpor(void)
 
       /* The interleave set is empty or the maximum depth is reached, let's back-track */
     } else {
+      
+      if((xbt_fifo_size(mc_stack_safety) > _sg_mc_max_depth) || user_max_depth_reached){  
 
-      if(xbt_fifo_size(mc_stack_safety) > _sg_mc_max_depth){  
-
-        XBT_WARN("/!\\ Max depth reached ! /!\\ ");
+        if(user_max_depth_reached)
+          XBT_WARN("User max depth reached !");
+        else
+          XBT_WARN("/!\\ Max depth reached ! /!\\ ");
 
         /* Interleave enabled processes in the state in which they have been enabled for the first time */
         xbt_swag_foreach(process, simix_global->process_list){
@@ -417,9 +420,10 @@ void MC_dpor(void)
       
       while ((state = xbt_fifo_shift(mc_stack_safety)) != NULL) {
         if(mc_reduce_kind != e_mc_reduce_none){
-          if((xbt_fifo_size(mc_stack_safety) == _sg_mc_max_depth) && max_depth_reached){
+          if(((xbt_fifo_size(mc_stack_safety) == _sg_mc_max_depth) && max_depth_reached) || user_max_depth_reached){
             req = MC_state_get_request(state, &value);
             MC_state_set_executed_request(state, req, value);
+            user_max_depth_reached = 0;
           }
           req = MC_state_get_internal_request(state);
           xbt_fifo_foreach(mc_stack_safety, item, prev_state, mc_state_t) {

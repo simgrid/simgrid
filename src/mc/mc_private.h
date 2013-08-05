@@ -69,6 +69,8 @@ extern double *mc_time;
 extern FILE *dot_output;
 extern const char* colors[13];
 
+extern int user_max_depth_reached;
+
 int MC_deadlock_check(void);
 void MC_replay(xbt_fifo_t stack, int start);
 void MC_replay_liveness(xbt_fifo_t stack, int all_stack);
