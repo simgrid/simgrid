@@ -2974,4 +2974,3 @@ $ $SG_TEST_EXENV ${bindir:=.}/chord$EXEEXT ${srcdir:=.}/../../platforms/cluster.
 > [ 987.000000] (6:node@c-5.me) Predecessor: 10004760
 > [1196.000000] (0:@) Messages created: 1827
 > [1196.000000] (0:@) Simulated time: 1196
-

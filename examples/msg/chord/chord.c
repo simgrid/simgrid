@@ -987,14 +987,19 @@ static void check_predecessor(node_t node)
  */
 static void random_lookup(node_t node)
 {
-  //int id = 1337; // TODO pick a pseudorandom id
-  if(node->stream == NULL)
+  
+  int id = 1337; 
+  find_successor(node, id);
+
+  /*** Random lookup disabled for tesh examples ***/
+  /*if(node->stream == NULL)
     node->stream = RngStream_CreateStream("");
   int random_index = RngStream_RandInt (node->stream, 0, nb_bits - 1);
   int random_id = node->fingers[random_index].id;
   XBT_DEBUG("Making a lookup request for id %d", random_id);
   int res = find_successor(node, random_id);
-  XBT_DEBUG("The successor of node %d is %d", random_id, res);
+  XBT_DEBUG("The successor of node %d is %d", random_id, res);*/
+
 }
 
 /**
