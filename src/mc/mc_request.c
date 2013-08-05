@@ -32,15 +32,15 @@ int MC_request_depend(smx_simcall_t r1, smx_simcall_t r2) {
     if(rdv != simcall_comm_wait__get__comm(r2)->comm.rdv_cpy && simcall_comm_wait__get__timeout(r2) <= 0)
       return FALSE;
 
-    if((r1->issuer != simcall_comm_wait__get__comm(r2)->comm.src_proc) && (r1->issuer != simcall_comm_wait__get__comm(r2)->comm.dst_proc))
+    if((r1->issuer != simcall_comm_wait__get__comm(r2)->comm.src_proc) && (r1->issuer != simcall_comm_wait__get__comm(r2)->comm.dst_proc) && simcall_comm_wait__get__timeout(r2) <= 0)
       return FALSE;
 
     if((r1->call == SIMCALL_COMM_ISEND) && (simcall_comm_wait__get__comm(r2)->comm.type == SIMIX_COMM_SEND) 
-       && (simcall_comm_wait__get__comm(r2)->comm.src_buff != simcall_comm_isend__get__src_buff(r1)))
+       && (simcall_comm_wait__get__comm(r2)->comm.src_buff != simcall_comm_isend__get__src_buff(r1)) && simcall_comm_wait__get__timeout(r2) <= 0)
       return FALSE;
 
     if((r1->call == SIMCALL_COMM_IRECV) && (simcall_comm_wait__get__comm(r2)->comm.type == SIMIX_COMM_RECEIVE) 
-       && (simcall_comm_wait__get__comm(r2)->comm.dst_buff != simcall_comm_irecv__get__dst_buff(r1)))
+       && (simcall_comm_wait__get__comm(r2)->comm.dst_buff != simcall_comm_irecv__get__dst_buff(r1)) && simcall_comm_wait__get__timeout(r2) <= 0)
       return FALSE;
   }
 
@@ -52,15 +52,15 @@ int MC_request_depend(smx_simcall_t r1, smx_simcall_t r2) {
     if(rdv != simcall_comm_wait__get__comm(r1)->comm.rdv_cpy && simcall_comm_wait__get__timeout(r1) <= 0)
       return FALSE;
 
-    if((r2->issuer != simcall_comm_wait__get__comm(r1)->comm.src_proc) && (r2->issuer != simcall_comm_wait__get__comm(r1)->comm.dst_proc))
+    if((r2->issuer != simcall_comm_wait__get__comm(r1)->comm.src_proc) && (r2->issuer != simcall_comm_wait__get__comm(r1)->comm.dst_proc) && simcall_comm_wait__get__timeout(r1) <= 0)
         return FALSE;  
 
     if((r2->call == SIMCALL_COMM_ISEND) && (simcall_comm_wait__get__comm(r1)->comm.type == SIMIX_COMM_SEND) 
-       && (simcall_comm_wait__get__comm(r1)->comm.src_buff != simcall_comm_isend__get__src_buff(r2)))
+       && (simcall_comm_wait__get__comm(r1)->comm.src_buff != simcall_comm_isend__get__src_buff(r2)) && simcall_comm_wait__get__timeout(r1) <= 0)
       return FALSE;
 
     if((r2->call == SIMCALL_COMM_IRECV) && (simcall_comm_wait__get__comm(r1)->comm.type == SIMIX_COMM_RECEIVE) 
-       && (simcall_comm_wait__get__comm(r1)->comm.dst_buff != simcall_comm_irecv__get__dst_buff(r2)))
+       && (simcall_comm_wait__get__comm(r1)->comm.dst_buff != simcall_comm_irecv__get__dst_buff(r2)) && simcall_comm_wait__get__timeout(r1) <= 0)
       return FALSE;
   }
 
