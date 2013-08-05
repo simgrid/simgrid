@@ -89,7 +89,6 @@ void _mc_cfg_cb_dot_output(const char *name, int pos) {
 }
 
 /* MC global data structures */
-
 mc_state_t mc_current_state = NULL;
 char mc_replay_mode = FALSE;
 double *mc_time = NULL;
@@ -98,20 +97,23 @@ double mc_snapshot_comparison_time;
 mc_stats_t mc_stats = NULL;
 
 /* Safety */
-
 xbt_fifo_t mc_stack_safety = NULL;
 mc_global_t initial_state_safety = NULL;
 
 /* Liveness */
-
 xbt_fifo_t mc_stack_liveness = NULL;
 mc_global_t initial_state_liveness = NULL;
 int compare;
 
-/* Local */
-xbt_dict_t mc_local_variables = NULL;
-/* Global */
-xbt_dynar_t mc_global_variables = NULL;
+xbt_automaton_t _mc_property_automaton = NULL;
+
+/* Variables */
+xbt_dict_t mc_local_variables_libsimgrid = NULL;
+xbt_dict_t mc_local_variables_binary = NULL;
+xbt_dynar_t mc_global_variables_libsimgrid = NULL;
+xbt_dynar_t mc_global_variables_binary = NULL;
+xbt_dict_t mc_variables_type_libsimgrid = NULL;
+xbt_dict_t mc_variables_type_binary = NULL;
 
 /* Ignore mechanism */
 xbt_dynar_t mc_stack_comparison_ignore;
@@ -119,46 +121,1619 @@ xbt_dynar_t mc_data_bss_comparison_ignore;
 extern xbt_dynar_t mc_heap_comparison_ignore;
 extern xbt_dynar_t stacks_areas;
 
+/* Dot output */
 FILE *dot_output = NULL;
 const char* colors[13];
 
-xbt_automaton_t _mc_property_automaton = NULL;
 
-/* Static functions */
+/*******************************  DWARF Information *******************************/
+/**********************************************************************************/
 
-static void MC_assert_pair(int prop);
-static dw_location_t get_location(xbt_dict_t location_list, char *expr);
-static dw_frame_t get_frame_by_offset(xbt_dict_t all_variables, unsigned long int offset);
-static size_t data_bss_ignore_size(void *address);
-static void MC_get_global_variables(char *elf_file);
+/************************** Free functions *************************/
 
-void MC_do_the_modelcheck_for_real() {
-
-  MC_SET_RAW_MEM;
-  mc_comp_times = xbt_new0(s_mc_comparison_times_t, 1);
-  MC_UNSET_RAW_MEM;
+static void dw_location_free(dw_location_t l){
+  if(l){
+    if(l->type == e_dw_loclist)
+      xbt_dynar_free(&(l->location.loclist));
+    else if(l->type == e_dw_compose)
+      xbt_dynar_free(&(l->location.compose));
+    else if(l->type == e_dw_arithmetic)
+      xbt_free(l->location.arithmetic);
   
-  if (!_sg_mc_property_file || _sg_mc_property_file[0]=='\0') {
-    if (mc_reduce_kind==e_mc_reduce_unset)
-      mc_reduce_kind=e_mc_reduce_dpor;
-
-    XBT_INFO("Check a safety property");
-    MC_modelcheck_safety();
-
-  } else  {
-
-    if (mc_reduce_kind==e_mc_reduce_unset)
-      mc_reduce_kind=e_mc_reduce_none;
-
-    XBT_INFO("Check the liveness property %s",_sg_mc_property_file);
-    MC_automaton_load(_sg_mc_property_file);
-    MC_modelcheck_liveness();
+    xbt_free(l);
   }
 }
 
+static void dw_location_entry_free(dw_location_entry_t e){
+  dw_location_free(e->location);
+  xbt_free(e);
+}
 
-void MC_compare(void){
-  compare = 1;
+static void dw_type_free(dw_type_t t){
+  xbt_free(t->name);
+  xbt_free(t->dw_type_id);
+  xbt_dynar_free(&(t->members));
+  xbt_free(t);
+}
+
+static void dw_type_free_voidp(void *t){
+  dw_type_free((dw_type_t) * (void **) t);
+}
+
+static void dw_variable_free(dw_variable_t v){
+  if(v){
+    xbt_free(v->name);
+    xbt_free(v->type_origin);
+    if(!v->global)
+      dw_location_free(v->address.location);
+    xbt_free(v);
+  }
+}
+
+static void dw_variable_free_voidp(void *t){
+  dw_variable_free((dw_variable_t) * (void **) t);
+}
+
+/*************************************************************************/
+
+static dw_location_t MC_dwarf_get_location(xbt_dict_t location_list, char *expr){
+
+  dw_location_t loc = xbt_new0(s_dw_location_t, 1);
+
+  if(location_list != NULL){
+    
+    char *key = bprintf("%d", (int)strtoul(expr, NULL, 16));
+    loc->type = e_dw_loclist;
+    loc->location.loclist =  (xbt_dynar_t)xbt_dict_get_or_null(location_list, key);
+    if(loc->location.loclist == NULL)
+      XBT_INFO("Key not found in loclist");
+    xbt_free(key);
+    return loc;
+
+  }else{
+
+    int cursor = 0;
+    char *tok = NULL, *tok2 = NULL; 
+    
+    xbt_dynar_t tokens1 = xbt_str_split(expr, ";");
+    xbt_dynar_t tokens2;
+
+    loc->type = e_dw_compose;
+    loc->location.compose = xbt_dynar_new(sizeof(dw_location_t), NULL);
+
+    while(cursor < xbt_dynar_length(tokens1)){
+
+      tok = xbt_dynar_get_as(tokens1, cursor, char*);
+      tokens2 = xbt_str_split(tok, " ");
+      tok2 = xbt_dynar_get_as(tokens2, 0, char*);
+      
+      if(strncmp(tok2, "DW_OP_reg", 9) == 0){
+        dw_location_t new_element = xbt_new0(s_dw_location_t, 1);
+        new_element->type = e_dw_register;
+        new_element->location.reg = atoi(strtok(tok2, "DW_OP_reg"));
+        xbt_dynar_push(loc->location.compose, &new_element);     
+      }else if(strcmp(tok2, "DW_OP_fbreg:") == 0){
+        dw_location_t new_element = xbt_new0(s_dw_location_t, 1);
+        new_element->type = e_dw_fbregister_op;
+        new_element->location.fbreg_op = atoi(xbt_dynar_get_as(tokens2, xbt_dynar_length(tokens2) - 1, char*));
+        xbt_dynar_push(loc->location.compose, &new_element);
+      }else if(strncmp(tok2, "DW_OP_breg", 10) == 0){
+        dw_location_t new_element = xbt_new0(s_dw_location_t, 1);
+        new_element->type = e_dw_bregister_op;
+        new_element->location.breg_op.reg = atoi(strtok(tok2, "DW_OP_breg"));
+        new_element->location.breg_op.offset = atoi(xbt_dynar_get_as(tokens2, xbt_dynar_length(tokens2) - 1, char*));
+        xbt_dynar_push(loc->location.compose, &new_element);
+      }else if(strncmp(tok2, "DW_OP_lit", 9) == 0){
+        dw_location_t new_element = xbt_new0(s_dw_location_t, 1);
+        new_element->type = e_dw_lit;
+        new_element->location.lit = atoi(strtok(tok2, "DW_OP_lit"));
+        xbt_dynar_push(loc->location.compose, &new_element);
+      }else if(strcmp(tok2, "DW_OP_piece:") == 0){
+        dw_location_t new_element = xbt_new0(s_dw_location_t, 1);
+        new_element->type = e_dw_piece;
+        new_element->location.piece = atoi(xbt_dynar_get_as(tokens2, xbt_dynar_length(tokens2) - 1, char*));
+        xbt_dynar_push(loc->location.compose, &new_element);
+      }else if(strcmp(tok2, "DW_OP_plus_uconst:") == 0){
+        dw_location_t new_element = xbt_new0(s_dw_location_t, 1);
+        new_element->type = e_dw_plus_uconst;
+        new_element->location.plus_uconst = atoi(xbt_dynar_get_as(tokens2, xbt_dynar_length(tokens2) - 1, char *));
+        xbt_dynar_push(loc->location.compose, &new_element);
+      }else if(strcmp(tok, "DW_OP_abs") == 0 || 
+               strcmp(tok, "DW_OP_and") == 0 ||
+               strcmp(tok, "DW_OP_div") == 0 ||
+               strcmp(tok, "DW_OP_minus") == 0 ||
+               strcmp(tok, "DW_OP_mod") == 0 ||
+               strcmp(tok, "DW_OP_mul") == 0 ||
+               strcmp(tok, "DW_OP_neg") == 0 ||
+               strcmp(tok, "DW_OP_not") == 0 ||
+               strcmp(tok, "DW_OP_or") == 0 ||
+               strcmp(tok, "DW_OP_plus") == 0){               
+        dw_location_t new_element = xbt_new0(s_dw_location_t, 1);
+        new_element->type = e_dw_arithmetic;
+        new_element->location.arithmetic = strdup(strtok(tok2, "DW_OP_"));
+        xbt_dynar_push(loc->location.compose, &new_element);
+      }else if(strcmp(tok, "DW_OP_stack_value") == 0){
+      }else if(strcmp(tok2, "DW_OP_deref_size:") == 0){
+        dw_location_t new_element = xbt_new0(s_dw_location_t, 1);
+        new_element->type = e_dw_deref;
+        new_element->location.deref_size = (unsigned int short) atoi(xbt_dynar_get_as(tokens2, xbt_dynar_length(tokens2) - 1, char*));
+        xbt_dynar_push(loc->location.compose, &new_element);
+      }else if(strcmp(tok, "DW_OP_deref") == 0){
+        dw_location_t new_element = xbt_new0(s_dw_location_t, 1);
+        new_element->type = e_dw_deref;
+        new_element->location.deref_size = sizeof(void *);
+        xbt_dynar_push(loc->location.compose, &new_element);
+      }else if(strcmp(tok2, "DW_OP_constu:") == 0){
+        dw_location_t new_element = xbt_new0(s_dw_location_t, 1);
+        new_element->type = e_dw_uconstant;
+        new_element->location.uconstant.bytes = 1;
+        new_element->location.uconstant.value = (unsigned long int)(atoi(xbt_dynar_get_as(tokens2, xbt_dynar_length(tokens2) - 1, char*)));
+        xbt_dynar_push(loc->location.compose, &new_element);
+      }else if(strcmp(tok2, "DW_OP_consts:") == 0){
+        dw_location_t new_element = xbt_new0(s_dw_location_t, 1);
+        new_element->type = e_dw_sconstant;
+        new_element->location.sconstant.bytes = 1;
+        new_element->location.sconstant.value = (long int)(atoi(xbt_dynar_get_as(tokens2, xbt_dynar_length(tokens2) - 1, char*)));
+        xbt_dynar_push(loc->location.compose, &new_element);
+      }else if(strcmp(tok2, "DW_OP_const1u:") == 0 ||
+               strcmp(tok2, "DW_OP_const2u:") == 0 ||
+               strcmp(tok2, "DW_OP_const4u:") == 0 ||
+               strcmp(tok2, "DW_OP_const8u:") == 0){
+        dw_location_t new_element = xbt_new0(s_dw_location_t, 1);
+        new_element->type = e_dw_uconstant;
+        new_element->location.uconstant.bytes = tok2[11] - '0';
+        new_element->location.uconstant.value = (unsigned long int)(atoi(xbt_dynar_get_as(tokens2, xbt_dynar_length(tokens2) - 1, char*)));
+        xbt_dynar_push(loc->location.compose, &new_element);
+      }else if(strcmp(tok, "DW_OP_const1s") == 0 ||
+               strcmp(tok, "DW_OP_const2s") == 0 ||
+               strcmp(tok, "DW_OP_const4s") == 0 ||
+               strcmp(tok, "DW_OP_const8s") == 0){
+        dw_location_t new_element = xbt_new0(s_dw_location_t, 1);
+        new_element->type = e_dw_sconstant;
+        new_element->location.sconstant.bytes = tok2[11] - '0';
+        new_element->location.sconstant.value = (long int)(atoi(xbt_dynar_get_as(tokens2, xbt_dynar_length(tokens2) - 1, char*)));
+        xbt_dynar_push(loc->location.compose, &new_element);
+      }else{
+        dw_location_t new_element = xbt_new0(s_dw_location_t, 1);
+        new_element->type = e_dw_unsupported;
+        xbt_dynar_push(loc->location.compose, &new_element);
+      }
+
+      cursor++;
+      xbt_dynar_free(&tokens2);
+
+    }
+    
+    xbt_dynar_free(&tokens1);
+
+    return loc;
+    
+  }
+
+}
+
+static xbt_dict_t MC_dwarf_get_location_list(const char *elf_file){
+
+  char *command = bprintf("objdump -Wo %s", elf_file);
+
+  FILE *fp = popen(command, "r");
+
+  if(fp == NULL){
+    perror("popen for objdump failed");
+    xbt_abort();
+  }
+
+  int debug = 0; /*Detect if the program has been compiled with -g */
+
+  xbt_dict_t location_list = xbt_dict_new_homogeneous(NULL);
+  char *line = NULL, *loc_expr = NULL;
+  ssize_t read;
+  size_t n = 0;
+  int cursor_remove;
+  xbt_dynar_t split = NULL;
+
+  while ((read = xbt_getline(&line, &n, fp)) != -1) {
+
+    /* Wipeout the new line character */
+    line[read - 1] = '\0';
+
+    xbt_str_trim(line, NULL);
+    
+    if(n == 0)
+      continue;
+
+    if(strlen(line) == 0)
+      continue;
+
+    if(debug == 0){
+
+      if(strncmp(line, elf_file, strlen(elf_file)) == 0)
+        continue;
+      
+      if(strncmp(line, "Contents", 8) == 0)
+        continue;
+
+      if(strncmp(line, "Offset", 6) == 0){
+        debug = 1;
+        continue;
+      }
+    }
+
+    if(debug == 0){
+      XBT_INFO("Your program must be compiled with -g");
+      xbt_abort();
+    }
+
+    xbt_dynar_t loclist = xbt_dynar_new(sizeof(dw_location_entry_t), NULL);
+
+    xbt_str_strip_spaces(line);
+    split = xbt_str_split(line, " ");
+
+    while(read != -1 && strcmp("<End", (char *)xbt_dynar_get_as(split, 1, char *)) != 0){
+      
+      dw_location_entry_t new_entry = xbt_new0(s_dw_location_entry_t, 1);
+      new_entry->lowpc = strtoul((char *)xbt_dynar_get_as(split, 1, char *), NULL, 16);
+      new_entry->highpc = strtoul((char *)xbt_dynar_get_as(split, 2, char *), NULL, 16);
+      
+      cursor_remove =0;
+      while(cursor_remove < 3){
+        xbt_dynar_remove_at(split, 0, NULL);
+        cursor_remove++;
+      }
+
+      loc_expr = xbt_str_join(split, " ");
+      xbt_str_ltrim(loc_expr, "(");
+      xbt_str_rtrim(loc_expr, ")");
+      new_entry->location = MC_dwarf_get_location(NULL, loc_expr);
+
+      xbt_dynar_push(loclist, &new_entry);
+
+      xbt_dynar_free(&split);
+      free(loc_expr);
+
+      read = xbt_getline(&line, &n, fp);
+      if(read != -1){
+        line[read - 1] = '\0';
+        xbt_str_strip_spaces(line);
+        split = xbt_str_split(line, " ");
+      }
+
+    }
+
+
+    char *key = bprintf("%d", (int)strtoul((char *)xbt_dynar_get_as(split, 0, char *), NULL, 16));
+    xbt_dict_set(location_list, key, loclist, NULL);
+    xbt_free(key);
+    
+    xbt_dynar_free(&split);
+
+  }
+
+  xbt_free(line);
+  xbt_free(command);
+  pclose(fp);
+
+  return location_list;
+}
+
+static dw_frame_t MC_dwarf_get_frame_by_offset(xbt_dict_t all_variables, unsigned long int offset){
+
+  xbt_dict_cursor_t cursor = NULL;
+  char *name;
+  dw_frame_t res;
+
+  xbt_dict_foreach(all_variables, cursor, name, res) {
+    if(offset >= res->start && offset < res->end){
+      xbt_dict_cursor_free(&cursor);
+      return res;
+    }
+  }
+
+  xbt_dict_cursor_free(&cursor);
+  return NULL;
+  
+}
+
+static dw_variable_t MC_dwarf_get_variable_by_name(dw_frame_t frame, char *var){
+
+  unsigned int cursor = 0;
+  dw_variable_t current_var;
+
+  xbt_dynar_foreach(frame->variables, cursor, current_var){
+    if(strcmp(var, current_var->name) == 0)
+      return current_var;
+  }
+
+  return NULL;
+}
+
+static int MC_dwarf_get_variable_index(xbt_dynar_t variables, char* var, void *address){
+
+  if(xbt_dynar_is_empty(variables))
+    return 0;
+
+  unsigned int cursor = 0;
+  int start = 0;
+  int end = xbt_dynar_length(variables) - 1;
+  dw_variable_t var_test = NULL;
+
+  while(start <= end){
+    cursor = (start + end) / 2;
+    var_test = (dw_variable_t)xbt_dynar_get_as(variables, cursor, dw_variable_t);
+    if(strcmp(var_test->name, var) < 0){
+      start = cursor + 1;
+    }else if(strcmp(var_test->name, var) > 0){
+      end = cursor - 1;
+    }else{
+      if(address){ /* global variable */
+        if(var_test->address.address == address)
+          return -1;
+        if(var_test->address.address > address)
+          end = cursor - 1;
+        else
+          start = cursor + 1;
+      }else{ /* local variable */
+        return -1;
+      }
+    }
+  }
+
+  if(strcmp(var_test->name, var) == 0){
+    if(address && var_test->address.address < address)
+      return cursor+1;
+    else
+      return cursor;
+  }else if(strcmp(var_test->name, var) < 0)
+    return cursor+1;
+  else
+    return cursor;
+
+}
+
+
+static void MC_dwarf_get_variables(const char *elf_file, xbt_dict_t location_list, xbt_dict_t *local_variables, xbt_dynar_t *global_variables, xbt_dict_t *types){
+
+  char *command = bprintf("objdump -Wi %s", elf_file);
+  
+  FILE *fp = popen(command, "r");
+
+  if(fp == NULL)
+    perror("popen for objdump failed");
+
+  char *line = NULL, *origin, *abstract_origin, *current_frame = NULL, 
+    *subprogram_name = NULL, *subprogram_start = NULL, *subprogram_end = NULL,
+    *node_type = NULL, *location_type = NULL, *variable_name = NULL, 
+    *loc_expr = NULL, *name = NULL, *end =NULL, *type_origin = NULL, *global_address = NULL, 
+    *parent_value = NULL;
+
+  ssize_t read =0;
+  size_t n = 0;
+  int global_variable = 0, parent = 0, new_frame = 0, new_variable = 1, size = 0, 
+    is_pointer = 0, struct_decl = 0, member_end = 0,
+    enumeration_size = 0, subrange = 0, union_decl = 0, offset = 0, index = 0;
+  
+  xbt_dynar_t split = NULL, split2 = NULL;
+
+  xbt_dict_t variables_origin = xbt_dict_new_homogeneous(xbt_free);
+  xbt_dict_t subprograms_origin = xbt_dict_new_homogeneous(xbt_free);
+
+  dw_frame_t variable_frame, subroutine_frame = NULL;
+
+  e_dw_type_type type_type = -1;
+
+  read = xbt_getline(&line, &n, fp);
+
+  while (read != -1) {
+
+    /* Wipeout the new line character */
+    line[read - 1] = '\0';
+  
+    if(n == 0 || strlen(line) == 0){
+      read = xbt_getline(&line, &n, fp);
+      continue;
+    }
+
+    xbt_str_ltrim(line, NULL);
+    xbt_str_strip_spaces(line);
+    
+    if(line[0] != '<'){
+      read = xbt_getline(&line, &n, fp);
+      continue;
+    }
+    
+    xbt_dynar_free(&split);
+    split = xbt_str_split(line, " ");
+
+    /* Get node type */
+    node_type = xbt_dynar_get_as(split, xbt_dynar_length(split) - 1, char *);
+
+    if(strcmp(node_type, "(DW_TAG_subprogram)") == 0){ /* New frame */
+
+      dw_frame_t frame = NULL;
+
+      strtok(xbt_dynar_get_as(split, 0, char *), "<");
+      subprogram_start = xbt_strdup(strtok(NULL, "<"));
+      xbt_str_rtrim(subprogram_start, ">:");
+
+      read = xbt_getline(&line, &n, fp);
+   
+      while(read != -1){
+
+        /* Wipeout the new line character */
+        line[read - 1] = '\0';
+
+        if(n == 0 || strlen(line) == 0){
+          read = xbt_getline(&line, &n, fp);
+          continue;
+        }
+        
+        xbt_dynar_free(&split);
+        xbt_str_rtrim(line, NULL);
+        xbt_str_strip_spaces(line);
+        split = xbt_str_split(line, " ");
+          
+        node_type = xbt_dynar_get_as(split, 1, char *);
+
+        if(strncmp(node_type, "DW_AT_", 6) != 0)
+          break;
+
+        if(strcmp(node_type, "DW_AT_sibling") == 0){
+
+          subprogram_end = xbt_strdup(xbt_dynar_get_as(split, 3, char*));
+          xbt_str_ltrim(subprogram_end, "<0x");
+          xbt_str_rtrim(subprogram_end, ">");
+          
+        }else if(strcmp(node_type, "DW_AT_abstract_origin:") == 0){ /* Frame already in dict */
+          
+          new_frame = 0;
+          abstract_origin = xbt_strdup(xbt_dynar_get_as(split, 2, char*));
+          xbt_str_ltrim(abstract_origin, "<0x");
+          xbt_str_rtrim(abstract_origin, ">");
+          subprogram_name = (char *)xbt_dict_get_or_null(subprograms_origin, abstract_origin);
+          frame = xbt_dict_get_or_null(*local_variables, subprogram_name); 
+          xbt_free(abstract_origin);
+
+        }else if(strcmp(node_type, "DW_AT_name") == 0){
+
+          new_frame = 1;
+          xbt_free(current_frame);
+          frame = xbt_new0(s_dw_frame_t, 1);
+          frame->name = strdup(xbt_dynar_get_as(split, xbt_dynar_length(split) - 1, char *)); 
+          frame->variables = xbt_dynar_new(sizeof(dw_variable_t), dw_variable_free_voidp);
+          frame->frame_base = xbt_new0(s_dw_location_t, 1); 
+          current_frame = strdup(frame->name);
+
+          xbt_dict_set(subprograms_origin, subprogram_start, xbt_strdup(frame->name), NULL);
+        
+        }else if(strcmp(node_type, "DW_AT_frame_base") == 0){
+
+          location_type = xbt_dynar_get_as(split, xbt_dynar_length(split) - 1, char *);
+
+          if(strcmp(location_type, "list)") == 0){ /* Search location in location list */
+
+            frame->frame_base = MC_dwarf_get_location(location_list, xbt_dynar_get_as(split, 3, char *));
+             
+          }else{
+                
+            xbt_str_strip_spaces(line);
+            split2 = xbt_str_split(line, "(");
+            xbt_dynar_remove_at(split2, 0, NULL);
+            loc_expr = xbt_str_join(split2, " ");
+            xbt_str_rtrim(loc_expr, ")");
+            frame->frame_base = MC_dwarf_get_location(NULL, loc_expr);
+            xbt_dynar_free(&split2);
+            xbt_free(loc_expr);
+
+          }
+ 
+        }else if(strcmp(node_type, "DW_AT_low_pc") == 0){
+          
+          if(frame != NULL)
+            frame->low_pc = (void *)strtoul(xbt_dynar_get_as(split, 3, char *), NULL, 16);
+
+        }else if(strcmp(node_type, "DW_AT_high_pc") == 0){
+
+          if(frame != NULL)
+            frame->high_pc = (void *)strtoul(xbt_dynar_get_as(split, 3, char *), NULL, 16);
+
+        }else if(strcmp(node_type, "DW_AT_MIPS_linkage_name:") == 0){
+
+          xbt_free(frame->name);
+          xbt_free(current_frame);
+          frame->name = strdup(xbt_dynar_get_as(split, xbt_dynar_length(split) - 1, char *));   
+          current_frame = strdup(frame->name);
+          xbt_dict_set(subprograms_origin, subprogram_start, xbt_strdup(frame->name), NULL);
+
+        }
+
+        read = xbt_getline(&line, &n, fp);
+
+      }
+ 
+      if(new_frame == 1){
+        frame->start = strtoul(subprogram_start, NULL, 16);
+        if(subprogram_end != NULL)
+          frame->end = strtoul(subprogram_end, NULL, 16);
+        xbt_dict_set(*local_variables, frame->name, frame, NULL);
+      }
+
+      xbt_free(subprogram_start);
+      xbt_free(subprogram_end);
+      subprogram_end = NULL;
+        
+
+    }else if(strcmp(node_type, "(DW_TAG_variable)") == 0){ /* New variable */
+
+      dw_variable_t var = NULL;
+      
+      parent_value = strdup(xbt_dynar_get_as(split, 0, char *));
+      parent_value = strtok(parent_value,"<");
+      xbt_str_rtrim(parent_value, ">");
+      parent = atoi(parent_value);
+      xbt_free(parent_value);
+
+      if(parent == 1)
+        global_variable = 1;
+    
+      strtok(xbt_dynar_get_as(split, 0, char *), "<");
+      origin = xbt_strdup(strtok(NULL, "<"));
+      xbt_str_rtrim(origin, ">:");
+      
+      read = xbt_getline(&line, &n, fp);
+      
+      while(read != -1){
+
+        /* Wipeout the new line character */
+        line[read - 1] = '\0'; 
+
+        if(n == 0 || strlen(line) == 0){
+          read = xbt_getline(&line, &n, fp);
+          continue;
+        }
+    
+        xbt_dynar_free(&split);
+        xbt_str_rtrim(line, NULL);
+        xbt_str_strip_spaces(line);
+        split = xbt_str_split(line, " ");
+  
+        node_type = xbt_dynar_get_as(split, 1, char *);
+
+        if(strncmp(node_type, "DW_AT_", 6) != 0)
+          break;
+
+        if(strcmp(node_type, "DW_AT_name") == 0){
+
+          var = xbt_new0(s_dw_variable_t, 1);
+          var->name = xbt_strdup(xbt_dynar_get_as(split, xbt_dynar_length(split) - 1, char *));
+          xbt_dict_set(variables_origin, origin, xbt_strdup(var->name), NULL);
+         
+        }else if(strcmp(node_type, "DW_AT_abstract_origin:") == 0){
+
+          new_variable = 0;
+
+          abstract_origin = xbt_dynar_get_as(split, 2, char *);
+          xbt_str_ltrim(abstract_origin, "<0x");
+          xbt_str_rtrim(abstract_origin, ">");
+          
+          variable_name = (char *)xbt_dict_get_or_null(variables_origin, abstract_origin);
+          variable_frame = MC_dwarf_get_frame_by_offset(*local_variables, strtoul(abstract_origin, NULL, 16));
+          var = MC_dwarf_get_variable_by_name(variable_frame, variable_name); 
+
+        }else if(strcmp(node_type, "DW_AT_location") == 0){
+
+          if(var != NULL){
+
+            if(!global_variable){
+
+              location_type = xbt_dynar_get_as(split, xbt_dynar_length(split) - 1, char *);
+
+              if(strcmp(location_type, "list)") == 0){ /* Search location in location list */
+                var->address.location = MC_dwarf_get_location(location_list, xbt_dynar_get_as(split, 3, char *));
+              }else{
+                xbt_str_strip_spaces(line);
+                split2 = xbt_str_split(line, "(");
+                xbt_dynar_remove_at(split2, 0, NULL);
+                loc_expr = xbt_str_join(split2, " ");
+                xbt_str_rtrim(loc_expr, ")");
+                if(strncmp("DW_OP_addr", loc_expr, 10) == 0){
+                  global_variable = 1;
+                  xbt_dynar_free(&split2);
+                  split2 = xbt_str_split(loc_expr, " ");
+                  if(strcmp(elf_file, xbt_binary_name) != 0)
+                    var->address.address = (char *)start_text_libsimgrid + (long)((void *)strtoul(xbt_dynar_get_as(split2, xbt_dynar_length(split2) - 1, char*), NULL, 16));
+                  else
+                    var->address.address = (void *)strtoul(xbt_dynar_get_as(split2, xbt_dynar_length(split2) - 1, char*), NULL, 16);
+                }else{
+                  var->address.location = MC_dwarf_get_location(NULL, loc_expr);
+                }
+                xbt_dynar_free(&split2);
+                xbt_free(loc_expr);
+              }
+            }else{
+              global_address = xbt_strdup(xbt_dynar_get_as(split, xbt_dynar_length(split) - 1, char *));
+              xbt_str_rtrim(global_address, ")");
+              if(strcmp(elf_file, xbt_binary_name) != 0)
+                var->address.address = (char *)start_text_libsimgrid + (long)((void *)strtoul(global_address, NULL, 16));
+              else
+                var->address.address = (void *)strtoul(global_address, NULL, 16);
+              xbt_free(global_address);
+              global_address = NULL;
+            }
+
+          }
+                   
+        }else if(strcmp(node_type, "DW_AT_type") == 0){
+          
+          type_origin = xbt_strdup(xbt_dynar_get_as(split, 3, char *));
+          xbt_str_ltrim(type_origin, "<0x");
+          xbt_str_rtrim(type_origin, ">");
+        
+        }else if(strcmp(node_type, "DW_AT_declaration") == 0){
+
+          new_variable = 0;
+          if(new_variable){
+            dw_variable_free(var);
+            var = NULL;
+          }
+        
+        }else if(strcmp(node_type, "DW_AT_artificial") == 0){
+          
+          new_variable = 0;
+          if(new_variable){
+            dw_variable_free(var);
+            var = NULL;
+          }
+        
+        }
+
+        read = xbt_getline(&line, &n, fp);
+ 
+      }
+
+      if(new_variable == 1){
+        
+        if(!global_variable){
+          variable_frame = xbt_dict_get_or_null(*local_variables, current_frame);
+          var->type_origin = strdup(type_origin);
+          var->global = 0;
+          index = MC_dwarf_get_variable_index(variable_frame->variables, var->name, NULL);
+          if(index != -1)
+            xbt_dynar_insert_at(variable_frame->variables, index, &var);
+        }else{
+          var->type_origin = strdup(type_origin);
+          var->global = 1;
+          index = MC_dwarf_get_variable_index(*global_variables, var->name, var->address.address);
+          if(index != -1)
+            xbt_dynar_insert_at(*global_variables, index, &var); 
+        }
+
+         xbt_free(type_origin);
+         type_origin = NULL;
+      }
+
+      global_variable = 0;
+      new_variable = 1;
+
+    }else if(strcmp(node_type, "(DW_TAG_inlined_subroutine)") == 0){
+
+      read = xbt_getline(&line, &n, fp);
+
+      while(read != -1){
+
+        /* Wipeout the new line character */
+        line[read - 1] = '\0'; 
+
+        if(n == 0 || strlen(line) == 0){
+          read = xbt_getline(&line, &n, fp);
+          continue;
+        }
+
+        xbt_dynar_free(&split);
+        xbt_str_rtrim(line, NULL);
+        xbt_str_strip_spaces(line);
+        split = xbt_str_split(line, " ");
+        
+        if(strncmp(xbt_dynar_get_as(split, 1, char *), "DW_AT_", 6) != 0)
+          break;
+          
+        node_type = xbt_dynar_get_as(split, 1, char *);
+
+        if(strcmp(node_type, "DW_AT_abstract_origin:") == 0){
+
+          origin = xbt_dynar_get_as(split, 2, char *);
+          xbt_str_ltrim(origin, "<0x");
+          xbt_str_rtrim(origin, ">");
+          
+          subprogram_name = (char *)xbt_dict_get_or_null(subprograms_origin, origin);
+          subroutine_frame = xbt_dict_get_or_null(*local_variables, subprogram_name);
+        
+        }else if(strcmp(node_type, "DW_AT_low_pc") == 0){
+
+          subroutine_frame->low_pc = (void *)strtoul(xbt_dynar_get_as(split, 3, char *), NULL, 16);
+
+        }else if(strcmp(node_type, "DW_AT_high_pc") == 0){
+
+          subroutine_frame->high_pc = (void *)strtoul(xbt_dynar_get_as(split, 3, char *), NULL, 16);
+        }
+
+        read = xbt_getline(&line, &n, fp);
+      
+      }
+
+    }else if(strcmp(node_type, "(DW_TAG_base_type)") == 0 
+             || strcmp(node_type, "(DW_TAG_enumeration_type)") == 0
+             || strcmp(node_type, "(DW_TAG_enumerator)") == 0
+             || strcmp(node_type, "(DW_TAG_typedef)") == 0
+             || strcmp(node_type, "(DW_TAG_const_type)") == 0
+             || strcmp(node_type, "(DW_TAG_subroutine_type)") == 0
+             || strcmp(node_type, "(DW_TAG_volatile_type)") == 0
+             || (is_pointer = !strcmp(node_type, "(DW_TAG_pointer_type)"))){
+
+      if(strcmp(node_type, "(DW_TAG_base_type)") == 0)
+        type_type = e_dw_base_type;
+      else if(strcmp(node_type, "(DW_TAG_enumeration_type)") == 0)
+        type_type = e_dw_enumeration_type;
+      else if(strcmp(node_type, "(DW_TAG_enumerator)") == 0)
+        type_type = e_dw_enumerator;
+      else if(strcmp(node_type, "(DW_TAG_typedef)") == 0)
+        type_type = e_dw_typedef;
+      else if(strcmp(node_type, "(DW_TAG_const_type)") == 0)
+        type_type = e_dw_const_type;
+      else if(strcmp(node_type, "(DW_TAG_pointer_type)") == 0)
+        type_type = e_dw_pointer_type;
+      else if(strcmp(node_type, "(DW_TAG_subroutine_type)") == 0)
+        type_type = e_dw_subroutine_type;
+      else if(strcmp(node_type, "(DW_TAG_volatile_type)") == 0)
+        type_type = e_dw_volatile_type;
+
+      strtok(xbt_dynar_get_as(split, 0, char *), "<");
+      origin = strdup(strtok(NULL, "<"));
+      xbt_str_rtrim(origin, ">:");
+      
+      read = xbt_getline(&line, &n, fp);
+      
+      while(read != -1){
+        
+         /* Wipeout the new line character */
+        line[read - 1] = '\0'; 
+
+        if(n == 0 || strlen(line) == 0){
+          read = xbt_getline(&line, &n, fp);
+          continue;
+        }
+
+        xbt_dynar_free(&split);
+        xbt_str_rtrim(line, NULL);
+        xbt_str_strip_spaces(line);
+        split = xbt_str_split(line, " ");
+        
+        if(strncmp(xbt_dynar_get_as(split, 1, char *), "DW_AT_", 6) != 0)
+          break;
+
+        node_type = xbt_dynar_get_as(split, 1, char *);
+
+        if(strcmp(node_type, "DW_AT_byte_size") == 0){
+          size = strtol(xbt_dynar_get_as(split, xbt_dynar_length(split) - 1, char*), NULL, 10);
+          if(type_type == e_dw_enumeration_type)
+            enumeration_size = size;
+        }else if(strcmp(node_type, "DW_AT_name") == 0){
+          end = xbt_str_join(split, " ");
+          xbt_dynar_free(&split);
+          split = xbt_str_split(end, "):");
+          xbt_str_ltrim(xbt_dynar_get_as(split, xbt_dynar_length(split) - 1, char*), NULL);
+          name = xbt_strdup(xbt_dynar_get_as(split, xbt_dynar_length(split) - 1, char*));
+        }else if(strcmp(node_type, "DW_AT_type") == 0){
+          type_origin = xbt_strdup(xbt_dynar_get_as(split, 3, char *));
+          xbt_str_ltrim(type_origin, "<0x");
+          xbt_str_rtrim(type_origin, ">");
+        }
+        
+        read = xbt_getline(&line, &n, fp);
+      }
+
+      dw_type_t type = xbt_new0(s_dw_type_t, 1);
+      type->type = type_type;
+      if(name)
+        type->name = xbt_strdup(name);
+      else
+        type->name = xbt_strdup("undefined");
+      type->is_pointer_type = is_pointer;
+      type->id = (void *)strtoul(origin, NULL, 16);
+      if(type_origin)
+        type->dw_type_id = xbt_strdup(type_origin);
+      if(type_type == e_dw_enumerator)
+        type->size = enumeration_size;
+      else
+        type->size = size;
+      type->members = NULL;
+
+      xbt_dict_set(*types, origin, type, NULL); 
+
+      xbt_free(name);
+      name = NULL;
+      xbt_free(type_origin);
+      type_origin = NULL;
+      xbt_free(end);
+      end = NULL;
+
+      is_pointer = 0;
+      size = 0;
+      xbt_free(origin);
+
+    }else if(strcmp(node_type, "(DW_TAG_structure_type)") == 0 || strcmp(node_type, "(DW_TAG_union_type)") == 0){
+      
+      if(strcmp(node_type, "(DW_TAG_structure_type)") == 0)
+        struct_decl = 1;
+      else
+        union_decl = 1;
+
+      strtok(xbt_dynar_get_as(split, 0, char *), "<");
+      origin = strdup(strtok(NULL, "<"));
+      xbt_str_rtrim(origin, ">:");
+      
+      read = xbt_getline(&line, &n, fp);
+
+      dw_type_t type = NULL;
+
+      while(read != -1){
+      
+        while(read != -1){
+        
+          /* Wipeout the new line character */
+          line[read - 1] = '\0'; 
+
+          if(n == 0 || strlen(line) == 0){
+            read = xbt_getline(&line, &n, fp);
+            continue;
+          }
+
+          xbt_dynar_free(&split);
+          xbt_str_rtrim(line, NULL);
+          xbt_str_strip_spaces(line);
+          split = xbt_str_split(line, " ");
+        
+          node_type = xbt_dynar_get_as(split, 1, char *);
+
+          if(strncmp(node_type, "DW_AT_", 6) != 0){
+            member_end = 1;
+            break;
+          }
+
+          if(strcmp(node_type, "DW_AT_byte_size") == 0){
+            size = strtol(xbt_dynar_get_as(split, xbt_dynar_length(split) - 1, char*), NULL, 10);
+          }else if(strcmp(node_type, "DW_AT_name") == 0){
+            xbt_free(end);
+            end = xbt_str_join(split, " ");
+            xbt_dynar_free(&split);
+            split = xbt_str_split(end, "):");
+            xbt_str_ltrim(xbt_dynar_get_as(split, xbt_dynar_length(split) - 1, char*), NULL);
+            name = xbt_strdup(xbt_dynar_get_as(split, xbt_dynar_length(split) - 1, char*));
+          }else if(strcmp(node_type, "DW_AT_type") == 0){
+            type_origin = xbt_strdup(xbt_dynar_get_as(split, 3, char *));
+            xbt_str_ltrim(type_origin, "<0x");
+            xbt_str_rtrim(type_origin, ">");
+          }else if(strcmp(node_type, "DW_AT_data_member_location:") == 0){
+            xbt_free(end);
+            end = xbt_str_join(split, " ");
+            xbt_dynar_free(&split);
+            split = xbt_str_split(end, "DW_OP_plus_uconst:");
+            xbt_str_ltrim(xbt_dynar_get_as(split, xbt_dynar_length(split) - 1, char *), NULL);
+            xbt_str_rtrim(xbt_dynar_get_as(split, xbt_dynar_length(split) - 1, char *), ")");
+            offset = strtol(xbt_dynar_get_as(split, xbt_dynar_length(split) - 1, char*), NULL, 10);
+          }
+
+          read = xbt_getline(&line, &n, fp);
+          
+        }
+
+        if(member_end && type){         
+          member_end = 0;
+          
+          dw_type_t member_type = xbt_new0(s_dw_type_t, 1);
+          member_type->name = xbt_strdup(name);
+          member_type->size = size;
+          member_type->is_pointer_type = is_pointer;
+          member_type->id = (void *)strtoul(origin, NULL, 16);
+          member_type->offset = offset;
+          if(type_origin)
+            member_type->dw_type_id = xbt_strdup(type_origin);
+
+          xbt_dynar_push(type->members, &member_type);
+
+          xbt_free(name);
+          name = NULL;
+          xbt_free(end);
+          end = NULL;
+          xbt_free(type_origin);
+          type_origin = NULL;
+          size = 0;
+          offset = 0;
+
+          xbt_free(origin);
+          origin = NULL;
+          strtok(xbt_dynar_get_as(split, 0, char *), "<");
+          origin = strdup(strtok(NULL, "<"));
+          xbt_str_rtrim(origin, ">:");
+
+        }
+
+        if(struct_decl || union_decl){
+          type = xbt_new0(s_dw_type_t, 1);
+          if(struct_decl)
+            type->type = e_dw_structure_type;
+          else
+            type->type = e_dw_union_type;
+          type->name = xbt_strdup(name);
+          type->size = size;
+          type->is_pointer_type = is_pointer;
+          type->id = (void *)strtoul(origin, NULL, 16);
+          if(type_origin)
+            type->dw_type_id = xbt_strdup(type_origin);
+          type->members = xbt_dynar_new(sizeof(dw_type_t), dw_type_free_voidp);
+          
+          xbt_dict_set(*types, origin, type, NULL); 
+          
+          xbt_free(name);
+          name = NULL;
+          xbt_free(end);
+          end = NULL;
+          xbt_free(type_origin);
+          type_origin = NULL;
+          size = 0;
+          struct_decl = 0;
+          union_decl = 0;
+
+        }
+
+        if(strcmp(xbt_dynar_get_as(split, xbt_dynar_length(split) - 1, char *), "(DW_TAG_member)") != 0)
+          break;  
+
+        read = xbt_getline(&line, &n, fp);
+    
+      }
+
+      xbt_free(origin);
+      origin = NULL;
+
+    }else if(strcmp(node_type, "(DW_TAG_array_type)") == 0){
+      
+      strtok(xbt_dynar_get_as(split, 0, char *), "<");
+      origin = strdup(strtok(NULL, "<"));
+      xbt_str_rtrim(origin, ">:");
+      
+      read = xbt_getline(&line, &n, fp);
+
+      dw_type_t type = NULL;
+
+      while(read != -1){
+      
+        while(read != -1){
+        
+          /* Wipeout the new line character */
+          line[read - 1] = '\0'; 
+
+          if(n == 0 || strlen(line) == 0){
+            read = xbt_getline(&line, &n, fp);
+            continue;
+          }
+
+          xbt_dynar_free(&split);
+          xbt_str_rtrim(line, NULL);
+          xbt_str_strip_spaces(line);
+          split = xbt_str_split(line, " ");
+        
+          node_type = xbt_dynar_get_as(split, 1, char *);
+
+          if(strncmp(node_type, "DW_AT_", 6) != 0)
+            break;
+
+          if(strcmp(node_type, "DW_AT_upper_bound") == 0){
+            size = strtol(xbt_dynar_get_as(split, xbt_dynar_length(split) - 1, char*), NULL, 10);
+          }else if(strcmp(node_type, "DW_AT_name") == 0){
+            end = xbt_str_join(split, " ");
+            xbt_dynar_free(&split);
+            split = xbt_str_split(end, "):");
+            xbt_str_ltrim(xbt_dynar_get_as(split, xbt_dynar_length(split) - 1, char*), NULL);
+            name = xbt_strdup(xbt_dynar_get_as(split, xbt_dynar_length(split) - 1, char*));
+          }else if(strcmp(node_type, "DW_AT_type") == 0){
+            type_origin = xbt_strdup(xbt_dynar_get_as(split, 3, char *));
+            xbt_str_ltrim(type_origin, "<0x");
+            xbt_str_rtrim(type_origin, ">");
+          }
+
+          read = xbt_getline(&line, &n, fp);
+          
+        }
+
+        if(strcmp(xbt_dynar_get_as(split, xbt_dynar_length(split) - 1, char *), "(DW_TAG_subrange_type)") == 0){
+          subrange = 1;         
+        }
+
+        if(subrange && type){         
+          type->size = size;
+      
+          xbt_free(name);
+          name = NULL;
+          xbt_free(end);
+          end = NULL;
+          xbt_free(type_origin);
+          type_origin = NULL;
+          size = 0;
+
+          xbt_free(origin);
+          origin = NULL;
+          strtok(xbt_dynar_get_as(split, 0, char *), "<");
+          origin = strdup(strtok(NULL, "<"));
+          xbt_str_rtrim(origin, ">:");
+
+        }else {
+          
+          type = xbt_new0(s_dw_type_t, 1);
+          type->type = e_dw_array_type;
+          type->name = xbt_strdup(name);
+          type->is_pointer_type = is_pointer;
+          type->id = (void *)strtoul(origin, NULL, 16);
+          if(type_origin)
+            type->dw_type_id = xbt_strdup(type_origin);
+          type->members = NULL;
+          
+          xbt_dict_set(*types, origin, type, NULL); 
+          
+          xbt_free(name);
+          name = NULL;
+          xbt_free(end);
+          end = NULL;
+          xbt_free(type_origin);
+          type_origin = NULL;
+          size = 0;
+        }
+
+        if(strcmp(xbt_dynar_get_as(split, xbt_dynar_length(split) - 1, char *), "(DW_TAG_subrange_type)") != 0)
+          break;  
+
+        read = xbt_getline(&line, &n, fp);
+    
+      }
+
+      xbt_free(origin);
+      origin = NULL;
+
+    }else{
+
+      read = xbt_getline(&line, &n, fp);
+
+    }
+
+  }
+  
+  xbt_dynar_free(&split);
+  xbt_dict_free(&variables_origin);
+  xbt_dict_free(&subprograms_origin);
+  xbt_free(line);
+  xbt_free(command);
+  pclose(fp);
+  
+}
+
+
+/*******************************  Ignore mechanism *******************************/
+/*********************************************************************************/
+
+typedef struct s_mc_stack_ignore_variable{
+  int in_libsimgrid;
+  char *var_name;
+  char *frame;
+}s_mc_stack_ignore_variable_t, *mc_stack_ignore_variable_t;
+
+typedef struct s_mc_data_bss_ignore_variable{
+  int in_libsimgrid;
+  char *name;
+}s_mc_data_bss_ignore_variable_t, *mc_data_bss_ignore_variable_t;
+
+/**************************** Free functions ******************************/
+
+static void stack_ignore_variable_free(mc_stack_ignore_variable_t v){
+  xbt_free(v->var_name);
+  xbt_free(v->frame);
+  xbt_free(v);
+}
+
+static void stack_ignore_variable_free_voidp(void *v){
+  stack_ignore_variable_free((mc_stack_ignore_variable_t) * (void **) v);
+}
+
+void heap_ignore_region_free(mc_heap_ignore_region_t r){
+  xbt_free(r);
+}
+
+void heap_ignore_region_free_voidp(void *r){
+  heap_ignore_region_free((mc_heap_ignore_region_t) * (void **) r);
+}
+
+static void data_bss_ignore_variable_free(mc_data_bss_ignore_variable_t v){
+  xbt_free(v->name);
+  xbt_free(v);
+}
+
+static void data_bss_ignore_variable_free_voidp(void *v){
+  data_bss_ignore_variable_free((mc_data_bss_ignore_variable_t) * (void **) v);
+}
+
+/***********************************************************************/
+
+void MC_ignore_heap(void *address, size_t size){
+
+  int raw_mem_set = (mmalloc_get_current_heap() == raw_heap);
+
+  MC_SET_RAW_MEM;
+
+  mc_heap_ignore_region_t region = NULL;
+  region = xbt_new0(s_mc_heap_ignore_region_t, 1);
+  region->address = address;
+  region->size = size;
+  
+  region->block = ((char*)address - (char*)((xbt_mheap_t)std_heap)->heapbase) / BLOCKSIZE + 1;
+  
+  if(((xbt_mheap_t)std_heap)->heapinfo[region->block].type == 0){
+    region->fragment = -1;
+    ((xbt_mheap_t)std_heap)->heapinfo[region->block].busy_block.ignore++;
+  }else{
+    region->fragment = ((uintptr_t) (ADDR2UINT (address) % (BLOCKSIZE))) >> ((xbt_mheap_t)std_heap)->heapinfo[region->block].type;
+    ((xbt_mheap_t)std_heap)->heapinfo[region->block].busy_frag.ignore[region->fragment]++;
+  }
+  
+  if(mc_heap_comparison_ignore == NULL){
+    mc_heap_comparison_ignore = xbt_dynar_new(sizeof(mc_heap_ignore_region_t), heap_ignore_region_free_voidp);
+    xbt_dynar_push(mc_heap_comparison_ignore, &region);
+    if(!raw_mem_set)
+      MC_UNSET_RAW_MEM;
+    return;
+  }
+
+  unsigned int cursor = 0;
+  mc_heap_ignore_region_t current_region = NULL;
+  int start = 0;
+  int end = xbt_dynar_length(mc_heap_comparison_ignore) - 1;
+  
+  while(start <= end){
+    cursor = (start + end) / 2;
+    current_region = (mc_heap_ignore_region_t)xbt_dynar_get_as(mc_heap_comparison_ignore, cursor, mc_heap_ignore_region_t);
+    if(current_region->address == address){
+      heap_ignore_region_free(region);
+      if(!raw_mem_set)
+        MC_UNSET_RAW_MEM;
+      return;
+    }
+    if(current_region->address < address)
+      start = cursor + 1;
+    if(current_region->address > address)
+      end = cursor - 1;   
+  }
+
+  if(current_region->address < address)
+    xbt_dynar_insert_at(mc_heap_comparison_ignore, cursor + 1, &region);
+  else
+    xbt_dynar_insert_at(mc_heap_comparison_ignore, cursor, &region);
+
+  MC_UNSET_RAW_MEM;
+
+  if(raw_mem_set)
+    MC_SET_RAW_MEM;
+}
+
+void MC_remove_ignore_heap(void *address, size_t size){
+
+  int raw_mem_set = (mmalloc_get_current_heap() == raw_heap);
+
+  MC_SET_RAW_MEM;
+
+  unsigned int cursor = 0;
+  int start = 0;
+  int end = xbt_dynar_length(mc_heap_comparison_ignore) - 1;
+  mc_heap_ignore_region_t region;
+  int ignore_found = 0;
+
+  while(start <= end){
+    cursor = (start + end) / 2;
+    region = (mc_heap_ignore_region_t)xbt_dynar_get_as(mc_heap_comparison_ignore, cursor, mc_heap_ignore_region_t);
+    if(region->address == address){
+      ignore_found = 1;
+      break;
+    }
+    if(region->address < address)
+      start = cursor + 1;
+    if(region->address > address){
+      if((char * )region->address <= ((char *)address + size)){
+        ignore_found = 1;
+        break;
+      }else
+        end = cursor - 1;   
+    }
+  }
+  
+  if(ignore_found == 1){
+    xbt_dynar_remove_at(mc_heap_comparison_ignore, cursor, NULL);
+    MC_remove_ignore_heap(address, size);
+  }
+
+  MC_UNSET_RAW_MEM;
+  
+  if(raw_mem_set)
+    MC_SET_RAW_MEM;
+
+}
+
+void MC_ignore_global_variable(const char *name,  ...){
+
+  int raw_mem_set = (mmalloc_get_current_heap() == raw_heap);
+
+  MC_SET_RAW_MEM;
+
+  va_list ap;
+  va_start(ap, name);
+  int in_libsimgrid = va_arg(ap, int);
+  va_end(ap);
+
+  xbt_dynar_t variables = NULL;
+
+  if(in_libsimgrid == 1){
+    variables = mc_global_variables_libsimgrid;
+  }else{
+    variables = mc_global_variables_binary;
+  }
+
+  if(variables){
+
+    unsigned int cursor = 0;
+    dw_variable_t current_var;
+    int start = 0;
+    int end = xbt_dynar_length(variables) - 1;
+    int var_found;
+
+    while(start <= end){
+      cursor = (start + end) /2;
+      current_var = (dw_variable_t)xbt_dynar_get_as(variables, cursor, dw_variable_t);
+      if(strcmp(current_var->name, name) == 0){
+        xbt_dynar_remove_at(variables, cursor, NULL);
+        var_found = 1;
+        break;
+      }else if(strcmp(current_var->name, name) < 0){
+        start = cursor + 1;
+      }else{
+        end = cursor - 1;
+      } 
+    }
+
+    if(var_found){
+      if(in_libsimgrid == 1)
+        MC_ignore_global_variable(name, 1);
+      else 
+        MC_ignore_global_variable(name);
+    }
+    
+  }else{
+
+    if(mc_data_bss_comparison_ignore == NULL)
+      mc_data_bss_comparison_ignore = xbt_dynar_new(sizeof(mc_data_bss_ignore_variable_t), data_bss_ignore_variable_free_voidp);
+
+    mc_data_bss_ignore_variable_t var = NULL;
+    var = xbt_new0(s_mc_data_bss_ignore_variable_t, 1);
+    var->name = strdup(name);
+    var->in_libsimgrid = (in_libsimgrid == 1);
+
+    if(xbt_dynar_is_empty(mc_data_bss_comparison_ignore)){
+
+      xbt_dynar_insert_at(mc_data_bss_comparison_ignore, 0, &var);
+
+    }else{
+    
+      unsigned int cursor = 0;
+      int start = 0;
+      int end = xbt_dynar_length(mc_data_bss_comparison_ignore) - 1;
+      mc_data_bss_ignore_variable_t current_var = NULL;
+
+      while(start <= end){
+        cursor = (start + end) / 2;
+        current_var = (mc_data_bss_ignore_variable_t)xbt_dynar_get_as(mc_data_bss_comparison_ignore, cursor, mc_data_bss_ignore_variable_t);
+        if(strcmp(current_var->name, name) == 0){
+          data_bss_ignore_variable_free(var);
+          if(!raw_mem_set)
+            MC_UNSET_RAW_MEM;
+          return;
+        }else if(strcmp(current_var->name, name) < 0){
+          start = cursor + 1;
+        }else{
+          end = cursor - 1;
+        }
+      }
+
+      if(strcmp(current_var->name, name) < 0)
+        xbt_dynar_insert_at(mc_data_bss_comparison_ignore, cursor + 1, &var);
+      else
+        xbt_dynar_insert_at(mc_data_bss_comparison_ignore, cursor, &var);
+
+    }
+  }
+
+  MC_UNSET_RAW_MEM;
+
+  if(raw_mem_set)
+    MC_SET_RAW_MEM;
+}
+
+void MC_ignore_local_variable(const char *var_name, const char *frame_name, ...){
+  
+  int raw_mem_set = (mmalloc_get_current_heap() == raw_heap);
+
+  MC_SET_RAW_MEM;
+
+  va_list ap;
+  va_start(ap, frame_name);
+  int in_libsimgrid = va_arg(ap, int);
+  va_end(ap);
+
+  xbt_dict_t variables = NULL;
+
+  if(in_libsimgrid == 1){
+    variables = mc_local_variables_libsimgrid;
+  }else{
+    variables = mc_local_variables_binary;
+  }
+
+  if(variables){
+    unsigned int cursor = 0;
+    dw_variable_t current_var;
+    int start, end;
+    if(strcmp(frame_name, "*") == 0){ /* Remove variable in all frames (binary and libsimgrid) */
+      xbt_dict_cursor_t dict_cursor, dict_cursor2;
+      char *current_frame_name;
+      dw_frame_t frame;
+      xbt_dict_foreach(mc_local_variables_libsimgrid, dict_cursor, current_frame_name, frame){
+        start = 0;
+        end = xbt_dynar_length(frame->variables) - 1;
+        while(start <= end){
+          cursor = (start + end) / 2;
+          current_var = (dw_variable_t)xbt_dynar_get_as(frame->variables, cursor, dw_variable_t);          
+          if(strcmp(current_var->name, var_name) == 0){
+            xbt_dynar_remove_at(frame->variables, cursor, NULL);
+            start = 0;
+            end = xbt_dynar_length(frame->variables) - 1;
+          }else if(strcmp(current_var->name, var_name) < 0){
+            start = cursor + 1;
+          }else{
+            end = cursor - 1;
+          } 
+        }
+      }
+      xbt_dict_foreach(mc_local_variables_binary, dict_cursor2, current_frame_name, frame){
+        start = 0;
+        end = xbt_dynar_length(frame->variables) - 1;
+        while(start <= end){
+          cursor = (start + end) / 2;
+          current_var = (dw_variable_t)xbt_dynar_get_as(frame->variables, cursor, dw_variable_t);
+          if(strcmp(current_var->name, var_name) == 0){
+            xbt_dynar_remove_at(frame->variables, cursor, NULL);
+            start = 0;
+            end = xbt_dynar_length(frame->variables) - 1;
+          }else if(strcmp(current_var->name, var_name) < 0){
+            start = cursor + 1;
+          }else{
+            end = cursor - 1;
+          } 
+        }
+      }
+    }else{
+      xbt_dynar_t variables_list = ((dw_frame_t)xbt_dict_get_or_null(variables, frame_name))->variables;
+      start = 0;
+      end = xbt_dynar_length(variables_list) - 1;
+      while(start <= end){
+        cursor = (start + end) / 2;
+        current_var = (dw_variable_t)xbt_dynar_get_as(variables_list, cursor, dw_variable_t);
+        if(strcmp(current_var->name, var_name) == 0){
+          xbt_dynar_remove_at(variables_list, cursor, NULL);
+          start = 0;
+          end = xbt_dynar_length(variables_list) - 1;
+        }else if(strcmp(current_var->name, var_name) < 0){
+          start = cursor + 1;
+        }else{
+          end = cursor - 1;
+        } 
+      }
+    } 
+  }else{
+
+    if(mc_stack_comparison_ignore == NULL)
+      mc_stack_comparison_ignore = xbt_dynar_new(sizeof(mc_stack_ignore_variable_t), stack_ignore_variable_free_voidp);
+  
+    mc_stack_ignore_variable_t var = NULL;
+    var = xbt_new0(s_mc_stack_ignore_variable_t, 1);
+    var->in_libsimgrid = (in_libsimgrid == 1);
+    var->var_name = strdup(var_name);
+    var->frame = strdup(frame_name);
+  
+    if(xbt_dynar_is_empty(mc_stack_comparison_ignore)){
+
+      xbt_dynar_insert_at(mc_stack_comparison_ignore, 0, &var);
+
+    }else{
+    
+      unsigned int cursor = 0;
+      int start = 0;
+      int end = xbt_dynar_length(mc_stack_comparison_ignore) - 1;
+      mc_stack_ignore_variable_t current_var = NULL;
+
+      while(start <= end){
+        cursor = (start + end) / 2;
+        current_var = (mc_stack_ignore_variable_t)xbt_dynar_get_as(mc_stack_comparison_ignore, cursor, mc_stack_ignore_variable_t);
+        if(strcmp(current_var->frame, frame_name) == 0){
+          if(strcmp(current_var->var_name, var_name) == 0){
+            stack_ignore_variable_free(var);
+            if(!raw_mem_set)
+              MC_UNSET_RAW_MEM;
+            return;
+          }
+          if(strcmp(current_var->var_name, var_name) < 0)
+            start = cursor + 1;
+          if(strcmp(current_var->var_name, var_name) > 0)
+            end = cursor - 1;
+        }
+        if(strcmp(current_var->frame, frame_name) < 0)
+          start = cursor + 1;
+        if(strcmp(current_var->frame, frame_name) > 0)
+          end = cursor - 1;
+      }
+
+      if(strcmp(current_var->frame, frame_name) < 0)
+        xbt_dynar_insert_at(mc_stack_comparison_ignore, cursor + 1, &var);
+      else
+        xbt_dynar_insert_at(mc_stack_comparison_ignore, cursor, &var);
+
+    }
+  }
+
+  MC_UNSET_RAW_MEM;
+  
+  if(raw_mem_set)
+    MC_SET_RAW_MEM;
+
+}
+
+void MC_new_stack_area(void *stack, char *name, void* context, size_t size){
+
+  int raw_mem_set = (mmalloc_get_current_heap() == raw_heap);
+
+  MC_SET_RAW_MEM;
+  if(stacks_areas == NULL)
+    stacks_areas = xbt_dynar_new(sizeof(stack_region_t), NULL);
+  
+  stack_region_t region = NULL;
+  region = xbt_new0(s_stack_region_t, 1);
+  region->address = stack;
+  region->process_name = strdup(name);
+  region->context = context;
+  region->size = size;
+  region->block = ((char*)stack - (char*)((xbt_mheap_t)std_heap)->heapbase) / BLOCKSIZE + 1;
+  xbt_dynar_push(stacks_areas, &region);
+  
+  MC_UNSET_RAW_MEM;
+
+  if(raw_mem_set)
+    MC_SET_RAW_MEM;
+}
+
+/*******************************  Initialisation of MC *******************************/
+/*********************************************************************************/
+
+static void MC_dump_ignored_local_variables(void){
+
+  if(mc_stack_comparison_ignore == NULL || xbt_dynar_is_empty(mc_stack_comparison_ignore))
+    return;
+
+  unsigned int cursor = 0;
+  mc_stack_ignore_variable_t current_var;
+  xbt_dict_t variables;
+
+  xbt_dynar_foreach(mc_stack_comparison_ignore, cursor, current_var){
+
+    if(current_var->in_libsimgrid == 1){
+      variables = mc_local_variables_libsimgrid;
+    }else{
+      variables = mc_local_variables_binary;
+    }
+
+    unsigned int cursor2 = 0;
+    dw_variable_t var;
+    int start, end;
+
+    if(strcmp(current_var->frame, "*") == 0){
+      xbt_dict_cursor_t dict_cursor;
+      char *frame_name;
+      dw_frame_t frame;
+      xbt_dict_foreach(variables, dict_cursor, frame_name, frame){
+        start = 0;
+        end = xbt_dynar_length(frame->variables) - 1;
+        while(start <= end){
+          cursor2 = (start + end) / 2;
+          var = (dw_variable_t)xbt_dynar_get_as(frame->variables, cursor2, dw_variable_t);
+          if(strcmp(var->name, current_var->var_name) == 0){
+            xbt_dynar_remove_at(frame->variables, cursor2, NULL);
+            start = 0;
+            end = xbt_dynar_length(frame->variables) - 1;
+          }else if(strcmp(var->name, current_var->var_name) < 0){
+            start = cursor2 + 1;
+          }else{
+            end = cursor2 - 1;
+          } 
+        }
+      }
+    }else{
+      xbt_dynar_t variables_list = ((dw_frame_t)xbt_dict_get_or_null(variables, current_var->frame))->variables;
+      start = 0;
+      end = xbt_dynar_length(variables_list) - 1;
+      while(start <= end){
+        cursor2 = (start + end) / 2;
+        var = (dw_variable_t)xbt_dynar_get_as(variables_list, cursor2, dw_variable_t);
+        if(strcmp(var->name, current_var->var_name) == 0){
+          xbt_dynar_remove_at(variables_list, cursor2, NULL);
+          start = 0;
+          end = xbt_dynar_length(variables_list) - 1; 
+        }else if(strcmp(var->name, current_var->var_name) < 0){
+          start = cursor2 + 1;
+        }else{
+          end = cursor2 - 1;
+        } 
+      }
+    } 
+  }
+
+  xbt_dynar_free(&mc_stack_comparison_ignore);
+  mc_stack_comparison_ignore = NULL;
+ 
+}
+
+static void MC_dump_ignored_global_variables(void){
+
+  if(mc_data_bss_comparison_ignore == NULL || xbt_dynar_is_empty(mc_data_bss_comparison_ignore))
+    return;
+
+  unsigned int cursor = 0;
+  mc_data_bss_ignore_variable_t current_var;
+  xbt_dynar_t variables;
+  
+  unsigned int cursor2 = 0;
+  dw_variable_t var;
+  int start, end;
+
+  xbt_dynar_foreach(mc_data_bss_comparison_ignore, cursor, current_var){
+
+    if(current_var->in_libsimgrid == 1){
+      variables = mc_global_variables_libsimgrid;
+    }else{
+      variables = mc_global_variables_binary;
+    }
+
+    cursor2 = 0;
+    start = 0;
+    end = xbt_dynar_length(variables) - 1;
+
+    while(start <= end){
+      cursor2 = (start + end) / 2;
+      var = (dw_variable_t)xbt_dynar_get_as(variables, cursor2, dw_variable_t);
+      if(strcmp(var->name, current_var->name) == 0){
+        xbt_dynar_remove_at(variables, cursor2, NULL);
+        return;
+      }else if(strcmp(var->name, current_var->name) < 0){
+        start = cursor2 + 1;
+      }else{
+        end = cursor2 - 1;
+      } 
+    }
+  } 
+
+  xbt_dynar_free(&mc_data_bss_comparison_ignore);
+  mc_data_bss_comparison_ignore = NULL;
+  
+
 }
 
 void MC_init(){
@@ -174,55 +1749,69 @@ void MC_init(){
 
   MC_init_memory_map_info();
   
-  mc_local_variables = xbt_dict_new_homogeneous(NULL);
+  mc_local_variables_libsimgrid = xbt_dict_new_homogeneous(NULL);
+  mc_local_variables_binary = xbt_dict_new_homogeneous(NULL);
+  mc_global_variables_libsimgrid = xbt_dynar_new(sizeof(dw_variable_t), dw_variable_free_voidp);
+  mc_global_variables_binary = xbt_dynar_new(sizeof(dw_variable_t), dw_variable_free_voidp);
+  mc_variables_type_libsimgrid = xbt_dict_new_homogeneous(NULL);
+  mc_variables_type_binary = xbt_dict_new_homogeneous(NULL);
+
+  XBT_INFO("Get debug information ...");
 
   /* Get local variables in binary for state equality detection */
-  xbt_dict_t binary_location_list = MC_get_location_list(xbt_binary_name);
-  MC_get_local_variables(xbt_binary_name, binary_location_list, &mc_local_variables);
+  xbt_dict_t binary_location_list = MC_dwarf_get_location_list(xbt_binary_name);
+  MC_dwarf_get_variables(xbt_binary_name, binary_location_list, &mc_local_variables_binary, &mc_global_variables_binary, &mc_variables_type_binary);
 
   /* Get local variables in libsimgrid for state equality detection */
-  xbt_dict_t libsimgrid_location_list = MC_get_location_list(libsimgrid_path);
-  MC_get_local_variables(libsimgrid_path, libsimgrid_location_list, &mc_local_variables);
+  xbt_dict_t libsimgrid_location_list = MC_dwarf_get_location_list(libsimgrid_path);
+  MC_dwarf_get_variables(libsimgrid_path, libsimgrid_location_list, &mc_local_variables_libsimgrid, &mc_global_variables_libsimgrid, &mc_variables_type_libsimgrid);
 
   xbt_dict_free(&libsimgrid_location_list);
   xbt_dict_free(&binary_location_list);
+
+  /* Remove variables ignored before getting list of variables */
+  MC_dump_ignored_local_variables();
+  MC_dump_ignored_global_variables();
   
   /* Get .plt section (start and end addresses) for data libsimgrid and data program comparison */
-  get_libsimgrid_plt_section();
-  get_binary_plt_section();
-
-  /* Get global variables */
-  MC_get_global_variables(xbt_binary_name);
-  MC_get_global_variables(libsimgrid_path);
+  MC_get_libsimgrid_plt_section();
+  MC_get_binary_plt_section();
 
   MC_UNSET_RAW_MEM;
 
    /* Ignore some variables from xbt/ex.h used by exception e for stacks comparison */
-  MC_ignore_stack("e", "*");
-  MC_ignore_stack("__ex_cleanup", "*");
-  MC_ignore_stack("__ex_mctx_en", "*");
-  MC_ignore_stack("__ex_mctx_me", "*");
-  MC_ignore_stack("__xbt_ex_ctx_ptr", "*");
-  MC_ignore_stack("_log_ev", "*");
-  MC_ignore_stack("_throw_ctx", "*");
-  MC_ignore_stack("ctx", "*");
+  MC_ignore_local_variable("e", "*");
+  MC_ignore_local_variable("__ex_cleanup", "*", 1);
+  MC_ignore_local_variable("__ex_mctx_en", "*", 1);
+  MC_ignore_local_variable("__ex_mctx_me", "*", 1);
+  MC_ignore_local_variable("__xbt_ex_ctx_ptr", "*", 1);
+  MC_ignore_local_variable("_log_ev", "*", 1);
+  MC_ignore_local_variable("_throw_ctx", "*", 1);
+  MC_ignore_local_variable("ctx", "*", 1);
 
-  MC_ignore_stack("next_context", "smx_ctx_sysv_suspend_serial");
-  MC_ignore_stack("i", "smx_ctx_sysv_suspend_serial");
+  MC_ignore_local_variable("next_context", "smx_ctx_sysv_suspend_serial", 1);
+  MC_ignore_local_variable("i", "smx_ctx_sysv_suspend_serial", 1);
 
   /* Ignore local variable about time used for tracing */
-  MC_ignore_stack("start_time", "*"); 
+  MC_ignore_local_variable("start_time", "*", 1); 
 
-  MC_ignore_data_bss(&mc_comp_times, sizeof(mc_comp_times));
-  MC_ignore_data_bss(&mc_snapshot_comparison_time, sizeof(mc_snapshot_comparison_time)); 
-  MC_ignore_data_bss(&mc_time, sizeof(mc_time));
+  MC_ignore_global_variable("mc_comp_times", 1);
+  MC_ignore_global_variable("mc_snapshot_comparison_time", 1); 
+  MC_ignore_global_variable("mc_time", 1);
+  MC_ignore_global_variable("smpi_current_rank", 1);
+  MC_ignore_global_variable("smx_current_context_serial", 1);
+  MC_ignore_global_variable("smx_current_context_key", 1);
+  MC_ignore_global_variable("sysv_maestro_context", 1);
+  MC_ignore_global_variable("counter", 1); /* Static variable used for tracing */
 
   if(raw_mem_set)
     MC_SET_RAW_MEM;
 
+  XBT_INFO("Get debug information done !");
+
 }
 
-void MC_init_dot_output(){ /* FIXME : more colors */
+static void MC_init_dot_output(){ /* FIXME : more colors */
 
   colors[0] = "blue";
   colors[1] = "red";
@@ -247,6 +1836,33 @@ void MC_init_dot_output(){ /* FIXME : more colors */
 
   fprintf(dot_output, "digraph graphname{\n fixedsize=true; rankdir=TB; ranksep=.25; edge [fontsize=12]; node [fontsize=10, shape=circle,width=.5 ]; graph [resolution=20, fontsize=10];\n");
 
+}
+
+/*******************************  Core of MC *******************************/
+/**************************************************************************/
+
+void MC_do_the_modelcheck_for_real() {
+
+  MC_SET_RAW_MEM;
+  mc_comp_times = xbt_new0(s_mc_comparison_times_t, 1);
+  MC_UNSET_RAW_MEM;
+  
+  if (!_sg_mc_property_file || _sg_mc_property_file[0]=='\0') {
+    if (mc_reduce_kind==e_mc_reduce_unset)
+      mc_reduce_kind=e_mc_reduce_dpor;
+
+    XBT_INFO("Check a safety property");
+    MC_modelcheck_safety();
+
+  } else  {
+
+    if (mc_reduce_kind==e_mc_reduce_unset)
+      mc_reduce_kind=e_mc_reduce_none;
+
+    XBT_INFO("Check the liveness property %s",_sg_mc_property_file);
+    MC_automaton_load(_sg_mc_property_file);
+    MC_modelcheck_liveness();
+  }
 }
 
 void MC_modelcheck_safety(void)
@@ -284,8 +1900,8 @@ void MC_modelcheck_safety(void)
   }else{
     MC_SET_RAW_MEM;
     MC_init_memory_map_info();
-    get_libsimgrid_plt_section();
-    get_binary_plt_section();
+    MC_get_libsimgrid_plt_section();
+    MC_get_binary_plt_section();
     MC_UNSET_RAW_MEM;
   }
 
@@ -302,7 +1918,8 @@ void MC_modelcheck_safety(void)
   if(raw_mem_set)
     MC_SET_RAW_MEM;
 
-  MC_exit();
+  xbt_abort();
+  //MC_exit();
 }
 
 void MC_modelcheck_liveness(){
@@ -349,7 +1966,7 @@ void MC_exit(void)
 {
   xbt_free(mc_time);
   MC_memory_exit();
-  xbt_abort();
+  //xbt_abort();
 }
 
 int SIMIX_pre_mc_random(smx_simcall_t simcall){
@@ -772,17 +2389,8 @@ void MC_assert(int prop)
   }
 }
 
-static void MC_assert_pair(int prop){
-  if (MC_is_active() && !prop) {
-    XBT_INFO("**************************");
-    XBT_INFO("*** PROPERTY NOT VALID ***");
-    XBT_INFO("**************************");
-    //XBT_INFO("Counter-example execution trace:");
-    MC_show_stack_liveness(mc_stack_liveness);
-    //MC_dump_snapshot_stack(mc_snapshot_stack);
-    MC_print_statistics(mc_stats);
-    xbt_abort();
-  }
+void MC_max_depth(int max_depth){
+  user_max_depth_reached = max_depth;
 }
 
 void MC_process_clock_add(smx_process_t process, double amount)
@@ -838,1189 +2446,5 @@ void MC_automaton_new_propositional_symbol(const char* id, void* fct) {
   
 }
 
-/************ MC_ignore ***********/ 
 
-void heap_ignore_region_free(mc_heap_ignore_region_t r){
-  xbt_free(r);
-}
 
-void heap_ignore_region_free_voidp(void *r){
-  heap_ignore_region_free((mc_heap_ignore_region_t) * (void **) r);
-}
-
-void MC_ignore_heap(void *address, size_t size){
-
-  int raw_mem_set = (mmalloc_get_current_heap() == raw_heap);
-
-  MC_SET_RAW_MEM;
-
-  mc_heap_ignore_region_t region = NULL;
-  region = xbt_new0(s_mc_heap_ignore_region_t, 1);
-  region->address = address;
-  region->size = size;
-  
-  region->block = ((char*)address - (char*)((xbt_mheap_t)std_heap)->heapbase) / BLOCKSIZE + 1;
-  
-  if(((xbt_mheap_t)std_heap)->heapinfo[region->block].type == 0){
-    region->fragment = -1;
-    ((xbt_mheap_t)std_heap)->heapinfo[region->block].busy_block.ignore++;
-  }else{
-    region->fragment = ((uintptr_t) (ADDR2UINT (address) % (BLOCKSIZE))) >> ((xbt_mheap_t)std_heap)->heapinfo[region->block].type;
-    ((xbt_mheap_t)std_heap)->heapinfo[region->block].busy_frag.ignore[region->fragment]++;
-  }
-  
-  if(mc_heap_comparison_ignore == NULL){
-    mc_heap_comparison_ignore = xbt_dynar_new(sizeof(mc_heap_ignore_region_t), heap_ignore_region_free_voidp);
-    xbt_dynar_push(mc_heap_comparison_ignore, &region);
-    if(!raw_mem_set)
-      MC_UNSET_RAW_MEM;
-    return;
-  }
-
-  unsigned int cursor = 0;
-  mc_heap_ignore_region_t current_region = NULL;
-  int start = 0;
-  int end = xbt_dynar_length(mc_heap_comparison_ignore) - 1;
-  
-  while(start <= end){
-    cursor = (start + end) / 2;
-    current_region = (mc_heap_ignore_region_t)xbt_dynar_get_as(mc_heap_comparison_ignore, cursor, mc_heap_ignore_region_t);
-    if(current_region->address == address){
-      heap_ignore_region_free(region);
-      if(!raw_mem_set)
-        MC_UNSET_RAW_MEM;
-      return;
-    }
-    if(current_region->address < address)
-      start = cursor + 1;
-    if(current_region->address > address)
-      end = cursor - 1;   
-  }
-
-  if(current_region->address < address)
-    xbt_dynar_insert_at(mc_heap_comparison_ignore, cursor + 1, &region);
-  else
-    xbt_dynar_insert_at(mc_heap_comparison_ignore, cursor, &region);
-
-  MC_UNSET_RAW_MEM;
-
-  if(raw_mem_set)
-    MC_SET_RAW_MEM;
-}
-
-void MC_remove_ignore_heap(void *address, size_t size){
-
-  int raw_mem_set = (mmalloc_get_current_heap() == raw_heap);
-
-  MC_SET_RAW_MEM;
-
-  unsigned int cursor = 0;
-  int start = 0;
-  int end = xbt_dynar_length(mc_heap_comparison_ignore) - 1;
-  mc_heap_ignore_region_t region;
-  int ignore_found = 0;
-
-  while(start <= end){
-    cursor = (start + end) / 2;
-    region = (mc_heap_ignore_region_t)xbt_dynar_get_as(mc_heap_comparison_ignore, cursor, mc_heap_ignore_region_t);
-    if(region->address == address){
-      ignore_found = 1;
-      break;
-    }
-    if(region->address < address)
-      start = cursor + 1;
-    if(region->address > address){
-      if((char * )region->address <= ((char *)address + size)){
-        ignore_found = 1;
-        break;
-      }else
-        end = cursor - 1;   
-    }
-  }
-  
-  if(ignore_found == 1){
-    xbt_dynar_remove_at(mc_heap_comparison_ignore, cursor, NULL);
-    MC_remove_ignore_heap(address, size);
-  }
-
-  MC_UNSET_RAW_MEM;
-  
-  if(raw_mem_set)
-    MC_SET_RAW_MEM;
-
-}
-
-void data_bss_ignore_variable_free(mc_data_bss_ignore_variable_t v){
-  xbt_free(v);
-}
-
-void data_bss_ignore_variable_free_voidp(void *v){
-  data_bss_ignore_variable_free((mc_data_bss_ignore_variable_t) * (void **) v);
-}
-
-void MC_ignore_data_bss(void *address, size_t size){
-
-  int raw_mem_set = (mmalloc_get_current_heap() == raw_heap);
-
-  MC_SET_RAW_MEM;
-  
-  if(mc_data_bss_comparison_ignore == NULL)
-    mc_data_bss_comparison_ignore = xbt_dynar_new(sizeof(mc_data_bss_ignore_variable_t), data_bss_ignore_variable_free_voidp);
-
-  mc_data_bss_ignore_variable_t var = NULL;
-  var = xbt_new0(s_mc_data_bss_ignore_variable_t, 1);
-  var->address = address;
-  var->size = size;
-
-  if(xbt_dynar_is_empty(mc_data_bss_comparison_ignore)){
-
-    xbt_dynar_insert_at(mc_data_bss_comparison_ignore, 0, &var);
-
-  }else{
-    
-    unsigned int cursor = 0;
-    int start = 0;
-    int end = xbt_dynar_length(mc_data_bss_comparison_ignore) - 1;
-    mc_data_bss_ignore_variable_t current_var = NULL;
-
-    while(start <= end){
-      cursor = (start + end) / 2;
-      current_var = (mc_data_bss_ignore_variable_t)xbt_dynar_get_as(mc_data_bss_comparison_ignore, cursor, mc_data_bss_ignore_variable_t);
-      if(current_var->address == address){
-        data_bss_ignore_variable_free(var);
-        MC_UNSET_RAW_MEM;
-        if(raw_mem_set)
-          MC_SET_RAW_MEM;
-        return;
-      }
-      if(current_var->address < address)
-        start = cursor + 1;
-      if(current_var->address > address)
-        end = cursor - 1;
-    }
-
-    if(current_var->address < address)
-      xbt_dynar_insert_at(mc_data_bss_comparison_ignore, cursor + 1, &var);
-    else
-      xbt_dynar_insert_at(mc_data_bss_comparison_ignore, cursor, &var);
-
-  }
-
-  /* Remove variable from mc_global_variables */
-
-  if(mc_global_variables != NULL){
-
-    unsigned int cursor = 0;
-    int start = 0;
-    int end = xbt_dynar_length(mc_global_variables) - 1;
-    global_variable_t current_var;
-    int var_found;
-
-    while(start <= end){
-      cursor = (start + end) / 2;
-      current_var = (global_variable_t)xbt_dynar_get_as(mc_global_variables, cursor, global_variable_t);
-      if(current_var->address == var->address){
-        var_found = 1;
-        break;
-      }
-      if(current_var->address < address)
-        start = cursor + 1;
-      if(current_var->address > address)
-        end = cursor - 1;
-    }
-
-    if(var_found)
-      xbt_dynar_remove_at(mc_global_variables, cursor, NULL);
-    
-  }
-
-  MC_UNSET_RAW_MEM;
-
-  if(raw_mem_set)
-    MC_SET_RAW_MEM;
-}
-
-static size_t data_bss_ignore_size(void *address){
-  unsigned int cursor = 0;
-  int start = 0;
-  int end = xbt_dynar_length(mc_data_bss_comparison_ignore) - 1;
-  mc_data_bss_ignore_variable_t var;
-
-  while(start <= end){
-    cursor = (start + end) / 2;
-    var = (mc_data_bss_ignore_variable_t)xbt_dynar_get_as(mc_data_bss_comparison_ignore, cursor, mc_data_bss_ignore_variable_t);
-    if(var->address == address)
-      return var->size;
-    if(var->address < address){
-      if((void *)((char *)var->address + var->size) > address)
-        return (char *)var->address + var->size - (char*)address;
-      else
-        start = cursor + 1;
-    }
-    if(var->address > address)
-      end = cursor - 1;   
-  }
-
-  return 0;
-}
-
-void stack_ignore_variable_free(mc_stack_ignore_variable_t v){
-  xbt_free(v->var_name);
-  xbt_free(v->frame);
-  xbt_free(v);
-}
-
-void stack_ignore_variable_free_voidp(void *v){
-  stack_ignore_variable_free((mc_stack_ignore_variable_t) * (void **) v);
-}
-
-void MC_ignore_stack(const char *var_name, const char *frame_name){
-  
-  int raw_mem_set = (mmalloc_get_current_heap() == raw_heap);
-
-  MC_SET_RAW_MEM;
-
-  if(mc_stack_comparison_ignore == NULL)
-    mc_stack_comparison_ignore = xbt_dynar_new(sizeof(mc_stack_ignore_variable_t), stack_ignore_variable_free_voidp);
-  
-  mc_stack_ignore_variable_t var = NULL;
-  var = xbt_new0(s_mc_stack_ignore_variable_t, 1);
-  var->var_name = strdup(var_name);
-  var->frame = strdup(frame_name);
-  
-  if(xbt_dynar_is_empty(mc_stack_comparison_ignore)){
-
-    xbt_dynar_insert_at(mc_stack_comparison_ignore, 0, &var);
-
-  }else{
-    
-    unsigned int cursor = 0;
-    int start = 0;
-    int end = xbt_dynar_length(mc_stack_comparison_ignore) - 1;
-    mc_stack_ignore_variable_t current_var = NULL;
-
-    while(start <= end){
-      cursor = (start + end) / 2;
-      current_var = (mc_stack_ignore_variable_t)xbt_dynar_get_as(mc_stack_comparison_ignore, cursor, mc_stack_ignore_variable_t);
-      if(strcmp(current_var->frame, frame_name) == 0){
-        if(strcmp(current_var->var_name, var_name) == 0){
-          stack_ignore_variable_free(var);
-          MC_UNSET_RAW_MEM;
-          if(raw_mem_set)
-            MC_SET_RAW_MEM;
-          return;
-        }
-        if(strcmp(current_var->var_name, var_name) < 0)
-          start = cursor + 1;
-        if(strcmp(current_var->var_name, var_name) > 0)
-          end = cursor - 1;
-      }
-      if(strcmp(current_var->frame, frame_name) < 0)
-        start = cursor + 1;
-      if(strcmp(current_var->frame, frame_name) > 0)
-        end = cursor - 1;
-    }
-
-    if(strcmp(current_var->frame, frame_name) < 0)
-      xbt_dynar_insert_at(mc_stack_comparison_ignore, cursor + 1, &var);
-    else
-      xbt_dynar_insert_at(mc_stack_comparison_ignore, cursor, &var);
-
-  }
-
- /* Remove variable from mc_local_variables */
-
-  if(mc_local_variables != NULL){
-
-    if(strcmp(frame_name, "*") != 0){
-      dw_frame_t frame = xbt_dict_get_or_null(mc_local_variables, frame_name);
-      if(frame != NULL)
-        xbt_dict_remove(frame->variables, var_name);
-    }
-
-  }
-
-  MC_UNSET_RAW_MEM;
-  
-  if(raw_mem_set)
-    MC_SET_RAW_MEM;
-
-}
-
-void MC_new_stack_area(void *stack, char *name, void* context, size_t size){
-
-  int raw_mem_set = (mmalloc_get_current_heap() == raw_heap);
-
-  MC_SET_RAW_MEM;
-  if(stacks_areas == NULL)
-    stacks_areas = xbt_dynar_new(sizeof(stack_region_t), NULL);
-  
-  stack_region_t region = NULL;
-  region = xbt_new0(s_stack_region_t, 1);
-  region->address = stack;
-  region->process_name = strdup(name);
-  region->context = context;
-  region->size = size;
-  region->block = ((char*)stack - (char*)((xbt_mheap_t)std_heap)->heapbase) / BLOCKSIZE + 1;
-  xbt_dynar_push(stacks_areas, &region);
-  
-  MC_UNSET_RAW_MEM;
-
-  if(raw_mem_set)
-    MC_SET_RAW_MEM;
-}
-
-/************ DWARF ***********/
-
-xbt_dict_t MC_get_location_list(const char *elf_file){
-
-  char *command = bprintf("objdump -Wo %s", elf_file);
-
-  FILE *fp = popen(command, "r");
-
-  if(fp == NULL){
-    perror("popen for objdump failed");
-    xbt_abort();
-  }
-
-  int debug = 0; /*Detect if the program has been compiled with -g */
-
-  xbt_dict_t location_list = xbt_dict_new_homogeneous(NULL);
-  char *line = NULL, *loc_expr = NULL;
-  ssize_t read;
-  size_t n = 0;
-  int cursor_remove;
-  xbt_dynar_t split = NULL;
-
-  while ((read = xbt_getline(&line, &n, fp)) != -1) {
-
-    /* Wipeout the new line character */
-    line[read - 1] = '\0';
-
-    xbt_str_trim(line, NULL);
-    
-    if(n == 0)
-      continue;
-
-    if(strlen(line) == 0)
-      continue;
-
-    if(debug == 0){
-
-      if(strncmp(line, elf_file, strlen(elf_file)) == 0)
-        continue;
-      
-      if(strncmp(line, "Contents", 8) == 0)
-        continue;
-
-      if(strncmp(line, "Offset", 6) == 0){
-        debug = 1;
-        continue;
-      }
-    }
-
-    if(debug == 0){
-      XBT_INFO("Your program must be compiled with -g");
-      xbt_abort();
-    }
-
-    xbt_dynar_t loclist = xbt_dynar_new(sizeof(dw_location_entry_t), NULL);
-
-    xbt_str_strip_spaces(line);
-    split = xbt_str_split(line, " ");
-
-    while(read != -1 && strcmp("<End", (char *)xbt_dynar_get_as(split, 1, char *)) != 0){
-      
-      dw_location_entry_t new_entry = xbt_new0(s_dw_location_entry_t, 1);
-      new_entry->lowpc = strtoul((char *)xbt_dynar_get_as(split, 1, char *), NULL, 16);
-      new_entry->highpc = strtoul((char *)xbt_dynar_get_as(split, 2, char *), NULL, 16);
-      
-      cursor_remove =0;
-      while(cursor_remove < 3){
-        xbt_dynar_remove_at(split, 0, NULL);
-        cursor_remove++;
-      }
-
-      loc_expr = xbt_str_join(split, " ");
-      xbt_str_ltrim(loc_expr, "(");
-      xbt_str_rtrim(loc_expr, ")");
-      new_entry->location = get_location(NULL, loc_expr);
-
-      xbt_dynar_push(loclist, &new_entry);
-
-      xbt_dynar_free(&split);
-      free(loc_expr);
-
-      read = xbt_getline(&line, &n, fp);
-      if(read != -1){
-        line[read - 1] = '\0';
-        xbt_str_strip_spaces(line);
-        split = xbt_str_split(line, " ");
-      }
-
-    }
-
-
-    char *key = bprintf("%d", (int)strtoul((char *)xbt_dynar_get_as(split, 0, char *), NULL, 16));
-    xbt_dict_set(location_list, key, loclist, NULL);
-    xbt_free(key);
-    
-    xbt_dynar_free(&split);
-
-  }
-
-  xbt_free(line);
-  xbt_free(command);
-  pclose(fp);
-
-  return location_list;
-}
-
-static dw_frame_t get_frame_by_offset(xbt_dict_t all_variables, unsigned long int offset){
-
-  xbt_dict_cursor_t cursor = NULL;
-  char *name;
-  dw_frame_t res;
-
-  xbt_dict_foreach(all_variables, cursor, name, res) {
-    if(offset >= res->start && offset < res->end){
-      xbt_dict_cursor_free(&cursor);
-      return res;
-    }
-  }
-
-  xbt_dict_cursor_free(&cursor);
-  return NULL;
-  
-}
-
-void MC_get_local_variables(const char *elf_file, xbt_dict_t location_list, xbt_dict_t *all_variables){
-
-  char *command = bprintf("objdump -Wi %s", elf_file);
-  
-  FILE *fp = popen(command, "r");
-
-  if(fp == NULL)
-    perror("popen for objdump failed");
-
-  char *line = NULL, *origin, *abstract_origin, *current_frame = NULL;
-  ssize_t read =0;
-  size_t n = 0;
-  int valid_variable = 1;
-  char *node_type = NULL, *location_type = NULL, *variable_name = NULL, *loc_expr = NULL;
-  xbt_dynar_t split = NULL, split2 = NULL;
-
-  xbt_dict_t variables_origin = xbt_dict_new_homogeneous(NULL);
-  xbt_dict_t subprograms_origin = xbt_dict_new_homogeneous(NULL);
-  char *subprogram_name = NULL, *subprogram_start = NULL, *subprogram_end = NULL;
-  int new_frame = 0, new_variable = 0;
-  dw_frame_t variable_frame, subroutine_frame = NULL;
-
-  read = xbt_getline(&line, &n, fp);
-
-  while (read != -1) {
-
-    if(n == 0){
-      read = xbt_getline(&line, &n, fp);
-      continue;
-    }
- 
-    /* Wipeout the new line character */
-    line[read - 1] = '\0';
-   
-    if(strlen(line) == 0){
-      read = xbt_getline(&line, &n, fp);
-      continue;
-    }
-
-    xbt_str_ltrim(line, NULL);
-    xbt_str_strip_spaces(line);
-    
-    if(line[0] != '<'){
-      read = xbt_getline(&line, &n, fp);
-      continue;
-    }
-    
-    xbt_dynar_free(&split);
-    split = xbt_str_split(line, " ");
-
-    /* Get node type */
-    node_type = xbt_dynar_get_as(split, xbt_dynar_length(split) - 1, char *);
-
-    if(strcmp(node_type, "(DW_TAG_subprogram)") == 0){ /* New frame */
-
-      dw_frame_t frame = NULL;
-
-      strtok(xbt_dynar_get_as(split, 0, char *), "<");
-      subprogram_start = strdup(strtok(NULL, "<"));
-      xbt_str_rtrim(subprogram_start, ">:");
-
-      read = xbt_getline(&line, &n, fp);
-   
-      while(read != -1){
-
-        if(n == 0){
-          read = xbt_getline(&line, &n, fp);
-          continue;
-        }
-
-        /* Wipeout the new line character */
-        line[read - 1] = '\0';
-        
-        if(strlen(line) == 0){
-          read = xbt_getline(&line, &n, fp);
-          continue;
-        }
-      
-        xbt_dynar_free(&split);
-        xbt_str_rtrim(line, NULL);
-        xbt_str_strip_spaces(line);
-        split = xbt_str_split(line, " ");
-          
-        node_type = xbt_dynar_get_as(split, 1, char *);
-
-        if(strncmp(node_type, "DW_AT_", 6) != 0)
-          break;
-
-        if(strcmp(node_type, "DW_AT_sibling") == 0){
-
-          subprogram_end = strdup(xbt_dynar_get_as(split, 3, char*));
-          xbt_str_ltrim(subprogram_end, "<0x");
-          xbt_str_rtrim(subprogram_end, ">");
-          
-        }else if(strcmp(node_type, "DW_AT_abstract_origin:") == 0){ /* Frame already in dict */
-          
-          new_frame = 0;
-          abstract_origin = strdup(xbt_dynar_get_as(split, 2, char*));
-          xbt_str_ltrim(abstract_origin, "<0x");
-          xbt_str_rtrim(abstract_origin, ">");
-          subprogram_name = (char *)xbt_dict_get_or_null(subprograms_origin, abstract_origin);
-          frame = xbt_dict_get_or_null(*all_variables, subprogram_name); 
-          xbt_free(abstract_origin);
-
-        }else if(strcmp(node_type, "DW_AT_name") == 0){
-
-          new_frame = 1;
-          xbt_free(current_frame);
-          frame = xbt_new0(s_dw_frame_t, 1);
-          frame->name = strdup(xbt_dynar_get_as(split, xbt_dynar_length(split) - 1, char *)); 
-          frame->variables = xbt_dict_new_homogeneous(NULL);
-          frame->frame_base = xbt_new0(s_dw_location_t, 1); 
-          current_frame = strdup(frame->name);
-
-          xbt_dict_set(subprograms_origin, subprogram_start, frame->name, NULL);
-        
-        }else if(strcmp(node_type, "DW_AT_frame_base") == 0){
-
-          location_type = xbt_dynar_get_as(split, xbt_dynar_length(split) - 1, char *);
-
-          if(strcmp(location_type, "list)") == 0){ /* Search location in location list */
-
-            frame->frame_base = get_location(location_list, xbt_dynar_get_as(split, 3, char *));
-             
-          }else{
-                
-            xbt_str_strip_spaces(line);
-            split2 = xbt_str_split(line, "(");
-            xbt_dynar_remove_at(split2, 0, NULL);
-            loc_expr = xbt_str_join(split2, " ");
-            xbt_str_rtrim(loc_expr, ")");
-            frame->frame_base = get_location(NULL, loc_expr);
-            xbt_dynar_free(&split2);
-            xbt_free(loc_expr);
-
-          }
- 
-        }else if(strcmp(node_type, "DW_AT_low_pc") == 0){
-          
-          if(frame != NULL)
-            frame->low_pc = (void *)strtoul(xbt_dynar_get_as(split, 3, char *), NULL, 16);
-
-        }else if(strcmp(node_type, "DW_AT_high_pc") == 0){
-
-          if(frame != NULL)
-            frame->high_pc = (void *)strtoul(xbt_dynar_get_as(split, 3, char *), NULL, 16);
-
-        }else if(strcmp(node_type, "DW_AT_MIPS_linkage_name:") == 0){
-
-          xbt_free(frame->name);
-          xbt_free(current_frame);
-          frame->name = strdup(xbt_dynar_get_as(split, xbt_dynar_length(split) - 1, char *));   
-          current_frame = strdup(frame->name);
-          xbt_dict_set(subprograms_origin, subprogram_start, frame->name, NULL);
-
-        }
-
-        read = xbt_getline(&line, &n, fp);
-
-      }
- 
-      if(new_frame == 1){
-        frame->start = strtoul(subprogram_start, NULL, 16);
-        if(subprogram_end != NULL)
-          frame->end = strtoul(subprogram_end, NULL, 16);
-        xbt_dict_set(*all_variables, frame->name, frame, NULL);
-      }
-
-      xbt_free(subprogram_start);
-      xbt_free(subprogram_end);
-      subprogram_end = NULL;
-        
-
-    }else if(strcmp(node_type, "(DW_TAG_variable)") == 0){ /* New variable */
-
-      dw_local_variable_t var = NULL;
-      
-      strtok(xbt_dynar_get_as(split, 0, char *), "<");
-      origin = strdup(strtok(NULL, "<"));
-      xbt_str_rtrim(origin, ">:");
-      
-      read = xbt_getline(&line, &n, fp);
-      
-      while(read != -1){
-
-        if(n == 0){
-          read = xbt_getline(&line, &n, fp);
-          continue;
-        }
-
-        /* Wipeout the new line character */
-        line[read - 1] = '\0'; 
-
-        if(strlen(line) == 0){
-          read = xbt_getline(&line, &n, fp);
-          continue;
-        }
-       
-        xbt_dynar_free(&split);
-        xbt_str_rtrim(line, NULL);
-        xbt_str_strip_spaces(line);
-        split = xbt_str_split(line, " ");
-  
-        node_type = xbt_dynar_get_as(split, 1, char *);
-
-        if(strncmp(node_type, "DW_AT_", 6) != 0)
-          break;
-
-        if(strcmp(node_type, "DW_AT_name") == 0){
-
-          new_variable = 1;
-          var = xbt_new0(s_dw_local_variable_t, 1);
-          var->name = strdup(xbt_dynar_get_as(split, xbt_dynar_length(split) - 1, char *));
-
-          xbt_dict_set(variables_origin, origin, var->name, NULL);
-         
-        }else if(strcmp(node_type, "DW_AT_abstract_origin:") == 0){
-
-          new_variable = 0;
-          abstract_origin = xbt_dynar_get_as(split, 2, char *);
-          xbt_str_ltrim(abstract_origin, "<0x");
-          xbt_str_rtrim(abstract_origin, ">");
-          
-          variable_name = (char *)xbt_dict_get_or_null(variables_origin, abstract_origin);
-          variable_frame = get_frame_by_offset(*all_variables, strtoul(abstract_origin, NULL, 16));
-          var = xbt_dict_get_or_null(variable_frame->variables, variable_name);   
-
-        }else if(strcmp(node_type, "DW_AT_location") == 0){
-
-          if(valid_variable == 1 && var != NULL){
-
-            var->location = xbt_new0(s_dw_location_t, 1);
-
-            location_type = xbt_dynar_get_as(split, xbt_dynar_length(split) - 1, char *);
-
-            if(strcmp(location_type, "list)") == 0){ /* Search location in location list */
-
-              var->location = get_location(location_list, xbt_dynar_get_as(split, 3, char *));
-             
-            }else{
-                
-              xbt_str_strip_spaces(line);
-              split2 = xbt_str_split(line, "(");
-              xbt_dynar_remove_at(split2, 0, NULL);
-              loc_expr = xbt_str_join(split2, " ");
-              xbt_str_rtrim(loc_expr, ")");
-              var->location = get_location(NULL, loc_expr);
-              xbt_dynar_free(&split2);
-              xbt_free(loc_expr);
-
-            }
-
-          }
-           
-        }else if(strcmp(node_type, "DW_AT_external") == 0){
-
-          valid_variable = 0;
-        
-        }
-
-        read = xbt_getline(&line, &n, fp);
- 
-      }
-
-      if(new_variable == 1 && valid_variable == 1){
-        
-        variable_frame = xbt_dict_get_or_null(*all_variables, current_frame);
-        xbt_dict_set(variable_frame->variables, var->name, var, NULL);
-      }
-
-      valid_variable = 1;
-      new_variable = 0;
-
-    }else if(strcmp(node_type, "(DW_TAG_inlined_subroutine)") == 0){
-
-      strtok(xbt_dynar_get_as(split, 0, char *), "<");
-      origin = strdup(strtok(NULL, "<"));
-      xbt_str_rtrim(origin, ">:");
-
-      read = xbt_getline(&line, &n, fp);
-
-      while(read != -1){
-
-        /* Wipeout the new line character */
-        line[read - 1] = '\0'; 
-
-        if(n == 0){
-          read = xbt_getline(&line, &n, fp);
-          continue;
-        }
-
-        if(strlen(line) == 0){
-          read = xbt_getline(&line, &n, fp);
-          continue;
-        }
-
-        xbt_dynar_free(&split);
-        xbt_str_rtrim(line, NULL);
-        xbt_str_strip_spaces(line);
-        split = xbt_str_split(line, " ");
-        
-        if(strncmp(xbt_dynar_get_as(split, 1, char *), "DW_AT_", 6) != 0)
-          break;
-          
-        node_type = xbt_dynar_get_as(split, 1, char *);
-
-        if(strcmp(node_type, "DW_AT_abstract_origin:") == 0){
-
-          origin = xbt_dynar_get_as(split, 2, char *);
-          xbt_str_ltrim(origin, "<0x");
-          xbt_str_rtrim(origin, ">");
-          
-          subprogram_name = (char *)xbt_dict_get_or_null(subprograms_origin, origin);
-          subroutine_frame = xbt_dict_get_or_null(*all_variables, subprogram_name);
-        
-        }else if(strcmp(node_type, "DW_AT_low_pc") == 0){
-
-          subroutine_frame->low_pc = (void *)strtoul(xbt_dynar_get_as(split, 3, char *), NULL, 16);
-
-        }else if(strcmp(node_type, "DW_AT_high_pc") == 0){
-
-          subroutine_frame->high_pc = (void *)strtoul(xbt_dynar_get_as(split, 3, char *), NULL, 16);
-        }
-
-        read = xbt_getline(&line, &n, fp);
-      
-      }
-
-    }else{
-
-      read = xbt_getline(&line, &n, fp);
-
-    }
-
-  }
-  
-  xbt_dynar_free(&split);
-  xbt_free(line);
-  xbt_free(command);
-  pclose(fp);
-  
-}
-
-static dw_location_t get_location(xbt_dict_t location_list, char *expr){
-
-  dw_location_t loc = xbt_new0(s_dw_location_t, 1);
-
-  if(location_list != NULL){
-    
-    char *key = bprintf("%d", (int)strtoul(expr, NULL, 16));
-    loc->type = e_dw_loclist;
-    loc->location.loclist =  (xbt_dynar_t)xbt_dict_get_or_null(location_list, key);
-    if(loc->location.loclist == NULL)
-      XBT_INFO("Key not found in loclist");
-    xbt_free(key);
-    return loc;
-
-  }else{
-
-    int cursor = 0;
-    char *tok = NULL, *tok2 = NULL; 
-    
-    xbt_dynar_t tokens1 = xbt_str_split(expr, ";");
-    xbt_dynar_t tokens2;
-
-    loc->type = e_dw_compose;
-    loc->location.compose = xbt_dynar_new(sizeof(dw_location_t), NULL);
-
-    while(cursor < xbt_dynar_length(tokens1)){
-
-      tok = xbt_dynar_get_as(tokens1, cursor, char*);
-      tokens2 = xbt_str_split(tok, " ");
-      tok2 = xbt_dynar_get_as(tokens2, 0, char*);
-      
-      if(strncmp(tok2, "DW_OP_reg", 9) == 0){
-        dw_location_t new_element = xbt_new0(s_dw_location_t, 1);
-        new_element->type = e_dw_register;
-        new_element->location.reg = atoi(strtok(tok2, "DW_OP_reg"));
-        xbt_dynar_push(loc->location.compose, &new_element);     
-      }else if(strcmp(tok2, "DW_OP_fbreg:") == 0){
-        dw_location_t new_element = xbt_new0(s_dw_location_t, 1);
-        new_element->type = e_dw_fbregister_op;
-        new_element->location.fbreg_op = atoi(xbt_dynar_get_as(tokens2, xbt_dynar_length(tokens2) - 1, char*));
-        xbt_dynar_push(loc->location.compose, &new_element);
-      }else if(strncmp(tok2, "DW_OP_breg", 10) == 0){
-        dw_location_t new_element = xbt_new0(s_dw_location_t, 1);
-        new_element->type = e_dw_bregister_op;
-        new_element->location.breg_op.reg = atoi(strtok(tok2, "DW_OP_breg"));
-        new_element->location.breg_op.offset = atoi(xbt_dynar_get_as(tokens2, xbt_dynar_length(tokens2) - 1, char*));
-        xbt_dynar_push(loc->location.compose, &new_element);
-      }else if(strncmp(tok2, "DW_OP_lit", 9) == 0){
-        dw_location_t new_element = xbt_new0(s_dw_location_t, 1);
-        new_element->type = e_dw_lit;
-        new_element->location.lit = atoi(strtok(tok2, "DW_OP_lit"));
-        xbt_dynar_push(loc->location.compose, &new_element);
-      }else if(strcmp(tok2, "DW_OP_piece:") == 0){
-        dw_location_t new_element = xbt_new0(s_dw_location_t, 1);
-        new_element->type = e_dw_piece;
-        new_element->location.piece = atoi(xbt_dynar_get_as(tokens2, xbt_dynar_length(tokens2) - 1, char*));
-        /*if(strlen(xbt_dynar_get_as(tokens2, 1, char*)) > 1)
-          new_element->location.piece = atoi(xbt_dynar_get_as(tokens2, 1, char*));
-        else
-        new_element->location.piece = xbt_dynar_get_as(tokens2, 1, char*)[0] - '0';*/
-        xbt_dynar_push(loc->location.compose, &new_element);
-      }else if(strcmp(tok2, "DW_OP_plus_uconst:") == 0){
-        dw_location_t new_element = xbt_new0(s_dw_location_t, 1);
-        new_element->type = e_dw_plus_uconst;
-        new_element->location.plus_uconst = atoi(xbt_dynar_get_as(tokens2, xbt_dynar_length(tokens2) - 1, char *));
-        xbt_dynar_push(loc->location.compose, &new_element);
-      }else if(strcmp(tok, "DW_OP_abs") == 0 || 
-               strcmp(tok, "DW_OP_and") == 0 ||
-               strcmp(tok, "DW_OP_div") == 0 ||
-               strcmp(tok, "DW_OP_minus") == 0 ||
-               strcmp(tok, "DW_OP_mod") == 0 ||
-               strcmp(tok, "DW_OP_mul") == 0 ||
-               strcmp(tok, "DW_OP_neg") == 0 ||
-               strcmp(tok, "DW_OP_not") == 0 ||
-               strcmp(tok, "DW_OP_or") == 0 ||
-               strcmp(tok, "DW_OP_plus") == 0){               
-        dw_location_t new_element = xbt_new0(s_dw_location_t, 1);
-        new_element->type = e_dw_arithmetic;
-        new_element->location.arithmetic = strdup(strtok(tok2, "DW_OP_"));
-        xbt_dynar_push(loc->location.compose, &new_element);
-      }else if(strcmp(tok, "DW_OP_stack_value") == 0){
-      }else if(strcmp(tok2, "DW_OP_deref_size:") == 0){
-        dw_location_t new_element = xbt_new0(s_dw_location_t, 1);
-        new_element->type = e_dw_deref;
-        new_element->location.deref_size = (unsigned int short) atoi(xbt_dynar_get_as(tokens2, xbt_dynar_length(tokens2) - 1, char*));
-        /*if(strlen(xbt_dynar_get_as(tokens, ++cursor, char*)) > 1)
-          new_element->location.deref_size = atoi(xbt_dynar_get_as(tokens, cursor, char*));
-        else
-        new_element->location.deref_size = xbt_dynar_get_as(tokens, cursor, char*)[0] - '0';*/
-        xbt_dynar_push(loc->location.compose, &new_element);
-      }else if(strcmp(tok, "DW_OP_deref") == 0){
-        dw_location_t new_element = xbt_new0(s_dw_location_t, 1);
-        new_element->type = e_dw_deref;
-        new_element->location.deref_size = sizeof(void *);
-        xbt_dynar_push(loc->location.compose, &new_element);
-      }else if(strcmp(tok2, "DW_OP_constu:") == 0){
-        dw_location_t new_element = xbt_new0(s_dw_location_t, 1);
-        new_element->type = e_dw_uconstant;
-        new_element->location.uconstant.bytes = 1;
-        new_element->location.uconstant.value = (unsigned long int)(atoi(xbt_dynar_get_as(tokens2, xbt_dynar_length(tokens2) - 1, char*)));
-        /*if(strlen(xbt_dynar_get_as(tokens, ++cursor, char*)) > 1)
-          new_element->location.uconstant.value = (unsigned long int)(atoi(xbt_dynar_get_as(tokens, cursor, char*)));
-        else
-        new_element->location.uconstant.value = (unsigned long int)(xbt_dynar_get_as(tokens, cursor, char*)[0] - '0');*/
-        xbt_dynar_push(loc->location.compose, &new_element);
-      }else if(strcmp(tok2, "DW_OP_consts:") == 0){
-        dw_location_t new_element = xbt_new0(s_dw_location_t, 1);
-        new_element->type = e_dw_sconstant;
-        new_element->location.sconstant.bytes = 1;
-        new_element->location.sconstant.value = (long int)(atoi(xbt_dynar_get_as(tokens2, xbt_dynar_length(tokens2) - 1, char*)));
-        xbt_dynar_push(loc->location.compose, &new_element);
-      }else if(strcmp(tok2, "DW_OP_const1u:") == 0 ||
-               strcmp(tok2, "DW_OP_const2u:") == 0 ||
-               strcmp(tok2, "DW_OP_const4u:") == 0 ||
-               strcmp(tok2, "DW_OP_const8u:") == 0){
-        dw_location_t new_element = xbt_new0(s_dw_location_t, 1);
-        new_element->type = e_dw_uconstant;
-        new_element->location.uconstant.bytes = tok2[11] - '0';
-        new_element->location.uconstant.value = (unsigned long int)(atoi(xbt_dynar_get_as(tokens2, xbt_dynar_length(tokens2) - 1, char*)));
-        /*if(strlen(xbt_dynar_get_as(tokens, ++cursor, char*)) > 1)
-          new_element->location.constant.value = atoi(xbt_dynar_get_as(tokens, cursor, char*));
-        else
-        new_element->location.constant.value = xbt_dynar_get_as(tokens, cursor, char*)[0] - '0';*/
-        xbt_dynar_push(loc->location.compose, &new_element);
-      }else if(strcmp(tok, "DW_OP_const1s") == 0 ||
-               strcmp(tok, "DW_OP_const2s") == 0 ||
-               strcmp(tok, "DW_OP_const4s") == 0 ||
-               strcmp(tok, "DW_OP_const8s") == 0){
-        dw_location_t new_element = xbt_new0(s_dw_location_t, 1);
-        new_element->type = e_dw_sconstant;
-        new_element->location.sconstant.bytes = tok2[11] - '0';
-        new_element->location.sconstant.value = (long int)(atoi(xbt_dynar_get_as(tokens2, xbt_dynar_length(tokens2) - 1, char*)));
-        xbt_dynar_push(loc->location.compose, &new_element);
-      }else{
-        dw_location_t new_element = xbt_new0(s_dw_location_t, 1);
-        new_element->type = e_dw_unsupported;
-        xbt_dynar_push(loc->location.compose, &new_element);
-      }
-
-      cursor++;
-      xbt_dynar_free(&tokens2);
-
-    }
-    
-    xbt_dynar_free(&tokens1);
-
-    return loc;
-    
-  }
-
-}
-
-
-void print_local_variables(xbt_dict_t list){
-  
-  dw_location_entry_t entry;
-  dw_location_t location_entry;
-  unsigned int cursor3 = 0, cursor4 = 0;
-  xbt_dict_cursor_t cursor = 0, cursor2 = 0;
-
-  char *frame_name, *variable_name;
-  dw_frame_t current_frame;
-  dw_local_variable_t current_variable;
-
-  xbt_dict_foreach(list, cursor, frame_name, current_frame){ 
-    fprintf(stderr, "Frame name : %s\n", current_frame->name);
-    fprintf(stderr, "Location type : %d\n", current_frame->frame_base->type);
-    xbt_dict_foreach((xbt_dict_t)current_frame->variables, cursor2, variable_name, current_variable){
-      fprintf(stderr, "Name : %s\n", current_variable->name);
-      if(current_variable->location == NULL)
-        continue;
-      fprintf(stderr, "Location type : %d\n", current_variable->location->type);
-      switch(current_variable->location->type){
-      case e_dw_loclist :
-        xbt_dynar_foreach(current_variable->location->location.loclist, cursor3, entry){
-          fprintf(stderr, "Lowpc : %lx, Highpc : %lx,", entry->lowpc, entry->highpc);
-          switch(entry->location->type){
-          case e_dw_register :
-            fprintf(stderr, " Location : in register %d\n", entry->location->location.reg);
-            break;
-          case e_dw_bregister_op:
-            fprintf(stderr, " Location : Add %d to the value in register %d\n", entry->location->location.breg_op.offset, entry->location->location.breg_op.reg);
-            break;
-          case e_dw_lit:
-            fprintf(stderr, "Value already kwnown : %d\n", entry->location->location.lit);
-            break;
-          case e_dw_fbregister_op:
-            fprintf(stderr, " Location : %d bytes from logical frame pointer\n", entry->location->location.fbreg_op);
-            break;
-          case e_dw_compose:
-            fprintf(stderr, " Location :\n");
-            xbt_dynar_foreach(entry->location->location.compose, cursor4, location_entry){
-              switch(location_entry->type){
-              case e_dw_register :
-                fprintf(stderr, " %d) in register %d\n", cursor4 + 1, location_entry->location.reg);
-                break;
-              case e_dw_bregister_op:
-                fprintf(stderr, " %d) add %d to the value in register %d\n", cursor4 + 1, location_entry->location.breg_op.offset, location_entry->location.breg_op.reg);
-                break;
-              case e_dw_lit:
-                fprintf(stderr, "%d) Value already kwnown : %d\n", cursor4 + 1, location_entry->location.lit);
-                break;
-              case e_dw_fbregister_op:
-                fprintf(stderr, " %d) %d bytes from logical frame pointer\n", cursor4 + 1, location_entry->location.fbreg_op);
-                break;
-              case e_dw_deref:
-                fprintf(stderr, " %d) Pop the stack entry and treats it as an address (size of data %d)\n", cursor4 + 1, location_entry->location.deref_size);
-                break;
-              case e_dw_arithmetic :
-                fprintf(stderr, "%d) arithmetic operation : %s\n", cursor4 + 1, location_entry->location.arithmetic);
-                break;
-              case e_dw_piece:
-                fprintf(stderr, "%d) The %d byte(s) previous value\n", cursor4 + 1, location_entry->location.piece);
-                break;
-              case e_dw_uconstant :
-                fprintf(stderr, "%d) Unsigned constant %lu\n", cursor4 + 1, location_entry->location.uconstant.value);
-                break;
-              case e_dw_sconstant :
-                fprintf(stderr, "%d) Signed constant %lu\n", cursor4 + 1, location_entry->location.sconstant.value);
-                break;
-              default :
-                fprintf(stderr, "%d) Location type not supported\n", cursor4 + 1);
-                break;
-              }
-            }
-            break;
-          default:
-            fprintf(stderr, "Location type not supported\n");
-            break;
-          }
-        }
-        break;
-      case e_dw_compose:
-        cursor4 = 0;
-        fprintf(stderr, "Location :\n");
-        xbt_dynar_foreach(current_variable->location->location.compose, cursor4, location_entry){
-          switch(location_entry->type){
-          case e_dw_register :
-            fprintf(stderr, " %d) in register %d\n", cursor4 + 1, location_entry->location.reg);
-            break;
-          case e_dw_bregister_op:
-            fprintf(stderr, " %d) add %d to the value in register %d\n", cursor4 + 1, location_entry->location.breg_op.offset, location_entry->location.breg_op.reg);
-            break;
-          case e_dw_lit:
-            fprintf(stderr, "%d) Value already kwnown : %d\n", cursor4 + 1, location_entry->location.lit);
-            break;
-          case e_dw_fbregister_op:
-            fprintf(stderr, " %d) %d bytes from logical frame pointer\n", cursor4 + 1, location_entry->location.fbreg_op);
-            break;
-          case e_dw_deref:
-            fprintf(stderr, " %d) Pop the stack entry and treats it as an address (size of data %d)\n", cursor4 + 1, location_entry->location.deref_size);
-            break;
-          case e_dw_arithmetic :
-            fprintf(stderr, "%d) arithmetic operation : %s\n", cursor4 + 1, location_entry->location.arithmetic);
-            break;
-          case e_dw_piece:
-            fprintf(stderr, "%d) The %d byte(s) previous value\n", cursor4 + 1, location_entry->location.piece);
-            break;
-          case e_dw_uconstant :
-            fprintf(stderr, "%d) Unsigned constant %lu\n", cursor4 + 1, location_entry->location.uconstant.value);
-            break;
-          case e_dw_sconstant :
-            fprintf(stderr, "%d) Signed constant %lu\n", cursor4 + 1, location_entry->location.sconstant.value);
-            break;
-          default :
-            fprintf(stderr, "%d) Location type not supported\n", cursor4 + 1);
-            break;
-          }
-        }
-        break;
-      default :
-        fprintf(stderr, "Location type not supported\n");
-        break;
-      }
-    }
-  }
-
-}
-
-static void MC_get_global_variables(char *elf_file){
-
-  FILE *fp;
-
-  char *command = bprintf("objdump -t -j .data -j .bss %s", elf_file);
-
-  fp = popen(command, "r");
-
-  if(fp == NULL){
-    perror("popen failed");
-    xbt_abort();
-  }
-
-  if(mc_global_variables == NULL)
-    mc_global_variables = xbt_dynar_new(sizeof(global_variable_t), global_variable_free_voidp);
-
-  char *line = NULL;
-  ssize_t read;
-  size_t n = 0;
-
-  xbt_dynar_t line_tokens = NULL;
-  unsigned long offset;
-
-  int type = strcmp(elf_file, xbt_binary_name); /* 0 = binary, other = libsimgrid */
-
-  while ((read = xbt_getline(&line, &n, fp)) != -1){
-
-    if(n == 0)
-      continue;
-
-     /* Wipeout the new line character */
-    line[read - 1] = '\0';
-
-    xbt_str_strip_spaces(line);
-    xbt_str_ltrim(line, NULL);
-
-    line_tokens = xbt_str_split(line, NULL);
-
-    if(xbt_dynar_length(line_tokens) <= 4 || strcmp(xbt_dynar_get_as(line_tokens, 0, char *), "SYMBOL") == 0)
-      continue;
-
-    if((strncmp(xbt_dynar_get_as(line_tokens, xbt_dynar_length(line_tokens) - 1, char*), "__gcov", 6) == 0)
-       || (strncmp(xbt_dynar_get_as(line_tokens, xbt_dynar_length(line_tokens) - 1, char*), "gcov", 4) == 0)
-       || (strcmp(xbt_dynar_get_as(line_tokens, xbt_dynar_length(line_tokens) - 1, char*), ".data") == 0)
-       || (strcmp(xbt_dynar_get_as(line_tokens, xbt_dynar_length(line_tokens) - 1, char*), ".bss") == 0)
-       || (strncmp(xbt_dynar_get_as(line_tokens, xbt_dynar_length(line_tokens) - 1, char*), "stderr", 6) == 0)
-       || ((size_t)strtoul(xbt_dynar_get_as(line_tokens, xbt_dynar_length(line_tokens) - 2, char*), NULL, 16) == 0))
-      continue;
-
-    global_variable_t var = xbt_new0(s_global_variable_t, 1);
-
-    if(type == 0){
-      var->address = (void *)strtoul(xbt_dynar_get_as(line_tokens, 0, char*), NULL, 16);
-    }else{
-      offset = strtoul(xbt_dynar_get_as(line_tokens, 0, char*), NULL, 16);
-      var->address = (char *)start_text_libsimgrid+offset;
-    }
-
-    var->size = (size_t)strtoul(xbt_dynar_get_as(line_tokens, xbt_dynar_length(line_tokens) - 2, char*), NULL, 16);
-    var->name = strdup(xbt_dynar_get_as(line_tokens, xbt_dynar_length(line_tokens) - 1, char*));
-
-    if(data_bss_ignore_size(var->address) > 0){
-      global_variable_free(var);
-    }else{
-      if(xbt_dynar_is_empty(mc_global_variables)){
-        xbt_dynar_push(mc_global_variables, &var);
-      }else{
-        unsigned int cursor = 0;
-        int start = 0;
-        int end = xbt_dynar_length(mc_global_variables) - 1;
-        global_variable_t current_var = NULL;
-      
-        while(start <= end){
-          cursor = (start + end) / 2;
-          current_var = (global_variable_t)xbt_dynar_get_as(mc_global_variables, cursor, global_variable_t);
-          if(current_var->address == var->address)
-            break;
-          if(current_var->address < var->address)
-            start = cursor + 1;
-          if(current_var->address > var->address)
-            end = cursor - 1;
-        }
- 
-        if(current_var->address < var->address)
-          xbt_dynar_insert_at(mc_global_variables, cursor + 1, &var);
-        else
-          xbt_dynar_insert_at(mc_global_variables, cursor, &var);
-      }
-    }
-
-    xbt_dynar_free(&line_tokens);
-
-  }
-
-  xbt_free(command);
-  xbt_free(line);
-  pclose(fp);
-
-}
-
-void global_variable_free(global_variable_t v){
-  xbt_free(v->name);
-  xbt_free(v);
-}
-
-void global_variable_free_voidp(void *v){
-  global_variable_free((global_variable_t) * (void **) v);
-}

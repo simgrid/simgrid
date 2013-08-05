@@ -9,7 +9,7 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_memory_map, mc,
                                 "Logging specific to algorithms for memory_map");
 
-memory_map_t get_memory_map(void)
+memory_map_t MC_get_memory_map(void)
 {
   FILE *fp;                     /* File pointer to process's proc maps file */
   char *line = NULL;            /* Temporal storage for each line that is readed */
@@ -155,7 +155,7 @@ memory_map_t get_memory_map(void)
   return ret;
 }
 
-void free_memory_map(memory_map_t map){
+void MC_free_memory_map(memory_map_t map){
 
   int i;
   for(i=0; i< map->mapsize; i++){

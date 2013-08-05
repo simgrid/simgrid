@@ -5,7 +5,6 @@
   * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "private.h"
-#include "mc/mc.h"
 #include <ctype.h>
 #include <wchar.h>
 
@@ -88,9 +87,6 @@ static char *TRACE_smpi_put_key(int src, int dst, char *key, int n)
   }
   //generate the key
   static unsigned long long counter = 0;
-  
-  if(MC_is_active())
-    MC_ignore_data_bss(&counter, sizeof(counter));
 
   snprintf(key, n, "%d_%d_%llu", src, dst, counter++);
 
