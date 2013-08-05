@@ -5,6 +5,8 @@
 $ ${bindir:=.}/bugged1_liveness --cfg=model-check:1 "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n" --cfg=contexts/factory:ucontext
 > [  0.000000] (0:@) Configuration change: Set 'model-check' to '1'
 > [  0.000000] (0:@) Check the liveness property promela_bugged1_liveness
+> [  0.000000] (0:@) Get debug information ...
+> [  0.000000] (0:@) Get debug information done !
 > [  0.000000] (2:client@Boivin) Ask the request
 > [  0.000000] (3:client@Fafard) Ask the request
 > [  0.000000] (2:client@Boivin) Propositions changed : r=1, cs=0
@@ -18,28 +20,29 @@ $ ${bindir:=.}/bugged1_liveness --cfg=model-check:1 "--log=root.fmt:[%10.6r]%e(%
 > [  0.000000] (0:@) |             ACCEPTANCE CYCLE            |
 > [  0.000000] (0:@) *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 > [  0.000000] (0:@) Counter-example that violates formula :
-> [  0.000000] (0:@) [(1)Tremblay (coordinator)] iRecv (dst=(1)Tremblay (coordinator), buff=(verbose only), size=(verbose only))
-> [  0.000000] (0:@) [(2)Boivin (client)] iSend (src=(2)Boivin (client), buff=(verbose only), size=(verbose only))
-> [  0.000000] (0:@) [(1)Tremblay (coordinator)] Wait (comm=(verbose only) [(2)Boivin (client)-> (1)Tremblay (coordinator)])
-> [  0.000000] (0:@) [(1)Tremblay (coordinator)] iRecv (dst=(1)Tremblay (coordinator), buff=(verbose only), size=(verbose only))
-> [  0.000000] (0:@) [(2)Boivin (client)] Wait (comm=(verbose only) [(2)Boivin (client)-> (1)Tremblay (coordinator)])
-> [  0.000000] (0:@) [(2)Boivin (client)] iRecv (dst=(2)Boivin (client), buff=(verbose only), size=(verbose only))
-> [  0.000000] (0:@) [(3)Fafard (client)] iSend (src=(3)Fafard (client), buff=(verbose only), size=(verbose only))
-> [  0.000000] (0:@) [(1)Tremblay (coordinator)] Wait (comm=(verbose only) [(3)Fafard (client)-> (1)Tremblay (coordinator)])
-> [  0.000000] (0:@) [(1)Tremblay (coordinator)] iSend (src=(1)Tremblay (coordinator), buff=(verbose only), size=(verbose only))
-> [  0.000000] (0:@) [(3)Fafard (client)] Wait (comm=(verbose only) [(3)Fafard (client)-> (1)Tremblay (coordinator)])
-> [  0.000000] (0:@) [(3)Fafard (client)] iRecv (dst=(3)Fafard (client), buff=(verbose only), size=(verbose only))
-> [  0.000000] (0:@) [(1)Tremblay (coordinator)] Wait (comm=(verbose only) [(1)Tremblay (coordinator)-> (3)Fafard (client)])
-> [  0.000000] (0:@) [(1)Tremblay (coordinator)] iRecv (dst=(1)Tremblay (coordinator), buff=(verbose only), size=(verbose only))
-> [  0.000000] (0:@) [(3)Fafard (client)] Wait (comm=(verbose only) [(1)Tremblay (coordinator)-> (3)Fafard (client)])
-> [  0.000000] (0:@) [(3)Fafard (client)] iSend (src=(3)Fafard (client), buff=(verbose only), size=(verbose only))
-> [  0.000000] (0:@) [(1)Tremblay (coordinator)] Wait (comm=(verbose only) [(3)Fafard (client)-> (1)Tremblay (coordinator)])
-> [  0.000000] (0:@) [(1)Tremblay (coordinator)] iRecv (dst=(1)Tremblay (coordinator), buff=(verbose only), size=(verbose only))
-> [  0.000000] (0:@) [(3)Fafard (client)] Wait (comm=(verbose only) [(3)Fafard (client)-> (1)Tremblay (coordinator)])
-> [  0.000000] (0:@) [(3)Fafard (client)] iSend (src=(3)Fafard (client), buff=(verbose only), size=(verbose only))
-> [  0.000000] (0:@) [(1)Tremblay (coordinator)] Wait (comm=(verbose only) [(3)Fafard (client)-> (1)Tremblay (coordinator)])
-> [  0.000000] (0:@) [(1)Tremblay (coordinator)] iSend (src=(1)Tremblay (coordinator), buff=(verbose only), size=(verbose only))
+> [  0.000000] (0:@) [(1)Tremblay (coordinator)] iRecv(56) (dst=(1)Tremblay (coordinator), buff=(verbose only), size=(verbose only))
+> [  0.000000] (0:@) [(2)Boivin (client)] iSend(54) (src=(2)Boivin (client), buff=(verbose only), size=(verbose only))
+> [  0.000000] (0:@) [(1)Tremblay (coordinator)] Wait(62) (comm=(verbose only) [(2)Boivin (client)-> (1)Tremblay (coordinator)])
+> [  0.000000] (0:@) [(1)Tremblay (coordinator)] iRecv(56) (dst=(1)Tremblay (coordinator), buff=(verbose only), size=(verbose only))
+> [  0.000000] (0:@) [(2)Boivin (client)] Wait(62) (comm=(verbose only) [(2)Boivin (client)-> (1)Tremblay (coordinator)])
+> [  0.000000] (0:@) [(2)Boivin (client)] iRecv(56) (dst=(2)Boivin (client), buff=(verbose only), size=(verbose only))
+> [  0.000000] (0:@) [(3)Fafard (client)] iSend(54) (src=(3)Fafard (client), buff=(verbose only), size=(verbose only))
+> [  0.000000] (0:@) [(1)Tremblay (coordinator)] Wait(62) (comm=(verbose only) [(3)Fafard (client)-> (1)Tremblay (coordinator)])
+> [  0.000000] (0:@) [(1)Tremblay (coordinator)] iSend(54) (src=(1)Tremblay (coordinator), buff=(verbose only), size=(verbose only))
+> [  0.000000] (0:@) [(3)Fafard (client)] Wait(62) (comm=(verbose only) [(3)Fafard (client)-> (1)Tremblay (coordinator)])
+> [  0.000000] (0:@) [(3)Fafard (client)] iRecv(56) (dst=(3)Fafard (client), buff=(verbose only), size=(verbose only))
+> [  0.000000] (0:@) [(1)Tremblay (coordinator)] Wait(62) (comm=(verbose only) [(1)Tremblay (coordinator)-> (3)Fafard (client)])
+> [  0.000000] (0:@) [(1)Tremblay (coordinator)] iRecv(56) (dst=(1)Tremblay (coordinator), buff=(verbose only), size=(verbose only))
+> [  0.000000] (0:@) [(3)Fafard (client)] Wait(62) (comm=(verbose only) [(1)Tremblay (coordinator)-> (3)Fafard (client)])
+> [  0.000000] (0:@) [(3)Fafard (client)] iSend(54) (src=(3)Fafard (client), buff=(verbose only), size=(verbose only))
+> [  0.000000] (0:@) [(1)Tremblay (coordinator)] Wait(62) (comm=(verbose only) [(3)Fafard (client)-> (1)Tremblay (coordinator)])
+> [  0.000000] (0:@) [(1)Tremblay (coordinator)] iRecv(56) (dst=(1)Tremblay (coordinator), buff=(verbose only), size=(verbose only))
+> [  0.000000] (0:@) [(3)Fafard (client)] Wait(62) (comm=(verbose only) [(3)Fafard (client)-> (1)Tremblay (coordinator)])
+> [  0.000000] (0:@) [(3)Fafard (client)] iSend(54) (src=(3)Fafard (client), buff=(verbose only), size=(verbose only))
+> [  0.000000] (0:@) [(1)Tremblay (coordinator)] Wait(62) (comm=(verbose only) [(3)Fafard (client)-> (1)Tremblay (coordinator)])
+> [  0.000000] (0:@) [(1)Tremblay (coordinator)] iSend(54) (src=(1)Tremblay (coordinator), buff=(verbose only), size=(verbose only))
 > [  0.000000] (0:@) Expanded pairs = 22
 > [  0.000000] (0:@) Visited pairs = 22
 > [  0.000000] (0:@) Executed transitions = 21
+
 
