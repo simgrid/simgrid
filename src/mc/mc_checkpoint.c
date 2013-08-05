@@ -24,7 +24,8 @@ void *start_data_libsimgrid, *start_bss_libsimgrid;
 void *start_data_binary, *start_bss_binary;
 void *start_text_binary;
 
-/* Free functions */
+/************************************  Free functions **************************************/
+/*****************************************************************************************/
 
 static void MC_snapshot_stack_free(mc_snapshot_stack_t s){
   if(s){
@@ -50,7 +51,8 @@ static void local_variable_free_voidp(void *v){
 }
 
 
-/* Snapshot regions */
+/*******************************  Snapshot regions ********************************/
+/*********************************************************************************/
 
 static mc_mem_region_t MC_region_new(int type, void *start_addr, size_t size)
 {
@@ -369,7 +371,8 @@ void MC_get_binary_plt_section(){
 
 }
 
-/* Snapshot */
+/************************************* Take Snapshot ************************************/
+/****************************************************************************************/
 
 static void MC_get_hash_global(char *snapshot_hash, void *data1, void *data2){
   
