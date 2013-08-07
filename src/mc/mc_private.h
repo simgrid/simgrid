@@ -274,6 +274,7 @@ typedef struct s_mc_visited_state{
   size_t heap_bytes_used;
   int nb_processes;
   int num;
+  int other_num; // dot_output for
 }s_mc_visited_state_t, *mc_visited_state_t;
 
 

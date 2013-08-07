@@ -30,6 +30,7 @@ static mc_visited_state_t visited_state_new(){
   new_state->nb_processes = xbt_swag_size(simix_global->process_list);
   new_state->system_state = MC_take_snapshot();
   new_state->num = mc_stats->expanded_states;
+  new_state->other_num = -1;
 
   return new_state;
   
@@ -94,12 +95,21 @@ static int is_visited_state(){
         if(bytes_used_test == current_bytes_used){
           same_processes_and_bytes_not_found = 0;
           if(snapshot_compare(new_state->system_state, state_test->system_state) == 0){
-            XBT_DEBUG("State %d already visited ! (equal to state %d)", new_state->num, state_test->num);
+            if(state_test->other_num == -1)
+              new_state->other_num = state_test->num;
+            else
+              new_state->other_num = state_test->other_num;
+            if(dot_output == NULL)
+              XBT_DEBUG("Next state %d already visited ! (equal to state %d)", new_state->num, state_test->num);
+            else
+              XBT_DEBUG("Next state %d already visited ! (equal to state %d (state %d in dot_output))", new_state->num, state_test->num, new_state->other_num);
+            xbt_dynar_remove_at(visited_states, cursor, NULL);
+            xbt_dynar_insert_at(visited_states, cursor, &new_state);
             if(raw_mem_set)
               MC_SET_RAW_MEM;
             else
               MC_UNSET_RAW_MEM;
-            return state_test->num;
+            return new_state->other_num;
           }else{
             /* Search another state with same number of bytes used in std_heap */
             previous_cursor = cursor - 1;
@@ -109,12 +119,21 @@ static int is_visited_state(){
               if(bytes_used_test != current_bytes_used)
                 break;
               if(snapshot_compare(new_state->system_state, state_test->system_state) == 0){
-                XBT_DEBUG("State %d already visited ! (equal to state %d)", new_state->num, state_test->num);
+                if(state_test->other_num == -1)
+                  new_state->other_num = state_test->num;
+                else
+                  new_state->other_num = state_test->other_num;
+                if(dot_output == NULL)
+                  XBT_DEBUG("Next state %d already visited ! (equal to state %d)", new_state->num, state_test->num);
+                else
+                  XBT_DEBUG("Next state %d already visited ! (equal to state %d (state %d in dot_output))", new_state->num, state_test->num, new_state->other_num);
+                xbt_dynar_remove_at(visited_states, previous_cursor, NULL);
+                xbt_dynar_insert_at(visited_states, cursor, &new_state);
                 if(raw_mem_set)
                   MC_SET_RAW_MEM;
                 else
                   MC_UNSET_RAW_MEM;
-                return state_test->num;
+                return new_state->other_num;
               }
               previous_cursor--;
             }
@@ -125,12 +144,21 @@ static int is_visited_state(){
               if(bytes_used_test != current_bytes_used)
                 break;
               if(snapshot_compare(new_state->system_state, state_test->system_state) == 0){
-                XBT_DEBUG("State %d already visited ! (equal to state %d)", new_state->num, state_test->num);
+                if(state_test->other_num == -1)
+                  new_state->other_num = state_test->num;
+                else
+                  new_state->other_num = state_test->other_num;
+                if(dot_output == NULL)
+                  XBT_DEBUG("Next state %d already visited ! (equal to state %d)", new_state->num, state_test->num);
+                else
+                  XBT_DEBUG("Next state %d already visited ! (equal to state %d (state %d in dot_output))", new_state->num, state_test->num, new_state->other_num);
+                xbt_dynar_remove_at(visited_states, next_cursor, NULL);
+                xbt_dynar_insert_at(visited_states, next_cursor, &new_state);
                 if(raw_mem_set)
                   MC_SET_RAW_MEM;
                 else
                   MC_UNSET_RAW_MEM;
-                return state_test->num;
+                return new_state->other_num;
               }
               next_cursor++;
             }
