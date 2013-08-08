@@ -6,8 +6,8 @@
 #ifndef _SURF_SURF_PRIVATE_H
 #define _SURF_SURF_PRIVATE_H
 
+#include "surf/solver.h"
 #include "surf/surf.h"
-#include "surf/maxmin.h"
 #include "surf/trace_mgr.h"
 #include "xbt/log.h"
 #include "surf/surfxml_parse.h"

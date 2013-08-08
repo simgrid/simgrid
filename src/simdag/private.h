@@ -12,6 +12,7 @@
 #include "xbt/fifo.h"
 #include "simdag/simdag.h"
 #include "simdag/datatypes.h"
+#include "surf/solver.h"
 #include "surf/surf.h"
 #include "xbt/swag.h"
 #include "xbt/mallocator.h"

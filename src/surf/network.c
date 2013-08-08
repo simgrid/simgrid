@@ -820,7 +820,7 @@ static void surf_network_model_init_internal(void)
                                  surf_action_lmm_update_index_heap);
     surf_network_model->model_private->modified_set =
         xbt_swag_new(xbt_swag_offset(comm, generic_lmm_action.action_list_hookup));
-    surf_network_model->model_private->maxmin_system->keep_track = surf_network_model->model_private->modified_set;
+    //TOREPAIR: surf_network_model->model_private->maxmin_system->keep_track = surf_network_model->model_private->modified_set;
   }
 
   surf_network_model->gap_remove = NULL;

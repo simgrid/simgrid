@@ -16,6 +16,7 @@
 #include "xbt/config.h"
 #include "surf/datatypes.h"
 #include "xbt/lib.h"
+#include "surf/solver.h"
 #include "surf/surf_routing.h"
 #include "simgrid/platf_interface.h"
 

@@ -163,8 +163,8 @@ static surf_action_t storage_action_execute (void *storage, size_t size, e_surf_
   GENERIC_LMM_ACTION(action).suspended = 0;     /* Should be useless because of the
                                                    calloc but it seems to help valgrind... */
 
-  GENERIC_LMM_ACTION(action).variable =
-      lmm_variable_new(storage_maxmin_system, action, 1.0, -1.0 , 3);
+  /* TOREPAIR GENERIC_LMM_ACTION(action).variable =
+      lmm_variable_new(storage_maxmin_system, action, 1.0, -1.0 , 3);*/
 
   // Must be less than the max bandwidth for all actions
   lmm_expand(storage_maxmin_system, STORAGE->constraint,
@@ -213,8 +213,9 @@ static void* storage_create_resource(const char* id, const char* model,const cha
   double Bconnection   = atof(xbt_dict_get(storage_type->properties,"Bconnection"));
   XBT_DEBUG("Create resource with Bconnection '%f' Bread '%f' Bwrite '%f' and Size '%lu'",Bconnection,Bread,Bwrite,(unsigned long)storage_type->size);
   storage->constraint       = lmm_constraint_new(storage_maxmin_system, storage, Bconnection);
+  /* TOREPAIR: storage->constraint       = lmm_constraint_new(storage_maxmin_system, storage, Bconnection);
   storage->constraint_read  = lmm_constraint_new(storage_maxmin_system, storage, Bread);
-  storage->constraint_write = lmm_constraint_new(storage_maxmin_system, storage, Bwrite);
+  storage->constraint_write = lmm_constraint_new(storage_maxmin_system, storage, Bwrite);*/
   storage->content = parse_storage_content((char*)content_name,&(storage->used_size));
   storage->size = storage_type->size;
 

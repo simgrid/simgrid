@@ -25,12 +25,6 @@ typedef struct surf_action *surf_action_t;
 typedef struct surf_file *surf_file_t;
 typedef struct surf_stat *surf_stat_t;
 
-typedef struct lmm_element *lmm_element_t;
-typedef struct lmm_variable *lmm_variable_t;
-typedef struct lmm_constraint *lmm_constraint_t;
-typedef struct lmm_constraint_light *lmm_constraint_light_t;
-typedef struct lmm_system *lmm_system_t;
-
 typedef struct tmgr_history *tmgr_history_t;
 typedef struct tmgr_trace_event *tmgr_trace_event_t;
 

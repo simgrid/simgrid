@@ -5,7 +5,8 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "surf_private.h"
-#include "surf/maxmin.h"
+//#include "surf/maxmin.h"
+#include "surf/solver.h"
 #include "surf/ns3/ns3_interface.h"
 #include "xbt/lib.h"
 #include "surf/network_ns3_private.h"
