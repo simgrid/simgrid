@@ -40,6 +40,8 @@ set(EXTRA_DIST
   src/smpi/colls/coll_tuned_topo.h
   src/smpi/private.h
   src/smpi/smpi_mpi_dt_private.h
+  src/surf/cpu.hpp
+  src/surf/cpu_ti.hpp
   src/surf/cpu_ti_private.h
   src/surf/gtnets/gtnets_interface.h
   src/surf/gtnets/gtnets_simulator.h
@@ -59,6 +61,8 @@ set(EXTRA_DIST
   src/surf/simgrid.dtd
   src/surf/simgrid_dtd.c
   src/surf/storage_private.h
+  src/surf/surf_c.h
+  src/surf/surf.hpp
   src/surf/surf_private.h
   src/surf/surf_routing_private.h
   src/surf/surfxml_parse.c
@@ -284,6 +288,7 @@ set(NS3_SRC
   )
 
 set(SURF_SRC
+  src/surf/cpu_ti.cpp
   src/surf/cpu_cas01.c
   src/surf/cpu_ti.c
   src/surf/fair_bottleneck.cpp
@@ -299,6 +304,7 @@ set(SURF_SRC
   src/surf/sg_platf.c
   src/surf/storage.c
   src/surf/surf.c
+  src/surf/surf.cpp
   src/surf/surf_action.c
   src/surf/surf_model.c
   src/surf/surf_routing.c
