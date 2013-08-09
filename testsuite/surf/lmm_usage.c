@@ -11,7 +11,7 @@
 #endif
 
 #include "xbt/sysdep.h"
-#include "surf/maxmin.h"
+#include "surf/solver.h"
 #include "xbt/log.h"
 #include "xbt/module.h"
 #include <math.h>
