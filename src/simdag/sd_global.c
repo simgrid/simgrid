@@ -97,6 +97,19 @@ void SD_init(int *argc, char **argv)
   SD_LINK_LEVEL = xbt_lib_add_level(link_lib,__SD_link_destroy);
 }
 
+/** \brief set a configuration variable
+ *
+ * Do --help on any simgrid binary to see the list of currently existing configuration variables, and see Section @ref options.
+ *
+ * Example:
+ * SD_config("workstation/model","default");
+ */
+void SD_config(const char *key, const char *value){
+  xbt_assert(sd_global,"ERROR: Please call SD_init() before using SD_config()");
+  xbt_cfg_set_as_string(_sg_cfg_set, key, value);
+}
+
+
 /**
  * \brief Reinits the application part of the simulation (experimental feature)
  *

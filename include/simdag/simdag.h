@@ -228,6 +228,7 @@ XBT_PUBLIC(int) SD_task_dependency_exists(SD_task_t src, SD_task_t dst);
  *  @{
  */
 XBT_PUBLIC(void) SD_init(int *argc, char **argv);
+XBT_PUBLIC(void) SD_config(const char *key, const char *value);
 XBT_PUBLIC(void) SD_application_reinit(void);
 XBT_PUBLIC(void) SD_create_environment(const char *platform_file);
 XBT_PUBLIC(xbt_dynar_t) SD_simulate(double how_long);
