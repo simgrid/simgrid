@@ -476,7 +476,27 @@ double SD_task_get_amount(SD_task_t task)
 }
 
 /**
- * \brief Returns the alpha parameter of a SD_TASK_COMP_PAR_AMDAH task
+ * \brief Sets the total amount of work of a task
+ * For sequential typed tasks (COMP_SEQ and COMM_E2E), it also sets the
+ * appropriate values in the computation_amount and communication_amount arrays
+ * respectively. Nothing more than modifying task->amount is done for paralle
+ * typed tasks (COMP_PAR_AMDAHL and COMM_PAR_MXN_1D_BLOCK) as the distribution
+ * of the amount of work is done at scheduling time.
+ *
+ * \param task a task
+ * \param amount the new amount of work to execute
+ */
+void SD_task_set_amount(SD_task_t task, double amount)
+{
+  task->amount = amount;
+  if (task->kind == SD_TASK_COMP_SEQ)
+    task->computation_amount[0] = amount;
+  if (task->kind == SD_TASK_COMM_E2E)
+    task->communication_amount[2] = amount;
+}
+
+/**
+ * \brief Returns the alpha parameter of a SD_TASK_COMP_PAR_AMDAHL task
  *
  * \param task a parallel task assuming Amdahl's law as speedup model
  * \return the alpha parameter (serial part of a task in percent) for this task
