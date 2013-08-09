@@ -271,6 +271,7 @@ if(NOT enable_memcheck)
   ADD_TEST(simdag-test-dax-cycle                ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/simdag/dax --cd ${CMAKE_BINARY_DIR}/examples/simdag/dax ${CMAKE_HOME_DIRECTORY}/examples/simdag/dax/simple_dax_with_cycle.tesh)
   ADD_TEST(simdag-test-prop                     ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/simdag --cd ${CMAKE_BINARY_DIR}/examples/simdag ${CMAKE_HOME_DIRECTORY}/examples/simdag/properties/test_prop.tesh)
   ADD_TEST(simdag-test-minmin-scheduling        ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --setenv bindir=${CMAKE_BINARY_DIR}/examples/simdag/scheduling --cd ${CMAKE_HOME_DIRECTORY}/examples/simdag/scheduling test_minmin.tesh)
+  ADD_TEST(simdag-test-io 		  	${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --setenv bindir=${CMAKE_BINARY_DIR}/examples/simdag/ --setenv srcdir=${CMAKE_HOME_DIRECTORY}/ --cd ${CMAKE_HOME_DIRECTORY}/examples/ ${CMAKE_HOME_DIRECTORY}/examples/simdag/io/io.tesh)
 
   ADD_TEST(msg-gtnets-crosstraffic-thread       ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg contexts/factory:thread --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg --cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/gtnets/gtnets-crosstraffic.tesh)
   if(CONTEXT_UCONTEXT)

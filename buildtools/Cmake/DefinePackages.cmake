@@ -895,6 +895,7 @@ set(EXAMPLES_CMAKEFILES_TXT
   examples/simdag/dax/CMakeLists.txt
   examples/simdag/dot/CMakeLists.txt
   examples/simdag/goal/CMakeLists.txt
+  examples/simdag/io/CMakeLists.txt
   examples/simdag/metaxml/CMakeLists.txt
   examples/simdag/properties/CMakeLists.txt
   examples/simdag/scheduling/CMakeLists.txt
