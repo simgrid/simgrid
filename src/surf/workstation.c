@@ -369,14 +369,14 @@ static xbt_dynar_t ws_get_storage_list(void *workstation)
 {
   s_mount_t mnt;
   unsigned int i;
-  xbt_dynar_t storage_list = xbt_dynar_new(sizeof(void*), NULL);
+  xbt_dynar_t storage_list = xbt_dynar_new(sizeof(char*), NULL);
 
   workstation_CLM03_t ws = (workstation_CLM03_t) surf_workstation_resource_priv(workstation);
   xbt_dynar_t storages = ws->storage;
 
   xbt_dynar_foreach(storages,i,mnt)
   {
-    xbt_dynar_push_as(storage_list, char*, mnt.name);
+    xbt_dynar_push(storage_list, &mnt.name);
   }
   return storage_list;
 }
