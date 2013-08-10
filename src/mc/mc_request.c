@@ -461,17 +461,10 @@ char *MC_request_get_dot_output(smx_simcall_t req, int value){
     break;
 
   case SIMCALL_MC_RANDOM:
-    if(value == 0){
-      if(req->issuer->smx_host)
-        label = bprintf("[(%lu)%s] MC_RANDOM (0)", req->issuer->pid, MSG_host_get_name(req->issuer->smx_host));
-      else
-        label = bprintf("[(%lu)] MC_RANDOM (0)", req->issuer->pid);
-    }else{
-      if(req->issuer->smx_host)
-        label = bprintf("[(%lu)%s] MC_RANDOM (1)", req->issuer->pid, MSG_host_get_name(req->issuer->smx_host));
-      else
-        label = bprintf("[(%lu)] MC_RANDOM (1)", req->issuer->pid);
-    }
+    if(req->issuer->smx_host)
+      label = bprintf("[(%lu)%s] MC_RANDOM (%d)", req->issuer->pid, MSG_host_get_name(req->issuer->smx_host), value);
+    else
+      label = bprintf("[(%lu)] MC_RANDOM (%d)", req->issuer->pid, value);
     break;
 
   case SIMCALL_MC_SNAPSHOT:

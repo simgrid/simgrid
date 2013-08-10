@@ -1971,16 +1971,16 @@ void MC_exit(void)
   //xbt_abort();
 }
 
-int SIMIX_pre_mc_random(smx_simcall_t simcall){
+int SIMIX_pre_mc_random(smx_simcall_t simcall, int min, int max){
 
   return simcall->mc_value;
 }
 
 
-int MC_random(void)
+int MC_random(int min, int max)
 {
   /*FIXME: return mc_current_state->executed_transition->random.value;*/
-  return simcall_mc_random();
+  return simcall_mc_random(min, max);
 }
 
 /**

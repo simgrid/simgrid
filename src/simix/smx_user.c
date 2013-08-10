@@ -1311,9 +1311,9 @@ int simcall_mc_compare_snapshots(void *s1, void *s2){
   return simcall_BODY_mc_compare_snapshots(s1, s2);
 }
 
-int simcall_mc_random(void)
+int simcall_mc_random(int min, int max)
 {
-  return simcall_BODY_mc_random();
+  return simcall_BODY_mc_random(min, max);
 }
 
 

@@ -79,7 +79,7 @@ void MC_show_deadlock(smx_simcall_t req);
 void MC_show_stack_safety(xbt_fifo_t stack);
 void MC_dump_stack_safety(xbt_fifo_t stack);
 void MC_init(void);
-int SIMIX_pre_mc_random(smx_simcall_t simcall);
+int SIMIX_pre_mc_random(smx_simcall_t simcall, int min, int max);
 
 
 /********************************* Requests ***********************************/
