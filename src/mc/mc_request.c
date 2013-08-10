@@ -274,9 +274,9 @@ char *MC_request_to_string(smx_simcall_t req, int value)
   }
 
   if(args != NULL){
-    str = bprintf("[(%lu)%s (%s)] %s(%d) (%s)", req->issuer->pid , MSG_host_get_name(req->issuer->smx_host), req->issuer->name, type, req->call, args);
+    str = bprintf("[(%lu)%s (%s)] %s(%s) (%d)", req->issuer->pid , MSG_host_get_name(req->issuer->smx_host), req->issuer->name, type, args, req->call);
   }else{
-    str = bprintf("[(%lu)%s (%s)] %s(%d) ", req->issuer->pid , MSG_host_get_name(req->issuer->smx_host), req->issuer->name, type, req->call);
+    str = bprintf("[(%lu)%s (%s)] %s (%d) ", req->issuer->pid , MSG_host_get_name(req->issuer->smx_host), req->issuer->name, type, req->call);
   }
 
   xbt_free(args);
