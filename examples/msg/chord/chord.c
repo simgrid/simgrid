@@ -293,6 +293,12 @@ int node(int argc, char *argv[])
   double next_check_predecessor_date = init_time + periodic_check_predecessor_delay;
   double next_lookup_date = init_time + periodic_lookup_delay;
 
+  #ifdef HAVE_MC
+  int listen = 0;
+  int no_op = 0;
+  int sub_protocol = 0;
+  #endif
+
   xbt_assert(argc == 3 || argc == 5, "Wrong number of arguments for this node");
 
   // initialize my node
@@ -339,67 +345,68 @@ int node(int argc, char *argv[])
         // FIXME: do not make MSG_task_irecv() calls from several functions
       }
 
+      //XBT_INFO("Node %d is ring member : %d", node.id, is_ring_member(known_id, node.id) != -1);
+
       if (!MSG_comm_test(node.comm_receive)) {
 
         // no task was received: make some periodic calls
 
-        #ifdef HAVE_MC
-          if(MC_is_active()){
-            if(MC_random()){
-              stabilize(&node);
-            }else if(MC_random()){
-              fix_fingers(&node);
-            }else if(MC_random()){
-              check_predecessor(&node);
-            }else if(MC_random()){
-              random_lookup(&node);
-            }else{
-              MSG_process_sleep(5);
-            }
-          }else{
-            if (MSG_get_clock() >= next_stabilize_date) {
-              stabilize(&node);
-              next_stabilize_date = MSG_get_clock() + periodic_stabilize_delay;
-            }
-            else if (MSG_get_clock() >= next_fix_fingers_date) {
-              fix_fingers(&node);
-              next_fix_fingers_date = MSG_get_clock() + periodic_fix_fingers_delay;
-            }
-            else if (MSG_get_clock() >= next_check_predecessor_date) {
-              check_predecessor(&node);
-              next_check_predecessor_date = MSG_get_clock() + periodic_check_predecessor_delay;
-            }
-            else if (MSG_get_clock() >= next_lookup_date) {
-              random_lookup(&node);
-              next_lookup_date = MSG_get_clock() + periodic_lookup_delay;
-            }
-            else {
-              // nothing to do: sleep for a while
-              MSG_process_sleep(5);
-            }
+#ifdef HAVE_MC
+        if(MC_is_active()){
+          if(!MC_visited_reduction() && no_op){
+              MC_cut();
           }
-        #else
+          if(listen == 0 && (sub_protocol = MC_random(0, 4)) > 0){
+            if(sub_protocol == 1)
+              stabilize(&node);
+            else if(sub_protocol == 2)
+              fix_fingers(&node);
+            else if(sub_protocol == 3)
+              check_predecessor(&node);
+            else
+              random_lookup(&node);
+            listen = 1;
+          }else{
+            MSG_process_sleep(5);
+            if(!MC_visited_reduction())
+              no_op = 1;
+          }
+        }else{
           if (MSG_get_clock() >= next_stabilize_date) {
             stabilize(&node);
             next_stabilize_date = MSG_get_clock() + periodic_stabilize_delay;
-          }
-          else if (MSG_get_clock() >= next_fix_fingers_date) {
+          }else if (MSG_get_clock() >= next_fix_fingers_date) {
             fix_fingers(&node);
             next_fix_fingers_date = MSG_get_clock() + periodic_fix_fingers_delay;
-          }
-          else if (MSG_get_clock() >= next_check_predecessor_date) {
+          }else if (MSG_get_clock() >= next_check_predecessor_date) {
             check_predecessor(&node);
             next_check_predecessor_date = MSG_get_clock() + periodic_check_predecessor_delay;
-          }
-          else if (MSG_get_clock() >= next_lookup_date) {
+          }else if (MSG_get_clock() >= next_lookup_date) {
             random_lookup(&node);
             next_lookup_date = MSG_get_clock() + periodic_lookup_delay;
-          }
-          else {
+          }else {
             // nothing to do: sleep for a while
             MSG_process_sleep(5);
           }
-        #endif
+        }
+#else
+        if (MSG_get_clock() >= next_stabilize_date) {
+          stabilize(&node);
+          next_stabilize_date = MSG_get_clock() + periodic_stabilize_delay;
+        }else if (MSG_get_clock() >= next_fix_fingers_date) {
+          fix_fingers(&node);
+          next_fix_fingers_date = MSG_get_clock() + periodic_fix_fingers_delay;
+        }else if (MSG_get_clock() >= next_check_predecessor_date) {
+          check_predecessor(&node);
+          next_check_predecessor_date = MSG_get_clock() + periodic_check_predecessor_delay;
+        }else if (MSG_get_clock() >= next_lookup_date) {
+          random_lookup(&node);
+          next_lookup_date = MSG_get_clock() + periodic_lookup_delay;
+        }else {
+          // nothing to do: sleep for a while
+          MSG_process_sleep(5);
+        }
+#endif
 
       } else {
         // a transfer has occurred
@@ -781,9 +788,9 @@ static int remote_get_predecessor(node_t node, int ask_to)
         msg_task_t task_received = MSG_comm_get_task(node->comm_receive);
         task_data_t ans_data = MSG_task_get_data(task_received);
 
-        if (MC_is_active()) {
+        /*if (MC_is_active()) {
           MC_assert(task_received == task_sent);
-        }
+          }*/
 
         if (task_received != task_sent) {
           MSG_comm_destroy(node->comm_receive);
