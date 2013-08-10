@@ -2391,8 +2391,8 @@ void MC_assert(int prop)
   }
 }
 
-void MC_max_depth(int max_depth){
-  user_max_depth_reached = max_depth;
+void MC_cut(void){
+  user_max_depth_reached = 1;
 }
 
 void MC_process_clock_add(smx_process_t process, double amount)
