@@ -1385,7 +1385,6 @@ void MC_ignore_global_variable(const char *name){
     dw_variable_t current_var;
     int start = 0;
     int end = xbt_dynar_length(mc_global_variables_libsimgrid) - 1;
-    int var_found;
 
     while(start <= end){
       cursor = (start + end) /2;
