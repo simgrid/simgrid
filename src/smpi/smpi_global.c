@@ -281,6 +281,8 @@ void smpi_global_init(void)
     process_data[i]->mailbox = simcall_rdv_create(get_mailbox_name(name, i));
     process_data[i]->mailbox_small = simcall_rdv_create(get_mailbox_name_small(name, i));
     process_data[i]->timer = xbt_os_timer_new();
+    if(MC_is_active())
+      MC_ignore_heap(process_data[i]->timer, xbt_os_timer_size());
     group = smpi_group_new(1);
     process_data[i]->comm_self = smpi_comm_new(group);
     process_data[i]->initialized =0;
