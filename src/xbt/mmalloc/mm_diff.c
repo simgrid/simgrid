@@ -145,6 +145,11 @@ static void heap_area_pair_free_voidp(void *d){
   heap_area_pair_free((heap_area_pair_t) * (void **) d);
 }
 
+static void heap_area_free(heap_area_t area){
+  xbt_free(area);
+  area = NULL;
+}
+
 /************************************************************************************/
 
 static heap_area_t new_heap_area(int block, int fragment){
@@ -244,15 +249,15 @@ static void match_equals(xbt_dynar_t list){
       
       if(heapinfo1[current_pair->block1].busy_frag.equal_to[current_pair->fragment1] != NULL){    
         previous_area = heapinfo1[current_pair->block1].busy_frag.equal_to[current_pair->fragment1];
-        xbt_free(heapinfo2[previous_area->block].busy_frag.equal_to[previous_area->fragment]);
+        heap_area_free(heapinfo2[previous_area->block].busy_frag.equal_to[previous_area->fragment]);
         heapinfo2[previous_area->block].busy_frag.equal_to[previous_area->fragment] = NULL;
-        xbt_free(previous_area); 
+        heap_area_free(previous_area); 
       }
       if(heapinfo2[current_pair->block2].busy_frag.equal_to[current_pair->fragment2] != NULL){        
         previous_area = heapinfo2[current_pair->block2].busy_frag.equal_to[current_pair->fragment2];
-        xbt_free(heapinfo1[previous_area->block].busy_frag.equal_to[previous_area->fragment]);
+        heap_area_free(heapinfo1[previous_area->block].busy_frag.equal_to[previous_area->fragment]);
         heapinfo1[previous_area->block].busy_frag.equal_to[previous_area->fragment] = NULL;
-        xbt_free(previous_area);
+        heap_area_free(previous_area);
       }
 
       heapinfo1[current_pair->block1].busy_frag.equal_to[current_pair->fragment1] = new_heap_area(current_pair->block2, current_pair->fragment2);
@@ -262,15 +267,15 @@ static void match_equals(xbt_dynar_t list){
 
       if(heapinfo1[current_pair->block1].busy_block.equal_to != NULL){
         previous_area = heapinfo1[current_pair->block1].busy_block.equal_to;
-        xbt_free(heapinfo2[previous_area->block].busy_block.equal_to);
-        heapinfo2[previous_area->block].busy_block.equal_to = NULL; 
-        xbt_free(previous_area);
+        heap_area_free(heapinfo2[previous_area->block].busy_block.equal_to);
+        heapinfo2[previous_area->block].busy_block.equal_to = NULL;
+        heap_area_free(previous_area);
       }
       if(heapinfo2[current_pair->block2].busy_block.equal_to != NULL){
         previous_area = heapinfo2[current_pair->block2].busy_block.equal_to;
-        xbt_free(heapinfo1[previous_area->block].busy_block.equal_to);
+        heap_area_free(heapinfo1[previous_area->block].busy_block.equal_to);
         heapinfo1[previous_area->block].busy_block.equal_to = NULL;
-        xbt_free(previous_area);
+        heap_area_free(previous_area);
       }
 
       heapinfo1[current_pair->block1].busy_block.equal_to = new_heap_area(current_pair->block2, current_pair->fragment2);
@@ -340,12 +345,12 @@ void reset_heap_information(){
 
   while(i<=heaplimit){
     if(heapinfo1[i].type == 0){
-      xbt_free(heapinfo1[i].busy_block.equal_to);
+      heap_area_free(heapinfo1[i].busy_block.equal_to);
       heapinfo1[i].busy_block.equal_to = NULL;
     }
     if(heapinfo1[i].type > 0){
       for(j=0; j < (size_t) (BLOCKSIZE >> heapinfo1[i].type); j++){
-        xbt_free(heapinfo1[i].busy_frag.equal_to[j]);
+        heap_area_free(heapinfo1[i].busy_frag.equal_to[j]);
         heapinfo1[i].busy_frag.equal_to[j] = NULL;
       }
     }
@@ -356,12 +361,12 @@ void reset_heap_information(){
 
   while(i<=heaplimit){
     if(heapinfo2[i].type == 0){
-      xbt_free(heapinfo2[i].busy_block.equal_to);
+      heap_area_free(heapinfo2[i].busy_block.equal_to);
       heapinfo2[i].busy_block.equal_to = NULL;
     }
     if(heapinfo2[i].type > 0){
       for(j=0; j < (size_t) (BLOCKSIZE >> heapinfo2[i].type); j++){
-        xbt_free(heapinfo2[i].busy_frag.equal_to[j]);
+        heap_area_free(heapinfo2[i].busy_frag.equal_to[j]);
         heapinfo2[i].busy_frag.equal_to[j] = NULL;
       }
     }
