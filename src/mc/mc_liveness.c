@@ -94,6 +94,7 @@ static int is_reached_acceptance_pair(mc_pair_t pair){
           same_processes_and_bytes_not_found = 0;
           if(xbt_automaton_state_compare(pair_test->automaton_state, pair->automaton_state) == 0){
             if(xbt_automaton_propositional_symbols_compare_value(pair_test->atomic_propositions, pair->atomic_propositions) == 0){
+              XBT_DEBUG("Compare with state %d", pair_test->num);
               if(snapshot_compare(pair->graph_state->system_state, pair_test->graph_state->system_state) == 0){
                 if(raw_mem_set)
                   MC_SET_RAW_MEM;
@@ -112,6 +113,7 @@ static int is_reached_acceptance_pair(mc_pair_t pair){
               break;
             if(xbt_automaton_state_compare(pair_test->automaton_state, pair->automaton_state) == 0){
               if(xbt_automaton_propositional_symbols_compare_value(pair_test->atomic_propositions, pair->atomic_propositions) == 0){  
+                XBT_DEBUG("Compare with state %d", pair_test->num);
                 if(snapshot_compare(pair->graph_state->system_state, pair_test->graph_state->system_state) == 0){
                   if(raw_mem_set)
                     MC_SET_RAW_MEM;
@@ -131,6 +133,7 @@ static int is_reached_acceptance_pair(mc_pair_t pair){
               break;
             if(xbt_automaton_state_compare(pair_test->automaton_state, pair->automaton_state) == 0){
               if(xbt_automaton_propositional_symbols_compare_value(pair_test->atomic_propositions, pair->atomic_propositions) == 0){
+                XBT_DEBUG("Compare with state %d", pair_test->num);
                 if(snapshot_compare(pair->graph_state->system_state, pair_test->graph_state->system_state) == 0){
                   if(raw_mem_set)
                     MC_SET_RAW_MEM;
