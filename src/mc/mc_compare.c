@@ -293,8 +293,8 @@ static int compare_local_variables(mc_snapshot_stack_t stack1, mc_snapshot_stack
         res = compare_areas_with_type( (char *)heap1 + offset1, (char *)heap2 + offset2, mc_variables_type_libsimgrid, mc_variables_type_binary, current_var1->type, 0, 1, start_data_libsimgrid, 0l);
       else
         res = compare_areas_with_type( (char *)heap1 + offset1, (char *)heap2 + offset2, mc_variables_type_binary, mc_variables_type_libsimgrid, current_var1->type, 0, 2, start_data_binary, 0l);
-      if(res != 0){
-        XBT_VERB("Local variable %s in frame %s  is different between snapshots", current_var1->name, current_var1->frame);
+      if(res == 1){
+        XBT_VERB("Local variable %s (%p - %p)  in frame %s  is different between snapshots", current_var1->name, (char *)heap1 + offset1, (char *)heap2 + offset2, current_var1->frame);
         return res;
       }
       cursor++;
