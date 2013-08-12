@@ -58,10 +58,17 @@ typedef struct s_mc_global_t{
   char *prev_req;
 }s_mc_global_t, *mc_global_t;
 
+typedef struct s_mc_checkpoint_ignore_region{
+  void *addr;
+  size_t size;
+}s_mc_checkpoint_ignore_region_t, *mc_checkpoint_ignore_region_t;
+
 mc_snapshot_t SIMIX_pre_mc_snapshot(smx_simcall_t simcall);
 mc_snapshot_t MC_take_snapshot(void);
 void MC_restore_snapshot(mc_snapshot_t);
 void MC_free_snapshot(mc_snapshot_t);
+
+extern xbt_dynar_t mc_checkpoint_ignore;
 
 /********************************* MC Global **********************************/
 

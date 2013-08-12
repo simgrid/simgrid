@@ -56,8 +56,8 @@ void MC_automaton_load(const char *file);
 /****************************** MC ignore **********************************/
 XBT_PUBLIC(void) MC_ignore_heap(void *address, size_t size);
 XBT_PUBLIC(void) MC_remove_ignore_heap(void *address, size_t size);
-XBT_PUBLIC(void) MC_ignore_local_variable(const char *var_name, const char *frame, ...);
-XBT_PUBLIC(void) MC_ignore_global_variable(const char *var_name, ...);
+XBT_PUBLIC(void) MC_ignore_local_variable(const char *var_name, const char *frame);
+XBT_PUBLIC(void) MC_ignore_global_variable(const char *var_name);
 void MC_new_stack_area(void *stack, char *name, void *context, size_t size);
 
 /********************************* Memory *************************************/

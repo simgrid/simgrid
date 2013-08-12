@@ -689,6 +689,24 @@ static xbt_dynar_t MC_take_snapshot_ignore(){
 
 }
 
+static void MC_dump_checkpoint_ignore(mc_snapshot_t snapshot){
+  
+  unsigned int cursor = 0;
+  mc_checkpoint_ignore_region_t region;
+  size_t offset;
+  
+  xbt_dynar_foreach(mc_checkpoint_ignore, cursor, region){
+    if(region->addr > snapshot->regions[0]->start_addr && (char *)(region->addr) < (char *)snapshot->regions[0]->start_addr + STD_HEAP_SIZE){
+      offset = (char *)region->addr - (char *)snapshot->regions[0]->start_addr;
+      memset((char *)snapshot->regions[0]->start_addr + offset, 0, region->size);
+    }else if(region->addr > snapshot->regions[2]->start_addr && (char *)(region->addr) < (char*)snapshot->regions[2]->start_addr + snapshot->regions[2]->size){
+      offset = (char *)region->addr - (char *)snapshot->regions[2]->start_addr;
+      memset((char *)snapshot->regions[2]->start_addr + offset, 0, region->size);
+    }
+  }
+
+}
+
 
 mc_snapshot_t MC_take_snapshot(){
 
@@ -709,6 +727,8 @@ mc_snapshot_t MC_take_snapshot(){
     //MC_get_hash_global(snapshot->hash_global, snapshot->regions[1]->data, snapshot->regions[2]->data);
     //MC_get_hash_local(snapshot->hash_local, snapshot->stacks);
   }
+
+  MC_dump_checkpoint_ignore(snapshot);
 
   MC_UNSET_RAW_MEM;
 

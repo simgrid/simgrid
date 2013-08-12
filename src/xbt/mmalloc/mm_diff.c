@@ -320,16 +320,16 @@ void init_heap_information(xbt_mheap_t heap1, xbt_mheap_t heap2, xbt_dynar_t i1,
   to_ignore2 = i2;
 
   if(MC_is_active()){
-    MC_ignore_global_variable("heaplimit", 1);
-    MC_ignore_global_variable("s_heap", 1);
-    MC_ignore_global_variable("heapbase1", 1);
-    MC_ignore_global_variable("heapbase2", 1);
-    MC_ignore_global_variable("heapinfo1", 1);
-    MC_ignore_global_variable("heapinfo2", 1);
-    MC_ignore_global_variable("heapsize1", 1);
-    MC_ignore_global_variable("heapsize2", 1);
-    MC_ignore_global_variable("to_ignore1", 1);
-    MC_ignore_global_variable("to_ignore2", 1);
+    MC_ignore_global_variable("heaplimit");
+    MC_ignore_global_variable("s_heap");
+    MC_ignore_global_variable("heapbase1");
+    MC_ignore_global_variable("heapbase2");
+    MC_ignore_global_variable("heapinfo1");
+    MC_ignore_global_variable("heapinfo2");
+    MC_ignore_global_variable("heapsize1");
+    MC_ignore_global_variable("heapsize2");
+    MC_ignore_global_variable("to_ignore1");
+    MC_ignore_global_variable("to_ignore2");
   }
 
 }
