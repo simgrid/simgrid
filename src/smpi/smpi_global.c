@@ -466,7 +466,7 @@ int smpi_main(int (*realmain) (int argc, char *argv[]),int argc, char *argv[])
   fflush(stderr);
 
   if (MC_is_active())
-    MC_modelcheck_safety();
+    MC_do_the_modelcheck_for_real();
   else
     SIMIX_run();
 
