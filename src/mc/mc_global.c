@@ -1393,7 +1393,6 @@ void MC_ignore_global_variable(const char *name){
         xbt_dynar_remove_at(mc_global_variables_libsimgrid, cursor, NULL);
         start = 0;
         end = xbt_dynar_length(mc_global_variables_libsimgrid) - 1;
-        break;
       }else if(strcmp(current_var->name, name) < 0){
         start = cursor + 1;
       }else{
