@@ -302,8 +302,10 @@ void smpi_datatype_create(MPI_Datatype* new_type, int size,int lb, int ub, int h
   new_t->in_use=0;
   *new_type = new_t;
 
+#ifdef HAVE_MC
   if(MC_is_active())
     MC_ignore(&(new_t->in_use), sizeof(new_t->in_use));
+#endif
 }
 
 void smpi_datatype_free(MPI_Datatype* type){
@@ -326,18 +328,22 @@ void smpi_datatype_free(MPI_Datatype* type){
 
 void smpi_datatype_use(MPI_Datatype type){
   if(type)type->in_use++;
-  
+
+#ifdef HAVE_MC
   if(MC_is_active())
     MC_ignore(&(type->in_use), sizeof(type->in_use));
+#endif
 }
 
 
 void smpi_datatype_unuse(MPI_Datatype type){
   if(type && type->in_use-- == 0 && (type->flags & DT_FLAG_DESTROYED))
     smpi_datatype_free(&type);
-
+  
+#ifdef HAVE_MC
   if(MC_is_active())
     MC_ignore(&(type->in_use), sizeof(type->in_use));
+#endif
 }
 
 
