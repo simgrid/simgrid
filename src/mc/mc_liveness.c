@@ -304,7 +304,6 @@ static int is_visited_pair(mc_pair_t pair){
     size_t bytes_used_test;
     int nb_processes_test;
     int same_processes_and_bytes_not_found = 1;
-    int result;
 
     while(start <= end && same_processes_and_bytes_not_found){
       cursor = (start + end) / 2;
@@ -325,10 +324,17 @@ static int is_visited_pair(mc_pair_t pair){
           if(xbt_automaton_state_compare(pair_test->automaton_state, pair->automaton_state) == 0){
             if(xbt_automaton_propositional_symbols_compare_value(pair_test->atomic_propositions, pair->atomic_propositions) == 0){
               if(snapshot_compare(pair->graph_state->system_state, pair_test->graph_state->system_state) == 0){
+                if(pair_test->other_num == -1)
+                  pair->other_num = pair_test->num;
+                else
+                  pair->other_num = pair_test->other_num;
+                if(dot_output == NULL)
+                  XBT_DEBUG("Pair %d already visited ! (equal to pair %d)", pair->num, pair_test->num);
+                else
+                  XBT_DEBUG("Pair %d already visited ! (equal to pair %d (pair %d in dot_output))", pair->num, pair_test->num, pair->other_num);
                 xbt_dynar_remove_at(visited_pairs, cursor, NULL);
                 xbt_dynar_insert_at(visited_pairs, cursor, &pair);
                 pair_test->visited_removed = 1;
-                result = pair_test->num;
                 if(pair_test->stack_removed && pair_test->visited_removed){
                   if((pair_test->automaton_state->type == 1) || (pair_test->automaton_state->type == 2)){
                     if(pair_test->acceptance_removed){ 
@@ -342,7 +348,7 @@ static int is_visited_pair(mc_pair_t pair){
                   MC_SET_RAW_MEM;
                 else
                   MC_UNSET_RAW_MEM;
-                return result;
+                return pair->other_num;
               }
             }
           }
@@ -356,10 +362,17 @@ static int is_visited_pair(mc_pair_t pair){
             if(xbt_automaton_state_compare(pair_test->automaton_state, pair->automaton_state) == 0){
               if(xbt_automaton_propositional_symbols_compare_value(pair_test->atomic_propositions, pair->atomic_propositions) == 0){  
                 if(snapshot_compare(pair->graph_state->system_state, pair_test->graph_state->system_state) == 0){
+                  if(pair_test->other_num == -1)
+                    pair->other_num = pair_test->num;
+                  else
+                    pair->other_num = pair_test->other_num;
+                  if(dot_output == NULL)
+                    XBT_DEBUG("Pair %d already visited ! (equal to pair %d)", pair->num, pair_test->num);
+                  else
+                    XBT_DEBUG("Pair %d already visited ! (equal to pair %d (pair %d in dot_output))", pair->num, pair_test->num, pair->other_num);
                   xbt_dynar_remove_at(visited_pairs, previous_cursor, NULL);
                   xbt_dynar_insert_at(visited_pairs, previous_cursor, &pair);
                   pair_test->visited_removed = 1;
-                  result = pair_test->num;
                   if(pair_test->stack_removed && pair_test->visited_removed){
                     if((pair_test->automaton_state->type == 1) || (pair_test->automaton_state->type == 2)){
                       if(pair_test->acceptance_removed){ 
@@ -373,7 +386,7 @@ static int is_visited_pair(mc_pair_t pair){
                     MC_SET_RAW_MEM;
                   else
                     MC_UNSET_RAW_MEM;
-                  return result;
+                  return pair->other_num;
                 }
               }
             }
@@ -388,10 +401,17 @@ static int is_visited_pair(mc_pair_t pair){
             if(xbt_automaton_state_compare(pair_test->automaton_state, pair->automaton_state) == 0){
               if(xbt_automaton_propositional_symbols_compare_value(pair_test->atomic_propositions, pair->atomic_propositions) == 0){
                 if(snapshot_compare(pair->graph_state->system_state, pair_test->graph_state->system_state) == 0){
+                  if(pair_test->other_num == -1)
+                    pair->other_num = pair_test->num;
+                  else
+                    pair->other_num = pair_test->other_num;
+                  if(dot_output == NULL)
+                    XBT_DEBUG("Pair %d already visited ! (equal to pair %d)", pair->num, pair_test->num);
+                  else
+                    XBT_DEBUG("Pair %d already visited ! (equal to pair %d (pair %d in dot_output))", pair->num, pair_test->num, pair->other_num);
                   xbt_dynar_remove_at(visited_pairs, next_cursor, NULL);
                   xbt_dynar_insert_at(visited_pairs, next_cursor, &pair);
                   pair_test->visited_removed = 1;
-                  result = pair_test->num;
                   if(pair_test->stack_removed && pair_test->visited_removed){
                     if((pair_test->automaton_state->type == 1) || (pair_test->automaton_state->type == 2)){
                       if(pair_test->acceptance_removed){ 
@@ -405,7 +425,7 @@ static int is_visited_pair(mc_pair_t pair){
                     MC_SET_RAW_MEM;
                   else
                     MC_UNSET_RAW_MEM;
-                  return result;
+                  return pair->other_num;
                 }
               }
             }
@@ -654,8 +674,6 @@ void MC_ddfs(){
       }
 
       if((visited_num = is_visited_pair(current_pair)) != -1){
-
-        XBT_DEBUG("Pair %d already visited ! (equal to pair %d)", current_pair->num, visited_num);
 
         MC_SET_RAW_MEM;
         if(dot_output != NULL)

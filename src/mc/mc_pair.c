@@ -11,6 +11,7 @@ mc_pair_t MC_pair_new(){
   p->nb_processes = xbt_swag_size(simix_global->process_list);
   p->num = ++mc_stats->expanded_pairs;
   p->search_cycle = 0;
+  p->other_num = -1;
   return p;
 }
 

@@ -296,6 +296,7 @@ extern xbt_dynar_t mc_data_bss_comparison_ignore;
 
 typedef struct s_mc_pair{
   int num;
+  int other_num; /* Dot output for */
   int search_cycle;
   mc_state_t graph_state; /* System state included */
   xbt_automaton_state_t automaton_state;
