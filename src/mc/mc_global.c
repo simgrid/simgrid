@@ -1313,11 +1313,11 @@ void MC_ignore_heap(void *address, size_t size){
       if(!raw_mem_set)
         MC_UNSET_RAW_MEM;
       return;
-    }
-    if(current_region->address < address)
+    }else if(current_region->address < address){
       start = cursor + 1;
-    if(current_region->address > address)
-      end = cursor - 1;   
+    }else{
+      end = cursor - 1;
+    }   
   }
 
   if(current_region->address < address)
@@ -1349,15 +1349,15 @@ void MC_remove_ignore_heap(void *address, size_t size){
     if(region->address == address){
       ignore_found = 1;
       break;
-    }
-    if(region->address < address)
+    }else if(region->address < address){
       start = cursor + 1;
-    if(region->address > address){
+    }else{
       if((char * )region->address <= ((char *)address + size)){
         ignore_found = 1;
         break;
-      }else
+      }else{
         end = cursor - 1;   
+      }
     }
   }
   
@@ -1528,23 +1528,29 @@ void MC_ignore_local_variable(const char *var_name, const char *frame_name){
             if(!raw_mem_set)
               MC_UNSET_RAW_MEM;
             return;
-          }
-          if(strcmp(current_var->var_name, var_name) < 0)
+          }else if(strcmp(current_var->var_name, var_name) < 0){
             start = cursor + 1;
-          if(strcmp(current_var->var_name, var_name) > 0)
+          }else{
             end = cursor - 1;
-        }
-        if(strcmp(current_var->frame, frame_name) < 0)
+          }
+        }else if(strcmp(current_var->frame, frame_name) < 0){
           start = cursor + 1;
-        if(strcmp(current_var->frame, frame_name) > 0)
+        }else{
           end = cursor - 1;
+        }
       }
 
-      if(strcmp(current_var->frame, frame_name) < 0)
+      if(strcmp(current_var->frame, frame_name) == 0){
+        if(strcmp(current_var->var_name, var_name) < 0){
+          xbt_dynar_insert_at(mc_stack_comparison_ignore, cursor + 1, &var);
+        }else{
+          xbt_dynar_insert_at(mc_stack_comparison_ignore, cursor, &var);
+        }
+      }else if(strcmp(current_var->frame, frame_name) < 0){
         xbt_dynar_insert_at(mc_stack_comparison_ignore, cursor + 1, &var);
-      else
+      }else{
         xbt_dynar_insert_at(mc_stack_comparison_ignore, cursor, &var);
-
+      }
     }
   }
 
@@ -1591,7 +1597,48 @@ void MC_ignore(void *addr, size_t size){
   region->addr = addr;
   region->size = size;
 
-  xbt_dynar_push(mc_checkpoint_ignore, &region);
+  if(xbt_dynar_is_empty(mc_checkpoint_ignore)){
+    xbt_dynar_push(mc_checkpoint_ignore, &region);
+  }else{
+     
+    unsigned int cursor = 0;
+    int start = 0;
+    int end = xbt_dynar_length(mc_checkpoint_ignore) -1;
+    mc_checkpoint_ignore_region_t current_region;
+
+    while(start <= end){
+      cursor = (start + end) / 2;
+      current_region = (mc_checkpoint_ignore_region_t)xbt_dynar_get_as(mc_checkpoint_ignore, cursor, mc_checkpoint_ignore_region_t);
+      if(current_region->addr == addr){
+        if(current_region->size == size){
+          checkpoint_ignore_region_free(region);
+          if(!raw_mem_set)
+            MC_UNSET_RAW_MEM;
+          return;
+        }else if(current_region->size < size){
+          start = cursor + 1;
+        }else{
+          end = cursor - 1;
+        }
+      }else if(current_region->addr < addr){
+          start = cursor + 1;
+      }else{
+        end = cursor - 1;
+      }
+    }
+
+     if(current_region->addr == addr){
+       if(current_region->size < size){
+        xbt_dynar_insert_at(mc_checkpoint_ignore, cursor + 1, &region);
+      }else{
+        xbt_dynar_insert_at(mc_checkpoint_ignore, cursor, &region);
+      }
+    }else if(current_region->addr < addr){
+       xbt_dynar_insert_at(mc_checkpoint_ignore, cursor + 1, &region);
+    }else{
+       xbt_dynar_insert_at(mc_checkpoint_ignore, cursor, &region);
+    }
+  }
 
   if(!raw_mem_set)
     MC_UNSET_RAW_MEM;

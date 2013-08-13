@@ -698,10 +698,13 @@ static void MC_dump_checkpoint_ignore(mc_snapshot_t snapshot){
   xbt_dynar_foreach(mc_checkpoint_ignore, cursor, region){
     if(region->addr > snapshot->regions[0]->start_addr && (char *)(region->addr) < (char *)snapshot->regions[0]->start_addr + STD_HEAP_SIZE){
       offset = (char *)region->addr - (char *)snapshot->regions[0]->start_addr;
-      memset((char *)snapshot->regions[0]->start_addr + offset, 0, region->size);
+      memset((char *)snapshot->regions[0]->data + offset, 0, region->size);
     }else if(region->addr > snapshot->regions[2]->start_addr && (char *)(region->addr) < (char*)snapshot->regions[2]->start_addr + snapshot->regions[2]->size){
       offset = (char *)region->addr - (char *)snapshot->regions[2]->start_addr;
-      memset((char *)snapshot->regions[2]->start_addr + offset, 0, region->size);
+      memset((char *)snapshot->regions[2]->data + offset, 0, region->size);
+    }else if(region->addr > snapshot->regions[1]->start_addr && (char *)(region->addr) < (char*)snapshot->regions[1]->start_addr + snapshot->regions[1]->size){
+      offset = (char *)region->addr - (char *)snapshot->regions[1]->start_addr;
+      memset((char *)snapshot->regions[1]->data + offset, 0, region->size);
     }
   }
 
