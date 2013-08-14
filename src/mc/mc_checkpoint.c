@@ -492,15 +492,19 @@ static xbt_dynar_t MC_get_local_variables_values(void *stack_context){
   int frame_found = 0, region_type;
   void *frame_pointer_address = NULL;
   long true_ip, value;
+  int stop;
 
   xbt_dynar_t variables = xbt_dynar_new(sizeof(local_variable_t), local_variable_free_voidp);
 
-  while(ret >= 0){
+  while(ret >= 0 && !stop){
 
     unw_get_reg(&c, UNW_REG_IP, &ip);
     unw_get_reg(&c, UNW_REG_SP, &sp);
 
     unw_get_proc_name(&c, frame_name, sizeof (frame_name), &off);
+
+    if(!strcmp(frame_name, "smx_ctx_sysv_wrapper")) /* Stop before context switch with maestro */
+      stop = 1;
 
     if((long)ip > (long)start_text_libsimgrid)
       frame = xbt_dict_get_or_null(mc_local_variables_libsimgrid, frame_name);
