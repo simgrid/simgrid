@@ -347,8 +347,7 @@ void reset_heap_information(){
     if(heapinfo1[i].type == 0){
       heap_area_free(heapinfo1[i].busy_block.equal_to);
       heapinfo1[i].busy_block.equal_to = NULL;
-    }
-    if(heapinfo1[i].type > 0){
+    }else if(heapinfo1[i].type > 0){
       for(j=0; j < (size_t) (BLOCKSIZE >> heapinfo1[i].type); j++){
         heap_area_free(heapinfo1[i].busy_frag.equal_to[j]);
         heapinfo1[i].busy_frag.equal_to[j] = NULL;
@@ -363,8 +362,7 @@ void reset_heap_information(){
     if(heapinfo2[i].type == 0){
       heap_area_free(heapinfo2[i].busy_block.equal_to);
       heapinfo2[i].busy_block.equal_to = NULL;
-    }
-    if(heapinfo2[i].type > 0){
+    }else if(heapinfo2[i].type > 0){
       for(j=0; j < (size_t) (BLOCKSIZE >> heapinfo2[i].type); j++){
         heap_area_free(heapinfo2[i].busy_frag.equal_to[j]);
         heapinfo2[i].busy_frag.equal_to[j] = NULL;
