@@ -134,7 +134,7 @@ msg_error_t MSG_main(void)
  * Do --help on any simgrid binary to see the list of currently existing configuration variables, and see Section @ref options.
  *
  * Example:
- * MSG_config("workstation/model","KCCFLN05");
+ * MSG_config("workstation/model","ptask_L07");
  */
 void MSG_config(const char *key, const char *value){
   xbt_assert(msg_global,"ERROR: Please call MSG_init() before using MSG_config()");

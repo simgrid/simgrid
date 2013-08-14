@@ -15,6 +15,26 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_io, simix,
                                 "Logging specific to SIMIX (io)");
 
 
+void* SIMIX_pre_file_get_data(smx_simcall_t simcall,smx_file_t fd){
+  return SIMIX_file_get_data(fd);
+}
+
+void* SIMIX_file_get_data(smx_file_t fd){
+  xbt_assert((fd != NULL), "Invalid parameters (simix file is NULL)");
+
+  return fd->data;
+}
+
+void SIMIX_pre_file_set_data(smx_simcall_t simcall, smx_file_t fd, void *data) {
+  SIMIX_file_set_data(fd, data);
+}
+
+void SIMIX_file_set_data(smx_file_t fd, void *data){
+  xbt_assert((fd != NULL), "Invalid parameter");
+
+  fd->data = data;
+}
+
 //SIMIX FILE READ
 void SIMIX_pre_file_read(smx_simcall_t simcall, size_t size,
 		        smx_file_t fd)

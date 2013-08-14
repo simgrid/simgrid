@@ -10,6 +10,8 @@
 #include "simgrid/simix.h"
 #include "smx_smurf_private.h"
 
+void* SIMIX_pre_file_get_data(smx_simcall_t simcall,smx_file_t fd);
+void SIMIX_pre_file_set_data(smx_simcall_t simcall, smx_file_t fd, void *data);
 void SIMIX_pre_file_read(smx_simcall_t simcall, size_t size, smx_file_t fd);
 void SIMIX_pre_file_write(smx_simcall_t simcall, size_t size, smx_file_t fd);
 void SIMIX_pre_file_open(smx_simcall_t simcall, const char* mount,
@@ -21,6 +23,8 @@ void SIMIX_pre_file_ls(smx_simcall_t simcall,
 size_t SIMIX_pre_file_get_size(smx_simcall_t simcall, smx_file_t fd);
 xbt_dynar_t SIMIX_pre_file_get_info(smx_simcall_t simcall, smx_file_t fd);
 
+void* SIMIX_file_get_data(smx_file_t fd);
+void SIMIX_file_set_data(smx_file_t fd, void *data);
 smx_action_t SIMIX_file_read(smx_process_t process, size_t size,
                              smx_file_t fd);
 smx_action_t SIMIX_file_write(smx_process_t process, size_t size, 

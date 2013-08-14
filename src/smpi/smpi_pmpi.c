@@ -83,7 +83,7 @@ int PMPI_Init_thread(int *argc, char ***argv, int required, int *provided)
 
 int PMPI_Query_thread(int *provided)
 {
-  int retval;
+  int retval = 0;
 
   smpi_bench_end();
   if (provided == NULL) {
@@ -98,7 +98,7 @@ int PMPI_Query_thread(int *provided)
 
 int PMPI_Is_thread_main(int *flag)
 {
-  int retval;
+  int retval = 0;
 
   smpi_bench_end();
   if (flag == NULL) {
@@ -141,7 +141,7 @@ double PMPI_Wtick(void)
 
 int PMPI_Address(void *location, MPI_Aint * address)
 {
-  int retval;
+  int retval = 0;
 
   smpi_bench_end();
   if (!address) {
@@ -161,7 +161,7 @@ int PMPI_Get_address(void *location, MPI_Aint * address)
 
 int PMPI_Type_free(MPI_Datatype * datatype)
 {
-  int retval;
+  int retval = 0;
 
   smpi_bench_end();
   if (!datatype) {
@@ -176,7 +176,7 @@ int PMPI_Type_free(MPI_Datatype * datatype)
 
 int PMPI_Type_size(MPI_Datatype datatype, int *size)
 {
-  int retval;
+  int retval = 0;
 
   smpi_bench_end();
   if (datatype == MPI_DATATYPE_NULL) {
@@ -193,7 +193,7 @@ int PMPI_Type_size(MPI_Datatype datatype, int *size)
 
 int PMPI_Type_get_extent(MPI_Datatype datatype, MPI_Aint * lb, MPI_Aint * extent)
 {
-  int retval;
+  int retval = 0;
 
   smpi_bench_end();
   if (datatype == MPI_DATATYPE_NULL) {
@@ -214,7 +214,7 @@ int PMPI_Type_get_true_extent(MPI_Datatype datatype, MPI_Aint * lb, MPI_Aint * e
 
 int PMPI_Type_extent(MPI_Datatype datatype, MPI_Aint * extent)
 {
-  int retval;
+  int retval = 0;
 
   smpi_bench_end();
   if (datatype == MPI_DATATYPE_NULL) {
@@ -231,7 +231,7 @@ int PMPI_Type_extent(MPI_Datatype datatype, MPI_Aint * extent)
 
 int PMPI_Type_lb(MPI_Datatype datatype, MPI_Aint * disp)
 {
-  int retval;
+  int retval = 0;
 
   smpi_bench_end();
   if (datatype == MPI_DATATYPE_NULL) {
@@ -248,7 +248,7 @@ int PMPI_Type_lb(MPI_Datatype datatype, MPI_Aint * disp)
 
 int PMPI_Type_ub(MPI_Datatype datatype, MPI_Aint * disp)
 {
-  int retval;
+  int retval = 0;
 
   smpi_bench_end();
   if (datatype == MPI_DATATYPE_NULL) {
@@ -265,7 +265,7 @@ int PMPI_Type_ub(MPI_Datatype datatype, MPI_Aint * disp)
 
 int PMPI_Op_create(MPI_User_function * function, int commute, MPI_Op * op)
 {
-  int retval;
+  int retval = 0;
 
   smpi_bench_end();
   if (function == NULL || op == NULL) {
@@ -280,7 +280,7 @@ int PMPI_Op_create(MPI_User_function * function, int commute, MPI_Op * op)
 
 int PMPI_Op_free(MPI_Op * op)
 {
-  int retval;
+  int retval = 0;
 
   smpi_bench_end();
   if (op == NULL) {
@@ -298,7 +298,7 @@ int PMPI_Op_free(MPI_Op * op)
 
 int PMPI_Group_free(MPI_Group * group)
 {
-  int retval;
+  int retval = 0;
 
   smpi_bench_end();
   if (group == NULL) {
@@ -314,7 +314,7 @@ int PMPI_Group_free(MPI_Group * group)
 
 int PMPI_Group_size(MPI_Group group, int *size)
 {
-  int retval;
+  int retval = 0;
 
   smpi_bench_end();
   if (group == MPI_GROUP_NULL) {
@@ -331,7 +331,7 @@ int PMPI_Group_size(MPI_Group group, int *size)
 
 int PMPI_Group_rank(MPI_Group group, int *rank)
 {
-  int retval;
+  int retval = 0;
 
   smpi_bench_end();
   if (group == MPI_GROUP_NULL) {
@@ -370,7 +370,7 @@ int PMPI_Group_translate_ranks(MPI_Group group1, int n, int *ranks1,
 
 int PMPI_Group_compare(MPI_Group group1, MPI_Group group2, int *result)
 {
-  int retval;
+  int retval = 0;
 
   smpi_bench_end();
   if (group1 == MPI_GROUP_NULL || group2 == MPI_GROUP_NULL) {
@@ -717,7 +717,7 @@ int PMPI_Group_range_excl(MPI_Group group, int n, int ranges[][3],
 
 int PMPI_Comm_rank(MPI_Comm comm, int *rank)
 {
-  int retval;
+  int retval = 0;
 
   smpi_bench_end();
   if (comm == MPI_COMM_NULL) {
@@ -734,7 +734,7 @@ int PMPI_Comm_rank(MPI_Comm comm, int *rank)
 
 int PMPI_Comm_size(MPI_Comm comm, int *size)
 {
-  int retval;
+  int retval = 0;
 
   smpi_bench_end();
   if (comm == MPI_COMM_NULL) {
@@ -751,7 +751,7 @@ int PMPI_Comm_size(MPI_Comm comm, int *size)
 
 int PMPI_Comm_get_name (MPI_Comm comm, char* name, int* len)
 {
-  int retval;
+  int retval = 0;
 
   smpi_bench_end();
   if (comm == MPI_COMM_NULL)  {
@@ -768,7 +768,7 @@ int PMPI_Comm_get_name (MPI_Comm comm, char* name, int* len)
 
 int PMPI_Comm_group(MPI_Comm comm, MPI_Group * group)
 {
-  int retval;
+  int retval = 0;
 
   smpi_bench_end();
   if (comm == MPI_COMM_NULL) {
@@ -790,7 +790,7 @@ int PMPI_Comm_group(MPI_Comm comm, MPI_Group * group)
 
 int PMPI_Comm_compare(MPI_Comm comm1, MPI_Comm comm2, int *result)
 {
-  int retval;
+  int retval = 0;
 
   smpi_bench_end();
   if (comm1 == MPI_COMM_NULL || comm2 == MPI_COMM_NULL) {
@@ -816,7 +816,7 @@ int PMPI_Comm_compare(MPI_Comm comm1, MPI_Comm comm2, int *result)
 
 int PMPI_Comm_dup(MPI_Comm comm, MPI_Comm * newcomm)
 {
-  int retval;
+  int retval = 0;
 
   smpi_bench_end();
   if (comm == MPI_COMM_NULL) {
@@ -833,7 +833,7 @@ int PMPI_Comm_dup(MPI_Comm comm, MPI_Comm * newcomm)
 
 int PMPI_Comm_create(MPI_Comm comm, MPI_Group group, MPI_Comm * newcomm)
 {
-  int retval;
+  int retval = 0;
 
   smpi_bench_end();
   if (comm == MPI_COMM_NULL) {
@@ -856,7 +856,7 @@ int PMPI_Comm_create(MPI_Comm comm, MPI_Group group, MPI_Comm * newcomm)
 
 int PMPI_Comm_free(MPI_Comm * comm)
 {
-  int retval;
+  int retval = 0;
 
   smpi_bench_end();
   if (comm == NULL) {
@@ -875,7 +875,7 @@ int PMPI_Comm_free(MPI_Comm * comm)
 int PMPI_Comm_disconnect(MPI_Comm * comm)
 {
   /* TODO: wait until all communication in comm are done */
-  int retval;
+  int retval = 0;
 
   smpi_bench_end();
   if (comm == NULL) {
@@ -893,7 +893,7 @@ int PMPI_Comm_disconnect(MPI_Comm * comm)
 
 int PMPI_Comm_split(MPI_Comm comm, int color, int key, MPI_Comm* comm_out)
 {
-  int retval;
+  int retval = 0;
 
   smpi_bench_end();
   if (comm_out == NULL) {
@@ -911,7 +911,7 @@ int PMPI_Comm_split(MPI_Comm comm, int color, int key, MPI_Comm* comm_out)
 int PMPI_Send_init(void *buf, int count, MPI_Datatype datatype, int dst,
                   int tag, MPI_Comm comm, MPI_Request * request)
 {
-  int retval;
+  int retval = 0;
 
   smpi_bench_end();
   if (request == NULL) {
@@ -925,13 +925,14 @@ int PMPI_Send_init(void *buf, int count, MPI_Datatype datatype, int dst,
     retval = MPI_SUCCESS;
   }
   smpi_bench_begin();
+  if(retval!=MPI_SUCCESS)*request=MPI_REQUEST_NULL;
   return retval;
 }
 
 int PMPI_Recv_init(void *buf, int count, MPI_Datatype datatype, int src,
                   int tag, MPI_Comm comm, MPI_Request * request)
 {
-  int retval;
+  int retval = 0;
 
   smpi_bench_end();
   if (request == NULL) {
@@ -945,11 +946,12 @@ int PMPI_Recv_init(void *buf, int count, MPI_Datatype datatype, int src,
     retval = MPI_SUCCESS;
   }
   smpi_bench_begin();
+  if(retval!=MPI_SUCCESS)*request=MPI_REQUEST_NULL;
   return retval;
 }
 
 int PMPI_Ssend_init(void* buf, int count, MPI_Datatype datatype, int dst, int tag, MPI_Comm comm, MPI_Request* request) {
-  int retval;
+  int retval = 0;
 
     smpi_bench_end();
     if (request == NULL) {
@@ -963,12 +965,13 @@ int PMPI_Ssend_init(void* buf, int count, MPI_Datatype datatype, int dst, int ta
       retval = MPI_SUCCESS;
     }
     smpi_bench_begin();
+    if(retval!=MPI_SUCCESS)*request=MPI_REQUEST_NULL;
     return retval;
 }
 
 int PMPI_Start(MPI_Request * request)
 {
-  int retval;
+  int retval = 0;
 
   smpi_bench_end();
   if (request == NULL || *request == MPI_REQUEST_NULL) {
@@ -983,7 +986,7 @@ int PMPI_Start(MPI_Request * request)
 
 int PMPI_Startall(int count, MPI_Request * requests)
 {
-  int retval;
+  int retval = 0;
 
   smpi_bench_end();
   if (requests == NULL) {
@@ -998,7 +1001,7 @@ int PMPI_Startall(int count, MPI_Request * requests)
 
 int PMPI_Request_free(MPI_Request * request)
 {
-  int retval;
+  int retval = 0;
 
   smpi_bench_end();
   if (*request == MPI_REQUEST_NULL) {
@@ -1015,7 +1018,7 @@ int PMPI_Request_free(MPI_Request * request)
 int PMPI_Irecv(void *buf, int count, MPI_Datatype datatype, int src,
               int tag, MPI_Comm comm, MPI_Request * request)
 {
-  int retval;
+  int retval = 0;
 
   smpi_bench_end();
 
@@ -1054,6 +1057,7 @@ int PMPI_Irecv(void *buf, int count, MPI_Datatype datatype, int src,
   }
 
   smpi_bench_begin();
+  if(retval!=MPI_SUCCESS)*request=MPI_REQUEST_NULL;
   return retval;
 }
 
@@ -1061,7 +1065,7 @@ int PMPI_Irecv(void *buf, int count, MPI_Datatype datatype, int src,
 int PMPI_Isend(void *buf, int count, MPI_Datatype datatype, int dst,
               int tag, MPI_Comm comm, MPI_Request * request)
 {
-  int retval;
+  int retval = 0;
 
   smpi_bench_end();
   if (request == NULL) {
@@ -1102,11 +1106,12 @@ int PMPI_Isend(void *buf, int count, MPI_Datatype datatype, int dst,
   }
 
   smpi_bench_begin();
+  if(retval!=MPI_SUCCESS)*request=MPI_REQUEST_NULL;
   return retval;
 }
 
 int PMPI_Issend(void* buf, int count, MPI_Datatype datatype, int dst, int tag, MPI_Comm comm, MPI_Request* request) {
-  int retval;
+  int retval = 0;
 
   smpi_bench_end();
   if (request == NULL) {
@@ -1147,13 +1152,14 @@ int PMPI_Issend(void* buf, int count, MPI_Datatype datatype, int dst, int tag, M
   }
 
   smpi_bench_begin();
+  if(retval!=MPI_SUCCESS)*request=MPI_REQUEST_NULL;
   return retval;
 }
 
 int PMPI_Recv(void *buf, int count, MPI_Datatype datatype, int src, int tag,
              MPI_Comm comm, MPI_Status * status)
 {
-  int retval;
+  int retval = 0;
 
   smpi_bench_end();
   if (comm == MPI_COMM_NULL) {
@@ -1200,7 +1206,7 @@ int PMPI_Recv(void *buf, int count, MPI_Datatype datatype, int src, int tag,
 int PMPI_Send(void *buf, int count, MPI_Datatype datatype, int dst, int tag,
              MPI_Comm comm)
 {
-  int retval;
+  int retval = 0;
 
   smpi_bench_end();
 
@@ -1244,7 +1250,7 @@ int PMPI_Send(void *buf, int count, MPI_Datatype datatype, int dst, int tag,
 
 
 int PMPI_Ssend(void* buf, int count, MPI_Datatype datatype, int dst, int tag, MPI_Comm comm) {
-  int retval;
+  int retval = 0;
 
    smpi_bench_end();
 
@@ -1290,7 +1296,7 @@ int PMPI_Sendrecv(void *sendbuf, int sendcount, MPI_Datatype sendtype,
                  MPI_Datatype recvtype, int src, int recvtag,
                  MPI_Comm comm, MPI_Status * status)
 {
-  int retval;
+  int retval = 0;
 
   smpi_bench_end();
 
@@ -1346,7 +1352,7 @@ int PMPI_Sendrecv_replace(void *buf, int count, MPI_Datatype datatype,
 {
   //TODO: suboptimal implementation
   void *recvbuf;
-  int retval;
+  int retval = 0;
   if (datatype == MPI_DATATYPE_NULL) {
       retval = MPI_ERR_TYPE;
   } else if (count < 0) {
@@ -1368,7 +1374,7 @@ int PMPI_Sendrecv_replace(void *buf, int count, MPI_Datatype datatype,
 
 int PMPI_Test(MPI_Request * request, int *flag, MPI_Status * status)
 {
-  int retval;
+  int retval = 0;
 
   smpi_bench_end();
   if (request == MPI_REQUEST_NULL || flag == NULL) {
@@ -1387,7 +1393,7 @@ int PMPI_Test(MPI_Request * request, int *flag, MPI_Status * status)
 int PMPI_Testany(int count, MPI_Request requests[], int *index, int *flag,
                 MPI_Status * status)
 {
-  int retval;
+  int retval = 0;
 
   smpi_bench_end();
   if (index == NULL || flag == NULL) {
@@ -1402,7 +1408,7 @@ int PMPI_Testany(int count, MPI_Request requests[], int *index, int *flag,
 
 int PMPI_Testall(int count, MPI_Request* requests, int* flag, MPI_Status* statuses)
 {
-  int retval;
+  int retval = 0;
 
   smpi_bench_end();
   if (flag == NULL) {
@@ -1416,7 +1422,7 @@ int PMPI_Testall(int count, MPI_Request* requests, int* flag, MPI_Status* status
 }
 
 int PMPI_Probe(int source, int tag, MPI_Comm comm, MPI_Status* status) {
-  int retval;
+  int retval = 0;
   smpi_bench_end();
 
   if (status == NULL) {
@@ -1437,7 +1443,7 @@ int PMPI_Probe(int source, int tag, MPI_Comm comm, MPI_Status* status) {
 
 
 int PMPI_Iprobe(int source, int tag, MPI_Comm comm, int* flag, MPI_Status* status) {
-  int retval;
+  int retval = 0;
   smpi_bench_end();
 
   if (flag == NULL) {
@@ -1461,7 +1467,7 @@ int PMPI_Iprobe(int source, int tag, MPI_Comm comm, int* flag, MPI_Status* statu
 
 int PMPI_Wait(MPI_Request * request, MPI_Status * status)
 {
-  int retval;
+  int retval = 0;
 
   smpi_bench_end();
 
@@ -1508,7 +1514,7 @@ int PMPI_Wait(MPI_Request * request, MPI_Status * status)
 
 int PMPI_Waitany(int count, MPI_Request requests[], int *index, MPI_Status * status)
 {
-  int retval;
+  int retval = 0;
 
   smpi_bench_end();
 #ifdef HAVE_TRACING
@@ -1549,7 +1555,7 @@ int PMPI_Waitany(int count, MPI_Request requests[], int *index, MPI_Status * sta
     if (is_wait_for_receive) {
       if(srcs[*index]==MPI_ANY_SOURCE)
         src_traced = (status!=MPI_STATUSES_IGNORE) ?
-                      smpi_group_rank(smpi_comm_group(comms[*index]), status[*index].MPI_SOURCE) :
+                      smpi_group_rank(smpi_comm_group(comms[*index]), status->MPI_SOURCE) :
                       srcs[*index];
       TRACE_smpi_recv(rank_traced, src_traced, dst_traced);
     }
@@ -1631,7 +1637,7 @@ int PMPI_Waitall(int count, MPI_Request requests[], MPI_Status status[])
 int PMPI_Waitsome(int incount, MPI_Request requests[], int *outcount,
                  int *indices, MPI_Status status[])
 {
-  int retval;
+  int retval = 0;
 
   smpi_bench_end();
   if (outcount == NULL) {
@@ -1647,7 +1653,7 @@ int PMPI_Waitsome(int incount, MPI_Request requests[], int *outcount,
 int PMPI_Testsome(int incount, MPI_Request requests[], int* outcount,
                  int* indices, MPI_Status status[])
 {
-  int retval;
+  int retval = 0;
 
    smpi_bench_end();
    if (outcount == NULL) {
@@ -1663,7 +1669,7 @@ int PMPI_Testsome(int incount, MPI_Request requests[], int* outcount,
 
 int PMPI_Bcast(void *buf, int count, MPI_Datatype datatype, int root, MPI_Comm comm)
 {
-  int retval;
+  int retval = 0;
 
   smpi_bench_end();
 #ifdef HAVE_TRACING
@@ -1688,7 +1694,7 @@ int PMPI_Bcast(void *buf, int count, MPI_Datatype datatype, int root, MPI_Comm c
 
 int PMPI_Barrier(MPI_Comm comm)
 {
-  int retval;
+  int retval = 0;
 
   smpi_bench_end();
 #ifdef HAVE_TRACING
@@ -1714,7 +1720,7 @@ int PMPI_Gather(void *sendbuf, int sendcount, MPI_Datatype sendtype,
                void *recvbuf, int recvcount, MPI_Datatype recvtype,
                int root, MPI_Comm comm)
 {
-  int retval;
+  int retval = 0;
 
   smpi_bench_end();
 #ifdef HAVE_TRACING
@@ -1759,7 +1765,7 @@ int PMPI_Gatherv(void *sendbuf, int sendcount, MPI_Datatype sendtype,
                 void *recvbuf, int *recvcounts, int *displs,
                 MPI_Datatype recvtype, int root, MPI_Comm comm)
 {
-  int retval;
+  int retval = 0;
 
   smpi_bench_end();
 #ifdef HAVE_TRACING
@@ -1803,7 +1809,7 @@ int PMPI_Allgather(void *sendbuf, int sendcount, MPI_Datatype sendtype,
                   void *recvbuf, int recvcount, MPI_Datatype recvtype,
                   MPI_Comm comm)
 {
-  int retval;
+  int retval = 0;
 
   smpi_bench_end();
 #ifdef HAVE_TRACING
@@ -1842,7 +1848,7 @@ int PMPI_Allgatherv(void *sendbuf, int sendcount, MPI_Datatype sendtype,
                    void *recvbuf, int *recvcounts, int *displs,
                    MPI_Datatype recvtype, MPI_Comm comm)
 {
-  int retval;
+  int retval = 0;
 
   smpi_bench_end();
 #ifdef HAVE_TRACING
@@ -1883,7 +1889,7 @@ int PMPI_Scatter(void *sendbuf, int sendcount, MPI_Datatype sendtype,
                 void *recvbuf, int recvcount, MPI_Datatype recvtype,
                 int root, MPI_Comm comm)
 {
-  int retval;
+  int retval = 0;
 
   smpi_bench_end();
 #ifdef HAVE_TRACING
@@ -1919,7 +1925,7 @@ int PMPI_Scatterv(void *sendbuf, int *sendcounts, int *displs,
                  MPI_Datatype sendtype, void *recvbuf, int recvcount,
                  MPI_Datatype recvtype, int root, MPI_Comm comm)
 {
-  int retval;
+  int retval = 0;
 
   smpi_bench_end();
 #ifdef HAVE_TRACING
@@ -1955,7 +1961,7 @@ int PMPI_Scatterv(void *sendbuf, int *sendcounts, int *displs,
 int PMPI_Reduce(void *sendbuf, void *recvbuf, int count,
                MPI_Datatype datatype, MPI_Op op, int root, MPI_Comm comm)
 {
-  int retval;
+  int retval = 0;
 
   smpi_bench_end();
 #ifdef HAVE_TRACING
@@ -1984,7 +1990,7 @@ int PMPI_Reduce(void *sendbuf, void *recvbuf, int count,
 
 int PMPI_Reduce_local(void *inbuf, void *inoutbuf, int count,
     MPI_Datatype datatype, MPI_Op op){
-  int retval;
+  int retval = 0;
 
     smpi_bench_end();
     if (datatype == MPI_DATATYPE_NULL || op == MPI_OP_NULL) {
@@ -2000,7 +2006,7 @@ int PMPI_Reduce_local(void *inbuf, void *inoutbuf, int count,
 int PMPI_Allreduce(void *sendbuf, void *recvbuf, int count,
                   MPI_Datatype datatype, MPI_Op op, MPI_Comm comm)
 {
-  int retval;
+  int retval = 0;
 
   smpi_bench_end();
 #ifdef HAVE_TRACING
@@ -2042,7 +2048,7 @@ int PMPI_Allreduce(void *sendbuf, void *recvbuf, int count,
 int PMPI_Scan(void *sendbuf, void *recvbuf, int count,
              MPI_Datatype datatype, MPI_Op op, MPI_Comm comm)
 {
-  int retval;
+  int retval = 0;
 
   smpi_bench_end();
 #ifdef HAVE_TRACING
@@ -2070,7 +2076,7 @@ int PMPI_Scan(void *sendbuf, void *recvbuf, int count,
 
 int PMPI_Exscan(void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype,
                 MPI_Op op, MPI_Comm comm){
-  int retval;
+  int retval = 0;
 
   smpi_bench_end();
 #ifdef HAVE_TRACING
@@ -2099,7 +2105,7 @@ int PMPI_Exscan(void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype,
 int PMPI_Reduce_scatter(void *sendbuf, void *recvbuf, int *recvcounts,
                        MPI_Datatype datatype, MPI_Op op, MPI_Comm comm)
 {
-  int retval;
+  int retval = 0;
   smpi_bench_end();
 #ifdef HAVE_TRACING
   int rank = comm != MPI_COMM_NULL ? smpi_process_index() : -1;
@@ -2171,7 +2177,7 @@ int PMPI_Alltoall(void *sendbuf, int sendcount, MPI_Datatype sendtype,
                  void *recvbuf, int recvcount, MPI_Datatype recvtype,
                  MPI_Comm comm)
 {
-  int retval;
+  int retval = 0;
 
   smpi_bench_end();
 #ifdef HAVE_TRACING
@@ -2199,7 +2205,7 @@ int PMPI_Alltoallv(void *sendbuf, int *sendcounts, int *senddisps,
                   MPI_Datatype sendtype, void *recvbuf, int *recvcounts,
                   int *recvdisps, MPI_Datatype recvtype, MPI_Comm comm)
 {
-  int retval;
+  int retval = 0;
 
   smpi_bench_end();
 #ifdef HAVE_TRACING
@@ -2272,7 +2278,7 @@ int PMPI_Get_count(MPI_Status * status, MPI_Datatype datatype, int *count)
 }
 
 int PMPI_Type_contiguous(int count, MPI_Datatype old_type, MPI_Datatype* new_type) {
-  int retval;
+  int retval = 0;
 
   smpi_bench_end();
   if (old_type == MPI_DATATYPE_NULL) {
@@ -2287,7 +2293,7 @@ int PMPI_Type_contiguous(int count, MPI_Datatype old_type, MPI_Datatype* new_typ
 }
 
 int PMPI_Type_commit(MPI_Datatype* datatype) {
-  int retval;
+  int retval = 0;
 
   smpi_bench_end();
   if (datatype == MPI_DATATYPE_NULL) {
@@ -2302,7 +2308,7 @@ int PMPI_Type_commit(MPI_Datatype* datatype) {
 
 
 int PMPI_Type_vector(int count, int blocklen, int stride, MPI_Datatype old_type, MPI_Datatype* new_type) {
-  int retval;
+  int retval = 0;
 
   smpi_bench_end();
   if (old_type == MPI_DATATYPE_NULL) {
@@ -2317,7 +2323,7 @@ int PMPI_Type_vector(int count, int blocklen, int stride, MPI_Datatype old_type,
 }
 
 int PMPI_Type_hvector(int count, int blocklen, MPI_Aint stride, MPI_Datatype old_type, MPI_Datatype* new_type) {
-  int retval;
+  int retval = 0;
 
   smpi_bench_end();
   if (old_type == MPI_DATATYPE_NULL) {
@@ -2336,7 +2342,7 @@ int PMPI_Type_create_hvector(int count, int blocklen, MPI_Aint stride, MPI_Datat
 }
 
 int PMPI_Type_indexed(int count, int* blocklens, int* indices, MPI_Datatype old_type, MPI_Datatype* new_type) {
-  int retval;
+  int retval = 0;
 
   smpi_bench_end();
   if (old_type == MPI_DATATYPE_NULL) {
@@ -2351,7 +2357,7 @@ int PMPI_Type_indexed(int count, int* blocklens, int* indices, MPI_Datatype old_
 }
 
 int PMPI_Type_create_indexed(int count, int* blocklens, int* indices, MPI_Datatype old_type, MPI_Datatype* new_type) {
-  int retval;
+  int retval = 0;
 
   smpi_bench_end();
   if (old_type == MPI_DATATYPE_NULL) {
@@ -2385,7 +2391,7 @@ int PMPI_Type_create_indexed_block(int count, int blocklength, int* indices, MPI
 
 
 int PMPI_Type_hindexed(int count, int* blocklens, MPI_Aint* indices, MPI_Datatype old_type, MPI_Datatype* new_type) {
-  int retval;
+  int retval = 0;
 
   smpi_bench_end();
   if (old_type == MPI_DATATYPE_NULL) {
@@ -2423,7 +2429,7 @@ int PMPI_Type_create_hindexed_block(int count, int blocklength, MPI_Aint* indice
 
 
 int PMPI_Type_struct(int count, int* blocklens, MPI_Aint* indices, MPI_Datatype* old_types, MPI_Datatype* new_type) {
-  int retval;
+  int retval = 0;
 
   smpi_bench_end();
   if (count<0){
@@ -2560,6 +2566,10 @@ int PMPI_Errhandler_set(MPI_Comm comm, MPI_Errhandler errhandler) {
 }
 
 int PMPI_Comm_set_errhandler(MPI_Comm comm, MPI_Errhandler errhandler) {
+   NOT_YET_IMPLEMENTED
+}
+
+int PMPI_Comm_get_errhandler(MPI_Comm comm, MPI_Errhandler* errhandler) {
    NOT_YET_IMPLEMENTED
 }
 

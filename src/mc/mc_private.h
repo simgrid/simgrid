@@ -46,8 +46,9 @@ typedef struct s_mc_snapshot{
 } s_mc_snapshot_t, *mc_snapshot_t;
 
 typedef struct s_mc_snapshot_stack{
-  xbt_strbuff_t local_variables;
+  xbt_dynar_t local_variables;
   void *stack_pointer;
+  void *real_address;
 }s_mc_snapshot_stack_t, *mc_snapshot_stack_t;
 
 typedef struct s_mc_global_t{
@@ -57,18 +58,25 @@ typedef struct s_mc_global_t{
   char *prev_req;
 }s_mc_global_t, *mc_global_t;
 
+typedef struct s_mc_checkpoint_ignore_region{
+  void *addr;
+  size_t size;
+}s_mc_checkpoint_ignore_region_t, *mc_checkpoint_ignore_region_t;
+
 mc_snapshot_t SIMIX_pre_mc_snapshot(smx_simcall_t simcall);
 mc_snapshot_t MC_take_snapshot(void);
 void MC_restore_snapshot(mc_snapshot_t);
 void MC_free_snapshot(mc_snapshot_t);
-void snapshot_stack_free_voidp(void *s);
-int is_stack_ignore_variable(char *frame, char *var_name);
+
+extern xbt_dynar_t mc_checkpoint_ignore;
 
 /********************************* MC Global **********************************/
 
 extern double *mc_time;
 extern FILE *dot_output;
 extern const char* colors[13];
+
+extern int user_max_depth_reached;
 
 int MC_deadlock_check(void);
 void MC_replay(xbt_fifo_t stack, int start);
@@ -78,8 +86,7 @@ void MC_show_deadlock(smx_simcall_t req);
 void MC_show_stack_safety(xbt_fifo_t stack);
 void MC_dump_stack_safety(xbt_fifo_t stack);
 void MC_init(void);
-void MC_init_dot_output(void);
-int SIMIX_pre_mc_random(smx_simcall_t simcall);
+int SIMIX_pre_mc_random(smx_simcall_t simcall, int min, int max);
 
 
 /********************************* Requests ***********************************/
@@ -206,16 +213,17 @@ typedef struct s_memory_map {
 
 
 void MC_init_memory_map_info(void);
-memory_map_t get_memory_map(void);
-void free_memory_map(memory_map_t map);
-void get_libsimgrid_plt_section(void);
-void get_binary_plt_section(void);
+memory_map_t MC_get_memory_map(void);
+void MC_free_memory_map(memory_map_t map);
+void MC_get_libsimgrid_plt_section(void);
+void MC_get_binary_plt_section(void);
 
 extern void *start_data_libsimgrid;
 extern void *start_data_binary;
 extern void *start_bss_binary;
 extern char *libsimgrid_path;
 extern void *start_text_libsimgrid;
+extern void *start_text_binary;
 extern void *start_bss_libsimgrid;
 extern void *start_plt_libsimgrid;
 extern void *end_plt_libsimgrid;
@@ -273,6 +281,7 @@ typedef struct s_mc_visited_state{
   size_t heap_bytes_used;
   int nb_processes;
   int num;
+  int other_num; // dot_output for
 }s_mc_visited_state_t, *mc_visited_state_t;
 
 
@@ -287,6 +296,7 @@ extern xbt_dynar_t mc_data_bss_comparison_ignore;
 
 typedef struct s_mc_pair{
   int num;
+  int other_num; /* Dot output for */
   int search_cycle;
   mc_state_t graph_state; /* System state included */
   xbt_automaton_state_t automaton_state;
@@ -308,7 +318,14 @@ void MC_show_stack_liveness(xbt_fifo_t stack);
 void MC_dump_stack_liveness(xbt_fifo_t stack);
 
 
-/********************************** Local variables with DWARF **********************************/
+/********************************** Variables with DWARF **********************************/
+
+extern xbt_dict_t mc_local_variables_libsimgrid;
+extern xbt_dict_t mc_local_variables_binary;
+extern xbt_dynar_t mc_global_variables_libsimgrid;
+extern xbt_dynar_t mc_global_variables_binary;
+extern xbt_dict_t mc_variables_type_libsimgrid;
+extern xbt_dict_t mc_variables_type_binary;
 
 typedef enum {
   e_dw_loclist,
@@ -372,53 +389,36 @@ typedef struct s_dw_location_entry{
   dw_location_t location;
 }s_dw_location_entry_t, *dw_location_entry_t;
 
-typedef struct s_dw_local_variable{
+typedef struct s_dw_variable{
+  int global;
   char *name;
-  dw_location_t location;
-}s_dw_local_variable_t, *dw_local_variable_t;
+  char *type_origin;
+  union{
+    dw_location_t location;
+    void *address;
+  }address;
+}s_dw_variable_t, *dw_variable_t;
 
 typedef struct s_dw_frame{
   char *name;
   void *low_pc;
   void *high_pc;
   dw_location_t frame_base;
-  xbt_dict_t variables;
+  xbt_dynar_t variables; /* Cannot use dict, there may be several variables with the same name (in different lexical blocks)*/
   unsigned long int start;
   unsigned long int end;
 }s_dw_frame_t, *dw_frame_t;
 
-/* FIXME : implement free functions for each structure */
+/********************************** Miscellaneous **********************************/
 
-extern xbt_dict_t mc_local_variables;
-
-typedef struct s_variable_value{
-  char *type;
-  
-  union{
-    void *address;
-    long int res;
-  }value;
-}s_variable_value_t, *variable_value_t;
-
-void variable_value_free_voidp(void* v);
-void variable_value_free(variable_value_t v);
-
-void MC_get_local_variables(const char *elf_file, xbt_dict_t location_list, xbt_dict_t *variables);
-void print_local_variables(xbt_dict_t list);
-xbt_dict_t MC_get_location_list(const char *elf_file);
-
-
-/********************************** Global variables with objdump **********************************/
-
-typedef struct s_global_variable{
+typedef struct s_local_variable{
+  char *frame;
+  unsigned long ip;
   char *name;
-  size_t size;
+  char *type;
   void *address;
-}s_global_variable_t, *global_variable_t;
-
-void global_variable_free(global_variable_t v);
-void global_variable_free_voidp(void *v);
-
-extern xbt_dynar_t mc_global_variables;
+  int region;
+}s_local_variable_t, *local_variable_t;
 
 #endif
+

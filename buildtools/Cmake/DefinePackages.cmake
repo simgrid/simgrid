@@ -204,6 +204,7 @@ set(SMPI_SRC
   src/smpi/colls/gather-ompi.c
   src/smpi/colls/reduce_scatter-ompi.c
   src/smpi/colls/reduce_scatter-mpich.c
+  src/smpi/colls/smpi_automatic_selector.c
   src/smpi/colls/scatter-ompi.c
   src/smpi/colls/barrier-ompi.c
   )
@@ -894,6 +895,7 @@ set(EXAMPLES_CMAKEFILES_TXT
   examples/simdag/dax/CMakeLists.txt
   examples/simdag/dot/CMakeLists.txt
   examples/simdag/goal/CMakeLists.txt
+  examples/simdag/io/CMakeLists.txt
   examples/simdag/metaxml/CMakeLists.txt
   examples/simdag/properties/CMakeLists.txt
   examples/simdag/scheduling/CMakeLists.txt
@@ -934,6 +936,10 @@ if(SMPI_F2C)
     teshsuite/smpi/mpich3-test/f77/datatype/CMakeLists.txt
     teshsuite/smpi/mpich3-test/f77/ext/CMakeLists.txt
     teshsuite/smpi/mpich3-test/f77/init/CMakeLists.txt
+    teshsuite/smpi/mpich3-test/f90/coll/CMakeLists.txt
+    teshsuite/smpi/mpich3-test/f90/pt2pt/CMakeLists.txt
+    teshsuite/smpi/mpich3-test/f90/datatype/CMakeLists.txt
+    teshsuite/smpi/mpich3-test/f90/init/CMakeLists.txt
   )
 endif()
 

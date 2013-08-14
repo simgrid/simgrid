@@ -29,7 +29,7 @@ Java_org_simgrid_msg_File_open(JNIEnv *env, jobject jfile, jobject jstorage, job
   const char *path = (*env)->GetStringUTFChars(env, jpath, 0);
   msg_file_t file;
 
-  file = MSG_file_open(storage, path);
+  file = MSG_file_open(storage, path, NULL);
   jfile_bind(env, jfile, file);
 
   (*env)->ReleaseStringUTFChars(env, jstorage, storage);

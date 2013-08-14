@@ -32,15 +32,15 @@ int MC_request_depend(smx_simcall_t r1, smx_simcall_t r2) {
     if(rdv != simcall_comm_wait__get__comm(r2)->comm.rdv_cpy && simcall_comm_wait__get__timeout(r2) <= 0)
       return FALSE;
 
-    if((r1->issuer != simcall_comm_wait__get__comm(r2)->comm.src_proc) && (r1->issuer != simcall_comm_wait__get__comm(r2)->comm.dst_proc))
+    if((r1->issuer != simcall_comm_wait__get__comm(r2)->comm.src_proc) && (r1->issuer != simcall_comm_wait__get__comm(r2)->comm.dst_proc) && simcall_comm_wait__get__timeout(r2) <= 0)
       return FALSE;
 
     if((r1->call == SIMCALL_COMM_ISEND) && (simcall_comm_wait__get__comm(r2)->comm.type == SIMIX_COMM_SEND) 
-       && (simcall_comm_wait__get__comm(r2)->comm.src_buff != simcall_comm_isend__get__src_buff(r1)))
+       && (simcall_comm_wait__get__comm(r2)->comm.src_buff != simcall_comm_isend__get__src_buff(r1)) && simcall_comm_wait__get__timeout(r2) <= 0)
       return FALSE;
 
     if((r1->call == SIMCALL_COMM_IRECV) && (simcall_comm_wait__get__comm(r2)->comm.type == SIMIX_COMM_RECEIVE) 
-       && (simcall_comm_wait__get__comm(r2)->comm.dst_buff != simcall_comm_irecv__get__dst_buff(r1)))
+       && (simcall_comm_wait__get__comm(r2)->comm.dst_buff != simcall_comm_irecv__get__dst_buff(r1)) && simcall_comm_wait__get__timeout(r2) <= 0)
       return FALSE;
   }
 
@@ -52,15 +52,15 @@ int MC_request_depend(smx_simcall_t r1, smx_simcall_t r2) {
     if(rdv != simcall_comm_wait__get__comm(r1)->comm.rdv_cpy && simcall_comm_wait__get__timeout(r1) <= 0)
       return FALSE;
 
-    if((r2->issuer != simcall_comm_wait__get__comm(r1)->comm.src_proc) && (r2->issuer != simcall_comm_wait__get__comm(r1)->comm.dst_proc))
+    if((r2->issuer != simcall_comm_wait__get__comm(r1)->comm.src_proc) && (r2->issuer != simcall_comm_wait__get__comm(r1)->comm.dst_proc) && simcall_comm_wait__get__timeout(r1) <= 0)
         return FALSE;  
 
     if((r2->call == SIMCALL_COMM_ISEND) && (simcall_comm_wait__get__comm(r1)->comm.type == SIMIX_COMM_SEND) 
-       && (simcall_comm_wait__get__comm(r1)->comm.src_buff != simcall_comm_isend__get__src_buff(r2)))
+       && (simcall_comm_wait__get__comm(r1)->comm.src_buff != simcall_comm_isend__get__src_buff(r2)) && simcall_comm_wait__get__timeout(r1) <= 0)
       return FALSE;
 
     if((r2->call == SIMCALL_COMM_IRECV) && (simcall_comm_wait__get__comm(r1)->comm.type == SIMIX_COMM_RECEIVE) 
-       && (simcall_comm_wait__get__comm(r1)->comm.dst_buff != simcall_comm_irecv__get__dst_buff(r2)))
+       && (simcall_comm_wait__get__comm(r1)->comm.dst_buff != simcall_comm_irecv__get__dst_buff(r2)) && simcall_comm_wait__get__timeout(r1) <= 0)
       return FALSE;
   }
 
@@ -274,9 +274,9 @@ char *MC_request_to_string(smx_simcall_t req, int value)
   }
 
   if(args != NULL){
-    str = bprintf("[(%lu)%s (%s)] %s (%s)", req->issuer->pid , MSG_host_get_name(req->issuer->smx_host), req->issuer->name, type, args);
+    str = bprintf("[(%lu)%s (%s)] %s(%s) (%d)", req->issuer->pid , MSG_host_get_name(req->issuer->smx_host), req->issuer->name, type, args, req->call);
   }else{
-    str = bprintf("[(%lu)%s (%s)] %s ", req->issuer->pid , MSG_host_get_name(req->issuer->smx_host), req->issuer->name, type);
+    str = bprintf("[(%lu)%s (%s)] %s (%d) ", req->issuer->pid , MSG_host_get_name(req->issuer->smx_host), req->issuer->name, type, req->call);
   }
 
   xbt_free(args);
@@ -461,17 +461,10 @@ char *MC_request_get_dot_output(smx_simcall_t req, int value){
     break;
 
   case SIMCALL_MC_RANDOM:
-    if(value == 0){
-      if(req->issuer->smx_host)
-        label = bprintf("[(%lu)%s] MC_RANDOM (0)", req->issuer->pid, MSG_host_get_name(req->issuer->smx_host));
-      else
-        label = bprintf("[(%lu)] MC_RANDOM (0)", req->issuer->pid);
-    }else{
-      if(req->issuer->smx_host)
-        label = bprintf("[(%lu)%s] MC_RANDOM (1)", req->issuer->pid, MSG_host_get_name(req->issuer->smx_host));
-      else
-        label = bprintf("[(%lu)] MC_RANDOM (1)", req->issuer->pid);
-    }
+    if(req->issuer->smx_host)
+      label = bprintf("[(%lu)%s] MC_RANDOM (%d)", req->issuer->pid, MSG_host_get_name(req->issuer->smx_host), value);
+    else
+      label = bprintf("[(%lu)] MC_RANDOM (%d)", req->issuer->pid, value);
     break;
 
   case SIMCALL_MC_SNAPSHOT:

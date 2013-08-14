@@ -80,7 +80,10 @@ XBT_PUBLIC(xbt_dynar_t) MSG_environment_as_get_hosts(msg_as_t as);
 /************************** File handling ***********************************/
 XBT_PUBLIC(size_t) MSG_file_read(size_t size, msg_file_t fd);
 XBT_PUBLIC(size_t) MSG_file_write(size_t size, msg_file_t fd);
-XBT_PUBLIC(msg_file_t) MSG_file_open(const char* mount, const char* path);
+XBT_PUBLIC(msg_file_t) MSG_file_open(const char* mount, const char* path,
+                                     void* data);
+XBT_PUBLIC(void*) MSG_file_get_data(msg_file_t fd);
+XBT_PUBLIC(msg_error_t) MSG_file_set_data(msg_file_t fd, void * data);
 XBT_PUBLIC(int) MSG_file_close(msg_file_t fd);
 XBT_PUBLIC(size_t) MSG_file_get_size(msg_file_t fd);
 XBT_PUBLIC(void) MSG_file_dump(msg_file_t fd);

@@ -1176,6 +1176,30 @@ int simcall_sem_get_capacity(smx_sem_t sem)
 
 /**
  * \ingroup simix_file_management
+ * \brief Returns the user data associated to a file.
+ *
+ * \param fd A simix file
+ * \return the user data of this file
+ */
+void* simcall_file_get_data(smx_file_t fd)
+{
+  return simcall_BODY_file_get_data(fd);
+}
+
+/**
+ * \ingroup simix_file_management
+ * \brief Sets the user data associated to a file.
+ *
+ * \param fd A SIMIX file
+ * \param data The user data to set
+ */
+void simcall_file_set_data(smx_file_t fd, void *data)
+{
+  simcall_file_set_data(fd, data);
+}
+
+/**
+ * \ingroup simix_file_management
  *
  */
 size_t simcall_file_read(size_t size, smx_file_t fd)
@@ -1287,9 +1311,9 @@ int simcall_mc_compare_snapshots(void *s1, void *s2){
   return simcall_BODY_mc_compare_snapshots(s1, s2);
 }
 
-int simcall_mc_random(void)
+int simcall_mc_random(int min, int max)
 {
-  return simcall_BODY_mc_random();
+  return simcall_BODY_mc_random(min, max);
 }
 
 

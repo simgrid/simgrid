@@ -109,12 +109,11 @@ void MC_state_set_executed_request(mc_state_t state, smx_simcall_t req, int valu
 
     case SIMCALL_MC_RANDOM:
       state->internal_req = *req;
-      simcall_mc_random__set__result(&state->internal_req, value);
-      if(value == 0){
+      if(value != simcall_mc_random__get__max(req)){
         xbt_swag_foreach(process, simix_global->process_list){
           procstate = &state->proc_status[process->pid];
           if(process->pid == req->issuer->pid){
-            procstate->state = MC_MORE_INTERLEAVE;  
+            procstate->state = MC_MORE_INTERLEAVE;
             break;
           }        
         }
@@ -200,8 +199,10 @@ smx_simcall_t MC_state_get_request(mc_state_t state, int *value)
           case SIMCALL_MC_RANDOM:
             if(procstate->state == MC_INTERLEAVE)
               *value = 0;
-            else
-              *value = 1;
+            else{
+              if(state->req_num < simcall_mc_random__get__max(&process->simcall))
+                *value = state->req_num + 1;
+            }
             procstate->state = MC_DONE;
             return &process->simcall;
             break;

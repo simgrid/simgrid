@@ -39,10 +39,8 @@ void TRACE_msg_task_create(msg_task_t task)
   task->counter = counter++;
   task->category = NULL;
   
-  if(MC_is_active()){
-    MC_ignore_data_bss(&counter, sizeof(counter));
+  if(MC_is_active())
     MC_ignore_heap(&(task->counter), sizeof(task->counter));
-  }
 
   XBT_DEBUG("CREATE %p, %lld", task, task->counter);
 }

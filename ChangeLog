@@ -41,9 +41,16 @@ SimGrid (3.10) NOT RELEASED; urgency=low
    happening inside a collective SMPI call.
  * Fix the behavior of complex datatypes handling
  * replace MPICH-1 test suite by the one from MPICH 3.0.4
+ * Add all missing Fortran bindings, SMPI should work with Fortran 90
+   (no privatization of global variables yet)
+
+ SimDag:
+ * Allow to change SimGrid configuration (see --help) within the code
+   thanks to SD_config() as it can be done in MSG.
+ * Add a new function SD_task_set_amount() upon user request.
 
  PLATFORM:
- * Handle units for values (10ms, 10kiloflops, 10Bps, ...)
+ * Handle units for values (10ms, 10kiloflops, 10Bps, 1GB, ...)
  * Remove rule based routing (no more pcre dependency)
  * Add a limiter_link option to cluster tag, to specify a maximum reachable
   bandwidth in fullduplex mode when it is < 2*nominal bw

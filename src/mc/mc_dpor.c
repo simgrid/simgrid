@@ -30,6 +30,7 @@ static mc_visited_state_t visited_state_new(){
   new_state->nb_processes = xbt_swag_size(simix_global->process_list);
   new_state->system_state = MC_take_snapshot();
   new_state->num = mc_stats->expanded_states;
+  new_state->other_num = -1;
 
   return new_state;
   
@@ -94,12 +95,21 @@ static int is_visited_state(){
         if(bytes_used_test == current_bytes_used){
           same_processes_and_bytes_not_found = 0;
           if(snapshot_compare(new_state->system_state, state_test->system_state) == 0){
-            XBT_DEBUG("State %d already visited ! (equal to state %d)", new_state->num, state_test->num);
+            if(state_test->other_num == -1)
+              new_state->other_num = state_test->num;
+            else
+              new_state->other_num = state_test->other_num;
+            if(dot_output == NULL)
+              XBT_DEBUG("Next state %d already visited ! (equal to state %d)", new_state->num, state_test->num);
+            else
+              XBT_DEBUG("Next state %d already visited ! (equal to state %d (state %d in dot_output))", new_state->num, state_test->num, new_state->other_num);
+            xbt_dynar_remove_at(visited_states, cursor, NULL);
+            xbt_dynar_insert_at(visited_states, cursor, &new_state);
             if(raw_mem_set)
               MC_SET_RAW_MEM;
             else
               MC_UNSET_RAW_MEM;
-            return state_test->num;
+            return new_state->other_num;
           }else{
             /* Search another state with same number of bytes used in std_heap */
             previous_cursor = cursor - 1;
@@ -109,12 +119,21 @@ static int is_visited_state(){
               if(bytes_used_test != current_bytes_used)
                 break;
               if(snapshot_compare(new_state->system_state, state_test->system_state) == 0){
-                XBT_DEBUG("State %d already visited ! (equal to state %d)", new_state->num, state_test->num);
+                if(state_test->other_num == -1)
+                  new_state->other_num = state_test->num;
+                else
+                  new_state->other_num = state_test->other_num;
+                if(dot_output == NULL)
+                  XBT_DEBUG("Next state %d already visited ! (equal to state %d)", new_state->num, state_test->num);
+                else
+                  XBT_DEBUG("Next state %d already visited ! (equal to state %d (state %d in dot_output))", new_state->num, state_test->num, new_state->other_num);
+                xbt_dynar_remove_at(visited_states, previous_cursor, NULL);
+                xbt_dynar_insert_at(visited_states, cursor, &new_state);
                 if(raw_mem_set)
                   MC_SET_RAW_MEM;
                 else
                   MC_UNSET_RAW_MEM;
-                return state_test->num;
+                return new_state->other_num;
               }
               previous_cursor--;
             }
@@ -125,12 +144,21 @@ static int is_visited_state(){
               if(bytes_used_test != current_bytes_used)
                 break;
               if(snapshot_compare(new_state->system_state, state_test->system_state) == 0){
-                XBT_DEBUG("State %d already visited ! (equal to state %d)", new_state->num, state_test->num);
+                if(state_test->other_num == -1)
+                  new_state->other_num = state_test->num;
+                else
+                  new_state->other_num = state_test->other_num;
+                if(dot_output == NULL)
+                  XBT_DEBUG("Next state %d already visited ! (equal to state %d)", new_state->num, state_test->num);
+                else
+                  XBT_DEBUG("Next state %d already visited ! (equal to state %d (state %d in dot_output))", new_state->num, state_test->num, new_state->other_num);
+                xbt_dynar_remove_at(visited_states, next_cursor, NULL);
+                xbt_dynar_insert_at(visited_states, next_cursor, &new_state);
                 if(raw_mem_set)
                   MC_SET_RAW_MEM;
                 else
                   MC_UNSET_RAW_MEM;
-                return state_test->num;
+                return new_state->other_num;
               }
               next_cursor++;
             }
@@ -247,8 +275,8 @@ void MC_dpor(void)
   smx_process_t process = NULL;
   xbt_fifo_item_t item = NULL;
   int pos;
-  int visited_state;
-  int enabled = 0, max_depth_reached = 0;
+  int visited_state = -1;
+  int enabled = 0;
 
   while (xbt_fifo_size(mc_stack_safety) > 0) {
 
@@ -257,17 +285,17 @@ void MC_dpor(void)
       xbt_fifo_get_item_content(xbt_fifo_get_first_item(mc_stack_safety));
 
     XBT_DEBUG("**************************************************");
-    XBT_DEBUG("Exploration depth=%d (state=%p, num %d)(%u interleave)",
+    XBT_DEBUG("Exploration depth=%d (state=%p, num %d)(%u interleave, user_max_depth %d)",
               xbt_fifo_size(mc_stack_safety), state, state->num,
-              MC_state_interleave_size(state));
-
+              MC_state_interleave_size(state), user_max_depth_reached);
+      
     /* Update statistics */
     mc_stats->visited_states++;
 
     /* If there are processes to interleave and the maximum depth has not been reached
        then perform one step of the exploration algorithm */
-    if (xbt_fifo_size(mc_stack_safety) <= _sg_mc_max_depth &&
-        (req = MC_state_get_request(state, &value))) {
+    if (xbt_fifo_size(mc_stack_safety) <= _sg_mc_max_depth && !user_max_depth_reached &&
+        (req = MC_state_get_request(state, &value)) && visited_state == -1) {
 
       /* Debug information */
       if(XBT_LOG_ISENABLED(mc_dpor, xbt_log_priority_debug)){
@@ -275,7 +303,7 @@ void MC_dpor(void)
         XBT_DEBUG("Execute: %s", req_str);
         xbt_free(req_str);
       }
-        
+      
       MC_SET_RAW_MEM;
       if(dot_output != NULL)
         req_str = MC_request_get_dot_output(req, value);
@@ -350,9 +378,14 @@ void MC_dpor(void)
       /* The interleave set is empty or the maximum depth is reached, let's back-track */
     } else {
 
-      if(xbt_fifo_size(mc_stack_safety) > _sg_mc_max_depth){  
+      if((xbt_fifo_size(mc_stack_safety) > _sg_mc_max_depth) || user_max_depth_reached || visited_state != -1){  
 
-        XBT_WARN("/!\\ Max depth reached ! /!\\ ");
+        if(user_max_depth_reached && visited_state == -1)
+          XBT_DEBUG("User max depth reached !");
+        else if(visited_state == -1)
+          XBT_WARN("/!\\ Max depth reached ! /!\\ ");
+
+        visited_state = -1;
 
         /* Interleave enabled processes in the state in which they have been enabled for the first time */
         xbt_swag_foreach(process, simix_global->process_list){
@@ -365,7 +398,8 @@ void MC_dpor(void)
             int cursor = xbt_fifo_size(mc_stack_safety);
             xbt_fifo_foreach(mc_stack_safety, item, state_test, mc_state_t){
               if(cursor-- == enabled){ 
-                if(!MC_state_process_is_done(state_test, process)){ 
+                if(!MC_state_process_is_done(state_test, process) && state_test->num != state->num){ 
+                  XBT_DEBUG("Interleave process %lu in state %d", process->pid, state_test->num);
                   MC_state_interleave_process(state_test, process);
                   break;
                 }
@@ -374,32 +408,18 @@ void MC_dpor(void)
           }
         }
 
-        if(MC_state_interleave_size(state) > 0){
-          max_depth_reached = 1;
-        }else{
-          /* Trash the current state, no longer needed */
-          MC_SET_RAW_MEM;
-          xbt_fifo_shift(mc_stack_safety);
-          MC_state_delete(state);
-          MC_UNSET_RAW_MEM;
-
-          max_depth_reached = 0;
-        }
-        
-
       }else{
 
-        XBT_DEBUG("There are no more processes to interleave.");
+        XBT_DEBUG("There are no more processes to interleave. (depth %d)", xbt_fifo_size(mc_stack_safety) + 1);
 
-        /* Trash the current state, no longer needed */
-        MC_SET_RAW_MEM;
-        xbt_fifo_shift(mc_stack_safety);
-        MC_state_delete(state);
-        XBT_DEBUG("Delete state %d at depth %d", state->num, xbt_fifo_size(mc_stack_safety) + 1);
-        MC_UNSET_RAW_MEM;
-        
-        max_depth_reached = 0;
       }
+
+      /* Trash the current state, no longer needed */
+      MC_SET_RAW_MEM;
+      xbt_fifo_shift(mc_stack_safety);
+      MC_state_delete(state);
+      XBT_DEBUG("Delete state %d at depth %d", state->num, xbt_fifo_size(mc_stack_safety) + 1);
+      MC_UNSET_RAW_MEM;        
       
       /* Check for deadlocks */
       if(MC_deadlock_check()){
@@ -417,10 +437,6 @@ void MC_dpor(void)
       
       while ((state = xbt_fifo_shift(mc_stack_safety)) != NULL) {
         if(mc_reduce_kind != e_mc_reduce_none){
-          if((xbt_fifo_size(mc_stack_safety) == _sg_mc_max_depth) && max_depth_reached){
-            req = MC_state_get_request(state, &value);
-            MC_state_set_executed_request(state, req, value);
-          }
           req = MC_state_get_internal_request(state);
           xbt_fifo_foreach(mc_stack_safety, item, prev_state, mc_state_t) {
             if(MC_request_depend(req, MC_state_get_internal_request(prev_state))){

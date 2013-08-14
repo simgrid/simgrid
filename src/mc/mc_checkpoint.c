@@ -24,23 +24,35 @@ void *start_data_libsimgrid, *start_bss_libsimgrid;
 void *start_data_binary, *start_bss_binary;
 void *start_text_binary;
 
-static mc_mem_region_t MC_region_new(int type, void *start_addr, size_t size);
-static void MC_region_restore(mc_mem_region_t reg);
-static void MC_region_destroy(mc_mem_region_t reg);
+/************************************  Free functions **************************************/
+/*****************************************************************************************/
 
-static void MC_snapshot_add_region(mc_snapshot_t snapshot, int type, void *start_addr, size_t size);
+static void MC_snapshot_stack_free(mc_snapshot_stack_t s){
+  if(s){
+    xbt_free(s->local_variables->data);
+    xbt_free(s->local_variables);
+    xbt_free(s);
+  }
+}
 
-static void add_value(xbt_dynar_t *list, const char *type, unsigned long int val);
-static xbt_dynar_t take_snapshot_stacks(mc_snapshot_t *s, void *heap);
-static xbt_strbuff_t get_local_variables_values(void *stack_context, void *heap);
-static void print_local_variables_values(xbt_dynar_t all_variables);
-static void *get_stack_pointer(void *stack_context, void *heap);
+static void MC_snapshot_stack_free_voidp(void *s){
+  MC_snapshot_stack_free((mc_snapshot_stack_t) * (void **) s);
+}
 
-static void snapshot_stack_free(mc_snapshot_stack_t s);
-static xbt_dynar_t take_snapshot_ignore(void);
+static void local_variable_free(local_variable_t v){
+  xbt_free(v->frame);
+  xbt_free(v->name);
+  xbt_free(v->type);
+  xbt_free(v);
+}
 
-static void get_hash_global(char *snapshot_hash, void *data1, void *data2);
-static void get_hash_local(char *snapshot_hash, xbt_dynar_t stacks);
+static void local_variable_free_voidp(void *v){
+  local_variable_free((local_variable_t) * (void **) v);
+}
+
+
+/*******************************  Snapshot regions ********************************/
+/*********************************************************************************/
 
 static mc_mem_region_t MC_region_new(int type, void *start_addr, size_t size)
 {
@@ -78,7 +90,7 @@ static void MC_snapshot_add_region(mc_snapshot_t snapshot, int type, void *start
   return;
 } 
 
-static void get_memory_regions(mc_snapshot_t snapshot){
+static void MC_get_memory_regions(mc_snapshot_t snapshot){
 
   FILE *fp;
   char *line = NULL;
@@ -188,7 +200,7 @@ void MC_init_memory_map_info(){
  
   unsigned int i = 0;
   s_map_region_t reg;
-  memory_map_t maps = get_memory_map();
+  memory_map_t maps = MC_get_memory_map();
 
   while (i < maps->mapsize) {
     reg = maps->regions[i];
@@ -227,63 +239,11 @@ void MC_init_memory_map_info(){
     i++;
   }
    
-  free_memory_map(maps);
+  MC_free_memory_map(maps);
 
 }
 
-mc_snapshot_t MC_take_snapshot()
-{
-
-  int raw_mem = (mmalloc_get_current_heap() == raw_heap);
-  
-  MC_SET_RAW_MEM;
-
-  mc_snapshot_t snapshot = xbt_new0(s_mc_snapshot_t, 1);
-  snapshot->nb_processes = xbt_swag_size(simix_global->process_list);
-
-  /* Save the std heap and the writable mapped pages of libsimgrid and binary */
-  get_memory_regions(snapshot);
-
-  snapshot->to_ignore = take_snapshot_ignore();
-
-  if(_sg_mc_visited > 0 || strcmp(_sg_mc_property_file,"")){
-    snapshot->stacks = take_snapshot_stacks(&snapshot, snapshot->regions[0]->data);
-    get_hash_global(snapshot->hash_global, snapshot->regions[1]->data, snapshot->regions[2]->data);
-    get_hash_local(snapshot->hash_local, snapshot->stacks);
-  }
-
-  MC_UNSET_RAW_MEM;
-
-  if(raw_mem)
-    MC_SET_RAW_MEM;
-
-  return snapshot;
-
-}
-
-void MC_restore_snapshot(mc_snapshot_t snapshot)
-{
-  unsigned int i;
-  for(i=0; i < NB_REGIONS; i++){
-    MC_region_restore(snapshot->regions[i]);
-  }
-
-}
-
-void MC_free_snapshot(mc_snapshot_t snapshot)
-{
-  unsigned int i;
-  for(i=0; i < NB_REGIONS; i++)
-    MC_region_destroy(snapshot->regions[i]);
-
-  xbt_free(snapshot->stack_sizes);
-  xbt_dynar_free(&(snapshot->stacks));
-  xbt_dynar_free(&(snapshot->to_ignore));
-  xbt_free(snapshot);
-}
-
-
-void get_libsimgrid_plt_section(){
+void MC_get_libsimgrid_plt_section(){
 
   FILE *fp;
   char *line = NULL;            /* Temporal storage for each line that is readed */
@@ -348,7 +308,7 @@ void get_libsimgrid_plt_section(){
 
 }
 
-void get_binary_plt_section(){
+void MC_get_binary_plt_section(){
 
   FILE *fp;
   char *line = NULL;            /* Temporal storage for each line that is readed */
@@ -411,38 +371,262 @@ void get_binary_plt_section(){
 
 }
 
-static void add_value(xbt_dynar_t *list, const char *type, unsigned long int val){
-  variable_value_t value = xbt_new0(s_variable_value_t, 1);
-  value->type = strdup(type);
-  if(strcmp(type, "value") == 0){
-    value->value.res = val;
-  }else{
-    value->value.address = (void *)val;
-  }
-  xbt_dynar_push(*list, &value);
+/************************************* Take Snapshot ************************************/
+/****************************************************************************************/
+
+static void MC_get_hash_global(char *snapshot_hash, void *data1, void *data2){
+  
+  /* unsigned int cursor = 0; */
+  /* size_t offset;  */
+  /* global_variable_t current_var;  */
+  /* void *addr_pointed = NULL; */
+  /* void *res = NULL; */
+
+  /* xbt_strbuff_t clear = xbt_strbuff_new(); */
+  
+  /* xbt_dynar_foreach(mc_global_variables, cursor, current_var){ */
+  /*   if(current_var->address < start_data_libsimgrid){ /\* binary *\/ */
+  /*     offset = (char *)current_var->address - (char *)start_data_binary; */
+  /*     addr_pointed = *((void **)((char *)data2 + offset)); */
+  /*     if(((addr_pointed >= start_plt_binary && addr_pointed <= end_plt_binary)) || ((addr_pointed >= std_heap && (char *)addr_pointed <= (char *)std_heap + STD_HEAP_SIZE ))) */
+  /*       continue; */
+  /*     res = xbt_malloc0(current_var->size + 1); */
+  /*     memset(res, 0, current_var->size + 1); */
+  /*     memcpy(res, (char*)data2 + offset, current_var->size); */
+  /*   }else{ /\* libsimgrid *\/ */
+  /*     offset = (char *)current_var->address - (char *)start_data_libsimgrid; */
+  /*     addr_pointed = *((void **)((char *)data1 + offset)); */
+  /*     if((addr_pointed >= start_plt_libsimgrid && addr_pointed <= end_plt_libsimgrid) || (addr_pointed >= std_heap && (char *)addr_pointed <= (char *)std_heap + STD_HEAP_SIZE )) */
+  /*       continue; */
+  /*     res = xbt_malloc0(current_var->size + 1); */
+  /*     memset(res, 0, current_var->size + 1); */
+  /*     memcpy(res, (char*)data1 + offset, current_var->size); */
+  /*   } */
+  /*   if(res != NULL){ */
+  /*     xbt_strbuff_append(clear, (const char*)res); */
+  /*     xbt_free(res); */
+  /*     res = NULL; */
+  /*   } */
+  /* } */
+
+  /* xbt_sha(clear->data, snapshot_hash); */
+
+  /* xbt_strbuff_free(clear); */
+
 }
 
-static xbt_dynar_t take_snapshot_stacks(mc_snapshot_t *snapshot, void *heap){
+static void MC_get_hash_local(char *snapshot_hash, xbt_dynar_t stacks){
 
-  xbt_dynar_t res = xbt_dynar_new(sizeof(s_mc_snapshot_stack_t), snapshot_stack_free_voidp);
+  /* xbt_dynar_t tokens = NULL, s_tokens = NULL; */
+  /* unsigned int cursor1 = 0, cursor2 = 0; */
+  /* mc_snapshot_stack_t current_stack; */
+  /* char *frame_name = NULL; */
+  /* void *addr; */
+
+  /* xbt_strbuff_t clear = xbt_strbuff_new(); */
+
+  /* while(cursor1 < xbt_dynar_length(stacks)){ */
+  /*   current_stack = xbt_dynar_get_as(stacks, cursor1, mc_snapshot_stack_t); */
+  /*   tokens = xbt_str_split(current_stack->local_variables->data, NULL); */
+  /*   cursor2 = 0; */
+  /*   while(cursor2 < xbt_dynar_length(tokens)){ */
+  /*     s_tokens = xbt_str_split(xbt_dynar_get_as(tokens, cursor2, char *), "="); */
+  /*     if(xbt_dynar_length(s_tokens) > 1){ */
+  /*       if(strcmp(xbt_dynar_get_as(s_tokens, 0, char *), "frame_name") == 0){ */
+  /*         xbt_free(frame_name); */
+  /*         frame_name = xbt_strdup(xbt_dynar_get_as(s_tokens, 1, char *)); */
+  /*         xbt_strbuff_append(clear, (const char*)xbt_dynar_get_as(tokens, cursor2, char *)); */
+  /*         cursor2++; */
+  /*         xbt_dynar_free(&s_tokens); */
+  /*         continue; */
+  /*       } */
+  /*       addr = (void *) strtoul(xbt_dynar_get_as(s_tokens, 1, char *), NULL, 16); */
+  /*       if(addr > std_heap && (char *)addr <= (char *)std_heap + STD_HEAP_SIZE){ */
+  /*         cursor2++; */
+  /*         xbt_dynar_free(&s_tokens); */
+  /*         continue; */
+  /*       } */
+  /*       if(is_stack_ignore_variable(frame_name, xbt_dynar_get_as(s_tokens, 0, char *))){ */
+  /*         cursor2++; */
+  /*         xbt_dynar_free(&s_tokens); */
+  /*         continue; */
+  /*       } */
+  /*       xbt_strbuff_append(clear, (const char *)xbt_dynar_get_as(tokens, cursor2, char *)); */
+  /*     } */
+  /*     xbt_dynar_free(&s_tokens); */
+  /*     cursor2++; */
+  /*   } */
+  /*   xbt_dynar_free(&tokens); */
+  /*   cursor1++; */
+  /* } */
+
+  /* xbt_free(frame_name); */
+
+  /* xbt_sha(clear->data, snapshot_hash); */
+
+  /* xbt_strbuff_free(clear); */
+
+}
+
+static xbt_dynar_t MC_get_local_variables_values(void *stack_context){
+  
+  unw_cursor_t c;
+  int ret;
+
+  char frame_name[256];
+  
+  ret = unw_init_local(&c, (unw_context_t *)stack_context);
+  if(ret < 0){
+    XBT_INFO("unw_init_local failed");
+    xbt_abort();
+  }
+
+  unw_word_t ip, sp, off;
+  dw_frame_t frame;
 
   unsigned int cursor = 0;
-  stack_region_t current_stack;
-  
-  xbt_dynar_foreach(stacks_areas, cursor, current_stack){
-    mc_snapshot_stack_t st = xbt_new(s_mc_snapshot_stack_t, 1);
-    st->local_variables = get_local_variables_values(current_stack->context, heap);
-    st->stack_pointer = get_stack_pointer(current_stack->context, heap);
-    xbt_dynar_push(res, &st);
-    (*snapshot)->stack_sizes = xbt_realloc((*snapshot)->stack_sizes, (cursor + 1) * sizeof(size_t));
-    (*snapshot)->stack_sizes[cursor] = current_stack->size - ((char *)st->stack_pointer - (char *)((char *)heap + ((char *)current_stack->address - (char *)std_heap)));
+  dw_variable_t current_variable;
+  dw_location_entry_t entry = NULL;
+  dw_location_t location_entry = NULL;
+  unw_word_t res;
+  int frame_found = 0, region_type;
+  void *frame_pointer_address = NULL;
+  long true_ip, value;
+
+  xbt_dynar_t variables = xbt_dynar_new(sizeof(local_variable_t), local_variable_free_voidp);
+
+  while(ret >= 0){
+
+    unw_get_reg(&c, UNW_REG_IP, &ip);
+    unw_get_reg(&c, UNW_REG_SP, &sp);
+
+    unw_get_proc_name(&c, frame_name, sizeof (frame_name), &off);
+
+    if((long)ip > (long)start_text_libsimgrid)
+      frame = xbt_dict_get_or_null(mc_local_variables_libsimgrid, frame_name);
+    else
+      frame = xbt_dict_get_or_null(mc_local_variables_binary, frame_name);
+
+    if(frame == NULL){
+      ret = unw_step(&c);
+      continue;
+    }
+    
+    true_ip = (long)frame->low_pc + (long)off;
+    frame_pointer_address = NULL;
+
+    /* Get frame pointer */
+    switch(frame->frame_base->type){
+    case e_dw_loclist:
+      cursor = 0;
+      while(cursor < xbt_dynar_length(frame->frame_base->location.loclist) && !frame_found){
+        entry = xbt_dynar_get_as(frame->frame_base->location.loclist, cursor, dw_location_entry_t);
+        if((true_ip >= entry->lowpc) && (true_ip < entry->highpc)){
+          frame_found = 1;
+          switch(entry->location->type){
+          case e_dw_compose:
+            if(xbt_dynar_length(entry->location->location.compose) > 1){
+              frame_pointer_address = NULL; /* TODO : location list with optimizations enabled */
+            }else{
+              location_entry = xbt_dynar_get_as(entry->location->location.compose, 0, dw_location_t);
+              switch(location_entry->type){
+              case e_dw_register:
+                unw_get_reg(&c, location_entry->location.reg, &res);
+                frame_pointer_address = (void*)(long)res;
+                break;
+              case e_dw_bregister_op:
+                unw_get_reg(&c, location_entry->location.breg_op.reg, &res);
+                frame_pointer_address = (void*)((long)res + location_entry->location.breg_op.offset);
+                break;
+              default:
+                frame_pointer_address = NULL; /* FIXME : implement other cases (with optimizations enabled) */
+                break;
+              }
+            }
+            break;
+          default:
+            frame_pointer_address = NULL; /* FIXME : implement other cases (with optimizations enabled) */
+            break;
+          }
+        }
+        cursor++;
+      }
+      break;
+    default :
+      frame_pointer_address = NULL; /* FIXME : implement other cases (with optimizations enabled)*/
+      break;
+    }
+
+    frame_found = 0;
+    cursor = 0;
+
+    xbt_dynar_foreach(frame->variables, cursor, current_variable){
+      
+      if((long)ip > (long)start_text_libsimgrid)
+        region_type = 1;
+      else
+        region_type = 2;
+
+      local_variable_t new_var = xbt_new0(s_local_variable_t, 1);
+      new_var->frame = xbt_strdup(frame_name);
+      new_var->ip = (unsigned long)ip;
+      new_var->name = xbt_strdup(current_variable->name);
+      new_var->type = strdup(current_variable->type_origin);
+      new_var->region= region_type;
+      
+      if(current_variable->address.location != NULL){
+        switch(current_variable->address.location->type){
+        case e_dw_compose:
+          if(xbt_dynar_length(current_variable->address.location->location.compose) > 1){
+            /* TODO : location list with optimizations enabled */
+          }else{
+            location_entry = xbt_dynar_get_as(current_variable->address.location->location.compose, 0, dw_location_t);
+            
+            switch(location_entry->type){
+            case e_dw_register:
+              unw_get_reg(&c, location_entry->location.reg, &res);
+              value = (long)res;
+              break;
+            case e_dw_bregister_op:
+              unw_get_reg(&c, location_entry->location.breg_op.reg, &res);
+              value = (long)res + location_entry->location.breg_op.offset;
+              break;
+            case e_dw_fbregister_op:
+              if(frame_pointer_address != NULL)
+                value = (long)((char *)frame_pointer_address + location_entry->location.fbreg_op);
+              else
+                value = 0;
+              break;
+            default:
+              value = 0; /* FIXME : implement other cases (with optimizations enabled)*/
+              break;
+            }
+
+            if(value)
+              new_var->address = (void *)value;
+            else
+              new_var->address = NULL;
+          }
+          break;
+        default :
+          break;
+        }
+      }
+
+      xbt_dynar_push(variables, &new_var);
+
+    }
+
+    ret = unw_step(&c);
+     
   }
 
-  return res;
+  return variables;
 
 }
 
-static void *get_stack_pointer(void *stack_context, void *heap){
+
+static void *MC_get_stack_pointer(void *stack_context, void *heap){
 
   unw_cursor_t c;
   int ret;
@@ -460,327 +644,28 @@ static void *get_stack_pointer(void *stack_context, void *heap){
 
 }
 
-static xbt_strbuff_t get_local_variables_values(void *stack_context, void *heap){
-  
-  unw_cursor_t c;
-  int ret;
+static xbt_dynar_t MC_take_snapshot_stacks(mc_snapshot_t *snapshot, void *heap){
 
-  char frame_name[256];
-  
-  ret = unw_init_local(&c, (unw_context_t *)stack_context);
-  if(ret < 0){
-    XBT_INFO("unw_init_local failed");
-    xbt_abort();
-  }
+  xbt_dynar_t res = xbt_dynar_new(sizeof(s_mc_snapshot_stack_t), MC_snapshot_stack_free_voidp);
 
-  unw_word_t ip, sp, off;
-  dw_frame_t frame;
- 
-  xbt_dynar_t compose = xbt_dynar_new(sizeof(variable_value_t), variable_value_free_voidp);
-
-  xbt_strbuff_t variables = xbt_strbuff_new();
-  xbt_dict_cursor_t dict_cursor;
-  char *variable_name;
-  dw_local_variable_t current_variable;
-  unsigned int cursor = 0, cursor2 = 0;
-  dw_location_entry_t entry = NULL;
-  dw_location_t location_entry = NULL;
-  unw_word_t res;
-  int frame_found = 0;
-  void *frame_pointer_address = NULL;
-  long true_ip;
-  char *to_append;
-
-  while(ret >= 0){
-
-    unw_get_reg(&c, UNW_REG_IP, &ip);
-    unw_get_reg(&c, UNW_REG_SP, &sp);
-
-    unw_get_proc_name(&c, frame_name, sizeof (frame_name), &off);
-
-    frame = xbt_dict_get_or_null(mc_local_variables, frame_name);
-
-    if(frame == NULL){
-      xbt_dynar_free(&compose);
-      xbt_dict_cursor_free(&dict_cursor);
-      return variables;
-    }
-
-    to_append = bprintf("frame_name=%s\n", frame_name);
-    xbt_strbuff_append(variables, to_append);
-    xbt_free(to_append);
-    to_append = bprintf("ip=%lx\n", (unsigned long)ip);
-    xbt_strbuff_append(variables, to_append);
-    xbt_free(to_append);
-    
-    true_ip = (long)frame->low_pc + (long)off;
-
-    /* Get frame pointer */
-    switch(frame->frame_base->type){
-    case e_dw_loclist:
-      while((cursor < xbt_dynar_length(frame->frame_base->location.loclist)) && frame_found == 0){
-        entry = xbt_dynar_get_as(frame->frame_base->location.loclist, cursor, dw_location_entry_t);
-        if((true_ip >= entry->lowpc) && (true_ip < entry->highpc)){
-          frame_found = 1;
-          switch(entry->location->type){
-          case e_dw_compose:
-            xbt_dynar_reset(compose);
-            cursor2 = 0;
-            while(cursor2 < xbt_dynar_length(entry->location->location.compose)){
-              location_entry = xbt_dynar_get_as(entry->location->location.compose, cursor2, dw_location_t);
-              switch(location_entry->type){
-              case e_dw_register:
-                unw_get_reg(&c, location_entry->location.reg, &res);
-                add_value(&compose, "address", (long)res);
-                break;
-              case e_dw_bregister_op:
-                unw_get_reg(&c, location_entry->location.breg_op.reg, &res);
-                add_value(&compose, "address", (long)res + location_entry->location.breg_op.offset);
-                break;
-              default:
-                xbt_dynar_reset(compose);
-                break;
-              }
-              cursor2++;
-            }
-
-            if(!xbt_dynar_is_empty(compose)){
-              frame_pointer_address = xbt_dynar_get_as(compose, xbt_dynar_length(compose) - 1, variable_value_t)->value.address ; 
-              xbt_dynar_reset(compose);
-            }
-            break;
-          default :
-            frame_pointer_address = NULL;
-            break;
-          }
-        }
-        cursor++;
-      }
-      break;
-    default :
-      frame_pointer_address = NULL;
-      break;
-    }
-
-    frame_found = 0;
-    cursor = 0;
-
-    xbt_dict_foreach(frame->variables, dict_cursor, variable_name, current_variable){
-      if(current_variable->location != NULL){
-        switch(current_variable->location->type){
-        case e_dw_compose:
-          xbt_dynar_reset(compose);
-          cursor = 0;
-          while(cursor < xbt_dynar_length(current_variable->location->location.compose)){
-            location_entry = xbt_dynar_get_as(current_variable->location->location.compose, cursor, dw_location_t);
-            switch(location_entry->type){
-            case e_dw_register:
-              unw_get_reg(&c, location_entry->location.reg, &res);
-              add_value(&compose, "value", (long)res);
-              break;
-            case e_dw_bregister_op:
-              unw_get_reg(&c, location_entry->location.breg_op.reg, &res);
-              add_value(&compose, "address", (long)res + location_entry->location.breg_op.offset);
-              break;
-            case e_dw_fbregister_op:
-              if(frame_pointer_address != NULL)
-                add_value(&compose, "address", (long)((char *)frame_pointer_address + location_entry->location.fbreg_op));
-              break;
-            default:
-              xbt_dynar_reset(compose);
-              break;
-            }
-            cursor++;
-          }
-          
-          if(!xbt_dynar_is_empty(compose)){
-            if(strcmp(xbt_dynar_get_as(compose, xbt_dynar_length(compose) - 1, variable_value_t)->type, "value") == 0){
-              to_append = bprintf("%s=%lx\n", current_variable->name, xbt_dynar_get_as(compose, xbt_dynar_length(compose) - 1, variable_value_t)->value.res);
-              xbt_strbuff_append(variables, to_append);
-              xbt_free(to_append);
-            }else{
-              if((long)xbt_dynar_get_as(compose, xbt_dynar_length(compose) - 1,variable_value_t)->value.address < 0 || *((void**)xbt_dynar_get_as(compose, xbt_dynar_length(compose) - 1,variable_value_t)->value.address) == NULL){
-                to_append = bprintf("%s=NULL\n", current_variable->name);
-                xbt_strbuff_append(variables, to_append);
-                xbt_free(to_append);
-              }else if(((long)*((void**)xbt_dynar_get_as(compose, xbt_dynar_length(compose) - 1,variable_value_t)->value.address) > 0xffffffff) || ((long)*((void**)xbt_dynar_get_as(compose, xbt_dynar_length(compose) - 1,variable_value_t)->value.address) < (long)start_text_binary)){
-                to_append = bprintf("%s=%u\n", current_variable->name, (unsigned int)(long)*((void**)xbt_dynar_get_as(compose, xbt_dynar_length(compose) - 1, variable_value_t)->value.address));
-                xbt_strbuff_append(variables, to_append);
-                xbt_free(to_append);
-              }else{ 
-                to_append = bprintf("%s=%p\n", current_variable->name, *((void**)xbt_dynar_get_as(compose, xbt_dynar_length(compose) - 1, variable_value_t)->value.address));
-                xbt_strbuff_append(variables, to_append);
-                xbt_free(to_append);
-              }
-            }
-            xbt_dynar_reset(compose);
-          }else{
-            to_append = bprintf("%s=undefined\n", current_variable->name);
-            xbt_strbuff_append(variables, to_append);
-            xbt_free(to_append);
-          }
-          break;
-        default :
-          break;
-        }
-      }else{
-        to_append = bprintf("%s=undefined\n", current_variable->name);
-        xbt_strbuff_append(variables, to_append);
-        xbt_free(to_append);
-      }
-    }    
- 
-    ret = unw_step(&c);
-     
-  }
-
-  xbt_dynar_free(&compose);
-  xbt_dict_cursor_free(&dict_cursor);
-
-  return variables;
-
-}
-
-static void print_local_variables_values(xbt_dynar_t all_variables){
-
-  unsigned cursor = 0;
-  mc_snapshot_stack_t stack;
-
-  xbt_dynar_foreach(all_variables, cursor, stack){
-    XBT_INFO("%s", stack->local_variables->data);
-  }
-}
-
-
-static void snapshot_stack_free(mc_snapshot_stack_t s){
-  if(s){
-    xbt_free(s->local_variables->data);
-    xbt_free(s->local_variables);
-    xbt_free(s);
-  }
-}
-
-void snapshot_stack_free_voidp(void *s){
-  snapshot_stack_free((mc_snapshot_stack_t) * (void **) s);
-}
-
-mc_snapshot_t SIMIX_pre_mc_snapshot(smx_simcall_t simcall){
-  return MC_take_snapshot();
-}
-
-void *MC_snapshot(void){
-
-  return simcall_mc_snapshot();
-  
-}
-
-void variable_value_free(variable_value_t v){
-  if(v){
-    xbt_free(v->type);
-    xbt_free(v);
-  }
-}
-
-void variable_value_free_voidp(void* v){
-  variable_value_free((variable_value_t) * (void **)v);
-}
-
-static void get_hash_global(char *snapshot_hash, void *data1, void *data2){
-  
   unsigned int cursor = 0;
-  size_t offset; 
-  global_variable_t current_var; 
-  void *addr_pointed = NULL;
-  void *res = NULL;
-
-  xbt_strbuff_t clear = xbt_strbuff_new();
+  stack_region_t current_stack;
   
-  xbt_dynar_foreach(mc_global_variables, cursor, current_var){
-    if(current_var->address < start_data_libsimgrid){ /* binary */
-      offset = (char *)current_var->address - (char *)start_data_binary;
-      addr_pointed = *((void **)((char *)data2 + offset));
-      if(((addr_pointed >= start_plt_binary && addr_pointed <= end_plt_binary)) || ((addr_pointed >= std_heap && (char *)addr_pointed <= (char *)std_heap + STD_HEAP_SIZE )))
-        continue;
-      res = xbt_malloc0(current_var->size + 1);
-      memset(res, 0, current_var->size + 1);
-      memcpy(res, (char*)data2 + offset, current_var->size);
-    }else{ /* libsimgrid */
-      offset = (char *)current_var->address - (char *)start_data_libsimgrid;
-      addr_pointed = *((void **)((char *)data1 + offset));
-      if((addr_pointed >= start_plt_libsimgrid && addr_pointed <= end_plt_libsimgrid) || (addr_pointed >= std_heap && (char *)addr_pointed <= (char *)std_heap + STD_HEAP_SIZE ))
-        continue;
-      res = xbt_malloc0(current_var->size + 1);
-      memset(res, 0, current_var->size + 1);
-      memcpy(res, (char*)data1 + offset, current_var->size);
-    }
-    if(res != NULL){
-      xbt_strbuff_append(clear, (const char*)res);
-      xbt_free(res);
-      res = NULL;
-    }
+  xbt_dynar_foreach(stacks_areas, cursor, current_stack){
+    mc_snapshot_stack_t st = xbt_new(s_mc_snapshot_stack_t, 1);
+    st->local_variables = MC_get_local_variables_values(current_stack->context);
+    st->stack_pointer = MC_get_stack_pointer(current_stack->context, heap);
+    st->real_address = current_stack->address;
+    xbt_dynar_push(res, &st);
+    (*snapshot)->stack_sizes = xbt_realloc((*snapshot)->stack_sizes, (cursor + 1) * sizeof(size_t));
+    (*snapshot)->stack_sizes[cursor] = current_stack->size - ((char *)st->stack_pointer - (char *)((char *)heap + ((char *)current_stack->address - (char *)std_heap)));
   }
 
-  xbt_sha(clear->data, snapshot_hash);
-
-  xbt_strbuff_free(clear);
+  return res;
 
 }
 
-static void get_hash_local(char *snapshot_hash, xbt_dynar_t stacks){
-
-  xbt_dynar_t tokens = NULL, s_tokens = NULL;
-  unsigned int cursor1 = 0, cursor2 = 0;
-  mc_snapshot_stack_t current_stack;
-  char *frame_name = NULL;
-  void *addr;
-
-  xbt_strbuff_t clear = xbt_strbuff_new();
-
-  while(cursor1 < xbt_dynar_length(stacks)){
-    current_stack = xbt_dynar_get_as(stacks, cursor1, mc_snapshot_stack_t);
-    tokens = xbt_str_split(current_stack->local_variables->data, NULL);
-    cursor2 = 0;
-    while(cursor2 < xbt_dynar_length(tokens)){
-      s_tokens = xbt_str_split(xbt_dynar_get_as(tokens, cursor2, char *), "=");
-      if(xbt_dynar_length(s_tokens) > 1){
-        if(strcmp(xbt_dynar_get_as(s_tokens, 0, char *), "frame_name") == 0){
-          xbt_free(frame_name);
-          frame_name = xbt_strdup(xbt_dynar_get_as(s_tokens, 1, char *));
-          xbt_strbuff_append(clear, (const char*)xbt_dynar_get_as(tokens, cursor2, char *));
-          cursor2++;
-          xbt_dynar_free(&s_tokens);
-          continue;
-        }
-        addr = (void *) strtoul(xbt_dynar_get_as(s_tokens, 1, char *), NULL, 16);
-        if(addr > std_heap && (char *)addr <= (char *)std_heap + STD_HEAP_SIZE){
-          cursor2++;
-          xbt_dynar_free(&s_tokens);
-          continue;
-        }
-        if(is_stack_ignore_variable(frame_name, xbt_dynar_get_as(s_tokens, 0, char *))){
-          cursor2++;
-          xbt_dynar_free(&s_tokens);
-          continue;
-        }
-        xbt_strbuff_append(clear, (const char *)xbt_dynar_get_as(tokens, cursor2, char *));
-      }
-      xbt_dynar_free(&s_tokens);
-      cursor2++;
-    }
-    xbt_dynar_free(&tokens);
-    cursor1++;
-  }
-
-  xbt_free(frame_name);
-
-  xbt_sha(clear->data, snapshot_hash);
-
-  xbt_strbuff_free(clear);
-
-}
-
-
-static xbt_dynar_t take_snapshot_ignore(){
+static xbt_dynar_t MC_take_snapshot_ignore(){
   
   if(mc_heap_comparison_ignore == NULL)
     return NULL;
@@ -802,4 +687,84 @@ static xbt_dynar_t take_snapshot_ignore(){
 
   return cpy;
 
+}
+
+static void MC_dump_checkpoint_ignore(mc_snapshot_t snapshot){
+  
+  unsigned int cursor = 0;
+  mc_checkpoint_ignore_region_t region;
+  size_t offset;
+  
+  xbt_dynar_foreach(mc_checkpoint_ignore, cursor, region){
+    if(region->addr > snapshot->regions[0]->start_addr && (char *)(region->addr) < (char *)snapshot->regions[0]->start_addr + STD_HEAP_SIZE){
+      offset = (char *)region->addr - (char *)snapshot->regions[0]->start_addr;
+      memset((char *)snapshot->regions[0]->data + offset, 0, region->size);
+    }else if(region->addr > snapshot->regions[2]->start_addr && (char *)(region->addr) < (char*)snapshot->regions[2]->start_addr + snapshot->regions[2]->size){
+      offset = (char *)region->addr - (char *)snapshot->regions[2]->start_addr;
+      memset((char *)snapshot->regions[2]->data + offset, 0, region->size);
+    }else if(region->addr > snapshot->regions[1]->start_addr && (char *)(region->addr) < (char*)snapshot->regions[1]->start_addr + snapshot->regions[1]->size){
+      offset = (char *)region->addr - (char *)snapshot->regions[1]->start_addr;
+      memset((char *)snapshot->regions[1]->data + offset, 0, region->size);
+    }
+  }
+
+}
+
+
+mc_snapshot_t MC_take_snapshot(){
+
+  int raw_mem = (mmalloc_get_current_heap() == raw_heap);
+  
+  MC_SET_RAW_MEM;
+
+  mc_snapshot_t snapshot = xbt_new0(s_mc_snapshot_t, 1);
+  snapshot->nb_processes = xbt_swag_size(simix_global->process_list);
+
+  /* Save the std heap and the writable mapped pages of libsimgrid and binary */
+  MC_get_memory_regions(snapshot);
+
+  snapshot->to_ignore = MC_take_snapshot_ignore();
+
+  if(_sg_mc_visited > 0 || strcmp(_sg_mc_property_file,"")){
+    snapshot->stacks = MC_take_snapshot_stacks(&snapshot, snapshot->regions[0]->data);
+    //MC_get_hash_global(snapshot->hash_global, snapshot->regions[1]->data, snapshot->regions[2]->data);
+    //MC_get_hash_local(snapshot->hash_local, snapshot->stacks);
+  }
+
+  MC_dump_checkpoint_ignore(snapshot);
+
+  MC_UNSET_RAW_MEM;
+
+  if(raw_mem)
+    MC_SET_RAW_MEM;
+
+  return snapshot;
+
+}
+
+void MC_restore_snapshot(mc_snapshot_t snapshot){
+  unsigned int i;
+  for(i=0; i < NB_REGIONS; i++){
+    MC_region_restore(snapshot->regions[i]);
+  }
+
+}
+
+void MC_free_snapshot(mc_snapshot_t snapshot){
+  unsigned int i;
+  for(i=0; i < NB_REGIONS; i++)
+    MC_region_destroy(snapshot->regions[i]);
+
+  xbt_free(snapshot->stack_sizes);
+  xbt_dynar_free(&(snapshot->stacks));
+  xbt_dynar_free(&(snapshot->to_ignore));
+  xbt_free(snapshot);
+}
+
+mc_snapshot_t SIMIX_pre_mc_snapshot(smx_simcall_t simcall){
+  return MC_take_snapshot();
+}
+
+void *MC_snapshot(void){
+  return simcall_mc_snapshot();
 }

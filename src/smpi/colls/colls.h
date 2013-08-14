@@ -33,7 +33,8 @@ COLL_APPLY(action, COLL_GATHER_SIG, ompi) COLL_sep \
 COLL_APPLY(action, COLL_GATHER_SIG, ompi_basic_linear) COLL_sep \
 COLL_APPLY(action, COLL_GATHER_SIG, ompi_binomial) COLL_sep \
 COLL_APPLY(action, COLL_GATHER_SIG, ompi_linear_sync) COLL_sep \
-COLL_APPLY(action, COLL_GATHER_SIG, mpich) \
+COLL_APPLY(action, COLL_GATHER_SIG, mpich) COLL_sep \
+COLL_APPLY(action, COLL_GATHER_SIG, automatic)
 
 
 
@@ -65,7 +66,8 @@ COLL_APPLY(action, COLL_ALLGATHER_SIG, smp_simple) COLL_sep \
 COLL_APPLY(action, COLL_ALLGATHER_SIG, spreading_simple) COLL_sep \
 COLL_APPLY(action, COLL_ALLGATHER_SIG, ompi) COLL_sep \
 COLL_APPLY(action, COLL_ALLGATHER_SIG, ompi_neighborexchange) COLL_sep \
-COLL_APPLY(action, COLL_ALLGATHER_SIG, mpich) 
+COLL_APPLY(action, COLL_ALLGATHER_SIG, mpich) COLL_sep \
+COLL_APPLY(action, COLL_ALLGATHER_SIG, automatic)
 
 
 COLL_ALLGATHERS(COLL_PROTO, COLL_NOsep)
@@ -86,7 +88,8 @@ COLL_APPLY(action, COLL_ALLGATHERV_SIG, ompi) COLL_sep \
 COLL_APPLY(action, COLL_ALLGATHERV_SIG, ompi_neighborexchange) COLL_sep \
 COLL_APPLY(action, COLL_ALLGATHERV_SIG, ompi_bruck) COLL_sep \
 COLL_APPLY(action, COLL_ALLGATHERV_SIG, mpich) COLL_sep \
-COLL_APPLY(action, COLL_ALLGATHERV_SIG, mpich_rdb)
+COLL_APPLY(action, COLL_ALLGATHERV_SIG, mpich_rdb) COLL_sep \
+COLL_APPLY(action, COLL_ALLGATHERV_SIG, automatic)
 
 COLL_ALLGATHERVS(COLL_PROTO, COLL_NOsep)
 
@@ -115,7 +118,8 @@ COLL_APPLY(action, COLL_ALLREDUCE_SIG, smp_rsag_rab) COLL_sep \
 COLL_APPLY(action, COLL_ALLREDUCE_SIG, redbcast) COLL_sep \
 COLL_APPLY(action, COLL_ALLREDUCE_SIG, ompi) COLL_sep \
 COLL_APPLY(action, COLL_ALLREDUCE_SIG, ompi_ring_segmented) COLL_sep \
-COLL_APPLY(action, COLL_ALLREDUCE_SIG, mpich)
+COLL_APPLY(action, COLL_ALLREDUCE_SIG, mpich) COLL_sep \
+COLL_APPLY(action, COLL_ALLREDUCE_SIG, automatic)
 
 COLL_ALLREDUCES(COLL_PROTO, COLL_NOsep)
 
@@ -126,7 +130,7 @@ COLL_ALLREDUCES(COLL_PROTO, COLL_NOsep)
 #define COLL_ALLTOALL_SIG alltoall, int, \
 	                 (void *send_buff, int send_count, MPI_Datatype send_type, \
 	                  void *recv_buff, int recv_count, MPI_Datatype recv_type, \
-                          MPI_Comm com)
+                          MPI_Comm comm)
 
 #define COLL_ALLTOALLS(action, COLL_sep) \
 COLL_APPLY(action, COLL_ALLTOALL_SIG, 2dmesh) COLL_sep \
@@ -143,8 +147,9 @@ COLL_APPLY(action, COLL_ALLTOALL_SIG, ring_mpi_barrier) COLL_sep \
 COLL_APPLY(action, COLL_ALLTOALL_SIG, ring_one_barrier) COLL_sep \
 COLL_APPLY(action, COLL_ALLTOALL_SIG, simple) COLL_sep \
 COLL_APPLY(action, COLL_ALLTOALL_SIG, ompi) COLL_sep \
-COLL_APPLY(action, COLL_ALLTOALL_SIG, mpich)COLL_sep \
-COLL_APPLY(action, COLL_ALLTOALL_SIG, ompi_pairwise)
+COLL_APPLY(action, COLL_ALLTOALL_SIG, mpich) COLL_sep \
+COLL_APPLY(action, COLL_ALLTOALL_SIG, ompi_pairwise) COLL_sep \
+COLL_APPLY(action, COLL_ALLTOALL_SIG, automatic)
 
 COLL_ALLTOALLS(COLL_PROTO, COLL_NOsep)
 
@@ -154,7 +159,7 @@ COLL_ALLTOALLS(COLL_PROTO, COLL_NOsep)
 #define COLL_ALLTOALLV_SIG alltoallv, int, \
 	                 (void *send_buff, int *send_counts, int *send_disps, MPI_Datatype send_type, \
 	                  void *recv_buff, int *recv_counts, int *recv_disps, MPI_Datatype recv_type, \
-                          MPI_Comm com)
+                          MPI_Comm comm)
 
 #define COLL_ALLTOALLVS(action, COLL_sep) \
 COLL_APPLY(action, COLL_ALLTOALLV_SIG, bruck) COLL_sep \
@@ -167,8 +172,9 @@ COLL_APPLY(action, COLL_ALLTOALLV_SIG, ring_light_barrier) COLL_sep \
 COLL_APPLY(action, COLL_ALLTOALLV_SIG, ring_mpi_barrier) COLL_sep \
 COLL_APPLY(action, COLL_ALLTOALLV_SIG, ring_one_barrier) COLL_sep \
 COLL_APPLY(action, COLL_ALLTOALLV_SIG, ompi) COLL_sep \
-COLL_APPLY(action, COLL_ALLTOALLV_SIG, mpich)COLL_sep \
-COLL_APPLY(action, COLL_ALLTOALLV_SIG, ompi_basic_linear)
+COLL_APPLY(action, COLL_ALLTOALLV_SIG, mpich) COLL_sep \
+COLL_APPLY(action, COLL_ALLTOALLV_SIG, ompi_basic_linear) COLL_sep \
+COLL_APPLY(action, COLL_ALLTOALLV_SIG, automatic)
 
 COLL_ALLTOALLVS(COLL_PROTO, COLL_NOsep)
 
@@ -198,7 +204,8 @@ COLL_APPLY(action, COLL_BCAST_SIG, SMP_linear) COLL_sep \
 COLL_APPLY(action, COLL_BCAST_SIG, ompi) COLL_sep \
 COLL_APPLY(action, COLL_BCAST_SIG, ompi_split_bintree) COLL_sep \
 COLL_APPLY(action, COLL_BCAST_SIG, ompi_pipeline) COLL_sep \
-COLL_APPLY(action, COLL_BCAST_SIG, mpich)
+COLL_APPLY(action, COLL_BCAST_SIG, mpich) COLL_sep \
+COLL_APPLY(action, COLL_BCAST_SIG, automatic)
 
 COLL_BCASTS(COLL_PROTO, COLL_NOsep)
 
@@ -223,7 +230,8 @@ COLL_APPLY(action, COLL_REDUCE_SIG, ompi_basic_linear) COLL_sep \
 COLL_APPLY(action, COLL_REDUCE_SIG, ompi_in_order_binary) COLL_sep \
 COLL_APPLY(action, COLL_REDUCE_SIG, ompi_binary) COLL_sep \
 COLL_APPLY(action, COLL_REDUCE_SIG, ompi_binomial) COLL_sep \
-COLL_APPLY(action, COLL_REDUCE_SIG, mpich)
+COLL_APPLY(action, COLL_REDUCE_SIG, mpich) COLL_sep \
+COLL_APPLY(action, COLL_REDUCE_SIG, automatic)
 
 COLL_REDUCES(COLL_PROTO, COLL_NOsep)
 
@@ -241,7 +249,9 @@ COLL_APPLY(action, COLL_REDUCE_SCATTER_SIG, ompi_ring)  COLL_sep \
 COLL_APPLY(action, COLL_REDUCE_SCATTER_SIG, mpich) COLL_sep \
 COLL_APPLY(action, COLL_REDUCE_SCATTER_SIG, mpich_pair) COLL_sep \
 COLL_APPLY(action, COLL_REDUCE_SCATTER_SIG, mpich_rdb) COLL_sep \
-COLL_APPLY(action, COLL_REDUCE_SCATTER_SIG, mpich_noncomm) 
+COLL_APPLY(action, COLL_REDUCE_SCATTER_SIG, mpich_noncomm) COLL_sep \
+COLL_APPLY(action, COLL_REDUCE_SCATTER_SIG, automatic)
+
 
 
 COLL_REDUCE_SCATTERS(COLL_PROTO, COLL_NOsep)
@@ -259,7 +269,8 @@ COLL_REDUCE_SCATTERS(COLL_PROTO, COLL_NOsep)
 COLL_APPLY(action, COLL_SCATTER_SIG, ompi) COLL_sep \
 COLL_APPLY(action, COLL_SCATTER_SIG, ompi_basic_linear) COLL_sep \
 COLL_APPLY(action, COLL_SCATTER_SIG, ompi_binomial)  COLL_sep \
-COLL_APPLY(action, COLL_SCATTER_SIG, mpich) 
+COLL_APPLY(action, COLL_SCATTER_SIG, mpich)   COLL_sep \
+COLL_APPLY(action, COLL_SCATTER_SIG, automatic)
 
 COLL_SCATTERS(COLL_PROTO, COLL_NOsep)
 
@@ -277,7 +288,8 @@ COLL_APPLY(action, COLL_BARRIER_SIG, ompi_tree)  COLL_sep \
 COLL_APPLY(action, COLL_BARRIER_SIG, ompi_bruck)  COLL_sep \
 COLL_APPLY(action, COLL_BARRIER_SIG, ompi_recursivedoubling) COLL_sep \
 COLL_APPLY(action, COLL_BARRIER_SIG, ompi_doublering) COLL_sep \
-COLL_APPLY(action, COLL_BARRIER_SIG, mpich)  
+COLL_APPLY(action, COLL_BARRIER_SIG, mpich)   COLL_sep \
+COLL_APPLY(action, COLL_BARRIER_SIG, automatic)
 
 COLL_BARRIERS(COLL_PROTO, COLL_NOsep)
 

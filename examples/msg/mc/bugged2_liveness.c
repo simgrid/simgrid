@@ -35,7 +35,6 @@ int coordinator(int argc, char *argv[])
         XBT_INFO("CS already used.");
         msg_task_t answer = MSG_task_create("not grant", 0, 1000, NULL);
         MSG_task_send(answer, req);
-        MC_compare();
       } else {                  // can serve it immediatly
         XBT_INFO("CS idle. Grant immediatly");
         msg_task_t answer = MSG_task_create("grant", 0, 1000, NULL);

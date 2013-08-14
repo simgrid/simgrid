@@ -458,6 +458,7 @@ void mpi_errhandler_free_ (void* errhandler, int* ierr) ;
 void mpi_errhandler_get_ (int* comm, void* errhandler, int* ierr) ;
 void mpi_errhandler_set_ (int* comm, void* errhandler, int* ierr) ;
 void mpi_comm_set_errhandler_ (int* comm, void* errhandler, int* ierr) ;
+void mpi_comm_get_errhandler_ (int* comm, void* errhandler, int* ierr) ;
 void mpi_type_contiguous_ (int* count, int* old_type, int*  newtype, int* ierr) ;
 void mpi_cancel_ (int*  request, int* ierr) ;
 void mpi_buffer_attach_ (void* buffer, int* size, int* ierr) ;

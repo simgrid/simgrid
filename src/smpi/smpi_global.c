@@ -120,7 +120,7 @@ int smpi_process_initialized(void)
 void smpi_process_mark_as_initialized(void)
 {
   int index = smpi_process_index();
-  if(index != -100)process_data[index]->initialized=1;
+  if((index != -100)&& (index!=MPI_UNDEFINED))process_data[index]->initialized=1;
 }
 
 
@@ -281,6 +281,8 @@ void smpi_global_init(void)
     process_data[i]->mailbox = simcall_rdv_create(get_mailbox_name(name, i));
     process_data[i]->mailbox_small = simcall_rdv_create(get_mailbox_name_small(name, i));
     process_data[i]->timer = xbt_os_timer_new();
+    if(MC_is_active())
+      MC_ignore_heap(process_data[i]->timer, xbt_os_timer_size());
     group = smpi_group_new(1);
     process_data[i]->comm_self = smpi_comm_new(group);
     process_data[i]->initialized =0;
@@ -466,7 +468,7 @@ int smpi_main(int (*realmain) (int argc, char *argv[]),int argc, char *argv[])
   fflush(stderr);
 
   if (MC_is_active())
-    MC_modelcheck_safety();
+    MC_do_the_modelcheck_for_real();
   else
     SIMIX_run();
 

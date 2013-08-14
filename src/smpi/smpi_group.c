@@ -75,7 +75,6 @@ MPI_Group smpi_group_copy(MPI_Group origin)
 
 void smpi_group_destroy(MPI_Group group)
 {
-  XBT_VERB("trying to free group %p, refcount = %d", group, group->refcount);
   if(group!= smpi_comm_group(MPI_COMM_WORLD)
           && group != MPI_GROUP_NULL
           && group != smpi_comm_group(MPI_COMM_SELF)
@@ -121,7 +120,6 @@ int smpi_group_unuse(MPI_Group group)
 {
   group->refcount--;
   if (group->refcount <= 0) {
-    XBT_VERB("freeing group %p", group);
     xbt_free(group->rank_to_index_map);
     xbt_free(group->index_to_rank_map);
     xbt_free(group);

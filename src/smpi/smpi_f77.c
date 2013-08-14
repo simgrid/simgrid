@@ -25,6 +25,8 @@ static int running_processes = 0;
 /* Convert between Fortran and C MPI_BOTTOM */
 #define F2C_BOTTOM(addr)    ((addr!=MPI_IN_PLACE && *(int*)addr == MPI_FORTRAN_BOTTOM) ? MPI_BOTTOM : (addr))
 #define F2C_IN_PLACE(addr)  ((addr!=MPI_BOTTOM &&*(int*)addr == MPI_FORTRAN_IN_PLACE) ? MPI_IN_PLACE : (addr))
+#define F2C_STATUS_IGNORE(addr) ((*(int*)addr == MPI_FORTRAN_STATUS_IGNORE) ? MPI_STATUS_IGNORE : (addr))
+#define F2C_STATUSES_IGNORE(addr) ((*(int*)addr == MPI_FORTRAN_STATUSES_IGNORE) ? MPI_STATUSES_IGNORE : (addr))
 
 #define KEY_SIZE (sizeof(int) * 2 + 1)
 
@@ -353,7 +355,7 @@ void mpi_sendrecv_(void* sendbuf, int* sendcount, int* sendtype, int* dst,
                 int* comm, MPI_Status* status, int* ierr) {
    *ierr = MPI_Sendrecv(sendbuf, *sendcount, get_datatype(*sendtype), *dst,
        *sendtag, recvbuf, *recvcount,get_datatype(*recvtype), *src, *recvtag,
-       get_comm(*comm), status);
+       get_comm(*comm), F2C_STATUS_IGNORE(status));
 }
 
 void mpi_recv_init_(void *buf, int* count, int* datatype, int* src, int* tag,
@@ -405,7 +407,7 @@ void mpi_startall_(int* count, int* requests, int* ierr) {
 void mpi_wait_(int* request, MPI_Status* status, int* ierr) {
    MPI_Request req = find_request(*request);
    
-   *ierr = MPI_Wait(&req, status);
+   *ierr = MPI_Wait(&req, F2C_STATUS_IGNORE(status));
    if(req==MPI_REQUEST_NULL){
      free_request(*request);
      *request=MPI_FORTRAN_REQUEST_NULL;
@@ -436,7 +438,7 @@ void mpi_waitall_(int* count, int* requests, MPI_Status* status, int* ierr) {
   for(i = 0; i < *count; i++) {
     reqs[i] = find_request(requests[i]);
   }
-  *ierr = MPI_Waitall(*count, reqs, status);
+  *ierr = MPI_Waitall(*count, reqs, F2C_STATUSES_IGNORE(status));
   for(i = 0; i < *count; i++) {
       if(reqs[i]==MPI_REQUEST_NULL){
           free_request(requests[i]);
@@ -551,7 +553,7 @@ void mpi_alltoallv_(void* sendbuf, int* sendcounts, int* senddisps, int* sendtyp
 
 void mpi_test_ (int * request, int *flag, MPI_Status * status, int* ierr){
   MPI_Request req = find_request(*request);
-  *ierr= MPI_Test(&req, flag, status);
+  *ierr= MPI_Test(&req, flag, F2C_STATUS_IGNORE(status));
   if(req==MPI_REQUEST_NULL){
       free_request(*request);
       *request=MPI_FORTRAN_REQUEST_NULL;
@@ -566,7 +568,7 @@ void mpi_testall_ (int* count, int * requests,  int *flag, MPI_Status * statuses
   for(i = 0; i < *count; i++) {
     reqs[i] = find_request(requests[i]);
   }
-  *ierr= MPI_Testall(*count, reqs, flag, statuses);
+  *ierr= MPI_Testall(*count, reqs, flag, F2C_STATUSES_IGNORE(statuses));
   for(i = 0; i < *count; i++) {
     if(reqs[i]==MPI_REQUEST_NULL){
         free_request(requests[i]);
@@ -581,7 +583,7 @@ void mpi_get_processor_name_(char *name, int *resultlen, int* ierr){
 }
 
 void mpi_get_count_(MPI_Status * status, int* datatype, int *count, int* ierr){
-  *ierr = MPI_Get_count(status, get_datatype(*datatype), count);
+  *ierr = MPI_Get_count(F2C_STATUS_IGNORE(status), get_datatype(*datatype), count);
 }
 
 void mpi_attr_get_(int* comm, int* keyval, void* attr_value, int* flag, int* ierr ){
@@ -966,7 +968,7 @@ void mpi_sendrecv_replace_ (void *buf, int* count, int* datatype, int* dst, int*
 {
 
  *ierr = MPI_Sendrecv_replace(buf, *count, get_datatype(*datatype), *dst, *sendtag, *src,
- *recvtag, get_comm(*comm), status);
+ *recvtag, get_comm(*comm), F2C_STATUS_IGNORE(status));
 }
 
 void mpi_testany_ (int* count, int* requests, int *index, int *flag, MPI_Status* status, int* ierr)
@@ -978,7 +980,7 @@ void mpi_testany_ (int* count, int* requests, int *index, int *flag, MPI_Status*
   for(i = 0; i < *count; i++) {
     reqs[i] = find_request(requests[i]);
   }
-  *ierr = MPI_Testany(*count, reqs, index, flag, status);
+  *ierr = MPI_Testany(*count, reqs, index, flag, F2C_STATUS_IGNORE(status));
   if(*index!=MPI_UNDEFINED)
   if(reqs[*index]==MPI_REQUEST_NULL){
     free_request(requests[*index]);
@@ -1117,6 +1119,10 @@ void mpi_comm_set_errhandler_ (int* comm, void* errhandler, int* ierr) {
  *ierr = MPI_Errhandler_set(get_comm(*comm), *(MPI_Errhandler*)errhandler);
 }
 
+void mpi_comm_get_errhandler_ (int* comm, void* errhandler, int* ierr) {
+ *ierr = MPI_Errhandler_set(get_comm(*comm), (MPI_Errhandler*)errhandler);
+}
+
 void mpi_type_contiguous_ (int* count, int* old_type, int*  newtype, int* ierr) {
   MPI_Datatype tmp;
   *ierr = MPI_Type_contiguous(*count, get_datatype(*old_type), &tmp);
@@ -1150,7 +1156,7 @@ void mpi_testsome_ (int* incount, int*  requests, int* outcount, int* indices, M
     reqs[i] = find_request(requests[i]);
     indices[i]=0;
   }
-  *ierr = MPI_Testsome(*incount, reqs, outcount, indices, statuses);
+  *ierr = MPI_Testsome(*incount, reqs, outcount, indices, F2C_STATUSES_IGNORE(statuses));
   for(i=0;i<*incount;i++){
     if(indices[i]){
       if(reqs[indices[i]]==MPI_REQUEST_NULL){
@@ -1307,7 +1313,7 @@ void mpi_issend_ (void* buf, int* count, int* datatype, int *dest, int* tag, int
 }
 
 void mpi_probe_ (int* source, int* tag, int* comm, MPI_Status*  status, int* ierr) {
- *ierr = MPI_Probe(*source, *tag, get_comm(*comm), status);
+ *ierr = MPI_Probe(*source, *tag, get_comm(*comm), F2C_STATUS_IGNORE(status));
 }
 
 void mpi_attr_delete_ (int* comm, int* keyval, int* ierr) {

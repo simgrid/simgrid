@@ -28,6 +28,33 @@ void __MSG_file_get_info(msg_file_t fd){
 
   xbt_dynar_free_container(&info);
 }
+
+/** \ingroup msg_file_management
+ *
+ * \brief Set the user data of a #msg_file_t.
+ *
+ * This functions checks whether some data has already been associated to \a file
+   or not and attach \a data to \a file if it is possible.
+ */
+msg_error_t MSG_file_set_data(msg_file_t fd, void *data)
+{
+  SIMIX_file_set_data(fd->simdata->smx_file,data);
+
+  return MSG_OK;
+}
+
+/** \ingroup msg_file_management
+ *
+ * \brief Return the user data of a #msg_file_t.
+ *
+ * This functions checks whether \a file is a valid pointer or not and return
+   the user data associated to \a file if it is possible.
+ */
+void *MSG_file_get_data(msg_file_t fd)
+{
+  return SIMIX_file_get_data(fd->simdata->smx_file);
+}
+
 /** \ingroup msg_file_management
  * \brief Display information related to a file descriptor
  *
@@ -74,16 +101,19 @@ size_t MSG_file_write(size_t size, msg_file_t fd)
  *
  * \param mount is the mount point where find the file is located
  * \param fullname is the file location on the storage
+ * \param data user data to attach to the file
  *
  * \return An #msg_file_t associated to the file
  */
-msg_file_t MSG_file_open(const char* mount, const char* fullname)
+msg_file_t MSG_file_open(const char* mount, const char* fullname, void* data)
 {
   msg_file_t file = xbt_new(s_msg_file_t,1);
   file->fullname = xbt_strdup(fullname);
   file->simdata = xbt_new0(s_simdata_file_t,1);
   file->info = xbt_new0(s_file_info_t,1);
   file->simdata->smx_file = simcall_file_open(mount, fullname);
+  SIMIX_file_set_data(file->simdata->smx_file, data);
+
   return file;
 }
 

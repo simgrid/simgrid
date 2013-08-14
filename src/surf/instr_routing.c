@@ -5,7 +5,6 @@
   * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "instr/instr_private.h"
-#include "mc/mc.h"
 
 #ifdef HAVE_TRACING
 #include "surf/surf_private.h"
@@ -116,9 +115,6 @@ static void linkContainers (container_t src, container_t dst, xbt_dict_t filter)
 
   //create the link
   static long long counter = 0;
-
-  if(MC_is_active())
-    MC_ignore_data_bss(&counter, sizeof(counter));
 
   char key[INSTR_DEFAULT_STR_SIZE];
   snprintf (key, INSTR_DEFAULT_STR_SIZE, "%lld", counter++);

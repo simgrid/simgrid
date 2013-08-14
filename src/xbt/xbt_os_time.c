@@ -99,6 +99,10 @@ struct s_xbt_os_timer {
 #endif
 };
 
+size_t xbt_os_timer_size(void){
+  return sizeof(struct s_xbt_os_timer);
+}
+
 xbt_os_timer_t xbt_os_timer_new(void)
 {
   return xbt_new0(struct s_xbt_os_timer, 1);

@@ -37,14 +37,14 @@ int host(int argc, char *argv[])
   size_t read,write;
 
   if(!strcmp(MSG_process_get_name(MSG_process_self()),"0")){
-    file = MSG_file_open(mount,FILENAME1);
+    file = MSG_file_open(mount,FILENAME1, NULL);
     MSG_file_dump(file);
   } else if(!strcmp(MSG_process_get_name(MSG_process_self()),"1"))
-    file = MSG_file_open(mount,FILENAME2);
+    file = MSG_file_open(mount,FILENAME2, NULL);
   else if(!strcmp(MSG_process_get_name(MSG_process_self()),"2"))
-    file = MSG_file_open(mount,FILENAME3);
+    file = MSG_file_open(mount,FILENAME3, NULL);
   else if(!strcmp(MSG_process_get_name(MSG_process_self()),"3"))
-    file = MSG_file_open(mount,FILENAME4);
+    file = MSG_file_open(mount,FILENAME4, NULL);
   else xbt_die("FILENAME NOT DEFINED %s",MSG_process_get_name(MSG_process_self()));
 
   XBT_INFO("\tOpen file '%s'",file->fullname);

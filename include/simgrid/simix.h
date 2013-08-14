@@ -285,6 +285,10 @@ XBT_PUBLIC(int) SIMIX_comm_has_send_match(smx_rdv_t rdv, int (*match_fun)(void*,
 XBT_PUBLIC(int) SIMIX_comm_has_recv_match(smx_rdv_t rdv, int (*match_fun)(void*, void*), void* data);
 XBT_PUBLIC(void) SIMIX_comm_finish(smx_action_t action);
 
+/*********************************** File *************************************/
+XBT_PUBLIC(void*) SIMIX_file_get_data(smx_file_t fd);
+XBT_PUBLIC(void) SIMIX_file_set_data(smx_file_t fd, void *data);
+
 /******************************************************************************/
 /*                            SIMIX simcalls                                  */
 /******************************************************************************/
@@ -473,6 +477,8 @@ XBT_PUBLIC(void) simcall_sem_acquire_timeout(smx_sem_t sem,
 XBT_PUBLIC(int) simcall_sem_get_capacity(smx_sem_t sem);
 
 /*****************************   File   **********************************/
+XBT_PUBLIC(void *) simcall_file_get_data(smx_file_t fd);
+XBT_PUBLIC(void) simcall_file_set_data(smx_file_t fd, void *data);
 XBT_PUBLIC(size_t) simcall_file_read(size_t size, smx_file_t fd);
 XBT_PUBLIC(size_t) simcall_file_write(size_t size, smx_file_t fd);
 XBT_PUBLIC(smx_file_t) simcall_file_open(const char* storage, const char* path);
@@ -494,7 +500,7 @@ XBT_PUBLIC(xbt_dict_t) simcall_asr_get_properties(const char *name);
 /************************** MC simcalls   **********************************/
 XBT_PUBLIC(void *) simcall_mc_snapshot(void);
 XBT_PUBLIC(int) simcall_mc_compare_snapshots(void *s1, void *s2);
-XBT_PUBLIC(int) simcall_mc_random(void);
+XBT_PUBLIC(int) simcall_mc_random(int min, int max);
 
 /************************** New API simcalls **********************************/
 /* TUTORIAL: New API                                                          */

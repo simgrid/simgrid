@@ -450,6 +450,16 @@ void SD_workstation_set_access_mode(SD_workstation_t workstation,
   }
 }
 
+/**
+ * \brief Return the list of mounted storages on a workstation.
+ *
+ * \param workstation a workstation
+ * \return a dynar containing all mounted storages on the workstation
+ */
+xbt_dynar_t SD_workstation_get_storage_list(SD_workstation_t workstation){
+  return surf_workstation_model->extension.workstation.get_storage_list(workstation);
+}
+
 /* Returns whether a task can start now on a workstation*/
 /*
   int __SD_workstation_can_start(SD_workstation_t workstation, SD_task_t task) {
