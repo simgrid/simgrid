@@ -1,7 +1,7 @@
 #! tesh
 
 ! output sort
-! timeout 15
+! timeout 30
 $ java -cp ${classpath:=.} async/AsyncTest ${srcdir:=.}/platform.xml ${srcdir:=.}/async/asyncDeployment.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (10:async.Slave@Robert) Receiving on 'slave_8'
 > [  0.000000] (11:async.Slave@Sirois) Receiving on 'slave_9'

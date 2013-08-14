@@ -1,6 +1,7 @@
 # Smpi Alltoall collectives tests
 ! setenv LD_LIBRARY_PATH=../../lib
 ! output sort
+! timeout 30
 
 p Test all to all
 $ ../../bin/smpirun -map -hostfile ${srcdir:=.}/hostfile -platform ${srcdir:=.}/../../examples/msg/small_platform.xml -np 16 --log=xbt_cfg.thres:critical ./gather_coll
