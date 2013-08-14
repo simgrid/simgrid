@@ -29,8 +29,7 @@ void *start_text_binary;
 
 static void MC_snapshot_stack_free(mc_snapshot_stack_t s){
   if(s){
-    xbt_free(s->local_variables->data);
-    xbt_free(s->local_variables);
+    xbt_dynar_free(&(s->local_variables));
     xbt_free(s);
   }
 }
@@ -48,6 +47,23 @@ static void local_variable_free(local_variable_t v){
 
 static void local_variable_free_voidp(void *v){
   local_variable_free((local_variable_t) * (void **) v);
+}
+
+static void MC_region_destroy(mc_mem_region_t reg)
+{
+  xbt_free(reg->data);
+  xbt_free(reg);
+}
+
+void MC_free_snapshot(mc_snapshot_t snapshot){
+  unsigned int i;
+  for(i=0; i < NB_REGIONS; i++)
+    MC_region_destroy(snapshot->regions[i]);
+
+  xbt_free(snapshot->stack_sizes);
+  xbt_dynar_free(&(snapshot->stacks));
+  xbt_dynar_free(&(snapshot->to_ignore));
+  xbt_free(snapshot);
 }
 
 
@@ -73,14 +89,7 @@ static void MC_region_restore(mc_mem_region_t reg)
     before copying the data */
  
   memcpy(reg->start_addr, reg->data, reg->size);
- 
   return;
-}
-
-static void MC_region_destroy(mc_mem_region_t reg)
-{
-  xbt_free(reg->data);
-  xbt_free(reg);
 }
 
 static void MC_snapshot_add_region(mc_snapshot_t snapshot, int type, void *start_addr, size_t size)
@@ -752,17 +761,6 @@ void MC_restore_snapshot(mc_snapshot_t snapshot){
     MC_region_restore(snapshot->regions[i]);
   }
 
-}
-
-void MC_free_snapshot(mc_snapshot_t snapshot){
-  unsigned int i;
-  for(i=0; i < NB_REGIONS; i++)
-    MC_region_destroy(snapshot->regions[i]);
-
-  xbt_free(snapshot->stack_sizes);
-  xbt_dynar_free(&(snapshot->stacks));
-  xbt_dynar_free(&(snapshot->to_ignore));
-  xbt_free(snapshot);
 }
 
 mc_snapshot_t SIMIX_pre_mc_snapshot(smx_simcall_t simcall){
