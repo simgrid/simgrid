@@ -1,3 +1,9 @@
+/***************** Centralized Mutual Exclusion Algorithm *********************/
+/* This example implements a centralized mutual exclusion algorithm.          */
+/* Bug : CS requests of process 1 not satisfied                                      */
+/* LTL property checked : G(r->F(cs)); (r=request of CS, cs=CS ok)            */
+/******************************************************************************/
+
 #include <stdio.h>
 #include <mpi.h>
 #include <simgrid/modelchecker.h>
@@ -19,11 +25,11 @@ static int predCS(){
 
 int main(int argc, char **argv){
 
-  //int i;
   int err, size, rank;
   int recv_buff;
   MPI_Status status;
   int CS_used = 0;
+  xbt_dynar_t requests = xbt_dynar_new(sizeof(int), NULL);
   
   /* Initialize MPI */
   err = MPI_Init(&argc, &argv);
@@ -43,12 +49,12 @@ int main(int argc, char **argv){
   err = MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
   if(rank == 0){ /* Coordinator */
-    //for(i=0; i<size-1; i++) {
     while(1){
       MPI_Recv(&recv_buff, 1, MPI_INT, MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
       if(status.MPI_TAG == REQUEST_TAG){
         if(CS_used){
           printf("CS already used.\n");
+          xbt_dynar_push(requests, &recv_buff);
         }else{
           if(recv_buff != 1){
             printf("CS idle. Grant immediatly.\n");
@@ -57,8 +63,19 @@ int main(int argc, char **argv){
           }
         }
       }else{
-        printf("CS release. Resource now idle.\n");
-        CS_used = 0;
+        if(!xbt_dynar_is_empty(requests)){
+          printf("CS release. Grant to queued requests (queue size: %lu)", xbt_dynar_length(requests));
+          xbt_dynar_pop(requests, &recv_buff);
+          if(recv_buff != 1){
+            MPI_Send(&rank, 1, MPI_INT, recv_buff, GRANT_TAG, MPI_COMM_WORLD);
+            CS_used = 1;
+          }else{
+            xbt_dynar_push(requests, &recv_buff);
+          }
+        }else{
+          printf("CS release. Resource now idle.\n");
+          CS_used = 0;
+        }
       }
     }
   }else{ /* Client */
