@@ -117,13 +117,14 @@ static void *register_morecore(struct mdesc *mdp, size_t size)
 
     /* mark the space previously occupied by the block info as free by first marking it
      * as occupied in the regular way, and then freing it */
-    for (it=0; it<BLOCKIFY(mdp->heapsize * sizeof(malloc_info)); it++)
+    for (it=0; it<BLOCKIFY(mdp->heapsize * sizeof(malloc_info)); it++){
       newinfo[BLOCK(oldinfo)+it].type = 0;
+      newinfo[BLOCK(oldinfo)+it].busy_block.ignore = 0;
+      newinfo[BLOCK(oldinfo+it)].busy_block.equal_to = NULL;
+    }
 
     newinfo[BLOCK(oldinfo)].busy_block.size = BLOCKIFY(mdp->heapsize * sizeof(malloc_info));
     newinfo[BLOCK(oldinfo)].busy_block.busy_size = size;
-    newinfo[BLOCK(oldinfo)].busy_block.ignore = 0;
-    newinfo[BLOCK(oldinfo)].busy_block.equal_to = NULL;
     //newinfo[BLOCK(oldinfo)].busy_block.bt_size = 0;// FIXME setup the backtrace
     mfree(mdp, (void *) oldinfo);
     mdp->heapsize = newsize;
