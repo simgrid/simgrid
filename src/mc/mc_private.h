@@ -311,6 +311,7 @@ typedef struct s_mc_pair{
 
 mc_pair_t MC_pair_new(void);
 void MC_pair_delete(mc_pair_t);
+void mc_pair_free_voidp(void *p);
 
 void MC_ddfs_init(void);
 void MC_ddfs(void);

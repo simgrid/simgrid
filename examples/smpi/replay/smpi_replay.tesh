@@ -6,7 +6,7 @@ p Test of trace replay with SMPI (one trace for all processes)
 
 < replay/actions_bcast.txt
 $ mkfile replay/one_trace
-! timeout 30
+! timeout 60
 
 $ ../../bin/smpirun -ext smpi_replay --log=replay.thresh:critical --log=smpi_replay.thresh:verbose --log=no_loc --cfg=smpi/cpu_threshold:1 -np 3 -platform ${srcdir:=.}/replay/replay_platform.xml -hostfile ${srcdir:=.}/hostfile ./smpi_replay replay/one_trace
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'maxmin/precision' to '1e-9'

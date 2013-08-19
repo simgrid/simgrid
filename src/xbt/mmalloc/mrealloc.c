@@ -82,8 +82,11 @@ void *mrealloc(xbt_mheap_t mdp, void *ptr, size_t size)
       int it;
       /* The new size is smaller; return excess memory to the free list. */
       //printf("(%s) return excess memory...",xbt_thread_self_name());
-      for (it= block+blocks; it< mdp->heapinfo[block].busy_block.size ; it++)
+      for (it= block+blocks; it< mdp->heapinfo[block].busy_block.size ; it++){
         mdp->heapinfo[it].type = 0; // FIXME that should be useless, type should already be 0 here
+        mdp->heapinfo[it].busy_block.ignore = 0;
+        mdp->heapinfo[it].busy_block.equal_to = NULL;
+      }
 
       mdp->heapinfo[block + blocks].busy_block.size
         = mdp->heapinfo[block].busy_block.size - blocks;

@@ -33,8 +33,6 @@ typedef struct s_stack_region{
   int block;
 }s_stack_region_t, *stack_region_t;
 
-void stack_region_free_voidp(void *s);
-
 void heap_ignore_region_free(mc_heap_ignore_region_t r);
 void heap_ignore_region_free_voidp(void *r);
 
