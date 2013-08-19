@@ -227,16 +227,15 @@ msg_storage_t MSG_storage_get_by_name(const char *name)
  * \brief Return a dynar containing all the storages declared at a given point of time
  */
 xbt_dynar_t MSG_storages_as_dynar(void) {
-  xbt_lib_cursor_t cursor;
-  char *key;
-  void **data;
-  xbt_dynar_t res = xbt_dynar_new(sizeof(msg_storage_t),NULL);
 
-  xbt_lib_foreach(host_lib, cursor, key, data) {
-    if(routing_get_network_element_type(key) == SURF_NETWORK_ELEMENT_HOST) {
-      xbt_dictelm_t elm = xbt_dict_cursor_get_elm(cursor);
-      xbt_dynar_push(res, &elm);
-    }
+  xbt_dynar_t storages = xbt_dynar_new(sizeof(msg_host_t), NULL);
+  xbt_dynar_t hosts;
+  msg_host_t host;
+  unsigned int i;
+
+  hosts = MSG_hosts_as_dynar();
+  xbt_dynar_foreach(hosts, i, host){
+	xbt_dynar_push(storages,xbt_lib_get_level((void *)host, SURF_STORAGE_LEVEL));
   }
-  return res;
+  return storages;
 }
