@@ -1003,11 +1003,22 @@ static void routing_parse_postparse(void) {
 static void routing_parse_peer(sg_platf_peer_cbarg_t peer)
 {
   char *host_id = NULL;
-  char *link_id;
+  char *link_id = NULL;
+  char *router_id = NULL;
 
   XBT_DEBUG(" ");
   host_id = HOST_PEER(peer->id);
   link_id = LINK_PEER(peer->id);
+  router_id = ROUTER_PEER(peer->id);
+
+  XBT_DEBUG("<AS id=\"%s\"\trouting=\"Cluster\">", peer->id);
+  s_sg_platf_AS_cbarg_t AS = SG_PLATF_AS_INITIALIZER;
+  AS.id = peer->id;
+  AS.routing = A_surfxml_AS_routing_Cluster;
+  sg_platf_new_AS_begin(&AS);
+
+  current_routing->link_up_down_list
+            = xbt_dynar_new(sizeof(s_surf_parsing_link_up_down_t),NULL);
 
   XBT_DEBUG("<host\tid=\"%s\"\tpower=\"%f\"/>", host_id, peer->power);
   s_sg_platf_host_cbarg_t host;
@@ -1024,7 +1035,6 @@ static void routing_parse_peer(sg_platf_peer_cbarg_t peer)
   host.power_trace = peer->availability_trace;
   host.state_trace = peer->state_trace;
   host.core_amount = 1;
-  host.coord = peer->coord;
   sg_platf_new_host(&host);
 
   s_sg_platf_link_cbarg_t link;
@@ -1055,6 +1065,16 @@ static void routing_parse_peer(sg_platf_peer_cbarg_t peer)
   host_link.link_down= link_down;
   sg_platf_new_host_link(&host_link);
 
+  XBT_DEBUG("<router id=\"%s\"/>", router_id);
+  s_sg_platf_router_cbarg_t router;
+  memset(&router, 0, sizeof(router));
+  router.id = router_id;
+  router.coord = peer->coord;
+  sg_platf_new_router(&router);
+  ((as_cluster_t)current_routing)->router = xbt_lib_get_or_null(as_router_lib, router.id, ROUTING_ASR_LEVEL);
+
+  XBT_DEBUG("</AS>");
+  sg_platf_new_AS_end();
   XBT_DEBUG(" ");
 
   //xbt_dynar_free(&tab_elements_num);

@@ -391,11 +391,13 @@ A <b>peer</b> represents a peer, as in Peer-to-Peer (P2P). Basically,
 as cluster, <b>A PEER IS INTERNALLY INTERPRETED AS AN \<AS\></b>. It's
 just a kind of shortcut that does the following :
 
+\li It creates a tiny AS whose routing type is cluster
 \li It creates an host
 \li Two links : one for download and one for upload. This is
     convenient to use and simulate stuff under the last mile model (as
-    ADSL peers).  
-\li It creates a gateway that serve as entry point for this peer zone.
+    ADSL peers). 
+\li It connects the two links to the host
+\li It creates a router (a gateway) that serve as entry point for this peer zone.
     This router has coordinates.
 
 <b>peer</b> attributes :
@@ -413,6 +415,27 @@ just a kind of shortcut that does the following :
     host availability file. See <b>host</b> description for details.   
 \li <b>state_file </b>: state file for the peer. Same as host state
     file. See <b>host</b> description for details. 
+
+In term of XML, the <b>peer</b> construct can be explained as follows: it transforms
+\verbatim
+  <peer id="FOO"
+	coordinates="12.8 14.4 6.4"
+	power="1.5Gf"
+	bw_in="2.25GBps"
+	bw_out="2.25GBps"
+	lat="500us" />
+\endverbatim
+into
+\verbatim
+   <AS id="as_FOO" routing="Cluster">
+      <host id="peer_FOO" power="1.5Gf"/>
+      <link id="link_FOO_UP" bandwidth="2.25GBps" latency="500us"/>
+      <link id="link_FOO_DOWN" bandwidth="2.25GBps" latency="500us"/>
+      <router id="router_FOO" coordinates="25.5 9.4 1.4"/>
+      <host_link id="peer_FOO" up="link_FOO_UP" down="link_FOO_DOWN"/>
+   </AS>
+\endverbatim
+
 
 \subsection pf_ne Network equipments: links and routers
 
@@ -1327,6 +1350,29 @@ complicated in using it, here is an example of it:
 Coordinates are then used to calculate latency between two hosts by
 calculating the euclidian distance between the two hosts coordinates.
 The results express the latency in ms.
+
+Note that the previous example defines a routing directly between hosts but it could be also used to define a routing between AS.
+That is for example what is commonly done when using peers (see Section \ref pf_peer).
+\verbatim
+<?xml version='1.0'?>
+<!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">
+<platform version="3">
+
+<config id="General">
+	<prop id="network/coordinates" value="yes"></prop>
+</config>
+ <AS  id="AS0"  routing="Vivaldi">
+   <peer id="peer-0" coordinates="173.0 96.8 0.1" power="730Mf" bw_in="13.38MBps" bw_out="1.024MBps" lat="500us"/>
+   <peer id="peer-1" coordinates="247.0 57.3 0.6" power="730Mf" bw_in="13.38MBps" bw_out="1.024MBps" lat="500us" />
+   <peer id="peer-2" coordinates="243.4 58.8 1.4" power="730Mf" bw_in="13.38MBps" bw_out="1.024MBps" lat="500us" />
+</AS>
+</platform>
+\endverbatim
+In such a case though, we connect the AS created by the <b>peer</b> tag with the Vivaldi routing mechanism. 
+This means that to route between AS1 and AS2, it will use the coordinates of router_AS1 and router_AS2. 
+This is currently a convention and we may offer to change this convention in the DTD later if needed.
+You may have noted that conveniently, a peer named FOO defines an AS named FOO and a router named router_FOO, which is why it works seamlessly with the <b>peer</b> tag.
+
 
 \subsection pf_wisely Choosing wisely the routing model to use
 

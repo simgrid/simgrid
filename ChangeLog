@@ -59,7 +59,10 @@ SimGrid (3.10) NOT RELEASED; urgency=low
  * Remove rule based routing (no more pcre dependency)
  * Add a limiter_link option to cluster tag, to specify a maximum reachable
   bandwidth in fullduplex mode when it is < 2*nominal bw
- * Add a loopback_bw and loopback_lat options to cluster tag. 
+ * Add a loopback_bw and loopback_lat options to cluster tag.
+ * Fix the peer tag that could not be mixed with other AS within a vivaldi
+   routing. Now peers are encapsulated in an AS and have their own private
+   router but this is transparent.
 
 -- $date Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
 
