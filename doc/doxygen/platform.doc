@@ -126,7 +126,7 @@ attributes.
     That also have a big impact on how many information you'll have to
     provide to help the simulator to route between the AS elements.
     <b>routing</b> possible values are <b>Full, Floyd, Dijkstra,
-    DijkstraCache, none, RuleBased, Vivaldi, Cluster</b>. For more
+    DijkstraCache, none, Vivaldi, Cluster</b>. For more
     explanation about what to choose, take a look at the section
     devoted to it below.  
 
@@ -770,12 +770,6 @@ DijsktraCache example :
 \subsubsection pf_rm_me Manually-entered route models
 
 \li <b>Full</b>: You have to enter all necessary routes manually
-\li <b>RuleBased</b>: Rule-Based routing data; same as Full except you
-    can use regexp to express route. As SimGrid has to evaluate the
-    regexp, it's slower than Full, but requires less memory. Regexp
-    syntax is similar as <a href="http://www.pcre.org">pcre</a> ones,
-    as this is the lib SimGrid use to do so.
-
 
 Full example :
 \verbatim
@@ -786,54 +780,6 @@ Full example :
    <route src="host1" dst="host2"><link_ctn id="link1"/></route>
  </AS>
 \endverbatim
-
-RuleBased example :
-\verbatim
-<AS id="AS_orsay" routing="RuleBased" >
-			<cluster id="AS_gdx" prefix="gdx-" suffix=".orsay.grid5000.fr"
-				radical="1-310" power="4.7153E9" bw="1.25E8" lat="1.0E-4"
-				bb_bw="1.25E9" bb_lat="1.0E-4"></cluster>
-			<link   id="link_gdx" bandwidth="1.25E9" latency="1.0E-4"/>
-
-			<cluster id="AS_netgdx" prefix="netgdx-" suffix=".orsay.grid5000.fr"
-				radical="1-30" power="4.7144E9" bw="1.25E8" lat="1.0E-4"
-				bb_bw="1.25E9" bb_lat="1.0E-4"></cluster>
-			<link   id="link_netgdx" bandwidth="1.25E9" latency="1.0E-4"/>
-
-			<AS id="gw_AS_orsay" routing="Full">
-				<router id="gw_orsay"/>
-			</AS>
-			<link   id="link_gw_orsay" bandwidth="1.25E9" latency="1.0E-4"/>
-
-			<ASroute src="^AS_(.*)$" dst="^AS_(.*)$"
-				gw_src="$1src-AS_$1src_router.orsay.grid5000.fr"
-				gw_dst="$1dst-AS_$1dst_router.orsay.grid5000.fr"
-				symmetrical="YES">
-					<link_ctn id="link_$1src"/>
-					<link_ctn id="link_$1dst"/>
-			</ASroute>
-
-			<ASroute src="^AS_(.*)$" dst="^gw_AS_(.*)$"
-				gw_src="$1src-AS_$1src_router.orsay.grid5000.fr"
-				gw_dst="gw_$1dst"
-				symmetrical="NO">
-					<link_ctn id="link_$1src"/>
-			</ASroute>
-
-			<ASroute src="^gw_AS_(.*)$" dst="^AS_(.*)$"
-				gw_src="gw_$1src"
-				gw_dst="$1dst-AS_$1dst_router.orsay.grid5000.fr"
-				symmetrical="NO">
-					<link_ctn id="link_$1dst"/>
-			</ASroute>
-
-		</AS>
-\endverbatim
-
-The example upper contains $1src and $1dst. It's simply a reference to
-string matching regexp enclosed by "()" within respectively <b>src</b>
-and <b>dst</b> attributes. If they were more than 1 "()", then you
-could refer to it as $2src, $3src and so on.
 
 \subsubsection pf_rm_sf Simple/fast models
 
@@ -914,7 +860,7 @@ a <b>link_ctn</b> is the tag that is used in order to reference a
 \subsubsection pf_asro ASroute
 
 ASroute tag purpose is to let people write manually their routes
-between AS. It's usefull when you're in Full or Rule-based model.
+between AS. It's useful when you're in Full model.
 
 <b>ASroute</b> attributes :
 \li <b>src (mandatory)</b>: the source AS id.
@@ -929,15 +875,6 @@ between AS. It's usefull when you're in Full or Rule-based model.
     will be the opposite of the one defined. Can be either YES or NO,
     default is YES.
 
-<b>Example of ASroute with RuleBased</b>
-\verbatim
-<ASroute src="^gw_AS_(.*)$" dst="^AS_(.*)$"
-				gw_src="gw_$1src"
-				gw_dst="$1dst-AS_$1dst_router.orsay.grid5000.fr"
-				symmetrical="NO">
-					<link_ctn id="link_$1dst"/>
-			</ASroute>
-\endverbatim
 <b>Example of ASroute with Full</b>
 \verbatim
 <AS  id="AS0"  routing="Full">
@@ -968,8 +905,8 @@ between AS. It's usefull when you're in Full or Rule-based model.
 The principle is the same as ASroute : <b>route</b> contains list of
 links that are in the path between src and dst, except that it is for
 routes between a src that can be either <b>host</b> or \b router and a
-dst that can be either <b>host</b> or \b router. Useful for Full and
-RuleBased, as well as for the shortest-paths based models, where you
+dst that can be either <b>host</b> or \b router. Useful for Full 
+as well as for the shortest-paths based models, where you
 have to give topological information.
 
 
@@ -1398,9 +1335,6 @@ characteristics (lookup : time to resolve a route):
     Defines that there is no routes, so if you try to determine a
     route without constant network within this AS, SimGrid will raise
     an exception.
-\li <b>RuleBased</b>: Rule-Based routing data (fast initialisation,
-    relatively slow lookup, moderate memory requirements, fully
-    expressive): uses regexp to define routes;
 \li <b>Vivaldi</b>: Vivaldi routing, so when you want to use coordinates
 \li <b>Cluster</b>: Cluster routing, specific to cluster tag, should
     not be used. 
