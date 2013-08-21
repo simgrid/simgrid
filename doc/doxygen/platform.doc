@@ -16,7 +16,7 @@ For the latest 2 entries, you have basically 2 ways to give it as an input :
 \li You can use two XML files: a platform description file and a
     deployment description one.
 
-For the deployment stuff, please takea look at \ref deployment
+For the deployment stuff, please take a look at \ref deployment
 
 The platform description may be complicated. This documentation is all
 about how to write this file: what are the basic concept it relies on,
@@ -28,10 +28,10 @@ write a good platform description.
 We choose to use XML because of some of its possibilities: if you're
 using an accurate XML editor, or simply using any XML plug-in for
 eclipse, it will allow you to have cool stuff like auto-completion,
-validation and checking, so all syntaxic errors may be avoided this
+validation and checking, so all syntax errors may be avoided this
 way.
 
-the XML checking is done based on the dtd which is nowaday online at
+the XML checking is done based on the dtd which is nowadays online at
 <a href="http://simgrid.gforge.inria.fr/simgrid.dtd">http://simgrid.gforge.inria.fr/simgrid.dtd</a>
 while you might be tempted to read it, it will not help you that much.
 
@@ -82,7 +82,7 @@ handles two different types of entities (<b>host/router</b> and
 <b>AS</b>) you will have to define routes between those elements. A
 network model have to be provided for AS, but you may/will need,
 depending of the network model, or because you want to bypass the
-default beahviour to defines routes manually. There are 3 tags to use: 
+default behavior to defines routes manually. There are 3 tags to use: 
 \li <b>ASroute</b>: to define routes between two  <b>AS</b>
 \li <b>route</b>: to define routes between two <b>host/router</b>
 \li <b>bypassRoute</b>: to define routes between two <b>AS</b> that
@@ -131,7 +131,7 @@ attributes.
     devoted to it below.  
 
 Elements into an AS are basically resources (computers, network
-equipments) and some routing informations if necessary (see below for
+equipments) and some routing information if necessary (see below for
 more explanation).
 
 <b>AS example</b>
@@ -162,7 +162,7 @@ contain more than 1 core. Here are the attributes of a host :
     referring to it.
 \li <b>power (mandatory)</b>:the peak number FLOPS the CPU can manage.
     Expressed in flop/s.
-\li <b>core</b>: The number of core of this host. If setted, the power
+\li <b>core</b>: The number of core of this host. If set, the power
     gives the power of one core. The specified computing power will be
     available to up to 6 sequential tasks without sharing. If more
     tasks are placed on this host, the resource will be shared
@@ -190,7 +190,7 @@ between some storage resource and the <b>host</b>. Please refer to the
 storage doc for more information.
 
 An host can also contain the <b>prop</b> tag. the prop tag allows you
-to define additional informations on this host following the
+to define additional information on this host following the
 attribute/value schema. You may want to use it to give information to
 the tool you use for rendering your simulation, for example.
 
@@ -285,7 +285,7 @@ A <b>cluster</b> represents a cluster. It is most of the time used
 when you want to have a bunch of machine defined quickly. It must be
 noted that cluster is meta-tag : <b>from the inner SimGrid point of
 view, a cluster is an AS where some optimized routing is defined</b>.
-The default inner organisation of the cluster is as follow:
+The default inner organization of the cluster is as follow:
 
 \verbatim
                  _________
@@ -300,7 +300,7 @@ The default inner organisation of the cluster is as follow:
 \endverbatim
 
 You have a set of <b>host</b> defined. Each of them has a <b>link</b>
-to a central backbone (backbone is a <b>link</b> itsef, as a link can
+to a central backbone (backbone is a <b>link</b> itself, as a link can
 be used to represent a switch, see the switch or <b>link</b> section
 below for more details about it). A <b>router</b> gives a way to the
 <b>cluster</b> to be connected to the outside world. Internally,
@@ -323,7 +323,7 @@ There is an alternative organization, which is as follow :
 
 The principle is the same, except we don't have the backbone. The way
 to obtain it is simple : you just have to let bb_* attributes
-unsetted.
+unset.
 
 
 
@@ -347,11 +347,11 @@ unsetted.
 \li <b>sharing_policy</b>: sharing policy for the links between nodes
     and backbone (if any). See <b>link</b> section for syntax/details.     
 \li <b>bb_bw </b>: bandwidth for backbone (if any). See <b>link</b>
-    section for syntax/details. If both bb_* attributes are ommited,
+    section for syntax/details. If both bb_* attributes are omitted,
     no backbone is created (alternative cluster architecture described
     before). 
 \li <b>bb_lat </b>: latency for backbone (if any). See <b>link</b>
-    section for syntax/details. If both bb_* attributes are ommited,
+    section for syntax/details. If both bb_* attributes are omitted,
     no backbone is created (alternative cluster architecture described
     before).
 \li <b>bb_sharing_policy</b>: sharing policy for the backbone (if
@@ -643,12 +643,12 @@ resources tags. This should moved to attributes soon or later.
 In order to run fast, it has been chosen to use static routing within
 SimGrid. By static, it means that it is calculated once (or almost),
 and will not change during execution. We chose to do that because it
-is rare to have a real deficience of a resource ; most of the time, a
+is rare to have a real deficiency of a resource ; most of the time, a
 communication fails because the links are too overloaded, and so your
 connection stops before the time out, or because the computer at the
 other end is not answering.
 
-We also chose to use shortests paths algorithms in order to emulate
+We also chose to use shortest paths algorithms in order to emulate
 routing. Doing so is consistent with the reality: RIP, OSPF, BGP are
 all calculating shortest paths. They have some convergence time, but
 at the end, so when the platform is stable (and this should be the
@@ -833,7 +833,7 @@ RuleBased example :
 The example upper contains $1src and $1dst. It's simply a reference to
 string matching regexp enclosed by "()" within respectively <b>src</b>
 and <b>dst</b> attributes. If they were more than 1 "()", then you
-could referer to it as $2src, $3src and so on.
+could refer to it as $2src, $3src and so on.
 
 \subsubsection pf_rm_sf Simple/fast models
 
@@ -874,15 +874,15 @@ Consider the example below:
    </route>
 \endverbatim
 
-The route here fom host Alice to Bob will be first link1, then link2,
+The route here from host Alice to Bob will be first link1, then link2,
 and finally link3. What about the reverse route ? <b>route</b> and
 <b>ASroute</b> have an optional attribute <b>symmetrical</b>, that can
 be either YES or NO. YES means that the reverse route is the same
-route in the inverse order, and is setted to YES by default. Note that
+route in the inverse order, and is set to YES by default. Note that
 this is not the case for bypass*Route, as it is more probable that you
 want to bypass only one default route.
 
-For an ASroute, things are just sligthly more complicated, as you have
+For an ASroute, things are just slightly more complicated, as you have
 to give the id of the gateway which is inside the AS you're talking
 about you want to access ... So it looks like this :
 
@@ -968,9 +968,9 @@ between AS. It's usefull when you're in Full or Rule-based model.
 The principle is the same as ASroute : <b>route</b> contains list of
 links that are in the path between src and dst, except that it is for
 routes between a src that can be either <b>host</b> or \b router and a
-dst that can be either <b>host</b> or \b router. Usefull for Full and
+dst that can be either <b>host</b> or \b router. Useful for Full and
 RuleBased, as well as for the shortest-paths based models, where you
-have to give topological informations.
+have to give topological information.
 
 
 <b>route</b> attributes :
@@ -1203,7 +1203,7 @@ and close tag in order to let it work.
 
 \subsection pf_tra trace and trace_connect
 Both tags are an alternate way to passe availability, state, and so on
-files to entity. Instead of refering to the file directly in the host,
+files to entity. Instead of referring to the file directly in the host,
 link, or cluster tag, you proceed by defining a trace with an id
 corresponding to a file, later an host/link/cluster, and finally using
 trace_connect you say that the file trace must be used by the entity.
@@ -1226,7 +1226,7 @@ All constraints you have is that <b>trace_connect</b> is after
     referring to it.
 \li <b>file</b>: filename of the file to include. Possible values :
     absolute or relative path, syntax similar to the one in use on
-    your system. If ommited, the system expects that you provide the
+    your system. If omitted, the system expects that you provide the
     trace values inside the trace tags (see below).
 \li <b>trace periodicity (mandatory)</b>: trace periodicity, same
     definition as in hosts (see upper for details).
@@ -1252,8 +1252,8 @@ Here is an example  of trace when no file name is provided:
 
 \section pf_hints Hints and tips, or how to write a platform efficiently
 
-Now you should know at least the syntax dans be able to create a
-platform. However, after having ourselves wrote some platforms, there
+Now you should know at least the syntax and be able to create a
+platform by your own. However, after having ourselves wrote some platforms, there
 are some best practices you should pay attention to in order to
 produce good platform and some choices you can make in order to have
 faster simulations. Here's some hints and tips, then.
@@ -1268,7 +1268,7 @@ only one host, then you'll also loose all the good AS hierarchy can
 give you. Remind you should always be "reasonable" in your platform
 definition when choosing the hierarchy. A good choice if you try to
 describe a real life platform is to follow the AS described in
-reality, since this kind og trade-off works well for real life
+reality, since this kind of trade-off works well for real life
 platforms.
 
 \subsection pf_exit_as Exit AS: why and how
@@ -1348,7 +1348,7 @@ complicated in using it, here is an example of it:
 \endverbatim
 
 Coordinates are then used to calculate latency between two hosts by
-calculating the euclidian distance between the two hosts coordinates.
+calculating the euclidean distance between the two hosts coordinates.
 The results express the latency in ms.
 
 Note that the previous example defines a routing directly between hosts but it could be also used to define a routing between AS.
@@ -1378,7 +1378,7 @@ You may have noted that conveniently, a peer named FOO defines an AS named FOO a
 
 
 Choosing wisely the routing model to use can significantly fasten your
-simulation/save your time when writing the platform/save tremendeous
+simulation/save your time when writing the platform/save tremendous
 disk space. Here is the list of available model and their
 characteristics (lookup : time to resolve a route):
 
@@ -1396,7 +1396,7 @@ characteristics (lookup : time to resolve a route):
     routes.
 \li <b>none</b>: No routing (usable with Constant network only).
     Defines that there is no routes, so if you try to determine a
-    route without constant network within this AS, SimGrid will raie
+    route without constant network within this AS, SimGrid will raise
     an exception.
 \li <b>RuleBased</b>: Rule-Based routing data (fast initialisation,
     relatively slow lookup, moderate memory requirements, fully
@@ -1407,7 +1407,7 @@ characteristics (lookup : time to resolve a route):
 
 \subsection pf_switch Hey, I want to describe a switch but there is no switch tag !
 
-Actually we did not include swith tag, ok. But when you're trying to
+Actually we did not include switch tag, ok. But when you're trying to
 simulate a switch, the only major impact it has when you're using
 fluid model (and SimGrid uses fluid model unless you activate GTNetS,
 ns-3, or constant network mode) is the impact of the upper limit of
