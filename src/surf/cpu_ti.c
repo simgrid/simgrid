@@ -502,8 +502,6 @@ static void cpu_ti_update_resource_state(void *id,
   cpu_ti_t cpu = id;
   surf_action_cpu_ti_t action;
 
-  surf_watched_hosts();
-
   if (event_type == cpu->power_event) {
     tmgr_trace_t power_trace;
     surf_cpu_ti_tgmr_t trace;
@@ -533,9 +531,11 @@ static void cpu_ti_update_resource_state(void *id,
       cpu->power_event = NULL;
 
   } else if (event_type == cpu->state_event) {
-    if (value > 0)
+    if (value > 0) {
+      if(cpu->state_current == SURF_RESOURCE_OFF)
+        xbt_dynar_push_as(host_that_restart, char*, (cpu->generic_resource.name));
       cpu->state_current = SURF_RESOURCE_ON;
-    else {
+    } else {
       cpu->state_current = SURF_RESOURCE_OFF;
 
       /* put all action running on cpu to failed */

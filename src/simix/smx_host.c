@@ -322,7 +322,10 @@ void SIMIX_host_restart_processes(smx_host_t host)
 {
   unsigned int cpt;
   smx_process_arg_t arg;
-  xbt_dynar_foreach(SIMIX_host_priv(host)->auto_restart_processes,cpt,arg) {
+  xbt_dynar_t process_list = SIMIX_host_priv(host)->auto_restart_processes;
+  if(!process_list) return;
+
+  xbt_dynar_foreach(process_list,cpt,arg) {
 
     smx_process_t process;
 
@@ -353,7 +356,7 @@ void SIMIX_host_restart_processes(smx_host_t host)
 
     }
   }
-  xbt_dynar_reset(SIMIX_host_priv(host)->auto_restart_processes);
+  xbt_dynar_reset(process_list);
 }
 
 void SIMIX_host_autorestart(smx_host_t host)

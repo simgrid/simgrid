@@ -644,6 +644,11 @@ XBT_PUBLIC_DATA(s_surf_model_description_t) surf_new_model_description[];
 XBT_PUBLIC_DATA(xbt_dynar_t) model_list;
 
 /** \ingroup SURF_simulation
+ *  \brief List of hosts that have juste restarted and whose autorestart process should be restarted.
+ */
+XBT_PUBLIC_DATA(xbt_dynar_t) host_that_restart;
+
+/** \ingroup SURF_simulation
  *  \brief List of hosts for which one want to be notified if they ever restart.
  */
 XBT_PUBLIC(xbt_dict_t) watched_hosts_lib;
@@ -734,8 +739,6 @@ XBT_PUBLIC(xbt_dict_t) get_as_router_properties(const char* name);
 
 int surf_get_nthreads(void);
 void surf_set_nthreads(int nthreads);
-
-void surf_watched_hosts(void);
 
 /*
  * Returns the initial path. On Windows the initial path is
