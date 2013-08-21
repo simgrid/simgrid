@@ -18,6 +18,8 @@
 
 #include "xbt_modinter.h"       /* prototype of other module's init/exit in XBT */
 
+#include "simgrid/sg_config.h"
+
 XBT_LOG_NEW_CATEGORY(xbt, "All XBT categories (simgrid toolbox)");
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(module, xbt, "module handling");
 
@@ -90,11 +92,11 @@ static void xbt_preinit(void) {
   srand(seed);
   srand48(seed);
 
-  atexit(xbt_postexit);   
 }
 
 static void xbt_postexit(void)
 {
+  if(!sg_cfg_get_boolean("clean_atexit")) return;
   xbt_backtrace_postexit();
   xbt_fifo_postexit();
   xbt_dict_postexit();

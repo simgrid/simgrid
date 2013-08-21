@@ -10,6 +10,7 @@
 #include "xbt/str.h"
 #include "xbt/ex.h"             /* ex_backtrace_display */
 #include "mc/mc.h"
+#include "simgrid/sg_config.h"
 
 XBT_LOG_NEW_CATEGORY(simix, "All SIMIX categories");
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_kernel, simix,
@@ -108,7 +109,7 @@ void SIMIX_global_init(int *argc, char **argv)
 
   SIMIX_HOST_LEVEL = xbt_lib_add_level(host_lib,SIMIX_host_destroy);
 
-  atexit(SIMIX_clean);
+  if(sg_cfg_get_boolean("clean_atexit")) atexit(SIMIX_clean);
 }
 
 /**

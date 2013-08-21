@@ -834,6 +834,13 @@ void sg_config_init(int *argc, char **argv)
 		     NULL);
 #endif // HAVE_SMPI
 
+    default_value = xbt_strdup("yes");
+    xbt_cfg_register(&_sg_cfg_set, "clean_atexit",
+                     "\"yes\" or \"no\". \"yes\" enables all the cleanups of SimGrid (XBT,SIMIX,MSG) to be registered with atexit. \"no\" may be useful if your code segfaults when calling the exit function.",
+                     xbt_cfgelm_boolean, &default_value, 1, 1,
+                     NULL, NULL);
+    xbt_cfg_setdefault_boolean(_sg_cfg_set, "clean_atexit", default_value);
+
     if (!surf_path) {
       /* retrieves the current directory of the        current process */
       const char *initial_path = __surf_get_initial_path();

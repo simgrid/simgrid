@@ -5,6 +5,11 @@ SimGrid (3.10) NOT RELEASED; urgency=low
    used even if the OS provide a getline(). This should reduce the
    configuration complexity by using the same code on all platforms.
  * new xbt_cfg_elm_boolean type
+ * Allow to disable simgrid cleanups at exit from command line option.
+   There are situations where one may want a simulation to end with an exit.
+   Unfortunately, calling exit may cause SimGrid to segfault, which is quite
+   annoying when scripting around the simulator. Adding a
+   --cfg=clean_atexit:yes allows to circumvent this issue.
 
  Java:
  * Reintegrate Java to the main archive as desynchronizing these
