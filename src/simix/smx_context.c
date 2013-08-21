@@ -94,7 +94,7 @@ void SIMIX_context_mod_init(void)
 }
 
 /**
- * This function is call by SIMIX_clean() to finalize the context module.
+ * This function is called by SIMIX_clean() to finalize the context module.
  */
 void SIMIX_context_mod_exit(void)
 {
