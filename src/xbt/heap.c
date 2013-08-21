@@ -123,10 +123,10 @@ void *xbt_heap_pop(xbt_heap_t H)
   int size = H->size;
   void *max;
 
-  XBT_DEBUG("Heap has %d elements before extraction and max elem was %g",xbt_heap_size(H),xbt_heap_maxkey(H));
-
   if (H->count == 0)
     return NULL;
+
+  XBT_DEBUG("Heap has %d elements before extraction and max elem was %g",xbt_heap_size(H),xbt_heap_maxkey(H));
 
   max = CONTENT(H, 0);
 
