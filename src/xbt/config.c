@@ -66,7 +66,7 @@ static xbt_cfgelm_t xbt_cfgelm_get(xbt_cfg_t cfg, const char *name,
 
 /** @brief Constructor
  *
- * Initialise an config set
+ * Initialise a config set
  */
 
 
