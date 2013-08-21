@@ -114,6 +114,7 @@ xbt_dynar_t model_list = NULL;
 tmgr_history_t history = NULL;
 lmm_system_t maxmin_system = NULL;
 xbt_dynar_t surf_path = NULL;
+xbt_dict_t watched_hosts_lib;
 
 /* Don't forget to update the option description in smx_config when you change this */
 s_surf_model_description_t surf_network_model_description[] = {

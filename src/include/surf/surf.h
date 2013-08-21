@@ -643,6 +643,11 @@ XBT_PUBLIC_DATA(s_surf_model_description_t) surf_new_model_description[];
  */
 XBT_PUBLIC_DATA(xbt_dynar_t) model_list;
 
+/** \ingroup SURF_simulation
+ *  \brief List of hosts for which one want to be notified if they ever restart.
+ */
+XBT_PUBLIC(xbt_dict_t) watched_hosts_lib;
+
 /*******************************************/
 /*** SURF Platform *************************/
 /*******************************************/

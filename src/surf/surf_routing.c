@@ -25,8 +25,6 @@ int SD_HOST_LEVEL;              //Simdag level
 int COORD_HOST_LEVEL=0;         //Coordinates level
 int NS3_HOST_LEVEL;             //host node for ns3
 
-xbt_dict_t watched_hosts_lib;
-
 /**
  * @ingroup SURF_build_api
  * @brief A library containing all known links
