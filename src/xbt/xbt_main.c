@@ -92,6 +92,7 @@ static void xbt_preinit(void) {
   srand(seed);
   srand48(seed);
 
+  atexit(xbt_postexit);
 }
 
 static void xbt_postexit(void)
