@@ -140,7 +140,7 @@ __ex_mctx_struct} __ex_mctx_t;
  *
  * Any exception thrown directly from the TRIED_BLOCK block or from called
  * subroutines is caught. Cleanups which must be done after this block
- * (whenever an exception arised or not) should be placed into the optionnal
+ * (whenever an exception arose or not) should be placed into the optionnal
  * CLEANUP_BLOCK. The code dealing with the exceptions when they arise should
  * be placed into the (mandatory) CATCH_BLOCK.
  *

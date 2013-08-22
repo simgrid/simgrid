@@ -195,7 +195,7 @@ typedef struct s_map_region {
   void *start_addr;             /* Start address of the map */
   void *end_addr;               /* End address of the map */
   int prot;                     /* Memory protection */
-  int flags;                    /* Aditional memory flags */
+  int flags;                    /* Additional memory flags */
   void *offset;                 /* Offset in the file/whatever */
   char dev_major;               /* Major of the device */
   char dev_minor;               /* Minor of the device */

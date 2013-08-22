@@ -148,7 +148,7 @@ static int sd_register_platform(lua_State * L)
 }
 
 /**
- * Register applicaiton for MSG
+ * Register application for MSG
  */
 static int msg_register_application(lua_State * L)
 {

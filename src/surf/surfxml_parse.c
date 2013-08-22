@@ -1078,7 +1078,7 @@ static void init_randomness(void)
 
 static void add_randomness(void)
 {
-  /* If needed aditional properties can be added by using the prop tag */
+  /* If needed, additional properties can be added by using the prop tag */
   random_data_t random =
       random_new(random_generator, 0, random_min, random_max, random_mean,
                  random_std_deviation);

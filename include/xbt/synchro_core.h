@@ -7,7 +7,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-/* splited away from synchro.h since we areused by dynar.h, and synchro.h uses dynar */
+/* splited away from synchro.h since we are used by dynar.h, and synchro.h uses dynar */
 
 
 #ifndef _XBT_THREAD_H

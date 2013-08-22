@@ -85,7 +85,7 @@ void rctx_init(void)
   sigwaiter_mutex = xbt_os_mutex_init();
   sigwaiter_cond = xbt_os_cond_init();
   xbt_os_mutex_acquire(sigwaiter_mutex);
-  sigwaiter_thread = xbt_os_thread_create("Armaggedon request waiter",
+  sigwaiter_thread = xbt_os_thread_create("Armageddon request waiter",
                                           armageddon_sigwaiter, NULL, NULL);
   /* Wait for thread to start... */
   xbt_os_cond_wait(sigwaiter_cond, sigwaiter_mutex);

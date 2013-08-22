@@ -178,7 +178,7 @@ void lagrange_solve(lmm_system_t sys)
   lmm_variable_t var = NULL;
 
   /*
-   * Auxiliar variables.
+   * Auxiliary variables.
    */
   int iteration = 0;
   double tmp = 0;

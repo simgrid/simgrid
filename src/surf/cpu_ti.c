@@ -111,7 +111,7 @@ static surf_cpu_ti_tgmr_t cpu_ti_parse_trace(tmgr_trace_t power_trace,
   if (!power_trace) {
     trace->type = TRACE_FIXED;
     trace->value = value;
-    XBT_DEBUG("No availabily trace. Constant value = %lf", value);
+    XBT_DEBUG("No availability trace. Constant value = %lf", value);
     return trace;
   }
 
@@ -489,7 +489,7 @@ static void cpu_ti_update_actions_state(double now, double delta)
     /* set the remains to 0 due to precision problems when updating the remaining amount */
     GENERIC_ACTION(action).remains = 0;
     cpu_ti_action_state_set((surf_action_t) action, SURF_ACTION_DONE);
-    /* update remaining amout of all actions */
+    /* update remaining amount of all actions */
     cpu_ti_update_remaining_amount(surf_cpu_resource_priv(action->cpu), surf_get_clock());
   }
 #undef GENERIC_ACTION

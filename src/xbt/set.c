@@ -420,7 +420,7 @@ static void traverse(xbt_set_t set)
     xbt_test_assert(elm, "Dude ! Got a null elm during traversal!");
     xbt_test_log("Id(%u):  %s->%s\n", elm->ID, elm->name, elm->data);
     xbt_test_assert(!strcmp(elm->name, elm->data),
-                     "Key(%s) != value(%s). Abording", elm->name,
+                     "Key(%s) != value(%s). Aborting", elm->name,
                      elm->data);
   }
 }

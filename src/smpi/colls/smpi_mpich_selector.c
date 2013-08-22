@@ -426,7 +426,7 @@ int smpi_coll_tuned_reduce_scatter_mpich( void *sbuf, void *rbuf,
     int comm_size, i;
     size_t total_message_size;
 
-    if(sbuf==rbuf)sbuf=MPI_IN_PLACE; //restore MPI_IN_PLACE as these algos handle it
+    if(sbuf==rbuf)sbuf=MPI_IN_PLACE; //restore MPI_IN_PLACE as these algorithms handle it
 
     XBT_DEBUG("smpi_coll_tuned_reduce_scatter_mpich");
     

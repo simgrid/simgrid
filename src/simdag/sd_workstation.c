@@ -278,7 +278,7 @@ double SD_workstation_get_available_power(SD_workstation_t workstation)
  *
  * \param workstation a workstation
  * \param computation_amount the computation amount you want to evaluate (in flops)
- * \return an approximative astimated computation time for the given computation amount on this workstation (in seconds)
+ * \return an approximative estimated computation time for the given computation amount on this workstation (in seconds)
  */
 double SD_workstation_get_computation_time(SD_workstation_t workstation,
                                            double computation_amount)
@@ -357,7 +357,7 @@ double SD_route_get_current_bandwidth(SD_workstation_t src,
  * \param src the first workstation
  * \param dst the second workstation
  * \param communication_amount the communication amount you want to evaluate (in bytes)
- * \return an approximative astimated computation time for the given communication amount
+ * \return an approximative estimated computation time for the given communication amount
  * between the workstations (in seconds)
  */
 double SD_route_get_communication_time(SD_workstation_t src,

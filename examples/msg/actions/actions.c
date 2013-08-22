@@ -437,8 +437,8 @@ static void action_comm_size(const char *const *action)
 
 static void action_compute(const char *const *action)
 {
-  const char *amout = action[2];
-  msg_task_t task = MSG_task_create("task", parse_double(amout), 0, NULL);
+  const char *amount = action[2];
+  msg_task_t task = MSG_task_create("task", parse_double(amount), 0, NULL);
   double clock = MSG_get_clock();
 
   ACT_DEBUG("Entering %s", NAME);
