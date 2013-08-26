@@ -622,7 +622,7 @@ int smpi_coll_tuned_allgatherv_mpich(void *sbuf, int scount,
                                                      rbuf, rcounts, rdispls, rdtype,
                                                      comm);
     } 
-    return smpi_coll_tuned_allgatherv_ring(sbuf, scount, sdtype, 
+    return smpi_coll_tuned_allgatherv_mpich_ring(sbuf, scount, sdtype,
                                                 rbuf, rcounts, rdispls, rdtype,
                                                 comm);
 }
