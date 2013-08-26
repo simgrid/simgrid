@@ -28,43 +28,59 @@ int smpi_coll_tuned_alltoallv_bruck(void *sendbuf, int *sendcounts, int *senddis
   err = smpi_datatype_extent(recvtype, &lb, &recvext);
   /* Local copy from self */
   err =
-      smpi_datatype_copy((char *)sendbuf + senddisps[rank] * sendext, 
-                         sendcounts[rank], sendtype, 
+      smpi_datatype_copy((char *)sendbuf + senddisps[rank] * sendext,
+                         sendcounts[rank], sendtype,
                          (char *)recvbuf + recvdisps[rank] * recvext,
                          recvcounts[rank], recvtype);
   if (err == MPI_SUCCESS && size > 1) {
     /* Initiate all send/recv to/from others. */
-    requests = xbt_new(MPI_Request, 2 * (size - 1));
-    count = 0;
-    /* Create all receives that will be posted first */
-    for (i = 0; i < size; ++i) {
-      if (i == rank) {
-        XBT_DEBUG("<%d> skip request creation [src = %d, recvcount = %d]",
-               rank, i, recvcounts[i]);
-        continue;
-      }
-      requests[count] =
-          smpi_irecv_init((char *)recvbuf + recvdisps[i] * recvext, recvcounts[i],
-                          recvtype, i, system_tag, comm);
-      count++;
-    }
-    /* Now create all sends  */
-    for (i = 0; i < size; ++i) {
-      if (i == rank) {
-        XBT_DEBUG("<%d> skip request creation [dst = %d, sendcount = %d]",
-               rank, i, sendcounts[i]);
-        continue;
-      }
-      requests[count] =
-          smpi_isend_init((char *)sendbuf + senddisps[i] * sendext, sendcounts[i],
-                          sendtype, i, system_tag, comm);
-      count++;
-    }
-    /* Wait for them all. */
-    smpi_mpi_startall(count, requests);
-    XBT_DEBUG("<%d> wait for %d requests", rank, count);
-    smpi_mpi_waitall(count, requests, MPI_STATUS_IGNORE);
-    xbt_free(requests);
+
+      int bblock = 4;//MPIR_PARAM_ALLTOALL_THROTTLE
+      //if (bblock == 0) bblock = comm_size;
+
+
+     // requests = xbt_new(MPI_Request, 2 * (bblock - 1));
+      int ii, ss, dst;
+      /* post only bblock isends/irecvs at a time as suggested by Tony Ladd */
+      for (ii=0; ii<size; ii+=bblock) {
+          requests = xbt_new(MPI_Request, 2 * (bblock ));
+
+          ss = size-ii < bblock ? size-ii : bblock;
+          count = 0;
+
+          /* do the communication -- post ss sends and receives: */
+          for ( i=0; i<ss; i++ ) {
+            dst = (rank+i+ii) % size;
+              if (dst == rank) {
+                XBT_DEBUG("<%d> skip request creation [src = %d, recvcount = %d]",
+                       rank, i, recvcounts[dst]);
+                continue;
+              }
+
+              requests[count]=smpi_mpi_irecv((char *)recvbuf + recvdisps[dst] * recvext, recvcounts[dst],
+                                  recvtype, dst, system_tag, comm );
+              count++;
+            }
+            /* Now create all sends  */
+          for ( i=0; i<ss; i++ ) {
+              dst = (rank-i-ii+size) % size;
+              if (dst == rank) {
+                XBT_DEBUG("<%d> skip request creation [dst = %d, sendcount = %d]",
+                       rank, i, sendcounts[dst]);
+                continue;
+              }
+              requests[count]=smpi_mpi_isend((char *)sendbuf + senddisps[dst] * sendext, sendcounts[dst],
+                                  sendtype, dst, system_tag, comm);
+              count++;
+            }
+            /* Wait for them all. */
+            //smpi_mpi_startall(count, requests);
+            XBT_DEBUG("<%d> wait for %d requests", rank, count);
+            smpi_mpi_waitall(count, requests, MPI_STATUSES_IGNORE);
+            xbt_free(requests);
+
+          }
+
   }
   return MPI_SUCCESS;
 }
