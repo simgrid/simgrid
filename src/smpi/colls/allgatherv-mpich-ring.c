@@ -59,8 +59,8 @@ smpi_coll_tuned_allgatherv_mpich_ring(void *sendbuf, int sendcount,
   for (i = 1; i < comm_size; i++)
     if (min > recvcounts[i])
       min = recvcounts[i];
-  if (min * recvtype_extent < 32768)
-    min = 32768 / recvtype_extent;
+  if (min * recvtype_extent < 32768*8)
+    min = 32768*8 / recvtype_extent;
   /* Handle the case where the datatype extent is larger than
    * the pipeline size. */
   if (!min)

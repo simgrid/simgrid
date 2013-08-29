@@ -92,7 +92,7 @@ int smpi_coll_tuned_alltoall_simple(void *send_buff, int send_count,
 
 
   /* All done */
-
+  for(i= 0;i<nreqs;i++)if(req[i])smpi_mpi_request_free(&req[i]);
   if (req)
     xbt_free((char *) req);
   if (statuses)

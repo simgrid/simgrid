@@ -45,6 +45,7 @@ int smpi_coll_tuned_reduce_scatter_mpich_pair(void *sendbuf, void *recvbuf, int 
     }
     
     if (total_count == 0) {
+        xbt_free(disps);
         return MPI_ERR_COUNT;
     }
 
@@ -134,7 +135,10 @@ int smpi_coll_tuned_reduce_scatter_mpich_pair(void *sendbuf, void *recvbuf, int 
             if (mpi_errno) return(mpi_errno);
         }
     
-return MPI_SUCCESS;
+        xbt_free(disps);
+        xbt_free(tmp_recvbuf);
+
+        return MPI_SUCCESS;
 }
     
 
