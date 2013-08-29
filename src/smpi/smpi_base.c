@@ -345,7 +345,7 @@ void smpi_mpi_start(MPI_Request request)
     #ifdef HAVE_TRACING
       int rank = smpi_process_index();
       if (TRACE_smpi_view_internals()) {
-        TRACE_smpi_send(rank, rank, receiver);
+        TRACE_smpi_send(rank, rank, receiver,request->size);
       }
     #endif
 /*    if(receiver == MPI_UNDEFINED) {*/

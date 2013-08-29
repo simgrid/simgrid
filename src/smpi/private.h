@@ -548,7 +548,7 @@ void mpi_comm_get_parent_ ( int*parent, int* ierr);
 /* from smpi_instr.c */
 void TRACE_internal_smpi_set_category (const char *category);
 const char *TRACE_internal_smpi_get_category (void);
-void TRACE_smpi_collective_in(int rank, int root, const char *operation);
+void TRACE_smpi_collective_in(int rank, int root, const char *operation, int size);
 void TRACE_smpi_collective_out(int rank, int root, const char *operation);
 void TRACE_smpi_computing_init(int rank);
 void TRACE_smpi_computing_out(int rank);

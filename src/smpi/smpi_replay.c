@@ -161,8 +161,8 @@ static void action_send(const char *const *action)
   int rank = smpi_comm_rank(MPI_COMM_WORLD);
   TRACE_smpi_computing_out(rank);
   int dst_traced = smpi_group_rank(smpi_comm_group(MPI_COMM_WORLD), to);
-  TRACE_smpi_ptp_in(rank, rank, dst_traced, __FUNCTION__);
-  TRACE_smpi_send(rank, rank, dst_traced);
+  TRACE_smpi_ptp_in(rank, rank, dst_traced, __FUNCTION__, size*smpi_datatype_size(MPI_CURRENT_TYPE));
+  TRACE_smpi_send(rank, rank, dst_traced, size*smpi_datatype_size(MPI_CURRENT_TYPE));
 #endif
 
   smpi_mpi_send(NULL, size, MPI_CURRENT_TYPE, to , 0, MPI_COMM_WORLD);
@@ -190,8 +190,8 @@ static void action_Isend(const char *const *action)
   int rank = smpi_comm_rank(MPI_COMM_WORLD);
   TRACE_smpi_computing_out(rank);
   int dst_traced = smpi_group_rank(smpi_comm_group(MPI_COMM_WORLD), to);
-  TRACE_smpi_ptp_in(rank, rank, dst_traced, __FUNCTION__);
-  TRACE_smpi_send(rank, rank, dst_traced);
+  TRACE_smpi_ptp_in(rank, rank, dst_traced, __FUNCTION__, size*smpi_datatype_size(MPI_CURRENT_TYPE));
+  TRACE_smpi_send(rank, rank, dst_traced, size*smpi_datatype_size(MPI_CURRENT_TYPE));
 #endif
 
   request = smpi_mpi_isend(NULL, size, MPI_CURRENT_TYPE, to, 0,MPI_COMM_WORLD);
@@ -221,7 +221,7 @@ static void action_recv(const char *const *action) {
   int src_traced = smpi_group_rank(smpi_comm_group(MPI_COMM_WORLD), from);
   TRACE_smpi_computing_out(rank);
 
-  TRACE_smpi_ptp_in(rank, src_traced, rank, __FUNCTION__);
+  TRACE_smpi_ptp_in(rank, src_traced, rank, __FUNCTION__, size*smpi_datatype_size(MPI_CURRENT_TYPE));
 #endif
 
   smpi_mpi_recv(NULL, size, MPI_CURRENT_TYPE, from, 0, MPI_COMM_WORLD, &status);
@@ -251,7 +251,7 @@ static void action_Irecv(const char *const *action)
 #ifdef HAVE_TRACING
   int rank = smpi_comm_rank(MPI_COMM_WORLD);
   int src_traced = smpi_group_rank(smpi_comm_group(MPI_COMM_WORLD), from);
-  TRACE_smpi_ptp_in(rank, src_traced, rank, __FUNCTION__);
+  TRACE_smpi_ptp_in(rank, src_traced, rank, __FUNCTION__, size*smpi_datatype_size(MPI_CURRENT_TYPE));
 #endif
 
   request = smpi_mpi_irecv(NULL, size, MPI_CURRENT_TYPE, from, 0, MPI_COMM_WORLD);
@@ -287,7 +287,7 @@ static void action_wait(const char *const *action){
   int src_traced = smpi_group_rank(group, request->src);
   int dst_traced = smpi_group_rank(group, request->dst);
   int is_wait_for_receive = request->recv;
-  TRACE_smpi_ptp_in(rank, src_traced, dst_traced, __FUNCTION__);
+  TRACE_smpi_ptp_in(rank, src_traced, dst_traced, __FUNCTION__, -1);
 #endif
   smpi_mpi_wait(&request, &status);
 #ifdef HAVE_TRACING
@@ -347,7 +347,7 @@ static void action_waitall(const char *const *action){
    int rank_traced = smpi_process_index();
    TRACE_smpi_computing_out(rank_traced);
 
-   TRACE_smpi_ptp_in(rank_traced, -1, -1, __FUNCTION__);
+   TRACE_smpi_ptp_in(rank_traced, -1, -1, __FUNCTION__, count_requests);
   #endif
 
     smpi_mpi_waitall(count_requests, requests, status);
@@ -380,7 +380,7 @@ static void action_barrier(const char *const *action){
 #ifdef HAVE_TRACING
   int rank = smpi_comm_rank(MPI_COMM_WORLD);
   TRACE_smpi_computing_out(rank);
-  TRACE_smpi_collective_in(rank, -1, __FUNCTION__);
+  TRACE_smpi_collective_in(rank, -1, __FUNCTION__, smpi_comm_size(MPI_COMM_WORLD));
 #endif
   smpi_mpi_barrier(MPI_COMM_WORLD);
 #ifdef HAVE_TRACING
@@ -414,7 +414,7 @@ static void action_bcast(const char *const *action)
   int rank = smpi_comm_rank(MPI_COMM_WORLD);
   TRACE_smpi_computing_out(rank);
   int root_traced = smpi_group_rank(smpi_comm_group(MPI_COMM_WORLD), 0);
-  TRACE_smpi_collective_in(rank, root_traced, __FUNCTION__);
+  TRACE_smpi_collective_in(rank, root_traced, __FUNCTION__,size*smpi_datatype_size(MPI_CURRENT_TYPE));
 #endif
 
   smpi_mpi_bcast(NULL, size, MPI_CURRENT_TYPE, root, MPI_COMM_WORLD);
@@ -445,7 +445,7 @@ static void action_reduce(const char *const *action)
   int rank = smpi_comm_rank(MPI_COMM_WORLD);
   TRACE_smpi_computing_out(rank);
   int root_traced = smpi_group_rank(smpi_comm_group(MPI_COMM_WORLD), 0);
-  TRACE_smpi_collective_in(rank, root_traced, __FUNCTION__);
+  TRACE_smpi_collective_in(rank, root_traced, __FUNCTION__,comm_size*smpi_datatype_size(MPI_CURRENT_TYPE));
 #endif
    mpi_coll_reduce_fun(NULL, NULL, comm_size, MPI_CURRENT_TYPE, MPI_OP_NULL, root, MPI_COMM_WORLD);
    smpi_execute_flops(comp_size);
@@ -468,7 +468,7 @@ static void action_allReduce(const char *const *action) {
 #ifdef HAVE_TRACING
   int rank = smpi_comm_rank(MPI_COMM_WORLD);
   TRACE_smpi_computing_out(rank);
-  TRACE_smpi_collective_in(rank, -1, __FUNCTION__);
+  TRACE_smpi_collective_in(rank, -1, __FUNCTION__,comp_size*smpi_datatype_size(MPI_CURRENT_TYPE));
 #endif
   mpi_coll_reduce_fun(NULL, NULL, comm_size, MPI_CURRENT_TYPE, MPI_OP_NULL, 0, MPI_COMM_WORLD);
   smpi_execute_flops(comp_size);
@@ -502,7 +502,7 @@ static void action_allToAll(const char *const *action) {
 #ifdef HAVE_TRACING
   int rank = smpi_process_index();
   TRACE_smpi_computing_out(rank);
-  TRACE_smpi_collective_in(rank, -1, __FUNCTION__);
+  TRACE_smpi_collective_in(rank, -1, __FUNCTION__,send_size*smpi_datatype_size(MPI_CURRENT_TYPE));
 #endif
 
   mpi_coll_alltoall_fun(send, send_size, MPI_CURRENT_TYPE, recv, recv_size, MPI_CURRENT_TYPE2, MPI_COMM_WORLD);
@@ -554,7 +554,7 @@ static void action_gather(const char *const *action) {
 
 #ifdef HAVE_TRACING
   TRACE_smpi_computing_out(rank);
-  TRACE_smpi_collective_in(rank, -1, __FUNCTION__);
+  TRACE_smpi_collective_in(rank, -1, __FUNCTION__,send_size*smpi_datatype_size(MPI_CURRENT_TYPE));
 #endif
 smpi_mpi_gather(send, send_size, MPI_CURRENT_TYPE,
                 recv, recv_size, MPI_CURRENT_TYPE2,
@@ -609,7 +609,7 @@ static void action_reducescatter(const char *const *action) {
 
 #ifdef HAVE_TRACING
   TRACE_smpi_computing_out(rank);
-  TRACE_smpi_collective_in(rank, -1, __FUNCTION__);
+  TRACE_smpi_collective_in(rank, -1, __FUNCTION__, recv_sum*smpi_datatype_size(MPI_CURRENT_TYPE));
 #endif
    mpi_coll_reduce_fun(NULL, NULL, recv_sum, MPI_CURRENT_TYPE, MPI_OP_NULL,
        root, MPI_COMM_WORLD);
@@ -672,7 +672,7 @@ static void action_allgatherv(const char *const *action) {
 #ifdef HAVE_TRACING
   int rank = MPI_COMM_WORLD != MPI_COMM_NULL ? smpi_process_index() : -1;
   TRACE_smpi_computing_out(rank);
-  TRACE_smpi_collective_in(rank, -1, __FUNCTION__);
+  TRACE_smpi_collective_in(rank, -1, __FUNCTION__,sendcount*smpi_datatype_size(MPI_CURRENT_TYPE));
 #endif
 
 mpi_coll_allgatherv_fun(sendbuf, sendcount, MPI_CURRENT_TYPE, recvbuf, recvcounts, disps, MPI_CURRENT_TYPE2, MPI_COMM_WORLD);
@@ -743,7 +743,9 @@ static void action_allToAllv(const char *const *action) {
 #ifdef HAVE_TRACING
   int rank = MPI_COMM_WORLD != MPI_COMM_NULL ? smpi_process_index() : -1;
   TRACE_smpi_computing_out(rank);
-  TRACE_smpi_collective_in(rank, -1, __FUNCTION__);
+  int count=0;
+  for(i=0;i<comm_size;i++) count+=sendcounts[i];
+  TRACE_smpi_collective_in(rank, -1, __FUNCTION__,count*smpi_datatype_size(MPI_CURRENT_TYPE));
 #endif
     mpi_coll_alltoallv_fun(sendbuf, sendcounts, senddisps, 	MPI_CURRENT_TYPE,
                                recvbuf, recvcounts, recvdisps, MPI_CURRENT_TYPE,
