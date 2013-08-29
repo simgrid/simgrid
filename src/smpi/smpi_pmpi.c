@@ -127,12 +127,10 @@ int PMPI_Abort(MPI_Comm comm, int errorcode)
 double PMPI_Wtime(void)
 {
   double time;
-
-  smpi_bench_end();
   time = SIMIX_get_clock();
-  smpi_bench_begin();
   return time;
 }
+
 extern double sg_maxmin_precision;
 double PMPI_Wtick(void)
 {
