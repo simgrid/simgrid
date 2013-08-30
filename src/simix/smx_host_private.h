@@ -18,7 +18,7 @@ typedef struct s_smx_host_priv {
 } s_smx_host_priv_t;
 
 static inline smx_host_priv_t SIMIX_host_priv(smx_host_t host){
-  return xbt_lib_get_level(host, SIMIX_HOST_LEVEL);
+  return (smx_host_priv_t) xbt_lib_get_level(host, SIMIX_HOST_LEVEL);
 }
 
 

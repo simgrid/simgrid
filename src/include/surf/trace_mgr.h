@@ -13,6 +13,10 @@
 #include "surf/datatypes.h"
 #include "simgrid/platf_interface.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /* Creation functions */
 XBT_PUBLIC(tmgr_history_t) tmgr_history_new(void);
 XBT_PUBLIC(void) tmgr_history_free(tmgr_history_t history);
@@ -42,5 +46,9 @@ XBT_PUBLIC(tmgr_trace_event_t)
                                 double *value, void **model);
 
 XBT_PUBLIC(void) tmgr_finalize(void);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif                          /* _SURF_TMGR_H */

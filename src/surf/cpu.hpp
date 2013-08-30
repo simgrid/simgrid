@@ -31,7 +31,7 @@ public:
  ************/
 class Cpu : public Resource {
 public:
-  Cpu(CpuModelPtr model, string name, xbt_dict_t properties) : Resource(model, name, properties) {};
+  Cpu(CpuModelPtr model, const char* name, xbt_dict_t properties) : Resource(model, name, properties) {};
   CpuActionPtr execute(double size);
   CpuActionPtr sleep(double duration);
   e_surf_resource_state_t getState();

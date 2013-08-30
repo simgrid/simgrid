@@ -14,7 +14,6 @@
 #include "xbt/log.h"
 #include "xbt/swag.h"
 
-
 /** Creates a new swag.
  * \param offset where the hookup is located in the structure
  * \see xbt_swag_offset
