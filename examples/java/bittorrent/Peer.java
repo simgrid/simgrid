@@ -481,8 +481,7 @@ public class Peer extends Process {
 						peerChoosed = null;
 					}
 					j++;
-				} while (peerChoosed == null && j < 
-	Common.MAXIMUM_PEERS);
+				} while (peerChoosed == null && j < Common.MAXIMUM_PEERS);
 			}
 			else {
 				Connection fastest = null;
