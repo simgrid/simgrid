@@ -27,9 +27,8 @@ public class Slave extends Process {
 	Msg.info("Send Mail1!");
 	task.send("mail1");
 	
-	Task task2;
         try {
-                task2 = Task.receive("mail2");
+                Task.receive("mail2");
         } catch (MsgException e) {
                 Msg.debug("Received failed");
                 return;

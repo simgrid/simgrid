@@ -8,7 +8,6 @@ package bittorrent;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map.Entry;
 
@@ -16,11 +15,9 @@ import org.simgrid.msg.Comm;
 import org.simgrid.msg.Host;
 import org.simgrid.msg.Msg;
 import org.simgrid.msg.MsgException;
-import org.simgrid.msg.RngStream;
 import org.simgrid.msg.Process;
+import org.simgrid.msg.RngStream;
 import org.simgrid.msg.Task;
-
-import bittorrent.Connection;
 
 /**
  * Main class for peers execution

@@ -9,8 +9,6 @@ package mutualExclusion;
 import org.simgrid.msg.Msg;
 import org.simgrid.msg.NativeException;
 
-import org.simgrid.msg.*;
-
 public class MutexCentral {
 
 	/* This only contains the launcher. If you do nothing more than than you can run 

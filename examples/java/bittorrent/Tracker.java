@@ -6,16 +6,14 @@
  */
 package bittorrent;
 import java.util.ArrayList;
-import java.util.Iterator;
 
 import org.simgrid.msg.Comm;
 import org.simgrid.msg.Host;
-import org.simgrid.msg.Process;
 import org.simgrid.msg.Msg;
 import org.simgrid.msg.MsgException;
-import org.simgrid.msg.Task;
-
+import org.simgrid.msg.Process;
 import org.simgrid.msg.RngStream;
+import org.simgrid.msg.Task;
 /**
  * Tracker, handle requests from peers.
  */

@@ -7,7 +7,6 @@
 package bittorrent;
 
 import java.util.Arrays;
-import org.simgrid.msg.Msg;
 public class Connection {
 	/**
 	 * Remote peer id

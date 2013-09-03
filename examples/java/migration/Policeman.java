@@ -9,7 +9,6 @@ package migration;
 import org.simgrid.msg.Host;
 import org.simgrid.msg.Msg;
 import org.simgrid.msg.MsgException;
-import org.simgrid.msg.Task;
 import org.simgrid.msg.Process;
 
 public class Policeman extends Process {
