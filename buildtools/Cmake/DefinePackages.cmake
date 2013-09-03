@@ -777,6 +777,8 @@ set(DOC_SOURCES
   doc/msg-tuto-src/platforms/griffon.xml
   doc/msg-tuto-src/platforms/peers.xml
   doc/msg-tuto-src/platforms/platform.xml
+  
+  CITATION.bib
   )
 
 set(DOC_FIGS
