@@ -106,8 +106,8 @@ doc/simgrid_modules.map
 
 ################################################
 ### Specific of project 
-.project
 .settings/
+.csettings/
 .anjuta
 .anjuta_sym_db.db
 simgrid.anjuta
