@@ -33,6 +33,7 @@ src/bindings/ruby/libsimgrid.so
 examples/msg/masterslave/simgrid.so
 examples/simdag/simgrid.so
 examples/lua/console/simgrid.so
+simgrid.jar
 
 ################################################
 ### Units and supernovae files
@@ -52,6 +53,7 @@ src/internal_config.h
 src/smpi/smpicc
 src/smpi/smpirun
 simgrid-*.tar.gz
+testprog
 
 ################################################
 ### Cmake files
@@ -132,6 +134,11 @@ examples/msg/toto.txt
 examples/msg/z_gtnets.trace
 examples/msg/gpu/test_MSG_gpu_task_create
 examples/msg/cloud/masterslave_virtual_machines
+examples/msg/energy/e1/e1
+examples/msg/energy/e2/e2
+examples/msg/energy/e3/e3
+examples/msg/pastry/pastry
+examples/msg/semaphores/synchro
 examples/msg/tracing/link_srcdst_user_variables
 examples/msg/tracing/link_user_variables
 examples/msg/tracing/simple
@@ -164,6 +171,7 @@ examples/msg/icomms/toto.txt
 examples/msg/masterslave/masterslave_console
 examples/msg/irc_isend/peer
 examples/msg/irc_isend/toto.txt
+examples/simdag/sd_avail
 examples/simdag/ex_sd_seq_access
 examples/simdag/sd_seq_access
 examples/simdag/sd_comm_throttling
@@ -183,6 +191,7 @@ examples/simdag/sd_test2
 examples/simdag/dax/dax_test
 examples/simdag/goal/goal_test
 examples/simdag/scheduling/minmin_test
+examples/simdag/io/sd_io
 examples/msg/actions/actions
 examples/msg/bittorrent/bittorrent
 examples/msg/bittorrent/bittorrent_platfgen
@@ -229,6 +238,11 @@ examples/msg/mc/bugged1_stateful
 examples/msg/mc/bugged2_liveness
 examples/msg/mc/bugged2_stateful
 examples/msg/mc/centralized_liveness
+examples/msg/mc/electric_fence
+examples/smpi/mc/bugged1
+examples/smpi/mc/bugged1_liveness
+examples/smpi/mc/bugged2
+
 
 src/replay/replay
 src/testall
@@ -237,8 +251,11 @@ teshsuite/smpi/allgatherv_coll
 teshsuite/smpi/allreduce_coll
 teshsuite/smpi/alltoall_coll
 teshsuite/smpi/alltoallv_coll
+teshsuite/smpi/barrier_coll
 teshsuite/smpi/bcast_coll
+teshsuite/smpi/gather_coll
 teshsuite/smpi/reduce_coll
+teshsuite/smpi/reduce_scatter_coll
 teshsuite/smpi/allreduce
 teshsuite/smpi/alltoall2
 teshsuite/smpi/alltoall_basic
@@ -253,6 +270,7 @@ teshsuite/smpi/indexed_test
 teshsuite/smpi/pingpong
 teshsuite/smpi/reduce
 teshsuite/smpi/scatter
+teshsuite/smpi/shared
 teshsuite/smpi/smpi_sendrecv
 teshsuite/smpi/split
 teshsuite/smpi/struct_test
@@ -401,6 +419,14 @@ teshsuite/smpi/mpich-test/pt2pt/waitall2
 teshsuite/smpi/mpich-test/pt2pt/waitall3
 teshsuite/smpi/mpich-test/pt2pt/waitall4
 teshsuite/smpi/mpich-test/pt2pt/waitany
+teshsuite/smpi/mpich3-test/attr/attr2type
+teshsuite/smpi/mpich3-test/attr/attrend
+teshsuite/smpi/mpich3-test/attr/attrend2
+teshsuite/smpi/mpich3-test/attr/attrerr
+teshsuite/smpi/mpich3-test/attr/attrerrcomm
+teshsuite/smpi/mpich3-test/attr/attrerrtype
+teshsuite/smpi/mpich3-test/attr/attric
+teshsuite/smpi/mpich3-test/attr/attrorder
 teshsuite/msg/pid
 teshsuite/msg/get_sender
 teshsuite/msg/trace/test_trace_integration
