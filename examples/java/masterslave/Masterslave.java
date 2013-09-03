@@ -7,6 +7,8 @@
 
 package masterslave;
 
+import java.io.File;
+
 import org.simgrid.msg.Msg;
 import org.simgrid.msg.NativeException;
 
@@ -21,15 +23,15 @@ public class Masterslave {
     public static void main(String[] args) throws NativeException {       
 	    /* initialize the MSG simulation. Must be done before anything else (even logging). */
 	    Msg.init(args);
+	    
+	    String platf  = args.length > 1 ? args[0] : "examples/java/platform.xml";
+	    String deploy =  args.length > 1 ? args[1] : "examples/java/masterslave/masterslaveDeployment.xml";
 	
-	    if (args.length < 2) {    		
-			Msg.info("Usage   : Masterslave platform_file deployment_file");
-			Msg.info("example : Masterslave basic_platform.xml basic_deployment.xml");
-			System.exit(1);	
-		}
+	    System.out.println("Platform: "+platf+"; Deployment:"+deploy+"; Current directory: "+new File(".").getAbsolutePath());
+	    
 		/* construct the platform and deploy the application */
-		Msg.createEnvironment(args[0]);
-		Msg.deployApplication(args[1]);
+		Msg.createEnvironment(platf);
+		Msg.deployApplication(deploy);
 		/*  execute the simulation. */
         Msg.run();
     }
