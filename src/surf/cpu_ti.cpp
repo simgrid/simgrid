@@ -383,10 +383,18 @@ CpuTiModel::CpuTiModel() : CpuModel("cpu_ti")
 {
   xbt_assert(!surf_cpu_model,"CPU model already initialized. This should not happen.");
   surf_cpu_model = this;
+  CpuTiAction action;
+  CpuTi cpu;
+
+  cpu_ti_running_action_set_that_does_not_need_being_checked =
+      xbt_swag_new(xbt_swag_offset(action, p_stateHookup));
+
+  cpu_ti_modified_cpu =
+      xbt_swag_new(xbt_swag_offset(cpu, p_modifiedCpuHookup));
+
   cpu_ti_action_heap = xbt_heap_new(8, NULL);
   xbt_heap_set_update_callback(cpu_ti_action_heap,
                                cpu_ti_action_update_index_heap);
-
   /* Define callbacks */
   //TODO sg_platf_host_add_cb(parse_cpu_ti_init);
   //TODO sg_platf_postparse_add_cb(add_traces_cpu_ti);
@@ -491,6 +499,62 @@ void CpuTiModel::updateActionsState(double now, double delta)
   }
 }
 
+void CpuTiModel::addTraces()
+{
+  xbt_dict_cursor_t cursor = NULL;
+  char *trace_name, *elm;
+
+  static int called = 0;
+
+  if (called)
+    return;
+  called = 1;
+
+/* connect all traces relative to hosts */
+  xbt_dict_foreach(trace_connect_list_host_avail, cursor, trace_name, elm) {
+    tmgr_trace_t trace = (tmgr_trace_t) xbt_dict_get_or_null(traces_set_list, trace_name);
+    CpuTiPtr cpu = (CpuTiPtr) surf_cpu_resource_priv(surf_cpu_resource_by_name(elm));
+
+    xbt_assert(cpu, "Host %s undefined", elm);
+    xbt_assert(trace, "Trace %s undefined", trace_name);
+
+    if (cpu->p_stateEvent) {
+      XBT_DEBUG("Trace already configured for this CPU(%s), ignoring it",
+             elm);
+      continue;
+    }
+    XBT_DEBUG("Add state trace: %s to CPU(%s)", trace_name, elm);
+    cpu->p_stateEvent = tmgr_history_add_trace(history, trace, 0.0, 0, cpu);
+  }
+
+  xbt_dict_foreach(trace_connect_list_power, cursor, trace_name, elm) {
+    tmgr_trace_t trace = (tmgr_trace_t) xbt_dict_get_or_null(traces_set_list, trace_name);
+    CpuTiPtr cpu = (CpuTiPtr) surf_cpu_resource_priv(surf_cpu_resource_by_name(elm));
+
+    xbt_assert(cpu, "Host %s undefined", elm);
+    xbt_assert(trace, "Trace %s undefined", trace_name);
+
+    XBT_DEBUG("Add power trace: %s to CPU(%s)", trace_name, elm);
+    if (cpu->p_availTrace)
+      delete cpu->p_availTrace;
+
+    cpu->p_availTrace = new CpuTiTgmr(trace, cpu->m_powerScale);
+
+    /* add a fake trace event if periodicity == 0 */
+    if (trace && xbt_dynar_length(trace->s_list.event_list) > 1) {
+      s_tmgr_event_t val;
+      xbt_dynar_get_cpy(trace->s_list.event_list,
+                        xbt_dynar_length(trace->s_list.event_list) - 1, &val);
+      if (val.delta == 0) {
+        tmgr_trace_t empty_trace;
+        empty_trace = tmgr_empty_trace_new();
+        cpu->p_powerEvent =
+            tmgr_history_add_trace(history, empty_trace,
+                                   cpu->p_availTrace->m_lastTime, 0, cpu);
+      }
+    }
+  }
+}
 
 /************
  * Resource *
@@ -499,8 +563,10 @@ CpuTi::CpuTi(CpuTiModelPtr model, const char *name, double powerPeak,
         double powerScale, tmgr_trace_t powerTrace, int core,
         e_surf_resource_state_t stateInitial, tmgr_trace_t stateTrace,
 	xbt_dict_t properties) :
-	Cpu(model, name, properties), m_powerPeak(powerPeak), m_powerScale(powerScale),
-        p_stateCurrent(stateInitial) {
+	Cpu(model, name, properties), p_stateCurrent(stateInitial) {
+  m_powerPeak = powerPeak;
+  m_powerScale = powerScale;
+  m_core = core;
   tmgr_trace_t empty_trace;		
   s_tmgr_event_t val;		
   xbt_assert(core==1,"Multi-core not handled with this model yet");
@@ -676,78 +742,12 @@ bool CpuTi::isUsed()
   return xbt_swag_size(p_actionSet);
 }
 
-e_surf_resource_state_t CpuTi::getState()
-{
-  return m_stateCurrent;
-}
 
-double CpuTi::getSpeed(double load)
-{
-  return load * m_powerPeak;
-}
 
 double CpuTi::getAvailableSpeed()
 {
   m_powerScale = p_availTrace->getPowerScale(surf_get_clock());
-/* number between 0 and 1 */
-  return m_powerScale;
-}
-
-void CpuTi::addTraces()
-{
-  xbt_dict_cursor_t cursor = NULL;
-  char *trace_name, *elm;
-
-  static int called = 0;
-
-  if (called)
-    return;
-  called = 1;
-
-/* connect all traces relative to hosts */
-  xbt_dict_foreach(trace_connect_list_host_avail, cursor, trace_name, elm) {
-    tmgr_trace_t trace = (tmgr_trace_t) xbt_dict_get_or_null(traces_set_list, trace_name);
-    CpuTiPtr cpu = (CpuTiPtr) surf_cpu_resource_priv(surf_cpu_resource_by_name(elm));
-
-    xbt_assert(cpu, "Host %s undefined", elm);
-    xbt_assert(trace, "Trace %s undefined", trace_name);
-
-    if (cpu->p_stateEvent) {
-      XBT_DEBUG("Trace already configured for this CPU(%s), ignoring it",
-             elm);
-      continue;
-    }
-    XBT_DEBUG("Add state trace: %s to CPU(%s)", trace_name, elm);
-    cpu->p_stateEvent = tmgr_history_add_trace(history, trace, 0.0, 0, cpu);
-  }
-
-  xbt_dict_foreach(trace_connect_list_power, cursor, trace_name, elm) {
-    tmgr_trace_t trace = (tmgr_trace_t) xbt_dict_get_or_null(traces_set_list, trace_name);
-    CpuTiPtr cpu = (CpuTiPtr) surf_cpu_resource_priv(surf_cpu_resource_by_name(elm));
-
-    xbt_assert(cpu, "Host %s undefined", elm);
-    xbt_assert(trace, "Trace %s undefined", trace_name);
-
-    XBT_DEBUG("Add power trace: %s to CPU(%s)", trace_name, elm);
-    if (cpu->p_availTrace)
-      delete cpu->p_availTrace;
-
-    cpu->p_availTrace = new CpuTiTgmr(trace, cpu->m_powerScale);
-
-    /* add a fake trace event if periodicity == 0 */
-    if (trace && xbt_dynar_length(trace->s_list.event_list) > 1) {
-      s_tmgr_event_t val;
-      xbt_dynar_get_cpy(trace->s_list.event_list,
-                        xbt_dynar_length(trace->s_list.event_list) - 1, &val);
-      if (val.delta == 0) {
-        tmgr_trace_t empty_trace;
-        empty_trace = tmgr_empty_trace_new();
-        cpu->p_powerEvent =
-            tmgr_history_add_trace(history, empty_trace,
-                                   cpu->p_availTrace->m_lastTime, 0, cpu);
-      }
-    }
-  }
+  return Cpu::getAvailableSpeed();
 }
 
 /**

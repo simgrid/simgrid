@@ -43,6 +43,7 @@ XBT_PUBLIC(void) surf_watched_hosts(void);
 }
 #endif
 
+extern double sg_sender_gap;
 XBT_PUBLIC(int)  SURF_CPU_LEVEL;    //Surf cpu level
 
 /***********
@@ -58,6 +59,22 @@ typedef boost::function<void (ResourcePtr r)> ResourceCallback;
 class Action;
 typedef Action* ActionPtr;
 typedef boost::function<void (ActionPtr a)> ActionCallback;
+
+class ActionLmm;
+typedef ActionLmm* ActionLmmPtr;
+
+enum heap_action_type{
+  LATENCY = 100,
+  MAX_DURATION,
+  NORMAL,
+  NOTSET
+};
+
+typedef enum {
+  UM_FULL,
+  UM_LAZY,
+  UM_UNDEFINED
+} e_UM_t;
 
 /*********
  * Trace *
@@ -91,10 +108,18 @@ public:
   }
   ResourcePtr createResource(string name);
   ActionPtr createAction(double _cost, bool _failed);
-  double shareResources(double now);
-  void updateActionsState(double now, double delta);
+  double (Model::*shareResources)(double now);
+  double shareResourcesLazy(double now);
+  double shareResourcesFull(xbt_swag_t running_actions,
+                                      size_t offset,
+                                      lmm_system_t sys,
+                                      void (*solve) (lmm_system_t));
+  void (Model::*updateActionsState)(double now, double delta);
+  void updateActionsStateLazy(double now, double delta);
+  void updateActionsStateFull(double now, double delta);
 
   string getName() {return m_name;};
+  void gapRemove(ActionLmmPtr action);
 
   void addTurnedOnCallback(ResourceCallback rc);
   void notifyResourceTurnedOn(ResourcePtr r);
@@ -108,6 +133,12 @@ public:
   void notifyActionResume(ActionPtr a);
   void addActionSuspendCallback(ActionCallback ac);  
   void notifyActionSuspend(ActionPtr a);
+
+  lmm_system_t p_maxminSystem;
+  e_UM_t p_updateMechanism;
+  xbt_swag_t p_modifiedSet;
+  xbt_heap_t p_actionHeap;
+  int m_selectiveUpdate;
 
   xbt_swag_t p_readyActionSet; /**< Actions in state SURF_ACTION_READY */
   xbt_swag_t p_runningActionSet; /**< Actions in state SURF_ACTION_RUNNING */
@@ -126,8 +157,19 @@ private:
 /************
  * Resource *
  ************/
+
+/**
+ * Resource which have a metric handled by a maxmin system
+ */
+typedef struct {
+  double scale;
+  double peak;
+  tmgr_trace_event_t event;
+} s_surf_metric_t;
+
 class Resource {
 public:
+  Resource() {};
   Resource(ModelPtr model, const char *name, xbt_dict_t properties):
 	  m_name(name),m_running(true),p_model(model),m_properties(properties) {};
   virtual ~Resource() {};
@@ -146,17 +188,27 @@ public:
   void setName(string name);
   string getName();
   ModelPtr getModel() {return p_model;};
+  e_surf_resource_state_t getState();
   void printModel() { std::cout << p_model->getName() << "<<plop"<<std::endl;};
   void *p_resource;
   e_surf_resource_state_t m_stateCurrent;
+  const char *m_name;
 
 protected:
   ModelPtr p_model;
-  const char *m_name;
   xbt_dict_t m_properties;
 
 private:
   bool m_running;  
+};
+
+class ResourceLmm: virtual public Resource {
+public:
+  ResourceLmm() {};
+  lmm_constraint_t p_constraint;
+  e_surf_resource_state_t p_stateCurrent;
+  tmgr_trace_event_t p_stateEvent;
+  s_surf_metric_t p_power;
 };
 
 static inline void *surf_cpu_resource_priv(const void *host) {
@@ -201,14 +253,9 @@ typedef enum {
                                 /**< Not in the system anymore. Why did you ask ? */
 } e_surf_action_state_t;
 
-typedef enum {
-  UM_FULL,
-  UM_LAZY,
-  UM_UNDEFINED
-} e_UM_t;
-
 class Action {
 public:
+  Action() {};
   Action(ModelPtr model, double cost, bool failed):
 	 m_cost(cost), p_model(model), m_failed(failed),
 	 m_refcount(1), m_priority(1.0), m_maxDuration(NO_MAX_DURATION),
@@ -220,6 +267,7 @@ public:
   };
   virtual ~Action() {};
   
+  s_xbt_swag_hookup_t p_stateHookup;
   e_surf_action_state_t getState(); /**< get the state*/
   void setState(e_surf_action_state_t state); /**< Change state*/
   double getStartTime(); /**< Return the start time of an action */
@@ -242,6 +290,7 @@ public:
 #ifdef HAVE_LATENCY_BOUND_TRACKING
   int getLatencyLimited();     /**< Return 1 if action is limited by latency, 0 otherwise */
 #endif
+
   xbt_swag_t p_stateSet;
 
   double m_priority; /**< priority (1.0 by default) */
@@ -254,14 +303,15 @@ public:
   int m_latencyLimited;               /**< Set to 1 if is limited by latency, 0 otherwise */
   #endif
   double m_maxDuration; /*< max_duration (may fluctuate until the task is completed) */  
+  char *p_category;               /**< tracing category for categorized resource utilization monitoring */  
 protected:
   ModelPtr p_model;  
   int    m_cost;
   int    m_refcount;
   void *p_data; /**< for your convenience */
 #ifdef HAVE_TRACING
-  char *p_category;               /**< tracing category for categorized resource utilization monitoring */
 #endif
+  e_UM_t p_updateMechanism;
 
 private:
   int resourceUsed(void *resource_id);
@@ -275,10 +325,32 @@ private:
   void finalize(void);
 
   lmm_system_t p_maxminSystem;
-  e_UM_t p_updateMechanism;
   xbt_swag_t p_modifiedSet;
   xbt_heap_t p_actionHeap;
   int m_selectiveUpdate;
+};
+
+void surf_action_lmm_update_index_heap(void *action, int i);
+
+class ActionLmm: virtual public Action {
+public:
+  ActionLmm() {};	
+  ActionLmm(ModelPtr model, double cost, bool failed) {};
+
+  virtual void updateRemainingLazy(double now)=0;
+  void heapInsert(xbt_heap_t heap, double key, enum heap_action_type hat);
+  void heapRemove(xbt_heap_t heap);
+  double getRemains();     /**< Get the remains of an action */
+  void updateIndexHeap(int i);
+
+
+  lmm_variable_t p_variable;
+  //bool m_suspended;
+  s_xbt_swag_hookup_t p_actionListHookup;
+  int m_indexHeap;
+  double m_lastUpdate;
+  double m_lastValue;
+  enum heap_action_type m_hat;
 };
 
 #endif /* SURF_MODEL_H_ */

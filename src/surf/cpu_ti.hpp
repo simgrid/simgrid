@@ -89,6 +89,7 @@ public:
   CpuTiActionPtr createAction(double cost, bool failed);
   double shareResources(double now);
   void updateActionsState(double now, double delta);
+  void addTraces();
 
 protected:
   void NotifyResourceTurnedOn(ResourcePtr r){};
@@ -104,6 +105,7 @@ protected:
  ************/
 class CpuTi : public Cpu {
 public:
+  CpuTi() {};
   CpuTi(CpuTiModelPtr model, const char *name, double powerPeak,
         double powerScale, tmgr_trace_t powerTrace, int core,
         e_surf_resource_state_t stateInitial, tmgr_trace_t stateTrace,
@@ -113,17 +115,12 @@ public:
   void updateState(tmgr_trace_event_t event_type, double value, double date);  
   void updateActionFinishDate(double now);
   bool isUsed();  
-  double getSpeed (double load);
-  double getAvailableSpeed ();
-  void addTraces();
   void printCpuTiModel();
   CpuTiModelPtr getModel();
   CpuActionPtr execute(double size);
   CpuActionPtr sleep(double duration);
-  e_surf_resource_state_t getState();
-  
-  double m_powerPeak;            /*< CPU power peak */
-  double m_powerScale;           /*< Percentage of CPU disponible */
+  double getAvailableSpeed();
+
   CpuTiTgmrPtr p_availTrace;       /*< Structure with data needed to integrate trace file */
   e_surf_resource_state_t p_stateCurrent;        /*< CPU current state (ON or OFF) */
   tmgr_trace_event_t p_stateEvent;       /*< trace file with states events (ON or OFF) */
@@ -140,6 +137,7 @@ public:
  **********/
 class CpuTiAction: public CpuAction {
 public:
+  CpuTiAction() {};
   CpuTiAction(CpuTiModelPtr model, double cost, bool failed): CpuAction(model, cost, failed) {};
 
   void setState(e_surf_action_state_t state);

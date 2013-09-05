@@ -1,4 +1,5 @@
 #include "surf.hpp"
+#include "cpu.hpp"
 #include "simix/smx_host_private.h"
 
 XBT_LOG_NEW_CATEGORY(surfpp, "All SURF categories");
@@ -9,7 +10,6 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surfpp_kernel, surfpp,
  * Utils *
  *********/
 
-//TODO:RENAME NOW
 double NOWW = 0;
 
 XBT_INLINE double surf_get_clock(void)
@@ -78,6 +78,151 @@ static void remove_watched_host(void *key)
  * Model *
  *********/
 
+double Model::shareResourcesLazy(double now)
+{
+  ActionLmmPtr action = NULL;
+  double min = -1;
+  double value;
+
+  XBT_DEBUG
+      ("Before share resources, the size of modified actions set is %d",
+       xbt_swag_size(p_modifiedSet));
+
+  lmm_solve(p_maxminSystem);
+
+  XBT_DEBUG
+      ("After share resources, The size of modified actions set is %d",
+       xbt_swag_size(p_modifiedSet));
+
+  while((action = (ActionLmmPtr) xbt_swag_extract(p_modifiedSet))) {
+    int max_dur_flag = 0;
+
+    if (action->p_stateSet != p_runningActionSet)
+      continue;
+
+    /* bogus priority, skip it */
+    if (action->m_priority <= 0)
+      continue;
+
+    action->updateRemainingLazy(now);
+
+    min = -1;
+    value = lmm_variable_getvalue(action->p_variable);
+    if (value > 0) {
+      if (action->m_remains > 0) {
+        value = action->m_remains / value;
+        min = now + value;
+      } else {
+        value = 0.0;
+        min = now;
+      }
+    }
+
+    if ((action->m_maxDuration != NO_MAX_DURATION)
+        && (min == -1
+            || action->m_start +
+            action->m_maxDuration < min)) {
+      min = action->m_start +
+          action->m_maxDuration;
+      max_dur_flag = 1;
+    }
+
+    XBT_DEBUG("Action(%p) Start %lf Finish %lf Max_duration %lf", action,
+        action->m_start, now + value,
+        action->m_maxDuration);
+
+    if (min != -1) {
+      action->heapRemove(p_actionHeap);
+      action->heapInsert(p_actionHeap, min, max_dur_flag ? MAX_DURATION : NORMAL);
+      XBT_DEBUG("Insert at heap action(%p) min %lf now %lf", action, min,
+                now);
+    } else DIE_IMPOSSIBLE;
+  }
+
+  //hereafter must have already the min value for this resource model
+  if (xbt_heap_size(p_actionHeap) > 0)
+    min = xbt_heap_maxkey(p_actionHeap) - now;
+  else
+    min = -1;
+
+  XBT_DEBUG("The minimum with the HEAP %lf", min);
+
+  return min;
+}
+
+double Model::shareResourcesFull(xbt_swag_t running_actions,
+                          size_t offset,
+                          lmm_system_t sys,
+                          void (*solve) (lmm_system_t))
+{
+  void *_action = NULL;
+  ActionPtr action = NULL;
+  double min = -1;
+  double value = -1;
+#define VARIABLE(action) (*((lmm_variable_t*)(((char *) (action)) + (offset))))
+
+  solve(sys);
+
+  xbt_swag_foreach(_action, running_actions) {
+    action = (ActionPtr)_action;
+    value = lmm_variable_getvalue(VARIABLE(action));
+    if ((value > 0) || (action->m_maxDuration >= 0))
+      break;
+  }
+
+  if (!action)
+    return -1.0;
+
+  if (value > 0) {
+    if (action->m_remains > 0)
+      min = action->m_remains / value;
+    else
+      min = 0.0;
+    if ((action->m_maxDuration >= 0) && (action->m_maxDuration < min))
+      min = action->m_maxDuration;
+  } else
+    min = action->m_maxDuration;
+
+
+  for (action = (ActionPtr) xbt_swag_getNext(action, running_actions->offset);
+       action;
+       action = (ActionPtr) xbt_swag_getNext(action, running_actions->offset)) {
+    value = lmm_variable_getvalue(VARIABLE(action));
+    if (value > 0) {
+      if (action->m_remains > 0)
+        value = action->m_remains / value;
+      else
+        value = 0.0;
+      if (value < min) {
+        min = value;
+        XBT_DEBUG("Updating min (value) with %p: %f", action, min);
+      }
+    }
+    if ((action->m_maxDuration >= 0) && (action->m_maxDuration < min)) {
+      min = action->m_maxDuration;
+      XBT_DEBUG("Updating min (duration) with %p: %f", action, min);
+    }
+  }
+  XBT_DEBUG("min value : %f", min);
+
+#undef VARIABLE
+  return min;
+}
+
+void Model::gapRemove(ActionLmmPtr action) {}
+
+
+void Model::updateActionsStateLazy(double now, double delta)
+{
+
+}
+
+void Model::updateActionsStateFull(double now, double delta)
+{
+
+}
+
+
 void Model::addTurnedOnCallback(ResourceCallback rc)
 {
   m_resOnCB = rc;
@@ -137,6 +282,11 @@ string Resource::getName() {
   return m_name;
 }
 
+e_surf_resource_state_t Resource::getState()
+{
+  return m_stateCurrent;
+}
+
 bool Resource::isOn()
 {
   return m_running;
@@ -161,6 +311,16 @@ void Resource::turnOff()
 /**********
  * Action *
  **********/
+/* added to manage the communication action's heap */
+void surf_action_lmm_update_index_heap(void *action, int i) {
+  ((ActionLmmPtr)action)->updateIndexHeap(i);
+}
+
+void ActionLmm::updateIndexHeap(int i)
+{
+  m_indexHeap = i;
+}
+
 /*TODO/const char *surf_action_state_names[6] = {
   "SURF_ACTION_READY",
   "SURF_ACTION_RUNNING",
@@ -205,19 +365,60 @@ void Action::setState(e_surf_action_state_t state)
   XBT_OUT();
 }
 
-double  Action::getStartTime()
+double Action::getStartTime()
 {
   return m_start;
 }
 
-double  Action::getFinishTime()
+double Action::getFinishTime()
 {
-  return m_finish;
+  /* keep the function behavior, some models (cpu_ti) change the finish time before the action end */
+  return m_remains == 0 ? m_finish : -1;
 }
 
-void  Action::setData(void* data)
+void Action::setData(void* data)
 {
   p_data = data;
+}
+
+#ifdef HAVE_TRACING
+void Action::setCategory(const char *category)
+{
+  XBT_IN("(%p,%s)", this, category);
+  p_category = xbt_strdup(category);
+  XBT_OUT();
+}
+#endif
+
+/* insert action on heap using a given key and a hat (heap_action_type)
+ * a hat can be of three types for communications:
+ *
+ * NORMAL = this is a normal heap entry stating the date to finish transmitting
+ * LATENCY = this is a heap entry to warn us when the latency is payed
+ * MAX_DURATION =this is a heap entry to warn us when the max_duration limit is reached
+ */
+void ActionLmm::heapInsert(xbt_heap_t heap, double key, enum heap_action_type hat)
+{
+  m_hat = hat;
+  xbt_heap_push(heap, this, key);
+}
+
+void ActionLmm::heapRemove(xbt_heap_t heap)
+{
+  m_hat = NOTSET;
+  if (m_indexHeap >= 0) {
+    xbt_heap_remove(heap, m_indexHeap);
+  }
+}
+
+double ActionLmm::getRemains()
+{
+  XBT_IN("(%p)", this);
+  /* update remains before return it */
+  if (p_updateMechanism == UM_LAZY)      /* update remains before return it */
+    updateRemainingLazy(surf_get_clock());
+  XBT_OUT();
+  return m_remains;
 }
 
 /*void Action::cancel()

@@ -42,6 +42,7 @@ set(EXTRA_DIST
   src/smpi/smpi_mpi_dt_private.h
   src/surf/cpu.hpp
   src/surf/cpu_ti.hpp
+  src/surf/cpu_cas01.hpp
   src/surf/cpu_ti_private.h
   src/surf/gtnets/gtnets_interface.h
   src/surf/gtnets/gtnets_simulator.h
@@ -53,6 +54,7 @@ set(EXTRA_DIST
   src/surf/network_gtnets_private.h
   src/surf/network_ns3_private.h
   src/surf/network_private.h
+  src/surf/network.hpp
   src/surf/ns3/my-point-to-point-helper.h
   src/surf/ns3/ns3_interface.h
   src/surf/ns3/ns3_simulator.h
@@ -288,7 +290,9 @@ set(NS3_SRC
   )
 
 set(SURF_SRC
+  src/surf/cpu.cpp
   src/surf/cpu_ti.cpp
+  src/surf/cpu_cas01.cpp
   src/surf/cpu_cas01.c
   src/surf/cpu_ti.c
   src/surf/fair_bottleneck.cpp
@@ -297,6 +301,7 @@ set(SURF_SRC
   src/surf/lagrange.cpp
   src/surf/solver.cpp
   src/surf/solver_c.cpp
+  src/surf/network.cpp
   src/surf/network.c
   src/surf/network_constant.c
   src/surf/platf_generator.c
