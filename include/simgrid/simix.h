@@ -491,6 +491,7 @@ XBT_PUBLIC(xbt_dynar_t) simcall_file_get_info(smx_file_t fd);
 /*****************************   Storage   **********************************/
 XBT_PUBLIC(size_t) simcall_storage_get_free_size (const char* name);
 XBT_PUBLIC(size_t) simcall_storage_get_used_size (const char* name);
+XBT_PUBLIC(xbt_dict_t) simcall_storage_get_properties(smx_storage_t storage);
 
 /************************** AS router   **********************************/
 XBT_PUBLIC(xbt_dict_t) SIMIX_asr_get_properties(const char *name);

@@ -113,7 +113,6 @@ msg_file_t MSG_file_open(const char* mount, const char* fullname, void* data)
   file->info = xbt_new0(s_file_info_t,1);
   file->simdata->smx_file = simcall_file_open(mount, fullname);
   SIMIX_file_set_data(file->simdata->smx_file, data);
-
   return file;
 }
 
@@ -181,8 +180,14 @@ xbt_dict_t MSG_file_ls(const char *mount, const char *path)
 
 /********************************* Storage **************************************/
 
+/** @addtogroup msg_storage_management
+ *     \htmlonly <!-- DOXYGEN_NAVBAR_LABEL="Storages" --> \endhtmlonly
+ * (#msg_storage_t) and the functions for managing it.
+ *
+ */
+
 /** \ingroup msg_storage_management
- * \brief Return the free space size of a storage element
+ * \brief Returns the free space size of a storage element
  * \param the storage name (#char*)
  * \return the free space size of the storage element (as a size_t)
  */
@@ -191,7 +196,7 @@ size_t MSG_storage_get_free_size(const char* name){
 }
 
 /** \ingroup msg_storage_management
- * \brief Return the used space size of a storage element
+ * \brief Returns the used space size of a storage element
  * \param the storage name (#char*)
  * \return the used space size of the storage element (as a size_t)
  */
@@ -207,10 +212,7 @@ size_t MSG_storage_get_used_size(const char* name){
 xbt_dict_t MSG_storage_get_properties(msg_storage_t storage)
 {
   xbt_assert((storage != NULL), "Invalid parameters (storage is NULL)");
-
-  xbt_die( "Not implemented yet");
-  return xbt_dict_new();
-  //return (simcall_host_get_properties(storage));
+  return (simcall_storage_get_properties(storage->simdata->smx_storage));
 }
 
 /** \ingroup msg_storage_management
@@ -220,22 +222,35 @@ xbt_dict_t MSG_storage_get_properties(msg_storage_t storage)
  */
 msg_storage_t MSG_storage_get_by_name(const char *name)
 {
-  return (msg_storage_t) xbt_lib_get_elm_or_null(host_lib,name);
+  return (msg_storage_t) xbt_lib_get_elm_or_null(storage_lib,name);
 }
 
 /** \ingroup msg_storage_management
- * \brief Return a dynar containing all the storages declared at a given point of time
+ * \brief Returns a dynar containing all the storage elements declared at a given point of time
+ *
+ *
+ *
+ * @TODO implement a new msg_storage_t structure that hides members (use xbt_dict)
  */
 xbt_dynar_t MSG_storages_as_dynar(void) {
 
-  xbt_dynar_t storages = xbt_dynar_new(sizeof(msg_host_t), NULL);
-  xbt_dynar_t hosts;
-  msg_host_t host;
-  unsigned int i;
-
-  hosts = MSG_hosts_as_dynar();
-  xbt_dynar_foreach(hosts, i, host){
-	xbt_dynar_push(storages,xbt_lib_get_level((void *)host, SURF_STORAGE_LEVEL));
+  xbt_lib_cursor_t cursor;
+  char *key;
+  void **data;
+  xbt_dynar_t res = xbt_dynar_new(sizeof(msg_storage_t),NULL);
+  msg_storage_t storage;
+  xbt_lib_foreach(storage_lib, cursor, key, data) {
+    if(routing_get_network_element_type(key) == ROUTING_STORAGE_LEVEL) {
+      xbt_dictelm_t elm = xbt_dict_cursor_get_elm(cursor);
+      storage = xbt_new(s_msg_storage_t, 1);
+      storage->name = elm->key;
+      storage->simdata = xbt_new0(s_simdata_storage_t,1);
+      smx_storage_t simix_storage = xbt_lib_get_or_null(storage_lib, elm->key, SURF_STORAGE_LEVEL);
+      storage->simdata->smx_storage = simix_storage;
+      storage->data = NULL;
+      xbt_dynar_push(res, &storage);
+    }
   }
-  return storages;
+
+  return res;
 }

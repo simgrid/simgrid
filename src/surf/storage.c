@@ -192,6 +192,11 @@ static surf_action_t storage_action_execute (void *storage, size_t size, e_surf_
   return (surf_action_t) action;
 }
 
+static xbt_dict_t storage_get_properties(const void *storage)
+{
+  return surf_resource_properties(storage);
+}
+
 static void* storage_create_resource(const char* id, const char* model,
     const char* type_id, const char* content_name, const char* content_type){
   storage_t storage = NULL;
@@ -207,6 +212,7 @@ static void* storage_create_resource(const char* id, const char* model,
   storage->used_size = 0;
   storage->size = 0;
   storage->write_actions = xbt_dynar_new(sizeof(char *),NULL);
+
 
   storage_type_t storage_type = xbt_lib_get_or_null(storage_type_lib, type_id,ROUTING_STORAGE_TYPE_LEVEL);
   double Bread =
@@ -498,6 +504,8 @@ static void surf_storage_model_init_internal(void)
   surf_storage_model->extension.storage.write = storage_action_write;
   surf_storage_model->extension.storage.ls = storage_action_ls;
 
+  surf_storage_model->extension.storage.get_properties = storage_get_properties;
+
   if (!storage_maxmin_system) {
     storage_maxmin_system = lmm_system_new(storage_selective_update);
   }
@@ -681,3 +689,4 @@ void storage_register_callbacks() {
   sg_platf_storage_type_add_cb(storage_parse_storage_type);
   sg_platf_mount_add_cb(storage_parse_mount);
 }
+

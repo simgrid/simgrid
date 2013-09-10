@@ -237,6 +237,7 @@ typedef struct surf_storage_model_extension_public {
   surf_action_t(*write) (void *storage, size_t size, surf_file_t fd);
   surf_action_t(*stat) (void *storage, surf_file_t fd);
   surf_action_t(*ls) (void *storage, const char *path);
+  xbt_dict_t(*get_properties) (const void *resource);
 } s_surf_model_extension_storage_t;
 
      /** \ingroup SURF_models
@@ -583,6 +584,8 @@ XBT_PUBLIC(void) surf_storage_model_init_default(void);
  *  This storage mode can be set using --cfg=storage/model:...
  */
 XBT_PUBLIC_DATA(s_surf_model_description_t) surf_storage_model_description[];
+
+XBT_PUBLIC_DATA(surf_model_t) surf_storage_model;
 
 /** \ingroup SURF_models
  *  \brief The workstation model

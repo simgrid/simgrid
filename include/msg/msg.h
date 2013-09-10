@@ -97,7 +97,6 @@ XBT_PUBLIC(size_t) MSG_storage_get_used_size(const char* name);
 XBT_PUBLIC(msg_storage_t) MSG_storage_get_by_name(const char *name);
 XBT_PUBLIC(xbt_dict_t) MSG_storage_get_properties(msg_storage_t storage);
 XBT_PUBLIC(xbt_dynar_t) MSG_storages_as_dynar(void);
-
 /************************** AS Router handling ************************************/
 XBT_PUBLIC(const char *) MSG_as_router_get_property_value(const char* asr, const char *name);
 XBT_PUBLIC(xbt_dict_t) MSG_as_router_get_properties(const char* asr);

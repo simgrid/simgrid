@@ -293,6 +293,14 @@ size_t SIMIX_storage_get_used_size(smx_process_t process, const char* name)
   return  surf_workstation_model->extension.workstation.get_used_size(host,name);
 }
 
+xbt_dict_t SIMIX_pre_storage_get_properties(smx_simcall_t simcall, smx_storage_t storage){
+  return SIMIX_storage_get_properties(storage);
+}
+xbt_dict_t SIMIX_storage_get_properties(smx_storage_t storage){
+  xbt_assert((storage != NULL), "Invalid parameters (simix storage is NULL)");
+  return surf_storage_model->extension.storage.get_properties(storage);
+}
+
 void SIMIX_post_io(smx_action_t action)
 {
   xbt_fifo_item_t i;

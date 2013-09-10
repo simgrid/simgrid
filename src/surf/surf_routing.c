@@ -20,7 +20,8 @@ int ROUTING_HOST_LEVEL;         //Routing level
 int SURF_CPU_LEVEL;             //Surf cpu level
 int SURF_WKS_LEVEL;             //Surf workstation level
 int SIMIX_HOST_LEVEL;           //Simix level
-int MSG_HOST_LEVEL;             //Msg level
+int SIMIX_STORAGE_LEVEL;           //Simix level
+int MSG_HOST_LEVEL;             //Msg host level
 int SD_HOST_LEVEL;              //Simdag level
 int COORD_HOST_LEVEL=0;         //Coordinates level
 int NS3_HOST_LEVEL;             //host node for ns3

@@ -39,6 +39,7 @@ typedef struct surf_storage {
   size_t used_size;
   char *type_id;
   xbt_dynar_t write_actions;
+  xbt_dict_t properties;
 } s_storage_t, *storage_t;
 
 typedef enum {

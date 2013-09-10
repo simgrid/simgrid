@@ -1270,7 +1270,7 @@ xbt_dynar_t simcall_file_get_info(smx_file_t fd)
 
 /**
  * \ingroup simix_storage_management
- * \brief Return the free space size on a given storage element.
+ * \brief Returns the free space size on a given storage element.
  * \param storage name
  * \return Return the free space size on a given storage element (as size_t)
  */
@@ -1280,7 +1280,7 @@ size_t simcall_storage_get_free_size (const char* name){
 
 /**
  * \ingroup simix_storage_management
- * \brief Return the used space size on a given storage element.
+ * \brief Returns the used space size on a given storage element.
  * \param storage name
  * \return Return the used space size on a given storage element (as size_t)
  */
@@ -1290,13 +1290,25 @@ size_t simcall_storage_get_used_size (const char* name){
 
 /**
  * \ingroup simix_storage_management
- * \brief Return the list of storages mounted on an host.
+ * \brief Returns the list of storages mounted on an host.
  * \param host A SIMIX host
  * \return a dynar containing all storages mounted on the host
  */
 xbt_dynar_t simcall_host_get_storage_list(smx_host_t host)
 {
   return simcall_BODY_host_get_storage_list(host);
+}
+
+/**
+ * \ingroup simix_storage_management
+ * \brief Returns a dict of the properties assigned to a storage element.
+ *
+ * \param storage A storage element
+ * \return The properties of this storage element
+ */
+xbt_dict_t simcall_storage_get_properties(smx_storage_t storage)
+{
+  return simcall_BODY_storage_get_properties(storage);
 }
 
 
