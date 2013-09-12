@@ -9,7 +9,6 @@ if(enable_smpi AND SMPI_F2C)
   endif()
 
   set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}")
-  set(MPICH_FLAGS "-DHAVE_STDLIB_H=1 -DHAVE_UNISTD_H=1 -DHAVE_STRING_H=1 -DUSE_STDARG=1 -DHAVE_LONG_DOUBLE=1 -DHAVE_PROTOTYPES=1 -DHAVE_SIGNAL_H=1 -DHAVE_SIGACTION=1 -DHAVE_SLEEP=1 -DHAVE_SYSCONF=1  -Wno-error=unused-variable -Wno-implicit -Wno-implicit-function-declaration")
   include_directories("${CMAKE_HOME_DIRECTORY}/include/smpi")
   include_directories("${CMAKE_CURRENT_SOURCE_DIR}/../include/")
 
@@ -38,19 +37,6 @@ if(enable_smpi AND SMPI_F2C)
   target_link_libraries(typenamef  simgrid)
   target_link_libraries(typesnamef  simgrid)
   target_link_libraries(typesubf  simgrid)
-
-  set_target_properties(allctypesf PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
-  set_target_properties(gaddressf PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
-  set_target_properties(hindex1f PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
-  set_target_properties(hindexed_blockf PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
-  set_target_properties(packef PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
-  set_target_properties(typeaints PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
-  set_target_properties(typecntsf PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
-  set_target_properties(typem2f PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
-  set_target_properties(typename3f PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
-  set_target_properties(typenamef PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
-  set_target_properties(typesnamef PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
-  set_target_properties(typesubf PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
 
 endif()
 

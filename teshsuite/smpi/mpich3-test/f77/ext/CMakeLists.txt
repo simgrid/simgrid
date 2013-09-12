@@ -9,10 +9,8 @@ if(enable_smpi AND SMPI_F2C)
   endif()
 
   set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}")
-  set(MPICH_FLAGS "-DHAVE_STDLIB_H=1 -DHAVE_UNISTD_H=1 -DHAVE_STRING_H=1 -DUSE_STDARG=1 -DHAVE_LONG_DOUBLE=1 -DHAVE_PROTOTYPES=1 -DHAVE_SIGNAL_H=1 -DHAVE_SIGACTION=1 -DHAVE_SLEEP=1 -DHAVE_SYSCONF=1  -Wno-error=unused-variable -Wno-implicit -Wno-implicit-function-declaration")
   include_directories("${CMAKE_HOME_DIRECTORY}/include/smpi")
   include_directories("${CMAKE_CURRENT_SOURCE_DIR}/../include/")
-
 
   add_executable(add1size add1size.h ../util/mtestf.f)
 #  add_executable(allocmemf allocmemf.f ../util/mtestf.f)
@@ -23,11 +21,6 @@ if(enable_smpi AND SMPI_F2C)
 #  target_link_libraries(allocmemf  simgrid)
 #  target_link_libraries(c2f2cf  simgrid)
 #  target_link_libraries(ctypesinf  simgrid)
-
- set_target_properties(add1size PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
-# set_target_properties(allocmemf PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
-# set_target_properties(c2f2cf PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
-# set_target_properties(ctypesinf PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
 
 endif()
 

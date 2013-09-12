@@ -9,7 +9,6 @@ if(enable_smpi)
   endif()
 
   set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}")
-  set(MPICH_FLAGS "-DHAVE_STDLIB_H=1 -DHAVE_UNISTD_H=1 -DHAVE_STRING_H=1 -DUSE_STDARG=1 -DHAVE_LONG_DOUBLE=1 -DHAVE_PROTOTYPES=1 -DHAVE_SIGNAL_H=1 -DHAVE_SIGACTION=1 -DHAVE_SLEEP=1 -DHAVE_SYSCONF=1")
 
   include_directories("${CMAKE_HOME_DIRECTORY}/include/smpi")
   include_directories("${CMAKE_CURRENT_SOURCE_DIR}/../include/")
@@ -32,7 +31,6 @@ if(enable_smpi)
   add_executable(fkeyvaltype fkeyvaltype.c ../util/mtest.c)
   add_executable(keyval_double_free keyval_double_free.c ../util/mtest.c)
 
-
   target_link_libraries(attr2type  simgrid)
   target_link_libraries(attrend2 simgrid)
   target_link_libraries(attrend simgrid)
@@ -50,25 +48,6 @@ if(enable_smpi)
   target_link_libraries(fkeyvalcomm simgrid)
   target_link_libraries(fkeyvaltype simgrid)
   target_link_libraries(keyval_double_free simgrid)
-
-
-  set_target_properties(attr2type  PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
-  set_target_properties(attrend2 PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
-  set_target_properties(attrend PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
-  set_target_properties(attrerr PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
-  set_target_properties(attrerrcomm PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
-  set_target_properties(attrerrtype PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
-  set_target_properties(attric PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
-  set_target_properties(attrorder PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
-  set_target_properties(attrordercomm PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
-  set_target_properties(attrordertype PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
-  set_target_properties(attrt PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
-  set_target_properties(baseattr2 PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
-  set_target_properties(baseattrcomm PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
-  set_target_properties(fkeyval PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
-  set_target_properties(fkeyvalcomm PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
-  set_target_properties(fkeyvaltype PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
-  set_target_properties(keyval_double_free PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
 
 endif()
 
