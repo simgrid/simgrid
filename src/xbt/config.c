@@ -657,7 +657,7 @@ void xbt_cfg_set_parse(xbt_cfg_t cfg, const char *options) {
 
     val = strchr(name, ':');
     if (!val) {
-      free(optionlist_cpy);
+      /* don't free(optionlist_cpy) here, 'name' points inside it */
       xbt_die("Option '%s' badly formated. Should be of the form 'name:value'",
               name);
     }
