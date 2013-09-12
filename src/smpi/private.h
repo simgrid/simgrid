@@ -94,7 +94,6 @@ typedef struct s_smpi_mpi_request {
 #endif
 } s_smpi_mpi_request_t;
 
-void smpi_process_init(int *argc, char ***argv);
 void smpi_process_destroy(void);
 void smpi_process_finalize(void);
 int smpi_process_finalized(void);
