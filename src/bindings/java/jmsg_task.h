@@ -177,7 +177,7 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Task_setPriority
     (JNIEnv *, jobject, jdouble);
 /**
  * Class		org_simgrid_msg_Task
- * Method		setComputationAmount
+ * Method		setComputeDuration
  * Signature	(D)V
  */
 JNIEXPORT void JNICALL

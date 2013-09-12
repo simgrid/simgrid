@@ -174,7 +174,7 @@ JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Process_fromPID
     (JNIEnv *, jclass, jint);
 /*
  * Class        org_simgrid_msg_Process
- * Method       waitFor
+ * Method       getProperty
  * Signature    (D)V
  */
 JNIEXPORT jobject JNICALL
