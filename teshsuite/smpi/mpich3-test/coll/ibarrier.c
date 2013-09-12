@@ -17,19 +17,22 @@
 
 int main(int argc, char *argv[])
 {
+#if defined(TEST_NBC_ROUTINES)
     MPI_Request barrier;
-    int rank,i,done;
+    int i,done;
+#endif
+    int rank;
 
     MPI_Init(&argc,&argv);
     MPI_Comm_rank(MPI_COMM_WORLD,&rank);
-    #if defined(TEST_NBC_ROUTINES)
+#if defined(TEST_NBC_ROUTINES)
     MPI_Ibarrier(MPI_COMM_WORLD,&barrier);
     for (i=0,done=0; !done; i++) {
         usleep(1000);
         /*printf("[%d] MPI_Test: %d\n",rank,i);*/
         MPI_Test(&barrier,&done,MPI_STATUS_IGNORE);
     }
-    #endif
+#endif
     if (rank == 0)
         printf(" No Errors\n");
 

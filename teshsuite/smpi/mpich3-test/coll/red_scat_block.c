@@ -20,9 +20,12 @@
 int main(int argc, char **argv)
 {
     int err = 0;
-    int toterr, size, rank, i, sumval;
+    int toterr, size, rank;
+#if MTEST_HAVE_MIN_MPI_VERSION(2,2)
+    int i, sumval;
     int *sendbuf;
     int *recvbuf;
+#endif
     MPI_Comm comm;
 
     MPI_Init(&argc, &argv);

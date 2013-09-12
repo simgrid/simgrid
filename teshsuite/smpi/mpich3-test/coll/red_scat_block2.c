@@ -70,12 +70,15 @@ void nc_sum(void *a, void *b, int *count, MPI_Datatype *type)
 
 int main( int argc, char **argv )
 {
+#if MTEST_HAVE_MIN_MPI_VERSION(2,2)
     int      *sendbuf;
     int      block_size;
     int      *recvbuf;
-    int      size, rank, i;
-    MPI_Comm comm;
+    int      i;
     MPI_Op left_op, right_op, nc_sum_op;
+#endif
+    int      size, rank;
+    MPI_Comm comm;
 
     MTest_Init( &argc, &argv );
     comm = MPI_COMM_WORLD;

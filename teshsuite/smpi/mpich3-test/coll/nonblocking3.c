@@ -749,18 +749,18 @@ static void complete_something_somehow(unsigned int rndnum, int numreqs, MPI_Req
 
 int main(int argc, char **argv)
 {
-    int i, num_posted, num_completed;
     int wrank, wsize;
+#if defined(TEST_NBC_ROUTINES)
+    int i, num_posted, num_completed;
     unsigned int seed = 0x10bc;
     unsigned int post_seq, complete_seq;
-#if defined(TEST_NBC_ROUTINES)
     struct laundry larr[WINDOW];
-#endif
     MPI_Request reqs[WINDOW];
     int outcount;
     int indices[WINDOW];
     MPI_Comm comms[NUM_COMMS];
     MPI_Comm comm;
+#endif
 
     MPI_Init(&argc, &argv);
     MPI_Comm_rank(MPI_COMM_WORLD, &wrank);

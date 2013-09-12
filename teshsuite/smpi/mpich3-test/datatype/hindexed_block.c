@@ -15,7 +15,9 @@
 #define TEST_HINDEXED_BLOCK 1
 #endif
 
+#if defined(TEST_HINDEXED_BLOCK)
 static int verbose = 0;
+#endif
 
 /* tests */
 int hindexed_block_contig_test(void);
@@ -27,7 +29,10 @@ static int pack_and_unpack(char *typebuf, int count, MPI_Datatype datatype, int 
 
 int main(int argc, char **argv)
 {
-    int err, errs = 0;
+#if defined(TEST_HINDEXED_BLOCK)
+    int err;
+#endif
+    int errs = 0;
     int rank;
 
     MPI_Init(&argc, &argv);     /* MPI-1.2 doesn't allow for MPI_Init(0,0) */
