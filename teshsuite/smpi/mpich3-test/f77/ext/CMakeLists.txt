@@ -41,12 +41,12 @@ set(xml_files
   )
 set(examples_src
   ${examples_src}
- ${CMAKE_CURRENT_SOURCE_DIR}/add1size.h 
- ${CMAKE_CURRENT_SOURCE_DIR}/allocmemf.f 
- ${CMAKE_CURRENT_SOURCE_DIR}/c2f2cf.f 
- ${CMAKE_CURRENT_SOURCE_DIR}/c2f2c.c
- ${CMAKE_CURRENT_SOURCE_DIR}/ctypesinf.f
- ${CMAKE_CURRENT_SOURCE_DIR}/ctypesfromc.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/add1size.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/allocmemf.f
+  ${CMAKE_CURRENT_SOURCE_DIR}/c2f2c.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/c2f2cf.f
+  ${CMAKE_CURRENT_SOURCE_DIR}/ctypesfromc.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/ctypesinf.f
   PARENT_SCOPE
   )
 set(bin_files

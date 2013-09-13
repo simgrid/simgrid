@@ -143,7 +143,7 @@ set(SMPI_SRC
   src/smpi/colls/allreduce-rab1.c
   src/smpi/colls/allreduce-rab2.c
   src/smpi/colls/allreduce-rab-rdb.c
-  #src/smpi/colls/allreduce-rab-reduce-scatter.c
+#  src/smpi/colls/allreduce-rab-reduce-scatter.c
   src/smpi/colls/allreduce-rab-rsag.c
   src/smpi/colls/allreduce-rdb.c
   src/smpi/colls/allreduce-redbcast.c
@@ -156,7 +156,7 @@ set(SMPI_SRC
   src/smpi/colls/allreduce-ompi-ring-segmented.c
   src/smpi/colls/alltoall-2dmesh.c
   src/smpi/colls/alltoall-3dmesh.c
-  #src/smpi/colls/alltoall-bruck.c
+#  src/smpi/colls/alltoall-bruck.c
   src/smpi/colls/alltoall-pair.c
   src/smpi/colls/alltoall-pair-light-barrier.c
   src/smpi/colls/alltoall-pair-mpi-barrier.c

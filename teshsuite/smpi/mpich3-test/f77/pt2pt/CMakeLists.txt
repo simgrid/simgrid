@@ -42,12 +42,12 @@ set(xml_files
   )
 set(examples_src
   ${examples_src}
- ${CMAKE_CURRENT_SOURCE_DIR}/allpairf.f 
- ${CMAKE_CURRENT_SOURCE_DIR}/attr1aints.h 
- ${CMAKE_CURRENT_SOURCE_DIR}/dummyf.f 
- ${CMAKE_CURRENT_SOURCE_DIR}/greqf.f 
- ${CMAKE_CURRENT_SOURCE_DIR}/mprobef.f 
- ${CMAKE_CURRENT_SOURCE_DIR}/statusesf.f 
+  ${CMAKE_CURRENT_SOURCE_DIR}/allpairf.f
+  ${CMAKE_CURRENT_SOURCE_DIR}/attr1aints.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/dummyf.f
+  ${CMAKE_CURRENT_SOURCE_DIR}/greqf.f
+  ${CMAKE_CURRENT_SOURCE_DIR}/mprobef.f
+  ${CMAKE_CURRENT_SOURCE_DIR}/statusesf.f
   PARENT_SCOPE
   )
 set(bin_files

@@ -67,20 +67,20 @@ set(xml_files
   )
 set(examples_src
   ${examples_src}
- ${CMAKE_CURRENT_SOURCE_DIR}/allredint8f90.f90 
- ${CMAKE_CURRENT_SOURCE_DIR}/allredopttf90.f90 
- ${CMAKE_CURRENT_SOURCE_DIR}/alltoallvf90.f90 
- ${CMAKE_CURRENT_SOURCE_DIR}/alltoallwf90.f90 
- ${CMAKE_CURRENT_SOURCE_DIR}/exscanf90.f90 
- ${CMAKE_CURRENT_SOURCE_DIR}/inplacef90.f90 
- ${CMAKE_CURRENT_SOURCE_DIR}/nonblockingf90.f90 
- ${CMAKE_CURRENT_SOURCE_DIR}/nonblocking_inpf90.f90 
- ${CMAKE_CURRENT_SOURCE_DIR}/red_scat_blockf90.f90 
- ${CMAKE_CURRENT_SOURCE_DIR}/redscatf90.f90 
- ${CMAKE_CURRENT_SOURCE_DIR}/reducelocalf90.f90 
- ${CMAKE_CURRENT_SOURCE_DIR}/split_typef90.f90 
- ${CMAKE_CURRENT_SOURCE_DIR}/uallreducef90.f90 
- ${CMAKE_CURRENT_SOURCE_DIR}/vw_inplacef90.f90 
+  ${CMAKE_CURRENT_SOURCE_DIR}/allredint8f90.f90
+  ${CMAKE_CURRENT_SOURCE_DIR}/allredopttf90.f90
+  ${CMAKE_CURRENT_SOURCE_DIR}/alltoallvf90.f90
+  ${CMAKE_CURRENT_SOURCE_DIR}/alltoallwf90.f90
+  ${CMAKE_CURRENT_SOURCE_DIR}/exscanf90.f90
+  ${CMAKE_CURRENT_SOURCE_DIR}/inplacef90.f90
+  ${CMAKE_CURRENT_SOURCE_DIR}/nonblockingf90.f90
+  ${CMAKE_CURRENT_SOURCE_DIR}/nonblocking_inpf90.f90
+  ${CMAKE_CURRENT_SOURCE_DIR}/red_scat_blockf90.f90
+  ${CMAKE_CURRENT_SOURCE_DIR}/redscatf90.f90
+  ${CMAKE_CURRENT_SOURCE_DIR}/reducelocalf90.f90
+  ${CMAKE_CURRENT_SOURCE_DIR}/split_typef90.f90
+  ${CMAKE_CURRENT_SOURCE_DIR}/uallreducef90.f90
+  ${CMAKE_CURRENT_SOURCE_DIR}/vw_inplacef90.f90
   PARENT_SCOPE
   )
 set(bin_files

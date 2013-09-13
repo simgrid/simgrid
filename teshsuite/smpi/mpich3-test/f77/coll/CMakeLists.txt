@@ -70,20 +70,20 @@ set(xml_files
   )
 set(examples_src
   ${examples_src}
- ${CMAKE_CURRENT_SOURCE_DIR}/allredint8f.f 
- ${CMAKE_CURRENT_SOURCE_DIR}/allredopttf.f 
- ${CMAKE_CURRENT_SOURCE_DIR}/alltoallvf.f 
- ${CMAKE_CURRENT_SOURCE_DIR}/alltoallwf.f 
- ${CMAKE_CURRENT_SOURCE_DIR}/exscanf.f 
- ${CMAKE_CURRENT_SOURCE_DIR}/inplacef.f 
- ${CMAKE_CURRENT_SOURCE_DIR}/nonblockingf.f 
- ${CMAKE_CURRENT_SOURCE_DIR}/nonblocking_inpf.f 
- ${CMAKE_CURRENT_SOURCE_DIR}/red_scat_blockf.f 
- ${CMAKE_CURRENT_SOURCE_DIR}/redscatf.f 
- ${CMAKE_CURRENT_SOURCE_DIR}/reducelocalf.f 
- ${CMAKE_CURRENT_SOURCE_DIR}/split_typef.f 
- ${CMAKE_CURRENT_SOURCE_DIR}/uallreducef.f 
- ${CMAKE_CURRENT_SOURCE_DIR}/vw_inplacef.f 
+  ${CMAKE_CURRENT_SOURCE_DIR}/allredint8f.f
+  ${CMAKE_CURRENT_SOURCE_DIR}/allredopttf.f
+  ${CMAKE_CURRENT_SOURCE_DIR}/alltoallvf.f
+  ${CMAKE_CURRENT_SOURCE_DIR}/alltoallwf.f
+  ${CMAKE_CURRENT_SOURCE_DIR}/exscanf.f
+  ${CMAKE_CURRENT_SOURCE_DIR}/inplacef.f
+  ${CMAKE_CURRENT_SOURCE_DIR}/nonblockingf.f
+  ${CMAKE_CURRENT_SOURCE_DIR}/nonblocking_inpf.f
+  ${CMAKE_CURRENT_SOURCE_DIR}/red_scat_blockf.f
+  ${CMAKE_CURRENT_SOURCE_DIR}/redscatf.f
+  ${CMAKE_CURRENT_SOURCE_DIR}/reducelocalf.f
+  ${CMAKE_CURRENT_SOURCE_DIR}/split_typef.f
+  ${CMAKE_CURRENT_SOURCE_DIR}/uallreducef.f
+  ${CMAKE_CURRENT_SOURCE_DIR}/vw_inplacef.f
   PARENT_SCOPE
   )
 set(bin_files

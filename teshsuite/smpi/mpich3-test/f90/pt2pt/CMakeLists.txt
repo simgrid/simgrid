@@ -37,11 +37,11 @@ set(xml_files
   )
 set(examples_src
   ${examples_src}
- ${CMAKE_CURRENT_SOURCE_DIR}/allpairf90.f90 
- ${CMAKE_CURRENT_SOURCE_DIR}/dummyf90.f90 
- ${CMAKE_CURRENT_SOURCE_DIR}/greqf90.f90 
- ${CMAKE_CURRENT_SOURCE_DIR}/mprobef90.f90 
- ${CMAKE_CURRENT_SOURCE_DIR}/statusesf90.f90 
+  ${CMAKE_CURRENT_SOURCE_DIR}/allpairf90.f90
+  ${CMAKE_CURRENT_SOURCE_DIR}/dummyf90.f90
+  ${CMAKE_CURRENT_SOURCE_DIR}/greqf90.f90
+  ${CMAKE_CURRENT_SOURCE_DIR}/mprobef90.f90
+  ${CMAKE_CURRENT_SOURCE_DIR}/statusesf90.f90
   PARENT_SCOPE
   )
 set(bin_files

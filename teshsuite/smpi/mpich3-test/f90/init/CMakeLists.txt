@@ -28,7 +28,7 @@ set(xml_files
   )
 set(examples_src
   ${examples_src}
- ${CMAKE_CURRENT_SOURCE_DIR}/baseenvf90.f90 
+  ${CMAKE_CURRENT_SOURCE_DIR}/baseenvf90.f90
   PARENT_SCOPE
   )
 set(bin_files

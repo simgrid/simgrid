@@ -29,7 +29,7 @@ set(xml_files
   )
 set(examples_src
   ${examples_src}
- ${CMAKE_CURRENT_SOURCE_DIR}/baseenvf.f 
+  ${CMAKE_CURRENT_SOURCE_DIR}/baseenvf.f
   PARENT_SCOPE
   )
 set(bin_files

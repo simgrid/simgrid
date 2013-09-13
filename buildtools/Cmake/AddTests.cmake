@@ -49,13 +49,13 @@ if(NOT enable_memcheck)
   ADD_TEST(help-models                          ${CMAKE_BINARY_DIR}/teshsuite/simdag/platforms/basic_parsing_test --help-models)
 
   # teshsuite/xbt
-  ADD_TEST(xbt-log-large                       ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cd ${CMAKE_BINARY_DIR}/teshsuite ${CMAKE_HOME_DIRECTORY}/teshsuite/xbt/log_large_test.tesh)
-  ADD_TEST(xbt-log-parallel                    ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cd ${CMAKE_BINARY_DIR}/teshsuite ${CMAKE_HOME_DIRECTORY}/teshsuite/xbt/parallel_log_crashtest.tesh)
+  ADD_TEST(xbt-log-large                        ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cd ${CMAKE_BINARY_DIR}/teshsuite ${CMAKE_HOME_DIRECTORY}/teshsuite/xbt/log_large_test.tesh)
+  ADD_TEST(xbt-log-parallel                     ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cd ${CMAKE_BINARY_DIR}/teshsuite ${CMAKE_HOME_DIRECTORY}/teshsuite/xbt/parallel_log_crashtest.tesh)
   IF(HAVE_MMAP)
     IF(${ARCH_32_BITS})
-      ADD_TEST(xbt-mmalloc-32                    ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cd ${CMAKE_BINARY_DIR}/teshsuite ${CMAKE_HOME_DIRECTORY}/teshsuite/xbt/mmalloc_32.tesh)
+      ADD_TEST(xbt-mmalloc-32                   ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cd ${CMAKE_BINARY_DIR}/teshsuite ${CMAKE_HOME_DIRECTORY}/teshsuite/xbt/mmalloc_32.tesh)
     ELSE()
-      ADD_TEST(xbt-mmalloc-64                    ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cd ${CMAKE_BINARY_DIR}/teshsuite ${CMAKE_HOME_DIRECTORY}/teshsuite/xbt/mmalloc_64.tesh)
+      ADD_TEST(xbt-mmalloc-64                   ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cd ${CMAKE_BINARY_DIR}/teshsuite ${CMAKE_HOME_DIRECTORY}/teshsuite/xbt/mmalloc_64.tesh)
     ENDIF()
   ENDIF()
   ADD_TEST(xbt-parmap                           ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cd ${CMAKE_BINARY_DIR}/teshsuite ${CMAKE_HOME_DIRECTORY}/teshsuite/xbt/parmap_test.tesh)
@@ -69,12 +69,12 @@ if(NOT enable_memcheck)
     ADD_TEST(tesh-msg-get-sender-ucontext       ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg contexts/factory:ucontext --setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite --cd ${CMAKE_BINARY_DIR}/teshsuite ${CMAKE_HOME_DIRECTORY}/teshsuite/msg/get_sender.tesh)
   endif()
 
-  ADD_TEST(tesh-msg-pid-thread           ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg contexts/factory:thread --setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite --cd ${CMAKE_BINARY_DIR}/teshsuite ${CMAKE_HOME_DIRECTORY}/teshsuite/msg/pid.tesh)
+  ADD_TEST(tesh-msg-pid-thread                  ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg contexts/factory:thread --setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite --cd ${CMAKE_BINARY_DIR}/teshsuite ${CMAKE_HOME_DIRECTORY}/teshsuite/msg/pid.tesh)
   if(HAVE_RAWCTX)
-    ADD_TEST(tesh-msg-pid-raw            ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg contexts/factory:raw --setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite --cd ${CMAKE_BINARY_DIR}/teshsuite ${CMAKE_HOME_DIRECTORY}/teshsuite/msg/pid.tesh)
+    ADD_TEST(tesh-msg-pid-raw                   ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg contexts/factory:raw --setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite --cd ${CMAKE_BINARY_DIR}/teshsuite ${CMAKE_HOME_DIRECTORY}/teshsuite/msg/pid.tesh)
   endif()
   if(CONTEXT_UCONTEXT)
-    ADD_TEST(tesh-msg-pid-ucontext       ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg contexts/factory:ucontext --setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite --cd ${CMAKE_BINARY_DIR}/teshsuite ${CMAKE_HOME_DIRECTORY}/teshsuite/msg/pid.tesh)
+    ADD_TEST(tesh-msg-pid-ucontext              ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg contexts/factory:ucontext --setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite --cd ${CMAKE_BINARY_DIR}/teshsuite ${CMAKE_HOME_DIRECTORY}/teshsuite/msg/pid.tesh)
   endif()
 
 
@@ -135,7 +135,7 @@ if(NOT enable_memcheck)
   ADD_TEST(msg-masterslave-cpu-ti-thread        ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg contexts/factory:thread --setenv bindir=${CMAKE_BINARY_DIR}/examples/msg/masterslave --cd ${CMAKE_HOME_DIRECTORY}/examples/msg masterslave/masterslave_cpu_ti_crosstraffic.tesh)
 
   ADD_TEST(msg-masterslave-virtual-machines     ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg contexts/factory:thread --setenv bindir=${CMAKE_BINARY_DIR}/examples/msg --cd ${CMAKE_HOME_DIRECTORY}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/cloud/masterslave_virtual_machines.tesh)
-  
+
   ADD_TEST(msg-energy-pstates                   ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg contexts/factory:thread --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg --cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/energy/e1/pstate.tesh)
   ADD_TEST(msg-energy-consumption               ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg contexts/factory:thread --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg --cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/energy/e2/energy_consumption.tesh)
   ADD_TEST(msg-energy-concurrent-tasks          ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg contexts/factory:thread --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg --cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/energy/e3/concurrent_tasks.tesh)
@@ -160,11 +160,11 @@ if(NOT enable_memcheck)
     ADD_TEST(msg-masterslave-failure-ucontext   ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg contexts/factory:ucontext --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg --cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/masterslave/masterslave_failure_crosstraffic.tesh)
     ADD_TEST(msg-masterslave-mailbox-ucontext   ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg contexts/factory:ucontext --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg --cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/masterslave/masterslave_mailbox_crosstraffic.tesh)
     ADD_TEST(msg-masterslave-cpu-ti-ucontext    ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg contexts/factory:ucontext --setenv bindir=${CMAKE_BINARY_DIR}/examples/msg/masterslave --cd ${CMAKE_HOME_DIRECTORY}/examples/msg masterslave/masterslave_cpu_ti_crosstraffic.tesh)
- 
+
     ADD_TEST(msg-energy-pstates-ucontext                ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg contexts/factory:ucontext --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg --cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/energy/e1/pstate.tesh)
     ADD_TEST(msg-energy-consumption-ucontext            ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg contexts/factory:ucontext --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg --cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/energy/e2/energy_consumption.tesh)
     ADD_TEST(msg-energy-concurrent-tasks-ucontext       ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg contexts/factory:ucontext --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg --cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/energy/e3/concurrent_tasks.tesh)
- 
+
   endif()
 
   if(HAVE_RAWCTX)
@@ -190,7 +190,7 @@ if(NOT enable_memcheck)
     ADD_TEST(msg-energy-pstates-raw             ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg contexts/factory:raw --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg --cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/energy/e1/pstate.tesh)
     ADD_TEST(msg-energy-consumption-raw         ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg contexts/factory:raw --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg --cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/energy/e2/energy_consumption.tesh)
     ADD_TEST(msg-energy-concurrent-tasks-raw    ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg contexts/factory:raw --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg --cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/energy/e3/concurrent_tasks.tesh)
- 
+
   endif()
 
   ADD_TEST(msg-masterslave-vivaldi-thread       ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg contexts/factory:thread --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg --cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/masterslave/masterslave_vivaldi.tesh)
@@ -258,20 +258,20 @@ if(NOT enable_memcheck)
 
   # simdag examples
   if(HAVE_GRAPHVIZ)
-    ADD_TEST(simdag-test-dotload                  ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/simdag/dot --cd ${CMAKE_BINARY_DIR}/examples/simdag/dot ${CMAKE_HOME_DIRECTORY}/examples/simdag/dot/test_simdag_dotload.tesh)
+    ADD_TEST(simdag-test-dotload                ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/simdag/dot --cd ${CMAKE_BINARY_DIR}/examples/simdag/dot ${CMAKE_HOME_DIRECTORY}/examples/simdag/dot/test_simdag_dotload.tesh)
   endif()
   ADD_TEST(simdag-test-simdag                   ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/simdag --cd ${CMAKE_BINARY_DIR}/examples/simdag ${CMAKE_HOME_DIRECTORY}/examples/simdag/test_simdag.tesh)
   ADD_TEST(simdag-test-simdag2                  ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/simdag --cd ${CMAKE_BINARY_DIR}/examples/simdag ${CMAKE_HOME_DIRECTORY}/examples/simdag/test_simdag2.tesh)
   ADD_TEST(simdag-test-seq-access               ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/simdag --cd ${CMAKE_BINARY_DIR}/examples/simdag ${CMAKE_HOME_DIRECTORY}/examples/simdag/test_simdag_seq_access.tesh)
   ADD_TEST(simdag-test-typed-tasks              ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/simdag --cd ${CMAKE_BINARY_DIR}/examples/simdag ${CMAKE_HOME_DIRECTORY}/examples/simdag/test_simdag_typed_tasks.tesh)
   ADD_TEST(simdag-test-fail                     ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --setenv bindir=${CMAKE_BINARY_DIR}/examples/simdag --cd ${CMAKE_HOME_DIRECTORY}/examples/simdag test_simdag_fail.tesh)
-  ADD_TEST(simdag-test-avail                     ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --setenv bindir=${CMAKE_BINARY_DIR}/examples/simdag --cd ${CMAKE_HOME_DIRECTORY}/examples/simdag test_simdag_avail.tesh)
+  ADD_TEST(simdag-test-avail                    ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --setenv bindir=${CMAKE_BINARY_DIR}/examples/simdag --cd ${CMAKE_HOME_DIRECTORY}/examples/simdag test_simdag_avail.tesh)
   ADD_TEST(simdag-test-comm-throttling          ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/simdag --cd ${CMAKE_BINARY_DIR}/examples/simdag ${CMAKE_HOME_DIRECTORY}/examples/simdag/test_simdag_comm_throttling.tesh)
   ADD_TEST(simdag-test-dax                      ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --setenv bindir=${CMAKE_BINARY_DIR}/examples/simdag/dax --cd ${CMAKE_HOME_DIRECTORY}/examples/simdag/dax smalldax.tesh)
   ADD_TEST(simdag-test-dax-cycle                ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/simdag/dax --cd ${CMAKE_BINARY_DIR}/examples/simdag/dax ${CMAKE_HOME_DIRECTORY}/examples/simdag/dax/simple_dax_with_cycle.tesh)
   ADD_TEST(simdag-test-prop                     ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/simdag --cd ${CMAKE_BINARY_DIR}/examples/simdag ${CMAKE_HOME_DIRECTORY}/examples/simdag/properties/test_prop.tesh)
   ADD_TEST(simdag-test-minmin-scheduling        ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --setenv bindir=${CMAKE_BINARY_DIR}/examples/simdag/scheduling --cd ${CMAKE_HOME_DIRECTORY}/examples/simdag/scheduling test_minmin.tesh)
-  ADD_TEST(simdag-test-io 		  	${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --setenv bindir=${CMAKE_BINARY_DIR}/examples/simdag/ --setenv srcdir=${CMAKE_HOME_DIRECTORY}/ --cd ${CMAKE_HOME_DIRECTORY}/examples/ ${CMAKE_HOME_DIRECTORY}/examples/simdag/io/io.tesh)
+  ADD_TEST(simdag-test-io                       ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --setenv bindir=${CMAKE_BINARY_DIR}/examples/simdag/ --setenv srcdir=${CMAKE_HOME_DIRECTORY}/ --cd ${CMAKE_HOME_DIRECTORY}/examples/ ${CMAKE_HOME_DIRECTORY}/examples/simdag/io/io.tesh)
 
   ADD_TEST(msg-gtnets-crosstraffic-thread       ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg contexts/factory:thread --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg --cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/gtnets/gtnets-crosstraffic.tesh)
   if(CONTEXT_UCONTEXT)
@@ -314,10 +314,10 @@ if(NOT enable_memcheck)
   if(HAVE_NS3)
     ADD_TEST(msg-ns3-thread                     ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg contexts/factory:thread --setenv srcdir=${CMAKE_HOME_DIRECTORY} --cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/ns3/ns3.tesh)
     if(CONTEXT_UCONTEXT)
-      ADD_TEST(msg-ns3-ucontext                   ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg contexts/factory:ucontext --setenv srcdir=${CMAKE_HOME_DIRECTORY} --cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/ns3/ns3.tesh)
+      ADD_TEST(msg-ns3-ucontext                 ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg contexts/factory:ucontext --setenv srcdir=${CMAKE_HOME_DIRECTORY} --cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/ns3/ns3.tesh)
     endif()
     if(HAVE_RAWCTX)
-      ADD_TEST(msg-ns3-raw                        ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg contexts/factory:raw --setenv srcdir=${CMAKE_HOME_DIRECTORY} --cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/ns3/ns3.tesh)
+      ADD_TEST(msg-ns3-raw                      ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg contexts/factory:raw --setenv srcdir=${CMAKE_HOME_DIRECTORY} --cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/ns3/ns3.tesh)
     endif()
   endif()
 
@@ -390,64 +390,63 @@ if(NOT enable_memcheck)
       ADD_TEST(smpi-replay                      ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/smpi --cd ${CMAKE_BINARY_DIR}/examples/smpi ${CMAKE_HOME_DIRECTORY}/examples/smpi/replay/smpi_replay.tesh)
     endif()
 
-
     FOREACH (GATHER_COLL default ompi mpich ompi_basic_linear ompi_linear_sync ompi_binomial)
-        ADD_TEST(smpi-gather-coll-${GATHER_COLL} ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg smpi/gather:${GATHER_COLL} --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/gather_coll.tesh)
+      ADD_TEST(smpi-gather-coll-${GATHER_COLL}  ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg smpi/gather:${GATHER_COLL} --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/gather_coll.tesh)
     ENDFOREACH()
-    
+
     FOREACH (ALLGATHER_COLL default  2dmesh 3dmesh bruck GB loosely_lr lr
-		            NTSLR NTSLR_NB pair rdb  rhv ring SMP_NTS
-		            smp_simple spreading_simple ompi mpich ompi_neighborexchange)
-        ADD_TEST(smpi-allgather-coll-${ALLGATHER_COLL} ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg smpi/allgather:${ALLGATHER_COLL} --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/allgather_coll.tesh)
+                            NTSLR NTSLR_NB pair rdb  rhv ring SMP_NTS
+                            smp_simple spreading_simple ompi mpich ompi_neighborexchange)
+      ADD_TEST(smpi-allgather-coll-${ALLGATHER_COLL} ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg smpi/allgather:${ALLGATHER_COLL} --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/allgather_coll.tesh)
     ENDFOREACH()
-    
+
     FOREACH (ALLGATHERV_COLL default GB pair ring ompi mpich ompi_neighborexchange ompi_bruck mpich_rdb mpich_ring)
-        ADD_TEST(smpi-allgatherv-coll-${ALLGATHERV_COLL} ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg smpi/allgatherv:${ALLGATHERV_COLL} --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/allgatherv_coll.tesh)
+      ADD_TEST(smpi-allgatherv-coll-${ALLGATHERV_COLL} ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg smpi/allgatherv:${ALLGATHERV_COLL} --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/allgatherv_coll.tesh)
     ENDFOREACH()
-    
+
     FOREACH (ALLREDUCE_COLL default lr NTS rab1 rab2 rab_rdb
-		            rab_rsag rdb smp_binomial smp_binomial_pipeline
-			    smp_rdb smp_rsag smp_rsag_lr smp_rsag_rab redbcast ompi mpich ompi_ring_segmented)
-        ADD_TEST(smpi-allreduce-coll-${ALLREDUCE_COLL} ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg smpi/allreduce:${ALLREDUCE_COLL} --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/allreduce_coll.tesh)
+                            rab_rsag rdb smp_binomial smp_binomial_pipeline
+                            smp_rdb smp_rsag smp_rsag_lr smp_rsag_rab redbcast ompi mpich ompi_ring_segmented)
+      ADD_TEST(smpi-allreduce-coll-${ALLREDUCE_COLL} ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg smpi/allreduce:${ALLREDUCE_COLL} --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/allreduce_coll.tesh)
     ENDFOREACH()
-    
+
     FOREACH (ALLREDUCE_COLL_LARGE ompi_ring_segmented)
-        ADD_TEST(smpi-allreduce-coll-${ALLREDUCE_COLL_LARGE} ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg smpi/allreduce:${ALLREDUCE_COLL_LARGE} --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/allreduce_coll_large.tesh)
+      ADD_TEST(smpi-allreduce-coll-${ALLREDUCE_COLL_LARGE} ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg smpi/allreduce:${ALLREDUCE_COLL_LARGE} --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/allreduce_coll_large.tesh)
     ENDFOREACH()
-    
+
     FOREACH (ALLTOALL_COLL 2dmesh 3dmesh pair pair_one_barrier pair_light_barrier
-		           pair_mpi_barrier rdb ring ring_light_barrier
-			   ring_mpi_barrier ring_one_barrier
-			   simple bruck basic_linear ompi mpich ompi_pairwise)
-        ADD_TEST(smpi-alltoall-coll-${ALLTOALL_COLL} ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg smpi/alltoall:${ALLTOALL_COLL} --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/alltoall_coll.tesh)
+                           pair_mpi_barrier rdb ring ring_light_barrier
+                           ring_mpi_barrier ring_one_barrier
+                           simple bruck basic_linear ompi mpich ompi_pairwise)
+      ADD_TEST(smpi-alltoall-coll-${ALLTOALL_COLL} ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg smpi/alltoall:${ALLTOALL_COLL} --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/alltoall_coll.tesh)
     ENDFOREACH()
-    
+
     FOREACH (ALLTOALLV_COLL default pair pair_light_barrier pair_mpi_barrier
-		            pair_one_barrier  ring ring_light_barrier
-			    ring_mpi_barrier ring_one_barrier bruck ompi mpich ompi_basic_linear)
-        ADD_TEST(smpi-alltoallv-coll-${ALLTOALLV_COLL} ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg smpi/alltoallv:${ALLTOALLV_COLL} --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/alltoallv_coll.tesh)
+                            pair_one_barrier  ring ring_light_barrier
+                            ring_mpi_barrier ring_one_barrier bruck ompi mpich ompi_basic_linear)
+      ADD_TEST(smpi-alltoallv-coll-${ALLTOALLV_COLL} ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg smpi/alltoallv:${ALLTOALLV_COLL} --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/alltoallv_coll.tesh)
     ENDFOREACH()
-    
+
     FOREACH (BCAST_COLL default arrival_nb arrival_pattern_aware arrival_pattern_aware_wait arrival_scatter
-		        binomial_tree flattree flattree_pipeline NTSB NTSL NTSL_Isend scatter_LR_allgather
-		        scatter_rdb_allgather SMP_binary SMP_binomial SMP_linear ompi mpich ompi_split_bintree ompi_pipeline)
-		ADD_TEST(smpi-bcast-coll-${BCAST_COLL} ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg smpi/bcast:${BCAST_COLL} --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/bcast_coll.tesh)
+                        binomial_tree flattree flattree_pipeline NTSB NTSL NTSL_Isend scatter_LR_allgather
+                        scatter_rdb_allgather SMP_binary SMP_binomial SMP_linear ompi mpich ompi_split_bintree ompi_pipeline)
+      ADD_TEST(smpi-bcast-coll-${BCAST_COLL}    ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg smpi/bcast:${BCAST_COLL} --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/bcast_coll.tesh)
     ENDFOREACH()
-    
+
     FOREACH (REDUCE_COLL default arrival_pattern_aware binomial flat_tree NTSL scatter_gather ompi mpich ompi_chain ompi_binary ompi_basic_linear ompi_binomial ompi_in_order_binary)
-        ADD_TEST(smpi-reduce-coll-${REDUCE_COLL} ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg smpi/reduce:${REDUCE_COLL} --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/reduce_coll.tesh)
+      ADD_TEST(smpi-reduce-coll-${REDUCE_COLL}  ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg smpi/reduce:${REDUCE_COLL} --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/reduce_coll.tesh)
     ENDFOREACH()
 
     FOREACH (REDUCE_SCATTER_COLL default  ompi mpich ompi_basic_recursivehalving ompi_ring mpich_noncomm mpich_pair mpich_rdb)
-        ADD_TEST(smpi-reduce_scatter-coll-${REDUCE_SCATTER_COLL} ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg smpi/reduce_scatter:${REDUCE_SCATTER_COLL} --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/reduce_scatter_coll.tesh)
+      ADD_TEST(smpi-reduce_scatter-coll-${REDUCE_SCATTER_COLL} ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg smpi/reduce_scatter:${REDUCE_SCATTER_COLL} --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/reduce_scatter_coll.tesh)
     ENDFOREACH()
 
     FOREACH (SCATTER_COLL default  ompi mpich ompi_basic_linear ompi_binomial)
-        ADD_TEST(smpi-scatter-coll-${SCATTER_COLL} ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg smpi/scatter:${SCATTER_COLL} --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/scatter_coll.tesh)
+      ADD_TEST(smpi-scatter-coll-${SCATTER_COLL} ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg smpi/scatter:${SCATTER_COLL} --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/scatter_coll.tesh)
     ENDFOREACH()
 
     FOREACH (BARRIER_COLL default  ompi mpich ompi_basic_linear ompi_tree ompi_bruck ompi_recursivedoubling ompi_doublering)
-        ADD_TEST(smpi-barrier-coll-${BARRIER_COLL} ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg smpi/barrier:${BARRIER_COLL} --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/barrier_coll.tesh)
+      ADD_TEST(smpi-barrier-coll-${BARRIER_COLL} ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg smpi/barrier:${BARRIER_COLL} --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/barrier_coll.tesh)
     ENDFOREACH()
 
   endif()
@@ -456,20 +455,20 @@ if(NOT enable_memcheck)
 
   if(enable_smpi)
     if(HAVE_RAWCTX)
-      ADD_TEST(smpi-mpich3-attr-raw              ${CMAKE_COMMAND} -E chdir ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich3-test/attr  ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich3-test/runtests -mpiexec=${CMAKE_BINARY_DIR}/smpi_script/bin/smpirun -srcdir=${CMAKE_BINARY_DIR}/teshsuite/smpi/mpich3-test/attr -tests=testlist -execarg=--cfg=contexts/factory:raw)
-      ADD_TEST(smpi-mpich3-coll-thread              ${CMAKE_COMMAND} -E chdir ${CMAKE_BINARY_DIR}/teshsuite/smpi/mpich3-test/coll  ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich3-test/runtests -mpiexec=${CMAKE_BINARY_DIR}/smpi_script/bin/smpirun -srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich3-test/coll -tests=testlist -execarg=--cfg=contexts/factory:thread)
-      ADD_TEST(smpi-mpich3-coll-ompi-thread              ${CMAKE_COMMAND} -E chdir ${CMAKE_BINARY_DIR}/teshsuite/smpi/mpich3-test/coll  ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich3-test/runtests -mpiexec=${CMAKE_BINARY_DIR}/smpi_script/bin/smpirun -srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich3-test/coll -tests=testlist -execarg=--cfg=contexts/factory:thread -execarg=--cfg=smpi/coll_selector:ompi -execarg=--cfg=smpi/send_is_detached_thres:0)
-      ADD_TEST(smpi-mpich3-coll-mpich-thread              ${CMAKE_COMMAND} -E chdir ${CMAKE_BINARY_DIR}/teshsuite/smpi/mpich3-test/coll  ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich3-test/runtests -mpiexec=${CMAKE_BINARY_DIR}/smpi_script/bin/smpirun -srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich3-test/coll -tests=testlist -execarg=--cfg=contexts/factory:thread -execarg=--cfg=smpi/coll_selector:mpich)
-      ADD_TEST(smpi-mpich3-comm-raw              ${CMAKE_COMMAND} -E chdir ${CMAKE_BINARY_DIR}/teshsuite/smpi/mpich3-test/comm  ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich3-test/runtests -mpiexec=${CMAKE_BINARY_DIR}/smpi_script/bin/smpirun -srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich3-test/comm -tests=testlist -execarg=--cfg=contexts/factory:raw)
-      ADD_TEST(smpi-mpich3-init-raw              ${CMAKE_COMMAND} -E chdir ${CMAKE_BINARY_DIR}/teshsuite/smpi/mpich3-test/init  ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich3-test/runtests -mpiexec=${CMAKE_BINARY_DIR}/smpi_script/bin/smpirun -srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich3-test/init -tests=testlist -execarg=--cfg=contexts/factory:raw)
-      ADD_TEST(smpi-mpich3-datatype-raw          ${CMAKE_COMMAND} -E chdir ${CMAKE_BINARY_DIR}/teshsuite/smpi/mpich3-test/datatype  ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich3-test/runtests -mpiexec=${CMAKE_BINARY_DIR}/smpi_script/bin/smpirun -srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich3-test/datatype -tests=testlist -execarg=--cfg=contexts/factory:raw)
-      ADD_TEST(smpi-mpich3-group-raw             ${CMAKE_COMMAND} -E chdir ${CMAKE_BINARY_DIR}/teshsuite/smpi/mpich3-test/group  ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich3-test/runtests -mpiexec=${CMAKE_BINARY_DIR}/smpi_script/bin/smpirun -srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich3-test/group -tests=testlist -execarg=--cfg=contexts/factory:raw)
-      ADD_TEST(smpi-mpich3-pt2pt-raw              ${CMAKE_COMMAND} -E chdir ${CMAKE_BINARY_DIR}/teshsuite/smpi/mpich3-test/pt2pt  ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich3-test/runtests -mpiexec=${CMAKE_BINARY_DIR}/smpi_script/bin/smpirun -srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich3-test/pt2pt -tests=testlist -execarg=--cfg=contexts/factory:raw)
-      ADD_TEST(smpi-mpich3-thread-f77              ${CMAKE_COMMAND} -E chdir ${CMAKE_BINARY_DIR}/teshsuite/smpi/mpich3-test/f77/  ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich3-test/runtests -mpiexec=${CMAKE_BINARY_DIR}/smpi_script/bin/smpirun -srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich3-test/f77/ -tests=testlist -execarg=--cfg=contexts/factory:thread)
-  if(NOT HAVE_MC)
-      ADD_TEST(smpi-mpich3-thread-f90              ${CMAKE_COMMAND} -E chdir ${CMAKE_BINARY_DIR}/teshsuite/smpi/mpich3-test/f90/  ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich3-test/runtests -mpiexec=${CMAKE_BINARY_DIR}/smpi_script/bin/smpirun -srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich3-test/f90/ -tests=testlist -execarg=--cfg=contexts/factory:thread)
-      set_tests_properties(smpi-mpich3-thread-f90 PROPERTIES PASS_REGULAR_EXPRESSION "tests passed!")
-endif()
+      ADD_TEST(smpi-mpich3-attr-raw             ${CMAKE_COMMAND} -E chdir ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich3-test/attr  ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich3-test/runtests -mpiexec=${CMAKE_BINARY_DIR}/smpi_script/bin/smpirun -srcdir=${CMAKE_BINARY_DIR}/teshsuite/smpi/mpich3-test/attr -tests=testlist -execarg=--cfg=contexts/factory:raw)
+      ADD_TEST(smpi-mpich3-coll-thread          ${CMAKE_COMMAND} -E chdir ${CMAKE_BINARY_DIR}/teshsuite/smpi/mpich3-test/coll  ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich3-test/runtests -mpiexec=${CMAKE_BINARY_DIR}/smpi_script/bin/smpirun -srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich3-test/coll -tests=testlist -execarg=--cfg=contexts/factory:thread)
+      ADD_TEST(smpi-mpich3-coll-ompi-thread     ${CMAKE_COMMAND} -E chdir ${CMAKE_BINARY_DIR}/teshsuite/smpi/mpich3-test/coll  ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich3-test/runtests -mpiexec=${CMAKE_BINARY_DIR}/smpi_script/bin/smpirun -srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich3-test/coll -tests=testlist -execarg=--cfg=contexts/factory:thread -execarg=--cfg=smpi/coll_selector:ompi -execarg=--cfg=smpi/send_is_detached_thres:0)
+      ADD_TEST(smpi-mpich3-coll-mpich-thread    ${CMAKE_COMMAND} -E chdir ${CMAKE_BINARY_DIR}/teshsuite/smpi/mpich3-test/coll  ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich3-test/runtests -mpiexec=${CMAKE_BINARY_DIR}/smpi_script/bin/smpirun -srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich3-test/coll -tests=testlist -execarg=--cfg=contexts/factory:thread -execarg=--cfg=smpi/coll_selector:mpich)
+      ADD_TEST(smpi-mpich3-comm-raw             ${CMAKE_COMMAND} -E chdir ${CMAKE_BINARY_DIR}/teshsuite/smpi/mpich3-test/comm  ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich3-test/runtests -mpiexec=${CMAKE_BINARY_DIR}/smpi_script/bin/smpirun -srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich3-test/comm -tests=testlist -execarg=--cfg=contexts/factory:raw)
+      ADD_TEST(smpi-mpich3-init-raw             ${CMAKE_COMMAND} -E chdir ${CMAKE_BINARY_DIR}/teshsuite/smpi/mpich3-test/init  ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich3-test/runtests -mpiexec=${CMAKE_BINARY_DIR}/smpi_script/bin/smpirun -srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich3-test/init -tests=testlist -execarg=--cfg=contexts/factory:raw)
+      ADD_TEST(smpi-mpich3-datatype-raw         ${CMAKE_COMMAND} -E chdir ${CMAKE_BINARY_DIR}/teshsuite/smpi/mpich3-test/datatype  ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich3-test/runtests -mpiexec=${CMAKE_BINARY_DIR}/smpi_script/bin/smpirun -srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich3-test/datatype -tests=testlist -execarg=--cfg=contexts/factory:raw)
+      ADD_TEST(smpi-mpich3-group-raw            ${CMAKE_COMMAND} -E chdir ${CMAKE_BINARY_DIR}/teshsuite/smpi/mpich3-test/group  ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich3-test/runtests -mpiexec=${CMAKE_BINARY_DIR}/smpi_script/bin/smpirun -srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich3-test/group -tests=testlist -execarg=--cfg=contexts/factory:raw)
+      ADD_TEST(smpi-mpich3-pt2pt-raw            ${CMAKE_COMMAND} -E chdir ${CMAKE_BINARY_DIR}/teshsuite/smpi/mpich3-test/pt2pt  ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich3-test/runtests -mpiexec=${CMAKE_BINARY_DIR}/smpi_script/bin/smpirun -srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich3-test/pt2pt -tests=testlist -execarg=--cfg=contexts/factory:raw)
+      ADD_TEST(smpi-mpich3-thread-f77           ${CMAKE_COMMAND} -E chdir ${CMAKE_BINARY_DIR}/teshsuite/smpi/mpich3-test/f77/  ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich3-test/runtests -mpiexec=${CMAKE_BINARY_DIR}/smpi_script/bin/smpirun -srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich3-test/f77/ -tests=testlist -execarg=--cfg=contexts/factory:thread)
+      if(NOT HAVE_MC)
+        ADD_TEST(smpi-mpich3-thread-f90         ${CMAKE_COMMAND} -E chdir ${CMAKE_BINARY_DIR}/teshsuite/smpi/mpich3-test/f90/  ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich3-test/runtests -mpiexec=${CMAKE_BINARY_DIR}/smpi_script/bin/smpirun -srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich3-test/f90/ -tests=testlist -execarg=--cfg=contexts/factory:thread)
+        set_tests_properties(smpi-mpich3-thread-f90 PROPERTIES PASS_REGULAR_EXPRESSION "tests passed!")
+      endif()
       set_tests_properties( smpi-mpich3-thread-f77 smpi-mpich3-attr-raw smpi-mpich3-coll-thread smpi-mpich3-coll-ompi-thread smpi-mpich3-coll-mpich-thread smpi-mpich3-comm-raw smpi-mpich3-init-raw smpi-mpich3-datatype-raw smpi-mpich3-pt2pt-raw smpi-mpich3-group-raw  PROPERTIES PASS_REGULAR_EXPRESSION "tests passed!")
     endif()
   endif()
@@ -493,16 +492,16 @@ endif()
     ADD_TEST(java-startKillTime                 ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/java --setenv classpath=${TESH_CLASSPATH} --cd ${CMAKE_BINARY_DIR}/examples/java ${CMAKE_HOME_DIRECTORY}/examples/java/startKillTime/startKillTime.tesh)
     ADD_TEST(java-suspend                       ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/java --setenv classpath=${TESH_CLASSPATH} --cd ${CMAKE_BINARY_DIR}/examples/java ${CMAKE_HOME_DIRECTORY}/examples/java/suspend/suspend.tesh)
     if(HAVE_TRACING)
-      ADD_TEST(java-tracing                       ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/java --setenv classpath=${TESH_CLASSPATH} --cd ${CMAKE_BINARY_DIR}/examples/java ${CMAKE_HOME_DIRECTORY}/examples/java/tracing/tracingPingPong.tesh)
+      ADD_TEST(java-tracing                     ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/java --setenv classpath=${TESH_CLASSPATH} --cd ${CMAKE_BINARY_DIR}/examples/java ${CMAKE_HOME_DIRECTORY}/examples/java/tracing/tracingPingPong.tesh)
     endif()
   endif()
 
   # Scala examples
   if(enable_scala)
     set(TESH_CLASSPATH "${CMAKE_BINARY_DIR}/examples/scala/:${SIMGRID_JAR}:${SCALA_JARS}")
-    ADD_TEST(scala-bypass                        ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/scala --setenv classpath=${TESH_CLASSPATH} --cd ${CMAKE_BINARY_DIR}/examples/scala ${CMAKE_HOME_DIRECTORY}/examples/scala/master_slave_bypass/bypass.tesh)
-    ADD_TEST(scala-kill                          ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/scala --setenv classpath=${TESH_CLASSPATH} --cd ${CMAKE_BINARY_DIR}/examples/scala ${CMAKE_HOME_DIRECTORY}/examples/scala/master_slave_kill/kill.tesh)
-    ADD_TEST(scala-masterslave                   ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/scala --setenv classpath=${TESH_CLASSPATH} --cd ${CMAKE_BINARY_DIR}/examples/scala ${CMAKE_HOME_DIRECTORY}/examples/scala/masterslave/masterslave.tesh)
+    ADD_TEST(scala-bypass                       ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/scala --setenv classpath=${TESH_CLASSPATH} --cd ${CMAKE_BINARY_DIR}/examples/scala ${CMAKE_HOME_DIRECTORY}/examples/scala/master_slave_bypass/bypass.tesh)
+    ADD_TEST(scala-kill                         ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/scala --setenv classpath=${TESH_CLASSPATH} --cd ${CMAKE_BINARY_DIR}/examples/scala ${CMAKE_HOME_DIRECTORY}/examples/scala/master_slave_kill/kill.tesh)
+    ADD_TEST(scala-masterslave                  ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/scala --setenv classpath=${TESH_CLASSPATH} --cd ${CMAKE_BINARY_DIR}/examples/scala ${CMAKE_HOME_DIRECTORY}/examples/scala/masterslave/masterslave.tesh)
   endif()
 
   # examples/msg/mc

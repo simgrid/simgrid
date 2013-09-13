@@ -33,7 +33,6 @@ if(enable_smpi)
   target_link_libraries(typeattr3f  simgrid)
   target_link_libraries(typeattrf  simgrid)
 
-
   set_target_properties(attrmpi1f PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
   set_target_properties(baseattr2f PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
   set_target_properties(baseattrf PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
@@ -56,16 +55,16 @@ set(xml_files
   )
 set(examples_src
   ${examples_src}
- ${CMAKE_CURRENT_SOURCE_DIR}/attraints.h 
- ${CMAKE_CURRENT_SOURCE_DIR}/attrmpi1f.f 
- ${CMAKE_CURRENT_SOURCE_DIR}/baseattr2f.f 
- ${CMAKE_CURRENT_SOURCE_DIR}/baseattrf.f 
- ${CMAKE_CURRENT_SOURCE_DIR}/commattr2f.f 
- ${CMAKE_CURRENT_SOURCE_DIR}/commattr3f.f 
- ${CMAKE_CURRENT_SOURCE_DIR}/commattrf.f 
- ${CMAKE_CURRENT_SOURCE_DIR}/typeattr2f.f 
- ${CMAKE_CURRENT_SOURCE_DIR}/typeattr3f.f 
- ${CMAKE_CURRENT_SOURCE_DIR}/typeattrf.f 
+  ${CMAKE_CURRENT_SOURCE_DIR}/attraints.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/attrmpi1f.f
+  ${CMAKE_CURRENT_SOURCE_DIR}/baseattr2f.f
+  ${CMAKE_CURRENT_SOURCE_DIR}/baseattrf.f
+  ${CMAKE_CURRENT_SOURCE_DIR}/commattr2f.f
+  ${CMAKE_CURRENT_SOURCE_DIR}/commattr3f.f
+  ${CMAKE_CURRENT_SOURCE_DIR}/commattrf.f
+  ${CMAKE_CURRENT_SOURCE_DIR}/typeattr2f.f
+  ${CMAKE_CURRENT_SOURCE_DIR}/typeattr3f.f
+  ${CMAKE_CURRENT_SOURCE_DIR}/typeattrf.f
   PARENT_SCOPE
   )
 set(bin_files

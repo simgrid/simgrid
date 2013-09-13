@@ -64,18 +64,18 @@ set(xml_files
   )
 set(examples_src
   ${examples_src}
- ${CMAKE_CURRENT_SOURCE_DIR}/allctypesf.f 
- ${CMAKE_CURRENT_SOURCE_DIR}/gaddressf.f 
- ${CMAKE_CURRENT_SOURCE_DIR}/hindex1f.f 
- ${CMAKE_CURRENT_SOURCE_DIR}/hindexed_blockf.f 
- ${CMAKE_CURRENT_SOURCE_DIR}/packef.f 
- ${CMAKE_CURRENT_SOURCE_DIR}/typeaints.h 
- ${CMAKE_CURRENT_SOURCE_DIR}/typecntsf.f 
- ${CMAKE_CURRENT_SOURCE_DIR}/typem2f.f 
- ${CMAKE_CURRENT_SOURCE_DIR}/typename3f.f 
- ${CMAKE_CURRENT_SOURCE_DIR}/typenamef.f 
- ${CMAKE_CURRENT_SOURCE_DIR}/typesnamef.f 
- ${CMAKE_CURRENT_SOURCE_DIR}/typesubf.f 
+  ${CMAKE_CURRENT_SOURCE_DIR}/allctypesf.f
+  ${CMAKE_CURRENT_SOURCE_DIR}/gaddressf.f
+  ${CMAKE_CURRENT_SOURCE_DIR}/hindex1f.f
+  ${CMAKE_CURRENT_SOURCE_DIR}/hindexed_blockf.f
+  ${CMAKE_CURRENT_SOURCE_DIR}/packef.f
+  ${CMAKE_CURRENT_SOURCE_DIR}/typeaints.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/typecntsf.f
+  ${CMAKE_CURRENT_SOURCE_DIR}/typem2f.f
+  ${CMAKE_CURRENT_SOURCE_DIR}/typename3f.f
+  ${CMAKE_CURRENT_SOURCE_DIR}/typenamef.f
+  ${CMAKE_CURRENT_SOURCE_DIR}/typesnamef.f
+  ${CMAKE_CURRENT_SOURCE_DIR}/typesubf.f
   PARENT_SCOPE
   )
 set(bin_files

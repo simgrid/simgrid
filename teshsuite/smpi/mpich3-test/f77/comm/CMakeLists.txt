@@ -35,8 +35,8 @@ set(xml_files
   )
 set(examples_src
   ${examples_src}
- ${CMAKE_CURRENT_SOURCE_DIR}/commerrf.f 
- ${CMAKE_CURRENT_SOURCE_DIR}/commnamef.f 
+  ${CMAKE_CURRENT_SOURCE_DIR}/commerrf.f
+  ${CMAKE_CURRENT_SOURCE_DIR}/commnamef.f
   PARENT_SCOPE
   )
 set(bin_files
