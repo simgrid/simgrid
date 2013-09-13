@@ -927,24 +927,19 @@ set(TESHSUITE_CMAKEFILES_TXT
   teshsuite/smpi/mpich3-test/group/CMakeLists.txt
   teshsuite/smpi/mpich3-test/init/CMakeLists.txt
   teshsuite/smpi/mpich3-test/pt2pt/CMakeLists.txt
+#  teshsuite/smpi/mpich3-test/f77/attr/CMakeLists.txt
+  teshsuite/smpi/mpich3-test/f77/coll/CMakeLists.txt
+  teshsuite/smpi/mpich3-test/f77/comm/CMakeLists.txt
+  teshsuite/smpi/mpich3-test/f77/datatype/CMakeLists.txt
+  teshsuite/smpi/mpich3-test/f77/ext/CMakeLists.txt
+  teshsuite/smpi/mpich3-test/f77/init/CMakeLists.txt
+  teshsuite/smpi/mpich3-test/f77/pt2pt/CMakeLists.txt
+  teshsuite/smpi/mpich3-test/f90/coll/CMakeLists.txt
+  teshsuite/smpi/mpich3-test/f90/datatype/CMakeLists.txt
+  teshsuite/smpi/mpich3-test/f90/init/CMakeLists.txt
+  teshsuite/smpi/mpich3-test/f90/pt2pt/CMakeLists.txt
   teshsuite/xbt/CMakeLists.txt
   )
-
-if(SMPI_F2C)
-  set(TESHSUITE_CMAKEFILES_TXT
-    ${TESHSUITE_CMAKEFILES_TXT}
-    teshsuite/smpi/mpich3-test/f77/comm/CMakeLists.txt
-    teshsuite/smpi/mpich3-test/f77/coll/CMakeLists.txt
-    teshsuite/smpi/mpich3-test/f77/pt2pt/CMakeLists.txt
-    teshsuite/smpi/mpich3-test/f77/datatype/CMakeLists.txt
-    teshsuite/smpi/mpich3-test/f77/ext/CMakeLists.txt
-    teshsuite/smpi/mpich3-test/f77/init/CMakeLists.txt
-    teshsuite/smpi/mpich3-test/f90/coll/CMakeLists.txt
-    teshsuite/smpi/mpich3-test/f90/pt2pt/CMakeLists.txt
-    teshsuite/smpi/mpich3-test/f90/datatype/CMakeLists.txt
-    teshsuite/smpi/mpich3-test/f90/init/CMakeLists.txt
-  )
-endif()
 
 set(TOOLS_CMAKEFILES_TXT
   tools/CMakeLists.txt

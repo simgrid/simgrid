@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.6)
 
-if(enable_smpi)
+if(enable_smpi AND SMPI_F2C)
   if(WIN32)
     set(CMAKE_C_FLAGS "-include ${CMAKE_HOME_DIRECTORY}/include/smpi/smpi_main.h")
   else()
@@ -30,6 +30,7 @@ set(xml_files
 set(examples_src
   ${examples_src}
   ${CMAKE_CURRENT_SOURCE_DIR}/baseenvf.f
+  ${CMAKE_CURRENT_SOURCE_DIR}/checksizes.c
   PARENT_SCOPE
   )
 set(bin_files

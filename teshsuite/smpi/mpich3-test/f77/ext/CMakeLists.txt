@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.6)
 
-if(enable_smpi)
+if(enable_smpi AND SMPI_F2C)
   if(WIN32)
     set(CMAKE_C_FLAGS "-include ${CMAKE_HOME_DIRECTORY}/include/smpi/smpi_main.h")
   else()
@@ -45,6 +45,7 @@ set(examples_src
   ${CMAKE_CURRENT_SOURCE_DIR}/allocmemf.f
   ${CMAKE_CURRENT_SOURCE_DIR}/c2f2c.c
   ${CMAKE_CURRENT_SOURCE_DIR}/c2f2cf.f
+  ${CMAKE_CURRENT_SOURCE_DIR}/c2fmult.c
   ${CMAKE_CURRENT_SOURCE_DIR}/ctypesfromc.c
   ${CMAKE_CURRENT_SOURCE_DIR}/ctypesinf.f
   PARENT_SCOPE
