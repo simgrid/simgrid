@@ -394,7 +394,7 @@ if(NOT enable_memcheck)
       ADD_TEST(smpi-gather-coll-${GATHER_COLL}  ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg smpi/gather:${GATHER_COLL} --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/gather_coll.tesh)
     ENDFOREACH()
 
-    FOREACH (ALLGATHER_COLL default  2dmesh 3dmesh bruck GB loosely_lr lr
+    FOREACH (ALLGATHER_COLL default  2dmesh 3dmesh bruck GB loosely_lr
                             NTSLR NTSLR_NB pair rdb  rhv ring SMP_NTS
                             smp_simple spreading_simple ompi mpich ompi_neighborexchange)
       ADD_TEST(smpi-allgather-coll-${ALLGATHER_COLL} ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg smpi/allgather:${ALLGATHER_COLL} --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/allgather_coll.tesh)
@@ -404,7 +404,7 @@ if(NOT enable_memcheck)
       ADD_TEST(smpi-allgatherv-coll-${ALLGATHERV_COLL} ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg smpi/allgatherv:${ALLGATHERV_COLL} --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/allgatherv_coll.tesh)
     ENDFOREACH()
 
-    FOREACH (ALLREDUCE_COLL default lr NTS rab1 rab2 rab_rdb
+    FOREACH (ALLREDUCE_COLL default lr rab1 rab2 rab_rdb
                             rab_rsag rdb smp_binomial smp_binomial_pipeline
                             smp_rdb smp_rsag smp_rsag_lr smp_rsag_rab redbcast ompi mpich ompi_ring_segmented)
       ADD_TEST(smpi-allreduce-coll-${ALLREDUCE_COLL} ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg smpi/allreduce:${ALLREDUCE_COLL} --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/allreduce_coll.tesh)
