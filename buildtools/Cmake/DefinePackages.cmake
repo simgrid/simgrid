@@ -120,7 +120,6 @@ set(SMPI_SRC
   src/smpi/colls/allgather-bruck.c
   src/smpi/colls/allgather-GB.c
   src/smpi/colls/allgather-loosely-lr.c
-  src/smpi/colls/allgather-lr.c
   src/smpi/colls/allgather-NTSLR.c
   src/smpi/colls/allgather-NTSLR-NB.c
   src/smpi/colls/allgather-pair.c
