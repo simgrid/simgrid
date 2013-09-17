@@ -105,8 +105,6 @@ COLL_APPLY(action, COLL_ALLREDUCE_SIG, lr) COLL_sep \
 COLL_APPLY(action, COLL_ALLREDUCE_SIG, rab1) COLL_sep \
 COLL_APPLY(action, COLL_ALLREDUCE_SIG, rab2) COLL_sep \
 COLL_APPLY(action, COLL_ALLREDUCE_SIG, rab_rdb) COLL_sep \
-COLL_NOTHING(COLL_APPLY(action, COLL_ALLREDUCE_SIG, rab_reduce_scatter) COLL_sep) \
-COLL_APPLY(action, COLL_ALLREDUCE_SIG, rab_rsag) COLL_sep \
 COLL_APPLY(action, COLL_ALLREDUCE_SIG, rdb) COLL_sep \
 COLL_APPLY(action, COLL_ALLREDUCE_SIG, smp_binomial) COLL_sep \
 COLL_APPLY(action, COLL_ALLREDUCE_SIG, smp_binomial_pipeline) COLL_sep \

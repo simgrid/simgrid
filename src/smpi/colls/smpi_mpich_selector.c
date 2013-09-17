@@ -74,7 +74,7 @@ int smpi_coll_tuned_allreduce_mpich(void *sbuf, void *rbuf, int count,
 
     if (block_dsize > large_message && count >= pof2 && smpi_op_is_commute(op)) {
       //for long messages
-       return (smpi_coll_tuned_allreduce_rab_rsag (sbuf, rbuf, 
+       return (smpi_coll_tuned_allreduce_rab_rdb (sbuf, rbuf, 
                                                                    count, dtype,
                                                                    op, comm));
     }else {

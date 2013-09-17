@@ -141,8 +141,6 @@ set(SMPI_SRC
   src/smpi/colls/allreduce-rab1.c
   src/smpi/colls/allreduce-rab2.c
   src/smpi/colls/allreduce-rab-rdb.c
-#  src/smpi/colls/allreduce-rab-reduce-scatter.c
-  src/smpi/colls/allreduce-rab-rsag.c
   src/smpi/colls/allreduce-rdb.c
   src/smpi/colls/allreduce-redbcast.c
   src/smpi/colls/allreduce-smp-binomial.c

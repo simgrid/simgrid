@@ -405,7 +405,7 @@ if(NOT enable_memcheck)
     ENDFOREACH()
 
     FOREACH (ALLREDUCE_COLL default lr rab1 rab2 rab_rdb
-                            rab_rsag rdb smp_binomial smp_binomial_pipeline
+                            rdb smp_binomial smp_binomial_pipeline
                             smp_rdb smp_rsag smp_rsag_lr smp_rsag_rab redbcast ompi mpich ompi_ring_segmented)
       ADD_TEST(smpi-allreduce-coll-${ALLREDUCE_COLL} ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg smpi/allreduce:${ALLREDUCE_COLL} --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/allreduce_coll.tesh)
     ENDFOREACH()
