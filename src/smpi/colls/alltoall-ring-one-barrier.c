@@ -41,7 +41,7 @@ smpi_coll_tuned_alltoall_ring_one_barrier(void *send_buff, int send_count,
   send_chunk *= send_count;
   recv_chunk *= recv_count;
 
-  smpi_mpi_barrier(comm);
+  mpi_coll_barrier_fun(comm);
   for (i = 0; i < num_procs; i++) {
     src = (rank - i + num_procs) % num_procs;
     dst = (rank + i) % num_procs;
