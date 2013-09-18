@@ -181,7 +181,6 @@ COLL_ALLTOALLVS(COLL_PROTO, COLL_NOsep)
 	               int root, MPI_Comm comm)
 
 #define COLL_BCASTS(action, COLL_sep) \
-COLL_APPLY(action, COLL_BCAST_SIG, arrival_nb) COLL_sep \
 COLL_APPLY(action, COLL_BCAST_SIG, arrival_pattern_aware) COLL_sep \
 COLL_APPLY(action, COLL_BCAST_SIG, arrival_pattern_aware_wait) COLL_sep \
 COLL_APPLY(action, COLL_BCAST_SIG, arrival_scatter) COLL_sep \

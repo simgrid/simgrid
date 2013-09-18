@@ -427,7 +427,7 @@ if(NOT enable_memcheck)
       ADD_TEST(smpi-alltoallv-coll-${ALLTOALLV_COLL} ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg smpi/alltoallv:${ALLTOALLV_COLL} --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/alltoallv_coll.tesh)
     ENDFOREACH()
 
-    FOREACH (BCAST_COLL default arrival_nb arrival_pattern_aware arrival_pattern_aware_wait arrival_scatter
+    FOREACH (BCAST_COLL default arrival_pattern_aware arrival_pattern_aware_wait arrival_scatter
                         binomial_tree flattree flattree_pipeline NTSB NTSL NTSL_Isend scatter_LR_allgather
                         scatter_rdb_allgather SMP_binary SMP_binomial SMP_linear ompi mpich ompi_split_bintree ompi_pipeline)
       ADD_TEST(smpi-bcast-coll-${BCAST_COLL}    ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg smpi/bcast:${BCAST_COLL} --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/bcast_coll.tesh)
