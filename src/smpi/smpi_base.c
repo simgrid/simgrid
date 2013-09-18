@@ -444,7 +444,7 @@ MPI_Request smpi_isend_init(void *buf, int count, MPI_Datatype datatype,
 {
   MPI_Request request =
     build_request(buf==MPI_BOTTOM ? (void*)0 : buf , count, datatype, smpi_process_index(), smpi_group_index(smpi_comm_group(comm), dst), tag,
-                  comm, NON_PERSISTENT | SEND | PREPARED);
+                  comm, NON_PERSISTENT | ISEND | SEND | PREPARED);
 
   return request;
 }
