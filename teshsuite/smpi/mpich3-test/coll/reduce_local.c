@@ -40,11 +40,13 @@ static void user_op(void *invec, void *inoutvec, int *len, MPI_Datatype *datatyp
 int main( int argc, char *argv[] )
 {
     int errs = 0;
+#if MTEST_HAVE_MIN_MPI_VERSION(2,2)
     int i;
     int *inbuf = NULL;
     int *inoutbuf = NULL;
     int count = -1;
     MPI_Op uop = MPI_OP_NULL;
+#endif
 
     MTest_Init(&argc, &argv);
 #if MTEST_HAVE_MIN_MPI_VERSION(2,2)

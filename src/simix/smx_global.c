@@ -10,6 +10,7 @@
 #include "xbt/str.h"
 #include "xbt/ex.h"             /* ex_backtrace_display */
 #include "mc/mc.h"
+#include "simgrid/sg_config.h"
 
 XBT_LOG_NEW_CATEGORY(simix, "All SIMIX categories");
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_kernel, simix,
@@ -108,7 +109,7 @@ void SIMIX_global_init(int *argc, char **argv)
 
   SIMIX_HOST_LEVEL = xbt_lib_add_level(host_lib,SIMIX_host_destroy);
 
-  atexit(SIMIX_clean);
+  if(sg_cfg_get_boolean("clean_atexit")) atexit(SIMIX_clean);
 }
 
 /**
@@ -157,7 +158,7 @@ static void SIMIX_clean(void)
 
 #ifdef TIME_BENCH_AMDAHL
   xbt_os_cputimer_stop(simix_global->timer_seq);
-  XBT_INFO("Amdhal timing informations. Sequential time: %lf; Parallel time: %lf",
+  XBT_INFO("Amdahl timing informations. Sequential time: %lf; Parallel time: %lf",
            xbt_os_timer_elapsed(simix_global->timer_seq),
            xbt_os_timer_elapsed(simix_global->timer_par));
   xbt_os_timer_free(simix_global->timer_seq);
@@ -325,6 +326,16 @@ void SIMIX_run(void)
       set = model->states.done_action_set;
       while ((action = xbt_swag_extract(set)))
         SIMIX_simcall_post((smx_action_t) action->data);
+    }
+
+    /* Autorestart all process */
+    if(host_that_restart) {
+      char *hostname = NULL;
+      xbt_dynar_foreach(host_that_restart,iter,hostname) {
+        XBT_INFO("Restart processes on host: %s",hostname);
+        SIMIX_host_autorestart(SIMIX_host_get_by_name(hostname));
+      }
+      xbt_dynar_reset(host_that_restart);
     }
 
     /* Clean processes to destroy */

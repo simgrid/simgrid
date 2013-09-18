@@ -6,13 +6,12 @@
  */
 package startKillTime;
 import org.simgrid.msg.Host;
-import org.simgrid.msg.MsgException;
 import org.simgrid.msg.HostFailureException;
-import org.simgrid.msg.HostNotFoundException;
-import org.simgrid.msg.TransferFailureException;
-import org.simgrid.msg.TimeoutException;
 import org.simgrid.msg.Msg;
+import org.simgrid.msg.MsgException;
 import org.simgrid.msg.Process;
+import org.simgrid.msg.TimeoutException;
+import org.simgrid.msg.TransferFailureException;
 
 /**
  * Lazy Guy Slave, suspends itself ASAP

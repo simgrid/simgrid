@@ -100,7 +100,7 @@ smpi_coll_tuned_scatter_ompi_binomial(void *sbuf, int scount,
 	}
 	total_send = scount;
     } else if (!(vrank % 2)) {
-	/* non-root, non-leaf nodes, allocte temp buffer for recv
+	/* non-root, non-leaf nodes, allocate temp buffer for recv
 	 * the most we need is rcount*size/2 */
 	tempbuf = (char *) malloc(rtrue_extent + (rcount*size - 1) * rextent);
 	if (NULL == tempbuf) {

@@ -50,7 +50,6 @@ static void sum_fn(void *invec, void *inoutvec, int *len, MPI_Datatype *datatype
 
 int main(int argc, char **argv)
 {
-    int i, j;
     int rank, size;
     int *buf = NULL;
     int *recvbuf = NULL;
@@ -60,8 +59,11 @@ int main(int argc, char **argv)
     int *rdispls = NULL;
     int *sendtypes = NULL;
     int *recvtypes = NULL;
+#if defined(TEST_NBC_ROUTINES)
+    int i, j;
     char *buf_alias = NULL;
     MPI_Request req;
+#endif
 
     MPI_Init(&argc, &argv);
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);

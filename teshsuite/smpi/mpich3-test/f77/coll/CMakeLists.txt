@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.6)
 
-if(enable_smpi)
+if(enable_smpi AND SMPI_F2C)
   if(WIN32)
     set(CMAKE_C_FLAGS "-include ${CMAKE_HOME_DIRECTORY}/include/smpi/smpi_main.h")
   else()
@@ -9,7 +9,6 @@ if(enable_smpi)
   endif()
 
   set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}")
-  set(MPICH_FLAGS "-DHAVE_STDLIB_H=1 -DHAVE_UNISTD_H=1 -DHAVE_STRING_H=1 -DUSE_STDARG=1 -DHAVE_LONG_DOUBLE=1 -DHAVE_PROTOTYPES=1 -DHAVE_SIGNAL_H=1 -DHAVE_SIGACTION=1 -DHAVE_SLEEP=1 -DHAVE_SYSCONF=1  -Wno-error=unused-variable -Wno-implicit -Wno-implicit-function-declaration")
   include_directories("${CMAKE_HOME_DIRECTORY}/include/smpi")
   include_directories("${CMAKE_CURRENT_SOURCE_DIR}/../include/")
 
@@ -43,21 +42,6 @@ if(enable_smpi)
   target_link_libraries(uallreducef  simgrid)
   target_link_libraries(vw_inplacef  simgrid)
 
-  set_target_properties(allredint8f PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
-  set_target_properties(allredopttf PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
-  set_target_properties(alltoallvf PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
-  set_target_properties(alltoallwf PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
-  set_target_properties(exscanf PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
-  set_target_properties(inplacef PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
-#  set_target_properties(nonblockingf PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
-#  set_target_properties(nonblocking_inpf PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
-  set_target_properties(red_scat_blockf PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
-  set_target_properties(redscatf PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
-  set_target_properties(reducelocalf PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
-  set_target_properties(split_typef PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
-  set_target_properties(uallreducef PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
-  set_target_properties(vw_inplacef PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
-
 endif()
 
 set(tesh_files
@@ -70,20 +54,20 @@ set(xml_files
   )
 set(examples_src
   ${examples_src}
- ${CMAKE_CURRENT_SOURCE_DIR}/allredint8f.f 
- ${CMAKE_CURRENT_SOURCE_DIR}/allredopttf.f 
- ${CMAKE_CURRENT_SOURCE_DIR}/alltoallvf.f 
- ${CMAKE_CURRENT_SOURCE_DIR}/alltoallwf.f 
- ${CMAKE_CURRENT_SOURCE_DIR}/exscanf.f 
- ${CMAKE_CURRENT_SOURCE_DIR}/inplacef.f 
- ${CMAKE_CURRENT_SOURCE_DIR}/nonblockingf.f 
- ${CMAKE_CURRENT_SOURCE_DIR}/nonblocking_inpf.f 
- ${CMAKE_CURRENT_SOURCE_DIR}/red_scat_blockf.f 
- ${CMAKE_CURRENT_SOURCE_DIR}/redscatf.f 
- ${CMAKE_CURRENT_SOURCE_DIR}/reducelocalf.f 
- ${CMAKE_CURRENT_SOURCE_DIR}/split_typef.f 
- ${CMAKE_CURRENT_SOURCE_DIR}/uallreducef.f 
- ${CMAKE_CURRENT_SOURCE_DIR}/vw_inplacef.f 
+  ${CMAKE_CURRENT_SOURCE_DIR}/allredint8f.f
+  ${CMAKE_CURRENT_SOURCE_DIR}/allredopttf.f
+  ${CMAKE_CURRENT_SOURCE_DIR}/alltoallvf.f
+  ${CMAKE_CURRENT_SOURCE_DIR}/alltoallwf.f
+  ${CMAKE_CURRENT_SOURCE_DIR}/exscanf.f
+  ${CMAKE_CURRENT_SOURCE_DIR}/inplacef.f
+  ${CMAKE_CURRENT_SOURCE_DIR}/nonblockingf.f
+  ${CMAKE_CURRENT_SOURCE_DIR}/nonblocking_inpf.f
+  ${CMAKE_CURRENT_SOURCE_DIR}/red_scat_blockf.f
+  ${CMAKE_CURRENT_SOURCE_DIR}/redscatf.f
+  ${CMAKE_CURRENT_SOURCE_DIR}/reducelocalf.f
+  ${CMAKE_CURRENT_SOURCE_DIR}/split_typef.f
+  ${CMAKE_CURRENT_SOURCE_DIR}/uallreducef.f
+  ${CMAKE_CURRENT_SOURCE_DIR}/vw_inplacef.f
   PARENT_SCOPE
   )
 set(bin_files

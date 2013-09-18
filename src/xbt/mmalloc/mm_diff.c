@@ -756,7 +756,7 @@ static int compare_heap_area_with_type(void *real_area1, void *real_area2, void 
   case e_dw_base_type:
     if((check_ignore > 0) && ((ignore1 = heap_comparison_ignore_size(to_ignore1, real_area1)) > 0) && ((ignore2 = heap_comparison_ignore_size(to_ignore2, real_area2))  == ignore1))
       return 0;
-    if(strcmp(type->name, "char") == 0){ /* Chaine de caractères, donc taille aléatoire */
+    if(strcmp(type->name, "char") == 0){ /* String, hence random (arbitrary ?) size */
       return (memcmp(area1, area2, area_size) != 0);
     }else{
       if(area_size != -1 && type->size != area_size)

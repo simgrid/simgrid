@@ -268,8 +268,6 @@ static void cpu_update_resource_state(void *id,
   lmm_variable_t var = NULL;
   lmm_element_t elem = NULL;
 
-  surf_watched_hosts();
-
   if (event_type == cpu->power_event) {
     cpu->power_scale = value;
     lmm_update_constraint_bound(surf_cpu_model->model_private->maxmin_system, cpu->constraint,
@@ -290,9 +288,11 @@ static void cpu_update_resource_state(void *id,
     if (tmgr_trace_event_free(event_type))
       cpu->power_event = NULL;
   } else if (event_type == cpu->state_event) {
-    if (value > 0)
+    if (value > 0) {
+      if(cpu->state_current == SURF_RESOURCE_OFF)
+        xbt_dynar_push_as(host_that_restart, char*, (cpu->generic_resource.name));
       cpu->state_current = SURF_RESOURCE_ON;
-    else {
+    } else {
       lmm_constraint_t cnst = cpu->constraint;
 
       cpu->state_current = SURF_RESOURCE_OFF;

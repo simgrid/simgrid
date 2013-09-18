@@ -69,9 +69,9 @@ int builtin_float_test(void)
 {
     int nints, nadds, ntypes, combiner;
 
-    int err, errs = 0;
+    int /* err, */ errs = 0;
 
-    err = MPI_Type_get_envelope(MPI_FLOAT,
+    /* err = */ MPI_Type_get_envelope(MPI_FLOAT,
 				&nints,
 				&nadds,
 				&ntypes,
@@ -217,7 +217,7 @@ int optimizable_vector_of_basics_test(void)
     char *buf;
     int i, sizeofint, sizeoftype, position;
 
-    int err, errs = 0;
+    int /* err, */ errs = 0;
 
     MPI_Type_size(MPI_INT, &sizeofint);
 
@@ -228,7 +228,7 @@ int optimizable_vector_of_basics_test(void)
     }
 
     /* set up type */
-    err = MPI_Type_vector(10,
+    /* err = */ MPI_Type_vector(10,
 			  2,
 			  2,
 			  MPI_INT,
@@ -247,7 +247,7 @@ int optimizable_vector_of_basics_test(void)
     buf = (char *) malloc(sizeoftype);
 
     position = 0;
-    err = MPI_Pack(array,
+    /* err = */ MPI_Pack(array,
 		   1,
 		   parent_type,
 		   buf,
@@ -263,7 +263,7 @@ int optimizable_vector_of_basics_test(void)
 
     memset(array, 0, 20 * sizeof(int));
     position = 0;
-    err = MPI_Unpack(buf,
+    /* err = */ MPI_Unpack(buf,
 		     sizeoftype,
 		     &position,
 		     array,

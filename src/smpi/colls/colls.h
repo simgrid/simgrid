@@ -89,6 +89,7 @@ COLL_APPLY(action, COLL_ALLGATHERV_SIG, ompi_neighborexchange) COLL_sep \
 COLL_APPLY(action, COLL_ALLGATHERV_SIG, ompi_bruck) COLL_sep \
 COLL_APPLY(action, COLL_ALLGATHERV_SIG, mpich) COLL_sep \
 COLL_APPLY(action, COLL_ALLGATHERV_SIG, mpich_rdb) COLL_sep \
+COLL_APPLY(action, COLL_ALLGATHERV_SIG, mpich_ring) COLL_sep \
 COLL_APPLY(action, COLL_ALLGATHERV_SIG, automatic)
 
 COLL_ALLGATHERVS(COLL_PROTO, COLL_NOsep)

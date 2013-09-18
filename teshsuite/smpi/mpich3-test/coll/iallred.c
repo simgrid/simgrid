@@ -14,9 +14,11 @@
 
 int main(int argc, char *argv[])
 {
-    MPI_Request request;
     int size, rank;
+#if defined(TEST_NBC_ROUTINES)
+    MPI_Request request;
     int one = 1, two = 2, isum, sum;
+#endif
     MPI_Init(&argc,&argv);
     MPI_Comm_size(MPI_COMM_WORLD, &size);
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);

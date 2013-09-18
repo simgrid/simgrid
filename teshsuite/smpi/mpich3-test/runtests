@@ -83,7 +83,7 @@ $depth = 0;              # This is used to manage multiple open list files
 
 # Build flags
 $remove_this_pgm = 0;
-$clean_pgms      = 1;
+$clean_pgms      = 0;
 
 my $program_wrapper = '';
 
@@ -753,6 +753,11 @@ sub AddMPIProgram {
 # Return value is 0 on success, non zero on failure
 sub BuildMPIProgram {
     my $programname = shift;
+    if (! -x $programname) {
+        die "Could not find $programname. Aborting.\n";
+    }
+    return 0;
+    # THE FOLLOWING IS DISABLED.
     my $xfail = shift;
     my $rc = 0;
     if ($verbose) { print STDERR "making $programname\n"; }

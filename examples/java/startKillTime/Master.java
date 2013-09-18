@@ -7,11 +7,10 @@
 package startKillTime;
 import org.simgrid.msg.Host;
 import org.simgrid.msg.HostFailureException;
-import org.simgrid.msg.HostNotFoundException;
-import org.simgrid.msg.TransferFailureException;
-import org.simgrid.msg.TimeoutException;
 import org.simgrid.msg.Msg;
 import org.simgrid.msg.Process;
+import org.simgrid.msg.TimeoutException;
+import org.simgrid.msg.TransferFailureException;
 
 
 public class Master extends Process {

@@ -20,6 +20,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_config, instr, "Configuration");
 #define OPT_TRACING_SMPI_GROUP    "tracing/smpi/group"
 #define OPT_TRACING_SMPI_COMPUTING "tracing/smpi/computing"
 #define OPT_TRACING_SMPI_INTERNALS "tracing/smpi/internals"
+#define OPT_TRACING_DISPLAY_SIZES  "tracing/smpi/display_sizes"
 #define OPT_TRACING_CATEGORIZED   "tracing/categorized"
 #define OPT_TRACING_UNCATEGORIZED "tracing/uncategorized"
 #define OPT_TRACING_MSG_PROCESS   "tracing/msg/process"
@@ -51,6 +52,7 @@ static int trace_buffer;
 static int trace_onelink_only;
 static int trace_disable_destroy;
 static int trace_basic;
+static int trace_display_sizes = 0;
 static int trace_disable_link;
 static int trace_disable_power;
 
@@ -76,6 +78,7 @@ static void TRACE_getopts(void)
   trace_onelink_only = xbt_cfg_get_int(_sg_cfg_set, OPT_TRACING_ONELINK_ONLY);
   trace_disable_destroy = xbt_cfg_get_int(_sg_cfg_set, OPT_TRACING_DISABLE_DESTROY);
   trace_basic = xbt_cfg_get_int(_sg_cfg_set, OPT_TRACING_BASIC);
+  trace_display_sizes = xbt_cfg_get_int(_sg_cfg_set, OPT_TRACING_DISPLAY_SIZES);
   trace_disable_link = xbt_cfg_get_int(_sg_cfg_set, OPT_TRACING_DISABLE_LINK);
   trace_disable_power = xbt_cfg_get_int(_sg_cfg_set, OPT_TRACING_DISABLE_POWER);
 }
@@ -283,6 +286,11 @@ int TRACE_basic (void)
   return trace_basic && TRACE_is_enabled();
 }
 
+int TRACE_display_sizes (void)
+{
+   return trace_display_sizes && trace_smpi_enabled && TRACE_is_enabled();
+}
+
 char *TRACE_get_comment (void)
 {
   return xbt_cfg_get_string(_sg_cfg_set, OPT_TRACING_COMMENT);
@@ -437,6 +445,13 @@ void TRACE_global_init(int *argc, char **argv)
                    xbt_cfgelm_int, &default_basic, 0, 1,
                    NULL, NULL);
 
+  /* display_sizes -- Extended events with message size information */
+  int default_display_sizes = 0;
+  xbt_cfg_register(&_sg_cfg_set, OPT_TRACING_DISPLAY_SIZES,
+                   "(smpi only for now) Extended events with message size information",
+                   xbt_cfgelm_int, &default_display_sizes, 0, 1,
+                   NULL, NULL);
+
   /* comment */
   char *default_tracing_comment = xbt_strdup ("");
   xbt_cfg_register(&_sg_cfg_set, OPT_TRACING_COMMENT,
@@ -552,6 +567,10 @@ void TRACE_help (int detailed)
       "  Use this option if you are using one of these tools to visualize the simulation\n"
       "  trace. Keep in mind that the trace might be incomplete, without all the\n"
       "  information that would be registered otherwise.",
+      detailed);
+  print_line (OPT_TRACING_DISPLAY_SIZES, "Only works for SMPI now. Add message size information",
+      "Message size (in bytes) is added to links, and to states. For collectives, the displayed value \n"
+      "is the more relevant to the collective (total sent by the process, usually)",
       detailed);
   print_line (OPT_TRACING_COMMENT, "Comment to be added on the top of the trace file.",
       "  Use this to add a comment line to the top of the trace file.",

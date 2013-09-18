@@ -311,7 +311,7 @@ void SIMIX_host_add_auto_restart_process(smx_host_t host,
   if( SIMIX_host_get_state(host) == SURF_RESOURCE_OFF
       && !xbt_dict_get_or_null(watched_hosts_lib,sg_host_name(host))){
     xbt_dict_set(watched_hosts_lib,sg_host_name(host),host,NULL);
-    XBT_DEBUG("Have push host %s to watched_hosts_lib because state == SURF_RESOURCE_OFF",sg_host_name(host));
+    XBT_DEBUG("Have pushed host %s to watched_hosts_lib because state == SURF_RESOURCE_OFF",sg_host_name(host));
   }
   xbt_dynar_push_as(SIMIX_host_priv(host)->auto_restart_processes,smx_process_arg_t,arg);
 }
@@ -322,7 +322,10 @@ void SIMIX_host_restart_processes(smx_host_t host)
 {
   unsigned int cpt;
   smx_process_arg_t arg;
-  xbt_dynar_foreach(SIMIX_host_priv(host)->auto_restart_processes,cpt,arg) {
+  xbt_dynar_t process_list = SIMIX_host_priv(host)->auto_restart_processes;
+  if(!process_list) return;
+
+  xbt_dynar_foreach(process_list,cpt,arg) {
 
     smx_process_t process;
 
@@ -353,7 +356,7 @@ void SIMIX_host_restart_processes(smx_host_t host)
 
     }
   }
-  xbt_dynar_reset(SIMIX_host_priv(host)->auto_restart_processes);
+  xbt_dynar_reset(process_list);
 }
 
 void SIMIX_host_autorestart(smx_host_t host)

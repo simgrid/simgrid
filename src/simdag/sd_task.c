@@ -172,8 +172,8 @@ return res;
  * mandatory power.
  *
  * A parallel computation can be scheduled on any number of host.
- * The underlying speedup model is Amdahl's law. 
- * To be auto-scheduled, \see SD_task_distribute_comp_amdhal has to be called 
+ * The underlying speedup model is Amdahl's law.
+ * To be auto-scheduled, \see SD_task_distribute_comp_amdahl has to be called
  * first.
  * \param name the name of the task (can be \c NULL)
  * \param data the user data you want to associate with the task (can be \c NULL)
@@ -1430,7 +1430,7 @@ double SD_task_get_finish_time(SD_task_t task)
 /** @brief Blah
  *
  */
-void SD_task_distribute_comp_amdhal(SD_task_t task, int ws_count)
+void SD_task_distribute_comp_amdahl(SD_task_t task, int ws_count)
 {
   int i;
   xbt_assert(task->kind == SD_TASK_COMP_PAR_AMDAHL,
@@ -1482,7 +1482,7 @@ void SD_task_schedulev(SD_task_t task, int count,
               SD_task_get_name(task));
   switch (task->kind) {
   case SD_TASK_COMP_PAR_AMDAHL:
-    SD_task_distribute_comp_amdhal(task, count);
+    SD_task_distribute_comp_amdahl(task, count);
   case SD_TASK_COMM_E2E:
   case SD_TASK_COMP_SEQ:
     xbt_assert(task->workstation_nb == count,
@@ -1559,7 +1559,7 @@ void SD_task_schedulev(SD_task_t task, int count,
    * located (and start them if runnable) */
   if (task->kind == SD_TASK_COMP_PAR_AMDAHL) {
     XBT_VERB("Schedule computation task %s on %d workstations. %.f flops"
-             " will be distributed following Amdahl'Law",
+             " will be distributed following Amdahl's Law",
           SD_task_get_name(task), task->workstation_nb,
           task->computation_amount[0]);
     xbt_dynar_foreach(task->tasks_before, cpt, dep) {

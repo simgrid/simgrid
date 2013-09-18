@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.6)
 
-if(enable_smpi)
+if(enable_smpi AND SMPI_F2C)
   if(WIN32)
     set(CMAKE_C_FLAGS "-include ${CMAKE_HOME_DIRECTORY}/include/smpi/smpi_main.h")
   else()
@@ -9,19 +9,14 @@ if(enable_smpi)
   endif()
 
   set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}")
-  set(MPICH_FLAGS "-DHAVE_STDLIB_H=1 -DHAVE_UNISTD_H=1 -DHAVE_STRING_H=1 -DUSE_STDARG=1 -DHAVE_LONG_DOUBLE=1 -DHAVE_PROTOTYPES=1 -DHAVE_SIGNAL_H=1 -DHAVE_SIGACTION=1 -DHAVE_SLEEP=1 -DHAVE_SYSCONF=1  -Wno-error=unused-variable -Wno-implicit -Wno-implicit-function-declaration")
   include_directories("${CMAKE_HOME_DIRECTORY}/include/smpi")
   include_directories("${CMAKE_CURRENT_SOURCE_DIR}/../include/")
-
 
  # add_executable(commerrf commerrf.f ../util/mtestf.f)
   add_executable(commnamef commnamef.f ../util/mtestf.f)
 
  # target_link_libraries(commerrf  simgrid)
   target_link_libraries(commnamef  simgrid)
-
-# set_target_properties(commerrf PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
-  set_target_properties(commnamef PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
 
 endif()
 
@@ -35,8 +30,8 @@ set(xml_files
   )
 set(examples_src
   ${examples_src}
- ${CMAKE_CURRENT_SOURCE_DIR}/commerrf.f 
- ${CMAKE_CURRENT_SOURCE_DIR}/commnamef.f 
+  ${CMAKE_CURRENT_SOURCE_DIR}/commerrf.f
+  ${CMAKE_CURRENT_SOURCE_DIR}/commnamef.f
   PARENT_SCOPE
   )
 set(bin_files

@@ -73,7 +73,7 @@ void MSG_init_nocheck(int *argc, char **argv) {
   MSG_HOST_LEVEL = xbt_lib_add_level(host_lib, (void_f_pvoid_t) __MSG_host_destroy);
   MSG_STORAGE_LEVEL = xbt_lib_add_level(storage_lib, (void_f_pvoid_t) __MSG_storage_destroy);
 
-  atexit(MSG_exit);
+  if(sg_cfg_get_boolean("clean_atexit")) atexit(MSG_exit);
 }
 
 #ifdef MSG_USE_DEPRECATED

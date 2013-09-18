@@ -31,15 +31,15 @@
 int main(int argc, char **argv)
 {
     int errs = 0;
-    int found, completed;
     int rank, size;
+#ifdef TEST_MPROBE_ROUTINES
+    int found, completed;
     int sendbuf[8], recvbuf[8];
     int count;
-#ifdef TEST_MPROBE_ROUTINES
     MPI_Message msg;
-#endif
     MPI_Request rreq;
     MPI_Status s1, s2;
+#endif
 
     MPI_Init(&argc, &argv);
 

@@ -87,9 +87,9 @@ void jxbt_throw_host_not_found(JNIEnv * env, const char *invalid_name);
 void jxbt_throw_process_not_found(JNIEnv * env, const char *invalid_name);
 /** Thrown when a transfer failure accure while Sending task */
 void jxbt_throw_transfer_failure(JNIEnv * env, char *detail);
-/** Thrown when a host failure accures while Sending task*/
+/** Thrown when a host failure occurs while Sending a task*/
 void jxbt_throw_host_failure(JNIEnv * env, char *details);
-/** Thrown when a time out accures While Sending task */
+/** Thrown when a timeout occurs while Sending a task */
 void jxbt_throw_time_out_failure(JNIEnv * env, char *details);
 /**Thrown when a task is canceled */
 void jxbt_throw_task_cancelled(JNIEnv * env, char *details);

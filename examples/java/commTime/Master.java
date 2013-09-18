@@ -10,11 +10,10 @@
 package commTime;
 
 import org.simgrid.msg.Host;
-import org.simgrid.msg.HostNotFoundException;
 import org.simgrid.msg.Msg;
 import org.simgrid.msg.MsgException;
-import org.simgrid.msg.Task;
 import org.simgrid.msg.Process;
+import org.simgrid.msg.Task;
 
 public class Master extends Process {
 	public Master(Host host, String name, String[]args) {

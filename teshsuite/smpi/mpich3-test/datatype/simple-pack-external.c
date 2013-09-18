@@ -68,9 +68,9 @@ int builtin_float_test(void)
 {
     int nints, nadds, ntypes, combiner;
 
-    int err, errs = 0;
+    int /* err, */ errs = 0;
 
-    err = MPI_Type_get_envelope(MPI_FLOAT,
+    /* err = */ MPI_Type_get_envelope(MPI_FLOAT,
 				&nints,
 				&nadds,
 				&ntypes,
@@ -219,7 +219,7 @@ int optimizable_vector_of_basics_test(void)
     int i;
     MPI_Aint sizeofint, sizeoftype, position;
 
-    int err, errs = 0;
+    int /* err, */ errs = 0;
 
     MPI_Pack_external_size((char*)"external32", 1, MPI_INT, &sizeofint);
 
@@ -231,7 +231,7 @@ int optimizable_vector_of_basics_test(void)
     }
 
     /* set up type */
-    err = MPI_Type_vector(10,
+    /* err = */ MPI_Type_vector(10,
 			  2,
 			  2,
 			  MPI_INT,
@@ -251,7 +251,7 @@ int optimizable_vector_of_basics_test(void)
     buf = (char *) malloc(sizeoftype);
 
     position = 0;
-    err = MPI_Pack_external((char*)"external32",
+    /* err = */ MPI_Pack_external((char*)"external32",
 			    array,
 			    1,
 			    parent_type,
@@ -267,7 +267,7 @@ int optimizable_vector_of_basics_test(void)
 
     memset(array, 0, 20 * sizeof(int));
     position = 0;
-    err = MPI_Unpack_external((char*)"external32",
+    /* err = */ MPI_Unpack_external((char*)"external32",
 			      buf,
 			      sizeoftype,
 			      &position,
@@ -313,7 +313,7 @@ int struct_of_basics_test(void)
     MPI_Aint indices[10];
     MPI_Datatype types[10];
 
-    int err, errs = 0;
+    int /* err, */ errs = 0;
 
     MPI_Pack_external_size((char*)"external32", 1, MPI_INT, &sizeofint);
 
@@ -333,7 +333,7 @@ int struct_of_basics_test(void)
     }
 
     /* set up type */
-    err = MPI_Type_struct(10,
+    /* err = */ MPI_Type_struct(10,
 			  blocks,
 			  indices,
 			  types,
@@ -352,7 +352,7 @@ int struct_of_basics_test(void)
     buf = (char *) malloc(sizeoftype);
 
     position = 0;
-    err = MPI_Pack_external((char*)"external32",
+    /* err = */ MPI_Pack_external((char*)"external32",
 			    array,
 			    1,
 			    parent_type,
@@ -368,7 +368,7 @@ int struct_of_basics_test(void)
 
     memset(array, 0, 20 * sizeof(int));
     position = 0;
-    err = MPI_Unpack_external((char*)"external32",
+    /* err = */ MPI_Unpack_external((char*)"external32",
 			      buf,
 			      sizeoftype,
 			      &position,

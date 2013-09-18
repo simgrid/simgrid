@@ -51,7 +51,9 @@ int main( int argc, char *argv[] )
 {
     MPI_Op c_uop = MPI_OP_NULL;
     MPI_Op nc_uop = MPI_OP_NULL;
+#if MTEST_HAVE_MIN_MPI_VERSION(2,2)
     int is_commutative = 0;
+#endif
 
     MTest_Init(&argc, &argv);
 

@@ -24,6 +24,20 @@
         }                                                                         \
     } while (0)
 
+/* Abort when using unimplemented functions.  Currently, it should not happen,
+ * since sizeof(MPI_Count) == sizeof(int), but it avoids compile errors about
+ * undefined functions. */
+#define err_unimpl(func) do {                                 \
+    fprintf(stderr, "ERROR: %s is not implemented\n", #func); \
+    abort();                                                  \
+  } while (0)
+
+#define MPI_Type_size_x(a,b)              err_unimpl(MPI_Type_size_x)
+#define MPI_Type_get_extent_x(a,b,c)      err_unimpl(MPI_Type_get_extent_x)
+#define MPI_Type_get_true_extent_x(a,b,c) err_unimpl(MPI_Type_get_true_extent_x)
+#define MPI_Get_elements_x(a,b,c)         err_unimpl(MPI_Get_elements_x)
+#define MPI_Status_set_elements_x(a,b,c)  err_unimpl(MPI_Status_set_elements_x)
+
 int main(int argc, char *argv[])
 {
     int errs = 0;

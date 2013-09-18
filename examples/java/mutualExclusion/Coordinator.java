@@ -5,7 +5,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. 
  */
 
-package mutualExclusion.centralized;
+package mutualExclusion;
 import java.util.LinkedList;
 
 import org.simgrid.msg.Host;

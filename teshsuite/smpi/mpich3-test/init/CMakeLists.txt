@@ -9,10 +9,8 @@ if(enable_smpi)
   endif()
 
   set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}")
-  set(MPICH_FLAGS "-DHAVE_STDLIB_H=1 -DHAVE_UNISTD_H=1 -DHAVE_STRING_H=1 -DUSE_STDARG=1 -DHAVE_LONG_DOUBLE=1 -DHAVE_PROTOTYPES=1 -DHAVE_SIGNAL_H=1 -DHAVE_SIGACTION=1 -DHAVE_SLEEP=1 -DHAVE_SYSCONF=1  -Wno-error=unused-variable")
   include_directories("${CMAKE_HOME_DIRECTORY}/include/smpi")
   include_directories("${CMAKE_CURRENT_SOURCE_DIR}/../include/")
-
 
   add_executable(attrself attrself.c ../util/mtest.c)
   add_executable(exitst1 exitst1.c ../util/mtest.c)
@@ -24,8 +22,6 @@ if(enable_smpi)
   add_executable(timeout timeout.c ../util/mtest.c)
   add_executable(version version.c ../util/mtest.c)
 
-
-
   target_link_libraries(attrself  simgrid)
   target_link_libraries(exitst1  simgrid)
   target_link_libraries(exitst2  simgrid)
@@ -35,18 +31,6 @@ if(enable_smpi)
   target_link_libraries(library_version  simgrid)
   target_link_libraries(timeout  simgrid)
   target_link_libraries(version  simgrid)
-
-
-
- set_target_properties(attrself PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
- set_target_properties(exitst1 PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
- set_target_properties(exitst2 PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
- set_target_properties(exitst3 PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
- set_target_properties(finalized PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
- set_target_properties(initstat PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
- set_target_properties(library_version PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
- set_target_properties(timeout PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
- set_target_properties(version PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
 
 endif()
 

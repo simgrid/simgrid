@@ -42,7 +42,7 @@ typedef struct cpu_ti {
   surf_cpu_ti_tgmr_t avail_trace;       /*< Structure with data needed to integrate trace file */
   e_surf_resource_state_t state_current;        /*< CPU current state (ON or OFF) */
   tmgr_trace_event_t state_event;       /*< trace file with states events (ON or OFF) */
-  tmgr_trace_event_t power_event;       /*< trace file with availabitly events */
+  tmgr_trace_event_t power_event;       /*< trace file with availability events */
   xbt_swag_t action_set;        /*< set with all actions running on cpu */
   s_xbt_swag_hookup_t modified_cpu_hookup;      /*< hookup to swag that indicacates whether share resources must be recalculated or not */
   double sum_priority;          /*< the sum of actions' priority that are running on cpu */

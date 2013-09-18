@@ -9,10 +9,8 @@ if(enable_smpi)
   endif()
 
   set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}")
-  set(MPICH_FLAGS "-DHAVE_STDLIB_H=1 -DHAVE_UNISTD_H=1 -DHAVE_STRING_H=1 -DUSE_STDARG=1 -DHAVE_LONG_DOUBLE=1 -DHAVE_PROTOTYPES=1 -DHAVE_SIGNAL_H=1 -DHAVE_SIGACTION=1 -DHAVE_SLEEP=1 -DHAVE_SYSCONF=1  -Wno-error=unused-variable")
   include_directories("${CMAKE_HOME_DIRECTORY}/include/smpi")
   include_directories("${CMAKE_CURRENT_SOURCE_DIR}/../include/")
-
 
   add_executable(groupcreate groupcreate.c ../util/mtest.c)
   add_executable(groupnullincl groupnullincl.c ../util/mtest.c)
@@ -21,23 +19,12 @@ if(enable_smpi)
   add_executable(gtranks gtranks.c ../util/mtest.c)
   add_executable(gtranksperf gtranksperf.c ../util/mtest.c)
 
-
-
   target_link_libraries(groupcreate  simgrid)
   target_link_libraries(groupnullincl  simgrid)
   target_link_libraries(grouptest2  simgrid)
   target_link_libraries(grouptest  simgrid)
   target_link_libraries(gtranks  simgrid)
   target_link_libraries(gtranksperf  simgrid)
-
-
-
- set_target_properties(groupcreate PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
- set_target_properties(groupnullincl PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
- set_target_properties(grouptest2 PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
- set_target_properties(grouptest PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
- set_target_properties(gtranks PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
- set_target_properties(gtranksperf PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
 
 endif()
 

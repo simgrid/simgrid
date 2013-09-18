@@ -5,6 +5,11 @@ SimGrid (3.10) NOT RELEASED; urgency=low
    used even if the OS provide a getline(). This should reduce the
    configuration complexity by using the same code on all platforms.
  * new xbt_cfg_elm_boolean type
+ * Allow to disable SimGrid cleanups at exit from command line option.
+   There are situations where one may want a simulation to end with an exit.
+   Unfortunately, calling exit may cause SimGrid to segfault, which is quite
+   annoying when scripting around the simulator. Adding a
+   --cfg=clean_atexit:yes allows to circumvent this issue.
 
  Java:
  * Reintegrate Java to the main archive as desynchronizing these
@@ -21,25 +26,25 @@ SimGrid (3.10) NOT RELEASED; urgency=low
 
  SMPI:
  * SMPI is now included directly in the libsimgrid as the windows
-   linker dont forces us on splitting it anymore.
+   linker doesn't force us on splitting it anymore.
  * Improvements of the SMPI replay tool:
    - Most of the collective communications are now rooted in the same process as
      in the original application.
-   - Traces now rely on the same MPI datatype as the application (MPI_BYTE was
-     used until now). Multiple datatypes can now be used in a trace.
+   - Traces now rely on the same MPI data type as the application (MPI_BYTE was
+     used until now). Multiple data types can now be used in a trace.
    - The replay tool now supports traces produce either by TAU or a modified
      version of MPE.
    - Bug Fix: the compute part of the reduce action is now taken into account.
  * smpirun generates the hostfile if needed (with given hostcount and platform)
- * Integration of more than 100 STAR-MPI, mpich, OpenMPI collective algorithms
+ * Integration of more than 100 STAR-MPI, MPICH, OpenMPI collective algorithms
    - allows to select one in particular with --cfg=smpi/coll_name:algorithm
    - allows to use the decision logic of OpenMPI(1.7) or MPICH(3.0.4) by setting
      --cfg=smpi/coll_selector:(mpich/ompi)
- * Support for new functions : MPI_Issend, MPI_Ssend, Commutative operations in 
+ * Support for new functions : MPI_Issend, MPI_Ssend, Commutative operations in
    Reduce
- * Add a --cfg:tracing/smpi/internals option, to trace internal communications 
+ * Add a --cfg:tracing/smpi/internals option, to trace internal communications
    happening inside a collective SMPI call.
- * Fix the behavior of complex datatypes handling
+ * Fix the behavior of complex data types handling
  * replace MPICH-1 test suite by the one from MPICH 3.0.4
  * Add all missing Fortran bindings, SMPI should work with Fortran 90
    (no privatization of global variables yet)
@@ -51,10 +56,13 @@ SimGrid (3.10) NOT RELEASED; urgency=low
 
  PLATFORM:
  * Handle units for values (10ms, 10kiloflops, 10Bps, 1GB, ...)
- * Remove rule based routing (no more pcre dependency)
+ * Remove rule based routing (no more PCRE dependency)
  * Add a limiter_link option to cluster tag, to specify a maximum reachable
-  bandwidth in fullduplex mode when it is < 2*nominal bw
- * Add a loopback_bw and loopback_lat options to cluster tag. 
+   bandwidth in fullduplex mode when it is less than twice the nominal bandwidth.
+ * Add a loopback_bw and loopback_lat options to cluster tag.
+ * Fix the peer tag that could not be mixed with other AS within a Vivaldi
+   routing. Now peers are encapsulated in an AS and have their own private
+   router but this is transparent.
 
 -- $date Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
 

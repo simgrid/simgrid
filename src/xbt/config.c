@@ -66,7 +66,7 @@ static xbt_cfgelm_t xbt_cfgelm_get(xbt_cfg_t cfg, const char *name,
 
 /** @brief Constructor
  *
- * Initialise an config set
+ * Initialise a config set
  */
 
 
@@ -412,9 +412,16 @@ void xbt_cfg_help(xbt_cfg_t cfg)
         printf("'%s'%s", xbt_dynar_get_as(variable->content, i, char *), sep);
         break;
 
-      case xbt_cfgelm_boolean:
-        printf("'%d'%s", xbt_dynar_get_as(variable->content, i, int), sep);
+      case xbt_cfgelm_boolean: {
+        int b = xbt_dynar_get_as(variable->content, i, int);
+        const char *bs = b ? xbt_cfgelm_boolean_values[0].true_val
+                           : xbt_cfgelm_boolean_values[0].false_val;
+        if (b == 0 || b == 1)
+          printf("'%s'%s", bs, sep);
+        else
+          printf("'%s/%d'%s", bs, b, sep);
         break;
+      }
 
       case xbt_cfgelm_peer: {
         xbt_peer_t hval = xbt_dynar_get_as(variable->content, i, xbt_peer_t);
@@ -657,7 +664,7 @@ void xbt_cfg_set_parse(xbt_cfg_t cfg, const char *options) {
 
     val = strchr(name, ':');
     if (!val) {
-      free(optionlist_cpy);
+      /* don't free(optionlist_cpy) here, 'name' points inside it */
       xbt_die("Option '%s' badly formated. Should be of the form 'name:value'",
               name);
     }

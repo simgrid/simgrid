@@ -19,7 +19,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route_floyd, surf, "Routing part of surf");
 
 typedef struct {
   s_as_t generic_routing;
-  /* vars for calculate the floyd algorith. */
+  /* vars for calculate the floyd algorithm. */
   int *predecessor_table;
   double *cost_table;
   sg_platf_route_cbarg_t *link_table;

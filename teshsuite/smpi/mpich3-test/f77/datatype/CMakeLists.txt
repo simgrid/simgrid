@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.6)
 
-if(enable_smpi)
+if(enable_smpi AND SMPI_F2C)
   if(WIN32)
     set(CMAKE_C_FLAGS "-include ${CMAKE_HOME_DIRECTORY}/include/smpi/smpi_main.h")
   else()
@@ -9,7 +9,6 @@ if(enable_smpi)
   endif()
 
   set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}")
-  set(MPICH_FLAGS "-DHAVE_STDLIB_H=1 -DHAVE_UNISTD_H=1 -DHAVE_STRING_H=1 -DUSE_STDARG=1 -DHAVE_LONG_DOUBLE=1 -DHAVE_PROTOTYPES=1 -DHAVE_SIGNAL_H=1 -DHAVE_SIGACTION=1 -DHAVE_SLEEP=1 -DHAVE_SYSCONF=1  -Wno-error=unused-variable -Wno-implicit -Wno-implicit-function-declaration")
   include_directories("${CMAKE_HOME_DIRECTORY}/include/smpi")
   include_directories("${CMAKE_CURRENT_SOURCE_DIR}/../include/")
 
@@ -39,19 +38,6 @@ if(enable_smpi)
   target_link_libraries(typesnamef  simgrid)
   target_link_libraries(typesubf  simgrid)
 
-  set_target_properties(allctypesf PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
-  set_target_properties(gaddressf PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
-  set_target_properties(hindex1f PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
-  set_target_properties(hindexed_blockf PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
-  set_target_properties(packef PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
-  set_target_properties(typeaints PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
-  set_target_properties(typecntsf PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
-  set_target_properties(typem2f PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
-  set_target_properties(typename3f PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
-  set_target_properties(typenamef PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
-  set_target_properties(typesnamef PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
-  set_target_properties(typesubf PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
-
 endif()
 
 set(tesh_files
@@ -64,18 +50,18 @@ set(xml_files
   )
 set(examples_src
   ${examples_src}
- ${CMAKE_CURRENT_SOURCE_DIR}/allctypesf.f 
- ${CMAKE_CURRENT_SOURCE_DIR}/gaddressf.f 
- ${CMAKE_CURRENT_SOURCE_DIR}/hindex1f.f 
- ${CMAKE_CURRENT_SOURCE_DIR}/hindexed_blockf.f 
- ${CMAKE_CURRENT_SOURCE_DIR}/packef.f 
- ${CMAKE_CURRENT_SOURCE_DIR}/typeaints.h 
- ${CMAKE_CURRENT_SOURCE_DIR}/typecntsf.f 
- ${CMAKE_CURRENT_SOURCE_DIR}/typem2f.f 
- ${CMAKE_CURRENT_SOURCE_DIR}/typename3f.f 
- ${CMAKE_CURRENT_SOURCE_DIR}/typenamef.f 
- ${CMAKE_CURRENT_SOURCE_DIR}/typesnamef.f 
- ${CMAKE_CURRENT_SOURCE_DIR}/typesubf.f 
+  ${CMAKE_CURRENT_SOURCE_DIR}/allctypesf.f
+  ${CMAKE_CURRENT_SOURCE_DIR}/gaddressf.f
+  ${CMAKE_CURRENT_SOURCE_DIR}/hindex1f.f
+  ${CMAKE_CURRENT_SOURCE_DIR}/hindexed_blockf.f
+  ${CMAKE_CURRENT_SOURCE_DIR}/packef.f
+  ${CMAKE_CURRENT_SOURCE_DIR}/typeaints.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/typecntsf.f
+  ${CMAKE_CURRENT_SOURCE_DIR}/typem2f.f
+  ${CMAKE_CURRENT_SOURCE_DIR}/typename3f.f
+  ${CMAKE_CURRENT_SOURCE_DIR}/typenamef.f
+  ${CMAKE_CURRENT_SOURCE_DIR}/typesnamef.f
+  ${CMAKE_CURRENT_SOURCE_DIR}/typesubf.f
   PARENT_SCOPE
   )
 set(bin_files

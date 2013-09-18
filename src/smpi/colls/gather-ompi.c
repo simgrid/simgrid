@@ -135,7 +135,7 @@ smpi_coll_tuned_gather_ompi_binomial(void *sbuf, int scount,
 			 "smpi_coll_tuned_gather_ompi_binomial rank %d recv %d mycount = %d",
 			 rank, bmtree->tree_next[i], mycount);
 
-	    smpi_mpi_recv(ptmp + total_recv*rextent, rcount*size-total_recv, rdtype,
+	    smpi_mpi_recv(ptmp + total_recv*rextent, mycount, rdtype,
 				    bmtree->tree_next[i], COLL_TAG_GATHER,
 				    comm, &status);
 

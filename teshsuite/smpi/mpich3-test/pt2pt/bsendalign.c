@@ -8,7 +8,7 @@
 #include "mpi.h"
 #include "mpitest.h"
 
-/* Test bsend with a buffer with arbitray alignment */
+/* Test bsend with a buffer with arbitrary alignment */
 #define BUFSIZE 2000*4
 int main( int argc, char *argv[] )
 {

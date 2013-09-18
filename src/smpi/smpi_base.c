@@ -320,6 +320,7 @@ void smpi_mpi_start(MPI_Request request)
   if(request->flags & PREPARED)request->flags &= ~PREPARED;
   if(request->flags & RECV) {
     print_request("New recv", request);
+    //FIXME: if receive is posted with a large size, but send is smaller, mailboxes may not match !
     if (request->size < sg_cfg_get_int("smpi/async_small_thres"))
       mailbox = smpi_process_mailbox_small();
     else
@@ -345,7 +346,7 @@ void smpi_mpi_start(MPI_Request request)
     #ifdef HAVE_TRACING
       int rank = smpi_process_index();
       if (TRACE_smpi_view_internals()) {
-        TRACE_smpi_send(rank, rank, receiver);
+        TRACE_smpi_send(rank, rank, receiver,request->size);
       }
     #endif
 /*    if(receiver == MPI_UNDEFINED) {*/

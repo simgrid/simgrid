@@ -95,6 +95,7 @@ typedef struct s_pushState {
   container_t container;
   type_t type;
   val_t value;
+  int size;
 }s_pushState_t;
 
 typedef struct s_popState *popState_t;
@@ -116,6 +117,7 @@ typedef struct s_startLink {
   container_t sourceContainer;
   char *value;
   char *key;
+  int size;
 }s_startLink_t;
 
 typedef struct s_endLink *endLink_t;
@@ -194,7 +196,7 @@ void TRACE_paje_start(void)
   dump_comment_file (TRACE_get_comment_file());
 
   /* output header */
-  TRACE_header(TRACE_basic());
+  TRACE_header(TRACE_basic(),TRACE_display_sizes());
 
   buffer = xbt_dynar_new (sizeof(paje_event_t), NULL);
 }
@@ -444,19 +446,39 @@ static void print_pajeSetState(paje_event_t event)
 static void print_pajePushState(paje_event_t event)
 {
   XBT_DEBUG("%s: event_type=%d, timestamp=%f", __FUNCTION__, (int)event->event_type, event->timestamp);
-  if (event->timestamp == 0){
-    fprintf(tracing_file, "%d 0 %s %s %s\n",
-        (int)event->event_type,
-        ((pushState_t)event->data)->type->id,
-        ((pushState_t)event->data)->container->id,
-        ((pushState_t)event->data)->value->id);
+  if (!TRACE_display_sizes()){
+    if (event->timestamp == 0){
+      fprintf(tracing_file, "%d 0 %s %s %s\n",
+          (int)event->event_type,
+          ((pushState_t)event->data)->type->id,
+          ((pushState_t)event->data)->container->id,
+          ((pushState_t)event->data)->value->id);
+    }else{
+      fprintf(tracing_file, "%d %lf %s %s %s\n",
+          (int)event->event_type,
+          event->timestamp,
+          ((pushState_t)event->data)->type->id,
+          ((pushState_t)event->data)->container->id,
+          ((pushState_t)event->data)->value->id);
+    }
   }else{
-    fprintf(tracing_file, "%d %lf %s %s %s\n",
-        (int)event->event_type,
-        event->timestamp,
-        ((pushState_t)event->data)->type->id,
-        ((pushState_t)event->data)->container->id,
-        ((pushState_t)event->data)->value->id);
+    if (event->timestamp == 0){
+      fprintf(tracing_file, "%d 0 %s %s %s %d\n",
+          (int)event->event_type,
+          ((pushState_t)event->data)->type->id,
+          ((pushState_t)event->data)->container->id,
+          ((pushState_t)event->data)->value->id,
+          ((pushState_t)event->data)->size);
+    }else{
+      fprintf(tracing_file, "%d %lf %s %s %s %d\n",
+          (int)event->event_type,
+          event->timestamp,
+          ((pushState_t)event->data)->type->id,
+          ((pushState_t)event->data)->container->id,
+          ((pushState_t)event->data)->value->id,
+          ((pushState_t)event->data)->size);
+    }
+
   }
 }
 
@@ -496,24 +518,47 @@ static void print_pajeResetState(paje_event_t event)
 
 static void print_pajeStartLink(paje_event_t event)
 {
+  if (!TRACE_display_sizes()){
+    if (event->timestamp == 0){
+      fprintf(tracing_file, "%d 0 %s %s %s %s %s\n",
+          (int)event->event_type,
+          ((startLink_t)event->data)->type->id,
+          ((startLink_t)event->data)->container->id,
+          ((startLink_t)event->data)->value,
+          ((startLink_t)event->data)->sourceContainer->id,
+          ((startLink_t)event->data)->key);
+    }else {
+      fprintf(tracing_file, "%d %lf %s %s %s %s %s\n",
+          (int)event->event_type,
+          event->timestamp,
+          ((startLink_t)event->data)->type->id,
+          ((startLink_t)event->data)->container->id,
+          ((startLink_t)event->data)->value,
+          ((startLink_t)event->data)->sourceContainer->id,
+          ((startLink_t)event->data)->key);
+    }
+  }else{
   XBT_DEBUG("%s: event_type=%d, timestamp=%f", __FUNCTION__, (int)event->event_type, event->timestamp);
-  if (event->timestamp == 0){
-    fprintf(tracing_file, "%d 0 %s %s %s %s %s\n",
-        (int)event->event_type,
-        ((startLink_t)event->data)->type->id,
-        ((startLink_t)event->data)->container->id,
-        ((startLink_t)event->data)->value,
-        ((startLink_t)event->data)->sourceContainer->id,
-        ((startLink_t)event->data)->key);
-  }else {
-    fprintf(tracing_file, "%d %lf %s %s %s %s %s\n",
-        (int)event->event_type,
-        event->timestamp,
-        ((startLink_t)event->data)->type->id,
-        ((startLink_t)event->data)->container->id,
-        ((startLink_t)event->data)->value,
-        ((startLink_t)event->data)->sourceContainer->id,
-        ((startLink_t)event->data)->key);
+    if (event->timestamp == 0){
+      fprintf(tracing_file, "%d 0 %s %s %s %s %s %d\n",
+          (int)event->event_type,
+          ((startLink_t)event->data)->type->id,
+          ((startLink_t)event->data)->container->id,
+          ((startLink_t)event->data)->value,
+          ((startLink_t)event->data)->sourceContainer->id,
+          ((startLink_t)event->data)->key,
+          ((startLink_t)event->data)->size);
+    }else {
+      fprintf(tracing_file, "%d %lf %s %s %s %s %s %d\n",
+          (int)event->event_type,
+          event->timestamp,
+          ((startLink_t)event->data)->type->id,
+          ((startLink_t)event->data)->container->id,
+          ((startLink_t)event->data)->value,
+          ((startLink_t)event->data)->sourceContainer->id,
+          ((startLink_t)event->data)->key,
+          ((startLink_t)event->data)->size);
+    }
   }
 }
 
@@ -797,6 +842,25 @@ void new_pajePushState (double timestamp, container_t container, type_t type, va
   ((pushState_t)(event->data))->type = type;
   ((pushState_t)(event->data))->container = container;
   ((pushState_t)(event->data))->value = value;
+  ((pushState_t)(event->data))->size = -1;
+
+  XBT_DEBUG("%s: event_type=%d, timestamp=%f", __FUNCTION__, (int)event->event_type, event->timestamp);
+
+  insert_into_buffer (event);
+}
+
+void new_pajePushStateWithSize (double timestamp, container_t container, type_t type, val_t value, int size)
+{
+  paje_event_t event = xbt_new0(s_paje_event_t, 1);
+  event->event_type = PAJE_PushState;
+  event->timestamp = timestamp;
+  event->print = print_pajePushState;
+  event->free = free_paje_event;
+  event->data = xbt_new0(s_pushState_t, 1);
+  ((pushState_t)(event->data))->type = type;
+  ((pushState_t)(event->data))->container = container;
+  ((pushState_t)(event->data))->value = value;
+  ((pushState_t)(event->data))->size = size;
 
   XBT_DEBUG("%s: event_type=%d, timestamp=%f", __FUNCTION__, (int)event->event_type, event->timestamp);
 
@@ -850,6 +914,26 @@ void new_pajeStartLink (double timestamp, container_t container, type_t type, co
   ((startLink_t)(event->data))->sourceContainer = sourceContainer;
   ((startLink_t)(event->data))->value = xbt_strdup(value);
   ((startLink_t)(event->data))->key = xbt_strdup(key);
+  ((startLink_t)(event->data))->size = -1;
+  XBT_DEBUG("%s: event_type=%d, timestamp=%f", __FUNCTION__, (int)event->event_type, event->timestamp);
+
+  insert_into_buffer (event);
+}
+
+void new_pajeStartLinkWithSize (double timestamp, container_t container, type_t type, container_t sourceContainer, const char *value, const char *key, int size)
+{
+  paje_event_t event = xbt_new0(s_paje_event_t, 1);
+  event->event_type = PAJE_StartLink;
+  event->timestamp = timestamp;
+  event->print = print_pajeStartLink;
+  event->free = free_paje_event;
+  event->data = xbt_new0(s_startLink_t, 1);
+  ((startLink_t)(event->data))->type = type;
+  ((startLink_t)(event->data))->container = container;
+  ((startLink_t)(event->data))->sourceContainer = sourceContainer;
+  ((startLink_t)(event->data))->value = xbt_strdup(value);
+  ((startLink_t)(event->data))->key = xbt_strdup(key);
+  ((startLink_t)(event->data))->size = size;
 
   XBT_DEBUG("%s: event_type=%d, timestamp=%f", __FUNCTION__, (int)event->event_type, event->timestamp);
 

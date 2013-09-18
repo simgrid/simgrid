@@ -288,8 +288,9 @@ $ ${bindir:=.}/masterslave_failure$EXEEXT --log=xbt_cfg.thres:critical --log=no_
 > [  0.000000] (1:master@Tremblay) Bourassa
 > [  0.000000] (1:master@Tremblay) Tremblay
 > [  0.000000] (1:master@Tremblay) Got 20 task to process :
-> [  1.000000] (0:@) Restart processes on host: Jupiter
+> [  1.000000] (0:@) Restart processes on host: Fafard
 > [  1.000000] (1:master@Tremblay) Mmh. Something went wrong with 'Jupiter'. Nevermind. Let's keep going!
+> [  2.000000] (0:@) Restart processes on host: Jupiter
 > [ 11.000000] (1:master@Tremblay) Mmh. Got timeouted while speaking to 'Fafard'. Nevermind. Let's keep going!
 > [ 12.082474] (1:master@Tremblay) Send completed
 > [ 12.082474] (4:slave@Ginette) Received "Task"

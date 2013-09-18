@@ -137,12 +137,13 @@ set(SMPI_SRC
   src/smpi/colls/allgatherv-ompi-neighborexchange.c
   src/smpi/colls/allgatherv-ompi-bruck.c
   src/smpi/colls/allgatherv-mpich-rdb.c
+  src/smpi/colls/allgatherv-mpich-ring.c
   src/smpi/colls/allreduce-lr.c
   src/smpi/colls/allreduce-NTS.c
   src/smpi/colls/allreduce-rab1.c
   src/smpi/colls/allreduce-rab2.c
   src/smpi/colls/allreduce-rab-rdb.c
-  #src/smpi/colls/allreduce-rab-reduce-scatter.c
+#  src/smpi/colls/allreduce-rab-reduce-scatter.c
   src/smpi/colls/allreduce-rab-rsag.c
   src/smpi/colls/allreduce-rdb.c
   src/smpi/colls/allreduce-redbcast.c
@@ -155,7 +156,7 @@ set(SMPI_SRC
   src/smpi/colls/allreduce-ompi-ring-segmented.c
   src/smpi/colls/alltoall-2dmesh.c
   src/smpi/colls/alltoall-3dmesh.c
-  #src/smpi/colls/alltoall-bruck.c
+#  src/smpi/colls/alltoall-bruck.c
   src/smpi/colls/alltoall-pair.c
   src/smpi/colls/alltoall-pair-light-barrier.c
   src/smpi/colls/alltoall-pair-mpi-barrier.c
@@ -776,6 +777,8 @@ set(DOC_SOURCES
   doc/msg-tuto-src/platforms/griffon.xml
   doc/msg-tuto-src/platforms/peers.xml
   doc/msg-tuto-src/platforms/platform.xml
+  
+  CITATION.bib
   )
 
 set(DOC_FIGS
@@ -924,24 +927,19 @@ set(TESHSUITE_CMAKEFILES_TXT
   teshsuite/smpi/mpich3-test/group/CMakeLists.txt
   teshsuite/smpi/mpich3-test/init/CMakeLists.txt
   teshsuite/smpi/mpich3-test/pt2pt/CMakeLists.txt
+#  teshsuite/smpi/mpich3-test/f77/attr/CMakeLists.txt
+  teshsuite/smpi/mpich3-test/f77/coll/CMakeLists.txt
+  teshsuite/smpi/mpich3-test/f77/comm/CMakeLists.txt
+  teshsuite/smpi/mpich3-test/f77/datatype/CMakeLists.txt
+  teshsuite/smpi/mpich3-test/f77/ext/CMakeLists.txt
+  teshsuite/smpi/mpich3-test/f77/init/CMakeLists.txt
+  teshsuite/smpi/mpich3-test/f77/pt2pt/CMakeLists.txt
+  teshsuite/smpi/mpich3-test/f90/coll/CMakeLists.txt
+  teshsuite/smpi/mpich3-test/f90/datatype/CMakeLists.txt
+  teshsuite/smpi/mpich3-test/f90/init/CMakeLists.txt
+  teshsuite/smpi/mpich3-test/f90/pt2pt/CMakeLists.txt
   teshsuite/xbt/CMakeLists.txt
   )
-
-if(SMPI_F2C)
-  set(TESHSUITE_CMAKEFILES_TXT
-    ${TESHSUITE_CMAKEFILES_TXT}
-    teshsuite/smpi/mpich3-test/f77/comm/CMakeLists.txt
-    teshsuite/smpi/mpich3-test/f77/coll/CMakeLists.txt
-    teshsuite/smpi/mpich3-test/f77/pt2pt/CMakeLists.txt
-    teshsuite/smpi/mpich3-test/f77/datatype/CMakeLists.txt
-    teshsuite/smpi/mpich3-test/f77/ext/CMakeLists.txt
-    teshsuite/smpi/mpich3-test/f77/init/CMakeLists.txt
-    teshsuite/smpi/mpich3-test/f90/coll/CMakeLists.txt
-    teshsuite/smpi/mpich3-test/f90/pt2pt/CMakeLists.txt
-    teshsuite/smpi/mpich3-test/f90/datatype/CMakeLists.txt
-    teshsuite/smpi/mpich3-test/f90/init/CMakeLists.txt
-  )
-endif()
 
 set(TOOLS_CMAKEFILES_TXT
   tools/CMakeLists.txt

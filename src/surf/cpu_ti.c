@@ -111,7 +111,7 @@ static surf_cpu_ti_tgmr_t cpu_ti_parse_trace(tmgr_trace_t power_trace,
   if (!power_trace) {
     trace->type = TRACE_FIXED;
     trace->value = value;
-    XBT_DEBUG("No availabily trace. Constant value = %lf", value);
+    XBT_DEBUG("No availability trace. Constant value = %lf", value);
     return trace;
   }
 
@@ -489,7 +489,7 @@ static void cpu_ti_update_actions_state(double now, double delta)
     /* set the remains to 0 due to precision problems when updating the remaining amount */
     GENERIC_ACTION(action).remains = 0;
     cpu_ti_action_state_set((surf_action_t) action, SURF_ACTION_DONE);
-    /* update remaining amout of all actions */
+    /* update remaining amount of all actions */
     cpu_ti_update_remaining_amount(surf_cpu_resource_priv(action->cpu), surf_get_clock());
   }
 #undef GENERIC_ACTION
@@ -501,8 +501,6 @@ static void cpu_ti_update_resource_state(void *id,
 {
   cpu_ti_t cpu = id;
   surf_action_cpu_ti_t action;
-
-  surf_watched_hosts();
 
   if (event_type == cpu->power_event) {
     tmgr_trace_t power_trace;
@@ -533,9 +531,11 @@ static void cpu_ti_update_resource_state(void *id,
       cpu->power_event = NULL;
 
   } else if (event_type == cpu->state_event) {
-    if (value > 0)
+    if (value > 0) {
+      if(cpu->state_current == SURF_RESOURCE_OFF)
+        xbt_dynar_push_as(host_that_restart, char*, (cpu->generic_resource.name));
       cpu->state_current = SURF_RESOURCE_ON;
-    else {
+    } else {
       cpu->state_current = SURF_RESOURCE_OFF;
 
       /* put all action running on cpu to failed */

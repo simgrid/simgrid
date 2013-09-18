@@ -39,7 +39,7 @@ Our coverage of the interface is very decent, but still incomplete;
 Given the size of the MPI standard, it may well be that we never
 implement absolutely all existing primitives. One sided communications
 and I/O primitives are not targeted for now. Our current state is
-still very decent: we pass most of the MPICH coverage tests.
+still very decent: we pass most of the MPICH coverage tests.
 
 The full list of not yet implemented functions is documented in the
 file <tt>include/smpi/smpi.h</tt> of the archive, between two lines
