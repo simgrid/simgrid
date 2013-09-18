@@ -76,12 +76,12 @@ int smpi_coll_tuned_alltoall_ompi( void *sbuf, int scount,
                                                     comm);
 
     } else if (block_dsize < 3000) {
-        return smpi_coll_tuned_alltoall_simple(sbuf, scount, sdtype, 
+        return smpi_coll_tuned_alltoall_basic_linear(sbuf, scount, sdtype, 
                                                            rbuf, rcount, rdtype, 
                                                            comm);
     }
 
-    return smpi_coll_tuned_alltoall_ompi_pairwise (sbuf, scount, sdtype, 
+    return smpi_coll_tuned_alltoall_ring (sbuf, scount, sdtype, 
                                                     rbuf, rcount, rdtype,
                                                     comm);
 }

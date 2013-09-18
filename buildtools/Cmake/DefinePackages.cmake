@@ -162,8 +162,6 @@ set(SMPI_SRC
   src/smpi/colls/alltoall-ring-light-barrier.c
   src/smpi/colls/alltoall-ring-mpi-barrier.c
   src/smpi/colls/alltoall-ring-one-barrier.c
-  src/smpi/colls/alltoall-simple.c
-  src/smpi/colls/alltoall-ompi-pairwise.c
   src/smpi/colls/alltoallv-pair.c   
   src/smpi/colls/alltoallv-pair-light-barrier.c
   src/smpi/colls/alltoallv-pair-mpi-barrier.c

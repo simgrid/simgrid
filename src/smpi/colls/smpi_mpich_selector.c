@@ -167,7 +167,7 @@ int smpi_coll_tuned_alltoall_mpich( void *sbuf, int scount,
                                                     comm);
 
     } else if (block_dsize < medium_size) {
-        return smpi_coll_tuned_alltoall_simple(sbuf, scount, sdtype, 
+        return smpi_coll_tuned_alltoall_basic_linear(sbuf, scount, sdtype, 
                                                            rbuf, rcount, rdtype, 
                                                            comm);
     }else if (communicator_size%2){
@@ -176,7 +176,7 @@ int smpi_coll_tuned_alltoall_mpich( void *sbuf, int scount,
                                                            comm);
     }
 
-    return smpi_coll_tuned_alltoall_ompi_pairwise (sbuf, scount, sdtype,
+    return smpi_coll_tuned_alltoall_ring (sbuf, scount, sdtype,
                                                     rbuf, rcount, rdtype,
                                                     comm);
 }
