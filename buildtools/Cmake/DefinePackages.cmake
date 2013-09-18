@@ -35,7 +35,6 @@ set(EXTRA_DIST
   src/simix/smx_smurf_private.h
   src/simix/smx_synchro_private.h
   src/smpi/README
-  src/smpi/colls/COPYRIGHTS
   src/smpi/colls/colls.h
   src/smpi/colls/colls_private.h
   src/smpi/colls/coll_tuned_topo.h
