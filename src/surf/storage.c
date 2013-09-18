@@ -194,25 +194,24 @@ static surf_action_t storage_action_execute (void *storage, size_t size, e_surf_
 
 static xbt_dict_t storage_get_properties(const void *storage)
 {
-  return surf_resource_properties(storage);
+  return surf_resource_properties(surf_storage_resource_priv(storage));
 }
 
 static void* storage_create_resource(const char* id, const char* model,
-    const char* type_id, const char* content_name, const char* content_type){
+    const char* type_id, const char* content_name, const char* content_type, xbt_dict_t properties){
   storage_t storage = NULL;
 
   xbt_assert(!surf_storage_resource_priv(surf_storage_resource_by_name(id)),
               "Storage '%s' declared several times in the platform file",
               id);
   storage = (storage_t) surf_resource_new(sizeof(s_storage_t),
-          surf_storage_model, id,NULL);
+          surf_storage_model, id, properties);
 
   storage->generic_resource.name = xbt_strdup(id);
   storage->state_current = SURF_RESOURCE_ON;
   storage->used_size = 0;
   storage->size = 0;
   storage->write_actions = xbt_dynar_new(sizeof(char *),NULL);
-
 
   storage_type_t storage_type = xbt_lib_get_or_null(storage_type_lib, type_id,ROUTING_STORAGE_TYPE_LEVEL);
   double Bread =
@@ -445,7 +444,8 @@ static void parse_storage_init(sg_platf_storage_cbarg_t storage)
      ((storage_type_t) stype)->model,
      ((storage_type_t) stype)->type_id,
      storage->content,
-     storage->content_type);
+     storage->content_type,
+     storage->properties);
 }
 
 static void parse_mstorage_init(sg_platf_mstorage_cbarg_t mstorage)

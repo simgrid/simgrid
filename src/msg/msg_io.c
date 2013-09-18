@@ -214,16 +214,6 @@ const char *MSG_storage_get_name(msg_storage_t storage) {
 }
 
 /** \ingroup msg_storage_management
- * \brief Finds a msg_storage_t using its name.
- * \param name the name of a storage.
- * \return the corresponding storage
- */
-msg_host_t MSG_get_storage_by_name(const char *name)
-{
-  return (msg_storage_t) xbt_lib_get_elm_or_null(storage_lib,name);
-}
-
-/** \ingroup msg_storage_management
  * \brief Returns the free space size of a storage element
  * \param the storage name (#char*)
  * \return the free space size of the storage element (as a size_t)
@@ -296,11 +286,9 @@ msg_error_t MSG_storage_set_data(msg_storage_t storage, void *data)
   return MSG_OK;
 }
 
-
-
 /** \ingroup msg_host_management
  *
- * \brief Return the user data of a #msg_storage_t.
+ * \brief Returns the user data of a #msg_storage_t.
  *
  * This functions checks whether \a storage is a valid pointer or not and return
    the user data associated to \a storage if it is possible.
@@ -309,12 +297,4 @@ void *MSG_storage_get_data(msg_storage_t storage)
 {
   return SIMIX_storage_get_data(storage);
 }
-
-
-
-
-
-
-
-
 
