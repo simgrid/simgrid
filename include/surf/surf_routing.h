@@ -14,9 +14,11 @@ XBT_PUBLIC(xbt_lib_t) host_lib;
 XBT_PUBLIC(int) ROUTING_HOST_LEVEL; //Routing level
 XBT_PUBLIC(int)  SURF_CPU_LEVEL;    //Surf cpu level
 XBT_PUBLIC(int) SURF_WKS_LEVEL;    //Surf workstation level
-XBT_PUBLIC(int) SIMIX_HOST_LEVEL;  //Simix level
+XBT_PUBLIC(int) SIMIX_HOST_LEVEL;  //Simix host level
+XBT_PUBLIC(int) SIMIX_STORAGE_LEVEL;  //Simix storage level
 XBT_PUBLIC(int)  MSG_HOST_LEVEL;    //Msg level
-XBT_PUBLIC(int)  SD_HOST_LEVEL;    //Simdag level
+XBT_PUBLIC(int)  SD_HOST_LEVEL;    //Simdag host level
+XBT_PUBLIC(int)  SD_STORAGE_LEVEL;    //Simdag storage level
 XBT_PUBLIC(int)  COORD_HOST_LEVEL;  //Coordinates level
 XBT_PUBLIC(int) NS3_HOST_LEVEL;    //host node for ns3
 
@@ -34,7 +36,7 @@ XBT_PUBLIC(int) ROUTING_PROP_ASR_LEVEL; //Properties for AS and router
 XBT_PUBLIC(xbt_lib_t) storage_lib;
 XBT_PUBLIC(int) ROUTING_STORAGE_LEVEL;        //Routing storage level
 XBT_PUBLIC(int) ROUTING_STORAGE_HOST_LEVEL;
-XBT_PUBLIC(int) SURF_STORAGE_LEVEL;
+XBT_PUBLIC(int) SURF_STORAGE_LEVEL;  // Surf storage level
 
 XBT_PUBLIC(xbt_lib_t) storage_type_lib;
 XBT_PUBLIC(int) ROUTING_STORAGE_TYPE_LEVEL;   //Routing storage_type level

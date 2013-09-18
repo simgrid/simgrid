@@ -69,6 +69,13 @@ static inline SD_workstation_priv_t SD_workstation_priv(SD_workstation_t host){
   return xbt_lib_get_level(host, SD_HOST_LEVEL);
 }
 
+/* Storage */
+typedef s_xbt_dictelm_t s_SD_storage_t;
+typedef struct SD_storage {
+  void *data;                   /* user data */
+} s_SD_storage_priv_t, *SD_storage_priv_t;
+
+
 /* Task */
 typedef struct SD_task {
   s_xbt_swag_hookup_t state_hookup;
@@ -199,6 +206,11 @@ static XBT_INLINE int __SD_task_is_running(SD_task_t task)
 {
   return task->state_set == sd_global->running_task_set;
 }
+
+/********** Storage **********/
+SD_storage_t __SD_storage_create(void *surf_storage, void *data);
+void __SD_storage_destroy(void *storage);
+
 /********** Tracing **********/
 /* declaration of instrumentation functions from sd_task_instr.c */
 void TRACE_sd_task_create(SD_task_t task);

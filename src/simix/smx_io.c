@@ -15,6 +15,24 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_io, simix,
                                 "Logging specific to SIMIX (io)");
 
 
+/**
+ * \brief Internal function to create a SIMIX storage.
+ * \param name name of the storage to create
+ * \param storage the SURF storage to encapsulate
+ * \param data some user data (may be NULL)
+ */
+smx_host_t SIMIX_storage_create(const char *name, void *storage, void *data)
+{
+  smx_storage_priv_t smx_storage = xbt_new0(s_smx_storage_priv_t, 1);
+
+  smx_storage->data = data;
+
+  /* Update global variables */
+  xbt_lib_set(storage_lib,name,SIMIX_STORAGE_LEVEL,smx_storage);
+  return xbt_lib_get_elm_or_null(storage_lib, name);
+}
+
+
 void* SIMIX_pre_file_get_data(smx_simcall_t simcall,smx_file_t fd){
   return SIMIX_file_get_data(fd);
 }
@@ -299,6 +317,31 @@ xbt_dict_t SIMIX_pre_storage_get_properties(smx_simcall_t simcall, smx_storage_t
 xbt_dict_t SIMIX_storage_get_properties(smx_storage_t storage){
   xbt_assert((storage != NULL), "Invalid parameters (simix storage is NULL)");
   return surf_storage_model->extension.storage.get_properties(storage);
+}
+
+const char* SIMIX_storage_get_name(smx_storage_t storage){
+  xbt_assert((storage != NULL), "Invalid parameters");
+
+  return sg_storage_name(storage);
+}
+
+void SIMIX_pre_storage_set_data(smx_simcall_t simcall, smx_storage_t storage, void *data) {
+  SIMIX_storage_set_data(storage, data);
+}
+void SIMIX_storage_set_data(smx_storage_t storage, void *data){
+  xbt_assert((storage != NULL), "Invalid parameters");
+  xbt_assert((SIMIX_storage_priv(storage)->data == NULL), "Data already set");
+
+  SIMIX_storage_priv(storage)->data = data;
+}
+
+void* SIMIX_pre_storage_get_data(smx_simcall_t simcall,smx_storage_t storage){
+  return SIMIX_storage_get_data(storage);
+}
+void* SIMIX_storage_get_data(smx_storage_t storage){
+  xbt_assert((storage != NULL), "Invalid parameters (simix storage is NULL)");
+
+  return SIMIX_storage_priv(storage)->data;
 }
 
 void SIMIX_post_io(smx_action_t action)

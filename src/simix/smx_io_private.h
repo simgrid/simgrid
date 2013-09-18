@@ -10,6 +10,11 @@
 #include "simgrid/simix.h"
 #include "smx_smurf_private.h"
 
+static inline smx_storage_priv_t SIMIX_storage_priv(smx_storage_t storage){
+  return xbt_lib_get_level(storage, SIMIX_STORAGE_LEVEL);
+}
+
+smx_storage_t SIMIX_storage_create(const char *name, void *storage, void *data);
 void* SIMIX_pre_file_get_data(smx_simcall_t simcall,smx_file_t fd);
 void SIMIX_pre_file_set_data(smx_simcall_t simcall, smx_file_t fd, void *data);
 void SIMIX_pre_file_read(smx_simcall_t simcall, size_t size, smx_file_t fd);
@@ -46,6 +51,9 @@ size_t SIMIX_storage_get_used_size(smx_process_t process,const char* name);
 
 xbt_dict_t SIMIX_storage_get_properties(smx_storage_t storage);
 xbt_dict_t SIMIX_pre_storage_get_properties(smx_simcall_t, smx_storage_t);
+
+void SIMIX_pre_storage_set_data(smx_simcall_t, smx_storage_t, void*);
+void* SIMIX_pre_storage_get_data(smx_simcall_t, smx_storage_t);
 
 void SIMIX_post_io(smx_action_t action);
 void SIMIX_io_destroy(smx_action_t action);

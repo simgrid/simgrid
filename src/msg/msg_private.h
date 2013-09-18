@@ -141,7 +141,9 @@ XBT_PUBLIC_DATA(MSG_Global_t) msg_global;
 #endif
 
 msg_host_t __MSG_host_create(smx_host_t workstation);
+msg_storage_t __MSG_storage_create(smx_storage_t storage);
 void __MSG_host_destroy(msg_host_priv_t host);
+void __MSG_storage_destroy(msg_storage_priv_t host);
 
 void MSG_process_cleanup_from_SIMIX(smx_process_t smx_proc);
 void MSG_process_create_from_SIMIX(smx_process_t *process, const char *name,

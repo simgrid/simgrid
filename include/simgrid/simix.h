@@ -68,10 +68,12 @@ typedef struct s_smx_cond *smx_cond_t;
 typedef struct s_smx_sem *smx_sem_t;
 
 /********************************** File *************************************/
+
 typedef struct s_smx_file *smx_file_t;
 
 /********************************** Storage *************************************/
-typedef struct s_smx_storage *smx_storage_t;
+typedef xbt_dictelm_t smx_storage_t;
+typedef struct s_smx_storage_priv *smx_storage_priv_t;
 
 /********************************** Action *************************************/
 typedef struct s_smx_action *smx_action_t; /* FIXME: replace by specialized action handlers */
@@ -262,6 +264,7 @@ XBT_PUBLIC(void*) SIMIX_host_self_get_data(void);
 XBT_PUBLIC(void*) SIMIX_host_get_data(smx_host_t host);
 XBT_PUBLIC(void) SIMIX_host_set_data(smx_host_t host, void *data);
 XBT_PUBLIC(xbt_dynar_t) SIMIX_host_get_storage_list(smx_host_t host);
+XBT_PUBLIC(const char*) SIMIX_storage_get_name(smx_host_t host);
 
 /********************************* Process ************************************/
 XBT_PUBLIC(int) SIMIX_process_count(void);
@@ -492,6 +495,8 @@ XBT_PUBLIC(xbt_dynar_t) simcall_file_get_info(smx_file_t fd);
 XBT_PUBLIC(size_t) simcall_storage_get_free_size (const char* name);
 XBT_PUBLIC(size_t) simcall_storage_get_used_size (const char* name);
 XBT_PUBLIC(xbt_dict_t) simcall_storage_get_properties(smx_storage_t storage);
+XBT_PUBLIC(void*) SIMIX_storage_get_data(smx_storage_t storage);
+XBT_PUBLIC(void) SIMIX_storage_set_data(smx_storage_t storage, void *data);
 
 /************************** AS router   **********************************/
 XBT_PUBLIC(xbt_dict_t) SIMIX_asr_get_properties(const char *name);

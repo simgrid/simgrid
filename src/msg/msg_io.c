@@ -186,6 +186,43 @@ xbt_dict_t MSG_file_ls(const char *mount, const char *path)
  *
  */
 
+
+/* TODO: PV: to comment */
+msg_storage_t __MSG_storage_create(smx_storage_t storage)
+{
+  const char *name = SIMIX_storage_get_name(storage);
+  xbt_lib_set(storage_lib,name,MSG_HOST_LEVEL,storage);
+  return xbt_lib_get_elm_or_null(storage_lib, name);
+}
+
+/*
+ * \brief Destroys a storage (internal call only)
+ */
+void __MSG_storage_destroy(msg_storage_priv_t storage) {
+
+  free(storage);
+}
+
+/** \ingroup msg_storage_management
+ *
+ * \brief Returns the name of the #msg_storage_t.
+ *
+ * This functions checks whether a storage is a valid pointer or not and return its name.
+ */
+const char *MSG_storage_get_name(msg_storage_t storage) {
+  return SIMIX_storage_get_name(storage);
+}
+
+/** \ingroup msg_storage_management
+ * \brief Finds a msg_storage_t using its name.
+ * \param name the name of a storage.
+ * \return the corresponding storage
+ */
+msg_host_t MSG_get_storage_by_name(const char *name)
+{
+  return (msg_storage_t) xbt_lib_get_elm_or_null(storage_lib,name);
+}
+
 /** \ingroup msg_storage_management
  * \brief Returns the free space size of a storage element
  * \param the storage name (#char*)
@@ -212,7 +249,7 @@ size_t MSG_storage_get_used_size(const char* name){
 xbt_dict_t MSG_storage_get_properties(msg_storage_t storage)
 {
   xbt_assert((storage != NULL), "Invalid parameters (storage is NULL)");
-  return (simcall_storage_get_properties(storage->simdata->smx_storage));
+  return (simcall_storage_get_properties(storage));
 }
 
 /** \ingroup msg_storage_management
@@ -228,9 +265,6 @@ msg_storage_t MSG_storage_get_by_name(const char *name)
 /** \ingroup msg_storage_management
  * \brief Returns a dynar containing all the storage elements declared at a given point of time
  *
- *
- *
- * @TODO implement a new msg_storage_t structure that hides members (use xbt_dict)
  */
 xbt_dynar_t MSG_storages_as_dynar(void) {
 
@@ -238,19 +272,49 @@ xbt_dynar_t MSG_storages_as_dynar(void) {
   char *key;
   void **data;
   xbt_dynar_t res = xbt_dynar_new(sizeof(msg_storage_t),NULL);
-  msg_storage_t storage;
+
   xbt_lib_foreach(storage_lib, cursor, key, data) {
-    if(routing_get_network_element_type(key) == ROUTING_STORAGE_LEVEL) {
+    if(routing_get_network_element_type(key) == MSG_STORAGE_LEVEL) {
       xbt_dictelm_t elm = xbt_dict_cursor_get_elm(cursor);
-      storage = xbt_new(s_msg_storage_t, 1);
-      storage->name = elm->key;
-      storage->simdata = xbt_new0(s_simdata_storage_t,1);
-      smx_storage_t simix_storage = xbt_lib_get_or_null(storage_lib, elm->key, SURF_STORAGE_LEVEL);
-      storage->simdata->smx_storage = simix_storage;
-      storage->data = NULL;
-      xbt_dynar_push(res, &storage);
+      xbt_dynar_push(res, &elm);
     }
   }
 
   return res;
 }
+
+/** \ingroup msg_storage_management
+ *
+ * \brief Set the user data of a #msg_storage_t.
+ * This functions checks whether some data has already been associated to \a storage
+   or not and attach \a data to \a storage if it is possible.
+ */
+msg_error_t MSG_storage_set_data(msg_storage_t storage, void *data)
+{
+  SIMIX_storage_set_data(storage,data);
+
+  return MSG_OK;
+}
+
+
+
+/** \ingroup msg_host_management
+ *
+ * \brief Return the user data of a #msg_storage_t.
+ *
+ * This functions checks whether \a storage is a valid pointer or not and return
+   the user data associated to \a storage if it is possible.
+ */
+void *MSG_storage_get_data(msg_storage_t storage)
+{
+  return SIMIX_storage_get_data(storage);
+}
+
+
+
+
+
+
+
+
+

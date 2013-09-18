@@ -92,11 +92,15 @@ XBT_PUBLIC(xbt_dict_t) MSG_file_ls(const char *mount, const char *path);
 XBT_PUBLIC(void) __MSG_file_get_info(msg_file_t fd);
 
 /************************** Storage handling ***********************************/
+XBT_PUBLIC(msg_host_t) MSG_get_storage_by_name(const char *name);
+XBT_PUBLIC(const char *) MSG_storage_get_name(msg_storage_t storage);
 XBT_PUBLIC(size_t) MSG_storage_get_free_size(const char* name);
 XBT_PUBLIC(size_t) MSG_storage_get_used_size(const char* name);
 XBT_PUBLIC(msg_storage_t) MSG_storage_get_by_name(const char *name);
 XBT_PUBLIC(xbt_dict_t) MSG_storage_get_properties(msg_storage_t storage);
 XBT_PUBLIC(xbt_dynar_t) MSG_storages_as_dynar(void);
+XBT_PUBLIC(msg_error_t) MSG_storage_set_data(msg_storage_t host, void *data);
+XBT_PUBLIC(void *) MSG_storage_get_data(msg_storage_t storage);
 /************************** AS Router handling ************************************/
 XBT_PUBLIC(const char *) MSG_as_router_get_property_value(const char* asr, const char *name);
 XBT_PUBLIC(xbt_dict_t) MSG_as_router_get_properties(const char* asr);

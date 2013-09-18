@@ -37,6 +37,29 @@ SD_workstation_t __SD_workstation_create(void *surf_workstation,
   return xbt_lib_get_elm_or_null(host_lib,name);
 }
 
+/* Creates a storage and registers it in SD.
+ */
+SD_storage_t __SD_storage_create(void *surf_storage, void *data)
+{
+
+  SD_storage_priv_t storage;
+  const char *name;
+
+  storage = xbt_new(s_SD_storage_priv_t, 1);
+  storage->data = data;     /* user data */
+
+  name = surf_resource_name(surf_storage);
+  xbt_lib_set(storage_lib,name, SD_STORAGE_LEVEL, storage);
+  return xbt_lib_get_elm_or_null(storage_lib, name);
+}
+
+/* Destroys a storage.
+ */
+void __SD_storage_destroy(void *storage)
+{
+  xbt_free(storage);
+}
+
 /**
  * \brief Returns a workstation given its name
  *

@@ -89,4 +89,12 @@ typedef enum {
 } e_SD_task_kind_t;
 
 
+/** @brief Storage datatype
+    @ingroup SD_datatypes_management
+
+ TODO PV: comment it !
+
+    @see SD_storage_management */
+typedef xbt_dictelm_t SD_storage_t;
+
 #endif
