@@ -175,6 +175,33 @@ tracing/smpi/group
 \endverbatim
 
 \li <b>\c
+tracing/smpi/computing
+</b>:
+  This option only has effect if this simulator is SMPI-based. The parts external
+to SMPI are also outputted to the trace. Provides better way to analyze the data automatically.
+\verbatim
+--cfg=tracing/smpi/computing:1
+\endverbatim
+
+\li <b>\c
+tracing/smpi/internals
+</b>:
+  This option only has effect if this simulator is SMPI-based. Display internal communications
+happening during a collective MPI call.
+\verbatim
+--cfg=tracing/smpi/internals:1
+\endverbatim
+
+\li <b>\c
+tracing/smpi/display_sizes
+</b>:
+  This option only has effect if this simulator is SMPI-based. Display the sizes of the messages
+exchanged in the trace, both in the links and on the states. For collective, size means the global size of data sent by the process in general.
+\verbatim
+--cfg=tracing/smpi/display_sizes:1
+\endverbatim
+
+\li <b>\c
 tracing/msg/process
 </b>:
   This option only has effect if this simulator is MSG-based. It traces the

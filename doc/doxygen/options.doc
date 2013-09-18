@@ -483,8 +483,7 @@ reproduce an experiment. You have two ways to do that:
 
 Please, use these two parameters (for comments) to make reproducible
 simulations. For additional details about this and all tracing
-options, check See the \ref tracing_tracing_options "Tracing
-Configuration Options subsection".
+options, check See the \ref tracing_tracing_options.
 
 \section options_smpi Configuring SMPI
 
@@ -524,6 +523,24 @@ when the simulation ends. If you set the \b smpi/display_timing item
 to 1, \c smpirun will display this information when the simulation ends. \verbatim
 Simulation time: 1e3 seconds.
 \endverbatim
+
+\subsection options_model_smpi_detached Simulating MPI detached send
+
+(this configuration item is experimental and may change or disapear)
+
+This threshold specifies the size in bytes under which the send will return 
+immediately. This is different from the threshold detailed in  \ref options_model_network_asyncsend
+because the message is not effectively sent when the send is posted. SMPI still waits for the
+correspondant receive to be posted to perform the communication operation. This threshold can be set 
+by changing the \b smpi/send_is_detached item. The default value is 65536.
+
+\subsection options_model_smpi_collectives Simulating MPI collective algorithms
+
+SMPI implements more than 100 different algorithms for MPI collective communication, to accurately 
+simulate the behavior of most of the existing MPI libraries. The \b smpi/coll_selector item can be used
+ to use the decision logic of either OpenMPI or MPICH libraries (values: ompi or mpich, by default SMPI
+uses naive version of collective operations). Each collective operation can be manually selected with a 
+\b smpi/collective_name:algo_name. Available algorithms are listed in \ref SMPI_collective_algorithms .
 
 \section options_generic Configuring other aspects of SimGrid
 
@@ -591,6 +608,8 @@ It can be done by using XBT. Go to \ref XBT_log for more details.
 - \c smpi/display_timing: \ref options_smpi_timing
 - \c smpi/cpu_threshold: \ref options_smpi_bench
 - \c smpi/async_small_thres: \ref options_model_network_asyncsend
+- \c smpi/send_is_detached: \ref options_model_smpi_detached
+- \c smpi/coll_selector: \ref options_model_smpi_collectives
 
 - \c path: \ref options_generic_path
 - \c verbose-exit: \ref options_generic_exit
