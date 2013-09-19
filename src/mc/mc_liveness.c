@@ -637,7 +637,6 @@ void MC_ddfs(){
   unsigned int cursor = 0;
   int res;
   int reached_num, visited_num;
-  int new_pair = 0;
 
   mc_pair_t next_pair = NULL;
   xbt_dynar_t prop_values = NULL;
@@ -731,9 +730,6 @@ void MC_ddfs(){
 
             if(res == 1){ // enabled transition in automaton
 
-              if(new_pair)
-               MC_replay_liveness(mc_stack_liveness, 1); 
-
               MC_SET_RAW_MEM;
 
               next_pair = MC_pair_new();
@@ -760,8 +756,6 @@ void MC_ddfs(){
 
               MC_UNSET_RAW_MEM;
 
-              new_pair = 1;
-
               MC_ddfs();
 
             }
@@ -775,9 +769,6 @@ void MC_ddfs(){
             res = MC_automaton_evaluate_label(transition_succ->label, prop_values);
   
             if(res == 2){ // true transition in automaton
-
-              if(new_pair)
-                MC_replay_liveness(mc_stack_liveness, 1); 
             
               MC_SET_RAW_MEM;
             
@@ -804,8 +795,6 @@ void MC_ddfs(){
                 XBT_INFO("Expanded pairs : %lu", mc_stats->expanded_pairs);
             
               MC_UNSET_RAW_MEM;
-
-              new_pair = 1;
 
               MC_ddfs();
 
@@ -871,9 +860,6 @@ void MC_ddfs(){
 
           if(res == 1){ // enabled transition in automaton
 
-            if(new_pair)
-              MC_replay_liveness(mc_stack_liveness, 1);
-
             MC_SET_RAW_MEM;
 
             next_pair = MC_pair_new();
@@ -895,8 +881,6 @@ void MC_ddfs(){
 
             MC_UNSET_RAW_MEM;
 
-            new_pair = 1;
-
             MC_ddfs();
 
           }
@@ -910,9 +894,6 @@ void MC_ddfs(){
           res = MC_automaton_evaluate_label(transition_succ->label, prop_values);
   
           if(res == 2){ // true transition in automaton
-
-            if(new_pair)
-              MC_replay_liveness(mc_stack_liveness, 1);
 
             MC_SET_RAW_MEM;
             
@@ -934,8 +915,6 @@ void MC_ddfs(){
               fprintf(dot_output, "\"%d\" -> \"%d\" [%s];\n", current_pair->num, next_pair->num, "");
 
             MC_UNSET_RAW_MEM;
-
-            new_pair = 1;
 
             MC_ddfs();
 
@@ -975,6 +954,7 @@ void MC_ddfs(){
     else if(current_pair->visited_removed)
       MC_pair_delete(current_pair);
   }
+
   MC_UNSET_RAW_MEM;
 
 }
