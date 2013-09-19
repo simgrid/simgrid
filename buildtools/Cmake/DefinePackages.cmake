@@ -807,8 +807,8 @@ set(DOC_IMG
   ${CMAKE_HOME_DIRECTORY}/doc/webcruft/win_install_04.png
   ${CMAKE_HOME_DIRECTORY}/doc/webcruft/win_install_05.png
   ${CMAKE_HOME_DIRECTORY}/doc/webcruft/win_install_06.png
-  ${CMAKE_HOME_DIRECTORY}/doc/smpi_simgrid_alltoall_pair_16.png
-  ${CMAKE_HOME_DIRECTORY}/doc/smpi_simgrid_alltoall_ring_16.png
+  ${CMAKE_HOME_DIRECTORY}/doc/webcruft/smpi_simgrid_alltoall_pair_16.png
+  ${CMAKE_HOME_DIRECTORY}/doc/webcruft/smpi_simgrid_alltoall_ring_16.png
   )
 
 set(bin_files
