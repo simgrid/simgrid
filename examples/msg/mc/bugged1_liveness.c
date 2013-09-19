@@ -56,6 +56,7 @@ int coordinator(int argc, char *argv[])
           MSG_task_send(MSG_task_create("grant", 0, 1000, NULL), req);
         }else{
           xbt_dynar_push(requests, &req);
+          CS_used = 0;
         }
       }else{
         XBT_INFO("CS release. resource now idle");
