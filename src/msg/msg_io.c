@@ -11,7 +11,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_io, msg,
                                 "Logging specific to MSG (io)");
 
 /** @addtogroup msg_file_management
- *     \htmlonly <!-- DOXYGEN_NAVBAR_LABEL="Files" --> \endhtmlonly
+ * \htmlonly <!-- DOXYGEN_NAVBAR_LABEL="Files" --> \endhtmlonly
  * (#msg_file_t) and the functions for managing it.
  *
  *  \see #msg_file_t
@@ -181,7 +181,7 @@ xbt_dict_t MSG_file_ls(const char *mount, const char *path)
 /********************************* Storage **************************************/
 
 /** @addtogroup msg_storage_management
- *     \htmlonly <!-- DOXYGEN_NAVBAR_LABEL="Storages" --> \endhtmlonly
+ * \htmlonly <!-- DOXYGEN_NAVBAR_LABEL="Storages" --> \endhtmlonly
  * (#msg_storage_t) and the functions for managing it.
  *
  */
@@ -215,7 +215,7 @@ const char *MSG_storage_get_name(msg_storage_t storage) {
 
 /** \ingroup msg_storage_management
  * \brief Returns the free space size of a storage element
- * \param the storage name (#char*)
+ * \param name the name of a storage
  * \return the free space size of the storage element (as a size_t)
  */
 size_t MSG_storage_get_free_size(const char* name){
@@ -224,7 +224,7 @@ size_t MSG_storage_get_free_size(const char* name){
 
 /** \ingroup msg_storage_management
  * \brief Returns the used space size of a storage element
- * \param the storage name (#char*)
+ * \param name the name of a storage
  * \return the used space size of the storage element (as a size_t)
  */
 size_t MSG_storage_get_used_size(const char* name){
@@ -244,7 +244,7 @@ xbt_dict_t MSG_storage_get_properties(msg_storage_t storage)
 
 /** \ingroup msg_storage_management
  * \brief Finds a msg_storage_t using its name.
- * \param name the name of a storage.
+ * \param name the name of a storage
  * \return the corresponding storage
  */
 msg_storage_t MSG_storage_get_by_name(const char *name)
