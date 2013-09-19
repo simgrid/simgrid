@@ -567,13 +567,12 @@ void sg_config_init(int *argc, char **argv)
     xbt_cfg_setdefault_boolean(_sg_cfg_set, "model-check", default_value);
 
     /* do stateful model-checking */
-    default_value = (char*)"off";
     xbt_cfg_register(&_sg_cfg_set, "model-check/checkpoint",
-                     "Specify the amount of steps between checkpoints during stateful model-checking (default: off => stateless verification). "
+                     "Specify the amount of steps between checkpoints during stateful model-checking (default: 0 => stateless verification). "
                      "If value=on, one checkpoint is saved for each step => faster verification, but huge memory consumption; higher values are good compromises between speed and memory consumption.",
-                     xbt_cfgelm_boolean, NULL, 0, 1,
+                     xbt_cfgelm_int, NULL, 0, 1,
                      _mc_cfg_cb_checkpoint, NULL);
-    xbt_cfg_setdefault_boolean(_sg_cfg_set, "model-check/checkpoint", default_value);
+    xbt_cfg_setdefault_int(_sg_cfg_set, "model-check/checkpoint", 0);
     
     /* do liveness model-checking */
     xbt_cfg_register(&_sg_cfg_set, "model-check/property",

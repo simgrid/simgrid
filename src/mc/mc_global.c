@@ -53,7 +53,7 @@ void _mc_cfg_cb_checkpoint(const char *name, int pos) {
   if (_sg_init_status && !_sg_do_model_check) {
     xbt_die("You are specifying a checkpointing value after the initialization (through MSG_config?), but model-checking was not activated at config time (through --cfg=model-check:1). This won't work, sorry.");
   }
-  _sg_mc_checkpoint = xbt_cfg_get_boolean(_sg_cfg_set, name);
+  _sg_mc_checkpoint = xbt_cfg_get_int(_sg_cfg_set, name);
 }
 void _mc_cfg_cb_property(const char *name, int pos) {
   if (_sg_init_status && !_sg_do_model_check) {
