@@ -318,6 +318,13 @@ static void _sg_cfg_cb_verbose_exit(const char *name, int pos)
   _sg_do_verbose_exit = xbt_cfg_get_boolean(_sg_cfg_set, name);
 }
 
+extern int _sg_do_clean_atexit;
+
+static void _sg_cfg_cb_clean_atexit(const char *name, int pos)
+{
+  _sg_do_clean_atexit = xbt_cfg_get_boolean(_sg_cfg_set, name);
+}
+
 
 static void _sg_cfg_cb_context_factory(const char *name, int pos) {
   smx_context_factory_name = xbt_cfg_get_string(_sg_cfg_set, name);
@@ -838,7 +845,7 @@ void sg_config_init(int *argc, char **argv)
     xbt_cfg_register(&_sg_cfg_set, "clean_atexit",
                      "\"yes\" or \"no\". \"yes\" enables all the cleanups of SimGrid (XBT,SIMIX,MSG) to be registered with atexit. \"no\" may be useful if your code segfaults when calling the exit function.",
                      xbt_cfgelm_boolean, &default_value, 1, 1,
-                     NULL, NULL);
+                     _sg_cfg_cb_clean_atexit, NULL);
     xbt_cfg_setdefault_boolean(_sg_cfg_set, "clean_atexit", default_value);
 
     if (!surf_path) {

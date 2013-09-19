@@ -30,6 +30,7 @@ char *xbt_binary_name = NULL;   /* Name of the system process containing us (man
 xbt_dynar_t xbt_cmdline = NULL; /* all we got in argv */
 
 int xbt_initialized = 0;
+int _sg_do_clean_atexit = 1;
 
 /* Declare xbt_preinit and xbt_postexit as constructor/destructor of the library.
  * This is crude and rather compiler-specific, unfortunately.
@@ -92,11 +93,12 @@ static void xbt_preinit(void) {
   srand(seed);
   srand48(seed);
 
+  atexit(xbt_postexit);
 }
 
 static void xbt_postexit(void)
 {
-  if(!sg_cfg_get_boolean("clean_atexit")) return;
+  if(!_sg_do_clean_atexit) return;
   xbt_backtrace_postexit();
   xbt_fifo_postexit();
   xbt_dict_postexit();
