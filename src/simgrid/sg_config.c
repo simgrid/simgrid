@@ -325,7 +325,6 @@ static void _sg_cfg_cb_clean_atexit(const char *name, int pos)
   _sg_do_clean_atexit = xbt_cfg_get_boolean(_sg_cfg_set, name);
 }
 
-
 static void _sg_cfg_cb_context_factory(const char *name, int pos) {
   smx_context_factory_name = xbt_cfg_get_string(_sg_cfg_set, name);
 }
@@ -547,12 +546,12 @@ void sg_config_init(int *argc, char **argv)
                      xbt_cfgelm_string, NULL, 0, 0,
                      _sg_cfg_cb__surf_path, NULL);
 
-    default_value = xbt_strdup("off");
+    default_value = (char*)"off";
     xbt_cfg_register(&_sg_cfg_set, "cpu/maxmin_selective_update",
                      "Update the constraint set propagating recursively to others constraints (off by default when optim is set to lazy)",
                      xbt_cfgelm_boolean, &default_value, 0, 1,
                      NULL, NULL);
-    default_value = xbt_strdup("off");
+    default_value = (char*)"off";
     xbt_cfg_register(&_sg_cfg_set, "network/maxmin_selective_update",
                      "Update the constraint set propagating recursively to others constraints (off by default when optim is set to lazy)",
                      xbt_cfgelm_boolean, &default_value, 0, 1,
@@ -560,7 +559,7 @@ void sg_config_init(int *argc, char **argv)
 
 #ifdef HAVE_MC
     /* do model-checking */
-    default_value = xbt_strdup("off");
+    default_value = (char*)"off";
     xbt_cfg_register(&_sg_cfg_set, "model-check",
                      "Verify the system through model-checking instead of simulating it (EXPERIMENTAL)",
                      xbt_cfgelm_boolean, NULL, 0, 1,
@@ -568,7 +567,7 @@ void sg_config_init(int *argc, char **argv)
     xbt_cfg_setdefault_boolean(_sg_cfg_set, "model-check", default_value);
 
     /* do stateful model-checking */
-    default_value = xbt_strdup("off");
+    default_value = (char*)"off";
     xbt_cfg_register(&_sg_cfg_set, "model-check/checkpoint",
                      "Specify the amount of steps between checkpoints during stateful model-checking (default: off => stateless verification). "
                      "If value=on, one checkpoint is saved for each step => faster verification, but huge memory consumption; higher values are good compromises between speed and memory consumption.",
@@ -591,7 +590,7 @@ void sg_config_init(int *argc, char **argv)
     xbt_cfg_setdefault_string(_sg_cfg_set, "model-check/reduction", "dpor");
 
     /* Enable/disable timeout for wait requests with model-checking */
-    default_value = xbt_strdup("off");
+    default_value = (char*)"off";
     xbt_cfg_register(&_sg_cfg_set, "model-check/timeout",
                      "Enable/Disable timeout for wait requests",
                      xbt_cfgelm_boolean, NULL, 0, 1,
@@ -621,7 +620,7 @@ void sg_config_init(int *argc, char **argv)
 #endif
 
     /* do verbose-exit */
-    default_value = xbt_strdup("on");
+    default_value = (char*)"on";
     xbt_cfg_register(&_sg_cfg_set, "verbose-exit",
                      "Activate the \"do nothing\" mode in Ctrl-C",
                      xbt_cfgelm_boolean, &default_value, 0, 1,
@@ -666,14 +665,14 @@ void sg_config_init(int *argc, char **argv)
         xbt_cfgelm_string, &default_value, 1, 1,
         _sg_cfg_cb_contexts_parallel_mode, NULL);
 
-    default_value = xbt_strdup("no");
+    default_value = (char*)"no";
     xbt_cfg_register(&_sg_cfg_set, "network/coordinates",
                      "\"yes\" or \"no\", specifying whether we use a coordinate-based routing (as Vivaldi)",
                      xbt_cfgelm_boolean, &default_value, 1, 1,
                      _sg_cfg_cb__surf_network_coordinates, NULL);
     xbt_cfg_setdefault_boolean(_sg_cfg_set, "network/coordinates", default_value);
 
-    default_value = xbt_strdup("no");
+    default_value = (char*)"no";
     xbt_cfg_register(&_sg_cfg_set, "network/crosstraffic",
                      "Activate the interferences between uploads and downloads for fluid max-min models (LV08, CM02)",
                      xbt_cfgelm_boolean, &default_value, 0, 1,
@@ -715,7 +714,7 @@ void sg_config_init(int *argc, char **argv)
                      NULL);
     xbt_cfg_setdefault_boolean(_sg_cfg_set, "smpi/display_timing", default_value);
 
-    default_value = xbt_strdup("yes");
+    default_value = (char*)"yes";
     xbt_cfg_register(&_sg_cfg_set, "smpi/use_shared_malloc",
                      "Boolean indicating whether we should use shared memory when using SMPI_SHARED_MALLOC. Allows user to disable it for debug purposes.",
                      xbt_cfgelm_boolean, &default_value, 1, 1, NULL,
@@ -841,7 +840,7 @@ void sg_config_init(int *argc, char **argv)
 		     NULL);
 #endif // HAVE_SMPI
 
-    default_value = xbt_strdup("yes");
+    default_value = (char*)"yes";
     xbt_cfg_register(&_sg_cfg_set, "clean_atexit",
                      "\"yes\" or \"no\". \"yes\" enables all the cleanups of SimGrid (XBT,SIMIX,MSG) to be registered with atexit. \"no\" may be useful if your code segfaults when calling the exit function.",
                      xbt_cfgelm_boolean, &default_value, 1, 1,
