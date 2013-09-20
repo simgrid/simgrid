@@ -488,7 +488,7 @@ void surf_exit(void)
   xbt_free(surf_mins);
   surf_mins = NULL;
 #endif
-
+  if(host_that_restart)xbt_dynar_free(&host_that_restart);
   xbt_dynar_free(&surf_path);
 
   xbt_lib_free(&host_lib);
