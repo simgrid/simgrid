@@ -546,25 +546,25 @@ void sg_config_init(int *argc, char **argv)
                      xbt_cfgelm_string, NULL, 0, 0,
                      _sg_cfg_cb__surf_path, NULL);
 
-    default_value = (char*)"off";
     xbt_cfg_register(&_sg_cfg_set, "cpu/maxmin_selective_update",
                      "Update the constraint set propagating recursively to others constraints (off by default when optim is set to lazy)",
-                     xbt_cfgelm_boolean, &default_value, 0, 1,
+                     xbt_cfgelm_boolean, NULL, 0, 1,
                      NULL, NULL);
-    default_value = (char*)"off";
+    xbt_cfg_setdefault_boolean(_sg_cfg_set, "cpu/maxmin_selective_update", "no");
+
     xbt_cfg_register(&_sg_cfg_set, "network/maxmin_selective_update",
                      "Update the constraint set propagating recursively to others constraints (off by default when optim is set to lazy)",
-                     xbt_cfgelm_boolean, &default_value, 0, 1,
+                     xbt_cfgelm_boolean, NULL, 0, 1,
                      NULL, NULL);
+    xbt_cfg_setdefault_boolean(_sg_cfg_set, "network/maxmin_selective_update", "no");
 
 #ifdef HAVE_MC
     /* do model-checking */
-    default_value = (char*)"off";
     xbt_cfg_register(&_sg_cfg_set, "model-check",
                      "Verify the system through model-checking instead of simulating it (EXPERIMENTAL)",
                      xbt_cfgelm_boolean, NULL, 0, 1,
                      _sg_cfg_cb_model_check, NULL);
-    xbt_cfg_setdefault_boolean(_sg_cfg_set, "model-check", default_value);
+    xbt_cfg_setdefault_boolean(_sg_cfg_set, "model-check", "no");
 
     /* do stateful model-checking */
     xbt_cfg_register(&_sg_cfg_set, "model-check/checkpoint",
@@ -589,12 +589,11 @@ void sg_config_init(int *argc, char **argv)
     xbt_cfg_setdefault_string(_sg_cfg_set, "model-check/reduction", "dpor");
 
     /* Enable/disable timeout for wait requests with model-checking */
-    default_value = (char*)"off";
     xbt_cfg_register(&_sg_cfg_set, "model-check/timeout",
                      "Enable/Disable timeout for wait requests",
                      xbt_cfgelm_boolean, NULL, 0, 1,
                      _mc_cfg_cb_timeout, NULL);
-    xbt_cfg_setdefault_boolean(_sg_cfg_set, "model-check/timeout", default_value);
+    xbt_cfg_setdefault_boolean(_sg_cfg_set, "model-check/timeout", "no");
 
     /* Set max depth exploration */
     xbt_cfg_register(&_sg_cfg_set, "model-check/max_depth",
@@ -619,11 +618,11 @@ void sg_config_init(int *argc, char **argv)
 #endif
 
     /* do verbose-exit */
-    default_value = (char*)"on";
     xbt_cfg_register(&_sg_cfg_set, "verbose-exit",
                      "Activate the \"do nothing\" mode in Ctrl-C",
-                     xbt_cfgelm_boolean, &default_value, 0, 1,
+                     xbt_cfgelm_boolean, NULL, 0, 1,
                      _sg_cfg_cb_verbose_exit, NULL);
+    xbt_cfg_setdefault_boolean(_sg_cfg_set, "verbose-exit", "yes");
 
     /* context factory */
     default_value = xbt_strdup("ucontext");
@@ -663,19 +662,17 @@ void sg_config_init(int *argc, char **argv)
         xbt_cfgelm_string, &default_value, 1, 1,
         _sg_cfg_cb_contexts_parallel_mode, NULL);
 
-    default_value = (char*)"no";
     xbt_cfg_register(&_sg_cfg_set, "network/coordinates",
                      "\"yes\" or \"no\", specifying whether we use a coordinate-based routing (as Vivaldi)",
-                     xbt_cfgelm_boolean, &default_value, 1, 1,
+                     xbt_cfgelm_boolean, NULL, 1, 1,
                      _sg_cfg_cb__surf_network_coordinates, NULL);
-    xbt_cfg_setdefault_boolean(_sg_cfg_set, "network/coordinates", default_value);
+    xbt_cfg_setdefault_boolean(_sg_cfg_set, "network/coordinates", "no");
 
-    default_value = (char*)"no";
     xbt_cfg_register(&_sg_cfg_set, "network/crosstraffic",
                      "Activate the interferences between uploads and downloads for fluid max-min models (LV08, CM02)",
-                     xbt_cfgelm_boolean, &default_value, 0, 1,
+                     xbt_cfgelm_boolean, NULL, 0, 1,
                      _sg_cfg_cb__surf_network_crosstraffic, NULL);
-    xbt_cfg_setdefault_boolean(_sg_cfg_set, "network/crosstraffic", default_value);
+    xbt_cfg_setdefault_boolean(_sg_cfg_set, "network/crosstraffic", "no");
 
 #ifdef HAVE_GTNETS
     xbt_cfg_register(&_sg_cfg_set, "gtnets/jitter",
@@ -705,19 +702,17 @@ void sg_config_init(int *argc, char **argv)
                      xbt_cfgelm_double, &default_reference_speed, 1, 1, NULL,
                      NULL);
 
-    default_value = xbt_strdup("no");
     xbt_cfg_register(&_sg_cfg_set, "smpi/display_timing",
                      "Boolean indicating whether we should display the timing after simulation.",
-                     xbt_cfgelm_boolean, &default_value, 1, 1, NULL,
+                     xbt_cfgelm_boolean, NULL, 1, 1, NULL,
                      NULL);
-    xbt_cfg_setdefault_boolean(_sg_cfg_set, "smpi/display_timing", default_value);
+    xbt_cfg_setdefault_boolean(_sg_cfg_set, "smpi/display_timing", "no");
 
-    default_value = (char*)"yes";
     xbt_cfg_register(&_sg_cfg_set, "smpi/use_shared_malloc",
                      "Boolean indicating whether we should use shared memory when using SMPI_SHARED_MALLOC. Allows user to disable it for debug purposes.",
-                     xbt_cfgelm_boolean, &default_value, 1, 1, NULL,
+                     xbt_cfgelm_boolean, NULL, 1, 1, NULL,
                      NULL);
-    xbt_cfg_setdefault_boolean(_sg_cfg_set, "smpi/use_shared_malloc", default_value);
+    xbt_cfg_setdefault_boolean(_sg_cfg_set, "smpi/use_shared_malloc", "yes");
 
     double default_threshold = 1e-6;
     xbt_cfg_register(&_sg_cfg_set, "smpi/cpu_threshold",
@@ -838,12 +833,11 @@ void sg_config_init(int *argc, char **argv)
                      NULL);
 #endif // HAVE_SMPI
 
-    default_value = (char*)"yes";
     xbt_cfg_register(&_sg_cfg_set, "clean_atexit",
                      "\"yes\" or \"no\". \"yes\" enables all the cleanups of SimGrid (XBT,SIMIX,MSG) to be registered with atexit. \"no\" may be useful if your code segfaults when calling the exit function.",
-                     xbt_cfgelm_boolean, &default_value, 1, 1,
+                     xbt_cfgelm_boolean, NULL, 1, 1,
                      _sg_cfg_cb_clean_atexit, NULL);
-    xbt_cfg_setdefault_boolean(_sg_cfg_set, "clean_atexit", default_value);
+    xbt_cfg_setdefault_boolean(_sg_cfg_set, "clean_atexit", "yes");
 
     if (!surf_path) {
       /* retrieves the current directory of the current process */
