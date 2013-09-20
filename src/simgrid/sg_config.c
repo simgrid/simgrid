@@ -11,7 +11,7 @@
 #include "xbt/log.h"
 #include "xbt/mallocator.h"
 #include "xbt/str.h"
-#include "xbt/lib.h" 
+#include "xbt/lib.h"
 #include "xbt/sysdep.h"
 #include "surf/surf.h"
 #include "surf/maxmin.h"
@@ -194,7 +194,6 @@ static void _sg_cfg_cb__network_model(const char *name, int pos)
   find_model_description(surf_network_model_description, val);
 }
 
-
 /* callbacks of the network models values */
 static void _sg_cfg_cb__tcp_gamma(const char *name, int pos)
 {
@@ -229,8 +228,8 @@ static void _sg_cfg_cb__weight_S(const char *name, int pos)
 #ifdef HAVE_SMPI
 /* callback of the mpi collectives */
 static void _sg_cfg_cb__coll(const char *category,
-		             s_mpi_coll_description_t * table,
-		             const char *name, int pos)
+                             s_mpi_coll_description_t * table,
+                             const char *name, int pos)
 {
   char *val;
 
@@ -262,19 +261,19 @@ static void _sg_cfg_cb__coll_allreduce(const char *name, int pos)
 }
 static void _sg_cfg_cb__coll_alltoall(const char *name, int pos)
 {
-  _sg_cfg_cb__coll("alltoall", mpi_coll_alltoall_description, name, pos);  
+  _sg_cfg_cb__coll("alltoall", mpi_coll_alltoall_description, name, pos);
 }
 static void _sg_cfg_cb__coll_alltoallv(const char *name, int pos)
 {
-  _sg_cfg_cb__coll("alltoallv", mpi_coll_alltoallv_description, name, pos);  
+  _sg_cfg_cb__coll("alltoallv", mpi_coll_alltoallv_description, name, pos);
 }
 static void _sg_cfg_cb__coll_bcast(const char *name, int pos)
 {
-  _sg_cfg_cb__coll("bcast", mpi_coll_bcast_description, name, pos);  
+  _sg_cfg_cb__coll("bcast", mpi_coll_bcast_description, name, pos);
 }
 static void _sg_cfg_cb__coll_reduce(const char *name, int pos)
 {
-  _sg_cfg_cb__coll("reduce", mpi_coll_reduce_description, name, pos);  
+  _sg_cfg_cb__coll("reduce", mpi_coll_reduce_description, name, pos);
 }
 static void _sg_cfg_cb__coll_reduce_scatter(const char *name, int pos){
   _sg_cfg_cb__coll("reduce_scatter", mpi_coll_reduce_scatter_description, name, pos);
@@ -325,7 +324,8 @@ static void _sg_cfg_cb_clean_atexit(const char *name, int pos)
   _sg_do_clean_atexit = xbt_cfg_get_boolean(_sg_cfg_set, name);
 }
 
-static void _sg_cfg_cb_context_factory(const char *name, int pos) {
+static void _sg_cfg_cb_context_factory(const char *name, int pos)
+{
   smx_context_factory_name = xbt_cfg_get_string(_sg_cfg_set, name);
 }
 
@@ -359,12 +359,12 @@ static void _sg_cfg_cb_contexts_parallel_mode(const char *name, int pos)
   }
   else {
     xbt_die("Command line setting of the parallel synchronization mode should "
-        "be one of \"posix\", \"futex\" or \"busy_wait\"");
+            "be one of \"posix\", \"futex\" or \"busy_wait\"");
   }
 }
 
 static void _sg_cfg_cb__surf_network_coordinates(const char *name,
-                                                   int pos)
+                                                 int pos)
 {
   int val = xbt_cfg_get_boolean(_sg_cfg_set, name);
   if (val) {
@@ -515,7 +515,7 @@ void sg_config_init(int *argc, char **argv)
     xbt_cfg_register(&_sg_cfg_set, "maxmin/precision",
                      "Numerical precision used when updating simulation models (epsilon in double comparisons)",
                      xbt_cfgelm_double, NULL, 1, 1, _sg_cfg_cb__maxmin_precision, NULL);
-    xbt_cfg_setdefault_double(_sg_cfg_set, "maxmin/precision", 0.00001); 
+    xbt_cfg_setdefault_double(_sg_cfg_set, "maxmin/precision", 0.00001);
 
     /* The parameters of network models */
 
@@ -624,8 +624,7 @@ void sg_config_init(int *argc, char **argv)
                      "Activate the \"do nothing\" mode in Ctrl-C",
                      xbt_cfgelm_boolean, &default_value, 0, 1,
                      _sg_cfg_cb_verbose_exit, NULL);
-    
-    
+
     /* context factory */
     default_value = xbt_strdup("ucontext");
     xbt_cfg_register(&_sg_cfg_set, "contexts/factory",
@@ -719,7 +718,7 @@ void sg_config_init(int *argc, char **argv)
                      xbt_cfgelm_boolean, &default_value, 1, 1, NULL,
                      NULL);
     xbt_cfg_setdefault_boolean(_sg_cfg_set, "smpi/use_shared_malloc", default_value);
-    
+
     double default_threshold = 1e-6;
     xbt_cfg_register(&_sg_cfg_set, "smpi/cpu_threshold",
                      "Minimal computation time (in seconds) not discarded.",
@@ -779,64 +778,64 @@ void sg_config_init(int *argc, char **argv)
                      NULL);
     default_value = xbt_strdup("default");
     xbt_cfg_register(&_sg_cfg_set, "smpi/coll_selector",
-		     "Which collective selector to use",
-		     xbt_cfgelm_string, &default_value, 1, 1, NULL,
-		     NULL);
-		     
-		xbt_cfg_register(&_sg_cfg_set, "smpi/gather",
-		     "Which collective to use for gather",
-		     xbt_cfgelm_string, NULL, 1, 1, &_sg_cfg_cb__coll_gather,
-		     NULL);
-		     
+                     "Which collective selector to use",
+                     xbt_cfgelm_string, &default_value, 1, 1, NULL,
+                     NULL);
+
+    xbt_cfg_register(&_sg_cfg_set, "smpi/gather",
+                     "Which collective to use for gather",
+                     xbt_cfgelm_string, NULL, 1, 1, &_sg_cfg_cb__coll_gather,
+                     NULL);
+
     xbt_cfg_register(&_sg_cfg_set, "smpi/allgather",
-		     "Which collective to use for allgather",
-		     xbt_cfgelm_string, NULL, 1, 1, &_sg_cfg_cb__coll_allgather,
-		     NULL);
+                     "Which collective to use for allgather",
+                     xbt_cfgelm_string, NULL, 1, 1, &_sg_cfg_cb__coll_allgather,
+                     NULL);
 
     xbt_cfg_register(&_sg_cfg_set, "smpi/barrier",
-		     "Which collective to use for barrier",
-		     xbt_cfgelm_string, NULL, 1, 1, &_sg_cfg_cb__coll_barrier,
-		     NULL);
+                     "Which collective to use for barrier",
+                     xbt_cfgelm_string, NULL, 1, 1, &_sg_cfg_cb__coll_barrier,
+                     NULL);
 
     xbt_cfg_register(&_sg_cfg_set, "smpi/reduce_scatter",
-		     "Which collective to use for reduce_scatter",
-		     xbt_cfgelm_string, NULL, 1, 1, &_sg_cfg_cb__coll_reduce_scatter,
-		     NULL);
+                     "Which collective to use for reduce_scatter",
+                     xbt_cfgelm_string, NULL, 1, 1, &_sg_cfg_cb__coll_reduce_scatter,
+                     NULL);
 
     xbt_cfg_register(&_sg_cfg_set, "smpi/scatter",
-		     "Which collective to use for scatter",
-		     xbt_cfgelm_string, NULL, 1, 1, &_sg_cfg_cb__coll_scatter,
-		     NULL);
+                     "Which collective to use for scatter",
+                     xbt_cfgelm_string, NULL, 1, 1, &_sg_cfg_cb__coll_scatter,
+                     NULL);
 
     xbt_cfg_register(&_sg_cfg_set, "smpi/allgatherv",
-		     "Which collective to use for allgatherv",
-		     xbt_cfgelm_string, NULL, 1, 1, &_sg_cfg_cb__coll_allgatherv,
-		     NULL);
+                     "Which collective to use for allgatherv",
+                     xbt_cfgelm_string, NULL, 1, 1, &_sg_cfg_cb__coll_allgatherv,
+                     NULL);
 
     xbt_cfg_register(&_sg_cfg_set, "smpi/allreduce",
-		     "Which collective to use for allreduce",
-		     xbt_cfgelm_string, NULL, 1, 1, &_sg_cfg_cb__coll_allreduce,
-		     NULL);
+                     "Which collective to use for allreduce",
+                     xbt_cfgelm_string, NULL, 1, 1, &_sg_cfg_cb__coll_allreduce,
+                     NULL);
 
     xbt_cfg_register(&_sg_cfg_set, "smpi/alltoall",
-		     "Which collective to use for alltoall",
-		     xbt_cfgelm_string, NULL, 1, 1, &_sg_cfg_cb__coll_alltoall,
-		     NULL);
+                     "Which collective to use for alltoall",
+                     xbt_cfgelm_string, NULL, 1, 1, &_sg_cfg_cb__coll_alltoall,
+                     NULL);
 
     xbt_cfg_register(&_sg_cfg_set, "smpi/alltoallv",
-		     "Which collective to use for alltoallv",
-		     xbt_cfgelm_string, NULL, 1, 1, &_sg_cfg_cb__coll_alltoallv,
-		     NULL);
+                     "Which collective to use for alltoallv",
+                     xbt_cfgelm_string, NULL, 1, 1, &_sg_cfg_cb__coll_alltoallv,
+                     NULL);
 
     xbt_cfg_register(&_sg_cfg_set, "smpi/bcast",
-		     "Which collective to use for bcast",
-		     xbt_cfgelm_string, NULL, 1, 1, &_sg_cfg_cb__coll_bcast,
-		     NULL);
+                     "Which collective to use for bcast",
+                     xbt_cfgelm_string, NULL, 1, 1, &_sg_cfg_cb__coll_bcast,
+                     NULL);
 
     xbt_cfg_register(&_sg_cfg_set, "smpi/reduce",
-		     "Which collective to use for reduce",
-		     xbt_cfgelm_string, NULL, 1, 1, &_sg_cfg_cb__coll_reduce,
-		     NULL);
+                     "Which collective to use for reduce",
+                     xbt_cfgelm_string, NULL, 1, 1, &_sg_cfg_cb__coll_reduce,
+                     NULL);
 #endif // HAVE_SMPI
 
     default_value = (char*)"yes";
@@ -847,7 +846,7 @@ void sg_config_init(int *argc, char **argv)
     xbt_cfg_setdefault_boolean(_sg_cfg_set, "clean_atexit", default_value);
 
     if (!surf_path) {
-      /* retrieves the current directory of the        current process */
+      /* retrieves the current directory of the current process */
       const char *initial_path = __surf_get_initial_path();
       xbt_assert((initial_path),
                   "__surf_get_initial_path() failed! Can't resolves current Windows directory");
@@ -897,15 +896,13 @@ void surf_config_models_setup()
    * the right net/cpu models.
    */
 
-  if((!xbt_cfg_is_default_value(_sg_cfg_set, "network/model") ||
-    !xbt_cfg_is_default_value(_sg_cfg_set, "cpu/model")) &&
-    xbt_cfg_is_default_value(_sg_cfg_set, "workstation/model"))
-  {
-      const char *val = "compound";
-      XBT_INFO
-          ("Switching workstation model to compound since you changed the network and/or cpu model(s)");
-      xbt_cfg_set_string(_sg_cfg_set, "workstation/model", val);
-      workstation_model_name = (char *) "compound";
+  if ((!xbt_cfg_is_default_value(_sg_cfg_set, "network/model") ||
+       !xbt_cfg_is_default_value(_sg_cfg_set, "cpu/model")) &&
+      xbt_cfg_is_default_value(_sg_cfg_set, "workstation/model")) {
+    const char *val = "compound";
+    XBT_INFO("Switching workstation model to compound since you changed the network and/or cpu model(s)");
+    xbt_cfg_set_string(_sg_cfg_set, "workstation/model", val);
+    workstation_model_name = (char *) "compound";
   }
 
   XBT_DEBUG("Workstation model: %s", workstation_model_name);
@@ -952,25 +949,30 @@ void surf_config_models_setup()
 
 int sg_cfg_get_int(const char* name)
 {
-	return xbt_cfg_get_int(_sg_cfg_set,name);
+  return xbt_cfg_get_int(_sg_cfg_set,name);
 }
+
 double sg_cfg_get_double(const char* name)
 {
-	return xbt_cfg_get_double(_sg_cfg_set,name);
+  return xbt_cfg_get_double(_sg_cfg_set,name);
 }
+
 char* sg_cfg_get_string(const char* name)
 {
-	return xbt_cfg_get_string(_sg_cfg_set,name);
+  return xbt_cfg_get_string(_sg_cfg_set,name);
 }
+
 int sg_cfg_get_boolean(const char* name)
 {
-	return xbt_cfg_get_boolean(_sg_cfg_set,name);
+  return xbt_cfg_get_boolean(_sg_cfg_set,name);
 }
+
 void sg_cfg_get_peer(const char *name, char **peer, int *port)
 {
-	xbt_cfg_get_peer(_sg_cfg_set,name, peer, port);
+  xbt_cfg_get_peer(_sg_cfg_set,name, peer, port);
 }
+
 xbt_dynar_t sg_cfg_get_dynar(const char* name)
 {
-	return xbt_cfg_get_dynar(_sg_cfg_set,name);
+  return xbt_cfg_get_dynar(_sg_cfg_set,name);
 }
