@@ -44,7 +44,86 @@ extern raw_stack_t raw_makecontext(char* malloced_stack, int stack_size,
                                    rawctx_entry_point_t entry_point, void* arg);
 extern void raw_swapcontext(raw_stack_t* old, raw_stack_t new);
 
-#ifdef PROCESSOR_i686
+#ifdef PROCESSOR_x86_64
+__asm__ (
+#if defined(APPLE)
+   ".text\n"
+   ".globl _raw_makecontext\n"
+   "_raw_makecontext:\n"
+#elif defined(_WIN32)
+   ".text\n"
+   ".globl raw_makecontext\n"
+   "raw_makecontext:\n"
+#else
+   ".text\n"
+   ".globl raw_makecontext\n"
+   ".type raw_makecontext,@function\n"
+   "raw_makecontext:\n"/* Calling convention sets the arguments in rdi, rsi, rdx and rcx, respectively */
+#endif
+   "   mov %rdi,%rax\n"      /* stack */
+   "   add %rsi,%rax\n"      /* size  */
+   "   movq $0,   -8(%rax)\n" /* @return for func */
+   "   mov %rdx,-16(%rax)\n" /* func */
+   "   mov %rcx,-24(%rax)\n" /* arg/rdi */
+   "   movq $0,  -32(%rax)\n" /* rsi */
+   "   movq $0,  -40(%rax)\n" /* rdx */
+   "   movq $0,  -48(%rax)\n" /* rcx */
+   "   movq $0,  -56(%rax)\n" /* r8  */
+   "   movq $0,  -64(%rax)\n" /* r9  */
+   "   movq $0,  -72(%rax)\n" /* rbp */
+   "   movq $0,  -80(%rax)\n" /* rbx */
+   "   movq $0,  -88(%rax)\n" /* r12 */
+   "   movq $0,  -96(%rax)\n" /* r13 */
+   "   movq $0, -104(%rax)\n" /* r14 */
+   "   movq $0, -112(%rax)\n" /* r15 */
+   "   sub $112,%rax\n"
+   "   ret\n"
+);
+
+__asm__ (
+#if defined(APPLE)
+   ".text\n"
+   ".globl _raw_swapcontext\n"
+   "_raw_swapcontext:\n"
+#elif defined(_WIN32)
+   ".text\n"
+   ".globl raw_swapcontext\n"
+   "raw_swapcontext:\n"
+#else
+   ".text\n"
+   ".globl raw_swapcontext\n"
+   ".type raw_swapcontext,@function\n"
+   "raw_swapcontext:\n" /* Calling convention sets the arguments in rdi and rsi, respectively */
+#endif
+   "   push %rdi\n"
+   "   push %rsi\n"
+   "   push %rdx\n"
+   "   push %rcx\n"
+   "   push %r8\n"
+   "   push %r9\n"
+   "   push %rbp\n"
+   "   push %rbx\n"
+   "   push %r12\n"
+   "   push %r13\n"
+   "   push %r14\n"
+   "   push %r15\n"
+   "   mov %rsp,(%rdi)\n" /* old */
+   "   mov %rsi,%rsp\n" /* new */
+   "   pop %r15\n"
+   "   pop %r14\n"
+   "   pop %r13\n"
+   "   pop %r12\n"
+   "   pop %rbx\n"
+   "   pop %rbp\n"
+   "   pop %r9\n"
+   "   pop %r8\n"
+   "   pop %rcx\n"
+   "   pop %rdx\n"
+   "   pop %rsi\n"
+   "   pop %rdi\n"
+   "   ret\n"
+);
+#elif PROCESSOR_i686
 __asm__ (
 #if defined(APPLE) || defined(_WIN32)
    ".text\n"
@@ -96,86 +175,8 @@ __asm__ (
    "   popl %ebp\n"
    "   retl\n"
 );
-#elif PROCESSOR_x86_64
-__asm__ (
-#if defined(APPLE)
-   ".text\n"
-   ".globl _raw_makecontext\n"
-   "_raw_makecontext:\n"
-#elif defined(_WIN32)
-   ".text\n"
-   ".globl raw_makecontext\n"
-   "raw_makecontext:\n"
 #else
-   ".text\n"
-   ".globl raw_makecontext\n"
-   ".type raw_makecontext,@function\n"
-   "raw_makecontext:\n"/* Calling convention sets the arguments in rdi, rsi, rdx and rcx, respectively */
-#endif
-   "   movq %rdi,%rax\n"      /* stack */
-   "   addq %rsi,%rax\n"      /* size  */
-   "   movq $0,   -8(%rax)\n" /* @return for func */
-   "   movq %rdx,-16(%rax)\n" /* func */
-   "   movq %rcx,-24(%rax)\n" /* arg/rdi */
-   "   movq $0,  -32(%rax)\n" /* rsi */
-   "   movq $0,  -40(%rax)\n" /* rdx */
-   "   movq $0,  -48(%rax)\n" /* rcx */
-   "   movq $0,  -56(%rax)\n" /* r8  */
-   "   movq $0,  -64(%rax)\n" /* r9  */
-   "   movq $0,  -72(%rax)\n" /* rbp */
-   "   movq $0,  -80(%rax)\n" /* rbx */
-   "   movq $0,  -88(%rax)\n" /* r12 */
-   "   movq $0,  -96(%rax)\n" /* r13 */
-   "   movq $0, -104(%rax)\n" /* r14 */
-   "   movq $0, -112(%rax)\n" /* r15 */
-   "   subq $112,%rax\n"
-   "   retq\n"
-);
 
-__asm__ (
-#if defined(APPLE)
-   ".text\n"
-   ".globl _raw_swapcontext\n"
-   "_raw_swapcontext:\n"
-#elif defined(_WIN32)
-   ".text\n"
-   ".globl raw_swapcontext\n"
-   "raw_swapcontext:\n"
-#else
-   ".text\n"
-   ".globl raw_swapcontext\n"
-   ".type raw_swapcontext,@function\n"
-   "raw_swapcontext:\n" /* Calling convention sets the arguments in rdi and rsi, respectively */
-#endif
-   "   pushq %rdi\n"
-   "   pushq %rsi\n"
-   "   pushq %rdx\n"
-   "   pushq %rcx\n"
-   "   pushq %r8\n"
-   "   pushq %r9\n"
-   "   pushq %rbp\n"
-   "   pushq %rbx\n"
-   "   pushq %r12\n"
-   "   pushq %r13\n"
-   "   pushq %r14\n"
-   "   pushq %r15\n"
-   "   movq %rsp,(%rdi)\n" /* old */
-   "   movq %rsi,%rsp\n" /* new */
-   "   popq %r15\n"
-   "   popq %r14\n"
-   "   popq %r13\n"
-   "   popq %r12\n"
-   "   popq %rbx\n"
-   "   popq %rbp\n"
-   "   popq %r9\n"
-   "   popq %r8\n"
-   "   popq %rcx\n"
-   "   popq %rdx\n"
-   "   popq %rsi\n"
-   "   popq %rdi\n"
-   "   retq\n"
-);
-#else
 
 /* If you implement raw contexts for other processors, don't forget to
    update the definition of HAVE_RAWCTX in buildtools/Cmake/CompleteInFiles.cmake */
