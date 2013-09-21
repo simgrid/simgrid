@@ -307,8 +307,8 @@ static void *xbt_parmap_worker_main(void *arg)
   xbt_parmap_thread_data_t data = (xbt_parmap_thread_data_t) arg;
   xbt_parmap_t parmap = data->parmap;
   unsigned round = 0;
-  //  smx_context_t context = SIMIX_context_new(NULL, 0, NULL, NULL, NULL);
-  //SIMIX_context_set_current(context);
+  smx_context_t context = SIMIX_context_new(NULL, 0, NULL, NULL, NULL);
+  SIMIX_context_set_current(context);
 
   XBT_DEBUG("New worker thread created");
 
