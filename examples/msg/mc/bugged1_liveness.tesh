@@ -2,7 +2,7 @@
 
 ! expect signal SIGABRT
 ! timeout 20
-$ ${bindir:=.}/bugged1_liveness ${bindir:=..}/msg_platform.xml ${bindir:=.}/deploy_bugged1_liveness.xml --cfg=model-check:1 "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n" --cfg=contexts/factory:ucontext
+$ ${bindir:=.}/bugged1_liveness ${bindir:=.}/../msg_platform.xml ${bindir:=.}/deploy_bugged1_liveness.xml --cfg=model-check:1 "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n" --cfg=contexts/factory:ucontext
 > [  0.000000] (0:@) Configuration change: Set 'model-check' to '1'
 > [  0.000000] (0:@) Check the liveness property promela_bugged1_liveness
 > [  0.000000] (0:@) Get debug information ...
