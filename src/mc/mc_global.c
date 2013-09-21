@@ -94,8 +94,8 @@ void _mc_cfg_cb_dot_output(const char *name, int pos) {
 mc_state_t mc_current_state = NULL;
 char mc_replay_mode = FALSE;
 double *mc_time = NULL;
-mc_comparison_times_t mc_comp_times = NULL;
-double mc_snapshot_comparison_time;
+__thread mc_comparison_times_t mc_comp_times = NULL;
+__thread double mc_snapshot_comparison_time;
 mc_stats_t mc_stats = NULL;
 
 /* Safety */
@@ -1325,10 +1325,8 @@ void MC_ignore_heap(void *address, size_t size){
   else
     xbt_dynar_insert_at(mc_heap_comparison_ignore, cursor, &region);
 
-  MC_UNSET_RAW_MEM;
-
-  if(raw_mem_set)
-    MC_SET_RAW_MEM;
+  if(!raw_mem_set)
+    MC_UNSET_RAW_MEM;
 }
 
 void MC_remove_ignore_heap(void *address, size_t size){
@@ -1366,10 +1364,8 @@ void MC_remove_ignore_heap(void *address, size_t size){
     MC_remove_ignore_heap(address, size);
   }
 
-  MC_UNSET_RAW_MEM;
-  
-  if(raw_mem_set)
-    MC_SET_RAW_MEM;
+  if(!raw_mem_set)
+    MC_UNSET_RAW_MEM;
 
 }
 
@@ -1443,10 +1439,8 @@ void MC_ignore_global_variable(const char *name){
     }
   }
 
-  MC_UNSET_RAW_MEM;
-
-  if(raw_mem_set)
-    MC_SET_RAW_MEM;
+  if(!raw_mem_set)
+    MC_UNSET_RAW_MEM;
 }
 
 void MC_ignore_local_variable(const char *var_name, const char *frame_name){
@@ -1554,10 +1548,8 @@ void MC_ignore_local_variable(const char *var_name, const char *frame_name){
     }
   }
 
-  MC_UNSET_RAW_MEM;
-  
-  if(raw_mem_set)
-    MC_SET_RAW_MEM;
+  if(!raw_mem_set)
+    MC_UNSET_RAW_MEM;
 
 }
 
@@ -1566,6 +1558,7 @@ void MC_new_stack_area(void *stack, char *name, void* context, size_t size){
   int raw_mem_set = (mmalloc_get_current_heap() == raw_heap);
 
   MC_SET_RAW_MEM;
+
   if(stacks_areas == NULL)
     stacks_areas = xbt_dynar_new(sizeof(stack_region_t), NULL);
   
@@ -1577,11 +1570,9 @@ void MC_new_stack_area(void *stack, char *name, void* context, size_t size){
   region->size = size;
   region->block = ((char*)stack - (char*)((xbt_mheap_t)std_heap)->heapbase) / BLOCKSIZE + 1;
   xbt_dynar_push(stacks_areas, &region);
-  
-  MC_UNSET_RAW_MEM;
 
-  if(raw_mem_set)
-    MC_SET_RAW_MEM;
+  if(!raw_mem_set)
+    MC_UNSET_RAW_MEM;
 }
 
 void MC_ignore(void *addr, size_t size){
@@ -1724,6 +1715,9 @@ void MC_init(){
   MC_get_libsimgrid_plt_section();
   MC_get_binary_plt_section();
 
+   /* Init parmap */
+  parmap = xbt_parmap_mc_new(xbt_os_get_numcores(), XBT_PARMAP_DEFAULT);
+
   MC_UNSET_RAW_MEM;
 
    /* Ignore some variables from xbt/ex.h used by exception e for stacks comparison */
@@ -1750,6 +1744,7 @@ void MC_init(){
   MC_ignore_global_variable("smx_current_context_key");
   MC_ignore_global_variable("sysv_maestro_context");
   MC_ignore_global_variable("counter"); /* Static variable used for tracing */
+ 
 
   if(raw_mem_set)
     MC_SET_RAW_MEM;

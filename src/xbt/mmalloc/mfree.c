@@ -169,7 +169,6 @@ void mfree(struct mdesc *mdp, void *ptr)
     /* Set size used in the fragment to -1 */
     mdp->heapinfo[block].busy_frag.frag_size[frag_nb] = -1;
     mdp->heapinfo[block].busy_frag.ignore[frag_nb] = 0;
-    mdp->heapinfo[block].busy_frag.equal_to[frag_nb] = NULL;
 
 //    fprintf(stderr,"nfree:%zu capa:%d\n", mdp->heapinfo[block].busy_frag.nfree,(BLOCKSIZE >> type));
     if (mdp->heapinfo[block].busy_frag.nfree ==
@@ -181,7 +180,6 @@ void mfree(struct mdesc *mdp, void *ptr)
       mdp->heapinfo[block].type = 0;
       mdp->heapinfo[block].busy_block.size = 1;
       mdp->heapinfo[block].busy_block.busy_size = 0;
-      mdp->heapinfo[block].busy_block.equal_to = NULL;
             
       /* Keep the statistics accurate.  */
       mdp -> heapstats.chunks_used++;
