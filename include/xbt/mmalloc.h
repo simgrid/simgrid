@@ -64,5 +64,6 @@ void reset_heap_information(void);
 int get_pointed_area_size(void *area, int heap);
 
 size_t mmalloc_get_bytes_used(xbt_mheap_t);
+ssize_t mmalloc_get_busy_size(xbt_mheap_t, void *ptr);
 
 #endif                          /* MMALLOC_H */
