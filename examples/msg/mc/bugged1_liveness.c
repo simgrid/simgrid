@@ -128,14 +128,19 @@ int main(int argc, char *argv[])
 
   MSG_init(&argc, argv);
 
+  char **options = &argv[1];
+
   MSG_config("model-check/property","promela_bugged1_liveness");
   MC_automaton_new_propositional_symbol("r", &predR);
   MC_automaton_new_propositional_symbol("cs", &predCS);
+
+  const char* platform_file = options[0];
+  const char* application_file = options[1];
   
-  MSG_create_environment("../msg_platform.xml");
+  MSG_create_environment(platform_file);
   MSG_function_register("coordinator", coordinator);
   MSG_function_register("client", client);
-  MSG_launch_application("deploy_bugged1_liveness.xml");
+  MSG_launch_application(application_file);
   MSG_main();
 
   return 0;
