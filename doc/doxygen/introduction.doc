@@ -163,7 +163,7 @@ sudo apt-get install vite
 ## Setting up and Compiling.
    
 The corresponding archive with all source files and platform files
-can be obtained [here](msg-tuto-src.tgz). 
+can be obtained [here](http://simgrid.gforge.inria.fr/tutorials/msg-tuto/msg-tuto.tgz).
 
 ~~~~{.sh}
 tar zxf msg-tuto.tgz
@@ -196,7 +196,7 @@ For a more "fancy" output, you can try:
 For a really fancy output, you should use [viva/triva][fn:1]:
 
 ~~~~{.sh}
-./masterworker0 platforms/platform.xml deployment0.xml --cfg=tracing:1\
+./masterworker0 platforms/platform.xml deployment0.xml --cfg=tracing:1 \
     --cfg=tracing/uncategorized:1 --cfg=viva/uncategorized:uncat.plist
 LANG=C ; viva simgrid.trace uncat.plist
 ~~~~
@@ -213,7 +213,7 @@ LANG=C ; Paje simgrid.trace
 Alternatively, you can use [vite][fn:6].
 
 ~~~~{.sh}
-./masterworker0 platforms/platform.xml deployment0.xml --cfg=tracing:1\
+./masterworker0 platforms/platform.xml deployment0.xml --cfg=tracing:1 \
     --cfg=tracing/msg/process:1 --cfg=tracing/basic:1
 vite simgrid.trace
 ~~~~
