@@ -33,6 +33,7 @@ set(tesh_files
 set(xml_files
   ${xml_files}
   ${CMAKE_CURRENT_SOURCE_DIR}/deploy_bugged1_liveness.xml
+  ${CMAKE_CURRENT_SOURCE_DIR}/deploy_bugged1_liveness_visited.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/deploy_bugged1.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/deploy_bugged2_liveness.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/deploy_bugged2.xml
