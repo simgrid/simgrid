@@ -117,6 +117,7 @@ static void* shm_map(int fd, size_t size, shared_data_t* data) {
 void smpi_bench_destroy(void)
 {
   xbt_dict_free(&allocs);
+  xbt_dict_free(&allocs_metadata);
   xbt_dict_free(&samples);
   xbt_dict_free(&calls);
 }
