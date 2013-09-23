@@ -55,7 +55,7 @@ int main(int argc, char **argv)
       fflush(stdout);
     }
   }
-
+  xbt_free(values);
   MPI_Finalize();
   return 0;
 }
