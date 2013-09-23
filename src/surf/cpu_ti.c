@@ -165,8 +165,8 @@ static void* cpu_ti_create_resource(const char *name, xbt_dynar_t power_peak,
   cpu->action_set =
       xbt_swag_new(xbt_swag_offset(ti_action, cpu_list_hookup));
 
-
   xbt_dynar_get_cpy(power_peak, 0, &cpu->power_peak);
+  xbt_dynar_free(&power_peak);  /* kill memory leak */
   //cpu->power_peak = power_peak;
   cpu->pstate = pstate;
   XBT_DEBUG("CPU create: peak=%lf, pstate=%d",cpu->power_peak, cpu->pstate);
