@@ -1595,7 +1595,7 @@ void MC_ignore(void *addr, size_t size){
     unsigned int cursor = 0;
     int start = 0;
     int end = xbt_dynar_length(mc_checkpoint_ignore) -1;
-    mc_checkpoint_ignore_region_t current_region;
+    mc_checkpoint_ignore_region_t current_region = NULL;
 
     while(start <= end){
       cursor = (start + end) / 2;
