@@ -414,7 +414,7 @@ void sg_config_init(int *argc, char **argv)
             ".\n       (use 'help' as a value to see the long description of each model)");
     xbt_cfg_register(&_sg_cfg_set, "cpu/model", description, xbt_cfgelm_string,
                      NULL, 1, 1, &_sg_cfg_cb__cpu_model, NULL);
-    xbt_cfg_setdefault_string(_sg_cfg_set, "cpu/model", xbt_strdup("Cas01"));
+    xbt_cfg_setdefault_string(_sg_cfg_set, "cpu/model", "Cas01");
 
     sprintf(description,
             "The optimization modes to use for the CPU. Possible values: ");
@@ -427,7 +427,7 @@ void sg_config_init(int *argc, char **argv)
             ".\n       (use 'help' as a value to see the long description of each optimization mode)");
     xbt_cfg_register(&_sg_cfg_set, "cpu/optim", description, xbt_cfgelm_string,
                      NULL, 1, 1, &_sg_cfg_cb__optimization_mode, NULL);
-    xbt_cfg_setdefault_string(_sg_cfg_set, "cpu/optim", xbt_strdup("Lazy"));
+    xbt_cfg_setdefault_string(_sg_cfg_set, "cpu/optim", "Lazy");
 
     sprintf(description,
             "The model to use for the storage. Possible values: ");
@@ -441,7 +441,7 @@ void sg_config_init(int *argc, char **argv)
     xbt_cfg_register(&_sg_cfg_set, "storage/model", description, xbt_cfgelm_string,
                      NULL, 1, 1, &_sg_cfg_cb__storage_mode,
                      NULL);
-    xbt_cfg_setdefault_string(_sg_cfg_set, "storage/model", xbt_strdup("default"));
+    xbt_cfg_setdefault_string(_sg_cfg_set, "storage/model", "default");
 
     /* ********************************************************************* */
     /* TUTORIAL: New model                                                   */
@@ -457,7 +457,7 @@ void sg_config_init(int *argc, char **argv)
     xbt_cfg_register(&_sg_cfg_set, "new_model/model", description, xbt_cfgelm_string,
                      NULL, 1, 1, &_sg_cfg_cb__storage_mode,
                      NULL);
-    xbt_cfg_setdefault_string(_sg_cfg_set, "new_model/model", xbt_strdup("default"));
+    xbt_cfg_setdefault_string(_sg_cfg_set, "new_model/model", "default");
     /* ********************************************************************* */
 
     sprintf(description,
@@ -472,7 +472,7 @@ void sg_config_init(int *argc, char **argv)
     xbt_cfg_register(&_sg_cfg_set, "network/model", description, xbt_cfgelm_string,
                      NULL, 1, 1, &_sg_cfg_cb__network_model,
                      NULL);
-    xbt_cfg_setdefault_string(_sg_cfg_set, "network/model", xbt_strdup("LV08"));
+    xbt_cfg_setdefault_string(_sg_cfg_set, "network/model", "LV08");
 
     sprintf(description,
             "The optimization modes to use for the network. Possible values: ");
@@ -485,7 +485,7 @@ void sg_config_init(int *argc, char **argv)
             ".\n       (use 'help' as a value to see the long description of each optimization mode)");
     xbt_cfg_register(&_sg_cfg_set, "network/optim", description, xbt_cfgelm_string,
                      NULL, 1, 1, &_sg_cfg_cb__optimization_mode, NULL);
-    xbt_cfg_setdefault_string(_sg_cfg_set, "network/optim", xbt_strdup("Lazy"));
+    xbt_cfg_setdefault_string(_sg_cfg_set, "network/optim", "Lazy");
 
     sprintf(description,
             "The model to use for the workstation. Possible values: ");
@@ -499,7 +499,7 @@ void sg_config_init(int *argc, char **argv)
     xbt_cfg_register(&_sg_cfg_set, "workstation/model", description, xbt_cfgelm_string,
                      NULL, 1, 1,
                      &_sg_cfg_cb__workstation_model, NULL);
-    xbt_cfg_setdefault_string(_sg_cfg_set, "workstation/model", xbt_strdup("default"));
+    xbt_cfg_setdefault_string(_sg_cfg_set, "workstation/model", "default");
 
     xbt_free(description);
 
@@ -625,7 +625,7 @@ void sg_config_init(int *argc, char **argv)
     xbt_cfg_register(&_sg_cfg_set, "contexts/factory",
                      "Context factory to use in SIMIX (ucontext, thread or raw)",
                      xbt_cfgelm_string, NULL, 1, 1, _sg_cfg_cb_context_factory, NULL);
-    xbt_cfg_setdefault_string(_sg_cfg_set, "contexts/factory", xbt_strdup("ucontext"));
+    xbt_cfg_setdefault_string(_sg_cfg_set, "contexts/factory", "ucontext");
 
     /* stack size of contexts in Ko */
     xbt_cfg_register(&_sg_cfg_set, "contexts/stack_size",
@@ -654,9 +654,9 @@ void sg_config_init(int *argc, char **argv)
         xbt_cfgelm_string, NULL, 1, 1,
         _sg_cfg_cb_contexts_parallel_mode, NULL);
 #ifdef HAVE_FUTEX_H
-    xbt_cfg_setdefault_string(_sg_cfg_set, "contexts/synchro", xbt_strdup("futex"));
+    xbt_cfg_setdefault_string(_sg_cfg_set, "contexts/synchro", "futex");
 #else //No futex on mac and posix is unimplememted yet
-    xbt_cfg_setdefault_string(_sg_cfg_set, "contexts/synchro", xbt_strdup("busy_wait"));
+    xbt_cfg_setdefault_string(_sg_cfg_set, "contexts/synchro", "busy_wait");
 #endif
 
     xbt_cfg_register(&_sg_cfg_set, "network/coordinates",
@@ -772,7 +772,7 @@ void sg_config_init(int *argc, char **argv)
                      "Which collective selector to use",
                      xbt_cfgelm_string, NULL, 1, 1, NULL,
                      NULL);
-    xbt_cfg_setdefault_string(_sg_cfg_set, "smpi/coll_selector", xbt_strdup("default"));
+    xbt_cfg_setdefault_string(_sg_cfg_set, "smpi/coll_selector", "default");
 
     xbt_cfg_register(&_sg_cfg_set, "smpi/gather",
                      "Which collective to use for gather",

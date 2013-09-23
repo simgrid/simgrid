@@ -323,7 +323,7 @@ void TRACE_global_init(int *argc, char **argv)
                    "Trace file created by the instrumented SimGrid.",
                    xbt_cfgelm_string, NULL, 1, 1,
                    NULL, NULL);
-  xbt_cfg_setdefault_string(_sg_cfg_set, OPT_TRACING_FILENAME, xbt_strdup("simgrid.trace"));
+  xbt_cfg_setdefault_string(_sg_cfg_set, OPT_TRACING_FILENAME, "simgrid.trace");
 
   /* tracing */
   xbt_cfg_register(&_sg_cfg_set, OPT_TRACING,
@@ -457,28 +457,28 @@ void TRACE_global_init(int *argc, char **argv)
                    "Comment to be added on the top of the trace file.",
                    xbt_cfgelm_string, NULL, 1, 1,
                    NULL, NULL);
-  xbt_cfg_setdefault_string(_sg_cfg_set, OPT_TRACING_COMMENT, xbt_strdup(""));
+  xbt_cfg_setdefault_string(_sg_cfg_set, OPT_TRACING_COMMENT, "");
 
   /* comment_file */
   xbt_cfg_register(&_sg_cfg_set, OPT_TRACING_COMMENT_FILE,
                    "The contents of the file are added to the top of the trace file as comment.",
                    xbt_cfgelm_string, NULL, 1, 1,
                    NULL, NULL);
-  xbt_cfg_setdefault_string(_sg_cfg_set, OPT_TRACING_COMMENT_FILE, xbt_strdup(""));
+  xbt_cfg_setdefault_string(_sg_cfg_set, OPT_TRACING_COMMENT_FILE, "");
 
   /* Viva graph configuration for uncategorized tracing */
   xbt_cfg_register(&_sg_cfg_set, OPT_VIVA_UNCAT_CONF,
                    "Viva Graph configuration file for uncategorized resource utilization traces.",
                    xbt_cfgelm_string, NULL, 1, 1,
                    NULL, NULL);
-  xbt_cfg_setdefault_string(_sg_cfg_set, OPT_VIVA_UNCAT_CONF, xbt_strdup(""));
+  xbt_cfg_setdefault_string(_sg_cfg_set, OPT_VIVA_UNCAT_CONF, "");
 
   /* Viva graph configuration for uncategorized tracing */
   xbt_cfg_register(&_sg_cfg_set, OPT_VIVA_CAT_CONF,
                    "Viva Graph configuration file for categorized resource utilization traces.",
                    xbt_cfgelm_string, NULL, 1, 1,
                    NULL, NULL);
-  xbt_cfg_setdefault_string(_sg_cfg_set, OPT_VIVA_CAT_CONF, xbt_strdup(""));
+  xbt_cfg_setdefault_string(_sg_cfg_set, OPT_VIVA_CAT_CONF, "");
 
   /* instrumentation can be considered configured now */
   trace_configured = 1;
