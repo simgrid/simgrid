@@ -869,7 +869,7 @@ void sg_config_finalize(void)
 /* Pick the right models for CPU, net and workstation, and call their model_init_preparse */
 void surf_config_models_setup()
 {
-  char *workstation_model_name;
+  const char *workstation_model_name;
   int workstation_id = -1;
   char *network_model_name = NULL;
   char *cpu_model_name = NULL;
@@ -890,10 +890,9 @@ void surf_config_models_setup()
   if ((!xbt_cfg_is_default_value(_sg_cfg_set, "network/model") ||
        !xbt_cfg_is_default_value(_sg_cfg_set, "cpu/model")) &&
       xbt_cfg_is_default_value(_sg_cfg_set, "workstation/model")) {
-    const char *val = "compound";
     XBT_INFO("Switching workstation model to compound since you changed the network and/or cpu model(s)");
-    xbt_cfg_set_string(_sg_cfg_set, "workstation/model", val);
-    workstation_model_name = (char *) "compound";
+    workstation_model_name = "compound";
+    xbt_cfg_set_string(_sg_cfg_set, "workstation/model", workstation_model_name);
   }
 
   XBT_DEBUG("Workstation model: %s", workstation_model_name);
