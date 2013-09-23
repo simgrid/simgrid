@@ -342,6 +342,13 @@ void smpi_sample_3(int global, const char *file, int line)
 }
 
 #ifndef WIN32
+static void smpi_shared_alloc_free(void *p)
+{
+  shared_data_t *data = p;
+  xbt_free(data->loc);
+  xbt_free(data);
+}
+
 void *smpi_shared_malloc(size_t size, const char *file, int line)
 {
   char *loc = bprintf("%zu_%s_%d", (size_t)getpid(), file, line);
@@ -358,7 +365,7 @@ void *smpi_shared_malloc(size_t size, const char *file, int line)
       }
     }
     if (!allocs) {
-      allocs = xbt_dict_new_homogeneous(free);
+      allocs = xbt_dict_new_homogeneous(smpi_shared_alloc_free);
     }
     data = xbt_dict_get_or_null(allocs, loc);
     if(!data) {
@@ -426,7 +433,6 @@ void smpi_shared_free(void *ptr)
     if (data->count <= 0) {
       close(data->fd);
       xbt_dict_remove(allocs, data->loc);
-      free(data->loc);
       XBT_DEBUG("Shared free - with removal - of %p", ptr);
     }
   }else{
