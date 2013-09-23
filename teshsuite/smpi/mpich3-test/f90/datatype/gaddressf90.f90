@@ -9,9 +9,9 @@
       use mpi
       integer max_asizev
       parameter (max_asizev=2)
-      integer (kind=MPI_ADDRESS_KIND) aint, aintv(max_asizev)
+      integer (kind=MPI_ADDRESS_KIND) aintv(max_asizev), gap
 
-      integer iarray(200), gap, intsize
+      integer iarray(200), intsize
       integer ierr, errs
 
       errs = 0

@@ -342,7 +342,7 @@
       subroutine test_pair_irsend( comm, errs )
       use mpi
       integer comm, errs
-      integer rank, size, ierr, next, prev, tag, count, index, i
+      integer rank, size, ierr, next, prev, tag, count, index
       integer TEST_SIZE
       integer dupcom
       parameter (TEST_SIZE=2000)
@@ -824,7 +824,7 @@
       integer TEST_SIZE
       parameter (TEST_SIZE=2000)
       integer status(MPI_STATUS_SIZE)
-      real send_buf(TEST_SIZE), recv_buf(TEST_SIZE)
+      real recv_buf(TEST_SIZE)
       logical verbose
       common /flags/ verbose
 !
@@ -979,7 +979,7 @@
       integer n, errs
       real buf(n)
       character *(*) name
-      integer count, ierr, i
+      integer count, i
 !
       do 10 i = 1, count
          if (buf(i) .ne. REAL(i)) then

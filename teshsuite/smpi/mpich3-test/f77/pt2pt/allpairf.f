@@ -899,11 +899,9 @@ c------------------------------------------------------------------------------
       real    recv_buf(n)
       integer source, tag, count, rank, status(MPI_STATUS_SIZE)
       character*(*) name
-      logical foundError
 
       integer ierr, recv_src, recv_tag, recv_count
 
-      foundError = .false.
       recv_src = status(MPI_SOURCE)
       recv_tag = status(MPI_TAG)
       call MPI_Comm_rank( MPI_COMM_WORLD, rank, ierr )
@@ -913,20 +911,17 @@ c------------------------------------------------------------------------------
          print *, '[', rank, '] Unexpected source:', recv_src, 
      *            ' in ', name
          errs       = errs + 1
-         foundError = .true.
       end if
 
       if (recv_tag .ne. tag) then
          print *, '[', rank, '] Unexpected tag:', recv_tag, ' in ', name
          errs       = errs + 1
-         foundError = .true.
       end if
 
       if (recv_count .ne. count) then
          print *, '[', rank, '] Unexpected count:', recv_count,
      *            ' in ', name
          errs       = errs + 1
-         foundError = .true.
       end if
          
       call verify_test_data(recv_buf, count, n, name, errs )

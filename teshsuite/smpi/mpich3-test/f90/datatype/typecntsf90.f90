@@ -40,7 +40,7 @@
        integer max_nints, max_dtypes, max_asizev
        parameter (max_nints = 10, max_dtypes = 10, max_asizev=10)
        integer intv(max_nints), dtypesv(max_dtypes)
-       integer (kind=MPI_ADDRESS_KIND) aint, aintv(max_asizev)
+       integer (kind=MPI_ADDRESS_KIND) aintv(max_asizev)
 
 !
        call mpi_type_get_envelope( dtype, nints, nadds, ntype, &

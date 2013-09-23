@@ -6,7 +6,7 @@
 !
       program main
       use mpi
-      integer atype, ierr
+      integer ierr
 !
       call mtest_init(ierr)
       call mpi_comm_set_errhandler( MPI_COMM_WORLD, MPI_ERRORS_RETURN,  &

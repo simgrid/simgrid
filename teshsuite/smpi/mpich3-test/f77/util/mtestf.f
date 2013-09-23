@@ -72,6 +72,7 @@ C A simple get intracomm for now
         endif
         myindex = mod( myindex, 4 ) + 1
         MTestGetIntracomm = comm .ne. MPI_COMM_NULL
+        qsmaller=.true.
         end
 C
         subroutine MTestFreeComm( comm )
