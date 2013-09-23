@@ -389,6 +389,7 @@ void *smpi_shared_malloc(size_t size, const char *file, int line)
       xbt_dict_set(allocs, loc, data, NULL);
       XBT_DEBUG("Mapping %s at %p through %d", loc, mem, fd);
     } else {
+      xbt_free(loc);
       mem = shm_map(data->fd, size, data);
       data->count++;
     }
