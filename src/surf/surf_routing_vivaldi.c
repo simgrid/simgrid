@@ -27,8 +27,14 @@ static void vivaldi_get_route_and_latency(
   char *dst = (char*)dst_p->name;
 
   if(src_p->rc_type == SURF_NETWORK_ELEMENT_AS) {
-    route->gw_src = xbt_lib_get_or_null(as_router_lib,ROUTER_PEER(src),ROUTING_ASR_LEVEL);
-    route->gw_dst = xbt_lib_get_or_null(as_router_lib,ROUTER_PEER(dst),ROUTING_ASR_LEVEL);
+    char *rp_src = ROUTER_PEER(src);
+    char *rp_dst = ROUTER_PEER(dst);
+    route->gw_src = xbt_lib_get_or_null(as_router_lib, rp_src,
+                                        ROUTING_ASR_LEVEL);
+    route->gw_dst = xbt_lib_get_or_null(as_router_lib, rp_dst,
+                                        ROUTING_ASR_LEVEL);
+    xbt_free(rp_src);
+    xbt_free(rp_dst);
   }
 
   double euclidean_dist;
