@@ -668,7 +668,7 @@ static void* ptask_cpu_create_resource(const char *name, double power_scale,
               name);
 
   cpu = (cpu_L07_t) surf_resource_new(sizeof(s_cpu_L07_t),
-          surf_workstation_model, name,cpu_properties);
+          surf_workstation_model, name,cpu_properties, NULL);
 
   cpu->type = SURF_WORKSTATION_RESOURCE_CPU;
   cpu->info = xbt_lib_get_or_null(host_lib, name, ROUTING_HOST_LEVEL);

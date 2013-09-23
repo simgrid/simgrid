@@ -205,7 +205,7 @@ static void* storage_create_resource(const char* id, const char* model,
               "Storage '%s' declared several times in the platform file",
               id);
   storage = (storage_t) surf_resource_new(sizeof(s_storage_t),
-          surf_storage_model, id, properties);
+          surf_storage_model, id, properties, NULL);
 
   storage->generic_resource.name = xbt_strdup(id);
   storage->state_current = SURF_RESOURCE_ON;

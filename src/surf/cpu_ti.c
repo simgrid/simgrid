@@ -161,7 +161,7 @@ static void* cpu_ti_create_resource(const char *name, xbt_dynar_t power_peak,
               name);
   xbt_assert(core==1,"Multi-core not handled with this model yet");
   cpu = (cpu_ti_t) surf_resource_new(sizeof(s_cpu_ti_t),
-          surf_cpu_model, name,cpu_properties);
+          surf_cpu_model, name,cpu_properties, NULL);
   cpu->action_set =
       xbt_swag_new(xbt_swag_offset(ti_action, cpu_list_hookup));
 

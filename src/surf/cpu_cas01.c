@@ -22,6 +22,19 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_cpu, surf,
 static xbt_swag_t
     cpu_running_action_set_that_does_not_need_being_checked = NULL;
 
+/* Additionnal callback function to cleanup some data, called from surf_resource_free */
+
+static void cpu_cas1_cleanup(void* r){
+  cpu_Cas01_t cpu = (cpu_Cas01_t)r;
+  unsigned int iter;
+  xbt_dynar_t power_tuple = NULL;
+  xbt_dynar_foreach(cpu->energy->power_range_watts_list, iter, power_tuple)
+    xbt_dynar_free(&power_tuple);
+  xbt_dynar_free(&cpu->energy->power_range_watts_list);
+  xbt_dynar_free(&cpu->power_peak_list);
+  xbt_free(cpu->energy);
+  return;
+}
 
 /* This function is registered as a callback to sg_platf_new_host() and never called directly */
 static void *cpu_create_resource(const char *name, xbt_dynar_t power_peak,
@@ -40,7 +53,7 @@ static void *cpu_create_resource(const char *name, xbt_dynar_t power_peak,
              name);
   cpu = (cpu_Cas01_t) surf_resource_new(sizeof(s_cpu_Cas01_t),
                                         surf_cpu_model, name,
-                                        cpu_properties);
+                                        cpu_properties,  &cpu_cas1_cleanup);
   cpu->power_peak = xbt_dynar_get_as(power_peak, pstate, double);
   cpu->power_peak_list = power_peak;
   cpu->pstate = pstate;
