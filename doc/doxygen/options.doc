@@ -253,6 +253,10 @@ manually set for MSG mailboxes, by setting the receiving mode of the mailbox
 with a call to \ref MSG_mailbox_set_async . For MSG, all messages sent to this 
 mailbox will have this behavior, so consider using two mailboxes if needed. 
 
+This value needs to be smaller than or equals to the threshold set at 
+\ref options_model_smpi_detached , because asynchronous messages are 
+meant to be detached as well.
+
 \subsubsection options_pls Configuring packet-level pseudo-models
 
 When using the packet-level pseudo-models, several specific

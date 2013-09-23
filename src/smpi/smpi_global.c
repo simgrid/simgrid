@@ -295,6 +295,10 @@ void smpi_global_init(void)
   for (i = 0; i < process_count; i++) {
     smpi_group_set_mapping(group, i, i);
   }
+
+  //check correctness of MPI parameters
+
+  xbt_assert(sg_cfg_get_int("smpi/async_small_thres")<=sg_cfg_get_int("smpi/send_is_detached_thres"));
 }
 
 void smpi_global_destroy(void)
