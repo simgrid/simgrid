@@ -174,7 +174,7 @@ static void cpu_update_actions_state_full(double now, double delta)
 
 xbt_dynar_t cpu_get_watts_range_list(cpu_Cas01_t cpu_model)
 {
-	xbt_dynar_t power_range_list = xbt_dynar_new(sizeof(xbt_dynar_t), NULL);
+	xbt_dynar_t power_range_list;
 	xbt_dynar_t power_tuple;
 	int i = 0, pstate_nb=0;
 	xbt_dynar_t current_power_values;
@@ -189,6 +189,8 @@ xbt_dynar_t cpu_get_watts_range_list(cpu_Cas01_t cpu_model)
 	if (all_power_values_str == NULL)
 		return NULL;
 
+
+	power_range_list = xbt_dynar_new(sizeof(xbt_dynar_t), NULL);
 	xbt_dynar_t all_power_values = xbt_str_split(all_power_values_str, ",");
 
 	pstate_nb = xbt_dynar_length(all_power_values);
@@ -210,8 +212,9 @@ xbt_dynar_t cpu_get_watts_range_list(cpu_Cas01_t cpu_model)
 		xbt_dynar_push_as(power_tuple, double, max_power);
 
 		xbt_dynar_push_as(power_range_list, xbt_dynar_t, power_tuple);
+		xbt_dynar_free(&current_power_values);
 	}
-
+	xbt_dynar_free(&all_power_values);
 	return power_range_list;
 
 }

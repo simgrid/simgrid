@@ -449,6 +449,7 @@ void ETag_surfxml_host(void)    {
 		  xbt_dynar_push_as(host.power_peak, double, power_value);
 		  XBT_DEBUG("Power value: %lf", power_value);
 	  }
+	  xbt_dynar_free(&pstate_list);
   }
 
   XBT_DEBUG("pstate: %s", A_surfxml_host_pstate);
