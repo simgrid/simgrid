@@ -632,13 +632,12 @@ static void action_allgatherv(const char *const *action) {
   /*
  The structure of the allgatherv action for the rank 0 (total 4 processes) 
  is the following:   
-0 allGatherV 275427 275427 275427 275427 204020 0 275427 550854 826281 
+0 allGatherV 275427 275427 275427 275427 204020
 
   where: 
   1) 275427 is the sendcount
   2) The next four elements declare the recvcounts array
-  3) The next four values declare the disps array
-  4) No more values mean that the datatype for sent and receive buffer
+  3) No more values mean that the datatype for sent and receive buffer
   is the default one, see decode_datatype().
 
    */
@@ -653,9 +652,9 @@ static void action_allgatherv(const char *const *action) {
   int recv_sum=0;  
   MPI_Datatype MPI_CURRENT_TYPE2;
 
-  if(action[3+2*comm_size]) {
-    MPI_CURRENT_TYPE = decode_datatype(action[3+2*comm_size]);
-    MPI_CURRENT_TYPE2 = decode_datatype(action[4+2*comm_size]);
+  if(action[3+comm_size]) {
+    MPI_CURRENT_TYPE = decode_datatype(action[3+comm_size]);
+    MPI_CURRENT_TYPE2 = decode_datatype(action[4+comm_size]);
   } else {
     MPI_CURRENT_TYPE = MPI_DEFAULT_TYPE;
     MPI_CURRENT_TYPE2 = MPI_DEFAULT_TYPE;    
@@ -665,7 +664,6 @@ static void action_allgatherv(const char *const *action) {
   for(i=0;i<comm_size;i++) {
     recvcounts[i] = atoi(action[i+3]);
     recv_sum=recv_sum+recvcounts[i];
-    disps[i] = atoi(action[i+3+comm_size]);
   }
   void *recvbuf = calloc(recv_sum, smpi_datatype_size(MPI_CURRENT_TYPE2));  
 
@@ -694,15 +692,13 @@ static void action_allToAllv(const char *const *action) {
   /*
  The structure of the allToAllV action for the rank 0 (total 4 processes) 
  is the following:   
-  0 allToAllV 100 1 7 10 12 5 10 20 45 100 1 70 10 5 1 5 77 90
+  0 allToAllV 100 1 7 10 12 100 1 70 10 5
 
   where: 
   1) 100 is the size of the send buffer *sizeof(int),
   2) 1 7 10 12 is the sendcounts array
-  3) 5 10 20 45 is the sdispls array
-  4) 100*sizeof(int) is the size of the receiver buffer
-  5)  1 70 10 5 is the recvcounts array
-  6) 1 5 77 90 is the rdispls array
+  3) 100*sizeof(int) is the size of the receiver buffer
+  4)  1 70 10 5 is the recvcounts array
 
    */
 
@@ -719,10 +715,10 @@ static void action_allToAllv(const char *const *action) {
   MPI_Datatype MPI_CURRENT_TYPE2;
 
   send_buf_size=parse_double(action[2]);
-  recv_buf_size=parse_double(action[3+2*comm_size]);
-  if(action[4+4*comm_size]) {
-    MPI_CURRENT_TYPE=decode_datatype(action[4+4*comm_size]);    
-    MPI_CURRENT_TYPE2=decode_datatype(action[5+4*comm_size]);    
+  recv_buf_size=parse_double(action[3+comm_size]);
+  if(action[4+2*comm_size]) {
+    MPI_CURRENT_TYPE=decode_datatype(action[4+2*comm_size]);
+    MPI_CURRENT_TYPE2=decode_datatype(action[5+2*comm_size]);
   }
   else {
       MPI_CURRENT_TYPE=MPI_DEFAULT_TYPE;
@@ -734,9 +730,7 @@ static void action_allToAllv(const char *const *action) {
 
   for(i=0;i<comm_size;i++) {
     sendcounts[i] = atoi(action[i+3]);
-    senddisps[i] = atoi(action[i+3+comm_size]);
-    recvcounts[i] = atoi(action[i+4+2*comm_size]);
-    recvdisps[i] = atoi(action[i+4+3*comm_size]);
+    recvcounts[i] = atoi(action[i+4+comm_size]);
   }
 
 
@@ -747,7 +741,7 @@ static void action_allToAllv(const char *const *action) {
   for(i=0;i<comm_size;i++) count+=sendcounts[i];
   TRACE_smpi_collective_in(rank, -1, __FUNCTION__,count*smpi_datatype_size(MPI_CURRENT_TYPE));
 #endif
-    mpi_coll_alltoallv_fun(sendbuf, sendcounts, senddisps, 	MPI_CURRENT_TYPE,
+    mpi_coll_alltoallv_fun(sendbuf, sendcounts, senddisps, MPI_CURRENT_TYPE,
                                recvbuf, recvcounts, recvdisps, MPI_CURRENT_TYPE,
                                MPI_COMM_WORLD);
 #ifdef HAVE_TRACING
