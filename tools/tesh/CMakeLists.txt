@@ -7,7 +7,8 @@ if(WIN32)
   #  COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/Scripts/tesh.pl ${CMAKE_BINARY_DIR}/bin/tesh
   #  )
     
-    file(COPY ${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/Scripts/tesh.pl ${CMAKE_BINARY_DIR}/bin/
+    file(COPY        ${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/Scripts/tesh.pl 
+         DESTINATION ${CMAKE_BINARY_DIR}/bin/
          FILE_PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ
                           GROUP_EXECUTE GROUP_READ)
     file(RENAME ${CMAKE_BINARY_DIR}/bin/tesh.pl ${CMAKE_BINARY_DIR}/bin/tesh)			  
