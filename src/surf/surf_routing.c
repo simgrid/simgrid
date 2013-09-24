@@ -746,9 +746,6 @@ static void routing_parse_cabinet(sg_platf_cabinet_cbarg_t cabinet)
     s_sg_platf_host_cbarg_t host;
     memset(&host, 0, sizeof(host));
     host.initial_state = SURF_RESOURCE_ON;
-    xbt_dynar_t power_state_list = xbt_dynar_new(sizeof(double), NULL);
-    xbt_dynar_push(power_state_list,&cabinet->power);
-    host.power_peak = power_state_list;
     host.pstate = 0;
     host.power_scale = 1.0;
     host.core_amount = 1;
@@ -768,6 +765,9 @@ static void routing_parse_cabinet(sg_platf_cabinet_cbarg_t cabinet)
       link_id = bprintf("link_%s%d%s",cabinet->prefix,i,cabinet->suffix);
       host.id = host_id;
       link.id = link_id;
+      xbt_dynar_t power_state_list = xbt_dynar_new(sizeof(double), NULL);
+      xbt_dynar_push(power_state_list,&cabinet->power);
+      host.power_peak = power_state_list;
       sg_platf_new_host(&host);
       sg_platf_new_link(&link);
 

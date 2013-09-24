@@ -24,7 +24,7 @@ static xbt_swag_t
 
 /* Additionnal callback function to cleanup some data, called from surf_resource_free */
 
-static void cpu_cas1_cleanup(void* r){
+static void cpu_cas01_cleanup(void* r){
   cpu_Cas01_t cpu = (cpu_Cas01_t)r;
   unsigned int iter;
   xbt_dynar_t power_tuple = NULL;
@@ -53,7 +53,7 @@ static void *cpu_create_resource(const char *name, xbt_dynar_t power_peak,
              name);
   cpu = (cpu_Cas01_t) surf_resource_new(sizeof(s_cpu_Cas01_t),
                                         surf_cpu_model, name,
-                                        cpu_properties,  &cpu_cas1_cleanup);
+                                        cpu_properties,  &cpu_cas01_cleanup);
   cpu->power_peak = xbt_dynar_get_as(power_peak, pstate, double);
   cpu->power_peak_list = power_peak;
   cpu->pstate = pstate;
