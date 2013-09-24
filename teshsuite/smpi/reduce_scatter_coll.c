@@ -28,7 +28,7 @@ int main( int argc, char **argv )
     for (i=0; i<size; i++) 
 	sendbuf[i] = rank + i;
     recvcounts = (int *)malloc( size * sizeof(int) );
-        recvbuf = (int *)malloc( size * sizeof(int) );
+    recvbuf = (int *)malloc( size * sizeof(int) );
     for (i=0; i<size; i++) 
     recvcounts[i] = 1;
     MPI_Reduce_scatter( sendbuf, recvbuf, recvcounts, MPI_INT, MPI_SUM, comm );
@@ -44,6 +44,10 @@ int main( int argc, char **argv )
     if (rank == 0 && toterr == 0) {
 	printf( " No Errors\n" );
     }
+    free(sendbuf);
+    free(recvcounts);
+    free(recvbuf);
+    
     MPI_Finalize( );
 
     return toterr;

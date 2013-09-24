@@ -387,6 +387,8 @@ int smpi_coll_tuned_reduce_scatter_gather(void *sendbuf, void *recvbuf,
       }
     }
   }
+  if (tmp_buf)
+    free(tmp_buf);
   if (cnts)
     free(cnts);
   if (disps)

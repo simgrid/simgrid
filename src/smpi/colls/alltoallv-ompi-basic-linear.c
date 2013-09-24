@@ -93,6 +93,7 @@ smpi_coll_tuned_alltoallv_ompi_basic_linear(void *sbuf, int *scounts, int *sdisp
     for (i = 0; i < nreqs; ++i) {
       if(ireqs[i]!=MPI_REQUEST_NULL)smpi_mpi_request_free(&ireqs[i]);
     }
+    free(ireqs);
 
     return MPI_SUCCESS;
 }

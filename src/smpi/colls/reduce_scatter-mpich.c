@@ -182,6 +182,9 @@ int smpi_coll_tuned_reduce_scatter_mpich_noncomm(void *sendbuf, void *recvbuf, i
 
     tmp_buf0=( void *)xbt_malloc( true_extent * total_count);
     tmp_buf1=( void *)xbt_malloc( true_extent * total_count);
+    void *tmp_buf0_save=tmp_buf0;
+    void *tmp_buf1_save=tmp_buf1;
+
     /* adjust for potential negative lower bound in datatype */
     tmp_buf0 = (void *)((char*)tmp_buf0 - true_lb);
     tmp_buf1 = (void *)((char*)tmp_buf1 - true_lb);
@@ -249,6 +252,8 @@ int smpi_coll_tuned_reduce_scatter_mpich_noncomm(void *sendbuf, void *recvbuf, i
     result_ptr = (char *)(buf0_was_inout ? tmp_buf0 : tmp_buf1) + recv_offset * true_extent;
     mpi_errno = smpi_datatype_copy(result_ptr, size, datatype,
                                recvbuf, size, datatype);
+    xbt_free(tmp_buf0_save);
+    xbt_free(tmp_buf1_save);
     if (mpi_errno) return(mpi_errno);
     return MPI_SUCCESS;
 }
@@ -469,8 +474,8 @@ int smpi_coll_tuned_reduce_scatter_mpich_rdb(void *sendbuf, void *recvbuf, int r
                     }
                 }
 
-                //smpi_datatype_free(&sendtype);
-                //smpi_datatype_free(&recvtype);
+                smpi_datatype_free(&sendtype);
+                smpi_datatype_free(&recvtype);
 
                 mask <<= 1;
                 i++;
@@ -481,6 +486,7 @@ int smpi_coll_tuned_reduce_scatter_mpich_rdb(void *sendbuf, void *recvbuf, int r
                                        recvcounts[rank], datatype, recvbuf,
                                        recvcounts[rank], datatype);
             if (mpi_errno) return(mpi_errno);
+
     xbt_free(disps);
     xbt_free(tmp_recvbuf);
     xbt_free(tmp_results);

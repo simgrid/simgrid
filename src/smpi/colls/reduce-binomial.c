@@ -70,14 +70,17 @@ int smpi_coll_tuned_reduce_binomial(void *sendbuf, void *recvbuf, int count,
     mask <<= 1;
   }
 
-if (!is_commutative && (root != 0)){
-  if (rank == 0){
-    smpi_mpi_send(recvbuf, count, datatype, root,tag, comm);
-  }else if (rank == root){
-    smpi_mpi_recv(recvbuf, count, datatype, 0, tag, comm, &status);
+  if (!is_commutative && (root != 0)){
+    if (rank == 0){
+      smpi_mpi_send(recvbuf, count, datatype, root,tag, comm);
+    }else if (rank == root){
+      smpi_mpi_recv(recvbuf, count, datatype, 0, tag, comm, &status);
+    }
   }
-}
 
+  if (rank != root) {
+        xbt_free(recvbuf);
+  }
   free(tmp_buf);
 
   return 0;

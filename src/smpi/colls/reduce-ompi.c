@@ -302,6 +302,7 @@ int smpi_coll_tuned_ompi_reduce_generic( void* sendbuf, void* recvbuf, int origi
             free(sreq);
         }
     }
+    free(tree);
     return MPI_SUCCESS;
 
  error_hndl:  /* error handler */

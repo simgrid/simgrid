@@ -291,6 +291,7 @@ smpi_coll_tuned_bcast_ompi_split_bintree ( void* buffer,
                                             comm, MPI_STATUS_IGNORE); 
         }
     }
+    xbt_free(tree);
     return (MPI_SUCCESS);
   
 
