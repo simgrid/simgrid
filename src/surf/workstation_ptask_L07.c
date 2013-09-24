@@ -700,7 +700,7 @@ static void ptask_parse_cpu_init(sg_platf_host_cbarg_t host)
 {
   double power_peak = xbt_dynar_get_as(host->power_peak, host->pstate, double);
  //cpu->power_peak = power_peak;
-
+  xbt_dynar_free(&(host->power_peak));  /* kill memory leak */
   ptask_cpu_create_resource(
       host->id,
       power_peak,
