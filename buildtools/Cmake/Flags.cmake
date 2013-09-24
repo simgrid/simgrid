@@ -37,6 +37,12 @@ if(APPLE AND COMPILER_C_VERSION_MAJOR_MINOR MATCHES "4.6")
   set(optCFLAGS "-O0 ")
 endif()
 
+if(WIN32) # http://gcc.gnu.org/bugzilla/show_bug.cgi?id=50293
+  if (COMPILER_C_VERSION_MAJOR_MINOR MATCHES "4.7" OR 
+      COMPILER_C_VERSION_MAJOR_MINOR MATCHES "4.6")
+  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} --disable-lto")
+endif()
+
 if(NOT enable_debug)
   set(CMAKE_C_FLAGS "-DNDEBUG ${CMAKE_C_FLAGS}")
 endif()
