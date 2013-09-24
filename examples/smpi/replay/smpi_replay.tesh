@@ -344,6 +344,24 @@ $ ../../bin/smpirun -ext smpi_replay --log=replay.thresh:critical --log=smpi_rep
 
 $ rm -f replay/one_trace
 
+p Test of AllGatherv replay with SMPI (one trace for all processes)
+
+< replay/actions_allgatherv.txt
+$ mkfile replay/one_trace
+
+$ ../../bin/smpirun -ext smpi_replay --log=replay.thresh:critical --log=smpi_replay.thresh:verbose --log=no_loc --cfg=smpi/cpu_threshold:1 -np 3 -platform ${srcdir:=.}/replay/replay_platform.xml -hostfile ${srcdir:=.}/hostfile ./smpi_replay replay/one_trace
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'maxmin/precision' to '1e-9'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'SMPI'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/TCP_gamma' to '4194304'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'smpi/cpu_threshold' to '1'
+> [0.000000] [surf_config/INFO] Switching workstation model to compound since you changed the network and/or cpu model(s)
+> [Tremblay:0:(0) 0.841244] [smpi_replay/VERBOSE] 0 allGatherV 275427 275427 275427 275427 204020 0 0 0.841244
+> [Fafard:2:(0) 1.239482] [smpi_replay/VERBOSE] 2 allGatherV 275427 275427 275427 275427 204020 0 0 1.239482
+> [Jupiter:1:(0) 1.239482] [smpi_replay/VERBOSE] 1 allGatherV 275427 275427 275427 275427 204020 0 0 1.239482
+> [Jupiter:1:(0) 1.239482] [smpi_replay/INFO] Simulation time 1.23948
+
+$ rm -f replay/one_trace
+
 p Test of waitall replay with SMPI (one trace for all processes)
 
 < replay/actions_waitall.txt
