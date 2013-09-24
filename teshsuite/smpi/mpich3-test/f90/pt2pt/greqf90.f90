@@ -7,7 +7,7 @@
       subroutine query_fn( extrastate, status, ierr )
       use mpi
       integer status(MPI_STATUS_SIZE), ierr
-      integer (kind=MPI_ADDRESS_KIND) extrastate, valin, valout, val
+      integer (kind=MPI_ADDRESS_KIND) extrastate
 
 !
 !    set a default status
@@ -16,12 +16,13 @@
       call mpi_status_set_cancelled( status, .false., ierr)
       call mpi_status_set_elements( status, MPI_BYTE, 0, ierr )
       ierr = MPI_SUCCESS
+      extrastate = extrastate
       end
 !
       subroutine free_fn( extrastate, ierr )
       use mpi
-      integer value, ierr
-      integer (kind=MPI_ADDRESS_KIND) extrastate, valin, valout, val
+      integer ierr
+      integer (kind=MPI_ADDRESS_KIND) extrastate
 
       integer freefncall
       common /fnccalls/ freefncall
@@ -40,10 +41,12 @@
       use mpi
       integer ierr
       logical complete
-      integer (kind=MPI_ADDRESS_KIND) extrastate, valin, valout, val
+      integer (kind=MPI_ADDRESS_KIND) extrastate
 
 
       ierr = MPI_SUCCESS
+      complete=.true.
+      extrastate=extrastate
       end
 !
 !
@@ -64,7 +67,7 @@
        integer status(MPI_STATUS_SIZE)
        integer request
        external query_fn, free_fn, cancel_fn
-       integer (kind=MPI_ADDRESS_KIND) extrastate, valin, valout, val
+       integer (kind=MPI_ADDRESS_KIND) extrastate
 
        integer freefncall
        common /fnccalls/ freefncall

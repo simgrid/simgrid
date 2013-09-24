@@ -13,7 +13,6 @@
       integer (kind=MPI_ADDRESS_KIND) aint, aintv(max_asizev)
 
       integer blocklens(max_asizev), dtypes(max_asizev)
-      integer displs(max_asizev)
       integer recvbuf(6*max_asizev)
       integer sendbuf(max_asizev), status(MPI_STATUS_SIZE)
       integer rank, size

@@ -41,8 +41,10 @@ option(enable_msg_deprecated "This option enable the use of msg deprecated funct
 
 if(WIN32)
   option(enable_smpi "Whether SMPI in included in library." off)
+  option(enable_smpi_MPICH3_testsuite "Whether the test suite form MPICH 3 should be built" off)
 else()
   option(enable_smpi "Whether SMPI in included in library." on)
+  option(enable_smpi_MPICH3_testsuite "Whether the test suite form MPICH 3 should be built" off)
 endif()
 
 if(enable_scala AND NOT enable_java)

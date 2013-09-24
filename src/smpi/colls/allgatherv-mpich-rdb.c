@@ -206,5 +206,6 @@ int smpi_coll_tuned_allgatherv_mpich_rdb (
                 position += recvcounts[j];
             }
         }
-return MPI_SUCCESS;
+  free(tmp_buf);
+  return MPI_SUCCESS;
 }

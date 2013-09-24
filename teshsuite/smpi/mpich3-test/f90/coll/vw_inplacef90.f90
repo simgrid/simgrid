@@ -14,7 +14,7 @@
        integer rbuf(MAX_SIZE)
        integer rdispls(MAX_SIZE), rcounts(MAX_SIZE), rtypes(MAX_SIZE)
        integer ierr, errs
-       integer comm, root
+       integer comm
        integer rank, size
        integer iexpected, igot
        integer i, j

@@ -295,6 +295,10 @@ void smpi_global_init(void)
   for (i = 0; i < process_count; i++) {
     smpi_group_set_mapping(group, i, i);
   }
+
+  //check correctness of MPI parameters
+
+  xbt_assert(sg_cfg_get_int("smpi/async_small_thres")<=sg_cfg_get_int("smpi/send_is_detached_thres"));
 }
 
 void smpi_global_destroy(void)
@@ -303,8 +307,8 @@ void smpi_global_destroy(void)
   int i;
 
   smpi_bench_destroy();
-  smpi_group_unuse(smpi_comm_group(MPI_COMM_WORLD));
-  smpi_comm_destroy(MPI_COMM_WORLD);
+  while(smpi_group_unuse(smpi_comm_group(MPI_COMM_WORLD))>0);
+  xbt_free(MPI_COMM_WORLD);
   MPI_COMM_WORLD = MPI_COMM_NULL;
   for (i = 0; i < count; i++) {
     smpi_group_unuse(smpi_comm_group(process_data[i]->comm_self));

@@ -26,12 +26,14 @@ set(tesh_files
   ${CMAKE_CURRENT_SOURCE_DIR}/bugged1.tesh
   ${CMAKE_CURRENT_SOURCE_DIR}/bugged2.tesh
   ${CMAKE_CURRENT_SOURCE_DIR}/bugged1_liveness.tesh
+  ${CMAKE_CURRENT_SOURCE_DIR}/bugged1_liveness_visited.tesh
   ${CMAKE_CURRENT_SOURCE_DIR}/centralized.tesh
   PARENT_SCOPE
   )
 set(xml_files
   ${xml_files}
   ${CMAKE_CURRENT_SOURCE_DIR}/deploy_bugged1_liveness.xml
+  ${CMAKE_CURRENT_SOURCE_DIR}/deploy_bugged1_liveness_visited.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/deploy_bugged1.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/deploy_bugged2_liveness.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/deploy_bugged2.xml

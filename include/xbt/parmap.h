@@ -52,6 +52,16 @@ XBT_PUBLIC(void) xbt_parmap_apply(xbt_parmap_t parmap,
                                   xbt_dynar_t data);
 XBT_PUBLIC(void*) xbt_parmap_next(xbt_parmap_t parmap);
 
+#ifdef HAVE_MC
+XBT_PUBLIC(xbt_parmap_t) xbt_parmap_mc_new(unsigned int num_workers,
+    e_xbt_parmap_mode_t mode);
+
+XBT_PUBLIC(int) xbt_parmap_mc_apply(xbt_parmap_t parmap, 
+                         int_f_pvoid_pvoid_t fun, 
+                         void *data,
+                         unsigned int length,
+                         void* ref_snapshot);
+#endif
 /** \} */
 
 SG_END_DECL()

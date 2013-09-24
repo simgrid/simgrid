@@ -87,6 +87,7 @@ end module
         endif
         myindex(rank+1) = mod( myindex(rank+1), 4 ) + 1
         MTestGetIntracomm = comm .ne. MPI_COMM_NULL
+        qsmaller=.true.
         end
 !
         subroutine MTestFreeComm( comm )

@@ -87,6 +87,9 @@ static int small_test(int rank, int size)
   retval =
       MPI_Scatter(sndbuf, sendcount, MPI_DOUBLE, &rcvd, recvcount,
                   MPI_DOUBLE, root, MPI_COMM_WORLD);
+  if (root == rank) {
+    free(sndbuf);
+    }
   if (retval != MPI_SUCCESS) {
     fprintf(stderr, "(%s:%d) MPI_Scatter() returned retval=%d\n", __FILE__,
             __LINE__, retval);

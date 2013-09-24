@@ -726,10 +726,6 @@ static void MC_dump_checkpoint_ignore(mc_snapshot_t snapshot){
 
 mc_snapshot_t MC_take_snapshot(){
 
-  int raw_mem = (mmalloc_get_current_heap() == raw_heap);
-  
-  MC_SET_RAW_MEM;
-
   mc_snapshot_t snapshot = xbt_new0(s_mc_snapshot_t, 1);
   snapshot->nb_processes = xbt_swag_size(simix_global->process_list);
 
@@ -745,11 +741,6 @@ mc_snapshot_t MC_take_snapshot(){
   }
 
   MC_dump_checkpoint_ignore(snapshot);
-
-  MC_UNSET_RAW_MEM;
-
-  if(raw_mem)
-    MC_SET_RAW_MEM;
 
   return snapshot;
 

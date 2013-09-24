@@ -120,12 +120,10 @@ static void *register_morecore(struct mdesc *mdp, size_t size)
     for (it=0; it<BLOCKIFY(mdp->heapsize * sizeof(malloc_info)); it++){
       newinfo[BLOCK(oldinfo)+it].type = 0;
       newinfo[BLOCK(oldinfo)+it].busy_block.ignore = 0;
-      newinfo[BLOCK(oldinfo+it)].busy_block.equal_to = NULL;
     }
 
     newinfo[BLOCK(oldinfo)].busy_block.size = BLOCKIFY(mdp->heapsize * sizeof(malloc_info));
     newinfo[BLOCK(oldinfo)].busy_block.busy_size = size;
-    //newinfo[BLOCK(oldinfo)].busy_block.bt_size = 0;// FIXME setup the backtrace
     mfree(mdp, (void *) oldinfo);
     mdp->heapsize = newsize;
   }
@@ -205,7 +203,6 @@ void *mmalloc_no_memset(xbt_mheap_t mdp, size_t size)
       /* Update our metadata about this fragment */
       candidate_info->busy_frag.frag_size[candidate_frag] = requested_size;
       candidate_info->busy_frag.ignore[candidate_frag] = 0;
-      candidate_info->busy_frag.equal_to[candidate_frag] = NULL;
       //xbt_backtrace_no_malloc(candidate_info->busy_frag.bt[candidate_frag],XBT_BACKTRACE_SIZE);
       //xbt_libunwind_backtrace(candidate_info->busy_frag.bt[candidate_frag],XBT_BACKTRACE_SIZE);
 
@@ -227,7 +224,6 @@ void *mmalloc_no_memset(xbt_mheap_t mdp, size_t size)
       for (i = 1; i < (size_t) (BLOCKSIZE >> log); ++i) {
         mdp->heapinfo[block].busy_frag.frag_size[i] = -1;
         mdp->heapinfo[block].busy_frag.ignore[i] = 0;
-        mdp->heapinfo[block].busy_frag.equal_to[i] = NULL;
       }
       mdp->heapinfo[block].busy_frag.nfree = i - 1;
       mdp->heapinfo[block].freehook.prev = NULL;
@@ -238,7 +234,6 @@ void *mmalloc_no_memset(xbt_mheap_t mdp, size_t size)
       /* mark the fragment returned as busy */
       mdp->heapinfo[block].busy_frag.frag_size[0] = requested_size;
       mdp->heapinfo[block].busy_frag.ignore[0] = 0;
-      mdp->heapinfo[block].busy_frag.equal_to[0] = NULL;
       //xbt_backtrace_no_malloc(mdp->heapinfo[block].busy_frag.bt[0],XBT_BACKTRACE_SIZE);
       //xbt_libunwind_backtrace(mdp->heapinfo[block].busy_frag.bt[0],XBT_BACKTRACE_SIZE);
       
@@ -286,7 +281,6 @@ void *mmalloc_no_memset(xbt_mheap_t mdp, size_t size)
           mdp->heapinfo[block+it].type = 0;
           mdp->heapinfo[block+it].busy_block.busy_size = 0;
           mdp->heapinfo[block+it].busy_block.ignore = 0;
-          mdp->heapinfo[block+it].busy_block.equal_to = NULL;
         }
         mdp->heapinfo[block].busy_block.size = blocks;
         mdp->heapinfo[block].busy_block.busy_size = requested_size;
@@ -328,7 +322,6 @@ void *mmalloc_no_memset(xbt_mheap_t mdp, size_t size)
       mdp->heapinfo[block+it].type = 0;
       mdp->heapinfo[block+it].busy_block.busy_size = 0;
       mdp->heapinfo[block+it].busy_block.ignore = 0;
-      mdp->heapinfo[block+it].busy_block.equal_to = NULL;
     }
     mdp->heapinfo[block].busy_block.size = blocks;
     mdp->heapinfo[block].busy_block.busy_size = requested_size; 

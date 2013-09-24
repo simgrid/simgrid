@@ -199,6 +199,7 @@ int smpi_coll_tuned_bcast_ompi_pipeline( void* buffer,
     }
 
     if( NULL != send_reqs ) free(send_reqs);
+    xbt_free(tree);
 
     return (MPI_SUCCESS);
 }

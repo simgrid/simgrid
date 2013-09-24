@@ -237,7 +237,8 @@ typedef struct surf_storage_model_extension_public {
   surf_action_t(*write) (void *storage, size_t size, surf_file_t fd);
   surf_action_t(*stat) (void *storage, surf_file_t fd);
   surf_action_t(*ls) (void *storage, const char *path);
-  xbt_dict_t(*get_properties) (const void *resource);
+  xbt_dict_t(*get_properties) (const void *storage);
+  xbt_dict_t(*get_content) (void *storage);
 } s_surf_model_extension_storage_t;
 
      /** \ingroup SURF_models
@@ -359,8 +360,8 @@ static inline void *surf_cpu_resource_priv(const void *host) {
 static inline void *surf_workstation_resource_priv(const void *host){
   return xbt_lib_get_level((void *)host, SURF_WKS_LEVEL);
 }
-static inline void *surf_storage_resource_priv(const void *host){
-  return xbt_lib_get_level((void *)host, SURF_STORAGE_LEVEL);
+static inline void *surf_storage_resource_priv(const void *storage){
+  return xbt_lib_get_level((void *)storage, SURF_STORAGE_LEVEL);
 }
 
 static inline void *surf_cpu_resource_by_name(const char *name) {
@@ -377,6 +378,7 @@ typedef struct surf_resource {
   surf_model_t model;
   char *name;
   xbt_dict_t properties;
+  void_f_pvoid_t free_f;
 } s_surf_resource_t, *surf_resource_t;
 
 /**

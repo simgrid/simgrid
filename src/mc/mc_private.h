@@ -23,6 +23,7 @@
 #include "msg/msg.h"
 #include "msg/datatypes.h"
 #include "xbt/strbuff.h"
+#include "xbt/parmap.h"
 
 /****************************** Snapshots ***********************************/
 
@@ -75,6 +76,7 @@ extern xbt_dynar_t mc_checkpoint_ignore;
 extern double *mc_time;
 extern FILE *dot_output;
 extern const char* colors[13];
+extern xbt_parmap_t parmap;
 
 extern int user_max_depth_reached;
 
@@ -249,10 +251,10 @@ typedef struct s_mc_comparison_times{
   double hash_local_variables_comparison_time;
 }s_mc_comparison_times_t, *mc_comparison_times_t;
 
-extern mc_comparison_times_t mc_comp_times;
-extern double mc_snapshot_comparison_time;
+extern __thread mc_comparison_times_t mc_comp_times;
+extern __thread double mc_snapshot_comparison_time;
 
-int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2);
+int snapshot_compare(void *p1, void *p2);
 int SIMIX_pre_mc_compare_snapshots(smx_simcall_t simcall, mc_snapshot_t s1, mc_snapshot_t s2);
 void print_comparison_times(void);
 

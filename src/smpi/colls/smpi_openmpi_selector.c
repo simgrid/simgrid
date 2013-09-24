@@ -601,9 +601,13 @@ int smpi_coll_tuned_scatter_ompi(void *sbuf, int scount,
             scount=rcount;
             sdtype=rdtype;
         }
-        return smpi_coll_tuned_scatter_ompi_binomial (sbuf, scount, sdtype, 
-                                                       rbuf, rcount, rdtype, 
-                                                       root, comm);
+        int ret=smpi_coll_tuned_scatter_ompi_binomial (sbuf, scount, sdtype,
+            rbuf, rcount, rdtype,
+            root, comm);
+        if(rank!=root){
+            xbt_free(sbuf);
+        }
+        return ret;
     }
     return smpi_coll_tuned_scatter_ompi_basic_linear (sbuf, scount, sdtype, 
                                                        rbuf, rcount, rdtype, 

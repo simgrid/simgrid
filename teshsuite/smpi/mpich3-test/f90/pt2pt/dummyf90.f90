@@ -15,6 +15,6 @@
 ! F90 tests from the F77 tests looks for mpif.h
       subroutine dummyupdate( extrastate )
       use mpi
-      integer (kind=MPI_ADDRESS_KIND) extrastate, valin, valout, val
-
+      integer (kind=MPI_ADDRESS_KIND) extrastate
+      extrastate=extrastate
       end

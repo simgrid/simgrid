@@ -91,7 +91,9 @@ static void xbt_preinit(void) {
   xbt_dict_preinit();
    
   srand(seed);
+#ifndef _WIN32
   srand48(seed);
+#endif
 
   atexit(xbt_postexit);
 }
