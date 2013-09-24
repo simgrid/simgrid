@@ -243,6 +243,18 @@ xbt_dict_t MSG_storage_get_properties(msg_storage_t storage)
 }
 
 /** \ingroup msg_storage_management
+ * \brief Change the value of a given storage property
+ *
+ * \param storage a storage
+ * \param name a property name
+ * \param value what to change the property to
+ * \param free_ctn the freeing function to use to kill the value on need
+ */
+void MSG_storage_set_property_value(msg_storage_t storage, const char *name, char *value,void_f_pvoid_t free_ctn) {
+  xbt_dict_set(MSG_storage_get_properties(storage), name, value,free_ctn);
+}
+
+/** \ingroup msg_storage_management
  * \brief Finds a msg_storage_t using its name.
  * \param name the name of a storage
  * \return the corresponding storage
