@@ -253,7 +253,7 @@ void xbt_os_cputimer_start(xbt_os_timer_t timer)
   clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &(timer->start));
 #elif defined(_XBT_WIN32)
   timer->elapse.tv_sec = 0;
-  timer->elapse.tv_nsec = 0;
+  timer->elapse.tv_usec = 0;
 #  if defined(WIN32_WCE) || (_WIN32_WINNT < 0x0400)
   THROW_UNIMPLEMENTED;
 #  else
@@ -281,7 +281,7 @@ void xbt_os_cputimer_resume(xbt_os_timer_t timer)
   clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &(timer->start));
 #elif defined(_XBT_WIN32)
   timer->elapse.tv_sec += timer->stop.tv_sec - timer->start.tv_sec;
-  timer->elapse.tv_nsec += timer->stop.tv_nsec - timer->start.tv_nsec;
+  timer->elapse.tv_usec += timer->stop.tv_usec - timer->start.tv_usec;
 #  if defined(WIN32_WCE) || (_WIN32_WINNT < 0x0400)
   THROW_UNIMPLEMENTED;
 #  else
@@ -361,7 +361,7 @@ void xbt_os_threadtimer_resume(xbt_os_timer_t timer)
   clock_gettime(CLOCK_THREAD_CPUTIME_ID, &(timer->start));
 #elif defined(_XBT_WIN32)
   timer->elapse.tv_sec += timer->stop.tv_sec - timer->start.tv_sec;
-  timer->elapse.tv_nsec += timer->stop.tv_nsec - timer->start.tv_nsec;
+  timer->elapse.tv_usec += timer->stop.tv_usec - timer->start.tv_usec;
 #  if defined(WIN32_WCE) || (_WIN32_WINNT < 0x0400)
   THROW_UNIMPLEMENTED;
 #  else
