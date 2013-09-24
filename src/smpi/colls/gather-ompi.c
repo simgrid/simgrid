@@ -172,6 +172,7 @@ smpi_coll_tuned_gather_ompi_binomial(void *sbuf, int scount,
 	/* other non-leaf nodes */
 	free(tempbuf);
     }
+    xbt_free(bmtree);
     return MPI_SUCCESS;
 
  err_hndl:

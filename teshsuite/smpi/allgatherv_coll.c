@@ -69,6 +69,8 @@ int main(int argc, char *argv[])
   }
   free(sb);
   free(rb);
+  free(recv_counts);
+  free(recv_disps);
   MPI_Finalize();
   return (EXIT_SUCCESS);
 }
