@@ -706,9 +706,8 @@ static int compare_heap_area_without_type(void *real_area1, void *real_area2, vo
       }else if((addr_pointed1 > s_heap) && ((char *)addr_pointed1 < (char *)s_heap + STD_HEAP_SIZE) 
                && (addr_pointed2 > s_heap) && ((char *)addr_pointed2 < (char *)s_heap + STD_HEAP_SIZE)){
         res_compare = compare_heap_area(addr_pointed1, addr_pointed2, previous, all_types, other_types, NULL, 0); 
-        if(res_compare != 0){
+        if(res_compare == 1)
           return res_compare;
-        }
         i = pointer_align + sizeof(void *);
         continue;
       }else{
@@ -751,7 +750,7 @@ static int compare_heap_area_with_type(void *real_area1, void *real_area2, void 
     if((check_ignore > 0) && ((ignore1 = heap_comparison_ignore_size(to_ignore1, real_area1)) > 0) && ((ignore2 = heap_comparison_ignore_size(to_ignore2, real_area2))  == ignore1))
       return 0;
     if(strcmp(type->name, "char") == 0){ /* String, hence random (arbitrary ?) size */
-      return  (memcmp(area1, area2, area_size) != 0);
+      return (memcmp(area1, area2, area_size) != 0);
     }else{
       if(area_size != -1 && type->size != area_size)
         return -1;
@@ -878,7 +877,7 @@ static int compare_heap_area_with_type(void *real_area1, void *real_area2, void 
         else
           res = compare_heap_area_with_type((char *)real_area1 + member->offset, (char *)real_area2 + member->offset, (char *)area1 + member->offset, (char *)area2 + member->offset, previous, all_types, other_types, member->dw_type_id, -1, check_ignore, 0);  
         if(res == 1)
-          return res;        
+          return res;
       }
     }
     break;
@@ -973,7 +972,7 @@ int compare_heap_area(void *area1, void* area2, xbt_dynar_t previous, xbt_dict_t
           type = xbt_dict_get_or_null(other_types, get_type_description(other_types, type->name));
       }
       if(strcmp(type->name, "s_smx_context") != 0){
-        if(type->size > 1){
+        if(type->size > 0){
           if(heapinfo1[block1].busy_block.busy_size != type->size && heapinfo2[block2].busy_block.busy_size  != type->size)
             return -1;
         }
@@ -1049,7 +1048,7 @@ int compare_heap_area(void *area1, void* area2, xbt_dynar_t previous, xbt_dict_t
           type = xbt_dict_get_or_null(all_types, type->dw_type_id);
         }
       }
-      if(type->size > 1){
+      if(type->size > 0){
         if(heapinfo1[block1].busy_frag.frag_size[frag1] != type->size || heapinfo2[block2].busy_frag.frag_size[frag2]  != type->size)
           return -1;
       }
@@ -1069,7 +1068,7 @@ int compare_heap_area(void *area1, void* area2, xbt_dynar_t previous, xbt_dict_t
       if(match_pairs){
         xbt_dynar_free(&previous);
       }
-      return 1;  
+      return 1;
     }
       
     if(!add_heap_area_pair(previous, block1, frag1, block2, frag2)){

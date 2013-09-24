@@ -29,12 +29,13 @@ int coordinator(int argc, char *argv[])
   int CS_used = 0;   
   msg_task_t task = NULL, answer = NULL; 
   xbt_dynar_t requests = xbt_dynar_new(sizeof(char *), NULL);
+  char *req;
 
   while(1){  
     MSG_task_receive(&task, "coordinator");
     const char *kind = MSG_task_get_name(task); 
     if (!strcmp(kind, "request")) {    
-      char *req = MSG_task_get_data(task);
+      req = MSG_task_get_data(task);
       if (CS_used) {           
         XBT_INFO("CS already used. Queue the request.");
         xbt_dynar_push(requests, &req);
@@ -50,7 +51,6 @@ int coordinator(int argc, char *argv[])
     } else {      
       if (!xbt_dynar_is_empty(requests)) {
         XBT_INFO("CS release. Grant to queued requests (queue size: %lu)", xbt_dynar_length(requests));
-        char *req;
         xbt_dynar_pop(requests, &req);
         if(strcmp(req, "1") != 0){
           MSG_task_send(MSG_task_create("grant", 0, 1000, NULL), req);
@@ -66,6 +66,7 @@ int coordinator(int argc, char *argv[])
     MSG_task_destroy(task);
     task = NULL;
     kind = NULL;
+    req = NULL;
   }
  
   return 0;
