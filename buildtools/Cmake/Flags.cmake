@@ -25,9 +25,16 @@ endif()
 
 if(enable_compile_optimizations)
   set(optCFLAGS "-O3 -finline-functions -funroll-loops -fno-strict-aliasing ")
-  if(COMPILER_C_VERSION_MAJOR_MINOR STRGREATER "4.5")
-    set(optCFLAGS "${optCFLAGS}-flto ")
-  endif()
+  if(WIN32)
+    if (COMPILER_C_VERSION_MAJOR_MINOR STRGREATER "4.7")
+    # On windows, we need 4.8 or higher to enable lto because of http://gcc.gnu.org/bugzilla/show_bug.cgi?id=50293
+      set(optCFLAGS "${optCFLAGS} -flto ")    
+  else()    
+    # On non-windows, 4.6 is enough for that
+    if(COMPILER_C_VERSION_MAJOR_MINOR STRGREATER "4.5")
+      set(optCFLAGS "${optCFLAGS} -flto ")
+    endif()
+  endif
 else()
   set(optCFLAGS "-O0 ")
 endif()
@@ -35,13 +42,6 @@ endif()
 if(APPLE AND COMPILER_C_VERSION_MAJOR_MINOR MATCHES "4.6")
   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-deprecated-declarations")
   set(optCFLAGS "-O0 ")
-endif()
-
-if(WIN32) # http://gcc.gnu.org/bugzilla/show_bug.cgi?id=50293
-  if (COMPILER_C_VERSION_MAJOR_MINOR MATCHES "4.7" OR 
-      COMPILER_C_VERSION_MAJOR_MINOR MATCHES "4.6")
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} --disable-lto")
-  endif()
 endif()
 
 if(NOT enable_debug)
