@@ -696,8 +696,12 @@ int smpi_coll_tuned_scatter_mpich(void *sbuf, int scount,
       scount=rcount;
       sdtype=rdtype;
   }
-        return smpi_coll_tuned_scatter_ompi_binomial (sbuf, scount, sdtype, 
+  int ret= smpi_coll_tuned_scatter_ompi_binomial (sbuf, scount, sdtype,
                                                        rbuf, rcount, rdtype, 
                                                        root, comm);
+  if(smpi_comm_rank(comm)!=root){
+      xbt_free(sbuf);
+  }
+  return ret;
 }
 
