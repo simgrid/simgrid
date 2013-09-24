@@ -55,6 +55,9 @@ xbt_dict_t SIMIX_pre_storage_get_properties(smx_simcall_t, smx_storage_t);
 void SIMIX_pre_storage_set_data(smx_simcall_t, smx_storage_t, void*);
 void* SIMIX_pre_storage_get_data(smx_simcall_t, smx_storage_t);
 
+xbt_dict_t SIMIX_pre_storage_get_content(smx_simcall_t simcall, smx_storage_t storage);
+xbt_dict_t SIMIX_storage_get_content(smx_storage_t storage);
+
 void SIMIX_post_io(smx_action_t action);
 void SIMIX_io_destroy(smx_action_t action);
 void SIMIX_io_finish(smx_action_t action);

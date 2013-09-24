@@ -338,10 +338,20 @@ void SIMIX_storage_set_data(smx_storage_t storage, void *data){
 void* SIMIX_pre_storage_get_data(smx_simcall_t simcall,smx_storage_t storage){
   return SIMIX_storage_get_data(storage);
 }
+
 void* SIMIX_storage_get_data(smx_storage_t storage){
   xbt_assert((storage != NULL), "Invalid parameters (simix storage is NULL)");
 
   return SIMIX_storage_priv(storage)->data;
+}
+
+xbt_dict_t SIMIX_pre_storage_get_content(smx_simcall_t simcall, smx_storage_t storage){
+  return SIMIX_storage_get_content(storage);
+}
+
+xbt_dict_t SIMIX_storage_get_content(smx_storage_t storage){
+  xbt_assert((storage != NULL), "Invalid parameters (simix storage is NULL)");
+  return surf_storage_model->extension.storage.get_content(storage);
 }
 
 void SIMIX_post_io(smx_action_t action)

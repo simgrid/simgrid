@@ -290,7 +290,7 @@ msg_error_t MSG_storage_set_data(msg_storage_t storage, void *data)
  *
  * \brief Returns the user data of a #msg_storage_t.
  *
- * This functions checks whether \a storage is a valid pointer or not and return
+ * This functions checks whether \a storage is a valid pointer or not and returns
    the user data associated to \a storage if it is possible.
  */
 void *MSG_storage_get_data(msg_storage_t storage)
@@ -298,3 +298,12 @@ void *MSG_storage_get_data(msg_storage_t storage)
   return SIMIX_storage_get_data(storage);
 }
 
+/** \ingroup msg_storage_management
+ *
+ * \brief Returns the content (file list) of a #msg_storage_t.
+ * \param storage a storage
+ */
+xbt_dict_t MSG_storage_get_content(msg_storage_t storage){
+
+	return SIMIX_storage_get_content(storage);
+}
