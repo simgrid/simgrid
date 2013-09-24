@@ -72,7 +72,8 @@ mkdir build-def
 cd build-def
 
 #DEFAULT CONF
-cmake ..
+cmake \
+-Denable_smpi_MPICH3_testsuite=on ..
 ctest -D NightlyStart
 ctest -D NightlyConfigure
 ctest -D NightlyBuild

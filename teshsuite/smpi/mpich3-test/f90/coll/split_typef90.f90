@@ -7,8 +7,8 @@
       program main
       use mpi
       integer ierr, errs
-      integer i, ans, size, rank, color, comm, newcomm
-      integer maxSize, displ
+      integer i, size, rank, comm, newcomm
+      integer maxSize
       parameter (maxSize=128)
       integer scounts(maxSize), sdispls(maxSize), stypes(maxSize)
       integer rcounts(maxSize), rdispls(maxSize), rtypes(maxSize)

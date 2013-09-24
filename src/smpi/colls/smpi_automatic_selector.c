@@ -4,6 +4,22 @@
 
 //attempt to do a quick autotuning version of the collective,
 
+#ifdef HAVE_TRACING
+#define TRACE_AUTO_COLL(cat) if (TRACE_is_enabled()){\
+        type_t type = PJ_type_get_or_null (#cat, PJ_type_get_root());\
+         if (!type){\
+             type=PJ_type_event_new(#cat, PJ_type_get_root());\
+         }\
+         char* cont_name=malloc(25*sizeof(char*));\
+         sprintf(cont_name, "rank-%d", smpi_process_index());\
+         val_t value = PJ_value_get_or_new(mpi_coll_##cat##_description[i].name,"1.0 1.0 1.0", type);\
+         new_pajeNewEvent (SIMIX_get_clock(), PJ_container_get(cont_name), type, value);\
+      }
+#else
+#define TRACE_AUTO_COLL(cat)
+#endif
+
+
 #define AUTOMATIC_COLL_BENCH(cat, ret, args, args2)\
     ret smpi_coll_tuned_ ## cat ## _ ## automatic(COLL_UNPAREN args)\
 {\
@@ -15,16 +31,7 @@
       if(!strcmp(mpi_coll_##cat##_description[i].name, "automatic"))continue;\
       if(!strcmp(mpi_coll_##cat##_description[i].name, "default"))continue;\
       smpi_mpi_barrier(comm);\
-      if (TRACE_is_enabled()){\
-        type_t type = PJ_type_get_or_null (#cat, PJ_type_get_root());\
-         if (!type){\
-             type=PJ_type_event_new(#cat, PJ_type_get_root());\
-         }\
-         char* cont_name=malloc(25*sizeof(char*));\
-         sprintf(cont_name, "rank-%d", smpi_process_index());\
-         val_t value = PJ_value_get_or_new(mpi_coll_##cat##_description[i].name,"1.0 1.0 1.0", type);\
-         new_pajeNewEvent (SIMIX_get_clock(), PJ_container_get(cont_name), type, value);\
-      }\
+      TRACE_AUTO_COLL(cat)\
       time1 = SIMIX_get_clock();\
       ((int (*) args)\
           mpi_coll_##cat##_description[i].coll) args2 ;\

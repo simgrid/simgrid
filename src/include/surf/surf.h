@@ -378,6 +378,7 @@ typedef struct surf_resource {
   surf_model_t model;
   char *name;
   xbt_dict_t properties;
+  void_f_pvoid_t free_f;
 } s_surf_resource_t, *surf_resource_t;
 
 /**

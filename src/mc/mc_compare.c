@@ -15,7 +15,7 @@ typedef struct s_pointers_pair{
   void *p2;
 }s_pointers_pair_t, *pointers_pair_t;
 
-xbt_dynar_t compared_pointers;
+__thread xbt_dynar_t compared_pointers;
 
 /************************** Free functions ****************************/
 /********************************************************************/
@@ -271,17 +271,17 @@ static int compare_global_variables(int region_type, mc_mem_region_t r1, mc_mem_
       offset = (char *)current_var->address.address - (char *)start_data_libsimgrid;
 
     res = compare_areas_with_type((char *)r1->data + offset, (char *)r2->data + offset, types, other_types, current_var->type_origin, r1->size, region_type, start_data, 0);
-    if(res == -1){
-      xbt_dynar_cursor_rm(variables, &cursor);
-    }else if(res == 1){
-      XBT_VERB("Global variable %s (%p - %p) is different between snapshots", current_var->name, (char *)r1->data + offset, (char *)r2->data + offset);
+    if(res == 1){
+      XBT_VERB("Global variable %s is different between snapshots", current_var->name);
       xbt_dynar_free(&compared_pointers);
+      compared_pointers = NULL;
       return 1;
     }
 
   }
 
   xbt_dynar_free(&compared_pointers);
+  compared_pointers = NULL;
 
   return 0;
 
@@ -299,6 +299,7 @@ static int compare_local_variables(mc_snapshot_stack_t stack1, mc_snapshot_stack
   if(xbt_dynar_length(stack1->local_variables) != xbt_dynar_length(stack2->local_variables)){
     XBT_VERB("Different number of local variables");
     xbt_dynar_free(&compared_pointers);
+    compared_pointers = NULL;
     return 1;
   }else{
     unsigned int cursor = 0;
@@ -318,24 +319,26 @@ static int compare_local_variables(mc_snapshot_stack_t stack1, mc_snapshot_stack
       else
         res = compare_areas_with_type( (char *)heap1 + offset1, (char *)heap2 + offset2, mc_variables_type_binary, mc_variables_type_libsimgrid, current_var1->type, 0, 2, start_data_binary, 0l);
       if(res == 1){
-        XBT_VERB("Local variable %s (%p - %p)  in frame %s  is different between snapshots", current_var1->name, (char *)heap1 + offset1, (char *)heap2 + offset2, current_var1->frame);
+        XBT_VERB("Local variable %s in frame %s  is different between snapshots", current_var1->name, current_var1->frame);
         xbt_dynar_free(&compared_pointers);
+        compared_pointers = NULL;
         return res;
       }
       cursor++;
     }
     xbt_dynar_free(&compared_pointers);
+    compared_pointers = NULL;
     return 0;
   }
 }
 
-int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2){
+int snapshot_compare(void *p1, void *p2){
 
-  int raw_mem = (mmalloc_get_current_heap() == raw_heap);
-  
-  MC_SET_RAW_MEM;
-     
+  mc_snapshot_t s1 = ((mc_pair_t)p1)->graph_state->system_state;
+  mc_snapshot_t s2 = ((mc_pair_t)p2)->graph_state->system_state;
+
   int errors = 0;
+  int res_init;
 
   xbt_os_timer_t global_timer = xbt_os_timer_new();
   xbt_os_timer_t timer = xbt_os_timer_new();
@@ -359,12 +362,12 @@ int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2){
         xbt_os_walltimer_stop(timer);
         mc_comp_times->stacks_sizes_comparison_time = xbt_os_timer_elapsed(timer);
       }
-      XBT_DEBUG("Different size used in stacks : %zu - %zu", size_used1, size_used2);
+      XBT_DEBUG("(%d - %d) Different size used in stacks : %zu - %zu", ((mc_pair_t)p1)->num, ((mc_pair_t)p2)->num, size_used1, size_used2);
       errors++;
       is_diff = 1;
     #else
       #ifdef MC_VERBOSE
-        XBT_VERB("Different size used in stacks : %zu - %zu", size_used1, size_used2);
+      XBT_VERB("(%d - %d) Different size used in stacks : %zu - %zu", ((mc_pair_t)p1)->num, ((mc_pair_t)p2)->num, size_used1, size_used2);
       #endif
 
       xbt_os_walltimer_stop(timer);
@@ -372,9 +375,6 @@ int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2){
       xbt_os_walltimer_stop(global_timer);
       mc_snapshot_comparison_time = xbt_os_timer_elapsed(global_timer);
       xbt_os_timer_free(global_timer);
-
-      if(!raw_mem)
-        MC_UNSET_RAW_MEM;
 
       return 1;
     #endif  
@@ -407,9 +407,6 @@ int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2){
         mc_snapshot_comparison_time = xbt_os_timer_elapsed(global_timer);
         xbt_os_timer_free(global_timer);
 
-        if(!raw_mem)
-          MC_UNSET_RAW_MEM;
-
         return 1;
       #endif
     }
@@ -438,9 +435,6 @@ int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2){
         mc_snapshot_comparison_time = xbt_os_timer_elapsed(global_timer);
         xbt_os_timer_free(global_timer);
 
-        if(!raw_mem)
-          MC_UNSET_RAW_MEM;
-        
         return 1;
       #endif
     }
@@ -451,7 +445,27 @@ int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2){
   #endif
 
   /* Init heap information used in heap comparison algorithm */
-  init_heap_information((xbt_mheap_t)s1->regions[0]->data, (xbt_mheap_t)s2->regions[0]->data, s1->to_ignore, s2->to_ignore);
+  res_init = init_heap_information((xbt_mheap_t)s1->regions[0]->data, (xbt_mheap_t)s2->regions[0]->data, s1->to_ignore, s2->to_ignore);
+  if(res_init == -1){
+     #ifdef MC_DEBUG
+    XBT_DEBUG("(%d - %d) Different heap information", ((mc_pair_t)p1)->num, ((mc_pair_t)p2)->num); 
+        errors++; 
+      #else
+        #ifdef MC_VERBOSE
+        XBT_VERB("(%d - %d) Different heap information", ((mc_pair_t)p1)->num, ((mc_pair_t)p2)->num); 
+        #endif
+
+        xbt_os_walltimer_stop(global_timer);
+        mc_snapshot_comparison_time = xbt_os_timer_elapsed(global_timer);
+        xbt_os_timer_free(global_timer);
+
+        return 1;
+      #endif
+  }
+
+  #ifdef MC_DEBUG
+    xbt_os_walltimer_start(timer);
+  #endif
 
   /* Stacks comparison */
   unsigned int  cursor = 0;
@@ -469,13 +483,13 @@ int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2){
           xbt_os_walltimer_stop(timer);
           mc_comp_times->stacks_comparison_time = xbt_os_timer_elapsed(timer);
         }
-        XBT_DEBUG("Different local variables between stacks %d", cursor + 1);
+        XBT_DEBUG("(%d - %d) Different local variables between stacks %d", ((mc_pair_t)p1)->num, ((mc_pair_t)p2)->num, cursor + 1);
         errors++;
         is_diff = 1;
       #else
         
         #ifdef MC_VERBOSE
-          XBT_VERB("Different local variables between stacks %d", cursor + 1);
+        XBT_VERB("(%d - %d) Different local variables between stacks %d", ((mc_pair_t)p1)->num, ((mc_pair_t)p2)->num, cursor + 1);
         #endif
           
         reset_heap_information();
@@ -484,10 +498,7 @@ int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2){
         xbt_os_walltimer_stop(global_timer);
         mc_snapshot_comparison_time = xbt_os_timer_elapsed(global_timer);
         xbt_os_timer_free(global_timer);
-        
-        if(!raw_mem)
-          MC_UNSET_RAW_MEM;
-        
+ 
         return 1;
       #endif
     }
@@ -506,11 +517,11 @@ int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2){
     #ifdef MC_DEBUG
       xbt_os_walltimer_stop(timer);
       mc_comp_times->binary_global_variables_comparison_time = xbt_os_timer_elapsed(timer);
-      XBT_DEBUG("Different global variables in binary");
+      XBT_DEBUG("(%d - %d) Different global variables in binary", ((mc_pair_t)p1)->num, ((mc_pair_t)p2)->num);
       errors++;
     #else
       #ifdef MC_VERBOSE
-        XBT_VERB("Different global variables in binary");
+      XBT_VERB("(%d - %d) Different global variables in binary", ((mc_pair_t)p1)->num, ((mc_pair_t)p2)->num);
       #endif
 
       reset_heap_information();
@@ -519,9 +530,6 @@ int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2){
       xbt_os_walltimer_stop(global_timer);
       mc_snapshot_comparison_time = xbt_os_timer_elapsed(global_timer);
       xbt_os_timer_free(global_timer);
-    
-      if(!raw_mem)
-        MC_UNSET_RAW_MEM;
 
       return 1;
     #endif
@@ -539,11 +547,11 @@ int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2){
     #ifdef MC_DEBUG
       xbt_os_walltimer_stop(timer);
       mc_comp_times->libsimgrid_global_variables_comparison_time = xbt_os_timer_elapsed(timer);
-      XBT_DEBUG("Different global variables in libsimgrid");
+      XBT_DEBUG("(%d - %d) Different global variables in libsimgrid", ((mc_pair_t)p1)->num, ((mc_pair_t)p2)->num);
       errors++;
     #else
       #ifdef MC_VERBOSE
-        XBT_VERB("Different global variables in libsimgrid");
+      XBT_VERB("(%d - %d) Different global variables in libsimgrid", ((mc_pair_t)p1)->num, ((mc_pair_t)p2)->num);
       #endif
         
       reset_heap_information();
@@ -552,14 +560,11 @@ int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2){
       xbt_os_walltimer_stop(global_timer);
       mc_snapshot_comparison_time = xbt_os_timer_elapsed(global_timer);
       xbt_os_timer_free(global_timer);
-    
-      if(!raw_mem)
-        MC_UNSET_RAW_MEM;
 
       return 1;
     #endif
   }
-    
+
   #ifdef MC_DEBUG
     xbt_os_walltimer_start(timer);
   #endif
@@ -570,12 +575,12 @@ int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2){
     #ifdef MC_DEBUG
       xbt_os_walltimer_stop(timer);
       mc_comp_times->heap_comparison_time = xbt_os_timer_elapsed(timer); 
-      XBT_DEBUG("Different heap (mmalloc_compare)");
+      XBT_DEBUG("(%d - %d) Different heap (mmalloc_compare)", ((mc_pair_t)p1)->num, ((mc_pair_t)p2)->num);
       errors++;
     #else
  
       #ifdef MC_VERBOSE
-        XBT_VERB("Different heap (mmalloc_compare)");
+      XBT_VERB("(%d - %d) Different heap (mmalloc_compare)", ((mc_pair_t)p1)->num, ((mc_pair_t)p2)->num);
       #endif
        
       reset_heap_information();
@@ -584,9 +589,6 @@ int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2){
       xbt_os_walltimer_stop(global_timer);
       mc_snapshot_comparison_time = xbt_os_timer_elapsed(global_timer);
       xbt_os_timer_free(global_timer);
-
-      if(!raw_mem)
-        MC_UNSET_RAW_MEM;
 
       return 1;
     #endif
@@ -611,9 +613,6 @@ int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2){
   #ifdef MC_DEBUG
     print_comparison_times();
   #endif
-
-  if(!raw_mem)
-    MC_UNSET_RAW_MEM;
 
   return errors > 0;
   

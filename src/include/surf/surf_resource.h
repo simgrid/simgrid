@@ -12,18 +12,21 @@
 static XBT_INLINE
     surf_resource_t surf_resource_new(size_t childsize,
                                       surf_model_t model, const char *name,
-                                      xbt_dict_t props)
+                                      xbt_dict_t props, void_f_pvoid_t free_f)
 {
   surf_resource_t res = xbt_malloc0(childsize);
   res->model = model;
   res->name = xbt_strdup(name);
   res->properties = props;
+  res->free_f=free_f;
   return res;
 }
 
 static XBT_INLINE void surf_resource_free(void *r)
 {
   surf_resource_t resource = r;
+  if(resource->free_f)
+    resource->free_f(r);
   free(resource->name);
   xbt_dict_free(&resource->properties);
   free(resource);

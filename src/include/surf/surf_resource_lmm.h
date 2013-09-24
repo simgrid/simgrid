@@ -28,7 +28,7 @@ static XBT_INLINE
 
   surf_resource_lmm_t res =
       (surf_resource_lmm_t) surf_resource_new(childsize, model, name,
-                                              props);
+                                              props, NULL);
 
   res->constraint = lmm_constraint_new(system, res, constraint_value);
   res->state_current = state_init;

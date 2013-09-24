@@ -117,9 +117,9 @@ typedef struct msg_file {
 } s_msg_file_t;
 
 /** @brief File datatype.
-    @ingroup msg_file_management 
- 
-    You should consider this as an opaque object.
+ *  @ingroup msg_file_management
+ *
+ *  You should consider this as an opaque object.
  */
 
 typedef struct msg_file *msg_file_t;
@@ -129,12 +129,17 @@ typedef struct msg_file *msg_file_t;
 
 extern int MSG_STORAGE_LEVEL;
 
+/** @brief Storage datatype.
+ *  @ingroup msg_storage_management
+ *
+ *  You should consider this as an opaque object.
+ */
 typedef xbt_dictelm_t msg_storage_t;
 typedef s_xbt_dictelm_t s_msg_storage_t;
 
-typedef struct msg_storage_priv {
-/* TODO PV: fill it (or not) ! */
-} s_msg_storage_priv_t, *msg_storage_priv_t;
+typedef struct msg_storage_priv /* {
+   TODO PV: fill it (or not) !
+} */ s_msg_storage_priv_t, *msg_storage_priv_t;
 
 //typedef struct simdata_storage *simdata_storage_t;
 //

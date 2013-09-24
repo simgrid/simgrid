@@ -1079,6 +1079,7 @@ static void routing_parse_peer(sg_platf_peer_cbarg_t peer)
   XBT_DEBUG(" ");
 
   //xbt_dynar_free(&tab_elements_num);
+  free(router_id);
   free(host_id);
   free(link_id);
   free(link_up);
