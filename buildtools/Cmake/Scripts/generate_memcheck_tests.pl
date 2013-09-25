@@ -38,6 +38,7 @@ my ($indent);
 while ( defined( $line = <MAKETEST> ) ) {
     chomp $line;
     if ( $line =~ /BEGIN TESH TESTS/ ) {
+        print "SET( MEMCHECK 1) \n";
         $dump = 1;
         next;
     }
