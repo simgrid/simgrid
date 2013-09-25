@@ -10,7 +10,7 @@
 }
 
 # There's a constant leak of 56 bytes in the depths of libc which
-# manifests, for example, when unsing backtrace()
+# manifests, for example, when using backtrace()
 {
    Memory leak in libc/dlopen with -pthread
    Memcheck:Leak
@@ -23,4 +23,57 @@
    fun:_dl_catch_error
    fun:dlerror_run
    fun:__libc_dlopen_mode
+}
+
+# Memory leaks appearing to be in libcgraph.  They can be seen with the
+# following simple program:
+# ,----
+# | #include <stdio.h>
+# | #include <graphviz/cgraph.h>
+# | int main(int argc, char *argv[])
+# | {
+# |     if (argc == 1) {
+# |         printf("Usage: %s <dotfile>\n", argv[0]);
+# |         return 1;
+# |     }
+# |     Agraph_t *g;
+# |     FILE *inf = fopen(argv[1], "r");
+# |     g = agread(inf, 0);
+# |     fclose(inf);
+# |     agclose(g);
+# |     return 0;
+# | }
+# `----
+{
+   Memory leak in libcgraph (1/3)
+   Memcheck:Leak
+   fun:malloc
+   obj:/usr/lib/libcgraph.so*
+   fun:aaglex
+   fun:aagparse
+   fun:agconcat
+}
+{
+   Memory leak in libcgraph (2/3)
+   Memcheck:Leak
+   fun:malloc
+   obj:/usr/lib/libcgraph.so*
+   fun:agalloc
+   obj:/usr/lib/libcgraph.so*
+   fun:agnode
+   obj:/usr/lib/libcgraph.so*
+   fun:aagparse
+   fun:agconcat
+}
+{
+   Memory leak in libcgraph (3/3)
+   Memcheck:Leak
+   fun:malloc
+   fun:dtopen
+   fun:agdtopen
+   obj:/usr/lib/libcgraph.so*
+   fun:agstrdup
+   fun:aaglex
+   fun:aagparse
+   fun:agconcat
 }
