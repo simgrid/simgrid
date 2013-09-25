@@ -29,7 +29,8 @@ smx_storage_t SIMIX_storage_create(const char *name, void *storage, void *data)
 
   /* Update global variables */
   xbt_lib_set(storage_lib,name,SIMIX_STORAGE_LEVEL,smx_storage);
-  return xbt_lib_get_elm_or_null(storage_lib, name);
+
+  return xbt_lib_get_or_null(storage_lib, name, SIMIX_STORAGE_LEVEL);
 }
 
 
