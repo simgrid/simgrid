@@ -263,7 +263,7 @@ void MSG_storage_set_property_value(msg_storage_t storage, const char *name, cha
  */
 msg_storage_t MSG_storage_get_by_name(const char *name)
 {
-  return (msg_storage_t) xbt_lib_get_or_null(storage_lib,name, MSG_STORAGE_LEVEL);
+  return (msg_storage_t) xbt_lib_get_elm_or_null(storage_lib,name);
 }
 
 /** \ingroup msg_storage_management
