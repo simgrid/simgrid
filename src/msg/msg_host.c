@@ -364,8 +364,8 @@ xbt_dynar_t MSG_host_get_storage_content(msg_host_t host)
   xbt_dynar_t storage_list = simcall_host_get_storage_list(host);
   xbt_dynar_foreach(storage_list, i, storage_name){
 	storage = xbt_lib_get_elm_or_null(storage_lib,storage_name);
-//	xbt_dict_t content = SIMIX_storage_get_content(storage);
-//	xbt_dynar_push(contents, &content);
+	xbt_dict_t content = SIMIX_storage_get_content(storage);
+	xbt_dynar_push(contents, &content);
   }
   return contents;
 }
