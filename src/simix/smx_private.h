@@ -76,11 +76,6 @@ typedef struct s_smx_file {
   void* data;                   /**< @brief user data */
 } s_smx_file_t;
 
-/* ******************************** Storage ************************************/
-typedef struct s_smx_storage_priv {
-  void *data;              /**< @brief user data */
-} s_smx_storage_priv_t;
-
 /*********************************** Time ************************************/
 
 /** @brief Timer datatype */

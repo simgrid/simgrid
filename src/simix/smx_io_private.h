@@ -10,6 +10,12 @@
 #include "simgrid/simix.h"
 #include "smx_smurf_private.h"
 
+/** @brief Storage datatype */
+typedef struct s_smx_storage_priv {
+  void *data;              /**< @brief user data */
+} s_smx_storage_priv_t;
+
+
 static inline smx_storage_priv_t SIMIX_storage_priv(smx_storage_t storage){
   return xbt_lib_get_level(storage, SIMIX_STORAGE_LEVEL);
 }
