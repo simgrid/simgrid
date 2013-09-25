@@ -9,6 +9,14 @@
    obj:/bin/dash
 }
 
+# We also don't want to be annoyed by leaks in /usr/bin/tail
+{
+   Memory leak in /usr/bin/tail
+   Memcheck:Leak
+   ...
+   obj:/usr/bin/tail
+}
+
 # There's a constant leak of 56 bytes in the depths of libc which
 # manifests, for example, when using backtrace()
 {
