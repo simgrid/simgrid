@@ -94,7 +94,7 @@ void xbt_cfg_cpy(xbt_cfg_t tocopy, xbt_cfg_t * whereto)
   xbt_assert(tocopy, "cannot copy NULL config");
 
   xbt_dict_foreach((xbt_dict_t) tocopy, cursor, name, variable) {
-    xbt_cfg_register(whereto, name, variable->desc, variable->type, NULL,
+    xbt_cfg_register(whereto, name, variable->desc, variable->type,
                      variable->min, variable->max, variable->cb_set,
                      variable->cb_rm);
   }
@@ -219,7 +219,7 @@ void xbt_cfgelm_free(void *data)
 void
 xbt_cfg_register(xbt_cfg_t * cfg,
                  const char *name, const char *desc,
-                 e_xbt_cfgelm_type_t type, void *default_value, int min,
+                 e_xbt_cfgelm_type_t type, int min,
                  int max, xbt_cfg_cb_t cb_set, xbt_cfg_cb_t cb_rm)
 {
   xbt_cfgelm_t res;
@@ -252,32 +252,22 @@ xbt_cfg_register(xbt_cfg_t * cfg,
   switch (type) {
   case xbt_cfgelm_int:
     res->content = xbt_dynar_new(sizeof(int), NULL);
-    if (default_value)
-      xbt_dynar_push(res->content, default_value);
     break;
 
   case xbt_cfgelm_double:
     res->content = xbt_dynar_new(sizeof(double), NULL);
-    if (default_value)
-      xbt_dynar_push(res->content, default_value);
     break;
 
   case xbt_cfgelm_string:
     res->content = xbt_dynar_new(sizeof(char *), xbt_free_ref);
-    if (default_value)
-      xbt_dynar_push(res->content, default_value);
     break;
 
   case xbt_cfgelm_boolean:
     res->content = xbt_dynar_new(sizeof(int), NULL);
-    if (default_value)
-      xbt_dynar_push(res->content, default_value);
     break;
 
   case xbt_cfgelm_peer:
     res->content = xbt_dynar_new(sizeof(xbt_peer_t), xbt_peer_free_voidp);
-    if (default_value)
-      xbt_dynar_push(res->content, default_value);
     break;
 
   default:
@@ -354,7 +344,7 @@ void xbt_cfg_register_str(xbt_cfg_t * cfg, const char *entry)
               "Invalid type in config element descriptor: %s%s", entry,
               "; Should be one of 'string', 'int', 'peer' or 'double'.");
 
-  xbt_cfg_register(cfg, entrycpy, NULL, type, NULL, min, max, NULL, NULL);
+  xbt_cfg_register(cfg, entrycpy, NULL, type, min, max, NULL, NULL);
 
   free(entrycpy);               /* strdup'ed by dict mechanism, but cannot be const */
 }
