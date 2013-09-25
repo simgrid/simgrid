@@ -57,7 +57,10 @@ SD_storage_t __SD_storage_create(void *surf_storage, void *data)
  */
 void __SD_storage_destroy(void *storage)
 {
-  xbt_free(storage);
+  SD_storage_priv_t s;
+
+  s = (SD_storage_priv_t) storage;
+  xbt_free(s);
 }
 
 /**

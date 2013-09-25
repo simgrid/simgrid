@@ -221,8 +221,8 @@ void SD_create_environment(const char *platform_file)
   }
 
   xbt_lib_foreach(storage_lib, cursor, name, surf_storage) {
-  if(surf_storage[SURF_LINK_LEVEL])
-    __SD_storage_create(surf_link[SURF_STORAGE_LEVEL], NULL);
+  if(surf_storage[SURF_STORAGE_LEVEL])
+    __SD_storage_create(surf_storage[SURF_STORAGE_LEVEL], NULL);
   }
 
 
