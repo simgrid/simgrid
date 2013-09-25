@@ -128,7 +128,6 @@ static int compare_areas_with_type(void *area1, void *area2, xbt_dict_t types, x
   dw_type_t member, subtype, subsubtype;
   int elm_size, i, res, switch_types = 0;
   void *addr_pointed1, *addr_pointed2;
-  int pointed_area_size1, pointed_area_size2;
 
   switch(type->type){
   case e_dw_base_type:
@@ -194,8 +193,6 @@ static int compare_areas_with_type(void *area1, void *area2, xbt_dict_t types, x
       addr_pointed1 = *((void **)(area1)); 
       addr_pointed2 = *((void **)(area2));
       
-      if((addr_pointed1 == addr_pointed2) && ((pointed_area_size1 = get_pointed_area_size(addr_pointed1, 1)) != (pointed_area_size2 = get_pointed_area_size(addr_pointed2, 2))))
-        return -1;
       if(addr_pointed1 == NULL && addr_pointed2 == NULL)
         return 0;
       if(already_compared_pointers(addr_pointed1, addr_pointed2) != -1)
@@ -272,7 +269,7 @@ static int compare_global_variables(int region_type, mc_mem_region_t r1, mc_mem_
 
     res = compare_areas_with_type((char *)r1->data + offset, (char *)r2->data + offset, types, other_types, current_var->type_origin, r1->size, region_type, start_data, 0);
     if(res == 1){
-      XBT_VERB("Global variable %s is different between snapshots", current_var->name);
+      XBT_VERB("Global variable %s (%p - %p) is different between snapshots", current_var->name, (char *)r1->data + offset, (char *)r2->data + offset);
       xbt_dynar_free(&compared_pointers);
       compared_pointers = NULL;
       return 1;
@@ -315,11 +312,11 @@ static int compare_local_variables(mc_snapshot_stack_t stack1, mc_snapshot_stack
       offset1 = (char *)current_var1->address - (char *)std_heap;
       offset2 = (char *)current_var2->address - (char *)std_heap;
       if(current_var1->region == 1)
-        res = compare_areas_with_type( (char *)heap1 + offset1, (char *)heap2 + offset2, mc_variables_type_libsimgrid, mc_variables_type_binary, current_var1->type, 0, 1, start_data_libsimgrid, 0l);
+        res = compare_areas_with_type( (char *)heap1 + offset1, (char *)heap2 + offset2, mc_variables_type_libsimgrid, mc_variables_type_binary, current_var1->type, 0, 1, start_data_libsimgrid, 0);
       else
-        res = compare_areas_with_type( (char *)heap1 + offset1, (char *)heap2 + offset2, mc_variables_type_binary, mc_variables_type_libsimgrid, current_var1->type, 0, 2, start_data_binary, 0l);
+        res = compare_areas_with_type( (char *)heap1 + offset1, (char *)heap2 + offset2, mc_variables_type_binary, mc_variables_type_libsimgrid, current_var1->type, 0, 2, start_data_binary, 0);
       if(res == 1){
-        XBT_VERB("Local variable %s in frame %s  is different between snapshots", current_var1->name, current_var1->frame);
+        XBT_VERB("Local variable %s (%p - %p) in frame %s  is different between snapshots", current_var1->name,(char *)heap1 + offset1, (char *)heap2 + offset2, current_var1->frame);
         xbt_dynar_free(&compared_pointers);
         compared_pointers = NULL;
         return res;

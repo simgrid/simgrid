@@ -36,5 +36,6 @@ int main(int argc, char **argv)
          SD_workstation_get_name(workstations[ctr]), mount_name);
     xbt_dynar_free_container(&current_storage_list);
   }
+  SD_exit();
   return 0;
 }

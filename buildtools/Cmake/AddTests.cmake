@@ -42,11 +42,11 @@ if(NOT enable_memcheck)
   ADD_TEST(tesh-self-bg-set-signal              ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cd "${CMAKE_HOME_DIRECTORY}/tools/tesh" bg-set-signal.tesh)
   ADD_TEST(tesh-self-background                 ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cd "${CMAKE_HOME_DIRECTORY}/tools/tesh" background.tesh)
 
-  # BEGIN TESH TESTS
-
   # test for code coverage
   ADD_TEST(help                                 ${CMAKE_BINARY_DIR}/teshsuite/simdag/platforms/basic_parsing_test --help)
   ADD_TEST(help-models                          ${CMAKE_BINARY_DIR}/teshsuite/simdag/platforms/basic_parsing_test --help-models)
+
+  # BEGIN TESH TESTS
 
   # teshsuite/xbt
   ADD_TEST(xbt-log-large                        ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cd ${CMAKE_BINARY_DIR}/teshsuite ${CMAKE_HOME_DIRECTORY}/teshsuite/xbt/log_large_test.tesh)
@@ -78,7 +78,7 @@ if(NOT enable_memcheck)
   endif()
 
 
-  IF(enable_debug) # these tests need the assertion mechanism
+  IF(enable_debug AND NOT MEMCHECK) # these tests need the assertion mechanism
     ADD_TEST(tesh-simdag-parser-bogus-symmetric ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/simdag/platforms --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/simdag/platforms two_hosts_asymetric.tesh)
   ENDIF()
 
@@ -322,7 +322,9 @@ if(NOT enable_memcheck)
   endif()
 
   IF(HAVE_TRACING)
-    ADD_TEST(tracing-help                       ${CMAKE_BINARY_DIR}/teshsuite/simdag/platforms/basic_parsing_test --help-tracing)
+    IF(NOT MEMCHECK)
+      ADD_TEST(tracing-help                       ${CMAKE_BINARY_DIR}/teshsuite/simdag/platforms/basic_parsing_test --help-tracing)
+    ENDIF()
     ADD_TEST(tracing-ms                         ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --setenv bindir=${CMAKE_BINARY_DIR}/examples/msg --cd ${CMAKE_HOME_DIRECTORY}/examples/msg tracing/ms.tesh)
     ADD_TEST(tracing-simdag                     ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/simdag --cd ${CMAKE_BINARY_DIR}/examples/simdag ${CMAKE_HOME_DIRECTORY}/examples/simdag/test_simdag_tracing.tesh)
     ADD_TEST(tracing-trace_platform             ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --setenv bindir=${CMAKE_BINARY_DIR}/examples/msg --cd ${CMAKE_HOME_DIRECTORY}/examples/msg tracing/trace_platform.tesh)
@@ -362,7 +364,9 @@ if(NOT enable_memcheck)
     ADD_TEST(smpi-struct-thread                 ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg contexts/factory:thread --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/struct.tesh)
     ADD_TEST(smpi-pt2pt-thread                  ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg contexts/factory:thread --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/pt2pt.tesh)
     ADD_TEST(smpi-compute-thread                ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg contexts/factory:thread --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/compute.tesh)
-    ADD_TEST(smpi-shared-thread                ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg contexts/factory:thread --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/shared.tesh)
+    if (NOT WIN32)
+      ADD_TEST(smpi-shared-thread               ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg contexts/factory:thread --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/shared.tesh)
+    endif()
     if(CONTEXT_UCONTEXT)
       ADD_TEST(smpi-bcast-ucontext              ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg contexts/factory:ucontext --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/bcast.tesh)
       ADD_TEST(smpi-reduce-ucontext             ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg contexts/factory:ucontext --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/reduce.tesh)
@@ -372,7 +376,9 @@ if(NOT enable_memcheck)
       ADD_TEST(smpi-struct-ucontext             ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg contexts/factory:ucontext --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/struct.tesh)
       ADD_TEST(smpi-pt2pt-ucontext              ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg contexts/factory:ucontext --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/pt2pt.tesh)
       ADD_TEST(smpi-compute-ucontext            ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg contexts/factory:ucontext --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/compute.tesh)
-      ADD_TEST(smpi-shared-ucontext             ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg contexts/factory:ucontext --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/shared.tesh)
+      if (NOT WIN32)
+        ADD_TEST(smpi-shared-ucontext             ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg contexts/factory:ucontext --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/shared.tesh)
+      endif()
     endif()
     if(HAVE_RAWCTX)
       ADD_TEST(smpi-bcast-raw                   ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg contexts/factory:raw --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/bcast.tesh)
@@ -383,7 +389,9 @@ if(NOT enable_memcheck)
       ADD_TEST(smpi-struct-raw                  ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg contexts/factory:raw --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/struct.tesh)
       ADD_TEST(smpi-pt2pt-raw                   ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg contexts/factory:raw --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/pt2pt.tesh)
       ADD_TEST(smpi-compute-raw                 ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg contexts/factory:raw --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/compute.tesh)
-      ADD_TEST(smpi-shared-raw                  ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg contexts/factory:raw --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/shared.tesh)
+      if (NOT WIN32)
+        ADD_TEST(smpi-shared-raw                  ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg contexts/factory:raw --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/shared.tesh)
+      endif()
     endif()
     if(HAVE_TRACING)
       ADD_TEST(smpi-tracing-ptp                 ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cd ${CMAKE_BINARY_DIR}/examples/smpi ${CMAKE_HOME_DIRECTORY}/examples/smpi/tracing/smpi_traced.tesh)

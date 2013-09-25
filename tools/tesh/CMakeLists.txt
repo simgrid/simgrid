@@ -1,11 +1,17 @@
 cmake_minimum_required(VERSION 2.6)
 
 if(WIN32)
-  add_custom_target(tesh ALL
-    DEPENDS ${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/Scripts/tesh.pl
-    COMMENT "Install ${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/Scripts/tesh.pl"
-    COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/Scripts/tesh.pl ${CMAKE_BINARY_DIR}/bin/tesh
-    )
+  #add_custom_target(tesh ALL
+  #  DEPENDS ${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/Scripts/tesh.pl
+  #  COMMENT "Install ${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/Scripts/tesh.pl"
+  #  COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/Scripts/tesh.pl ${CMAKE_BINARY_DIR}/bin/tesh
+  #  )
+    
+    file(COPY        ${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/Scripts/tesh.pl 
+         DESTINATION ${CMAKE_BINARY_DIR}/bin/
+         FILE_PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ
+                          GROUP_EXECUTE GROUP_READ)
+    file(RENAME ${CMAKE_BINARY_DIR}/bin/tesh.pl ${CMAKE_BINARY_DIR}/bin/tesh)			  
 else()
   set(EXECUTABLE_OUTPUT_PATH "${CMAKE_BINARY_DIR}/bin")
 

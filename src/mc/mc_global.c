@@ -1474,6 +1474,23 @@ void MC_ignore_local_variable(const char *var_name, const char *frame_name){
           } 
         }
       }
+       xbt_dict_foreach(mc_local_variables_binary, dict_cursor, current_frame_name, frame){
+        start = 0;
+        end = xbt_dynar_length(frame->variables) - 1;
+        while(start <= end){
+          cursor = (start + end) / 2;
+          current_var = (dw_variable_t)xbt_dynar_get_as(frame->variables, cursor, dw_variable_t); 
+          if(strcmp(current_var->name, var_name) == 0){
+            xbt_dynar_remove_at(frame->variables, cursor, NULL);
+            start = 0;
+            end = xbt_dynar_length(frame->variables) - 1;
+          }else if(strcmp(current_var->name, var_name) < 0){
+            start = cursor + 1;
+          }else{
+            end = cursor - 1;
+          } 
+        }
+      }
     }else{
       xbt_dynar_t variables_list = ((dw_frame_t)xbt_dict_get_or_null(mc_local_variables_libsimgrid, frame_name))->variables;
       start = 0;

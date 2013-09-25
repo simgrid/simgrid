@@ -2894,10 +2894,6 @@ int PMPI_Request_get_status( MPI_Request request, int *flag, MPI_Status *status)
   NOT_YET_IMPLEMENTED
 }
 
-int MPI_Request_get_status( MPI_Request request, int *flag, MPI_Status *status){
-  NOT_YET_IMPLEMENTED
-}
-
 int PMPI_Grequest_start( MPI_Grequest_query_function *query_fn, MPI_Grequest_free_function *free_fn, MPI_Grequest_cancel_function *cancel_fn, void *extra_state, MPI_Request *request){
   NOT_YET_IMPLEMENTED
 }
