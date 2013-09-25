@@ -1,0 +1,26 @@
+# Valgrind suppressions for stuff that we cannot control
+
+# Memory leak in dash
+# dash is actually used when checking the "mkfile" command in tesh
+{
+   Memory leak in /bin/dash
+   Memcheck:Leak
+   ...
+   obj:/bin/dash
+}
+
+# There's a constant leak of 56 bytes in the depths of libc which
+# manifests, for example, when unsing backtrace()
+{
+   Memory leak in libc/dlopen with -pthread
+   Memcheck:Leak
+   fun:malloc
+   fun:_dl_map_object_deps
+   fun:dl_open_worker
+   fun:_dl_catch_error
+   fun:_dl_open
+   fun:do_dlopen
+   fun:_dl_catch_error
+   fun:dlerror_run
+   fun:__libc_dlopen_mode
+}
