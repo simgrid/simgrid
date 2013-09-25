@@ -137,19 +137,9 @@ extern int MSG_STORAGE_LEVEL;
 typedef xbt_dictelm_t msg_storage_t;
 typedef s_xbt_dictelm_t s_msg_storage_t;
 
-typedef struct msg_storage_priv /* {
-   TODO PV: fill it (or not) !
-} */ s_msg_storage_priv_t, *msg_storage_priv_t;
-
-//typedef struct simdata_storage *simdata_storage_t;
-//
-//typedef struct msg_storage {
-//  char *name;
-//  simdata_storage_t simdata;    /**< @brief simulator data  */
-//  void *data;                   /**< @brief user data */
-//} s_msg_storage_t;
-//
-//typedef struct msg_storage *msg_storage_t;
+typedef struct msg_storage_priv  {
+  // TODO PV: fill it (or not) !
+} s_msg_storage_priv_t, *msg_storage_priv_t;
 
 /*************** Begin GPU ***************/
 typedef struct simdata_gpu_task *simdata_gpu_task_t;

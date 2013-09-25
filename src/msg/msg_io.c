@@ -191,7 +191,8 @@ xbt_dict_t MSG_file_ls(const char *mount, const char *path)
 msg_storage_t __MSG_storage_create(smx_storage_t storage)
 {
   const char *name = SIMIX_storage_get_name(storage);
-  xbt_lib_set(storage_lib,name,MSG_STORAGE_LEVEL,storage);
+  msg_storage_priv_t storage_private = xbt_new0(s_msg_storage_priv_t, 1);
+  xbt_lib_set(storage_lib,name,MSG_STORAGE_LEVEL,storage_private);
   return xbt_lib_get_elm_or_null(storage_lib, name);
 }
 
