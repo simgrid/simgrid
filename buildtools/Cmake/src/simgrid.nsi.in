@@ -90,7 +90,6 @@ Section "Libraries and Headers" LibSection
 	file @CMAKE_HOME_DIRECTORY@\include\xbt\mmalloc.h
 	file @CMAKE_HOME_DIRECTORY@\include\xbt\parmap.h
 	file @CMAKE_HOME_DIRECTORY@\include\xbt\automaton.h
-	file @CMAKE_HOME_DIRECTORY@\include\xbt\file_stat.h
     file @CMAKE_HOME_DIRECTORY@\include\xbt\xbt_os_thread.h
     file @CMAKE_HOME_DIRECTORY@\include\xbt\RngStream.h
 
