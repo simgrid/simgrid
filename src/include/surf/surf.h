@@ -238,7 +238,7 @@ typedef struct surf_storage_model_extension_public {
   surf_action_t(*stat) (void *storage, surf_file_t fd);
   surf_action_t(*ls) (void *storage, const char *path);
   xbt_dict_t(*get_properties) (const void *storage);
-  xbt_dict_t(*get_content) (void *storage);
+  xbt_dict_t(*get_content) (const void *storage);
 } s_surf_model_extension_storage_t;
 
      /** \ingroup SURF_models

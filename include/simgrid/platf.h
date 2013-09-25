@@ -80,8 +80,6 @@ static inline char* sg_storage_name(sg_storage_t storage) {
   return storage->key;
 }
 
-
-
 /*
  * Platform creation functions. Instead of passing 123 arguments to the creation functions
  * (one for each possible XML attribute), we pass structures containing them all. It removes the

@@ -33,7 +33,7 @@ typedef struct surf_storage {
   lmm_constraint_t constraint;          /* Constraint for maximum bandwidth from connection */
   lmm_constraint_t constraint_write;    /* Constraint for maximum write bandwidth*/
   lmm_constraint_t constraint_read;     /* Constraint for maximum write bandwidth*/
-  xbt_dict_t content; /* char * -> s_surf_file_t */
+  xbt_dict_t content;
   char* content_type;
   size_t size;
   size_t used_size;

@@ -341,10 +341,31 @@ double MSG_get_host_consumed_energy(msg_host_t host) {
 /** \ingroup m_host_management
  * \brief Return the list of mounted storages on an host.
  * \param host a host
- * \return a dynar containing all mounted storages on the host
+ * \return a dynar containing all storages mounted on the host
  */
 xbt_dynar_t MSG_host_get_storage_list(msg_host_t host)
 {
   xbt_assert((host != NULL), "Invalid parameters");
   return (simcall_host_get_storage_list(host));
+}
+
+/** \ingroup msg_host_management
+ * \brief Return the content of mounted storages on an host.
+ * \param host a host
+ * \return a dynar containing content (as a dict) of all storages mounted on the host
+ */
+xbt_dynar_t MSG_host_get_storage_content(msg_host_t host)
+{
+  xbt_assert((host != NULL), "Invalid parameters");
+  xbt_dynar_t contents = xbt_dynar_new(sizeof(void *),NULL);
+  msg_storage_t storage;
+  char* storage_name;
+  unsigned int i;
+  xbt_dynar_t storage_list = simcall_host_get_storage_list(host);
+  xbt_dynar_foreach(storage_list, i, storage_name){
+	storage = xbt_lib_get_elm_or_null(storage_lib,storage_name);
+//	xbt_dict_t content = SIMIX_storage_get_content(storage);
+//	xbt_dynar_push(contents, &content);
+  }
+  return contents;
 }

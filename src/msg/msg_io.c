@@ -191,7 +191,7 @@ xbt_dict_t MSG_file_ls(const char *mount, const char *path)
 msg_storage_t __MSG_storage_create(smx_storage_t storage)
 {
   const char *name = SIMIX_storage_get_name(storage);
-  xbt_lib_set(storage_lib,name,MSG_HOST_LEVEL,storage);
+  xbt_lib_set(storage_lib,name,MSG_STORAGE_LEVEL,storage);
   return xbt_lib_get_elm_or_null(storage_lib, name);
 }
 
@@ -210,6 +210,7 @@ void __MSG_storage_destroy(msg_storage_priv_t storage) {
  * This functions checks whether a storage is a valid pointer or not and return its name.
  */
 const char *MSG_storage_get_name(msg_storage_t storage) {
+  xbt_assert((storage != NULL), "Invalid parameters");
   return SIMIX_storage_get_name(storage);
 }
 
@@ -261,7 +262,7 @@ void MSG_storage_set_property_value(msg_storage_t storage, const char *name, cha
  */
 msg_storage_t MSG_storage_get_by_name(const char *name)
 {
-  return (msg_storage_t) xbt_lib_get_elm_or_null(storage_lib,name);
+  return (msg_storage_t) xbt_lib_get_or_null(storage_lib,name, MSG_STORAGE_LEVEL);
 }
 
 /** \ingroup msg_storage_management
@@ -315,7 +316,7 @@ void *MSG_storage_get_data(msg_storage_t storage)
  * \brief Returns the content (file list) of a #msg_storage_t.
  * \param storage a storage
  */
-xbt_dict_t MSG_storage_get_content(msg_storage_t storage){
-
+xbt_dict_t MSG_storage_get_content(msg_storage_t storage)
+{
 	return SIMIX_storage_get_content(storage);
 }

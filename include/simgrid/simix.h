@@ -264,8 +264,6 @@ XBT_PUBLIC(void*) SIMIX_host_self_get_data(void);
 XBT_PUBLIC(void*) SIMIX_host_get_data(smx_host_t host);
 XBT_PUBLIC(void) SIMIX_host_set_data(smx_host_t host, void *data);
 XBT_PUBLIC(xbt_dynar_t) SIMIX_host_get_storage_list(smx_host_t host);
-XBT_PUBLIC(const char*) SIMIX_storage_get_name(smx_host_t host);
-
 /********************************* Process ************************************/
 XBT_PUBLIC(int) SIMIX_process_count(void);
 XBT_PUBLIC(smx_process_t) SIMIX_process_self(void);
@@ -498,7 +496,7 @@ XBT_PUBLIC(xbt_dict_t) simcall_storage_get_properties(smx_storage_t storage);
 XBT_PUBLIC(void*) SIMIX_storage_get_data(smx_storage_t storage);
 XBT_PUBLIC(void) SIMIX_storage_set_data(smx_storage_t storage, void *data);
 XBT_PUBLIC(xbt_dict_t) SIMIX_storage_get_content(smx_storage_t storage);
-
+XBT_PUBLIC(const char*) SIMIX_storage_get_name(smx_host_t host);
 /************************** AS router   **********************************/
 XBT_PUBLIC(xbt_dict_t) SIMIX_asr_get_properties(const char *name);
 /************************** AS router simcalls ***************************/

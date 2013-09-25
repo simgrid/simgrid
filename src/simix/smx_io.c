@@ -21,7 +21,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_io, simix,
  * \param storage the SURF storage to encapsulate
  * \param data some user data (may be NULL)
  */
-smx_host_t SIMIX_storage_create(const char *name, void *storage, void *data)
+smx_storage_t SIMIX_storage_create(const char *name, void *storage, void *data)
 {
   smx_storage_priv_t smx_storage = xbt_new0(s_smx_storage_priv_t, 1);
 
@@ -319,9 +319,12 @@ xbt_dict_t SIMIX_storage_get_properties(smx_storage_t storage){
   return surf_storage_model->extension.storage.get_properties(storage);
 }
 
+const char* SIMIX_pre_storage_get_name(smx_simcall_t simcall, smx_storage_t storage){
+   return SIMIX_storage_get_name(storage);
+}
+
 const char* SIMIX_storage_get_name(smx_storage_t storage){
   xbt_assert((storage != NULL), "Invalid parameters");
-
   return sg_storage_name(storage);
 }
 

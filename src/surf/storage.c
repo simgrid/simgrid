@@ -197,19 +197,18 @@ static xbt_dict_t storage_get_properties(const void *storage)
   return surf_resource_properties(surf_storage_resource_priv(storage));
 }
 
-static xbt_dict_t storage_get_content(void *storage)
+static xbt_dict_t storage_get_content(const void *storage)
 {
   /* For the moment this action has no cost, but in the future we could take in account access latency of the disk */
   /* surf_action_t action = storage_action_execute(storage,0, LS); */
   xbt_dict_t content_dict = xbt_dict_new();
-
   xbt_dict_cursor_t cursor = NULL;
   char *file;
   size_t size;
 
-  xbt_dict_foreach(((storage_t)storage)->content,cursor,file,size)
+  xbt_dict_foreach(((storage_t)storage)->content, cursor, file, size){
     xbt_dict_set(content_dict,file,&size,NULL);
-
+  }
   return content_dict;
 }
 
