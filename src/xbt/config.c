@@ -77,8 +77,8 @@ xbt_cfg_t xbt_cfg_new(void)
 
 /** \brief Copy an existing configuration set
  *
- * \arg whereto the config set to be created
- * \arg tocopy the source data
+ * @param whereto the config set to be created
+ * @param tocopy the source data
  *
  * This only copy the registrations, not the actual content
  */
@@ -109,9 +109,9 @@ void xbt_cfg_free(xbt_cfg_t * cfg)
 
 /** @brief Dump a config set for debuging purpose
  *
- * \arg name The name to give to this config set
- * \arg indent what to write at the begining of each line (right number of spaces)
- * \arg cfg the config set
+ * @param name The name to give to this config set
+ * @param indent what to write at the begining of each line (right number of spaces)
+ * @param cfg the config set
  */
 void xbt_cfg_dump(const char *name, const char *indent, xbt_cfg_t cfg)
 {
@@ -210,10 +210,14 @@ void xbt_cfgelm_free(void *data)
 
 /** @brief Register an element within a config set
  *
- *  @arg cfg the config set
- *  @arg type the type of the config element
- *  @arg min the minimum
- *  @arg max the maximum
+ *  @param cfg the config set
+ *  @param name the name of the config element
+ *  @param desc a description for this item (used by xbt_cfg_help())
+ *  @param type the type of the config element
+ *  @param min the minimum number of values for this config element
+ *  @param max the maximum number of values for this config element
+ *  @param cb_set callback function called when a value is set
+ *  @param cb_rm callback function called when a value is removed
  */
 
 void
@@ -279,8 +283,8 @@ xbt_cfg_register(xbt_cfg_t * cfg,
 
 /** @brief Unregister an element from a config set.
  *
- *  @arg cfg the config set
- *  @arg name the name of the elem to be freed
+ *  @param cfg the config set
+ *  @param name the name of the elem to be freed
  *
  *  Note that it removes both the description and the actual content.
  *  Throws not_found when no such element exists.
@@ -295,8 +299,8 @@ void xbt_cfg_unregister(xbt_cfg_t cfg, const char *name)
 /**
  * @brief Parse a string and register the stuff described.
  *
- * @arg cfg the config set
- * @arg entry a string describing the element to register
+ * @param cfg the config set
+ * @param entry a string describing the element to register
  *
  * The string may consist in several variable descriptions separated by a space.
  * Each of them must use the following syntax: \<name\>:\<min nb\>_to_\<max nb\>_\<type\>
@@ -484,10 +488,10 @@ static xbt_cfgelm_t xbt_cfgelm_get(xbt_cfg_t cfg,
 
 /** @brief Get the type of this variable in that configuration set
  *
- * \arg cfg the config set
- * \arg name the name of the element
- * \arg type the result
+ * @param cfg the config set
+ * @param name the name of the element
  *
+ * @return the type of the given element
  */
 
 e_xbt_cfgelm_type_t xbt_cfg_get_type(xbt_cfg_t cfg, const char *name)
@@ -509,9 +513,9 @@ e_xbt_cfgelm_type_t xbt_cfg_get_type(xbt_cfg_t cfg, const char *name)
 /*----[ Setting ]---------------------------------------------------------*/
 /**  @brief va_args version of xbt_cfg_set
  *
- * \arg cfg config set to fill
- * \arg n   variable name
- * \arg pa  variable value
+ * @param cfg config set to fill
+ * @param name  variable name
+ * @param pa  variable value
  *
  * Add some values to the config set.
  */
@@ -571,9 +575,9 @@ void xbt_cfg_set_vargs(xbt_cfg_t cfg, const char *name, va_list pa)
 
 /** @brief Add a NULL-terminated list of pairs {(char*)key, value} to the set
  *
- * \arg cfg config set to fill
- * \arg name variable name
- * \arg varargs variable value
+ * @param cfg config set to fill
+ * @param name variable name
+ * @param ... variable value
  *
  */
 void xbt_cfg_set(xbt_cfg_t cfg, const char *name, ...)
@@ -587,8 +591,8 @@ void xbt_cfg_set(xbt_cfg_t cfg, const char *name, ...)
 
 /** @brief Add values parsed from a string into a config set
  *
- * \arg cfg config set to fill
- * \arg options a string containing the content to add to the config set. This
+ * @param cfg config set to fill
+ * @param options a string containing the content to add to the config set. This
  * is a '\\t',' ' or '\\n' or ',' separated list of variables. Each individual variable is
  * like "[name]:[value]" where [name] is the name of an already registred
  * variable, and [value] conforms to the data type under which this variable was
@@ -675,9 +679,9 @@ void xbt_cfg_set_parse(xbt_cfg_t cfg, const char *options) {
 
 /** @brief Set the value of a variable, using the string representation of that value
  *
- * @arg cfg config set to modify
- * @arg key name of the variable to modify
- * @arg value string representation of the value to set
+ * @param cfg config set to modify
+ * @param key name of the variable to modify
+ * @param value string representation of the value to set
  *
  * @return the first char after the parsed value in val
  */
@@ -857,9 +861,9 @@ void xbt_cfg_setdefault_peer(xbt_cfg_t cfg, const char *name,
 
 /** @brief Set or add an integer value to \a name within \a cfg
  *
- * \arg cfg the config set
- * \arg name the name of the variable
- * \arg val the value of the variable
+ * @param cfg the config set
+ * @param name the name of the variable
+ * @param val the value of the variable
  */
 void xbt_cfg_set_int(xbt_cfg_t cfg, const char *name, int val)
 {
@@ -891,9 +895,9 @@ void xbt_cfg_set_int(xbt_cfg_t cfg, const char *name, int val)
 
 /** @brief Set or add a double value to \a name within \a cfg
  *
- * \arg cfg the config set
- * \arg name the name of the variable
- * \arg val the doule to set
+ * @param cfg the config set
+ * @param name the name of the variable
+ * @param val the doule to set
  */
 
 void xbt_cfg_set_double(xbt_cfg_t cfg, const char *name, double val)
@@ -925,9 +929,9 @@ void xbt_cfg_set_double(xbt_cfg_t cfg, const char *name, double val)
 
 /** @brief Set or add a string value to \a name within \a cfg
  *
- * \arg cfg the config set
- * \arg name the name of the variable
- * \arg val the value to be added
+ * @param cfg the config set
+ * @param name the name of the variable
+ * @param val the value to be added
  *
  */
 
@@ -970,9 +974,9 @@ void xbt_cfg_set_string(xbt_cfg_t cfg, const char *name, const char *val)
 
 /** @brief Set or add a boolean value to \a name within \a cfg
  *
- * \arg cfg the config set
- * \arg name the name of the variable
- * \arg val the value of the variable
+ * @param cfg the config set
+ * @param name the name of the variable
+ * @param val the value of the variable
  */
 void xbt_cfg_set_boolean(xbt_cfg_t cfg, const char *name, const char *val)
 {
@@ -1019,10 +1023,10 @@ void xbt_cfg_set_boolean(xbt_cfg_t cfg, const char *name, const char *val)
 
 /** @brief Set or add an peer value to \a name within \a cfg
  *
- * \arg cfg the config set
- * \arg name the name of the variable
- * \arg peer the peer
- * \arg port the port number
+ * @param cfg the config set
+ * @param name the name of the variable
+ * @param peer the peer
+ * @param port the port number
  *
  * \e peer values are composed of a string (peername) and an integer (port)
  */
@@ -1062,9 +1066,9 @@ xbt_cfg_set_peer(xbt_cfg_t cfg, const char *name, const char *peer,
 
 /** @brief Remove the provided \e val integer value from a variable
  *
- * \arg cfg the config set
- * \arg name the name of the variable
- * \arg val the value to be removed
+ * @param cfg the config set
+ * @param name the name of the variable
+ * @param val the value to be removed
  */
 void xbt_cfg_rm_int(xbt_cfg_t cfg, const char *name, int val)
 {
@@ -1096,9 +1100,9 @@ void xbt_cfg_rm_int(xbt_cfg_t cfg, const char *name, int val)
 
 /** @brief Remove the provided \e val double value from a variable
  *
- * \arg cfg the config set
- * \arg name the name of the variable
- * \arg val the value to be removed
+ * @param cfg the config set
+ * @param name the name of the variable
+ * @param val the value to be removed
  */
 
 void xbt_cfg_rm_double(xbt_cfg_t cfg, const char *name, double val)
@@ -1130,9 +1134,9 @@ void xbt_cfg_rm_double(xbt_cfg_t cfg, const char *name, double val)
 
 /** @brief Remove the provided \e val string value from a variable
  *
- * \arg cfg the config set
- * \arg name the name of the variable
- * \arg val the value of the string which will be removed
+ * @param cfg the config set
+ * @param name the name of the variable
+ * @param val the value of the string which will be removed
  */
 void xbt_cfg_rm_string(xbt_cfg_t cfg, const char *name, const char *val)
 {
@@ -1163,9 +1167,9 @@ void xbt_cfg_rm_string(xbt_cfg_t cfg, const char *name, const char *val)
 
 /** @brief Remove the provided \e val boolean value from a variable
  *
- * \arg cfg the config set
- * \arg name the name of the variable
- * \arg val the value to be removed
+ * @param cfg the config set
+ * @param name the name of the variable
+ * @param val the value to be removed
  */
 void xbt_cfg_rm_boolean(xbt_cfg_t cfg, const char *name, int val)
 {
@@ -1197,10 +1201,10 @@ void xbt_cfg_rm_boolean(xbt_cfg_t cfg, const char *name, int val)
 
 /** @brief Remove the provided \e val peer value from a variable
  *
- * \arg cfg the config set
- * \arg name the name of the variable
- * \arg peer the peername
- * \arg port the port number
+ * @param cfg the config set
+ * @param name the name of the variable
+ * @param peer the peername
+ * @param port the port number
  */
 
 void
@@ -1253,8 +1257,8 @@ void xbt_cfg_rm_at(xbt_cfg_t cfg, const char *name, int pos)
 
 /** @brief Remove all the values from a variable
  *
- * \arg cfg the config set
- * \arg name the name of the variable
+ * @param cfg the config set
+ * @param name the name of the variable
  */
 
 void xbt_cfg_empty(xbt_cfg_t cfg, const char *name)
@@ -1299,9 +1303,8 @@ int xbt_cfg_is_default_value(xbt_cfg_t cfg, const char *name)
 
 /** @brief Retrieve an integer value of a variable (get a warning if not uniq)
  *
- * \arg cfg the config set
- * \arg name the name of the variable
- * \arg val the wanted value
+ * @param cfg the config set
+ * @param name the name of the variable
  *
  * Returns the first value from the config set under the given name.
  * If there is more than one value, it will issue a warning. Consider using
@@ -1324,9 +1327,8 @@ int xbt_cfg_get_int(xbt_cfg_t cfg, const char *name)
 
 /** @brief Retrieve a double value of a variable (get a warning if not uniq)
  *
- * \arg cfg the config set
- * \arg name the name of the variable
- * \arg val the wanted value
+ * @param cfg the config set
+ * @param name the name of the variable
  *
  * Returns the first value from the config set under the given name.
  * If there is more than one value, it will issue a warning. Consider using
@@ -1350,9 +1352,8 @@ double xbt_cfg_get_double(xbt_cfg_t cfg, const char *name)
 
 /** @brief Retrieve a string value of a variable (get a warning if not uniq)
  *
- * \arg th the config set
- * \arg name the name of the variable
- * \arg val the wanted value
+ * @param cfg the config set
+ * @param name the name of the variable
  *
  * Returns the first value from the config set under the given name.
  * If there is more than one value, it will issue a warning. Consider using
@@ -1378,9 +1379,8 @@ char *xbt_cfg_get_string(xbt_cfg_t cfg, const char *name)
 
 /** @brief Retrieve a boolean value of a variable (get a warning if not uniq)
  *
- * \arg cfg the config set
- * \arg name the name of the variable
- * \arg val the wanted value
+ * @param cfg the config set
+ * @param name the name of the variable
  *
  * Returns the first value from the config set under the given name.
  * If there is more than one value, it will issue a warning. Consider using
@@ -1403,10 +1403,10 @@ int xbt_cfg_get_boolean(xbt_cfg_t cfg, const char *name)
 
 /** @brief Retrieve an peer value of a variable (get a warning if not uniq)
  *
- * \arg cfg the config set
- * \arg name the name of the variable
- * \arg peer the peer
- * \arg port the port number
+ * @param cfg the config set
+ * @param name the name of the variable
+ * @param peer the peer
+ * @param port the port number
  *
  * Returns the first value from the config set under the given name.
  * If there is more than one value, it will issue a warning. Consider using
@@ -1436,9 +1436,8 @@ void xbt_cfg_get_peer(xbt_cfg_t cfg, const char *name, char **peer,
 
 /** @brief Retrieve the dynar of all the values stored in a variable
  *
- * \arg cfg where to search in
- * \arg name what to search for
- * \arg dynar result
+ * @param cfg where to search in
+ * @param name what to search for
  *
  * Get the data stored in the config set.
  *
