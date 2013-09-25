@@ -1,7 +1,7 @@
 #! ./tesh
 
 ! expect signal SIGABRT
-! timeout 60
+! timeout 90
 $ ${bindir:=.}/bugged1_liveness ${bindir:=.}/../msg_platform.xml ${bindir:=.}/deploy_bugged1_liveness_visited.xml --cfg=model-check:1 "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n" --cfg=contexts/factory:ucontext --cfg=model-check/visited:100
 > [  0.000000] (0:@) Configuration change: Set 'model-check' to '1'
 > [  0.000000] (0:@) Configuration change: Set 'model-check/visited' to '100'
