@@ -138,7 +138,7 @@ int main(int argc, char **argv)
     SD_task_destroy(task);
   }
   fclose(out);
-
+  xbt_dynar_free_container(&dax);
   /* exit */
   SD_exit();
   return 0;
