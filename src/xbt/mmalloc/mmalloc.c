@@ -4,7 +4,7 @@
    Written May 1989 by Mike Haertel.
    Heavily modified Mar 1992 by Fred Fish for mmap'd version. */
 
-/* Copyright (c) 2010. The SimGrid Team.
+/* Copyright (c) 2010-2013. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it

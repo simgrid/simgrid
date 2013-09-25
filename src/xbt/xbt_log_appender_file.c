@@ -1,6 +1,7 @@
 /* file_appender - a dumb log appender which simply prints to a file        */
 
-/* Copyright (c) 2007-2012. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2007-2012. The SimGrid Team.
+ * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */

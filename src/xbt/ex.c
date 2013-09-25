@@ -1,6 +1,6 @@
 /* ex - Exception Handling                                                  */
 
-/*  Copyright (c) 2005-2010 The SimGrid team                                */
+/*  Copyright (c) 2005-2013. The SimGrid Team.                              */
 /*  Copyright (c) 2002-2004 Ralf S. Engelschall <rse@engelschall.com>       */
 /*  Copyright (c) 2002-2004 The OSSP Project <http://www.ossp.org/>         */
 /*  Copyright (c) 2002-2004 Cable & Wireless <http://www.cw.com/>           */

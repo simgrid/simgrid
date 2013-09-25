@@ -1,6 +1,7 @@
 /* simgrid_config.h - Results of the configure made visible to user code    */
 
-/* Copyright (c) 2009-2012. Da SimGrid team. All rights reserved.           */
+/* Copyright (c) 2009-2013. The SimGrid Team.
+   All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */

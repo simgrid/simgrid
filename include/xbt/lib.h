@@ -1,6 +1,6 @@
 /* xbt/lib.h - api to a generic library                                     */
 
-/* Copyright (c) 2011. The SimGrid Team.
+/* Copyright (c) 2011, 2013. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it

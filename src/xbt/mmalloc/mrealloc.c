@@ -2,7 +2,7 @@
    Copyright 1990, 1991 Free Software Foundation
    Written May 1989 by Mike Haertel. */
 
-/* Copyright (c) 2010. The SimGrid Team.
+/* Copyright (c) 2010-2013. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it

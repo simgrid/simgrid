@@ -1,4 +1,4 @@
-/* Copyright (c) 2007, 2008, 2009, 2010. The SimGrid Team.
+/* Copyright (c) 2007-2010, 2012. The SimGrid Team.
  * Copyright (c) 2012. Maximiliano Geier.
  * All rights reserved.                                                     */
 

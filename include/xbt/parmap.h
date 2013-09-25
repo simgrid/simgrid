@@ -1,6 +1,6 @@
 /* A thread pool.                                          */
 
-/* Copyright (c) 2007, 2009, 2010. The SimGrid Team.
+/* Copyright (c) 2007, 2009-2013. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it

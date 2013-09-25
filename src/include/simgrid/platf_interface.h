@@ -1,6 +1,6 @@
 /* platf_interface.h - Internal interface to the SimGrid platforms          */
 
-/* Copyright (c) 2004, 2005, 2006, 2007, 2009, 2010, 2011. The SimGrid Team.
+/* Copyright (c) 2004-2007, 2009-2012. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
