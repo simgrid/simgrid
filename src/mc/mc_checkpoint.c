@@ -501,7 +501,7 @@ static xbt_dynar_t MC_get_local_variables_values(void *stack_context){
   int frame_found = 0, region_type;
   void *frame_pointer_address = NULL;
   long true_ip, value;
-  int stop;
+  int stop = 0;
 
   xbt_dynar_t variables = xbt_dynar_new(sizeof(local_variable_t), local_variable_free_voidp);
 
