@@ -235,7 +235,7 @@ typedef struct {
   const char* content;
   const char* content_type;
   xbt_dict_t properties;
-  unsigned long size; /* size in Gbytes */
+  size_t size;
 } s_sg_platf_storage_type_cbarg_t, *sg_platf_storage_type_cbarg_t;
 
 #define SG_PLATF_STORAGE_TYPE_INITIALIZER {NULL,NULL,NULL,NULL,NULL}
