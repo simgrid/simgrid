@@ -360,6 +360,7 @@ ACTION(SIMCALL_FILE_GET_INFO, file_get_info, WITH_ANSWER, TSPEC(result, xbt_dyna
 ACTION(SIMCALL_STORAGE_GET_FREE_SIZE, storage_get_free_size, WITH_ANSWER, TSIZE(result), TSTRING(name)) sep \
 ACTION(SIMCALL_STORAGE_GET_USED_SIZE, storage_get_used_size, WITH_ANSWER, TSIZE(result), TSTRING(name)) sep \
 ACTION(SIMCALL_STORAGE_GET_PROPERTIES, storage_get_properties, WITH_ANSWER, TSPEC(result, xbt_dict_t), TSPEC(storage, smx_storage_t)) sep \
+ACTION(SIMCALL_STORAGE_GET_CONTENT, storage_get_content, WITH_ANSWER, TSPEC(result, xbt_dict_t), TSPEC(storage, smx_storage_t)) sep \
 ACTION(SIMCALL_ASR_GET_PROPERTIES, asr_get_properties, WITH_ANSWER, TSPEC(result, xbt_dict_t), TSTRING(name)) sep 
 
 /* SIMCALL_COMM_IS_LATENCY_BOUNDED and SIMCALL_SET_CATEGORY make things complicated

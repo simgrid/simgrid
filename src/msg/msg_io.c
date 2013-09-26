@@ -316,8 +316,10 @@ void *MSG_storage_get_data(msg_storage_t storage)
  *
  * \brief Returns the content (file list) of a #msg_storage_t.
  * \param storage a storage
+ * \return The content of this storage element as a dict (full path file => size)
  */
 xbt_dict_t MSG_storage_get_content(msg_storage_t storage)
 {
-	return SIMIX_storage_get_content(storage);
+  return SIMIX_storage_get_content(storage);
+  //return (simcall_storage_get_properties(storage));
 }
