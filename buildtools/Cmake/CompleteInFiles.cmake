@@ -56,6 +56,12 @@ ELSE() #PROCESSOR NOT FOUND
 
 ENDIF()
 
+if(ARCH_32_BITS)
+  set(MPI_ADDRESS_SIZE 4)
+else()
+  set(MPI_ADDRESS_SIZE 8)
+endif()
+
 message(STATUS "Cmake version ${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION}")
 
 include(CheckFunctionExists)
@@ -779,6 +785,7 @@ set(includedir "${CMAKE_INSTALL_PREFIX}/include")
 set(libdir ${exec_prefix}/lib)
 set(CMAKE_SMPI_COMMAND "export LD_LIBRARY_PATH=${CMAKE_INSTALL_PREFIX}/lib:${GTNETS_LIB_PATH}:${HAVE_NS3_LIB}:$LD_LIBRARY_PATH")
 
+configure_file(${CMAKE_HOME_DIRECTORY}/include/smpi/mpif.h.in ${CMAKE_BINARY_DIR}/include/smpi/mpif.h @ONLY)
 configure_file(${CMAKE_HOME_DIRECTORY}/include/smpi/smpif.h.in ${CMAKE_BINARY_DIR}/include/smpi/smpif.h @ONLY)
 configure_file(${CMAKE_HOME_DIRECTORY}/src/smpi/smpicc.in ${CMAKE_BINARY_DIR}/bin/smpicc @ONLY)
 configure_file(${CMAKE_HOME_DIRECTORY}/src/smpi/smpif2c.in ${CMAKE_BINARY_DIR}/bin/smpif2c @ONLY)
@@ -816,6 +823,7 @@ if(NOT WIN32)
 endif()
 
 set(generated_headers_to_install
+  ${CMAKE_CURRENT_BINARY_DIR}/include/smpi/mpif.h
   ${CMAKE_CURRENT_BINARY_DIR}/include/smpi/smpif.h
   ${CMAKE_CURRENT_BINARY_DIR}/include/simgrid_config.h
   )

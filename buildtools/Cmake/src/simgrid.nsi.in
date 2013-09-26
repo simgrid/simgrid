@@ -201,9 +201,9 @@ Section "SMPI Library" SMPISection
 	setOutPath $INSTDIR\include\smpi
 	file @CMAKE_HOME_DIRECTORY@\include\smpi\smpi.h
 	file @CMAKE_HOME_DIRECTORY@\include\smpi\mpi.h
-	file @CMAKE_HOME_DIRECTORY@\include\smpi\mpif.h
 	file @CMAKE_HOME_DIRECTORY@\include\smpi\smpi_cocci.h
 	file @CMAKE_HOME_DIRECTORY@\include\smpi\smpi_main.h
+	file include\smpi\mpif.h
 	file include\smpi\smpif.h
 	
 	CreateDirectory $INSTDIR\examples\smpi
