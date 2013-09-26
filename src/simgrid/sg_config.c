@@ -608,7 +608,7 @@ void sg_config_init(int *argc, char **argv)
 
     /* stack size of contexts in Ko */
     xbt_cfg_register(&_sg_cfg_set, "contexts/stack_size",
-                     "Stack size of contexts in Kib (ucontext or raw only)",
+                     "Stack size of contexts in Kib",
                      xbt_cfgelm_int, 1, 1, _sg_cfg_cb_context_stack_size, NULL);
     xbt_cfg_setdefault_int(_sg_cfg_set, "contexts/stack_size", 128);
 
