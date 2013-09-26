@@ -482,7 +482,7 @@ void SD_workstation_set_access_mode(SD_workstation_t workstation,
  * \param workstation a workstation
  * \return a dynar containing all mounted storages on the workstation
  */
-xbt_dynar_t SD_workstation_get_storage_list(SD_workstation_t workstation){
+xbt_dict_t SD_workstation_get_storage_list(SD_workstation_t workstation){
   return surf_workstation_model->extension.workstation.get_storage_list(workstation);
 }
 

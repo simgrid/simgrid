@@ -293,7 +293,7 @@ typedef struct surf_workstation_model_extension_public {
 
   size_t (*get_free_size) (void *workstation,const char* name);
   size_t (*get_used_size) (void *workstation,const char* name);
-  xbt_dynar_t (*get_storage_list) (void *workstation);
+  xbt_dict_t (*get_storage_list) (void *workstation);
 
 } s_surf_model_extension_workstation_t;
 

@@ -14,11 +14,13 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(sd_io,
                              "Logging specific to this SimDag example");
 int main(int argc, char **argv)
 {
-  unsigned int ctr, ctr2;
+  unsigned int ctr;
   const SD_workstation_t *workstations;
   int total_nworkstations;
-  xbt_dynar_t current_storage_list;
+  xbt_dict_t current_storage_list;
   char *mount_name;
+  char *storage_name;
+  xbt_dict_cursor_t cursor = NULL;
 
   SD_init(&argc, argv);
   /* Set the workstation model to default, as storage is not supported by the
@@ -31,10 +33,10 @@ int main(int argc, char **argv)
 
   for (ctr=0; ctr<total_nworkstations;ctr++){
     current_storage_list = SD_workstation_get_storage_list(workstations[ctr]);
-    xbt_dynar_foreach(current_storage_list, ctr2, mount_name)
+    xbt_dict_foreach(current_storage_list,cursor,mount_name,storage_name)
       XBT_INFO("Workstation '%s' mounts '%s'",
          SD_workstation_get_name(workstations[ctr]), mount_name);
-    xbt_dynar_free_container(&current_storage_list);
+    xbt_dict_free(&current_storage_list);
   }
   SD_exit();
   return 0;

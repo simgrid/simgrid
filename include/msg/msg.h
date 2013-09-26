@@ -142,7 +142,7 @@ XBT_PUBLIC(void) MSG_create_environment(const char *file);
 XBT_PUBLIC(msg_host_t) MSG_get_host_by_name(const char *name);
 XBT_PUBLIC(xbt_dynar_t) MSG_hosts_as_dynar(void);
 XBT_PUBLIC(int) MSG_get_host_number(void);
-XBT_PUBLIC(xbt_dynar_t) MSG_host_get_storage_list(msg_host_t host);
+XBT_PUBLIC(xbt_dict_t) MSG_host_get_storage_list(msg_host_t host);
 XBT_PUBLIC(xbt_dynar_t) MSG_host_get_storage_content(msg_host_t host);
 /************************** Process handling *********************************/
 XBT_PUBLIC(msg_process_t) MSG_process_create(const char *name,
