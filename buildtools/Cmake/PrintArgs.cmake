@@ -123,7 +123,6 @@ message("        Graphviz mode .......: ${HAVE_GRAPHVIZ}")
 message("        Mallocators .........: ${enable_mallocators}")
 message("")
 message("        Simgrid dependencies : ${SIMGRID_DEP}")
-message("        Smpi dependencies ...: ${SMPI_DEP}")
 message("")
 message("        INSTALL_PREFIX ......: ${CMAKE_INSTALL_PREFIX}")
 
