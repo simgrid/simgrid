@@ -16,6 +16,7 @@ B<tesh> [I<options>] I<tesh_file>
 my($bindir)=".";
 my($srcdir)=".";
 my $path = $0;
+my $OS;
 $path =~ s|[^/]*$||;
 push @INC,$path;
 
@@ -24,12 +25,10 @@ use strict;
 use Term::ANSIColor;
 use IPC::Open3;
 
-my($OS)=`echo %OS%`;
-if($OS eq "%OS%\n"){
+if($^O eq "linux"){
 	$OS = "UNIX";
 }
 else{
-    print("$OS and %OS%\n");
 	$OS = "WIN";
 }
 
