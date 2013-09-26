@@ -7,14 +7,15 @@ set(CMAKE_MODULE_PATH
 # x86
 # i.86
 
+### Determine the assembly flavor that we need today
+include(CMakeDetermineSystem)
 IF(CMAKE_SYSTEM_PROCESSOR MATCHES ".86")
   IF(${ARCH_32_BITS})
+    message(STATUS "System processor: i686 (${CMAKE_SYSTEM_PROCESSOR}, 32 bits)")
     set(PROCESSOR_i686 1)
-    message(STATUS "System processor: ${CMAKE_SYSTEM_PROCESSOR}")
   ELSE()
-    message(STATUS "System processor: amd64")
+    message(STATUS "System processor: x86_64 (${CMAKE_SYSTEM_PROCESSOR}, 64 bits)")
     set(PROCESSOR_x86_64 1)
-    set(PROCESSOR_i686 0)
   ENDIF()
   set(HAVE_RAWCTX 1)
 

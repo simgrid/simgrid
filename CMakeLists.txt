@@ -190,10 +190,6 @@ endif()
 
 include_directories(${INCLUDES})
 
-### Determine the assembly flavor that we need today
-include(CMakeDetermineSystem)
-set(PROCESSOR_${CMAKE_SYSTEM_PROCESSOR} 1)
-
 ### Setup Options
 include(${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/Option.cmake)
 
