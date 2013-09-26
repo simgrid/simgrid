@@ -162,15 +162,16 @@ contain more than 1 core. Here are the attributes of a host :
     referring to it.
 \li <b>power (mandatory)</b>:the peak number FLOPS the CPU can manage.
     Expressed in flop/s.
-\li <b>core</b>: The number of core of this host. If set, the power
-    gives the power of one core. The specified computing power will be
+\li <b>core</b>: The number of core of this host (by default, 1). If
+    you specify the amount of cores, the 'power' parameter is the power 
+    of each core. 
+    For example, if you specify that your host has 6 cores, it will be
     available to up to 6 sequential tasks without sharing. If more
     tasks are placed on this host, the resource will be shared
-    accordingly. For example, if you schedule 12 tasks on the host,
-    each will get half of the computing power. Please note that
-    although sound, this model were never scientifically assessed.
+    accordingly. For example, if you schedule 12 tasks on that host,
+    each will get half of the specified computing power. Please note
+    that although sound, this model were never scientifically assessed.
     Please keep this fact in mind when using it.
-
 \li <b>availability</b>: specify if the percentage of power available.
 \li <b>availability_file</b>: Allow you to use a file as input. This
     file will contain availability traces for this computer. The
