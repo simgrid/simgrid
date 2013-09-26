@@ -1,6 +1,6 @@
 /* A few tests for the trace library                                       */
 
-/* Copyright (c) 2004, 2005, 2006, 2009, 2010. The SimGrid Team.
+/* Copyright (c) 2004-2006, 2009-2012. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it

@@ -1,9 +1,10 @@
 /* Functions related to the MSG VM API. */
 
-/* Copyright (c) 2012. The SimGrid Team. */
+/* Copyright (c) 2012-2013. The SimGrid Team.
+ * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
-  * under the terms of the license (GNU LGPL) which comes with this package. */
+ * under the terms of the license (GNU LGPL) which comes with this package. */
 #include "jmsg_vm.h"
 #include "jmsg_host.h"
 #include "jmsg_process.h"

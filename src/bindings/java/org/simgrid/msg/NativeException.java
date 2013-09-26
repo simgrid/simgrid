@@ -1,8 +1,8 @@
 /*
  * This exception is raised when there is an error within the C world of SimGrid.
  *
- * Copyright 2006-2012 The SimGrid team
- * All right reserved. 
+ * Copyright (c) 2006-2013. The SimGrid Team.
+ * All rights reserved.
  *
  * This program is free software; you can redistribute 
  * it and/or modify it under the terms of the license 

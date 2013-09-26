@@ -2,7 +2,7 @@
 /* Used in RL to get win/lin portability, and in SG when CONTEXT_THREAD     */
 /* in SG, when using CONTEXT_UCONTEXT, xbt_os_thread_stub is used instead   */
 
-/* Copyright (c) 2007, 2008, 2009, 2010. The SimGrid Team.
+/* Copyright (c) 2007-2013. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it

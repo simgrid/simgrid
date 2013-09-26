@@ -704,7 +704,6 @@ else()
 endif()
 
 set(DOC_SOURCES
-  doc/AS_hierarchy.png
   doc/Doxyfile.in
   doc/Layout.xml
   doc/sg_thread_model.fig
@@ -788,6 +787,7 @@ set(DOC_TOOLS
 set(DOC_IMG
   ${CMAKE_HOME_DIRECTORY}/doc/simgrid.css
   ${CMAKE_HOME_DIRECTORY}/doc/sc3-description.png
+  ${CMAKE_HOME_DIRECTORY}/doc/webcruft/AS_hierarchy.png
   ${CMAKE_HOME_DIRECTORY}/doc/webcruft/Paje_MSG_screenshot.jpg
   ${CMAKE_HOME_DIRECTORY}/doc/webcruft/Paje_MSG_screenshot_thn.jpg
   ${CMAKE_HOME_DIRECTORY}/doc/webcruft/SGicon.gif

@@ -1,7 +1,7 @@
 /* Copyright (C) 1991, 1992 Free Software Foundation, Inc.
    This file was then part of the GNU C Library. */
 
-/* Copyright (c) 2010-2012. The SimGrid Team.
+/* Copyright (c) 2010-2013. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it

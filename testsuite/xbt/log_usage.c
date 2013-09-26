@@ -1,6 +1,6 @@
 /* log_usage - A test of normal usage of the log facilities                 */
 
-/* Copyright (c) 2004, 2005, 2006, 2007, 2009, 2010. The SimGrid Team.
+/* Copyright (c) 2004-2007, 2009-2012. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
