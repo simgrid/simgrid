@@ -18,7 +18,6 @@
 */
 static int verbose = 1;
 
-int main(int argc, char *argv[]);
 int parse_args(int argc, char **argv);
 int lots_of_types_test(void);
 
