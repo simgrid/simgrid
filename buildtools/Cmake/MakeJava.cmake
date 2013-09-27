@@ -36,7 +36,7 @@ if(WIN32)
   message(STATUS "pexports: ${PEXPORTS_PATH}")
   if(PEXPORTS_PATH)
     add_custom_command(TARGET SG_java POST_BUILD
-      COMMAND ${PEXPORTS_PATH}/pexports.exe ${CMAKE_BINARY_DIR}/SG_java.dll > ${CMAKE_BINARY_DIR}/SG_java.def)
+      COMMAND ${PEXPORTS_PATH}/pexports.exe ${CMAKE_BINARY_DIR}/lib/SG_java.dll > ${CMAKE_BINARY_DIR}/lib/SG_java.def)
   endif(PEXPORTS_PATH)
 endif()
 
