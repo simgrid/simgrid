@@ -53,35 +53,22 @@
 # | }
 # `----
 {
-   Memory leak in libcgraph (1/3)
+   Memory leak in libcgraph (1/2)
    Memcheck:Leak
    fun:malloc
+   ...
    obj:/usr/lib/libcgraph.so*
    fun:aaglex
    fun:aagparse
    fun:agconcat
 }
 {
-   Memory leak in libcgraph (2/3)
+   Memory leak in libcgraph (2/2)
    Memcheck:Leak
    fun:malloc
-   obj:/usr/lib/libcgraph.so*
-   fun:agalloc
-   obj:/usr/lib/libcgraph.so*
+   ...
    fun:agnode
    obj:/usr/lib/libcgraph.so*
-   fun:aagparse
-   fun:agconcat
-}
-{
-   Memory leak in libcgraph (3/3)
-   Memcheck:Leak
-   fun:malloc
-   fun:dtopen
-   fun:agdtopen
-   obj:/usr/lib/libcgraph.so*
-   fun:agstrdup
-   fun:aaglex
    fun:aagparse
    fun:agconcat
 }

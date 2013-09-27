@@ -4,6 +4,7 @@ set(optCFLAGS "")
 if(NOT __VISUALC__ AND NOT __BORLANDC__)
   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}-g3")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}-g3")
+  set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -g")
 else()
   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}/Zi")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}/Zi")
@@ -18,7 +19,7 @@ if(enable_compile_warnings)
     string(REPLACE "-Wclobbered " "" warnCFLAGS "${warnCFLAGS}")
   endif()
 
-  set(CMAKE_Fortran_FLAGS "-Wall") # FIXME: Q&D hack
+  set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -Wall") # FIXME: Q&D hack
 
   set(CMAKE_JAVA_COMPILE_FLAGS "-Xlint")
 endif()

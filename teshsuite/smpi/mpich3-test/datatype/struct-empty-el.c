@@ -11,7 +11,6 @@
 
 static int verbose = 0;
 
-int main(int argc, char *argv[]);
 int parse_args(int argc, char **argv);
 int single_struct_test(void);
 

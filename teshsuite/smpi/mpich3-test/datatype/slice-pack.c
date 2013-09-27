@@ -16,7 +16,6 @@
 static int verbose = 0;
 int a[100][100][100], e[9][9][9];
 
-int main(int argc, char *argv[]);
 
 /* helper functions */
 static int parse_args(int argc, char **argv);

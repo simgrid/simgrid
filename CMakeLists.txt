@@ -74,8 +74,7 @@ else()
   endif()
 endif()
 
-string(REGEX MATCH "gcc" GCC "${CMAKE_C_COMPILER}")
-if(GCC)
+if(${CMAKE_C_COMPILER_ID} STREQUAL "GNU")
   exec_program("${CMAKE_C_COMPILER} --version" OUTPUT_VARIABLE "COMPILER_C_VERSION")
   exec_program("${CMAKE_CXX_COMPILER} --version" OUTPUT_VARIABLE "COMPILER_CXX_VERSION")
   string(REGEX MATCH "[0-9].[0-9].[0-9]" COMPILER_C_VERSION "${COMPILER_C_VERSION}")
@@ -190,10 +189,6 @@ if(WIN32)
 endif()
 
 include_directories(${INCLUDES})
-
-### Determine the assembly flavor that we need today
-include(CMakeDetermineSystem)
-set(PROCESSOR_${CMAKE_SYSTEM_PROCESSOR} 1)
 
 ### Setup Options
 include(${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/Option.cmake)

@@ -13,9 +13,10 @@ tesh -- testing shell
 B<tesh> [I<options>] I<tesh_file>
 
 =cut
-my($bindir);
-my($srcdir);
+my($bindir)=".";
+my($srcdir)=".";
 my $path = $0;
+my $OS;
 $path =~ s|[^/]*$||;
 push @INC,$path;
 
@@ -24,12 +25,20 @@ use strict;
 use Term::ANSIColor;
 use IPC::Open3;
 
-my($OS)=`echo %OS%`;
-if($OS eq "%OS%"){
+if($^O eq "linux"){
 	$OS = "UNIX";
 }
 else{
 	$OS = "WIN";
+}
+
+
+sub trim($)
+{
+	my $string = shift;
+	$string =~ s/^\s+//;
+	$string =~ s/\s+$//;
+	return $string;
 }
 
 print "OS: ".$OS."\n";
@@ -59,8 +68,14 @@ sub cd_cmd {
 }
 
 sub setenv_cmd {
-    if ($_[1] =~ /^(.*)=(.*)$/) {
-	my($var,$ctn)=($1,$2);
+    my($var,$ctn);
+    if ($_[0] =~ /^(.*)=(.*)$/) {
+        ($var,$ctn)=($1,$2);
+    }elsif ($_[1] =~ /^(.*)=(.*)$/) {
+        ($var,$ctn)=($1,$2);
+    } else { 
+	    die "[Tesh/CRITICAL] Malformed argument to setenv: expected 'name=value' but got '$_[1]'\n";
+    }
 	
 	if($var =~ /bindir/){
 		print "[Tesh/INFO] setenv $var=$ctn\n";
@@ -76,9 +91,6 @@ sub setenv_cmd {
 			print "[Tesh/INFO] setenv $var=$ctn\n";
 		}
 	}	
-	} else { 
-	die "[Tesh/CRITICAL] Malformed argument to setenv: expected 'name=value' but got '$_[1]'\n";
-    }
 }
 
 # Main option parsing sub
@@ -220,12 +232,25 @@ sub exec_cmd {
     my @got;
     while(defined(my $got=<OUT>)) {
 	$got =~ s/\r//g;
-	#$got =~ s/^( )*//g;
+	$got =~ s/^( )*//g;
 	chomp $got;
-	push @got, "$got";
+    $got=trim($got);
+	if( $got ne ""){
+        push @got, "$got";
+    }
     }	
     close OUT;
-    
+   
+    if ($sort){   
+      sub mysort{
+        $a cmp $b
+        }
+      use sort qw(defaults _quicksort); # force quicksort
+      @got = sort mysort @got;
+      #also resort the other one, as perl sort is not the same as the C one used to generate teshes
+      @{$cmd{'out'}}=sort mysort @{$cmd{'out'}};
+    }
+  
     # Cleanup the executing child, and kill the timeouter brother on need
     $cmd{'return'} = 0 unless defined($cmd{'return'});
     my $wantret = "returned code ".(defined($cmd{'return'})? $cmd{'return'} : 0);
@@ -304,7 +329,10 @@ LINE: while (defined(my $line=<TESH_FILE>)) {
     if ($cmd =~ /^#/) {	#comment
     } elsif ($cmd eq '> '){	#expected result line
 	print "[TESH/debug] push expected result\n" if $opts{'debug'};
-	push @{$cmd{'out'}}, $arg;
+    $arg=trim($arg);
+	if($arg ne ""){
+        push @{$cmd{'out'}}, $arg;
+    }
 
     } elsif ($cmd eq '< ') {	# provided input
 	print "[TESH/debug] push provided input\n" if $opts{'debug'};
@@ -346,6 +374,7 @@ LINE: while (defined(my $line=<TESH_FILE>)) {
 	$cmd{'cmd'} = $arg;
     }	
     elsif($line =~ /^! output sort/){	#output sort
+    $sort=1;
 	$cmd{'sort'} = 1;
     }
     elsif($line =~ /^! output ignore/){	#output ignore

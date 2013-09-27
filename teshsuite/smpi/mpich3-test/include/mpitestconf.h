@@ -57,8 +57,9 @@
 //#define HAVE_FORTRAN_BINDING 0
 
 /* Define to 1 if you have the `getrusage' function. */
+#ifndef WIN32
 #define HAVE_GETRUSAGE 1
-
+#endif
 /* Define if struct hostent contains h_addr_list */
 #define HAVE_H_ADDR_LIST 1
 
@@ -141,8 +142,9 @@
 #define HAVE_STRING_H 1
 
 /* Define to 1 if you have the <sys/resource.h> header file. */
+#ifndef WIN32
 #define HAVE_SYS_RESOURCE_H 1
-
+#endif
 /* Define to 1 if you have the <sys/stat.h> header file. */
 #define HAVE_SYS_STAT_H 1
 

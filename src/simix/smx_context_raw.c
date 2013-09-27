@@ -44,7 +44,7 @@ extern raw_stack_t raw_makecontext(char* malloced_stack, int stack_size,
                                    rawctx_entry_point_t entry_point, void* arg);
 extern void raw_swapcontext(raw_stack_t* old, raw_stack_t new);
 
-#ifdef PROCESSOR_x86_64
+#if PROCESSOR_x86_64
 __asm__ (
 #if defined(APPLE)
    ".text\n"

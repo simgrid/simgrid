@@ -10,8 +10,6 @@
 #include "mpi.h"
 #include "mpitest.h"
 
-int main(int argc, char *argv[]);
-
 /* helper functions */
 int parse_args(int argc, char **argv);
 

@@ -534,7 +534,6 @@ set(headers_to_install
   include/simgrid/platf_generator.h
   include/simgrid/simix.h
   include/smpi/mpi.h
-  include/smpi/mpif.h
   include/smpi/smpi.h
   include/smpi/smpi_cocci.h
   include/smpi/smpi_main.h
@@ -580,6 +579,7 @@ set(headers_to_install
   )
 set(source_of_generated_headers
   include/simgrid_config.h.in
+  include/smpi/mpif.h.in
   include/smpi/smpif.h.in
   src/context_sysv_config.h.in)
 
