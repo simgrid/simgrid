@@ -11,7 +11,6 @@
 
 static int verbose = 0;
 
-int main(int argc, char *argv[]);
 int parse_args(int argc, char **argv);
 int hindexed_zerotype_test(void);
 int hindexed_sparsetype_test(void);
