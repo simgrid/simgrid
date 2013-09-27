@@ -12,6 +12,8 @@ if(enable_smpi AND enable_smpi_MPICH3_testsuite AND SMPI_F2C)
   include_directories("${CMAKE_HOME_DIRECTORY}/include/smpi")
   include_directories("${CMAKE_CURRENT_SOURCE_DIR}/../include/")
 
+  configure_file(${CMAKE_CURRENT_SOURCE_DIR}/typeaints.h.in ${CMAKE_CURRENT_SOURCE_DIR}/typeaints.h @ONLY)
+
   add_executable(allctypesf allctypesf.f ../util/mtestf.f)
   add_executable(gaddressf gaddressf.f ../util/mtestf.f)
   add_executable(hindex1f hindex1f.f ../util/mtestf.f)
@@ -53,7 +55,7 @@ set(examples_src
   ${CMAKE_CURRENT_SOURCE_DIR}/hindex1f.f
   ${CMAKE_CURRENT_SOURCE_DIR}/hindexed_blockf.f
   ${CMAKE_CURRENT_SOURCE_DIR}/packef.f
-  ${CMAKE_CURRENT_SOURCE_DIR}/typeaints.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/typeaints.h.in
   ${CMAKE_CURRENT_SOURCE_DIR}/typecntsf.f
   ${CMAKE_CURRENT_SOURCE_DIR}/typem2f.f
   ${CMAKE_CURRENT_SOURCE_DIR}/typename3f.f

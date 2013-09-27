@@ -619,7 +619,7 @@ teshsuite/smpi/mpich3-test/f77/datatype/gaddressf
 teshsuite/smpi/mpich3-test/f77/datatype/hindex1f
 teshsuite/smpi/mpich3-test/f77/datatype/hindexed_blockf
 teshsuite/smpi/mpich3-test/f77/datatype/packef
-teshsuite/smpi/mpich3-test/f77/datatype/typeaints
+teshsuite/smpi/mpich3-test/f77/datatype/typeaints.h
 teshsuite/smpi/mpich3-test/f77/datatype/typecntsf
 teshsuite/smpi/mpich3-test/f77/datatype/typem2f
 teshsuite/smpi/mpich3-test/f77/datatype/typename3f
