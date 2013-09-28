@@ -78,6 +78,7 @@ add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/smpi/MM)
 
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/teshsuite/msg)
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/teshsuite/msg/trace)
+add_subdirectory(${CMAKE_HOME_DIRECTORY}/teshsuite/msg/storage)
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/teshsuite/simdag)
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/teshsuite/simdag/availability)
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/teshsuite/simdag/network)

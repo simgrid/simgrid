@@ -206,9 +206,9 @@ static xbt_dict_t storage_get_content(void *storage)
   xbt_dict_t content_dict = xbt_dict_new();
   xbt_dict_cursor_t cursor = NULL;
   char *file;
-  size_t size;
+  char *size;
   xbt_dict_foreach(((storage_t)st)->content, cursor, file, size){
-    xbt_dict_set(content_dict,file,&size,NULL);
+    xbt_dict_set(content_dict,file,(void*)size,NULL);
   }
   return content_dict;
 }

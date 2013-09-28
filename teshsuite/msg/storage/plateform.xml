@@ -1,0 +1,51 @@
+<?xml version='1.0'?>
+<!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">
+
+<platform version="3">
+	<AS id="AS0" routing="Full">
+		<!-- STORAGE TYPES -->
+		<storage_type id="crucial" model="SSD" size="500">
+			<prop id="Bwrite" value="30000000" /> <!-- 30Mo/s -->
+			<prop id="Bread" value="100000000" /> <!-- 100Mo/s -->
+			<prop id="Bconnection" value="150000000" /> <!-- 150Mo/s -->
+		</storage_type>
+
+		<storage_type id="single_HDD" model="linear_no_lat" size="500GiB" content_type="txt_unix">
+			<prop id="Bwrite" value="30MBps" />
+			<prop id="Bread" value="100MBps" />
+			<prop id="Bconnection" value="150MBps" />
+		</storage_type>
+
+		<storage_type id="single_SSD" model="linear_no_lat" size="500GiB">
+			<prop id="Bwrite" value="30MBps" />
+			<prop id="Bread" value="100MBps" />
+			<prop id="Bconnection" value="150MBps" />
+		</storage_type>
+
+		<!-- DISKS -->
+		<storage id="cdisk" typeId="single_HDD" content="msg/storage/storage_content_c.txt">
+		   <prop id="usage" value="scratch"/>
+   		   <prop id="date" value="31-08-13"/>
+		</storage>
+		<storage id="sdisk1" typeId="single_SSD" content="msg/storage/storage_content_s1.txt" />
+		<storage id="sdisk2" typeId="single_HDD" content="msg/storage/storage_content_s2.txt" />
+
+		<!-- HOSTS -->
+		<host id="client" power="1000000000">
+			<mount storageId="cdisk" name="/sd1" />
+		</host>
+
+		<host id="server" power="1000000000">
+			<mount storageId="sdisk1" name="/sd1" />
+			<mount storageId="sdisk2" name="/sd2" />
+			<prop id="ip adress" value="134.165.2.5"/>
+		</host>
+
+		<!-- LINKS & ROUTES -->
+		<link id="link" bandwidth="125MBps" latency="50us" />
+
+		<route src="client" dst="server" symmetrical="YES">
+			<link_ctn id="link" />
+		</route>
+	</AS>
+</platform>

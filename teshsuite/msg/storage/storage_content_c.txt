@@ -1,0 +1,5 @@
+./doc/simgrid/examples/cxx/autoDestination/FinalizeTask.cxx 71000
+./doc/simgrid/examples/cxx/autoDestination/autoDestination_deployment.xml 1262000 	   
+./doc/simgrid/examples/cxx/autoDestination/Main.cxx	1480000
+./doc/simgrid/examples/cxx/autoDestination/Slave.cxx 87000000  
+./doc/simgrid/examples/cxx/autoDestination/BasicTask.cxx 6500000

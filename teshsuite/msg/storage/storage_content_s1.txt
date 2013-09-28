@@ -1,0 +1,4 @@
+./doc/simgrid/examples/cxx/autoDestination/Master.cxx 18910000
+./doc/simgrid/examples/cxx/autoDestination/autoDestination_platform.xml	21339320000   
+./doc/simgrid/examples/cxx/autoDestination/Forwarder.cxx 113700000 	   
+./doc/simgrid/examples/cxx/basic/FinalizeTask.cxx 710000000 	   

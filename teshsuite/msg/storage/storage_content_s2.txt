@@ -1,0 +1,2 @@
+./doc/simgrid/examples/cxx/basic/Main.cxx 14800000
+./doc/simgrid/examples/cxx/basic/Slave.cxx 69300000 	   
