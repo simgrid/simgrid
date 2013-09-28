@@ -1,4 +1,4 @@
-$ msg/storage/storage ${srcdir:=.}/msg/storage/platform.xml ${srcdir:=.}/msg/storage/deployment.xml 0 "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+$ msg/storage/storage --cfg=path:${srcdir:=.} ${srcdir:=.}/msg/storage/platform.xml ${srcdir:=.}/msg/storage/deployment.xml 0 "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (1:client@client) ** Storage info on client:
 > [  0.000000] (1:client@client) 	Storage mount name: /sd1
 > [  0.000000] (1:client@client) 		Free size: 536774599000 octets
