@@ -160,7 +160,7 @@ sudo apt-get install vite
 ~~~~
 
 # Let's get Started
-## Setting up and Compiling.
+## Setting up and Compiling
    
 The corresponding archive with all source files and platform files
 can be obtained [here](http://simgrid.gforge.inria.fr/tutorials/msg-tuto/msg-tuto.tgz).
@@ -312,14 +312,14 @@ In the current version, the number of tasks is defined in the
 worker arguments. Hence, tasks are created at the very beginning of
 the simulation. Instead, create tasks as needed and provide a time
 limit indicating when it stops sending tasks. To this end, you will
-obviously need to know what time it is[fn:7]:
+obviously need to know what time it is ([reference manual][fn:7]):
 
 ~~~~{.c}
 double MSG_get_clock(void);
 ~~~~
 
 Otherwise, a quite effective way of terminating the simulation
-would be to use some of the following function[fn:7]:
+would be to use some of the following [function][fn:7]:
 
 ~~~~{.c}
 void MSG_process_kill(msg_process_t process);
@@ -352,7 +352,7 @@ tasks processed). These debug messages can be activated as follows:
 ## Using the Tracing Mechanism
 
 SimGrid can trace all resource consumption and the outcome can be
-displayed with viva as illustrated [[*Setting%20up%20and%20Compiling.][here]]. However, when several
+displayed with viva as illustrated in the section "Setting up and Compiling". However, when several
 masters are deployed, it is hard to understand what happens. 
 
 ~~~~{.xml}
@@ -378,7 +378,7 @@ masters are deployed, it is hard to understand what happens.
 ~~~~
 
 So let's use categories to track more precisely who does what and
-when[fn:7].
+[when][fn:7].
 
 ~~~~{.c}
 void TRACE_category(const char *category);
@@ -418,7 +418,7 @@ name. This way, the master can keep track of which workers are idle
 and willing to work.
 
 To know whether it has pending requests, the master can use the
-following function[fn:7]:
+following [function][fn:7]:
 
 ~~~~{.c}
 int MSG_task_listen(const char *alias);
@@ -426,7 +426,7 @@ int MSG_task_listen(const char *alias);
 
 If so, it should get the request and push the corresponding host
 into a dynar so that they can later be retrieved when sending a
-real task[fn:7].
+real [task][fn:7].
 
 ~~~~{.c}
 xbt_dynar_t xbt_dynar_new(const unsigned long elm_size,
@@ -439,7 +439,7 @@ unsigned long xbt_dynar_length(const xbt_dynar_t dynar);
 As you will soon realize, with such simple mechanisms, simple
 deadlocks will soon appear. They can easily be removed with a
 simple polling mechanism, hence the need for the following
-function[fn:7]:
+[function][fn:7]:
 
 ~~~~{.c}
 msg_error_t MSG_process_sleep(double nb_sec);
