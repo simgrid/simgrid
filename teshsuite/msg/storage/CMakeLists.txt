@@ -33,5 +33,8 @@ set(bin_files
   )
 set(txt_files
   ${txt_files}
+  ${CMAKE_CURRENT_SOURCE_DIR}/storage_content_c.txt
+  ${CMAKE_CURRENT_SOURCE_DIR}/storage_content_s1.txt
+  ${CMAKE_CURRENT_SOURCE_DIR}/storage_content_s2.txt
   PARENT_SCOPE
   )

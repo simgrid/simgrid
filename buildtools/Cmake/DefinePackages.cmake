@@ -904,6 +904,7 @@ set(EXAMPLES_CMAKEFILES_TXT
 set(TESHSUITE_CMAKEFILES_TXT
   teshsuite/CMakeLists.txt
   teshsuite/msg/CMakeLists.txt
+  teshsuite/msg/storage/CMakeLists.txt
   teshsuite/msg/trace/CMakeLists.txt
   teshsuite/simdag/CMakeLists.txt
   teshsuite/simdag/availability/CMakeLists.txt
