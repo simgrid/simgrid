@@ -1043,7 +1043,7 @@ int compare_heap_area(void *area1, void* area2, xbt_dynar_t previous, xbt_dict_t
     if(type_size != -1){
       if(heapinfo1[block1].busy_frag.frag_size[frag1] == -1 || heapinfo2[block2].busy_frag.frag_size[frag2] == -1)
         return -1;
-      if(type_size != heapinfo1[block1].busy_frag.frag_size[frag1] && type_size !=  heapinfo2[block2].busy_frag.frag_size[frag2])
+      if(type_size != heapinfo1[block1].busy_frag.frag_size[frag1] || type_size !=  heapinfo2[block2].busy_frag.frag_size[frag2])
         return -1;
     }
 
