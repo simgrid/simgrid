@@ -1,16 +1,5 @@
 SimGrid (3.10) NOT RELEASED; urgency=low
 
- XBT:
- * Our own implementation of getline is renamed xbt_getline, and gets
-   used even if the OS provide a getline(). This should reduce the
-   configuration complexity by using the same code on all platforms.
- * new xbt_cfg_elm_boolean type
- * Allow to disable SimGrid cleanups at exit from command line option.
-   There are situations where one may want a simulation to end with an exit.
-   Unfortunately, calling exit may cause SimGrid to segfault, which is quite
-   annoying when scripting around the simulator. Adding a
-   --cfg=clean_atexit:yes allows to circumvent this issue.
-
  Java:
  * Reintegrate Java to the main archive as desynchronizing these
    package is not acceptable anymore (Java is now considered stable)
@@ -23,6 +12,7 @@ SimGrid (3.10) NOT RELEASED; urgency=low
    this part of MSG was not considered as production grade either.
  * Add explicit synchronization facilities through semaphores
  * Add a new function MSG_host_get_process_list()
+ * Preliminary DVFS support (see /examples/msg/energy for details)
 
  SMPI:
  * SMPI is now included directly in the libsimgrid as the windows
@@ -64,6 +54,17 @@ SimGrid (3.10) NOT RELEASED; urgency=low
  * Fix the peer tag that could not be mixed with other AS within a Vivaldi
    routing. Now peers are encapsulated in an AS and have their own private
    router but this is transparent.
+
+ XBT:
+ * Our own implementation of getline is renamed xbt_getline, and gets
+   used even if the OS provide a getline(). This should reduce the
+   configuration complexity by using the same code on all platforms.
+ * new xbt_cfg_elm_boolean type
+ * Allow to disable SimGrid cleanups at exit from command line option.
+   There are situations where one may want a simulation to end with an exit.
+   Unfortunately, calling exit may cause SimGrid to segfault, which is quite
+   annoying when scripting around the simulator. Adding a
+   --cfg=clean_atexit:yes allows to circumvent this issue.
 
 -- $date Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
 
