@@ -62,7 +62,7 @@ if(CMAKE_SYSTEM_PROCESSOR MATCHES ".86")
   endif()
 else()
   message(WARNING "Unknown system type. Processor: ${CMAKE_SYSTEM_PROCESSOR}; System: ${CMAKE_SYSTEM_NAME}")
-  set(JSG_BUNDLE "NATIVE/${CMAKE_SYSTEM_NAME}/${CMAKE_SYSTEM_PROCESSOR/")
+  set(JSG_BUNDLE "NATIVE/${CMAKE_SYSTEM_NAME}/${CMAKE_SYSTEM_PROCESSOR}/")
 endif()
 message("-- [Java] Native libraries bundled into: ${JSG_BUNDLE}")
 
