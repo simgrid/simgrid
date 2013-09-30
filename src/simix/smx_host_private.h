@@ -21,7 +21,9 @@ static inline smx_host_priv_t SIMIX_host_priv(smx_host_t host){
   return (smx_host_priv_t) xbt_lib_get_level(host, SIMIX_HOST_LEVEL);
 }
 
-
+#ifdef __cplusplus
+extern "C" {
+#endif
 smx_host_t SIMIX_host_create(const char *name, void *workstation, void *data);
 void SIMIX_host_destroy(void *host);
 
@@ -85,6 +87,10 @@ void SIMIX_post_host_execute(smx_action_t action);
 void SIMIX_pre_set_category(smx_simcall_t simcall, smx_action_t action,
 		            const char *category);
 void SIMIX_set_category(smx_action_t action, const char *category);
+#endif
+
+#ifdef __cplusplus
+}
 #endif
 
 #endif

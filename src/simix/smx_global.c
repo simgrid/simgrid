@@ -317,14 +317,15 @@ void SIMIX_run(void)
          ((void (*)(void*))timer->func)(timer->args);
        xbt_free(timer);
     }
+
     /* Wake up all processes waiting for a Surf action to finish */
     xbt_dynar_foreach(model_list, iter, model) {
-      set = model->states.failed_action_set;
+      set = surf_model_failed_action_set(model);
       while ((action = xbt_swag_extract(set)))
-        SIMIX_simcall_post((smx_action_t) action->data);
-      set = model->states.done_action_set;
+        SIMIX_simcall_post((smx_action_t) surf_action_get_data(action));
+      set = surf_model_done_action_set(model);
       while ((action = xbt_swag_extract(set)))
-        SIMIX_simcall_post((smx_action_t) action->data);
+        SIMIX_simcall_post((smx_action_t) surf_action_get_data(action));
     }
 
     /* Clean processes to destroy */

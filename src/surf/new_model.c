@@ -20,13 +20,19 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_new_model, surf,
 
 surf_model_t surf_new_model = NULL;
 lmm_system_t new_model_maxmin_system = NULL;
+/*FIXME:
 static int new_model_selective_update = 0;
 static xbt_swag_t
     new_model_running_action_set_that_does_not_need_being_checked = NULL;
+*/
 
 #define GENERIC_LMM_ACTION(action) action->generic_lmm_action
 #define GENERIC_ACTION(action) GENERIC_LMM_ACTION(action).generic_action
 
+void surf_new_model_init_default(void){}
+
+//FIXME:UPDATE FOR SURF++
+#ifdef UPDATE_FOR_SURFPP
 static void new_model_action_state_set(surf_action_t action, e_surf_action_state_t state);
 
 static surf_action_t new_model_action_execute ()
@@ -179,3 +185,5 @@ void surf_new_model_init_default(void)
 
   xbt_dynar_push(model_list, &surf_new_model);
 }
+
+#endif

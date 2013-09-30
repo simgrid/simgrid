@@ -47,14 +47,16 @@ set(EXTRA_DIST
   src/surf/gtnets/gtnets_interface.h
   src/surf/gtnets/gtnets_simulator.h
   src/surf/gtnets/gtnets_topology.h
-  src/surf/solver.hpp
-  src/surf/solver.h
+  #src/surf/solver.hpp
+  #src/surf/solver.h
   src/surf/maxmin_private.h
-  src/surf/maxmin_private_.h
+  #src/surf/maxmin_private_.h
   src/surf/network_gtnets_private.h
+  #src/surf/network_gtnets.hpp
   src/surf/network_ns3_private.h
   src/surf/network_private.h
   src/surf/network.hpp
+  src/surf/network_constant.hpp
   src/surf/ns3/my-point-to-point-helper.h
   src/surf/ns3/ns3_interface.h
   src/surf/ns3/ns3_simulator.h
@@ -293,38 +295,33 @@ set(SURF_SRC
   src/surf/cpu.cpp
   src/surf/cpu_ti.cpp
   src/surf/cpu_cas01.cpp
-  src/surf/cpu_cas01.c
-  src/surf/cpu_ti.c
-  src/surf/fair_bottleneck.cpp
+  src/surf/fair_bottleneck.c
   src/surf/instr_routing.c
   src/surf/instr_surf.c
-  src/surf/lagrange.cpp
-  src/surf/solver.cpp
-  src/surf/solver_c.cpp
+  src/surf/lagrange.c
+  src/surf/maxmin.c
   src/surf/network.cpp
-  src/surf/network.c
-  src/surf/network_constant.c
+  src/surf/network_smpi.cpp  
+  src/surf/network_constant.cpp
   src/surf/platf_generator.c
   src/surf/random_mgr.c
   src/surf/sg_platf.c
-  src/surf/storage.c
-  src/surf/surf.c
+  src/surf/storage.cpp
   src/surf/surf.cpp
-  src/surf/surf_action.c
-  src/surf/surf_model.c
-  src/surf/surf_routing.c
-  src/surf/surf_routing_cluster.c
-  src/surf/surf_routing_dijkstra.c
-  src/surf/surf_routing_floyd.c
-  src/surf/surf_routing_full.c
-  src/surf/surf_routing_generic.c
-  src/surf/surf_routing_none.c
-  src/surf/surf_routing_vivaldi.c
+  src/surf/surf_interface.cpp
+  src/surf/surf_routing.cpp  
+  src/surf/surf_routing_cluster.cpp
+  src/surf/surf_routing_dijkstra.cpp
+  src/surf/surf_routing_floyd.cpp
+  src/surf/surf_routing_full.cpp
+  src/surf/surf_routing_generic.cpp
+  src/surf/surf_routing_none.cpp
+  src/surf/surf_routing_vivaldi.cpp
   src/surf/surfxml_parse.c
   src/surf/surfxml_parseplatf.c
   src/surf/trace_mgr.c
-  src/surf/workstation.c
-  src/surf/workstation_ptask_L07.c
+  src/surf/workstation.cpp
+  src/surf/workstation_ptask_L07.cpp
   src/xbt/xbt_sg_stubs.c
   )
 

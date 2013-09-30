@@ -114,10 +114,11 @@ public:
 
   void updateState(tmgr_trace_event_t event_type, double value, double date);  
   void updateActionFinishDate(double now);
-  bool isUsed();  
+  bool isUsed();
   void printCpuTiModel();
   CpuTiModelPtr getModel();
   CpuActionPtr execute(double size);
+  CpuTiActionPtr _execute(double size);
   CpuActionPtr sleep(double duration);
   double getAvailableSpeed();
 
@@ -153,6 +154,6 @@ public:
   double getRemains();
   CpuTiPtr p_cpu;
   int m_indexHeap;
-
+  int m_suspended;
 private:
 };

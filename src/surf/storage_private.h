@@ -27,7 +27,7 @@ typedef struct surf_file {
 } s_surf_file_t;
 
 typedef struct storage {
-  s_surf_resource_t generic_resource;   /*< Structure with generic data. Needed at begin to interact with SURF */
+  //FIXME:s_surf_resource_t generic_resource;   /*< Structure with generic data. Needed at begin to interact with SURF */
   e_surf_resource_state_t state_current;        /*< STORAGE current state (ON or OFF) */
   lmm_constraint_t constraint;          /* Constraint for maximum bandwidth from connection */
   lmm_constraint_t constraint_write;    /* Constraint for maximum write bandwidth*/
@@ -43,7 +43,7 @@ typedef enum {
 } e_surf_action_storage_type_t;
 
 typedef struct surf_action_storage {
-  s_surf_action_lmm_t generic_lmm_action;
+  //FIXME:s_surf_action_lmm_t generic_lmm_action;
   e_surf_action_storage_type_t type;
   void *storage;
 } s_surf_action_storage_t, *surf_action_storage_t;

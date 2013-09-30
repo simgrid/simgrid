@@ -7,8 +7,7 @@
 #ifndef _SURF_MAXMIN_PRIVATE_H
 #define _SURF_MAXMIN_PRIVATE_H
 
-//#include "surf/maxmin.h"
-#include "surf/solver.h"
+#include "surf/maxmin.h"
 #include "xbt/swag.h"
 #include "xbt/mallocator.h"
 

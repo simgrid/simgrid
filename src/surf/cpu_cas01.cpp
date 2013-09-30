@@ -10,14 +10,10 @@
 #include "maxmin_private.h"
 #include "simgrid/sg_config.h"
 
-//TODO: resolve dependencies
-static void TRACE_surf_host_set_power(double date, const char *resource, double power) {}
-
-
-static ModelPtr surf_cpu_model = NULL;
-
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surfpp_cpu_cas, surfpp,
+extern "C" {
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_cpu_cas, surf,
                                 "Logging specific to the SURF CPU IMPROVED module");
+}
 
 static xbt_swag_t
     cpu_running_action_set_that_does_not_need_being_checked = NULL;
@@ -141,7 +137,7 @@ CpuCas01LmmPtr CpuCas01Model::createResource(const char *name, double power_peak
 double CpuCas01Model::shareResourcesFull(double now)
 {
   CpuCas01ActionLmm action;
-  Model::shareResourcesFull(p_runningActionSet, 
+  Model::shareResourcesMaxMin(p_runningActionSet, 
 		             xbt_swag_offset(action, p_variable),
                              p_maxminSystem, lmm_solve);
   return 0;

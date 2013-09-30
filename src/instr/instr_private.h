@@ -102,6 +102,10 @@ extern xbt_dict_t user_vm_variables;
 extern xbt_dict_t user_link_variables;
 extern double TRACE_last_timestamp_to_dump;
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /* instr_paje_header.c */
 void TRACE_header(int basic);
 
@@ -210,6 +214,10 @@ XBT_PUBLIC(val_t)  PJ_value_new (const char *name, const char *color, type_t fat
 XBT_PUBLIC(val_t)  PJ_value_get_or_new (const char *name, const char *color, type_t father);
 XBT_PUBLIC(val_t)  PJ_value_get (const char *name, const type_t father);
 void PJ_value_free (val_t value);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* HAVE_TRACING */
 

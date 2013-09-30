@@ -11,9 +11,15 @@
 #include <xbt.h>
 
 typedef void *sg_routing_link_t; /* The actual type is model-dependent so use void* instead*/
-typedef struct s_routing_edge *sg_routing_edge_t;
+typedef struct RoutingEdge *sg_routing_edge_t;
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 XBT_PUBLIC(sg_routing_edge_t) sg_routing_edge_by_name_or_null(const char *name);
+#ifdef __cplusplus
+}
+#endif
 
 /** Defines whether a given resource is working or not */
 typedef enum {
@@ -46,6 +52,9 @@ typedef struct tmgr_trace *tmgr_trace_t; /**< Opaque structure defining an avail
 /** opaque structure defining a event generator for availability based on a probability distribution */
 typedef struct probabilist_event_generator *probabilist_event_generator_t;
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 XBT_PUBLIC(tmgr_trace_t) tmgr_trace_new_from_file(const char *filename);
 XBT_PUBLIC(tmgr_trace_t) tmgr_trace_new_from_string(const char *id,
                                                     const char *input,
@@ -70,6 +79,10 @@ XBT_PUBLIC(probabilist_event_generator_t) tmgr_event_generator_new_exponential(c
 XBT_PUBLIC(probabilist_event_generator_t) tmgr_event_generator_new_weibull(const char* id,
                                                                            double scale,
                                                                            double shape);
+#ifdef __cplusplus
+}
+#endif
+
 typedef xbt_dictelm_t sg_host_t;
 static inline char* sg_host_name(sg_host_t host) {
   return host->key;
@@ -308,6 +321,10 @@ typedef struct s_sg_platf_gpu_cbarg {
 
 /* ***************************************** */
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 XBT_PUBLIC(void) sg_platf_begin(void);  // Start a new platform
 XBT_PUBLIC(void) sg_platf_end(void); // Finish the creation of the platform
 
@@ -357,5 +374,8 @@ XBT_PUBLIC(void) sg_platf_ASroute_add_link (const char* link_id, sg_platf_route_
 typedef void (*sg_platf_process_cb_t)(sg_platf_process_cbarg_t);
 XBT_PUBLIC(void) sg_platf_process_add_cb(sg_platf_process_cb_t fct);
 
+#ifdef __cplusplus
+}
+#endif
 
 #endif                          /* SG_PLATF_H */

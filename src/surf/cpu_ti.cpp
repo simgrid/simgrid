@@ -1,19 +1,18 @@
 #include "cpu_ti.hpp"
-//#include "solver.hpp"
 #include "trace_mgr_private.h"
 #include "xbt/heap.h"
 
 #ifndef SURF_MODEL_CPUTI_H_
 #define SURF_MODEL_CPUTI_H_
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surfpp_cpu_tii, surfpp,
+extern "C" {
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_cpu_ti, surf,
                                 "Logging specific to the SURF CPU TRACE INTEGRATION module");
+}
 
 static xbt_swag_t cpu_ti_running_action_set_that_does_not_need_being_checked;
 static xbt_swag_t cpu_ti_modified_cpu;
 static xbt_heap_t cpu_ti_action_heap;
-
-static CpuTiModelPtr surf_cpu_model = NULL;
 
 static void cpu_ti_action_update_index_heap(void *action, int i);
 
@@ -806,8 +805,13 @@ void CpuTi::updateRemainingAmount(double now)
 
 CpuActionPtr CpuTi::execute(double size)
 {
+  return execute(size);
+}
+
+CpuTiActionPtr CpuTi::_execute(double size)
+{
   XBT_IN("(%s,%g)", m_name, size);
-  CpuTiActionPtr action = new CpuTiAction(surf_cpu_model, size, p_stateCurrent != SURF_RESOURCE_ON);
+  CpuTiActionPtr action = new CpuTiAction((CpuTiModelPtr) p_model, size, p_stateCurrent != SURF_RESOURCE_ON);
 
   action->p_cpu = this;
   action->m_indexHeap = -1;
@@ -830,7 +834,7 @@ CpuActionPtr CpuTi::sleep(double duration)
     duration = MAX(duration, MAXMIN_PRECISION);
 
   XBT_IN("(%s,%g)", m_name, duration);
-  CpuActionPtr action = execute(1.0);
+  CpuTiActionPtr action = _execute(1.0);
   action->m_maxDuration = duration;
   action->m_suspended = 2;
   if (duration == NO_MAX_DURATION) {

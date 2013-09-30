@@ -161,10 +161,10 @@
 	(name, type, __VA_ARGS__)
 #define SIMCALL_FUNC_SIMCALL(res) SIMCALL_FUNC_SIMCALL_ res
 
-#define SIMCALL_WITH_FUNC_RETURN(name, type, field, cast) return self->simcall.result.field;
+#define SIMCALL_WITH_FUNC_RETURN(name, type, field, ...) return self->simcall.result.field;
 #define SIMCALL_WITHOUT_FUNC_RETURN(name, type, field)
 #define SIMCALL_FUNC_RETURN_(name, type, ...)\
-        MAYBE3(,##__VA_ARGS__, SIMCALL_WITH_FUNC_RETURN, SIMCALL_WITHOUT_FUNC_RETURN, SIMCALL_WITHOUT_FUNC_RETURN)\
+        MAYBE3(,##__VA_ARGS__, SIMCALL_WITH_FUNC_RETURN, SIMCALL_WITH_FUNC_RETURN, SIMCALL_WITHOUT_FUNC_RETURN)\
 	(name, type, __VA_ARGS__)
 #define SIMCALL_FUNC_RETURN(res) SIMCALL_FUNC_RETURN_ res
 

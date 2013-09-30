@@ -23,7 +23,7 @@ SD_link_t __SD_link_create(void *surf_link, void *data)
   link = xbt_new(s_SD_link_t, 1);
   link->surf_link = surf_link;
   link->data = data;            /* user data */
-  if (surf_workstation_model->extension.workstation.link_shared(surf_link))
+  if (surf_network_link_is_shared(surf_link))
     link->sharing_policy = SD_LINK_SHARED;
   else
     link->sharing_policy = SD_LINK_FATPIPE;
@@ -118,8 +118,7 @@ const char *SD_link_get_name(SD_link_t link)
  */
 double SD_link_get_current_bandwidth(SD_link_t link)
 {
-  return surf_workstation_model->extension.workstation.
-      get_link_bandwidth(link->surf_link);
+  return surf_network_link_get_bandwidth(link->surf_link);
 }
 
 /**
@@ -130,8 +129,7 @@ double SD_link_get_current_bandwidth(SD_link_t link)
  */
 double SD_link_get_current_latency(SD_link_t link)
 {
-  return surf_workstation_model->extension.workstation.
-      get_link_latency(link->surf_link);
+  return surf_network_link_get_latency(link->surf_link);
 }
 
 /**

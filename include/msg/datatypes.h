@@ -27,7 +27,7 @@ SG_BEGIN_DECL()
 typedef struct s_smx_rvpoint *msg_mailbox_t;
 
 /* ******************************** Environment ************************************ */
-typedef struct s_as *msg_as_t;
+typedef struct As *msg_as_t;
 
 /* ******************************** Host ************************************ */
 

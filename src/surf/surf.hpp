@@ -15,14 +15,13 @@
 #include "xbt/lib.h"
 #include "surf/surf_routing.h"
 #include "simgrid/platf_interface.h"
+#include "surf/surf.h"
+#include "surf/surf_private.h"
 
 extern tmgr_history_t history;
 #define NO_MAX_DURATION -1.0
 
 using namespace std;
-
-// TODO: put in surf_private.hpp
-extern xbt_dict_t watched_hosts_lib;
 
 /** \ingroup SURF_simulation
  *  \brief Return the current time
@@ -33,6 +32,19 @@ extern xbt_dict_t watched_hosts_lib;
 /*********
  * Utils *
  *********/
+
+/* user-visible parameters */
+extern double sg_tcp_gamma;
+extern double sg_sender_gap;
+extern double sg_latency_factor;
+extern double sg_bandwidth_factor;
+extern double sg_weight_S_parameter;
+extern int sg_network_crosstraffic;
+#ifdef HAVE_GTNETS
+extern double sg_gtnets_jitter;
+extern int sg_gtnets_jitter_seed;
+#endif
+extern xbt_dynar_t surf_path;
 
 #ifdef __cplusplus
 extern "C" {
@@ -46,21 +58,23 @@ XBT_PUBLIC(void) surf_watched_hosts(void);
 extern double sg_sender_gap;
 XBT_PUBLIC(int)  SURF_CPU_LEVEL;    //Surf cpu level
 
+int __surf_is_absolute_file_path(const char *file_path);
+
 /***********
  * Classes *
  ***********/
-class Model;
+//class Model;
 typedef Model* ModelPtr;
 
-class Resource;
+//class Resource;
 typedef Resource* ResourcePtr;
 typedef boost::function<void (ResourcePtr r)> ResourceCallback;
 			
-class Action;
+//class Action;
 typedef Action* ActionPtr;
 typedef boost::function<void (ActionPtr a)> ActionCallback;
 
-class ActionLmm;
+//class ActionLmm;
 typedef ActionLmm* ActionLmmPtr;
 
 enum heap_action_type{
@@ -69,12 +83,6 @@ enum heap_action_type{
   NORMAL,
   NOTSET
 };
-
-typedef enum {
-  UM_FULL,
-  UM_LAZY,
-  UM_UNDEFINED
-} e_UM_t;
 
 /*********
  * Trace *
@@ -95,31 +103,23 @@ XBT_PUBLIC_DATA(xbt_dynar_t) model_list;
 
 class Model {
 public:
-  Model(string name) {
-    m_name = name;
-    m_resOnCB = m_resOffCB= 0;
-    m_actSuspendCB = m_actCancelCB = m_actResumeCB = 0;
-  }
-  virtual ~Model() {
-    xbt_swag_free(p_readyActionSet);
-    xbt_swag_free(p_runningActionSet);
-    xbt_swag_free(p_failedActionSet);
-    xbt_swag_free(p_doneActionSet);
-  }
+  Model(string name);
+  virtual ~Model();
+
   ResourcePtr createResource(string name);
   ActionPtr createAction(double _cost, bool _failed);
-  double (Model::*shareResources)(double now);
+  virtual double shareResources(double now);
   double shareResourcesLazy(double now);
-  double shareResourcesFull(xbt_swag_t running_actions,
+  //double shareResourcesFull(double now);
+  double shareResourcesMaxMin(xbt_swag_t running_actions,
                                       size_t offset,
                                       lmm_system_t sys,
                                       void (*solve) (lmm_system_t));
-  void (Model::*updateActionsState)(double now, double delta);
+  void updateActionsState(double now, double delta);
   void updateActionsStateLazy(double now, double delta);
   void updateActionsStateFull(double now, double delta);
 
   string getName() {return m_name;};
-  void gapRemove(ActionLmmPtr action);
 
   void addTurnedOnCallback(ResourceCallback rc);
   void notifyResourceTurnedOn(ResourcePtr r);
@@ -144,12 +144,12 @@ public:
   xbt_swag_t p_runningActionSet; /**< Actions in state SURF_ACTION_RUNNING */
   xbt_swag_t p_failedActionSet; /**< Actions in state SURF_ACTION_FAILED */
   xbt_swag_t p_doneActionSet; /**< Actions in state SURF_ACTION_DONE */
+  string m_name;
 
 protected:
   std::vector<ActionPtr> m_failedActions, m_runningActions;
 
 private:
-  string m_name;
   ResourceCallback m_resOnCB, m_resOffCB;
   ActionCallback m_actCancelCB, m_actSuspendCB, m_actResumeCB;
 };
@@ -169,15 +169,14 @@ typedef struct {
 
 class Resource {
 public:
-  Resource() {};
-  Resource(ModelPtr model, const char *name, xbt_dict_t properties):
-	  m_name(name),m_running(true),p_model(model),m_properties(properties) {};
+  Resource();
+  Resource(ModelPtr model, const char *name, xbt_dict_t properties);
   virtual ~Resource() {};
 
-  void updateState(tmgr_trace_event_t event_type, double value, double date);
+  virtual void updateState(tmgr_trace_event_t event_type, double value, double date)=0;
 
   //private
-  bool isUsed();
+  virtual bool isUsed()=0;
   //TODOupdateActionState();
   //TODOupdateResourceState();
   //TODOfinilize();
@@ -186,17 +185,19 @@ public:
   void turnOn();
   void turnOff();
   void setName(string name);
-  string getName();
+  const char *getName();
+  xbt_dict_t getProperties();
+
   ModelPtr getModel() {return p_model;};
   e_surf_resource_state_t getState();
   void printModel() { std::cout << p_model->getName() << "<<plop"<<std::endl;};
   void *p_resource;
   e_surf_resource_state_t m_stateCurrent;
   const char *m_name;
+  xbt_dict_t m_properties;
+  ModelPtr p_model;
 
 protected:
-  ModelPtr p_model;
-  xbt_dict_t m_properties;
 
 private:
   bool m_running;  
@@ -205,67 +206,29 @@ private:
 class ResourceLmm: virtual public Resource {
 public:
   ResourceLmm() {};
+  ResourceLmm(surf_model_t model, const char *name, xbt_dict_t props,
+                           lmm_system_t system,
+                           double constraint_value,
+                           tmgr_history_t history,
+                           e_surf_resource_state_t state_init,
+                           tmgr_trace_t state_trace,
+                           double metric_peak,
+                           tmgr_trace_t metric_trace);
   lmm_constraint_t p_constraint;
   e_surf_resource_state_t p_stateCurrent;
   tmgr_trace_event_t p_stateEvent;
   s_surf_metric_t p_power;
 };
 
-static inline void *surf_cpu_resource_priv(const void *host) {
-  return xbt_lib_get_level((xbt_dictelm_t)host, SURF_CPU_LEVEL);
-}
-/*static inline void *surf_workstation_resource_priv(const void *host){
-  return xbt_lib_get_level((xbt_dictelm_t)host, SURF_WKS_LEVEL); 
-}        
-static inline void *surf_storage_resource_priv(const void *host){
-  return xbt_lib_get_level((xbt_dictelm_t)host, SURF_STORAGE_LEVEL);
-}*/
-
-static inline void *surf_cpu_resource_by_name(const char *name) {
-  return xbt_lib_get_elm_or_null(host_lib, name);
-}
-/*static inline void *surf_workstation_resource_by_name(const char *name){
-  return xbt_lib_get_elm_or_null(host_lib, name);
-}
-static inline void *surf_storage_resource_by_name(const char *name){
-  return xbt_lib_get_elm_or_null(storage_lib, name);*/
-
 /**********
  * Action *
  **********/
 
-/** \ingroup SURF_actions
- *  \brief Action states
- *
- *  Action states.
- *
- *  \see surf_action_t, surf_action_state_t
- */
-extern const char *surf_action_state_names[6];
-
-typedef enum {
-  SURF_ACTION_READY = 0,        /**< Ready        */
-  SURF_ACTION_RUNNING,          /**< Running      */
-  SURF_ACTION_FAILED,           /**< Task Failure */
-  SURF_ACTION_DONE,             /**< Completed    */
-  SURF_ACTION_TO_FREE,          /**< Action to free in next cleanup */
-  SURF_ACTION_NOT_IN_THE_SYSTEM
-                                /**< Not in the system anymore. Why did you ask ? */
-} e_surf_action_state_t;
-
 class Action {
 public:
-  Action() {};
-  Action(ModelPtr model, double cost, bool failed):
-	 m_cost(cost), p_model(model), m_failed(failed),
-	 m_refcount(1), m_priority(1.0), m_maxDuration(NO_MAX_DURATION),
-	 m_start(surf_get_clock()), m_finish(-1.0)
-  {
-    m_priority = m_start = m_finish = m_maxDuration = -1.0;
-    m_start = 10;//surf_get_clock();
-    m_suspended = false;
-  };
-  virtual ~Action() {};
+  Action();
+  Action(ModelPtr model, double cost, bool failed);
+  virtual ~Action();
   
   s_xbt_swag_hookup_t p_stateHookup;
   e_surf_action_state_t getState(); /**< get the state*/
@@ -274,15 +237,16 @@ public:
   double getFinishTime(); /**< Return the finish time of an action */
   void setData(void* data);
 
-  virtual int unref()=0;     /**< Specify that we don't use that action anymore. Returns true if the action was destroyed and false if someone still has references on it. */
-  virtual void cancel()=0;     /**< Cancel a running action */
-  virtual void recycle()=0;     /**< Recycle an action */
+  void ref();
+  virtual int unref();     /**< Specify that we don't use that action anymore. Returns true if the action was destroyed and false if someone still has references on it. */
+  virtual void cancel();     /**< Cancel a running action */
+  virtual void recycle();     /**< Recycle an action */
   
-  void suspend();     /**< Suspend an action */
-  void resume();     /**< Resume a suspended action */
-  bool isSuspended();     /**< Return whether an action is suspended */
-  void setMaxDuration(double duration);     /**< Set the max duration of an action*/
-  void setPriority(double priority);     /**< Set the priority of an action */
+  virtual void suspend()=0;     /**< Suspend an action */
+  virtual void resume()=0;     /**< Resume a suspended action */
+  virtual bool isSuspended()=0;     /**< Return whether an action is suspended */
+  virtual void setMaxDuration(double duration)=0;     /**< Set the max duration of an action*/
+  virtual void setPriority(double priority)=0;     /**< Set the priority of an action */
 #ifdef HAVE_TRACING
   void setCategory(const char *category); /**< Set the category of an action */
 #endif
@@ -295,7 +259,6 @@ public:
 
   double m_priority; /**< priority (1.0 by default) */
   bool m_failed;
-  bool m_suspended;  
   double m_start; /**< start time  */
   double m_finish; /**< finish time : this is modified during the run and fluctuates until the task is completed */
   double m_remains; /**< How much of that cost remains to be done in the currently running task */
@@ -304,11 +267,11 @@ public:
   #endif
   double m_maxDuration; /*< max_duration (may fluctuate until the task is completed) */  
   char *p_category;               /**< tracing category for categorized resource utilization monitoring */  
+  int    m_cost;
+  void *p_data; /**< for your convenience */
 protected:
   ModelPtr p_model;  
-  int    m_cost;
   int    m_refcount;
-  void *p_data; /**< for your convenience */
 #ifdef HAVE_TRACING
 #endif
   e_UM_t p_updateMechanism;
@@ -322,7 +285,6 @@ private:
   void updateActionsState(double now, double delta);
   void updateResourceState(void *id, tmgr_trace_event_t event_type,
                                  double value, double time);
-  void finalize(void);
 
   lmm_system_t p_maxminSystem;
   xbt_swag_t p_modifiedSet;
@@ -330,19 +292,28 @@ private:
   int m_selectiveUpdate;
 };
 
+//FIXME:REMOVE
 void surf_action_lmm_update_index_heap(void *action, int i);
 
 class ActionLmm: virtual public Action {
 public:
-  ActionLmm() {};	
-  ActionLmm(ModelPtr model, double cost, bool failed) {};
+  ActionLmm() : m_suspended(false) {};
+  ActionLmm(ModelPtr model, double cost, bool failed) : m_suspended(false) {};
 
-  virtual void updateRemainingLazy(double now)=0;
+  void updateRemainingLazy(double now) {};//FIXME:
   void heapInsert(xbt_heap_t heap, double key, enum heap_action_type hat);
   void heapRemove(xbt_heap_t heap);
   double getRemains();     /**< Get the remains of an action */
   void updateIndexHeap(int i);
 
+  int unref();
+  void cancel();
+  void suspend();
+  void resume();
+  bool isSuspended();
+  void setMaxDuration(double duration);
+  void setPriority(double priority);
+  void gapRemove();
 
   lmm_variable_t p_variable;
   //bool m_suspended;
@@ -351,6 +322,7 @@ public:
   double m_lastUpdate;
   double m_lastValue;
   enum heap_action_type m_hat;
+  int m_suspended;
 };
 
 #endif /* SURF_MODEL_H_ */

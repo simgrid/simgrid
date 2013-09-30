@@ -409,7 +409,7 @@ static void surf_cpu_model_init_internal()
         surf_action_lmm_update_index_heap);
     surf_cpu_model->model_private->modified_set =
         xbt_swag_new(xbt_swag_offset(comp, generic_lmm_action.action_list_hookup));
-    //TOREPAIR: cpu_model->model_private->maxmin_system->m_keepTrack = cpu_model->model_private->modified_set;
+    surf_cpu_model->model_private->maxmin_system->keep_track = surf_cpu_model->model_private->modified_set;
   }
 }
 

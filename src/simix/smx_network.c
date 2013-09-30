@@ -340,17 +340,17 @@ void SIMIX_comm_destroy_internal_actions(smx_action_t action)
 #ifdef HAVE_LATENCY_BOUND_TRACKING
     action->latency_limited = SIMIX_comm_is_latency_bounded(action);
 #endif
-    action->comm.surf_comm->model_type->action_unref(action->comm.surf_comm);
+    surf_action_unref(action->comm.surf_comm);
     action->comm.surf_comm = NULL;
   }
 
   if (action->comm.src_timeout){
-    action->comm.src_timeout->model_type->action_unref(action->comm.src_timeout);
+    surf_action_unref(action->comm.src_timeout);
     action->comm.src_timeout = NULL;
   }
 
   if (action->comm.dst_timeout){
-    action->comm.dst_timeout->model_type->action_unref(action->comm.dst_timeout);
+    surf_action_unref(action->comm.dst_timeout);
     action->comm.dst_timeout = NULL;
   }
 }
@@ -729,8 +729,8 @@ void SIMIX_pre_comm_wait(smx_simcall_t simcall, smx_action_t action, double time
   if (action->state != SIMIX_WAITING && action->state != SIMIX_RUNNING) {
     SIMIX_comm_finish(action);
   } else { /* if (timeout >= 0) { we need a surf sleep action even when there is no timeout, otherwise surf won't tell us when the host fails */
-    sleep = surf_workstation_model->extension.workstation.sleep(simcall->issuer->smx_host, timeout);
-    surf_workstation_model->action_data_set(sleep, action);
+    sleep = surf_workstation_sleep(surf_workstation_resource_priv(simcall->issuer->smx_host), timeout);
+    surf_action_set_data(sleep, action);
 
     if (simcall->issuer == action->comm.src_proc)
       action->comm.src_timeout = sleep;
@@ -846,15 +846,14 @@ XBT_INLINE void SIMIX_comm_start(smx_action_t action)
     XBT_DEBUG("Starting communication %p from '%s' to '%s'", action,
               SIMIX_host_get_name(sender), SIMIX_host_get_name(receiver));
 
-    action->comm.surf_comm = surf_workstation_model->extension.workstation.
-      communicate(sender, receiver, action->comm.task_size, action->comm.rate);
+    action->comm.surf_comm = surf_workstation_communicate(sender, receiver, action->comm.task_size, action->comm.rate);
 
-    surf_workstation_model->action_data_set(action->comm.surf_comm, action);
+    surf_action_set_data(action->comm.surf_comm, action);
 
     action->state = SIMIX_RUNNING;
 
     /* If a link is failed, detect it immediately */
-    if (surf_workstation_model->action_state_get(action->comm.surf_comm) == SURF_ACTION_FAILED) {
+    if (surf_action_get_state(action->comm.surf_comm) == SURF_ACTION_FAILED) {
       XBT_DEBUG("Communication from '%s' to '%s' failed to start because of a link failure",
                 SIMIX_host_get_name(sender), SIMIX_host_get_name(receiver));
       action->state = SIMIX_LINK_FAILURE;
@@ -874,7 +873,7 @@ XBT_INLINE void SIMIX_comm_start(smx_action_t action)
         XBT_DEBUG("The communication is suspended on startup because dst (%s:%s) were suspended since it initiated the communication",
                   SIMIX_host_get_name(action->comm.dst_proc->smx_host), action->comm.dst_proc->name);
 
-      surf_workstation_model->suspend(action->comm.surf_comm);
+      surf_action_suspend(action->comm.surf_comm);
 
     }
   }
@@ -980,8 +979,7 @@ void SIMIX_comm_finish(smx_action_t action)
       }
     }
 
-    if (surf_workstation_model->extension.
-        workstation.get_state(simcall->issuer->smx_host) != SURF_RESOURCE_ON) {
+    if (surf_resource_get_state(surf_workstation_resource_priv(simcall->issuer->smx_host)) != SURF_RESOURCE_ON) {
       simcall->issuer->context->iwannadie = 1;
     }
 
@@ -1013,19 +1011,19 @@ void SIMIX_post_comm(smx_action_t action)
 {
   /* Update action state */
   if (action->comm.src_timeout &&
-      surf_workstation_model->action_state_get(action->comm.src_timeout) == SURF_ACTION_DONE)
+      surf_action_get_state(action->comm.src_timeout) == SURF_ACTION_DONE)
     action->state = SIMIX_SRC_TIMEOUT;
   else if (action->comm.dst_timeout &&
-           surf_workstation_model->action_state_get(action->comm.dst_timeout) == SURF_ACTION_DONE)
+	  surf_action_get_state(action->comm.dst_timeout) == SURF_ACTION_DONE)
     action->state = SIMIX_DST_TIMEOUT;
   else if (action->comm.src_timeout &&
-           surf_workstation_model->action_state_get(action->comm.src_timeout) == SURF_ACTION_FAILED)
+	  surf_action_get_state(action->comm.src_timeout) == SURF_ACTION_FAILED)
     action->state = SIMIX_SRC_HOST_FAILURE;
   else if (action->comm.dst_timeout &&
-           surf_workstation_model->action_state_get(action->comm.dst_timeout) == SURF_ACTION_FAILED)
+      surf_action_get_state(action->comm.dst_timeout) == SURF_ACTION_FAILED)
     action->state = SIMIX_DST_HOST_FAILURE;
   else if (action->comm.surf_comm &&
-           surf_workstation_model->action_state_get(action->comm.surf_comm) == SURF_ACTION_FAILED) {
+	  surf_action_get_state(action->comm.surf_comm) == SURF_ACTION_FAILED) {
     XBT_DEBUG("Puta madre. Surf says that the link broke");
     action->state = SIMIX_LINK_FAILURE;
   } else
@@ -1066,7 +1064,7 @@ void SIMIX_comm_cancel(smx_action_t action)
   else if (!MC_is_active() /* when running the MC there are no surf actions */
            && (action->state == SIMIX_READY || action->state == SIMIX_RUNNING)) {
 
-    surf_workstation_model->action_cancel(action->comm.surf_comm);
+    surf_action_cancel(action->comm.surf_comm);
   }
 }
 
@@ -1074,7 +1072,7 @@ void SIMIX_comm_suspend(smx_action_t action)
 {
   /*FIXME: shall we suspend also the timeout actions? */
   if (action->comm.surf_comm)
-    surf_workstation_model->suspend(action->comm.surf_comm);
+    surf_action_suspend(action->comm.surf_comm);
   /* in the other case, the action will be suspended on creation, in SIMIX_comm_start() */
 }
 
@@ -1082,7 +1080,7 @@ void SIMIX_comm_resume(smx_action_t action)
 {
   /*FIXME: check what happen with the timeouts */
   if (action->comm.surf_comm)
-    surf_workstation_model->resume(action->comm.surf_comm);
+    surf_action_resume(action->comm.surf_comm);
   /* in the other case, the action were not really suspended yet, see SIMIX_comm_suspend() and SIMIX_comm_start() */
 }
 
@@ -1107,7 +1105,7 @@ double SIMIX_comm_get_remains(smx_action_t action)
   switch (action->state) {
 
   case SIMIX_RUNNING:
-    remains = surf_workstation_model->get_remains(action->comm.surf_comm);
+    remains = surf_action_get_remains(action->comm.surf_comm);
     break;
 
   case SIMIX_WAITING:

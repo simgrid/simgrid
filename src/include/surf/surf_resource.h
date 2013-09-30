@@ -9,7 +9,7 @@
 #ifndef SURF_RESOURCE_H
 #define SURF_RESOURCE_H
 
-static XBT_INLINE
+/*FIXME:DELETEstatic XBT_INLINE
     surf_resource_t surf_resource_new(size_t childsize,
                                       surf_model_t model, const char *name,
                                       xbt_dict_t props)
@@ -37,6 +37,6 @@ static XBT_INLINE const char *surf_resource_name(const void *resource)
 static XBT_INLINE xbt_dict_t surf_resource_properties(const void *resource)
 {
   return ((surf_resource_t) resource)->properties;
-}
+}*/
 
 #endif                          /* SURF_RESOURCE_H */

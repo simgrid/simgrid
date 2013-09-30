@@ -10,6 +10,10 @@
 #include "xbt/lib.h"
 #include "simgrid/platf_interface.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 XBT_PUBLIC(xbt_lib_t) host_lib;
 XBT_PUBLIC(int) ROUTING_HOST_LEVEL; //Routing level
 XBT_PUBLIC(int)  SURF_CPU_LEVEL;    //Surf cpu level
@@ -44,5 +48,9 @@ void routing_AS_begin(sg_platf_AS_cbarg_t AS);
 void routing_AS_end(sg_platf_AS_cbarg_t AS);
 
 void routing_cluster_add_backbone(void* bb);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif                          /* _SURF_SURF_H */

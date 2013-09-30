@@ -43,7 +43,7 @@ void SIMIX_post_new_api(smx_action_t action)
     }
   }
 
-  switch (surf_workstation_model->action_state_get(action->new_api.surf_new_api)) {
+  switch (surf_action_get_state(action->new_api.surf_new_api)) {
 
     case SURF_ACTION_FAILED:
       action->state = SIMIX_FAILED;
@@ -67,8 +67,7 @@ smx_action_t SIMIX_new_api_fct(smx_process_t process, const char* param1, double
   smx_host_t host = process->smx_host;
 
   /* check if the host is active */
-  if (surf_workstation_model->extension.
-      workstation.get_state(host) != SURF_RESOURCE_ON) {
+  if (surf_resource_get_state(surf_workstation_resource_priv(host)) != SURF_RESOURCE_ON) {
     THROWF(host_error, 0, "Host %s failed, you cannot call this function",
            sg_host_name(host));
   }
@@ -81,9 +80,9 @@ smx_action_t SIMIX_new_api_fct(smx_process_t process, const char* param1, double
 #endif
 
   // Called the function from the new model
-  action->new_api.surf_new_api = surf_workstation_model->extension.new_model.fct();
+  //FIXME:CHECK WHAT TO DO action->new_api.surf_new_api = surf_workstation_model->extension.new_model.fct();
 
-  surf_workstation_model->action_data_set(action->new_api.surf_new_api, action);
+  surf_action_set_data(action->new_api.surf_new_api, action);
   XBT_DEBUG("Create NEW MODEL action %p", action);
 
   return action;
@@ -93,7 +92,7 @@ void SIMIX_new_api_destroy(smx_action_t action)
 {
   XBT_DEBUG("Destroy action %p", action);
   if (action->new_api.surf_new_api)
-    action->new_api.surf_new_api->model_type->action_unref(action->new_api.surf_new_api);
+    surf_action_unref(action->new_api.surf_new_api);
   xbt_mallocator_release(simix_global->action_mallocator, action);
 }
 
@@ -123,8 +122,7 @@ void SIMIX_new_api_finish(smx_action_t action)
             (int)action->state);
     }
 
-    if (surf_workstation_model->extension.
-        workstation.get_state(simcall->issuer->smx_host) != SURF_RESOURCE_ON) {
+    if (surf_resource_get_state(surf_workstation_resource_priv(simcall->issuer->smx_host)) != SURF_RESOURCE_ON) {
       simcall->issuer->context->iwannadie = 1;
     }
 

@@ -28,7 +28,7 @@ typedef struct xbt_automaton {
 typedef struct xbt_automaton* xbt_automaton_t;
 
 typedef struct xbt_automaton_exp_label{
-  enum{or=0, and=1, not=2, predicat=3, one=4} type;
+  enum{AUT_OR=0, AUT_AND=1, AUT_NOT=2, AUT_PREDICAT=3, AUT_ONE=4} type;
   union{
     struct{
       struct xbt_automaton_exp_label* left_exp;

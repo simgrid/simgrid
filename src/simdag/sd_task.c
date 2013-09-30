@@ -257,7 +257,7 @@ void SD_task_destroy(SD_task_t task)
   xbt_free(task->name);
 
   if (task->surf_action != NULL)
-    surf_workstation_model->action_unref(task->surf_action);
+	surf_action_unref(task->surf_action);
 
   xbt_free(task->workstation_list);
   xbt_free(task->communication_amount);
@@ -358,13 +358,11 @@ void __SD_task_set_state(SD_task_t task, e_SD_task_state_t new_state)
     break;
   case SD_RUNNING:
     task->state_set = sd_global->running_task_set;
-    task->start_time =
-        surf_workstation_model->action_get_start_time(task->surf_action);
+    task->start_time = surf_action_get_start_time(task->surf_action);
     break;
   case SD_DONE:
     task->state_set = sd_global->done_task_set;
-    task->finish_time =
-        surf_workstation_model->action_get_finish_time(task->surf_action);
+    task->finish_time = surf_action_get_finish_time(task->surf_action);
     task->remains = 0;
 #ifdef HAVE_JEDULE
     jedule_log_sd_event(task);
@@ -499,7 +497,7 @@ double SD_task_get_alpha(SD_task_t task)
 double SD_task_get_remaining_amount(SD_task_t task)
 {
   if (task->surf_action)
-    return surf_workstation_model->get_remains(task->surf_action);
+	return surf_action_get_remains(task->surf_action);
   else
     return task->remains;
 }
@@ -1047,7 +1045,7 @@ void SD_task_unschedule(SD_task_t task)
   }
 
   if (__SD_task_is_running(task))       /* the task should become SD_FAILED */
-    surf_workstation_model->action_cancel(task->surf_action);
+	surf_action_cancel(task->surf_action);
   else {
     if (task->unsatisfied_dependencies == 0)
       __SD_task_set_state(task, SD_SCHEDULABLE);
@@ -1127,15 +1125,14 @@ void __SD_task_really_run(SD_task_t task)
     memcpy(communication_amount, task->communication_amount,
            sizeof(double) * workstation_nb * workstation_nb);
 
-  task->surf_action =
-        surf_workstation_model->extension.
-        workstation.execute_parallel_task(workstation_nb,
-                                          surf_workstations,
-                                          computation_amount,
-                                          communication_amount,
-                                          task->rate);
+  task->surf_action = surf_workstation_model_execute_parallel_task((surf_workstation_model_t)surf_workstation_model,
+		                                                     workstation_nb,
+		                                                     surf_workstations,
+		                                                     computation_amount,
+		                                                     communication_amount,
+		                                                     task->rate);
 
-  surf_workstation_model->action_data_set(task->surf_action, task);
+  surf_action_set_data(task->surf_action, task);
 
   XBT_DEBUG("surf_action = %p", task->surf_action);
 
@@ -1224,7 +1221,7 @@ void __SD_task_just_done(SD_task_t task)
   candidates = xbt_new(SD_task_t, 8);
 
   __SD_task_set_state(task, SD_DONE);
-  surf_workstation_model->action_unref(task->surf_action);
+  surf_action_unref(task->surf_action);
   task->surf_action = NULL;
 
   XBT_DEBUG("Looking for candidates");
@@ -1382,8 +1379,7 @@ static void __SD_task_remove_dependencies(SD_task_t task)
 double SD_task_get_start_time(SD_task_t task)
 {
   if (task->surf_action)
-    return surf_workstation_model->
-        action_get_start_time(task->surf_action);
+    return surf_action_get_start_time(task->surf_action);
   else
     return task->start_time;
 }
@@ -1402,8 +1398,7 @@ double SD_task_get_start_time(SD_task_t task)
 double SD_task_get_finish_time(SD_task_t task)
 {
   if (task->surf_action)        /* should never happen as actions are destroyed right after their completion */
-    return surf_workstation_model->
-        action_get_finish_time(task->surf_action);
+    return surf_action_get_finish_time(task->surf_action);
   else
     return task->finish_time;
 }

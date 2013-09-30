@@ -6,7 +6,9 @@
 
 #include "surf_routing_private.h"
 
+extern "C" {
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route_none, surf, "Routing part of surf");
+}
 
 static xbt_dynar_t none_get_onelink_routes(AS_t rc) {
   return NULL;

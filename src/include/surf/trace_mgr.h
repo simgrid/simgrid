@@ -9,7 +9,7 @@
 
 #include "xbt/heap.h"
 #include "xbt/dynar.h"
-#include "surf/solver.h"
+#include "surf/maxmin.h"
 #include "surf/datatypes.h"
 #include "simgrid/platf_interface.h"
 

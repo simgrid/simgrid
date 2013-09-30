@@ -8,7 +8,6 @@
 #define _SIMIX_PRIVATE_H
 
 #include "simgrid/simix.h"
-#include "surf/solver.h"
 #include "surf/surf.h"
 #include "xbt/fifo.h"
 #include "xbt/swag.h"

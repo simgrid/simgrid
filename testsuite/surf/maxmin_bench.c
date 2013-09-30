@@ -11,7 +11,7 @@
 #endif
 
 
-#include "surf/solver.h"
+#include "surf/maxmin.h"
 #include "xbt/module.h"
 #include "xbt/xbt_os_time.h"
 #include "xbt/sysdep.h"         /* time manipulation for benchmarking */

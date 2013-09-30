@@ -1,17 +1,11 @@
 #include "cpu.hpp"
 
-//TODO: resolve dependencies
-static int TRACE_is_enabled(void) {return 0;}
-static void TRACE_surf_host_set_utilization(const char *resource,
-                                     const char *category,
-                                     double value,
-                                     double now,
-                                     double delta){}
-static double TRACE_last_timestamp_to_dump = 0;
-
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surfpp_cpu, surfpp,
+extern "C" {
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_cpu, surf,
                                 "Logging specific to the SURF cpu module");
+}
 
+CpuModelPtr surf_cpu_model;
 
 /*********
  * Model *

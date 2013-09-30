@@ -6,8 +6,8 @@
 #ifndef _SURF_SURF_PRIVATE_H
 #define _SURF_SURF_PRIVATE_H
 
-#include "surf/solver.h"
 #include "surf/surf.h"
+#include "surf/maxmin.h"
 #include "surf/trace_mgr.h"
 #include "xbt/log.h"
 #include "surf/surfxml_parse.h"
@@ -16,6 +16,10 @@
 #include "surf/surfxml_parse_values.h"
 
 #define NO_MAX_DURATION -1.0
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 extern xbt_dict_t watched_hosts_lib;
 
@@ -46,30 +50,30 @@ typedef struct surf_model_private {
 
 } s_surf_model_private_t;
 
-double generic_maxmin_share_resources(xbt_swag_t running_actions,
+/*FIXME:REMOVEdouble generic_maxmin_share_resources(xbt_swag_t running_actions,
                                       size_t offset,
                                       lmm_system_t sys,
-                                      void (*solve) (lmm_system_t));
+                                      void (*solve) (lmm_system_t));*/
 double generic_share_resources_lazy(double now, surf_model_t model);
 
 /* Generic functions common to all models */
 void surf_action_init(void);
 void surf_action_exit(void);
 e_surf_action_state_t surf_action_state_get(surf_action_t action);      /* cannot declare inline since we use a pointer to it */
-double surf_action_get_start_time(surf_action_t action);        /* cannot declare inline since we use a pointer to it */
+//FIXME:DELETEdouble surf_action_get_start_time(surf_action_t action);        /* cannot declare inline since we use a pointer to it */
 double surf_action_get_finish_time(surf_action_t action);       /* cannot declare inline since we use a pointer to it */
 void surf_action_free(surf_action_t * action);
-void surf_action_state_set(surf_action_t action,
-                           e_surf_action_state_t state);
-void surf_action_data_set(surf_action_t action, void *data);    /* cannot declare inline since we use a pointer to it */
+/*FIXME:void surf_action_state_set(surf_action_t action,
+                           e_surf_action_state_t state);*/
+//FIXME:void surf_action_data_set(surf_action_t action, void *data);    /* cannot declare inline since we use a pointer to it */
 
 void surf_action_lmm_update_index_heap(void *action, int i); /* callback for heap management shared by cpu and net models */
-void surf_action_lmm_heap_insert(xbt_heap_t heap, surf_action_lmm_t action,
-    double key, enum heap_action_type hat);
+/*FIXME:void surf_action_lmm_heap_insert(xbt_heap_t heap, surf_action_lmm_t action,
+    double key, enum heap_action_type hat);*/
 void surf_action_lmm_heap_remove(xbt_heap_t heap,surf_action_lmm_t action);
 
 void surf_action_cancel(surf_action_t action);
-int surf_action_unref(surf_action_t action);
+//FIXME:removeint surf_action_unref(surf_action_t action);
 void surf_action_suspend(surf_action_t action);
 void surf_action_resume(surf_action_t action);
 int surf_action_is_suspended(surf_action_t action);
@@ -195,8 +199,8 @@ XBT_PUBLIC(void) generic_get_graph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict
 /**
  * Resource protected methods
  */
-XBT_PUBLIC(void) surfxml_bufferstack_push(int new);
-XBT_PUBLIC(void) surfxml_bufferstack_pop(int new);
+XBT_PUBLIC(void) surfxml_bufferstack_push(int _new);
+XBT_PUBLIC(void) surfxml_bufferstack_pop(int _new);
 
 XBT_PUBLIC_DATA(int) surfxml_bufferstack_size;
 
@@ -205,5 +209,8 @@ XBT_PUBLIC_DATA(int) surfxml_bufferstack_size;
 void TRACE_surf_host_set_power(double date, const char *resource, double power);
 void TRACE_surf_link_set_bandwidth(double date, const char *resource, double bandwidth);
 
+#ifdef __cplusplus
+}
+#endif
 
 #endif                          /* _SURF_SURF_PRIVATE_H */
