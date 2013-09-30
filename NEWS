@@ -137,7 +137,7 @@ The "Winter in Frejus" release. Also known as "ANR/ADT funding helps"
 Major changes are:
 
  * New feature: Model check any simgrid simulation
- * SMPI: now considered stable
+ * SMPI is now very usable.
  * Visualization:
     - now covers the whole framework
     - major usability improvements
