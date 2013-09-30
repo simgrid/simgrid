@@ -11,7 +11,7 @@ The "to be named" release. Major changes:
  * The storage sub-modules is now believed to be usable.
  * SMPI is now very stable (we pass most MPICH tests).
  * Model-Checking : 
-    - Verifcation of liveness properties is now available for SMPI applications 
+    - Verification of liveness properties is now available for SMPI applications 
     - New reduction of the state space based on the storage of visited states.
  Plus the usual load of bug fixes and small improvements
  
