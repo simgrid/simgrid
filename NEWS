@@ -6,9 +6,11 @@ __   _____ _ __ ___(_) ___  _ __   |___ / / |/ _ \
 
 The "to be named" release. Major changes:
 
- * Java is back in the main package (and is stable).
- * The storage sub-modules is believed to be usable.
- * SMPI is now rock stable (we pass all MPICH tests)
+ * Preliminary DVFS support to track the energy consumption
+ * Java is back in the main package (and is very stable).
+ * The storage sub-modules is now believed to be usable.
+ * SMPI is now very stable (we pass most MPICH tests).
+ Plus the usual load of bug fixes and small improvements
  
                     _               _____ ___
 __   _____ _ __ ___(_) ___  _ __   |___ // _ \
