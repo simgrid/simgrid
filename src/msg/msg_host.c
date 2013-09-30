@@ -352,33 +352,23 @@ xbt_dict_t MSG_host_get_storage_list(msg_host_t host)
 /** \ingroup msg_host_management
  * \brief Return the content of mounted storages on an host.
  * \param host a host
- * \return a dynar containing content (as a dict) of all storages mounted on the host
+ * \return a dict containing content (as a dict) of all storages mounted on the host
  */
 xbt_dict_t MSG_host_get_storage_content(msg_host_t host)
 {
   xbt_assert((host != NULL), "Invalid parameters");
   xbt_dict_t contents = xbt_dict_new();
-
   msg_storage_t storage;
   char* storage_name;
   char* mount_name;
   xbt_dict_cursor_t cursor = NULL;
-  xbt_dict_cursor_t cursor2 = NULL;
-  char* file;
-  size_t size;
 
   xbt_dict_t storage_list = simcall_host_get_storage_list(host);
 
   xbt_dict_foreach(storage_list,cursor,mount_name,storage_name){
 	storage = (msg_storage_t)xbt_lib_get_elm_or_null(storage_lib,storage_name);
-
-	XBT_INFO("mount name => %s", mount_name);
 	xbt_dict_t content = simcall_storage_get_content(storage);
-    xbt_dict_foreach(content,cursor2,file,size){
-      XBT_INFO("\t\t%s size: %zu bytes", file, size);
-    }
-
-	xbt_dict_set(contents,mount_name,(void *)content,NULL);
+	xbt_dict_set(contents,mount_name, content,NULL);
   }
   return contents;
 }
