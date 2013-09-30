@@ -41,13 +41,13 @@ SimGrid (3.10) NOT RELEASED; urgency=low
    (no privatization of global variables yet)
 
  Model-Checking;
- * Verification of liveness properties is now available
-    for SMPI applications (in addition to MSG applications)
+ * Verification of liveness properties is now available for SMPI applications
+   (in addition to MSG applications)
  * Bugged examples using SMPI in examples/smpi/mc/
- * Add --cfg=model-check/visited option. Allows the verification of
-    infinite programs. Detection of loops in the execution thanks to the system
-    state comparison and reduction of the state space to explore. Can
-    be combined with DPOR for safety properties. 	
+ * Add --cfg=model-check/visited option. Allows the verification of infinite
+   programs. Detection of loops in the execution thanks to the system state
+   comparison and reduction of the state space to explore. Can be combined with
+   DPOR for safety properties.
 
  SimDag:
  * Allow to change SimGrid configuration (see --help) within the code
