@@ -4,7 +4,12 @@ __   _____ _ __ ___(_) ___  _ __   |___ / / |/ _ \
  \ V /  __/ |  \__ \ | (_) | | | |  ___) || | |_| |
   \_/ \___|_|  |___/_|\___/|_| |_| |____(_)_|\___/
 
-(to complete)
+The "to be named" release. Major changes:
+
+ * Java is back in the main package (and is stable).
+ * The storage sub-modules is believed to be usable.
+ * SMPI is now rock stable (we pass all MPICH tests)
+ 
                     _               _____ ___
 __   _____ _ __ ___(_) ___  _ __   |___ // _ \
 \ \ / / _ \ '__/ __| |/ _ \| '_ \    |_ \ (_) |
