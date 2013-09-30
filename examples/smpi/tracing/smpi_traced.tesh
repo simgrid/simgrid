@@ -3,7 +3,7 @@
 # Go for the first test
 
 p Test instrumentation of SMPI
-$ ../../bin/smpirun -trace -trace-resource -trace-file smpi_traced.trace -hostfile ${srcdir:=.}/hostfile -platform ${srcdir:=.}/../msg/tracing/platform.xml -np 3 ./smpi_traced
+$ ../../smpi_script/bin/smpirun -trace -trace-resource -trace-file smpi_traced.trace -hostfile ${srcdir:=.}/hostfile -platform ${srcdir:=.}/../msg/tracing/platform.xml -np 3 ./smpi_traced
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing' to '1'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/filename' to 'smpi_traced.trace'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/smpi' to '1'
@@ -15,7 +15,7 @@ $ ../../bin/smpirun -trace -trace-resource -trace-file smpi_traced.trace -hostfi
 > [0.000000] [surf_config/INFO] Switching workstation model to compound since you changed the network and/or cpu model(s)
 
 p Another SMPI test
-$ ../../bin/smpirun -trace -trace-resource -trace-file smpi_traced.trace -hostfile ${srcdir:=.}/hostfile -platform ${srcdir:=.}/../msg/tracing/platform.xml -np 3 ./smpi_traced_simple
+$ ../../smpi_script/bin/smpirun -trace -trace-resource -trace-file smpi_traced.trace -hostfile ${srcdir:=.}/hostfile -platform ${srcdir:=.}/../msg/tracing/platform.xml -np 3 ./smpi_traced_simple
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing' to '1'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/filename' to 'smpi_traced.trace'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/smpi' to '1'
@@ -27,14 +27,14 @@ $ ../../bin/smpirun -trace -trace-resource -trace-file smpi_traced.trace -hostfi
 > [0.000000] [surf_config/INFO] Switching workstation model to compound since you changed the network and/or cpu model(s)
 
 p Testing without trace parameters
-$ ../../bin/smpirun -hostfile ${srcdir:=.}/hostfile -platform ${srcdir:=.}/../msg/tracing/platform.xml -np 3 ./smpi_traced_simple
+$ ../../smpi_script/bin/smpirun -hostfile ${srcdir:=.}/hostfile -platform ${srcdir:=.}/../msg/tracing/platform.xml -np 3 ./smpi_traced_simple
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'maxmin/precision' to '1e-9'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'SMPI'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/TCP_gamma' to '4194304'
 > [0.000000] [surf_config/INFO] Switching workstation model to compound since you changed the network and/or cpu model(s)
 
 p Testing grouped tracing
-$ ../../bin/smpirun -trace -trace-grouped -trace-file smpi_traced.trace -hostfile ${srcdir:=.}/hostfile -platform ${srcdir:=.}/../msg/tracing/platform.xml -np 3 ./smpi_traced_simple
+$ ../../smpi_script/bin/smpirun -trace -trace-grouped -trace-file smpi_traced.trace -hostfile ${srcdir:=.}/hostfile -platform ${srcdir:=.}/../msg/tracing/platform.xml -np 3 ./smpi_traced_simple
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing' to '1'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/filename' to 'smpi_traced.trace'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/smpi' to '1'
@@ -45,7 +45,7 @@ $ ../../bin/smpirun -trace -trace-grouped -trace-file smpi_traced.trace -hostfil
 > [0.000000] [surf_config/INFO] Switching workstation model to compound since you changed the network and/or cpu model(s)
 
 p Testing generation of viva configuration files
-$ ../../bin/smpirun -trace -trace-resource -trace-viva -trace-file smpi_traced.trace -hostfile ${srcdir:=.}/hostfile -platform ${srcdir:=.}/../msg/tracing/platform.xml --cfg=smpi/cpu_threshold:1 -np 3 ./smpi_traced_simple
+$ ../../smpi_script/bin/smpirun -trace -trace-resource -trace-viva -trace-file smpi_traced.trace -hostfile ${srcdir:=.}/hostfile -platform ${srcdir:=.}/../msg/tracing/platform.xml --cfg=smpi/cpu_threshold:1 -np 3 ./smpi_traced_simple
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing' to '1'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/filename' to 'smpi_traced.trace'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/smpi' to '1'
@@ -61,7 +61,7 @@ $ ../../bin/smpirun -trace -trace-resource -trace-viva -trace-file smpi_traced.t
 > [0.013981] [instr_config/INFO] No categories declared, ignoring generation of viva graph configuration
 
 p Testing with parameters but without activating them with the safe switch (-trace)
-$ ../../bin/smpirun -trace-resource -trace-viva -trace-file smpi_traced.trace -hostfile ${srcdir:=.}/hostfile -platform ${srcdir:=.}/../msg/tracing/platform.xml -np 3 ./smpi_traced_simple
+$ ../../smpi_script/bin/smpirun -trace-resource -trace-viva -trace-file smpi_traced.trace -hostfile ${srcdir:=.}/hostfile -platform ${srcdir:=.}/../msg/tracing/platform.xml -np 3 ./smpi_traced_simple
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'maxmin/precision' to '1e-9'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'SMPI'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/TCP_gamma' to '4194304'
