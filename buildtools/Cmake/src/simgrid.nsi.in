@@ -174,11 +174,11 @@ Section "Java Bindings" JavaSection
 	# install java library and examples
 	CreateDirectory $INSTDIR\examples\simgrid-java
 	setOutPath $INSTDIR\lib
-	file /nonfatal "$%SIMGRID_JAVA_SRC%\build\SG_java.dll"
-	file /nonfatal "$%SIMGRID_JAVA_SRC%\build\SG_java.def"
-	file /nonfatal "$%SIMGRID_JAVA_SRC%\simgrid.jar"
+	file /nonfatal "lib\SG_java.dll"
+	file /nonfatal "lib\SG_java.def"
+	file /nonfatal "simgrid.jar"
 	setOutPath $INSTDIR\examples\simgrid-java
-	file /nonfatal /r "$%SIMGRID_JAVA_SRC%\examples\"
+	file /nonfatal /r ".\examples\"
 	# create shortcuts in the start menu programs directory
 	createShortCut  "$SMPROGRAMS\SimGrid @SIMGRID_VERSION_MAJOR@.@SIMGRID_VERSION_MINOR@.@SIMGRID_VERSION_PATCH@\Examples\Java project.lnk"	"$INSTDIR\examples\simgrid-java"
 	# create a popup box, with an OK button"
@@ -194,8 +194,6 @@ Section "SMPI Library" SMPISection
 	file bin\smpif90
 	
     setOutPath $INSTDIR\lib
-	file lib\libsmpi.dll
-	file lib\libsmpi.def
 	
 	CreateDirectory  $INSTDIR\include\smpi
 	setOutPath $INSTDIR\include\smpi
@@ -212,8 +210,7 @@ Section "SMPI Library" SMPISection
 	setOutPath $INSTDIR\examples\smpi
 	file @CMAKE_HOME_DIRECTORY@\examples\smpi\bcbench.c
 	file @CMAKE_HOME_DIRECTORY@\examples\smpi\mvmul.c
-	file @CMAKE_HOME_DIRECTORY@\examples\smpi\mc_bugged1.c
-	file @CMAKE_HOME_DIRECTORY@\examples\smpi\mc_bugged2.c
+	file /r @CMAKE_HOME_DIRECTORY@\examples\smpi\mc
 	file @CMAKE_HOME_DIRECTORY@\examples\smpi\hostfile
 	file @CMAKE_HOME_DIRECTORY@\examples\msg\small_platform_with_routers.xml
 	file @CMAKE_HOME_DIRECTORY@\examples\smpi\CMakeLists.txt
