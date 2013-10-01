@@ -110,7 +110,7 @@ msg_file_t MSG_file_open(const char* mount, const char* fullname, void* data)
   msg_file_t file = xbt_new(s_msg_file_t,1);
   file->fullname = xbt_strdup(fullname);
   file->simdata = xbt_new0(s_simdata_file_t,1);
-  file->info = xbt_new0(s_file_info_t,1);
+  file->info = xbt_new0(s_msg_file_info_t,1);
   file->simdata->smx_file = simcall_file_open(mount, fullname);
   SIMIX_file_set_data(file->simdata->smx_file, data);
   return file;

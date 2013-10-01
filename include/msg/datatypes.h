@@ -103,13 +103,13 @@ typedef struct msg_vm {
 /* ******************************** File ************************************ */
 typedef struct simdata_file *simdata_file_t;
 
-typedef struct s_file_info {
+typedef struct s_msg_file_info {
   sg_storage_size_t size;
   char* mount_point;
   char* storageId;
   char* storage_type;
   char* content_type;
-} s_file_info_t, *msg_file_info_t;
+} s_msg_file_info_t, *msg_file_info_t;
 
 typedef struct msg_file {
   char *fullname;               /**< @brief file full name (path+name)*/
