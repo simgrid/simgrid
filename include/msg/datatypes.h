@@ -104,7 +104,7 @@ typedef struct msg_vm {
 typedef struct simdata_file *simdata_file_t;
 
 typedef struct s_file_info {
-  size_t size;
+  sg_storage_size_t size;
   char* mount_point;
   char* storageId;
   char* storage_type;

@@ -13,7 +13,7 @@ typedef struct s_storage_type {
   char *content_type;
   char *type_id;
   xbt_dict_t properties;
-  size_t size;
+  sg_storage_size_t size;
 } s_storage_type_t, *storage_type_t;
 
 typedef struct s_mount {
@@ -24,7 +24,7 @@ typedef struct s_mount {
 typedef struct surf_file {
   char *name;
   char *mount;
-  size_t size;
+  sg_storage_size_t size;
 } s_surf_file_t;
 
 typedef struct surf_storage {
@@ -35,8 +35,8 @@ typedef struct surf_storage {
   lmm_constraint_t constraint_read;     /* Constraint for maximum write bandwidth*/
   xbt_dict_t content;
   char* content_type;
-  size_t size;
-  size_t used_size;
+  sg_storage_size_t size;
+  sg_storage_size_t used_size;
   char *type_id;
   xbt_dynar_t write_actions;
   xbt_dict_t properties;

@@ -24,7 +24,7 @@ void __MSG_file_get_info(msg_file_t fd){
   fd->info->storage_type = xbt_dynar_pop_as(info, char *);
   fd->info->storageId = xbt_dynar_pop_as(info, char *);
   fd->info->mount_point = xbt_dynar_pop_as(info, char *);
-  fd->info->size = xbt_dynar_pop_as(info, size_t);
+  fd->info->size = xbt_dynar_pop_as(info, sg_storage_size_t);
 
   xbt_dynar_free_container(&info);
 }
@@ -79,7 +79,7 @@ void MSG_file_dump (msg_file_t fd){
  * \param fd is a the file descriptor
  * \return the number of bytes successfully read
  */
-size_t MSG_file_read(size_t size, msg_file_t fd)
+sg_storage_size_t MSG_file_read(sg_storage_size_t size, msg_file_t fd)
 {
   return simcall_file_read(size, fd->simdata->smx_file);
 }
@@ -91,7 +91,7 @@ size_t MSG_file_read(size_t size, msg_file_t fd)
  * \param fd is a the file descriptor
  * \return the number of bytes successfully write
  */
-size_t MSG_file_write(size_t size, msg_file_t fd)
+sg_storage_size_t MSG_file_write(sg_storage_size_t size, msg_file_t fd)
 {
   return simcall_file_write(size, fd->simdata->smx_file);
 }
@@ -147,10 +147,9 @@ int MSG_file_unlink(msg_file_t fd)
  * \brief Return the size of a file
  *
  * \param fd is the file descriptor (#msg_file_t)
- * \return the size of the file (as a size_t)
+ * \return the size of the file (as a sg_storage_size_t)
  */
-
-size_t MSG_file_get_size(msg_file_t fd){
+sg_storage_size_t MSG_file_get_size(msg_file_t fd){
   return simcall_file_get_size(fd->simdata->smx_file);
 }
 
@@ -218,18 +217,18 @@ const char *MSG_storage_get_name(msg_storage_t storage) {
 /** \ingroup msg_storage_management
  * \brief Returns the free space size of a storage element
  * \param name the name of a storage
- * \return the free space size of the storage element (as a size_t)
+ * \return the free space size of the storage element (as a sg_storage_size_t)
  */
-size_t MSG_storage_get_free_size(const char* name){
+sg_storage_size_t MSG_storage_get_free_size(const char* name){
   return simcall_storage_get_free_size(name);
 }
 
 /** \ingroup msg_storage_management
  * \brief Returns the used space size of a storage element
  * \param name the name of a storage
- * \return the used space size of the storage element (as a size_t)
+ * \return the used space size of the storage element (as a sg_storage_size_t)
  */
-size_t MSG_storage_get_used_size(const char* name){
+sg_storage_size_t MSG_storage_get_used_size(const char* name){
   return simcall_storage_get_used_size(name);
 }
 

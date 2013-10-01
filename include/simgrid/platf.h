@@ -80,6 +80,9 @@ typedef xbt_dictelm_t sg_storage_t;
 static inline char* sg_storage_name(sg_storage_t storage) {
   return storage->key;
 }
+/* Type for any integer storage size  */
+typedef uint64_t sg_storage_size_t;
+
 
 /*
  * Platform creation functions. Instead of passing 123 arguments to the creation functions
@@ -236,7 +239,7 @@ typedef struct {
   const char* content;
   const char* content_type;
   xbt_dict_t properties;
-  size_t size;
+  sg_storage_size_t size;
 } s_sg_platf_storage_type_cbarg_t, *sg_platf_storage_type_cbarg_t;
 
 #define SG_PLATF_STORAGE_TYPE_INITIALIZER {NULL,NULL,NULL,NULL,NULL}

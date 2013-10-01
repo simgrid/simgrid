@@ -1203,7 +1203,7 @@ void simcall_file_set_data(smx_file_t fd, void *data)
  * \ingroup simix_file_management
  *
  */
-size_t simcall_file_read(size_t size, smx_file_t fd)
+sg_storage_size_t simcall_file_read(sg_storage_size_t size, smx_file_t fd)
 {
   return simcall_BODY_file_read(size, fd);
 }
@@ -1212,7 +1212,7 @@ size_t simcall_file_read(size_t size, smx_file_t fd)
  * \ingroup simix_file_management
  *
  */
-size_t simcall_file_write(size_t size, smx_file_t fd)
+sg_storage_size_t simcall_file_write(sg_storage_size_t size, smx_file_t fd)
 {
   return simcall_BODY_file_write(size, fd);
 }
@@ -1256,7 +1256,7 @@ xbt_dict_t simcall_file_ls(const char* mount, const char* path)
  * \ingroup simix_file_management
  *
  */
-size_t simcall_file_get_size (smx_file_t fd){
+sg_storage_size_t simcall_file_get_size (smx_file_t fd){
   return simcall_BODY_file_get_size(fd);
 }
 
@@ -1273,9 +1273,9 @@ xbt_dynar_t simcall_file_get_info(smx_file_t fd)
  * \ingroup simix_storage_management
  * \brief Returns the free space size on a given storage element.
  * \param storage name
- * \return Return the free space size on a given storage element (as size_t)
+ * \return Return the free space size on a given storage element (as sg_storage_size_t)
  */
-size_t simcall_storage_get_free_size (const char* name){
+sg_storage_size_t simcall_storage_get_free_size (const char* name){
   return simcall_BODY_storage_get_free_size(name);
 }
 
@@ -1283,9 +1283,9 @@ size_t simcall_storage_get_free_size (const char* name){
  * \ingroup simix_storage_management
  * \brief Returns the used space size on a given storage element.
  * \param storage name
- * \return Return the used space size on a given storage element (as size_t)
+ * \return Return the used space size on a given storage element (as sg_storage_size_t)
  */
-size_t simcall_storage_get_used_size (const char* name){
+sg_storage_size_t simcall_storage_get_used_size (const char* name){
   return simcall_BODY_storage_get_used_size(name);
 }
 

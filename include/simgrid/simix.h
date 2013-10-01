@@ -13,6 +13,7 @@
 #include "xbt/function_types.h"
 #include "xbt/parmap.h"
 #include "xbt/swag.h"
+#include "simgrid/platf.h"
 
 SG_BEGIN_DECL()
 
@@ -480,18 +481,18 @@ XBT_PUBLIC(int) simcall_sem_get_capacity(smx_sem_t sem);
 /*****************************   File   **********************************/
 XBT_PUBLIC(void *) simcall_file_get_data(smx_file_t fd);
 XBT_PUBLIC(void) simcall_file_set_data(smx_file_t fd, void *data);
-XBT_PUBLIC(size_t) simcall_file_read(size_t size, smx_file_t fd);
-XBT_PUBLIC(size_t) simcall_file_write(size_t size, smx_file_t fd);
+XBT_PUBLIC(sg_storage_size_t) simcall_file_read(sg_storage_size_t size, smx_file_t fd);
+XBT_PUBLIC(sg_storage_size_t) simcall_file_write(sg_storage_size_t size, smx_file_t fd);
 XBT_PUBLIC(smx_file_t) simcall_file_open(const char* storage, const char* path);
 XBT_PUBLIC(int) simcall_file_close(smx_file_t fd);
 XBT_PUBLIC(int) simcall_file_unlink(smx_file_t fd);
 XBT_PUBLIC(xbt_dict_t) simcall_file_ls(const char* mount, const char* path);
-XBT_PUBLIC(size_t) simcall_file_get_size(smx_file_t fd);
+XBT_PUBLIC(sg_storage_size_t) simcall_file_get_size(smx_file_t fd);
 XBT_PUBLIC(xbt_dynar_t) simcall_file_get_info(smx_file_t fd);
 
 /*****************************   Storage   **********************************/
-XBT_PUBLIC(size_t) simcall_storage_get_free_size (const char* name);
-XBT_PUBLIC(size_t) simcall_storage_get_used_size (const char* name);
+XBT_PUBLIC(sg_storage_size_t) simcall_storage_get_free_size (const char* name);
+XBT_PUBLIC(sg_storage_size_t) simcall_storage_get_used_size (const char* name);
 XBT_PUBLIC(xbt_dict_t) simcall_storage_get_properties(smx_storage_t storage);
 XBT_PUBLIC(void*) SIMIX_storage_get_data(smx_storage_t storage);
 XBT_PUBLIC(void) SIMIX_storage_set_data(smx_storage_t storage, void *data);

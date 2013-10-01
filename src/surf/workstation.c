@@ -400,7 +400,7 @@ static surf_action_t ws_action_close(void *workstation, surf_file_t fd)
   return model->extension.storage.close(st, fd);
 }
 
-static surf_action_t ws_action_read(void *workstation, size_t size,
+static surf_action_t ws_action_read(void *workstation, sg_storage_size_t size,
                                     surf_file_t fd)
 {
   storage_t st = find_storage_on_mount_list(workstation, fd->mount);
@@ -409,7 +409,7 @@ static surf_action_t ws_action_read(void *workstation, size_t size,
   return model->extension.storage.read(st, size, fd);
 }
 
-static surf_action_t ws_action_write(void *workstation, size_t size, 
+static surf_action_t ws_action_write(void *workstation, sg_storage_size_t size,
                                      surf_file_t fd)
 {
   storage_t st = find_storage_on_mount_list(workstation, fd->mount);
@@ -456,7 +456,7 @@ static surf_action_t ws_action_ls(void *workstation, const char* mount,
   return model->extension.storage.ls(st, path);
 }
 
-static size_t ws_file_get_size(void *workstation, surf_file_t fd)
+static sg_storage_size_t ws_file_get_size(void *workstation, surf_file_t fd)
 {
   return fd->size;
 }
@@ -474,13 +474,13 @@ static xbt_dynar_t ws_file_get_info(void *workstation, surf_file_t fd)
   return info;
 }
 
-static size_t ws_storage_get_free_size(void *workstation,const char* name)
+static sg_storage_size_t ws_storage_get_free_size(void *workstation,const char* name)
 {
   storage_t st = find_storage_on_mount_list(workstation, name);
   return st->size - st->used_size;
 }
 
-static size_t ws_storage_get_used_size(void *workstation,const char* name)
+static sg_storage_size_t ws_storage_get_used_size(void *workstation,const char* name)
 {
   storage_t st = find_storage_on_mount_list(workstation, name);
   return st->used_size;
