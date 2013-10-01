@@ -27,10 +27,13 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_config, surf,
 
 xbt_cfg_t _sg_cfg_set = NULL;
 
-int _sg_init_status = 0;      /* 0: beginning of time (config cannot be changed yet);
-                                  1: initialized: cfg_set created (config can now be changed);
-                                  2: configured: command line parsed and config part of platform file was integrated also, platform construction ongoing or done.
-                                     (Config cannot be changed anymore!) */
+/* 0: beginning of time (config cannot be changed yet);
+ * 1: initialized: cfg_set created (config can now be changed);
+ * 2: configured: command line parsed and config part of platform file was
+ *    integrated also, platform construction ongoing or done.
+ *    (Config cannot be changed anymore!)
+ */
+int _sg_cfg_init_status = 0;
 
 /* Parse the command line, looking for options */
 static void sg_config_cmd_line(int *argc, char **argv)
@@ -94,7 +97,7 @@ static void sg_config_cmd_line(int *argc, char **argv)
     *argc = j;
   }
   if (shall_exit) {
-    _sg_init_status = 1;        // get everything cleanly cleaned on exit
+    _sg_cfg_init_status = 1;        // get everything cleanly cleaned on exit
     exit(0);
   }
 }
@@ -104,7 +107,7 @@ static void _sg_cfg_cb__workstation_model(const char *name, int pos)
 {
   char *val;
 
-  xbt_assert(_sg_init_status < 2,
+  xbt_assert(_sg_cfg_init_status < 2,
               "Cannot change the model after the initialization");
 
   val = xbt_cfg_get_string(_sg_cfg_set, name);
@@ -123,7 +126,7 @@ static void _sg_cfg_cb__cpu_model(const char *name, int pos)
 {
   char *val;
 
-  xbt_assert(_sg_init_status < 2,
+  xbt_assert(_sg_cfg_init_status < 2,
               "Cannot change the model after the initialization");
 
   val = xbt_cfg_get_string(_sg_cfg_set, name);
@@ -142,7 +145,7 @@ static void _sg_cfg_cb__optimization_mode(const char *name, int pos)
 {
   char *val;
 
-  xbt_assert(_sg_init_status < 2,
+  xbt_assert(_sg_cfg_init_status < 2,
               "Cannot change the model after the initialization");
 
   val = xbt_cfg_get_string(_sg_cfg_set, name);
@@ -161,7 +164,7 @@ static void _sg_cfg_cb__storage_mode(const char *name, int pos)
 {
   char *val;
 
-  xbt_assert(_sg_init_status < 2,
+  xbt_assert(_sg_cfg_init_status < 2,
               "Cannot change the model after the initialization");
 
   val = xbt_cfg_get_string(_sg_cfg_set, name);
@@ -180,7 +183,7 @@ static void _sg_cfg_cb__network_model(const char *name, int pos)
 {
   char *val;
 
-  xbt_assert(_sg_init_status < 2,
+  xbt_assert(_sg_cfg_init_status < 2,
               "Cannot change the model after the initialization");
 
   val = xbt_cfg_get_string(_sg_cfg_set, name);
@@ -233,7 +236,7 @@ static void _sg_cfg_cb__coll(const char *category,
 {
   char *val;
 
-  xbt_assert(_sg_init_status < 2,
+  xbt_assert(_sg_cfg_init_status < 2,
               "Cannot change the model after the initialization");
 
   val = xbt_cfg_get_string(_sg_cfg_set, name);
@@ -402,7 +405,7 @@ void sg_config_init(int *argc, char **argv)
   int i;
 
   /* Create the configuration support */
-  if (_sg_init_status == 0) { /* Only create stuff if not already inited */
+  if (_sg_cfg_init_status == 0) { /* Only create stuff if not already inited */
     sprintf(description,
             "The model to use for the CPU. Possible values: ");
     p = description;
@@ -554,7 +557,7 @@ void sg_config_init(int *argc, char **argv)
                      "If value=on, one checkpoint is saved for each step => faster verification, but huge memory consumption; higher values are good compromises between speed and memory consumption.",
                      xbt_cfgelm_int, 0, 1, _mc_cfg_cb_checkpoint, NULL);
     xbt_cfg_setdefault_int(_sg_cfg_set, "model-check/checkpoint", 0);
-    
+
     /* do liveness model-checking */
     xbt_cfg_register(&_sg_cfg_set, "model-check/property",
                      "Specify the name of the file containing the property. It must be the result of the ltl2ba program.",
@@ -800,7 +803,7 @@ void sg_config_init(int *argc, char **argv)
       xbt_cfg_setdefault_string(_sg_cfg_set, "path", initial_path);
     }
 
-    _sg_init_status = 1;
+    _sg_cfg_init_status = 1;
 
     sg_config_cmd_line(argc, argv);
 
@@ -815,11 +818,11 @@ void sg_config_init(int *argc, char **argv)
 
 void sg_config_finalize(void)
 {
-  if (!_sg_init_status)
+  if (!_sg_cfg_init_status)
     return;                     /* Not initialized yet. Nothing to do */
 
   xbt_cfg_free(&_sg_cfg_set);
-  _sg_init_status = 0;
+  _sg_cfg_init_status = 0;
 }
 
 /* Pick the right models for CPU, net and workstation, and call their model_init_preparse */
