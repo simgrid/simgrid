@@ -165,27 +165,26 @@
  *     DLL space.
  */
 
-
 /* Build the DLL */
 #if defined(DLL_EXPORT)
-#  define XBT_PUBLIC(type)            __declspec(dllexport) type
+#  define XBT_PUBLIC(type)            extern __declspec(dllexport) type
 #  define XBT_EXPORT_NO_IMPORT(type)  __declspec(dllexport) type
 #  define XBT_IMPORT_NO_EXPORT(type)  type
-#  define XBT_PUBLIC_DATA(type)        __declspec(dllexport) type
+#  define XBT_PUBLIC_DATA(type)       extern __declspec(dllexport) type
 
 /* Pack everything up statically */
 #elif defined(DLL_STATIC)
-#  define XBT_PUBLIC(type)           extern type
+#  define XBT_PUBLIC(type)            extern type
 #  define XBT_EXPORT_NO_IMPORT(type)  type
 #  define XBT_IMPORT_NO_EXPORT(type)  type
 #  define XBT_PUBLIC_DATA(type)       extern type
 
 /* Link against the DLL */
 #elif (defined(_XBT_WIN32) && !defined(DLL_EXPORT) && !defined(DLL_STATIC))
-#  define XBT_PUBLIC(type)              __declspec(dllimport) type
-#  define XBT_EXPORT_NO_IMPORT(type)    type
-#  define XBT_IMPORT_NO_EXPORT(type)    __declspec(dllimport) type
-#  define XBT_PUBLIC_DATA(type)    __declspec(dllimport) type
+#  define XBT_PUBLIC(type)            extern __declspec(dllimport) type
+#  define XBT_EXPORT_NO_IMPORT(type)  type
+#  define XBT_IMPORT_NO_EXPORT(type)  __declspec(dllimport) type
+#  define XBT_PUBLIC_DATA(type)       extern __declspec(dllimport) type
 
 /* UNIX build */
 #else

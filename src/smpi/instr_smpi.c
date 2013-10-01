@@ -271,8 +271,7 @@ void TRACE_smpi_send(int rank, int src, int dst, int size)
 {
   if (!TRACE_smpi_is_enabled()) return;
 
-  char key[INSTR_DEFAULT_STR_SIZE];
-  bzero (key, INSTR_DEFAULT_STR_SIZE);
+  char key[INSTR_DEFAULT_STR_SIZE] = {0};
   TRACE_smpi_put_key(src, dst, key, INSTR_DEFAULT_STR_SIZE);
 
   char str[INSTR_DEFAULT_STR_SIZE];
@@ -287,8 +286,7 @@ void TRACE_smpi_recv(int rank, int src, int dst)
 {
   if (!TRACE_smpi_is_enabled()) return;
 
-  char key[INSTR_DEFAULT_STR_SIZE];
-  bzero (key, INSTR_DEFAULT_STR_SIZE);
+  char key[INSTR_DEFAULT_STR_SIZE] = {0};
   TRACE_smpi_get_key(src, dst, key, INSTR_DEFAULT_STR_SIZE);
 
   char str[INSTR_DEFAULT_STR_SIZE];

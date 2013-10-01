@@ -3,7 +3,7 @@
 ! output sort
 
 p Test allreduce
-$ ../../bin/smpirun -map -hostfile ${srcdir:=.}/hostfile -platform ${srcdir:=.}/../../examples/msg/small_platform.xml -np 16 --log=xbt_cfg.thres:critical ./reduce_coll
+$ ../../smpi_script/bin/smpirun -map -hostfile ${srcdir:=.}/hostfile -platform ${srcdir:=.}/../../examples/msg/small_platform.xml -np 16 --log=xbt_cfg.thres:critical ./reduce_coll
 > You requested to use 16 processes, but there is only 5 processes in your hostfile...
 > [0.000000] [surf_config/INFO] Switching workstation model to compound since you changed the network and/or cpu model(s)
 > [0] rcvbuf=[1920 1936 1952 1968 1984 2000 2016 2032 2048 2064 2080 2096 2112 2128 2144 2160 ]

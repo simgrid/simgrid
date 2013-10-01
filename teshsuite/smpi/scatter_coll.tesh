@@ -3,7 +3,7 @@
 ! output sort
 
 p Test scatter
-$ ../../bin/smpirun -map -hostfile ${srcdir:=.}/hostfile -platform ${srcdir:=.}/../../examples/msg/small_platform.xml -np 16 --log=xbt_cfg.thres:critical ./scatter 
+$ ../../smpi_script/bin/smpirun -map -hostfile ${srcdir:=.}/hostfile -platform ${srcdir:=.}/../../examples/msg/small_platform.xml -np 16 --log=xbt_cfg.thres:critical ./scatter 
 > 	[0] ok.
 > 	[0] ok.
 > 	[10] ok.

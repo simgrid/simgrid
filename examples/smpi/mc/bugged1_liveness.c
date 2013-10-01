@@ -71,6 +71,7 @@ int main(int argc, char **argv){
             CS_used = 1;
           }else{
             xbt_dynar_push(requests, &recv_buff);
+            CS_used = 0;
           }
         }else{
           printf("CS release. Resource now idle.\n");

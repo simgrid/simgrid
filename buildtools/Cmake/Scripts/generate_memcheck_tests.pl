@@ -47,7 +47,7 @@ while ( defined( $line = <MAKETEST> ) ) {
     }
     if ($dump) {
         $line =~ s/^  //;
-        if ( $line =~ /^\s*ADD_TEST\(\S+\s+\S*\/tesh\s/ ) {
+        if ( $line =~ /^\s*ADD_TEST\(\S+\s+\S*TESH\_COMMAND\}\s/ ) {
             undef %environ;
             $config_var = "";
             $path       = "";

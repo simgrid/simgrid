@@ -181,7 +181,7 @@ static int compare_areas_with_type(void *area1, void *area2, xbt_dict_t types, x
         res = compare_areas_with_type((char *)area1 + (i*elm_size), (char *)area2 + (i*elm_size), other_types, types, type->dw_type_id, region_size, region_type, start_data, pointer_level);
       else
         res = compare_areas_with_type((char *)area1 + (i*elm_size), (char *)area2 + (i*elm_size), types, other_types, type->dw_type_id, region_size, region_type, start_data, pointer_level);
-      if(res != 0)
+      if(res == 1)
         return res;
     }
     break;
@@ -208,9 +208,9 @@ static int compare_areas_with_type(void *area1, void *area2, xbt_dict_t types, x
         if(type->dw_type_id == NULL)
           return  (addr_pointed1 != addr_pointed2);
         else
-          return compare_areas_with_type(addr_pointed1, addr_pointed2, types, other_types, type->dw_type_id, region_size, region_type, start_data, pointer_level); 
+          return  compare_areas_with_type(addr_pointed1, addr_pointed2, types, other_types, type->dw_type_id, region_size, region_type, start_data, pointer_level); 
       }else{
-        return  (addr_pointed1 != addr_pointed2);
+        return (addr_pointed1 != addr_pointed2);
       }
     }
     break;

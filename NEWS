@@ -4,7 +4,16 @@ __   _____ _ __ ___(_) ___  _ __   |___ / / |/ _ \
  \ V /  __/ |  \__ \ | (_) | | | |  ___) || | |_| |
   \_/ \___|_|  |___/_|\___/|_| |_| |____(_)_|\___/
 
-(to complete)
+The "to be named" release. Major changes:
+
+ * Preliminary DVFS support to track the energy consumption
+ * Java is back in the main package (and is very stable).
+ * The storage sub-modules is now believed to be usable.
+ * SMPI is now very stable (we pass most MPICH tests).
+ * Verification and model checking further improved: 
+   liveness+SMPI works; reduction through state equality detection
+ Plus the usual load of bug fixes and small improvements
+ 
                     _               _____ ___
 __   _____ _ __ ___(_) ___  _ __   |___ // _ \
 \ \ / / _ \ '__/ __| |/ _ \| '_ \    |_ \ (_) |
@@ -130,7 +139,7 @@ The "Winter in Frejus" release. Also known as "ANR/ADT funding helps"
 Major changes are:
 
  * New feature: Model check any simgrid simulation
- * SMPI: now considered stable
+ * SMPI is now very usable.
  * Visualization:
     - now covers the whole framework
     - major usability improvements

@@ -1,16 +1,5 @@
 SimGrid (3.10) NOT RELEASED; urgency=low
 
- XBT:
- * Our own implementation of getline is renamed xbt_getline, and gets
-   used even if the OS provide a getline(). This should reduce the
-   configuration complexity by using the same code on all platforms.
- * new xbt_cfg_elm_boolean type
- * Allow to disable SimGrid cleanups at exit from command line option.
-   There are situations where one may want a simulation to end with an exit.
-   Unfortunately, calling exit may cause SimGrid to segfault, which is quite
-   annoying when scripting around the simulator. Adding a
-   --cfg=clean_atexit:yes allows to circumvent this issue.
-
  Java:
  * Reintegrate Java to the main archive as desynchronizing these
    package is not acceptable anymore (Java is now considered stable)
@@ -23,6 +12,7 @@ SimGrid (3.10) NOT RELEASED; urgency=low
    this part of MSG was not considered as production grade either.
  * Add explicit synchronization facilities through semaphores
  * Add a new function MSG_host_get_process_list()
+ * Preliminary DVFS support (see /examples/msg/energy for details)
 
  SMPI:
  * SMPI is now included directly in the libsimgrid as the windows
@@ -50,6 +40,15 @@ SimGrid (3.10) NOT RELEASED; urgency=low
  * Add all missing Fortran bindings, SMPI should work with Fortran 90
    (no privatization of global variables yet)
 
+ Model-Checking;
+ * Verification of liveness properties is now available for SMPI applications
+   (in addition to MSG applications)
+ * Bugged examples using SMPI in examples/smpi/mc/
+ * Add --cfg=model-check/visited option. Allows the verification of infinite
+   programs. Detection of loops in the execution thanks to the system state
+   comparison and reduction of the state space to explore. Can be combined with
+   DPOR for safety properties.
+
  SimDag:
  * Allow to change SimGrid configuration (see --help) within the code
    thanks to SD_config() as it can be done in MSG.
@@ -64,6 +63,17 @@ SimGrid (3.10) NOT RELEASED; urgency=low
  * Fix the peer tag that could not be mixed with other AS within a Vivaldi
    routing. Now peers are encapsulated in an AS and have their own private
    router but this is transparent.
+
+ XBT:
+ * Our own implementation of getline is renamed xbt_getline, and gets
+   used even if the OS provide a getline(). This should reduce the
+   configuration complexity by using the same code on all platforms.
+ * new xbt_cfg_elm_boolean type
+ * Allow to disable SimGrid cleanups at exit from command line option.
+   There are situations where one may want a simulation to end with an exit.
+   Unfortunately, calling exit may cause SimGrid to segfault, which is quite
+   annoying when scripting around the simulator. Adding a
+   --cfg=clean_atexit:yes allows to circumvent this issue.
 
 -- $date Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
 
