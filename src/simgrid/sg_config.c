@@ -602,7 +602,15 @@ void sg_config_init(int *argc, char **argv)
 
     /* context factory */
     xbt_cfg_register(&_sg_cfg_set, "contexts/factory",
-                     "Context factory to use in SIMIX (default, ucontext, thread or raw)",
+                     "Context factory to use in SIMIX. Possible values: "
+                     "default"
+#if HAVE_RAWCTX
+                     ", raw"
+#endif
+#if CONTEXT_UCONTEXT
+                     ", ucontext"
+#endif
+                     ", thread.",
                      xbt_cfgelm_string, 1, 1, _sg_cfg_cb_context_factory, NULL);
     xbt_cfg_setdefault_string(_sg_cfg_set, "contexts/factory", "default");
 
