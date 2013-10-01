@@ -1,3 +1,5 @@
+! output sort
+
 $ ${bindir:=.}/basic_parsing_test one_cluster.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (0:@) surf_workstation_model_init_ptask_L07
 > Workstation number: 5, link number: 12

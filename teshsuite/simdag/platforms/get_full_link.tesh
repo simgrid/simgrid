@@ -1,4 +1,5 @@
 #! ./tesh
+! output sort
 
 $ ${bindir:=.}/basic_parsing_test ./four_hosts_floyd.xml FULL_LINK
 > [0.000000] [surf_workstation/INFO] surf_workstation_model_init_ptask_L07
