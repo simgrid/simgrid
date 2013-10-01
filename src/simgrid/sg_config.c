@@ -35,6 +35,12 @@ xbt_cfg_t _sg_cfg_set = NULL;
  */
 int _sg_cfg_init_status = 0;
 
+/* instruct the upper layer (simix or simdag) to exit as soon as possible
+ */
+int _sg_cfg_exit_asap = 0;
+
+#define sg_cfg_exit_early() do { _sg_cfg_exit_asap = 1; return; } while (0)
+
 /* Parse the command line, looking for options */
 static void sg_config_cmd_line(int *argc, char **argv)
 {
@@ -96,10 +102,8 @@ static void sg_config_cmd_line(int *argc, char **argv)
     argv[j] = NULL;
     *argc = j;
   }
-  if (shall_exit) {
-    _sg_cfg_init_status = 1;        // get everything cleanly cleaned on exit
-    exit(0);
-  }
+  if (shall_exit)
+    sg_cfg_exit_early();
 }
 
 /* callback of the workstation/model variable */
@@ -114,7 +118,7 @@ static void _sg_cfg_cb__workstation_model(const char *name, int pos)
 
   if (!strcmp(val, "help")) {
     model_help("workstation", surf_workstation_model_description);
-    exit(0);
+    sg_cfg_exit_early();
   }
 
   /* Make sure that the model exists */
@@ -133,7 +137,7 @@ static void _sg_cfg_cb__cpu_model(const char *name, int pos)
 
   if (!strcmp(val, "help")) {
     model_help("CPU", surf_cpu_model_description);
-    exit(0);
+    sg_cfg_exit_early();
   }
 
   /* New Module missing */
@@ -152,7 +156,7 @@ static void _sg_cfg_cb__optimization_mode(const char *name, int pos)
 
   if (!strcmp(val, "help")) {
     model_help("optimization", surf_optimization_mode_description);
-    exit(0);
+    sg_cfg_exit_early();
   }
 
   /* New Module missing */
@@ -171,7 +175,7 @@ static void _sg_cfg_cb__storage_mode(const char *name, int pos)
 
   if (!strcmp(val, "help")) {
     model_help("storage", surf_storage_model_description);
-    exit(0);
+    sg_cfg_exit_early();
   }
 
   /* New Module missing */
@@ -190,7 +194,7 @@ static void _sg_cfg_cb__network_model(const char *name, int pos)
 
   if (!strcmp(val, "help")) {
     model_help("network", surf_network_model_description);
-    exit(0);
+    sg_cfg_exit_early();
   }
 
   /* New Module missing */
@@ -243,7 +247,7 @@ static void _sg_cfg_cb__coll(const char *category,
 
   if (!strcmp(val, "help")) {
     coll_help(category, table);
-    exit(0);
+    sg_cfg_exit_early();
   }
 
   /* New Module missing */

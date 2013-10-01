@@ -11,6 +11,7 @@
 /*******************************************/
 XBT_PUBLIC_DATA(xbt_cfg_t) _sg_cfg_set;
 XBT_PUBLIC_DATA(int) _sg_cfg_init_status;
+XBT_PUBLIC_DATA(int) _sg_cfg_exit_asap;
 XBT_PUBLIC(int) sg_cfg_get_int(const char* name);
 XBT_PUBLIC(double) sg_cfg_get_double(const char* name);
 XBT_PUBLIC(char*) sg_cfg_get_string(const char* name);
