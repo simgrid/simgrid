@@ -602,13 +602,9 @@ void sg_config_init(int *argc, char **argv)
 
     /* context factory */
     xbt_cfg_register(&_sg_cfg_set, "contexts/factory",
-                     "Context factory to use in SIMIX (ucontext, thread or raw)",
+                     "Context factory to use in SIMIX (default, ucontext, thread or raw)",
                      xbt_cfgelm_string, 1, 1, _sg_cfg_cb_context_factory, NULL);
-#ifndef WIN32
-    xbt_cfg_setdefault_string(_sg_cfg_set, "contexts/factory", "ucontext");
-#else
-    xbt_cfg_setdefault_string(_sg_cfg_set, "contexts/factory", "raw");
-#endif
+    xbt_cfg_setdefault_string(_sg_cfg_set, "contexts/factory", "default");
 
     /* stack size of contexts in Ko */
     xbt_cfg_register(&_sg_cfg_set, "contexts/stack_size",

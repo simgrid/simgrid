@@ -48,7 +48,8 @@ void SIMIX_context_mod_init(void)
     }
     else { /* use the factory specified by --cfg=contexts/factory:value */
 
-    if (smx_context_factory_name == NULL) {
+    if (smx_context_factory_name == NULL ||
+        !strcmp(smx_context_factory_name, "default")) {
         /* use the default factory */
   #ifdef HAVE_RAWCTX
       SIMIX_ctx_raw_factory_init(&simix_global->context_factory);
