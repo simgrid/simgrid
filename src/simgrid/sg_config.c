@@ -494,8 +494,6 @@ void sg_config_init(int *argc, char **argv)
                      xbt_cfgelm_string, 1, 1, &_sg_cfg_cb__workstation_model, NULL);
     xbt_cfg_setdefault_string(_sg_cfg_set, "workstation/model", "default");
 
-    xbt_free(description);
-
     xbt_cfg_register(&_sg_cfg_set, "network/TCP_gamma",
                      "Size of the biggest TCP window (cat /proc/sys/net/ipv4/tcp_[rw]mem for recv/send window; Use the last given value, which is the max window size)",
                      xbt_cfgelm_double, 1, 1, _sg_cfg_cb__tcp_gamma, NULL);
@@ -601,18 +599,21 @@ void sg_config_init(int *argc, char **argv)
     xbt_cfg_setdefault_boolean(_sg_cfg_set, "verbose-exit", "yes");
 
     /* context factory */
-    xbt_cfg_register(&_sg_cfg_set, "contexts/factory",
-                     "Context factory to use in SIMIX. Possible values: "
-                     "default"
-#if HAVE_RAWCTX
-                     ", raw"
+    sprintf(description,
+            "Context factory to use in SIMIX. Possible values: thread");
+    const char *dflt_ctx_fact = "thread";
+#ifdef CONTEXT_UCONTEXT
+    strcat(description, ", ucontext");
+    dflt_ctx_fact = "ucontext";
 #endif
-#if CONTEXT_UCONTEXT
-                     ", ucontext"
+#ifdef HAVE_RAWCTX
+    strcat(description, ", raw");
+    dflt_ctx_fact = "raw";
 #endif
-                     ", thread.",
+    strcat(description, ".");
+    xbt_cfg_register(&_sg_cfg_set, "contexts/factory", description,
                      xbt_cfgelm_string, 1, 1, _sg_cfg_cb_context_factory, NULL);
-    xbt_cfg_setdefault_string(_sg_cfg_set, "contexts/factory", "default");
+    xbt_cfg_setdefault_string(_sg_cfg_set, "contexts/factory", dflt_ctx_fact);
 
     /* stack size of contexts in Ko */
     xbt_cfg_register(&_sg_cfg_set, "contexts/stack_size",
@@ -808,6 +809,8 @@ void sg_config_init(int *argc, char **argv)
   } else {
     XBT_WARN("Call to sg_config_init() after initialization ignored");
   }
+
+  xbt_free(description);
 }
 
 void sg_config_finalize(void)
