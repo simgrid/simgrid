@@ -43,7 +43,7 @@ static surf_action_t storage_action_ls(void *storage, const char* path)
 {
   surf_action_t action = storage_action_execute(storage,0, LS);
   action->ls_dict = NULL;
-  xbt_dict_t ls_dict = xbt_dict_new();
+  xbt_dict_t ls_dict = xbt_dict_new_homogeneous(NULL);
 
   char* key;
   sg_storage_size_t size = 0;
@@ -204,7 +204,7 @@ static xbt_dict_t storage_get_content(void *storage)
   /*surf_action_t action = storage_action_execute(storage,0, LS);*/
 
   void *st = surf_storage_resource_priv(storage);
-  xbt_dict_t content_dict = xbt_dict_new();
+  xbt_dict_t content_dict = xbt_dict_new_homogeneous(NULL);
   xbt_dict_cursor_t cursor = NULL;
   char *file;
   char *size;

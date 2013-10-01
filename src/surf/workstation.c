@@ -369,7 +369,7 @@ static xbt_dict_t ws_get_storage_list(void *workstation)
 {
   s_mount_t mnt;
   unsigned int i;
-  xbt_dict_t storage_list = xbt_dict_new();
+  xbt_dict_t storage_list = xbt_dict_new_homogeneous(NULL);
   char *storage_name = NULL;
 
   workstation_CLM03_t ws = (workstation_CLM03_t) surf_workstation_resource_priv(workstation);

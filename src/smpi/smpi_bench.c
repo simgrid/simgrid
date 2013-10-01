@@ -102,13 +102,13 @@ static void* shm_map(int fd, size_t size, shared_data_t* data) {
     xbt_die("Could not map fd %d: %s", fd, strerror(errno));
   }
   if(!allocs_metadata) {
-    allocs_metadata = xbt_dict_new();
+    allocs_metadata = xbt_dict_new_homogeneous(xbt_free);
   }
   snprintf(loc, PTR_STRLEN, "%p", mem);
   meta = xbt_new(shared_metadata_t, 1);
   meta->size = size;
   meta->data = data;
-  xbt_dict_set(allocs_metadata, loc, meta, &free);
+  xbt_dict_set(allocs_metadata, loc, meta, NULL);
   XBT_DEBUG("MMAP %zu to %p", size, mem);
   return mem;
 }

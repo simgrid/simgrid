@@ -357,7 +357,7 @@ xbt_dict_t MSG_host_get_storage_list(msg_host_t host)
 xbt_dict_t MSG_host_get_storage_content(msg_host_t host)
 {
   xbt_assert((host != NULL), "Invalid parameters");
-  xbt_dict_t contents = xbt_dict_new();
+  xbt_dict_t contents = xbt_dict_new_homogeneous(NULL);
   msg_storage_t storage;
   char* storage_name;
   char* mount_name;

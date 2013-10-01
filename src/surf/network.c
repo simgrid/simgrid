@@ -680,7 +680,7 @@ static void smpi_gap_append(double size, const link_CM02_t link,
 
   if (sg_sender_gap > 0.0) {
     if (!gap_lookup) {
-      gap_lookup = xbt_dict_new();
+      gap_lookup = xbt_dict_new_homogeneous(NULL);
     }
     fifo = (xbt_fifo_t) xbt_dict_get_or_null(gap_lookup, src);
     action->sender.gap = 0.0;
