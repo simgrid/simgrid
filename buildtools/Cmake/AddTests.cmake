@@ -22,7 +22,7 @@ SET(TRIGGER_SITE "http://cdash.inria.fr/CDash/cgi-bin/Submit-Random-TestingResul
 #If you use the --read-var-info option Memcheck will run more slowly but may give a more detailed description of any illegal address.
 
 if(WIN32)
-SET(TESH_COMMAND perl.exe ${CMAKE_BINARY_DIR}/bin/tesh)
+SET(TESH_COMMAND perl.exe ${CMAKE_BINARY_DIR}/bin/tesh --timeout 50)
 else()
 SET(TESH_COMMAND ${CMAKE_BINARY_DIR}/bin/tesh)
 endif()

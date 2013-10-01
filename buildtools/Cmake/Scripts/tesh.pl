@@ -15,6 +15,7 @@ B<tesh> [I<options>] I<tesh_file>
 =cut
 my($bindir)=".";
 my($srcdir)=".";
+my($timeout)=0;
 my $path = $0;
 my $OS;
 $path =~ s|[^/]*$||;
@@ -65,6 +66,10 @@ sub cd_cmd {
     } else {
 	die "[Tesh/CRITICAL] Cannot change directory to '$directory': no such directory\n";
     }
+}
+
+sub timeout_cmd{
+    $timeout=$_[1];
 }
 
 sub setenv_cmd {
@@ -120,6 +125,7 @@ sub get_options {
         'debug|d'    => \$opt{"debug"},
 
 	'cd=s'       => \&cd_cmd,
+	'timeout=s'  => \&timeout_cmd,	
 	'setenv=s'   => \&setenv_cmd,
 	'cfg=s'      => \@cfg,
 	'log=s'      => \$log,
@@ -139,7 +145,6 @@ my %opts = get_options(@ARGV);
 ##
 my($sort)=0;
 my($nb_arg)=0;
-my($timeout)=0;
 my($old_buffer);
 my($linebis);
 my($SIGABRT)=0;
