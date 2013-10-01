@@ -110,7 +110,11 @@ void SIMIX_global_init(int *argc, char **argv)
 
   SIMIX_HOST_LEVEL = xbt_lib_add_level(host_lib,SIMIX_host_destroy);
 
-  if(sg_cfg_get_boolean("clean_atexit")) atexit(SIMIX_clean);
+  if (sg_cfg_get_boolean("clean_atexit"))
+    atexit(SIMIX_clean);
+
+  if (_sg_cfg_exit_asap)
+    exit(0);
 }
 
 /**
@@ -121,6 +125,9 @@ void SIMIX_global_init(int *argc, char **argv)
  */
 static void SIMIX_clean(void)
 {
+#ifdef HAVE_TRACING
+  TRACE_end();
+#endif
 #ifdef TIME_BENCH_PER_SR
   smx_ctx_raw_new_sr();
 #endif

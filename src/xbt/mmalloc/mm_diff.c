@@ -371,7 +371,9 @@ void reset_heap_information(){
       equals_to1[i][j] = NULL;
       heap_area_free(equals_to2[i][j]);
       equals_to2[i][j] = NULL;
-    }    
+    }
+    free(equals_to1[i]);
+    free(equals_to2[i]);
   }
 
   free(equals_to1);

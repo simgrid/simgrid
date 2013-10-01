@@ -181,6 +181,7 @@ int TRACE_end()
     XBT_DEBUG("Tracing is off");
     XBT_DEBUG("Tracing system is shutdown");
   }
+  xbt_dynar_free(&TRACE_start_functions); /* useful when exiting early */
   xbt_dynar_free(&TRACE_end_functions);
   return retval;
 }

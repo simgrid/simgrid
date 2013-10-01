@@ -35,9 +35,8 @@ char *_sg_mc_dot_output_file = NULL;
 
 int user_max_depth_reached = 0;
 
-extern int _sg_init_status;
 void _mc_cfg_cb_reduce(const char *name, int pos) {
-  if (_sg_init_status && !_sg_do_model_check) {
+  if (_sg_cfg_init_status && !_sg_do_model_check) {
     xbt_die("You are specifying a reduction strategy after the initialization (through MSG_config?), but model-checking was not activated at config time (through --cfg=model-check:1). This won't work, sorry.");
   }
   char *val= xbt_cfg_get_string(_sg_cfg_set, name);
@@ -51,41 +50,41 @@ void _mc_cfg_cb_reduce(const char *name, int pos) {
 }
 
 void _mc_cfg_cb_checkpoint(const char *name, int pos) {
-  if (_sg_init_status && !_sg_do_model_check) {
+  if (_sg_cfg_init_status && !_sg_do_model_check) {
     xbt_die("You are specifying a checkpointing value after the initialization (through MSG_config?), but model-checking was not activated at config time (through --cfg=model-check:1). This won't work, sorry.");
   }
   _sg_mc_checkpoint = xbt_cfg_get_int(_sg_cfg_set, name);
 }
 void _mc_cfg_cb_property(const char *name, int pos) {
-  if (_sg_init_status && !_sg_do_model_check) {
+  if (_sg_cfg_init_status && !_sg_do_model_check) {
     xbt_die("You are specifying a property after the initialization (through MSG_config?), but model-checking was not activated at config time (through --cfg=model-check:1). This won't work, sorry.");
   }
   _sg_mc_property_file= xbt_cfg_get_string(_sg_cfg_set, name);
 }
 
 void _mc_cfg_cb_timeout(const char *name, int pos) {
-  if (_sg_init_status && !_sg_do_model_check) {
+  if (_sg_cfg_init_status && !_sg_do_model_check) {
     xbt_die("You are specifying a value to enable/disable timeout for wait requests after the initialization (through MSG_config?), but model-checking was not activated at config time (through --cfg=model-check:1). This won't work, sorry.");
   }
   _sg_mc_timeout= xbt_cfg_get_boolean(_sg_cfg_set, name);
 }
 
 void _mc_cfg_cb_max_depth(const char *name, int pos) {
-  if (_sg_init_status && !_sg_do_model_check) {
+  if (_sg_cfg_init_status && !_sg_do_model_check) {
     xbt_die("You are specifying a max depth value after the initialization (through MSG_config?), but model-checking was not activated at config time (through --cfg=model-check:1). This won't work, sorry.");
   }
   _sg_mc_max_depth= xbt_cfg_get_int(_sg_cfg_set, name);
 }
 
 void _mc_cfg_cb_visited(const char *name, int pos) {
-  if (_sg_init_status && !_sg_do_model_check) {
+  if (_sg_cfg_init_status && !_sg_do_model_check) {
     xbt_die("You are specifying a number of stored visited states after the initialization (through MSG_config?), but model-checking was not activated at config time (through --cfg=model-check:1). This won't work, sorry.");
   }
   _sg_mc_visited= xbt_cfg_get_int(_sg_cfg_set, name);
 }
 
 void _mc_cfg_cb_dot_output(const char *name, int pos) {
-  if (_sg_init_status && !_sg_do_model_check) {
+  if (_sg_cfg_init_status && !_sg_do_model_check) {
     xbt_die("You are specifying a file name for a dot output of graph state after the initialization (through MSG_config?), but model-checking was not activated at config time (through --cfg=model-check:1). This won't work, sorry.");
   }
   _sg_mc_dot_output_file= xbt_cfg_get_string(_sg_cfg_set, name);

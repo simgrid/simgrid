@@ -5,6 +5,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "simgrid/platf_interface.h"    // platform creation API internal interface
+#include "simgrid/sg_config.h"
 
 #include "surf_routing_private.h"
 #include "surf/surf_routing.h"
@@ -319,8 +320,6 @@ static void routing_parse_trace_connect(sg_platf_trace_connect_cbarg_t trace_con
   }
 }
 
-extern int _sg_init_status; /* yay, this is an horrible hack */
-
 /**
  * \brief Make a new routing component to the platform
  *
@@ -344,7 +343,9 @@ void routing_AS_begin(sg_platf_AS_cbarg_t AS)
              (as_router_lib, AS->id, ROUTING_ASR_LEVEL),
              "The AS \"%s\" already exists", AS->id);
 
-  _sg_init_status = 2; /* horrible hack: direct access to the global controlling the level of configuration to prevent any further config */
+  _sg_cfg_init_status = 2; /* horrible hack: direct access to the global
+                            * controlling the level of configuration to prevent
+                            * any further config */
 
   /* search the routing model */
   switch(AS->routing){

@@ -1,10 +1,8 @@
-/*
- * jedule_sd_binding.c
- *
- *  Created on: Dec 2, 2010
- *      Author: sascha
- */
+/* Copyright (c) 2010-2013. The SimGrid Team.
+ * All rights reserved.                                                     */
 
+/* This program is free software; you can redistribute it and/or modify it
+ * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "xbt/asserts.h"
 #include "xbt/dynar.h"
@@ -28,7 +26,8 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(jed_sd, jedule,
 
 jedule_t jedule;
 
-void jedule_log_sd_event(SD_task_t task) {
+void jedule_log_sd_event(SD_task_t task)
+{
   xbt_dynar_t host_list;
   jed_event_t event;
   int i;
@@ -55,7 +54,8 @@ void jedule_log_sd_event(SD_task_t task) {
 }
 
 static void create_hierarchy(AS_t current_comp,
-    jed_simgrid_container_t current_container) {
+                             jed_simgrid_container_t current_container)
+{
   xbt_dict_cursor_t cursor = NULL;
   unsigned int dynar_cursor;
   char *key;
@@ -69,7 +69,7 @@ static void create_hierarchy(AS_t current_comp,
 
     hosts = xbt_dynar_new(sizeof(char*), NULL);
 
-    xbt_dynar_foreach(current_comp->index_network_elm, 
+    xbt_dynar_foreach(current_comp->index_network_elm,
           dynar_cursor, network_elem) {
       xbt_dynar_push_as(hosts, char*, network_elem->name);
     }
@@ -87,8 +87,8 @@ static void create_hierarchy(AS_t current_comp,
   }
 }
 
-void jedule_setup_platform() {
-
+void jedule_setup_platform()
+{
   AS_t root_comp;
   // e_surf_network_element_type_t type;
 
@@ -111,36 +111,40 @@ void jedule_setup_platform() {
 }
 
 
-void jedule_sd_cleanup() {
-
+void jedule_sd_cleanup()
+{
   jedule_cleanup_output();
 }
 
-void jedule_sd_init() {
-
+void jedule_sd_init()
+{
   jedule_init_output();
 }
 
 void jedule_sd_exit(void)
 {
-  jed_free_jedule(jedule);
-  jedule = NULL;
+  if (jedule) {
+    jed_free_jedule(jedule);
+    jedule = NULL;
+  }
 }
 
-void jedule_sd_dump() {
-  FILE *fh;
+void jedule_sd_dump()
+{
+  if (jedule) {
+    FILE *fh;
     char fname[1024];
 
     fname[0] = '\0';
     strcat(fname, xbt_binary_name);
     strcat(fname, ".jed\0");
-    
-  fh = fopen(fname, "w");
 
-  write_jedule_output(fh, jedule, jedule_event_list, NULL);
+    fh = fopen(fname, "w");
 
-  fclose(fh);
+    write_jedule_output(fh, jedule, jedule_event_list, NULL);
 
+    fclose(fh);
+  }
 }
 
 #endif
