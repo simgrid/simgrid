@@ -492,7 +492,11 @@ if(NOT enable_memcheck)
 
   # Java examples
   if(enable_java)
+    if(WIN32)
+    set(TESH_CLASSPATH "${CMAKE_BINARY_DIR}/examples/java/\;${SIMGRID_JAR}")
+    else()
     set(TESH_CLASSPATH "${CMAKE_BINARY_DIR}/examples/java/:${SIMGRID_JAR}")
+    endif()
     ADD_TEST(java-async                         ${TESH_COMMAND} ${TESH_OPTION} --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/java --setenv classpath=${TESH_CLASSPATH} --cd ${CMAKE_BINARY_DIR}/examples/java ${CMAKE_HOME_DIRECTORY}/examples/java/async/async.tesh)
     ADD_TEST(java-bittorrent                    ${TESH_COMMAND} ${TESH_OPTION} --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/java --setenv classpath=${TESH_CLASSPATH} --cd ${CMAKE_BINARY_DIR}/examples/java ${CMAKE_HOME_DIRECTORY}/examples/java/bittorrent/bittorrent.tesh)
     ADD_TEST(java-bypass                        ${TESH_COMMAND} ${TESH_OPTION} --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/java --setenv classpath=${TESH_CLASSPATH} --cd ${CMAKE_BINARY_DIR}/examples/java ${CMAKE_HOME_DIRECTORY}/examples/java/master_slave_bypass/bypass.tesh)
@@ -515,7 +519,12 @@ if(NOT enable_memcheck)
 
   # Scala examples
   if(enable_scala)
+    if(WIN32)
+    set(TESH_CLASSPATH "${CMAKE_BINARY_DIR}/examples/scala/\;${SIMGRID_JAR}\;${SCALA_JARS}")
+    else()
     set(TESH_CLASSPATH "${CMAKE_BINARY_DIR}/examples/scala/:${SIMGRID_JAR}:${SCALA_JARS}")
+    endif()
+
     ADD_TEST(scala-bypass                       ${TESH_COMMAND} ${TESH_OPTION} --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/scala --setenv classpath=${TESH_CLASSPATH} --cd ${CMAKE_BINARY_DIR}/examples/scala ${CMAKE_HOME_DIRECTORY}/examples/scala/master_slave_bypass/bypass.tesh)
     ADD_TEST(scala-kill                         ${TESH_COMMAND} ${TESH_OPTION} --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/scala --setenv classpath=${TESH_CLASSPATH} --cd ${CMAKE_BINARY_DIR}/examples/scala ${CMAKE_HOME_DIRECTORY}/examples/scala/master_slave_kill/kill.tesh)
     ADD_TEST(scala-masterslave                  ${TESH_COMMAND} ${TESH_OPTION} --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/scala --setenv classpath=${TESH_CLASSPATH} --cd ${CMAKE_BINARY_DIR}/examples/scala ${CMAKE_HOME_DIRECTORY}/examples/scala/masterslave/masterslave.tesh)
