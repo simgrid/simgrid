@@ -321,13 +321,13 @@ static int is_visited_pair(mc_pair_t pair){
     }
 
     if(xbt_dynar_length(visited_pairs) > _sg_mc_visited){
-      int min = mc_stats->expanded_states;
+      int min2 = mc_stats->expanded_pairs;
       unsigned int cursor2 = 0;
       unsigned int index2 = 0;
       xbt_dynar_foreach(visited_pairs, cursor2, pair_test){
-        if(pair_test->num < min){
-          index = cursor2;
-          min = pair_test->num;
+        if(pair_test->num < min2){
+          index2 = cursor2;
+          min2 = pair_test->num;
         }
       }
       xbt_dynar_remove_at(visited_pairs, index2, &pair_test);
