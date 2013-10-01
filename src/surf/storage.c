@@ -87,8 +87,10 @@ static surf_action_t storage_action_open(void *storage, const char* mount,
   XBT_DEBUG("\tOpen file '%s'",path);
   xbt_dict_t content_dict = ((storage_t)storage)->content;
   size_t size = (size_t) xbt_dict_get_or_null(content_dict,path);
+
   // if file does not exist create an empty file
   if(!size){
+	size = 0;
     xbt_dict_set(content_dict,path,&size,NULL);
     XBT_DEBUG("File '%s' was not found, file created.",path);
   }
@@ -115,7 +117,6 @@ static surf_action_t storage_action_close(void *storage, surf_file_t fd)
       storage_action_unref((surf_action_t) write_action);
     }
   }
-
   free(fd->name);
   free(fd->mount);
   xbt_free(fd);
@@ -282,22 +283,23 @@ static void storage_update_actions_state(double now, double delta)
   surf_action_storage_t next_action = NULL;
   xbt_swag_t running_actions = surf_storage_model->states.running_action_set;
 
-  // Update the disk usage
-  // Update the file size
-  // For each action of type write
+
   xbt_swag_foreach_safe(action, next_action, running_actions) {
     if(action->type == WRITE)
     {
+      // Update the disk usage
+      // Update the file size
+      // Update the storage content (with file size)
       double rate = lmm_variable_getvalue(GENERIC_LMM_ACTION(action).variable);
       /* Hack to avoid rounding differences between x86 and x86_64
        * (note that the next sizes are of type size_t). */
       long incr = delta * rate + MAXMIN_PRECISION;
       ((storage_t)(action->storage))->used_size += incr; // disk usage
       ((surf_action_t)action)->file->size += incr; // file size
-    }
-  }
 
-  xbt_swag_foreach_safe(action, next_action, running_actions) {
+      xbt_dict_t content_dict = ((storage_t)(action->storage))->content;
+      xbt_dict_set(content_dict,((surf_action_t)action)->file->name,(void*)(((surf_action_t)action)->file->size),NULL);
+    }
 
     double_update(&(GENERIC_ACTION(action).remains),
                   lmm_variable_getvalue(GENERIC_LMM_ACTION(action).variable) * delta);
