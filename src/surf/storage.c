@@ -10,6 +10,7 @@
 #include "surf_private.h"
 #include "storage_private.h"
 #include "surf/surf_resource.h"
+#include <inttypes.h>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_storage, surf,
                                 "Logging specific to the SURF storage module");
@@ -107,7 +108,7 @@ static surf_action_t storage_action_open(void *storage, const char* mount,
 static surf_action_t storage_action_close(void *storage, surf_file_t fd)
 {
   char *filename = fd->name;
-  XBT_DEBUG("\tClose file '%s' size '%zu'",filename,fd->size);
+  XBT_DEBUG("\tClose file '%s' size '%" PRIu64 "'", filename, fd->size);
   // unref write actions from storage
   surf_action_storage_t write_action;
   unsigned int i;
@@ -137,7 +138,8 @@ static surf_action_t storage_action_write(void *storage, sg_storage_size_t size,
                                           surf_file_t fd)
 {
   char *filename = fd->name;
-  XBT_DEBUG("\tWrite file '%s' size '%zu/%zu'",filename,size,fd->size);
+  XBT_DEBUG("\tWrite file '%s' size '%" PRIu64 "/%" PRIu64 "'",
+            filename, size, fd->size);
 
   surf_action_t action = storage_action_execute(storage,size,WRITE);
   action->file = fd;
@@ -154,7 +156,7 @@ static surf_action_t storage_action_execute (void *storage, sg_storage_size_t si
   surf_action_storage_t action = NULL;
   storage_t STORAGE = storage;
 
-  XBT_IN("(%s,%zu", surf_resource_name(STORAGE), size);
+  XBT_IN("(%s,%" PRIu64, surf_resource_name(STORAGE), size);
   action =
       surf_action_new(sizeof(s_surf_action_storage_t), size, surf_storage_model,
           STORAGE->state_current != SURF_RESOURCE_ON);
@@ -580,7 +582,7 @@ static xbt_dict_t parse_storage_content(char *filename, sg_storage_size_t *used_
 
   while ((read = xbt_getline(&line, &len, file)) != -1) {
     if (read){
-    if(sscanf(line,"%s %zu",path, &size)==2) {
+    if (sscanf(line,"%s %" SCNu64, path, &size) == 2) {
         *used_size += size;
         xbt_dict_set(parse_content,path,(void*) size,NULL);
       } else {

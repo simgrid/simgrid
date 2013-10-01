@@ -6,6 +6,7 @@
 
 #include "msg_private.h"
 #include "xbt/log.h"
+#include <inttypes.h>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_io, msg,
                                 "Logging specific to MSG (io)");
@@ -65,11 +66,16 @@ void MSG_file_dump (msg_file_t fd){
 //   THROW_UNIMPLEMENTED;
   /* Update the cached information first */
   __MSG_file_get_info(fd);
-  XBT_INFO("File Descriptor information:\n\t\tFull name: '%s'"
-      "\n\t\tSize: %zu\n\t\tMount point: '%s'\n\t\tStorage Id: '%s'"
-      "\n\t\tStorage Type: '%s'\n\t\tContent Type: '%s'",
-      fd->fullname, fd->info->size, fd->info->mount_point, fd->info->storageId,
-      fd->info->storage_type, fd->info->content_type);
+  XBT_INFO("File Descriptor information:\n"
+           "\t\tFull name: '%s'\n"
+           "\t\tSize: %" PRIu64 "\n"
+           "\t\tMount point: '%s'\n"
+           "\t\tStorage Id: '%s'\n"
+           "\t\tStorage Type: '%s'\n"
+           "\t\tContent Type: '%s'",
+           fd->fullname, fd->info->size, fd->info->mount_point,
+           fd->info->storageId, fd->info->storage_type,
+           fd->info->content_type);
 }
 
 /** \ingroup msg_file_management
