@@ -255,7 +255,7 @@ typedef struct s_mc_comparison_times{
 extern __thread mc_comparison_times_t mc_comp_times;
 extern __thread double mc_snapshot_comparison_time;
 
-int snapshot_compare(void *p1, void *p2);
+int snapshot_compare(void *state1, void *state2);
 int SIMIX_pre_mc_compare_snapshots(smx_simcall_t simcall, mc_snapshot_t s1, mc_snapshot_t s2);
 void print_comparison_times(void);
 
