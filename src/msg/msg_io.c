@@ -85,9 +85,9 @@ void MSG_file_dump (msg_file_t fd){
  * \param fd is a the file descriptor
  * \return the number of bytes successfully read
  */
-sg_storage_size_t MSG_file_read(sg_storage_size_t size, msg_file_t fd)
+sg_storage_size_t MSG_file_read(msg_file_t fd, sg_storage_size_t size)
 {
-  return simcall_file_read(size, fd->simdata->smx_file);
+  return simcall_file_read(fd->simdata->smx_file, size);
 }
 
 /** \ingroup msg_file_management
@@ -97,9 +97,9 @@ sg_storage_size_t MSG_file_read(sg_storage_size_t size, msg_file_t fd)
  * \param fd is a the file descriptor
  * \return the number of bytes successfully write
  */
-sg_storage_size_t MSG_file_write(sg_storage_size_t size, msg_file_t fd)
+sg_storage_size_t MSG_file_write(msg_file_t fd, sg_storage_size_t size)
 {
-  return simcall_file_write(size, fd->simdata->smx_file);
+  return simcall_file_write(fd->simdata->smx_file, size);
 }
 
 /** \ingroup msg_file_management

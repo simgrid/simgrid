@@ -125,8 +125,7 @@ static surf_action_t storage_action_close(void *storage, surf_file_t fd)
   return action;
 }
 
-static surf_action_t storage_action_read(void *storage, sg_storage_size_t size,
-                                         surf_file_t fd)
+static surf_action_t storage_action_read(void *storage, surf_file_t fd, sg_storage_size_t size)
 {
   if(size > fd->size)
     size = fd->size;
@@ -134,8 +133,7 @@ static surf_action_t storage_action_read(void *storage, sg_storage_size_t size,
   return action;
 }
 
-static surf_action_t storage_action_write(void *storage, sg_storage_size_t size,
-                                          surf_file_t fd)
+static surf_action_t storage_action_write(void *storage, surf_file_t fd, sg_storage_size_t size)
 {
   char *filename = fd->name;
   XBT_DEBUG("\tWrite file '%s' size '%" PRIu64 "/%" PRIu64 "'",

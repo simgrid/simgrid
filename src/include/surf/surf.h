@@ -233,8 +233,8 @@ typedef struct surf_network_model_extension_public {
 typedef struct surf_storage_model_extension_public {
   surf_action_t(*open) (void *storage, const char* mount, const char* path);
   surf_action_t(*close) (void *storage, surf_file_t fd);
-  surf_action_t(*read) (void *storage, size_t size, surf_file_t fd);
-  surf_action_t(*write) (void *storage, size_t size, surf_file_t fd);
+  surf_action_t(*read) (void *storage, surf_file_t fd, sg_storage_size_t size);
+  surf_action_t(*write) (void *storage, surf_file_t fd, sg_storage_size_t size);
   surf_action_t(*stat) (void *storage, surf_file_t fd);
   surf_action_t(*ls) (void *storage, const char *path);
   xbt_dict_t(*get_properties) (const void *storage);
@@ -279,20 +279,20 @@ typedef struct surf_workstation_model_extension_public {
   surf_action_t(*open) (void *workstation, const char* storage,
                         const char* path);
   surf_action_t(*close) (void *workstation, surf_file_t fd);
-  surf_action_t(*read) (void *workstation, size_t size, surf_file_t fd);
-  surf_action_t(*write) (void *workstation, size_t size, surf_file_t fd);
+  surf_action_t(*read) (void *workstation, surf_file_t fd, sg_storage_size_t size);
+  surf_action_t(*write) (void *workstation, surf_file_t fd, sg_storage_size_t size);
   surf_action_t(*stat) (void *workstation, surf_file_t fd);
   int(*unlink) (void *workstation, surf_file_t fd);
   surf_action_t(*ls) (void *workstation, const char* mount, const char *path);
-  size_t (*get_size) (void *workstation, surf_file_t fd);
+  sg_storage_size_t (*get_size) (void *workstation, surf_file_t fd);
   xbt_dynar_t (*get_info) (void *workstation, surf_file_t fd);
 
   int (*link_shared) (const void *link);
   xbt_dict_t(*get_properties) (const void *resource);
   void (*add_traces) (void);
 
-  size_t (*get_free_size) (void *workstation,const char* name);
-  size_t (*get_used_size) (void *workstation,const char* name);
+  sg_storage_size_t (*get_free_size) (void *workstation,const char* name);
+  sg_storage_size_t (*get_used_size) (void *workstation,const char* name);
   xbt_dict_t (*get_storage_list) (void *workstation);
 
 } s_surf_model_extension_workstation_t;

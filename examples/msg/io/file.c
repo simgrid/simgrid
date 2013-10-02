@@ -49,13 +49,13 @@ int host(int argc, char *argv[])
 
   XBT_INFO("\tOpen file '%s'",file->fullname);
 
-  read = MSG_file_read(10000000,file);     // Read for 10MB
+  read = MSG_file_read(file, 10000000);     // Read for 10MB
   XBT_INFO("\tHave read    %zu on %s",read,file->fullname);
 
-  write = MSG_file_write(100000,file);  // Write for 100KB
+  write = MSG_file_write(file, 100000);  // Write for 100KB
   XBT_INFO("\tHave written %zu on %s",write,file->fullname);
 
-  read = MSG_file_read(110000,file);     // Read for 110KB
+  read = MSG_file_read(file, 110000);     // Read for 110KB
   XBT_INFO("\tHave read    %zu on %s (of size %zu)",read,file->fullname,
       MSG_file_get_size(file));
 

@@ -46,7 +46,7 @@ int host(int argc, char *argv[])
   file = MSG_file_open(mount,FILENAME1, NULL);
 
   // Write into the new file
-  write = MSG_file_write(100000,file);  // Write for 100Ko
+  write = MSG_file_write(file,100000);  // Write for 100Ko
   XBT_INFO("\tHave written %zu on %s",write,file->fullname);
 
   // Close the file

@@ -1203,18 +1203,18 @@ void simcall_file_set_data(smx_file_t fd, void *data)
  * \ingroup simix_file_management
  *
  */
-sg_storage_size_t simcall_file_read(sg_storage_size_t size, smx_file_t fd)
+sg_storage_size_t simcall_file_read(smx_file_t fd, sg_storage_size_t size)
 {
-  return simcall_BODY_file_read(size, fd);
+  return simcall_BODY_file_read(fd, size);
 }
 
 /**
  * \ingroup simix_file_management
  *
  */
-sg_storage_size_t simcall_file_write(sg_storage_size_t size, smx_file_t fd)
+sg_storage_size_t simcall_file_write(smx_file_t fd, sg_storage_size_t size)
 {
-  return simcall_BODY_file_write(size, fd);
+  return simcall_BODY_file_write(fd, size);
 }
 
 /**

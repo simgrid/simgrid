@@ -81,8 +81,8 @@ XBT_PUBLIC(const char *) MSG_environment_as_get_model(msg_as_t as);
 XBT_PUBLIC(xbt_dynar_t) MSG_environment_as_get_hosts(msg_as_t as);
 
 /************************** File handling ***********************************/
-XBT_PUBLIC(sg_storage_size_t) MSG_file_read(sg_storage_size_t size, msg_file_t fd);
-XBT_PUBLIC(sg_storage_size_t) MSG_file_write(sg_storage_size_t size, msg_file_t fd);
+XBT_PUBLIC(sg_storage_size_t) MSG_file_read(msg_file_t fd, sg_storage_size_t size);
+XBT_PUBLIC(sg_storage_size_t) MSG_file_write(msg_file_t fd, sg_storage_size_t size);
 XBT_PUBLIC(msg_file_t) MSG_file_open(const char* mount, const char* path,
                                      void* data);
 XBT_PUBLIC(void*) MSG_file_get_data(msg_file_t fd);
