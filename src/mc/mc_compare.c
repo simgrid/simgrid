@@ -340,6 +340,11 @@ int snapshot_compare(void *state1, void *state2){
     s2 = ((mc_pair_t)state2)->graph_state->system_state;
     num1 = ((mc_pair_t)state1)->num;
     num2 =  ((mc_pair_t)state2)->num;
+    /* Firstly compare automaton state */
+    if(xbt_automaton_state_compare(((mc_pair_t)state1)->automaton_state, ((mc_pair_t)state2)->automaton_state) != 0)
+      return 1;
+    if(xbt_automaton_propositional_symbols_compare_value(((mc_pair_t)state1)->atomic_propositions, ((mc_pair_t)state2)->atomic_propositions) != 0)
+      return 1;
   }else{ /* Safety MC */
     s1 = ((mc_visited_state_t)state1)->system_state;
     s2 = ((mc_visited_state_t)state2)->system_state;
