@@ -10,7 +10,7 @@ if(WIN32)
   "${CMAKE_BINARY_DIR}/bin/tesh" @ONLY IMMEDIATE)
 
     file(COPY        ${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/Scripts/Diff.pm 
-         DESTINATION ${CMAKE_BINARY_DIR}
+         DESTINATION ${CMAKE_BINARY_DIR}/bin
          FILE_PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ
                           GROUP_EXECUTE GROUP_READ)
 
