@@ -1,8 +1,45 @@
 $ msg/storage/storage --cfg=path:${srcdir:=.} ${srcdir:=.}/msg/storage/platform.xml ${srcdir:=.}/msg/storage/deployment.xml 0 "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
-> [  0.000000] (1:client@client) ** Storage info on client:
-> [  0.000000] (1:client@client) 	Storage mount name: /sd1
-> [  0.000000] (1:client@client) 		Free size: 536774599000 bytes
-> [  0.000000] (1:client@client) 		Used size: 96313000 bytes
-> [  0.000000] (1:client@client) 	Properties of mounted storage: cdisk
-> [  0.000000] (1:client@client) 		'date' -> '31-08-13'
-> [  0.000000] (1:client@client) 		'usage' -> 'scratch'
+> [  0.000000] (1:server@server) *** Storage info of: server ***
+> [  0.000000] (1:server@server) *** Dump a storage element ***
+> [  0.000000] (1:server@server) Print the content of the storage element: sdisk1
+> [  0.000000] (1:server@server) ./doc/simgrid/examples/cxx/autoDestination/autoDestination_platform.xml size: 21339320000 bytes
+> [  0.000000] (1:server@server) ./doc/simgrid/examples/cxx/autoDestination/Forwarder.cxx size: 113700000 bytes
+> [  0.000000] (1:server@server) ./doc/simgrid/examples/cxx/autoDestination/Master.cxx size: 18910000 bytes
+> [  0.000000] (1:server@server) ./doc/simgrid/examples/cxx/basic/FinalizeTask.cxx size: 710000000 bytes
+> [  0.000000] (1:server@server) *** Dump a storage element ***
+> [  0.000000] (1:server@server) Print the content of the storage element: sdisk2
+> [  0.000000] (1:server@server) ./doc/simgrid/examples/cxx/basic/Slave.cxx size: 69300000 bytes
+> [  0.000000] (1:server@server) ./doc/simgrid/examples/cxx/basic/Main.cxx size: 14800000 bytes
+> [  0.000000] (1:server@server) Server waiting for transfers
+> [  0.000710] (2:client@client) client has read 71000 on ./doc/simgrid/examples/cxx/autoDestination/FinalizeTask.cxx
+> [  0.000710] (2:client@client) client sends 71000 to server
+> [  0.014595] (2:client@client) client has read 1262000 on ./doc/simgrid/examples/cxx/autoDestination/autoDestination_deployment.xml
+> [  0.014595] (2:client@client) client sends 1262000 to server
+> [  0.896175] (2:client@client) client has read 87000000 on ./doc/simgrid/examples/cxx/autoDestination/Slave.cxx
+> [  0.896175] (2:client@client) client sends 87000000 to server
+> [  4.550878] (2:client@client) *** GET/SET DATA for storage element: cdisk ***
+> [  4.550878] (2:client@client) Get data: '(null)'
+> [  4.550878] (2:client@client) Set and get data: 'Some data'
+> [  4.550878] (2:client@client) *** Storage info of: client ***
+> [  4.550878] (1:server@server) *** Storage info of: server ***
+> [  4.550878] (2:client@client) *** Dump a storage element ***
+> [  4.550878] (2:client@client) Print the content of the storage element: cdisk
+> [  4.550878] (2:client@client) ./doc/simgrid/examples/cxx/autoDestination/FinalizeTask.cxx size: 71000 bytes
+> [  4.550878] (2:client@client) ./doc/simgrid/examples/cxx/autoDestination/BasicTask.cxx size: 6500000 bytes
+> [  4.550878] (2:client@client) ./doc/simgrid/examples/cxx/autoDestination/Main.cxx size: 1480000 bytes
+> [  4.550878] (2:client@client) ./doc/simgrid/examples/cxx/autoDestination/autoDestination_deployment.xml size: 1262000 bytes
+> [  4.550878] (2:client@client) ./doc/simgrid/examples/cxx/autoDestination/Slave.cxx size: 87000000 bytes
+> [  4.550878] (1:server@server) *** Dump a storage element ***
+> [  4.550878] (1:server@server) Print the content of the storage element: sdisk1
+> [  4.550878] (1:server@server) ./doc/simgrid/examples/cxx/autoDestination/autoDestination_platform.xml size: 21339320000 bytes
+> [  4.550878] (1:server@server) ./scratch/toto.xml size: 71000 bytes
+> [  4.550878] (1:server@server) ./scratch/tata.cxx size: 87000000 bytes
+> [  4.550878] (1:server@server) ./doc/simgrid/examples/cxx/autoDestination/Forwarder.cxx size: 113700000 bytes
+> [  4.550878] (1:server@server) ./scratch/titi.cxx size: 1262000 bytes
+> [  4.550878] (1:server@server) ./doc/simgrid/examples/cxx/autoDestination/Master.cxx size: 18910000 bytes
+> [  4.550878] (1:server@server) ./doc/simgrid/examples/cxx/basic/FinalizeTask.cxx size: 710000000 bytes
+> [  4.550878] (1:server@server) *** Dump a storage element ***
+> [  4.550878] (1:server@server) Print the content of the storage element: sdisk2
+> [  4.550878] (1:server@server) ./doc/simgrid/examples/cxx/basic/Slave.cxx size: 69300000 bytes
+> [  4.550878] (1:server@server) ./doc/simgrid/examples/cxx/basic/Main.cxx size: 14800000 bytes
+> [  4.550878] (0:@) Simulated time: 4.55088

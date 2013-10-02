@@ -16,7 +16,8 @@
 			<prop id="Bconnection" value="150MBps" />
 		</storage_type>
 
-		<storage_type id="single_SSD" model="linear_no_lat" size="500GiB">
+		<storage_type id="single_SSD" model="linear_no_lat"
+			content="content/storage_content.txt" size="500GiB">
 			<prop id="Bwrite" value="30MBps" />
 			<prop id="Bread" value="100MBps" />
 			<prop id="Bconnection" value="150MBps" />
@@ -24,8 +25,9 @@
 
 		<!-- DISKS -->
 		<storage id="cdisk" typeId="single_HDD" content="msg/storage/storage_content_c.txt">
-		   <prop id="usage" value="scratch"/>
-   		   <prop id="date" value="31-08-13"/>
+		   <prop id="filename" value="prop.xml"/>
+   		   <prop id="date" value="31-08-12"/>
+           <prop id="author" value="pnavarro"/>
 		</storage>
 		<storage id="sdisk1" typeId="single_SSD" content="msg/storage/storage_content_s1.txt" />
 		<storage id="sdisk2" typeId="single_HDD" content="msg/storage/storage_content_s2.txt" />
@@ -38,7 +40,7 @@
 		<host id="server" power="1000000000">
 			<mount storageId="sdisk1" name="/sd1" />
 			<mount storageId="sdisk2" name="/sd2" />
-			<prop id="ip adress" value="134.165.2.5"/>
+			<prop id="ip adress" value="127.0.0.5"/>
 		</host>
 
 		<!-- LINKS & ROUTES -->
