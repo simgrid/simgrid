@@ -42,14 +42,12 @@ sub trim($)
 	return $string;
 }
 
-print "OS: ".$OS."\n";
-
 # make sure we received a tesh file
 scalar @ARGV > 0 || die "Usage:\n    tesh [*options*] *tesh_file*\n";
 
 #Add current directory to path
 $ENV{PATH} = "$ENV{PATH}:.";
-
+my $tesh_file;
 
 ##
 ## Command line option handling
@@ -58,13 +56,19 @@ $ENV{PATH} = "$ENV{PATH}:.";
 # option handling helper subs
 sub cd_cmd {
     my $directory=$_[1];
+    my $failure=1;
     if (-e $directory && -d $directory) {
 	chdir("$directory");
 	print "[Tesh/INFO] change directory to $directory\n";
+    $failure=0;
     } elsif (-e $directory) {
-	die "[Tesh/CRITICAL] Cannot change directory to '$directory': it is not a directory\n";
+	print "Cannot change directory to '$directory': it is not a directory\n";
     } else {
-	die "[Tesh/CRITICAL] Cannot change directory to '$directory': no such directory\n";
+	print "Chdir to $directory failed: No such file or directory\n";
+    }
+    if($failure==1){
+    print "Test suite `$tesh_file': NOK (system error)\n";
+    exit 4;
     }
 }
 
@@ -99,7 +103,7 @@ sub setenv_cmd {
 }
 
 # Main option parsing sub
-my $tesh_file;
+
 sub get_options {
     # remove the tesh file from the ARGV used
     my @ARGV = @_;
@@ -109,6 +113,7 @@ sub get_options {
     my @verbose = ();
     my @cfg;
     my $log; # ignored
+    my $enable_coverage;
 
     my %opt = (
 	"help"    => 0,
@@ -129,7 +134,17 @@ sub get_options {
 	'setenv=s'   => \&setenv_cmd,
 	'cfg=s'      => \@cfg,
 	'log=s'      => \$log,
+    'enable-coverage+'  => \$enable_coverage,	
 	);
+
+    if($enable_coverage){
+        print "Enable coverage\n";
+    }
+
+    unless($tesh_file=~/\.tesh/){
+        $tesh_file="(stdin)";
+        print "Test suite from stdin\n";
+    }
 
     $opt{'verbose'} = scalar @verbose;
     foreach (@cfg) {
@@ -216,7 +231,11 @@ sub exec_cmd {
     ###
     # exec the command line
     ###
-    $pid = open3(\*IN, \*OUT, \*OUT, $cmd{'cmd'} );
+    $pid = open3(\*CHILD_IN, \*OUT, \*OUT, $cmd{'cmd'} );
+
+    # push all provided input to executing child
+    map { print CHILD_IN "$_\n" }  @{$cmd{'in'}};
+    close CHILD_IN;
 
     # if timeout specified, fork and kill executing child at the end of timeout
     if ($timeout){
@@ -229,9 +248,6 @@ sub exec_cmd {
 	}
     }
 
-    # push all provided input to executing child
-    map { print IN "$_\n" } $cmd{'in'};
-    close IN;
 
     # pop all output from executing child
     my @got;
@@ -297,13 +313,16 @@ sub mkfile_cmd {
 }
 
 # parse tesh file
-print "Test suite $tesh_file\n";
-open TESH_FILE, $tesh_file or die "[Tesh/CRITICAL] Unable to open $tesh_file $!\n";
-
+#my $teshfile=$tesh_file;
+#$teshfile=~ s{\.[^.]+$}{};
+#print "Test suite `$teshfile'\n";
+unless($tesh_file eq "(stdin)"){
+    open TESH_FILE, $tesh_file or die "[Tesh/CRITICAL] Unable to open $tesh_file $!\n";
+}
 
 my %cmd; # everything about the next command to run
 my $line_num=0;
-LINE: while (defined(my $line=<TESH_FILE>)) {
+LINE: while (defined(my $line=<TESH_FILE>) or defined(my $line=<>)) {
     $line_num++;
     chomp $line;
     print "[TESH/debug] $line_num: $line\n" if $opts{'debug'};
@@ -412,10 +431,16 @@ LINE: while (defined(my $line=<TESH_FILE>)) {
     }
 }
 
+
+
 # Deal with last command
 if (defined($cmd{'cmd'})) {
     exec_cmd(\%cmd);
     %cmd = ();
+}
+
+if($tesh_file eq "(stdin)"){
+        print "Test suite from stdin OK\n";
 }
 
 #my (@a,@b);
