@@ -21,6 +21,8 @@
 
 #include "simgrid/sg_config.h"
 
+#include <stdio.h>
+
 XBT_LOG_NEW_CATEGORY(xbt, "All XBT categories (simgrid toolbox)");
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(module, xbt, "module handling");
 
@@ -84,6 +86,10 @@ static void xbt_preinit(void) {
 
 #ifdef MMALLOC_WANT_OVERRIDE_LEGACY
   mmalloc_preinit();
+#endif
+#ifdef _TWO_DIGIT_EXPONENT
+  /* Even printf behaves differently on Windows... */
+  _set_output_format(_TWO_DIGIT_EXPONENT);
 #endif
   xbt_log_preinit();
   xbt_backtrace_preinit();
