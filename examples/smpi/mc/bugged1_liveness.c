@@ -65,7 +65,7 @@ int main(int argc, char **argv){
       }else{
         if(!xbt_dynar_is_empty(requests)){
           printf("CS release. Grant to queued requests (queue size: %lu)", xbt_dynar_length(requests));
-          xbt_dynar_pop(requests, &recv_buff);
+          xbt_dynar_shift(requests, &recv_buff);
           if(recv_buff != 1){
             MPI_Send(&rank, 1, MPI_INT, recv_buff, GRANT_TAG, MPI_COMM_WORLD);
             CS_used = 1;

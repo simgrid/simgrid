@@ -51,7 +51,7 @@ int coordinator(int argc, char *argv[])
     } else {      
       if (!xbt_dynar_is_empty(requests)) {
         XBT_INFO("CS release. Grant to queued requests (queue size: %lu)", xbt_dynar_length(requests));
-        xbt_dynar_pop(requests, &req);
+        xbt_dynar_shift(requests, &req);
         if(strcmp(req, "1") != 0){
           MSG_task_send(MSG_task_create("grant", 0, 1000, NULL), req);
         }else{
