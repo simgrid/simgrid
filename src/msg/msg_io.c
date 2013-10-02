@@ -326,5 +326,9 @@ void *MSG_storage_get_data(msg_storage_t storage)
 xbt_dict_t MSG_storage_get_content(msg_storage_t storage)
 {
   return SIMIX_storage_get_content(storage);
-  //return (simcall_storage_get_properties(storage));
+}
+
+sg_storage_size_t MSG_storage_get_size(msg_storage_t storage)
+{
+  return SIMIX_storage_get_size(storage);
 }

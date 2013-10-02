@@ -203,15 +203,20 @@ static xbt_dict_t storage_get_content(void *storage)
   /* For the moment this action has no cost, but in the future we could take in account access latency of the disk */
   /*surf_action_t action = storage_action_execute(storage,0, LS);*/
 
-  void *st = surf_storage_resource_priv(storage);
+  void *storage_resource = surf_storage_resource_priv(storage);
   xbt_dict_t content_dict = xbt_dict_new_homogeneous(NULL);
   xbt_dict_cursor_t cursor = NULL;
   char *file;
   char *size;
-  xbt_dict_foreach(((storage_t)st)->content, cursor, file, size){
+  xbt_dict_foreach(((storage_t)storage_resource)->content, cursor, file, size){
     xbt_dict_set(content_dict,file,(void*)size,NULL);
   }
   return content_dict;
+}
+
+static sg_storage_size_t storage_get_size(void *storage){
+  void *storage_resource = surf_storage_resource_priv(storage);
+  return ((storage_t)storage_resource)->size;
 }
 
 static void* storage_create_resource(const char* id, const char* model,
@@ -522,11 +527,10 @@ static void surf_storage_model_init_internal(void)
   surf_storage_model->extension.storage.ls = storage_action_ls;
   surf_storage_model->extension.storage.get_properties = storage_get_properties;
   surf_storage_model->extension.storage.get_content = storage_get_content;
-
+  surf_storage_model->extension.storage.get_size = storage_get_size;
   if (!storage_maxmin_system) {
     storage_maxmin_system = lmm_system_new(storage_selective_update);
   }
-
 }
 
 void surf_storage_model_init_default(void)

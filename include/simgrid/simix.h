@@ -499,6 +499,7 @@ XBT_PUBLIC(void) SIMIX_storage_set_data(smx_storage_t storage, void *data);
 XBT_PUBLIC(xbt_dict_t) SIMIX_storage_get_content(smx_storage_t storage);
 XBT_PUBLIC(xbt_dict_t) simcall_storage_get_content(smx_storage_t storage);
 XBT_PUBLIC(const char*) SIMIX_storage_get_name(smx_host_t host);
+XBT_PUBLIC(sg_storage_size_t) SIMIX_storage_get_size(smx_storage_t storage);
 /************************** AS router   **********************************/
 XBT_PUBLIC(xbt_dict_t) SIMIX_asr_get_properties(const char *name);
 /************************** AS router simcalls ***************************/

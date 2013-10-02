@@ -106,6 +106,7 @@ XBT_PUBLIC(xbt_dynar_t) MSG_storages_as_dynar(void);
 XBT_PUBLIC(msg_error_t) MSG_storage_set_data(msg_storage_t host, void *data);
 XBT_PUBLIC(void *) MSG_storage_get_data(msg_storage_t storage);
 XBT_PUBLIC(xbt_dict_t) MSG_storage_get_content(msg_storage_t storage);
+XBT_PUBLIC(sg_storage_size_t) MSG_storage_get_size(msg_storage_t storage);
 /************************** AS Router handling ************************************/
 XBT_PUBLIC(const char *) MSG_as_router_get_property_value(const char* asr, const char *name);
 XBT_PUBLIC(xbt_dict_t) MSG_as_router_get_properties(const char* asr);

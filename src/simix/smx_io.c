@@ -352,6 +352,11 @@ xbt_dict_t SIMIX_storage_get_content(smx_storage_t storage){
   return surf_storage_model->extension.storage.get_content(storage);
 }
 
+sg_storage_size_t SIMIX_storage_get_size(smx_storage_t storage){
+  xbt_assert((storage != NULL), "Invalid parameters (simix storage is NULL)");
+  return surf_storage_model->extension.storage.get_size(storage);
+}
+
 void SIMIX_post_io(smx_action_t action)
 {
   xbt_fifo_item_t i;
