@@ -440,6 +440,8 @@ if (defined($cmd{'cmd'})) {
 #push @a,"AZE"; push @b,"EZA";
 #print "Different:\n".build_diff(\@a,\@b);
 
+use lib "@CMAKE_BINARY_DIR@/bin" ;
+
 use Diff qw(diff); # postpone a bit to have time to change INC
 
 sub build_diff {
