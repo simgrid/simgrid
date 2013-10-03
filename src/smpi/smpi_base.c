@@ -219,6 +219,7 @@ static MPI_Request build_request(void *buf, int count,
   request->flags = flags;
   request->detached = 0;
   request->detached_sender = NULL;
+  request->real_src = 0;
 
   request->truncated = 0;
   request->real_size = 0;
