@@ -2,14 +2,14 @@
 
 /* This is always part of SG, never of RL. Content:                         */
 /*  - a bunch of stub functions of the thread related function that we need */
-/*    to add to the lib to please the linker when using ucontextes.         */
+/*    to add to the lib to please the linker when using ucontexts.          */
 /*  - a bunch of stub functions of the java related function when we don't  */
 /*    compile java bindings.                                                */
 
 /* In RL, java is useless, and threads are always part of the picture,      */
 /*  ucontext never */
 
-/* Copyright (c) 2007-2010. The SimGrid Team.
+/* Copyright (c) 2007-2010, 2013. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it

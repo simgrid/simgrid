@@ -1,4 +1,4 @@
-/* context_raw - fast context switching inspired from System V ucontextes   */
+/* context_raw - fast context switching inspired from System V ucontexts   */
 
 /* Copyright (c) 2009-2013. The SimGrid Team.
  * All rights reserved.                                                     */
