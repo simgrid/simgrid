@@ -308,6 +308,7 @@ static int compare_local_variables(mc_snapshot_stack_t stack1, mc_snapshot_stack
       current_var2 = (local_variable_t)xbt_dynar_get_as(stack2->local_variables, cursor, local_variable_t);
       if(strcmp(current_var1->name, current_var2->name) != 0 || strcmp(current_var1->frame, current_var2->frame) != 0 || current_var1->ip != current_var2->ip){
         xbt_dynar_free(&compared_pointers);
+        XBT_VERB("Different name of variable (%s - %s) or frame (%s - %s) or ip (%lu - %lu)", current_var1->name, current_var2->name, current_var1->frame, current_var2->frame, current_var1->ip, current_var2->ip);
         return 1;
       }
       offset1 = (char *)current_var1->address - (char *)std_heap;
