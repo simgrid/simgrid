@@ -84,6 +84,8 @@ add_subdirectory(${CMAKE_HOME_DIRECTORY}/teshsuite/simdag/network/p2p)
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/teshsuite/simdag/partask)
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/teshsuite/simdag/platforms)
 
+add_subdirectory(${CMAKE_HOME_DIRECTORY}/teshsuite/simix)
+
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/teshsuite/smpi)
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich3-test)
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich3-test/attr)
