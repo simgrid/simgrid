@@ -6,7 +6,6 @@
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/lua)
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/msg)
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/xbt)
-add_subdirectory(${CMAKE_HOME_DIRECTORY}/teshsuite)
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/tools)
 ##################################################################
 
