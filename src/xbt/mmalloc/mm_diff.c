@@ -130,11 +130,14 @@ static int compare_backtrace(int b1, int f1, int b2, int f2){
 /*********************************** Heap comparison ***********************************/
 /***************************************************************************************/
 
+typedef char* type_name;
+
 __thread void *s_heap = NULL, *heapbase1 = NULL, *heapbase2 = NULL;
 __thread malloc_info *heapinfo1 = NULL, *heapinfo2 = NULL;
 __thread size_t heaplimit = 0, heapsize1 = 0, heapsize2 = 0;
 __thread xbt_dynar_t to_ignore1 = NULL, to_ignore2 = NULL;
 __thread heap_area_t **equals_to1, **equals_to2;
+__thread type_name **types1, **types2;
 
 /*********************************** Free functions ************************************/
 
@@ -334,12 +337,25 @@ int init_heap_information(xbt_mheap_t heap1, xbt_mheap_t heap2, xbt_dynar_t i1, 
       equals_to1[i][j] = NULL;
   }
 
-
   equals_to2 = malloc(heaplimit * sizeof(heap_area_t *));
   for(i=0; i<=heaplimit; i++){
     equals_to2[i] = malloc(MAX_FRAGMENT_PER_BLOCK * sizeof(heap_area_t));
     for(j=0; j<MAX_FRAGMENT_PER_BLOCK; j++)
       equals_to2[i][j] = NULL;
+  }
+
+  types1 = malloc(heaplimit * sizeof(type_name *));
+  for(i=0; i<=heaplimit; i++){
+    types1[i] = malloc(MAX_FRAGMENT_PER_BLOCK * sizeof(type_name));
+    for(j=0; j<MAX_FRAGMENT_PER_BLOCK; j++)
+      types1[i][j] = NULL;
+  }
+
+  types2 = malloc(heaplimit * sizeof(type_name *));
+  for(i=0; i<=heaplimit; i++){
+    types2[i] = malloc(MAX_FRAGMENT_PER_BLOCK * sizeof(type_name));
+    for(j=0; j<MAX_FRAGMENT_PER_BLOCK; j++)
+      types2[i][j] = NULL;
   }
 
   if(MC_is_active()){
@@ -355,6 +371,8 @@ int init_heap_information(xbt_mheap_t heap1, xbt_mheap_t heap2, xbt_dynar_t i1, 
     MC_ignore_global_variable("to_ignore2");
     MC_ignore_global_variable("equals_to1");
     MC_ignore_global_variable("equals_to2");
+    MC_ignore_global_variable("types1");
+    MC_ignore_global_variable("types2");
   }
 
   return 0;
@@ -371,19 +389,28 @@ void reset_heap_information(){
       equals_to1[i][j] = NULL;
       heap_area_free(equals_to2[i][j]);
       equals_to2[i][j] = NULL;
+      xbt_free(types1[i][j]);
+      types1[i][j] = NULL;
+      xbt_free(types2[i][j]);
+      types2[i][j] = NULL;
     }
     free(equals_to1[i]);
     free(equals_to2[i]);
+    free(types1[i]);
+    free(types2[i]);
   }
 
   free(equals_to1);
   free(equals_to2);
+  free(types1);
+  free(types2);
 
   s_heap = NULL, heapbase1 = NULL, heapbase2 = NULL;
   heapinfo1 = NULL, heapinfo2 = NULL;
   heaplimit = 0, heapsize1 = 0, heapsize2 = 0;
   to_ignore1 = NULL, to_ignore2 = NULL;
   equals_to1 = NULL, equals_to2 = NULL;
+  types1 = NULL, types2 = NULL;
 
 }
 
@@ -709,8 +736,9 @@ static int compare_heap_area_without_type(void *real_area1, void *real_area2, vo
       }else if((addr_pointed1 > s_heap) && ((char *)addr_pointed1 < (char *)s_heap + STD_HEAP_SIZE) 
                && (addr_pointed2 > s_heap) && ((char *)addr_pointed2 < (char *)s_heap + STD_HEAP_SIZE)){
         res_compare = compare_heap_area(addr_pointed1, addr_pointed2, previous, all_types, other_types, NULL, 0); 
-        if(res_compare == 1)
+        if(res_compare == 1){
           return res_compare;
+        }
         i = pointer_align + sizeof(void *);
         continue;
       }else{
@@ -737,8 +765,9 @@ static int compare_heap_area_with_type(void *real_area1, void *real_area2, void 
 
   size_t ignore1, ignore2;
 
-  if((check_ignore > 0) && ((ignore1 = heap_comparison_ignore_size(to_ignore1, real_area1)) > 0) && ((ignore2 = heap_comparison_ignore_size(to_ignore2, real_area2))  == ignore1))
+  if((check_ignore > 0) && ((ignore1 = heap_comparison_ignore_size(to_ignore1, real_area1)) > 0) && ((ignore2 = heap_comparison_ignore_size(to_ignore2, real_area2))  == ignore1)){
     return 0;
+  }
   
   dw_type_t type = xbt_dict_get_or_null(all_types, type_id);
   dw_type_t subtype, subsubtype;
@@ -750,8 +779,6 @@ static int compare_heap_area_with_type(void *real_area1, void *real_area2, void 
 
   switch(type->type){
   case e_dw_base_type:
-    if((check_ignore > 0) && ((ignore1 = heap_comparison_ignore_size(to_ignore1, real_area1)) > 0) && ((ignore2 = heap_comparison_ignore_size(to_ignore2, real_area2))  == ignore1))
-      return 0;
     if(strcmp(type->name, "char") == 0){ /* String, hence random (arbitrary ?) size */
       if(real_area1 == real_area2)
         return -1;
@@ -760,13 +787,12 @@ static int compare_heap_area_with_type(void *real_area1, void *real_area2, void 
     }else{
       if(area_size != -1 && type->size != area_size)
         return -1;
-      else
-        return (memcmp(area1, area2, type->size) != 0);
+      else{
+        return  (memcmp(area1, area2, type->size) != 0);
+      }
     }
     break;
   case e_dw_enumeration_type:
-    if((check_ignore > 0) && ((ignore1 = heap_comparison_ignore_size(to_ignore1, real_area1)) > 0) && ((ignore2 = heap_comparison_ignore_size(to_ignore2, real_area2))  == ignore1))
-      return 0;
     if(area_size != -1 && type->size != area_size)
       return -1;
     else
@@ -815,7 +841,7 @@ static int compare_heap_area_with_type(void *real_area1, void *real_area2, void 
       return 0;
       break;
     }
-    for(i=0; i<type->size; i++){
+    for(i=0; i<type->size; i++){ 
       if(switch_types)
         res = compare_heap_area_with_type((char *)real_area1 + (i*elm_size), (char *)real_area2 + (i*elm_size), (char *)area1 + (i*elm_size), (char *)area2 + (i*elm_size), previous, other_types, all_types, type->dw_type_id, type->size, check_ignore, pointer_level);
       else
@@ -832,7 +858,7 @@ static int compare_heap_area_with_type(void *real_area1, void *real_area2, void 
     }else{
       pointer_level++;
       if(pointer_level > 1){ /* Array of pointers */
-        for(i=0; i<(area_size/sizeof(void *)); i++){
+        for(i=0; i<(area_size/sizeof(void *)); i++){ 
           addr_pointed1 = *((void **)((char *)area1 + (i*sizeof(void *)))); 
           addr_pointed2 = *((void **)((char *)area2 + (i*sizeof(void *)))); 
           if(addr_pointed1 > s_heap && (char *)addr_pointed1 < (char*) s_heap + STD_HEAP_SIZE && addr_pointed2 > s_heap && (char *)addr_pointed2 < (char*) s_heap + STD_HEAP_SIZE)
@@ -864,7 +890,7 @@ static int compare_heap_area_with_type(void *real_area1, void *real_area2, void 
     }
     if(area_size != -1 && type->size != area_size){
       if(area_size>type->size && area_size%type->size == 0){
-        for(i=0; i<(area_size/type->size); i++){
+        for(i=0; i<(area_size/type->size); i++){ 
           if(switch_types)
             res = compare_heap_area_with_type((char *)real_area1 + (i*type->size), (char *)real_area2 + (i*type->size), (char *)area1 + (i*type->size), (char *)area2 + (i*type->size), previous, other_types, all_types, type_id, -1, check_ignore, 0); 
           else
@@ -877,21 +903,19 @@ static int compare_heap_area_with_type(void *real_area1, void *real_area2, void 
       }
     }else{
       cursor = 0;
-      xbt_dynar_foreach(type->members, cursor, member){
+      xbt_dynar_foreach(type->members, cursor, member){ 
         if(switch_types)
           res = compare_heap_area_with_type((char *)real_area1 + member->offset, (char *)real_area2 + member->offset, (char *)area1 + member->offset, (char *)area2 + member->offset, previous, other_types, all_types, member->dw_type_id, -1, check_ignore, 0);
         else
           res = compare_heap_area_with_type((char *)real_area1 + member->offset, (char *)real_area2 + member->offset, (char *)area1 + member->offset, (char *)area2 + member->offset, previous, all_types, other_types, member->dw_type_id, -1, check_ignore, 0);  
-        if(res == 1)
+        if(res == 1){
           return res;
+        }
       }
     }
     break;
   case e_dw_union_type:
-    if((check_ignore > 0) && ((ignore1 = heap_comparison_ignore_size(to_ignore1, real_area1)) > 0) && ((ignore2 = heap_comparison_ignore_size(to_ignore2, real_area2))  == ignore1))
-      return 0;
-    else
-      return compare_heap_area_without_type(real_area1, real_area2, area1, area2, previous, all_types, other_types, type->size, check_ignore);
+    return compare_heap_area_without_type(real_area1, real_area2, area1, area2, previous, all_types, other_types, type->size, check_ignore);
     break;
   case e_dw_volatile_type:
     return compare_heap_area_with_type(real_area1, real_area2, area1, area2, previous, all_types, other_types, type->dw_type_id, area_size, check_ignore, pointer_level);
@@ -904,6 +928,41 @@ static int compare_heap_area_with_type(void *real_area1, void *real_area2, void 
 
 }
 
+static char* get_offset_type(char* type_id, int offset, xbt_dict_t all_types, xbt_dict_t other_types, int area_size){
+  dw_type_t type = xbt_dict_get_or_null(all_types, type_id);
+  char* type_desc;
+  switch(type->type){
+  case e_dw_structure_type :
+    if(type->size == 0){ /*declaration of the structure, need the complete description */
+      type_desc = get_type_description(all_types, type->name);
+      if(type_desc){
+        type = xbt_dict_get_or_null(all_types, type_desc);
+      }else{
+        type = xbt_dict_get_or_null(other_types, get_type_description(other_types, type->name));
+      }
+    }
+    if(area_size != -1 && type->size != area_size){
+      if(area_size>type->size && area_size%type->size == 0)
+        return type_id;
+      else
+        return NULL;
+    }else{
+      unsigned int cursor = 0;
+      dw_type_t member;
+      xbt_dynar_foreach(type->members, cursor, member){ 
+        if(member->offset == offset)
+          return member->dw_type_id;
+      }
+      return NULL;
+    }
+    break;
+  default:
+    /* FIXME : other cases ? */
+    return NULL;
+    break;
+  }
+}
+
 int compare_heap_area(void *area1, void* area2, xbt_dynar_t previous, xbt_dict_t all_types, xbt_dict_t other_types, char *type_id, int pointer_level){
 
   int res_compare;
@@ -911,11 +970,14 @@ int compare_heap_area(void *area1, void* area2, xbt_dynar_t previous, xbt_dict_t
   ssize_t size;
   int check_ignore = 0;
 
-  void *addr_block1, *addr_block2, *addr_frag1, *addr_frag2;
+  void *addr_block1, *addr_block2, *addr_frag1, *addr_frag2, *real_addr_block1, *real_addr_block2,  *real_addr_frag1, *real_addr_frag2;
   void *area1_to_compare, *area2_to_compare;
   dw_type_t type = NULL;
   char *type_desc;
   int type_size = -1;
+  int offset1 =0, offset2 = 0;
+  int new_size1 = -1, new_size2 = -1;
+  char *new_type_id1 = NULL, *new_type_id2 = NULL;
 
   int match_pairs = 0;
 
@@ -946,6 +1008,9 @@ int compare_heap_area(void *area1, void* area2, xbt_dynar_t previous, xbt_dict_t
   addr_block1 = ((void*) (((ADDR2UINT(block1)) - 1) * BLOCKSIZE + (char*)heapbase1));
   addr_block2 = ((void*) (((ADDR2UINT(block2)) - 1) * BLOCKSIZE + (char*)heapbase2));
 
+  real_addr_block1 = ((void*) (((ADDR2UINT(block1)) - 1) * BLOCKSIZE + (char*)((xbt_mheap_t)s_heap)->heapbase));
+  real_addr_block2 = ((void*) (((ADDR2UINT(block2)) - 1) * BLOCKSIZE + (char*)((xbt_mheap_t)s_heap)->heapbase));
+
   if(type_id){
     type = xbt_dict_get_or_null(all_types, type_id);
     if(type->size == 0){
@@ -973,8 +1038,8 @@ int compare_heap_area(void *area1, void* area2, xbt_dynar_t previous, xbt_dict_t
     }
     return 0;
 
-  }else if((heapinfo1[block1].type == 0) && (heapinfo2[block2].type == 0)){ /* Complete block */
-
+  }else if((heapinfo1[block1].type == 0) && (heapinfo2[block2].type == 0)){ /* Complete block */ 
+    
     if(equals_to1[block1][0] != NULL && equals_to2[block2][0] != NULL){
       if(equal_blocks(block1, block2)){
         if(match_pairs){
@@ -986,7 +1051,7 @@ int compare_heap_area(void *area1, void* area2, xbt_dynar_t previous, xbt_dict_t
     }
 
     if(type_size != -1){
-      if(type_size != heapinfo1[block1].busy_block.busy_size && type_size != heapinfo2[block2].busy_block.busy_size && strcmp(type->name, "s_smx_context") != 0)
+      if(type_size != heapinfo1[block1].busy_block.busy_size && type_size != heapinfo2[block2].busy_block.busy_size && !strcmp(type->name, "s_smx_context"))
         return -1;
     }
 
@@ -1013,6 +1078,13 @@ int compare_heap_area(void *area1, void* area2, xbt_dynar_t previous, xbt_dict_t
     }
  
     size = heapinfo1[block1].busy_block.busy_size;
+    
+    if(type_id != NULL){
+      free(types1[block1][0]);
+      free(types2[block2][0]);
+      types1[block1][0] = strdup(type_id);
+      types2[block2][0] = strdup(type_id);
+    }
 
     if(size <= 0){
       if(match_pairs){
@@ -1035,12 +1107,12 @@ int compare_heap_area(void *area1, void* area2, xbt_dynar_t previous, xbt_dict_t
 
     frag1 = ((uintptr_t) (ADDR2UINT (area1) % (BLOCKSIZE))) >> heapinfo1[block1].type;
     frag2 = ((uintptr_t) (ADDR2UINT (area2) % (BLOCKSIZE))) >> heapinfo2[block2].type;
-      
+
     addr_frag1 = (void*) ((char *)addr_block1 + (frag1 << heapinfo1[block1].type));
     addr_frag2 = (void*) ((char *)addr_block2 + (frag2 << heapinfo2[block2].type));
-      
-    area1_to_compare = addr_frag1;
-    area2_to_compare = addr_frag2;
+
+    real_addr_frag1 = (void*) ((char *)real_addr_block1 + (frag1 << ((xbt_mheap_t)s_heap)->heapinfo[block1].type));
+    real_addr_frag2 = (void*) ((char *)real_addr_block2 + (frag2 << ((xbt_mheap_t)s_heap)->heapinfo[block1].type));
 
     if(type_size != -1){
       if(heapinfo1[block1].busy_frag.frag_size[frag1] == -1 || heapinfo2[block2].busy_frag.frag_size[frag2] == -1)
@@ -1070,15 +1142,58 @@ int compare_heap_area(void *area1, void* area2, xbt_dynar_t previous, xbt_dict_t
       }
     }
       
-    if(!add_heap_area_pair(previous, block1, frag1, block2, frag2)){
-      if(match_pairs){
-        match_equals(previous);
-        xbt_dynar_free(&previous);
-      }
-      return 0;
+    size = heapinfo1[block1].busy_frag.frag_size[frag1];
+
+    if(type_id != NULL){
+      free(types1[block1][frag1]);
+      free(types2[block2][frag2]);
+      types1[block1][frag1] = strdup(type_id);
+      types2[block2][frag2] = strdup(type_id);
     }
 
-    size = heapinfo1[block1].busy_frag.frag_size[frag1];
+    if(real_addr_frag1 != area1 || real_addr_frag2 != area2){
+      offset1 = (char *)area1 - (char *)real_addr_frag1;
+      offset2 = (char *)area2 - (char *)real_addr_frag2;
+      if(types1[block1][frag1] != NULL && types2[block2][frag2] != NULL){
+        new_type_id1 = get_offset_type(types1[block1][frag1], offset1, all_types, other_types, size);
+        new_type_id2 = get_offset_type(types2[block2][frag2], offset1, all_types, other_types, size);
+      }else if(types1[block1][frag1] != NULL){
+        new_type_id1 = get_offset_type(types1[block1][frag1], offset1, all_types, other_types, size);
+        new_type_id2 = get_offset_type(types1[block1][frag1], offset2, all_types, other_types, size);       
+      }else if(types2[block2][frag2] != NULL){
+        new_type_id1 = get_offset_type(types2[block2][frag2], offset1, all_types, other_types, size);
+        new_type_id2 = get_offset_type(types2[block2][frag2], offset2, all_types, other_types, size);
+      }   
+
+      if(new_type_id1 !=  NULL && new_type_id2 !=  NULL && !strcmp(new_type_id1, new_type_id2)){
+        type = xbt_dict_get_or_null(all_types, new_type_id1);
+        while(type->size == 0 && type->dw_type_id != NULL)
+          type = xbt_dict_get_or_null(all_types, type->dw_type_id);
+        new_size1 = type->size;
+        type = xbt_dict_get_or_null(all_types, new_type_id2);
+        while(type->size == 0 && type->dw_type_id != NULL)
+          type = xbt_dict_get_or_null(all_types, type->dw_type_id);
+        new_size2 = type->size;
+      }
+    }
+
+    area1_to_compare = (char *)addr_frag1 + offset1;
+    area2_to_compare = (char *)addr_frag2 + offset2;
+    
+    if(new_size1 > 0 && new_size1 == new_size2){
+      type_id = new_type_id1;
+      size = new_size1;
+    }
+
+    if(offset1 == 0 && offset2 == 0){
+      if(!add_heap_area_pair(previous, block1, frag1, block2, frag2)){
+        if(match_pairs){
+          match_equals(previous);
+          xbt_dynar_free(&previous);
+        }
+        return 0;
+      }
+    }
 
     if(size <= 0){
       if(match_pairs){
@@ -1104,14 +1219,14 @@ int compare_heap_area(void *area1, void* area2, xbt_dynar_t previous, xbt_dict_t
   /* Start comparison*/
   if(type_id != NULL){
     res_compare = compare_heap_area_with_type(area1, area2, area1_to_compare, area2_to_compare, previous, all_types, other_types, type_id, size, check_ignore, pointer_level);
-    if(res_compare != 0){
+    if(res_compare == 1){
       if(match_pairs)
         xbt_dynar_free(&previous);
       return res_compare;
     }
   }else{
     res_compare = compare_heap_area_without_type(area1, area2, area1_to_compare, area2_to_compare, previous, all_types, other_types, size, check_ignore);
-    if(res_compare != 0){
+    if(res_compare == 1){
       if(match_pairs)
         xbt_dynar_free(&previous);
       return res_compare;
