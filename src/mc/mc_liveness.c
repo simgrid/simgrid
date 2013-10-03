@@ -117,17 +117,32 @@ static int is_reached_acceptance_pair(mc_pair_t pair){
     }
 
     int min = -1, max = -1, index;
-    int res;
+    //int res;
     mc_pair_t pair_test;
-    
+    int cursor;
+
     index = get_search_interval(acceptance_pairs, pair, &min, &max);
 
-    if(min != -1 && max != -1){ /* Acceptance pair with same number of processes and same heap bytes used exists */
-      res = xbt_parmap_mc_apply(parmap, snapshot_compare, xbt_dynar_get_ptr(acceptance_pairs, min), (max-min)+1, pair);
+    if(min != -1 && max != -1){ // Acceptance pair with same number of processes and same heap bytes used exists
+      /*res = xbt_parmap_mc_apply(parmap, snapshot_compare, xbt_dynar_get_ptr(acceptance_pairs, min), (max-min)+1, pair);
       if(res != -1){
         if(!raw_mem_set)
           MC_UNSET_RAW_MEM;
         return ((mc_pair_t)xbt_dynar_get_as(acceptance_pairs, (min+res)-1, mc_pair_t))->num;
+        }*/
+      cursor = min;
+      while(cursor <= max){
+        pair_test = (mc_pair_t)xbt_dynar_get_as(acceptance_pairs, cursor, mc_pair_t);
+        if(xbt_automaton_state_compare(pair_test->automaton_state, pair->automaton_state) == 0){
+          if(xbt_automaton_propositional_symbols_compare_value(pair_test->atomic_propositions, pair->atomic_propositions) == 0){
+            if(snapshot_compare(pair_test, pair) == 0){
+              if(!raw_mem_set)
+                MC_UNSET_RAW_MEM;
+              return pair_test->num;
+            }
+          }
+        }
+        cursor++;
       }
       xbt_dynar_insert_at(acceptance_pairs, min, &pair);
     }else{
@@ -279,13 +294,14 @@ static int is_visited_pair(mc_pair_t pair){
       pair->graph_state->system_state = MC_take_snapshot();
 
     int min = -1, max = -1, index;
-    int res;
+    //int res;
     mc_pair_t pair_test;
+    int cursor;
 
     index = get_search_interval(visited_pairs, pair, &min, &max);
 
-    if(min != -1 && max != -1){ /* Visited pair with same number of processes and same heap bytes used exists */
-      res = xbt_parmap_mc_apply(parmap, snapshot_compare, xbt_dynar_get_ptr(visited_pairs, min), (max-min)+1, pair);
+    if(min != -1 && max != -1){ // Visited pair with same number of processes and same heap bytes used exists
+      /*res = xbt_parmap_mc_apply(parmap, snapshot_compare, xbt_dynar_get_ptr(visited_pairs, min), (max-min)+1, pair);
       if(res != -1){
         pair_test = (mc_pair_t)xbt_dynar_get_as(visited_pairs, (min+res)-1, mc_pair_t);
         if(pair_test->other_num == -1)
@@ -311,6 +327,40 @@ static int is_visited_pair(mc_pair_t pair){
         if(!raw_mem_set)
           MC_UNSET_RAW_MEM;
         return pair->other_num;
+        }*/
+      cursor = min;
+      while(cursor <= max){
+        pair_test = (mc_pair_t)xbt_dynar_get_as(visited_pairs, cursor, mc_pair_t);
+        if(xbt_automaton_state_compare(pair_test->automaton_state, pair->automaton_state) == 0){
+          if(xbt_automaton_propositional_symbols_compare_value(pair_test->atomic_propositions, pair->atomic_propositions) == 0){
+            if(snapshot_compare(pair_test, pair) == 0){
+              if(pair_test->other_num == -1)
+                pair->other_num = pair_test->num;
+              else
+                pair->other_num = pair_test->other_num;
+              if(dot_output == NULL)
+                XBT_DEBUG("Pair %d already visited ! (equal to pair %d)", pair->num, pair_test->num);
+              else
+                XBT_DEBUG("Pair %d already visited ! (equal to pair %d (pair %d in dot_output))", pair->num, pair_test->num, pair->other_num);
+              xbt_dynar_remove_at(visited_pairs, cursor, NULL);
+              xbt_dynar_insert_at(visited_pairs, cursor, &pair);
+              pair_test->visited_removed = 1;
+              if(pair_test->stack_removed && pair_test->visited_removed){
+                if((pair_test->automaton_state->type == 1) || (pair_test->automaton_state->type == 2)){
+                  if(pair_test->acceptance_removed){
+                    MC_pair_delete(pair_test);
+                  }
+                }else{
+                  MC_pair_delete(pair_test);
+                }
+              }
+              if(!raw_mem_set)
+                MC_UNSET_RAW_MEM;
+              return pair->other_num;
+            }
+          }
+        }
+        cursor++;
       }
       xbt_dynar_insert_at(visited_pairs, min, &pair);
     }else{

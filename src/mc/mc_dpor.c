@@ -118,13 +118,14 @@ static int is_visited_state(){
   }else{
 
     int min = -1, max = -1, index;
-    int res;
+    //int res;
     mc_visited_state_t state_test;
+    int cursor;
 
     index = get_search_interval(visited_states, new_state, &min, &max);
 
     if(min != -1 && max != -1){
-      res = xbt_parmap_mc_apply(parmap, snapshot_compare, xbt_dynar_get_ptr(visited_states, min), (max-min)+1, new_state);
+      /*res = xbt_parmap_mc_apply(parmap, snapshot_compare, xbt_dynar_get_ptr(visited_states, min), (max-min)+1, new_state);
       if(res != -1){
         state_test = (mc_visited_state_t)xbt_dynar_get_as(visited_states, (min+res)-1, mc_visited_state_t);
         if(state_test->other_num == -1)
@@ -140,7 +141,27 @@ static int is_visited_state(){
         if(!raw_mem_set)
           MC_UNSET_RAW_MEM;
         return new_state->other_num;
-      } 
+        }*/
+      cursor = min;
+      while(cursor <= max){
+        state_test = (mc_visited_state_t)xbt_dynar_get_as(visited_states, cursor, mc_visited_state_t);
+        if(snapshot_compare(state_test, new_state) == 0){
+          if(state_test->other_num == -1)
+            new_state->other_num = state_test->num;
+          else
+            new_state->other_num = state_test->other_num;
+          if(dot_output == NULL)
+            XBT_DEBUG("State %d already visited ! (equal to state %d)", new_state->num, state_test->num);
+          else
+            XBT_DEBUG("State %d already visited ! (equal to state %d (state %d in dot_output))", new_state->num, state_test->num, new_state->other_num);
+          xbt_dynar_remove_at(visited_states, cursor, NULL);
+          xbt_dynar_insert_at(visited_states, cursor, &new_state);
+          if(!raw_mem_set)
+            MC_UNSET_RAW_MEM;
+          return new_state->other_num;
+        }
+        cursor++;
+      }
       xbt_dynar_insert_at(visited_states, min, &new_state);
     }else{
       state_test = (mc_visited_state_t)xbt_dynar_get_as(visited_states, index, mc_visited_state_t);
