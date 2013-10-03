@@ -233,7 +233,7 @@ $ cat ${srcdir:=.}/dag.trace
 
 $ rm -f dag.trace
 
-! expect signal SIGABRT
+! expect return 2
 $ $SG_TEST_EXENV ./simulate_dot --log=no_loc  "--log=sd_dotparse.thres:verbose" ${srcdir:=.}/../2clusters.xml ${srcdir:=.}/dag_with_bad_schedule.dot
 > [0.000000] [surf_workstation/INFO] surf_workstation_model_init_ptask_L07
 > [0.000000] [sd_dotparse/VERBOSE] The schedule is ignored, the task end is not correctly scheduled
@@ -242,7 +242,7 @@ $ $SG_TEST_EXENV ./simulate_dot --log=no_loc  "--log=sd_dotparse.thres:verbose" 
 > [0.000000] [sd_dotparse/VERBOSE] The schedule is ignored, the task 3 is not correctly scheduled
 > [0.000000] [sd_dotparse/VERBOSE] The schedule is ignored, the task root is not correctly scheduled
 > [0.000000] [sd_dotparse/WARNING] The scheduling is ignored
-> [0.000000] [xbt/CRITICAL] The dot file with the provided scheduling is wrong, more information with the option : --log=sd_dotparse.thres:verbose
+> [0.000000] [test/CRITICAL] The dot file with the provided scheduling is wrong, more information with the option : --log=sd_dotparse.thres:verbose
 
 $ $SG_TEST_EXENV ./simulate_dot --log=no_loc ${srcdir:=.}/../2clusters.xml ${srcdir:=.}/dag_with_good_schedule.dot
 > [0.000000] [surf_workstation/INFO] surf_workstation_model_init_ptask_L07
@@ -491,7 +491,7 @@ $ cat ${srcdir:=.}/dag_with_good_schedule.trace
 
 $ rm -f ${srcdir:=.}/dag_with_good_schedule.trace
 
-! expect signal SIGABRT
+! expect return 2
 $ $SG_TEST_EXENV ./dot_test --log=no_loc ${srcdir:=.}/../2clusters.xml ${srcdir:=.}/dag_with_cycle.dot
 > [0.000000] [surf_workstation/INFO] surf_workstation_model_init_ptask_L07
 > [0.000000] [sd_daxparse/WARNING] the task root is not marked
@@ -503,4 +503,4 @@ $ $SG_TEST_EXENV ./dot_test --log=no_loc ${srcdir:=.}/../2clusters.xml ${srcdir:
 > [0.000000] [sd_daxparse/WARNING] the task 5 is in a cycle
 > [0.000000] [sd_daxparse/WARNING] the task 6 is in a cycle
 > [0.000000] [sd_dotparse/ERROR] The DOT described in dag_with_cycle.dot is not a DAG. It contains a cycle.
-> [0.000000] [xbt/CRITICAL] No dot load may be you have a cycle in your graph
+> [0.000000] [test/CRITICAL] No dot load may be you have a cycle in your graph
