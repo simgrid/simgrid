@@ -203,10 +203,15 @@ static void set_acceptance_pair_reached(mc_pair_t pair){
       }
     }
 
-    if(bytes_used_test < current_bytes_used)
-      xbt_dynar_insert_at(acceptance_pairs, cursor + 1, &pair);
-    else
-      xbt_dynar_insert_at(acceptance_pairs, cursor, &pair);    
+    if(pair_test->nb_processes < pair->nb_processes){
+      xbt_dynar_insert_at(acceptance_pairs, cursor+1, &pair);
+    }else{
+      if(pair_test->heap_bytes_used < pair->heap_bytes_used)
+        xbt_dynar_insert_at(acceptance_pairs, cursor + 1, &pair);
+      else
+        xbt_dynar_insert_at(acceptance_pairs, cursor, &pair);
+    }    
+
   }
 
   if(!raw_mem_set)
