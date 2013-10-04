@@ -1374,7 +1374,7 @@ int PMPI_Test(MPI_Request * request, int *flag, MPI_Status * status)
   int retval = 0;
 
   smpi_bench_end();
-  if (*request == MPI_REQUEST_NULL || flag == NULL) {
+  if (request == NULL || flag == NULL) {
     retval = MPI_ERR_ARG;
   } else if (*request == MPI_REQUEST_NULL) {
     *flag= TRUE;
