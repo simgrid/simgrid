@@ -2324,7 +2324,7 @@ int PMPI_Type_commit(MPI_Datatype* datatype) {
   int retval = 0;
 
   smpi_bench_end();
-  if (datatype == MPI_DATATYPE_NULL) {
+  if (datatype == NULL || *datatype == MPI_DATATYPE_NULL) {
     retval = MPI_ERR_TYPE;
   } else {
     smpi_datatype_commit(datatype);

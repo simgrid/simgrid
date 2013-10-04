@@ -165,12 +165,12 @@ typedef struct {
   int count;
 } MPI_Status;
 
-#define MPI_STATUS_IGNORE NULL
-#define MPI_STATUSES_IGNORE NULL
+#define MPI_STATUS_IGNORE ((MPI_Status*)NULL)
+#define MPI_STATUSES_IGNORE ((MPI_Status*)NULL)
 #define MPI_FORTRAN_STATUS_IGNORE -1
 #define MPI_FORTRAN_STATUSES_IGNORE -1
 
-#define MPI_DATATYPE_NULL NULL
+#define MPI_DATATYPE_NULL ((MPI_Datatype)NULL)
 XBT_PUBLIC_DATA( MPI_Datatype ) MPI_CHAR;
 XBT_PUBLIC_DATA( MPI_Datatype ) MPI_SHORT;
 XBT_PUBLIC_DATA( MPI_Datatype ) MPI_INT;
@@ -223,7 +223,7 @@ typedef void MPI_User_function(void *invec, void *inoutvec, int *len,
 struct s_smpi_mpi_op;
 typedef struct s_smpi_mpi_op *MPI_Op;
 
-#define MPI_OP_NULL NULL
+#define MPI_OP_NULL ((MPI_Op)NULL)
 XBT_PUBLIC_DATA( MPI_Op ) MPI_MAX;
 XBT_PUBLIC_DATA( MPI_Op ) MPI_MIN;
 XBT_PUBLIC_DATA( MPI_Op ) MPI_MAXLOC;
@@ -240,14 +240,14 @@ XBT_PUBLIC_DATA( MPI_Op ) MPI_BXOR;
 struct s_smpi_mpi_group;
 typedef struct s_smpi_mpi_group *MPI_Group;
 
-#define MPI_GROUP_NULL NULL
+#define MPI_GROUP_NULL ((MPI_Group)NULL)
 
 XBT_PUBLIC_DATA( MPI_Group ) MPI_GROUP_EMPTY;
 
 struct s_smpi_mpi_communicator;
 typedef struct s_smpi_mpi_communicator *MPI_Comm;
 
-#define MPI_COMM_NULL NULL
+#define MPI_COMM_NULL ((MPI_Comm)NULL)
 XBT_PUBLIC_DATA( MPI_Comm ) MPI_COMM_WORLD;
 XBT_PUBLIC_DATA( int ) MPI_UNIVERSE_SIZE;
 #define MPI_COMM_SELF smpi_process_comm_self()
