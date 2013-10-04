@@ -451,6 +451,9 @@ void MC_ddfs_init(void){
 
   MC_wait_for_requests();
 
+  MC_ignore_heap(simix_global->process_to_run->data, 0);
+  MC_ignore_heap(simix_global->process_that_ran->data, 0);
+
   MC_SET_RAW_MEM;
 
   acceptance_pairs = xbt_dynar_new(sizeof(mc_pair_t), NULL); 
