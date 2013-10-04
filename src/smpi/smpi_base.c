@@ -316,10 +316,9 @@ void smpi_mpi_start(MPI_Request request)
 {
   smx_rdv_t mailbox;
 
-  xbt_assert(!request->action,
-             "Cannot (re)start a non-finished communication");
-  if(request->flags & PREPARED)request->flags &= ~PREPARED;
-  if(request->flags & RECV) {
+  xbt_assert(!request->action, "Cannot (re)start a non-finished communication");
+  request->flags &= ~PREPARED;
+  if (request->flags & RECV) {
     print_request("New recv", request);
     //FIXME: if receive is posted with a large size, but send is smaller, mailboxes may not match !
     if (request->size < sg_cfg_get_int("smpi/async_small_thres"))
@@ -614,15 +613,15 @@ int smpi_mpi_test(MPI_Request * request, MPI_Status * status) {
   int flag;
 
   //assume that request is not MPI_REQUEST_NULL (filtered in PMPI_Test or smpi_mpi_testall before)
-  if ((*request)->action == NULL)
-    flag = 1;
-  else
-    flag = simcall_comm_test((*request)->action);
-  if(flag) {
-    finish_wait(request, status);
-    *request = MPI_REQUEST_NULL;
-  }else{
-    smpi_empty_status(status);
+  smpi_empty_status(status);
+  flag = 1;
+  if (!((*request)->flags & PREPARED)) {
+    if ((*request)->action != NULL)
+      flag = simcall_comm_test((*request)->action);
+    if (flag) {
+      finish_wait(request, status);
+      *request = MPI_REQUEST_NULL;
+    }
   }
   return flag;
 }
@@ -640,7 +639,8 @@ int smpi_mpi_testany(int count, MPI_Request requests[], int *index,
   map = xbt_new(int, count);
   size = 0;
   for(i = 0; i < count; i++) {
-    if((requests[i]!=MPI_REQUEST_NULL) && requests[i]->action) {
+    if ((requests[i] != MPI_REQUEST_NULL) && requests[i]->action &&
+        !(requests[i]->flags & PREPARED)) {
        xbt_dynar_push(comms, &requests[i]->action);
        map[size] = i;
        size++;
@@ -675,7 +675,7 @@ int smpi_mpi_testall(int count, MPI_Request requests[],
   int flag=1;
   int i;
   for(i=0; i<count; i++){
-    if(requests[i]!= MPI_REQUEST_NULL){
+    if (requests[i] != MPI_REQUEST_NULL && !(requests[i]->flags & PREPARED)) {
       if (smpi_mpi_test(&requests[i], pstat)!=1){
         flag=0;
       }else{
@@ -752,6 +752,11 @@ void smpi_mpi_iprobe(int source, int tag, MPI_Comm comm, int* flag, MPI_Status* 
 void smpi_mpi_wait(MPI_Request * request, MPI_Status * status)
 {
   print_request("Waiting", *request);
+  if ((*request)->flags & PREPARED) {
+    smpi_empty_status(status);
+    return;
+  }
+
   if ((*request)->action != NULL) { // this is not a detached send
     simcall_comm_wait((*request)->action, -1.0);
   }
@@ -781,7 +786,7 @@ int smpi_mpi_waitany(int count, MPI_Request requests[],
     size = 0;
     XBT_DEBUG("Wait for one of %d", count);
     for(i = 0; i < count; i++) {
-      if(requests[i] != MPI_REQUEST_NULL) {
+      if (requests[i] != MPI_REQUEST_NULL && !(requests[i]->flags & PREPARED)) {
         if (requests[i]->action != NULL) {
           XBT_DEBUG("Waiting any %p ", requests[i]);
           xbt_dynar_push(comms, &requests[i]->action);
@@ -827,7 +832,8 @@ int smpi_mpi_waitall(int count, MPI_Request requests[],
   //tag invalid requests in the set
   if (status != MPI_STATUSES_IGNORE) {
     for (c = 0; c < count; c++) {
-      if (requests[c] == MPI_REQUEST_NULL || requests[c]->dst == MPI_PROC_NULL) {
+      if (requests[c] == MPI_REQUEST_NULL || requests[c]->dst == MPI_PROC_NULL ||
+          (requests[c]->flags & PREPARED)) {
         smpi_empty_status(&status[c]);
       } else if (requests[c]->src == MPI_PROC_NULL) {
         smpi_empty_status(&status[c]);
