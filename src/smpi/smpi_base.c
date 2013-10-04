@@ -755,6 +755,12 @@ void smpi_mpi_wait(MPI_Request * request, MPI_Status * status)
   if ((*request)->action != NULL) { // this is not a detached send
     simcall_comm_wait((*request)->action, -1.0);
   }
+
+#ifdef HAVE_MC
+  if(MC_is_active())
+    (*request)->action->comm.dst_data = NULL; // dangling pointer : dst_data is freed with a wait, need to set it to NULL for system state comparison
+#endif
+
   finish_wait(request, status);
   request=MPI_REQUEST_NULL;
   // FIXME for a detached send, finish_wait is not called:
