@@ -392,9 +392,6 @@ LINE: while (not $finished and not $error) {
 
   $line_num++;
   chomp $line;
-  if($line!=~/\s/){
-    next LINE;
-  }
   print "[TESH/debug] $line_num: $line\n" if $opts{'debug'};
   my $next;
   # deal with line continuations
@@ -409,7 +406,7 @@ LINE: while (not $finished and not $error) {
   }
 
   # Push delayed commands on empty lines
-  unless ($line =~ m/^(.)\s*(.*)$/) {
+  unless ($line =~ m/^(.).(.*)$/) {
     if (defined($cmd{'cmd'})) {
       exec_cmd(\%cmd);
       %cmd = ();
