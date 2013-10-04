@@ -1760,9 +1760,12 @@ void MC_init(){
   MC_ignore_global_variable("counter"); /* Static variable used for tracing */
   MC_ignore_global_variable("maestro_stack_start");
   MC_ignore_global_variable("maestro_stack_end");
- 
+
   MC_ignore_heap(&(simix_global->process_to_run), sizeof(simix_global->process_to_run));
   MC_ignore_heap(&(simix_global->process_that_ran), sizeof(simix_global->process_that_ran));
+  MC_ignore_heap(simix_global->process_to_run, sizeof(*(simix_global->process_to_run)));
+  MC_ignore_heap(simix_global->process_that_ran, sizeof(*(simix_global->process_that_ran)));
+  
   smx_process_t process;
   xbt_swag_foreach(process, simix_global->process_list){
     MC_ignore_heap(&(process->process_hookup), sizeof(process->process_hookup));
