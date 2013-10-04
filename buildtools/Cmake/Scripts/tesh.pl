@@ -270,7 +270,7 @@ sub exec_cmd {
     $got =~ s/\r//g;
     $got =~ s/^( )*//g;
     chomp $got;
-  $got=trim($got);
+    $got=trim($got);
     if( $got ne ""){
         if (!($enable_coverage and $got=~ /^profiling:/)){    
         push @got, "$got";
@@ -392,6 +392,9 @@ LINE: while (not $finished and not $error) {
 
   $line_num++;
   chomp $line;
+  if($line!=~/\s/){
+    next LINE;
+  }
   print "[TESH/debug] $line_num: $line\n" if $opts{'debug'};
   my $next;
   # deal with line continuations
