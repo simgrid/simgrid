@@ -255,7 +255,7 @@ XBT_PUBLIC_DATA( int ) MPI_UNIVERSE_SIZE;
 struct s_smpi_mpi_request;
 typedef struct s_smpi_mpi_request *MPI_Request;
 
-#define MPI_REQUEST_NULL NULL
+#define MPI_REQUEST_NULL ((MPI_Request)NULL)
 #define MPI_FORTRAN_REQUEST_NULL -1
 
 MPI_CALL(XBT_PUBLIC(int), MPI_Init, (int *argc, char ***argv));

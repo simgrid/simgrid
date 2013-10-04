@@ -621,7 +621,7 @@ int smpi_mpi_test(MPI_Request * request, MPI_Status * status) {
     flag = simcall_comm_test((*request)->action);
   if(flag) {
     finish_wait(request, status);
-    request=MPI_REQUEST_NULL;
+    *request = MPI_REQUEST_NULL;
   }else{
     smpi_empty_status(status);
   }
@@ -762,7 +762,7 @@ void smpi_mpi_wait(MPI_Request * request, MPI_Status * status)
 #endif
 
   finish_wait(request, status);
-  request=MPI_REQUEST_NULL;
+  *request = MPI_REQUEST_NULL;
   // FIXME for a detached send, finish_wait is not called:
 }
 
