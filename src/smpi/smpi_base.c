@@ -187,7 +187,7 @@ static MPI_Request build_request(void *buf, int count,
                                  MPI_Datatype datatype, int src, int dst,
                                  int tag, MPI_Comm comm, unsigned flags)
 {
-  MPI_Request request;
+  MPI_Request request = NULL;
 
   void *old_buf = NULL;
 
@@ -285,9 +285,9 @@ static void smpi_mpi_request_free_voidp(void* request)
 MPI_Request smpi_mpi_send_init(void *buf, int count, MPI_Datatype datatype,
                                int dst, int tag, MPI_Comm comm)
 {
-  MPI_Request request =
-    build_request(buf==MPI_BOTTOM ? (void*)0 : buf, count, datatype, smpi_process_index(), smpi_group_index(smpi_comm_group(comm), dst), tag,
-                  comm, PERSISTENT | SEND | PREPARED);
+  MPI_Request request = NULL;
+  request = build_request(buf==MPI_BOTTOM ? (void*)0 : buf, count, datatype, smpi_process_index(), smpi_group_index(smpi_comm_group(comm), dst), tag,
+                          comm, PERSISTENT | SEND | PREPARED);
   request->refcount++;
   return request;
 }
@@ -295,9 +295,9 @@ MPI_Request smpi_mpi_send_init(void *buf, int count, MPI_Datatype datatype,
 MPI_Request smpi_mpi_ssend_init(void *buf, int count, MPI_Datatype datatype,
                                int dst, int tag, MPI_Comm comm)
 {
-  MPI_Request request =
-    build_request(buf==MPI_BOTTOM ? (void*)0 : buf, count, datatype, smpi_process_index(), smpi_group_index(smpi_comm_group(comm), dst), tag,
-                  comm, PERSISTENT | SSEND | SEND | PREPARED);
+  MPI_Request request = NULL;
+  request = build_request(buf==MPI_BOTTOM ? (void*)0 : buf, count, datatype, smpi_process_index(), smpi_group_index(smpi_comm_group(comm), dst), tag,
+                          comm, PERSISTENT | SSEND | SEND | PREPARED);
   request->refcount++;
   return request;
 }
@@ -305,9 +305,9 @@ MPI_Request smpi_mpi_ssend_init(void *buf, int count, MPI_Datatype datatype,
 MPI_Request smpi_mpi_recv_init(void *buf, int count, MPI_Datatype datatype,
                                int src, int tag, MPI_Comm comm)
 {
-  MPI_Request request =
-    build_request(buf==MPI_BOTTOM ? (void*)0 : buf, count, datatype, src == MPI_ANY_SOURCE ? MPI_ANY_SOURCE : smpi_group_index(smpi_comm_group(comm), src), smpi_process_index(), tag,
-                  comm, PERSISTENT | RECV | PREPARED);
+  MPI_Request request = NULL;
+  request = build_request(buf==MPI_BOTTOM ? (void*)0 : buf, count, datatype, src == MPI_ANY_SOURCE ? MPI_ANY_SOURCE : smpi_group_index(smpi_comm_group(comm), src), smpi_process_index(), tag,
+                          comm, PERSISTENT | RECV | PREPARED);
   request->refcount++;
   return request;
 }
@@ -443,20 +443,18 @@ void smpi_mpi_request_free(MPI_Request * request)
 MPI_Request smpi_isend_init(void *buf, int count, MPI_Datatype datatype,
                             int dst, int tag, MPI_Comm comm)
 {
-  MPI_Request request =
-    build_request(buf==MPI_BOTTOM ? (void*)0 : buf , count, datatype, smpi_process_index(), smpi_group_index(smpi_comm_group(comm), dst), tag,
-                  comm, NON_PERSISTENT | ISEND | SEND | PREPARED);
-
+  MPI_Request request = NULL;
+  request = build_request(buf==MPI_BOTTOM ? (void*)0 : buf , count, datatype, smpi_process_index(), smpi_group_index(smpi_comm_group(comm), dst), tag,
+                          comm, NON_PERSISTENT | ISEND | SEND | PREPARED);
   return request;
 }
 
 MPI_Request smpi_mpi_isend(void *buf, int count, MPI_Datatype datatype,
                            int dst, int tag, MPI_Comm comm)
 {
-  MPI_Request request =
-      build_request(buf==MPI_BOTTOM?(void*)0:buf, count, datatype, smpi_process_index(), smpi_group_index(smpi_comm_group(comm), dst), tag,
-                    comm, NON_PERSISTENT | ISEND | SEND);
-
+  MPI_Request request = NULL;
+  request =  build_request(buf==MPI_BOTTOM?(void*)0:buf, count, datatype, smpi_process_index(), smpi_group_index(smpi_comm_group(comm), dst), tag,
+                           comm, NON_PERSISTENT | ISEND | SEND);
   smpi_mpi_start(request);
   return request;
 }
@@ -464,9 +462,9 @@ MPI_Request smpi_mpi_isend(void *buf, int count, MPI_Datatype datatype,
 MPI_Request smpi_mpi_issend(void *buf, int count, MPI_Datatype datatype,
                            int dst, int tag, MPI_Comm comm)
 {
-  MPI_Request request =
-      build_request(buf==MPI_BOTTOM ? (void*)0 : buf, count, datatype, smpi_process_index(), smpi_group_index(smpi_comm_group(comm), dst), tag,
-                    comm, NON_PERSISTENT | ISEND | SSEND | SEND);
+  MPI_Request request = NULL;
+  request = build_request(buf==MPI_BOTTOM ? (void*)0 : buf, count, datatype, smpi_process_index(), smpi_group_index(smpi_comm_group(comm), dst), tag,
+                          comm, NON_PERSISTENT | ISEND | SSEND | SEND);
   smpi_mpi_start(request);
   return request;
 }
@@ -476,19 +474,18 @@ MPI_Request smpi_mpi_issend(void *buf, int count, MPI_Datatype datatype,
 MPI_Request smpi_irecv_init(void *buf, int count, MPI_Datatype datatype,
                             int src, int tag, MPI_Comm comm)
 {
-  MPI_Request request =
-    build_request(buf==MPI_BOTTOM ? (void*)0 : buf, count, datatype, src == MPI_ANY_SOURCE ? MPI_ANY_SOURCE : smpi_group_index(smpi_comm_group(comm), src), smpi_process_index(), tag,
-                  comm, NON_PERSISTENT | RECV | PREPARED);
+  MPI_Request request = NULL;
+  request = build_request(buf==MPI_BOTTOM ? (void*)0 : buf, count, datatype, src == MPI_ANY_SOURCE ? MPI_ANY_SOURCE : smpi_group_index(smpi_comm_group(comm), src), smpi_process_index(), tag,
+                          comm, NON_PERSISTENT | RECV | PREPARED);
   return request;
 }
 
 MPI_Request smpi_mpi_irecv(void *buf, int count, MPI_Datatype datatype,
                            int src, int tag, MPI_Comm comm)
 {
-  MPI_Request request =
-      build_request(buf==MPI_BOTTOM ? (void*)0 : buf, count, datatype, src == MPI_ANY_SOURCE ? MPI_ANY_SOURCE : smpi_group_index(smpi_comm_group(comm), src), smpi_process_index(), tag,
-                    comm, NON_PERSISTENT | RECV);
-
+  MPI_Request request = NULL;
+  request = build_request(buf==MPI_BOTTOM ? (void*)0 : buf, count, datatype, src == MPI_ANY_SOURCE ? MPI_ANY_SOURCE : smpi_group_index(smpi_comm_group(comm), src), smpi_process_index(), tag,
+                          comm, NON_PERSISTENT | RECV);
   smpi_mpi_start(request);
   return request;
 }
@@ -496,9 +493,10 @@ MPI_Request smpi_mpi_irecv(void *buf, int count, MPI_Datatype datatype,
 void smpi_mpi_recv(void *buf, int count, MPI_Datatype datatype, int src,
                    int tag, MPI_Comm comm, MPI_Status * status)
 {
-  MPI_Request request;
+  MPI_Request request = NULL;
   request = smpi_mpi_irecv(buf, count, datatype, src, tag, comm);
   smpi_mpi_wait(&request, status);
+  request = NULL;
 }
 
 
@@ -506,23 +504,25 @@ void smpi_mpi_recv(void *buf, int count, MPI_Datatype datatype, int src,
 void smpi_mpi_send(void *buf, int count, MPI_Datatype datatype, int dst,
                    int tag, MPI_Comm comm)
 {
-  MPI_Request request =
-      build_request(buf==MPI_BOTTOM ? (void*)0 : buf, count, datatype, smpi_process_index(), smpi_group_index(smpi_comm_group(comm), dst), tag,
-                    comm, NON_PERSISTENT | SEND);
+  MPI_Request request = NULL;
+  request = build_request(buf==MPI_BOTTOM ? (void*)0 : buf, count, datatype, smpi_process_index(), smpi_group_index(smpi_comm_group(comm), dst), tag,
+                          comm, NON_PERSISTENT | SEND);
+
   smpi_mpi_start(request);
   smpi_mpi_wait(&request, MPI_STATUS_IGNORE);
-
+  request = NULL;
 }
 
 void smpi_mpi_ssend(void *buf, int count, MPI_Datatype datatype,
                            int dst, int tag, MPI_Comm comm)
 {
-  MPI_Request request =
-      build_request(buf==MPI_BOTTOM ? (void*)0 : buf, count, datatype, smpi_process_index(), smpi_group_index(smpi_comm_group(comm), dst), tag,
-                    comm, NON_PERSISTENT | SSEND | SEND);
+  MPI_Request request = NULL;
+  request = build_request(buf==MPI_BOTTOM ? (void*)0 : buf, count, datatype, smpi_process_index(), smpi_group_index(smpi_comm_group(comm), dst), tag,
+                comm, NON_PERSISTENT | SSEND | SEND);
 
   smpi_mpi_start(request);
   smpi_mpi_wait(&request, MPI_STATUS_IGNORE);
+  request = NULL;
 }
 
 void smpi_mpi_sendrecv(void *sendbuf, int sendcount, MPI_Datatype sendtype,
