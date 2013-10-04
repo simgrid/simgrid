@@ -1,4 +1,4 @@
-/* context_sysv - context switching with ucontextes from System V           */
+/* context_sysv - context switching with ucontexts from System V           */
 
 /* Copyright (c) 2009-2013. The SimGrid Team.
  * All rights reserved.                                                     */

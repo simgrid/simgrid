@@ -32,6 +32,18 @@ int main(int argc, char **argv)
     XBT_INFO("example: %s ../2clusters.xml dag.dot dag.mytrace", argv[0]);
     exit(1);
   }
+
+  /* creation of the environment */
+  SD_create_environment(argv[1]);
+
+  /* load the DOT file */
+  dot = SD_dotload(argv[2]);
+  if(dot == NULL){
+    XBT_CRITICAL("No dot load may be you have a cycle in your graph");
+    SD_exit();
+    exit(2);
+  }
+
   char *tracefilename;
   if (argc == 3) {
     char *last = strrchr(argv[2], '.');
@@ -42,16 +54,6 @@ int main(int argc, char **argv)
                 argv[2]);
   } else {
     tracefilename = xbt_strdup(argv[3]);
-  }
-
-  /* creation of the environment */
-  SD_create_environment(argv[1]);
-
-  /* load the DOT file */
-  dot = SD_dotload(argv[2]);
-  if(dot == NULL){
-    SD_exit();
-    xbt_die("No dot load may be you have a cycle in your graph");
   }
 
   /* Display all the tasks */

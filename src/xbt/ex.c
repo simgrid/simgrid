@@ -75,7 +75,7 @@ xbt_running_ctx_t *__xbt_ex_ctx_default(void)
      real life and in simulation when using threads to implement the simulation
      processes (ie, with pthreads and on windows).
 
-     It also gets overriden in xbt/context.c when using ucontextes (as well as
+     It also gets overriden in xbt/context.c when using ucontexts (as well as
      in Java for now, but after the java overhaul, it will get cleaned out)
    */
   static xbt_running_ctx_t ctx = XBT_RUNNING_CTX_INITIALIZER;

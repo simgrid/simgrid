@@ -902,7 +902,6 @@ set(EXAMPLES_CMAKEFILES_TXT
   )
 
 set(TESHSUITE_CMAKEFILES_TXT
-  teshsuite/CMakeLists.txt
   teshsuite/msg/CMakeLists.txt
   teshsuite/msg/storage/CMakeLists.txt
   teshsuite/msg/trace/CMakeLists.txt
@@ -913,6 +912,7 @@ set(TESHSUITE_CMAKEFILES_TXT
   teshsuite/simdag/network/p2p/CMakeLists.txt
   teshsuite/simdag/partask/CMakeLists.txt
   teshsuite/simdag/platforms/CMakeLists.txt
+  teshsuite/simix/CMakeLists.txt
   teshsuite/smpi/CMakeLists.txt
   teshsuite/smpi/mpich3-test/CMakeLists.txt
   teshsuite/smpi/mpich3-test/attr/CMakeLists.txt

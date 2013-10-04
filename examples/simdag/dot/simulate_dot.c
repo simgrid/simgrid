@@ -32,6 +32,18 @@ int main(int argc, char **argv)
     XBT_INFO("example: %s ../2clusters.xml dag.dot dag.mytrace", argv[0]);
     exit(1);
   }
+
+  /* creation of the environment */
+  SD_create_environment(argv[1]);
+
+  /* load the DOT file  and schedule tasks */
+  dot = SD_dotload_with_sched(argv[2]);
+  if(!dot){
+    XBT_CRITICAL("The dot file with the provided scheduling is wrong, more information with the option : --log=sd_dotparse.thres:verbose");
+    SD_exit();
+    exit(2);
+  }
+
   char *tracefilename;
   if (argc == 3) {
     char *last = strrchr(argv[2], '.');
@@ -42,16 +54,6 @@ int main(int argc, char **argv)
             argv[2]);
   } else {
     tracefilename = xbt_strdup(argv[3]);
-  }
-
-  /* creation of the environment */
-  SD_create_environment(argv[1]);
-
-  /* load the DOT file  and schedule tasks */
-  dot = SD_dotload_with_sched(argv[2]);
-  if(!dot){
-    SD_exit();
-    xbt_die("The dot file with the provided scheduling is wrong, more information with the option : --log=sd_dotparse.thres:verbose");
   }
 
   /* Display all the tasks */
@@ -106,6 +108,7 @@ int main(int argc, char **argv)
     SD_task_destroy(task);
   }
   fclose(out);
+  xbt_dynar_free_container(&dot);
 
   /* exit */
   SD_exit();

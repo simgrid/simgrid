@@ -70,10 +70,10 @@ void SIMIX_context_mod_init(void)
 #ifdef HAVE_RAWCTX
         XBT_ERROR("  raw: high performance context factory implemented specifically for SimGrid");
 #else
-        XBT_ERROR("  (raw contextes are disabled at compilation time on this machine -- check configure logs for details)");
+        XBT_ERROR("  (raw contexts are disabled at compilation time on this machine -- check configure logs for details)");
 #endif
 #ifdef CONTEXT_UCONTEXT
-        XBT_ERROR("  ucontext: classical system V contextes (implemented with makecontext, swapcontext and friends)");
+        XBT_ERROR("  ucontext: classical system V contexts (implemented with makecontext, swapcontext and friends)");
 #else
         XBT_ERROR("  (ucontext is disabled at compilation time on this machine -- check configure logs for details)");
 #endif
@@ -220,4 +220,3 @@ XBT_INLINE void SIMIX_context_set_current(smx_context_t context)
     smx_current_context_serial = context;
   }
 }
-
