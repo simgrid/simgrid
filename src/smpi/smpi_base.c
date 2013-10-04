@@ -652,6 +652,7 @@ int smpi_mpi_testany(int count, MPI_Request requests[], int *index,
     if(i != -1) {
       *index = map[i];
       finish_wait(&requests[*index], status);
+      requests[*index] = MPI_REQUEST_NULL;
       flag = 1;
     }
   }else{
@@ -803,6 +804,7 @@ int smpi_mpi_waitany(int count, MPI_Request requests[],
       if (i != -1) {
         index = map[i];
         finish_wait(&requests[index], status);
+        requests[index] = MPI_REQUEST_NULL;
       }
     }
     xbt_free(map);
