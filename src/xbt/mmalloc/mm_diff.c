@@ -1134,7 +1134,7 @@ int compare_heap_area(void *area1, void* area2, xbt_dynar_t previous, xbt_dict_t
     addr_frag2 = (void*) ((char *)addr_block2 + (frag2 << heapinfo2[block2].type));
 
     real_addr_frag1 = (void*) ((char *)real_addr_block1 + (frag1 << ((xbt_mheap_t)s_heap)->heapinfo[block1].type));
-    real_addr_frag2 = (void*) ((char *)real_addr_block2 + (frag2 << ((xbt_mheap_t)s_heap)->heapinfo[block1].type));
+    real_addr_frag2 = (void*) ((char *)real_addr_block2 + (frag2 << ((xbt_mheap_t)s_heap)->heapinfo[block2].type));
 
     if(type_size != -1){
       if(heapinfo1[block1].busy_frag.frag_size[frag1] == -1 || heapinfo2[block2].busy_frag.frag_size[frag2] == -1)
