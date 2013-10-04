@@ -1378,6 +1378,7 @@ int PMPI_Test(MPI_Request * request, int *flag, MPI_Status * status)
     retval = MPI_ERR_ARG;
   } else if (*request == MPI_REQUEST_NULL) {
     *flag= TRUE;
+    smpi_empty_status(status);
     retval = MPI_ERR_REQUEST;
   } else {
     *flag = smpi_mpi_test(request, status);
