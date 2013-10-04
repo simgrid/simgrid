@@ -357,7 +357,7 @@ void SIMIX_run(void)
     TRACE_end();
 #endif
 
-    XBT_WARN("Oops ! Deadlock or code not perfectly clean.");
+    XBT_CRITICAL("Oops ! Deadlock or code not perfectly clean.");
     SIMIX_display_process_status();
     xbt_abort();
   }
