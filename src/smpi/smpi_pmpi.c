@@ -1468,6 +1468,8 @@ int PMPI_Wait(MPI_Request * request, MPI_Status * status)
 
   smpi_bench_end();
 
+  smpi_empty_status(status);
+
   if (request == NULL) {
     retval = MPI_ERR_ARG;
   } else if (*request == MPI_REQUEST_NULL) {
@@ -1475,32 +1477,32 @@ int PMPI_Wait(MPI_Request * request, MPI_Status * status)
   } else {
 
 #ifdef HAVE_TRACING
-  int rank = request && (*request)->comm != MPI_COMM_NULL
+    int rank = request && (*request)->comm != MPI_COMM_NULL
       ? smpi_process_index()
       : -1;
-  TRACE_smpi_computing_out(rank);
+    TRACE_smpi_computing_out(rank);
 
-  int src_traced = (*request)->src;
-  int dst_traced = (*request)->dst;
-  MPI_Comm comm = (*request)->comm;
-  int is_wait_for_receive = (*request)->recv;
-  TRACE_smpi_ptp_in(rank, src_traced, dst_traced, __FUNCTION__,-1);
+    int src_traced = (*request)->src;
+    int dst_traced = (*request)->dst;
+    MPI_Comm comm = (*request)->comm;
+    int is_wait_for_receive = (*request)->recv;
+    TRACE_smpi_ptp_in(rank, src_traced, dst_traced, __FUNCTION__,-1);
 #endif
 
     smpi_mpi_wait(request, status);
     retval = MPI_SUCCESS;
 
 #ifdef HAVE_TRACING
-  //the src may not have been known at the beginning of the recv (MPI_ANY_SOURCE)
-  TRACE_smpi_ptp_out(rank, src_traced, dst_traced, __FUNCTION__);
-  if (is_wait_for_receive) {
-    if(src_traced==MPI_ANY_SOURCE)
-    src_traced = (status!=MPI_STATUS_IGNORE) ?
-                                smpi_group_rank(smpi_comm_group(comm), status->MPI_SOURCE) :
-                                src_traced;
-    TRACE_smpi_recv(rank, src_traced, dst_traced);
-  }
-  TRACE_smpi_computing_in(rank);
+    //the src may not have been known at the beginning of the recv (MPI_ANY_SOURCE)
+    TRACE_smpi_ptp_out(rank, src_traced, dst_traced, __FUNCTION__);
+    if (is_wait_for_receive) {
+      if(src_traced==MPI_ANY_SOURCE)
+        src_traced = (status!=MPI_STATUS_IGNORE) ?
+          smpi_group_rank(smpi_comm_group(comm), status->MPI_SOURCE) :
+          src_traced;
+      TRACE_smpi_recv(rank, src_traced, dst_traced);
+    }
+    TRACE_smpi_computing_in(rank);
 #endif
 
   }

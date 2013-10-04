@@ -558,11 +558,10 @@ int smpi_mpi_get_count(MPI_Status * status, MPI_Datatype datatype)
 static void finish_wait(MPI_Request * request, MPI_Status * status)
 {
   MPI_Request req = *request;
-  if(status != MPI_STATUS_IGNORE)
-    smpi_empty_status(status);
+  smpi_empty_status(status);
 
   if(!(req->detached && req->flags & SEND) && !(req->flags & PREPARED)){
-     if(status != MPI_STATUS_IGNORE) {
+    if(status != MPI_STATUS_IGNORE) {
       int src = req->src == MPI_ANY_SOURCE ? req->real_src : req->src;
       status->MPI_SOURCE = smpi_group_rank(smpi_comm_group(req->comm), src);
       status->MPI_TAG = req->tag == MPI_ANY_TAG ? req->real_tag : req->tag;
@@ -577,8 +576,8 @@ static void finish_wait(MPI_Request * request, MPI_Status * status)
     MPI_Datatype datatype = req->old_type;
 
     if(datatype->has_subtype == 1){
-        // This part handles the problem of non-contignous memory
-        // the unserialization at the reception
+      // This part handles the problem of non-contignous memory
+      // the unserialization at the reception
       s_smpi_subtype_t *subtype = datatype->substruct;
       if(req->flags & RECV) {
         subtype->unserialize(req->buf, req->old_buf, req->real_size/smpi_datatype_size(datatype) , datatype->substruct);
@@ -591,13 +590,13 @@ static void finish_wait(MPI_Request * request, MPI_Status * status)
   }
 
 #ifdef HAVE_TRACING
-    if (TRACE_smpi_view_internals()) {
-      if(req->flags & RECV){
-        int rank = smpi_process_index();
-        int src_traced = (req->src == MPI_ANY_SOURCE ? req->real_src : req->src);
-        TRACE_smpi_recv(rank, src_traced, rank);
-      }
+  if (TRACE_smpi_view_internals()) {
+    if(req->flags & RECV){
+      int rank = smpi_process_index();
+      int src_traced = (req->src == MPI_ANY_SOURCE ? req->real_src : req->src);
+      TRACE_smpi_recv(rank, src_traced, rank);
     }
+  }
 #endif
 
   if(req->detached_sender!=NULL){
