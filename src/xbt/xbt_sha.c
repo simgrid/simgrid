@@ -6,7 +6,7 @@
  */
 
 /* Later adapted to fit into SimGrid. Distributed under LGPL v2.1, Feb 1999.*/
-/* Copyright (c) 2008-2012. The SimGrid Team.
+/* Copyright (c) 2008-2013. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -99,7 +99,7 @@ static void xbt_sha_finalize(xbt_sha_t sha)
 /** @brief returns the sha hash into a newly allocated buffer (+ reset sha object) */
 char *xbt_sha_read(xbt_sha_t sha)
 {
-  char *res = xbt_malloc(40);
+  char *res = xbt_malloc(41);
   xbt_sha_print(sha, res);
   return res;
 }
