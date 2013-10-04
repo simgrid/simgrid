@@ -224,6 +224,9 @@ void MC_dpor_init()
   /* Wait for requests (schedules processes) */
   MC_wait_for_requests();
 
+  MC_ignore_heap(simix_global->process_to_run->data, 0);
+  MC_ignore_heap(simix_global->process_that_ran->data, 0);
+
   MC_SET_RAW_MEM;
  
   /* Get an enabled process and insert it in the interleave set of the initial state */
