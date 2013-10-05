@@ -331,31 +331,25 @@ int init_heap_information(xbt_mheap_t heap1, xbt_mheap_t heap2, xbt_dynar_t i1, 
   to_ignore2 = i2;
 
   equals_to1 = malloc(heaplimit * sizeof(heap_area_t *));
+  types1 = malloc(heaplimit * sizeof(type_name *));
   for(i=0; i<=heaplimit; i++){
     equals_to1[i] = malloc(MAX_FRAGMENT_PER_BLOCK * sizeof(heap_area_t));
-    for(j=0; j<MAX_FRAGMENT_PER_BLOCK; j++)
+    types1[i] = malloc(MAX_FRAGMENT_PER_BLOCK * sizeof(type_name));
+    for(j=0; j<MAX_FRAGMENT_PER_BLOCK; j++){
       equals_to1[i][j] = NULL;
+      types1[i][j] = NULL;
+    }      
   }
 
   equals_to2 = malloc(heaplimit * sizeof(heap_area_t *));
-  for(i=0; i<=heaplimit; i++){
-    equals_to2[i] = malloc(MAX_FRAGMENT_PER_BLOCK * sizeof(heap_area_t));
-    for(j=0; j<MAX_FRAGMENT_PER_BLOCK; j++)
-      equals_to2[i][j] = NULL;
-  }
-
-  types1 = malloc(heaplimit * sizeof(type_name *));
-  for(i=0; i<=heaplimit; i++){
-    types1[i] = malloc(MAX_FRAGMENT_PER_BLOCK * sizeof(type_name));
-    for(j=0; j<MAX_FRAGMENT_PER_BLOCK; j++)
-      types1[i][j] = NULL;
-  }
-
   types2 = malloc(heaplimit * sizeof(type_name *));
   for(i=0; i<=heaplimit; i++){
+    equals_to2[i] = malloc(MAX_FRAGMENT_PER_BLOCK * sizeof(heap_area_t));
     types2[i] = malloc(MAX_FRAGMENT_PER_BLOCK * sizeof(type_name));
-    for(j=0; j<MAX_FRAGMENT_PER_BLOCK; j++)
+    for(j=0; j<MAX_FRAGMENT_PER_BLOCK; j++){
+      equals_to2[i][j] = NULL;
       types2[i][j] = NULL;
+    }
   }
 
   if(MC_is_active()){
@@ -1107,8 +1101,8 @@ int compare_heap_area(void *area1, void* area2, xbt_dynar_t previous, xbt_dict_t
     size = heapinfo1[block1].busy_block.busy_size;
     
     if(type_id != NULL){
-      free(types1[block1][0]);
-      free(types2[block2][0]);
+      xbt_free(types1[block1][0]);
+      xbt_free(types2[block2][0]);
       types1[block1][0] = strdup(type_id);
       types2[block2][0] = strdup(type_id);
     }
@@ -1186,8 +1180,8 @@ int compare_heap_area(void *area1, void* area2, xbt_dynar_t previous, xbt_dict_t
     size = heapinfo1[block1].busy_frag.frag_size[frag1];
 
     if(type_id != NULL){
-      free(types1[block1][frag1]);
-      free(types2[block2][frag2]);
+      xbt_free(types1[block1][frag1]);
+      xbt_free(types2[block2][frag2]);
       types1[block1][frag1] = strdup(type_id);
       types2[block2][frag2] = strdup(type_id);
     }
