@@ -207,7 +207,7 @@ static xbt_dict_t storage_get_content(void *storage)
   xbt_dict_t content_dict = xbt_dict_new_homogeneous(NULL);
   xbt_dict_cursor_t cursor = NULL;
   char *file;
-  char *size;
+  sg_storage_size_t *size;
   xbt_dict_foreach(((storage_t)st)->content, cursor, file, size){
     xbt_dict_set(content_dict,file,(void*)size,NULL);
   }
