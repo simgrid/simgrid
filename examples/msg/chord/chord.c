@@ -608,7 +608,12 @@ static void quit_notify(node_t node)
 
   msg_task_t task_sent = MSG_task_create(NULL, COMP_SIZE, COMM_SIZE, req_data);
   XBT_DEBUG("Sending a 'PREDECESSOR_LEAVING' to my successor %d",node->fingers[0].id);
-  MSG_task_send_with_timeout(task_sent, node->fingers[0].mailbox, timeout);
+  if (MSG_task_send_with_timeout(task_sent, node->fingers[0].mailbox, timeout)==
+      MSG_TIMEOUT) {
+    XBT_DEBUG("Timeout expired when sending a 'PREDECESSOR_LEAVING' to my successor %d",
+        node->fingers[0].id);
+    task_free(task_sent);
+  }
 
   //send the SUCCESSOR_LEAVING to our predecessor
   get_mailbox(node->pred_id, mailbox);
@@ -621,7 +626,12 @@ static void quit_notify(node_t node)
 
   msg_task_t task_sent_s = MSG_task_create(NULL, COMP_SIZE, COMM_SIZE, req_data_s);
   XBT_DEBUG("Sending a 'SUCCESSOR_LEAVING' to my predecessor %d",node->pred_id);
-  MSG_task_send_with_timeout(task_sent_s, mailbox, timeout);
+  if (MSG_task_send_with_timeout(task_sent_s, mailbox, timeout)==
+      MSG_TIMEOUT) {
+    XBT_DEBUG("Timeout expired when sending a 'SUCCESSOR_LEAVING' to my predecessor %d",
+        node->pred_id);
+    task_free(task_sent_s);
+  }
 
 }
 
