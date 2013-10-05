@@ -383,7 +383,7 @@ void reset_heap_information(){
 
   size_t i = 0, j;
 
-  for(i=0; i<heaplimit; i++){
+  for(i=0; i<=heaplimit; i++){
     for(j=0; j<MAX_FRAGMENT_PER_BLOCK;j++){
       heap_area_free(equals_to1[i][j]);
       equals_to1[i][j] = NULL;
@@ -1073,8 +1073,13 @@ int compare_heap_area(void *area1, void* area2, xbt_dynar_t previous, xbt_dict_t
     }
 
     if(type_size != -1){
-      if(type_size != heapinfo1[block1].busy_block.busy_size && type_size != heapinfo2[block2].busy_block.busy_size && !strcmp(type->name, "s_smx_context"))
+      if(type_size != heapinfo1[block1].busy_block.busy_size && type_size != heapinfo2[block2].busy_block.busy_size && !strcmp(type->name, "s_smx_context")){
+        if(match_pairs){
+          match_equals(previous);
+          xbt_dynar_free(&previous);
+        }
         return -1;
+      }
     }
 
     if(heapinfo1[block1].busy_block.size != heapinfo2[block2].busy_block.size){
@@ -1137,10 +1142,20 @@ int compare_heap_area(void *area1, void* area2, xbt_dynar_t previous, xbt_dict_t
     real_addr_frag2 = (void*) ((char *)real_addr_block2 + (frag2 << ((xbt_mheap_t)s_heap)->heapinfo[block2].type));
 
     if(type_size != -1){
-      if(heapinfo1[block1].busy_frag.frag_size[frag1] == -1 || heapinfo2[block2].busy_frag.frag_size[frag2] == -1)
+      if(heapinfo1[block1].busy_frag.frag_size[frag1] == -1 || heapinfo2[block2].busy_frag.frag_size[frag2] == -1){
+        if(match_pairs){
+          match_equals(previous);
+          xbt_dynar_free(&previous);
+        }
         return -1;
-      if(type_size != heapinfo1[block1].busy_frag.frag_size[frag1] || type_size !=  heapinfo2[block2].busy_frag.frag_size[frag2])
+      }
+      if(type_size != heapinfo1[block1].busy_frag.frag_size[frag1] || type_size !=  heapinfo2[block2].busy_frag.frag_size[frag2]){
+        if(match_pairs){
+          match_equals(previous);
+          xbt_dynar_free(&previous);
+        }
         return -1;
+      }
     }
 
     if(equals_to1[block1][frag1] != NULL && equals_to2[block2][frag2] != NULL){
@@ -1155,6 +1170,10 @@ int compare_heap_area(void *area1, void* area2, xbt_dynar_t previous, xbt_dict_t
 
     if(heapinfo1[block1].busy_frag.frag_size[frag1] != heapinfo2[block2].busy_frag.frag_size[frag2]){
       if(type_size == -1){
+         if(match_pairs){
+          match_equals(previous);
+          xbt_dynar_free(&previous);
+        }
         return -1;
       }else{
         if(match_pairs){
@@ -1186,6 +1205,10 @@ int compare_heap_area(void *area1, void* area2, xbt_dynar_t previous, xbt_dict_t
         new_type_id1 = get_offset_type(types2[block2][frag2], offset1, all_types, other_types, size, &switch_type);
         new_type_id2 = get_offset_type(types2[block2][frag2], offset2, all_types, other_types, size, &switch_type);
       }else{
+        if(match_pairs){
+          match_equals(previous);
+          xbt_dynar_free(&previous);
+        }
         return -1;
       }   
 
@@ -1210,6 +1233,10 @@ int compare_heap_area(void *area1, void* area2, xbt_dynar_t previous, xbt_dict_t
           new_size2 = type->size;
         }
       }else{
+        if(match_pairs){
+          match_equals(previous);
+          xbt_dynar_free(&previous);
+        }
         return -1;
       }
     }
