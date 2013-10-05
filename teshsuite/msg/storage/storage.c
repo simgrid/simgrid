@@ -1,5 +1,6 @@
 #include "msg/msg.h"
 #include "xbt/log.h"
+#include "inttypes.h"
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(storage,"Messages specific for this simulation");
 
@@ -128,9 +129,9 @@ void display_storage_content(msg_storage_t storage){
   xbt_dict_t content = MSG_storage_get_content(storage);
   if (content){
     xbt_dict_foreach(content, cursor, file, size)
-	  XBT_INFO("%s size: %zu bytes", file, size);
-  }else{
-	XBT_INFO("No content.");
+    XBT_INFO("%s size: %" PRIu64 "bytes", file, size);
+  } else {
+    XBT_INFO("No content.");
   }
 }
 
