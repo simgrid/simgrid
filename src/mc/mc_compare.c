@@ -337,10 +337,10 @@ int snapshot_compare(void *state1, void *state2){
   int num1, num2;
   
   if(_sg_mc_property_file && _sg_mc_property_file[0] != '\0'){ /* Liveness MC */
-    s1 = ((mc_pair_t)state1)->graph_state->system_state;
-    s2 = ((mc_pair_t)state2)->graph_state->system_state;
-    num1 = ((mc_pair_t)state1)->num;
-    num2 =  ((mc_pair_t)state2)->num;
+    s1 = ((mc_visited_pair_t)state1)->graph_state->system_state;
+    s2 = ((mc_visited_pair_t)state2)->graph_state->system_state;
+    num1 = ((mc_visited_pair_t)state1)->num;
+    num2 =  ((mc_visited_pair_t)state2)->num;
     /* Firstly compare automaton state */
     /*if(xbt_automaton_state_compare(((mc_pair_t)state1)->automaton_state, ((mc_pair_t)state2)->automaton_state) != 0)
       return 1;

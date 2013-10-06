@@ -33,7 +33,7 @@ static mc_visited_state_t visited_state_new(){
   new_state = xbt_new0(s_mc_visited_state_t, 1);
   new_state->heap_bytes_used = mmalloc_get_bytes_used(std_heap);
   new_state->nb_processes = xbt_swag_size(simix_global->process_list);
-  new_state->system_state = MC_take_snapshot();
+  new_state->system_state = MC_take_snapshot(mc_stats->expanded_states);
   new_state->num = mc_stats->expanded_states;
   new_state->other_num = -1;
 
@@ -276,6 +276,7 @@ void MC_dpor(void)
   mc_state_t state = NULL, prev_state = NULL, next_state = NULL, restore_state=NULL;
   smx_process_t process = NULL;
   xbt_fifo_item_t item = NULL;
+  mc_state_t state_test = NULL;
   int pos;
   int visited_state = -1;
   int enabled = 0;
@@ -287,9 +288,9 @@ void MC_dpor(void)
       xbt_fifo_get_item_content(xbt_fifo_get_first_item(mc_stack_safety));
 
     XBT_DEBUG("**************************************************");
-    XBT_DEBUG("Exploration depth=%d (state=%p, num %d)(%u interleave, user_max_depth %d)",
+    XBT_DEBUG("Exploration depth=%d (state=%p, num %d)(%u interleave, user_max_depth %d, first_enabled_state size : %d)",
               xbt_fifo_size(mc_stack_safety), state, state->num,
-              MC_state_interleave_size(state), user_max_depth_reached);
+              MC_state_interleave_size(state), user_max_depth_reached, xbt_dict_size(first_enabled_state));
       
     /* Update statistics */
     mc_stats->visited_states++;
@@ -343,7 +344,7 @@ void MC_dpor(void)
         }
 
         if(_sg_mc_checkpoint && ((xbt_fifo_size(mc_stack_safety) + 1) % _sg_mc_checkpoint == 0)){
-          next_state->system_state = MC_take_snapshot();
+          next_state->system_state = MC_take_snapshot(next_state->num);
         }
 
         if(dot_output != NULL)
@@ -395,8 +396,6 @@ void MC_dpor(void)
             char *key = bprintf("%lu", process->pid);
             enabled = (int)strtoul(xbt_dict_get_or_null(first_enabled_state, key), 0, 10);
             xbt_free(key);
-            mc_state_t state_test = NULL;
-            xbt_fifo_item_t item = NULL;
             int cursor = xbt_fifo_size(mc_stack_safety);
             xbt_fifo_foreach(mc_stack_safety, item, state_test, mc_state_t){
               if(cursor-- == enabled){ 
@@ -406,7 +405,7 @@ void MC_dpor(void)
                   break;
                 }
               }
-            } 
+            }
           }
         }
 
@@ -504,7 +503,7 @@ void MC_dpor(void)
             MC_UNSET_RAW_MEM;
             MC_replay(mc_stack_safety, -1);
           }
-          XBT_DEBUG("Back-tracking to state %d at depth %d", state->num, xbt_fifo_size(mc_stack_safety));
+          XBT_DEBUG("Back-tracking to state %d at depth %d done", state->num, xbt_fifo_size(mc_stack_safety));
           break;
         } else {
           XBT_DEBUG("Delete state %d at depth %d", state->num, xbt_fifo_size(mc_stack_safety) + 1); 

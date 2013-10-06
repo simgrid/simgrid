@@ -1875,7 +1875,7 @@ void MC_modelcheck_safety(void)
   MC_SET_RAW_MEM;
   /* Save the initial state */
   initial_state_safety = xbt_new0(s_mc_global_t, 1);
-  initial_state_safety->snapshot = MC_take_snapshot();
+  initial_state_safety->snapshot = MC_take_snapshot(0);
   MC_UNSET_RAW_MEM;
 
   MC_dpor();

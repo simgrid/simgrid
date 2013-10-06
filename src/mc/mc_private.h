@@ -66,7 +66,7 @@ typedef struct s_mc_checkpoint_ignore_region{
 }s_mc_checkpoint_ignore_region_t, *mc_checkpoint_ignore_region_t;
 
 mc_snapshot_t SIMIX_pre_mc_snapshot(smx_simcall_t simcall);
-mc_snapshot_t MC_take_snapshot(void);
+mc_snapshot_t MC_take_snapshot(int num_state);
 void MC_restore_snapshot(mc_snapshot_t);
 void MC_free_snapshot(mc_snapshot_t);
 
@@ -299,22 +299,31 @@ extern xbt_dynar_t mc_data_bss_comparison_ignore;
 
 typedef struct s_mc_pair{
   int num;
-  int other_num; /* Dot output for */
   int search_cycle;
   mc_state_t graph_state; /* System state included */
   xbt_automaton_state_t automaton_state;
   xbt_dynar_t atomic_propositions;
   int requests;
+}s_mc_pair_t, *mc_pair_t;
+
+typedef struct s_mc_visited_pair{
+  int num;
+  int other_num; /* Dot output for */
+  int acceptance_pair;
+  mc_state_t graph_state; /* System state included */
+  xbt_automaton_state_t automaton_state;
+  xbt_dynar_t atomic_propositions;
   size_t heap_bytes_used;
   int nb_processes;
-  int stack_removed;
-  int visited_removed;
   int acceptance_removed;
-}s_mc_pair_t, *mc_pair_t;
+  int visited_removed;
+}s_mc_visited_pair_t, *mc_visited_pair_t;
 
 mc_pair_t MC_pair_new(void);
 void MC_pair_delete(mc_pair_t);
 void mc_pair_free_voidp(void *p);
+mc_visited_pair_t MC_visited_pair_new(int pair_num, xbt_automaton_state_t automaton_state, xbt_dynar_t atomic_propositions);
+void MC_visited_pair_delete(mc_visited_pair_t p);
 
 void MC_ddfs_init(void);
 void MC_ddfs(void);

@@ -725,7 +725,7 @@ static void MC_dump_checkpoint_ignore(mc_snapshot_t snapshot){
 }
 
 
-mc_snapshot_t MC_take_snapshot(){
+mc_snapshot_t MC_take_snapshot(int num_state){
 
   mc_snapshot_t snapshot = xbt_new0(s_mc_snapshot_t, 1);
   snapshot->nb_processes = xbt_swag_size(simix_global->process_list);
@@ -741,7 +741,8 @@ mc_snapshot_t MC_take_snapshot(){
     //MC_get_hash_local(snapshot->hash_local, snapshot->stacks);
   }
 
-  MC_dump_checkpoint_ignore(snapshot);
+  if(num_state > 0)
+    MC_dump_checkpoint_ignore(snapshot);
 
   return snapshot;
 
@@ -756,7 +757,7 @@ void MC_restore_snapshot(mc_snapshot_t snapshot){
 }
 
 mc_snapshot_t SIMIX_pre_mc_snapshot(smx_simcall_t simcall){
-  return MC_take_snapshot();
+  return MC_take_snapshot(1);
 }
 
 void *MC_snapshot(void){
