@@ -760,7 +760,7 @@ void simcall_comm_send(smx_rdv_t rdv, double task_size, double rate,
 
   if (MC_is_active()) {
     /* the model-checker wants two separate simcalls */
-    smx_action_t comm = NULL;
+    smx_action_t comm = NULL; /* MC needs the comm to be set to NULL during the simcall */
     comm = simcall_comm_isend(rdv, task_size, rate,
         src_buff, src_buff_size, match_fun, NULL, data, 0);
     simcall_comm_wait(comm, timeout);
@@ -803,7 +803,7 @@ void simcall_comm_recv(smx_rdv_t rdv, void *dst_buff, size_t * dst_buff_size,
 
   if (MC_is_active()) {
     /* the model-checker wants two separate simcalls */
-    smx_action_t comm = NULL;
+    smx_action_t comm = NULL; /* MC needs the comm to be set to NULL during the simcall */
     comm = simcall_comm_irecv(rdv, dst_buff, dst_buff_size,
         match_fun, data);
     simcall_comm_wait(comm, timeout);
