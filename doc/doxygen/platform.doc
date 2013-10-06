@@ -371,14 +371,17 @@ router_name = prefix + clusterId + router_ + suffix;
 
 <b>cluster example</b>
 \verbatim
-<cluster id="my_cluster_1" prefix="" suffix=""
-  		radical="0-262144"	power="1000000000"    bw="125000000"     lat="5E-5"/>
-<cluster id="my_cluster_1" prefix="c-" suffix=".me"
-  		radical="0-99"	power="1000000000"    bw="125000000"     lat="5E-5"
-        bb_bw="2250000000" bb_lat="5E-4"/>
+<cluster id="my_cluster_1" prefix="" suffix="" radical="0-262144"
+         power="1e9" bw="125e6" lat="5E-5"/>
+
+<cluster id="my_cluster_1" prefix="c-" suffix=".me" radical="0-99"
+         power="1e9" bw="125e6" lat="5E-5"
+         bb_bw="2.25e9" bb_lat="5E-4"/>
 \endverbatim
-The second examples creates 100 machines, which names are the following:
+The second examples creates one router and 100 machines, which names 
+are the following:
 \verbatim
+c-my_cluster_1_router.me
 c-0.my_cluster_1.me
 c-1.my_cluster_1.me
 c-2.my_cluster_1.me
