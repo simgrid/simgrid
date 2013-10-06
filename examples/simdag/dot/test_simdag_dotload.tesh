@@ -503,4 +503,4 @@ $ $SG_TEST_EXENV ./dot_test --log=no_loc ${srcdir:=.}/../2clusters.xml ${srcdir:
 > [0.000000] [sd_daxparse/WARNING] the task 5 is in a cycle
 > [0.000000] [sd_daxparse/WARNING] the task 6 is in a cycle
 > [0.000000] [sd_dotparse/ERROR] The DOT described in dag_with_cycle.dot is not a DAG. It contains a cycle.
-> [0.000000] [test/CRITICAL] No dot load may be you have a cycle in your graph
+> [0.000000] [test/CRITICAL] No dot loaded. Do you have a cycle in your graph?
