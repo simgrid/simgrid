@@ -45,7 +45,7 @@ int coordinator(int argc, char *argv[])
         XBT_INFO("CS release. Grant to queued requests (queue size: %lu)",
               xbt_dynar_length(requests));
         char *req;
-        xbt_dynar_pop(requests, &req);
+        xbt_dynar_shift(requests, &req);
         MSG_task_send(MSG_task_create("grant", 0, 1000, NULL), req);
         todo--;
       } else {                  // nobody wants it

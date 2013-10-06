@@ -15,7 +15,7 @@ $ ${bindir:=.}/bugged1_liveness ${bindir:=.}/../msg_platform.xml ${bindir:=.}/de
 > [  0.000000] (1:coordinator@Tremblay) CS release. resource now idle
 > [  0.000000] (3:client@Fafard) Ask the request
 > [  0.000000] (1:coordinator@Tremblay) CS idle. Grant immediatly
-> [  0.000000] (0:@) Pair 22 already reached (equal to pair 10) !
+> [  0.000000] (0:@) Pair 21 already reached (equal to pair 9) !
 > [  0.000000] (0:@) *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 > [  0.000000] (0:@) |             ACCEPTANCE CYCLE            |
 > [  0.000000] (0:@) *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
@@ -40,10 +40,10 @@ $ ${bindir:=.}/bugged1_liveness ${bindir:=.}/../msg_platform.xml ${bindir:=.}/de
 > [  0.000000] (0:@) [(3)Fafard (client)] Wait(comm=(verbose only) [(3)Fafard (client)-> (1)Tremblay (coordinator)]) (62)
 > [  0.000000] (0:@) [(3)Fafard (client)] iSend(src=(3)Fafard (client), buff=(verbose only), size=(verbose only)) (54)
 > [  0.000000] (0:@) [(1)Tremblay (coordinator)] Wait(comm=(verbose only) [(3)Fafard (client)-> (1)Tremblay (coordinator)]) (62)
-> [  0.000000] (0:@) [(1)Tremblay (coordinator)] iSend(src=(1)Tremblay (coordinator), buff=(verbose only), size=(verbose only)) (54)
-> [  0.000000] (0:@) Expanded pairs = 22
-> [  0.000000] (0:@) Visited pairs = 22
-> [  0.000000] (0:@) Executed transitions = 21
+> [  0.000000] (0:@) Expanded pairs = 21
+> [  0.000000] (0:@) Visited pairs = 21
+> [  0.000000] (0:@) Executed transitions = 20
+
 
 
 

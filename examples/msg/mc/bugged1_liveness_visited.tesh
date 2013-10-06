@@ -25,34 +25,10 @@ $ ${bindir:=.}/bugged1_liveness ${bindir:=.}/../msg_platform.xml ${bindir:=.}/de
 > [  0.000000] (1:coordinator@Tremblay) CS release. resource now idle
 > [  0.000000] (2:client@Boivin) Ask the request
 > [  0.000000] (1:coordinator@Tremblay) CS idle. Grant immediatly
-> [  0.000000] (2:client@Boivin) 2 got the answer. Sleep a bit and release it
-> [  0.000000] (1:coordinator@Tremblay) CS release. resource now idle
 > [  0.000000] (1:coordinator@Tremblay) CS idle. Grant immediatly
 > [  0.000000] (2:client@Boivin) 2 got the answer. Sleep a bit and release it
 > [  0.000000] (1:coordinator@Tremblay) CS release. resource now idle
 > [  0.000000] (2:client@Boivin) Ask the request
-> [  0.000000] (1:coordinator@Tremblay) CS idle. Grant immediatly
-> [  0.000000] (2:client@Boivin) 2 got the answer. Sleep a bit and release it
-> [  0.000000] (2:client@Boivin) Ask the request
-> [  0.000000] (1:coordinator@Tremblay) CS release. resource now idle
-> [  0.000000] (1:coordinator@Tremblay) CS idle. Grant immediatly
-> [  0.000000] (1:coordinator@Tremblay) CS idle. Grant immediatly
-> [  0.000000] (2:client@Boivin) 2 got the answer. Sleep a bit and release it
-> [  0.000000] (1:coordinator@Tremblay) CS release. resource now idle
-> [  0.000000] (2:client@Boivin) Ask the request
-> [  0.000000] (1:coordinator@Tremblay) CS idle. Grant immediatly
-> [  0.000000] (2:client@Boivin) 2 got the answer. Sleep a bit and release it
-> [  0.000000] (2:client@Boivin) Ask the request
-> [  0.000000] (1:coordinator@Tremblay) CS release. resource now idle
-> [  0.000000] (1:coordinator@Tremblay) CS idle. Grant immediatly
-> [  0.000000] (1:coordinator@Tremblay) CS idle. Grant immediatly
-> [  0.000000] (2:client@Boivin) 2 got the answer. Sleep a bit and release it
-> [  0.000000] (1:coordinator@Tremblay) CS release. resource now idle
-> [  0.000000] (2:client@Boivin) Ask the request
-> [  0.000000] (1:coordinator@Tremblay) CS idle. Grant immediatly
-> [  0.000000] (2:client@Boivin) 2 got the answer. Sleep a bit and release it
-> [  0.000000] (2:client@Boivin) Ask the request
-> [  0.000000] (1:coordinator@Tremblay) CS release. resource now idle
 > [  0.000000] (1:coordinator@Tremblay) CS idle. Grant immediatly
 > [  0.000000] (1:coordinator@Tremblay) CS already used. Queue the request.
 > [  0.000000] (2:client@Boivin) 2 got the answer. Sleep a bit and release it
@@ -64,9 +40,16 @@ $ ${bindir:=.}/bugged1_liveness ${bindir:=.}/../msg_platform.xml ${bindir:=.}/de
 > [  0.000000] (1:coordinator@Tremblay) CS release. resource now idle
 > [  0.000000] (2:client@Boivin) Ask the request
 > [  0.000000] (1:coordinator@Tremblay) CS idle. Grant immediatly
+> [  0.000000] (1:coordinator@Tremblay) CS already used. Queue the request.
 > [  0.000000] (2:client@Boivin) 2 got the answer. Sleep a bit and release it
+> [  0.000000] (1:coordinator@Tremblay) CS release. Grant to queued requests (queue size: 1)
 > [  0.000000] (2:client@Boivin) Ask the request
+> [  0.000000] (1:coordinator@Tremblay) CS idle. Grant immediatly
+> [  0.000000] (2:client@Boivin) 2 got the answer. Sleep a bit and release it
+> [  0.000000] (1:coordinator@Tremblay) CS idle. Grant immediatly
+> [  0.000000] (2:client@Boivin) 2 got the answer. Sleep a bit and release it
 > [  0.000000] (1:coordinator@Tremblay) CS release. resource now idle
+> [  0.000000] (2:client@Boivin) Ask the request
 > [  0.000000] (1:coordinator@Tremblay) CS idle. Grant immediatly
 > [  0.000000] (1:coordinator@Tremblay) CS already used. Queue the request.
 > [  0.000000] (2:client@Boivin) 2 got the answer. Sleep a bit and release it
@@ -74,79 +57,15 @@ $ ${bindir:=.}/bugged1_liveness ${bindir:=.}/../msg_platform.xml ${bindir:=.}/de
 > [  0.000000] (2:client@Boivin) Ask the request
 > [  0.000000] (1:coordinator@Tremblay) CS idle. Grant immediatly
 > [  0.000000] (2:client@Boivin) 2 got the answer. Sleep a bit and release it
-> [  0.000000] (1:coordinator@Tremblay) CS release. Grant to queued requests (queue size: 1)
 > [  0.000000] (1:coordinator@Tremblay) CS idle. Grant immediatly
 > [  0.000000] (2:client@Boivin) 2 got the answer. Sleep a bit and release it
 > [  0.000000] (1:coordinator@Tremblay) CS release. resource now idle
 > [  0.000000] (2:client@Boivin) Ask the request
-> [  0.000000] (1:coordinator@Tremblay) CS idle. Grant immediatly
-> [  0.000000] (2:client@Boivin) 2 got the answer. Sleep a bit and release it
-> [  0.000000] (2:client@Boivin) Ask the request
-> [  0.000000] (1:coordinator@Tremblay) CS release. resource now idle
 > [  0.000000] (1:coordinator@Tremblay) CS idle. Grant immediatly
 > [  0.000000] (1:coordinator@Tremblay) CS already used. Queue the request.
 > [  0.000000] (2:client@Boivin) 2 got the answer. Sleep a bit and release it
 > [  0.000000] (1:coordinator@Tremblay) CS release. Grant to queued requests (queue size: 1)
 > [  0.000000] (2:client@Boivin) Ask the request
-> [  0.000000] (1:coordinator@Tremblay) CS idle. Grant immediatly
-> [  0.000000] (2:client@Boivin) 2 got the answer. Sleep a bit and release it
-> [  0.000000] (2:client@Boivin) Ask the request
-> [  0.000000] (1:coordinator@Tremblay) CS release. Grant to queued requests (queue size: 1)
-> [  0.000000] (1:coordinator@Tremblay) CS idle. Grant immediatly
-> [  0.000000] (1:coordinator@Tremblay) CS idle. Grant immediatly
-> [  0.000000] (2:client@Boivin) 2 got the answer. Sleep a bit and release it
-> [  0.000000] (1:coordinator@Tremblay) CS release. resource now idle
-> [  0.000000] (2:client@Boivin) Ask the request
-> [  0.000000] (1:coordinator@Tremblay) CS idle. Grant immediatly
-> [  0.000000] (2:client@Boivin) 2 got the answer. Sleep a bit and release it
-> [  0.000000] (2:client@Boivin) Ask the request
-> [  0.000000] (1:coordinator@Tremblay) CS release. resource now idle
-> [  0.000000] (1:coordinator@Tremblay) CS idle. Grant immediatly
-> [  0.000000] (1:coordinator@Tremblay) CS already used. Queue the request.
-> [  0.000000] (2:client@Boivin) 2 got the answer. Sleep a bit and release it
-> [  0.000000] (1:coordinator@Tremblay) CS release. Grant to queued requests (queue size: 1)
-> [  0.000000] (2:client@Boivin) Ask the request
-> [  0.000000] (1:coordinator@Tremblay) CS idle. Grant immediatly
-> [  0.000000] (2:client@Boivin) 2 got the answer. Sleep a bit and release it
-> [  0.000000] (2:client@Boivin) Ask the request
-> [  0.000000] (1:coordinator@Tremblay) CS release. Grant to queued requests (queue size: 1)
-> [  0.000000] (1:coordinator@Tremblay) CS idle. Grant immediatly
-> [  0.000000] (1:coordinator@Tremblay) CS idle. Grant immediatly
-> [  0.000000] (2:client@Boivin) 2 got the answer. Sleep a bit and release it
-> [  0.000000] (1:coordinator@Tremblay) CS release. resource now idle
-> [  0.000000] (2:client@Boivin) Ask the request
-> [  0.000000] (1:coordinator@Tremblay) CS idle. Grant immediatly
-> [  0.000000] (2:client@Boivin) 2 got the answer. Sleep a bit and release it
-> [  0.000000] (2:client@Boivin) Ask the request
-> [  0.000000] (1:coordinator@Tremblay) CS release. resource now idle
-> [  0.000000] (1:coordinator@Tremblay) CS idle. Grant immediatly
-> [  0.000000] (1:coordinator@Tremblay) CS already used. Queue the request.
-> [  0.000000] (2:client@Boivin) 2 got the answer. Sleep a bit and release it
-> [  0.000000] (1:coordinator@Tremblay) CS release. Grant to queued requests (queue size: 1)
-> [  0.000000] (2:client@Boivin) Ask the request
-> [  0.000000] (1:coordinator@Tremblay) CS idle. Grant immediatly
-> [  0.000000] (2:client@Boivin) 2 got the answer. Sleep a bit and release it
-> [  0.000000] (2:client@Boivin) Ask the request
-> [  0.000000] (1:coordinator@Tremblay) CS release. Grant to queued requests (queue size: 1)
-> [  0.000000] (1:coordinator@Tremblay) CS idle. Grant immediatly
-> [  0.000000] (2:client@Boivin) 2 got the answer. Sleep a bit and release it
-> [  0.000000] (1:coordinator@Tremblay) CS idle. Grant immediatly
-> [  0.000000] (2:client@Boivin) 2 got the answer. Sleep a bit and release it
-> [  0.000000] (1:coordinator@Tremblay) CS release. resource now idle
-> [  0.000000] (2:client@Boivin) Ask the request
-> [  0.000000] (1:coordinator@Tremblay) CS idle. Grant immediatly
-> [  0.000000] (2:client@Boivin) 2 got the answer. Sleep a bit and release it
-> [  0.000000] (2:client@Boivin) Ask the request
-> [  0.000000] (1:coordinator@Tremblay) CS release. resource now idle
-> [  0.000000] (1:coordinator@Tremblay) CS idle. Grant immediatly
-> [  0.000000] (1:coordinator@Tremblay) CS already used. Queue the request.
-> [  0.000000] (2:client@Boivin) 2 got the answer. Sleep a bit and release it
-> [  0.000000] (1:coordinator@Tremblay) CS release. Grant to queued requests (queue size: 1)
-> [  0.000000] (2:client@Boivin) Ask the request
-> [  0.000000] (1:coordinator@Tremblay) CS idle. Grant immediatly
-> [  0.000000] (2:client@Boivin) 2 got the answer. Sleep a bit and release it
-> [  0.000000] (2:client@Boivin) Ask the request
-> [  0.000000] (1:coordinator@Tremblay) CS release. Grant to queued requests (queue size: 1)
 > [  0.000000] (1:coordinator@Tremblay) CS idle. Grant immediatly
 > [  0.000000] (2:client@Boivin) 2 got the answer. Sleep a bit and release it
 > [  0.000000] (3:client@Fafard) Propositions changed : r=1, cs=0
@@ -154,8 +73,7 @@ $ ${bindir:=.}/bugged1_liveness ${bindir:=.}/../msg_platform.xml ${bindir:=.}/de
 > [  0.000000] (2:client@Boivin) Ask the request
 > [  0.000000] (1:coordinator@Tremblay) CS idle. Grant immediatly
 > [  0.000000] (2:client@Boivin) 2 got the answer. Sleep a bit and release it
-> [  0.000000] (1:coordinator@Tremblay) CS release. Grant to queued requests (queue size: 1)
-> [  0.000000] (0:@) Pair 86 already reached (equal to pair 74) !
+> [  0.000000] (0:@) Pair 57 already reached (equal to pair 45) !
 > [  0.000000] (0:@) *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 > [  0.000000] (0:@) |             ACCEPTANCE CYCLE            |
 > [  0.000000] (0:@) *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
@@ -174,23 +92,11 @@ $ ${bindir:=.}/bugged1_liveness ${bindir:=.}/../msg_platform.xml ${bindir:=.}/de
 > [  0.000000] (0:@) [(1)Tremblay (coordinator)] iRecv(dst=(1)Tremblay (coordinator), buff=(verbose only), size=(verbose only)) (56)
 > [  0.000000] (0:@) [(2)Boivin (client)] Wait(comm=(verbose only) [(2)Boivin (client)-> (1)Tremblay (coordinator)]) (62)
 > [  0.000000] (0:@) [(2)Boivin (client)] iSend(src=(2)Boivin (client), buff=(verbose only), size=(verbose only)) (54)
-> [  0.000000] (0:@) [(1)Tremblay (coordinator)] Wait(comm=(verbose only) [(2)Boivin (client)-> (1)Tremblay (coordinator)]) (62)
 > [  0.000000] (0:@) [(2)Boivin (client)] Wait(comm=(verbose only) [(2)Boivin (client)-> (1)Tremblay (coordinator)]) (62)
-> [  0.000000] (0:@) [(1)Tremblay (coordinator)] iSend(src=(1)Tremblay (coordinator), buff=(verbose only), size=(verbose only)) (54)
+> [  0.000000] (0:@) [(1)Tremblay (coordinator)] Wait(comm=(verbose only) [(2)Boivin (client)-> (1)Tremblay (coordinator)]) (62)
 > [  0.000000] (0:@) [(2)Boivin (client)] iRecv(dst=(2)Boivin (client), buff=(verbose only), size=(verbose only)) (56)
-> [  0.000000] (0:@) [(2)Boivin (client)] Wait(comm=(verbose only) [(1)Tremblay (coordinator)-> (2)Boivin (client)]) (62)
-> [  0.000000] (0:@) [(1)Tremblay (coordinator)] Wait(comm=(verbose only) [(1)Tremblay (coordinator)-> (2)Boivin (client)]) (62)
-> [  0.000000] (0:@) [(1)Tremblay (coordinator)] iRecv(dst=(1)Tremblay (coordinator), buff=(verbose only), size=(verbose only)) (56)
-> [  0.000000] (0:@) [(2)Boivin (client)] iSend(src=(2)Boivin (client), buff=(verbose only), size=(verbose only)) (54)
-> [  0.000000] (0:@) [(2)Boivin (client)] Wait(comm=(verbose only) [(2)Boivin (client)-> (1)Tremblay (coordinator)]) (62)
-> [  0.000000] (0:@) [(1)Tremblay (coordinator)] Wait(comm=(verbose only) [(2)Boivin (client)-> (1)Tremblay (coordinator)]) (62)
-> [  0.000000] (0:@) [(1)Tremblay (coordinator)] iRecv(dst=(1)Tremblay (coordinator), buff=(verbose only), size=(verbose only)) (56)
-> [  0.000000] (0:@) [(2)Boivin (client)] iSend(src=(2)Boivin (client), buff=(verbose only), size=(verbose only)) (54)
-> [  0.000000] (0:@) [(2)Boivin (client)] Wait(comm=(verbose only) [(2)Boivin (client)-> (1)Tremblay (coordinator)]) (62)
-> [  0.000000] (0:@) [(1)Tremblay (coordinator)] Wait(comm=(verbose only) [(2)Boivin (client)-> (1)Tremblay (coordinator)]) (62)
-> [  0.000000] (0:@) [(1)Tremblay (coordinator)] iSend(src=(1)Tremblay (coordinator), buff=(verbose only), size=(verbose only)) (54)
 > [  0.000000] (0:@) [(3)Fafard (client)] iSend(src=(3)Fafard (client), buff=(verbose only), size=(verbose only)) (54)
-> [  0.000000] (0:@) [(2)Boivin (client)] iRecv(dst=(2)Boivin (client), buff=(verbose only), size=(verbose only)) (56)
+> [  0.000000] (0:@) [(1)Tremblay (coordinator)] iSend(src=(1)Tremblay (coordinator), buff=(verbose only), size=(verbose only)) (54)
 > [  0.000000] (0:@) [(1)Tremblay (coordinator)] Wait(comm=(verbose only) [(1)Tremblay (coordinator)-> (2)Boivin (client)]) (62)
 > [  0.000000] (0:@) [(1)Tremblay (coordinator)] iRecv(dst=(1)Tremblay (coordinator), buff=(verbose only), size=(verbose only)) (56)
 > [  0.000000] (0:@) [(1)Tremblay (coordinator)] Wait(comm=(verbose only) [(3)Fafard (client)-> (1)Tremblay (coordinator)]) (62)
@@ -205,23 +111,11 @@ $ ${bindir:=.}/bugged1_liveness ${bindir:=.}/../msg_platform.xml ${bindir:=.}/de
 > [  0.000000] (0:@) [(1)Tremblay (coordinator)] iSend(src=(1)Tremblay (coordinator), buff=(verbose only), size=(verbose only)) (54)
 > [  0.000000] (0:@) [(2)Boivin (client)] Wait(comm=(verbose only) [(2)Boivin (client)-> (1)Tremblay (coordinator)]) (62)
 > [  0.000000] (0:@) [(2)Boivin (client)] iRecv(dst=(2)Boivin (client), buff=(verbose only), size=(verbose only)) (56)
-> [  0.000000] (0:@) [(1)Tremblay (coordinator)] Wait(comm=(verbose only) [(1)Tremblay (coordinator)-> (2)Boivin (client)]) (62)
-> [  0.000000] (0:@) [(2)Boivin (client)] Wait(comm=(verbose only) [(1)Tremblay (coordinator)-> (2)Boivin (client)]) (62)
-> [  0.000000] (0:@) [(1)Tremblay (coordinator)] iRecv(dst=(1)Tremblay (coordinator), buff=(verbose only), size=(verbose only)) (56)
-> [  0.000000] (0:@) [(2)Boivin (client)] iSend(src=(2)Boivin (client), buff=(verbose only), size=(verbose only)) (54)
-> [  0.000000] (0:@) [(2)Boivin (client)] Wait(comm=(verbose only) [(2)Boivin (client)-> (1)Tremblay (coordinator)]) (62)
-> [  0.000000] (0:@) [(1)Tremblay (coordinator)] Wait(comm=(verbose only) [(2)Boivin (client)-> (1)Tremblay (coordinator)]) (62)
-> [  0.000000] (0:@) [(1)Tremblay (coordinator)] iRecv(dst=(1)Tremblay (coordinator), buff=(verbose only), size=(verbose only)) (56)
-> [  0.000000] (0:@) [(2)Boivin (client)] iSend(src=(2)Boivin (client), buff=(verbose only), size=(verbose only)) (54)
-> [  0.000000] (0:@) [(2)Boivin (client)] Wait(comm=(verbose only) [(2)Boivin (client)-> (1)Tremblay (coordinator)]) (62)
-> [  0.000000] (0:@) [(1)Tremblay (coordinator)] Wait(comm=(verbose only) [(2)Boivin (client)-> (1)Tremblay (coordinator)]) (62)
-> [  0.000000] (0:@) [(1)Tremblay (coordinator)] iSend(src=(1)Tremblay (coordinator), buff=(verbose only), size=(verbose only)) (54)
-> [  0.000000] (0:@) [(2)Boivin (client)] iRecv(dst=(2)Boivin (client), buff=(verbose only), size=(verbose only)) (56)
 > [  0.000000] (0:@) [(2)Boivin (client)] Wait(comm=(verbose only) [(1)Tremblay (coordinator)-> (2)Boivin (client)]) (62)
 > [  0.000000] (0:@) [(1)Tremblay (coordinator)] Wait(comm=(verbose only) [(1)Tremblay (coordinator)-> (2)Boivin (client)]) (62)
-> [  0.000000] (0:@) [(1)Tremblay (coordinator)] iRecv(dst=(1)Tremblay (coordinator), buff=(verbose only), size=(verbose only)) (56)
+> [  0.000000] (0:@) [(2)Boivin (client)] iSend(src=(2)Boivin (client), buff=(verbose only), size=(verbose only)) (54)
 > [  0.000000] (0:@) [(3)Fafard (client)] Wait(comm=(verbose only) [(3)Fafard (client)-> (1)Tremblay (coordinator)]) (62)
-> [  0.000000] (0:@) [(2)Boivin (client)] iSend(src=(2)Boivin (client), buff=(verbose only), size=(verbose only)) (54)
+> [  0.000000] (0:@) [(1)Tremblay (coordinator)] iRecv(dst=(1)Tremblay (coordinator), buff=(verbose only), size=(verbose only)) (56)
 > [  0.000000] (0:@) [(1)Tremblay (coordinator)] Wait(comm=(verbose only) [(2)Boivin (client)-> (1)Tremblay (coordinator)]) (62)
 > [  0.000000] (0:@) [(1)Tremblay (coordinator)] iRecv(dst=(1)Tremblay (coordinator), buff=(verbose only), size=(verbose only)) (56)
 > [  0.000000] (0:@) [(2)Boivin (client)] Wait(comm=(verbose only) [(2)Boivin (client)-> (1)Tremblay (coordinator)]) (62)
@@ -234,7 +128,6 @@ $ ${bindir:=.}/bugged1_liveness ${bindir:=.}/../msg_platform.xml ${bindir:=.}/de
 > [  0.000000] (0:@) [(1)Tremblay (coordinator)] iRecv(dst=(1)Tremblay (coordinator), buff=(verbose only), size=(verbose only)) (56)
 > [  0.000000] (0:@) [(2)Boivin (client)] Wait(comm=(verbose only) [(1)Tremblay (coordinator)-> (2)Boivin (client)]) (62)
 > [  0.000000] (0:@) [(2)Boivin (client)] iSend(src=(2)Boivin (client), buff=(verbose only), size=(verbose only)) (54)
-> [  0.000000] (0:@) [(1)Tremblay (coordinator)] Wait(comm=(verbose only) [(2)Boivin (client)-> (1)Tremblay (coordinator)]) (62)
-> [  0.000000] (0:@) Expanded pairs = 86
-> [  0.000000] (0:@) Visited pairs = 461
-> [  0.000000] (0:@) Executed transitions = 460
+> [  0.000000] (0:@) Expanded pairs = 57
+> [  0.000000] (0:@) Visited pairs = 208
+> [  0.000000] (0:@) Executed transitions = 207

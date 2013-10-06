@@ -308,6 +308,7 @@ static int compare_local_variables(mc_snapshot_stack_t stack1, mc_snapshot_stack
       current_var2 = (local_variable_t)xbt_dynar_get_as(stack2->local_variables, cursor, local_variable_t);
       if(strcmp(current_var1->name, current_var2->name) != 0 || strcmp(current_var1->frame, current_var2->frame) != 0 || current_var1->ip != current_var2->ip){
         xbt_dynar_free(&compared_pointers);
+        XBT_VERB("Different name of variable (%s - %s) or frame (%s - %s) or ip (%lu - %lu)", current_var1->name, current_var2->name, current_var1->frame, current_var2->frame, current_var1->ip, current_var2->ip);
         return 1;
       }
       offset1 = (char *)current_var1->address - (char *)std_heap;
@@ -340,6 +341,11 @@ int snapshot_compare(void *state1, void *state2){
     s2 = ((mc_pair_t)state2)->graph_state->system_state;
     num1 = ((mc_pair_t)state1)->num;
     num2 =  ((mc_pair_t)state2)->num;
+    /* Firstly compare automaton state */
+    /*if(xbt_automaton_state_compare(((mc_pair_t)state1)->automaton_state, ((mc_pair_t)state2)->automaton_state) != 0)
+      return 1;
+    if(xbt_automaton_propositional_symbols_compare_value(((mc_pair_t)state1)->atomic_propositions, ((mc_pair_t)state2)->atomic_propositions) != 0)
+    return 1;*/
   }else{ /* Safety MC */
     s1 = ((mc_visited_state_t)state1)->system_state;
     s2 = ((mc_visited_state_t)state2)->system_state;
@@ -580,7 +586,7 @@ int snapshot_compare(void *state1, void *state2){
   #endif
 
   /* Compare heap */
-  if(mmalloc_compare_heap((xbt_mheap_t)s1->regions[0]->data, (xbt_mheap_t)s2->regions[0]->data) > 0){
+    if(mmalloc_compare_heap((xbt_mheap_t)s1->regions[0]->data, (xbt_mheap_t)s2->regions[0]->data, mc_variables_type_libsimgrid, mc_variables_type_binary) > 0){
 
     #ifdef MC_DEBUG
       xbt_os_walltimer_stop(timer);
