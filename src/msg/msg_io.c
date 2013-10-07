@@ -146,7 +146,12 @@ int MSG_file_close(msg_file_t fd)
  */
 int MSG_file_unlink(msg_file_t fd)
 {
-  return simcall_file_unlink(fd->simdata->smx_file);
+  int res = simcall_file_unlink(fd->simdata->smx_file);
+  free(fd->fullname);
+  xbt_free(fd->simdata);
+  xbt_free(fd->info);
+  xbt_free(fd);
+  return res;
 }
 
 /** \ingroup msg_file_management

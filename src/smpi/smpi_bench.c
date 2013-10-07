@@ -8,6 +8,7 @@
 #include "xbt/dict.h"
 #include "xbt/sysdep.h"
 #include "xbt/ex.h"
+#include "xbt/hash.h"
 #include "surf/surf.h"
 #include "simgrid/sg_config.h"
 
@@ -350,28 +351,48 @@ static void smpi_shared_alloc_free(void *p)
   xbt_free(data);
 }
 
+static char *smpi_shared_alloc_hash(char *loc)
+{
+  char hash[42];
+  char s[7];
+  unsigned val;
+  int i, j;
+
+  xbt_sha(loc, hash);
+  hash[41] = '\0';
+  s[6] = '\0';
+  loc = xbt_realloc(loc, 30);
+  loc[0] = '/';
+  for (i = 0; i < 40; i += 6) { /* base64 encode */
+    memcpy(s, hash + i, 6);
+    val = strtoul(s, NULL, 16);
+    for (j = 0; j < 4; j++) {
+      unsigned char x = (val >> (18 - 3 * j)) & 0x3f;
+      loc[1 + 4 * i / 6 + j] =
+        "ABCDEFGHIJKLMNOPQRSTUVZXYZabcdefghijklmnopqrstuvzxyz0123456789-_"[x];
+    }
+  }
+  loc[29] = '\0';
+  return loc;
+}
+
 void *smpi_shared_malloc(size_t size, const char *file, int line)
 {
-  char *loc = bprintf("%zu_%s_%d", (size_t)getpid(), file, line);
-  size_t len = strlen(loc);
-  size_t i;
-  int fd;
   void* mem;
-  shared_data_t *data;
   if (sg_cfg_get_boolean("smpi/use_shared_malloc")){
-    for(i = 0; i < len; i++) {
-      /* Make the 'loc' ID be a flat filename */
-      if(loc[i] == '/') {
-        loc[i] = '_';
-      }
-    }
+    char *loc = bprintf("%zu_%s_%d", (size_t)getpid(), file, line);
+    int fd;
+    shared_data_t *data;
+    loc = smpi_shared_alloc_hash(loc); /* hash loc, in order to have something
+                                        * not too long */
     if (!allocs) {
       allocs = xbt_dict_new_homogeneous(smpi_shared_alloc_free);
     }
     data = xbt_dict_get_or_null(allocs, loc);
-    if(!data) {
-      fd = shm_open(loc, O_RDWR | O_CREAT | O_EXCL, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
-      if(fd < 0) {
+    if (!data) {
+      fd = shm_open(loc, O_RDWR | O_CREAT | O_EXCL,
+                    S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
+      if (fd < 0) {
         switch(errno) {
           case EEXIST:
             xbt_die("Please cleanup /dev/shm/%s", loc);
@@ -384,7 +405,7 @@ void *smpi_shared_malloc(size_t size, const char *file, int line)
       data->count = 1;
       data->loc = loc;
       mem = shm_map(fd, size, data);
-      if(shm_unlink(loc) < 0) {
+      if (shm_unlink(loc) < 0) {
         XBT_WARN("Could not early unlink %s: %s", loc, strerror(errno));
       }
       xbt_dict_set(allocs, loc, data, NULL);
@@ -395,7 +416,7 @@ void *smpi_shared_malloc(size_t size, const char *file, int line)
       data->count++;
     }
     XBT_DEBUG("Shared malloc %zu in %p (metadata at %p)", size, mem, data);
-  }else{
+  } else {
     mem = xbt_malloc(size);
     XBT_DEBUG("Classic malloc %zu in %p", size, mem);
   }
