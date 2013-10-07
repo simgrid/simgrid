@@ -94,11 +94,10 @@ Please apply the above checklists before and after releasing the bindings.
 
 Then, clean your git repository and build the archive. It will give
 you an archive file in the build dir:
-'SimGrid-Java-${inside_release_version}.tar.gz' or
 'SimGrid-Ruby-${inside_release_version}.tar.gz'. 
 
 \verbatim
-$ cd simgrid-java (or simgrid-ruby)
+$ cd simgrid-ruby
 $ git reset --hard master
 $ git clean -dfx
 $ mkdir build
