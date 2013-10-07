@@ -97,7 +97,7 @@ EOF
     fi
 }
 
-colordiff=$(type -p colordiff)
+colordiff=$(type -p colordiff || true) 
 colorless() {
     if [ -x "$colordiff" ]; then
         "$colordiff" | less -R -F -X
