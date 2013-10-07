@@ -12,7 +12,7 @@ Please apply the following checklist before releasing.
     SIMGRID_VERSION_MAJOR and friends. Please also update the
     comments right before these macros so that we keep a track of the
     version numbers that were used.
-  - The" make distcheck" target works (testing that every files needed
+  - The "make distcheck" target works (testing that every files needed
     to build and install are included in the archive)
   - The URL provided to download in the examples of
     doc/doxygen/install.doc is accurate. Note that updating the 
