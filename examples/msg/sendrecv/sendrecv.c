@@ -1,4 +1,4 @@
-/* Copyright (c) 2007-2012. The SimGrid Team.
+/* Copyright (c) 2007-2013. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -14,7 +14,7 @@
 #include "xbt/asserts.h"
 
 /** @addtogroup MSG_examples
- * 
+ *
  *  - <b>sendrecv/sendrecv.c: Ping-pong example</b>. It's hard to
  *    think of a simpler example. The tesh files laying in the
  *    directory are instructive concerning the way to pass options to the simulators (as described in \ref options).
@@ -89,8 +89,6 @@ int receiver(int argc, char *argv[])
 
   XBT_INFO("receiver");
 
-  time = MSG_get_clock();
-
   /* Get Latency */
   a = MSG_task_receive(&task_la,MSG_host_get_name(MSG_host_self()));
   if (a == MSG_OK) {
@@ -106,7 +104,6 @@ int receiver(int argc, char *argv[])
   } else {
     xbt_die("Unexpected behavior");
   }
-
 
   /* Get Bandwidth */
   a = MSG_task_receive(&task_bw,MSG_host_get_name(MSG_host_self()));
@@ -133,10 +130,7 @@ int receiver(int argc, char *argv[])
 msg_error_t test_all(const char *platform_file,
                      const char *application_file)
 {
-
   msg_error_t res = MSG_OK;
-
-
 
   XBT_INFO("test_all");
 
@@ -166,7 +160,6 @@ int main(int argc, char *argv[])
 #endif
 
   MSG_init(&argc, argv);
-
 
   if (argc != 3) {
     XBT_CRITICAL("Usage: %s platform_file deployment_file <model>\n",
