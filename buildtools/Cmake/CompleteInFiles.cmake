@@ -415,7 +415,7 @@ IF(CMAKE_CROSSCOMPILING)
 ELSE()
   file(REMOVE "${CMAKE_BINARY_DIR}/testprog*")
   file(REMOVE ${CMAKE_BINARY_DIR}/conftestval)
-  execute_process(COMMAND ${CMAKE_C_COMPILER} ${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/test_prog/prog_AC_CHECK_MCSC.c ${mcsc_flags} -o testprog
+  execute_process(COMMAND "${CMAKE_C_COMPILER} ${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/test_prog/prog_AC_CHECK_MCSC.c ${mcsc_flags} -o testprog"
   WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/
   OUTPUT_VARIABLE COMPILE_mcsc_VAR)
 
