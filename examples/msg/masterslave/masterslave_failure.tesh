@@ -77,6 +77,7 @@ $ masterslave/masterslave_failure$EXEEXT --log=xbt_cfg.thres:critical --log=no_l
 > [ 49.278351] (4:slave@Ginette) Received "Task"
 > [ 49.278351] (4:slave@Ginette) Communication time : "1.030928"
 > [ 49.278351] (4:slave@Ginette) Processing "Task"
+> [ 50.000000] (4:slave@Ginette) Gloups. The cpu on which I'm running just turned off!. See you!
 > [ 50.309278] (1:master@Tremblay) Send completed
 > [ 50.309278] (5:slave@Bourassa) Received "Task"
 > [ 50.309278] (5:slave@Bourassa) Communication time : "1.030928"
