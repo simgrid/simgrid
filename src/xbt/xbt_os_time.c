@@ -92,7 +92,7 @@ void xbt_os_sleep(double sec)
 struct s_xbt_os_timer {
 #ifdef HAVE_POSIX_GETTIME
   struct timespec start, stop, elapse;
-#elif defined(HAVE_GETTIMEOFDAY)
+#elif defined(HAVE_GETTIMEOFDAY) || defined(_XBT_WIN32)
   struct timeval start, stop, elapse;
 #else
   unsigned long int start, stop, elapse;
