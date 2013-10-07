@@ -61,7 +61,7 @@ int master(int argc, char *argv[])
   for (i = 0; i < number_of_tasks; i++) {
     msg_task_t task = MSG_task_create("Task", task_comp_size, task_comm_size,
                                     xbt_new0(double, 1));
-    int a;
+    msg_error_t a;
     *((double *) task->data) = MSG_get_clock();
 
     a = MSG_task_send_with_timeout(task,MSG_host_get_name(slaves[i % slaves_count]),10.0);
@@ -155,6 +155,8 @@ int slave(int argc, char *argv[])
       } else if (a == MSG_HOST_FAILURE) {
         XBT_INFO
             ("Gloups. The cpu on which I'm running just turned off!. See you!");
+        free(task->data);
+        MSG_task_destroy(task);
         return 0;
       } else {
         XBT_INFO("Hey ?! What's up ? ");
