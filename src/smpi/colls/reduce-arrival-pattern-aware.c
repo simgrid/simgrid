@@ -18,9 +18,7 @@ int smpi_coll_tuned_reduce_arrival_pattern_aware(void *buf, void *rbuf,
                                                  MPI_Op op, int root,
                                                  MPI_Comm comm)
 {
-  int rank;
-  rank = smpi_comm_rank(comm);
-
+  int rank = smpi_comm_rank(comm);
   int tag = -COLL_TAG_REDUCE;
   MPI_Status status;
   MPI_Request request;
@@ -31,7 +29,7 @@ int smpi_coll_tuned_reduce_arrival_pattern_aware(void *buf, void *rbuf,
 
   MPI_Status temp_status_array[MAX_NODE];
 
-  int size;
+  int size = smpi_comm_size(comm);
   int i;
 
   int sent_count;
@@ -47,10 +45,6 @@ int smpi_coll_tuned_reduce_arrival_pattern_aware(void *buf, void *rbuf,
 
   /* source and destination */
   int to, from;
-
-  size=smpi_comm_size(comm);
-  rank=smpi_comm_rank(comm);
-
 
   /* segment is segment size in number of elements (not bytes) */
   int segment = reduce_arrival_pattern_aware_segment_size_in_byte / extent;
