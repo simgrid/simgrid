@@ -532,7 +532,7 @@ if(HAVE_MAKECONTEXT OR WIN32)
     else()
       set(makecontext_CPPFLAGS "-DTEST_makecontext -D_AMD64_")
     endif()
-    set(makecontext_CPPFLAGS_2 "-D_XBT_WsystemIN32 -I${CMAKE_HOME_DIRECTORY}/include/xbt -I${CMAKE_HOME_DIRECTORY}/src/xbt")
+    set(makecontext_CPPFLAGS_2 "-D_XBT_WIN32 -I${CMAKE_HOME_DIRECTORY}/include/xbt -I${CMAKE_HOME_DIRECTORY}/src/xbt")
   endif()
 
   file(REMOVE ${CMAKE_BINARY_DIR}/conftestval)
