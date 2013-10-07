@@ -38,7 +38,6 @@ int main(int argc, char**argv)
   }
   XBT_INFO("All blocks were correctly allocated. Free every second block");
   for (i = 0; i < TESTSIZE; i+=2) {
-    size = size_of_block(i);
     mfree(heapA,pointers[i]);
   }
   XBT_INFO("Memset every second block to zero (yeah, they are not currently allocated :)");
