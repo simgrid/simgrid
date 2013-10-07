@@ -33,9 +33,12 @@ extern AS_t current_routing;
 void surf_parse_error(const char *fmt, ...) {
   va_list va;
   va_start(va,fmt);
+  int lineno = surf_parse_lineno;
   char *msg = bvprintf(fmt,va);
   va_end(va);
-  xbt_die("Parse error at %s:%d: %s", surf_parsed_filename, surf_parse_lineno, msg);
+  cleanup();
+  surf_exit();
+  xbt_die("Parse error at %s:%d: %s", surf_parsed_filename, lineno, msg);
 }
 void surf_parse_warn(const char *fmt, ...) {
   va_list va;
