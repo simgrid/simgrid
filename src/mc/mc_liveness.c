@@ -465,7 +465,6 @@ void MC_ddfs(){
 
   mc_pair_t next_pair = NULL;
   xbt_dynar_t prop_values = NULL;
-  int new_pair = 0;
   mc_visited_pair_t reached_pair = NULL;
   
   if(xbt_fifo_size(mc_stack_liveness) < _sg_mc_max_depth){
@@ -538,6 +537,8 @@ void MC_ddfs(){
           MC_SET_RAW_MEM;
           prop_values = get_atomic_propositions_values();
           MC_UNSET_RAW_MEM;
+
+          int new_pair = 0;
          
           /* Evaluate enabled transition according to atomic propositions values */
           cursor= 0;
