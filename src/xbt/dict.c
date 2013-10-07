@@ -718,14 +718,19 @@ static void search_ext(xbt_dict_t head, const char *key, const char *data)
   xbt_test_add("Search %s", key);
   found = xbt_dict_get(head, key);
   xbt_test_log("Found %s", (char *) found);
-  if (data)
+  if (data) {
     xbt_test_assert(found,
-                     "data do not match expectations: found NULL while searching for %s",
-                     data);
-  if (found)
-    xbt_test_assert(!strcmp((char *) data, found),
-                     "data do not match expectations: found %s while searching for %s",
-                     (char *) found, data);
+                    "data do not match expectations: found NULL while searching for %s",
+                    data);
+    if (found)
+      xbt_test_assert(!strcmp((char *) data, found),
+                      "data do not match expectations: found %s while searching for %s",
+                      (char *) found, data);
+  } else {
+    xbt_test_assert(!found,
+                    "data do not match expectations: found %s while searching for NULL",
+                    found);
+  }
 }
 
 static void search(xbt_dict_t head, const char *key)
