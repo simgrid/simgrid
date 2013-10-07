@@ -532,7 +532,7 @@ if(HAVE_MAKECONTEXT OR WIN32)
     else()
       set(makecontext_CPPFLAGS "-DTEST_makecontext -D_AMD64_")
     endif()
-    set(makecontext_CPPFLAGS_2 "-D_XBT_WIN32 -I${CMAKE_HOME_DIRECTORY}/include/xbt -I${CMAKE_HOME_DIRECTORY}/src/xbt")
+    set(makecontext_CPPFLAGS_2 "-D_XBT_WsystemIN32 -I${CMAKE_HOME_DIRECTORY}/include/xbt -I${CMAKE_HOME_DIRECTORY}/src/xbt")
   endif()
 
   file(REMOVE ${CMAKE_BINARY_DIR}/conftestval)
@@ -640,11 +640,16 @@ int main(void)
   exit(0);
 }"
     )
-  try_compile(COMPILE_VA_NULL_VAR
-    ${CMAKE_BINARY_DIR}
-    ${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/test_prog/prog_va_copy.c
-    )
-  if(COMPILE_VA_NULL_VAR)
+
+  execute_process(
+  COMMAND ${CMAKE_C_COMPILER} "${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/test_prog/prog_va_copy.c" 
+  WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+  RESULT_VARIABLE COMPILE_VA_NULL_VAR
+  OUTPUT_QUIET
+  ERROR_QUIET
+  )
+
+  if(NOT COMPILE_VA_NULL_VAR)
     string(REGEX REPLACE "\;" "" fctbis ${fct})
     if(${fctbis} STREQUAL "va_copy((d),(s))")
       set(HAVE_VA_COPY 1)
