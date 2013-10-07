@@ -125,9 +125,6 @@ void SIMIX_global_init(int *argc, char **argv)
  */
 static void SIMIX_clean(void)
 {
-#ifdef HAVE_TRACING
-  TRACE_end();
-#endif
 #ifdef TIME_BENCH_PER_SR
   smx_ctx_raw_new_sr();
 #endif
