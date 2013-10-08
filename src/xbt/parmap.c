@@ -167,7 +167,6 @@ xbt_parmap_t xbt_parmap_mc_new(unsigned int num_workers, e_xbt_parmap_mode_t mod
     data->worker_id = i;
     parmap->workers[i] = xbt_os_thread_create(NULL, xbt_parmap_mc_worker_main,
                                               data, NULL);
-    xbt_os_thread_detach(worker);
   }
   return parmap;
 }
