@@ -526,6 +526,8 @@ static void _get_route_and_latency(RoutingEdgePtr src, RoutingEdgePtr dst,
   /* Check whether a direct bypass is defined */
   sg_platf_route_cbarg_t e_route_bypass = NULL;
   //FIXME:REMOVE:if (common_father->get_bypass_route)
+  common_father->test();
+
   e_route_bypass = common_father->getBypassRoute(src, dst, latency);
 
   /* Common ancestor is kind enough to declare a bypass route from src to dst -- use it and bail out */

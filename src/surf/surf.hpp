@@ -109,15 +109,15 @@ public:
   ResourcePtr createResource(string name);
   ActionPtr createAction(double _cost, bool _failed);
   virtual double shareResources(double now);
-  double shareResourcesLazy(double now);
-  //double shareResourcesFull(double now);
+  virtual double shareResourcesLazy(double now);
+  virtual double shareResourcesFull(double now);
   double shareResourcesMaxMin(xbt_swag_t running_actions,
                                       size_t offset,
                                       lmm_system_t sys,
                                       void (*solve) (lmm_system_t));
-  void updateActionsState(double now, double delta);
-  void updateActionsStateLazy(double now, double delta);
-  void updateActionsStateFull(double now, double delta);
+  virtual void updateActionsState(double now, double delta);
+  virtual void updateActionsStateLazy(double now, double delta);
+  virtual void updateActionsStateFull(double now, double delta);
 
   string getName() {return m_name;};
 
@@ -177,9 +177,9 @@ public:
 
   //private
   virtual bool isUsed()=0;
-  //TODOupdateActionState();
-  //TODOupdateResourceState();
-  //TODOfinilize();
+  //FIXME:updateActionState();
+  //FIXME:updateResourceState();
+  //FIXME:finilize();
 
   bool isOn();
   void turnOn();
@@ -192,10 +192,10 @@ public:
   e_surf_resource_state_t getState();
   void printModel() { std::cout << p_model->getName() << "<<plop"<<std::endl;};
   void *p_resource;
-  e_surf_resource_state_t m_stateCurrent;
   const char *m_name;
   xbt_dict_t m_properties;
   ModelPtr p_model;
+  e_surf_resource_state_t p_stateCurrent;
 
 protected:
 
@@ -215,7 +215,6 @@ public:
                            double metric_peak,
                            tmgr_trace_t metric_trace);
   lmm_constraint_t p_constraint;
-  e_surf_resource_state_t p_stateCurrent;
   tmgr_trace_event_t p_stateEvent;
   s_surf_metric_t p_power;
 };
@@ -250,7 +249,7 @@ public:
 #ifdef HAVE_TRACING
   void setCategory(const char *category); /**< Set the category of an action */
 #endif
-  double getRemains();     /**< Get the remains of an action */
+  virtual double getRemains();     /**< Get the remains of an action */
 #ifdef HAVE_LATENCY_BOUND_TRACKING
   int getLatencyLimited();     /**< Return 1 if action is limited by latency, 0 otherwise */
 #endif
@@ -300,13 +299,13 @@ public:
   ActionLmm() : m_suspended(false) {};
   ActionLmm(ModelPtr model, double cost, bool failed) : m_suspended(false) {};
 
-  void updateRemainingLazy(double now) {};//FIXME:
+  virtual void updateRemainingLazy(double now);
   void heapInsert(xbt_heap_t heap, double key, enum heap_action_type hat);
   void heapRemove(xbt_heap_t heap);
   double getRemains();     /**< Get the remains of an action */
   void updateIndexHeap(int i);
 
-  int unref();
+  virtual int unref();
   void cancel();
   void suspend();
   void resume();

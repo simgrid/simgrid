@@ -16,6 +16,9 @@ typedef WorkstationModel *WorkstationModelPtr;
 class WorkstationCLM03;
 typedef WorkstationCLM03 *WorkstationCLM03Ptr;
 
+class WorkstationCLM03Lmm;
+typedef WorkstationCLM03Lmm *WorkstationCLM03LmmPtr;
+
 class WorkstationAction;
 typedef WorkstationAction *WorkstationActionPtr;
 
@@ -34,6 +37,7 @@ class WorkstationModel : public Model {
 public:
   WorkstationModel(string name): Model(name) {};
   WorkstationModel();
+  ~WorkstationModel();
   void parseInit(sg_platf_host_cbarg_t host);
   WorkstationCLM03Ptr createResource(string name);
   double shareResources(double now);
@@ -87,6 +91,7 @@ public:
 class WorkstationCLM03Lmm : public WorkstationCLM03, public ResourceLmm {
 public:
   WorkstationCLM03Lmm(WorkstationModelPtr model, const char* name, xbt_dict_t props): WorkstationCLM03(model, name, props, NULL, NULL, NULL){};
+  e_surf_resource_state_t getState();
 };
 
 /**********

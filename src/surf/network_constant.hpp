@@ -53,7 +53,7 @@ public:
 	m_latency = latency;
 	if (m_latency <= 0.0) {
 	  p_stateSet = p_model->p_doneActionSet;
-	  xbt_swag_insert(this, p_stateSet);
+	  xbt_swag_insert(static_cast<ActionPtr>(this), p_stateSet);
 	}
   };
   int unref();

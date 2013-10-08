@@ -1,6 +1,8 @@
 #include "surf_private.h"
 #include "surf.hpp"
+#include "network.hpp"
 #include "cpu.hpp"
+#include "workstation.hpp"
 #include "simix/smx_host_private.h"
 #include "surf_routing.hpp"
 #include "simgrid/sg_config.h"
@@ -324,11 +326,21 @@ static XBT_INLINE void routing_asr_prop_free(void *p)
   xbt_dict_free(&elm);
 }
 
-static XBT_INLINE void surf_resource_free(void *r)
+static XBT_INLINE void surf_cpu_free(void *r)
 {
-  ResourcePtr resource = (ResourcePtr) r;
-  delete resource;
+  delete static_cast<CpuPtr>(r);
 }
+
+static XBT_INLINE void surf_link_free(void *r)
+{
+  delete static_cast<NetworkCm02LinkPtr>(r);
+}
+
+static XBT_INLINE void surf_workstation_free(void *r)
+{
+  delete static_cast<WorkstationCLM03Ptr>(r);
+}
+
 
 void sg_version(int *ver_major,int *ver_minor,int *ver_patch) {
   *ver_major = SIMGRID_VERSION_MAJOR;
@@ -352,9 +364,9 @@ void surf_init(int *argc, char **argv)
   ROUTING_PROP_ASR_LEVEL = xbt_lib_add_level(as_router_lib,routing_asr_prop_free);
 
   XBT_DEBUG("Add SURF levels");
-  SURF_CPU_LEVEL = xbt_lib_add_level(host_lib,surf_resource_free);
-  SURF_WKS_LEVEL = xbt_lib_add_level(host_lib,surf_resource_free);
-  SURF_LINK_LEVEL = xbt_lib_add_level(link_lib,surf_resource_free);
+  SURF_CPU_LEVEL = xbt_lib_add_level(host_lib,surf_cpu_free);
+  SURF_WKS_LEVEL = xbt_lib_add_level(host_lib,surf_workstation_free);
+  SURF_LINK_LEVEL = xbt_lib_add_level(link_lib,surf_link_free);
 
   xbt_init(argc, argv);
   if (!model_list)
@@ -446,7 +458,13 @@ xbt_swag_free(p_doneActionSet);
 
 double Model::shareResources(double now)
 {
-  //FIXME: to implement
+  //FIXME: set the good function once and for all
+  if (p_updateMechanism == UM_LAZY)
+	shareResourcesLazy(now);
+  else if (p_updateMechanism == UM_FULL)
+	shareResourcesFull(now);
+  else
+	xbt_die("Invalid cpu update mechanism!");
 }
 
 double Model::shareResourcesLazy(double now)
@@ -520,6 +538,11 @@ double Model::shareResourcesLazy(double now)
 
   return min;
 }
+
+double Model::shareResourcesFull(double now) {
+  THROW_UNIMPLEMENTED;
+}
+
 
 double Model::shareResourcesMaxMin(xbt_swag_t running_actions,
                           size_t offset,
@@ -662,7 +685,7 @@ Resource::Resource(surf_model_t model, const char *name, xbt_dict_t props)
 
 Resource::Resource(){
   //FIXME:free(m_name);
-  xbt_dict_free(&m_properties);
+  //FIXME:xbt_dict_free(&m_properties);
 }
 
 const char *Resource::getName()
@@ -677,7 +700,7 @@ xbt_dict_t Resource::getProperties()
 
 e_surf_resource_state_t Resource::getState()
 {
-  return m_stateCurrent;
+  return p_stateCurrent;
 }
 
 bool Resource::isOn()
@@ -832,6 +855,13 @@ double Action::getFinishTime()
   return m_remains == 0 ? m_finish : -1;
 }
 
+double Action::getRemains()
+{
+  XBT_IN("(%p)", this);
+  XBT_OUT();
+  return m_remains;
+}
+
 void Action::setData(void* data)
 {
   p_data = data;
@@ -883,7 +913,7 @@ void ActionLmm::cancel(){
 int ActionLmm::unref(){
   m_refcount--;
   if (!m_refcount) {
-	xbt_swag_remove(this, p_stateSet);
+	xbt_swag_remove(static_cast<ActionPtr>(this), p_stateSet);
 	if (p_variable)
 	  lmm_variable_free(p_model->p_maxminSystem, p_variable);
 	if (p_model->p_updateMechanism == UM_LAZY) {
@@ -958,15 +988,72 @@ void ActionLmm::updateIndexHeap(int i) {
   m_indexHeap = i;
 }
 
-
 double ActionLmm::getRemains()
 {
   XBT_IN("(%p)", this);
   /* update remains before return it */
-  if (p_updateMechanism == UM_LAZY)      /* update remains before return it */
+  if (p_model->p_updateMechanism == UM_LAZY)      /* update remains before return it */
     updateRemainingLazy(surf_get_clock());
   XBT_OUT();
   return m_remains;
+}
+
+//FIXME split code in the right places
+void ActionLmm::updateRemainingLazy(double now)
+{
+  double delta = 0.0;
+
+  if(p_model == static_cast<ModelPtr>(surf_network_model))
+  {
+    if (m_suspended != 0)
+      return;
+  }
+  else
+  {
+    xbt_assert(p_stateSet == p_model->p_runningActionSet,
+        "You're updating an action that is not running.");
+
+      /* bogus priority, skip it */
+    xbt_assert(m_priority > 0,
+        "You're updating an action that seems suspended.");
+  }
+
+  delta = now - m_lastUpdate;
+
+  if (m_remains > 0) {
+    XBT_DEBUG("Updating action(%p): remains was %lf, last_update was: %lf", this, m_remains, m_lastUpdate);
+    double_update(&m_remains, m_lastValue * delta);
+
+#ifdef HAVE_TRACING
+    if (p_model == static_cast<ModelPtr>(surf_cpu_model) && TRACE_is_enabled()) {
+      ResourcePtr cpu = static_cast<ResourcePtr>(lmm_constraint_id(lmm_get_cnst_from_var(p_model->p_maxminSystem, p_variable, 0)));
+      TRACE_surf_host_set_utilization(cpu->m_name, p_category, m_lastValue, m_lastUpdate, now - m_lastUpdate);
+    }
+#endif
+    XBT_DEBUG("Updating action(%p): remains is now %lf", this, m_remains);
+  }
+
+  if(p_model == static_cast<ModelPtr>(surf_network_model))
+  {
+    if (m_maxDuration != NO_MAX_DURATION)
+      double_update(&m_maxDuration, delta);
+
+    //FIXME: duplicated code
+    if ((m_remains <= 0) &&
+        (lmm_get_variable_weight(p_variable) > 0)) {
+      m_finish = surf_get_clock();
+      setState(SURF_ACTION_DONE);
+      heapRemove(p_model->p_actionHeap);
+    } else if (((m_maxDuration != NO_MAX_DURATION)
+        && (m_maxDuration <= 0))) {
+      m_finish = surf_get_clock();
+      setState(SURF_ACTION_DONE);
+      heapRemove(p_model->p_actionHeap);
+    }
+  }
+
+  m_lastUpdate = now;
+  m_lastValue = lmm_variable_getvalue(p_variable);
 }
 
 /*void Action::cancel()

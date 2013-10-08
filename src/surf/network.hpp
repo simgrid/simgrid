@@ -49,7 +49,6 @@ public:
                                    e_surf_link_sharing_policy_t policy,
                                    xbt_dict_t properties);
   void updateActionsStateLazy(double now, double delta);
-  void updateActionsStateFull(double now, double delta);
   virtual void gapAppend(double size, const NetworkCm02LinkLmmPtr link, NetworkCm02ActionLmmPtr action) {};
   NetworkCm02ActionPtr communicate(RoutingEdgePtr src, RoutingEdgePtr dst,
 		                           double size, double rate);
@@ -104,7 +103,8 @@ public:
  **********/
 class NetworkCm02Action : virtual public Action {
 public:
-  NetworkCm02Action(ModelPtr model, double cost, bool failed): Action(model, cost, failed) {};
+  NetworkCm02Action(ModelPtr model, double cost, bool failed)
+ : Action(model, cost, failed) {};
   double m_latency;
   double m_latCurrent;
   double m_weight;
@@ -121,7 +121,10 @@ public:
 
 class NetworkCm02ActionLmm : public ActionLmm, public NetworkCm02Action {
 public:
-  NetworkCm02ActionLmm(ModelPtr model, double cost, bool failed): ActionLmm(model, cost, failed), NetworkCm02Action(model, cost, failed) {};
+  NetworkCm02ActionLmm(ModelPtr model, double cost, bool failed)
+ : Action(model, cost, failed),
+   ActionLmm(model, cost, failed),
+   NetworkCm02Action(model, cost, failed) {};
   void updateRemainingLazy(double now);
   void recycle();
 };

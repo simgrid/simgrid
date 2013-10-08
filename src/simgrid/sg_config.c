@@ -922,12 +922,12 @@ void surf_config_models_setup()
 
   /* ********************************************************************* */
   /* TUTORIAL: New model                                                   */
-  int new_model_id = -1;
+  /*FIXME:UPDATE: int new_model_id = -1;
   char *new_model_name = NULL;
   new_model_name = xbt_cfg_get_string(_sg_cfg_set, "new_model/model");
   XBT_DEBUG("Call new model_init");
   new_model_id = find_model_description(surf_new_model_description, new_model_name);
-  surf_new_model_description[new_model_id].model_init_preparse();
+  surf_new_model_description[new_model_id].model_init_preparse();*/
   /* ********************************************************************* */
 }
 

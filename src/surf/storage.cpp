@@ -22,22 +22,35 @@ lmm_system_t storage_maxmin_system = NULL;
 static int storage_selective_update = 0;
 static xbt_swag_t storage_running_action_set_that_does_not_need_being_checked = NULL;
 
-void storage_register_callbacks() {
+/*************
+ * CallBacks *
+ *************/
 
-  /*FIXME:ROUTING_STORAGE_LEVEL = xbt_lib_add_level(storage_lib,xbt_free);
-  ROUTING_STORAGE_HOST_LEVEL = xbt_lib_add_level(storage_lib,routing_storage_host_free);
-  ROUTING_STORAGE_TYPE_LEVEL = xbt_lib_add_level(storage_type_lib,routing_storage_type_free);
-  SURF_STORAGE_LEVEL = xbt_lib_add_level(storage_lib,surf_storage_resource_free);
-
-  sg_platf_storage_add_cb(storage_parse_storage);
-  sg_platf_mstorage_add_cb(storage_parse_mstorage);
-  sg_platf_storage_type_add_cb(storage_parse_storage_type);
-  sg_platf_mount_add_cb(storage_parse_mount);*/
+static XBT_INLINE void routing_storage_type_free(void *r)
+{
+  storage_type_t stype = (storage_type_t) r;
+  free(stype->model);
+  free(stype->type_id);
+  free(stype->content);
+  xbt_dict_free(&(stype->properties));
+  free(stype);
 }
 
-/***********
- * PARSING *
- ***********/
+static XBT_INLINE void surf_storage_resource_free(void *r)
+{
+  // specific to storage
+  StoragePtr storage = (StoragePtr) r;
+  xbt_dict_free(&storage->p_content);
+  xbt_dynar_free(&storage->p_writeActions);
+  // generic resource
+  delete storage;
+}
+
+static XBT_INLINE void routing_storage_host_free(void *r)
+{
+  xbt_dynar_t dyn = (xbt_dynar_t) r;
+  xbt_dynar_free(&dyn);
+}
 
 static void parse_storage_init(sg_platf_storage_cbarg_t storage)
 {
@@ -203,30 +216,25 @@ static void storage_parse_mount(sg_platf_mount_cbarg_t mount)
   xbt_dynar_push(mount_list,&mnt);
 }
 
-static XBT_INLINE void routing_storage_type_free(void *r)
+static void storage_define_callbacks()
 {
-  storage_type_t stype = (storage_type_t) r;
-  free(stype->model);
-  free(stype->type_id);
-  free(stype->content);
-  xbt_dict_free(&(stype->properties));
-  free(stype);
+  sg_platf_storage_add_cb(parse_storage_init);
+  sg_platf_storage_type_add_cb(parse_storage_type_init);
+  sg_platf_mstorage_add_cb(parse_mstorage_init);
+  sg_platf_mount_add_cb(parse_mount_init);
 }
 
-static XBT_INLINE void surf_storage_resource_free(void *r)
-{
-  // specific to storage
-  StoragePtr storage = (StoragePtr) r;
-  xbt_dict_free(&storage->p_content);
-  xbt_dynar_free(&storage->p_writeActions);
-  // generic resource
-  delete storage;
-}
+void storage_register_callbacks() {
 
-static XBT_INLINE void routing_storage_host_free(void *r)
-{
-  xbt_dynar_t dyn = (xbt_dynar_t) r;
-  xbt_dynar_free(&dyn);
+  ROUTING_STORAGE_LEVEL = xbt_lib_add_level(storage_lib,xbt_free);
+  ROUTING_STORAGE_HOST_LEVEL = xbt_lib_add_level(storage_lib, routing_storage_host_free);
+  ROUTING_STORAGE_TYPE_LEVEL = xbt_lib_add_level(storage_type_lib, routing_storage_type_free);
+  SURF_STORAGE_LEVEL = xbt_lib_add_level(storage_lib, surf_storage_resource_free);
+
+  sg_platf_storage_add_cb(storage_parse_storage);
+  sg_platf_mstorage_add_cb(storage_parse_mstorage);
+  sg_platf_storage_type_add_cb(storage_parse_storage_type);
+  sg_platf_mount_add_cb(storage_parse_mount);
 }
 
 /*********
@@ -235,33 +243,22 @@ static XBT_INLINE void routing_storage_host_free(void *r)
 
 void surf_storage_model_init_default(void)
 {
-  new StorageModel();
+  surf_storage_model = new StorageModel();
+  storage_define_callbacks();
+  xbt_dynar_push(model_list, &surf_storage_model);
 }
 
 StorageModel::StorageModel() : Model("Storage"){
   StorageActionLmm action;
+
+  XBT_DEBUG("surf_storage_model_init_internal");
+
   storage_running_action_set_that_does_not_need_being_checked =
       xbt_swag_new(xbt_swag_offset(action, p_stateHookup));
 
   if (!storage_maxmin_system) {
     storage_maxmin_system = lmm_system_new(storage_selective_update);
   }
-  xbt_dynar_push(model_list, this);
-
-  sg_platf_storage_add_cb(parse_storage_init);
-  sg_platf_storage_type_add_cb(parse_storage_type_init);
-  sg_platf_mstorage_add_cb(parse_mstorage_init);
-  sg_platf_mount_add_cb(parse_mount_init);
-
-  ROUTING_STORAGE_LEVEL = xbt_lib_add_level(storage_lib,xbt_free);
-  ROUTING_STORAGE_HOST_LEVEL = xbt_lib_add_level(storage_lib,routing_storage_host_free);
-  ROUTING_STORAGE_TYPE_LEVEL = xbt_lib_add_level(storage_type_lib,routing_storage_type_free);
-  SURF_STORAGE_LEVEL = xbt_lib_add_level(storage_lib,surf_storage_resource_free);
-
-  sg_platf_storage_add_cb(storage_parse_storage);
-  sg_platf_mstorage_add_cb(storage_parse_mstorage);
-  sg_platf_storage_type_add_cb(storage_parse_storage_type);
-  sg_platf_mount_add_cb(storage_parse_mount);
 }
 
 
@@ -284,19 +281,16 @@ StoragePtr StorageModel::createResource(const char* id, const char* model, const
               "Storage '%s' declared several times in the platform file",
               id);
 
-  StoragePtr storage ;//= new Storage();
-
   storage_type_t storage_type = (storage_type_t) xbt_lib_get_or_null(storage_type_lib, type_id,ROUTING_STORAGE_TYPE_LEVEL);
+
   double Bread  = atof((char*)xbt_dict_get(storage_type->properties, "Bread"));
   double Bwrite = atof((char*)xbt_dict_get(storage_type->properties, "Bwrite"));
-  double Bconnection = atof((char*)xbt_dict_get(storage_type->properties, "Bconnection"));
-  XBT_DEBUG("Create resource with Bconnection '%f' Bread '%f' Bwrite '%f' and Size '%lu'", Bconnection, Bread, Bwrite, (unsigned long)storage_type->size);
-  storage->p_constraint = lmm_constraint_new(storage_maxmin_system, storage, Bconnection);
-  /* TOREPAIR: storage->constraint       = lmm_constraint_new(storage_maxmin_system, storage, Bconnection);
-  storage->constraint_read  = lmm_constraint_new(storage_maxmin_system, storage, Bread);
-  storage->constraint_write = lmm_constraint_new(storage_maxmin_system, storage, Bwrite);*/
-  storage->p_content = parseContent((char*)content_name, &(storage->m_usedSize));
-  storage->m_size = storage_type->size;
+  double Bconnection   = atof((char*)xbt_dict_get(storage_type->properties, "Bconnection"));
+
+  StoragePtr storage = new StorageLmm(this, NULL, NULL, p_maxminSystem,
+		  Bread, Bwrite, Bconnection,
+		  parseContent((char*)content_name, &(storage->m_usedSize)),
+		  storage_type->size);
 
   xbt_lib_set(storage_lib, id, SURF_STORAGE_LEVEL, storage);
 
@@ -437,6 +431,19 @@ Storage::Storage(StorageModelPtr model, const char* name, xbt_dict_t properties)
   p_writeActions = xbt_dynar_new(sizeof(char *),NULL);
 }
 
+StorageLmm::StorageLmm(StorageModelPtr model, const char* name, xbt_dict_t properties,
+	     lmm_system_t maxminSystem, double bread, double bwrite, double bconnection,
+	     xbt_dict_t content, size_t size)
+ :    ResourceLmm(), Storage(model, name, properties) {
+  XBT_DEBUG("Create resource with Bconnection '%f' Bread '%f' Bwrite '%f' and Size '%lu'", bconnection, bread, bwrite, ((unsigned long)size));
+
+  p_constraint = lmm_constraint_new(maxminSystem, this, bconnection);
+  p_constraintRead  = lmm_constraint_new(maxminSystem, this, bread);
+  p_constraintWrite = lmm_constraint_new(maxminSystem, this, bwrite);
+  p_content = content;
+  m_size = size;
+}
+
 bool Storage::isUsed()
 {
   THROW_UNIMPLEMENTED;
@@ -448,9 +455,9 @@ void Storage::updateState(tmgr_trace_event_t event_type, double value, double da
   THROW_UNIMPLEMENTED;
 }
 
-StorageActionLmmPtr Storage::ls(const char* path)
+StorageActionPtr StorageLmm::ls(const char* path)
 {
-  StorageActionLmmPtr action = new StorageActionLmm(p_model, 0, m_stateCurrent != SURF_RESOURCE_ON, this, LS);
+  StorageActionLmmPtr action = new StorageActionLmm(p_model, 0, p_stateCurrent != SURF_RESOURCE_ON, this, LS);
 
   action->p_lsDict = NULL;
   xbt_dict_t ls_dict = xbt_dict_new();
@@ -491,7 +498,7 @@ StorageActionLmmPtr Storage::ls(const char* path)
   return action;
 }
 
-StorageActionLmmPtr Storage::open(const char* mount, const char* path)
+StorageActionPtr StorageLmm::open(const char* mount, const char* path)
 {
   XBT_DEBUG("\tOpen file '%s'",path);
   size_t size = (size_t) xbt_dict_get_or_null(p_content, path);
@@ -505,12 +512,12 @@ StorageActionLmmPtr Storage::open(const char* mount, const char* path)
   file->size = size;
   file->storage = xbt_strdup(mount);
 
-  StorageActionLmmPtr action = new StorageActionLmm(p_model, 0, m_stateCurrent != SURF_RESOURCE_ON, this, OPEN);
+  StorageActionLmmPtr action = new StorageActionLmm(p_model, 0, p_stateCurrent != SURF_RESOURCE_ON, this, OPEN);
   action->p_file = file;
   return action;
 }
 
-StorageActionLmmPtr Storage::close(surf_file_t fd)
+StorageActionPtr StorageLmm::close(surf_file_t fd)
 {
   char *filename = fd->name;
   XBT_DEBUG("\tClose file '%s' size '%zu'", filename, fd->size);
@@ -526,24 +533,24 @@ StorageActionLmmPtr Storage::close(surf_file_t fd)
   free(fd->name);
   free(fd->storage);
   xbt_free(fd);
-  StorageActionLmmPtr action = new StorageActionLmm(p_model, 0, m_stateCurrent != SURF_RESOURCE_ON, this, CLOSE);
+  StorageActionLmmPtr action = new StorageActionLmm(p_model, 0, p_stateCurrent != SURF_RESOURCE_ON, this, CLOSE);
   return action;
 }
 
-StorageActionLmmPtr Storage::read(void* ptr, size_t size, surf_file_t fd)
+StorageActionPtr StorageLmm::read(void* ptr, size_t size, surf_file_t fd)
 {
   if(size > fd->size)
     size = fd->size;
-  StorageActionLmmPtr action = new StorageActionLmm(p_model, 0, m_stateCurrent != SURF_RESOURCE_ON, this, READ);
+  StorageActionLmmPtr action = new StorageActionLmm(p_model, 0, p_stateCurrent != SURF_RESOURCE_ON, this, READ);
   return action;
 }
 
-StorageActionLmmPtr Storage::write(const void* ptr, size_t size, surf_file_t fd)
+StorageActionPtr StorageLmm::write(const void* ptr, size_t size, surf_file_t fd)
 {
   char *filename = fd->name;
   XBT_DEBUG("\tWrite file '%s' size '%zu/%zu'",filename,size,fd->size);
 
-  StorageActionLmmPtr action = new StorageActionLmm(p_model, 0, m_stateCurrent != SURF_RESOURCE_ON, this, WRITE);
+  StorageActionLmmPtr action = new StorageActionLmm(p_model, 0, p_stateCurrent != SURF_RESOURCE_ON, this, WRITE);
   action->p_file = fd;
 
   // If the storage is full
@@ -557,8 +564,8 @@ StorageActionLmmPtr Storage::write(const void* ptr, size_t size, surf_file_t fd)
  * Action *
  **********/
 
-StorageActionLmm::StorageActionLmm(ModelPtr model, double cost, bool failed, StoragePtr storage, e_surf_action_storage_type_t type)
-  : ActionLmm(model, cost, failed), p_storage(storage), m_type(type) {
+StorageActionLmm::StorageActionLmm(ModelPtr model, double cost, bool failed, StorageLmmPtr storage, e_surf_action_storage_type_t type)
+  : ActionLmm(model, cost, failed), StorageAction(model, cost, failed, storage, type) {
   XBT_IN("(%s,%zu", storage->m_name, cost);
   // Must be less than the max bandwidth for all actions
   lmm_expand(storage_maxmin_system, storage->p_constraint, p_variable, 1.0);
@@ -585,7 +592,7 @@ int StorageActionLmm::unref()
 {
   m_refcount--;
   if (!m_refcount) {
-    xbt_swag_remove(this, p_stateSet);
+    xbt_swag_remove(static_cast<ActionPtr>(this), p_stateSet);
     if (p_variable)
       lmm_variable_free(storage_maxmin_system, p_variable);
 #ifdef HAVE_TRACING
@@ -602,8 +609,6 @@ void StorageActionLmm::cancel()
   setState(SURF_ACTION_FAILED);
   return;
 }
-
-
 
 void StorageActionLmm::suspend()
 {

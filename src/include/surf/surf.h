@@ -305,6 +305,7 @@ static inline void *surf_storage_resource_by_name(const char *name){
 #ifdef __cplusplus
 extern "C" {
 #endif
+char *surf_routing_edge_name(sg_routing_edge_t edge);
 
 const char *surf_model_name(surf_model_t model);
 xbt_swag_t surf_model_done_action_set(surf_model_t model);
@@ -331,6 +332,7 @@ surf_action_t surf_workstation_sleep(surf_workstation_t resource, double duratio
 surf_action_t surf_workstation_communicate(surf_workstation_t workstation_src, surf_workstation_t workstation_dst, double size, double rate);
 surf_action_t surf_workstation_open(surf_workstation_t workstation, const char* mount, const char* path);
 surf_action_t surf_workstation_close(surf_workstation_t workstation, surf_file_t fd);
+const char *surf_cpu_name(surf_cpu_t resource);
 surf_action_t surf_cpu_execute(surf_cpu_t cpu, double size);
 surf_action_t surf_cpu_sleep(surf_cpu_t cpu, double duration);
 int surf_workstation_unlink(surf_workstation_t workstation, surf_file_t fd);

@@ -10,6 +10,10 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_kernel);
  *********/
 extern double NOW;
 
+char *surf_routing_edge_name(sg_routing_edge_t edge){
+  return edge->p_name;
+}
+
 #ifdef CONTEXT_THREADS
 static xbt_parmap_t surf_parmap = NULL; /* parallel map on models */
 #endif
@@ -87,7 +91,7 @@ double surf_solve(double max_date)
 
   /* sequential version */
   xbt_dynar_foreach(model_list, iter, model) {
-    surf_share_resources(model);
+    surf_share_resources(static_cast<ModelPtr>(model));
   }
 
   unsigned i;
@@ -303,6 +307,10 @@ double surf_network_link_get_bandwidth(surf_network_link_t link){
 
 double surf_network_link_get_latency(surf_network_link_t link){
   return link->getLatency();
+}
+
+const char *surf_cpu_name(surf_cpu_t resource){
+  return resource->m_name;
 }
 
 surf_action_t surf_cpu_execute(surf_cpu_t cpu, double size){

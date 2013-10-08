@@ -57,8 +57,5 @@ public:
 class CpuCas01ActionLmm: public CpuActionLmm {
 public:
   CpuCas01ActionLmm() {};
-  CpuCas01ActionLmm(ModelPtr model, double cost, bool failed): CpuActionLmm(model, cost, failed) {};
-  int unref() {return 0;};//TODO
-  void cancel() {};//TODO
-  void recycle() {};//TODO
+  CpuCas01ActionLmm(ModelPtr model, double cost, bool failed): Action(model, cost, failed), CpuActionLmm(model, cost, failed) {};
 };

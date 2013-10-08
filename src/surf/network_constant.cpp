@@ -22,7 +22,8 @@ void surf_network_model_init_Constant()
 
   //FIXME:sg_platf_host_add_cb(netcste_count_hosts);
 
-  xbt_dynar_push(model_list, &surf_network_model);
+  ModelPtr model = static_cast<ModelPtr>(surf_network_model);
+  xbt_dynar_push(model_list, &model);
 
   //FIXME:routing_model_create(NULL);
 }
@@ -129,7 +130,7 @@ int NetworkConstantActionLmm::unref()
 {
   m_refcount--;
   if (!m_refcount) {
-    xbt_swag_remove(this, p_stateSet);
+    xbt_swag_remove(static_cast<ActionPtr>(this), p_stateSet);
     delete this;
   return 1;
   }

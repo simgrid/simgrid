@@ -840,9 +840,9 @@ CpuActionPtr CpuTi::sleep(double duration)
   if (duration == NO_MAX_DURATION) {
     /* Move to the *end* of the corresponding action set. This convention
        is used to speed up update_resource_state  */
-    xbt_swag_remove(action, action->p_stateSet);
+    xbt_swag_remove(static_cast<ActionPtr>(action), action->p_stateSet);
     action->p_stateSet = cpu_ti_running_action_set_that_does_not_need_being_checked;
-    xbt_swag_insert(action, action->p_stateSet);
+    xbt_swag_insert(static_cast<ActionPtr>(action), action->p_stateSet);
   }
   XBT_OUT();
   return action;
@@ -875,7 +875,7 @@ int CpuTiAction::unref()
 {
   m_refcount--;
   if (!m_refcount) {
-    xbt_swag_remove(this, p_stateSet);
+    xbt_swag_remove(static_cast<ActionPtr>(this), p_stateSet);
     /* remove from action_set */
     xbt_swag_remove(this, ((CpuTiPtr)surf_cpu_resource_priv(p_cpu))->p_actionSet);
     /* remove from heap */

@@ -10,6 +10,14 @@ WorkstationModelPtr surf_workstation_model = NULL;
 
 //FIXME:Faire hériter ou composer de cup et network
 
+/*************
+ * CallBacks *
+ *************/
+
+static void workstation_new(sg_platf_host_cbarg_t host){
+  surf_workstation_model->createResource(host->id);
+}
+
 /*********
  * Model *
  *********/
@@ -21,8 +29,9 @@ void surf_workstation_model_init_current_default(void)
   surf_cpu_model_init_Cas01();
   surf_network_model_init_LegrandVelho();
 
-  xbt_dynar_push(model_list, &surf_workstation_model);
-  //FIXME:sg_platf_host_add_cb(workstation_new);
+  ModelPtr model = static_cast<ModelPtr>(surf_workstation_model);
+  xbt_dynar_push(model_list, &model);
+  sg_platf_host_add_cb(workstation_new);
 }
 
 void surf_workstation_model_init_compound()
@@ -31,19 +40,17 @@ void surf_workstation_model_init_compound()
   xbt_assert(surf_cpu_model, "No CPU model defined yet!");
   xbt_assert(surf_network_model, "No network model defined yet!");
   surf_workstation_model = new WorkstationModel();
-  xbt_dynar_push(model_list, &surf_workstation_model);
-  //FIXME:sg_platf_host_add_cb(workstation_new);
+
+  ModelPtr model = static_cast<ModelPtr>(surf_workstation_model);
+  xbt_dynar_push(model_list, &model);
+  sg_platf_host_add_cb(workstation_new);
 }
 
 WorkstationModel::WorkstationModel() : Model("Workstation") {
-  //FIXME:xbt_cfg_setdefault_boolean(_sg_cfg_set, "network/crosstraffic", xbt_strdup("yes"));
-  //FIXME:surf_cpu_model_init_Cas01();
-  //FIXME:surf_network_model_init_LegrandVelho();
-
-  xbt_dynar_push(model_list, this);
-  //FIXME:sg_platf_host_add_cb(workstation_new);
 }
 
+WorkstationModel::~WorkstationModel() {
+}
 
 void WorkstationModel::parseInit(sg_platf_host_cbarg_t host){
   createResource(host->id);
@@ -239,6 +246,9 @@ size_t WorkstationCLM03::getSize(surf_file_t fd){
   return fd->size;
 }
 
+e_surf_resource_state_t WorkstationCLM03Lmm::getState() {
+  return WorkstationCLM03::getState();
+}
 /**********
  * Action *
  **********/

@@ -109,7 +109,7 @@ void WorkstationL07Model::updateActionsState(double now, double delta)
                                     i++))) {
         constraint_id = lmm_constraint_id(cnst);
 
-        if (((WorkstationCLM03Ptr)constraint_id)->m_stateCurrent == SURF_RESOURCE_OFF) {
+        if (((WorkstationCLM03LmmPtr)constraint_id)->p_stateCurrent == SURF_RESOURCE_OFF) {
           XBT_DEBUG("Action (%p) Failed!!", action);
           action->m_finish = surf_get_clock();
           action->setState(SURF_ACTION_FAILED);
@@ -266,7 +266,7 @@ WorkstationCLM03Ptr WorkstationL07Model::createCpuResource(const char *name, dou
     cpu->p_power.event =
         tmgr_history_add_trace(history, power_trace, 0.0, 0, cpu);
 
-  cpu->m_stateCurrent = state_initial;
+  cpu->p_stateCurrent = state_initial;
   if (state_trace)
     cpu->p_stateEvent =
         tmgr_history_add_trace(history, state_trace, 0.0, 0, cpu);
@@ -561,7 +561,7 @@ int WorkstationL07ActionLmm::unref()
 {
   m_refcount--;
   if (!m_refcount) {
-    xbt_swag_remove(this, p_stateSet);
+    xbt_swag_remove(static_cast<ActionPtr>(this), p_stateSet);
     if (p_variable)
       lmm_variable_free(ptask_maxmin_system, p_variable);
     delete this;

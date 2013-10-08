@@ -36,10 +36,6 @@ void AsGeneric::getRouteAndLatency(RoutingEdgePtr src, RoutingEdgePtr dst, sg_pl
   THROW_IMPOSSIBLE;
 }
 
-xbt_dynar_t AsGeneric::getOneLinkRoutes(){
-  THROW_IMPOSSIBLE;
-}
-
 AsGeneric::AsGeneric() {
   p_bypassRoutes = xbt_dict_new_homogeneous((void (*)(void *)) generic_free_route);
 }
@@ -98,7 +94,7 @@ void AsGeneric::parseBypassroute(sg_platf_route_cbarg_t e_route)
 /* ************************************************************************** */
 /* *********************** GENERIC BUSINESS METHODS ************************* */
 
-xbt_dynar_t AsGeneric::getOnelinkRoutes() { // FIXME: kill that stub
+xbt_dynar_t AsGeneric::getOneLinkRoutes() { // FIXME: kill that stub
   xbt_die("\"generic_get_onelink_routes\" not implemented yet");
   return NULL;
 }

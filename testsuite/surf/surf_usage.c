@@ -63,13 +63,13 @@ void test(char *platform)
   cpuB = surf_cpu_resource_by_name("Cpu B");
 
   /* Let's check that those two processors exist */
-  XBT_DEBUG("%s : %p", surf_resource_name(cpuA), cpuA);
-  XBT_DEBUG("%s : %p", surf_resource_name(cpuB), cpuB);
-
+  XBT_DEBUG("%s : %p", surf_cpu_name(surf_cpu_resource_priv(cpuA)), cpuA);
+  XBT_DEBUG("%s : %p", surf_cpu_name(surf_cpu_resource_priv(cpuB)), cpuB);
+  surf_cpu_resource_priv(cpuA);
   /* Let's do something on it */
-  actionA = surf_cpu_execute(cpuA, 1000.0);
-  actionB = surf_cpu_execute(cpuB, 1000.0);
-  actionC = surf_cpu_sleep(cpuB, 7.32);
+  actionA = surf_cpu_execute(surf_cpu_resource_priv(cpuA), 1000.0);
+  actionB = surf_cpu_execute(surf_cpu_resource_priv(cpuB), 1000.0);
+  actionC = surf_cpu_sleep(surf_cpu_resource_priv(cpuB), 7.32);
 
   /* Use whatever calling style you want... */
   stateActionA = surf_action_get_state(actionA);     /* When you know actionA model type */
@@ -87,8 +87,8 @@ void test(char *platform)
   cardB = sg_routing_edge_by_name_or_null("Cpu B");
 
   /* Let's check that those two processors exist */
-  XBT_DEBUG("%s : %p", surf_resource_name(cardA), cardA);
-  XBT_DEBUG("%s : %p", surf_resource_name(cardB), cardB);
+  XBT_DEBUG("%s : %p", surf_routing_edge_name(cardA), cardA);
+  XBT_DEBUG("%s : %p", surf_routing_edge_name(cardB), cardB);
 
   /* Let's do something on it */
   surf_network_model_communicate(surf_network_model, cardA, cardB, 150.0, -1.0);
