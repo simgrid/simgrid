@@ -84,6 +84,7 @@ public class VM extends Host{
 	
 
 	/* JNI / Native code */
+
 	/* get/set property methods are inherited from the Host class. */
 	
 	/** Returns whether the given VM is currently suspended
@@ -157,6 +158,7 @@ public class VM extends Host{
 	 */	
 	public void migrate(Host destination){
 		this.internalmig(destination);
+		this.currentHost = destination; 
 	}
 	
 	/** Immediately suspend the execution of all processes within the given VM
