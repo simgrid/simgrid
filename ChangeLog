@@ -1,4 +1,4 @@
-SimGrid (3.10) NOT RELEASED; urgency=low
+SimGrid (3.10pre1) unstable; urgency=low
 
  Java:
  * Reintegrate Java to the main archive as desynchronizing these
@@ -75,7 +75,7 @@ SimGrid (3.10) NOT RELEASED; urgency=low
    annoying when scripting around the simulator. Adding a
    --cfg=clean_atexit:yes allows to circumvent this issue.
 
--- $date Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
+-- Mon Oct 7 2013 Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
 
 SimGrid (3.9) stable; urgency=low
 

@@ -640,11 +640,16 @@ int main(void)
   exit(0);
 }"
     )
-  try_compile(COMPILE_VA_NULL_VAR
-    ${CMAKE_BINARY_DIR}
-    ${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/test_prog/prog_va_copy.c
-    )
-  if(COMPILE_VA_NULL_VAR)
+
+  execute_process(
+  COMMAND ${CMAKE_C_COMPILER} "${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/test_prog/prog_va_copy.c" 
+  WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+  RESULT_VARIABLE COMPILE_VA_NULL_VAR
+  OUTPUT_QUIET
+  ERROR_QUIET
+  )
+
+  if(NOT COMPILE_VA_NULL_VAR)
     string(REGEX REPLACE "\;" "" fctbis ${fct})
     if(${fctbis} STREQUAL "va_copy((d),(s))")
       set(HAVE_VA_COPY 1)

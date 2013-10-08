@@ -72,3 +72,11 @@
    fun:aagparse
    fun:agconcat
 }
+
+# We're not interested by memory leaks in the Lua interpreter
+{
+   Memory leak in lua
+   Memcheck:Leak
+   ...
+   fun:luaD_precall
+}

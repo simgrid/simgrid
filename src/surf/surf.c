@@ -466,6 +466,11 @@ void surf_exit(void)
   unsigned int iter;
   surf_model_t model = NULL;
 
+#ifdef HAVE_TRACING
+  TRACE_end();                  /* Just in case it was not called by the upper
+                                 * layer (or there is no upper layer) */
+#endif
+
   sg_config_finalize();
 
   xbt_dynar_foreach(model_list, iter, model)

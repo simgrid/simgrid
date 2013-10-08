@@ -572,7 +572,7 @@ static void smx_ctx_raw_runall_parallel(void)
   xbt_parmap_apply(raw_parmap, (void_f_pvoid_t) smx_ctx_raw_resume_parallel,
       simix_global->process_to_run);
 #else
-  xbt_die("You asked for a parallel execution, but you don't have any threads.")
+  xbt_die("You asked for a parallel execution, but you don't have any threads.");
 #endif
 }
 

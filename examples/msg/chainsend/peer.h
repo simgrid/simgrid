@@ -12,8 +12,8 @@
 /* Peer struct */
 typedef struct s_peer {
   int init;
-  const char *prev;
-  const char *next;
+  char *prev;
+  char *next;
   char *me;
   int pieces;
   unsigned long long bytes;

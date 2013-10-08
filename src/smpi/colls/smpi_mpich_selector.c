@@ -598,18 +598,16 @@ int smpi_coll_tuned_allgatherv_mpich(void *sbuf, int scount,
                                                )
 {
     int communicator_size, pow2_size,i;
-    size_t dsize, total_dsize;
+    size_t total_dsize;
 
     communicator_size = smpi_comm_size(comm);
 
     /* Determine complete data size */
-    dsize=smpi_datatype_size(sdtype);
-    total_dsize = dsize * scount * communicator_size;   
-
     total_dsize = 0;
     for (i=0; i<communicator_size; i++)
         total_dsize += rcounts[i];
-    if (total_dsize == 0) return MPI_SUCCESS;
+    if (total_dsize == 0)
+      return MPI_SUCCESS;
     
     for (pow2_size  = 1; pow2_size < communicator_size; pow2_size <<=1); 
 

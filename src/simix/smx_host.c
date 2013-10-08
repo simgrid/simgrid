@@ -555,7 +555,7 @@ void SIMIX_execution_finish(smx_action_t action)
       case SIMIX_FAILED:
         XBT_DEBUG("SIMIX_execution_finished: host '%s' failed", sg_host_name(simcall->issuer->smx_host));
         simcall->issuer->context->iwannadie = 1;
-        //SMX_EXCEPTION(simcall->issuer, host_error, 0, "Host failed");
+        SMX_EXCEPTION(simcall->issuer, host_error, 0, "Host failed");
         break;
 
       case SIMIX_CANCELED:

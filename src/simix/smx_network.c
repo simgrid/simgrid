@@ -695,7 +695,6 @@ smx_action_t SIMIX_comm_iprobe(smx_process_t dst_proc, smx_rdv_t rdv, int src,
 
 void SIMIX_pre_comm_wait(smx_simcall_t simcall, smx_action_t action, double timeout)
 {
-  int idx = simcall->mc_value;
   /* the simcall may be a wait, a send or a recv */
   surf_action_t sleep;
 
@@ -706,6 +705,7 @@ void SIMIX_pre_comm_wait(smx_simcall_t simcall, smx_action_t action, double time
   simcall->issuer->waiting_action = action;
 
   if (MC_is_active()) {
+    int idx = simcall->mc_value;
     if (idx == 0) {
       action->state = SIMIX_DONE;
     } else {
@@ -764,12 +764,12 @@ void SIMIX_pre_comm_test(smx_simcall_t simcall, smx_action_t action)
 
 void SIMIX_pre_comm_testany(smx_simcall_t simcall, xbt_dynar_t actions)
 {
-  int idx = simcall->mc_value;
   unsigned int cursor;
   smx_action_t action;
   simcall_comm_testany__set__result(simcall, -1);
 
   if (MC_is_active()){
+    int idx = simcall->mc_value;
     if(idx == -1){
       SIMIX_simcall_answer(simcall);
     }else{
@@ -795,11 +795,11 @@ void SIMIX_pre_comm_testany(smx_simcall_t simcall, xbt_dynar_t actions)
 
 void SIMIX_pre_comm_waitany(smx_simcall_t simcall, xbt_dynar_t actions)
 {
-  int idx = simcall->mc_value;
   smx_action_t action;
   unsigned int cursor = 0;
 
   if (MC_is_active()){
+    int idx = simcall->mc_value;
     action = xbt_dynar_get_as(actions, idx, smx_action_t);
     xbt_fifo_push(action->simcalls, simcall);
     simcall_comm_waitany__set__result(simcall, idx);

@@ -405,7 +405,8 @@ static void _sg_cfg_cb__gtnets_jitter_seed(const char *name, int pos)
 /* create the config set, register what should be and parse the command line*/
 void sg_config_init(int *argc, char **argv)
 {
-  char *description = xbt_malloc(1024), *p = description;
+  char *description = xbt_malloc(1024);
+  char *p;
   int i;
 
   /* Create the configuration support */

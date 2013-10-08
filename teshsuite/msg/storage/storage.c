@@ -125,11 +125,11 @@ void display_storage_content(msg_storage_t storage){
   XBT_INFO("Print the content of the storage element: %s",MSG_storage_get_name(storage));
   xbt_dict_cursor_t cursor = NULL;
   char *file;
-  sg_storage_size_t size;
+  sg_storage_size_t *psize;
   xbt_dict_t content = MSG_storage_get_content(storage);
   if (content){
-    xbt_dict_foreach(content, cursor, file, size)
-    XBT_INFO("%s size: %" PRIu64 " bytes", file, size);
+    xbt_dict_foreach(content, cursor, file, psize)
+    XBT_INFO("%s size: %" PRIu64 " bytes", file, *psize);
   } else {
     XBT_INFO("No content.");
   }

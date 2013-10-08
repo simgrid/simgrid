@@ -99,6 +99,9 @@ msg_error_t MSG_parallel_task_execute(msg_task_t task)
     case cancel_error:
       status = MSG_TASK_CANCELED;
       break;
+    case host_error:
+      status = MSG_HOST_FAILURE;
+      break;
     default:
       RETHROW;
     }

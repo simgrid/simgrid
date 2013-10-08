@@ -21,12 +21,15 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_io, msg,
 /********************************* File **************************************/
 void __MSG_file_get_info(msg_file_t fd){
   xbt_dynar_t info = simcall_file_get_info(fd->simdata->smx_file);
+  sg_storage_size_t *psize;
+
   fd->info->content_type = xbt_dynar_pop_as(info, char *);
   fd->info->storage_type = xbt_dynar_pop_as(info, char *);
   fd->info->storageId = xbt_dynar_pop_as(info, char *);
   fd->info->mount_point = xbt_dynar_pop_as(info, char *);
-  fd->info->size = xbt_dynar_pop_as(info, sg_storage_size_t);
-
+  psize = xbt_dynar_pop_as(info, sg_storage_size_t*);
+  fd->info->size = *psize;
+  xbt_free(psize);
   xbt_dynar_free_container(&info);
 }
 

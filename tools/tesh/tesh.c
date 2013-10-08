@@ -141,7 +141,6 @@ static void handle_suite(const char *filename, FILE * IN)
       } else {
         to_be_continued = 1;
         line[linelen - 2] = '\0';
-        linelen -= 2;
         if (!buff->used)
           buffbegin = line_num;
       }

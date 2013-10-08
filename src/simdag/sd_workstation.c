@@ -364,8 +364,7 @@ double SD_route_get_current_bandwidth(SD_workstation_t src,
 
   links = SD_route_get_list(src, dst);
   nb_links = SD_route_get_size(src, dst);
-  bandwidth = min_bandwidth = -1.0;
-
+  min_bandwidth = -1.0;
 
   for (i = 0; i < nb_links; i++) {
     bandwidth = SD_link_get_current_bandwidth(links[i]);

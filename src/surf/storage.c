@@ -44,7 +44,7 @@ static surf_action_t storage_action_ls(void *storage, const char* path)
 {
   surf_action_t action = storage_action_execute(storage,0, LS);
   action->ls_dict = NULL;
-  xbt_dict_t ls_dict = xbt_dict_new_homogeneous(NULL);
+  xbt_dict_t ls_dict = xbt_dict_new_homogeneous(xbt_free);
 
   char* key;
   sg_storage_size_t size = 0;
@@ -65,7 +65,9 @@ static surf_action_t storage_action_ls(void *storage, const char* path)
 
       // file
       if(xbt_dynar_length(dyn) == 1){
-        xbt_dict_set(ls_dict,file,&size,NULL);
+        sg_storage_size_t *psize = xbt_new(sg_storage_size_t,1);
+        *psize=size;
+        xbt_dict_set(ls_dict,file,psize,NULL);
       }
       // Directory
       else
@@ -87,12 +89,16 @@ static surf_action_t storage_action_open(void *storage, const char* mount,
 {
   XBT_DEBUG("\tOpen file '%s'",path);
   xbt_dict_t content_dict = ((storage_t)storage)->content;
-  sg_storage_size_t size = (sg_storage_size_t) xbt_dict_get_or_null(content_dict,path);
-
+  sg_storage_size_t size, *psize;
+  psize = (sg_storage_size_t*) xbt_dict_get_or_null(content_dict, path);
+  if (psize)
+    size = *psize;
+  else {
   // if file does not exist create an empty file
-  if(!size){
-	size = 0;
-    xbt_dict_set(content_dict,path,&size,NULL);
+    psize = xbt_new(sg_storage_size_t,1);
+    size = 0;
+    *psize = size;
+    xbt_dict_set(content_dict,path,psize,NULL);
     XBT_DEBUG("File '%s' was not found, file created.",path);
   }
   surf_file_t file = xbt_new0(s_surf_file_t,1);
@@ -207,9 +213,10 @@ static xbt_dict_t storage_get_content(void *storage)
   xbt_dict_t content_dict = xbt_dict_new_homogeneous(NULL);
   xbt_dict_cursor_t cursor = NULL;
   char *file;
-  sg_storage_size_t *size;
-  xbt_dict_foreach(((storage_t)st)->content, cursor, file, size){
-    xbt_dict_set(content_dict,file,(void*)size,NULL);
+  sg_storage_size_t *psize;
+
+  xbt_dict_foreach(((storage_t)st)->content, cursor, file, psize){
+    xbt_dict_set(content_dict,file,psize,NULL);
   }
   return content_dict;
 }
@@ -302,8 +309,11 @@ static void storage_update_actions_state(double now, double delta)
       ((storage_t)(action->storage))->used_size += incr; // disk usage
       ((surf_action_t)action)->file->size += incr; // file size
 
+      sg_storage_size_t *psize = xbt_new(sg_storage_size_t,1);
+      *psize = ((surf_action_t)action)->file->size;
+
       xbt_dict_t content_dict = ((storage_t)(action->storage))->content;
-      xbt_dict_set(content_dict,((surf_action_t)action)->file->name,(void*)(((surf_action_t)action)->file->size),NULL);
+      xbt_dict_set(content_dict,((surf_action_t)action)->file->name,psize,NULL);
     }
 
     double_update(&(GENERIC_ACTION(action).remains),
@@ -569,7 +579,7 @@ static xbt_dict_t parse_storage_content(char *filename, sg_storage_size_t *used_
   if ((!filename) || (strcmp(filename, "") == 0))
     return NULL;
 
-  xbt_dict_t parse_content = xbt_dict_new_homogeneous(NULL);
+  xbt_dict_t parse_content = xbt_dict_new_homogeneous(xbt_free);
   FILE *file = NULL;
 
   file = surf_fopen(filename, "r");
@@ -586,7 +596,9 @@ static xbt_dict_t parse_storage_content(char *filename, sg_storage_size_t *used_
     if (read){
     if (sscanf(line,"%s %" SCNu64, path, &size) == 2) {
         *used_size += size;
-        xbt_dict_set(parse_content,path,(void*) size,NULL);
+        sg_storage_size_t *psize = xbt_new(sg_storage_size_t, 1);
+        *psize = size;
+        xbt_dict_set(parse_content,path,psize,NULL);
       } else {
         xbt_die("Be sure of passing a good format for content file.\n");
       }
