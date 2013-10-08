@@ -93,12 +93,11 @@ void peer_init(peer_t p, int argc, char *argv[])
   p->bytes = 0;
   p->pending_recvs = xbt_dynar_new(sizeof(msg_comm_t), NULL);
   p->pending_sends = xbt_dynar_new(sizeof(msg_comm_t), NULL);
-  p->me = xbt_new(char, HOSTNAME_LENGTH);
   /* Set mailbox name: use host number from argv or hostname if no argument given */
   if (argc > 1) {
-    snprintf(p->me, HOSTNAME_LENGTH, "host%s", argv[1]);
+    p->me = bprintf("host%s", argv[1]);
   } else {
-    strncpy(p->me, MSG_host_get_name(MSG_host_self()), HOSTNAME_LENGTH);
+    p->me = xbt_strdup(MSG_host_get_name(MSG_host_self()));
   }
 }
 
@@ -127,6 +126,8 @@ void peer_delete(peer_t p)
   xbt_dynar_free(&p->pending_recvs);
   xbt_dynar_free(&p->pending_sends);
   xbt_free(p->me);
+  xbt_free(p->prev);
+  xbt_free(p->next);
 
   xbt_free(p);
 }

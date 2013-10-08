@@ -5,13 +5,11 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(msg_broadcaster,
 
 xbt_dynar_t build_hostlist_from_hostcount(int hostcount)
 {
-  xbt_dynar_t host_list = xbt_dynar_new(sizeof(char*), NULL);
-  char *hostname = NULL;
-  int i = 1;
+  xbt_dynar_t host_list = xbt_dynar_new(sizeof(char*), xbt_free_ref);
+  int i;
   
-  for (; i < hostcount+1; i++) {
-    hostname = xbt_new(char, HOSTNAME_LENGTH);
-    snprintf(hostname, HOSTNAME_LENGTH, "host%d", i);
+  for (i = 1; i <= hostcount; i++) {
+    char *hostname = bprintf("host%d", i);
     XBT_DEBUG("%s", hostname);
     xbt_dynar_push(host_list, &hostname);
   }

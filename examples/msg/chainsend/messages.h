@@ -17,10 +17,10 @@ typedef enum {
 /* Message struct */
 typedef struct s_message {
   e_message_type type;
-  const char *issuer_hostname;
-  const char *mailbox;
-  const char *prev_hostname;
-  const char *next_hostname;
+  char *issuer_hostname;
+  char *mailbox;
+  char *prev_hostname;
+  char *next_hostname;
   const char *data_block;
   unsigned int data_length;
   unsigned int num_pieces;
