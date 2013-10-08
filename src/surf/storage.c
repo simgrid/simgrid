@@ -215,7 +215,7 @@ static xbt_dict_t storage_get_content(void *storage)
   char *file;
   sg_storage_size_t *psize;
 
-  xbt_dict_foreach(((storage_t)st)->content, cursor, file, psize){
+  xbt_dict_foreach(((storage_t)storage_resource)->content, cursor, file, psize){
     xbt_dict_set(content_dict,file,psize,NULL);
   }
   return content_dict;
