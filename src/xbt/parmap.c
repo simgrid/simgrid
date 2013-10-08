@@ -326,6 +326,7 @@ static void *xbt_parmap_worker_main(void *arg)
 
     /* We are destroying the parmap */
     } else {
+      SIMIX_context_free(context);
       xbt_free(data);
       parmap->worker_signal_f(parmap);
       return NULL;
