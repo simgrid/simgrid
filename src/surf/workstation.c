@@ -462,8 +462,10 @@ static sg_storage_size_t ws_file_get_size(void *workstation, surf_file_t fd)
 static xbt_dynar_t ws_file_get_info(void *workstation, surf_file_t fd)
 {
   storage_t st = find_storage_on_mount_list(workstation, fd->mount);
+  sg_storage_size_t *psize = xbt_new(sg_storage_size_t, 1);
+  *psize = fd->size;
   xbt_dynar_t info = xbt_dynar_new(sizeof(void*), NULL);
-  xbt_dynar_push_as(info, void *, (void*)fd->size);
+  xbt_dynar_push_as(info, sg_storage_size_t *, psize);
   xbt_dynar_push_as(info, void *, fd->mount);
   xbt_dynar_push_as(info, void *, st->generic_resource.name);
   xbt_dynar_push_as(info, void *, st->type_id);
