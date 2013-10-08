@@ -846,7 +846,9 @@ XBT_INLINE void SIMIX_comm_start(smx_action_t action)
     XBT_DEBUG("Starting communication %p from '%s' to '%s'", action,
               SIMIX_host_get_name(sender), SIMIX_host_get_name(receiver));
 
-    action->comm.surf_comm = surf_workstation_communicate(sender, receiver, action->comm.task_size, action->comm.rate);
+    action->comm.surf_comm = surf_workstation_model_communicate(surf_workstation_model,
+    		                                                    sender, receiver,
+    		                                                    action->comm.task_size, action->comm.rate);
 
     surf_action_set_data(action->comm.surf_comm, action);
 

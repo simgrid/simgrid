@@ -318,7 +318,7 @@ surf_action_t surf_workstation_model_execute_parallel_task(surf_workstation_mode
                                             double *computation_amount,
                                             double *communication_amount,
                                             double rate);
-surf_action_t surf_workstation_model_communicate(surf_workstation_model_t model, surf_workstation_CLM03_t src, surf_workstation_CLM03_t dst, double size, double rate);
+surf_action_t surf_workstation_model_communicate(surf_workstation_model_t model, surf_workstation_t src, surf_workstation_t dst, double size, double rate);
 xbt_dynar_t surf_workstation_model_get_route(surf_workstation_model_t model, surf_workstation_t src, surf_workstation_t dst);
 surf_action_t surf_network_model_communicate(surf_network_model_t model, sg_routing_edge_t src, sg_routing_edge_t dst, double size, double rate);
 const char *surf_resource_name(surf_resource_t resource);
@@ -329,7 +329,6 @@ double surf_workstation_get_available_speed(surf_workstation_t resource);
 int surf_workstation_get_core(surf_workstation_t resource);
 surf_action_t surf_workstation_execute(surf_workstation_t resource, double size);
 surf_action_t surf_workstation_sleep(surf_workstation_t resource, double duration);
-surf_action_t surf_workstation_communicate(surf_workstation_t workstation_src, surf_workstation_t workstation_dst, double size, double rate);
 surf_action_t surf_workstation_open(surf_workstation_t workstation, const char* mount, const char* path);
 surf_action_t surf_workstation_close(surf_workstation_t workstation, surf_file_t fd);
 const char *surf_cpu_name(surf_cpu_t resource);
