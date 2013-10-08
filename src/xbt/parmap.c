@@ -67,6 +67,7 @@ typedef struct s_xbt_parmap {
   unsigned thread_counter;         /**< number of workers that have done the work */
 
   unsigned int num_workers;        /**< total number of worker threads including the controller */
+  xbt_os_thread_t *workers;        /**< worker thread handlers */
   void_f_pvoid_t fun;              /**< function to run in parallel on each element of data */
   xbt_dynar_t data;                /**< parameters to pass to fun in parallel */
   unsigned int index;              /**< index of the next element of data to pick */
@@ -112,12 +113,12 @@ typedef s_xbt_parmap_thread_data_t *xbt_parmap_thread_data_t;
 xbt_parmap_t xbt_parmap_new(unsigned int num_workers, e_xbt_parmap_mode_t mode)
 {
   unsigned int i;
-  xbt_os_thread_t worker = NULL;
 
   XBT_DEBUG("Create new parmap (%u workers)", num_workers);
 
   /* Initialize the thread pool data structure */
   xbt_parmap_t parmap = xbt_new0(s_xbt_parmap_t, 1);
+  parmap->workers = xbt_new(xbt_os_thread_t, num_workers);
 
   parmap->num_workers = num_workers;
   parmap->status = XBT_PARMAP_WORK;
@@ -125,12 +126,13 @@ xbt_parmap_t xbt_parmap_new(unsigned int num_workers, e_xbt_parmap_mode_t mode)
 
   /* Create the pool of worker threads */
   xbt_parmap_thread_data_t data;
+  parmap->workers[0] = NULL;
   for (i = 1; i < num_workers; i++) {
     data = xbt_new0(s_xbt_parmap_thread_data_t, 1);
     data->parmap = parmap;
     data->worker_id = i;
-    worker = xbt_os_thread_create(NULL, xbt_parmap_worker_main, data, NULL);
-    xbt_os_thread_detach(worker);
+    parmap->workers[i] = xbt_os_thread_create(NULL, xbt_parmap_worker_main,
+                                              data, NULL);
   }
   return parmap;
 }
@@ -145,12 +147,12 @@ xbt_parmap_t xbt_parmap_new(unsigned int num_workers, e_xbt_parmap_mode_t mode)
 xbt_parmap_t xbt_parmap_mc_new(unsigned int num_workers, e_xbt_parmap_mode_t mode)
 {
   unsigned int i;
-  xbt_os_thread_t worker = NULL;
 
   XBT_DEBUG("Create new parmap (%u workers)", num_workers);
 
   /* Initialize the thread pool data structure */
   xbt_parmap_t parmap = xbt_new0(s_xbt_parmap_t, 1);
+  parmap->workers = xbt_new(xbt_os_thread_t, num_workers);
 
   parmap->num_workers = num_workers;
   parmap->status = XBT_PARMAP_WORK;
@@ -158,11 +160,13 @@ xbt_parmap_t xbt_parmap_mc_new(unsigned int num_workers, e_xbt_parmap_mode_t mod
 
   /* Create the pool of worker threads */
   xbt_parmap_thread_data_t data;
+  parmap->workers[0] = NULL;
   for (i = 1; i < num_workers; i++) {
     data = xbt_new0(s_xbt_parmap_thread_data_t, 1);
     data->parmap = parmap;
     data->worker_id = i;
-    worker = xbt_os_thread_create(NULL, xbt_parmap_mc_worker_main, data, NULL);
+    parmap->workers[i] = xbt_os_thread_create(NULL, xbt_parmap_mc_worker_main,
+                                              data, NULL);
     xbt_os_thread_detach(worker);
   }
   return parmap;
@@ -181,13 +185,17 @@ void xbt_parmap_destroy(xbt_parmap_t parmap)
 
   parmap->status = XBT_PARMAP_DESTROY;
   parmap->master_signal_f(parmap);
-  parmap->master_wait_f(parmap);
+
+  unsigned int i;
+  for (i = 1; i < parmap->num_workers; i++)
+    xbt_os_thread_join(parmap->workers[i], NULL);
 
   xbt_os_cond_destroy(parmap->ready_cond);
   xbt_os_mutex_destroy(parmap->ready_mutex);
   xbt_os_cond_destroy(parmap->done_cond);
   xbt_os_mutex_destroy(parmap->done_mutex);
 
+  xbt_free(parmap->workers);
   xbt_free(parmap);
 }
 
@@ -328,7 +336,6 @@ static void *xbt_parmap_worker_main(void *arg)
     } else {
       SIMIX_context_free(context);
       xbt_free(data);
-      parmap->worker_signal_f(parmap);
       return NULL;
     }
   }
@@ -410,7 +417,6 @@ static void *xbt_parmap_mc_worker_main(void *arg)
     /* We are destroying the parmap */
     } else {
       xbt_free(data);
-      parmap->worker_signal_f(parmap);
       return NULL;
     }
   }
