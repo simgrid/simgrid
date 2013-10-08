@@ -221,7 +221,7 @@ int SIMIX_file_unlink(smx_process_t process, smx_file_t fd)
   }
 
   if (surf_workstation_model->extension.workstation.unlink(host, fd->surf_file)){
-    fd->surf_file = NULL;
+    xbt_free(fd);
     return 1;
   } else
     return 0;
