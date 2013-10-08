@@ -1,4 +1,4 @@
-/* Copyright (c) 2008-2012. The SimGrid Team.
+/* Copyright (c) 2008-2013. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -18,7 +18,6 @@ typedef struct surf_action_network_Constant {
 } s_surf_action_network_Constant_t, *surf_action_network_Constant_t;
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_network);
-static random_data_t random_latency = NULL;
 static int host_number_int = 0;
 
 static void netcste_count_hosts(sg_platf_host_cbarg_t h) {
@@ -126,7 +125,7 @@ static surf_action_t netcste_communicate(sg_routing_edge_t src,
 
   action->suspended = 0;
 
-  action->latency = sg_latency_factor;          //random_generate(random_latency);
+  action->latency = sg_latency_factor;
   action->lat_init = action->latency;
 
   if (action->latency <= 0.0) {
@@ -229,8 +228,6 @@ void surf_network_model_init_Constant()
   surf_network_model->set_category = netcste_action_set_category;
 #endif
 
-  if (!random_latency)
-    random_latency = random_new(RAND, 100, 0.0, 1.0, .125, .034);
   netcste_define_callbacks();
   xbt_dynar_push(model_list, &surf_network_model);
 
