@@ -17,7 +17,7 @@ void peer_init_chain(peer_t peer, message_t msg)
 
 static void peer_forward_msg(peer_t peer, message_t msg)
 {
-  msg_task_t task = task_message_data_new(peer->me, peer->next, NULL, msg->data_length);
+  msg_task_t task = task_message_data_new(NULL, msg->data_length);
   msg_comm_t comm = NULL;
   XBT_DEBUG("Sending (isend) from %s into mailbox %s", peer->me, peer->next);
   comm = MSG_task_isend(task, peer->next);

@@ -17,8 +17,6 @@ typedef enum {
 /* Message struct */
 typedef struct s_message {
   e_message_type type;
-  char *issuer_hostname;
-  char *mailbox;
   char *prev_hostname;
   char *next_hostname;
   const char *data_block;
@@ -27,9 +25,9 @@ typedef struct s_message {
 } s_message_t, *message_t;
 
 /* Message methods */
-msg_task_t task_message_new(e_message_type type, unsigned int len, const char *issuer_hostname, const char *mailbox);
-msg_task_t task_message_chain_new(const char *issuer_hostname, const char *mailbox, const char* prev, const char *next, const unsigned int num_pieces);
-msg_task_t task_message_data_new(const char *issuer_hostname, const char *mailbox, const char *block, unsigned int len);
+msg_task_t task_message_new(e_message_type type, unsigned int len);
+msg_task_t task_message_chain_new(const char* prev, const char *next, const unsigned int num_pieces);
+msg_task_t task_message_data_new(const char *block, unsigned int len);
 void task_message_delete(void *);
 
 #endif /* KADEPLOY_MESSAGES_H */

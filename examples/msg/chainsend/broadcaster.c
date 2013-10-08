@@ -46,7 +46,7 @@ int broadcaster_build_chain(broadcaster_t bc)
       XBT_DEBUG("Building chain -- broadcaster:\"%s\" dest:\"%s\" prev:\"%s\" next:\"%s\"", me, current_host, prev, next);
     
       /* Send message to current peer */
-      task = task_message_chain_new(me, current_host, prev, next, bc->piece_count);
+      task = task_message_chain_new(prev, next, bc->piece_count);
       MSG_task_send(task, current_host);
 
       last = current_host;
@@ -65,7 +65,7 @@ int broadcaster_send_file(broadcaster_t bc)
   bc->current_piece = 0;
 
   while (bc->current_piece < bc->piece_count) {
-    task = task_message_data_new(me, bc->first, NULL, PIECE_SIZE);
+    task = task_message_data_new(NULL, PIECE_SIZE);
     XBT_DEBUG("Sending (send) piece %d from %s into mailbox %s", bc->current_piece, me, bc->first);
     MSG_task_send(task, bc->first);
     bc->current_piece++;
