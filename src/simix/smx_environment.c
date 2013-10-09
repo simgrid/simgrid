@@ -38,7 +38,7 @@ void SIMIX_create_environment(const char *file)
   start = xbt_os_time();
   parse_platform_file(file);
   end = xbt_os_time();
-  XBT_DEBUG("PARSE TIME: %lg", (end - start));
+  XBT_DEBUG("PARSE TIME: %g", (end - start));
 
 }
 

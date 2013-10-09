@@ -276,8 +276,8 @@ void SIMIX_ctx_raw_factory_init(smx_context_factory_t *factory)
 static int smx_ctx_raw_factory_finalize(smx_context_factory_t *factory)
 {
 #ifdef TIME_BENCH_PER_SR
-  XBT_CRITICAL("Total wasted time in %u SR: %lf", sr_count, time_wasted_sr);
-  XBT_CRITICAL("Total wasted time in %u SSR: %lf", ssr_count, time_wasted_ssr);
+  XBT_CRITICAL("Total wasted time in %u SR: %f", sr_count, time_wasted_sr);
+  XBT_CRITICAL("Total wasted time in %u SSR: %f", ssr_count, time_wasted_ssr);
 #endif
 
 #ifdef CONTEXT_THREADS
@@ -463,7 +463,7 @@ static void smx_ctx_raw_runall_serial(xbt_dynar_t processes)
     tmax = time_thread_ssr[t];
 
   for(cursor=0; cursor <= t; cursor++){
-    XBT_VERB("Time SSR thread %u = %lf (max %lf)", cursor, time_thread_ssr[cursor], tmax);
+    XBT_VERB("Time SSR thread %u = %f (max %f)", cursor, time_thread_ssr[cursor], tmax);
     time_wasted_ssr += tmax - time_thread_ssr[cursor];
   }
 }
@@ -481,7 +481,7 @@ void smx_ctx_raw_new_sr(void)
   }
 
   for(i=0; i < NUM_THREADS; i++){
-    XBT_VERB("Time SR thread %u = %lf (max %lf)", i, time_thread_sr[i], tmax);
+    XBT_VERB("Time SR thread %u = %f (max %f)", i, time_thread_sr[i], tmax);
     time_wasted_sr += tmax - time_thread_sr[i];
   }
 

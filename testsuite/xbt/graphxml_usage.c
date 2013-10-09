@@ -1,6 +1,6 @@
 /* A few basic tests for the graphxml library                               */
 
-/* Copyright (c) 2006-2012. The SimGrid Team.
+/* Copyright (c) 2006-2013. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -79,7 +79,7 @@ void test(char *graph_file)
     buf = xbt_new0(char, n * 20);
     for (i = 0; i < n; i++) {
       for (j = 0; j < n; j++) {
-        sprintf(buf + strlen(buf), "%le\t", adj[i * n + j]);
+        sprintf(buf + strlen(buf), "%e\t", adj[i * n + j]);
       }
       XBT_INFO("%s", buf);
       buf[0] = '\000';

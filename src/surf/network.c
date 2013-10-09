@@ -126,12 +126,12 @@ static double smpi_bandwidth_factor(double size)
   double current=1.0;
   xbt_dynar_foreach(smpi_bw_factor, iter, fact) {
     if (size <= fact.factor) {
-      XBT_DEBUG("%lf <= %ld return %f", size, fact.factor, current);
+      XBT_DEBUG("%f <= %ld return %f", size, fact.factor, current);
       return current;
     }else
       current=fact.value;
   }
-  XBT_DEBUG("%lf > %ld return %f", size, fact.factor, current);
+  XBT_DEBUG("%f > %ld return %f", size, fact.factor, current);
 
   return current;
 }
@@ -147,12 +147,12 @@ static double smpi_latency_factor(double size)
   double current=1.0;
   xbt_dynar_foreach(smpi_lat_factor, iter, fact) {
     if (size <= fact.factor) {
-      XBT_DEBUG("%lf <= %ld return %f", size, fact.factor, current);
+      XBT_DEBUG("%f <= %ld return %f", size, fact.factor, current);
       return current;
     }else
       current=fact.value;
   }
-  XBT_DEBUG("%lf > %ld return %f", size, fact.factor, current);
+  XBT_DEBUG("%f > %ld return %f", size, fact.factor, current);
 
   return current;
 }
@@ -379,8 +379,8 @@ static void net_update_resource_state(void *id,
                                       double value, double date)
 {
   link_CM02_t nw_link = id;
-  /*   printf("[" "%lg" "] Asking to update network card \"%s\" with value " */
-  /*     "%lg" " for event %p\n", surf_get_clock(), nw_link->name, */
+  /*   printf("[" "%g" "] Asking to update network card \"%s\" with value " */
+  /*     "%g" " for event %p\n", surf_get_clock(), nw_link->name, */
   /*     value, event_type); */
 
   if (event_type == nw_link->lmm_resource.power.event) {

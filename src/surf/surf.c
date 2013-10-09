@@ -352,14 +352,14 @@ double generic_share_resources_lazy(double now, surf_model_t model)
       max_dur_flag = 1;
     }
 
-    XBT_DEBUG("Action(%p) Start %lf Finish %lf Max_duration %lf", action,
+    XBT_DEBUG("Action(%p) Start %f Finish %f Max_duration %f", action,
         action->generic_action.start, now + value,
         action->generic_action.max_duration);
 
     if (min != -1) {
       surf_action_lmm_heap_remove(model->model_private->action_heap,action);
       surf_action_lmm_heap_insert(model->model_private->action_heap,action, min, max_dur_flag ? MAX_DURATION : NORMAL);
-      XBT_DEBUG("Insert at heap action(%p) min %lf now %lf", action, min,
+      XBT_DEBUG("Insert at heap action(%p) min %f now %f", action, min,
                 now);
     } else DIE_IMPOSSIBLE;
   }
@@ -370,7 +370,7 @@ double generic_share_resources_lazy(double now, surf_model_t model)
   else
     min = -1;
 
-  XBT_DEBUG("The minimum with the HEAP %lf", min);
+  XBT_DEBUG("The minimum with the HEAP %f", min);
 
   return min;
 }
@@ -625,7 +625,7 @@ double surf_solve(double max_date)
       }
       /* update state of model_obj according to new value. Does not touch lmm.
          It will be modified if needed when updating actions */
-      XBT_DEBUG("Calling update_resource_state for resource %s with min %lf",
+      XBT_DEBUG("Calling update_resource_state for resource %s with min %f",
              resource->name, min);
 
       resource->model->model_private->update_resource_state(resource,

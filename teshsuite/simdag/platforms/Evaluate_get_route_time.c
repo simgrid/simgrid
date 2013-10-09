@@ -49,7 +49,7 @@ int main(int argc, char **argv)
   SD_route_get_list(w1, w2);
   xbt_os_cputimer_stop(timer);
 
-  printf("%lf\n", xbt_os_timer_elapsed(timer) );
+  printf("%f\n", xbt_os_timer_elapsed(timer) );
 
   SD_exit();
 

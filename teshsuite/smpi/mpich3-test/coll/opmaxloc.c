@@ -216,7 +216,7 @@ int main( int argc, char *argv[] )
 	    }
 	    if (coutbuf[1].val != 0) {
 		errs++;
-		fprintf( stderr, "double-int MAXLOC(0) test failed, value = %lf, should be zero\n", coutbuf[1].val );
+		fprintf( stderr, "double-int MAXLOC(0) test failed, value = %f, should be zero\n", coutbuf[1].val );
 	    }
 	    if (coutbuf[1].loc != 0) {
 		errs++;
@@ -261,7 +261,7 @@ int main( int argc, char *argv[] )
 		}
 		if (coutbuf[1].val != 0) {
 		    errs++;
-		    fprintf( stderr, "long double-int MAXLOC(0) test failed, value = %lf, should be zero\n", (double)coutbuf[1].val );
+		    fprintf( stderr, "long double-int MAXLOC(0) test failed, value = %f, should be zero\n", (double)coutbuf[1].val );
 		}
 		if (coutbuf[1].loc != 0) {
 		    errs++;
@@ -269,7 +269,7 @@ int main( int argc, char *argv[] )
 		}
 		if (coutbuf[2].val != size-1) {
 		    errs++;
-		    fprintf( stderr, "long double-int MAXLOC(>) test failed, value = %lf, should be %d\n", (double)coutbuf[2].val, size-1 );
+		    fprintf( stderr, "long double-int MAXLOC(>) test failed, value = %f, should be %d\n", (double)coutbuf[2].val, size-1 );
 		}
 		if (coutbuf[2].loc != size-1) {
 		    errs++;

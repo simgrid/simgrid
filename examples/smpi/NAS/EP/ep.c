@@ -400,7 +400,7 @@
     fprintf(stdout,"CPU Time=%d\n",tm);
     fprintf(stdout,"N = 2^%d\n",m);
     fprintf(stdout,"No. Gaussain Pairs =%d\n",gc);
-    fprintf(stdout,"Sum = %lf %ld\n",sx,sy);
+    fprintf(stdout,"Sum = %f %ld\n",sx,sy);
     fprintf(stdout,"Count:");
     for(i = 0; i < nq; i++) {
       fprintf(stdout,"%d\t %ld\n",i,q[i]);
@@ -414,19 +414,19 @@
             fprintf(stdout,"Class           = %s\n", _class);
     fprintf(stdout,"Size            = %s\n", size);
     fprintf(stdout,"Iteration       = %d\n", nit);
-    fprintf(stdout,"Time in seconds = %lf\n",(tm/1000));
+    fprintf(stdout,"Time in seconds = %f\n",(tm/1000));
     fprintf(stdout,"Total processes = %d\n",no_nodes);
-    fprintf(stdout,"Mops/s total    = %lf\n",Mops);
-    fprintf(stdout,"Mops/s/process  = %lf\n", Mops/no_nodes);
+    fprintf(stdout,"Mops/s total    = %f\n",Mops);
+    fprintf(stdout,"Mops/s/process  = %f\n", Mops/no_nodes);
     fprintf(stdout,"Operation type  = Random number generated\n");
     if(verified) {
       fprintf(stdout,"Verification    = SUCCESSFUL\n");
     } else {
       fprintf(stdout,"Verification    = UNSUCCESSFUL\n");
     }
-             fprintf(stdout,"Total time:     %lf\n",(timer_read(1,elapsed)/1000));
-             fprintf(stdout,"Gaussian pairs: %lf\n",(timer_read(2,elapsed)/1000));
-             fprintf(stdout,"Random numbers: %lf\n",(timer_read(3,elapsed)/1000));
+             fprintf(stdout,"Total time:     %f\n",(timer_read(1,elapsed)/1000));
+             fprintf(stdout,"Gaussian pairs: %f\n",(timer_read(2,elapsed)/1000));
+             fprintf(stdout,"Random numbers: %f\n",(timer_read(3,elapsed)/1000));
          }
 #ifdef USE_MPE
     MPE_Finish_log(argv[0]);

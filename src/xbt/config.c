@@ -795,7 +795,7 @@ void xbt_cfg_setdefault_double(xbt_cfg_t cfg, const char *name, double val)
   }
   else
     XBT_DEBUG
-        ("Do not override configuration variable '%s' with value '%lf' because it was already set.",
+        ("Do not override configuration variable '%s' with value '%f' because it was already set.",
          name, val);
 }
 

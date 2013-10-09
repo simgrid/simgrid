@@ -240,8 +240,8 @@ double two_dot_five(
   end_time = MPI_Wtime();
   time = end_time - start_time;
   double reduce_time = end_time_reduce - start_time_reduce;
-  printf("communication time: %le reduce time: %le seconds, "
-         "total time: %le seconds\n",communication_time,reduce_time,time);
+  printf("communication time: %e reduce time: %e seconds, "
+         "total time: %e seconds\n",communication_time,reduce_time,time);
   MPI_Barrier(my_world);
 
 #if CHECK_25D

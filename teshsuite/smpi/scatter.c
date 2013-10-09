@@ -97,7 +97,7 @@ static int small_test(int rank, int size)
   }
   // verification
   if ((double) rank != rcvd) {
-    fprintf(stderr, "[%d] has %lf instead of %d\n", rank, rcvd, rank);
+    fprintf(stderr, "[%d] has %f instead of %d\n", rank, rcvd, rank);
     success = 0;
   }
   return (success);

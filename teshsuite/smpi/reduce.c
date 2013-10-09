@@ -105,7 +105,7 @@ int main(int argc, char **argv)
     else
       printf("failed.\n");
     if (!quiet)
-      printf("Elapsed time=%lf s\n", MPI_Wtime() - start_timer);
+      printf("Elapsed time=%f s\n", MPI_Wtime() - start_timer);
   }
 
   MPI_Barrier(MPI_COMM_WORLD);

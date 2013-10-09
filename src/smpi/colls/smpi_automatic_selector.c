@@ -50,9 +50,9 @@
       }\
   }\
   if(smpi_comm_rank(comm)==0){\
-      XBT_WARN("For rank 0, the quickest was %s : %lf , but global was %s : %lf at max",mpi_coll_##cat##_description[min_coll].name, time_min,mpi_coll_##cat##_description[global_coll].name, max_min);\
+      XBT_WARN("For rank 0, the quickest was %s : %f , but global was %s : %f at max",mpi_coll_##cat##_description[min_coll].name, time_min,mpi_coll_##cat##_description[global_coll].name, max_min);\
   }else\
-  XBT_WARN("The quickest %s was %s on rank %d and took %lf",#cat,mpi_coll_##cat##_description[min_coll].name, smpi_comm_rank(comm), time_min);\
+  XBT_WARN("The quickest %s was %s on rank %d and took %f",#cat,mpi_coll_##cat##_description[min_coll].name, smpi_comm_rank(comm), time_min);\
   return (min_coll!=-1)?MPI_SUCCESS:MPI_ERR_INTERN;\
 }\
 

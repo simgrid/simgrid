@@ -314,7 +314,7 @@ void generic_update_action_remaining_lazy( surf_action_lmm_t action, double now)
   delta = now - action->last_update;
 
   if (action->generic_action.remains > 0) {
-    XBT_DEBUG("Updating action(%p): remains was %lf, last_update was: %lf", action, action->generic_action.remains, action->last_update);
+    XBT_DEBUG("Updating action(%p): remains was %f, last_update was: %f", action, action->generic_action.remains, action->last_update);
     double_update(&(action->generic_action.remains),
         action->last_value * delta);
 
@@ -331,7 +331,7 @@ void generic_update_action_remaining_lazy( surf_action_lmm_t action, double now)
           now - action->last_update);
     }
 #endif
-    XBT_DEBUG("Updating action(%p): remains is now %lf", action,
+    XBT_DEBUG("Updating action(%p): remains is now %f", action,
         action->generic_action.remains);
   }
 

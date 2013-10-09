@@ -1,4 +1,4 @@
-/* Copyright (c) 2007-2012. The SimGrid Team.
+/* Copyright (c) 2007-2013. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -210,7 +210,7 @@ static double share_resources(double now)
 
   XBT_DEBUG("Calling gtnets_get_time_to_next_flow_completion");
   time_to_next_flow_completion = gtnets_get_time_to_next_flow_completion();
-  XBT_DEBUG("gtnets_get_time_to_next_flow_completion received %lg",
+  XBT_DEBUG("gtnets_get_time_to_next_flow_completion received %g",
          time_to_next_flow_completion);
 
   return time_to_next_flow_completion;

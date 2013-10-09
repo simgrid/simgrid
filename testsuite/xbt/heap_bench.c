@@ -1,6 +1,6 @@
 /* A few tests for the xbt_heap module                                      */
 
-/* Copyright (c) 2004-2010, 2012. The SimGrid Team.
+/* Copyright (c) 2004-2010, 2012, 2013. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -59,7 +59,7 @@ void test_heap_validity(int size)
   qsort(tab, size, sizeof(double), compare_double);
 
   for (i = 0; i < size; i++) {
-    /*     printf("%lg" " ", xbt_heap_maxkey(heap)); */
+    /*     printf("%g" " ", xbt_heap_maxkey(heap)); */
     if (xbt_heap_maxkey(heap) != tab[i]) {
       fprintf(stderr, "Problem !\n");
       exit(1);

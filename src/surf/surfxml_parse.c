@@ -54,7 +54,7 @@ double surf_parse_get_double(const char *string) {
   int ret = sscanf(string, "%lg", &res);
   if (ret != 1)
     surf_parse_error("%s is not a double", string);
-  //printf("Parsed double [%lg] %s\n", res, string);  
+  //printf("Parsed double [%g] %s\n", res, string);
   return res;
 }
 
@@ -450,7 +450,7 @@ void ETag_surfxml_host(void)    {
 		  xbt_str_trim(power_value_str, NULL);
 		  power_value = get_cpu_power(power_value_str);
 		  xbt_dynar_push_as(host.power_peak, double, power_value);
-		  XBT_DEBUG("Power value: %lf", power_value);
+		  XBT_DEBUG("Power value: %f", power_value);
 	  }
 	  xbt_dynar_free(&pstate_list);
   }
@@ -602,10 +602,10 @@ void ETag_surfxml_link(void){
 
   link.id = A_surfxml_link_id;
   link.bandwidth = surf_parse_get_bandwidth(A_surfxml_link_bandwidth);
-  //printf("Link bandwidth [%lg]\n", link.bandwidth);  
+  //printf("Link bandwidth [%g]\n", link.bandwidth);
   link.bandwidth_trace = tmgr_trace_new_from_file(A_surfxml_link_bandwidth___file);
   link.latency = surf_parse_get_time(A_surfxml_link_latency);
-  //printf("Link latency [%lg]\n", link.latency);  
+  //printf("Link latency [%g]\n", link.latency);
   link.latency_trace = tmgr_trace_new_from_file(A_surfxml_link_latency___file);
 
   switch (A_surfxml_link_state) {

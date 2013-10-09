@@ -63,7 +63,7 @@ static void *cpu_create_resource(const char *name, xbt_dynar_t power_peak,
   cpu->energy->power_range_watts_list = cpu_get_watts_range_list(cpu);
   cpu->energy->last_updated = surf_get_clock();
 
-  XBT_DEBUG("CPU create: peak=%lf, pstate=%d",cpu->power_peak, cpu->pstate);
+  XBT_DEBUG("CPU create: peak=%f, pstate=%d",cpu->power_peak, cpu->pstate);
 
   xbt_assert(cpu->power_peak > 0, "Power has to be >0");
   cpu->power_scale = power_scale;
@@ -247,8 +247,8 @@ static double cpu_get_current_watts_value(cpu_Cas01_t cpu_model, double cpu_load
 
     double current_power = min_power + cpu_load * power_slope;
 
-	XBT_DEBUG("[get_current_watts] min_power=%lf, max_power=%lf, slope=%lf", min_power, max_power, power_slope);
-    XBT_DEBUG("[get_current_watts] Current power (watts) = %lf, load = %lf", current_power, cpu_load);
+	XBT_DEBUG("[get_current_watts] min_power=%f, max_power=%f, slope=%f", min_power, max_power, power_slope);
+    XBT_DEBUG("[get_current_watts] Current power (watts) = %f, load = %f", current_power, cpu_load);
 
 	return current_power;
 
@@ -264,7 +264,7 @@ void cpu_update_energy(cpu_Cas01_t cpu_model, double cpu_load)
   double start_time = cpu_model->energy->last_updated;
   double finish_time = surf_get_clock();
 
-  XBT_DEBUG("[cpu_update_energy] action time interval=(%lf-%lf), current power peak=%lf, current pstate=%d",
+  XBT_DEBUG("[cpu_update_energy] action time interval=(%f-%f), current power peak=%f, current pstate=%d",
 		  start_time, finish_time, cpu_model->power_peak, cpu_model->pstate);
   double current_energy = cpu_model->energy->total_energy;
   double action_energy = cpu_get_current_watts_value(cpu_model, cpu_load)*(finish_time-start_time);
@@ -272,7 +272,7 @@ void cpu_update_energy(cpu_Cas01_t cpu_model, double cpu_load)
   cpu_model->energy->total_energy = current_energy + action_energy;
   cpu_model->energy->last_updated = finish_time;
 
-  XBT_DEBUG("[cpu_update_energy] old_energy_value=%lf, action_energy_value=%lf", current_energy, action_energy);
+  XBT_DEBUG("[cpu_update_energy] old_energy_value=%f, action_energy_value=%f", current_energy, action_energy);
 
 }
 

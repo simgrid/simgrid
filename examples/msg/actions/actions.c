@@ -108,7 +108,7 @@ static void action_send(const char *const *action)
 
   sprintf(to, "%s_%s", MSG_process_get_name(MSG_process_self()), action[2]);
 
-  ACT_DEBUG("Entering Send: %s (size: %lg)", NAME, size);
+  ACT_DEBUG("Entering Send: %s (size: %g)", NAME, size);
   if (size < 65536) {
     action_Isend(action);
   } else {

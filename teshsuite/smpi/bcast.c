@@ -1,4 +1,4 @@
-/* Copyright (c) 2009, 2012. The SimGrid Team.
+/* Copyright (c) 2009, 2012-2013. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -33,7 +33,7 @@ int main(int argc, char **argv)
 
   MPI_Barrier(MPI_COMM_WORLD);
   if (0 == rank && !quiet)
-    printf("Elapsed time on rank %d: %lf s\n", rank,
+    printf("Elapsed time on rank %d: %f s\n", rank,
            MPI_Wtime() - start_timer);
   MPI_Finalize();
   return 0;

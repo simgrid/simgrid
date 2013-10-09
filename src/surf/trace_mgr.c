@@ -269,7 +269,7 @@ tmgr_trace_t tmgr_trace_new_from_string(const char *id, const char *input,
   }
 
   xbt_assert(periodicity >= 0,
-              "Invalid periodicity %lg (must be positive)", periodicity);
+              "Invalid periodicity %g (must be positive)", periodicity);
 
   trace = xbt_new0(s_tmgr_trace_t, 1);
   trace->type = e_trace_list;
@@ -292,7 +292,7 @@ tmgr_trace_t tmgr_trace_new_from_string(const char *id, const char *input,
     if (last_event) {
       if (last_event->delta > event.delta) {
         xbt_die("%s:%d: Invalid trace: Events must be sorted, "
-                "but time %lg > time %lg.\n%s",
+                "but time %g > time %g.\n%s",
                 id, linecount, last_event->delta, event.delta, input);
       }
       last_event->delta = event.delta - last_event->delta;

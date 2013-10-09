@@ -51,7 +51,7 @@ char **argv;
 
     MPI_Bcast( &value, 1, mystruct, 0, MPI_COMM_WORLD );
 
-    printf( "Process %d got %d (-2?) and %lf (8.0?), tab (should be all 0): ", rank, value.a, value.b );
+    printf( "Process %d got %d (-2?) and %f (8.0?), tab (should be all 0): ", rank, value.a, value.b );
    
     for(j=0; j<2;j++ )
       for(i=0; i<3;i++ )
