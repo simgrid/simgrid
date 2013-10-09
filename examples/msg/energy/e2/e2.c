@@ -1,3 +1,4 @@
+
 /* Copyright (c) 2007-2010, 2013. The SimGrid Team.
  * All rights reserved.                                                     */
 
@@ -28,10 +29,10 @@ int dvfs(int argc, char *argv[])
 
 
   double current_peak = MSG_get_host_current_power_peak(host);
-  XBT_INFO("Current power peak=%lf", current_peak);
+  XBT_INFO("Current power peak=%f", current_peak);
 
   double consumed_energy = MSG_get_host_consumed_energy(host);
-  XBT_INFO("Total energy (Joules): %lf", consumed_energy);
+  XBT_INFO("Total energy (Joules): %f", consumed_energy);
 
   // Run a task
   task1 = MSG_task_create ("t1", 100E6, 0, NULL);
@@ -39,14 +40,14 @@ int dvfs(int argc, char *argv[])
   MSG_task_destroy(task1);
 
   task_time = MSG_get_clock();
-  XBT_INFO("Task1 simulation time: %le", task_time);
+  XBT_INFO("Task1 simulation time: %e", task_time);
   consumed_energy = MSG_get_host_consumed_energy(host);
-  XBT_INFO("Total energy (Joules): %lf", consumed_energy);
+  XBT_INFO("Total energy (Joules): %f", consumed_energy);
 
   // ========= Change power peak =========
   int peak_index=2;
   double peak_at = MSG_get_host_power_peak_at(host, peak_index);
-  XBT_INFO("=========Changing power peak value to %lf (at index %d)", peak_at, peak_index);
+  XBT_INFO("=========Changing power peak value to %f (at index %d)", peak_at, peak_index);
 
   MSG_set_host_power_peak_at(host, peak_index);
 
@@ -56,18 +57,18 @@ int dvfs(int argc, char *argv[])
   MSG_task_destroy(task1);
 
   task_time = MSG_get_clock() - task_time;
-  XBT_INFO("Task2 simulation time: %le", task_time);
+  XBT_INFO("Task2 simulation time: %e", task_time);
 
   consumed_energy = MSG_get_host_consumed_energy(host);
-  XBT_INFO("Total energy (Joules): %lf", consumed_energy);
+  XBT_INFO("Total energy (Joules): %f", consumed_energy);
 
 
   MSG_process_sleep(3);
 
   task_time = MSG_get_clock() - task_time;
-  XBT_INFO("Task3 (sleep) simulation time: %le", task_time);
+  XBT_INFO("Task3 (sleep) simulation time: %e", task_time);
   consumed_energy = MSG_get_host_consumed_energy(host);
-  XBT_INFO("Total energy (Joules): %lf", consumed_energy);
+  XBT_INFO("Total energy (Joules): %f", consumed_energy);
 
 
   return 0;
@@ -97,7 +98,7 @@ int main(int argc, char *argv[])
 
   res = MSG_main();
 
-  XBT_INFO("Total simulation time: %le", MSG_get_clock());
+  XBT_INFO("Total simulation time: %e", MSG_get_clock());
 
   if (res == MSG_OK)
     return 0;

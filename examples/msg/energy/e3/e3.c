@@ -32,7 +32,7 @@ static int process_code(int argc, char *argv[])
 
 	  MSG_process_sleep(sleep_task);
 	  task_time = MSG_get_clock() - task_time;
-	  XBT_INFO("Process %s executed task sleep cpu=%lf, duration = %lf",
+	  XBT_INFO("Process %s executed task sleep cpu=%f, duration = %f",
 			  MSG_process_get_name(MSG_process_self()), 0.0, task_time);
 	  XBT_INFO("==================================================");
  }
@@ -45,7 +45,7 @@ static int process_code(int argc, char *argv[])
   MSG_task_destroy(task1);
 
   task_time = MSG_get_clock() - task_time;
-  XBT_INFO("Process %s executed task cpu=%lf, duration = %lf",
+  XBT_INFO("Process %s executed task cpu=%f, duration = %f",
 		  MSG_process_get_name(MSG_process_self()), cpu_task, task_time);
   XBT_INFO("==================================================");
   return 0;
@@ -60,9 +60,9 @@ static int dvfs(int argc, char *argv[])
 
   double current_peak = MSG_get_host_current_power_peak(host);
 
-  XBT_INFO("Current power peak=%lf", current_peak);
+  XBT_INFO("Current power peak=%f", current_peak);
   double consumed_energy = MSG_get_host_consumed_energy(host);
-  XBT_INFO("Total energy (Joules): %lf", consumed_energy);
+  XBT_INFO("Total energy (Joules): %f", consumed_energy);
 
   // Process 1 - long CPU task
   int argc1 = 1;
@@ -89,9 +89,9 @@ static int dvfs(int argc, char *argv[])
   MSG_process_sleep(8);
 
   task_time = MSG_get_clock() - task_time;
-  XBT_INFO("Task simulation time: %le", task_time);
+  XBT_INFO("Task simulation time: %e", task_time);
   consumed_energy = MSG_get_host_consumed_energy(host);
-  XBT_INFO("Total energy (Joules): %lf", consumed_energy);
+  XBT_INFO("Total energy (Joules): %f", consumed_energy);
 
   return 0;
 }
@@ -120,7 +120,7 @@ int main(int argc, char *argv[])
 
   res = MSG_main();
 
-  XBT_INFO("Total simulation time: %le", MSG_get_clock());
+  XBT_INFO("Total simulation time: %e", MSG_get_clock());
 
   if (res == MSG_OK)
     return 0;

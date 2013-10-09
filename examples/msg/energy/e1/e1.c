@@ -41,7 +41,7 @@ int dvfs(int argc, char *argv[])
   XBT_INFO("Number of Processor states=%d", nb);
 
   double current_peak = MSG_get_host_current_power_peak(host);
-  XBT_INFO("Current power peak=%lf", current_peak);
+  XBT_INFO("Current power peak=%f", current_peak);
 
   // Run a task
   task1 = MSG_task_create ("t1", workload, 0, NULL);
@@ -49,7 +49,7 @@ int dvfs(int argc, char *argv[])
   MSG_task_destroy(task1);
 
   task_time = MSG_get_clock();
-  XBT_INFO("Task1 simulation time: %le", task_time);
+  XBT_INFO("Task1 simulation time: %e", task_time);
 
   // Change power peak
   if ((new_peak_index >= nb) || (new_peak_index < 0))
@@ -59,12 +59,12 @@ int dvfs(int argc, char *argv[])
 	  }
 
   double peak_at = MSG_get_host_power_peak_at(host, new_peak_index);
-  XBT_INFO("Changing power peak value to %lf (at index %d)", peak_at, new_peak_index);
+  XBT_INFO("Changing power peak value to %f (at index %d)", peak_at, new_peak_index);
 
   MSG_set_host_power_peak_at(host, new_peak_index);
 
   current_peak = MSG_get_host_current_power_peak(host);
-  XBT_INFO("Current power peak=%lf", current_peak);
+  XBT_INFO("Current power peak=%f", current_peak);
 
   // Run a second task
   task1 = MSG_task_create ("t1", workload, 0, NULL);
@@ -72,7 +72,7 @@ int dvfs(int argc, char *argv[])
   MSG_task_destroy(task1);
 
   task_time = MSG_get_clock() - task_time;
-  XBT_INFO("Task2 simulation time: %le", task_time);
+  XBT_INFO("Task2 simulation time: %e", task_time);
 
 
   // Verify the default pstate is set to 0
@@ -81,7 +81,7 @@ int dvfs(int argc, char *argv[])
   XBT_INFO("Number of Processor states=%d", nb2);
 
   double current_peak2 = MSG_get_host_current_power_peak(host);
-  XBT_INFO("Current power peak=%lf", current_peak2);
+  XBT_INFO("Current power peak=%f", current_peak2);
   return 0;
 }
 
@@ -109,7 +109,7 @@ int main(int argc, char *argv[])
 
   res = MSG_main();
 
-  XBT_INFO("Total simulation time: %le", MSG_get_clock());
+  XBT_INFO("Total simulation time: %e", MSG_get_clock());
 
   if (res == MSG_OK)
     return 0;

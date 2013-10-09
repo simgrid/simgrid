@@ -107,7 +107,7 @@ int main(int argc, char *argv[])
 
   res = test_all(argv[1], argv[2]);
 
-  XBT_INFO("Total simulation time: %le", MSG_get_clock());
+  XBT_INFO("Total simulation time: %e", MSG_get_clock());
 
 #ifdef _MSC_VER
   _set_output_format(prev_exponent_format);
