@@ -21,6 +21,7 @@ static inline smx_storage_priv_t SIMIX_storage_priv(smx_storage_t storage){
 }
 
 smx_storage_t SIMIX_storage_create(const char *name, void *storage, void *data);
+void SIMIX_storage_destroy(void *s);
 void* SIMIX_pre_file_get_data(smx_simcall_t simcall,smx_file_t fd);
 void SIMIX_pre_file_set_data(smx_simcall_t simcall, smx_file_t fd, void *data);
 void SIMIX_pre_file_read(smx_simcall_t simcall, smx_file_t fd, sg_storage_size_t size);

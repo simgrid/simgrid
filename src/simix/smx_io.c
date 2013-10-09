@@ -33,6 +33,22 @@ smx_storage_t SIMIX_storage_create(const char *name, void *storage, void *data)
   return xbt_lib_get_or_null(storage_lib, name, SIMIX_STORAGE_LEVEL);
 }
 
+/**
+ * \brief Internal function to destroy a SIMIX storage.
+ *
+ * \param s the host to destroy (a smx_storage_t)
+ */
+void SIMIX_storage_destroy(void *s)
+{
+  smx_storage_priv_t storage = (smx_storage_priv_t) s;
+
+  xbt_assert((storage != NULL), "Invalid parameters");
+  if (storage->data)
+    free(storage->data);
+
+  /* Clean storage structure */
+  free(storage);
+}
 
 void* SIMIX_pre_file_get_data(smx_simcall_t simcall,smx_file_t fd){
   return SIMIX_file_get_data(fd);
