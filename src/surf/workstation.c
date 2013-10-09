@@ -375,9 +375,8 @@ static xbt_dict_t ws_get_storage_list(void *workstation)
   workstation_CLM03_t ws = (workstation_CLM03_t) surf_workstation_resource_priv(workstation);
   xbt_dynar_t storages = ws->storage;
 
-  xbt_dynar_foreach(storages,i,mnt)
-  {
-	storage_name = ((storage_t)mnt.storage)->generic_resource.name;
+  xbt_dynar_foreach(storages,i,mnt){
+    storage_name = ((storage_t)mnt.storage)->generic_resource.name;
     xbt_dict_set(storage_list,mnt.name,storage_name,NULL);
   }
   return storage_list;
