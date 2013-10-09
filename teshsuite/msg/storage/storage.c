@@ -41,6 +41,7 @@ void storage_info(msg_host_t host)
     storage = MSG_storage_get_by_name(storage_name);
     display_storage_properties(storage);
   }
+  xbt_dict_free(&storage_list);
 }
 
 void display_storage_properties(msg_storage_t storage){
@@ -107,6 +108,7 @@ void display_storage_info(msg_host_t host)
   {
     dump_storage_by_name(storage_name);
   }
+  xbt_dict_free(&storage_list);
 }
 
 void dump_storage_by_name(char *name){
@@ -133,16 +135,18 @@ void display_storage_content(msg_storage_t storage){
   } else {
     XBT_INFO("No content.");
   }
+  xbt_dict_free(&content);
 }
 
 void get_set_storage_data(const char *storage_name){
-	XBT_INFO("*** GET/SET DATA for storage element: %s ***",storage_name);
-	msg_storage_t storage = MSG_storage_get_by_name(storage_name);
-	char *data = MSG_storage_get_data(storage);
-	XBT_INFO("Get data: '%s'", data);
-	MSG_storage_set_data(storage,strdup("Some data"));
-	data = MSG_storage_get_data(storage);
-	XBT_INFO("Set and get data: '%s'", data);
+  XBT_INFO("*** GET/SET DATA for storage element: %s ***",storage_name);
+  msg_storage_t storage = MSG_storage_get_by_name(storage_name);
+  char *data = MSG_storage_get_data(storage);
+  XBT_INFO("Get data: '%s'", data);
+
+  MSG_storage_set_data(storage,strdup("Some data"));
+  data = MSG_storage_get_data(storage);
+  XBT_INFO("Set and get data: '%s'", data);
 }
 
 int client(int argc, char *argv[])
