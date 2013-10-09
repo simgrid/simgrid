@@ -120,8 +120,8 @@ int main(int argc, char** argv)
 
   XBT_INFO("Basic testing posix");
   status += test_parmap_basic(XBT_PARMAP_POSIX);
-#ifdef HAVE_FUTEX_H
   XBT_INFO("Basic testing futex");
+#ifdef HAVE_FUTEX_H
   status += test_parmap_basic(XBT_PARMAP_FUTEX);
 #endif
   XBT_INFO("Basic testing busy wait");
@@ -129,8 +129,8 @@ int main(int argc, char** argv)
 
   XBT_INFO("Extended testing posix");
   status += test_parmap_extended(XBT_PARMAP_POSIX);
-#ifdef HAVE_FUTEX_H
   XBT_INFO("Extended testing futex");
+#ifdef HAVE_FUTEX_H
   status += test_parmap_extended(XBT_PARMAP_FUTEX);
 #endif
   XBT_INFO("Extended testing busy wait");
