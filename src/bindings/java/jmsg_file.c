@@ -38,17 +38,13 @@ Java_org_simgrid_msg_File_open(JNIEnv *env, jobject jfile, jobject jstorage, job
 JNIEXPORT jlong JNICALL
 Java_org_simgrid_msg_File_read(JNIEnv *env, jobject jfile, jlong jsize) {
   msg_file_t file = jfile_get_native(env, jfile);
-  size_t n;
-  n = MSG_file_read(file, (size_t)jsize);
-  return (jlong)n;
+  return (jlong)MSG_file_read(file, (sg_storage_size_t)jsize);
 }
 
 JNIEXPORT jlong JNICALL
 Java_org_simgrid_msg_File_write(JNIEnv *env, jobject jfile, jlong jsize) {
   msg_file_t file = jfile_get_native(env, jfile);
-  size_t n;
-  n = MSG_file_write(file, (size_t)jsize);
-  return (jlong)n;
+  return (jlong)MSG_file_write(file, (sg_storage_size_t)jsize);
 }
 JNIEXPORT void JNICALL
 Java_org_simgrid_msg_File_close(JNIEnv *env, jobject jfile) {
