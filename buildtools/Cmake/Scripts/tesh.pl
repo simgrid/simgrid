@@ -258,7 +258,7 @@ sub exec_cmd {
     die "fork() failed: $!" unless defined $forked;
     if ( $forked == 0 ) { # child
       sleep $time_to_wait;
-      kill(9, $pid);
+      kill(SIGKILL, $pid);
       exit $time_to_wait;
     }
   }
@@ -532,7 +532,7 @@ LINE: while (not $finished and not $error) {
     die "[TESH/CRITICAL] parse error: $line\n";
   }
   if($forked){
-   kill(9, $forked);
+   kill(SIGKILL, $forked);
    $timeout=0;
   }
 
@@ -548,7 +548,7 @@ if (defined($cmd{'cmd'})) {
 
 
 if($forked){
-   kill(9, $forked);
+   kill(SIGKILL, $forked);
    $timeout=0;
 }
 
