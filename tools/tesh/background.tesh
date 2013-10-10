@@ -9,13 +9,20 @@ $ cd temp_testdir_background
 < #include <sys/types.h>
 < #include <sys/stat.h>
 < #include <fcntl.h>
+< #ifdef WIN32 
+<   #include "windows.h"
+< #endif
 <		     
 < int main() {
 <   char buff[2048];
 <   int got;
 <   int in;
 < 
+< #ifndef WIN32 
 <   sleep(1);
+< #else
+<   Sleep(1000);
+< #endif
 <   in = open("tmp_fich",O_RDONLY|O_CREAT);
 <   if (in == -1) {
 <     perror("Cannot open tmp_fich: ");

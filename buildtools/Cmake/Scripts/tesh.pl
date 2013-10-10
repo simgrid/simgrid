@@ -486,7 +486,7 @@ LINE: while (not $finished and not $error) {
     }
     $cmd{'output ignore'} = 1;
   }
-  elsif($line =~ /^!\s*expect signal (\w*)$/) {#expect signal SIGABRT
+  elsif($line =~ /^!\s*expect signal (\w*)/) {#expect signal SIGABRT
     if (defined($cmd{'cmd'})) {
       exec_cmd(\%cmd);
       %cmd = ();
