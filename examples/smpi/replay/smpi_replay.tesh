@@ -225,7 +225,7 @@ p Another test of trace replay with SMPI (one trace per process)
 < replay/actions1.txt
 $ mkfile ./split_traces_tesh
 
-$ ../../smpi_script/bin/smpirun -ext smpi_replay --log=replay.thresh:critical --log=smpi_replay.thresh:verbose --log=no_loc --cfg=smpi/cpu_threshold:1 -np 2 -platform ${srcdir:=.}/replay/replay_platform.xml -hostfile ${srcdir:=.}/hostfile ./smpi_replay ${srcdir:=.}/split_traces_tesh
+$ ../../smpi_script/bin/smpirun -ext smpi_replay --log=replay.thresh:critical --log=smpi_replay.thresh:verbose --log=no_loc --cfg=smpi/cpu_threshold:1 -np 2 -platform ${srcdir:=.}/replay/replay_platform.xml -hostfile ${srcdir:=.}/hostfile ./smpi_replay ./split_traces_tesh
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'maxmin/precision' to '1e-9'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'SMPI'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/TCP_gamma' to '4194304'
