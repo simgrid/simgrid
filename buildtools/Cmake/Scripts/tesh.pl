@@ -531,6 +531,11 @@ LINE: while (not $finished and not $error) {
   } else {
     die "[TESH/CRITICAL] parse error: $line\n";
   }
+  if($forked){
+   kill(9, $forked);
+   $timeout=0;
+  }
+
 }
 
 
