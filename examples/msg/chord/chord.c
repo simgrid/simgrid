@@ -793,6 +793,7 @@ static int remote_get_predecessor(node_t node, int ask_to)
         stop = 1;
         MSG_comm_destroy(node->comm_receive);
         node->comm_receive = NULL;
+        task_free(task_sent);
       }
       else {
         msg_task_t task_received = MSG_comm_get_task(node->comm_receive);
