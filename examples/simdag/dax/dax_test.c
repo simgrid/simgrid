@@ -63,7 +63,7 @@ int main(int argc, char **argv)
     XBT_ERROR("A problem occurred during DAX parsing (cycle or syntax). Do not continue this test");
     free(tracefilename);
     SD_exit();
-    return -1;
+    exit(255);
   }
 
   /* Display all the tasks */
