@@ -122,8 +122,8 @@ void SIMIX_process_empty_trash(void)
 
     xbt_dynar_free(&process->on_exit);
 
-    free(process->name);
-    free(process);
+    xbt_free(process->name);
+    xbt_free(process);
   }
 }
 
@@ -239,8 +239,12 @@ void SIMIX_process_create(smx_process_t *process,
   XBT_DEBUG("Start process %s on host '%s'", name, hostname);
 
   if (!SIMIX_host_get_state(host)) {
+    int i;
     XBT_WARN("Cannot launch process '%s' on failed host '%s'", name,
           hostname);
+    for (i = 0; i < argc; i++)
+      xbt_free(argv[i]);
+    xbt_free(argv);
   }
   else {
     *process = xbt_new0(s_smx_process_t, 1);

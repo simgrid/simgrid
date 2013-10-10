@@ -262,10 +262,14 @@ void* SIMIX_host_get_data(smx_host_t host){
 
   return SIMIX_host_priv(host)->data;
 }
-void _SIMIX_host_free_process_arg(void *);
-void _SIMIX_host_free_process_arg(void *data)
+
+static void _SIMIX_host_free_process_arg(void *data)
 {
   smx_process_arg_t arg = *(void**)data;
+  int i;
+  for (i = 0; i < arg->argc; i++)
+    xbt_free(arg->argv[i]);
+  xbt_free(arg->argv);
   xbt_free(arg->name);
   xbt_free(arg);
 }
@@ -323,9 +327,10 @@ void SIMIX_host_restart_processes(smx_host_t host)
   unsigned int cpt;
   smx_process_arg_t arg;
   xbt_dynar_t process_list = SIMIX_host_priv(host)->auto_restart_processes;
-  if(!process_list) return;
+  if (!process_list)
+    return;
 
-  xbt_dynar_foreach(process_list,cpt,arg) {
+  xbt_dynar_foreach (process_list, cpt, arg) {
 
     smx_process_t process;
 
@@ -341,20 +346,24 @@ void SIMIX_host_restart_processes(smx_host_t host)
                                             arg->argv,
                                             arg->properties,
                                             arg->auto_restart);
-    }
-    else {
+    } else {
       simcall_process_create(&process,
-                                            arg->argv[0],
-                                            arg->code,
-                                            NULL,
-                                            arg->hostname,
-                                            arg->kill_time,
-                                            arg->argc,
-                                            arg->argv,
-                                            arg->properties,
-                                            arg->auto_restart);
+                             arg->argv[0],
+                             arg->code,
+                             NULL,
+                             arg->hostname,
+                             arg->kill_time,
+                             arg->argc,
+                             arg->argv,
+                             arg->properties,
+                             arg->auto_restart);
 
     }
+    /* arg->argv is used by the process created above.  Hide it to
+     * _SIMIX_host_free_process_arg() which is called by xbt_dynar_reset()
+     * below. */
+    arg->argc = 0;
+    arg->argv = NULL;
   }
   xbt_dynar_reset(process_list);
 }
