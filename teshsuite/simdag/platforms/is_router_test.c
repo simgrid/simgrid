@@ -1,4 +1,4 @@
-/* Copyright (c) 2008-2012. The SimGrid Team.
+/* Copyright (c) 2008-2013. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -15,9 +15,15 @@ int main(int argc, char **argv)
 {
   /* initialisation of SD */
   int size;
-  SD_init(&argc, argv);
   xbt_lib_cursor_t cursor = NULL;
   char *key, *data;
+
+#ifdef _XBT_WIN32
+  setbuf(stderr, NULL);
+  setbuf(stdout, NULL);
+#endif
+
+  SD_init(&argc, argv);
 
   /* creation of the environment */
   SD_create_environment(argv[1]);
