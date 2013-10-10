@@ -37,6 +37,7 @@ if(enable_smpi)
   add_executable(hvector_test hvector_test.c)
   add_executable(indexed_test indexed_test.c)
   add_executable(struct_test struct_test.c)
+  add_executable(dsend dsend.c)
 
   target_link_libraries(gather_coll simgrid)
   target_link_libraries(allgather_coll simgrid)
@@ -65,13 +66,11 @@ if(enable_smpi)
   target_link_libraries(hvector_test simgrid)
   target_link_libraries(indexed_test simgrid)
   target_link_libraries(struct_test simgrid)
+  target_link_libraries(dsend simgrid)
 
   set_target_properties(smpi_sendrecv PROPERTIES RENAME sendrecv)
 
   if(NOT WIN32)
-    add_executable(dsend dsend.c)
-    target_link_libraries(dsend m simgrid)
-
     add_executable(shared shared.c)
     target_link_libraries(shared simgrid)
   endif()
