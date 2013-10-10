@@ -38,6 +38,7 @@ if($^O eq "linux"){
 }
 else{
     $OS = "WIN";
+    $ENV{"PRINTF_EXPONENT_DIGITS"} = "2"; 
 }
 
 
@@ -243,7 +244,7 @@ sub exec_cmd {
 
   ###
   # exec the command line
-  ###
+  ###  $line =~ s/\r//g;
   $pid = open3(\*CHILD_IN, \*OUT, \*OUT, $cmd{'cmd'} );
 
   # push all provided input to executing child
@@ -392,6 +393,7 @@ LINE: while (not $finished and not $error) {
 
   $line_num++;
   chomp $line;
+  $line =~ s/\r//g;
   print "[TESH/debug] $line_num: $line\n" if $opts{'debug'};
   my $next;
   # deal with line continuations
