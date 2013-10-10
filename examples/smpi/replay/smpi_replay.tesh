@@ -220,7 +220,12 @@ $ tail -n +3 ./simgrid.trace
 $ rm -f ./simgrid.trace
 
 p Another test of trace replay with SMPI (one trace per process)
-$ ../../smpi_script/bin/smpirun -ext smpi_replay --log=replay.thresh:critical --log=smpi_replay.thresh:verbose --log=no_loc --cfg=smpi/cpu_threshold:1 -np 2 -platform ${srcdir:=.}/replay/replay_platform.xml -hostfile ${srcdir:=.}/hostfile ./smpi_replay ${srcdir:=.}/replay/split_traces
+
+< replay/actions0.txt
+< replay/actions1.txt
+$ mkfile ./split_traces_tesh
+
+$ ../../smpi_script/bin/smpirun -ext smpi_replay --log=replay.thresh:critical --log=smpi_replay.thresh:verbose --log=no_loc --cfg=smpi/cpu_threshold:1 -np 2 -platform ${srcdir:=.}/replay/replay_platform.xml -hostfile ${srcdir:=.}/hostfile ./smpi_replay ${srcdir:=.}/split_traces_tesh
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'maxmin/precision' to '1e-9'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'SMPI'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/TCP_gamma' to '4194304'
@@ -236,6 +241,7 @@ $ ../../smpi_script/bin/smpirun -ext smpi_replay --log=replay.thresh:critical --
 > [Tremblay:0:(0) 13.600235] [smpi_replay/VERBOSE] 0 send 1 1e6 0.164463
 > [Tremblay:0:(0) 13.600235] [smpi_replay/INFO] Simulation time 13.6002
 
+$ rm -f ./split_traces_tesh
 
 p Test of barrier replay with SMPI (one trace for all processes)
 
