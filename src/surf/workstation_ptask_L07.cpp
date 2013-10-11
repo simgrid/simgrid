@@ -275,7 +275,7 @@ WorkstationCLM03Ptr WorkstationL07Model::createCpuResource(const char *name, dou
       lmm_constraint_new(ptask_maxmin_system, cpu,
                          cpu->m_powerCurrent * cpu->p_power.scale);
 
-  xbt_lib_set(host_lib, name, SURF_WKS_LEVEL, cpu);
+  xbt_lib_set(host_lib, name, SURF_WKS_LEVEL, static_cast<ResourcePtr>(cpu));
 
   return cpu;//FIXME:xbt_lib_get_elm_or_null(host_lib, name);
 }

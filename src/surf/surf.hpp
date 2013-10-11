@@ -186,10 +186,10 @@ public:
   void turnOff();
   void setName(string name);
   const char *getName();
-  xbt_dict_t getProperties();
+  virtual xbt_dict_t getProperties();
 
   ModelPtr getModel() {return p_model;};
-  e_surf_resource_state_t getState();
+  virtual e_surf_resource_state_t getState();
   void printModel() { std::cout << p_model->getName() << "<<plop"<<std::endl;};
   void *p_resource;
   const char *m_name;
@@ -230,6 +230,7 @@ public:
   virtual ~Action();
   
   s_xbt_swag_hookup_t p_stateHookup;
+
   e_surf_action_state_t getState(); /**< get the state*/
   void setState(e_surf_action_state_t state); /**< Change state*/
   double getStartTime(); /**< Return the start time of an action */
@@ -296,8 +297,14 @@ void surf_action_lmm_update_index_heap(void *action, int i);
 
 class ActionLmm: virtual public Action {
 public:
-  ActionLmm() : m_suspended(false) {};
-  ActionLmm(ModelPtr model, double cost, bool failed) : m_suspended(false) {};
+  ActionLmm() : m_suspended(false) {
+	p_actionListHookup.prev = 0;
+	p_actionListHookup.next = 0;
+  };
+  ActionLmm(ModelPtr model, double cost, bool failed) : m_suspended(false) {
+	p_actionListHookup.prev = 0;
+	p_actionListHookup.next = 0;
+  };
 
   virtual void updateRemainingLazy(double now);
   void heapInsert(xbt_heap_t heap, double key, enum heap_action_type hat);
@@ -315,7 +322,6 @@ public:
   void gapRemove();
 
   lmm_variable_t p_variable;
-  //bool m_suspended;
   s_xbt_swag_hookup_t p_actionListHookup;
   int m_indexHeap;
   double m_lastUpdate;

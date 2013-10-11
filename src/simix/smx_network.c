@@ -729,7 +729,7 @@ void SIMIX_pre_comm_wait(smx_simcall_t simcall, smx_action_t action, double time
   if (action->state != SIMIX_WAITING && action->state != SIMIX_RUNNING) {
     SIMIX_comm_finish(action);
   } else { /* if (timeout >= 0) { we need a surf sleep action even when there is no timeout, otherwise surf won't tell us when the host fails */
-    sleep = surf_workstation_sleep(surf_workstation_resource_priv(simcall->issuer->smx_host), timeout);
+    sleep = surf_workstation_sleep(simcall->issuer->smx_host, timeout);
     surf_action_set_data(sleep, action);
 
     if (simcall->issuer == action->comm.src_proc)

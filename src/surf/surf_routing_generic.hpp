@@ -10,7 +10,6 @@ class AsGeneric : public AsNone {
 public:
   AsGeneric();
   ~AsGeneric();
-  int test(){return 2;};
 
   virtual void getRouteAndLatency(RoutingEdgePtr src, RoutingEdgePtr dst, sg_platf_route_cbarg_t into, double *latency);
   virtual xbt_dynar_t getOneLinkRoutes();

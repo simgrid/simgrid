@@ -252,7 +252,7 @@ NetworkCm02Model::NetworkCm02Model() : NetworkCm02Model("network"){
 }
 
 NetworkCm02Model::NetworkCm02Model(string name) : Model(name){
-  NetworkCm02ActionLmmPtr comm;
+  ActionLmmPtr comm;
 
   char *optim = xbt_cfg_get_string(_sg_cfg_set, "network/optim");
   int select =
@@ -284,7 +284,7 @@ NetworkCm02Model::NetworkCm02Model(string name) : Model(name){
   if (p_updateMechanism == UM_LAZY) {
 	p_actionHeap = xbt_heap_new(8, NULL);
 	xbt_heap_set_update_callback(p_actionHeap, surf_action_lmm_update_index_heap);
-	p_modifiedSet = xbt_swag_new(xbt_swag_offset((*comm), p_actionListHookup));
+	p_modifiedSet = xbt_swag_new(xbt_swag_offset(*comm, p_actionListHookup));
 	p_maxminSystem->keep_track = p_modifiedSet;
   }
 }
@@ -430,7 +430,8 @@ NetworkCm02ActionPtr NetworkCm02Model::communicate(RoutingEdgePtr src, RoutingEd
 
   bandwidth_bound = -1.0;
   if (sg_weight_S_parameter > 0) {
-    xbt_dynar_foreach(route, i, link) {
+    xbt_dynar_foreach(route, i, _link) {
+      link = static_cast<NetworkCm02LinkLmmPtr>(static_cast<NetworkCm02LinkPtr>(_link));
       action->m_weight +=
          sg_weight_S_parameter /
          (link->p_power.peak * link->p_power.scale);

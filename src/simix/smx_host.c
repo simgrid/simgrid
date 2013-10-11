@@ -500,7 +500,7 @@ void SIMIX_execution_finish(smx_action_t action)
     }
     /* check if the host is down */
 
-    if (surf_resource_get_state((surf_resource_t)surf_workstation_resource_priv(simcall->issuer->smx_host)) != SURF_RESOURCE_ON) {
+    if (surf_resource_get_state(surf_workstation_resource_priv(simcall->issuer->smx_host)) != SURF_RESOURCE_ON) {
       simcall->issuer->context->iwannadie = 1;
     }
 
@@ -517,7 +517,7 @@ void SIMIX_post_host_execute(smx_action_t action)
 {
   if (action->type == SIMIX_ACTION_EXECUTE && /* FIMXE: handle resource failure
                                                * for parallel tasks too */
-      surf_resource_get_state((surf_resource_t)surf_workstation_resource_priv(action->execution.host)) == SURF_RESOURCE_OFF) {
+      surf_resource_get_state(surf_workstation_resource_priv(action->execution.host)) == SURF_RESOURCE_OFF) {
     /* If the host running the action failed, notice it so that the asking
      * process can be killed if it runs on that host itself */
     action->state = SIMIX_FAILED;

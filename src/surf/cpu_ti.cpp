@@ -410,7 +410,7 @@ CpuTiModel::~CpuTiModel()
   xbt_lib_foreach(host_lib, cursor, key, cpu){
     if(cpu[SURF_CPU_LEVEL])
     {
-        CpuTiPtr CPU = (CpuTiPtr) cpu[SURF_CPU_LEVEL];
+        CpuTiPtr CPU = dynamic_cast<CpuTiPtr>(static_cast<ResourcePtr>(cpu[SURF_CPU_LEVEL]));
         xbt_swag_free(CPU->p_actionSet);
         delete CPU->p_availTrace;
     }
@@ -456,7 +456,7 @@ CpuTiPtr CpuTiModel::createResource(const char *name,
               name);
   CpuTiPtr cpu = new CpuTi(this, name, powerPeak, powerScale, powerTrace,
 		           core, stateInitial, stateTrace, cpuProperties);
-  xbt_lib_set(host_lib, name, SURF_CPU_LEVEL, cpu);
+  xbt_lib_set(host_lib, name, SURF_CPU_LEVEL, static_cast<ResourcePtr>(cpu));
   return (CpuTiPtr) xbt_lib_get_elm_or_null(host_lib, name);
 }
 

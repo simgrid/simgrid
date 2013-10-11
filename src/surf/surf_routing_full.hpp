@@ -15,7 +15,6 @@ public:
 
   AsFull();
   ~AsFull();
-  int test(){return 1;};
 
   void getRouteAndLatency(RoutingEdgePtr src, RoutingEdgePtr dst, sg_platf_route_cbarg_t into, double *latency);
   xbt_dynar_t getOneLinkRoutes();

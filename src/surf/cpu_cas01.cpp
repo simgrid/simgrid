@@ -59,7 +59,8 @@ void surf_cpu_model_init_Cas01()
 
 CpuCas01Model::CpuCas01Model() : CpuModel("cpu")
 {
-  CpuCas01ActionLmm action;
+  ActionPtr action;
+  ActionLmmPtr actionlmm;
 
   char *optim = xbt_cfg_get_string(_sg_cfg_set, "cpu/optim");
   int select = xbt_cfg_get_boolean(_sg_cfg_set, "cpu/maxmin_selective_update");
@@ -80,7 +81,7 @@ CpuCas01Model::CpuCas01Model() : CpuModel("cpu")
   }
 
   cpu_running_action_set_that_does_not_need_being_checked =
-      xbt_swag_new(xbt_swag_offset(action, p_stateHookup));
+      xbt_swag_new(xbt_swag_offset(*action, p_stateHookup));
 
   if (p_updateMechanism == UM_LAZY) {
 	shareResources = &CpuCas01Model::shareResourcesLazy;
@@ -99,21 +100,7 @@ CpuCas01Model::CpuCas01Model() : CpuModel("cpu")
   if (p_updateMechanism == UM_LAZY) {
     p_actionHeap = xbt_heap_new(8, NULL);
     xbt_heap_set_update_callback(p_actionHeap,  surf_action_lmm_update_index_heap);
-    ActionLmmPtr _actionlmm;
-    CpuCas01ActionLmmPtr _actioncpu;
-    int j = xbt_swag_offset(*_actionlmm, p_actionListHookup);
-    int k = xbt_swag_offset(*_actioncpu, p_actionListHookup);
-    j = ((char *)&( (*_actionlmm).p_actionListHookup ) - (char *)(_actionlmm));
-    k = ((char *)&( (*_actioncpu).p_actionListHookup ) - (char *)(_actioncpu));
-    void *toto = &(*_actionlmm).p_actionListHookup;
-    void *tata = _actionlmm;
-    ActionLmm aieu;
-    ActionLmmPtr actionBase = &aieu;
-    void *actionBaseVoid = actionBase;
-    void *actionBaseCVoid = static_cast<void*>(actionBase);
-    ActionLmmPtr actionBaseVoidBase = (ActionLmmPtr)actionBaseVoid;
-    ActionLmmPtr actionBaseCVoidCBase = static_cast<ActionLmmPtr>(actionBaseCVoid);
-    p_modifiedSet = xbt_swag_new(xbt_swag_offset(*_actionlmm, p_actionListHookup));
+    p_modifiedSet = xbt_swag_new(xbt_swag_offset(*actionlmm, p_actionListHookup));
     p_maxminSystem->keep_track = p_modifiedSet;
   }
 }
@@ -158,9 +145,9 @@ CpuCas01LmmPtr CpuCas01Model::createResource(const char *name, double power_peak
   xbt_assert(core > 0, "Invalid number of cores %d", core);
 
   cpu = new CpuCas01Lmm(this, name, power_peak, power_scale, power_trace, core, state_initial, state_trace, cpu_properties);
-  xbt_lib_set(host_lib, name, SURF_CPU_LEVEL, cpu);
+  xbt_lib_set(host_lib, name, SURF_CPU_LEVEL, static_cast<ResourcePtr>(cpu));
 
-  return (CpuCas01LmmPtr) xbt_lib_get_elm_or_null(host_lib, name);;
+  return (CpuCas01LmmPtr) xbt_lib_get_elm_or_null(host_lib, name);
 }
 
 double CpuCas01Model::shareResourcesFull(double now)
@@ -287,7 +274,7 @@ void CpuCas01Lmm::updateState(tmgr_trace_event_t event_type, double value, doubl
   return;
 }
 
-CpuActionPtr CpuCas01Lmm::execute(double size)
+ActionPtr CpuCas01Lmm::execute(double size)
 {
 
   XBT_IN("(%s,%g)", m_name, size);
@@ -311,13 +298,13 @@ CpuActionPtr CpuCas01Lmm::execute(double size)
   return action;
 }
 
-CpuActionPtr CpuCas01Lmm::sleep(double duration)
+ActionPtr CpuCas01Lmm::sleep(double duration)
 {
   if (duration > 0)
     duration = MAX(duration, MAXMIN_PRECISION);
 
   XBT_IN("(%s,%g)", m_name, duration);
-  CpuCas01ActionLmmPtr action = (CpuCas01ActionLmmPtr) execute(1.0);
+  CpuCas01ActionLmmPtr action = dynamic_cast<CpuCas01ActionLmmPtr>(execute(1.0));
 
   // FIXME: sleep variables should not consume 1.0 in lmm_expand
   action->m_maxDuration = duration;
@@ -337,7 +324,7 @@ CpuActionPtr CpuCas01Lmm::sleep(double duration)
     // this is necessary for a variable with weight 0 since such
     // variables are ignored in lmm and we need to set its max_duration
     // correctly at the next call to share_resources
-    xbt_swag_insert_at_head(action, surf_cpu_model->p_modifiedSet);
+    xbt_swag_insert_at_head(static_cast<ActionLmmPtr>(action), surf_cpu_model->p_modifiedSet);
   }
 
   XBT_OUT();

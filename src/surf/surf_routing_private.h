@@ -64,14 +64,6 @@ AsPtr model_floyd_create(void);  /* create structures for floyd routing model */
 void model_floyd_end(AsPtr as);      /* finalize the creation of floyd routing model */
 void model_floyd_parse_route(AsPtr rc, sg_platf_route_cbarg_t route);
 
-/* ************************************************** */
-/* **************  Cluster ROUTING   **************** */
-class AsCluster : public As {
-  void *p_backbone;
-  void *p_loopback;
-  RoutingEdgePtr router;
-};
-
 AsPtr model_cluster_create(void);      /* create structures for cluster routing model */
 
 /* ************************************************** */

@@ -41,8 +41,8 @@ class Cpu : virtual public Resource {
 public:
   Cpu(){};
   Cpu(CpuModelPtr model, const char* name, xbt_dict_t properties) : Resource(model, name, properties) {};
-  virtual CpuActionPtr execute(double size)=0;
-  virtual CpuActionPtr sleep(double duration)=0;
+  virtual ActionPtr execute(double size)=0;
+  virtual ActionPtr sleep(double duration)=0;
   int getCore();
   double getSpeed(double load);
   double getAvailableSpeed();

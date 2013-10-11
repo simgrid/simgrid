@@ -43,8 +43,8 @@ public:
         e_surf_resource_state_t stateInitial, tmgr_trace_t stateTrace,
 	xbt_dict_t properties) ;
   void updateState(tmgr_trace_event_t event_type, double value, double date);
-  CpuActionPtr execute(double size);
-  CpuActionPtr sleep(double duration);
+  ActionPtr execute(double size);
+  ActionPtr sleep(double duration);
 
   bool isUsed();
 
@@ -58,4 +58,5 @@ class CpuCas01ActionLmm: public CpuActionLmm {
 public:
   CpuCas01ActionLmm() {};
   CpuCas01ActionLmm(ModelPtr model, double cost, bool failed): Action(model, cost, failed), CpuActionLmm(model, cost, failed) {};
+
 };

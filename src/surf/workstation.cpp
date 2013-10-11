@@ -61,9 +61,9 @@ WorkstationCLM03Ptr WorkstationModel::createResource(string name){
   WorkstationCLM03Ptr workstation = new WorkstationCLM03(surf_workstation_model, name.c_str(), NULL,
 		  (xbt_dynar_t)xbt_lib_get_or_null(storage_lib, name.c_str(), ROUTING_STORAGE_HOST_LEVEL),
 		  (RoutingEdgePtr)xbt_lib_get_or_null(host_lib, name.c_str(), ROUTING_HOST_LEVEL),
-		  (CpuPtr)xbt_lib_get_or_null(host_lib, name.c_str(), SURF_CPU_LEVEL));
+		  dynamic_cast<CpuPtr>(static_cast<ResourcePtr>(xbt_lib_get_or_null(host_lib, name.c_str(), SURF_CPU_LEVEL))));
   XBT_DEBUG("Create workstation %s with %ld mounted disks", name.c_str(), xbt_dynar_length(workstation->p_storage));
-  xbt_lib_set(host_lib, name.c_str(), SURF_WKS_LEVEL, workstation);
+  xbt_lib_set(host_lib, name.c_str(), SURF_WKS_LEVEL, static_cast<ResourcePtr>(workstation));
   return workstation;
 }
 
@@ -116,7 +116,7 @@ xbt_dynar_t WorkstationModel::getRoute(WorkstationCLM03Ptr src, WorkstationCLM03
 }
 
 ActionPtr WorkstationModel::communicate(WorkstationCLM03Ptr src, WorkstationCLM03Ptr dst, double size, double rate){
-  surf_network_model->communicate(src->p_netElm, dst->p_netElm, size, rate);
+  return surf_network_model->communicate(src->p_netElm, dst->p_netElm, size, rate);
 }
 
 

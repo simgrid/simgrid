@@ -10,6 +10,14 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_kernel);
  *********/
 extern double NOW;
 
+static CpuPtr get_casted_cpu(surf_resource_t resource){
+  return dynamic_cast<CpuPtr>(static_cast<ResourcePtr>(surf_cpu_resource_priv(resource)));
+}
+
+static WorkstationCLM03Ptr get_casted_workstation(surf_resource_t resource){
+  return dynamic_cast<WorkstationCLM03Ptr>(static_cast<ResourcePtr>(surf_workstation_resource_priv(resource)));
+}
+
 char *surf_routing_edge_name(sg_routing_edge_t edge){
   return edge->p_name;
 }
@@ -27,8 +35,8 @@ void surf_presolve(void)
   double next_event_date = -1.0;
   tmgr_trace_event_t event = NULL;
   double value = -1.0;
-  surf_resource_t resource = NULL;
-  surf_model_t model = NULL;
+  ResourcePtr resource = NULL;
+  ModelPtr model = NULL;
   unsigned int iter;
 
   XBT_DEBUG
@@ -73,8 +81,8 @@ double surf_solve(double max_date)
   double next_event_date = -1.0;
   double model_next_action_end = -1.0;
   double value = -1.0;
-  surf_resource_t resource = NULL;
-  surf_model_t model = NULL;
+  ResourcePtr resource = NULL;
+  ModelPtr model = NULL;
   tmgr_trace_event_t event = NULL;
   unsigned int iter;
 
@@ -217,84 +225,80 @@ surf_action_t surf_workstation_model_execute_parallel_task(surf_workstation_mode
                                             double *computation_amount,
                                             double *communication_amount,
                                             double rate){
-  return model->executeParallelTask(workstation_nb, workstation_list, computation_amount, communication_amount, rate);
+  return static_cast<ActionPtr>(model->executeParallelTask(workstation_nb, workstation_list, computation_amount, communication_amount, rate));
 }
 
-surf_action_t surf_workstation_model_communicate(surf_workstation_model_t model, surf_workstation_CLM03_t src, surf_workstation_CLM03_t dst, double size, double rate){
-  model->communicate(src, dst, size, rate);
+surf_action_t surf_workstation_model_communicate(surf_workstation_model_t model, surf_resource_t src, surf_resource_t dst, double size, double rate){
+  return model->communicate(get_casted_workstation(src), get_casted_workstation(dst), size, rate);
 }
 
 xbt_dynar_t surf_workstation_model_get_route(surf_workstation_model_t model,
-		                                     surf_workstation_t src, surf_workstation_t dst){
-  return model->getRoute((WorkstationCLM03Ptr)surf_workstation_resource_priv(src),(WorkstationCLM03Ptr)surf_workstation_resource_priv(dst));
+		                                     surf_resource_t src, surf_resource_t dst){
+  return model->getRoute(get_casted_workstation(src), get_casted_workstation(dst));
 }
 
 surf_action_t surf_network_model_communicate(surf_network_model_t model, sg_routing_edge_t src, sg_routing_edge_t dst, double size, double rate){
   model->communicate(src, dst, size, rate);
 }
 
-const char *surf_resource_name(surf_resource_t resource){
+const char *surf_resource_name(surf_cpp_resource_t resource){
   return resource->m_name;
 }
 
-xbt_dict_t surf_resource_get_properties(surf_resource_t resource){
+xbt_dict_t surf_resource_get_properties(surf_cpp_resource_t resource){
   return resource->m_properties;
 }
 
-e_surf_resource_state_t surf_resource_get_state(surf_resource_t resource){
+e_surf_resource_state_t surf_resource_get_state(surf_cpp_resource_t resource){
   return resource->getState();
 }
 
-surf_action_t surf_workstation_sleep(surf_workstation_t resource, double duration){
-  return ((surf_workstation_CLM03_t)surf_workstation_resource_priv(resource))->sleep(duration);
+surf_action_t surf_workstation_sleep(surf_resource_t resource, double duration){
+  return get_casted_workstation(resource)->sleep(duration);
 }
 
-double surf_workstation_get_speed(surf_workstation_t resource, double load){
-  return ((surf_workstation_CLM03_t)surf_workstation_resource_priv(resource))->getSpeed(load);
+double surf_workstation_get_speed(surf_resource_t resource, double load){
+  return get_casted_workstation(resource)->getSpeed(load);
 }
 
-double surf_workstation_get_available_speed(surf_workstation_t resource){
-  return ((surf_workstation_CLM03_t)surf_workstation_resource_priv(resource))->getAvailableSpeed();
+double surf_workstation_get_available_speed(surf_resource_t resource){
+  return get_casted_workstation(resource)->getAvailableSpeed();
 }
 
-int surf_workstation_get_core(surf_workstation_t resource){
-  return ((surf_workstation_CLM03_t)surf_workstation_resource_priv(resource))->getCore();
+int surf_workstation_get_core(surf_resource_t resource){
+  return get_casted_workstation(resource)->getCore();
 }
 
-surf_action_t surf_workstation_execute(surf_workstation_t resource, double size){
-  return ((surf_workstation_CLM03_t)surf_workstation_resource_priv(resource))->execute(size);
+surf_action_t surf_workstation_execute(surf_resource_t resource, double size){
+  return get_casted_workstation(resource)->execute(size);
 }
 
-surf_action_t surf_workstation_communicate(surf_workstation_t workstation_src, surf_workstation_t workstation_dst, double size, double rate){
-  return surf_workstation_model->communicate((surf_workstation_CLM03_t)surf_workstation_resource_priv(workstation_src),(surf_workstation_CLM03_t)surf_workstation_resource_priv(workstation_dst), size, rate);
+surf_action_t surf_workstation_open(surf_resource_t workstation, const char* mount, const char* path){
+  return get_casted_workstation(workstation)->open(mount, path);
 }
 
-surf_action_t surf_workstation_open(surf_workstation_t workstation, const char* mount, const char* path){
-  return ((surf_workstation_CLM03_t)surf_workstation_resource_priv(workstation))->open(mount, path);
+surf_action_t surf_workstation_close(surf_resource_t workstation, surf_file_t fd){
+  return get_casted_workstation(workstation)->close(fd);
 }
 
-surf_action_t surf_workstation_close(surf_workstation_t workstation, surf_file_t fd){
-  return ((surf_workstation_CLM03_t)surf_workstation_resource_priv(workstation))->close(fd);
+int surf_workstation_unlink(surf_resource_t workstation, surf_file_t fd){
+  return get_casted_workstation(workstation)->unlink(fd);
 }
 
-int surf_workstation_unlink(surf_workstation_t workstation, surf_file_t fd){
-  return ((surf_workstation_CLM03_t)surf_workstation_resource_priv(workstation))->unlink(fd);
+surf_action_t surf_workstation_ls(surf_resource_t workstation, const char* mount, const char *path){
+  return get_casted_workstation(workstation)->ls(mount, path);
 }
 
-surf_action_t surf_workstation_ls(surf_workstation_t workstation, const char* mount, const char *path){
-  return ((surf_workstation_CLM03_t)surf_workstation_resource_priv(workstation))->ls(mount, path);
+size_t surf_workstation_get_size(surf_resource_t workstation, surf_file_t fd){
+  return get_casted_workstation(workstation)->getSize(fd);
 }
 
-size_t surf_workstation_get_size(surf_workstation_t workstation, surf_file_t fd){
-  return ((surf_workstation_CLM03_t)surf_workstation_resource_priv(workstation))->getSize(fd);
+surf_action_t surf_workstation_read(surf_resource_t resource, void *ptr, size_t size, surf_file_t fd){
+  return get_casted_workstation(resource)->read(ptr, size, fd);
 }
 
-surf_action_t surf_workstation_read(surf_workstation_t resource, void *ptr, size_t size, surf_file_t fd){
-  return ((surf_workstation_CLM03_t)surf_workstation_resource_priv(resource))->read(ptr, size, fd);
-}
-
-surf_action_t surf_workstation_write(surf_workstation_t resource, const void *ptr, size_t size, surf_file_t fd){
-  return ((surf_workstation_CLM03_t)surf_workstation_resource_priv(resource))->write(ptr, size, fd);
+surf_action_t surf_workstation_write(surf_resource_t resource, const void *ptr, size_t size, surf_file_t fd){
+  return get_casted_workstation(resource)->write(ptr, size, fd);
 }
 
 int surf_network_link_is_shared(surf_network_link_t link){
@@ -309,16 +313,12 @@ double surf_network_link_get_latency(surf_network_link_t link){
   return link->getLatency();
 }
 
-const char *surf_cpu_name(surf_cpu_t resource){
-  return resource->m_name;
+surf_action_t surf_cpu_execute(surf_resource_t cpu, double size){
+  return get_casted_cpu(cpu)->execute(size);
 }
 
-surf_action_t surf_cpu_execute(surf_cpu_t cpu, double size){
-  return cpu->execute(size);
-}
-
-surf_action_t surf_cpu_sleep(surf_cpu_t cpu, double duration){
-  return cpu->sleep(duration);
+surf_action_t surf_cpu_sleep(surf_resource_t cpu, double duration){
+  return get_casted_cpu(cpu)->sleep(duration);
 }
 
 double surf_action_get_start_time(surf_action_t action){

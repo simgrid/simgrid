@@ -63,13 +63,13 @@ void test(char *platform)
   cpuB = surf_cpu_resource_by_name("Cpu B");
 
   /* Let's check that those two processors exist */
-  XBT_DEBUG("%s : %p", surf_cpu_name(surf_cpu_resource_priv(cpuA)), cpuA);
-  XBT_DEBUG("%s : %p", surf_cpu_name(surf_cpu_resource_priv(cpuB)), cpuB);
-  surf_cpu_resource_priv(cpuA);
+  XBT_DEBUG("%s : %p", surf_resource_name(surf_cpu_resource_priv(cpuA)), cpuA);
+  XBT_DEBUG("%s : %p", surf_resource_name(surf_cpu_resource_priv(cpuB)), cpuB);
+
   /* Let's do something on it */
-  actionA = surf_cpu_execute(surf_cpu_resource_priv(cpuA), 1000.0);
-  actionB = surf_cpu_execute(surf_cpu_resource_priv(cpuB), 1000.0);
-  actionC = surf_cpu_sleep(surf_cpu_resource_priv(cpuB), 7.32);
+  actionA = surf_cpu_execute(cpuA, 1000.0);
+  actionB = surf_cpu_execute(cpuB, 1000.0);
+  actionC = surf_cpu_sleep(cpuB, 7.32);
 
   /* Use whatever calling style you want... */
   stateActionA = surf_action_get_state(actionA);     /* When you know actionA model type */

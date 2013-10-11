@@ -328,7 +328,7 @@ static XBT_INLINE void routing_asr_prop_free(void *p)
 
 static XBT_INLINE void surf_cpu_free(void *r)
 {
-  delete static_cast<CpuPtr>(r);
+  delete dynamic_cast<CpuPtr>(static_cast<ResourcePtr>(r));
 }
 
 static XBT_INLINE void surf_link_free(void *r)
@@ -338,7 +338,7 @@ static XBT_INLINE void surf_link_free(void *r)
 
 static XBT_INLINE void surf_workstation_free(void *r)
 {
-  delete static_cast<WorkstationCLM03Ptr>(r);
+  delete dynamic_cast<WorkstationCLM03Ptr>(static_cast<ResourcePtr>(r));
 }
 
 
@@ -460,9 +460,9 @@ double Model::shareResources(double now)
 {
   //FIXME: set the good function once and for all
   if (p_updateMechanism == UM_LAZY)
-	shareResourcesLazy(now);
+	return shareResourcesLazy(now);
   else if (p_updateMechanism == UM_FULL)
-	shareResourcesFull(now);
+	return shareResourcesFull(now);
   else
 	xbt_die("Invalid cpu update mechanism!");
 }
@@ -483,7 +483,7 @@ double Model::shareResourcesLazy(double now)
       ("After share resources, The size of modified actions set is %d",
        xbt_swag_size(p_modifiedSet));
 
-  while((action = (ActionLmmPtr) xbt_swag_extract(p_modifiedSet))) {
+  while((action = static_cast<ActionLmmPtr>(xbt_swag_extract(p_modifiedSet)))) {
     int max_dur_flag = 0;
 
     if (action->p_stateSet != p_runningActionSet)
@@ -787,6 +787,8 @@ Action::Action(ModelPtr model, double cost, bool failed):
   #ifdef HAVE_TRACING
     p_category = NULL;
   #endif
+  p_stateHookup.prev = 0;
+  p_stateHookup.next = 0;
   if (failed)
     p_stateSet = p_model->p_failedActionSet;
   else
