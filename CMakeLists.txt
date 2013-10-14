@@ -203,9 +203,7 @@ include(${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/DefinePackages.cmake)
 
 ### Build some Maintainer files
 include(${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/MaintainerMode.cmake)
-if(NOT WIN32)
-  include(${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/UnitTesting.cmake)
-endif()
+include(${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/UnitTesting.cmake)
 
 ### Setup gcc flags
 include(${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/Flags.cmake)
