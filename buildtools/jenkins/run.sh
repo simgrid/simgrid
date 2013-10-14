@@ -37,8 +37,9 @@ then
     make
 else    
     cmake $WORKSPACE
+    rm Simgrid*.tar.gz
     make dist
-    tar xzf `cat $WORKSPACE/VERSION`.tar.gz
+    tar xzf `cat VERSION`.tar.gz
     cd `cat VERSION`
 
     if [ "$build_mode" = "Debug" ]
