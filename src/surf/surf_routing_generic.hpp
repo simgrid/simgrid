@@ -6,6 +6,8 @@
 class AsGeneric;
 typedef AsGeneric *AsGenericPtr;
 
+void generic_free_route(sg_platf_route_cbarg_t route);
+
 class AsGeneric : public AsNone {
 public:
   AsGeneric();

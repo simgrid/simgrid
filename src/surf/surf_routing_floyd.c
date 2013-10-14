@@ -179,7 +179,7 @@ void model_floyd_end(AS_t current_routing)
   }
 
   /* Add the loopback if needed */
-  if (routing_platf->loopback && current_routing->hierarchy == SURF_ROUTING_BASE) {
+  if (routing_platf->p_loopback && current_routing->p_hierarchy == SURF_ROUTING_BASE) {
     for (i = 0; i < table_size; i++) {
       sg_platf_route_cbarg_t e_route = TO_FLOYD_LINK(i, i);
       if (!e_route) {
@@ -187,7 +187,7 @@ void model_floyd_end(AS_t current_routing)
         e_route->gw_src = NULL;
         e_route->gw_dst = NULL;
         e_route->link_list = xbt_dynar_new(sizeof(sg_routing_link_t), NULL);
-        xbt_dynar_push(e_route->link_list, &routing_platf->loopback);
+        xbt_dynar_push(e_route->link_list, &routing_platf->p_loopback);
         TO_FLOYD_LINK(i, i) = e_route;
         TO_FLOYD_PRED(i, i) = i;
         TO_FLOYD_COST(i, i) = 1;

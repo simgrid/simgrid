@@ -10,7 +10,7 @@
 
 #include <xbt.h>
 
-typedef void *sg_routing_link_t; /* The actual type is model-dependent so use void* instead*/
+typedef void *sg_routing_link_t; /* FIXME:The actual type is model-dependent so use void* instead*/
 typedef struct RoutingEdge *sg_routing_edge_t;
 
 #ifdef __cplusplus
