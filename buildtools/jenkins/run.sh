@@ -29,17 +29,17 @@ then
     
     if [ "$build_mode" = "Debug" ]
     then
-    cmake -G "MSYS Makefiles" -Denable_coverage=ON -Denable_java=ON -Denable_model-checking=OFF -Denable_lua=OFF -Denable_compile_optimizations=ON  -Denable_smpi=ON -Denable_smpi_MPICH3_testsuite=ON -Denable_compile_warnings=ON .
+    cmake -G "MSYS Makefiles" -Denable_coverage=ON -Denable_java=ON -Denable_model-checking=OFF -Denable_lua=OFF -Denable_compile_optimizations=ON  -Denable_smpi=ON -Denable_smpi_MPICH3_testsuite=ON -Denable_compile_warnings=OFF .
     fi
 
     if [ "$build_mode" = "ModelChecker" ]
     then
-    cmake -G "MSYS Makefiles" -Denable_coverage=ON -Denable_java=ON -Denable_smpi=ON -Denable_model-checking=ON -Denable_lua=OFF -Denable_compile_optimizations=OFF -Denable_compile_warnings=ON .
+    cmake -G "MSYS Makefiles" -Denable_coverage=ON -Denable_java=ON -Denable_smpi=ON -Denable_model-checking=ON -Denable_lua=OFF -Denable_compile_optimizations=OFF -Denable_compile_warnings=OFF .
     fi
 
     if [ "$build_mode" = "DynamicAnalysis" ]
     then
-    cmake -G "MSYS Makefiles" -Denable_lua=OFF -Denable_java=ON -Denable_tracing=ON -Denable_smpi=ON -Denable_compile_optimizations=OFF -Denable_compile_warnings=ON -Denable_lib_static=OFF -Denable_model-checking=OFF -Denable_latency_bound_tracking=OFF -Denable_gtnets=OFF -Denable_jedule=OFF -Denable_mallocators=OFF -Denable_memcheck=ON .
+    cmake -G "MSYS Makefiles" -Denable_lua=OFF -Denable_java=ON -Denable_tracing=ON -Denable_smpi=ON -Denable_compile_optimizations=OFF -Denable_compile_warnings=OFF -Denable_lib_static=OFF -Denable_model-checking=OFF -Denable_latency_bound_tracking=OFF -Denable_gtnets=OFF -Denable_jedule=OFF -Denable_mallocators=OFF -Denable_memcheck=ON .
     fi
 
     if [ $? -ne 0 ] ; then
