@@ -38,16 +38,19 @@ if(NOT enable_memcheck)
   ADD_TEST(tesh-self-IO-orders                  ${TESH_COMMAND} ${TESH_OPTION} --cd "${CMAKE_BINARY_DIR}/bin" ${CMAKE_HOME_DIRECTORY}/tools/tesh/IO-orders.tesh)
   ADD_TEST(tesh-self-IO-bigsize                 ${TESH_COMMAND} ${TESH_OPTION} --cd "${CMAKE_HOME_DIRECTORY}/tools/tesh" IO-bigsize.tesh)
   ADD_TEST(tesh-self-set-return                 ${TESH_COMMAND} ${TESH_OPTION} --cd "${CMAKE_HOME_DIRECTORY}/tools/tesh" set-return.tesh)
-  ADD_TEST(tesh-self-set-signal                 ${TESH_COMMAND} ${TESH_OPTION} --cd "${CMAKE_HOME_DIRECTORY}/tools/tesh" set-signal.tesh)
   ADD_TEST(tesh-self-set-timeout                ${TESH_COMMAND} ${TESH_OPTION} --cd "${CMAKE_HOME_DIRECTORY}/tools/tesh" set-timeout.tesh)
   ADD_TEST(tesh-self-set-ignore-output          ${TESH_COMMAND} ${TESH_OPTION} --cd "${CMAKE_BINARY_DIR}/bin" ${CMAKE_HOME_DIRECTORY}/tools/tesh/set-ignore-output.tesh)
   ADD_TEST(tesh-self-catch-return               ${TESH_COMMAND} ${TESH_OPTION} --cd "${CMAKE_BINARY_DIR}/bin" ${CMAKE_HOME_DIRECTORY}/tools/tesh/catch-return.tesh)
-  ADD_TEST(tesh-self-catch-signal               ${TESH_COMMAND} ${TESH_OPTION} --cd "${CMAKE_BINARY_DIR}/bin" ${CMAKE_HOME_DIRECTORY}/tools/tesh/catch-signal.tesh)
   ADD_TEST(tesh-self-catch-timeout              ${TESH_COMMAND} ${TESH_OPTION} --cd "${CMAKE_BINARY_DIR}/bin" ${CMAKE_HOME_DIRECTORY}/tools/tesh/catch-timeout.tesh)
   ADD_TEST(tesh-self-catch-wrong-output         ${TESH_COMMAND} ${TESH_OPTION} --cd "${CMAKE_BINARY_DIR}/bin" ${CMAKE_HOME_DIRECTORY}/tools/tesh/catch-wrong-output.tesh)
   ADD_TEST(tesh-self-bg-basic                   ${TESH_COMMAND} ${TESH_OPTION} --cd "${CMAKE_HOME_DIRECTORY}/tools/tesh" bg-basic.tesh)
-  ADD_TEST(tesh-self-bg-set-signal              ${TESH_COMMAND} ${TESH_OPTION} --cd "${CMAKE_HOME_DIRECTORY}/tools/tesh" bg-set-signal.tesh)
   ADD_TEST(tesh-self-background                 ${TESH_COMMAND} ${TESH_OPTION} --cd "${CMAKE_HOME_DIRECTORY}/tools/tesh" background.tesh)
+
+  if(NOT WIN32)
+    ADD_TEST(tesh-self-set-signal                 ${TESH_COMMAND} ${TESH_OPTION} --cd "${CMAKE_HOME_DIRECTORY}/tools/tesh" set-signal.tesh)
+    ADD_TEST(tesh-self-bg-set-signal              ${TESH_COMMAND} ${TESH_OPTION} --cd "${CMAKE_HOME_DIRECTORY}/tools/tesh" bg-set-signal.tesh)
+    ADD_TEST(tesh-self-catch-signal               ${TESH_COMMAND} ${TESH_OPTION} --cd "${CMAKE_BINARY_DIR}/bin" ${CMAKE_HOME_DIRECTORY}/tools/tesh/catch-signal.tesh)
+  endif()
 
   # BEGIN TESH TESTS
 
