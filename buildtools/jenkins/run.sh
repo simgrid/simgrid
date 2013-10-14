@@ -4,20 +4,28 @@ WORKSPACE=$1
 build_mode=$2
 
 rm -rf $WORKSPACE/build
-rm -rf $WORKSPACE/install
 
 mkdir $WORKSPACE/build
-mkdir $WORKSPACE/install
 cd $WORKSPACE/build
 
 export PATH=./lib/:../../lib:$PATH
 
 if test "$(uname -o)" = "Msys"
 then 
-    cmake -G "MSYS Makefiles" -Denable_java=ON -Denable_smpi=ON -Denable_smpi_MPICH3_testsuite=ON -Denable_tracing=ON $WORKSPACE
-    make
+    cmake -G "MSYS Makefiles" $WORKSPACE
+
+    if [ $? -ne 0 ] ; then
+        echo "Failed to do the first cmake - Halting"
+        exit 1
+    fi
+
     make dist
-    make nsis
+
+    if [ $? -ne 0 ] ; then
+        echo "Failed to build dist - Halting"
+        exit 2
+    fi
+
     
     if [ "$build_mode" = "Debug" ]
     then
@@ -34,13 +42,54 @@ then
     cmake -G "MSYS Makefiles" -Denable_lua=OFF -Denable_java=ON -Denable_tracing=ON -Denable_smpi=ON -Denable_compile_optimizations=OFF -Denable_compile_warnings=ON -Denable_lib_static=OFF -Denable_model-checking=OFF -Denable_latency_bound_tracking=OFF -Denable_gtnets=OFF -Denable_jedule=OFF -Denable_mallocators=OFF -Denable_memcheck=ON .
     fi
 
+    if [ $? -ne 0 ] ; then
+        echo "Failed to perform the Cmake for $build_mode - Halting"
+        exit 5
+    fi
+
     make
+
+    if [ $? -ne 0 ] ; then
+        echo "Build failure - Halting"
+        exit 5
+    fi
+
+    make nsis
+
+    if [ $? -ne 0 ] ; then
+        echo "Failure while generating the Windows executable - Halting"
+        exit 6
+    fi
+
 else    
     cmake $WORKSPACE
+
+    if [ $? -ne 0 ] ; then
+        echo "Failed to do the first cmake - Halting"
+        exit 1
+    fi
+
     rm Simgrid*.tar.gz
     make dist
+
+    if [ $? -ne 0 ] ; then
+        echo "Failed to build dist - Halting"
+        exit 2
+    fi
+
     tar xzf `cat VERSION`.tar.gz
+
+    if [ $? -ne 0 ] ; then
+        echo "Failed to extract the generated tgz - Halting"
+        exit 3
+    fi
+
     cd `cat VERSION`
+
+    if [ $? -ne 0 ] ; then
+        echo "Path `cat VERSION` cannot be found - Halting"
+        exit 4
+    fi
 
     if [ "$build_mode" = "Debug" ]
     then
@@ -57,8 +106,18 @@ else
     cmake -Denable_lua=OFF -Denable_java=ON -Denable_tracing=ON -Denable_smpi=ON -Denable_compile_optimizations=OFF -Denable_compile_warnings=ON -Denable_lib_static=OFF -Denable_model-checking=OFF -Denable_latency_bound_tracking=OFF -Denable_gtnets=OFF -Denable_jedule=OFF -Denable_mallocators=OFF -Denable_memcheck=ON .
     fi
 
+    if [ $? -ne 0 ] ; then
+        echo "Failed to perform the Cmake for $build_mode - Halting"
+        exit 5
+    fi
+
     make
-    make dist
+
+    if [ $? -ne 0 ] ; then
+        echo "Build failure - Halting"
+        exit 6
+    fi
+
 fi
 
 ctest -T test --no-compress-output  --timeout 100 || true
