@@ -29,12 +29,12 @@ then
     
     if [ "$build_mode" = "Debug" ]
     then
-    cmake -G "MSYS Makefiles" -Denable_coverage=ON -Denable_java=ON -Denable_model-checking=OFF -Denable_lua=OFF -Denable_compile_optimizations=ON  -Denable_smpi=ON -Denable_smpi_MPICH3_testsuite=ON -Denable_compile_warnings=OFF .
+    cmake -G "MSYS Makefiles" -Denable_java=ON -Denable_model-checking=OFF -Denable_lua=OFF -Denable_compile_optimizations=ON  -Denable_smpi=ON -Denable_smpi_MPICH3_testsuite=ON -Denable_compile_warnings=OFF .
     fi
 
     if [ "$build_mode" = "ModelChecker" ]
     then
-    cmake -G "MSYS Makefiles" -Denable_coverage=ON -Denable_java=ON -Denable_smpi=ON -Denable_model-checking=ON -Denable_lua=OFF -Denable_compile_optimizations=OFF -Denable_compile_warnings=OFF .
+    cmake -G "MSYS Makefiles" -Denable_java=ON -Denable_smpi=ON -Denable_model-checking=ON -Denable_lua=OFF -Denable_compile_optimizations=OFF -Denable_compile_warnings=OFF .
     fi
 
     if [ "$build_mode" = "DynamicAnalysis" ]
