@@ -245,7 +245,11 @@ sub exec_cmd {
   ###
   # exec the command line
   ###  $line =~ s/\r//g;
-  $pid = open3(\*CHILD_IN, \*OUT, \*OUT, $cmd{'cmd'} );
+
+  my $e = IO::File->new_tmpfile;
+  $e->autoflush(1);
+  local *E = $e; 
+  $pid = open3(\*CHILD_IN,  ">&E",  ">&E", $cmd{'cmd'} );
 
   # push all provided input to executing child
   map { print CHILD_IN "$_\n" }  @{$cmd{'in'}};
@@ -264,33 +268,6 @@ sub exec_cmd {
     }
   }
 
-
-  # pop all output from executing child
-  my @got;
-  while(defined(my $got=<OUT>)) {
-    $got =~ s/\r//g;
-    $got =~ s/^( )*//g;
-    chomp $got;
-    $got=trim($got);
-    if( $got ne ""){
-        if (!($enable_coverage and $got=~ /^profiling:/)){    
-        push @got, "$got";
-     }
-  }
-  }    
-  close OUT;
-   
-  if ($cmd{'sort'}){   
-    sub mysort{
-    $a cmp $b
-    }
-    use sort qw(defaults _quicksort); # force quicksort
-    @got = sort mysort @got;
-    #also resort the other one, as perl sort is not the same as the C one used to generate teshes
-    if(defined($cmd{'out'})){
-      @{$cmd{'out'}}=sort mysort @{$cmd{'out'}};
-    }
-  }
   
   # Cleanup the executing child, and kill the timeouter brother on need
   $cmd{'return'} = 0 unless defined($cmd{'return'});
@@ -304,6 +281,34 @@ sub exec_cmd {
   my $gotret;
   waitpid ($pid, 0);
   $gotret = exit_status($?);
+
+  seek($e,0,0);
+  # pop all output from executing child
+  my @got;
+  while(defined(my $got=<$e>)) {
+    $got =~ s/\r//g;
+    $got =~ s/^( )*//g;
+    chomp $got;
+    $got=trim($got);
+    if( $got ne ""){
+        if (!($enable_coverage and $got=~ /^profiling:/)){    
+        push @got, "$got";
+     }
+  }
+  }    
+
+  if ($cmd{'sort'}){   
+    sub mysort{
+    $a cmp $b
+    }
+    use sort qw(defaults _quicksort); # force quicksort
+    @got = sort mysort @got;
+    #also resort the other one, as perl sort is not the same as the C one used to generate teshes
+    if(defined($cmd{'out'})){
+      @{$cmd{'out'}}=sort mysort @{$cmd{'out'}};
+    }
+  }
+
   #Did we timeout ? If yes, handle it. If not, kill the forked process.
 
   if($timeout==-1 and $gotret eq "got signal SIGKILL"){
