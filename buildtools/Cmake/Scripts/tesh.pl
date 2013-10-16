@@ -24,6 +24,7 @@ my $tesh_file;
 my $tesh_name;
 my $error=0;
 my $exitcode=0;
+my @bg_cmds;
 
 $path =~ s|[^/]*$||;
 push @INC,$path;
@@ -187,16 +188,17 @@ my(@buffer_tesh)=();
   sub exit_status {
     my $status = shift;
     if (POSIX::WIFEXITED($status)) {
+      $exitcode=POSIX::WEXITSTATUS($status)+40;
       return "returned code ".POSIX::WEXITSTATUS($status);
     } elsif (POSIX::WIFSIGNALED($status)) {
-        my $code;
-        if (POSIX::WTERMSIG($status) == SIGINT){$code="SIGINT"; }
-        elsif  (POSIX::WTERMSIG($status) == SIGTERM) {$code="SIGTERM"; }
-        elsif  (POSIX::WTERMSIG($status) == SIGKILL) {$code= "SIGKILL"; }
-        elsif  (POSIX::WTERMSIG($status) == SIGABRT) {$code="SIGABRT"; }
-        elsif  (POSIX::WTERMSIG($status) == SIGSEGV) {$code="SIGSEGV" ;}
-        $exitcode=POSIX::WTERMSIG($status)+4;
-        return "got signal $code";
+      my $code;
+      if (POSIX::WTERMSIG($status) == SIGINT){$code="SIGINT"; }
+      elsif  (POSIX::WTERMSIG($status) == SIGTERM) {$code="SIGTERM"; }
+      elsif  (POSIX::WTERMSIG($status) == SIGKILL) {$code= "SIGKILL"; }
+      elsif  (POSIX::WTERMSIG($status) == SIGABRT) {$code="SIGABRT"; }
+      elsif  (POSIX::WTERMSIG($status) == SIGSEGV) {$code="SIGSEGV" ;}
+      $exitcode=POSIX::WTERMSIG($status)+4;
+      return "got signal $code";
     }
     return "Unparsable status. Is the process stopped?";
   }
@@ -246,13 +248,13 @@ sub exec_cmd {
   # exec the command line
   ###  $line =~ s/\r//g;
 
-  my $e = IO::File->new_tmpfile;
-  $e->autoflush(1);
-  local *E = $e; 
-  $pid = open3(\*CHILD_IN,  ">&E",  ">&E", $cmd{'cmd'} );
+  $cmd{'got'} = IO::File->new_tmpfile;
+  $cmd{'got'}->autoflush(1);
+  local *E = $cmd{'got'}; 
+  $cmd{'pid'} = open3(\*CHILD_IN,  ">&E",  ">&E", $cmd{'cmd'} );
 
   # push all provided input to executing child
-  map { print CHILD_IN "$_\n" }  @{$cmd{'in'}};
+  map { print CHILD_IN "$_\n"; }  @{$cmd{'in'}};
   close CHILD_IN;
 
   # if timeout specified, fork and kill executing child at the end of timeout
@@ -263,7 +265,7 @@ sub exec_cmd {
     die "fork() failed: $!" unless defined $forked;
     if ( $forked == 0 ) { # child
       sleep $time_to_wait;
-      kill(SIGKILL, $pid);
+      kill(SIGKILL, $cmd{'pid'});
       exit $time_to_wait;
     }
   }
@@ -271,21 +273,40 @@ sub exec_cmd {
   
   # Cleanup the executing child, and kill the timeouter brother on need
   $cmd{'return'} = 0 unless defined($cmd{'return'});
+  if($cmd{'background'} != 1){
+    waitpid ($cmd{'pid'}, 0);
+    $cmd{'gotret'} = exit_status($?);
+    parse_out(\%cmd);
+  }else{
+    # & commands, which will be handled at the end
+    push @bg_cmds, \%cmd;
+    # no timeout for background commands
+    if($forked){
+       kill(SIGKILL, $forked);
+       $timeout=0;
+       $forked=0;
+    }
+  }
+}
+
+
+sub parse_out { 
+  my %cmd = %{$_[0]};
+  my $gotret=$cmd{'gotret'};
+
   my $wantret;
+
   if(defined($cmd{'expect'}) and ($cmd{'expect'} ne "")){
     $wantret = "got signal $cmd{'expect'}";
   }else{
     $wantret = "returned code ".(defined($cmd{'return'})? $cmd{'return'} : 0);
-    $exitcode= 41;
   }
-  my $gotret;
-  waitpid ($pid, 0);
-  $gotret = exit_status($?);
 
-  seek($e,0,0);
+  local *got = $cmd{'got'};
+  seek(got,0,0);
   # pop all output from executing child
   my @got;
-  while(defined(my $got=<$e>)) {
+  while(defined(my $got=<got>)) {
     $got =~ s/\r//g;
     $got =~ s/^( )*//g;
     chomp $got;
@@ -364,7 +385,6 @@ sub mkfile_cmd {
   my $file = $cmd{'arg'};
   print "[Tesh/INFO] mkfile $file\n";
 
-  die "[TESH/CRITICAL] no input provided to mkfile\n" unless defined($cmd{'in'}) && scalar @{$cmd{'in'}};
   unlink($file);
   open(FILE,">$file") or die "[Tesh/CRITICAL] Unable to create file $file: $!\n";
   print FILE join("\n", @{$cmd{'in'}});
@@ -414,7 +434,7 @@ LINE: while (not $finished and not $error) {
 
   # Push delayed commands on empty lines
   unless ($line =~ m/^(.).(.*)$/) {
-    if (defined($cmd{'cmd'})) {
+    if (defined($cmd{'cmd'}))  {
       exec_cmd(\%cmd);
       %cmd = ();
     }
@@ -498,6 +518,7 @@ LINE: while (not $finished and not $error) {
       exec_cmd(\%cmd);
       %cmd = ();
     }
+print "hey\n";
     $cmd{'expect'} = "$1";
   }
   elsif($line =~ /^!\s*expect return/){    #expect return
@@ -558,6 +579,16 @@ if($forked){
    kill(SIGKILL, $forked);
    $timeout=0;
 }
+
+foreach(@bg_cmds){
+  my %test=%{$_};
+  waitpid ($test{'pid'}, 0);
+  $test{'gotret'} = exit_status($?);
+  parse_out(\%test);
+}
+
+@bg_cmds=();
+
 
 if($error !=0){
     exit $exitcode;
