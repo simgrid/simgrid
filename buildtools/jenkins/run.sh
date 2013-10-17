@@ -3,6 +3,7 @@
 WORKSPACE=$1
 build_mode=$2
 
+
 rm -rf $WORKSPACE/build
 
 mkdir $WORKSPACE/build
@@ -12,7 +13,12 @@ export PATH=./lib/:../../lib:$PATH
 
 if test "$(uname -o)" = "Msys"
 then 
+    
     cmake -G "MSYS Makefiles" $WORKSPACE
+    #$NUMBER_OF_PROCESSORS should be already set on win
+    if [ -z "$NUMBER_OF_PROCESSORS" ]; then
+        NUMBER_OF_PROCESSORS=1
+    fi  
 
     if [ $? -ne 0 ] ; then
         echo "Failed to do the first cmake - Halting"
@@ -33,7 +39,7 @@ then
         exit 5
     fi
 
-    make
+    make -j$NUMBER_OF_PROCESSORS
 
     if [ $? -ne 0 ] ; then
         echo "Build failure - Halting"
@@ -47,7 +53,18 @@ then
         exit 6
     fi
 
-else    
+else
+    NUMBER_OF_PROCESSORS=0
+    # Linux:
+    cpuinfo_file="/proc/cpuinfo"
+    if [ -f "${cpuinfo_file}" ]; then
+      NUMBER_OF_PROCESSORS=$(grep -c "processor.: " ${cpuinfo_file}) 
+    fi
+    # grep returns 0 or cpuinfo not found
+    if [ $NUMBER_OF_PROCESSORS = 0 ]; then
+      NUMBER_OF_PROCESSORS=1
+    fi
+
     cmake $WORKSPACE
 
     if [ $? -ne 0 ] ; then
@@ -97,7 +114,7 @@ else
         exit 5
     fi
 
-    make
+    make -j$NUMBER_OF_PROCESSORS
 
     if [ $? -ne 0 ] ; then
         echo "Build failure - Halting"
@@ -106,7 +123,10 @@ else
 
 fi
 
-ctest -T test --no-compress-output  --timeout 100 || true
+
+echo "running tests with $NUMBER_OF_PROCESSORS processors"
+
+ctest -T test --no-compress-output  --timeout 100 -j$NUMBER_OF_PROCESSORS || true
 if [ -f Testing/TAG ] ; then
    xsltproc $WORKSPACE/buildtools/jenkins/ctest2junit.xsl -o "$WORKSPACE/CTestResults.xml" Testing/`head -n 1 < Testing/TAG`/Test.xml
 fi
