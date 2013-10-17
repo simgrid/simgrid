@@ -33,6 +33,7 @@ use Getopt::Long qw(GetOptions);
 use strict;
 use Term::ANSIColor;
 use IPC::Open3;
+use IO::File;
 
 if($^O eq "linux"){
     $OS = "UNIX";
