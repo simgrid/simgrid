@@ -51,7 +51,7 @@ public:
                                    xbt_dict_t properties);
   void updateActionsStateLazy(double now, double delta);
   virtual void gapAppend(double size, const NetworkCm02LinkLmmPtr link, NetworkCm02ActionLmmPtr action) {};
-  NetworkCm02ActionPtr communicate(RoutingEdgePtr src, RoutingEdgePtr dst,
+  virtual ActionPtr communicate(RoutingEdgePtr src, RoutingEdgePtr dst,
 		                           double size, double rate);
   xbt_dynar_t getRoute(RoutingEdgePtr src, RoutingEdgePtr dst); //FIXME: kill field? That is done by the routing nowadays
   //FIXME: virtual void addTraces() =0;

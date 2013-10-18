@@ -20,12 +20,12 @@ void surf_network_model_init_Constant()
   if (!random_latency)
     random_latency = random_new(RAND, 100, 0.0, 1.0, .125, .034);
 
-  //FIXME:sg_platf_host_add_cb(netcste_count_hosts);
+  sg_platf_host_add_cb(netcste_count_hosts);
 
   ModelPtr model = static_cast<ModelPtr>(surf_network_model);
   xbt_dynar_push(model_list, &model);
 
-  //FIXME:routing_model_create(NULL);
+  routing_model_create(NULL);
 }
 
 double NetworkConstantModel::shareResources(double now)
@@ -35,7 +35,7 @@ double NetworkConstantModel::shareResources(double now)
   double min = -1.0;
 
   xbt_swag_foreach(_action, p_runningActionSet) {
-	action = (NetworkConstantActionLmmPtr) _action;
+	action = dynamic_cast<NetworkConstantActionLmmPtr>(static_cast<ActionPtr>(_action));
     if (action->m_latency > 0) {
       if (min < 0)
         min = action->m_latency;
@@ -53,7 +53,7 @@ void NetworkConstantModel::updateActionsState(double now, double delta)
   NetworkConstantActionLmmPtr action = NULL;
 
   xbt_swag_foreach_safe(_action, _next_action, p_runningActionSet) {
-	action = (NetworkConstantActionLmmPtr) _action;
+	action = dynamic_cast<NetworkConstantActionLmmPtr>(static_cast<ActionPtr>(_action));
     if (action->m_latency > 0) {
       if (action->m_latency > delta) {
         double_update(&(action->m_latency), delta);
@@ -77,7 +77,7 @@ void NetworkConstantModel::updateActionsState(double now, double delta)
   }
 }
 
-NetworkCm02ActionLmmPtr NetworkConstantModel::communicate(RoutingEdgePtr src, RoutingEdgePtr dst,
+ActionPtr NetworkConstantModel::communicate(RoutingEdgePtr src, RoutingEdgePtr dst,
 		                         double size, double rate)
 {
   char *src_name = src->p_name;

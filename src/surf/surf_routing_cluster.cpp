@@ -22,11 +22,6 @@ AS_t model_cluster_create(void)
 /* Creation routing model functions */
 AsCluster::AsCluster() : AsNone()
 {
-  /*result->get_route_and_latency = cluster_get_route_and_latency;
-  result->finalize = model_cluster_finalize;
-  result->get_graph = cluster_get_graph;
-  result->parse_AS = cluster_parse_AS;
-  result->parse_PU = cluster_parse_PU;*/
 }
 
 /* Business methods */

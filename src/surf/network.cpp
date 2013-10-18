@@ -374,7 +374,7 @@ xbt_dynar_t NetworkCm02Model::getRoute(RoutingEdgePtr src, RoutingEdgePtr dst)
   return route;
 }
 
-NetworkCm02ActionPtr NetworkCm02Model::communicate(RoutingEdgePtr src, RoutingEdgePtr dst,
+ActionPtr NetworkCm02Model::communicate(RoutingEdgePtr src, RoutingEdgePtr dst,
                                                 double size, double rate)
 {
   unsigned int i;

@@ -24,7 +24,7 @@ public:
   NetworkCm02LinkLmmPtr createResource(string name);
   double shareResources(double now);
   void updateActionsState(double now, double delta);
-  NetworkCm02ActionLmmPtr communicate(RoutingEdgePtr src, RoutingEdgePtr dst,
+  ActionPtr communicate(RoutingEdgePtr src, RoutingEdgePtr dst,
 		                           double size, double rate);
   void gapRemove(ActionLmmPtr action);
   //FIXME:virtual void addTraces() =0;
@@ -49,7 +49,7 @@ public:
 class NetworkConstantActionLmm : public NetworkCm02ActionLmm {
 public:
   NetworkConstantActionLmm(NetworkConstantModelPtr model, double latency):
-	  NetworkCm02ActionLmm(model, 0, false), m_latInit(latency) {
+	  Action(model, 0, false), NetworkCm02ActionLmm(model, 0, false), m_latInit(latency) {
 	m_latency = latency;
 	if (m_latency <= 0.0) {
 	  p_stateSet = p_model->p_doneActionSet;

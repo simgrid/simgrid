@@ -88,10 +88,9 @@ public:
 		                                   tmgr_trace_t state_trace,
 		                                   e_surf_link_sharing_policy_t
 		                                   policy, xbt_dict_t properties);
-  NetworkCm02ActionPtr communicate(RoutingEdgePtr src, RoutingEdgePtr dst,
-		                           double size, double rate);
+
   xbt_dynar_t getRoute(WorkstationCLM03Ptr src, WorkstationCLM03Ptr dst) {DIE_IMPOSSIBLE;};
-  ActionPtr communicate(WorkstationCLM03Ptr src, WorkstationCLM03Ptr dst, double size, double rate) {DIE_IMPOSSIBLE;};
+  ActionPtr communicate(RoutingEdgePtr src, RoutingEdgePtr dst, double size, double rate) {DIE_IMPOSSIBLE;};
   void addTraces() {DIE_IMPOSSIBLE;};
   WorkstationL07ModelPtr p_workstationModel;
 };

@@ -247,7 +247,7 @@ xbt_dynar_t surf_workstation_model_get_route(surf_workstation_model_t model,
 }
 
 surf_action_t surf_network_model_communicate(surf_network_model_t model, sg_routing_edge_t src, sg_routing_edge_t dst, double size, double rate){
-  model->communicate(src, dst, size, rate);
+  return model->communicate(src, dst, size, rate);
 }
 
 const char *surf_resource_name(surf_cpp_resource_t resource){
