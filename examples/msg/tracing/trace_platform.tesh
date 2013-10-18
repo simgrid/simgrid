@@ -2,11 +2,12 @@
 
 
 p Tracing master/slave application
-$ $SG_TEST_EXENV ${bindir:=.}/tracing/trace_platform$EXEEXT --cfg=tracing:1 --cfg=tracing/categorized:1 ${srcdir:=.}/tracing/platform.xml
+$ $SG_TEST_EXENV ${bindir:=.}/tracing/trace_platform$EXEEXT --cfg=tracing:1 --cfg=tracing/filename:tracing/trace_platform.trace --cfg=tracing/categorized:1 ${srcdir:=.}/tracing/platform.xml
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing' to '1'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/filename' to 'tracing/trace_platform.trace'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/categorized' to '1'
 
-$ tail -n +3 simgrid.trace
+$ tail -n +3 tracing/trace_platform.trace
 > %EventDef PajeDefineContainerType 0
 > %       Alias string
 > %       Type string
@@ -213,11 +214,14 @@ $ tail -n +3 simgrid.trace
 > 7 0 1 2
 > 7 0 1 4
 
-$ $SG_TEST_EXENV ${bindir:=.}/tracing/trace_platform$EXEEXT --cfg=tracing:1 --cfg=tracing/categorized:1 ${srcdir:=.}/../platforms/g5k.xml
+$ rm -rf tracing/trace_platform.trace
+
+$ $SG_TEST_EXENV ${bindir:=.}/tracing/trace_platform$EXEEXT --cfg=tracing:1  --cfg=tracing/filename:tracing/trace_platform.trace --cfg=tracing/categorized:1 ${srcdir:=.}/../platforms/g5k.xml
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing' to '1'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/filename' to 'tracing/trace_platform.trace'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/categorized' to '1'
 
-$ tail -n +3 simgrid.trace
+$ tail -n +3 tracing/trace_platform.trace
 > %EventDef PajeDefineContainerType 0
 > %       Alias string
 > %       Type string
@@ -30397,4 +30401,4 @@ $ tail -n +3 simgrid.trace
 > 7 0 6 4094
 > 7 0 1 3921
 
-$ rm -rf simgrid.trace
+$ rm -rf tracing/trace_platform.trace
