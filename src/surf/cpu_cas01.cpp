@@ -47,7 +47,7 @@ void surf_cpu_model_init_Cas01()
     return;
 
   if (!strcmp(optim, "TI")) {
-    surf_cpu_model = new CpuTiModel();
+    surf_cpu_model_init_ti();
     return;
   }
 
@@ -131,6 +131,7 @@ void CpuCas01Model::parseInit(sg_platf_host_cbarg_t host)
         host->state_trace,
         host->properties);
 }
+
 CpuCas01LmmPtr CpuCas01Model::createResource(const char *name, double power_peak, double power_scale,
                           tmgr_trace_t power_trace, int core,
                           e_surf_resource_state_t state_initial,
@@ -152,11 +153,8 @@ CpuCas01LmmPtr CpuCas01Model::createResource(const char *name, double power_peak
 
 double CpuCas01Model::shareResourcesFull(double now)
 {
-  CpuCas01ActionLmm action;
-  Model::shareResourcesMaxMin(p_runningActionSet, 
-		             xbt_swag_offset(action, p_variable),
+  return Model::shareResourcesMaxMin(p_runningActionSet,
                              p_maxminSystem, lmm_solve);
-  return 0;
 }
 
 void CpuCas01Model::addTraces()
@@ -171,24 +169,24 @@ void CpuCas01Model::addTraces()
   /* connect all traces relative to hosts */
   xbt_dict_foreach(trace_connect_list_host_avail, cursor, trace_name, elm) {
     tmgr_trace_t trace = (tmgr_trace_t) xbt_dict_get_or_null(traces_set_list, trace_name);
-    CpuCas01LmmPtr host = (CpuCas01LmmPtr) surf_cpu_resource_priv(surf_cpu_resource_by_name(elm));
+    CpuCas01LmmPtr host = static_cast<CpuCas01LmmPtr>(surf_cpu_resource_priv(surf_cpu_resource_by_name(elm)));
 
     xbt_assert(host, "Host %s undefined", elm);
     xbt_assert(trace, "Trace %s undefined", trace_name);
 
     host->p_stateEvent =
-        tmgr_history_add_trace(history, trace, 0.0, 0, (ResourcePtr) host);
+        tmgr_history_add_trace(history, trace, 0.0, 0, static_cast<ResourcePtr>(host));
   }
 
   xbt_dict_foreach(trace_connect_list_power, cursor, trace_name, elm) {
     tmgr_trace_t trace = (tmgr_trace_t) xbt_dict_get_or_null(traces_set_list, trace_name);
-    CpuCas01LmmPtr host = (CpuCas01LmmPtr) surf_cpu_resource_priv(surf_cpu_resource_by_name(elm));
+    CpuCas01LmmPtr host = dynamic_cast<CpuCas01LmmPtr>(static_cast<ResourcePtr>(surf_cpu_resource_priv(surf_cpu_resource_by_name(elm))));
 
     xbt_assert(host, "Host %s undefined", elm);
     xbt_assert(trace, "Trace %s undefined", trace_name);
 
     host->p_powerEvent =
-        tmgr_history_add_trace(history, trace, 0.0, 0, (ResourcePtr) host);
+        tmgr_history_add_trace(history, trace, 0.0, 0, static_cast<ResourcePtr>(host));
   }
 }
 

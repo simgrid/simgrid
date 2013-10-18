@@ -1,6 +1,7 @@
 #include "surf.hpp"
 #include "workstation.hpp"
 #include "network.hpp"
+#include "surf_routing_cluster.hpp"
 #include "instr/instr_private.h"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_kernel);
@@ -199,6 +200,14 @@ void routing_get_route_and_latency(sg_routing_edge_t src, sg_routing_edge_t dst,
  * MODEL *
  *********/
 
+void *surf_as_cluster_get_backbone(AS_t as){
+  return static_cast<AsClusterPtr>(as)->p_backbone;
+}
+
+void surf_as_cluster_set_backbone(AS_t as, void* backbone){
+  static_cast<AsClusterPtr>(as)->p_backbone = static_cast<NetworkCm02LinkPtr>(backbone);
+}
+
 const char *surf_model_name(surf_model_t model){
   return model->m_name.c_str();
 }
@@ -246,7 +255,7 @@ const char *surf_resource_name(surf_cpp_resource_t resource){
 }
 
 xbt_dict_t surf_resource_get_properties(surf_cpp_resource_t resource){
-  return resource->m_properties;
+  return resource->getProperties();
 }
 
 e_surf_resource_state_t surf_resource_get_state(surf_cpp_resource_t resource){
@@ -342,7 +351,7 @@ void surf_action_suspend(surf_action_t action){
 }
 
 void surf_action_resume(surf_action_t action){
-  action->suspend();
+  action->resume();
 }
 
 void surf_action_cancel(surf_action_t action){

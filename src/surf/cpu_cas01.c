@@ -66,7 +66,7 @@ static void *cpu_create_resource(const char *name, double power_peak,
 
   if (power_trace)
     cpu->power_event =
-        tmgr_history_add_trace(history, power_trace, 0.0, 0, cpu);
+        tmgr_history_add_trace(history, power_trace, 0.0, 0, static_cast<ResourcePtr>(cpu));
 
   cpu->state_current = state_initial;
   if (state_trace)

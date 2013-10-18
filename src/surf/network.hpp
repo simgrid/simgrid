@@ -36,6 +36,7 @@ extern NetworkCm02ModelPtr surf_network_model;
  *********/
 class NetworkCm02Model : public Model {
 public:
+  NetworkCm02Model(int i) : Model("network") {};//FIXME: add network clean interface
   NetworkCm02Model(string name);
   NetworkCm02Model();
   //FIXME:NetworkCm02LinkPtr createResource(string name);
@@ -70,7 +71,7 @@ public:
   NetworkCm02Link(){};
   NetworkCm02Link(NetworkCm02ModelPtr model, const char* name, xbt_dict_t properties) : Resource(model, name, properties) {};
   virtual double getBandwidth()=0;
-  double getLatency();
+  virtual double getLatency();
   virtual bool isShared()=0;
   /* Using this object with the public part of
     model does not make sense */
@@ -80,6 +81,8 @@ public:
 
 class NetworkCm02LinkLmm : public ResourceLmm, public NetworkCm02Link {
 public:
+  NetworkCm02LinkLmm(NetworkCm02ModelPtr model, const char* name, xbt_dict_t properties)
+   : ResourceLmm(), NetworkCm02Link(model, name, properties) {};
   NetworkCm02LinkLmm(NetworkCm02ModelPtr model, const char *name, xbt_dict_t props,
 	                           lmm_system_t system,
 	                           double constraint_value,

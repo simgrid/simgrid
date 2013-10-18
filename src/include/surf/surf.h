@@ -305,7 +305,8 @@ static inline void *surf_storage_resource_by_name(const char *name){
 extern "C" {
 #endif
 char *surf_routing_edge_name(sg_routing_edge_t edge);
-
+void *surf_as_cluster_get_backbone(AS_t as);
+void surf_as_cluster_set_backbone(AS_t as, void* backbone);
 const char *surf_model_name(surf_model_t model);
 xbt_swag_t surf_model_done_action_set(surf_model_t model);
 xbt_swag_t surf_model_failed_action_set(surf_model_t model);

@@ -310,13 +310,11 @@ StoragePtr StorageModel::createResource(const char* id, const char* model, const
 double StorageModel::shareResources(double now)
 {
   XBT_DEBUG("storage_share_resources %f", now);
-  StorageActionLmm action;
   unsigned int i, j;
   StoragePtr storage;
   StorageActionLmmPtr write_action;
 
   double min_completion = shareResourcesMaxMin(p_runningActionSet,
-      xbt_swag_offset(action, p_variable),
       storage_maxmin_system, lmm_solve);
 
   double rate;

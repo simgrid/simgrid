@@ -112,7 +112,6 @@ public:
   virtual double shareResourcesLazy(double now);
   virtual double shareResourcesFull(double now);
   double shareResourcesMaxMin(xbt_swag_t running_actions,
-                                      size_t offset,
                                       lmm_system_t sys,
                                       void (*solve) (lmm_system_t));
   virtual void updateActionsState(double now, double delta);
@@ -232,7 +231,7 @@ public:
   s_xbt_swag_hookup_t p_stateHookup;
 
   e_surf_action_state_t getState(); /**< get the state*/
-  void setState(e_surf_action_state_t state); /**< Change state*/
+  virtual void setState(e_surf_action_state_t state); /**< Change state*/
   double getStartTime(); /**< Return the start time of an action */
   double getFinishTime(); /**< Return the finish time of an action */
   void setData(void* data);

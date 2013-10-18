@@ -43,9 +43,9 @@ public:
   Cpu(CpuModelPtr model, const char* name, xbt_dict_t properties) : Resource(model, name, properties) {};
   virtual ActionPtr execute(double size)=0;
   virtual ActionPtr sleep(double duration)=0;
-  int getCore();
-  double getSpeed(double load);
-  double getAvailableSpeed();
+  virtual int getCore();
+  virtual double getSpeed(double load);
+  virtual double getAvailableSpeed();
   void addTraces(void);
   double m_powerPeak;            /*< CPU power peak */
   double m_powerScale;           /*< Percentage of CPU disponible */

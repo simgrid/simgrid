@@ -68,7 +68,7 @@ void CpuModel::updateActionsStateFull(double now, double delta)
   xbt_swag_t running_actions = p_runningActionSet;
 
   xbt_swag_foreach_safe(_action, _next_action, running_actions) {
-    action = (ActionLmmPtr) _action;
+    action = dynamic_cast<ActionLmmPtr>(static_cast<ActionPtr>(_action));
 #ifdef HAVE_TRACING
     if (TRACE_is_enabled()) {
       CpuPtr x = (CpuPtr) lmm_constraint_id(lmm_get_cnst_from_var

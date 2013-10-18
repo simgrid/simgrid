@@ -45,7 +45,7 @@ public:
 
   As(){};
   ~As(){};
-  int test(){return 3;};
+
   virtual void getRouteAndLatency(RoutingEdgePtr src, RoutingEdgePtr dst, sg_platf_route_cbarg_t into, double *latency)=0;
   virtual xbt_dynar_t getOneLinkRoutes()=0;
   virtual void getGraph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges)=0;
@@ -86,6 +86,7 @@ public:
   void *p_loopback;
   xbt_dynar_t p_lastRoute;
   xbt_dynar_t getOneLinkRoutes(void);
+  xbt_dynar_t recursiveGetOneLinkRoutes(AsPtr rc);
   void getRouteAndLatency(RoutingEdgePtr src, RoutingEdgePtr dst, xbt_dynar_t * links, double *latency);
 };
 

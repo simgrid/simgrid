@@ -38,18 +38,18 @@ public:
   WorkstationModel(string name): Model(name) {};
   WorkstationModel();
   ~WorkstationModel();
-  void parseInit(sg_platf_host_cbarg_t host);
+  virtual void parseInit(sg_platf_host_cbarg_t host);
   WorkstationCLM03Ptr createResource(string name);
   double shareResources(double now);
   void updateActionsState(double now, double delta);
 
-  ActionPtr executeParallelTask(int workstation_nb,
+  virtual ActionPtr executeParallelTask(int workstation_nb,
                                         void **workstation_list,
                                         double *computation_amount,
                                         double *communication_amount,
                                         double rate);
- xbt_dynar_t getRoute(WorkstationCLM03Ptr src, WorkstationCLM03Ptr dst);
- ActionPtr communicate(WorkstationCLM03Ptr src, WorkstationCLM03Ptr dst, double size, double rate);
+ virtual xbt_dynar_t getRoute(WorkstationCLM03Ptr src, WorkstationCLM03Ptr dst);
+ virtual ActionPtr communicate(WorkstationCLM03Ptr src, WorkstationCLM03Ptr dst, double size, double rate);
 };
 
 /************
@@ -62,13 +62,13 @@ public:
 
   void updateState(tmgr_trace_event_t event_type, double value, double date);
 
-  ActionPtr execute(double size);
-  ActionPtr sleep(double duration);
+  virtual ActionPtr execute(double size);
+  virtual ActionPtr sleep(double duration);
   e_surf_resource_state_t getState();
 
-  int getCore();
-  double getSpeed(double load);
-  double getAvailableSpeed();
+  virtual int getCore();
+  virtual double getSpeed(double load);
+  virtual double getAvailableSpeed();
 
   xbt_dict_t getProperties();
 
@@ -90,7 +90,8 @@ public:
 
 class WorkstationCLM03Lmm : public WorkstationCLM03, public ResourceLmm {
 public:
-  WorkstationCLM03Lmm(WorkstationModelPtr model, const char* name, xbt_dict_t props): WorkstationCLM03(model, name, props, NULL, NULL, NULL){};
+  WorkstationCLM03Lmm(WorkstationModelPtr model, const char* name, xbt_dict_t props, xbt_dynar_t storage, RoutingEdgePtr netElm, CpuPtr cpu):
+	  WorkstationCLM03(model, name, props, storage, netElm, cpu){};
   e_surf_resource_state_t getState();
 };
 

@@ -12,7 +12,8 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route_none, surf, "Routing part of surf");
 }
 
 AS_t model_none_create(void)
-{//FIXME:
+{
+  return new AsNone();
 }
 
 xbt_dynar_t AsNone::getOneLinkRoutes() {

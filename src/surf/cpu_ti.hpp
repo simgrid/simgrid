@@ -116,14 +116,12 @@ public:
   void updateActionFinishDate(double now);
   bool isUsed();
   void printCpuTiModel();
-  CpuTiModelPtr getModel();
   CpuActionPtr execute(double size);
   CpuTiActionPtr _execute(double size);
   CpuActionPtr sleep(double duration);
   double getAvailableSpeed();
 
   CpuTiTgmrPtr p_availTrace;       /*< Structure with data needed to integrate trace file */
-  e_surf_resource_state_t p_stateCurrent;        /*< CPU current state (ON or OFF) */
   tmgr_trace_event_t p_stateEvent;       /*< trace file with states events (ON or OFF) */
   tmgr_trace_event_t p_powerEvent;       /*< trace file with availabitly events */
   xbt_swag_t p_actionSet;        /*< set with all actions running on cpu */
@@ -136,10 +134,15 @@ public:
 /**********
  * Action *
  **********/
+
 class CpuTiAction: public CpuAction {
 public:
   CpuTiAction() {};
-  CpuTiAction(CpuTiModelPtr model, double cost, bool failed): CpuAction(model, cost, failed) {};
+  CpuTiAction(CpuTiModelPtr model, double cost, bool failed)
+  : Action(model, cost, failed), CpuAction(model, cost, failed) {
+	p_cpuListHookup.next = 0;
+	p_cpuListHookup.prev = 0;
+  };
 
   void setState(e_surf_action_state_t state);
   int unref();
@@ -154,6 +157,7 @@ public:
   double getRemains();
   CpuTiPtr p_cpu;
   int m_indexHeap;
+  s_xbt_swag_hookup_t p_cpuListHookup;
   int m_suspended;
 private:
 };

@@ -435,7 +435,9 @@ void surf_exit(void)
  *********/
 
 Model::Model(string name)
- : m_name(name), m_resOnCB(0), m_resOffCB(0), m_actSuspendCB(0), m_actCancelCB(0), m_actResumeCB(0)
+ : m_name(name), m_resOnCB(0), m_resOffCB(0),
+   m_actSuspendCB(0), m_actCancelCB(0), m_actResumeCB(0),
+   p_maxminSystem(0)
 {
   ActionPtr action;
   p_readyActionSet = xbt_swag_new(xbt_swag_offset(*action, p_stateHookup));
@@ -545,26 +547,24 @@ double Model::shareResourcesFull(double now) {
 
 
 double Model::shareResourcesMaxMin(xbt_swag_t running_actions,
-                          size_t offset,
                           lmm_system_t sys,
                           void (*solve) (lmm_system_t))
 {
   void *_action = NULL;
-  ActionPtr action = NULL;
+  ActionLmmPtr action = NULL;
   double min = -1;
   double value = -1;
-#define VARIABLE(action) (*((lmm_variable_t*)(((char *) (action)) + (offset))))
 
   solve(sys);
 
   xbt_swag_foreach(_action, running_actions) {
-    action = (ActionPtr)_action;
-    value = lmm_variable_getvalue(VARIABLE(action));
+    action = dynamic_cast<ActionLmmPtr>(static_cast<ActionPtr>(_action));
+    value = lmm_variable_getvalue(action->p_variable);
     if ((value > 0) || (action->m_maxDuration >= 0))
       break;
   }
 
-  if (!action)
+  if (!_action)
     return -1.0;
 
   if (value > 0) {
@@ -578,10 +578,11 @@ double Model::shareResourcesMaxMin(xbt_swag_t running_actions,
     min = action->m_maxDuration;
 
 
-  for (action = (ActionPtr) xbt_swag_getNext(action, running_actions->offset);
-       action;
-       action = (ActionPtr) xbt_swag_getNext(action, running_actions->offset)) {
-    value = lmm_variable_getvalue(VARIABLE(action));
+  for (_action = xbt_swag_getNext(static_cast<ActionPtr>(action), running_actions->offset);
+       _action;
+       _action = xbt_swag_getNext(static_cast<ActionPtr>(action), running_actions->offset)) {
+	action = dynamic_cast<ActionLmmPtr>(static_cast<ActionPtr>(_action));
+    value = lmm_variable_getvalue(action->p_variable);
     if (value > 0) {
       if (action->m_remains > 0)
         value = action->m_remains / value;
@@ -599,7 +600,6 @@ double Model::shareResourcesMaxMin(xbt_swag_t running_actions,
   }
   XBT_DEBUG("min value : %f", min);
 
-#undef VARIABLE
   return min;
 }
 
@@ -737,11 +737,11 @@ ResourceLmm::ResourceLmm(surf_model_t model, const char *name, xbt_dict_t props,
   p_constraint = lmm_constraint_new(system, this, constraint_value);
   p_stateCurrent = state_init;
   if (state_trace)
-    p_stateEvent = tmgr_history_add_trace(history, state_trace, 0.0, 0, this);
+    p_stateEvent = tmgr_history_add_trace(history, state_trace, 0.0, 0, static_cast<ResourcePtr>(this));
   p_power.scale = 1.0;
   p_power.peak = metric_peak;
   if (metric_trace)
-    p_power.event = tmgr_history_add_trace(history, metric_trace, 0.0, 0, this);
+    p_power.event = tmgr_history_add_trace(history, metric_trace, 0.0, 0, static_cast<ResourcePtr>(this));
 }
 
 /**********

@@ -75,7 +75,7 @@ static void net_add_traces(void){
                "Cannot connect trace %s to link %s: trace undefined",
                trace_name, elm);
 
-    link->p_stateEvent = tmgr_history_add_trace(history, trace, 0.0, 0, link);
+    link->p_stateEvent = tmgr_history_add_trace(history, trace, 0.0, 0, static_cast<ResourcePtr>(link));
   }
 
   xbt_dict_foreach(trace_connect_list_bandwidth, cursor, trace_name, elm) {
@@ -90,7 +90,7 @@ static void net_add_traces(void){
                "Cannot connect trace %s to link %s: trace undefined",
                trace_name, elm);
 
-    link->p_power.event = tmgr_history_add_trace(history, trace, 0.0, 0, link);
+    link->p_power.event = tmgr_history_add_trace(history, trace, 0.0, 0, static_cast<ResourcePtr>(link));
   }
 
   xbt_dict_foreach(trace_connect_list_latency, cursor, trace_name, elm) {
@@ -105,7 +105,7 @@ static void net_add_traces(void){
                "Cannot connect trace %s to link %s: trace undefined",
                trace_name, elm);
 
-    link->p_latEvent = tmgr_history_add_trace(history, trace, 0.0, 0, link);
+    link->p_latEvent = tmgr_history_add_trace(history, trace, 0.0, 0, static_cast<ResourcePtr>(link));
   }
 }
 
@@ -276,10 +276,10 @@ NetworkCm02Model::NetworkCm02Model(string name) : Model(name){
   if (!p_maxminSystem)
 	p_maxminSystem = lmm_system_new(m_selectiveUpdate);
 
-  routing_model_create(createResource("__loopback__",
+  routing_model_create(static_cast<NetworkCm02LinkPtr>(createResource("__loopback__",
 	                                           498000000, NULL, 0.000015, NULL,
 	                                           SURF_RESOURCE_ON, NULL,
-	                                           SURF_LINK_FATPIPE, NULL));
+	                                           SURF_LINK_FATPIPE, NULL)));
 
   if (p_updateMechanism == UM_LAZY) {
 	p_actionHeap = xbt_heap_new(8, NULL);
@@ -532,7 +532,7 @@ NetworkCm02LinkLmm::NetworkCm02LinkLmm(NetworkCm02ModelPtr model, const char *na
 {
   m_latCurrent = lat_initial;
   if (lat_trace)
-	p_latEvent = tmgr_history_add_trace(history, lat_trace, 0.0, 0, this);
+	p_latEvent = tmgr_history_add_trace(history, lat_trace, 0.0, 0, static_cast<ResourcePtr>(this));
 
   if (policy == SURF_LINK_FATPIPE)
 	lmm_constraint_shared(p_constraint);

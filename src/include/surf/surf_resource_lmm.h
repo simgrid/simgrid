@@ -11,7 +11,7 @@
 #include "surf/trace_mgr.h"
 #include "surf/surf_resource.h"
 
-
+#ifdef TOMATO
 static XBT_INLINE
     surf_resource_lmm_t surf_resource_lmm_new(size_t childsize,
                                               /* for superclass */
@@ -43,7 +43,7 @@ static XBT_INLINE
         tmgr_history_add_trace(history, metric_trace, 0.0, 0, res);
   return res;
 }
-
+#endif
 
 static XBT_INLINE e_surf_resource_state_t surf_resource_lmm_get_state(void
                                                                       *r)

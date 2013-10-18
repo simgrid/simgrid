@@ -526,7 +526,6 @@ static void _get_route_and_latency(RoutingEdgePtr src, RoutingEdgePtr dst,
   /* Check whether a direct bypass is defined */
   sg_platf_route_cbarg_t e_route_bypass = NULL;
   //FIXME:REMOVE:if (common_father->get_bypass_route)
-  common_father->test();
 
   e_route_bypass = common_father->getBypassRoute(src, dst, latency);
 
@@ -611,7 +610,11 @@ void RoutingPlatf::getRouteAndLatency(RoutingEdgePtr src, RoutingEdgePtr dst,
              "negative latency on route between \"%s\" and \"%s\"", src->p_name, dst->p_name);
 }
 
-static xbt_dynar_t recursive_get_onelink_routes(AsPtr rc)
+xbt_dynar_t RoutingPlatf::getOneLinkRoutes(){
+  return recursiveGetOneLinkRoutes(p_root);
+}
+
+xbt_dynar_t RoutingPlatf::recursiveGetOneLinkRoutes(AsPtr rc)
 {
   xbt_dynar_t ret = xbt_dynar_new(sizeof(OnelinkPtr), xbt_free);
 
@@ -625,16 +628,11 @@ static xbt_dynar_t recursive_get_onelink_routes(AsPtr rc)
   xbt_dict_cursor_t cursor = NULL;
   AS_t rc_child;
   xbt_dict_foreach(rc->p_routingSons, cursor, key, rc_child) {
-    xbt_dynar_t onelink_child = recursive_get_onelink_routes(rc_child);
+    xbt_dynar_t onelink_child = recursiveGetOneLinkRoutes(rc_child);
     if (onelink_child)
       xbt_dynar_merge(&ret,&onelink_child);
   }
   return ret;
-}
-
-static xbt_dynar_t get_onelink_routes(void)
-{
-  return recursive_get_onelink_routes(routing_platf->p_root);
 }
 
 e_surf_network_element_type_t routing_get_network_element_type(const char *name)
@@ -656,8 +654,7 @@ void routing_model_create( void *loopback)
   /* config the uniq global routing */
   routing_platf = new RoutingPlatf();
   routing_platf->p_root = NULL;
-  //FIXME:routing_platf->get_onelink_routes = get_onelink_routes;
-  //FIXME:routing_platf->loopback = loopback;
+  routing_platf->p_loopback = loopback;
   routing_platf->p_lastRoute = xbt_dynar_new(sizeof(sg_routing_link_t),NULL);
   /* no current routing at moment */
   current_routing = NULL;
@@ -713,9 +710,9 @@ void routing_model_create( void *loopback)
 void routing_cluster_add_backbone(void* bb) {
   xbt_assert(current_routing->p_modelDesc == &routing_models[SURF_MODEL_CLUSTER],
         "You have to be in model Cluster to use tag backbone!");
-  /*FIXME:xbt_assert(!((as_cluster_t)current_routing)->p_backbone, "The backbone link is already defined!");
-  ((as_cluster_t)current_routing)->p_backbone = bb;*/
-  XBT_DEBUG("Add a backbone to AS '%s'",current_routing->p_name);
+  xbt_assert(!surf_as_cluster_get_backbone(current_routing), "The backbone link is already defined!");
+  surf_as_cluster_set_backbone(current_routing, bb);
+  XBT_DEBUG("Add a backbone to AS '%s'", current_routing->p_name);
 }
 
 static void routing_parse_cabinet(sg_platf_cabinet_cbarg_t cabinet)
