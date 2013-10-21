@@ -205,7 +205,7 @@ void *surf_as_cluster_get_backbone(AS_t as){
 }
 
 void surf_as_cluster_set_backbone(AS_t as, void* backbone){
-  static_cast<AsClusterPtr>(as)->p_backbone = static_cast<NetworkCm02LinkPtr>(backbone);
+  static_cast<AsClusterPtr>(as)->p_backbone = dynamic_cast<NetworkCm02LinkPtr>(static_cast<ResourcePtr>(backbone));
 }
 
 const char *surf_model_name(surf_model_t model){
@@ -310,16 +310,16 @@ surf_action_t surf_workstation_write(surf_resource_t resource, const void *ptr, 
   return get_casted_workstation(resource)->write(ptr, size, fd);
 }
 
-int surf_network_link_is_shared(surf_network_link_t link){
-  return link->isShared();
+int surf_network_link_is_shared(surf_cpp_resource_t link){
+  return dynamic_cast<NetworkCm02LinkPtr>(link)->isShared();
 }
 
-double surf_network_link_get_bandwidth(surf_network_link_t link){
-  return link->getBandwidth();
+double surf_network_link_get_bandwidth(surf_cpp_resource_t link){
+  return dynamic_cast<NetworkCm02LinkPtr>(link)->getBandwidth();
 }
 
-double surf_network_link_get_latency(surf_network_link_t link){
-  return link->getLatency();
+double surf_network_link_get_latency(surf_cpp_resource_t link){
+  return dynamic_cast<NetworkCm02LinkPtr>(link)->getLatency();
 }
 
 surf_action_t surf_cpu_execute(surf_resource_t cpu, double size){

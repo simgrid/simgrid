@@ -17,14 +17,15 @@ lmm_system_t ptask_maxmin_system = NULL;
 WorkstationL07Model::WorkstationL07Model() : WorkstationModel("Workstation ptask_L07") {
   if (!ptask_maxmin_system)
 	ptask_maxmin_system = lmm_system_new(1);
+  surf_network_model = new NetworkL07Model();
+  surf_cpu_model = new CpuL07Model();
   routing_model_create(p_networkModel->createResource("__loopback__",
 	                                                  498000000, NULL,
 	                                                  0.000015, NULL,
 	                                                  SURF_RESOURCE_ON, NULL,
 	                                                  SURF_LINK_FATPIPE, NULL));
 
-   surf_network_model = new NetworkL07Model();
-   surf_cpu_model = new CpuL07Model();
+
 }
 
 double WorkstationL07Model::shareResources(double now)
@@ -160,7 +161,7 @@ ActionPtr WorkstationL07Model::executeParallelTask(int workstation_nb,
         latency = MAX(latency, lat);
 
         xbt_dynar_foreach(route, cpt, _link) {
-           link = dynamic_cast<LinkL07Ptr>(static_cast<NetworkCm02LinkPtr>(_link));
+           link = dynamic_cast<LinkL07Ptr>(static_cast<ResourcePtr>(_link));
            xbt_dict_set(ptask_parallel_task_link_set, link->m_name, link, NULL);
         }
       }
@@ -204,6 +205,7 @@ ActionPtr WorkstationL07Model::executeParallelTask(int workstation_nb,
     for (j = 0; j < workstation_nb; j++) {
       void *_link;
       LinkL07Ptr link;
+
       xbt_dynar_t route=NULL;
       if (communication_amount[i * workstation_nb + j] == 0.0)
         continue;
@@ -217,7 +219,7 @@ ActionPtr WorkstationL07Model::executeParallelTask(int workstation_nb,
     		                            &route, NULL);
 
       xbt_dynar_foreach(route, cpt, _link) {
-        link = static_cast<LinkL07Ptr>(static_cast<NetworkCm02LinkPtr>(_link));
+        link = dynamic_cast<LinkL07Ptr>(static_cast<ResourcePtr>(_link));
         lmm_expand_add(ptask_maxmin_system, link->p_constraint,
                        action->p_variable,
                        communication_amount[i * workstation_nb + j]);
@@ -352,7 +354,7 @@ ResourcePtr NetworkL07Model::createResource(const char *name,
   if (policy == SURF_LINK_FATPIPE)
     lmm_constraint_shared(nw_link->p_constraint);
 
-  xbt_lib_set(link_lib, name, SURF_LINK_LEVEL, static_cast<NetworkCm02LinkPtr>(nw_link));
+  xbt_lib_set(link_lib, name, SURF_LINK_LEVEL, static_cast<ResourcePtr>(nw_link));
   return nw_link;
 }
 
@@ -388,7 +390,7 @@ void WorkstationL07Model::addTraces()
   /* Connect traces relative to network */
   xbt_dict_foreach(trace_connect_list_link_avail, cursor, trace_name, elm) {
     tmgr_trace_t trace = (tmgr_trace_t) xbt_dict_get_or_null(traces_set_list, trace_name);
-    LinkL07Ptr link = (LinkL07Ptr) xbt_lib_get_or_null(link_lib, elm, SURF_LINK_LEVEL);
+    LinkL07Ptr link = dynamic_cast<LinkL07Ptr>(static_cast<ResourcePtr>(xbt_lib_get_or_null(link_lib, elm, SURF_LINK_LEVEL)));
 
     xbt_assert(link, "Link %s undefined", elm);
     xbt_assert(trace, "Trace %s undefined", trace_name);
@@ -398,7 +400,7 @@ void WorkstationL07Model::addTraces()
 
   xbt_dict_foreach(trace_connect_list_bandwidth, cursor, trace_name, elm) {
     tmgr_trace_t trace = (tmgr_trace_t) xbt_dict_get_or_null(traces_set_list, trace_name);
-    LinkL07Ptr link = (LinkL07Ptr) xbt_lib_get_or_null(link_lib, elm, SURF_LINK_LEVEL);
+    LinkL07Ptr link = dynamic_cast<LinkL07Ptr>(static_cast<ResourcePtr>(xbt_lib_get_or_null(link_lib, elm, SURF_LINK_LEVEL)));
 
     xbt_assert(link, "Link %s undefined", elm);
     xbt_assert(trace, "Trace %s undefined", trace_name);
@@ -408,7 +410,7 @@ void WorkstationL07Model::addTraces()
 
   xbt_dict_foreach(trace_connect_list_latency, cursor, trace_name, elm) {
     tmgr_trace_t trace = (tmgr_trace_t) xbt_dict_get_or_null(traces_set_list, trace_name);
-    LinkL07Ptr link = (LinkL07Ptr) xbt_lib_get_or_null(link_lib, elm, SURF_LINK_LEVEL);
+    LinkL07Ptr link = dynamic_cast<LinkL07Ptr>(static_cast<ResourcePtr>(xbt_lib_get_or_null(link_lib, elm, SURF_LINK_LEVEL)));
 
     xbt_assert(link, "Link %s undefined", elm);
     xbt_assert(trace, "Trace %s undefined", trace_name);

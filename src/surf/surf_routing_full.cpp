@@ -106,7 +106,7 @@ void AsFull::getRouteAndLatency(RoutingEdgePtr src, RoutingEdgePtr dst, sg_platf
   size_t table_size = xbt_dynar_length(p_indexNetworkElm);
 
   sg_platf_route_cbarg_t e_route = NULL;
-  NetworkCm02LinkPtr link;
+  void *link;
   unsigned int cpt = 0;
 
   e_route = TO_ROUTE_FULL(src->m_id, dst->m_id);
@@ -117,7 +117,7 @@ void AsFull::getRouteAndLatency(RoutingEdgePtr src, RoutingEdgePtr dst, sg_platf
     xbt_dynar_foreach(e_route->link_list, cpt, link) {
       xbt_dynar_push(res->link_list, &link);
       if (lat)
-        *lat += link->getLatency();
+        *lat += dynamic_cast<NetworkCm02LinkPtr>(static_cast<ResourcePtr>(link))->getLatency();
     }
   }
 }

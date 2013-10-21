@@ -104,7 +104,7 @@ void AsFloyd::getRouteAndLatency(RoutingEdgePtr src, RoutingEdgePtr dst, sg_plat
   while (!xbt_dynar_is_empty(route_stack)) {
     sg_platf_route_cbarg_t e_route = xbt_dynar_pop_as(route_stack, sg_platf_route_cbarg_t);
     xbt_dynar_t links;
-    NetworkCm02LinkPtr link;
+    void *link;
     unsigned int cpt;
 
     if (p_hierarchy == SURF_ROUTING_RECURSIVE && prev_dst_gw != NULL
@@ -117,7 +117,7 @@ void AsFloyd::getRouteAndLatency(RoutingEdgePtr src, RoutingEdgePtr dst, sg_plat
     xbt_dynar_foreach(links, cpt, link) {
       xbt_dynar_push_as(res->link_list, sg_routing_link_t, link);
       if (lat)
-        *lat += link->getLatency();
+        *lat += dynamic_cast<NetworkCm02LinkPtr>(static_cast<ResourcePtr>(link))->getLatency();
     }
 
     prev_dst_gw = e_route->gw_dst;

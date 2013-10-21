@@ -103,7 +103,7 @@ struct s_model_type routing_models[] = {
  */
 static void parse_S_host_link(sg_platf_host_link_cbarg_t host)
 {
-  RoutingEdgePtr info = (RoutingEdgePtr) xbt_lib_get_or_null(host_lib, host->id, ROUTING_HOST_LEVEL);
+  RoutingEdgePtr info = static_cast<RoutingEdgePtr>(xbt_lib_get_or_null(host_lib, host->id, ROUTING_HOST_LEVEL));
   xbt_assert(info, "Host '%s' not found!", host->id);
   xbt_assert(current_routing->p_modelDesc == &routing_models[SURF_MODEL_CLUSTER] ||
       current_routing->p_modelDesc == &routing_models[SURF_MODEL_VIVALDI],

@@ -338,9 +338,9 @@ surf_action_t surf_workstation_ls(surf_resource_t workstation, const char* mount
 size_t surf_workstation_get_size(surf_resource_t workstation, surf_file_t fd);
 surf_action_t surf_workstation_read(surf_resource_t resource, void *ptr, size_t size, surf_file_t fd);
 surf_action_t surf_workstation_write(surf_resource_t resource, const void *ptr, size_t size, surf_file_t fd);
-int surf_network_link_is_shared(surf_network_link_t link);
-double surf_network_link_get_bandwidth(surf_network_link_t link);
-double surf_network_link_get_latency(surf_network_link_t link);
+int surf_network_link_is_shared(surf_cpp_resource_t link);
+double surf_network_link_get_bandwidth(surf_cpp_resource_t link);
+double surf_network_link_get_latency(surf_cpp_resource_t link);
 void *surf_action_get_data(surf_action_t action);
 void surf_action_set_data(surf_action_t action, void *data);
 void surf_action_unref(surf_action_t action);

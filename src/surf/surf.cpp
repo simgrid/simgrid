@@ -333,7 +333,7 @@ static XBT_INLINE void surf_cpu_free(void *r)
 
 static XBT_INLINE void surf_link_free(void *r)
 {
-  delete static_cast<NetworkCm02LinkPtr>(r);
+  delete dynamic_cast<NetworkCm02LinkPtr>(static_cast<ResourcePtr>(r));
 }
 
 static XBT_INLINE void surf_workstation_free(void *r)
