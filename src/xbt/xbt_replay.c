@@ -151,7 +151,7 @@ int xbt_replay_action_runner(int argc, char *argv[])
         );
     xbt_replay_reader_t reader = xbt_replay_reader_new(argv[1]);
     while ((evt=xbt_replay_reader_get(reader))) {
-      if (!strcmp(argv[0],evt[0])) {
+      if (!strcasecmp(argv[0],evt[0])) {
         action_fun function = (action_fun)xbt_dict_get(action_funs, evt[1]);
         function(evt);
       } else {
