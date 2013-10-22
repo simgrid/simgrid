@@ -122,7 +122,7 @@ XBT_PUBLIC(void) new_pajeAddVariable (double timestamp, container_t container, t
 XBT_PUBLIC(void) new_pajeSubVariable (double timestamp, container_t container, type_t type, double value);
 XBT_PUBLIC(void) new_pajeSetState (double timestamp, container_t container, type_t type, val_t value);
 XBT_PUBLIC(void) new_pajePushState (double timestamp, container_t container, type_t type, val_t value);
-XBT_PUBLIC(void) new_pajePushStateWithSize (double timestamp, container_t container, type_t type, val_t value, int size);
+XBT_PUBLIC(void) new_pajePushStateWithExtra (double timestamp, container_t container, type_t type, val_t value, xbt_dynar_t extra);
 XBT_PUBLIC(void) new_pajePopState (double timestamp, container_t container, type_t type);
 XBT_PUBLIC(void) new_pajeResetState (double timestamp, container_t container, type_t type);
 XBT_PUBLIC(void) new_pajeStartLink (double timestamp, container_t container, type_t type, container_t sourceContainer, const char *value, const char *key);

@@ -96,6 +96,7 @@ typedef struct s_pushState {
   type_t type;
   val_t value;
   int size;
+  xbt_dynar_t extra;
 }s_pushState_t;
 
 typedef struct s_popState *popState_t;
@@ -463,22 +464,35 @@ static void print_pajePushState(paje_event_t event)
     }
   }else{
     if (event->timestamp == 0){
-      fprintf(tracing_file, "%d 0 %s %s %s %d\n",
+      fprintf(tracing_file, "%d 0 %s %s %s ",
           (int)event->event_type,
           ((pushState_t)event->data)->type->id,
           ((pushState_t)event->data)->container->id,
-          ((pushState_t)event->data)->value->id,
-          ((pushState_t)event->data)->size);
+          ((pushState_t)event->data)->value->id);
+
+      char *value = NULL;
+      unsigned int iter = 0;
+      xbt_dynar_foreach( ((pushState_t)event->data)->extra, iter, value) {
+        fprintf(tracing_file, "%s ", value);
+      }
+      fprintf(tracing_file, "\n");
+
     }else{
-      fprintf(tracing_file, "%d %f %s %s %s %d\n",
+      fprintf(tracing_file, "%d %f %s %s %s ",
           (int)event->event_type,
           event->timestamp,
           ((pushState_t)event->data)->type->id,
           ((pushState_t)event->data)->container->id,
-          ((pushState_t)event->data)->value->id,
-          ((pushState_t)event->data)->size);
-    }
+          ((pushState_t)event->data)->value->id);
 
+      char *value = NULL;
+      unsigned int iter = 0;
+      xbt_dynar_foreach( ((pushState_t)event->data)->extra, iter, value) {
+        fprintf(tracing_file, "%s ", value);
+      }
+      fprintf(tracing_file, "\n");
+    }
+   xbt_dynar_free(&((pushState_t)event->data)->extra);
   }
 }
 
@@ -831,6 +845,25 @@ void new_pajeSetState (double timestamp, container_t container, type_t type, val
 }
 
 
+void new_pajePushStateWithExtra (double timestamp, container_t container, type_t type, val_t value, xbt_dynar_t extra)
+{
+  paje_event_t event = xbt_new0(s_paje_event_t, 1);
+  event->event_type = PAJE_PushState;
+  event->timestamp = timestamp;
+  event->print = print_pajePushState;
+  event->free = free_paje_event;
+  event->data = xbt_new0(s_pushState_t, 1);
+  ((pushState_t)(event->data))->type = type;
+  ((pushState_t)(event->data))->container = container;
+  ((pushState_t)(event->data))->value = value;
+  ((pushState_t)(event->data))->extra = extra;
+
+  XBT_DEBUG("%s: event_type=%d, timestamp=%f", __FUNCTION__, (int)event->event_type, event->timestamp);
+
+  insert_into_buffer (event);
+}
+
+
 void new_pajePushState (double timestamp, container_t container, type_t type, val_t value)
 {
   paje_event_t event = xbt_new0(s_paje_event_t, 1);
@@ -842,26 +875,6 @@ void new_pajePushState (double timestamp, container_t container, type_t type, va
   ((pushState_t)(event->data))->type = type;
   ((pushState_t)(event->data))->container = container;
   ((pushState_t)(event->data))->value = value;
-  ((pushState_t)(event->data))->size = -1;
-
-  XBT_DEBUG("%s: event_type=%d, timestamp=%f", __FUNCTION__, (int)event->event_type, event->timestamp);
-
-  insert_into_buffer (event);
-}
-
-void new_pajePushStateWithSize (double timestamp, container_t container, type_t type, val_t value, int size)
-{
-  paje_event_t event = xbt_new0(s_paje_event_t, 1);
-  event->event_type = PAJE_PushState;
-  event->timestamp = timestamp;
-  event->print = print_pajePushState;
-  event->free = free_paje_event;
-  event->data = xbt_new0(s_pushState_t, 1);
-  ((pushState_t)(event->data))->type = type;
-  ((pushState_t)(event->data))->container = container;
-  ((pushState_t)(event->data))->value = value;
-  ((pushState_t)(event->data))->size = size;
-
   XBT_DEBUG("%s: event_type=%d, timestamp=%f", __FUNCTION__, (int)event->event_type, event->timestamp);
 
   insert_into_buffer (event);
