@@ -1250,7 +1250,9 @@ msg_host_t MSG_vm_get_pm(msg_vm_t vm)
  *
  *
  * 2.
- * Note that bound == 0 means no bound (i.e., unlimited).
+ * Note that bound == 0 means no bound (i.e., unlimited). But, if a host has
+ * multiple CPU cores, the CPU share of a computation task (or a VM) never
+ * exceeds the capacity of a CPU core.
  */
 void MSG_vm_set_bound(msg_vm_t vm, double bound)
 {

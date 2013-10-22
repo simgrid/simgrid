@@ -237,6 +237,12 @@ static surf_action_t cpu_execute(void *cpu, double size)
   GENERIC_LMM_ACTION(action).suspended = 0;     /* Should be useless because of the
                                                    calloc but it seems to help valgrind... */
 
+  /* Note (hypervisor): here, the bound value of the variable is set to the
+   * capacity of a CPU core. But, after MSG_{task/vm}_set_bound() were added to
+   * the hypervisor branch, this bound value is overwritten in
+   * SIMIX_host_execute().
+   * TODO: cleanup this.
+   */
   GENERIC_LMM_ACTION(action).variable =
       lmm_variable_new(cpu_model->model_private->maxmin_system, action,
                        GENERIC_ACTION(action).priority,

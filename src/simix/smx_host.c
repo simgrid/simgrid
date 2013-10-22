@@ -423,7 +423,14 @@ smx_action_t SIMIX_host_execute(const char *name,
     action->execution.surf_exec = ws_model->extension.workstation.execute(host, computation_amount);
     ws_model->action_data_set(action->execution.surf_exec, action);
     ws_model->set_priority(action->execution.surf_exec, priority);
-    ws_model->set_bound(action->execution.surf_exec, bound);
+
+    /* Note (hypervisor): for multicore, the bound value being passed to the
+     * surf layer should not be zero (i.e., unlimited). It should be the
+     * capacity of a CPU core. */
+    if (bound == 0)
+      ws_model->set_bound(action->execution.surf_exec, SIMIX_host_get_speed(host));
+    else
+      ws_model->set_bound(action->execution.surf_exec, bound);
   }
 
   XBT_DEBUG("Create execute action %p", action);
