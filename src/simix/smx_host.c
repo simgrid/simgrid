@@ -370,7 +370,7 @@ smx_action_t SIMIX_host_parallel_execute(const char *name,
   /* set surf's action */
   workstation_list = xbt_new0(void *, host_nb);
   for (i = 0; i < host_nb; i++)
-    workstation_list[i] = host_list[i];
+    workstation_list[i] = surf_workstation_resource_priv(host_list[i]);
 
   /* set surf's action */
   if (!MC_is_active()) {

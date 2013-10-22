@@ -1112,7 +1112,7 @@ void __SD_task_really_run(SD_task_t task)
   surf_workstations = xbt_new(void *, workstation_nb);
 
   for (i = 0; i < workstation_nb; i++)
-    surf_workstations[i] = task->workstation_list[i];
+    surf_workstations[i] =  surf_workstation_resource_priv(task->workstation_list[i]);
 
   double *computation_amount = xbt_new0(double, workstation_nb);
   double *communication_amount = xbt_new0(double, workstation_nb * workstation_nb);

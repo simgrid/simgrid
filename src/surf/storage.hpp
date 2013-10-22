@@ -26,7 +26,7 @@ typedef StorageActionLmm *StorageActionLmmPtr;
 /*********
  * Model *
  *********/
-class StorageModel : Model {
+class StorageModel : public Model {
 public:
   StorageModel();
   ~StorageModel();
@@ -34,7 +34,6 @@ public:
   double shareResources(double now);
   void updateActionsState(double now, double delta);
 
-  xbt_dict_t parseContent(char *filename, size_t *used_size);
 };
 
 /************
@@ -57,6 +56,7 @@ public:
   //virtual size_t getSize(surf_file_t fd);
   virtual StorageActionPtr read(void* ptr, size_t size, surf_file_t fd)=0;//FIXME:why we have a useless param ptr ??
   virtual StorageActionPtr write(const void* ptr, size_t size, surf_file_t fd)=0;//FIXME:why we have a useless param ptr ??
+  xbt_dict_t parseContent(char *filename);
 
   size_t m_size;
   size_t m_usedSize;
@@ -67,7 +67,7 @@ class StorageLmm : public ResourceLmm, public Storage {
 public:
   StorageLmm(StorageModelPtr model, const char* name, xbt_dict_t properties,
 		     lmm_system_t maxminSystem, double bread, double bwrite, double bconnection,
-		     xbt_dict_t content, size_t size);
+		     char *content_name, size_t size);
 
   StorageActionPtr open(const char* mount, const char* path);
   StorageActionPtr close(surf_file_t fd);
@@ -93,7 +93,8 @@ typedef enum {
 class StorageAction : virtual public Action {
 public:
   StorageAction(){};
-  StorageAction(ModelPtr model, double cost, bool failed, StoragePtr storage, e_surf_action_storage_type_t type){};
+  StorageAction(ModelPtr model, double cost, bool failed, StoragePtr storage, e_surf_action_storage_type_t type)
+   : p_storage(storage), m_type(type) {};
 
 
 

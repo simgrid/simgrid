@@ -276,7 +276,7 @@ NetworkCm02Model::NetworkCm02Model(string name) : Model(name){
   if (!p_maxminSystem)
 	p_maxminSystem = lmm_system_new(m_selectiveUpdate);
 
-  routing_model_create(static_cast<NetworkCm02LinkPtr>(createResource("__loopback__",
+  routing_model_create(static_cast<ResourcePtr>(createResource("__loopback__",
 	                                           498000000, NULL, 0.000015, NULL,
 	                                           SURF_RESOURCE_ON, NULL,
 	                                           SURF_LINK_FATPIPE, NULL)));

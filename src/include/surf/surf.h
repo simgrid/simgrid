@@ -354,8 +354,8 @@ void surf_action_set_priority(surf_action_t action, double priority);
 void surf_action_set_category(surf_action_t action, const char *category);
 e_surf_action_state_t surf_action_get_state(surf_action_t action);
 int surf_action_get_cost(surf_action_t action);
-surf_file_t surf_storage_action_get_file(surf_storage_action_lmm_t action);
-xbt_dict_t surf_storage_action_get_ls_dict(surf_storage_action_lmm_t action);
+surf_file_t surf_storage_action_get_file(surf_action_t action);
+xbt_dict_t surf_storage_action_get_ls_dict(surf_action_t action);
 
 #ifdef __cplusplus
 }

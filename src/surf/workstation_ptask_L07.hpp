@@ -41,6 +41,7 @@ typedef WorkstationActionLmm *WorkstationActionLmmPtr;*/
 class WorkstationL07Model : public WorkstationModel {
 public:
   WorkstationL07Model();
+  ~WorkstationL07Model();
 
   double shareResources(double now);
   void updateActionsState(double now, double delta);
@@ -65,6 +66,7 @@ public:
 class CpuL07Model : public CpuModel {
 public:
   CpuL07Model() : CpuModel("cpuL07") {};
+  ~CpuL07Model() {surf_cpu_model = NULL;};
   ResourcePtr createResource(const char *name, double power_scale,
                                  double power_initial,
                                  tmgr_trace_t power_trace,
@@ -78,6 +80,7 @@ public:
 class NetworkL07Model : public NetworkCm02Model {
 public:
   NetworkL07Model() : NetworkCm02Model(0) {};
+  ~NetworkL07Model() {surf_network_model = NULL;};
   ResourcePtr createResource(const char *name,
 		                                   double bw_initial,
 		                                   tmgr_trace_t bw_trace,
@@ -102,7 +105,8 @@ public:
 class WorkstationL07 : public WorkstationCLM03Lmm {
 public:
   WorkstationL07(WorkstationModelPtr model, const char* name, xbt_dict_t props, RoutingEdgePtr netElm, CpuPtr cpu);
-  bool isUsed();
+  //bool isUsed();
+  bool isUsed() {DIE_IMPOSSIBLE;};
   void updateState(tmgr_trace_event_t event_type, double value, double date) {DIE_IMPOSSIBLE;};
   ActionPtr execute(double size);
   ActionPtr sleep(double duration);
@@ -112,7 +116,8 @@ public:
 class CpuL07 : public CpuLmm {
 public:
   CpuL07(CpuL07ModelPtr model, const char* name, xbt_dict_t properties);
-  bool isUsed() {DIE_IMPOSSIBLE;};
+  bool isUsed();
+  //bool isUsed() {DIE_IMPOSSIBLE;};
   void updateState(tmgr_trace_event_t event_type, double value, double date);
   e_surf_resource_state_t getState();
   double getSpeed(double load);
@@ -125,7 +130,7 @@ public:
 class LinkL07 : public NetworkCm02LinkLmm {
 public:
   LinkL07(NetworkL07ModelPtr model, const char* name, xbt_dict_t props);
-  bool isUsed() {DIE_IMPOSSIBLE;};
+  bool isUsed();
   void updateState(tmgr_trace_event_t event_type, double value, double date);
   double getBandwidth();
   double getLatency();

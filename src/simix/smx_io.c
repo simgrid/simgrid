@@ -242,7 +242,7 @@ void SIMIX_post_io(smx_action_t action)
     switch (simcall->call) {
     case SIMCALL_FILE_OPEN:;
       smx_file_t tmp = xbt_new(s_smx_file_t,1);
-      tmp->surf_file = surf_storage_action_get_file((surf_storage_action_lmm_t)action->io.surf_io);
+      tmp->surf_file = surf_storage_action_get_file(action->io.surf_io);
       simcall_file_open__set__result(simcall, tmp);
       break;
 
@@ -267,7 +267,7 @@ void SIMIX_post_io(smx_action_t action)
 //          xbt_dict_set((action->io.surf_io)->ls_dict,key,dst,xbt_free);
 //        }
 //      }
-      simcall_file_ls__set__result(simcall, surf_storage_action_get_ls_dict((surf_storage_action_lmm_t)action->io.surf_io));
+      simcall_file_ls__set__result(simcall, surf_storage_action_get_ls_dict(action->io.surf_io));
       break;
     default:
       break;

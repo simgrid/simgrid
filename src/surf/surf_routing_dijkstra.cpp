@@ -15,19 +15,6 @@ extern "C" {
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route_dijkstra, surf, "Routing part of surf -- dijkstra routing logic");
 }
 
-AS_t model_dijkstra_create(void){
-  return new AsDijkstra(0);
-}
-
-AS_t model_dijkstracache_create(void){
-  return new AsDijkstra(1);
-}
-
-void model_dijkstra_both_end(AS_t as)
-{
-  delete as;
-}
-
 /* Free functions */
 
 static void route_cache_elem_free(void *e)
@@ -51,6 +38,43 @@ static void graph_edge_data_free(void *e) // FIXME: useless code duplication
   if (e_route) {
     xbt_dynar_free(&(e_route->link_list));
     xbt_free(e_route);
+  }
+}
+
+AS_t model_dijkstra_create(void){
+  return new AsDijkstra(0);
+}
+
+AS_t model_dijkstracache_create(void){
+  return new AsDijkstra(1);
+}
+
+void model_dijkstra_both_end(AS_t as)
+{
+  AsDijkstraPtr THIS_AS = static_cast<AsDijkstraPtr>(as);
+  xbt_node_t node = NULL;
+  unsigned int cursor2;
+  xbt_dynar_t nodes = NULL;
+
+  /* Create the topology graph */
+  if(!THIS_AS->p_routeGraph)
+    THIS_AS->p_routeGraph = xbt_graph_new_graph(1, NULL);
+  if(!THIS_AS->p_graphNodeMap)
+    THIS_AS->p_graphNodeMap = xbt_dict_new_homogeneous(&graph_node_map_elem_free);
+
+  if (THIS_AS->m_cached && !THIS_AS->p_routeCache)
+    THIS_AS->p_routeCache = xbt_dict_new_homogeneous(&route_cache_elem_free);
+
+  /* Add the loopback if needed */
+  if (routing_platf->p_loopback && as->p_hierarchy == SURF_ROUTING_BASE)
+    THIS_AS->addLoopback();
+
+  /* initialize graph indexes in nodes after graph has been built */
+  nodes = xbt_graph_get_nodes(THIS_AS->p_routeGraph);
+
+  xbt_dynar_foreach(nodes, cursor2, node) {
+    graph_node_data_t data = (graph_node_data_t) xbt_graph_node_get_data(node);
+    data->graph_id = cursor2;
   }
 }
 
@@ -430,6 +454,12 @@ void AsDijkstra::end()
   }
 
 }
+
+void AsDijkstra::parseASroute(sg_platf_route_cbarg_t route)
+{
+  parseRoute(route);
+}
+
 void AsDijkstra::parseRoute(sg_platf_route_cbarg_t route)
 {
   char *src = (char*)(route->src);

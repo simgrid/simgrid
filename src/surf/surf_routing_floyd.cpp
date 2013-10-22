@@ -129,6 +129,10 @@ static int floyd_pointer_resource_cmp(const void *a, const void *b) {
   return a != b;
 }
 
+void AsFloyd::parseASroute(sg_platf_route_cbarg_t route){
+  parseRoute(route);
+}
+
 void AsFloyd::parseRoute(sg_platf_route_cbarg_t route)
 {
   char *src = (char*)(route->src);

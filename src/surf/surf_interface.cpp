@@ -382,10 +382,10 @@ int surf_action_get_cost(surf_action_t action){
   return action->m_cost;
 }
 
-surf_file_t surf_storage_action_get_file(surf_storage_action_lmm_t action){
-  return action->p_file;
+surf_file_t surf_storage_action_get_file(surf_action_t action){
+  return dynamic_cast<StorageActionPtr>(action)->p_file;
 }
 
-xbt_dict_t surf_storage_action_get_ls_dict(surf_storage_action_lmm_t action){
-  return action->p_lsDict;
+xbt_dict_t surf_storage_action_get_ls_dict(surf_action_t action){
+  return dynamic_cast<StorageActionPtr>(action)->p_lsDict;
 }

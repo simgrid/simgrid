@@ -47,6 +47,7 @@ void model_full_end(AS_t _routing)
 }
 
 AsFull::AsFull(){
+  p_routingTable = 0;
 }
 
 AsFull::~AsFull(){

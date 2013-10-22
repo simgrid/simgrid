@@ -22,6 +22,9 @@ AS_t model_cluster_create(void)
 /* Creation routing model functions */
 AsCluster::AsCluster() : AsNone()
 {
+  p_backbone = 0;
+  p_loopback = 0;
+  p_router = 0;
 }
 
 /* Business methods */

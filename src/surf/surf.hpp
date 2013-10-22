@@ -285,7 +285,6 @@ private:
   void updateResourceState(void *id, tmgr_trace_event_t event_type,
                                  double value, double time);
 
-  lmm_system_t p_maxminSystem;
   xbt_swag_t p_modifiedSet;
   xbt_heap_t p_actionHeap;
   int m_selectiveUpdate;

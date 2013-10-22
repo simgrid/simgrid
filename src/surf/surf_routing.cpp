@@ -440,15 +440,15 @@ static void elements_father(sg_routing_edge_t src, sg_routing_edge_t dst,
 {
   xbt_assert(src && dst, "bad parameters for \"elements_father\" method");
 #define ELEMENTS_FATHER_MAXDEPTH 16     /* increase if it is not enough */
-  AS_t src_as, dst_as;
-  AS_t path_src[ELEMENTS_FATHER_MAXDEPTH];
-  AS_t path_dst[ELEMENTS_FATHER_MAXDEPTH];
+  AsPtr src_as, dst_as;
+  AsPtr path_src[ELEMENTS_FATHER_MAXDEPTH];
+  AsPtr path_dst[ELEMENTS_FATHER_MAXDEPTH];
   int index_src = 0;
   int index_dst = 0;
-  AS_t current;
-  AS_t current_src;
-  AS_t current_dst;
-  AS_t father;
+  AsPtr current;
+  AsPtr current_src;
+  AsPtr current_dst;
+  AsPtr father;
 
   /* (1) find the as where the src and dst are located */
   sg_routing_edge_t src_data = src;

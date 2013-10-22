@@ -17,6 +17,12 @@ typedef struct route_cache_element {
   int size;
 } s_route_cache_element_t, *route_cache_element_t;
 
+/***********
+ * Classes *
+ ***********/
+class AsDijkstra;
+typedef AsDijkstra *AsDijkstraPtr;
+
 class AsDijkstra : public AsGeneric {
 public:
   AsDijkstra();
@@ -29,6 +35,7 @@ public:
 	void getRouteAndLatency(RoutingEdgePtr src, RoutingEdgePtr dst, sg_platf_route_cbarg_t route, double *lat);
 	xbt_dynar_t getOnelinkRoutes();
 	void getRouteAndLatency(sg_platf_route_cbarg_t route, double *lat);
+	void parseASroute(sg_platf_route_cbarg_t route);
 	void parseRoute(sg_platf_route_cbarg_t route);
 	void end();
 

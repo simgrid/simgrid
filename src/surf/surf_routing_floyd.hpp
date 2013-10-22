@@ -17,6 +17,7 @@ public:
 
   void getRouteAndLatency(RoutingEdgePtr src, RoutingEdgePtr dst, sg_platf_route_cbarg_t into, double *latency);
   xbt_dynar_t getOneLinkRoutes();
+  void parseASroute(sg_platf_route_cbarg_t route);
   void parseRoute(sg_platf_route_cbarg_t route);
   void end();
   //void parseASroute(sg_platf_route_cbarg_t route);
