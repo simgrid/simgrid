@@ -27,7 +27,8 @@ Options:
   -map                       # display the machine on which each process rank is mapped
   -np <numprocs>             # use that amount of processes from the hostfile.
                              # By default, all processes of the hostfile are used.
-  -trace                     # activate tracing
+  -trace-ti                  # activate time independant tracing (for replay, default in smpi_simgrid.txt)
+  -trace                     # activate tracing (Paje, default in smpi_simgrid.trace)
   -trace-comment <comment>   # put a comment on the top of the trace file
   -trace-comment-file <file> # put file contents on the top of the trace file as comment
   -trace-grouped             # group MPI processes by location
@@ -95,6 +96,12 @@ while true; do
 
    "-trace")
       TRACE_ACTIVE="true"
+      shift 1
+   ;;
+
+   "-trace-ti")
+      TRACE_ACTIVE="true"
+      TRACE_TI_ACTIVE="true"
       shift 1
    ;;
 
@@ -341,10 +348,17 @@ APPLICATIONFOOT
 ##---------------------- SMPI TRACING OPTIONS ---------------------------------
 if [ -n "${TRACE_ACTIVE}" ]; then
   #define trace filename
-  if [ -z "${TRACE_FILENAME}" ]; then
-    TRACE_FILENAME="smpi_simgrid.trace"
+  if [ -n "${TRACE_TI_ACTIVE}" ]; then
+    if [ -z "${TRACE_FILENAME}" ]; then
+      TRACE_FILENAME="smpi_simgrid.txt"
+    fi
+    TRACEOPTIONS="--cfg=tracing:1 --cfg=tracing/filename:${TRACE_FILENAME} --cfg=tracing/smpi:1 --cfg=tracing/smpi/format:TI --cfg=tracing/smpi/computing:1"
+  else
+    if [ -z "${TRACE_FILENAME}" ]; then
+      TRACE_FILENAME="smpi_simgrid.trace"
+    fi
+    TRACEOPTIONS="--cfg=tracing:1 --cfg=tracing/filename:${TRACE_FILENAME} --cfg=tracing/smpi:1"
   fi
-  TRACEOPTIONS="--cfg=tracing:1 --cfg=tracing/filename:${TRACE_FILENAME} --cfg=tracing/smpi:1"
 
   if [ -n "${TRACE_COMMENT}" ]; then
     TRACEOPTIONS="${TRACEOPTIONS} --cfg=tracing/comment:${TRACE_COMMENT}"
