@@ -339,7 +339,7 @@ double surf_action_get_finish_time(surf_action_t action){
 }
 
 double surf_action_get_remains(surf_action_t action){
-  return action->m_remains;
+  return action->getRemains();
 }
 
 void surf_action_unref(surf_action_t action){
