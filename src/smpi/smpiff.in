@@ -35,6 +35,9 @@ then
       CFILE="${TMPFILE%.f}.c"
       #echo "$prefix/bin/smpif2c ${TMPFILE} && $prefix/bin/smpicc ${ARGS} ${CFILE} && rm ${CFILE} && rm ${TMPFILE}"
       $prefix/bin/smpif2c ${TMPFILE} && $prefix/bin/smpicc ${ARGS} ${CFILE} && rm ${CFILE} && rm ${TMPFILE}
+      # When the file is compiled with "-c" and no output file is specified with
+      # "-o", rename the output.
+      test -f ${CFILE%.c}.o && mv ${CFILE%.c}.o ${SRCFILE%.f}.o
    done
 else
    #echo "$prefix/bin/smpicc ${ARGS}"
