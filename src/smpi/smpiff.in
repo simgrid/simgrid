@@ -2,7 +2,7 @@
 prefix="@exec_prefix@"
 
 ARGS="-DMAIN__=user_main -Diargc_=smpi_process_argc -Dgetarg_=smpi_process_getarg"
-LINKARGS="-lf2c"
+LINKARGS="-lf2c -lm"
 SRCFILES=""
 
 while [ -n "$1" ]; do
