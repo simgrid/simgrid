@@ -167,8 +167,6 @@ static void remove_acceptance_pair(int pair_num){
 
   int raw_mem_set = (mmalloc_get_current_heap() == raw_heap);
 
-  fprintf(stderr, "Search acceptance pair %d\n", pair_num);
-
   MC_SET_RAW_MEM;
 
   unsigned int cursor = 0;
@@ -466,6 +464,7 @@ void MC_ddfs(){
   mc_pair_t next_pair = NULL;
   xbt_dynar_t prop_values = NULL;
   mc_visited_pair_t reached_pair = NULL;
+  int counter_example_depth = 0;
   
   if(xbt_fifo_size(mc_stack_liveness) < _sg_mc_max_depth){
 
@@ -476,6 +475,7 @@ void MC_ddfs(){
         if((current_pair->automaton_state->type == 1) || (current_pair->automaton_state->type == 2)){ 
           if((reached_pair = is_reached_acceptance_pair(current_pair->num, current_pair->automaton_state, current_pair->atomic_propositions)) == NULL){
 
+            counter_example_depth = xbt_fifo_size(mc_stack_liveness);
             XBT_INFO("*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*");
             XBT_INFO("|             ACCEPTANCE CYCLE            |");
             XBT_INFO("*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*");
@@ -483,6 +483,7 @@ void MC_ddfs(){
             MC_show_stack_liveness(mc_stack_liveness);
             MC_dump_stack_liveness(mc_stack_liveness);
             MC_print_statistics(mc_stats);
+            XBT_INFO("Counter-example depth : %d", counter_example_depth);
             xbt_abort();
 
           }
