@@ -397,7 +397,7 @@ void *smpi_shared_malloc(size_t size, const char *file, int line)
           case EEXIST:
             xbt_die("Please cleanup /dev/shm/%s", loc);
           default:
-            xbt_die("An unhandled error occured while opening %s: %s", loc, strerror(errno));
+            xbt_die("An unhandled error occured while opening %s. shm_open: %s", loc, strerror(errno));
         }
       }
       data = xbt_new(shared_data_t, 1);
@@ -406,7 +406,7 @@ void *smpi_shared_malloc(size_t size, const char *file, int line)
       data->loc = loc;
       mem = shm_map(fd, size, data);
       if (shm_unlink(loc) < 0) {
-        XBT_WARN("Could not early unlink %s: %s", loc, strerror(errno));
+        XBT_WARN("Could not early unlink %s. shm_unlink: %s", loc, strerror(errno));
       }
       xbt_dict_set(allocs, loc, data, NULL);
       XBT_DEBUG("Mapping %s at %p through %d", loc, mem, fd);
