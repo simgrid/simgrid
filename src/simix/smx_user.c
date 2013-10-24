@@ -183,13 +183,13 @@ void simcall_host_set_data(smx_host_t host, void *data)
 
 smx_action_t simcall_host_execute(const char *name, smx_host_t host,
                                     double computation_amount,
-                                    double priority, double bound)
+                                    double priority, double bound, unsigned long affinity_mask)
 {
   /* checking for infinite values */
   xbt_assert(isfinite(computation_amount), "computation_amount is not finite!");
   xbt_assert(isfinite(priority), "priority is not finite!");
   
-  return simcall_BODY_host_execute(name, host, computation_amount, priority, bound);
+  return simcall_BODY_host_execute(name, host, computation_amount, priority, bound, affinity_mask);
 }
 
 /**

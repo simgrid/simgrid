@@ -400,11 +400,11 @@ void SIMIX_host_set_data(smx_host_t host, void *data){
 }
 
 smx_action_t SIMIX_pre_host_execute(smx_simcall_t simcall,const char *name,
-    smx_host_t host, double computation_amount, double priority, double bound){
-  return SIMIX_host_execute(name, host, computation_amount, priority, bound);
+    smx_host_t host, double computation_amount, double priority, double bound, unsigned long affinity_mask){
+  return SIMIX_host_execute(name, host, computation_amount, priority, bound, affinity_mask);
 }
 smx_action_t SIMIX_host_execute(const char *name,
-    smx_host_t host, double computation_amount, double priority, double bound){
+    smx_host_t host, double computation_amount, double priority, double bound, unsigned long affinity_mask){
 
   /* alloc structures and initialize */
   smx_action_t action = xbt_mallocator_get(simix_global->action_mallocator);
@@ -431,6 +431,9 @@ smx_action_t SIMIX_host_execute(const char *name,
       ws_model->set_bound(action->execution.surf_exec, SIMIX_host_get_speed(host));
     else
       ws_model->set_bound(action->execution.surf_exec, bound);
+
+    if (affinity_mask != 0)
+      ws_model->set_affinity(action->execution.surf_exec, host, affinity_mask);
   }
 
   XBT_DEBUG("Create execute action %p", action);

@@ -310,7 +310,7 @@ XBT_PUBLIC(void) simcall_host_set_data(smx_host_t host, void *data);
 
 XBT_PUBLIC(smx_action_t) simcall_host_execute(const char *name, smx_host_t host,
                                                 double computation_amount,
-                                                double priority, double bound);
+                                                double priority, double bound, unsigned long affinity_mask);
 XBT_PUBLIC(smx_action_t) simcall_host_parallel_execute(const char *name,
                                                      int host_nb,
                                                      smx_host_t *host_list,
