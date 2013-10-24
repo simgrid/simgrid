@@ -159,13 +159,10 @@ if(NOT enable_memcheck)
   ADD_TEST(msg-masterslave-mailbox-thread       ${TESH_COMMAND} ${TESH_OPTION} --cfg contexts/factory:thread --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg --cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/masterslave/masterslave_mailbox_crosstraffic.tesh)
   ADD_TEST(msg-masterslave-cpu-ti-thread        ${TESH_COMMAND} ${TESH_OPTION} --cfg contexts/factory:thread --setenv bindir=${CMAKE_BINARY_DIR}/examples/msg/masterslave --cd ${CMAKE_HOME_DIRECTORY}/examples/msg masterslave/masterslave_cpu_ti_crosstraffic.tesh)
 
-  ADD_TEST(msg-masterslave-virtual-machines     ${TESH_COMMAND} ${TESH_OPTION} --cfg contexts/factory:thread --setenv bindir=${CMAKE_BINARY_DIR}/examples/msg --cd ${CMAKE_HOME_DIRECTORY}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/cloud/masterslave_virtual_machines.tesh)
+  ADD_TEST(msg-masterslave-vivaldi-thread       ${TESH_COMMAND} ${TESH_OPTION} --cfg contexts/factory:thread --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg --cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/masterslave/masterslave_vivaldi.tesh)
 
-  ADD_TEST(msg-energy-pstates-thread            ${TESH_COMMAND} ${TESH_OPTION} --cfg contexts/factory:thread --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg --cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/energy/e1/pstate.tesh)
-  ADD_TEST(msg-energy-consumption-thread        ${TESH_COMMAND} ${TESH_OPTION} --cfg contexts/factory:thread --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg --cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/energy/e2/energy_consumption.tesh)
-  ADD_TEST(msg-energy-concurrent-tasks-thread   ${TESH_COMMAND} ${TESH_OPTION} --cfg contexts/factory:thread --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg --cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/energy/e3/concurrent_tasks.tesh)
-  ADD_TEST(msg-storage                          ${TESH_COMMAND} ${TESH_OPTION} --setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite --cd ${CMAKE_BINARY_DIR}/teshsuite ${CMAKE_HOME_DIRECTORY}/teshsuite/msg/storage/storage.tesh)
-  
+  ADD_TEST(msg-masterslave-virtual-machines-thread ${TESH_COMMAND} ${TESH_OPTION} --cfg contexts/factory:thread --setenv bindir=${CMAKE_BINARY_DIR}/examples/msg --cd ${CMAKE_HOME_DIRECTORY}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/cloud/masterslave_virtual_machines.tesh)
+
   if(CONTEXT_UCONTEXT)
     ADD_TEST(msg-sendrecv-CLM03-ucontext        ${TESH_COMMAND} ${TESH_OPTION} --cfg contexts/factory:ucontext --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg --cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/sendrecv/sendrecv_CLM03.tesh)
     ADD_TEST(msg-sendrecv-Vegas-ucontext        ${TESH_COMMAND} ${TESH_OPTION} --cfg contexts/factory:ucontext --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg --cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/sendrecv/sendrecv_Vegas.tesh)
@@ -186,10 +183,9 @@ if(NOT enable_memcheck)
     ADD_TEST(msg-masterslave-mailbox-ucontext   ${TESH_COMMAND} ${TESH_OPTION} --cfg contexts/factory:ucontext --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg --cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/masterslave/masterslave_mailbox_crosstraffic.tesh)
     ADD_TEST(msg-masterslave-cpu-ti-ucontext    ${TESH_COMMAND} ${TESH_OPTION} --cfg contexts/factory:ucontext --setenv bindir=${CMAKE_BINARY_DIR}/examples/msg/masterslave --cd ${CMAKE_HOME_DIRECTORY}/examples/msg masterslave/masterslave_cpu_ti_crosstraffic.tesh)
 
-    ADD_TEST(msg-energy-pstates-ucontext        ${TESH_COMMAND} ${TESH_OPTION} --cfg contexts/factory:ucontext --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg --cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/energy/e1/pstate.tesh)
-    ADD_TEST(msg-energy-consumption-ucontext    ${TESH_COMMAND} ${TESH_OPTION} --cfg contexts/factory:ucontext --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg --cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/energy/e2/energy_consumption.tesh)
-    ADD_TEST(msg-energy-concurrent-tasks-ucontext ${TESH_COMMAND} ${TESH_OPTION} --cfg contexts/factory:ucontext --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg --cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/energy/e3/concurrent_tasks.tesh)
+    ADD_TEST(msg-masterslave-vivaldi-ucontext   ${TESH_COMMAND} ${TESH_OPTION} --cfg contexts/factory:ucontext --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg --cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/masterslave/masterslave_vivaldi.tesh)
 
+    ADD_TEST(msg-masterslave-virtual-machines-ucontext ${TESH_COMMAND} ${TESH_OPTION} --cfg contexts/factory:ucontext --setenv bindir=${CMAKE_BINARY_DIR}/examples/msg --cd ${CMAKE_HOME_DIRECTORY}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/cloud/masterslave_virtual_machines.tesh)
   endif()
 
   if(HAVE_RAWCTX)
@@ -212,21 +208,41 @@ if(NOT enable_memcheck)
     ADD_TEST(msg-masterslave-mailbox-raw        ${TESH_COMMAND} ${TESH_OPTION} --cfg contexts/factory:raw --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg --cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/masterslave/masterslave_mailbox_crosstraffic.tesh)
     ADD_TEST(msg-masterslave-cpu-ti-raw         ${TESH_COMMAND} ${TESH_OPTION} --cfg contexts/factory:raw --setenv bindir=${CMAKE_BINARY_DIR}/examples/msg/masterslave --cd ${CMAKE_HOME_DIRECTORY}/examples/msg masterslave/masterslave_cpu_ti_crosstraffic.tesh)
 
+    ADD_TEST(msg-masterslave-vivaldi-raw        ${TESH_COMMAND} ${TESH_OPTION} --cfg contexts/factory:raw --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg --cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/masterslave/masterslave_vivaldi.tesh)
+
+    ADD_TEST(msg-masterslave-virtual-machines-raw ${TESH_COMMAND} ${TESH_OPTION} --cfg contexts/factory:raw --setenv bindir=${CMAKE_BINARY_DIR}/examples/msg --cd ${CMAKE_HOME_DIRECTORY}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/cloud/masterslave_virtual_machines.tesh)
+  endif()
+
+  ADD_TEST(msg-energy-pstates-thread            ${TESH_COMMAND} ${TESH_OPTION} --cfg contexts/factory:thread --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg --cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/energy/e1/pstate.tesh)
+  ADD_TEST(msg-energy-consumption-thread        ${TESH_COMMAND} ${TESH_OPTION} --cfg contexts/factory:thread --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg --cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/energy/e2/energy_consumption.tesh)
+  ADD_TEST(msg-energy-concurrent-tasks-thread   ${TESH_COMMAND} ${TESH_OPTION} --cfg contexts/factory:thread --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg --cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/energy/e3/concurrent_tasks.tesh)
+
+  if(CONTEXT_UCONTEXT)
+    ADD_TEST(msg-energy-pstates-ucontext        ${TESH_COMMAND} ${TESH_OPTION} --cfg contexts/factory:ucontext --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg --cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/energy/e1/pstate.tesh)
+    ADD_TEST(msg-energy-consumption-ucontext    ${TESH_COMMAND} ${TESH_OPTION} --cfg contexts/factory:ucontext --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg --cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/energy/e2/energy_consumption.tesh)
+    ADD_TEST(msg-energy-concurrent-tasks-ucontext ${TESH_COMMAND} ${TESH_OPTION} --cfg contexts/factory:ucontext --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg --cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/energy/e3/concurrent_tasks.tesh)
+  endif()
+
+  if(HAVE_RAWCTX)
     ADD_TEST(msg-energy-pstates-raw             ${TESH_COMMAND} ${TESH_OPTION} --cfg contexts/factory:raw --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg --cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/energy/e1/pstate.tesh)
     ADD_TEST(msg-energy-consumption-raw         ${TESH_COMMAND} ${TESH_OPTION} --cfg contexts/factory:raw --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg --cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/energy/e2/energy_consumption.tesh)
     ADD_TEST(msg-energy-concurrent-tasks-raw    ${TESH_COMMAND} ${TESH_OPTION} --cfg contexts/factory:raw --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg --cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/energy/e3/concurrent_tasks.tesh)
-
   endif()
 
-  ADD_TEST(msg-masterslave-vivaldi-thread       ${TESH_COMMAND} ${TESH_OPTION} --cfg contexts/factory:thread --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg --cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/masterslave/masterslave_vivaldi.tesh)
-  ADD_TEST(msg-token-ring-thread                ${TESH_COMMAND} ${TESH_OPTION} --cfg contexts/factory:thread --setenv srcdir=${CMAKE_HOME_DIRECTORY} --cd ${CMAKE_BINARY_DIR}/examples/msg/token_ring ${CMAKE_HOME_DIRECTORY}/examples/msg/token_ring/token_ring.tesh)
-  if(HAVE_RAWCTX)
-    ADD_TEST(msg-masterslave-vivaldi-raw        ${TESH_COMMAND} ${TESH_OPTION} --cfg contexts/factory:raw --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg --cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/masterslave/masterslave_vivaldi.tesh)
-    ADD_TEST(msg-token-ring-raw                 ${TESH_COMMAND} ${TESH_OPTION} --cfg contexts/factory:raw --setenv srcdir=${CMAKE_HOME_DIRECTORY} --cd ${CMAKE_BINARY_DIR}/examples/msg/token_ring ${CMAKE_HOME_DIRECTORY}/examples/msg/token_ring/token_ring.tesh)
-  endif()
+  ADD_TEST(msg-storage-thread                   ${TESH_COMMAND} ${TESH_OPTION} --cfg contexts/factory:thread --setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite --cd ${CMAKE_BINARY_DIR}/teshsuite ${CMAKE_HOME_DIRECTORY}/teshsuite/msg/storage/storage.tesh)
   if(CONTEXT_UCONTEXT)
-    ADD_TEST(msg-masterslave-vivaldi-ucontext   ${TESH_COMMAND} ${TESH_OPTION} --cfg contexts/factory:ucontext --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg --cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/masterslave/masterslave_vivaldi.tesh)
+    ADD_TEST(msg-storage-ucontext               ${TESH_COMMAND} ${TESH_OPTION} --cfg contexts/factory:ucontext --setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite --cd ${CMAKE_BINARY_DIR}/teshsuite ${CMAKE_HOME_DIRECTORY}/teshsuite/msg/storage/storage.tesh)
+  endif()
+  if(HAVE_RAWCTX)
+    ADD_TEST(msg-storage-raw                    ${TESH_COMMAND} ${TESH_OPTION} --cfg contexts/factory:raw --setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite --cd ${CMAKE_BINARY_DIR}/teshsuite ${CMAKE_HOME_DIRECTORY}/teshsuite/msg/storage/storage.tesh)
+  endif()
+
+  ADD_TEST(msg-token-ring-thread                ${TESH_COMMAND} ${TESH_OPTION} --cfg contexts/factory:thread --setenv srcdir=${CMAKE_HOME_DIRECTORY} --cd ${CMAKE_BINARY_DIR}/examples/msg/token_ring ${CMAKE_HOME_DIRECTORY}/examples/msg/token_ring/token_ring.tesh)
+  if(CONTEXT_UCONTEXT)
     ADD_TEST(msg-token-ring-ucontext            ${TESH_COMMAND} ${TESH_OPTION} --cfg contexts/factory:ucontext --setenv srcdir=${CMAKE_HOME_DIRECTORY} --cd ${CMAKE_BINARY_DIR}/examples/msg/token_ring ${CMAKE_HOME_DIRECTORY}/examples/msg/token_ring/token_ring.tesh)
+  endif()
+  if(HAVE_RAWCTX)
+    ADD_TEST(msg-token-ring-raw                 ${TESH_COMMAND} ${TESH_OPTION} --cfg contexts/factory:raw --setenv srcdir=${CMAKE_HOME_DIRECTORY} --cd ${CMAKE_BINARY_DIR}/examples/msg/token_ring ${CMAKE_HOME_DIRECTORY}/examples/msg/token_ring/token_ring.tesh)
   endif()
 
   ADD_TEST(msg-migration-thread                 ${TESH_COMMAND} ${TESH_OPTION} --cfg contexts/factory:thread --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg --cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/migration/migration.tesh)
