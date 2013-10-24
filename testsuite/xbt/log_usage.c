@@ -1,6 +1,6 @@
 /* log_usage - A test of normal usage of the log facilities                 */
 
-/* Copyright (c) 2004-2007, 2009-2012. The SimGrid Team.
+/* Copyright (c) 2004-2007, 2009-2013. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -38,7 +38,9 @@ int main(int argc, char **argv)
   dolog("");
   dolog(" ");
   dolog(" test.thres:info root.thres:info  ");
+#ifndef NDEBUG
   dolog(" test.thres:debug ");
+#endif
   dolog(" test.thres:verbose root.thres:error ");
   dolog(" test.thres:critical ");
 
