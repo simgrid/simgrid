@@ -68,6 +68,26 @@ void *cpu_cas01_create_resource(const char *name, double power_peak,
       lmm_constraint_new(cpu_model->model_private->maxmin_system, cpu,
                          cpu->core * cpu->power_scale * cpu->power_peak);
 
+  /* Note (hypervisor): we create a constraint object for each CPU core, which
+   * is used for making a contraint problem of CPU affinity.
+   **/
+  {
+    /* At now, we assume that a VM does not have a multicore CPU. */
+    if (core > 1)
+      xbt_assert(cpu_model == surf_cpu_model_pm);
+
+    cpu->constraint_core = xbt_new(lmm_constraint_t, core);
+
+    unsigned long i;
+    for (i = 0; i < core; i++) {
+      /* just for a unique id, never used as a string. */
+      void *cnst_id = bprintf("%s:%lu", name, i);
+      cpu->constraint_core[i] =
+        lmm_constraint_new(cpu_model->model_private->maxmin_system, cnst_id,
+            cpu->power_scale * cpu->power_peak);
+    }
+  }
+
   xbt_lib_set(host_lib, name, SURF_CPU_LEVEL, cpu);
 
   return xbt_lib_get_elm_or_null(host_lib, name);;
@@ -132,6 +152,11 @@ static int cpu_resource_used(void *resource)
 {
   surf_model_t cpu_model = ((surf_resource_t) resource)->model;
 
+  /* Note (hypervisor): we do not need to look up constraint_core[i] here. Even
+   * when a task is pinned or not, its variable object is always linked to the
+   * basic contraint object.
+   **/
+
   return lmm_constraint_used(cpu_model->model_private->maxmin_system,
                              ((cpu_Cas01_t) resource)->constraint);
 }
@@ -174,6 +199,10 @@ static void cpu_update_resource_state(void *id,
   surf_watched_hosts();
 
   if (event_type == cpu->power_event) {
+    /* TODO (Hypervisor): do the same thing for constraint_core[i] */
+    XBT_CRITICAL("FIXME: add power scaling code also for constraint_core[i]");
+    xbt_abort();
+
     cpu->power_scale = value;
     lmm_update_constraint_bound(cpu_model->model_private->maxmin_system, cpu->constraint,
                                 cpu->core * cpu->power_scale *
@@ -193,6 +222,10 @@ static void cpu_update_resource_state(void *id,
     if (tmgr_trace_event_free(event_type))
       cpu->power_event = NULL;
   } else if (event_type == cpu->state_event) {
+    /* TODO (Hypervisor): do the same thing for constraint_core[i] */
+    XBT_CRITICAL("FIXME: add state change code also for constraint_core[i]");
+    xbt_abort();
+
     if (value > 0)
       cpu->state_current = SURF_RESOURCE_ON;
     else {

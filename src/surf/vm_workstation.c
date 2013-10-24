@@ -194,6 +194,17 @@ static void vm_ws_destroy(void *ind_vm_workstation)
    * free other objects than lmm_constraint. */
   surf_model_t cpu_model = cpu->generic_resource.model;
   lmm_constraint_free(cpu_model->model_private->maxmin_system, cpu->constraint);
+  {
+    unsigned long i;
+    for (i = 0; i < cpu->core; i++) {
+      void *cnst_id = cpu->constraint_core[i]->id;
+      lmm_constraint_free(cpu_model->model_private->maxmin_system, cpu->constraint_core[i]);
+      xbt_free(cnst_id);
+    }
+
+    xbt_free(cpu->constraint_core);
+  }
+
   surf_resource_free(cpu);
 
   /* Free the network resource of the VM. */

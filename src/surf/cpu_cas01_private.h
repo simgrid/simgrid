@@ -18,6 +18,10 @@ typedef struct cpu_Cas01 {
   e_surf_resource_state_t state_current;
   tmgr_trace_event_t state_event;
   lmm_constraint_t constraint;
+
+  /* Note (hypervisor): */
+  lmm_constraint_t *constraint_core;
+
 } s_cpu_Cas01_t, *cpu_Cas01_t;
 
 void *cpu_cas01_create_resource(const char *name,
