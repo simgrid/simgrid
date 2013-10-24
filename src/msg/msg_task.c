@@ -63,6 +63,7 @@ msg_task_t MSG_task_create(const char *name, double compute_duration,
   simdata->source = NULL;
   simdata->priority = 1.0;
   simdata->bound = 0;
+  simdata->affinity_mask = 0;
   simdata->rate = -1.0;
   simdata->isused = 0;
 
@@ -459,4 +460,19 @@ void MSG_task_set_bound(msg_task_t task, double bound)
   if (task->simdata->compute)
     simcall_host_execution_set_bound(task->simdata->compute,
                                       task->simdata->bound);
+}
+
+
+/** \ingroup m_task_management
+ * \brief Changes the CPU affinity of a computation task.
+ *
+ */
+void MSG_task_set_affinity(msg_task_t task, msg_host_t host, unsigned long mask)
+{
+  xbt_assert(task, "Invalid parameter");
+  xbt_assert(task->simdata, "Invalid parameter");
+
+  task->simdata->affinity_mask = mask;
+  if (task->simdata->compute)
+    simcall_host_execution_set_affinity(task->simdata->compute, host, mask);
 }

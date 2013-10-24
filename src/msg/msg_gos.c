@@ -86,7 +86,9 @@ msg_error_t MSG_parallel_task_execute(msg_task_t task)
                                               p_simdata->m_host,
                                               simdata->computation_amount,
                                               simdata->priority,
-                                              simdata->bound);
+                                              simdata->bound,
+                                              simdata->affinity_mask
+                                              );
 
     }
 #ifdef HAVE_TRACING

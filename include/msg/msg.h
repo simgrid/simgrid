@@ -215,6 +215,7 @@ XBT_PUBLIC(msg_error_t) MSG_task_execute(msg_task_t task);
 XBT_PUBLIC(msg_error_t) MSG_parallel_task_execute(msg_task_t task);
 XBT_PUBLIC(void) MSG_task_set_priority(msg_task_t task, double priority);
 XBT_PUBLIC(void) MSG_task_set_bound(msg_task_t task, double bound);
+XBT_PUBLIC(void) MSG_task_set_affinity(msg_task_t task, msg_host_t host, unsigned long mask);
 
 XBT_PUBLIC(msg_error_t) MSG_process_sleep(double nb_sec);
 
