@@ -71,8 +71,9 @@ void surf_network_model_init_SMPI(void)
   if (surf_network_model)
     return;
   surf_network_model = new NetworkSmpiModel();
-
+  net_define_callbacks();
   xbt_dynar_push(model_list, &surf_network_model);
+  //network_solve = lmm_solve;
 
   xbt_cfg_setdefault_double(_sg_cfg_set, "network/sender_gap", 10e-6);
   xbt_cfg_setdefault_double(_sg_cfg_set, "network/weight_S", 8775);
@@ -139,7 +140,7 @@ void NetworkSmpiModel::gapRemove(ActionLmmPtr lmm_action)
   }
 }
 
-double NetworkSmpiModel::latencyFactor(double size)
+double NetworkSmpiModel::bandwidthFactor(double size)
 {
   if (!smpi_bw_factor)
     smpi_bw_factor =
@@ -159,7 +160,7 @@ double NetworkSmpiModel::latencyFactor(double size)
 
   return current;
 }
-double NetworkSmpiModel::bandwidthFactor(double size)
+double NetworkSmpiModel::latencyFactor(double size)
 {
   if (!smpi_lat_factor)
     smpi_lat_factor =

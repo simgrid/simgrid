@@ -43,7 +43,7 @@ void CpuModel::updateActionsStateLazy(double now, double delta)
     //without losing the event ascending order (considering all CPU's)
     double smaller = -1;
     xbt_swag_foreach(_action, p_runningActionSet) {
-      action = (ActionLmmPtr) _action;
+      action = dynamic_cast<ActionLmmPtr>(static_cast<ActionPtr>(_action));
         if (smaller < 0) {
           smaller = action->m_lastUpdate;
           continue;

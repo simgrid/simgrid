@@ -29,7 +29,7 @@ typedef NetworkCm02ActionLmm *NetworkCm02ActionLmmPtr;
  *********/
 extern NetworkCm02ModelPtr surf_network_model;
 
-
+void net_define_callbacks(void);
 
 /*********
  * Model *
@@ -56,9 +56,9 @@ public:
   xbt_dynar_t getRoute(RoutingEdgePtr src, RoutingEdgePtr dst); //FIXME: kill field? That is done by the routing nowadays
   //FIXME: virtual void addTraces() =0;
   void (*f_networkSolve)(lmm_system_t) = lmm_solve;
-  double latencyFactor(double size);
-  double bandwidthFactor(double size);
-  double bandwidthConstraint(double rate, double bound, double size);
+  virtual double latencyFactor(double size);
+  virtual double bandwidthFactor(double size);
+  virtual double bandwidthConstraint(double rate, double bound, double size);
   bool m_haveGap = false;
 };
 

@@ -109,7 +109,7 @@ static void net_add_traces(void){
   }
 }
 
-static void net_define_callbacks(void)
+void net_define_callbacks(void)
 {
   /* Figuring out the network links */
   sg_platf_link_add_cb(net_parse_link_init);

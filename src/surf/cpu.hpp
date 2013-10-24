@@ -69,13 +69,15 @@ public:
 class CpuAction : virtual public Action {
 public:
   CpuAction(){};
-  CpuAction(ModelPtr model, double cost, bool failed): Action(model, cost, failed) {};
+  CpuAction(ModelPtr model, double cost, bool failed)
+  : Action(model, cost, failed) {};
 };
 
 class CpuActionLmm : public ActionLmm, public CpuAction {
 public:
   CpuActionLmm(){};
-  CpuActionLmm(ModelPtr model, double cost, bool failed): ActionLmm(model, cost, failed), CpuAction(model, cost, failed) {};
+  CpuActionLmm(ModelPtr model, double cost, bool failed)
+  : Action(model, cost, failed), ActionLmm(model, cost, failed), CpuAction(model, cost, failed) {};
   void updateRemainingLazy(double now);
 };
 
