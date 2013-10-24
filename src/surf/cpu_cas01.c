@@ -268,13 +268,13 @@ static void cpu_action_set_affinity(surf_action_t action, void *cpu, unsigned lo
 
   unsigned long i;
   for (i = 0; i < CPU->core; i++) {
+    XBT_INFO("clear affinity %p to cpu-%lu@%s", action, i, CPU->generic_resource.name);
+    lmm_shrink(cpu_model->model_private->maxmin_system, CPU->constraint_core[i], var_obj);
+
     unsigned long has_affinity = (1UL << i) & mask;
     if (has_affinity) {
       XBT_INFO("set affinity %p to cpu-%lu@%s", action, i, CPU->generic_resource.name);
       lmm_expand(cpu_model->model_private->maxmin_system, CPU->constraint_core[i], var_obj, 1.0);
-    } else {
-      XBT_INFO("clear affinity %p to cpu-%lu@%s", action, i, CPU->generic_resource.name);
-      lmm_shrink(cpu_model->model_private->maxmin_system, CPU->constraint_core[i], var_obj);
     }
   }
 
