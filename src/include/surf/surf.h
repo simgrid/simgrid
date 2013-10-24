@@ -382,6 +382,12 @@ typedef struct surf_model {
   void (*set_max_duration) (surf_action_t action, double duration);     /**< Set the max duration of an action*/
   void (*set_priority) (surf_action_t action, double priority);     /**< Set the priority of an action */
   void (*set_bound) (surf_action_t action, double bound);     /**< Set the bound (the maximum CPU utilization) of an action */
+
+  /* Note (hypervisor): set_affinity() may be used only in CPU models. It might
+   * be better to move this member to the extension field.
+   **/
+  void (*set_affinity) (surf_action_t action, void *workstation, unsigned long mask);     /**< Set the CPU affinity of an action */
+
 #ifdef HAVE_TRACING
   void (*set_category) (surf_action_t action, const char *category); /**< Set the category of an action */
 #endif

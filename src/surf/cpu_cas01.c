@@ -255,6 +255,36 @@ static void cpu_update_resource_state(void *id,
   return;
 }
 
+static void cpu_action_set_affinity(surf_action_t action, void *cpu, unsigned long mask)
+{
+  lmm_variable_t var_obj = ((surf_action_lmm_t) action)->variable;
+
+  surf_model_t cpu_model = action->model_obj;
+  xbt_assert(cpu_model->type == SURF_MODEL_TYPE_CPU);
+  cpu_Cas01_t CPU = surf_cpu_resource_priv(cpu);
+
+  XBT_IN("(%p,%lx)", action, mask);
+
+
+  unsigned long i;
+  for (i = 0; i < CPU->core; i++) {
+    unsigned long has_affinity = (1UL << i) & mask;
+    if (has_affinity) {
+      XBT_INFO("set affinity %p to cpu-%lu@%s", action, i, CPU->generic_resource.name);
+      lmm_expand(cpu_model->model_private->maxmin_system, CPU->constraint_core[i], var_obj, 1.0);
+    } else {
+      XBT_INFO("clear affinity %p to cpu-%lu@%s", action, i, CPU->generic_resource.name);
+      lmm_shrink(cpu_model->model_private->maxmin_system, CPU->constraint_core[i], var_obj);
+    }
+  }
+
+  if (cpu_model->model_private->update_mechanism == UM_LAZY) {
+    XBT_WARN("FIXME (hypervisor): Do we need to do something for the LAZY mode?");
+  }
+
+  XBT_OUT();
+}
+
 static surf_action_t cpu_execute(void *cpu, double size)
 {
   surf_action_cpu_Cas01_t action = NULL;
@@ -279,7 +309,7 @@ static surf_action_t cpu_execute(void *cpu, double size)
   GENERIC_LMM_ACTION(action).variable =
       lmm_variable_new(cpu_model->model_private->maxmin_system, action,
                        GENERIC_ACTION(action).priority,
-                       CPU->power_scale * CPU->power_peak, 1);
+                       CPU->power_scale * CPU->power_peak, 1 + CPU->core); // the basic constraint plus core-specific constraints
   if (cpu_model->model_private->update_mechanism == UM_LAZY) {
     GENERIC_LMM_ACTION(action).index_heap = -1;
     GENERIC_LMM_ACTION(action).last_update = surf_get_clock();
@@ -430,6 +460,7 @@ static surf_model_t surf_cpu_model_init_cas01(void)
   cpu_model->set_max_duration = surf_action_set_max_duration;
   cpu_model->set_priority = surf_action_set_priority;
   cpu_model->set_bound = surf_action_set_bound;
+  cpu_model->set_affinity = cpu_action_set_affinity;
 #ifdef HAVE_TRACING
   cpu_model->set_category = surf_action_set_category;
 #endif
