@@ -52,9 +52,6 @@ sub trim($)
     return $string;
 }
 
-# make sure we received a tesh file
-scalar @ARGV > 0 || die "Usage:\n  tesh [*options*] *tesh_file*\n";
-
 #Add current directory to path
 $ENV{PATH} = "$ENV{PATH}:.";
 
