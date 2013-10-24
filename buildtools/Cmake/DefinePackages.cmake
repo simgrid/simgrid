@@ -10,6 +10,7 @@ set(EXTRA_DIST
   src/include/simgrid/sg_config.h
   src/include/smpi/smpi_interface.h
   src/include/surf/datatypes.h
+  src/include/surf/maxmin.h 
   src/include/surf/random_mgr.h
   src/include/surf/surf.h
   src/include/surf/surf_resource.h
@@ -47,15 +48,13 @@ set(EXTRA_DIST
   src/surf/gtnets/gtnets_interface.h
   src/surf/gtnets/gtnets_simulator.h
   src/surf/gtnets/gtnets_topology.h
-  #src/surf/solver.hpp
-  #src/surf/solver.h
   src/surf/maxmin_private.h
-  #src/surf/maxmin_private_.h
-  src/surf/network_gtnets_private.h
-  #src/surf/network_gtnets.hpp
+  #src/surf/network_gtnets_private.h
+  src/surf/network_gtnets.hpp
   src/surf/network_ns3_private.h
   src/surf/network_private.h
   src/surf/network.hpp
+  src/surf/network_smpi.hpp
   src/surf/network_constant.hpp
   src/surf/ns3/my-point-to-point-helper.h
   src/surf/ns3/ns3_interface.h
@@ -64,13 +63,24 @@ set(EXTRA_DIST
   src/surf/platf_generator_private.h
   src/surf/simgrid.dtd
   src/surf/simgrid_dtd.c
+  src/surf/storage.hpp
   src/surf/storage_private.h
-  src/surf/surf_c.h
   src/surf/surf.hpp
   src/surf/surf_private.h
   src/surf/surf_routing_private.h
+  src/surf/surf_routing_private.hpp
+  src/surf/surf_routing.hpp
+  src/surf/surf_routing_cluster.hpp
+  src/surf/surf_routing_dijkstra.hpp
+  src/surf/surf_routing_floyd.hpp
+  src/surf/surf_routing_full.hpp
+  src/surf/surf_routing_generic.hpp
+  src/surf/surf_routing_none.hpp
+  src/surf/surf_routing_vivaldi.hpp
   src/surf/surfxml_parse.c
   src/surf/trace_mgr_private.h
+  src/surf/workstation.hpp
+  src/surf/workstation_ptask_L07.hpp
   src/win32/config.h
   src/xbt/automaton/automaton_lexer.yy.c
   src/xbt/automaton/parserPromela.lex
@@ -280,7 +290,7 @@ set(GTNETS_SRC
   src/surf/gtnets/gtnets_interface.cc
   src/surf/gtnets/gtnets_simulator.cc
   src/surf/gtnets/gtnets_topology.cc
-  src/surf/network_gtnets.c
+  src/surf/network_gtnets.cpp
   )
 
 set(NS3_SRC
@@ -385,11 +395,9 @@ set(SIMIX_SRC
 
 set(SURF_SRC
   ${SURF_SRC}
-  src/surf/new_model.c
   )
 set(EXTRA_DIST
   ${EXTRA_DIST}
-  src/surf/new_model_private.h
   )
 #* ****************************************************************************************** *#
 

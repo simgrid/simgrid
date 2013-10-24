@@ -597,13 +597,6 @@ XBT_PUBLIC(void) surf_workstation_model_init_ptask_L07(void);
 XBT_PUBLIC_DATA(s_surf_model_description_t)
     surf_workstation_model_description[];
 
-/*******************************************
- *  TUTORIAL: New model
- */
-XBT_PUBLIC(void) surf_new_model_init_default(void);
-
-XBT_PUBLIC_DATA(s_surf_model_description_t) surf_new_model_description[];
-
 /*******************************************/
 
 /** \ingroup SURF_models
@@ -672,6 +665,7 @@ XBT_PUBLIC(double) surf_solve(double max_date);
  *
  *  Return the current time in millisecond.
  */
+
 XBT_PUBLIC(double) surf_get_clock(void);
 
 /** \ingroup SURF_simulation

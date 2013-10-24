@@ -154,16 +154,6 @@ s_surf_model_description_t surf_storage_model_description[] = {
   {NULL, NULL,  NULL}      /* this array must be NULL terminated */
 };
 
-/* ********************************************************************* */
-/* TUTORIAL: New model                                                   */
-s_surf_model_description_t surf_new_model_description[] = {
-  {"default",
-   "Tutorial model.",
-   surf_new_model_init_default},
-  {NULL, NULL,  NULL}      /* this array must be NULL terminated */
-};
-/* ********************************************************************* */
-
 #ifdef CONTEXT_THREADS
 static xbt_parmap_t surf_parmap = NULL; /* parallel map on models */
 #endif
@@ -174,7 +164,7 @@ static double min;               /* duration determined by surf_solve */
 
 double NOW = 0;
 
-XBT_INLINE double surf_get_clock(void)
+double surf_get_clock(void)
 {
   return NOW;
 }

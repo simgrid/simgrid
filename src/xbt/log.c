@@ -681,7 +681,6 @@ static void xbt_log_connect_categories(void)
   XBT_LOG_CONNECT(surf_lagrange_dichotomy);
   XBT_LOG_CONNECT(surf_maxmin);
   XBT_LOG_CONNECT(surf_network);
-  XBT_LOG_CONNECT(surf_new_model);
 #ifdef HAVE_GTNETS
   XBT_LOG_CONNECT(surf_network_gtnets);
   XBT_LOG_CONNECT(surf_network_gtnets_interface);
