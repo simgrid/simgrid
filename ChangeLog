@@ -4,7 +4,7 @@ SimGrid (3.10pre1) unstable; urgency=low
  * Reintegrate Java to the main archive as desynchronizing these
    package is not acceptable anymore (Java is now considered stable)
  * Add explicit synchronization facilities through semaphores
- * Bugfix: Task.setDataSize() only changed the C world, not the value
+ * Bug fix: Task.setDataSize() only changed the C world, not the value
    cached in the Java world
 
  MSG:
@@ -12,7 +12,7 @@ SimGrid (3.10pre1) unstable; urgency=low
    this part of MSG was not considered as production grade either.
  * Add explicit synchronization facilities through semaphores
  * Add a new function MSG_host_get_process_list()
- * Preliminary DVFS support (see /examples/msg/energy for details)
+ * Preliminary DVFS support (see examples/msg/energy/ for details)
 
  SMPI:
  * SMPI is now included directly in the libsimgrid as the windows
@@ -25,7 +25,7 @@ SimGrid (3.10pre1) unstable; urgency=low
    - The replay tool now supports traces produce either by TAU or a modified
      version of MPE.
    - Bug Fix: the compute part of the reduce action is now taken into account.
- * smpirun generates the hostfile if needed (with given hostcount and platform)
+ * smpirun generates the host file if needed (with given host count and platform)
  * Integration of more than 100 STAR-MPI, MPICH, OpenMPI collective algorithms
    - allows to select one in particular with --cfg=smpi/coll_name:algorithm
    - allows to use the decision logic of OpenMPI(1.7) or MPICH(3.0.4) by setting
@@ -68,12 +68,12 @@ SimGrid (3.10pre1) unstable; urgency=low
  * Our own implementation of getline is renamed xbt_getline, and gets
    used even if the OS provide a getline(). This should reduce the
    configuration complexity by using the same code on all platforms.
- * new xbt_cfg_elm_boolean type
+ * New type: xbt_cfg_elm_boolean.
  * Allow to disable SimGrid cleanups at exit from command line option.
    There are situations where one may want a simulation to end with an exit.
    Unfortunately, calling exit may cause SimGrid to segfault, which is quite
    annoying when scripting around the simulator. Adding a
-   --cfg=clean_atexit:yes allows to circumvent this issue.
+   --cfg=clean_atexit:no allows to circumvent this issue.
 
 -- Mon Oct 7 2013 Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
 
