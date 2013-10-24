@@ -50,6 +50,8 @@ XBT_PUBLIC(void) lmm_variable_free(lmm_system_t sys, lmm_variable_t var);
 XBT_PUBLIC(double) lmm_variable_getvalue(lmm_variable_t var);
 XBT_PUBLIC(double) lmm_variable_getbound(lmm_variable_t var);
 
+XBT_PUBLIC(void) lmm_shrink(lmm_system_t sys, lmm_constraint_t cnst,
+                            lmm_variable_t var);
 XBT_PUBLIC(void) lmm_expand(lmm_system_t sys, lmm_constraint_t cnst,
                             lmm_variable_t var, double value);
 void lmm_expand_add(lmm_system_t sys, lmm_constraint_t cnst,

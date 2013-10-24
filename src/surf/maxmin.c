@@ -258,6 +258,62 @@ XBT_INLINE double lmm_variable_getbound(lmm_variable_t var)
   return (var->bound);
 }
 
+void lmm_shrink(lmm_system_t sys, lmm_constraint_t cnst,
+                lmm_variable_t var)
+{
+  lmm_element_t elem = NULL;
+  int found = 0;
+
+  int i;
+  for (i = 0; i < var->cnsts_number; i++) {
+    elem = &(var->cnsts[i]);
+    if (elem->constraint == cnst) {
+      found = 1;
+      break;
+    }
+  }
+
+  if (!found) {
+    XBT_WARN("cnst %p is not found in var %p", cnst, var);
+    return;
+  }
+
+  sys->modified = 1;
+
+  XBT_INFO("remove elem(value %lf, cnst %p, var %p) in var %p",
+      elem->value, elem->constraint, elem->variable, var);
+
+  xbt_swag_remove(elem, &(elem->constraint->element_set));
+  var->cnsts[i] = var->cnsts[var->cnsts_number - 1];
+  var->cnsts_number -= 1;
+
+
+  if (xbt_swag_size(&(cnst->element_set)) == 0)
+    make_constraint_inactive(sys, cnst);
+  else {
+    /* This shrink operation effects the given constraint as well as all the constraints of the variable? */
+    lmm_update_modified_set(sys, cnst);
+    lmm_update_modified_set(sys, var->cnsts[0].constraint);
+  }
+
+
+#if 0
+  if (!sys->selective_update_active) {
+    make_constraint_active(sys, cnst);
+
+  } else if (elem->value > 0 || var->weight > 0) {
+    make_constraint_active(sys, cnst);
+    lmm_update_modified_set(sys, cnst);
+
+    /* FIXME: Why is only the cnsts[0] used here? Don't we do this other cnts[i]? */
+    /* if a variable object has changes, we might want to propagate changes to all constraints of it? */
+    if (var->cnsts_number > 1)
+      lmm_update_modified_set(sys, var->cnsts[0].constraint);
+  }
+#endif
+
+}
+
 void lmm_expand(lmm_system_t sys, lmm_constraint_t cnst,
                 lmm_variable_t var, double value)
 {
