@@ -20,20 +20,6 @@ $ ${bindir:=.}/bugged1_liveness ${bindir:=.}/../msg_platform.xml ${bindir:=.}/de
 > [  0.000000] (1:coordinator@Tremblay) CS release. resource now idle
 > [  0.000000] (2:client@Boivin) Ask the request
 > [  0.000000] (1:coordinator@Tremblay) CS idle. Grant immediatly
-> [  0.000000] (2:client@Boivin) 2 got the answer. Sleep a bit and release it
-> [  0.000000] (1:coordinator@Tremblay) CS release. resource now idle
-> [  0.000000] (2:client@Boivin) Ask the request
-> [  0.000000] (1:coordinator@Tremblay) CS idle. Grant immediatly
-> [  0.000000] (1:coordinator@Tremblay) CS idle. Grant immediatly
-> [  0.000000] (2:client@Boivin) 2 got the answer. Sleep a bit and release it
-> [  0.000000] (1:coordinator@Tremblay) CS release. resource now idle
-> [  0.000000] (2:client@Boivin) Ask the request
-> [  0.000000] (1:coordinator@Tremblay) CS idle. Grant immediatly
-> [  0.000000] (1:coordinator@Tremblay) CS idle. Grant immediatly
-> [  0.000000] (2:client@Boivin) 2 got the answer. Sleep a bit and release it
-> [  0.000000] (1:coordinator@Tremblay) CS release. resource now idle
-> [  0.000000] (2:client@Boivin) Ask the request
-> [  0.000000] (1:coordinator@Tremblay) CS idle. Grant immediatly
 > [  0.000000] (1:coordinator@Tremblay) CS idle. Grant immediatly
 > [  0.000000] (2:client@Boivin) 2 got the answer. Sleep a bit and release it
 > [  0.000000] (1:coordinator@Tremblay) CS release. resource now idle
@@ -71,40 +57,6 @@ $ ${bindir:=.}/bugged1_liveness ${bindir:=.}/../msg_platform.xml ${bindir:=.}/de
 > [  0.000000] (2:client@Boivin) Ask the request
 > [  0.000000] (1:coordinator@Tremblay) CS idle. Grant immediatly
 > [  0.000000] (2:client@Boivin) 2 got the answer. Sleep a bit and release it
-> [  0.000000] (1:coordinator@Tremblay) CS idle. Grant immediatly
-> [  0.000000] (2:client@Boivin) 2 got the answer. Sleep a bit and release it
-> [  0.000000] (1:coordinator@Tremblay) CS release. resource now idle
-> [  0.000000] (2:client@Boivin) Ask the request
-> [  0.000000] (1:coordinator@Tremblay) CS idle. Grant immediatly
-> [  0.000000] (1:coordinator@Tremblay) CS already used. Queue the request.
-> [  0.000000] (2:client@Boivin) 2 got the answer. Sleep a bit and release it
-> [  0.000000] (1:coordinator@Tremblay) CS release. Grant to queued requests (queue size: 1)
-> [  0.000000] (2:client@Boivin) Ask the request
-> [  0.000000] (1:coordinator@Tremblay) CS idle. Grant immediatly
-> [  0.000000] (2:client@Boivin) 2 got the answer. Sleep a bit and release it
-> [  0.000000] (1:coordinator@Tremblay) CS idle. Grant immediatly
-> [  0.000000] (2:client@Boivin) 2 got the answer. Sleep a bit and release it
-> [  0.000000] (1:coordinator@Tremblay) CS release. resource now idle
-> [  0.000000] (2:client@Boivin) Ask the request
-> [  0.000000] (1:coordinator@Tremblay) CS idle. Grant immediatly
-> [  0.000000] (1:coordinator@Tremblay) CS already used. Queue the request.
-> [  0.000000] (2:client@Boivin) 2 got the answer. Sleep a bit and release it
-> [  0.000000] (1:coordinator@Tremblay) CS release. Grant to queued requests (queue size: 1)
-> [  0.000000] (2:client@Boivin) Ask the request
-> [  0.000000] (1:coordinator@Tremblay) CS idle. Grant immediatly
-> [  0.000000] (2:client@Boivin) 2 got the answer. Sleep a bit and release it
-> [  0.000000] (1:coordinator@Tremblay) CS idle. Grant immediatly
-> [  0.000000] (2:client@Boivin) 2 got the answer. Sleep a bit and release it
-> [  0.000000] (1:coordinator@Tremblay) CS release. resource now idle
-> [  0.000000] (2:client@Boivin) Ask the request
-> [  0.000000] (1:coordinator@Tremblay) CS idle. Grant immediatly
-> [  0.000000] (1:coordinator@Tremblay) CS already used. Queue the request.
-> [  0.000000] (2:client@Boivin) 2 got the answer. Sleep a bit and release it
-> [  0.000000] (1:coordinator@Tremblay) CS release. Grant to queued requests (queue size: 1)
-> [  0.000000] (2:client@Boivin) Ask the request
-> [  0.000000] (1:coordinator@Tremblay) CS idle. Grant immediatly
-> [  0.000000] (2:client@Boivin) 2 got the answer. Sleep a bit and release it
-> [  0.000000] (3:client@Fafard) Propositions changed : r=1, cs=0
 > [  0.000000] (1:coordinator@Tremblay) CS idle. Grant immediatly
 > [  0.000000] (2:client@Boivin) 2 got the answer. Sleep a bit and release it
 > [  0.000000] (1:coordinator@Tremblay) CS release. resource now idle
@@ -177,5 +129,6 @@ $ ${bindir:=.}/bugged1_liveness ${bindir:=.}/../msg_platform.xml ${bindir:=.}/de
 > [  0.000000] (0:@) [(2)Boivin (client)] Wait(comm=(verbose only) [(1)Tremblay (coordinator)-> (2)Boivin (client)]) (62)
 > [  0.000000] (0:@) [(2)Boivin (client)] iSend(src=(2)Boivin (client), buff=(verbose only), size=(verbose only)) (54)
 > [  0.000000] (0:@) Expanded pairs = 57
-> [  0.000000] (0:@) Visited pairs = 365
-> [  0.000000] (0:@) Executed transitions = 364
+> [  0.000000] (0:@) Visited pairs = 208
+> [  0.000000] (0:@) Executed transitions = 207
+> [  0.000000] (0:@) Counter-example depth : 50

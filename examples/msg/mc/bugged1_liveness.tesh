@@ -43,7 +43,7 @@ $ ${bindir:=.}/bugged1_liveness ${bindir:=.}/../msg_platform.xml ${bindir:=.}/de
 > [  0.000000] (0:@) Expanded pairs = 21
 > [  0.000000] (0:@) Visited pairs = 21
 > [  0.000000] (0:@) Executed transitions = 20
-
+> [  0.000000] (0:@) Counter-example depth : 20
 
 
 
