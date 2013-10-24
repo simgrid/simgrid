@@ -479,6 +479,7 @@ static void surf_vm_workstation_model_init_internal(void)
 //   model->set_max_duration = ws_action_set_max_duration;
   model->set_priority     = ws_action_set_priority;
   model->set_bound        = ws_action_set_bound;
+  model->set_affinity     = ws_action_set_affinity;
 // #ifdef HAVE_TRACING
 //   model->set_category     = ws_action_set_category;
 // #endif

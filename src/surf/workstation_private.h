@@ -26,6 +26,7 @@ void ws_finalize(surf_model_t workstation_model);
 
 void ws_action_set_priority(surf_action_t action, double priority);
 void ws_action_set_bound(surf_action_t action, double bound);
+void ws_action_set_affinity(surf_action_t action, void *workstation, unsigned long mask);
 
 surf_action_t ws_execute(void *workstation, double size);
 surf_action_t ws_action_sleep(void *workstation, double duration);
