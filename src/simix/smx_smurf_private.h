@@ -278,6 +278,7 @@ ACTION(SIMCALL_HOST_EXECUTION_GET_REMAINS, host_execution_get_remains, WITH_ANSW
 ACTION(SIMCALL_HOST_EXECUTION_GET_STATE, host_execution_get_state, WITH_ANSWER, TINT(result), TSPEC(execution, smx_action_t)) sep \
 ACTION(SIMCALL_HOST_EXECUTION_SET_PRIORITY, host_execution_set_priority, WITH_ANSWER, TVOID(result), TSPEC(execution, smx_action_t), TDOUBLE(priority)) sep \
 ACTION(SIMCALL_HOST_EXECUTION_SET_BOUND, host_execution_set_bound, WITHOUT_ANSWER, TVOID(result), TSPEC(execution, smx_action_t), TDOUBLE(bound)) sep \
+ACTION(SIMCALL_HOST_EXECUTION_SET_AFFINITY, host_execution_set_affinity, WITH_ANSWER, TVOID(result), TSPEC(execution, smx_action_t), TSPEC(ws, smx_host_t), TULONG(mask)) sep \
 ACTION(SIMCALL_HOST_EXECUTION_WAIT, host_execution_wait, WITHOUT_ANSWER, TINT(result), TSPEC(execution, smx_action_t)) sep \
 ACTION(SIMCALL_HOST_GET_PARAMS, host_get_params, WITHOUT_ANSWER, TVOID(result), TSPEC(ind_vm, smx_host_t), TSPEC(params, ws_params_t)) sep \
 ACTION(SIMCALL_HOST_SET_PARAMS, host_set_params, WITHOUT_ANSWER, TVOID(result), TSPEC(ind_vm, smx_host_t), TSPEC(params, ws_params_t)) sep \

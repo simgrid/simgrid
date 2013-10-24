@@ -324,6 +324,7 @@ XBT_PUBLIC(double) simcall_host_execution_get_remains(smx_action_t execution);
 XBT_PUBLIC(e_smx_state_t) simcall_host_execution_get_state(smx_action_t execution);
 XBT_PUBLIC(void) simcall_host_execution_set_priority(smx_action_t execution, double priority);
 XBT_PUBLIC(void) simcall_host_execution_set_bound(smx_action_t execution, double bound);
+XBT_PUBLIC(void) simcall_host_execution_set_affinity(smx_action_t execution, smx_host_t host, unsigned long mask);
 XBT_PUBLIC(e_smx_state_t) simcall_host_execution_wait(smx_action_t execution);
 XBT_PUBLIC(void) simcall_host_get_params(smx_host_t vm, ws_params_t param);
 XBT_PUBLIC(void) simcall_host_set_params(smx_host_t vm, ws_params_t param);

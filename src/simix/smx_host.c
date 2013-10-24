@@ -577,6 +577,17 @@ void SIMIX_host_execution_set_bound(smx_action_t action, double bound){
     ws_model->set_bound(action->execution.surf_exec, bound);
 }
 
+void SIMIX_pre_host_execution_set_affinity(smx_simcall_t simcall,
+    smx_action_t action, smx_host_t host, unsigned long mask){
+  SIMIX_host_execution_set_affinity(action, host, mask);
+}
+void SIMIX_host_execution_set_affinity(smx_action_t action, smx_host_t host, unsigned long mask){
+  surf_model_t ws_model = get_ws_model_from_action(action);
+
+  if(action->execution.surf_exec)
+    ws_model->set_affinity(action->execution.surf_exec, host, mask);
+}
+
 void SIMIX_pre_host_execution_wait(smx_simcall_t simcall, smx_action_t action){
 
   XBT_DEBUG("Wait for execution of action %p, state %d", action, (int)action->state);

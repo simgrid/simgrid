@@ -58,6 +58,7 @@ double SIMIX_host_execution_get_remains(smx_action_t action);
 e_smx_state_t SIMIX_host_execution_get_state(smx_action_t action);
 void SIMIX_host_execution_set_priority(smx_action_t action, double priority);
 void SIMIX_host_execution_set_bound(smx_action_t action, double bound);
+void SIMIX_host_execution_set_affinity(smx_action_t action, smx_host_t host, unsigned long mask);
 void SIMIX_pre_host_execution_wait(smx_simcall_t simcall, smx_action_t action);
 
 // pre prototypes
@@ -83,6 +84,7 @@ double SIMIX_pre_host_execution_get_remains(smx_simcall_t, smx_action_t);
 e_smx_state_t SIMIX_pre_host_execution_get_state(smx_simcall_t, smx_action_t);
 void SIMIX_pre_host_execution_set_priority(smx_simcall_t, smx_action_t, double);
 void SIMIX_pre_host_execution_set_bound(smx_simcall_t simcall, smx_action_t action, double bound);
+void SIMIX_pre_host_execution_set_affinity(smx_simcall_t simcall, smx_action_t action, smx_host_t host, unsigned long mask);
 
 void SIMIX_host_execution_suspend(smx_action_t action);
 void SIMIX_host_execution_resume(smx_action_t action);

@@ -314,6 +314,20 @@ void simcall_host_execution_set_bound(smx_action_t execution, double bound)
 
 /**
  * \ingroup simix_host_management
+ * \brief Changes the CPU affinity of an execution action.
+ *
+ * This functions changes the CPU affinity of an execution action. See taskset(1) on Linux.
+ * \param execution The execution action
+ * \param host Host
+ * \param mask Affinity mask
+ */
+void simcall_host_execution_set_affinity(smx_action_t execution, smx_host_t host, unsigned long mask)
+{
+  simcall_BODY_host_execution_set_affinity(execution, host, mask);
+}
+
+/**
+ * \ingroup simix_host_management
  * \brief Waits for the completion of an execution action and destroy it.
  *
  * \param execution The execution action
