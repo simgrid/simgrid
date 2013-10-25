@@ -29,23 +29,3 @@ $ wc -l tmp_fich
 > 4 tmp_fich
 
 $ rm tmp_fich
-
-$ ${bindir:=.}/tesh --enable-coverage --log='log.thresh:info tesh.fmt:%m%n' basic2.tesh
-> Enable coverage
-> Test suite `basic2'
-> [basic2:3] Test sorting and filtering of output
-> [basic2:5] true
-> [basic2:8] true
-> [basic2:10] printf 'profiling: foo\\n'
-> [basic2:12] printf 'profiling: foo'
-> [basic2:15] printf 'profiling: foo\\n'
-> [basic2:18] printf 'profiling: foo'
-> [basic2:20] printf 'a\\nb\\nc\\nd\\n'
-> [basic2:26] printf 'a\\nb\\nc\\nd'
-> [basic2:33] printf 'c\\nd\\nb\\na\\n'
-> [basic2:40] printf 'c\\nd\\nb\\na'
-> [basic2:46] printf 'a\\nprofiling: foo\\nprofiling: bar\\nb\\nc\\nd\\nprofiling: baz\\n'
-> [basic2:52] printf 'a\\nprofiling: foo\\nprofiling: bar\\nb\\nc\\nd\\nprofiling: baz'
-> [basic2:59] printf 'c\\nprofiling: foo\\nprofiling: bar\\nd\\nb\\na\\nprofiling: baz\\n'
-> [basic2:66] printf 'c\\nprofiling: foo\\nprofiling: bar\\nd\\nb\\na\\nprofiling: baz'
-> Test suite `basic2' OK

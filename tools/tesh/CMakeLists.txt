@@ -27,11 +27,12 @@ set(tesh_files
   ${tesh_files}
   ${CMAKE_CURRENT_SOURCE_DIR}/setenv.tesh
   ${CMAKE_CURRENT_SOURCE_DIR}/set-ignore-output.tesh
+  ${CMAKE_CURRENT_SOURCE_DIR}/set-output-sort.tesh
+  ${CMAKE_CURRENT_SOURCE_DIR}/set-output-sort-1.tesh
   ${CMAKE_CURRENT_SOURCE_DIR}/set-return.tesh
   ${CMAKE_CURRENT_SOURCE_DIR}/set-signal.tesh
   ${CMAKE_CURRENT_SOURCE_DIR}/set-timeout.tesh
   ${CMAKE_CURRENT_SOURCE_DIR}/background.tesh
-  ${CMAKE_CURRENT_SOURCE_DIR}/basic2.tesh
   ${CMAKE_CURRENT_SOURCE_DIR}/basic.tesh
   ${CMAKE_CURRENT_SOURCE_DIR}/bg-basic.tesh
   ${CMAKE_CURRENT_SOURCE_DIR}/bg-set-signal.tesh
