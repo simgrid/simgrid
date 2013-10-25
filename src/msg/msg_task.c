@@ -466,6 +466,14 @@ void MSG_task_set_bound(msg_task_t task, double bound)
 /** \ingroup m_task_management
  * \brief Changes the CPU affinity of a computation task.
  *
+ * When pinning the given task to the first CPU core of the given host, use
+ * 0x01 for the mask value. Each bit of the mask value corresponds to each CPU
+ * core. See taskset(1) on Linux.
+ *
+ * \param task a target task
+ * \param host the host having a multi-core CPU
+ * \param mask the value specifying the CPU affinity setting of the task
+ *
  */
 void MSG_task_set_affinity(msg_task_t task, msg_host_t host, unsigned long mask)
 {

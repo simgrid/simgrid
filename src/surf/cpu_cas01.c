@@ -255,6 +255,24 @@ static void cpu_update_resource_state(void *id,
   return;
 }
 
+
+/*
+ *
+ * This function formulates a constraint problem that pins a given task to
+ * particular cores. Currently, it is possible to pin a task to an exactly one
+ * specific core. The system links the variable object of the task to the
+ * per-core constraint object.
+ *
+ * But, the taskset command on Linux takes a mask value specifying a CPU
+ * affinity setting of a given task. If the mask value is 0x03, the given task
+ * will be executed on the first core (CPU0) or the second core (CPU1) on the
+ * given PM. The schedular will determine appropriate placements of tasks,
+ * considering given CPU affinities and task activities.
+ *
+ * How should the system formulate constraint problems for an affinity to
+ * multiple cores?
+ *
+ */
 static void cpu_action_set_affinity(surf_action_t action, void *cpu, unsigned long mask)
 {
   lmm_variable_t var_obj = ((surf_action_lmm_t) action)->variable;
@@ -264,6 +282,25 @@ static void cpu_action_set_affinity(surf_action_t action, void *cpu, unsigned lo
   cpu_Cas01_t CPU = surf_cpu_resource_priv(cpu);
 
   XBT_IN("(%p,%lx)", action, mask);
+
+  {
+    unsigned long nbits = 0;
+
+    /* FIXME: There is much faster algorithms doing this. */
+    unsigned long i;
+    for (i = 0; i < CPU->core; i++) {
+      unsigned long has_affinity = (1UL << i) & mask;
+      if (has_affinity)
+        nbits += 1;
+    }
+
+    if (nbits > 1) {
+      XBT_CRITICAL("Do not specify multiple cores for an affinity mask.");
+      XBT_CRITICAL("See the comment in cpu_action_set_affinity().");
+      DIE_IMPOSSIBLE;
+    }
+  }
+
 
 
   unsigned long i;
