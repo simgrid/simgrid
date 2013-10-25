@@ -31,8 +31,9 @@ int PMPI_Init(int *argc, char ***argv)
 #ifdef HAVE_TRACING
   int rank = smpi_process_index();
   TRACE_smpi_init(rank);
-
   TRACE_smpi_computing_init(rank);
+  TRACE_smpi_collective_in(rank, -1, __FUNCTION__,0);
+  TRACE_smpi_collective_out(rank, -1, __FUNCTION__);
 #endif
   smpi_bench_begin();
   return MPI_SUCCESS;
@@ -40,11 +41,14 @@ int PMPI_Init(int *argc, char ***argv)
 
 int PMPI_Finalize(void)
 {
-  smpi_process_finalize();
   smpi_bench_end();
 #ifdef HAVE_TRACING
   int rank = smpi_process_index();
-  TRACE_smpi_computing_out(rank);
+  TRACE_smpi_collective_in(rank, -1, __FUNCTION__,0);
+#endif
+  smpi_process_finalize();
+#ifdef HAVE_TRACING
+  TRACE_smpi_collective_out(rank, -1, __FUNCTION__);
   TRACE_smpi_finalize(smpi_process_index());
 #endif
   smpi_process_destroy();
