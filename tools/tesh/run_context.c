@@ -795,8 +795,6 @@ void *rctx_wait(void *r)
   }
   xbt_strbuff_chomp(rctx->output_got);
   xbt_strbuff_chomp(rctx->output_wanted);
-  xbt_strbuff_trim(rctx->output_got);
-  xbt_strbuff_trim(rctx->output_wanted);
 
   /* Check for broken pipe */
   if (rctx->brokenpipe)
