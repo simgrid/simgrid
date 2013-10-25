@@ -21,6 +21,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_config, instr, "Configuration");
 #define OPT_TRACING_SMPI_COMPUTING "tracing/smpi/computing"
 #define OPT_TRACING_SMPI_INTERNALS "tracing/smpi/internals"
 #define OPT_TRACING_DISPLAY_SIZES  "tracing/smpi/display_sizes"
+#define OPT_TRACING_FORMAT        "tracing/smpi/format"
 #define OPT_TRACING_CATEGORIZED   "tracing/categorized"
 #define OPT_TRACING_UNCATEGORIZED "tracing/uncategorized"
 #define OPT_TRACING_MSG_PROCESS   "tracing/msg/process"
@@ -434,6 +435,12 @@ void TRACE_global_init(int *argc, char **argv)
                    xbt_cfgelm_int, 0, 1, NULL, NULL);
   xbt_cfg_setdefault_int(_sg_cfg_set, OPT_TRACING_DISPLAY_SIZES, 0);
 
+  /* format -- Switch the ouput format of Tracing */
+  xbt_cfg_register(&_sg_cfg_set, OPT_TRACING_FORMAT,
+                   "(smpi only for now) Switch the ouput format of Tracing",
+                   xbt_cfgelm_string, 1, 1, NULL, NULL);
+  xbt_cfg_setdefault_string(_sg_cfg_set, OPT_TRACING_FORMAT, "Paje");
+
   /* comment */
   xbt_cfg_register(&_sg_cfg_set, OPT_TRACING_COMMENT,
                    "Comment to be added on the top of the trace file.",
@@ -549,6 +556,10 @@ void TRACE_help (int detailed)
   print_line (OPT_TRACING_DISPLAY_SIZES, "Only works for SMPI now. Add message size information",
       "Message size (in bytes) is added to links, and to states. For collectives, the displayed value \n"
       "is the more relevant to the collective (total sent by the process, usually)",
+      detailed);
+  print_line (OPT_TRACING_FORMAT, "Only works for SMPI now. Switch output format",
+      "Default format is Paje. Time independant traces are also supported, \n"
+      "to output traces that can later be used by the trace replay tool",
       detailed);
   print_line (OPT_TRACING_COMMENT, "Comment to be added on the top of the trace file.",
       "  Use this to add a comment line to the top of the trace file.",
