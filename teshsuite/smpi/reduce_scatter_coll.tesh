@@ -4,7 +4,7 @@
 
 p Test reduce_scatter
 $ ../../smpi_script/bin/smpirun -map -hostfile ${srcdir:=.}/hostfile -platform ${srcdir:=.}/../../examples/msg/small_platform.xml -np 16 --log=xbt_cfg.thres:critical ./reduce_scatter_coll 
-> No Errors
+>  No Errors
 > You requested to use 16 processes, but there is only 5 processes in your hostfile...
 > [0.000000] [surf_config/INFO] Switching workstation model to compound since you changed the network and/or cpu model(s)
 > [rank 0] -> Tremblay

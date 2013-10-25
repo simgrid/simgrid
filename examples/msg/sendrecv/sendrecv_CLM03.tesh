@@ -4,7 +4,7 @@ p Testing the deprecated CM02 network model
 
 ! output sort
 $ $SG_TEST_EXENV sendrecv/sendrecv$EXEEXT ${srcdir:=.}/sendrecv/platform_sendrecv.xml ${srcdir:=.}/sendrecv/deployment_sendrecv.xml --cfg=cpu/model:Cas01 --cfg=network/model:CM02 "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
->  [  0.000000] (0:@) Configuration change: Set 'cpu/model' to 'Cas01'
+> [  0.000000] (0:@) Configuration change: Set 'cpu/model' to 'Cas01'
 > [  0.000000] (0:@) Configuration change: Set 'network/model' to 'CM02'
 > [  0.000000] (0:@) test_all
 > [  0.000000] (0:@) Switching workstation model to compound since you changed the network and/or cpu model(s)
