@@ -10,6 +10,8 @@
 #include "xbt/log.h"
 #include "xbt/str.h"
 #include "xbt/replay.h"
+#include <ctype.h>
+#include <wchar.h>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(replay,xbt,"Replay trace reader");
 
@@ -30,6 +32,16 @@ static char *action_line = NULL;
 static size_t action_len = 0;
 
 static char **action_get_action(char *name);
+
+static char *str_tolower (const char *str)
+{
+  char *ret = xbt_strdup (str);
+  int i, n = strlen (ret);
+  for (i = 0; i < n; i++)
+    ret[i] = tolower (str[i]);
+  return ret;
+}
+
 
 xbt_replay_reader_t xbt_replay_reader_new(const char *filename)
 {
@@ -96,7 +108,7 @@ void xbt_replay_reader_free(xbt_replay_reader_t *reader)
  */
 void xbt_replay_action_register(const char *action_name, action_fun function)
 {
-  xbt_dict_set(action_funs, action_name, function, NULL);
+  xbt_dict_set(action_funs, str_tolower (action_name), function, NULL);
 }
 
 /** \ingroup XBT_replay
@@ -106,7 +118,7 @@ void xbt_replay_action_register(const char *action_name, action_fun function)
  */
 void xbt_replay_action_unregister(const char *action_name)
 {
-  xbt_dict_remove(action_funs, action_name);
+  xbt_dict_remove(action_funs, str_tolower (action_name));
 }
 
 void _xbt_replay_action_init(void)
@@ -136,7 +148,7 @@ int xbt_replay_action_runner(int argc, char *argv[])
     char **evt;
     while ((evt = action_get_action(argv[0]))) {
       action_fun function =
-        (action_fun)xbt_dict_get(action_funs, evt[1]);
+        (action_fun)xbt_dict_get(action_funs, str_tolower (evt[1]));
       function((const char **)evt);
       for (i=0;evt[i]!= NULL;i++)
         free(evt[i]);
@@ -151,8 +163,8 @@ int xbt_replay_action_runner(int argc, char *argv[])
         );
     xbt_replay_reader_t reader = xbt_replay_reader_new(argv[1]);
     while ((evt=xbt_replay_reader_get(reader))) {
-      if (!strcasecmp(argv[0],evt[0])) {
-        action_fun function = (action_fun)xbt_dict_get(action_funs, evt[1]);
+      if (!strcmp(argv[0],evt[0])) {
+        action_fun function = (action_fun)xbt_dict_get(action_funs, str_tolower (evt[1]));
         function(evt);
       } else {
         XBT_WARN("%s: Ignore trace element not for me",
@@ -193,7 +205,7 @@ static char **action_get_action(char *name)
 
       // if it's for me, I'm done
       evtname = xbt_dynar_get_as(evt, 0, char *);
-      if (!strcmp(name, evtname)) {
+      if (!strcasecmp(name, evtname)) {
         return xbt_dynar_to_array(evt);
       } else {
         // Else, I have to store it for the relevant colleague
