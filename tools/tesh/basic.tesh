@@ -9,10 +9,17 @@ $ mkfile tmp_fich
 $ cat tmp_fich
 > TOTO TUTU
 
+! expect return 2
+! output ignore
+< $ cat tmp_fich
+< > TUTU TOTO
+$ ${bindir:=.}/tesh --enable-coverage
+
 $ rm tmp_fich
 
 p And now, some multilines examples
 
+p Really basic multiline
 < a
 < b
 < c
@@ -29,3 +36,128 @@ $ wc -l tmp_fich
 > 4 tmp_fich
 
 $ rm tmp_fich
+
+p Now, check for spaces in input
+
+p * leading and trailing spaces...
+<   a
+<  b 
+< c  
+$ sed 's/ /_/g'
+> __a
+> _b_
+> c__
+
+p * empty lines...
+< a
+<
+< c
+$ sed '2s/^/b/'
+> a
+> b
+> c
+
+<
+< b
+< c
+$ sed '1s/^/a/'
+> a
+> b
+> c
+
+p Now that input should be good, check for spaces in output
+
+p * leading spaces...
+< _x
+$ sed 's/_/ /'
+>  x
+
+! expect return 2
+! output ignore
+< < _x
+< $ sed 's/_/ /'
+< > x
+$ ${bindir:=.}/tesh --enable-coverage
+
+! expect return 2
+! output ignore
+< < x
+< $ cat
+< >  x
+$ ${bindir:=.}/tesh --enable-coverage
+
+p * trailing spaces...
+< x_
+$ sed 's/_/ /'
+> x 
+
+! expect return 2
+! output ignore
+< < x_
+< $ sed 's/_/ /'
+< > x
+$ ${bindir:=.}/tesh --enable-coverage
+
+! expect return 2
+! output ignore
+< < x
+< $ cat
+< > x 
+$ ${bindir:=.}/tesh --enable-coverage
+
+p * empty lines...
+< a
+<
+< c
+$ cat
+> a
+>
+> c
+
+! expect return 2
+! output ignore
+< < a
+< <
+< < c
+< $ cat
+< > a
+< > c
+$ ${bindir:=.}/tesh --enable-coverage
+
+! expect return 2
+! output ignore
+< < a
+< < c
+< $ cat
+< > a
+< >
+< > c
+$ ${bindir:=.}/tesh --enable-coverage
+
+<
+< b
+< c
+$ cat
+>
+> b
+> c
+
+! expect return 2
+! output ignore
+< <
+< < b
+< < c
+< $ cat
+< > b
+< > c
+$ ${bindir:=.}/tesh --enable-coverage
+
+! expect return 2
+! output ignore
+< < b
+< < c
+< $ cat
+< >
+< > b
+< > c
+$ ${bindir:=.}/tesh --enable-coverage
