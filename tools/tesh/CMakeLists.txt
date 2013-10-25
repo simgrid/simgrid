@@ -26,7 +26,7 @@ endif()
 set(tesh_files
   ${tesh_files}
   ${CMAKE_CURRENT_SOURCE_DIR}/setenv.tesh
-  ${CMAKE_CURRENT_SOURCE_DIR}/set-ignore-output.tesh
+  ${CMAKE_CURRENT_SOURCE_DIR}/set-output-ignore.tesh
   ${CMAKE_CURRENT_SOURCE_DIR}/set-output-sort.tesh
   ${CMAKE_CURRENT_SOURCE_DIR}/set-output-sort-1.tesh
   ${CMAKE_CURRENT_SOURCE_DIR}/set-return.tesh
