@@ -212,7 +212,8 @@ void TRACE_smpi_computing_init(int rank)
   char str[INSTR_DEFAULT_STR_SIZE];
   smpi_container(rank, str, INSTR_DEFAULT_STR_SIZE);
   container_t container = PJ_container_get (str);
-  type_t type = PJ_type_get ("MPI_STATE", container->type);
+  type_t mpi = PJ_type_get("MPI", PJ_container_get_root()->type);
+  type_t type = PJ_type_state_new ("COMPUTATION", mpi);
   const char *color = instr_find_color ("computing");
   val_t value = PJ_value_get_or_new ("computing", color, type);
   new_pajePushState (SIMIX_get_clock(), container, type, value);
@@ -226,19 +227,22 @@ void TRACE_smpi_computing_in(int rank)
   char str[INSTR_DEFAULT_STR_SIZE];
   smpi_container(rank, str, INSTR_DEFAULT_STR_SIZE);
   container_t container = PJ_container_get (str);
-  type_t type = PJ_type_get ("MPI_STATE", container->type);
+  type_t type = PJ_type_get ("COMPUTATION", container->type);
   val_t value = PJ_value_get_or_new ("computing", NULL, type);
   new_pajePushState (SIMIX_get_clock(), container, type, value);
 }
 
-void TRACE_smpi_computing_out(int rank)
+void TRACE_smpi_computing_out(int rank, double flops)
 {
   if (!TRACE_smpi_is_enabled()|| !TRACE_smpi_is_computing()) return;
   char str[INSTR_DEFAULT_STR_SIZE];
   smpi_container(rank, str, INSTR_DEFAULT_STR_SIZE);
   container_t container = PJ_container_get (str);
-  type_t type = PJ_type_get ("MPI_STATE", container->type);
-  new_pajePopState (SIMIX_get_clock(), container, type);
+  type_t type = PJ_type_get ("COMPUTATION", container->type);
+  xbt_dynar_t extra= xbt_dynar_new(sizeof(char*), NULL);
+  char* char_duration  = bprintf("%g", flops);
+  xbt_dynar_push(extra, &char_duration);
+  new_pajePopStateWithExtra (SIMIX_get_clock(), container, type, extra);
 }
 
 void TRACE_smpi_ptp_in(int rank, int src, int dst, const char *operation, int size)

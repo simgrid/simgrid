@@ -127,9 +127,19 @@ void smpi_execute_flops(double flops) {
   smx_action_t action;
   smx_host_t host;
   host = SIMIX_host_self();
+  int rank = smpi_process_index();
+#ifdef HAVE_TRACING
+  TRACE_smpi_computing_in(rank);
+#endif
 
-  XBT_DEBUG("Handle real computation time: %f flops", flops);
-  action = simcall_host_execute("computation", host, flops, 1);
+XBT_DEBUG("Handle real computation time: %f flops", flops);
+action = simcall_host_execute("computation", host, flops, 1);
+
+#ifdef HAVE_TRACING
+  TRACE_smpi_computing_out(rank,flops);
+#endif
+
+
 #ifdef HAVE_TRACING
   simcall_set_category (action, TRACE_internal_smpi_get_category());
 #endif
@@ -165,8 +175,18 @@ void smpi_bench_end(void)
 
 unsigned int smpi_sleep(unsigned int secs)
 {
+  smx_action_t action;
+
   smpi_bench_end();
-  smpi_execute_flops((double) secs*simcall_host_get_speed(SIMIX_host_self()));
+
+  double flops = (double) secs*simcall_host_get_speed(SIMIX_host_self());
+  XBT_DEBUG("Sleep for: %f flops", flops);
+  action = simcall_host_execute("computation", SIMIX_host_self(), flops, 1);
+  #ifdef HAVE_TRACING
+    simcall_set_category (action, TRACE_internal_smpi_get_category());
+  #endif
+  simcall_host_execution_wait(action);
+
   smpi_bench_begin();
   return secs;
 }
