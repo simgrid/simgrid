@@ -11,20 +11,21 @@ Quick way to compile
 ====================
 
 In short, the way to compile SimGrid depends on whether you are compiling a
-tar.gz archive or directly from the SVN.
+tar.gz archive or directly from the Git.
 
-(1) configure SimGrid (both in SVN and archives)
+(1) configure SimGrid (both in Git and archives)
 $ cmake <all options> ./
 
 Main options are:
   -DCMAKE_INSTALL_PREFIX=<path>: specify where to install SimGrid
   -Denable_maintainer_mode=on/off: get the maintainer files regenerated
                                    automatically
-  -Denable_compile_optimizations=on/off: compile or not with -O0 instead of -O3
-  -Denable_java=on/off: enable or not binding java
-  -Denable_lua=on/off: enable or not binding lua
-  -Denable_ruby=on/off: enable or not binding ruby
+  -Denable_compile_optimizations=on/off: compile or not with optimizations
+  -Denable_java=on/off: enable or not the Java bindings
+  -Denable_scala=on/off: enable or not the Scala bindings
+  -Denable_lua=on/off: enable or not the lua bindings
   -Denable_smpi=on/off: enable or not smpi
+  -Denable_model-checking=on/off: enable or not the model-checker
 See below for other configure options which are common to any project,
 not only SimGrid related.
 
@@ -52,10 +53,7 @@ the jni.h header file (available from the JDK).
 If you want to compile the lua bindings, you have to have lua5.1 executable and
 liblua5.1-dev.
 
-If you want to compile the ruby bindings, you have to install ruby executable
-and ruby-dev version 1.9.
-
-If you want to compile smpi, you should install f2c for use Fortran code.
+If you want to compile smpi, you should install f2c to use Fortran code.
 
 If you want to compile the GTNetS backend, you have to have a patched version of
-GTNetS installed. The patch lives in the contrib section of the SVN.
+GTNetS installed. The patch lives in the contrib section of the Git.
