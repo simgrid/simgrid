@@ -443,13 +443,24 @@ static void vm_ws_action_cancel(surf_action_t action)
 /* Now we can set bound for each task by using MSG_task_set_bound. But, it does
  * not work for the dummy CPU action of a VM. Here, we add the set_bound
  * function for the dummy CPU action. */
-static void vm_ws_set_vm_bound(void *workstation, double bound)
+static void vm_ws_set_vm_bound(void *vm, double bound)
 {
-  surf_resource_t ws = ((surf_resource_t) surf_workstation_resource_priv(workstation));
+  surf_resource_t ws = ((surf_resource_t) surf_workstation_resource_priv(vm));
   xbt_assert(ws->model->type == SURF_MODEL_TYPE_VM_WORKSTATION);
   workstation_VM2013_t vm_ws = (workstation_VM2013_t) ws;
 
   surf_action_set_bound(vm_ws->cpu_action, bound);
+}
+
+
+/* set the affinity of a VM to the CPU cores of a PM */
+static void vm_ws_set_vm_affinity(void *vm, void *pm, unsigned long mask)
+{
+  surf_resource_t ws = ((surf_resource_t) surf_workstation_resource_priv(vm));
+  xbt_assert(ws->model->type == SURF_MODEL_TYPE_VM_WORKSTATION);
+  workstation_VM2013_t vm_ws = (workstation_VM2013_t) ws;
+
+  surf_cpu_model_pm->set_affinity(vm_ws->cpu_action, pm, mask);
 }
 
 
@@ -531,6 +542,7 @@ static void surf_vm_workstation_model_init_internal(void)
   model->extension.vm_workstation.restore       = vm_ws_restore;
   model->extension.vm_workstation.get_pm        = vm_ws_get_pm;
   model->extension.vm_workstation.set_vm_bound  = vm_ws_set_vm_bound;
+  model->extension.vm_workstation.set_vm_affinity  = vm_ws_set_vm_affinity;
 
   model->extension.workstation.set_params    = ws_set_params;
   model->extension.workstation.get_params    = ws_get_params;

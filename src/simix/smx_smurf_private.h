@@ -289,6 +289,7 @@ ACTION(SIMCALL_VM_GET_STATE, vm_get_state, WITH_ANSWER,    TINT(result),  TSPEC(
 ACTION(SIMCALL_VM_MIGRATE,   vm_migrate,   WITH_ANSWER, TVOID(result), TSPEC(ind_vm, smx_host_t), TSPEC(ind_dst_pm, smx_host_t)) sep \
 ACTION(SIMCALL_VM_GET_PM,    vm_get_pm,    WITH_ANSWER,    TPTR(result),  TSPEC(ind_vm, smx_host_t)) sep \
 ACTION(SIMCALL_VM_SET_BOUND,    vm_set_bound,    WITH_ANSWER, TVOID(result), TSPEC(ind_vm, smx_host_t), TDOUBLE(bound)) sep \
+ACTION(SIMCALL_VM_SET_AFFINITY, vm_set_affinity, WITH_ANSWER, TVOID(result), TSPEC(ind_vm, smx_host_t), TSPEC(ind_pm, smx_host_t), TULONG(mask)) sep \
 ACTION(SIMCALL_VM_DESTROY,   vm_destroy,   WITH_ANSWER, TVOID(result), TSPEC(ind_vm, smx_host_t)) sep \
 ACTION(SIMCALL_VM_SUSPEND,   vm_suspend,   WITH_ANSWER, TVOID(result), TSPEC(ind_vm, smx_host_t)) sep \
 ACTION(SIMCALL_VM_RESUME,    vm_resume,    WITH_ANSWER, TVOID(result), TSPEC(ind_vm, smx_host_t)) sep \

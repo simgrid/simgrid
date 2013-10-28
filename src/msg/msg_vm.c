@@ -1258,3 +1258,15 @@ void MSG_vm_set_bound(msg_vm_t vm, double bound)
 {
 	return simcall_vm_set_bound(vm, bound);
 }
+
+
+/** @brief Set the CPU affinity of a given VM.
+ *  @ingroup msg_VMs
+ *
+ * This function changes the CPU affinity of a given VM. Usage is the same as
+ * MSG_task_set_affinity(). See the MSG_task_set_affinity() for details.
+ */
+void MSG_vm_set_affinity(msg_vm_t vm, msg_host_t pm, unsigned long mask)
+{
+	return simcall_vm_set_affinity(vm, pm, mask);
+}

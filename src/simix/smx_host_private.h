@@ -139,6 +139,9 @@ void *SIMIX_pre_vm_get_pm(smx_simcall_t simcall, smx_host_t ind_vm);
 void SIMIX_vm_set_bound(smx_host_t ind_vm, double bound);
 void SIMIX_pre_vm_set_bound(smx_simcall_t simcall, smx_host_t ind_vm, double bound);
 
+void SIMIX_vm_set_affinity(smx_host_t ind_vm, smx_host_t ind_pm, unsigned long mask);
+void SIMIX_pre_vm_set_affinity(smx_simcall_t simcall, smx_host_t ind_vm, smx_host_t ind_pm, unsigned long mask);
+
 void SIMIX_host_get_params(smx_host_t ind_vm, ws_params_t params);
 void SIMIX_pre_host_get_params(smx_simcall_t simcall, smx_host_t ind_vm, ws_params_t params);
 

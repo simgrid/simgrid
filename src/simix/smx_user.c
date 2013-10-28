@@ -396,6 +396,12 @@ void simcall_vm_set_bound(smx_host_t vm, double bound)
   simcall_BODY_vm_set_bound(vm, bound);
 }
 
+void simcall_vm_set_affinity(smx_host_t vm, smx_host_t pm, unsigned long mask)
+{
+  /* will jump to SIMIX_pre_vm_set_affinity in src/simix/smx_smurf_private.h */
+  simcall_BODY_vm_set_affinity(vm, pm, mask);
+}
+
 void simcall_host_get_params(smx_host_t vm, ws_params_t params)
 {
   /* will jump to SIMIX_pre_host_get_params in src/simix/smx_smurf_private.h */

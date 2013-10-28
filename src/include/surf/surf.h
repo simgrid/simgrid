@@ -332,6 +332,7 @@ typedef struct surf_vm_workstation_model_extension_public {
   void * (*get_pm) (void *ind_vm_ws); // will be vm_ws_get_pm()
 
   void   (*set_vm_bound) (void *ind_vm_ws, double bound); // will be vm_ws_set_vm_bound()
+  void   (*set_vm_affinity) (void *ind_vm_ws, void *ind_pm_ws, unsigned long mask); // will be vm_ws_set_vm_affinity()
 
 } s_surf_model_extension_vm_workstation_t;
 

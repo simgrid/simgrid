@@ -188,6 +188,25 @@ void SIMIX_pre_vm_set_bound(smx_simcall_t simcall, smx_host_t ind_vm, double bou
 
 
 /**
+ * \brief Function to set the CPU affinity of the given SIMIX VM host.
+ *
+ * \param host the vm host (a smx_host_t)
+ * \param host the pm host (a smx_host_t)
+ * \param mask affinity mask (a unsigned long)
+ */
+void SIMIX_vm_set_affinity(smx_host_t ind_vm, smx_host_t ind_pm, unsigned long mask)
+{
+  /* jump to vm_ws_set_vm_affinity(). */
+  surf_vm_workstation_model->extension.vm_workstation.set_vm_affinity(ind_vm, ind_pm, mask);
+}
+
+void SIMIX_pre_vm_set_affinity(smx_simcall_t simcall, smx_host_t ind_vm, smx_host_t ind_pm, unsigned long mask)
+{
+  SIMIX_vm_set_affinity(ind_vm, ind_pm, mask);
+}
+
+
+/**
  * \brief Function to suspend a SIMIX VM host. This function stops the exection of the
  * VM. All the processes on this VM will pause. The state of the VM is
  * preserved on memory. We can later resume it again.

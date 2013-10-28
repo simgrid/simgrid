@@ -426,6 +426,7 @@ XBT_PUBLIC(void) MSG_vm_restore(msg_vm_t vm);
 
 XBT_PUBLIC(msg_host_t) MSG_vm_get_pm(msg_vm_t vm);
 XBT_PUBLIC(void) MSG_vm_set_bound(msg_vm_t vm, double bound);
+XBT_PUBLIC(void) MSG_vm_set_affinity(msg_vm_t vm, msg_host_t pm, unsigned long mask);
 
 /* TODO: do we need this? */
 // XBT_PUBLIC(xbt_dynar_t) MSG_vms_as_dynar(void);
