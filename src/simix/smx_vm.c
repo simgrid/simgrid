@@ -106,7 +106,6 @@ void SIMIX_vm_start(smx_host_t ind_vm)
 void SIMIX_pre_vm_start(smx_simcall_t simcall, smx_host_t ind_vm)
 {
   SIMIX_vm_start(ind_vm);
-  SIMIX_simcall_answer(simcall);
 }
 
 /* ***** set/get state of a VM ***** */
@@ -150,7 +149,6 @@ void SIMIX_vm_migrate(smx_host_t ind_vm, smx_host_t ind_dst_pm)
 void SIMIX_pre_vm_migrate(smx_simcall_t simcall, smx_host_t ind_vm, smx_host_t ind_dst_pm)
 {
   SIMIX_vm_migrate(ind_vm, ind_dst_pm);
-  SIMIX_simcall_answer(simcall);
 }
 
 
@@ -186,7 +184,6 @@ void SIMIX_vm_set_bound(smx_host_t ind_vm, double bound)
 void SIMIX_pre_vm_set_bound(smx_simcall_t simcall, smx_host_t ind_vm, double bound)
 {
   SIMIX_vm_set_bound(ind_vm, bound);
-  SIMIX_simcall_answer(simcall);
 }
 
 
@@ -227,9 +224,6 @@ void SIMIX_pre_vm_suspend(smx_simcall_t simcall, smx_host_t ind_vm)
 
   SIMIX_vm_suspend(ind_vm, simcall->issuer);
 
-  /* without this, simcall_vm_suspend() does not return to the userland. why? */
-  SIMIX_simcall_answer(simcall);
-
   XBT_DEBUG("SIMIX_pre_vm_suspend done");
 }
 
@@ -262,7 +256,6 @@ void SIMIX_vm_resume(smx_host_t ind_vm, smx_process_t issuer)
 void SIMIX_pre_vm_resume(smx_simcall_t simcall, smx_host_t ind_vm)
 {
   SIMIX_vm_resume(ind_vm, simcall->issuer);
-  SIMIX_simcall_answer(simcall);
 }
 
 
@@ -296,9 +289,6 @@ void SIMIX_vm_save(smx_host_t ind_vm, smx_process_t issuer)
 void SIMIX_pre_vm_save(smx_simcall_t simcall, smx_host_t ind_vm)
 {
   SIMIX_vm_save(ind_vm, simcall->issuer);
-
-  /* without this, simcall_vm_suspend() does not return to the userland. why? */
-  SIMIX_simcall_answer(simcall);
 }
 
 
@@ -330,7 +320,6 @@ void SIMIX_vm_restore(smx_host_t ind_vm, smx_process_t issuer)
 void SIMIX_pre_vm_restore(smx_simcall_t simcall, smx_host_t ind_vm)
 {
   SIMIX_vm_restore(ind_vm, simcall->issuer);
-  SIMIX_simcall_answer(simcall);
 }
 
 
@@ -363,7 +352,6 @@ void SIMIX_vm_shutdown(smx_host_t ind_vm, smx_process_t issuer)
 void SIMIX_pre_vm_shutdown(smx_simcall_t simcall, smx_host_t ind_vm)
 {
   SIMIX_vm_shutdown(ind_vm, simcall->issuer);
-  SIMIX_simcall_answer(simcall);
 }
 
 
@@ -389,5 +377,4 @@ void SIMIX_vm_destroy(smx_host_t ind_vm)
 void SIMIX_pre_vm_destroy(smx_simcall_t simcall, smx_host_t ind_vm)
 {
   SIMIX_vm_destroy(ind_vm);
-  SIMIX_simcall_answer(simcall);
 }

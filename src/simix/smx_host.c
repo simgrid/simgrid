@@ -736,7 +736,6 @@ void SIMIX_host_get_params(smx_host_t ind_vm, ws_params_t params)
 void SIMIX_pre_host_get_params(smx_simcall_t simcall, smx_host_t ind_vm, ws_params_t params)
 {
   SIMIX_host_get_params(ind_vm, params);
-  SIMIX_simcall_answer(simcall);
 }
 
 void SIMIX_host_set_params(smx_host_t ind_vm, ws_params_t params)
@@ -748,5 +747,4 @@ void SIMIX_host_set_params(smx_host_t ind_vm, ws_params_t params)
 void SIMIX_pre_host_set_params(smx_simcall_t simcall, smx_host_t ind_vm, ws_params_t params)
 {
   SIMIX_host_set_params(ind_vm, params);
-  SIMIX_simcall_answer(simcall);
 }
