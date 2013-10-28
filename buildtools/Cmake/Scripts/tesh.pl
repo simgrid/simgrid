@@ -43,15 +43,6 @@ else{
     $ENV{"PRINTF_EXPONENT_DIGITS"} = "2"; 
 }
 
-
-sub trim($)
-{
-    my $string = shift;
-    $string =~ s/^\s+//;
-    $string =~ s/\s+$//;
-    return $string;
-}
-
 #Add current directory to path
 $ENV{PATH} = "$ENV{PATH}:.";
 
@@ -306,14 +297,10 @@ sub parse_out {
   my @got;
   while(defined(my $got=<got>)) {
     $got =~ s/\r//g;
-    $got =~ s/^( )*//g;
     chomp $got;
-    $got=trim($got);
-    if( $got ne ""){
-        if (!($enable_coverage and $got=~ /^profiling:/)){    
-        push @got, "$got";
-     }
-  }
+    if (!($enable_coverage and $got=~ /^profiling:/)){
+      push @got, $got;
+    }
   }    
 
   if ($cmd{'sort'}){   
@@ -431,7 +418,7 @@ LINE: while (not $finished and not $error) {
   }
 
   # Push delayed commands on empty lines
-  unless ($line =~ m/^(.).(.*)$/) {
+  unless ($line =~ m/^(.)(.*)$/) {
     if (defined($cmd{'cmd'}))  {
       exec_cmd(\%cmd);
       %cmd = ();
@@ -440,16 +427,14 @@ LINE: while (not $finished and not $error) {
   }     
  
   my ($cmd,$arg) = ($1,$2);
+  $arg =~ s/^ //g;
   $arg =~ s/\r//g;
   $arg =~ s/\\\\/\\/g;
   # handle the commands
   if ($cmd =~ /^#/) {    #comment
   } elsif ($cmd eq '>'){    #expected result line
     print "[TESH/debug] push expected result\n" if $opts{'debug'};
-  $arg=trim($arg);
-    if($arg ne ""){
     push @{$cmd{'out'}}, $arg;
-  }
 
   } elsif ($cmd eq '<') {    # provided input
     print "[TESH/debug] push provided input\n" if $opts{'debug'};
