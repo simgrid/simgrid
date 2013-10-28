@@ -20,6 +20,7 @@ my($time_to_wait)=0;
 my $path = $0;
 my $OS;
 my $enable_coverage=0;
+my $sort_prefix = 19;
 my $tesh_file;
 my $tesh_name;
 my $error=0;
@@ -305,9 +306,9 @@ sub parse_out {
 
   if ($cmd{'sort'}){   
     sub mysort{
-    $a cmp $b
+        substr($a, 0, $sort_prefix) cmp substr($b, 0, $sort_prefix)
     }
-    use sort qw(defaults _quicksort); # force quicksort
+    use sort 'stable';
     @got = sort mysort @got;
     #also resort the other one, as perl sort is not the same as the C one used to generate teshes
     if(defined($cmd{'out'})){
@@ -488,6 +489,9 @@ LINE: while (not $finished and not $error) {
       %cmd = ();
     }
     $cmd{'sort'} = 1;
+    if ($line =~ /^!\s*output sort\s+(\d+)/) {
+        $sort_prefix = $1;
+    }
   }
   elsif($line =~ /^!\s*output ignore/){    #output ignore
     if (defined($cmd{'cmd'})) {
