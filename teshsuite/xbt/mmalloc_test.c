@@ -21,7 +21,9 @@ int main(int argc, char**argv)
   xbt_init(&argc,argv);
 
   XBT_INFO("Allocating a new heap");
-  heapA = xbt_mheap_new(-1, ((char*)sbrk(0)) + BUFFSIZE);
+  unsigned long mask = ~((unsigned long)getpagesize() - 1);
+  void *addr = (void*)(((unsigned long)sbrk(0) + BUFFSIZE) & mask);
+  heapA = xbt_mheap_new(-1, addr);
   if (heapA == NULL) {
     perror("attach 1 failed");
     fprintf(stderr, "bye\n");
