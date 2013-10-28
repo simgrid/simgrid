@@ -34,8 +34,9 @@ SimGrid (3.10pre1) unstable; urgency=low
    Reduce
  * Add a --cfg:tracing/smpi/internals option, to trace internal communications
    happening inside a collective SMPI call.
- * Fix the behavior of complex data types handling
- * replace MPICH-1 test suite by the one from MPICH 3.0.4. Can be built using
+ * Fix the behavior of complex data types handling.
+ * Make MPI_Wtime another synchronization point to take computations into account.
+ * Replace MPICH-1 test suite by the one from MPICH 3.0.4. Can be built using
    enable_smpi_MPICH3_testsuite flag in cmake. Run with ctest.
  * Add all missing Fortran bindings, SMPI should work with Fortran 90
    (no privatization of global variables yet)

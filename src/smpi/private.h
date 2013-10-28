@@ -285,6 +285,7 @@ int smpi_coll_basic_alltoallv(void *sendbuf, int *sendcounts,
                               MPI_Comm comm);
 
 // utilities
+extern int smpi_sample_is_running;
 void smpi_bench_destroy(void);
 void smpi_bench_begin(void);
 void smpi_bench_end(void);

@@ -220,6 +220,8 @@ typedef struct {
   int benching;     /* 1: we are benchmarking; 0: we have enough data, no bench anymore */
 } local_data_t;
 
+int smpi_sample_is_running = 0;
+
 static char *sample_location(int global, const char *file, int line) {
   if (global) {
     return bprintf("%s:%d", file, line);
@@ -247,6 +249,8 @@ void smpi_sample_1(int global, const char *file, int line, int iters, double thr
   local_data_t *data;
 
   smpi_bench_end();     /* Take time from previous, unrelated computation into account */
+  smpi_sample_is_running++;
+
   if (!samples)
     samples = xbt_dict_new_homogeneous(free);
 
@@ -301,6 +305,7 @@ int smpi_sample_2(int global, const char *file, int line)
         data->count, data->iters, data->relstderr, data->threshold, data->mean);
     smpi_execute(data->mean);
 
+    smpi_sample_is_running--;
     smpi_bench_begin(); // prepare to capture future, unrelated computations
     return 0;
   }
