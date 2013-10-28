@@ -432,8 +432,11 @@ smx_action_t SIMIX_host_execute(const char *name,
     else
       ws_model->set_bound(action->execution.surf_exec, bound);
 
-    if (affinity_mask != 0)
+    if (affinity_mask != 0) {
+      /* just a double check to confirm that this host is the host where this task is running. */
+      xbt_assert(action->execution.host == host);
       ws_model->set_affinity(action->execution.surf_exec, host, affinity_mask);
+    }
   }
 
   XBT_DEBUG("Create execute action %p", action);
@@ -587,8 +590,13 @@ void SIMIX_pre_host_execution_set_affinity(smx_simcall_t simcall,
 void SIMIX_host_execution_set_affinity(smx_action_t action, smx_host_t host, unsigned long mask){
   surf_model_t ws_model = get_ws_model_from_action(action);
 
-  if(action->execution.surf_exec)
+  xbt_assert(action->type == SIMIX_ACTION_EXECUTE);
+
+  if (action->execution.surf_exec) {
+    /* just a double check to confirm that this host is the host where this task is running. */
+    xbt_assert(action->execution.host == host);
     ws_model->set_affinity(action->execution.surf_exec, host, mask);
+  }
 }
 
 void SIMIX_pre_host_execution_wait(smx_simcall_t simcall, smx_action_t action){

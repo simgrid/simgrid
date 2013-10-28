@@ -5,6 +5,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "msg_private.h"
+#include "simix/smx_private.h"
 #include "xbt/sysdep.h"
 #include "xbt/log.h"
 
@@ -63,7 +64,7 @@ msg_task_t MSG_task_create(const char *name, double compute_duration,
   simdata->source = NULL;
   simdata->priority = 1.0;
   simdata->bound = 0;
-  simdata->affinity_mask = 0;
+  simdata->affinity_mask_db = xbt_dict_new_homogeneous(NULL);
   simdata->rate = -1.0;
   simdata->isused = 0;
 
@@ -285,6 +286,8 @@ msg_error_t MSG_task_destroy(msg_task_t task)
   /* parallel tasks only */
   xbt_free(task->simdata->host_list);
 
+  xbt_dict_free(&task->simdata->affinity_mask_db);
+
   /* free main structures */
   xbt_free(task->simdata);
   xbt_free(task);
@@ -480,7 +483,39 @@ void MSG_task_set_affinity(msg_task_t task, msg_host_t host, unsigned long mask)
   xbt_assert(task, "Invalid parameter");
   xbt_assert(task->simdata, "Invalid parameter");
 
-  task->simdata->affinity_mask = mask;
-  if (task->simdata->compute)
+  if (mask == 0) {
+    /* 0 means clear */
+    xbt_dict_remove_ext(task->simdata->affinity_mask_db, (char *) host, sizeof(host));
+  } else
+    xbt_dict_set_ext(task->simdata->affinity_mask_db, (char *) host, sizeof(host), (void *) mask, NULL);
+
+  /* We set affinity data of this task. If the task is being executed, we
+   * actually change the affinity setting of the task. Otherwise, this change
+   * will be applied when the task is executed. */
+
+  if (!task->simdata->compute) {
+    /* task is not yet executed */
+    XBT_INFO("set affinity(0x%04lx@%s) for %s (not active now)", mask, MSG_host_get_name(host), MSG_task_get_name(task));
+    return;
+  }
+
+  {
+    smx_action_t compute = task->simdata->compute;
+    msg_host_t host_now = compute->execution.host;  // simix_private.h is necessary
+    if (host_now != host) {
+      /* task is not yet executed on this host */
+      XBT_INFO("set affinity(0x%04lx@%s) for %s (not active now)", mask, MSG_host_get_name(host), MSG_task_get_name(task));
+      return;
+    }
+
+    /* task is being executed on this host. so change the affinity now */
+    {
+      /* check it works. remove me if it works. */
+      unsigned long affinity_mask = (unsigned long) xbt_dict_get_or_null_ext(task->simdata->affinity_mask_db, (char *) host, sizeof(msg_host_t));
+      xbt_assert(affinity_mask == mask);
+    }
+
+    XBT_INFO("set affinity(0x%04lx@%s) for %s", mask, MSG_host_get_name(host), MSG_task_get_name(task));
     simcall_host_execution_set_affinity(task->simdata->compute, host, mask);
+  }
 }

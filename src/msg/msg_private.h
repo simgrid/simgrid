@@ -33,7 +33,10 @@ typedef struct simdata_task {
   double priority;
   double bound; /* Capping for CPU resource */
   double rate;  /* Capping for network resource */
-  unsigned long affinity_mask; /* CPU affinity */
+
+  /* CPU affinity database of this task */
+  xbt_dict_t affinity_mask_db; /* smx_host_t host => unsigned long mask */
+
   int isused;  /* Indicates whether the task is used in SIMIX currently */
   int host_nb;                  /* ==0 if sequential task; parallel task if not */
   /*******  Parallel Tasks Only !!!! *******/

@@ -272,6 +272,9 @@ static void cpu_update_resource_state(void *id,
  * How should the system formulate constraint problems for an affinity to
  * multiple cores?
  *
+ * The cpu argument must be the host where the task is being executed. The
+ * action object does not have the information about the location where the
+ * action is being executed.
  */
 static void cpu_action_set_affinity(surf_action_t action, void *cpu, unsigned long mask)
 {
@@ -310,6 +313,15 @@ static void cpu_action_set_affinity(surf_action_t action, void *cpu, unsigned lo
 
     unsigned long has_affinity = (1UL << i) & mask;
     if (has_affinity) {
+      /* This function only accepts an affinity setting on the host where the
+       * task is now running. In future, a task might move to another host.
+       * But, at this moment, this function cannot take an affinity setting on
+       * that future host.
+       *
+       * It might be possible to extend the code to allow this function to
+       * accept affinity settings on a future host. We might be able to assign
+       * zero to elem->value to maintain such inactive affinity settings in the
+       * system. But, this will make the system complex. */
       XBT_INFO("set affinity %p to cpu-%lu@%s", action, i, CPU->generic_resource.name);
       lmm_expand(cpu_model->model_private->maxmin_system, CPU->constraint_core[i], var_obj, 1.0);
     }
