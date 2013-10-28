@@ -310,9 +310,16 @@ sub parse_out {
     }
     use sort 'stable';
     @got = sort mysort @got;
+    while (@got and $got[0] eq "") {
+      shift @got;
+    }
+
     #also resort the other one, as perl sort is not the same as the C one used to generate teshes
     if(defined($cmd{'out'})){
       @{$cmd{'out'}}=sort mysort @{$cmd{'out'}};
+      while (@{$cmd{'out'}} and ${$cmd{'out'}}[0] eq "") {
+        shift @{$cmd{'out'}};
+      }
     }
   }
 
