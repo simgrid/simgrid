@@ -522,7 +522,7 @@ print "hey\n";
     $line =~ s/\r//g;
     setenv_cmd($line);
   }
-  elsif($line =~ /^!\s*include/){    #output sort
+  elsif($line =~ /^!\s*include/){    #include
     if (defined($cmd{'cmd'})) {
       exec_cmd(\%cmd);
       %cmd = ();
