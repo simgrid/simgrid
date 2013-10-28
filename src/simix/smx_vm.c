@@ -196,6 +196,9 @@ void SIMIX_pre_vm_set_bound(smx_simcall_t simcall, smx_host_t ind_vm, double bou
  */
 void SIMIX_vm_set_affinity(smx_host_t ind_vm, smx_host_t ind_pm, unsigned long mask)
 {
+  /* make sure this at the MSG layer. */
+  xbt_assert(SIMIX_vm_get_pm(ind_vm) == ind_pm);
+
   /* jump to vm_ws_set_vm_affinity(). */
   surf_vm_workstation_model->extension.vm_workstation.set_vm_affinity(ind_vm, ind_pm, mask);
 }

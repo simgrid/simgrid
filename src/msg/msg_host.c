@@ -52,6 +52,8 @@ msg_host_t __MSG_host_create(smx_host_t workstation)
   priv->dp_enabled = 0;
   priv->dp_updated_by_deleted_tasks = 0;
 
+  priv->affinity_mask_db = xbt_dict_new_homogeneous(NULL);
+
   xbt_lib_set(host_lib, name, MSG_HOST_LEVEL, priv);
   
   return xbt_lib_get_elm_or_null(host_lib, name);
@@ -142,6 +144,7 @@ void __MSG_host_priv_free(msg_host_priv_t priv)
   if (size > 0)
     XBT_WARN("dp_objs: %u pending task?", size);
   xbt_dict_free(&priv->dp_objs);
+  xbt_dict_free(&priv->affinity_mask_db);
 
 #ifdef MSG_USE_DEPRECATED
   if (msg_global->max_channel > 0)

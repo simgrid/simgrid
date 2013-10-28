@@ -51,6 +51,8 @@ typedef struct msg_host_priv {
   xbt_dict_t dp_objs;
   double     dp_updated_by_deleted_tasks;
 
+  xbt_dict_t affinity_mask_db;
+
 #ifdef MSG_USE_DEPRECATED
   msg_mailbox_t *mailboxes;     /**< the channels  */
 #endif

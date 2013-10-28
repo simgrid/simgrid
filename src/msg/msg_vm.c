@@ -328,7 +328,8 @@ static int migration_rx_fun(int argc, char *argv[])
   const char *src_pm_name  = argv[2];
   const char *dst_pm_name  = argv[3];
   msg_vm_t vm = MSG_get_host_by_name(vm_name);
-  msg_vm_t dst_pm = MSG_get_host_by_name(dst_pm_name);
+  msg_host_t src_pm = MSG_get_host_by_name(src_pm_name);
+  msg_host_t dst_pm = MSG_get_host_by_name(dst_pm_name);
 
 
   s_ws_params_t params;
@@ -362,8 +363,20 @@ static int migration_rx_fun(int argc, char *argv[])
   }
 
 
+  /* deinstall the current affinity setting */
+  simcall_vm_set_affinity(vm, src_pm, 0);
+
   simcall_vm_migrate(vm, dst_pm);
   simcall_vm_resume(vm);
+
+  /* install the affinity setting of the VM on the destination pm */
+  {
+    msg_host_priv_t priv = msg_host_resource_priv(vm);
+
+    unsigned long affinity_mask = (unsigned long) xbt_dict_get_or_null_ext(priv->affinity_mask_db, (char *) dst_pm, sizeof(msg_host_t));
+    simcall_vm_set_affinity(vm, dst_pm, affinity_mask);
+    XBT_INFO("set affinity(0x%04lx@%s) for %s", affinity_mask, MSG_host_get_name(dst_pm), MSG_host_get_name(vm));
+  }
 
   {
     char *task_name = get_mig_task_name(vm_name, src_pm_name, dst_pm_name, 4);
@@ -1268,5 +1281,17 @@ void MSG_vm_set_bound(msg_vm_t vm, double bound)
  */
 void MSG_vm_set_affinity(msg_vm_t vm, msg_host_t pm, unsigned long mask)
 {
-	return simcall_vm_set_affinity(vm, pm, mask);
+  msg_host_priv_t priv = msg_host_resource_priv(vm);
+
+  if (mask == 0)
+    xbt_dict_remove_ext(priv->affinity_mask_db, (char *) pm, sizeof(pm));
+  else
+    xbt_dict_set_ext(priv->affinity_mask_db, (char *) pm, sizeof(pm), (void *) mask, NULL);
+
+  msg_host_t pm_now = MSG_vm_get_pm(vm);
+  if (pm_now == pm) {
+    XBT_INFO("set affinity(0x%04lx@%s) for %s", mask, MSG_host_get_name(pm), MSG_host_get_name(vm));
+    simcall_vm_set_affinity(vm, pm, mask);
+  } else
+    XBT_INFO("set affinity(0x%04lx@%s) for %s (not active now)", mask, MSG_host_get_name(pm), MSG_host_get_name(vm));
 }
