@@ -869,7 +869,7 @@ void *rctx_wait(void *r)
     xbt_dynar_t a = xbt_str_split(rctx->output_got->data, "\n");
     char *out = xbt_str_join(a, "\n||");
     xbt_dynar_free(&a);
-    XBT_INFO("Output of <%s> so far: \n||%s", rctx->filepos, out);
+    XBT_INFO("Output of <%s> so far:\n||%s", rctx->filepos, out);
     free(out);
   } else if (rctx->output == e_output_check
              && (rctx->output_got->used != rctx->output_wanted->used
@@ -891,7 +891,7 @@ void *rctx_wait(void *r)
     xbt_dynar_t a = xbt_str_split(rctx->output_got->data, "\n");
     char *out = xbt_str_join(a, "\n||");
     xbt_dynar_free(&a);
-    XBT_INFO("Here is the (ignored) command output: \n||%s", out);
+    XBT_INFO("Here is the (ignored) command output:\n||%s", out);
     free(out);
   }
 
