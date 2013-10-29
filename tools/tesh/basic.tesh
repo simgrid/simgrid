@@ -32,8 +32,8 @@ $ cat tmp_fich
 > c
 > d
 
-$ wc -l tmp_fich
-> 4 tmp_fich
+$ sed -n '$=' tmp_fich
+> 4
 
 $ rm tmp_fich
 
