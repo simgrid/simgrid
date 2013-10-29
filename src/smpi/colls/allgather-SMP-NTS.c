@@ -15,10 +15,7 @@ int smpi_coll_tuned_allgather_SMP_NTS(void *sbuf, int scount,
   rextent = smpi_datatype_get_extent(rtype);
   sextent = smpi_datatype_get_extent(stype);
   int tag = COLL_TAG_ALLGATHER;
-  MPI_Request request;
-  MPI_Request rrequest_array[128];
 
-  MPI_Status status;
   int i, send_offset, recv_offset;
   int intra_rank, inter_rank;
   intra_rank = rank % NUM_CORE;
@@ -41,7 +38,7 @@ int smpi_coll_tuned_allgather_SMP_NTS(void *sbuf, int scount,
   recv_offset = rank * rextent * rcount;
   smpi_mpi_sendrecv(sbuf, scount, stype, rank, tag,
                ((char *) rbuf + recv_offset), rcount, rtype, rank, tag, comm,
-               &status);
+               MPI_STATUS_IGNORE);
 
   //gather to root of each SMP
 
@@ -57,7 +54,7 @@ int smpi_coll_tuned_allgather_SMP_NTS(void *sbuf, int scount,
 
     smpi_mpi_sendrecv(sbuf, scount, stype, dst, tag,
                  ((char *) rbuf + recv_offset), rcount, rtype, src, tag, comm,
-                 &status);
+                 MPI_STATUS_IGNORE);
 
   }
 
@@ -67,6 +64,9 @@ int smpi_coll_tuned_allgather_SMP_NTS(void *sbuf, int scount,
 
   // root of each SMP
   if (intra_rank == 0) {
+    MPI_Request *rrequest_array = xbt_new(MPI_Request, inter_comm_size - 1);
+    MPI_Request *srequest_array = xbt_new(MPI_Request, inter_comm_size - 1);
+
     src = ((inter_rank - 1 + inter_comm_size) % inter_comm_size) * NUM_CORE;
     dst = ((inter_rank + 1) % inter_comm_size) * NUM_CORE;
 
@@ -75,27 +75,28 @@ int smpi_coll_tuned_allgather_SMP_NTS(void *sbuf, int scount,
       recv_offset =
           ((inter_rank - i - 1 +
             inter_comm_size) % inter_comm_size) * NUM_CORE * sextent * scount;
-      rrequest_array[i] = smpi_mpi_irecv((char *)rbuf+recv_offset, rcount * NUM_CORE, rtype, src, tag+i, comm);
+      rrequest_array[i] = smpi_mpi_irecv((char *)rbuf + recv_offset, rcount * NUM_CORE,
+                                         rtype, src, tag + i, comm);
     }
 
     // send first message
     send_offset =
         ((inter_rank +
           inter_comm_size) % inter_comm_size) * NUM_CORE * sextent * scount;
-    smpi_mpi_isend((char *) rbuf + send_offset, scount * NUM_CORE, stype,
-                   dst, tag, comm);
+    srequest_array[0] = smpi_mpi_isend((char *)rbuf + send_offset, scount * NUM_CORE,
+                                       stype, dst, tag, comm);
 
     // loop : recv-inter , send-inter, send-intra (linear-bcast)
     for (i = 0; i < inter_comm_size - 2; i++) {
       recv_offset =
           ((inter_rank - i - 1 +
             inter_comm_size) % inter_comm_size) * NUM_CORE * sextent * scount;
-      smpi_mpi_wait(&rrequest_array[i], &status);
-      smpi_mpi_isend((char *) rbuf + recv_offset, scount * NUM_CORE, stype,
-                     dst, tag + i + 1, comm);
+      smpi_mpi_wait(&rrequest_array[i], MPI_STATUS_IGNORE);
+      srequest_array[i + 1] = smpi_mpi_isend((char *)rbuf + recv_offset, scount * NUM_CORE,
+                                             stype, dst, tag + i + 1, comm);
       if (num_core_in_current_smp > 1) {
-        request = smpi_mpi_isend((char *) rbuf + recv_offset, scount * NUM_CORE, stype,
-                  (rank + 1), tag + i + 1, comm);
+        smpi_mpi_send((char *)rbuf + recv_offset, scount * NUM_CORE,
+                      stype, (rank + 1), tag + i + 1, comm);
       }
     }
 
@@ -105,11 +106,15 @@ int smpi_coll_tuned_allgather_SMP_NTS(void *sbuf, int scount,
           inter_comm_size) % inter_comm_size) * NUM_CORE * sextent * scount;
     //recv_offset = ((inter_rank + 1) % inter_comm_size) * NUM_CORE * sextent * scount;
     //i=inter_comm_size-2;
-    smpi_mpi_wait(&rrequest_array[i], &status);
+    smpi_mpi_wait(&rrequest_array[i], MPI_STATUS_IGNORE);
     if (num_core_in_current_smp > 1) {
-      request = smpi_mpi_isend((char *) rbuf + recv_offset, scount * NUM_CORE, stype,
-                (rank + 1), tag + i + 1, comm);
+      smpi_mpi_send((char *)rbuf + recv_offset, scount * NUM_CORE,
+                                  stype, (rank + 1), tag + i + 1, comm);
     }
+
+    smpi_mpi_waitall(inter_comm_size - 1, srequest_array, MPI_STATUSES_IGNORE);
+    xbt_free(rrequest_array);
+    xbt_free(srequest_array);
   }
   // last rank of each SMP
   else if (intra_rank == (num_core_in_current_smp - 1)) {
@@ -117,9 +122,8 @@ int smpi_coll_tuned_allgather_SMP_NTS(void *sbuf, int scount,
       recv_offset =
           ((inter_rank - i - 1 +
             inter_comm_size) % inter_comm_size) * NUM_CORE * sextent * scount;
-      request = smpi_mpi_irecv((char *) rbuf + recv_offset, (rcount * NUM_CORE), rtype,
-                rank - 1, tag + i + 1, comm);
-      smpi_mpi_wait(&request, &status);
+      smpi_mpi_recv((char *) rbuf + recv_offset, (rcount * NUM_CORE), rtype,
+                    rank - 1, tag + i + 1, comm, MPI_STATUS_IGNORE);
     }
   }
   // intermediate rank of each SMP
@@ -128,11 +132,10 @@ int smpi_coll_tuned_allgather_SMP_NTS(void *sbuf, int scount,
       recv_offset =
           ((inter_rank - i - 1 +
             inter_comm_size) % inter_comm_size) * NUM_CORE * sextent * scount;
-      request = smpi_mpi_irecv((char *) rbuf + recv_offset, (rcount * NUM_CORE), rtype,
-                rank - 1, tag + i + 1, comm);
-      smpi_mpi_wait(&request, &status);
-      request = smpi_mpi_isend((char *) rbuf + recv_offset, (scount * NUM_CORE), stype,
-                (rank + 1), tag + i + 1, comm);
+      smpi_mpi_recv((char *) rbuf + recv_offset, (rcount * NUM_CORE), rtype,
+                    rank - 1, tag + i + 1, comm, MPI_STATUS_IGNORE);
+      smpi_mpi_send((char *) rbuf + recv_offset, (scount * NUM_CORE), stype,
+                    (rank + 1), tag + i + 1, comm);
     }
   }
 
