@@ -200,8 +200,7 @@ static void cpu_update_resource_state(void *id,
 
   if (event_type == cpu->power_event) {
     /* TODO (Hypervisor): do the same thing for constraint_core[i] */
-    XBT_CRITICAL("FIXME: add power scaling code also for constraint_core[i]");
-    xbt_abort();
+    xbt_assert(cpu->core == 1, "FIXME: add power scaling code also for constraint_core[i]");
 
     cpu->power_scale = value;
     lmm_update_constraint_bound(cpu_model->model_private->maxmin_system, cpu->constraint,
@@ -223,8 +222,7 @@ static void cpu_update_resource_state(void *id,
       cpu->power_event = NULL;
   } else if (event_type == cpu->state_event) {
     /* TODO (Hypervisor): do the same thing for constraint_core[i] */
-    XBT_CRITICAL("FIXME: add state change code also for constraint_core[i]");
-    xbt_abort();
+    xbt_assert(cpu->core == 1, "FIXME: add state change code also for constraint_core[i]");
 
     if (value > 0)
       cpu->state_current = SURF_RESOURCE_ON;
@@ -308,7 +306,7 @@ static void cpu_action_set_affinity(surf_action_t action, void *cpu, unsigned lo
 
   unsigned long i;
   for (i = 0; i < CPU->core; i++) {
-    XBT_INFO("clear affinity %p to cpu-%lu@%s", action, i, CPU->generic_resource.name);
+    XBT_DEBUG("clear affinity %p to cpu-%lu@%s", action, i, CPU->generic_resource.name);
     lmm_shrink(cpu_model->model_private->maxmin_system, CPU->constraint_core[i], var_obj);
 
     unsigned long has_affinity = (1UL << i) & mask;
@@ -322,13 +320,13 @@ static void cpu_action_set_affinity(surf_action_t action, void *cpu, unsigned lo
        * accept affinity settings on a future host. We might be able to assign
        * zero to elem->value to maintain such inactive affinity settings in the
        * system. But, this will make the system complex. */
-      XBT_INFO("set affinity %p to cpu-%lu@%s", action, i, CPU->generic_resource.name);
+      XBT_DEBUG("set affinity %p to cpu-%lu@%s", action, i, CPU->generic_resource.name);
       lmm_expand(cpu_model->model_private->maxmin_system, CPU->constraint_core[i], var_obj, 1.0);
     }
   }
 
   if (cpu_model->model_private->update_mechanism == UM_LAZY) {
-    XBT_WARN("FIXME (hypervisor): Do we need to do something for the LAZY mode?");
+    /* FIXME (hypervisor): Do we need to do something for the LAZY mode? */
   }
 
   XBT_OUT();

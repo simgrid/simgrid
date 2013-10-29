@@ -477,6 +477,17 @@ void MSG_task_set_bound(msg_task_t task, double bound)
  * \param host the host having a multi-core CPU
  * \param mask the value specifying the CPU affinity setting of the task
  *
+ *
+ * Note:
+ * 1. The current code does not allow an affinity of a task to multiple cores.
+ * The mask value 0x03 (i.e., a given task will be executed on the first core
+ * or the second core) is not allowed. The mask value 0x01 or 0x02 works. See
+ * cpu_cas01.c for details.
+ *
+ * 2. It is recommended to first compare simulation results in both the Lazy
+ * and Full calculation modes (using --cfg=cpu/optim:Full or not). Fix
+ * cpu_cas01.c if you find wrong results in the Lazy mode.
+ *
  */
 void MSG_task_set_affinity(msg_task_t task, msg_host_t host, unsigned long mask)
 {

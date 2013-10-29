@@ -301,13 +301,13 @@ void lmm_shrink(lmm_system_t sys, lmm_constraint_t cnst,
   }
 
   if (!found) {
-    // XBT_WARN("cnst %p is not found in var %p", cnst, var);
+    XBT_DEBUG("cnst %p is not found in var %p", cnst, var);
     return;
   }
 
   sys->modified = 1;
 
-  XBT_INFO("remove elem(value %lf, cnst %p, var %p) in var %p",
+  XBT_DEBUG("remove elem(value %lf, cnst %p, var %p) in var %p",
       elem->value, elem->constraint, elem->variable, var);
 
 
@@ -340,9 +340,6 @@ void lmm_shrink(lmm_system_t sys, lmm_constraint_t cnst,
 
   if (xbt_swag_size(&(cnst->element_set)) == 0)
     make_constraint_inactive(sys, cnst);
-
-
-
 }
 
 void lmm_expand(lmm_system_t sys, lmm_constraint_t cnst,
