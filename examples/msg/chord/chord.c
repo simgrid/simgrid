@@ -407,6 +407,9 @@ int node(int argc, char *argv[])
     }
 
     if (node.comm_receive) {
+      /* handle last task if any */
+      if (MSG_comm_wait(node.comm_receive, 0) == MSG_OK)
+        task_free(task_received);
       MSG_comm_destroy(node.comm_receive);
       node.comm_receive = NULL;
     }
@@ -514,6 +517,8 @@ static void handle_task(node_t node, msg_task_t task) {
     MSG_task_dsend(task, task_data->answer_to, task_free);
     break;
 
+  default:
+    THROW_IMPOSSIBLE;
   }
 }
 
@@ -772,7 +777,6 @@ static int remote_get_predecessor(node_t node, int ask_to)
         stop = 1;
         MSG_comm_destroy(node->comm_receive);
         node->comm_receive = NULL;
-        task_free(task_sent);
       }
       else {
         msg_task_t task_received = MSG_comm_get_task(node->comm_receive);
