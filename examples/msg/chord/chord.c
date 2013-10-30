@@ -38,6 +38,8 @@ static int periodic_fix_fingers_delay = 120;
 static int periodic_check_predecessor_delay = 120;
 static int periodic_lookup_delay = 10;
 
+static const double sleep_delay = 4.9999;
+
 extern long int smx_total_comms;
 
 /*
@@ -364,7 +366,7 @@ int node(int argc, char *argv[])
               random_lookup(&node);
             listen = 1;
           }else{
-            MSG_process_sleep(5);
+            MSG_process_sleep(sleep_delay);
             if(!MC_visited_reduction())
               no_op = 1;
           }
@@ -383,7 +385,7 @@ int node(int argc, char *argv[])
             next_lookup_date = MSG_get_clock() + periodic_lookup_delay;
           }else {
             // nothing to do: sleep for a while
-            MSG_process_sleep(5);
+            MSG_process_sleep(sleep_delay);
           }
         }
 
