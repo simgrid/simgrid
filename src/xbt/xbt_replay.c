@@ -108,7 +108,9 @@ void xbt_replay_reader_free(xbt_replay_reader_t *reader)
  */
 void xbt_replay_action_register(const char *action_name, action_fun function)
 {
-  xbt_dict_set(action_funs, str_tolower (action_name), function, NULL);
+  char* lowername = str_tolower (action_name);
+  xbt_dict_set(action_funs, lowername, function, NULL);
+  xbt_free(lowername);
 }
 
 /** \ingroup XBT_replay
@@ -118,7 +120,9 @@ void xbt_replay_action_register(const char *action_name, action_fun function)
  */
 void xbt_replay_action_unregister(const char *action_name)
 {
-  xbt_dict_remove(action_funs, str_tolower (action_name));
+  char* lowername = str_tolower (action_name);
+  xbt_dict_remove(action_funs, lowername);
+  xbt_free(lowername);
 }
 
 void _xbt_replay_action_init(void)
@@ -147,8 +151,10 @@ int xbt_replay_action_runner(int argc, char *argv[])
   if (action_fp) {              // A unique trace file
     char **evt;
     while ((evt = action_get_action(argv[0]))) {
+      char* lowername = str_tolower (evt[1]);
       action_fun function =
-        (action_fun)xbt_dict_get(action_funs, str_tolower (evt[1]));
+        (action_fun)xbt_dict_get(action_funs, lowername);
+      xbt_free(lowername);
       function((const char **)evt);
       for (i=0;evt[i]!= NULL;i++)
         free(evt[i]);
@@ -164,7 +170,9 @@ int xbt_replay_action_runner(int argc, char *argv[])
     xbt_replay_reader_t reader = xbt_replay_reader_new(argv[1]);
     while ((evt=xbt_replay_reader_get(reader))) {
       if (!strcmp(argv[0],evt[0])) {
-        action_fun function = (action_fun)xbt_dict_get(action_funs, str_tolower (evt[1]));
+        char* lowername = str_tolower (evt[1]);
+        action_fun function = (action_fun)xbt_dict_get(action_funs, lowername);
+        xbt_free(lowername);
         function(evt);
       } else {
         XBT_WARN("%s: Ignore trace element not for me",

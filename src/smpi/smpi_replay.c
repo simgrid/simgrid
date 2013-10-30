@@ -402,7 +402,7 @@ static void action_waitall(const char *const *action){
     }
    }
    int rank_traced = smpi_process_index();
-   instr_extra_data extra = xbt_new(s_instr_extra_data_t,1);
+   instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
    extra->type = TRACING_WAITALL;
    extra->send_size=count_requests;
    TRACE_smpi_ptp_in(rank_traced, -1, -1, __FUNCTION__,extra);
