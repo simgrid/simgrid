@@ -117,6 +117,16 @@ static char *TRACE_smpi_get_key(int src, int dst, char *key, int n)
 
 static xbt_dict_t process_category;
 
+static void cleanup_extra_data (instr_extra_data extra){
+  if(extra!=NULL){
+    if(extra->sendcounts!=NULL)
+      xbt_free(extra->sendcounts);
+    if(extra->recvcounts!=NULL)
+      xbt_free(extra->recvcounts);
+    xbt_free(extra);
+  }
+}
+
 void TRACE_internal_smpi_set_category (const char *category)
 {
   if (!TRACE_smpi_is_enabled()) return;
@@ -183,7 +193,10 @@ void TRACE_smpi_finalize(int rank)
 
 void TRACE_smpi_collective_in(int rank, int root, const char *operation, instr_extra_data extra)
 {
-  if (!TRACE_smpi_is_enabled()) return;
+  if (!TRACE_smpi_is_enabled()) {
+      cleanup_extra_data(extra);
+      return;
+  }
 
   char str[INSTR_DEFAULT_STR_SIZE];
   smpi_container(rank, str, INSTR_DEFAULT_STR_SIZE);
@@ -226,7 +239,10 @@ void TRACE_smpi_computing_init(int rank)
 void TRACE_smpi_computing_in(int rank, instr_extra_data extra)
 {
   //do not forget to set the color first, otherwise this will explode
-  if (!TRACE_smpi_is_enabled()|| !TRACE_smpi_is_computing()) return;
+  if (!TRACE_smpi_is_enabled()|| !TRACE_smpi_is_computing()) {
+      cleanup_extra_data(extra);
+      return;
+  }
 
   char str[INSTR_DEFAULT_STR_SIZE];
   smpi_container(rank, str, INSTR_DEFAULT_STR_SIZE);
@@ -248,8 +264,10 @@ void TRACE_smpi_computing_out(int rank)
 
 void TRACE_smpi_ptp_in(int rank, int src, int dst, const char *operation, instr_extra_data extra)
 {
-  if (!TRACE_smpi_is_enabled()) return;
-
+  if (!TRACE_smpi_is_enabled()) {
+      cleanup_extra_data(extra);
+      return;
+  }
 
   char str[INSTR_DEFAULT_STR_SIZE];
   smpi_container(rank, str, INSTR_DEFAULT_STR_SIZE);
