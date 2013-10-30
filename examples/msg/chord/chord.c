@@ -293,11 +293,9 @@ int node(int argc, char *argv[])
   double next_check_predecessor_date = init_time + periodic_check_predecessor_delay;
   double next_lookup_date = init_time + periodic_lookup_delay;
 
-  #ifdef HAVE_MC
   int listen = 0;
   int no_op = 0;
   int sub_protocol = 0;
-  #endif
 
   xbt_assert(argc == 3 || argc == 5, "Wrong number of arguments for this node");
 
@@ -351,7 +349,6 @@ int node(int argc, char *argv[])
 
         // no task was received: make some periodic calls
 
-#ifdef HAVE_MC
         if(MC_is_active()){
           if(!MC_visited_reduction() && no_op){
               MC_cut();
@@ -389,24 +386,6 @@ int node(int argc, char *argv[])
             MSG_process_sleep(5);
           }
         }
-#else
-        if (MSG_get_clock() >= next_stabilize_date) {
-          stabilize(&node);
-          next_stabilize_date = MSG_get_clock() + periodic_stabilize_delay;
-        }else if (MSG_get_clock() >= next_fix_fingers_date) {
-          fix_fingers(&node);
-          next_fix_fingers_date = MSG_get_clock() + periodic_fix_fingers_delay;
-        }else if (MSG_get_clock() >= next_check_predecessor_date) {
-          check_predecessor(&node);
-          next_check_predecessor_date = MSG_get_clock() + periodic_check_predecessor_delay;
-        }else if (MSG_get_clock() >= next_lookup_date) {
-          random_lookup(&node);
-          next_lookup_date = MSG_get_clock() + periodic_lookup_delay;
-        }else {
-          // nothing to do: sleep for a while
-          MSG_process_sleep(5);
-        }
-#endif
 
       } else {
         // a transfer has occurred
