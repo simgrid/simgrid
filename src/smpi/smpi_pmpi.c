@@ -32,7 +32,7 @@ int PMPI_Init(int *argc, char ***argv)
   int rank = smpi_process_index();
   TRACE_smpi_init(rank);
   TRACE_smpi_computing_init(rank);
-  instr_extra_data extra = xbt_new(s_instr_extra_data_t,1);
+  instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
   extra->type = TRACING_INIT;
   TRACE_smpi_collective_in(rank, -1, __FUNCTION__, extra);
   TRACE_smpi_collective_out(rank, -1, __FUNCTION__);
@@ -46,7 +46,7 @@ int PMPI_Finalize(void)
   smpi_bench_end();
 #ifdef HAVE_TRACING
   int rank = smpi_process_index();
-  instr_extra_data extra = xbt_new(s_instr_extra_data_t,1);
+  instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
   extra->type = TRACING_FINALIZE;
   TRACE_smpi_collective_in(rank, -1, __FUNCTION__, extra);
 #endif
@@ -564,7 +564,7 @@ int PMPI_Group_excl(MPI_Group group, int n, int *ranks, MPI_Group * newgroup)
       newsize = oldsize - n;
       *newgroup = smpi_group_new(newsize);
 
-      int* to_exclude=xbt_new(int, smpi_group_size(group));
+      int* to_exclude=xbt_new0(int, smpi_group_size(group));
       for(i=0; i<oldsize; i++)
         to_exclude[i]=0;
       for(i=0; i<n; i++)
@@ -1058,7 +1058,7 @@ int PMPI_Irecv(void *buf, int count, MPI_Datatype datatype, int src,
     int rank = comm != MPI_COMM_NULL ? smpi_process_index() : -1;
     int src_traced = smpi_group_index(smpi_comm_group(comm), src);
 
-    instr_extra_data extra = xbt_new(s_instr_extra_data_t,1);
+    instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
     extra->type = TRACING_IRECV;
     extra->send_size = count;
     extra->src = src_traced;
@@ -1112,7 +1112,7 @@ int PMPI_Isend(void *buf, int count, MPI_Datatype datatype, int dst,
     int rank = comm != MPI_COMM_NULL ? smpi_process_index() : -1;
     int dst_traced = smpi_group_index(smpi_comm_group(comm), dst);
 
-    instr_extra_data extra = xbt_new(s_instr_extra_data_t,1);
+    instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
     extra->type = TRACING_ISEND;
     extra->send_size = count;
     extra->src = rank;
@@ -1165,7 +1165,7 @@ int PMPI_Issend(void* buf, int count, MPI_Datatype datatype,
 #ifdef HAVE_TRACING
     int rank = comm != MPI_COMM_NULL ? smpi_process_index() : -1;
     int dst_traced = smpi_group_index(smpi_comm_group(comm), dst);
-    instr_extra_data extra = xbt_new(s_instr_extra_data_t,1);
+    instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
     extra->type = TRACING_ISSEND;
     extra->send_size = count;
     extra->src = rank;
@@ -1216,7 +1216,7 @@ int PMPI_Recv(void *buf, int count, MPI_Datatype datatype, int src, int tag,
 #ifdef HAVE_TRACING
   int rank = comm != MPI_COMM_NULL ? smpi_process_index() : -1;
   int src_traced = smpi_group_index(smpi_comm_group(comm), src);
-  instr_extra_data extra = xbt_new(s_instr_extra_data_t,1);
+  instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
   extra->type = TRACING_RECV;
   extra->send_size = count;
   extra->src = src_traced;
@@ -1266,7 +1266,7 @@ int PMPI_Send(void *buf, int count, MPI_Datatype datatype, int dst, int tag,
 #ifdef HAVE_TRACING
   int rank = comm != MPI_COMM_NULL ? smpi_process_index() : -1;
   int dst_traced = smpi_group_index(smpi_comm_group(comm), dst);
-  instr_extra_data extra = xbt_new(s_instr_extra_data_t,1);
+  instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
   extra->type = TRACING_SEND;
   extra->send_size = count;
   extra->src = rank;
@@ -1314,7 +1314,7 @@ int PMPI_Ssend(void* buf, int count, MPI_Datatype datatype, int dst, int tag, MP
  #ifdef HAVE_TRACING
    int rank = comm != MPI_COMM_NULL ? smpi_process_index() : -1;
    int dst_traced = smpi_group_index(smpi_comm_group(comm), dst);
-   instr_extra_data extra = xbt_new(s_instr_extra_data_t,1);
+   instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
    extra->type = TRACING_SSEND;
    extra->send_size = count;
    extra->src = rank;
@@ -1368,7 +1368,7 @@ int PMPI_Sendrecv(void *sendbuf, int sendcount, MPI_Datatype sendtype,
   int rank = comm != MPI_COMM_NULL ? smpi_process_index() : -1;
   int dst_traced = smpi_group_index(smpi_comm_group(comm), dst);
   int src_traced = smpi_group_index(smpi_comm_group(comm), src);
-  instr_extra_data extra = xbt_new(s_instr_extra_data_t,1);
+  instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
   extra->type = TRACING_SENDRECV;
   extra->send_size = sendcount;
   extra->recv_size = recvcount;
@@ -1410,7 +1410,7 @@ int PMPI_Sendrecv_replace(void *buf, int count, MPI_Datatype datatype,
       retval = MPI_ERR_COUNT;
   } else {
     int size = smpi_datatype_get_extent(datatype) * count;
-    recvbuf = xbt_new(char, size);
+    recvbuf = xbt_new0(char, size);
     retval =
         MPI_Sendrecv(buf, count, datatype, dst, sendtag, recvbuf, count,
                      datatype, src, recvtag, comm, status);
@@ -1540,7 +1540,7 @@ int PMPI_Wait(MPI_Request * request, MPI_Status * status)
     int dst_traced = (*request)->dst;
     MPI_Comm comm = (*request)->comm;
     int is_wait_for_receive = (*request)->recv;
-    instr_extra_data extra = xbt_new(s_instr_extra_data_t,1);
+    instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
     extra->type = TRACING_WAIT;
     TRACE_smpi_ptp_in(rank, src_traced, dst_traced, __FUNCTION__, extra);
 #endif
@@ -1574,10 +1574,10 @@ int PMPI_Waitany(int count, MPI_Request requests[], int *index, MPI_Status * sta
 #ifdef HAVE_TRACING
   //save requests information for tracing
   int i;
-  int *srcs = xbt_new(int, count);
-  int *dsts = xbt_new(int, count);
-  int *recvs = xbt_new(int, count);
-  MPI_Comm *comms = xbt_new(MPI_Comm, count);
+  int *srcs = xbt_new0(int, count);
+  int *dsts = xbt_new0(int, count);
+  int *recvs = xbt_new0(int, count);
+  MPI_Comm *comms = xbt_new0(MPI_Comm, count);
 
   for (i = 0; i < count; i++) {
     MPI_Request req = requests[i];      //already received requests are no longer valid
@@ -1589,7 +1589,7 @@ int PMPI_Waitany(int count, MPI_Request requests[], int *index, MPI_Status * sta
     }
   }
   int rank_traced = smpi_process_index();
-  instr_extra_data extra = xbt_new(s_instr_extra_data_t,1);
+  instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
   extra->type = TRACING_WAITANY;
   extra->send_size=count;
   TRACE_smpi_ptp_in(rank_traced, -1, -1, __FUNCTION__,extra);
@@ -1633,11 +1633,11 @@ int PMPI_Waitall(int count, MPI_Request requests[], MPI_Status status[])
 #ifdef HAVE_TRACING
   //save information from requests
   int i;
-  int *srcs = xbt_new(int, count);
-  int *dsts = xbt_new(int, count);
-  int *recvs = xbt_new(int, count);
-  int *valid = xbt_new(int, count);
-  MPI_Comm *comms = xbt_new(MPI_Comm, count);
+  int *srcs = xbt_new0(int, count);
+  int *dsts = xbt_new0(int, count);
+  int *recvs = xbt_new0(int, count);
+  int *valid = xbt_new0(int, count);
+  MPI_Comm *comms = xbt_new0(MPI_Comm, count);
 
   //int valid_count = 0;
   for (i = 0; i < count; i++) {
@@ -1653,7 +1653,7 @@ int PMPI_Waitall(int count, MPI_Request requests[], MPI_Status status[])
     }
   }
   int rank_traced = smpi_process_index();
-  instr_extra_data extra = xbt_new(s_instr_extra_data_t,1);
+  instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
   extra->type = TRACING_WAITALL;
   extra->send_size=count;
   TRACE_smpi_ptp_in(rank_traced, -1, -1, __FUNCTION__,extra);
@@ -1734,7 +1734,7 @@ int PMPI_Bcast(void *buf, int count, MPI_Datatype datatype, int root, MPI_Comm c
   int rank = comm != MPI_COMM_NULL ? smpi_process_index() : -1;
   int root_traced = smpi_group_index(smpi_comm_group(comm), root);
 
-  instr_extra_data extra = xbt_new(s_instr_extra_data_t,1);
+  instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
   extra->type = TRACING_BCAST;
   extra->send_size = count;
   extra->root = root_traced;
@@ -1764,7 +1764,7 @@ int PMPI_Barrier(MPI_Comm comm)
   } else {
 #ifdef HAVE_TRACING
   int rank = comm != MPI_COMM_NULL ? smpi_process_index() : -1;
-  instr_extra_data extra = xbt_new(s_instr_extra_data_t,1);
+  instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
   extra->type = TRACING_BARRIER;
   TRACE_smpi_collective_in(rank, -1, __FUNCTION__, extra);
 #endif
@@ -1807,7 +1807,7 @@ int PMPI_Gather(void *sendbuf, int sendcount, MPI_Datatype sendtype,
 #ifdef HAVE_TRACING
   int rank = comm != MPI_COMM_NULL ? smpi_process_index() : -1;
   int root_traced = smpi_group_index(smpi_comm_group(comm), root);
-  instr_extra_data extra = xbt_new(s_instr_extra_data_t,1);
+  instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
   extra->type = TRACING_GATHER;
   extra->send_size = sendtmpcount;
   extra->recv_size = recvcount;
@@ -1862,7 +1862,7 @@ int PMPI_Gatherv(void *sendbuf, int sendcount, MPI_Datatype sendtype,
   int root_traced = smpi_group_index(smpi_comm_group(comm), root);
   int i=0;
   int size = smpi_comm_size(comm);
-  instr_extra_data extra = xbt_new(s_instr_extra_data_t,1);
+  instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
   extra->type = TRACING_GATHERV;
   extra->send_size = sendtmpcount;
   extra->recvcounts= xbt_malloc(size*sizeof(int));
@@ -1911,7 +1911,7 @@ int PMPI_Allgather(void *sendbuf, int sendcount, MPI_Datatype sendtype,
     }
 #ifdef HAVE_TRACING
   int rank = comm != MPI_COMM_NULL ? smpi_process_index() : -1;
-  instr_extra_data extra = xbt_new(s_instr_extra_data_t,1);
+  instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
   extra->type = TRACING_ALLGATHER;
   extra->send_size = sendcount;
   extra->recv_size = recvcount;
@@ -1960,7 +1960,7 @@ int PMPI_Allgatherv(void *sendbuf, int sendcount, MPI_Datatype sendtype,
   int rank = comm != MPI_COMM_NULL ? smpi_process_index() : -1;
   int i=0;
   int size = smpi_comm_size(comm);
-  instr_extra_data extra = xbt_new(s_instr_extra_data_t,1);
+  instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
   extra->type = TRACING_ALLGATHERV;
   extra->send_size = sendcount;
   extra->recvcounts= xbt_malloc(size*sizeof(int));
@@ -2006,7 +2006,7 @@ int PMPI_Scatter(void *sendbuf, int sendcount, MPI_Datatype sendtype,
 #ifdef HAVE_TRACING
   int rank = comm != MPI_COMM_NULL ? smpi_process_index() : -1;
   int root_traced = smpi_group_index(smpi_comm_group(comm), root);
-  instr_extra_data extra = xbt_new(s_instr_extra_data_t,1);
+  instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
   extra->type = TRACING_SCATTER;
   extra->send_size = sendcount;
   extra->recv_size= recvcount;
@@ -2053,7 +2053,7 @@ int PMPI_Scatterv(void *sendbuf, int *sendcounts, int *displs,
   int root_traced = smpi_group_index(smpi_comm_group(comm), root);
   int i=0;
   int size = smpi_comm_size(comm);
-  instr_extra_data extra = xbt_new(s_instr_extra_data_t,1);
+  instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
   extra->type = TRACING_SCATTERV;
   extra->recv_size = recvcount;
   extra->sendcounts= xbt_malloc(size*sizeof(int));
@@ -2094,7 +2094,7 @@ int PMPI_Reduce(void *sendbuf, void *recvbuf, int count,
 #ifdef HAVE_TRACING
   int rank = comm != MPI_COMM_NULL ? smpi_process_index() : -1;
   int root_traced = smpi_group_index(smpi_comm_group(comm), root);
-  instr_extra_data extra = xbt_new(s_instr_extra_data_t,1);
+  instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
   extra->type = TRACING_REDUCE;
   extra->send_size = count;
   extra->datatype1 = encode_datatype(datatype);
@@ -2151,7 +2151,7 @@ int PMPI_Allreduce(void *sendbuf, void *recvbuf, int count,
     }
 #ifdef HAVE_TRACING
   int rank = comm != MPI_COMM_NULL ? smpi_process_index() : -1;
-  instr_extra_data extra = xbt_new(s_instr_extra_data_t,1);
+  instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
   extra->type = TRACING_ALLREDUCE;
   extra->send_size = count;
   extra->datatype1 = encode_datatype(datatype);
@@ -2190,7 +2190,7 @@ int PMPI_Scan(void *sendbuf, void *recvbuf, int count,
   } else {
 #ifdef HAVE_TRACING
   int rank = comm != MPI_COMM_NULL ? smpi_process_index() : -1;
-  instr_extra_data extra = xbt_new(s_instr_extra_data_t,1);
+  instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
   extra->type = TRACING_SCAN;
   extra->send_size = count;
   extra->datatype1 = encode_datatype(datatype);
@@ -2223,7 +2223,7 @@ int PMPI_Exscan(void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype,
   } else {
 #ifdef HAVE_TRACING
   int rank = comm != MPI_COMM_NULL ? smpi_process_index() : -1;
-  instr_extra_data extra = xbt_new(s_instr_extra_data_t,1);
+  instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
   extra->type = TRACING_EXSCAN;
   extra->send_size = count;
   extra->datatype1 = encode_datatype(datatype);
@@ -2260,7 +2260,7 @@ int PMPI_Reduce_scatter(void *sendbuf, void *recvbuf, int *recvcounts,
   int rank = comm != MPI_COMM_NULL ? smpi_process_index() : -1;
   int i=0;
   int size = smpi_comm_size(comm);
-  instr_extra_data extra = xbt_new(s_instr_extra_data_t,1);
+  instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
   extra->type = TRACING_REDUCE_SCATTER;
   extra->send_size = 0;
   extra->recvcounts= xbt_malloc(size*sizeof(int));
@@ -2307,7 +2307,7 @@ int PMPI_Reduce_scatter_block(void *sendbuf, void *recvbuf, int recvcount,
 
 #ifdef HAVE_TRACING
   int rank = comm != MPI_COMM_NULL ? smpi_process_index() : -1;
-  instr_extra_data extra = xbt_new(s_instr_extra_data_t,1);
+  instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
   extra->type = TRACING_REDUCE_SCATTER;
   extra->send_size = 0;
   extra->recvcounts= xbt_malloc(count*sizeof(int));
@@ -2349,7 +2349,7 @@ int PMPI_Alltoall(void *sendbuf, int sendcount, MPI_Datatype sendtype,
   } else {
 #ifdef HAVE_TRACING
   int rank = comm != MPI_COMM_NULL ? smpi_process_index() : -1;
-  instr_extra_data extra = xbt_new(s_instr_extra_data_t,1);
+  instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
   extra->type = TRACING_ALLTOALL;
   extra->send_size = sendcount;
   extra->recv_size = recvcount;
@@ -2389,7 +2389,7 @@ int PMPI_Alltoallv(void *sendbuf, int *sendcounts, int *senddisps,
   int rank = comm != MPI_COMM_NULL ? smpi_process_index() : -1;
   int i=0;
   int size = smpi_comm_size(comm);
-  instr_extra_data extra = xbt_new(s_instr_extra_data_t,1);
+  instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
   extra->type = TRACING_ALLTOALLV;
   extra->send_size = 0;
   extra->recv_size = 0;

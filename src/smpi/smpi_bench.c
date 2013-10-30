@@ -144,7 +144,7 @@ static void smpi_execute(double duration)
         sg_cfg_get_double("smpi/running_power");
 #ifdef HAVE_TRACING
     int rank = smpi_process_index();
-    instr_extra_data extra = xbt_new(s_instr_extra_data_t,1);
+    instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
     extra->type=TRACING_COMPUTING;
     extra->comp_size=flops;
     TRACE_smpi_computing_in(rank, extra);

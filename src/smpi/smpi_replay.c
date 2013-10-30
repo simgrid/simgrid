@@ -170,7 +170,7 @@ static void action_compute(const char *const *action)
   double flops= parse_double(action[2]);
 #ifdef HAVE_TRACING
   int rank = smpi_comm_rank(MPI_COMM_WORLD);
-  instr_extra_data extra = xbt_new(s_instr_extra_data_t,1);
+  instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
   extra->type=TRACING_COMPUTING;
   extra->comp_size=flops;
   TRACE_smpi_computing_in(rank, extra);
@@ -199,7 +199,7 @@ static void action_send(const char *const *action)
   int rank = smpi_comm_rank(MPI_COMM_WORLD);
 
   int dst_traced = smpi_group_rank(smpi_comm_group(MPI_COMM_WORLD), to);
-  instr_extra_data extra = xbt_new(s_instr_extra_data_t,1);
+  instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
   extra->type = TRACING_SEND;
   extra->send_size = size;
   extra->src = rank;
@@ -232,7 +232,7 @@ static void action_Isend(const char *const *action)
 #ifdef HAVE_TRACING
   int rank = smpi_comm_rank(MPI_COMM_WORLD);
   int dst_traced = smpi_group_rank(smpi_comm_group(MPI_COMM_WORLD), to);
-  instr_extra_data extra = xbt_new(s_instr_extra_data_t,1);
+  instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
   extra->type = TRACING_ISEND;
   extra->send_size = size;
   extra->src = rank;
@@ -267,7 +267,7 @@ static void action_recv(const char *const *action) {
   int rank = smpi_comm_rank(MPI_COMM_WORLD);
   int src_traced = smpi_group_rank(smpi_comm_group(MPI_COMM_WORLD), from);
 
-  instr_extra_data extra = xbt_new(s_instr_extra_data_t,1);
+  instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
   extra->type = TRACING_RECV;
   extra->send_size = size;
   extra->src = src_traced;
@@ -302,7 +302,7 @@ static void action_Irecv(const char *const *action)
 #ifdef HAVE_TRACING
   int rank = smpi_comm_rank(MPI_COMM_WORLD);
   int src_traced = smpi_group_rank(smpi_comm_group(MPI_COMM_WORLD), from);
-  instr_extra_data extra = xbt_new(s_instr_extra_data_t,1);
+  instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
   extra->type = TRACING_IRECV;
   extra->send_size = size;
   extra->src = src_traced;
@@ -343,7 +343,7 @@ static void action_wait(const char *const *action){
   int src_traced = smpi_group_rank(group, request->src);
   int dst_traced = smpi_group_rank(group, request->dst);
   int is_wait_for_receive = request->recv;
-  instr_extra_data extra = xbt_new(s_instr_extra_data_t,1);
+  instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
   extra->type = TRACING_WAIT;
   TRACE_smpi_ptp_in(rank, src_traced, dst_traced, __FUNCTION__, extra);
 #endif
@@ -436,7 +436,7 @@ static void action_barrier(const char *const *action){
   double clock = smpi_process_simulated_elapsed();
 #ifdef HAVE_TRACING
   int rank = smpi_comm_rank(MPI_COMM_WORLD);
-  instr_extra_data extra = xbt_new(s_instr_extra_data_t,1);
+  instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
   extra->type = TRACING_BARRIER;
   TRACE_smpi_collective_in(rank, -1, __FUNCTION__, extra);
 #endif
@@ -471,7 +471,7 @@ static void action_bcast(const char *const *action)
   int rank = smpi_comm_rank(MPI_COMM_WORLD);
   int root_traced = smpi_group_index(smpi_comm_group(MPI_COMM_WORLD), root);
 
-  instr_extra_data extra = xbt_new(s_instr_extra_data_t,1);
+  instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
   extra->type = TRACING_BCAST;
   extra->send_size = size;
   extra->root = root_traced;
@@ -506,7 +506,7 @@ static void action_reduce(const char *const *action)
 #ifdef HAVE_TRACING
   int rank = smpi_comm_rank(MPI_COMM_WORLD);
   int root_traced = smpi_group_rank(smpi_comm_group(MPI_COMM_WORLD), root);
-  instr_extra_data extra = xbt_new(s_instr_extra_data_t,1);
+  instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
   extra->type = TRACING_REDUCE;
   extra->send_size = comm_size;
   extra->comp_size = comp_size;
@@ -534,7 +534,7 @@ static void action_allReduce(const char *const *action) {
   double clock = smpi_process_simulated_elapsed();
 #ifdef HAVE_TRACING
   int rank = smpi_comm_rank(MPI_COMM_WORLD);
-  instr_extra_data extra = xbt_new(s_instr_extra_data_t,1);
+  instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
   extra->type = TRACING_ALLREDUCE;
   extra->send_size = comm_size;
   extra->comp_size = comp_size;
@@ -572,7 +572,7 @@ static void action_allToAll(const char *const *action) {
 
 #ifdef HAVE_TRACING
   int rank = smpi_process_index();
-  instr_extra_data extra = xbt_new(s_instr_extra_data_t,1);
+  instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
   extra->type = TRACING_ALLTOALL;
   extra->send_size = send_size;
   extra->recv_size = recv_size;
@@ -629,7 +629,7 @@ static void action_gather(const char *const *action) {
     recv = calloc(recv_size*comm_size, smpi_datatype_size(MPI_CURRENT_TYPE2));
 
 #ifdef HAVE_TRACING
-  instr_extra_data extra = xbt_new(s_instr_extra_data_t,1);
+  instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
   extra->type = TRACING_GATHER;
   extra->send_size = send_size;
   extra->recv_size = recv_size;
@@ -690,7 +690,7 @@ static void action_reducescatter(const char *const *action) {
   }
 
 #ifdef HAVE_TRACING
-  instr_extra_data extra = xbt_new(s_instr_extra_data_t,1);
+  instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
   extra->type = TRACING_REDUCE_SCATTER;
   extra->send_size = 0;
   extra->recvcounts= xbt_malloc(comm_size*sizeof(int));
@@ -760,7 +760,7 @@ static void action_allgatherv(const char *const *action) {
 
 #ifdef HAVE_TRACING
   int rank = smpi_process_index();
-  instr_extra_data extra = xbt_new(s_instr_extra_data_t,1);
+  instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
   extra->type = TRACING_ALLGATHERV;
   extra->send_size = sendcount;
   extra->recvcounts= xbt_malloc(comm_size*sizeof(int));
@@ -837,7 +837,7 @@ static void action_allToAllv(const char *const *action) {
   int rank = smpi_process_index();
   int count=0;
   for(i=0;i<comm_size;i++) count+=sendcounts[i];
-  instr_extra_data extra = xbt_new(s_instr_extra_data_t,1);
+  instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
   extra->type = TRACING_ALLTOALLV;
   extra->send_size = count;
   extra->recvcounts= xbt_malloc(comm_size*sizeof(int));
@@ -877,7 +877,7 @@ void smpi_replay_init(int *argc, char***argv){
   int rank = smpi_process_index();
   TRACE_smpi_init(rank);
   TRACE_smpi_computing_init(rank);
-  instr_extra_data extra = xbt_new(s_instr_extra_data_t,1);
+  instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
   extra->type = TRACING_INIT;
   TRACE_smpi_collective_in(rank, -1, __FUNCTION__, extra);
   TRACE_smpi_collective_out(rank, -1, __FUNCTION__);
@@ -930,7 +930,7 @@ int smpi_replay_finalize(){
   smpi_mpi_barrier(MPI_COMM_WORLD);
 #ifdef HAVE_TRACING
   int rank = smpi_process_index();
-  instr_extra_data extra = xbt_new(s_instr_extra_data_t,1);
+  instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
   extra->type = TRACING_FINALIZE;
   TRACE_smpi_collective_in(rank, -1, __FUNCTION__, extra);
 #endif
