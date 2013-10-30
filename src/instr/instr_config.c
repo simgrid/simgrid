@@ -102,8 +102,22 @@ int TRACE_start()
   if (TRACE_is_enabled() && TRACE_is_configured()) {
     XBT_DEBUG("Tracing starts");
 
+    /* init the tracing module to generate the right output */
     /* open the trace file */
-    TRACE_paje_start();
+
+    const char* format = sg_cfg_get_string("tracing/smpi/format");
+    XBT_DEBUG("Tracing format %s\n", format);
+    if(!strcmp(format, "Paje")){
+      TRACE_paje_init();
+      TRACE_paje_start();
+    }else if (!strcmp(format, "TI")){
+      TRACE_TI_init();
+      TRACE_TI_start();
+    }else{
+    xbt_die("Unknown trace format :%s ", format);
+    }
+
+
 
     /* activate trace */
     if (trace_active == 1) {
@@ -558,7 +572,7 @@ void TRACE_help (int detailed)
       "is the more relevant to the collective (total sent by the process, usually)",
       detailed);
   print_line (OPT_TRACING_FORMAT, "Only works for SMPI now. Switch output format",
-      "Default format is Paje. Time independant traces are also supported, \n"
+      "Default format is Paje. Time independent traces are also supported, \n"
       "to output traces that can later be used by the trace replay tool",
       detailed);
   print_line (OPT_TRACING_COMMENT, "Comment to be added on the top of the trace file.",

@@ -7,6 +7,7 @@
 #ifndef SMPI_PRIVATE_H
 #define SMPI_PRIVATE_H
 
+#include "internal_config.h"
 #include "xbt.h"
 #include "xbt/xbt_os_time.h"
 #include "simgrid/simix.h"
@@ -192,6 +193,8 @@ MPI_Request smpi_isend_init(void *buf, int count, MPI_Datatype datatype,
                             int dst, int tag, MPI_Comm comm);
 MPI_Request smpi_mpi_isend(void *buf, int count, MPI_Datatype datatype,
                            int dst, int tag, MPI_Comm comm);
+MPI_Request smpi_issend_init(void *buf, int count, MPI_Datatype datatype,
+                            int dst, int tag, MPI_Comm comm);
 MPI_Request smpi_mpi_issend(void *buf, int count, MPI_Datatype datatype,
                            int dst, int tag, MPI_Comm comm);
 MPI_Request smpi_irecv_init(void *buf, int count, MPI_Datatype datatype,
@@ -548,10 +551,22 @@ void mpi_comm_get_parent_ ( int*parent, int* ierr);
 /* from smpi_instr.c */
 void TRACE_internal_smpi_set_category (const char *category);
 const char *TRACE_internal_smpi_get_category (void);
-void TRACE_smpi_collective_in(int rank, int root, const char *operation, int size);
+void TRACE_smpi_collective_in(int rank, int root, const char *operation, instr_extra_data extra);
 void TRACE_smpi_collective_out(int rank, int root, const char *operation);
 void TRACE_smpi_computing_init(int rank);
 void TRACE_smpi_computing_out(int rank);
-void TRACE_smpi_computing_in(int rank);
+void TRACE_smpi_computing_in(int rank, instr_extra_data extra);
+void TRACE_smpi_alloc(void);
+void TRACE_smpi_release(void);
+void TRACE_smpi_ptp_in(int rank, int src, int dst, const char *operation,  instr_extra_data extra);
+void TRACE_smpi_ptp_out(int rank, int src, int dst, const char *operation);
+void TRACE_smpi_send(int rank, int src, int dst, int size);
+void TRACE_smpi_recv(int rank, int src, int dst);
+void TRACE_smpi_init(int rank);
+void TRACE_smpi_finalize(int rank);
+
+
+const char* encode_datatype(MPI_Datatype datatype);
+
 
 #endif
