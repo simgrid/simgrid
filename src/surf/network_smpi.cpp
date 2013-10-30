@@ -88,7 +88,7 @@ void NetworkSmpiModel::gapAppend(double size, const NetworkCm02LinkLmmPtr link, 
 
   if (sg_sender_gap > 0.0) {
     if (!gap_lookup) {
-      gap_lookup = xbt_dict_new();
+      gap_lookup = xbt_dict_new_homogeneous(NULL);
     }
     fifo = (xbt_fifo_t) xbt_dict_get_or_null(gap_lookup, src);
     action->m_senderGap = 0.0;
@@ -151,12 +151,12 @@ double NetworkSmpiModel::bandwidthFactor(double size)
   double current=1.0;
   xbt_dynar_foreach(smpi_bw_factor, iter, fact) {
     if (size <= fact.factor) {
-      XBT_DEBUG("%lf <= %ld return %f", size, fact.factor, current);
+      XBT_DEBUG("%f <= %ld return %f", size, fact.factor, current);
       return current;
     }else
       current=fact.value;
   }
-  XBT_DEBUG("%lf > %ld return %f", size, fact.factor, current);
+  XBT_DEBUG("%f > %ld return %f", size, fact.factor, current);
 
   return current;
 }
@@ -171,12 +171,12 @@ double NetworkSmpiModel::latencyFactor(double size)
   double current=1.0;
   xbt_dynar_foreach(smpi_lat_factor, iter, fact) {
     if (size <= fact.factor) {
-      XBT_DEBUG("%lf <= %ld return %f", size, fact.factor, current);
+      XBT_DEBUG("%f <= %ld return %f", size, fact.factor, current);
       return current;
     }else
       current=fact.value;
   }
-  XBT_DEBUG("%lf > %ld return %f", size, fact.factor, current);
+  XBT_DEBUG("%f > %ld return %f", size, fact.factor, current);
 
   return current;
 }

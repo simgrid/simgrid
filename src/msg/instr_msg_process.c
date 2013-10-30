@@ -1,11 +1,10 @@
-/* Copyright (c) 2010. The SimGrid Team.
+/* Copyright (c) 2010, 2012-2013. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
   * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "msg_private.h"
-#include "mc/mc.h"
 
 #include "msg/datatypes.h"
 #include "simix/smx_process_private.h"
@@ -32,9 +31,6 @@ void TRACE_msg_process_change_host(msg_process_t process, msg_host_t old_host, m
 {
   if (TRACE_msg_process_is_enabled()){
     static long long int counter = 0;
-
-    if(MC_is_active())
-      MC_ignore_data_bss(&counter, sizeof(counter));
 
     char key[INSTR_DEFAULT_STR_SIZE];
     snprintf (key, INSTR_DEFAULT_STR_SIZE, "%lld", counter++);

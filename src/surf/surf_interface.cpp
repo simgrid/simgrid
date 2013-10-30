@@ -87,6 +87,9 @@ double surf_solve(double max_date)
   tmgr_trace_event_t event = NULL;
   unsigned int iter;
 
+  if(!host_that_restart)
+    host_that_restart = xbt_dynar_new(sizeof(char*), NULL);
+
   if (max_date != -1.0 && max_date != NOW) {
     surf_min = max_date - NOW;
   }
@@ -148,7 +151,7 @@ double surf_solve(double max_date)
             tmgr_history_get_next_event_leq(history, next_event_date,
                                             &value,
                                             (void **) &resource))) {
-      if (resource->isUsed()) {
+      if (resource->isUsed() || xbt_dict_get_or_null(watched_hosts_lib, resource->m_name)) {
         surf_min = next_event_date - NOW;
         XBT_DEBUG
             ("This event will modify model state. Next event set to %f",
@@ -157,7 +160,7 @@ double surf_solve(double max_date)
       /* update state of model_obj according to new value. Does not touch lmm.
          It will be modified if needed when updating actions */
       XBT_DEBUG("Calling update_resource_state for resource %s with min %lf",
-             resource->p_model->m_name.c_str(), surf_min);
+             resource->m_name, surf_min);
       resource->updateState(event, value, next_event_date);
     }
   } while (1);
@@ -282,6 +285,29 @@ surf_action_t surf_workstation_execute(surf_resource_t resource, double size){
   return get_casted_workstation(resource)->execute(size);
 }
 
+double surf_workstation_get_current_power_peak(surf_resource_t resource){
+  return get_casted_workstation(resource)->getCurrentPowerPeak();
+}
+
+double surf_workstation_get_power_peak_at(surf_resource_t resource, int pstate_index){
+  return get_casted_workstation(resource)->getPowerPeakAt(pstate_index);
+}
+
+int surf_workstation_get_nb_pstates(surf_resource_t resource){
+  return get_casted_workstation(resource)->getNbPstates();
+}
+
+void surf_workstation_set_power_peak_at(surf_resource_t resource, int pstate_index){
+  return get_casted_workstation(resource)->setPowerPeakAt(pstate_index);
+}
+
+double surf_workstation_get_consumed_energy(surf_resource_t resource){
+  return get_casted_workstation(resource)->getConsumedEnergy();
+}
+
+xbt_dict_t surf_workstation_get_storage_list(surf_resource_t workstation){
+  return get_casted_workstation(workstation)->getStorageList();
+}
 surf_action_t surf_workstation_open(surf_resource_t workstation, const char* mount, const char* path){
   return get_casted_workstation(workstation)->open(mount, path);
 }
@@ -302,12 +328,23 @@ size_t surf_workstation_get_size(surf_resource_t workstation, surf_file_t fd){
   return get_casted_workstation(workstation)->getSize(fd);
 }
 
-surf_action_t surf_workstation_read(surf_resource_t resource, void *ptr, size_t size, surf_file_t fd){
-  return get_casted_workstation(resource)->read(ptr, size, fd);
+surf_action_t surf_workstation_read(surf_resource_t resource, surf_file_t fd, sg_storage_size_t size){
+  return get_casted_workstation(resource)->read(fd, size);
 }
 
-surf_action_t surf_workstation_write(surf_resource_t resource, const void *ptr, size_t size, surf_file_t fd){
-  return get_casted_workstation(resource)->write(ptr, size, fd);
+surf_action_t surf_workstation_write(surf_resource_t resource, surf_file_t fd, sg_storage_size_t size){
+  return get_casted_workstation(resource)->write(fd, size);
+}
+
+xbt_dynar_t surf_workstation_get_info(surf_resource_t resource, surf_file_t fd){
+  return get_casted_workstation(resource)->getInfo(fd);
+}
+
+sg_storage_size_t surf_workstation_get_free_size(surf_resource_t resource, const char* name){
+  return get_casted_workstation(resource)->getFreeSize(name);
+}
+sg_storage_size_t surf_workstation_get_used_size(surf_resource_t resource, const char* name){
+  return get_casted_workstation(resource)->getUsedSize(name);
 }
 
 int surf_network_link_is_shared(surf_cpp_resource_t link){
@@ -320,6 +357,14 @@ double surf_network_link_get_bandwidth(surf_cpp_resource_t link){
 
 double surf_network_link_get_latency(surf_cpp_resource_t link){
   return dynamic_cast<NetworkCm02LinkPtr>(link)->getLatency();
+}
+
+xbt_dict_t surf_storage_get_content(surf_resource_t resource){
+  return dynamic_cast<StoragePtr>(static_cast<ResourcePtr>(surf_storage_resource_priv(resource)))->getContent();
+}
+
+sg_storage_size_t surf_storage_get_size(surf_resource_t resource){
+  return dynamic_cast<StoragePtr>(static_cast<ResourcePtr>(surf_storage_resource_priv(resource)))->getSize();
 }
 
 surf_action_t surf_cpu_execute(surf_resource_t cpu, double size){

@@ -1,6 +1,7 @@
-/* Functions related to the java comm instances 																*/
+/* Functions related to the java comm instances                             */
 
-/* Copyright (c) 2012. The SimGrid Team. All rights reserved.                   */
+/* Copyright (c) 2012-2013. The SimGrid Team.
+ * All rights reserved.                                                     */
 
 #ifndef MSG_JCOMM_H
 #define MSG_JCOMM_H

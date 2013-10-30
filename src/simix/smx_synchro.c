@@ -1,4 +1,4 @@
-/* Copyright (c) 2007, 2008, 2009, 2010. The SimGrid Team.
+/* Copyright (c) 2007-2013. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -466,7 +466,7 @@ void SIMIX_sem_release(smx_sem_t sem)
 }
 
 /** @brief Returns true if acquiring this semaphore would block */
-XBT_INLINE int SIMIX_sem_would_block(smx_sem_t sem)
+int SIMIX_sem_would_block(smx_sem_t sem)
 {
   XBT_IN("(%p)",sem);
   XBT_OUT();

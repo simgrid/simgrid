@@ -1,4 +1,4 @@
-/* Copyright (c) 2007, 2008, 2009, 2010. The SimGrid Team.
+/* Copyright (c) 2007-2013. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -14,7 +14,7 @@
 #include "xbt/asserts.h"
 
 /** @addtogroup MSG_examples
- * 
+ *
  *  - <b>sendrecv/sendrecv.c: Ping-pong example</b>. It's hard to
  *    think of a simpler example. The tesh files laying in the
  *    directory are instructive concerning the way to pass options to the simulators (as described in \ref options).
@@ -62,7 +62,7 @@ int sender(int argc, char *argv[])
       MSG_task_create(sprintf_buffer_la, 0.0, task_comm_size_lat, NULL);
   task_la->data = xbt_new(double, 1);
   *(double *) task_la->data = time;
-  XBT_INFO("task_la->data = %le", *((double *) task_la->data));
+  XBT_INFO("task_la->data = %e", *((double *) task_la->data));
   MSG_task_send(task_la, argv[1]);
 
   /* Bandwidth */
@@ -72,7 +72,7 @@ int sender(int argc, char *argv[])
       MSG_task_create(sprintf_buffer_bw, 0.0, task_comm_size_bw, NULL);
   task_bw->data = xbt_new(double, 1);
   *(double *) task_bw->data = time;
-  XBT_INFO("task_bw->data = %le", *((double *) task_bw->data));
+  XBT_INFO("task_bw->data = %e", *((double *) task_bw->data));
   MSG_task_send(task_bw, argv[1]);
 
   return 0;
@@ -89,8 +89,6 @@ int receiver(int argc, char *argv[])
 
   XBT_INFO("receiver");
 
-  time = MSG_get_clock();
-
   /* Get Latency */
   a = MSG_task_receive(&task_la,MSG_host_get_name(MSG_host_self()));
   if (a == MSG_OK) {
@@ -101,12 +99,11 @@ int receiver(int argc, char *argv[])
     XBT_INFO("Task received : %s", task_la->name);
     xbt_free(task_la->data);
     MSG_task_destroy(task_la);
-    XBT_INFO("Communic. time %le", communication_time);
+    XBT_INFO("Communic. time %e", communication_time);
     XBT_INFO("--- la %f ----", communication_time);
   } else {
     xbt_die("Unexpected behavior");
   }
-
 
   /* Get Bandwidth */
   a = MSG_task_receive(&task_bw,MSG_host_get_name(MSG_host_self()));
@@ -118,7 +115,7 @@ int receiver(int argc, char *argv[])
     XBT_INFO("Task received : %s", task_bw->name);
     xbt_free(task_bw->data);
     MSG_task_destroy(task_bw);
-    XBT_INFO("Communic. time %le", communication_time);
+    XBT_INFO("Communic. time %e", communication_time);
     XBT_INFO("--- bw %f ----", task_comm_size_bw / communication_time);
   } else {
     xbt_die("Unexpected behavior");
@@ -133,10 +130,7 @@ int receiver(int argc, char *argv[])
 msg_error_t test_all(const char *platform_file,
                      const char *application_file)
 {
-
   msg_error_t res = MSG_OK;
-
-
 
   XBT_INFO("test_all");
 
@@ -167,7 +161,6 @@ int main(int argc, char *argv[])
 
   MSG_init(&argc, argv);
 
-
   if (argc != 3) {
     XBT_CRITICAL("Usage: %s platform_file deployment_file <model>\n",
               argv[0]);
@@ -188,7 +181,7 @@ int main(int argc, char *argv[])
 
   res = test_all(argv[1], argv[2]);
 
-  XBT_INFO("Total simulation time: %le", MSG_get_clock());
+  XBT_INFO("Total simulation time: %e", MSG_get_clock());
 
 #ifdef _MSC_VER
   _set_output_format(prev_exponent_format);

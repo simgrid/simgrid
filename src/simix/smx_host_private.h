@@ -1,4 +1,4 @@
-/* Copyright (c) 2007, 2008, 2009, 2010. The SimGrid Team.
+/* Copyright (c) 2007-2010, 2012-2013. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -41,9 +41,15 @@ void SIMIX_host_restart_processes(smx_host_t host);
 void SIMIX_host_autorestart(smx_host_t host);
 xbt_dict_t SIMIX_host_get_properties(smx_host_t host);
 int SIMIX_host_get_core(smx_host_t host);
+xbt_swag_t SIMIX_host_get_process_list(smx_host_t host);
 double SIMIX_host_get_speed(smx_host_t host);
 double SIMIX_host_get_available_speed(smx_host_t host);
 int SIMIX_host_get_state(smx_host_t host);
+double SIMIX_host_get_current_power_peak(smx_host_t host);
+double SIMIX_host_get_power_peak_at(smx_host_t host, int pstate_index);
+int SIMIX_host_get_nb_pstates(smx_host_t host);
+double SIMIX_host_get_consumed_energy(smx_host_t host);
+void SIMIX_host_set_power_peak_at(smx_host_t host, int pstate_index);
 smx_action_t SIMIX_host_execute(const char *name,
     smx_host_t host, double computation_amount, double priority);
 smx_action_t SIMIX_host_parallel_execute(const char *name,
@@ -56,6 +62,7 @@ double SIMIX_host_execution_get_remains(smx_action_t action);
 e_smx_state_t SIMIX_host_execution_get_state(smx_action_t action);
 void SIMIX_host_execution_set_priority(smx_action_t action, double priority);
 void SIMIX_pre_host_execution_wait(smx_simcall_t simcall, smx_action_t action);
+xbt_dict_t SIMIX_host_get_storage_list(smx_host_t host);
 
 // pre prototypes
 smx_host_t SIMIX_pre_host_get_by_name(smx_simcall_t, const char*);
@@ -63,9 +70,15 @@ const char* SIMIX_pre_host_self_get_name(smx_simcall_t);
 const char* SIMIX_pre_host_get_name(smx_simcall_t, smx_host_t);
 xbt_dict_t SIMIX_pre_host_get_properties(smx_simcall_t, smx_host_t);
 int SIMIX_pre_host_get_core(smx_simcall_t, smx_host_t);
+xbt_swag_t SIMIX_pre_host_get_process_list(smx_simcall_t, smx_host_t host);
 double SIMIX_pre_host_get_speed(smx_simcall_t, smx_host_t);
 double SIMIX_pre_host_get_available_speed(smx_simcall_t, smx_host_t);
 int SIMIX_pre_host_get_state(smx_simcall_t, smx_host_t);
+double SIMIX_pre_host_get_current_power_peak(smx_simcall_t, smx_host_t);
+double SIMIX_pre_host_get_power_peak_at(smx_simcall_t, smx_host_t host, int pstate_index);
+int SIMIX_pre_host_get_nb_pstates(smx_simcall_t, smx_host_t host);
+void SIMIX_pre_host_set_power_peak_at(smx_simcall_t, smx_host_t host, int pstate_index);
+double SIMIX_pre_host_get_consumed_energy(smx_simcall_t, smx_host_t);
 void* SIMIX_pre_host_self_get_data(smx_simcall_t);
 void* SIMIX_pre_host_get_data(smx_simcall_t, smx_host_t);
 void SIMIX_pre_host_set_data(smx_simcall_t, smx_host_t, void*);
@@ -82,7 +95,7 @@ void SIMIX_host_execution_suspend(smx_action_t action);
 void SIMIX_host_execution_resume(smx_action_t action);
 
 void SIMIX_post_host_execute(smx_action_t action);
-
+xbt_dict_t SIMIX_pre_host_get_storage_list(smx_simcall_t, smx_host_t);
 #ifdef HAVE_TRACING
 void SIMIX_pre_set_category(smx_simcall_t simcall, smx_action_t action,
 		            const char *category);

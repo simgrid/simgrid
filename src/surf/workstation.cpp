@@ -25,7 +25,7 @@ static void workstation_new(sg_platf_host_cbarg_t host){
 void surf_workstation_model_init_current_default(void)
 {
   surf_workstation_model = new WorkstationModel();
-  xbt_cfg_setdefault_boolean(_sg_cfg_set, "network/crosstraffic", xbt_strdup("yes"));
+  xbt_cfg_setdefault_boolean(_sg_cfg_set, "network/crosstraffic", "yes");
   surf_cpu_model_init_Cas01();
   surf_network_model_init_LegrandVelho();
 
@@ -160,29 +160,69 @@ double WorkstationCLM03::getAvailableSpeed(){
   return p_cpu->getAvailableSpeed();
 }
 
+double WorkstationCLM03::getCurrentPowerPeak()
+{
+  return p_cpu->getCurrentPowerPeak();
+}
+
+double WorkstationCLM03::getPowerPeakAt(int pstate_index)
+{
+  return p_cpu->getPowerPeakAt(pstate_index);
+}
+
+int WorkstationCLM03::getNbPstates()
+{
+  return p_cpu->getNbPstates();
+}
+
+void WorkstationCLM03::setPowerPeakAt(int pstate_index)
+{
+	p_cpu->setPowerPeakAt(pstate_index);
+}
+
+double WorkstationCLM03::getConsumedEnergy()
+{
+  return p_cpu->getConsumedEnergy();
+}
+
+
 xbt_dict_t WorkstationCLM03::getProperties()
 {
   return p_cpu->m_properties;
 }
 
 
-StoragePtr WorkstationCLM03::findStorageOnMountList(const char* storage)
+StoragePtr WorkstationCLM03::findStorageOnMountList(const char* mount)
 {
   StoragePtr st = NULL;
   s_mount_t mnt;
   unsigned int cursor;
 
-  XBT_DEBUG("Search for storage name '%s' on '%s'",storage,m_name);
+  XBT_DEBUG("Search for storage name '%s' on '%s'", mount, m_name);
   xbt_dynar_foreach(p_storage,cursor,mnt)
   {
     XBT_DEBUG("See '%s'",mnt.name);
-    if(!strcmp(storage,mnt.name)){
-      st = (StoragePtr)mnt.id;
+    if(!strcmp(mount,mnt.name)){
+      st = dynamic_cast<StoragePtr>(static_cast<ResourcePtr>(mnt.storage));
       break;
     }
   }
-  if(!st) xbt_die("Can't find mount '%s' for '%s'",storage,m_name);
+  if(!st) xbt_die("Can't find mount '%s' for '%s'", mount, m_name);
   return st;
+}
+
+xbt_dict_t WorkstationCLM03::getStorageList()
+{
+  s_mount_t mnt;
+  unsigned int i;
+  xbt_dict_t storage_list = xbt_dict_new_homogeneous(NULL);
+  char *storage_name = NULL;
+
+  xbt_dynar_foreach(p_storage,i,mnt){
+    storage_name = (char *)dynamic_cast<StoragePtr>(static_cast<ResourcePtr>(mnt.storage))->m_name;
+    xbt_dict_set(storage_list,mnt.name,storage_name,NULL);
+  }
+  return storage_list;
 }
 
 ActionPtr WorkstationCLM03::open(const char* mount, const char* path) {
@@ -192,21 +232,21 @@ ActionPtr WorkstationCLM03::open(const char* mount, const char* path) {
 }
 
 ActionPtr WorkstationCLM03::close(surf_file_t fd) {
-  StoragePtr st = findStorageOnMountList(fd->storage);
+  StoragePtr st = findStorageOnMountList(fd->mount);
   XBT_DEBUG("CLOSE on disk '%s'",st->m_name);
   return st->close(fd);
 }
 
-ActionPtr WorkstationCLM03::read(void* ptr, size_t size, surf_file_t fd) {
-  StoragePtr st = findStorageOnMountList(fd->storage);
+ActionPtr WorkstationCLM03::read(surf_file_t fd, sg_storage_size_t size) {
+  StoragePtr st = findStorageOnMountList(fd->mount);
   XBT_DEBUG("READ on disk '%s'",st->m_name);
-  return st->read(ptr, size, fd);
+  return st->read(fd, size);
 }
 
-ActionPtr WorkstationCLM03::write(const void* ptr, size_t size, surf_file_t fd) {
-  StoragePtr st = findStorageOnMountList(fd->storage);
+ActionPtr WorkstationCLM03::write(surf_file_t fd, sg_storage_size_t size) {
+  StoragePtr st = findStorageOnMountList(fd->mount);
   XBT_DEBUG("WRITE on disk '%s'",st->m_name);
-  return st->write(ptr, size, fd);
+  return st->write(fd, size);
 }
 
 int WorkstationCLM03::unlink(surf_file_t fd) {
@@ -215,7 +255,7 @@ int WorkstationCLM03::unlink(surf_file_t fd) {
     return 0;
   } else {
 //    XBT_INFO("%s %zu", fd->storage, fd->size);
-    StoragePtr st = findStorageOnMountList(fd->storage);
+    StoragePtr st = findStorageOnMountList(fd->mount);
     /* Check if the file is on this storage */
     if (!xbt_dict_get_or_null(st->p_content, fd->name)){
       XBT_WARN("File %s is not on disk %s. Impossible to unlink", fd->name,
@@ -229,7 +269,7 @@ int WorkstationCLM03::unlink(surf_file_t fd) {
       xbt_dict_remove(st->p_content, fd->name);
 
       free(fd->name);
-      free(fd->storage);
+      free(fd->mount);
       xbt_free(fd);
       return 1;
     }
@@ -242,8 +282,35 @@ ActionPtr WorkstationCLM03::ls(const char* mount, const char *path){
   return st->ls(path);
 }
 
-size_t WorkstationCLM03::getSize(surf_file_t fd){
+sg_storage_size_t WorkstationCLM03::getSize(surf_file_t fd){
   return fd->size;
+}
+
+xbt_dynar_t WorkstationCLM03::getInfo( surf_file_t fd)
+{
+  StoragePtr st = findStorageOnMountList(fd->mount);
+  sg_storage_size_t *psize = xbt_new(sg_storage_size_t, 1);
+  *psize = fd->size;
+  xbt_dynar_t info = xbt_dynar_new(sizeof(void*), NULL);
+  xbt_dynar_push_as(info, sg_storage_size_t *, psize);
+  xbt_dynar_push_as(info, void *, fd->mount);
+  xbt_dynar_push_as(info, void *, (void *)st->m_name);
+  xbt_dynar_push_as(info, void *, st->p_typeId);
+  xbt_dynar_push_as(info, void *, st->p_contentType);
+
+  return info;
+}
+
+sg_storage_size_t WorkstationCLM03::getFreeSize(const char* name)
+{
+  StoragePtr st = findStorageOnMountList(name);
+  return st->m_size - st->m_usedSize;
+}
+
+sg_storage_size_t WorkstationCLM03::getUsedSize(const char* name)
+{
+  StoragePtr st = findStorageOnMountList(name);
+  return st->m_usedSize;
 }
 
 e_surf_resource_state_t WorkstationCLM03Lmm::getState() {

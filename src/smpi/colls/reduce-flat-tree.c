@@ -6,7 +6,7 @@ smpi_coll_tuned_reduce_flat_tree(void *sbuf, void *rbuf, int count,
                                  MPI_Datatype dtype, MPI_Op op,
                                  int root, MPI_Comm comm)
 {
-  int i, tag = 4321;
+  int i, tag = COLL_TAG_REDUCE;
   int size;
   int rank;
   MPI_Aint extent;

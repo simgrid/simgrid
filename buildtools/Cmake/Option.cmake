@@ -16,8 +16,6 @@ mark_as_advanced(pipol_user)
 
 option(release "Whether Release Mode is activated (disable tests on experimental parts)" on)
 option(enable_compile_optimizations "Whether to produce efficient code for the SimGrid library" on)
-option(enable_debug "Set NDEBUG flag" on)
-
 option(enable_gtnets "Whether gtnets model is activated." off)
 option(enable_ns3    "Whether ns3 model is activated." off)
 option(enable_java   "Whether the Java bindings are activated." off)
@@ -43,8 +41,10 @@ option(enable_msg_deprecated "This option enable the use of msg deprecated funct
 
 if(WIN32)
   option(enable_smpi "Whether SMPI in included in library." off)
+  option(enable_smpi_MPICH3_testsuite "Whether the test suite form MPICH 3 should be built" off)
 else()
   option(enable_smpi "Whether SMPI in included in library." on)
+  option(enable_smpi_MPICH3_testsuite "Whether the test suite form MPICH 3 should be built" off)
 endif()
 
 if(enable_scala AND NOT enable_java)

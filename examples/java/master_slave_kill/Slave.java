@@ -1,5 +1,6 @@
 /*
- * Copyright 2006-2012. The SimGrid Team. All rights reserved. 
+ * Copyright (c) 2006-2013. The SimGrid Team.
+ * All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. 
@@ -27,9 +28,8 @@ public class Slave extends Process {
 	Msg.info("Send Mail1!");
 	task.send("mail1");
 	
-	Task task2;
         try {
-                task2 = Task.receive("mail2");
+                Task.receive("mail2");
         } catch (MsgException e) {
                 Msg.debug("Received failed");
                 return;

@@ -1,6 +1,6 @@
 /* Functions related to the java process instances.                         */
 
-/* Copyright (c) 2007-2012. The SimGrid Team.
+/* Copyright (c) 2007-2013. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -335,7 +335,7 @@ Java_org_simgrid_msg_Process_isSuspended(JNIEnv * env,
 JNIEXPORT void JNICALL
 Java_org_simgrid_msg_Process_sleep(JNIEnv *env, jclass cls, jlong jmillis, jint jnanos)
  {
-  double time =  jmillis / 1000 + jnanos / 1000;
+  double time =  ((double)jmillis) / 1000 + ((double)jnanos) / 1000000000;
   msg_error_t rv;
   rv = MSG_process_sleep(time);
   if (rv != MSG_OK) {

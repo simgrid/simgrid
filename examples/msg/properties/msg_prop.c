@@ -1,4 +1,4 @@
-/* Copyright (c) 2007, 2008, 2009, 2010. The SimGrid Team.
+/* Copyright (c) 2007-2013. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -71,7 +71,7 @@ static void test_host(const char*hostname)
               "Value of property %s is defined to %s (where it should be 250)",
               exist, value);
   XBT_INFO("   Property: %s old value: %s", exist, value);
-   
+
   /* Restore the value for the next test */
   MSG_host_set_property_value(thehost, exist, xbt_strdup("180"), NULL);
 }

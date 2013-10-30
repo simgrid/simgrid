@@ -14,6 +14,7 @@ IF(pipol_user)
 
   if(enable_smpi)
     set(CMAKE_OPTIONS "${CMAKE_OPTIONS}	-Denable_smpi=on")
+    set(CMAKE_OPTIONS "${CMAKE_OPTIONS}	-Denable_smpi_MPICH3_testsuite=on")
   endif()
 
   if(enable_lua)

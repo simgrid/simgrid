@@ -1,6 +1,6 @@
 /* selector for collective algorithms based on openmpi's default coll_tuned_decision_fixed selector */
 
-/* Copyright (c) 2009, 2010. The SimGrid Team.
+/* Copyright (c) 2009-2010, 2013. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -76,12 +76,12 @@ int smpi_coll_tuned_alltoall_ompi( void *sbuf, int scount,
                                                     comm);
 
     } else if (block_dsize < 3000) {
-        return smpi_coll_tuned_alltoall_simple(sbuf, scount, sdtype, 
+        return smpi_coll_tuned_alltoall_basic_linear(sbuf, scount, sdtype, 
                                                            rbuf, rcount, rdtype, 
                                                            comm);
     }
 
-    return smpi_coll_tuned_alltoall_pair (sbuf, scount, sdtype, 
+    return smpi_coll_tuned_alltoall_ring (sbuf, scount, sdtype, 
                                                     rbuf, rcount, rdtype,
                                                     comm);
 }
@@ -94,7 +94,7 @@ int smpi_coll_tuned_alltoallv_ompi(void *sbuf, int *scounts, int *sdisps,
                                               )
 {
     /* For starters, just keep the original algorithm. */
-    return smpi_coll_tuned_alltoallv_pair(sbuf, scounts, sdisps, sdtype, 
+    return smpi_coll_tuned_alltoallv_ompi_basic_linear(sbuf, scounts, sdisps, sdtype, 
                                                         rbuf, rcounts, rdisps,rdtype,
                                                         comm);
 }
@@ -596,9 +596,18 @@ int smpi_coll_tuned_scatter_ompi(void *sbuf, int scount,
 
     if ((communicator_size > small_comm_size) &&
         (block_size < small_block_size)) {
-        return smpi_coll_tuned_scatter_ompi_binomial (sbuf, scount, sdtype, 
-                                                       rbuf, rcount, rdtype, 
-                                                       root, comm);
+        if(rank!=root){
+            sbuf=xbt_malloc(rcount*smpi_datatype_get_extent(rdtype));
+            scount=rcount;
+            sdtype=rdtype;
+        }
+        int ret=smpi_coll_tuned_scatter_ompi_binomial (sbuf, scount, sdtype,
+            rbuf, rcount, rdtype,
+            root, comm);
+        if(rank!=root){
+            xbt_free(sbuf);
+        }
+        return ret;
     }
     return smpi_coll_tuned_scatter_ompi_basic_linear (sbuf, scount, sdtype, 
                                                        rbuf, rcount, rdtype, 

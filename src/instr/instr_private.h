@@ -1,4 +1,4 @@
-/* Copyright (c) 2010. The SimGrid Team.
+/* Copyright (c) 2010-2013. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -107,7 +107,7 @@ extern "C" {
 #endif
 
 /* instr_paje_header.c */
-void TRACE_header(int basic);
+void TRACE_header(int basic, int size);
 
 /* from paje.c */
 void TRACE_paje_start(void);
@@ -126,9 +126,11 @@ XBT_PUBLIC(void) new_pajeAddVariable (double timestamp, container_t container, t
 XBT_PUBLIC(void) new_pajeSubVariable (double timestamp, container_t container, type_t type, double value);
 XBT_PUBLIC(void) new_pajeSetState (double timestamp, container_t container, type_t type, val_t value);
 XBT_PUBLIC(void) new_pajePushState (double timestamp, container_t container, type_t type, val_t value);
+XBT_PUBLIC(void) new_pajePushStateWithSize (double timestamp, container_t container, type_t type, val_t value, int size);
 XBT_PUBLIC(void) new_pajePopState (double timestamp, container_t container, type_t type);
 XBT_PUBLIC(void) new_pajeResetState (double timestamp, container_t container, type_t type);
 XBT_PUBLIC(void) new_pajeStartLink (double timestamp, container_t container, type_t type, container_t sourceContainer, const char *value, const char *key);
+XBT_PUBLIC(void) new_pajeStartLinkWithSize (double timestamp, container_t container, type_t type, container_t sourceContainer, const char *value, const char *key, int size);
 XBT_PUBLIC(void) new_pajeEndLink (double timestamp, container_t container, type_t type, container_t destContainer, const char *value, const char *key);
 XBT_PUBLIC(void) new_pajeNewEvent (double timestamp, container_t container, type_t type, val_t value);
 
@@ -151,6 +153,7 @@ int TRACE_disable_power(void);
 int TRACE_onelink_only (void);
 int TRACE_disable_destroy (void);
 int TRACE_basic (void);
+int TRACE_display_sizes (void);
 char *TRACE_get_comment (void);
 char *TRACE_get_comment_file (void);
 char *TRACE_get_filename(void);

@@ -1,7 +1,7 @@
 #! ./tesh
 
 p Testing a bypass ASroute
-
+! output sort
 $ ${bindir:=.}/basic_parsing_test ${srcdir:=.}/examples/platforms/bypassASroute.xml FULL_LINK
 > [0.000000] [surf_workstation/INFO] surf_workstation_model_init_ptask_L07
 > Workstation number: 3, link number: 11

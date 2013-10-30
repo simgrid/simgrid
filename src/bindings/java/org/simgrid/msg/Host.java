@@ -1,7 +1,7 @@
 /*
  * Bindings to the MSG hosts
  *
- * Copyright 2006-2012 The SimGrid Team           
+ * Copyright (c) 2006-2013. The SimGrid Team.
  * All right reserved. 
  *
  * This program is free software; you can redistribute 
@@ -171,7 +171,7 @@ public class Host {
 	 * @return			The speed of the processor of the host in flops.
 	 *
 	 */ 
-	public native double getCore();
+	public native double getCoreNumber();
 
 	/**
 	 * Returns the value of a given host property. 

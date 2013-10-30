@@ -34,14 +34,16 @@
 <!ATTLIST storage_type model    CDATA #REQUIRED>
 <!ATTLIST storage_type size     CDATA #REQUIRED>
 <!ATTLIST storage_type content  CDATA "">
+<!ATTLIST storage_type content_type  CDATA "txt_unix">
 
 <!ELEMENT storage (prop*)>
 <!ATTLIST storage id CDATA #REQUIRED>
 <!ATTLIST storage typeId CDATA #REQUIRED>
 <!ATTLIST storage content  CDATA "">
+<!ATTLIST storage content_type  CDATA "txt_unix">
 
 <!ELEMENT mount EMPTY>
-<!ATTLIST mount id CDATA #REQUIRED>
+<!ATTLIST mount storageId CDATA #REQUIRED>
 <!ATTLIST mount name CDATA #REQUIRED>
 
 <!ELEMENT mstorage EMPTY>
@@ -57,6 +59,7 @@
 <!ATTLIST host state (ON|OFF) "ON">
 <!ATTLIST host state_file CDATA "">
 <!ATTLIST host coordinates  CDATA "">
+<!ATTLIST host pstate CDATA "0.0">
 
 <!ELEMENT gpu EMPTY>
 <!ATTLIST gpu name CDATA #REQUIRED>

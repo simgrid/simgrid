@@ -1,4 +1,4 @@
-/* Copyright (c) 2009, 2010. The SimGrid Team.
+/* Copyright (c) 2009-2013. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -23,6 +23,7 @@
  */
 //FIXME:typedef struct surf_action *surf_action_t;
 //FIXME:typedef struct surf_file *surf_file_t;
+typedef struct surf_storage *surf_storage_t;
 typedef struct surf_stat *surf_stat_t;
 
 typedef struct lmm_element *lmm_element_t;

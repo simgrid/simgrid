@@ -51,7 +51,7 @@ static void remove_watched_host(void *key)
   xbt_dict_remove(watched_hosts_lib, *(char**)key);
 }
 
-void surf_watched_hosts(void)
+/*void surf_watched_hosts(void)
 {
   char *key;
   void *host;
@@ -71,13 +71,15 @@ void surf_watched_hosts(void)
   }
   xbt_dynar_map(hosts, remove_watched_host);
   xbt_dynar_free(&hosts);
-}
+}*/
 
 
 xbt_dynar_t model_list = NULL;
 tmgr_history_t history = NULL;
 lmm_system_t maxmin_system = NULL;
 xbt_dynar_t surf_path = NULL;
+xbt_dynar_t host_that_restart = NULL;
+xbt_dict_t watched_hosts_lib;
 
 /* Don't forget to update the option description in smx_config when you change this */
 s_surf_model_description_t surf_network_model_description[] = {
@@ -168,30 +170,6 @@ double surf_get_clock(void)
 {
   return NOW;
 }
-
-/*TODO: keepit void surf_watched_hosts(void)
-{
-  char *key;
-  void *_host;
-  smx_host_t host;
-  xbt_dict_cursor_t cursor;
-  xbt_dynar_t hosts = xbt_dynar_new(sizeof(char*), NULL);
-
-  XBT_DEBUG("Check for host SURF_RESOURCE_ON on watched_hosts_lib");
-  xbt_dict_foreach(watched_hosts_lib,cursor,key,_host)
-  {
-    host = (smx_host_t) host;
-    if(SIMIX_host_get_state(host) == SURF_RESOURCE_ON){
-      XBT_INFO("Restart processes on host: %s",SIMIX_host_get_name(host));
-      SIMIX_host_autorestart(host);
-      xbt_dynar_push_as(hosts, char*, key);
-    }
-    else
-      XBT_DEBUG("See SURF_RESOURCE_OFF on host: %s",key);
-  }
-  xbt_dynar_map(hosts, remove_watched_host);
-  xbt_dynar_free(&hosts);
-}*/
 
 #ifdef _XBT_WIN32
 # define FILE_DELIM "\\"
@@ -346,7 +324,7 @@ void surf_init(int *argc, char **argv)
   as_router_lib = xbt_lib_new();
   storage_lib = xbt_lib_new();
   storage_type_lib = xbt_lib_new();
-  watched_hosts_lib = xbt_dict_new();
+  watched_hosts_lib = xbt_dict_new_homogeneous(NULL);
 
   XBT_DEBUG("Add routing levels");
   ROUTING_HOST_LEVEL = xbt_lib_add_level(host_lib,routing_asr_host_free);
@@ -381,6 +359,11 @@ void surf_exit(void)
   unsigned int iter;
   ModelPtr model = NULL;
 
+#ifdef HAVE_TRACING
+  TRACE_end();                  /* Just in case it was not called by the upper
+                                 * layer (or there is no upper layer) */
+#endif
+
   sg_config_finalize();
 
   xbt_dynar_foreach(model_list, iter, model)
@@ -403,7 +386,7 @@ void surf_exit(void)
   xbt_free(surf_mins);
   surf_mins = NULL;
 #endif
-
+  xbt_dynar_free(&host_that_restart);
   xbt_dynar_free(&surf_path);
 
   xbt_lib_free(&host_lib);
@@ -1013,7 +996,7 @@ void ActionLmm::updateRemainingLazy(double now)
   delta = now - m_lastUpdate;
 
   if (m_remains > 0) {
-    XBT_DEBUG("Updating action(%p): remains was %lf, last_update was: %lf", this, m_remains, m_lastUpdate);
+    XBT_DEBUG("Updating action(%p): remains was %f, last_update was: %f", this, m_remains, m_lastUpdate);
     double_update(&m_remains, m_lastValue * delta);
 
 #ifdef HAVE_TRACING
@@ -1022,7 +1005,7 @@ void ActionLmm::updateRemainingLazy(double now)
       TRACE_surf_host_set_utilization(cpu->m_name, p_category, m_lastValue, m_lastUpdate, now - m_lastUpdate);
     }
 #endif
-    XBT_DEBUG("Updating action(%p): remains is now %lf", this, m_remains);
+    XBT_DEBUG("Updating action(%p): remains is now %f", this, m_remains);
   }
 
   if(p_model == static_cast<ModelPtr>(surf_network_model))

@@ -1,5 +1,7 @@
 #! ./tesh
 
+! output sort
+
 $ ${bindir:=.}/flatifier$EXEEXT one_cluster.xml "--log=root.fmt:[%10.6r]%e[%i:%P@%h]%e%m%n"
 > [  0.000000] [0:@] surf_workstation_model_init_ptask_L07
 > <?xml version='1.0'?>

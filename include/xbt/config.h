@@ -2,7 +2,7 @@
 
 /* This is useful to build named structs, like option or property sets.     */
 
-/* Copyright (c) 2004, 2005, 2006, 2007, 2009, 2010. The SimGrid Team.
+/* Copyright (c) 2004-2007, 2009-2013. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -204,7 +204,7 @@ XBT_PUBLIC(void) xbt_cfg_register(xbt_cfg_t * cfg,
                                   const char *name,
                                   const char *description,
                                   e_xbt_cfgelm_type_t type,
-                                  void *default_value, int min, int max,
+                                  int min, int max,
                                   xbt_cfg_cb_t cb_set, xbt_cfg_cb_t cb_rm);
 XBT_PUBLIC(void) xbt_cfg_unregister(xbt_cfg_t cfg, const char *name);
 XBT_PUBLIC(void) xbt_cfg_register_str(xbt_cfg_t * cfg, const char *entry);

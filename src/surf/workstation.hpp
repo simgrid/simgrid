@@ -69,17 +69,27 @@ public:
   virtual int getCore();
   virtual double getSpeed(double load);
   virtual double getAvailableSpeed();
+  virtual double getCurrentPowerPeak();
+  virtual double getPowerPeakAt(int pstate_index);
+  virtual int getNbPstates();
+  virtual void setPowerPeakAt(int pstate_index);
+  virtual double getConsumedEnergy();
 
   xbt_dict_t getProperties();
 
   StoragePtr findStorageOnMountList(const char* storage);
+  xbt_dict_t getStorageList();
   ActionPtr open(const char* mount, const char* path);
   ActionPtr close(surf_file_t fd);
   int unlink(surf_file_t fd);
   ActionPtr ls(const char* mount, const char *path);
-  size_t getSize(surf_file_t fd);
-  ActionPtr read(void* ptr, size_t size, surf_file_t fd);
-  ActionPtr write(const void* ptr, size_t size, surf_file_t fd);
+  sg_storage_size_t getSize(surf_file_t fd);
+  ActionPtr read(surf_file_t fd, sg_storage_size_t size);
+  ActionPtr write(surf_file_t fd, sg_storage_size_t size);
+  xbt_dynar_t getInfo( surf_file_t fd);
+  sg_storage_size_t getFreeSize(const char* name);
+  sg_storage_size_t getUsedSize(const char* name);
+
   bool isUsed();
   //bool isShared();
   xbt_dynar_t p_storage;

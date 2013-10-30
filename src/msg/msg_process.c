@@ -1,4 +1,4 @@
-/* Copyright (c) 2004, 2005, 2006, 2007, 2008, 2009, 2010. The SimGrid Team.
+/* Copyright (c) 2004-2013. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -12,7 +12,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_process, msg,
                                 "Logging specific to MSG (process)");
 
 /** @addtogroup m_process_management
- *    \htmlonly <!-- DOXYGEN_NAVBAR_LABEL="Processes" --> \endhtmlonly
+ * \htmlonly <!-- DOXYGEN_NAVBAR_LABEL="Processes" --> \endhtmlonly
  *
  *  We need to simulate many independent scheduling decisions, so
  *  the concept of <em>process</em> is at the heart of the
@@ -46,12 +46,12 @@ void MSG_process_cleanup_from_SIMIX(smx_process_t smx_proc)
   TRACE_msg_process_end(smx_proc);
 #endif
   // free the data if a function was provided
-  if (msg_proc->data && msg_global->process_data_cleanup) {
+  if (msg_proc && msg_proc->data && msg_global->process_data_cleanup) {
     msg_global->process_data_cleanup(msg_proc->data);
   }
 
   // remove the process from its virtual machine
-  if (msg_proc->vm) {
+  if (msg_proc && msg_proc->vm) {
     int pos = xbt_dynar_search(msg_proc->vm->processes,&smx_proc);
     xbt_dynar_remove_at(msg_proc->vm->processes,pos, NULL);
   }

@@ -1,6 +1,6 @@
 /* ex - Exception Handling                                                  */
 
-/*  Copyright (c) 2005-2010 The SimGrid team                                */
+/*  Copyright (c) 2005-2013. The SimGrid Team.                              */
 /*  Copyright (c) 2002-2004 Ralf S. Engelschall <rse@engelschall.com>       */
 /*  Copyright (c) 2002-2004 The OSSP Project <http://www.ossp.org/>         */
 /*  Copyright (c) 2002-2004 Cable & Wireless <http://www.cw.com/>           */
@@ -140,7 +140,7 @@ __ex_mctx_struct} __ex_mctx_t;
  *
  * Any exception thrown directly from the TRIED_BLOCK block or from called
  * subroutines is caught. Cleanups which must be done after this block
- * (whenever an exception arised or not) should be placed into the optionnal
+ * (whenever an exception arose or not) should be placed into the optionnal
  * CLEANUP_BLOCK. The code dealing with the exceptions when they arise should
  * be placed into the (mandatory) CATCH_BLOCK.
  *

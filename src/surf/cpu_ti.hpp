@@ -81,7 +81,8 @@ public:
   ~CpuTiModel();
 
   void parseInit(sg_platf_host_cbarg_t host);
-  CpuTiPtr createResource(const char *name, double power_peak, double power_scale,
+  CpuTiPtr createResource(const char *name,  xbt_dynar_t powerPeak,
+                          int pstate, double power_scale,
                           tmgr_trace_t power_trace, int core,
                           e_surf_resource_state_t state_initial,
                           tmgr_trace_t state_trace,
@@ -106,8 +107,8 @@ protected:
 class CpuTi : public Cpu {
 public:
   CpuTi() {};
-  CpuTi(CpuTiModelPtr model, const char *name, double powerPeak,
-        double powerScale, tmgr_trace_t powerTrace, int core,
+  CpuTi(CpuTiModelPtr model, const char *name, xbt_dynar_t powerPeak,
+        int pstate, double powerScale, tmgr_trace_t powerTrace, int core,
         e_surf_resource_state_t stateInitial, tmgr_trace_t stateTrace,
 	xbt_dict_t properties) ;
   ~CpuTi() {};
@@ -121,13 +122,27 @@ public:
   CpuActionPtr sleep(double duration);
   double getAvailableSpeed();
 
+  xbt_dynar_t getWattsRangeList() {};
+  double getCurrentWattsValue(double cpu_load) {};
+  void updateEnergy(double cpu_load) {};
+
+  double getCurrentPowerPeak() {};
+  double getPowerPeakAt(int pstate_index) {};
+  int getNbPstates() {};
+  void setPowerPeakAt(int pstate_index) {};
+  double getConsumedEnergy() {};
+
   CpuTiTgmrPtr p_availTrace;       /*< Structure with data needed to integrate trace file */
   tmgr_trace_event_t p_stateEvent;       /*< trace file with states events (ON or OFF) */
-  tmgr_trace_event_t p_powerEvent;       /*< trace file with availabitly events */
+  tmgr_trace_event_t p_powerEvent;       /*< trace file with availability events */
   xbt_swag_t p_actionSet;        /*< set with all actions running on cpu */
-  s_xbt_swag_hookup_t p_modifiedCpuHookup;      /*< hookup to swag that indicacates whether share resources must be recalculated or not */
+  s_xbt_swag_hookup_t p_modifiedCpuHookup;      /*< hookup to swag that indicates whether share resources must be recalculated or not */
   double m_sumPriority;          /*< the sum of actions' priority that are running on cpu */
   double m_lastUpdate;           /*< last update of actions' remaining amount done */
+
+  int m_pstate;								/*< Current pstate (index in the power_peak_list)*/
+  double current_frequency;
+
   void updateRemainingAmount(double now);
 };
 

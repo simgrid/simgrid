@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, 2007, 2008, 2009, 2010. The SimGrid Team.
+/* Copyright (c) 2006-2013. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -95,7 +95,26 @@ void SD_init(int *argc, char **argv)
   XBT_DEBUG("ADD SD LEVELS");
   SD_HOST_LEVEL = xbt_lib_add_level(host_lib,__SD_workstation_destroy);
   SD_LINK_LEVEL = xbt_lib_add_level(link_lib,__SD_link_destroy);
+  SD_STORAGE_LEVEL = xbt_lib_add_level(storage_lib,__SD_storage_destroy);
+
+  if (_sg_cfg_exit_asap) {
+    SD_exit();
+    exit(0);
+  }
 }
+
+/** \brief set a configuration variable
+ *
+ * Do --help on any simgrid binary to see the list of currently existing configuration variables, and see Section @ref options.
+ *
+ * Example:
+ * SD_config("workstation/model","default");
+ */
+void SD_config(const char *key, const char *value){
+  xbt_assert(sd_global,"ERROR: Please call SD_init() before using SD_config()");
+  xbt_cfg_set_as_string(_sg_cfg_set, key, value);
+}
+
 
 /**
  * \brief Reinits the application part of the simulation (experimental feature)
@@ -191,10 +210,11 @@ void SD_create_environment(const char *platform_file)
   char *name = NULL;
   void **surf_workstation = NULL;
   void **surf_link = NULL;
+  void **surf_storage = NULL;
 
   parse_platform_file(platform_file);
 
-  /* now let's create the SD wrappers for workstations and links */
+  /* now let's create the SD wrappers for workstations, storages and links */
   xbt_lib_foreach(host_lib, cursor, name, surf_workstation){
     if(surf_workstation[SURF_WKS_LEVEL])
       __SD_workstation_create(surf_workstation[SURF_WKS_LEVEL], NULL);
@@ -204,6 +224,12 @@ void SD_create_environment(const char *platform_file)
   if(surf_link[SURF_LINK_LEVEL])
     __SD_link_create(surf_link[SURF_LINK_LEVEL], NULL);
   }
+
+  xbt_lib_foreach(storage_lib, cursor, name, surf_storage) {
+  if(surf_storage[SURF_STORAGE_LEVEL])
+    __SD_storage_create(surf_storage[SURF_STORAGE_LEVEL], NULL);
+  }
+
 
   XBT_DEBUG("Workstation number: %d, link number: %d",
          SD_workstation_get_number(), SD_link_get_number());

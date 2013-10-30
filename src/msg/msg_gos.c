@@ -1,4 +1,5 @@
-/* Copyright (c) 2004-2012. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2004-2013. The SimGrid Team.
+ * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -97,6 +98,9 @@ msg_error_t MSG_parallel_task_execute(msg_task_t task)
     switch (e.category) {
     case cancel_error:
       status = MSG_TASK_CANCELED;
+      break;
+    case host_error:
+      status = MSG_HOST_FAILURE;
       break;
     default:
       RETHROW;

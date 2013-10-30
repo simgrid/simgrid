@@ -1,7 +1,7 @@
 /* smpi_mpi_dt.c -- MPI primitives to handle datatypes                        */
 /* FIXME: a very incomplete implementation                                    */
 
-/* Copyright (c) 2009, 2010. The SimGrid Team.
+/* Copyright (c) 2009-2013. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -13,6 +13,8 @@
 
 #include "private.h"
 #include "smpi_mpi_dt_private.h"
+#include "mc/mc.h"
+#include "simgrid/modelchecker.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_mpi_dt, smpi,
                                 "Logging specific to SMPI (datatype)");
@@ -180,9 +182,9 @@ int smpi_datatype_copy(void *sendbuf, int sendcount, MPI_Datatype sendtype,
 
       void * buf_tmp = xbt_malloc(count);
 
-      subtype->serialize( sendbuf, buf_tmp,1, subtype);
+      subtype->serialize( sendbuf, buf_tmp,count/smpi_datatype_size(sendtype), subtype);
       subtype =  recvtype->substruct;
-      subtype->unserialize( buf_tmp, recvbuf,1, subtype);
+      subtype->unserialize( buf_tmp, recvbuf,count/smpi_datatype_size(recvtype), subtype);
 
       free(buf_tmp);
     }
@@ -221,6 +223,9 @@ void serialize_vector( const void *noncontiguous_vector,
                                                                      type_c->old_type->substruct);
 
     contiguous_vector_char += type_c->block_length*type_c->size_oldtype;
+    if((i+1)%type_c->block_count ==0)
+    noncontiguous_vector_char += type_c->block_length*smpi_datatype_get_extent(type_c->old_type);
+    else
     noncontiguous_vector_char += type_c->block_stride*smpi_datatype_get_extent(type_c->old_type);
   }
 }
@@ -255,6 +260,9 @@ void unserialize_vector( const void *contiguous_vector,
                                                                      type_c->block_length,
                                                                      type_c->old_type->substruct);
     contiguous_vector_char += type_c->block_length*type_c->size_oldtype;
+    if((i+1)%type_c->block_count ==0)
+    noncontiguous_vector_char += type_c->block_length*smpi_datatype_get_extent(type_c->old_type);
+    else
     noncontiguous_vector_char += type_c->block_stride*smpi_datatype_get_extent(type_c->old_type);
   }
 }
@@ -286,13 +294,18 @@ void smpi_datatype_create(MPI_Datatype* new_type, int size,int lb, int ub, int h
                           void *struct_type, int flags){
   MPI_Datatype new_t= xbt_new(s_smpi_mpi_datatype_t,1);
   new_t->size = size;
-  new_t->has_subtype = has_subtype;
+  new_t->has_subtype = size>0? has_subtype:0;
   new_t->lb = lb;
   new_t->ub = ub;
   new_t->flags = flags;
   new_t->substruct = struct_type;
   new_t->in_use=0;
   *new_type = new_t;
+
+#ifdef HAVE_MC
+  if(MC_is_active())
+    MC_ignore(&(new_t->in_use), sizeof(new_t->in_use));
+#endif
 }
 
 void smpi_datatype_free(MPI_Datatype* type){
@@ -315,12 +328,22 @@ void smpi_datatype_free(MPI_Datatype* type){
 
 void smpi_datatype_use(MPI_Datatype type){
   if(type)type->in_use++;
+
+#ifdef HAVE_MC
+  if(MC_is_active())
+    MC_ignore(&(type->in_use), sizeof(type->in_use));
+#endif
 }
 
 
 void smpi_datatype_unuse(MPI_Datatype type){
   if(type && type->in_use-- == 0 && (type->flags & DT_FLAG_DESTROYED))
     smpi_datatype_free(&type);
+  
+#ifdef HAVE_MC
+  if(MC_is_active())
+    MC_ignore(&(type->in_use), sizeof(type->in_use));
+#endif
 }
 
 
@@ -498,6 +521,9 @@ void serialize_hvector( const void *noncontiguous_hvector,
                                                                    type_c->old_type->substruct);
 
     contiguous_vector_char += type_c->block_length*type_c->size_oldtype;
+    if((i+1)%type_c->block_count ==0)
+    noncontiguous_vector_char += type_c->block_length*type_c->size_oldtype;
+    else
     noncontiguous_vector_char += type_c->block_stride;
   }
 }
@@ -531,6 +557,9 @@ void unserialize_hvector( const void *contiguous_vector,
                                                                      type_c->block_length,
                                                                      type_c->old_type->substruct);
     contiguous_vector_char += type_c->block_length*type_c->size_oldtype;
+    if((i+1)%type_c->block_count ==0)
+    noncontiguous_vector_char += type_c->block_length*type_c->size_oldtype;
+    else
     noncontiguous_vector_char += type_c->block_stride;
   }
 }
@@ -1448,7 +1477,7 @@ MPI_Op smpi_op_new(MPI_User_function * function, int commute)
 
 int smpi_op_is_commute(MPI_Op op)
 {
-  return op-> is_commute;
+  return (op==MPI_OP_NULL) ? 1 : op-> is_commute;
 }
 
 void smpi_op_destroy(MPI_Op op)

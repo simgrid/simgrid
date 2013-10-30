@@ -1,4 +1,4 @@
-/* Copyright (c) 2010. The SimGrid Team.
+/* Copyright (c) 2010-2013. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -14,6 +14,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_comm, smpi,
 
 typedef struct s_smpi_mpi_communicator {
   MPI_Group group;
+  int refcount;
 } s_smpi_mpi_communicator_t;
 
 static int smpi_compare_rankmap(const void *a, const void *b)
@@ -43,12 +44,14 @@ MPI_Comm smpi_comm_new(MPI_Group group)
   comm = xbt_new(s_smpi_mpi_communicator_t, 1);
   comm->group = group;
   smpi_group_use(comm->group);
+  comm->refcount=1;
   return comm;
 }
 
 void smpi_comm_destroy(MPI_Comm comm)
 {
-  xbt_free(comm);
+  smpi_group_unuse(comm->group);
+  smpi_comm_unuse(comm);
 }
 
 MPI_Group smpi_comm_group(MPI_Comm comm)
@@ -78,7 +81,7 @@ void smpi_comm_get_name (MPI_Comm comm, char* name, int* len)
 
 MPI_Comm smpi_comm_split(MPI_Comm comm, int color, int key)
 {
-  int system_tag = 666;
+  int system_tag = 123;
   int index, rank, size, i, j, count, reqs;
   int* sendbuf;
   int* recvbuf;
@@ -128,6 +131,7 @@ MPI_Comm smpi_comm_split(MPI_Comm comm, int color, int key)
         group_root = group_out; /* Save root's group */
       }
       for(j = 0; j < count; j++) {
+        //increment refcounter in order to avoid freeing the group too quick before copy
         index = smpi_group_index(group, rankmap[2 * j]);
         smpi_group_set_mapping(group_out, index, j);
       }
@@ -148,7 +152,20 @@ MPI_Comm smpi_comm_split(MPI_Comm comm, int color, int key)
   } else {
     if(color != MPI_UNDEFINED) {
       smpi_mpi_recv(&group_out, 1, MPI_PTR, 0, system_tag, comm, MPI_STATUS_IGNORE);
+      if(group_out){
+        group_out=smpi_group_copy(group_out);
+      }
     } /* otherwise, exit with group_out == NULL */
   }
   return group_out ? smpi_comm_new(group_out) : MPI_COMM_NULL;
+}
+
+void smpi_comm_use(MPI_Comm comm){
+  comm->refcount++;
+}
+
+void smpi_comm_unuse(MPI_Comm comm){
+  comm->refcount--;
+  if(comm->refcount==0)
+    xbt_free(comm);
 }

@@ -12,7 +12,7 @@ Shiny side: glance at interface
 
 It uses a new simix context factory: state_machine. Each user process
 is a state machine. There is no system mystery such as pthread or
-ucontextes to save its stack. As a result, there is no stack. Each
+ucontexts to save its stack. As a result, there is no stack. Each
 user process only have a user-provided structure describing its state,
 and only compute its next state based on that. Your main() can be as
 simple as:
@@ -35,7 +35,7 @@ simple as:
              the structure describing a process.
 
 This way of organizing the code saves a *huge amount* of memory
-(regular contextes have 128kb stacks per user process, threads are
+(regular contexts have 128kb stacks per user process, threads are
 even more expensive) and greatly speeds things up (there is absolutely
 no nothing to ask to the system, and everything can be done in user
 space).

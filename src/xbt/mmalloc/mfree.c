@@ -4,7 +4,7 @@
    Written May 1989 by Mike Haertel.
    Heavily modified Mar 1992 by Fred Fish.  (fnf@cygnus.com) */
 
-/* Copyright (c) 2010. The SimGrid Team.
+/* Copyright (c) 2010-2013. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -168,7 +168,8 @@ void mfree(struct mdesc *mdp, void *ptr)
 
     /* Set size used in the fragment to -1 */
     mdp->heapinfo[block].busy_frag.frag_size[frag_nb] = -1;
-    
+    mdp->heapinfo[block].busy_frag.ignore[frag_nb] = 0;
+
 //    fprintf(stderr,"nfree:%zu capa:%d\n", mdp->heapinfo[block].busy_frag.nfree,(BLOCKSIZE >> type));
     if (mdp->heapinfo[block].busy_frag.nfree ==
         (BLOCKSIZE >> type) - 1) {

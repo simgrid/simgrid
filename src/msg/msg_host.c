@@ -1,4 +1,4 @@
-/* Copyright (c) 2004, 2005, 2006, 2007, 2008, 2009, 2010. The SimGrid Team.
+/* Copyright (c) 2004-2013. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -13,7 +13,7 @@
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(msg);
 
 /** @addtogroup m_host_management
- *     \htmlonly <!-- DOXYGEN_NAVBAR_LABEL="Hosts" --> \endhtmlonly
+ * \htmlonly <!-- DOXYGEN_NAVBAR_LABEL="Hosts" --> \endhtmlonly
  * (#msg_host_t) and the functions for managing it.
  *  
  *  A <em>location</em> (or <em>host</em>) is any possible place where
@@ -204,14 +204,31 @@ double MSG_get_host_speed(msg_host_t h)
 
 
 /** \ingroup m_host_management
- * \brief Return the number of core.
+ * \brief Return the number of cores.
+ *
+ * \param host a host
+ * \return the number of cores
  */
-int MSG_get_host_core(msg_host_t h)
+int MSG_host_get_core_number(msg_host_t host)
 {
-  xbt_assert((h != NULL), "Invalid parameters");
+  xbt_assert((host != NULL), "Invalid parameters");
 
-  return (simcall_host_get_core(h));
+  return (simcall_host_get_core(host));
 }
+
+/** \ingroup m_host_management
+ * \brief Return the list of processes attached to an host.
+ *
+ * \param host a host
+ * \return a swag with the attached processes
+ */
+xbt_swag_t MSG_host_get_process_list(msg_host_t host)
+{
+  xbt_assert((host != NULL), "Invalid parameters");
+
+  return (simcall_host_get_process_list(host));
+}
+
 
 /** \ingroup m_host_management
  * \brief Returns the value of a given host property
@@ -262,4 +279,96 @@ int MSG_host_is_avail(msg_host_t host)
 {
   xbt_assert((host != NULL), "Invalid parameters (host is NULL)");
   return (simcall_host_get_state(host));
+}
+
+/** \ingroup m_host_management
+ * \brief Return the speed of the processor (in flop/s) at a given pstate
+ *
+ * \param  host host to test
+ * \param pstate_index pstate to test
+ * \return Returns the processor speed associated with pstate_index
+ */
+double MSG_get_host_power_peak_at(msg_host_t host, int pstate_index) {
+	  xbt_assert((host != NULL), "Invalid parameters (host is NULL)");
+	  return (simcall_host_get_power_peak_at(host, pstate_index));
+}
+
+/** \ingroup m_host_management
+ * \brief Return the current speed of the processor (in flop/s)
+ *
+ * \param  host host to test
+ * \return Returns the current processor speed
+ */
+double MSG_get_host_current_power_peak(msg_host_t host) {
+	  xbt_assert((host != NULL), "Invalid parameters (host is NULL)");
+	  return simcall_host_get_current_power_peak(host);
+}
+
+/** \ingroup m_host_management
+ * \brief Return the number of pstates defined for a host
+ *
+ * \param  host host to test
+ */
+int MSG_get_host_nb_pstates(msg_host_t host) {
+
+	  xbt_assert((host != NULL), "Invalid parameters (host is NULL)");
+	  return (simcall_host_get_nb_pstates(host));
+}
+
+/** \ingroup m_host_management
+ * \brief Sets the speed of the processor (in flop/s) at a given pstate
+ *
+ * \param  host host to test
+ * \param pstate_index pstate to switch to
+ */
+void MSG_set_host_power_peak_at(msg_host_t host, int pstate_index) {
+	  xbt_assert((host != NULL), "Invalid parameters (host is NULL)");
+
+	  simcall_host_set_power_peak_at(host, pstate_index);
+}
+
+/** \ingroup m_host_management
+ * \brief Return the total energy consumed by a host (in Joules)
+ *
+ * \param  host host to test
+ * \return Returns the consumed energy
+ */
+double MSG_get_host_consumed_energy(msg_host_t host) {
+	  xbt_assert((host != NULL), "Invalid parameters (host is NULL)");
+	  return simcall_host_get_consumed_energy(host);
+}
+
+/** \ingroup m_host_management
+ * \brief Return the list of mount point names on an host.
+ * \param host a host
+ * \return a dict containing all mount point on the host (mount_name => msg_storage_t)
+ */
+xbt_dict_t MSG_host_get_storage_list(msg_host_t host)
+{
+  xbt_assert((host != NULL), "Invalid parameters");
+  return (simcall_host_get_storage_list(host));
+}
+
+/** \ingroup msg_host_management
+ * \brief Return the content of mounted storages on an host.
+ * \param host a host
+ * \return a dict containing content (as a dict) of all storages mounted on the host
+ */
+xbt_dict_t MSG_host_get_storage_content(msg_host_t host)
+{
+  xbt_assert((host != NULL), "Invalid parameters");
+  xbt_dict_t contents = xbt_dict_new_homogeneous(NULL);
+  msg_storage_t storage;
+  char* storage_name;
+  char* mount_name;
+  xbt_dict_cursor_t cursor = NULL;
+
+  xbt_dict_t storage_list = simcall_host_get_storage_list(host);
+
+  xbt_dict_foreach(storage_list,cursor,mount_name,storage_name){
+	storage = (msg_storage_t)xbt_lib_get_elm_or_null(storage_lib,storage_name);
+	xbt_dict_t content = simcall_storage_get_content(storage);
+	xbt_dict_set(contents,mount_name, content,NULL);
+  }
+  return contents;
 }

@@ -2,7 +2,6 @@
 #include "surf/random_mgr.h"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_network);
-static random_data_t random_latency = NULL;
 static int host_number_int = 0;
 
 static void netcste_count_hosts(sg_platf_host_cbarg_t h) {
@@ -16,9 +15,6 @@ void surf_network_model_init_Constant()
 {
   xbt_assert(surf_network_model == NULL);
   surf_network_model = new NetworkConstantModel();
-
-  if (!random_latency)
-    random_latency = random_new(RAND, 100, 0.0, 1.0, .125, .034);
 
   sg_platf_host_add_cb(netcste_count_hosts);
 

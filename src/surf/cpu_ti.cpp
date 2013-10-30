@@ -6,7 +6,7 @@
 #define SURF_MODEL_CPUTI_H_
 
 extern "C" {
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_cpu_ti, surf,
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_cpu_ti, surf_cpu,
                                 "Logging specific to the SURF CPU TRACE INTEGRATION module");
 }
 
@@ -145,7 +145,7 @@ double CpuTiTrace::integrateSimplePoint(double a)
   ind = binarySearch(p_timePoints, a, 0, m_nbPoints - 1);
   integral += p_integral[ind];
   XBT_DEBUG
-      ("a %lf ind %d integral %lf ind + 1 %lf ind %lf time +1 %lf time %lf",
+      ("a %f ind %d integral %f ind + 1 %f ind %f time +1 %f time %f",
        a, ind, integral, p_integral[ind + 1], p_integral[ind],
        p_timePoints[ind + 1], p_timePoints[ind]);
   double_update(&a_aux, p_timePoints[ind]);
@@ -154,7 +154,7 @@ double CpuTiTrace::integrateSimplePoint(double a)
         ((p_integral[ind + 1] -
           p_integral[ind]) / (p_timePoints[ind + 1] -
                               p_timePoints[ind])) * (a - p_timePoints[ind]);
-  XBT_DEBUG("Integral a %lf = %lf", a, integral);
+  XBT_DEBUG("Integral a %f = %f", a, integral);
 
   return integral;
 }
@@ -203,14 +203,14 @@ double CpuTiTgmr::solve(double a, double amount)
     return (a + (amount / m_value));
   }
 
-  XBT_DEBUG("amount %lf total %lf", amount, m_total);
+  XBT_DEBUG("amount %f total %f", amount, m_total);
 /* Reduce the problem to one where amount <= trace_total */
   quotient = (int) (floor(amount / m_total));
   reduced_amount = (m_total) * ((amount / m_total) -
                                      floor(amount / m_total));
   reduced_a = a - (m_lastTime) * (int) (floor(a / m_lastTime));
 
-  XBT_DEBUG("Quotient: %d reduced_amount: %lf reduced_a: %lf", quotient,
+  XBT_DEBUG("Quotient: %d reduced_amount: %f reduced_a: %f", quotient,
          reduced_amount, reduced_a);
 
 /* Now solve for new_amount which is <= trace_total */
@@ -318,7 +318,7 @@ CpuTiTgmr::CpuTiTgmr(tmgr_trace_t power_trace, double value)
   if (!power_trace) {
     m_type = TRACE_FIXED;
     m_value = value;
-    XBT_DEBUG("No availabily trace. Constant value = %lf", value);
+    XBT_DEBUG("No availability trace. Constant value = %lf", value);
     return;
   }
 
@@ -362,7 +362,7 @@ int CpuTiTrace::binarySearch(double *array, double a, int low, int high)
   int mid;
   do {
     mid = low + (high - low) / 2;
-    XBT_DEBUG("a %lf low %d high %d mid %d value %lf", a, low, high, mid,
+    XBT_DEBUG("a %f low %d high %d mid %d value %f", a, low, high, mid,
         array[mid]);
 
     if (array[mid] > a)
@@ -451,6 +451,7 @@ void CpuTiModel::parseInit(sg_platf_host_cbarg_t host)
 {
   createResource(host->id,
         host->power_peak,
+        host->pstate,
         host->power_scale,
         host->power_trace,
         host->core_amount,
@@ -460,7 +461,8 @@ void CpuTiModel::parseInit(sg_platf_host_cbarg_t host)
 }
 
 CpuTiPtr CpuTiModel::createResource(const char *name,
-	                   double powerPeak,
+	                       xbt_dynar_t powerPeak,
+	                       int pstate,
                            double powerScale,
                            tmgr_trace_t powerTrace,
                            int core,
@@ -475,7 +477,7 @@ CpuTiPtr CpuTiModel::createResource(const char *name,
   xbt_assert(!surf_cpu_resource_priv(surf_cpu_resource_by_name(name)),
               "Host '%s' declared several times in the platform file",
               name);
-  CpuTiPtr cpu = new CpuTi(this, name, powerPeak, powerScale, powerTrace,
+  CpuTiPtr cpu = new CpuTi(this, name, powerPeak, pstate, powerScale, powerTrace,
 		           core, stateInitial, stateTrace, cpuProperties);
   xbt_lib_set(host_lib, name, SURF_CPU_LEVEL, static_cast<ResourcePtr>(cpu));
   return (CpuTiPtr) xbt_lib_get_elm_or_null(host_lib, name);
@@ -499,7 +501,7 @@ double CpuTiModel::shareResources(double now)
   if (xbt_heap_size(cpu_ti_action_heap) > 0)
     min_action_duration = xbt_heap_maxkey(cpu_ti_action_heap) - now;
 
-  XBT_DEBUG("Share resources, min next event date: %lf", min_action_duration);
+  XBT_DEBUG("Share resources, min next event date: %f", min_action_duration);
 
   return min_action_duration;
 }
@@ -514,7 +516,7 @@ void CpuTiModel::updateActionsState(double now, double delta)
     /* set the remains to 0 due to precision problems when updating the remaining amount */
     action->m_remains = 0;
     action->setState(SURF_ACTION_DONE);
-    /* update remaining amout of all actions */
+    /* update remaining amount of all actions */
     action->p_cpu->updateRemainingAmount(surf_get_clock());
   }
 }
@@ -579,13 +581,12 @@ void CpuTiModel::addTraces()
 /************
  * Resource *
  ************/
-CpuTi::CpuTi(CpuTiModelPtr model, const char *name, double powerPeak,
-        double powerScale, tmgr_trace_t powerTrace, int core,
+CpuTi::CpuTi(CpuTiModelPtr model, const char *name, xbt_dynar_t powerPeak,
+        int pstate, double powerScale, tmgr_trace_t powerTrace, int core,
         e_surf_resource_state_t stateInitial, tmgr_trace_t stateTrace,
 	xbt_dict_t properties) :
 	Resource(model, name, properties), Cpu(model, name, properties) {
   p_stateCurrent = stateInitial;
-  m_powerPeak = powerPeak;
   m_powerScale = powerScale;
   m_core = core;
   tmgr_trace_t empty_trace;		
@@ -596,6 +597,11 @@ CpuTi::CpuTi(CpuTiModelPtr model, const char *name, double powerPeak,
 
   CpuTiActionPtr action;
   p_actionSet = xbt_swag_new(xbt_swag_offset(*action, p_cpuListHookup));
+
+  xbt_dynar_get_cpy(powerPeak, 0, &m_powerPeak);
+  xbt_dynar_free(&powerPeak);  /* kill memory leak */
+  m_pstate = pstate;
+  XBT_DEBUG("CPU create: peak=%f, pstate=%d", m_powerPeak, m_pstate);
 
   p_modifiedCpuHookup.prev = 0;
   p_modifiedCpuHookup.next = 0;
@@ -608,7 +614,7 @@ CpuTi::CpuTi(CpuTiModelPtr model, const char *name, double powerPeak,
                       xbt_dynar_length(powerTrace->s_list.event_list) - 1, &val);
     if (val.delta == 0) {
       empty_trace = tmgr_empty_trace_new();
-       p_powerEvent =
+      p_powerEvent =
         tmgr_history_add_trace(history, empty_trace,
                                p_availTrace->m_lastTime, 0, static_cast<ResourcePtr>(this));
     }
@@ -621,14 +627,12 @@ void CpuTi::updateState(tmgr_trace_event_t event_type,
   void *_action;
   CpuTiActionPtr action;
 
-  surf_watched_hosts();
-
   if (event_type == p_powerEvent) {
     tmgr_trace_t power_trace;
     CpuTiTgmrPtr trace;
     s_tmgr_event_t val;
 
-    XBT_DEBUG("Finish trace date: %lf value %lf date %lf", surf_get_clock(),
+    XBT_DEBUG("Finish trace date: %f value %lf date %f", surf_get_clock(),
            value, date);
     /* update remaining of actions and put in modified cpu swag */
     updateRemainingAmount(date);
@@ -642,7 +646,7 @@ void CpuTi::updateState(tmgr_trace_event_t event_type,
     m_powerScale = val.value;
 
     trace = new CpuTiTgmr(TRACE_FIXED, val.value);
-    XBT_DEBUG("value %lf", val.value);
+    XBT_DEBUG("value %f", val.value);
 
     p_availTrace = trace;
 
@@ -650,9 +654,11 @@ void CpuTi::updateState(tmgr_trace_event_t event_type,
       p_powerEvent = NULL;
 
   } else if (event_type == p_stateEvent) {
-    if (value > 0)
+    if (value > 0) {
+      if(p_stateCurrent == SURF_RESOURCE_OFF)
+        xbt_dynar_push_as(host_that_restart, char*, (char *)m_name);
       p_stateCurrent = SURF_RESOURCE_ON;
-    else {
+    } else {
       p_stateCurrent = SURF_RESOURCE_OFF;
 
       /* put all action running on cpu to failed */
@@ -751,7 +757,7 @@ updateRemainingAmount(now);
       xbt_heap_push(cpu_ti_action_heap, action, min_finish);
 
     XBT_DEBUG
-        ("Update finish time: Cpu(%s) Action: %p, Start Time: %lf Finish Time: %lf Max duration %lf",
+        ("Update finish time: Cpu(%s) Action: %p, Start Time: %f Finish Time: %f Max duration %f",
          m_name, action, action->m_start,
          action->m_finish,
          action->m_maxDuration);
@@ -790,7 +796,7 @@ void CpuTi::updateRemainingAmount(double now)
 
 /* calcule the surface */
   area_total = p_availTrace->integrate(m_lastUpdate, now) * m_powerPeak;
-  XBT_DEBUG("Flops total: %lf, Last update %lf", area_total,
+  XBT_DEBUG("Flops total: %f, Last update %f", area_total,
          m_lastUpdate);
 
   xbt_swag_foreach(_action, p_actionSet) {
@@ -821,7 +827,7 @@ void CpuTi::updateRemainingAmount(double now)
     double_update(&(action->m_remains),
                   area_total / (m_sumPriority *
                                 action->m_priority));
-    XBT_DEBUG("Update remaining action(%p) remaining %lf", action,
+    XBT_DEBUG("Update remaining action(%p) remaining %f", action,
            action->m_remains);
   }
   m_lastUpdate = now;

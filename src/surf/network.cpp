@@ -561,8 +561,8 @@ bool NetworkCm02LinkLmm::isShared()
 void NetworkCm02LinkLmm::updateState(tmgr_trace_event_t event_type,
                                       double value, double date)
 {
-  /*   printf("[" "%lg" "] Asking to update network card \"%s\" with value " */
-  /*     "%lg" " for event %p\n", surf_get_clock(), nw_link->name, */
+  /*   printf("[" "%g" "] Asking to update network card \"%s\" with value " */
+  /*     "%g" " for event %p\n", surf_get_clock(), nw_link->name, */
   /*     value, event_type); */
 
   if (event_type == p_power.event) {

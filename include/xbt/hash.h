@@ -1,6 +1,6 @@
 /* hash.h - Various hashing functions.                                      */
 
-/* Copyright (c) 2008, 2009, 2010. The SimGrid Team.
+/* Copyright (c) 2008-2011. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it

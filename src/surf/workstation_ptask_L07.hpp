@@ -111,6 +111,10 @@ public:
   ActionPtr execute(double size);
   ActionPtr sleep(double duration);
   e_surf_resource_state_t getState();
+  double getPowerPeakAt(int pstate_index);
+  int getNbPstates();
+  void setPowerPeakAt(int pstate_index);
+  double getConsumedEnergy();
 };
 
 class CpuL07 : public CpuLmm {
@@ -124,6 +128,13 @@ public:
   double getAvailableSpeed();
   ActionPtr execute(double size) {DIE_IMPOSSIBLE;};
   ActionPtr sleep(double duration) {DIE_IMPOSSIBLE;};
+
+  double getCurrentPowerPeak() {};
+  double getPowerPeakAt(int pstate_index) {};
+  int getNbPstates() {};
+  void setPowerPeakAt(int pstate_index) {};
+  double getConsumedEnergy() {};
+
   double m_powerCurrent;
 };
 

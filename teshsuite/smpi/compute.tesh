@@ -2,7 +2,7 @@ p Test compute
 ! setenv LD_LIBRARY_PATH=../../lib
 ! output sort
 ! timeout 5
-$ ../../bin/smpirun -platform ${srcdir:=.}/../../examples/msg/small_platform_with_routers.xml -hostfile ${srcdir:=.}/hostfile -np 2 ./compute 0
+$ ../../smpi_script/bin/smpirun -platform ${srcdir:=.}/../../examples/msg/small_platform_with_routers.xml -hostfile ${srcdir:=.}/hostfile -np 2 ./compute 0
 > 0 2.000000
 > 0 2.000000
 > [0.000000] [surf_config/INFO] Switching workstation model to compound since you changed the network and/or cpu model(s)
@@ -14,7 +14,7 @@ p Test compute and bench
 ! setenv LD_LIBRARY_PATH=../../lib
 ! output sort
 ! timeout 45
-$ ../../bin/smpirun  -platform ${srcdir:=.}/../../examples/msg/small_platform_with_routers.xml -hostfile ${srcdir:=.}/hostfile -np 2 ./compute3
+$ ../../smpi_script/bin/smpirun  -platform ${srcdir:=.}/../../examples/msg/small_platform_with_routers.xml -hostfile ${srcdir:=.}/hostfile -np 2 ./compute3
 > [0.000000] [surf_config/INFO] Switching workstation model to compound since you changed the network and/or cpu model(s)
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'maxmin/precision' to '1e-9'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'SMPI'

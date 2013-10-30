@@ -10,22 +10,29 @@ if(enable_smpi)
   set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}")
 
   include_directories("${CMAKE_HOME_DIRECTORY}/include/smpi")
+  file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/mc/")
 
 
   add_executable(bcbench bcbench.c)
   add_executable(mvmul mvmul.c)
   add_executable(smpi_traced tracing/smpi_traced.c)
   add_executable(smpi_traced_simple tracing/smpi_traced_simple.c)
-  add_executable(mc_bugged1 mc_bugged1.c)
-  add_executable(mc_bugged2 mc_bugged2.c)
   add_executable(smpi_replay replay/replay.c)
-
+  
+  if(HAVE_MC)
+    add_executable(mc/bugged1 mc/bugged1.c)
+    add_executable(mc/bugged2 mc/bugged2.c)
+    add_executable(mc/bugged1_liveness mc/bugged1_liveness.c)
+  
+    target_link_libraries(mc/bugged1 simgrid)
+    target_link_libraries(mc/bugged2 simgrid)
+    target_link_libraries(mc/bugged1_liveness simgrid)
+  endif()
+  
   target_link_libraries(bcbench simgrid)
   target_link_libraries(mvmul simgrid)
   target_link_libraries(smpi_traced simgrid)
   target_link_libraries(smpi_traced_simple simgrid)
-  target_link_libraries(mc_bugged1 simgrid)
-  target_link_libraries(mc_bugged2 simgrid)
   target_link_libraries(smpi_replay simgrid)
 
 endif()
@@ -43,18 +50,23 @@ set(xml_files
   )
 set(examples_src
   ${examples_src}
-  ${CMAKE_CURRENT_SOURCE_DIR}/mc_bugged2.c
-  ${CMAKE_CURRENT_SOURCE_DIR}/mc_bugged1.c
   ${CMAKE_CURRENT_SOURCE_DIR}/mvmul.c
   ${CMAKE_CURRENT_SOURCE_DIR}/bcbench.c
   ${CMAKE_CURRENT_SOURCE_DIR}/replay/replay.c
   ${CMAKE_CURRENT_SOURCE_DIR}/tracing/smpi_traced.c
   ${CMAKE_CURRENT_SOURCE_DIR}/tracing/smpi_traced_simple.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/mc/bugged2.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/mc/bugged1.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/mc/bugged1_liveness.c
   PARENT_SCOPE
   )
 set(bin_files
   ${bin_files}
   ${CMAKE_CURRENT_SOURCE_DIR}/hostfile
+  ${CMAKE_CURRENT_SOURCE_DIR}/mc/promela_bugged1_liveness
+  ${CMAKE_CURRENT_SOURCE_DIR}/mc/hostfile_bugged1_liveness
+  ${CMAKE_CURRENT_SOURCE_DIR}/mc/hostfile_bugged1
+  ${CMAKE_CURRENT_SOURCE_DIR}/mc/hostfile_bugged2
   PARENT_SCOPE
   )
 set(txt_files

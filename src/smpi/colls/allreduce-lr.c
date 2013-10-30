@@ -17,14 +17,14 @@ int
 smpi_coll_tuned_allreduce_lr(void *sbuf, void *rbuf, int rcount,
                              MPI_Datatype dtype, MPI_Op op, MPI_Comm comm)
 {
-  int tag = 5000;
+  int tag = COLL_TAG_ALLREDUCE;
   MPI_Status status;
   int rank, i, size, count;
   int send_offset, recv_offset;
   int remainder, remainder_flag, remainder_offset;
 
-  rank = smpi_comm_rank(MPI_COMM_WORLD);
-  size = smpi_comm_size(MPI_COMM_WORLD);
+  rank = smpi_comm_rank(comm);
+  size = smpi_comm_size(comm);
 
   /* make it compatible with all data type */
   MPI_Aint extent;

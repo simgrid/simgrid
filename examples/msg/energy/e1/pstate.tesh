@@ -1,0 +1,19 @@
+#! ./tesh
+
+p Testing the DVFS-related functions
+
+! output sort
+$ $SG_TEST_EXENV energy/e1/e1$EXEEXT ${srcdir:=.}/energy/e1/platform_e1.xml ${srcdir:=.}/energy/e1/deployment_e1.xml --log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n
+> [  0.000000] (1:dvfs_test@MyHost1) Number of Processor states=3
+> [  0.000000] (2:dvfs_test@MyHost2) Number of Processor states=1
+> [  0.000000] (1:dvfs_test@MyHost1) Current power peak=100000000.000000
+> [  0.000000] (2:dvfs_test@MyHost2) Current power peak=100000000.000000
+> [  1.000000] (1:dvfs_test@MyHost1) Task1 simulation time: 1.000000e+00
+> [  1.000000] (2:dvfs_test@MyHost2) Task1 simulation time: 1.000000e+00
+> [  1.000000] (2:dvfs_test@MyHost2) Cannot set pstate 2, host supports only 1 pstates
+> [  1.000000] (1:dvfs_test@MyHost1) Changing power peak value to 20000000.000000 (at index 2)
+> [  1.000000] (1:dvfs_test@MyHost1) Current power peak=20000000.000000
+> [  6.000000] (1:dvfs_test@MyHost1) Task2 simulation time: 5.000000e+00
+> [  6.000000] (1:dvfs_test@MyHost1) Number of Processor states=1
+> [  6.000000] (1:dvfs_test@MyHost1) Current power peak=100000000.000000
+> [  6.000000] (0:@) Total simulation time: 6.000000e+00

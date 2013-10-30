@@ -8,7 +8,7 @@ static int bcast_NTSL_segment_size_in_byte = 8192;
 int smpi_coll_tuned_bcast_NTSL_Isend(void *buf, int count, MPI_Datatype datatype,
                                int root, MPI_Comm comm)
 {
-  int tag = 50;
+  int tag = COLL_TAG_BCAST;
   MPI_Status status;
   MPI_Request request;
   MPI_Request *send_request_array;
@@ -20,8 +20,8 @@ int smpi_coll_tuned_bcast_NTSL_Isend(void *buf, int count, MPI_Datatype datatype
   MPI_Aint extent;
   extent = smpi_datatype_get_extent(datatype);
 
-  rank = smpi_comm_rank(MPI_COMM_WORLD);
-  size = smpi_comm_size(MPI_COMM_WORLD);
+  rank = smpi_comm_rank(comm);
+  size = smpi_comm_size(comm);
 
   /* source node and destination nodes (same through out the functions) */
   int to = (rank + 1) % size;

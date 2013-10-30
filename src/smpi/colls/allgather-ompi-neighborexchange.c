@@ -57,7 +57,6 @@
  */
  
  #include "colls_private.h"
- #define MCA_COLL_BASE_TAG_ALLGATHER 555
 int 
 smpi_coll_tuned_allgather_ompi_neighborexchange(void *sbuf, int scount,
                                                  MPI_Datatype sdtype,
@@ -134,9 +133,9 @@ smpi_coll_tuned_allgather_ompi_neighborexchange(void *sbuf, int scount,
    tmpsend = (char*)rbuf + rank * rcount * rext;
    /* Sendreceive */
    smpi_mpi_sendrecv(tmpsend, rcount, rdtype, neighbor[0],
-                                  MCA_COLL_BASE_TAG_ALLGATHER,
+                                  COLL_TAG_ALLGATHER,
                                   tmprecv, rcount, rdtype, neighbor[0],
-                                  MCA_COLL_BASE_TAG_ALLGATHER,
+                                  COLL_TAG_ALLGATHER,
                                   comm, MPI_STATUS_IGNORE);
 
    /* Determine initial sending location */
@@ -157,10 +156,10 @@ smpi_coll_tuned_allgather_ompi_neighborexchange(void *sbuf, int scount,
       /* Sendreceive */
       smpi_mpi_sendrecv(tmpsend, 2 * rcount, rdtype, 
                                      neighbor[i_parity], 
-                                     MCA_COLL_BASE_TAG_ALLGATHER,
+                                     COLL_TAG_ALLGATHER,
                                      tmprecv, 2 * rcount, rdtype,
                                      neighbor[i_parity],
-                                     MCA_COLL_BASE_TAG_ALLGATHER,
+                                     COLL_TAG_ALLGATHER,
                                      comm, MPI_STATUS_IGNORE);
 
       send_data_from = recv_data_from[i_parity];

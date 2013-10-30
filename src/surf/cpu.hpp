@@ -46,6 +46,13 @@ public:
   virtual int getCore();
   virtual double getSpeed(double load);
   virtual double getAvailableSpeed();
+
+  virtual double getCurrentPowerPeak()=0;
+  virtual double getPowerPeakAt(int pstate_index)=0;
+  virtual int getNbPstates()=0;
+  virtual void setPowerPeakAt(int pstate_index)=0;
+  virtual double getConsumedEnergy()=0;
+
   void addTraces(void);
   double m_powerPeak;            /*< CPU power peak */
   double m_powerScale;           /*< Percentage of CPU disponible */
@@ -79,6 +86,7 @@ public:
   CpuActionLmm(ModelPtr model, double cost, bool failed)
   : Action(model, cost, failed), ActionLmm(model, cost, failed), CpuAction(model, cost, failed) {};
   void updateRemainingLazy(double now);
+  virtual void updateEnergy()=0;
 };
 
 

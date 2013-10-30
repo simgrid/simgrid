@@ -10,7 +10,7 @@ int smpi_coll_tuned_allgather_loosely_lr(void *sbuf, int scount,
                                          MPI_Comm comm)
 {
   int comm_size, rank;
-  int tag = 50;
+  int tag = COLL_TAG_ALLGATHER;
   int i, j, send_offset, recv_offset;
   int intra_rank, inter_rank, inter_comm_size, intra_comm_size;
   int inter_dst, inter_src;

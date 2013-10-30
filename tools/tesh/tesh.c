@@ -1,6 +1,6 @@
 /* TESH (Test Shell) -- mini shell specialized in running test units        */
 
-/* Copyright (c) 2007, 2008, 2009, 2010. The SimGrid Team.
+/* Copyright (c) 2007-2013. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -141,7 +141,6 @@ static void handle_suite(const char *filename, FILE * IN)
       } else {
         to_be_continued = 1;
         line[linelen - 2] = '\0';
-        linelen -= 2;
         if (!buff->used)
           buffbegin = line_num;
       }

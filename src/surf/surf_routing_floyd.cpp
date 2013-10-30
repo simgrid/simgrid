@@ -1,3 +1,9 @@
+/* Copyright (c) 2009-2013. The SimGrid Team.
+ * All rights reserved.                                                     */
+
+/* This program is free software; you can redistribute it and/or modify it
+ * under the terms of the license (GNU LGPL) which comes with this package. */
+
 #include "surf_routing_private.h"
 #include "surf_routing_floyd.hpp"
 #include "network.hpp"

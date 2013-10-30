@@ -2,7 +2,7 @@
    Copyright 1990, 1991 Free Software Foundation
    Written May 1989 by Mike Haertel. */
 
-/* Copyright (c) 2010. The SimGrid Team.
+/* Copyright (c) 2010-2013. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -82,8 +82,10 @@ void *mrealloc(xbt_mheap_t mdp, void *ptr, size_t size)
       int it;
       /* The new size is smaller; return excess memory to the free list. */
       //printf("(%s) return excess memory...",xbt_thread_self_name());
-      for (it= block+blocks; it< mdp->heapinfo[block].busy_block.size ; it++)
+      for (it= block+blocks; it< mdp->heapinfo[block].busy_block.size ; it++){
         mdp->heapinfo[it].type = 0; // FIXME that should be useless, type should already be 0 here
+        mdp->heapinfo[it].busy_block.ignore = 0;
+      }
 
       mdp->heapinfo[block + blocks].busy_block.size
         = mdp->heapinfo[block].busy_block.size - blocks;

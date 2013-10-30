@@ -11,7 +11,4 @@ static XBT_INLINE void queue_pending_connection(msg_comm_t comm, xbt_dynar_t q)
 
 int process_pending_connections(xbt_dynar_t q);
 
-#define MESSAGE_SIZE 1
-#define HOSTNAME_LENGTH 20
-
 #endif /* KADEPLOY_COMMON_H */

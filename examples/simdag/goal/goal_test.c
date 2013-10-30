@@ -4,7 +4,8 @@
  *  GOAL files as an input, thus the file name. But there is no actual link
  *  to the GOAL formalism beside of this.
  * 
- * Copyright (c) 2011. The SimGrid Team. All rights reserved.
+ * Copyright (c) 2011-2013. The SimGrid Team.
+ * All rights reserved.
  * 
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package.
@@ -98,7 +99,7 @@ int main(int argc, char **argv) {
     done=SD_simulate(-1);
   } while(!xbt_dynar_is_empty(done));
   xbt_os_cputimer_stop(timer);
-  printf("exec_time:%lf\n", xbt_os_timer_elapsed(timer) );
+  printf("exec_time:%f\n", xbt_os_timer_elapsed(timer) );
 
   xbt_dynar_free(&done);
   xbt_dynar_free(&reclaimed);

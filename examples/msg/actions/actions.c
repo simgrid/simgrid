@@ -1,4 +1,4 @@
-/* Copyright (c) 2009, 2010. The SimGrid Team.
+/* Copyright (c) 2009-2013. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -108,7 +108,7 @@ static void action_send(const char *const *action)
 
   sprintf(to, "%s_%s", MSG_process_get_name(MSG_process_self()), action[2]);
 
-  ACT_DEBUG("Entering Send: %s (size: %lg)", NAME, size);
+  ACT_DEBUG("Entering Send: %s (size: %g)", NAME, size);
   if (size < 65536) {
     action_Isend(action);
   } else {
@@ -437,8 +437,8 @@ static void action_comm_size(const char *const *action)
 
 static void action_compute(const char *const *action)
 {
-  const char *amout = action[2];
-  msg_task_t task = MSG_task_create("task", parse_double(amout), 0, NULL);
+  const char *amount = action[2];
+  msg_task_t task = MSG_task_create("task", parse_double(amount), 0, NULL);
   double clock = MSG_get_clock();
 
   ACT_DEBUG("Entering %s", NAME);

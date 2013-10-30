@@ -1,6 +1,7 @@
 /* module handling                                                          */
 
-/* Copyright (c) 2006-2012. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2006-2013. The SimGrid Team.
+ * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -18,6 +19,10 @@
 
 #include "xbt_modinter.h"       /* prototype of other module's init/exit in XBT */
 
+#include "simgrid/sg_config.h"
+
+#include <stdio.h>
+
 XBT_LOG_NEW_CATEGORY(xbt, "All XBT categories (simgrid toolbox)");
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(module, xbt, "module handling");
 
@@ -28,6 +33,7 @@ char *xbt_binary_name = NULL;   /* Name of the system process containing us (man
 xbt_dynar_t xbt_cmdline = NULL; /* all we got in argv */
 
 int xbt_initialized = 0;
+int _sg_do_clean_atexit = 1;
 
 /* Declare xbt_preinit and xbt_postexit as constructor/destructor of the library.
  * This is crude and rather compiler-specific, unfortunately.
@@ -81,6 +87,10 @@ static void xbt_preinit(void) {
 #ifdef MMALLOC_WANT_OVERRIDE_LEGACY
   mmalloc_preinit();
 #endif
+#ifdef _TWO_DIGIT_EXPONENT
+  /* Even printf behaves differently on Windows... */
+  _set_output_format(_TWO_DIGIT_EXPONENT);
+#endif
   xbt_log_preinit();
   xbt_backtrace_preinit();
   xbt_os_thread_mod_preinit();
@@ -88,13 +98,16 @@ static void xbt_preinit(void) {
   xbt_dict_preinit();
    
   srand(seed);
+#ifndef _WIN32
   srand48(seed);
+#endif
 
-  atexit(xbt_postexit);   
+  atexit(xbt_postexit);
 }
 
 static void xbt_postexit(void)
 {
+  if(!_sg_do_clean_atexit) return;
   xbt_backtrace_postexit();
   xbt_fifo_postexit();
   xbt_dict_postexit();

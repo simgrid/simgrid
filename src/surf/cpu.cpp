@@ -1,6 +1,7 @@
 #include "cpu.hpp"
 
 extern "C" {
+XBT_LOG_EXTERNAL_CATEGORY(surf_kernel);
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_cpu, surf,
                                 "Logging specific to the SURF cpu module");
 }
@@ -14,11 +15,11 @@ CpuModelPtr surf_cpu_model;
 void CpuModel::updateActionsStateLazy(double now, double delta)
 {
   void *_action;
-  ActionLmmPtr action;
+  CpuActionLmmPtr action;
   while ((xbt_heap_size(p_actionHeap) > 0)
          && (double_equals(xbt_heap_maxkey(p_actionHeap), now))) {
-    action = (ActionLmmPtr) xbt_heap_pop(p_actionHeap);
-    XBT_DEBUG("Something happened to action %p", action);
+    action = dynamic_cast<CpuActionLmmPtr>(static_cast<ActionLmmPtr>(xbt_heap_pop(p_actionHeap)));
+    XBT_CDEBUG(surf_kernel, "Something happened to action %p", action);
 #ifdef HAVE_TRACING
     if (TRACE_is_enabled()) {
       CpuPtr cpu = (CpuPtr) lmm_constraint_id(lmm_get_cnst_from_var(p_maxminSystem, action->p_variable, 0));
@@ -30,7 +31,9 @@ void CpuModel::updateActionsStateLazy(double now, double delta)
 #endif
 
     action->m_finish = surf_get_clock();
-    XBT_DEBUG("Action %p finished", action);
+    XBT_CDEBUG(surf_kernel, "Action %p finished", action);
+
+    action->updateEnergy();
 
     /* set the remains to 0 due to precision problems when updating the remaining amount */
     action->m_remains = 0;
@@ -43,7 +46,7 @@ void CpuModel::updateActionsStateLazy(double now, double delta)
     //without losing the event ascending order (considering all CPU's)
     double smaller = -1;
     xbt_swag_foreach(_action, p_runningActionSet) {
-      action = dynamic_cast<ActionLmmPtr>(static_cast<ActionPtr>(_action));
+      action = dynamic_cast<CpuActionLmmPtr>(static_cast<ActionPtr>(_action));
         if (smaller < 0) {
           smaller = action->m_lastUpdate;
           continue;
@@ -63,12 +66,11 @@ void CpuModel::updateActionsStateLazy(double now, double delta)
 void CpuModel::updateActionsStateFull(double now, double delta)
 {
   void *_action, *_next_action;
-  ActionLmmPtr action = NULL;
-  ActionLmmPtr next_action = NULL;
+  CpuActionLmmPtr action = NULL;
   xbt_swag_t running_actions = p_runningActionSet;
 
   xbt_swag_foreach_safe(_action, _next_action, running_actions) {
-    action = dynamic_cast<ActionLmmPtr>(static_cast<ActionPtr>(_action));
+    action = dynamic_cast<CpuActionLmmPtr>(static_cast<ActionPtr>(_action));
 #ifdef HAVE_TRACING
     if (TRACE_is_enabled()) {
       CpuPtr x = (CpuPtr) lmm_constraint_id(lmm_get_cnst_from_var
@@ -101,6 +103,7 @@ void CpuModel::updateActionsStateFull(double now, double delta)
       action->m_finish = surf_get_clock();
       action->setState(SURF_ACTION_DONE);
     }
+    action->updateEnergy();
   }
 
   return;
@@ -144,7 +147,7 @@ void CpuActionLmm::updateRemainingLazy(double now)
   delta = now - m_lastUpdate;
 
   if (m_remains > 0) {
-    XBT_DEBUG("Updating action(%p): remains was %lf, last_update was: %lf", this, m_remains, m_lastUpdate);
+    XBT_CDEBUG(surf_kernel, "Updating action(%p): remains was %lf, last_update was: %lf", this, m_remains, m_lastUpdate);
     double_update(&(m_remains), m_lastValue * delta);
 
 #ifdef HAVE_TRACING
@@ -153,7 +156,7 @@ void CpuActionLmm::updateRemainingLazy(double now)
       TRACE_surf_host_set_utilization(cpu->m_name, p_category, m_lastValue, m_lastUpdate, now - m_lastUpdate);
     }
 #endif
-    XBT_DEBUG("Updating action(%p): remains is now %lf", this, m_remains);
+    XBT_CDEBUG(surf_kernel, "Updating action(%p): remains is now %lf", this, m_remains);
   }
 
   m_lastUpdate = now;

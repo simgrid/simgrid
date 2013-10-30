@@ -1,4 +1,4 @@
-/* Copyright (c) 2012. The SimGrid Team.
+/* Copyright (c) 2012-2013. The SimGrid Team.
  * All rights reserved.                                                     */
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -30,8 +30,9 @@ void promoter(context_node_t node)
     host_parameters.id = NULL;
 
     //Power from 3,000,000 to 10,000,000
-    host_parameters.power_peak =
-        7000000 * RngStream_RandU01(rng_stream) + 3000000;
+    host_parameters.power_peak = xbt_dynar_new(sizeof(double), NULL);
+    xbt_dynar_push_as(host_parameters.power_peak, double,
+    		7000000 * RngStream_RandU01(rng_stream) + 3000000.0);
     host_parameters.core_amount = 1;
     host_parameters.power_scale = 1;
     host_parameters.power_trace = NULL;

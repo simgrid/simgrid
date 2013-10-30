@@ -1,4 +1,4 @@
-/* Copyright (c) 2010. The SimGrid Team.
+/* Copyright (c) 2010-2013. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -148,7 +148,7 @@ static int sd_register_platform(lua_State * L)
 }
 
 /**
- * Register applicaiton for MSG
+ * Register application for MSG
  */
 static int msg_register_application(lua_State * L)
 {

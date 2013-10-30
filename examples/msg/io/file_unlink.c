@@ -1,4 +1,4 @@
-/* Copyright (c) 2008, 2009, 2010. The SimGrid Team.
+/* Copyright (c) 2008-2010, 2012-2013. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -21,6 +21,7 @@
 #include <stdlib.h>
 #include "msg/msg.h"
 #include "surf/surf_private.h"
+#include "inttypes.h"
 
 int host(int argc, char *argv[]);
 
@@ -30,28 +31,27 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(io_file,
 int host(int argc, char *argv[])
 {
   msg_file_t file = NULL;
-  void *ptr = NULL;
   char* mount = xbt_strdup("/home");
-  size_t write;
+  sg_storage_size_t write;
 
   // First open
   XBT_INFO("\tOpen file '%s'",FILENAME1);
-  file = MSG_file_open(mount,FILENAME1);
+  file = MSG_file_open(mount,FILENAME1, NULL);
 
   // Unlink the file
-  XBT_INFO("\tUnlink file '%s'",file->name);
+  XBT_INFO("\tUnlink file '%s'",file->fullname);
   MSG_file_unlink(file);
 
   // Re Open the file wich is in fact created
   XBT_INFO("\tOpen file '%s'",FILENAME1);
-  file = MSG_file_open(mount,FILENAME1);
+  file = MSG_file_open(mount,FILENAME1, NULL);
 
   // Write into the new file
-  write = MSG_file_write(ptr,100000,file);  // Write for 100Ko
-  XBT_INFO("\tHave written %zu on %s",write,file->name);
+  write = MSG_file_write(file,100000);  // Write for 100Ko
+  XBT_INFO("\tHave written %" PRIu64 " on %s",write,file->fullname);
 
   // Close the file
-  XBT_INFO("\tClose file '%s'",file->name);
+  XBT_INFO("\tClose file '%s'",file->fullname);
   MSG_file_close(file);
 
   xbt_dict_t dict_ls;

@@ -443,6 +443,29 @@ WorkstationL07::WorkstationL07(WorkstationModelPtr model, const char* name, xbt_
 {
 }
 
+double WorkstationL07::getPowerPeakAt(int pstate_index)
+{
+	XBT_DEBUG("[ws_get_power_peak_at] Not implemented for workstation_ptask_L07");
+	return 0.0;
+}
+
+int WorkstationL07::getNbPstates()
+{
+	XBT_DEBUG("[ws_get_nb_pstates] Not implemented for workstation_ptask_L07");
+	return 0.0;
+}
+
+void WorkstationL07::setPowerPeakAt(int pstate_index)
+{
+	XBT_DEBUG("[ws_set_power_peak_at] Not implemented for workstation_ptask_L07");
+}
+
+double WorkstationL07::getConsumedEnergy()
+{
+	XBT_DEBUG("[ws_get_consumed_energy] Not implemented for workstation_ptask_L07");
+	return 0.0;
+}
+
 CpuL07::CpuL07(CpuL07ModelPtr model, const char* name, xbt_dict_t props)
  : Resource(model, name, props), CpuLmm(model, name, props) {
 
@@ -740,9 +763,12 @@ static void ptask_finalize(void)
 
 static void ptask_parse_workstation_init(sg_platf_host_cbarg_t host)
 {
+  double power_peak = xbt_dynar_get_as(host->power_peak, host->pstate, double);
+  //cpu->power_peak = power_peak;
+  xbt_dynar_free(&(host->power_peak));  /* kill memory leak */
   static_cast<WorkstationL07ModelPtr>(surf_workstation_model)->createResource(
       host->id,
-      host->power_peak,
+      power_peak,
       host->power_scale,
       host->power_trace,
       host->initial_state,
@@ -752,9 +778,10 @@ static void ptask_parse_workstation_init(sg_platf_host_cbarg_t host)
 
 static void ptask_parse_cpu_init(sg_platf_host_cbarg_t host)
 {
-	static_cast<CpuL07ModelPtr>(surf_cpu_model)->createResource(
+  double power_peak = xbt_dynar_get_as(host->power_peak, host->pstate, double);
+  static_cast<CpuL07ModelPtr>(surf_cpu_model)->createResource(
       host->id,
-      host->power_peak,
+      power_peak,
       host->power_scale,
       host->power_trace,
       host->initial_state,

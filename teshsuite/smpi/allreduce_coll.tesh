@@ -3,7 +3,7 @@
 ! output sort
 
 p Test allreduce
-$ ../../bin/smpirun -map -hostfile ${srcdir:=.}/hostfile -platform ${srcdir:=.}/../../examples/msg/small_platform.xml -np 16 --log=xbt_cfg.thres:critical ./allreduce_coll
+$ ../../smpi_script/bin/smpirun -map -hostfile ${srcdir:=.}/hostfile -platform ${srcdir:=.}/../../examples/msg/small_platform.xml -np 16 --log=xbt_cfg.thres:critical ./allreduce_coll
 > You requested to use 16 processes, but there is only 5 processes in your hostfile...
 > [rank 0] -> Tremblay
 > [rank 1] -> Jupiter

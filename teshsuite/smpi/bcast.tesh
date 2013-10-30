@@ -2,7 +2,7 @@
 # (since we want to pass it to the child, it has to be redefined before each command)
 # Go for the first test
 p Test Broadcast with less processes than hosts
-$ ../../bin/smpirun -map -hostfile ${srcdir:=.}/hostfile -platform ${srcdir:=.}/../../examples/msg/small_platform.xml -np 3 ./bcast -q
+$ ../../smpi_script/bin/smpirun -map -hostfile ${srcdir:=.}/hostfile -platform ${srcdir:=.}/../../examples/msg/small_platform.xml -np 3 ./bcast -q
 > [rank 0] -> Tremblay
 > [rank 1] -> Jupiter
 > [rank 2] -> Fafard
@@ -14,7 +14,7 @@ $ ../../bin/smpirun -map -hostfile ${srcdir:=.}/hostfile -platform ${srcdir:=.}/
 # second test
 p Test Broadcast with as much processes than hosts
 ! setenv LD_LIBRARY_PATH=../../lib
-$ ../../bin/smpirun -map -hostfile ${srcdir:=.}/hostfile -platform ${srcdir:=.}/../../examples/msg/small_platform.xml -np 5 ./bcast -q
+$ ../../smpi_script/bin/smpirun -map -hostfile ${srcdir:=.}/hostfile -platform ${srcdir:=.}/../../examples/msg/small_platform.xml -np 5 ./bcast -q
 > [rank 0] -> Tremblay
 > [rank 1] -> Jupiter
 > [rank 2] -> Fafard
@@ -28,7 +28,7 @@ $ ../../bin/smpirun -map -hostfile ${srcdir:=.}/hostfile -platform ${srcdir:=.}/
 # Another test
 p Test Broadcast with more processes than hosts
 ! setenv LD_LIBRARY_PATH=../../lib
-$ ../../bin/smpirun -map -hostfile ${srcdir:=.}/hostfile -platform ${srcdir:=.}/../../examples/msg/small_platform.xml -np 12 ./bcast -q
+$ ../../smpi_script/bin/smpirun -map -hostfile ${srcdir:=.}/hostfile -platform ${srcdir:=.}/../../examples/msg/small_platform.xml -np 12 ./bcast -q
 > You requested to use 12 processes, but there is only 5 processes in your hostfile...
 > [rank 0] -> Tremblay
 > [rank 1] -> Jupiter

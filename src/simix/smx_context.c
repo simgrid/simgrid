@@ -1,6 +1,6 @@
 /* a fast and simple context switching library                              */
 
-/* Copyright (c) 2009 - 2011. The SimGrid Team.
+/* Copyright (c) 2009-2013. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -48,41 +48,32 @@ void SIMIX_context_mod_init(void)
     }
     else { /* use the factory specified by --cfg=contexts/factory:value */
 
-    if (smx_context_factory_name == NULL) {
-        /* use the default factory */
-  #ifdef HAVE_RAWCTX
-      SIMIX_ctx_raw_factory_init(&simix_global->context_factory);
-  #elif CONTEXT_UCONTEXT
-    SIMIX_ctx_sysv_factory_init(&simix_global->context_factory);
-  #else
-    SIMIX_ctx_thread_factory_init(&simix_global->context_factory);
-  #endif
-    }
-    else if (!strcmp(smx_context_factory_name, "ucontext")) {
-        /* use ucontext */
-#ifdef CONTEXT_UCONTEXT
-        SIMIX_ctx_sysv_factory_init(&simix_global->context_factory);
-#else
-        xbt_die("The context factory 'ucontext' unavailable on your system");
-#endif
-      }
-      else if (!strcmp(smx_context_factory_name, "thread")) {
-  /* use os threads (either pthreads or windows ones) */
+
+      if (!strcmp(smx_context_factory_name, "thread")) {
+        /* use os threads (either pthreads or windows ones) */
         SIMIX_ctx_thread_factory_init(&simix_global->context_factory);
       }
-      else if (!strcmp(smx_context_factory_name, "raw")) {
-  /* use raw contexts */
-  SIMIX_ctx_raw_factory_init(&simix_global->context_factory);
+#ifdef CONTEXT_UCONTEXT
+      else if (!strcmp(smx_context_factory_name, "ucontext")) {
+        /* use ucontext */
+        SIMIX_ctx_sysv_factory_init(&simix_global->context_factory);
       }
+#endif
+#ifdef HAVE_RAWCTX
+      else if (!strcmp(smx_context_factory_name, "raw")) {
+        /* use raw contexts */
+        SIMIX_ctx_raw_factory_init(&simix_global->context_factory);
+      }
+#endif
       else {
         XBT_ERROR("Invalid context factory specified. Valid factories on this machine:");
 #ifdef HAVE_RAWCTX
         XBT_ERROR("  raw: high performance context factory implemented specifically for SimGrid");
 #else
-        XBT_ERROR("  (raw contextes are disabled at compilation time on this machine -- check configure logs for details)");
+        XBT_ERROR("  (raw contexts are disabled at compilation time on this machine -- check configure logs for details)");
 #endif
 #ifdef CONTEXT_UCONTEXT
-        XBT_ERROR("  ucontext: classical system V contextes (implemented with makecontext, swapcontext and friends)");
+        XBT_ERROR("  ucontext: classical system V contexts (implemented with makecontext, swapcontext and friends)");
 #else
         XBT_ERROR("  (ucontext is disabled at compilation time on this machine -- check configure logs for details)");
 #endif
@@ -94,7 +85,7 @@ void SIMIX_context_mod_init(void)
 }
 
 /**
- * This function is call by SIMIX_clean() to finalize the context module.
+ * This function is called by SIMIX_clean() to finalize the context module.
  */
 void SIMIX_context_mod_exit(void)
 {
@@ -229,4 +220,3 @@ XBT_INLINE void SIMIX_context_set_current(smx_context_t context)
     smx_current_context_serial = context;
   }
 }
-

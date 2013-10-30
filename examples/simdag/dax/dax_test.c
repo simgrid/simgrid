@@ -1,6 +1,6 @@
 /* simple test trying to load a DAX file.                                   */
 
-/* Copyright (c) 2009, 2010. The SimGrid Team.
+/* Copyright (c) 2009-2013. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -63,7 +63,7 @@ int main(int argc, char **argv)
     XBT_ERROR("A problem occurred during DAX parsing (cycle or syntax). Do not continue this test");
     free(tracefilename);
     SD_exit();
-    return -1;
+    exit(255);
   }
 
   /* Display all the tasks */
@@ -138,7 +138,7 @@ int main(int argc, char **argv)
     SD_task_destroy(task);
   }
   fclose(out);
-
+  xbt_dynar_free_container(&dax);
   /* exit */
   SD_exit();
   return 0;

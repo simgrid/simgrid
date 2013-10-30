@@ -1,7 +1,7 @@
 /*
  * This exception is an abstract class grouping all MSG-related exceptions
  *
- * Copyright 2006-2012 The SimGrid Team           
+ * Copyright (c) 2006-2013. The SimGrid Team.
  * All right reserved. 
  *
  * This program is free software; you can redistribute 
@@ -12,14 +12,13 @@ package org.simgrid.msg;
 
 /**
  * This exception is an abstract class grouping all MSG-related exceptions
-  
-    \htmlonly <!-- 
-      DOXYGEN_NAVBAR_CHILD "HostNotFoundException"=classsimgrid_1_1msg_1_1HostNotFoundException.html
-      DOXYGEN_NAVBAR_CHILD "JniException"=classsimgrid_1_1msg_1_1JniException.html
-      DOXYGEN_NAVBAR_CHILD "NativeException"=classsimgrid_1_1msg_1_1NativeException.html
-      DOXYGEN_NAVBAR_CHILD "ProcessNotFoundException"=classsimgrid_1_1msg_1_1ProcessNotFoundException.html
-    --> \endhtmlonly 
-  
+ *
+ *  <!--
+ *    DOXYGEN_NAVBAR_CHILD "HostNotFoundException"=classsimgrid_1_1msg_1_1HostNotFoundException.html
+ *    DOXYGEN_NAVBAR_CHILD "JniException"=classsimgrid_1_1msg_1_1JniException.html
+ *    DOXYGEN_NAVBAR_CHILD "NativeException"=classsimgrid_1_1msg_1_1NativeException.html
+ *    DOXYGEN_NAVBAR_CHILD "ProcessNotFoundException"=classsimgrid_1_1msg_1_1ProcessNotFoundException.html
+ *  -->
  */
 public abstract class MsgException extends Exception {
   private static final long serialVersionUID = 1L;

@@ -50,7 +50,6 @@ extern xbt_dynar_t surf_path;
 extern "C" {
 #endif
 XBT_PUBLIC(double) surf_get_clock(void);
-XBT_PUBLIC(void) surf_watched_hosts(void);
 #ifdef __cplusplus
 }
 #endif

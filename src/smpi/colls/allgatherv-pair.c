@@ -67,7 +67,7 @@ smpi_coll_tuned_allgatherv_pair(void *send_buff, int send_count,
 
   MPI_Aint extent;
   int i, src, dst, rank, num_procs;
-  int tag = 1;
+  int tag = COLL_TAG_ALLGATHERV;
   MPI_Status status;
 
   char *send_ptr = (char *) send_buff;

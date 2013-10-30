@@ -1,4 +1,5 @@
-/* Copyright (c) 2008-2012. Da SimGrid Team. All rights reserved.           */
+/* Copyright (c) 2008-2013. The SimGrid Team.
+ * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -56,16 +57,13 @@ void MC_automaton_load(const char *file);
 /****************************** MC ignore **********************************/
 XBT_PUBLIC(void) MC_ignore_heap(void *address, size_t size);
 XBT_PUBLIC(void) MC_remove_ignore_heap(void *address, size_t size);
-XBT_PUBLIC(void) MC_ignore_stack(const char *var_name, const char *frame);
-XBT_PUBLIC(void) MC_ignore_data_bss(void *address, size_t size);
+XBT_PUBLIC(void) MC_ignore_local_variable(const char *var_name, const char *frame);
+XBT_PUBLIC(void) MC_ignore_global_variable(const char *var_name);
 void MC_new_stack_area(void *stack, char *name, void *context, size_t size);
 
 /********************************* Memory *************************************/
 XBT_PUBLIC(void) MC_memory_init(void);  /* Initialize the memory subsystem */
 XBT_PUBLIC(void) MC_memory_exit(void);
-
-/* Trigger for state equality detection (check potential cycle in application) */
-void MC_compare(void);
 
 SG_END_DECL()
 

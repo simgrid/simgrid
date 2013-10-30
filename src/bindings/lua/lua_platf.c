@@ -1,4 +1,4 @@
-/* Copyright (c) 2010. The SimGrid Team.
+/* Copyright (c) 2010, 2012-2013. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -92,7 +92,8 @@ int console_add_host(lua_State *L) {
   // get power value
   lua_pushstring(L, "power");
   lua_gettable(L, -2);
-  host.power_peak = lua_tonumber(L, -1);
+  host.power_peak = xbt_dynar_new(sizeof(double), NULL);
+  xbt_dynar_push_as(host.power_peak, double, lua_tonumber(L, -1));
   lua_pop(L, 1);
 
   // get core

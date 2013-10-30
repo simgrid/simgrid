@@ -1,4 +1,4 @@
-/* Copyright (c) 2009, 2010. The SimGrid Team.
+/* Copyright (c) 2009-2010, 2013. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -15,6 +15,8 @@
 #define EXIT_FAILURE 1
 #endif
 
+//define MAXLEN  300000
+
 int main(int argc, char *argv[])
 {
   int rank, size;
@@ -22,28 +24,31 @@ int main(int argc, char *argv[])
   int *sb;
   int *rb;
   int status;
+  int mult=1;
 
   MPI_Init(&argc, &argv);
+  int maxlen = argc >= 2 ? atoi(argv[1]) : 1;
+
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
   MPI_Comm_size(MPI_COMM_WORLD, &size);
-
-  sb = (int *) xbt_malloc(size * sizeof(int));
-  rb = (int *) xbt_malloc(size * sizeof(int));
+  if (maxlen>1)mult=size;
+  sb = (int *) xbt_malloc(size *maxlen * sizeof(int));
+  rb = (int *) xbt_malloc(size *maxlen * sizeof(int));
   
-  for (i = 0; i < size; ++i) {
+  for (i = 0; i < size *maxlen; ++i) {
     sb[i] = rank*size + i;
     rb[i] = 0;
   }
 
   printf("[%d] sndbuf=[", rank);
-  for (i = 0; i < size; i++)
+  for (i = 0; i < size *mult; i++)
     printf("%d ", sb[i]);
   printf("]\n");
 
-  status = MPI_Allreduce(sb, rb, size, MPI_INT, MPI_SUM, MPI_COMM_WORLD);
+  status = MPI_Allreduce(sb, rb, size *maxlen, MPI_INT, MPI_SUM, MPI_COMM_WORLD);
 
   printf("[%d] rcvbuf=[", rank);
-  for (i = 0; i < size; i++)
+  for (i =  0; i < size *mult; i++)//do not print everything
     printf("%d ", rb[i]);
   printf("]\n");
 

@@ -1,4 +1,5 @@
-/* Copyright (c) 2004-2012. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2004-2013. The SimGrid Team.
+ * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -102,19 +103,45 @@ typedef struct msg_vm {
 /* ******************************** File ************************************ */
 typedef struct simdata_file *simdata_file_t;
 
+typedef struct s_msg_file_info {
+  sg_storage_size_t size;
+  char* mount_point;
+  char* storageId;
+  char* storage_type;
+  char* content_type;
+} s_msg_file_info_t, *msg_file_info_t;
+
 typedef struct msg_file {
-  char *name;                   /**< @brief file name */
-  size_t size;
-  simdata_file_t simdata;                /**< @brief simulator data  */
-  void *data;                   /**< @brief user data */
+  char *fullname;               /**< @brief file full name (path+name)*/
+  simdata_file_t simdata;       /**< @brief simulator data  */
+  msg_file_info_t info;
 } s_msg_file_t;
 
 /** @brief File datatype.
-    @ingroup msg_file_management 
- 
-    You should consider this as an opaque object.
+ *  @ingroup msg_file_management
+ *
+ *  You should consider this as an opaque object.
  */
+
 typedef struct msg_file *msg_file_t;
+
+/* ******************************** Storage ************************************ */
+/* TODO: PV: to comment */
+
+extern int MSG_STORAGE_LEVEL;
+
+/** @brief Storage datatype.
+ *  @ingroup msg_storage_management
+ *
+ *  You should consider this as an opaque object.
+ */
+typedef xbt_dictelm_t msg_storage_t;
+typedef s_xbt_dictelm_t s_msg_storage_t;
+
+typedef struct msg_storage_priv  {
+  // TODO PV: fill it (or not) !
+  void * dummy;
+} s_msg_storage_priv_t, *msg_storage_priv_t;
 
 /*************** Begin GPU ***************/
 typedef struct simdata_gpu_task *simdata_gpu_task_t;

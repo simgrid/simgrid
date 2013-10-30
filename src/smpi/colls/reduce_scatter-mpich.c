@@ -1,5 +1,4 @@
 #include "colls_private.h"
-#define MPIR_REDUCE_SCATTER_TAG 222
 
 static inline int MPIU_Mirror_permutation(unsigned int x, int bits)
 {
@@ -46,6 +45,7 @@ int smpi_coll_tuned_reduce_scatter_mpich_pair(void *sendbuf, void *recvbuf, int 
     }
     
     if (total_count == 0) {
+        xbt_free(disps);
         return MPI_ERR_COUNT;
     }
 
@@ -70,16 +70,16 @@ int smpi_coll_tuned_reduce_scatter_mpich_pair(void *sendbuf, void *recvbuf, int 
             if (sendbuf != MPI_IN_PLACE) 
                 smpi_mpi_sendrecv(((char *)sendbuf+disps[dst]*extent), 
                                              recvcounts[dst], datatype, dst,
-                                             MPIR_REDUCE_SCATTER_TAG, tmp_recvbuf,
+                                             COLL_TAG_SCATTER, tmp_recvbuf,
                                              recvcounts[rank], datatype, src,
-                                             MPIR_REDUCE_SCATTER_TAG, comm,
+                                             COLL_TAG_SCATTER, comm,
                                              MPI_STATUS_IGNORE);
             else
                 smpi_mpi_sendrecv(((char *)recvbuf+disps[dst]*extent), 
                                              recvcounts[dst], datatype, dst,
-                                             MPIR_REDUCE_SCATTER_TAG, tmp_recvbuf,
+                                             COLL_TAG_SCATTER, tmp_recvbuf,
                                              recvcounts[rank], datatype, src,
-                                             MPIR_REDUCE_SCATTER_TAG, comm,
+                                             COLL_TAG_SCATTER, comm,
                                              MPI_STATUS_IGNORE);
             
             if (is_commutative || (src < rank)) {
@@ -135,7 +135,10 @@ int smpi_coll_tuned_reduce_scatter_mpich_pair(void *sendbuf, void *recvbuf, int 
             if (mpi_errno) return(mpi_errno);
         }
     
-return MPI_SUCCESS;
+        xbt_free(disps);
+        xbt_free(tmp_recvbuf);
+
+        return MPI_SUCCESS;
 }
     
 
@@ -179,6 +182,9 @@ int smpi_coll_tuned_reduce_scatter_mpich_noncomm(void *sendbuf, void *recvbuf, i
 
     tmp_buf0=( void *)xbt_malloc( true_extent * total_count);
     tmp_buf1=( void *)xbt_malloc( true_extent * total_count);
+    void *tmp_buf0_save=tmp_buf0;
+    void *tmp_buf1_save=tmp_buf1;
+
     /* adjust for potential negative lower bound in datatype */
     tmp_buf0 = (void *)((char*)tmp_buf0 - true_lb);
     tmp_buf1 = (void *)((char*)tmp_buf1 - true_lb);
@@ -212,9 +218,9 @@ int smpi_coll_tuned_reduce_scatter_mpich_noncomm(void *sendbuf, void *recvbuf, i
         }
 
         smpi_mpi_sendrecv(outgoing_data + send_offset*true_extent,
-                                     size, datatype, peer, MPIR_REDUCE_SCATTER_TAG,
+                                     size, datatype, peer, COLL_TAG_SCATTER,
                                      incoming_data + recv_offset*true_extent,
-                                     size, datatype, peer, MPIR_REDUCE_SCATTER_TAG,
+                                     size, datatype, peer, COLL_TAG_SCATTER,
                                      comm, MPI_STATUS_IGNORE);
         /* always perform the reduction at recv_offset, the data at send_offset
            is now our peer's responsibility */
@@ -246,6 +252,8 @@ int smpi_coll_tuned_reduce_scatter_mpich_noncomm(void *sendbuf, void *recvbuf, i
     result_ptr = (char *)(buf0_was_inout ? tmp_buf0 : tmp_buf1) + recv_offset * true_extent;
     mpi_errno = smpi_datatype_copy(result_ptr, size, datatype,
                                recvbuf, size, datatype);
+    xbt_free(tmp_buf0_save);
+    xbt_free(tmp_buf1_save);
     if (mpi_errno) return(mpi_errno);
     return MPI_SUCCESS;
 }
@@ -264,7 +272,7 @@ int smpi_coll_tuned_reduce_scatter_mpich_rdb(void *sendbuf, void *recvbuf, int r
     int mask, dst_tree_root, my_tree_root, j, k;
     int received;
     MPI_Datatype sendtype, recvtype;
-    int nprocs_completed, tmp_mask, tree_root, is_commutative;
+    int nprocs_completed, tmp_mask, tree_root, is_commutative=0;
     comm_size = smpi_comm_size(comm);
     rank = smpi_comm_rank(comm);
 
@@ -367,9 +375,9 @@ int smpi_coll_tuned_reduce_scatter_mpich_rdb(void *sendbuf, void *recvbuf, int r
                        tmp_results. accumulation is done later below.   */ 
 
                     smpi_mpi_sendrecv(tmp_results, 1, sendtype, dst,
-                                                 MPIR_REDUCE_SCATTER_TAG, 
+                                                 COLL_TAG_SCATTER,
                                                  tmp_recvbuf, 1, recvtype, dst,
-                                                 MPIR_REDUCE_SCATTER_TAG, comm,
+                                                 COLL_TAG_SCATTER, comm,
                                                  MPI_STATUS_IGNORE);
                     received = 1;
                 }
@@ -411,7 +419,7 @@ int smpi_coll_tuned_reduce_scatter_mpich_rdb(void *sendbuf, void *recvbuf, int r
                             && (dst >= tree_root + nprocs_completed)) {
                             /* send the current result */
                             smpi_mpi_send(tmp_recvbuf, 1, recvtype,
-                                                     dst, MPIR_REDUCE_SCATTER_TAG,
+                                                     dst, COLL_TAG_SCATTER,
                                                      comm);
                         }
                         /* recv only if this proc. doesn't have data and sender
@@ -420,7 +428,7 @@ int smpi_coll_tuned_reduce_scatter_mpich_rdb(void *sendbuf, void *recvbuf, int r
                                  (dst < tree_root + nprocs_completed) &&
                                  (rank >= tree_root + nprocs_completed)) {
                             smpi_mpi_recv(tmp_recvbuf, 1, recvtype, dst,
-                                                     MPIR_REDUCE_SCATTER_TAG,
+                                                     COLL_TAG_SCATTER,
                                                      comm, MPI_STATUS_IGNORE); 
                             received = 1;
                         }
@@ -466,8 +474,8 @@ int smpi_coll_tuned_reduce_scatter_mpich_rdb(void *sendbuf, void *recvbuf, int r
                     }
                 }
 
-                //smpi_datatype_free(&sendtype);
-                //smpi_datatype_free(&recvtype);
+                smpi_datatype_free(&sendtype);
+                smpi_datatype_free(&recvtype);
 
                 mask <<= 1;
                 i++;
@@ -479,6 +487,9 @@ int smpi_coll_tuned_reduce_scatter_mpich_rdb(void *sendbuf, void *recvbuf, int r
                                        recvcounts[rank], datatype);
             if (mpi_errno) return(mpi_errno);
 
+    xbt_free(disps);
+    xbt_free(tmp_recvbuf);
+    xbt_free(tmp_results);
     return MPI_SUCCESS;
         }
 

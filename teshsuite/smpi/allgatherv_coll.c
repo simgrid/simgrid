@@ -1,4 +1,4 @@
-/* Copyright (c) 2009, 2010. The SimGrid Team.
+/* Copyright (c) 2009-2010, 2013. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -69,6 +69,8 @@ int main(int argc, char *argv[])
   }
   free(sb);
   free(rb);
+  free(recv_counts);
+  free(recv_disps);
   MPI_Finalize();
   return (EXIT_SUCCESS);
 }

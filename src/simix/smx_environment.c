@@ -1,4 +1,4 @@
-/* Copyright (c) 2007, 2008, 2009, 2010. The SimGrid Team.
+/* Copyright (c) 2007-2013. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -38,19 +38,28 @@ void SIMIX_create_environment(const char *file)
   start = xbt_os_time();
   parse_platform_file(file);
   end = xbt_os_time();
-  XBT_DEBUG("PARSE TIME: %lg", (end - start));
+  XBT_DEBUG("PARSE TIME: %g", (end - start));
 
 }
 
 void SIMIX_post_create_environment(void) {
 
   void **workstation = NULL;
+  void **storage = NULL;
   xbt_lib_cursor_t cursor = NULL;
   char *name = NULL;
 
+  /* Create host at SIMIX level */
   xbt_lib_foreach(host_lib, cursor, name, workstation) {
     if(workstation[SURF_WKS_LEVEL])
       SIMIX_host_create(name, workstation[SURF_WKS_LEVEL], NULL);
   }
+
+  /* Create storage at SIMIX level */
+  xbt_lib_foreach(storage_lib, cursor, name, storage) {
+    if(storage[SURF_STORAGE_LEVEL])
+      SIMIX_storage_create(name, storage[SURF_STORAGE_LEVEL], NULL);
+  }
+
   surf_presolve();
 }

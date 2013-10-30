@@ -1,4 +1,4 @@
-/* Copyright (c) 2004, 2005, 2006, 2007, 2008, 2009, 2010. The SimGrid Team.
+/* Copyright (c) 2004-2013. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -47,6 +47,13 @@ void MSG_post_create_environment(void) {
     if(data[SIMIX_HOST_LEVEL])
       __MSG_host_create(xbt_dict_cursor_get_elm(cursor));
   }
+
+  /* Initialize MSG storages */
+  xbt_lib_foreach(storage_lib, cursor, name, data) {
+    if(data[SIMIX_STORAGE_LEVEL])
+      __MSG_storage_create(xbt_dict_cursor_get_elm(cursor));
+  }
+
 }
 
 msg_as_t MSG_environment_get_routing_root() {
