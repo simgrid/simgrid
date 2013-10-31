@@ -719,8 +719,11 @@ smpi_mpi_gatherv(send, send_size, MPI_CURRENT_TYPE,
 #endif
 
   log_timed_action (action, clock);
+  xbt_free(recvcounts);
   xbt_free(send);
-  xbt_free(recv);
+  if(recv)xbt_free(recv);
+  xbt_free(disps);
+
 }
 
 static void action_reducescatter(const char *const *action) {
@@ -783,7 +786,8 @@ static void action_reducescatter(const char *const *action) {
 #ifdef HAVE_TRACING
   TRACE_smpi_collective_out(rank, -1, __FUNCTION__);
 #endif
-
+  xbt_free(recvcounts);
+  xbt_free(disps);
   log_timed_action (action, clock);
 }
 
