@@ -171,8 +171,13 @@ void smpi_bench_begin(void)
 void smpi_bench_end(void)
 {
   xbt_os_timer_t timer = smpi_process_timer();
-
   xbt_os_threadtimer_stop(timer);
+  if (smpi_process_get_sampling()) {
+    XBT_CRITICAL("Cannot do recursive benchmarks.");
+    XBT_CRITICAL("Are you trying to make a call to MPI within a SMPI_SAMPLE_ block?");
+    xbt_backtrace_display_current();
+    xbt_die("Aborting.");
+  }
   smpi_execute(xbt_os_timer_elapsed(timer));
 }
 
