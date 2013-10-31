@@ -148,10 +148,14 @@ void print_TIPushState(paje_event_t event)
   case TRACING_COMPUTING:
     fprintf(tracing_file, "%s compute %f\n", process_id, extra->comp_size);
     break;
-
+  case TRACING_GATHERV: // rank gatherv send_size [recvcounts] root (sendtype) (recvtype)
+    fprintf(tracing_file, "%s gatherv %d ", process_id, extra->send_size);
+    for (i = 0; i < extra->num_processes; i++)
+      fprintf(tracing_file, "%d ", extra->recvcounts[i]);
+    fprintf(tracing_file, "%d %s %s\n", extra->root, extra->datatype1, extra->datatype2);
+    break;
   case TRACING_WAITANY:
   case TRACING_SENDRECV:
-  case TRACING_GATHERV:
   case TRACING_SCATTER:
   case TRACING_SCATTERV:
   case TRACING_ALLGATHER:
