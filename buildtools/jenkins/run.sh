@@ -3,6 +3,14 @@
 WORKSPACE=$1
 build_mode=$2
 
+# usage: die status message...
+die () {
+  local status=${1:-1}
+  shift
+  [ $# -gt 0 ] || set -- "Error - Halting"
+  echo "$@" >&2
+  exit $status
+}
 
 rm -rf $WORKSPACE/build
 
@@ -18,40 +26,16 @@ then
         NUMBER_OF_PROCESSORS=1
     fi  
 
-    cmake -G "MSYS Makefiles" $WORKSPACE
+    cmake -G "MSYS Makefiles" $WORKSPACE || die 1 "Failed to do the first cmake - Halting"
 
-    if [ $? -ne 0 ] ; then
-        echo "Failed to do the first cmake - Halting"
-        exit 1
-    fi
+    make dist || die 2 "Failed to build dist - Halting"
 
-    make dist
+    cmake -G "MSYS Makefiles" -Denable_java=ON -Denable_model-checking=OFF -Denable_lua=OFF -Denable_compile_optimizations=ON  -Denable_smpi=ON -Denable_smpi_MPICH3_testsuite=ON -Denable_compile_warnings=OFF . \
+    || die 5 "Failed to perform the Cmake for $build_mode - Halting"
 
-    if [ $? -ne 0 ] ; then
-        echo "Failed to build dist - Halting"
-        exit 2
-    fi
+    make -j$NUMBER_OF_PROCESSORS || die 5 "Build failure - Halting"
 
-    cmake -G "MSYS Makefiles" -Denable_java=ON -Denable_model-checking=OFF -Denable_lua=OFF -Denable_compile_optimizations=ON  -Denable_smpi=ON -Denable_smpi_MPICH3_testsuite=ON -Denable_compile_warnings=OFF .
-
-    if [ $? -ne 0 ] ; then
-        echo "Failed to perform the Cmake for $build_mode - Halting"
-        exit 5
-    fi
-
-    make -j$NUMBER_OF_PROCESSORS
-
-    if [ $? -ne 0 ] ; then
-        echo "Build failure - Halting"
-        exit 5
-    fi
-
-    make nsis
-
-    if [ $? -ne 0 ] ; then
-        echo "Failure while generating the Windows executable - Halting"
-        exit 6
-    fi
+    make nsis || die 6 "Failure while generating the Windows executable - Halting"
 
 else
     # Linux:
@@ -60,34 +44,14 @@ else
     NUMBER_OF_PROCESSORS=$(grep -c "^processor[[:space:]]*:" ${cpuinfo_file} 2>/dev/null)
     [ "0$NUMBER_OF_PROCESSORS" -gt 0 ] || NUMBER_OF_PROCESSORS=1
 
-    cmake $WORKSPACE
-
-    if [ $? -ne 0 ] ; then
-        echo "Failed to do the first cmake - Halting"
-        exit 1
-    fi
+    cmake $WORKSPACE || die 1 "Failed to do the first cmake - Halting"
 
     rm Simgrid*.tar.gz
-    make dist
+    make dist || die 2 "Failed to build dist - Halting"
 
-    if [ $? -ne 0 ] ; then
-        echo "Failed to build dist - Halting"
-        exit 2
-    fi
+    tar xzf `cat VERSION`.tar.gz || die 3 "Failed to extract the generated tgz - Halting"
 
-    tar xzf `cat VERSION`.tar.gz
-
-    if [ $? -ne 0 ] ; then
-        echo "Failed to extract the generated tgz - Halting"
-        exit 3
-    fi
-
-    cd `cat VERSION`
-
-    if [ $? -ne 0 ] ; then
-        echo "Path `cat VERSION` cannot be found - Halting"
-        exit 4
-    fi
+    cd `cat VERSION` || die 4 "Path `cat VERSION` cannot be found - Halting"
 
     if [ "$build_mode" = "Debug" ]
     then
@@ -104,20 +68,10 @@ else
     cmake -Denable_lua=OFF -Denable_java=ON -Denable_tracing=ON -Denable_smpi=ON -Denable_compile_optimizations=OFF -Denable_compile_warnings=ON -Denable_lib_static=OFF -Denable_model-checking=OFF -Denable_latency_bound_tracking=OFF -Denable_gtnets=OFF -Denable_jedule=OFF -Denable_mallocators=OFF -Denable_memcheck=ON .
     fi
 
-    if [ $? -ne 0 ] ; then
-        echo "Failed to perform the Cmake for $build_mode - Halting"
-        exit 5
-    fi
+    [ $? -eq 0 ] || die 5 "Failed to perform the Cmake for $build_mode - Halting"
 
-    make -j$NUMBER_OF_PROCESSORS
-
-    if [ $? -ne 0 ] ; then
-        echo "Build failure - Halting"
-        exit 6
-    fi
-
+    make -j$NUMBER_OF_PROCESSORS || die 6 "Build failure - Halting"
 fi
-
 
 echo "running tests with $NUMBER_OF_PROCESSORS processors"
 
