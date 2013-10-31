@@ -13,12 +13,12 @@ export PATH=./lib/:../../lib:$PATH
 
 if test "$(uname -o)" = "Msys"
 then 
-    
-    cmake -G "MSYS Makefiles" $WORKSPACE
     #$NUMBER_OF_PROCESSORS should be already set on win
     if [ -z "$NUMBER_OF_PROCESSORS" ]; then
         NUMBER_OF_PROCESSORS=1
     fi  
+
+    cmake -G "MSYS Makefiles" $WORKSPACE
 
     if [ $? -ne 0 ] ; then
         echo "Failed to do the first cmake - Halting"
@@ -54,16 +54,11 @@ then
     fi
 
 else
-    NUMBER_OF_PROCESSORS=0
     # Linux:
     cpuinfo_file="/proc/cpuinfo"
-    if [ -f "${cpuinfo_file}" ]; then
-      NUMBER_OF_PROCESSORS=$(grep -c "processor.: " ${cpuinfo_file}) 
-    fi
-    # grep returns 0 or cpuinfo not found
-    if [ $NUMBER_OF_PROCESSORS = 0 ]; then
-      NUMBER_OF_PROCESSORS=1
-    fi
+    NUMBER_OF_PROCESSORS=$(lscpu -p 2>/dev/null | grep -c '^[^#]') || \
+    NUMBER_OF_PROCESSORS=$(grep -c "^processor[[:space:]]*:" ${cpuinfo_file} 2>/dev/null)
+    [ "0$NUMBER_OF_PROCESSORS" -gt 0 ] || NUMBER_OF_PROCESSORS=1
 
     cmake $WORKSPACE
 
