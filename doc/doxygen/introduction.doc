@@ -196,8 +196,8 @@ For a more "fancy" output, you can try:
 For a really fancy output, you should use [viva/triva][fn:1]:
 
 ~~~~{.sh}
-./masterworker0 platforms/platform.xml deployment0.xml --cfg=tracing:1 \
-    --cfg=tracing/uncategorized:1 --cfg=viva/uncategorized:uncat.plist
+./masterworker0 platforms/platform.xml deployment0.xml --cfg=tracing:yes \
+    --cfg=tracing/uncategorized:yes --cfg=viva/uncategorized:uncat.plist
 LANG=C ; viva simgrid.trace uncat.plist
 ~~~~
  
@@ -205,16 +205,16 @@ For a more classical Gantt-Chart visualization, you can produce a
 [Paje][fn:5] trace:
 
 ~~~~{.sh}
-./masterworker0 platforms/platform.xml deployment0.xml --cfg=tracing:1 \
-    --cfg=tracing/msg/process:1
+./masterworker0 platforms/platform.xml deployment0.xml --cfg=tracing:yes \
+    --cfg=tracing/msg/process:yes
 LANG=C ; Paje simgrid.trace
 ~~~~
 
 Alternatively, you can use [vite][fn:6].
 
 ~~~~{.sh}
-./masterworker0 platforms/platform.xml deployment0.xml --cfg=tracing:1 \
-    --cfg=tracing/msg/process:1 --cfg=tracing/basic:1
+./masterworker0 platforms/platform.xml deployment0.xml --cfg=tracing:yes \
+    --cfg=tracing/msg/process:yes --cfg=tracing/basic:yes
 vite simgrid.trace
 ~~~~
 
@@ -388,8 +388,8 @@ void MSG_task_set_category (msg_task_t task, const char *category);
 The outcome can then be visualized as follows:
 
 ~~~~{.sh}
-./masterworker3 platforms/platform.xml deployment3.xml --cfg=tracing:1\
-    --cfg=tracing/categorized:1 --cfg=viva/categorized:viva_cat.plist
+./masterworker3 platforms/platform.xml deployment3.xml --cfg=tracing:yes\
+    --cfg=tracing/categorized:yes --cfg=viva/categorized:viva_cat.plist
 LANG=C; viva simgrid.trace viva_cat.plist
 ~~~~
 
@@ -399,8 +399,8 @@ and there are several masters deployed on the platform. Using a
 Gantt-chart visualization may help:
 
 ~~~~{.sh}
-./masterworker3 platforms/platform.xml deployment3.xml --cfg=tracing:1 \
-    --cfg=tracing/msg/process:1
+./masterworker3 platforms/platform.xml deployment3.xml --cfg=tracing:yes \
+    --cfg=tracing/msg/process:yes
 LANG=C; Paje simgrid.trace
 ~~~~
 

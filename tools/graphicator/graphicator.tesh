@@ -1,7 +1,7 @@
 #! ./tesh
 
-$ ${bindir:=.}/graphicator ${srcdir:=.}/teshsuite/simdag/platforms/one_cluster.xml --cfg=tracing:1 --cfg=tracing/platform:1 test.dot
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing' to '1'
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/platform' to '1'
+$ ${bindir:=.}/graphicator ${srcdir:=.}/teshsuite/simdag/platforms/one_cluster.xml --cfg=tracing:yes --cfg=tracing/platform:yes test.dot
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing' to 'yes'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/platform' to 'yes'
 
 $ rm test.dot

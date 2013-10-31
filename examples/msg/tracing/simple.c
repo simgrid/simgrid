@@ -14,7 +14,7 @@
  * 
  * - <b>tracing/simple.c</b> very simple program where each process creates, executes and
  *   destroy a task. You might want to run this program with the following parameters:
- *   --cfg=tracing/uncategorized:1
+ *   --cfg=tracing/uncategorized:yes
  *   (See \ref tracing_tracing_options for details)
  */
 

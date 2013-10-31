@@ -352,12 +352,12 @@ if [ -n "${TRACE_ACTIVE}" ]; then
     if [ -z "${TRACE_FILENAME}" ]; then
       TRACE_FILENAME="smpi_simgrid.txt"
     fi
-    TRACEOPTIONS="--cfg=tracing:1 --cfg=tracing/filename:${TRACE_FILENAME} --cfg=tracing/smpi:1 --cfg=tracing/smpi/format:TI --cfg=tracing/smpi/computing:1"
+    TRACEOPTIONS="--cfg=tracing:yes --cfg=tracing/filename:${TRACE_FILENAME} --cfg=tracing/smpi:yes --cfg=tracing/smpi/format:TI --cfg=tracing/smpi/computing:yes"
   else
     if [ -z "${TRACE_FILENAME}" ]; then
       TRACE_FILENAME="smpi_simgrid.trace"
     fi
-    TRACEOPTIONS="--cfg=tracing:1 --cfg=tracing/filename:${TRACE_FILENAME} --cfg=tracing/smpi:1"
+    TRACEOPTIONS="--cfg=tracing:yes --cfg=tracing/filename:${TRACE_FILENAME} --cfg=tracing/smpi:yes"
   fi
 
   if [ -n "${TRACE_COMMENT}" ]; then
@@ -369,11 +369,11 @@ if [ -n "${TRACE_ACTIVE}" ]; then
   fi
 
   if [ -n "${TRACE_GROUPED}" ]; then
-    TRACEOPTIONS="${TRACEOPTIONS} --cfg=tracing/smpi/group:1"
+    TRACEOPTIONS="${TRACEOPTIONS} --cfg=tracing/smpi/group:yes"
   fi
 
   if [ -n "${TRACE_RESOURCE}" ]; then
-    TRACEOPTIONS="${TRACEOPTIONS} --cfg=tracing/categorized:1 --cfg=tracing/uncategorized:1"
+    TRACEOPTIONS="${TRACEOPTIONS} --cfg=tracing/categorized:yes --cfg=tracing/uncategorized:yes"
   fi
 
   if [ -n "${TRACE_VIVA}" ]; then

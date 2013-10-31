@@ -31,7 +31,7 @@ int main(int argc, char **argv)
 
   int status = TRACE_platform_graph_export_graphviz (graphvizFile);
   if (status == 0){
-    XBT_INFO ("%s expects --cfg=tracing:1 --cfg=tracing/platform:1", argv[0]);
+    XBT_INFO ("%s expects --cfg=tracing:yes --cfg=tracing/platform:yes", argv[0]);
   }
 #else
   XBT_INFO ("works only if simgrid was compiled with tracing enabled.");

@@ -4,11 +4,11 @@
 
 p Test instrumentation of SMPI
 $ ../../smpi_script/bin/smpirun -trace -trace-resource -trace-file smpi_traced.trace -hostfile ${srcdir:=.}/hostfile -platform ${srcdir:=.}/../msg/tracing/platform.xml -np 3 ./smpi_traced
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing' to '1'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing' to 'yes'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/filename' to 'smpi_traced.trace'
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/smpi' to '1'
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/categorized' to '1'
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/uncategorized' to '1'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/smpi' to 'yes'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/categorized' to 'yes'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/uncategorized' to 'yes'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'maxmin/precision' to '1e-9'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'SMPI'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/TCP_gamma' to '4194304'
@@ -16,11 +16,11 @@ $ ../../smpi_script/bin/smpirun -trace -trace-resource -trace-file smpi_traced.t
 
 p Another SMPI test
 $ ../../smpi_script/bin/smpirun -trace -trace-resource -trace-file smpi_traced.trace -hostfile ${srcdir:=.}/hostfile -platform ${srcdir:=.}/../msg/tracing/platform.xml -np 3 ./smpi_traced_simple
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing' to '1'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing' to 'yes'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/filename' to 'smpi_traced.trace'
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/smpi' to '1'
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/categorized' to '1'
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/uncategorized' to '1'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/smpi' to 'yes'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/categorized' to 'yes'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/uncategorized' to 'yes'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'maxmin/precision' to '1e-9'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'SMPI'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/TCP_gamma' to '4194304'
@@ -35,10 +35,10 @@ $ ../../smpi_script/bin/smpirun -hostfile ${srcdir:=.}/hostfile -platform ${srcd
 
 p Testing grouped tracing
 $ ../../smpi_script/bin/smpirun -trace -trace-grouped -trace-file smpi_traced.trace -hostfile ${srcdir:=.}/hostfile -platform ${srcdir:=.}/../msg/tracing/platform.xml -np 3 ./smpi_traced_simple
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing' to '1'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing' to 'yes'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/filename' to 'smpi_traced.trace'
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/smpi' to '1'
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/smpi/group' to '1'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/smpi' to 'yes'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/smpi/group' to 'yes'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'maxmin/precision' to '1e-9'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'SMPI'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/TCP_gamma' to '4194304'
@@ -46,11 +46,11 @@ $ ../../smpi_script/bin/smpirun -trace -trace-grouped -trace-file smpi_traced.tr
 
 p Testing generation of viva configuration files
 $ ../../smpi_script/bin/smpirun -trace -trace-resource -trace-viva -trace-file smpi_traced.trace -hostfile ${srcdir:=.}/hostfile -platform ${srcdir:=.}/../msg/tracing/platform.xml --cfg=smpi/cpu_threshold:1 -np 3 ./smpi_traced_simple
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing' to '1'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing' to 'yes'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/filename' to 'smpi_traced.trace'
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/smpi' to '1'
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/categorized' to '1'
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/uncategorized' to '1'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/smpi' to 'yes'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/categorized' to 'yes'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/uncategorized' to 'yes'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'viva/categorized' to 'smpi_cat.plist'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'viva/uncategorized' to 'smpi_uncat.plist'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'maxmin/precision' to '1e-9'

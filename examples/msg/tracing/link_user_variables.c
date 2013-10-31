@@ -13,8 +13,8 @@
  * to provide the name of the link to update the value of the variable associated
  * to that link.
  * You might want to run this program with the following parameters:
- * --cfg=tracing:1
- * --cfg=tracing/platform:1
+ * --cfg=tracing:yes
+ * --cfg=tracing/platform:yes
  * (See \ref tracing_tracing_options for details)
  */
 

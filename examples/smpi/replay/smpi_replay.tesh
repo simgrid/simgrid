@@ -38,13 +38,13 @@ p The same with tracing activated
 < replay/actions_bcast.txt
 $ mkfile replay/one_trace
 
-$ ../../smpi_script/bin/smpirun -ext smpi_replay --log=replay.thresh:critical --log=no_loc  --cfg=tracing:1 --cfg=tracing/smpi:1 --cfg=tracing/smpi/computing:1 --cfg=smpi/cpu_threshold:1 -np 3 -platform ${srcdir:=.}/replay/replay_platform.xml -hostfile ${srcdir:=.}/hostfile ./smpi_replay replay/one_trace
+$ ../../smpi_script/bin/smpirun -ext smpi_replay --log=replay.thresh:critical --log=no_loc  --cfg=tracing:yes --cfg=tracing/smpi:yes --cfg=tracing/smpi/computing:yes --cfg=smpi/cpu_threshold:1 -np 3 -platform ${srcdir:=.}/replay/replay_platform.xml -hostfile ${srcdir:=.}/hostfile ./smpi_replay replay/one_trace
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'maxmin/precision' to '1e-9'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'SMPI'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/TCP_gamma' to '4194304'
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing' to '1'
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/smpi' to '1'
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/smpi/computing' to '1'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing' to 'yes'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/smpi' to 'yes'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/smpi/computing' to 'yes'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'smpi/cpu_threshold' to '1'
 > [0.000000] [surf_config/INFO] Switching workstation model to compound since you changed the network and/or cpu model(s)
 > [Fafard:2:(0) 19.691622] [smpi_replay/INFO] Simulation time 19.6916

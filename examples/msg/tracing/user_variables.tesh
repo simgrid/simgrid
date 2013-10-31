@@ -1,9 +1,9 @@
 #! ./tesh
 
 p Tracing user variables
-$ $SG_TEST_EXENV ${bindir:=.}/tracing/user_variables$EXEEXT --cfg=tracing:1 --cfg=tracing/platform:1 ${srcdir:=.}/tracing/platform.xml ${srcdir:=.}/tracing/deployment.xml
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing' to '1'
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/platform' to '1'
+$ $SG_TEST_EXENV ${bindir:=.}/tracing/user_variables$EXEEXT --cfg=tracing:yes --cfg=tracing/platform:yes ${srcdir:=.}/tracing/platform.xml ${srcdir:=.}/tracing/deployment.xml
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing' to 'yes'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/platform' to 'yes'
 > [0.004078] [msg_test/INFO] Declared host variables:
 > [0.004078] [msg_test/INFO] HDD_capacity
 > [0.004078] [msg_test/INFO] HDD_utilization

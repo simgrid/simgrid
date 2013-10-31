@@ -447,7 +447,7 @@ you never used the tracing API.
 
 - Any SimGrid-based simulator (MSG, SimDag, SMPI, ...) and raw traces:
 \verbatim
---cfg=tracing:1 --cfg=tracing/uncategorized:1 --cfg=triva/uncategorized:uncat.plist
+--cfg=tracing:yes --cfg=tracing/uncategorized:yes --cfg=triva/uncategorized:uncat.plist
 \endverbatim
     The first parameter activates the tracing subsystem, the second
     tells it to trace host and link utilization (without any
@@ -456,7 +456,7 @@ you never used the tracing API.
 
 - MSG or SimDag-based simulator and categorized traces (you need to declare categories and classify your tasks according to them)
 \verbatim
---cfg=tracing:1 --cfg=tracing/categorized:1 --cfg=triva/categorized:cat.plist
+--cfg=tracing:yes --cfg=tracing/categorized:yes --cfg=triva/categorized:cat.plist
 \endverbatim
     The first parameter activates the tracing subsystem, the second
     tells it to trace host and link categorized utilization and the
@@ -468,7 +468,7 @@ you never used the tracing API.
 smpirun -trace ...
 \endverbatim
     The <i>-trace</i> parameter for the smpirun script runs the
-simulation with --cfg=tracing:1 and --cfg=tracing/smpi:1. Check the
+simulation with --cfg=tracing:yes and --cfg=tracing/smpi:yes. Check the
 smpirun's <i>-help</i> parameter for additional tracing options.
 
 Sometimes you might want to put additional information on the trace to

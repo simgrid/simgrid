@@ -8,11 +8,11 @@ $ ../../smpi_script/bin/smpirun -trace-ti  --cfg=tracing/filename:out_in_ti.txt 
 > == pivot=1 : pingpong [1] <--> [2]
 > == pivot=2 : pingpong [2] <--> [3]
 > [0.000000] [surf_config/INFO] Switching workstation model to compound since you changed the network and/or cpu model(s)
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing' to '1'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing' to 'yes'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/filename' to 'smpi_simgrid.txt'
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/smpi' to '1'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/smpi' to 'yes'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/smpi/format' to 'TI'
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/smpi/computing' to '1'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/smpi/computing' to 'yes'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'maxmin/precision' to '1e-9'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'SMPI'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/TCP_gamma' to '4194304'
@@ -45,11 +45,11 @@ $ ../../smpi_script/bin/smpirun -ext smpi_replay --log=replay.:critical -trace-t
 > [rank 1] -> Jupiter
 > [rank 2] -> Fafard
 > [rank 3] -> Ginette
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing' to '1'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing' to 'yes'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/filename' to 'smpi_simgrid.txt'
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/smpi' to '1'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/smpi' to 'yes'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/smpi/format' to 'TI'
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/smpi/computing' to '1'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/smpi/computing' to 'yes'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'maxmin/precision' to '1e-9'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'SMPI'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/TCP_gamma' to '4194304'
