@@ -288,6 +288,8 @@ int smpi_coll_basic_alltoallv(void *sendbuf, int *sendcounts,
                               MPI_Comm comm);
 
 // utilities
+extern double smpi_cpu_threshold;
+extern double smpi_running_power;
 extern int smpi_sample_is_running;
 void smpi_bench_destroy(void);
 void smpi_bench_begin(void);

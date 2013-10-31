@@ -465,6 +465,9 @@ int smpi_main(int (*realmain) (int argc, char *argv[]),int argc, char *argv[])
   mpi_coll_barrier_fun = (int (*)(MPI_Comm comm))
 	                   mpi_coll_barrier_description[barrier_id].coll;
 
+  smpi_cpu_threshold = sg_cfg_get_double("smpi/cpu_threshold");
+  smpi_running_power = sg_cfg_get_double("smpi/running_power");
+
   smpi_global_init();
 
   /* Clean IO before the run */

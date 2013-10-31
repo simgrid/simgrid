@@ -66,6 +66,9 @@ xbt_dict_t samples = NULL;         /* Allocated on first use */
 xbt_dict_t calls = NULL;           /* Allocated on first use */
 __thread int smpi_current_rank = 0;      /* Updated after each MPI call */
 
+double smpi_cpu_threshold;
+double smpi_running_power;
+
 typedef struct {
   int fd;
   int count;
@@ -137,11 +140,9 @@ void smpi_execute_flops(double flops) {
 
 static void smpi_execute(double duration)
 {
-  /* FIXME: a global variable would be less expensive to consult than a call to xbt_cfg_get_double() right on the critical path */
-  if (duration >= sg_cfg_get_double("smpi/cpu_threshold")) {
+  if (duration >= smpi_cpu_threshold) {
     XBT_DEBUG("Sleep for %f to handle real computation time", duration);
-    double flops = duration *
-        sg_cfg_get_double("smpi/running_power");
+    double flops = duration * smpi_running_power;
 #ifdef HAVE_TRACING
     int rank = smpi_process_index();
     instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
@@ -152,12 +153,12 @@ static void smpi_execute(double duration)
     smpi_execute_flops(flops);
 
 #ifdef HAVE_TRACING
-  TRACE_smpi_computing_out(rank);
+    TRACE_smpi_computing_out(rank);
 #endif
 
   } else {
     XBT_DEBUG("Real computation took %f while option smpi/cpu_threshold is set to %f => ignore it",
-        duration, sg_cfg_get_double("smpi/cpu_threshold"));
+              duration, smpi_cpu_threshold);
   }
 }
 
