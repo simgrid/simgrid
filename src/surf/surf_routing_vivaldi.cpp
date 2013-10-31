@@ -1,4 +1,3 @@
-#include "surf_routing_private.h"
 #include "surf_routing_vivaldi.hpp"
 
 extern "C" {

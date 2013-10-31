@@ -5,7 +5,6 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "surf_routing_dijkstra.hpp"
-#include "surf_routing_private.h"
 #include "network.hpp"
 
 /* Global vars */
@@ -195,15 +194,13 @@ xbt_dynar_t AsDijkstra::getOnelinkRoutes()
 
       if (xbt_dynar_length(route->link_list) == 1) {
         void *link = *(void **) xbt_dynar_get_ptr(route->link_list, 0);
-        OnelinkPtr onelink = new Onelink();
-        onelink->p_linkPtr = link;
-        if (p_hierarchy == SURF_ROUTING_BASE) {
-          onelink->p_src = src_elm;
-          onelink->p_dst = dst_elm;
-        } else if (p_hierarchy == SURF_ROUTING_RECURSIVE) {
-          onelink->p_src = route->gw_src;
-          onelink->p_dst = route->gw_dst;
-        }
+        OnelinkPtr onelink;
+        if (p_hierarchy == SURF_ROUTING_BASE)
+          onelink = new Onelink(link, src_elm, dst_elm);
+        else if (p_hierarchy == SURF_ROUTING_RECURSIVE)
+          onelink = new Onelink(link, route->gw_src, route->gw_dst);
+        else
+          onelink = new Onelink(link, NULL, NULL);
         xbt_dynar_push(ret, &onelink);
       }
     }

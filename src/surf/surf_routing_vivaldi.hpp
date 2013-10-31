@@ -4,6 +4,13 @@
 #ifndef SURF_ROUTING_VIVALDI_HPP_
 #define SURF_ROUTING_VIVALDI_HPP_
 
+/* ************************************************** */
+/* **************  Vivaldi ROUTING   **************** */
+AS_t model_vivaldi_create(void);      /* create structures for vivaldi routing model */
+#define HOST_PEER(peername) bprintf("peer_%s", peername)
+#define ROUTER_PEER(peername) bprintf("router_%s", peername)
+#define LINK_PEER(peername) bprintf("link_%s", peername)
+
 /***********
  * Classes *
  ***********/

@@ -4,7 +4,6 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "surf_routing_private.h"
 #include "surf_routing_full.hpp"
 #include "network.hpp"
 
@@ -68,7 +67,7 @@ AsFull::~AsFull(){
 
 xbt_dynar_t AsFull::getOneLinkRoutes()
 {
-  xbt_dynar_t ret = xbt_dynar_new(sizeof(onelink_t), xbt_free);
+  xbt_dynar_t ret = xbt_dynar_new(sizeof(OnelinkPtr), xbt_free);
 
   int src, dst;
   int table_size = xbt_dynar_length(p_indexNetworkElm);
@@ -79,17 +78,17 @@ xbt_dynar_t AsFull::getOneLinkRoutes()
       if (route) {
         if (xbt_dynar_length(route->link_list) == 1) {
           void *link = *(void **) xbt_dynar_get_ptr(route->link_list, 0);
-          onelink_t onelink = xbt_new0(s_onelink_t, 1);
-          onelink->link_ptr = link;
+          OnelinkPtr onelink;
           if (p_hierarchy == SURF_ROUTING_BASE) {
-            onelink->src = xbt_dynar_get_as(p_indexNetworkElm, src, sg_routing_edge_t);
-            onelink->src->m_id = src;
-            onelink->dst = xbt_dynar_get_as(p_indexNetworkElm, dst, sg_routing_edge_t);
-            onelink->dst->m_id = dst;
-          } else if (p_hierarchy == SURF_ROUTING_RECURSIVE) {
-            onelink->src = route->gw_src;
-            onelink->dst = route->gw_dst;
-          }
+        	RoutingEdgePtr tmp_src = xbt_dynar_get_as(p_indexNetworkElm, src, sg_routing_edge_t);
+            tmp_src->m_id = src;
+        	RoutingEdgePtr tmp_dst = xbt_dynar_get_as(p_indexNetworkElm, dst, sg_routing_edge_t);
+        	tmp_dst->m_id = dst;
+            onelink = new Onelink(link, tmp_src, tmp_dst);
+          } else if (p_hierarchy == SURF_ROUTING_RECURSIVE)
+            onelink = new Onelink(link, route->gw_src, route->gw_dst);
+          else
+            onelink = new Onelink(link, NULL, NULL);
           xbt_dynar_push(ret, &onelink);
           XBT_DEBUG("Push route from '%d' to '%d'",
               src,

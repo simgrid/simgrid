@@ -5,7 +5,6 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "surf_routing_none.hpp"
-#include "surf_routing_private.h"
 
 extern "C" {
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route_none, surf, "Routing part of surf");

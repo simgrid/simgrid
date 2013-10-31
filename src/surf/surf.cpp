@@ -349,7 +349,6 @@ void surf_init(int *argc, char **argv)
 
   sg_config_init(argc, argv);
 
-  surf_action_init();
   if (MC_is_active())
     MC_memory_init();
 }
@@ -379,7 +378,6 @@ void surf_exit(void)
     tmgr_history_free(history);
     history = NULL;
   }
-  surf_action_exit();
 
 #ifdef CONTEXT_THREADS
   xbt_parmap_destroy(surf_parmap);
@@ -729,26 +727,6 @@ const char *surf_action_state_names[6] = {
   "SURF_ACTION_TO_FREE",
   "SURF_ACTION_NOT_IN_THE_SYSTEM"
 };
-
-/**
- * \brief Initializes the action module of Surf.
- */
-void surf_action_init(void) {
-
-  /* the action mallocator will always provide actions of the following size,
-   * so this size should be set to the maximum size of the surf action structures
-   */
-  /*FIXME:action_mallocator_allocated_size = sizeof(s_surf_action_network_CM02_t);
-  action_mallocator = xbt_mallocator_new(65536, surf_action_mallocator_new_f,
-      surf_action_mallocator_free_f, surf_action_mallocator_reset_f);*/
-}
-
-/**
- * \brief Uninitializes the action module of Surf.
- */
-void surf_action_exit(void) {
-  //FIXME:xbt_mallocator_free(action_mallocator);
-}
 
 Action::Action(){}
 

@@ -1,9 +1,15 @@
 #include "surf.hpp"
+#include <float.h>
 
 #ifndef NETWORK_ROUTING_HPP_
 #define NETWORK_ROUTING_HPP_
 
 void routing_model_create( void *loopback);
+
+/* ************************************************************************** */
+/* ************************* GRAPH EXPORTING FUNCTIONS ********************** */
+xbt_node_t new_xbt_graph_node (xbt_graph_t graph, const char *name, xbt_dict_t nodes);
+xbt_edge_t new_xbt_graph_edge (xbt_graph_t graph, xbt_node_t s, xbt_node_t d, xbt_dict_t edges);
 
 /***********
  * Classes *
@@ -75,9 +81,11 @@ public:
  */
 class Onelink {
 public:
+  Onelink(void *link, RoutingEdgePtr src, RoutingEdgePtr dst)
+   : p_link(link), p_src(src), p_dst(dst) {};
   RoutingEdgePtr p_src;
   RoutingEdgePtr p_dst;
-  void *p_linkPtr;
+  void *p_link;
 };
 
 class RoutingPlatf {

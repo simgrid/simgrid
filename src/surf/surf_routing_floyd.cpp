@@ -4,7 +4,6 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "surf_routing_private.h"
 #include "surf_routing_floyd.hpp"
 #include "network.hpp"
 
@@ -48,7 +47,7 @@ AsFloyd::~AsFloyd(){
 /* Business methods */
 xbt_dynar_t AsFloyd::getOneLinkRoutes()
 {
-  xbt_dynar_t ret = xbt_dynar_new(sizeof(onelink_t), xbt_free);
+  xbt_dynar_t ret = xbt_dynar_new(sizeof(OnelinkPtr), xbt_free);
   sg_platf_route_cbarg_t route =   xbt_new0(s_sg_platf_route_cbarg_t, 1);
   route->link_list = xbt_dynar_new(sizeof(sg_routing_link_t), NULL);
 
@@ -64,15 +63,13 @@ xbt_dynar_t AsFloyd::getOneLinkRoutes()
 
       if (xbt_dynar_length(route->link_list) == 1) {
         void *link = *(void **) xbt_dynar_get_ptr(route->link_list, 0);
-        onelink_t onelink = xbt_new0(s_onelink_t, 1);
-        onelink->link_ptr = link;
-        if (p_hierarchy == SURF_ROUTING_BASE) {
-          onelink->src = src_elm;
-          onelink->dst = dst_elm;
-        } else if (p_hierarchy == SURF_ROUTING_RECURSIVE) {
-          onelink->src = route->gw_src;
-          onelink->dst = route->gw_dst;
-        }
+        OnelinkPtr onelink;
+        if (p_hierarchy == SURF_ROUTING_BASE)
+          onelink = new Onelink(link, src_elm, dst_elm);
+        else if (p_hierarchy == SURF_ROUTING_RECURSIVE)
+          onelink = new Onelink(link, route->gw_src, route->gw_dst);
+        else
+          onelink = new Onelink(link, NULL, NULL);
         xbt_dynar_push(ret, &onelink);
       }
     }
