@@ -239,7 +239,7 @@ initialization are done in the simulator.
 It is possible to specify a timing gap between consecutive emission on
 the same network card through the \b network/sender_gap item. This
 is still under investigation as of writting, and the default value is
-to wait 0 seconds between emissions (no gap applied).
+to wait 10 microseconds (1e-5 seconds) between emissions.
 
 \subsubsection options_model_network_asyncsend Simulating asyncronous send
 
