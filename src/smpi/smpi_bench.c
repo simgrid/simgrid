@@ -130,7 +130,7 @@ void smpi_execute_flops(double flops) {
   smx_action_t action;
   smx_host_t host;
   host = SIMIX_host_self();
-  XBT_DEBUG("Handle real computation time: %f flops", flops);
+  XBT_DEBUG("Handle real computation time: %g flops", flops);
   action = simcall_host_execute("computation", host, flops, 1);
 #ifdef HAVE_TRACING
   simcall_set_category (action, TRACE_internal_smpi_get_category());
@@ -141,7 +141,7 @@ void smpi_execute_flops(double flops) {
 static void smpi_execute(double duration)
 {
   if (duration >= smpi_cpu_threshold) {
-    XBT_DEBUG("Sleep for %f to handle real computation time", duration);
+    XBT_DEBUG("Sleep for %g to handle real computation time", duration);
     double flops = duration * smpi_running_power;
 #ifdef HAVE_TRACING
     int rank = smpi_process_index();
@@ -157,7 +157,7 @@ static void smpi_execute(double duration)
 #endif
 
   } else {
-    XBT_DEBUG("Real computation took %f while option smpi/cpu_threshold is set to %f => ignore it",
+    XBT_DEBUG("Real computation took %g while option smpi/cpu_threshold is set to %g => ignore it",
               duration, smpi_cpu_threshold);
   }
 }

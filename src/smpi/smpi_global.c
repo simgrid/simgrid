@@ -4,10 +4,6 @@
 /* This program is free software; you can redistribute it and/or modify it
   * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <stdint.h>
-#include <stdio.h>
-#include <stdlib.h>
-
 #include "private.h"
 #include "smpi_mpi_dt_private.h"
 #include "mc/mc.h"
@@ -15,6 +11,10 @@
 #include "simix/smx_private.h"
 #include "simgrid/sg_config.h"
 
+#include <float.h> // DBL_MAX
+#include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_kernel, smpi,
                                 "Logging specific to SMPI (kernel)");
@@ -467,6 +467,8 @@ int smpi_main(int (*realmain) (int argc, char *argv[]),int argc, char *argv[])
 
   smpi_cpu_threshold = sg_cfg_get_double("smpi/cpu_threshold");
   smpi_running_power = sg_cfg_get_double("smpi/running_power");
+  if (smpi_cpu_threshold < 0)
+    smpi_cpu_threshold = DBL_MAX;
 
   smpi_global_init();
 

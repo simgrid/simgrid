@@ -698,7 +698,7 @@ void sg_config_init(int *argc, char **argv)
     xbt_cfg_setdefault_boolean(_sg_cfg_set, "smpi/use_shared_malloc", "yes");
 
     xbt_cfg_register(&_sg_cfg_set, "smpi/cpu_threshold",
-                     "Minimal computation time (in seconds) not discarded.",
+                     "Minimal computation time (in seconds) not discarded, or -1 for infinity.",
                      xbt_cfgelm_double, 1, 1, NULL, NULL);
     xbt_cfg_setdefault_double(_sg_cfg_set, "smpi/cpu_threshold", 1e-6);
 
