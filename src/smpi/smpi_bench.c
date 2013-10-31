@@ -243,8 +243,6 @@ typedef struct {
   int benching;     /* 1: we are benchmarking; 0: we have enough data, no bench anymore */
 } local_data_t;
 
-int smpi_sample_is_running = 0;
-
 static char *sample_location(int global, const char *file, int line) {
   if (global) {
     return bprintf("%s:%d", file, line);
@@ -272,7 +270,7 @@ void smpi_sample_1(int global, const char *file, int line, int iters, double thr
   local_data_t *data;
 
   smpi_bench_end();     /* Take time from previous, unrelated computation into account */
-  smpi_sample_is_running++;
+  smpi_process_set_sampling(1);
 
   if (!samples)
     samples = xbt_dict_new_homogeneous(free);
@@ -309,6 +307,7 @@ int smpi_sample_2(int global, const char *file, int line)
 {
   char *loc = sample_location(global, file, line);
   local_data_t *data;
+  int res;
 
   xbt_assert(samples, "Y U NO use SMPI_SAMPLE_* macros? Stop messing directly with smpi_sample_* functions!");
   data = xbt_dict_get(samples, loc);
@@ -319,19 +318,18 @@ int smpi_sample_2(int global, const char *file, int line)
     // we need to run a new bench
     XBT_DEBUG("benchmarking: count:%d iter:%d stderr:%f thres:%f; mean:%f",
         data->count, data->iters, data->relstderr, data->threshold, data->mean);
-    smpi_bench_begin();
-    return 1;
+    res = 1;
   } else {
     // Enough data, no more bench (either we got enough data from previous visits to this benched nest, or we just ran one bench and need to bail out now that our job is done).
     // Just sleep instead
     XBT_DEBUG("No benchmark (either no need, or just ran one): count >= iter (%d >= %d) or stderr<thres (%f<=%f). apply the %fs delay instead",
         data->count, data->iters, data->relstderr, data->threshold, data->mean);
     smpi_execute(data->mean);
-
-    smpi_sample_is_running--;
-    smpi_bench_begin(); // prepare to capture future, unrelated computations
-    return 0;
+    smpi_process_set_sampling(0);
+    res = 0; // prepare to capture future, unrelated computations
   }
+  smpi_bench_begin();
+  return res;
 }
 
 

@@ -114,6 +114,8 @@ smx_rdv_t smpi_process_remote_mailbox_small(int index);
 xbt_os_timer_t smpi_process_timer(void);
 void smpi_process_simulated_start(void);
 double smpi_process_simulated_elapsed(void);
+void smpi_process_set_sampling(int s);
+int smpi_process_get_sampling(void);
 
 void print_request(const char *message, MPI_Request request);
 
@@ -290,7 +292,6 @@ int smpi_coll_basic_alltoallv(void *sendbuf, int *sendcounts,
 // utilities
 extern double smpi_cpu_threshold;
 extern double smpi_running_power;
-extern int smpi_sample_is_running;
 void smpi_bench_destroy(void);
 void smpi_bench_begin(void);
 void smpi_bench_end(void);

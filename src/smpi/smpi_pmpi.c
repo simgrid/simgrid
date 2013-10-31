@@ -131,7 +131,7 @@ int PMPI_Abort(MPI_Comm comm, int errorcode)
 double PMPI_Wtime(void)
 {
   double time;
-  if (smpi_process_initialized() && !smpi_process_finalized() && !smpi_sample_is_running) {
+  if (smpi_process_initialized() && !smpi_process_finalized() && !smpi_process_get_sampling()) {
     smpi_bench_end();
     time = SIMIX_get_clock();
     smpi_bench_begin();

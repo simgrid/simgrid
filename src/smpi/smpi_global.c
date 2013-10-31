@@ -30,6 +30,7 @@ typedef struct s_smpi_process_data {
   void *data;                   /* user data */
   int index;
   int initialized;
+  int sampling;                 /* inside an SMPI_SAMPLE_ block? */
 } s_smpi_process_data_t;
 
 static smpi_process_data_t *process_data = NULL;
@@ -253,6 +254,18 @@ MPI_Comm smpi_process_comm_self(void)
   return data->comm_self;
 }
 
+void smpi_process_set_sampling(int s)
+{
+  smpi_process_data_t data = smpi_process_data();
+  data->sampling = s;
+}
+
+int smpi_process_get_sampling(void)
+{
+  smpi_process_data_t data = smpi_process_data();
+  return data->sampling;
+}
+
 void print_request(const char *message, MPI_Request request)
 {
   XBT_DEBUG
@@ -301,6 +314,7 @@ void smpi_global_init(void)
     group = smpi_group_new(1);
     process_data[i]->comm_self = smpi_comm_new(group);
     process_data[i]->initialized = 0;
+    process_data[i]->sampling = 0;
 
     smpi_group_set_mapping(group, i, 0);
   }
