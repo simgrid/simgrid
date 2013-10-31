@@ -59,7 +59,7 @@ $ ../../smpi_script/bin/smpirun -ext smpi_replay --log=replay.:critical -trace-t
 
 $ sort out_in_ti.txt -o out_in_ti_sorted.txt 
 $ sort out_ti.txt -o out_ti_sorted.txt 
-
+$ diff out_in_ti_sorted.txt out_ti_sorted.txt
 
 $ rm replay_in.txt
 $ rm out_ti.txt
