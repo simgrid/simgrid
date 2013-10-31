@@ -70,6 +70,7 @@ SimGrid (3.10pre1) unstable; urgency=low
    used even if the OS provide a getline(). This should reduce the
    configuration complexity by using the same code on all platforms.
  * New type: xbt_cfg_elm_boolean.
+ * Allow to use yes/no for boolean configuration options in the command line.
  * Allow to disable SimGrid cleanups at exit from command line option.
    There are situations where one may want a simulation to end with an exit.
    Unfortunately, calling exit may cause SimGrid to segfault, which is quite
