@@ -233,13 +233,13 @@ unsigned long long smpi_rastro_timestamp (void)
 
 /* ****************************** Functions related to the SMPI_SAMPLE_ macros ************************************/
 typedef struct {
-  int iters;        /* amount of requested iterations */
-  int count;        /* amount of iterations done so far */
   double threshold; /* maximal stderr requested (if positive) */
   double relstderr; /* observed stderr so far */
   double mean;      /* mean of benched times, to be used if the block is disabled */
   double sum;       /* sum of benched times (to compute the mean and stderr) */
   double sum_pow2;  /* sum of the square of the benched times (to compute the stderr) */
+  int iters;        /* amount of requested iterations */
+  int count;        /* amount of iterations done so far */
   int benching;     /* 1: we are benchmarking; 0: we have enough data, no bench anymore */
 } local_data_t;
 

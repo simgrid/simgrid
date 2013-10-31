@@ -20,15 +20,15 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_kernel, smpi,
                                 "Logging specific to SMPI (kernel)");
 
 typedef struct s_smpi_process_data {
-  int index;
+  double simulated;
   int* argc;
   char*** argv;
   smx_rdv_t mailbox;
   smx_rdv_t mailbox_small;
   xbt_os_timer_t timer;
-  double simulated;
   MPI_Comm comm_self;
   void *data; /* user data */
+  int index;
   int initialized;
 } s_smpi_process_data_t;
 
