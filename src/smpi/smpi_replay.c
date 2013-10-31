@@ -721,7 +721,7 @@ smpi_mpi_gatherv(send, send_size, MPI_CURRENT_TYPE,
   log_timed_action (action, clock);
   xbt_free(recvcounts);
   xbt_free(send);
-  if(recv)xbt_free(recv);
+  xbt_free(recv);
   xbt_free(disps);
 
 }
