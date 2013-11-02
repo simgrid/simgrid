@@ -59,7 +59,7 @@ else()
   set(release_version "${SIMGRID_VERSION_MAJOR}.${SIMGRID_VERSION_MINOR}.${SIMGRID_VERSION_PATCH}")
 endif()
 set(libsimgrid_version "${release_version}")
-set(libSG_java_version "${release_version}")
+set(libsimgrid-java_version "${release_version}")
 set(GCC_NEED_VERSION "4.0")
 set(APPLE_NEED_GCC_VERSION "4.6")
 

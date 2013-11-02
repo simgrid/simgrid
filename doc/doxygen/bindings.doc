@@ -83,7 +83,7 @@ $ cmake .
 \subsubsection bindings_binding_java_use How to use Simgrid-java
 
 To execute the examples you need to add the path where you installed
-the generated `libSG_java` and `libsimgrid` libraries
+the generated `libsimgrid-java` and `libsimgrid` libraries
 into the `LD_LIBRARY_PATH`.
 
 Be careful on Mac, this variable is called `DYLD_LIBRARY_PATH` and not
@@ -203,7 +203,7 @@ factory if your JVM support it, so you will just need to execute your
 simulation with the correct JVM. The selected context factory gets
 displayed automatically.
 ~~~~{.sh}
-export LD_LIBRARY_PATH=/path/to/simgrid.so:/path/to/libSG_java.so
+export LD_LIBRARY_PATH=/path/to/simgrid.so:/path/to/libsimgrid-java.so
 cd examples
 $PATH_TO_COROUTINE_JVM/java -cp .:../simgrid.jar masterslave.Masterslave masterslave/ masterslaveDeployment.xml platform.xml
 ~~~~
