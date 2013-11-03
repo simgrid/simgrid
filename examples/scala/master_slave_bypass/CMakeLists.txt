@@ -13,7 +13,7 @@ if(enable_scala)
     COMMENT "Building ${example}..."
     OUTPUT ${example}_compiled
     DEPENDS ${sources} simgrid-java_jar ${SIMGRID_JAR}
-    COMMAND ${SCALA_COMPILE} -cp ${SIMGRID_JAR}
+    COMMAND ${SCALA_COMPILE} -classpath ${SIMGRID_JAR}
                              -d ${CMAKE_CURRENT_BINARY_DIR}/.. ${sources}
     COMMAND ${CMAKE_COMMAND} -E remove ${example}_compiled
     COMMAND ${CMAKE_COMMAND} -E touch ${example}_compiled

@@ -93,7 +93,7 @@ Be careful on Mac, this variable is called `DYLD_LIBRARY_PATH` and not
 $ export SIMGRID_ROOT="$HOME/Install/simgrid/" # change it to the path where you installed the SimGrid library
 $ export LD_LIBRARY_PATH=${LD_LIBRARY_PATH:+$LD_LIBRARY_PATH:}$SIMGRID_ROOT/lib
 $ cd examples
-$ java -cp .:../simgrid.jar basic/BasicTest platform.xml basic/basicDeployment.xml
+$ java -classpath .:../simgrid.jar basic/BasicTest platform.xml basic/basicDeployment.xml
 ~~~~
 
 If you want to make these settings permanent even after a reboot, you
@@ -205,14 +205,14 @@ displayed automatically.
 ~~~~{.sh}
 export LD_LIBRARY_PATH=/path/to/simgrid.so:/path/to/libsimgrid-java.so
 cd examples
-$PATH_TO_COROUTINE_JVM/java -cp .:../simgrid.jar masterslave.Masterslave masterslave/ masterslaveDeployment.xml platform.xml
+$PATH_TO_COROUTINE_JVM/java -classpath .:../simgrid.jar masterslave.Masterslave masterslave/ masterslaveDeployment.xml platform.xml
 ~~~~
 
 Note that you may have to adjust the "coro.stacksPerThread"
 configuration option to run large simulations. The default is 100 and
 you want to increase it to run more processes.
 ~~~~{.sh}
-$ $PATH_TO_COROUTINE_JVM/java -Dcoro.stacksPerThread=$STACKS_NUMBER -cp .:../simgrid.jar basic/BasicTest platform.xml basic/basicDeployment.xml
+$ $PATH_TO_COROUTINE_JVM/java -Dcoro.stacksPerThread=$STACKS_NUMBER -classpath .:../simgrid.jar basic/BasicTest platform.xml basic/basicDeployment.xml
 ~~~~
 
 If you reach the point where the creation of new simulated processes
