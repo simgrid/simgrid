@@ -92,8 +92,10 @@ XBT_PUBLIC(sg_storage_size_t) MSG_file_get_size(msg_file_t fd);
 XBT_PUBLIC(void) MSG_file_dump(msg_file_t fd);
 XBT_PUBLIC(int) MSG_file_unlink(msg_file_t fd);
 XBT_PUBLIC(xbt_dict_t) MSG_file_ls(const char *mount, const char *path);
+XBT_PUBLIC(msg_error_t) MSG_file_move (msg_file_t fd, msg_host_t dest, char* mount, char* fullname);
+XBT_PUBLIC(msg_error_t) MSG_file_seek (msg_file_t fd, sg_storage_size_t offset, int whence);
+XBT_PUBLIC(msg_error_t) MSG_file_rename (msg_file_t fd, char* new_name);
 XBT_PUBLIC(void) __MSG_file_get_info(msg_file_t fd);
-
 /************************** Storage handling ***********************************/
 XBT_PUBLIC(msg_host_t) MSG_get_storage_by_name(const char *name);
 XBT_PUBLIC(const char *) MSG_storage_get_name(msg_storage_t storage);
