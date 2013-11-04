@@ -103,8 +103,9 @@ if(NOT enable_memcheck)
     ADD_TEST(tesh-msg-pid-ucontext              ${TESH_COMMAND} ${TESH_OPTION} --cfg contexts/factory:ucontext --setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite --cd ${CMAKE_BINARY_DIR}/teshsuite ${CMAKE_HOME_DIRECTORY}/teshsuite/msg/pid.tesh)
   endif()
 
-
-  IF(enable_debug) # these tests need the assertion mechanism
+  # these tests need the assertion mechanism
+  # exclude them from memcheck, as they normally die, leaving lots of unfree'd objects
+  IF(enable_debug AND NOT enable_memcheck)
     ADD_TEST(tesh-simdag-parser-bogus-symmetric ${TESH_COMMAND} ${TESH_OPTION} --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/simdag/platforms --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/simdag/platforms two_hosts_asymetric.tesh)
   ENDIF()
 

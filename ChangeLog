@@ -4,7 +4,7 @@ SimGrid (3.11) NOT RELEASED; urgency=low
 
  -- $date Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
 
-SimGrid (3.10pre1) unstable; urgency=low
+SimGrid (3.10-rc1) unstable; urgency=low
 
  Java:
  * Reintegrate Java to the main archive as desynchronizing these
@@ -82,6 +82,9 @@ SimGrid (3.10pre1) unstable; urgency=low
    Unfortunately, calling exit may cause SimGrid to segfault, which is quite
    annoying when scripting around the simulator. Adding a
    --cfg=clean_atexit:no allows to circumvent this issue.
+ * New command line option --version, to get SimGrid version information.
+   Packagers may want to add extra words to SIMGRID_VERSION_EXTRA defined in
+   CMakeLists.txt.
 
 -- Mon Oct 7 2013 Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
 

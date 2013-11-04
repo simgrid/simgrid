@@ -22,6 +22,8 @@ SG_BEGIN_DECL()
 #define SIMGRID_VERSION_MINOR @SIMGRID_VERSION_MINOR@
 #define SIMGRID_VERSION_PATCH @SIMGRID_VERSION_PATCH@
 
+#define SIMGRID_VERSION_STRING "@SIMGRID_VERSION_STRING@"
+
 /* Version X.Y.Z will get version number XYZ: all digits concatenated without dots
  * (with Y and Z must be on two positions)*/
 
