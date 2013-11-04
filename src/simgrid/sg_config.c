@@ -611,12 +611,12 @@ void sg_config_init(int *argc, char **argv)
             "Context factory to use in SIMIX. Possible values: thread");
     const char *dflt_ctx_fact = "thread";
 #ifdef CONTEXT_UCONTEXT
-    strcat(description, ", ucontext");
     dflt_ctx_fact = "ucontext";
+    strcat(strcat(description, ", "), dflt_ctx_fact);
 #endif
 #ifdef HAVE_RAWCTX
-    strcat(description, ", raw");
     dflt_ctx_fact = "raw";
+    strcat(strcat(description, ", "), dflt_ctx_fact);
 #endif
     strcat(description, ".");
     xbt_cfg_register(&_sg_cfg_set, "contexts/factory", description,

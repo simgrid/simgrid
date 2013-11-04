@@ -26,6 +26,7 @@ static smx_action_t SIMIX_fifo_get_comm(xbt_fifo_t fifo, e_smx_comm_type_t type,
                                         int (*match_fun)(void *, void *,smx_action_t),
                                         void *user_data, smx_action_t my_action);
 static void SIMIX_rdv_free(void *data);
+static void SIMIX_comm_start(smx_action_t action);
 
 void SIMIX_network_init(void)
 {
@@ -835,7 +836,7 @@ void SIMIX_waitany_remove_simcall_from_actions(smx_simcall_t simcall)
  *  \brief Starts the simulation of a communication action.
  *  \param action the communication action
  */
-XBT_INLINE void SIMIX_comm_start(smx_action_t action)
+static XBT_INLINE void SIMIX_comm_start(smx_action_t action)
 {
   /* If both the sender and the receiver are already there, start the communication */
   if (action->state == SIMIX_READY) {

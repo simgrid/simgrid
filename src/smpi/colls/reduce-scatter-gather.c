@@ -216,7 +216,7 @@ int smpi_coll_tuned_reduce_scatter_gather(void *sendbuf, void *recvbuf,
   }
 
 
-  else if (count >= comm_size) {
+  else /* (count >= comm_size) */ {
     tmp_buf = (void *) xbt_malloc(count * extent);
 
     //if ((rank != root))
