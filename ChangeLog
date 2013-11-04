@@ -1,4 +1,4 @@
-SimGrid (3.10pre1) unstable; urgency=low
+SimGrid (3.10-rc1) unstable; urgency=low
 
  Java:
  * Reintegrate Java to the main archive as desynchronizing these
