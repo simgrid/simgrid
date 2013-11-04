@@ -191,6 +191,37 @@ xbt_dict_t MSG_file_ls(const char *mount, const char *path)
   return simcall_file_ls(mount, path);
 }
 
+/*
+ * Move a file to another location. Depending on the values of dest, dest, mount,
+ * and fullname, this move can be local or remote and, within a host, on the same
+ * mounted disk or between mounted disks.
+ *
+ */
+msg_error_t MSG_file_move (msg_file_t fd, msg_host_t dest, char* mount, char* fullname)
+{
+  THROW_UNIMPLEMENTED;
+  return MSG_OK;
+}
+
+/*
+ * Set the file position indicator in the msg_file_t by adding offset bytes
+ * to the position specified by whence (either SEEK_SET, SEEK_CUR, or SEEK_END).
+ */
+msg_error_t MSG_file_seek (msg_file_t fd, sg_storage_size_t offset, int whence)
+{
+  THROW_UNIMPLEMENTED;
+  return MSG_OK;
+}
+
+/*
+ * Rename the file in the contents of its associated storage.
+ */
+msg_error_t MSG_file_rename (msg_file_t fd, char* new_name)
+{
+  THROW_UNIMPLEMENTED;
+  return MSG_OK;
+}
+
 /********************************* Storage **************************************/
 
 /** @addtogroup msg_storage_management
@@ -199,8 +230,6 @@ xbt_dict_t MSG_file_ls(const char *mount, const char *path)
  *
  */
 
-
-/* TODO: PV: to comment */
 msg_storage_t __MSG_storage_create(smx_storage_t storage)
 {
   const char *name = SIMIX_storage_get_name(storage);
@@ -340,3 +369,4 @@ sg_storage_size_t MSG_storage_get_size(msg_storage_t storage)
 {
   return SIMIX_storage_get_size(storage);
 }
+
