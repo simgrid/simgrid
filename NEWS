@@ -10,10 +10,10 @@ The "to be named" release. Major changes:
  * Java is back in the main package (and is very stable).
  * The storage sub-modules is now believed to be usable.
  * SMPI is now very stable (we pass most MPICH tests).
- * Verification and model checking further improved: 
+ * Verification and model checking further improved:
    liveness+SMPI works; reduction through state equality detection
  Plus the usual load of bug fixes and small improvements
- 
+
                     _               _____ ___
 __   _____ _ __ ___(_) ___  _ __   |___ // _ \
 \ \ / / _ \ '__/ __| |/ _ \| '_ \    |_ \ (_) |
