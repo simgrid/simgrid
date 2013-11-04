@@ -55,6 +55,9 @@ static void sg_config_cmd_line(int *argc, char **argv)
 
       xbt_cfg_set_parse(_sg_cfg_set, opt);
       XBT_DEBUG("Did apply '%s' as config setting", opt);
+    } else if (!strcmp(argv[i], "--version")) {
+      printf("%s\n", SIMGRID_VERSION_STRING);
+      shall_exit = 1;
     } else if (!strcmp(argv[i], "--cfg-help") || !strcmp(argv[i], "--help")) {
       printf
           ("Description of the configuration accepted by this simulator:\n");
@@ -71,6 +74,8 @@ static void sg_config_cmd_line(int *argc, char **argv)
 #endif
 "\n"
 "You can also use --help-logs and --help-log-categories to see the details of logging output.\n"
+"\n"
+"You can also use --version to get SimGrid version information.\n"
 "\n"
         );
       shall_exit = 1;
