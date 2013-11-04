@@ -707,7 +707,7 @@ XBT_INLINE void * xbt_dynar_to_array (xbt_dynar_t dynar)
 /*
  * Return 0 if d1 and d2 are equal and 1 if not equal
  */
-XBT_INLINE int xbt_dynar_compare(xbt_dynar_t d1, xbt_dynar_t d2,
+int xbt_dynar_compare(xbt_dynar_t d1, xbt_dynar_t d2,
           int(*compar)(const void *, const void *))
 {
   int i ;

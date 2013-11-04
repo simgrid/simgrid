@@ -127,7 +127,7 @@ XBT_INLINE int SIMIX_context_get_nthreads(void) {
  *
  * \param nb_threads the number of threads to use
  */
-XBT_INLINE void SIMIX_context_set_nthreads(int nb_threads) {
+void SIMIX_context_set_nthreads(int nb_threads) {
   if (nb_threads<=0) {  
      nb_threads = xbt_os_get_numcores();
      XBT_INFO("Auto-setting contexts/nthreads to %d",nb_threads);
