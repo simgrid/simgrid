@@ -93,7 +93,7 @@ void lmm_system_free(lmm_system_t sys)
   free(sys);
 }
 
-XBT_INLINE void lmm_variable_disable(lmm_system_t sys, lmm_variable_t var)
+static XBT_INLINE void lmm_variable_disable(lmm_system_t sys, lmm_variable_t var)
 {
   int i;
   int n;
