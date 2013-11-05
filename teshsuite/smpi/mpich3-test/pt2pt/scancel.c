@@ -44,6 +44,7 @@ int main( int argc, char *argv[] )
 	    if (!buf) {
 		fprintf( stderr, "Unable to allocate %d bytes\n", n );
 		MPI_Abort( MPI_COMM_WORLD, 1 );
+                exit(1);
 	    }
 	    MTestPrintfMsg( 1, "(%d) About to create isend and cancel\n",cs );
 	    MPI_Isend( buf, n, MPI_CHAR, dest, cs+n+1, comm, &req );
@@ -81,6 +82,7 @@ int main( int argc, char *argv[] )
 		{
 		    fprintf( stderr, "Unable to allocate %d bytes\n", nn );
 		    MPI_Abort( MPI_COMM_WORLD, 1 );
+                    exit(1);
 		}
 		MPI_Recv( btemp, nn, MPI_CHAR, 0, tag, comm, &status );
 		free(btemp);
@@ -97,12 +99,14 @@ int main( int argc, char *argv[] )
 	    if (!buf) {
 		fprintf( stderr, "Unable to allocate %d bytes\n", n );
 		MPI_Abort( MPI_COMM_WORLD, 1 );
+                exit(1);
 	    }
 	    bsendbufsize = n + MPI_BSEND_OVERHEAD;
 	    bsendbuf = (char *)malloc( bsendbufsize );
 	    if (!bsendbuf) {
 		fprintf( stderr, "Unable to allocate %d bytes for bsend\n", n );
 		MPI_Abort( MPI_COMM_WORLD, 1 );
+                exit(1);
 	    }
 	    MPI_Buffer_attach( bsendbuf, bsendbufsize );
 	    MTestPrintfMsg( 1, "About to create and cancel ibsend\n" );
@@ -142,6 +146,7 @@ int main( int argc, char *argv[] )
 		{
 		    fprintf( stderr, "Unable to allocate %d bytes\n", nn);
 		    MPI_Abort( MPI_COMM_WORLD, 1 );
+                    exit(1);
 		}
 		MPI_Recv( btemp, nn, MPI_CHAR, 0, tag, comm, &status );
 		free(btemp);
@@ -162,6 +167,7 @@ int main( int argc, char *argv[] )
 	    if (!buf) {
 		fprintf( stderr, "Unable to allocate %d bytes\n", n );
 		MPI_Abort( MPI_COMM_WORLD, 1 );
+                exit(1);
 	    }
 	    MTestPrintfMsg( 1, "About to create and cancel irsend\n" );
 	    MPI_Irsend( buf, n, MPI_CHAR, dest, cs+n+3, comm, &req );
@@ -207,6 +213,7 @@ int main( int argc, char *argv[] )
 		{
 		    fprintf( stderr, "Unable to allocate %d bytes\n", n);
 		    MPI_Abort( MPI_COMM_WORLD, 1 );
+                    exit(1);
 		}
 		MPI_Recv( btemp, n, MPI_CHAR, 0, tag, comm, &status );
 		free(btemp);
@@ -221,6 +228,7 @@ int main( int argc, char *argv[] )
 	    if (!buf) {
 		fprintf( stderr, "Unable to allocate %d bytes\n", n );
 		MPI_Abort( MPI_COMM_WORLD, 1 );
+                exit(1);
 	    }
 	    MTestPrintfMsg( 1, "About to create and cancel issend\n" );
 	    MPI_Issend( buf, n, MPI_CHAR, dest, cs+n+4, comm, &req );
@@ -257,6 +265,7 @@ int main( int argc, char *argv[] )
 		{
 		    fprintf( stderr, "Unable to allocate %d bytes\n", nn);
 		    MPI_Abort( MPI_COMM_WORLD, 1 );
+                    exit(1);
 		}
 		MPI_Recv( btemp, nn, MPI_CHAR, 0, tag, comm, &status );
 		free(btemp);

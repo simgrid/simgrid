@@ -24,6 +24,7 @@ int main( int argc, char *argv[] )
     if (size < 2) {
 	fprintf( stderr, "Must run with at least 2 processes\n" );
 	MPI_Abort( MPI_COMM_WORLD, 1 );
+        exit(1);
     }
     MPI_Comm_rank( MPI_COMM_WORLD, &rank );
 
@@ -39,6 +40,7 @@ int main( int argc, char *argv[] )
 	fprintf( stderr, "Unable to allocate buffers of size %d\n", 
 		 n0 * (int)sizeof(int) );
 	MPI_Abort( MPI_COMM_WORLD, 1 );
+        exit(1);
     }
     memset( buf0, -1, n0 * sizeof(int) );
     memset( buf1, -1, n0 * sizeof(int) );

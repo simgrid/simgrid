@@ -32,6 +32,7 @@ int main( int argc, char *argv[] )
     if (size < 2) {
 	fprintf( stderr, "This test requires at least two processes." );
 	MPI_Abort( MPI_COMM_WORLD, 1 );
+        exit(1);
     }
 
     while (MTestGetIntercomm( &intercomm, &isLeft, 2 )) {

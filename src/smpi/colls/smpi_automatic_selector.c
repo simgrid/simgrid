@@ -1,6 +1,6 @@
 #include "colls_private.h"
-#include <limits.h>
 #include "mc/mc_private.h"
+#include <float.h>
 
 //attempt to do a quick autotuning version of the collective,
 
@@ -10,7 +10,7 @@
          if (!type){\
              type=PJ_type_event_new(#cat, PJ_type_get_root());\
          }\
-         char* cont_name=malloc(25*sizeof(char*));\
+         char cont_name[25];\
          sprintf(cont_name, "rank-%d", smpi_process_index());\
          val_t value = PJ_value_get_or_new(mpi_coll_##cat##_description[i].name,"1.0 1.0 1.0", type);\
          new_pajeNewEvent (SIMIX_get_clock(), PJ_container_get(cont_name), type, value);\
@@ -23,10 +23,10 @@
 #define AUTOMATIC_COLL_BENCH(cat, ret, args, args2)\
     ret smpi_coll_tuned_ ## cat ## _ ## automatic(COLL_UNPAREN args)\
 {\
-  double time1, time2, time_min=INT_MAX;\
+  double time1, time2, time_min=DBL_MAX;\
   int min_coll=-1, global_coll=-1;\
   int i;\
-  double buf_in, buf_out, max_min=INT_MAX;\
+  double buf_in, buf_out, max_min=DBL_MAX;\
   for (i = 0; mpi_coll_##cat##_description[i].name; i++){\
       if(!strcmp(mpi_coll_##cat##_description[i].name, "automatic"))continue;\
       if(!strcmp(mpi_coll_##cat##_description[i].name, "default"))continue;\

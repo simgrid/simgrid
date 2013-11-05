@@ -35,6 +35,7 @@ int main( int argc, char *argv[] )
     if (size < 2) {
 	printf( "This test requires at least 2 processes\n" );
 	MPI_Abort( MPI_COMM_WORLD, 1 );
+        exit(1);
     }
 
     for (testnum=0; msgsizes[testnum] > 0; testnum++) {
@@ -50,6 +51,7 @@ int main( int argc, char *argv[] )
 		    fprintf( stderr, "Unable to allocate %d bytes\n", 
 			     msgSize );
 		    MPI_Abort( MPI_COMM_WORLD, 1 );
+                    exit(1);
 		}
 	    }
 	    partner = (rank + 1) % size;

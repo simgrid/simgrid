@@ -45,6 +45,7 @@ int main(int argc, char **argv)
     if (size < 2) {
         printf("this test requires at least 2 processes\n");
         MPI_Abort(MPI_COMM_WORLD, 1);
+        exit(1);
     }
 
 #ifdef TEST_IDUP

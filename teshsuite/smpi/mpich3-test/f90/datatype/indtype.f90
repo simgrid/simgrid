@@ -24,6 +24,7 @@
       if (size .lt. 2) then
          print *, "Must have at least 2 processes"
          call MPI_Abort( 1, MPI_COMM_WORLD, ierr )
+         stop
       endif
 
       errs = 0

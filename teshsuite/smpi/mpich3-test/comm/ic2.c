@@ -34,7 +34,7 @@ int main(int argc, char **argv)
     if (size < 33) {
         printf("ERROR: this test requires at least 33 processes\n");
         MPI_Abort(MPI_COMM_WORLD, 1);
-        return 1;
+        exit(1);
     }
 
     /* group of c0

@@ -32,6 +32,7 @@ int main(int argc, char *argv[])
     perror("can't allocate send buffer");
     fflush(stderr);
     MPI_Abort(MPI_COMM_WORLD, EXIT_FAILURE);
+    exit(EXIT_FAILURE);
   }
   rb = (int *) malloc(size * sizeof(int));
   if (!rb) {
@@ -39,6 +40,7 @@ int main(int argc, char *argv[])
     fflush(stderr);
     free(sb);
     MPI_Abort(MPI_COMM_WORLD, EXIT_FAILURE);
+    exit(EXIT_FAILURE);
   }
   for (i = 0; i < size; ++i) {
     sb[i] = rank + 1;

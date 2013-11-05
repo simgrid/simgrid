@@ -40,6 +40,7 @@ int main( int argc, char *argv[] )
 	if (!buf) {
 	    fprintf( stderr, "Unable to allocate %d bytes\n", n );
 	    MPI_Abort( MPI_COMM_WORLD, 1 );
+            exit(1);
 	}
 
 	if (rank == source) {

@@ -65,6 +65,7 @@ int main( int argc, char *argv[] )
 	    fprintf( stderr, "Unable to allocated %d words for data\n", 
 		     3 * count );
 	    MPI_Abort( MPI_COMM_WORLD, 1 );
+            exit(1);
 	}
 	for (i=0; i<count*3; i++) {
 	    outVal[i] = -1;

@@ -143,7 +143,9 @@ int find_coll_description(s_mpi_coll_description_t * table,
         return i;
     }
   }
-  name_list = strdup(table[0].name);
+  if (!table[0].name)
+    xbt_die("No collective is valid! This is a bug.");
+  name_list = xbt_strdup(table[0].name);
   for (i = 1; table[i].name; i++) {
     name_list =
         xbt_realloc(name_list,
@@ -151,7 +153,7 @@ int find_coll_description(s_mpi_coll_description_t * table,
     strcat(name_list, ", ");
     strcat(name_list, table[i].name);
   }
-  xbt_die("Model '%s' is invalid! Valid models are: %s.", name, name_list);
+  xbt_die("Collective '%s' is invalid! Valid collectives are: %s.", name, name_list);
   return -1;
 }
 

@@ -40,6 +40,7 @@ int main ( int argc, char *argv[] )
     fprintf( stderr, "This program requires a comm_world no larger than %d",
 	     MAXPES );
     MPI_Abort( MPI_COMM_WORLD, 1 );
+    exit(1);
   }
 
   for (size = 1; size  <= MYBUFSIZE ; size += size) {

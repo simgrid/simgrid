@@ -45,6 +45,7 @@ int main( int argc, char *argv[] )
 	    fprintf(stderr,"Unrecognized argument %s\n",
 		    argv[i]);
 	    MPI_Abort(MPI_COMM_WORLD,EXIT_FAILURE);
+            exit(EXIT_FAILURE);
 	}
     }
 
@@ -52,12 +53,14 @@ int main( int argc, char *argv[] )
     if ( !sb ) {
 	perror( "can't allocate send buffer" );
 	MPI_Abort(MPI_COMM_WORLD,EXIT_FAILURE);
+        exit(EXIT_FAILURE);
     }
     rb = (int *)malloc(size*chunk*sizeof(int));
     if ( !rb ) {
 	perror( "can't allocate recv buffer");
 	free(sb);
 	MPI_Abort(MPI_COMM_WORLD,EXIT_FAILURE);
+        exit(EXIT_FAILURE);
     }
     for ( i=0 ; i < size*chunk ; ++i ) {
 	sb[i] = rank + 1;

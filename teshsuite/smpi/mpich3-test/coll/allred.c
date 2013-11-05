@@ -368,6 +368,7 @@ int main( int argc, char **argv )
     if (size < 2) {
 	fprintf( stderr, "At least 2 processes required\n" );
 	MPI_Abort( MPI_COMM_WORLD, 1 );
+        exit(1);
     }
 
     /* Set errors return so that we can provide better information 
@@ -383,6 +384,7 @@ int main( int argc, char **argv )
 	if  (count <= 0) {
 	    fprintf( stderr, "Invalid count argument %s\n", argv[1] );
 	    MPI_Abort( MPI_COMM_WORLD, 1 );
+            exit(1);
 	}
     }
 

@@ -25,6 +25,7 @@ int main(int argc, char *argv[])
     if (size % 2) {
         fprintf(stderr, "this program requires a multiple of 2 number of processes\n");
         MPI_Abort(MPI_COMM_WORLD, 1);
+        exit(1);
     }
 
     excl = malloc((size / 2) * sizeof(int));

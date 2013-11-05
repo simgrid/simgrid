@@ -39,6 +39,7 @@ int main( int argc, char *argv[] )
 	buf = (int *)malloc( count * 3 * sizeof(int) );
 	if (!buf) {
 	    MPI_Abort( comm, 1 );
+            exit(1);
 	}
 	for (i=0; i<3*count; i++) buf[i] = -1;
 	if (rank == source) {

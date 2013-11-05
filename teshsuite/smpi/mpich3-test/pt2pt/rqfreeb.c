@@ -27,6 +27,7 @@ int main( int argc, char *argv[] )
 	if (dest > r) r = dest;
 	fprintf( stderr, "This program requires %d processes\n", r-1 );
 	MPI_Abort( MPI_COMM_WORLD, 1 );
+        exit(1);
     }
 
     if (rank == src) {

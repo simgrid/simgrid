@@ -49,6 +49,7 @@ int main(int argc, char **argv)
     if (size < 2) {
         printf("this test requires at least 2 processes\n");
         MPI_Abort(MPI_COMM_WORLD, 1);
+        exit(1);
     }
 
     /* all processes besides ranks 0 & 1 aren't used by this test */

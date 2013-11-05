@@ -18,6 +18,14 @@ set(simgrid_fragile_sources
 ### Rebuild the supernovae source files
 if (enable_supernovae) # I need supernovae
 
+  message(WARNING
+"==============================================================================\n"
+"WARNING\n"
+"Supernovae builds are deprecated, and expected to be removed in the next version of SimGrid.\n"
+"If you want this feature to be kept, please tell us at <simgrid-user@lists.gforge.inria.fr>.\n"
+"===============================================================================
+")
+
   # supernovae files are generated. I promise
   set_source_files_properties(${CMAKE_CURRENT_BINARY_DIR}/src/supernovae_sg.c
     PROPERTIES GENERATED true)

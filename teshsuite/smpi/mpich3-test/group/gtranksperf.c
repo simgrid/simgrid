@@ -45,6 +45,7 @@ int main( int argc, char *argv[] )
     if (!ranks || !ranksout) {
         fprintf(stderr, "out of memory\n");
         MPI_Abort(MPI_COMM_WORLD, 1);
+        exit(1);
     }
 
     /* generate a comm with the rank order reversed */

@@ -389,6 +389,7 @@ c---------------------------------------------------------------------
                write(*, 239) np1*np2, np
  239           format(' Product is ', i5, ' and should be ', i5)
                call MPI_Abort(MPI_COMM_WORLD, 1, ierr)
+               stop
             endif
 
 c---------------------------------------------------------------------
@@ -402,6 +403,7 @@ c---------------------------------------------------------------------
  240           format(' Layout type specified in inputft.data is 
      >                  invalid ')
                call MPI_Abort(MPI_COMM_WORLD, 1, ierr)
+               stop
             endif
 
 c---------------------------------------------------------------------
@@ -413,6 +415,7 @@ c---------------------------------------------------------------------
                write(*, 241)
  241           format(' For 0D layout, both np1 and np2 must be 1 ')
                call MPI_Abort(MPI_COMM_WORLD, 1, ierr)
+               stop
             endif
 c---------------------------------------------------------------------
 c 4. 1D layout must be 1xN grid
@@ -422,6 +425,7 @@ c---------------------------------------------------------------------
                write(*, 242)
  242           format(' For 1D layout, np1 must be 1 ')
                call MPI_Abort(MPI_COMM_WORLD, 1, ierr)
+               stop
             endif
 
          else
@@ -448,6 +452,7 @@ c---------------------------------------------------------------------
             write(*, 11) np
  11         format(' Only ',  i5, ' processors found ')
             call MPI_Abort(MPI_COMM_WORLD, 1, ierr)
+            stop
          endif
 
  234     format(' No input file inputft.data. Using compiled defaults')

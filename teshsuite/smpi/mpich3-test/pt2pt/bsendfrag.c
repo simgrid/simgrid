@@ -43,6 +43,7 @@ int main( int argc, char *argv[] )
 	errs++;
 	fprintf( stderr, "At least 2 processes required\n" );
 	MPI_Abort( MPI_COMM_WORLD, 1 );
+        exit(1);
     }
 
     src  = 0;
@@ -57,6 +58,7 @@ int main( int argc, char *argv[] )
 	    fprintf( stderr, "Could not allocate buffer of %d bytes\n", 
 		     bufsize );
 	    MPI_Abort( MPI_COMM_WORLD, 1 );
+            exit(1);
 	}
 	MPI_Buffer_attach( buf, bufsize );
 
