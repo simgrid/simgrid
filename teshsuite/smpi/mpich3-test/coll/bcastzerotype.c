@@ -10,7 +10,7 @@ int main(int argc, char *argv[])
 {
     int i, type_size;
     MPI_Datatype type = MPI_DATATYPE_NULL;
-    char *buf = NULL;
+    int *buf = NULL;
     int wrank, wsize;
 
     MPI_Init(&argc, &argv);
