@@ -10,7 +10,7 @@
          if (!type){\
              type=PJ_type_event_new(#cat, PJ_type_get_root());\
          }\
-         char* cont_name=malloc(25*sizeof(char*));\
+         char cont_name[25];\
          sprintf(cont_name, "rank-%d", smpi_process_index());\
          val_t value = PJ_value_get_or_new(mpi_coll_##cat##_description[i].name,"1.0 1.0 1.0", type);\
          new_pajeNewEvent (SIMIX_get_clock(), PJ_container_get(cont_name), type, value);\
