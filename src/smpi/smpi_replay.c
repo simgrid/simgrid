@@ -334,8 +334,9 @@ static void action_wait(const char *const *action){
       "action wait not preceded by any irecv: %s",
       xbt_str_join_array(action," "));
   request = xbt_dynar_pop_as(globals->irecvs,MPI_Request);
+  xbt_assert(request != NULL, "found null request in globals->irecv");
 #ifdef HAVE_TRACING
-  int rank = request && request->comm != MPI_COMM_NULL
+  int rank = request->comm != MPI_COMM_NULL
       ? smpi_comm_rank(request->comm)
       : -1;
 
