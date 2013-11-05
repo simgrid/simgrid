@@ -447,11 +447,7 @@ XBT_PUBLIC( void )__xbt_ex_terminate_default(xbt_ex_t * e);
 #define THROW_UNIMPLEMENTED \
   THROWF(unknown_error, 0, "Function %s unimplemented",_XBT_FUNCTION)
 
-#ifndef NDEBUG
-#  define DIE_IMPOSSIBLE       xbt_assert(0,"The Impossible Did Happen (yet again)")
-#else
-#  define DIE_IMPOSSIBLE       exit(1);
-#endif
+#define DIE_IMPOSSIBLE xbt_die("The Impossible Did Happen (yet again)")
 
 /** @brief re-throwing of an already caught exception (ie, pass it to the upper catch block) 
  *  @hideinitializer
