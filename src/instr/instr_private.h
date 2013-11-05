@@ -364,6 +364,8 @@ void print_pajeEndLink(paje_event_t event);
 void print_pajeNewEvent (paje_event_t event);
 
 void print_TIPushState(paje_event_t event);
+void print_TICreateContainer(paje_event_t event);
+void print_TIDestroyContainer(paje_event_t event);
 void TRACE_TI_start(void);
 void TRACE_TI_end(void);
 void TRACE_TI_init(void);
