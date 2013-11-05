@@ -1568,7 +1568,8 @@ int PMPI_Wait(MPI_Request * request, MPI_Status * status)
 
 int PMPI_Waitany(int count, MPI_Request requests[], int *index, MPI_Status * status)
 {
-  int retval = 0;
+  if (index == NULL)
+    return MPI_ERR_ARG;
 
   smpi_bench_end();
 #ifdef HAVE_TRACING
@@ -1595,12 +1596,7 @@ int PMPI_Waitany(int count, MPI_Request requests[], int *index, MPI_Status * sta
   TRACE_smpi_ptp_in(rank_traced, -1, -1, __FUNCTION__,extra);
 
 #endif
-  if (index == NULL) {
-    retval = MPI_ERR_ARG;
-  } else {
-    *index = smpi_mpi_waitany(count, requests, status);
-    retval = MPI_SUCCESS;
-  }
+  *index = smpi_mpi_waitany(count, requests, status);
 #ifdef HAVE_TRACING
   if(*index!=MPI_UNDEFINED){
     int src_traced = srcs[*index];
@@ -1623,7 +1619,7 @@ int PMPI_Waitany(int count, MPI_Request requests[], int *index, MPI_Status * sta
   }
 #endif
   smpi_bench_begin();
-  return retval;
+  return MPI_SUCCESS;
 }
 
 int PMPI_Waitall(int count, MPI_Request requests[], MPI_Status status[])
