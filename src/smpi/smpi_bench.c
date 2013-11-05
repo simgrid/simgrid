@@ -496,28 +496,28 @@ void smpi_shared_free(void *ptr)
 }
 #endif
 
-int smpi_shared_known_call(const char* func, const char* input) {
-   char* loc = bprintf("%s:%s", func, input);
-   xbt_ex_t ex;
-   int known;
+int smpi_shared_known_call(const char* func, const char* input)
+{
+  char* loc = bprintf("%s:%s", func, input);
+  xbt_ex_t ex;
+  int known = 0;
 
-   if(!calls) {
-      calls = xbt_dict_new_homogeneous(NULL);
-   }
-   TRY {
-      xbt_dict_get(calls, loc); /* Succeed or throw */
-      known = 1;
-   }
-   CATCH(ex) {
-      if(ex.category == not_found_error) {
-         known = 0;
-         xbt_ex_free(ex);
-      } else {
-         RETHROW;
-      }
-   }
-   free(loc);
-   return known;
+  if (!calls) {
+    calls = xbt_dict_new_homogeneous(NULL);
+  }
+  TRY {
+    xbt_dict_get(calls, loc); /* Succeed or throw */
+    known = 1;
+  }
+  TRY_CLEANUP {
+    xbt_free(loc);
+  }
+  CATCH(ex) {
+    if (ex.category != not_found_error)
+      RETHROW;
+    xbt_ex_free(ex);
+  }
+  return known;
 }
 
 void* smpi_shared_get_call(const char* func, const char* input) {
