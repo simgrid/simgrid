@@ -59,8 +59,13 @@ void dump_comment_file (const char *filename)
   fclose(file);
 }
 
+void TRACE_init(){
+   buffer = xbt_dynar_new(sizeof(paje_event_t), NULL);
+}
 
-
+void TRACE_finalize(){
+  if (buffer) xbt_dynar_free(&buffer);
+}
 
 double TRACE_last_timestamp_to_dump = 0;
 //dumps the trace file until the timestamp TRACE_last_timestamp_to_dump
@@ -101,6 +106,7 @@ static void insert_into_buffer (paje_event_t tbi)
     tbi->free (tbi);
     return;
   }
+
   XBT_DEBUG("%s: insert event_type=%d, timestamp=%f, buffersize=%lu)",
       __FUNCTION__, (int)tbi->event_type, tbi->timestamp, xbt_dynar_length(buffer));
 

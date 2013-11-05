@@ -104,7 +104,8 @@ int TRACE_start()
     XBT_DEBUG("Tracing starts");
 
     /* init the tracing module to generate the right output */
-    /* open the trace file */
+    /* open internal buffer */
+    TRACE_init();
 
     /* open the trace file(s) */
     const char* format = sg_cfg_get_string(OPT_TRACING_FORMAT);
@@ -198,6 +199,8 @@ int TRACE_end()
     }else{
       xbt_die("Unknown trace format :%s ", format);
     }
+    /* close internal buffer */
+    TRACE_finalize();
     /* de-activate trace */
     trace_active = 0;
     XBT_DEBUG("Tracing is off");

@@ -234,6 +234,8 @@ extern double TRACE_last_timestamp_to_dump;
 void TRACE_header(int basic, int size);
 
 /* from paje.c */
+void TRACE_init(void);
+void TRACE_finalize(void);
 void TRACE_paje_init(void);
 void TRACE_paje_start(void);
 void TRACE_paje_end(void);

@@ -11,7 +11,6 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(instr_paje_trace, instr_trace, "tracing event sy
 
 extern FILE * tracing_file;
 extern s_instr_trace_writer_t active_writer;
-extern xbt_dynar_t buffer;
 
 
 void TRACE_paje_init(void)
@@ -65,14 +64,12 @@ void TRACE_paje_start(void)
   /* output header */
   TRACE_header(TRACE_basic(),TRACE_display_sizes());
 
-  buffer = xbt_dynar_new (sizeof(paje_event_t), NULL);
 }
 
 void TRACE_paje_end(void)
 {
   fclose(tracing_file);
   char *filename = TRACE_get_filename();
-  xbt_dynar_free (&buffer);
   XBT_DEBUG("Filename %s is closed", filename);
 }
 
