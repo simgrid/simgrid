@@ -1,6 +1,6 @@
 #include "colls_private.h"
-#include <limits.h>
 #include "mc/mc_private.h"
+#include <float.h>
 
 //attempt to do a quick autotuning version of the collective,
 
@@ -23,10 +23,10 @@
 #define AUTOMATIC_COLL_BENCH(cat, ret, args, args2)\
     ret smpi_coll_tuned_ ## cat ## _ ## automatic(COLL_UNPAREN args)\
 {\
-  double time1, time2, time_min=INT_MAX;\
+  double time1, time2, time_min=DBL_MAX;\
   int min_coll=-1, global_coll=-1;\
   int i;\
-  double buf_in, buf_out, max_min=INT_MAX;\
+  double buf_in, buf_out, max_min=DBL_MAX;\
   for (i = 0; mpi_coll_##cat##_description[i].name; i++){\
       if(!strcmp(mpi_coll_##cat##_description[i].name, "automatic"))continue;\
       if(!strcmp(mpi_coll_##cat##_description[i].name, "default"))continue;\
