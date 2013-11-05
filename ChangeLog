@@ -76,9 +76,13 @@ SimGrid (3.10-rc1) unstable; urgency=low
    Unfortunately, calling exit may cause SimGrid to segfault, which is quite
    annoying when scripting around the simulator. Adding a
    --cfg=clean_atexit:no allows to circumvent this issue.
+
+ Build System:
  * New command line option --version, to get SimGrid version information.
    Packagers may want to add extra words to SIMGRID_VERSION_EXTRA defined in
    CMakeLists.txt.
+ * Supernovae builds are deprecated, and expected to be removed in the next
+   version of SimGrid.
 
 -- Mon Oct 7 2013 Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
 
