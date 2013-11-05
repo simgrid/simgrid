@@ -5,16 +5,27 @@
   * under the terms of the license (GNU LGPL) which comes with this package. */
 #include "instr/instr_private.h"
 #include "xbt/virtu.h" /* sg_cmdline */
+#include "xbt/xbt_os_time.h"
+#include "simgrid/sg_config.h"
+
+
+#include <sys/stat.h>
+
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(instr_TI_trace, instr_trace, "tracing event system");
 
-
 extern FILE *tracing_file;
+double prefix=0.0;
+
+xbt_dict_t tracing_files = NULL;
+
 extern s_instr_trace_writer_t active_writer;
 extern xbt_dynar_t buffer;
 
 void TRACE_TI_init(void)
 {
   active_writer.print_PushState = print_TIPushState;
+  active_writer.print_CreateContainer=print_TICreateContainer;
+  active_writer.print_DestroyContainer=print_TIDestroyContainer;
 }
 
 void TRACE_TI_start(void)
@@ -39,11 +50,58 @@ void TRACE_TI_start(void)
 
 void TRACE_TI_end(void)
 {
+  if(tracing_files)xbt_dict_free(&tracing_files);
   fclose(tracing_file);
   char *filename = TRACE_get_filename();
   xbt_dynar_free(&buffer);
   XBT_DEBUG("Filename %s is closed", filename);
 }
+
+void print_TICreateContainer(paje_event_t event){
+
+  char* folder_name = bprintf("%s_files",TRACE_get_filename());
+  if(tracing_files==NULL){
+    tracing_files = xbt_dict_new_homogeneous(NULL);
+    struct stat st;
+    if (stat(folder_name, &st) == -1) {
+        mkdir(folder_name, 0700);
+    }
+    //generate unique run id with time
+    prefix=xbt_os_time();
+  }
+
+  //Open a file for each new container
+  char *filename = NULL;
+
+
+  //if we are in the mode with only one file
+  static FILE* temp = NULL;
+
+  if (!xbt_cfg_get_boolean(_sg_cfg_set, "tracing/smpi/format/ti_one_file") || temp ==NULL){
+    filename = bprintf("%s/%f_%s.txt", folder_name, prefix, ((createContainer_t) event->data)->container->name);
+    temp=fopen(filename, "w");
+    if(temp==NULL){
+    xbt_die("Tracefile %s could not be opened for writing.",
+           filename);
+    }
+    fprintf(tracing_file, "%s\n", filename);
+
+  }
+
+
+
+  xbt_dict_set(tracing_files, ((createContainer_t) event->data)->container->name, (void*)temp, NULL);
+
+  //Append its path to the main file
+  free(folder_name);
+  free(filename);
+}
+
+
+void print_TIDestroyContainer(paje_event_t event){
+  xbt_dict_remove(tracing_files, ((destroyContainer_t) event->data)->container->name);
+}
+
 
 void print_TIPushState(paje_event_t event)
 {
@@ -64,95 +122,97 @@ void print_TIPushState(paje_event_t event)
   else
     process_id = xbt_strdup(((pushState_t) event->data)->container->name + 5);
 
+  FILE* trace_file =  (FILE* )xbt_dict_get(tracing_files, ((pushState_t) event->data)->container->name);
+
   switch (extra->type) {
 
   case TRACING_INIT:
-    fprintf(tracing_file, "%s init\n", process_id);
+    fprintf(trace_file, "%s init\n", process_id);
     break;
   case TRACING_FINALIZE:
-    fprintf(tracing_file, "%s finalize\n", process_id);
+    fprintf(trace_file, "%s finalize\n", process_id);
     break;
   case TRACING_SEND:
-    fprintf(tracing_file, "%s send %d %d %s\n", process_id, extra->dst,
+    fprintf(trace_file, "%s send %d %d %s\n", process_id, extra->dst,
             extra->send_size, extra->datatype1);
     break;
   case TRACING_ISEND:
-    fprintf(tracing_file, "%s isend %d %d %s\n", process_id, extra->dst,
+    fprintf(trace_file, "%s isend %d %d %s\n", process_id, extra->dst,
             extra->send_size, extra->datatype1);
     break;
   case TRACING_RECV:
-    fprintf(tracing_file, "%s recv %d %d %s\n", process_id, extra->src,
+    fprintf(trace_file, "%s recv %d %d %s\n", process_id, extra->src,
             extra->send_size, extra->datatype1);
     break;
   case TRACING_IRECV:
-    fprintf(tracing_file, "%s irecv %d %d %s\n", process_id, extra->src,
+    fprintf(trace_file, "%s irecv %d %d %s\n", process_id, extra->src,
             extra->send_size, extra->datatype1);
     break;
   case TRACING_WAIT:
-    fprintf(tracing_file, "%s wait\n", process_id);
+    fprintf(trace_file, "%s wait\n", process_id);
     break;
   case TRACING_WAITALL:
-    fprintf(tracing_file, "%s waitall\n", process_id);
+    fprintf(trace_file, "%s waitall\n", process_id);
     break;
   case TRACING_BARRIER:
-    fprintf(tracing_file, "%s barrier\n", process_id);
+    fprintf(trace_file, "%s barrier\n", process_id);
     break;
   case TRACING_BCAST:          // rank bcast size (root) (datatype)
-    fprintf(tracing_file, "%s bcast %d ", process_id, extra->send_size);
+    fprintf(trace_file, "%s bcast %d ", process_id, extra->send_size);
     if (extra->root != 0 || (extra->datatype1 && strcmp(extra->datatype1, "")))
-      fprintf(tracing_file, "%d %s", extra->root, extra->datatype1);
-    fprintf(tracing_file, "\n");
+      fprintf(trace_file, "%d %s", extra->root, extra->datatype1);
+    fprintf(trace_file, "\n");
     break;
   case TRACING_REDUCE:         // rank reduce comm_size comp_size (root) (datatype)
-    fprintf(tracing_file, "%s reduce %d %f ", process_id, extra->send_size,
+    fprintf(trace_file, "%s reduce %d %f ", process_id, extra->send_size,
             extra->comp_size);
     if (extra->root != 0 || (extra->datatype1 && strcmp(extra->datatype1, "")))
-      fprintf(tracing_file, "%d %s", extra->root, extra->datatype1);
-    fprintf(tracing_file, "\n");
+      fprintf(trace_file, "%d %s", extra->root, extra->datatype1);
+    fprintf(trace_file, "\n");
     break;
   case TRACING_ALLREDUCE:      // rank allreduce comm_size comp_size (datatype)
-    fprintf(tracing_file, "%s allreduce %d %f %s\n", process_id,
+    fprintf(trace_file, "%s allreduce %d %f %s\n", process_id,
             extra->send_size, extra->comp_size, extra->datatype1);
     break;
   case TRACING_ALLTOALL:       // rank alltoall send_size recv_size (sendtype) (recvtype)
-    fprintf(tracing_file, "%s alltoall %d %d %s %s\n", process_id,
+    fprintf(trace_file, "%s alltoall %d %d %s %s\n", process_id,
             extra->send_size, extra->recv_size, extra->datatype1,
             extra->datatype2);
     break;
   case TRACING_ALLTOALLV:      // rank alltoallv send_size [sendcounts] recv_size [recvcounts] (sendtype) (recvtype)
-    fprintf(tracing_file, "%s alltoallv %d ", process_id, extra->send_size);
+    fprintf(trace_file, "%s alltoallv %d ", process_id, extra->send_size);
     for (i = 0; i < extra->num_processes; i++)
-      fprintf(tracing_file, "%d ", extra->sendcounts[i]);
-    fprintf(tracing_file, "%d ", extra->recv_size);
+      fprintf(trace_file, "%d ", extra->sendcounts[i]);
+    fprintf(trace_file, "%d ", extra->recv_size);
     for (i = 0; i < extra->num_processes; i++)
-      fprintf(tracing_file, "%d ", extra->recvcounts[i]);
-    fprintf(tracing_file, "%s %s \n", extra->datatype1, extra->datatype2);
+      fprintf(trace_file, "%d ", extra->recvcounts[i]);
+    fprintf(trace_file, "%s %s \n", extra->datatype1, extra->datatype2);
     break;
   case TRACING_GATHER:         // rank gather send_size recv_size root (sendtype) (recvtype)
-    fprintf(tracing_file, "%s gather %d %d %d %s %s\n", process_id,
+    fprintf(trace_file, "%s gather %d %d %d %s %s\n", process_id,
             extra->send_size, extra->recv_size, extra->root, extra->datatype1,
             extra->datatype2);
     break;
   case TRACING_ALLGATHERV:     // rank allgatherv send_size [recvcounts] (sendtype) (recvtype)
-    fprintf(tracing_file, "%s allgatherv %d ", process_id, extra->send_size);
+    fprintf(trace_file, "%s allgatherv %d ", process_id, extra->send_size);
     for (i = 0; i < extra->num_processes; i++)
-      fprintf(tracing_file, "%d ", extra->recvcounts[i]);
-    fprintf(tracing_file, "%s %s \n", extra->datatype1, extra->datatype2);
+      fprintf(trace_file, "%d ", extra->recvcounts[i]);
+    fprintf(trace_file, "%s %s \n", extra->datatype1, extra->datatype2);
     break;
   case TRACING_REDUCE_SCATTER: // rank reducescatter [recvcounts] comp_size (sendtype)
-    fprintf(tracing_file, "%s reducescatter ", process_id);
+    fprintf(trace_file, "%s reducescatter ", process_id);
     for (i = 0; i < extra->num_processes; i++)
-      fprintf(tracing_file, "%d ", extra->recvcounts[i]);
-    fprintf(tracing_file, "%f %s\n", extra->comp_size, extra->datatype1);
+      fprintf(trace_file, "%d ", extra->recvcounts[i]);
+    fprintf(trace_file, "%f %s\n", extra->comp_size, extra->datatype1);
     break;
   case TRACING_COMPUTING:
-    fprintf(tracing_file, "%s compute %f\n", process_id, extra->comp_size);
+    fprintf(trace_file, "%s compute %f\n", process_id, extra->comp_size);
     break;
   case TRACING_GATHERV: // rank gatherv send_size [recvcounts] root (sendtype) (recvtype)
-    fprintf(tracing_file, "%s gatherv %d ", process_id, extra->send_size);
+    fprintf(trace_file, "%s gatherv %d ", process_id, extra->send_size);
     for (i = 0; i < extra->num_processes; i++)
-      fprintf(tracing_file, "%d ", extra->recvcounts[i]);
-    fprintf(tracing_file, "%d %s %s\n", extra->root, extra->datatype1, extra->datatype2);
+      fprintf(trace_file, "%d ", extra->recvcounts[i]);
+    fprintf(trace_file, "%d %s %s\n", extra->root, extra->datatype1, extra->datatype2);
     break;
   case TRACING_WAITANY:
   case TRACING_SENDRECV:

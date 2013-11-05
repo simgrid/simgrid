@@ -22,6 +22,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_config, instr, "Configuration");
 #define OPT_TRACING_SMPI_INTERNALS "tracing/smpi/internals"
 #define OPT_TRACING_DISPLAY_SIZES  "tracing/smpi/display_sizes"
 #define OPT_TRACING_FORMAT        "tracing/smpi/format"
+#define OPT_TRACING_FORMAT_TI_ONEFILE "tracing/smpi/format/ti_one_file"
 #define OPT_TRACING_CATEGORIZED   "tracing/categorized"
 #define OPT_TRACING_UNCATEGORIZED "tracing/uncategorized"
 #define OPT_TRACING_MSG_PROCESS   "tracing/msg/process"
@@ -105,7 +106,8 @@ int TRACE_start()
     /* init the tracing module to generate the right output */
     /* open the trace file */
 
-    const char* format = sg_cfg_get_string("tracing/smpi/format");
+    /* open the trace file(s) */
+    const char* format = sg_cfg_get_string(OPT_TRACING_FORMAT);
     XBT_DEBUG("Tracing format %s\n", format);
     if(!strcmp(format, "Paje")){
       TRACE_paje_init();
@@ -114,10 +116,8 @@ int TRACE_start()
       TRACE_TI_init();
       TRACE_TI_start();
     }else{
-    xbt_die("Unknown trace format :%s ", format);
+      xbt_die("Unknown trace format :%s ", format);
     }
-
-
 
     /* activate trace */
     if (trace_active == 1) {
@@ -188,9 +188,16 @@ int TRACE_end()
     xbt_dict_free(&declared_marks);
     xbt_dict_free(&created_categories);
 
-    /* close the trace file */
-    TRACE_paje_end();
-
+    /* close the trace files */
+    const char* format = sg_cfg_get_string(OPT_TRACING_FORMAT);
+    XBT_DEBUG("Tracing format %s\n", format);
+    if(!strcmp(format, "Paje")){
+      TRACE_paje_end();
+    }else if (!strcmp(format, "TI")){
+      TRACE_TI_end();
+    }else{
+      xbt_die("Unknown trace format :%s ", format);
+    }
     /* de-activate trace */
     trace_active = 0;
     XBT_DEBUG("Tracing is off");
@@ -455,6 +462,13 @@ void TRACE_global_init(int *argc, char **argv)
                    xbt_cfgelm_string, 1, 1, NULL, NULL);
   xbt_cfg_setdefault_string(_sg_cfg_set, OPT_TRACING_FORMAT, "Paje");
 
+
+  /* format -- Switch the ouput format of Tracing */
+  xbt_cfg_register(&_sg_cfg_set, OPT_TRACING_FORMAT_TI_ONEFILE,
+                   "(smpi only for now) For replay format only : output to one file only",
+                   xbt_cfgelm_boolean, 1, 1, NULL, NULL);
+  xbt_cfg_setdefault_boolean(_sg_cfg_set, OPT_TRACING_FORMAT_TI_ONEFILE, "no");
+
   /* comment */
   xbt_cfg_register(&_sg_cfg_set, OPT_TRACING_COMMENT,
                    "Comment to be added on the top of the trace file.",
@@ -574,6 +588,11 @@ void TRACE_help (int detailed)
   print_line (OPT_TRACING_FORMAT, "Only works for SMPI now. Switch output format",
       "Default format is Paje. Time independent traces are also supported, \n"
       "to output traces that can later be used by the trace replay tool",
+      detailed);
+  print_line (OPT_TRACING_FORMAT_TI_ONEFILE, "Only works for SMPI now, and TI output format",
+      "By default, each process outputs to a separate file, inside a filename_files folder \n"
+      "By setting this option to yes, all processes will output to only one file \n"
+      "This is meant to avoid opening thousands of files with large simulations",
       detailed);
   print_line (OPT_TRACING_COMMENT, "Comment to be added on the top of the trace file.",
       "  Use this to add a comment line to the top of the trace file.",
