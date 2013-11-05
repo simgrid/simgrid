@@ -53,6 +53,7 @@ int main( int argc, char *argv[] )
 		errs++;
 		fprintf( stderr, "Failed to allocate sendbuf and/or recvbuf\n" );
 		MPI_Abort( MPI_COMM_WORLD, 1 );
+                exit(1);
 	    }
 	    for (i=0; i<count*size; i++) 
 		recvbuf[i] = -1;

@@ -25,6 +25,7 @@ void abortMsg( const char *str, int code )
     fprintf( stderr, "%s: errcode = %d, class = %d, msg = %s\n", 
 	     str, code, class, msg );
     MPI_Abort( MPI_COMM_WORLD, code );
+    exit(code);
 }
 
 int main( int argc, char *argv[] )

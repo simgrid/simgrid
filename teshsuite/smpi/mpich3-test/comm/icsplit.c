@@ -28,6 +28,7 @@ int main( int argc, char *argv[] )
     if (size < 4) {
 	printf( "This test requires at least 4 processes\n" );
 	MPI_Abort( MPI_COMM_WORLD, 1 );
+        exit(1);
     }
 
     while (MTestGetIntercomm( &intercomm, &isLeft, 2 )) {

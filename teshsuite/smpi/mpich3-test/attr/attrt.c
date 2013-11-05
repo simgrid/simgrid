@@ -55,6 +55,7 @@ int delete_fn( MPI_Comm comm, int keyval, void *attribute_val,
     if ((MPI_Aint)attribute_val != (MPI_Aint)world_rank) {
 	printf( "incorrect attribute value %d\n", *(int*)attribute_val );
 	MPI_Abort(MPI_COMM_WORLD, 1005 );
+        exit(1005);
     }
     return MPI_SUCCESS;
 }
@@ -99,6 +100,7 @@ int test_communicators( void )
 	errs++;
 	printf( "incorrect rank in world comm: %d\n", rank );
 	MPI_Abort(MPI_COMM_WORLD, 3001 );
+        exit(3001);
     }
 
     n = world_size / 2;
@@ -130,6 +132,7 @@ int test_communicators( void )
 	    errs++;
 	    printf( "incorrect lo group rank: %d\n", rank ); fflush(stdout);
 	    MPI_Abort(MPI_COMM_WORLD, 3002 );
+            exit(3002);
 	}
 	else {
 	    /* printf( "lo in\n" );FFLUSH; */
@@ -142,6 +145,7 @@ int test_communicators( void )
 	    errs++;
 	    printf( "rank : %d incorrect lo comm:\n", rank ); fflush(stdout);
 	    MPI_Abort(MPI_COMM_WORLD, 3003 );
+            exit(3003);
 	}
     }
 
@@ -192,6 +196,7 @@ int test_communicators( void )
 	    printf( "dup_comm key_1 not found on %d\n", world_rank );
 	    fflush( stdout );
 	    MPI_Abort(MPI_COMM_WORLD, 3004 );
+            exit(3004);
 	}
 	
 	if (value != world_rank) {
@@ -200,6 +205,7 @@ int test_communicators( void )
 		    (long)value, world_rank );
 	    fflush( stdout );
 	    MPI_Abort(MPI_COMM_WORLD, 3005 );
+            exit(3005);
 	}
 
 	MPI_Attr_get(dup_comm, key_3, (void **)&vvalue, &flag );
@@ -209,6 +215,7 @@ int test_communicators( void )
 	    printf( "dup_comm key_3 found!\n" );
 	    fflush( stdout );
 	    MPI_Abort(MPI_COMM_WORLD, 3008 );
+            exit(3008);
 	}
 	MPI_Keyval_free(&key_1 );
 	MPI_Keyval_free(&key_3 );
@@ -233,6 +240,7 @@ int test_communicators( void )
 	errs++;
 	printf( "incorrect split rank: %d\n", rank ); fflush(stdout);
 	MPI_Abort(MPI_COMM_WORLD, 3009 );
+        exit(3009);
     }
     
     MPI_Barrier(split_comm );
@@ -251,6 +259,7 @@ int test_communicators( void )
 	errs++;
 	printf( "incorrect ident result: %d\n", result );
 	MPI_Abort(MPI_COMM_WORLD, 3010 );
+        exit(3010);
     }
     
     if (lo_comm != MPI_COMM_NULL) {
@@ -259,6 +268,7 @@ int test_communicators( void )
 	    errs++;
             printf( "incorrect congruent result: %d\n", result );
             MPI_Abort(MPI_COMM_WORLD, 3011 );
+            exit(3011);
 	}
     }
     
@@ -274,6 +284,7 @@ int test_communicators( void )
 	errs++;
 	printf( "incorrect similar result: %d\n", result );
 	MPI_Abort(MPI_COMM_WORLD, 3012 );
+        exit(3012);
     }
     
     if (lo_comm != MPI_COMM_NULL) {
@@ -282,6 +293,7 @@ int test_communicators( void )
 	    errs++;
 	    printf( "incorrect unequal result: %d\n", result );
 	    MPI_Abort(MPI_COMM_WORLD, 3013 );
+            exit(3013);
 	}
     }
     /*

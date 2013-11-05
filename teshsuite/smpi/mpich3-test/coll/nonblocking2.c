@@ -25,6 +25,7 @@
         if (!(cond_)) {                                                   \
             fprintf(stderr, "assertion (%s) failed, aborting\n", #cond_); \
             MPI_Abort(MPI_COMM_WORLD, 1);                                 \
+            exit(1);                                                      \
         }                                                                 \
     } while (0)
 

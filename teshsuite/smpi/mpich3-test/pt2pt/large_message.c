@@ -34,6 +34,7 @@ int main(int argc, char *argv[])
   if (size != 3) {
     fprintf(stderr,"[%d] usage: mpiexec -n 3 %s\n",rank,argv[0]);
     MPI_Abort(MPI_COMM_WORLD,1);
+    exit(1);
   }
 
   cols = malloc(cnt*sizeof(long long));

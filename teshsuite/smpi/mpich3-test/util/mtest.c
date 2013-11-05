@@ -1534,6 +1534,7 @@ void MTestError( const char *msg )
     fprintf( stderr, "%s\n", msg );
     fflush( stderr );
     MPI_Abort( MPI_COMM_WORLD, 1 );
+    exit(1);
 }
 /* ------------------------------------------------------------------------ */
 static void MTestResourceSummary( FILE *fp )

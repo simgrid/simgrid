@@ -24,6 +24,7 @@ int main( int argc, char *argv[] )
     if (size < 2) {
 	printf( "Size must be at least 2\n" );
 	MPI_Abort( MPI_COMM_WORLD, 0 );
+        exit(0);
     }
 
     MPI_Comm_rank( MPI_COMM_WORLD, &rank );

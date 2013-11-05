@@ -405,6 +405,7 @@ static void start_random_nonblocking(MPI_Comm comm, unsigned int rndnum, MPI_Req
         default:
             fprintf(stderr, "unexpected value for l->case_num=%d)\n", (l->case_num));
             MPI_Abort(comm, 1);
+            exit(1);
             break;
     }
 }

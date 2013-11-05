@@ -160,9 +160,15 @@ int main( int argc, char *argv[] )
 	MPI_Type_commit( &mattype );
 	
 	buf = (int *)malloc( count * size * size * sizeof(int) );
-	if (!buf) MPI_Abort( MPI_COMM_WORLD, 1 );
+	if (!buf) {
+          MPI_Abort( MPI_COMM_WORLD, 1 );
+          exit(1);
+        }
 	bufout = (int *)malloc( count * size * size * sizeof(int) );
-	if (!bufout) MPI_Abort( MPI_COMM_WORLD, 1 );
+	if (!bufout) {
+          MPI_Abort( MPI_COMM_WORLD, 1 );
+          exit(1);
+        }
 
 	for (root = 0; root < size; root ++) {
 	    initMat( comm, buf );

@@ -39,6 +39,7 @@ int main( int argc, char *argv[] )
 	errs++;
 	fprintf( stderr, "This test requires at least two processes\n" );
 	MPI_Abort( MPI_COMM_WORLD, 1 );
+        exit(1);
     }
     source = 0;
     dest = 1;

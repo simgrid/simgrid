@@ -59,6 +59,7 @@ int main( int argc, char **argv )
 	    fprintf( stderr, "Could not allocate %d int for recvcounts\n", 
 		     size );
 	    MPI_Abort( MPI_COMM_WORLD, 1 );
+            exit(1);
 	}
 	for (i=0; i<size; i++) 
 	    recvcounts[i] = recvcount;
@@ -68,6 +69,7 @@ int main( int argc, char **argv )
 	    fprintf( stderr, "Could not allocate %d ints for sendbuf\n", 
 		     sendcount );
 	    MPI_Abort( MPI_COMM_WORLD, 1 );
+            exit(1);
 	}
 
 	for (i=0; i<sendcount; i++) {
@@ -78,6 +80,7 @@ int main( int argc, char **argv )
 	    fprintf( stderr, "Could not allocate %d ints for recvbuf\n", 
 		     recvcount );
 	    MPI_Abort( MPI_COMM_WORLD, 1 );
+            exit(1);
 	}
 	for (i=0; i<recvcount; i++) {
 	    recvbuf[i] = (long long)(-i);

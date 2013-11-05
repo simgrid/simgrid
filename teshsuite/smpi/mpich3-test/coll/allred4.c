@@ -198,11 +198,13 @@ int main( int argc, char *argv[] )
 	    buf = (int *)malloc( count * 9 * sizeof(int) );
 	    if (!buf) {
 		MPI_Abort( MPI_COMM_WORLD, 1 );
+                exit(1);
 	    }
 
 	    bufout = (int *)malloc( count * 9 * sizeof(int) );
 	    if (!bufout) {
 		MPI_Abort( MPI_COMM_WORLD, 1 );
+                exit(1);
 	    }
 
 	    for (i=0; i < count; i++) {

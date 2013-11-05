@@ -51,6 +51,7 @@ int main( int argc, char *argv[] )
 	    fprintf( stderr, "Unable to allocate buffer %d of size %ld\n", 
 		    	i, (long)extent );
 	    MPI_Abort( MPI_COMM_WORLD, 1 );
+            exit(1);
 	}
     }
     buf = (int *)malloc( 10 * 30 * sizeof(int) );

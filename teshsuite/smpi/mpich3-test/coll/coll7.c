@@ -27,6 +27,7 @@ int main( int argc, char **argv )
 	fprintf( stderr, "Number of processors must divide %d\n",
 		MAX_PROCESSES );
 	MPI_Abort( MPI_COMM_WORLD, 1 );
+        exit(1);
 	}
     /* while (MAX_PROCESSES % participants) participants--; */
     if ( (rank < participants) ) {
