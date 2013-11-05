@@ -233,7 +233,9 @@ int find_model_description(s_surf_model_description_t * table,
     if (!strcmp(name, table[i].name)) {
       return i;
     }
-  name_list = strdup(table[0].name);
+  if (!table[0].name)
+    xbt_die("No model is valid! This is a bug.");
+  name_list = xbt_strdup(table[0].name);
   for (i = 1; table[i].name; i++) {
     name_list =
         xbt_realloc(name_list,
