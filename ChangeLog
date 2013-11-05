@@ -1,6 +1,8 @@
 SimGrid (3.11) NOT RELEASED; urgency=low
 
- (to complete)
+ TODO/FIXME BEFORE RELEASE:
+ * Consider the removal of Supernovae mode if no user has manifested since the
+   release of version 3.10.
 
  -- $date Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
 
