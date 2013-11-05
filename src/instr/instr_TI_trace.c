@@ -19,7 +19,6 @@ double prefix=0.0;
 xbt_dict_t tracing_files = NULL;
 
 extern s_instr_trace_writer_t active_writer;
-extern xbt_dynar_t buffer;
 
 void TRACE_TI_init(void)
 {
@@ -45,7 +44,6 @@ void TRACE_TI_start(void)
   /* output comment file */
   dump_comment_file(TRACE_get_comment_file());
 
-  buffer = xbt_dynar_new(sizeof(paje_event_t), NULL);
 }
 
 void TRACE_TI_end(void)
@@ -53,7 +51,6 @@ void TRACE_TI_end(void)
   if(tracing_files)xbt_dict_free(&tracing_files);
   fclose(tracing_file);
   char *filename = TRACE_get_filename();
-  xbt_dynar_free(&buffer);
   XBT_DEBUG("Filename %s is closed", filename);
 }
 
