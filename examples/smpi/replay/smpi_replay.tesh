@@ -244,7 +244,7 @@ $ ../../smpi_script/bin/smpirun -ext smpi_replay --log=replay.thresh:critical --
 > [Tremblay:0:(0) 13.435773] [smpi_replay/VERBOSE] 0 recv 1 1e6 13.271310
 > [Jupiter:1:(0) 13.600235] [smpi_replay/VERBOSE] 1 wait 0.328926
 > [Tremblay:0:(0) 13.600235] [smpi_replay/VERBOSE] 0 send 1 1e6 0.164463
-> [Tremblay:0:(0) 13.600235] [smpi_replay/INFO] Simulation time 13.6002
+> [Jupiter:1:(0) 13.600235] [smpi_replay/INFO] Simulation time 13.6002
 
 $ rm -f ./split_traces_tesh
 
