@@ -35,6 +35,12 @@ SimGrid (3.10-rc1) unstable; urgency=low
    - The replay tool now supports traces produce either by TAU or a modified
      version of MPE.
    - Bug Fix: the compute part of the reduce action is now taken into account.
+   - Gatherv collective is now supported
+   - Simgrid (SMPI for now) can generate replay traces as well. Option -trace-ti
+     of smpirun outputs time independent traces for the current run. One file 
+     is created per process. If too many processes are simulated, this behavior 
+     can be changed to one file for all processes by using the 
+     tracing/smpi/format/ti_one_file flag
  * smpirun generates the host file if needed (with given host count and platform)
  * Integration of more than 100 STAR-MPI, MPICH, OpenMPI collective algorithms
    - allows to select one in particular with --cfg=smpi/coll_name:algorithm
