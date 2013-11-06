@@ -138,7 +138,7 @@ void smpi_execute_flops(double flops) {
   simcall_host_execution_wait(action);
 }
 
-static void smpi_execute(double duration)
+void smpi_execute(double duration)
 {
   if (duration >= smpi_cpu_threshold) {
     XBT_DEBUG("Sleep for %g to handle real computation time", duration);
