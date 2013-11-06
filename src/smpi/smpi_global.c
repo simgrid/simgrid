@@ -274,7 +274,7 @@ void print_request(const char *message, MPI_Request request)
        request->dst, request->tag, request->flags);
 }
 
-static void SMPI_comm_copy_buffer_callback(smx_action_t comm,
+static void smpi_comm_copy_buffer_callback(smx_action_t comm,
                                            void *buff, size_t buff_size)
 {
   XBT_DEBUG("Copy the data over");
@@ -297,7 +297,7 @@ void smpi_global_init(void)
   MPI_Group group;
   char name[MAILBOX_NAME_MAXLEN];
 
-  SIMIX_comm_set_copy_data_callback(&SMPI_comm_copy_buffer_callback);
+  SIMIX_comm_set_copy_data_callback(&smpi_comm_copy_buffer_callback);
   process_count = SIMIX_process_count();
   process_data = xbt_new(smpi_process_data_t, process_count);
   for (i = 0; i < process_count; i++) {
