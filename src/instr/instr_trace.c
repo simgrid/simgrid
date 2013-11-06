@@ -27,8 +27,6 @@ s_instr_trace_writer_t active_writer = {
     print_NULL, print_NULL
 };
 
-
-
 xbt_dynar_t buffer = NULL;
 
 void dump_comment (const char *comment)
@@ -59,12 +57,14 @@ void dump_comment_file (const char *filename)
   fclose(file);
 }
 
-void TRACE_init(){
-   buffer = xbt_dynar_new(sizeof(paje_event_t), NULL);
+void TRACE_init()
+{
+  buffer = xbt_dynar_new(sizeof(paje_event_t), NULL);
 }
 
-void TRACE_finalize(){
-  if (buffer) xbt_dynar_free(&buffer);
+void TRACE_finalize()
+{
+  xbt_dynar_free(&buffer);
 }
 
 double TRACE_last_timestamp_to_dump = 0;
