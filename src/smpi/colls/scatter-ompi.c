@@ -145,13 +145,15 @@ smpi_coll_tuned_scatter_ompi_binomial(void *sbuf, int scount,
 	    total_send += mycount;
 	}
 
-	if (NULL != tempbuf) 
-	    free(tempbuf);
+
     } else {
 	/* recv from parent on leaf nodes */
 	smpi_mpi_recv(ptmp, rcount, rdtype, bmtree->tree_prev,
 				COLL_TAG_SCATTER, comm, &status);
     }
+
+    if (NULL != tempbuf)
+      free(tempbuf);
     //!FIXME : store the tree, as done in ompi, instead of calculating it each time ?
     xbt_free(bmtree);
 

@@ -86,13 +86,13 @@ static xbt_dynar_t parse_factor(const char *smpi_coef_string)
   char *value = NULL;
   unsigned int iter = 0;
   s_smpi_factor_t fact;
+  fact.nb_values=0;
   int i=0;
   xbt_dynar_t smpi_factor, radical_elements, radical_elements2 = NULL;
 
   smpi_factor = xbt_dynar_new(sizeof(s_smpi_factor_t), NULL);
   radical_elements = xbt_str_split(smpi_coef_string, ";");
   xbt_dynar_foreach(radical_elements, iter, value) {
-    fact.nb_values=0;
     radical_elements2 = xbt_str_split(value, ":");
     if (xbt_dynar_length(radical_elements2) <2 || xbt_dynar_length(radical_elements2) > 5)
       xbt_die("Malformed radical for smpi factor!");
@@ -414,6 +414,7 @@ void smpi_mpi_start(MPI_Request request)
 void smpi_mpi_startall(int count, MPI_Request * requests)
 {
   int i;
+  if(requests==NULL) return;
 
   for(i = 0; i < count; i++) {
     smpi_mpi_start(requests[i]);
