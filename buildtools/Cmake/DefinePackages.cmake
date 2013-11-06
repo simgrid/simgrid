@@ -901,6 +901,8 @@ set(EXAMPLES_CMAKEFILES_TXT
   examples/smpi/CMakeLists.txt
   examples/smpi/MM/CMakeLists.txt
   examples/smpi/energy/CMakeLists.txt
+  examples/smpi/energy/f77/CMakeLists.txt
+  examples/smpi/energy/f90/CMakeLists.txt
   examples/xbt/CMakeLists.txt
   )
 

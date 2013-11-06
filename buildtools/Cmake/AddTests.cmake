@@ -436,6 +436,10 @@ if(NOT enable_memcheck)
     endif()
 
     ADD_TEST(smpi-energy                        ${TESH_COMMAND} ${TESH_OPTION} --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/smpi/energy --cd ${CMAKE_BINARY_DIR}/examples/smpi/energy ${CMAKE_HOME_DIRECTORY}/examples/smpi/energy/energy.tesh)
+    if(SMPI_F2C)
+      ADD_TEST(smpi-energy-f77                  ${TESH_COMMAND} ${TESH_OPTION} --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/smpi/energy --cd ${CMAKE_BINARY_DIR}/examples/smpi/energy ${CMAKE_HOME_DIRECTORY}/examples/smpi/energy/f77/energy.tesh)
+      ADD_TEST(smpi-energy-f90                  ${TESH_COMMAND} ${TESH_OPTION} --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/smpi/energy --cd ${CMAKE_BINARY_DIR}/examples/smpi/energy ${CMAKE_HOME_DIRECTORY}/examples/smpi/energy/f90/energy.tesh)
+    endif()
 
     if(HAVE_TRACING)
       ADD_TEST(smpi-tracing-ptp                 ${TESH_COMMAND} ${TESH_OPTION} --cd ${CMAKE_BINARY_DIR}/examples/smpi ${CMAKE_HOME_DIRECTORY}/examples/smpi/tracing/smpi_traced.tesh)
