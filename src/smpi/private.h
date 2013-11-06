@@ -295,7 +295,6 @@ extern double smpi_running_power;
 void smpi_bench_destroy(void);
 void smpi_bench_begin(void);
 void smpi_bench_end(void);
-void smpi_execute_flops(double flops);
 
 // f77 wrappers
 void mpi_init_(int*);

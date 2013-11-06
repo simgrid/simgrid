@@ -682,6 +682,9 @@ XBT_PUBLIC(MPI_Comm) smpi_process_comm_self(void);
 XBT_PUBLIC(void) smpi_exit(int);
 */
 
+XBT_PUBLIC(void) smpi_execute_flops(double flops);
+XBT_PUBLIC(void) smpi_execute(double duration);
+
 XBT_PUBLIC(unsigned int) smpi_sleep(unsigned int secs);
 XBT_PUBLIC(int) smpi_gettimeofday(struct timeval *tv);
 XBT_PUBLIC(unsigned long long) smpi_rastro_resolution (void);
