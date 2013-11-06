@@ -72,7 +72,7 @@ void print_TICreateContainer(paje_event_t event)
     char *filename = bprintf("%s/%f_%s.txt", folder_name, prefix,
                              ((createContainer_t) event->data)->container->name);
     mkdir(folder_name, S_IRWXU | S_IRWXG | S_IRWXO);
-    temp = fopen(filename, "w"); /* FIXME: file is never closed */
+    temp = fopen(filename, "w");
     if (temp == NULL)
       xbt_die("Tracefile %s could not be opened for writing: %s",
               filename, strerror(errno));
@@ -89,6 +89,12 @@ void print_TICreateContainer(paje_event_t event)
 
 void print_TIDestroyContainer(paje_event_t event)
 {
+  if (!xbt_cfg_get_boolean(_sg_cfg_set, "tracing/smpi/format/ti_one_file")||
+      xbt_dict_length(tracing_files) == 1) {
+    FILE* f = xbt_dict_get_or_null(tracing_files,
+        ((destroyContainer_t) event->data)->container->name);
+    fclose(f);
+  }
   xbt_dict_remove(tracing_files, ((destroyContainer_t) event->data)->container->name);
 }
 
