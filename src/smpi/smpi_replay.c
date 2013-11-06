@@ -27,11 +27,6 @@ static void log_timed_action (const char *const *action, double clock){
   }
 }
 
-typedef struct {
-  xbt_dynar_t irecvs; /* of MPI_Request */
-} s_smpi_replay_globals_t, *smpi_replay_globals_t;
-
-
 /* Helper function */
 static double parse_double(const char *string)
 {
@@ -108,13 +103,9 @@ static void action_init(const char *const *action)
 {
   int i;
   XBT_DEBUG("Initialize the counters");
-  smpi_replay_globals_t globals =  xbt_new(s_smpi_replay_globals_t, 1);
-  globals->irecvs = xbt_dynar_new(sizeof(MPI_Request),NULL);
 
   if(action[2]) MPI_DEFAULT_TYPE= MPI_DOUBLE; // default MPE dataype 
   else MPI_DEFAULT_TYPE= MPI_BYTE; // default TAU datatype
-
-  smpi_process_set_user_data((void*) globals);
 
   /* start a simulated timer */
   smpi_process_simulated_start();
@@ -125,21 +116,13 @@ static void action_init(const char *const *action)
     reqq=xbt_new0(xbt_dynar_t,active_processes);
 
     for(i=0;i<active_processes;i++){
-      reqq[i]=xbt_dynar_new(sizeof(MPI_Request),NULL);
+      reqq[i]=xbt_dynar_new(sizeof(MPI_Request),&xbt_free_ref);
     }
   }
 }
 
 static void action_finalize(const char *const *action)
 {
-  smpi_replay_globals_t globals =
-      (smpi_replay_globals_t) smpi_process_get_user_data();
-  if (globals){
-    XBT_DEBUG("There are %lu irecvs in the dynar",
-         xbt_dynar_length(globals->irecvs));
-    xbt_dynar_free_container(&(globals->irecvs));
-  }
-  free(globals);
 }
 
 static void action_comm_size(const char *const *action)
@@ -293,9 +276,6 @@ static void action_Irecv(const char *const *action)
   double clock = smpi_process_simulated_elapsed();
   MPI_Request request;
 
-  smpi_replay_globals_t globals =
-     (smpi_replay_globals_t) smpi_process_get_user_data();
-
   if(action[4]) MPI_CURRENT_TYPE=decode_datatype(action[4]);
   else MPI_CURRENT_TYPE= MPI_DEFAULT_TYPE;
 
@@ -317,7 +297,6 @@ static void action_Irecv(const char *const *action)
   TRACE_smpi_ptp_out(rank, src_traced, rank, __FUNCTION__);
   request->recv = 1;
 #endif
-  xbt_dynar_push(globals->irecvs,&request);
   xbt_dynar_push(reqq[smpi_comm_rank(MPI_COMM_WORLD)],&request);
 
   log_timed_action (action, clock);
@@ -327,14 +306,12 @@ static void action_wait(const char *const *action){
   double clock = smpi_process_simulated_elapsed();
   MPI_Request request;
   MPI_Status status;
-  smpi_replay_globals_t globals =
-      (smpi_replay_globals_t) smpi_process_get_user_data();
 
-  xbt_assert(xbt_dynar_length(globals->irecvs),
-      "action wait not preceded by any irecv: %s",
+  xbt_assert(xbt_dynar_length(reqq[smpi_comm_rank(MPI_COMM_WORLD)]),
+      "action wait not preceded by any irecv or isend: %s",
       xbt_str_join_array(action," "));
-  request = xbt_dynar_pop_as(globals->irecvs,MPI_Request);
-  xbt_assert(request != NULL, "found null request in globals->irecv");
+  request = xbt_dynar_pop_as(reqq[smpi_comm_rank(MPI_COMM_WORLD)],MPI_Request);
+  xbt_assert(request != NULL, "found null request in reqq");
 #ifdef HAVE_TRACING
   int rank = request->comm != MPI_COMM_NULL
       ? smpi_comm_rank(request->comm)
@@ -428,7 +405,7 @@ static void action_waitall(const char *const *action){
    xbt_dynar_free(&recvs);
   #endif
 
-   xbt_dynar_reset(reqq[smpi_comm_rank(MPI_COMM_WORLD)]);
+   xbt_dynar_free_container(&(reqq[smpi_comm_rank(MPI_COMM_WORLD)]));
   }
   log_timed_action (action, clock);
 }
