@@ -8,7 +8,8 @@
 #include "xbt/xbt_os_time.h"
 #include "simgrid/sg_config.h"
 
-
+#include <errno.h>
+#include <string.h>
 #include <sys/stat.h>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(instr_TI_trace, instr_trace, "tracing event system");
@@ -48,54 +49,46 @@ void TRACE_TI_start(void)
 
 void TRACE_TI_end(void)
 {
-  if(tracing_files)xbt_dict_free(&tracing_files);
+  xbt_dict_free(&tracing_files);
   fclose(tracing_file);
   char *filename = TRACE_get_filename();
   XBT_DEBUG("Filename %s is closed", filename);
 }
 
-void print_TICreateContainer(paje_event_t event){
+void print_TICreateContainer(paje_event_t event)
+{
+  //if we are in the mode with only one file
+  static FILE *temp = NULL;
 
-  char* folder_name = bprintf("%s_files",TRACE_get_filename());
-  if(tracing_files==NULL){
+  if (tracing_files == NULL) {
     tracing_files = xbt_dict_new_homogeneous(NULL);
-    struct stat st;
-    if (stat(folder_name, &st) == -1) {
-        mkdir(folder_name, 0700);
-    }
     //generate unique run id with time
-    prefix=xbt_os_time();
+    prefix = xbt_os_time();
   }
 
-  //Open a file for each new container
-  char *filename = NULL;
-
-
-  //if we are in the mode with only one file
-  static FILE* temp = NULL;
-
-  if (!xbt_cfg_get_boolean(_sg_cfg_set, "tracing/smpi/format/ti_one_file") || temp ==NULL){
-    filename = bprintf("%s/%f_%s.txt", folder_name, prefix, ((createContainer_t) event->data)->container->name);
-    temp=fopen(filename, "w");
-    if(temp==NULL){
-    xbt_die("Tracefile %s could not be opened for writing.",
-           filename);
-    }
+  if (!xbt_cfg_get_boolean(_sg_cfg_set, "tracing/smpi/format/ti_one_file")
+      || temp == NULL) {
+    char *folder_name = bprintf("%s_files", TRACE_get_filename());
+    char *filename = bprintf("%s/%f_%s.txt", folder_name, prefix,
+                             ((createContainer_t) event->data)->container->name);
+    mkdir(folder_name, S_IRWXU | S_IRWXG | S_IRWXO);
+    temp = fopen(filename, "w"); /* FIXME: file is never closed */
+    if (temp == NULL)
+      xbt_die("Tracefile %s could not be opened for writing: %s",
+              filename, strerror(errno));
     fprintf(tracing_file, "%s\n", filename);
 
+    xbt_free(folder_name);
+    xbt_free(filename);
   }
 
-
-
-  xbt_dict_set(tracing_files, ((createContainer_t) event->data)->container->name, (void*)temp, NULL);
-
-  //Append its path to the main file
-  free(folder_name);
-  free(filename);
+  xbt_dict_set(tracing_files,
+               ((createContainer_t) event->data)->container->name,
+               (void *) temp, NULL);
 }
 
-
-void print_TIDestroyContainer(paje_event_t event){
+void print_TIDestroyContainer(paje_event_t event)
+{
   xbt_dict_remove(tracing_files, ((destroyContainer_t) event->data)->container->name);
 }
 
