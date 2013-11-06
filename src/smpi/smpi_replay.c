@@ -965,10 +965,23 @@ void smpi_replay_init(int *argc, char***argv){
 int smpi_replay_finalize(){
   double sim_time= 1.;
   /* One active process will stop. Decrease the counter*/
-  active_processes--;
   XBT_DEBUG("There are %lu elements in reqq[*]",
             xbt_dynar_length(reqq[smpi_comm_rank(MPI_COMM_WORLD)]));
-  xbt_dynar_free(&reqq[smpi_comm_rank(MPI_COMM_WORLD)]);
+  if (!xbt_dynar_is_empty(reqq[smpi_comm_rank(MPI_COMM_WORLD)])){
+    int count_requests=xbt_dynar_length(reqq[smpi_comm_rank(MPI_COMM_WORLD)]);
+    MPI_Request requests[count_requests];
+    MPI_Status status[count_requests];
+    unsigned int i;
+
+    xbt_dynar_foreach(reqq[smpi_comm_rank(MPI_COMM_WORLD)],i,requests[i]);
+    smpi_mpi_waitall(count_requests, requests, status);
+    active_processes--;
+  } else {
+    active_processes--;
+  }
+
+  xbt_dynar_free_container(&(reqq[smpi_comm_rank(MPI_COMM_WORLD)]));
+
   if(!active_processes){
     /* Last process alive speaking */
     /* end the simulated timer */
