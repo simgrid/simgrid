@@ -104,6 +104,7 @@ set(SMPI_SRC
   src/smpi/smpi_c99.c
   src/smpi/smpi_coll.c
   src/smpi/smpi_comm.c
+  src/smpi/smpi_dvfs.c
   src/smpi/smpi_global.c
   src/smpi/smpi_group.c
   src/smpi/smpi_mpi.c
