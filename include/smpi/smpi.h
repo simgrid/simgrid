@@ -685,11 +685,15 @@ XBT_PUBLIC(void) smpi_exit(int);
 XBT_PUBLIC(void) smpi_execute_flops(double flops);
 XBT_PUBLIC(void) smpi_execute(double duration);
 
+XBT_PUBLIC(double) smpi_get_host_current_power_peak_(void);
+XBT_PUBLIC(int) smpi_get_host_nb_pstates_(void);
+XBT_PUBLIC(double) smpi_get_host_consumed_energy_(void);
+
 XBT_PUBLIC(double) smpi_get_host_power_peak_at(int pstate_index);
-XBT_PUBLIC(double) smpi_get_host_current_power_peak(void);
-XBT_PUBLIC(int) smpi_get_host_nb_pstates(void);
+#define smpi_get_host_current_power_peak() smpi_get_host_current_power_peak_()
+#define smpi_get_host_nb_pstates() smpi_get_host_nb_pstates_()
 XBT_PUBLIC(void) smpi_set_host_power_peak_at(int pstate_index);
-XBT_PUBLIC(double) smpi_get_host_consumed_energy(void);
+#define smpi_get_host_consumed_energy() smpi_get_host_consumed_energy_()
 
 XBT_PUBLIC(unsigned int) smpi_sleep(unsigned int secs);
 XBT_PUBLIC(int) smpi_gettimeofday(struct timeval *tv);

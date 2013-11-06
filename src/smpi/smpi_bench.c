@@ -126,6 +126,18 @@ void smpi_bench_destroy(void)
   xbt_dict_free(&calls);
 }
 
+XBT_PUBLIC(void) smpi_execute_flops_(double *flops);
+void smpi_execute_flops_(double *flops)
+{
+  smpi_execute_flops(*flops);
+}
+
+XBT_PUBLIC(void) smpi_execute_(double *duration);
+void smpi_execute_(double *duration)
+{
+  smpi_execute(*duration);
+}
+
 void smpi_execute_flops(double flops) {
   smx_action_t action;
   smx_host_t host;
