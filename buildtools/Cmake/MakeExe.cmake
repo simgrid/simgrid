@@ -69,6 +69,7 @@ add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/simdag/scheduling)
 
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/smpi)
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/smpi/MM)
+add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/smpi/energy)
 
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/xbt)
 

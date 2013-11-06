@@ -901,6 +901,7 @@ set(EXAMPLES_CMAKEFILES_TXT
   examples/simdag/scheduling/CMakeLists.txt
   examples/smpi/CMakeLists.txt
   examples/smpi/MM/CMakeLists.txt
+  examples/smpi/energy/CMakeLists.txt
   examples/xbt/CMakeLists.txt
   )
 
