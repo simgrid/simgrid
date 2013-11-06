@@ -434,6 +434,9 @@ if(NOT enable_memcheck)
         ADD_TEST(smpi-shared-raw                ${TESH_COMMAND} ${TESH_OPTION} --cfg contexts/factory:raw --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/shared.tesh)
       endif()
     endif()
+
+    ADD_TEST(smpi-energy                        ${TESH_COMMAND} ${TESH_OPTION} --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/smpi/energy --cd ${CMAKE_BINARY_DIR}/examples/smpi/energy ${CMAKE_HOME_DIRECTORY}/examples/smpi/energy/energy.tesh)
+
     if(HAVE_TRACING)
       ADD_TEST(smpi-tracing-ptp                 ${TESH_COMMAND} ${TESH_OPTION} --cd ${CMAKE_BINARY_DIR}/examples/smpi ${CMAKE_HOME_DIRECTORY}/examples/smpi/tracing/smpi_traced.tesh)
       ADD_TEST(smpi-replay                      ${TESH_COMMAND} ${TESH_OPTION} --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/smpi --cd ${CMAKE_BINARY_DIR}/examples/smpi ${CMAKE_HOME_DIRECTORY}/examples/smpi/replay/smpi_replay.tesh)

@@ -56,6 +56,7 @@ SimGrid (3.10-rc1) unstable; urgency=low
    enable_smpi_MPICH3_testsuite flag in cmake. Run with ctest.
  * Add all missing Fortran bindings, SMPI should work with Fortran 90
    (no privatization of global variables yet)
+ * Preliminary DVFS support (see examples/smpi/energy/ for details)
 
  Model-Checking;
  * Verification of liveness properties is now available for SMPI applications
