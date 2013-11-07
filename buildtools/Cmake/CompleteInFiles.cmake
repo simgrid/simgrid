@@ -217,9 +217,9 @@ else()
   SET(MMALLOC_WANT_OVERRIDE_LEGACY 0)
 endif()
 
-# must come after having set HAVE_MC (FindGFortran uses it)
 if(enable_smpi)
   include(FindF2c)
+  # FindGFortran must come after FindF2C, and after having set HAVE_MC
   include(FindGFortran)
   SET(HAVE_SMPI 1)
 endif()
