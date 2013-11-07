@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.6)
 
-if(enable_smpi AND SMPI_F2C)
+if(enable_smpi AND SMPI_F90)
   set(CMAKE_Fortran_COMPILER "${CMAKE_BINARY_DIR}/smpi_script/bin/smpif90")
 
   set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}")

@@ -1,6 +1,6 @@
 #! /bin/bash
 
-F90=gfortran
+F90=@GFORTRAN_EXE@
 
 INCLUDEARGS="@includeflag@"
 CMAKE_LINKARGS="-L@libdir@"
