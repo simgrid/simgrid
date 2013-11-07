@@ -970,6 +970,7 @@ set(CMAKE_SOURCE_FILES
   buildtools/Cmake/MakeLib.cmake
   buildtools/Cmake/MakeLibWin.cmake
   buildtools/Cmake/Modules/FindF2c.cmake
+  buildtools/Cmake/Modules/FindGFortran.cmake
   buildtools/Cmake/Modules/FindGTnets.cmake
   buildtools/Cmake/Modules/FindGraphviz.cmake
   buildtools/Cmake/Modules/FindLibunwind.cmake
