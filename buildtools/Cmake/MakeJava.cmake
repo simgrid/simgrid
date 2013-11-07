@@ -56,7 +56,6 @@ endif()
 ## Files to include in simgrid.jar
 ##
 set(SIMGRID_JAR "${CMAKE_BINARY_DIR}/simgrid.jar")
-set(MANIFEST_FILE "${CMAKE_HOME_DIRECTORY}/src/bindings/java/MANIFEST.MF")
 set(LIBSIMGRID_SO
   libsimgrid${CMAKE_SHARED_LIBRARY_SUFFIX})
 set(LIBSG_JAVA_SO
@@ -86,32 +85,23 @@ endif()
 
 ## Here is how to build simgrid.jar
 ##
+set(CMAKE_JAVA_JAR_ENTRY_POINT org/simgrid/msg/Msg)
 set(CMAKE_JAVA_TARGET_OUTPUT_NAME simgrid)
-add_jar(simgrid-java_pre_jar ${JMSG_JAVA_SRC})
-
-add_custom_command(
-  COMMENT "Finalize simgrid.jar..."
-  OUTPUT ${SIMGRID_JAR}_finalized
-  DEPENDS simgrid simgrid-java simgrid-java_pre_jar
-          ${SIMGRID_JAR} ${MANIFEST_FILE}
-          ${CMAKE_BINARY_DIR}/lib/${LIBSIMGRID_SO}
-          ${CMAKE_BINARY_DIR}/lib/${LIBSG_JAVA_SO}
-          ${CMAKE_HOME_DIRECTORY}/COPYING
-          ${CMAKE_HOME_DIRECTORY}/ChangeLog
-          ${CMAKE_HOME_DIRECTORY}/ChangeLog.SimGrid-java
-          ${CMAKE_HOME_DIRECTORY}/LICENSE-LGPL-2.1
+add_jar(simgrid-java_jar
+        SOURCES ${JMSG_JAVA_SRC} 
+                ${CMAKE_HOME_DIRECTORY}/COPYING
+		${CMAKE_HOME_DIRECTORY}/ChangeLog
+		${CMAKE_HOME_DIRECTORY}/LICENSE-LGPL-2.1
+		NATIVE/
+		)
+		
+add_custom_command(TARGET simgrid-java_jar PRE_BUILD
   COMMAND ${CMAKE_COMMAND} -E remove_directory "NATIVE"
   COMMAND ${CMAKE_COMMAND} -E make_directory "${JSG_BUNDLE}"
   COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_BINARY_DIR}/lib/${LIBSIMGRID_SO}" "${JSG_BUNDLE}"
   COMMAND ${STRIP_COMMAND} -S "${JSG_BUNDLE}/${LIBSIMGRID_SO}"
   COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_BINARY_DIR}/lib/${LIBSG_JAVA_SO}" "${JSG_BUNDLE}"
   COMMAND ${STRIP_COMMAND} -S "${JSG_BUNDLE}/${LIBSG_JAVA_SO}"
-  COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_HOME_DIRECTORY}/COPYING" "${JSG_BUNDLE}"
-  COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_HOME_DIRECTORY}/ChangeLog" "${JSG_BUNDLE}"
-  COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_HOME_DIRECTORY}/ChangeLog.SimGrid-java" "${JSG_BUNDLE}"
-  COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_HOME_DIRECTORY}/LICENSE-LGPL-2.1" "${JSG_BUNDLE}"
-  COMMAND ${JAVA_ARCHIVE} -uvmf ${MANIFEST_FILE} ${SIMGRID_JAR} "NATIVE"
-  COMMAND ${CMAKE_COMMAND} -E remove ${SIMGRID_JAR}_finalized
-  COMMAND ${CMAKE_COMMAND} -E touch ${SIMGRID_JAR}_finalized
   )
-add_custom_target(simgrid-java_jar ALL DEPENDS ${SIMGRID_JAR}_finalized)
+
+add_dependencies(simgrid-java_jar simgrid-java)
