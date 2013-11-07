@@ -26,15 +26,17 @@ endif()
 
 if(enable_compile_optimizations)
   set(optCFLAGS "-O3 -finline-functions -funroll-loops -fno-strict-aliasing ")
-  if(WIN32)
-    if (COMPILER_C_VERSION_MAJOR_MINOR STRGREATER "4.7")
-    # On windows, we need 4.8 or higher to enable lto because of http://gcc.gnu.org/bugzilla/show_bug.cgi?id=50293
-      set(optCFLAGS "${optCFLAGS} -flto ")
-    endif()
-  else()    
-    # On non-windows, 4.6 is enough for that
-    if(COMPILER_C_VERSION_MAJOR_MINOR STRGREATER "4.5")
-      set(optCFLAGS "${optCFLAGS} -flto ")
+  if(CMAKE_COMPILER_IS_GNUCC)
+    if(WIN32)
+      if (COMPILER_C_VERSION_MAJOR_MINOR STRGREATER "4.7")
+      # On windows, we need 4.8 or higher to enable lto because of http://gcc.gnu.org/bugzilla/show_bug.cgi?id=50293
+        set(optCFLAGS "${optCFLAGS} -flto ")
+      endif()
+    else()    
+      # On non-windows, 4.6 is enough for that
+      if(COMPILER_C_VERSION_MAJOR_MINOR STRGREATER "4.5")
+        set(optCFLAGS "${optCFLAGS} -flto ")
+      endif()
     endif()
   endif()
 else()
