@@ -475,7 +475,23 @@ void MSG_task_set_bound(msg_task_t task, double bound)
  *
  * \param task a target task
  * \param host the host having a multi-core CPU
- * \param mask the value specifying the CPU affinity setting of the task
+ * \param mask the bit mask of a new CPU affinity setting for the task
+ *
+ *
+ * Usage:
+ * 0. Define a host with multiple cores.
+ *    <host id="PM0" power="1E8" core="2"/>
+ *
+ * 1. Pin a given task to the first CPU core of a host.
+ *   MSG_task_set_affinity(task, pm0, 0x01);
+ *
+ * 2. Pin a given task to the third CPU core of a host. Turn on the third bit of the mask.
+ *   MSG_task_set_affinity(task, pm0, 0x04); // 0x04 == 100B
+ *
+ * 3. Pin a given VM to the first CPU core of a host.
+ *   MSG_vm_set_affinity(vm, pm0, 0x01);
+ *
+ * See examples/msg/cloud/multicore.c for more information.
  *
  *
  * Note:
