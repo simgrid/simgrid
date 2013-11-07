@@ -1,4 +1,4 @@
-#! /bin/bash
+#! /bin/sh
 
 F90=@GFORTRAN_EXE@
 
