@@ -22,7 +22,7 @@
 #define LARGE_BUF (256 * 1024)
 
 /* FIXME: MAX_BUF is too large */
-#define MAX_BUF   (128 * 1024 * 1024)
+#define MAX_BUF   (32 * 1024 * 1024)
 #define LOOPS 10
 
 __thread char * sbuf, * rbuf;
