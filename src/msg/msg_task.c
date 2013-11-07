@@ -512,7 +512,12 @@ void MSG_task_set_affinity(msg_task_t task, msg_host_t host, unsigned long mask)
 
   if (mask == 0) {
     /* 0 means clear */
-    xbt_dict_remove_ext(task->simdata->affinity_mask_db, (char *) host, sizeof(host));
+    {
+      /* We need remove_ext() not throwing exception. */
+      void *ret = xbt_dict_get_or_null_ext(task->simdata->affinity_mask_db, (char *) host, sizeof(msg_host_t));
+      if (ret != NULL)
+        xbt_dict_remove_ext(task->simdata->affinity_mask_db, (char *) host, sizeof(host));
+    }
   } else
     xbt_dict_set_ext(task->simdata->affinity_mask_db, (char *) host, sizeof(host), (void *) mask, NULL);
 
