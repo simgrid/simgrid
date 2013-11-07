@@ -1,4 +1,4 @@
-#! /bin/bash
+#! /bin/sh
 
 CC=@CMAKE_C_COMPILER@
 
