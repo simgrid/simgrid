@@ -59,7 +59,7 @@ set(SIMGRID_JAR "${CMAKE_BINARY_DIR}/simgrid.jar")
 set(MANIFEST_FILE "${CMAKE_HOME_DIRECTORY}/src/bindings/java/MANIFEST.MF")
 set(LIBSIMGRID_SO
   libsimgrid${CMAKE_SHARED_LIBRARY_SUFFIX})
-set(LIBSG_JAVA_SO
+set(LIBSIMGRID_JAVA_SO
   ${CMAKE_SHARED_LIBRARY_PREFIX}simgrid-java${CMAKE_SHARED_LIBRARY_SUFFIX})
 
 ## Name of the "NATIVE" folder in simgrid.jar
@@ -86,8 +86,12 @@ endif()
 
 ## Here is how to build simgrid.jar
 ##
-set(CMAKE_JAVA_TARGET_OUTPUT_NAME simgrid)
-add_jar(simgrid-java_pre_jar ${JMSG_JAVA_SRC})
+if(CMAKE_VERSION VERSION_LESS "2.8.12")
+  set(CMAKE_JAVA_TARGET_OUTPUT_NAME simgrid)
+  add_jar(simgrid-java_pre_jar ${JMSG_JAVA_SRC})
+else()
+  add_jar(simgrid-java_pre_jar ${JMSG_JAVA_SRC} OUTPUT_NAME simgrid)
+endif()
 
 add_custom_command(
   COMMENT "Finalize simgrid.jar..."
@@ -95,7 +99,7 @@ add_custom_command(
   DEPENDS simgrid simgrid-java simgrid-java_pre_jar
           ${SIMGRID_JAR} ${MANIFEST_FILE}
           ${CMAKE_BINARY_DIR}/lib/${LIBSIMGRID_SO}
-          ${CMAKE_BINARY_DIR}/lib/${LIBSG_JAVA_SO}
+          ${CMAKE_BINARY_DIR}/lib/${LIBSIMGRID_JAVA_SO}
           ${CMAKE_HOME_DIRECTORY}/COPYING
           ${CMAKE_HOME_DIRECTORY}/ChangeLog
           ${CMAKE_HOME_DIRECTORY}/ChangeLog.SimGrid-java
@@ -104,8 +108,8 @@ add_custom_command(
   COMMAND ${CMAKE_COMMAND} -E make_directory "${JSG_BUNDLE}"
   COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_BINARY_DIR}/lib/${LIBSIMGRID_SO}" "${JSG_BUNDLE}"
   COMMAND ${STRIP_COMMAND} -S "${JSG_BUNDLE}/${LIBSIMGRID_SO}"
-  COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_BINARY_DIR}/lib/${LIBSG_JAVA_SO}" "${JSG_BUNDLE}"
-  COMMAND ${STRIP_COMMAND} -S "${JSG_BUNDLE}/${LIBSG_JAVA_SO}"
+  COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_BINARY_DIR}/lib/${LIBSIMGRID_JAVA_SO}" "${JSG_BUNDLE}"
+  COMMAND ${STRIP_COMMAND} -S "${JSG_BUNDLE}/${LIBSIMGRID_JAVA_SO}"
   COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_HOME_DIRECTORY}/COPYING" "${JSG_BUNDLE}"
   COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_HOME_DIRECTORY}/ChangeLog" "${JSG_BUNDLE}"
   COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_HOME_DIRECTORY}/ChangeLog.SimGrid-java" "${JSG_BUNDLE}"
