@@ -10,6 +10,8 @@ SimGrid (3.11) NOT RELEASED; urgency=low
 
 SimGrid (3.10-rc1) unstable; urgency=low
 
+ The Clean Diaper Release, a.k.a. SimGrid is leak-free.
+
  Java:
  * Reintegrate Java to the main archive as desynchronizing these
    package is not acceptable anymore (Java is now considered stable)
@@ -95,6 +97,7 @@ SimGrid (3.10-rc1) unstable; urgency=low
    --cfg=clean_atexit:no allows to circumvent this issue.
 
  Build System:
+ * Lots of memory leaks were corrected in this release.
  * New command line option --version, to get SimGrid version information.
    Packagers may want to add extra words to SIMGRID_VERSION_EXTRA defined in
    CMakeLists.txt.
