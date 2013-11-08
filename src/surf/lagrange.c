@@ -1,4 +1,4 @@
-/* Copyright (c) 2007, 2008, 2009, 2010. The SimGrid Team.
+/* Copyright (c) 2007-2013. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -178,7 +178,7 @@ void lagrange_solve(lmm_system_t sys)
   lmm_variable_t var = NULL;
 
   /*
-   * Auxiliar variables.
+   * Auxiliary variables.
    */
   int iteration = 0;
   double tmp = 0;

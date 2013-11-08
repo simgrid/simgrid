@@ -8,8 +8,10 @@
 - Makefile
 - doc/html/.*
 
++ \.classpath
 + \.cproject
 + \.gitignore
++ \.project
 + README\.(coding|git)
 + mk_win-dist.sh
 
@@ -37,44 +39,9 @@
 + src/smpi/replace_globals\.cocci
 + src/smpi/replace_static\.cocci
 
-+ teshsuite/smpi/mpich-test/coll/bcast2\.f
-+ teshsuite/smpi/mpich-test/coll/nbcoll\.c
-+ teshsuite/smpi/mpich-test/coll/shortint\.c
-+ teshsuite/smpi/mpich-test/coll/temprun
-+ teshsuite/smpi/mpich-test/context/attrt\.c
-+ teshsuite/smpi/mpich-test/context/commnames\.c
-+ teshsuite/smpi/mpich-test/env/argstest\.c
-+ teshsuite/smpi/mpich-test/env/cmdline\.c
-+ teshsuite/smpi/mpich-test/env/errhand2\.c
-+ teshsuite/smpi/mpich-test/env/hang\.c
-+ teshsuite/smpi/mpich-test/pt2pt/fairness/README
-+ teshsuite/smpi/mpich-test/pt2pt/fairness/fairness-euih\.c
-+ teshsuite/smpi/mpich-test/pt2pt/fairness/fairness\.c
-+ teshsuite/smpi/mpich-test/pt2pt/fairness/fairness2\.c
-+ teshsuite/smpi/mpich-test/pt2pt/fairness/fairness2m\.c
-+ teshsuite/smpi/mpich-test/pt2pt/fairness/fairnessm\.c
-+ teshsuite/smpi/mpich-test/pt2pt/isndrcv2\.c
-+ teshsuite/smpi/mpich-test/pt2pt/mpitest\.h
-+ teshsuite/smpi/mpich-test/pt2pt/systest\.c
-+ teshsuite/smpi/mpich-test/pt2pt/systest1\.c
-+ teshsuite/smpi/mpich-test/pt2pt/testhetero
-+ teshsuite/smpi/mpich-test/topol/cart\.c
-+ teshsuite/smpi/mpich-test/topol/cart1f\.f
-+ teshsuite/smpi/mpich-test/topol/cart2\.c
-+ teshsuite/smpi/mpich-test/topol/cart2f\.f
-+ teshsuite/smpi/mpich-test/topol/cartc\.f90
-+ teshsuite/smpi/mpich-test/topol/cartf\.f
-+ teshsuite/smpi/mpich-test/topol/cartf\.std
-+ teshsuite/smpi/mpich-test/topol/cartmap\.c
-+ teshsuite/smpi/mpich-test/topol/cartmap\.std
-+ teshsuite/smpi/mpich-test/topol/cartorder\.c
-+ teshsuite/smpi/mpich-test/topol/dims\.c
-+ teshsuite/smpi/mpich-test/topol/graphtest\.c
-+ teshsuite/smpi/mpich-test/topol/graphtest\.std
-+ teshsuite/smpi/mpich-test/topol/test\.c
-+ teshsuite/smpi/mpich-test/topol/test\.h
-+ teshsuite/smpi/mpich-test/topol/twod\.f
-+ teshsuite/smpi/mpich-test/topol/twod2\.f
++ teshsuite/smpi/mpich3-test/f77/attr/.*
 
 + tools/check_dist_archive
 + tools/check_dist_archive\.exclude
+
++ tools/spell/.*

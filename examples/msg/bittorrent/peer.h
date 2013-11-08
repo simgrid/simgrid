@@ -1,4 +1,4 @@
-/* Copyright (c) 2012. The SimGrid Team.
+/* Copyright (c) 2012-2013. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -27,7 +27,7 @@ typedef struct s_peer {
 
   xbt_dict_t peers;             //peers list
   xbt_dict_t active_peers;      //active peers list
-  int round;                    //current round for the chocking algortihm.
+  int round;                    //current round for the chocking algorithm.
 
 
   char mailbox[MAILBOX_SIZE];   //peer mailbox.

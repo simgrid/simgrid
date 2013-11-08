@@ -1,4 +1,4 @@
-/* Copyright (c) 2004, 2005, 2006, 2007, 2008, 2009, 2010. The SimGrid Team.
+/* Copyright (c) 2004-2013. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -78,13 +78,6 @@ enum heap_action_type{
   NORMAL,
   NOTSET
 };
-
-
-typedef struct surf_resource {
-  surf_model_t model;
-  char *name;
-  xbt_dict_t properties;
-} s_surf_resource_t, *surf_resource_t;
 
 /** \ingroup SURF_actions
  *  \brief Action structure
@@ -211,6 +204,11 @@ typedef struct surf_cpu_model_extension_public {
   int (*get_core) (void *cpu);
   double (*get_speed) (void *cpu, double load);
   double (*get_available_speed) (void *cpu);
+  double (*get_current_power_peak) (void *cpu);
+  double (*get_power_peak_at) (void *cpu, int pstate_index);
+  int (*get_nb_pstates) (void *cpu);
+  void (*set_power_peak_at) (void *cpu, int pstate_index);
+  double (*get_consumed_energy) (void *cpu);
   void (*add_traces) (void);
 } s_surf_model_extension_cpu_t;
 
@@ -243,12 +241,13 @@ typedef struct surf_network_model_extension_public {
 typedef struct surf_storage_model_extension_public {
   surf_action_t(*open) (void *storage, const char* mount, const char* path);
   surf_action_t(*close) (void *storage, surf_file_t fd);
-  surf_action_t(*read) (void *storage, void* ptr, size_t size,
-                        surf_file_t fd);
-  surf_action_t(*write) (void *storage, const void* ptr, size_t size,
-                         surf_file_t fd);
+  surf_action_t(*read) (void *storage, surf_file_t fd, sg_storage_size_t size);
+  surf_action_t(*write) (void *storage, surf_file_t fd, sg_storage_size_t size);
   surf_action_t(*stat) (void *storage, surf_file_t fd);
   surf_action_t(*ls) (void *storage, const char *path);
+  xbt_dict_t(*get_properties) (const void *storage);
+  xbt_dict_t(*get_content) (void *storage);
+  sg_storage_size_t(*get_size) (void *storage);
 } s_surf_model_extension_storage_t;
 
 /** \ingroup SURF_models
@@ -268,6 +267,14 @@ typedef struct surf_workstation_model_extension_public {
   int (*get_core) (void *workstation); 
   double (*get_speed) (void *workstation, double load);                                    /**< Return the speed of a workstation */
   double (*get_available_speed) (void *workstation);                                       /**< Return tha available speed of a workstation */
+
+  double (*get_current_power_peak) (void *workstation);					  /**< Return the current CPU speed of a workstation */
+  double (*get_power_peak_at) (void *workstation, int pstate_index);			  /**< Return the speed of a workstation for a specific pstate,
+												 (where higher pstate values represent lower processor speeds) */
+  int (*get_nb_pstates) (void *workstation);						  /**< Return the number of pstates defined for a workstation (default is 1) */
+  void (*set_power_peak_at) (void *workstation, int pstate_index);			  /**< Set the processor speed of a workstation to the speed associated with the pstate_index pstate */
+  double (*get_consumed_energy) (void *workstation);					  /**< Return the total energy consumed by a workstation */
+
    surf_action_t(*communicate) (void *workstation_src,                                     /**< Execute a communication amount between two workstations */
                                 void *workstation_dst, double size,
                                 double max_rate);
@@ -284,23 +291,25 @@ typedef struct surf_workstation_model_extension_public {
   surf_action_t(*open) (void *workstation, const char* storage,
                         const char* path);
   surf_action_t(*close) (void *workstation, surf_file_t fd);
-  surf_action_t(*read) (void *workstation, void* ptr, size_t size,
-                        surf_file_t fd);
-  surf_action_t(*write) (void *workstation, const void* ptr, size_t size,
-                         surf_file_t fd);
+  surf_action_t(*read) (void *workstation, surf_file_t fd, sg_storage_size_t size);
+  surf_action_t(*write) (void *workstation, surf_file_t fd, sg_storage_size_t size);
   surf_action_t(*stat) (void *workstation, surf_file_t fd);
   int(*unlink) (void *workstation, surf_file_t fd);
   surf_action_t(*ls) (void *workstation, const char* mount, const char *path);
-  size_t (*get_size) (void *workstation, surf_file_t fd);
+  sg_storage_size_t (*get_size) (void *workstation, surf_file_t fd);
+  xbt_dynar_t (*get_info) (void *workstation, surf_file_t fd);
 
   int (*link_shared) (const void *link);
-   xbt_dict_t(*get_properties) (const void *resource);
+  xbt_dict_t(*get_properties) (const void *resource);
   void (*add_traces) (void);
 
   void (*get_params) (void *ind_vm_ws, ws_params_t param);
   void (*set_params) (void *ind_vm_ws, ws_params_t param);
   xbt_dynar_t (*get_vms) (void *ind_vm_ws);
 
+  sg_storage_size_t (*get_free_size) (void *workstation,const char* name);
+  sg_storage_size_t (*get_used_size) (void *workstation,const char* name);
+  xbt_dict_t (*get_storage_list) (void *workstation);
 } s_surf_model_extension_workstation_t;
 
 typedef struct surf_vm_workstation_model_extension_public {
@@ -424,8 +433,8 @@ static inline void *surf_cpu_resource_priv(const void *host) {
 static inline void *surf_workstation_resource_priv(const void *host){
   return xbt_lib_get_level((void *)host, SURF_WKS_LEVEL);
 }
-static inline void *surf_storage_resource_priv(const void *host){
-  return xbt_lib_get_level((void *)host, SURF_STORAGE_LEVEL);
+static inline void *surf_storage_resource_priv(const void *storage){
+  return xbt_lib_get_level((void *)storage, SURF_STORAGE_LEVEL);
 }
 
 static inline void *surf_cpu_resource_by_name(const char *name) {
@@ -438,14 +447,19 @@ static inline void *surf_storage_resource_by_name(const char *name){
   return xbt_lib_get_elm_or_null(storage_lib, name);
 }
 
+typedef struct surf_resource {
+  surf_model_t model;
+  char *name;
+  xbt_dict_t properties;
+  void_f_pvoid_t free_f;
+} s_surf_resource_t, *surf_resource_t;
+
 static inline surf_model_t surf_resource_model(const void *host, int level) {
   /* If level is SURF_WKS_LEVEL, ws is a workstation_CLM03 object. It has
    * surf_resource at the generic_resource field. */
   surf_resource_t ws = xbt_lib_get_level((void *) host, level);
   return ws->model;
 }
-
-
 
 /**
  * Resource which have a metric handled by a maxmin system
@@ -658,6 +672,8 @@ XBT_PUBLIC(void) surf_storage_model_init_default(void);
  */
 XBT_PUBLIC_DATA(s_surf_model_description_t) surf_storage_model_description[];
 
+XBT_PUBLIC_DATA(surf_model_t) surf_storage_model;
+
 /** \ingroup SURF_models
  *  \brief The workstation model
  *
@@ -727,6 +743,16 @@ XBT_PUBLIC_DATA(s_surf_model_description_t) surf_new_model_description[];
  */
 XBT_PUBLIC_DATA(xbt_dynar_t) model_list;
 XBT_PUBLIC_DATA(xbt_dynar_t) model_list_invoke;
+
+/** \ingroup SURF_simulation
+ *  \brief List of hosts that have juste restarted and whose autorestart process should be restarted.
+ */
+XBT_PUBLIC_DATA(xbt_dynar_t) host_that_restart;
+
+/** \ingroup SURF_simulation
+ *  \brief List of hosts for which one want to be notified if they ever restart.
+ */
+XBT_PUBLIC(xbt_dict_t) watched_hosts_lib;
 
 /*******************************************/
 /*** SURF Platform *************************/
@@ -814,8 +840,6 @@ XBT_PUBLIC(xbt_dict_t) get_as_router_properties(const char* name);
 
 int surf_get_nthreads(void);
 void surf_set_nthreads(int nthreads);
-
-void surf_watched_hosts(void);
 
 /*
  * Returns the initial path. On Windows the initial path is

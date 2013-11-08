@@ -1,4 +1,4 @@
-/* Copyright (c) 2008, 2009, 2010, 2011. The SimGrid Team.
+/* Copyright (c) 2008-2013. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -27,7 +27,7 @@ int main(int argc, char **argv)
   xbt_os_cputimer_stop(timer);
 
   /* Display the result and exit after cleanup */
-  printf( "%lf\n", xbt_os_timer_elapsed(timer) );
+  printf( "%f\n", xbt_os_timer_elapsed(timer) );
     printf("Workstation number: %d, link number: %d\n",
            SD_workstation_get_number(), SD_link_get_number());
   if(argv[2]){

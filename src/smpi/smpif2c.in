@@ -25,7 +25,6 @@ foreach my $fortran (@ARGV) {
    die "F2C failed\n" if $?;
    open F2C,"<$output" or die "Unable to open file $output";
    my $started = 0;
-   my $cutext = 0;
    print $tmp "#ifndef INTEGER_STAR_8\n";
    print $tmp "#define INTEGER_STAR_8\n";
    print $tmp "#endif\n";
@@ -52,16 +51,7 @@ foreach my $fortran (@ARGV) {
       if(/\/\* Table of constant values \*\// || /MAIN__/) {
          $started = 0;
       }
-      if(/extern \/\* Subroutine \*\//) {
-         $cutext = 1;
-      }
       $_ =~ s/(mpi_[\w]*_)_/$1/g;
-      if($cutext) {
-         if(/;$/) {
-            $cutext = 0;
-         }
-         next;
-      }
       if(/\/* Main program alias \*\/\s*int\s+.*\s*\(\s*\)\s*{(.*)}/) {
          $_ = "int smpi_simulated_main_(int argc, char** argv) { smpi_process_init(&argc, &argv); $1 }\n";
       }

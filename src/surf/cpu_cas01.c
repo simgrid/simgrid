@@ -1,4 +1,4 @@
-/* Copyright (c) 2009-2011. The SimGrid Team.
+/* Copyright (c) 2009-2013. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -8,22 +8,14 @@
 #include "surf/surf_resource.h"
 #include "maxmin_private.h"
 #include "simgrid/sg_config.h"
-#include "surf/cpu_cas01_private.h"
+#include "cpu_cas01_private.h"
+
+#include "string.h"
+#include "stdlib.h"
 
 /* the model objects for physical machines and virtual machines */
 surf_model_t surf_cpu_model_pm = NULL;
 surf_model_t surf_cpu_model_vm = NULL;
-
-#undef GENERIC_LMM_ACTION
-#undef GENERIC_ACTION
-#undef ACTION_GET_CPU
-#define GENERIC_LMM_ACTION(action) action->generic_lmm_action
-#define GENERIC_ACTION(action) GENERIC_LMM_ACTION(action).generic_action
-#define ACTION_GET_CPU(action) ((surf_action_cpu_Cas01_t) action)->cpu
-
-typedef struct surf_action_cpu_cas01 {
-  s_surf_action_lmm_t generic_lmm_action;
-} s_surf_action_cpu_Cas01_t, *surf_action_cpu_Cas01_t;
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_cpu, surf,
                                 "Logging specific to the SURF CPU IMPROVED module");
@@ -31,8 +23,23 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_cpu, surf,
 static xbt_swag_t
     cpu_running_action_set_that_does_not_need_being_checked = NULL;
 
+/* Additionnal callback function to cleanup some data, called from surf_resource_free */
 
-void *cpu_cas01_create_resource(const char *name, double power_peak,
+static void cpu_cas01_cleanup(void* r){
+  cpu_Cas01_t cpu = (cpu_Cas01_t)r;
+  unsigned int iter;
+  xbt_dynar_t power_tuple = NULL;
+  xbt_dynar_foreach(cpu->energy->power_range_watts_list, iter, power_tuple)
+    xbt_dynar_free(&power_tuple);
+  xbt_dynar_free(&cpu->energy->power_range_watts_list);
+  xbt_dynar_free(&cpu->power_peak_list);
+  xbt_free(cpu->energy);
+  return;
+}
+
+/* This function is registered as a callback to sg_platf_new_host() and never called directly */
+void *cpu_cas01_create_resource(const char *name, xbt_dynar_t power_peak,
+								 int pstate,
                                  double power_scale,
                                  tmgr_trace_t power_trace,
                                  int core,
@@ -48,8 +55,18 @@ void *cpu_cas01_create_resource(const char *name, double power_peak,
              name);
   cpu = (cpu_Cas01_t) surf_resource_new(sizeof(s_cpu_Cas01_t),
                                         cpu_model, name,
-                                        cpu_properties);
-  cpu->power_peak = power_peak;
+                                        cpu_properties, &cpu_cas01_cleanup);
+  cpu->power_peak = xbt_dynar_get_as(power_peak, pstate, double);
+  cpu->power_peak_list = power_peak;
+  cpu->pstate = pstate;
+
+  cpu->energy = xbt_new(s_energy_cpu_cas01_t, 1);
+  cpu->energy->total_energy = 0;
+  cpu->energy->power_range_watts_list = cpu_get_watts_range_list(cpu);
+  cpu->energy->last_updated = surf_get_clock();
+
+  XBT_DEBUG("CPU create: peak=%f, pstate=%d",cpu->power_peak, cpu->pstate);
+
   xbt_assert(cpu->power_peak > 0, "Power has to be >0");
   cpu->power_scale = power_scale;
   cpu->core = core;
@@ -101,6 +118,7 @@ static void parse_cpu_init(sg_platf_host_cbarg_t host)
    * machine layer. */
   cpu_cas01_create_resource(host->id,
                       host->power_peak,
+                      host->pstate,
                       host->power_scale,
                       host->power_trace,
                       host->core_amount,
@@ -187,6 +205,110 @@ static void cpu_update_actions_state_full(surf_model_t cpu_model, double now, do
   generic_update_actions_state_full(now, delta, cpu_model);
 }
 
+xbt_dynar_t cpu_get_watts_range_list(cpu_Cas01_t cpu_model)
+{
+	xbt_dynar_t power_range_list;
+	xbt_dynar_t power_tuple;
+	int i = 0, pstate_nb=0;
+	xbt_dynar_t current_power_values;
+	double min_power, max_power;
+	xbt_dict_t props = cpu_model->generic_resource.properties;
+
+	if (props == NULL)
+		return NULL;
+
+	char* all_power_values_str = xbt_dict_get_or_null(props, "power_per_state");
+
+	if (all_power_values_str == NULL)
+		return NULL;
+
+
+	power_range_list = xbt_dynar_new(sizeof(xbt_dynar_t), NULL);
+	xbt_dynar_t all_power_values = xbt_str_split(all_power_values_str, ",");
+
+	pstate_nb = xbt_dynar_length(all_power_values);
+	for (i=0; i< pstate_nb; i++)
+	{
+		/* retrieve the power values associated with the current pstate */
+		current_power_values = xbt_str_split(xbt_dynar_get_as(all_power_values, i, char*), ":");
+		xbt_assert(xbt_dynar_length(current_power_values) > 1,
+				"Power properties incorrectly defined - could not retrieve min and max power values for host %s",
+				cpu_model->generic_resource.name);
+
+		/* min_power corresponds to the idle power (cpu load = 0) */
+		/* max_power is the power consumed at 100% cpu load       */
+		min_power = atof(xbt_dynar_get_as(current_power_values, 0, char*));
+		max_power = atof(xbt_dynar_get_as(current_power_values, 1, char*));
+
+		power_tuple = xbt_dynar_new(sizeof(double), NULL);
+		xbt_dynar_push_as(power_tuple, double, min_power);
+		xbt_dynar_push_as(power_tuple, double, max_power);
+
+		xbt_dynar_push_as(power_range_list, xbt_dynar_t, power_tuple);
+		xbt_dynar_free(&current_power_values);
+	}
+	xbt_dynar_free(&all_power_values);
+	return power_range_list;
+
+}
+
+/**
+ * Computes the power consumed by the host according to the current pstate and processor load
+ *
+ */
+static double cpu_get_current_watts_value(cpu_Cas01_t cpu_model, double cpu_load)
+{
+	xbt_dynar_t power_range_list = cpu_model->energy->power_range_watts_list;
+
+	if (power_range_list == NULL)
+	{
+		XBT_DEBUG("No power range properties specified for host %s", cpu_model->generic_resource.name);
+		return 0;
+	}
+	xbt_assert(xbt_dynar_length(power_range_list) == xbt_dynar_length(cpu_model->power_peak_list),
+						"The number of power ranges in the properties does not match the number of pstates for host %s",
+						cpu_model->generic_resource.name);
+
+    /* retrieve the power values associated with the current pstate */
+    xbt_dynar_t current_power_values = xbt_dynar_get_as(power_range_list, cpu_model->pstate, xbt_dynar_t);
+
+    /* min_power corresponds to the idle power (cpu load = 0) */
+    /* max_power is the power consumed at 100% cpu load       */
+    double min_power = xbt_dynar_get_as(current_power_values, 0, double);
+    double max_power = xbt_dynar_get_as(current_power_values, 1, double);
+    double power_slope = max_power - min_power;
+
+    double current_power = min_power + cpu_load * power_slope;
+
+	XBT_DEBUG("[get_current_watts] min_power=%f, max_power=%f, slope=%f", min_power, max_power, power_slope);
+    XBT_DEBUG("[get_current_watts] Current power (watts) = %f, load = %f", current_power, cpu_load);
+
+	return current_power;
+
+}
+
+/**
+ * Updates the total energy consumed as the sum of the current energy and
+ * 						 the energy consumed by the current action
+ */
+void cpu_update_energy(cpu_Cas01_t cpu_model, double cpu_load)
+{
+
+  double start_time = cpu_model->energy->last_updated;
+  double finish_time = surf_get_clock();
+
+  XBT_DEBUG("[cpu_update_energy] action time interval=(%f-%f), current power peak=%f, current pstate=%d",
+		  start_time, finish_time, cpu_model->power_peak, cpu_model->pstate);
+  double current_energy = cpu_model->energy->total_energy;
+  double action_energy = cpu_get_current_watts_value(cpu_model, cpu_load)*(finish_time-start_time);
+
+  cpu_model->energy->total_energy = current_energy + action_energy;
+  cpu_model->energy->last_updated = finish_time;
+
+  XBT_DEBUG("[cpu_update_energy] old_energy_value=%f, action_energy_value=%f", current_energy, action_energy);
+
+}
+
 static void cpu_update_resource_state(void *id,
                                       tmgr_trace_event_t event_type,
                                       double value, double date)
@@ -195,8 +317,6 @@ static void cpu_update_resource_state(void *id,
   lmm_variable_t var = NULL;
   lmm_element_t elem = NULL;
   surf_model_t cpu_model = ((surf_resource_t) cpu)->model;
-
-  surf_watched_hosts();
 
   if (event_type == cpu->power_event) {
     /* TODO (Hypervisor): do the same thing for constraint_core[i] */
@@ -224,9 +344,11 @@ static void cpu_update_resource_state(void *id,
     /* TODO (Hypervisor): do the same thing for constraint_core[i] */
     xbt_assert(cpu->core == 1, "FIXME: add state change code also for constraint_core[i]");
 
-    if (value > 0)
+    if (value > 0) {
+      if(cpu->state_current == SURF_RESOURCE_OFF)
+        xbt_dynar_push_as(host_that_restart, char*, (cpu->generic_resource.name));
       cpu->state_current = SURF_RESOURCE_ON;
-    else {
+    } else {
       lmm_constraint_t cnst = cpu->constraint;
 
       cpu->state_current = SURF_RESOURCE_OFF;
@@ -335,6 +457,7 @@ static void cpu_action_set_affinity(surf_action_t action, void *cpu, unsigned lo
 static surf_action_t cpu_execute(void *cpu, double size)
 {
   surf_action_cpu_Cas01_t action = NULL;
+  //xbt_dict_cursor_t cursor = NULL;
   cpu_Cas01_t CPU = surf_cpu_resource_priv(cpu);
   surf_model_t cpu_model = ((surf_resource_t) CPU)->model;
 
@@ -430,6 +553,40 @@ static double cpu_get_available_speed(void *cpu)
   return ((cpu_Cas01_t)surf_cpu_resource_priv(cpu))->power_scale;
 }
 
+static double cpu_get_current_power_peak(void *cpu)
+{
+  return ((cpu_Cas01_t)surf_cpu_resource_priv(cpu))->power_peak;
+}
+
+static double cpu_get_power_peak_at(void *cpu, int pstate_index)
+{
+  xbt_dynar_t plist = ((cpu_Cas01_t)surf_cpu_resource_priv(cpu))->power_peak_list;
+  xbt_assert((pstate_index <= xbt_dynar_length(plist)), "Invalid parameters (pstate index out of bounds)");
+
+  return xbt_dynar_get_as(plist, pstate_index, double);
+}
+
+static int cpu_get_nb_pstates(void *cpu)
+{
+  return xbt_dynar_length(((cpu_Cas01_t)surf_cpu_resource_priv(cpu))->power_peak_list);
+}
+
+static void cpu_set_power_peak_at(void *cpu, int pstate_index)
+{
+  cpu_Cas01_t cpu_implem = (cpu_Cas01_t)surf_cpu_resource_priv(cpu);
+  xbt_dynar_t plist = cpu_implem->power_peak_list;
+  xbt_assert((pstate_index <= xbt_dynar_length(plist)), "Invalid parameters (pstate index out of bounds)");
+
+  double new_power_peak = xbt_dynar_get_as(plist, pstate_index, double);
+  cpu_implem->pstate = pstate_index;
+  cpu_implem->power_peak = new_power_peak;
+}
+
+static double cpu_get_consumed_energy(void *cpu)
+{
+  return ((cpu_Cas01_t)surf_cpu_resource_priv(cpu))->energy->total_energy;
+}
+
 static void cpu_finalize(surf_model_t cpu_model)
 {
   lmm_system_free(cpu_model->model_private->maxmin_system);
@@ -522,6 +679,12 @@ static surf_model_t surf_cpu_model_init_cas01(void)
   cpu_model->extension.cpu.get_speed = cpu_get_speed;
   cpu_model->extension.cpu.get_available_speed =
       cpu_get_available_speed;
+  cpu_model->extension.cpu.get_current_power_peak = cpu_get_current_power_peak;
+  cpu_model->extension.cpu.get_power_peak_at = cpu_get_power_peak_at;
+  cpu_model->extension.cpu.get_nb_pstates = cpu_get_nb_pstates;
+  cpu_model->extension.cpu.set_power_peak_at = cpu_set_power_peak_at;
+  cpu_model->extension.cpu.get_consumed_energy = cpu_get_consumed_energy;
+
   cpu_model->extension.cpu.add_traces = cpu_add_traces_cpu;
 
   if (!cpu_model->model_private->maxmin_system) {

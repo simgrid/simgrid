@@ -6,7 +6,7 @@
     	   radical="0-1" power="1Gf" bw="125MBps" lat="50us"
            router_id="router1"/>
 
-  <AS id="AS1" routing="none">
+  <AS id="AS1" routing="None">
     <host id="host1" power="1Gf"/>
   </AS>
 

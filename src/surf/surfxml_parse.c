@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, 2007, 2008, 2009, 2010, 2011. The SimGrid Team.
+/* Copyright (c) 2006-2013. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -33,9 +33,12 @@ extern AS_t current_routing;
 void surf_parse_error(const char *fmt, ...) {
   va_list va;
   va_start(va,fmt);
+  int lineno = surf_parse_lineno;
   char *msg = bvprintf(fmt,va);
   va_end(va);
-  xbt_die("Parse error at %s:%d: %s", surf_parsed_filename, surf_parse_lineno, msg);
+  cleanup();
+  surf_exit();
+  xbt_die("Parse error at %s:%d: %s", surf_parsed_filename, lineno, msg);
 }
 void surf_parse_warn(const char *fmt, ...) {
   va_list va;
@@ -51,7 +54,7 @@ double surf_parse_get_double(const char *string) {
   int ret = sscanf(string, "%lg", &res);
   if (ret != 1)
     surf_parse_error("%s is not a double", string);
-  //printf("Parsed double [%lg] %s\n", res, string);  
+  //printf("Parsed double [%g] %s\n", res, string);
   return res;
 }
 
@@ -105,6 +108,33 @@ double surf_parse_get_time(const char *string)
     { "ns", 1e-9 },
     { "ps", 1e-12 },
     { NULL, 0 }
+  };
+  return surf_parse_get_value_with_unit(string, units);
+}
+
+double surf_parse_get_size(const char *string)
+{
+  const struct unit_scale units[] = {
+    { "TiB", pow(1024, 4) },
+    { "GiB", pow(1024, 3) },
+    { "MiB", pow(1024, 2) },
+    { "KiB", 1024 },
+    { "TB",  1e12 },
+    { "GB",  1e9 },
+    { "MB",  1e6 },
+    { "kB",  1e3 },
+    { "B",   1.0 },
+    { "",      1.0 },           /* default unit is bytes*/
+    { "Tib", 0.125 * pow(1024, 4) },
+    { "Gib", 0.125 * pow(1024, 3) },
+    { "Mib", 0.125 * pow(1024, 2) },
+    { "Kib", 0.125 * 1024 },
+    { "Tb",  0.125 * 1e12 },
+    { "Gb",  0.125 * 1e9 },
+    { "Mb",  0.125 * 1e6 },
+    { "kb",  0.125 * 1e3 },
+    { "b",   0.125 },
+    { NULL,    0 }
   };
   return surf_parse_get_value_with_unit(string, units);
 }
@@ -205,6 +235,7 @@ void ETag_surfxml_storage(void)
   storage.id = A_surfxml_storage_id;
   storage.type_id = A_surfxml_storage_typeId;
   storage.content = A_surfxml_storage_content;
+  storage.content_type = A_surfxml_storage_content___type;
   storage.properties = current_property_set;
   sg_platf_new_storage(&storage);
   current_property_set = NULL;
@@ -221,10 +252,11 @@ void ETag_surfxml_storage___type(void)
   memset(&storage_type,0,sizeof(storage_type));
 
   storage_type.content = A_surfxml_storage___type_content;
+  storage_type.content_type = A_surfxml_storage___type_content___type;
   storage_type.id = A_surfxml_storage___type_id;
   storage_type.model = A_surfxml_storage___type_model;
   storage_type.properties = current_property_set;
-  storage_type.size = surf_parse_get_int(A_surfxml_storage___type_size);
+  storage_type.size = surf_parse_get_size(A_surfxml_storage___type_size);
   sg_platf_new_storage_type(&storage_type);
   current_property_set = NULL;
 }
@@ -251,7 +283,7 @@ void ETag_surfxml_mount(void)
   memset(&mount,0,sizeof(mount));
 
   mount.name = A_surfxml_mount_name;
-  mount.id = A_surfxml_mount_id;
+  mount.storageId = A_surfxml_mount_storageId;
   sg_platf_new_mount(&mount);
 }
 
@@ -392,16 +424,45 @@ void STag_surfxml_prop(void)
 
 void ETag_surfxml_host(void)    {
   s_sg_platf_host_cbarg_t host;
+  char* buf;
   memset(&host,0,sizeof(host));
+
 
   host.properties = current_property_set;
 
   host.id = A_surfxml_host_id;
-  host.power_peak = get_cpu_power(A_surfxml_host_power);
+
+  buf = A_surfxml_host_power;
+  XBT_DEBUG("Buffer: %s", buf);
+  host.power_peak = xbt_dynar_new(sizeof(double), NULL);
+  if (strchr(buf, ',') == NULL){
+	  double power_value = get_cpu_power(A_surfxml_host_power);
+	  xbt_dynar_push_as(host.power_peak,double, power_value);
+  }
+  else {
+	  xbt_dynar_t pstate_list = xbt_str_split(buf, ",");
+	  int i;
+	  for (i = 0; i < xbt_dynar_length(pstate_list); i++) {
+		  double power_value;
+		  char* power_value_str;
+
+		  xbt_dynar_get_cpy(pstate_list, i, &power_value_str);
+		  xbt_str_trim(power_value_str, NULL);
+		  power_value = get_cpu_power(power_value_str);
+		  xbt_dynar_push_as(host.power_peak, double, power_value);
+		  XBT_DEBUG("Power value: %f", power_value);
+	  }
+	  xbt_dynar_free(&pstate_list);
+  }
+
+  XBT_DEBUG("pstate: %s", A_surfxml_host_pstate);
+  //host.power_peak = get_cpu_power(A_surfxml_host_power);
   host.power_scale = surf_parse_get_double( A_surfxml_host_availability);
   host.core_amount = surf_parse_get_int(A_surfxml_host_core);
   host.power_trace = tmgr_trace_new_from_file(A_surfxml_host_availability___file);
   host.state_trace = tmgr_trace_new_from_file(A_surfxml_host_state___file);
+  host.pstate = surf_parse_get_int(A_surfxml_host_pstate);
+
   xbt_assert((A_surfxml_host_state == A_surfxml_host_state_ON) ||
         (A_surfxml_host_state == A_surfxml_host_state_OFF), "Invalid state");
   if (A_surfxml_host_state == A_surfxml_host_state_ON)
@@ -541,10 +602,10 @@ void ETag_surfxml_link(void){
 
   link.id = A_surfxml_link_id;
   link.bandwidth = surf_parse_get_bandwidth(A_surfxml_link_bandwidth);
-  //printf("Link bandwidth [%lg]\n", link.bandwidth);  
+  //printf("Link bandwidth [%g]\n", link.bandwidth);
   link.bandwidth_trace = tmgr_trace_new_from_file(A_surfxml_link_bandwidth___file);
   link.latency = surf_parse_get_time(A_surfxml_link_latency);
-  //printf("Link latency [%lg]\n", link.latency);  
+  //printf("Link latency [%g]\n", link.latency);
   link.latency_trace = tmgr_trace_new_from_file(A_surfxml_link_latency___file);
 
   switch (A_surfxml_link_state) {
@@ -800,13 +861,11 @@ void ETag_surfxml_AS(void){
   sg_platf_new_AS_end();
 }
 
-extern int _sg_init_status; /* FIXME: find a proper way to export this at some point */
-
 void STag_surfxml_config(void){
   AS_TAG = 0;
   xbt_assert(current_property_set == NULL, "Someone forgot to reset the property set to NULL in its closing tag (or XML malformed)");
   XBT_DEBUG("START configuration name = %s",A_surfxml_config_id);
-  if (_sg_init_status == 2) {
+  if (_sg_cfg_init_status == 2) {
     surf_parse_error("All <config> tags must be given before any platform elements (such as <AS>, <host>, <cluster>, <link>, etc).");
   }
 }
@@ -1021,7 +1080,7 @@ static void init_randomness(void)
 
 static void add_randomness(void)
 {
-  /* If needed aditional properties can be added by using the prop tag */
+  /* If needed, additional properties can be added by using the prop tag */
   random_data_t random =
       random_new(random_generator, 0, random_min, random_max, random_mean,
                  random_std_deviation);

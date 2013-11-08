@@ -1,4 +1,4 @@
-/* Copyright (c) 2006 - 2013. The SimGrid Team.
+/* Copyright (c) 2006-2013. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -172,8 +172,8 @@ return res;
  * mandatory power.
  *
  * A parallel computation can be scheduled on any number of host.
- * The underlying speedup model is Amdahl's law. 
- * To be auto-scheduled, \see SD_task_distribute_comp_amdhal has to be called 
+ * The underlying speedup model is Amdahl's law.
+ * To be auto-scheduled, \see SD_task_distribute_comp_amdahl has to be called
  * first.
  * \param name the name of the task (can be \c NULL)
  * \param data the user data you want to associate with the task (can be \c NULL)
@@ -476,7 +476,27 @@ double SD_task_get_amount(SD_task_t task)
 }
 
 /**
- * \brief Returns the alpha parameter of a SD_TASK_COMP_PAR_AMDAH task
+ * \brief Sets the total amount of work of a task
+ * For sequential typed tasks (COMP_SEQ and COMM_E2E), it also sets the
+ * appropriate values in the computation_amount and communication_amount arrays
+ * respectively. Nothing more than modifying task->amount is done for paralle
+ * typed tasks (COMP_PAR_AMDAHL and COMM_PAR_MXN_1D_BLOCK) as the distribution
+ * of the amount of work is done at scheduling time.
+ *
+ * \param task a task
+ * \param amount the new amount of work to execute
+ */
+void SD_task_set_amount(SD_task_t task, double amount)
+{
+  task->amount = amount;
+  if (task->kind == SD_TASK_COMP_SEQ)
+    task->computation_amount[0] = amount;
+  if (task->kind == SD_TASK_COMM_E2E)
+    task->communication_amount[2] = amount;
+}
+
+/**
+ * \brief Returns the alpha parameter of a SD_TASK_COMP_PAR_AMDAHL task
  *
  * \param task a parallel task assuming Amdahl's law as speedup model
  * \return the alpha parameter (serial part of a task in percent) for this task
@@ -1410,7 +1430,7 @@ double SD_task_get_finish_time(SD_task_t task)
 /** @brief Blah
  *
  */
-void SD_task_distribute_comp_amdhal(SD_task_t task, int ws_count)
+void SD_task_distribute_comp_amdahl(SD_task_t task, int ws_count)
 {
   int i;
   xbt_assert(task->kind == SD_TASK_COMP_PAR_AMDAHL,
@@ -1462,7 +1482,7 @@ void SD_task_schedulev(SD_task_t task, int count,
               SD_task_get_name(task));
   switch (task->kind) {
   case SD_TASK_COMP_PAR_AMDAHL:
-    SD_task_distribute_comp_amdhal(task, count);
+    SD_task_distribute_comp_amdahl(task, count);
   case SD_TASK_COMM_E2E:
   case SD_TASK_COMP_SEQ:
     xbt_assert(task->workstation_nb == count,
@@ -1539,7 +1559,7 @@ void SD_task_schedulev(SD_task_t task, int count,
    * located (and start them if runnable) */
   if (task->kind == SD_TASK_COMP_PAR_AMDAHL) {
     XBT_VERB("Schedule computation task %s on %d workstations. %.f flops"
-             " will be distributed following Amdahl'Law",
+             " will be distributed following Amdahl's Law",
           SD_task_get_name(task), task->workstation_nb,
           task->computation_amount[0]);
     xbt_dynar_foreach(task->tasks_before, cpt, dep) {

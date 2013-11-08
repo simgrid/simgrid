@@ -179,7 +179,7 @@ grep GLOBAL_GUARDS patches/make/* -r
 
 # Finish the setup
 (cd patches/make; make setup && make force && make && make FORCE_VERSIONS=1 && echo "Sources are properly setup")
-# If this last command failed, check your mercurial config within ~/.hgrc (see above)
+# If this last command failed, check your mercurial config within ~/.hgrc (see above)
 ~~~~       
  -# Compile it all
 ~~~~{.sh}

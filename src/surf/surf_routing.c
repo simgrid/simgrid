@@ -1,10 +1,11 @@
-/* Copyright (c) 2009, 2010, 2011. The SimGrid Team.
+/* Copyright (c) 2009-2013. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "simgrid/platf_interface.h"    // platform creation API internal interface
+#include "simgrid/sg_config.h"
 
 #include "surf_routing_private.h"
 #include "surf/surf_routing.h"
@@ -19,13 +20,14 @@ xbt_lib_t host_lib;
 int ROUTING_HOST_LEVEL;         //Routing level
 int SURF_CPU_LEVEL;             //Surf cpu level
 int SURF_WKS_LEVEL;             //Surf workstation level
-int SIMIX_HOST_LEVEL;           //Simix level
-int MSG_HOST_LEVEL;             //Msg level
-int SD_HOST_LEVEL;              //Simdag level
+int SIMIX_HOST_LEVEL;           //Simix host level
+int SIMIX_STORAGE_LEVEL;        //Simix storage level
+int MSG_HOST_LEVEL;             //Msg host level
+int MSG_STORAGE_LEVEL;          //Msg storage level
+int SD_HOST_LEVEL;              //Simdag host level
+int SD_STORAGE_LEVEL;           //Simdag storage level
 int COORD_HOST_LEVEL=0;         //Coordinates level
 int NS3_HOST_LEVEL;             //host node for ns3
-
-xbt_dict_t watched_hosts_lib;
 
 /**
  * @ingroup SURF_build_api
@@ -318,8 +320,6 @@ static void routing_parse_trace_connect(sg_platf_trace_connect_cbarg_t trace_con
   }
 }
 
-extern int _sg_init_status; /* yay, this is an horrible hack */
-
 /**
  * \brief Make a new routing component to the platform
  *
@@ -343,7 +343,9 @@ void routing_AS_begin(sg_platf_AS_cbarg_t AS)
              (as_router_lib, AS->id, ROUTING_ASR_LEVEL),
              "The AS \"%s\" already exists", AS->id);
 
-  _sg_init_status = 2; /* horrible hack: direct access to the global controlling the level of configuration to prevent any further config */
+  _sg_cfg_init_status = 2; /* horrible hack: direct access to the global
+                            * controlling the level of configuration to prevent
+                            * any further config */
 
   /* search the routing model */
   switch(AS->routing){
@@ -745,7 +747,7 @@ static void routing_parse_cabinet(sg_platf_cabinet_cbarg_t cabinet)
     s_sg_platf_host_cbarg_t host;
     memset(&host, 0, sizeof(host));
     host.initial_state = SURF_RESOURCE_ON;
-    host.power_peak = cabinet->power;
+    host.pstate = 0;
     host.power_scale = 1.0;
     host.core_amount = 1;
 
@@ -764,6 +766,9 @@ static void routing_parse_cabinet(sg_platf_cabinet_cbarg_t cabinet)
       link_id = bprintf("link_%s%d%s",cabinet->prefix,i,cabinet->suffix);
       host.id = host_id;
       link.id = link_id;
+      xbt_dynar_t power_state_list = xbt_dynar_new(sizeof(double), NULL);
+      xbt_dynar_push(power_state_list,&cabinet->power);
+      host.power_peak = power_state_list;
       sg_platf_new_host(&host);
       sg_platf_new_link(&link);
 
@@ -861,7 +866,12 @@ static void routing_parse_cluster(sg_platf_cluster_cbarg_t cluster)
         XBT_DEBUG("\tstate_file=\"\"");
       }
 
-      host.power_peak = cluster->power;
+      xbt_dynar_t power_state_list = xbt_dynar_new(sizeof(double), NULL);
+      xbt_dynar_push(power_state_list,&cluster->power);
+      host.power_peak = power_state_list;
+      host.pstate = 0;
+
+      //host.power_peak = cluster->power;
       host.power_scale = 1.0;
       host.core_amount = cluster->core_amount;
       host.initial_state = SURF_RESOURCE_ON;
@@ -995,23 +1005,38 @@ static void routing_parse_postparse(void) {
 static void routing_parse_peer(sg_platf_peer_cbarg_t peer)
 {
   char *host_id = NULL;
-  char *link_id;
+  char *link_id = NULL;
+  char *router_id = NULL;
 
   XBT_DEBUG(" ");
   host_id = HOST_PEER(peer->id);
   link_id = LINK_PEER(peer->id);
+  router_id = ROUTER_PEER(peer->id);
+
+  XBT_DEBUG("<AS id=\"%s\"\trouting=\"Cluster\">", peer->id);
+  s_sg_platf_AS_cbarg_t AS = SG_PLATF_AS_INITIALIZER;
+  AS.id = peer->id;
+  AS.routing = A_surfxml_AS_routing_Cluster;
+  sg_platf_new_AS_begin(&AS);
+
+  current_routing->link_up_down_list
+            = xbt_dynar_new(sizeof(s_surf_parsing_link_up_down_t),NULL);
 
   XBT_DEBUG("<host\tid=\"%s\"\tpower=\"%f\"/>", host_id, peer->power);
   s_sg_platf_host_cbarg_t host;
   memset(&host, 0, sizeof(host));
   host.initial_state = SURF_RESOURCE_ON;
   host.id = host_id;
-  host.power_peak = peer->power;
+
+  xbt_dynar_t power_state_list = xbt_dynar_new(sizeof(double), NULL);
+  xbt_dynar_push(power_state_list,&peer->power);
+  host.power_peak = power_state_list;
+  host.pstate = 0;
+  //host.power_peak = peer->power;
   host.power_scale = 1.0;
   host.power_trace = peer->availability_trace;
   host.state_trace = peer->state_trace;
   host.core_amount = 1;
-  host.coord = peer->coord;
   sg_platf_new_host(&host);
 
   s_sg_platf_link_cbarg_t link;
@@ -1042,9 +1067,20 @@ static void routing_parse_peer(sg_platf_peer_cbarg_t peer)
   host_link.link_down= link_down;
   sg_platf_new_host_link(&host_link);
 
+  XBT_DEBUG("<router id=\"%s\"/>", router_id);
+  s_sg_platf_router_cbarg_t router;
+  memset(&router, 0, sizeof(router));
+  router.id = router_id;
+  router.coord = peer->coord;
+  sg_platf_new_router(&router);
+  ((as_cluster_t)current_routing)->router = xbt_lib_get_or_null(as_router_lib, router.id, ROUTING_ASR_LEVEL);
+
+  XBT_DEBUG("</AS>");
+  sg_platf_new_AS_end();
   XBT_DEBUG(" ");
 
   //xbt_dynar_free(&tab_elements_num);
+  free(router_id);
   free(host_id);
   free(link_id);
   free(link_up);

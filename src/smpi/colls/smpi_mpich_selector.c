@@ -1,6 +1,6 @@
 /* selector for collective algorithms based on mpich decision logic */
 
-/* Copyright (c) 2009, 2010. The SimGrid Team.
+/* Copyright (c) 2009-2010, 2013. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -74,7 +74,7 @@ int smpi_coll_tuned_allreduce_mpich(void *sbuf, void *rbuf, int count,
 
     if (block_dsize > large_message && count >= pof2 && smpi_op_is_commute(op)) {
       //for long messages
-       return (smpi_coll_tuned_allreduce_rab_rsag (sbuf, rbuf, 
+       return (smpi_coll_tuned_allreduce_rab_rdb (sbuf, rbuf, 
                                                                    count, dtype,
                                                                    op, comm));
     }else {
@@ -167,7 +167,7 @@ int smpi_coll_tuned_alltoall_mpich( void *sbuf, int scount,
                                                     comm);
 
     } else if (block_dsize < medium_size) {
-        return smpi_coll_tuned_alltoall_simple(sbuf, scount, sdtype, 
+        return smpi_coll_tuned_alltoall_basic_linear(sbuf, scount, sdtype, 
                                                            rbuf, rcount, rdtype, 
                                                            comm);
     }else if (communicator_size%2){
@@ -176,7 +176,7 @@ int smpi_coll_tuned_alltoall_mpich( void *sbuf, int scount,
                                                            comm);
     }
 
-    return smpi_coll_tuned_alltoall_pair (sbuf, scount, sdtype, 
+    return smpi_coll_tuned_alltoall_ring (sbuf, scount, sdtype,
                                                     rbuf, rcount, rdtype,
                                                     comm);
 }
@@ -426,6 +426,8 @@ int smpi_coll_tuned_reduce_scatter_mpich( void *sbuf, void *rbuf,
     int comm_size, i;
     size_t total_message_size;
 
+    if(sbuf==rbuf)sbuf=MPI_IN_PLACE; //restore MPI_IN_PLACE as these algorithms handle it
+
     XBT_DEBUG("smpi_coll_tuned_reduce_scatter_mpich");
     
     comm_size = smpi_comm_size(comm);
@@ -595,15 +597,18 @@ int smpi_coll_tuned_allgatherv_mpich(void *sbuf, int scount,
                                                MPI_Comm  comm
                                                )
 {
-    int communicator_size, pow2_size;
-    size_t dsize, total_dsize;
+    int communicator_size, pow2_size,i;
+    size_t total_dsize;
 
     communicator_size = smpi_comm_size(comm);
 
     /* Determine complete data size */
-    dsize=smpi_datatype_size(sdtype);
-    total_dsize = dsize * scount * communicator_size;   
-   
+    total_dsize = 0;
+    for (i=0; i<communicator_size; i++)
+        total_dsize += rcounts[i];
+    if (total_dsize == 0)
+      return MPI_SUCCESS;
+    
     for (pow2_size  = 1; pow2_size < communicator_size; pow2_size <<=1); 
 
     if ((pow2_size == communicator_size) && (total_dsize < 524288)) {
@@ -615,7 +620,7 @@ int smpi_coll_tuned_allgatherv_mpich(void *sbuf, int scount,
                                                      rbuf, rcounts, rdispls, rdtype,
                                                      comm);
     } 
-    return smpi_coll_tuned_allgatherv_ring(sbuf, scount, sdtype, 
+    return smpi_coll_tuned_allgatherv_mpich_ring(sbuf, scount, sdtype,
                                                 rbuf, rcounts, rdispls, rdtype,
                                                 comm);
 }
@@ -684,8 +689,17 @@ int smpi_coll_tuned_scatter_mpich(void *sbuf, int scount,
                                             int root, MPI_Comm  comm
                                             )
 {
-        return smpi_coll_tuned_scatter_ompi_binomial (sbuf, scount, sdtype, 
+  if(smpi_comm_rank(comm)!=root){
+      sbuf=xbt_malloc(rcount*smpi_datatype_get_extent(rdtype));
+      scount=rcount;
+      sdtype=rdtype;
+  }
+  int ret= smpi_coll_tuned_scatter_ompi_binomial (sbuf, scount, sdtype,
                                                        rbuf, rcount, rdtype, 
                                                        root, comm);
+  if(smpi_comm_rank(comm)!=root){
+      xbt_free(sbuf);
+  }
+  return ret;
 }
 

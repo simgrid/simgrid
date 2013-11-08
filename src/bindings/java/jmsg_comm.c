@@ -1,6 +1,7 @@
-/* Functions related to the java comm instances 																*/
+/* Functions related to the java comm instances                             */
 
-/* Copyright (c) 2012. The SimGrid Team. All rights reserved.                   */
+/* Copyright (c) 2012-2013. The SimGrid Team.
+ * All rights reserved.                                                     */
 #include "jmsg_comm.h"
 #include "jxbt_utilities.h"
 #include "jmsg.h"

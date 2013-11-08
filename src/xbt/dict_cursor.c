@@ -1,6 +1,6 @@
 /* dict_cursor - iterators over dictionnaries                               */
 
-/* Copyright (c) 2004-2011. The SimGrid Team.
+/* Copyright (c) 2004-2013. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it

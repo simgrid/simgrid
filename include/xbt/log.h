@@ -1,6 +1,6 @@
 /* log - a generic logging facility in the spirit of log4j                  */
 
-/* Copyright (c) 2004-2011. The SimGrid Team.
+/* Copyright (c) 2004-2013. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -60,7 +60,7 @@ typedef enum {
 
 /*
  * define NLOG to disable at compilation time any logging request
- * define NDEBUG to disable at compilation time any logging request of priority below INFO
+ * define NDEBUG to disable at compilation time any logging request of priority below VERBOSE
  */
 
 

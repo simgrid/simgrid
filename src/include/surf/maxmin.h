@@ -1,4 +1,4 @@
-/* Copyright (c) 2004, 2005, 2006, 2007, 2008, 2009, 2010. The SimGrid Team.
+/* Copyright (c) 2004-2013. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -41,6 +41,8 @@ void lmm_constraint_shared(lmm_constraint_t cnst);
 int lmm_constraint_is_shared(lmm_constraint_t cnst);
 
 void lmm_constraint_free(lmm_system_t sys, lmm_constraint_t cnst);
+
+double lmm_constraint_get_usage(lmm_constraint_t cnst);
 
 XBT_PUBLIC(lmm_variable_t) lmm_variable_new(lmm_system_t sys, void *id,
                                             double weight_value,

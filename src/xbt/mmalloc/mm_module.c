@@ -365,3 +365,16 @@ size_t mmalloc_get_bytes_used(xbt_mheap_t heap){
   return bytes;
 }
 
+ssize_t mmalloc_get_busy_size(xbt_mheap_t heap, void *ptr){
+
+  ssize_t block = ((char*)ptr - (char*)(heap->heapbase)) / BLOCKSIZE + 1;
+  if(heap->heapinfo[block].type == -1)
+    return -1;
+  else if(heap->heapinfo[block].type == 0)
+    return heap->heapinfo[block].busy_block.busy_size;
+  else{
+    ssize_t frag = ((uintptr_t) (ADDR2UINT (ptr) % (BLOCKSIZE))) >> heap->heapinfo[block].type;
+    return heap->heapinfo[block].busy_frag.frag_size[frag];
+  }
+    
+}

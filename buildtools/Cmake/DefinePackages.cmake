@@ -35,12 +35,12 @@ set(EXTRA_DIST
   src/simix/smx_smurf_private.h
   src/simix/smx_synchro_private.h
   src/smpi/README
-  src/smpi/colls/COPYRIGHTS
   src/smpi/colls/colls.h
   src/smpi/colls/colls_private.h
   src/smpi/colls/coll_tuned_topo.h
   src/smpi/private.h
   src/smpi/smpi_mpi_dt_private.h
+  src/surf/cpu_cas01_private.h
   src/surf/cpu_ti_private.h
   src/surf/gtnets/gtnets_interface.h
   src/surf/gtnets/gtnets_simulator.h
@@ -119,7 +119,6 @@ set(SMPI_SRC
   src/smpi/colls/allgather-bruck.c
   src/smpi/colls/allgather-GB.c
   src/smpi/colls/allgather-loosely-lr.c
-  src/smpi/colls/allgather-lr.c
   src/smpi/colls/allgather-NTSLR.c
   src/smpi/colls/allgather-NTSLR-NB.c
   src/smpi/colls/allgather-pair.c
@@ -136,13 +135,11 @@ set(SMPI_SRC
   src/smpi/colls/allgatherv-ompi-neighborexchange.c
   src/smpi/colls/allgatherv-ompi-bruck.c
   src/smpi/colls/allgatherv-mpich-rdb.c
+  src/smpi/colls/allgatherv-mpich-ring.c
   src/smpi/colls/allreduce-lr.c
-  src/smpi/colls/allreduce-NTS.c
   src/smpi/colls/allreduce-rab1.c
   src/smpi/colls/allreduce-rab2.c
   src/smpi/colls/allreduce-rab-rdb.c
-  #src/smpi/colls/allreduce-rab-reduce-scatter.c
-  src/smpi/colls/allreduce-rab-rsag.c
   src/smpi/colls/allreduce-rdb.c
   src/smpi/colls/allreduce-redbcast.c
   src/smpi/colls/allreduce-smp-binomial.c
@@ -154,7 +151,7 @@ set(SMPI_SRC
   src/smpi/colls/allreduce-ompi-ring-segmented.c
   src/smpi/colls/alltoall-2dmesh.c
   src/smpi/colls/alltoall-3dmesh.c
-  #src/smpi/colls/alltoall-bruck.c
+#  src/smpi/colls/alltoall-bruck.c
   src/smpi/colls/alltoall-pair.c
   src/smpi/colls/alltoall-pair-light-barrier.c
   src/smpi/colls/alltoall-pair-mpi-barrier.c
@@ -164,7 +161,6 @@ set(SMPI_SRC
   src/smpi/colls/alltoall-ring-light-barrier.c
   src/smpi/colls/alltoall-ring-mpi-barrier.c
   src/smpi/colls/alltoall-ring-one-barrier.c
-  src/smpi/colls/alltoall-simple.c
   src/smpi/colls/alltoallv-pair.c   
   src/smpi/colls/alltoallv-pair-light-barrier.c
   src/smpi/colls/alltoallv-pair-mpi-barrier.c
@@ -174,7 +170,7 @@ set(SMPI_SRC
   src/smpi/colls/alltoallv-ring-mpi-barrier.c
   src/smpi/colls/alltoallv-ring-one-barrier.c
   src/smpi/colls/alltoallv-bruck.c
-  src/smpi/colls/bcast-arrival-nb.c
+  src/smpi/colls/alltoallv-ompi-basic-linear.c
   src/smpi/colls/bcast-arrival-pattern-aware.c
   src/smpi/colls/bcast-arrival-pattern-aware-wait.c
   src/smpi/colls/bcast-arrival-scatter.c
@@ -201,6 +197,7 @@ set(SMPI_SRC
   src/smpi/colls/gather-ompi.c
   src/smpi/colls/reduce_scatter-ompi.c
   src/smpi/colls/reduce_scatter-mpich.c
+  src/smpi/colls/smpi_automatic_selector.c
   src/smpi/colls/scatter-ompi.c
   src/smpi/colls/barrier-ompi.c
   )
@@ -539,7 +536,6 @@ set(headers_to_install
   include/simgrid/platf_generator.h
   include/simgrid/simix.h
   include/smpi/mpi.h
-  include/smpi/mpif.h
   include/smpi/smpi.h
   include/smpi/smpi_cocci.h
   include/smpi/smpi_main.h
@@ -585,6 +581,7 @@ set(headers_to_install
   )
 set(source_of_generated_headers
   include/simgrid_config.h.in
+  include/smpi/mpif.h.in
   include/smpi/smpif.h.in
   src/context_sysv_config.h.in)
 
@@ -709,7 +706,6 @@ else()
 endif()
 
 set(DOC_SOURCES
-  doc/AS_hierarchy.png
   doc/Doxyfile.in
   doc/Layout.xml
   doc/sg_thread_model.fig
@@ -774,6 +770,8 @@ set(DOC_SOURCES
   doc/msg-tuto-src/platforms/griffon.xml
   doc/msg-tuto-src/platforms/peers.xml
   doc/msg-tuto-src/platforms/platform.xml
+  
+  CITATION.bib
   )
 
 set(DOC_FIGS
@@ -791,6 +789,7 @@ set(DOC_TOOLS
 set(DOC_IMG
   ${CMAKE_HOME_DIRECTORY}/doc/simgrid.css
   ${CMAKE_HOME_DIRECTORY}/doc/sc3-description.png
+  ${CMAKE_HOME_DIRECTORY}/doc/webcruft/AS_hierarchy.png
   ${CMAKE_HOME_DIRECTORY}/doc/webcruft/Paje_MSG_screenshot.jpg
   ${CMAKE_HOME_DIRECTORY}/doc/webcruft/Paje_MSG_screenshot_thn.jpg
   ${CMAKE_HOME_DIRECTORY}/doc/webcruft/SGicon.gif
@@ -810,6 +809,8 @@ set(DOC_IMG
   ${CMAKE_HOME_DIRECTORY}/doc/webcruft/win_install_04.png
   ${CMAKE_HOME_DIRECTORY}/doc/webcruft/win_install_05.png
   ${CMAKE_HOME_DIRECTORY}/doc/webcruft/win_install_06.png
+  ${CMAKE_HOME_DIRECTORY}/doc/webcruft/smpi_simgrid_alltoall_pair_16.png
+  ${CMAKE_HOME_DIRECTORY}/doc/webcruft/smpi_simgrid_alltoall_ring_16.png
   )
 
 set(bin_files
@@ -862,6 +863,9 @@ set(EXAMPLES_CMAKEFILES_TXT
   examples/msg/chainsend/CMakeLists.txt
   examples/msg/chord/CMakeLists.txt
   examples/msg/cloud/CMakeLists.txt
+  examples/msg/energy/e1/CMakeLists.txt
+  examples/msg/energy/e2/CMakeLists.txt
+  examples/msg/energy/e3/CMakeLists.txt
   examples/msg/gpu/CMakeLists.txt
   examples/msg/gtnets/CMakeLists.txt
   examples/msg/icomms/CMakeLists.txt
@@ -890,6 +894,7 @@ set(EXAMPLES_CMAKEFILES_TXT
   examples/simdag/dax/CMakeLists.txt
   examples/simdag/dot/CMakeLists.txt
   examples/simdag/goal/CMakeLists.txt
+  examples/simdag/io/CMakeLists.txt
   examples/simdag/metaxml/CMakeLists.txt
   examples/simdag/properties/CMakeLists.txt
   examples/simdag/scheduling/CMakeLists.txt
@@ -899,8 +904,8 @@ set(EXAMPLES_CMAKEFILES_TXT
   )
 
 set(TESHSUITE_CMAKEFILES_TXT
-  teshsuite/CMakeLists.txt
   teshsuite/msg/CMakeLists.txt
+  teshsuite/msg/storage/CMakeLists.txt
   teshsuite/msg/trace/CMakeLists.txt
   teshsuite/simdag/CMakeLists.txt
   teshsuite/simdag/availability/CMakeLists.txt
@@ -909,13 +914,27 @@ set(TESHSUITE_CMAKEFILES_TXT
   teshsuite/simdag/network/p2p/CMakeLists.txt
   teshsuite/simdag/partask/CMakeLists.txt
   teshsuite/simdag/platforms/CMakeLists.txt
+  teshsuite/simix/CMakeLists.txt
   teshsuite/smpi/CMakeLists.txt
-  teshsuite/smpi/mpich-test/CMakeLists.txt
-  teshsuite/smpi/mpich-test/coll/CMakeLists.txt
-  teshsuite/smpi/mpich-test/context/CMakeLists.txt
-  teshsuite/smpi/mpich-test/env/CMakeLists.txt
-  teshsuite/smpi/mpich-test/profile/CMakeLists.txt
-  teshsuite/smpi/mpich-test/pt2pt/CMakeLists.txt
+  teshsuite/smpi/mpich3-test/CMakeLists.txt
+  teshsuite/smpi/mpich3-test/attr/CMakeLists.txt
+  teshsuite/smpi/mpich3-test/comm/CMakeLists.txt
+  teshsuite/smpi/mpich3-test/coll/CMakeLists.txt
+  teshsuite/smpi/mpich3-test/datatype/CMakeLists.txt
+  teshsuite/smpi/mpich3-test/group/CMakeLists.txt
+  teshsuite/smpi/mpich3-test/init/CMakeLists.txt
+  teshsuite/smpi/mpich3-test/pt2pt/CMakeLists.txt
+#  teshsuite/smpi/mpich3-test/f77/attr/CMakeLists.txt
+  teshsuite/smpi/mpich3-test/f77/coll/CMakeLists.txt
+  teshsuite/smpi/mpich3-test/f77/comm/CMakeLists.txt
+  teshsuite/smpi/mpich3-test/f77/datatype/CMakeLists.txt
+  teshsuite/smpi/mpich3-test/f77/ext/CMakeLists.txt
+  teshsuite/smpi/mpich3-test/f77/init/CMakeLists.txt
+  teshsuite/smpi/mpich3-test/f77/pt2pt/CMakeLists.txt
+  teshsuite/smpi/mpich3-test/f90/coll/CMakeLists.txt
+  teshsuite/smpi/mpich3-test/f90/datatype/CMakeLists.txt
+  teshsuite/smpi/mpich3-test/f90/init/CMakeLists.txt
+  teshsuite/smpi/mpich3-test/f90/pt2pt/CMakeLists.txt
   teshsuite/xbt/CMakeLists.txt
   )
 
@@ -1004,6 +1023,7 @@ set(PLATFORMS_EXAMPLES
   examples/platforms/conf/transform_optorsim_platform.pl
   examples/platforms/config.xml
   examples/platforms/content/storage_content.txt
+  examples/platforms/content/win_storage_content.txt
   examples/platforms/data_center.xml
   examples/platforms/g5k.xml
   examples/platforms/generation_scripts/create_hierarchical_clusters.pl

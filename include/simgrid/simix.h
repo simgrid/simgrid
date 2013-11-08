@@ -1,4 +1,4 @@
-/* Copyright (c) 2007, 2008, 2009, 2010. The SimGrid Team.
+/* Copyright (c) 2007-2010, 2012-2013. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -13,6 +13,7 @@
 #include "xbt/function_types.h"
 #include "xbt/parmap.h"
 #include "xbt/swag.h"
+#include "simgrid/platf.h"
 
 #include "simgrid/platf.h" // ws_params_t
 
@@ -70,7 +71,12 @@ typedef struct s_smx_cond *smx_cond_t;
 typedef struct s_smx_sem *smx_sem_t;
 
 /********************************** File *************************************/
+
 typedef struct s_smx_file *smx_file_t;
+
+/********************************** Storage *************************************/
+typedef xbt_dictelm_t smx_storage_t;
+typedef struct s_smx_storage_priv *smx_storage_priv_t;
 
 /********************************** Action *************************************/
 typedef struct s_smx_action *smx_action_t; /* FIXME: replace by specialized action handlers */
@@ -262,7 +268,7 @@ XBT_PUBLIC(void) SIMIX_host_self_set_data(void *data);
 XBT_PUBLIC(void*) SIMIX_host_self_get_data(void);
 XBT_PUBLIC(void*) SIMIX_host_get_data(smx_host_t host);
 XBT_PUBLIC(void) SIMIX_host_set_data(smx_host_t host, void *data);
-
+XBT_PUBLIC(xbt_dict_t) SIMIX_host_get_storage_list(smx_host_t host);
 /********************************* Process ************************************/
 XBT_PUBLIC(int) SIMIX_process_count(void);
 XBT_PUBLIC(smx_process_t) SIMIX_process_self(void);
@@ -285,6 +291,10 @@ XBT_PUBLIC(int) SIMIX_comm_has_send_match(smx_rdv_t rdv, int (*match_fun)(void*,
 XBT_PUBLIC(int) SIMIX_comm_has_recv_match(smx_rdv_t rdv, int (*match_fun)(void*, void*), void* data);
 XBT_PUBLIC(void) SIMIX_comm_finish(smx_action_t action);
 
+/*********************************** File *************************************/
+XBT_PUBLIC(void*) SIMIX_file_get_data(smx_file_t fd);
+XBT_PUBLIC(void) SIMIX_file_set_data(smx_file_t fd, void *data);
+
 /******************************************************************************/
 /*                            SIMIX simcalls                                  */
 /******************************************************************************/
@@ -300,6 +310,7 @@ XBT_PUBLIC(xbt_dict_t) simcall_host_get_properties(smx_host_t host);
 XBT_PUBLIC(void) simcall_host_on(smx_host_t host);
 XBT_PUBLIC(void) simcall_host_off(smx_host_t host);
 XBT_PUBLIC(int) simcall_host_get_core(smx_host_t host);
+XBT_PUBLIC(xbt_swag_t) simcall_host_get_process_list(smx_host_t host);
 XBT_PUBLIC(double) simcall_host_get_speed(smx_host_t host);
 XBT_PUBLIC(double) simcall_host_get_available_speed(smx_host_t host);
 /* Two possible states, 1 - CPU ON and 0 CPU OFF */
@@ -307,6 +318,12 @@ XBT_PUBLIC(int) simcall_host_get_state(smx_host_t host);
 XBT_PUBLIC(void *) simcall_host_get_data(smx_host_t host);
 
 XBT_PUBLIC(void) simcall_host_set_data(smx_host_t host, void *data);
+
+XBT_PUBLIC(double) simcall_host_get_current_power_peak(smx_host_t host);
+XBT_PUBLIC(double) simcall_host_get_power_peak_at(smx_host_t host, int pstate_index);
+XBT_PUBLIC(int) simcall_host_get_nb_pstates(smx_host_t host);
+XBT_PUBLIC(void) simcall_host_set_power_peak_at(smx_host_t host, int pstate_index);
+XBT_PUBLIC(double) simcall_host_get_consumed_energy(smx_host_t host);
 
 XBT_PUBLIC(smx_action_t) simcall_host_execute(const char *name, smx_host_t host,
                                                 double computation_amount,
@@ -326,6 +343,7 @@ XBT_PUBLIC(void) simcall_host_execution_set_priority(smx_action_t execution, dou
 XBT_PUBLIC(void) simcall_host_execution_set_bound(smx_action_t execution, double bound);
 XBT_PUBLIC(void) simcall_host_execution_set_affinity(smx_action_t execution, smx_host_t host, unsigned long mask);
 XBT_PUBLIC(e_smx_state_t) simcall_host_execution_wait(smx_action_t execution);
+XBT_PUBLIC(xbt_dict_t) simcall_host_get_storage_list(smx_host_t host);
 XBT_PUBLIC(void) simcall_host_get_params(smx_host_t vm, ws_params_t param);
 XBT_PUBLIC(void) simcall_host_set_params(smx_host_t vm, ws_params_t param);
 
@@ -486,15 +504,28 @@ XBT_PUBLIC(void) simcall_sem_acquire_timeout(smx_sem_t sem,
                                              double max_duration);
 XBT_PUBLIC(int) simcall_sem_get_capacity(smx_sem_t sem);
 
-XBT_PUBLIC(size_t) simcall_file_read(void* ptr, size_t size, smx_file_t fd);
-XBT_PUBLIC(size_t) simcall_file_write(const void* ptr, size_t size,
-                                      smx_file_t fd);
+/*****************************   File   **********************************/
+XBT_PUBLIC(void *) simcall_file_get_data(smx_file_t fd);
+XBT_PUBLIC(void) simcall_file_set_data(smx_file_t fd, void *data);
+XBT_PUBLIC(sg_storage_size_t) simcall_file_read(smx_file_t fd, sg_storage_size_t size);
+XBT_PUBLIC(sg_storage_size_t) simcall_file_write(smx_file_t fd, sg_storage_size_t size);
 XBT_PUBLIC(smx_file_t) simcall_file_open(const char* storage, const char* path);
 XBT_PUBLIC(int) simcall_file_close(smx_file_t fd);
 XBT_PUBLIC(int) simcall_file_unlink(smx_file_t fd);
 XBT_PUBLIC(xbt_dict_t) simcall_file_ls(const char* mount, const char* path);
-XBT_PUBLIC(size_t) simcall_file_get_size(smx_file_t fd);
+XBT_PUBLIC(sg_storage_size_t) simcall_file_get_size(smx_file_t fd);
+XBT_PUBLIC(xbt_dynar_t) simcall_file_get_info(smx_file_t fd);
 
+/*****************************   Storage   **********************************/
+XBT_PUBLIC(sg_storage_size_t) simcall_storage_get_free_size (const char* name);
+XBT_PUBLIC(sg_storage_size_t) simcall_storage_get_used_size (const char* name);
+XBT_PUBLIC(xbt_dict_t) simcall_storage_get_properties(smx_storage_t storage);
+XBT_PUBLIC(void*) SIMIX_storage_get_data(smx_storage_t storage);
+XBT_PUBLIC(void) SIMIX_storage_set_data(smx_storage_t storage, void *data);
+XBT_PUBLIC(xbt_dict_t) SIMIX_storage_get_content(smx_storage_t storage);
+XBT_PUBLIC(xbt_dict_t) simcall_storage_get_content(smx_storage_t storage);
+XBT_PUBLIC(const char*) SIMIX_storage_get_name(smx_host_t host);
+XBT_PUBLIC(sg_storage_size_t) SIMIX_storage_get_size(smx_storage_t storage);
 /************************** AS router   **********************************/
 XBT_PUBLIC(xbt_dict_t) SIMIX_asr_get_properties(const char *name);
 /************************** AS router simcalls ***************************/
@@ -503,7 +534,7 @@ XBT_PUBLIC(xbt_dict_t) simcall_asr_get_properties(const char *name);
 /************************** MC simcalls   **********************************/
 XBT_PUBLIC(void *) simcall_mc_snapshot(void);
 XBT_PUBLIC(int) simcall_mc_compare_snapshots(void *s1, void *s2);
-XBT_PUBLIC(int) simcall_mc_random(void);
+XBT_PUBLIC(int) simcall_mc_random(int min, int max);
 
 /************************** New API simcalls **********************************/
 /* TUTORIAL: New API                                                          */

@@ -72,7 +72,7 @@ int smpi_coll_tuned_allgather_bruck(void *send_buff, int send_count,
 
   // local int variables
   int src, dst, rank, num_procs, count, remainder;
-  int tag = 1;
+  int tag = COLL_TAG_ALLGATHER;
   int pof2 = 1;
 
   // local string variables

@@ -1,5 +1,5 @@
 
-/* Copyright (c) 2009, 2010. The SimGrid Team.
+/* Copyright (c) 2009-2013. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -111,7 +111,7 @@ static surf_cpu_ti_tgmr_t cpu_ti_parse_trace(tmgr_trace_t power_trace,
   if (!power_trace) {
     trace->type = TRACE_FIXED;
     trace->value = value;
-    XBT_DEBUG("No availabily trace. Constant value = %lf", value);
+    XBT_DEBUG("No availability trace. Constant value = %f", value);
     return trace;
   }
 
@@ -135,14 +135,15 @@ static surf_cpu_ti_tgmr_t cpu_ti_parse_trace(tmgr_trace_t power_trace,
   trace->total =
       surf_cpu_ti_integrate_trace_simple(trace->trace, 0, total_time);
 
-  XBT_DEBUG("Total integral %lf, last_time %lf ",
+  XBT_DEBUG("Total integral %f, last_time %f ",
          trace->total, trace->last_time);
 
   return trace;
 }
 
 
-static void* cpu_ti_create_resource(const char *name, double power_peak,
+static void* cpu_ti_create_resource(const char *name, xbt_dynar_t power_peak,
+						   int pstate,
                            double power_scale,
                            tmgr_trace_t power_trace,
                            int core,
@@ -161,12 +162,18 @@ static void* cpu_ti_create_resource(const char *name, double power_peak,
               name);
   xbt_assert(core==1,"Multi-core not handled with this model yet");
   cpu = (cpu_ti_t) surf_resource_new(sizeof(s_cpu_ti_t),
-          cpu_model, name,cpu_properties);
+          cpu_model, name,cpu_properties, NULL);
   cpu->action_set =
       xbt_swag_new(xbt_swag_offset(ti_action, cpu_list_hookup));
-  cpu->power_peak = power_peak;
+
+  xbt_dynar_get_cpy(power_peak, 0, &cpu->power_peak);
+  xbt_dynar_free(&power_peak);  /* kill memory leak */
+  //cpu->power_peak = power_peak;
+  cpu->pstate = pstate;
+  XBT_DEBUG("CPU create: peak=%f, pstate=%d",cpu->power_peak, cpu->pstate);
+
   xbt_assert(cpu->power_peak > 0, "Power has to be >0");
-  XBT_DEBUG("power scale %lf", power_scale);
+  XBT_DEBUG("power scale %f", power_scale);
   cpu->power_scale = power_scale;
   cpu->avail_trace = cpu_ti_parse_trace(power_trace, power_scale);
   cpu->state_current = state_initial;
@@ -194,6 +201,7 @@ static void parse_cpu_ti_init(sg_platf_host_cbarg_t host)
 {
   cpu_ti_create_resource(host->id,
         host->power_peak,
+        host->pstate,
         host->power_scale,
         host->power_trace,
         host->core_amount,
@@ -326,7 +334,7 @@ static void cpu_ti_update_remaining_amount(surf_model_t cpu_model, cpu_ti_t cpu,
   area_total =
       surf_cpu_ti_integrate_trace(cpu->avail_trace, cpu->last_update,
                                   now) * cpu->power_peak;
-  XBT_DEBUG("Flops total: %lf, Last update %lf", area_total,
+  XBT_DEBUG("Flops total: %f, Last update %f", area_total,
          cpu->last_update);
 
   xbt_swag_foreach(action, cpu->action_set) {
@@ -357,7 +365,7 @@ static void cpu_ti_update_remaining_amount(surf_model_t cpu_model, cpu_ti_t cpu,
     double_update(&(generic->remains),
                   area_total / (cpu->sum_priority *
                                 generic->priority));
-    XBT_DEBUG("Update remaining action(%p) remaining %lf", action,
+    XBT_DEBUG("Update remaining action(%p) remaining %f", action,
            generic->remains);
   }
   cpu->last_update = now;
@@ -443,7 +451,7 @@ static void cpu_ti_update_action_finish_date(surf_model_t cpu_model, cpu_ti_t cp
       xbt_heap_push(cpu_ti_action_heap, action, min_finish);
 
     XBT_DEBUG
-        ("Update finish time: Cpu(%s) Action: %p, Start Time: %lf Finish Time: %lf Max duration %lf",
+        ("Update finish time: Cpu(%s) Action: %p, Start Time: %f Finish Time: %f Max duration %f",
          cpu->generic_resource.name, action, GENERIC_ACTION(action).start,
          GENERIC_ACTION(action).finish,
          GENERIC_ACTION(action).max_duration);
@@ -472,7 +480,7 @@ static double cpu_ti_share_resources(surf_model_t cpu_model, double now)
   if (xbt_heap_size(cpu_ti_action_heap) > 0)
     min_action_duration = xbt_heap_maxkey(cpu_ti_action_heap) - now;
 
-  XBT_DEBUG("Share resources, min next event date: %lf", min_action_duration);
+  XBT_DEBUG("Share resources, min next event date: %f", min_action_duration);
 
   return min_action_duration;
 }
@@ -505,14 +513,12 @@ static void cpu_ti_update_resource_state(void *id,
   surf_model_t cpu_model = ((surf_resource_t) cpu)->model;
   surf_action_cpu_ti_t action;
 
-  surf_watched_hosts();
-
   if (event_type == cpu->power_event) {
     tmgr_trace_t power_trace;
     surf_cpu_ti_tgmr_t trace;
     s_tmgr_event_t val;
 
-    XBT_DEBUG("Finish trace date: %lf value %lf date %lf", surf_get_clock(),
+    XBT_DEBUG("Finish trace date: %f value %f date %f", surf_get_clock(),
            value, date);
     /* update remaining of actions and put in modified cpu swag */
     cpu_ti_update_remaining_amount(cpu_model, cpu, date);
@@ -528,7 +534,7 @@ static void cpu_ti_update_resource_state(void *id,
     trace = xbt_new0(s_surf_cpu_ti_tgmr_t, 1);
     trace->type = TRACE_FIXED;
     trace->value = val.value;
-    XBT_DEBUG("value %lf", val.value);
+    XBT_DEBUG("value %f", val.value);
 
     cpu->avail_trace = trace;
 
@@ -536,9 +542,11 @@ static void cpu_ti_update_resource_state(void *id,
       cpu->power_event = NULL;
 
   } else if (event_type == cpu->state_event) {
-    if (value > 0)
+    if (value > 0) {
+      if(cpu->state_current == SURF_RESOURCE_OFF)
+        xbt_dynar_push_as(host_that_restart, char*, (cpu->generic_resource.name));
       cpu->state_current = SURF_RESOURCE_ON;
-    else {
+    } else {
       cpu->state_current = SURF_RESOURCE_OFF;
 
       /* put all action running on cpu to failed */
@@ -937,7 +945,7 @@ static double surf_cpu_ti_integrate_trace_simple_point(surf_cpu_ti_trace_t
                                 trace->nb_points - 1);
   integral += trace->integral[ind];
   XBT_DEBUG
-      ("a %lf ind %d integral %lf ind + 1 %lf ind %lf time +1 %lf time %lf",
+      ("a %f ind %d integral %f ind + 1 %f ind %f time +1 %f time %f",
        a, ind, integral, trace->integral[ind + 1], trace->integral[ind],
        trace->time_points[ind + 1], trace->time_points[ind]);
   double_update(&a_aux, trace->time_points[ind]);
@@ -949,7 +957,7 @@ static double surf_cpu_ti_integrate_trace_simple_point(surf_cpu_ti_trace_t
                                                                 trace->
                                                                 time_points
                                                                 [ind]);
-  XBT_DEBUG("Integral a %lf = %lf", a, integral);
+  XBT_DEBUG("Integral a %f = %f", a, integral);
 
   return integral;
 }
@@ -999,14 +1007,14 @@ static double surf_cpu_ti_solve_trace(surf_cpu_ti_tgmr_t trace, double a,
     return (a + (amount / trace->value));
   }
 
-  XBT_DEBUG("amount %lf total %lf", amount, trace->total);
+  XBT_DEBUG("amount %f total %f", amount, trace->total);
 /* Reduce the problem to one where amount <= trace_total */
   quotient = (int) (floor(amount / trace->total));
   reduced_amount = (trace->total) * ((amount / trace->total) -
                                      floor(amount / trace->total));
   reduced_a = a - (trace->last_time) * (int) (floor(a / trace->last_time));
 
-  XBT_DEBUG("Quotient: %d reduced_amount: %lf reduced_a: %lf", quotient,
+  XBT_DEBUG("Quotient: %d reduced_amount: %f reduced_a: %f", quotient,
          reduced_amount, reduced_a);
 
 /* Now solve for new_amount which is <= trace_total */
@@ -1102,7 +1110,7 @@ static int surf_cpu_ti_binary_search(double *array, double a, int low,
   int mid;
   do {
     mid = low + (high - low) / 2;
-    XBT_DEBUG("a %lf low %d high %d mid %d value %lf", a, low, high, mid,
+    XBT_DEBUG("a %f low %d high %d mid %d value %f", a, low, high, mid,
         array[mid]);
 
     if (array[mid] > a)

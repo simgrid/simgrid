@@ -1,4 +1,4 @@
-/* Copyright (c) 2009, 2010. The SimGrid Team.
+/* Copyright (c) 2009-2010, 2012-2013. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -32,8 +32,8 @@ int test_trace(int argc, char *argv[])
   task_prio = atof(argv[2]);
 
   XBT_INFO("Testing the trace integration cpu model: CpuTI");
-  XBT_INFO("Task size: %lf", task_comp_size);
-  XBT_INFO("Task prio: %lf", task_prio);
+  XBT_INFO("Task size: %f", task_comp_size);
+  XBT_INFO("Task prio: %f", task_prio);
 
   /* Create and execute a single task. */
   task = MSG_task_create("proc 0", task_comp_size, 0, NULL);

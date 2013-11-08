@@ -1,11 +1,10 @@
-/* Copyright (c) 2010. The SimGrid Team.
+/* Copyright (c) 2010, 2012-2013. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
   * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "instr/instr_private.h"
-#include "mc/mc.h"
 
 #ifdef HAVE_TRACING
 #include "surf/surf_private.h"
@@ -116,9 +115,6 @@ static void linkContainers (container_t src, container_t dst, xbt_dict_t filter)
 
   //create the link
   static long long counter = 0;
-
-  if(MC_is_active())
-    MC_ignore_data_bss(&counter, sizeof(counter));
 
   char key[INSTR_DEFAULT_STR_SIZE];
   snprintf (key, INSTR_DEFAULT_STR_SIZE, "%lld", counter++);
@@ -268,7 +264,10 @@ static void instr_routing_parse_start_host (sg_platf_host_cbarg_t host)
     if (power == NULL){
       power = PJ_type_variable_new ("power", NULL, new->type);
     }
-    new_pajeSetVariable (0, new, power, host->power_peak);
+
+    double current_power_state;
+    xbt_dynar_get_cpy(host->power_peak, host->pstate, &current_power_state);
+    new_pajeSetVariable (0, new, power, current_power_state);
   }
   if (TRACE_uncategorized()){
     type_t power_used = PJ_type_get_or_null ("power_used", new->type);

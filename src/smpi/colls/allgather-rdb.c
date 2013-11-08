@@ -14,7 +14,7 @@ smpi_coll_tuned_allgather_rdb(void *sbuf, int send_count,
   int i, j, k, dst, rank, num_procs, send_offset, recv_offset, tree_root;
   int dst_tree_root, rank_tree_root, last_recv_count = 0, num_procs_completed;
   int offset, tmp_mask;
-  int tag = 1;
+  int tag = COLL_TAG_ALLGATHER;
   int mask = 1;
   int success = 0;
   int curr_count = recv_count;

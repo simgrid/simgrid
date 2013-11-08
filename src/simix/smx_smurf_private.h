@@ -1,4 +1,4 @@
-/* Copyright (c) 2007, 2008, 2009, 2010. The SimGrid Team.
+ /* Copyright (c) 2007-2010, 2012-2013. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -265,12 +265,18 @@ ACTION(SIMCALL_HOST_ON, host_on, WITH_ANSWER, TVOID(result), TSPEC(host, smx_hos
 ACTION(SIMCALL_HOST_OFF, host_off, WITH_ANSWER, TVOID(result), TSPEC(host, smx_host_t)) sep \
 ACTION(SIMCALL_HOST_GET_PROPERTIES, host_get_properties, WITH_ANSWER, TSPEC(result, xbt_dict_t), TSPEC(host, smx_host_t)) sep \
 ACTION(SIMCALL_HOST_GET_CORE, host_get_core, WITH_ANSWER, TINT(result), TSPEC(host, smx_host_t)) sep \
+ACTION(SIMCALL_HOST_GET_PROCESS_LIST, host_get_process_list, WITH_ANSWER, TSPEC(result, xbt_swag_t), TSPEC(host, smx_host_t)) sep \
 ACTION(SIMCALL_HOST_GET_SPEED, host_get_speed, WITH_ANSWER, TDOUBLE(result), TSPEC(host, smx_host_t)) sep \
 ACTION(SIMCALL_HOST_GET_AVAILABLE_SPEED, host_get_available_speed, WITH_ANSWER, TDOUBLE(result), TSPEC(host, smx_host_t)) sep \
 ACTION(SIMCALL_HOST_GET_STATE, host_get_state, WITH_ANSWER, TINT(result), TSPEC(host, smx_host_t)) sep \
 ACTION(SIMCALL_HOST_GET_DATA, host_get_data, WITH_ANSWER, TPTR(result), TSPEC(host, smx_host_t)) sep \
 ACTION(SIMCALL_HOST_SET_DATA, host_set_data, WITH_ANSWER, TVOID(result), TSPEC(host, smx_host_t), TPTR(data)) sep \
 ACTION(SIMCALL_HOST_EXECUTE, host_execute, WITH_ANSWER, TSPEC(result, smx_action_t), TSTRING(name), TSPEC(host, smx_host_t), TDOUBLE(computation_amount), TDOUBLE(priority), TDOUBLE(bound), TULONG(affinity_mask)) sep \
+ACTION(SIMCALL_HOST_GET_CURRENT_POWER_PEAK, host_get_current_power_peak, WITH_ANSWER, TDOUBLE(result), TSPEC(host, smx_host_t)) sep \
+ACTION(SIMCALL_HOST_GET_POWER_PEAK_AT, host_get_power_peak_at, WITH_ANSWER, TDOUBLE(result), TSPEC(host, smx_host_t), TINT(pstate_index)) sep \
+ACTION(SIMCALL_HOST_GET_NB_PSTATES, host_get_nb_pstates, WITH_ANSWER, TINT(result), TSPEC(host, smx_host_t)) sep \
+ACTION(SIMCALL_HOST_SET_POWER_PEAK_AT, host_set_power_peak_at, WITH_ANSWER, TVOID(result), TSPEC(host, smx_host_t), TINT(pstate_index)) sep \
+ACTION(SIMCALL_HOST_GET_CONSUMED_ENERGY, host_get_consumed_energy, WITH_ANSWER, TDOUBLE(result), TSPEC(host, smx_host_t)) sep \
 ACTION(SIMCALL_HOST_PARALLEL_EXECUTE, host_parallel_execute, WITH_ANSWER, TSPEC(result, smx_action_t), TSTRING(name), TINT(host_nb), TSPEC(host_list, smx_host_t*), TSPEC(computation_amount, double*), TSPEC(communication_amount, double*), TDOUBLE(amount), TDOUBLE(rate)) sep \
 ACTION(SIMCALL_HOST_EXECUTION_DESTROY, host_execution_destroy, WITH_ANSWER, TVOID(result), TSPEC(execution, smx_action_t)) sep \
 ACTION(SIMCALL_HOST_EXECUTION_CANCEL, host_execution_cancel, WITH_ANSWER, TVOID(result), TSPEC(execution, smx_action_t)) sep \
@@ -296,6 +302,7 @@ ACTION(SIMCALL_VM_RESUME,    vm_resume,    WITH_ANSWER, TVOID(result), TSPEC(ind
 ACTION(SIMCALL_VM_SHUTDOWN,  vm_shutdown,  WITH_ANSWER, TVOID(result), TSPEC(ind_vm, smx_host_t)) sep \
 ACTION(SIMCALL_VM_SAVE,      vm_save,      WITH_ANSWER, TVOID(result), TSPEC(ind_vm, smx_host_t)) sep \
 ACTION(SIMCALL_VM_RESTORE,   vm_restore,   WITH_ANSWER, TVOID(result), TSPEC(ind_vm, smx_host_t)) sep \
+ACTION(SIMCALL_HOST_GET_STORAGE_LIST, host_get_storage_list, WITH_ANSWER, TSPEC(result, xbt_dict_t), TSPEC(host, smx_host_t)) sep \
 ACTION(SIMCALL_PROCESS_CREATE, process_create, WITH_ANSWER, TVOID(result), TSPEC(process, smx_process_t*), TSTRING(name), TSPEC(code, xbt_main_func_t), TPTR(data), TSTRING(hostname), TDOUBLE(kill_time), TINT(argc), TSPEC(argv, char**), TSPEC(properties, xbt_dict_t), TINT(auto_restart)) sep \
 ACTION(SIMCALL_PROCESS_KILL, process_kill, WITH_ANSWER, TVOID(result), TSPEC(process, smx_process_t)) sep \
 ACTION(SIMCALL_PROCESS_KILLALL, process_killall, WITH_ANSWER, TVOID(result), TINT(reset_pid)) sep \
@@ -360,13 +367,20 @@ ACTION(SIMCALL_SEM_WOULD_BLOCK, sem_would_block, WITH_ANSWER, TINT(result), TSPE
 ACTION(SIMCALL_SEM_ACQUIRE, sem_acquire, WITHOUT_ANSWER, TVOID(result), TSPEC(sem, smx_sem_t)) sep \
 ACTION(SIMCALL_SEM_ACQUIRE_TIMEOUT, sem_acquire_timeout, WITHOUT_ANSWER, TVOID(result), TSPEC(sem, smx_sem_t), TDOUBLE(timeout)) sep \
 ACTION(SIMCALL_SEM_GET_CAPACITY, sem_get_capacity, WITH_ANSWER, TINT(result), TSPEC(sem, smx_sem_t)) sep \
-ACTION(SIMCALL_FILE_READ, file_read, WITHOUT_ANSWER, TSIZE(result), TPTR(ptr), TSIZE(size), TSPEC(fd, smx_file_t)) sep \
-ACTION(SIMCALL_FILE_WRITE, file_write, WITHOUT_ANSWER, TSIZE(result), TCPTR(ptr), TSIZE(size), TSPEC(fd, smx_file_t)) sep \
+ACTION(SIMCALL_FILE_GET_DATA, file_get_data, WITH_ANSWER, TPTR(result), TSPEC(fd, smx_file_t)) sep \
+ACTION(SIMCALL_FILE_SET_DATA, file_set_data, WITH_ANSWER, TVOID(result), TSPEC(fd, smx_file_t), TPTR(data)) sep \
+ACTION(SIMCALL_FILE_READ, file_read, WITHOUT_ANSWER, TSIZE(result), TSPEC(fd, smx_file_t), TSIZE(size)) sep \
+ACTION(SIMCALL_FILE_WRITE, file_write, WITHOUT_ANSWER, TSIZE(result), TSPEC(fd, smx_file_t), TSIZE(size)) sep \
 ACTION(SIMCALL_FILE_OPEN, file_open, WITHOUT_ANSWER, TSPEC(result, smx_file_t), TSTRING(mount), TSTRING(path)) sep \
 ACTION(SIMCALL_FILE_CLOSE, file_close, WITHOUT_ANSWER, TINT(result), TSPEC(fd, smx_file_t)) sep \
 ACTION(SIMCALL_FILE_UNLINK, file_unlink, WITH_ANSWER, TINT(result), TSPEC(fd, smx_file_t)) sep \
 ACTION(SIMCALL_FILE_LS, file_ls, WITHOUT_ANSWER, TSPEC(result, xbt_dict_t), TSTRING(mount), TSTRING(path)) sep \
 ACTION(SIMCALL_FILE_GET_SIZE, file_get_size, WITH_ANSWER, TSIZE(result), TSPEC(fd, smx_file_t)) sep \
+ACTION(SIMCALL_FILE_GET_INFO, file_get_info, WITH_ANSWER, TSPEC(result, xbt_dynar_t), TSPEC(fd, smx_file_t)) sep \
+ACTION(SIMCALL_STORAGE_GET_FREE_SIZE, storage_get_free_size, WITH_ANSWER, TSIZE(result), TSTRING(name)) sep \
+ACTION(SIMCALL_STORAGE_GET_USED_SIZE, storage_get_used_size, WITH_ANSWER, TSIZE(result), TSTRING(name)) sep \
+ACTION(SIMCALL_STORAGE_GET_PROPERTIES, storage_get_properties, WITH_ANSWER, TSPEC(result, xbt_dict_t), TSPEC(storage, smx_storage_t)) sep \
+ACTION(SIMCALL_STORAGE_GET_CONTENT, storage_get_content, WITH_ANSWER, TSPEC(result, xbt_dict_t), TSPEC(storage, smx_storage_t)) sep \
 ACTION(SIMCALL_ASR_GET_PROPERTIES, asr_get_properties, WITH_ANSWER, TSPEC(result, xbt_dict_t), TSTRING(name)) sep 
 
 /* SIMCALL_COMM_IS_LATENCY_BOUNDED and SIMCALL_SET_CATEGORY make things complicated
@@ -389,7 +403,7 @@ ACTION(SIMCALL_SET_CATEGORY, set_category, WITH_ANSWER, TVOID(result), TSPEC(act
 #define SIMCALL_LIST4(ACTION, sep) \
 ACTION(SIMCALL_MC_SNAPSHOT, mc_snapshot, WITH_ANSWER, TPTR(result)) sep \
 ACTION(SIMCALL_MC_COMPARE_SNAPSHOTS, mc_compare_snapshots, WITH_ANSWER, TINT(result), TPTR(s1), TPTR(s2)) sep \
-ACTION(SIMCALL_MC_RANDOM, mc_random, WITH_ANSWER, TINT(result)) sep
+ACTION(SIMCALL_MC_RANDOM, mc_random, WITH_ANSWER, TINT(result), TINT(min), TINT(max)) sep
 #else
 #define SIMCALL_LIST4(ACTION, sep)
 #endif

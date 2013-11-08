@@ -4,6 +4,7 @@ set(optCFLAGS "")
 if(NOT __VISUALC__ AND NOT __BORLANDC__)
   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}-g3")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}-g3")
+  set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -g")
 else()
   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}/Zi")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}/Zi")
@@ -18,15 +19,23 @@ if(enable_compile_warnings)
     string(REPLACE "-Wclobbered " "" warnCFLAGS "${warnCFLAGS}")
   endif()
 
-  set(CMAKE_Fortran_FLAGS "-Wall") # FIXME: Q&D hack
+  set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -Wall") # FIXME: Q&D hack
 
   set(CMAKE_JAVA_COMPILE_FLAGS "-Xlint")
 endif()
 
 if(enable_compile_optimizations)
   set(optCFLAGS "-O3 -finline-functions -funroll-loops -fno-strict-aliasing ")
-  if(COMPILER_C_VERSION_MAJOR_MINOR STRGREATER "4.5")
-    set(optCFLAGS "${optCFLAGS}-flto ")
+  if(WIN32)
+    if (COMPILER_C_VERSION_MAJOR_MINOR STRGREATER "4.7")
+    # On windows, we need 4.8 or higher to enable lto because of http://gcc.gnu.org/bugzilla/show_bug.cgi?id=50293
+      set(optCFLAGS "${optCFLAGS} -flto ")
+    endif()
+  else()    
+    # On non-windows, 4.6 is enough for that
+    if(COMPILER_C_VERSION_MAJOR_MINOR STRGREATER "4.5")
+      set(optCFLAGS "${optCFLAGS} -flto ")
+    endif()
   endif()
 else()
   set(optCFLAGS "-O0 ")

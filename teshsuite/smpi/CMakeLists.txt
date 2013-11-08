@@ -6,9 +6,9 @@ if(enable_smpi)
   else()
     set(CMAKE_C_COMPILER "${CMAKE_BINARY_DIR}/smpi_script/bin/smpicc")
   endif()
-  
+
   set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}")
-  
+
   include_directories("${CMAKE_HOME_DIRECTORY}/include/smpi")
   add_executable(gather_coll gather_coll.c)
   add_executable(allgather_coll allgather_coll.c)
@@ -18,9 +18,9 @@ if(enable_smpi)
   add_executable(alltoall_coll alltoall_coll.c)
   add_executable(alltoallv_coll alltoallv_coll.c)
   add_executable(allreduce allreduce.c)
-  add_executable(allreduce_coll allreduce_coll.c)  
+  add_executable(allreduce_coll allreduce_coll.c)
   add_executable(bcast bcast.c)
-  add_executable(bcast_coll bcast_coll.c) 
+  add_executable(bcast_coll bcast_coll.c)
   add_executable(barrier_coll barrier.c )
   add_executable(compute compute.c)
   add_executable(compute2 compute2.c)
@@ -37,6 +37,7 @@ if(enable_smpi)
   add_executable(hvector_test hvector_test.c)
   add_executable(indexed_test indexed_test.c)
   add_executable(struct_test struct_test.c)
+  add_executable(dsend dsend.c)
 
   target_link_libraries(gather_coll simgrid)
   target_link_libraries(allgather_coll simgrid)
@@ -46,9 +47,9 @@ if(enable_smpi)
   target_link_libraries(alltoall_coll simgrid)
   target_link_libraries(alltoallv_coll simgrid)
   target_link_libraries(allreduce simgrid)
-  target_link_libraries(allreduce_coll simgrid)      
+  target_link_libraries(allreduce_coll simgrid)
   target_link_libraries(bcast simgrid)
-  target_link_libraries(bcast_coll simgrid)      
+  target_link_libraries(bcast_coll simgrid)
   target_link_libraries(barrier_coll simgrid)
   target_link_libraries(compute simgrid)
   target_link_libraries(compute2 simgrid)
@@ -56,8 +57,8 @@ if(enable_smpi)
   target_link_libraries(pingpong simgrid)
   target_link_libraries(scatter simgrid)
   target_link_libraries(reduce simgrid)
-  target_link_libraries(reduce_coll simgrid)      
-  target_link_libraries(reduce_scatter_coll simgrid)      
+  target_link_libraries(reduce_coll simgrid)
+  target_link_libraries(reduce_scatter_coll simgrid)
   target_link_libraries(split simgrid)
   target_link_libraries(smpi_sendrecv simgrid)
   target_link_libraries(ttest01 simgrid)
@@ -65,12 +66,13 @@ if(enable_smpi)
   target_link_libraries(hvector_test simgrid)
   target_link_libraries(indexed_test simgrid)
   target_link_libraries(struct_test simgrid)
+  target_link_libraries(dsend simgrid)
 
   set_target_properties(smpi_sendrecv PROPERTIES RENAME sendrecv)
 
   if(NOT WIN32)
-    add_executable(dsend dsend.c)
-    target_link_libraries(dsend m simgrid)
+    add_executable(shared shared.c)
+    target_link_libraries(shared simgrid)
   endif()
 
 endif()
@@ -80,23 +82,25 @@ set(tesh_files
   ${tesh_files}
   ${CMAKE_CURRENT_SOURCE_DIR}/gather_coll.tesh
   ${CMAKE_CURRENT_SOURCE_DIR}/allgather_coll.tesh
-  ${CMAKE_CURRENT_SOURCE_DIR}/allgatherv_coll.tesh  
+  ${CMAKE_CURRENT_SOURCE_DIR}/allgatherv_coll.tesh
   ${CMAKE_CURRENT_SOURCE_DIR}/allreduce_coll.tesh
+  ${CMAKE_CURRENT_SOURCE_DIR}/allreduce_coll_large.tesh
   ${CMAKE_CURRENT_SOURCE_DIR}/alltoall_coll.tesh
   ${CMAKE_CURRENT_SOURCE_DIR}/alltoallv_coll.tesh
   ${CMAKE_CURRENT_SOURCE_DIR}/scatter_coll.tesh
   ${CMAKE_CURRENT_SOURCE_DIR}/barrier_coll.tesh
   ${CMAKE_CURRENT_SOURCE_DIR}/bcast.tesh
-  ${CMAKE_CURRENT_SOURCE_DIR}/bcast_coll.tesh  
+  ${CMAKE_CURRENT_SOURCE_DIR}/bcast_coll.tesh
   ${CMAKE_CURRENT_SOURCE_DIR}/compute.tesh
+  ${CMAKE_CURRENT_SOURCE_DIR}/shared.tesh
   ${CMAKE_CURRENT_SOURCE_DIR}/hvector.tesh
   ${CMAKE_CURRENT_SOURCE_DIR}/indexed.tesh
   ${CMAKE_CURRENT_SOURCE_DIR}/pt2pt.tesh
   ${CMAKE_CURRENT_SOURCE_DIR}/reduce.tesh
-  ${CMAKE_CURRENT_SOURCE_DIR}/reduce_coll.tesh  
-  ${CMAKE_CURRENT_SOURCE_DIR}/reduce_scatter_coll.tesh  
+  ${CMAKE_CURRENT_SOURCE_DIR}/reduce_coll.tesh
+  ${CMAKE_CURRENT_SOURCE_DIR}/reduce_scatter_coll.tesh
   ${CMAKE_CURRENT_SOURCE_DIR}/struct.tesh
-  ${CMAKE_CURRENT_SOURCE_DIR}/vector.tesh  
+  ${CMAKE_CURRENT_SOURCE_DIR}/vector.tesh
   PARENT_SCOPE
   )
 set(xml_files
@@ -107,10 +111,10 @@ set(examples_src
   ${examples_src}
   ${CMAKE_CURRENT_SOURCE_DIR}/gather_coll.c
   ${CMAKE_CURRENT_SOURCE_DIR}/allgather_coll.c
-  ${CMAKE_CURRENT_SOURCE_DIR}/allgatherv_coll.c  
+  ${CMAKE_CURRENT_SOURCE_DIR}/allgatherv_coll.c
   ${CMAKE_CURRENT_SOURCE_DIR}/allreduce_coll.c
   ${CMAKE_CURRENT_SOURCE_DIR}/alltoall_coll.c
-  ${CMAKE_CURRENT_SOURCE_DIR}/alltoallv_coll.c  
+  ${CMAKE_CURRENT_SOURCE_DIR}/alltoallv_coll.c
   ${CMAKE_CURRENT_SOURCE_DIR}/bcast_coll.c
   ${CMAKE_CURRENT_SOURCE_DIR}/reduce_coll.c
   ${CMAKE_CURRENT_SOURCE_DIR}/reduce_scatter_coll.c
@@ -123,6 +127,7 @@ set(examples_src
   ${CMAKE_CURRENT_SOURCE_DIR}/sendrecv.c
   ${CMAKE_CURRENT_SOURCE_DIR}/reduce.c
   ${CMAKE_CURRENT_SOURCE_DIR}/compute2.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/shared.c
   ${CMAKE_CURRENT_SOURCE_DIR}/split.c
   ${CMAKE_CURRENT_SOURCE_DIR}/dsend.c
   ${CMAKE_CURRENT_SOURCE_DIR}/ttest01.c
@@ -145,6 +150,6 @@ set(bin_files
   )
 set(txt_files
   ${txt_files}
-  
+
   PARENT_SCOPE
   )

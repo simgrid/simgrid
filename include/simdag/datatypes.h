@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, 2008, 2009, 2010. The SimGrid Team.
+/* Copyright (c) 2006, 2008-2013. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -88,5 +88,13 @@ typedef enum {
   SD_TASK_COMM_PAR_MXN_1D_BLOCK = 4 /**< @brief MxN data redistribution (1D Block distribution) */
 } e_SD_task_kind_t;
 
+
+/** @brief Storage datatype
+    @ingroup SD_datatypes_management
+
+ TODO PV: comment it !
+
+    @see SD_storage_management */
+typedef xbt_dictelm_t SD_storage_t;
 
 #endif

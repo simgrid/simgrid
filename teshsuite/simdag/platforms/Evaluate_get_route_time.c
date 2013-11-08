@@ -1,4 +1,4 @@
-/* Copyright (c) 2008, 2009, 2010, 2011. The SimGrid Team.
+/* Copyright (c) 2008-2013. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -49,7 +49,7 @@ int main(int argc, char **argv)
   SD_route_get_list(w1, w2);
   xbt_os_cputimer_stop(timer);
 
-  printf("%lf\n", xbt_os_timer_elapsed(timer) );
+  printf("%f\n", xbt_os_timer_elapsed(timer) );
 
   SD_exit();
 

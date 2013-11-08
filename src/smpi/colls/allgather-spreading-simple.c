@@ -70,7 +70,7 @@ smpi_coll_tuned_allgather_spreading_simple(void *send_buff, int send_count,
   MPI_Request *reqs, *req_ptr;
   MPI_Aint extent;
   int i, src, dst, rank, num_procs, num_reqs;
-  int tag = 1;
+  int tag = COLL_TAG_ALLGATHER;
   MPI_Status status;
   char *recv_ptr = (char *) recv_buff;
 

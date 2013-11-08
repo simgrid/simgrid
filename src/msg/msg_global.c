@@ -1,4 +1,5 @@
-/* Copyright (c) 2004-2012. The SimGrid Team.  All rights reserved.         */
+/* Copyright (c) 2004-2013. The SimGrid Team.
+ * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -69,8 +70,9 @@ void MSG_init_nocheck(int *argc, char **argv) {
 
   XBT_DEBUG("ADD MSG LEVELS");
   MSG_HOST_LEVEL = xbt_lib_add_level(host_lib, (void_f_pvoid_t) __MSG_host_priv_free);
+  MSG_STORAGE_LEVEL = xbt_lib_add_level(storage_lib, (void_f_pvoid_t) __MSG_storage_destroy);
 
-  atexit(MSG_exit);
+  if(sg_cfg_get_boolean("clean_atexit")) atexit(MSG_exit);
 }
 
 #ifdef MSG_USE_DEPRECATED
@@ -132,7 +134,7 @@ msg_error_t MSG_main(void)
  * Do --help on any simgrid binary to see the list of currently existing configuration variables, and see Section @ref options.
  *
  * Example:
- * MSG_config("workstation/model","KCCFLN05");
+ * MSG_config("workstation/model","ptask_L07");
  */
 void MSG_config(const char *key, const char *value){
   xbt_assert(msg_global,"ERROR: Please call MSG_init() before using MSG_config()");

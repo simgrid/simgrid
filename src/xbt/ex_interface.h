@@ -2,7 +2,7 @@
 /* This file is to loaded in any location defining exception handlers       */
 /* (such as context.c), to exchange them.        */
 
-/* Copyright (c) 2006, 2007, 2009, 2010. The SimGrid Team.
+/* Copyright (c) 2006-2007, 2009-2010, 2012. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it

@@ -2,10 +2,17 @@
 
 $ ${bindir:=.}/io/file ${srcdir:=.}/examples/platforms/storage.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (0:@) Number of host '4'
-> [  0.000000] (1:0@denise) 	Open file './doc/simgrid/examples/platforms/g5k.xml'
 > [  0.000000] (2:1@alice) 	Open file './doc/simgrid/examples/platforms/One_cluster_no_backbone.xml'
 > [  0.000000] (3:2@carl) 	Open file './doc/simgrid/examples/platforms/g5k_cabinets.xml'
 > [  0.000000] (4:3@bob) 	Open file './doc/simgrid/examples/platforms/nancy.xml'
+> [  0.000000] (1:0@denise) File Descriptor information:
+> 		Full name: './doc/simgrid/examples/platforms/g5k.xml'
+> 		Size: 17028
+> 		Mount point: '/home'
+> 		Storage Id: 'Disk4'
+> 		Storage Type: 'single_SSD'
+> 		Content Type: 'txt_unix'
+> [  0.000000] (1:0@denise) 	Open file './doc/simgrid/examples/platforms/g5k.xml'
 > [  0.000005] (2:1@alice) 	Have read    482 on ./doc/simgrid/examples/platforms/One_cluster_no_backbone.xml
 > [  0.000040] (4:3@bob) 	Have read    4028 on ./doc/simgrid/examples/platforms/nancy.xml
 > [  0.000170] (1:0@denise) 	Have read    17028 on ./doc/simgrid/examples/platforms/g5k.xml

@@ -1,4 +1,4 @@
-/* Copyright (c) 2007, 2008, 2009, 2010. The SimGrid Team.
+/* Copyright (c) 2007-2013. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -29,12 +29,14 @@ typedef struct s_smpi_process_data {
   double simulated;
   MPI_Comm comm_self;
   void *data; /* user data */
+  int initialized;
 } s_smpi_process_data_t;
 
 static smpi_process_data_t *process_data = NULL;
 static int process_count = 0;
 
 MPI_Comm MPI_COMM_WORLD = MPI_COMM_NULL;
+int MPI_UNIVERSE_SIZE;
 
 MPI_Errhandler* MPI_ERRORS_RETURN = NULL;
 MPI_Errhandler* MPI_ERRORS_ARE_FATAL = NULL;
@@ -79,7 +81,7 @@ void smpi_process_init(int *argc, char ***argv)
 void smpi_process_destroy(void)
 {
   int index = smpi_process_index();
-
+  process_data[index]->index=-100;
   XBT_DEBUG("<%d> Process left the game", index);
 }
 
@@ -93,6 +95,34 @@ void smpi_process_finalize(void)
     simcall_process_sleep(0.01);
   }
 }
+
+/**
+ * @brief Check if a process is finalized
+ */
+int smpi_process_finalized()
+{
+   return (smpi_process_index()==-100);
+  // If finalized, this value has been set to -100;
+}
+
+/**
+ * @brief Check if a process is initialized
+ */
+int smpi_process_initialized(void)
+{
+  int index = smpi_process_index();
+  return((index != -100) && (index!=MPI_UNDEFINED) && (process_data[index]->initialized));
+}
+
+/**
+ * @brief Mark a process as initialized (=MPI_Init called)
+ */
+void smpi_process_mark_as_initialized(void)
+{
+  int index = smpi_process_index();
+  if((index != -100)&& (index!=MPI_UNDEFINED))process_data[index]->initialized=1;
+}
+
 
 #ifdef SMPI_F2C
 int smpi_process_argc(void) {
@@ -160,8 +190,8 @@ int smpi_process_count(void)
 int smpi_process_index(void)
 {
   smpi_process_data_t data = smpi_process_data();
-
-  return data->index;
+  //return -1 if not initialized
+  return data? data->index : MPI_UNDEFINED;
 }
 
 smx_rdv_t smpi_process_mailbox(void) {
@@ -251,15 +281,24 @@ void smpi_global_init(void)
     process_data[i]->mailbox = simcall_rdv_create(get_mailbox_name(name, i));
     process_data[i]->mailbox_small = simcall_rdv_create(get_mailbox_name_small(name, i));
     process_data[i]->timer = xbt_os_timer_new();
+    if(MC_is_active())
+      MC_ignore_heap(process_data[i]->timer, xbt_os_timer_size());
     group = smpi_group_new(1);
     process_data[i]->comm_self = smpi_comm_new(group);
+    process_data[i]->initialized =0;
+
     smpi_group_set_mapping(group, i, 0);
   }
   group = smpi_group_new(process_count);
   MPI_COMM_WORLD = smpi_comm_new(group);
+  MPI_UNIVERSE_SIZE = smpi_comm_size(MPI_COMM_WORLD);
   for (i = 0; i < process_count; i++) {
     smpi_group_set_mapping(group, i, i);
   }
+
+  //check correctness of MPI parameters
+
+  xbt_assert(sg_cfg_get_int("smpi/async_small_thres")<=sg_cfg_get_int("smpi/send_is_detached_thres"));
 }
 
 void smpi_global_destroy(void)
@@ -268,11 +307,11 @@ void smpi_global_destroy(void)
   int i;
 
   smpi_bench_destroy();
-  smpi_group_destroy(smpi_comm_group(MPI_COMM_WORLD));
-  smpi_comm_destroy(MPI_COMM_WORLD);
+  while(smpi_group_unuse(smpi_comm_group(MPI_COMM_WORLD))>0);
+  xbt_free(MPI_COMM_WORLD);
   MPI_COMM_WORLD = MPI_COMM_NULL;
   for (i = 0; i < count; i++) {
-    smpi_group_destroy(smpi_comm_group(process_data[i]->comm_self));
+    smpi_group_unuse(smpi_comm_group(process_data[i]->comm_self));
     smpi_comm_destroy(process_data[i]->comm_self);
     xbt_os_timer_free(process_data[i]->timer);
     simcall_rdv_destroy(process_data[i]->mailbox);
@@ -433,7 +472,7 @@ int smpi_main(int (*realmain) (int argc, char *argv[]),int argc, char *argv[])
   fflush(stderr);
 
   if (MC_is_active())
-    MC_modelcheck_safety();
+    MC_do_the_modelcheck_for_real();
   else
     SIMIX_run();
 

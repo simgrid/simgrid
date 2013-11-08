@@ -1,4 +1,4 @@
-/* Copyright (c) 2006-2011. The SimGrid Team.
+/* Copyright (c) 2006-2013. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -35,6 +35,32 @@ SD_workstation_t __SD_workstation_create(void *surf_workstation,
   name = surf_resource_name(surf_workstation);
   xbt_lib_set(host_lib,name,SD_HOST_LEVEL,workstation);
   return xbt_lib_get_elm_or_null(host_lib,name);
+}
+
+/* Creates a storage and registers it in SD.
+ */
+SD_storage_t __SD_storage_create(void *surf_storage, void *data)
+{
+
+  SD_storage_priv_t storage;
+  const char *name;
+
+  storage = xbt_new(s_SD_storage_priv_t, 1);
+  storage->data = data;     /* user data */
+
+  name = surf_resource_name(surf_storage);
+  xbt_lib_set(storage_lib,name, SD_STORAGE_LEVEL, storage);
+  return xbt_lib_get_elm_or_null(storage_lib, name);
+}
+
+/* Destroys a storage.
+ */
+void __SD_storage_destroy(void *storage)
+{
+  SD_storage_priv_t s;
+
+  s = (SD_storage_priv_t) storage;
+  xbt_free(s);
 }
 
 /**
@@ -278,7 +304,7 @@ double SD_workstation_get_available_power(SD_workstation_t workstation)
  *
  * \param workstation a workstation
  * \param computation_amount the computation amount you want to evaluate (in flops)
- * \return an approximative astimated computation time for the given computation amount on this workstation (in seconds)
+ * \return an approximative estimated computation time for the given computation amount on this workstation (in seconds)
  */
 double SD_workstation_get_computation_time(SD_workstation_t workstation,
                                            double computation_amount)
@@ -338,8 +364,7 @@ double SD_route_get_current_bandwidth(SD_workstation_t src,
 
   links = SD_route_get_list(src, dst);
   nb_links = SD_route_get_size(src, dst);
-  bandwidth = min_bandwidth = -1.0;
-
+  min_bandwidth = -1.0;
 
   for (i = 0; i < nb_links; i++) {
     bandwidth = SD_link_get_current_bandwidth(links[i]);
@@ -357,7 +382,7 @@ double SD_route_get_current_bandwidth(SD_workstation_t src,
  * \param src the first workstation
  * \param dst the second workstation
  * \param communication_amount the communication amount you want to evaluate (in bytes)
- * \return an approximative astimated computation time for the given communication amount
+ * \return an approximative estimated computation time for the given communication amount
  * between the workstations (in seconds)
  */
 double SD_route_get_communication_time(SD_workstation_t src,
@@ -448,6 +473,16 @@ void SD_workstation_set_access_mode(SD_workstation_t workstation,
   } else {
     SD_workstation_priv(workstation)->task_fifo = xbt_fifo_new();
   }
+}
+
+/**
+ * \brief Return the list of mounted storages on a workstation.
+ *
+ * \param workstation a workstation
+ * \return a dynar containing all mounted storages on the workstation
+ */
+xbt_dict_t SD_workstation_get_storage_list(SD_workstation_t workstation){
+  return surf_workstation_model->extension.workstation.get_storage_list(workstation);
 }
 
 /* Returns whether a task can start now on a workstation*/

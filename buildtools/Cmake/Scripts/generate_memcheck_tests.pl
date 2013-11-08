@@ -8,7 +8,7 @@ if ( $#ARGV != 1 ) {
 }
 
 my ($proj_dir) = $ARGV[0];
-open MAKETEST, $ARGV[1] or die "Unable to open $ARGV[1]. $!\n";
+open MAKETEST, $ARGV[1] or die "Unable to open file: \"$ARGV[1]\". $!\n";
 
 sub var_subst {
     my ($text, $name, $value) = @_;
@@ -47,7 +47,7 @@ while ( defined( $line = <MAKETEST> ) ) {
     }
     if ($dump) {
         $line =~ s/^  //;
-        if ( $line =~ /^\s*ADD_TEST\(\S+\s+\S*\/tesh\s/ ) {
+        if ( $line =~ /^\s*ADD_TEST\(\S+\s+\S*TESH\_COMMAND\}\s/ ) {
             undef %environ;
             $config_var = "";
             $path       = "";
@@ -71,7 +71,7 @@ while ( defined( $line = <MAKETEST> ) ) {
                 my ( $env_var, $value_var ) = ( $1, $2 );
                 $environ{$env_var} = $value_var;
             }
-            if ( $line =~ /(\S+)\)$/ ) {
+            if ( $line =~ /(\S+)\s*\)$/ ) {
                 $tesh_file = $1;
                 $tesh_file =~ s/^[^\/\$]/$path\/$&/;
                 $tesh_file =~ s/\${CMAKE_HOME_DIRECTORY}/$proj_dir/g;
@@ -96,7 +96,7 @@ while ( defined( $line = <MAKETEST> ) ) {
             my ($count)        = 0;
             my ($count_first)  = 0;
             my ($count_second) = 0;
-            open TESH_FILE, $tesh_file or die "Unable to open $tesh_file $!\n";
+            open TESH_FILE, $tesh_file or die "Unable to open tesh file: \"$tesh_file\". $!\n";
             my ($input) = "";
             my ($l);
             while ( defined( $l = <TESH_FILE> ) ) {

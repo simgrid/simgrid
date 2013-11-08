@@ -1,6 +1,6 @@
 /* pmm - parallel matrix multiplication "double diffusion"                  */
 
-/* Copyright (c) 2006, 2007, 2008, 2009, 2010, 2011. The SimGrid Team.
+/* Copyright (c) 2006-2013. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -28,7 +28,7 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(msg_pmm,
 /* This example should always be executed using a deployment of
  * GRID_SIZE * GRID_SIZE nodes. */
 #define GRID_SIZE 3    /* Modify to adjust the grid's size */
-#define NODE_MATRIX_SIZE 300  /* Ammount of work done by each node*/
+#define NODE_MATRIX_SIZE 300  /* Amount of work done by each node*/
 
 #define GRID_NUM_NODES GRID_SIZE * GRID_SIZE
 #define MATRIX_SIZE NODE_MATRIX_SIZE * GRID_SIZE

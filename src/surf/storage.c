@@ -1,8 +1,8 @@
-/* Copyright (c) 2004 - 2013. The SimGrid Team.
- * All rights reserved.                                                                 */
+/* Copyright (c) 2004-2013. The SimGrid Team.
+ * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
- * under the terms of the license (GNU LGPL) which comes with this package.             */
+ * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "xbt/ex.h"
 #include "xbt/dict.h"
@@ -10,6 +10,7 @@
 #include "surf_private.h"
 #include "storage_private.h"
 #include "surf/surf_resource.h"
+#include <inttypes.h>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_storage, surf,
                                 "Logging specific to the SURF storage module");
@@ -34,19 +35,19 @@ static xbt_dynar_t storage_list;
 #define GENERIC_LMM_ACTION(action) action->generic_lmm_action
 #define GENERIC_ACTION(action) GENERIC_LMM_ACTION(action).generic_action
 
-static xbt_dict_t parse_storage_content(char *filename, size_t *used_size);
+static xbt_dict_t parse_storage_content(char *filename, sg_storage_size_t *used_size);
 static int storage_action_unref(surf_action_t action);
 static void storage_action_state_set(surf_action_t action, e_surf_action_state_t state);
-static surf_action_t storage_action_execute (void *storage, size_t size, e_surf_action_storage_type_t type);
+static surf_action_t storage_action_execute (void *storage, sg_storage_size_t size, e_surf_action_storage_type_t type);
 
 static surf_action_t storage_action_ls(void *storage, const char* path)
 {
   surf_action_t action = storage_action_execute(storage,0, LS);
   action->ls_dict = NULL;
-  xbt_dict_t ls_dict = xbt_dict_new();
+  xbt_dict_t ls_dict = xbt_dict_new_homogeneous(xbt_free);
 
   char* key;
-  size_t size = 0;
+  sg_storage_size_t size = 0;
   xbt_dict_cursor_t cursor = NULL;
 
   xbt_dynar_t dyn = NULL;
@@ -64,7 +65,9 @@ static surf_action_t storage_action_ls(void *storage, const char* path)
 
       // file
       if(xbt_dynar_length(dyn) == 1){
-        xbt_dict_set(ls_dict,file,&size,NULL);
+        sg_storage_size_t *psize = xbt_new(sg_storage_size_t,1);
+        *psize=size;
+        xbt_dict_set(ls_dict,file,psize,NULL);
       }
       // Directory
       else
@@ -86,16 +89,22 @@ static surf_action_t storage_action_open(void *storage, const char* mount,
 {
   XBT_DEBUG("\tOpen file '%s'",path);
   xbt_dict_t content_dict = ((storage_t)storage)->content;
-  size_t size = (size_t) xbt_dict_get_or_null(content_dict,path);
+  sg_storage_size_t size, *psize;
+  psize = (sg_storage_size_t*) xbt_dict_get_or_null(content_dict, path);
+  if (psize)
+    size = *psize;
+  else {
   // if file does not exist create an empty file
-  if(!size){
-    xbt_dict_set(content_dict,path,&size,NULL);
+    psize = xbt_new(sg_storage_size_t,1);
+    size = 0;
+    *psize = size;
+    xbt_dict_set(content_dict,path,psize,NULL);
     XBT_DEBUG("File '%s' was not found, file created.",path);
   }
   surf_file_t file = xbt_new0(s_surf_file_t,1);
   file->name = xbt_strdup(path);
   file->size = size;
-  file->storage = xbt_strdup(mount);
+  file->mount = xbt_strdup(mount);
 
   surf_action_t action = storage_action_execute(storage,0, OPEN);
   action->file = (void *)file;
@@ -105,7 +114,7 @@ static surf_action_t storage_action_open(void *storage, const char* mount,
 static surf_action_t storage_action_close(void *storage, surf_file_t fd)
 {
   char *filename = fd->name;
-  XBT_DEBUG("\tClose file '%s' size '%zu'",filename,fd->size);
+  XBT_DEBUG("\tClose file '%s' size '%" PRIu64 "'", filename, fd->size);
   // unref write actions from storage
   surf_action_storage_t write_action;
   unsigned int i;
@@ -115,16 +124,14 @@ static surf_action_t storage_action_close(void *storage, surf_file_t fd)
       storage_action_unref((surf_action_t) write_action);
     }
   }
-
   free(fd->name);
-  free(fd->storage);
+  free(fd->mount);
   xbt_free(fd);
   surf_action_t action = storage_action_execute(storage,0, CLOSE);
   return action;
 }
 
-static surf_action_t storage_action_read(void *storage, void* ptr, 
-					 size_t size, surf_file_t fd)
+static surf_action_t storage_action_read(void *storage, surf_file_t fd, sg_storage_size_t size)
 {
   if(size > fd->size)
     size = fd->size;
@@ -132,11 +139,11 @@ static surf_action_t storage_action_read(void *storage, void* ptr,
   return action;
 }
 
-static surf_action_t storage_action_write(void *storage, const void* ptr,
-                                          size_t size, surf_file_t fd)
+static surf_action_t storage_action_write(void *storage, surf_file_t fd, sg_storage_size_t size)
 {
   char *filename = fd->name;
-  XBT_DEBUG("\tWrite file '%s' size '%zu/%zu'",filename,size,fd->size);
+  XBT_DEBUG("\tWrite file '%s' size '%" PRIu64 "/%" PRIu64 "'",
+            filename, size, fd->size);
 
   surf_action_t action = storage_action_execute(storage,size,WRITE);
   action->file = fd;
@@ -148,12 +155,12 @@ static surf_action_t storage_action_write(void *storage, const void* ptr,
   return action;
 }
 
-static surf_action_t storage_action_execute (void *storage, size_t size, e_surf_action_storage_type_t type)
+static surf_action_t storage_action_execute (void *storage, sg_storage_size_t size, e_surf_action_storage_type_t type)
 {
   surf_action_storage_t action = NULL;
   storage_t STORAGE = storage;
 
-  XBT_IN("(%s,%zu", surf_resource_name(STORAGE), size);
+  XBT_IN("(%s,%" PRIu64, surf_resource_name(STORAGE), size);
   action =
       surf_action_new(sizeof(s_surf_action_storage_t), size, surf_storage_model,
           STORAGE->state_current != SURF_RESOURCE_ON);
@@ -192,15 +199,42 @@ static surf_action_t storage_action_execute (void *storage, size_t size, e_surf_
   return (surf_action_t) action;
 }
 
-static void* storage_create_resource(const char* id, const char* model,const char* type_id,const char* content_name)
+static xbt_dict_t storage_get_properties(const void *storage)
 {
+  return surf_resource_properties(surf_storage_resource_priv(storage));
+}
+
+static xbt_dict_t storage_get_content(void *storage)
+{
+  /* For the moment this action has no cost, but in the future we could take in account access latency of the disk */
+  /*surf_action_t action = storage_action_execute(storage,0, LS);*/
+
+  void *storage_resource = surf_storage_resource_priv(storage);
+  xbt_dict_t content_dict = xbt_dict_new_homogeneous(NULL);
+  xbt_dict_cursor_t cursor = NULL;
+  char *file;
+  sg_storage_size_t *psize;
+
+  xbt_dict_foreach(((storage_t)storage_resource)->content, cursor, file, psize){
+    xbt_dict_set(content_dict,file,psize,NULL);
+  }
+  return content_dict;
+}
+
+static sg_storage_size_t storage_get_size(void *storage){
+  void *storage_resource = surf_storage_resource_priv(storage);
+  return ((storage_t)storage_resource)->size;
+}
+
+static void* storage_create_resource(const char* id, const char* model,
+    const char* type_id, const char* content_name, const char* content_type, xbt_dict_t properties){
   storage_t storage = NULL;
 
   xbt_assert(!surf_storage_resource_priv(surf_storage_resource_by_name(id)),
               "Storage '%s' declared several times in the platform file",
               id);
   storage = (storage_t) surf_resource_new(sizeof(s_storage_t),
-          surf_storage_model, id,NULL);
+          surf_storage_model, id, properties, NULL);
 
   storage->state_current = SURF_RESOURCE_ON;
   storage->used_size = 0;
@@ -208,15 +242,21 @@ static void* storage_create_resource(const char* id, const char* model,const cha
   storage->write_actions = xbt_dynar_new(sizeof(char *),NULL);
 
   storage_type_t storage_type = xbt_lib_get_or_null(storage_type_lib, type_id,ROUTING_STORAGE_TYPE_LEVEL);
-  double Bread  = atof(xbt_dict_get(storage_type->properties,"Bread"));
-  double Bwrite = atof(xbt_dict_get(storage_type->properties,"Bwrite"));
-  double Bconnection   = atof(xbt_dict_get(storage_type->properties,"Bconnection"));
+  double Bread =
+      surf_parse_get_bandwidth(xbt_dict_get(storage_type->properties,"Bread"));
+  double Bwrite =
+      surf_parse_get_bandwidth(xbt_dict_get(storage_type->properties,"Bwrite"));
+  double Bconnection =
+      surf_parse_get_bandwidth(xbt_dict_get(storage_type->properties,
+                                            "Bconnection"));
   XBT_DEBUG("Create resource with Bconnection '%f' Bread '%f' Bwrite '%f' and Size '%lu'",Bconnection,Bread,Bwrite,(unsigned long)storage_type->size);
   storage->constraint       = lmm_constraint_new(storage_maxmin_system, storage, Bconnection);
   storage->constraint_read  = lmm_constraint_new(storage_maxmin_system, storage, Bread);
   storage->constraint_write = lmm_constraint_new(storage_maxmin_system, storage, Bwrite);
   storage->content = parse_storage_content((char*)content_name,&(storage->used_size));
+  storage->content_type = xbt_strdup(content_type);
   storage->size = storage_type->size;
+  storage->type_id = xbt_strdup(type_id);
 
   xbt_lib_set(storage_lib, id, SURF_STORAGE_LEVEL, storage);
 
@@ -227,7 +267,8 @@ static void* storage_create_resource(const char* id, const char* model,const cha
       storage_type->properties,
       Bread);
 
-  if(!storage_list) storage_list=xbt_dynar_new(sizeof(char *),NULL);
+  if (!storage_list)
+    storage_list = xbt_dynar_new(sizeof(char *),NULL);
   xbt_dynar_push(storage_list,&storage);
 
   return storage;
@@ -254,22 +295,26 @@ static void storage_update_actions_state(surf_model_t storage_model, double now,
   surf_action_storage_t next_action = NULL;
   xbt_swag_t running_actions = storage_model->states.running_action_set;
 
-  // Update the disk usage
-  // Update the file size
-  // For each action of type write
+
   xbt_swag_foreach_safe(action, next_action, running_actions) {
     if(action->type == WRITE)
     {
+      // Update the disk usage
+      // Update the file size
+      // Update the storage content (with file size)
       double rate = lmm_variable_getvalue(GENERIC_LMM_ACTION(action).variable);
       /* Hack to avoid rounding differences between x86 and x86_64
-       * (note that the next sizes are of type size_t). */
+       * (note that the next sizes are of type sg_storage_size_t). */
       long incr = delta * rate + MAXMIN_PRECISION;
       ((storage_t)(action->storage))->used_size += incr; // disk usage
       ((surf_action_t)action)->file->size += incr; // file size
-    }
-  }
 
-  xbt_swag_foreach_safe(action, next_action, running_actions) {
+      sg_storage_size_t *psize = xbt_new(sg_storage_size_t,1);
+      *psize = ((surf_action_t)action)->file->size;
+
+      xbt_dict_t content_dict = ((storage_t)(action->storage))->content;
+      xbt_dict_set(content_dict,((surf_action_t)action)->file->name,psize,NULL);
+    }
 
     double_update(&(GENERIC_ACTION(action).remains),
                   lmm_variable_getvalue(GENERIC_LMM_ACTION(action).variable) * delta);
@@ -411,20 +456,28 @@ static void parse_storage_init(sg_platf_storage_cbarg_t storage)
   // if storage content is not specified use the content of storage_type if exist
   if(!strcmp(storage->content,"") && strcmp(((storage_type_t) stype)->content,"")){
     storage->content = ((storage_type_t) stype)->content;
-    XBT_DEBUG("For disk '%s' content is empty, use the content of storage type '%s'",storage->id,((storage_type_t) stype)->type_id);
+    storage->content_type = ((storage_type_t) stype)->content_type;
+    XBT_DEBUG("For disk '%s' content is empty, inherit the content (of type %s) from storage type '%s' ",
+        storage->id,((storage_type_t) stype)->content_type,
+        ((storage_type_t) stype)->type_id);
   }
 
-  XBT_DEBUG("SURF storage create resource\n\t\tid '%s'\n\t\ttype '%s' \n\t\tmodel '%s' \n\t\tcontent '%s'\n\t\tproperties '%p'\n",
+  XBT_DEBUG("SURF storage create resource\n\t\tid '%s'\n\t\ttype '%s' "
+      "\n\t\tmodel '%s' \n\t\tcontent '%s'\n\t\tcontent_type '%s' "
+      "\n\t\tproperties '%p'\n",
       storage->id,
       ((storage_type_t) stype)->model,
       ((storage_type_t) stype)->type_id,
       storage->content,
+      storage->content_type,
       ((storage_type_t) stype)->properties);
 
   storage_create_resource(storage->id,
      ((storage_type_t) stype)->model,
      ((storage_type_t) stype)->type_id,
-     storage->content);
+     storage->content,
+     storage->content_type,
+     storage->properties);
 }
 
 static void parse_mstorage_init(sg_platf_mstorage_cbarg_t mstorage)
@@ -483,11 +536,12 @@ static void surf_storage_model_init_internal(void)
   surf_storage_model->extension.storage.read = storage_action_read;
   surf_storage_model->extension.storage.write = storage_action_write;
   surf_storage_model->extension.storage.ls = storage_action_ls;
-
+  surf_storage_model->extension.storage.get_properties = storage_get_properties;
+  surf_storage_model->extension.storage.get_content = storage_get_content;
+  surf_storage_model->extension.storage.get_size = storage_get_size;
   if (!storage_maxmin_system) {
     storage_maxmin_system = lmm_system_new(storage_selective_update);
   }
-
 }
 
 void surf_storage_model_init_default(void)
@@ -520,13 +574,13 @@ static void storage_parse_storage(sg_platf_storage_cbarg_t storage)
       (void *) xbt_strdup(storage->type_id));
 }
 
-static xbt_dict_t parse_storage_content(char *filename, size_t *used_size)
+static xbt_dict_t parse_storage_content(char *filename, sg_storage_size_t *used_size)
 {
   *used_size = 0;
   if ((!filename) || (strcmp(filename, "") == 0))
     return NULL;
 
-  xbt_dict_t parse_content = xbt_dict_new_homogeneous(NULL);
+  xbt_dict_t parse_content = xbt_dict_new_homogeneous(xbt_free);
   FILE *file = NULL;
 
   file = surf_fopen(filename, "r");
@@ -537,14 +591,15 @@ static xbt_dict_t parse_storage_content(char *filename, size_t *used_size)
   size_t len = 0;
   ssize_t read;
   char path[1024];
-  size_t size;
-
+  sg_storage_size_t size;
 
   while ((read = xbt_getline(&line, &len, file)) != -1) {
     if (read){
-    if(sscanf(line,"%s %zu",path, &size)==2) {
+    if (sscanf(line,"%s %" SCNu64, path, &size) == 2) {
         *used_size += size;
-        xbt_dict_set(parse_content,path,(void*) size,NULL);
+        sg_storage_size_t *psize = xbt_new(sg_storage_size_t, 1);
+        *psize = size;
+        xbt_dict_set(parse_content,path,psize,NULL);
       } else {
         xbt_die("Be sure of passing a good format for content file.\n");
       }
@@ -564,13 +619,16 @@ static void storage_parse_storage_type(sg_platf_storage_type_cbarg_t storage_typ
   stype->model = xbt_strdup(storage_type->model);
   stype->properties = storage_type->properties;
   stype->content = xbt_strdup(storage_type->content);
+  stype->content_type = xbt_strdup(storage_type->content_type);
   stype->type_id = xbt_strdup(storage_type->id);
-  stype->size = storage_type->size * 1000000000; /* storage_type->size is in Gbytes and stype->sizeis in bytes */
+  stype->size = storage_type->size;
 
-  XBT_DEBUG("ROUTING Create a storage type id '%s' with model '%s' content '%s'",
+  XBT_DEBUG("ROUTING Create a storage type id '%s' with model '%s', "
+      "content '%s', and content_type '%s'",
       stype->type_id,
       stype->model,
-      storage_type->content);
+      storage_type->content,
+      storage_type->content_type);
 
   xbt_lib_set(storage_type_lib,
       stype->type_id,
@@ -605,14 +663,15 @@ static void storage_parse_mount(sg_platf_mount_cbarg_t mount)
 {
   // Verification of an existing storage
 #ifndef NDEBUG
-  void* storage = xbt_lib_get_or_null(storage_lib, mount->id,ROUTING_STORAGE_LEVEL);
+  void* storage = xbt_lib_get_or_null(storage_lib, mount->storageId,ROUTING_STORAGE_LEVEL);
 #endif
-  xbt_assert(storage,"Disk id \"%s\" does not exists", mount->id);
+  xbt_assert(storage,"Disk id \"%s\" does not exists", mount->storageId);
 
-  XBT_DEBUG("ROUTING Mount '%s' on '%s'",mount->id, mount->name);
+  XBT_DEBUG("ROUTING Mount '%s' on '%s'",mount->storageId, mount->name);
 
   s_mount_t mnt;
-  mnt.id = surf_storage_resource_priv(surf_storage_resource_by_name(mount->id));
+  mnt.storage =
+    surf_storage_resource_priv(surf_storage_resource_by_name(mount->storageId));
   mnt.name = xbt_strdup(mount->name);
 
   if(!mount_list){
@@ -628,6 +687,7 @@ static XBT_INLINE void routing_storage_type_free(void *r)
   free(stype->model);
   free(stype->type_id);
   free(stype->content);
+  free(stype->content_type);
   xbt_dict_free(&(stype->properties));
   free(stype);
 }
@@ -638,6 +698,8 @@ static XBT_INLINE void surf_storage_resource_free(void *r)
   storage_t storage = r;
   xbt_dict_free(&storage->content);
   xbt_dynar_free(&storage->write_actions);
+  free(storage->type_id);
+  free(storage->content_type);
   // generic resource
   surf_resource_free(r);
 }
@@ -660,3 +722,4 @@ void storage_register_callbacks() {
   sg_platf_storage_type_add_cb(storage_parse_storage_type);
   sg_platf_mount_add_cb(storage_parse_mount);
 }
+

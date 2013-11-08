@@ -1,4 +1,4 @@
-/* Copyright (c) 2009, 2010, 2011. The SimGrid Team.
+/* Copyright (c) 2009-2013. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -19,7 +19,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route_floyd, surf, "Routing part of surf");
 
 typedef struct {
   s_as_t generic_routing;
-  /* vars for calculate the floyd algorith. */
+  /* vars for calculate the floyd algorithm. */
   int *predecessor_table;
   double *cost_table;
   sg_platf_route_cbarg_t *link_table;

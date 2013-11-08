@@ -1,4 +1,4 @@
-/* Copyright (c) 2004, 2005, 2006, 2007, 2008, 2009, 2010. The SimGrid Team.
+/* Copyright (c) 2004-2013. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -28,7 +28,7 @@ static void workstation_new(sg_platf_host_cbarg_t host)
 
   /* NOTE: The properties object is NULL, because the current code uses that of
    * that of a cpu resource. */
-  workstation_CLM03_t ws = (workstation_CLM03_t) surf_resource_new(sizeof(s_workstation_CLM03_t), surf_workstation_model, name, NULL);
+  workstation_CLM03_t ws = (workstation_CLM03_t) surf_resource_new(sizeof(s_workstation_CLM03_t), surf_workstation_model, name, NULL, NULL);
 
   ws->storage = xbt_lib_get_or_null(storage_lib, name, ROUTING_STORAGE_HOST_LEVEL);
   ws->net_elm = xbt_lib_get_or_null(host_lib, name, ROUTING_HOST_LEVEL);
@@ -400,6 +400,42 @@ static double ws_get_available_speed(void *workstation)
   return cpu->model->extension.cpu.get_available_speed(workstation);
 }
 
+static double ws_get_current_power_peak(void *workstation)
+{
+  surf_resource_t cpu = ((surf_resource_t) surf_cpu_resource_priv(workstation));
+  return cpu->model->extension.cpu.
+      get_current_power_peak(workstation);
+}
+
+static double ws_get_power_peak_at(void *workstation, int pstate_index)
+{
+  surf_resource_t cpu = ((surf_resource_t) surf_cpu_resource_priv(workstation));
+  return cpu->model->extension.cpu.
+      get_power_peak_at(workstation, pstate_index);
+}
+
+static int ws_get_nb_pstates(void *workstation)
+{
+  surf_resource_t cpu = ((surf_resource_t) surf_cpu_resource_priv(workstation));
+  return cpu->model->extension.cpu.
+      get_nb_pstates(workstation);
+}
+
+static void ws_set_power_peak_at(void *workstation, int pstate_index)
+{
+  surf_resource_t cpu = ((surf_resource_t) surf_cpu_resource_priv(workstation));
+  cpu->model->extension.cpu.
+      set_power_peak_at(workstation, pstate_index);
+}
+
+static double ws_get_consumed_energy(void *workstation)
+{
+  surf_resource_t cpu = ((surf_resource_t) surf_cpu_resource_priv(workstation));
+  return cpu->model->extension.cpu.
+      get_consumed_energy(workstation);
+}
+
+
 static surf_action_t ws_execute_parallel_task(int workstation_nb,
                                               void **workstation_list,
                                               double *computation_amount,
@@ -466,7 +502,7 @@ static xbt_dict_t ws_get_properties(const void *ws)
   return surf_resource_properties(surf_cpu_resource_priv(ws));
 }
 
-static storage_t find_storage_on_mount_list(void *workstation,const char* storage)
+static storage_t find_storage_on_mount_list(void *workstation,const char* mount)
 {
   storage_t st = NULL;
   s_mount_t mnt;
@@ -474,17 +510,34 @@ static storage_t find_storage_on_mount_list(void *workstation,const char* storag
   workstation_CLM03_t ws = (workstation_CLM03_t) surf_workstation_resource_priv(workstation);
   xbt_dynar_t storage_list = ws->storage;
 
-  XBT_DEBUG("Search for storage name '%s' on '%s'",storage,ws->generic_resource.name);
+  XBT_DEBUG("Search for storage name '%s' on '%s'",mount,ws->generic_resource.name);
   xbt_dynar_foreach(storage_list,cursor,mnt)
   {
     XBT_DEBUG("See '%s'",mnt.name);
-    if(!strcmp(storage,mnt.name)){
-      st = mnt.id;
+    if(!strcmp(mount,mnt.name)){
+      st = mnt.storage;
       break;
     }
   }
-  if(!st) xbt_die("Can't find mount '%s' for '%s'",storage,ws->generic_resource.name);
+  if(!st) xbt_die("Can't find mount '%s' for '%s'",mount,ws->generic_resource.name);
   return st;
+}
+
+static xbt_dict_t ws_get_storage_list(void *workstation)
+{
+  s_mount_t mnt;
+  unsigned int i;
+  xbt_dict_t storage_list = xbt_dict_new_homogeneous(NULL);
+  char *storage_name = NULL;
+
+  workstation_CLM03_t ws = (workstation_CLM03_t) surf_workstation_resource_priv(workstation);
+  xbt_dynar_t storages = ws->storage;
+
+  xbt_dynar_foreach(storages,i,mnt){
+    storage_name = ((storage_t)mnt.storage)->generic_resource.name;
+    xbt_dict_set(storage_list,mnt.name,storage_name,NULL);
+  }
+  return storage_list;
 }
 
 static surf_action_t ws_action_open(void *workstation, const char* mount,
@@ -498,28 +551,26 @@ static surf_action_t ws_action_open(void *workstation, const char* mount,
 
 static surf_action_t ws_action_close(void *workstation, surf_file_t fd)
 {
-  storage_t st = find_storage_on_mount_list(workstation, fd->storage);
+  storage_t st = find_storage_on_mount_list(workstation, fd->mount);
   XBT_DEBUG("CLOSE on disk '%s'",st->generic_resource.name);
   surf_model_t model = st->generic_resource.model;
   return model->extension.storage.close(st, fd);
 }
 
-static surf_action_t ws_action_read(void *workstation, void* ptr, size_t size,
-                                    surf_file_t fd)
+static surf_action_t ws_action_read(void *workstation, surf_file_t fd, sg_storage_size_t size)
 {
-  storage_t st = find_storage_on_mount_list(workstation, fd->storage);
+  storage_t st = find_storage_on_mount_list(workstation, fd->mount);
   XBT_DEBUG("READ on disk '%s'",st->generic_resource.name);
   surf_model_t model = st->generic_resource.model;
-  return model->extension.storage.read(st, ptr, size, fd);
+  return model->extension.storage.read(st, fd, size);
 }
 
-static surf_action_t ws_action_write(void *workstation, const void* ptr,
-                                     size_t size, surf_file_t fd)
+static surf_action_t ws_action_write(void *workstation, surf_file_t fd, sg_storage_size_t size)
 {
-  storage_t st = find_storage_on_mount_list(workstation, fd->storage);
+  storage_t st = find_storage_on_mount_list(workstation, fd->mount);
   XBT_DEBUG("WRITE on disk '%s'",st->generic_resource.name);
   surf_model_t model = st->generic_resource.model;
-  return model->extension.storage.write(st,  ptr, size, fd);
+  return model->extension.storage.write(st, fd, size);
 }
 
 static int ws_file_unlink(void *workstation, surf_file_t fd)
@@ -529,7 +580,7 @@ static int ws_file_unlink(void *workstation, surf_file_t fd)
     return 0;
   } else {
 //    XBT_INFO("%s %zu", fd->storage, fd->size);
-    storage_t st = find_storage_on_mount_list(workstation, fd->storage);
+    storage_t st = find_storage_on_mount_list(workstation, fd->mount);
     xbt_dict_t content_dict = (st)->content;
     /* Check if the file is on this storage */
     if (!xbt_dict_get_or_null(content_dict, fd->name)){
@@ -544,7 +595,7 @@ static int ws_file_unlink(void *workstation, surf_file_t fd)
       xbt_dict_remove(content_dict,fd->name);
 
       free(fd->name);
-      free(fd->storage);
+      free(fd->mount);
       xbt_free(fd);
       return 1;
     }
@@ -560,9 +611,36 @@ static surf_action_t ws_action_ls(void *workstation, const char* mount,
   return model->extension.storage.ls(st, path);
 }
 
-static size_t ws_file_get_size(void *workstation, surf_file_t fd)
+static sg_storage_size_t ws_file_get_size(void *workstation, surf_file_t fd)
 {
   return fd->size;
+}
+
+static xbt_dynar_t ws_file_get_info(void *workstation, surf_file_t fd)
+{
+  storage_t st = find_storage_on_mount_list(workstation, fd->mount);
+  sg_storage_size_t *psize = xbt_new(sg_storage_size_t, 1);
+  *psize = fd->size;
+  xbt_dynar_t info = xbt_dynar_new(sizeof(void*), NULL);
+  xbt_dynar_push_as(info, sg_storage_size_t *, psize);
+  xbt_dynar_push_as(info, void *, fd->mount);
+  xbt_dynar_push_as(info, void *, st->generic_resource.name);
+  xbt_dynar_push_as(info, void *, st->type_id);
+  xbt_dynar_push_as(info, void *, st->content_type);
+
+  return info;
+}
+
+static sg_storage_size_t ws_storage_get_free_size(void *workstation,const char* name)
+{
+  storage_t st = find_storage_on_mount_list(workstation, name);
+  return st->size - st->used_size;
+}
+
+static sg_storage_size_t ws_storage_get_used_size(void *workstation,const char* name)
+{
+  storage_t st = find_storage_on_mount_list(workstation, name);
+  return st->used_size;
 }
 
 void ws_get_params(void *ws, ws_params_t params)
@@ -649,21 +727,31 @@ static void surf_workstation_model_init_internal(void)
   model->extension.workstation.get_speed = ws_get_speed;
   model->extension.workstation.get_available_speed =
       ws_get_available_speed;
+  model->extension.workstation.get_current_power_peak = ws_get_current_power_peak;
+  model->extension.workstation.get_power_peak_at = ws_get_power_peak_at;
+  model->extension.workstation.get_nb_pstates = ws_get_nb_pstates;
+  model->extension.workstation.set_power_peak_at = ws_set_power_peak_at;
+  model->extension.workstation.get_consumed_energy = ws_get_consumed_energy;
 
-  model->extension.workstation.communicate           = ws_communicate;
-  model->extension.workstation.get_route             = ws_get_route;
+  model->extension.workstation.communicate = ws_communicate;
+  model->extension.workstation.get_route = ws_get_route;
   model->extension.workstation.execute_parallel_task = ws_execute_parallel_task;
-  model->extension.workstation.get_link_bandwidth    = ws_get_link_bandwidth;
-  model->extension.workstation.get_link_latency      = ws_get_link_latency;
-  model->extension.workstation.link_shared           = ws_link_shared;
-  model->extension.workstation.get_properties        = ws_get_properties;
+  model->extension.workstation.get_link_bandwidth = ws_get_link_bandwidth;
+  model->extension.workstation.get_link_latency = ws_get_link_latency;
+  model->extension.workstation.link_shared = ws_link_shared;
+  model->extension.workstation.get_properties = ws_get_properties;
 
-  model->extension.workstation.open   = ws_action_open;
-  model->extension.workstation.close  = ws_action_close;
-  model->extension.workstation.read   = ws_action_read;
-  model->extension.workstation.write  = ws_action_write;
+  model->extension.workstation.open = ws_action_open;
+  model->extension.workstation.close = ws_action_close;
+  model->extension.workstation.read = ws_action_read;
+  model->extension.workstation.write = ws_action_write;
   model->extension.workstation.unlink = ws_file_unlink;
-  model->extension.workstation.ls     = ws_action_ls;
+  model->extension.workstation.ls = ws_action_ls;
+  model->extension.workstation.get_size = ws_file_get_size;
+  model->extension.workstation.get_info = ws_file_get_info;
+  model->extension.workstation.get_free_size = ws_storage_get_free_size;
+  model->extension.workstation.get_used_size = ws_storage_get_used_size;
+  model->extension.workstation.get_storage_list = ws_get_storage_list;
 
   model->extension.workstation.get_params = ws_get_params;
   model->extension.workstation.set_params = ws_set_params;
@@ -674,7 +762,7 @@ static void surf_workstation_model_init_internal(void)
 
 void surf_workstation_model_init_current_default(void)
 {
-  xbt_cfg_setdefault_boolean(_sg_cfg_set, "network/crosstraffic", xbt_strdup("yes"));
+  xbt_cfg_setdefault_boolean(_sg_cfg_set, "network/crosstraffic", "yes");
   surf_cpu_model_init_Cas01();
   surf_network_model_init_LegrandVelho();
 

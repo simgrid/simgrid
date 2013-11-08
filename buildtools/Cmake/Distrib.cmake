@@ -241,7 +241,7 @@ foreach(file ${source_to_pack})
   # Actually copy the file
   add_custom_command(
     TARGET dist-dir
-    COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_HOME_DIRECTORY}/${file} ${PROJECT_NAME}-${release_version}/${file_location}/
+    COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_HOME_DIRECTORY}/${file} ${PROJECT_NAME}-${release_version}/${file_location}
     )
 endforeach(file ${source_to_pack})
 
@@ -309,7 +309,7 @@ add_custom_target(distcheck
   COMMAND ${CMAKE_COMMAND} -E chdir ${CMAKE_BINARY_TEST_DIR}/${PROJECT_NAME}-${release_version}/_build ${CMAKE_MAKE_PROGRAM}
 
   COMMAND ${CMAKE_COMMAND} -E echo "XXX Test"
-  COMMAND ${CMAKE_COMMAND} -E chdir ${CMAKE_BINARY_TEST_DIR}/${PROJECT_NAME}-${release_version}/_build ctest
+  COMMAND ${CMAKE_COMMAND} -E chdir ${CMAKE_BINARY_TEST_DIR}/${PROJECT_NAME}-${release_version}/_build ctest --output-on-failure
 
   COMMAND ${CMAKE_COMMAND} -E echo "XXX Install"
   COMMAND ${CMAKE_COMMAND} -E chdir ${CMAKE_BINARY_TEST_DIR}/${PROJECT_NAME}-${release_version}/_build ${CMAKE_MAKE_PROGRAM} install

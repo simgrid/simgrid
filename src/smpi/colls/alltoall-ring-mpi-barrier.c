@@ -29,7 +29,7 @@ smpi_coll_tuned_alltoall_ring_mpi_barrier(void *send_buff, int send_count,
   MPI_Status s;
   MPI_Aint send_chunk, recv_chunk;
   int i, src, dst, rank, num_procs;
-  int tag = 1;
+  int tag = COLL_TAG_ALLTOALL;
 
   char *send_ptr = (char *) send_buff;
   char *recv_ptr = (char *) recv_buff;
@@ -46,7 +46,7 @@ smpi_coll_tuned_alltoall_ring_mpi_barrier(void *send_buff, int send_count,
     src = (rank - i + num_procs) % num_procs;
     dst = (rank + i) % num_procs;
 
-    smpi_mpi_barrier(comm);
+    mpi_coll_barrier_fun(comm);
     smpi_mpi_sendrecv(send_ptr + dst * send_chunk, send_count, send_type, dst,
                  tag, recv_ptr + src * recv_chunk, recv_count, recv_type,
                  src, tag, comm, &s);

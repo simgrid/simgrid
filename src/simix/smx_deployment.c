@@ -1,4 +1,4 @@
-/* Copyright (c) 2007, 2009, 2010. The SimGrid Team.
+/* Copyright (c) 2007, 2009-2013. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -45,7 +45,7 @@ static void parse_process(sg_platf_process_cbarg_t process)
   int i;
   for (i=0; i<process->argc; i++)
     arg->argv[i] = xbt_strdup(process->argv[i]);
-  arg->name = (char*)(arg->argv)[0];
+  arg->name = xbt_strdup(arg->argv[0]);
   arg->kill_time = kill_time;
   arg->properties = current_property_set;
   if (!SIMIX_host_priv(host)->boot_processes) {

@@ -5,13 +5,11 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(msg_broadcaster,
 
 xbt_dynar_t build_hostlist_from_hostcount(int hostcount)
 {
-  xbt_dynar_t host_list = xbt_dynar_new(sizeof(char*), NULL);
-  char *hostname = NULL;
-  int i = 1;
+  xbt_dynar_t host_list = xbt_dynar_new(sizeof(char*), xbt_free_ref);
+  int i;
   
-  for (; i < hostcount+1; i++) {
-    hostname = xbt_new(char, HOSTNAME_LENGTH);
-    snprintf(hostname, HOSTNAME_LENGTH, "host%d", i);
+  for (i = 1; i <= hostcount; i++) {
+    char *hostname = bprintf("host%d", i);
     XBT_DEBUG("%s", hostname);
     xbt_dynar_push(host_list, &hostname);
   }
@@ -48,7 +46,7 @@ int broadcaster_build_chain(broadcaster_t bc)
       XBT_DEBUG("Building chain -- broadcaster:\"%s\" dest:\"%s\" prev:\"%s\" next:\"%s\"", me, current_host, prev, next);
     
       /* Send message to current peer */
-      task = task_message_chain_new(me, current_host, prev, next, bc->piece_count);
+      task = task_message_chain_new(prev, next, bc->piece_count);
       MSG_task_send(task, current_host);
 
       last = current_host;
@@ -67,7 +65,7 @@ int broadcaster_send_file(broadcaster_t bc)
   bc->current_piece = 0;
 
   while (bc->current_piece < bc->piece_count) {
-    task = task_message_data_new(me, bc->first, NULL, PIECE_SIZE);
+    task = task_message_data_new(NULL, PIECE_SIZE);
     XBT_DEBUG("Sending (send) piece %d from %s into mailbox %s", bc->current_piece, me, bc->first);
     MSG_task_send(task, bc->first);
     bc->current_piece++;

@@ -4,7 +4,7 @@
    Written May 1989 by Mike Haertel.
    Heavily modified Mar 1992 by Fred Fish. (fnf@cygnus.com) */
 
-/* Copyright (c) 2010. The SimGrid Team.
+/* Copyright (c) 2010-2013. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -157,7 +157,6 @@ typedef struct {
       ssize_t frag_size[MAX_FRAGMENT_PER_BLOCK];
       //void *bt[MAX_FRAGMENT_PER_BLOCK][XBT_BACKTRACE_SIZE]; /* Where it was malloced (or realloced lastly) */
       int ignore[MAX_FRAGMENT_PER_BLOCK];
-      heap_area_t equal_to[MAX_FRAGMENT_PER_BLOCK];
     } busy_frag;
     struct {
       size_t size; /* Size (in blocks) of a large cluster.  */
@@ -165,7 +164,6 @@ typedef struct {
       //void *bt[XBT_BACKTRACE_SIZE]; /* Where it was malloced (or realloced lastly) */
       //int bt_size;
       int ignore;
-      heap_area_t equal_to;
     } busy_block;
     /* Heap information for a free block (that may be the first of a free cluster).  */
     struct {

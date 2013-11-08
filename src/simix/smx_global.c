@@ -1,4 +1,5 @@
-/* Copyright (c) 2007-2012. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2007-2013. The SimGrid Team.
+ * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -10,6 +11,7 @@
 #include "xbt/str.h"
 #include "xbt/ex.h"             /* ex_backtrace_display */
 #include "mc/mc.h"
+#include "simgrid/sg_config.h"
 
 XBT_LOG_NEW_CATEGORY(simix, "All SIMIX categories");
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_kernel, simix,
@@ -107,8 +109,13 @@ void SIMIX_global_init(int *argc, char **argv)
   }
 
   SIMIX_HOST_LEVEL = xbt_lib_add_level(host_lib,SIMIX_host_destroy);
+  SIMIX_STORAGE_LEVEL = xbt_lib_add_level(storage_lib, SIMIX_storage_destroy);
 
-  atexit(SIMIX_clean);
+  if (sg_cfg_get_boolean("clean_atexit"))
+    atexit(SIMIX_clean);
+
+  if (_sg_cfg_exit_asap)
+    exit(0);
 }
 
 /**
@@ -157,7 +164,7 @@ static void SIMIX_clean(void)
 
 #ifdef TIME_BENCH_AMDAHL
   xbt_os_cputimer_stop(simix_global->timer_seq);
-  XBT_INFO("Amdhal timing informations. Sequential time: %lf; Parallel time: %lf",
+  XBT_INFO("Amdahl timing informations. Sequential time: %f; Parallel time: %f",
            xbt_os_timer_elapsed(simix_global->timer_seq),
            xbt_os_timer_elapsed(simix_global->timer_par));
   xbt_os_timer_free(simix_global->timer_seq);
@@ -332,6 +339,16 @@ void SIMIX_run(void)
       }
     }
 
+    /* Autorestart all process */
+    if(host_that_restart) {
+      char *hostname = NULL;
+      xbt_dynar_foreach(host_that_restart,iter,hostname) {
+        XBT_INFO("Restart processes on host: %s",hostname);
+        SIMIX_host_autorestart(SIMIX_host_get_by_name(hostname));
+      }
+      xbt_dynar_reset(host_that_restart);
+    }
+
     /* Clean processes to destroy */
     SIMIX_process_empty_trash();
 
@@ -348,7 +365,7 @@ void SIMIX_run(void)
     TRACE_end();
 #endif
 
-    XBT_WARN("Oops ! Deadlock or code not perfectly clean.");
+    XBT_CRITICAL("Oops ! Deadlock or code not perfectly clean.");
     SIMIX_display_process_status();
     xbt_abort();
   }

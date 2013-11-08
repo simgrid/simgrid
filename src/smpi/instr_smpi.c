@@ -1,11 +1,10 @@
-/* Copyright (c) 2010. The SimGrid Team.
+/* Copyright (c) 2010, 2012-2013. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
   * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "private.h"
-#include "mc/mc.h"
 #include <ctype.h>
 #include <wchar.h>
 
@@ -38,6 +37,7 @@ static const char *smpi_colors[] ={
     "reduce",        "0 1 0",
     "reducescatter", "0.52 1 0.52",
     "scan",          "1 0.58 0.23",
+    "exscan",          "1 0.54 0.25",
     "scatterv",      "0.52 0 0.52",
     "scatter",       "1 0.74 0.54",
     "computing",     "0 1 1",
@@ -87,9 +87,6 @@ static char *TRACE_smpi_put_key(int src, int dst, char *key, int n)
   }
   //generate the key
   static unsigned long long counter = 0;
-  
-  if(MC_is_active())
-    MC_ignore_data_bss(&counter, sizeof(counter));
 
   snprintf(key, n, "%d_%d_%llu", src, dst, counter++);
 
@@ -180,7 +177,7 @@ void TRACE_smpi_finalize(int rank)
   PJ_container_free (container);
 }
 
-void TRACE_smpi_collective_in(int rank, int root, const char *operation)
+void TRACE_smpi_collective_in(int rank, int root, const char *operation, int size)
 {
   if (!TRACE_smpi_is_enabled()) return;
 
@@ -190,7 +187,7 @@ void TRACE_smpi_collective_in(int rank, int root, const char *operation)
   type_t type = PJ_type_get ("MPI_STATE", container->type);
   const char *color = instr_find_color (operation);
   val_t value = PJ_value_get_or_new (operation, color, type);
-  new_pajePushState (SIMIX_get_clock(), container, type, value);
+  new_pajePushStateWithSize (SIMIX_get_clock(), container, type, value, size);
 }
 
 void TRACE_smpi_collective_out(int rank, int root, const char *operation)
@@ -244,7 +241,7 @@ void TRACE_smpi_computing_out(int rank)
   new_pajePopState (SIMIX_get_clock(), container, type);
 }
 
-void TRACE_smpi_ptp_in(int rank, int src, int dst, const char *operation)
+void TRACE_smpi_ptp_in(int rank, int src, int dst, const char *operation, int size)
 {
   if (!TRACE_smpi_is_enabled()) return;
 
@@ -255,7 +252,7 @@ void TRACE_smpi_ptp_in(int rank, int src, int dst, const char *operation)
   type_t type = PJ_type_get ("MPI_STATE", container->type);
   const char *color = instr_find_color (operation);
   val_t value = PJ_value_get_or_new (operation, color, type);
-  new_pajePushState (SIMIX_get_clock(), container, type, value);
+  new_pajePushStateWithSize (SIMIX_get_clock(), container, type, value, size);
 }
 
 void TRACE_smpi_ptp_out(int rank, int src, int dst, const char *operation)
@@ -270,12 +267,11 @@ void TRACE_smpi_ptp_out(int rank, int src, int dst, const char *operation)
   new_pajePopState (SIMIX_get_clock(), container, type);
 }
 
-void TRACE_smpi_send(int rank, int src, int dst)
+void TRACE_smpi_send(int rank, int src, int dst, int size)
 {
   if (!TRACE_smpi_is_enabled()) return;
 
-  char key[INSTR_DEFAULT_STR_SIZE];
-  bzero (key, INSTR_DEFAULT_STR_SIZE);
+  char key[INSTR_DEFAULT_STR_SIZE] = {0};
   TRACE_smpi_put_key(src, dst, key, INSTR_DEFAULT_STR_SIZE);
 
   char str[INSTR_DEFAULT_STR_SIZE];
@@ -283,15 +279,14 @@ void TRACE_smpi_send(int rank, int src, int dst)
   container_t container = PJ_container_get (str);
   type_t type = PJ_type_get ("MPI_LINK", PJ_type_get_root());
 
-  new_pajeStartLink (SIMIX_get_clock(), PJ_container_get_root(), type, container, "PTP", key);
+  new_pajeStartLinkWithSize (SIMIX_get_clock(), PJ_container_get_root(), type, container, "PTP", key, size);
 }
 
 void TRACE_smpi_recv(int rank, int src, int dst)
 {
   if (!TRACE_smpi_is_enabled()) return;
 
-  char key[INSTR_DEFAULT_STR_SIZE];
-  bzero (key, INSTR_DEFAULT_STR_SIZE);
+  char key[INSTR_DEFAULT_STR_SIZE] = {0};
   TRACE_smpi_get_key(src, dst, key, INSTR_DEFAULT_STR_SIZE);
 
   char str[INSTR_DEFAULT_STR_SIZE];

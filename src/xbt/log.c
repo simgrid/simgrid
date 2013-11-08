@@ -1,6 +1,6 @@
 /* log - a generic logging facility in the spirit of log4j                  */
 
-/* Copyright (c) 2004-2011. The SimGrid Team.
+/* Copyright (c) 2004-2013. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -1100,7 +1100,12 @@ static xbt_log_setting_t _xbt_log_parse_setting(const char *control_string)
         break;
       }
     }
-    if (i < xbt_log_priority_infinite) {
+
+    if(i<XBT_LOG_STATIC_THRESHOLD){
+     THROWF(arg_error, 0,
+             "Priority: %s is above allowed priority : %s (for debug and trace levels, recompile SimGrid with -Denable_debug=ON)",
+             eq + 1, xbt_log_priority_names[XBT_LOG_STATIC_THRESHOLD]);
+    }else if (i < xbt_log_priority_infinite) {
       set->thresh = (e_xbt_log_priority_t) i;
     } else {
       THROWF(arg_error, 0,

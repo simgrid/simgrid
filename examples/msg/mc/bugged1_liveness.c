@@ -1,6 +1,6 @@
 /***************** Centralized Mutual Exclusion Algorithm *********************/
 /* This example implements a centralized mutual exclusion algorithm.          */
-/* CS requests of client 1 not satisfied                                      */
+/* Bug : CS requests of client 1 not satisfied                                      */
 /* LTL property checked : G(r->F(cs)); (r=request of CS, cs=CS ok)            */
 /******************************************************************************/
 
@@ -27,15 +27,18 @@ int coordinator(int argc, char *argv[])
 {
 
   int CS_used = 0;   
-  msg_task_t task = NULL, answer = NULL;        
+  msg_task_t task = NULL, answer = NULL; 
+  xbt_dynar_t requests = xbt_dynar_new(sizeof(char *), NULL);
+  char *req;
 
   while(1){  
     MSG_task_receive(&task, "coordinator");
     const char *kind = MSG_task_get_name(task); 
     if (!strcmp(kind, "request")) {    
-      char *req = MSG_task_get_data(task);
+      req = MSG_task_get_data(task);
       if (CS_used) {           
-        XBT_INFO("CS already used.");
+        XBT_INFO("CS already used. Queue the request.");
+        xbt_dynar_push(requests, &req);
       } else {               
         if(strcmp(req, "1") != 0){
           XBT_INFO("CS idle. Grant immediatly");
@@ -45,13 +48,25 @@ int coordinator(int argc, char *argv[])
           answer = NULL;
         }
       }
-    } else {         
-      XBT_INFO("CS release. resource now idle");
-      CS_used = 0;
+    } else {      
+      if (!xbt_dynar_is_empty(requests)) {
+        XBT_INFO("CS release. Grant to queued requests (queue size: %lu)", xbt_dynar_length(requests));
+        xbt_dynar_shift(requests, &req);
+        if(strcmp(req, "1") != 0){
+          MSG_task_send(MSG_task_create("grant", 0, 1000, NULL), req);
+        }else{
+          xbt_dynar_push(requests, &req);
+          CS_used = 0;
+        }
+      }else{
+        XBT_INFO("CS release. resource now idle");
+        CS_used = 0;
+      }
     }
     MSG_task_destroy(task);
     task = NULL;
     kind = NULL;
+    req = NULL;
   }
  
   return 0;
@@ -114,14 +129,19 @@ int main(int argc, char *argv[])
 
   MSG_init(&argc, argv);
 
+  char **options = &argv[1];
+
   MSG_config("model-check/property","promela_bugged1_liveness");
   MC_automaton_new_propositional_symbol("r", &predR);
   MC_automaton_new_propositional_symbol("cs", &predCS);
+
+  const char* platform_file = options[0];
+  const char* application_file = options[1];
   
-  MSG_create_environment("../msg_platform.xml");
+  MSG_create_environment(platform_file);
   MSG_function_register("coordinator", coordinator);
   MSG_function_register("client", client);
-  MSG_launch_application("deploy_bugged1_liveness.xml");
+  MSG_launch_application(application_file);
   MSG_main();
 
   return 0;

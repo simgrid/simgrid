@@ -1,4 +1,4 @@
-/* Copyright (c) 2007, 2008, 2009, 2010. The SimGrid Team.
+/* Copyright (c) 2007-2010, 2012-2013. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -15,17 +15,70 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_io, simix,
                                 "Logging specific to SIMIX (io)");
 
 
-//SIMIX FILE READ
-void SIMIX_pre_file_read(smx_simcall_t simcall, void *ptr, size_t size,
-		        smx_file_t fd)
+/**
+ * \brief Internal function to create a SIMIX storage.
+ * \param name name of the storage to create
+ * \param storage the SURF storage to encapsulate
+ * \param data some user data (may be NULL)
+ */
+smx_storage_t SIMIX_storage_create(const char *name, void *storage, void *data)
 {
-  smx_action_t action = SIMIX_file_read(simcall->issuer, ptr, size, fd);
+  smx_storage_priv_t smx_storage = xbt_new0(s_smx_storage_priv_t, 1);
+
+  smx_storage->data = data;
+
+  /* Update global variables */
+  xbt_lib_set(storage_lib,name,SIMIX_STORAGE_LEVEL,smx_storage);
+
+  return xbt_lib_get_or_null(storage_lib, name, SIMIX_STORAGE_LEVEL);
+}
+
+/**
+ * \brief Internal function to destroy a SIMIX storage.
+ *
+ * \param s the host to destroy (a smx_storage_t)
+ */
+void SIMIX_storage_destroy(void *s)
+{
+  smx_storage_priv_t storage = (smx_storage_priv_t) s;
+
+  xbt_assert((storage != NULL), "Invalid parameters");
+  if (storage->data)
+    free(storage->data);
+
+  /* Clean storage structure */
+  free(storage);
+}
+
+void* SIMIX_pre_file_get_data(smx_simcall_t simcall,smx_file_t fd){
+  return SIMIX_file_get_data(fd);
+}
+
+void* SIMIX_file_get_data(smx_file_t fd){
+  xbt_assert((fd != NULL), "Invalid parameters (simix file is NULL)");
+
+  return fd->data;
+}
+
+void SIMIX_pre_file_set_data(smx_simcall_t simcall, smx_file_t fd, void *data) {
+  SIMIX_file_set_data(fd, data);
+}
+
+void SIMIX_file_set_data(smx_file_t fd, void *data){
+  xbt_assert((fd != NULL), "Invalid parameter");
+
+  fd->data = data;
+}
+
+//SIMIX FILE READ
+void SIMIX_pre_file_read(smx_simcall_t simcall, smx_file_t fd, sg_storage_size_t size)
+{
+  smx_action_t action = SIMIX_file_read(simcall->issuer, fd, size);
   xbt_fifo_push(action->simcalls, simcall);
   simcall->issuer->waiting_action = action;
 }
 
-smx_action_t SIMIX_file_read(smx_process_t process, void* ptr, size_t size,
-                             smx_file_t fd)
+smx_action_t SIMIX_file_read(smx_process_t process, smx_file_t fd, sg_storage_size_t size)
 {
   smx_action_t action;
   smx_host_t host = process->smx_host;
@@ -46,8 +99,7 @@ smx_action_t SIMIX_file_read(smx_process_t process, void* ptr, size_t size,
 
   action->io.host = host;
   action->io.surf_io =
-      surf_workstation_model->extension.workstation.read(host, ptr, size,
-                                                         fd->surf_file);
+      surf_workstation_model->extension.workstation.read(host, fd->surf_file, size);
 
   surf_workstation_model->action_data_set(action->io.surf_io, action);
   XBT_DEBUG("Create io action %p", action);
@@ -56,16 +108,14 @@ smx_action_t SIMIX_file_read(smx_process_t process, void* ptr, size_t size,
 }
 
 //SIMIX FILE WRITE
-void SIMIX_pre_file_write(smx_simcall_t simcall, const void *ptr, size_t size,
-	                  smx_file_t fd)
+void SIMIX_pre_file_write(smx_simcall_t simcall, smx_file_t fd, sg_storage_size_t size)
 {
-  smx_action_t action = SIMIX_file_write(simcall->issuer, ptr, size, fd);
+  smx_action_t action = SIMIX_file_write(simcall->issuer, fd,  size);
   xbt_fifo_push(action->simcalls, simcall);
   simcall->issuer->waiting_action = action;
 }
 
-smx_action_t SIMIX_file_write(smx_process_t process, const void* ptr,
-                              size_t size, smx_file_t fd)
+smx_action_t SIMIX_file_write(smx_process_t process, smx_file_t fd, sg_storage_size_t size)
 {
   smx_action_t action;
   smx_host_t host = process->smx_host;
@@ -86,8 +136,7 @@ smx_action_t SIMIX_file_write(smx_process_t process, const void* ptr,
 
   action->io.host = host;
   action->io.surf_io =
-      surf_workstation_model->extension.workstation.write(host, ptr, size,
-                                                          fd->surf_file);
+      surf_workstation_model->extension.workstation.write(host, fd->surf_file, size);
 
   surf_workstation_model->action_data_set(action->io.surf_io, action);
   XBT_DEBUG("Create io action %p", action);
@@ -188,7 +237,7 @@ int SIMIX_file_unlink(smx_process_t process, smx_file_t fd)
   }
 
   if (surf_workstation_model->extension.workstation.unlink(host, fd->surf_file)){
-    fd->surf_file = NULL;
+    xbt_free(fd);
     return 1;
   } else
     return 0;
@@ -227,18 +276,102 @@ smx_action_t SIMIX_file_ls(smx_process_t process, const char* mount, const char 
   return action;
 }
 
-size_t SIMIX_pre_file_get_size(smx_simcall_t simcall, smx_file_t fd)
+sg_storage_size_t SIMIX_pre_file_get_size(smx_simcall_t simcall, smx_file_t fd)
 {
   return SIMIX_file_get_size(simcall->issuer, fd);
 }
 
-size_t SIMIX_file_get_size(smx_process_t process, smx_file_t fd)
+sg_storage_size_t SIMIX_file_get_size(smx_process_t process, smx_file_t fd)
 {
   smx_host_t host = process->smx_host;
   return  surf_workstation_model->extension.workstation.get_size(host,
       fd->surf_file);
 }
 
+xbt_dynar_t SIMIX_pre_file_get_info(smx_simcall_t simcall, smx_file_t fd)
+{
+  return SIMIX_file_get_info(simcall->issuer, fd);
+}
+
+xbt_dynar_t SIMIX_file_get_info(smx_process_t process, smx_file_t fd)
+{
+  smx_host_t host = process->smx_host;
+  return  surf_workstation_model->extension.workstation.get_info(host,
+      fd->surf_file);
+}
+
+sg_storage_size_t SIMIX_pre_storage_get_free_size(smx_simcall_t simcall, const char* name)
+{
+  return SIMIX_storage_get_free_size(simcall->issuer, name);
+}
+
+sg_storage_size_t SIMIX_storage_get_free_size(smx_process_t process, const char* name)
+{
+  smx_host_t host = process->smx_host;
+  return  surf_workstation_model->extension.workstation.get_free_size(host,name);
+}
+
+sg_storage_size_t SIMIX_pre_storage_get_used_size(smx_simcall_t simcall, const char* name)
+{
+  return SIMIX_storage_get_used_size(simcall->issuer, name);
+}
+
+sg_storage_size_t SIMIX_storage_get_used_size(smx_process_t process, const char* name)
+{
+  smx_host_t host = process->smx_host;
+  return  surf_workstation_model->extension.workstation.get_used_size(host,name);
+}
+
+xbt_dict_t SIMIX_pre_storage_get_properties(smx_simcall_t simcall, smx_storage_t storage){
+  return SIMIX_storage_get_properties(storage);
+}
+xbt_dict_t SIMIX_storage_get_properties(smx_storage_t storage){
+  xbt_assert((storage != NULL), "Invalid parameters (simix storage is NULL)");
+  return surf_storage_model->extension.storage.get_properties(storage);
+}
+
+const char* SIMIX_pre_storage_get_name(smx_simcall_t simcall, smx_storage_t storage){
+   return SIMIX_storage_get_name(storage);
+}
+
+const char* SIMIX_storage_get_name(smx_storage_t storage){
+  xbt_assert((storage != NULL), "Invalid parameters");
+  return sg_storage_name(storage);
+}
+
+void SIMIX_pre_storage_set_data(smx_simcall_t simcall, smx_storage_t storage, void *data) {
+  SIMIX_storage_set_data(storage, data);
+}
+void SIMIX_storage_set_data(smx_storage_t storage, void *data){
+  xbt_assert((storage != NULL), "Invalid parameters");
+  xbt_assert((SIMIX_storage_priv(storage)->data == NULL), "Data already set");
+
+  SIMIX_storage_priv(storage)->data = data;
+}
+
+void* SIMIX_pre_storage_get_data(smx_simcall_t simcall,smx_storage_t storage){
+  return SIMIX_storage_get_data(storage);
+}
+
+void* SIMIX_storage_get_data(smx_storage_t storage){
+  xbt_assert((storage != NULL), "Invalid parameters (simix storage is NULL)");
+
+  return SIMIX_storage_priv(storage)->data;
+}
+
+xbt_dict_t SIMIX_pre_storage_get_content(smx_simcall_t simcall, smx_storage_t storage){
+  return SIMIX_storage_get_content(storage);
+}
+
+xbt_dict_t SIMIX_storage_get_content(smx_storage_t storage){
+  xbt_assert((storage != NULL), "Invalid parameters (simix storage is NULL)");
+  return surf_storage_model->extension.storage.get_content(storage);
+}
+
+sg_storage_size_t SIMIX_storage_get_size(smx_storage_t storage){
+  xbt_assert((storage != NULL), "Invalid parameters (simix storage is NULL)");
+  return surf_storage_model->extension.storage.get_size(storage);
+}
 
 void SIMIX_post_io(smx_action_t action)
 {

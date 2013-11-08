@@ -1,7 +1,7 @@
 /* dict_elm - elements of generic dictionnaries                             */
 /* This file is not to be loaded from anywhere but dict.c                   */
 
-/* Copyright (c) 2004-2011. The SimGrid Team.
+/* Copyright (c) 2004-2011, 2013. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it

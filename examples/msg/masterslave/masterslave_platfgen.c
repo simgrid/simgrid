@@ -23,8 +23,8 @@ void promoter_1(context_node_t node) {
   s_sg_platf_host_cbarg_t host_parameters;
 
   host_parameters.id = NULL;
-  host_parameters.power_peak = 1000000;
-
+  host_parameters.power_peak = xbt_dynar_new(sizeof(double), NULL);
+  xbt_dynar_push_as(host_parameters.power_peak, double, 1000000.0);
   host_parameters.core_amount = 1;
   host_parameters.power_scale = 1;
   host_parameters.power_trace = NULL;

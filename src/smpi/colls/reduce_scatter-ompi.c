@@ -22,7 +22,6 @@
 #include "colls_private.h"
 #include "coll_tuned_topo.h"
 
-#define MCA_COLL_BASE_TAG_REDUCE_SCATTER 222
 /*
  * Recursive-halving function is (*mostly*) copied from the BASIC coll module.
  * I have removed the part which handles "large" message sizes 
@@ -116,13 +115,13 @@ smpi_coll_tuned_reduce_scatter_ompi_basic_recursivehalving(void *sbuf,
     if (rank < 2 * remain) {
         if ((rank & 1) == 0) {
             smpi_mpi_send(result_buf, count, dtype, rank + 1, 
-                                    MCA_COLL_BASE_TAG_REDUCE_SCATTER,
+                                    COLL_TAG_REDUCE_SCATTER,
                                     comm);
             /* we don't participate from here on out */
             tmp_rank = -1;
         } else {
             smpi_mpi_recv(recv_buf, count, dtype, rank - 1,
-                                    MCA_COLL_BASE_TAG_REDUCE_SCATTER,
+                                    COLL_TAG_REDUCE_SCATTER,
                                     comm, MPI_STATUS_IGNORE);
          
             /* integrate their results into our temp results */
@@ -211,7 +210,7 @@ smpi_coll_tuned_reduce_scatter_ompi_basic_recursivehalving(void *sbuf,
             if (send_count > 0 && recv_count != 0) {
                 request=smpi_mpi_irecv(recv_buf + (ptrdiff_t)tmp_disps[recv_index] * extent,
                                          recv_count, dtype, peer,
-                                         MCA_COLL_BASE_TAG_REDUCE_SCATTER,
+                                         COLL_TAG_REDUCE_SCATTER,
                                          comm);
                 if (MPI_SUCCESS != err) {
                     xbt_free(tmp_rcounts);
@@ -222,7 +221,7 @@ smpi_coll_tuned_reduce_scatter_ompi_basic_recursivehalving(void *sbuf,
             if (recv_count > 0 && send_count != 0) {
                 smpi_mpi_send(result_buf + (ptrdiff_t)tmp_disps[send_index] * extent,
                                         send_count, dtype, peer, 
-                                        MCA_COLL_BASE_TAG_REDUCE_SCATTER,
+                                        COLL_TAG_REDUCE_SCATTER,
                                         comm);
                 if (MPI_SUCCESS != err) {
                     xbt_free(tmp_rcounts);
@@ -271,14 +270,14 @@ smpi_coll_tuned_reduce_scatter_ompi_basic_recursivehalving(void *sbuf,
         if ((rank & 1) == 0) {
             if (rcounts[rank]) {
                 smpi_mpi_recv(rbuf, rcounts[rank], dtype, rank + 1,
-                                        MCA_COLL_BASE_TAG_REDUCE_SCATTER,
+                                        COLL_TAG_REDUCE_SCATTER,
                                         comm, MPI_STATUS_IGNORE);
             }
         } else {
             if (rcounts[rank - 1]) {
                 smpi_mpi_send(result_buf + disps[rank - 1] * extent,
                                         rcounts[rank - 1], dtype, rank - 1,
-                                        MCA_COLL_BASE_TAG_REDUCE_SCATTER,
+                                        COLL_TAG_REDUCE_SCATTER,
                                         comm);
             }
         }            
@@ -452,11 +451,11 @@ smpi_coll_tuned_reduce_scatter_ompi_ring(void *sbuf, void *rbuf, int *rcounts,
     inbi = 0;
     /* Initialize first receive from the neighbor on the left */
     reqs[inbi]=smpi_mpi_irecv(inbuf[inbi], max_block_count, dtype, recv_from,
-                             MCA_COLL_BASE_TAG_REDUCE_SCATTER, comm
+                             COLL_TAG_REDUCE_SCATTER, comm
                              );
     tmpsend = accumbuf + (ptrdiff_t)displs[recv_from] * extent;
     smpi_mpi_send(tmpsend, rcounts[recv_from], dtype, send_to,
-                            MCA_COLL_BASE_TAG_REDUCE_SCATTER,
+                            COLL_TAG_REDUCE_SCATTER,
                              comm);
 
     for (k = 2; k < size; k++) {
@@ -466,7 +465,7 @@ smpi_coll_tuned_reduce_scatter_ompi_ring(void *sbuf, void *rbuf, int *rcounts,
 
         /* Post irecv for the current block */
         reqs[inbi]=smpi_mpi_irecv(inbuf[inbi], max_block_count, dtype, recv_from,
-                                 MCA_COLL_BASE_TAG_REDUCE_SCATTER, comm 
+                                 COLL_TAG_REDUCE_SCATTER, comm
                                  );
       
         /* Wait on previous block to arrive */
@@ -480,7 +479,7 @@ smpi_coll_tuned_reduce_scatter_ompi_ring(void *sbuf, void *rbuf, int *rcounts,
       
         /* send previous block to send_to */
         smpi_mpi_send(tmprecv, rcounts[prevblock], dtype, send_to,
-                                MCA_COLL_BASE_TAG_REDUCE_SCATTER,
+                                COLL_TAG_REDUCE_SCATTER,
                                  comm);
     }
 

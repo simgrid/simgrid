@@ -45,11 +45,13 @@ set(CMAKE_Fortran_LINK_FLAGS "" CACHE TYPE INTERNAL FORCE)
 # 3.7.{0,1} -> release 3.7, 3.7.1
 # 3.8.{0,1} -> release 3.8, 3.8.1
 # 3.9.0 -> release 3.9
+
+# 3.9.90 -> release 3.10pre1
 # 3.10.0 -> release 3.10
 
 set(SIMGRID_VERSION_MAJOR "3")
-set(SIMGRID_VERSION_MINOR "10")
-set(SIMGRID_VERSION_PATCH "0")
+set(SIMGRID_VERSION_MINOR "9")
+set(SIMGRID_VERSION_PATCH "90")
 
 if(${SIMGRID_VERSION_PATCH} EQUAL "0")
   set(release_version "${SIMGRID_VERSION_MAJOR}.${SIMGRID_VERSION_MINOR}")
@@ -74,8 +76,7 @@ else()
   endif()
 endif()
 
-string(REGEX MATCH "gcc" GCC "${CMAKE_C_COMPILER}")
-if(GCC)
+if(${CMAKE_C_COMPILER_ID} STREQUAL "GNU")
   exec_program("${CMAKE_C_COMPILER} --version" OUTPUT_VARIABLE "COMPILER_C_VERSION")
   exec_program("${CMAKE_CXX_COMPILER} --version" OUTPUT_VARIABLE "COMPILER_CXX_VERSION")
   string(REGEX MATCH "[0-9].[0-9].[0-9]" COMPILER_C_VERSION "${COMPILER_C_VERSION}")
@@ -191,10 +192,6 @@ endif()
 
 include_directories(${INCLUDES})
 
-### Determine the assembly flavor that we need today
-include(CMakeDetermineSystem)
-set(PROCESSOR_${CMAKE_SYSTEM_PROCESSOR} 1)
-
 ### Setup Options
 include(${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/Option.cmake)
 
@@ -206,9 +203,7 @@ include(${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/DefinePackages.cmake)
 
 ### Build some Maintainer files
 include(${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/MaintainerMode.cmake)
-if(NOT WIN32)
-  include(${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/UnitTesting.cmake)
-endif()
+include(${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/UnitTesting.cmake)
 
 ### Setup gcc flags
 include(${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/Flags.cmake)

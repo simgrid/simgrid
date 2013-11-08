@@ -28,7 +28,17 @@ message("-- [Java] SG_java includes: ${CHECK_INCLUDES}")
 
 target_link_libraries(SG_java simgrid)
 
+
+
+
 if(WIN32)
+  exec_program("java -d32 -version"
+                OUTPUT_VARIABLE IS_32_BITS_JVM)
+  STRING( FIND ${IS_32_BITS_JVM} "Error" POSITION )
+  if(${POSITION} GREATER -1) 
+    message(FATAL_ERROR "Java JVM needs to be 32 bits to be able to run with Simgrid on Windows for now")
+  endif()
+
   set_target_properties(SG_java PROPERTIES
     LINK_FLAGS "-Wl,--subsystem,windows,--kill-at"
     PREFIX "")
@@ -36,7 +46,7 @@ if(WIN32)
   message(STATUS "pexports: ${PEXPORTS_PATH}")
   if(PEXPORTS_PATH)
     add_custom_command(TARGET SG_java POST_BUILD
-      COMMAND ${PEXPORTS_PATH}/pexports.exe ${CMAKE_BINARY_DIR}/SG_java.dll > ${CMAKE_BINARY_DIR}/SG_java.def)
+      COMMAND ${PEXPORTS_PATH}/pexports.exe ${CMAKE_BINARY_DIR}/lib/SG_java.dll > ${CMAKE_BINARY_DIR}/lib/SG_java.def)
   endif(PEXPORTS_PATH)
 endif()
 
@@ -48,7 +58,7 @@ endif()
 set(SIMGRID_JAR "${CMAKE_BINARY_DIR}/simgrid.jar")
 set(MANIFEST_FILE "${CMAKE_HOME_DIRECTORY}/src/bindings/java/MANIFEST.MF")
 set(LIBSIMGRID_SO
-  ${CMAKE_SHARED_LIBRARY_PREFIX}simgrid${CMAKE_SHARED_LIBRARY_SUFFIX})
+  libsimgrid${CMAKE_SHARED_LIBRARY_SUFFIX})
 set(LIBSG_JAVA_SO
   ${CMAKE_SHARED_LIBRARY_PREFIX}SG_java${CMAKE_SHARED_LIBRARY_SUFFIX})
 
@@ -62,7 +72,7 @@ if(CMAKE_SYSTEM_PROCESSOR MATCHES ".86")
   endif()
 else()
   message(WARNING "Unknown system type. Processor: ${CMAKE_SYSTEM_PROCESSOR}; System: ${CMAKE_SYSTEM_NAME}")
-  set(JSG_BUNDLE "NATIVE/${CMAKE_SYSTEM_NAME}/${CMAKE_SYSTEM_PROCESSOR/")
+  set(JSG_BUNDLE "NATIVE/${CMAKE_SYSTEM_NAME}/${CMAKE_SYSTEM_PROCESSOR}/")
 endif()
 message("-- [Java] Native libraries bundled into: ${JSG_BUNDLE}")
 

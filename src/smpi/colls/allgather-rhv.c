@@ -15,7 +15,7 @@ smpi_coll_tuned_allgather_rhv(void *sbuf, int send_count,
   int i, dst, send_base_offset, recv_base_offset, send_chunk, recv_chunk,
       send_offset, recv_offset;
   int rank, num_procs;
-  int tag = 50;
+  int tag = COLL_TAG_ALLGATHER;
   int mask;
   int curr_count;
 

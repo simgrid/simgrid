@@ -2,7 +2,7 @@
 /* Used in RL to get win/lin portability, and in SG when CONTEXT_THREAD     */
 /* in SG, when using CONTEXT_UCONTEXT, xbt_os_thread_stub is used instead   */
 
-/* Copyright (c) 2007, 2008, 2009, 2010. The SimGrid Team.
+/* Copyright (c) 2007-2013. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -1234,7 +1234,8 @@ void xbt_os_thread_set_extra_data(void *data)
 
 void *xbt_os_thread_get_extra_data(void)
 {
-  return xbt_os_thread_self()->extra_data;
+  xbt_os_thread_t self = xbt_os_thread_self();
+  return self? self->extra_data : NULL;
 }
 
 xbt_os_rmutex_t xbt_os_rmutex_init(void)

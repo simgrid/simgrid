@@ -60,7 +60,7 @@ int smpi_coll_tuned_alltoall_2dmesh(void *send_buff, int send_count,
   int i, j, src, dst, rank, num_procs, count, num_reqs;
   int X, Y, send_offset, recv_offset;
   int my_row_base, my_col_base, src_row_base, block_size;
-  int tag = 1;
+  int tag = COLL_TAG_ALLTOALL;
 
   rank = smpi_comm_rank(comm);
   num_procs = smpi_comm_size(comm);

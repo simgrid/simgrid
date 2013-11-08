@@ -1,0 +1,29 @@
+#! ./tesh
+
+p Testing the mechanism for computing host energy consumption 
+
+! output sort
+$ $SG_TEST_EXENV energy/e2/e2$EXEEXT ${srcdir:=.}/energy/e2/platform_e2.xml ${srcdir:=.}/energy/e2/deployment_e2.xml --log=surf_cpu.thres:debug --log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n
+> [  0.000000] (0:@) CPU create: peak=100000000.000000, pstate=0
+> [  0.000000] (1:dvfs_test@MyHost1) Current power peak=100000000.000000
+> [  0.000000] (1:dvfs_test@MyHost1) Total energy (Joules): 0.000000
+> [  1.000000] (0:@) [cpu_update_energy] action time interval=(0.000000-1.000000), current power peak=100000000.000000, current pstate=0
+> [  1.000000] (0:@) [get_current_watts] min_power=95.000000, max_power=200.000000, slope=105.000000
+> [  1.000000] (0:@) [get_current_watts] Current power (watts) = 200.000000, load = 1.000000
+> [  1.000000] (0:@) [cpu_update_energy] old_energy_value=0.000000, action_energy_value=200.000000
+> [  1.000000] (1:dvfs_test@MyHost1) Task1 simulation time: 1.000000e+00
+> [  1.000000] (1:dvfs_test@MyHost1) Total energy (Joules): 200.000000
+> [  1.000000] (1:dvfs_test@MyHost1) =========Changing power peak value to 20000000.000000 (at index 2)
+> [  6.000000] (0:@) [cpu_update_energy] action time interval=(1.000000-6.000000), current power peak=20000000.000000, current pstate=2
+> [  6.000000] (0:@) [get_current_watts] min_power=90.000000, max_power=150.000000, slope=60.000000
+> [  6.000000] (0:@) [get_current_watts] Current power (watts) = 150.000000, load = 1.000000
+> [  6.000000] (0:@) [cpu_update_energy] old_energy_value=200.000000, action_energy_value=750.000000
+> [  6.000000] (1:dvfs_test@MyHost1) Task2 simulation time: 5.000000e+00
+> [  6.000000] (1:dvfs_test@MyHost1) Total energy (Joules): 950.000000
+> [  9.000000] (0:@) [cpu_update_energy] action time interval=(6.000000-9.000000), current power peak=20000000.000000, current pstate=2
+> [  9.000000] (0:@) [get_current_watts] min_power=90.000000, max_power=150.000000, slope=60.000000
+> [  9.000000] (0:@) [get_current_watts] Current power (watts) = 90.000000, load = 0.000000
+> [  9.000000] (0:@) [cpu_update_energy] old_energy_value=950.000000, action_energy_value=270.000000
+> [  9.000000] (1:dvfs_test@MyHost1) Task3 (sleep) simulation time: 4.000000e+00
+> [  9.000000] (1:dvfs_test@MyHost1) Total energy (Joules): 1220.000000
+> [  9.000000] (0:@) Total simulation time: 9.000000e+00

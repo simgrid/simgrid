@@ -1,3 +1,5 @@
+! output sort
+
 $ simdag/availability/availability_test ${srcdir:=.}/simdag/availability/simulacrum_7_hosts.xml --cfg=path:${srcdir:=.}/simdag/availability/ ${srcdir:=.}/../examples/simdag/scheduling/Montage_25.xml --cfg=network/TCP_gamma:4194304 --log=sd_daxparse.thresh:critical
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/TCP_gamma' to '4194304'
 > [0.000000] [surf_workstation/INFO] surf_workstation_model_init_ptask_L07

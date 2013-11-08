@@ -1,0 +1,2 @@
+$ ./simix/check_defaults
+> [simix_context/VERBOSE] Using raw contexts. Because the glibc is just not good enough for us.

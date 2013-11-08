@@ -1,10 +1,11 @@
-/* Copyright (c) 2009-2012. The SimGrid Team. All rights reserved.          */
-
-/* This example should be instructive to learn about SMPI_SAMPLE_LOCAL and 
-   SMPI_SAMPLE_GLOBAL macros for execution sampling */
+/* Copyright (c) 2009-2012. The SimGrid Team.
+ * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
+
+/* This example should be instructive to learn about SMPI_SAMPLE_LOCAL and 
+   SMPI_SAMPLE_GLOBAL macros for execution sampling */
 
 #include <stdio.h>
 #include <mpi.h>

@@ -1,6 +1,6 @@
 /* Functions related to the java As instances.                            */
 
-/* Copyright (c) 2007-2012. The SimGrid Team.
+/* Copyright (c) 2007-2013. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -14,7 +14,7 @@
 
 /* Functions related to the java host instances.                            */
 
-/* Copyright (c) 2007-2012. The SimGrid Team.
+/* Copyright (c) 2007-2013. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it

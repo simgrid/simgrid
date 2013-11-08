@@ -97,7 +97,7 @@ int smpi_coll_tuned_allgather_3dmesh(void *send_buff, int send_count,
   int i, src, dst, rank, num_procs, block_size, my_z_base;
   int my_z, X, Y, Z, send_offset, recv_offset;
   int two_dsize, my_row_base, my_col_base, src_row_base, src_z_base, num_reqs;
-  int tag = 1;
+  int tag = COLL_TAG_ALLGATHER;
 
   rank = smpi_comm_rank(comm);
   num_procs = smpi_comm_size(comm);

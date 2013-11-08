@@ -1,4 +1,4 @@
-/* Copyright (c) 2007-2012. The SimGrid Team.
+/* Copyright (c) 2007-2013. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -34,8 +34,8 @@ smx_host_t SIMIX_host_create(const char *name,
 
   /* Update global variables */
   xbt_lib_set(host_lib,name,SIMIX_HOST_LEVEL,smx_host);
-  
-  return xbt_lib_get_elm_or_null(host_lib, name);
+
+  return xbt_lib_get_or_null(host_lib, name, SIMIX_HOST_LEVEL);
 }
 
 void SIMIX_pre_host_on(smx_simcall_t simcall, smx_host_t h)
@@ -242,6 +242,16 @@ int SIMIX_host_get_core(smx_host_t host){
       get_core(host);
 }
 
+xbt_swag_t SIMIX_pre_host_get_process_list(smx_simcall_t simcall, smx_host_t host){
+  return SIMIX_host_get_process_list(host);
+}
+
+xbt_swag_t SIMIX_host_get_process_list(smx_host_t host){
+  xbt_assert((host != NULL), "Invalid parameters (simix host is NULL)");
+  smx_host_priv_t host_priv = SIMIX_host_priv(host);
+
+  return host_priv->process_list;
+}
 
 
 double SIMIX_pre_host_get_available_speed(smx_simcall_t simcall, smx_host_t host){
@@ -252,6 +262,55 @@ double SIMIX_host_get_available_speed(smx_host_t host){
 
   surf_model_t ws_model = surf_resource_model(host, SURF_WKS_LEVEL);
   return ws_model->extension.workstation.get_available_speed(host);
+}
+
+double SIMIX_pre_host_get_current_power_peak(smx_simcall_t simcall, smx_host_t host){
+  return SIMIX_host_get_current_power_peak(host);
+}
+double SIMIX_host_get_current_power_peak(smx_host_t host) {
+	  xbt_assert((host != NULL), "Invalid parameters (simix host is NULL)");
+	  return surf_workstation_model->extension.workstation.
+		      get_current_power_peak(host);
+}
+
+double SIMIX_pre_host_get_power_peak_at(smx_simcall_t simcall, smx_host_t host, int pstate_index){
+  return SIMIX_host_get_power_peak_at(host, pstate_index);
+}
+double SIMIX_host_get_power_peak_at(smx_host_t host, int pstate_index) {
+	  xbt_assert((host != NULL), "Invalid parameters (simix host is NULL)");
+
+	  return surf_workstation_model->extension.workstation.
+	      get_power_peak_at(host, pstate_index);
+}
+
+int SIMIX_pre_host_get_nb_pstates(smx_simcall_t simcall, smx_host_t host){
+  return SIMIX_host_get_nb_pstates(host);
+}
+int SIMIX_host_get_nb_pstates(smx_host_t host) {
+	  xbt_assert((host != NULL), "Invalid parameters (simix host is NULL)");
+
+	  return surf_workstation_model->extension.workstation.
+	      get_nb_pstates(host);
+}
+
+
+void SIMIX_pre_host_set_power_peak_at(smx_simcall_t simcall, smx_host_t host, int pstate_index){
+  SIMIX_host_set_power_peak_at(host, pstate_index);
+}
+void SIMIX_host_set_power_peak_at(smx_host_t host, int pstate_index) {
+	  xbt_assert((host != NULL), "Invalid parameters (simix host is NULL)");
+
+	  surf_workstation_model->extension.workstation.
+	      set_power_peak_at(host, pstate_index);
+}
+
+double SIMIX_pre_host_get_consumed_energy(smx_simcall_t simcall, smx_host_t host){
+  return SIMIX_host_get_consumed_energy(host);
+}
+double SIMIX_host_get_consumed_energy(smx_host_t host) {
+	  xbt_assert((host != NULL), "Invalid parameters (simix host is NULL)");
+	  return surf_workstation_model->extension.workstation.
+		      get_consumed_energy(host);
 }
 
 int SIMIX_pre_host_get_state(smx_simcall_t simcall, smx_host_t host){
@@ -291,6 +350,10 @@ void* SIMIX_host_get_data(smx_host_t host){
 void _SIMIX_host_free_process_arg(void *data)
 {
   smx_process_arg_t arg = *(void**)data;
+  int i;
+  for (i = 0; i < arg->argc; i++)
+    xbt_free(arg->argv[i]);
+  xbt_free(arg->argv);
   xbt_free(arg->name);
   xbt_free(arg);
 }
@@ -336,7 +399,7 @@ void SIMIX_host_add_auto_restart_process(smx_host_t host,
   if( SIMIX_host_get_state(host) == SURF_RESOURCE_OFF
       && !xbt_dict_get_or_null(watched_hosts_lib,sg_host_name(host))){
     xbt_dict_set(watched_hosts_lib,sg_host_name(host),host,NULL);
-    XBT_DEBUG("Have push host %s to watched_hosts_lib because state == SURF_RESOURCE_OFF",sg_host_name(host));
+    XBT_DEBUG("Have pushed host %s to watched_hosts_lib because state == SURF_RESOURCE_OFF",sg_host_name(host));
   }
   xbt_dynar_push_as(SIMIX_host_priv(host)->auto_restart_processes,smx_process_arg_t,arg);
 }
@@ -347,7 +410,11 @@ void SIMIX_host_restart_processes(smx_host_t host)
 {
   unsigned int cpt;
   smx_process_arg_t arg;
-  xbt_dynar_foreach(SIMIX_host_priv(host)->auto_restart_processes,cpt,arg) {
+  xbt_dynar_t process_list = SIMIX_host_priv(host)->auto_restart_processes;
+  if (!process_list)
+    return;
+
+  xbt_dynar_foreach (process_list, cpt, arg) {
 
     smx_process_t process;
 
@@ -363,22 +430,26 @@ void SIMIX_host_restart_processes(smx_host_t host)
                                             arg->argv,
                                             arg->properties,
                                             arg->auto_restart);
-    }
-    else {
+    } else {
       simcall_process_create(&process,
-                                            arg->argv[0],
-                                            arg->code,
-                                            NULL,
-                                            arg->hostname,
-                                            arg->kill_time,
-                                            arg->argc,
-                                            arg->argv,
-                                            arg->properties,
-                                            arg->auto_restart);
+                             arg->argv[0],
+                             arg->code,
+                             NULL,
+                             arg->hostname,
+                             arg->kill_time,
+                             arg->argc,
+                             arg->argv,
+                             arg->properties,
+                             arg->auto_restart);
 
     }
+    /* arg->argv is used by the process created above.  Hide it to
+     * _SIMIX_host_free_process_arg() which is called by xbt_dynar_reset()
+     * below. */
+    arg->argc = 0;
+    arg->argv = NULL;
   }
-  xbt_dynar_reset(SIMIX_host_priv(host)->auto_restart_processes);
+  xbt_dynar_reset(process_list);
 }
 
 void SIMIX_host_autorestart(smx_host_t host)
@@ -653,7 +724,7 @@ void SIMIX_execution_finish(smx_action_t action)
       case SIMIX_FAILED:
         XBT_DEBUG("SIMIX_execution_finished: host '%s' failed", sg_host_name(simcall->issuer->smx_host));
         simcall->issuer->context->iwannadie = 1;
-        //SMX_EXCEPTION(simcall->issuer, host_error, 0, "Host failed");
+        SMX_EXCEPTION(simcall->issuer, host_error, 0, "Host failed");
         break;
 
       case SIMIX_CANCELED:
@@ -728,7 +799,6 @@ void SIMIX_set_category(smx_action_t action, const char *category)
 }
 #endif
 
-
 /**
  * \brief Function to get the parameters of the given the SIMIX host.
  *
@@ -755,4 +825,14 @@ void SIMIX_host_set_params(smx_host_t ind_vm, ws_params_t params)
 void SIMIX_pre_host_set_params(smx_simcall_t simcall, smx_host_t ind_vm, ws_params_t params)
 {
   SIMIX_host_set_params(ind_vm, params);
+}
+
+xbt_dict_t SIMIX_pre_host_get_storage_list(smx_simcall_t simcall, smx_host_t host){
+  return SIMIX_host_get_storage_list(host);
+}
+
+xbt_dict_t SIMIX_host_get_storage_list(smx_host_t host){
+  xbt_assert((host != NULL), "Invalid parameters (simix host is NULL)");
+
+  return surf_workstation_model->extension.workstation.get_storage_list(host);
 }

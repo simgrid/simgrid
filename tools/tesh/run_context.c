@@ -1,6 +1,6 @@
 /* run_context -- stuff in which TESH runs a command                        */
 
-/* Copyright (c) 2007, 2008, 2009, 2010. The SimGrid Team.
+/* Copyright (c) 2007-2013. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -85,7 +85,7 @@ void rctx_init(void)
   sigwaiter_mutex = xbt_os_mutex_init();
   sigwaiter_cond = xbt_os_cond_init();
   xbt_os_mutex_acquire(sigwaiter_mutex);
-  sigwaiter_thread = xbt_os_thread_create("Armaggedon request waiter",
+  sigwaiter_thread = xbt_os_thread_create("Armageddon request waiter",
                                           armageddon_sigwaiter, NULL, NULL);
   /* Wait for thread to start... */
   xbt_os_cond_wait(sigwaiter_cond, sigwaiter_mutex);

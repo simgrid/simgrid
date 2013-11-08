@@ -31,7 +31,7 @@ smpi_coll_tuned_alltoall_ring_light_barrier(void *send_buff, int send_count,
   MPI_Aint send_chunk, recv_chunk;
   MPI_Status s;
   int i, src, dst, rank, num_procs, next_dst, next_src;
-  int tag = 1;
+  int tag = COLL_TAG_ALLTOALL;
 
   char send_sync = 'a', recv_sync = 'b';
   char *send_ptr = (char *) send_buff;

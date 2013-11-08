@@ -1,4 +1,4 @@
-/* Copyright (c) 2007, 2008, 2009, 2010. The SimGrid Team.
+/* Copyright (c) 2007-2010, 2012-2013. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -73,6 +73,7 @@ extern xbt_dict_t watched_hosts_lib;
 /* ******************************** File ************************************ */
 typedef struct s_smx_file {
   surf_file_t surf_file;
+  void* data;                   /**< @brief user data */
 } s_smx_file_t;
 
 /*********************************** Time ************************************/

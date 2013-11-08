@@ -1,24 +1,22 @@
 cmake_minimum_required(VERSION 2.6)
 
 set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}")
-if(NOT WIN32)
-  add_executable(log_large_test log_large_test.c)
-  add_executable(parallel_log_crashtest parallel_log_crashtest.c)
-  if(HAVE_MMAP)
-    add_executable(mmalloc_test mmalloc_test.c)
-  endif()
-  add_executable(parmap_test parmap_test.c)
+
+add_executable(log_large_test log_large_test.c)
+add_executable(parallel_log_crashtest parallel_log_crashtest.c)
+if(HAVE_MMAP)
+  add_executable(mmalloc_test mmalloc_test.c)
 endif()
+add_executable(parmap_test parmap_test.c)
+
 
 ### Add definitions for compile
-if(NOT WIN32)
-  target_link_libraries(log_large_test simgrid m pthread )
-  target_link_libraries(parallel_log_crashtest simgrid m pthread )
-  if(HAVE_MMAP)
-    target_link_libraries(mmalloc_test simgrid m pthread )
-  endif()
-  target_link_libraries(parmap_test simgrid m pthread )
+target_link_libraries(log_large_test simgrid)
+target_link_libraries(parallel_log_crashtest simgrid)
+if(HAVE_MMAP)
+  target_link_libraries(mmalloc_test simgrid)
 endif()
+target_link_libraries(parmap_test simgrid)
 
 set(tesh_files
   ${tesh_files}

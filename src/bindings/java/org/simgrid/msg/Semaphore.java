@@ -1,5 +1,6 @@
 /* 
- * Copyright 2012 The SimGrid team. All right reserved. 
+ * Copyright (c) 2012-2013. The SimGrid Team.
+ * All rights reserved.
  *
  * This program is free software; you can redistribute 
  * it and/or modify it under the terms of the license 

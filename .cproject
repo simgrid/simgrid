@@ -1,21 +1,22 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<?fileVersion 5.0.0?>
-
-<cproject storage_type_id="org.eclipse.cdt.core.XmlProjectDescriptionStorage2">
+<?fileVersion 5.0.0?><cproject storage_type_id="org.eclipse.cdt.core.XmlProjectDescriptionStorage2">
 	<storageModule moduleId="org.eclipse.cdt.core.settings">
-		<cconfiguration id="0.1454192080">
-			<storageModule externalCElementFile="0.1454192080_org.eclipse.cdt.core.settings" id="0.1454192080" name="Default"/>
-			<storageModule externalCElementFile="0.1454192080_cdtBuildSystem" version="4.0.0"/>
-			<storageModule externalCElementFile="0.1454192080_org.eclipse.cdt.core.externalSettings"/>
+		<cconfiguration id="cdt.managedbuild.toolchain.gnu.base.1053321950">
+			<storageModule externalCElementFile="cdt.managedbuild.toolchain.gnu.base.1053321950_org.eclipse.cdt.core.settings" id="cdt.managedbuild.toolchain.gnu.base.1053321950" name="Default"/>
+			<storageModule externalCElementFile="cdt.managedbuild.toolchain.gnu.base.1053321950_cdtBuildSystem" version="4.0.0"/>
+			<storageModule externalCElementFile="cdt.managedbuild.toolchain.gnu.base.1053321950_org.eclipse.cdt.core.externalSettings"/>
 		</cconfiguration>
 	</storageModule>
 	<storageModule moduleId="cdtBuildSystem" version="4.0.0">
-		<project id="simgrid.null.1424519849" name="simgrid"/>
+		<project id="simgrid.null.1652888656" name="simgrid"/>
 	</storageModule>
 	<storageModule moduleId="scannerConfiguration">
 		<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
-		<scannerConfigBuildInfo instanceId="0.1454192080">
-			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
-		</scannerConfigBuildInfo>
+	</storageModule>
+	<storageModule moduleId="org.eclipse.cdt.core.LanguageSettingsProviders"/>
+	<storageModule moduleId="refreshScope" versionNumber="2">
+		<configuration configurationName="Default">
+			<resource resourceType="PROJECT" workspacePath="/simgrid"/>
+		</configuration>
 	</storageModule>
 </cproject>

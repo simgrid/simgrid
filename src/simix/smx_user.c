@@ -1,6 +1,7 @@
 /* smx_user.c - public interface to simix                                   */
 
-/* Copyright (c) 2010-2012. Da SimGrid team. All rights reserved.          */
+/* Copyright (c) 2010-2013. The SimGrid Team.
+   All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -116,6 +117,17 @@ int simcall_host_get_core(smx_host_t host)
   return simcall_BODY_host_get_core(host);
 }
 
+/**
+ * \ingroup simix_host_management
+ * \brief Returns the list of processes attached to the host.
+ *
+ * \param host A SIMIX host
+ * \return the swag of attached processes
+ */
+xbt_swag_t simcall_host_get_process_list(smx_host_t host)
+{
+  return simcall_BODY_host_get_process_list(host);
+}
 
 
 /**
@@ -169,6 +181,69 @@ void simcall_host_set_data(smx_host_t host, void *data)
 
 /**
  * \ingroup simix_host_management
+ * \brief Returns the power peak of a host.
+ *
+ * \param host A SIMIX host
+ * \return the current power peak value (double)
+ */
+double simcall_host_get_current_power_peak(smx_host_t host)
+{
+  return simcall_BODY_host_get_current_power_peak(host);
+}
+
+/**
+ * \ingroup simix_host_management
+ * \brief Returns one power peak (in flops/s) of a host at a given pstate
+ *
+ * \param host A SIMIX host
+ * \param pstate_index pstate to test
+ * \return the current power peak value (double) for pstate_index
+ */
+double simcall_host_get_power_peak_at(smx_host_t host, int pstate_index)
+{
+  return simcall_BODY_host_get_power_peak_at(host, pstate_index);
+}
+
+/**
+ * \ingroup simix_host_management
+ * \brief Returns the number of power states for a host.
+ *
+ * \param host A SIMIX host
+ * \return the number of power states
+ */
+int simcall_host_get_nb_pstates(smx_host_t host)
+{
+  return simcall_BODY_host_get_nb_pstates(host);
+}
+
+/**
+ * \ingroup simix_host_management
+ * \brief Sets a new power peak for a host.
+ *
+ * \param host A SIMIX host
+ * \param pstate_index The pstate to which the CPU power will be set
+ * \return void
+ */
+void simcall_host_set_power_peak_at(smx_host_t host, int pstate_index)
+{
+	simcall_BODY_host_set_power_peak_at(host, pstate_index);
+}
+
+/**
+ * \ingroup simix_host_management
+ * \brief Returns the total energy consumed by the host (in Joules)
+ *
+ * \param host A SIMIX host
+ * \return the energy consumed by the host (double)
+ */
+double simcall_host_get_consumed_energy(smx_host_t host)
+{
+  return simcall_BODY_host_get_consumed_energy(host);
+}
+
+
+/**
+ * \ingroup simix_host_management
  * \brief Creates an action that executes some computation of an host.
  *
  * This function creates a SURF action and allocates the data necessary
@@ -180,7 +255,6 @@ void simcall_host_set_data(smx_host_t host, void *data)
  * \param priority computation priority
  * \return A new SIMIX execution action
  */
-
 smx_action_t simcall_host_execute(const char *name, smx_host_t host,
                                     double computation_amount,
                                     double priority, double bound, unsigned long affinity_mask)
@@ -898,9 +972,11 @@ void simcall_comm_send(smx_rdv_t rdv, double task_size, double rate,
 
   if (MC_is_active()) {
     /* the model-checker wants two separate simcalls */
-    smx_action_t comm = simcall_comm_isend(rdv, task_size, rate,
+    smx_action_t comm = NULL; /* MC needs the comm to be set to NULL during the simcall */
+    comm = simcall_comm_isend(rdv, task_size, rate,
         src_buff, src_buff_size, match_fun, NULL, data, 0);
     simcall_comm_wait(comm, timeout);
+    comm = NULL;
   }
   else {
     simcall_BODY_comm_send(rdv, task_size, rate, src_buff, src_buff_size,
@@ -939,9 +1015,11 @@ void simcall_comm_recv(smx_rdv_t rdv, void *dst_buff, size_t * dst_buff_size,
 
   if (MC_is_active()) {
     /* the model-checker wants two separate simcalls */
-    smx_action_t comm = simcall_comm_irecv(rdv, dst_buff, dst_buff_size,
+    smx_action_t comm = NULL; /* MC needs the comm to be set to NULL during the simcall */
+    comm = simcall_comm_irecv(rdv, dst_buff, dst_buff_size,
         match_fun, data);
     simcall_comm_wait(comm, timeout);
+    comm = NULL;
   }
   else {
     simcall_BODY_comm_recv(rdv, dst_buff, dst_buff_size,
@@ -1315,21 +1393,44 @@ int simcall_sem_get_capacity(smx_sem_t sem)
 
 /**
  * \ingroup simix_file_management
+ * \brief Returns the user data associated to a file.
  *
+ * \param fd A simix file
+ * \return the user data of this file
  */
-size_t simcall_file_read(void* ptr, size_t size, smx_file_t fd)
+void* simcall_file_get_data(smx_file_t fd)
 {
-  return simcall_BODY_file_read(ptr, size, fd);
+  return simcall_BODY_file_get_data(fd);
+}
+
+/**
+ * \ingroup simix_file_management
+ * \brief Sets the user data associated to a file.
+ *
+ * \param fd A SIMIX file
+ * \param data The user data to set
+ */
+void simcall_file_set_data(smx_file_t fd, void *data)
+{
+  simcall_file_set_data(fd, data);
 }
 
 /**
  * \ingroup simix_file_management
  *
  */
-size_t simcall_file_write(const void* ptr, size_t size,
-                          smx_file_t fd)
+sg_storage_size_t simcall_file_read(smx_file_t fd, sg_storage_size_t size)
 {
-  return simcall_BODY_file_write(ptr, size, fd);
+  return simcall_BODY_file_read(fd, size);
+}
+
+/**
+ * \ingroup simix_file_management
+ *
+ */
+sg_storage_size_t simcall_file_write(smx_file_t fd, sg_storage_size_t size)
+{
+  return simcall_BODY_file_write(fd, size);
 }
 
 /**
@@ -1371,8 +1472,72 @@ xbt_dict_t simcall_file_ls(const char* mount, const char* path)
  * \ingroup simix_file_management
  *
  */
-size_t simcall_file_get_size (smx_file_t fd){
+sg_storage_size_t simcall_file_get_size (smx_file_t fd){
   return simcall_BODY_file_get_size(fd);
+}
+
+/**
+ * \ingroup simix_file_management
+ *
+ */
+xbt_dynar_t simcall_file_get_info(smx_file_t fd)
+{
+  return simcall_BODY_file_get_info(fd);
+}
+
+/**
+ * \ingroup simix_storage_management
+ * \brief Returns the free space size on a given storage element.
+ * \param storage name
+ * \return Return the free space size on a given storage element (as sg_storage_size_t)
+ */
+sg_storage_size_t simcall_storage_get_free_size (const char* name){
+  return simcall_BODY_storage_get_free_size(name);
+}
+
+/**
+ * \ingroup simix_storage_management
+ * \brief Returns the used space size on a given storage element.
+ * \param storage name
+ * \return Return the used space size on a given storage element (as sg_storage_size_t)
+ */
+sg_storage_size_t simcall_storage_get_used_size (const char* name){
+  return simcall_BODY_storage_get_used_size(name);
+}
+
+/**
+ * \ingroup simix_storage_management
+ * \brief Returns the list of storages mounted on an host.
+ * \param host A SIMIX host
+ * \return a dict containing all storages mounted on the host
+ */
+xbt_dict_t simcall_host_get_storage_list(smx_host_t host)
+{
+  return simcall_BODY_host_get_storage_list(host);
+}
+
+/**
+ * \ingroup simix_storage_management
+ * \brief Returns a dict of the properties assigned to a storage element.
+ *
+ * \param storage A storage element
+ * \return The properties of this storage element
+ */
+xbt_dict_t simcall_storage_get_properties(smx_storage_t storage)
+{
+  return simcall_BODY_storage_get_properties(storage);
+}
+
+/**
+ * \ingroup simix_storage_management
+ * \brief Returns a dict containing the content of a storage element.
+ *
+ * \param storage A storage element
+ * \return The content of this storage element as a dict (full path file => size)
+ */
+xbt_dict_t simcall_storage_get_content(smx_storage_t storage)
+{
+  return simcall_BODY_storage_get_content(storage);
 }
 
 #ifdef HAVE_MC
@@ -1386,9 +1551,9 @@ int simcall_mc_compare_snapshots(void *s1, void *s2){
   return simcall_BODY_mc_compare_snapshots(s1, s2);
 }
 
-int simcall_mc_random(void)
+int simcall_mc_random(int min, int max)
 {
-  return simcall_BODY_mc_random();
+  return simcall_BODY_mc_random(min, max);
 }
 
 

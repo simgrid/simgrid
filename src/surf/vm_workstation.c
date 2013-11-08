@@ -32,7 +32,7 @@ static void vm_ws_create(const char *name, void *ind_phys_workstation)
    * create a physical workstation resource, but specifying the size of
    * s_workstation_VM2013_t and the vm workstation model object. */
   workstation_CLM03_t ws = (workstation_CLM03_t) surf_resource_new(sizeof(s_workstation_VM2013_t),
-      surf_vm_workstation_model, name, NULL);
+      surf_vm_workstation_model, name, NULL, NULL);
 
   /* Currently, we assume a VM has no storage. */
   ws->storage = NULL;
@@ -71,7 +71,8 @@ static void vm_ws_create(const char *name, void *ind_phys_workstation)
   /* We can assume one core and cas01 cpu for the first step.
    * Do xbt_lib_set(host_lib, name, SURF_CPU_LEVEL, cpu) if you get the resource. */
   cpu_cas01_create_resource(name, // name
-      sub_cpu->power_peak,        // host->power_peak,
+      sub_cpu->power_peak_list,        // host->power_peak,
+      sub_cpu->pstate,
       1,                          // host->power_scale,
       NULL,                       // host->power_trace,
       1,                          // host->core_amount,

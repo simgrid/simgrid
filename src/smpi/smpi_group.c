@@ -1,4 +1,4 @@
-/* Copyright (c) 2010. The SimGrid Team.
+/* Copyright (c) 2010, 2013. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -35,30 +35,58 @@ MPI_Group smpi_group_new(int size)
   group->size = size;
   group->rank_to_index_map = xbt_new(int, size);
   group->index_to_rank_map = xbt_new(int, count);
-  group->refcount = 0;
+  group->refcount = 1;
   for (i = 0; i < size; i++) {
     group->rank_to_index_map[i] = MPI_UNDEFINED;
   }
   for (i = 0; i < count; i++) {
     group->index_to_rank_map[i] = MPI_UNDEFINED;
   }
+
   return group;
 }
 
+MPI_Group smpi_group_copy(MPI_Group origin)
+{
+  MPI_Group group=origin;
+  int i, count;
+  if(origin!= smpi_comm_group(MPI_COMM_WORLD)
+            && origin != MPI_GROUP_NULL
+            && origin != smpi_comm_group(MPI_COMM_SELF)
+            && origin != MPI_GROUP_EMPTY)
+    {
+      count = smpi_process_count();
+      group = xbt_new(s_smpi_mpi_group_t, 1);
+      group->size = origin->size;
+      group->rank_to_index_map = xbt_new(int, group->size);
+      group->index_to_rank_map = xbt_new(int, count);
+      group->refcount = 1;
+      for (i = 0; i < group->size; i++) {
+        group->rank_to_index_map[i] = origin->rank_to_index_map[i];
+      }
+      for (i = 0; i < count; i++) {
+        group->index_to_rank_map[i] = origin->index_to_rank_map[i];
+      }
+    }
+
+  return group;
+}
+
+
 void smpi_group_destroy(MPI_Group group)
 {
-  if (smpi_group_unuse(group) <= 0) {
-    xbt_free(group->rank_to_index_map);
-    xbt_free(group->index_to_rank_map);
-    xbt_free(group);
-  }
+  if(group!= smpi_comm_group(MPI_COMM_WORLD)
+          && group != MPI_GROUP_NULL
+          && group != smpi_comm_group(MPI_COMM_SELF)
+          && group != MPI_GROUP_EMPTY)
+  smpi_group_unuse(group);
 }
 
 void smpi_group_set_mapping(MPI_Group group, int index, int rank)
 {
   if (rank < group->size && index < smpi_process_count()) {
     group->rank_to_index_map[rank] = index;
-    group->index_to_rank_map[index] = rank;
+    if(index!=MPI_UNDEFINED)group->index_to_rank_map[index] = rank;
   }
 }
 
@@ -91,7 +119,14 @@ int smpi_group_use(MPI_Group group)
 int smpi_group_unuse(MPI_Group group)
 {
   group->refcount--;
+  if (group->refcount <= 0) {
+    xbt_free(group->rank_to_index_map);
+    xbt_free(group->index_to_rank_map);
+    xbt_free(group);
+    return 0;
+  }
   return group->refcount;
+
 }
 
 int smpi_group_size(MPI_Group group)

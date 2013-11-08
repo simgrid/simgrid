@@ -1,4 +1,5 @@
-/* Copyright (c) 2004-2012. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2004-2013. The SimGrid Team.
+ * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -11,6 +12,8 @@
 #include "msg/datatypes.h"
 
 #include "simgrid/simix.h"
+
+#include "simgrid/platf.h"
 
 SG_BEGIN_DECL()
 
@@ -78,15 +81,32 @@ XBT_PUBLIC(const char *) MSG_environment_as_get_model(msg_as_t as);
 XBT_PUBLIC(xbt_dynar_t) MSG_environment_as_get_hosts(msg_as_t as);
 
 /************************** File handling ***********************************/
-XBT_PUBLIC(size_t) MSG_file_read(void* ptr, size_t size, msg_file_t fd);
-XBT_PUBLIC(size_t) MSG_file_write(const void* ptr, size_t size, msg_file_t fd);
-XBT_PUBLIC(msg_file_t) MSG_file_open(const char* mount, const char* path);
+XBT_PUBLIC(sg_storage_size_t) MSG_file_read(msg_file_t fd, sg_storage_size_t size);
+XBT_PUBLIC(sg_storage_size_t) MSG_file_write(msg_file_t fd, sg_storage_size_t size);
+XBT_PUBLIC(msg_file_t) MSG_file_open(const char* mount, const char* path,
+                                     void* data);
+XBT_PUBLIC(void*) MSG_file_get_data(msg_file_t fd);
+XBT_PUBLIC(msg_error_t) MSG_file_set_data(msg_file_t fd, void * data);
 XBT_PUBLIC(int) MSG_file_close(msg_file_t fd);
-XBT_PUBLIC(size_t) MSG_file_get_size(msg_file_t fd);
-
+XBT_PUBLIC(sg_storage_size_t) MSG_file_get_size(msg_file_t fd);
+XBT_PUBLIC(void) MSG_file_dump(msg_file_t fd);
 XBT_PUBLIC(int) MSG_file_unlink(msg_file_t fd);
 XBT_PUBLIC(xbt_dict_t) MSG_file_ls(const char *mount, const char *path);
+XBT_PUBLIC(void) __MSG_file_get_info(msg_file_t fd);
 
+/************************** Storage handling ***********************************/
+XBT_PUBLIC(msg_host_t) MSG_get_storage_by_name(const char *name);
+XBT_PUBLIC(const char *) MSG_storage_get_name(msg_storage_t storage);
+XBT_PUBLIC(sg_storage_size_t) MSG_storage_get_free_size(const char* name);
+XBT_PUBLIC(sg_storage_size_t) MSG_storage_get_used_size(const char* name);
+XBT_PUBLIC(msg_storage_t) MSG_storage_get_by_name(const char *name);
+XBT_PUBLIC(xbt_dict_t) MSG_storage_get_properties(msg_storage_t storage);
+XBT_PUBLIC(void) MSG_storage_set_property_value(msg_storage_t storage, const char *name, char *value,void_f_pvoid_t free_ctn);
+XBT_PUBLIC(xbt_dynar_t) MSG_storages_as_dynar(void);
+XBT_PUBLIC(msg_error_t) MSG_storage_set_data(msg_storage_t host, void *data);
+XBT_PUBLIC(void *) MSG_storage_get_data(msg_storage_t storage);
+XBT_PUBLIC(xbt_dict_t) MSG_storage_get_content(msg_storage_t storage);
+XBT_PUBLIC(sg_storage_size_t) MSG_storage_get_size(msg_storage_t storage);
 /************************** AS Router handling ************************************/
 XBT_PUBLIC(const char *) MSG_as_router_get_property_value(const char* asr, const char *name);
 XBT_PUBLIC(xbt_dict_t) MSG_as_router_get_properties(const char* asr);
@@ -102,10 +122,17 @@ XBT_PUBLIC(msg_host_t) MSG_host_self(void);
 XBT_PUBLIC(int) MSG_get_host_msgload(msg_host_t host);
 /* int MSG_get_msgload(void); This function lacks specification; discard it */
 XBT_PUBLIC(double) MSG_get_host_speed(msg_host_t h);
-XBT_PUBLIC(int) MSG_get_host_core(msg_host_t h);
+XBT_PUBLIC(int) MSG_host_get_core_number(msg_host_t h);
+XBT_PUBLIC(xbt_swag_t) MSG_host_get_process_list(msg_host_t h);
 XBT_PUBLIC(int) MSG_host_is_avail(msg_host_t h);
 XBT_PUBLIC(void) __MSG_host_priv_free(msg_host_priv_t priv);
 XBT_PUBLIC(void) __MSG_host_destroy(msg_host_t host);
+
+XBT_PUBLIC(double) MSG_get_host_power_peak_at(msg_host_t h, int pstate_index);
+XBT_PUBLIC(double) MSG_get_host_current_power_peak(msg_host_t h);
+XBT_PUBLIC(int) MSG_get_host_nb_pstates(msg_host_t h);
+XBT_PUBLIC(void) MSG_set_host_power_peak_at(msg_host_t h, int pstate);
+XBT_PUBLIC(double) MSG_get_host_consumed_energy(msg_host_t h);
 
 /*property handlers*/
 XBT_PUBLIC(xbt_dict_t) MSG_host_get_properties(msg_host_t host);
@@ -121,10 +148,10 @@ XBT_PUBLIC(void) MSG_create_environment(const char *file);
 XBT_PUBLIC(msg_host_t) MSG_get_host_by_name(const char *name);
 XBT_PUBLIC(xbt_dynar_t) MSG_hosts_as_dynar(void);
 XBT_PUBLIC(int) MSG_get_host_number(void);
-
 XBT_PUBLIC(void) MSG_host_get_params(msg_host_t ind_pm, ws_params_t params);
 XBT_PUBLIC(void) MSG_host_set_params(msg_host_t ind_pm, ws_params_t params);
-
+XBT_PUBLIC(xbt_dict_t) MSG_host_get_storage_list(msg_host_t host);
+XBT_PUBLIC(xbt_dict_t) MSG_host_get_storage_content(msg_host_t host);
 /************************** Process handling *********************************/
 XBT_PUBLIC(msg_process_t) MSG_process_create(const char *name,
                                            xbt_main_func_t code,

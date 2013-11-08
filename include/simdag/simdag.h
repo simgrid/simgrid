@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, 2007, 2008, 2009, 2010. The SimGrid Team.
+/* Copyright (c) 2006-2010, 2012-2013. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -105,6 +105,8 @@ XBT_PUBLIC(double) SD_route_get_communication_time(SD_workstation_t src,
 
 XBT_PUBLIC(SD_task_t) SD_workstation_get_current_task(SD_workstation_t
                                                       workstation);
+XBT_PUBLIC(xbt_dict_t)
+    SD_workstation_get_storage_list(SD_workstation_t workstation);
 /** @} */
 
 /************************** Task handling ************************************/
@@ -135,6 +137,7 @@ XBT_PUBLIC(void) SD_task_set_rate(SD_task_t task, double rate);
 XBT_PUBLIC(void) SD_task_watch(SD_task_t task, e_SD_task_state_t state);
 XBT_PUBLIC(void) SD_task_unwatch(SD_task_t task, e_SD_task_state_t state);
 XBT_PUBLIC(double) SD_task_get_amount(SD_task_t task);
+XBT_PUBLIC(void) SD_task_set_amount(SD_task_t task, double amount);
 XBT_PUBLIC(double) SD_task_get_alpha(SD_task_t task);
 XBT_PUBLIC(double) SD_task_get_remaining_amount(SD_task_t task);
 XBT_PUBLIC(double) SD_task_get_execution_time(SD_task_t task,
@@ -175,7 +178,7 @@ XBT_PUBLIC(SD_task_t) SD_task_create_comm_par_mxn_1d_block(const char *name,
                                                            void *data,
                                                            double amount);
 
-XBT_PUBLIC(void) SD_task_distribute_comp_amdhal(SD_task_t task, int ws_count);
+XBT_PUBLIC(void) SD_task_distribute_comp_amdahl(SD_task_t task, int ws_count);
 XBT_PUBLIC(void) SD_task_schedulev(SD_task_t task, int count,
                                    const SD_workstation_t * list);
 XBT_PUBLIC(void) SD_task_schedulel(SD_task_t task, int count, ...);
@@ -225,6 +228,7 @@ XBT_PUBLIC(int) SD_task_dependency_exists(SD_task_t src, SD_task_t dst);
  *  @{
  */
 XBT_PUBLIC(void) SD_init(int *argc, char **argv);
+XBT_PUBLIC(void) SD_config(const char *key, const char *value);
 XBT_PUBLIC(void) SD_application_reinit(void);
 XBT_PUBLIC(void) SD_create_environment(const char *platform_file);
 XBT_PUBLIC(xbt_dynar_t) SD_simulate(double how_long);

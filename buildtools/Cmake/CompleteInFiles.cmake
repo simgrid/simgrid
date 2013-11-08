@@ -7,16 +7,15 @@ set(CMAKE_MODULE_PATH
 # x86
 # i.86
 
-IF(CMAKE_SYSTEM_PROCESSOR MATCHES ".86")
+### Determine the assembly flavor that we need today
+include(CMakeDetermineSystem)
+IF(CMAKE_SYSTEM_PROCESSOR MATCHES ".86|AMD64")
   IF(${ARCH_32_BITS})
+    message(STATUS "System processor: i686 (${CMAKE_SYSTEM_PROCESSOR}, 32 bits)")
     set(PROCESSOR_i686 1)
-    set(SIMGRID_SYSTEM_PROCESSOR "${CMAKE_SYSTEM_PROCESSOR}")
-    message(STATUS "System processor: ${CMAKE_SYSTEM_PROCESSOR}")
   ELSE()
-    message(STATUS "System processor: amd64")
-    set(SIMGRID_SYSTEM_PROCESSOR "amd64")
+    message(STATUS "System processor: x86_64 (${CMAKE_SYSTEM_PROCESSOR}, 64 bits)")
     set(PROCESSOR_x86_64 1)
-    set(PROCESSOR_i686 0)
   ENDIF()
   set(HAVE_RAWCTX 1)
 
@@ -56,6 +55,12 @@ ELSE() #PROCESSOR NOT FOUND
   message(STATUS "PROCESSOR NOT FOUND: ${CMAKE_SYSTEM_PROCESSOR}")
 
 ENDIF()
+
+if(ARCH_32_BITS)
+  set(MPI_ADDRESS_SIZE 4)
+else()
+  set(MPI_ADDRESS_SIZE 8)
+endif()
 
 message(STATUS "Cmake version ${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION}")
 
@@ -98,12 +103,12 @@ if(enable_ns3)
 endif()
 
 # Checks for header libraries functions.
-CHECK_LIBRARY_EXISTS(pthread 	pthread_create 			"" pthread)
-CHECK_LIBRARY_EXISTS(pthread 	sem_init 				"" HAVE_SEM_INIT_LIB)
-CHECK_LIBRARY_EXISTS(pthread 	sem_open 				"" HAVE_SEM_OPEN_LIB)
-CHECK_LIBRARY_EXISTS(pthread 	sem_timedwait 			"" HAVE_SEM_TIMEDWAIT_LIB)
-CHECK_LIBRARY_EXISTS(pthread 	pthread_mutex_timedlock "" HAVE_MUTEX_TIMEDLOCK_LIB)
-CHECK_LIBRARY_EXISTS(rt 		clock_gettime 			"" HAVE_POSIX_GETTIME)
+CHECK_LIBRARY_EXISTS(pthread pthread_create          "" pthread)
+CHECK_LIBRARY_EXISTS(pthread sem_init                "" HAVE_SEM_INIT_LIB)
+CHECK_LIBRARY_EXISTS(pthread sem_open                "" HAVE_SEM_OPEN_LIB)
+CHECK_LIBRARY_EXISTS(pthread sem_timedwait           "" HAVE_SEM_TIMEDWAIT_LIB)
+CHECK_LIBRARY_EXISTS(pthread pthread_mutex_timedlock "" HAVE_MUTEX_TIMEDLOCK_LIB)
+CHECK_LIBRARY_EXISTS(rt      clock_gettime           "" HAVE_POSIX_GETTIME)
 
 CHECK_INCLUDE_FILES("time.h;sys/time.h" TIME_WITH_SYS_TIME)
 CHECK_INCLUDE_FILES("stdlib.h;stdarg.h;string.h;float.h" STDC_HEADERS)
@@ -236,8 +241,8 @@ if (HAVE_DLFCN_H)
     else()
 
       execute_process(COMMAND ./test_gnu_ld
-          WORKING_DIRECTORY ${CMAKE_BINARY_DIR} 
-          RESULT_VARIABLE HAVE_GNU_LD_run 
+          WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+          RESULT_VARIABLE HAVE_GNU_LD_run
           OUTPUT_VARIABLE var_exec
       )
 
@@ -248,7 +253,7 @@ if (HAVE_DLFCN_H)
         set(HAVE_GNU_LD 0)
         message(STATUS "Warning: error while checking for GNU ld:")
         message(STATUS "Test output: '${var_exec}'")
-	message(STATUS "Exit status: ${HAVE_GNU_LD_run}")
+        message(STATUS "Exit status: ${HAVE_GNU_LD_run}")
       endif()
       file(REMOVE test_gnu_ld)
     endif()
@@ -283,8 +288,8 @@ if(pthread)
     endif()
 
     execute_process(COMMAND ./sem_open
-    WORKING_DIRECTORY ${CMAKE_BINARY_DIR} 
-    RESULT_VARIABLE HAVE_SEM_OPEN_run 
+    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+    RESULT_VARIABLE HAVE_SEM_OPEN_run
     OUTPUT_VARIABLE var_compil
     )
     file(REMOVE sem_open)
@@ -310,9 +315,9 @@ if(pthread)
 
   if(HAVE_SEM_INIT_LIB)
     execute_process(COMMAND ${CMAKE_C_COMPILER} ${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/test_prog/prog_sem_init.c -lpthread -o sem_init
-    WORKING_DIRECTORY ${CMAKE_BINARY_DIR} 
+    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
     RESULT_VARIABLE HAVE_SEM_INIT_run OUTPUT_VARIABLE HAVE_SEM_INIT_compil)
-    
+
     if(HAVE_SEM_INIT_compil)
       set(HAVE_SEM_INIT 0)
       message(STATUS "Warning: sem_init not compilable")
@@ -321,9 +326,9 @@ if(pthread)
       set(HAVE_SEM_INIT 1)
       message(STATUS "sem_init is compilable")
     endif()
-    execute_process(COMMAND ./sem_init 
-    WORKING_DIRECTORY ${CMAKE_BINARY_DIR} 
-    RESULT_VARIABLE HAVE_SEM_INIT_run 
+    execute_process(COMMAND ./sem_init
+    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+    RESULT_VARIABLE HAVE_SEM_INIT_run
     OUTPUT_VARIABLE var_compil
     )
     file(REMOVE sem_init)
@@ -550,7 +555,7 @@ if(HAVE_MAKECONTEXT OR WIN32)
     message(STATUS "${pth_skaddr_makecontext}")
     message(STATUS "${pth_sksize_makecontext}")
   else()
-    #	    message(FATAL_ERROR "makecontext is not compilable")
+    # message(FATAL_ERROR "makecontext is not compilable")
   endif()
 endif()
 
@@ -607,39 +612,44 @@ set(diff_va "va_copy((d),(s))"
 
 foreach(fct ${diff_va})
   write_file("${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/test_prog/prog_va_copy.c" "#include <stdlib.h>
-	#include <stdarg.h>
-	#include <string.h>
-	#define DO_VA_COPY(d,s) ${fct}
-	void test(char *str, ...)
-	{
-	    va_list ap, ap2;
-	    int i;
-	    va_start(ap, str);
-	    DO_VA_COPY(ap2, ap);
-	    for (i = 1; i <= 9; i++) {
-		int k = (int)va_arg(ap, int);
-		if (k != i)
-		    abort();
-	    }
-	    DO_VA_COPY(ap, ap2);
-	    for (i = 1; i <= 9; i++) {
-		int k = (int)va_arg(ap, int);
-		if (k != i)
-		    abort();
-	    }
-	    va_end(ap);
-	}
-	int main(void)
-	{
-	    test(\"test\", 1, 2, 3, 4, 5, 6, 7, 8, 9);
-	    exit(0);
-	}"
+#include <stdarg.h>
+#include <string.h>
+#define DO_VA_COPY(d,s) ${fct}
+void test(char *str, ...)
+{
+  va_list ap, ap2;
+  int i;
+  va_start(ap, str);
+  DO_VA_COPY(ap2, ap);
+  for (i = 1; i <= 9; i++) {
+    int k = (int)va_arg(ap, int);
+    if (k != i)
+      abort();
+  }
+  DO_VA_COPY(ap, ap2);
+  for (i = 1; i <= 9; i++) {
+    int k = (int)va_arg(ap, int);
+    if (k != i)
+      abort();
+  }
+  va_end(ap);
+}
+int main(void)
+{
+  test(\"test\", 1, 2, 3, 4, 5, 6, 7, 8, 9);
+  exit(0);
+}"
     )
-  try_compile(COMPILE_VA_NULL_VAR
-    ${CMAKE_BINARY_DIR}
-    ${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/test_prog/prog_va_copy.c
-    )
-  if(COMPILE_VA_NULL_VAR)
+
+  execute_process(
+  COMMAND ${CMAKE_C_COMPILER} "${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/test_prog/prog_va_copy.c" 
+  WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+  RESULT_VARIABLE COMPILE_VA_NULL_VAR
+  OUTPUT_QUIET
+  ERROR_QUIET
+  )
+
+  if(NOT COMPILE_VA_NULL_VAR)
     string(REGEX REPLACE "\;" "" fctbis ${fct})
     if(${fctbis} STREQUAL "va_copy((d),(s))")
       set(HAVE_VA_COPY 1)
@@ -762,12 +772,13 @@ endif()
 
 ### File to create
 
-configure_file("${CMAKE_HOME_DIRECTORY}/src/context_sysv_config.h.in" 			"${CMAKE_BINARY_DIR}/src/context_sysv_config.h" @ONLY IMMEDIATE)
+configure_file("${CMAKE_HOME_DIRECTORY}/src/context_sysv_config.h.in"
+  "${CMAKE_BINARY_DIR}/src/context_sysv_config.h" @ONLY IMMEDIATE)
 
 SET( CMAKEDEFINE "#cmakedefine" )
-configure_file("${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/src/internal_config.h.in" 	"${CMAKE_BINARY_DIR}/src/internal_config.h" @ONLY IMMEDIATE)
-configure_file("${CMAKE_BINARY_DIR}/src/internal_config.h" 			"${CMAKE_BINARY_DIR}/src/internal_config.h" @ONLY IMMEDIATE)
-configure_file("${CMAKE_HOME_DIRECTORY}/include/simgrid_config.h.in" 		"${CMAKE_BINARY_DIR}/include/simgrid_config.h" @ONLY IMMEDIATE)
+configure_file("${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/src/internal_config.h.in" "${CMAKE_BINARY_DIR}/src/internal_config.h" @ONLY IMMEDIATE)
+configure_file("${CMAKE_BINARY_DIR}/src/internal_config.h" "${CMAKE_BINARY_DIR}/src/internal_config.h" @ONLY IMMEDIATE)
+configure_file("${CMAKE_HOME_DIRECTORY}/include/simgrid_config.h.in" "${CMAKE_BINARY_DIR}/include/simgrid_config.h" @ONLY IMMEDIATE)
 
 set(top_srcdir "${CMAKE_HOME_DIRECTORY}")
 set(srcdir "${CMAKE_HOME_DIRECTORY}/src")
@@ -778,8 +789,16 @@ set(exec_prefix ${CMAKE_INSTALL_PREFIX})
 set(includeflag "-I${CMAKE_INSTALL_PREFIX}/include -I${CMAKE_INSTALL_PREFIX}/include/smpi")
 set(includedir "${CMAKE_INSTALL_PREFIX}/include")
 set(libdir ${exec_prefix}/lib)
-set(CMAKE_SMPI_COMMAND "export LD_LIBRARY_PATH=${CMAKE_INSTALL_PREFIX}/lib:${GTNETS_LIB_PATH}:${HAVE_NS3_LIB}:$LD_LIBRARY_PATH")
+set(CMAKE_SMPI_COMMAND "export LD_LIBRARY_PATH=\"${CMAKE_INSTALL_PREFIX}/lib")
+if(GTNETS_LIB_PATH)
+  set(CMAKE_SMPI_COMMAND "${CMAKE_SMPI_COMMAND}:${GTNETS_LIB_PATH}")
+endif()
+if(HAVE_NS3_LIB)
+  set(CMAKE_SMPI_COMMAND "${CMAKE_SMPI_COMMAND}:${HAVE_NS3_LIB}")
+endif()
+set(CMAKE_SMPI_COMMAND "${CMAKE_SMPI_COMMAND}:\${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}\"")
 
+configure_file(${CMAKE_HOME_DIRECTORY}/include/smpi/mpif.h.in ${CMAKE_BINARY_DIR}/include/smpi/mpif.h @ONLY)
 configure_file(${CMAKE_HOME_DIRECTORY}/include/smpi/smpif.h.in ${CMAKE_BINARY_DIR}/include/smpi/smpif.h @ONLY)
 configure_file(${CMAKE_HOME_DIRECTORY}/src/smpi/smpicc.in ${CMAKE_BINARY_DIR}/bin/smpicc @ONLY)
 configure_file(${CMAKE_HOME_DIRECTORY}/src/smpi/smpif2c.in ${CMAKE_BINARY_DIR}/bin/smpif2c @ONLY)
@@ -792,7 +811,14 @@ set(includeflag "-I${CMAKE_HOME_DIRECTORY}/include -I${CMAKE_HOME_DIRECTORY}/inc
 set(includeflag "${includeflag} -I${CMAKE_BINARY_DIR}/include -I${CMAKE_BINARY_DIR}/include/smpi")
 set(includedir "${CMAKE_HOME_DIRECTORY}/include")
 set(exec_prefix "${CMAKE_BINARY_DIR}/smpi_script/")
-set(CMAKE_SMPI_COMMAND "export LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib:${GTNETS_LIB_PATH}:${HAVE_NS3_LIB}:$LD_LIBRARY_PATH")
+set(CMAKE_SMPI_COMMAND "export LD_LIBRARY_PATH=\"${CMAKE_BINARY_DIR}/lib")
+if(GTNETS_LIB_PATH)
+  set(CMAKE_SMPI_COMMAND "${CMAKE_SMPI_COMMAND}:${GTNETS_LIB_PATH}")
+endif()
+if(HAVE_NS3_LIB)
+  set(CMAKE_SMPI_COMMAND "${CMAKE_SMPI_COMMAND}:${HAVE_NS3_LIB}")
+endif()
+set(CMAKE_SMPI_COMMAND "${CMAKE_SMPI_COMMAND}:\${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}\"")
 set(libdir "${CMAKE_BINARY_DIR}/lib")
 
 configure_file(${CMAKE_HOME_DIRECTORY}/src/smpi/smpicc.in ${CMAKE_BINARY_DIR}/smpi_script/bin/smpicc @ONLY)
@@ -817,6 +843,7 @@ if(NOT WIN32)
 endif()
 
 set(generated_headers_to_install
+  ${CMAKE_CURRENT_BINARY_DIR}/include/smpi/mpif.h
   ${CMAKE_CURRENT_BINARY_DIR}/include/smpi/smpif.h
   ${CMAKE_CURRENT_BINARY_DIR}/include/simgrid_config.h
   )
@@ -888,4 +915,4 @@ IF(${ARCH_32_BITS})
 ELSE()
   set(WIN_ARCH "64")
 ENDIF()
-configure_file("${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/src/simgrid.nsi.in" 	"${CMAKE_BINARY_DIR}/simgrid.nsi" @ONLY IMMEDIATE)
+configure_file("${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/src/simgrid.nsi.in" "${CMAKE_BINARY_DIR}/simgrid.nsi" @ONLY IMMEDIATE)

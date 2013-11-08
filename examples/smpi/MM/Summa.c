@@ -152,8 +152,8 @@ inline double Summa(
 
   end_time = MPI_Wtime();
   time = end_time - start_time ;
-  printf("communication time: %le seconds, "
-         "computation time: %le seconds\n",
+  printf("communication time: %e seconds, "
+         "computation time: %e seconds\n",
          communication_time, computation_time);
 
 

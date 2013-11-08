@@ -1,21 +1,20 @@
 /*
- * Copyright 2006-2012. The SimGrid Team. All rights reserved. 
+ * Copyright (c) 2006-2013. The SimGrid Team.
+ * All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. 
  */
 package bittorrent;
 import java.util.ArrayList;
-import java.util.Iterator;
 
 import org.simgrid.msg.Comm;
 import org.simgrid.msg.Host;
-import org.simgrid.msg.Process;
 import org.simgrid.msg.Msg;
 import org.simgrid.msg.MsgException;
-import org.simgrid.msg.Task;
-
+import org.simgrid.msg.Process;
 import org.simgrid.msg.RngStream;
+import org.simgrid.msg.Task;
 /**
  * Tracker, handle requests from peers.
  */

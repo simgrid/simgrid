@@ -1,6 +1,6 @@
 /* Functions related to the java host instances.                            */
 
-/* Copyright (c) 2007-2012. The SimGrid Team.
+/* Copyright (c) 2007-2013. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -154,10 +154,10 @@ JNIEXPORT jdouble JNICALL Java_org_simgrid_msg_Host_getSpeed
     (JNIEnv *, jobject);
 /*
  * Class		org_simgrid_msg_Host
- * Method		getCore
+ * Method		getCoreNumber
  * Signature	()D
  */
-JNIEXPORT jdouble JNICALL Java_org_simgrid_msg_Host_getCore
+JNIEXPORT jdouble JNICALL Java_org_simgrid_msg_Host_getCoreNumber
     (JNIEnv *, jobject);
 /*
  * Class		org_simgrid_msg_Host

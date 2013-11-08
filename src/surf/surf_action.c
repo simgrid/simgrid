@@ -1,4 +1,4 @@
-/* Copyright (c) 2009, 2010. The SimGrid Team.
+/* Copyright (c) 2009-2013. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -6,6 +6,9 @@
 
 #include "surf_private.h"
 #include "network_private.h"
+#include "maxmin_private.h"
+#include "surf/datatypes.h"
+#include "cpu_cas01_private.h"
 #include "xbt/mallocator.h"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_kernel);
@@ -323,7 +326,7 @@ void generic_update_action_remaining_lazy( surf_action_lmm_t action, double now)
   delta = now - action->last_update;
 
   if (action->generic_action.remains > 0) {
-    XBT_DEBUG("Updating action(%p): remains was %lf, last_update was: %lf", action, action->generic_action.remains, action->last_update);
+    XBT_DEBUG("Updating action(%p): remains was %f, last_update was: %f", action, action->generic_action.remains, action->last_update);
     double_update(&(action->generic_action.remains),
         action->last_value * delta);
 
@@ -340,7 +343,7 @@ void generic_update_action_remaining_lazy( surf_action_lmm_t action, double now)
           now - action->last_update);
     }
 #endif
-    XBT_DEBUG("Updating action(%p): remains is now %lf", action,
+    XBT_DEBUG("Updating action(%p): remains is now %f", action,
         action->generic_action.remains);
   }
 
@@ -379,6 +382,27 @@ double surf_action_get_remains(surf_action_t action)
   XBT_OUT();
   return action->remains;
 }
+
+/**
+ * Update the CPU total energy for a finished action
+ *
+ */
+void update_resource_energy(surf_model_t model, surf_action_lmm_t action)
+{
+    if(model->type == SURF_MODEL_TYPE_CPU){
+        cpu_Cas01_t cpu_model = (cpu_Cas01_t)lmm_constraint_id(lmm_get_cnst_from_var
+                	  	  	  	  	  	  	  	  (model->model_private->maxmin_system,
+                	  	  	  	  	  	  	  			  action->variable, 0));
+
+        if( cpu_model->energy->last_updated < surf_get_clock()) {
+        	double load = lmm_constraint_get_usage(cpu_model->constraint) / cpu_model->power_peak;
+        	cpu_update_energy(cpu_model, load);
+        }
+    }
+}
+
+
+
 
 void generic_update_actions_state_lazy(double now, double delta, surf_model_t model)
 {
@@ -423,7 +447,8 @@ void generic_update_actions_state_lazy(double now, double delta, surf_model_t mo
 
     if(model->type == SURF_MODEL_TYPE_CPU){
       action->generic_action.finish = surf_get_clock();
-      XBT_DEBUG("Action %p finished", action);
+
+      update_resource_energy(model, action);
 
       /* set the remains to 0 due to precision problems when updating the remaining amount */
       action->generic_action.remains = 0;
@@ -576,6 +601,8 @@ void generic_update_actions_state_full(double now, double delta, surf_model_t mo
       if (model->gap_remove && model == surf_network_model)
         model->gap_remove(action);
     }
+
+    update_resource_energy(model, action);
   }
 
   return;

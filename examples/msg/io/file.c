@@ -1,4 +1,4 @@
-/* Copyright (c) 2008, 2009, 2010. The SimGrid Team.
+/* Copyright (c) 2008-2010, 2012-2013. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -24,6 +24,7 @@
 #include <stdlib.h>
 #include "msg/msg.h"
 #include "surf/surf_private.h"
+#include "inttypes.h"
 
 int host(int argc, char *argv[]);
 
@@ -33,33 +34,33 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(io_file,
 int host(int argc, char *argv[])
 {
   msg_file_t file = NULL;
-  void *ptr = NULL;
   char* mount = xbt_strdup("/home");
-  size_t read,write;
+  sg_storage_size_t read,write;
 
-  if(!strcmp(MSG_process_get_name(MSG_process_self()),"0"))
-    file = MSG_file_open(mount,FILENAME1);
-  else if(!strcmp(MSG_process_get_name(MSG_process_self()),"1"))
-    file = MSG_file_open(mount,FILENAME2);
+  if(!strcmp(MSG_process_get_name(MSG_process_self()),"0")){
+    file = MSG_file_open(mount,FILENAME1, NULL);
+    MSG_file_dump(file);
+  } else if(!strcmp(MSG_process_get_name(MSG_process_self()),"1"))
+    file = MSG_file_open(mount,FILENAME2, NULL);
   else if(!strcmp(MSG_process_get_name(MSG_process_self()),"2"))
-    file = MSG_file_open(mount,FILENAME3);
+    file = MSG_file_open(mount,FILENAME3, NULL);
   else if(!strcmp(MSG_process_get_name(MSG_process_self()),"3"))
-    file = MSG_file_open(mount,FILENAME4);
+    file = MSG_file_open(mount,FILENAME4, NULL);
   else xbt_die("FILENAME NOT DEFINED %s",MSG_process_get_name(MSG_process_self()));
 
-  XBT_INFO("\tOpen file '%s'",file->name);
+  XBT_INFO("\tOpen file '%s'",file->fullname);
 
-  read = MSG_file_read(ptr,10000000,file);     // Read for 10MB
-  XBT_INFO("\tHave read    %zu on %s",read,file->name);
+  read = MSG_file_read(file, 10000000);     // Read for 10MB
+  XBT_INFO("\tHave read    %" PRIu64 " on %s",read,file->fullname);
 
-  write = MSG_file_write(ptr,100000,file);  // Write for 100KB
-  XBT_INFO("\tHave written %zu on %s",write,file->name);
+  write = MSG_file_write(file, 100000);  // Write for 100KB
+  XBT_INFO("\tHave written %" PRIu64 " on %s",write,file->fullname);
 
-  read = MSG_file_read(ptr,110000,file);     // Read for 110KB
-  XBT_INFO("\tHave read    %zu on %s (of size %zu)",read,file->name,
+  read = MSG_file_read(file, 110000);     // Read for 110KB
+  XBT_INFO("\tHave read    %" PRIu64 " on %s (of size %" PRIu64 ")",read,file->fullname,
       MSG_file_get_size(file));
 
-  XBT_INFO("\tClose file '%s'",file->name);
+  XBT_INFO("\tClose file '%s'",file->fullname);
   MSG_file_close(file);
 
   free(mount);

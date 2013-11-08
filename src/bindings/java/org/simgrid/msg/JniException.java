@@ -1,7 +1,7 @@
 /*
  * This exception is raised when there is a problem within the bindings (in JNI). 
  *
- * Copyright 2006-2012 The SimGrid Team            
+ * Copyright (c) 2006-2013. The SimGrid Team.
  * All right reserved. 
  *
  * This program is free software; you can redistribute 

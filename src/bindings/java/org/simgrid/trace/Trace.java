@@ -1,7 +1,7 @@
 /*
  * JNI interface to C code for the TRACES part of SimGrid.
  * 
- * Copyright 2012 The SimGrid Team.           
+ * Copyright (c) 2012-2013. The SimGrid Team.
  * All right reserved. 
  *
  * This program is free software; you can redistribute 
