@@ -226,7 +226,7 @@ static sg_storage_size_t storage_get_size(void *storage){
   return ((storage_t)storage_resource)->size;
 }
 
-static void storage_file_rename(const void *storage, const char *src, const char *dest)
+static void storage_file_rename(void *storage, const char *src, const char *dest)
 {
   void *storage_resource = surf_storage_resource_priv(storage);
 
