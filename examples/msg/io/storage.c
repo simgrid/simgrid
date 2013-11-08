@@ -20,13 +20,14 @@
 
 #include "msg/msg.h"
 #include "xbt/log.h"
+#include "xbt/dict.h"
 
  /* To use PRIu64 format specifier for printing uint64_t (sg_storage_size_t) */
 #include <inttypes.h>
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(storage,"Messages specific for this simulation");
 
-int host(int argc, char *argv[]){
+static int host(int argc, char *argv[]){
   const char* host_name = MSG_host_get_name(MSG_host_self());
 
   // display information on the disks mounted by the current host
@@ -55,7 +56,7 @@ int host(int argc, char *argv[]){
 	XBT_INFO("Free size: %"PRIu64" bytes", free_size);
 	XBT_INFO("Used size: %"PRIu64" bytes", used_size);
   }
-  xbt_free(storage_list);
+  xbt_dict_free(&storage_list);
 
 
   // Create a 200,000 bytes file named './tmp/data.txt' on /sd1
@@ -90,15 +91,15 @@ int host(int argc, char *argv[]){
   free(mount);
   free(file_name);
 
-  // Now rename file from /tmp/data.txt to /tmp/simgrid.readme
-  msg_storage_t st = MSG_storage_get_by_name("/sd1");
-  MSG_storage_file_rename(st, "/tmp/data.txt", "/tmp/simgrid.readme");
+  storage_name = xbt_strdup("Disk1");
+  storage = MSG_storage_get_by_name(storage_name);
+
+  // Now rename file from ./tmp/data.txt to ./tmp/simgrid.readme
+//  MSG_storage_file_rename(storage, "./tmp/data.txt", "./tmp/simgrid.readme");
 
   // Now attach some user data to disk1
-  storage_name = xbt_strdup("disk1");
   XBT_INFO("*** Get/set data for storage element: %s ***",storage_name);
 
-  storage = MSG_storage_get_by_name(storage_name);
   char *data = MSG_storage_get_data(storage);
 
   XBT_INFO("Get data: '%s'", data);
@@ -106,7 +107,7 @@ int host(int argc, char *argv[]){
   MSG_storage_set_data(storage,strdup("Some user data"));
   data = MSG_storage_get_data(storage);
   XBT_INFO("Set and get data: '%s'", data);
-  free(storage_name);
+  xbt_free(storage_name);
 
 
   // Dump disks contents
@@ -119,12 +120,13 @@ int host(int argc, char *argv[]){
   char* path;
   sg_storage_size_t *size;
   xbt_dict_foreach(contents, curs, mountname, content){
-	XBT_INFO("Print the content of mount point: %s",mountname);
+    XBT_INFO("Print the content of mount point: %s",mountname);
     xbt_dict_foreach(content,curs2,path,size){
-	  XBT_INFO("%s size: %"PRIu64" bytes", path,*((sg_storage_size_t*)size));
+       XBT_INFO("%s size: %"PRIu64" bytes", path,*((sg_storage_size_t*)size));
     }
+    xbt_dict_free(&content);
   }
-
+  xbt_dict_free(&contents);
   return 1;
 }
 
@@ -133,18 +135,11 @@ int main(int argc, char *argv[])
 {
 
   MSG_init(&argc, argv);
-  /* Check the arguments */
-  if (argc < 3) {
-    printf("Usage: %s platform_file deployment_file \n", argv[0]);
-    return -1;
-  }
-
-  const char *platform_file = argv[1];
-  const char *deployment_file = argv[2];
-
-  MSG_create_environment(platform_file);
+  MSG_create_environment(argv[1]);
   MSG_function_register("host", host);
-  MSG_launch_application(deployment_file);
+  xbt_dynar_t hosts =  MSG_hosts_as_dynar();
+  MSG_process_create(NULL, host, NULL, xbt_dynar_get_as(hosts,0,msg_host_t) );
+  xbt_dynar_free(&hosts);
 
   msg_error_t res = MSG_main();
   XBT_INFO("Simulated time: %g", MSG_get_clock());
