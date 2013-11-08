@@ -44,6 +44,7 @@
 		</host>
 		
 		<host id="denise" power="1Gf">
+			<mount storageId="Disk1" name="/sd1"/>	
 			<mount storageId="Disk4" name="/home"/>	
 		</host>
 
