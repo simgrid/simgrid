@@ -1274,6 +1274,15 @@ xbt_dynar_t simcall_file_get_info(smx_file_t fd)
 }
 
 /**
+ * \ingroup simix_file_management
+ *
+ */
+void simcall_file_rename(smx_file_t fd, const char* new_name)
+{
+  return simcall_BODY_file_rename(fd, new_name);
+}
+
+/**
  * \ingroup simix_storage_management
  * \brief Returns the free space size on a given storage element.
  * \param storage name

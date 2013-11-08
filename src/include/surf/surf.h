@@ -287,7 +287,7 @@ typedef struct surf_workstation_model_extension_public {
   surf_action_t(*ls) (void *workstation, const char* mount, const char *path);
   sg_storage_size_t (*get_size) (void *workstation, surf_file_t fd);
   xbt_dynar_t (*get_info) (void *workstation, surf_file_t fd);
-
+  void (*rename) (void *workstation, surf_file_t fd, const char *new_name);
   int (*link_shared) (const void *link);
   xbt_dict_t(*get_properties) (const void *resource);
   void (*add_traces) (void);

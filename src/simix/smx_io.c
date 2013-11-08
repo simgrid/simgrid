@@ -300,6 +300,19 @@ xbt_dynar_t SIMIX_file_get_info(smx_process_t process, smx_file_t fd)
       fd->surf_file);
 }
 
+void SIMIX_pre_file_rename(smx_simcall_t simcall, smx_file_t fd, const char* new_name)
+{
+  return SIMIX_file_rename(simcall->issuer, fd, new_name);
+}
+
+void SIMIX_file_rename(smx_process_t process, smx_file_t fd, const char* new_name)
+{
+  smx_host_t host = process->smx_host;
+  return  surf_workstation_model->extension.workstation.rename(host,
+      fd->surf_file, new_name);
+}
+
+
 sg_storage_size_t SIMIX_pre_storage_get_free_size(smx_simcall_t simcall, const char* name)
 {
   return SIMIX_storage_get_free_size(simcall->issuer, name);
