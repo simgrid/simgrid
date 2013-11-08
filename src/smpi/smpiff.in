@@ -3,7 +3,24 @@ prefix="@exec_prefix@"
 
 ARGS="-DMAIN__=user_main -Diargc_=smpi_process_argc -Dgetarg_=smpi_process_getarg"
 LINKARGS="-lf2c -lm"
-SRCFILES=""
+declare -a SRCFILES
+
+# $1: prefix, $2: suffix
+mymktemp () {
+    tmp=$(mktemp --suffix="$2" "$1_XXXXXXXXXX" 2> /dev/null)
+    if [ -z "$tmp" ]; then
+        # mktemp failed (unsupported --suffix ?), try unsafe mode
+        tmp=$(mktemp -u "$1_XXXXXXXXXX" 2> /dev/null)
+        if [ -z "$tmp" ]; then
+            # mktemp failed again (doesn't exist ?), try very unsafe mode
+            tmp="$1_$$x$RANDOM"
+        fi
+        tmp="${tmp}$2"
+        # create temp file, and exit if it existed before
+        sh -C -c "true > \"${tmp}\"" || exit 1
+    fi
+    echo "${tmp}"
+}
 
 while [ -n "$1" ]; do
   ARG="$1"
@@ -11,10 +28,10 @@ while [ -n "$1" ]; do
   case "${ARG}" in
     *.f)
       SRCFILE="$(readlink -f ${ARG} 2>/dev/null)"
-       if [ -z $SRCFILE ] ; then
+       if [ -z "$SRCFILE" ] ; then
          SRCFILE="$ARG"
        fi
-       SRCFILES="${SRCFILES} ${SRCFILE}"
+       SRCFILES+="${SRCFILE}"
        ;;
     *)
       if [ "${ARG}" = "-c" ]; then
@@ -28,9 +45,9 @@ ARGS="${ARGS} ${LINKARGS}"
 
 if [ -n "${SRCFILES}" ]
 then
-   for SRCFILE in "${SRCFILES}"
+   for SRCFILE in "${SRCFILES[@]}"
    do
-      TMPFILE=${SRCFILE}\_$RANDOM.f
+      TMPFILE=$(mymktemp "${SRCFILE}" ".f")
       cp ${SRCFILE} ${TMPFILE}
       CFILE="${TMPFILE%.f}.c"
       #echo "$prefix/bin/smpif2c ${TMPFILE} && $prefix/bin/smpicc ${ARGS} ${CFILE} && rm ${CFILE} && rm ${TMPFILE}"
