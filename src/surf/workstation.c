@@ -11,6 +11,7 @@
 #include "storage_private.h"
 #include "surf/surf_resource.h"
 #include "simgrid/sg_config.h"
+#include <inttypes.h>
 
 typedef struct workstation_CLM03 {
   s_surf_resource_t generic_resource;   /* Must remain first to add this to a trace */
@@ -473,6 +474,34 @@ static xbt_dynar_t ws_file_get_info(void *workstation, surf_file_t fd)
   return info;
 }
 
+static void ws_file_rename(void *workstation, surf_file_t fd, const char* new_name)
+{
+  storage_t storage = find_storage_on_mount_list(workstation, fd->mount);
+
+  const char* old_full_name = fd->name;
+  xbt_dynar_t dyn = NULL;
+  const char* separator;
+  const char* ctype = storage->content_type;
+
+  // TODO: PV: use an enum and a switch case to manage content type properly
+  if(!strcmp(ctype, "txt_unix"))
+	separator = strdup("/");
+  else
+	separator = strdup("\\");
+
+  // Split file with separator and replace file name
+  dyn = xbt_str_split(old_full_name, separator);
+  xbt_dynar_pop_ptr(dyn);
+  xbt_dynar_push(dyn, &new_name);
+  char *new_full_name = xbt_str_join(dyn, separator);
+
+  sg_storage_size_t *psize;
+  psize = (sg_storage_size_t*) xbt_dict_get_or_null(storage->content,old_full_name);
+  xbt_dict_remove(storage->content, old_full_name);
+  xbt_dict_set(storage->content,new_full_name,psize,NULL);
+  XBT_DEBUG("Change file name from %s to %s, size '%" PRIu64 "'",fd->name, new_full_name, *psize);
+}
+
 static sg_storage_size_t ws_storage_get_free_size(void *workstation,const char* name)
 {
   storage_t st = find_storage_on_mount_list(workstation, name);
@@ -551,6 +580,7 @@ static void surf_workstation_model_init_internal(void)
   surf_workstation_model->extension.workstation.ls = ws_action_ls;
   surf_workstation_model->extension.workstation.get_size = ws_file_get_size;
   surf_workstation_model->extension.workstation.get_info = ws_file_get_info;
+  surf_workstation_model->extension.workstation.rename = ws_file_rename;
   surf_workstation_model->extension.workstation.get_free_size = ws_storage_get_free_size;
   surf_workstation_model->extension.workstation.get_used_size = ws_storage_get_used_size;
   surf_workstation_model->extension.workstation.get_storage_list = ws_get_storage_list;

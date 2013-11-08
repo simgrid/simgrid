@@ -357,6 +357,7 @@ ACTION(SIMCALL_FILE_UNLINK, file_unlink, WITH_ANSWER, TINT(result), TSPEC(fd, sm
 ACTION(SIMCALL_FILE_LS, file_ls, WITHOUT_ANSWER, TSPEC(result, xbt_dict_t), TSTRING(mount), TSTRING(path)) sep \
 ACTION(SIMCALL_FILE_GET_SIZE, file_get_size, WITH_ANSWER, TSIZE(result), TSPEC(fd, smx_file_t)) sep \
 ACTION(SIMCALL_FILE_GET_INFO, file_get_info, WITH_ANSWER, TSPEC(result, xbt_dynar_t), TSPEC(fd, smx_file_t)) sep \
+ACTION(SIMCALL_FILE_RENAME, file_rename, WITH_ANSWER, TVOID(result), TSPEC(fd, smx_file_t), TSTRING(new_name)) sep \
 ACTION(SIMCALL_STORAGE_GET_FREE_SIZE, storage_get_free_size, WITH_ANSWER, TSIZE(result), TSTRING(name)) sep \
 ACTION(SIMCALL_STORAGE_GET_USED_SIZE, storage_get_used_size, WITH_ANSWER, TSIZE(result), TSTRING(name)) sep \
 ACTION(SIMCALL_STORAGE_GET_PROPERTIES, storage_get_properties, WITH_ANSWER, TSPEC(result, xbt_dict_t), TSPEC(storage, smx_storage_t)) sep \

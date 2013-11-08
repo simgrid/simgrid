@@ -216,9 +216,9 @@ msg_error_t MSG_file_seek (msg_file_t fd, sg_storage_size_t offset, int whence)
 /*
  * Rename the file in the contents of its associated storage.
  */
-msg_error_t MSG_file_rename (msg_file_t fd, char* new_name)
+msg_error_t MSG_file_rename (msg_file_t fd, const char* new_name)
 {
-  THROW_UNIMPLEMENTED;
+  simcall_file_rename(fd->simdata->smx_file, new_name);
   return MSG_OK;
 }
 
