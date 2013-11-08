@@ -226,6 +226,22 @@ static sg_storage_size_t storage_get_size(void *storage){
   return ((storage_t)storage_resource)->size;
 }
 
+static void storage_file_rename(const void *storage, const char *src, const char *dest)
+{
+  void *storage_resource = surf_storage_resource_priv(storage);
+
+  sg_storage_size_t *psize;
+  psize = (sg_storage_size_t*) xbt_dict_get_or_null(((storage_t)storage_resource)->content,src);
+  if (psize){// src file exists
+    xbt_dict_remove(((storage_t)storage_resource)->content, src);
+    xbt_dict_set(((storage_t)storage_resource)->content, dest, psize,NULL);
+    XBT_DEBUG("Change file name from %s to %s, size '%" PRIu64 "'",src, dest, *psize);
+  }
+  else
+	XBT_DEBUG("File %s doesn't exist",src);
+}
+
+
 static void* storage_create_resource(const char* id, const char* model,
     const char* type_id, const char* content_name, const char* content_type, xbt_dict_t properties){
   storage_t storage = NULL;
@@ -538,6 +554,7 @@ static void surf_storage_model_init_internal(void)
   surf_storage_model->extension.storage.get_properties = storage_get_properties;
   surf_storage_model->extension.storage.get_content = storage_get_content;
   surf_storage_model->extension.storage.get_size = storage_get_size;
+  surf_storage_model->extension.storage.rename = storage_file_rename;
   if (!storage_maxmin_system) {
     storage_maxmin_system = lmm_system_new(storage_selective_update);
   }
