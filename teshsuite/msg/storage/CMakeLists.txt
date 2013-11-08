@@ -2,18 +2,18 @@ cmake_minimum_required(VERSION 2.6)
 
 set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}")
 
-add_executable(storage storage.c)
+add_executable(storage_basic storage_basic.c)
 
 ### Add definitions for compile
 if(NOT WIN32)
-  target_link_libraries(storage simgrid m pthread )
+  target_link_libraries(storage_basic simgrid m pthread )
 else()
-  target_link_libraries(storage simgrid)
+  target_link_libraries(storage_basic simgrid)
 endif()
 
 set(tesh_files
   ${tesh_files}
-  ${CMAKE_CURRENT_SOURCE_DIR}/storage.tesh
+  ${CMAKE_CURRENT_SOURCE_DIR}/storage_basic.tesh
   PARENT_SCOPE
   )
 set(xml_files
@@ -24,7 +24,7 @@ set(xml_files
   )
 set(teshsuite_src
   ${teshsuite_src}
-  ${CMAKE_CURRENT_SOURCE_DIR}/storage.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/storage_basic.c
   PARENT_SCOPE
   )
 set(bin_files
