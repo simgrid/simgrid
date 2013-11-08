@@ -63,6 +63,11 @@ mark_as_advanced(HAVE_F2C_H)
 mark_as_advanced(F2C_EXE)
 mark_as_advanced(HAVE_F2C_LIB)
 
+if(HAVE_F2C_LIB)
+  get_filename_component(F2C_LIBRARY_PATH "${HAVE_F2C_LIB}" PATH)
+  file(TO_NATIVE_PATH "${F2C_LIBRARY_PATH}" F2C_LIBRARY_PATH)
+endif()
+
 #Some old versions of 64 bits systems seem to have a different size between C and Fortran Datatypes
 #Deactivate F2C with these versions, in order to avoid breaking test cases in legacy systems (as Fedora 13)
 set(COMPILER_OK 1)
