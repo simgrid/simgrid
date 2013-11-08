@@ -307,7 +307,7 @@ void SIMIX_pre_storage_file_rename(smx_simcall_t simcall, smx_storage_t storage,
 
 void SIMIX_storage_file_rename(smx_process_t process, smx_storage_t storage, const char* src, const char* dest)
 {
-  return  surf_workstation_model->extension.storage.rename(storage, src, dest);
+  return  surf_storage_model->extension.storage.rename(storage, src, dest);
 }
 
 sg_storage_size_t SIMIX_pre_storage_get_free_size(smx_simcall_t simcall, const char* name)
