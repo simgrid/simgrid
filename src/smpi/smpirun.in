@@ -1,4 +1,4 @@
-#!/bin/sh
+#! /usr/bin/env bash
 
 @CMAKE_SMPI_COMMAND@
 
