@@ -1277,9 +1277,9 @@ xbt_dynar_t simcall_file_get_info(smx_file_t fd)
  * \ingroup simix_file_management
  *
  */
-void simcall_file_rename(smx_file_t fd, const char* new_name)
+void simcall_storage_file_rename(smx_storage_t storage, const char* src,  const char* dest)
 {
-  return simcall_BODY_file_rename(fd, new_name);
+  return simcall_BODY_storage_file_rename(storage, src, dest);
 }
 
 /**
