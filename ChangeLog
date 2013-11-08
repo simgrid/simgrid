@@ -8,7 +8,7 @@ SimGrid (3.11) NOT RELEASED; urgency=low
 
  -- $date Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
 
-SimGrid (3.10-rc1) unstable; urgency=low
+SimGrid (3.10-rc2) unstable; urgency=low
 
  The Clean Diaper Release, a.k.a. SimGrid is leak-free.
 
@@ -38,10 +38,10 @@ SimGrid (3.10-rc1) unstable; urgency=low
      version of MPE.
    - Bug Fix: the compute part of the reduce action is now taken into account.
    - Gatherv collective is now supported
-   - Simgrid (SMPI for now) can generate replay traces as well. Option -trace-ti
-     of smpirun outputs time independent traces for the current run. One file 
-     is created per process. If too many processes are simulated, this behavior 
-     can be changed to one file for all processes by using the 
+   - SimGrid (SMPI for now) can generate replay traces as well. Option -trace-ti
+     of smpirun outputs time independent traces for the current run. One file
+     is created per process. If too many processes are simulated, this behavior
+     can be changed to one file for all processes by using the
      tracing/smpi/format/ti_one_file flag
  * smpirun generates the host file if needed (with given host count and platform)
  * Integration of more than 100 STAR-MPI, MPICH, OpenMPI collective algorithms
@@ -104,7 +104,7 @@ SimGrid (3.10-rc1) unstable; urgency=low
  * Supernovae builds are deprecated, and expected to be removed in the next
    version of SimGrid.
 
--- Mon Oct 7 2013 Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
+ -- Fri Nov  8 23:54:56 CET 2013 Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
 
 SimGrid (3.9) stable; urgency=low
 
@@ -180,7 +180,7 @@ SimGrid (3.9) stable; urgency=low
  TRACING:
  * Transfer the tracing files into the corresponding modules.
 
- -- Tue Feb 5 11:31:43 CET 2013 Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
+ -- Tue Feb  5 11:31:43 CET 2013 Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
 
 SimGrid (3.8.1) stable; urgency=low
 
@@ -480,7 +480,7 @@ SimGrid (3.7) stable; urgency=low
       Turn model-checking OFF if simulation performance matters to you.
       Not enabling it at runtime is not enough, disable it in cmake.
 
-  -- Tue May 15 11:30:19 UTC 2012 Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
+ -- Tue May 15 11:30:19 UTC 2012 Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
 
 SimGrid (3.6.2) stable; urgency=low
 
