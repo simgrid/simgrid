@@ -14,7 +14,7 @@
       t = MPI_Wtime()
 
       print *, '[', t, '] [rank ', rank, ']',
-     &     pstates, 'pstates available'
+     &     pstates, ' pstates available'
 
       do i = 0, pstates - 1
          p = smpi_get_host_power_peak_at(i)
@@ -34,7 +34,7 @@
          t = MPI_Wtime()
          e = smpi_get_host_consumed_energy()
          print *, '[', t, '] [rank ', rank, ']',
-     &        'Energy consumed (Joules): ', e
+     &        ' Energy consumed (Joules): ', e
       end do
 
       call MPI_Finalize(ierr)
