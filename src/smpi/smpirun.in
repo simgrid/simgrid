@@ -274,14 +274,14 @@ APPLICATIONHEAD
 
 ##---- cache hostnames of hostfile---------------
 if [ -n "${HOSTFILE}" ] && [ -f ${HOSTFILE} ]; then
-  hostnames=$(cat ${HOSTFILE} | tr \\\n\\\r " ")
+  hostnames=$(cat ${HOSTFILE} | tr '\n\r' '  ')
   NUMHOSTS=$(cat ${HOSTFILE} | wc -l)
 fi
 
 if [ "${EXTOPT}" = "smpi_replay" ]; then
   APP_TRACES=$PROC_ARGS
   if [ -n "${APP_TRACES}" ] && [ -f "${APP_TRACES}" ]; then
-     hosttraces=$(cat ${APP_TRACES} | tr \\\n\\\r ' ' )
+     hosttraces=$(cat ${APP_TRACES} | tr '\n\r' '  ' )
      NUMTRACES=$(cat ${APP_TRACES} | wc -l)
   else
      printf "File not found: %s\n", "${APP_TRACES:-\${APP_TRACES\}}" >&2
