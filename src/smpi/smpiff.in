@@ -20,6 +20,7 @@ mymktemp () {
     echo "${tmp}"
 }
 
+SRCFILES=""
 while [ -n "$1" ]; do
   ARG="$1"
   shift

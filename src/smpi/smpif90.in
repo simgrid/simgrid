@@ -9,6 +9,7 @@ FFLAGS="-ff2c  -fno-second-underscore"
 LINKARGS="-lsimgrid -lm -lgfortran"
 main_name=main
 
+TMPFILES=""
 trap 'rm -f ${TMPFILES}' EXIT
 
 # $1: prefix, $2: suffix
