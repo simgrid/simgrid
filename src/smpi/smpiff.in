@@ -3,8 +3,6 @@ prefix="@exec_prefix@"
 
 ARGS="-DMAIN__=user_main -Diargc_=smpi_process_argc -Dgetarg_=smpi_process_getarg"
 LINKARGS="-L@F2C_LIBRARY_PATH@ -lf2c -lm"
-declare -a SRCFILES
-
 # $1: prefix, $2: suffix
 mymktemp () {
     tmp=$(mktemp --suffix="$2" "$1_XXXXXXXXXX" 2> /dev/null)
@@ -31,7 +29,7 @@ while [ -n "$1" ]; do
        if [ -z "$SRCFILE" ] ; then
          SRCFILE="$ARG"
        fi
-       SRCFILES+="${SRCFILE}"
+       SRCFILES="${SRCFILES} ${SRCFILE}"
        ;;
     *)
       if [ "${ARG}" = "-c" ]; then
@@ -45,7 +43,7 @@ ARGS="${ARGS} ${LINKARGS}"
 
 if [ -n "${SRCFILES}" ]
 then
-   for SRCFILE in "${SRCFILES[@]}"
+   for SRCFILE in ${SRCFILES}
    do
       TMPFILE=$(mymktemp "${SRCFILE}" ".f")
       cp ${SRCFILE} ${TMPFILE}
