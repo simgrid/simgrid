@@ -235,20 +235,26 @@ if [ -z "${PLATFORM}" ]; then
 <AS id="AS0" routing="Full">
 PLATFORMHEAD
 
-for i in $(echo "for (i=${NUMPROCS};i>0;i--) i"|bc); do
+i=${NUMPROCS}
+while [ $i -gt 0 ]; do
   echo "  <host id=\"host$i\" power=\"${POWER}\"/>" >> ${PLATFORMTMP}
   echo "  <link id=\"loop$i\" bandwidth=\"${LOOPBACK_BANDWIDTH}\" latency=\"${LOOPBACK_LATENCY}\"/>" >> ${PLATFORMTMP}
   echo "  <link id=\"link$i\" bandwidth=\"${NETWORK_BANDWIDTH}\" latency=\"${NETWORK_LATENCY}\"/>" >> ${PLATFORMTMP}
+  i=$((i - 1))
 done
 
-for i in $(echo "for (i=${NUMPROCS};i>0;i--) i"|bc); do
-  for j in $(echo "for (i=${NUMPROCS};i>0;i--) i"|bc); do
+i=${NUMPROCS}
+while [ $i -gt 0 ]; do
+  j=${NUMPROCS}
+  while [ $j -gt 0 ]; do
     if [ $i -eq $j ]; then
       echo "  <route src=\"host$i\" dst=\"host$j\"><link_ctn id=\"loop$i\"/></route>" >> ${PLATFORMTMP}
     else
       echo "  <route src=\"host$i\" dst=\"host$j\"><link_ctn id=\"link$i\"/><link_ctn id=\"link$j\"/></route>" >> ${PLATFORMTMP}
     fi
+    j=$((j - 1))
   done
+  i=$((i - 1))
 done
 
 cat >> ${PLATFORMTMP} <<PLATFORMFOOT
