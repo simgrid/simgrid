@@ -1,4 +1,4 @@
-#! /usr/bin/env bash
+#! /bin/sh
 
 CC=@CMAKE_C_COMPILER@
 
