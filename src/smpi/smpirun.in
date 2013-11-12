@@ -52,6 +52,7 @@ fi
 
 EXTOPT=""
 WRAPPER=""
+HOSTFILE=""
 
 while true; do
   case "$1" in
