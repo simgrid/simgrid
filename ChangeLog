@@ -98,6 +98,7 @@ SimGrid (3.10-rc2) unstable; urgency=low
 
  Build System:
  * Lots of memory leaks were corrected in this release.
+   There is no known memory leaks anymore, in all of our 600+ tests.
  * New command line option --version, to get SimGrid version information.
    Packagers may want to add extra words to SIMGRID_VERSION_EXTRA defined in
    CMakeLists.txt.
