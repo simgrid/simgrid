@@ -1,4 +1,4 @@
-#! /usr/bin/env bash
+#! /bin/sh
 
 @CMAKE_SMPI_COMMAND@
 
@@ -18,7 +18,7 @@ POWER="${DEFAULT_POWER}"
 SIMOPTS="--cfg=maxmin/precision:1e-9 --cfg=network/model:SMPI --cfg=network/TCP_gamma:4194304"
 
 #usage to print the way this script should be called
-function usage () {
+usage () {
 cat <<EOF
 Usage: $0 [OPTIONS] -platform <xmldesc> -hostfile <hostfile> program [program-options]
 Options:
@@ -234,14 +234,14 @@ if [ -z "${PLATFORM}" ]; then
 <AS id="AS0" routing="Full">
 PLATFORMHEAD
 
-for (( i=${NUMPROCS}; $i ; i=$i-1 )) do
+for i in $(echo "for (i=${NUMPROCS};i>0;i--) i"|bc); do
   echo "  <host id=\"host$i\" power=\"${POWER}\"/>" >> ${PLATFORMTMP}
   echo "  <link id=\"loop$i\" bandwidth=\"${LOOPBACK_BANDWIDTH}\" latency=\"${LOOPBACK_LATENCY}\"/>" >> ${PLATFORMTMP}
   echo "  <link id=\"link$i\" bandwidth=\"${NETWORK_BANDWIDTH}\" latency=\"${NETWORK_LATENCY}\"/>" >> ${PLATFORMTMP}
 done
 
-for (( i=${NUMPROCS}; $i ; i=$i-1 )) do
-  for (( j=${NUMPROCS}; $j ; j=$j-1 )) do
+for i in $(echo "for (i=${NUMPROCS};i>0;i--) i"|bc); do
+  for j in $(echo "for (i=${NUMPROCS};i>0;i--) i"|bc); do
     if [ $i -eq $j ]; then
       echo "  <route src=\"host$i\" dst=\"host$j\"><link_ctn id=\"loop$i\"/></route>" >> ${PLATFORMTMP}
     else
@@ -273,15 +273,15 @@ APPLICATIONHEAD
 
 ##---- cache hostnames of hostfile---------------
 if [ -n "${HOSTFILE}" ] && [ -f ${HOSTFILE} ]; then
-	hostnames=(`cat ${HOSTFILE} | tr \\\n " "`)
-      NUMHOSTS=`cat ${HOSTFILE} | wc -l`
+  hostnames=$(cat ${HOSTFILE} | tr \\\n " ")
+  NUMHOSTS=$(cat ${HOSTFILE} | wc -l)
 fi
 
 if [ "${EXTOPT}" = "smpi_replay" ]; then
   APP_TRACES=$PROC_ARGS
   if [ -n "${APP_TRACES}" ] && [ -f "${APP_TRACES}" ]; then
-     hosttraces=(`cat ${APP_TRACES} | tr \\\n " "`)
-     NUMTRACES=`cat ${APP_TRACES} | wc -l`
+     hosttraces=$(cat ${APP_TRACES} | tr \\\n " ")
+     NUMTRACES=$(cat ${APP_TRACES} | wc -l)
   else
      printf "File not found: %s\n", "${APP_TRACES:-\${APP_TRACES\}}" >&2
      exit 1
@@ -312,25 +312,25 @@ fi
 for i in ${SEQ}
 do
   if [ -n "${HOSTFILE}" ]; then
-	j=$(( $i % ${NUMHOSTS} ))
+	j=$(( $i % ${NUMHOSTS} + 1 ))
   fi
   ##---- optional display of ranks to process mapping
   if [ -n "${MAPOPT}" ]; then
-	echo "[rank $i] -> ${hostnames[$j]}"
+	echo "[rank $i] -> $(echo $hostnames|cut -d' ' -f$j)"
   fi
 
-  if [ -z "${hostnames[$j]}" ]; then
-	host="host"$(($j+1))
+  if [ -z "$(echo $hostnames|cut -d' ' -f$j)" ]; then
+	host="host"$($j)
   else
-	host="${hostnames[$j]}"
+	host="$(echo $hostnames|cut -d' ' -f$j)"
   fi
   echo "  <process host=\"${host}\" function=\"$i\"> <!-- function name used only for logging -->" >> ${APPLICATIONTMP}
   echo "    <argument value=\"$i\"/> <!-- rank -->" >> ${APPLICATIONTMP}
   if [ "${EXTOPT}" = "smpi_replay" ]; then
     if  [ ${NUMTRACES} -gt 1 ]; then
-      echo "    <argument value=\"${hosttraces[$j]}\"/>" >> ${APPLICATIONTMP}
+      echo "    <argument value=\"$(echo $hosttraces|cut -d' ' -f$j)\"/>" >> ${APPLICATIONTMP}
     else
-      echo "    <argument value=\"${hosttraces[0]}\"/>" >> ${APPLICATIONTMP}
+      echo "    <argument value=\"$(echo $hosttraces|cut -d' ' -f1)\"/>" >> ${APPLICATIONTMP}
     fi
   else 
     for ARG in $PROC_ARGS; do
