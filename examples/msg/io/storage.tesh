@@ -18,8 +18,8 @@ $ ${bindir:=.}/io/storage ${srcdir:=.}/examples/platforms/storage.xml "--log=roo
 > 		Storage Id: 'Disk4'
 > 		Storage Type: 'single_SSD'
 > 		Content Type: 'txt_unix'
-> [0.003333] (1@denise) Total size: 536857490006 bytes
-> [0.003333] (1@denise) Free size: 13421994 bytes
+> [0.003333] (1@denise) Free size: 536857490006 bytes
+> [0.003333] (1@denise) Used size: 13421994 bytes
 > [0.004583] (1@denise) Read 200000 bytes on ./tmp/data.txt
 > [0.007917] (1@denise) Write 100000 more bytes on ./tmp/data.txt
 > [0.007917] (1@denise) File Descriptor information:

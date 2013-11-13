@@ -72,8 +72,8 @@ static int host(int argc, char *argv[]){
   MSG_file_dump(file);
 
   // check that sizes have changed
-  XBT_INFO("Total size: %"PRIu64" bytes", MSG_storage_get_free_size("/home"));
-  XBT_INFO("Free size: %"PRIu64" bytes", MSG_storage_get_used_size("/home"));
+  XBT_INFO("Free size: %"PRIu64" bytes", MSG_storage_get_free_size("/home"));
+  XBT_INFO("Used size: %"PRIu64" bytes", MSG_storage_get_used_size("/home"));
 
 
   // Now retrieve the size of created file and read it completely
