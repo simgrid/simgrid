@@ -91,7 +91,7 @@
 #define TPTR(n) (n, void*, p)
 #define TCPTR(n) (n, const void*, cp)
 #define TSIZE(n) (n, size_t, si)
-#define TSSIZE(n) (n, sg_storage_size_t, si)
+#define TSGSTSIZE(n) (n, sg_storage_size_t, si)
 #define TVOID(n) (n, void)
 #define TSPEC(n,t) (n, t, p)
 
@@ -350,17 +350,17 @@ ACTION(SIMCALL_SEM_ACQUIRE_TIMEOUT, sem_acquire_timeout, WITHOUT_ANSWER, TVOID(r
 ACTION(SIMCALL_SEM_GET_CAPACITY, sem_get_capacity, WITH_ANSWER, TINT(result), TSPEC(sem, smx_sem_t)) sep \
 ACTION(SIMCALL_FILE_GET_DATA, file_get_data, WITH_ANSWER, TPTR(result), TSPEC(fd, smx_file_t)) sep \
 ACTION(SIMCALL_FILE_SET_DATA, file_set_data, WITH_ANSWER, TVOID(result), TSPEC(fd, smx_file_t), TPTR(data)) sep \
-ACTION(SIMCALL_FILE_READ, file_read, WITHOUT_ANSWER, TSSIZE(result), TSPEC(fd, smx_file_t), TSSIZE(size)) sep \
-ACTION(SIMCALL_FILE_WRITE, file_write, WITHOUT_ANSWER, TSSIZE(result), TSPEC(fd, smx_file_t), TSSIZE(size)) sep \
+ACTION(SIMCALL_FILE_READ, file_read, WITHOUT_ANSWER, TSGSTSIZE(result), TSPEC(fd, smx_file_t), TSGSTSIZE(size)) sep \
+ACTION(SIMCALL_FILE_WRITE, file_write, WITHOUT_ANSWER, TSGSTSIZE(result), TSPEC(fd, smx_file_t), TSGSTSIZE(size)) sep \
 ACTION(SIMCALL_FILE_OPEN, file_open, WITHOUT_ANSWER, TSPEC(result, smx_file_t), TSTRING(mount), TSTRING(path)) sep \
 ACTION(SIMCALL_FILE_CLOSE, file_close, WITHOUT_ANSWER, TINT(result), TSPEC(fd, smx_file_t)) sep \
 ACTION(SIMCALL_FILE_UNLINK, file_unlink, WITH_ANSWER, TINT(result), TSPEC(fd, smx_file_t)) sep \
 ACTION(SIMCALL_FILE_LS, file_ls, WITHOUT_ANSWER, TSPEC(result, xbt_dict_t), TSTRING(mount), TSTRING(path)) sep \
-ACTION(SIMCALL_FILE_GET_SIZE, file_get_size, WITH_ANSWER, TSSIZE(result), TSPEC(fd, smx_file_t)) sep \
+ACTION(SIMCALL_FILE_GET_SIZE, file_get_size, WITH_ANSWER, TSGSTSIZE(result), TSPEC(fd, smx_file_t)) sep \
 ACTION(SIMCALL_FILE_GET_INFO, file_get_info, WITH_ANSWER, TSPEC(result, xbt_dynar_t), TSPEC(fd, smx_file_t)) sep \
 ACTION(SIMCALL_STORAGE_FILE_RENAME, storage_file_rename, WITH_ANSWER, TVOID(result), TSPEC(storage, smx_storage_t), TSTRING(src), TSTRING(dest)) sep \
-ACTION(SIMCALL_STORAGE_GET_FREE_SIZE, storage_get_free_size, WITH_ANSWER, TSSIZE(result), TSTRING(name)) sep \
-ACTION(SIMCALL_STORAGE_GET_USED_SIZE, storage_get_used_size, WITH_ANSWER, TSSIZE(result), TSTRING(name)) sep \
+ACTION(SIMCALL_STORAGE_GET_FREE_SIZE, storage_get_free_size, WITH_ANSWER, TSGSTSIZE(result), TSTRING(name)) sep \
+ACTION(SIMCALL_STORAGE_GET_USED_SIZE, storage_get_used_size, WITH_ANSWER, TSGSTSIZE(result), TSTRING(name)) sep \
 ACTION(SIMCALL_STORAGE_GET_PROPERTIES, storage_get_properties, WITH_ANSWER, TSPEC(result, xbt_dict_t), TSPEC(storage, smx_storage_t)) sep \
 ACTION(SIMCALL_STORAGE_GET_CONTENT, storage_get_content, WITH_ANSWER, TSPEC(result, xbt_dict_t), TSPEC(storage, smx_storage_t)) sep \
 ACTION(SIMCALL_ASR_GET_PROPERTIES, asr_get_properties, WITH_ANSWER, TSPEC(result, xbt_dict_t), TSTRING(name)) sep 
