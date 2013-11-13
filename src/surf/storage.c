@@ -238,7 +238,7 @@ static void storage_file_rename(void *storage, const char *src, const char *dest
     XBT_DEBUG("Change file name from %s to %s, size '%" PRIu64 "'",src, dest, *psize);
   }
   else
-	XBT_DEBUG("File %s doesn't exist",src);
+    XBT_DEBUG("File %s doesn't exist",src);
 }
 
 
