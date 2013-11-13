@@ -1027,6 +1027,7 @@ set(PLATFORMS_EXAMPLES
   examples/platforms/conf/lcg_sept2004_grid.xml
   examples/platforms/conf/transform_optorsim_platform.pl
   examples/platforms/config.xml
+  examples/platforms/content/small_content.txt
   examples/platforms/content/storage_content.txt
   examples/platforms/content/win_storage_content.txt
   examples/platforms/data_center.xml
