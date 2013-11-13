@@ -821,6 +821,7 @@ set(bin_files
   src/smpi/smpiff.in
   src/smpi/smpif90.in
   src/smpi/smpirun.in
+  src/smpi/smpitools.sh
   )
 
 set(txt_files

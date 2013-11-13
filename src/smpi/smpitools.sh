@@ -1,0 +1,57 @@
+SAVEIFS="$IFS"
+LISTSEP="$(printf '\b')"
+
+# Create a temporary file, with its name of the form $1_XXX$2, where XXX is
+# replaced by an unique string.
+# $1: prefix, $2: suffix
+mymktemp () {
+    tmp=$(mktemp --suffix="$2" "$1_XXXXXXXXXX" 2> /dev/null)
+    if [ -z "$tmp" ]; then
+        # mktemp failed (unsupported --suffix ?), try unsafe mode
+        tmp=$(mktemp -u "$1_XXXXXXXXXX" 2> /dev/null)
+        if [ -z "$tmp" ]; then
+            # mktemp failed again (doesn't exist ?), try very unsafe mode
+            if [ -z "${mymktemp_seq}" ]; then
+                mymktemp_seq=$(date +%d%H%M%S)
+            fi
+            tmp="$1_$$x${mymktemp_seq}"
+            mymktemp_seq=$((mymktemp_seq + 1))
+        fi
+        tmp="${tmp}$2"
+        # create temp file, and exit if it existed before
+        sh -C -c "true > \"${tmp}\"" || exit 1
+    fi
+    echo "${tmp}"
+}
+
+# Add a word to the end of a list (words separated by LISTSEP)
+# $1: list, $2...: words to add
+list_add () {
+    local list content
+    list="$1"
+    shift
+    eval content=\"\${$list}\"
+    IFS="$LISTSEP"
+    if [ -z "$content" ]; then
+        content="$*"
+    else
+        content="$content${LISTSEP}$*"
+    fi
+    IFS="$SAVEIFS"
+    eval $list=\"\${content}\"
+}
+
+# Set contents of a list (words separated by LISTSEP)
+# $1: list, $2...: words to set
+list_set () {
+    eval $1=""
+    list_add "$@"
+}
+
+# Get the content of a list: positional parameters ($1, $2, ...) are set to the
+# content of the list
+# $1: list
+# usage:  eval $(list_get list)
+list_get () {
+    printf 'IFS="$LISTSEP"; eval set -- \\$%s; IFS="$SAVEIFS"' "$1"
+}

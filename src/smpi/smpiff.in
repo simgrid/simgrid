@@ -1,63 +1,64 @@
 #! /bin/sh
-prefix="@exec_prefix@"
 
-ARGS="-DMAIN__=user_main -Diargc_=smpi_process_argc -Dgetarg_=smpi_process_getarg"
-LINKARGS="-L@F2C_LIBRARY_PATH@ -lf2c -lm"
-# $1: prefix, $2: suffix
-mymktemp () {
-    tmp=$(mktemp --suffix="$2" "$1_XXXXXXXXXX" 2> /dev/null)
-    if [ -z "$tmp" ]; then
-        # mktemp failed (unsupported --suffix ?), try unsafe mode
-        tmp=$(mktemp -u "$1_XXXXXXXXXX" 2> /dev/null)
-        if [ -z "$tmp" ]; then
-            # mktemp failed again (doesn't exist ?), try very unsafe mode
-            tmp="$1_$$x$RANDOM"
-        fi
-        tmp="${tmp}$2"
-        # create temp file, and exit if it existed before
-        sh -C -c "true > \"${tmp}\"" || exit 1
+prefix="@exec_prefix@"
+smpicc="$prefix/bin/smpicc"
+smpif2c="$prefix/bin/smpif2c"
+
+@SMPITOOLS_SH@
+
+list_set ARGS "-DMAIN__=user_main" "-Diargc_=smpi_process_argc" "-Dgetarg_=smpi_process_getarg"
+list_set LINKARGS "-L@F2C_LIBRARY_PATH@" "-lf2c" "-lm"
+list_set SRCFILES
+
+while [ $# -gt 0 ]; do
+    ARG="$1"
+    shift
+    case "${ARG}" in
+        *.f)
+            SRCFILE="$(readlink -f ${ARG} 2>/dev/null)"
+            if [ -z "$SRCFILE" ] ; then
+                SRCFILE="$ARG"
+            fi
+            list_add SRCFILES "${SRCFILE}"
+            ;;
+        *)
+            if [ "${ARG}" = "-c" ]; then
+                LINKARGS=""
+            fi
+            list_add ARGS "${ARG}"
+            ;;
+    esac
+done
+list_add ARGS "${LINKARGS}"
+
+build () {
+    local SRCFILE
+    SCFILE="$1"
+    TMPFILE=$(mymktemp "${SRCFILE}" ".f")
+    CFILE="${TMPFILE%.f}.c"
+
+    eval $(list_get ARGS)
+
+    cp "${SRCFILE}" "${TMPFILE}" \
+        && "$smpif2c" "${TMPFILE}" \
+        && "$smpicc" "$@" "${CFILE}" \
+        && rm -f "${CFILE}" \
+        && rm -f "${TMPFILE}" \
+        || exit $?
+
+    # When the file is compiled with "-c" and no output file is specified with
+    # "-o", rename the output.  FIXME: do it properly.
+    if [ -f "${CFILE%.c}.o" ]; then
+        mv "${CFILE%.c}.o" "${SRCFILE%.f}.o"
     fi
-    echo "${tmp}"
 }
 
-SRCFILES=""
-while [ -n "$1" ]; do
-  ARG="$1"
-  shift
-  case "${ARG}" in
-    *.f)
-      SRCFILE="$(readlink -f ${ARG} 2>/dev/null)"
-       if [ -z "$SRCFILE" ] ; then
-         SRCFILE="$ARG"
-       fi
-       SRCFILES="${SRCFILES} ${SRCFILE}"
-       ;;
-    *)
-      if [ "${ARG}" = "-c" ]; then
-          LINKARGS=""
-      fi
-      ARGS="${ARGS} ${ARG}"
-      ;;
-  esac
-done
-ARGS="${ARGS} ${LINKARGS}"
-
-if [ -n "${SRCFILES}" ]
-then
-   for SRCFILE in ${SRCFILES}
-   do
-      TMPFILE=$(mymktemp "${SRCFILE}" ".f")
-      cp ${SRCFILE} ${TMPFILE}
-      CFILE="${TMPFILE%.f}.c"
-      #echo "$prefix/bin/smpif2c ${TMPFILE} && $prefix/bin/smpicc ${ARGS} ${CFILE} && rm ${CFILE} && rm ${TMPFILE}"
-      $prefix/bin/smpif2c ${TMPFILE} && $prefix/bin/smpicc ${ARGS} ${CFILE} && rm ${CFILE} && rm ${TMPFILE} || exit $?
-      # When the file is compiled with "-c" and no output file is specified with
-      # "-o", rename the output.  FIXME: do it properly.
-      if [ -f ${CFILE%.c}.o ]; then
-          mv ${CFILE%.c}.o ${SRCFILE%.f}.o
-      fi
-   done
+if [ -n "${SRCFILES}" ]; then
+    eval $(list_get SRCFILES)
+    for SRCFILE in "$@"; do
+        build "$SRCFILE"
+    done
 else
-   #echo "$prefix/bin/smpicc ${ARGS}"
-   $prefix/bin/smpicc ${ARGS}
+    eval $(list_get ARGS)
+    "$smpicc" "$@"
 fi
