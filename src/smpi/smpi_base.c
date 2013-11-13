@@ -93,6 +93,7 @@ static xbt_dynar_t parse_factor(const char *smpi_coef_string)
   smpi_factor = xbt_dynar_new(sizeof(s_smpi_factor_t), NULL);
   radical_elements = xbt_str_split(smpi_coef_string, ";");
   xbt_dynar_foreach(radical_elements, iter, value) {
+    memset(&fact, 0, sizeof(s_smpi_factor_t));
     radical_elements2 = xbt_str_split(value, ":");
     if (xbt_dynar_length(radical_elements2) <2 || xbt_dynar_length(radical_elements2) > 5)
       xbt_die("Malformed radical for smpi factor!");
