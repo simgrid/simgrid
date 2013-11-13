@@ -25,8 +25,8 @@
 
     <storage id="Disk1" typeId="single_HDD" />
     <storage id="Disk2" typeId="single_SSD"
-             content="content/storage_content.txt"
-             content_type="txt_unix" />
+             content="content/win_storage_content.txt"
+             content_type="txt_windows" />
     <storage id="Disk3" typeId="single_HDD" />
     <storage id="Disk4" typeId="single_SSD"
              content="content/small_content.txt"
@@ -37,7 +37,7 @@
     </host>
 
     <host id="alice" power="1Gf">
-      <mount storageId="Disk2" name="/home"/>
+      <mount storageId="Disk2" name="/windows"/>
     </host>
 
     <host id="carl" power="1Gf">
@@ -45,8 +45,8 @@
     </host>
 
     <host id="denise" power="1Gf">
-      <mount storageId="Disk1" name="/home"/>	
-      <mount storageId="Disk4" name="/sd1"/>	
+      <mount storageId="Disk2" name="/windows"/>	
+      <mount storageId="Disk4" name="/home"/>	
     </host>
 
     <link id="link1" bandwidth="125MBps" latency="50us" />

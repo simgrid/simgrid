@@ -16,7 +16,7 @@
  */
 
 #define FILENAME1 "./doc/simgrid/examples/platforms/g5k.xml"
-#define FILENAME2 "./doc/simgrid/examples/platforms/One_cluster_no_backbone.xml"
+#define FILENAME2 ".\\Windows\\setupact.log"
 #define FILENAME3 "./doc/simgrid/examples/platforms/g5k_cabinets.xml"
 #define FILENAME4 "./doc/simgrid/examples/platforms/nancy.xml"
 
@@ -40,11 +40,13 @@ int host(int argc, char *argv[])
   if(!strcmp(MSG_process_get_name(MSG_process_self()),"0")){
     file = MSG_file_open(mount,FILENAME1, NULL);
     MSG_file_dump(file);
-  } else if(!strcmp(MSG_process_get_name(MSG_process_self()),"1"))
+  } else if(!strcmp(MSG_process_get_name(MSG_process_self()),"1")) {
+    free(mount);
+    mount = xbt_strdup("/windows");
     file = MSG_file_open(mount,FILENAME2, NULL);
-  else if(!strcmp(MSG_process_get_name(MSG_process_self()),"2"))
+  } else if(!strcmp(MSG_process_get_name(MSG_process_self()),"2")){
     file = MSG_file_open(mount,FILENAME3, NULL);
-  else if(!strcmp(MSG_process_get_name(MSG_process_self()),"3"))
+  } else if(!strcmp(MSG_process_get_name(MSG_process_self()),"3"))
     file = MSG_file_open(mount,FILENAME4, NULL);
   else xbt_die("FILENAME NOT DEFINED %s",MSG_process_get_name(MSG_process_self()));
 
