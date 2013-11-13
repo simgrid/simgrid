@@ -230,11 +230,13 @@ static void storage_file_rename(void *storage, const char *src, const char *dest
 {
   void *storage_resource = surf_storage_resource_priv(storage);
 
-  sg_storage_size_t *psize;
+  sg_storage_size_t *psize, *new_psize;
   psize = (sg_storage_size_t*) xbt_dict_get_or_null(((storage_t)storage_resource)->content,src);
+  new_psize = xbt_new(sg_storage_size_t, 1);
+  *new_psize = *psize;
   if (psize){// src file exists
     xbt_dict_remove(((storage_t)storage_resource)->content, src);
-    xbt_dict_set(((storage_t)storage_resource)->content, dest, psize,NULL);
+    xbt_dict_set(((storage_t)storage_resource)->content, dest, new_psize,NULL);
     XBT_DEBUG("Change file name from %s to %s, size '%" PRIu64 "'",src, dest, *psize);
   }
   else
