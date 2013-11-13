@@ -43,25 +43,24 @@ static int host(int argc, char *argv[]){
 
   xbt_dict_foreach(storage_list,cursor,mount_name,storage_name)  {
     // For each disk mounted on host
+    XBT_INFO("Storage name: %s, mount name: %s", storage_name, mount_name);
+    storage = MSG_storage_get_by_name(storage_name);
 
-	XBT_INFO("Storage name: %s, mount name: %s", storage_name, mount_name);
-	storage = MSG_storage_get_by_name(storage_name);
+    // Retrieve disk's information
+    sg_storage_size_t free_size = MSG_storage_get_free_size(mount_name);
+    sg_storage_size_t used_size = MSG_storage_get_used_size(mount_name);
+    sg_storage_size_t size = MSG_storage_get_size(storage);
 
-	// Retrieve disk's information
-	sg_storage_size_t free_size = MSG_storage_get_free_size(mount_name);
-	sg_storage_size_t used_size = MSG_storage_get_used_size(mount_name);
-	sg_storage_size_t size = MSG_storage_get_size(storage);
-
-	XBT_INFO("Total size: %"PRIu64" bytes", size);
-	XBT_INFO("Free size: %"PRIu64" bytes", free_size);
-	XBT_INFO("Used size: %"PRIu64" bytes", used_size);
+    XBT_INFO("Total size: %"PRIu64" bytes", size);
+    XBT_INFO("Free size: %"PRIu64" bytes", free_size);
+    XBT_INFO("Used size: %"PRIu64" bytes", used_size);
   }
   xbt_dict_free(&storage_list);
 
 
   // Create a 200,000 bytes file named './tmp/data.txt' on /sd1
 
-  char* mount = xbt_strdup("/sd1");
+  char* mount = xbt_strdup("/home");
   char* file_name = xbt_strdup("./tmp/data.txt");
   msg_file_t file = NULL;
   sg_storage_size_t write, read, file_size;
@@ -73,8 +72,8 @@ static int host(int argc, char *argv[]){
   MSG_file_dump(file);
 
   // check that sizes have changed
-  XBT_INFO("Total size: %"PRIu64" bytes", MSG_storage_get_free_size("/sd1"));
-  XBT_INFO("Free size: %"PRIu64" bytes", MSG_storage_get_used_size("/sd1"));
+  XBT_INFO("Total size: %"PRIu64" bytes", MSG_storage_get_free_size("/home"));
+  XBT_INFO("Free size: %"PRIu64" bytes", MSG_storage_get_used_size("/home"));
 
 
   // Now retrieve the size of created file and read it completely
@@ -91,11 +90,12 @@ static int host(int argc, char *argv[]){
   free(mount);
   free(file_name);
 
-  storage_name = xbt_strdup("Disk1");
+  storage_name = xbt_strdup("Disk4");
   storage = MSG_storage_get_by_name(storage_name);
 
   // Now rename file from ./tmp/data.txt to ./tmp/simgrid.readme
-//  MSG_storage_file_rename(storage, "./tmp/data.txt", "./tmp/simgrid.readme");
+  XBT_INFO("*** Renaming './tmp/data.txt' into './tmp/simgrid.readme'");
+  MSG_storage_file_rename(storage, "./tmp/data.txt", "./tmp/simgrid.readme");
 
   // Now attach some user data to disk1
   XBT_INFO("*** Get/set data for storage element: %s ***",storage_name);
@@ -124,7 +124,7 @@ static int host(int argc, char *argv[]){
     xbt_dict_foreach(content,curs2,path,size){
        XBT_INFO("%s size: %"PRIu64" bytes", path,*((sg_storage_size_t*)size));
     }
-    xbt_dict_free(&content);
+  xbt_dict_free(&content);
   }
   xbt_dict_free(&contents);
   return 1;
