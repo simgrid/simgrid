@@ -1,4 +1,4 @@
-./doc/simgrid/examples/cxx/autoDestination/autoDestination_platform.xml  2133932
+./doc/simgrid/examples/platforms/g5k.xml  17028
 ./doc/simgrid/examples/smpi/mc_bugged2.c  1387
 ./doc/simgrid/examples/smpi/NAS/README  1857
 ./doc/simgrid/examples/smpi/NAS/MPI_dummy/README 2406
