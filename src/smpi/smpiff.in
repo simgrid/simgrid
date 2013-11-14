@@ -29,7 +29,7 @@ while [ $# -gt 0 ]; do
             ;;
     esac
 done
-list_add ARGS "${LINKARGS}"
+list_add_not_empty ARGS "${LINKARGS}"
 
 build () {
     local SRCFILE

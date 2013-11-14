@@ -27,18 +27,28 @@ mymktemp () {
 # Add a word to the end of a list (words separated by LISTSEP)
 # $1: list, $2...: words to add
 list_add () {
-    local list content
+    local list content newcontent
     list="$1"
     shift
-    eval content=\"\${$list}\"
-    IFS="$LISTSEP"
-    if [ -z "$content" ]; then
-        content="$*"
-    else
-        content="$content${LISTSEP}$*"
+    if [ $# -gt 0 ]; then
+        eval content=\"\${$list}\"
+        IFS="$LISTSEP"
+        newcontent="$*"
+        IFS="$SAVEIFS"
+        if [ -z "$content" ]; then
+            content="$newcontent"
+        else
+            content="$content${LISTSEP}$newcontent"
+        fi
+        eval $list=\"\${content}\"
     fi
-    IFS="$SAVEIFS"
-    eval $list=\"\${content}\"
+}
+
+# Like list_add, but only if first word to add ($2) is not empty
+list_add_not_empty () {
+    if [ -n "$2" ]; then
+        list_add "$@"
+    fi
 }
 
 # Set contents of a list (words separated by LISTSEP)

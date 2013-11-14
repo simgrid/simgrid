@@ -17,7 +17,8 @@ else
     list_add LINKARGS "@libdir@\libsimgrid.dll"
 fi
 
-list_set CMDLINE
+list_set CMDLINE "${CC}"
+list_add_not_empty CMDLINE "${CFLAGS}"
 while [ $# -gt 0 ]; do
     ARG="$1"
     shift
@@ -40,7 +41,9 @@ while [ $# -gt 0 ]; do
   esac
 done
 
-list_set CMDLINE "${CFLAGS}" "${CMDLINE}" ${INCLUDEARGS} ${CMAKE_LINKARGS} "${LINKARGS}"
-eval $(list_get CMDLINE)
+list_add_not_empty CMDLINE ${INCLUDEARGS}
+list_add_not_empty CMDLINE ${CMAKE_LINKARGS}
+list_add_not_empty CMDLINE "${LINKARGS}"
 
-"${CC}" "$@"
+eval $(list_get CMDLINE)
+"$@"

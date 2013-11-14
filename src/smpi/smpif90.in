@@ -18,7 +18,8 @@ cleanup () {
 }
 trap 'cleanup' EXIT
 
-list_set CMDLINE
+list_set CMDLINE "${F90}"
+list_add_not_empty CMDLINE "${FFLAGS}"
 while [ $# -gt 0 ]; do
     ARG="$1"
     shift
@@ -42,7 +43,9 @@ while [ $# -gt 0 ]; do
     esac
 done
 
-list_set CMDLINE "${FFLAGS}" "${CMDLINE}" ${INCLUDEARGS} ${CMAKE_LINKARGS} "${LINKARGS}"
-eval $(list_get CMDLINE)
+list_add_not_empty CMDLINE ${INCLUDEARGS}
+list_add_not_empty CMDLINE ${CMAKE_LINKARGS}
+list_add_not_empty CMDLINE "${LINKARGS}"
 
-"${F90}" "$@"
+eval $(list_get CMDLINE)
+"$@"
