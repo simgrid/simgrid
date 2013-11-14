@@ -81,7 +81,8 @@ static double constant_bandwidth_constraint(double rate, double bound,
 
 static int factor_cmp(const void *pa, const void *pb)
 {
-  return (((s_smpi_factor_t*)pa)->factor > ((s_smpi_factor_t*)pb)->factor);
+  return (((s_smpi_factor_t*)pa)->factor > ((s_smpi_factor_t*)pb)->factor) ? 1 : 
+         (((s_smpi_factor_t*)pa)->factor < ((s_smpi_factor_t*)pb)->factor) ? -1 : 0;
 }
 
 
