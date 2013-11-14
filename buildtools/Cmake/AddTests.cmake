@@ -28,6 +28,13 @@ else()
 SET(TESH_COMMAND ${CMAKE_BINARY_DIR}/bin/tesh)
 endif()
 
+#some tests may take forever on non futexes systems, using busy_wait with n cores < n workers
+# default to posix for these tests if futexes are not supported
+if(NOT HAVE_FUTEX_H) 
+SET(CONTEXTS_SYNCHRO --cfg=contexts/synchro:posix)
+endif()
+ 
+
 INCLUDE(CTest)
 ENABLE_TESTING()
 
@@ -256,13 +263,13 @@ if(NOT enable_memcheck)
   ADD_TEST(msg-actions-thread                   ${TESH_COMMAND} ${TESH_OPTION} --cfg contexts/factory:thread --setenv bindir=${CMAKE_BINARY_DIR}/examples/msg/actions --cd ${CMAKE_HOME_DIRECTORY}/examples/msg/actions actions.tesh)
   ADD_TEST(msg-trace-thread                     ${TESH_COMMAND} ${TESH_OPTION} --cfg contexts/factory:thread --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/msg --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/msg trace/trace.tesh)
   ADD_TEST(msg-chord-no-crosstraffic-thread     ${TESH_COMMAND} ${TESH_OPTION} --cfg contexts/factory:thread --setenv bindir=${CMAKE_BINARY_DIR}/examples/msg/chord --cd ${CMAKE_HOME_DIRECTORY}/examples/msg/chord chord.tesh)
-  ADD_TEST(msg-chord-no-crosstraffic-thread-parallel ${TESH_COMMAND} ${TESH_OPTION} --cfg contexts/factory:thread --cfg contexts/nthreads:4 --setenv bindir=${CMAKE_BINARY_DIR}/examples/msg/chord --cd ${CMAKE_HOME_DIRECTORY}/examples/msg/chord chord.tesh)
+  ADD_TEST(msg-chord-no-crosstraffic-thread-parallel ${TESH_COMMAND} ${TESH_OPTION} --cfg contexts/factory:thread --cfg contexts/nthreads:4 ${CONTEXTS_SYNCHRO} --setenv bindir=${CMAKE_BINARY_DIR}/examples/msg/chord --cd ${CMAKE_HOME_DIRECTORY}/examples/msg/chord chord.tesh)
   ADD_TEST(msg-chord-thread                     ${TESH_COMMAND} ${TESH_OPTION} --cfg contexts/factory:thread --setenv bindir=${CMAKE_BINARY_DIR}/examples/msg/chord --cd ${CMAKE_HOME_DIRECTORY}/examples/msg/chord chord_crosstraffic.tesh)
-  ADD_TEST(msg-chord-thread-parallel            ${TESH_COMMAND} ${TESH_OPTION} --cfg contexts/factory:thread --cfg contexts/nthreads:4 --setenv bindir=${CMAKE_BINARY_DIR}/examples/msg/chord --cd ${CMAKE_HOME_DIRECTORY}/examples/msg/chord chord_crosstraffic.tesh)
+  ADD_TEST(msg-chord-thread-parallel            ${TESH_COMMAND} ${TESH_OPTION} --cfg contexts/factory:thread --cfg contexts/nthreads:4  ${CONTEXTS_SYNCHRO} --setenv bindir=${CMAKE_BINARY_DIR}/examples/msg/chord --cd ${CMAKE_HOME_DIRECTORY}/examples/msg/chord chord_crosstraffic.tesh)
   ADD_TEST(msg-bittorrent-thread                ${TESH_COMMAND} ${TESH_OPTION} --cfg contexts/factory:thread --setenv bindir=${CMAKE_BINARY_DIR}/examples/msg/bittorrent --cd ${CMAKE_HOME_DIRECTORY}/examples/msg/bittorrent bittorrent.tesh)
-  ADD_TEST(msg-bittorrent-thread-parallel       ${TESH_COMMAND} ${TESH_OPTION} --cfg contexts/nthreads:4 --cfg contexts/factory:thread --setenv bindir=${CMAKE_BINARY_DIR}/examples/msg/bittorrent --cd ${CMAKE_HOME_DIRECTORY}/examples/msg/bittorrent bittorrent.tesh)
+  ADD_TEST(msg-bittorrent-thread-parallel       ${TESH_COMMAND} ${TESH_OPTION} --cfg contexts/nthreads:4 --cfg contexts/factory:thread ${CONTEXTS_SYNCHRO} --setenv bindir=${CMAKE_BINARY_DIR}/examples/msg/bittorrent --cd ${CMAKE_HOME_DIRECTORY}/examples/msg/bittorrent bittorrent.tesh)
   ADD_TEST(msg-kademlia-thread                  ${TESH_COMMAND} ${TESH_OPTION} --cfg contexts/factory:thread --setenv bindir=${CMAKE_BINARY_DIR}/examples/msg/kademlia --cd ${CMAKE_HOME_DIRECTORY}/examples/msg/kademlia kademlia.tesh)
-  ADD_TEST(msg-kademlia-thread-parallel         ${TESH_COMMAND} ${TESH_OPTION} --cfg contexts/nthreads:4 --cfg contexts/factory:thread --setenv bindir=${CMAKE_BINARY_DIR}/examples/msg/kademlia --cd ${CMAKE_HOME_DIRECTORY}/examples/msg/kademlia kademlia.tesh)
+  ADD_TEST(msg-kademlia-thread-parallel         ${TESH_COMMAND} ${TESH_OPTION} --cfg contexts/nthreads:4 --cfg contexts/factory:thread ${CONTEXTS_SYNCHRO} --setenv bindir=${CMAKE_BINARY_DIR}/examples/msg/kademlia --cd ${CMAKE_HOME_DIRECTORY}/examples/msg/kademlia kademlia.tesh)
 
   if(CONTEXT_UCONTEXT)
     ADD_TEST(msg-migration-ucontext             ${TESH_COMMAND} ${TESH_OPTION} --cfg contexts/factory:ucontext --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg --cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/migration/migration.tesh)
