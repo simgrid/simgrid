@@ -6,7 +6,6 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "internal_config.h"
 #include "xbt/misc.h"
 #include "xbt/sysdep.h"
 #include "xbt/log.h"
@@ -639,11 +638,7 @@ XBT_INLINE void xbt_dynar_cursor_rm(xbt_dynar_t dynar,
 XBT_INLINE void xbt_dynar_sort(xbt_dynar_t dynar,
                                int_f_cpvoid_cpvoid_t compar_fn)
 {
-#ifdef HAVE_MERGESORT
-  mergesort(dynar->data, dynar->used, dynar->elmsize, compar_fn);
-#else
   qsort(dynar->data, dynar->used, dynar->elmsize, compar_fn);
-#endif
 }
 
 /** @brief Sorts a dynar according to their color assuming elements can have only three colors.
