@@ -2558,8 +2558,6 @@ memset
 Memset
 memuse
 ment
-mergesort
-MERGESORT
 merr
 messageSize
 messageSizes

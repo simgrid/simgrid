@@ -58,9 +58,6 @@
 #cmakedefine MMALLOC_WANT_OVERRIDE_LEGACY @MMALLOC_WANT_OVERRIDE_LEGACY@
 #cmakedefine HAVE_MC @HAVE_MC@
 
-/* Set to true if have the mergesort function */
-#cmakedefine HAVE_MERGESORT @HAVE_MERGESORT@
-
 /* If have linux_futex.h */
 #cmakedefine HAVE_FUTEX_H @HAVE_FUTEX_H@
 
