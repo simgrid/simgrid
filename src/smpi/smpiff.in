@@ -33,7 +33,7 @@ list_add_not_empty ARGS "${LINKARGS}"
 
 build () {
     local SRCFILE
-    SCFILE="$1"
+    SRCFILE="$1"
     TMPFILE=$(mymktemp "${SRCFILE}" ".f")
     CFILE="${TMPFILE%.f}.c"
 
