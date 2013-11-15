@@ -58,7 +58,7 @@ void test(char *platform)
   parse_platform_file(platform);
 
   /*********************** CPU ***********************************/
-  XBT_DEBUG("%p", surf_cpu_model);
+  XBT_DEBUG("%p", surf_cpu_model_pm);
   cpuA = surf_cpu_resource_by_name("Cpu A");
   cpuB = surf_cpu_resource_by_name("Cpu B");
 
@@ -100,12 +100,12 @@ void test(char *platform)
     XBT_DEBUG("Next Event : %g", now);
     XBT_DEBUG("\t CPU actions");
     while ((action =
-            xbt_swag_extract(surf_model_failed_action_set((surf_model_t)surf_cpu_model)))) {
+            xbt_swag_extract(surf_model_failed_action_set((surf_model_t)surf_cpu_model_pm)))) {
       XBT_DEBUG("\t * Failed : %p", action);
       surf_action_unref(action);
     }
     while ((action =
-            xbt_swag_extract(surf_model_done_action_set((surf_model_t)surf_cpu_model)))) {
+            xbt_swag_extract(surf_model_done_action_set((surf_model_t)surf_cpu_model_pm)))) {
       XBT_DEBUG("\t * Done : %p", action);
       surf_action_unref(action);
     }
@@ -122,7 +122,7 @@ void test(char *platform)
     }
 
   } while ((xbt_swag_size(surf_model_running_action_set((surf_model_t)surf_network_model)) ||
-            xbt_swag_size(surf_model_running_action_set((surf_model_t)surf_cpu_model))) &&
+            xbt_swag_size(surf_model_running_action_set((surf_model_t)surf_cpu_model_pm))) &&
            surf_solve(-1.0) >= 0.0);
 
   XBT_DEBUG("Simulation Terminated");

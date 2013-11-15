@@ -491,7 +491,8 @@ smx_action_t SIMIX_process_suspend(smx_process_t process, smx_process_t issuer)
       return NULL;
     }
   } else {
-    return SIMIX_host_execute("suspend", process->smx_host, 0.0, 1.0);
+    /* FIXME: computation size is zero. Is it okay that bound is zero ? */
+    return SIMIX_host_execute("suspend", process->smx_host, 0.0, 1.0, 0.0, 0);
   }
 }
 
@@ -722,6 +723,8 @@ void SIMIX_post_process_sleep(smx_action_t action)
   smx_simcall_t simcall;
   e_smx_state_t state;
 
+  xbt_assert(action->type == SIMIX_ACTION_SLEEP);
+
   while ((simcall = xbt_fifo_shift(action->simcalls))) {
 
     switch(surf_action_get_state(action->sleep.surf_sleep)){
@@ -753,6 +756,8 @@ void SIMIX_post_process_sleep(smx_action_t action)
 void SIMIX_process_sleep_destroy(smx_action_t action)
 {
   XBT_DEBUG("Destroy action %p", action);
+  xbt_assert(action->type == SIMIX_ACTION_SLEEP);
+
   if (action->sleep.surf_sleep)
     surf_action_unref(action->sleep.surf_sleep);
   xbt_mallocator_release(simix_global->action_mallocator, action);
@@ -760,11 +765,13 @@ void SIMIX_process_sleep_destroy(smx_action_t action)
 
 void SIMIX_process_sleep_suspend(smx_action_t action)
 {
+  xbt_assert(action->type == SIMIX_ACTION_SLEEP);
   surf_action_suspend(action->sleep.surf_sleep);
 }
 
 void SIMIX_process_sleep_resume(smx_action_t action)
 {
+  xbt_assert(action->type == SIMIX_ACTION_SLEEP);
   surf_action_resume(action->sleep.surf_sleep);
 }
 

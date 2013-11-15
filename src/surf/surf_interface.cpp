@@ -1,5 +1,6 @@
 #include "surf.hpp"
 #include "workstation.hpp"
+#include "vm_workstation.hpp"
 #include "network.hpp"
 #include "surf_routing_cluster.hpp"
 #include "instr/instr_private.h"
@@ -17,6 +18,10 @@ static CpuPtr get_casted_cpu(surf_resource_t resource){
 
 static WorkstationCLM03Ptr get_casted_workstation(surf_resource_t resource){
   return dynamic_cast<WorkstationCLM03Ptr>(static_cast<ResourcePtr>(surf_workstation_resource_priv(resource)));
+}
+
+static WorkstationVM2013Ptr get_casted_vm_workstation(surf_resource_t resource){
+  return dynamic_cast<WorkstationVM2013Ptr>(static_cast<ResourcePtr>(surf_workstation_resource_priv(resource)));
 }
 
 char *surf_routing_edge_name(sg_routing_edge_t edge){
@@ -97,17 +102,17 @@ double surf_solve(double max_date)
   XBT_DEBUG("Looking for next action end for all models except NS3");
 
   if (surf_mins == NULL) {
-    surf_mins = xbt_new(double, xbt_dynar_length(model_list));
+    surf_mins = xbt_new(double, xbt_dynar_length(model_list_invoke));
   }
   surf_min_index = 0;
 
   /* sequential version */
-  xbt_dynar_foreach(model_list, iter, model) {
+  xbt_dynar_foreach(model_list_invoke, iter, model) {
     surf_share_resources(static_cast<ModelPtr>(model));
   }
 
   unsigned i;
-  for (i = 0; i < xbt_dynar_length(model_list); i++) {
+  for (i = 0; i < xbt_dynar_length(model_list_invoke); i++) {
     if ((surf_min < 0.0 || surf_mins[i] < surf_min)
         && surf_mins[i] >= 0.0) {
       surf_min = surf_mins[i];
@@ -176,7 +181,7 @@ double surf_solve(double max_date)
   XBT_DEBUG("Duration set to %f", surf_min);
 
   NOW = NOW + surf_min;
-
+  /* FIXME: model_list or model_list_invoke? revisit here later */
   /* sequential version */
   xbt_dynar_foreach(model_list, iter, model) {
     surf_update_actions_state(model);
@@ -202,6 +207,13 @@ void routing_get_route_and_latency(sg_routing_edge_t src, sg_routing_edge_t dst,
 /*********
  * MODEL *
  *********/
+
+surf_model_t surf_resource_model(const void *host, int level) {
+  /* If level is SURF_WKS_LEVEL, ws is a workstation_CLM03 object. It has
+   * surf_resource at the generic_resource field. */
+  ResourcePtr ws = static_cast<ResourcePtr>(xbt_lib_get_level((xbt_dictelm_t) host, level));
+  return ws->p_model;
+}
 
 void *surf_as_cluster_get_backbone(AS_t as){
   return static_cast<AsClusterPtr>(as)->p_backbone;
@@ -249,6 +261,10 @@ xbt_dynar_t surf_workstation_model_get_route(surf_workstation_model_t model,
   return model->getRoute(get_casted_workstation(src), get_casted_workstation(dst));
 }
 
+void surf_vm_workstation_model_create(const char *name, surf_resource_t ind_phys_host){
+  surf_vm_workstation_model->createResource(name, ind_phys_host);
+}
+
 surf_action_t surf_network_model_communicate(surf_network_model_t model, sg_routing_edge_t src, sg_routing_edge_t dst, double size, double rate){
   return model->communicate(src, dst, size, rate);
 }
@@ -263,6 +279,10 @@ xbt_dict_t surf_resource_get_properties(surf_cpp_resource_t resource){
 
 e_surf_resource_state_t surf_resource_get_state(surf_cpp_resource_t resource){
   return resource->getState();
+}
+
+void surf_resource_set_state(surf_cpp_resource_t resource, e_surf_resource_state_t state){
+  resource->setState(state);
 }
 
 surf_action_t surf_workstation_sleep(surf_resource_t resource, double duration){
@@ -308,6 +328,7 @@ double surf_workstation_get_consumed_energy(surf_resource_t resource){
 xbt_dict_t surf_workstation_get_storage_list(surf_resource_t workstation){
   return get_casted_workstation(workstation)->getStorageList();
 }
+
 surf_action_t surf_workstation_open(surf_resource_t workstation, const char* mount, const char* path){
   return get_casted_workstation(workstation)->open(mount, path);
 }
@@ -343,8 +364,57 @@ xbt_dynar_t surf_workstation_get_info(surf_resource_t resource, surf_file_t fd){
 sg_storage_size_t surf_workstation_get_free_size(surf_resource_t resource, const char* name){
   return get_casted_workstation(resource)->getFreeSize(name);
 }
+
 sg_storage_size_t surf_workstation_get_used_size(surf_resource_t resource, const char* name){
   return get_casted_workstation(resource)->getUsedSize(name);
+}
+
+xbt_dynar_t surf_workstation_get_vms(surf_resource_t resource){
+  return get_casted_workstation(resource)->getVms();
+}
+
+void surf_workstation_get_params(surf_resource_t resource, ws_params_t params){
+  get_casted_workstation(resource)->getParams(params);
+}
+
+void surf_workstation_set_params(surf_resource_t resource, ws_params_t params){
+  get_casted_workstation(resource)->setParams(params);
+}
+
+void surf_vm_workstation_destroy(surf_resource_t resource){
+  delete get_casted_vm_workstation(resource);
+}
+
+void surf_vm_workstation_suspend(surf_resource_t resource){
+  get_casted_vm_workstation(resource)->suspend();
+}
+
+void surf_vm_workstation_resume(surf_resource_t resource){
+  get_casted_vm_workstation(resource)->resume();
+}
+
+void surf_vm_workstation_save(surf_resource_t resource){
+  get_casted_vm_workstation(resource)->save();
+}
+
+void surf_vm_workstation_restore(surf_resource_t resource){
+  get_casted_vm_workstation(resource)->restore();
+}
+
+void surf_vm_workstation_migrate(surf_resource_t resource, surf_resource_t ind_vm_ws_dest){
+  get_casted_vm_workstation(resource)->migrate(ind_vm_ws_dest);
+}
+
+surf_resource_t surf_vm_workstation_get_pm(surf_resource_t resource){
+  return get_casted_vm_workstation(resource)->getPm();
+}
+
+void surf_vm_workstation_set_bound(surf_resource_t resource, double bound){
+  return get_casted_vm_workstation(resource)->setBound(bound);
+}
+
+void surf_vm_workstation_set_affinity(surf_resource_t resource, surf_resource_t cpu, unsigned long mask){
+  return get_casted_vm_workstation(resource)->setAffinity(dynamic_cast<CpuLmmPtr>(get_casted_cpu(cpu)), mask);
 }
 
 int surf_network_link_is_shared(surf_cpp_resource_t link){
@@ -427,6 +497,14 @@ int surf_action_get_cost(surf_action_t action){
   return action->m_cost;
 }
 
+void surf_cpu_action_set_affinity(surf_action_t action, surf_resource_t cpu, unsigned long mask) {
+  dynamic_cast<CpuActionLmmPtr>(action)->setAffinity( dynamic_cast<CpuLmmPtr>(get_casted_cpu(cpu)), mask);
+}
+
+void surf_cpu_action_set_bound(surf_action_t action, double bound) {
+  dynamic_cast<CpuActionLmmPtr>(action)->setBound(bound);
+}
+
 surf_file_t surf_storage_action_get_file(surf_action_t action){
   return dynamic_cast<StorageActionPtr>(action)->p_file;
 }
@@ -434,3 +512,5 @@ surf_file_t surf_storage_action_get_file(surf_action_t action){
 xbt_dict_t surf_storage_action_get_ls_dict(surf_action_t action){
   return dynamic_cast<StorageActionPtr>(action)->p_lsDict;
 }
+
+

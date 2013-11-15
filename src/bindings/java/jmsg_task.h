@@ -126,6 +126,14 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Task_execute
 
 /*
  * Class		org_simgrid_msg_Task
+ * Method		setBound
+ * Signature	()V
+ */
+JNIEXPORT void JNICALL Java_org_simgrid_msg_Task_setBound
+    (JNIEnv *, jobject, jdouble);
+
+/*
+ * Class		org_simgrid_msg_Task
  * Method		getName
  * Signature	()Ljava/lang/String;
  */

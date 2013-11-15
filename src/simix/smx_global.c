@@ -329,10 +329,15 @@ void SIMIX_run(void)
     xbt_dynar_foreach(model_list, iter, model) {
       set = surf_model_failed_action_set(model);
       while ((action = xbt_swag_extract(set)))
-        SIMIX_simcall_post((smx_action_t) surf_action_get_data(action));
+
+      SIMIX_simcall_post((smx_action_t) surf_action_get_data(action));
       set = surf_model_done_action_set(model);
-      while ((action = xbt_swag_extract(set)))
-        SIMIX_simcall_post((smx_action_t) surf_action_get_data(action));
+
+      while ((action = xbt_swag_extract(set))) 
+        if (surf_action_get_data(action) == NULL)
+          XBT_DEBUG("probably vcpu's action %p, skip", action);
+        else
+          SIMIX_simcall_post((smx_action_t) surf_action_get_data(action));
     }
 
     /* Autorestart all process */
@@ -347,6 +352,11 @@ void SIMIX_run(void)
 
     /* Clean processes to destroy */
     SIMIX_process_empty_trash();
+
+
+    XBT_DEBUG("### time %f, empty %d", time, xbt_dynar_is_empty(simix_global->process_to_run));
+    // !(time == -1.0 && xbt_dynar_is_empty()) 
+
 
   } while (time != -1.0 || !xbt_dynar_is_empty(simix_global->process_to_run));
 

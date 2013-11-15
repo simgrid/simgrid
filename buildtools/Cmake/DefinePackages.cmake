@@ -328,6 +328,7 @@ set(SURF_SRC
   src/surf/trace_mgr.c
   src/surf/workstation.cpp
   src/surf/workstation_ptask_L07.cpp
+  src/surf/vm_workstation.cpp
   src/xbt/xbt_sg_stubs.c
   )
 
@@ -345,6 +346,7 @@ set(SIMIX_SRC
   src/simix/smx_smurf.c
   src/simix/smx_synchro.c
   src/simix/smx_user.c
+  src/simix/smx_vm.c
   )
 
 set(SIMGRID_SRC
@@ -384,17 +386,6 @@ set(SIMIX_SRC
   ${SIMIX_SRC}
   src/simix/smx_new_api.c
 )
-#* ****************************************************************************************** *#
-
-#* ****************************************************************************************** *#
-#* TUTORIAL: New Model                                                                        *#
-
-set(SURF_SRC
-  ${SURF_SRC}
-  )
-set(EXTRA_DIST
-  ${EXTRA_DIST}
-  )
 #* ****************************************************************************************** *#
 
 set(SIMDAG_SRC

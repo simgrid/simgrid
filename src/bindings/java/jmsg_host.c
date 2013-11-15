@@ -154,6 +154,19 @@ Java_org_simgrid_msg_Host_currentHost(JNIEnv * env, jclass cls) {
 
   return jhost;
 }
+
+JNIEXPORT void JNICALL
+Java_org_simgrid_msg_Host_on(JNIEnv *env, jobject jhost) {
+  msg_host_t host = jhost_get_native(env, jhost);
+  MSG_host_on(host);
+}
+
+JNIEXPORT void JNICALL
+Java_org_simgrid_msg_Host_off(JNIEnv *env, jobject jhost) {
+  msg_host_t host = jhost_get_native(env, jhost);
+  MSG_host_off(host);
+}
+
 JNIEXPORT jint JNICALL
 Java_org_simgrid_msg_Host_getCount(JNIEnv * env, jclass cls) {
   xbt_dynar_t hosts =  MSG_hosts_as_dynar();

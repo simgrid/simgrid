@@ -14,6 +14,7 @@
 #include "xbt/parmap.h"
 #include "xbt/swag.h"
 #include "simgrid/platf.h"
+#include "surf/surf.h"
 
 SG_BEGIN_DECL()
 
@@ -260,6 +261,8 @@ XBT_PUBLIC(smx_host_t) SIMIX_host_get_by_name(const char *name);
 XBT_PUBLIC(smx_host_t) SIMIX_host_self(void);
 XBT_PUBLIC(const char*) SIMIX_host_self_get_name(void);
 XBT_PUBLIC(const char*) SIMIX_host_get_name(smx_host_t host); /* FIXME: make private: only the name of SIMIX_host_self() should be public without request */
+XBT_PUBLIC(void) SIMIX_host_on(smx_host_t host);
+XBT_PUBLIC(void) SIMIX_host_off(smx_host_t host, smx_process_t issuer);
 XBT_PUBLIC(void) SIMIX_host_self_set_data(void *data);
 XBT_PUBLIC(void*) SIMIX_host_self_get_data(void);
 XBT_PUBLIC(void*) SIMIX_host_get_data(smx_host_t host);
@@ -303,6 +306,8 @@ XBT_PUBLIC(void) SIMIX_file_set_data(smx_file_t fd, void *data);
 XBT_PUBLIC(smx_host_t) simcall_host_get_by_name(const char *name);
 XBT_PUBLIC(const char *) simcall_host_get_name(smx_host_t host);
 XBT_PUBLIC(xbt_dict_t) simcall_host_get_properties(smx_host_t host);
+XBT_PUBLIC(void) simcall_host_on(smx_host_t host);
+XBT_PUBLIC(void) simcall_host_off(smx_host_t host);
 XBT_PUBLIC(int) simcall_host_get_core(smx_host_t host);
 XBT_PUBLIC(xbt_swag_t) simcall_host_get_process_list(smx_host_t host);
 XBT_PUBLIC(double) simcall_host_get_speed(smx_host_t host);
@@ -321,7 +326,7 @@ XBT_PUBLIC(double) simcall_host_get_consumed_energy(smx_host_t host);
 
 XBT_PUBLIC(smx_action_t) simcall_host_execute(const char *name, smx_host_t host,
                                                 double computation_amount,
-                                                double priority);
+                                                double priority, double bound, unsigned long affinity_mask);
 XBT_PUBLIC(smx_action_t) simcall_host_parallel_execute(const char *name,
                                                      int host_nb,
                                                      smx_host_t *host_list,
@@ -334,8 +339,28 @@ XBT_PUBLIC(void) simcall_host_execution_cancel(smx_action_t execution);
 XBT_PUBLIC(double) simcall_host_execution_get_remains(smx_action_t execution);
 XBT_PUBLIC(e_smx_state_t) simcall_host_execution_get_state(smx_action_t execution);
 XBT_PUBLIC(void) simcall_host_execution_set_priority(smx_action_t execution, double priority);
+XBT_PUBLIC(void) simcall_host_execution_set_bound(smx_action_t execution, double bound);
+XBT_PUBLIC(void) simcall_host_execution_set_affinity(smx_action_t execution, smx_host_t host, unsigned long mask);
 XBT_PUBLIC(e_smx_state_t) simcall_host_execution_wait(smx_action_t execution);
 XBT_PUBLIC(xbt_dict_t) simcall_host_get_storage_list(smx_host_t host);
+XBT_PUBLIC(void) simcall_host_get_params(smx_host_t vm, ws_params_t param);
+XBT_PUBLIC(void) simcall_host_set_params(smx_host_t vm, ws_params_t param);
+
+/******************************* VM simcalls ********************************/
+// Create the vm_workstation at the SURF level
+XBT_PUBLIC(void*) simcall_vm_create(const char *name, smx_host_t host);
+XBT_PUBLIC(int) simcall_vm_get_state(smx_host_t vm);
+XBT_PUBLIC(void) simcall_vm_start(smx_host_t vm);
+XBT_PUBLIC(void) simcall_vm_migrate(smx_host_t vm, smx_host_t dst_pm);
+XBT_PUBLIC(void *) simcall_vm_get_pm(smx_host_t vm);
+XBT_PUBLIC(void) simcall_vm_set_bound(smx_host_t vm, double bound);
+XBT_PUBLIC(void) simcall_vm_set_affinity(smx_host_t vm, smx_host_t pm, unsigned long mask);
+XBT_PUBLIC(void) simcall_vm_resume(smx_host_t vm);
+XBT_PUBLIC(void) simcall_vm_save(smx_host_t vm);
+XBT_PUBLIC(void) simcall_vm_restore(smx_host_t vm);
+XBT_PUBLIC(void) simcall_vm_suspend(smx_host_t vm);
+XBT_PUBLIC(void) simcall_vm_destroy(smx_host_t vm);
+XBT_PUBLIC(void) simcall_vm_shutdown(smx_host_t vm);
 
 /**************************** Process simcalls ********************************/
 /* Constructor and Destructor */

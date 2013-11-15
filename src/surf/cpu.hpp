@@ -56,8 +56,8 @@ public:
   void addTraces(void);
   double m_powerPeak;            /*< CPU power peak */
   double m_powerScale;           /*< Percentage of CPU disponible */
-protected:
   int m_core;
+protected:
 
   //virtual boost::shared_ptr<Action> execute(double size) = 0;
   //virtual boost::shared_ptr<Action> sleep(double duration) = 0;
@@ -67,7 +67,8 @@ class CpuLmm : public ResourceLmm, public Cpu {
 public:
   CpuLmm(){};
   CpuLmm(CpuModelPtr model, const char* name, xbt_dict_t properties) : ResourceLmm(), Cpu(model, name, properties) {};
-
+  /* Note (hypervisor): */
+  lmm_constraint_t *p_constraintCore;
 };
 
 /**********
@@ -87,6 +88,9 @@ public:
   : Action(model, cost, failed), ActionLmm(model, cost, failed), CpuAction(model, cost, failed) {};
   void updateRemainingLazy(double now);
   virtual void updateEnergy()=0;
+  void setAffinity(CpuLmmPtr cpu, unsigned long mask);
+  void setBound(double bound);
+  double m_bound;
 };
 
 

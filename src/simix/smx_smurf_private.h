@@ -1,4 +1,4 @@
-/* Copyright (c) 2007-2010, 2012-2013. The SimGrid Team.
+ /* Copyright (c) 2007-2010, 2012-2013. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -275,6 +275,8 @@
 #define SIMCALL_LIST1(ACTION, sep) \
 ACTION(SIMCALL_HOST_GET_BY_NAME, host_get_by_name, WITH_ANSWER, TDSPEC(result, smx_host_t), TSTRING(name)) sep \
 ACTION(SIMCALL_HOST_GET_NAME, host_get_name, WITH_ANSWER, TSTRING(result), TDSPEC(host, smx_host_t)) sep \
+ACTION(SIMCALL_HOST_ON, host_on, WITH_ANSWER, TVOID(result), TDSPEC(host, smx_host_t)) sep \
+ACTION(SIMCALL_HOST_OFF, host_off, WITH_ANSWER, TVOID(result), TDSPEC(host, smx_host_t)) sep \
 ACTION(SIMCALL_HOST_GET_PROPERTIES, host_get_properties, WITH_ANSWER, TDSPEC(result, xbt_dict_t), TDSPEC(host, smx_host_t)) sep \
 ACTION(SIMCALL_HOST_GET_CORE, host_get_core, WITH_ANSWER, TINT(result), TDSPEC(host, smx_host_t)) sep \
 ACTION(SIMCALL_HOST_GET_PROCESS_LIST, host_get_process_list, WITH_ANSWER, TDSPEC(result, xbt_swag_t), TDSPEC(host, smx_host_t)) sep \
@@ -288,14 +290,32 @@ ACTION(SIMCALL_HOST_GET_POWER_PEAK_AT, host_get_power_peak_at, WITH_ANSWER, TDOU
 ACTION(SIMCALL_HOST_GET_NB_PSTATES, host_get_nb_pstates, WITH_ANSWER, TINT(result), TDSPEC(host, smx_host_t)) sep \
 ACTION(SIMCALL_HOST_SET_POWER_PEAK_AT, host_set_power_peak_at, WITH_ANSWER, TVOID(result), TDSPEC(host, smx_host_t), TINT(pstate_index)) sep \
 ACTION(SIMCALL_HOST_GET_CONSUMED_ENERGY, host_get_consumed_energy, WITH_ANSWER, TDOUBLE(result), TDSPEC(host, smx_host_t)) sep \
-ACTION(SIMCALL_HOST_EXECUTE, host_execute, WITH_ANSWER, TDSPEC(result, smx_action_t), TSTRING(name), TDSPEC(host, smx_host_t), TDOUBLE(computation_amount), TDOUBLE(priority)) sep \
+ACTION(SIMCALL_HOST_EXECUTE, host_execute, WITH_ANSWER, TDSPEC(result, smx_action_t), TSTRING(name), TDSPEC(host, smx_host_t), TDOUBLE(computation_amount), TDOUBLE(priority), TDOUBLE(bound), TULONG(affinity_mask)) sep \
 ACTION(SIMCALL_HOST_PARALLEL_EXECUTE, host_parallel_execute, WITH_ANSWER, TDSPEC(result, smx_action_t), TSTRING(name), TINT(host_nb), TDSPEC(host_list, smx_host_t*), TDSPEC(computation_amount, double*), TDSPEC(communication_amount, double*), TDOUBLE(amount), TDOUBLE(rate)) sep \
 ACTION(SIMCALL_HOST_EXECUTION_DESTROY, host_execution_destroy, WITH_ANSWER, TVOID(result), TDSPEC(execution, smx_action_t)) sep \
 ACTION(SIMCALL_HOST_EXECUTION_CANCEL, host_execution_cancel, WITH_ANSWER, TVOID(result), TDSPEC(execution, smx_action_t)) sep \
 ACTION(SIMCALL_HOST_EXECUTION_GET_REMAINS, host_execution_get_remains, WITH_ANSWER, TDOUBLE(result), TDSPEC(execution, smx_action_t)) sep \
 ACTION(SIMCALL_HOST_EXECUTION_GET_STATE, host_execution_get_state, WITH_ANSWER, TINT(result), TDSPEC(execution, smx_action_t)) sep \
 ACTION(SIMCALL_HOST_EXECUTION_SET_PRIORITY, host_execution_set_priority, WITH_ANSWER, TVOID(result), TDSPEC(execution, smx_action_t), TDOUBLE(priority)) sep \
+ACTION(SIMCALL_HOST_EXECUTION_SET_BOUND, host_execution_set_bound, WITH_ANSWER, TVOID(result), TDSPEC(execution, smx_action_t), TDOUBLE(bound)) sep \
+ACTION(SIMCALL_HOST_EXECUTION_SET_AFFINITY, host_execution_set_affinity, WITH_ANSWER, TVOID(result), TDSPEC(execution, smx_action_t), TDSPEC(ws, smx_host_t), TULONG(mask)) sep \
 ACTION(SIMCALL_HOST_EXECUTION_WAIT, host_execution_wait, WITHOUT_ANSWER, TINT(result), TDSPEC(execution, smx_action_t)) sep \
+ACTION(SIMCALL_HOST_GET_PARAMS, host_get_params, WITH_ANSWER, TVOID(result), TDSPEC(ind_vm, smx_host_t), TDSPEC(params, ws_params_t)) sep \
+ACTION(SIMCALL_HOST_SET_PARAMS, host_set_params, WITH_ANSWER, TVOID(result), TDSPEC(ind_vm, smx_host_t), TDSPEC(params, ws_params_t)) sep \
+ACTION(SIMCALL_VM_CREATE, vm_create, WITH_ANSWER, TDPTR(result), TSTRING(name), TDSPEC(ind_pm, smx_host_t)) sep \
+ACTION(SIMCALL_VM_START, vm_start, WITH_ANSWER, TVOID(result), TDSPEC(ind_vm, smx_host_t)) sep \
+ACTION(SIMCALL_VM_SET_STATE, vm_set_state, WITH_ANSWER, TVOID(result), TDSPEC(ind_vm, smx_host_t), TINT(state)) sep \
+ACTION(SIMCALL_VM_GET_STATE, vm_get_state, WITH_ANSWER, TINT(result), TDSPEC(ind_vm, smx_host_t)) sep \
+ACTION(SIMCALL_VM_MIGRATE, vm_migrate, WITH_ANSWER, TVOID(result), TDSPEC(ind_vm, smx_host_t), TDSPEC(ind_dst_pm, smx_host_t)) sep \
+ACTION(SIMCALL_VM_GET_PM, vm_get_pm, WITH_ANSWER,    TDPTR(result),  TDSPEC(ind_vm, smx_host_t)) sep \
+ACTION(SIMCALL_VM_SET_BOUND,    vm_set_bound,    WITH_ANSWER, TVOID(result), TDSPEC(ind_vm, smx_host_t), TDOUBLE(bound)) sep \
+ACTION(SIMCALL_VM_SET_AFFINITY, vm_set_affinity, WITH_ANSWER, TVOID(result), TDSPEC(ind_vm, smx_host_t), TDSPEC(ind_pm, smx_host_t), TULONG(mask)) sep \
+ACTION(SIMCALL_VM_DESTROY,   vm_destroy,   WITH_ANSWER, TVOID(result), TDSPEC(ind_vm, smx_host_t)) sep \
+ACTION(SIMCALL_VM_SUSPEND,   vm_suspend,   WITH_ANSWER, TVOID(result), TDSPEC(ind_vm, smx_host_t)) sep \
+ACTION(SIMCALL_VM_RESUME,    vm_resume,    WITH_ANSWER, TVOID(result), TDSPEC(ind_vm, smx_host_t)) sep \
+ACTION(SIMCALL_VM_SHUTDOWN,  vm_shutdown,  WITH_ANSWER, TVOID(result), TDSPEC(ind_vm, smx_host_t)) sep \
+ACTION(SIMCALL_VM_SAVE,      vm_save,      WITH_ANSWER, TVOID(result), TDSPEC(ind_vm, smx_host_t)) sep \
+ACTION(SIMCALL_VM_RESTORE,   vm_restore,   WITH_ANSWER, TVOID(result), TDSPEC(ind_vm, smx_host_t)) sep \
 ACTION(SIMCALL_HOST_GET_STORAGE_LIST, host_get_storage_list, WITH_ANSWER, TDSPEC(result, xbt_dict_t), TDSPEC(host, smx_host_t)) sep \
 ACTION(SIMCALL_PROCESS_CREATE, process_create, WITH_ANSWER, TVOID(result), TDSPEC(process, smx_process_t*), TSTRING(name), TFSPEC(code, xbt_main_func_t), TDPTR(data), TSTRING(hostname), TDOUBLE(kill_time), TINT(argc), TDSPEC(argv, char**), TDSPEC(properties, xbt_dict_t), TINT(auto_restart)) sep \
 ACTION(SIMCALL_PROCESS_KILL, process_kill, WITH_ANSWER, TVOID(result), TDSPEC(process, smx_process_t)) sep \

@@ -66,7 +66,7 @@ public:
 class CpuL07Model : public CpuModel {
 public:
   CpuL07Model() : CpuModel("cpuL07") {};
-  ~CpuL07Model() {surf_cpu_model = NULL;};
+  ~CpuL07Model() {surf_cpu_model_pm = NULL;};
   ResourcePtr createResource(const char *name, double power_scale,
                                  double power_initial,
                                  tmgr_trace_t power_trace,

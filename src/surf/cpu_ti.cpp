@@ -380,11 +380,11 @@ int CpuTiTrace::binarySearch(double *array, double a, int low, int high)
  *************/
 
 static void parse_cpu_ti_init(sg_platf_host_cbarg_t host){
-  ((CpuTiModelPtr)surf_cpu_model)->parseInit(host);
+  ((CpuTiModelPtr)surf_cpu_model_pm)->parseInit(host);
 }
 
 static void add_traces_cpu_ti(){
-  surf_cpu_model->addTraces();
+  surf_cpu_model_pm->addTraces();
 }
 
 static void cpu_ti_define_callbacks()
@@ -399,16 +399,16 @@ static void cpu_ti_define_callbacks()
 
 void surf_cpu_model_init_ti()
 {
-  xbt_assert(!surf_cpu_model,"CPU model already initialized. This should not happen.");
-  surf_cpu_model = new CpuTiModel();
+  xbt_assert(!surf_cpu_model_pm,"CPU model already initialized. This should not happen.");
+  surf_cpu_model_pm = new CpuTiModel();
   cpu_ti_define_callbacks();
-  ModelPtr model = static_cast<ModelPtr>(surf_cpu_model);
+  ModelPtr model = static_cast<ModelPtr>(surf_cpu_model_pm);
   xbt_dynar_push(model_list, &model);
 }
 
 CpuTiModel::CpuTiModel() : CpuModel("cpu_ti")
 {
-  xbt_assert(!surf_cpu_model,"CPU model already initialized. This should not happen.");
+  xbt_assert(!surf_cpu_model_pm,"CPU model already initialized. This should not happen.");
   ActionPtr action;
   CpuTi cpu;
 
@@ -438,7 +438,7 @@ CpuTiModel::~CpuTiModel()
     }
   }
 
-  surf_cpu_model = NULL;
+  surf_cpu_model_pm = NULL;
 
   xbt_swag_free
       (cpu_ti_running_action_set_that_does_not_need_being_checked);
@@ -701,7 +701,7 @@ updateRemainingAmount(now);
     action = static_cast<CpuTiActionPtr>(_action);
     /* action not running, skip it */
     if (action->p_stateSet !=
-        surf_cpu_model->p_runningActionSet)
+        surf_cpu_model_pm->p_runningActionSet)
       continue;
 
     /* bogus priority, skip it */
@@ -721,7 +721,7 @@ updateRemainingAmount(now);
     min_finish = -1;
     /* action not running, skip it */
     if (action->p_stateSet !=
-        surf_cpu_model->p_runningActionSet)
+        surf_cpu_model_pm->p_runningActionSet)
       continue;
 
     /* verify if the action is really running on cpu */

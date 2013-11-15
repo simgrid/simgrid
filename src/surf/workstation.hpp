@@ -41,6 +41,8 @@ public:
   virtual void parseInit(sg_platf_host_cbarg_t host);
   WorkstationCLM03Ptr createResource(string name);
   double shareResources(double now);
+  virtual void adjustWeightOfDummyCpuActions();
+
   void updateActionsState(double now, double delta);
 
   virtual ActionPtr executeParallelTask(int workstation_nb,
@@ -96,9 +98,16 @@ public:
   RoutingEdgePtr p_netElm;
   CpuPtr p_cpu;
   NetworkCm02LinkPtr p_network;
+
+  xbt_dynar_t getVms();
+
+  /* common with vm */
+  void getParams(ws_params_t params);
+  void setParams(ws_params_t params);
+  s_ws_params_t p_params;
 };
 
-class WorkstationCLM03Lmm : public WorkstationCLM03, public ResourceLmm {
+class WorkstationCLM03Lmm : virtual public WorkstationCLM03, public ResourceLmm {
 public:
   WorkstationCLM03Lmm(WorkstationModelPtr model, const char* name, xbt_dict_t props, xbt_dynar_t storage, RoutingEdgePtr netElm, CpuPtr cpu):
 	  WorkstationCLM03(model, name, props, storage, netElm, cpu){};

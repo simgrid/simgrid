@@ -3,6 +3,7 @@
 #include "network.hpp"
 #include "cpu.hpp"
 #include "workstation.hpp"
+#include "vm_workstation.hpp"
 #include "simix/smx_host_private.h"
 #include "surf_routing.hpp"
 #include "simgrid/sg_config.h"
@@ -73,8 +74,12 @@ static void remove_watched_host(void *key)
   xbt_dynar_free(&hosts);
 }*/
 
+/* model_list_invoke contains only surf_workstation and surf_vm_workstation.
+ * The callback functions of cpu_model and network_model will be called from
+ * those of these workstation models. */
+xbt_dynar_t model_list = NULL; /* for destroying all models correctly */
+xbt_dynar_t model_list_invoke = NULL;  /* for invoking callbacks */
 
-xbt_dynar_t model_list = NULL;
 tmgr_history_t history = NULL;
 lmm_system_t maxmin_system = NULL;
 xbt_dynar_t surf_path = NULL;
@@ -133,6 +138,13 @@ s_surf_model_description_t surf_workstation_model_description[] = {
    surf_workstation_model_init_compound},
   {"ptask_L07", "Workstation model somehow similar to Cas01+CM02 but allowing parallel tasks",
    surf_workstation_model_init_ptask_L07},
+  {NULL, NULL, NULL}      /* this array must be NULL terminated */
+};
+
+s_surf_model_description_t surf_vm_workstation_model_description[] = {
+  {"default",
+   "Default vm workstation model.)",
+   surf_vm_workstation_model_init_current_default},
   {NULL, NULL, NULL}      /* this array must be NULL terminated */
 };
 
@@ -338,7 +350,9 @@ void surf_init(int *argc, char **argv)
 
   xbt_init(argc, argv);
   if (!model_list)
-    model_list = xbt_dynar_new(sizeof(surf_model_private_t), NULL);
+    model_list = xbt_dynar_new(sizeof(ModelPtr), NULL);
+  if (!model_list_invoke)
+    model_list_invoke = xbt_dynar_new(sizeof(ModelPtr), NULL);
   if (!history)
     history = tmgr_history_new();
 
@@ -368,6 +382,7 @@ void surf_exit(void)
   xbt_dynar_foreach(model_list, iter, model)
     delete model;
   xbt_dynar_free(&model_list);
+  xbt_dynar_free(&model_list_invoke);
   routing_exit();
 
   if (maxmin_system) {
@@ -674,6 +689,11 @@ e_surf_resource_state_t Resource::getState()
   return p_stateCurrent;
 }
 
+void Resource::setState(e_surf_resource_state_t state)
+{
+  p_stateCurrent = state;
+}
+
 bool Resource::isOn()
 {
   return m_running;
@@ -978,7 +998,7 @@ void ActionLmm::updateRemainingLazy(double now)
     double_update(&m_remains, m_lastValue * delta);
 
 #ifdef HAVE_TRACING
-    if (p_model == static_cast<ModelPtr>(surf_cpu_model) && TRACE_is_enabled()) {
+    if (p_model == static_cast<ModelPtr>(surf_cpu_model_pm) && TRACE_is_enabled()) {
       ResourcePtr cpu = static_cast<ResourcePtr>(lmm_constraint_id(lmm_get_cnst_from_var(p_model->p_maxminSystem, p_variable, 0)));
       TRACE_surf_host_set_utilization(cpu->m_name, p_category, m_lastValue, m_lastUpdate, now - m_lastUpdate);
     }

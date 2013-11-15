@@ -169,6 +169,11 @@ public class Task {
      */
 	public native void execute() throws HostFailureException,TaskCancelledException;
 	/**
+	 * Bound a computation to a certain load
+	 *
+	 */
+	public native void setBound(double load); 
+	/**
 	 * Cancels a task.
 	 *
 	 */ 

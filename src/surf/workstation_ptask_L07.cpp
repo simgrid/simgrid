@@ -19,7 +19,7 @@ WorkstationL07Model::WorkstationL07Model() : WorkstationModel("Workstation ptask
 	ptask_maxmin_system = lmm_system_new(1);
   surf_workstation_model = NULL;
   surf_network_model = new NetworkL07Model();
-  surf_cpu_model = new CpuL07Model();
+  surf_cpu_model_pm = new CpuL07Model();
   routing_model_create(p_networkModel->createResource("__loopback__",
 	                                                  498000000, NULL,
 	                                                  0.000015, NULL,
@@ -30,7 +30,7 @@ WorkstationL07Model::WorkstationL07Model() : WorkstationModel("Workstation ptask
 WorkstationL07Model::~WorkstationL07Model() {
   xbt_dict_free(&ptask_parallel_task_link_set);
 
-  delete surf_cpu_model;
+  delete surf_cpu_model_pm;
   delete surf_network_model;
   ptask_host_count = 0;
 
@@ -439,7 +439,9 @@ void WorkstationL07Model::addTraces()
  ************/
 
 WorkstationL07::WorkstationL07(WorkstationModelPtr model, const char* name, xbt_dict_t props, RoutingEdgePtr netElm, CpuPtr cpu)
-  : Resource(model, name, props), WorkstationCLM03Lmm(model, name, props, NULL, netElm, cpu)
+  : Resource(model, name, props),
+    WorkstationCLM03Lmm(model, name, props, NULL, netElm, cpu),
+    WorkstationCLM03(model, name, props, NULL, netElm, cpu)
 {
 }
 
@@ -779,7 +781,7 @@ static void ptask_parse_workstation_init(sg_platf_host_cbarg_t host)
 static void ptask_parse_cpu_init(sg_platf_host_cbarg_t host)
 {
   double power_peak = xbt_dynar_get_as(host->power_peak, host->pstate, double);
-  static_cast<CpuL07ModelPtr>(surf_cpu_model)->createResource(
+  static_cast<CpuL07ModelPtr>(surf_cpu_model_pm)->createResource(
       host->id,
       power_peak,
       host->power_scale,
@@ -852,7 +854,7 @@ static void ptask_define_callbacks()
 void surf_workstation_model_init_ptask_L07(void)
 {
   XBT_INFO("surf_workstation_model_init_ptask_L07");
-  xbt_assert(!surf_cpu_model, "CPU model type already defined");
+  xbt_assert(!surf_cpu_model_pm, "CPU model type already defined");
   xbt_assert(!surf_network_model, "network model type already defined");
   ptask_define_callbacks();
   surf_workstation_model = new WorkstationL07Model();

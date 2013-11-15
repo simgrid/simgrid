@@ -6,7 +6,8 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_cpu, surf,
                                 "Logging specific to the SURF cpu module");
 }
 
-CpuModelPtr surf_cpu_model;
+CpuModelPtr surf_cpu_model_pm;
+CpuModelPtr surf_cpu_model_vm;
 
 /*********
  * Model *
@@ -161,4 +162,89 @@ void CpuActionLmm::updateRemainingLazy(double now)
 
   m_lastUpdate = now;
   m_lastValue = lmm_variable_getvalue(p_variable);
+}
+
+void CpuActionLmm::setBound(double bound)
+{
+  XBT_IN("(%p,%g)", this, bound);
+  m_bound = bound;
+  lmm_update_variable_bound(p_model->p_maxminSystem, p_variable, bound);
+
+  if (p_model->p_updateMechanism == UM_LAZY)
+	heapRemove(p_model->p_actionHeap);
+  XBT_OUT();
+}
+
+/*
+ *
+ * This function formulates a constraint problem that pins a given task to
+ * particular cores. Currently, it is possible to pin a task to an exactly one
+ * specific core. The system links the variable object of the task to the
+ * per-core constraint object.
+ *
+ * But, the taskset command on Linux takes a mask value specifying a CPU
+ * affinity setting of a given task. If the mask value is 0x03, the given task
+ * will be executed on the first core (CPU0) or the second core (CPU1) on the
+ * given PM. The schedular will determine appropriate placements of tasks,
+ * considering given CPU affinities and task activities.
+ *
+ * How should the system formulate constraint problems for an affinity to
+ * multiple cores?
+ *
+ * The cpu argument must be the host where the task is being executed. The
+ * action object does not have the information about the location where the
+ * action is being executed.
+ */
+void CpuActionLmm::setAffinity(CpuLmmPtr cpu, unsigned long mask)
+{
+  lmm_variable_t var_obj = p_variable;
+
+  XBT_IN("(%p,%lx)", this, mask);
+
+  {
+    unsigned long nbits = 0;
+
+    /* FIXME: There is much faster algorithms doing this. */
+    unsigned long i;
+    for (i = 0; i < cpu->m_core; i++) {
+      unsigned long has_affinity = (1UL << i) & mask;
+      if (has_affinity)
+        nbits += 1;
+    }
+
+    if (nbits > 1) {
+      XBT_CRITICAL("Do not specify multiple cores for an affinity mask.");
+      XBT_CRITICAL("See the comment in cpu_action_set_affinity().");
+      DIE_IMPOSSIBLE;
+    }
+  }
+
+
+
+  unsigned long i;
+  for (i = 0; i < cpu->m_core; i++) {
+    XBT_DEBUG("clear affinity %p to cpu-%lu@%s", this, i,  cpu->m_name);
+    lmm_shrink(cpu->p_model->p_maxminSystem, cpu->p_constraintCore[i], var_obj);
+
+    unsigned long has_affinity = (1UL << i) & mask;
+    if (has_affinity) {
+      /* This function only accepts an affinity setting on the host where the
+       * task is now running. In future, a task might move to another host.
+       * But, at this moment, this function cannot take an affinity setting on
+       * that future host.
+       *
+       * It might be possible to extend the code to allow this function to
+       * accept affinity settings on a future host. We might be able to assign
+       * zero to elem->value to maintain such inactive affinity settings in the
+       * system. But, this will make the system complex. */
+      XBT_DEBUG("set affinity %p to cpu-%lu@%s", this, i, cpu->m_name);
+      lmm_expand(cpu->p_model->p_maxminSystem, cpu->p_constraintCore[i], var_obj, 1.0);
+    }
+  }
+
+  if (cpu->p_model->p_updateMechanism == UM_LAZY) {
+    /* FIXME (hypervisor): Do we need to do something for the LAZY mode? */
+  }
+
+  XBT_OUT();
 }

@@ -31,7 +31,12 @@ typedef struct simdata_task {
   msg_process_t receiver;
   msg_host_t source;
   double priority;
-  double rate;
+  double bound; /* Capping for CPU resource */
+  double rate;  /* Capping for network resource */
+
+  /* CPU affinity database of this task */
+  xbt_dict_t affinity_mask_db; /* smx_host_t host => unsigned long mask */
+
   int isused;  /* Indicates whether the task is used in SIMIX currently */
   int host_nb;                  /* ==0 if sequential task; parallel task if not */
   /*******  Parallel Tasks Only !!!! *******/
@@ -73,8 +78,6 @@ typedef struct simdata_process {
   int argc;                     /* arguments number if any */
   msg_error_t last_errno;       /* the last value returned by a MSG_function */
 
-  msg_vm_t vm;                 /* virtual machine the process is in */
-
   void* data;                   /* user data */
 } s_simdata_process_t, *simdata_process_t;
 
@@ -94,21 +97,21 @@ typedef struct msg_comm {
   msg_task_t *task_received;      /* where the task will be received (NULL for the sender) */
   msg_error_t status;           /* status of the communication once finished */
 } s_msg_comm_t;
-/*
-typedef enum {
-  msg_vm_state_suspended, msg_vm_state_running, msg_vm_state_migrating
-} e_msg_vm_state_t;
 
-typedef struct msg_vm {
-  const char *name;
-  s_xbt_swag_hookup_t all_vms_hookup;
-  s_xbt_swag_hookup_t host_vms_hookup;
-  xbt_dynar_t processes;
-  e_msg_vm_state_t state;
-  msg_host_t location;
-  int coreAmount;
-} s_msg_vm_t;
-*/
+
+/******************************* VM *************************************/
+typedef struct dirty_page {
+  double prev_clock;
+  double prev_remaining;
+  msg_task_t task;
+} s_dirty_page, *dirty_page_t;
+
+XBT_PUBLIC_DATA(const char*) MSG_vm_get_property_value(msg_vm_t vm, const char *name);
+XBT_PUBLIC_DATA(xbt_dict_t) MSG_vm_get_properties(msg_vm_t vm);
+XBT_PUBLIC_DATA(void) MSG_vm_set_property_value(msg_vm_t vm, const char *name, void *value, void_f_pvoid_t free_ctn);
+XBT_PUBLIC_DATA(msg_vm_t) MSG_vm_get_by_name(const char *name);
+XBT_PUBLIC_DATA(const char*) MSG_vm_get_name(msg_vm_t vm);
+
 /************************** Global variables ********************************/
 typedef struct MSG_Global {
   xbt_fifo_t host;
@@ -119,7 +122,6 @@ typedef struct MSG_Global {
   unsigned long int sent_msg;   /* Total amount of messages sent during the simulation */
   void (*task_copy_callback) (msg_task_t task, msg_process_t src, msg_process_t dst);
   void_f_pvoid_t process_data_cleanup;
-  xbt_swag_t vms;
 } s_MSG_Global_t, *MSG_Global_t;
 
 /*extern MSG_Global_t msg_global;*/
@@ -142,7 +144,7 @@ XBT_PUBLIC_DATA(MSG_Global_t) msg_global;
 
 msg_host_t __MSG_host_create(smx_host_t workstation);
 msg_storage_t __MSG_storage_create(smx_storage_t storage);
-void __MSG_host_destroy(msg_host_priv_t host);
+void __MSG_host_destroy(msg_host_t host);
 void __MSG_storage_destroy(msg_storage_priv_t host);
 
 void MSG_process_cleanup_from_SIMIX(smx_process_t smx_proc);
@@ -156,6 +158,13 @@ void _MSG_action_init(void);
 void _MSG_action_exit(void);
 
 void MSG_post_create_environment(void);
+
+static inline void *msg_host_resource_priv(const void *host) {
+  return xbt_lib_get_level((void *)host, MSG_HOST_LEVEL);
+}
+
+void MSG_host_add_task(msg_host_t host, msg_task_t task);
+void MSG_host_del_task(msg_host_t host, msg_task_t task);
 
 /********** Tracing **********/
 /* declaration of instrumentation functions from msg_task_instr.c */
@@ -184,16 +193,17 @@ void TRACE_msg_process_sleep_out(msg_process_t process);
 void TRACE_msg_process_end(msg_process_t process);
 
 /* declaration of instrumentation functions from instr_msg_vm.c */
-char *instr_vm_id (msg_vm_t vm, char *str, int len);
-char *instr_vm_id_2 (const char *vm_name, char *str, int len);
+char *instr_vm_id(msg_vm_t vm, char *str, int len);
+char *instr_vm_id_2(const char *vm_name, char *str, int len);
 void TRACE_msg_vm_change_host(msg_vm_t vm, msg_host_t old_host,
                                    msg_host_t new_host);
-void TRACE_msg_vm_create (const char *vm_name, msg_host_t host);
+void TRACE_msg_vm_start(msg_vm_t vm);
+void TRACE_msg_vm_create(const char *vm_name, msg_host_t host);
 void TRACE_msg_vm_kill(msg_vm_t process);
 void TRACE_msg_vm_suspend(msg_vm_t vm);
 void TRACE_msg_vm_resume(msg_vm_t vm);
-void TRACE_msg_vm_sleep_in(msg_vm_t vm);
-void TRACE_msg_vm_sleep_out(msg_vm_t vm);
+void TRACE_msg_vm_save(msg_vm_t vm);
+void TRACE_msg_vm_restore(msg_vm_t vm);
 void TRACE_msg_vm_end(msg_vm_t vm);
 
 SG_END_DECL()

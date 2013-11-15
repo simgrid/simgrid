@@ -1,4 +1,6 @@
 #include "workstation.hpp"
+#include "vm_workstation.hpp"
+#include "cpu_cas01.hpp"
 #include "simgrid/sg_config.h"
 
 extern "C" {
@@ -31,18 +33,20 @@ void surf_workstation_model_init_current_default(void)
 
   ModelPtr model = static_cast<ModelPtr>(surf_workstation_model);
   xbt_dynar_push(model_list, &model);
+  xbt_dynar_push(model_list_invoke, &model);
   sg_platf_host_add_cb(workstation_new);
 }
 
 void surf_workstation_model_init_compound()
 {
 
-  xbt_assert(surf_cpu_model, "No CPU model defined yet!");
+  xbt_assert(surf_cpu_model_pm, "No CPU model defined yet!");
   xbt_assert(surf_network_model, "No network model defined yet!");
   surf_workstation_model = new WorkstationModel();
 
   ModelPtr model = static_cast<ModelPtr>(surf_workstation_model);
   xbt_dynar_push(model_list, &model);
+  xbt_dynar_push(model_list_invoke, &model);
   sg_platf_host_add_cb(workstation_new);
 }
 
@@ -67,8 +71,74 @@ WorkstationCLM03Ptr WorkstationModel::createResource(string name){
   return workstation;
 }
 
+/* Each VM has a dummy CPU action on the PM layer. This CPU action works as the
+ * constraint (capacity) of the VM in the PM layer. If the VM does not have any
+ * active task, the dummy CPU action must be deactivated, so that the VM does
+ * not get any CPU share in the PM layer. */
+void WorkstationModel::adjustWeightOfDummyCpuActions()
+{
+  /* iterate for all hosts including virtual machines */
+  xbt_lib_cursor_t cursor;
+  char *key;
+  void **ind_host;
+
+  xbt_lib_foreach(host_lib, cursor, key, ind_host) {
+    WorkstationCLM03Ptr ws_clm03 = dynamic_cast<WorkstationCLM03Ptr>(
+    		                       static_cast<ResourcePtr>(ind_host[SURF_WKS_LEVEL]));
+    CpuCas01LmmPtr cpu_cas01 = dynamic_cast<CpuCas01LmmPtr>(
+                               static_cast<ResourcePtr>(ind_host[SURF_CPU_LEVEL]));
+
+    if (!ws_clm03)
+      continue;
+    /* skip if it is not a virtual machine */
+    if (ws_clm03->p_model != static_cast<ModelPtr>(surf_vm_workstation_model))
+      continue;
+    xbt_assert(cpu_cas01, "cpu-less workstation");
+
+    /* It is a virtual machine, so we can cast it to workstation_VM2013_t */
+    WorkstationVM2013Ptr ws_vm2013 = dynamic_cast<WorkstationVM2013Ptr>(ws_clm03);
+
+    int is_active = lmm_constraint_used(cpu_cas01->p_model->p_maxminSystem, cpu_cas01->p_constraint);
+    // int is_active_old = constraint_is_active(cpu_cas01);
+
+    // {
+    //   xbt_assert(is_active == is_active_old, "%d %d", is_active, is_active_old);
+    // }
+
+    if (is_active) {
+      /* some tasks exist on this VM */
+      XBT_DEBUG("set the weight of the dummy CPU action on PM to 1");
+
+      /* FIXME: we shoud use lmm_update_variable_weight() ? */
+      /* FIXME: If we assgign 1.05 and 0.05, the system makes apparently wrong values. */
+      surf_action_set_priority(ws_vm2013->p_action, 1);
+
+    } else {
+      /* no task exits on this VM */
+      XBT_DEBUG("set the weight of the dummy CPU action on PM to 0");
+
+      surf_action_set_priority(ws_vm2013->p_action, 0);
+    }
+  }
+}
+
 double WorkstationModel::shareResources(double now){
-  return -1.0;
+  adjustWeightOfDummyCpuActions();
+
+  double min_by_cpu = surf_cpu_model_pm->shareResources(now);
+  double min_by_net = surf_network_model->shareResources(now);
+
+  XBT_DEBUG("model %p, %s min_by_cpu %f, %s min_by_net %f",
+      this, surf_cpu_model_pm->m_name.c_str(), min_by_cpu, surf_network_model->m_name.c_str(), min_by_net);
+
+  if (min_by_cpu >= 0.0 && min_by_net >= 0.0)
+    return min(min_by_cpu, min_by_net);
+  else if (min_by_cpu >= 0.0)
+    return min_by_cpu;
+  else if (min_by_net >= 0.0)
+    return min_by_net;
+  else
+    return min_by_cpu;  /* probably min_by_cpu == min_by_net == -1 */
 }
 
 void WorkstationModel::updateActionsState(double now, double delta){
@@ -315,6 +385,42 @@ sg_storage_size_t WorkstationCLM03::getUsedSize(const char* name)
 
 e_surf_resource_state_t WorkstationCLM03Lmm::getState() {
   return WorkstationCLM03::getState();
+}
+
+xbt_dynar_t WorkstationCLM03::getVms()
+{
+  xbt_dynar_t dyn = xbt_dynar_new(sizeof(smx_host_t), NULL);
+
+  /* iterate for all hosts including virtual machines */
+  xbt_lib_cursor_t cursor;
+  char *key;
+  void **ind_host;
+  xbt_lib_foreach(host_lib, cursor, key, ind_host) {
+    WorkstationCLM03Ptr ws_clm03 = dynamic_cast<WorkstationCLM03Ptr>(static_cast<ResourcePtr>(ind_host[SURF_WKS_LEVEL]));
+    if (!ws_clm03)
+      continue;
+    /* skip if it is not a virtual machine */
+    if (ws_clm03->p_model != static_cast<ModelPtr>(surf_vm_workstation_model))
+      continue;
+
+    /* It is a virtual machine, so we can cast it to workstation_VM2013_t */
+    WorkstationVM2013Ptr ws_vm2013 = dynamic_cast<WorkstationVM2013Ptr>(ws_clm03);
+    if (this == ws_vm2013-> p_subWs)
+      xbt_dynar_push(dyn, &ws_vm2013->p_subWs);
+  }
+
+  return dyn;
+}
+
+void WorkstationCLM03::getParams(ws_params_t params)
+{
+  memcpy(params, &p_params, sizeof(s_ws_params_t));
+}
+
+void WorkstationCLM03::setParams(ws_params_t params)
+{
+  /* may check something here. */
+  memcpy(&p_params, params, sizeof(s_ws_params_t));
 }
 /**********
  * Action *

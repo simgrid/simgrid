@@ -188,6 +188,7 @@ public:
 
   ModelPtr getModel() {return p_model;};
   virtual e_surf_resource_state_t getState();
+  virtual void setState(e_surf_resource_state_t state);
   void printModel() { std::cout << p_model->getName() << "<<plop"<<std::endl;};
   void *p_resource;
   const char *m_name;
@@ -256,6 +257,7 @@ public:
   xbt_swag_t p_stateSet;
 
   double m_priority; /**< priority (1.0 by default) */
+  double m_bound;              /**< the capping of the CPU use  */
   bool m_failed;
   double m_start; /**< start time  */
   double m_finish; /**< finish time : this is modified during the run and fluctuates until the task is completed */
