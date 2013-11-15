@@ -68,6 +68,7 @@ void smpi_process_init(int *argc, char ***argv)
   if (argc && argv) {
     proc = SIMIX_process_self();
     index = atoi((*argv)[1]);
+    smpi_current_rank = index;
     data = smpi_process_remote_data(index);
     simcall_process_set_data(proc, data);
     if (*argc > 2) {
