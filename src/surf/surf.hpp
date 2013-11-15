@@ -7,10 +7,7 @@
 #include <string>
 #include <vector>
 #include <memory>
-#include <boost/smart_ptr.hpp>
 #include <boost/function.hpp>
-#include <boost/functional/factory.hpp>
-#include <boost/bind.hpp>
 #include "surf/trace_mgr.h"
 #include "xbt/lib.h"
 #include "surf/surf_routing.h"
