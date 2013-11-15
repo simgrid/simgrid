@@ -36,7 +36,10 @@ void net_define_callbacks(void);
  *********/
 class NetworkCm02Model : public Model {
 public:
-  NetworkCm02Model(int i) : Model("network") {};//FIXME: add network clean interface
+  NetworkCm02Model(int i) : Model("network") {
+	f_networkSolve = lmm_solve;
+	m_haveGap = false;
+  };//FIXME: add network clean interface
   NetworkCm02Model(string name);
   NetworkCm02Model();
   //FIXME:NetworkCm02LinkPtr createResource(string name);
@@ -55,11 +58,11 @@ public:
 		                           double size, double rate);
   xbt_dynar_t getRoute(RoutingEdgePtr src, RoutingEdgePtr dst); //FIXME: kill field? That is done by the routing nowadays
   //FIXME: virtual void addTraces() =0;
-  void (*f_networkSolve)(lmm_system_t) = lmm_solve;
+  void (*f_networkSolve)(lmm_system_t);
   virtual double latencyFactor(double size);
   virtual double bandwidthFactor(double size);
   virtual double bandwidthConstraint(double rate, double bound, double size);
-  bool m_haveGap = false;
+  bool m_haveGap;
 };
 
 /************
