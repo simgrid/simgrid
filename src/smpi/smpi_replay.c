@@ -986,7 +986,7 @@ int smpi_replay_finalize(){
     /* Last process alive speaking */
     /* end the simulated timer */
     sim_time = smpi_process_simulated_elapsed();
-    XBT_INFO("Simulation time %g", sim_time);
+    XBT_INFO("Simulation time %f", sim_time);
     _xbt_replay_action_exit();
     xbt_free(reqq);
     reqq = NULL;
