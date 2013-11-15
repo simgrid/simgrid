@@ -15,6 +15,8 @@ C       about out-of-order statements
         logical dbgflag
         integer wrank
         common /mtest/ dbgflag, wrank
+        integer myindex
+        common /grr/ myindex
 
         call MPI_Initialized( flag, ierr )
         if (.not. flag) then
@@ -22,6 +24,7 @@ C       about out-of-order statements
         endif
 
         dbgflag = .false.
+        myindex = 0
         call MPI_Comm_rank( MPI_COMM_WORLD, wrank, ierr )
         end
 C
