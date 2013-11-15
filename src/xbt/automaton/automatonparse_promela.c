@@ -7,6 +7,8 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "xbt/automaton.h"
+#include <errno.h>
+#include <string.h>             /* strerror */
 
 static xbt_automaton_t parsed_automaton;
 char* state_id_src;
@@ -92,8 +94,11 @@ static xbt_automaton_exp_label_t new_label(int type, ...){
 
 #include "parserPromela.tab.cacc"
 
-void xbt_automaton_load(xbt_automaton_t a, const char *file){
+void xbt_automaton_load(xbt_automaton_t a, const char *file)
+{
   parsed_automaton = a;
   yyin = fopen(file, "r");
+  if (yyin == NULL)
+    xbt_die("Failed to open automaton file `%s': %s", file, strerror(errno));
   yyparse();
 }
