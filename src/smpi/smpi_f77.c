@@ -20,13 +20,32 @@ static xbt_dict_t datatype_lookup = NULL;
 static xbt_dict_t op_lookup = NULL;
 static int running_processes = 0;
 
+/* Bindings for MPI special values */
+union u_smpi_common {
+  struct s_smpi_common {
+    integer mpi_in_place;
+    integer mpi_bottom;
+    integer mpi_status_ignore;
+    integer mpi_statuses_ignore;
+  } f90;                        /* with gftortran */
+  struct s_smpi_common *f77;    /* with f2c */
+} smpi_;
 
-
-/* Convert between Fortran and C MPI_BOTTOM */
-#define F2C_BOTTOM(addr)    ((addr!=MPI_IN_PLACE && *(int*)addr == MPI_FORTRAN_BOTTOM) ? MPI_BOTTOM : (addr))
-#define F2C_IN_PLACE(addr)  ((addr!=MPI_BOTTOM &&*(int*)addr == MPI_FORTRAN_IN_PLACE) ? MPI_IN_PLACE : (addr))
-#define F2C_STATUS_IGNORE(addr) ((*(int*)addr == MPI_FORTRAN_STATUS_IGNORE) ? MPI_STATUS_IGNORE : (addr))
-#define F2C_STATUSES_IGNORE(addr) ((*(int*)addr == MPI_FORTRAN_STATUSES_IGNORE) ? MPI_STATUSES_IGNORE : (addr))
+/* Convert between Fortran and C */
+static XBT_INLINE void *f2c_addr(void *addr, void *cval, void *chk1, void *chk2)
+{
+  return (addr == chk1 || addr == chk2) ? cval : addr;
+}
+#define F2C_ADDR(addr, cval, fval) \
+  f2c_addr(addr, cval, &smpi_.f90.fval, &smpi_.f77[smpi_current_rank].fval)
+#define F2C_BOTTOM(addr) \
+  F2C_ADDR(addr, MPI_BOTTOM, mpi_bottom)
+#define F2C_IN_PLACE(addr) \
+  F2C_ADDR(addr, MPI_IN_PLACE, mpi_in_place)
+#define F2C_STATUS_IGNORE(addr) \
+  F2C_ADDR(addr, MPI_STATUS_IGNORE, mpi_status_ignore)
+#define F2C_STATUSES_IGNORE(addr) \
+  F2C_ADDR(addr, MPI_STATUSES_IGNORE, mpi_statuses_ignore)
 
 #define KEY_SIZE (sizeof(int) * 2 + 1)
 
