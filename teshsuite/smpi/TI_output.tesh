@@ -57,7 +57,7 @@ $ ../../smpi_script/bin/smpirun -ext smpi_replay --log=replay.:critical -trace-t
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/filename' to 'out_ti.txt'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'smpi/cpu_threshold' to '-1'
 > [0.000000] [surf_config/INFO] Switching workstation model to compound since you changed the network and/or cpu model(s)
-> [Jupiter:1:(0) 0.016798] [smpi_replay/INFO] Simulation time 0.0167975
+> [Jupiter:1:(0) 0.016798] [smpi_replay/INFO] Simulation time 0.016798
 
 ! output sort
 $ find ./out_ti.txt_files -type f -exec cat {} \;
@@ -167,7 +167,7 @@ $ ../../smpi_script/bin/smpirun -ext smpi_replay --log=replay.:critical -trace-t
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/filename' to 'out_ti.txt'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/smpi/format/ti_one_file' to 'yes'
 > [0.000000] [surf_config/INFO] Switching workstation model to compound since you changed the network and/or cpu model(s)
-> [Jupiter:1:(0) 0.016798] [smpi_replay/INFO] Simulation time 0.0167976
+> [Jupiter:1:(0) 0.016798] [smpi_replay/INFO] Simulation time 0.016798
 
 
 
