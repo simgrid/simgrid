@@ -35,13 +35,88 @@ extern int sg_gtnets_jitter_seed;
 #endif
 extern xbt_dynar_t surf_path;
 
-
 typedef enum {
   SURF_NETWORK_ELEMENT_NULL = 0,        /* NULL */
   SURF_NETWORK_ELEMENT_HOST,    /* host type */
   SURF_NETWORK_ELEMENT_ROUTER,  /* router type */
   SURF_NETWORK_ELEMENT_AS       /* AS type */
 } e_surf_network_element_type_t;
+
+#ifdef __cplusplus
+class Model;
+class CpuModel;
+class WorkstationModel;
+class WorkstationVMModel;
+class NetworkCm02Model;
+class StorageModel;
+class Resource;
+class ResourceLmm;
+class WorkstationCLM03;
+class NetworkCm02Link;
+class Cpu;
+class Action;
+class ActionLmm;
+class StorageActionLmm;
+class As;
+class RoutingEdge;
+class RoutingPlatf;
+#else
+typedef struct Model Model;
+typedef struct CpuModel CpuModel;
+typedef struct WorkstationModel WorkstationModel;
+typedef struct WorkstationVMModel WorkstationVMModel;
+typedef struct NetworkCm02Model NetworkCm02Model;
+typedef struct StorageModel StorageModel;
+typedef struct Resource Resource;
+typedef struct ResourceLmm ResourceLmm;
+typedef struct WorkstationCLM03 WorkstationCLM03;
+typedef struct NetworkCm02Link NetworkCm02Link;
+typedef struct Cpu Cpu;
+typedef struct Action Action;
+typedef struct ActionLmm ActionLmm;
+typedef struct StorageActionLmm StorageActionLmm;
+typedef struct As As;
+typedef struct RoutingEdge RoutingEdge;
+typedef struct RoutingPlatf RoutingPlatf;
+#endif
+
+/** \ingroup SURF_models
+ *  \brief Model datatype
+ *
+ *  Generic data structure for a model. The workstations,
+ *  the CPUs and the network links are examples of models.
+ */
+typedef Model *surf_model_t;
+typedef CpuModel *surf_cpu_model_t;
+typedef WorkstationModel *surf_workstation_model_t;
+typedef WorkstationVMModel *surf_vm_workstation_model_t;
+
+typedef NetworkCm02Model *surf_network_model_t;
+typedef StorageModel *surf_storage_model_t;
+
+typedef xbt_dictelm_t surf_resource_t;
+typedef Resource *surf_cpp_resource_t;
+typedef WorkstationCLM03 *surf_workstation_CLM03_t;
+typedef NetworkCm02Link *surf_network_link_t;
+typedef Cpu *surf_cpu_t;
+
+/** \ingroup SURF_actions
+ *  \brief Action structure
+ *
+ *  Never create s_surf_action_t by yourself ! The actions are created
+ *  on the fly when you call execute or communicate on a model.
+ *
+ *  \see e_surf_action_state_t
+ */
+typedef Action *surf_action_t;
+typedef ActionLmm *surf_action_lmm_t;
+typedef StorageActionLmm *surf_storage_action_lmm_t;
+
+typedef As *AS_t;
+typedef RoutingEdge *routing_edge_t;
+typedef RoutingPlatf *routing_platf_t;
+
+typedef struct surf_file *surf_file_t;
 
 XBT_PUBLIC(e_surf_network_element_type_t)
   routing_get_network_element_type(const char* name);
@@ -72,58 +147,6 @@ XBT_PUBLIC(int) find_model_description(s_surf_model_description_t * table,
 XBT_PUBLIC(void) model_help(const char *category,
                             s_surf_model_description_t * table);
 
-enum heap_action_type{
-  LATENCY = 100,
-  MAX_DURATION,
-  NORMAL,
-  NOTSET
-};
-
-/** \ingroup SURF_actions
- *  \brief Action structure
- *
- *  Never create s_surf_action_t by yourself ! The actions are created
- *  on the fly when you call execute or communicate on a model.
- *
- *  \see e_surf_action_state_t
- */
-typedef struct surf_action {
-  s_xbt_swag_hookup_t state_hookup;
-  xbt_swag_t state_set;
-  double cost;                  /**< cost        */
-  double priority;              /**< priority (1.0 by default) */
-  double max_duration;          /**< max_duration (may fluctuate until
-           the task is completed) */
-  double remains;               /**< How much of that cost remains to
-         * be done in the currently running task */
-#ifdef HAVE_LATENCY_BOUND_TRACKING
-  int latency_limited;               /**< Set to 1 if is limited by latency, 0 otherwise */
-#endif
-
-  double start;                 /**< start time  */
-  double finish;                /**< finish time : this is modified during the run
-         * and fluctuates until the task is completed */
-  void *data;                   /**< for your convenience */
-  int refcount;
-  surf_model_t model_type;
-#ifdef HAVE_TRACING
-  char *category;               /**< tracing category for categorized resource utilization monitoring */
-#endif
-  surf_file_t file;        /**< surf_file_t for storage model */
-  xbt_dict_t ls_dict;
-} s_surf_action_t;
-
-typedef struct surf_action_lmm {
-  s_surf_action_t generic_action;
-  lmm_variable_t variable;
-  int suspended;
-  s_xbt_swag_hookup_t action_list_hookup;
-  int index_heap;
-  double last_update;
-  double last_value;
-  enum heap_action_type hat;
-} s_surf_action_lmm_t, *surf_action_lmm_t;
-
 /** \ingroup SURF_actions
  *  \brief Action states
  *
@@ -131,6 +154,7 @@ typedef struct surf_action_lmm {
  *
  *  \see surf_action_t, surf_action_state_t
  */
+
 typedef enum {
   SURF_ACTION_READY = 0,        /**< Ready        */
   SURF_ACTION_RUNNING,          /**< Running      */
@@ -141,228 +165,60 @@ typedef enum {
                                 /**< Not in the system anymore. Why did you ask ? */
 } e_surf_action_state_t;
 
-/** \ingroup SURF_actions
- *  \brief Action state sets
- *
- *  This structure contains some sets of actions.
- *  It provides a fast access to the actions in each state.
- *
- *  \see surf_action_t, e_surf_action_state_t
- */
-typedef struct surf_action_state {
-  xbt_swag_t ready_action_set;
-                                 /**< Actions in state SURF_ACTION_READY */
-  xbt_swag_t running_action_set;
-                                 /**< Actions in state SURF_ACTION_RUNNING */
-  xbt_swag_t failed_action_set;
-                                 /**< Actions in state SURF_ACTION_FAILED */
-  xbt_swag_t done_action_set;
-                                 /**< Actions in state SURF_ACTION_DONE */
-} s_surf_action_state_t, *surf_action_state_t;
+/* FIXME: Where should the VM state be defined? */
+typedef enum {
+  /* created, but not yet started */
+  SURF_VM_STATE_CREATED,
+
+  SURF_VM_STATE_RUNNING,
+  SURF_VM_STATE_MIGRATING,
+
+  /* Suspend/resume does not involve disk I/O, so we assume there is no transition states. */
+  SURF_VM_STATE_SUSPENDED,
+
+  /* Save/restore involves disk I/O, so there should be transition states. */
+  SURF_VM_STATE_SAVING,
+  SURF_VM_STATE_SAVED,
+  SURF_VM_STATE_RESTORING,
+
+} e_surf_vm_state_t;
+
+typedef struct ws_params {
+  int ncpus;
+  long ramsize;
+  int overcommit;
+
+  /* The size of other states than memory pages, which is out-of-scope of dirty
+   * page tracking. */
+  long devsize;
+  int skip_stage1;
+  int skip_stage2;
+  double max_downtime;
+
+  double dp_rate;
+  double dp_cap; /* bytes per 1 flop execution */
+
+  double xfer_cpu_overhead;
+  double dpt_cpu_overhead;
+
+  /* set migration speed */
+  double mig_speed;
+} s_ws_params_t, *ws_params_t;
 
 /***************************/
 /* Generic model object */
 /***************************/
-typedef struct s_routing_platf s_routing_platf_t, *routing_platf_t;
+//FIXME:REMOVE typedef struct s_routing_platf s_routing_platf_t, *routing_platf_t;
 XBT_PUBLIC_DATA(routing_platf_t) routing_platf;
 
-/*******************************************
- *  TUTORIAL: New model
- *  New model extension public
- *  Public functions specific to a New model.
- */
-typedef struct surf_new_model_extension_public {
-  surf_action_t(*fct) ();
-  void* (*create_resource) ();
-} s_surf_model_extension_new_model_t;
-/*******************************************/
-
-/** \ingroup SURF_models
- *  \brief Private data available on all models
- */
-typedef struct surf_model_private *surf_model_private_t;
-
-     /* Cpu model */
-
-     /** \ingroup SURF_models
-      *  \brief CPU model extension public
-      *
-      *  Public functions specific to the CPU model.
-      */
-typedef struct surf_cpu_model_extension_public {
-  surf_action_t(*execute) (void *cpu, double size);
-  surf_action_t(*sleep) (void *cpu, double duration);
-  e_surf_resource_state_t(*get_state) (void *cpu);
-  int (*get_core) (void *cpu);
-  double (*get_speed) (void *cpu, double load);
-  double (*get_available_speed) (void *cpu);
-  double (*get_current_power_peak) (void *cpu);
-  double (*get_power_peak_at) (void *cpu, int pstate_index);
-  int (*get_nb_pstates) (void *cpu);
-  void (*set_power_peak_at) (void *cpu, int pstate_index);
-  double (*get_consumed_energy) (void *cpu);
-  void (*add_traces) (void);
-} s_surf_model_extension_cpu_t;
-
-     /* Network model */
-
-     /** \ingroup SURF_models
-      *  \brief Network model extension public
-      *
-      *  Public functions specific to the network model
-      */
-typedef struct surf_network_model_extension_public {
-  surf_action_t (*communicate) (sg_routing_edge_t src,
-                                sg_routing_edge_t dst,
-                                double size, double rate);
-  xbt_dynar_t(*get_route) (void *src, void *dst); //FIXME: kill field? That is done by the routing nowadays
-  double (*get_link_bandwidth) (const void *link);
-  double (*get_link_latency) (const void *link);
-  int (*link_shared) (const void *link);
-  void (*add_traces) (void);
-} s_surf_model_extension_network_t;
-
-/* Storage model */
-
-/** \ingroup SURF_models
- *  \brief Storage model extension public
- *
- *  Public functions specific to the Storage model.
- */
-
-typedef struct surf_storage_model_extension_public {
-  surf_action_t(*open) (void *storage, const char* mount, const char* path);
-  surf_action_t(*close) (void *storage, surf_file_t fd);
-  surf_action_t(*read) (void *storage, surf_file_t fd, sg_storage_size_t size);
-  surf_action_t(*write) (void *storage, surf_file_t fd, sg_storage_size_t size);
-  surf_action_t(*stat) (void *storage, surf_file_t fd);
-  surf_action_t(*ls) (void *storage, const char *path);
-  xbt_dict_t(*get_properties) (const void *storage);
-  void (*rename) (void *storage, const char *src, const char *dest);
-  xbt_dict_t(*get_content) (void *storage);
-  sg_storage_size_t(*get_size) (void *storage);
-} s_surf_model_extension_storage_t;
-
-     /** \ingroup SURF_models
-      *  \brief Workstation model extension public
-      *
-      *  Public functions specific to the workstation model.
-      */
-typedef struct surf_workstation_model_extension_public {
-  surf_action_t(*execute) (void *workstation, double size);                                /**< Execute a computation amount on a workstation
-                                      and create the corresponding action */
-  surf_action_t(*sleep) (void *workstation, double duration);                              /**< Make a workstation sleep during a given duration */
-  e_surf_resource_state_t(*get_state) (void *workstation);                                      /**< Return the CPU state of a workstation */
-
-  int (*get_core) (void *workstation); 
-  double (*get_speed) (void *workstation, double load);                                    /**< Return the speed of a workstation */
-  double (*get_available_speed) (void *workstation);                                       /**< Return tha available speed of a workstation */
-
-  double (*get_current_power_peak) (void *workstation);					  /**< Return the current CPU speed of a workstation */
-  double (*get_power_peak_at) (void *workstation, int pstate_index);			  /**< Return the speed of a workstation for a specific pstate,
-												 (where higher pstate values represent lower processor speeds) */
-  int (*get_nb_pstates) (void *workstation);						  /**< Return the number of pstates defined for a workstation (default is 1) */
-  void (*set_power_peak_at) (void *workstation, int pstate_index);			  /**< Set the processor speed of a workstation to the speed associated with the pstate_index pstate */
-  double (*get_consumed_energy) (void *workstation);					  /**< Return the total energy consumed by a workstation */
-
-   surf_action_t(*communicate) (void *workstation_src,                                     /**< Execute a communication amount between two workstations */
-                                void *workstation_dst, double size,
-                                double max_rate);
-   // FIXME: kill next field, which duplicates the routing
-   xbt_dynar_t(*get_route) (void *workstation_src, void *workstation_dst);                 /**< Get the list of links between two ws */
-
-   surf_action_t(*execute_parallel_task) (int workstation_nb,                              /**< Execute a parallel task on several workstations */
-                                          void **workstation_list,
-                                          double *computation_amount,
-                                          double *communication_amount,
-                                          double rate);
-  double (*get_link_bandwidth) (const void *link);                                         /**< Return the current bandwidth of a network link */
-  double (*get_link_latency) (const void *link);                                           /**< Return the current latency of a network link */
-  surf_action_t(*open) (void *workstation, const char* storage,
-                        const char* path);
-  surf_action_t(*close) (void *workstation, surf_file_t fd);
-  surf_action_t(*read) (void *workstation, surf_file_t fd, sg_storage_size_t size);
-  surf_action_t(*write) (void *workstation, surf_file_t fd, sg_storage_size_t size);
-  surf_action_t(*stat) (void *workstation, surf_file_t fd);
-  int(*unlink) (void *workstation, surf_file_t fd);
-  surf_action_t(*ls) (void *workstation, const char* mount, const char *path);
-  sg_storage_size_t (*get_size) (void *workstation, surf_file_t fd);
-  xbt_dynar_t (*get_info) (void *workstation, surf_file_t fd);
-  int (*link_shared) (const void *link);
-  xbt_dict_t(*get_properties) (const void *resource);
-  void (*add_traces) (void);
-
-  sg_storage_size_t (*get_free_size) (void *workstation,const char* name);
-  sg_storage_size_t (*get_used_size) (void *workstation,const char* name);
-  xbt_dict_t (*get_storage_list) (void *workstation);
-
-} s_surf_model_extension_workstation_t;
-
-
-
-
-/** \ingroup SURF_models
- *  \brief Model datatype
- *
- *  Generic data structure for a model. The workstations,
- *  the CPUs and the network links are examples of models.
- */
-typedef struct surf_model {
-  const char *name;     /**< Name of this model */
-  s_surf_action_state_t states;      /**< Any living action on this model */
-
-   e_surf_action_state_t(*action_state_get) (surf_action_t action);
-                                                                       /**< Return the state of an action */
-  void (*action_state_set) (surf_action_t action,
-                            e_surf_action_state_t state);
-                                                                  /**< Change an action state*/
-
-  double (*action_get_start_time) (surf_action_t action);     /**< Return the start time of an action */
-  double (*action_get_finish_time) (surf_action_t action);     /**< Return the finish time of an action */
-  int (*action_unref) (surf_action_t action);     /**< Specify that we don't use that action anymore. Returns true if the action was destroyed and false if someone still has references on it. */
-  void (*action_cancel) (surf_action_t action);     /**< Cancel a running action */
-  void (*action_recycle) (surf_action_t action);     /**< Recycle an action */
-  void (*action_data_set) (surf_action_t action, void *data);     /**< Set the user data of an action */
-  void (*suspend) (surf_action_t action);     /**< Suspend an action */
-  void (*resume) (surf_action_t action);     /**< Resume a suspended action */
-  int (*is_suspended) (surf_action_t action);     /**< Return whether an action is suspended */
-  void (*set_max_duration) (surf_action_t action, double duration);     /**< Set the max duration of an action*/
-  void (*set_priority) (surf_action_t action, double priority);     /**< Set the priority of an action */
-#ifdef HAVE_TRACING
-  void (*set_category) (surf_action_t action, const char *category); /**< Set the category of an action */
-#endif
-  double (*get_remains) (surf_action_t action);     /**< Get the remains of an action */
-#ifdef HAVE_LATENCY_BOUND_TRACKING
-  int (*get_latency_limited) (surf_action_t action);     /**< Return 1 if action is limited by latency, 0 otherwise */
-#endif
-
-  void (*gap_remove) (surf_action_lmm_t action);
-
-  surf_model_private_t model_private;
-
-  union extension {
-    s_surf_model_extension_cpu_t cpu;
-    s_surf_model_extension_network_t network;
-    s_surf_model_extension_storage_t storage;
-    s_surf_model_extension_workstation_t workstation;
-    /*******************************************/
-    /* TUTORIAL: New model                     */
-    s_surf_model_extension_new_model_t new_model;
-    /*******************************************/
-  } extension;
-} s_surf_model_t;
-
-surf_model_t surf_model_init(void);
-void surf_model_exit(surf_model_t model);
-
 static inline void *surf_cpu_resource_priv(const void *host) {
-  return xbt_lib_get_level((void *)host, SURF_CPU_LEVEL);
+  return xbt_lib_get_level((xbt_dictelm_t)host, SURF_CPU_LEVEL);
 }
 static inline void *surf_workstation_resource_priv(const void *host){
-  return xbt_lib_get_level((void *)host, SURF_WKS_LEVEL);
+  return (void*)xbt_lib_get_level((xbt_dictelm_t)host, SURF_WKS_LEVEL);
 }
 static inline void *surf_storage_resource_priv(const void *storage){
-  return xbt_lib_get_level((void *)storage, SURF_STORAGE_LEVEL);
+  return (void*)xbt_lib_get_level((xbt_dictelm_t)storage, SURF_STORAGE_LEVEL);
 }
 
 static inline void *surf_cpu_resource_by_name(const char *name) {
@@ -375,29 +231,93 @@ static inline void *surf_storage_resource_by_name(const char *name){
   return xbt_lib_get_elm_or_null(storage_lib, name);
 }
 
-typedef struct surf_resource {
-  surf_model_t model;
-  char *name;
-  xbt_dict_t properties;
-  void_f_pvoid_t free_f;
-} s_surf_resource_t, *surf_resource_t;
-
-/**
- * Resource which have a metric handled by a maxmin system
- */
-typedef struct {
-  double scale;
-  double peak;
-  tmgr_trace_event_t event;
-} s_surf_metric_t;
-
-typedef struct surf_resource_lmm {
-  s_surf_resource_t generic_resource;
-  lmm_constraint_t constraint;
-  e_surf_resource_state_t state_current;
-  tmgr_trace_event_t state_event;
-  s_surf_metric_t power;
-} s_surf_resource_lmm_t, *surf_resource_lmm_t;
+#ifdef __cplusplus
+extern "C" {
+#endif
+char *surf_routing_edge_name(sg_routing_edge_t edge);
+void *surf_as_cluster_get_backbone(AS_t as);
+void surf_as_cluster_set_backbone(AS_t as, void* backbone);
+const char *surf_model_name(surf_model_t model);
+xbt_swag_t surf_model_done_action_set(surf_model_t model);
+xbt_swag_t surf_model_failed_action_set(surf_model_t model);
+xbt_swag_t surf_model_ready_action_set(surf_model_t model);
+xbt_swag_t surf_model_running_action_set(surf_model_t model);
+surf_action_t surf_workstation_model_execute_parallel_task(surf_workstation_model_t model,
+		                                    int workstation_nb,
+                                            void **workstation_list,
+                                            double *computation_amount,
+                                            double *communication_amount,
+                                            double rate);
+surf_action_t surf_workstation_model_communicate(surf_workstation_model_t model, surf_resource_t src, surf_resource_t dst, double size, double rate);
+xbt_dynar_t surf_workstation_model_get_route(surf_workstation_model_t model, surf_resource_t src, surf_resource_t dst);
+void surf_vm_workstation_model_create(const char *name, surf_resource_t ind_phys_host);
+surf_action_t surf_network_model_communicate(surf_network_model_t model, sg_routing_edge_t src, sg_routing_edge_t dst, double size, double rate);
+const char *surf_resource_name(surf_cpp_resource_t resource);
+xbt_dict_t surf_resource_get_properties(surf_cpp_resource_t resource);
+e_surf_resource_state_t surf_resource_get_state(surf_cpp_resource_t resource);
+void surf_resource_set_state(surf_cpp_resource_t resource, e_surf_resource_state_t state);
+double surf_workstation_get_speed(surf_resource_t resource, double load);
+double surf_workstation_get_available_speed(surf_resource_t resource);
+int surf_workstation_get_core(surf_resource_t resource);
+surf_action_t surf_workstation_execute(surf_resource_t resource, double size);
+surf_action_t surf_workstation_sleep(surf_resource_t resource, double duration);
+surf_action_t surf_workstation_open(surf_resource_t workstation, const char* mount, const char* path);
+surf_action_t surf_workstation_close(surf_resource_t workstation, surf_file_t fd);
+surf_action_t surf_workstation_read(surf_resource_t resource, surf_file_t fd, sg_storage_size_t size);
+surf_action_t surf_workstation_write(surf_resource_t resource, surf_file_t fd, sg_storage_size_t size);
+xbt_dynar_t surf_workstation_get_info(surf_resource_t resource, surf_file_t fd);
+sg_storage_size_t surf_workstation_get_free_size(surf_resource_t resource, const char* name);
+sg_storage_size_t surf_workstation_get_used_size(surf_resource_t resource, const char* name);
+xbt_dynar_t surf_workstation_get_vms(surf_resource_t resource);
+void surf_workstation_get_params(surf_resource_t resource, ws_params_t params);
+void surf_workstation_set_params(surf_resource_t resource, ws_params_t params);
+void surf_vm_workstation_destroy(surf_resource_t resource);
+void surf_vm_workstation_suspend(surf_resource_t resource);
+void surf_vm_workstation_resume(surf_resource_t resource);
+void surf_vm_workstation_save(surf_resource_t resource);
+void surf_vm_workstation_restore(surf_resource_t resource);
+void surf_vm_workstation_migrate(surf_resource_t resource, surf_resource_t ind_vm_ws_dest);
+surf_resource_t surf_vm_workstation_get_pm(surf_resource_t resource);
+void surf_vm_workstation_set_bound(surf_resource_t resource, double bound);
+void surf_vm_workstation_set_affinity(surf_resource_t resource, surf_resource_t cpu, unsigned long mask);
+surf_action_t surf_cpu_execute(surf_resource_t cpu, double size);
+surf_action_t surf_cpu_sleep(surf_resource_t cpu, double duration);
+double surf_workstation_get_current_power_peak(surf_resource_t host);
+double surf_workstation_get_power_peak_at(surf_resource_t host, int pstate_index);
+int surf_workstation_get_nb_pstates(surf_resource_t host);
+void surf_workstation_set_power_peak_at(surf_resource_t host, int pstate_index);
+double surf_workstation_get_consumed_energy(surf_resource_t host);
+xbt_dict_t surf_workstation_get_storage_list(surf_resource_t workstation);
+int surf_workstation_unlink(surf_resource_t workstation, surf_file_t fd);
+surf_action_t surf_workstation_ls(surf_resource_t workstation, const char* mount, const char *path);
+size_t surf_workstation_get_size(surf_resource_t workstation, surf_file_t fd);
+int surf_network_link_is_shared(surf_cpp_resource_t link);
+double surf_network_link_get_bandwidth(surf_cpp_resource_t link);
+double surf_network_link_get_latency(surf_cpp_resource_t link);
+xbt_dict_t surf_storage_get_content(surf_resource_t resource);
+sg_storage_size_t surf_storage_get_size(surf_resource_t resource);
+void surf_storage_rename(surf_resource_t resource, const char* src, const char* dest);
+void *surf_action_get_data(surf_action_t action);
+void surf_action_set_data(surf_action_t action, void *data);
+void surf_action_unref(surf_action_t action);
+double surf_action_get_start_time(surf_action_t action);
+double surf_action_get_finish_time(surf_action_t action);
+double surf_action_get_remains(surf_action_t action);
+void surf_action_suspend(surf_action_t action);
+void surf_action_resume(surf_action_t action);
+void surf_action_cancel(surf_action_t action);
+void surf_action_set_priority(surf_action_t action, double priority);
+void surf_action_set_category(surf_action_t action, const char *category);
+e_surf_action_state_t surf_action_get_state(surf_action_t action);
+int surf_action_get_cost(surf_action_t action);
+void surf_cpu_action_set_affinity(surf_action_t action, surf_resource_t cpu, unsigned long mask);
+void surf_cpu_action_set_bound(surf_action_t action, double bound);
+surf_file_t surf_storage_action_get_file(surf_action_t action);
+xbt_dict_t surf_storage_action_get_ls_dict(surf_action_t action);
+surf_model_t surf_resource_model(const void *host, int level);
+#ifdef __cplusplus
+}
+#endif
 
 /**************************************/
 /* Implementations of model object */
@@ -405,9 +325,15 @@ typedef struct surf_resource_lmm {
 
 
 /** \ingroup SURF_models
- *  \brief The CPU model
+ *  \brief The CPU model object for the physical machine layer
  */
-XBT_PUBLIC_DATA(surf_model_t) surf_cpu_model;
+XBT_PUBLIC_DATA(surf_cpu_model_t) surf_cpu_model_pm;
+
+/** \ingroup SURF_models
+ *  \brief The CPU model object for the virtual machine layer
+ */
+XBT_PUBLIC_DATA(surf_cpu_model_t) surf_cpu_model_vm;
+
 
 /** \ingroup SURF_models
  *  \brief Initializes the CPU model with the model Cas01
@@ -452,7 +378,7 @@ XBT_PUBLIC_DATA(s_surf_model_description_t) surf_cpu_model_description[];
  *  model should be accessed because depending on the platform model,
  *  the network model can be NULL.
  */
-XBT_PUBLIC_DATA(surf_model_t) surf_network_model;
+XBT_PUBLIC_DATA(surf_network_model_t) surf_network_model;
 
 /** \ingroup SURF_models
  *  \brief Same as network model 'LagrangeVelho', only with different correction factors.
@@ -588,7 +514,7 @@ XBT_PUBLIC(void) surf_storage_model_init_default(void);
  */
 XBT_PUBLIC_DATA(s_surf_model_description_t) surf_storage_model_description[];
 
-XBT_PUBLIC_DATA(surf_model_t) surf_storage_model;
+XBT_PUBLIC_DATA(surf_storage_model_t) surf_storage_model;
 
 /** \ingroup SURF_models
  *  \brief The workstation model
@@ -598,7 +524,17 @@ XBT_PUBLIC_DATA(surf_model_t) surf_storage_model;
  *  because depending on the platform model, the network model and the CPU model
  *  may not exist.
  */
-XBT_PUBLIC_DATA(surf_model_t) surf_workstation_model;
+XBT_PUBLIC_DATA(surf_workstation_model_t) surf_workstation_model;
+
+/** \ingroup SURF_models
+ *  \brief The vm_workstation model
+ *
+ *  Note that when you create an API on top of SURF,
+ *  the vm_workstation model should be the only one you use
+ *  because depending on the platform model, the network model and the CPU model
+ *  may not exist.
+ */
+XBT_PUBLIC_DATA(surf_vm_workstation_model_t) surf_vm_workstation_model;
 
 /** \ingroup SURF_models
  *  \brief Initializes the platform with a compound workstation model
@@ -637,17 +573,31 @@ XBT_PUBLIC(void) surf_workstation_model_init_ptask_L07(void);
 XBT_PUBLIC_DATA(s_surf_model_description_t)
     surf_workstation_model_description[];
 
-/*******************************************
- *  TUTORIAL: New model
+/** \ingroup SURF_models
+ *  \brief Initializes the platform with the current best network and cpu models at hand
+ *
+ *  This platform model seperates the workstation model and the network model.
+ *  The workstation model will be initialized with the model compound, the network
+ *  model with the model LV08 (with cross traffic support) and the CPU model with
+ *  the model Cas01.
+ *  Such model is subject to modification with warning in the ChangeLog so monitor it!
+ *
  */
-XBT_PUBLIC(void) surf_new_model_init_default(void);
-XBT_PUBLIC_DATA(s_surf_model_description_t) surf_new_model_description[];
+XBT_PUBLIC(void) surf_vm_workstation_model_init_current_default(void);
+
+/** \ingroup SURF_models
+ *  \brief The list of all available vm workstation model models
+ */
+XBT_PUBLIC_DATA(s_surf_model_description_t)
+    surf_vm_workstation_model_description[];
+
 /*******************************************/
 
 /** \ingroup SURF_models
  *  \brief List of initialized models
  */
 XBT_PUBLIC_DATA(xbt_dynar_t) model_list;
+XBT_PUBLIC_DATA(xbt_dynar_t) model_list_invoke;
 
 /** \ingroup SURF_simulation
  *  \brief List of hosts that have juste restarted and whose autorestart process should be restarted.
@@ -662,13 +612,20 @@ XBT_PUBLIC(xbt_dict_t) watched_hosts_lib;
 /*******************************************/
 /*** SURF Platform *************************/
 /*******************************************/
-typedef struct s_as *AS_t;
-
+#ifdef __cplusplus
+extern "C" {
+#endif
 XBT_PUBLIC_DATA(AS_t) surf_AS_get_routing_root(void); 
 XBT_PUBLIC_DATA(const char *) surf_AS_get_name(AS_t as);
 XBT_PUBLIC_DATA(xbt_dict_t) surf_AS_get_routing_sons(AS_t as);
 XBT_PUBLIC_DATA(const char *) surf_AS_get_model(AS_t as);
 XBT_PUBLIC_DATA(xbt_dynar_t) surf_AS_get_hosts(AS_t as);
+XBT_PUBLIC_DATA(void) surf_AS_get_graph(AS_t as, xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges);
+XBT_PUBLIC_DATA(AS_t) surf_platf_get_root(routing_platf_t platf);
+XBT_PUBLIC_DATA(e_surf_network_element_type_t) surf_routing_edge_get_rc_type(sg_routing_edge_t edge);
+#ifdef __cplusplus
+}
+#endif
 
 /*******************************************/
 /*** SURF Globals **************************/
@@ -765,7 +722,7 @@ void instr_routing_define_callbacks (void);
 void instr_new_variable_type (const char *new_typename, const char *color);
 void instr_new_user_variable_type  (const char *father_type, const char *new_typename, const char *color);
 void instr_new_user_state_type (const char *father_type, const char *new_typename);
-void instr_new_value_for_user_state_type (const char *typename, const char *value, const char *color);
+void instr_new_value_for_user_state_type (const char *_typename, const char *value, const char *color);
 int instr_platform_traced (void);
 xbt_graph_t instr_routing_platform_graph (void);
 void instr_routing_platform_graph_export_graphviz (xbt_graph_t g, const char *filename);

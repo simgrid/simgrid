@@ -11,6 +11,13 @@
 
 #include <xbt/misc.h>           /* XBT_PUBLIC */
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 XBT_PUBLIC(void) xbt_init(int *argc, char **argv);
 XBT_PUBLIC(void) xbt_exit(void);
+#ifdef __cplusplus
+}
+#endif
+
 #endif                          /* _XBT_MODULE_H */

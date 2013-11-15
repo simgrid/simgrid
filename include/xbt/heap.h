@@ -16,6 +16,9 @@
  *  @{
  */
 /* @brief heap datatype */
+#ifdef __cplusplus
+extern "C" {
+#endif
 typedef struct xbt_heap *xbt_heap_t;
 
 XBT_PUBLIC(xbt_heap_t) xbt_heap_new(int init_size,
@@ -33,6 +36,8 @@ XBT_PUBLIC(void) xbt_heap_set_update_callback(xbt_heap_t H,
                                                                        *,
                                                                        int));
 XBT_PUBLIC(void *) xbt_heap_remove(xbt_heap_t H, int i);
-
+#ifdef __cplusplus
+}
+#endif
 /* @} */
 #endif                          /* _XBT_HEAP_H */

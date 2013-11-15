@@ -24,7 +24,15 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_gos, msg,
  */
 msg_error_t MSG_task_execute(msg_task_t task)
 {
-  return MSG_parallel_task_execute(task);
+  /* TODO: add this to other locations */
+  msg_host_t host = MSG_process_get_host(MSG_process_self());
+  MSG_host_add_task(host, task);
+
+  msg_error_t ret = MSG_parallel_task_execute(task);
+
+  MSG_host_del_task(host, task);
+
+  return ret;
 }
 
 /** \ingroup msg_task_usage
@@ -75,10 +83,16 @@ msg_error_t MSG_parallel_task_execute(msg_task_t task)
                                                        1.0, -1.0);
       XBT_DEBUG("Parallel execution action created: %p", simdata->compute);
     } else {
+      unsigned long affinity_mask = (unsigned long) xbt_dict_get_or_null_ext(simdata->affinity_mask_db, (char *) p_simdata->m_host, sizeof(msg_host_t));
+      XBT_DEBUG("execute %s@%s with affinity(0x%04lx)", MSG_task_get_name(task), MSG_host_get_name(p_simdata->m_host), affinity_mask);
+
       simdata->compute = simcall_host_execute(task->name,
                                               p_simdata->m_host,
                                               simdata->computation_amount,
-                                              simdata->priority);
+                                              simdata->priority,
+                                              simdata->bound,
+                                              affinity_mask
+                                              );
 
     }
 #ifdef HAVE_TRACING

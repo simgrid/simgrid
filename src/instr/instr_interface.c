@@ -8,7 +8,10 @@
 
 #ifdef HAVE_TRACING
 #include "instr/instr_private.h"
-#include "surf/network_private.h"
+#include "surf/surf.h"
+#include "surf/surf_private.h"
+
+//FIXME:#include "surf/network_private.h"
 
 typedef enum {
   INSTR_US_DECLARE,
@@ -374,7 +377,7 @@ static void instr_user_srcdst_variable(double time,
   unsigned int i;
   void *link;
   xbt_dynar_foreach (route, i, link) {
-    char *link_name = ((link_CM02_t)link)->lmm_resource.generic_resource.name;
+    char *link_name = (char*)surf_resource_name(link);
     instr_user_variable (time, link_name, variable, father_type, value, what, NULL, user_link_variables);
   }
 }

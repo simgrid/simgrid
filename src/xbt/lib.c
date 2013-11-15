@@ -70,6 +70,37 @@ void xbt_lib_set(xbt_lib_t lib, const char *key, int level, void *obj)
   elts[level] = obj;
 }
 
+/* for vm */
+void xbt_lib_unset(xbt_lib_t lib, const char *key, int level, int invoke_callback)
+{
+  void **elts = xbt_dict_get_or_null(lib->dict, key);
+  if (!elts) {
+     XBT_WARN("no key %s", key);
+     return;
+  }
+
+  void *obj = elts[level];
+
+  if (!obj) {
+     XBT_WARN("no key %s at level %d", key, level);
+  } else {
+     XBT_DEBUG("Remove %p of key %s at level %d", obj, key, level);
+     if (invoke_callback)
+       lib->free_f[level](obj);
+     elts[level] = NULL;
+  }
+
+  /* check if there still remains any elements of this key */
+  int i;
+  for (i = 0; i < lib->levels; i++) {
+     if (elts[i] != NULL)
+       return;
+  }
+
+  /* there is no element at any level, so delete the key */
+  xbt_dict_remove(lib->dict, key);
+}
+
 void *xbt_lib_get_or_null(xbt_lib_t lib, const char *key, int level)
 {
   void **elts = xbt_dict_get_or_null(lib->dict, key);
@@ -84,4 +115,8 @@ xbt_dictelm_t xbt_lib_get_elm_or_null(xbt_lib_t lib, const char *key)
 void *xbt_lib_get_level(xbt_dictelm_t elm, int level){
   void **elts = elm->content;
   return elts ? elts[level] : NULL;
+}
+
+void xbt_lib_remove(xbt_lib_t lib, const char *key){
+  xbt_dict_remove(lib->dict, key);
 }

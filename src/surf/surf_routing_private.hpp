@@ -1,4 +1,4 @@
-/* Copyright (c) 2009-2013. The SimGrid Team.
+/* Copyright (c) 2009, 2010, 2011. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -10,7 +10,7 @@
 #include <float.h>
 #include "internal_config.h"
 
-#include "surf_private.h"
+#include "surf.hpp"
 #include "xbt/dynar.h"
 #include "xbt/str.h"
 #include "xbt/config.h"
@@ -65,14 +65,16 @@ void model_floyd_parse_route(AS_t rc, sg_platf_route_cbarg_t route);
 
 /* ************************************************** */
 /* **************  Cluster ROUTING   **************** */
-typedef struct {
-  s_as_t generic_routing;
+class AsCluster : public As {
+public:
   void *backbone;
   void *loopback;
-  sg_routing_edge_t router;
-} s_as_cluster_t, *as_cluster_t;
+  RoutingEdgePtr p_router;
+};
+typedef AsCluster *AsClusterPtr;
+//FIXME:remove} s_as_cluster_t, *as_cluster_t;
 
-AS_t model_cluster_create(void);      /* create structures for cluster routing model */
+AsPtr model_cluster_create(void);      /* create structures for cluster routing model */
 
 /* ************************************************** */
 /* **************  Vivaldi ROUTING   **************** */

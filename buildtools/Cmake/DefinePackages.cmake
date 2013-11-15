@@ -35,20 +35,26 @@ set(EXTRA_DIST
   src/simix/smx_smurf_private.h
   src/simix/smx_synchro_private.h
   src/smpi/README
+  src/smpi/colls/COPYRIGHTS
   src/smpi/colls/colls.h
   src/smpi/colls/colls_private.h
   src/smpi/colls/coll_tuned_topo.h
   src/smpi/private.h
   src/smpi/smpi_mpi_dt_private.h
-  src/surf/cpu_cas01_private.h
+  src/surf/cpu.hpp
+  src/surf/cpu_ti.hpp
+  src/surf/cpu_cas01.hpp
   src/surf/cpu_ti_private.h
   src/surf/gtnets/gtnets_interface.h
   src/surf/gtnets/gtnets_simulator.h
   src/surf/gtnets/gtnets_topology.h
   src/surf/maxmin_private.h
-  src/surf/network_gtnets_private.h
+  src/surf/network_gtnets.hpp
   src/surf/network_ns3_private.h
   src/surf/network_private.h
+  src/surf/network.hpp
+  src/surf/network_smpi.hpp
+  src/surf/network_constant.hpp
   src/surf/ns3/my-point-to-point-helper.h
   src/surf/ns3/ns3_interface.h
   src/surf/ns3/ns3_simulator.h
@@ -56,11 +62,24 @@ set(EXTRA_DIST
   src/surf/platf_generator_private.h
   src/surf/simgrid.dtd
   src/surf/simgrid_dtd.c
+  src/surf/storage.hpp
   src/surf/storage_private.h
+  src/surf/surf.hpp
   src/surf/surf_private.h
   src/surf/surf_routing_private.h
+  src/surf/surf_routing_private.hpp
+  src/surf/surf_routing.hpp
+  src/surf/surf_routing_cluster.hpp
+  src/surf/surf_routing_dijkstra.hpp
+  src/surf/surf_routing_floyd.hpp
+  src/surf/surf_routing_full.hpp
+  src/surf/surf_routing_generic.hpp
+  src/surf/surf_routing_none.hpp
+  src/surf/surf_routing_vivaldi.hpp
   src/surf/surfxml_parse.c
   src/surf/trace_mgr_private.h
+  src/surf/workstation.hpp
+  src/surf/workstation_ptask_L07.hpp
   src/win32/config.h
   src/xbt/automaton/automaton_lexer.yy.c
   src/xbt/automaton/parserPromela.lex
@@ -268,7 +287,7 @@ set(GTNETS_SRC
   src/surf/gtnets/gtnets_interface.cc
   src/surf/gtnets/gtnets_simulator.cc
   src/surf/gtnets/gtnets_topology.cc
-  src/surf/network_gtnets.c
+  src/surf/network_gtnets.cpp
   )
 
 set(NS3_SRC
@@ -280,35 +299,37 @@ set(NS3_SRC
   )
 
 set(SURF_SRC
-  src/surf/cpu_cas01.c
-  src/surf/cpu_ti.c
+  src/surf/cpu.cpp
+  src/surf/cpu_ti.cpp
+  src/surf/cpu_cas01.cpp
   src/surf/fair_bottleneck.c
   src/surf/instr_routing.c
   src/surf/instr_surf.c
   src/surf/lagrange.c
   src/surf/maxmin.c
-  src/surf/network.c
-  src/surf/network_constant.c
+  src/surf/network.cpp
+  src/surf/network_smpi.cpp  
+  src/surf/network_constant.cpp
   src/surf/platf_generator.c
   src/surf/random_mgr.c
   src/surf/sg_platf.c
-  src/surf/storage.c
-  src/surf/surf.c
-  src/surf/surf_action.c
-  src/surf/surf_model.c
-  src/surf/surf_routing.c
-  src/surf/surf_routing_cluster.c
-  src/surf/surf_routing_dijkstra.c
-  src/surf/surf_routing_floyd.c
-  src/surf/surf_routing_full.c
-  src/surf/surf_routing_generic.c
-  src/surf/surf_routing_none.c
-  src/surf/surf_routing_vivaldi.c
+  src/surf/storage.cpp
+  src/surf/surf.cpp
+  src/surf/surf_interface.cpp
+  src/surf/surf_routing.cpp  
+  src/surf/surf_routing_cluster.cpp
+  src/surf/surf_routing_dijkstra.cpp
+  src/surf/surf_routing_floyd.cpp
+  src/surf/surf_routing_full.cpp
+  src/surf/surf_routing_generic.cpp
+  src/surf/surf_routing_none.cpp
+  src/surf/surf_routing_vivaldi.cpp
   src/surf/surfxml_parse.c
   src/surf/surfxml_parseplatf.c
   src/surf/trace_mgr.c
-  src/surf/workstation.c
-  src/surf/workstation_ptask_L07.c
+  src/surf/workstation.cpp
+  src/surf/workstation_ptask_L07.cpp
+  src/surf/vm_workstation.cpp
   src/xbt/xbt_sg_stubs.c
   )
 
@@ -326,6 +347,7 @@ set(SIMIX_SRC
   src/simix/smx_smurf.c
   src/simix/smx_synchro.c
   src/simix/smx_user.c
+  src/simix/smx_vm.c
   )
 
 set(SIMGRID_SRC
@@ -365,19 +387,6 @@ set(SIMIX_SRC
   ${SIMIX_SRC}
   src/simix/smx_new_api.c
 )
-#* ****************************************************************************************** *#
-
-#* ****************************************************************************************** *#
-#* TUTORIAL: New Model                                                                        *#
-
-set(SURF_SRC
-  ${SURF_SRC}
-  src/surf/new_model.c
-  )
-set(EXTRA_DIST
-  ${EXTRA_DIST}
-  src/surf/new_model_private.h
-  )
 #* ****************************************************************************************** *#
 
 set(SIMDAG_SRC

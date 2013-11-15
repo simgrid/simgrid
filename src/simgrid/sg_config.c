@@ -130,6 +130,25 @@ static void _sg_cfg_cb__workstation_model(const char *name, int pos)
   find_model_description(surf_workstation_model_description, val);
 }
 
+/* callback of the vm_workstation/model variable */
+static void _sg_cfg_cb__vm_workstation_model(const char *name, int pos)
+{
+  char *val;
+
+  xbt_assert(_sg_cfg_init_status < 2,
+              "Cannot change the model after the initialization");
+
+  val = xbt_cfg_get_string(_sg_cfg_set, name);
+
+  if (!strcmp(val, "help")) {
+    model_help("vm_workstation", surf_vm_workstation_model_description);
+    sg_cfg_exit_early();
+  }
+
+  /* Make sure that the model exists */
+  find_model_description(surf_vm_workstation_model_description, val);
+}
+
 /* callback of the cpu/model variable */
 static void _sg_cfg_cb__cpu_model(const char *name, int pos)
 {
@@ -452,22 +471,6 @@ void sg_config_init(int *argc, char **argv)
                      xbt_cfgelm_string, 1, 1, &_sg_cfg_cb__storage_mode, NULL);
     xbt_cfg_setdefault_string(_sg_cfg_set, "storage/model", "default");
 
-    /* ********************************************************************* */
-    /* TUTORIAL: New model                                                   */
-    sprintf(description,
-            "The model to use for the New model. Possible values: ");
-    p = description;
-    while (*(++p) != '\0');
-    for (i = 0; surf_new_model_description[i].name; i++)
-      p += sprintf(p, "%s%s", (i == 0 ? "" : ", "),
-                   surf_new_model_description[i].name);
-    sprintf(p,
-            ".\n       (use 'help' as a value to see the long description of each model)");
-    xbt_cfg_register(&_sg_cfg_set, "new_model/model", description,
-                     xbt_cfgelm_string, 1, 1, &_sg_cfg_cb__storage_mode, NULL);
-    xbt_cfg_setdefault_string(_sg_cfg_set, "new_model/model", "default");
-    /* ********************************************************************* */
-
     sprintf(description,
             "The model to use for the network. Possible values: ");
     p = description;
@@ -506,6 +509,10 @@ void sg_config_init(int *argc, char **argv)
     xbt_cfg_register(&_sg_cfg_set, "workstation/model", description,
                      xbt_cfgelm_string, 1, 1, &_sg_cfg_cb__workstation_model, NULL);
     xbt_cfg_setdefault_string(_sg_cfg_set, "workstation/model", "default");
+
+    xbt_cfg_register(&_sg_cfg_set, "vm_workstation/model", description,
+                     xbt_cfgelm_string, 1, 1, &_sg_cfg_cb__vm_workstation_model, NULL);
+    xbt_cfg_setdefault_string(_sg_cfg_set, "vm_workstation/model", "default");
 
     xbt_cfg_register(&_sg_cfg_set, "network/TCP_gamma",
                      "Size of the biggest TCP window (cat /proc/sys/net/ipv4/tcp_[rw]mem for recv/send window; Use the last given value, which is the max window size)",
@@ -841,7 +848,9 @@ void sg_config_finalize(void)
 void surf_config_models_setup()
 {
   const char *workstation_model_name;
+  const char *vm_workstation_model_name;
   int workstation_id = -1;
+  int vm_workstation_id = -1;
   char *network_model_name = NULL;
   char *cpu_model_name = NULL;
   int storage_id = -1;
@@ -849,6 +858,8 @@ void surf_config_models_setup()
 
   workstation_model_name =
       xbt_cfg_get_string(_sg_cfg_set, "workstation/model");
+  vm_workstation_model_name =
+      xbt_cfg_get_string(_sg_cfg_set, "vm_workstation/model");
   network_model_name = xbt_cfg_get_string(_sg_cfg_set, "network/model");
   cpu_model_name = xbt_cfg_get_string(_sg_cfg_set, "cpu/model");
   storage_model_name = xbt_cfg_get_string(_sg_cfg_set, "storage/model");
@@ -893,19 +904,15 @@ void surf_config_models_setup()
   XBT_DEBUG("Call workstation_model_init");
   surf_workstation_model_description[workstation_id].model_init_preparse();
 
+  XBT_DEBUG("Call vm_workstation_model_init");
+  vm_workstation_id = find_model_description(surf_vm_workstation_model_description,
+                                          vm_workstation_model_name);
+  surf_vm_workstation_model_description[vm_workstation_id].model_init_preparse();
+
   XBT_DEBUG("Call storage_model_init");
   storage_id = find_model_description(surf_storage_model_description, storage_model_name);
   surf_storage_model_description[storage_id].model_init_preparse();
 
-  /* ********************************************************************* */
-  /* TUTORIAL: New model                                                   */
-  int new_model_id = -1;
-  char *new_model_name = NULL;
-  new_model_name = xbt_cfg_get_string(_sg_cfg_set, "new_model/model");
-  XBT_DEBUG("Call new model_init");
-  new_model_id = find_model_description(surf_new_model_description, new_model_name);
-  surf_new_model_description[new_model_id].model_init_preparse();
-  /* ********************************************************************* */
 }
 
 int sg_cfg_get_int(const char* name)

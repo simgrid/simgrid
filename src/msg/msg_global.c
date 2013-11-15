@@ -38,7 +38,6 @@ void MSG_init_nocheck(int *argc, char **argv) {
 
   xbt_getpid = MSG_process_self_PID;
   if (!msg_global) {
-    s_msg_vm_t vm; // to compute the offset
 
     SIMIX_global_init(argc, argv);
     
@@ -50,7 +49,6 @@ void MSG_init_nocheck(int *argc, char **argv) {
     msg_global->sent_msg = 0;
     msg_global->task_copy_callback = NULL;
     msg_global->process_data_cleanup = NULL;
-    msg_global->vms = xbt_swag_new(xbt_swag_offset(vm,all_vms_hookup));
 
     /* initialization of the action module */
     _MSG_action_init();
@@ -71,7 +69,7 @@ void MSG_init_nocheck(int *argc, char **argv) {
 #endif
 
   XBT_DEBUG("ADD MSG LEVELS");
-  MSG_HOST_LEVEL = xbt_lib_add_level(host_lib, (void_f_pvoid_t) __MSG_host_destroy);
+  MSG_HOST_LEVEL = xbt_lib_add_level(host_lib, (void_f_pvoid_t) __MSG_host_priv_free);
   MSG_STORAGE_LEVEL = xbt_lib_add_level(storage_lib, (void_f_pvoid_t) __MSG_storage_destroy);
 
   if(sg_cfg_get_boolean("clean_atexit")) atexit(MSG_exit);
@@ -177,7 +175,6 @@ static void MSG_exit(void) {
   TRACE_end();
 #endif
 
-  xbt_swag_free(msg_global->vms);
   free(msg_global);
   msg_global = NULL;
 }

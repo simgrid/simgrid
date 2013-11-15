@@ -258,6 +258,90 @@ XBT_INLINE double lmm_variable_getbound(lmm_variable_t var)
   return (var->bound);
 }
 
+/* Replace the content of elem_a with elem_b. The content of elem_b is cleared. */
+static void renew_elem_entry(lmm_element_t elem_a, lmm_element_t elem_b)
+{
+    elem_a->constraint = elem_b->constraint;
+    elem_a->variable   = elem_b->variable;
+    elem_a->value      = elem_b->value;
+
+    /* If elem_b is in the element_set swag, register the new element to the swag. */
+    if (xbt_swag_remove(elem_b, &(elem_b->constraint->element_set))) {
+      if (elem_a->variable->weight)
+        xbt_swag_insert_at_head(elem_a, &(elem_a->constraint->element_set));
+      else
+        xbt_swag_insert_at_tail(elem_a, &(elem_a->constraint->element_set));
+    }
+
+    if (xbt_swag_remove(elem_b, &(elem_b->constraint->active_element_set))) {
+      if (elem_a->variable->weight)
+        xbt_swag_insert_at_head(elem_a, &(elem_a->constraint->active_element_set));
+      else
+        xbt_swag_insert_at_tail(elem_a, &(elem_a->constraint->active_element_set));
+    }
+
+    elem_b->constraint = NULL;
+    elem_b->variable   = NULL;
+    elem_b->value      = 0;
+}
+
+void lmm_shrink(lmm_system_t sys, lmm_constraint_t cnst,
+                lmm_variable_t var)
+{
+  lmm_element_t elem = NULL;
+  int found = 0;
+
+  int i;
+  for (i = 0; i < var->cnsts_number; i++) {
+    elem = &(var->cnsts[i]);
+    if (elem->constraint == cnst) {
+      found = 1;
+      break;
+    }
+  }
+
+  if (!found) {
+    XBT_DEBUG("cnst %p is not found in var %p", cnst, var);
+    return;
+  }
+
+  sys->modified = 1;
+
+  XBT_DEBUG("remove elem(value %lf, cnst %p, var %p) in var %p",
+      elem->value, elem->constraint, elem->variable, var);
+
+
+
+  /* We are going to change the constraint object and the variable object.
+   * Propagate this change to other objects. Calling here (not after
+   * modification) is correct? */
+  lmm_update_modified_set(sys, cnst);
+  lmm_update_modified_set(sys, var->cnsts[0].constraint); // will look up element_set of this constraint, and then each var in the element_set, and each var->cnsts[i].
+
+
+
+  /* now var->cnsts[i] is not necessary any more */
+
+  xbt_swag_remove(elem, &(elem->constraint->element_set));
+  xbt_swag_remove(elem, &(elem->constraint->active_element_set));
+  elem->constraint = NULL;
+  elem->variable = NULL;
+  elem->value = 0;
+
+
+
+  /* We do not want to have an empty element entry before the last entry. So,
+   * plug up the hole with the last one. */
+  if (i < var->cnsts_number - 1)
+    renew_elem_entry(&var->cnsts[i], &var->cnsts[var->cnsts_number - 1]);
+
+  var->cnsts_number -= 1;
+
+
+  if (xbt_swag_size(&(cnst->element_set)) == 0)
+    make_constraint_inactive(sys, cnst);
+}
+
 void lmm_expand(lmm_system_t sys, lmm_constraint_t cnst,
                 lmm_variable_t var, double value)
 {

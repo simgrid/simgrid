@@ -47,25 +47,25 @@ static void* new_model_create_resource(const char* id, const char* model,const c
   return NULL;
 }
 
-static void new_model_finalize(void)
+static void new_model_finalize(surf_model_t new_model)
 {
   lmm_system_free(new_model_maxmin_system);
   new_model_maxmin_system = NULL;
 
-  surf_model_exit(surf_new_model);
-  surf_new_model = NULL;
+  surf_model_exit(new_model);
+  new_model = NULL;
 
   xbt_swag_free
       (new_model_running_action_set_that_does_not_need_being_checked);
   new_model_running_action_set_that_does_not_need_being_checked = NULL;
 }
 
-static void new_model_update_actions_state(double now, double delta)
+static void new_model_update_actions_state(surf_model_t new_model, double now, double delta)
 {
   return;
 }
 
-static double new_model_share_resources(double NOW)
+static double new_model_share_resources(surf_model_t new_model, double NOW)
 {
   return -1;
 }
@@ -147,6 +147,7 @@ static void surf_new_model_init_internal(void)
       xbt_swag_new(xbt_swag_offset(action, state_hookup));
 
   surf_new_model->name = "New Model";
+  surf_new_model->type = SURF_MODEL_TYPE_NEW_MODEL;
   surf_new_model->action_unref = new_model_action_unref;
   surf_new_model->action_cancel = new_model_action_cancel;
   surf_new_model->action_state_set = new_model_action_state_set;

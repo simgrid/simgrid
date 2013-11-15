@@ -292,13 +292,13 @@ static void* storage_create_resource(const char* id, const char* model,
   return storage;
 }
 
-static void storage_finalize(void)
+static void storage_finalize(surf_model_t storage_model)
 {
   lmm_system_free(storage_maxmin_system);
   storage_maxmin_system = NULL;
 
-  surf_model_exit(surf_storage_model);
-  surf_storage_model = NULL;
+  surf_model_exit(storage_model);
+  storage_model = NULL;
 
   xbt_dynar_free(&storage_list);
 
@@ -307,11 +307,11 @@ static void storage_finalize(void)
   storage_running_action_set_that_does_not_need_being_checked = NULL;
 }
 
-static void storage_update_actions_state(double now, double delta)
+static void storage_update_actions_state(surf_model_t storage_model, double now, double delta)
 {
   surf_action_storage_t action = NULL;
   surf_action_storage_t next_action = NULL;
-  xbt_swag_t running_actions = surf_storage_model->states.running_action_set;
+  xbt_swag_t running_actions = storage_model->states.running_action_set;
 
 
   xbt_swag_foreach_safe(action, next_action, running_actions) {
@@ -362,7 +362,7 @@ static void storage_update_actions_state(double now, double delta)
   return;
 }
 
-static double storage_share_resources(double NOW)
+static double storage_share_resources(surf_model_t storage_model, double NOW)
 {
   XBT_DEBUG("storage_share_resources %f",NOW);
   s_surf_action_storage_t action;
@@ -370,7 +370,7 @@ static double storage_share_resources(double NOW)
   storage_t storage;
   surf_action_storage_t write_action;
 
-  double min_completion = generic_maxmin_share_resources(surf_storage_model->states.running_action_set,
+  double min_completion = generic_maxmin_share_resources(storage_model->states.running_action_set,
       xbt_swag_offset(action, generic_lmm_action.variable),
       storage_maxmin_system, lmm_solve);
 
@@ -532,6 +532,7 @@ static void surf_storage_model_init_internal(void)
       xbt_swag_new(xbt_swag_offset(action, state_hookup));
 
   surf_storage_model->name = "Storage";
+  surf_storage_model->type = SURF_MODEL_TYPE_STORAGE;
   surf_storage_model->action_unref = storage_action_unref;
   surf_storage_model->action_cancel = storage_action_cancel;
   surf_storage_model->action_state_set = storage_action_state_set;

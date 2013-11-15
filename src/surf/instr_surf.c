@@ -6,7 +6,7 @@
 
 #include "instr/instr_private.h"
 #include "surf/surf_private.h"
-#include "surf/network_gtnets_private.h"
+//FIXME:#include "surf/network_gtnets_private.h"
 
 #ifdef HAVE_TRACING
 
@@ -43,9 +43,9 @@ void TRACE_surf_link_set_bandwidth(double date, const char *resource, double ban
 /* to trace gtnets */
 void TRACE_surf_gtnets_communicate(void *action, void *src, void *dst)
 {
-  surf_action_network_GTNETS_t gtnets_action = (surf_action_network_GTNETS_t)action;
+  /*FIXME:surf_action_network_GTNETS_t gtnets_action = (surf_action_network_GTNETS_t)action;
   gtnets_action->src = src;
-  gtnets_action->dst = dst;
+  gtnets_action->dst = dst;*/
 }
 
 void TRACE_surf_action(surf_action_t surf_action, const char *category)
@@ -57,6 +57,6 @@ void TRACE_surf_action(surf_action_t surf_action, const char *category)
   if (!category)
     return;
 
-  surf_action->category = xbt_strdup(category);
+  surf_action_set_category(surf_action, xbt_strdup(category));
 }
 #endif /* HAVE_TRACING */

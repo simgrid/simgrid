@@ -1,5 +1,4 @@
-
-/* Copyright (c) 2009-2010, 2013. The SimGrid Team.
+/* Copyright (c) 2013. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -18,7 +17,6 @@
 typedef struct surf_action_cpu_cas01 {
   s_surf_action_lmm_t generic_lmm_action;
 } s_surf_action_cpu_Cas01_t, *surf_action_cpu_Cas01_t;
-
 
 /*
  * Energy-related properties for the cpu_cas01 model
@@ -43,9 +41,23 @@ typedef struct cpu_Cas01 {
 
   xbt_dynar_t power_peak_list;				/*< List of supported CPU capacities */
   int pstate;								/*< Current pstate (index in the power_peak_list)*/
-  energy_cpu_cas01_t energy;				/*< Structure with energy-consumption data */
+  energy_cpu_cas01_t energy;	
+
+  /* Note (hypervisor): */
+  lmm_constraint_t *constraint_core;
 
 } s_cpu_Cas01_t, *cpu_Cas01_t;
+
+void *cpu_cas01_create_resource(const char *name,
+	xbt_dynar_t power_peak,
+	int pstate,
+    double power_scale,
+    tmgr_trace_t power_trace,
+    int core,
+    e_surf_resource_state_t state_initial,
+    tmgr_trace_t state_trace,
+    xbt_dict_t cpu_properties,
+    surf_model_t cpu_model);
 
 xbt_dynar_t cpu_get_watts_range_list(cpu_Cas01_t cpu_model);
 void cpu_update_energy(cpu_Cas01_t cpu_model, double cpu_load);

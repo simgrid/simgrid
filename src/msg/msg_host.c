@@ -29,28 +29,32 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(msg);
 msg_host_t __MSG_host_create(smx_host_t workstation)
 {
   const char *name = SIMIX_host_get_name(workstation);
-  msg_host_priv_t host = xbt_new0(s_msg_host_priv_t, 1);
-  s_msg_vm_t vm; // simply to compute the offset
-
-  host->vms = xbt_swag_new(xbt_swag_offset(vm,host_vms_hookup));
+  msg_host_priv_t priv = xbt_new0(s_msg_host_priv_t, 1);
 
 #ifdef MSG_USE_DEPRECATED
   int i;
   char alias[MAX_ALIAS_NAME + 1] = { 0 };       /* buffer used to build the key of the mailbox */
 
   if (msg_global->max_channel > 0)
-    host->mailboxes = xbt_new0(msg_mailbox_t, msg_global->max_channel);
+    priv->mailboxes = xbt_new0(msg_mailbox_t, msg_global->max_channel);
 
   for (i = 0; i < msg_global->max_channel; i++) {
     sprintf(alias, "%s:%d", name, i);
 
     /* the key of the mailbox (in this case) is build from the name of the host and the channel number */
-    host->mailboxes[i] = MSG_mailbox_new(alias);
+    priv->mailboxes[i] = MSG_mailbox_new(alias);
     memset(alias, 0, MAX_ALIAS_NAME + 1);
   }
 #endif
 
-  xbt_lib_set(host_lib,name,MSG_HOST_LEVEL,host);
+
+  priv->dp_objs = xbt_dict_new();
+  priv->dp_enabled = 0;
+  priv->dp_updated_by_deleted_tasks = 0;
+
+  priv->affinity_mask_db = xbt_dict_new_homogeneous(NULL);
+
+  xbt_lib_set(host_lib, name, MSG_HOST_LEVEL, priv);
   
   return xbt_lib_get_elm_or_null(host_lib, name);
 }
@@ -114,20 +118,54 @@ msg_host_t MSG_host_self(void)
   return MSG_process_get_host(NULL);
 }
 
+
 /*
- * \brief Destroys a host (internal call only)
+ * \brief Start the host if it is off
  */
-void __MSG_host_destroy(msg_host_priv_t host) {
+void MSG_host_on(msg_host_t host)
+{
+  simcall_host_on(host);
+}
+
+/*
+ * \brief Stop the host if it is on
+ */
+void MSG_host_off(msg_host_t host)
+{
+  simcall_host_off(host);
+}
+
+/*
+ * \brief Frees private data of a host (internal call only)
+ */
+void __MSG_host_priv_free(msg_host_priv_t priv)
+{
+  unsigned int size = xbt_dict_size(priv->dp_objs);
+  if (size > 0)
+    XBT_WARN("dp_objs: %u pending task?", size);
+  xbt_dict_free(&priv->dp_objs);
+  xbt_dict_free(&priv->affinity_mask_db);
 
 #ifdef MSG_USE_DEPRECATED
   if (msg_global->max_channel > 0)
-    free(host->mailboxes);
+    free(priv->mailboxes);
 #endif
-  if (xbt_swag_size(host->vms) > 0 ) {
-    XBT_VERB("Host shut down, but it still hosts %d VMs. They will be leaked.",xbt_swag_size(host->vms));
-  }
-  xbt_swag_free(host->vms);
-  free(host);
+
+  free(priv);
+}
+
+/*
+ * \brief Destroys a host (internal call only)
+ */
+void __MSG_host_destroy(msg_host_t host)
+{
+  const char *name = MSG_host_get_name(host);
+  /* TODO:
+   * What happens if VMs still remain on this host?
+   * Revisit here after the surf layer gets stable.
+   **/
+
+  xbt_lib_unset(host_lib, name, MSG_HOST_LEVEL, 1);
 }
 
 /** \ingroup m_host_management
@@ -279,6 +317,27 @@ int MSG_host_is_avail(msg_host_t host)
 {
   xbt_assert((host != NULL), "Invalid parameters (host is NULL)");
   return (simcall_host_get_state(host));
+}
+/** \ingroup m_host_management
+ * \brief Set the parameters of a given host
+ *
+ * \param host a host
+ * \param params a prameter object
+ */
+void MSG_host_set_params(msg_host_t ind_pm, ws_params_t params)
+{
+  simcall_host_set_params(ind_pm, params);
+}
+
+/** \ingroup m_host_management
+ * \brief Get the parameters of a given host
+ *
+ * \param host a host
+ * \param params a prameter object
+ */
+void MSG_host_get_params(msg_host_t ind_pm, ws_params_t params)
+{
+  simcall_host_get_params(ind_pm, params);
 }
 
 /** \ingroup m_host_management

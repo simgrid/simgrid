@@ -230,6 +230,10 @@ extern xbt_dict_t user_vm_variables;
 extern xbt_dict_t user_link_variables;
 extern double TRACE_last_timestamp_to_dump;
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /* instr_paje_header.c */
 void TRACE_header(int basic, int size);
 
@@ -345,7 +349,6 @@ XBT_PUBLIC(val_t)  PJ_value_get_or_new (const char *name, const char *color, typ
 XBT_PUBLIC(val_t)  PJ_value_get (const char *name, const type_t father);
 void PJ_value_free (val_t value);
 
-
 void print_pajeDefineContainerType(paje_event_t event);
 void print_pajeDefineVariableType(paje_event_t event);
 void print_pajeDefineStateType(paje_event_t event);
@@ -457,6 +460,11 @@ typedef struct s_instr_extra_data {
   int * recvcounts;
   int num_processes;
 } s_instr_extra_data_t;
+
+#ifdef __cplusplus
+}
+#endif
+
 
 #endif /* HAVE_TRACING */
 

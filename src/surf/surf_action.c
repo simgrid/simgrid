@@ -77,7 +77,7 @@ void *surf_action_new(size_t size, double cost, surf_model_t model,
   action->max_duration = NO_MAX_DURATION;
   action->start = surf_get_clock();
   action->finish = -1.0;
-  action->model_type = model;
+  action->model_obj = model;
 #ifdef HAVE_TRACING
   action->category = NULL;
 #endif
@@ -94,7 +94,7 @@ void *surf_action_new(size_t size, double cost, surf_model_t model,
 
 e_surf_action_state_t surf_action_state_get(surf_action_t action)
 {
-  surf_action_state_t action_state = &(action->model_type->states);
+  surf_action_state_t action_state = &(action->model_obj->states);
 
   if (action->state_set == action_state->ready_action_set)
     return SURF_ACTION_READY;
@@ -127,7 +127,7 @@ XBT_INLINE void surf_action_free(surf_action_t * action)
 void surf_action_state_set(surf_action_t action,
                            e_surf_action_state_t state)
 {
-  surf_action_state_t action_state = &(action->model_type->states);
+  surf_action_state_t action_state = &(action->model_obj->states);
   XBT_IN("(%p,%s)", action, surf_action_state_names[state]);
   xbt_swag_remove(action, action->state_set);
 
@@ -190,7 +190,7 @@ void surf_action_lmm_heap_remove(xbt_heap_t heap, surf_action_lmm_t action)
 
 void surf_action_cancel(surf_action_t action)
 {
-  surf_model_t model = action->model_type;
+  surf_model_t model = action->model_obj;
   surf_action_state_set(action, SURF_ACTION_FAILED);
   if (model->model_private->update_mechanism == UM_LAZY) {
     xbt_swag_remove(action, model->model_private->modified_set);
@@ -201,7 +201,7 @@ void surf_action_cancel(surf_action_t action)
 
 int surf_action_unref(surf_action_t action)
 {
-  surf_model_t model = action->model_type;
+  surf_model_t model = action->model_obj;
   action->refcount--;
   if (!action->refcount) {
     xbt_swag_remove(action, action->state_set);
@@ -224,7 +224,7 @@ int surf_action_unref(surf_action_t action)
 
 void surf_action_suspend(surf_action_t action)
 {
-  surf_model_t model = action->model_type;
+  surf_model_t model = action->model_obj;
   XBT_IN("(%p)", action);
   if (((surf_action_lmm_t) action)->suspended != 2) {
     lmm_update_variable_weight(model->model_private->maxmin_system,
@@ -239,7 +239,7 @@ void surf_action_suspend(surf_action_t action)
 
 void surf_action_resume(surf_action_t action)
 {
-  surf_model_t model = action->model_type;
+  surf_model_t model = action->model_obj;
   XBT_IN("(%p)", action);
   if (((surf_action_lmm_t) action)->suspended != 2) {
     lmm_update_variable_weight(model->model_private->maxmin_system,
@@ -259,7 +259,7 @@ int surf_action_is_suspended(surf_action_t action)
 
 void surf_action_set_max_duration(surf_action_t action, double duration)
 {
-  surf_model_t model = action->model_type;
+  surf_model_t model = action->model_obj;
   XBT_IN("(%p,%g)", action, duration);
   action->max_duration = duration;
   if (model->model_private->update_mechanism == UM_LAZY)      // remove action from the heap
@@ -269,7 +269,7 @@ void surf_action_set_max_duration(surf_action_t action, double duration)
 
 void surf_action_set_priority(surf_action_t action, double priority)
 {
-  surf_model_t model = action->model_type;
+  surf_model_t model = action->model_obj;
   XBT_IN("(%p,%g)", action, priority);
   action->priority = priority;
   lmm_update_variable_weight(model->model_private->maxmin_system,
@@ -278,6 +278,18 @@ void surf_action_set_priority(surf_action_t action, double priority)
 
   if (model->model_private->update_mechanism == UM_LAZY)
     surf_action_lmm_heap_remove(model->model_private->action_heap,(surf_action_lmm_t)action);
+  XBT_OUT();
+}
+
+void surf_action_set_bound(surf_action_t action, double bound)
+{
+  surf_model_t model = action->model_obj;
+  XBT_IN("(%p,%g)", action, bound);
+  action->bound = bound;
+  lmm_update_variable_bound(model->model_private->maxmin_system, ((surf_action_lmm_t) action)->variable, bound);
+
+  if (model->model_private->update_mechanism == UM_LAZY)
+    surf_action_lmm_heap_remove(model->model_private->action_heap, (surf_action_lmm_t) action);
   XBT_OUT();
 }
 
@@ -294,7 +306,7 @@ void surf_action_set_category(surf_action_t action,
 void generic_update_action_remaining_lazy( surf_action_lmm_t action, double now)
 {
   double delta = 0.0;
-  surf_model_t model = action->generic_action.model_type;
+  surf_model_t model = action->generic_action.model_obj;
 
   if(model == surf_network_model)
   {
@@ -319,7 +331,7 @@ void generic_update_action_remaining_lazy( surf_action_lmm_t action, double now)
         action->last_value * delta);
 
 #ifdef HAVE_TRACING
-    if (model == surf_cpu_model && TRACE_is_enabled()) {
+    if (model->type == SURF_MODEL_TYPE_CPU && TRACE_is_enabled()) {
       surf_resource_t cpu =
           lmm_constraint_id(lmm_get_cnst_from_var
               (model->model_private->maxmin_system,
@@ -363,7 +375,7 @@ void generic_update_action_remaining_lazy( surf_action_lmm_t action, double now)
 double surf_action_get_remains(surf_action_t action)
 {
   XBT_IN("(%p)", action);
-  surf_model_t model = action->model_type;
+  surf_model_t model = action->model_obj;
   /* update remains before return it */
   if (model->model_private->update_mechanism == UM_LAZY)      /* update remains before return it */
     generic_update_action_remaining_lazy((surf_action_lmm_t)action, surf_get_clock());
@@ -377,7 +389,7 @@ double surf_action_get_remains(surf_action_t action)
  */
 void update_resource_energy(surf_model_t model, surf_action_lmm_t action)
 {
-    if(model == surf_cpu_model){
+    if(model->type == SURF_MODEL_TYPE_CPU){
         cpu_Cas01_t cpu_model = (cpu_Cas01_t)lmm_constraint_id(lmm_get_cnst_from_var
                 	  	  	  	  	  	  	  	  (model->model_private->maxmin_system,
                 	  	  	  	  	  	  	  			  action->variable, 0));
@@ -401,7 +413,7 @@ void generic_update_actions_state_lazy(double now, double delta, surf_model_t mo
     XBT_DEBUG("Something happened to action %p", action);
 #ifdef HAVE_TRACING
     if (TRACE_is_enabled()) {
-      if(model == surf_cpu_model){
+      if(model->type == SURF_MODEL_TYPE_CPU){
       surf_resource_t cpu =
           lmm_constraint_id(lmm_get_cnst_from_var
                             (model->model_private->maxmin_system,
@@ -433,7 +445,7 @@ void generic_update_actions_state_lazy(double now, double delta, surf_model_t mo
     }
 #endif
 
-    if(model == surf_cpu_model){
+    if(model->type == SURF_MODEL_TYPE_CPU){
       action->generic_action.finish = surf_get_clock();
 
       update_resource_energy(model, action);
@@ -471,7 +483,7 @@ void generic_update_actions_state_lazy(double now, double delta, surf_model_t mo
     }
   }
 #ifdef HAVE_TRACING
-  if (TRACE_is_enabled() && model == surf_cpu_model) {
+  if (TRACE_is_enabled() && model->type == SURF_MODEL_TYPE_CPU) {
     //defining the last timestamp that we can safely dump to trace file
     //without losing the event ascending order (considering all CPU's)
     double smaller = -1;

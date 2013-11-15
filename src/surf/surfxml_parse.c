@@ -14,6 +14,7 @@
 #include "xbt/dict.h"
 #include "surf/surfxml_parse.h"
 #include "surf/surf_private.h"
+#include "surf/random_mgr.h"
 #include "simgrid/sg_config.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_parse, surf,

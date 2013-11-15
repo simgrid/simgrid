@@ -53,7 +53,7 @@ public class Host {
 	/**
 	 * Host name
 	 */
-	private String name;
+	protected String name;
 
 	/**
 	 * User data.
@@ -66,6 +66,11 @@ public class Host {
 		this.bind = 0;
 		this.data = null;
 	};
+	
+	public String toString (){
+		return this.name; 
+		
+	}
 
 	/**
 	 * This static method gets an host instance associated with a native
@@ -123,6 +128,7 @@ public class Host {
 	public String getName() {
 		return name;
 	}
+
 	/**
 	 * Sets the data of the host.
      * @param data
@@ -147,6 +153,17 @@ public class Host {
 	public boolean hasData() {
 		return null != this.data;
 	}
+
+	/**
+	 * This method start the host if it is off
+	 */ 
+	public native void on();
+
+	/**
+	 * This method stop the host if it is on
+	 */ 
+	public native void off();
+
 
 	/**
 	 * This method returns the number of tasks currently running on a host.
@@ -177,11 +194,13 @@ public class Host {
 	 * Returns the value of a given host property. 
 	 */
 	public native String getProperty(String name);
+	
 	/**
 	 * Change the value of a given host property. 
 	 */
 	public native void setProperty(String name, String value);
-    /** This method tests if a host is available.
+    
+	/** This method tests if a host is available.
      * @return True if the host is available.
      */
 	public native boolean isAvail();

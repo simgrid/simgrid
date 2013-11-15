@@ -110,7 +110,11 @@ int __surf_is_absolute_file_path(const char *file_path)
 
 double NOW = 0;
 
-xbt_dynar_t model_list = NULL;
+/* model_list_invoke contains only surf_workstation and surf_vm_workstation.
+ * The callback functions of cpu_model and network_model will be called from
+ * those of these workstation models. */
+xbt_dynar_t model_list = NULL; /* for destroying all models correctly */
+xbt_dynar_t model_list_invoke = NULL;  /* for invoking callbacks */
 tmgr_history_t history = NULL;
 lmm_system_t maxmin_system = NULL;
 xbt_dynar_t surf_path = NULL;
@@ -418,6 +422,8 @@ void surf_init(int *argc, char **argv)
   xbt_init(argc, argv);
   if (!model_list)
     model_list = xbt_dynar_new(sizeof(surf_model_private_t), NULL);
+  if (!model_list_invoke)
+    model_list_invoke = xbt_dynar_new(sizeof(surf_model_private_t), NULL);
   if (!history)
     history = tmgr_history_new();
 
@@ -476,8 +482,11 @@ void surf_exit(void)
   sg_config_finalize();
 
   xbt_dynar_foreach(model_list, iter, model)
-      model->model_private->finalize();
+      model->model_private->finalize(model);
   xbt_dynar_free(&model_list);
+
+  xbt_dynar_free(&model_list_invoke);
+
   routing_exit();
 
   if (maxmin_system) {
@@ -538,12 +547,15 @@ void surf_presolve(void)
       }
     }
   }
+
+  /* FIXME: see what is check_update_action_state(). if necessary, use model_list_invoke. */
   xbt_dynar_foreach(model_list, iter, model)
-      model->model_private->update_actions_state(NOW, 0.0);
+      model->model_private->update_actions_state(model, NOW, 0.0);
 }
 
 double surf_solve(double max_date)
 {
+		  
   min = -1.0; /* duration */
   double next_event_date = -1.0;
   double model_next_action_end = -1.0;
@@ -563,17 +575,16 @@ double surf_solve(double max_date)
   XBT_DEBUG("Looking for next action end for all models except NS3");
 
   if (surf_mins == NULL) {
-    surf_mins = xbt_new(double, xbt_dynar_length(model_list));
+    surf_mins = xbt_new(double, xbt_dynar_length(model_list_invoke));
   }
   surf_min_index = 0;
 
   /* sequential version */
-  xbt_dynar_foreach(model_list, iter, model) {
+  xbt_dynar_foreach(model_list_invoke, iter, model) {
     surf_share_resources(model);
   }
-
   unsigned i;
-  for (i = 0; i < xbt_dynar_length(model_list); i++) {
+  for (i = 0; i < xbt_dynar_length(model_list_invoke); i++) {
     if ((min < 0.0 || surf_mins[i] < min)
         && surf_mins[i] >= 0.0) {
       min = surf_mins[i];
@@ -598,7 +609,7 @@ double surf_solve(double max_date)
 
       XBT_DEBUG("Run for network at most %f", min);
       // run until min or next flow
-      model_next_action_end = surf_network_model->model_private->share_resources(min);
+      model_next_action_end = surf_network_model->model_private->share_resources(surf_network_model, min);
 
       XBT_DEBUG("Min for network : %f", model_next_action_end);
       if(model_next_action_end>=0.0)
@@ -647,7 +658,7 @@ double surf_solve(double max_date)
   XBT_DEBUG("Duration set to %f", min);
 
   NOW = NOW + min;
-
+  /* FIXME: model_list or model_list_invoke? revisit here later */
   /* sequential version */
   xbt_dynar_foreach(model_list, iter, model) {
     surf_update_actions_state(model);
@@ -671,7 +682,7 @@ static void surf_share_resources(surf_model_t model)
   int i = __sync_fetch_and_add(&surf_min_index, 1);
   if (strcmp(model->name,"network NS3")) {
     XBT_DEBUG("Running for Resource [%s]", model->name);
-    next_action_end = model->model_private->share_resources(NOW);
+    next_action_end = model->model_private->share_resources(model, NOW);
     XBT_DEBUG("Resource [%s] : next action end = %f",
         model->name, next_action_end);
   }
@@ -680,6 +691,6 @@ static void surf_share_resources(surf_model_t model)
 
 static void surf_update_actions_state(surf_model_t model)
 {
-  model->model_private->update_actions_state(NOW, min);
+  model->model_private->update_actions_state(model, NOW, min);
 }
 

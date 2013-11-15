@@ -58,23 +58,23 @@ void test(char *platform)
   parse_platform_file(platform);
 
   /*********************** CPU ***********************************/
-  XBT_DEBUG("%p", surf_cpu_model);
+  XBT_DEBUG("%p", surf_cpu_model_pm);
   cpuA = surf_cpu_resource_by_name("Cpu A");
   cpuB = surf_cpu_resource_by_name("Cpu B");
 
   /* Let's check that those two processors exist */
-  XBT_DEBUG("%s : %p", surf_resource_name(cpuA), cpuA);
-  XBT_DEBUG("%s : %p", surf_resource_name(cpuB), cpuB);
+  XBT_DEBUG("%s : %p", surf_resource_name(surf_cpu_resource_priv(cpuA)), cpuA);
+  XBT_DEBUG("%s : %p", surf_resource_name(surf_cpu_resource_priv(cpuB)), cpuB);
 
   /* Let's do something on it */
-  actionA = surf_cpu_model->extension.cpu.execute(cpuA, 1000.0);
-  actionB = surf_cpu_model->extension.cpu.execute(cpuB, 1000.0);
-  actionC = surf_cpu_model->extension.cpu.sleep(cpuB, 7.32);
+  actionA = surf_cpu_execute(cpuA, 1000.0);
+  actionB = surf_cpu_execute(cpuB, 1000.0);
+  actionC = surf_cpu_sleep(cpuB, 7.32);
 
   /* Use whatever calling style you want... */
-  stateActionA = surf_cpu_model->action_state_get(actionA);     /* When you know actionA model type */
-  stateActionB = actionB->model_type->action_state_get(actionB);        /* If you're unsure about it's model type */
-  stateActionC = surf_cpu_model->action_state_get(actionC);     /* When you know actionA model type */
+  stateActionA = surf_action_get_state(actionA);     /* When you know actionA model type */
+  stateActionB = surf_action_get_state(actionB);        /* If you're unsure about it's model type */
+  stateActionC = surf_action_get_state(actionC);     /* When you know actionA model type */
 
   /* And just look at the state of these tasks */
   XBT_DEBUG("actionA : %p (%s)", actionA, string_action(stateActionA));
@@ -87,12 +87,11 @@ void test(char *platform)
   cardB = sg_routing_edge_by_name_or_null("Cpu B");
 
   /* Let's check that those two processors exist */
-  XBT_DEBUG("%s : %p", surf_resource_name(cardA), cardA);
-  XBT_DEBUG("%s : %p", surf_resource_name(cardB), cardB);
+  XBT_DEBUG("%s : %p", surf_routing_edge_name(cardA), cardA);
+  XBT_DEBUG("%s : %p", surf_routing_edge_name(cardB), cardB);
 
   /* Let's do something on it */
-  surf_network_model->extension.network.communicate(cardA, cardB,
-                                                    150.0, -1.0);
+  surf_network_model_communicate(surf_network_model, cardA, cardB, 150.0, -1.0);
 
   surf_solve(-1.0);                 /* Takes traces into account. Returns 0.0 */
   do {
@@ -101,31 +100,29 @@ void test(char *platform)
     XBT_DEBUG("Next Event : %g", now);
     XBT_DEBUG("\t CPU actions");
     while ((action =
-            xbt_swag_extract(surf_cpu_model->states.failed_action_set))) {
+            xbt_swag_extract(surf_model_failed_action_set((surf_model_t)surf_cpu_model_pm)))) {
       XBT_DEBUG("\t * Failed : %p", action);
-      action->model_type->action_unref(action);
+      surf_action_unref(action);
     }
     while ((action =
-            xbt_swag_extract(surf_cpu_model->states.done_action_set))) {
+            xbt_swag_extract(surf_model_done_action_set((surf_model_t)surf_cpu_model_pm)))) {
       XBT_DEBUG("\t * Done : %p", action);
-      action->model_type->action_unref(action);
+      surf_action_unref(action);
     }
     XBT_DEBUG("\t Network actions");
     while ((action =
-            xbt_swag_extract(surf_network_model->states.
-                             failed_action_set))) {
+            xbt_swag_extract(surf_model_failed_action_set((surf_model_t)surf_network_model)))) {
       XBT_DEBUG("\t * Failed : %p", action);
-      action->model_type->action_unref(action);
+      surf_action_unref(action);
     }
     while ((action =
-            xbt_swag_extract(surf_network_model->states.
-                             done_action_set))) {
+            xbt_swag_extract(surf_model_done_action_set((surf_model_t)surf_network_model)))) {
       XBT_DEBUG("\t * Done : %p", action);
-      action->model_type->action_unref(action);
+      surf_action_unref(action);
     }
 
-  } while ((xbt_swag_size(surf_network_model->states.running_action_set) ||
-            xbt_swag_size(surf_cpu_model->states.running_action_set)) &&
+  } while ((xbt_swag_size(surf_model_running_action_set((surf_model_t)surf_network_model)) ||
+            xbt_swag_size(surf_model_running_action_set((surf_model_t)surf_cpu_model_pm))) &&
            surf_solve(-1.0) >= 0.0);
 
   XBT_DEBUG("Simulation Terminated");

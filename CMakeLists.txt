@@ -7,6 +7,9 @@ project(SimGrid C)
 if (enable_gtnets OR enable_ns3)
   enable_language(CXX)
 endif()
+
+enable_language(CXX)
+
 if (NOT DEFINED enable_smpi OR enable_smpi) # smpi is enabled by default
   # Call enable_language(Fortran) in order to load the build rules for
   # this language, needed by teshsuite/smpi/mpich-test/.  Use
@@ -32,7 +35,7 @@ if (NOT DEFINED enable_smpi OR enable_smpi) # smpi is enabled by default
 endif()
 
 set(CMAKE_C_FLAGS "" CACHE TYPE INTERNAL FORCE)
-set(CMAKE_CXX_FLAGS "" CACHE TYPE INTERNAL FORCE)
+set(CMAKE_CXX_FLAGS " -std=c++11 " CACHE TYPE INTERNAL FORCE)
 set(CMAKE_EXE_LINKER_FLAGS "" CACHE TYPE INTERNAL FORCE)
 set(CMAKE_C_LINK_FLAGS "" CACHE TYPE INTERNAL FORCE)
 set(CMAKE_Fortran_FLAGS "" CACHE TYPE INTERNAL FORCE)

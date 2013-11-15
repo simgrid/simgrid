@@ -111,18 +111,23 @@ static void* smx_ctx_java_thread_run(void *data) {
     (*env)->SetLongField(env, context->jprocess, jprocess_field_Process_bind,
                          (intptr_t)process);
   }
-  xbt_assert((context->jprocess != NULL), "Process not created...");
-  //wait for the process to be able to begin
-  //TODO: Cache it
+
+  // Adrien, ugly path, just to bypass creation of context at low levels
+  // (i.e such as for the VM migration for instance)
+  if(context->jprocess != NULL){
+	xbt_assert((context->jprocess != NULL), "Process not created...");
+	//wait for the process to be able to begin
+	//TODO: Cache it
 	jfieldID jprocess_field_Process_startTime = jxbt_get_sfield(env, "org/simgrid/msg/Process", "startTime", "D");
-  jdouble startTime =  (*env)->GetDoubleField(env, context->jprocess, jprocess_field_Process_startTime);
-  if (startTime > MSG_get_clock()) {
-  	MSG_process_sleep(startTime - MSG_get_clock());
+	jdouble startTime =  (*env)->GetDoubleField(env, context->jprocess, jprocess_field_Process_startTime);
+	if (startTime > MSG_get_clock()) {
+		MSG_process_sleep(startTime - MSG_get_clock());
+	}
+	//Execution of the "run" method.
+	jmethodID id = jxbt_get_smethod(env, "org/simgrid/msg/Process", "run", "()V");
+	xbt_assert( (id != NULL), "Method not found...");
+	(*env)->CallVoidMethod(env, context->jprocess, id);
   }
-  //Execution of the "run" method.
-  jmethodID id = jxbt_get_smethod(env, "org/simgrid/msg/Process", "run", "()V");
-  xbt_assert( (id != NULL), "Method not found...");
-  (*env)->CallVoidMethod(env, context->jprocess, id);
   smx_ctx_java_stop((smx_context_t)context);
 
   return NULL;

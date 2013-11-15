@@ -326,18 +326,18 @@ int net_get_link_latency_limited(surf_action_t action)
 }
 #endif
 
-static double net_share_resources_full(double now)
+static double net_share_resources_full(surf_model_t network_model, double now)
 {
   s_surf_action_lmm_t s_action;
   surf_action_network_CM02_t action = NULL;
   xbt_swag_t running_actions =
-      surf_network_model->states.running_action_set;
+      network_model->states.running_action_set;
   double min;
 
   min = generic_maxmin_share_resources(running_actions,
                                        xbt_swag_offset(s_action,
                                                        variable),
-                                                       surf_network_model->model_private->maxmin_system,
+                                                       network_model->model_private->maxmin_system,
                                        network_solve);
 
 #define VARIABLE(action) (*((lmm_variable_t*)(((char *) (action)) + xbt_swag_offset(s_action, variable)  )))
@@ -360,19 +360,19 @@ static double net_share_resources_full(double now)
   return min;
 }
 
-static double net_share_resources_lazy(double now)
+static double net_share_resources_lazy(surf_model_t network_model, double now)
 {
-  return generic_share_resources_lazy(now, surf_network_model);
+  return generic_share_resources_lazy(now, network_model);
 }
 
-static void net_update_actions_state_full(double now, double delta)
+static void net_update_actions_state_full(surf_model_t network_model, double now, double delta)
 {
-  generic_update_actions_state_full(now, delta, surf_network_model);
+  generic_update_actions_state_full(now, delta, network_model);
 }
 
-static void net_update_actions_state_lazy(double now, double delta)
+static void net_update_actions_state_lazy(surf_model_t network_model, double now, double delta)
 {
-  generic_update_actions_state_lazy(now, delta, surf_network_model);
+  generic_update_actions_state_lazy(now, delta, network_model);
 }
 
 static void net_update_resource_state(void *id,
@@ -653,18 +653,18 @@ static int net_link_shared(const void *link)
       lmm_constraint_is_shared(((surf_resource_lmm_t) link)->constraint);
 }
 
-static void net_finalize(void)
+static void net_finalize(surf_model_t network_model)
 {
-  lmm_system_free(surf_network_model->model_private->maxmin_system);
-  surf_network_model->model_private->maxmin_system = NULL;
+  lmm_system_free(network_model->model_private->maxmin_system);
+  network_model->model_private->maxmin_system = NULL;
 
-  if (surf_network_model->model_private->update_mechanism == UM_LAZY) {
-    xbt_heap_free(surf_network_model->model_private->action_heap);
-    xbt_swag_free(surf_network_model->model_private->modified_set);
+  if (network_model->model_private->update_mechanism == UM_LAZY) {
+    xbt_heap_free(network_model->model_private->action_heap);
+    xbt_swag_free(network_model->model_private->modified_set);
   }
 
-  surf_model_exit(surf_network_model);
-  surf_network_model = NULL;
+  surf_model_exit(network_model);
+  network_model = NULL;
 
   xbt_dict_free(&gap_lookup);
   xbt_dynar_free(&smpi_bw_factor);
@@ -763,6 +763,7 @@ static void surf_network_model_init_internal(void)
   set_update_mechanism();
 
   surf_network_model->name = "network";
+  surf_network_model->type = SURF_MODEL_TYPE_NETWORK;
   surf_network_model->action_unref = surf_action_unref;
   surf_network_model->action_cancel = surf_action_cancel;
   surf_network_model->action_recycle = net_action_recycle;
@@ -796,7 +797,11 @@ static void surf_network_model_init_internal(void)
   surf_network_model->suspend = surf_action_suspend;
   surf_network_model->resume = surf_action_resume;
   surf_network_model->is_suspended = surf_action_is_suspended;
-  surf_cpu_model->set_max_duration = surf_action_set_max_duration;
+
+  xbt_assert(surf_cpu_model_pm);
+  xbt_assert(surf_cpu_model_vm);
+  surf_cpu_model_pm->set_max_duration = surf_action_set_max_duration;
+  surf_cpu_model_vm->set_max_duration = surf_action_set_max_duration;
 
   surf_network_model->extension.network.communicate = net_communicate;
   surf_network_model->extension.network.get_route = net_get_route;

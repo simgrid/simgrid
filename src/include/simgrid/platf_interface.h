@@ -41,6 +41,10 @@ typedef void (*sg_platf_mstorage_cb_t)(sg_platf_mstorage_cbarg_t);
 /* ***************************************** */
 /* TUTORIAL: New TAG                         */
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 typedef void (*sg_platf_gpu_cb_t)(sg_platf_gpu_cbarg_t);
 XBT_PUBLIC(void) sg_platf_gpu_add_cb(sg_platf_gpu_cb_t);
 /* ***************************************** */
@@ -70,6 +74,9 @@ XBT_PUBLIC(void) sg_platf_mstorage_add_cb(sg_platf_mstorage_cb_t fct);
 XBT_PUBLIC(void) sg_platf_storage_type_add_cb(sg_platf_storage_type_cb_t fct);
 XBT_PUBLIC(void) sg_platf_mount_add_cb(sg_platf_mount_cb_t fct);
 
+#ifdef __cplusplus
+}
+#endif
 /** \brief Pick the right models for CPU, net and workstation, and call their model_init_preparse
  *
  * Must be called within parsing/creating the environment (after the <config>s, if any, and before <AS> or friends such as <cluster>)
