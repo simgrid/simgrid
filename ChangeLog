@@ -1,4 +1,4 @@
-SimGrid (3.10-rc2) unstable; urgency=low
+SimGrid (3.10) stable; urgency=low
 
  The Clean Diaper Release, a.k.a. SimGrid is leak-free.
 
@@ -95,7 +95,7 @@ SimGrid (3.10-rc2) unstable; urgency=low
  * Supernovae builds are deprecated, and expected to be removed in the next
    version of SimGrid.
 
- -- Fri Nov  8 23:54:56 CET 2013 Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
+ -- Fri Nov 15 16:56:21 CET 2013 Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
 
 SimGrid (3.9) stable; urgency=low
 

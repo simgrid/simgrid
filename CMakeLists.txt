@@ -51,7 +51,7 @@ set(CMAKE_Fortran_LINK_FLAGS "" CACHE TYPE INTERNAL FORCE)
 set(SIMGRID_VERSION_MAJOR "3")
 set(SIMGRID_VERSION_MINOR "10")
 set(SIMGRID_VERSION_PATCH "0")
-set(SIMGRID_VERSION_EXTRA "-rc2") # Extra words to add to version string (e.g. -rc1)
+set(SIMGRID_VERSION_EXTRA "") # Extra words to add to version string (e.g. -rc1)
 
 set(SIMGRID_VERSION_DATE  "2013") # Year for copyright information
 
