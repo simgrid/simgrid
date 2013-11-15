@@ -35,7 +35,6 @@ set(EXTRA_DIST
   src/simix/smx_smurf_private.h
   src/simix/smx_synchro_private.h
   src/smpi/README
-  src/smpi/colls/COPYRIGHTS
   src/smpi/colls/colls.h
   src/smpi/colls/colls_private.h
   src/smpi/colls/coll_tuned_topo.h
@@ -44,14 +43,12 @@ set(EXTRA_DIST
   src/surf/cpu.hpp
   src/surf/cpu_ti.hpp
   src/surf/cpu_cas01.hpp
-  src/surf/cpu_ti_private.h
   src/surf/gtnets/gtnets_interface.h
   src/surf/gtnets/gtnets_simulator.h
   src/surf/gtnets/gtnets_topology.h
   src/surf/maxmin_private.h
   src/surf/network_gtnets.hpp
   src/surf/network_ns3_private.h
-  src/surf/network_private.h
   src/surf/network.hpp
   src/surf/network_smpi.hpp
   src/surf/network_constant.hpp
@@ -63,10 +60,8 @@ set(EXTRA_DIST
   src/surf/simgrid.dtd
   src/surf/simgrid_dtd.c
   src/surf/storage.hpp
-  src/surf/storage_private.h
   src/surf/surf.hpp
   src/surf/surf_private.h
-  src/surf/surf_routing_private.h
   src/surf/surf_routing_private.hpp
   src/surf/surf_routing.hpp
   src/surf/surf_routing_cluster.hpp
@@ -78,6 +73,7 @@ set(EXTRA_DIST
   src/surf/surf_routing_vivaldi.hpp
   src/surf/surfxml_parse.c
   src/surf/trace_mgr_private.h
+  src/surf/vm_workstation.hpp
   src/surf/workstation.hpp
   src/surf/workstation_ptask_L07.hpp
   src/win32/config.h
