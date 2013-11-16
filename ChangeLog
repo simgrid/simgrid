@@ -95,7 +95,7 @@ SimGrid (3.10) stable; urgency=low
  * Supernovae builds are deprecated, and expected to be removed in the next
    version of SimGrid.
 
- -- Fri Nov 15 16:56:21 CET 2013 Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
+ -- Sun Nov 17 00:26:44 CET 2013 Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
 
 SimGrid (3.9) stable; urgency=low
 
