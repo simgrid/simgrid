@@ -98,6 +98,8 @@ if(enable_ns3)
   include(FindNS3)
 endif()
 
+find_package( Boost REQUIRED)
+
 # Checks for header libraries functions.
 CHECK_LIBRARY_EXISTS(pthread pthread_create          "" pthread)
 CHECK_LIBRARY_EXISTS(pthread sem_init                "" HAVE_SEM_INIT_LIB)
