@@ -24,7 +24,6 @@
 #include <stdlib.h>
 #include "msg/msg.h"
 #include "surf/surf_private.h"
-#include "inttypes.h"
 
 int host(int argc, char *argv[]);
 
@@ -53,13 +52,13 @@ int host(int argc, char *argv[])
   XBT_INFO("\tOpen file '%s'",file->fullname);
 
   read = MSG_file_read(file, 10000000);     // Read for 10MB
-  XBT_INFO("\tHave read    %" PRIu64 " on %s",read,file->fullname);
+  XBT_INFO("\tHave read    %llu on %s",read,file->fullname);
 
   write = MSG_file_write(file, 100000);  // Write for 100KB
-  XBT_INFO("\tHave written %" PRIu64 " on %s",write,file->fullname);
+  XBT_INFO("\tHave written %llu on %s",write,file->fullname);
 
   read = MSG_file_read(file, 110000);     // Read for 110KB
-  XBT_INFO("\tHave read    %" PRIu64 " on %s (of size %" PRIu64 ")",read,file->fullname,
+  XBT_INFO("\tHave read    %llu on %s (of size %llu)",read,file->fullname,
       MSG_file_get_size(file));
 
   XBT_INFO("\tClose file '%s'",file->fullname);

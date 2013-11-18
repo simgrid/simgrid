@@ -10,8 +10,6 @@
 #define SG_PLATF_H
 
 #include <xbt.h>
-#define __STDC_FORMAT_MACROS
-#include <inttypes.h>
 
 typedef void *sg_routing_link_t; /* FIXME:The actual type is model-dependent so use void* instead*/
 typedef struct RoutingEdge *sg_routing_edge_t;
@@ -96,7 +94,7 @@ static inline char* sg_storage_name(sg_storage_t storage) {
   return storage->key;
 }
 /* Type for any simgrid size size  */
-typedef uint64_t sg_size_t;
+typedef unsigned long long sg_size_t;
 
 /*
  * Platform creation functions. Instead of passing 123 arguments to the creation functions

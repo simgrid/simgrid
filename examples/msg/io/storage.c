@@ -22,9 +22,6 @@
 #include "xbt/log.h"
 #include "xbt/dict.h"
 
- /* To use PRIu64 format specifier for printing uint64_t (sg_size_t) */
-#include <inttypes.h>
-
 XBT_LOG_NEW_DEFAULT_CATEGORY(storage,"Messages specific for this simulation");
 
 static int host(int argc, char *argv[]){
@@ -51,9 +48,9 @@ static int host(int argc, char *argv[]){
     sg_size_t used_size = MSG_storage_get_used_size(mount_name);
     sg_size_t size = MSG_storage_get_size(storage);
 
-    XBT_INFO("Total size: %"PRIu64" bytes", size);
-    XBT_INFO("Free size: %"PRIu64" bytes", free_size);
-    XBT_INFO("Used size: %"PRIu64" bytes", used_size);
+    XBT_INFO("Total size: %llu bytes", size);
+    XBT_INFO("Free size: %llu bytes", free_size);
+    XBT_INFO("Used size: %llu bytes", used_size);
   }
   xbt_dict_free(&storage_list);
 
@@ -68,22 +65,22 @@ static int host(int argc, char *argv[]){
   // Open an non-existing file amounts to create it!
   file = MSG_file_open(mount, file_name, NULL);
   write = MSG_file_write(file, 200000);  // Write 200,000 bytes
-  XBT_INFO("Create a %"PRIu64" bytes file named '%s' on /sd1", write, file_name);
+  XBT_INFO("Create a %llu bytes file named '%s' on /sd1", write, file_name);
   MSG_file_dump(file);
 
   // check that sizes have changed
-  XBT_INFO("Free size: %"PRIu64" bytes", MSG_storage_get_free_size("/home"));
-  XBT_INFO("Used size: %"PRIu64" bytes", MSG_storage_get_used_size("/home"));
+  XBT_INFO("Free size: %llu bytes", MSG_storage_get_free_size("/home"));
+  XBT_INFO("Used size: %llu bytes", MSG_storage_get_used_size("/home"));
 
 
   // Now retrieve the size of created file and read it completely
   file_size = MSG_file_get_size(file);
   read = MSG_file_read(file, file_size);
-  XBT_INFO("Read %"PRIu64" bytes on %s", read, file_name);
+  XBT_INFO("Read %llu bytes on %s", read, file_name);
 
   // Now write 100,000 more bytes in tmp/data.txt
   write = MSG_file_write(file, 100000);  // Write 100,000 bytes
-  XBT_INFO("Write %"PRIu64" more bytes on %s", write, file_name);
+  XBT_INFO("Write %llu more bytes on %s", write, file_name);
   MSG_file_dump(file);
 
   MSG_file_close(file);
@@ -122,7 +119,7 @@ static int host(int argc, char *argv[]){
   xbt_dict_foreach(contents, curs, mountname, content){
     XBT_INFO("Print the content of mount point: %s",mountname);
     xbt_dict_foreach(content,curs2,path,size){
-       XBT_INFO("%s size: %"PRIu64" bytes", path,*((sg_size_t*)size));
+       XBT_INFO("%s size: %llu bytes", path,*((sg_size_t*)size));
     }
   xbt_dict_free(&content);
   }

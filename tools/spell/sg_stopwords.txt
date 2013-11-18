@@ -3440,7 +3440,6 @@ printTasks
 prio
 prioritarily
 PriorityClass
-PRIu
 priv
 PRN
 PRNG

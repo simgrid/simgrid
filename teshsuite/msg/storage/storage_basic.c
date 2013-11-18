@@ -1,6 +1,5 @@
 #include "msg/msg.h"
 #include "xbt/log.h"
-#include "inttypes.h"
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(storage,"Messages specific for this simulation");
 
@@ -35,8 +34,8 @@ void storage_info(msg_host_t host)
     sg_size_t free_size = MSG_storage_get_free_size(mount_name);
     sg_size_t used_size = MSG_storage_get_used_size(mount_name);
 
-    XBT_INFO("Free size: %" PRIu64 " bytes", free_size);
-    XBT_INFO("Used size: %" PRIu64 " bytes", used_size);
+    XBT_INFO("Free size: %llu bytes", free_size);
+    XBT_INFO("Used size: %llu bytes", used_size);
 
     storage = MSG_storage_get_by_name(storage_name);
     display_storage_properties(storage);
@@ -64,7 +63,7 @@ int hsm_put(const char *remote_host, const char *src, const char *dest){
   sg_size_t read_size = read_local_file(src);
 
   // Send file
-  XBT_INFO("%s sends %" PRIu64 " to %s",MSG_host_get_name(MSG_host_self()),read_size,remote_host);
+  XBT_INFO("%s sends %llu to %s",MSG_host_get_name(MSG_host_self()),read_size,remote_host);
   msg_task_t to_execute = MSG_task_create((const char*)"hsm_put", 0, (double) read_size, (void*)dest);
   MSG_task_send(to_execute, remote_host);
 
@@ -87,7 +86,7 @@ sg_size_t read_local_file(const char *src)
   file_size = MSG_file_get_size(file);
 
   read = MSG_file_read(file, file_size);
-  XBT_INFO("%s has read %" PRIu64 " on %s",MSG_host_get_name(MSG_host_self()),read,src);
+  XBT_INFO("%s has read %llu on %s",MSG_host_get_name(MSG_host_self()),read,src);
   MSG_file_close(file);
 
   return read;
@@ -131,7 +130,7 @@ void display_storage_content(msg_storage_t storage){
   xbt_dict_t content = MSG_storage_get_content(storage);
   if (content){
     xbt_dict_foreach(content, cursor, file, psize)
-    XBT_INFO("%s size: %" PRIu64 " bytes", file, *psize);
+    XBT_INFO("%s size: %llu bytes", file, *psize);
   } else {
     XBT_INFO("No content.");
   }

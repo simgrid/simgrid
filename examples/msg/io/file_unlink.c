@@ -21,7 +21,6 @@
 #include <stdlib.h>
 #include "msg/msg.h"
 #include "surf/surf_private.h"
-#include "inttypes.h"
 
 int host(int argc, char *argv[]);
 
@@ -48,7 +47,7 @@ int host(int argc, char *argv[])
 
   // Write into the new file
   write = MSG_file_write(file,100000);  // Write for 100Ko
-  XBT_INFO("\tHave written %" PRIu64 " on %s",write,file->fullname);
+  XBT_INFO("\tHave written %llu on %s",write,file->fullname);
 
   // Close the file
   XBT_INFO("\tClose file '%s'",file->fullname);

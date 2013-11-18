@@ -834,9 +834,9 @@ static void send_migration_data(const char *vm_name, const char *src_pm_name, co
 
 
   if (stage == 2){
-    XBT_DEBUG("mig-stage%d.%d: sent %" PRIu64 " duration %f actual_speed %f (target %f) cpu %f", stage, stage2_round, size, duration, actual_speed, mig_speed, cpu_utilization);}
+    XBT_DEBUG("mig-stage%d.%d: sent %llu duration %f actual_speed %f (target %f) cpu %f", stage, stage2_round, size, duration, actual_speed, mig_speed, cpu_utilization);}
   else{
-    XBT_DEBUG("mig-stage%d: sent %" PRIu64 " duration %f actual_speed %f (target %f) cpu %f", stage, size, duration, actual_speed, mig_speed, cpu_utilization);
+    XBT_DEBUG("mig-stage%d: sent %llu duration %f actual_speed %f (target %f) cpu %f", stage, size, duration, actual_speed, mig_speed, cpu_utilization);
   }
 
   xbt_free(task_name);

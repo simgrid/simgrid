@@ -148,7 +148,7 @@ static xbt_dict_t parse_storage_content(char *filename, sg_size_t *used_size)
 
   while ((read = xbt_getline(&line, &len, file)) != -1) {
     if (read){
-    if(sscanf(line,"%s %" SCNu64, path, &size) == 2) {
+    if(sscanf(line,"%s %llu", path, &size) == 2) {
         *used_size += size;
         sg_size_t *psize = xbt_new(sg_size_t, 1);
         *psize = size;
@@ -427,7 +427,7 @@ xbt_dict_t Storage::parseContent(char *filename)
 
   while ((read = xbt_getline(&line, &len, file)) != -1) {
     if (read){
-    if(sscanf(line,"%s %" SCNu64, path, &size) == 2) {
+    if(sscanf(line,"%s %llu", path, &size) == 2) {
         m_usedSize += size;
         sg_size_t *psize = xbt_new(sg_size_t, 1);
         *psize = size;
@@ -555,7 +555,7 @@ StorageActionPtr StorageLmm::open(const char* mount, const char* path)
 StorageActionPtr StorageLmm::close(surf_file_t fd)
 {
   char *filename = fd->name;
-  XBT_DEBUG("\tClose file '%s' size '%" PRIu64 "'", filename, fd->size);
+  XBT_DEBUG("\tClose file '%s' size '%llu'", filename, fd->size);
   // unref write actions from storage
   StorageActionLmmPtr write_action;
   unsigned int i;
@@ -583,7 +583,7 @@ StorageActionPtr StorageLmm::read(surf_file_t fd, sg_size_t size)
 StorageActionPtr StorageLmm::write(surf_file_t fd, sg_size_t size)
 {
   char *filename = fd->name;
-  XBT_DEBUG("\tWrite file '%s' size '%" PRIu64 "/%" PRIu64 "'",filename,size,fd->size);
+  XBT_DEBUG("\tWrite file '%s' size '%llu/%llu'",filename,size,fd->size);
 
   StorageActionLmmPtr action = new StorageActionLmm(p_model, size, p_stateCurrent != SURF_RESOURCE_ON, this, WRITE);
   action->p_file = fd;
@@ -604,7 +604,7 @@ void StorageLmm::rename(const char *src, const char *dest)
   if (psize){// src file exists
     xbt_dict_remove(p_content, src);
     xbt_dict_set(p_content, dest, new_psize,NULL);
-    XBT_DEBUG("Change file name from %s to %s, size '%" PRIu64 "'",src, dest, *psize);
+    XBT_DEBUG("Change file name from %s to %s, size '%llu'",src, dest, *psize);
   }
   else
     XBT_DEBUG("File %s doesn't exist",src);
@@ -636,7 +636,7 @@ sg_size_t StorageLmm::getSize(){
 
 StorageActionLmm::StorageActionLmm(ModelPtr model, double cost, bool failed, StorageLmmPtr storage, e_surf_action_storage_type_t type)
   : Action(model, cost, failed), ActionLmm(model, cost, failed), StorageAction(model, cost, failed, storage, type) {
-  XBT_IN("(%s,%" PRIu64, storage->m_name, cost);
+  XBT_IN("(%s,%g", storage->m_name, cost);
   p_variable = lmm_variable_new(p_model->p_maxminSystem, this, 1.0, -1.0 , 3);
 
   // Must be less than the max bandwidth for all actions
