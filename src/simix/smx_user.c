@@ -1419,7 +1419,7 @@ void simcall_file_set_data(smx_file_t fd, void *data)
  * \ingroup simix_file_management
  *
  */
-sg_storage_size_t simcall_file_read(smx_file_t fd, sg_storage_size_t size)
+sg_size_t simcall_file_read(smx_file_t fd, sg_size_t size)
 {
   return simcall_BODY_file_read(fd, size);
 }
@@ -1428,7 +1428,7 @@ sg_storage_size_t simcall_file_read(smx_file_t fd, sg_storage_size_t size)
  * \ingroup simix_file_management
  *
  */
-sg_storage_size_t simcall_file_write(smx_file_t fd, sg_storage_size_t size)
+sg_size_t simcall_file_write(smx_file_t fd, sg_size_t size)
 {
   return simcall_BODY_file_write(fd, size);
 }
@@ -1472,7 +1472,7 @@ xbt_dict_t simcall_file_ls(const char* mount, const char* path)
  * \ingroup simix_file_management
  *
  */
-sg_storage_size_t simcall_file_get_size (smx_file_t fd){
+sg_size_t simcall_file_get_size (smx_file_t fd){
   return simcall_BODY_file_get_size(fd);
 }
 
@@ -1498,9 +1498,9 @@ void simcall_storage_file_rename(smx_storage_t storage, const char* src,  const 
  * \ingroup simix_storage_management
  * \brief Returns the free space size on a given storage element.
  * \param storage name
- * \return Return the free space size on a given storage element (as sg_storage_size_t)
+ * \return Return the free space size on a given storage element (as sg_size_t)
  */
-sg_storage_size_t simcall_storage_get_free_size (const char* name){
+sg_size_t simcall_storage_get_free_size (const char* name){
   return simcall_BODY_storage_get_free_size(name);
 }
 
@@ -1508,9 +1508,9 @@ sg_storage_size_t simcall_storage_get_free_size (const char* name){
  * \ingroup simix_storage_management
  * \brief Returns the used space size on a given storage element.
  * \param storage name
- * \return Return the used space size on a given storage element (as sg_storage_size_t)
+ * \return Return the used space size on a given storage element (as sg_size_t)
  */
-sg_storage_size_t simcall_storage_get_used_size (const char* name){
+sg_size_t simcall_storage_get_used_size (const char* name){
   return simcall_BODY_storage_get_used_size(name);
 }
 

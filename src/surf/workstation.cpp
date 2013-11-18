@@ -307,13 +307,13 @@ ActionPtr WorkstationCLM03::close(surf_file_t fd) {
   return st->close(fd);
 }
 
-ActionPtr WorkstationCLM03::read(surf_file_t fd, sg_storage_size_t size) {
+ActionPtr WorkstationCLM03::read(surf_file_t fd, sg_size_t size) {
   StoragePtr st = findStorageOnMountList(fd->mount);
   XBT_DEBUG("READ on disk '%s'",st->m_name);
   return st->read(fd, size);
 }
 
-ActionPtr WorkstationCLM03::write(surf_file_t fd, sg_storage_size_t size) {
+ActionPtr WorkstationCLM03::write(surf_file_t fd, sg_size_t size) {
   StoragePtr st = findStorageOnMountList(fd->mount);
   XBT_DEBUG("WRITE on disk '%s'",st->m_name);
   return st->write(fd, size);
@@ -352,17 +352,17 @@ ActionPtr WorkstationCLM03::ls(const char* mount, const char *path){
   return st->ls(path);
 }
 
-sg_storage_size_t WorkstationCLM03::getSize(surf_file_t fd){
+sg_size_t WorkstationCLM03::getSize(surf_file_t fd){
   return fd->size;
 }
 
 xbt_dynar_t WorkstationCLM03::getInfo( surf_file_t fd)
 {
   StoragePtr st = findStorageOnMountList(fd->mount);
-  sg_storage_size_t *psize = xbt_new(sg_storage_size_t, 1);
+  sg_size_t *psize = xbt_new(sg_size_t, 1);
   *psize = fd->size;
   xbt_dynar_t info = xbt_dynar_new(sizeof(void*), NULL);
-  xbt_dynar_push_as(info, sg_storage_size_t *, psize);
+  xbt_dynar_push_as(info, sg_size_t *, psize);
   xbt_dynar_push_as(info, void *, fd->mount);
   xbt_dynar_push_as(info, void *, (void *)st->m_name);
   xbt_dynar_push_as(info, void *, st->p_typeId);
@@ -371,13 +371,13 @@ xbt_dynar_t WorkstationCLM03::getInfo( surf_file_t fd)
   return info;
 }
 
-sg_storage_size_t WorkstationCLM03::getFreeSize(const char* name)
+sg_size_t WorkstationCLM03::getFreeSize(const char* name)
 {
   StoragePtr st = findStorageOnMountList(name);
   return st->m_size - st->m_usedSize;
 }
 
-sg_storage_size_t WorkstationCLM03::getUsedSize(const char* name)
+sg_size_t WorkstationCLM03::getUsedSize(const char* name)
 {
   StoragePtr st = findStorageOnMountList(name);
   return st->m_usedSize;

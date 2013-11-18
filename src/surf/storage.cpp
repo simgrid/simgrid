@@ -2,7 +2,6 @@
 #include "surf_private.h"
 
 #define __STDC_FORMAT_MACROS
-#include <inttypes.h>
 
 extern "C" {
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_storage, surf,
@@ -127,7 +126,7 @@ static void storage_parse_storage(sg_platf_storage_cbarg_t storage)
       (void *) xbt_strdup(storage->type_id));
 }
 
-static xbt_dict_t parse_storage_content(char *filename, sg_storage_size_t *used_size)
+static xbt_dict_t parse_storage_content(char *filename, sg_size_t *used_size)
 {
   *used_size = 0;
   if ((!filename) || (strcmp(filename, "") == 0))
@@ -144,14 +143,14 @@ static xbt_dict_t parse_storage_content(char *filename, sg_storage_size_t *used_
   size_t len = 0;
   ssize_t read;
   char path[1024];
-  sg_storage_size_t size;
+  sg_size_t size;
 
 
   while ((read = xbt_getline(&line, &len, file)) != -1) {
     if (read){
     if(sscanf(line,"%s %" SCNu64, path, &size) == 2) {
         *used_size += size;
-        sg_storage_size_t *psize = xbt_new(sg_storage_size_t, 1);
+        sg_size_t *psize = xbt_new(sg_size_t, 1);
         *psize = size;
         xbt_dict_set(parse_content,path,psize,NULL);
       } else {
@@ -366,12 +365,12 @@ void StorageModel::updateActionsState(double now, double delta)
      // For each action of type write
       double rate = lmm_variable_getvalue(action->p_variable);
       /* Hack to avoid rounding differences between x86 and x86_64
-       * (note that the next sizes are of type sg_storage_size_t). */
+       * (note that the next sizes are of type sg_size_t). */
       long incr = delta * rate + MAXMIN_PRECISION;
       action->p_storage->m_usedSize += incr; // disk usage
       action->p_file->size += incr; // file size
 
-      sg_storage_size_t *psize = xbt_new(sg_storage_size_t,1);
+      sg_size_t *psize = xbt_new(sg_size_t,1);
       *psize = action->p_file->size;
 
       xbt_dict_t content_dict = action->p_storage->p_content;
@@ -423,14 +422,14 @@ xbt_dict_t Storage::parseContent(char *filename)
   size_t len = 0;
   ssize_t read;
   char path[1024];
-  sg_storage_size_t size;
+  sg_size_t size;
 
 
   while ((read = xbt_getline(&line, &len, file)) != -1) {
     if (read){
     if(sscanf(line,"%s %" SCNu64, path, &size) == 2) {
         m_usedSize += size;
-        sg_storage_size_t *psize = xbt_new(sg_storage_size_t, 1);
+        sg_size_t *psize = xbt_new(sg_size_t, 1);
         *psize = size;
         xbt_dict_set(parse_content,path,psize,NULL);
       } else {
@@ -491,7 +490,7 @@ StorageActionPtr StorageLmm::ls(const char* path)
   xbt_dict_t ls_dict = xbt_dict_new_homogeneous(xbt_free);
 
   char* key;
-  sg_storage_size_t size = 0;
+  sg_size_t size = 0;
   xbt_dict_cursor_t cursor = NULL;
 
   xbt_dynar_t dyn = NULL;
@@ -509,7 +508,7 @@ StorageActionPtr StorageLmm::ls(const char* path)
 
       // file
       if(xbt_dynar_length(dyn) == 1){
-        sg_storage_size_t *psize = xbt_new(sg_storage_size_t, 1);
+        sg_size_t *psize = xbt_new(sg_size_t, 1);
         *psize=size;
         xbt_dict_set(ls_dict, file, psize, NULL);
       }
@@ -531,13 +530,13 @@ StorageActionPtr StorageLmm::ls(const char* path)
 StorageActionPtr StorageLmm::open(const char* mount, const char* path)
 {
   XBT_DEBUG("\tOpen file '%s'",path);
-  sg_storage_size_t size, *psize;
-  psize = (sg_storage_size_t*) xbt_dict_get_or_null(p_content, path);
+  sg_size_t size, *psize;
+  psize = (sg_size_t*) xbt_dict_get_or_null(p_content, path);
   // if file does not exist create an empty file
   if(psize)
     size = *psize;
   else {
-	psize = xbt_new(sg_storage_size_t,1);
+	psize = xbt_new(sg_size_t,1);
     size = 0;
     *psize = size;
     xbt_dict_set(p_content, path, psize, NULL);
@@ -573,7 +572,7 @@ StorageActionPtr StorageLmm::close(surf_file_t fd)
   return action;
 }
 
-StorageActionPtr StorageLmm::read(surf_file_t fd, sg_storage_size_t size)
+StorageActionPtr StorageLmm::read(surf_file_t fd, sg_size_t size)
 {
   if(size > fd->size)
     size = fd->size;
@@ -581,7 +580,7 @@ StorageActionPtr StorageLmm::read(surf_file_t fd, sg_storage_size_t size)
   return action;
 }
 
-StorageActionPtr StorageLmm::write(surf_file_t fd, sg_storage_size_t size)
+StorageActionPtr StorageLmm::write(surf_file_t fd, sg_size_t size)
 {
   char *filename = fd->name;
   XBT_DEBUG("\tWrite file '%s' size '%" PRIu64 "/%" PRIu64 "'",filename,size,fd->size);
@@ -598,9 +597,9 @@ StorageActionPtr StorageLmm::write(surf_file_t fd, sg_storage_size_t size)
 
 void StorageLmm::rename(const char *src, const char *dest)
 {
-  sg_storage_size_t *psize, *new_psize;
-  psize = (sg_storage_size_t*) xbt_dict_get_or_null(p_content,src);
-  new_psize = xbt_new(sg_storage_size_t, 1);
+  sg_size_t *psize, *new_psize;
+  psize = (sg_size_t*) xbt_dict_get_or_null(p_content,src);
+  new_psize = xbt_new(sg_size_t, 1);
   *new_psize = *psize;
   if (psize){// src file exists
     xbt_dict_remove(p_content, src);
@@ -619,7 +618,7 @@ xbt_dict_t StorageLmm::getContent()
   xbt_dict_t content_dict = xbt_dict_new_homogeneous(NULL);
   xbt_dict_cursor_t cursor = NULL;
   char *file;
-  sg_storage_size_t *psize;
+  sg_size_t *psize;
 
   xbt_dict_foreach(p_content, cursor, file, psize){
     xbt_dict_set(content_dict,file,psize,NULL);
@@ -627,7 +626,7 @@ xbt_dict_t StorageLmm::getContent()
   return content_dict;
 }
 
-sg_storage_size_t StorageLmm::getSize(){
+sg_size_t StorageLmm::getSize(){
   return m_size;
 }
 

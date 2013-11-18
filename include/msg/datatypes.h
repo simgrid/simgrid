@@ -100,7 +100,7 @@ static inline msg_vm_priv_t MSG_vm_priv(msg_vm_t vm){
 typedef struct simdata_file *simdata_file_t;
 
 typedef struct s_msg_file_info {
-  sg_storage_size_t size;
+  sg_size_t size;
   char* mount_point;
   char* storageId;
   char* storage_type;

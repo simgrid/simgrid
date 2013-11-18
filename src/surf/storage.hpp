@@ -50,20 +50,20 @@ public:
 
   xbt_dict_t p_content;
   char* p_contentType;
-  sg_storage_size_t m_size;
-  sg_storage_size_t m_usedSize;
+  sg_size_t m_size;
+  sg_size_t m_usedSize;
   char * p_typeId;
 
   virtual StorageActionPtr open(const char* mount, const char* path)=0;
   virtual StorageActionPtr close(surf_file_t fd)=0;
   //virtual StorageActionPtr unlink(surf_file_t fd)=0;
   virtual StorageActionPtr ls(const char *path)=0;
-  virtual StorageActionPtr read(surf_file_t fd, sg_storage_size_t size)=0;
-  virtual StorageActionPtr write(surf_file_t fd, sg_storage_size_t size)=0;
+  virtual StorageActionPtr read(surf_file_t fd, sg_size_t size)=0;
+  virtual StorageActionPtr write(surf_file_t fd, sg_size_t size)=0;
   virtual void rename(const char *src, const char *dest)=0;
 
   virtual xbt_dict_t getContent()=0;
-  virtual sg_storage_size_t getSize()=0;
+  virtual sg_size_t getSize()=0;
 
   xbt_dict_t parseContent(char *filename);
 
@@ -81,9 +81,9 @@ public:
   //StorageActionPtr unlink(surf_file_t fd);
   StorageActionPtr ls(const char *path);
   xbt_dict_t getContent();
-  sg_storage_size_t getSize();
-  StorageActionPtr read(surf_file_t fd, sg_storage_size_t size);//FIXME:why we have a useless param ptr ??
-  StorageActionPtr write(surf_file_t fd, sg_storage_size_t size);//FIXME:why we have a useless param ptr ??
+  sg_size_t getSize();
+  StorageActionPtr read(surf_file_t fd, sg_size_t size);//FIXME:why we have a useless param ptr ??
+  StorageActionPtr write(surf_file_t fd, sg_size_t size);//FIXME:why we have a useless param ptr ??
   void rename(const char *src, const char *dest);
 
   lmm_constraint_t p_constraintWrite;    /* Constraint for maximum write bandwidth*/
@@ -135,7 +135,7 @@ typedef struct s_storage_type {
   char *content_type;
   char *type_id;
   xbt_dict_t properties;
-  sg_storage_size_t size;
+  sg_size_t size;
 } s_storage_type_t, *storage_type_t;
 
 typedef struct s_mount {
@@ -146,7 +146,7 @@ typedef struct s_mount {
 typedef struct surf_file {
   char *name;
   char *mount;
-  sg_storage_size_t size;
+  sg_size_t size;
 } s_surf_file_t;
 
 

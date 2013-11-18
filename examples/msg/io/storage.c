@@ -22,7 +22,7 @@
 #include "xbt/log.h"
 #include "xbt/dict.h"
 
- /* To use PRIu64 format specifier for printing uint64_t (sg_storage_size_t) */
+ /* To use PRIu64 format specifier for printing uint64_t (sg_size_t) */
 #include <inttypes.h>
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(storage,"Messages specific for this simulation");
@@ -47,9 +47,9 @@ static int host(int argc, char *argv[]){
     storage = MSG_storage_get_by_name(storage_name);
 
     // Retrieve disk's information
-    sg_storage_size_t free_size = MSG_storage_get_free_size(mount_name);
-    sg_storage_size_t used_size = MSG_storage_get_used_size(mount_name);
-    sg_storage_size_t size = MSG_storage_get_size(storage);
+    sg_size_t free_size = MSG_storage_get_free_size(mount_name);
+    sg_size_t used_size = MSG_storage_get_used_size(mount_name);
+    sg_size_t size = MSG_storage_get_size(storage);
 
     XBT_INFO("Total size: %"PRIu64" bytes", size);
     XBT_INFO("Free size: %"PRIu64" bytes", free_size);
@@ -63,7 +63,7 @@ static int host(int argc, char *argv[]){
   char* mount = xbt_strdup("/home");
   char* file_name = xbt_strdup("./tmp/data.txt");
   msg_file_t file = NULL;
-  sg_storage_size_t write, read, file_size;
+  sg_size_t write, read, file_size;
 
   // Open an non-existing file amounts to create it!
   file = MSG_file_open(mount, file_name, NULL);
@@ -118,11 +118,11 @@ static int host(int argc, char *argv[]){
   char* mountname;
   xbt_dict_t content;
   char* path;
-  sg_storage_size_t *size;
+  sg_size_t *size;
   xbt_dict_foreach(contents, curs, mountname, content){
     XBT_INFO("Print the content of mount point: %s",mountname);
     xbt_dict_foreach(content,curs2,path,size){
-       XBT_INFO("%s size: %"PRIu64" bytes", path,*((sg_storage_size_t*)size));
+       XBT_INFO("%s size: %"PRIu64" bytes", path,*((sg_size_t*)size));
     }
   xbt_dict_free(&content);
   }

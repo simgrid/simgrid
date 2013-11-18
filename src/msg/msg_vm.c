@@ -21,6 +21,7 @@
 #include "msg_private.h"
 #include "xbt/sysdep.h"
 #include "xbt/log.h"
+#include "simgrid/platf.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_vm, msg,
                                 "Cloud-oriented parts of the MSG API");
@@ -798,7 +799,7 @@ const double alpha = 0.22L * 1.0E8 / (80L * 1024 * 1024);
 
 
 static void send_migration_data(const char *vm_name, const char *src_pm_name, const char *dst_pm_name,
-    double size, char *mbox, int stage, int stage2_round, double mig_speed, double xfer_cpu_overhead)
+    sg_size_t size, char *mbox, int stage, int stage2_round, double mig_speed, double xfer_cpu_overhead)
 {
   char *task_name = get_mig_task_name(vm_name, src_pm_name, dst_pm_name, stage);
   msg_task_t task = MSG_task_create(task_name, 0, size, NULL);
@@ -833,9 +834,9 @@ static void send_migration_data(const char *vm_name, const char *src_pm_name, co
 
 
   if (stage == 2){
-    XBT_DEBUG("mig-stage%d.%d: sent %f duration %f actual_speed %f (target %f) cpu %f", stage, stage2_round, size, duration, actual_speed, mig_speed, cpu_utilization);}
+    XBT_DEBUG("mig-stage%d.%d: sent %" PRIu64 " duration %f actual_speed %f (target %f) cpu %f", stage, stage2_round, size, duration, actual_speed, mig_speed, cpu_utilization);}
   else{
-    XBT_DEBUG("mig-stage%d: sent %f duration %f actual_speed %f (target %f) cpu %f", stage, size, duration, actual_speed, mig_speed, cpu_utilization);
+    XBT_DEBUG("mig-stage%d: sent %" PRIu64 " duration %f actual_speed %f (target %f) cpu %f", stage, size, duration, actual_speed, mig_speed, cpu_utilization);
   }
 
   xbt_free(task_name);
@@ -871,18 +872,18 @@ static double get_updated_size(double computed, double dp_rate, double dp_cap)
 }
 
 static double send_stage1(msg_host_t vm, const char *src_pm_name, const char *dst_pm_name,
-    long ramsize, double mig_speed, double xfer_cpu_overhead, double dp_rate, double dp_cap, double dpt_cpu_overhead)
+    sg_size_t ramsize, double mig_speed, double xfer_cpu_overhead, double dp_rate, double dp_cap, double dpt_cpu_overhead)
 {
   const char *vm_name = MSG_host_get_name(vm);
   char *mbox = get_mig_mbox_src_dst(vm_name, src_pm_name, dst_pm_name);
 
   // const long chunksize = 1024 * 1024 * 100;
-  const unsigned long chunksize = 1024u * 1024u * 100000;
-  long remaining = ramsize;
+  const sg_size_t chunksize = 1024L * 1024 * 100000;
+  sg_size_t remaining = ramsize;
   double computed_total = 0;
 
   while (remaining > 0) {
-    long datasize = chunksize;
+    sg_size_t datasize = chunksize;
     if (remaining < chunksize)
       datasize = remaining;
 
@@ -928,7 +929,7 @@ static int migration_tx_fun(int argc, char *argv[])
 
   s_ws_params_t params;
   simcall_host_get_params(vm, &params);
-  const long ramsize        = params.ramsize;
+  const sg_size_t ramsize   = params.ramsize;
   const long devsize        = params.devsize;
   const int skip_stage1     = params.skip_stage1;
   const int skip_stage2     = params.skip_stage2;

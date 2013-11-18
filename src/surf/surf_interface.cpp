@@ -349,11 +349,11 @@ size_t surf_workstation_get_size(surf_resource_t workstation, surf_file_t fd){
   return get_casted_workstation(workstation)->getSize(fd);
 }
 
-surf_action_t surf_workstation_read(surf_resource_t resource, surf_file_t fd, sg_storage_size_t size){
+surf_action_t surf_workstation_read(surf_resource_t resource, surf_file_t fd, sg_size_t size){
   return get_casted_workstation(resource)->read(fd, size);
 }
 
-surf_action_t surf_workstation_write(surf_resource_t resource, surf_file_t fd, sg_storage_size_t size){
+surf_action_t surf_workstation_write(surf_resource_t resource, surf_file_t fd, sg_size_t size){
   return get_casted_workstation(resource)->write(fd, size);
 }
 
@@ -361,11 +361,11 @@ xbt_dynar_t surf_workstation_get_info(surf_resource_t resource, surf_file_t fd){
   return get_casted_workstation(resource)->getInfo(fd);
 }
 
-sg_storage_size_t surf_workstation_get_free_size(surf_resource_t resource, const char* name){
+sg_size_t surf_workstation_get_free_size(surf_resource_t resource, const char* name){
   return get_casted_workstation(resource)->getFreeSize(name);
 }
 
-sg_storage_size_t surf_workstation_get_used_size(surf_resource_t resource, const char* name){
+sg_size_t surf_workstation_get_used_size(surf_resource_t resource, const char* name){
   return get_casted_workstation(resource)->getUsedSize(name);
 }
 
@@ -433,7 +433,7 @@ xbt_dict_t surf_storage_get_content(surf_resource_t resource){
   return dynamic_cast<StoragePtr>(static_cast<ResourcePtr>(surf_storage_resource_priv(resource)))->getContent();
 }
 
-sg_storage_size_t surf_storage_get_size(surf_resource_t resource){
+sg_size_t surf_storage_get_size(surf_resource_t resource){
   return dynamic_cast<StoragePtr>(static_cast<ResourcePtr>(surf_storage_resource_priv(resource)))->getSize();
 }
 

@@ -81,24 +81,24 @@ XBT_PUBLIC(const char *) MSG_environment_as_get_model(msg_as_t as);
 XBT_PUBLIC(xbt_dynar_t) MSG_environment_as_get_hosts(msg_as_t as);
 
 /************************** File handling ***********************************/
-XBT_PUBLIC(sg_storage_size_t) MSG_file_read(msg_file_t fd, sg_storage_size_t size);
-XBT_PUBLIC(sg_storage_size_t) MSG_file_write(msg_file_t fd, sg_storage_size_t size);
+XBT_PUBLIC(sg_size_t) MSG_file_read(msg_file_t fd, sg_size_t size);
+XBT_PUBLIC(sg_size_t) MSG_file_write(msg_file_t fd, sg_size_t size);
 XBT_PUBLIC(msg_file_t) MSG_file_open(const char* mount, const char* path,
                                      void* data);
 XBT_PUBLIC(void*) MSG_file_get_data(msg_file_t fd);
 XBT_PUBLIC(msg_error_t) MSG_file_set_data(msg_file_t fd, void * data);
 XBT_PUBLIC(int) MSG_file_close(msg_file_t fd);
-XBT_PUBLIC(sg_storage_size_t) MSG_file_get_size(msg_file_t fd);
+XBT_PUBLIC(sg_size_t) MSG_file_get_size(msg_file_t fd);
 XBT_PUBLIC(void) MSG_file_dump(msg_file_t fd);
 XBT_PUBLIC(int) MSG_file_unlink(msg_file_t fd);
 XBT_PUBLIC(xbt_dict_t) MSG_file_ls(const char *mount, const char *path);
-XBT_PUBLIC(msg_error_t) MSG_file_seek(msg_file_t fd, sg_storage_size_t offset, int whence);
+XBT_PUBLIC(msg_error_t) MSG_file_seek(msg_file_t fd, sg_size_t offset, int whence);
 XBT_PUBLIC(void) __MSG_file_get_info(msg_file_t fd);
 /************************** Storage handling ***********************************/
 XBT_PUBLIC(msg_host_t) MSG_get_storage_by_name(const char *name);
 XBT_PUBLIC(const char *) MSG_storage_get_name(msg_storage_t storage);
-XBT_PUBLIC(sg_storage_size_t) MSG_storage_get_free_size(const char* name);
-XBT_PUBLIC(sg_storage_size_t) MSG_storage_get_used_size(const char* name);
+XBT_PUBLIC(sg_size_t) MSG_storage_get_free_size(const char* name);
+XBT_PUBLIC(sg_size_t) MSG_storage_get_used_size(const char* name);
 XBT_PUBLIC(msg_storage_t) MSG_storage_get_by_name(const char *name);
 XBT_PUBLIC(xbt_dict_t) MSG_storage_get_properties(msg_storage_t storage);
 XBT_PUBLIC(void) MSG_storage_set_property_value(msg_storage_t storage, const char *name, char *value,void_f_pvoid_t free_ctn);
@@ -106,7 +106,7 @@ XBT_PUBLIC(xbt_dynar_t) MSG_storages_as_dynar(void);
 XBT_PUBLIC(msg_error_t) MSG_storage_set_data(msg_storage_t host, void *data);
 XBT_PUBLIC(void *) MSG_storage_get_data(msg_storage_t storage);
 XBT_PUBLIC(xbt_dict_t) MSG_storage_get_content(msg_storage_t storage);
-XBT_PUBLIC(sg_storage_size_t) MSG_storage_get_size(msg_storage_t storage);
+XBT_PUBLIC(sg_size_t) MSG_storage_get_size(msg_storage_t storage);
 XBT_PUBLIC(msg_error_t) MSG_storage_file_move(msg_file_t fd, msg_host_t dest, char* mount, char* fullname);
 XBT_PUBLIC(msg_error_t) MSG_storage_file_rename(msg_storage_t storage, const char* src,  const char* dest);
 /************************** AS Router handling ************************************/

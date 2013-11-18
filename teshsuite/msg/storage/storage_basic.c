@@ -7,8 +7,8 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(storage,"Messages specific for this simulation");
 void storage_info(msg_host_t host);
 void display_storage_properties(msg_storage_t storage);
 int hsm_put(const char *remote_host, const char *src, const char *dest);
-sg_storage_size_t write_local_file(char *dest, sg_storage_size_t file_size);
-sg_storage_size_t read_local_file(const char *src);
+sg_size_t write_local_file(char *dest, sg_size_t file_size);
+sg_size_t read_local_file(const char *src);
 void display_storage_info(msg_host_t host);
 void dump_storage_by_name(char *name);
 void display_storage_content(msg_storage_t storage);
@@ -32,8 +32,8 @@ void storage_info(msg_host_t host)
   {
     XBT_INFO("Storage name: %s, mount name: %s", storage_name, mount_name);
 
-    sg_storage_size_t free_size = MSG_storage_get_free_size(mount_name);
-    sg_storage_size_t used_size = MSG_storage_get_used_size(mount_name);
+    sg_size_t free_size = MSG_storage_get_free_size(mount_name);
+    sg_size_t used_size = MSG_storage_get_used_size(mount_name);
 
     XBT_INFO("Free size: %" PRIu64 " bytes", free_size);
     XBT_INFO("Used size: %" PRIu64 " bytes", used_size);
@@ -61,7 +61,7 @@ void display_storage_properties(msg_storage_t storage){
 int hsm_put(const char *remote_host, const char *src, const char *dest){
 
   // Read local src file, and return the size that was actually read
-  sg_storage_size_t read_size = read_local_file(src);
+  sg_size_t read_size = read_local_file(src);
 
   // Send file
   XBT_INFO("%s sends %" PRIu64 " to %s",MSG_host_get_name(MSG_host_self()),read_size,remote_host);
@@ -71,18 +71,18 @@ int hsm_put(const char *remote_host, const char *src, const char *dest){
   return 1;
 }
 
-sg_storage_size_t write_local_file(char *dest, sg_storage_size_t file_size)
+sg_size_t write_local_file(char *dest, sg_size_t file_size)
 {
-  sg_storage_size_t write;
+  sg_size_t write;
   msg_file_t file = MSG_file_open("/sd1",dest, NULL);
   write = MSG_file_write(file, file_size);
   MSG_file_close(file);
   return write;
 }
 
-sg_storage_size_t read_local_file(const char *src)
+sg_size_t read_local_file(const char *src)
 {
-  sg_storage_size_t read, file_size;
+  sg_size_t read, file_size;
   msg_file_t file = MSG_file_open("/sd1",src, NULL);
   file_size = MSG_file_get_size(file);
 
@@ -127,7 +127,7 @@ void display_storage_content(msg_storage_t storage){
   XBT_INFO("Print the content of the storage element: %s",MSG_storage_get_name(storage));
   xbt_dict_cursor_t cursor = NULL;
   char *file;
-  sg_storage_size_t *psize;
+  sg_size_t *psize;
   xbt_dict_t content = MSG_storage_get_content(storage);
   if (content){
     xbt_dict_foreach(content, cursor, file, psize)
@@ -186,7 +186,7 @@ int server(int argc, char *argv[])
     else if(!strcmp(task_name,"hsm_put")){// Receive file to save
       // Write file on local disk
       char *dest = MSG_task_get_data(to_execute);
-      sg_storage_size_t size_to_write = (sg_storage_size_t)MSG_task_get_data_size(to_execute);
+      sg_size_t size_to_write = (sg_size_t)MSG_task_get_data_size(to_execute);
       write_local_file(dest, size_to_write);
 	}
 

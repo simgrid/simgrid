@@ -35,7 +35,7 @@ int host(int argc, char *argv[])
 {
   msg_file_t file = NULL;
   char* mount = xbt_strdup("/home");
-  sg_storage_size_t read,write;
+  sg_size_t read,write;
 
   if(!strcmp(MSG_process_get_name(MSG_process_self()),"0")){
     file = MSG_file_open(mount,FILENAME1, NULL);

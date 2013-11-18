@@ -71,14 +71,14 @@ void SIMIX_file_set_data(smx_file_t fd, void *data){
 }
 
 //SIMIX FILE READ
-void SIMIX_pre_file_read(smx_simcall_t simcall, smx_file_t fd, sg_storage_size_t size)
+void SIMIX_pre_file_read(smx_simcall_t simcall, smx_file_t fd, sg_size_t size)
 {
   smx_action_t action = SIMIX_file_read(simcall->issuer, fd, size);
   xbt_fifo_push(action->simcalls, simcall);
   simcall->issuer->waiting_action = action;
 }
 
-smx_action_t SIMIX_file_read(smx_process_t process, smx_file_t fd, sg_storage_size_t size)
+smx_action_t SIMIX_file_read(smx_process_t process, smx_file_t fd, sg_size_t size)
 {
   smx_action_t action;
   smx_host_t host = process->smx_host;
@@ -106,14 +106,14 @@ smx_action_t SIMIX_file_read(smx_process_t process, smx_file_t fd, sg_storage_si
 }
 
 //SIMIX FILE WRITE
-void SIMIX_pre_file_write(smx_simcall_t simcall, smx_file_t fd, sg_storage_size_t size)
+void SIMIX_pre_file_write(smx_simcall_t simcall, smx_file_t fd, sg_size_t size)
 {
   smx_action_t action = SIMIX_file_write(simcall->issuer, fd,  size);
   xbt_fifo_push(action->simcalls, simcall);
   simcall->issuer->waiting_action = action;
 }
 
-smx_action_t SIMIX_file_write(smx_process_t process, smx_file_t fd, sg_storage_size_t size)
+smx_action_t SIMIX_file_write(smx_process_t process, smx_file_t fd, sg_size_t size)
 {
   smx_action_t action;
   smx_host_t host = process->smx_host;
@@ -268,12 +268,12 @@ smx_action_t SIMIX_file_ls(smx_process_t process, const char* mount, const char 
   return action;
 }
 
-sg_storage_size_t SIMIX_pre_file_get_size(smx_simcall_t simcall, smx_file_t fd)
+sg_size_t SIMIX_pre_file_get_size(smx_simcall_t simcall, smx_file_t fd)
 {
   return SIMIX_file_get_size(simcall->issuer, fd);
 }
 
-sg_storage_size_t SIMIX_file_get_size(smx_process_t process, smx_file_t fd)
+sg_size_t SIMIX_file_get_size(smx_process_t process, smx_file_t fd)
 {
   smx_host_t host = process->smx_host;
   return  surf_workstation_get_size(host, fd->surf_file);
@@ -300,23 +300,23 @@ void SIMIX_storage_file_rename(smx_process_t process, smx_storage_t storage, con
   return  surf_storage_rename(storage, src, dest);
 }
 
-sg_storage_size_t SIMIX_pre_storage_get_free_size(smx_simcall_t simcall, const char* name)
+sg_size_t SIMIX_pre_storage_get_free_size(smx_simcall_t simcall, const char* name)
 {
   return SIMIX_storage_get_free_size(simcall->issuer, name);
 }
 
-sg_storage_size_t SIMIX_storage_get_free_size(smx_process_t process, const char* name)
+sg_size_t SIMIX_storage_get_free_size(smx_process_t process, const char* name)
 {
   smx_host_t host = process->smx_host;
   return  surf_workstation_get_free_size(host, name);
 }
 
-sg_storage_size_t SIMIX_pre_storage_get_used_size(smx_simcall_t simcall, const char* name)
+sg_size_t SIMIX_pre_storage_get_used_size(smx_simcall_t simcall, const char* name)
 {
   return SIMIX_storage_get_used_size(simcall->issuer, name);
 }
 
-sg_storage_size_t SIMIX_storage_get_used_size(smx_process_t process, const char* name)
+sg_size_t SIMIX_storage_get_used_size(smx_process_t process, const char* name)
 {
   smx_host_t host = process->smx_host;
   return  surf_workstation_get_used_size(host, name);
@@ -368,7 +368,7 @@ xbt_dict_t SIMIX_storage_get_content(smx_storage_t storage){
   return surf_storage_get_content(storage);
 }
 
-sg_storage_size_t SIMIX_storage_get_size(smx_storage_t storage){
+sg_size_t SIMIX_storage_get_size(smx_storage_t storage){
   xbt_assert((storage != NULL), "Invalid parameters (simix storage is NULL)");
   return surf_storage_get_size(storage);
 }

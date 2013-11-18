@@ -185,7 +185,7 @@ typedef enum {
 
 typedef struct ws_params {
   int ncpus;
-  long ramsize;
+  sg_size_t ramsize;
   int overcommit;
 
   /* The size of other states than memory pages, which is out-of-scope of dirty
@@ -263,11 +263,11 @@ surf_action_t surf_workstation_execute(surf_resource_t resource, double size);
 surf_action_t surf_workstation_sleep(surf_resource_t resource, double duration);
 surf_action_t surf_workstation_open(surf_resource_t workstation, const char* mount, const char* path);
 surf_action_t surf_workstation_close(surf_resource_t workstation, surf_file_t fd);
-surf_action_t surf_workstation_read(surf_resource_t resource, surf_file_t fd, sg_storage_size_t size);
-surf_action_t surf_workstation_write(surf_resource_t resource, surf_file_t fd, sg_storage_size_t size);
+surf_action_t surf_workstation_read(surf_resource_t resource, surf_file_t fd, sg_size_t size);
+surf_action_t surf_workstation_write(surf_resource_t resource, surf_file_t fd, sg_size_t size);
 xbt_dynar_t surf_workstation_get_info(surf_resource_t resource, surf_file_t fd);
-sg_storage_size_t surf_workstation_get_free_size(surf_resource_t resource, const char* name);
-sg_storage_size_t surf_workstation_get_used_size(surf_resource_t resource, const char* name);
+sg_size_t surf_workstation_get_free_size(surf_resource_t resource, const char* name);
+sg_size_t surf_workstation_get_used_size(surf_resource_t resource, const char* name);
 xbt_dynar_t surf_workstation_get_vms(surf_resource_t resource);
 void surf_workstation_get_params(surf_resource_t resource, ws_params_t params);
 void surf_workstation_set_params(surf_resource_t resource, ws_params_t params);
@@ -295,7 +295,7 @@ int surf_network_link_is_shared(surf_cpp_resource_t link);
 double surf_network_link_get_bandwidth(surf_cpp_resource_t link);
 double surf_network_link_get_latency(surf_cpp_resource_t link);
 xbt_dict_t surf_storage_get_content(surf_resource_t resource);
-sg_storage_size_t surf_storage_get_size(surf_resource_t resource);
+sg_size_t surf_storage_get_size(surf_resource_t resource);
 void surf_storage_rename(surf_resource_t resource, const char* src, const char* dest);
 void *surf_action_get_data(surf_action_t action);
 void surf_action_set_data(surf_action_t action, void *data);

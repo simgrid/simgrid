@@ -32,7 +32,7 @@ int host(int argc, char *argv[])
 {
   msg_file_t file = NULL;
   char* mount = xbt_strdup("/home");
-  sg_storage_size_t write;
+  sg_size_t write;
 
   // First open
   XBT_INFO("\tOpen file '%s'",FILENAME1);
