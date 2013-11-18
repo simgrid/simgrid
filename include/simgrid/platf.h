@@ -93,7 +93,7 @@ typedef xbt_dictelm_t sg_storage_t;
 static inline char* sg_storage_name(sg_storage_t storage) {
   return storage->key;
 }
-/* Type for any simgrid size size  */
+/* Type for any simgrid size */
 typedef unsigned long long sg_size_t;
 
 /*
