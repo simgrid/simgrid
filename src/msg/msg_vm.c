@@ -877,8 +877,8 @@ static double send_stage1(msg_host_t vm, const char *src_pm_name, const char *ds
   const char *vm_name = MSG_host_get_name(vm);
   char *mbox = get_mig_mbox_src_dst(vm_name, src_pm_name, dst_pm_name);
 
-  // const long chunksize = 1024 * 1024 * 100;
-  const sg_size_t chunksize = 1024L * 1024 * 100000;
+  // const long chunksize = (sg_size_t)1024 * 1024 * 100;
+  const sg_size_t chunksize = (sg_size_t)1024 * 1024 * 100000;
   sg_size_t remaining = ramsize;
   double computed_total = 0;
 
