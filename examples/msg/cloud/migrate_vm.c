@@ -1,4 +1,4 @@
-/* Copyright (c) 2007-2012. The SimGrid Team. All rights reserved. */
+/* Copyright (c) 2007-2013. The SimGrid Team. All rights reserved. */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -73,7 +73,7 @@ static int master_main(int argc, char *argv[])
   MSG_host_set_params(vm0, &params);
   MSG_vm_start(vm0);
 
-  XBT_INFO("Test: Migrate a VM with %ld Mbytes RAM", params.ramsize / 1000 / 1000);
+  XBT_INFO("Test: Migrate a VM with %llu Mbytes RAM", params.ramsize / 1000 / 1000);
   vm_migrate(vm0, pm1);
 
   MSG_vm_destroy(vm0);
@@ -85,7 +85,7 @@ static int master_main(int argc, char *argv[])
   MSG_host_set_params(vm0, &params);
   MSG_vm_start(vm0);
 
-  XBT_INFO("Test: Migrate a VM with %ld Mbytes RAM", params.ramsize / 1000 / 1000);
+  XBT_INFO("Test: Migrate a VM with %llu Mbytes RAM", params.ramsize / 1000 / 1000);
   vm_migrate(vm0, pm1);
 
   MSG_vm_destroy(vm0);
