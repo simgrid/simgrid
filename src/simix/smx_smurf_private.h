@@ -91,8 +91,8 @@
 #define TDPTR(n) (n, void*, dp, void*)
 #define TFPTR(n) (n, FPtr, fp, FPtr)
 #define TCPTR(n) (n, const void*, cp)
-#define TSIZE(n) (n, size_t, si)
-#define TSGSTSIZE(n) (n, sg_size_t, sgstsi)
+#define TSIZE(n) (n, size_t, sz)
+#define TSGSIZE(n) (n, sg_size_t, sgsz)
 #define TVOID(n) (n, void)
 #define TDSPEC(n,t) (n, t, dp, void*)
 #define TFSPEC(n,t) (n, t, fp, FPtr)
@@ -463,8 +463,8 @@ union u_smx_scalar {
   unsigned long   ul;
   float           f;
   double          d;
-  size_t          si;
-  sg_size_t  sgstsi;
+  size_t          sz;
+  sg_size_t       sgsz;
   void*           dp;
   FPtr            fp;
   const void*     cp;
