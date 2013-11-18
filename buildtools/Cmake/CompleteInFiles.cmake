@@ -98,7 +98,8 @@ if(enable_ns3)
   include(FindNS3)
 endif()
 
-find_package( Boost REQUIRED)
+find_package(Boost REQUIRED)
+include_directories(${Boost_INCLUDE_DIRS})
 
 # Checks for header libraries functions.
 CHECK_LIBRARY_EXISTS(pthread pthread_create          "" pthread)
