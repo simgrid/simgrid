@@ -1,4 +1,4 @@
- /* Copyright (c) 2007-2010, 2012-2013. The SimGrid Team.
+/* Copyright (c) 2007-2010, 2012-2013. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -384,17 +384,17 @@ ACTION(SIMCALL_SEM_ACQUIRE_TIMEOUT, sem_acquire_timeout, WITHOUT_ANSWER, TVOID(r
 ACTION(SIMCALL_SEM_GET_CAPACITY, sem_get_capacity, WITH_ANSWER, TINT(result), TDSPEC(sem, smx_sem_t)) sep \
 ACTION(SIMCALL_FILE_GET_DATA, file_get_data, WITH_ANSWER, TDPTR(result), TDSPEC(fd, smx_file_t)) sep \
 ACTION(SIMCALL_FILE_SET_DATA, file_set_data, WITH_ANSWER, TVOID(result), TDSPEC(fd, smx_file_t), TDPTR(data)) sep \
-ACTION(SIMCALL_FILE_READ, file_read, WITHOUT_ANSWER, TSIZE(result), TDSPEC(fd, smx_file_t),  TSIZE(size)) sep \
-ACTION(SIMCALL_FILE_WRITE, file_write, WITHOUT_ANSWER, TSIZE(result), TDSPEC(fd, smx_file_t), TSIZE(size)) sep \
+ACTION(SIMCALL_FILE_READ, file_read, WITHOUT_ANSWER, TSGSIZE(result), TDSPEC(fd, smx_file_t),  TSGSIZE(size)) sep \
+ACTION(SIMCALL_FILE_WRITE, file_write, WITHOUT_ANSWER, TSGSIZE(result), TDSPEC(fd, smx_file_t), TSGSIZE(size)) sep \
 ACTION(SIMCALL_FILE_OPEN, file_open, WITHOUT_ANSWER, TDSPEC(result, smx_file_t), TSTRING(mount), TSTRING(path)) sep \
 ACTION(SIMCALL_FILE_CLOSE, file_close, WITHOUT_ANSWER, TINT(result), TDSPEC(fd, smx_file_t)) sep \
 ACTION(SIMCALL_FILE_UNLINK, file_unlink, WITH_ANSWER, TINT(result), TDSPEC(fd, smx_file_t)) sep \
 ACTION(SIMCALL_FILE_LS, file_ls, WITHOUT_ANSWER, TDSPEC(result, xbt_dict_t), TSTRING(mount), TSTRING(path)) sep \
-ACTION(SIMCALL_FILE_GET_SIZE, file_get_size, WITH_ANSWER, TSIZE(result), TDSPEC(fd, smx_file_t)) sep \
+ACTION(SIMCALL_FILE_GET_SIZE, file_get_size, WITH_ANSWER, TSGSIZE(result), TDSPEC(fd, smx_file_t)) sep \
 ACTION(SIMCALL_FILE_GET_INFO, file_get_info, WITH_ANSWER, TDSPEC(result, xbt_dynar_t), TDSPEC(fd, smx_file_t)) sep \
 ACTION(SIMCALL_STORAGE_FILE_RENAME, storage_file_rename, WITH_ANSWER, TVOID(result), TDSPEC(storage, smx_storage_t), TSTRING(src), TSTRING(dest)) sep \
-ACTION(SIMCALL_STORAGE_GET_FREE_SIZE, storage_get_free_size, WITH_ANSWER, TSIZE(result), TSTRING(name)) sep \
-ACTION(SIMCALL_STORAGE_GET_USED_SIZE, storage_get_used_size, WITH_ANSWER, TSIZE(result), TSTRING(name)) sep \
+ACTION(SIMCALL_STORAGE_GET_FREE_SIZE, storage_get_free_size, WITH_ANSWER, TSGSIZE(result), TSTRING(name)) sep \
+ACTION(SIMCALL_STORAGE_GET_USED_SIZE, storage_get_used_size, WITH_ANSWER, TSGSIZE(result), TSTRING(name)) sep \
 ACTION(SIMCALL_STORAGE_GET_PROPERTIES, storage_get_properties, WITH_ANSWER, TDSPEC(result, xbt_dict_t), TDSPEC(storage, smx_storage_t)) sep \
 ACTION(SIMCALL_STORAGE_GET_CONTENT, storage_get_content, WITH_ANSWER, TDSPEC(result, xbt_dict_t), TDSPEC(storage, smx_storage_t)) sep \
 ACTION(SIMCALL_ASR_GET_PROPERTIES, asr_get_properties, WITH_ANSWER, TDSPEC(result, xbt_dict_t), TSTRING(name)) sep 
