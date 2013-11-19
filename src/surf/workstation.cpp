@@ -51,6 +51,7 @@ void surf_workstation_model_init_compound()
 }
 
 WorkstationModel::WorkstationModel() : Model("Workstation") {
+  p_cpuModel = surf_cpu_model_pm;
 }
 
 WorkstationModel::~WorkstationModel() {
@@ -125,7 +126,7 @@ void WorkstationModel::adjustWeightOfDummyCpuActions()
 double WorkstationModel::shareResources(double now){
   adjustWeightOfDummyCpuActions();
 
-  double min_by_cpu = surf_cpu_model_pm->shareResources(now);
+  double min_by_cpu = p_cpuModel->shareResources(now);
   double min_by_net = surf_network_model->shareResources(now);
 
   XBT_DEBUG("model %p, %s min_by_cpu %f, %s min_by_net %f",
