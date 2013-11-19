@@ -99,7 +99,11 @@ if(enable_ns3)
 endif()
 
 find_package(Boost REQUIRED)
-include_directories(${Boost_INCLUDE_DIRS})
+if(Boost_FOUND)
+  include_directories(${Boost_INCLUDE_DIRS})
+else()
+  message(FATAL_ERROR, "Failed to find Boost libraries")
+endif()
 
 # Checks for header libraries functions.
 CHECK_LIBRARY_EXISTS(pthread pthread_create          "" pthread)
