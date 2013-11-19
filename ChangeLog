@@ -5,6 +5,9 @@ SimGrid (3.11) NOT RELEASED; urgency=low
    release of version 3.10.
  * Switch to tesh.pl, and kill the now unused parts of xbt that seem fragile
  * Switch to surf++, and reintegrate the hypervisor branch on top of it
+ * Kill support for 32bits host architecture. 
+   - Integers are too short to store a date or a size
+   - Plus, less platforms ~> simpler codebase ~> easier to maintain
 
  -- $date Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
 
