@@ -6,6 +6,7 @@
 #include <xbt.h>
 #include <string>
 #include <vector>
+#include <iostream>
 #include <memory>
 #include <boost/function.hpp>
 #include "surf/trace_mgr.h"
