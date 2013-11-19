@@ -14,15 +14,21 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_vm_workstation, surf,
 WorkstationVMModelPtr surf_vm_workstation_model = NULL;
 
 void surf_vm_workstation_model_init_current_default(void){
-  surf_vm_workstation_model = new WorkstationVMModel();
-  xbt_dynar_push(model_list, &surf_vm_workstation_model);
-  xbt_dynar_push(model_list_invoke, &surf_vm_workstation_model);
+  if (surf_cpu_model_vm) {
+    surf_vm_workstation_model = new WorkstationVMModel();
+    ModelPtr model = static_cast<ModelPtr>(surf_vm_workstation_model);
+
+    xbt_dynar_push(model_list, &model);
+    xbt_dynar_push(model_list_invoke, &model);
+  }
 }
+
 /*********
  * Model *
  *********/
 
 WorkstationVMModel::WorkstationVMModel() : WorkstationModel("Virtual Workstation") {
+  p_cpuModel = surf_cpu_model_vm;
 }
 
 /* ind means ''indirect'' that this is a reference on the whole dict_elm
@@ -59,8 +65,10 @@ double WorkstationVMModel::shareResources(double now)
   /* 0. Make sure that we already calculated the resource share at the physical
    * machine layer. */
   {
-    unsigned int index_of_pm_ws_model = xbt_dynar_search(model_list_invoke, &surf_workstation_model);
-    unsigned int index_of_vm_ws_model = xbt_dynar_search(model_list_invoke, &surf_vm_workstation_model);
+	ModelPtr ws_model = static_cast<ModelPtr>(surf_workstation_model);
+	ModelPtr vm_ws_model = static_cast<ModelPtr>(surf_vm_workstation_model);
+    unsigned int index_of_pm_ws_model = xbt_dynar_search(model_list_invoke, &ws_model);
+    unsigned int index_of_vm_ws_model = xbt_dynar_search(model_list_invoke, &vm_ws_model);
     xbt_assert((index_of_pm_ws_model < index_of_vm_ws_model), "Cannot assume surf_workstation_model comes before");
 
     /* Another option is that we call sub_ws->share_resource() here. The

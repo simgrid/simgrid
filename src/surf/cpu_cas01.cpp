@@ -43,8 +43,8 @@ void surf_cpu_model_init_Cas01()
 {
   char *optim = xbt_cfg_get_string(_sg_cfg_set, "cpu/optim");
 
-  if (surf_cpu_model_pm)
-    return;
+  xbt_assert(!surf_cpu_model_pm);
+  xbt_assert(!surf_cpu_model_vm);
 
   if (!strcmp(optim, "TI")) {
     surf_cpu_model_init_ti();
@@ -52,9 +52,13 @@ void surf_cpu_model_init_Cas01()
   }
 
   surf_cpu_model_pm = new CpuCas01Model();
+  surf_cpu_model_vm  = new CpuCas01Model();
+
   cpu_define_callbacks();
-  ModelPtr model = static_cast<ModelPtr>(surf_cpu_model_pm);
-  xbt_dynar_push(model_list, &model);
+  ModelPtr model_pm = static_cast<ModelPtr>(surf_cpu_model_pm);
+  ModelPtr model_vm = static_cast<ModelPtr>(surf_cpu_model_vm);
+  xbt_dynar_push(model_list, &model_pm);
+  xbt_dynar_push(model_list, &model_vm);
 }
 
 CpuCas01Model::CpuCas01Model() : CpuModel("cpu")

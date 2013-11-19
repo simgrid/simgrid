@@ -52,6 +52,7 @@ public:
                                         double rate);
  virtual xbt_dynar_t getRoute(WorkstationCLM03Ptr src, WorkstationCLM03Ptr dst);
  virtual ActionPtr communicate(WorkstationCLM03Ptr src, WorkstationCLM03Ptr dst, double size, double rate);
+ CpuModelPtr p_cpuModel;
 };
 
 /************

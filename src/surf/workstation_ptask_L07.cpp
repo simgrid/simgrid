@@ -25,6 +25,7 @@ WorkstationL07Model::WorkstationL07Model() : WorkstationModel("Workstation ptask
 	                                                  0.000015, NULL,
 	                                                  SURF_RESOURCE_ON, NULL,
 	                                                  SURF_LINK_FATPIPE, NULL));
+  p_cpuModel = surf_cpu_model_pm;
 }
 
 WorkstationL07Model::~WorkstationL07Model() {
@@ -860,4 +861,5 @@ void surf_workstation_model_init_ptask_L07(void)
   surf_workstation_model = new WorkstationL07Model();
   ModelPtr model = static_cast<ModelPtr>(surf_workstation_model);
   xbt_dynar_push(model_list, &model);
+  xbt_dynar_push(model_list_invoke, &model);
 }

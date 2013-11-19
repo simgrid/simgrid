@@ -30,6 +30,7 @@ void surf_workstation_model_init_current_default(void)
   xbt_cfg_setdefault_boolean(_sg_cfg_set, "network/crosstraffic", "yes");
   surf_cpu_model_init_Cas01();
   surf_network_model_init_LegrandVelho();
+  surf_workstation_model->p_cpuModel = surf_cpu_model_pm;
 
   ModelPtr model = static_cast<ModelPtr>(surf_workstation_model);
   xbt_dynar_push(model_list, &model);

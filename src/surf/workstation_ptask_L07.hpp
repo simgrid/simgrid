@@ -59,7 +59,6 @@ public:
   xbt_dynar_t getRoute(WorkstationCLM03Ptr src, WorkstationCLM03Ptr dst);
   ActionPtr communicate(WorkstationCLM03Ptr src, WorkstationCLM03Ptr dst, double size, double rate);
   void addTraces();
-  CpuL07ModelPtr p_cpuModel;
   NetworkL07ModelPtr p_networkModel;
 };
 
@@ -74,6 +73,7 @@ public:
                                  tmgr_trace_t state_trace,
                                  xbt_dict_t cpu_properties);
   void addTraces() {DIE_IMPOSSIBLE;};
+
   WorkstationL07ModelPtr p_workstationModel;
 };
 
