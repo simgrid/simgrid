@@ -248,10 +248,8 @@ void surf_network_model_init_Vegas(void)
   xbt_cfg_setdefault_double(_sg_cfg_set, "network/weight_S", 8775);
 }
 
-NetworkCm02Model::NetworkCm02Model() : NetworkCm02Model("network"){
-}
-
-NetworkCm02Model::NetworkCm02Model(string name) : Model(name){
+void NetworkCm02Model::initialize()
+{
   ActionLmmPtr comm;
 
   char *optim = xbt_cfg_get_string(_sg_cfg_set, "network/optim");

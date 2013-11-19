@@ -35,13 +35,19 @@ void net_define_callbacks(void);
  * Model *
  *********/
 class NetworkCm02Model : public Model {
+private:
+  void initialize();
 public:
   NetworkCm02Model(int i) : Model("network") {
 	f_networkSolve = lmm_solve;
 	m_haveGap = false;
   };//FIXME: add network clean interface
-  NetworkCm02Model(string name);
-  NetworkCm02Model();
+  NetworkCm02Model(string name) : Model(name) {
+    this->initialize();
+  }
+  NetworkCm02Model() : Model("network") {
+    this->initialize();
+  }
   //FIXME:NetworkCm02LinkPtr createResource(string name);
   NetworkCm02LinkLmmPtr createResource(const char *name,
                                    double bw_initial,
