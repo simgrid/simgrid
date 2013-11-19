@@ -92,7 +92,7 @@ bug. Please report it (or fix it yourself if you can).
 **
 *****************************************************
 
-MALLOC:
+MALLOC
  Don't use it, or you'll have to check the result (and do some dirty stuff
  on AIX). Use xbt_malloc (or even better, xbt_new) instead.
 
@@ -101,6 +101,12 @@ SIZE_T (FIXME: obsolete?)
  #include <sys/types.h> in all files manipulating size_t
  do cast it to unsigned long before printing (and use %lu),
  or use %zu.
+
+INTEGERS
+ Please avoid to use long ints.  This is the source of many compatibility
+ problems betwwen 32 bits and 64 bits archs.  Either use plain ints (generally
+ 32 bits width) or long long ints (64 bits width, at least).  At last resort
+ consider using integer types defined in C99 by <stdint.h>.
 
 PRINTF pointer difference (FIXME: advertise %td instead?)
  printf ("diff = %ld\n", (long) (pointer2 - pointer1));
