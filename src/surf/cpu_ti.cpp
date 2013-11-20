@@ -998,9 +998,5 @@ double CpuTiAction::getRemains()
   return m_remains;
 }
 
-static void check() {
-  CpuTiActionPtr cupAction = new CpuTiAction(NULL, 0, true);
-}
-
 #endif /* SURF_MODEL_CPUTI_H_ */
 
