@@ -273,16 +273,13 @@ WorkstationVM2013Lmm::~WorkstationVM2013Lmm()
   /* Free the cpu resource of the VM. If using power_trace, we will have to
    * free other objects than lmm_constraint. */
   lmm_constraint_free(cpu->p_model->p_maxminSystem, cpu->p_constraint);
-  {
-    unsigned long i;
-    for (i = 0; i < cpu->m_core; i++) {
-      void *cnst_id = cpu->p_constraintCore[i]->id;
-      lmm_constraint_free(cpu->p_model->p_maxminSystem, cpu->p_constraintCore[i]);
-      xbt_free(cnst_id);
-    }
-
-    xbt_free(cpu->p_constraintCore);
+  for (int i = 0; i < cpu->m_core; i++) {
+    void *cnst_id = cpu->p_constraintCore[i]->id;
+    lmm_constraint_free(cpu->p_model->p_maxminSystem, cpu->p_constraintCore[i]);
+    xbt_free(cnst_id);
   }
+
+  xbt_free(cpu->p_constraintCore);
 
   delete cpu;
 

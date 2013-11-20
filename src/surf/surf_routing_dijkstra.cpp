@@ -184,7 +184,7 @@ xbt_dynar_t AsDijkstra::getOnelinkRoutes()
 
   int src,dst;
   RoutingEdgePtr src_elm, dst_elm;
-  size_t table_size = xbt_dynar_length(p_indexNetworkElm);
+  int table_size = (int)xbt_dynar_length(p_indexNetworkElm);
   for(src=0; src < table_size; src++) {
     for(dst=0; dst< table_size; dst++) {
       xbt_dynar_reset(route->link_list);

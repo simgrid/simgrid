@@ -30,8 +30,8 @@ AsFloyd::AsFloyd(): AsGeneric() {
 
 AsFloyd::~AsFloyd(){
   int i, j;
-  size_t table_size;
-  table_size = xbt_dynar_length(p_indexNetworkElm);
+  int table_size;
+  table_size = (int)xbt_dynar_length(p_indexNetworkElm);
     /* Delete link_table */
     for (i = 0; i < table_size; i++)
       for (j = 0; j < table_size; j++)
@@ -144,7 +144,7 @@ void AsFloyd::parseRoute(sg_platf_route_cbarg_t route)
   int as_route = 0;
 
   /* set the size of table routing */
-  size_t table_size = xbt_dynar_length(p_indexNetworkElm);
+  int table_size = (int)xbt_dynar_length(p_indexNetworkElm);
   RoutingEdgePtr src_net_elm, dst_net_elm;
 
   src_net_elm = sg_routing_edge_by_name_or_null(src);

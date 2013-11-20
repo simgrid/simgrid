@@ -463,7 +463,7 @@ double CpuCas01Lmm::getCurrentPowerPeak()
 double CpuCas01Lmm::getPowerPeakAt(int pstate_index)
 {
   xbt_dynar_t plist = p_powerPeakList;
-  xbt_assert((pstate_index <= xbt_dynar_length(plist)), "Invalid parameters (pstate index out of bounds)");
+  xbt_assert((pstate_index <= (int)xbt_dynar_length(plist)), "Invalid parameters (pstate index out of bounds)");
 
   return xbt_dynar_get_as(plist, pstate_index, double);
 }
@@ -476,7 +476,7 @@ int CpuCas01Lmm::getNbPstates()
 void CpuCas01Lmm::setPowerPeakAt(int pstate_index)
 {
   xbt_dynar_t plist = p_powerPeakList;
-  xbt_assert((pstate_index <= xbt_dynar_length(plist)), "Invalid parameters (pstate index out of bounds)");
+  xbt_assert((pstate_index <= (int)xbt_dynar_length(plist)), "Invalid parameters (pstate index out of bounds)");
 
   double new_power_peak = xbt_dynar_get_as(plist, pstate_index, double);
   m_pstate = pstate_index;

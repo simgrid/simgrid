@@ -205,8 +205,7 @@ void CpuActionLmm::setAffinity(CpuLmmPtr cpu, unsigned long mask)
     unsigned long nbits = 0;
 
     /* FIXME: There is much faster algorithms doing this. */
-    unsigned long i;
-    for (i = 0; i < cpu->m_core; i++) {
+    for (int i = 0; i < cpu->m_core; i++) {
       unsigned long has_affinity = (1UL << i) & mask;
       if (has_affinity)
         nbits += 1;
@@ -219,11 +218,8 @@ void CpuActionLmm::setAffinity(CpuLmmPtr cpu, unsigned long mask)
     }
   }
 
-
-
-  unsigned long i;
-  for (i = 0; i < cpu->m_core; i++) {
-    XBT_DEBUG("clear affinity %p to cpu-%lu@%s", this, i,  cpu->m_name);
+  for (int i = 0; i < cpu->m_core; i++) {
+    XBT_DEBUG("clear affinity %p to cpu-%d@%s", this, i,  cpu->m_name);
     lmm_shrink(cpu->p_model->p_maxminSystem, cpu->p_constraintCore[i], var_obj);
 
     unsigned long has_affinity = (1UL << i) & mask;
@@ -237,7 +233,7 @@ void CpuActionLmm::setAffinity(CpuLmmPtr cpu, unsigned long mask)
        * accept affinity settings on a future host. We might be able to assign
        * zero to elem->value to maintain such inactive affinity settings in the
        * system. But, this will make the system complex. */
-      XBT_DEBUG("set affinity %p to cpu-%lu@%s", this, i, cpu->m_name);
+      XBT_DEBUG("set affinity %p to cpu-%d@%s", this, i, cpu->m_name);
       lmm_expand(cpu->p_model->p_maxminSystem, cpu->p_constraintCore[i], var_obj, 1.0);
     }
   }

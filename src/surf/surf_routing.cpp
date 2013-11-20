@@ -1,4 +1,4 @@
-/* Copyright (c) 2009, 2010, 2011. The SimGrid Team.
+/* Copyright (c) 2009, 2010, 2011, 2013. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -132,7 +132,7 @@ static void parse_S_host_link(sg_platf_host_link_cbarg_t host)
     current_routing->p_linkUpDownList = xbt_dynar_new(sizeof(s_surf_parsing_link_up_down_t),NULL);
 
   // If dynar is is greater than edge id and if the host_link is already defined
-  if(xbt_dynar_length(current_routing->p_linkUpDownList) > info->m_id &&
+  if((int)xbt_dynar_length(current_routing->p_linkUpDownList) > info->m_id &&
       xbt_dynar_get_as(current_routing->p_linkUpDownList, info->m_id, void*))
     xbt_die("Host_link for '%s' is already defined!",host->id);
 

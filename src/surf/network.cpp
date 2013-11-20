@@ -322,7 +322,7 @@ void NetworkCm02Model::updateActionsStateLazy(double now, double delta)
 #ifdef HAVE_TRACING
     if (TRACE_is_enabled()) {
       int n = lmm_get_number_of_cnst_from_var(p_maxminSystem, action->p_variable);
-      unsigned int i;
+      int i;
       for (i = 0; i < n; i++){
         lmm_constraint_t constraint = lmm_get_cnst_from_var(p_maxminSystem,
                                                             action->p_variable,

@@ -24,12 +24,12 @@ AS_t model_full_create(void)
 
 void model_full_end(AS_t _routing)
 {
-  unsigned int i;
+  int i;
   sg_platf_route_cbarg_t e_route;
 
   /* set utils vars */
   AsFullPtr routing = ((AsFullPtr) _routing);
-  size_t table_size = xbt_dynar_length(routing->p_indexNetworkElm);
+  int table_size = (int)xbt_dynar_length(routing->p_indexNetworkElm);
 
   /* Create table if necessary */
   if (!routing->p_routingTable)
@@ -56,7 +56,7 @@ AsFull::AsFull(){
 }
 
 AsFull::~AsFull(){
-  size_t table_size = xbt_dynar_length(p_indexNetworkElm);
+  int table_size = (int)xbt_dynar_length(p_indexNetworkElm);
   int i, j;
   /* Delete routing table */
   for (i = 0; i < table_size; i++)
