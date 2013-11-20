@@ -115,9 +115,13 @@ public:
   //FIXME: remove
   void updateState(tmgr_trace_event_t event_type, double value, double date) {
 	WorkstationCLM03Lmm::updateState(event_type, value, date);
-  };
-  bool isUsed() {WorkstationCLM03Lmm::isUsed();};
-  xbt_dict_t getProperties() {WorkstationCLM03Lmm::getProperties();};
+  }
+  bool isUsed() {
+    return WorkstationCLM03Lmm::isUsed();
+  }
+  xbt_dict_t getProperties() {
+    return WorkstationCLM03Lmm::getProperties();
+  }
   ActionPtr execute(double size);
 
 };
