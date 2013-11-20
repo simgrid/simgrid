@@ -181,10 +181,10 @@ double WorkstationVMModel::shareResources(double now)
 
 WorkstationVM2013Lmm::WorkstationVM2013Lmm(WorkstationVMModelPtr model, const char* name, xbt_dict_t props,
 		                                   surf_resource_t ind_phys_workstation)
-  :  WorkstationVM2013(model, name, props, NULL, NULL),
-     WorkstationCLM03Lmm(model, name, props, NULL, NULL, NULL),
+  :  Resource(model, name, props),
      WorkstationCLM03(model, name, props, NULL, NULL, NULL),
-     Resource(model, name, props) {
+     WorkstationVM2013(model, name, props, NULL, NULL),
+     WorkstationCLM03Lmm(model, name, props, NULL, NULL, NULL) {
   WorkstationCLM03Ptr sub_ws = dynamic_cast<WorkstationCLM03Ptr>(
                                static_cast<ResourcePtr>(
                                  surf_workstation_resource_priv(ind_phys_workstation)));

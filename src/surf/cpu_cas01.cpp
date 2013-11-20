@@ -200,10 +200,10 @@ void CpuCas01Model::addTraces()
  * Resource *
  ************/
 CpuCas01Lmm::CpuCas01Lmm(CpuCas01ModelPtr model, const char *name, xbt_dynar_t powerPeak,
-		int pstate, double powerScale, tmgr_trace_t powerTrace, int core,
-        e_surf_resource_state_t stateInitial, tmgr_trace_t stateTrace,
-	xbt_dict_t properties) :
-	CpuLmm(model, name, properties), Resource(model, name, properties) {
+                         int pstate, double powerScale, tmgr_trace_t powerTrace, int core,
+                         e_surf_resource_state_t stateInitial, tmgr_trace_t stateTrace,
+                         xbt_dict_t properties) :
+       Resource(model, name, properties), CpuLmm(model, name, properties) {
   m_powerPeak = xbt_dynar_get_as(powerPeak, pstate, double);
   p_powerPeakList = powerPeak;
   m_pstate = pstate;

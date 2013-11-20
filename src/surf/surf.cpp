@@ -419,9 +419,9 @@ void surf_exit(void)
  *********/
 
 Model::Model(string name)
- : m_name(name), m_resOnCB(0), m_resOffCB(0),
-   m_actSuspendCB(0), m_actCancelCB(0), m_actResumeCB(0),
-   p_maxminSystem(0)
+  : p_maxminSystem(0),  m_name(name),
+    m_resOnCB(0), m_resOffCB(0),
+    m_actCancelCB(0), m_actSuspendCB(0), m_actResumeCB(0)
 {
   ActionPtr action = NULL;
   p_readyActionSet = xbt_swag_new(xbt_swag_offset(*action, p_stateHookup));
@@ -664,7 +664,7 @@ void Model::notifyActionSuspend(ActionPtr a)
  ************/
 
 Resource::Resource(surf_model_t model, const char *name, xbt_dict_t props)
-  : m_name(xbt_strdup(name)), m_running(true), p_model(model), m_properties(props)
+  : m_name(xbt_strdup(name)), m_properties(props), p_model(model), m_running(true)
 {}
 
 Resource::Resource(){
@@ -749,9 +749,14 @@ const char *surf_action_state_names[6] = {
 Action::Action(){}
 
 Action::Action(ModelPtr model, double cost, bool failed):
-	 m_cost(cost), p_model(model), m_failed(failed), m_remains(cost),
-	 m_refcount(1), m_priority(1.0), m_maxDuration(NO_MAX_DURATION),
-	 m_start(surf_get_clock()), m_finish(-1.0)
+         m_priority(1.0),
+         m_failed(failed),
+         m_start(surf_get_clock()), m_finish(-1.0),
+         m_remains(cost),
+         m_maxDuration(NO_MAX_DURATION),
+         m_cost(cost),
+         p_model(model),
+         m_refcount(1)
 {
   #ifdef HAVE_TRACING
     p_category = NULL;

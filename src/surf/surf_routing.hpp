@@ -82,7 +82,7 @@ public:
 class Onelink {
 public:
   Onelink(void *link, RoutingEdgePtr src, RoutingEdgePtr dst)
-   : p_link(link), p_src(src), p_dst(dst) {};
+    : p_src(src), p_dst(dst), p_link(link) {};
   RoutingEdgePtr p_src;
   RoutingEdgePtr p_dst;
   void *p_link;

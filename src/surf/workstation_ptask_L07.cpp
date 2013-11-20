@@ -441,8 +441,8 @@ void WorkstationL07Model::addTraces()
 
 WorkstationL07::WorkstationL07(WorkstationModelPtr model, const char* name, xbt_dict_t props, RoutingEdgePtr netElm, CpuPtr cpu)
   : Resource(model, name, props),
-    WorkstationCLM03Lmm(model, name, props, NULL, netElm, cpu),
-    WorkstationCLM03(model, name, props, NULL, netElm, cpu)
+    WorkstationCLM03(model, name, props, NULL, netElm, cpu),
+    WorkstationCLM03Lmm(model, name, props, NULL, netElm, cpu)
 {
 }
 
