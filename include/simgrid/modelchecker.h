@@ -13,6 +13,8 @@
 #ifndef SIMGRID_MODELCHECKER_H
 #define SIMGRID_MODELCHECKER_H
 
+SG_BEGIN_DECL()
+
 #ifdef HAVE_MC
 
 extern int _sg_do_model_check; /* please don't use directly: we inline MC_is_active, but that's what you should use */
@@ -44,6 +46,6 @@ XBT_PUBLIC(void) MC_ignore(void *addr, size_t size);
 
 #endif
 
-
+SG_END_DECL()
 
 #endif /* SIMGRID_MODELCHECKER_H */
