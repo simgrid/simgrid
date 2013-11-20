@@ -173,8 +173,6 @@ static xbt_parmap_t surf_parmap = NULL; /* parallel map on models */
 #endif
 
 static double *surf_mins = NULL; /* return value of share_resources for each model */
-static int surf_min_index;       /* current index in surf_mins */
-static double min;               /* duration determined by surf_solve */
 
 double NOW = 0;
 

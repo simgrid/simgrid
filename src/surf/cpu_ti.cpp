@@ -470,9 +470,6 @@ CpuTiPtr CpuTiModel::createResource(const char *name,
                            tmgr_trace_t stateTrace,
                            xbt_dict_t cpuProperties)
 {
-  tmgr_trace_t empty_trace;
-  s_tmgr_event_t val;
-  CpuTiActionPtr cpuAction;
   xbt_assert(core==1,"Multi-core not handled with this model yet");
   xbt_assert(!surf_cpu_resource_priv(surf_cpu_resource_by_name(name)),
               "Host '%s' declared several times in the platform file",
