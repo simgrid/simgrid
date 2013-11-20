@@ -527,7 +527,7 @@ double Model::shareResourcesLazy(double now)
   return min;
 }
 
-double Model::shareResourcesFull(double now) {
+double Model::shareResourcesFull(double /*now*/) {
   THROW_UNIMPLEMENTED;
 }
 
@@ -599,12 +599,12 @@ void Model::updateActionsState(double now, double delta)
 	xbt_die("Invalid cpu update mechanism!");
 }
 
-void Model::updateActionsStateLazy(double now, double delta)
+void Model::updateActionsStateLazy(double /*now*/, double /*delta*/)
 {
 
 }
 
-void Model::updateActionsStateFull(double now, double delta)
+void Model::updateActionsStateFull(double /*now*/, double /*delta*/)
 {
 
 }

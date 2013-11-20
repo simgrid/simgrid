@@ -420,7 +420,7 @@ void routing_AS_begin(sg_platf_AS_cbarg_t AS)
  * even if you add stuff to a closed AS
  *
  */
-void routing_AS_end(sg_platf_AS_cbarg_t AS)
+void routing_AS_end(sg_platf_AS_cbarg_t /*AS*/)
 {
 
   if (current_routing == NULL) {

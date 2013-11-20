@@ -38,7 +38,7 @@ class NetworkCm02Model : public Model {
 private:
   void initialize();
 public:
-  NetworkCm02Model(int i) : Model("network") {
+  NetworkCm02Model(int /*i*/) : Model("network") {
 	f_networkSolve = lmm_solve;
 	m_haveGap = false;
   };//FIXME: add network clean interface
@@ -59,7 +59,7 @@ public:
                                    e_surf_link_sharing_policy_t policy,
                                    xbt_dict_t properties);
   void updateActionsStateLazy(double now, double delta);
-  virtual void gapAppend(double size, const NetworkCm02LinkLmmPtr link, NetworkCm02ActionLmmPtr action) {};
+  virtual void gapAppend(double /*size*/, const NetworkCm02LinkLmmPtr /*link*/, NetworkCm02ActionLmmPtr /*action*/) {};
   virtual ActionPtr communicate(RoutingEdgePtr src, RoutingEdgePtr dst,
 		                           double size, double rate);
   xbt_dynar_t getRoute(RoutingEdgePtr src, RoutingEdgePtr dst); //FIXME: kill field? That is done by the routing nowadays

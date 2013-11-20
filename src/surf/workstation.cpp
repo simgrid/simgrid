@@ -143,7 +143,7 @@ double WorkstationModel::shareResources(double now){
     return min_by_cpu;  /* probably min_by_cpu == min_by_net == -1 */
 }
 
-void WorkstationModel::updateActionsState(double now, double delta){
+void WorkstationModel::updateActionsState(double /*now*/, double /*delta*/){
   return;
 }
 
@@ -204,7 +204,7 @@ bool WorkstationCLM03::isUsed(){
   return -1;
 }
 
-void WorkstationCLM03::updateState(tmgr_trace_event_t event_type, double value, double date){
+void WorkstationCLM03::updateState(tmgr_trace_event_t /*event_type*/, double /*value*/, double /*date*/){
   THROW_IMPOSSIBLE;             /* This model does not implement parallel tasks */
 }
 

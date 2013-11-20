@@ -4,7 +4,7 @@
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_network);
 static int host_number_int = 0;
 
-static void netcste_count_hosts(sg_platf_host_cbarg_t h) {
+static void netcste_count_hosts(sg_platf_host_cbarg_t /*h*/) {
   host_number_int++;
 }
 
@@ -24,7 +24,7 @@ void surf_network_model_init_Constant()
   routing_model_create(NULL);
 }
 
-double NetworkConstantModel::shareResources(double now)
+double NetworkConstantModel::shareResources(double /*now*/)
 {
   void *_action = NULL;
   NetworkConstantActionLmmPtr action = NULL;
@@ -43,7 +43,7 @@ double NetworkConstantModel::shareResources(double now)
   return min;
 }
 
-void NetworkConstantModel::updateActionsState(double now, double delta)
+void NetworkConstantModel::updateActionsState(double /*now*/, double delta)
 {
   void *_action, *_next_action;
   NetworkConstantActionLmmPtr action = NULL;
@@ -94,8 +94,8 @@ bool NetworkConstantLinkLmm::isUsed()
   return 0;
 }
 
-void NetworkConstantLinkLmm::updateState(tmgr_trace_event_t event_type,
-                                      double value, double time)
+void NetworkConstantLinkLmm::updateState(tmgr_trace_event_t /*event_type*/,
+                                         double /*value*/, double /*time*/)
 {
   DIE_IMPOSSIBLE;
 }
@@ -139,7 +139,7 @@ void NetworkConstantActionLmm::cancel()
 }
 
 #ifdef HAVE_TRACING
-void NetworkConstantActionLmm::setCategory(const char *category)
+void NetworkConstantActionLmm::setCategory(const char */*category*/)
 {
   //ignore completely the categories in constant model, they are not traced
 }

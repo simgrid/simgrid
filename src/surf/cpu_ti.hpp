@@ -93,12 +93,12 @@ public:
   void addTraces();
 
 protected:
-  void NotifyResourceTurnedOn(ResourcePtr r){};
-  void NotifyResourceTurnedOff(ResourcePtr r){};
+  void NotifyResourceTurnedOn(ResourcePtr){};
+  void NotifyResourceTurnedOff(ResourcePtr){};
 
-  void NotifyActionCancel(ActionPtr a){};
-  void NotifyActionResume(ActionPtr a){};
-  void NotifyActionSuspend(ActionPtr a){};
+  void NotifyActionCancel(ActionPtr){};
+  void NotifyActionResume(ActionPtr){};
+  void NotifyActionSuspend(ActionPtr){};
 };
 
 /************
@@ -123,13 +123,13 @@ public:
   double getAvailableSpeed();
 
   xbt_dynar_t getWattsRangeList() {THROW_UNIMPLEMENTED;};
-  double getCurrentWattsValue(double cpu_load) {THROW_UNIMPLEMENTED;};
-  void updateEnergy(double cpu_load) {THROW_UNIMPLEMENTED;};
+  double getCurrentWattsValue(double /*cpu_load*/) {THROW_UNIMPLEMENTED;};
+  void updateEnergy(double /*cpu_load*/) {THROW_UNIMPLEMENTED;};
 
   double getCurrentPowerPeak() {THROW_UNIMPLEMENTED;};
-  double getPowerPeakAt(int pstate_index) {THROW_UNIMPLEMENTED;};
+  double getPowerPeakAt(int /*pstate_index*/) {THROW_UNIMPLEMENTED;};
   int getNbPstates() {THROW_UNIMPLEMENTED;};
-  void setPowerPeakAt(int pstate_index) {THROW_UNIMPLEMENTED;};
+  void setPowerPeakAt(int /*pstate_index*/) {THROW_UNIMPLEMENTED;};
   double getConsumedEnergy() {THROW_UNIMPLEMENTED;};
 
   CpuTiTgmrPtr p_availTrace;       /*< Structure with data needed to integrate trace file */

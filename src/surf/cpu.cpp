@@ -13,7 +13,7 @@ CpuModelPtr surf_cpu_model_vm;
  * Model *
  *********/
 
-void CpuModel::updateActionsStateLazy(double now, double delta)
+void CpuModel::updateActionsStateLazy(double now, double /*delta*/)
 {
   void *_action;
   CpuActionLmmPtr action;

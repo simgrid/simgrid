@@ -298,7 +298,7 @@ public:
 	p_actionListHookup.prev = 0;
 	p_actionListHookup.next = 0;
   };
-  ActionLmm(ModelPtr model, double cost, bool failed) : m_suspended(false) {
+  ActionLmm(ModelPtr /*model*/, double /*cost*/, bool /*failed*/) : m_suspended(false) {
 	p_actionListHookup.prev = 0;
 	p_actionListHookup.next = 0;
   };

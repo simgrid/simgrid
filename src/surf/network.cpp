@@ -312,7 +312,7 @@ NetworkCm02LinkLmmPtr NetworkCm02Model::createResource(const char *name,
   return nw_link;
 }
 
-void NetworkCm02Model::updateActionsStateLazy(double now, double delta)
+void NetworkCm02Model::updateActionsStateLazy(double now, double /*delta*/)
 {
   NetworkCm02ActionLmmPtr action;
   while ((xbt_heap_size(p_actionHeap) > 0)
@@ -498,15 +498,15 @@ ActionPtr NetworkCm02Model::communicate(RoutingEdgePtr src, RoutingEdgePtr dst,
   return action;
 }
 
-double NetworkCm02Model::latencyFactor(double size) {
+double NetworkCm02Model::latencyFactor(double /*size*/) {
   return sg_latency_factor;
 }
 
-double NetworkCm02Model::bandwidthFactor(double size) {
+double NetworkCm02Model::bandwidthFactor(double /*size*/) {
   return sg_bandwidth_factor;
 }
 
-double NetworkCm02Model::bandwidthConstraint(double rate, double bound, double size) {
+double NetworkCm02Model::bandwidthConstraint(double rate, double /*bound*/, double /*size*/) {
   return rate;
 }
 

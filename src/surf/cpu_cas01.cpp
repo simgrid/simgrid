@@ -157,7 +157,7 @@ CpuCas01LmmPtr CpuCas01Model::createResource(const char *name, xbt_dynar_t power
   return (CpuCas01LmmPtr) xbt_lib_get_elm_or_null(host_lib, name);
 }
 
-double CpuCas01Model::shareResourcesFull(double now)
+double CpuCas01Model::shareResourcesFull(double /*now*/)
 {
   return Model::shareResourcesMaxMin(p_runningActionSet,
                              p_maxminSystem, lmm_solve);

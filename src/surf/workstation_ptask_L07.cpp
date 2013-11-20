@@ -41,7 +41,7 @@ WorkstationL07Model::~WorkstationL07Model() {
   }
 }
 
-double WorkstationL07Model::shareResources(double now)
+double WorkstationL07Model::shareResources(double /*now*/)
 {
   void *_action;
   WorkstationL07ActionLmmPtr action;
@@ -71,7 +71,7 @@ double WorkstationL07Model::shareResources(double now)
   return min;
 }
 
-void WorkstationL07Model::updateActionsState(double now, double delta)
+void WorkstationL07Model::updateActionsState(double /*now*/, double delta)
 {
   double deltap = 0.0;
   void *_action, *_next_action;
@@ -245,12 +245,12 @@ ActionPtr WorkstationL07Model::executeParallelTask(int workstation_nb,
   return static_cast<ActionPtr>(action);
 }
 
-ResourcePtr WorkstationL07Model::createResource(const char *name, double power_scale,
-                               double power_initial,
-                               tmgr_trace_t power_trace,
-                               e_surf_resource_state_t state_initial,
-                               tmgr_trace_t state_trace,
-                               xbt_dict_t cpu_properties)
+ResourcePtr WorkstationL07Model::createResource(const char *name, double /*power_scale*/,
+                                                double /*power_initial*/,
+                                                tmgr_trace_t /*power_trace*/,
+                                                e_surf_resource_state_t /*state_initial*/,
+                                                tmgr_trace_t /*state_trace*/,
+                                                xbt_dict_t cpu_properties)
 {
   WorkstationL07Ptr wk = NULL;
   xbt_assert(!surf_workstation_resource_priv(surf_workstation_resource_by_name(name)),
@@ -446,7 +446,7 @@ WorkstationL07::WorkstationL07(WorkstationModelPtr model, const char* name, xbt_
 {
 }
 
-double WorkstationL07::getPowerPeakAt(int pstate_index)
+double WorkstationL07::getPowerPeakAt(int /*pstate_index*/)
 {
 	XBT_DEBUG("[ws_get_power_peak_at] Not implemented for workstation_ptask_L07");
 	return 0.0;
@@ -458,7 +458,7 @@ int WorkstationL07::getNbPstates()
 	return 0.0;
 }
 
-void WorkstationL07::setPowerPeakAt(int pstate_index)
+void WorkstationL07::setPowerPeakAt(int /*pstate_index*/)
 {
 	XBT_DEBUG("[ws_set_power_peak_at] Not implemented for workstation_ptask_L07");
 }
@@ -487,7 +487,7 @@ bool LinkL07::isUsed(){
   return lmm_constraint_used(ptask_maxmin_system, p_constraint);
 }
 
-void CpuL07::updateState(tmgr_trace_event_t event_type, double value, double date){
+void CpuL07::updateState(tmgr_trace_event_t event_type, double value, double /*date*/){
   XBT_DEBUG("Updating cpu %s (%p) with value %g", m_name, this, value);
   if (event_type == p_power.event) {
 	m_powerCurrent = value;

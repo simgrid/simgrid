@@ -24,15 +24,15 @@ void generic_free_route(sg_platf_route_cbarg_t route)
   }
 }
 
-void AsGeneric::parseRoute(sg_platf_route_cbarg_t route){
+void AsGeneric::parseRoute(sg_platf_route_cbarg_t /*route*/){
   THROW_IMPOSSIBLE;
 }
 
-void AsGeneric::parseASroute(sg_platf_route_cbarg_t route){
+void AsGeneric::parseASroute(sg_platf_route_cbarg_t /*route*/){
   THROW_IMPOSSIBLE;
 }
 
-void AsGeneric::getRouteAndLatency(RoutingEdgePtr src, RoutingEdgePtr dst, sg_platf_route_cbarg_t into, double *latency){
+void AsGeneric::getRouteAndLatency(RoutingEdgePtr /*src*/, RoutingEdgePtr /*dst*/, sg_platf_route_cbarg_t /*into*/, double */*latency*/){
   THROW_IMPOSSIBLE;
 }
 

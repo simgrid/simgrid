@@ -102,7 +102,7 @@ typedef enum {
 class StorageAction : virtual public Action {
 public:
   StorageAction(){};
-  StorageAction(ModelPtr model, double cost, bool failed, StoragePtr storage, e_surf_action_storage_type_t type)
+  StorageAction(ModelPtr /*model*/, double /*cost*/, bool /*failed*/, StoragePtr storage, e_surf_action_storage_type_t type)
    : p_storage(storage), m_type(type) {};
 
 

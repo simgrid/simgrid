@@ -1,4 +1,4 @@
-/* Copyright (c) 2009, 2010, 2011. The SimGrid Team.
+/* Copyright (c) 2009, 2010, 2011, 2013. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -19,18 +19,18 @@ xbt_dynar_t AsNone::getOneLinkRoutes() {
   return NULL;
 }
 
-void AsNone::getRouteAndLatency(RoutingEdgePtr src, RoutingEdgePtr dst,
-    sg_platf_route_cbarg_t res, double *lat)
+void AsNone::getRouteAndLatency(RoutingEdgePtr /*src*/, RoutingEdgePtr /*dst*/,
+                                sg_platf_route_cbarg_t /*res*/, double *lat)
 {
   *lat = 0.0;
 }
 
-void AsNone::getGraph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges)
+void AsNone::getGraph(xbt_graph_t /*graph*/, xbt_dict_t /*nodes*/, xbt_dict_t /*edges*/)
 {
 	XBT_INFO("No routing no graph");
 }
 
-sg_platf_route_cbarg_t AsNone::getBypassRoute(RoutingEdgePtr src, RoutingEdgePtr dst, double *lat) {
+sg_platf_route_cbarg_t AsNone::getBypassRoute(RoutingEdgePtr /*src*/, RoutingEdgePtr /*dst*/, double */*lat*/) {
   return NULL;
 }
 
@@ -48,14 +48,14 @@ int AsNone::parseAS(RoutingEdgePtr elm) {
   return -1;
 }
 
-void AsNone::parseRoute(sg_platf_route_cbarg_t route){
+void AsNone::parseRoute(sg_platf_route_cbarg_t /*route*/){
   THROW_IMPOSSIBLE;
 }
 
-void AsNone::parseASroute(sg_platf_route_cbarg_t route){
+void AsNone::parseASroute(sg_platf_route_cbarg_t /*route*/){
   THROW_IMPOSSIBLE;
 }
-void AsNone::parseBypassroute(sg_platf_route_cbarg_t e_route){
+void AsNone::parseBypassroute(sg_platf_route_cbarg_t /*e_route*/){
   THROW_IMPOSSIBLE;
 }
 

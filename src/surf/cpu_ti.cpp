@@ -483,7 +483,7 @@ CpuTiPtr CpuTiModel::createResource(const char *name,
   return (CpuTiPtr) xbt_lib_get_elm_or_null(host_lib, name);
 }
 
-CpuTiActionPtr CpuTiModel::createAction(double cost, bool failed)
+CpuTiActionPtr CpuTiModel::createAction(double /*cost*/, bool /*failed*/)
 {
   return NULL;//new CpuTiAction(this, cost, failed);
 }
@@ -506,7 +506,7 @@ double CpuTiModel::shareResources(double now)
   return min_action_duration;
 }
 
-void CpuTiModel::updateActionsState(double now, double delta)
+void CpuTiModel::updateActionsState(double now, double /*delta*/)
 {
   while ((xbt_heap_size(cpu_ti_action_heap) > 0)
          && (xbt_heap_maxkey(cpu_ti_action_heap) <= now)) {

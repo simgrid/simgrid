@@ -89,17 +89,17 @@ static void parse_storage_init(sg_platf_storage_cbarg_t storage)
                                      storage->properties);
 }
 
-static void parse_mstorage_init(sg_platf_mstorage_cbarg_t mstorage)
+static void parse_mstorage_init(sg_platf_mstorage_cbarg_t /*mstorage*/)
 {
   XBT_DEBUG("parse_mstorage_init");
 }
 
-static void parse_storage_type_init(sg_platf_storage_type_cbarg_t storagetype_)
+static void parse_storage_type_init(sg_platf_storage_type_cbarg_t /*storagetype_*/)
 {
   XBT_DEBUG("parse_storage_type_init");
 }
 
-static void parse_mount_init(sg_platf_mount_cbarg_t mount)
+static void parse_mount_init(sg_platf_mount_cbarg_t /*mount*/)
 {
   XBT_DEBUG("parse_mount_init");
 }
@@ -188,7 +188,7 @@ static void storage_parse_storage_type(sg_platf_storage_type_cbarg_t storage_typ
       ROUTING_STORAGE_TYPE_LEVEL,
       (void *) stype);
 }
-static void storage_parse_mstorage(sg_platf_mstorage_cbarg_t mstorage)
+static void storage_parse_mstorage(sg_platf_mstorage_cbarg_t /*mstorage*/)
 {
   THROW_UNIMPLEMENTED;
 //  mount_t mnt = xbt_new0(s_mount_t, 1);
@@ -351,7 +351,7 @@ double StorageModel::shareResources(double now)
   return min_completion;
 }
 
-void StorageModel::updateActionsState(double now, double delta)
+void StorageModel::updateActionsState(double /*now*/, double delta)
 {
   void *_action, *_next_action;
   StorageActionLmmPtr action = NULL;
@@ -477,7 +477,7 @@ bool Storage::isUsed()
   return false;
 }
 
-void Storage::updateState(tmgr_trace_event_t event_type, double value, double date)
+void Storage::updateState(tmgr_trace_event_t /*event_type*/, double /*value*/, double /*date*/)
 {
   THROW_UNIMPLEMENTED;
 }
@@ -704,12 +704,12 @@ bool StorageActionLmm::isSuspended()
   return m_suspended == 1;
 }
 
-void StorageActionLmm::setMaxDuration(double duration)
+void StorageActionLmm::setMaxDuration(double /*duration*/)
 {
   THROW_UNIMPLEMENTED;
 }
 
-void StorageActionLmm::setPriority(double priority)
+void StorageActionLmm::setPriority(double /*priority*/)
 {
   THROW_UNIMPLEMENTED;
 }

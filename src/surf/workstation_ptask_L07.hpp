@@ -92,8 +92,8 @@ public:
 		                                   e_surf_link_sharing_policy_t
 		                                   policy, xbt_dict_t properties);
 
-  xbt_dynar_t getRoute(WorkstationCLM03Ptr src, WorkstationCLM03Ptr dst) {DIE_IMPOSSIBLE;};
-  ActionPtr communicate(RoutingEdgePtr src, RoutingEdgePtr dst, double size, double rate) {DIE_IMPOSSIBLE;};
+  xbt_dynar_t getRoute(WorkstationCLM03Ptr /*src*/, WorkstationCLM03Ptr /*dst*/) {DIE_IMPOSSIBLE;};
+  ActionPtr communicate(RoutingEdgePtr /*src*/, RoutingEdgePtr /*dst*/, double /*size*/, double /*rate*/) {DIE_IMPOSSIBLE;};
   void addTraces() {DIE_IMPOSSIBLE;};
   WorkstationL07ModelPtr p_workstationModel;
 };
@@ -107,7 +107,7 @@ public:
   WorkstationL07(WorkstationModelPtr model, const char* name, xbt_dict_t props, RoutingEdgePtr netElm, CpuPtr cpu);
   //bool isUsed();
   bool isUsed() {DIE_IMPOSSIBLE;};
-  void updateState(tmgr_trace_event_t event_type, double value, double date) {DIE_IMPOSSIBLE;};
+  void updateState(tmgr_trace_event_t /*event_type*/, double /*value*/, double /*date*/) {DIE_IMPOSSIBLE;};
   ActionPtr execute(double size);
   ActionPtr sleep(double duration);
   e_surf_resource_state_t getState();
@@ -126,13 +126,13 @@ public:
   e_surf_resource_state_t getState();
   double getSpeed(double load);
   double getAvailableSpeed();
-  ActionPtr execute(double size) {DIE_IMPOSSIBLE;};
-  ActionPtr sleep(double duration) {DIE_IMPOSSIBLE;};
+  ActionPtr execute(double /*size*/) {DIE_IMPOSSIBLE;};
+  ActionPtr sleep(double /*duration*/) {DIE_IMPOSSIBLE;};
 
   double getCurrentPowerPeak() {THROW_UNIMPLEMENTED;};
-  double getPowerPeakAt(int pstate_index) {THROW_UNIMPLEMENTED;};
+  double getPowerPeakAt(int /*pstate_index*/) {THROW_UNIMPLEMENTED;};
   int getNbPstates() {THROW_UNIMPLEMENTED;};
-  void setPowerPeakAt(int pstate_index) {THROW_UNIMPLEMENTED;};
+  void setPowerPeakAt(int /*pstate_index*/) {THROW_UNIMPLEMENTED;};
   double getConsumedEnergy() {THROW_UNIMPLEMENTED;};
 
   double m_powerCurrent;
