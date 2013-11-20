@@ -122,15 +122,15 @@ public:
   CpuActionPtr sleep(double duration);
   double getAvailableSpeed();
 
-  xbt_dynar_t getWattsRangeList() {};
-  double getCurrentWattsValue(double cpu_load) {};
-  void updateEnergy(double cpu_load) {};
+  xbt_dynar_t getWattsRangeList() {THROW_UNIMPLEMENTED;};
+  double getCurrentWattsValue(double cpu_load) {THROW_UNIMPLEMENTED;};
+  void updateEnergy(double cpu_load) {THROW_UNIMPLEMENTED;};
 
-  double getCurrentPowerPeak() {};
-  double getPowerPeakAt(int pstate_index) {};
-  int getNbPstates() {};
-  void setPowerPeakAt(int pstate_index) {};
-  double getConsumedEnergy() {};
+  double getCurrentPowerPeak() {THROW_UNIMPLEMENTED;};
+  double getPowerPeakAt(int pstate_index) {THROW_UNIMPLEMENTED;};
+  int getNbPstates() {THROW_UNIMPLEMENTED;};
+  void setPowerPeakAt(int pstate_index) {THROW_UNIMPLEMENTED;};
+  double getConsumedEnergy() {THROW_UNIMPLEMENTED;};
 
   CpuTiTgmrPtr p_availTrace;       /*< Structure with data needed to integrate trace file */
   tmgr_trace_event_t p_stateEvent;       /*< trace file with states events (ON or OFF) */

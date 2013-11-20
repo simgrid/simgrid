@@ -129,11 +129,11 @@ public:
   ActionPtr execute(double size) {DIE_IMPOSSIBLE;};
   ActionPtr sleep(double duration) {DIE_IMPOSSIBLE;};
 
-  double getCurrentPowerPeak() {};
-  double getPowerPeakAt(int pstate_index) {};
-  int getNbPstates() {};
-  void setPowerPeakAt(int pstate_index) {};
-  double getConsumedEnergy() {};
+  double getCurrentPowerPeak() {THROW_UNIMPLEMENTED;};
+  double getPowerPeakAt(int pstate_index) {THROW_UNIMPLEMENTED;};
+  int getNbPstates() {THROW_UNIMPLEMENTED;};
+  void setPowerPeakAt(int pstate_index) {THROW_UNIMPLEMENTED;};
+  double getConsumedEnergy() {THROW_UNIMPLEMENTED;};
 
   double m_powerCurrent;
 };
