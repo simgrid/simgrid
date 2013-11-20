@@ -104,8 +104,8 @@ SIZE_T (FIXME: obsolete?)
 
 INTEGERS
  Please avoid to use long ints.  This is the source of many compatibility
- problems betwwen 32 bits and 64 bits archs.  Either use plain ints (generally
- 32 bits width) or long long ints (64 bits width, at least).  At last resort
+ problems between 32 bits and 64 bits archs.  Either use plain ints (generally
+ 32 bits wide) or long long ints (64 bits wide, at least).  At last resort
  consider using integer types defined in C99 by <stdint.h>.
 
 PRINTF pointer difference (FIXME: advertise %td instead?)
@@ -214,4 +214,3 @@ investigating the portability of the thing to windows.
   deactivate the whole logging mechanism, switching to printfs
   instead. SimGrid becomes incredibly verbose when doing so, but it
   you let you fixing the dynars.
-  
