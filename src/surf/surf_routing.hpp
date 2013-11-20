@@ -50,7 +50,7 @@ public:
   xbt_dynar_t p_linkUpDownList;
 
   As(){};
-  ~As(){};
+  virtual ~As(){};
 
   virtual void getRouteAndLatency(RoutingEdgePtr src, RoutingEdgePtr dst, sg_platf_route_cbarg_t into, double *latency)=0;
   virtual xbt_dynar_t getOneLinkRoutes()=0;
