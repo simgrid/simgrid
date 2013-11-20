@@ -4,19 +4,20 @@
 
 sudo yum -y -q update
 
-sudo yum -y -q install gcc
-sudo yum -y -q install make
-sudo yum -y -q install java-1.6.0-openjdk
-sudo yum -y -q install lua-devel lua
-sudo yum -y -q install unzip
+sudo yum -y -q install boost-devel
 sudo yum -y -q install cmake
-sudo yum -y -q install wget
-sudo yum -y -q install perl
-sudo yum -y -q install graphviz-dev graphviz
 sudo yum -y -q install f2c
+sudo yum -y -q install gcc
 sudo yum -y -q install git-core
-sudo yum -y -q install ruby ruby-devel
+sudo yum -y -q install graphviz-dev graphviz
+sudo yum -y -q install java-1.6.0-openjdk
 sudo yum -y -q install libunwind libunwind-devel
+sudo yum -y -q install lua-devel lua
+sudo yum -y -q install make
+sudo yum -y -q install perl
+sudo yum -y -q install ruby ruby-devel
+sudo yum -y -q install unzip
+sudo yum -y -q install wget
 
 which_svn=`which svn`		#svn necessary
 which_gcc=`which gcc`		#gcc gcc necessary
