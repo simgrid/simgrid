@@ -409,7 +409,7 @@ void surf_cpu_model_init_ti()
 CpuTiModel::CpuTiModel() : CpuModel("cpu_ti")
 {
   xbt_assert(!surf_cpu_model_pm,"CPU model already initialized. This should not happen.");
-  ActionPtr action;
+  ActionPtr action = NULL;
   CpuTi cpu;
 
   cpu_ti_running_action_set_that_does_not_need_being_checked =
@@ -595,7 +595,7 @@ CpuTi::CpuTi(CpuTiModelPtr model, const char *name, xbt_dynar_t powerPeak,
   XBT_DEBUG("power scale %lf", powerScale);
   p_availTrace = new CpuTiTgmr(powerTrace, powerScale);
 
-  CpuTiActionPtr action;
+  CpuTiActionPtr action = NULL;
   p_actionSet = xbt_swag_new(xbt_swag_offset(*action, p_cpuListHookup));
 
   xbt_dynar_get_cpy(powerPeak, 0, &m_powerPeak);

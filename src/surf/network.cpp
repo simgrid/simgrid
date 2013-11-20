@@ -250,7 +250,7 @@ void surf_network_model_init_Vegas(void)
 
 void NetworkCm02Model::initialize()
 {
-  ActionLmm comm;
+  ActionLmmPtr comm = NULL;
 
   char *optim = xbt_cfg_get_string(_sg_cfg_set, "network/optim");
   int select =
@@ -282,7 +282,7 @@ void NetworkCm02Model::initialize()
   if (p_updateMechanism == UM_LAZY) {
 	p_actionHeap = xbt_heap_new(8, NULL);
 	xbt_heap_set_update_callback(p_actionHeap, surf_action_lmm_update_index_heap);
-	p_modifiedSet = xbt_swag_new(xbt_swag_offset(comm, p_actionListHookup));
+	p_modifiedSet = xbt_swag_new(xbt_swag_offset(*comm, p_actionListHookup));
 	p_maxminSystem->keep_track = p_modifiedSet;
   }
 }

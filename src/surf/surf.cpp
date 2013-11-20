@@ -425,7 +425,7 @@ Model::Model(string name)
    m_actSuspendCB(0), m_actCancelCB(0), m_actResumeCB(0),
    p_maxminSystem(0)
 {
-  ActionPtr action;
+  ActionPtr action = NULL;
   p_readyActionSet = xbt_swag_new(xbt_swag_offset(*action, p_stateHookup));
   p_runningActionSet = xbt_swag_new(xbt_swag_offset(*action, p_stateHookup));
   p_failedActionSet = xbt_swag_new(xbt_swag_offset(*action, p_stateHookup));

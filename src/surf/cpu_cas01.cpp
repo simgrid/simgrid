@@ -1,4 +1,4 @@
-/* Copyright (c) 2009-2011. The SimGrid Team.
+/* Copyright (c) 2009-2011, 2013. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -63,8 +63,8 @@ void surf_cpu_model_init_Cas01()
 
 CpuCas01Model::CpuCas01Model() : CpuModel("cpu")
 {
-  ActionPtr action;
-  ActionLmmPtr actionlmm;
+  ActionPtr action = NULL;
+  ActionLmmPtr actionlmm = NULL;
 
   char *optim = xbt_cfg_get_string(_sg_cfg_set, "cpu/optim");
   int select = xbt_cfg_get_boolean(_sg_cfg_set, "cpu/maxmin_selective_update");
