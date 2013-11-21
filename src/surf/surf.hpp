@@ -297,10 +297,14 @@ public:
   ActionLmm() : m_suspended(false) {
 	p_actionListHookup.prev = 0;
 	p_actionListHookup.next = 0;
+        m_lastUpdate = 0;
+        m_lastValue = 0;
   };
   ActionLmm(ModelPtr /*model*/, double /*cost*/, bool /*failed*/) : m_suspended(false) {
 	p_actionListHookup.prev = 0;
 	p_actionListHookup.next = 0;
+        m_lastUpdate = 0;
+        m_lastValue = 0;
   };
 
   virtual void updateRemainingLazy(double now);

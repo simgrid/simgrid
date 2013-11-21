@@ -285,6 +285,8 @@ void NetworkCm02Model::initialize()
 	p_modifiedSet = xbt_swag_new(xbt_swag_offset(*comm, p_actionListHookup));
 	p_maxminSystem->keep_track = p_modifiedSet;
   }
+
+  m_haveGap = false;
 }
 
 NetworkCm02LinkLmmPtr NetworkCm02Model::createResource(const char *name,
