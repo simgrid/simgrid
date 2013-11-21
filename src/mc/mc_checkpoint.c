@@ -501,7 +501,7 @@ static xbt_dynar_t MC_get_local_variables_values(void *stack_context){
   unw_word_t res;
   int frame_found = 0, region_type;
   void *frame_pointer_address = NULL;
-  long true_ip, value;
+  unsigned long true_ip, value;
   int stop = 0;
 
   xbt_dynar_t variables = xbt_dynar_new(sizeof(local_variable_t), local_variable_free_voidp);
@@ -516,7 +516,7 @@ static xbt_dynar_t MC_get_local_variables_values(void *stack_context){
     if(!strcmp(frame_name, "smx_ctx_sysv_wrapper")) /* Stop before context switch with maestro */
       stop = 1;
 
-    if((long)ip > (long)start_text_libsimgrid)
+    if((uintptr_t)ip > (uintptr_t)start_text_libsimgrid)
       frame = xbt_dict_get_or_null(mc_local_variables_libsimgrid, frame_name);
     else
       frame = xbt_dict_get_or_null(mc_local_variables_binary, frame_name);
@@ -526,7 +526,7 @@ static xbt_dynar_t MC_get_local_variables_values(void *stack_context){
       continue;
     }
     
-    true_ip = (long)frame->low_pc + (long)off;
+    true_ip = (unsigned long)frame->low_pc + (unsigned long)off;
     frame_pointer_address = NULL;
 
     /* Get frame pointer */
@@ -546,11 +546,11 @@ static xbt_dynar_t MC_get_local_variables_values(void *stack_context){
               switch(location_entry->type){
               case e_dw_register:
                 unw_get_reg(&c, location_entry->location.reg, &res);
-                frame_pointer_address = (void*)(long)res;
+                frame_pointer_address = (void*)(uintptr_t)res;
                 break;
               case e_dw_bregister_op:
                 unw_get_reg(&c, location_entry->location.breg_op.reg, &res);
-                frame_pointer_address = (void*)((long)res + location_entry->location.breg_op.offset);
+                frame_pointer_address = (void*)((uintptr_t)res + location_entry->location.breg_op.offset);
                 break;
               default:
                 frame_pointer_address = NULL; /* FIXME : implement other cases (with optimizations enabled) */
@@ -576,7 +576,7 @@ static xbt_dynar_t MC_get_local_variables_values(void *stack_context){
 
     xbt_dynar_foreach(frame->variables, cursor, current_variable){
       
-      if((long)ip > (long)start_text_libsimgrid)
+      if((uintptr_t)ip > (uintptr_t)start_text_libsimgrid)
         region_type = 1;
       else
         region_type = 2;
@@ -599,15 +599,15 @@ static xbt_dynar_t MC_get_local_variables_values(void *stack_context){
             switch(location_entry->type){
             case e_dw_register:
               unw_get_reg(&c, location_entry->location.reg, &res);
-              value = (long)res;
+              value = (unsigned long)res;
               break;
             case e_dw_bregister_op:
               unw_get_reg(&c, location_entry->location.breg_op.reg, &res);
-              value = (long)res + location_entry->location.breg_op.offset;
+              value = (unsigned long)res + location_entry->location.breg_op.offset;
               break;
             case e_dw_fbregister_op:
               if(frame_pointer_address != NULL)
-                value = (long)((char *)frame_pointer_address + location_entry->location.fbreg_op);
+                value = (unsigned long)((char *)frame_pointer_address + location_entry->location.fbreg_op);
               else
                 value = 0;
               break;
@@ -654,7 +654,7 @@ static void *MC_get_stack_pointer(void *stack_context, void *heap){
 
   unw_get_reg(&c, UNW_REG_SP, &sp);
 
-  return ((char *)heap + (size_t)(((char *)((long)sp) - (char*)std_heap)));
+  return (char *)heap + ((char *)sp - (char*)std_heap);
 
 }
 

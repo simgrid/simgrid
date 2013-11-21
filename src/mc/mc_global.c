@@ -184,7 +184,7 @@ static dw_location_t MC_dwarf_get_location(xbt_dict_t location_list, char *expr)
 
   if(location_list != NULL){
     
-    char *key = bprintf("%d", (int)strtoul(expr, NULL, 16));
+    char *key = bprintf("%lu", strtoul(expr, NULL, 16));
     loc->type = e_dw_loclist;
     loc->location.loclist =  (xbt_dynar_t)xbt_dict_get_or_null(location_list, key);
     if(loc->location.loclist == NULL)
@@ -403,7 +403,7 @@ static xbt_dict_t MC_dwarf_get_location_list(const char *elf_file){
     }
 
 
-    char *key = bprintf("%d", (int)strtoul((char *)xbt_dynar_get_as(split, 0, char *), NULL, 16));
+    char *key = bprintf("%lu", strtoul((char *)xbt_dynar_get_as(split, 0, char *), NULL, 16));
     xbt_dict_set(location_list, key, loclist, NULL);
     xbt_free(key);
     
@@ -742,7 +742,7 @@ static void MC_dwarf_get_variables(const char *elf_file, xbt_dict_t location_lis
                   xbt_dynar_free(&split2);
                   split2 = xbt_str_split(loc_expr, " ");
                   if(strcmp(elf_file, xbt_binary_name) != 0)
-                    var->address.address = (char *)start_text_libsimgrid + (long)((void *)strtoul(xbt_dynar_get_as(split2, xbt_dynar_length(split2) - 1, char*), NULL, 16));
+                    var->address.address = (char *)start_text_libsimgrid + strtoul(xbt_dynar_get_as(split2, xbt_dynar_length(split2) - 1, char*), NULL, 16);
                   else
                     var->address.address = (void *)strtoul(xbt_dynar_get_as(split2, xbt_dynar_length(split2) - 1, char*), NULL, 16);
                 }else{
@@ -755,7 +755,7 @@ static void MC_dwarf_get_variables(const char *elf_file, xbt_dict_t location_lis
               global_address = xbt_strdup(xbt_dynar_get_as(split, xbt_dynar_length(split) - 1, char *));
               xbt_str_rtrim(global_address, ")");
               if(strcmp(elf_file, xbt_binary_name) != 0)
-                var->address.address = (char *)start_text_libsimgrid + (long)((void *)strtoul(global_address, NULL, 16));
+                var->address.address = (char *)start_text_libsimgrid + strtoul(global_address, NULL, 16);
               else
                 var->address.address = (void *)strtoul(global_address, NULL, 16);
               xbt_free(global_address);

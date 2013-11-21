@@ -397,8 +397,8 @@ typedef struct s_dw_location{
 }s_dw_location_t, *dw_location_t;
 
 typedef struct s_dw_location_entry{
-  long lowpc;
-  long highpc;
+  unsigned long lowpc;
+  unsigned long highpc;
   dw_location_t location;
 }s_dw_location_entry_t, *dw_location_entry_t;
 
