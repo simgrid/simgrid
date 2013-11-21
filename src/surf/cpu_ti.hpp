@@ -170,8 +170,8 @@ public:
   void setMaxDuration(double duration);
   void setPriority(double priority);
   double getRemains();
-  void setAffinity(CpuPtr cpu, unsigned long mask) {};
-  void setBound(double bound) {};
+  void setAffinity(CpuPtr /*cpu*/, unsigned long /*mask*/) {};
+  void setBound(double /*bound*/) {};
 
   CpuTiPtr p_cpu;
   int m_indexHeap;
