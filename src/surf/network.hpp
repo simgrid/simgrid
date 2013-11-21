@@ -77,8 +77,9 @@ public:
 
 class NetworkCm02Link : virtual public Resource {
 public:
-  NetworkCm02Link(){};
-  NetworkCm02Link(NetworkCm02ModelPtr model, const char* name, xbt_dict_t properties) : Resource(model, name, properties) {};
+  NetworkCm02Link() : p_latEvent(NULL) {};
+  NetworkCm02Link(NetworkCm02ModelPtr model, const char* name, xbt_dict_t properties)
+    : Resource(model, name, properties), p_latEvent(NULL) {};
   virtual double getBandwidth()=0;
   virtual double getLatency();
   virtual bool isShared()=0;

@@ -409,10 +409,17 @@ AsDijkstra::~AsDijkstra()
 
 /* Creation routing model functions */
 
-AsDijkstra::AsDijkstra() : AsGeneric(), m_cached(0) {}
+AsDijkstra::AsDijkstra() : AsGeneric(), m_cached(0) {
+  p_routeGraph = NULL;
+  p_graphNodeMap = NULL;
+  p_routeCache = NULL;
+}
 
 AsDijkstra::AsDijkstra(int cached) : AsGeneric(), m_cached(cached)
 {
+  p_routeGraph = NULL;
+  p_graphNodeMap = NULL;
+  p_routeCache = NULL;
   /*new_component->generic_routing.parse_route = model_dijkstra_both_parse_route;
   new_component->generic_routing.parse_ASroute = model_dijkstra_both_parse_route;
   new_component->generic_routing.get_route_and_latency = dijkstra_get_route_and_latency;

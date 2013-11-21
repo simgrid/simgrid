@@ -583,6 +583,7 @@ CpuTi::CpuTi(CpuTiModelPtr model, const char *name, xbt_dynar_t powerPeak,
         e_surf_resource_state_t stateInitial, tmgr_trace_t stateTrace,
 	xbt_dict_t properties) :
 	Resource(model, name, properties), Cpu(model, name, properties) {
+  p_powerEvent = NULL;
   p_stateCurrent = stateInitial;
   m_powerScale = powerScale;
   m_core = core;
@@ -594,6 +595,8 @@ CpuTi::CpuTi(CpuTiModelPtr model, const char *name, xbt_dynar_t powerPeak,
 
   CpuTiActionPtr action = NULL;
   p_actionSet = xbt_swag_new(xbt_swag_offset(*action, p_cpuListHookup));
+
+  m_lastUpdate = 0;
 
   xbt_dynar_get_cpy(powerPeak, 0, &m_powerPeak);
   xbt_dynar_free(&powerPeak);  /* kill memory leak */

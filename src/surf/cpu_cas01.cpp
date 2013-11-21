@@ -204,6 +204,7 @@ CpuCas01Lmm::CpuCas01Lmm(CpuCas01ModelPtr model, const char *name, xbt_dynar_t p
                          e_surf_resource_state_t stateInitial, tmgr_trace_t stateTrace,
                          xbt_dict_t properties) :
        Resource(model, name, properties), CpuLmm(model, name, properties) {
+  p_powerEvent = NULL;
   m_powerPeak = xbt_dynar_get_as(powerPeak, pstate, double);
   p_powerPeakList = powerPeak;
   m_pstate = pstate;

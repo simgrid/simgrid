@@ -731,6 +731,8 @@ ResourceLmm::ResourceLmm(surf_model_t model, const char *name, xbt_dict_t props,
   p_power.peak = metric_peak;
   if (metric_trace)
     p_power.event = tmgr_history_add_trace(history, metric_trace, 0.0, 0, static_cast<ResourcePtr>(this));
+  else
+    p_power.event = NULL;
 }
 
 /**********
