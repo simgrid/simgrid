@@ -202,7 +202,7 @@ private:
 
 class ResourceLmm: virtual public Resource {
 public:
-  ResourceLmm() {};
+  ResourceLmm() { p_power.event = NULL; };
   ResourceLmm(surf_model_t model, const char *name, xbt_dict_t props,
                            lmm_system_t system,
                            double constraint_value,
