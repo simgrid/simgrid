@@ -419,9 +419,9 @@ Storage::Storage(StorageModelPtr model, const char* name, xbt_dict_t properties)
 
 StorageLmm::StorageLmm(StorageModelPtr model, const char* name, xbt_dict_t properties,
 	     lmm_system_t maxminSystem, double bread, double bwrite, double bconnection,
-	     const char* type_id, char *content_name, char *content_type, size_t size)
+	     const char* type_id, char *content_name, char *content_type, sg_size_t size)
  :  Resource(model, name, properties), ResourceLmm(), Storage(model, name, properties) {
-  XBT_DEBUG("Create resource with Bconnection '%f' Bread '%f' Bwrite '%f' and Size '%lu'", bconnection, bread, bwrite, ((unsigned long)size));
+  XBT_DEBUG("Create resource with Bconnection '%f' Bread '%f' Bwrite '%f' and Size '%llu'", bconnection, bread, bwrite, size);
 
   p_stateCurrent = SURF_RESOURCE_ON;
   m_usedSize = 0;

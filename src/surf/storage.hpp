@@ -74,7 +74,7 @@ class StorageLmm : public ResourceLmm, public Storage {
 public:
   StorageLmm(StorageModelPtr model, const char* name, xbt_dict_t properties,
 		     lmm_system_t maxminSystem, double bread, double bwrite, double bconnection,
-		     const char* type_id, char *content_name, char *content_type, size_t size);
+		     const char* type_id, char *content_name, char *content_type, sg_size_t size);
 
   StorageActionPtr open(const char* mount, const char* path);
   StorageActionPtr close(surf_file_t fd);
