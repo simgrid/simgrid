@@ -1267,7 +1267,7 @@ void routing_exit(void) {
     return;
   xbt_dynar_free(&routing_platf->p_lastRoute);
   finalize_rec(routing_platf->p_root);
-  xbt_free(routing_platf);
+  delete routing_platf;
 }
 
 AS_t surf_AS_get_routing_root() {
