@@ -5,9 +5,20 @@ SimGrid (3.11) NOT RELEASED; urgency=low
    release of version 3.10.
  * Switch to tesh.pl, and kill the now unused parts of xbt that seem fragile
  * Switch to surf++, and reintegrate the hypervisor branch on top of it
- * Kill support for 32bits host architecture. 
+ * Kill support for 32bits host architecture.
    - Integers are too short to store a date or a size
    - Plus, less platforms ~> simpler codebase ~> easier to maintain
+ * Clean up CMake files (may need a full rewrite).
+   Non exhaustive list of subgoals:
+   - Use genuine cmake mechanisms and variables when available,
+     instead of reinventing the wheel.
+   - Correctly determine system and architecture (e.g. x32).
+   - Correctly determine compiler type and version (e.g. clang).
+   - Correctly set compiler flags according to compiler type and version.
+   - Correctly set compiler flags for C++, Java, and Fortran compilers too.
+   - Use git to generate the dist archive.  Either use git-archive to
+     generate the tarball, or keep using cmake -E tar, but use git-ls-files
+     to get the list of files to pack.
 
  -- $date Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
 
