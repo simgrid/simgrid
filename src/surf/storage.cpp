@@ -292,6 +292,7 @@ double StorageModel::shareResources(double now)
   XBT_DEBUG("storage_share_resources %f", now);
   unsigned int i, j;
   StoragePtr storage;
+  void *_write_action;
   StorageActionLmmPtr write_action;
 
   double min_completion = shareResourcesMaxMin(p_runningActionSet,
@@ -303,8 +304,9 @@ double StorageModel::shareResources(double now)
   {
     rate = 0;
     // Foreach write action on disk
-    xbt_dynar_foreach(storage->p_writeActions, j, write_action)
+    xbt_dynar_foreach(storage->p_writeActions, j, _write_action)
     {
+      write_action = dynamic_cast<StorageActionLmmPtr>(static_cast<ActionPtr>(_write_action));
       rate += lmm_variable_getvalue(write_action->p_variable);
     }
     if(rate > 0)
@@ -412,7 +414,7 @@ xbt_dict_t Storage::parseContent(char *filename)
 Storage::Storage(StorageModelPtr model, const char* name, xbt_dict_t properties)
 :  Resource(model, name, properties)
 {
-  p_writeActions = xbt_dynar_new(sizeof(char *),NULL);
+  p_writeActions = xbt_dynar_new(sizeof(ActionPtr),NULL);
 }
 
 StorageLmm::StorageLmm(StorageModelPtr model, const char* name, xbt_dict_t properties,
@@ -520,9 +522,11 @@ StorageActionPtr StorageLmm::close(surf_file_t fd)
   char *filename = fd->name;
   XBT_DEBUG("\tClose file '%s' size '%llu'", filename, fd->size);
   // unref write actions from storage
+  void *_write_action;
   StorageActionLmmPtr write_action;
   unsigned int i;
-  xbt_dynar_foreach(p_writeActions, i, write_action) {
+  xbt_dynar_foreach(p_writeActions, i, _write_action) {
+	write_action = dynamic_cast<StorageActionLmmPtr>(static_cast<ActionPtr>(_write_action));
     if ((write_action->p_file) == fd) {
       xbt_dynar_cursor_rm(p_writeActions, &i);
       write_action->unref();
@@ -619,7 +623,8 @@ StorageActionLmm::StorageActionLmm(ModelPtr model, double cost, bool failed, Sto
   case WRITE:
     lmm_expand(p_model->p_maxminSystem, storage->p_constraintWrite,
                p_variable, 1.0);
-    xbt_dynar_push(storage->p_writeActions, static_cast<ActionPtr>(this));
+    ActionPtr action = this;
+    xbt_dynar_push(storage->p_writeActions, &action);
     ref();
     break;
   }
