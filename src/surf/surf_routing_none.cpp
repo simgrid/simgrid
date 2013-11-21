@@ -63,6 +63,7 @@ void AsNone::parseBypassroute(sg_platf_route_cbarg_t /*e_route*/){
 AsNone::AsNone() {
   p_routingSons = xbt_dict_new_homogeneous(NULL);
   p_indexNetworkElm = xbt_dynar_new(sizeof(char*),NULL);
+  p_linkUpDownList = NULL;
 }
 
 AsNone::~AsNone() {

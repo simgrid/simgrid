@@ -26,6 +26,9 @@ void model_floyd_end(AS_t current_routing)
 }
 
 AsFloyd::AsFloyd(): AsGeneric() {
+  p_predecessorTable = NULL;
+  p_costTable = NULL;
+  p_linkTable = NULL;
 }
 
 AsFloyd::~AsFloyd(){
