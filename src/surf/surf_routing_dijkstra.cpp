@@ -435,7 +435,7 @@ void AsDijkstra::end()
   if(!p_graphNodeMap)
     p_graphNodeMap = xbt_dict_new_homogeneous(&graph_node_map_elem_free);
 
-  if (m_cached && p_routeCache)
+  if (m_cached && !p_routeCache)
     p_routeCache = xbt_dict_new_homogeneous(&route_cache_elem_free);
 
   /* Add the loopback if needed */
