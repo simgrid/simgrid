@@ -57,8 +57,8 @@ class Cpu;
 class Action;
 class ActionLmm;
 class StorageActionLmm;
-class As;
-class RoutingEdge;
+struct As;
+struct RoutingEdge;
 class RoutingPlatf;
 #else
 typedef struct Model Model;

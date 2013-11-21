@@ -14,13 +14,13 @@ xbt_edge_t new_xbt_graph_edge (xbt_graph_t graph, xbt_node_t s, xbt_node_t d, xb
 /***********
  * Classes *
  ***********/
-class As;
+struct As;
 typedef As *AsPtr;
 
 class RoutingModelDescription;
 typedef RoutingModelDescription *RoutingModelDescriptionPtr;
 
-class RoutingEdge;
+struct RoutingEdge;
 typedef RoutingEdge *RoutingEdgePtr;
 
 class Onelink;
@@ -37,7 +37,7 @@ typedef RoutingPlatf *RoutingPlatfPtr;
   void end(AsPtr as);
 };*/
 
-class As {
+struct As {
 public:
   xbt_dynar_t p_indexNetworkElm;
   xbt_dict_t p_bypassRoutes;    /* store bypass routes */
@@ -68,7 +68,7 @@ public:
   virtual void parseBypassroute(sg_platf_route_cbarg_t e_route)=0;
 };
 
-class RoutingEdge {
+struct RoutingEdge {
 public:
   AsPtr p_rcComponent;
   e_surf_network_element_type_t p_rcType;
