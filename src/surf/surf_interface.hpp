@@ -240,7 +240,6 @@ protected:
   double m_finish; /**< finish time : this is modified during the run and fluctuates until the task is completed */
 
   ModelPtr getModel() {return p_model;}
-  double getBound() {return m_bound;}
 
 public:
 
@@ -253,6 +252,7 @@ public:
 
   e_surf_action_state_t getState(); /**< get the state*/
   virtual void setState(e_surf_action_state_t state); /**< Change state*/
+  double getBound() {return m_bound;}
   double getStartTime(); /**< Return the start time of an action */
   double getFinishTime(); /**< Return the finish time of an action */
   void *getData() {return p_data;}

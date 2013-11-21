@@ -273,6 +273,7 @@ static int master_main(int argc, char *argv[])
 {
   xbt_dynar_t hosts_dynar = MSG_hosts_as_dynar();
   msg_host_t pm0 = xbt_dynar_get_as(hosts_dynar, 0, msg_host_t);
+  msg_host_t pm1 = xbt_dynar_get_as(hosts_dynar, 0, msg_host_t);
 
 
   {
@@ -339,7 +340,46 @@ static int master_main(int argc, char *argv[])
   }
 
 
-  XBT_INFO("# 10. Change a bound dynamically.");
+  {
+    msg_host_t vm0 = MSG_vm_create_core(pm0, "VM0");
+
+    s_ws_params_t params;
+    memset(&params, 0, sizeof(params));
+    params.ramsize = 1L * 1000 * 1000 * 1000; // 1Gbytes
+    MSG_host_set_params(vm0, &params);
+    MSG_vm_start(vm0);
+
+    const double cpu_speed = MSG_get_host_speed(pm0);
+    MSG_vm_start(vm0);
+
+    XBT_INFO("# 10. Test migration");
+    const double computation_amount = cpu_speed * 10;
+
+    XBT_INFO("# 10. (a) Put a task on a VM without any bound.");
+    launch_worker(vm0, "worker0", computation_amount, 0, 0);
+    MSG_process_sleep(1000);
+    XBT_INFO(" ");
+
+    XBT_INFO("# 10. (b) set 10%% bound to the VM, and then put a task on the VM.");
+    MSG_vm_set_bound(vm0, cpu_speed / 10);
+    launch_worker(vm0, "worker0", computation_amount, 0, 0);
+    MSG_process_sleep(1000);
+    XBT_INFO(" ");
+
+    XBT_INFO("# 10. (c) migrate");
+    MSG_vm_migrate(vm0, pm1);
+    XBT_INFO(" ");
+
+    XBT_INFO("# 10. (d) Put a task again on the VM.");
+    launch_worker(vm0, "worker0", computation_amount, 0, 0);
+    MSG_process_sleep(1000);
+    XBT_INFO(" ");
+
+    MSG_vm_destroy(vm0);
+  }
+
+
+  XBT_INFO("# 11. Change a bound dynamically.");
   test_dynamic_change();
 
   return 0;
