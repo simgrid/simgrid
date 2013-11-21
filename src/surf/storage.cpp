@@ -190,7 +190,7 @@ static void storage_parse_mount(sg_platf_mount_cbarg_t mount)
   mnt.name = xbt_strdup(mount->name);
 
   if(!mount_list){
-    //FIXME:XBT_DEBUG("Create a Mount list for %s",A_surfxml_host_id);
+    XBT_DEBUG("Create a Mount list for %s",A_surfxml_host_id);
     mount_list = xbt_dynar_new(sizeof(s_mount_t), mount_free);
   }
   xbt_dynar_push(mount_list,&mnt);
@@ -598,7 +598,9 @@ sg_size_t StorageLmm::getSize(){
  **********/
 
 StorageActionLmm::StorageActionLmm(ModelPtr model, double cost, bool failed, StorageLmmPtr storage, e_surf_action_storage_type_t type)
-  : Action(model, cost, failed), ActionLmm(model, cost, failed), StorageAction(model, cost, failed, storage, type) {
+  : Action(model, cost, failed),
+    ActionLmm(model, cost, failed),
+    StorageAction(model, cost, failed, storage, type) {
   XBT_IN("(%s,%g", storage->m_name, cost);
   p_variable = lmm_variable_new(p_model->p_maxminSystem, this, 1.0, -1.0 , 3);
 
@@ -618,6 +620,7 @@ StorageActionLmm::StorageActionLmm(ModelPtr model, double cost, bool failed, Sto
     lmm_expand(p_model->p_maxminSystem, storage->p_constraintWrite,
                p_variable, 1.0);
     xbt_dynar_push(storage->p_writeActions, static_cast<ActionPtr>(this));
+    ref();
     break;
   }
   XBT_OUT();

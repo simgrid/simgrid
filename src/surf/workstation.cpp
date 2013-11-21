@@ -129,18 +129,23 @@ double WorkstationModel::shareResources(double now){
 
   double min_by_cpu = p_cpuModel->shareResources(now);
   double min_by_net = surf_network_model->shareResources(now);
+  double min_by_sto = -1;
+  if (p_cpuModel == surf_cpu_model_pm)
+	min_by_sto = surf_storage_model->shareResources(now);
 
-  XBT_DEBUG("model %p, %s min_by_cpu %f, %s min_by_net %f",
-      this, surf_cpu_model_pm->m_name.c_str(), min_by_cpu, surf_network_model->m_name.c_str(), min_by_net);
+  XBT_DEBUG("model %p, %s min_by_cpu %f, %s min_by_net %f, %s min_by_sto %f",
+      this, surf_cpu_model_pm->m_name.c_str(), min_by_cpu,
+            surf_network_model->m_name.c_str(), min_by_net,
+            surf_storage_model->m_name.c_str(), min_by_sto);
 
-  if (min_by_cpu >= 0.0 && min_by_net >= 0.0)
-    return min(min_by_cpu, min_by_net);
-  else if (min_by_cpu >= 0.0)
-    return min_by_cpu;
-  else if (min_by_net >= 0.0)
-    return min_by_net;
-  else
-    return min_by_cpu;  /* probably min_by_cpu == min_by_net == -1 */
+  double res = max(max(min_by_cpu, min_by_net), min_by_sto);
+  if (min_by_cpu >= 0.0 && min_by_cpu < res)
+	res = min_by_cpu;
+  if (min_by_net >= 0.0 && min_by_net < res)
+	res = min_by_net;
+  if (min_by_sto >= 0.0 && min_by_sto < res)
+	res = min_by_sto;
+  return res;
 }
 
 void WorkstationModel::updateActionsState(double /*now*/, double /*delta*/){
