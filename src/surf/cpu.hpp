@@ -79,6 +79,8 @@ public:
   CpuAction(){};
   CpuAction(ModelPtr model, double cost, bool failed)
   : Action(model, cost, failed) {};
+  virtual void setAffinity(CpuPtr cpu, unsigned long mask)=0;
+  virtual void setBound(double bound)=0;
 };
 
 class CpuActionLmm : public ActionLmm, public CpuAction {
@@ -88,7 +90,7 @@ public:
   : Action(model, cost, failed), ActionLmm(model, cost, failed), CpuAction(model, cost, failed) {};
   void updateRemainingLazy(double now);
   virtual void updateEnergy()=0;
-  void setAffinity(CpuLmmPtr cpu, unsigned long mask);
+  void setAffinity(CpuPtr cpu, unsigned long mask);
   void setBound(double bound);
   double m_bound;
 };

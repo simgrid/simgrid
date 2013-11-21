@@ -195,10 +195,10 @@ void CpuActionLmm::setBound(double bound)
  * action object does not have the information about the location where the
  * action is being executed.
  */
-void CpuActionLmm::setAffinity(CpuLmmPtr cpu, unsigned long mask)
+void CpuActionLmm::setAffinity(CpuPtr _cpu, unsigned long mask)
 {
   lmm_variable_t var_obj = p_variable;
-
+  CpuLmmPtr cpu = reinterpret_cast<CpuLmmPtr>(_cpu);
   XBT_IN("(%p,%lx)", this, mask);
 
   {

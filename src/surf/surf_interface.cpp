@@ -502,11 +502,11 @@ int surf_action_get_cost(surf_action_t action){
 }
 
 void surf_cpu_action_set_affinity(surf_action_t action, surf_resource_t cpu, unsigned long mask) {
-  dynamic_cast<CpuActionLmmPtr>(action)->setAffinity( dynamic_cast<CpuLmmPtr>(get_casted_cpu(cpu)), mask);
+  dynamic_cast<CpuActionPtr>(action)->setAffinity(get_casted_cpu(cpu), mask);
 }
 
 void surf_cpu_action_set_bound(surf_action_t action, double bound) {
-  dynamic_cast<CpuActionLmmPtr>(action)->setBound(bound);
+  dynamic_cast<CpuActionPtr>(action)->setBound(bound);
 }
 
 surf_file_t surf_storage_action_get_file(surf_action_t action){
