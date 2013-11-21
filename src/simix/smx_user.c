@@ -253,6 +253,8 @@ double simcall_host_get_consumed_energy(smx_host_t host)
  * \param host SIMIX host where the action will be executed
  * \param computation_amount amount Computation amount (in bytes)
  * \param priority computation priority
+ * \param bound
+ * \param affinity_mask
  * \return A new SIMIX execution action
  */
 smx_action_t simcall_host_execute(const char *name, smx_host_t host,

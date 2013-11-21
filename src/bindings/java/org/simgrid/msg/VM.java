@@ -34,17 +34,16 @@ public class VM extends Host{
 
 	/**
 	 * Create a  VM
-	 * @param host, Host node
-	 * @param name, name of the machine
-	 * @param nCore, number of core
-	 * @param ramSize, size of the RAM that should be allocated (in MBytes) 
+	 * @param host  Host node
+	 * @param name name of the machine
+	 * @param nCore number of core
+	 * @param ramSize size of the RAM that should be allocated (in MBytes)
 	 * @param netCap (not used for the moment)
 	 * @param diskPath (not used for the moment)
 	 * @param diskSize (not used for the moment)
 	 * @param migNetSpeed (network bandwith allocated for migrations in MB/s, if you don't know put zero ;))
 	 * @param dpIntensity (dirty page percentage according to migNetSpeed, [0-100], if you don't know put zero ;))
 	 */
-	
 	public VM(Host host, String name, int nCore,  int ramSize, 
 			int netCap, String diskPath, int diskSize, int migNetSpeed, int dpIntensity){
 		super();
@@ -117,8 +116,8 @@ public class VM extends Host{
 	
 	/**
 	 * Natively implemented method create the VM.
-	 * @param nCore, number of core
-	 * @param ramSize, size of the RAM that should be allocated (in MB) 
+	 * @param nCore number of core
+	 * @param ramSize size of the RAM that should be allocated (in MB)
 	 * @param netCap (not used for the moment)
 	 * @param diskPath (not used for the moment)
 	 * @param diskSize (not used for the moment)
@@ -131,7 +130,7 @@ public class VM extends Host{
 
 	/**
 	 * Bound the VM to a certain % of its vcpu capability (e.g. 75% of vm.getSpeed())
-	 * @param load, percentage (between [0,100]
+	 * @param load percentage (between [0,100]
 	 */
 	public native void setBound(int load);
 

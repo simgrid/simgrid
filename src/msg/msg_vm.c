@@ -58,7 +58,7 @@ xbt_dict_t MSG_vm_get_properties(msg_vm_t vm)
 /** \ingroup m_host_management
  * \brief Change the value of a given host property
  *
- * \param host a host
+ * \param vm a vm
  * \param name a property name
  * \param value what to change the property to
  * \param free_ctn the freeing function to use to kill the value on need
@@ -1244,11 +1244,11 @@ msg_host_t MSG_vm_get_pm(msg_vm_t vm)
  * For example,
  *  On PM0, there are Task1 and VM0.
  *  On VM0, there is Task2.
- * Now we bound 75% to Task1@PM0 and bound 25% to Task2@VM0.
+ * Now we bound 75% to Task1\@PM0 and bound 25% to Task2\@VM0.
  * Then, 
- *  Task1@PM0 gets 50%.
- *  Task2@VM0 gets 25%.
- * This is NOT 75% for Task1@PM0 and 25% for Task2@VM0, respectively.
+ *  Task1\@PM0 gets 50%.
+ *  Task2\@VM0 gets 25%.
+ * This is NOT 75% for Task1\@PM0 and 25% for Task2\@VM0, respectively.
  *
  * This is because a VM has the dummy CPU action in the PM layer. Putting a
  * task on the VM does not affect the bound of the dummy CPU action. The bound

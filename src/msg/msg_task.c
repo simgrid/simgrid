@@ -480,7 +480,7 @@ void MSG_task_set_bound(msg_task_t task, double bound)
  *
  * Usage:
  * 0. Define a host with multiple cores.
- *    <host id="PM0" power="1E8" core="2"/>
+ *    \<host id="PM0" power="1E8" core="2"/\>
  *
  * 1. Pin a given task to the first CPU core of a host.
  *   MSG_task_set_affinity(task, pm0, 0x01);
