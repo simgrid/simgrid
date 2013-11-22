@@ -16,7 +16,8 @@ xbt_dict_t gap_lookup = NULL;
 
 static int factor_cmp(const void *pa, const void *pb)
 {
-  return (((s_smpi_factor_t*)pa)->factor > ((s_smpi_factor_t*)pb)->factor);
+ return (((s_smpi_factor_t*)pa)->factor > ((s_smpi_factor_t*)pb)->factor) ? 1 :
+         (((s_smpi_factor_t*)pa)->factor < ((s_smpi_factor_t*)pb)->factor) ? -1 : 0;
 }
 
 
