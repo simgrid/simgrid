@@ -61,8 +61,11 @@ AsFull::~AsFull(){
   /* Delete routing table */
   for (i = 0; i < table_size; i++)
     for (j = 0; j < table_size; j++) {
-      xbt_dynar_free(&TO_ROUTE_FULL(i,j)->link_list);
-      xbt_free(TO_ROUTE_FULL(i,j));
+      if (TO_ROUTE_FULL(i,j)){
+    	if (TO_ROUTE_FULL(i,j)->link_list)
+          xbt_dynar_free(&TO_ROUTE_FULL(i,j)->link_list);
+        xbt_free(TO_ROUTE_FULL(i,j));
+      }
     }
   xbt_free(p_routingTable);
 }

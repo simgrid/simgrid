@@ -93,6 +93,7 @@ public:
 
 class RoutingPlatf {
 public:
+  ~RoutingPlatf();
   AsPtr p_root;
   void *p_loopback;
   xbt_dynar_t p_lastRoute;

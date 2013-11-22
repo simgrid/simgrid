@@ -49,7 +49,8 @@ public:
     this->initialize();
   }
   ~NetworkCm02Model() {
-	lmm_system_free(p_maxminSystem);
+	if (p_maxminSystem)
+	  lmm_system_free(p_maxminSystem);
 	if (p_actionHeap)
 	  xbt_heap_free(p_actionHeap);
 	if (p_modifiedSet)

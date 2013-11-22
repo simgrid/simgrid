@@ -141,6 +141,8 @@ public:
 class LinkL07 : public NetworkCm02LinkLmm {
 public:
   LinkL07(NetworkL07ModelPtr model, const char* name, xbt_dict_t props);
+  ~LinkL07(){
+  };
   bool isUsed();
   void updateState(tmgr_trace_event_t event_type, double value, double date);
   double getBandwidth();

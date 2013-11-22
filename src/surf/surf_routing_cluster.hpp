@@ -33,8 +33,6 @@ public:
   int parsePU(RoutingEdgePtr elm); /* A host or a router, whatever */
   int parseAS(RoutingEdgePtr elm);
 
-  //virtual void parseBypassroute(sg_platf_route_cbarg_t e_route)=0;
-
   NetworkCm02LinkPtr p_backbone;
   void *p_loopback;
   RoutingEdgePtr p_router;

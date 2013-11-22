@@ -214,6 +214,7 @@ public:
                            tmgr_trace_t state_trace,
                            double metric_peak,
                            tmgr_trace_t metric_trace);
+  ~ResourceLmm() {};
   lmm_constraint_t p_constraint;
   tmgr_trace_event_t p_stateEvent;
   s_surf_metric_t p_power;

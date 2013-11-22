@@ -1263,11 +1263,14 @@ static void finalize_rec(AsPtr as) {
 
 /** \brief Frees all memory allocated by the routing module */
 void routing_exit(void) {
-  if (!routing_platf)
-    return;
-  xbt_dynar_free(&routing_platf->p_lastRoute);
-  finalize_rec(routing_platf->p_root);
-  delete routing_platf;
+  if (routing_platf)
+    delete routing_platf;
+}
+
+RoutingPlatf::~RoutingPlatf()
+{
+	xbt_dynar_free(&p_lastRoute);
+	finalize_rec(p_root);
 }
 
 AS_t surf_AS_get_routing_root() {
