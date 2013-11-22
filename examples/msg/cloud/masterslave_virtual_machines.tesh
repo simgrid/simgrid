@@ -3,7 +3,7 @@
 p Testing the Cloud API with a simple masterslave
 
 ! output sort
-$ $SG_TEST_EXENV ${bindir:=.}/cloud/masterslave_virtual_machines$EXEEXT ${srcdir:=.}/msg_platform.xml --log=root.fmt:"[%12.6r]%e(%i:%P@%h)%e%m%n"
+$ $SG_TEST_EXENV ${bindir:=.}/cloud/masterslave_virtual_machines$EXEEXT ${srcdir:=.}/msg_platform.xml "--log=root.fmt:[%12.6r]%e(%i:%P@%h)%e%m%n"
 > [    0.000000] (10:Slave 8@Jean_Yves) Slave listenning on 8
 > [    0.000000] (11:Slave 9@Fafard) Slave listenning on 9
 > [    0.000000] (1:master@Jacquelin) Launched 10 VMs
