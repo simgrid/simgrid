@@ -1263,8 +1263,7 @@ static void finalize_rec(AsPtr as) {
 
 /** \brief Frees all memory allocated by the routing module */
 void routing_exit(void) {
-  if (routing_platf)
-    delete routing_platf;
+  delete routing_platf;
 }
 
 RoutingPlatf::~RoutingPlatf()

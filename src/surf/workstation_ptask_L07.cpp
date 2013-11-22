@@ -339,7 +339,7 @@ ResourcePtr NetworkL07Model::createResource(const char *name,
                                  e_surf_link_sharing_policy_t
                                  policy, xbt_dict_t properties)
 {
-  LinkL07Ptr nw_link = new LinkL07(this, xbt_strdup(name), properties);
+  LinkL07Ptr nw_link = new LinkL07(this, name, properties);
   xbt_assert(!xbt_lib_get_or_null(link_lib, name, SURF_LINK_LEVEL),
               "Link '%s' declared several times in the platform file.",
               name);

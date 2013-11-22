@@ -15,9 +15,6 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_cpu_cas, surf_cpu,
                                 "Logging specific to the SURF CPU IMPROVED module");
 }
 
-static xbt_swag_t
-    cpu_running_action_set_that_does_not_need_being_checked = NULL;
-
 /*************
  * CallBacks *
  *************/
@@ -84,7 +81,7 @@ CpuCas01Model::CpuCas01Model() : CpuModel("cpu")
     xbt_die("Unsupported optimization (%s) for this model", optim);
   }
 
-  cpu_running_action_set_that_does_not_need_being_checked =
+  p_cpuRunningActionSetThatDoesNotNeedBeingChecked =
       xbt_swag_new(xbt_swag_offset(*action, p_stateHookup));
 
   if (p_updateMechanism == UM_LAZY) {
@@ -120,8 +117,7 @@ CpuCas01Model::~CpuCas01Model()
 
   surf_cpu_model_pm = NULL;
 
-  xbt_swag_free(cpu_running_action_set_that_does_not_need_being_checked);
-  cpu_running_action_set_that_does_not_need_being_checked = NULL;
+  xbt_swag_free(p_cpuRunningActionSetThatDoesNotNeedBeingChecked);
 }
 
 void CpuCas01Model::parseInit(sg_platf_host_cbarg_t host)
@@ -338,7 +334,7 @@ ActionPtr CpuCas01Lmm::sleep(double duration)
     /* Move to the *end* of the corresponding action set. This convention
        is used to speed up update_resource_state  */
     xbt_swag_remove(static_cast<ActionPtr>(action), action->p_stateSet);
-    action->p_stateSet = cpu_running_action_set_that_does_not_need_being_checked;
+    action->p_stateSet = static_cast<CpuCas01ModelPtr>(p_model)->p_cpuRunningActionSetThatDoesNotNeedBeingChecked;
     xbt_swag_insert(static_cast<ActionPtr>(action), action->p_stateSet);
   }
 

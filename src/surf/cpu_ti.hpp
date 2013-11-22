@@ -111,7 +111,7 @@ public:
         int pstate, double powerScale, tmgr_trace_t powerTrace, int core,
         e_surf_resource_state_t stateInitial, tmgr_trace_t stateTrace,
 	xbt_dict_t properties) ;
-  ~CpuTi() {};
+  ~CpuTi();
 
   void updateState(tmgr_trace_event_t event_type, double value, double date);  
   void updateActionFinishDate(double now);

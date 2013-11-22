@@ -429,15 +429,6 @@ CpuTiModel::~CpuTiModel()
   xbt_lib_cursor_t cursor;
   char *key;
 
-  xbt_lib_foreach(host_lib, cursor, key, cpu){
-    if(cpu[SURF_CPU_LEVEL])
-    {
-        CpuTiPtr CPU = dynamic_cast<CpuTiPtr>(static_cast<ResourcePtr>(cpu[SURF_CPU_LEVEL]));
-        xbt_swag_free(CPU->p_actionSet);
-        delete CPU->p_availTrace;
-    }
-  }
-
   surf_cpu_model_pm = NULL;
 
   xbt_swag_free
@@ -620,6 +611,11 @@ CpuTi::CpuTi(CpuTiModelPtr model, const char *name, xbt_dynar_t powerPeak,
     }
   }
 };
+
+CpuTi::~CpuTi(){
+delete p_availTrace;
+xbt_swag_free(p_actionSet);
+}
 
 void CpuTi::updateState(tmgr_trace_event_t event_type,
                         double value, double date)

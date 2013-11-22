@@ -32,6 +32,7 @@ public:
                           xbt_dict_t cpu_properties);
   double shareResourcesFull(double now);  
   void addTraces();
+  xbt_swag_t p_cpuRunningActionSetThatDoesNotNeedBeingChecked;
 };
 
 /************
