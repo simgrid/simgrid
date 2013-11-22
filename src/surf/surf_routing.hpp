@@ -50,7 +50,9 @@ public:
   xbt_dynar_t p_linkUpDownList;
 
   As(){};
-  virtual ~As(){};
+  virtual ~As(){
+	xbt_free(p_name);
+  };
 
   virtual void getRouteAndLatency(RoutingEdgePtr src, RoutingEdgePtr dst, sg_platf_route_cbarg_t into, double *latency)=0;
   virtual xbt_dynar_t getOneLinkRoutes()=0;
@@ -70,6 +72,7 @@ public:
 
 struct RoutingEdge {
 public:
+  ~RoutingEdge() { xbt_free(p_name);};
   AsPtr p_rcComponent;
   e_surf_network_element_type_t p_rcType;
   int m_id;

@@ -397,7 +397,7 @@ void routing_AS_begin(sg_platf_AS_cbarg_t AS)
 
   info->p_rcComponent = new_as->p_routingFather;
   info->p_rcType = SURF_NETWORK_ELEMENT_AS;
-  info->p_name = new_as->p_name;
+  info->p_name = xbt_strdup(new_as->p_name);
 
   xbt_lib_set(as_router_lib, info->p_name, ROUTING_ASR_LEVEL,
               (void *) info);

@@ -236,7 +236,6 @@ CpuCas01Lmm::~CpuCas01Lmm(){
   xbt_dynar_free(&p_energy->power_range_watts_list);
   xbt_dynar_free(&p_powerPeakList);
   xbt_free(p_energy);
-  return;
 }
 
 bool CpuCas01Lmm::isUsed()

@@ -668,8 +668,6 @@ Resource::Resource(surf_model_t model, const char *name, xbt_dict_t props)
 {}
 
 Resource::Resource(){
-  //FIXME:free(m_name);
-  //FIXME:xbt_dict_free(&m_properties);
 }
 
 const char *Resource::getName()

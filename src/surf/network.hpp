@@ -48,6 +48,13 @@ public:
   NetworkCm02Model() : Model("network") {
     this->initialize();
   }
+  ~NetworkCm02Model() {
+	lmm_system_free(p_maxminSystem);
+	if (p_actionHeap)
+	  xbt_heap_free(p_actionHeap);
+	if (p_modifiedSet)
+	  xbt_swag_free(p_modifiedSet);
+  }
   //FIXME:NetworkCm02LinkPtr createResource(string name);
   NetworkCm02LinkLmmPtr createResource(const char *name,
                                    double bw_initial,
