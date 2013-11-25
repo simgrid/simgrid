@@ -29,14 +29,6 @@ typedef Onelink *OnelinkPtr;
 class RoutingPlatf;
 typedef RoutingPlatf *RoutingPlatfPtr;
 
-
-/*FIXME:class RoutingModelDescription {
-  const char *p_name;
-  const char *p_desc;
-  AsPtr create();
-  void end(AsPtr as);
-};*/
-
 struct As {
 public:
   xbt_dynar_t p_indexNetworkElm;

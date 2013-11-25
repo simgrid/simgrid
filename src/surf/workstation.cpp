@@ -10,8 +10,6 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_workstation, surf,
 
 WorkstationModelPtr surf_workstation_model = NULL;
 
-//FIXME:Faire hériter ou composer de cup et network
-
 /*************
  * CallBacks *
  *************/

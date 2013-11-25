@@ -22,8 +22,8 @@ typedef WorkstationCLM03Lmm *WorkstationCLM03LmmPtr;
 class WorkstationAction;
 typedef WorkstationAction *WorkstationActionPtr;
 
-/*FIXME:class WorkstationActionLmm;
-typedef WorkstationActionLmm *WorkstationActionLmmPtr;*/
+class WorkstationActionLmm;
+typedef WorkstationActionLmm *WorkstationActionLmmPtr;
 
 /*********
  * Tools *

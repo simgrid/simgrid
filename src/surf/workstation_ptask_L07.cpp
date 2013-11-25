@@ -257,7 +257,7 @@ ResourcePtr WorkstationL07Model::createResource(const char *name, double /*power
               "Host '%s' declared several times in the platform file.",
               name);
 
-  wk = new WorkstationL07(this, name, cpu_properties,
+  wk = new WorkstationL07(this, name, NULL,
 		                  static_cast<RoutingEdgePtr>(xbt_lib_get_or_null(host_lib, name, ROUTING_HOST_LEVEL)),
 		                  dynamic_cast<CpuPtr>(static_cast<ResourcePtr>(xbt_lib_get_or_null(host_lib, name, SURF_CPU_LEVEL))));
 

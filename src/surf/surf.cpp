@@ -667,8 +667,9 @@ Resource::Resource(surf_model_t model, const char *name, xbt_dict_t props)
   : m_name(xbt_strdup(name)), m_properties(props), p_model(model), m_running(true)
 {}
 
-Resource::Resource(){
-}
+Resource::Resource()
+: m_name(NULL), m_properties(NULL), p_model(NULL)
+{}
 
 const char *Resource::getName()
 {

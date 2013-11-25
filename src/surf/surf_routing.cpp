@@ -542,7 +542,7 @@ static void _get_route_and_latency(RoutingEdgePtr src, RoutingEdgePtr dst,
   /* Common ancestor is kind enough to declare a bypass route from src to dst -- use it and bail out */
   if (e_route_bypass) {
     xbt_dynar_merge(links, &e_route_bypass->link_list);
-    //FIXME:generic_free_route(e_route_bypass);
+    generic_free_route(e_route_bypass);
     return;
   }
 

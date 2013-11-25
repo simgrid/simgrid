@@ -169,7 +169,7 @@ public:
   Resource(ModelPtr model, const char *name, xbt_dict_t properties);
   virtual ~Resource() {
 	xbt_free((void*)m_name);
-	xbt_dict_free(&m_properties);
+    xbt_dict_free(&m_properties);
   };
 
   virtual void updateState(tmgr_trace_event_t event_type, double value, double date)=0;

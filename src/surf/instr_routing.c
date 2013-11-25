@@ -8,7 +8,6 @@
 
 #ifdef HAVE_TRACING
 #include "surf/surf_private.h"
-//FIXME:#include "surf/network_private.h"
 #include "xbt/graph.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_routing, instr, "Tracing platform hierarchy");

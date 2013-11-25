@@ -11,8 +11,6 @@
 #include "surf/surf.h"
 #include "surf/surf_private.h"
 
-//FIXME:#include "surf/network_private.h"
-
 typedef enum {
   INSTR_US_DECLARE,
   INSTR_US_SET,

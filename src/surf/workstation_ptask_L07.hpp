@@ -28,9 +28,6 @@ typedef LinkL07 *LinkL07Ptr;
 class WorkstationL07ActionLmm;
 typedef WorkstationL07ActionLmm *WorkstationL07ActionLmmPtr;
 
-/*FIXME:class WorkstationActionLmm;
-typedef WorkstationActionLmm *WorkstationActionLmmPtr;*/
-
 /*********
  * Tools *
  *********/
