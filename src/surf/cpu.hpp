@@ -1,4 +1,5 @@
 #include "surf.hpp"
+#include "maxmin_private.h"
 
 #ifndef SURF_MODEL_CPU_H_
 #define SURF_MODEL_CPU_H_
@@ -40,7 +41,9 @@ public:
 class Cpu : virtual public Resource {
 public:
   Cpu(){};
-  Cpu(CpuModelPtr model, const char* name, xbt_dict_t properties) : Resource(model, name, properties) {};
+  Cpu(CpuModelPtr model, const char* name, xbt_dict_t properties, int core, double powerPeak, double powerScale)
+   : Resource(model, name, properties), m_core(core), m_powerPeak(powerPeak), m_powerScale(powerScale)
+   {};
   virtual ActionPtr execute(double size)=0;
   virtual ActionPtr sleep(double duration)=0;
   virtual int getCore();
@@ -54,9 +57,9 @@ public:
   virtual double getConsumedEnergy()=0;
 
   void addTraces(void);
+  int m_core;
   double m_powerPeak;            /*< CPU power peak */
   double m_powerScale;           /*< Percentage of CPU disponible */
-  int m_core;
 protected:
 
   //virtual boost::shared_ptr<Action> execute(double size) = 0;
@@ -65,8 +68,9 @@ protected:
 
 class CpuLmm : public ResourceLmm, public Cpu {
 public:
-  CpuLmm(){};
-  CpuLmm(CpuModelPtr model, const char* name, xbt_dict_t properties) : ResourceLmm(), Cpu(model, name, properties) {};
+  CpuLmm() : p_constraintCore(NULL) {};
+  CpuLmm(CpuModelPtr model, const char* name, xbt_dict_t properties, int core, double powerPeak, double powerScale);
+  ~CpuLmm();
   /* Note (hypervisor): */
   lmm_constraint_t *p_constraintCore;
 };

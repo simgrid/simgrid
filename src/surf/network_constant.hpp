@@ -48,8 +48,8 @@ public:
  **********/
 class NetworkConstantActionLmm : public NetworkCm02ActionLmm {
 public:
-  NetworkConstantActionLmm(NetworkConstantModelPtr model, double latency):
-	  Action(model, 0, false), NetworkCm02ActionLmm(model, 0, false), m_latInit(latency) {
+  NetworkConstantActionLmm(NetworkConstantModelPtr model, double size, double latency):
+	  Action(model, size, false), NetworkCm02ActionLmm(model, 0, false), m_latInit(latency) {
 	m_latency = latency;
 	if (m_latency <= 0.0) {
 	  p_stateSet = p_model->p_doneActionSet;

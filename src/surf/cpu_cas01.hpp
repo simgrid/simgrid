@@ -24,7 +24,7 @@ public:
   void (CpuCas01Model::*updateActionsState)(double now, double delta);
 
   void parseInit(sg_platf_host_cbarg_t host);  
-  CpuCas01LmmPtr createResource(const char *name, xbt_dynar_t power_peak, int pstate,
+  CpuPtr createResource(const char *name, xbt_dynar_t power_peak, int pstate,
 		                  double power_scale,
                           tmgr_trace_t power_trace, int core,
                           e_surf_resource_state_t state_initial,
@@ -84,6 +84,6 @@ class CpuCas01ActionLmm: public CpuActionLmm {
 public:
   CpuCas01ActionLmm() {};
   CpuCas01ActionLmm(ModelPtr model, double cost, bool failed): Action(model, cost, failed), CpuActionLmm(model, cost, failed) {};
+  ~CpuCas01ActionLmm() {};
   void updateEnergy();
-
 };

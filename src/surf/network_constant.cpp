@@ -80,7 +80,7 @@ ActionPtr NetworkConstantModel::communicate(RoutingEdgePtr src, RoutingEdgePtr d
   char *dst_name = dst->p_name;
 
   XBT_IN("(%s,%s,%g,%g)", src_name, dst_name, size, rate);
-  NetworkConstantActionLmmPtr action = new NetworkConstantActionLmm(this, sg_latency_factor);
+  NetworkConstantActionLmmPtr action = new NetworkConstantActionLmm(this, size, sg_latency_factor);
   XBT_OUT();
 
   return action;

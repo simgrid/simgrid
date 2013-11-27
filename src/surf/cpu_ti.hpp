@@ -92,6 +92,10 @@ public:
   void updateActionsState(double now, double delta);
   void addTraces();
 
+  xbt_swag_t p_runningActionSetThatDoesNotNeedBeingChecked;
+  xbt_swag_t p_modifiedCpu;
+  xbt_heap_t p_tiActionHeap;
+
 protected:
   void NotifyResourceTurnedOn(ResourcePtr){};
   void NotifyResourceTurnedOff(ResourcePtr){};

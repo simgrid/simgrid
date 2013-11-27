@@ -130,6 +130,33 @@ int Cpu::getCore()
   return m_core;
 }
 
+CpuLmm::CpuLmm(CpuModelPtr model, const char* name, xbt_dict_t properties, int core, double powerPeak, double powerScale)
+: ResourceLmm(), Cpu(model, name, properties, core, powerPeak, powerScale) {
+  /* At now, we assume that a VM does not have a multicore CPU. */
+  if (core > 1)
+    xbt_assert(model == surf_cpu_model_pm);
+
+  p_constraintCore = xbt_new(lmm_constraint_t, core);
+
+  int i;
+  for (i = 0; i < core; i++) {
+    /* just for a unique id, never used as a string. */
+    void *cnst_id = bprintf("%s:%i", name, i);
+    p_constraintCore[i] = lmm_constraint_new(p_model->p_maxminSystem, cnst_id, m_powerScale * m_powerPeak);
+  }
+}
+
+CpuLmm::~CpuLmm(){
+  if (p_constraintCore){
+    for (int i = 0; i < m_core; i++) {
+	  void *cnst_id = p_constraintCore[i]->id;
+	  //FIXME:lmm_constraint_free(p_model->p_maxminSystem, p_constraintCore[i]);
+	  xbt_free(cnst_id);
+    }
+    xbt_free(p_constraintCore);
+  }
+}
+
 /**********
  * Action *
  **********/

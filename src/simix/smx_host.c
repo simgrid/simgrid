@@ -35,7 +35,7 @@ smx_host_t SIMIX_host_create(const char *name,
   /* Update global variables */
   xbt_lib_set(host_lib,name,SIMIX_HOST_LEVEL,smx_host);
 
-  return xbt_lib_get_or_null(host_lib, name, SIMIX_HOST_LEVEL);
+  return xbt_lib_get_elm_or_null(host_lib, name);//, SIMIX_HOST_LEVEL);
 }
 
 void SIMIX_pre_host_on(smx_simcall_t simcall, smx_host_t h)

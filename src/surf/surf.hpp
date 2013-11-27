@@ -205,7 +205,9 @@ private:
 
 class ResourceLmm: virtual public Resource {
 public:
-  ResourceLmm() { p_power.event = NULL; };
+  ResourceLmm() : p_constraint(NULL) {
+	p_power.event = NULL;
+  };
   ResourceLmm(surf_model_t model, const char *name, xbt_dict_t props,
                            lmm_system_t system,
                            double constraint_value,
@@ -214,7 +216,8 @@ public:
                            tmgr_trace_t state_trace,
                            double metric_peak,
                            tmgr_trace_t metric_trace);
-  ~ResourceLmm() {};
+  ~ResourceLmm() {
+  };
   lmm_constraint_t p_constraint;
   tmgr_trace_event_t p_stateEvent;
   s_surf_metric_t p_power;
@@ -276,7 +279,7 @@ protected:
   int    m_refcount;
 #ifdef HAVE_TRACING
 #endif
-  e_UM_t p_updateMechanism;
+  //FIXME:removee_UM_t p_updateMechanism;
 
 private:
   int resourceUsed(void *resource_id);

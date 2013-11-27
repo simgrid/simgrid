@@ -470,7 +470,7 @@ double WorkstationL07::getConsumedEnergy()
 }
 
 CpuL07::CpuL07(CpuL07ModelPtr model, const char* name, xbt_dict_t props)
- : Resource(model, name, props), CpuLmm(model, name, props) {
+ : Resource(model, name, props), CpuLmm() {
 
 }
 

@@ -6,7 +6,6 @@
  */
 #include "vm_workstation.hpp"
 #include "cpu_cas01.hpp"
-#include "maxmin_private.h"
 
 extern "C" {
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_vm_workstation, surf,
@@ -40,7 +39,7 @@ void WorkstationVMModel::createResource(const char *name, void *ind_phys_worksta
 {
   WorkstationVM2013LmmPtr ws = new WorkstationVM2013Lmm(this, name, NULL, static_cast<surf_resource_t>(ind_phys_workstation));
 
-  xbt_lib_set(host_lib, name, SURF_WKS_LEVEL, ws);
+  xbt_lib_set(host_lib, name, SURF_WKS_LEVEL, static_cast<ResourcePtr>(ws));
 
   /* TODO:
    * - check how network requests are scheduled between distinct processes competing for the same card.
@@ -180,7 +179,6 @@ double WorkstationVMModel::shareResources(double now)
 /************
  * Resource *
  ************/
-
 WorkstationVM2013Lmm::WorkstationVM2013Lmm(WorkstationVMModelPtr model, const char* name, xbt_dict_t props,
 		                                   surf_resource_t ind_phys_workstation)
   :  Resource(model, name, props),
@@ -215,7 +213,7 @@ WorkstationVM2013Lmm::WorkstationVM2013Lmm(WorkstationVMModelPtr model, const ch
   /* We can assume one core and cas01 cpu for the first step.
    * Do xbt_lib_set(host_lib, name, SURF_CPU_LEVEL, cpu) if you get the resource. */
 
-  static_cast<CpuCas01ModelPtr>(surf_cpu_model_vm)->createResource(name, // name
+  p_cpu = static_cast<CpuCas01ModelPtr>(surf_cpu_model_vm)->createResource(name, // name
       sub_cpu->p_powerPeakList,        // host->power_peak,
       sub_cpu->m_pstate,
       1,                          // host->power_scale,
@@ -272,17 +270,7 @@ WorkstationVM2013Lmm::~WorkstationVM2013Lmm()
   int ret = p_action->unref();
   xbt_assert(ret == 1, "Bug: some resource still remains");
 
-  /* Free the cpu resource of the VM. If using power_trace, we will have to
-   * free other objects than lmm_constraint. */
-  lmm_constraint_free(cpu->p_model->p_maxminSystem, cpu->p_constraint);
-  for (int i = 0; i < cpu->m_core; i++) {
-    void *cnst_id = cpu->p_constraintCore[i]->id;
-    lmm_constraint_free(cpu->p_model->p_maxminSystem, cpu->p_constraintCore[i]);
-    xbt_free(cnst_id);
-  }
-
-  xbt_free(cpu->p_constraintCore);
-
+  /* Free the cpu resource of the VM. If using power_trace, we will have to */
   delete cpu;
 
   /* Free the network resource of the VM. */

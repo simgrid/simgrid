@@ -133,7 +133,7 @@ void CpuCas01Model::parseInit(sg_platf_host_cbarg_t host)
         host->properties);
 }
 
-CpuCas01LmmPtr CpuCas01Model::createResource(const char *name, xbt_dynar_t power_peak,
+CpuPtr CpuCas01Model::createResource(const char *name, xbt_dynar_t power_peak,
 		                  int pstate, double power_scale,
                           tmgr_trace_t power_trace, int core,
                           e_surf_resource_state_t state_initial,
@@ -150,7 +150,7 @@ CpuCas01LmmPtr CpuCas01Model::createResource(const char *name, xbt_dynar_t power
   cpu = new CpuCas01Lmm(this, name, power_peak, pstate, power_scale, power_trace, core, state_initial, state_trace, cpu_properties);
   xbt_lib_set(host_lib, name, SURF_CPU_LEVEL, static_cast<ResourcePtr>(cpu));
 
-  return (CpuCas01LmmPtr) xbt_lib_get_elm_or_null(host_lib, name);
+  return cpu;
 }
 
 double CpuCas01Model::shareResourcesFull(double /*now*/)
@@ -198,10 +198,10 @@ void CpuCas01Model::addTraces()
 CpuCas01Lmm::CpuCas01Lmm(CpuCas01ModelPtr model, const char *name, xbt_dynar_t powerPeak,
                          int pstate, double powerScale, tmgr_trace_t powerTrace, int core,
                          e_surf_resource_state_t stateInitial, tmgr_trace_t stateTrace,
-                         xbt_dict_t properties) :
-       Resource(model, name, properties), CpuLmm(model, name, properties) {
+                         xbt_dict_t properties)
+: Resource(model, name, properties)
+, CpuLmm(model, name, properties, core, xbt_dynar_get_as(powerPeak, pstate, double), powerScale) {
   p_powerEvent = NULL;
-  m_powerPeak = xbt_dynar_get_as(powerPeak, pstate, double);
   p_powerPeakList = powerPeak;
   m_pstate = pstate;
 
@@ -212,7 +212,6 @@ CpuCas01Lmm::CpuCas01Lmm(CpuCas01ModelPtr model, const char *name, xbt_dynar_t p
 
   XBT_DEBUG("CPU create: peak=%f, pstate=%d", m_powerPeak, m_pstate);
 
-  m_powerScale = powerScale;
   m_core = core;
   p_stateCurrent = stateInitial;
   if (powerTrace)
@@ -245,6 +244,9 @@ void CpuCas01Lmm::updateState(tmgr_trace_event_t event_type, double value, doubl
   lmm_element_t elem = NULL;
 
   if (event_type == p_powerEvent) {
+	/* TODO (Hypervisor): do the same thing for constraint_core[i] */
+	xbt_assert(m_core == 1, "FIXME: add power scaling code also for constraint_core[i]");
+
     m_powerScale = value;
     lmm_update_constraint_bound(surf_cpu_model_pm->p_maxminSystem, p_constraint,
                                 m_core * m_powerScale *
@@ -265,6 +267,9 @@ void CpuCas01Lmm::updateState(tmgr_trace_event_t event_type, double value, doubl
     if (tmgr_trace_event_free(event_type))
       p_powerEvent = NULL;
   } else if (event_type == p_stateEvent) {
+	/* TODO (Hypervisor): do the same thing for constraint_core[i] */
+    xbt_assert(m_core == 1, "FIXME: add state change code also for constraint_core[i]");
+
     if (value > 0) {
       if(p_stateCurrent == SURF_RESOURCE_OFF)
         xbt_dynar_push_as(host_that_restart, char*, (char *)m_name);
