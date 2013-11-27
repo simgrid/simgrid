@@ -470,12 +470,13 @@ set(JMSG_JAVA_SRC
   src/bindings/java/org/simgrid/msg/Msg.java
   src/bindings/java/org/simgrid/msg/MsgException.java
   src/bindings/java/org/simgrid/msg/Mutex.java
-  src/bindings/java/org/simgrid/msg/Semaphore.java
   src/bindings/java/org/simgrid/msg/NativeException.java
+  src/bindings/java/org/simgrid/msg/NativeLib.java
   src/bindings/java/org/simgrid/msg/Process.java
   src/bindings/java/org/simgrid/msg/ProcessKilledError.java
   src/bindings/java/org/simgrid/msg/ProcessNotFoundException.java
   src/bindings/java/org/simgrid/msg/RngStream.java
+  src/bindings/java/org/simgrid/msg/Semaphore.java
   src/bindings/java/org/simgrid/msg/Task.java
   src/bindings/java/org/simgrid/msg/TaskCancelledException.java
   src/bindings/java/org/simgrid/msg/TimeoutException.java
@@ -1021,6 +1022,7 @@ set(CMAKE_SOURCE_FILES
   buildtools/Cmake/Scripts/SimGrid.packproj
   buildtools/Cmake/Scripts/generate_memcheck_tests.pl
   buildtools/Cmake/Scripts/generate_new_tests.pl
+  buildtools/Cmake/Scripts/java_bundle.sh
   buildtools/Cmake/Scripts/my_valgrind.pl
   buildtools/Cmake/Scripts/postinstall.sh
   buildtools/Cmake/Scripts/preinstall.sh
