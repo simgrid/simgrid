@@ -144,7 +144,8 @@ CpuPtr CpuCas01Model::createResource(const char *name, xbt_dynar_t power_peak,
   xbt_assert(!surf_cpu_resource_priv(surf_cpu_resource_by_name(name)),
              "Host '%s' declared several times in the platform file",
              name);
-  xbt_assert(power_peak > 0, "Power has to be >0");
+  xbt_assert(xbt_dynar_getfirst_as(power_peak, double) > 0.0,
+      "Power has to be >0.0");
   xbt_assert(core > 0, "Invalid number of cores %d", core);
 
   cpu = new CpuCas01Lmm(this, name, power_peak, pstate, power_scale, power_trace, core, state_initial, state_trace, cpu_properties);
