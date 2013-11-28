@@ -17,7 +17,9 @@ typedef NetworkSmpiModel *NetworkSmpiModelPtr;
 
 class NetworkSmpiModel : public NetworkCm02Model {
 public:
-  NetworkSmpiModel() : NetworkCm02Model() {m_haveGap=true;};
+  NetworkSmpiModel();
+  ~NetworkSmpiModel();
+
   void gapAppend(double size, const NetworkCm02LinkLmmPtr link, NetworkCm02ActionLmmPtr action);
   void gapRemove(ActionLmmPtr action);
   double latencyFactor(double size);

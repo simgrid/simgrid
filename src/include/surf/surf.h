@@ -18,6 +18,7 @@
 #include "xbt/lib.h"
 #include "surf/surf_routing.h"
 #include "simgrid/platf_interface.h"
+#include "simgrid/datatypes.h"
 
 SG_BEGIN_DECL()
 /* Actions and models are highly connected structures... */
@@ -182,28 +183,6 @@ typedef enum {
   SURF_VM_STATE_RESTORING,
 
 } e_surf_vm_state_t;
-
-typedef struct ws_params {
-  int ncpus;
-  sg_size_t ramsize;
-  int overcommit;
-
-  /* The size of other states than memory pages, which is out-of-scope of dirty
-   * page tracking. */
-  long devsize;
-  int skip_stage1;
-  int skip_stage2;
-  double max_downtime;
-
-  double dp_rate;
-  double dp_cap; /* bytes per 1 flop execution */
-
-  double xfer_cpu_overhead;
-  double dpt_cpu_overhead;
-
-  /* set migration speed */
-  double mig_speed;
-} s_ws_params_t, *ws_params_t;
 
 /***************************/
 /* Generic model object */

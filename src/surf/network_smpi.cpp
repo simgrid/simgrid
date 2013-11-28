@@ -80,6 +80,17 @@ void surf_network_model_init_SMPI(void)
   xbt_cfg_setdefault_double(_sg_cfg_set, "network/weight_S", 8775);
 }
 
+NetworkSmpiModel::NetworkSmpiModel()
+ : NetworkCm02Model() {
+	m_haveGap=true;
+}
+
+NetworkSmpiModel::~NetworkSmpiModel(){
+  if (gap_lookup) {
+    xbt_dict_free(&gap_lookup);
+  }
+}
+
 void NetworkSmpiModel::gapAppend(double size, const NetworkCm02LinkLmmPtr link, NetworkCm02ActionLmmPtr action)
 {
   const char *src = link->m_name;
@@ -173,12 +184,13 @@ double NetworkSmpiModel::latencyFactor(double size)
   xbt_dynar_foreach(smpi_lat_factor, iter, fact) {
     if (size <= fact.factor) {
       XBT_DEBUG("%f <= %ld return %f", size, fact.factor, current);
+      xbt_dynar_free(&smpi_lat_factor);
       return current;
     }else
       current=fact.value;
   }
   XBT_DEBUG("%f > %ld return %f", size, fact.factor, current);
-
+  xbt_dynar_free(&smpi_lat_factor);
   return current;
 }
 

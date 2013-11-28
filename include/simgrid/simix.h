@@ -14,7 +14,7 @@
 #include "xbt/parmap.h"
 #include "xbt/swag.h"
 #include "simgrid/platf.h"
-#include "surf/surf.h"
+#include "simgrid/datatypes.h"
 
 SG_BEGIN_DECL()
 
@@ -51,7 +51,6 @@ typedef enum {
   SIMIX_LINK_FAILURE
 } e_smx_state_t;
 /** @} */
-
 
 typedef struct s_smx_timer* smx_timer_t;
 
