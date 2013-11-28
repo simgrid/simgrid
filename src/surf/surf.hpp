@@ -279,7 +279,6 @@ protected:
   int    m_refcount;
 #ifdef HAVE_TRACING
 #endif
-  //FIXME:removee_UM_t p_updateMechanism;
 
 private:
   int resourceUsed(void *resource_id);

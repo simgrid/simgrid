@@ -68,11 +68,13 @@ protected:
 
 class CpuLmm : public ResourceLmm, public Cpu {
 public:
-  CpuLmm() : p_constraintCore(NULL) {};
+  CpuLmm() : p_constraintCore(NULL), p_constraintCoreId(NULL) {};
   CpuLmm(CpuModelPtr model, const char* name, xbt_dict_t properties, int core, double powerPeak, double powerScale);
   ~CpuLmm();
   /* Note (hypervisor): */
   lmm_constraint_t *p_constraintCore;
+  void **p_constraintCoreId;
+
 };
 
 /**********
