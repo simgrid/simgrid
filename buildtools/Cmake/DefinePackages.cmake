@@ -537,6 +537,7 @@ set(headers_to_install
   include/msg/msg.h
   include/simdag/datatypes.h
   include/simdag/simdag.h
+  include/simgrid/datatypes.h
   include/simgrid/modelchecker.h
   include/simgrid/platf.h
   include/simgrid/platf_generator.h
