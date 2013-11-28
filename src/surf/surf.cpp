@@ -15,6 +15,8 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_kernel, surf,
                                 "Logging specific to SURF (kernel)");
 }
 
+
+
 /*********
  * Utils *
  *********/
@@ -172,9 +174,10 @@ s_surf_model_description_t surf_storage_model_description[] = {
 static xbt_parmap_t surf_parmap = NULL; /* parallel map on models */
 #endif
 
-static double *surf_mins = NULL; /* return value of share_resources for each model */
-
 double NOW = 0;
+double *surf_mins = NULL; /* return value of share_resources for each model */
+int surf_min_index;       /* current index in surf_mins */
+double surf_min;               /* duration determined by surf_solve */
 
 double surf_get_clock(void)
 {

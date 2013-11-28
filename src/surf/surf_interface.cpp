@@ -10,7 +10,6 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_kernel);
 /*********
  * TOOLS *
  *********/
-extern double NOW;
 
 static CpuPtr get_casted_cpu(surf_resource_t resource){
   return dynamic_cast<CpuPtr>(static_cast<ResourcePtr>(surf_cpu_resource_priv(resource)));
@@ -32,9 +31,10 @@ char *surf_routing_edge_name(sg_routing_edge_t edge){
 static xbt_parmap_t surf_parmap = NULL; /* parallel map on models */
 #endif
 
-static double *surf_mins = NULL; /* return value of share_resources for each model */
-static int surf_min_index;       /* current index in surf_mins */
-static double surf_min;               /* duration determined by surf_solve */
+extern double NOW;
+extern double *surf_mins; /* return value of share_resources for each model */
+extern int surf_min_index;       /* current index in surf_mins */
+extern double surf_min;               /* duration determined by surf_solve */
 
 void surf_presolve(void)
 {
