@@ -90,6 +90,7 @@ public:
   ActionPtr read(surf_file_t fd, sg_size_t size);
   ActionPtr write(surf_file_t fd, sg_size_t size);
   xbt_dynar_t getInfo( surf_file_t fd);
+  sg_size_t fileTell(surf_file_t fd);
   sg_size_t getFreeSize(const char* name);
   sg_size_t getUsedSize(const char* name);
 

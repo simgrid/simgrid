@@ -270,6 +270,7 @@ xbt_dict_t surf_workstation_get_storage_list(surf_resource_t workstation);
 int surf_workstation_unlink(surf_resource_t workstation, surf_file_t fd);
 surf_action_t surf_workstation_ls(surf_resource_t workstation, const char* mount, const char *path);
 size_t surf_workstation_get_size(surf_resource_t workstation, surf_file_t fd);
+size_t surf_workstation_file_tell(surf_resource_t workstation, surf_file_t fd);
 int surf_network_link_is_shared(surf_cpp_resource_t link);
 double surf_network_link_get_bandwidth(surf_cpp_resource_t link);
 double surf_network_link_get_latency(surf_cpp_resource_t link);

@@ -1474,8 +1474,16 @@ xbt_dict_t simcall_file_ls(const char* mount, const char* path)
  * \ingroup simix_file_management
  *
  */
-sg_size_t simcall_file_get_size (smx_file_t fd){
+sg_size_t simcall_file_get_size(smx_file_t fd){
   return simcall_BODY_file_get_size(fd);
+}
+
+/**
+ * \ingroup simix_file_management
+ *
+ */
+sg_size_t simcall_file_tell(smx_file_t fd){
+  return simcall_BODY_file_tell(fd);
 }
 
 /**

@@ -513,6 +513,7 @@ XBT_PUBLIC(int) simcall_file_unlink(smx_file_t fd);
 XBT_PUBLIC(xbt_dict_t) simcall_file_ls(const char* mount, const char* path);
 XBT_PUBLIC(sg_size_t) simcall_file_get_size(smx_file_t fd);
 XBT_PUBLIC(xbt_dynar_t) simcall_file_get_info(smx_file_t fd);
+XBT_PUBLIC(sg_size_t) simcall_file_tell(smx_file_t fd);
 /*****************************   Storage   **********************************/
 XBT_PUBLIC(sg_size_t) simcall_storage_get_free_size (const char* name);
 XBT_PUBLIC(sg_size_t) simcall_storage_get_used_size (const char* name);

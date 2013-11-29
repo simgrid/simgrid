@@ -279,6 +279,18 @@ sg_size_t SIMIX_file_get_size(smx_process_t process, smx_file_t fd)
   return  surf_workstation_get_size(host, fd->surf_file);
 }
 
+sg_size_t SIMIX_pre_file_tell(smx_simcall_t simcall, smx_file_t fd)
+{
+  return SIMIX_file_tell(simcall->issuer, fd);
+}
+
+sg_size_t SIMIX_file_tell(smx_process_t process, smx_file_t fd)
+{
+  smx_host_t host = process->smx_host;
+  return  surf_workstation_file_tell(host, fd->surf_file);
+}
+
+
 xbt_dynar_t SIMIX_pre_file_get_info(smx_simcall_t simcall, smx_file_t fd)
 {
   return SIMIX_file_get_info(simcall->issuer, fd);

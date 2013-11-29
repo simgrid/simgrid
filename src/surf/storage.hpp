@@ -147,6 +147,7 @@ typedef struct surf_file {
   char *name;
   char *mount;
   sg_size_t size;
+  sg_size_t current_position;
 } s_surf_file_t;
 
 

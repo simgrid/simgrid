@@ -369,6 +369,10 @@ sg_size_t surf_workstation_get_used_size(surf_resource_t resource, const char* n
   return get_casted_workstation(resource)->getUsedSize(name);
 }
 
+size_t surf_workstation_file_tell(surf_resource_t workstation, surf_file_t fd){
+  return get_casted_workstation(workstation)->getSize(fd);
+}
+
 xbt_dynar_t surf_workstation_get_vms(surf_resource_t resource){
   return get_casted_workstation(resource)->getVms();
 }

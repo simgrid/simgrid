@@ -512,6 +512,7 @@ StorageActionPtr StorageLmm::open(const char* mount, const char* path)
   file->name = xbt_strdup(path);
   file->size = size;
   file->mount = xbt_strdup(mount);
+  file->current_position = 0;
 
   StorageActionLmmPtr action = new StorageActionLmm(p_model, 0, p_stateCurrent != SURF_RESOURCE_ON, this, OPEN);
   action->p_file = file;
@@ -542,8 +543,13 @@ StorageActionPtr StorageLmm::close(surf_file_t fd)
 
 StorageActionPtr StorageLmm::read(surf_file_t fd, sg_size_t size)
 {
-  if(size > fd->size)
+  if(size > fd->size){
     size = fd->size;
+    fd->current_position = fd->size;
+  }
+  else
+	fd->current_position += size;
+
   StorageActionLmmPtr action = new StorageActionLmm(p_model, size, p_stateCurrent != SURF_RESOURCE_ON, this, READ);
   return action;
 }
@@ -555,7 +561,7 @@ StorageActionPtr StorageLmm::write(surf_file_t fd, sg_size_t size)
 
   StorageActionLmmPtr action = new StorageActionLmm(p_model, size, p_stateCurrent != SURF_RESOURCE_ON, this, WRITE);
   action->p_file = fd;
-
+  fd->current_position += size;
   // If the storage is full
   if(m_usedSize==m_size) {
     action->setState(SURF_ACTION_FAILED);

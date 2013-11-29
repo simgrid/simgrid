@@ -376,6 +376,10 @@ xbt_dynar_t WorkstationCLM03::getInfo( surf_file_t fd)
   return info;
 }
 
+sg_size_t WorkstationCLM03::fileTell(surf_file_t fd){
+  return fd->current_position;
+}
+
 sg_size_t WorkstationCLM03::getFreeSize(const char* name)
 {
   StoragePtr st = findStorageOnMountList(name);

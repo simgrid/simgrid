@@ -160,7 +160,7 @@ int MSG_file_unlink(msg_file_t fd)
  * \brief Return the size of a file
  *
  * \param fd is the file descriptor (#msg_file_t)
- * \return the size of the file (as a sg_size_t)
+ * \return the size of the file (as a #sg_size_t)
  */
 sg_size_t MSG_file_get_size(msg_file_t fd){
   return simcall_file_get_size(fd->simdata->smx_file);
@@ -191,14 +191,40 @@ xbt_dict_t MSG_file_ls(const char *mount, const char *path)
 }
 
 /*
- * Set the file position indicator in the msg_file_t by adding offset bytes
- * to the position specified by whence (either SEEK_SET, SEEK_CUR, or SEEK_END).
+ * \ingroup msg_file_management
+ * \brief Set the file position indicator in the msg_file_t by adding offset bytes
+ * to the position specified by origin (either SEEK_SET, SEEK_CUR, or SEEK_END).
+ *
+ * \param fd : file object that identifies the stream
+ * \param offset : number of bytes to offset from origin
+ * \param origin : Position used as reference for the offset. It is specified by
+ * one of the following constants defined in <cstdio> exclusively to be used as
+ * arguments for this function (SEEK_SET = beginning of file, SEEK_CUR = current
+ * position of the file pointer, SEEK_END = end of file)
+ *
+ * \return If successful, the function returns MSG_OK (=0). Otherwise, it returns
+ * MSG_TASK_CANCELED (=8).
+ *
  */
-msg_error_t MSG_file_seek (msg_file_t fd, sg_size_t offset, int whence)
+msg_error_t MSG_file_seek(msg_file_t fd, sg_size_t offset, int origin)
 {
   THROW_UNIMPLEMENTED;
   return MSG_OK;
 }
+
+/*
+ * \ingroup msg_file_management
+ * \brief Returns the current value of the position indicator of the file
+ *
+ * \param fd : file object that identifies the stream
+ * \return On success, the current value of the position indicator is returned.
+ *
+ */
+sg_size_t MSG_file_tell(msg_file_t fd)
+{
+  return simcall_file_tell(fd->simdata->smx_file);
+}
+
 
 /********************************* Storage **************************************/
 
@@ -349,7 +375,9 @@ sg_size_t MSG_storage_get_size(msg_storage_t storage)
 }
 
 /*
- * Rename the file in the contents of its associated storage.
+ * \ingroup msg_storage_management
+ *
+ * \brief Rename the file in the contents of its associated storage.
  */
 msg_error_t MSG_storage_file_rename(msg_storage_t storage, const char* src,  const char* dest)
 {
@@ -358,7 +386,8 @@ msg_error_t MSG_storage_file_rename(msg_storage_t storage, const char* src,  con
 }
 
 /*
- * Move a file to another location. Depending on the values of dest, dest, mount,
+ * \ingroup msg_storage_management
+ * \brief Move a file to another location. Depending on the values of dest, dest, mount,
  * and fullname, this move can be local or remote and, within a host, on the same
  * mounted disk or between mounted disks.
  *
