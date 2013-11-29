@@ -170,9 +170,9 @@ if(WIN32)
     message(FATAL_ERROR "Please use MinGW to compile SimGrid!")
   endif()
 
-  if(ARCH_32_BITS)	### Arch 32bits
+  if(ARCH_32_BITS)      ### Arch 32bits
     set(_WIN32 1)
-  else()	### Arch 64bits
+  else()        ### Arch 64bits
     set(_WIN64 1)
   endif()
 
@@ -184,18 +184,18 @@ if(WIN32)
 
   set(_XBT_WIN32 1)
 
-  message(STATUS "C_COMPILER			${CMAKE_C_COMPILER} ${COMPILER_C_VERSION}")
-  message(STATUS "CXX_COMPILER			${CMAKE_CXX_COMPILER} ${COMPILER_CXX_VERSION}")
-  message(STATUS "CMAKE_RC_COMPILER		${CMAKE_RC_COMPILER}")
-  message(STATUS "INCLUDE			${CMAKE_INCLUDE_WIN}")
-  message(STATUS "LIB				${CMAKE_LIB_WIN}")
-  message(STATUS "MAKE_PROGRAM			${CMAKE_MAKE_PROGRAM}")
-  message(STATUS "CMAKE_BUILD_TOOL		${CMAKE_BUILD_TOOL}")
-  message(STATUS "LINKER			${CMAKE_LINKER}")
-  message(STATUS "CMAKE_GENERATOR		${CMAKE_GENERATOR}")
-  message(STATUS "BORLAND			${BORLAND}")
-  message(STATUS "VISUALC			${MSVC}")
-  message(STATUS "GNUC				${CMAKE_COMPILER_IS_GNUCC}")
+  message(STATUS "C_COMPILER                    ${CMAKE_C_COMPILER} ${COMPILER_C_VERSION}")
+  message(STATUS "CXX_COMPILER                  ${CMAKE_CXX_COMPILER} ${COMPILER_CXX_VERSION}")
+  message(STATUS "CMAKE_RC_COMPILER             ${CMAKE_RC_COMPILER}")
+  message(STATUS "INCLUDE                       ${CMAKE_INCLUDE_WIN}")
+  message(STATUS "LIB                           ${CMAKE_LIB_WIN}")
+  message(STATUS "MAKE_PROGRAM                  ${CMAKE_MAKE_PROGRAM}")
+  message(STATUS "CMAKE_BUILD_TOOL              ${CMAKE_BUILD_TOOL}")
+  message(STATUS "LINKER                        ${CMAKE_LINKER}")
+  message(STATUS "CMAKE_GENERATOR               ${CMAKE_GENERATOR}")
+  message(STATUS "BORLAND                       ${BORLAND}")
+  message(STATUS "VISUALC                       ${MSVC}")
+  message(STATUS "GNUC                          ${CMAKE_COMPILER_IS_GNUCC}")
 
 endif()
 

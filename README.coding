@@ -26,7 +26,7 @@ The tree is not split on projects, but on file finality:
  testsuite/ -> The more test the better.
                Same organization than src/ and include/
                Tests are allowed to load some headers of the module they test.
-	       All tests should be listed in run_test.in so that they get
+               All tests should be listed in run_test.in so that they get
                run on 'make check'.
 
  examples/ -> Supposed to be copy/pastable by the user, so keep it clear and
@@ -34,11 +34,11 @@ The tree is not split on projects, but on file finality:
                 public headers here.
 
  teshsuite/ -> The more test the better. Put in there any strange test
-	       doing things that the users are not supposed to do,
-	       just to see if our framework is robust to incorrect and
-	       unusual behaviors. All tests written in this section
-	       should leverage our tesh(1) utility.
- 
+               doing things that the users are not supposed to do,
+               just to see if our framework is robust to incorrect and
+               unusual behaviors. All tests written in this section
+               should leverage our tesh(1) utility.
+
  testsuite/ -> Old test suite, that should be converted to tesh and
                moved to teshsuite at some point.
 
