@@ -21,10 +21,10 @@ $ ${bindir:=.}/io/storage ${srcdir:=.}/examples/platforms/storage.xml "--log=roo
 > [0.003333] (1@denise) Free size: 536857490006 bytes
 > [0.003333] (1@denise) Used size: 13421994 bytes
 > [0.004583] (1@denise) Read 200000 bytes on ./tmp/data.txt
-> [0.007917] (1@denise) Write 100000 more bytes on ./tmp/data.txt
+> [0.007917] (1@denise) Write 100000 bytes on ./tmp/data.txt
 > [0.007917] (1@denise) File Descriptor information:
 > 		Full name: './tmp/data.txt'
-> 		Size: 300000
+> 		Size: 100000
 > 		Mount point: '/home'
 > 		Storage Id: 'Disk4'
 > 		Storage Type: 'single_SSD'
@@ -41,7 +41,7 @@ $ ${bindir:=.}/io/storage ${srcdir:=.}/examples/platforms/storage.xml "--log=roo
 > [0.007917] (1@denise) ./doc/simgrid/examples/smpi/mc_bugged2.c size: 1387 bytes
 > [0.007917] (1@denise) ./include/simdag/simdag.h size: 10325 bytes
 > [0.007917] (1@denise) ./doc/simgrid/examples/smpi/NAS/sys/README size: 1461 bytes
-> [0.007917] (1@denise) ./tmp/simgrid.readme size: 300000 bytes
+> [0.007917] (1@denise) ./tmp/simgrid.readme size: 100000 bytes
 > [0.007917] (1@denise) ./doc/simgrid/examples/smpi/NAS/common/randdp.c size: 1441 bytes
 > [0.007917] (1@denise) ./include/msg/datatypes.h size: 4635 bytes
 > [0.007917] (1@denise) ./doc/simgrid/examples/smpi/NAS/EP/randlc.c size: 3300 bytes

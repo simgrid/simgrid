@@ -11,7 +11,7 @@
  * - display information on the disks mounted by the current host
  * - create a 200,000 bytes file
  * - completely read the created file
- * - write 100,000 more bytes in the file
+ * - write 100,000 bytes in the file
  * - rename the created file
  * - attach some user data to a disk
  * - dump disk's contents
@@ -78,9 +78,9 @@ static int host(int argc, char *argv[]){
   read = MSG_file_read(file, file_size);
   XBT_INFO("Read %llu bytes on %s", read, file_name);
 
-  // Now write 100,000 more bytes in tmp/data.txt
+  // Now write 100,000 bytes in tmp/data.txt
   write = MSG_file_write(file, 100000);  // Write 100,000 bytes
-  XBT_INFO("Write %llu more bytes on %s", write, file_name);
+  XBT_INFO("Write %llu bytes on %s", write, file_name);
   MSG_file_dump(file);
 
   MSG_file_close(file);

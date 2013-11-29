@@ -333,8 +333,8 @@ void StorageModel::updateActionsState(double /*now*/, double delta)
       /* Hack to avoid rounding differences between x86 and x86_64
        * (note that the next sizes are of type sg_size_t). */
       long incr = delta * rate + MAXMIN_PRECISION;
-      action->p_storage->m_usedSize += incr; // disk usage
-      action->p_file->size += incr; // file size
+      action->p_storage->m_usedSize += (incr - action->p_file->size); // disk usage
+      action->p_file->size = incr; // file size
 
       sg_size_t *psize = xbt_new(sg_size_t,1);
       *psize = action->p_file->size;
