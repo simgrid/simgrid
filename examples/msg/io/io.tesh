@@ -19,17 +19,17 @@ $ ${bindir:=.}/io/file ${srcdir:=.}/examples/platforms/storage.xml "--log=root.f
 > [  0.000508] (2:1@alice) 	Have read    101663 on .\Windows\setupact.log
 > [  0.001752] (1:0@denise) 	Have written 100000 on ./doc/simgrid/examples/platforms/g5k.xml
 > [  0.002175] (2:1@alice) 	Have written 100000 on .\Windows\setupact.log
-> [  0.002439] (1:0@denise) 	Have read    110000 on ./doc/simgrid/examples/platforms/g5k.xml (of size 117026)
-> [  0.002439] (1:0@denise) 	Close file './doc/simgrid/examples/platforms/g5k.xml'
-> [  0.002862] (2:1@alice) 	Have read    110000 on .\Windows\setupact.log (of size 201662)
-> [  0.002862] (2:1@alice) 	Close file '.\Windows\setupact.log'
+> [  0.002218] (1:0@denise) 	Have read    74609 on ./doc/simgrid/examples/platforms/g5k.xml (of size 74609)
+> [  0.002218] (1:0@denise) 	Close file './doc/simgrid/examples/platforms/g5k.xml'
+> [  0.002334] (2:1@alice) 	Have read    25390 on .\Windows\setupact.log (of size 25390)
+> [  0.002334] (2:1@alice) 	Close file '.\Windows\setupact.log'
 > [  0.003374] (4:3@bob) 	Have written 100000 on ./doc/simgrid/examples/platforms/nancy.xml
 > [  0.003560] (3:2@carl) 	Have written 100000 on ./doc/simgrid/examples/platforms/g5k_cabinets.xml
-> [  0.004529] (4:3@bob) 	Have read    104023 on ./doc/simgrid/examples/platforms/nancy.xml (of size 104023)
-> [  0.004529] (4:3@bob) 	Close file './doc/simgrid/examples/platforms/nancy.xml'
-> [  0.004782] (3:2@carl) 	Have read    110000 on ./doc/simgrid/examples/platforms/g5k_cabinets.xml (of size 122641)
-> [  0.004782] (3:2@carl) 	Close file './doc/simgrid/examples/platforms/g5k_cabinets.xml'
-> [  0.004782] (0:@) Simulation time 0.00478201
+> [  0.003622] (3:2@carl) 	Have read    5585 on ./doc/simgrid/examples/platforms/g5k_cabinets.xml (of size 5585)
+> [  0.003622] (3:2@carl) 	Close file './doc/simgrid/examples/platforms/g5k_cabinets.xml'
+> [  0.003720] (4:3@bob) 	Have read    31198 on ./doc/simgrid/examples/platforms/nancy.xml (of size 31198)
+> [  0.003720] (4:3@bob) 	Close file './doc/simgrid/examples/platforms/nancy.xml'
+> [  0.003720] (0:@) Simulation time 0.00372026
 
 $ ${bindir:=.}/io/file_unlink ${srcdir:=.}/examples/platforms/storage.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (0:@) Number of host '4'
