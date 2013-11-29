@@ -39,7 +39,7 @@ void net_define_callbacks(void);
  *********/
 class NetworkModel : public Model {
 public:
-  NetworkModel() : NetworkModel("network") {
+  NetworkModel() : Model("network") {
   };
   NetworkModel(string name) : Model(name) {
 	f_networkSolve = lmm_solve;
