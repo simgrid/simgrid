@@ -380,7 +380,7 @@ sg_size_t WorkstationCLM03::fileTell(surf_file_t fd){
   return fd->current_position;
 }
 
-sg_size_t WorkstationCLM03::fileSeek(surf_file_t fd, sg_size_t offset, int origin){
+int WorkstationCLM03::fileSeek(surf_file_t fd, sg_size_t offset, int origin){
 
   switch (origin) {
   case SEEK_SET:

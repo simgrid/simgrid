@@ -93,7 +93,7 @@ public:
   sg_size_t fileTell(surf_file_t fd);
   sg_size_t getFreeSize(const char* name);
   sg_size_t getUsedSize(const char* name);
-  sg_size_t fileSeek(surf_file_t fd, sg_size_t offset, int origin);
+  int fileSeek(surf_file_t fd, sg_size_t offset, int origin);
 
   bool isUsed();
   //bool isShared();
