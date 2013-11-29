@@ -1499,6 +1499,14 @@ xbt_dynar_t simcall_file_get_info(smx_file_t fd)
  * \ingroup simix_file_management
  *
  */
+int simcall_file_seek(smx_file_t fd, sg_size_t offset, int origin){
+  return simcall_BODY_file_seek(fd, offset, origin);
+}
+
+/**
+ * \ingroup simix_file_management
+ *
+ */
 void simcall_storage_file_rename(smx_storage_t storage, const char* src,  const char* dest)
 {
   return simcall_BODY_storage_file_rename(storage, src, dest);

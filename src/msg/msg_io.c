@@ -208,8 +208,8 @@ xbt_dict_t MSG_file_ls(const char *mount, const char *path)
  */
 msg_error_t MSG_file_seek(msg_file_t fd, sg_size_t offset, int origin)
 {
-  THROW_UNIMPLEMENTED;
-  return MSG_OK;
+  //THROW_UNIMPLEMENTED;
+  return simcall_file_seek(fd->simdata->smx_file, offset, origin);
 }
 
 /*

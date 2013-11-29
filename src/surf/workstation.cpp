@@ -380,6 +380,25 @@ sg_size_t WorkstationCLM03::fileTell(surf_file_t fd){
   return fd->current_position;
 }
 
+sg_size_t WorkstationCLM03::fileSeek(surf_file_t fd, sg_size_t offset, int origin){
+
+  switch (origin) {
+  case SEEK_SET:
+    fd->current_position = 0;
+	return MSG_OK;
+  case SEEK_CUR:
+	if(offset > fd->size)
+	  offset = fd->size;
+	fd->current_position = offset;
+	return MSG_OK;
+  case SEEK_END:
+	fd->current_position = fd->size;
+	return MSG_OK;
+  default:
+	return MSG_TASK_CANCELED;
+  }
+}
+
 sg_size_t WorkstationCLM03::getFreeSize(const char* name)
 {
   StoragePtr st = findStorageOnMountList(name);
