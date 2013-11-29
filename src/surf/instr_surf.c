@@ -57,6 +57,6 @@ void TRACE_surf_action(surf_action_t surf_action, const char *category)
   if (!category)
     return;
 
-  surf_action_set_category(surf_action, xbt_strdup(category));
+  surf_action_set_category(surf_action, category);
 }
 #endif /* HAVE_TRACING */
