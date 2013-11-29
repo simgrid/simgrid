@@ -48,7 +48,7 @@ class Model;
 class CpuModel;
 class WorkstationModel;
 class WorkstationVMModel;
-class NetworkCm02Model;
+class NetworkModel;
 class StorageModel;
 class Resource;
 class ResourceLmm;
@@ -66,7 +66,7 @@ typedef struct Model Model;
 typedef struct CpuModel CpuModel;
 typedef struct WorkstationModel WorkstationModel;
 typedef struct WorkstationVMModel WorkstationVMModel;
-typedef struct NetworkCm02Model NetworkCm02Model;
+typedef struct NetworkModel NetworkModel;
 typedef struct StorageModel StorageModel;
 typedef struct Resource Resource;
 typedef struct ResourceLmm ResourceLmm;
@@ -92,7 +92,7 @@ typedef CpuModel *surf_cpu_model_t;
 typedef WorkstationModel *surf_workstation_model_t;
 typedef WorkstationVMModel *surf_vm_workstation_model_t;
 
-typedef NetworkCm02Model *surf_network_model_t;
+typedef NetworkModel *surf_network_model_t;
 typedef StorageModel *surf_storage_model_t;
 
 typedef xbt_dictelm_t surf_resource_t;

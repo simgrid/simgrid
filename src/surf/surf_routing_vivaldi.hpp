@@ -1,5 +1,4 @@
 #include "surf_routing_generic.hpp"
-#include "network.hpp"
 
 #ifndef SURF_ROUTING_VIVALDI_HPP_
 #define SURF_ROUTING_VIVALDI_HPP_

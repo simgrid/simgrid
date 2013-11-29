@@ -1,4 +1,4 @@
-#include "network.hpp"
+#include "network_cm02.hpp"
 
 /***********
  * Classes *

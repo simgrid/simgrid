@@ -426,10 +426,6 @@ CpuTiModel::CpuTiModel() : CpuModel("cpu_ti")
 
 CpuTiModel::~CpuTiModel()
 {
-  void **cpu;
-  xbt_lib_cursor_t cursor;
-  char *key;
-
   surf_cpu_model_pm = NULL;
 
   xbt_swag_free(p_runningActionSetThatDoesNotNeedBeingChecked);

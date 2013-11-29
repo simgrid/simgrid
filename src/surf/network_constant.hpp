@@ -1,4 +1,4 @@
-#include "network.hpp"
+#include "network_cm02.hpp"
 
 #ifndef NETWORK_CONSTANT_HPP_
 #define NETWORK_CONSTANT_HPP_

@@ -56,7 +56,7 @@ public:
   xbt_dynar_t getRoute(WorkstationCLM03Ptr src, WorkstationCLM03Ptr dst);
   ActionPtr communicate(WorkstationCLM03Ptr src, WorkstationCLM03Ptr dst, double size, double rate);
   void addTraces();
-  NetworkL07ModelPtr p_networkModel;
+  NetworkModelPtr p_networkModel;
 };
 
 class CpuL07Model : public CpuModel {
@@ -74,11 +74,11 @@ public:
   WorkstationL07ModelPtr p_workstationModel;
 };
 
-class NetworkL07Model : public NetworkCm02Model {
+class NetworkL07Model : public NetworkModel {
 public:
-  NetworkL07Model() : NetworkCm02Model(0) {};
+  NetworkL07Model() : NetworkModel() {};
   ~NetworkL07Model() {surf_network_model = NULL;};
-  ResourcePtr createResource(const char *name,
+  NetworkLinkPtr createResource(const char *name,
 		                                   double bw_initial,
 		                                   tmgr_trace_t bw_trace,
 		                                   double lat_initial,
@@ -135,7 +135,7 @@ public:
   double m_powerCurrent;
 };
 
-class LinkL07 : public NetworkCm02LinkLmm {
+class LinkL07 : public NetworkLinkLmm {
 public:
   LinkL07(NetworkL07ModelPtr model, const char* name, xbt_dict_t props);
   ~LinkL07(){

@@ -1,4 +1,4 @@
-#include "cpu.hpp"
+#include "cpu_interface.hpp"
 
 extern "C" {
 XBT_LOG_EXTERNAL_CATEGORY(surf_kernel);

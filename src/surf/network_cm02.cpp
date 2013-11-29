@@ -1,4 +1,4 @@
-#include "network.hpp"
+#include "network_cm02.hpp"
 #include "maxmin_private.h"
 #include "simgrid/sg_config.h"
 
@@ -6,8 +6,6 @@ extern "C" {
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_network, surf,
                                 "Logging specific to the SURF network module");
 }
-
-NetworkCm02ModelPtr surf_network_model = NULL;
 
 double sg_sender_gap = 0.0;
 double sg_latency_factor = 1.0; /* default value; can be set by model or from command line */
@@ -290,7 +288,7 @@ void NetworkCm02Model::initialize()
   m_haveGap = false;
 }
 
-NetworkCm02LinkLmmPtr NetworkCm02Model::createResource(const char *name,
+NetworkLinkPtr NetworkCm02Model::createResource(const char *name,
                                  double bw_initial,
                                  tmgr_trace_t bw_trace,
                                  double lat_initial,
@@ -330,7 +328,7 @@ void NetworkCm02Model::updateActionsStateLazy(double now, double /*delta*/)
         lmm_constraint_t constraint = lmm_get_cnst_from_var(p_maxminSystem,
                                                             action->p_variable,
                                                             i);
-        NetworkCm02LinkPtr link = static_cast<NetworkCm02LinkPtr>(lmm_constraint_id(constraint));
+        NetworkCm02LinkLmmPtr link = static_cast<NetworkCm02LinkLmmPtr>(lmm_constraint_id(constraint));
         TRACE_surf_link_set_utilization(link->m_name,
                                         action->p_category,
                                         (lmm_variable_getvalue(action->p_variable)*
@@ -366,13 +364,6 @@ void NetworkCm02Model::updateActionsStateLazy(double now, double /*delta*/)
     }
   }
   return;
-}
-
-xbt_dynar_t NetworkCm02Model::getRoute(RoutingEdgePtr src, RoutingEdgePtr dst)
-{
-  xbt_dynar_t route = NULL;
-  routing_platf->getRouteAndLatency(src, dst, &route, NULL);
-  return route;
 }
 
 ActionPtr NetworkCm02Model::communicate(RoutingEdgePtr src, RoutingEdgePtr dst,
@@ -501,17 +492,7 @@ ActionPtr NetworkCm02Model::communicate(RoutingEdgePtr src, RoutingEdgePtr dst,
   return action;
 }
 
-double NetworkCm02Model::latencyFactor(double /*size*/) {
-  return sg_latency_factor;
-}
 
-double NetworkCm02Model::bandwidthFactor(double /*size*/) {
-  return sg_bandwidth_factor;
-}
-
-double NetworkCm02Model::bandwidthConstraint(double rate, double /*bound*/, double /*size*/) {
-  return rate;
-}
 
 /************
  * Resource *
@@ -528,8 +509,7 @@ NetworkCm02LinkLmm::NetworkCm02LinkLmm(NetworkCm02ModelPtr model, const char *na
 	                           tmgr_trace_t lat_trace,
 	                           e_surf_link_sharing_policy_t policy)
 : Resource(model, name, props),
-  ResourceLmm(model, name, props, system, constraint_value, history, state_init, state_trace, metric_peak, metric_trace),
-  NetworkCm02Link(model, name, props)
+  NetworkLinkLmm(system, constraint_value, history, state_init, state_trace, metric_peak, metric_trace)
 {
   m_latCurrent = lat_initial;
   if (lat_trace)
@@ -539,25 +519,7 @@ NetworkCm02LinkLmm::NetworkCm02LinkLmm(NetworkCm02ModelPtr model, const char *na
 	lmm_constraint_shared(p_constraint);
 }
 
-bool NetworkCm02LinkLmm::isUsed()
-{
-  return lmm_constraint_used(p_model->p_maxminSystem, p_constraint);
-}
 
-double NetworkCm02Link::getLatency()
-{
-  return m_latCurrent;
-}
-
-double NetworkCm02LinkLmm::getBandwidth()
-{
-  return p_power.peak * p_power.scale;
-}
-
-bool NetworkCm02LinkLmm::isShared()
-{
-  return lmm_constraint_is_shared(p_constraint);
-}
 
 void NetworkCm02LinkLmm::updateState(tmgr_trace_event_t event_type,
                                       double value, double date)

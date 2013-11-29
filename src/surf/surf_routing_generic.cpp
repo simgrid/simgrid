@@ -7,7 +7,7 @@
 #include "simgrid/platf_interface.h"    // platform creation API internal interface
 
 #include "surf_routing_generic.hpp"
-#include "network.hpp"
+#include "network_interface.hpp"
 #include "xbt/graph.h"
 
 extern "C" {
@@ -323,7 +323,7 @@ sg_platf_route_cbarg_t AsGeneric::getBypassRoute(RoutingEdgePtr src,
 
   sg_platf_route_cbarg_t new_e_route = NULL;
   if (e_route_bypass) {
-    NetworkCm02LinkPtr link;
+    NetworkLinkPtr link;
     unsigned int cpt = 0;
     new_e_route = xbt_new0(s_sg_platf_route_cbarg_t, 1);
     new_e_route->gw_src = e_route_bypass->gw_src;

@@ -40,16 +40,17 @@ set(EXTRA_DIST
   src/smpi/colls/coll_tuned_topo.h
   src/smpi/private.h
   src/smpi/smpi_mpi_dt_private.h
-  src/surf/cpu.hpp
+  src/surf/cpu_interface.hpp
   src/surf/cpu_ti.hpp
   src/surf/cpu_cas01.hpp
   src/surf/gtnets/gtnets_interface.h
   src/surf/gtnets/gtnets_simulator.h
   src/surf/gtnets/gtnets_topology.h
   src/surf/maxmin_private.h
+  src/surf/network_interface.hpp
   src/surf/network_gtnets.hpp
   src/surf/network_ns3_private.h
-  src/surf/network.hpp
+  src/surf/network_cm02.hpp
   src/surf/network_smpi.hpp
   src/surf/network_constant.hpp
   src/surf/ns3/my-point-to-point-helper.h
@@ -295,7 +296,7 @@ set(NS3_SRC
   )
 
 set(SURF_SRC
-  src/surf/cpu.cpp
+  src/surf/cpu_interface.cpp
   src/surf/cpu_ti.cpp
   src/surf/cpu_cas01.cpp
   src/surf/fair_bottleneck.c
@@ -303,7 +304,8 @@ set(SURF_SRC
   src/surf/instr_surf.c
   src/surf/lagrange.c
   src/surf/maxmin.c
-  src/surf/network.cpp
+  src/surf/network_interface.cpp
+  src/surf/network_cm02.cpp
   src/surf/network_smpi.cpp  
   src/surf/network_constant.cpp
   src/surf/platf_generator.c
@@ -311,7 +313,7 @@ set(SURF_SRC
   src/surf/sg_platf.c
   src/surf/storage.cpp
   src/surf/surf.cpp
-  src/surf/surf_interface.cpp
+  src/surf/surf_c_bindings.cpp
   src/surf/surf_routing.cpp  
   src/surf/surf_routing_cluster.cpp
   src/surf/surf_routing_dijkstra.cpp

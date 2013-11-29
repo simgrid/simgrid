@@ -5,7 +5,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "surf_routing_dijkstra.hpp"
-#include "network.hpp"
+#include "network_interface.hpp"
 
 /* Global vars */
 extern routing_platf_t routing_platf;
@@ -258,7 +258,7 @@ void AsDijkstra::getRouteAndLatency(RoutingEdgePtr src, RoutingEdgePtr dst, sg_p
     xbt_dynar_foreach(links, cpt, link) {
       xbt_dynar_unshift(route->link_list, &link);
       if (lat)
-        *lat += dynamic_cast<NetworkCm02LinkPtr>(static_cast<ResourcePtr>(link))->getLatency();
+        *lat += dynamic_cast<NetworkLinkPtr>(static_cast<ResourcePtr>(link))->getLatency();
     }
 
   }
@@ -366,7 +366,7 @@ void AsDijkstra::getRouteAndLatency(RoutingEdgePtr src, RoutingEdgePtr dst, sg_p
       xbt_dynar_foreach(links, cpt, link) {
         xbt_dynar_insert_at(route->link_list, pos, &link);
         if (lat)
-          *lat += dynamic_cast<NetworkCm02LinkPtr>(static_cast<ResourcePtr>(link))->getLatency();
+          *lat += dynamic_cast<NetworkLinkPtr>(static_cast<ResourcePtr>(link))->getLatency();
         pos++;
       }
     }
@@ -375,7 +375,7 @@ void AsDijkstra::getRouteAndLatency(RoutingEdgePtr src, RoutingEdgePtr dst, sg_p
     xbt_dynar_foreach(links, cpt, link) {
       xbt_dynar_unshift(route->link_list, &link);
       if (lat)
-        *lat += dynamic_cast<NetworkCm02LinkPtr>(static_cast<ResourcePtr>(link))->getLatency();
+        *lat += dynamic_cast<NetworkLinkPtr>(static_cast<ResourcePtr>(link))->getLatency();
     }
     size++;
   }

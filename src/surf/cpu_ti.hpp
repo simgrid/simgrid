@@ -1,4 +1,4 @@
-#include "cpu.hpp"
+#include "cpu_interface.hpp"
 #include "trace_mgr_private.h"
 #include "surf/surf_routing.h"
 

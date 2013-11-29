@@ -1,5 +1,5 @@
 #include "surf_routing_none.hpp"
-#include "network.hpp"
+#include "network_interface.hpp"
 
 #ifndef SURF_ROUTING_CLUSTER_HPP_
 #define SURF_ROUTING_CLUSTER_HPP_
@@ -33,7 +33,7 @@ public:
   int parsePU(RoutingEdgePtr elm); /* A host or a router, whatever */
   int parseAS(RoutingEdgePtr elm);
 
-  NetworkCm02LinkPtr p_backbone;
+  NetworkLinkPtr p_backbone;
   void *p_loopback;
   RoutingEdgePtr p_router;
 };

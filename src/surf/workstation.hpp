@@ -1,7 +1,7 @@
 #include "surf.hpp"
 #include "storage.hpp"
-#include "cpu.hpp"
-#include "network.hpp"
+#include "cpu_interface.hpp"
+#include "network_interface.hpp"
 
 #ifndef WORKSTATION_HPP_
 #define WORKSTATION_HPP_
@@ -100,7 +100,7 @@ public:
   xbt_dynar_t p_storage;
   RoutingEdgePtr p_netElm;
   CpuPtr p_cpu;
-  NetworkCm02LinkPtr p_network;
+  NetworkLinkPtr p_network;
 
   xbt_dynar_t getVms();
 

@@ -1,7 +1,7 @@
 #include "surf_private.h"
 #include "surf.hpp"
-#include "network.hpp"
-#include "cpu.hpp"
+#include "network_interface.hpp"
+#include "cpu_interface.hpp"
 #include "workstation.hpp"
 #include "vm_workstation.hpp"
 #include "simix/smx_host_private.h"
@@ -314,7 +314,7 @@ static XBT_INLINE void surf_cpu_free(void *r)
 
 static XBT_INLINE void surf_link_free(void *r)
 {
-  delete dynamic_cast<NetworkCm02LinkPtr>(static_cast<ResourcePtr>(r));
+  delete dynamic_cast<NetworkLinkPtr>(static_cast<ResourcePtr>(r));
 }
 
 static XBT_INLINE void surf_workstation_free(void *r)
@@ -717,15 +717,13 @@ void Resource::turnOff()
   }
 }
 
-ResourceLmm::ResourceLmm(surf_model_t model, const char *name, xbt_dict_t props,
-                         lmm_system_t system,
+ResourceLmm::ResourceLmm(lmm_system_t system,
                          double constraint_value,
                          tmgr_history_t history,
                          e_surf_resource_state_t state_init,
                          tmgr_trace_t state_trace,
                          double metric_peak,
                          tmgr_trace_t metric_trace)
-  : Resource(model, name, props)
 {
   p_constraint = lmm_constraint_new(system, this, constraint_value);
   p_stateCurrent = state_init;

@@ -5,7 +5,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "surf_routing_floyd.hpp"
-#include "network.hpp"
+#include "network_interface.hpp"
 
 extern "C" {
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route_floyd, surf, "Routing part of surf");
@@ -123,7 +123,7 @@ void AsFloyd::getRouteAndLatency(RoutingEdgePtr src, RoutingEdgePtr dst, sg_plat
     xbt_dynar_foreach(links, cpt, link) {
       xbt_dynar_push_as(res->link_list, sg_routing_link_t, link);
       if (lat)
-        *lat += dynamic_cast<NetworkCm02LinkPtr>(static_cast<ResourcePtr>(link))->getLatency();
+        *lat += dynamic_cast<NetworkLinkPtr>(static_cast<ResourcePtr>(link))->getLatency();
     }
 
     prev_dst_gw = e_route->gw_dst;

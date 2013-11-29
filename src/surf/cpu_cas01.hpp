@@ -1,4 +1,4 @@
-#include "cpu.hpp"
+#include "cpu_interface.hpp"
 
 /***********
  * Classes *

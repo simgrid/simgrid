@@ -5,7 +5,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "surf_routing_full.hpp"
-#include "network.hpp"
+#include "network_interface.hpp"
 
 extern "C" {
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route_full, surf, "Routing part of surf");
@@ -127,7 +127,7 @@ void AsFull::getRouteAndLatency(RoutingEdgePtr src, RoutingEdgePtr dst, sg_platf
     xbt_dynar_foreach(e_route->link_list, cpt, link) {
       xbt_dynar_push(res->link_list, &link);
       if (lat)
-        *lat += dynamic_cast<NetworkCm02LinkPtr>(static_cast<ResourcePtr>(link))->getLatency();
+        *lat += dynamic_cast<NetworkLinkPtr>(static_cast<ResourcePtr>(link))->getLatency();
     }
   }
 }

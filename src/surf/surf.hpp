@@ -208,14 +208,13 @@ public:
   ResourceLmm() : p_constraint(NULL) {
 	p_power.event = NULL;
   };
-  ResourceLmm(surf_model_t model, const char *name, xbt_dict_t props,
-                           lmm_system_t system,
-                           double constraint_value,
-                           tmgr_history_t history,
-                           e_surf_resource_state_t state_init,
-                           tmgr_trace_t state_trace,
-                           double metric_peak,
-                           tmgr_trace_t metric_trace);
+  ResourceLmm(lmm_system_t system,
+              double constraint_value,
+              tmgr_history_t history,
+              e_surf_resource_state_t state_init,
+              tmgr_trace_t state_trace,
+              double metric_peak,
+              tmgr_trace_t metric_trace);
   ~ResourceLmm() {
   };
   lmm_constraint_t p_constraint;

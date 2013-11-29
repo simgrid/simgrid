@@ -5,7 +5,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "workstation_ptask_L07.hpp"
-#include "cpu.hpp"
+#include "cpu_interface.hpp"
 #include "surf_routing.hpp"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_workstation);
@@ -20,11 +20,11 @@ WorkstationL07Model::WorkstationL07Model() : WorkstationModel("Workstation ptask
   surf_workstation_model = NULL;
   surf_network_model = new NetworkL07Model();
   surf_cpu_model_pm = new CpuL07Model();
-  routing_model_create(p_networkModel->createResource("__loopback__",
+  routing_model_create(static_cast<ResourcePtr>(surf_network_model->createResource("__loopback__",
 	                                                  498000000, NULL,
 	                                                  0.000015, NULL,
 	                                                  SURF_RESOURCE_ON, NULL,
-	                                                  SURF_LINK_FATPIPE, NULL));
+	                                                  SURF_LINK_FATPIPE, NULL)));
   p_cpuModel = surf_cpu_model_pm;
 }
 
@@ -328,7 +328,7 @@ ResourcePtr CpuL07Model::createResource(const char *name, double power_scale,
   return cpu;//FIXME:xbt_lib_get_elm_or_null(host_lib, name);
 }
 
-ResourcePtr NetworkL07Model::createResource(const char *name,
+NetworkLinkPtr NetworkL07Model::createResource(const char *name,
                                  double bw_initial,
                                  tmgr_trace_t bw_trace,
                                  double lat_initial,
@@ -475,7 +475,7 @@ CpuL07::CpuL07(CpuL07ModelPtr model, const char* name, xbt_dict_t props)
 }
 
 LinkL07::LinkL07(NetworkL07ModelPtr model, const char* name, xbt_dict_t props)
- : Resource(model, name, props), NetworkCm02LinkLmm(model, name, props) {
+ : Resource(model, name, props), NetworkLinkLmm() {
 
 }
 

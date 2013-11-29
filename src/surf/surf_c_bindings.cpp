@@ -1,7 +1,7 @@
 #include "surf.hpp"
 #include "workstation.hpp"
 #include "vm_workstation.hpp"
-#include "network.hpp"
+#include "network_interface.hpp"
 #include "surf_routing_cluster.hpp"
 #include "instr/instr_private.h"
 
@@ -220,7 +220,7 @@ void *surf_as_cluster_get_backbone(AS_t as){
 }
 
 void surf_as_cluster_set_backbone(AS_t as, void* backbone){
-  static_cast<AsClusterPtr>(as)->p_backbone = dynamic_cast<NetworkCm02LinkPtr>(static_cast<ResourcePtr>(backbone));
+  static_cast<AsClusterPtr>(as)->p_backbone = dynamic_cast<NetworkLinkPtr>(static_cast<ResourcePtr>(backbone));
 }
 
 const char *surf_model_name(surf_model_t model){
@@ -426,15 +426,15 @@ void surf_vm_workstation_set_affinity(surf_resource_t resource, surf_resource_t 
 }
 
 int surf_network_link_is_shared(surf_cpp_resource_t link){
-  return dynamic_cast<NetworkCm02LinkPtr>(link)->isShared();
+  return dynamic_cast<NetworkLinkPtr>(link)->isShared();
 }
 
 double surf_network_link_get_bandwidth(surf_cpp_resource_t link){
-  return dynamic_cast<NetworkCm02LinkPtr>(link)->getBandwidth();
+  return dynamic_cast<NetworkLinkPtr>(link)->getBandwidth();
 }
 
 double surf_network_link_get_latency(surf_cpp_resource_t link){
-  return dynamic_cast<NetworkCm02LinkPtr>(link)->getLatency();
+  return dynamic_cast<NetworkLinkPtr>(link)->getLatency();
 }
 
 xbt_dict_t surf_storage_get_content(surf_resource_t resource){
