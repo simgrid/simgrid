@@ -1,10 +1,7 @@
 #include "storage_n11.hpp"
 #include "surf_private.h"
 
-#define __STDC_FORMAT_MACROS
-
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_storage);
-
 
 static int storage_selective_update = 0;
 static xbt_swag_t storage_running_action_set_that_does_not_need_being_checked = NULL;

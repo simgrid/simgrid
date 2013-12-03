@@ -1,8 +1,6 @@
 #include "storage_interface.hpp"
 #include "surf_private.h"
 
-#define __STDC_FORMAT_MACROS
-
 extern "C" {
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_storage, surf,
                                 "Logging specific to the SURF storage module");
