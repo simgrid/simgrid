@@ -60,7 +60,8 @@ set(EXTRA_DIST
   src/surf/platf_generator_private.h
   src/surf/simgrid.dtd
   src/surf/simgrid_dtd.c
-  src/surf/storage.hpp
+  src/surf/storage_interface.hpp
+  src/surf/storage_n11.hpp
   src/surf/surf.hpp
   src/surf/surf_private.h
   src/surf/surf_routing_private.hpp
@@ -311,7 +312,8 @@ set(SURF_SRC
   src/surf/platf_generator.c
   src/surf/random_mgr.c
   src/surf/sg_platf.c
-  src/surf/storage.cpp
+  src/surf/storage_interface.cpp
+  src/surf/storage_n11.cpp
   src/surf/surf.cpp
   src/surf/surf_c_bindings.cpp
   src/surf/surf_routing.cpp  

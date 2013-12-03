@@ -1,24 +1,10 @@
-#include "storage.hpp"
+#include "storage_n11.hpp"
 #include "surf_private.h"
 
 #define __STDC_FORMAT_MACROS
 
-extern "C" {
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_storage, surf,
-                                "Logging specific to the SURF storage module");
-}
+XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_storage);
 
-xbt_lib_t storage_lib;
-int ROUTING_STORAGE_LEVEL;      //Routing for storagelevel
-int ROUTING_STORAGE_HOST_LEVEL;
-int SURF_STORAGE_LEVEL;
-xbt_lib_t storage_type_lib;
-int ROUTING_STORAGE_TYPE_LEVEL; //Routing for storage_type level
-
-static xbt_dynar_t storage_list;
-
-xbt_dynar_t mount_list = NULL;  /* temporary store of current mount storage */
-StorageModelPtr surf_storage_model = NULL;
 
 static int storage_selective_update = 0;
 static xbt_swag_t storage_running_action_set_that_does_not_need_being_checked = NULL;
@@ -83,7 +69,7 @@ static void parse_storage_init(sg_platf_storage_cbarg_t storage)
       storage->content_type,
       ((storage_type_t) stype)->properties);
 
-  surf_storage_model->createResource(storage->id, ((storage_type_t) stype)->model,
+  surf_storage_model->createResource(storage->id,
                                      ((storage_type_t) stype)->type_id,
                                      storage->content,
                                      storage->content_type,
@@ -152,6 +138,7 @@ static void storage_parse_storage_type(sg_platf_storage_type_cbarg_t storage_typ
       ROUTING_STORAGE_TYPE_LEVEL,
       (void *) stype);
 }
+
 static void storage_parse_mstorage(sg_platf_mstorage_cbarg_t /*mstorage*/)
 {
   THROW_UNIMPLEMENTED;
@@ -194,7 +181,7 @@ static void storage_parse_mount(sg_platf_mount_cbarg_t mount)
     XBT_DEBUG("Create a Mount list for %s",A_surfxml_host_id);
     mount_list = xbt_dynar_new(sizeof(s_mount_t), mount_free);
   }
-  xbt_dynar_push(mount_list,&mnt);
+  xbt_dynar_push(mount_list, &mnt);
 }
 
 static void storage_define_callbacks()
@@ -224,13 +211,13 @@ void storage_register_callbacks() {
 
 void surf_storage_model_init_default(void)
 {
-  surf_storage_model = new StorageModel();
+  surf_storage_model = new StorageN11Model();
   storage_define_callbacks();
   xbt_dynar_push(model_list, &surf_storage_model);
 }
 
-StorageModel::StorageModel() : Model("Storage") {
-  StorageActionLmm action;
+StorageN11Model::StorageN11Model() : StorageModel() {
+  StorageN11ActionLmm action;
 
   XBT_DEBUG("surf_storage_model_init_internal");
 
@@ -242,19 +229,12 @@ StorageModel::StorageModel() : Model("Storage") {
   }
 }
 
-
-StorageModel::~StorageModel(){
-  lmm_system_free(p_maxminSystem);
-
-  surf_storage_model = NULL;
-
-  xbt_dynar_free(&storage_list);
-
+StorageN11Model::~StorageN11Model(){
   xbt_swag_free(storage_running_action_set_that_does_not_need_being_checked);
   storage_running_action_set_that_does_not_need_being_checked = NULL;
 }
 
-StoragePtr StorageModel::createResource(const char* id, const char* model, const char* type_id,
+StoragePtr StorageN11Model::createResource(const char* id, const char* type_id,
 		const char* content_name, const char* content_type, xbt_dict_t properties)
 {
 
@@ -268,7 +248,7 @@ StoragePtr StorageModel::createResource(const char* id, const char* model, const
   double Bwrite = surf_parse_get_bandwidth((char*)xbt_dict_get(storage_type->properties, "Bwrite"));
   double Bconnection   = surf_parse_get_bandwidth((char*)xbt_dict_get(storage_type->properties, "Bconnection"));
 
-  StoragePtr storage = new StorageLmm(this, id, properties, p_maxminSystem,
+  StoragePtr storage = new StorageN11Lmm(this, id, properties, p_maxminSystem,
 		  Bread, Bwrite, Bconnection,
 		  type_id, (char *)content_name, xbt_strdup(content_type), storage_type->size);
 
@@ -276,19 +256,19 @@ StoragePtr StorageModel::createResource(const char* id, const char* model, const
 
   XBT_DEBUG("SURF storage create resource\n\t\tid '%s'\n\t\ttype '%s' \n\t\tmodel '%s' \n\t\tproperties '%p'\n\t\tBread '%f'\n",
       id,
-      model,
+      this,
       type_id,
       storage_type->properties,
       Bread);
 
-  if(!storage_list)
-	storage_list = xbt_dynar_new(sizeof(char *),NULL);
-  xbt_dynar_push(storage_list, &storage);
+  if(!p_storageList)
+	p_storageList = xbt_dynar_new(sizeof(char *),NULL);
+  xbt_dynar_push(p_storageList, &storage);
 
   return storage;
 }
 
-double StorageModel::shareResources(double now)
+double StorageN11Model::shareResources(double now)
 {
   XBT_DEBUG("storage_share_resources %f", now);
   unsigned int i, j;
@@ -301,7 +281,7 @@ double StorageModel::shareResources(double now)
 
   double rate;
   // Foreach disk
-  xbt_dynar_foreach(storage_list,i,storage)
+  xbt_dynar_foreach(p_storageList,i,storage)
   {
     rate = 0;
     // Foreach write action on disk
@@ -317,7 +297,7 @@ double StorageModel::shareResources(double now)
   return min_completion;
 }
 
-void StorageModel::updateActionsState(double /*now*/, double delta)
+void StorageN11Model::updateActionsState(double /*now*/, double delta)
 {
   void *_action, *_next_action;
   StorageActionLmmPtr action = NULL;
@@ -371,57 +351,15 @@ void StorageModel::updateActionsState(double /*now*/, double delta)
   return;
 }
 
-xbt_dict_t Storage::parseContent(char *filename)
-{
-  m_usedSize = 0;
-  if ((!filename) || (strcmp(filename, "") == 0))
-    return NULL;
-
-  xbt_dict_t parse_content = xbt_dict_new_homogeneous(xbt_free);
-  FILE *file = NULL;
-
-  file = surf_fopen(filename, "r");
-  xbt_assert(file != NULL, "Cannot open file '%s' (path=%s)", filename,
-              xbt_str_join(surf_path, ":"));
-
-  char *line = NULL;
-  size_t len = 0;
-  ssize_t read;
-  char path[1024];
-  sg_size_t size;
-
-
-  while ((read = xbt_getline(&line, &len, file)) != -1) {
-    if (read){
-    if(sscanf(line,"%s %llu", path, &size) == 2) {
-        m_usedSize += size;
-        sg_size_t *psize = xbt_new(sg_size_t, 1);
-        *psize = size;
-        xbt_dict_set(parse_content,path,psize,NULL);
-      } else {
-        xbt_die("Be sure of passing a good format for content file.\n");
-      }
-    }
-  }
-  free(line);
-  fclose(file);
-  return parse_content;
-}
-
 /************
  * Resource *
  ************/
 
-Storage::Storage(StorageModelPtr model, const char* name, xbt_dict_t properties)
-:  Resource(model, name, properties)
-{
-  p_writeActions = xbt_dynar_new(sizeof(ActionPtr),NULL);
-}
-
-StorageLmm::StorageLmm(StorageModelPtr model, const char* name, xbt_dict_t properties,
+StorageN11Lmm::StorageN11Lmm(StorageModelPtr model, const char* name, xbt_dict_t properties,
 	     lmm_system_t maxminSystem, double bread, double bwrite, double bconnection,
 	     const char* type_id, char *content_name, char *content_type, sg_size_t size)
- :  Resource(model, name, properties), ResourceLmm(), Storage(model, name, properties) {
+ :  Resource(model, name, properties),
+    StorageLmm(maxminSystem, bread, bwrite, bconnection, type_id, content_name, content_type, size) {
   XBT_DEBUG("Create resource with Bconnection '%f' Bread '%f' Bwrite '%f' and Size '%llu'", bconnection, bread, bwrite, size);
 
   p_stateCurrent = SURF_RESOURCE_ON;
@@ -437,20 +375,9 @@ StorageLmm::StorageLmm(StorageModelPtr model, const char* name, xbt_dict_t prope
   p_typeId = xbt_strdup(type_id);
 }
 
-bool Storage::isUsed()
+StorageActionPtr StorageN11Lmm::ls(const char* path)
 {
-  THROW_UNIMPLEMENTED;
-  return false;
-}
-
-void Storage::updateState(tmgr_trace_event_t /*event_type*/, double /*value*/, double /*date*/)
-{
-  THROW_UNIMPLEMENTED;
-}
-
-StorageActionPtr StorageLmm::ls(const char* path)
-{
-  StorageActionLmmPtr action = new StorageActionLmm(p_model, 0, p_stateCurrent != SURF_RESOURCE_ON, this, LS);
+  StorageActionLmmPtr action = new StorageN11ActionLmm(p_model, 0, p_stateCurrent != SURF_RESOURCE_ON, this, LS);
 
   action->p_lsDict = NULL;
   xbt_dict_t ls_dict = xbt_dict_new_homogeneous(xbt_free);
@@ -493,7 +420,7 @@ StorageActionPtr StorageLmm::ls(const char* path)
   return action;
 }
 
-StorageActionPtr StorageLmm::open(const char* mount, const char* path)
+StorageActionPtr StorageN11Lmm::open(const char* mount, const char* path)
 {
   XBT_DEBUG("\tOpen file '%s'",path);
   sg_size_t size, *psize;
@@ -514,12 +441,12 @@ StorageActionPtr StorageLmm::open(const char* mount, const char* path)
   file->mount = xbt_strdup(mount);
   file->current_position = 0;
 
-  StorageActionLmmPtr action = new StorageActionLmm(p_model, 0, p_stateCurrent != SURF_RESOURCE_ON, this, OPEN);
+  StorageActionLmmPtr action = new StorageN11ActionLmm(p_model, 0, p_stateCurrent != SURF_RESOURCE_ON, this, OPEN);
   action->p_file = file;
   return action;
 }
 
-StorageActionPtr StorageLmm::close(surf_file_t fd)
+StorageActionPtr StorageN11Lmm::close(surf_file_t fd)
 {
   char *filename = fd->name;
   XBT_DEBUG("\tClose file '%s' size '%llu'", filename, fd->size);
@@ -537,11 +464,11 @@ StorageActionPtr StorageLmm::close(surf_file_t fd)
   free(fd->name);
   free(fd->mount);
   xbt_free(fd);
-  StorageActionLmmPtr action = new StorageActionLmm(p_model, 0, p_stateCurrent != SURF_RESOURCE_ON, this, CLOSE);
+  StorageActionLmmPtr action = new StorageN11ActionLmm(p_model, 0, p_stateCurrent != SURF_RESOURCE_ON, this, CLOSE);
   return action;
 }
 
-StorageActionPtr StorageLmm::read(surf_file_t fd, sg_size_t size)
+StorageActionPtr StorageN11Lmm::read(surf_file_t fd, sg_size_t size)
 {
   if(size > fd->size){
     size = fd->size;
@@ -550,16 +477,16 @@ StorageActionPtr StorageLmm::read(surf_file_t fd, sg_size_t size)
   else
 	fd->current_position += size;
 
-  StorageActionLmmPtr action = new StorageActionLmm(p_model, size, p_stateCurrent != SURF_RESOURCE_ON, this, READ);
+  StorageActionLmmPtr action = new StorageN11ActionLmm(p_model, size, p_stateCurrent != SURF_RESOURCE_ON, this, READ);
   return action;
 }
 
-StorageActionPtr StorageLmm::write(surf_file_t fd, sg_size_t size)
+StorageActionPtr StorageN11Lmm::write(surf_file_t fd, sg_size_t size)
 {
   char *filename = fd->name;
   XBT_DEBUG("\tWrite file '%s' size '%llu/%llu'",filename,size,fd->size);
 
-  StorageActionLmmPtr action = new StorageActionLmm(p_model, size, p_stateCurrent != SURF_RESOURCE_ON, this, WRITE);
+  StorageActionLmmPtr action = new StorageN11ActionLmm(p_model, size, p_stateCurrent != SURF_RESOURCE_ON, this, WRITE);
   action->p_file = fd;
   fd->current_position += size;
   // If the storage is full
@@ -569,7 +496,7 @@ StorageActionPtr StorageLmm::write(surf_file_t fd, sg_size_t size)
   return action;
 }
 
-void StorageLmm::rename(const char *src, const char *dest)
+void StorageN11Lmm::rename(const char *src, const char *dest)
 {
   sg_size_t *psize, *new_psize;
   psize = (sg_size_t*) xbt_dict_get_or_null(p_content,src);
@@ -584,7 +511,7 @@ void StorageLmm::rename(const char *src, const char *dest)
     XBT_DEBUG("File %s doesn't exist",src);
 }
 
-xbt_dict_t StorageLmm::getContent()
+xbt_dict_t StorageN11Lmm::getContent()
 {
   /* For the moment this action has no cost, but in the future we could take in account access latency of the disk */
   /*surf_action_t action = storage_action_execute(storage,0, LS);*/
@@ -600,7 +527,7 @@ xbt_dict_t StorageLmm::getContent()
   return content_dict;
 }
 
-sg_size_t StorageLmm::getSize(){
+sg_size_t StorageN11Lmm::getSize(){
   return m_size;
 }
 
@@ -608,10 +535,9 @@ sg_size_t StorageLmm::getSize(){
  * Action *
  **********/
 
-StorageActionLmm::StorageActionLmm(ModelPtr model, double cost, bool failed, StorageLmmPtr storage, e_surf_action_storage_type_t type)
+StorageN11ActionLmm::StorageN11ActionLmm(ModelPtr model, double cost, bool failed, StorageLmmPtr storage, e_surf_action_storage_type_t type)
   : Action(model, cost, failed),
-    ActionLmm(model, cost, failed),
-    StorageAction(model, cost, failed, storage, type) {
+    StorageActionLmm(storage, type) {
   XBT_IN("(%s,%g", storage->m_name, cost);
   p_variable = lmm_variable_new(p_model->p_maxminSystem, this, 1.0, -1.0 , 3);
 
@@ -638,7 +564,7 @@ StorageActionLmm::StorageActionLmm(ModelPtr model, double cost, bool failed, Sto
   XBT_OUT();
 }
 
-int StorageActionLmm::unref()
+int StorageN11ActionLmm::unref()
 {
   m_refcount--;
   if (!m_refcount) {
@@ -654,13 +580,13 @@ int StorageActionLmm::unref()
   return 0;
 }
 
-void StorageActionLmm::cancel()
+void StorageN11ActionLmm::cancel()
 {
   setState(SURF_ACTION_FAILED);
   return;
 }
 
-void StorageActionLmm::suspend()
+void StorageN11ActionLmm::suspend()
 {
   XBT_IN("(%p)", this);
   if (m_suspended != 2) {
@@ -672,22 +598,22 @@ void StorageActionLmm::suspend()
   XBT_OUT();
 }
 
-void StorageActionLmm::resume()
+void StorageN11ActionLmm::resume()
 {
   THROW_UNIMPLEMENTED;
 }
 
-bool StorageActionLmm::isSuspended()
+bool StorageN11ActionLmm::isSuspended()
 {
   return m_suspended == 1;
 }
 
-void StorageActionLmm::setMaxDuration(double /*duration*/)
+void StorageN11ActionLmm::setMaxDuration(double /*duration*/)
 {
   THROW_UNIMPLEMENTED;
 }
 
-void StorageActionLmm::setPriority(double /*priority*/)
+void StorageN11ActionLmm::setPriority(double /*priority*/)
 {
   THROW_UNIMPLEMENTED;
 }

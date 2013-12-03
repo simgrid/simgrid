@@ -1,7 +1,9 @@
 #include "surf.hpp"
 
-#ifndef STORAGE_HPP_
-#define STORAGE_HPP_
+#ifndef STORAGE_INTERFACE_HPP_
+#define STORAGE_INTERFACE_HPP_
+
+extern xbt_dynar_t mount_list;
 
 /***********
  * Classes *
@@ -22,7 +24,6 @@ typedef StorageAction *StorageActionPtr;
 class StorageActionLmm;
 typedef StorageActionLmm *StorageActionLmmPtr;
 
-
 /*********
  * Model *
  *********/
@@ -30,11 +31,10 @@ class StorageModel : public Model {
 public:
   StorageModel();
   ~StorageModel();
-  StoragePtr createResource(const char* id, const char* model, const char* type_id,
-		   const char* content_name, const char* content_type, xbt_dict_t properties);
-  double shareResources(double now);
-  void updateActionsState(double now, double delta);
+  virtual StoragePtr createResource(const char* id, const char* type_id,
+		   const char* content_name, const char* content_type, xbt_dict_t properties)=0;
 
+  xbt_dynar_t p_storageList;
 };
 
 /************
@@ -43,7 +43,8 @@ public:
 
 class Storage : virtual public Resource {
 public:
-  Storage(StorageModelPtr model, const char* name, xbt_dict_t properties);
+  Storage(const char* type_id, char *content_name, char *content_type, sg_size_t size);
+  ~Storage();
 
   bool isUsed();
   void updateState(tmgr_trace_event_t event_type, double value, double date);
@@ -62,8 +63,8 @@ public:
   virtual StorageActionPtr write(surf_file_t fd, sg_size_t size)=0;
   virtual void rename(const char *src, const char *dest)=0;
 
-  virtual xbt_dict_t getContent()=0;
-  virtual sg_size_t getSize()=0;
+  virtual xbt_dict_t getContent();
+  virtual sg_size_t getSize();
 
   xbt_dict_t parseContent(char *filename);
 
@@ -72,19 +73,8 @@ public:
 
 class StorageLmm : public ResourceLmm, public Storage {
 public:
-  StorageLmm(StorageModelPtr model, const char* name, xbt_dict_t properties,
-		     lmm_system_t maxminSystem, double bread, double bwrite, double bconnection,
+  StorageLmm(lmm_system_t maxminSystem, double bread, double bwrite, double bconnection,
 		     const char* type_id, char *content_name, char *content_type, sg_size_t size);
-
-  StorageActionPtr open(const char* mount, const char* path);
-  StorageActionPtr close(surf_file_t fd);
-  //StorageActionPtr unlink(surf_file_t fd);
-  StorageActionPtr ls(const char *path);
-  xbt_dict_t getContent();
-  sg_size_t getSize();
-  StorageActionPtr read(surf_file_t fd, sg_size_t size);//FIXME:why we have a useless param ptr ??
-  StorageActionPtr write(surf_file_t fd, sg_size_t size);//FIXME:why we have a useless param ptr ??
-  void rename(const char *src, const char *dest);
 
   lmm_constraint_t p_constraintWrite;    /* Constraint for maximum write bandwidth*/
   lmm_constraint_t p_constraintRead;     /* Constraint for maximum write bandwidth*/
@@ -101,11 +91,8 @@ typedef enum {
 
 class StorageAction : virtual public Action {
 public:
-  StorageAction(){};
-  StorageAction(ModelPtr /*model*/, double /*cost*/, bool /*failed*/, StoragePtr storage, e_surf_action_storage_type_t type)
-    : m_type(type), p_storage(storage) {};
-
-
+  StorageAction() : m_type(READ) {};//FIXME:REMOVE
+  StorageAction(StoragePtr storage, e_surf_action_storage_type_t type);
 
   e_surf_action_storage_type_t m_type;
   StoragePtr p_storage;
@@ -115,19 +102,10 @@ public:
 
 class StorageActionLmm : public ActionLmm, public StorageAction {
 public:
-  StorageActionLmm(){};
-  StorageActionLmm(ModelPtr model, double cost, bool failed, StorageLmmPtr storage, e_surf_action_storage_type_t type);
-  void suspend();
-  int unref();
-  void cancel();
-  //FIXME:??void recycle();
-  void resume();
-  bool isSuspended();
-  void setMaxDuration(double duration);
-  void setPriority(double priority);
+  StorageActionLmm() {};//FIXME:REMOVE
 
+  StorageActionLmm(StorageLmmPtr storage, e_surf_action_storage_type_t type);
 };
-
 
 typedef struct s_storage_type {
   char *model;
@@ -151,4 +129,4 @@ typedef struct surf_file {
 } s_surf_file_t;
 
 
-#endif /* STORAGE_HPP_ */
+#endif /* STORAGE_INTERFACE_HPP_ */

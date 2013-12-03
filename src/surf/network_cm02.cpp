@@ -2,10 +2,7 @@
 #include "maxmin_private.h"
 #include "simgrid/sg_config.h"
 
-extern "C" {
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_network, surf,
-                                "Logging specific to the SURF network module");
-}
+XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_network);
 
 double sg_sender_gap = 0.0;
 double sg_latency_factor = 1.0; /* default value; can be set by model or from command line */
