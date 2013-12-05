@@ -757,9 +757,9 @@ Action::Action(ModelPtr model, double cost, bool failed)
  , m_remains(cost)
  , m_maxDuration(NO_MAX_DURATION)
  , m_cost(cost)
+ , p_data(NULL)
  , p_model(model)
  , m_refcount(1)
- , p_data(NULL)
 {
   #ifdef HAVE_TRACING
     p_category = NULL;
