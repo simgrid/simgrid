@@ -25,8 +25,12 @@ void AsVivaldi::getRouteAndLatency(RoutingEdgePtr src, RoutingEdgePtr dst, sg_pl
 		  src->p_name, src->m_id, dst->p_name, dst->m_id);
 
   if(src->p_rcType == SURF_NETWORK_ELEMENT_AS) {
-    route->gw_src = (sg_routing_edge_t) xbt_lib_get_or_null(as_router_lib, ROUTER_PEER(src->p_name), ROUTING_ASR_LEVEL);
-    route->gw_dst = (sg_routing_edge_t) xbt_lib_get_or_null(as_router_lib, ROUTER_PEER(dst->p_name), ROUTING_ASR_LEVEL);
+    char *src_name = ROUTER_PEER(src->p_name);
+    char *dst_name = ROUTER_PEER(dst->p_name);
+    route->gw_src = (sg_routing_edge_t) xbt_lib_get_or_null(as_router_lib, src_name, ROUTING_ASR_LEVEL);
+    route->gw_dst = (sg_routing_edge_t) xbt_lib_get_or_null(as_router_lib, dst_name, ROUTING_ASR_LEVEL);
+    xbt_free(src_name);
+    xbt_free(dst_name);
   }
 
   double euclidean_dist;
