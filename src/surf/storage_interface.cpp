@@ -35,9 +35,10 @@ StorageModel::~StorageModel(){
  ************/
 
 Storage::Storage(const char* type_id, char *content_name, char *content_type, sg_size_t size)
-:  p_content(parseContent(content_name)), p_contentType(content_type),
+:  p_contentType(content_type),
    m_size(size), m_usedSize(0), p_typeId(xbt_strdup(type_id)), p_writeActions(xbt_dynar_new(sizeof(ActionPtr),NULL))
 {
+  p_content = parseContent(content_name);
   p_stateCurrent = SURF_RESOURCE_ON;
 }
 
