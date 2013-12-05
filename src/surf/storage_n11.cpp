@@ -26,10 +26,6 @@ static XBT_INLINE void surf_storage_resource_free(void *r)
 {
   // specific to storage
   StoragePtr storage = dynamic_cast<StoragePtr>(static_cast<ResourcePtr>(r));
-  xbt_dict_free(&storage->p_content);
-  xbt_dynar_free(&storage->p_writeActions);
-  free(storage->p_typeId);
-  free(storage->p_contentType);
   // generic resource
   delete storage;
 }
