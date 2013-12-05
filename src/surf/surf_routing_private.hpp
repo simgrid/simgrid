@@ -10,7 +10,7 @@
 #include <float.h>
 #include "internal_config.h"
 
-#include "surf.hpp"
+#include "surf_interface.hpp"
 #include "xbt/dynar.h"
 #include "xbt/str.h"
 #include "xbt/config.h"

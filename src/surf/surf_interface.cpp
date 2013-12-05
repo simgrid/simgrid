@@ -1,9 +1,9 @@
 #include "surf_private.h"
-#include "surf.hpp"
+#include "surf_interface.hpp"
 #include "network_interface.hpp"
 #include "cpu_interface.hpp"
-#include "workstation.hpp"
-#include "vm_workstation.hpp"
+#include "workstation_interface.hpp"
+#include "vm_workstation_interface.hpp"
 #include "simix/smx_host_private.h"
 #include "surf_routing.hpp"
 #include "simgrid/sg_config.h"
@@ -319,7 +319,7 @@ static XBT_INLINE void surf_link_free(void *r)
 
 static XBT_INLINE void surf_workstation_free(void *r)
 {
-  delete dynamic_cast<WorkstationCLM03Ptr>(static_cast<ResourcePtr>(r));
+  delete dynamic_cast<WorkstationPtr>(static_cast<ResourcePtr>(r));
 }
 
 
@@ -750,18 +750,20 @@ const char *surf_action_state_names[6] = {
   "SURF_ACTION_NOT_IN_THE_SYSTEM"
 };
 
-Action::Action(){}
+Action::Action()
+: m_refcount(1)
+{}
 
-Action::Action(ModelPtr model, double cost, bool failed):
-         m_priority(1.0),
-         m_failed(failed),
-         m_start(surf_get_clock()), m_finish(-1.0),
-         m_remains(cost),
-         m_maxDuration(NO_MAX_DURATION),
-         m_cost(cost),
-         p_model(model),
-         m_refcount(1),
-         p_data(NULL)
+Action::Action(ModelPtr model, double cost, bool failed)
+ : m_priority(1.0)
+ , m_failed(failed)
+ , m_start(surf_get_clock()), m_finish(-1.0)
+ , m_remains(cost)
+ , m_maxDuration(NO_MAX_DURATION)
+ , m_cost(cost)
+ , p_model(model)
+ , m_refcount(1)
+ , p_data(NULL)
 {
   #ifdef HAVE_TRACING
     p_category = NULL;

@@ -4,7 +4,7 @@
  *  Created on: Nov 29, 2013
  *      Author: bedaride
  */
-#include "surf.hpp"
+#include "surf_interface.hpp"
 #include "surf_routing.hpp"
 
 #ifndef SURF_NETWORK_INTERFACE_HPP_

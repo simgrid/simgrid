@@ -103,7 +103,7 @@ public:
   Model(string name);
   virtual ~Model();
 
-  ResourcePtr createResource(string name);
+  //ResourcePtr createResource(string name);
   ActionPtr createAction(double _cost, bool _failed);
   virtual double shareResources(double now);
   virtual double shareResourcesLazy(double now);

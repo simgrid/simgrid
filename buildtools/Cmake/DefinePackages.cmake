@@ -62,7 +62,7 @@ set(EXTRA_DIST
   src/surf/simgrid_dtd.c
   src/surf/storage_interface.hpp
   src/surf/storage_n11.hpp
-  src/surf/surf.hpp
+  src/surf/surf_interface.hpp
   src/surf/surf_private.h
   src/surf/surf_routing_private.hpp
   src/surf/surf_routing.hpp
@@ -75,8 +75,10 @@ set(EXTRA_DIST
   src/surf/surf_routing_vivaldi.hpp
   src/surf/surfxml_parse.c
   src/surf/trace_mgr_private.h
-  src/surf/vm_workstation.hpp
-  src/surf/workstation.hpp
+  src/surf/vm_workstation_interface.hpp
+  src/surf/vm_workstation_hl13.hpp
+  src/surf/workstation_interface.hpp
+  src/surf/workstation_clm03.hpp
   src/surf/workstation_ptask_L07.hpp
   src/win32/config.h
   src/xbt/automaton/automaton_lexer.yy.c
@@ -314,7 +316,7 @@ set(SURF_SRC
   src/surf/sg_platf.c
   src/surf/storage_interface.cpp
   src/surf/storage_n11.cpp
-  src/surf/surf.cpp
+  src/surf/surf_interface.cpp
   src/surf/surf_c_bindings.cpp
   src/surf/surf_routing.cpp  
   src/surf/surf_routing_cluster.cpp
@@ -327,9 +329,11 @@ set(SURF_SRC
   src/surf/surfxml_parse.c
   src/surf/surfxml_parseplatf.c
   src/surf/trace_mgr.c
-  src/surf/workstation.cpp
+  src/surf/workstation_interface.cpp
+  src/surf/workstation_clm03.cpp
   src/surf/workstation_ptask_L07.cpp
-  src/surf/vm_workstation.cpp
+  src/surf/vm_workstation_interface.cpp
+  src/surf/vm_workstation_hl13.cpp
   src/xbt/xbt_sg_stubs.c
   )
 

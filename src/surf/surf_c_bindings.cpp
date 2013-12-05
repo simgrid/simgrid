@@ -1,6 +1,6 @@
-#include "surf.hpp"
-#include "workstation.hpp"
-#include "vm_workstation.hpp"
+#include "surf_interface.hpp"
+#include "workstation_interface.hpp"
+#include "vm_workstation_interface.hpp"
 #include "network_interface.hpp"
 #include "surf_routing_cluster.hpp"
 #include "instr/instr_private.h"
@@ -15,12 +15,12 @@ static CpuPtr get_casted_cpu(surf_resource_t resource){
   return dynamic_cast<CpuPtr>(static_cast<ResourcePtr>(surf_cpu_resource_priv(resource)));
 }
 
-static WorkstationCLM03Ptr get_casted_workstation(surf_resource_t resource){
-  return dynamic_cast<WorkstationCLM03Ptr>(static_cast<ResourcePtr>(surf_workstation_resource_priv(resource)));
+static WorkstationPtr get_casted_workstation(surf_resource_t resource){
+  return dynamic_cast<WorkstationPtr>(static_cast<ResourcePtr>(surf_workstation_resource_priv(resource)));
 }
 
-static WorkstationVM2013Ptr get_casted_vm_workstation(surf_resource_t resource){
-  return dynamic_cast<WorkstationVM2013Ptr>(static_cast<ResourcePtr>(surf_workstation_resource_priv(resource)));
+static WorkstationVMPtr get_casted_vm_workstation(surf_resource_t resource){
+  return dynamic_cast<WorkstationVMPtr>(static_cast<ResourcePtr>(surf_workstation_resource_priv(resource)));
 }
 
 char *surf_routing_edge_name(sg_routing_edge_t edge){
@@ -28,7 +28,7 @@ char *surf_routing_edge_name(sg_routing_edge_t edge){
 }
 
 #ifdef CONTEXT_THREADS
-static xbt_parmap_t surf_parmap = NULL; /* parallel map on models */
+//FIXME:keeporremove static xbt_parmap_t surf_parmap = NULL; /* parallel map on models */
 #endif
 
 extern double NOW;

@@ -121,7 +121,7 @@ void WorkstationL07Model::updateActionsState(double /*now*/, double delta)
                                     i++))) {
         constraint_id = lmm_constraint_id(cnst);
 
-        if (static_cast<WorkstationCLM03LmmPtr>(constraint_id)->p_stateCurrent == SURF_RESOURCE_OFF) {
+        if (static_cast<WorkstationLmmPtr>(constraint_id)->p_stateCurrent == SURF_RESOURCE_OFF) {
           XBT_DEBUG("Action (%p) Failed!!", action);
           action->m_finish = surf_get_clock();
           action->setState(SURF_ACTION_FAILED);
@@ -194,7 +194,7 @@ ActionPtr WorkstationL07Model::executeParallelTask(int workstation_nb,
   action->m_suspended = 0;        /* Should be useless because of the
                                    calloc but it seems to help valgrind... */
   action->m_workstationNb = workstation_nb;
-  action->p_workstationList = (WorkstationCLM03Ptr *) workstation_list;
+  action->p_workstationList = (WorkstationPtr *) workstation_list;
   action->p_computationAmount = computation_amount;
   action->p_communicationAmount = communication_amount;
   action->m_latency = latency;
@@ -266,7 +266,7 @@ ResourcePtr WorkstationL07Model::createResource(const char *name, double /*power
   return wk;//FIXME:xbt_lib_get_elm_or_null(host_lib, name);
 }
 
-ActionPtr WorkstationL07Model::communicate(WorkstationCLM03Ptr src, WorkstationCLM03Ptr dst,
+ActionPtr WorkstationL07Model::communicate(WorkstationPtr src, WorkstationPtr dst,
                                        double size, double rate)
 {
   void **workstation_list = xbt_new0(void *, 2);
@@ -285,7 +285,7 @@ ActionPtr WorkstationL07Model::communicate(WorkstationCLM03Ptr src, WorkstationC
   return res;
 }
 
-xbt_dynar_t WorkstationL07Model::getRoute(WorkstationCLM03Ptr src, WorkstationCLM03Ptr dst)
+xbt_dynar_t WorkstationL07Model::getRoute(WorkstationPtr src, WorkstationPtr dst)
 {
   xbt_dynar_t route=NULL;
   routing_platf->getRouteAndLatency(src->p_netElm, dst->p_netElm, &route, NULL);
@@ -441,8 +441,8 @@ void WorkstationL07Model::addTraces()
 
 WorkstationL07::WorkstationL07(WorkstationModelPtr model, const char* name, xbt_dict_t props, RoutingEdgePtr netElm, CpuPtr cpu)
   : Resource(model, name, props),
-    WorkstationCLM03(model, name, props, NULL, netElm, cpu),
-    WorkstationCLM03Lmm(model, name, props, NULL, netElm, cpu)
+    Workstation(NULL, netElm, cpu),
+    WorkstationLmm()
 {
 }
 

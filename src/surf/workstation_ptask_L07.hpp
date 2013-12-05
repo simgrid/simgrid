@@ -1,4 +1,4 @@
-#include "workstation.hpp"
+#include "workstation_interface.hpp"
 
 #ifndef WORKSTATION_L07_HPP_
 #define WORKSTATION_L07_HPP_
@@ -53,8 +53,8 @@ public:
                                         double *computation_amount,
                                         double *communication_amount,
                                         double rate);
-  xbt_dynar_t getRoute(WorkstationCLM03Ptr src, WorkstationCLM03Ptr dst);
-  ActionPtr communicate(WorkstationCLM03Ptr src, WorkstationCLM03Ptr dst, double size, double rate);
+  xbt_dynar_t getRoute(WorkstationPtr src, WorkstationPtr dst);
+  ActionPtr communicate(WorkstationPtr src, WorkstationPtr dst, double size, double rate);
   void addTraces();
   NetworkModelPtr p_networkModel;
 };
@@ -89,7 +89,7 @@ public:
 		                                   e_surf_link_sharing_policy_t
 		                                   policy, xbt_dict_t properties);
 
-  xbt_dynar_t getRoute(WorkstationCLM03Ptr /*src*/, WorkstationCLM03Ptr /*dst*/) {DIE_IMPOSSIBLE;};
+  xbt_dynar_t getRoute(WorkstationPtr /*src*/, WorkstationPtr /*dst*/) {DIE_IMPOSSIBLE;};
   ActionPtr communicate(RoutingEdgePtr /*src*/, RoutingEdgePtr /*dst*/, double /*size*/, double /*rate*/) {DIE_IMPOSSIBLE;};
   void addTraces() {DIE_IMPOSSIBLE;};
   WorkstationL07ModelPtr p_workstationModel;
@@ -99,7 +99,7 @@ public:
  * Resource *
  ************/
 
-class WorkstationL07 : public WorkstationCLM03Lmm {
+class WorkstationL07 : public WorkstationLmm {
 public:
   WorkstationL07(WorkstationModelPtr model, const char* name, xbt_dict_t props, RoutingEdgePtr netElm, CpuPtr cpu);
   //bool isUsed();
@@ -158,7 +158,7 @@ public:
 class WorkstationL07ActionLmm : public WorkstationActionLmm {
 public:
   WorkstationL07ActionLmm(ModelPtr model, double cost, bool failed)
-  : Action(model, cost, failed), WorkstationActionLmm(model, cost, failed) {};
+  : Action(model, cost, failed), WorkstationActionLmm() {};
  ~WorkstationL07ActionLmm();
 
   void updateBound();
@@ -173,7 +173,7 @@ public:
   double getRemains();
 
   int m_workstationNb;
-  WorkstationCLM03Ptr *p_workstationList;
+  WorkstationPtr *p_workstationList;
   double *p_computationAmount;
   double *p_communicationAmount;
   double m_latency;

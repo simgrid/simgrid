@@ -4,19 +4,14 @@
  *  Created on: Nov 12, 2013
  *      Author: bedaride
  */
-#include "vm_workstation.hpp"
+#include "vm_workstation_hl13.hpp"
 #include "cpu_cas01.hpp"
 
-extern "C" {
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_vm_workstation, surf,
-                                "Logging specific to the SURF VM workstation module");
-}
-
-WorkstationVMModelPtr surf_vm_workstation_model = NULL;
+XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_vm_workstation);
 
 void surf_vm_workstation_model_init_current_default(void){
   if (surf_cpu_model_vm) {
-    surf_vm_workstation_model = new WorkstationVMModel();
+    surf_vm_workstation_model = new WorkstationVMHL13Model();
     ModelPtr model = static_cast<ModelPtr>(surf_vm_workstation_model);
 
     xbt_dynar_push(model_list, &model);
@@ -28,16 +23,24 @@ void surf_vm_workstation_model_init_current_default(void){
  * Model *
  *********/
 
-WorkstationVMModel::WorkstationVMModel() : WorkstationModel("Virtual Workstation") {
+WorkstationVMHL13Model::WorkstationVMHL13Model() : WorkstationVMModel() {
   p_cpuModel = surf_cpu_model_vm;
+}
+
+xbt_dynar_t WorkstationVMHL13Model::getRoute(WorkstationPtr src, WorkstationPtr dst){
+  return WorkstationCLM03Model::getRoute(src, dst);
+}
+
+ActionPtr WorkstationVMHL13Model::communicate(WorkstationPtr src, WorkstationPtr dst, double size, double rate){
+  return WorkstationCLM03Model::communicate(src, dst, size, rate);
 }
 
 /* ind means ''indirect'' that this is a reference on the whole dict_elm
  * structure (i.e not on the surf_resource_private infos) */
 
-void WorkstationVMModel::createResource(const char *name, void *ind_phys_workstation)
+void WorkstationVMHL13Model::createResource(const char *name, void *ind_phys_workstation)
 {
-  WorkstationVM2013LmmPtr ws = new WorkstationVM2013Lmm(this, name, NULL, static_cast<surf_resource_t>(ind_phys_workstation));
+  WorkstationVMHL13LmmPtr ws = new WorkstationVMHL13Lmm(this, name, NULL, static_cast<surf_resource_t>(ind_phys_workstation));
 
   xbt_lib_set(host_lib, name, SURF_WKS_LEVEL, static_cast<ResourcePtr>(ws));
 
@@ -58,7 +61,7 @@ static inline double get_solved_value(CpuActionLmmPtr cpu_action)
 // const double virt_overhead = 0.95;
 const double virt_overhead = 1;
 
-double WorkstationVMModel::shareResources(double now)
+double WorkstationVMHL13Model::shareResources(double now)
 {
   /* TODO: udpate action's cost with the total cost of processes on the VM. */
 
@@ -107,35 +110,35 @@ double WorkstationVMModel::shareResources(double now)
   char *key;
   void **ind_host;
   xbt_lib_foreach(host_lib, cursor, key, ind_host) {
-    WorkstationCLM03Ptr ws_clm03 = dynamic_cast<WorkstationCLM03Ptr>(
+    WorkstationPtr ws = dynamic_cast<WorkstationPtr>(
                                    static_cast<ResourcePtr>(ind_host[SURF_WKS_LEVEL]));
-    CpuCas01LmmPtr cpu_cas01 = dynamic_cast<CpuCas01LmmPtr>(
+    CpuLmmPtr cpu = dynamic_cast<CpuLmmPtr>(
                                static_cast<ResourcePtr>(ind_host[SURF_CPU_LEVEL]));
 
-    if (!ws_clm03)
+    if (!ws)
       continue;
     /* skip if it is not a virtual machine */
-    if (ws_clm03->p_model != static_cast<ModelPtr>(surf_vm_workstation_model))
+    if (ws->p_model != static_cast<ModelPtr>(surf_vm_workstation_model))
       continue;
-    xbt_assert(cpu_cas01, "cpu-less workstation");
+    xbt_assert(cpu, "cpu-less workstation");
 
     /* It is a virtual machine, so we can cast it to workstation_VM2013_t */
-    WorkstationVM2013Ptr ws_vm2013 = dynamic_cast<WorkstationVM2013Ptr>(ws_clm03);
+    WorkstationVMPtr ws_vm = dynamic_cast<WorkstationVMPtr>(ws);
 
-    double solved_value = get_solved_value(ws_vm2013->p_action);
+    double solved_value = get_solved_value(reinterpret_cast<CpuActionLmmPtr>(ws_vm->p_action));
     XBT_DEBUG("assign %f to vm %s @ pm %s", solved_value,
-        ws_clm03->m_name, ws_vm2013->p_subWs->m_name);
+        ws->m_name, ws_vm->p_subWs->m_name);
 
     // TODO: check lmm_update_constraint_bound() works fine instead of the below manual substitution.
     // cpu_cas01->constraint->bound = solved_value;
-    xbt_assert(cpu_cas01->p_model == static_cast<ModelPtr>(surf_cpu_model_vm));
-    lmm_system_t vcpu_system = cpu_cas01->p_model->p_maxminSystem;
-    lmm_update_constraint_bound(vcpu_system, cpu_cas01->p_constraint, virt_overhead * solved_value);
+    xbt_assert(cpu->p_model == static_cast<ModelPtr>(surf_cpu_model_vm));
+    lmm_system_t vcpu_system = cpu->p_model->p_maxminSystem;
+    lmm_update_constraint_bound(vcpu_system, cpu->p_constraint, virt_overhead * solved_value);
   }
 
 
   /* 2. Calculate resource share at the virtual machine layer. */
-  double ret = WorkstationModel::shareResources(now);
+  double ret = WorkstationCLM03Model::shareResources(now);
 
 
   /* FIXME: 3. do we have to re-initialize our cpu_action object? */
@@ -179,13 +182,13 @@ double WorkstationVMModel::shareResources(double now)
 /************
  * Resource *
  ************/
-WorkstationVM2013Lmm::WorkstationVM2013Lmm(WorkstationVMModelPtr model, const char* name, xbt_dict_t props,
+WorkstationVMHL13Lmm::WorkstationVMHL13Lmm(WorkstationVMModelPtr model, const char* name, xbt_dict_t props,
 		                                   surf_resource_t ind_phys_workstation)
-  :  Resource(model, name, props),
-     WorkstationCLM03(model, name, props, NULL, NULL, NULL),
-     WorkstationVM2013(model, name, props, NULL, NULL),
-     WorkstationCLM03Lmm(model, name, props, NULL, NULL, NULL) {
-  WorkstationCLM03Ptr sub_ws = dynamic_cast<WorkstationCLM03Ptr>(
+ : Resource(model, name, props)
+ , WorkstationVMLmm(NULL, NULL)
+ , WorkstationCLM03Lmm(model, name, props, NULL, NULL, NULL)
+{
+  WorkstationPtr sub_ws = dynamic_cast<WorkstationPtr>(
                                static_cast<ResourcePtr>(
                                  surf_workstation_resource_priv(ind_phys_workstation)));
 
@@ -242,7 +245,7 @@ WorkstationVM2013Lmm::WorkstationVM2013Lmm(WorkstationVMModelPtr model, const ch
  * A physical host does not disapper in the current SimGrid code, but a VM may
  * disapper during a simulation.
  */
-WorkstationVM2013Lmm::~WorkstationVM2013Lmm()
+WorkstationVMHL13Lmm::~WorkstationVMHL13Lmm()
 {
   /* ind_phys_workstation equals to smx_host_t */
   surf_resource_t ind_vm_workstation = xbt_lib_get_elm_or_null(host_lib, m_name);
@@ -282,29 +285,29 @@ WorkstationVM2013Lmm::~WorkstationVM2013Lmm()
 	/* Free the workstation resource of the VM. */
 }
 
-e_surf_resource_state_t WorkstationVM2013Lmm::getState()
+e_surf_resource_state_t WorkstationVMHL13Lmm::getState()
 {
   return (e_surf_resource_state_t) p_currentState;
 }
 
-void WorkstationVM2013Lmm::setState(e_surf_resource_state_t state)
+void WorkstationVMHL13Lmm::setState(e_surf_resource_state_t state)
 {
   p_currentState = (e_surf_vm_state_t) state;
 }
 
-void WorkstationVM2013Lmm::suspend()
+void WorkstationVMHL13Lmm::suspend()
 {
   p_action->suspend();
   p_currentState = SURF_VM_STATE_SUSPENDED;
 }
 
-void WorkstationVM2013Lmm::resume()
+void WorkstationVMHL13Lmm::resume()
 {
   p_action->resume();
   p_currentState = SURF_VM_STATE_RUNNING;
 }
 
-void WorkstationVM2013Lmm::save()
+void WorkstationVMHL13Lmm::save()
 {
   p_currentState = SURF_VM_STATE_SAVING;
 
@@ -313,7 +316,7 @@ void WorkstationVM2013Lmm::save()
   p_currentState = SURF_VM_STATE_SAVED;
 }
 
-void WorkstationVM2013Lmm::restore()
+void WorkstationVMHL13Lmm::restore()
 {
   p_currentState = SURF_VM_STATE_RESTORING;
 
@@ -325,17 +328,17 @@ void WorkstationVM2013Lmm::restore()
 /*
  * Update the physical host of the given VM
  */
-void WorkstationVM2013Lmm::migrate(surf_resource_t ind_dst_pm)
+void WorkstationVMHL13Lmm::migrate(surf_resource_t ind_dst_pm)
 {
    /* ind_phys_workstation equals to smx_host_t */
-   WorkstationCLM03Ptr ws_clm03_dst = dynamic_cast<WorkstationCLM03Ptr>(
+   WorkstationPtr ws_dst = dynamic_cast<WorkstationPtr>(
 	                                  static_cast<ResourcePtr>(
 	                                   surf_workstation_resource_priv(ind_dst_pm)));
    const char *vm_name = m_name;
    const char *pm_name_src = p_subWs->m_name;
-   const char *pm_name_dst = ws_clm03_dst->m_name;
+   const char *pm_name_dst = ws_dst->m_name;
 
-   xbt_assert(ws_clm03_dst);
+   xbt_assert(ws_dst);
 
    /* do something */
 
@@ -351,7 +354,7 @@ void WorkstationVM2013Lmm::migrate(surf_resource_t ind_dst_pm)
    p_netElm = new_net_elm;
    xbt_lib_set(host_lib, vm_name, ROUTING_HOST_LEVEL, p_netElm);
 
-   p_subWs = ws_clm03_dst;
+   p_subWs = ws_dst;
 
    /* Update vcpu's action for the new pm */
    {
@@ -371,7 +374,7 @@ void WorkstationVM2013Lmm::migrate(surf_resource_t ind_dst_pm)
                                         static_cast<ResourcePtr>(
                                         surf_cpu_resource_priv(ind_dst_pm)))->execute(0));
 
-     e_surf_action_state_t state = surf_action_get_state(p_action);
+     e_surf_action_state_t state = p_action->getState();
      if (state != SURF_ACTION_DONE)
        XBT_CRITICAL("FIXME: may need a proper handling, %d", state);
      if (p_action->m_remains > 0)
@@ -387,11 +390,11 @@ void WorkstationVM2013Lmm::migrate(surf_resource_t ind_dst_pm)
    XBT_DEBUG("migrate VM(%s): change PM (%s to %s)", vm_name, pm_name_src, pm_name_dst);
 }
 
-void WorkstationVM2013Lmm::setBound(double bound){
+void WorkstationVMHL13Lmm::setBound(double bound){
  p_action->setBound(bound);
 }
 
-void WorkstationVM2013Lmm::setAffinity(CpuLmmPtr cpu, unsigned long mask){
+void WorkstationVMHL13Lmm::setAffinity(CpuLmmPtr cpu, unsigned long mask){
  p_action->setAffinity(cpu, mask);
 }
 
@@ -399,13 +402,13 @@ void WorkstationVM2013Lmm::setAffinity(CpuLmmPtr cpu, unsigned long mask){
  * A surf level object will be useless in the upper layer. Returing the
  * dict_elm of the host.
  **/
-surf_resource_t WorkstationVM2013Lmm::getPm()
+surf_resource_t WorkstationVMHL13Lmm::getPm()
 {
   return xbt_lib_get_elm_or_null(host_lib, p_subWs->m_name);
 }
 
 /* Adding a task to a VM updates the VCPU task on its physical machine. */
-ActionPtr WorkstationVM2013Lmm::execute(double size)
+ActionPtr WorkstationVMHL13Lmm::execute(double size)
 {
   double old_cost = p_action->m_cost;
   double new_cost = old_cost + size;
@@ -416,7 +419,7 @@ ActionPtr WorkstationVM2013Lmm::execute(double size)
 
   p_action->m_cost = new_cost;
 
-  return WorkstationCLM03::execute(size);
+  return WorkstationCLM03Lmm::execute(size);
 }
 
 /**********

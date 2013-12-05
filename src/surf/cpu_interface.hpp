@@ -1,8 +1,8 @@
-#include "surf.hpp"
+#include "surf_interface.hpp"
 #include "maxmin_private.h"
 
-#ifndef SURF_MODEL_CPU_H_
-#define SURF_MODEL_CPU_H_
+#ifndef SURF_CPU_INTERFACE_HPP_
+#define SURF_CPU_INTERFACE_HPP_
 
 /***********
  * Classes *
@@ -102,4 +102,4 @@ public:
 };
 
 
-#endif /* SURF_MODEL_CPU_H_ */
+#endif /* SURF_CPU_INTERFACE_HPP_ */
