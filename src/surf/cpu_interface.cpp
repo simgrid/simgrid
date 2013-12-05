@@ -1,10 +1,8 @@
 #include "cpu_interface.hpp"
 
-extern "C" {
 XBT_LOG_EXTERNAL_CATEGORY(surf_kernel);
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_cpu, surf,
                                 "Logging specific to the SURF cpu module");
-}
 
 CpuModelPtr surf_cpu_model_pm;
 CpuModelPtr surf_cpu_model_vm;

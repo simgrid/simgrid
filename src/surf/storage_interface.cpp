@@ -1,10 +1,8 @@
 #include "storage_interface.hpp"
 #include "surf_private.h"
 
-extern "C" {
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_storage, surf,
                                 "Logging specific to the SURF storage module");
-}
 
 xbt_lib_t storage_lib;
 int ROUTING_STORAGE_LEVEL;      //Routing for storagelevel

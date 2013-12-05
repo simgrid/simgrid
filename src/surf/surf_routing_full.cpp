@@ -7,9 +7,7 @@
 #include "surf_routing_full.hpp"
 #include "network_interface.hpp"
 
-extern "C" {
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route_full, surf, "Routing part of surf");
-}
 
 /* Global vars */
 extern routing_platf_t routing_platf;

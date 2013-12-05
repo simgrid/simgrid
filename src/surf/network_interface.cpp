@@ -10,10 +10,8 @@
 #ifndef NETWORK_INTERFACE_CPP_
 #define NETWORK_INTERFACE_CPP_
 
-extern "C" {
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_network, surf,
                                 "Logging specific to the SURF network module");
-}
 
 NetworkModelPtr surf_network_model = NULL;
 

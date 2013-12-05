@@ -3,10 +3,8 @@
 #include "cpu_cas01.hpp"
 #include "simgrid/sg_config.h"
 
-extern "C" {
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_workstation, surf,
                                 "Logging specific to the SURF workstation module");
-}
 
 WorkstationModelPtr surf_workstation_model = NULL;
 

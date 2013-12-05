@@ -66,9 +66,7 @@ AsPtr current_routing = NULL;
 /* global parse functions */
 extern xbt_dynar_t mount_list;
 
-extern "C" {
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route, surf, "Routing part of surf");
-}
 
 static void routing_parse_peer(sg_platf_peer_cbarg_t peer);     /* peer bypass */
 static void routing_parse_Srandom(void);        /* random bypass */

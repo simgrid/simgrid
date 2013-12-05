@@ -1,4 +1,4 @@
-/* Copyright (c) 2009, 2010, 2011. The SimGrid Team.
+/* Copyright (c) 2009, 2010, 2011, 2013. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -6,9 +6,7 @@
 
 #include "surf_routing_cluster.hpp"
 
-extern "C" {
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route_cluster, surf, "Routing part of surf");
-}
 
 /* This routing is specifically setup to represent clusters, aka homogeneous sets of machines
  * Note that a router is created, easing the interconnexion with the rest of the world.

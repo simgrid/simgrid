@@ -10,9 +10,7 @@
 #include "network_interface.hpp"
 #include "xbt/graph.h"
 
-extern "C" {
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_routing_generic, surf_route, "Generic implementation of the surf routing");
-}
 
 static int no_bypassroute_declared = 1;
 

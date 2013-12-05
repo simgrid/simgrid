@@ -1,9 +1,7 @@
 #include "surf_routing_vivaldi.hpp"
 #include "network_interface.hpp"
 
-extern "C" {
-  XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route_vivaldi, surf, "Routing part of surf");
-}
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route_vivaldi, surf, "Routing part of surf");
 
 static XBT_INLINE double euclidean_dist_comp(int index, xbt_dynar_t src, xbt_dynar_t dst) {
   double src_coord, dst_coord;

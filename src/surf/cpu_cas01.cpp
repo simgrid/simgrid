@@ -9,10 +9,8 @@
 #include "maxmin_private.h"
 #include "simgrid/sg_config.h"
 
-extern "C" {
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_cpu_cas, surf_cpu,
                                 "Logging specific to the SURF CPU IMPROVED module");
-}
 
 /*************
  * CallBacks *

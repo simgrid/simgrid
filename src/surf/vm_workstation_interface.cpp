@@ -7,10 +7,8 @@
 #include "vm_workstation_interface.hpp"
 #include "cpu_cas01.hpp"
 
-extern "C" {
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_vm_workstation, surf,
                                 "Logging specific to the SURF VM workstation module");
-}
 
 WorkstationVMModelPtr surf_vm_workstation_model = NULL;
 

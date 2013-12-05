@@ -6,9 +6,7 @@
 
 #include "surf_routing_none.hpp"
 
-extern "C" {
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route_none, surf, "Routing part of surf");
-}
 
 AS_t model_none_create(void)
 {

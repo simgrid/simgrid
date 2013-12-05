@@ -9,13 +9,9 @@
 #include "simgrid/sg_config.h"
 #include "mc/mc.h"
 
-extern "C" {
 XBT_LOG_NEW_CATEGORY(surf, "All SURF categories");
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_kernel, surf,
                                 "Logging specific to SURF (kernel)");
-}
-
-
 
 /*********
  * Utils *

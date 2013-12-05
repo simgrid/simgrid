@@ -5,10 +5,8 @@
 #ifndef SURF_MODEL_CPUTI_H_
 #define SURF_MODEL_CPUTI_H_
 
-extern "C" {
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_cpu_ti, surf_cpu,
                                 "Logging specific to the SURF CPU TRACE INTEGRATION module");
-}
 
 static void cpu_ti_action_update_index_heap(void *action, int i);
 

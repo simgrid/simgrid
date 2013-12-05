@@ -10,9 +10,7 @@
 /* Global vars */
 extern routing_platf_t routing_platf;
 
-extern "C" {
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route_dijkstra, surf, "Routing part of surf -- dijkstra routing logic");
-}
 
 /* Free functions */
 
