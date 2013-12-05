@@ -251,9 +251,8 @@ StoragePtr StorageN11Model::createResource(const char* id, const char* type_id,
 
   xbt_lib_set(storage_lib, id, SURF_STORAGE_LEVEL, static_cast<ResourcePtr>(storage));
 
-  XBT_DEBUG("SURF storage create resource\n\t\tid '%s'\n\t\ttype '%s' \n\t\tmodel '%s' \n\t\tproperties '%p'\n\t\tBread '%f'\n",
+  XBT_DEBUG("SURF storage create resource\n\t\tid '%s'\n\t\ttype '%s'\n\t\tproperties '%p'\n\t\tBread '%f'\n",
       id,
-      this,
       type_id,
       storage_type->properties,
       Bread);
