@@ -89,7 +89,6 @@ public:
 		                                   e_surf_link_sharing_policy_t
 		                                   policy, xbt_dict_t properties);
 
-  xbt_dynar_t getRoute(WorkstationPtr /*src*/, WorkstationPtr /*dst*/) {DIE_IMPOSSIBLE;};
   ActionPtr communicate(RoutingEdgePtr /*src*/, RoutingEdgePtr /*dst*/, double /*size*/, double /*rate*/) {DIE_IMPOSSIBLE;};
   void addTraces() {DIE_IMPOSSIBLE;};
   WorkstationL07ModelPtr p_workstationModel;

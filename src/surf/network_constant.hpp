@@ -21,7 +21,6 @@ typedef NetworkConstantActionLmm *NetworkConstantActionLmmPtr;
 class NetworkConstantModel : public NetworkCm02Model {
 public:
   NetworkConstantModel() : NetworkCm02Model("constant time network") {};
-  NetworkCm02LinkLmmPtr createResource(string name);
   double shareResources(double now);
   void updateActionsState(double now, double delta);
   ActionPtr communicate(RoutingEdgePtr src, RoutingEdgePtr dst,
