@@ -35,8 +35,6 @@ public:
 		   const char* content_name, const char* content_type, xbt_dict_t properties);
   double shareResources(double now);
   void updateActionsState(double now, double delta);
-
-  xbt_dynar_t p_storageList;
 };
 
 /************
