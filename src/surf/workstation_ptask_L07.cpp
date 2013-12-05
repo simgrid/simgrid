@@ -250,7 +250,7 @@ ResourcePtr WorkstationL07Model::createResource(const char *name, double /*power
                                                 tmgr_trace_t /*power_trace*/,
                                                 e_surf_resource_state_t /*state_initial*/,
                                                 tmgr_trace_t /*state_trace*/,
-                                                xbt_dict_t cpu_properties)
+                                                xbt_dict_t /*cpu_properties*/)
 {
   WorkstationL07Ptr wk = NULL;
   xbt_assert(!surf_workstation_resource_priv(surf_workstation_resource_by_name(name)),
