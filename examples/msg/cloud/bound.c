@@ -73,7 +73,7 @@ static int worker_busy_loop_main(int argc, char *argv[])
 }
 
 /* FIXME: */
-#define DOUBLE_MAX 100000000000L
+#define DOUBLE_MAX 1e11
 
 static void test_dynamic_change(void)
 {

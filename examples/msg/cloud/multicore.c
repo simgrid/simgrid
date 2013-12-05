@@ -69,10 +69,10 @@ static void test_pm_pin(void)
   struct task_data t3;
   struct task_data t4;
 
-  t1.task = MSG_task_create("Task1", 10000000000000000UL, 0, NULL);
-  t2.task = MSG_task_create("Task2", 10000000000000000UL, 0, NULL);
-  t3.task = MSG_task_create("Task3", 10000000000000000UL, 0, NULL);
-  t4.task = MSG_task_create("Task4", 10000000000000000UL, 0, NULL);
+  t1.task = MSG_task_create("Task1", 1e16, 0, NULL);
+  t2.task = MSG_task_create("Task2", 1e16, 0, NULL);
+  t3.task = MSG_task_create("Task3", 1e16, 0, NULL);
+  t4.task = MSG_task_create("Task4", 1e16, 0, NULL);
 
   MSG_process_create("worker1", worker_main, t1.task, pm1);
   MSG_process_create("worker2", worker_main, t2.task, pm1);
@@ -199,10 +199,10 @@ static void test_vm_pin(void)
   struct task_data t2;
   struct task_data t3;
 
-  t0.task = MSG_task_create("Task0", 10000000000000000UL, 0, NULL);
-  t1.task = MSG_task_create("Task1", 10000000000000000UL, 0, NULL);
-  t2.task = MSG_task_create("Task2", 10000000000000000UL, 0, NULL);
-  t3.task = MSG_task_create("Task3", 10000000000000000UL, 0, NULL);
+  t0.task = MSG_task_create("Task0", 1e16, 0, NULL);
+  t1.task = MSG_task_create("Task1", 1e16, 0, NULL);
+  t2.task = MSG_task_create("Task2", 1e16, 0, NULL);
+  t3.task = MSG_task_create("Task3", 1e16, 0, NULL);
 
   MSG_process_create("worker0", worker_main, t0.task, vm0);
   MSG_process_create("worker1", worker_main, t1.task, vm1);
