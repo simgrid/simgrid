@@ -45,10 +45,10 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_kernel, surf,
  *
  */
 
-static void remove_watched_host(void *key)
+/*static void remove_watched_host(void *key)
 {
   xbt_dict_remove(watched_hosts_lib, *(char**)key);
-}
+}*/
 
 /*void surf_watched_hosts(void)
 {

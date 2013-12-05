@@ -1,4 +1,4 @@
-/* Copyright (c) 2007, 2008, 2009, 2010. The SimGrid Team.
+/* Copyright (c) 2007-2010, 2013. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -716,15 +716,7 @@ double WorkstationL07ActionLmm::getRemains()
   return m_remains;
 }
 
-
-
-
-
-
-
-
-
-static void ptask_finalize(void)
+/*static void ptask_finalize(void)
 {
   xbt_dict_free(&ptask_parallel_task_link_set);
 
@@ -739,7 +731,7 @@ static void ptask_finalize(void)
     lmm_system_free(ptask_maxmin_system);
     ptask_maxmin_system = NULL;
   }
-}
+  }*/
 
 /**************************************/
 /******* Resource Private    **********/
