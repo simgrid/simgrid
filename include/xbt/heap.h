@@ -1,4 +1,4 @@
-/* Copyright (c) 2004-2007, 2009-2011. The SimGrid Team.
+/* Copyright (c) 2004-2007, 2009-2011, 2013. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -10,15 +10,14 @@
 #include "xbt/misc.h"
 #include "xbt/dynar.h"          /* void_f_pvoid_t */
 
+SG_BEGIN_DECL()
+
 /** @addtogroup XBT_heap
  *  @brief This section describes the API to generic heap with O(log(n)) access.
  *
  *  @{
  */
 /* @brief heap datatype */
-#ifdef __cplusplus
-extern "C" {
-#endif
 typedef struct xbt_heap *xbt_heap_t;
 
 XBT_PUBLIC(xbt_heap_t) xbt_heap_new(int init_size,
@@ -36,8 +35,6 @@ XBT_PUBLIC(void) xbt_heap_set_update_callback(xbt_heap_t H,
                                                                        *,
                                                                        int));
 XBT_PUBLIC(void *) xbt_heap_remove(xbt_heap_t H, int i);
-#ifdef __cplusplus
-}
-#endif
 /* @} */
+SG_END_DECL()
 #endif                          /* _XBT_HEAP_H */

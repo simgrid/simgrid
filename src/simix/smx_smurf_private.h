@@ -7,6 +7,8 @@
 #ifndef _SIMIX_SMURF_PRIVATE_H
 #define _SIMIX_SMURF_PRIVATE_H
 
+SG_BEGIN_DECL()
+
 /********************************* Simcalls *********************************/
 
 /* we want to build the e_smx_simcall_t enumeration, the table of the
@@ -492,14 +494,8 @@ typedef struct s_smx_simcall {
   };
 } s_smx_simcall_t, *smx_simcall_t;
 
-#ifdef __cplusplus
-extern "C" {
-#endif
 SIMCALL_LIST(SIMCALL_RES_GETSET, SIMCALL_SEP_NOTHING)
 SIMCALL_LIST(SIMCALL_ARG_GETSET, SIMCALL_SEP_NOTHING)
-#ifdef __cplusplus
-}
-#endif
 
 /******************************** General *************************************/
 
@@ -518,6 +514,8 @@ typedef smx_action_t (*simcall_handler_t)(u_smx_scalar_t *);
 
 extern const char *simcall_types[];
 extern simcall_handler_t simcall_table[];
+
+SG_END_DECL()
 
 #endif
 

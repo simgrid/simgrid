@@ -1,6 +1,6 @@
 /* platf_interface.h - Internal interface to the SimGrid platforms          */
 
-/* Copyright (c) 2004-2007, 2009-2012. The SimGrid Team.
+/* Copyright (c) 2004-2007, 2009-2013. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -11,6 +11,8 @@
 
 #include "simgrid/platf.h" /* public interface */
 #include "xbt/RngStream.h"
+
+SG_BEGIN_DECL()
 
 /* Module management functions */
 XBT_PUBLIC(void) sg_platf_init(void);
@@ -41,10 +43,6 @@ typedef void (*sg_platf_mstorage_cb_t)(sg_platf_mstorage_cbarg_t);
 /* ***************************************** */
 /* TUTORIAL: New TAG                         */
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 typedef void (*sg_platf_gpu_cb_t)(sg_platf_gpu_cbarg_t);
 XBT_PUBLIC(void) sg_platf_gpu_add_cb(sg_platf_gpu_cb_t);
 /* ***************************************** */
@@ -74,9 +72,6 @@ XBT_PUBLIC(void) sg_platf_mstorage_add_cb(sg_platf_mstorage_cb_t fct);
 XBT_PUBLIC(void) sg_platf_storage_type_add_cb(sg_platf_storage_type_cb_t fct);
 XBT_PUBLIC(void) sg_platf_mount_add_cb(sg_platf_mount_cb_t fct);
 
-#ifdef __cplusplus
-}
-#endif
 /** \brief Pick the right models for CPU, net and workstation, and call their model_init_preparse
  *
  * Must be called within parsing/creating the environment (after the <config>s, if any, and before <AS> or friends such as <cluster>)
@@ -86,5 +81,7 @@ XBT_PUBLIC(void) surf_config_models_setup(void);
 /* RngStream management functions */
 XBT_PUBLIC(void) sg_platf_rng_stream_init(unsigned long seed[6]);
 XBT_PUBLIC(RngStream) sg_platf_rng_stream_get(const char* id);
+
+SG_END_DECL()
 
 #endif                          /* SG_PLATF_INTERFACE_H */

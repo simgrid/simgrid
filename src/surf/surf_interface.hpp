@@ -44,13 +44,9 @@ extern int sg_gtnets_jitter_seed;
 #endif
 extern xbt_dynar_t surf_path;
 
-#ifdef __cplusplus
 extern "C" {
-#endif
 XBT_PUBLIC(double) surf_get_clock(void);
-#ifdef __cplusplus
 }
-#endif
 
 extern double sg_sender_gap;
 XBT_PUBLIC(int)  SURF_CPU_LEVEL;    //Surf cpu level

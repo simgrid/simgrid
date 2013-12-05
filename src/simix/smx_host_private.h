@@ -10,6 +10,8 @@
 #include "simgrid/simix.h"
 #include "smx_smurf_private.h"
 
+SG_BEGIN_DECL()
+
 /** @brief Host datatype */
 typedef struct s_smx_host_priv {
   xbt_swag_t process_list;
@@ -22,10 +24,6 @@ static inline smx_host_priv_t SIMIX_host_priv(smx_host_t host){
   return (smx_host_priv_t) xbt_lib_get_level(host, SIMIX_HOST_LEVEL);
 }
 
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 void _SIMIX_host_free_process_arg(void *);
 smx_host_t SIMIX_host_create(const char *name, void *workstation, void *data);
 void SIMIX_host_destroy(void *host);
@@ -160,9 +158,8 @@ void SIMIX_pre_host_get_params(smx_simcall_t simcall, smx_host_t ind_vm, ws_para
 
 void SIMIX_host_set_params(smx_host_t ind_vm, ws_params_t params);
 void SIMIX_pre_host_set_params(smx_simcall_t simcall, smx_host_t ind_vm, ws_params_t params);
-#ifdef __cplusplus
-}
-#endif
+
+SG_END_DECL()
 
 #endif
 

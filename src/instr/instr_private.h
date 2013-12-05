@@ -14,6 +14,8 @@
 
 #ifdef HAVE_TRACING
 
+SG_BEGIN_DECL()
+
 /* Need to define function drand48 for Windows */
 #ifdef _WIN32
 #  define drand48() (rand()/(RAND_MAX + 1.0))
@@ -229,10 +231,6 @@ extern xbt_dict_t user_host_variables;
 extern xbt_dict_t user_vm_variables;
 extern xbt_dict_t user_link_variables;
 extern double TRACE_last_timestamp_to_dump;
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 /* instr_paje_header.c */
 void TRACE_header(int basic, int size);
@@ -461,20 +459,12 @@ typedef struct s_instr_extra_data {
   int num_processes;
 } s_instr_extra_data_t;
 
-#ifdef __cplusplus
-}
-#endif
-
+SG_END_DECL()
 
 #endif /* HAVE_TRACING */
 
 #ifdef HAVE_JEDULE
 #include "instr/jedule/jedule_sd_binding.h"
 #endif
-
-
-
-
-
 
 #endif /* INSTR_PRIVATE_H_ */

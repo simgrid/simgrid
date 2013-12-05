@@ -17,9 +17,7 @@
 
 #define NO_MAX_DURATION -1.0
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+SG_BEGIN_DECL()
 
 extern xbt_dict_t watched_hosts_lib;
 
@@ -92,8 +90,6 @@ XBT_PUBLIC_DATA(int) surfxml_bufferstack_size;
 void TRACE_surf_host_set_power(double date, const char *resource, double power);
 void TRACE_surf_link_set_bandwidth(double date, const char *resource, double bandwidth);
 
-#ifdef __cplusplus
-}
-#endif
+SG_END_DECL()
 
 #endif                          /* _SURF_SURF_PRIVATE_H */

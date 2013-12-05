@@ -210,9 +210,6 @@ static inline void *surf_storage_resource_by_name(const char *name){
   return xbt_lib_get_elm_or_null(storage_lib, name);
 }
 
-#ifdef __cplusplus
-extern "C" {
-#endif
 char *surf_routing_edge_name(sg_routing_edge_t edge);
 void *surf_as_cluster_get_backbone(AS_t as);
 void surf_as_cluster_set_backbone(AS_t as, void* backbone);
@@ -296,9 +293,6 @@ void surf_cpu_action_set_bound(surf_action_t action, double bound);
 surf_file_t surf_storage_action_get_file(surf_action_t action);
 xbt_dict_t surf_storage_action_get_ls_dict(surf_action_t action);
 surf_model_t surf_resource_model(const void *host, int level);
-#ifdef __cplusplus
-}
-#endif
 
 /**************************************/
 /* Implementations of model object */
@@ -593,9 +587,6 @@ XBT_PUBLIC(xbt_dict_t) watched_hosts_lib;
 /*******************************************/
 /*** SURF Platform *************************/
 /*******************************************/
-#ifdef __cplusplus
-extern "C" {
-#endif
 XBT_PUBLIC_DATA(AS_t) surf_AS_get_routing_root(void); 
 XBT_PUBLIC_DATA(const char *) surf_AS_get_name(AS_t as);
 XBT_PUBLIC_DATA(xbt_dict_t) surf_AS_get_routing_sons(AS_t as);
@@ -604,9 +595,6 @@ XBT_PUBLIC_DATA(xbt_dynar_t) surf_AS_get_hosts(AS_t as);
 XBT_PUBLIC_DATA(void) surf_AS_get_graph(AS_t as, xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges);
 XBT_PUBLIC_DATA(AS_t) surf_platf_get_root(routing_platf_t platf);
 XBT_PUBLIC_DATA(e_surf_network_element_type_t) surf_routing_edge_get_rc_type(sg_routing_edge_t edge);
-#ifdef __cplusplus
-}
-#endif
 
 /*******************************************/
 /*** SURF Globals **************************/

@@ -31,9 +31,7 @@ static XBT_INLINE int double_equals(double value1, double value2)
   return (fabs(value1 - value2) < MAXMIN_PRECISION);
 }
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+SG_BEGIN_DECL()
 
 XBT_PUBLIC(lmm_system_t) lmm_system_new(int selective_update);
 XBT_PUBLIC(void) lmm_system_free(lmm_system_t sys);
@@ -133,8 +131,6 @@ XBT_PUBLIC(double func_vegas_f) (lmm_variable_t var, double x);
 XBT_PUBLIC(double func_vegas_fp) (lmm_variable_t var, double x);
 XBT_PUBLIC(double func_vegas_fpi) (lmm_variable_t var, double x);
 
-#ifdef __cplusplus
-}
-#endif
+SG_END_DECL()
 
 #endif                          /* _SURF_MAXMIN_H */
