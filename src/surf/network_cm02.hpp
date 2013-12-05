@@ -52,7 +52,6 @@ public:
                                    e_surf_link_sharing_policy_t policy,
                                    xbt_dict_t properties);
   void updateActionsStateLazy(double now, double delta);
-  void gapAppend(double /*size*/, const NetworkCm02LinkLmmPtr /*link*/, NetworkCm02ActionLmmPtr /*action*/) {};
   ActionPtr communicate(RoutingEdgePtr src, RoutingEdgePtr dst,
 		                           double size, double rate);
 };
