@@ -20,8 +20,6 @@ void surf_network_model_init_Constant()
 
   ModelPtr model = static_cast<ModelPtr>(surf_network_model);
   xbt_dynar_push(model_list, &model);
-
-  routing_model_create(NULL);
 }
 
 double NetworkConstantModel::shareResources(double /*now*/)
