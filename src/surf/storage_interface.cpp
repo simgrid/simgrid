@@ -19,6 +19,7 @@ StorageModelPtr surf_storage_model = NULL;
  *********/
 
 StorageModel::StorageModel() : Model("Storage") {
+  p_storageList = NULL;
 }
 
 StorageModel::~StorageModel(){

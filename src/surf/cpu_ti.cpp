@@ -409,7 +409,7 @@ void surf_cpu_model_init_ti()
 CpuTiModel::CpuTiModel() : CpuModel("cpu_ti")
 {
   ActionPtr action = NULL;
-  CpuTiPtr cpu;
+  CpuTiPtr cpu = NULL;
 
   p_runningActionSetThatDoesNotNeedBeingChecked =
       xbt_swag_new(xbt_swag_offset(*action, p_stateHookup));
