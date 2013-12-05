@@ -354,17 +354,9 @@ StorageN11Lmm::StorageN11Lmm(StorageModelPtr model, const char* name, xbt_dict_t
     StorageLmm(maxminSystem, bread, bwrite, bconnection, type_id, content_name, content_type, size) {
   XBT_DEBUG("Create resource with Bconnection '%f' Bread '%f' Bwrite '%f' and Size '%llu'", bconnection, bread, bwrite, size);
 
-  p_stateCurrent = SURF_RESOURCE_ON;
-  m_usedSize = 0;
-  m_size = 0;
-
-  p_content = parseContent(content_name);
-  p_contentType = content_type;
   p_constraint = lmm_constraint_new(maxminSystem, this, bconnection);
   p_constraintRead  = lmm_constraint_new(maxminSystem, this, bread);
   p_constraintWrite = lmm_constraint_new(maxminSystem, this, bwrite);
-  m_size = size;
-  p_typeId = xbt_strdup(type_id);
 }
 
 StorageActionPtr StorageN11Lmm::ls(const char* path)
