@@ -33,7 +33,7 @@ Options:
   -trace-comment-file <file> # put file contents on the top of the trace file as comment
   -trace-grouped             # group MPI processes by location
   -trace-resource            # trace resource utilization
-  -trace-viva               # generate configuration for Viva's GraphView
+  -trace-viva                # generate configuration for Viva's GraphView
   -trace-file <tracefile>    # name of the tracefile (simgrid_smpi.trace)
   -ext <value>               # additional parameter (reserved)
 
