@@ -292,6 +292,6 @@ msg_mailbox_t MSG_mailbox_get_by_channel(msg_host_t host,
               && (channel < msg_global->max_channel), "Invalid channel %d",
               channel);
 
-  return host->mailboxes[(size_t) channel];
+  return MSG_host_priv(host)->mailboxes[(size_t) channel];
 }
 #endif
