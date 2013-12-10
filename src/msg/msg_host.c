@@ -35,8 +35,8 @@ msg_host_t __MSG_host_create(smx_host_t workstation)
   int i;
   char alias[MAX_ALIAS_NAME + 1] = { 0 };       /* buffer used to build the key of the mailbox */
 
-  if (msg_global->max_channel > 0)
-    priv->mailboxes = xbt_new0(msg_mailbox_t, msg_global->max_channel);
+  priv->mailboxes = (msg_global->max_channel > 0) ?
+    xbt_new0(msg_mailbox_t, msg_global->max_channel) : NULL;
 
   for (i = 0; i < msg_global->max_channel; i++) {
     sprintf(alias, "%s:%d", name, i);
@@ -147,8 +147,7 @@ void __MSG_host_priv_free(msg_host_priv_t priv)
   xbt_dict_free(&priv->affinity_mask_db);
 
 #ifdef MSG_USE_DEPRECATED
-  if (msg_global->max_channel > 0)
-    free(priv->mailboxes);
+  free(priv->mailboxes);
 #endif
 
   free(priv);
