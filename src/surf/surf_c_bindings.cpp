@@ -194,11 +194,6 @@ double surf_solve(double max_date)
   return surf_min;
 }
 
-XBT_INLINE double surf_get_clock(void)
-{
-  return NOW;
-}
-
 void routing_get_route_and_latency(sg_routing_edge_t src, sg_routing_edge_t dst,
                               xbt_dynar_t * route, double *latency){
   routing_platf->getRouteAndLatency(src, dst, route, latency);
