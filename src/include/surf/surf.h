@@ -218,7 +218,7 @@ XBT_PUBLIC(xbt_swag_t) surf_model_done_action_set(surf_model_t model);
 XBT_PUBLIC(xbt_swag_t) surf_model_failed_action_set(surf_model_t model);
 XBT_PUBLIC(xbt_swag_t) surf_model_ready_action_set(surf_model_t model);
 XBT_PUBLIC(xbt_swag_t) surf_model_running_action_set(surf_model_t model);
-surf_action_t surf_workstation_model_execute_parallel_task(surf_workstation_model_t model,
+XBT_PUBLIC(surf_action_t) surf_workstation_model_execute_parallel_task(surf_workstation_model_t model,
 		                                    int workstation_nb,
                                             void **workstation_list,
                                             double *computation_amount,
@@ -226,12 +226,12 @@ surf_action_t surf_workstation_model_execute_parallel_task(surf_workstation_mode
                                             double rate);
 XBT_PUBLIC(surf_action_t) surf_workstation_model_communicate(surf_workstation_model_t model, surf_resource_t src, surf_resource_t dst, double size, double rate);
 XBT_PUBLIC(xbt_dynar_t) surf_workstation_model_get_route(surf_workstation_model_t model, surf_resource_t src, surf_resource_t dst);
-void surf_vm_workstation_model_create(const char *name, surf_resource_t ind_phys_host);
-surf_action_t surf_network_model_communicate(surf_network_model_t model, sg_routing_edge_t src, sg_routing_edge_t dst, double size, double rate);
+XBT_PUBLIC(void) surf_vm_workstation_model_create(const char *name, surf_resource_t ind_phys_host);
+XBT_PUBLIC(surf_action_t) surf_network_model_communicate(surf_network_model_t model, sg_routing_edge_t src, sg_routing_edge_t dst, double size, double rate);
 XBT_PUBLIC(const char * ) surf_resource_name(surf_cpp_resource_t resource);
 XBT_PUBLIC(xbt_dict_t) surf_resource_get_properties(surf_cpp_resource_t resource);
 XBT_PUBLIC(e_surf_resource_state_t) surf_resource_get_state(surf_cpp_resource_t resource);
-void surf_resource_set_state(surf_cpp_resource_t resource, e_surf_resource_state_t state);
+XBT_PUBLIC(void) surf_resource_set_state(surf_cpp_resource_t resource, e_surf_resource_state_t state);
 XBT_PUBLIC(double) surf_workstation_get_speed(surf_resource_t resource, double load);
 XBT_PUBLIC(double) surf_workstation_get_available_speed(surf_resource_t resource);
 XBT_PUBLIC(int) surf_workstation_get_core(surf_resource_t resource);
