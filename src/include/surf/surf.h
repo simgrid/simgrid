@@ -228,7 +228,7 @@ surf_action_t surf_workstation_model_communicate(surf_workstation_model_t model,
 xbt_dynar_t surf_workstation_model_get_route(surf_workstation_model_t model, surf_resource_t src, surf_resource_t dst);
 void surf_vm_workstation_model_create(const char *name, surf_resource_t ind_phys_host);
 surf_action_t surf_network_model_communicate(surf_network_model_t model, sg_routing_edge_t src, sg_routing_edge_t dst, double size, double rate);
-const char *surf_resource_name(surf_cpp_resource_t resource);
+XBT_PUBLIC(const char * ) surf_resource_name(surf_cpp_resource_t resource);
 xbt_dict_t surf_resource_get_properties(surf_cpp_resource_t resource);
 e_surf_resource_state_t surf_resource_get_state(surf_cpp_resource_t resource);
 void surf_resource_set_state(surf_cpp_resource_t resource, e_surf_resource_state_t state);
