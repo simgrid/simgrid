@@ -39,7 +39,7 @@ Storage::Storage(const char* type_id, char *content_name, char *content_type, sg
    m_size(size), m_usedSize(0), p_typeId(xbt_strdup(type_id)), p_writeActions(xbt_dynar_new(sizeof(ActionPtr),NULL))
 {
   p_content = parseContent(content_name);
-  p_stateCurrent = SURF_RESOURCE_ON;
+  m_stateCurrent = SURF_RESOURCE_ON;
 }
 
 Storage::~Storage(){
@@ -119,10 +119,8 @@ sg_size_t Storage::getSize(){
 
 StorageLmm::StorageLmm(lmm_system_t maxminSystem, double bread, double bwrite, double bconnection,
 	     const char* type_id, char *content_name, char *content_type, sg_size_t size)
- :  ResourceLmm(), Storage(type_id, content_name, content_type, size) {
+ :  ResourceLmm(lmm_constraint_new(maxminSystem, this, bconnection)), Storage(type_id, content_name, content_type, size) {
   XBT_DEBUG("Create resource with Bconnection '%f' Bread '%f' Bwrite '%f' and Size '%llu'", bconnection, bread, bwrite, size);
-
-  p_constraint = lmm_constraint_new(maxminSystem, this, bconnection);
   p_constraintRead  = lmm_constraint_new(maxminSystem, this, bread);
   p_constraintWrite = lmm_constraint_new(maxminSystem, this, bwrite);
 }
@@ -135,7 +133,7 @@ StorageAction::StorageAction(StoragePtr storage, e_surf_action_storage_type_t ty
 {
 };
 
-StorageActionLmm::StorageActionLmm(StorageLmmPtr storage, e_surf_action_storage_type_t type)
-  : StorageAction(storage, type) {
+StorageActionLmm::StorageActionLmm(StorageLmmPtr storage, e_surf_action_storage_type_t type, lmm_variable_t var)
+  : StorageAction(storage, type), ActionLmm(var) {
 }
 

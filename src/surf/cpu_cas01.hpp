@@ -48,6 +48,8 @@ typedef struct energy_cpu_cas01 {
 } s_energy_cpu_cas01_t, *energy_cpu_cas01_t;
 
 class CpuCas01Lmm : public CpuLmm {
+public://FIXME:
+  tmgr_trace_event_t p_stateEvent;
 public:
   CpuCas01Lmm(CpuCas01ModelPtr model, const char *name, xbt_dynar_t power_peak,
         int pstate, double powerScale, tmgr_trace_t powerTrace, int core,
@@ -55,8 +57,8 @@ public:
 	xbt_dict_t properties) ;
   ~CpuCas01Lmm();
   void updateState(tmgr_trace_event_t event_type, double value, double date);
-  ActionPtr execute(double size);
-  ActionPtr sleep(double duration);
+  CpuActionPtr execute(double size);
+  CpuActionPtr sleep(double duration);
 
   xbt_dynar_t getWattsRangeList();
   double getCurrentWattsValue(double cpu_load);
@@ -71,7 +73,6 @@ public:
   bool isUsed();
 
   tmgr_trace_event_t p_powerEvent;
-
   xbt_dynar_t p_powerPeakList;				/*< List of supported CPU capacities */
   int m_pstate;								/*< Current pstate (index in the power_peak_list)*/
   energy_cpu_cas01_t p_energy;				/*< Structure with energy-consumption data */
@@ -81,9 +82,12 @@ public:
  * Action *
  **********/
 class CpuCas01ActionLmm: public CpuActionLmm {
+  friend CpuActionPtr CpuCas01Lmm::execute(double size);
+  friend CpuActionPtr CpuCas01Lmm::sleep(double duration);
 public:
   CpuCas01ActionLmm() {};
-  CpuCas01ActionLmm(ModelPtr model, double cost, bool failed): Action(model, cost, failed), CpuActionLmm(model, cost, failed) {};
+  CpuCas01ActionLmm(ModelPtr model, double cost, bool failed, double power, lmm_constraint_t constraint);
+
   ~CpuCas01ActionLmm() {};
   void updateEnergy();
 };

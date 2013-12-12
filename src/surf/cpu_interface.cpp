@@ -15,43 +15,44 @@ void CpuModel::updateActionsStateLazy(double now, double /*delta*/)
 {
   void *_action;
   CpuActionLmmPtr action;
-  while ((xbt_heap_size(p_actionHeap) > 0)
-         && (double_equals(xbt_heap_maxkey(p_actionHeap), now))) {
-    action = dynamic_cast<CpuActionLmmPtr>(static_cast<ActionLmmPtr>(xbt_heap_pop(p_actionHeap)));
+  while ((xbt_heap_size(getActionHeap()) > 0)
+         && (double_equals(xbt_heap_maxkey(getActionHeap()), now))) {
+    action = dynamic_cast<CpuActionLmmPtr>(static_cast<ActionLmmPtr>(xbt_heap_pop(getActionHeap())));
     XBT_CDEBUG(surf_kernel, "Something happened to action %p", action);
 #ifdef HAVE_TRACING
     if (TRACE_is_enabled()) {
-      CpuPtr cpu = (CpuPtr) lmm_constraint_id(lmm_get_cnst_from_var(p_maxminSystem, action->p_variable, 0));
-      TRACE_surf_host_set_utilization(cpu->m_name, action->p_category,
-                                      lmm_variable_getvalue(action->p_variable),
-                                      action->m_lastUpdate,
-                                      now - action->m_lastUpdate);
+      CpuPtr cpu = static_cast<CpuPtr>(lmm_constraint_id(lmm_get_cnst_from_var(getMaxminSystem(), action->getVariable(), 0)));
+      TRACE_surf_host_set_utilization(cpu->getName(), action->getCategory(),
+                                      lmm_variable_getvalue(action->getVariable()),
+                                      action->getLastUpdate(),
+                                      now - action->getLastUpdate());
     }
 #endif
 
-    action->m_finish = surf_get_clock();
+    action->finish();
     XBT_CDEBUG(surf_kernel, "Action %p finished", action);
 
     action->updateEnergy();
 
     /* set the remains to 0 due to precision problems when updating the remaining amount */
-    action->m_remains = 0;
+    action->setRemains(0);
     action->setState(SURF_ACTION_DONE);
-    action->heapRemove(p_actionHeap); //FIXME: strange call since action was already popped
+    action->heapRemove(getActionHeap()); //FIXME: strange call since action was already popped
   }
 #ifdef HAVE_TRACING
   if (TRACE_is_enabled()) {
     //defining the last timestamp that we can safely dump to trace file
     //without losing the event ascending order (considering all CPU's)
     double smaller = -1;
-    xbt_swag_foreach(_action, p_runningActionSet) {
+    xbt_swag_t actionSet = getRunningActionSet();
+    xbt_swag_foreach(_action, actionSet) {
       action = dynamic_cast<CpuActionLmmPtr>(static_cast<ActionPtr>(_action));
         if (smaller < 0) {
-          smaller = action->m_lastUpdate;
+          smaller = action->getLastUpdate();
           continue;
         }
-        if (action->m_lastUpdate < smaller) {
-          smaller = action->m_lastUpdate;
+        if (action->getLastUpdate() < smaller) {
+          smaller = action->getLastUpdate();
         }
     }
     if (smaller > 0) {
@@ -66,40 +67,38 @@ void CpuModel::updateActionsStateFull(double now, double delta)
 {
   void *_action, *_next_action;
   CpuActionLmmPtr action = NULL;
-  xbt_swag_t running_actions = p_runningActionSet;
+  xbt_swag_t running_actions = getRunningActionSet();
 
   xbt_swag_foreach_safe(_action, _next_action, running_actions) {
     action = dynamic_cast<CpuActionLmmPtr>(static_cast<ActionPtr>(_action));
 #ifdef HAVE_TRACING
     if (TRACE_is_enabled()) {
       CpuPtr x = (CpuPtr) lmm_constraint_id(lmm_get_cnst_from_var
-                              (p_maxminSystem, action->p_variable, 0));
+                              (getMaxminSystem(), action->getVariable(), 0));
 
-      TRACE_surf_host_set_utilization(x->m_name,
-                                      action->p_category,
-                                      lmm_variable_getvalue(action->p_variable),
+      TRACE_surf_host_set_utilization(x->getName(),
+                                      action->getCategory(),
+                                      lmm_variable_getvalue(action->getVariable()),
                                       now - delta,
                                       delta);
       TRACE_last_timestamp_to_dump = now - delta;
     }
 #endif
 
-    double_update(&(action->m_remains),
-                  lmm_variable_getvalue(action->p_variable) * delta);
+    action->updateRemains(lmm_variable_getvalue(action->getVariable()) * delta);
 
 
-    if (action->m_maxDuration != NO_MAX_DURATION)
-      double_update(&(action->m_maxDuration), delta);
+    if (action->getMaxDuration() != NO_MAX_DURATION)
+      action->updateMaxDuration(delta);
 
 
-    if ((action->m_remains <= 0) &&
-        (lmm_get_variable_weight(action->p_variable) > 0)) {
-      action->m_finish = surf_get_clock();
+    if ((action->getRemains() <= 0) &&
+        (lmm_get_variable_weight(action->getVariable()) > 0)) {
+      action->finish();
       action->setState(SURF_ACTION_DONE);
-
-    } else if ((action->m_maxDuration != NO_MAX_DURATION) &&
-               (action->m_maxDuration <= 0)) {
-      action->m_finish = surf_get_clock();
+    } else if ((action->getMaxDuration() != NO_MAX_DURATION) &&
+               (action->getMaxDuration() <= 0)) {
+      action->finish();
       action->setState(SURF_ACTION_DONE);
     }
     action->updateEnergy();
@@ -111,6 +110,10 @@ void CpuModel::updateActionsStateFull(double now, double delta)
 /************
  * Resource *
  ************/
+
+Cpu::Cpu(int core, double powerPeak, double powerScale)
+ : m_core(core), m_powerPeak(powerPeak), m_powerScale(powerScale)
+{}
 
 double Cpu::getSpeed(double load)
 {
@@ -128,11 +131,18 @@ int Cpu::getCore()
   return m_core;
 }
 
-CpuLmm::CpuLmm(CpuModelPtr model, const char* name, xbt_dict_t properties, int core, double powerPeak, double powerScale)
-: ResourceLmm(), Cpu(model, name, properties, core, powerPeak, powerScale) {
+CpuLmm::CpuLmm(lmm_constraint_t constraint)
+: ResourceLmm(constraint), p_constraintCore(NULL), p_constraintCoreId(NULL)
+{}
+
+CpuLmm::CpuLmm(lmm_constraint_t constraint, int core, double powerPeak, double powerScale)
+ : ResourceLmm(constraint)
+ , Cpu(core, powerPeak, powerScale)
+{
   /* At now, we assume that a VM does not have a multicore CPU. */
   if (core > 1)
-    xbt_assert(model == surf_cpu_model_pm);
+    xbt_assert(getModel() == surf_cpu_model_pm);
+
 
   p_constraintCore = xbt_new(lmm_constraint_t, core);
   p_constraintCoreId = xbt_new(void*, core);
@@ -140,8 +150,8 @@ CpuLmm::CpuLmm(CpuModelPtr model, const char* name, xbt_dict_t properties, int c
   int i;
   for (i = 0; i < core; i++) {
     /* just for a unique id, never used as a string. */
-    p_constraintCoreId[i] = bprintf("%s:%i", name, i);
-    p_constraintCore[i] = lmm_constraint_new(p_model->p_maxminSystem, p_constraintCoreId[i], m_powerScale * m_powerPeak);
+    p_constraintCoreId[i] = bprintf("%s:%i", getName(), i);
+    p_constraintCore[i] = lmm_constraint_new(getModel()->getMaxminSystem(), p_constraintCoreId[i], m_powerScale * m_powerPeak);
   }
 }
 
@@ -163,11 +173,11 @@ void CpuActionLmm::updateRemainingLazy(double now)
 {
   double delta = 0.0;
 
-  xbt_assert(p_stateSet == p_model->p_runningActionSet,
+  xbt_assert(getStateSet() == getModel()->getRunningActionSet(),
       "You're updating an action that is not running.");
 
   /* bogus priority, skip it */
-  xbt_assert(m_priority > 0,
+  xbt_assert(getPriority() > 0,
       "You're updating an action that seems suspended.");
 
   delta = now - m_lastUpdate;
@@ -178,25 +188,25 @@ void CpuActionLmm::updateRemainingLazy(double now)
 
 #ifdef HAVE_TRACING
     if (TRACE_is_enabled()) {
-      CpuPtr cpu = (CpuPtr) lmm_constraint_id(lmm_get_cnst_from_var(p_model->p_maxminSystem, p_variable, 0));
-      TRACE_surf_host_set_utilization(cpu->m_name, p_category, m_lastValue, m_lastUpdate, now - m_lastUpdate);
+      CpuPtr cpu = static_cast<CpuPtr>(lmm_constraint_id(lmm_get_cnst_from_var(getModel()->getMaxminSystem(), getVariable(), 0)));
+      TRACE_surf_host_set_utilization(cpu->getName(), getCategory(), m_lastValue, m_lastUpdate, now - m_lastUpdate);
     }
 #endif
     XBT_CDEBUG(surf_kernel, "Updating action(%p): remains is now %lf", this, m_remains);
   }
 
   m_lastUpdate = now;
-  m_lastValue = lmm_variable_getvalue(p_variable);
+  m_lastValue = lmm_variable_getvalue(getVariable());
 }
 
 void CpuActionLmm::setBound(double bound)
 {
   XBT_IN("(%p,%g)", this, bound);
   m_bound = bound;
-  lmm_update_variable_bound(p_model->p_maxminSystem, p_variable, bound);
+  lmm_update_variable_bound(getModel()->getMaxminSystem(), getVariable(), bound);
 
-  if (p_model->p_updateMechanism == UM_LAZY)
-	heapRemove(p_model->p_actionHeap);
+  if (getModel()->getUpdateMechanism() == UM_LAZY)
+	heapRemove(getModel()->getActionHeap());
   XBT_OUT();
 }
 
@@ -222,7 +232,7 @@ void CpuActionLmm::setBound(double bound)
  */
 void CpuActionLmm::setAffinity(CpuPtr _cpu, unsigned long mask)
 {
-  lmm_variable_t var_obj = p_variable;
+  lmm_variable_t var_obj = getVariable();
   CpuLmmPtr cpu = reinterpret_cast<CpuLmmPtr>(_cpu);
   XBT_IN("(%p,%lx)", this, mask);
 
@@ -244,8 +254,8 @@ void CpuActionLmm::setAffinity(CpuPtr _cpu, unsigned long mask)
   }
 
   for (int i = 0; i < cpu->m_core; i++) {
-    XBT_DEBUG("clear affinity %p to cpu-%d@%s", this, i,  cpu->m_name);
-    lmm_shrink(cpu->p_model->p_maxminSystem, cpu->p_constraintCore[i], var_obj);
+    XBT_DEBUG("clear affinity %p to cpu-%d@%s", this, i,  cpu->getName());
+    lmm_shrink(cpu->getModel()->getMaxminSystem(), cpu->p_constraintCore[i], var_obj);
 
     unsigned long has_affinity = (1UL << i) & mask;
     if (has_affinity) {
@@ -258,12 +268,12 @@ void CpuActionLmm::setAffinity(CpuPtr _cpu, unsigned long mask)
        * accept affinity settings on a future host. We might be able to assign
        * zero to elem->value to maintain such inactive affinity settings in the
        * system. But, this will make the system complex. */
-      XBT_DEBUG("set affinity %p to cpu-%d@%s", this, i, cpu->m_name);
-      lmm_expand(cpu->p_model->p_maxminSystem, cpu->p_constraintCore[i], var_obj, 1.0);
+      XBT_DEBUG("set affinity %p to cpu-%d@%s", this, i, cpu->getName());
+      lmm_expand(cpu->getModel()->getMaxminSystem(), cpu->p_constraintCore[i], var_obj, 1.0);
     }
   }
 
-  if (cpu->p_model->p_updateMechanism == UM_LAZY) {
+  if (cpu->getModel()->getUpdateMechanism() == UM_LAZY) {
     /* FIXME (hypervisor): Do we need to do something for the LAZY mode? */
   }
 

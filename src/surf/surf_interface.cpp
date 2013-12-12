@@ -419,8 +419,8 @@ void surf_exit(void)
  * Model *
  *********/
 
-Model::Model(string name)
-  : p_maxminSystem(0),  m_name(name),
+Model::Model(const char *name)
+  : p_maxminSystem(0),  p_name(name),
     m_resOnCB(0), m_resOffCB(0),
     m_actCancelCB(0), m_actSuspendCB(0), m_actResumeCB(0)
 {
@@ -473,20 +473,20 @@ double Model::shareResourcesLazy(double now)
   while((action = static_cast<ActionLmmPtr>(xbt_swag_extract(p_modifiedSet)))) {
     int max_dur_flag = 0;
 
-    if (action->p_stateSet != p_runningActionSet)
+    if (action->getStateSet() != p_runningActionSet)
       continue;
 
     /* bogus priority, skip it */
-    if (action->m_priority <= 0)
+    if (action->getPriority() <= 0)
       continue;
 
     action->updateRemainingLazy(now);
 
     min = -1;
-    value = lmm_variable_getvalue(action->p_variable);
+    value = lmm_variable_getvalue(action->getVariable());
     if (value > 0) {
-      if (action->m_remains > 0) {
-        value = action->m_remains / value;
+      if (action->getRemains() > 0) {
+        value = action->getRemains() / value;
         min = now + value;
       } else {
         value = 0.0;
@@ -494,18 +494,18 @@ double Model::shareResourcesLazy(double now)
       }
     }
 
-    if ((action->m_maxDuration != NO_MAX_DURATION)
+    if ((action->getMaxDuration() != NO_MAX_DURATION)
         && (min == -1
-            || action->m_start +
-            action->m_maxDuration < min)) {
-      min = action->m_start +
-          action->m_maxDuration;
+            || action->getStartTime() +
+            action->getMaxDuration() < min)) {
+      min = action->getStartTime() +
+          action->getMaxDuration();
       max_dur_flag = 1;
     }
 
     XBT_DEBUG("Action(%p) Start %lf Finish %lf Max_duration %lf", action,
-        action->m_start, now + value,
-        action->m_maxDuration);
+        action->getStartTime(), now + value,
+        action->getMaxDuration());
 
     if (min != -1) {
       action->heapRemove(p_actionHeap);
@@ -544,8 +544,8 @@ double Model::shareResourcesMaxMin(xbt_swag_t running_actions,
 
   xbt_swag_foreach(_action, running_actions) {
     action = dynamic_cast<ActionLmmPtr>(static_cast<ActionPtr>(_action));
-    value = lmm_variable_getvalue(action->p_variable);
-    if ((value > 0) || (action->m_maxDuration >= 0))
+    value = lmm_variable_getvalue(action->getVariable());
+    if ((value > 0) || (action->getMaxDuration() >= 0))
       break;
   }
 
@@ -553,24 +553,24 @@ double Model::shareResourcesMaxMin(xbt_swag_t running_actions,
     return -1.0;
 
   if (value > 0) {
-    if (action->m_remains > 0)
-      min = action->m_remains / value;
+    if (action->getRemains() > 0)
+      min = action->getRemains() / value;
     else
       min = 0.0;
-    if ((action->m_maxDuration >= 0) && (action->m_maxDuration < min))
-      min = action->m_maxDuration;
+    if ((action->getMaxDuration() >= 0) && (action->getMaxDuration() < min))
+      min = action->getMaxDuration();
   } else
-    min = action->m_maxDuration;
+    min = action->getMaxDuration();
 
 
   for (_action = xbt_swag_getNext(static_cast<ActionPtr>(action), running_actions->offset);
        _action;
        _action = xbt_swag_getNext(static_cast<ActionPtr>(action), running_actions->offset)) {
 	action = dynamic_cast<ActionLmmPtr>(static_cast<ActionPtr>(_action));
-    value = lmm_variable_getvalue(action->p_variable);
+    value = lmm_variable_getvalue(action->getVariable());
     if (value > 0) {
-      if (action->m_remains > 0)
-        value = action->m_remains / value;
+      if (action->getRemains() > 0)
+        value = action->getRemains() / value;
       else
         value = 0.0;
       if (value < min) {
@@ -578,8 +578,8 @@ double Model::shareResourcesMaxMin(xbt_swag_t running_actions,
         XBT_DEBUG("Updating min (value) with %p: %f", action, min);
       }
     }
-    if ((action->m_maxDuration >= 0) && (action->m_maxDuration < min)) {
-      min = action->m_maxDuration;
+    if ((action->getMaxDuration() >= 0) && (action->getMaxDuration() < min)) {
+      min = action->getMaxDuration();
       XBT_DEBUG("Updating min (duration) with %p: %f", action, min);
     }
   }
@@ -664,32 +664,28 @@ void Model::notifyActionSuspend(ActionPtr a)
  * Resource *
  ************/
 
-Resource::Resource(surf_model_t model, const char *name, xbt_dict_t props)
-  : m_name(xbt_strdup(name)), m_properties(props), p_model(model), m_running(true)
-{}
-
 Resource::Resource()
-: m_name(NULL), m_properties(NULL), p_model(NULL)
+: p_name(NULL), p_properties(NULL), p_model(NULL)
 {}
 
-const char *Resource::getName()
-{
-  return m_name;
-}
+Resource::Resource(surf_model_t model, const char *name, xbt_dict_t props)
+ : p_name(xbt_strdup(name)), p_properties(props), p_model(model)
+ , m_running(true), m_stateCurrent(SURF_RESOURCE_ON)
+{}
 
-xbt_dict_t Resource::getProperties()
-{
-  return m_properties;
-}
+Resource::Resource(surf_model_t model, const char *name, xbt_dict_t props, e_surf_resource_state_t stateInit)
+ : p_name(xbt_strdup(name)), p_properties(props), p_model(model)
+ , m_running(true), m_stateCurrent(stateInit)
+{}
 
 e_surf_resource_state_t Resource::getState()
 {
-  return p_stateCurrent;
+  return m_stateCurrent;
 }
 
 void Resource::setState(e_surf_resource_state_t state)
 {
-  p_stateCurrent = state;
+  m_stateCurrent = state;
 }
 
 bool Resource::isOn()
@@ -701,7 +697,7 @@ void Resource::turnOn()
 {
   if (!m_running) {
     m_running = true;
-    p_model->notifyResourceTurnedOn(this);
+    getModel()->notifyResourceTurnedOn(this);
   }
 }
 
@@ -709,29 +705,17 @@ void Resource::turnOff()
 {
   if (m_running) {
     m_running = false;
-    p_model->notifyResourceTurnedOff(this);
+    getModel()->notifyResourceTurnedOff(this);
   }
 }
 
-ResourceLmm::ResourceLmm(lmm_system_t system,
-                         double constraint_value,
-                         tmgr_history_t history,
-                         e_surf_resource_state_t state_init,
-                         tmgr_trace_t state_trace,
-                         double metric_peak,
-                         tmgr_trace_t metric_trace)
-{
-  p_constraint = lmm_constraint_new(system, this, constraint_value);
-  p_stateCurrent = state_init;
-  if (state_trace)
-    p_stateEvent = tmgr_history_add_trace(history, state_trace, 0.0, 0, static_cast<ResourcePtr>(this));
-  p_power.scale = 1.0;
-  p_power.peak = metric_peak;
-  if (metric_trace)
-    p_power.event = tmgr_history_add_trace(history, metric_trace, 0.0, 0, static_cast<ResourcePtr>(this));
-  else
-    p_power.event = NULL;
-}
+ResourceLmm::ResourceLmm()
+ : p_constraint(NULL)
+{}
+
+ResourceLmm::ResourceLmm(lmm_constraint_t constraint)
+ : p_constraint(constraint)
+{}
 
 /**********
  * Action *
@@ -767,14 +751,22 @@ Action::Action(ModelPtr model, double cost, bool failed)
   p_stateHookup.prev = 0;
   p_stateHookup.next = 0;
   if (failed)
-    p_stateSet = p_model->p_failedActionSet;
+    p_stateSet = getModel()->getFailedActionSet();
   else
-    p_stateSet = p_model->p_runningActionSet;
+    p_stateSet = getModel()->getRunningActionSet();
 
   xbt_swag_insert(this, p_stateSet);
 }
 
-Action::~Action() {}
+Action::~Action() {
+#ifdef HAVE_TRACING
+  xbt_free(p_category);
+#endif
+}
+
+void Action::finish() {
+    m_finish = surf_get_clock();
+}
 
 int Action::unref(){
   DIE_IMPOSSIBLE;
@@ -790,13 +782,13 @@ void Action::recycle(){
 
 e_surf_action_state_t Action::getState()
 {
-  if (p_stateSet ==  p_model->p_readyActionSet)
+  if (p_stateSet ==  getModel()->getReadyActionSet())
     return SURF_ACTION_READY;
-  if (p_stateSet ==  p_model->p_runningActionSet)
+  if (p_stateSet ==  getModel()->getRunningActionSet())
     return SURF_ACTION_RUNNING;
-  if (p_stateSet ==  p_model->p_failedActionSet)
+  if (p_stateSet ==  getModel()->getFailedActionSet())
     return SURF_ACTION_FAILED;
-  if (p_stateSet ==  p_model->p_doneActionSet)
+  if (p_stateSet ==  getModel()->getDoneActionSet())
     return SURF_ACTION_DONE;
   return SURF_ACTION_NOT_IN_THE_SYSTEM;
 }
@@ -808,13 +800,13 @@ void Action::setState(e_surf_action_state_t state)
   xbt_swag_remove(this, p_stateSet);
 
   if (state == SURF_ACTION_READY)
-    p_stateSet = p_model->p_readyActionSet;
+    p_stateSet = getModel()->getReadyActionSet();
   else if (state == SURF_ACTION_RUNNING)
-    p_stateSet = p_model->p_runningActionSet;
+    p_stateSet = getModel()->getRunningActionSet();
   else if (state == SURF_ACTION_FAILED)
-    p_stateSet = p_model->p_failedActionSet;
+    p_stateSet = getModel()->getFailedActionSet();
   else if (state == SURF_ACTION_DONE)
-    p_stateSet = p_model->p_doneActionSet;
+    p_stateSet = getModel()->getDoneActionSet();
   else
     p_stateSet = NULL;
 
@@ -863,8 +855,8 @@ void ActionLmm::setMaxDuration(double duration)
 {
   XBT_IN("(%p,%g)", this, duration);
   m_maxDuration = duration;
-  if (p_model->p_updateMechanism == UM_LAZY)      // remove action from the heap
-    heapRemove(p_model->p_actionHeap);
+  if (getModel()->getUpdateMechanism() == UM_LAZY)      // remove action from the heap
+    heapRemove(getModel()->getActionHeap());
   XBT_OUT();
 }
 
@@ -874,18 +866,18 @@ void ActionLmm::setPriority(double priority)
 {
   XBT_IN("(%p,%g)", this, priority);
   m_priority = priority;
-  lmm_update_variable_weight(p_model->p_maxminSystem, p_variable, priority);
+  lmm_update_variable_weight(getModel()->getMaxminSystem(), getVariable(), priority);
 
-  if (p_model->p_updateMechanism == UM_LAZY)
-	heapRemove(p_model->p_actionHeap);
+  if (getModel()->getUpdateMechanism() == UM_LAZY)
+	heapRemove(getModel()->getActionHeap());
   XBT_OUT();
 }
 
 void ActionLmm::cancel(){
   setState(SURF_ACTION_FAILED);
-  if (p_model->p_updateMechanism == UM_LAZY) {
-    xbt_swag_remove(this, p_model->p_modifiedSet);
-    heapRemove(p_model->p_actionHeap);
+  if (getModel()->getUpdateMechanism() == UM_LAZY) {
+    xbt_swag_remove(this, getModel()->getModifiedSet());
+    heapRemove(getModel()->getActionHeap());
   }
 }
 
@@ -893,16 +885,13 @@ int ActionLmm::unref(){
   m_refcount--;
   if (!m_refcount) {
 	xbt_swag_remove(static_cast<ActionPtr>(this), p_stateSet);
-	if (p_variable)
-	  lmm_variable_free(p_model->p_maxminSystem, p_variable);
-	if (p_model->p_updateMechanism == UM_LAZY) {
+	if (getVariable())
+	  lmm_variable_free(getModel()->getMaxminSystem(), getVariable());
+	if (getModel()->getUpdateMechanism() == UM_LAZY) {
 	  /* remove from heap */
-	  heapRemove(p_model->p_actionHeap);
-	  xbt_swag_remove(this, p_model->p_modifiedSet);
+	  heapRemove(getModel()->getActionHeap());
+	  xbt_swag_remove(this, getModel()->getModifiedSet());
     }
-#ifdef HAVE_TRACING
-    xbt_free(p_category);
-#endif
 	delete this;
 	return 1;
   }
@@ -913,10 +902,10 @@ void ActionLmm::suspend()
 {
   XBT_IN("(%p)", this);
   if (m_suspended != 2) {
-    lmm_update_variable_weight(p_model->p_maxminSystem, p_variable, 0.0);
+    lmm_update_variable_weight(getModel()->getMaxminSystem(), getVariable(), 0.0);
     m_suspended = 1;
-    if (p_model->p_updateMechanism == UM_LAZY)
-      heapRemove(p_model->p_actionHeap);
+    if (getModel()->getUpdateMechanism() == UM_LAZY)
+      heapRemove(getModel()->getActionHeap());
   }
   XBT_OUT();
 }
@@ -925,10 +914,10 @@ void ActionLmm::resume()
 {
   XBT_IN("(%p)", this);
   if (m_suspended != 2) {
-    lmm_update_variable_weight(p_model->p_maxminSystem, p_variable, m_priority);
+    lmm_update_variable_weight(getModel()->getMaxminSystem(), getVariable(), m_priority);
     m_suspended = 0;
-    if (p_model->p_updateMechanism == UM_LAZY)
-      heapRemove(p_model->p_actionHeap);
+    if (getModel()->getUpdateMechanism() == UM_LAZY)
+      heapRemove(getModel()->getActionHeap());
   }
   XBT_OUT();
 }
@@ -971,7 +960,7 @@ double ActionLmm::getRemains()
 {
   XBT_IN("(%p)", this);
   /* update remains before return it */
-  if (p_model->p_updateMechanism == UM_LAZY)      /* update remains before return it */
+  if (getModel()->getUpdateMechanism() == UM_LAZY)      /* update remains before return it */
     updateRemainingLazy(surf_get_clock());
   XBT_OUT();
   return m_remains;
@@ -982,14 +971,14 @@ void ActionLmm::updateRemainingLazy(double now)
 {
   double delta = 0.0;
 
-  if(p_model == static_cast<ModelPtr>(surf_network_model))
+  if(getModel() == static_cast<ModelPtr>(surf_network_model))
   {
     if (m_suspended != 0)
       return;
   }
   else
   {
-    xbt_assert(p_stateSet == p_model->p_runningActionSet,
+    xbt_assert(p_stateSet == getModel()->getRunningActionSet(),
         "You're updating an action that is not running.");
 
       /* bogus priority, skip it */
@@ -1004,35 +993,35 @@ void ActionLmm::updateRemainingLazy(double now)
     double_update(&m_remains, m_lastValue * delta);
 
 #ifdef HAVE_TRACING
-    if (p_model == static_cast<ModelPtr>(surf_cpu_model_pm) && TRACE_is_enabled()) {
-      ResourcePtr cpu = static_cast<ResourcePtr>(lmm_constraint_id(lmm_get_cnst_from_var(p_model->p_maxminSystem, p_variable, 0)));
-      TRACE_surf_host_set_utilization(cpu->m_name, p_category, m_lastValue, m_lastUpdate, now - m_lastUpdate);
+    if (getModel() == static_cast<ModelPtr>(surf_cpu_model_pm) && TRACE_is_enabled()) {
+      ResourcePtr cpu = static_cast<ResourcePtr>(lmm_constraint_id(lmm_get_cnst_from_var(getModel()->getMaxminSystem(), getVariable(), 0)));
+      TRACE_surf_host_set_utilization(cpu->getName(), getCategory(), m_lastValue, m_lastUpdate, now - m_lastUpdate);
     }
 #endif
     XBT_DEBUG("Updating action(%p): remains is now %f", this, m_remains);
   }
 
-  if(p_model == static_cast<ModelPtr>(surf_network_model))
+  if(getModel() == static_cast<ModelPtr>(surf_network_model))
   {
     if (m_maxDuration != NO_MAX_DURATION)
       double_update(&m_maxDuration, delta);
 
     //FIXME: duplicated code
     if ((m_remains <= 0) &&
-        (lmm_get_variable_weight(p_variable) > 0)) {
-      m_finish = surf_get_clock();
+        (lmm_get_variable_weight(getVariable()) > 0)) {
+      finish();
       setState(SURF_ACTION_DONE);
-      heapRemove(p_model->p_actionHeap);
+      heapRemove(getModel()->getActionHeap());
     } else if (((m_maxDuration != NO_MAX_DURATION)
         && (m_maxDuration <= 0))) {
-      m_finish = surf_get_clock();
+      finish();
       setState(SURF_ACTION_DONE);
-      heapRemove(p_model->p_actionHeap);
+      heapRemove(getModel()->getActionHeap());
     }
   }
 
   m_lastUpdate = now;
-  m_lastValue = lmm_variable_getvalue(p_variable);
+  m_lastValue = lmm_variable_getvalue(getVariable());
 }
 
 /*void Action::cancel()

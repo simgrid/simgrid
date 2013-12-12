@@ -51,7 +51,7 @@ void WorkstationVMHL13Model::createResource(const char *name, void *ind_phys_wor
 
 static inline double get_solved_value(CpuActionLmmPtr cpu_action)
 {
-  return cpu_action->p_variable->value;
+  return cpu_action->getVariable()->value;
 }
 
 /* In the real world, processes on the guest operating system will be somewhat
@@ -118,7 +118,7 @@ double WorkstationVMHL13Model::shareResources(double now)
     if (!ws)
       continue;
     /* skip if it is not a virtual machine */
-    if (ws->p_model != static_cast<ModelPtr>(surf_vm_workstation_model))
+    if (ws->getModel() != static_cast<ModelPtr>(surf_vm_workstation_model))
       continue;
     xbt_assert(cpu, "cpu-less workstation");
 
@@ -127,13 +127,13 @@ double WorkstationVMHL13Model::shareResources(double now)
 
     double solved_value = get_solved_value(reinterpret_cast<CpuActionLmmPtr>(ws_vm->p_action));
     XBT_DEBUG("assign %f to vm %s @ pm %s", solved_value,
-        ws->m_name, ws_vm->p_subWs->m_name);
+        ws->getName(), ws_vm->p_subWs->getName());
 
     // TODO: check lmm_update_constraint_bound() works fine instead of the below manual substitution.
     // cpu_cas01->constraint->bound = solved_value;
-    xbt_assert(cpu->p_model == static_cast<ModelPtr>(surf_cpu_model_vm));
-    lmm_system_t vcpu_system = cpu->p_model->p_maxminSystem;
-    lmm_update_constraint_bound(vcpu_system, cpu->p_constraint, virt_overhead * solved_value);
+    xbt_assert(cpu->getModel() == static_cast<ModelPtr>(surf_cpu_model_vm));
+    lmm_system_t vcpu_system = cpu->getModel()->getMaxminSystem();
+    lmm_update_constraint_bound(vcpu_system, cpu->constraint(), virt_overhead * solved_value);
   }
 
 
@@ -150,7 +150,7 @@ double WorkstationVMHL13Model::shareResources(double now)
     /* skip if it is not a virtual machine */
     if (!ws_clm03)
       continue;
-    if (ws_clm03->p_model != surf_vm_workstation_model)
+    if (ws_clm03->getModel() != surf_vm_workstation_model)
       continue;
 
     /* It is a virtual machine, so we can cast it to workstation_VM2013_t */
@@ -164,7 +164,7 @@ double WorkstationVMHL13Model::shareResources(double now)
           );
 #endif
 #if 0
-      void *ind_sub_host = xbt_lib_get_elm_or_null(host_lib, ws_vm2013->sub_ws->generic_resource.name);
+      void *ind_sub_host = xbt_lib_get_elm_or_null(host_lib, ws_vm2013->sub_ws->generic_resource.getName);
       surf_cpu_model_pm->action_unref(ws_vm2013->cpu_action);
       /* FIXME: this means busy loop? */
       // ws_vm2013->cpu_action = surf_cpu_model_pm->extension.cpu.execute(ind_sub_host, GUESTOS_NOISE);
@@ -201,7 +201,7 @@ WorkstationVMHL13Lmm::WorkstationVMHL13Lmm(WorkstationVMModelPtr model, const ch
    * from the VM name, we have to make sure that the system does not call the
    * free callback for the network resource object. The network resource object
    * is still used by the physical machine. */
-  p_netElm = static_cast<RoutingEdgePtr>(xbt_lib_get_or_null(host_lib, sub_ws->m_name, ROUTING_HOST_LEVEL));
+  p_netElm = static_cast<RoutingEdgePtr>(xbt_lib_get_or_null(host_lib, sub_ws->getName(), ROUTING_HOST_LEVEL));
   xbt_lib_set(host_lib, name, ROUTING_HOST_LEVEL, p_netElm);
 
   p_subWs = sub_ws;
@@ -238,7 +238,7 @@ WorkstationVMHL13Lmm::WorkstationVMHL13Lmm(WorkstationVMModelPtr model, const ch
    * If you want to get a workstation_VM2013 object from host_lib, see
    * ws->generic_resouce.model->type first. If it is
    * SURF_MODEL_TYPE_VM_WORKSTATION, you can cast ws to vm_ws. */
-  XBT_INFO("Create VM(%s)@PM(%s) with %ld mounted disks", name, sub_ws->m_name, xbt_dynar_length(p_storage));
+  XBT_INFO("Create VM(%s)@PM(%s) with %ld mounted disks", name, sub_ws->getName(), xbt_dynar_length(p_storage));
 }
 
 /*
@@ -248,7 +248,7 @@ WorkstationVMHL13Lmm::WorkstationVMHL13Lmm(WorkstationVMModelPtr model, const ch
 WorkstationVMHL13Lmm::~WorkstationVMHL13Lmm()
 {
   /* ind_phys_workstation equals to smx_host_t */
-  surf_resource_t ind_vm_workstation = xbt_lib_get_elm_or_null(host_lib, m_name);
+  surf_resource_t ind_vm_workstation = xbt_lib_get_elm_or_null(host_lib, getName());
 
   /* Before clearing the entries in host_lib, we have to pick up resources. */
   CpuCas01LmmPtr cpu = dynamic_cast<CpuCas01LmmPtr>(
@@ -261,9 +261,9 @@ WorkstationVMHL13Lmm::~WorkstationVMHL13Lmm()
    * Do not call xbt_lib_remove() here. It deletes all levels of the key,
    * including MSG_HOST_LEVEL and others. We should unregister only what we know.
    */
-  xbt_lib_unset(host_lib, m_name, SURF_CPU_LEVEL, 0);
-  xbt_lib_unset(host_lib, m_name, ROUTING_HOST_LEVEL, 0);
-  xbt_lib_unset(host_lib, m_name, SURF_WKS_LEVEL, 0);
+  xbt_lib_unset(host_lib, getName(), SURF_CPU_LEVEL, 0);
+  xbt_lib_unset(host_lib, getName(), ROUTING_HOST_LEVEL, 0);
+  xbt_lib_unset(host_lib, getName(), SURF_WKS_LEVEL, 0);
 
   /* TODO: comment out when VM stroage is implemented. */
   // xbt_lib_unset(host_lib, name, SURF_STORAGE_LEVEL, 0);
@@ -334,9 +334,9 @@ void WorkstationVMHL13Lmm::migrate(surf_resource_t ind_dst_pm)
    WorkstationPtr ws_dst = dynamic_cast<WorkstationPtr>(
 	                                  static_cast<ResourcePtr>(
 	                                   surf_workstation_resource_priv(ind_dst_pm)));
-   const char *vm_name = m_name;
-   const char *pm_name_src = p_subWs->m_name;
-   const char *pm_name_dst = ws_dst->m_name;
+   const char *vm_name = getName();
+   const char *pm_name_src = p_subWs->getName();
+   const char *pm_name_dst = ws_dst->getName();
 
    xbt_assert(ws_dst);
 
@@ -377,8 +377,8 @@ void WorkstationVMHL13Lmm::migrate(surf_resource_t ind_dst_pm)
      e_surf_action_state_t state = p_action->getState();
      if (state != SURF_ACTION_DONE)
        XBT_CRITICAL("FIXME: may need a proper handling, %d", state);
-     if (p_action->m_remains > 0)
-       XBT_CRITICAL("FIXME: need copy the state(?), %f", p_action->m_remains);
+     if (p_action->getRemains() > 0)
+       XBT_CRITICAL("FIXME: need copy the state(?), %f", p_action->getRemains());
 
      int ret = p_action->unref();
      xbt_assert(ret == 1, "Bug: some resource still remains");
@@ -404,20 +404,20 @@ void WorkstationVMHL13Lmm::setAffinity(CpuLmmPtr cpu, unsigned long mask){
  **/
 surf_resource_t WorkstationVMHL13Lmm::getPm()
 {
-  return xbt_lib_get_elm_or_null(host_lib, p_subWs->m_name);
+  return xbt_lib_get_elm_or_null(host_lib, p_subWs->getName());
 }
 
 /* Adding a task to a VM updates the VCPU task on its physical machine. */
 ActionPtr WorkstationVMHL13Lmm::execute(double size)
 {
-  double old_cost = p_action->m_cost;
+  double old_cost = p_action->getCost();
   double new_cost = old_cost + size;
 
   XBT_DEBUG("VM(%s)@PM(%s): update dummy action's cost (%f -> %f)",
-      m_name, p_subWs->m_name,
+      getName(), p_subWs->getName(),
       old_cost, new_cost);
 
-  p_action->m_cost = new_cost;
+  p_action->setCost(new_cost);
 
   return WorkstationCLM03Lmm::execute(size);
 }

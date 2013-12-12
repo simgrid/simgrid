@@ -37,7 +37,7 @@ WorkstationVMLmm::WorkstationVMLmm(RoutingEdgePtr netElm, CpuPtr cpu)
 WorkstationVM::~WorkstationVM()
 {
   /* ind_phys_workstation equals to smx_host_t */
-  surf_resource_t ind_vm_workstation = xbt_lib_get_elm_or_null(host_lib, m_name);
+  surf_resource_t ind_vm_workstation = xbt_lib_get_elm_or_null(host_lib, getName());
 
   /* Before clearing the entries in host_lib, we have to pick up resources. */
   CpuCas01LmmPtr cpu = dynamic_cast<CpuCas01LmmPtr>(
@@ -50,9 +50,9 @@ WorkstationVM::~WorkstationVM()
    * Do not call xbt_lib_remove() here. It deletes all levels of the key,
    * including MSG_HOST_LEVEL and others. We should unregister only what we know.
    */
-  xbt_lib_unset(host_lib, m_name, SURF_CPU_LEVEL, 0);
-  xbt_lib_unset(host_lib, m_name, ROUTING_HOST_LEVEL, 0);
-  xbt_lib_unset(host_lib, m_name, SURF_WKS_LEVEL, 0);
+  xbt_lib_unset(host_lib, getName(), SURF_CPU_LEVEL, 0);
+  xbt_lib_unset(host_lib, getName(), ROUTING_HOST_LEVEL, 0);
+  xbt_lib_unset(host_lib, getName(), SURF_WKS_LEVEL, 0);
 
   /* TODO: comment out when VM stroage is implemented. */
   // xbt_lib_unset(host_lib, name, SURF_STORAGE_LEVEL, 0);
@@ -72,7 +72,7 @@ WorkstationVM::~WorkstationVM()
  **/
 surf_resource_t WorkstationVM::getPm()
 {
-  return xbt_lib_get_elm_or_null(host_lib, p_subWs->m_name);
+  return xbt_lib_get_elm_or_null(host_lib, p_subWs->getName());
 }
 
 /**********

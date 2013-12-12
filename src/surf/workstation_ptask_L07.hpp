@@ -115,15 +115,22 @@ public:
 
 class CpuL07 : public CpuLmm {
 public:
-  CpuL07(CpuL07ModelPtr model, const char* name, xbt_dict_t properties);
+  s_surf_metric_t p_power;
+  tmgr_trace_event_t p_stateEvent;
+
+public:
+  CpuL07(CpuL07ModelPtr model, const char* name, xbt_dict_t properties,
+		 double power_scale,
+		 double power_initial, tmgr_trace_t power_trace,
+		 e_surf_resource_state_t state_initial, tmgr_trace_t state_trace);
   bool isUsed();
   //bool isUsed() {DIE_IMPOSSIBLE;};
   void updateState(tmgr_trace_event_t event_type, double value, double date);
   e_surf_resource_state_t getState();
   double getSpeed(double load);
   double getAvailableSpeed();
-  ActionPtr execute(double /*size*/) {DIE_IMPOSSIBLE;};
-  ActionPtr sleep(double /*duration*/) {DIE_IMPOSSIBLE;};
+  CpuActionPtr execute(double /*size*/) {DIE_IMPOSSIBLE;};
+  CpuActionPtr sleep(double /*duration*/) {DIE_IMPOSSIBLE;};
 
   double getCurrentPowerPeak() {THROW_UNIMPLEMENTED;};
   double getPowerPeakAt(int /*pstate_index*/) {THROW_UNIMPLEMENTED;};
@@ -136,7 +143,15 @@ public:
 
 class LinkL07 : public NetworkLinkLmm {
 public:
-  LinkL07(NetworkL07ModelPtr model, const char* name, xbt_dict_t props);
+  LinkL07(NetworkL07ModelPtr model, const char* name, xbt_dict_t props,
+		  double bw_initial,
+          tmgr_trace_t bw_trace,
+          double lat_initial,
+          tmgr_trace_t lat_trace,
+          e_surf_resource_state_t
+          state_initial,
+          tmgr_trace_t state_trace,
+          e_surf_link_sharing_policy_t policy);
   ~LinkL07(){
   };
   bool isUsed();
@@ -155,6 +170,14 @@ public:
  * Action *
  **********/
 class WorkstationL07ActionLmm : public WorkstationActionLmm {
+  friend ActionPtr WorkstationL07::execute(double size);
+  friend ActionPtr WorkstationL07::sleep(double duration);
+  friend ActionPtr WorkstationL07Model::executeParallelTask(int workstation_nb,
+                                                     void **workstation_list,
+                                                   double
+                                                   *computation_amount, double
+                                                   *communication_amount,
+                                                   double rate);
 public:
   WorkstationL07ActionLmm(ModelPtr model, double cost, bool failed)
   : Action(model, cost, failed), WorkstationActionLmm() {};

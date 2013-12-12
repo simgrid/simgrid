@@ -319,41 +319,40 @@ void NetworkCm02Model::updateActionsStateLazy(double now, double /*delta*/)
     XBT_DEBUG("Something happened to action %p", action);
 #ifdef HAVE_TRACING
     if (TRACE_is_enabled()) {
-      int n = lmm_get_number_of_cnst_from_var(p_maxminSystem, action->p_variable);
+      int n = lmm_get_number_of_cnst_from_var(p_maxminSystem, action->getVariable());
       int i;
       for (i = 0; i < n; i++){
         lmm_constraint_t constraint = lmm_get_cnst_from_var(p_maxminSystem,
-                                                            action->p_variable,
+                                                            action->getVariable(),
                                                             i);
         NetworkCm02LinkLmmPtr link = static_cast<NetworkCm02LinkLmmPtr>(lmm_constraint_id(constraint));
-        TRACE_surf_link_set_utilization(link->m_name,
-                                        action->p_category,
-                                        (lmm_variable_getvalue(action->p_variable)*
+        TRACE_surf_link_set_utilization(link->getName(),
+                                        action->getCategory(),
+                                        (lmm_variable_getvalue(action->getVariable())*
                                             lmm_get_cnst_weight_from_var(p_maxminSystem,
-                                                action->p_variable,
+                                                action->getVariable(),
                                                 i)),
-                                        action->m_lastUpdate,
-                                        now - action->m_lastUpdate);
+                                        action->getLastUpdate(),
+                                        now - action->getLastUpdate());
       }
     }
 #endif
 
     // if I am wearing a latency hat
-    if (action->m_hat == LATENCY) {
+    if (action->getHat() == LATENCY) {
       XBT_DEBUG("Latency paid for action %p. Activating", action);
-      lmm_update_variable_weight(p_maxminSystem, action->p_variable, action->m_weight);
+      lmm_update_variable_weight(p_maxminSystem, action->getVariable(), action->m_weight);
       action->heapRemove(p_actionHeap);
-      action->m_lastUpdate = surf_get_clock();
+      action->refreshLastUpdate();
 
         // if I am wearing a max_duration or normal hat
-    } else if (action->m_hat == MAX_DURATION ||
-        action->m_hat == NORMAL) {
+    } else if (action->getHat() == MAX_DURATION ||
+        action->getHat() == NORMAL) {
         // no need to communicate anymore
         // assume that flows that reached max_duration have remaining of 0
-      action->m_finish = surf_get_clock();
       XBT_DEBUG("Action %p finished", action);
-      action->m_remains = 0;
-      action->m_finish = surf_get_clock();
+      action->setRemains(0);
+      action->finish();
       action->setState(SURF_ACTION_DONE);
       action->heapRemove(p_actionHeap);
 
@@ -387,7 +386,7 @@ ActionPtr NetworkCm02Model::communicate(RoutingEdgePtr src, RoutingEdgePtr dst,
 
   xbt_dynar_foreach(route, i, _link) {
 	link = dynamic_cast<NetworkCm02LinkLmmPtr>(static_cast<ResourcePtr>(_link));
-    if (link->p_stateCurrent == SURF_RESOURCE_OFF) {
+    if (link->getState() == SURF_RESOURCE_OFF) {
       failed = 1;
       break;
     }
@@ -396,7 +395,7 @@ ActionPtr NetworkCm02Model::communicate(RoutingEdgePtr src, RoutingEdgePtr dst,
 	  routing_platf->getRouteAndLatency(dst, src, &back_route, NULL);
     xbt_dynar_foreach(back_route, i, _link) {
       link = dynamic_cast<NetworkCm02LinkLmmPtr>(static_cast<ResourcePtr>(_link));
-      if (link->p_stateCurrent == SURF_RESOURCE_OFF) {
+      if (link->getState() == SURF_RESOURCE_OFF) {
         failed = 1;
         break;
       }
@@ -421,14 +420,12 @@ ActionPtr NetworkCm02Model::communicate(RoutingEdgePtr src, RoutingEdgePtr dst,
   if (sg_weight_S_parameter > 0) {
     xbt_dynar_foreach(route, i, _link) {
       link = dynamic_cast<NetworkCm02LinkLmmPtr>(static_cast<ResourcePtr>(_link));
-      action->m_weight +=
-         sg_weight_S_parameter /
-         (link->p_power.peak * link->p_power.scale);
+      action->m_weight += sg_weight_S_parameter / link->getBandwidth();
     }
   }
   xbt_dynar_foreach(route, i, _link) {
 	link = dynamic_cast<NetworkCm02LinkLmmPtr>(static_cast<ResourcePtr>(_link));
-    double bb = bandwidthFactor(size) * (link->p_power.peak * link->p_power.scale);
+    double bb = bandwidthFactor(size) * link->getBandwidth(); //(link->p_power.peak * link->p_power.scale);
     bandwidth_bound =
         (bandwidth_bound < 0.0) ? bb : min(bandwidth_bound, bb);
   }
@@ -465,21 +462,21 @@ ActionPtr NetworkCm02Model::communicate(RoutingEdgePtr src, RoutingEdgePtr dst,
     action->p_variable = lmm_variable_new(p_maxminSystem, action, 1.0, -1.0, constraints_per_variable);
 
   if (action->m_rate < 0) {
-    lmm_update_variable_bound(p_maxminSystem, action->p_variable, (action->m_latCurrent > 0) ? sg_tcp_gamma / (2.0 * action->m_latCurrent) : -1.0);
+    lmm_update_variable_bound(p_maxminSystem, action->getVariable(), (action->m_latCurrent > 0) ? sg_tcp_gamma / (2.0 * action->m_latCurrent) : -1.0);
   } else {
-    lmm_update_variable_bound(p_maxminSystem, action->p_variable, (action->m_latCurrent > 0) ? min(action->m_rate, sg_tcp_gamma / (2.0 * action->m_latCurrent)) : action->m_rate);
+    lmm_update_variable_bound(p_maxminSystem, action->getVariable(), (action->m_latCurrent > 0) ? min(action->m_rate, sg_tcp_gamma / (2.0 * action->m_latCurrent)) : action->m_rate);
   }
 
   xbt_dynar_foreach(route, i, _link) {
 	link = dynamic_cast<NetworkCm02LinkLmmPtr>(static_cast<ResourcePtr>(_link));
-    lmm_expand(p_maxminSystem, link->p_constraint, action->p_variable, 1.0);
+    lmm_expand(p_maxminSystem, link->constraint(), action->getVariable(), 1.0);
   }
 
   if (sg_network_crosstraffic == 1) {
     XBT_DEBUG("Fullduplex active adding backward flow using 5%%");
     xbt_dynar_foreach(back_route, i, _link) {
       link = dynamic_cast<NetworkCm02LinkLmmPtr>(static_cast<ResourcePtr>(_link));
-      lmm_expand(p_maxminSystem, link->p_constraint, action->p_variable, .05);
+      lmm_expand(p_maxminSystem, link->constraint(), action->getVariable(), .05);
     }
   }
 
@@ -506,14 +503,23 @@ NetworkCm02LinkLmm::NetworkCm02LinkLmm(NetworkCm02ModelPtr model, const char *na
 	                           tmgr_trace_t lat_trace,
 	                           e_surf_link_sharing_policy_t policy)
 : Resource(model, name, props),
-  NetworkLinkLmm(system, constraint_value, history, state_init, state_trace, metric_peak, metric_trace)
+  NetworkLinkLmm(lmm_constraint_new(system, this, constraint_value), history, state_trace)
 {
+  m_stateCurrent = state_init;
+
+  p_power.scale = 1.0;
+  p_power.peak = metric_peak;
+  if (metric_trace)
+    p_power.event = tmgr_history_add_trace(history, metric_trace, 0.0, 0, static_cast<ResourcePtr>(this));
+  else
+    p_power.event = NULL;
+
   m_latCurrent = lat_initial;
   if (lat_trace)
 	p_latEvent = tmgr_history_add_trace(history, lat_trace, 0.0, 0, static_cast<ResourcePtr>(this));
 
   if (policy == SURF_LINK_FATPIPE)
-	lmm_constraint_shared(p_constraint);
+	lmm_constraint_shared(constraint());
 }
 
 
@@ -534,19 +540,19 @@ void NetworkCm02LinkLmm::updateState(tmgr_trace_event_t event_type,
     NetworkCm02ActionLmmPtr action = NULL;
 
     p_power.peak = value;
-    lmm_update_constraint_bound(p_model->p_maxminSystem,
-                                p_constraint,
+    lmm_update_constraint_bound(getModel()->getMaxminSystem(),
+                                constraint(),
                                 sg_bandwidth_factor *
                                 (p_power.peak * p_power.scale));
 #ifdef HAVE_TRACING
-    TRACE_surf_link_set_bandwidth(date, m_name, sg_bandwidth_factor * p_power.peak * p_power.scale);
+    TRACE_surf_link_set_bandwidth(date, getName(), sg_bandwidth_factor * p_power.peak * p_power.scale);
 #endif
     if (sg_weight_S_parameter > 0) {
-      while ((var = lmm_get_var_from_cnst(p_model->p_maxminSystem, p_constraint, &elem))) {
+      while ((var = lmm_get_var_from_cnst(getModel()->getMaxminSystem(), constraint(), &elem))) {
         action = (NetworkCm02ActionLmmPtr) lmm_variable_id(var);
         action->m_weight += delta;
-        if (!action->m_suspended)
-          lmm_update_variable_weight(p_model->p_maxminSystem, action->p_variable, action->m_weight);
+        if (!action->isSuspended())
+          lmm_update_variable_weight(getModel()->getMaxminSystem(), action->getVariable(), action->m_weight);
       }
     }
     if (tmgr_trace_event_free(event_type))
@@ -558,14 +564,14 @@ void NetworkCm02LinkLmm::updateState(tmgr_trace_event_t event_type,
     NetworkCm02ActionLmmPtr action = NULL;
 
     m_latCurrent = value;
-    while ((var = lmm_get_var_from_cnst(p_model->p_maxminSystem, p_constraint, &elem))) {
+    while ((var = lmm_get_var_from_cnst(getModel()->getMaxminSystem(), constraint(), &elem))) {
       action = (NetworkCm02ActionLmmPtr) lmm_variable_id(var);
       action->m_latCurrent += delta;
       action->m_weight += delta;
       if (action->m_rate < 0)
-        lmm_update_variable_bound(p_model->p_maxminSystem, action->p_variable, sg_tcp_gamma / (2.0 * action->m_latCurrent));
+        lmm_update_variable_bound(getModel()->getMaxminSystem(), action->getVariable(), sg_tcp_gamma / (2.0 * action->m_latCurrent));
       else {
-        lmm_update_variable_bound(p_model->p_maxminSystem, action->p_variable,
+        lmm_update_variable_bound(getModel()->getMaxminSystem(), action->getVariable(),
                                   min(action->m_rate, sg_tcp_gamma / (2.0 * action->m_latCurrent)));
 
         if (action->m_rate < sg_tcp_gamma / (2.0 * action->m_latCurrent)) {
@@ -575,27 +581,27 @@ void NetworkCm02LinkLmm::updateState(tmgr_trace_event_t event_type,
                    action->m_latCurrent);
         }
       }
-      if (!action->m_suspended)
-        lmm_update_variable_weight(p_model->p_maxminSystem, action->p_variable, action->m_weight);
+      if (!action->isSuspended())
+        lmm_update_variable_weight(getModel()->getMaxminSystem(), action->getVariable(), action->m_weight);
 
     }
     if (tmgr_trace_event_free(event_type))
       p_latEvent = NULL;
   } else if (event_type == p_stateEvent) {
     if (value > 0)
-      p_stateCurrent = SURF_RESOURCE_ON;
+      m_stateCurrent = SURF_RESOURCE_ON;
     else {
-      lmm_constraint_t cnst = p_constraint;
+      lmm_constraint_t cnst = constraint();
       lmm_variable_t var = NULL;
       lmm_element_t elem = NULL;
 
-      p_stateCurrent = SURF_RESOURCE_OFF;
-      while ((var = lmm_get_var_from_cnst(p_model->p_maxminSystem, cnst, &elem))) {
+      m_stateCurrent = SURF_RESOURCE_OFF;
+      while ((var = lmm_get_var_from_cnst(getModel()->getMaxminSystem(), cnst, &elem))) {
         ActionPtr action = (ActionPtr) lmm_variable_id(var);
 
         if (action->getState() == SURF_ACTION_RUNNING ||
             action->getState() == SURF_ACTION_READY) {
-          action->m_finish = date;
+          action->setFinishTime(date);
           action->setState(SURF_ACTION_FAILED);
         }
       }
@@ -609,7 +615,7 @@ void NetworkCm02LinkLmm::updateState(tmgr_trace_event_t event_type,
 
   XBT_DEBUG
       ("There were a resource state event, need to update actions related to the constraint (%p)",
-       p_constraint);
+       constraint());
   return;
 }
 
@@ -636,20 +642,20 @@ void NetworkCm02ActionLmm::updateRemainingLazy(double now)
     double_update(&m_maxDuration, delta);
 
   if (m_remains <= 0 &&
-      (lmm_get_variable_weight(p_variable) > 0)) {
-    m_finish = surf_get_clock();
+      (lmm_get_variable_weight(getVariable()) > 0)) {
+    finish();
     setState(SURF_ACTION_DONE);
 
-    heapRemove(p_model->p_actionHeap);
+    heapRemove(getModel()->getActionHeap());
   } else if (((m_maxDuration != NO_MAX_DURATION)
       && (m_maxDuration <= 0))) {
-    m_finish = surf_get_clock();
+    finish();
     setState(SURF_ACTION_DONE);
-    heapRemove(p_model->p_actionHeap);
+    heapRemove(getModel()->getActionHeap());
   }
 
   m_lastUpdate = now;
-  m_lastValue = lmm_variable_getvalue(p_variable);
+  m_lastValue = lmm_variable_getvalue(getVariable());
 }
 void NetworkCm02ActionLmm::recycle()
 {

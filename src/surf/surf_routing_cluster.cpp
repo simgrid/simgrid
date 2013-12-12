@@ -90,7 +90,7 @@ void AsCluster::getGraph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges)
   routerNode = new_xbt_graph_node(graph, link_name, nodes);
 
   if(p_backbone) {
-    const char *link_nameR = p_backbone->m_name;
+    const char *link_nameR = p_backbone->getName();
     backboneNode = new_xbt_graph_node(graph, link_nameR, nodes);
 
     new_xbt_graph_edge(graph, routerNode, backboneNode, edges);
@@ -106,7 +106,7 @@ void AsCluster::getGraph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges)
 
       if (info.link_up) {     // link up
 
-        const char *link_name = ((ResourcePtr) info.link_up)->m_name;
+        const char *link_name = static_cast<ResourcePtr>(info.link_up)->getName();
         current = new_xbt_graph_node(graph, link_name, nodes);
         new_xbt_graph_edge(graph, previous, current, edges);
 
@@ -119,7 +119,7 @@ void AsCluster::getGraph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges)
       }
 
       if (info.link_down) {    // link down
-        const char *link_name = ((ResourcePtr) info.link_down)->m_name;
+        const char *link_name = static_cast<ResourcePtr>(info.link_down)->getName();
         current = new_xbt_graph_node(graph, link_name, nodes);
         new_xbt_graph_edge(graph, previous, current, edges);
 

@@ -41,7 +41,7 @@ class NetworkModel : public Model {
 public:
   NetworkModel() : Model("network") {
   };
-  NetworkModel(string name) : Model(name) {
+  NetworkModel(const char *name) : Model(name) {
 	f_networkSolve = lmm_solve;
 	m_haveGap = false;
   };
@@ -94,21 +94,15 @@ public:
 };
 
 class NetworkLinkLmm : public ResourceLmm, public NetworkLink {
+protected:
 public:
   NetworkLinkLmm() {};
-  NetworkLinkLmm(lmm_system_t system,
-	             double constraint_value,
-	             tmgr_history_t history,
-	             e_surf_resource_state_t state_init,
-	             tmgr_trace_t state_trace,
-	             double metric_peak,
-	             tmgr_trace_t metric_trace)
- : ResourceLmm(system, constraint_value, history, state_init, state_trace, metric_peak, metric_trace)
-{
-}
+  NetworkLinkLmm(lmm_constraint_t constraint, tmgr_history_t history, tmgr_trace_t state_trace);
   bool isShared();
   bool isUsed();
   double getBandwidth();
+  tmgr_trace_event_t p_stateEvent;
+  s_surf_metric_t p_power;
 };
 
 /**********

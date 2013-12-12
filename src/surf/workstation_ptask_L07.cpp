@@ -46,7 +46,7 @@ double WorkstationL07Model::shareResources(double /*now*/)
   void *_action;
   WorkstationL07ActionLmmPtr action;
 
-  xbt_swag_t running_actions = this->p_runningActionSet;
+  xbt_swag_t running_actions = getRunningActionSet();
   double min = this->shareResourcesMaxMin(running_actions,
                                               ptask_maxmin_system,
                                               bottleneck_solve);
@@ -57,11 +57,11 @@ double WorkstationL07Model::shareResources(double /*now*/)
       if (min < 0) {
         min = action->m_latency;
         XBT_DEBUG("Updating min (value) with %p (start %f): %f", action,
-               action->m_start, min);
+               action->getStartTime(), min);
       } else if (action->m_latency < min) {
         min = action->m_latency;
         XBT_DEBUG("Updating min (latency) with %p (start %f): %f", action,
-               action->m_start, min);
+               action->getStartTime(), min);
       }
     }
   }
@@ -77,7 +77,8 @@ void WorkstationL07Model::updateActionsState(double /*now*/, double delta)
   void *_action, *_next_action;
   WorkstationL07ActionLmmPtr action;
 
-  xbt_swag_foreach_safe(_action, _next_action, p_runningActionSet) {
+  xbt_swag_t actionSet = getRunningActionSet();
+  xbt_swag_foreach_safe(_action, _next_action, actionSet) {
     action = dynamic_cast<WorkstationL07ActionLmmPtr>(static_cast<ActionPtr>(_action));
 
     deltap = delta;
@@ -89,27 +90,27 @@ void WorkstationL07Model::updateActionsState(double /*now*/, double delta)
         double_update(&(deltap), action->m_latency);
         action->m_latency = 0.0;
       }
-      if ((action->m_latency == 0.0) && (action->m_suspended == 0)) {
+      if ((action->m_latency == 0.0) && (action->isSuspended() == 0)) {
         action->updateBound();
-        lmm_update_variable_weight(ptask_maxmin_system, action->p_variable, 1.0);
+        lmm_update_variable_weight(ptask_maxmin_system, action->getVariable(), 1.0);
       }
     }
     XBT_DEBUG("Action (%p) : remains (%g) updated by %g.",
-           action, action->m_remains, lmm_variable_getvalue(action->p_variable) * delta);
-    double_update(&(action->m_remains), lmm_variable_getvalue(action->p_variable) * delta);
+           action, action->getRemains(), lmm_variable_getvalue(action->getVariable()) * delta);
+    action->updateRemains(lmm_variable_getvalue(action->getVariable()) * delta);
 
-    if (action->m_maxDuration != NO_MAX_DURATION)
-      double_update(&(action->m_maxDuration), delta);
+    if (action->getMaxDuration() != NO_MAX_DURATION)
+      action->updateMaxDuration(delta);
 
     XBT_DEBUG("Action (%p) : remains (%g).",
-           action, action->m_remains);
-    if ((action->m_remains <= 0) &&
-        (lmm_get_variable_weight(action->p_variable) > 0)) {
-      action->m_finish = surf_get_clock();
+           action, action->getRemains());
+    if ((action->getRemains() <= 0) &&
+        (lmm_get_variable_weight(action->getVariable()) > 0)) {
+      action->finish();
       action->setState(SURF_ACTION_DONE);
-    } else if ((action->m_maxDuration != NO_MAX_DURATION) &&
-               (action->m_maxDuration <= 0)) {
-      action->m_finish = surf_get_clock();
+    } else if ((action->getMaxDuration() != NO_MAX_DURATION) &&
+               (action->getMaxDuration() <= 0)) {
+      action->finish();
      action->setState(SURF_ACTION_DONE);
     } else {
       /* Need to check that none of the model has failed */
@@ -117,13 +118,13 @@ void WorkstationL07Model::updateActionsState(double /*now*/, double delta)
       int i = 0;
       void *constraint_id = NULL;
 
-      while ((cnst = lmm_get_cnst_from_var(ptask_maxmin_system, action->p_variable,
+      while ((cnst = lmm_get_cnst_from_var(ptask_maxmin_system, action->getVariable(),
                                     i++))) {
         constraint_id = lmm_constraint_id(cnst);
 
-        if (static_cast<WorkstationLmmPtr>(constraint_id)->p_stateCurrent == SURF_RESOURCE_OFF) {
+        if (static_cast<WorkstationLmmPtr>(constraint_id)->getState() == SURF_RESOURCE_OFF) {
           XBT_DEBUG("Action (%p) Failed!!", action);
-          action->m_finish = surf_get_clock();
+          action->finish();
           action->setState(SURF_ACTION_FAILED);
           break;
         }
@@ -175,7 +176,7 @@ ActionPtr WorkstationL07Model::executeParallelTask(int workstation_nb,
 
         xbt_dynar_foreach(route, cpt, _link) {
            link = dynamic_cast<LinkL07Ptr>(static_cast<ResourcePtr>(_link));
-           xbt_dict_set(ptask_parallel_task_link_set, link->m_name, link, NULL);
+           xbt_dict_set(ptask_parallel_task_link_set, link->getName(), link, NULL);
         }
       }
     }
@@ -205,13 +206,13 @@ ActionPtr WorkstationL07Model::executeParallelTask(int workstation_nb,
                        workstation_nb + nb_link);
 
   if (action->m_latency > 0)
-    lmm_update_variable_weight(ptask_maxmin_system, action->p_variable, 0.0);
+    lmm_update_variable_weight(ptask_maxmin_system, action->getVariable(), 0.0);
 
   for (i = 0; i < workstation_nb; i++)
     lmm_expand(ptask_maxmin_system,
     	       static_cast<CpuLmmPtr>(dynamic_cast<WorkstationL07Ptr>(
-    		                           static_cast<ResourcePtr>(workstation_list[i]))->p_cpu)->p_constraint,
-               action->p_variable, computation_amount[i]);
+    		                           static_cast<ResourcePtr>(workstation_list[i]))->p_cpu)->constraint(),
+               action->getVariable(), computation_amount[i]);
 
   for (i = 0; i < workstation_nb; i++) {
     for (j = 0; j < workstation_nb; j++) {
@@ -230,16 +231,16 @@ ActionPtr WorkstationL07Model::executeParallelTask(int workstation_nb,
 
       xbt_dynar_foreach(route, cpt, _link) {
         link = dynamic_cast<LinkL07Ptr>(static_cast<ResourcePtr>(_link));
-        lmm_expand_add(ptask_maxmin_system, link->p_constraint,
-                       action->p_variable,
+        lmm_expand_add(ptask_maxmin_system, link->constraint(),
+                       action->getVariable(),
                        communication_amount[i * workstation_nb + j]);
       }
     }
   }
 
   if (nb_link + nb_host == 0) {
-    action->m_cost = 1.0;
-    action->m_remains = 0.0;
+    action->setCost(1.0);
+    action->setRemains(0.0);
   }
 
   return static_cast<ActionPtr>(action);
@@ -299,29 +300,12 @@ ResourcePtr CpuL07Model::createResource(const char *name, double power_scale,
                                tmgr_trace_t state_trace,
                                xbt_dict_t cpu_properties)
 {
-  CpuL07Ptr cpu = NULL;
   xbt_assert(!surf_workstation_resource_priv(surf_workstation_resource_by_name(name)),
               "Host '%s' declared several times in the platform file.",
               name);
 
-  cpu = new CpuL07(this, name, cpu_properties);
-
-  cpu->p_power.scale = power_scale;
-  xbt_assert(cpu->p_power.scale > 0, "Power has to be >0");
-
-  cpu->m_powerCurrent = power_initial;
-  if (power_trace)
-    cpu->p_power.event =
-        tmgr_history_add_trace(history, power_trace, 0.0, 0, static_cast<ResourcePtr>(cpu));
-
-  cpu->p_stateCurrent = state_initial;
-  if (state_trace)
-    cpu->p_stateEvent =
-        tmgr_history_add_trace(history, state_trace, 0.0, 0, static_cast<ResourcePtr>(cpu));
-
-  cpu->p_constraint =
-      lmm_constraint_new(ptask_maxmin_system, cpu,
-                         cpu->m_powerCurrent * cpu->p_power.scale);
+  CpuL07Ptr cpu = new CpuL07(this, name, cpu_properties,
+		                     power_scale, power_initial, power_trace,state_initial, state_trace);
 
   xbt_lib_set(host_lib, name, SURF_CPU_LEVEL, static_cast<ResourcePtr>(cpu));
 
@@ -336,33 +320,18 @@ NetworkLinkPtr NetworkL07Model::createResource(const char *name,
                                  e_surf_resource_state_t
                                  state_initial,
                                  tmgr_trace_t state_trace,
-                                 e_surf_link_sharing_policy_t
-                                 policy, xbt_dict_t properties)
+                                 e_surf_link_sharing_policy_t policy,
+                                 xbt_dict_t properties)
 {
-  LinkL07Ptr nw_link = new LinkL07(this, name, properties);
   xbt_assert(!xbt_lib_get_or_null(link_lib, name, SURF_LINK_LEVEL),
-              "Link '%s' declared several times in the platform file.",
-              name);
+	              "Link '%s' declared several times in the platform file.",
+	              name);
 
-  nw_link->m_bwCurrent = bw_initial;
-  if (bw_trace)
-    nw_link->p_bwEvent =
-        tmgr_history_add_trace(history, bw_trace, 0.0, 0, static_cast<ResourcePtr>(nw_link));
-  nw_link->p_stateCurrent = state_initial;
-  nw_link->m_latCurrent = lat_initial;
-  if (lat_trace)
-    nw_link->p_latEvent =
-        tmgr_history_add_trace(history, lat_trace, 0.0, 0, static_cast<ResourcePtr>(nw_link));
-  if (state_trace)
-    nw_link->p_stateEvent =
-        tmgr_history_add_trace(history, state_trace, 0.0, 0, static_cast<ResourcePtr>(nw_link));
-
-  nw_link->p_constraint =
-      lmm_constraint_new(ptask_maxmin_system, nw_link,
-                         nw_link->m_bwCurrent);
-
-  if (policy == SURF_LINK_FATPIPE)
-    lmm_constraint_shared(nw_link->p_constraint);
+  LinkL07Ptr nw_link = new LinkL07(this, name, properties,
+	                               bw_initial, bw_trace,
+	                               lat_initial, lat_trace,
+	                               state_initial, state_trace,
+	                               policy);
 
   xbt_lib_set(link_lib, name, SURF_LINK_LEVEL, static_cast<ResourcePtr>(nw_link));
   return nw_link;
@@ -469,36 +438,70 @@ double WorkstationL07::getConsumedEnergy()
 	return 0.0;
 }
 
-CpuL07::CpuL07(CpuL07ModelPtr model, const char* name, xbt_dict_t props)
- : Resource(model, name, props), CpuLmm() {
+CpuL07::CpuL07(CpuL07ModelPtr model, const char* name, xbt_dict_t props,
+	           double power_scale,
+		       double power_initial, tmgr_trace_t power_trace,
+		       e_surf_resource_state_t state_initial, tmgr_trace_t state_trace)
+ : Resource(model, name, props)
+ , CpuLmm(lmm_constraint_new(ptask_maxmin_system, this, power_initial * power_scale))
+{
+  p_power.scale = power_scale;
+  xbt_assert(p_power.scale > 0, "Power has to be >0");
 
+  m_powerCurrent = power_initial;
+  if (power_trace)
+	p_power.event = tmgr_history_add_trace(history, power_trace, 0.0, 0, static_cast<ResourcePtr>(this));
+
+  m_stateCurrent = state_initial;
+  if (state_trace)
+	p_stateEvent = tmgr_history_add_trace(history, state_trace, 0.0, 0, static_cast<ResourcePtr>(this));
 }
 
-LinkL07::LinkL07(NetworkL07ModelPtr model, const char* name, xbt_dict_t props)
- : Resource(model, name, props), NetworkLinkLmm() {
+LinkL07::LinkL07(NetworkL07ModelPtr model, const char* name, xbt_dict_t props,
+		         double bw_initial,
+		         tmgr_trace_t bw_trace,
+		         double lat_initial,
+		         tmgr_trace_t lat_trace,
+		         e_surf_resource_state_t state_initial,
+		         tmgr_trace_t state_trace,
+		         e_surf_link_sharing_policy_t policy)
+ : Resource(model, name, props)
+ , NetworkLinkLmm(lmm_constraint_new(ptask_maxmin_system, this, bw_initial), history, state_trace)
+{
+  m_bwCurrent = bw_initial;
+  if (bw_trace)
+    p_bwEvent = tmgr_history_add_trace(history, bw_trace, 0.0, 0, static_cast<ResourcePtr>(this));
 
+  m_stateCurrent = state_initial;
+  m_latCurrent = lat_initial;
+
+  if (lat_trace)
+	p_latEvent = tmgr_history_add_trace(history, lat_trace, 0.0, 0, static_cast<ResourcePtr>(this));
+
+  if (policy == SURF_LINK_FATPIPE)
+	lmm_constraint_shared(constraint());
 }
 
 bool CpuL07::isUsed(){
-  return lmm_constraint_used(ptask_maxmin_system, p_constraint);
+  return lmm_constraint_used(ptask_maxmin_system, constraint());
 }
 
 bool LinkL07::isUsed(){
-  return lmm_constraint_used(ptask_maxmin_system, p_constraint);
+  return lmm_constraint_used(ptask_maxmin_system, constraint());
 }
 
 void CpuL07::updateState(tmgr_trace_event_t event_type, double value, double /*date*/){
-  XBT_DEBUG("Updating cpu %s (%p) with value %g", m_name, this, value);
+  XBT_DEBUG("Updating cpu %s (%p) with value %g", getName(), this, value);
   if (event_type == p_power.event) {
 	m_powerCurrent = value;
-    lmm_update_constraint_bound(ptask_maxmin_system, p_constraint, m_powerCurrent * p_power.scale);
+    lmm_update_constraint_bound(ptask_maxmin_system, constraint(), m_powerCurrent * p_power.scale);
     if (tmgr_trace_event_free(event_type))
       p_power.event = NULL;
   } else if (event_type == p_stateEvent) {
     if (value > 0)
-      p_stateCurrent = SURF_RESOURCE_ON;
+      m_stateCurrent = SURF_RESOURCE_ON;
     else
-      p_stateCurrent = SURF_RESOURCE_OFF;
+      m_stateCurrent = SURF_RESOURCE_OFF;
     if (tmgr_trace_event_free(event_type))
       p_stateEvent = NULL;
   } else {
@@ -509,10 +512,10 @@ void CpuL07::updateState(tmgr_trace_event_t event_type, double value, double /*d
 }
 
 void LinkL07::updateState(tmgr_trace_event_t event_type, double value, double date){
-  XBT_DEBUG("Updating link %s (%p) with value=%f for date=%g", m_name, this, value, date);
+  XBT_DEBUG("Updating link %s (%p) with value=%f for date=%g", getName(), this, value, date);
   if (event_type == p_bwEvent) {
     m_bwCurrent = value;
-    lmm_update_constraint_bound(ptask_maxmin_system, p_constraint, m_bwCurrent);
+    lmm_update_constraint_bound(ptask_maxmin_system, constraint(), m_bwCurrent);
     if (tmgr_trace_event_free(event_type))
       p_bwEvent = NULL;
   } else if (event_type == p_latEvent) {
@@ -521,7 +524,7 @@ void LinkL07::updateState(tmgr_trace_event_t event_type, double value, double da
     lmm_element_t elem = NULL;
 
     m_latCurrent = value;
-    while ((var = lmm_get_var_from_cnst(ptask_maxmin_system, p_constraint, &elem))) {
+    while ((var = lmm_get_var_from_cnst(ptask_maxmin_system, constraint(), &elem))) {
       action = (WorkstationL07ActionLmmPtr) lmm_variable_id(var);
       action->updateBound();
     }
@@ -529,9 +532,9 @@ void LinkL07::updateState(tmgr_trace_event_t event_type, double value, double da
       p_latEvent = NULL;
   } else if (event_type == p_stateEvent) {
     if (value > 0)
-      p_stateCurrent = SURF_RESOURCE_ON;
+      m_stateCurrent = SURF_RESOURCE_ON;
     else
-      p_stateCurrent = SURF_RESOURCE_OFF;
+      m_stateCurrent = SURF_RESOURCE_OFF;
     if (tmgr_trace_event_free(event_type))
       p_stateEvent = NULL;
   } else {
@@ -543,12 +546,12 @@ void LinkL07::updateState(tmgr_trace_event_t event_type, double value, double da
 
 e_surf_resource_state_t WorkstationL07::getState()
 {
-  return p_cpu->p_stateCurrent;
+  return p_cpu->getState();
 }
 
 e_surf_resource_state_t CpuL07::getState()
 {
-  return p_stateCurrent;
+  return m_stateCurrent;
 }
 
 double CpuL07::getSpeed(double load)
@@ -571,7 +574,7 @@ ActionPtr WorkstationL07::execute(double size)
   communication_amount[0] = 0.0;
   computation_amount[0] = size;
 
-  return static_cast<WorkstationL07ModelPtr>(p_model)->executeParallelTask(1, workstation_list,
+  return static_cast<WorkstationL07ModelPtr>(getModel())->executeParallelTask(1, workstation_list,
 		                              computation_amount,
                                      communication_amount, -1);
 }
@@ -580,12 +583,12 @@ ActionPtr WorkstationL07::sleep(double duration)
 {
   WorkstationL07ActionLmmPtr action = NULL;
 
-  XBT_IN("(%s,%g)", m_name, duration);
+  XBT_IN("(%s,%g)", getName(), duration);
 
   action = dynamic_cast<WorkstationL07ActionLmmPtr>(execute(1.0));
   action->m_maxDuration = duration;
   action->m_suspended = 2;
-  lmm_update_variable_weight(ptask_maxmin_system, action->p_variable, 0.0);
+  lmm_update_variable_weight(ptask_maxmin_system, action->getVariable(), 0.0);
 
   XBT_OUT();
   return action;
@@ -603,7 +606,7 @@ double LinkL07::getLatency()
 
 bool LinkL07::isShared()
 {
-  return lmm_constraint_is_shared(p_constraint);
+  return lmm_constraint_is_shared(constraint());
 }
 
 /**********
@@ -614,9 +617,6 @@ WorkstationL07ActionLmm::~WorkstationL07ActionLmm(){
   free(p_workstationList);
   free(p_communicationAmount);
   free(p_computationAmount);
-#ifdef HAVE_TRACING
-  xbt_free(p_category);
-#endif
 }
 
 void WorkstationL07ActionLmm::updateBound()
@@ -645,9 +645,9 @@ void WorkstationL07ActionLmm::updateBound()
   XBT_DEBUG("action (%p) : lat_bound = %g", this, lat_bound);
   if ((m_latency == 0.0) && (m_suspended == 0)) {
     if (m_rate < 0)
-      lmm_update_variable_bound(ptask_maxmin_system, p_variable, lat_bound);
+      lmm_update_variable_bound(ptask_maxmin_system, getVariable(), lat_bound);
     else
-      lmm_update_variable_bound(ptask_maxmin_system, p_variable, min(m_rate, lat_bound));
+      lmm_update_variable_bound(ptask_maxmin_system, getVariable(), min(m_rate, lat_bound));
   }
 }
 
@@ -656,8 +656,8 @@ int WorkstationL07ActionLmm::unref()
   m_refcount--;
   if (!m_refcount) {
     xbt_swag_remove(static_cast<ActionPtr>(this), p_stateSet);
-    if (p_variable)
-      lmm_variable_free(ptask_maxmin_system, p_variable);
+    if (getVariable())
+      lmm_variable_free(ptask_maxmin_system, getVariable());
     delete this;
     return 1;
   }
@@ -675,7 +675,7 @@ void WorkstationL07ActionLmm::suspend()
   XBT_IN("(%p))", this);
   if (m_suspended != 2) {
     m_suspended = 1;
-    lmm_update_variable_weight(ptask_maxmin_system, p_variable, 0.0);
+    lmm_update_variable_weight(ptask_maxmin_system, getVariable(), 0.0);
   }
   XBT_OUT();
 }
@@ -684,7 +684,7 @@ void WorkstationL07ActionLmm::resume()
 {
   XBT_IN("(%p)", this);
   if (m_suspended != 2) {
-    lmm_update_variable_weight(ptask_maxmin_system, p_variable, 1.0);
+    lmm_update_variable_weight(ptask_maxmin_system, getVariable(), 1.0);
     m_suspended = 0;
   }
   XBT_OUT();
@@ -716,7 +716,7 @@ double WorkstationL07ActionLmm::getRemains()
   return m_remains;
 }
 
-/*static void ptask_finalize(void)
+/*FIXME:remove static void ptask_finalize(void)
 {
   xbt_dict_free(&ptask_parallel_task_link_set);
 
@@ -736,21 +736,6 @@ double WorkstationL07ActionLmm::getRemains()
 /**************************************/
 /******* Resource Private    **********/
 /**************************************/
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 /**************************************/
 /*** Resource Creation & Destruction **/

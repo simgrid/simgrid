@@ -210,13 +210,12 @@ void surf_storage_model_init_default(void)
 }
 
 StorageN11Model::StorageN11Model() : StorageModel() {
-  StorageN11ActionLmm action;
+  ActionPtr action = NULL;
 
   XBT_DEBUG("surf_storage_model_init_internal");
 
   storage_running_action_set_that_does_not_need_being_checked =
-      xbt_swag_new(xbt_swag_offset(action, p_stateHookup));
-
+      xbt_swag_new(xbt_swag_offset(*action, p_stateHookup));
   if (!p_maxminSystem) {
     p_maxminSystem = lmm_system_new(storage_selective_update);
   }
@@ -268,7 +267,7 @@ double StorageN11Model::shareResources(double now)
   void *_write_action;
   StorageActionLmmPtr write_action;
 
-  double min_completion = shareResourcesMaxMin(p_runningActionSet,
+  double min_completion = shareResourcesMaxMin(getRunningActionSet(),
       p_maxminSystem, lmm_solve);
 
   double rate;
@@ -280,7 +279,7 @@ double StorageN11Model::shareResources(double now)
     xbt_dynar_foreach(storage->p_writeActions, j, _write_action)
     {
       write_action = dynamic_cast<StorageActionLmmPtr>(static_cast<ActionPtr>(_write_action));
-      rate += lmm_variable_getvalue(write_action->p_variable);
+      rate += lmm_variable_getvalue(write_action->getVariable());
     }
     if(rate > 0)
       min_completion = MIN(min_completion, (storage->m_size-storage->m_usedSize)/rate);
@@ -294,14 +293,15 @@ void StorageN11Model::updateActionsState(double /*now*/, double delta)
   void *_action, *_next_action;
   StorageActionLmmPtr action = NULL;
 
-  xbt_swag_foreach_safe(_action, _next_action, p_runningActionSet) {
+  xbt_swag_t actionSet = getRunningActionSet();
+  xbt_swag_foreach_safe(_action, _next_action, actionSet) {
 	action = dynamic_cast<StorageActionLmmPtr>(static_cast<ActionPtr>(_action));
     if(action->m_type == WRITE)
     {
       // Update the disk usage
      // Update the file size
      // For each action of type write
-      double rate = lmm_variable_getvalue(action->p_variable);
+      double rate = lmm_variable_getvalue(action->getVariable());
       /* Hack to avoid rounding differences between x86 and x86_64
        * (note that the next sizes are of type sg_size_t). */
       long incr = delta * rate + MAXMIN_PRECISION;
@@ -315,27 +315,26 @@ void StorageN11Model::updateActionsState(double /*now*/, double delta)
       xbt_dict_set(content_dict, action->p_file->name, psize, NULL);
     }
 
-    double_update(&action->m_remains,
-                  lmm_variable_getvalue(action->p_variable) * delta);
+    action->updateRemains(lmm_variable_getvalue(action->getVariable()) * delta);
 
-    if (action->m_maxDuration != NO_MAX_DURATION)
-      double_update(&action->m_maxDuration, delta);
+    if (action->getMaxDuration() != NO_MAX_DURATION)
+      action->updateMaxDuration(delta);
 
-    if(action->m_remains > 0 &&
-        lmm_get_variable_weight(action->p_variable) > 0 &&
+    if(action->getRemains() > 0 &&
+        lmm_get_variable_weight(action->getVariable()) > 0 &&
         action->p_storage->m_usedSize == action->p_storage->m_size)
     {
-      action->m_finish = surf_get_clock();
+      action->finish();
       action->setState(SURF_ACTION_FAILED);
-    } else if ((action->m_remains <= 0) &&
-        (lmm_get_variable_weight(action->p_variable) > 0))
+    } else if ((action->getRemains() <= 0) &&
+        (lmm_get_variable_weight(action->getVariable()) > 0))
     {
-      action->m_finish = surf_get_clock();
+      action->finish();
       action->setState(SURF_ACTION_DONE);
-    } else if ((action->m_maxDuration != NO_MAX_DURATION) &&
-               (action->m_maxDuration <= 0))
+    } else if ((action->getMaxDuration() != NO_MAX_DURATION) &&
+               (action->getMaxDuration() <= 0))
     {
-      action->m_finish = surf_get_clock();
+      action->finish();
       action->setState(SURF_ACTION_DONE);
     }
   }
@@ -353,15 +352,11 @@ StorageN11Lmm::StorageN11Lmm(StorageModelPtr model, const char* name, xbt_dict_t
  :  Resource(model, name, properties),
     StorageLmm(maxminSystem, bread, bwrite, bconnection, type_id, content_name, content_type, size) {
   XBT_DEBUG("Create resource with Bconnection '%f' Bread '%f' Bwrite '%f' and Size '%llu'", bconnection, bread, bwrite, size);
-
-  p_constraint = lmm_constraint_new(maxminSystem, this, bconnection);
-  p_constraintRead  = lmm_constraint_new(maxminSystem, this, bread);
-  p_constraintWrite = lmm_constraint_new(maxminSystem, this, bwrite);
 }
 
 StorageActionPtr StorageN11Lmm::ls(const char* path)
 {
-  StorageActionLmmPtr action = new StorageN11ActionLmm(p_model, 0, p_stateCurrent != SURF_RESOURCE_ON, this, LS);
+  StorageActionLmmPtr action = new StorageN11ActionLmm(getModel(), 0, m_stateCurrent != SURF_RESOURCE_ON, this, LS);
 
   action->p_lsDict = NULL;
   xbt_dict_t ls_dict = xbt_dict_new_homogeneous(xbt_free);
@@ -425,7 +420,7 @@ StorageActionPtr StorageN11Lmm::open(const char* mount, const char* path)
   file->mount = xbt_strdup(mount);
   file->current_position = 0;
 
-  StorageActionLmmPtr action = new StorageN11ActionLmm(p_model, 0, p_stateCurrent != SURF_RESOURCE_ON, this, OPEN);
+  StorageActionLmmPtr action = new StorageN11ActionLmm(getModel(), 0, m_stateCurrent != SURF_RESOURCE_ON, this, OPEN);
   action->p_file = file;
   return action;
 }
@@ -448,7 +443,7 @@ StorageActionPtr StorageN11Lmm::close(surf_file_t fd)
   free(fd->name);
   free(fd->mount);
   xbt_free(fd);
-  StorageActionLmmPtr action = new StorageN11ActionLmm(p_model, 0, p_stateCurrent != SURF_RESOURCE_ON, this, CLOSE);
+  StorageActionLmmPtr action = new StorageN11ActionLmm(getModel(), 0, m_stateCurrent != SURF_RESOURCE_ON, this, CLOSE);
   return action;
 }
 
@@ -461,7 +456,7 @@ StorageActionPtr StorageN11Lmm::read(surf_file_t fd, sg_size_t size)
   else
 	fd->current_position += size;
 
-  StorageActionLmmPtr action = new StorageN11ActionLmm(p_model, size, p_stateCurrent != SURF_RESOURCE_ON, this, READ);
+  StorageActionLmmPtr action = new StorageN11ActionLmm(getModel(), size, m_stateCurrent != SURF_RESOURCE_ON, this, READ);
   return action;
 }
 
@@ -470,7 +465,7 @@ StorageActionPtr StorageN11Lmm::write(surf_file_t fd, sg_size_t size)
   char *filename = fd->name;
   XBT_DEBUG("\tWrite file '%s' size '%llu/%llu'",filename,size,fd->size);
 
-  StorageActionLmmPtr action = new StorageN11ActionLmm(p_model, size, p_stateCurrent != SURF_RESOURCE_ON, this, WRITE);
+  StorageActionLmmPtr action = new StorageN11ActionLmm(getModel(), size, m_stateCurrent != SURF_RESOURCE_ON, this, WRITE);
   action->p_file = fd;
   fd->current_position += size;
   // If the storage is full
@@ -519,14 +514,13 @@ sg_size_t StorageN11Lmm::getSize(){
  * Action *
  **********/
 
-StorageN11ActionLmm::StorageN11ActionLmm(ModelPtr model, double cost, bool failed, StorageLmmPtr storage, e_surf_action_storage_type_t type)
-  : Action(model, cost, failed),
-    StorageActionLmm(storage, type) {
-  XBT_IN("(%s,%g", storage->m_name, cost);
-  p_variable = lmm_variable_new(p_model->p_maxminSystem, this, 1.0, -1.0 , 3);
+StorageN11ActionLmm::StorageN11ActionLmm(ModelPtr model_, double cost, bool failed, StorageLmmPtr storage, e_surf_action_storage_type_t type)
+  : Action(model_, cost, failed),
+    StorageActionLmm(storage, type, lmm_variable_new(getModel()->getMaxminSystem(), this, 1.0, -1.0 , 3)) {
+  XBT_IN("(%s,%g", storage->getName(), cost);
 
   // Must be less than the max bandwidth for all actions
-  lmm_expand(p_model->p_maxminSystem, storage->p_constraint, p_variable, 1.0);
+  lmm_expand(getModel()->getMaxminSystem(), storage->constraint(), getVariable(), 1.0);
   switch(type) {
   case OPEN:
   case CLOSE:
@@ -534,12 +528,12 @@ StorageN11ActionLmm::StorageN11ActionLmm(ModelPtr model, double cost, bool faile
   case LS:
     break;
   case READ:
-    lmm_expand(p_model->p_maxminSystem, storage->p_constraintRead,
-               p_variable, 1.0);
+    lmm_expand(getModel()->getMaxminSystem(), storage->p_constraintRead,
+    		   getVariable(), 1.0);
     break;
   case WRITE:
-    lmm_expand(p_model->p_maxminSystem, storage->p_constraintWrite,
-               p_variable, 1.0);
+    lmm_expand(getModel()->getMaxminSystem(), storage->p_constraintWrite,
+    		   getVariable(), 1.0);
     ActionPtr action = this;
     xbt_dynar_push(storage->p_writeActions, &action);
     ref();
@@ -553,10 +547,10 @@ int StorageN11ActionLmm::unref()
   m_refcount--;
   if (!m_refcount) {
     xbt_swag_remove(static_cast<ActionPtr>(this), p_stateSet);
-    if (p_variable)
-      lmm_variable_free(p_model->p_maxminSystem, p_variable);
+    if (getVariable())
+      lmm_variable_free(getModel()->getMaxminSystem(), getVariable());
 #ifdef HAVE_TRACING
-    xbt_free(p_category);
+    xbt_free(getCategory());
 #endif
     delete this;
     return 1;
@@ -574,8 +568,8 @@ void StorageN11ActionLmm::suspend()
 {
   XBT_IN("(%p)", this);
   if (m_suspended != 2) {
-    lmm_update_variable_weight(p_model->p_maxminSystem,
-                               p_variable,
+    lmm_update_variable_weight(getModel()->getMaxminSystem(),
+                               getVariable(),
                                0.0);
     m_suspended = 1;
   }

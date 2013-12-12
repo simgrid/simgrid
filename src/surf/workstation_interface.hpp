@@ -35,7 +35,7 @@ extern WorkstationModelPtr surf_workstation_model;
  *********/
 class WorkstationModel : public Model {
 public:
-  WorkstationModel(string name);
+  WorkstationModel(const char *name);
   WorkstationModel();
   ~WorkstationModel();
   virtual void adjustWeightOfDummyCpuActions();

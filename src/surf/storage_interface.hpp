@@ -104,7 +104,7 @@ class StorageActionLmm : public ActionLmm, public StorageAction {
 public:
   StorageActionLmm() {};//FIXME:REMOVE
 
-  StorageActionLmm(StorageLmmPtr storage, e_surf_action_storage_type_t type);
+  StorageActionLmm(StorageLmmPtr storage, e_surf_action_storage_type_t type, lmm_variable_t var);
 };
 
 typedef struct s_storage_type {

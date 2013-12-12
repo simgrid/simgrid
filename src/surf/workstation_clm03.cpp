@@ -44,7 +44,7 @@ void surf_workstation_model_init_compound()
   sg_platf_host_add_cb(workstation_new);
 }
 
-WorkstationCLM03Model::WorkstationCLM03Model(string name)
+WorkstationCLM03Model::WorkstationCLM03Model(const char *name)
  : WorkstationModel(name)
 {}
 
@@ -61,14 +61,14 @@ void WorkstationCLM03Model::parseInit(sg_platf_host_cbarg_t host){
   createResource(host->id);
 }
 
-WorkstationPtr WorkstationCLM03Model::createResource(string name){
+WorkstationPtr WorkstationCLM03Model::createResource(const char *name){
 
-  WorkstationPtr workstation = new WorkstationCLM03Lmm(surf_workstation_model, name.c_str(), NULL,
-		  (xbt_dynar_t)xbt_lib_get_or_null(storage_lib, name.c_str(), ROUTING_STORAGE_HOST_LEVEL),
-		  (RoutingEdgePtr)xbt_lib_get_or_null(host_lib, name.c_str(), ROUTING_HOST_LEVEL),
-		  dynamic_cast<CpuPtr>(static_cast<ResourcePtr>(xbt_lib_get_or_null(host_lib, name.c_str(), SURF_CPU_LEVEL))));
-  XBT_DEBUG("Create workstation %s with %ld mounted disks", name.c_str(), xbt_dynar_length(workstation->p_storage));
-  xbt_lib_set(host_lib, name.c_str(), SURF_WKS_LEVEL, static_cast<ResourcePtr>(workstation));
+  WorkstationPtr workstation = new WorkstationCLM03Lmm(surf_workstation_model, name, NULL,
+		  (xbt_dynar_t)xbt_lib_get_or_null(storage_lib, name, ROUTING_STORAGE_HOST_LEVEL),
+		  (RoutingEdgePtr)xbt_lib_get_or_null(host_lib, name, ROUTING_HOST_LEVEL),
+		  dynamic_cast<CpuPtr>(static_cast<ResourcePtr>(xbt_lib_get_or_null(host_lib, name, SURF_CPU_LEVEL))));
+  XBT_DEBUG("Create workstation %s with %ld mounted disks", name, xbt_dynar_length(workstation->p_storage));
+  xbt_lib_set(host_lib, name, SURF_WKS_LEVEL, static_cast<ResourcePtr>(workstation));
   return workstation;
 }
 
@@ -82,9 +82,9 @@ double WorkstationCLM03Model::shareResources(double now){
 	min_by_sto = surf_storage_model->shareResources(now);
 
   XBT_DEBUG("model %p, %s min_by_cpu %f, %s min_by_net %f, %s min_by_sto %f",
-      this, surf_cpu_model_pm->m_name.c_str(), min_by_cpu,
-            surf_network_model->m_name.c_str(), min_by_net,
-            surf_storage_model->m_name.c_str(), min_by_sto);
+      this, surf_cpu_model_pm->getName(), min_by_cpu,
+            surf_network_model->getName(), min_by_net,
+            surf_storage_model->getName(), min_by_sto);
 
   double res = max(max(min_by_cpu, min_by_net), min_by_sto);
   if (min_by_cpu >= 0.0 && min_by_cpu < res)

@@ -179,7 +179,7 @@ void AsGeneric::getGraph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges)
       }
 
       xbt_dynar_foreach(route->link_list, cpt, link) {
-        const char *link_name = ((ResourcePtr) link)->m_name;
+        const char *link_name = ((ResourcePtr) link)->getName();
         current = new_xbt_graph_node(graph, link_name, nodes);
         current_name = link_name;
         new_xbt_graph_edge(graph, previous, current, edges);

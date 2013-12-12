@@ -47,11 +47,11 @@ public:
  **********/
 class NetworkConstantActionLmm : public NetworkCm02ActionLmm {
 public:
-  NetworkConstantActionLmm(NetworkConstantModelPtr model, double size, double latency):
-	  Action(model, size, false), NetworkCm02ActionLmm(model, 0, false), m_latInit(latency) {
+  NetworkConstantActionLmm(NetworkConstantModelPtr model_, double size, double latency):
+	  Action(model_, size, false), NetworkCm02ActionLmm(model_, 0, false), m_latInit(latency) {
 	m_latency = latency;
 	if (m_latency <= 0.0) {
-	  p_stateSet = p_model->p_doneActionSet;
+	  p_stateSet = getModel()->getDoneActionSet();
 	  xbt_swag_insert(static_cast<ActionPtr>(this), p_stateSet);
 	}
   };

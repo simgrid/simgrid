@@ -67,11 +67,11 @@ static void surf_share_resources(surf_model_t model)
 {
   double next_action_end = -1.0;
   int i = __sync_fetch_and_add(&surf_min_index, 1);
-  if (strcmp(model->m_name.c_str(), "network NS3")) {
-    XBT_DEBUG("Running for Resource [%s]", model->m_name.c_str());
+  if (strcmp(model->getName(), "network NS3")) {
+    XBT_DEBUG("Running for Resource [%s]", model->getName());
     next_action_end = model->shareResources(NOW);
     XBT_DEBUG("Resource [%s] : next action end = %f",
-        model->m_name.c_str(), next_action_end);
+        model->getName(), next_action_end);
   }
   surf_mins[i] = next_action_end;
 }
@@ -128,7 +128,7 @@ double surf_solve(double max_date)
 
     next_event_date = tmgr_history_next_date(history);
 
-    if(!strcmp(surf_network_model->m_name.c_str(), "network NS3")){//FIXME: add surf_network_model->m_name &&
+    if(!strcmp(surf_network_model->getName(), "network NS3")){//FIXME: add surf_network_model->m_name &&
       if(next_event_date!=-1.0 && surf_min!=-1.0) {
         surf_min = MIN(next_event_date - NOW, surf_min);
       } else{
@@ -156,7 +156,7 @@ double surf_solve(double max_date)
             tmgr_history_get_next_event_leq(history, next_event_date,
                                             &value,
                                             (void **) &resource))) {
-      if (resource->isUsed() || xbt_dict_get_or_null(watched_hosts_lib, resource->m_name)) {
+      if (resource->isUsed() || xbt_dict_get_or_null(watched_hosts_lib, resource->getName())) {
         surf_min = next_event_date - NOW;
         XBT_DEBUG
             ("This event will modify model state. Next event set to %f",
@@ -165,7 +165,7 @@ double surf_solve(double max_date)
       /* update state of model_obj according to new value. Does not touch lmm.
          It will be modified if needed when updating actions */
       XBT_DEBUG("Calling update_resource_state for resource %s with min %lf",
-             resource->m_name, surf_min);
+             resource->getName(), surf_min);
       resource->updateState(event, value, next_event_date);
     }
   } while (1);
@@ -212,7 +212,7 @@ surf_model_t surf_resource_model(const void *host, int level) {
   /* If level is SURF_WKS_LEVEL, ws is a workstation_CLM03 object. It has
    * surf_resource at the generic_resource field. */
   ResourcePtr ws = static_cast<ResourcePtr>(xbt_lib_get_level((xbt_dictelm_t) host, level));
-  return ws->p_model;
+  return ws->getModel();
 }
 
 void *surf_as_cluster_get_backbone(AS_t as){
@@ -224,23 +224,23 @@ void surf_as_cluster_set_backbone(AS_t as, void* backbone){
 }
 
 const char *surf_model_name(surf_model_t model){
-  return model->m_name.c_str();
+  return model->getName();
 }
 
 xbt_swag_t surf_model_done_action_set(surf_model_t model){
-  return model->p_doneActionSet;
+  return model->getDoneActionSet();
 }
 
 xbt_swag_t surf_model_failed_action_set(surf_model_t model){
-  return model->p_failedActionSet;
+  return model->getFailedActionSet();
 }
 
 xbt_swag_t surf_model_ready_action_set(surf_model_t model){
-  return model->p_readyActionSet;
+  return model->getReadyActionSet();
 }
 
 xbt_swag_t surf_model_running_action_set(surf_model_t model){
-  return model->p_runningActionSet;
+  return model->getRunningActionSet();
 }
 
 surf_action_t surf_workstation_model_execute_parallel_task(surf_workstation_model_t model,
@@ -270,7 +270,7 @@ surf_action_t surf_network_model_communicate(surf_network_model_t model, sg_rout
 }
 
 const char *surf_resource_name(surf_cpp_resource_t resource){
-  return resource->m_name;
+  return resource->getName();
 }
 
 xbt_dict_t surf_resource_get_properties(surf_cpp_resource_t resource){
@@ -458,11 +458,11 @@ surf_action_t surf_cpu_sleep(surf_resource_t cpu, double duration){
 }
 
 double surf_action_get_start_time(surf_action_t action){
-  return action->m_start;
+  return action->getStartTime();
 }
 
 double surf_action_get_finish_time(surf_action_t action){
-  return action->m_finish;
+  return action->getFinishTime();
 }
 
 double surf_action_get_remains(surf_action_t action){
@@ -494,11 +494,11 @@ void surf_action_set_category(surf_action_t action, const char *category){
 }
 
 void *surf_action_get_data(surf_action_t action){
-  return action->p_data;
+  return action->getData();
 }
 
 void surf_action_set_data(surf_action_t action, void *data){
-  action->p_data = data;
+  action->setData(data);
 }
 
 e_surf_action_state_t surf_action_get_state(surf_action_t action){
@@ -506,7 +506,7 @@ e_surf_action_state_t surf_action_get_state(surf_action_t action){
 }
 
 int surf_action_get_cost(surf_action_t action){
-  return action->m_cost;
+  return action->getCost();
 }
 
 void surf_cpu_action_set_affinity(surf_action_t action, surf_resource_t cpu, unsigned long mask) {

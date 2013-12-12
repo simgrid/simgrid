@@ -81,11 +81,11 @@ CpuCas01Model::CpuCas01Model() : CpuModel("cpu")
   p_cpuRunningActionSetThatDoesNotNeedBeingChecked =
       xbt_swag_new(xbt_swag_offset(*action, p_stateHookup));
 
-  if (p_updateMechanism == UM_LAZY) {
+  if (getUpdateMechanism() == UM_LAZY) {
 	shareResources = &CpuCas01Model::shareResourcesLazy;
 	updateActionsState = &CpuCas01Model::updateActionsStateLazy;
 
-  } else if (p_updateMechanism == UM_FULL) {
+  } else if (getUpdateMechanism() == UM_FULL) {
 	shareResources = &CpuCas01Model::shareResourcesFull;
 	updateActionsState = &CpuCas01Model::updateActionsStateFull;
   } else
@@ -95,7 +95,7 @@ CpuCas01Model::CpuCas01Model() : CpuModel("cpu")
     p_maxminSystem = lmm_system_new(m_selectiveUpdate);
   }
 
-  if (p_updateMechanism == UM_LAZY) {
+  if (getUpdateMechanism() == UM_LAZY) {
     p_actionHeap = xbt_heap_new(8, NULL);
     xbt_heap_set_update_callback(p_actionHeap,  surf_action_lmm_update_index_heap);
     p_modifiedSet = xbt_swag_new(xbt_swag_offset(*actionlmm, p_actionListHookup));
@@ -153,7 +153,7 @@ CpuPtr CpuCas01Model::createResource(const char *name, xbt_dynar_t power_peak,
 
 double CpuCas01Model::shareResourcesFull(double /*now*/)
 {
-  return Model::shareResourcesMaxMin(p_runningActionSet,
+  return Model::shareResourcesMaxMin(getRunningActionSet(),
                              p_maxminSystem, lmm_solve);
 }
 
@@ -174,8 +174,7 @@ void CpuCas01Model::addTraces()
     xbt_assert(host, "Host %s undefined", elm);
     xbt_assert(trace, "Trace %s undefined", trace_name);
 
-    host->p_stateEvent =
-        tmgr_history_add_trace(history, trace, 0.0, 0, static_cast<ResourcePtr>(host));
+    host->p_stateEvent = tmgr_history_add_trace(history, trace, 0.0, 0, static_cast<ResourcePtr>(host));
   }
 
   xbt_dict_foreach(trace_connect_list_power, cursor, trace_name, elm) {
@@ -193,12 +192,13 @@ void CpuCas01Model::addTraces()
 /************
  * Resource *
  ************/
-CpuCas01Lmm::CpuCas01Lmm(CpuCas01ModelPtr model, const char *name, xbt_dynar_t powerPeak,
+CpuCas01Lmm::CpuCas01Lmm(CpuCas01ModelPtr model_, const char *name, xbt_dynar_t powerPeak,
                          int pstate, double powerScale, tmgr_trace_t powerTrace, int core,
                          e_surf_resource_state_t stateInitial, tmgr_trace_t stateTrace,
                          xbt_dict_t properties)
-: Resource(model, name, properties)
-, CpuLmm(model, name, properties, core, xbt_dynar_get_as(powerPeak, pstate, double), powerScale) {
+: Resource(model_, name, properties)
+, CpuLmm(lmm_constraint_new(getModel()->getMaxminSystem(), this, core * powerScale * xbt_dynar_get_as(powerPeak, pstate, double)),
+		 core, xbt_dynar_get_as(powerPeak, pstate, double), powerScale) {
   p_powerEvent = NULL;
   p_powerPeakList = powerPeak;
   m_pstate = pstate;
@@ -211,14 +211,12 @@ CpuCas01Lmm::CpuCas01Lmm(CpuCas01ModelPtr model, const char *name, xbt_dynar_t p
   XBT_DEBUG("CPU create: peak=%f, pstate=%d", m_powerPeak, m_pstate);
 
   m_core = core;
-  p_stateCurrent = stateInitial;
+  m_stateCurrent = stateInitial;
   if (powerTrace)
     p_powerEvent = tmgr_history_add_trace(history, powerTrace, 0.0, 0, static_cast<ResourcePtr>(this));
 
   if (stateTrace)
     p_stateEvent = tmgr_history_add_trace(history, stateTrace, 0.0, 0, static_cast<ResourcePtr>(this));
-
-  p_constraint = lmm_constraint_new(p_model->p_maxminSystem, this, m_core * m_powerScale * m_powerPeak);
 }
 
 CpuCas01Lmm::~CpuCas01Lmm(){
@@ -233,7 +231,7 @@ CpuCas01Lmm::~CpuCas01Lmm(){
 
 bool CpuCas01Lmm::isUsed()
 {
-  return lmm_constraint_used(p_model->p_maxminSystem, p_constraint);
+  return lmm_constraint_used(getModel()->getMaxminSystem(), constraint());
 }
 
 void CpuCas01Lmm::updateState(tmgr_trace_event_t event_type, double value, double date)
@@ -246,20 +244,20 @@ void CpuCas01Lmm::updateState(tmgr_trace_event_t event_type, double value, doubl
 	xbt_assert(m_core == 1, "FIXME: add power scaling code also for constraint_core[i]");
 
     m_powerScale = value;
-    lmm_update_constraint_bound(surf_cpu_model_pm->p_maxminSystem, p_constraint,
+    lmm_update_constraint_bound(surf_cpu_model_pm->getMaxminSystem(), constraint(),
                                 m_core * m_powerScale *
                                 m_powerPeak);
 #ifdef HAVE_TRACING
-    TRACE_surf_host_set_power(date, m_name,
+    TRACE_surf_host_set_power(date, getName(),
                               m_core * m_powerScale *
                               m_powerPeak);
 #endif
     while ((var = lmm_get_var_from_cnst
-            (surf_cpu_model_pm->p_maxminSystem, p_constraint, &elem))) {
+            (surf_cpu_model_pm->getMaxminSystem(), constraint(), &elem))) {
       CpuCas01ActionLmmPtr action = static_cast<CpuCas01ActionLmmPtr>(static_cast<ActionLmmPtr>(lmm_variable_id(var)));
 
-      lmm_update_variable_bound(surf_cpu_model_pm->p_maxminSystem,
-                                action->p_variable,
+      lmm_update_variable_bound(surf_cpu_model_pm->getMaxminSystem(),
+                                action->getVariable(),
                                 m_powerScale * m_powerPeak);
     }
     if (tmgr_trace_event_free(event_type))
@@ -269,21 +267,21 @@ void CpuCas01Lmm::updateState(tmgr_trace_event_t event_type, double value, doubl
     xbt_assert(m_core == 1, "FIXME: add state change code also for constraint_core[i]");
 
     if (value > 0) {
-      if(p_stateCurrent == SURF_RESOURCE_OFF)
-        xbt_dynar_push_as(host_that_restart, char*, (char *)m_name);
-      p_stateCurrent = SURF_RESOURCE_ON;
+      if(m_stateCurrent == SURF_RESOURCE_OFF)
+        xbt_dynar_push_as(host_that_restart, char*, (char *)getName());
+      m_stateCurrent = SURF_RESOURCE_ON;
     } else {
-      lmm_constraint_t cnst = p_constraint;
+      lmm_constraint_t cnst = constraint();
 
-      p_stateCurrent = SURF_RESOURCE_OFF;
+      m_stateCurrent = SURF_RESOURCE_OFF;
 
-      while ((var = lmm_get_var_from_cnst(surf_cpu_model_pm->p_maxminSystem, cnst, &elem))) {
+      while ((var = lmm_get_var_from_cnst(surf_cpu_model_pm->getMaxminSystem(), cnst, &elem))) {
         ActionLmmPtr action = static_cast<ActionLmmPtr>(lmm_variable_id(var));
 
         if (action->getState() == SURF_ACTION_RUNNING ||
             action->getState() == SURF_ACTION_READY ||
             action->getState() == SURF_ACTION_NOT_IN_THE_SYSTEM) {
-          action->m_finish = date;
+          action->setFinishTime(date);
           action->setState(SURF_ACTION_FAILED);
         }
       }
@@ -298,37 +296,26 @@ void CpuCas01Lmm::updateState(tmgr_trace_event_t event_type, double value, doubl
   return;
 }
 
-ActionPtr CpuCas01Lmm::execute(double size)
+CpuActionPtr CpuCas01Lmm::execute(double size)
 {
 
-  XBT_IN("(%s,%g)", m_name, size);
-  CpuCas01ActionLmmPtr action = new CpuCas01ActionLmm(surf_cpu_model_pm, size, p_stateCurrent != SURF_RESOURCE_ON);
+  XBT_IN("(%s,%g)", getName(), size);
+  CpuCas01ActionLmmPtr action = new CpuCas01ActionLmm(surf_cpu_model_pm, size, m_stateCurrent != SURF_RESOURCE_ON,
+		                                              m_powerScale * m_powerPeak, constraint());
 
-  action->m_suspended = 0;     /* Should be useless because of the
-                                                   calloc but it seems to help valgrind... */
-
-  action->p_variable =
-      lmm_variable_new(surf_cpu_model_pm->p_maxminSystem, static_cast<ActionLmmPtr>(action),
-                       action->m_priority,
-                       m_powerScale * m_powerPeak, 1);
-  if (surf_cpu_model_pm->p_updateMechanism == UM_LAZY) {
-    action->m_indexHeap = -1;
-    action->m_lastUpdate = surf_get_clock();
-    action->m_lastValue = 0.0;
-  }
-  lmm_expand(surf_cpu_model_pm->p_maxminSystem, p_constraint,
-             action->p_variable, 1.0);
   XBT_OUT();
   return action;
 }
 
-ActionPtr CpuCas01Lmm::sleep(double duration)
+CpuActionPtr CpuCas01Lmm::sleep(double duration)
 {
   if (duration > 0)
     duration = MAX(duration, MAXMIN_PRECISION);
 
-  XBT_IN("(%s,%g)", m_name, duration);
-  CpuCas01ActionLmmPtr action = dynamic_cast<CpuCas01ActionLmmPtr>(execute(1.0));
+  XBT_IN("(%s,%g)", getName(), duration);
+  CpuCas01ActionLmmPtr action = new CpuCas01ActionLmm(surf_cpu_model_pm, 1.0, m_stateCurrent != SURF_RESOURCE_ON,
+                                                      m_powerScale * m_powerPeak, constraint());
+
 
   // FIXME: sleep variables should not consume 1.0 in lmm_expand
   action->m_maxDuration = duration;
@@ -336,19 +323,19 @@ ActionPtr CpuCas01Lmm::sleep(double duration)
   if (duration == NO_MAX_DURATION) {
     /* Move to the *end* of the corresponding action set. This convention
        is used to speed up update_resource_state  */
-    xbt_swag_remove(static_cast<ActionPtr>(action), action->p_stateSet);
-    action->p_stateSet = static_cast<CpuCas01ModelPtr>(p_model)->p_cpuRunningActionSetThatDoesNotNeedBeingChecked;
-    xbt_swag_insert(static_cast<ActionPtr>(action), action->p_stateSet);
+    xbt_swag_remove(static_cast<ActionPtr>(action), action->getStateSet());
+    action->p_stateSet = static_cast<CpuCas01ModelPtr>(getModel())->p_cpuRunningActionSetThatDoesNotNeedBeingChecked;
+    xbt_swag_insert(static_cast<ActionPtr>(action), action->getStateSet());
   }
 
-  lmm_update_variable_weight(surf_cpu_model_pm->p_maxminSystem,
-                             action->p_variable, 0.0);
-  if (surf_cpu_model_pm->p_updateMechanism == UM_LAZY) {     // remove action from the heap
-    action->heapRemove(surf_cpu_model_pm->p_actionHeap);
+  lmm_update_variable_weight(surf_cpu_model_pm->getMaxminSystem(),
+                             action->getVariable(), 0.0);
+  if (surf_cpu_model_pm->getUpdateMechanism() == UM_LAZY) {     // remove action from the heap
+    action->heapRemove(surf_cpu_model_pm->getActionHeap());
     // this is necessary for a variable with weight 0 since such
     // variables are ignored in lmm and we need to set its max_duration
     // correctly at the next call to share_resources
-    xbt_swag_insert_at_head(static_cast<ActionLmmPtr>(action), surf_cpu_model_pm->p_modifiedSet);
+    xbt_swag_insert_at_head(static_cast<ActionLmmPtr>(action), surf_cpu_model_pm->getModifiedSet());
   }
 
   XBT_OUT();
@@ -363,10 +350,10 @@ xbt_dynar_t CpuCas01Lmm::getWattsRangeList()
 	xbt_dynar_t current_power_values;
 	double min_power, max_power;
 
-	if (m_properties == NULL)
+	if (getProperties() == NULL)
 		return NULL;
 
-	char* all_power_values_str = (char*)xbt_dict_get_or_null(m_properties, "power_per_state");
+	char* all_power_values_str = (char*)xbt_dict_get_or_null(getProperties(), "power_per_state");
 
 	if (all_power_values_str == NULL)
 		return NULL;
@@ -382,7 +369,7 @@ xbt_dynar_t CpuCas01Lmm::getWattsRangeList()
 		current_power_values = xbt_str_split(xbt_dynar_get_as(all_power_values, i, char*), ":");
 		xbt_assert(xbt_dynar_length(current_power_values) > 1,
 				"Power properties incorrectly defined - could not retrieve min and max power values for host %s",
-				m_name);
+				getName());
 
 		/* min_power corresponds to the idle power (cpu load = 0) */
 		/* max_power is the power consumed at 100% cpu load       */
@@ -410,12 +397,12 @@ double CpuCas01Lmm::getCurrentWattsValue(double cpu_load)
 
 	if (power_range_list == NULL)
 	{
-		XBT_DEBUG("No power range properties specified for host %s", m_name);
+		XBT_DEBUG("No power range properties specified for host %s", getName());
 		return 0;
 	}
 	xbt_assert(xbt_dynar_length(power_range_list) == xbt_dynar_length(p_powerPeakList),
 						"The number of power ranges in the properties does not match the number of pstates for host %s",
-						m_name);
+						getName());
 
     /* retrieve the power values associated with the current pstate */
     xbt_dynar_t current_power_values = xbt_dynar_get_as(power_range_list, m_pstate, xbt_dynar_t);
@@ -491,6 +478,24 @@ double CpuCas01Lmm::getConsumedEnergy()
  * Action *
  **********/
 
+CpuCas01ActionLmm::CpuCas01ActionLmm(ModelPtr model_, double cost, bool failed, double power, lmm_constraint_t constraint)
+ : Action(model_, cost, failed)
+ , CpuActionLmm(lmm_variable_new(getModel()->getMaxminSystem(), static_cast<ActionLmmPtr>(this),
+		        m_priority,
+                power, 1))
+{
+  m_suspended = 0;     /* Should be useless because of the
+	                                                   calloc but it seems to help valgrind... */
+
+  if (getModel()->getUpdateMechanism() == UM_LAZY) {
+    m_indexHeap = -1;
+    m_lastUpdate = surf_get_clock();
+    m_lastValue = 0.0;
+  }
+  lmm_expand(getModel()->getMaxminSystem(), constraint, getVariable(), 1.0);
+}
+
+
 /**
  * Update the CPU total energy for a finished action
  *
@@ -498,11 +503,11 @@ double CpuCas01Lmm::getConsumedEnergy()
 void CpuCas01ActionLmm::updateEnergy()
 {
   CpuCas01LmmPtr cpu  = static_cast<CpuCas01LmmPtr>(lmm_constraint_id(lmm_get_cnst_from_var
-                	  	  	  	  	  	  	  	  (p_model->p_maxminSystem,
-                	  	  	  	  	  	  	  			  p_variable, 0)));
+                	  	  	  	  	  	  	  	  (getModel()->getMaxminSystem(),
+                	  	  	  	  	  	  	  			  getVariable(), 0)));
 
   if(cpu->p_energy->last_updated < surf_get_clock()) {
-   	double load = lmm_constraint_get_usage(cpu->p_constraint) / cpu->m_powerPeak;
+   	double load = lmm_constraint_get_usage(cpu->constraint()) / cpu->m_powerPeak;
     cpu->updateEnergy(load);
   }
 }

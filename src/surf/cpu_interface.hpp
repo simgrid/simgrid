@@ -27,7 +27,7 @@ typedef CpuActionLmm *CpuActionLmmPtr;
  *********/
 class CpuModel : public Model {
 public:
-  CpuModel(string name) : Model(name) {};
+  CpuModel(const char *name) : Model(name) {};
   CpuPtr createResource(string name);
   void updateActionsStateLazy(double now, double delta);
   void updateActionsStateFull(double now, double delta);
@@ -41,11 +41,9 @@ public:
 class Cpu : virtual public Resource {
 public:
   Cpu(){};
-  Cpu(CpuModelPtr model, const char* name, xbt_dict_t properties, int core, double powerPeak, double powerScale)
-   : Resource(model, name, properties), m_core(core), m_powerPeak(powerPeak), m_powerScale(powerScale)
-   {};
-  virtual ActionPtr execute(double size)=0;
-  virtual ActionPtr sleep(double duration)=0;
+  Cpu(int core, double powerPeak, double powerScale);
+  virtual CpuActionPtr execute(double size)=0;
+  virtual CpuActionPtr sleep(double duration)=0;
   virtual int getCore();
   virtual double getSpeed(double load);
   virtual double getAvailableSpeed();
@@ -68,8 +66,8 @@ protected:
 
 class CpuLmm : public ResourceLmm, public Cpu {
 public:
-  CpuLmm() : p_constraintCore(NULL), p_constraintCoreId(NULL) {};
-  CpuLmm(CpuModelPtr model, const char* name, xbt_dict_t properties, int core, double powerPeak, double powerScale);
+  CpuLmm(lmm_constraint_t constraint);
+  CpuLmm(lmm_constraint_t constraint, int core, double powerPeak, double powerScale);
   ~CpuLmm();
   /* Note (hypervisor): */
   lmm_constraint_t *p_constraintCore;
@@ -84,7 +82,7 @@ class CpuAction : virtual public Action {
 public:
   CpuAction(){};
   CpuAction(ModelPtr model, double cost, bool failed)
-  : Action(model, cost, failed) {};
+  : Action(model, cost, failed) {};//FIXME:REMOVE
   virtual void setAffinity(CpuPtr cpu, unsigned long mask)=0;
   virtual void setBound(double bound)=0;
 };
@@ -92,8 +90,8 @@ public:
 class CpuActionLmm : public ActionLmm, public CpuAction {
 public:
   CpuActionLmm(){};
-  CpuActionLmm(ModelPtr model, double cost, bool failed)
-  : Action(model, cost, failed), ActionLmm(model, cost, failed), CpuAction(model, cost, failed) {};
+  CpuActionLmm(lmm_variable_t var)
+  : ActionLmm(var), CpuAction() {};
   void updateRemainingLazy(double now);
   virtual void updateEnergy()=0;
   void setAffinity(CpuPtr cpu, unsigned long mask);

@@ -34,7 +34,7 @@ public:
 	f_networkSolve = lmm_solve;
 	m_haveGap = false;
   };//FIXME: add network clean interface
-  NetworkCm02Model(string name) : NetworkModel(name) {
+  NetworkCm02Model(const char *name) : NetworkModel(name) {
     this->initialize();
   }
   NetworkCm02Model() : NetworkModel("network") {
@@ -82,6 +82,8 @@ public:
  **********/
 
 class NetworkCm02ActionLmm : public NetworkActionLmm {
+  friend ActionPtr NetworkCm02Model::communicate(RoutingEdgePtr src, RoutingEdgePtr dst, double size, double rate);
+
 public:
   NetworkCm02ActionLmm(ModelPtr model, double cost, bool failed)
  : Action(model, cost, failed) {};

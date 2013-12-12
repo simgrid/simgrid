@@ -25,11 +25,11 @@ typedef WorkstationCLM03ActionLmm *WorkstationCLM03ActionLmmPtr;
 
 class WorkstationCLM03Model : virtual public WorkstationModel {
 public:
-  WorkstationCLM03Model(string name);
+  WorkstationCLM03Model(const char *name);
   WorkstationCLM03Model();
   ~WorkstationCLM03Model();
   void parseInit(sg_platf_host_cbarg_t host);
-  WorkstationPtr createResource(string name);
+  WorkstationPtr createResource(const char *name);
   double shareResources(double now);
 
   void updateActionsState(double now, double delta);

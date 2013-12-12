@@ -118,11 +118,10 @@ public:
   ~CpuTi();
 
   void updateState(tmgr_trace_event_t event_type, double value, double date);  
-  void updateActionFinishDate(double now);
+  void updateActionsFinishTime(double now);
   bool isUsed();
   void printCpuTiModel();
   CpuActionPtr execute(double size);
-  CpuTiActionPtr _execute(double size);
   CpuActionPtr sleep(double duration);
   double getAvailableSpeed();
 
@@ -155,13 +154,15 @@ public:
  **********/
 
 class CpuTiAction: public CpuAction {
+  friend CpuActionPtr CpuTi::execute(double size);
+  friend CpuActionPtr CpuTi::sleep(double duration);
+  friend void CpuTi::updateActionsFinishTime(double now);//FIXME
+  friend void CpuTi::updateRemainingAmount(double now);//FIXME
+
 public:
   CpuTiAction() {};
-  CpuTiAction(CpuTiModelPtr model, double cost, bool failed)
-  : Action(model, cost, failed), CpuAction(model, cost, failed) {
-	p_cpuListHookup.next = 0;
-	p_cpuListHookup.prev = 0;
-  };
+  CpuTiAction(CpuTiModelPtr model, double cost, bool failed,
+  		                 CpuTiPtr cpu);
 
   void setState(e_surf_action_state_t state);
   int unref();

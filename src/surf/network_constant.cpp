@@ -28,7 +28,8 @@ double NetworkConstantModel::shareResources(double /*now*/)
   NetworkConstantActionLmmPtr action = NULL;
   double min = -1.0;
 
-  xbt_swag_foreach(_action, p_runningActionSet) {
+  xbt_swag_t actionSet = getRunningActionSet();
+  xbt_swag_foreach(_action, actionSet) {
 	action = dynamic_cast<NetworkConstantActionLmmPtr>(static_cast<ActionPtr>(_action));
     if (action->m_latency > 0) {
       if (min < 0)
@@ -45,8 +46,8 @@ void NetworkConstantModel::updateActionsState(double /*now*/, double delta)
 {
   void *_action, *_next_action;
   NetworkConstantActionLmmPtr action = NULL;
-
-  xbt_swag_foreach_safe(_action, _next_action, p_runningActionSet) {
+  xbt_swag_t actionSet = getRunningActionSet();
+  xbt_swag_foreach_safe(_action, _next_action, actionSet) {
 	action = dynamic_cast<NetworkConstantActionLmmPtr>(static_cast<ActionPtr>(_action));
     if (action->m_latency > 0) {
       if (action->m_latency > delta) {
@@ -55,17 +56,16 @@ void NetworkConstantModel::updateActionsState(double /*now*/, double delta)
         action->m_latency = 0.0;
       }
     }
-    double_update(&(action->m_remains),
-                  action->m_cost * delta / action->m_latInit);
-    if (action->m_maxDuration != NO_MAX_DURATION)
-      double_update(&(action->m_maxDuration), delta);
+    action->updateRemains(action->getCost() * delta / action->m_latInit);
+    if (action->getMaxDuration() != NO_MAX_DURATION)
+      action->updateMaxDuration(delta);
 
-    if (action->m_remains <= 0) {
-      action->m_finish = surf_get_clock();
+    if (action->getRemains() <= 0) {
+      action->finish();
       action->setState(SURF_ACTION_DONE);
-    } else if ((action->m_maxDuration != NO_MAX_DURATION)
-               && (action->m_maxDuration <= 0)) {
-      action->m_finish = surf_get_clock();
+    } else if ((action->getMaxDuration() != NO_MAX_DURATION)
+               && (action->getMaxDuration() <= 0)) {
+      action->finish();
       action->setState(SURF_ACTION_DONE);
     }
   }

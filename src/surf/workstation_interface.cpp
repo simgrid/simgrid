@@ -11,7 +11,7 @@ WorkstationModelPtr surf_workstation_model = NULL;
 /*********
  * Model *
  *********/
-WorkstationModel::WorkstationModel(string name)
+WorkstationModel::WorkstationModel(const char *name)
  : Model(name)
 {
   p_cpuModel = surf_cpu_model_pm;
@@ -47,14 +47,14 @@ void WorkstationModel::adjustWeightOfDummyCpuActions()
     if (!ws)
       continue;
     /* skip if it is not a virtual machine */
-    if (ws->p_model != static_cast<ModelPtr>(surf_vm_workstation_model))
+    if (ws->getModel() != static_cast<ModelPtr>(surf_vm_workstation_model))
       continue;
     xbt_assert(cpu_cas01, "cpu-less workstation");
 
     /* It is a virtual machine, so we can cast it to workstation_VM2013_t */
     WorkstationVMLmmPtr ws_vm = dynamic_cast<WorkstationVMLmmPtr>(ws);
 
-    int is_active = lmm_constraint_used(cpu_cas01->p_model->p_maxminSystem, cpu_cas01->p_constraint);
+    int is_active = lmm_constraint_used(cpu_cas01->getModel()->getMaxminSystem(), cpu_cas01->constraint());
     // int is_active_old = constraint_is_active(cpu_cas01);
 
     // {
@@ -124,7 +124,7 @@ double Workstation::getConsumedEnergy()
 
 xbt_dict_t Workstation::getProperties()
 {
-  return p_cpu->m_properties;
+  return p_cpu->getProperties();
 }
 
 
@@ -134,7 +134,7 @@ StoragePtr Workstation::findStorageOnMountList(const char* mount)
   s_mount_t mnt;
   unsigned int cursor;
 
-  XBT_DEBUG("Search for storage name '%s' on '%s'", mount, m_name);
+  XBT_DEBUG("Search for storage name '%s' on '%s'", mount, getName());
   xbt_dynar_foreach(p_storage,cursor,mnt)
   {
     XBT_DEBUG("See '%s'",mnt.name);
@@ -143,7 +143,7 @@ StoragePtr Workstation::findStorageOnMountList(const char* mount)
       break;
     }
   }
-  if(!st) xbt_die("Can't find mount '%s' for '%s'", mount, m_name);
+  if(!st) xbt_die("Can't find mount '%s' for '%s'", mount, getName());
   return st;
 }
 
@@ -155,7 +155,7 @@ xbt_dict_t Workstation::getStorageList()
   char *storage_name = NULL;
 
   xbt_dynar_foreach(p_storage,i,mnt){
-    storage_name = (char *)dynamic_cast<StoragePtr>(static_cast<ResourcePtr>(mnt.storage))->m_name;
+    storage_name = (char *)dynamic_cast<StoragePtr>(static_cast<ResourcePtr>(mnt.storage))->getName();
     xbt_dict_set(storage_list,mnt.name,storage_name,NULL);
   }
   return storage_list;
@@ -163,25 +163,25 @@ xbt_dict_t Workstation::getStorageList()
 
 ActionPtr Workstation::open(const char* mount, const char* path) {
   StoragePtr st = findStorageOnMountList(mount);
-  XBT_DEBUG("OPEN on disk '%s'", st->m_name);
+  XBT_DEBUG("OPEN on disk '%s'", st->getName());
   return st->open(mount, path);
 }
 
 ActionPtr Workstation::close(surf_file_t fd) {
   StoragePtr st = findStorageOnMountList(fd->mount);
-  XBT_DEBUG("CLOSE on disk '%s'",st->m_name);
+  XBT_DEBUG("CLOSE on disk '%s'",st->getName());
   return st->close(fd);
 }
 
 ActionPtr Workstation::read(surf_file_t fd, sg_size_t size) {
   StoragePtr st = findStorageOnMountList(fd->mount);
-  XBT_DEBUG("READ on disk '%s'",st->m_name);
+  XBT_DEBUG("READ on disk '%s'",st->getName());
   return st->read(fd, size);
 }
 
 ActionPtr Workstation::write(surf_file_t fd, sg_size_t size) {
   StoragePtr st = findStorageOnMountList(fd->mount);
-  XBT_DEBUG("WRITE on disk '%s'",st->m_name);
+  XBT_DEBUG("WRITE on disk '%s'",st->getName());
   return st->write(fd, size);
 }
 
@@ -195,10 +195,10 @@ int Workstation::unlink(surf_file_t fd) {
     /* Check if the file is on this storage */
     if (!xbt_dict_get_or_null(st->p_content, fd->name)){
       XBT_WARN("File %s is not on disk %s. Impossible to unlink", fd->name,
-          st->m_name);
+          st->getName());
       return 0;
     } else {
-      XBT_DEBUG("UNLINK on disk '%s'",st->m_name);
+      XBT_DEBUG("UNLINK on disk '%s'",st->getName());
       st->m_usedSize -= fd->size;
 
       // Remove the file from storage
@@ -230,7 +230,7 @@ xbt_dynar_t Workstation::getInfo( surf_file_t fd)
   xbt_dynar_t info = xbt_dynar_new(sizeof(void*), NULL);
   xbt_dynar_push_as(info, sg_size_t *, psize);
   xbt_dynar_push_as(info, void *, fd->mount);
-  xbt_dynar_push_as(info, void *, (void *)st->m_name);
+  xbt_dynar_push_as(info, void *, (void *)st->getName());
   xbt_dynar_push_as(info, void *, st->p_typeId);
   xbt_dynar_push_as(info, void *, st->p_contentType);
 
@@ -285,7 +285,7 @@ xbt_dynar_t Workstation::getVms()
     if (!ws)
       continue;
     /* skip if it is not a virtual machine */
-    if (ws->p_model != static_cast<ModelPtr>(surf_vm_workstation_model))
+    if (ws->getModel() != static_cast<ModelPtr>(surf_vm_workstation_model))
       continue;
 
     /* It is a virtual machine, so we can cast it to workstation_VM2013_t */

@@ -476,7 +476,7 @@ double CpuTiModel::shareResources(double now)
 
 /* iterates over modified cpus to update share resources */
   xbt_swag_foreach_safe(_cpu, _cpu_next, p_modifiedCpu) {
-    static_cast<CpuTiPtr>(_cpu)->updateActionFinishDate(now);
+    static_cast<CpuTiPtr>(_cpu)->updateActionsFinishTime(now);
   }
 /* get the min next event if heap not empty */
   if (xbt_heap_size(p_tiActionHeap) > 0)
@@ -493,9 +493,9 @@ void CpuTiModel::updateActionsState(double now, double /*delta*/)
          && (xbt_heap_maxkey(p_tiActionHeap) <= now)) {
     CpuTiActionPtr action = (CpuTiActionPtr) xbt_heap_pop(p_tiActionHeap);
     XBT_DEBUG("Action %p: finish", action);
-    action->m_finish = surf_get_clock();
+    action->finish();
     /* set the remains to 0 due to precision problems when updating the remaining amount */
-    action->m_remains = 0;
+    action->setRemains(0);
     action->setState(SURF_ACTION_DONE);
     /* update remaining amount of all actions */
     action->p_cpu->updateRemainingAmount(surf_get_clock());
@@ -567,9 +567,9 @@ CpuTi::CpuTi(CpuTiModelPtr model, const char *name, xbt_dynar_t powerPeak,
         e_surf_resource_state_t stateInitial, tmgr_trace_t stateTrace,
 	xbt_dict_t properties)
 : Resource(model, name, properties)
-, Cpu(model, name, properties, core, 0, powerScale) {
+, Cpu(core, 0, powerScale) {
   p_powerEvent = NULL;
-  p_stateCurrent = stateInitial;
+  m_stateCurrent = stateInitial;
   m_powerScale = powerScale;
   m_core = core;
   tmgr_trace_t empty_trace;		
@@ -626,7 +626,7 @@ void CpuTi::updateState(tmgr_trace_event_t event_type,
            value, date);
     /* update remaining of actions and put in modified cpu swag */
     updateRemainingAmount(date);
-    xbt_swag_insert(this, reinterpret_cast<CpuTiModelPtr>(p_model)->p_modifiedCpu);
+    xbt_swag_insert(this, reinterpret_cast<CpuTiModelPtr>(getModel())->p_modifiedCpu);
 
     power_trace = p_availTrace->p_powerTrace;
     xbt_dynar_get_cpy(power_trace->s_list.event_list,
@@ -645,11 +645,11 @@ void CpuTi::updateState(tmgr_trace_event_t event_type,
 
   } else if (event_type == p_stateEvent) {
     if (value > 0) {
-      if(p_stateCurrent == SURF_RESOURCE_OFF)
-        xbt_dynar_push_as(host_that_restart, char*, (char *)m_name);
-      p_stateCurrent = SURF_RESOURCE_ON;
+      if(m_stateCurrent == SURF_RESOURCE_OFF)
+        xbt_dynar_push_as(host_that_restart, char*, (char *)getName());
+      m_stateCurrent = SURF_RESOURCE_ON;
     } else {
-      p_stateCurrent = SURF_RESOURCE_OFF;
+      m_stateCurrent = SURF_RESOURCE_OFF;
 
       /* put all action running on cpu to failed */
       xbt_swag_foreach(_action, p_actionSet) {
@@ -657,11 +657,11 @@ void CpuTi::updateState(tmgr_trace_event_t event_type,
         if (action->getState() == SURF_ACTION_RUNNING
          || action->getState() == SURF_ACTION_READY
          || action->getState() == SURF_ACTION_NOT_IN_THE_SYSTEM) {
-          action->m_finish = date;
+          action->setFinishTime(date);
           action->setState(SURF_ACTION_FAILED);
           if (action->m_indexHeap >= 0) {
             CpuTiActionPtr heap_act = (CpuTiActionPtr)
-                xbt_heap_remove(reinterpret_cast<CpuTiModelPtr>(p_model)->p_tiActionHeap, action->m_indexHeap);
+                xbt_heap_remove(reinterpret_cast<CpuTiModelPtr>(getModel())->p_tiActionHeap, action->m_indexHeap);
             if (heap_act != action)
               DIE_IMPOSSIBLE;
           }
@@ -678,7 +678,7 @@ void CpuTi::updateState(tmgr_trace_event_t event_type,
   return;
 }
 
-void CpuTi::updateActionFinishDate(double now)
+void CpuTi::updateActionsFinishTime(double now)
 {
   void *_action;
   CpuTiActionPtr action;
@@ -690,19 +690,19 @@ updateRemainingAmount(now);
   xbt_swag_foreach(_action, p_actionSet) {
     action = static_cast<CpuTiActionPtr>(_action);
     /* action not running, skip it */
-    if (action->p_stateSet !=
-        surf_cpu_model_pm->p_runningActionSet)
+    if (action->getStateSet() !=
+        surf_cpu_model_pm->getRunningActionSet())
       continue;
 
     /* bogus priority, skip it */
-    if (action->m_priority <= 0)
+    if (action->getPriority() <= 0)
       continue;
 
     /* action suspended, skip it */
     if (action->m_suspended != 0)
       continue;
 
-    sum_priority += 1.0 / action->m_priority;
+    sum_priority += 1.0 / action->getPriority();
   }
   m_sumPriority = sum_priority;
 
@@ -710,50 +710,50 @@ updateRemainingAmount(now);
     action = static_cast<CpuTiActionPtr>(_action);
     min_finish = -1;
     /* action not running, skip it */
-    if (action->p_stateSet !=
-        surf_cpu_model_pm->p_runningActionSet)
+    if (action->getStateSet() !=
+        surf_cpu_model_pm->getRunningActionSet())
       continue;
 
     /* verify if the action is really running on cpu */
-    if (action->m_suspended == 0 && action->m_priority > 0) {
+    if (action->m_suspended == 0 && action->getPriority() > 0) {
       /* total area needed to finish the action. Used in trace integration */
       total_area =
-          (action->m_remains) * sum_priority *
-           action->m_priority;
+          (action->getRemains()) * sum_priority *
+           action->getPriority();
 
       total_area /= m_powerPeak;
 
-      action->m_finish = p_availTrace->solve(now, total_area);
+      action->setFinishTime(p_availTrace->solve(now, total_area));
       /* verify which event will happen before (max_duration or finish time) */
-      if (action->m_maxDuration != NO_MAX_DURATION &&
-          action->m_start + action->m_maxDuration < action->m_finish)
-        min_finish = action->m_start + action->m_maxDuration;
+      if (action->getMaxDuration() != NO_MAX_DURATION &&
+          action->getStartTime() + action->getMaxDuration() < action->m_finish)
+        min_finish = action->getStartTime() + action->getMaxDuration();
       else
         min_finish = action->m_finish;
     } else {
       /* put the max duration time on heap */
-      if (action->m_maxDuration != NO_MAX_DURATION)
-        min_finish = action->m_start + action->m_maxDuration;
+      if (action->getMaxDuration() != NO_MAX_DURATION)
+        min_finish = action->getStartTime() + action->getMaxDuration();
     }
     /* add in action heap */
     XBT_DEBUG("action(%p) index %d", action, action->m_indexHeap);
     if (action->m_indexHeap >= 0) {
       CpuTiActionPtr heap_act = (CpuTiActionPtr)
-          xbt_heap_remove(reinterpret_cast<CpuTiModelPtr>(p_model)->p_tiActionHeap, action->m_indexHeap);
+          xbt_heap_remove(reinterpret_cast<CpuTiModelPtr>(getModel())->p_tiActionHeap, action->m_indexHeap);
       if (heap_act != action)
         DIE_IMPOSSIBLE;
     }
     if (min_finish != NO_MAX_DURATION)
-      xbt_heap_push(reinterpret_cast<CpuTiModelPtr>(p_model)->p_tiActionHeap, action, min_finish);
+      xbt_heap_push(reinterpret_cast<CpuTiModelPtr>(getModel())->p_tiActionHeap, action, min_finish);
 
     XBT_DEBUG
         ("Update finish time: Cpu(%s) Action: %p, Start Time: %f Finish Time: %f Max duration %f",
-         m_name, action, action->m_start,
+         getName(), action, action->getStartTime(),
          action->m_finish,
-         action->m_maxDuration);
+         action->getMaxDuration());
   }
 /* remove from modified cpu */
-  xbt_swag_remove(this, reinterpret_cast<CpuTiModelPtr>(p_model)->p_modifiedCpu);
+  xbt_swag_remove(this, reinterpret_cast<CpuTiModelPtr>(getModel())->p_modifiedCpu);
 }
 
 bool CpuTi::isUsed()
@@ -792,12 +792,12 @@ void CpuTi::updateRemainingAmount(double now)
   xbt_swag_foreach(_action, p_actionSet) {
     action = static_cast<CpuTiActionPtr>(_action);
     /* action not running, skip it */
-    if (action->p_stateSet !=
-        getModel()->p_runningActionSet)
+    if (action->getStateSet() !=
+        getModel()->getRunningActionSet())
       continue;
 
     /* bogus priority, skip it */
-    if (action->m_priority <= 0)
+    if (action->getPriority() <= 0)
       continue;
 
     /* action suspended, skip it */
@@ -805,7 +805,7 @@ void CpuTi::updateRemainingAmount(double now)
       continue;
 
     /* action don't need update */
-    if (action->m_start >= now)
+    if (action->getStartTime() >= now)
       continue;
 
     /* skip action that are finishing now */
@@ -814,9 +814,7 @@ void CpuTi::updateRemainingAmount(double now)
       continue;
 
     /* update remaining */
-    double_update(&(action->m_remains),
-                  area_total / (m_sumPriority *
-                                action->m_priority));
+    action->updateRemains(area_total / (m_sumPriority * action->getPriority()));
     XBT_DEBUG("Update remaining action(%p) remaining %f", action,
            action->m_remains);
   }
@@ -825,23 +823,10 @@ void CpuTi::updateRemainingAmount(double now)
 
 CpuActionPtr CpuTi::execute(double size)
 {
-  return _execute(size);
-}
-
-CpuTiActionPtr CpuTi::_execute(double size)
-{
-  XBT_IN("(%s,%g)", m_name, size);
-  CpuTiActionPtr action = new CpuTiAction(static_cast<CpuTiModelPtr>(p_model), size, p_stateCurrent != SURF_RESOURCE_ON);
-
-  action->p_cpu = this;
-  action->m_indexHeap = -1;
-
-  xbt_swag_insert(this, reinterpret_cast<CpuTiModelPtr>(p_model)->p_modifiedCpu);
+  XBT_IN("(%s,%g)", getName(), size);
+  CpuTiActionPtr action = new CpuTiAction(static_cast<CpuTiModelPtr>(getModel()), size, m_stateCurrent != SURF_RESOURCE_ON, this);
 
   xbt_swag_insert(action, p_actionSet);
-
-  action->m_suspended = 0;        /* Should be useless because of the
-              »                     calloc but it seems to help valgrind... */
 
   XBT_OUT();
   return action;
@@ -853,33 +838,49 @@ CpuActionPtr CpuTi::sleep(double duration)
   if (duration > 0)
     duration = MAX(duration, MAXMIN_PRECISION);
 
-  XBT_IN("(%s,%g)", m_name, duration);
-  CpuTiActionPtr action = _execute(1.0);
+  XBT_IN("(%s,%g)", getName(), duration);
+  CpuTiActionPtr action = new CpuTiAction(static_cast<CpuTiModelPtr>(getModel()), 1.0, m_stateCurrent != SURF_RESOURCE_ON, this);
+
   action->m_maxDuration = duration;
   action->m_suspended = 2;
   if (duration == NO_MAX_DURATION) {
-    /* Move to the *end* of the corresponding action set. This convention
-       is used to speed up update_resource_state  */
-    xbt_swag_remove(static_cast<ActionPtr>(action), action->p_stateSet);
-    action->p_stateSet = reinterpret_cast<CpuTiModelPtr>(p_model)->p_runningActionSetThatDoesNotNeedBeingChecked;
-    xbt_swag_insert(static_cast<ActionPtr>(action), action->p_stateSet);
+   /* Move to the *end* of the corresponding action set. This convention
+      is used to speed up update_resource_state  */
+    xbt_swag_remove(static_cast<ActionPtr>(action), action->getStateSet());
+    action->p_stateSet = reinterpret_cast<CpuTiModelPtr>(getModel())->p_runningActionSetThatDoesNotNeedBeingChecked;
+    xbt_swag_insert(static_cast<ActionPtr>(action), action->getStateSet());
   }
+
+  xbt_swag_insert(action, p_actionSet);
+
   XBT_OUT();
   return action;
 }
 
-void CpuTi::printCpuTiModel()
-{
-  std::cout << getModel()->getName() << "<<plop"<< std::endl;
-};
-
 /**********
  * Action *
  **********/
+
 static void cpu_ti_action_update_index_heap(void *action, int i)
 {
-  ((CpuTiActionPtr)action)->updateIndexHeap(i); 
+((CpuTiActionPtr)action)->updateIndexHeap(i);
 }
+
+CpuTiAction::CpuTiAction(CpuTiModelPtr model_, double cost, bool failed,
+		                 CpuTiPtr cpu)
+ : Action(model_, cost, failed)
+ , CpuAction(model_, cost, failed)
+{
+  p_cpuListHookup.next = 0;
+  p_cpuListHookup.prev = 0;
+
+  m_suspended = 0;        /* Should be useless because of the
+	                         calloc but it seems to help valgrind... */
+  p_cpu = cpu;
+  m_indexHeap = -1;
+  xbt_swag_insert(cpu, reinterpret_cast<CpuTiModelPtr>(getModel())->p_modifiedCpu);
+}
+
 void CpuTiAction::updateIndexHeap(int i)
 {
   m_indexHeap = i;
@@ -888,19 +889,19 @@ void CpuTiAction::updateIndexHeap(int i)
 void CpuTiAction::setState(e_surf_action_state_t state)
 {
   Action::setState(state);
-  xbt_swag_insert(p_cpu, reinterpret_cast<CpuTiModelPtr>(p_model)->p_modifiedCpu);
+  xbt_swag_insert(p_cpu, reinterpret_cast<CpuTiModelPtr>(getModel())->p_modifiedCpu);
 }
 
 int CpuTiAction::unref()
 {
   m_refcount--;
   if (!m_refcount) {
-    xbt_swag_remove(static_cast<ActionPtr>(this), p_stateSet);
+    xbt_swag_remove(static_cast<ActionPtr>(this), getStateSet());
     /* remove from action_set */
     xbt_swag_remove(this, p_cpu->p_actionSet);
     /* remove from heap */
-    xbt_heap_remove(reinterpret_cast<CpuTiModelPtr>(p_model)->p_tiActionHeap, this->m_indexHeap);
-    xbt_swag_insert(p_cpu, reinterpret_cast<CpuTiModelPtr>(p_model)->p_modifiedCpu);
+    xbt_heap_remove(reinterpret_cast<CpuTiModelPtr>(getModel())->p_tiActionHeap, this->m_indexHeap);
+    xbt_swag_insert(p_cpu, reinterpret_cast<CpuTiModelPtr>(getModel())->p_modifiedCpu);
     delete this;
     return 1;
   }
@@ -910,8 +911,8 @@ int CpuTiAction::unref()
 void CpuTiAction::cancel()
 {
   this->setState(SURF_ACTION_FAILED);
-  xbt_heap_remove(p_model->p_actionHeap, this->m_indexHeap);
-  xbt_swag_insert(p_cpu, reinterpret_cast<CpuTiModelPtr>(p_model)->p_modifiedCpu);
+  xbt_heap_remove(getModel()->getActionHeap(), this->m_indexHeap);
+  xbt_swag_insert(p_cpu, reinterpret_cast<CpuTiModelPtr>(getModel())->p_modifiedCpu);
   return;
 }
 
@@ -925,8 +926,8 @@ void CpuTiAction::suspend()
   XBT_IN("(%p)", this);
   if (m_suspended != 2) {
     m_suspended = 1;
-    xbt_heap_remove(p_model->p_actionHeap, m_indexHeap);
-    xbt_swag_insert(p_cpu, reinterpret_cast<CpuTiModelPtr>(p_model)->p_modifiedCpu);
+    xbt_heap_remove(getModel()->getActionHeap(), m_indexHeap);
+    xbt_swag_insert(p_cpu, reinterpret_cast<CpuTiModelPtr>(getModel())->p_modifiedCpu);
   }
   XBT_OUT();
 }
@@ -936,7 +937,7 @@ void CpuTiAction::resume()
   XBT_IN("(%p)", this);
   if (m_suspended != 2) {
     m_suspended = 0;
-    xbt_swag_insert(p_cpu, reinterpret_cast<CpuTiModelPtr>(p_model)->p_modifiedCpu);
+    xbt_swag_insert(p_cpu, reinterpret_cast<CpuTiModelPtr>(getModel())->p_modifiedCpu);
   }
   XBT_OUT();
 }
@@ -955,19 +956,19 @@ void CpuTiAction::setMaxDuration(double duration)
   m_maxDuration = duration;
 
   if (duration >= 0)
-    min_finish = (m_start + m_maxDuration) < m_finish ?
-                 (m_start + m_maxDuration) : m_finish;
+    min_finish = (getStartTime() + getMaxDuration()) < getFinishTime() ?
+                 (getStartTime() + getMaxDuration()) : getFinishTime();
   else
-    min_finish = m_finish;
+    min_finish = getFinishTime();
 
 /* add in action heap */
   if (m_indexHeap >= 0) {
     CpuTiActionPtr heap_act = (CpuTiActionPtr)
-        xbt_heap_remove(p_model->p_actionHeap, m_indexHeap);
+        xbt_heap_remove(getModel()->getActionHeap(), m_indexHeap);
     if (heap_act != this)
       DIE_IMPOSSIBLE;
   }
-  xbt_heap_push(p_model->p_actionHeap, this, min_finish);
+  xbt_heap_push(getModel()->getActionHeap(), this, min_finish);
 
   XBT_OUT();
 }
@@ -976,7 +977,7 @@ void CpuTiAction::setPriority(double priority)
 {
   XBT_IN("(%p,%g)", this, priority);
   m_priority = priority;
-  xbt_swag_insert(p_cpu, reinterpret_cast<CpuTiModelPtr>(p_model)->p_modifiedCpu);
+  xbt_swag_insert(p_cpu, reinterpret_cast<CpuTiModelPtr>(getModel())->p_modifiedCpu);
   XBT_OUT();
 }
 

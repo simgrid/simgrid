@@ -34,9 +34,18 @@ double NetworkModel::bandwidthConstraint(double rate, double /*bound*/, double /
   return rate;
 }
 
+NetworkLinkLmm::NetworkLinkLmm(lmm_constraint_t constraint,
+	                           tmgr_history_t history,
+	                           tmgr_trace_t state_trace)
+: ResourceLmm(constraint)
+{
+  if (state_trace)
+    p_stateEvent = tmgr_history_add_trace(history, state_trace, 0.0, 0, static_cast<ResourcePtr>(this));
+}
+
 bool NetworkLinkLmm::isUsed()
 {
-  return lmm_constraint_used(p_model->p_maxminSystem, p_constraint);
+  return lmm_constraint_used(getModel()->getMaxminSystem(), constraint());
 }
 
 double NetworkLink::getLatency()
@@ -51,7 +60,7 @@ double NetworkLinkLmm::getBandwidth()
 
 bool NetworkLinkLmm::isShared()
 {
-  return lmm_constraint_is_shared(p_constraint);
+  return lmm_constraint_is_shared(constraint());
 }
 
 #endif /* NETWORK_INTERFACE_CPP_ */
