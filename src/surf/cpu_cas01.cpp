@@ -6,7 +6,7 @@
 
 #include "cpu_cas01.hpp"
 #include "cpu_ti.hpp"
-#include "maxmin_private.h"
+#include "maxmin_private.hpp"
 #include "simgrid/sg_config.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_cpu_cas, surf_cpu,
@@ -57,9 +57,6 @@ void surf_cpu_model_init_Cas01()
 
 CpuCas01Model::CpuCas01Model() : CpuModel("cpu")
 {
-  ActionPtr action = NULL;
-  ActionLmmPtr actionlmm = NULL;
-
   char *optim = xbt_cfg_get_string(_sg_cfg_set, "cpu/optim");
   int select = xbt_cfg_get_boolean(_sg_cfg_set, "cpu/maxmin_selective_update");
 
@@ -78,8 +75,7 @@ CpuCas01Model::CpuCas01Model() : CpuModel("cpu")
     xbt_die("Unsupported optimization (%s) for this model", optim);
   }
 
-  p_cpuRunningActionSetThatDoesNotNeedBeingChecked =
-      xbt_swag_new(xbt_swag_offset(*action, p_stateHookup));
+  p_cpuRunningActionSetThatDoesNotNeedBeingChecked = new ActionList();
 
   if (getUpdateMechanism() == UM_LAZY) {
 	shareResources = &CpuCas01Model::shareResourcesLazy;
@@ -98,7 +94,7 @@ CpuCas01Model::CpuCas01Model() : CpuModel("cpu")
   if (getUpdateMechanism() == UM_LAZY) {
     p_actionHeap = xbt_heap_new(8, NULL);
     xbt_heap_set_update_callback(p_actionHeap,  surf_action_lmm_update_index_heap);
-    p_modifiedSet = xbt_swag_new(xbt_swag_offset(*actionlmm, p_actionListHookup));
+    p_modifiedSet = new ActionLmmList();
     p_maxminSystem->keep_track = p_modifiedSet;
   }
 }
@@ -110,11 +106,11 @@ CpuCas01Model::~CpuCas01Model()
 
   if (p_actionHeap)
     xbt_heap_free(p_actionHeap);
-  xbt_swag_free(p_modifiedSet);
+  delete p_modifiedSet;
 
   surf_cpu_model_pm = NULL;
 
-  xbt_swag_free(p_cpuRunningActionSetThatDoesNotNeedBeingChecked);
+  delete p_cpuRunningActionSetThatDoesNotNeedBeingChecked;
 }
 
 void CpuCas01Model::parseInit(sg_platf_host_cbarg_t host)
@@ -323,9 +319,9 @@ CpuActionPtr CpuCas01Lmm::sleep(double duration)
   if (duration == NO_MAX_DURATION) {
     /* Move to the *end* of the corresponding action set. This convention
        is used to speed up update_resource_state  */
-    xbt_swag_remove(static_cast<ActionPtr>(action), action->getStateSet());
+	action->getStateSet()->erase(action->getStateSet()->iterator_to(*action));
     action->p_stateSet = static_cast<CpuCas01ModelPtr>(getModel())->p_cpuRunningActionSetThatDoesNotNeedBeingChecked;
-    xbt_swag_insert(static_cast<ActionPtr>(action), action->getStateSet());
+    action->getStateSet()->push_back(*action);
   }
 
   lmm_update_variable_weight(surf_cpu_model_pm->getMaxminSystem(),
@@ -335,7 +331,7 @@ CpuActionPtr CpuCas01Lmm::sleep(double duration)
     // this is necessary for a variable with weight 0 since such
     // variables are ignored in lmm and we need to set its max_duration
     // correctly at the next call to share_resources
-    xbt_swag_insert_at_head(static_cast<ActionLmmPtr>(action), surf_cpu_model_pm->getModifiedSet());
+    surf_cpu_model_pm->getModifiedSet()->push_front(*action);
   }
 
   XBT_OUT();

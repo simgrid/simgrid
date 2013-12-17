@@ -43,16 +43,16 @@ WorkstationL07Model::~WorkstationL07Model() {
 
 double WorkstationL07Model::shareResources(double /*now*/)
 {
-  void *_action;
   WorkstationL07ActionLmmPtr action;
 
-  xbt_swag_t running_actions = getRunningActionSet();
+  ActionListPtr running_actions = getRunningActionSet();
   double min = this->shareResourcesMaxMin(running_actions,
                                               ptask_maxmin_system,
                                               bottleneck_solve);
 
-  xbt_swag_foreach(_action, running_actions) {
-	action = dynamic_cast<WorkstationL07ActionLmmPtr>(static_cast<ActionPtr>(_action));
+  for(ActionList::iterator it(running_actions->begin()), itend(running_actions->end())
+	 ; it != itend ; ++it) {
+	action = dynamic_cast<WorkstationL07ActionLmmPtr>(&*it);
     if (action->m_latency > 0) {
       if (min < 0) {
         min = action->m_latency;
@@ -74,13 +74,14 @@ double WorkstationL07Model::shareResources(double /*now*/)
 void WorkstationL07Model::updateActionsState(double /*now*/, double delta)
 {
   double deltap = 0.0;
-  void *_action, *_next_action;
   WorkstationL07ActionLmmPtr action;
 
-  xbt_swag_t actionSet = getRunningActionSet();
-  xbt_swag_foreach_safe(_action, _next_action, actionSet) {
-    action = dynamic_cast<WorkstationL07ActionLmmPtr>(static_cast<ActionPtr>(_action));
+  ActionListPtr actionSet = getRunningActionSet();
 
+  for(ActionList::iterator it(actionSet->begin()), itNext = it, itend(actionSet->end())
+	 ; it != itend ; it=itNext) {
+	++itNext;
+    action = dynamic_cast<WorkstationL07ActionLmmPtr>(&*it);
     deltap = delta;
     if (action->m_latency > 0) {
       if (action->m_latency > deltap) {
@@ -655,7 +656,8 @@ int WorkstationL07ActionLmm::unref()
 {
   m_refcount--;
   if (!m_refcount) {
-    xbt_swag_remove(static_cast<ActionPtr>(this), p_stateSet);
+    if (actionHook::is_linked())
+	  p_stateSet->erase(p_stateSet->iterator_to(*this));
     if (getVariable())
       lmm_variable_free(ptask_maxmin_system, getVariable());
     delete this;

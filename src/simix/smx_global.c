@@ -215,7 +215,6 @@ void SIMIX_run(void)
 {
   double time = 0;
   smx_process_t process;
-  xbt_swag_t set;
   surf_action_t action;
   smx_timer_t timer;
   surf_model_t model;
@@ -327,13 +326,11 @@ void SIMIX_run(void)
 
     /* Wake up all processes waiting for a Surf action to finish */
     xbt_dynar_foreach(model_list, iter, model) {
-      set = surf_model_failed_action_set(model);
-      while ((action = xbt_swag_extract(set)))
+      while ((action = surf_model_extract_failed_action_set(model)))
 
       SIMIX_simcall_post((smx_action_t) surf_action_get_data(action));
-      set = surf_model_done_action_set(model);
 
-      while ((action = xbt_swag_extract(set))) 
+      while ((action = surf_model_extract_done_action_set(model)))
         if (surf_action_get_data(action) == NULL)
           XBT_DEBUG("probably vcpu's action %p, skip", action);
         else

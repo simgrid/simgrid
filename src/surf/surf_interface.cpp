@@ -457,15 +457,14 @@ void surf_exit(void)
  *********/
 
 Model::Model(const char *name)
-  : p_maxminSystem(0),  p_name(name),
+  : p_name(name), p_maxminSystem(0),
     m_resOnCB(0), m_resOffCB(0),
     m_actCancelCB(0), m_actSuspendCB(0), m_actResumeCB(0)
 {
-  ActionPtr action = NULL;
-  p_readyActionSet = xbt_swag_new(xbt_swag_offset(*action, p_stateHookup));
-  p_runningActionSet = xbt_swag_new(xbt_swag_offset(*action, p_stateHookup));
-  p_failedActionSet = xbt_swag_new(xbt_swag_offset(*action, p_stateHookup));
-  p_doneActionSet = xbt_swag_new(xbt_swag_offset(*action, p_stateHookup));
+  p_readyActionSet = new ActionList();
+  p_runningActionSet = new ActionList();
+  p_failedActionSet = new ActionList();
+  p_doneActionSet = new ActionList();
 
   p_modifiedSet = NULL;
   p_actionHeap = NULL;
@@ -474,10 +473,10 @@ Model::Model(const char *name)
 }
 
 Model::~Model(){
-xbt_swag_free(p_readyActionSet);
-xbt_swag_free(p_runningActionSet);
-xbt_swag_free(p_failedActionSet);
-xbt_swag_free(p_doneActionSet);
+  delete p_readyActionSet;
+  delete p_runningActionSet;
+  delete p_failedActionSet;
+  delete p_doneActionSet;
 }
 
 double Model::shareResources(double now)
@@ -499,15 +498,17 @@ double Model::shareResourcesLazy(double now)
 
   XBT_DEBUG
       ("Before share resources, the size of modified actions set is %d",
-       xbt_swag_size(p_modifiedSet));
+       p_modifiedSet->size());
 
   lmm_solve(p_maxminSystem);
 
   XBT_DEBUG
       ("After share resources, The size of modified actions set is %d",
-       xbt_swag_size(p_modifiedSet));
+       p_modifiedSet->size());
 
-  while((action = static_cast<ActionLmmPtr>(xbt_swag_extract(p_modifiedSet)))) {
+  while(!p_modifiedSet->empty()) {
+	action = dynamic_cast<ActionLmmPtr>(&(p_modifiedSet->front()));
+	p_modifiedSet->pop_front();
     int max_dur_flag = 0;
 
     if (action->getStateSet() != p_runningActionSet)
@@ -568,7 +569,7 @@ double Model::shareResourcesFull(double /*now*/) {
 }
 
 
-double Model::shareResourcesMaxMin(xbt_swag_t running_actions,
+double Model::shareResourcesMaxMin(ActionListPtr running_actions,
                           lmm_system_t sys,
                           void (*solve) (lmm_system_t))
 {
@@ -579,14 +580,15 @@ double Model::shareResourcesMaxMin(xbt_swag_t running_actions,
 
   solve(sys);
 
-  xbt_swag_foreach(_action, running_actions) {
-    action = dynamic_cast<ActionLmmPtr>(static_cast<ActionPtr>(_action));
+  ActionList::iterator it(running_actions->begin()), itend(running_actions->end());
+  for(; it != itend ; ++it) {
+	  action = dynamic_cast<ActionLmmPtr>(&*it);
     value = lmm_variable_getvalue(action->getVariable());
     if ((value > 0) || (action->getMaxDuration() >= 0))
       break;
   }
 
-  if (!_action)
+  if (!action)
     return -1.0;
 
   if (value > 0) {
@@ -600,10 +602,8 @@ double Model::shareResourcesMaxMin(xbt_swag_t running_actions,
     min = action->getMaxDuration();
 
 
-  for (_action = xbt_swag_getNext(static_cast<ActionPtr>(action), running_actions->offset);
-       _action;
-       _action = xbt_swag_getNext(static_cast<ActionPtr>(action), running_actions->offset)) {
-	action = dynamic_cast<ActionLmmPtr>(static_cast<ActionPtr>(_action));
+  for (++it; it != itend; ++it) {
+	action = dynamic_cast<ActionLmmPtr>(&*it);
     value = lmm_variable_getvalue(action->getVariable());
     if (value > 0) {
       if (action->getRemains() > 0)
@@ -792,7 +792,7 @@ Action::Action(ModelPtr model, double cost, bool failed)
   else
     p_stateSet = getModel()->getRunningActionSet();
 
-  xbt_swag_insert(this, p_stateSet);
+  p_stateSet->push_back(*this);
 }
 
 Action::~Action() {
@@ -834,8 +834,7 @@ void Action::setState(e_surf_action_state_t state)
 {
   //surf_action_state_t action_state = &(action->model_type->states);
   XBT_IN("(%p,%s)", this, surf_action_state_names[state]);
-  xbt_swag_remove(this, p_stateSet);
-
+  p_stateSet->erase(p_stateSet->iterator_to(*this));
   if (state == SURF_ACTION_READY)
     p_stateSet = getModel()->getReadyActionSet();
   else if (state == SURF_ACTION_RUNNING)
@@ -848,7 +847,7 @@ void Action::setState(e_surf_action_state_t state)
     p_stateSet = NULL;
 
   if (p_stateSet)
-    xbt_swag_insert(this, p_stateSet);
+	p_stateSet->push_back(*this);
   XBT_OUT();
 }
 
@@ -913,7 +912,7 @@ void ActionLmm::setPriority(double priority)
 void ActionLmm::cancel(){
   setState(SURF_ACTION_FAILED);
   if (getModel()->getUpdateMechanism() == UM_LAZY) {
-    xbt_swag_remove(this, getModel()->getModifiedSet());
+	getModel()->getModifiedSet()->erase(getModel()->getModifiedSet()->iterator_to(*this));
     heapRemove(getModel()->getActionHeap());
   }
 }
@@ -921,13 +920,15 @@ void ActionLmm::cancel(){
 int ActionLmm::unref(){
   m_refcount--;
   if (!m_refcount) {
-	xbt_swag_remove(static_cast<ActionPtr>(this), p_stateSet);
+	if (actionHook::is_linked())
+	  p_stateSet->erase(p_stateSet->iterator_to(*this));
 	if (getVariable())
 	  lmm_variable_free(getModel()->getMaxminSystem(), getVariable());
 	if (getModel()->getUpdateMechanism() == UM_LAZY) {
 	  /* remove from heap */
 	  heapRemove(getModel()->getActionHeap());
-	  xbt_swag_remove(this, getModel()->getModifiedSet());
+      if (actionLmmHook::is_linked())
+	    getModel()->getModifiedSet()->erase(getModel()->getModifiedSet()->iterator_to(*this));
     }
 	delete this;
 	return 1;

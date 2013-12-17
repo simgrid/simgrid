@@ -222,20 +222,37 @@ const char *surf_model_name(surf_model_t model){
   return model->getName();
 }
 
-xbt_swag_t surf_model_done_action_set(surf_model_t model){
-  return model->getDoneActionSet();
+surf_action_t surf_model_extract_done_action_set(surf_model_t model){
+  if (model->getDoneActionSet()->empty())
+	return NULL;
+  surf_action_t res = &model->getDoneActionSet()->front();
+  model->getDoneActionSet()->pop_front();
+  return res;
+}
+surf_action_t surf_model_extract_failed_action_set(surf_model_t model){
+  if (model->getFailedActionSet()->empty())
+	return NULL;
+  surf_action_t res = &model->getFailedActionSet()->front();
+  model->getFailedActionSet()->pop_front();
+  return res;
+}
+surf_action_t surf_model_extract_ready_action_set(surf_model_t model){
+  if (model->getReadyActionSet()->empty())
+	return NULL;
+  surf_action_t res = &model->getReadyActionSet()->front();
+  model->getReadyActionSet()->pop_front();
+  return res;
+}
+surf_action_t surf_model_extract_running_action_set(surf_model_t model){
+  if (model->getRunningActionSet()->empty())
+	return NULL;
+  surf_action_t res = &model->getRunningActionSet()->front();
+  model->getRunningActionSet()->pop_front();
+  return res;
 }
 
-xbt_swag_t surf_model_failed_action_set(surf_model_t model){
-  return model->getFailedActionSet();
-}
-
-xbt_swag_t surf_model_ready_action_set(surf_model_t model){
-  return model->getReadyActionSet();
-}
-
-xbt_swag_t surf_model_running_action_set(surf_model_t model){
-  return model->getRunningActionSet();
+int surf_model_running_action_set_size(surf_model_t model){
+  return model->getRunningActionSet()->size();
 }
 
 surf_action_t surf_workstation_model_execute_parallel_task(surf_workstation_model_t model,

@@ -13,7 +13,6 @@ CpuModelPtr surf_cpu_model_vm;
 
 void CpuModel::updateActionsStateLazy(double now, double /*delta*/)
 {
-  void *_action;
   CpuActionLmmPtr action;
   while ((xbt_heap_size(getActionHeap()) > 0)
          && (double_equals(xbt_heap_maxkey(getActionHeap()), now))) {
@@ -44,9 +43,10 @@ void CpuModel::updateActionsStateLazy(double now, double /*delta*/)
     //defining the last timestamp that we can safely dump to trace file
     //without losing the event ascending order (considering all CPU's)
     double smaller = -1;
-    xbt_swag_t actionSet = getRunningActionSet();
-    xbt_swag_foreach(_action, actionSet) {
-      action = dynamic_cast<CpuActionLmmPtr>(static_cast<ActionPtr>(_action));
+    ActionListPtr actionSet = getRunningActionSet();
+    for(ActionList::iterator it(actionSet->begin()), itend(actionSet->end())
+       ; it != itend ; ++it) {
+      action = dynamic_cast<CpuActionLmmPtr>(&*it);
         if (smaller < 0) {
           smaller = action->getLastUpdate();
           continue;
@@ -65,12 +65,13 @@ void CpuModel::updateActionsStateLazy(double now, double /*delta*/)
 
 void CpuModel::updateActionsStateFull(double now, double delta)
 {
-  void *_action, *_next_action;
   CpuActionLmmPtr action = NULL;
-  xbt_swag_t running_actions = getRunningActionSet();
+  ActionListPtr running_actions = getRunningActionSet();
 
-  xbt_swag_foreach_safe(_action, _next_action, running_actions) {
-    action = dynamic_cast<CpuActionLmmPtr>(static_cast<ActionPtr>(_action));
+  for(ActionList::iterator it(running_actions->begin()), itNext=it, itend(running_actions->end())
+     ; it != itend ; it=itNext) {
+	++itNext;
+    action = dynamic_cast<CpuActionLmmPtr>(&*it);
 #ifdef HAVE_TRACING
     if (TRACE_is_enabled()) {
       CpuPtr x = (CpuPtr) lmm_constraint_id(lmm_get_cnst_from_var

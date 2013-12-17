@@ -212,12 +212,13 @@ static inline void *surf_storage_resource_by_name(const char *name){
 
 XBT_PUBLIC(char *) surf_routing_edge_name(sg_routing_edge_t edge);
 XBT_PUBLIC(void *) surf_as_cluster_get_backbone(AS_t as);
-XBT_PUBLIC(void)  surf_as_cluster_set_backbone(AS_t as, void* backbone);
+XBT_PUBLIC(void) surf_as_cluster_set_backbone(AS_t as, void* backbone);
 XBT_PUBLIC(const char *) surf_model_name(surf_model_t model);
-XBT_PUBLIC(xbt_swag_t) surf_model_done_action_set(surf_model_t model);
-XBT_PUBLIC(xbt_swag_t) surf_model_failed_action_set(surf_model_t model);
-XBT_PUBLIC(xbt_swag_t) surf_model_ready_action_set(surf_model_t model);
-XBT_PUBLIC(xbt_swag_t) surf_model_running_action_set(surf_model_t model);
+XBT_PUBLIC(surf_action_t) surf_model_extract_done_action_set(surf_model_t model);
+XBT_PUBLIC(surf_action_t) surf_model_extract_failed_action_set(surf_model_t model);
+XBT_PUBLIC(surf_action_t) surf_model_extract_ready_action_set(surf_model_t model);
+XBT_PUBLIC(surf_action_t) surf_model_extract_running_action_set(surf_model_t model);
+XBT_PUBLIC(int) surf_model_running_action_set_size(surf_model_t model);
 XBT_PUBLIC(surf_action_t) surf_workstation_model_execute_parallel_task(surf_workstation_model_t model,
 		                                    int workstation_nb,
                                             void **workstation_list,

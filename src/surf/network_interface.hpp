@@ -51,7 +51,7 @@ public:
 	if (p_actionHeap)
 	  xbt_heap_free(p_actionHeap);
 	if (p_modifiedSet)
-	  xbt_swag_free(p_modifiedSet);
+	  delete p_modifiedSet;
   }
 
   virtual NetworkLinkPtr createResource(const char *name,

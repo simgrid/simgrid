@@ -290,12 +290,13 @@ double StorageN11Model::shareResources(double now)
 
 void StorageN11Model::updateActionsState(double /*now*/, double delta)
 {
-  void *_action, *_next_action;
   StorageActionLmmPtr action = NULL;
 
-  xbt_swag_t actionSet = getRunningActionSet();
-  xbt_swag_foreach_safe(_action, _next_action, actionSet) {
-	action = dynamic_cast<StorageActionLmmPtr>(static_cast<ActionPtr>(_action));
+  ActionListPtr actionSet = getRunningActionSet();
+  for(ActionList::iterator it(actionSet->begin()), itNext=it, itend(actionSet->end())
+     ; it != itend ; it=itNext) {
+    ++itNext;
+    action = dynamic_cast<StorageActionLmmPtr>(&*it);
     if(action->m_type == WRITE)
     {
       // Update the disk usage
@@ -546,7 +547,8 @@ int StorageN11ActionLmm::unref()
 {
   m_refcount--;
   if (!m_refcount) {
-    xbt_swag_remove(static_cast<ActionPtr>(this), p_stateSet);
+	if (actionHook::is_linked())
+	  p_stateSet->erase(p_stateSet->iterator_to(*this));
     if (getVariable())
       lmm_variable_free(getModel()->getMaxminSystem(), getVariable());
 #ifdef HAVE_TRACING

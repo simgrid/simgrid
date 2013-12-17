@@ -9,6 +9,7 @@
 #include <iostream>
 #include <memory>
 #include <boost/function.hpp>
+#include <boost/intrusive/list.hpp>
 #include "surf/trace_mgr.h"
 #include "xbt/lib.h"
 #include "surf/surf_routing.h"
@@ -67,8 +68,17 @@ typedef boost::function<void (ResourcePtr r)> ResourceCallback;
 typedef Action* ActionPtr;
 typedef boost::function<void (ActionPtr a)> ActionCallback;
 
+typedef boost::intrusive::list<Action> ActionList;
+typedef ActionList* ActionListPtr;
+typedef boost::intrusive::list_base_hook<> actionHook;
+
 //class ActionLmm;
 typedef ActionLmm* ActionLmmPtr;
+
+struct lmmTag;
+typedef boost::intrusive::list<ActionLmm, boost::intrusive::base_hook<boost::intrusive::list_base_hook<boost::intrusive::tag<lmmTag> > > > ActionLmmList;
+typedef ActionLmmList* ActionLmmListPtr;
+typedef boost::intrusive::list_base_hook<boost::intrusive::tag<lmmTag> > actionLmmHook;
 
 enum heap_action_type{
   LATENCY = 100,
@@ -97,16 +107,16 @@ XBT_PUBLIC_DATA(xbt_dynar_t) model_list;
 class Model {
   const char *p_name;
 
-  xbt_swag_t p_readyActionSet; /**< Actions in state SURF_ACTION_READY */
-  xbt_swag_t p_runningActionSet; /**< Actions in state SURF_ACTION_RUNNING */
-  xbt_swag_t p_failedActionSet; /**< Actions in state SURF_ACTION_FAILED */
-  xbt_swag_t p_doneActionSet; /**< Actions in state SURF_ACTION_DONE */
+  ActionListPtr p_readyActionSet; /**< Actions in state SURF_ACTION_READY */
+  ActionListPtr p_runningActionSet; /**< Actions in state SURF_ACTION_RUNNING */
+  ActionListPtr p_failedActionSet; /**< Actions in state SURF_ACTION_FAILED */
+  ActionListPtr p_doneActionSet; /**< Actions in state SURF_ACTION_DONE */
 
   ResourceCallback m_resOnCB, m_resOffCB;
   ActionCallback m_actCancelCB, m_actSuspendCB, m_actResumeCB;
 
 protected:
-  xbt_swag_t p_modifiedSet;
+  ActionLmmListPtr p_modifiedSet;
 
   lmm_system_t p_maxminSystem;
   e_UM_t p_updateMechanism;
@@ -118,11 +128,11 @@ public:
   virtual ~Model();
 
   const char *getName() {return p_name;}
-  xbt_swag_t getReadyActionSet() {return p_readyActionSet;}
-  xbt_swag_t getRunningActionSet() {return p_runningActionSet;}
-  xbt_swag_t getFailedActionSet() {return p_failedActionSet;}
-  xbt_swag_t getDoneActionSet() {return p_doneActionSet;}
-  xbt_swag_t getModifiedSet() {return p_modifiedSet;}
+  ActionListPtr getReadyActionSet() {return p_readyActionSet;}
+  ActionListPtr getRunningActionSet() {return p_runningActionSet;}
+  ActionListPtr getFailedActionSet() {return p_failedActionSet;}
+  ActionListPtr getDoneActionSet() {return p_doneActionSet;}
+  ActionLmmListPtr getModifiedSet() {return p_modifiedSet;}
   lmm_system_t getMaxminSystem() {return p_maxminSystem;}
   e_UM_t getUpdateMechanism() {return p_updateMechanism;}
   xbt_heap_t getActionHeap() {return p_actionHeap;}
@@ -131,7 +141,7 @@ public:
   virtual double shareResources(double now);
   virtual double shareResourcesLazy(double now);
   virtual double shareResourcesFull(double now);
-  double shareResourcesMaxMin(xbt_swag_t running_actions,
+  double shareResourcesMaxMin(ActionListPtr running_actions,
                                       lmm_system_t sys,
                                       void (*solve) (lmm_system_t));
   virtual void updateActionsState(double now, double delta);
@@ -215,8 +225,8 @@ public:
  * Action *
  **********/
 
-class Action {
-  xbt_swag_t p_modifiedSet;
+class Action : public actionHook{
+  ActionLmmListPtr p_modifiedSet;
   xbt_heap_t p_actionHeap;
   int m_selectiveUpdate;
   ModelPtr p_model;
@@ -232,7 +242,7 @@ class Action {
   void *p_data; /**< for your convenience */
 
 protected:
-  xbt_swag_t p_stateSet;
+  ActionListPtr p_stateSet;
   double m_priority; /**< priority (1.0 by default) */
   int    m_refcount;
   double m_remains; /**< How much of that cost remains to be done in the currently running task */
@@ -288,7 +298,7 @@ public:
 
 
   double getPriority() {return m_priority;};
-  xbt_swag_t getStateSet() {return p_stateSet;};
+  ActionListPtr getStateSet() {return p_stateSet;};
 
 private:
   int resourceUsed(void *resource_id);
@@ -305,8 +315,7 @@ private:
 
 //FIXME:REMOVE
 void surf_action_lmm_update_index_heap(void *action, int i);
-
-class ActionLmm: virtual public Action {
+class ActionLmm: virtual public Action, public actionLmmHook {
 
 protected:
   lmm_variable_t p_variable;
@@ -340,7 +349,7 @@ public:
   double getLastUpdate() {return m_lastUpdate;}
   void refreshLastUpdate() {m_lastUpdate = surf_get_clock();}
   enum heap_action_type getHat() {return m_hat;}
-
+  bool is_linked() {return actionLmmHook::is_linked();}
   virtual int unref();
   void cancel();
   void suspend();

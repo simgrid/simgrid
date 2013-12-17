@@ -80,15 +80,15 @@ void test(char *platform)
 
     xbt_dynar_foreach(model_list, iter, model) {
       XBT_DEBUG("\t %s actions", surf_model_name(model));
-      while ((action = xbt_swag_extract(surf_model_failed_action_set((surf_model_t)model)))) {
+      while ((action = surf_model_extract_failed_action_set((surf_model_t)model))) {
         XBT_DEBUG("\t * Failed : %p", action);
         surf_action_unref(action);
       }
-      while ((action = xbt_swag_extract(surf_model_done_action_set((surf_model_t)model)))) {
+      while ((action = surf_model_extract_done_action_set((surf_model_t)model))) {
         XBT_DEBUG("\t * Done : %p", action);
         surf_action_unref(action);
       }
-      if (xbt_swag_size(surf_model_running_action_set((surf_model_t)model))) {
+      if (surf_model_running_action_set_size((surf_model_t)model)) {
         XBT_DEBUG("running %s", surf_model_name(model));
         running = 1;
       }

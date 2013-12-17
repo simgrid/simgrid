@@ -1,5 +1,5 @@
 #include "network_cm02.hpp"
-#include "maxmin_private.h"
+#include "maxmin_private.hpp"
 #include "simgrid/sg_config.h"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_network);
@@ -245,8 +245,6 @@ void surf_network_model_init_Vegas(void)
 
 void NetworkCm02Model::initialize()
 {
-  ActionLmmPtr comm = NULL;
-
   char *optim = xbt_cfg_get_string(_sg_cfg_set, "network/optim");
   int select =
       xbt_cfg_get_boolean(_sg_cfg_set, "network/maxmin_selective_update");
@@ -278,7 +276,7 @@ void NetworkCm02Model::initialize()
   if (p_updateMechanism == UM_LAZY) {
 	p_actionHeap = xbt_heap_new(8, NULL);
 	xbt_heap_set_update_callback(p_actionHeap, surf_action_lmm_update_index_heap);
-	p_modifiedSet = xbt_swag_new(xbt_swag_offset(*comm, p_actionListHookup));
+	p_modifiedSet = new ActionLmmList();
 	p_maxminSystem->keep_track = p_modifiedSet;
   }
 
@@ -409,7 +407,6 @@ ActionPtr NetworkCm02Model::communicate(RoutingEdgePtr src, RoutingEdgePtr dst,
 #endif
   action->m_weight = action->m_latency = latency;
 
-  //FIXME:REMOVxbt_swag_insert(action, action->p_stateSet);
   action->m_rate = rate;
   if (p_updateMechanism == UM_LAZY) {
     action->m_indexHeap = -1;
@@ -450,7 +447,7 @@ ActionPtr NetworkCm02Model::communicate(RoutingEdgePtr src, RoutingEdgePtr dst,
     constraints_per_variable += xbt_dynar_length(back_route);
 
   if (action->m_latency > 0) {
-    action->p_variable = lmm_variable_new(p_maxminSystem, action, 0.0, -1.0,
+    action->p_variable = lmm_variable_new(p_maxminSystem, static_cast<ActionLmmPtr>(action), 0.0, -1.0,
                          constraints_per_variable);
     if (p_updateMechanism == UM_LAZY) {
       // add to the heap the event when the latency is payed
@@ -459,7 +456,7 @@ ActionPtr NetworkCm02Model::communicate(RoutingEdgePtr src, RoutingEdgePtr dst,
       action->heapInsert(p_actionHeap, action->m_latency + action->m_lastUpdate, xbt_dynar_is_empty(route) ? NORMAL : LATENCY);
     }
   } else
-    action->p_variable = lmm_variable_new(p_maxminSystem, action, 1.0, -1.0, constraints_per_variable);
+    action->p_variable = lmm_variable_new(p_maxminSystem, static_cast<ActionLmmPtr>(action), 1.0, -1.0, constraints_per_variable);
 
   if (action->m_rate < 0) {
     lmm_update_variable_bound(p_maxminSystem, action->getVariable(), (action->m_latCurrent > 0) ? sg_tcp_gamma / (2.0 * action->m_latCurrent) : -1.0);

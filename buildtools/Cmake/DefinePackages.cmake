@@ -10,7 +10,7 @@ set(EXTRA_DIST
   src/include/simgrid/sg_config.h
   src/include/smpi/smpi_interface.h
   src/include/surf/datatypes.h
-  src/include/surf/maxmin.h
+  src/include/surf/maxmin.hpp
   src/include/surf/random_mgr.h
   src/include/surf/surf.h
   src/include/surf/surf_resource.h
@@ -46,7 +46,7 @@ set(EXTRA_DIST
   src/surf/gtnets/gtnets_interface.h
   src/surf/gtnets/gtnets_simulator.h
   src/surf/gtnets/gtnets_topology.h
-  src/surf/maxmin_private.h
+  src/surf/maxmin_private.hpp
   src/surf/network_interface.hpp
   src/surf/network_gtnets.hpp
   src/surf/network_ns3_private.h
@@ -302,11 +302,11 @@ set(SURF_SRC
   src/surf/cpu_interface.cpp
   src/surf/cpu_ti.cpp
   src/surf/cpu_cas01.cpp
-  src/surf/fair_bottleneck.c
+  src/surf/fair_bottleneck.cpp
   src/surf/instr_routing.c
   src/surf/instr_surf.c
-  src/surf/lagrange.c
-  src/surf/maxmin.c
+  src/surf/lagrange.cpp
+  src/surf/maxmin.cpp
   src/surf/network_interface.cpp
   src/surf/network_cm02.cpp
   src/surf/network_smpi.cpp  

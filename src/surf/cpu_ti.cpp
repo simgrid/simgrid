@@ -408,11 +408,9 @@ void surf_cpu_model_init_ti()
 
 CpuTiModel::CpuTiModel() : CpuModel("cpu_ti")
 {
-  ActionPtr action = NULL;
   CpuTiPtr cpu = NULL;
 
-  p_runningActionSetThatDoesNotNeedBeingChecked =
-      xbt_swag_new(xbt_swag_offset(*action, p_stateHookup));
+  p_runningActionSetThatDoesNotNeedBeingChecked = new ActionList();
 
   p_modifiedCpu =
       xbt_swag_new(xbt_swag_offset(*cpu, p_modifiedCpuHookup));
@@ -426,7 +424,7 @@ CpuTiModel::~CpuTiModel()
 {
   surf_cpu_model_pm = NULL;
 
-  xbt_swag_free(p_runningActionSetThatDoesNotNeedBeingChecked);
+  delete p_runningActionSetThatDoesNotNeedBeingChecked;
   xbt_swag_free(p_modifiedCpu);
   xbt_heap_free(p_tiActionHeap);
 }
@@ -846,9 +844,9 @@ CpuActionPtr CpuTi::sleep(double duration)
   if (duration == NO_MAX_DURATION) {
    /* Move to the *end* of the corresponding action set. This convention
       is used to speed up update_resource_state  */
-    xbt_swag_remove(static_cast<ActionPtr>(action), action->getStateSet());
+	action->getStateSet()->erase(action->getStateSet()->iterator_to(*action));
     action->p_stateSet = reinterpret_cast<CpuTiModelPtr>(getModel())->p_runningActionSetThatDoesNotNeedBeingChecked;
-    xbt_swag_insert(static_cast<ActionPtr>(action), action->getStateSet());
+    action->getStateSet()->push_back(*static_cast<ActionPtr>(action));
   }
 
   xbt_swag_insert(action, p_actionSet);
@@ -896,7 +894,8 @@ int CpuTiAction::unref()
 {
   m_refcount--;
   if (!m_refcount) {
-    xbt_swag_remove(static_cast<ActionPtr>(this), getStateSet());
+	if (actionHook::is_linked())
+	  getStateSet()->erase(getStateSet()->iterator_to(*this));
     /* remove from action_set */
     xbt_swag_remove(this, p_cpu->p_actionSet);
     /* remove from heap */

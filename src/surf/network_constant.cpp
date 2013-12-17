@@ -24,13 +24,13 @@ void surf_network_model_init_Constant()
 
 double NetworkConstantModel::shareResources(double /*now*/)
 {
-  void *_action = NULL;
   NetworkConstantActionLmmPtr action = NULL;
   double min = -1.0;
 
-  xbt_swag_t actionSet = getRunningActionSet();
-  xbt_swag_foreach(_action, actionSet) {
-	action = dynamic_cast<NetworkConstantActionLmmPtr>(static_cast<ActionPtr>(_action));
+  ActionListPtr actionSet = getRunningActionSet();
+  for(ActionList::iterator it(actionSet->begin()), itend(actionSet->end())
+	 ; it != itend ; ++it) {
+	action = dynamic_cast<NetworkConstantActionLmmPtr>(&*it);
     if (action->m_latency > 0) {
       if (min < 0)
         min = action->m_latency;
@@ -44,11 +44,12 @@ double NetworkConstantModel::shareResources(double /*now*/)
 
 void NetworkConstantModel::updateActionsState(double /*now*/, double delta)
 {
-  void *_action, *_next_action;
   NetworkConstantActionLmmPtr action = NULL;
-  xbt_swag_t actionSet = getRunningActionSet();
-  xbt_swag_foreach_safe(_action, _next_action, actionSet) {
-	action = dynamic_cast<NetworkConstantActionLmmPtr>(static_cast<ActionPtr>(_action));
+  ActionListPtr actionSet = getRunningActionSet();
+  for(ActionList::iterator it(actionSet->begin()), itNext=it, itend(actionSet->end())
+     ; it != itend ; it=itNext) {
+    ++itNext;
+	action = dynamic_cast<NetworkConstantActionLmmPtr>(&*it);
     if (action->m_latency > 0) {
       if (action->m_latency > delta) {
         double_update(&(action->m_latency), delta);
@@ -124,7 +125,8 @@ int NetworkConstantActionLmm::unref()
 {
   m_refcount--;
   if (!m_refcount) {
-    xbt_swag_remove(static_cast<ActionPtr>(this), p_stateSet);
+	if (actionHook::is_linked())
+	  p_stateSet->erase(p_stateSet->iterator_to(*this));
     delete this;
   return 1;
   }

@@ -1,5 +1,5 @@
 #include "surf_interface.hpp"
-#include "maxmin_private.h"
+#include "maxmin_private.hpp"
 
 #ifndef SURF_CPU_INTERFACE_HPP_
 #define SURF_CPU_INTERFACE_HPP_

@@ -92,7 +92,7 @@ public:
   void updateActionsState(double now, double delta);
   void addTraces();
 
-  xbt_swag_t p_runningActionSetThatDoesNotNeedBeingChecked;
+  ActionListPtr p_runningActionSetThatDoesNotNeedBeingChecked;
   xbt_swag_t p_modifiedCpu;
   xbt_heap_t p_tiActionHeap;
 

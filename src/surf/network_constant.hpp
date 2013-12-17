@@ -20,7 +20,11 @@ typedef NetworkConstantActionLmm *NetworkConstantActionLmmPtr;
  *********/
 class NetworkConstantModel : public NetworkCm02Model {
 public:
-  NetworkConstantModel() : NetworkCm02Model("constant time network") {};
+  NetworkConstantModel()
+  : NetworkCm02Model("constant time network")
+  {
+    p_updateMechanism = UM_UNDEFINED;
+  };
   double shareResources(double now);
   void updateActionsState(double now, double delta);
   ActionPtr communicate(RoutingEdgePtr src, RoutingEdgePtr dst,
@@ -52,8 +56,9 @@ public:
 	m_latency = latency;
 	if (m_latency <= 0.0) {
 	  p_stateSet = getModel()->getDoneActionSet();
-	  xbt_swag_insert(static_cast<ActionPtr>(this), p_stateSet);
+	  p_stateSet->push_back(*this);
 	}
+	p_variable = NULL;
   };
   int unref();
   void recycle();
