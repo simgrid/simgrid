@@ -43,10 +43,11 @@ public:
  * Resource *
  ************/
 
-class WorkstationVM : virtual public Workstation {
+class WorkstationVM : public Workstation {
 public:
-  WorkstationVM(RoutingEdgePtr netElm, CpuPtr cpu)
-   : Workstation(NULL, netElm, cpu) {};
+  WorkstationVM(ModelPtr model, const char *name, xbt_dict_t props,
+		        RoutingEdgePtr netElm, CpuPtr cpu)
+  : Workstation(model, name, props, NULL, netElm, cpu) {}
   ~WorkstationVM();
 
   virtual void suspend()=0;
@@ -60,7 +61,7 @@ public:
   virtual surf_resource_t getPm()=0; // will be vm_ws_get_pm()
 
   virtual void setBound(double bound)=0;
-  virtual void setAffinity(CpuLmmPtr cpu, unsigned long mask)=0;
+  virtual void setAffinity(CpuPtr cpu, unsigned long mask)=0;
 
   /* The workstation object of the lower layer */
   CpuActionPtr p_action;
@@ -68,10 +69,6 @@ public:
   e_surf_vm_state_t p_currentState;
 };
 
-class WorkstationVMLmm : public WorkstationVM, public WorkstationLmm {
-public:
-  WorkstationVMLmm(RoutingEdgePtr netElm, CpuPtr cpu);
-};
 
 /**********
  * Action *

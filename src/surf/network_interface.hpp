@@ -19,14 +19,8 @@ typedef NetworkModel *NetworkModelPtr;
 class NetworkLink;
 typedef NetworkLink *NetworkLinkPtr;
 
-class NetworkLinkLmm;
-typedef NetworkLinkLmm *NetworkLinkLmmPtr;
-
 class NetworkAction;
 typedef NetworkAction *NetworkActionPtr;
-
-class NetworkActionLmm;
-typedef NetworkActionLmm *NetworkActionLmmPtr;
 
 /*********
  * Tools *
@@ -64,8 +58,7 @@ public:
                                    e_surf_link_sharing_policy_t policy,
                                    xbt_dict_t properties)=0;
 
-  //FIXME:void updateActionsStateLazy(double now, double delta);
-  virtual void gapAppend(double /*size*/, const NetworkLinkLmmPtr /*link*/, NetworkActionLmmPtr /*action*/) {};
+  virtual void gapAppend(double /*size*/, const NetworkLinkPtr /*link*/, NetworkActionPtr /*action*/) {};
   virtual ActionPtr communicate(RoutingEdgePtr src, RoutingEdgePtr dst,
 		                           double size, double rate)=0;
   virtual xbt_dynar_t getRoute(RoutingEdgePtr src, RoutingEdgePtr dst); //FIXME: kill field? That is done by the routing nowadays
@@ -80,27 +73,24 @@ public:
  * Resource *
  ************/
 
-class NetworkLink : virtual public Resource {
+class NetworkLink : public Resource {
 public:
-  NetworkLink() : p_latEvent(NULL) {};
-  virtual double getBandwidth()=0;
+  NetworkLink(NetworkModelPtr model, const char *name, xbt_dict_t props);
+  NetworkLink(NetworkModelPtr model, const char *name, xbt_dict_t props,
+  		      lmm_constraint_t constraint,
+  	          tmgr_history_t history,
+  	          tmgr_trace_t state_trace);
+  virtual double getBandwidth();
   virtual double getLatency();
-  virtual bool isShared()=0;
+  virtual bool isShared();
+  bool isUsed();
 
   /* Using this object with the public part of
     model does not make sense */
   double m_latCurrent;
   tmgr_trace_event_t p_latEvent;
-};
 
-class NetworkLinkLmm : public ResourceLmm, public NetworkLink {
-protected:
-public:
-  NetworkLinkLmm() {};
-  NetworkLinkLmm(lmm_constraint_t constraint, tmgr_history_t history, tmgr_trace_t state_trace);
-  bool isShared();
-  bool isUsed();
-  double getBandwidth();
+  /* LMM */
   tmgr_trace_event_t p_stateEvent;
   s_surf_metric_t p_power;
 };
@@ -108,9 +98,12 @@ public:
 /**********
  * Action *
  **********/
-class NetworkAction : virtual public Action {
+class NetworkAction : public Action {
 public:
-  NetworkAction() {};
+  NetworkAction(ModelPtr model, double cost, bool failed)
+  : Action(model, cost, failed) {}
+  NetworkAction(ModelPtr model, double cost, bool failed, lmm_variable_t var)
+  : Action(model, cost, failed, var) {};
   double m_latency;
   double m_latCurrent;
   double m_weight;
@@ -123,11 +116,6 @@ public:
   int m_latencyLimited;
 #endif
 
-};
-
-class NetworkActionLmm : public ActionLmm, public NetworkAction {
-public:
-  NetworkActionLmm() {};
 };
 
 #endif /* SURF_NETWORK_INTERFACE_HPP_ */

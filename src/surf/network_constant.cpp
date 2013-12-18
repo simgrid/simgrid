@@ -24,13 +24,13 @@ void surf_network_model_init_Constant()
 
 double NetworkConstantModel::shareResources(double /*now*/)
 {
-  NetworkConstantActionLmmPtr action = NULL;
+  NetworkConstantActionPtr action = NULL;
   double min = -1.0;
 
   ActionListPtr actionSet = getRunningActionSet();
   for(ActionList::iterator it(actionSet->begin()), itend(actionSet->end())
 	 ; it != itend ; ++it) {
-	action = dynamic_cast<NetworkConstantActionLmmPtr>(&*it);
+	action = dynamic_cast<NetworkConstantActionPtr>(&*it);
     if (action->m_latency > 0) {
       if (min < 0)
         min = action->m_latency;
@@ -44,12 +44,12 @@ double NetworkConstantModel::shareResources(double /*now*/)
 
 void NetworkConstantModel::updateActionsState(double /*now*/, double delta)
 {
-  NetworkConstantActionLmmPtr action = NULL;
+  NetworkConstantActionPtr action = NULL;
   ActionListPtr actionSet = getRunningActionSet();
   for(ActionList::iterator it(actionSet->begin()), itNext=it, itend(actionSet->end())
      ; it != itend ; it=itNext) {
     ++itNext;
-	action = dynamic_cast<NetworkConstantActionLmmPtr>(&*it);
+	action = dynamic_cast<NetworkConstantActionPtr>(&*it);
     if (action->m_latency > 0) {
       if (action->m_latency > delta) {
         double_update(&(action->m_latency), delta);
@@ -79,7 +79,7 @@ ActionPtr NetworkConstantModel::communicate(RoutingEdgePtr src, RoutingEdgePtr d
   char *dst_name = dst->p_name;
 
   XBT_IN("(%s,%s,%g,%g)", src_name, dst_name, size, rate);
-  NetworkConstantActionLmmPtr action = new NetworkConstantActionLmm(this, size, sg_latency_factor);
+  NetworkConstantActionPtr action = new NetworkConstantAction(this, size, sg_latency_factor);
   XBT_OUT();
 
   return action;
@@ -88,30 +88,30 @@ ActionPtr NetworkConstantModel::communicate(RoutingEdgePtr src, RoutingEdgePtr d
 /************
  * Resource *
  ************/
-bool NetworkConstantLinkLmm::isUsed()
+bool NetworkConstantLink::isUsed()
 {
   return 0;
 }
 
-void NetworkConstantLinkLmm::updateState(tmgr_trace_event_t /*event_type*/,
+void NetworkConstantLink::updateState(tmgr_trace_event_t /*event_type*/,
                                          double /*value*/, double /*time*/)
 {
   DIE_IMPOSSIBLE;
 }
 
-double NetworkConstantLinkLmm::getBandwidth()
+double NetworkConstantLink::getBandwidth()
 {
   DIE_IMPOSSIBLE;
   return -1.0; /* useless since DIE actually abort(), but eclipse prefer to have a useless and harmless return */
 }
 
-double NetworkConstantLinkLmm::getLatency()
+double NetworkConstantLink::getLatency()
 {
   DIE_IMPOSSIBLE;
   return -1.0; /* useless since DIE actually abort(), but eclipse prefer to have a useless and harmless return */
 }
 
-bool NetworkConstantLinkLmm::isShared()
+bool NetworkConstantLink::isShared()
 {
   DIE_IMPOSSIBLE;
   return -1; /* useless since DIE actually abort(), but eclipse prefer to have a useless and harmless return */
@@ -121,7 +121,7 @@ bool NetworkConstantLinkLmm::isShared()
  * Action *
  **********/
 
-int NetworkConstantActionLmm::unref()
+int NetworkConstantAction::unref()
 {
   m_refcount--;
   if (!m_refcount) {
@@ -133,35 +133,35 @@ int NetworkConstantActionLmm::unref()
   return 0;
 }
 
-void NetworkConstantActionLmm::cancel()
+void NetworkConstantAction::cancel()
 {
   return;
 }
 
 #ifdef HAVE_TRACING
-void NetworkConstantActionLmm::setCategory(const char */*category*/)
+void NetworkConstantAction::setCategory(const char */*category*/)
 {
   //ignore completely the categories in constant model, they are not traced
 }
 #endif
 
-void NetworkConstantActionLmm::suspend()
+void NetworkConstantAction::suspend()
 {
   m_suspended = true;
 }
 
-void NetworkConstantActionLmm::resume()
+void NetworkConstantAction::resume()
 {
   if (m_suspended)
 	m_suspended = false;
 }
 
-void NetworkConstantActionLmm::recycle()
+void NetworkConstantAction::recycle()
 {
   return;
 }
 
-bool NetworkConstantActionLmm::isSuspended()
+bool NetworkConstantAction::isSuspended()
 {
   return m_suspended;
 }

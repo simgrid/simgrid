@@ -72,11 +72,8 @@ typedef boost::intrusive::list<Action> ActionList;
 typedef ActionList* ActionListPtr;
 typedef boost::intrusive::list_base_hook<> actionHook;
 
-//class ActionLmm;
-typedef ActionLmm* ActionLmmPtr;
-
 struct lmmTag;
-typedef boost::intrusive::list<ActionLmm, boost::intrusive::base_hook<boost::intrusive::list_base_hook<boost::intrusive::tag<lmmTag> > > > ActionLmmList;
+typedef boost::intrusive::list<Action, boost::intrusive::base_hook<boost::intrusive::list_base_hook<boost::intrusive::tag<lmmTag> > > > ActionLmmList;
 typedef ActionLmmList* ActionLmmListPtr;
 typedef boost::intrusive::list_base_hook<boost::intrusive::tag<lmmTag> > actionLmmHook;
 
@@ -128,11 +125,11 @@ public:
   virtual ~Model();
 
   const char *getName() {return p_name;}
-  ActionListPtr getReadyActionSet() {return p_readyActionSet;}
-  ActionListPtr getRunningActionSet() {return p_runningActionSet;}
-  ActionListPtr getFailedActionSet() {return p_failedActionSet;}
-  ActionListPtr getDoneActionSet() {return p_doneActionSet;}
-  ActionLmmListPtr getModifiedSet() {return p_modifiedSet;}
+  virtual ActionListPtr getReadyActionSet() {return p_readyActionSet;}
+  virtual ActionListPtr getRunningActionSet() {return p_runningActionSet;}
+  virtual ActionListPtr getFailedActionSet() {return p_failedActionSet;}
+  virtual ActionListPtr getDoneActionSet() {return p_doneActionSet;}
+  virtual ActionLmmListPtr getModifiedSet() {return p_modifiedSet;}
   lmm_system_t getMaxminSystem() {return p_maxminSystem;}
   e_UM_t getUpdateMechanism() {return p_updateMechanism;}
   xbt_heap_t getActionHeap() {return p_actionHeap;}
@@ -187,8 +184,11 @@ protected:
 
 public:
   Resource();
-  Resource(ModelPtr model, const char *name, xbt_dict_t properties);
-  Resource(surf_model_t model, const char *name, xbt_dict_t props, e_surf_resource_state_t stateInit);
+  Resource(ModelPtr model, const char *name, xbt_dict_t props);
+  Resource(ModelPtr model, const char *name, xbt_dict_t props, lmm_constraint_t constraint);
+  Resource(ModelPtr model, const char *name, xbt_dict_t props, e_surf_resource_state_t stateInit);
+  Resource(ModelPtr model, const char *name, xbt_dict_t props, e_surf_resource_state_t stateInit, lmm_constraint_t constraint);
+
   virtual ~Resource() {
 	xbt_free((void*)p_name);
     xbt_dict_free(&p_properties);
@@ -207,25 +207,21 @@ public:
 
   virtual e_surf_resource_state_t getState();
   virtual void setState(e_surf_resource_state_t state);
-};
 
-class ResourceLmm: virtual public Resource {
+  /* LMM */
+private:
   lmm_constraint_t p_constraint;
-
 public:
-  ResourceLmm();
-  ResourceLmm(lmm_constraint_t constraint);
-  ~ResourceLmm() {
-  };
+  lmm_constraint_t getConstraint() {return p_constraint;};
 
-  lmm_constraint_t constraint() {return p_constraint;};
 };
 
 /**********
  * Action *
  **********/
+void surf_action_lmm_update_index_heap(void *action, int i);
 
-class Action : public actionHook{
+class Action : public actionHook, public actionLmmHook {
   ActionLmmListPtr p_modifiedSet;
   xbt_heap_t p_actionHeap;
   int m_selectiveUpdate;
@@ -255,6 +251,7 @@ public:
 
   Action();
   Action(ModelPtr model, double cost, bool failed);
+  Action(ModelPtr model, double cost, bool failed, lmm_variable_t var);
   virtual ~Action();
   
   void finish();
@@ -281,13 +278,13 @@ public:
   void ref();
   virtual int unref();     /**< Specify that we don't use that action anymore. Returns true if the action was destroyed and false if someone still has references on it. */
   virtual void cancel();     /**< Cancel a running action */
-  virtual void recycle();     /**< Recycle an action */
+  virtual void recycle(){};     /**< Recycle an action */
   
-  virtual void suspend()=0;     /**< Suspend an action */
-  virtual void resume()=0;     /**< Resume a suspended action */
-  virtual bool isSuspended()=0;     /**< Return whether an action is suspended */
-  virtual void setMaxDuration(double duration)=0;     /**< Set the max duration of an action*/
-  virtual void setPriority(double priority)=0;     /**< Set the priority of an action */
+  virtual void suspend();     /**< Suspend an action */
+  virtual void resume();     /**< Resume a suspended action */
+  virtual bool isSuspended();     /**< Return whether an action is suspended */
+  virtual void setMaxDuration(double duration);     /**< Set the max duration of an action*/
+  virtual void setPriority(double priority);     /**< Set the priority of an action */
 #ifdef HAVE_TRACING
   void setCategory(const char *category); /**< Set the category of an action */
 #endif
@@ -310,13 +307,7 @@ private:
   void updateResourceState(void *id, tmgr_trace_event_t event_type,
                                  double value, double time);
 
-
-};
-
-//FIXME:REMOVE
-void surf_action_lmm_update_index_heap(void *action, int i);
-class ActionLmm: virtual public Action, public actionLmmHook {
-
+  /* LMM */
 protected:
   lmm_variable_t p_variable;
   double m_lastUpdate;
@@ -326,40 +317,16 @@ protected:
   enum heap_action_type m_hat;
 
 public:
-  ActionLmm() : m_suspended(false) {
-	p_actionListHookup.prev = 0;
-	p_actionListHookup.next = 0;
-    m_lastUpdate = 0;
-    m_lastValue = 0;
-  };
-  ActionLmm(lmm_variable_t var) : m_suspended(false) {
-	p_actionListHookup.prev = 0;
-	p_actionListHookup.next = 0;
-    m_lastUpdate = 0;
-    m_lastValue = 0;
-    p_variable = var;
-  };
-
   virtual void updateRemainingLazy(double now);
   void heapInsert(xbt_heap_t heap, double key, enum heap_action_type hat);
   void heapRemove(xbt_heap_t heap);
-  double getRemains();     /**< Get the remains of an action */
   void updateIndexHeap(int i);
   lmm_variable_t getVariable() {return p_variable;}
   double getLastUpdate() {return m_lastUpdate;}
   void refreshLastUpdate() {m_lastUpdate = surf_get_clock();}
   enum heap_action_type getHat() {return m_hat;}
   bool is_linked() {return actionLmmHook::is_linked();}
-  virtual int unref();
-  void cancel();
-  void suspend();
-  void resume();
-  bool isSuspended();
-  void setMaxDuration(double duration);
-  void setPriority(double priority);
   void gapRemove();
-  s_xbt_swag_hookup_t p_actionListHookup;
-
 };
 
 #endif /* SURF_MODEL_H_ */

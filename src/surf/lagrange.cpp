@@ -157,9 +157,10 @@ static double dual_objective(xbt_swag_t var_list, xbt_swag_t cnst_list)
       obj += var->mu * var->bound;
   }
 
-  xbt_swag_foreach(_cnst, cnst_list)
+  xbt_swag_foreach(_cnst, cnst_list) {
       cnst = (lmm_constraint_t)_cnst;
       obj += cnst->lambda * cnst->bound;
+  }
 
   return obj;
 }

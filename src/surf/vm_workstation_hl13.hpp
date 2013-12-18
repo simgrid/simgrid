@@ -22,8 +22,8 @@ void surf_vm_workstation_model_init(void);
 class WorkstationVMHL13Model;
 typedef WorkstationVMHL13Model *WorkstationVMHL13ModelPtr;
 
-class WorkstationVMHL13Lmm;
-typedef WorkstationVMHL13Lmm *WorkstationVMHL13LmmPtr;
+class WorkstationVMHL13;
+typedef WorkstationVMHL13 *WorkstationVMHL13Ptr;
 
 /*********
  * Tools *
@@ -32,7 +32,7 @@ typedef WorkstationVMHL13Lmm *WorkstationVMHL13LmmPtr;
 /*********
  * Model *
  *********/
-class WorkstationVMHL13Model : public WorkstationVMModel, public WorkstationCLM03Model {
+class WorkstationVMHL13Model : public WorkstationVMModel {
 public:
   WorkstationVMHL13Model();
   ~WorkstationVMHL13Model(){};
@@ -41,16 +41,22 @@ public:
   void adjustWeightOfDummyCpuActions() {};
   xbt_dynar_t getRoute(WorkstationPtr src, WorkstationPtr dst);
   ActionPtr communicate(WorkstationPtr src, WorkstationPtr dst, double size, double rate);
+  ActionPtr executeParallelTask(int workstation_nb,
+                                          void **workstation_list,
+                                          double *computation_amount,
+                                          double *communication_amount,
+                                          double rate);
+  void updateActionsState(double /*now*/, double /*delta*/);
 };
 
 /************
  * Resource *
  ************/
 
-class WorkstationVMHL13Lmm : public WorkstationVMLmm, public WorkstationCLM03Lmm {
+class WorkstationVMHL13 : public WorkstationVM {
 public:
-  WorkstationVMHL13Lmm(WorkstationVMModelPtr model, const char* name, xbt_dict_t props, surf_resource_t ind_phys_workstation);
-  ~WorkstationVMHL13Lmm();
+  WorkstationVMHL13(WorkstationVMModelPtr model, const char* name, xbt_dict_t props, surf_resource_t ind_phys_workstation);
+  ~WorkstationVMHL13();
 
   void suspend();
   void resume();
@@ -66,20 +72,14 @@ public:
   surf_resource_t getPm(); // will be vm_ws_get_pm()
 
   void setBound(double bound);
-  void setAffinity(CpuLmmPtr cpu, unsigned long mask);
+  void setAffinity(CpuPtr cpu, unsigned long mask);
 
   //FIXME: remove
-  void updateState(tmgr_trace_event_t event_type, double value, double date) {
-	WorkstationCLM03Lmm::updateState(event_type, value, date);
-  }
-  bool isUsed() {
-    return WorkstationCLM03Lmm::isUsed();
-  }
-  xbt_dict_t getProperties() {
-    return WorkstationCLM03Lmm::getProperties();
-  }
-  ActionPtr execute(double size);
+  void updateState(tmgr_trace_event_t event_type, double value, double date);
+  bool isUsed();
 
+  ActionPtr execute(double size);
+  ActionPtr sleep(double duration);
 };
 
 /**********

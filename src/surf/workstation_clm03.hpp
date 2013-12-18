@@ -13,11 +13,11 @@
 class WorkstationCLM03Model;
 typedef WorkstationCLM03Model *WorkstationCLM03ModelPtr;
 
-class WorkstationCLM03Lmm;
-typedef WorkstationCLM03Lmm *WorkstationCLM03LmmPtr;
+class WorkstationCLM03;
+typedef WorkstationCLM03 *WorkstationCLM03Ptr;
 
-class WorkstationCLM03ActionLmm;
-typedef WorkstationCLM03ActionLmm *WorkstationCLM03ActionLmmPtr;
+class WorkstationCLM03Action;
+typedef WorkstationCLM03Action *WorkstationCLM03ActionPtr;
 
 /*********
  * Model *
@@ -47,9 +47,9 @@ public:
  * Resource *
  ************/
 
-class WorkstationCLM03Lmm : public WorkstationLmm {
+class WorkstationCLM03 : public Workstation {
 public:
-  WorkstationCLM03Lmm(WorkstationModelPtr model, const char* name, xbt_dict_t properties, xbt_dynar_t storage, RoutingEdgePtr netElm, CpuPtr cpu);
+  WorkstationCLM03(WorkstationModelPtr model, const char* name, xbt_dict_t properties, xbt_dynar_t storage, RoutingEdgePtr netElm, CpuPtr cpu);
 
   void updateState(tmgr_trace_event_t event_type, double value, double date);
 
@@ -71,9 +71,10 @@ public:
  * Action *
  **********/
 
-class WorkstationCLM03ActionLmm : public WorkstationActionLmm {
+class WorkstationCLM03Action : public WorkstationAction {
 public:
-  WorkstationCLM03ActionLmm(ModelPtr model, double cost, bool failed): Action(model, cost, failed), WorkstationActionLmm() {};
+  WorkstationCLM03Action(ModelPtr model, double cost, bool failed)
+  : WorkstationAction(model, cost, failed) {}
 };
 
 

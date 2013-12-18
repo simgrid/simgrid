@@ -492,7 +492,7 @@ double Model::shareResources(double now)
 
 double Model::shareResourcesLazy(double now)
 {
-  ActionLmmPtr action = NULL;
+  ActionPtr action = NULL;
   double min = -1;
   double value;
 
@@ -507,7 +507,7 @@ double Model::shareResourcesLazy(double now)
        p_modifiedSet->size());
 
   while(!p_modifiedSet->empty()) {
-	action = dynamic_cast<ActionLmmPtr>(&(p_modifiedSet->front()));
+	action = &(p_modifiedSet->front());
 	p_modifiedSet->pop_front();
     int max_dur_flag = 0;
 
@@ -574,7 +574,7 @@ double Model::shareResourcesMaxMin(ActionListPtr running_actions,
                           void (*solve) (lmm_system_t))
 {
   void *_action = NULL;
-  ActionLmmPtr action = NULL;
+  ActionPtr action = NULL;
   double min = -1;
   double value = -1;
 
@@ -582,7 +582,7 @@ double Model::shareResourcesMaxMin(ActionListPtr running_actions,
 
   ActionList::iterator it(running_actions->begin()), itend(running_actions->end());
   for(; it != itend ; ++it) {
-	  action = dynamic_cast<ActionLmmPtr>(&*it);
+	  action = &*it;
     value = lmm_variable_getvalue(action->getVariable());
     if ((value > 0) || (action->getMaxDuration() >= 0))
       break;
@@ -603,7 +603,7 @@ double Model::shareResourcesMaxMin(ActionListPtr running_actions,
 
 
   for (++it; it != itend; ++it) {
-	action = dynamic_cast<ActionLmmPtr>(&*it);
+	action = &*it;
     value = lmm_variable_getvalue(action->getVariable());
     if (value > 0) {
       if (action->getRemains() > 0)
@@ -710,6 +710,11 @@ Resource::Resource(surf_model_t model, const char *name, xbt_dict_t props)
  , m_running(true), m_stateCurrent(SURF_RESOURCE_ON)
 {}
 
+Resource::Resource(surf_model_t model, const char *name, xbt_dict_t props, lmm_constraint_t constraint)
+ : p_name(xbt_strdup(name)), p_properties(props), p_model(model)
+ , m_running(true), m_stateCurrent(SURF_RESOURCE_ON), p_constraint(constraint)
+{}
+
 Resource::Resource(surf_model_t model, const char *name, xbt_dict_t props, e_surf_resource_state_t stateInit)
  : p_name(xbt_strdup(name)), p_properties(props), p_model(model)
  , m_running(true), m_stateCurrent(stateInit)
@@ -746,14 +751,6 @@ void Resource::turnOff()
   }
 }
 
-ResourceLmm::ResourceLmm()
- : p_constraint(NULL)
-{}
-
-ResourceLmm::ResourceLmm(lmm_constraint_t constraint)
- : p_constraint(constraint)
-{}
-
 /**********
  * Action *
  **********/
@@ -781,6 +778,38 @@ Action::Action(ModelPtr model, double cost, bool failed)
  , p_data(NULL)
  , p_model(model)
  , m_refcount(1)
+ , m_lastValue(0)
+ , m_lastUpdate(0)
+ , m_suspended(false)
+ , p_variable(NULL)
+{
+  #ifdef HAVE_TRACING
+    p_category = NULL;
+  #endif
+  p_stateHookup.prev = 0;
+  p_stateHookup.next = 0;
+  if (failed)
+    p_stateSet = getModel()->getFailedActionSet();
+  else
+    p_stateSet = getModel()->getRunningActionSet();
+
+  p_stateSet->push_back(*this);
+}
+
+Action::Action(ModelPtr model, double cost, bool failed, lmm_variable_t var)
+ : m_priority(1.0)
+ , m_failed(failed)
+ , m_start(surf_get_clock()), m_finish(-1.0)
+ , m_remains(cost)
+ , m_maxDuration(NO_MAX_DURATION)
+ , m_cost(cost)
+ , p_data(NULL)
+ , p_model(model)
+ , m_refcount(1)
+ , m_lastValue(0)
+ , m_lastUpdate(0)
+ , m_suspended(false)
+ , p_variable(var)
 {
   #ifdef HAVE_TRACING
     p_category = NULL;
@@ -803,18 +832,6 @@ Action::~Action() {
 
 void Action::finish() {
     m_finish = surf_get_clock();
-}
-
-int Action::unref(){
-  DIE_IMPOSSIBLE;
-}
-
-void Action::cancel(){
-  DIE_IMPOSSIBLE;
-}
-
-void Action::recycle(){
-  DIE_IMPOSSIBLE;
 }
 
 e_surf_action_state_t Action::getState()
@@ -862,13 +879,6 @@ double Action::getFinishTime()
   return m_remains == 0 ? m_finish : -1;
 }
 
-double Action::getRemains()
-{
-  XBT_IN("(%p)", this);
-  XBT_OUT();
-  return m_remains;
-}
-
 void Action::setData(void* data)
 {
   p_data = data;
@@ -887,7 +897,7 @@ void Action::ref(){
   m_refcount++;
 }
 
-void ActionLmm::setMaxDuration(double duration)
+void Action::setMaxDuration(double duration)
 {
   XBT_IN("(%p,%g)", this, duration);
   m_maxDuration = duration;
@@ -896,9 +906,9 @@ void ActionLmm::setMaxDuration(double duration)
   XBT_OUT();
 }
 
-void ActionLmm::gapRemove() {}
+void Action::gapRemove() {}
 
-void ActionLmm::setPriority(double priority)
+void Action::setPriority(double priority)
 {
   XBT_IN("(%p,%g)", this, priority);
   m_priority = priority;
@@ -909,7 +919,7 @@ void ActionLmm::setPriority(double priority)
   XBT_OUT();
 }
 
-void ActionLmm::cancel(){
+void Action::cancel(){
   setState(SURF_ACTION_FAILED);
   if (getModel()->getUpdateMechanism() == UM_LAZY) {
 	getModel()->getModifiedSet()->erase(getModel()->getModifiedSet()->iterator_to(*this));
@@ -917,7 +927,7 @@ void ActionLmm::cancel(){
   }
 }
 
-int ActionLmm::unref(){
+int Action::unref(){
   m_refcount--;
   if (!m_refcount) {
 	if (actionHook::is_linked())
@@ -936,7 +946,7 @@ int ActionLmm::unref(){
   return 0;
 }
 
-void ActionLmm::suspend()
+void Action::suspend()
 {
   XBT_IN("(%p)", this);
   if (m_suspended != 2) {
@@ -948,7 +958,7 @@ void ActionLmm::suspend()
   XBT_OUT();
 }
 
-void ActionLmm::resume()
+void Action::resume()
 {
   XBT_IN("(%p)", this);
   if (m_suspended != 2) {
@@ -960,7 +970,7 @@ void ActionLmm::resume()
   XBT_OUT();
 }
 
-bool ActionLmm::isSuspended()
+bool Action::isSuspended()
 {
   return m_suspended == 1;
 }
@@ -971,13 +981,13 @@ bool ActionLmm::isSuspended()
  * LATENCY = this is a heap entry to warn us when the latency is payed
  * MAX_DURATION =this is a heap entry to warn us when the max_duration limit is reached
  */
-void ActionLmm::heapInsert(xbt_heap_t heap, double key, enum heap_action_type hat)
+void Action::heapInsert(xbt_heap_t heap, double key, enum heap_action_type hat)
 {
   m_hat = hat;
   xbt_heap_push(heap, this, key);
 }
 
-void ActionLmm::heapRemove(xbt_heap_t heap)
+void Action::heapRemove(xbt_heap_t heap)
 {
   m_hat = NOTSET;
   if (m_indexHeap >= 0) {
@@ -987,14 +997,14 @@ void ActionLmm::heapRemove(xbt_heap_t heap)
 
 /* added to manage the communication action's heap */
 void surf_action_lmm_update_index_heap(void *action, int i) {
-  ((ActionLmmPtr)action)->updateIndexHeap(i);
+  ((ActionPtr)action)->updateIndexHeap(i);
 }
 
-void ActionLmm::updateIndexHeap(int i) {
+void Action::updateIndexHeap(int i) {
   m_indexHeap = i;
 }
 
-double ActionLmm::getRemains()
+double Action::getRemains()
 {
   XBT_IN("(%p)", this);
   /* update remains before return it */
@@ -1005,7 +1015,7 @@ double ActionLmm::getRemains()
 }
 
 //FIXME split code in the right places
-void ActionLmm::updateRemainingLazy(double now)
+void Action::updateRemainingLazy(double now)
 {
   double delta = 0.0;
 
@@ -1061,24 +1071,4 @@ void ActionLmm::updateRemainingLazy(double now)
   m_lastUpdate = now;
   m_lastValue = lmm_variable_getvalue(getVariable());
 }
-
-/*void Action::cancel()
-{
-  p_model->notifyActionCancel(this);
-}
-
-void Action::suspend()
-{
-  p_model->notifyActionSuspend(this);
-}
-
-void Action::resume()
-{
-  p_model->notifyActionResume(this);
-}
-
-bool Action::isSuspended()
-{
-  return false;
-}*/
 

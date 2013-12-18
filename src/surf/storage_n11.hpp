@@ -13,14 +13,14 @@ typedef StorageN11Model *StorageN11ModelPtr;
 class StorageN11;
 typedef StorageN11 *StorageN11Ptr;
 
-class StorageN11Lmm;
-typedef StorageN11Lmm *StorageN11LmmPtr;
+class StorageN11;
+typedef StorageN11 *StorageN11Ptr;
 
 class StorageN11Action;
 typedef StorageN11Action *StorageN11ActionPtr;
 
-class StorageN11ActionLmm;
-typedef StorageN11ActionLmm *StorageN11ActionLmmPtr;
+class StorageN11Action;
+typedef StorageN11Action *StorageN11ActionPtr;
 
 
 /*********
@@ -41,9 +41,9 @@ public:
  * Resource *
  ************/
 
-class StorageN11Lmm : public StorageLmm {
+class StorageN11 : public Storage {
 public:
-  StorageN11Lmm(StorageModelPtr model, const char* name, xbt_dict_t properties,
+  StorageN11(StorageModelPtr model, const char* name, xbt_dict_t properties,
 		     lmm_system_t maxminSystem, double bread, double bwrite, double bconnection,
 		     const char* type_id, char *content_name, char *content_type, sg_size_t size);
 
@@ -64,10 +64,10 @@ public:
  * Action *
  **********/
 
-class StorageN11ActionLmm : public StorageActionLmm {
+class StorageN11Action : public StorageAction {
 public:
-	StorageN11ActionLmm() {}; //FIXME:REMOVE
-  StorageN11ActionLmm(ModelPtr model, double cost, bool failed, StorageLmmPtr storage, e_surf_action_storage_type_t type);
+	StorageN11Action() {}; //FIXME:REMOVE
+  StorageN11Action(ModelPtr model, double cost, bool failed, StoragePtr storage, e_surf_action_storage_type_t type);
   void suspend();
   int unref();
   void cancel();

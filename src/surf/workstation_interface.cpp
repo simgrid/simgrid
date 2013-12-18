@@ -41,7 +41,7 @@ void WorkstationModel::adjustWeightOfDummyCpuActions()
   xbt_lib_foreach(host_lib, cursor, key, ind_host) {
     WorkstationPtr ws = dynamic_cast<WorkstationPtr>(
     		                       static_cast<ResourcePtr>(ind_host[SURF_WKS_LEVEL]));
-    CpuCas01LmmPtr cpu_cas01 = dynamic_cast<CpuCas01LmmPtr>(
+    CpuCas01Ptr cpu_cas01 = dynamic_cast<CpuCas01Ptr>(
                                static_cast<ResourcePtr>(ind_host[SURF_CPU_LEVEL]));
 
     if (!ws)
@@ -52,9 +52,9 @@ void WorkstationModel::adjustWeightOfDummyCpuActions()
     xbt_assert(cpu_cas01, "cpu-less workstation");
 
     /* It is a virtual machine, so we can cast it to workstation_VM2013_t */
-    WorkstationVMLmmPtr ws_vm = dynamic_cast<WorkstationVMLmmPtr>(ws);
+    WorkstationVMPtr ws_vm = dynamic_cast<WorkstationVMPtr>(ws);
 
-    int is_active = lmm_constraint_used(cpu_cas01->getModel()->getMaxminSystem(), cpu_cas01->constraint());
+    int is_active = lmm_constraint_used(cpu_cas01->getModel()->getMaxminSystem(), cpu_cas01->getConstraint());
     // int is_active_old = constraint_is_active(cpu_cas01);
 
     // {
@@ -81,8 +81,16 @@ void WorkstationModel::adjustWeightOfDummyCpuActions()
 /************
  * Resource *
  ************/
-Workstation::Workstation(xbt_dynar_t storage, RoutingEdgePtr netElm, CpuPtr cpu)
- : p_storage(storage), p_netElm(netElm), p_cpu(cpu)
+Workstation::Workstation(ModelPtr model, const char *name, xbt_dict_t props,
+		                 xbt_dynar_t storage, RoutingEdgePtr netElm, CpuPtr cpu)
+ : Resource(model, name, props)
+ , p_storage(storage), p_netElm(netElm), p_cpu(cpu)
+{}
+
+Workstation::Workstation(ModelPtr model, const char *name, xbt_dict_t props, lmm_constraint_t constraint,
+				         xbt_dynar_t storage, RoutingEdgePtr netElm, CpuPtr cpu)
+ : Resource(model, name, props, constraint)
+ , p_storage(storage), p_netElm(netElm), p_cpu(cpu)
 {}
 
 int Workstation::getCore(){

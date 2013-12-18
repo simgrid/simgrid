@@ -34,18 +34,24 @@ double NetworkModel::bandwidthConstraint(double rate, double /*bound*/, double /
   return rate;
 }
 
-NetworkLinkLmm::NetworkLinkLmm(lmm_constraint_t constraint,
-	                           tmgr_history_t history,
-	                           tmgr_trace_t state_trace)
-: ResourceLmm(constraint)
+NetworkLink::NetworkLink(NetworkModelPtr model, const char *name, xbt_dict_t props)
+: p_latEvent(NULL)
+{}
+
+NetworkLink::NetworkLink(NetworkModelPtr model, const char *name, xbt_dict_t props,
+		                 lmm_constraint_t constraint,
+	                     tmgr_history_t history,
+	                     tmgr_trace_t state_trace)
+: Resource(model, name, props, constraint),
+  p_latEvent(NULL)
 {
   if (state_trace)
     p_stateEvent = tmgr_history_add_trace(history, state_trace, 0.0, 0, static_cast<ResourcePtr>(this));
 }
 
-bool NetworkLinkLmm::isUsed()
+bool NetworkLink::isUsed()
 {
-  return lmm_constraint_used(getModel()->getMaxminSystem(), constraint());
+  return lmm_constraint_used(getModel()->getMaxminSystem(), getConstraint());
 }
 
 double NetworkLink::getLatency()
@@ -53,14 +59,14 @@ double NetworkLink::getLatency()
   return m_latCurrent;
 }
 
-double NetworkLinkLmm::getBandwidth()
+double NetworkLink::getBandwidth()
 {
   return p_power.peak * p_power.scale;
 }
 
-bool NetworkLinkLmm::isShared()
+bool NetworkLink::isShared()
 {
-  return lmm_constraint_is_shared(constraint());
+  return lmm_constraint_is_shared(getConstraint());
 }
 
 #endif /* NETWORK_INTERFACE_CPP_ */

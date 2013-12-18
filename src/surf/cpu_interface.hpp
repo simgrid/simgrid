@@ -13,14 +13,8 @@ typedef CpuModel *CpuModelPtr;
 class Cpu;
 typedef Cpu *CpuPtr;
 
-class CpuLmm;
-typedef CpuLmm *CpuLmmPtr;
-
 class CpuAction;
 typedef CpuAction *CpuActionPtr;
-
-class CpuActionLmm;
-typedef CpuActionLmm *CpuActionLmmPtr;
 
 /*********
  * Model *
@@ -38,10 +32,15 @@ public:
 /************
  * Resource *
  ************/
-class Cpu : virtual public Resource {
+class Cpu : public Resource {
 public:
   Cpu(){};
-  Cpu(int core, double powerPeak, double powerScale);
+  /*Cpu(lmm_constraint_t constraint);*/
+  Cpu(ModelPtr model, const char *name, xbt_dict_t props,
+	  lmm_constraint_t constraint, int core, double powerPeak, double powerScale);
+  Cpu(ModelPtr model, const char *name, xbt_dict_t props,
+	  int core, double powerPeak, double powerScale);
+  ~Cpu();
   virtual CpuActionPtr execute(double size)=0;
   virtual CpuActionPtr sleep(double duration)=0;
   virtual int getCore();
@@ -58,46 +57,28 @@ public:
   int m_core;
   double m_powerPeak;            /*< CPU power peak */
   double m_powerScale;           /*< Percentage of CPU disponible */
-protected:
 
-  //virtual boost::shared_ptr<Action> execute(double size) = 0;
-  //virtual boost::shared_ptr<Action> sleep(double duration) = 0;
-};
-
-class CpuLmm : public ResourceLmm, public Cpu {
-public:
-  CpuLmm(lmm_constraint_t constraint);
-  CpuLmm(lmm_constraint_t constraint, int core, double powerPeak, double powerScale);
-  ~CpuLmm();
   /* Note (hypervisor): */
   lmm_constraint_t *p_constraintCore;
   void **p_constraintCoreId;
-
 };
 
 /**********
  * Action *
  **********/
-class CpuAction : virtual public Action {
+class CpuAction : public Action {
 public:
   CpuAction(){};
   CpuAction(ModelPtr model, double cost, bool failed)
-  : Action(model, cost, failed) {};//FIXME:REMOVE
-  virtual void setAffinity(CpuPtr cpu, unsigned long mask)=0;
-  virtual void setBound(double bound)=0;
-};
+  : Action(model, cost, failed) {} //FIXME:REMOVE
+  CpuAction(ModelPtr model, double cost, bool failed, lmm_variable_t var)
+  : Action(model, cost, failed, var) {}
+  virtual void setAffinity(CpuPtr cpu, unsigned long mask);
+  virtual void setBound(double bound);
 
-class CpuActionLmm : public ActionLmm, public CpuAction {
-public:
-  CpuActionLmm(){};
-  CpuActionLmm(lmm_variable_t var)
-  : ActionLmm(var), CpuAction() {};
   void updateRemainingLazy(double now);
   virtual void updateEnergy()=0;
-  void setAffinity(CpuPtr cpu, unsigned long mask);
-  void setBound(double bound);
   double m_bound;
 };
-
 
 #endif /* SURF_CPU_INTERFACE_HPP_ */

@@ -667,7 +667,7 @@ void lmm_solve(lmm_system_t sys)
           cnst->usage = elem->value / elem->variable->weight;
 
         make_elem_active(elem);
-        ActionLmmPtr action = static_cast<ActionLmmPtr>(elem->variable->id);
+        ActionPtr action = static_cast<ActionPtr>(elem->variable->id);
         if (sys->keep_track && !action->is_linked())
           sys->keep_track->push_back(*action);
       }

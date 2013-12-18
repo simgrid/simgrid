@@ -34,12 +34,31 @@ StorageModel::~StorageModel(){
  * Resource *
  ************/
 
-Storage::Storage(const char* type_id, char *content_name, char *content_type, sg_size_t size)
-:  p_contentType(content_type),
-   m_size(size), m_usedSize(0), p_typeId(xbt_strdup(type_id)), p_writeActions(xbt_dynar_new(sizeof(ActionPtr),NULL))
+Storage::Storage(ModelPtr model, const char *name, xbt_dict_t props,
+		         const char* type_id, char *content_name, char *content_type, sg_size_t size)
+ : Resource(model, name, props)
+ , p_contentType(content_type)
+ , m_size(size), m_usedSize(0)
+ , p_typeId(xbt_strdup(type_id))
+ , p_writeActions(xbt_dynar_new(sizeof(ActionPtr),NULL))
 {
   p_content = parseContent(content_name);
   m_stateCurrent = SURF_RESOURCE_ON;
+}
+
+Storage::Storage(ModelPtr model, const char *name, xbt_dict_t props,
+		         lmm_system_t maxminSystem, double bread, double bwrite, double bconnection,
+	             const char* type_id, char *content_name, char *content_type, sg_size_t size)
+ :  Resource(model, name, props, lmm_constraint_new(maxminSystem, this, bconnection))
+ , p_contentType(content_type)
+ , m_size(size), m_usedSize(0)
+ , p_typeId(xbt_strdup(type_id))
+ , p_writeActions(xbt_dynar_new(sizeof(ActionPtr),NULL)) {
+  p_content = parseContent(content_name);
+  m_stateCurrent = SURF_RESOURCE_ON;
+  XBT_DEBUG("Create resource with Bconnection '%f' Bread '%f' Bwrite '%f' and Size '%llu'", bconnection, bread, bwrite, size);
+  p_constraintRead  = lmm_constraint_new(maxminSystem, this, bread);
+  p_constraintWrite = lmm_constraint_new(maxminSystem, this, bwrite);
 }
 
 Storage::~Storage(){
@@ -117,23 +136,21 @@ sg_size_t Storage::getSize(){
   return m_size;
 }
 
-StorageLmm::StorageLmm(lmm_system_t maxminSystem, double bread, double bwrite, double bconnection,
-	     const char* type_id, char *content_name, char *content_type, sg_size_t size)
- :  ResourceLmm(lmm_constraint_new(maxminSystem, this, bconnection)), Storage(type_id, content_name, content_type, size) {
-  XBT_DEBUG("Create resource with Bconnection '%f' Bread '%f' Bwrite '%f' and Size '%llu'", bconnection, bread, bwrite, size);
-  p_constraintRead  = lmm_constraint_new(maxminSystem, this, bread);
-  p_constraintWrite = lmm_constraint_new(maxminSystem, this, bwrite);
-}
+
 
 /**********
  * Action *
  **********/
-StorageAction::StorageAction(StoragePtr storage, e_surf_action_storage_type_t type)
-: m_type(type), p_storage(storage), p_file(NULL), p_lsDict(NULL)
+StorageAction::StorageAction(ModelPtr model, double cost, bool failed,
+		                     StoragePtr storage, e_surf_action_storage_type_t type)
+: Action(model, cost, failed)
+, m_type(type), p_storage(storage), p_file(NULL), p_lsDict(NULL)
 {
 };
 
-StorageActionLmm::StorageActionLmm(StorageLmmPtr storage, e_surf_action_storage_type_t type, lmm_variable_t var)
-  : StorageAction(storage, type), ActionLmm(var) {
+StorageAction::StorageAction(ModelPtr model, double cost, bool failed, lmm_variable_t var,
+		                     StoragePtr storage, e_surf_action_storage_type_t type)
+  : Action(model, cost, failed, var)
+  , m_type(type), p_storage(storage), p_file(NULL), p_lsDict(NULL) {
 }
 

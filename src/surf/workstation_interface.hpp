@@ -16,14 +16,8 @@ typedef WorkstationModel *WorkstationModelPtr;
 class Workstation;
 typedef Workstation *WorkstationPtr;
 
-class WorkstationLmm;
-typedef WorkstationLmm *WorkstationLmmPtr;
-
 class WorkstationAction;
 typedef WorkstationAction *WorkstationActionPtr;
-
-class WorkstationActionLmm;
-typedef WorkstationActionLmm *WorkstationActionLmmPtr;
 
 /*********
  * Tools *
@@ -55,10 +49,13 @@ public:
  * Resource *
  ************/
 
-class Workstation : virtual public Resource {
+class Workstation : public Resource {
 public:
   Workstation(){};
-  Workstation(xbt_dynar_t storage, RoutingEdgePtr netElm, CpuPtr cpu);
+  Workstation(ModelPtr model, const char *name, xbt_dict_t props,
+		      xbt_dynar_t storage, RoutingEdgePtr netElm, CpuPtr cpu);
+  Workstation(ModelPtr model, const char *name, xbt_dict_t props, lmm_constraint_t constraint,
+		      xbt_dynar_t storage, RoutingEdgePtr netElm, CpuPtr cpu);
 
   xbt_dict_t getProperties();
 
@@ -102,22 +99,16 @@ public:
   s_ws_params_t p_params;
 };
 
-class WorkstationLmm : virtual public Workstation, public ResourceLmm {
-public:
-  WorkstationLmm() {};
-};
-
 /**********
  * Action *
  **********/
-class WorkstationAction : virtual public Action {
+class WorkstationAction : public Action {
 public:
-  WorkstationAction() {};
-};
+  WorkstationAction(ModelPtr model, double cost, bool failed)
+  : Action(model, cost, failed) {}
+  WorkstationAction(ModelPtr model, double cost, bool failed, lmm_variable_t var)
+  : Action(model, cost, failed, var) {}
 
-class WorkstationActionLmm : public ActionLmm, public WorkstationAction {
-public:
-  WorkstationActionLmm(): ActionLmm(), WorkstationAction() {};
 };
 
 

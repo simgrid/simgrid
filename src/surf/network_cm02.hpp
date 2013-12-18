@@ -11,11 +11,11 @@
 class NetworkCm02Model;
 typedef NetworkCm02Model *NetworkCm02ModelPtr;
 
-class NetworkCm02LinkLmm;
-typedef NetworkCm02LinkLmm *NetworkCm02LinkLmmPtr;
+class NetworkCm02Link;
+typedef NetworkCm02Link *NetworkCm02LinkPtr;
 
-class NetworkCm02ActionLmm;
-typedef NetworkCm02ActionLmm *NetworkCm02ActionLmmPtr;
+class NetworkCm02Action;
+typedef NetworkCm02Action *NetworkCm02ActionPtr;
 
 /*********
  * Tools *
@@ -60,9 +60,9 @@ public:
  * Resource *
  ************/
 
-class NetworkCm02LinkLmm : public NetworkLinkLmm {
+class NetworkCm02Link : public NetworkLink {
 public:
-  NetworkCm02LinkLmm(NetworkCm02ModelPtr model, const char *name, xbt_dict_t props,
+  NetworkCm02Link(NetworkCm02ModelPtr model, const char *name, xbt_dict_t props,
 	                           lmm_system_t system,
 	                           double constraint_value,
 	                           tmgr_history_t history,
@@ -81,12 +81,12 @@ public:
  * Action *
  **********/
 
-class NetworkCm02ActionLmm : public NetworkActionLmm {
+class NetworkCm02Action : public NetworkAction {
   friend ActionPtr NetworkCm02Model::communicate(RoutingEdgePtr src, RoutingEdgePtr dst, double size, double rate);
 
 public:
-  NetworkCm02ActionLmm(ModelPtr model, double cost, bool failed)
- : Action(model, cost, failed) {};
+  NetworkCm02Action(ModelPtr model, double cost, bool failed)
+ : NetworkAction(model, cost, failed) {};
   void updateRemainingLazy(double now);
   void recycle();
 };

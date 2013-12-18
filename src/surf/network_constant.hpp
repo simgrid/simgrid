@@ -9,11 +9,11 @@
 class NetworkConstantModel;
 typedef NetworkConstantModel *NetworkConstantModelPtr;
 
-class NetworkConstantLinkLmm;
-typedef NetworkConstantLinkLmm *NetworkConstantLinkLmmPtr;
+class NetworkConstantLink;
+typedef NetworkConstantLink *NetworkConstantLinkPtr;
 
-class NetworkConstantActionLmm;
-typedef NetworkConstantActionLmm *NetworkConstantActionLmmPtr;
+class NetworkConstantAction;
+typedef NetworkConstantAction *NetworkConstantActionPtr;
 
 /*********
  * Model *
@@ -29,16 +29,16 @@ public:
   void updateActionsState(double now, double delta);
   ActionPtr communicate(RoutingEdgePtr src, RoutingEdgePtr dst,
 		                           double size, double rate);
-  void gapRemove(ActionLmmPtr action);
+  void gapRemove(ActionPtr action);
   //FIXME:virtual void addTraces() =0;
 };
 
 /************
  * Resource *
  ************/
-class NetworkConstantLinkLmm : public NetworkCm02LinkLmm {
+class NetworkConstantLink : public NetworkCm02Link {
 public:
-  NetworkConstantLinkLmm(NetworkCm02ModelPtr model, const char* name, xbt_dict_t properties);
+  NetworkConstantLink(NetworkCm02ModelPtr model, const char* name, xbt_dict_t properties);
   bool isUsed();
   void updateState(tmgr_trace_event_t event_type, double value, double date);
   double getBandwidth();
@@ -49,10 +49,12 @@ public:
 /**********
  * Action *
  **********/
-class NetworkConstantActionLmm : public NetworkCm02ActionLmm {
+class NetworkConstantAction : public NetworkCm02Action {
 public:
-  NetworkConstantActionLmm(NetworkConstantModelPtr model_, double size, double latency):
-	  Action(model_, size, false), NetworkCm02ActionLmm(model_, 0, false), m_latInit(latency) {
+  NetworkConstantAction(NetworkConstantModelPtr model_, double size, double latency)
+  : NetworkCm02Action(model_, size, false)
+  , m_latInit(latency)
+  {
 	m_latency = latency;
 	if (m_latency <= 0.0) {
 	  p_stateSet = getModel()->getDoneActionSet();

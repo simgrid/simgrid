@@ -6,11 +6,11 @@
 class CpuCas01Model;
 typedef CpuCas01Model *CpuCas01ModelPtr;
 
-class CpuCas01Lmm;
-typedef CpuCas01Lmm *CpuCas01LmmPtr;
+class CpuCas01;
+typedef CpuCas01 *CpuCas01Ptr;
 
-class CpuCas01ActionLmm;
-typedef CpuCas01ActionLmm *CpuCas01ActionLmmPtr;
+class CpuCas01Action;
+typedef CpuCas01Action *CpuCas01ActionPtr;
 
 /*********
  * Model *
@@ -47,15 +47,15 @@ typedef struct energy_cpu_cas01 {
 	double last_updated;					/*< Timestamp of the last energy update event*/
 } s_energy_cpu_cas01_t, *energy_cpu_cas01_t;
 
-class CpuCas01Lmm : public CpuLmm {
+class CpuCas01 : public Cpu {
 public://FIXME:
   tmgr_trace_event_t p_stateEvent;
 public:
-  CpuCas01Lmm(CpuCas01ModelPtr model, const char *name, xbt_dynar_t power_peak,
+  CpuCas01(CpuCas01ModelPtr model, const char *name, xbt_dynar_t power_peak,
         int pstate, double powerScale, tmgr_trace_t powerTrace, int core,
         e_surf_resource_state_t stateInitial, tmgr_trace_t stateTrace,
 	xbt_dict_t properties) ;
-  ~CpuCas01Lmm();
+  ~CpuCas01();
   void updateState(tmgr_trace_event_t event_type, double value, double date);
   CpuActionPtr execute(double size);
   CpuActionPtr sleep(double duration);
@@ -81,13 +81,13 @@ public:
 /**********
  * Action *
  **********/
-class CpuCas01ActionLmm: public CpuActionLmm {
-  friend CpuActionPtr CpuCas01Lmm::execute(double size);
-  friend CpuActionPtr CpuCas01Lmm::sleep(double duration);
+class CpuCas01Action: public CpuAction {
+  friend CpuActionPtr CpuCas01::execute(double size);
+  friend CpuActionPtr CpuCas01::sleep(double duration);
 public:
-  CpuCas01ActionLmm() {};
-  CpuCas01ActionLmm(ModelPtr model, double cost, bool failed, double power, lmm_constraint_t constraint);
+  CpuCas01Action() {};
+  CpuCas01Action(ModelPtr model, double cost, bool failed, double power, lmm_constraint_t constraint);
 
-  ~CpuCas01ActionLmm() {};
+  ~CpuCas01Action() {};
   void updateEnergy();
 };

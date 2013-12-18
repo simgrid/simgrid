@@ -240,7 +240,7 @@ StoragePtr StorageN11Model::createResource(const char* id, const char* type_id,
   double Bwrite = surf_parse_get_bandwidth((char*)xbt_dict_get(storage_type->properties, "Bwrite"));
   double Bconnection   = surf_parse_get_bandwidth((char*)xbt_dict_get(storage_type->properties, "Bconnection"));
 
-  StoragePtr storage = new StorageN11Lmm(this, id, properties, p_maxminSystem,
+  StoragePtr storage = new StorageN11(this, id, properties, p_maxminSystem,
 		  Bread, Bwrite, Bconnection,
 		  type_id, (char *)content_name, xbt_strdup(content_type), storage_type->size);
 
@@ -265,7 +265,7 @@ double StorageN11Model::shareResources(double now)
   unsigned int i, j;
   StoragePtr storage;
   void *_write_action;
-  StorageActionLmmPtr write_action;
+  StorageActionPtr write_action;
 
   double min_completion = shareResourcesMaxMin(getRunningActionSet(),
       p_maxminSystem, lmm_solve);
@@ -278,7 +278,7 @@ double StorageN11Model::shareResources(double now)
     // Foreach write action on disk
     xbt_dynar_foreach(storage->p_writeActions, j, _write_action)
     {
-      write_action = dynamic_cast<StorageActionLmmPtr>(static_cast<ActionPtr>(_write_action));
+      write_action = dynamic_cast<StorageActionPtr>(static_cast<ActionPtr>(_write_action));
       rate += lmm_variable_getvalue(write_action->getVariable());
     }
     if(rate > 0)
@@ -290,13 +290,13 @@ double StorageN11Model::shareResources(double now)
 
 void StorageN11Model::updateActionsState(double /*now*/, double delta)
 {
-  StorageActionLmmPtr action = NULL;
+  StorageActionPtr action = NULL;
 
   ActionListPtr actionSet = getRunningActionSet();
   for(ActionList::iterator it(actionSet->begin()), itNext=it, itend(actionSet->end())
      ; it != itend ; it=itNext) {
     ++itNext;
-    action = dynamic_cast<StorageActionLmmPtr>(&*it);
+    action = dynamic_cast<StorageActionPtr>(&*it);
     if(action->m_type == WRITE)
     {
       // Update the disk usage
@@ -347,17 +347,17 @@ void StorageN11Model::updateActionsState(double /*now*/, double delta)
  * Resource *
  ************/
 
-StorageN11Lmm::StorageN11Lmm(StorageModelPtr model, const char* name, xbt_dict_t properties,
+StorageN11::StorageN11(StorageModelPtr model, const char* name, xbt_dict_t properties,
 	     lmm_system_t maxminSystem, double bread, double bwrite, double bconnection,
 	     const char* type_id, char *content_name, char *content_type, sg_size_t size)
- :  Resource(model, name, properties),
-    StorageLmm(maxminSystem, bread, bwrite, bconnection, type_id, content_name, content_type, size) {
+ : Storage(model, name, properties,
+    	   maxminSystem, bread, bwrite, bconnection, type_id, content_name, content_type, size) {
   XBT_DEBUG("Create resource with Bconnection '%f' Bread '%f' Bwrite '%f' and Size '%llu'", bconnection, bread, bwrite, size);
 }
 
-StorageActionPtr StorageN11Lmm::ls(const char* path)
+StorageActionPtr StorageN11::ls(const char* path)
 {
-  StorageActionLmmPtr action = new StorageN11ActionLmm(getModel(), 0, m_stateCurrent != SURF_RESOURCE_ON, this, LS);
+  StorageActionPtr action = new StorageN11Action(getModel(), 0, m_stateCurrent != SURF_RESOURCE_ON, this, LS);
 
   action->p_lsDict = NULL;
   xbt_dict_t ls_dict = xbt_dict_new_homogeneous(xbt_free);
@@ -400,7 +400,7 @@ StorageActionPtr StorageN11Lmm::ls(const char* path)
   return action;
 }
 
-StorageActionPtr StorageN11Lmm::open(const char* mount, const char* path)
+StorageActionPtr StorageN11::open(const char* mount, const char* path)
 {
   XBT_DEBUG("\tOpen file '%s'",path);
   sg_size_t size, *psize;
@@ -421,21 +421,21 @@ StorageActionPtr StorageN11Lmm::open(const char* mount, const char* path)
   file->mount = xbt_strdup(mount);
   file->current_position = 0;
 
-  StorageActionLmmPtr action = new StorageN11ActionLmm(getModel(), 0, m_stateCurrent != SURF_RESOURCE_ON, this, OPEN);
+  StorageActionPtr action = new StorageN11Action(getModel(), 0, m_stateCurrent != SURF_RESOURCE_ON, this, OPEN);
   action->p_file = file;
   return action;
 }
 
-StorageActionPtr StorageN11Lmm::close(surf_file_t fd)
+StorageActionPtr StorageN11::close(surf_file_t fd)
 {
   char *filename = fd->name;
   XBT_DEBUG("\tClose file '%s' size '%llu'", filename, fd->size);
   // unref write actions from storage
   void *_write_action;
-  StorageActionLmmPtr write_action;
+  StorageActionPtr write_action;
   unsigned int i;
   xbt_dynar_foreach(p_writeActions, i, _write_action) {
-	write_action = dynamic_cast<StorageActionLmmPtr>(static_cast<ActionPtr>(_write_action));
+	write_action = dynamic_cast<StorageActionPtr>(static_cast<ActionPtr>(_write_action));
     if ((write_action->p_file) == fd) {
       xbt_dynar_cursor_rm(p_writeActions, &i);
       write_action->unref();
@@ -444,11 +444,11 @@ StorageActionPtr StorageN11Lmm::close(surf_file_t fd)
   free(fd->name);
   free(fd->mount);
   xbt_free(fd);
-  StorageActionLmmPtr action = new StorageN11ActionLmm(getModel(), 0, m_stateCurrent != SURF_RESOURCE_ON, this, CLOSE);
+  StorageActionPtr action = new StorageN11Action(getModel(), 0, m_stateCurrent != SURF_RESOURCE_ON, this, CLOSE);
   return action;
 }
 
-StorageActionPtr StorageN11Lmm::read(surf_file_t fd, sg_size_t size)
+StorageActionPtr StorageN11::read(surf_file_t fd, sg_size_t size)
 {
   if(size > fd->size){
     size = fd->size;
@@ -457,16 +457,16 @@ StorageActionPtr StorageN11Lmm::read(surf_file_t fd, sg_size_t size)
   else
 	fd->current_position += size;
 
-  StorageActionLmmPtr action = new StorageN11ActionLmm(getModel(), size, m_stateCurrent != SURF_RESOURCE_ON, this, READ);
+  StorageActionPtr action = new StorageN11Action(getModel(), size, m_stateCurrent != SURF_RESOURCE_ON, this, READ);
   return action;
 }
 
-StorageActionPtr StorageN11Lmm::write(surf_file_t fd, sg_size_t size)
+StorageActionPtr StorageN11::write(surf_file_t fd, sg_size_t size)
 {
   char *filename = fd->name;
   XBT_DEBUG("\tWrite file '%s' size '%llu/%llu'",filename,size,fd->size);
 
-  StorageActionLmmPtr action = new StorageN11ActionLmm(getModel(), size, m_stateCurrent != SURF_RESOURCE_ON, this, WRITE);
+  StorageActionPtr action = new StorageN11Action(getModel(), size, m_stateCurrent != SURF_RESOURCE_ON, this, WRITE);
   action->p_file = fd;
   fd->current_position += size;
   // If the storage is full
@@ -476,7 +476,7 @@ StorageActionPtr StorageN11Lmm::write(surf_file_t fd, sg_size_t size)
   return action;
 }
 
-void StorageN11Lmm::rename(const char *src, const char *dest)
+void StorageN11::rename(const char *src, const char *dest)
 {
   sg_size_t *psize, *new_psize;
   psize = (sg_size_t*) xbt_dict_get_or_null(p_content,src);
@@ -491,7 +491,7 @@ void StorageN11Lmm::rename(const char *src, const char *dest)
     XBT_DEBUG("File %s doesn't exist",src);
 }
 
-xbt_dict_t StorageN11Lmm::getContent()
+xbt_dict_t StorageN11::getContent()
 {
   /* For the moment this action has no cost, but in the future we could take in account access latency of the disk */
   /*surf_action_t action = storage_action_execute(storage,0, LS);*/
@@ -507,7 +507,7 @@ xbt_dict_t StorageN11Lmm::getContent()
   return content_dict;
 }
 
-sg_size_t StorageN11Lmm::getSize(){
+sg_size_t StorageN11::getSize(){
   return m_size;
 }
 
@@ -515,13 +515,14 @@ sg_size_t StorageN11Lmm::getSize(){
  * Action *
  **********/
 
-StorageN11ActionLmm::StorageN11ActionLmm(ModelPtr model_, double cost, bool failed, StorageLmmPtr storage, e_surf_action_storage_type_t type)
-  : Action(model_, cost, failed),
-    StorageActionLmm(storage, type, lmm_variable_new(getModel()->getMaxminSystem(), this, 1.0, -1.0 , 3)) {
+StorageN11Action::StorageN11Action(ModelPtr model, double cost, bool failed, StoragePtr storage, e_surf_action_storage_type_t type)
+  : StorageAction(model, cost, failed,
+    		      lmm_variable_new(model->getMaxminSystem(), this, 1.0, -1.0 , 3),
+    		      storage, type) {
   XBT_IN("(%s,%g", storage->getName(), cost);
 
   // Must be less than the max bandwidth for all actions
-  lmm_expand(getModel()->getMaxminSystem(), storage->constraint(), getVariable(), 1.0);
+  lmm_expand(model->getMaxminSystem(), storage->getConstraint(), getVariable(), 1.0);
   switch(type) {
   case OPEN:
   case CLOSE:
@@ -529,11 +530,11 @@ StorageN11ActionLmm::StorageN11ActionLmm(ModelPtr model_, double cost, bool fail
   case LS:
     break;
   case READ:
-    lmm_expand(getModel()->getMaxminSystem(), storage->p_constraintRead,
+    lmm_expand(model->getMaxminSystem(), storage->p_constraintRead,
     		   getVariable(), 1.0);
     break;
   case WRITE:
-    lmm_expand(getModel()->getMaxminSystem(), storage->p_constraintWrite,
+    lmm_expand(model->getMaxminSystem(), storage->p_constraintWrite,
     		   getVariable(), 1.0);
     ActionPtr action = this;
     xbt_dynar_push(storage->p_writeActions, &action);
@@ -543,7 +544,7 @@ StorageN11ActionLmm::StorageN11ActionLmm(ModelPtr model_, double cost, bool fail
   XBT_OUT();
 }
 
-int StorageN11ActionLmm::unref()
+int StorageN11Action::unref()
 {
   m_refcount--;
   if (!m_refcount) {
@@ -560,13 +561,13 @@ int StorageN11ActionLmm::unref()
   return 0;
 }
 
-void StorageN11ActionLmm::cancel()
+void StorageN11Action::cancel()
 {
   setState(SURF_ACTION_FAILED);
   return;
 }
 
-void StorageN11ActionLmm::suspend()
+void StorageN11Action::suspend()
 {
   XBT_IN("(%p)", this);
   if (m_suspended != 2) {
@@ -578,22 +579,22 @@ void StorageN11ActionLmm::suspend()
   XBT_OUT();
 }
 
-void StorageN11ActionLmm::resume()
+void StorageN11Action::resume()
 {
   THROW_UNIMPLEMENTED;
 }
 
-bool StorageN11ActionLmm::isSuspended()
+bool StorageN11Action::isSuspended()
 {
   return m_suspended == 1;
 }
 
-void StorageN11ActionLmm::setMaxDuration(double /*duration*/)
+void StorageN11Action::setMaxDuration(double /*duration*/)
 {
   THROW_UNIMPLEMENTED;
 }
 
-void StorageN11ActionLmm::setPriority(double /*priority*/)
+void StorageN11Action::setPriority(double /*priority*/)
 {
   THROW_UNIMPLEMENTED;
 }

@@ -564,8 +564,8 @@ CpuTi::CpuTi(CpuTiModelPtr model, const char *name, xbt_dynar_t powerPeak,
         int pstate, double powerScale, tmgr_trace_t powerTrace, int core,
         e_surf_resource_state_t stateInitial, tmgr_trace_t stateTrace,
 	xbt_dict_t properties)
-: Resource(model, name, properties)
-, Cpu(core, 0, powerScale) {
+: Cpu(model, name, properties, core, 0, powerScale)
+{
   p_powerEvent = NULL;
   m_stateCurrent = stateInitial;
   m_powerScale = powerScale;
@@ -866,8 +866,7 @@ static void cpu_ti_action_update_index_heap(void *action, int i)
 
 CpuTiAction::CpuTiAction(CpuTiModelPtr model_, double cost, bool failed,
 		                 CpuTiPtr cpu)
- : Action(model_, cost, failed)
- , CpuAction(model_, cost, failed)
+ : CpuAction(model_, cost, failed)
 {
   p_cpuListHookup.next = 0;
   p_cpuListHookup.prev = 0;

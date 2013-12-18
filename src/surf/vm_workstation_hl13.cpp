@@ -27,12 +27,17 @@ WorkstationVMHL13Model::WorkstationVMHL13Model() : WorkstationVMModel() {
   p_cpuModel = surf_cpu_model_vm;
 }
 
+void WorkstationVMHL13Model::updateActionsState(double /*now*/, double /*delta*/){
+  return;
+}
+
 xbt_dynar_t WorkstationVMHL13Model::getRoute(WorkstationPtr src, WorkstationPtr dst){
-  return WorkstationCLM03Model::getRoute(src, dst);
+  XBT_DEBUG("ws_get_route");
+  return surf_network_model->getRoute(src->p_netElm, dst->p_netElm);
 }
 
 ActionPtr WorkstationVMHL13Model::communicate(WorkstationPtr src, WorkstationPtr dst, double size, double rate){
-  return WorkstationCLM03Model::communicate(src, dst, size, rate);
+  return surf_network_model->communicate(src->p_netElm, dst->p_netElm, size, rate);
 }
 
 /* ind means ''indirect'' that this is a reference on the whole dict_elm
@@ -40,7 +45,7 @@ ActionPtr WorkstationVMHL13Model::communicate(WorkstationPtr src, WorkstationPtr
 
 void WorkstationVMHL13Model::createResource(const char *name, void *ind_phys_workstation)
 {
-  WorkstationVMHL13LmmPtr ws = new WorkstationVMHL13Lmm(this, name, NULL, static_cast<surf_resource_t>(ind_phys_workstation));
+  WorkstationVMHL13Ptr ws = new WorkstationVMHL13(this, name, NULL, static_cast<surf_resource_t>(ind_phys_workstation));
 
   xbt_lib_set(host_lib, name, SURF_WKS_LEVEL, static_cast<ResourcePtr>(ws));
 
@@ -49,7 +54,7 @@ void WorkstationVMHL13Model::createResource(const char *name, void *ind_phys_wor
    */
 }
 
-static inline double get_solved_value(CpuActionLmmPtr cpu_action)
+static inline double get_solved_value(CpuActionPtr cpu_action)
 {
   return cpu_action->getVariable()->value;
 }
@@ -112,7 +117,7 @@ double WorkstationVMHL13Model::shareResources(double now)
   xbt_lib_foreach(host_lib, cursor, key, ind_host) {
     WorkstationPtr ws = dynamic_cast<WorkstationPtr>(
                                    static_cast<ResourcePtr>(ind_host[SURF_WKS_LEVEL]));
-    CpuLmmPtr cpu = dynamic_cast<CpuLmmPtr>(
+    CpuPtr cpu = dynamic_cast<CpuPtr>(
                                static_cast<ResourcePtr>(ind_host[SURF_CPU_LEVEL]));
 
     if (!ws)
@@ -125,7 +130,7 @@ double WorkstationVMHL13Model::shareResources(double now)
     /* It is a virtual machine, so we can cast it to workstation_VM2013_t */
     WorkstationVMPtr ws_vm = dynamic_cast<WorkstationVMPtr>(ws);
 
-    double solved_value = get_solved_value(reinterpret_cast<CpuActionLmmPtr>(ws_vm->p_action));
+    double solved_value = get_solved_value(reinterpret_cast<CpuActionPtr>(ws_vm->p_action));
     XBT_DEBUG("assign %f to vm %s @ pm %s", solved_value,
         ws->getName(), ws_vm->p_subWs->getName());
 
@@ -133,13 +138,31 @@ double WorkstationVMHL13Model::shareResources(double now)
     // cpu_cas01->constraint->bound = solved_value;
     xbt_assert(cpu->getModel() == static_cast<ModelPtr>(surf_cpu_model_vm));
     lmm_system_t vcpu_system = cpu->getModel()->getMaxminSystem();
-    lmm_update_constraint_bound(vcpu_system, cpu->constraint(), virt_overhead * solved_value);
+    lmm_update_constraint_bound(vcpu_system, cpu->getConstraint(), virt_overhead * solved_value);
   }
 
 
   /* 2. Calculate resource share at the virtual machine layer. */
-  double ret = WorkstationCLM03Model::shareResources(now);
+  adjustWeightOfDummyCpuActions();
 
+  double min_by_cpu = p_cpuModel->shareResources(now);
+  double min_by_net = surf_network_model->shareResources(now);
+  double min_by_sto = -1;
+  if (p_cpuModel == surf_cpu_model_pm)
+	min_by_sto = surf_storage_model->shareResources(now);
+
+  XBT_DEBUG("model %p, %s min_by_cpu %f, %s min_by_net %f, %s min_by_sto %f",
+      this, surf_cpu_model_pm->getName(), min_by_cpu,
+            surf_network_model->getName(), min_by_net,
+            surf_storage_model->getName(), min_by_sto);
+
+  double ret = max(max(min_by_cpu, min_by_net), min_by_sto);
+  if (min_by_cpu >= 0.0 && min_by_cpu < ret)
+	ret = min_by_cpu;
+  if (min_by_net >= 0.0 && min_by_net < ret)
+	ret = min_by_net;
+  if (min_by_sto >= 0.0 && min_by_sto < ret)
+	ret = min_by_sto;
 
   /* FIXME: 3. do we have to re-initialize our cpu_action object? */
 #if 0
@@ -179,14 +202,46 @@ double WorkstationVMHL13Model::shareResources(double now)
   return ret;
 }
 
+ActionPtr WorkstationVMHL13Model::executeParallelTask(int workstation_nb,
+                                        void **workstation_list,
+                                        double *computation_amount,
+                                        double *communication_amount,
+                                        double rate){
+#define cost_or_zero(array,pos) ((array)?(array)[pos]:0.0)
+  if ((workstation_nb == 1)
+      && (cost_or_zero(communication_amount, 0) == 0.0))
+    return ((WorkstationCLM03Ptr)workstation_list[0])->execute(computation_amount[0]);
+  else if ((workstation_nb == 1)
+           && (cost_or_zero(computation_amount, 0) == 0.0))
+    return communicate((WorkstationCLM03Ptr)workstation_list[0], (WorkstationCLM03Ptr)workstation_list[0],communication_amount[0], rate);
+  else if ((workstation_nb == 2)
+             && (cost_or_zero(computation_amount, 0) == 0.0)
+             && (cost_or_zero(computation_amount, 1) == 0.0)) {
+    int i,nb = 0;
+    double value = 0.0;
+
+    for (i = 0; i < workstation_nb * workstation_nb; i++) {
+      if (cost_or_zero(communication_amount, i) > 0.0) {
+        nb++;
+        value = cost_or_zero(communication_amount, i);
+      }
+    }
+    if (nb == 1)
+      return communicate((WorkstationCLM03Ptr)workstation_list[0], (WorkstationCLM03Ptr)workstation_list[1],value, rate);
+  }
+#undef cost_or_zero
+
+  THROW_UNIMPLEMENTED;          /* This model does not implement parallel tasks */
+  return NULL;
+}
+
 /************
  * Resource *
  ************/
-WorkstationVMHL13Lmm::WorkstationVMHL13Lmm(WorkstationVMModelPtr model, const char* name, xbt_dict_t props,
+
+WorkstationVMHL13::WorkstationVMHL13(WorkstationVMModelPtr model, const char* name, xbt_dict_t props,
 		                                   surf_resource_t ind_phys_workstation)
- : Resource(model, name, props)
- , WorkstationVMLmm(NULL, NULL)
- , WorkstationCLM03Lmm(model, name, props, NULL, NULL, NULL)
+ : WorkstationVM(model, name, props, NULL, NULL)
 {
   WorkstationPtr sub_ws = dynamic_cast<WorkstationPtr>(
                                static_cast<ResourcePtr>(
@@ -209,7 +264,7 @@ WorkstationVMHL13Lmm::WorkstationVMHL13Lmm(WorkstationVMModelPtr model, const ch
 
   // //// CPU  RELATED STUFF ////
   // Roughly, create a vcpu resource by using the values of the sub_cpu one.
-  CpuCas01LmmPtr sub_cpu = dynamic_cast<CpuCas01LmmPtr>(
+  CpuCas01Ptr sub_cpu = dynamic_cast<CpuCas01Ptr>(
                    static_cast<ResourcePtr>(
                 	 surf_cpu_resource_priv(ind_phys_workstation)));
 
@@ -229,7 +284,7 @@ WorkstationVMHL13Lmm::WorkstationVMHL13Lmm(WorkstationVMModelPtr model, const ch
   /* We create cpu_action corresponding to a VM process on the host operating system. */
   /* FIXME: TODO: we have to peridocally input GUESTOS_NOISE to the system? how ? */
   // vm_ws->cpu_action = surf_cpu_model_pm->extension.cpu.execute(ind_phys_workstation, GUESTOS_NOISE);
-  p_action = dynamic_cast<CpuActionLmmPtr>(sub_cpu->execute(0));
+  p_action = dynamic_cast<CpuActionPtr>(sub_cpu->execute(0));
 
   /* The SURF_WKS_LEVEL at host_lib saves workstation_CLM03 objects. Please
    * note workstation_VM2013 objects, inheriting the workstation_CLM03
@@ -245,13 +300,13 @@ WorkstationVMHL13Lmm::WorkstationVMHL13Lmm(WorkstationVMModelPtr model, const ch
  * A physical host does not disapper in the current SimGrid code, but a VM may
  * disapper during a simulation.
  */
-WorkstationVMHL13Lmm::~WorkstationVMHL13Lmm()
+WorkstationVMHL13::~WorkstationVMHL13()
 {
   /* ind_phys_workstation equals to smx_host_t */
   surf_resource_t ind_vm_workstation = xbt_lib_get_elm_or_null(host_lib, getName());
 
   /* Before clearing the entries in host_lib, we have to pick up resources. */
-  CpuCas01LmmPtr cpu = dynamic_cast<CpuCas01LmmPtr>(
+  CpuCas01Ptr cpu = dynamic_cast<CpuCas01Ptr>(
                     static_cast<ResourcePtr>(
        	              surf_cpu_resource_priv(ind_vm_workstation)));
 
@@ -285,29 +340,38 @@ WorkstationVMHL13Lmm::~WorkstationVMHL13Lmm()
 	/* Free the workstation resource of the VM. */
 }
 
-e_surf_resource_state_t WorkstationVMHL13Lmm::getState()
+void WorkstationVMHL13::updateState(tmgr_trace_event_t event_type, double value, double date) {
+  THROW_IMPOSSIBLE;             /* This model does not implement parallel tasks */
+}
+
+bool WorkstationVMHL13::isUsed() {
+  THROW_IMPOSSIBLE;             /* This model does not implement parallel tasks */
+  return -1;
+}
+
+e_surf_resource_state_t WorkstationVMHL13::getState()
 {
   return (e_surf_resource_state_t) p_currentState;
 }
 
-void WorkstationVMHL13Lmm::setState(e_surf_resource_state_t state)
+void WorkstationVMHL13::setState(e_surf_resource_state_t state)
 {
   p_currentState = (e_surf_vm_state_t) state;
 }
 
-void WorkstationVMHL13Lmm::suspend()
+void WorkstationVMHL13::suspend()
 {
   p_action->suspend();
   p_currentState = SURF_VM_STATE_SUSPENDED;
 }
 
-void WorkstationVMHL13Lmm::resume()
+void WorkstationVMHL13::resume()
 {
   p_action->resume();
   p_currentState = SURF_VM_STATE_RUNNING;
 }
 
-void WorkstationVMHL13Lmm::save()
+void WorkstationVMHL13::save()
 {
   p_currentState = SURF_VM_STATE_SAVING;
 
@@ -316,7 +380,7 @@ void WorkstationVMHL13Lmm::save()
   p_currentState = SURF_VM_STATE_SAVED;
 }
 
-void WorkstationVMHL13Lmm::restore()
+void WorkstationVMHL13::restore()
 {
   p_currentState = SURF_VM_STATE_RESTORING;
 
@@ -328,7 +392,7 @@ void WorkstationVMHL13Lmm::restore()
 /*
  * Update the physical host of the given VM
  */
-void WorkstationVMHL13Lmm::migrate(surf_resource_t ind_dst_pm)
+void WorkstationVMHL13::migrate(surf_resource_t ind_dst_pm)
 {
    /* ind_phys_workstation equals to smx_host_t */
    WorkstationPtr ws_dst = dynamic_cast<WorkstationPtr>(
@@ -369,8 +433,8 @@ void WorkstationVMHL13Lmm::migrate(surf_resource_t ind_dst_pm)
 #endif
 
      /* create a cpu action bound to the pm model at the destination. */
-     CpuActionLmmPtr new_cpu_action = dynamic_cast<CpuActionLmmPtr>(
-    		                            dynamic_cast<CpuCas01LmmPtr>(
+     CpuActionPtr new_cpu_action = dynamic_cast<CpuActionPtr>(
+    		                            dynamic_cast<CpuCas01Ptr>(
                                         static_cast<ResourcePtr>(
                                         surf_cpu_resource_priv(ind_dst_pm)))->execute(0));
 
@@ -397,11 +461,11 @@ void WorkstationVMHL13Lmm::migrate(surf_resource_t ind_dst_pm)
    XBT_DEBUG("migrate VM(%s): change PM (%s to %s)", vm_name, pm_name_src, pm_name_dst);
 }
 
-void WorkstationVMHL13Lmm::setBound(double bound){
+void WorkstationVMHL13::setBound(double bound){
  p_action->setBound(bound);
 }
 
-void WorkstationVMHL13Lmm::setAffinity(CpuLmmPtr cpu, unsigned long mask){
+void WorkstationVMHL13::setAffinity(CpuPtr cpu, unsigned long mask){
  p_action->setAffinity(cpu, mask);
 }
 
@@ -409,13 +473,13 @@ void WorkstationVMHL13Lmm::setAffinity(CpuLmmPtr cpu, unsigned long mask){
  * A surf level object will be useless in the upper layer. Returing the
  * dict_elm of the host.
  **/
-surf_resource_t WorkstationVMHL13Lmm::getPm()
+surf_resource_t WorkstationVMHL13::getPm()
 {
   return xbt_lib_get_elm_or_null(host_lib, p_subWs->getName());
 }
 
 /* Adding a task to a VM updates the VCPU task on its physical machine. */
-ActionPtr WorkstationVMHL13Lmm::execute(double size)
+ActionPtr WorkstationVMHL13::execute(double size)
 {
   double old_cost = p_action->getCost();
   double new_cost = old_cost + size;
@@ -426,7 +490,11 @@ ActionPtr WorkstationVMHL13Lmm::execute(double size)
 
   p_action->setCost(new_cost);
 
-  return WorkstationCLM03Lmm::execute(size);
+  return p_cpu->execute(size);
+}
+
+ActionPtr WorkstationVMHL13::sleep(double duration) {
+  return p_cpu->sleep(duration);
 }
 
 /**********

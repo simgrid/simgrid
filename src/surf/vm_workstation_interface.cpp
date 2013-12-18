@@ -24,12 +24,6 @@ WorkstationVMModel::WorkstationVMModel() : WorkstationModel("Virtual Workstation
  * Resource *
  ************/
 
-
-WorkstationVMLmm::WorkstationVMLmm(RoutingEdgePtr netElm, CpuPtr cpu)
-  : WorkstationVM(netElm, cpu)
-  , WorkstationLmm()
-{}
-
 /*
  * A physical host does not disapper in the current SimGrid code, but a VM may
  * disapper during a simulation.
@@ -40,7 +34,7 @@ WorkstationVM::~WorkstationVM()
   surf_resource_t ind_vm_workstation = xbt_lib_get_elm_or_null(host_lib, getName());
 
   /* Before clearing the entries in host_lib, we have to pick up resources. */
-  CpuCas01LmmPtr cpu = dynamic_cast<CpuCas01LmmPtr>(
+  CpuCas01Ptr cpu = dynamic_cast<CpuCas01Ptr>(
                     static_cast<ResourcePtr>(
        	              surf_cpu_resource_priv(ind_vm_workstation)));
 

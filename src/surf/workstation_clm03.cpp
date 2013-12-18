@@ -63,7 +63,7 @@ void WorkstationCLM03Model::parseInit(sg_platf_host_cbarg_t host){
 
 WorkstationPtr WorkstationCLM03Model::createResource(const char *name){
 
-  WorkstationPtr workstation = new WorkstationCLM03Lmm(surf_workstation_model, name, NULL,
+  WorkstationPtr workstation = new WorkstationCLM03(surf_workstation_model, name, NULL,
 		  (xbt_dynar_t)xbt_lib_get_or_null(storage_lib, name, ROUTING_STORAGE_HOST_LEVEL),
 		  (RoutingEdgePtr)xbt_lib_get_or_null(host_lib, name, ROUTING_HOST_LEVEL),
 		  dynamic_cast<CpuPtr>(static_cast<ResourcePtr>(xbt_lib_get_or_null(host_lib, name, SURF_CPU_LEVEL))));
@@ -108,10 +108,10 @@ ActionPtr WorkstationCLM03Model::executeParallelTask(int workstation_nb,
 #define cost_or_zero(array,pos) ((array)?(array)[pos]:0.0)
   if ((workstation_nb == 1)
       && (cost_or_zero(communication_amount, 0) == 0.0))
-    return ((WorkstationCLM03LmmPtr)workstation_list[0])->execute(computation_amount[0]);
+    return ((WorkstationCLM03Ptr)workstation_list[0])->execute(computation_amount[0]);
   else if ((workstation_nb == 1)
            && (cost_or_zero(computation_amount, 0) == 0.0))
-    return communicate((WorkstationCLM03LmmPtr)workstation_list[0], (WorkstationCLM03LmmPtr)workstation_list[0],communication_amount[0], rate);
+    return communicate((WorkstationCLM03Ptr)workstation_list[0], (WorkstationCLM03Ptr)workstation_list[0],communication_amount[0], rate);
   else if ((workstation_nb == 2)
              && (cost_or_zero(computation_amount, 0) == 0.0)
              && (cost_or_zero(computation_amount, 1) == 0.0)) {
@@ -125,7 +125,7 @@ ActionPtr WorkstationCLM03Model::executeParallelTask(int workstation_nb,
       }
     }
     if (nb == 1)
-      return communicate((WorkstationCLM03LmmPtr)workstation_list[0], (WorkstationCLM03LmmPtr)workstation_list[1],value, rate);
+      return communicate((WorkstationCLM03Ptr)workstation_list[0], (WorkstationCLM03Ptr)workstation_list[1],value, rate);
   }
 #undef cost_or_zero
 
@@ -149,38 +149,29 @@ ActionPtr WorkstationCLM03Model::communicate(WorkstationPtr src, WorkstationPtr 
 /************
  * Resource *
  ************/
-WorkstationCLM03Lmm::WorkstationCLM03Lmm(WorkstationModelPtr model, const char* name, xbt_dict_t properties, xbt_dynar_t storage, RoutingEdgePtr netElm, CpuPtr cpu)
-  : Resource(model, name, properties), Workstation(storage, netElm, cpu) {}
+WorkstationCLM03::WorkstationCLM03(WorkstationModelPtr model, const char* name, xbt_dict_t properties, xbt_dynar_t storage, RoutingEdgePtr netElm, CpuPtr cpu)
+  : Workstation(model, name, properties, storage, netElm, cpu) {}
 
-bool WorkstationCLM03Lmm::isUsed(){
+bool WorkstationCLM03::isUsed(){
   THROW_IMPOSSIBLE;             /* This model does not implement parallel tasks */
   return -1;
 }
 
-void WorkstationCLM03Lmm::updateState(tmgr_trace_event_t /*event_type*/, double /*value*/, double /*date*/){
+void WorkstationCLM03::updateState(tmgr_trace_event_t /*event_type*/, double /*value*/, double /*date*/){
   THROW_IMPOSSIBLE;             /* This model does not implement parallel tasks */
 }
 
-ActionPtr WorkstationCLM03Lmm::execute(double size) {
+ActionPtr WorkstationCLM03::execute(double size) {
   return p_cpu->execute(size);
 }
 
-ActionPtr WorkstationCLM03Lmm::sleep(double duration) {
+ActionPtr WorkstationCLM03::sleep(double duration) {
   return p_cpu->sleep(duration);
 }
 
-e_surf_resource_state_t WorkstationCLM03Lmm::getState() {
+e_surf_resource_state_t WorkstationCLM03::getState() {
   return p_cpu->getState();
 }
-
-
-
-
-
-
-
-
-
 
 /**********
  * Action *

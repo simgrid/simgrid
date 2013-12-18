@@ -177,6 +177,7 @@ public:
   double getRemains();
   void setAffinity(CpuPtr /*cpu*/, unsigned long /*mask*/) {};
   void setBound(double /*bound*/) {};
+  void updateEnergy() {};
 
   CpuTiPtr p_cpu;
   int m_indexHeap;

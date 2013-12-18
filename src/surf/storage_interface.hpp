@@ -15,14 +15,14 @@ typedef StorageModel *StorageModelPtr;
 class Storage;
 typedef Storage *StoragePtr;
 
-class StorageLmm;
-typedef StorageLmm *StorageLmmPtr;
+class Storage;
+typedef Storage *StoragePtr;
 
 class StorageAction;
 typedef StorageAction *StorageActionPtr;
 
-class StorageActionLmm;
-typedef StorageActionLmm *StorageActionLmmPtr;
+class StorageAction;
+typedef StorageAction *StorageActionPtr;
 
 /*********
  * Model *
@@ -41,9 +41,13 @@ public:
  * Resource *
  ************/
 
-class Storage : virtual public Resource {
+class Storage : public Resource {
 public:
-  Storage(const char* type_id, char *content_name, char *content_type, sg_size_t size);
+  Storage(ModelPtr model, const char *name, xbt_dict_t props,
+		  const char* type_id, char *content_name, char *content_type, sg_size_t size);
+  Storage(ModelPtr model, const char *name, xbt_dict_t props,
+		  lmm_system_t maxminSystem, double bread, double bwrite, double bconnection,
+		  const char* type_id, char *content_name, char *content_type, sg_size_t size);
   ~Storage();
 
   bool isUsed();
@@ -69,12 +73,6 @@ public:
   xbt_dict_t parseContent(char *filename);
 
   xbt_dynar_t p_writeActions;
-};
-
-class StorageLmm : public ResourceLmm, public Storage {
-public:
-  StorageLmm(lmm_system_t maxminSystem, double bread, double bwrite, double bconnection,
-		     const char* type_id, char *content_name, char *content_type, sg_size_t size);
 
   lmm_constraint_t p_constraintWrite;    /* Constraint for maximum write bandwidth*/
   lmm_constraint_t p_constraintRead;     /* Constraint for maximum write bandwidth*/
@@ -89,22 +87,18 @@ typedef enum {
 } e_surf_action_storage_type_t;
 
 
-class StorageAction : virtual public Action {
+class StorageAction : public Action {
 public:
   StorageAction() : m_type(READ) {};//FIXME:REMOVE
-  StorageAction(StoragePtr storage, e_surf_action_storage_type_t type);
+  StorageAction(ModelPtr model, double cost, bool failed,
+		        StoragePtr storage, e_surf_action_storage_type_t type);
+  StorageAction(ModelPtr model, double cost, bool failed, lmm_variable_t var,
+		        StoragePtr storage, e_surf_action_storage_type_t type);
 
   e_surf_action_storage_type_t m_type;
   StoragePtr p_storage;
   surf_file_t p_file;
   xbt_dict_t p_lsDict;
-};
-
-class StorageActionLmm : public ActionLmm, public StorageAction {
-public:
-  StorageActionLmm() {};//FIXME:REMOVE
-
-  StorageActionLmm(StorageLmmPtr storage, e_surf_action_storage_type_t type, lmm_variable_t var);
 };
 
 typedef struct s_storage_type {

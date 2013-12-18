@@ -13,10 +13,10 @@ CpuModelPtr surf_cpu_model_vm;
 
 void CpuModel::updateActionsStateLazy(double now, double /*delta*/)
 {
-  CpuActionLmmPtr action;
+  CpuActionPtr action;
   while ((xbt_heap_size(getActionHeap()) > 0)
          && (double_equals(xbt_heap_maxkey(getActionHeap()), now))) {
-    action = dynamic_cast<CpuActionLmmPtr>(static_cast<ActionLmmPtr>(xbt_heap_pop(getActionHeap())));
+    action = static_cast<CpuActionPtr>(static_cast<ActionPtr>(xbt_heap_pop(getActionHeap())));
     XBT_CDEBUG(surf_kernel, "Something happened to action %p", action);
 #ifdef HAVE_TRACING
     if (TRACE_is_enabled()) {
@@ -46,7 +46,7 @@ void CpuModel::updateActionsStateLazy(double now, double /*delta*/)
     ActionListPtr actionSet = getRunningActionSet();
     for(ActionList::iterator it(actionSet->begin()), itend(actionSet->end())
        ; it != itend ; ++it) {
-      action = dynamic_cast<CpuActionLmmPtr>(&*it);
+      action = static_cast<CpuActionPtr>(&*it);
         if (smaller < 0) {
           smaller = action->getLastUpdate();
           continue;
@@ -65,13 +65,13 @@ void CpuModel::updateActionsStateLazy(double now, double /*delta*/)
 
 void CpuModel::updateActionsStateFull(double now, double delta)
 {
-  CpuActionLmmPtr action = NULL;
+  CpuActionPtr action = NULL;
   ActionListPtr running_actions = getRunningActionSet();
 
   for(ActionList::iterator it(running_actions->begin()), itNext=it, itend(running_actions->end())
      ; it != itend ; it=itNext) {
 	++itNext;
-    action = dynamic_cast<CpuActionLmmPtr>(&*it);
+    action = static_cast<CpuActionPtr>(&*it);
 #ifdef HAVE_TRACING
     if (TRACE_is_enabled()) {
       CpuPtr x = (CpuPtr) lmm_constraint_id(lmm_get_cnst_from_var
@@ -112,9 +112,51 @@ void CpuModel::updateActionsStateFull(double now, double delta)
  * Resource *
  ************/
 
-Cpu::Cpu(int core, double powerPeak, double powerScale)
- : m_core(core), m_powerPeak(powerPeak), m_powerScale(powerScale)
+Cpu::Cpu(ModelPtr model, const char *name, xbt_dict_t props,
+		 int core, double powerPeak, double powerScale)
+ : Resource(model, name, props)
+ , m_core(core)
+ , m_powerPeak(powerPeak)
+ , m_powerScale(powerScale)
+ , p_constraintCore(NULL)
+ , p_constraintCoreId(NULL)
 {}
+
+Cpu::Cpu(ModelPtr model, const char *name, xbt_dict_t props,
+		 lmm_constraint_t constraint, int core, double powerPeak, double powerScale)
+ : Resource(model, name, props, constraint)
+ , m_core(core)
+ , m_powerPeak(powerPeak)
+ , m_powerScale(powerScale)
+{
+  /* At now, we assume that a VM does not have a multicore CPU. */
+  if (core > 1)
+    xbt_assert(model == surf_cpu_model_pm);
+
+  p_constraintCore = NULL;
+  p_constraintCoreId = NULL;
+  if (model->getUpdateMechanism() != UM_UNDEFINED) {
+	p_constraintCore = xbt_new(lmm_constraint_t, core);
+	p_constraintCoreId = xbt_new(void*, core);
+
+    int i;
+    for (i = 0; i < core; i++) {
+      /* just for a unique id, never used as a string. */
+      p_constraintCoreId[i] = bprintf("%s:%i", name, i);
+      p_constraintCore[i] = lmm_constraint_new(model->getMaxminSystem(), p_constraintCoreId[i], m_powerScale * m_powerPeak);
+    }
+  }
+}
+
+Cpu::~Cpu(){
+  if (getModel()->getUpdateMechanism() != UM_UNDEFINED){
+    for (int i = 0; i < m_core; i++) {
+	  xbt_free(p_constraintCoreId[i]);
+    }
+    xbt_free(p_constraintCore);
+    xbt_free(p_constraintCoreId);
+  }
+}
 
 double Cpu::getSpeed(double load)
 {
@@ -132,45 +174,11 @@ int Cpu::getCore()
   return m_core;
 }
 
-CpuLmm::CpuLmm(lmm_constraint_t constraint)
-: ResourceLmm(constraint), p_constraintCore(NULL), p_constraintCoreId(NULL)
-{}
-
-CpuLmm::CpuLmm(lmm_constraint_t constraint, int core, double powerPeak, double powerScale)
- : ResourceLmm(constraint)
- , Cpu(core, powerPeak, powerScale)
-{
-  /* At now, we assume that a VM does not have a multicore CPU. */
-  if (core > 1)
-    xbt_assert(getModel() == surf_cpu_model_pm);
-
-
-  p_constraintCore = xbt_new(lmm_constraint_t, core);
-  p_constraintCoreId = xbt_new(void*, core);
-
-  int i;
-  for (i = 0; i < core; i++) {
-    /* just for a unique id, never used as a string. */
-    p_constraintCoreId[i] = bprintf("%s:%i", getName(), i);
-    p_constraintCore[i] = lmm_constraint_new(getModel()->getMaxminSystem(), p_constraintCoreId[i], m_powerScale * m_powerPeak);
-  }
-}
-
-CpuLmm::~CpuLmm(){
-  if (p_constraintCore){
-    for (int i = 0; i < m_core; i++) {
-	  xbt_free(p_constraintCoreId[i]);
-    }
-    xbt_free(p_constraintCore);
-    xbt_free(p_constraintCoreId);
-  }
-}
-
 /**********
  * Action *
  **********/
 
-void CpuActionLmm::updateRemainingLazy(double now)
+void CpuAction::updateRemainingLazy(double now)
 {
   double delta = 0.0;
 
@@ -200,7 +208,7 @@ void CpuActionLmm::updateRemainingLazy(double now)
   m_lastValue = lmm_variable_getvalue(getVariable());
 }
 
-void CpuActionLmm::setBound(double bound)
+void CpuAction::setBound(double bound)
 {
   XBT_IN("(%p,%g)", this, bound);
   m_bound = bound;
@@ -231,10 +239,9 @@ void CpuActionLmm::setBound(double bound)
  * action object does not have the information about the location where the
  * action is being executed.
  */
-void CpuActionLmm::setAffinity(CpuPtr _cpu, unsigned long mask)
+void CpuAction::setAffinity(CpuPtr cpu, unsigned long mask)
 {
   lmm_variable_t var_obj = getVariable();
-  CpuLmmPtr cpu = reinterpret_cast<CpuLmmPtr>(_cpu);
   XBT_IN("(%p,%lx)", this, mask);
 
   {

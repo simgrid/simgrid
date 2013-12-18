@@ -434,7 +434,7 @@ void surf_vm_workstation_set_bound(surf_resource_t resource, double bound){
 }
 
 void surf_vm_workstation_set_affinity(surf_resource_t resource, surf_resource_t cpu, unsigned long mask){
-  return get_casted_vm_workstation(resource)->setAffinity(dynamic_cast<CpuLmmPtr>(get_casted_cpu(cpu)), mask);
+  return get_casted_vm_workstation(resource)->setAffinity(get_casted_cpu(cpu), mask);
 }
 
 int surf_network_link_is_shared(surf_cpp_resource_t link){

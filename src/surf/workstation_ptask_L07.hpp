@@ -25,8 +25,8 @@ typedef CpuL07 *CpuL07Ptr;
 class LinkL07;
 typedef LinkL07 *LinkL07Ptr;
 
-class WorkstationL07ActionLmm;
-typedef WorkstationL07ActionLmm *WorkstationL07ActionLmmPtr;
+class WorkstationL07Action;
+typedef WorkstationL07Action *WorkstationL07ActionPtr;
 
 /*********
  * Tools *
@@ -98,7 +98,7 @@ public:
  * Resource *
  ************/
 
-class WorkstationL07 : public WorkstationLmm {
+class WorkstationL07 : public Workstation {
 public:
   WorkstationL07(WorkstationModelPtr model, const char* name, xbt_dict_t props, RoutingEdgePtr netElm, CpuPtr cpu);
   //bool isUsed();
@@ -113,7 +113,7 @@ public:
   double getConsumedEnergy();
 };
 
-class CpuL07 : public CpuLmm {
+class CpuL07 : public Cpu {
 public:
   s_surf_metric_t p_power;
   tmgr_trace_event_t p_stateEvent;
@@ -141,7 +141,7 @@ public:
   double m_powerCurrent;
 };
 
-class LinkL07 : public NetworkLinkLmm {
+class LinkL07 : public NetworkLink {
 public:
   LinkL07(NetworkL07ModelPtr model, const char* name, xbt_dict_t props,
 		  double bw_initial,
@@ -169,7 +169,7 @@ public:
 /**********
  * Action *
  **********/
-class WorkstationL07ActionLmm : public WorkstationActionLmm {
+class WorkstationL07Action : public WorkstationAction {
   friend ActionPtr WorkstationL07::execute(double size);
   friend ActionPtr WorkstationL07::sleep(double duration);
   friend ActionPtr WorkstationL07Model::executeParallelTask(int workstation_nb,
@@ -179,9 +179,9 @@ class WorkstationL07ActionLmm : public WorkstationActionLmm {
                                                    *communication_amount,
                                                    double rate);
 public:
-  WorkstationL07ActionLmm(ModelPtr model, double cost, bool failed)
-  : Action(model, cost, failed), WorkstationActionLmm() {};
- ~WorkstationL07ActionLmm();
+  WorkstationL07Action(ModelPtr model, double cost, bool failed)
+  : WorkstationAction(model, cost, failed) {};
+ ~WorkstationL07Action();
 
   void updateBound();
 
