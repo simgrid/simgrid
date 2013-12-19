@@ -6,6 +6,7 @@
 
 #include "surf_routing.hpp"
 #include "surf_routing_private.hpp"
+#include "surf_routing_cluster.hpp"
 
 #include "simgrid/platf_interface.h"    // platform creation API internal interface
 #include "simgrid/sg_config.h"

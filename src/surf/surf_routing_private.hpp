@@ -65,14 +65,6 @@ void model_floyd_parse_route(AS_t rc, sg_platf_route_cbarg_t route);
 
 /* ************************************************** */
 /* **************  Cluster ROUTING   **************** */
-class AsCluster : public As {
-public:
-  void *backbone;
-  void *loopback;
-  RoutingEdgePtr p_router;
-};
-typedef AsCluster *AsClusterPtr;
-//FIXME:remove} s_as_cluster_t, *as_cluster_t;
 
 AsPtr model_cluster_create(void);      /* create structures for cluster routing model */
 

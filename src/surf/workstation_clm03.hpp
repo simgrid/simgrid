@@ -23,7 +23,7 @@ typedef WorkstationCLM03Action *WorkstationCLM03ActionPtr;
  * Model *
  *********/
 
-class WorkstationCLM03Model : virtual public WorkstationModel {
+class WorkstationCLM03Model : public WorkstationModel {
 public:
   WorkstationCLM03Model(const char *name);
   WorkstationCLM03Model();

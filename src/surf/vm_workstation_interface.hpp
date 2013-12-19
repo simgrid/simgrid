@@ -31,7 +31,7 @@ typedef WorkstationVMLmm *WorkstationVMLmmPtr;
  * Model *
  *********/
 
-class WorkstationVMModel : virtual public WorkstationModel {
+class WorkstationVMModel : public WorkstationModel {
 public:
   WorkstationVMModel();
   ~WorkstationVMModel(){};
