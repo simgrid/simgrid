@@ -10,7 +10,7 @@ set(EXTRA_DIST
   src/include/simgrid/sg_config.h
   src/include/smpi/smpi_interface.h
   src/include/surf/datatypes.h
-  src/include/surf/maxmin.hpp
+  src/include/surf/maxmin.h
   src/include/surf/random_mgr.h
   src/include/surf/surf.h
   src/include/surf/surf_resource.h
