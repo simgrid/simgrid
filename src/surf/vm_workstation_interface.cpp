@@ -34,9 +34,7 @@ WorkstationVM::~WorkstationVM()
   surf_resource_t ind_vm_workstation = xbt_lib_get_elm_or_null(host_lib, getName());
 
   /* Before clearing the entries in host_lib, we have to pick up resources. */
-  CpuCas01Ptr cpu = dynamic_cast<CpuCas01Ptr>(
-                    static_cast<ResourcePtr>(
-       	              surf_cpu_resource_priv(ind_vm_workstation)));
+  CpuCas01Ptr cpu = static_cast<CpuCas01Ptr>(surf_cpu_resource_priv(ind_vm_workstation));
 
   /* We deregister objects from host_lib, without invoking the freeing callback
    * of each level.

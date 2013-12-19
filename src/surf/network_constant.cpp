@@ -30,7 +30,7 @@ double NetworkConstantModel::shareResources(double /*now*/)
   ActionListPtr actionSet = getRunningActionSet();
   for(ActionList::iterator it(actionSet->begin()), itend(actionSet->end())
 	 ; it != itend ; ++it) {
-	action = dynamic_cast<NetworkConstantActionPtr>(&*it);
+	action = static_cast<NetworkConstantActionPtr>(&*it);
     if (action->m_latency > 0) {
       if (min < 0)
         min = action->m_latency;
@@ -49,7 +49,7 @@ void NetworkConstantModel::updateActionsState(double /*now*/, double delta)
   for(ActionList::iterator it(actionSet->begin()), itNext=it, itend(actionSet->end())
      ; it != itend ; it=itNext) {
     ++itNext;
-	action = dynamic_cast<NetworkConstantActionPtr>(&*it);
+	action = static_cast<NetworkConstantActionPtr>(&*it);
     if (action->m_latency > 0) {
       if (action->m_latency > delta) {
         double_update(&(action->m_latency), delta);

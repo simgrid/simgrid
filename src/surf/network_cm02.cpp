@@ -60,9 +60,8 @@ static void net_add_traces(void){
   /* connect all traces relative to network */
   xbt_dict_foreach(trace_connect_list_link_avail, cursor, trace_name, elm) {
     tmgr_trace_t trace = (tmgr_trace_t) xbt_dict_get_or_null(traces_set_list, trace_name);
-    NetworkCm02LinkPtr link = dynamic_cast<NetworkCm02LinkPtr>(
-    		                     static_cast<ResourcePtr>(
-    		                		  xbt_lib_get_or_null(link_lib, elm, SURF_LINK_LEVEL)));
+    NetworkCm02LinkPtr link = static_cast<NetworkCm02LinkPtr>(
+    		                    xbt_lib_get_or_null(link_lib, elm, SURF_LINK_LEVEL));
 
     xbt_assert(link, "Cannot connect trace %s to link %s: link undefined",
                trace_name, elm);
@@ -75,9 +74,8 @@ static void net_add_traces(void){
 
   xbt_dict_foreach(trace_connect_list_bandwidth, cursor, trace_name, elm) {
     tmgr_trace_t trace = (tmgr_trace_t) xbt_dict_get_or_null(traces_set_list, trace_name);
-    NetworkCm02LinkPtr link = dynamic_cast<NetworkCm02LinkPtr>(
-                                 static_cast<ResourcePtr>(
-       	                              xbt_lib_get_or_null(link_lib, elm, SURF_LINK_LEVEL)));
+    NetworkCm02LinkPtr link = static_cast<NetworkCm02LinkPtr>(
+                                xbt_lib_get_or_null(link_lib, elm, SURF_LINK_LEVEL));
 
     xbt_assert(link, "Cannot connect trace %s to link %s: link undefined",
                trace_name, elm);
@@ -90,9 +88,8 @@ static void net_add_traces(void){
 
   xbt_dict_foreach(trace_connect_list_latency, cursor, trace_name, elm) {
     tmgr_trace_t trace = (tmgr_trace_t) xbt_dict_get_or_null(traces_set_list, trace_name);
-    NetworkCm02LinkPtr link = dynamic_cast<NetworkCm02LinkPtr>(
-                                 static_cast<ResourcePtr>(
-       	                              xbt_lib_get_or_null(link_lib, elm, SURF_LINK_LEVEL)));
+    NetworkCm02LinkPtr link = static_cast<NetworkCm02LinkPtr>(
+    		                    xbt_lib_get_or_null(link_lib, elm, SURF_LINK_LEVEL));
 
     xbt_assert(link, "Cannot connect trace %s to link %s: link undefined",
                trace_name, elm);
@@ -383,7 +380,7 @@ ActionPtr NetworkCm02Model::communicate(RoutingEdgePtr src, RoutingEdgePtr dst,
              src->p_name, dst->p_name);
 
   xbt_dynar_foreach(route, i, _link) {
-	link = dynamic_cast<NetworkCm02LinkPtr>(static_cast<ResourcePtr>(_link));
+	link = static_cast<NetworkCm02LinkPtr>(_link);
     if (link->getState() == SURF_RESOURCE_OFF) {
       failed = 1;
       break;
@@ -392,7 +389,7 @@ ActionPtr NetworkCm02Model::communicate(RoutingEdgePtr src, RoutingEdgePtr dst,
   if (sg_network_crosstraffic == 1) {
 	  routing_platf->getRouteAndLatency(dst, src, &back_route, NULL);
     xbt_dynar_foreach(back_route, i, _link) {
-      link = dynamic_cast<NetworkCm02LinkPtr>(static_cast<ResourcePtr>(_link));
+      link = static_cast<NetworkCm02LinkPtr>(_link);
       if (link->getState() == SURF_RESOURCE_OFF) {
         failed = 1;
         break;
@@ -416,12 +413,12 @@ ActionPtr NetworkCm02Model::communicate(RoutingEdgePtr src, RoutingEdgePtr dst,
   bandwidth_bound = -1.0;
   if (sg_weight_S_parameter > 0) {
     xbt_dynar_foreach(route, i, _link) {
-      link = dynamic_cast<NetworkCm02LinkPtr>(static_cast<ResourcePtr>(_link));
+      link = static_cast<NetworkCm02LinkPtr>(_link);
       action->m_weight += sg_weight_S_parameter / link->getBandwidth();
     }
   }
   xbt_dynar_foreach(route, i, _link) {
-	link = dynamic_cast<NetworkCm02LinkPtr>(static_cast<ResourcePtr>(_link));
+	link = static_cast<NetworkCm02LinkPtr>(_link);
     double bb = bandwidthFactor(size) * link->getBandwidth(); //(link->p_power.peak * link->p_power.scale);
     bandwidth_bound =
         (bandwidth_bound < 0.0) ? bb : min(bandwidth_bound, bb);
@@ -434,8 +431,7 @@ ActionPtr NetworkCm02Model::communicate(RoutingEdgePtr src, RoutingEdgePtr dst,
     xbt_assert(!xbt_dynar_is_empty(route),
                "Using a model with a gap (e.g., SMPI) with a platform without links (e.g. vivaldi)!!!");
 
-    //link = *(NetworkCm02LinkPtr *) xbt_dynar_get_ptr(route, 0);
-    link = dynamic_cast<NetworkCm02LinkPtr>(*static_cast<ResourcePtr *>(xbt_dynar_get_ptr(route, 0)));
+    link = *static_cast<NetworkCm02LinkPtr *>(xbt_dynar_get_ptr(route, 0));
     gapAppend(size, link, action);
     XBT_DEBUG("Comm %p: %s -> %s gap=%f (lat=%f)",
               action, src->p_name, dst->p_name, action->m_senderGap,
@@ -465,14 +461,14 @@ ActionPtr NetworkCm02Model::communicate(RoutingEdgePtr src, RoutingEdgePtr dst,
   }
 
   xbt_dynar_foreach(route, i, _link) {
-	link = dynamic_cast<NetworkCm02LinkPtr>(static_cast<ResourcePtr>(_link));
+	link = static_cast<NetworkCm02LinkPtr>(_link);
     lmm_expand(p_maxminSystem, link->getConstraint(), action->getVariable(), 1.0);
   }
 
   if (sg_network_crosstraffic == 1) {
     XBT_DEBUG("Fullduplex active adding backward flow using 5%%");
     xbt_dynar_foreach(back_route, i, _link) {
-      link = dynamic_cast<NetworkCm02LinkPtr>(static_cast<ResourcePtr>(_link));
+      link = static_cast<NetworkCm02LinkPtr>(_link);
       lmm_expand(p_maxminSystem, link->getConstraint(), action->getVariable(), .05);
     }
   }

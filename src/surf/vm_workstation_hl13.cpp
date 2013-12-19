@@ -115,10 +115,8 @@ double WorkstationVMHL13Model::shareResources(double now)
   char *key;
   void **ind_host;
   xbt_lib_foreach(host_lib, cursor, key, ind_host) {
-    WorkstationPtr ws = dynamic_cast<WorkstationPtr>(
-                                   static_cast<ResourcePtr>(ind_host[SURF_WKS_LEVEL]));
-    CpuPtr cpu = dynamic_cast<CpuPtr>(
-                               static_cast<ResourcePtr>(ind_host[SURF_CPU_LEVEL]));
+    WorkstationPtr ws = static_cast<WorkstationPtr>(ind_host[SURF_WKS_LEVEL]);
+    CpuPtr cpu = static_cast<CpuPtr>(ind_host[SURF_CPU_LEVEL]);
 
     if (!ws)
       continue;
@@ -128,9 +126,9 @@ double WorkstationVMHL13Model::shareResources(double now)
     xbt_assert(cpu, "cpu-less workstation");
 
     /* It is a virtual machine, so we can cast it to workstation_VM2013_t */
-    WorkstationVMPtr ws_vm = dynamic_cast<WorkstationVMPtr>(ws);
+    WorkstationVMPtr ws_vm = static_cast<WorkstationVMPtr>(ws);
 
-    double solved_value = get_solved_value(reinterpret_cast<CpuActionPtr>(ws_vm->p_action));
+    double solved_value = get_solved_value(static_cast<CpuActionPtr>(ws_vm->p_action));
     XBT_DEBUG("assign %f to vm %s @ pm %s", solved_value,
         ws->getName(), ws_vm->p_subWs->getName());
 
@@ -243,9 +241,7 @@ WorkstationVMHL13::WorkstationVMHL13(WorkstationVMModelPtr model, const char* na
 		                                   surf_resource_t ind_phys_workstation)
  : WorkstationVM(model, name, props, NULL, NULL)
 {
-  WorkstationPtr sub_ws = dynamic_cast<WorkstationPtr>(
-                               static_cast<ResourcePtr>(
-                                 surf_workstation_resource_priv(ind_phys_workstation)));
+  WorkstationPtr sub_ws = static_cast<WorkstationPtr>(surf_workstation_resource_priv(ind_phys_workstation));
 
   /* Currently, we assume a VM has no storage. */
   p_storage = NULL;
@@ -264,9 +260,7 @@ WorkstationVMHL13::WorkstationVMHL13(WorkstationVMModelPtr model, const char* na
 
   // //// CPU  RELATED STUFF ////
   // Roughly, create a vcpu resource by using the values of the sub_cpu one.
-  CpuCas01Ptr sub_cpu = dynamic_cast<CpuCas01Ptr>(
-                   static_cast<ResourcePtr>(
-                	 surf_cpu_resource_priv(ind_phys_workstation)));
+  CpuCas01Ptr sub_cpu = static_cast<CpuCas01Ptr>(surf_cpu_resource_priv(ind_phys_workstation));
 
   /* We can assume one core and cas01 cpu for the first step.
    * Do xbt_lib_set(host_lib, name, SURF_CPU_LEVEL, cpu) if you get the resource. */
@@ -284,7 +278,7 @@ WorkstationVMHL13::WorkstationVMHL13(WorkstationVMModelPtr model, const char* na
   /* We create cpu_action corresponding to a VM process on the host operating system. */
   /* FIXME: TODO: we have to peridocally input GUESTOS_NOISE to the system? how ? */
   // vm_ws->cpu_action = surf_cpu_model_pm->extension.cpu.execute(ind_phys_workstation, GUESTOS_NOISE);
-  p_action = dynamic_cast<CpuActionPtr>(sub_cpu->execute(0));
+  p_action = static_cast<CpuActionPtr>(sub_cpu->execute(0));
 
   /* The SURF_WKS_LEVEL at host_lib saves workstation_CLM03 objects. Please
    * note workstation_VM2013 objects, inheriting the workstation_CLM03
@@ -306,9 +300,7 @@ WorkstationVMHL13::~WorkstationVMHL13()
   surf_resource_t ind_vm_workstation = xbt_lib_get_elm_or_null(host_lib, getName());
 
   /* Before clearing the entries in host_lib, we have to pick up resources. */
-  CpuCas01Ptr cpu = dynamic_cast<CpuCas01Ptr>(
-                    static_cast<ResourcePtr>(
-       	              surf_cpu_resource_priv(ind_vm_workstation)));
+  CpuCas01Ptr cpu = static_cast<CpuCas01Ptr>(surf_cpu_resource_priv(ind_vm_workstation));
 
   /* We deregister objects from host_lib, without invoking the freeing callback
    * of each level.
@@ -395,9 +387,7 @@ void WorkstationVMHL13::restore()
 void WorkstationVMHL13::migrate(surf_resource_t ind_dst_pm)
 {
    /* ind_phys_workstation equals to smx_host_t */
-   WorkstationPtr ws_dst = dynamic_cast<WorkstationPtr>(
-	                                  static_cast<ResourcePtr>(
-	                                   surf_workstation_resource_priv(ind_dst_pm)));
+   WorkstationPtr ws_dst = static_cast<WorkstationPtr>(surf_workstation_resource_priv(ind_dst_pm));
    const char *vm_name = getName();
    const char *pm_name_src = p_subWs->getName();
    const char *pm_name_dst = ws_dst->getName();
@@ -433,10 +423,8 @@ void WorkstationVMHL13::migrate(surf_resource_t ind_dst_pm)
 #endif
 
      /* create a cpu action bound to the pm model at the destination. */
-     CpuActionPtr new_cpu_action = dynamic_cast<CpuActionPtr>(
-    		                            dynamic_cast<CpuCas01Ptr>(
-                                        static_cast<ResourcePtr>(
-                                        surf_cpu_resource_priv(ind_dst_pm)))->execute(0));
+     CpuActionPtr new_cpu_action = static_cast<CpuActionPtr>(
+    		                            static_cast<CpuPtr>(surf_cpu_resource_priv(ind_dst_pm))->execute(0));
 
      e_surf_action_state_t state = p_action->getState();
      if (state != SURF_ACTION_DONE)

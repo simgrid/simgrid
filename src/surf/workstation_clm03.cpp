@@ -66,7 +66,7 @@ WorkstationPtr WorkstationCLM03Model::createResource(const char *name){
   WorkstationPtr workstation = new WorkstationCLM03(surf_workstation_model, name, NULL,
 		  (xbt_dynar_t)xbt_lib_get_or_null(storage_lib, name, ROUTING_STORAGE_HOST_LEVEL),
 		  (RoutingEdgePtr)xbt_lib_get_or_null(host_lib, name, ROUTING_HOST_LEVEL),
-		  dynamic_cast<CpuPtr>(static_cast<ResourcePtr>(xbt_lib_get_or_null(host_lib, name, SURF_CPU_LEVEL))));
+		  static_cast<CpuPtr>(xbt_lib_get_or_null(host_lib, name, SURF_CPU_LEVEL)));
   XBT_DEBUG("Create workstation %s with %ld mounted disks", name, xbt_dynar_length(workstation->p_storage));
   xbt_lib_set(host_lib, name, SURF_WKS_LEVEL, static_cast<ResourcePtr>(workstation));
   return workstation;

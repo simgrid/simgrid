@@ -45,7 +45,7 @@ void AsVivaldi::getRouteAndLatency(RoutingEdgePtr src, RoutingEdgePtr dst, sg_pl
       if(info.link_up) { // link up
         xbt_dynar_push_as(route->link_list, void*, info.link_up);
         if (lat)
-          *lat += dynamic_cast<NetworkLinkPtr>(static_cast<ResourcePtr>(info.link_up))->getLatency();
+          *lat += static_cast<NetworkLinkPtr>(info.link_up)->getLatency();
       }
     }
     src_ctn = (xbt_dynar_t) xbt_lib_get_or_null(host_lib, tmp_src_name, COORD_HOST_LEVEL);
@@ -67,7 +67,7 @@ void AsVivaldi::getRouteAndLatency(RoutingEdgePtr src, RoutingEdgePtr dst, sg_pl
       if(info.link_down) { // link down
         xbt_dynar_push_as(route->link_list,void*,info.link_down);
         if (lat)
-          *lat += dynamic_cast<NetworkLinkPtr>(static_cast<ResourcePtr>(info.link_down))->getLatency();
+          *lat += static_cast<NetworkLinkPtr>(info.link_down)->getLatency();
       }
     }
     dst_ctn = (xbt_dynar_t) xbt_lib_get_or_null(host_lib, tmp_dst_name, COORD_HOST_LEVEL);

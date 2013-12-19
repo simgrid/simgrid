@@ -52,7 +52,7 @@ double WorkstationL07Model::shareResources(double /*now*/)
 
   for(ActionList::iterator it(running_actions->begin()), itend(running_actions->end())
 	 ; it != itend ; ++it) {
-	action = dynamic_cast<WorkstationL07ActionPtr>(&*it);
+	action = static_cast<WorkstationL07ActionPtr>(&*it);
     if (action->m_latency > 0) {
       if (min < 0) {
         min = action->m_latency;
@@ -81,7 +81,7 @@ void WorkstationL07Model::updateActionsState(double /*now*/, double delta)
   for(ActionList::iterator it(actionSet->begin()), itNext = it, itend(actionSet->end())
 	 ; it != itend ; it=itNext) {
 	++itNext;
-    action = dynamic_cast<WorkstationL07ActionPtr>(&*it);
+    action = static_cast<WorkstationL07ActionPtr>(&*it);
     deltap = delta;
     if (action->m_latency > 0) {
       if (action->m_latency > deltap) {
@@ -165,18 +165,14 @@ ActionPtr WorkstationL07Model::executeParallelTask(int workstation_nb,
         void *_link;
         LinkL07Ptr link;
 
-        routing_platf->getRouteAndLatency(dynamic_cast<WorkstationL07Ptr>(
-        		                           static_cast<ResourcePtr>(
-        		                            workstation_list[i]))->p_netElm,
-        		                          dynamic_cast<WorkstationL07Ptr>(
-        		                           static_cast<ResourcePtr>(
-        		                        	workstation_list[j]))->p_netElm,
+        routing_platf->getRouteAndLatency(static_cast<WorkstationL07Ptr>(workstation_list[i])->p_netElm,
+        		                          static_cast<WorkstationL07Ptr>(workstation_list[j])->p_netElm,
         		                          &route,
         		                          &lat);
         latency = MAX(latency, lat);
 
         xbt_dynar_foreach(route, cpt, _link) {
-           link = dynamic_cast<LinkL07Ptr>(static_cast<ResourcePtr>(_link));
+           link = static_cast<LinkL07Ptr>(_link);
            xbt_dict_set(ptask_parallel_task_link_set, link->getName(), link, NULL);
         }
       }
@@ -211,8 +207,7 @@ ActionPtr WorkstationL07Model::executeParallelTask(int workstation_nb,
 
   for (i = 0; i < workstation_nb; i++)
     lmm_expand(ptask_maxmin_system,
-    	       static_cast<CpuPtr>(dynamic_cast<WorkstationL07Ptr>(
-    		                           static_cast<ResourcePtr>(workstation_list[i]))->p_cpu)->getConstraint(),
+    	       static_cast<CpuPtr>(static_cast<WorkstationL07Ptr>(workstation_list[i])->p_cpu)->getConstraint(),
                action->getVariable(), computation_amount[i]);
 
   for (i = 0; i < workstation_nb; i++) {
@@ -224,14 +219,12 @@ ActionPtr WorkstationL07Model::executeParallelTask(int workstation_nb,
       if (communication_amount[i * workstation_nb + j] == 0.0)
         continue;
 
-      routing_platf->getRouteAndLatency(dynamic_cast<WorkstationL07Ptr>(
-                                         static_cast<ResourcePtr>(workstation_list[i]))->p_netElm,
-                                        dynamic_cast<WorkstationL07Ptr>(
-                                         static_cast<ResourcePtr>(workstation_list[j]))->p_netElm,
+      routing_platf->getRouteAndLatency(static_cast<WorkstationL07Ptr>(workstation_list[i])->p_netElm,
+                                        static_cast<WorkstationL07Ptr>(workstation_list[j])->p_netElm,
     		                            &route, NULL);
 
       xbt_dynar_foreach(route, cpt, _link) {
-        link = dynamic_cast<LinkL07Ptr>(static_cast<ResourcePtr>(_link));
+        link = static_cast<LinkL07Ptr>(_link);
         lmm_expand_add(ptask_maxmin_system, link->getConstraint(),
                        action->getVariable(),
                        communication_amount[i * workstation_nb + j]);
@@ -261,7 +254,7 @@ ResourcePtr WorkstationL07Model::createResource(const char *name, double /*power
 
   wk = new WorkstationL07(this, name, NULL,
 		                  static_cast<RoutingEdgePtr>(xbt_lib_get_or_null(host_lib, name, ROUTING_HOST_LEVEL)),
-		                  dynamic_cast<CpuPtr>(static_cast<ResourcePtr>(xbt_lib_get_or_null(host_lib, name, SURF_CPU_LEVEL))));
+		                  static_cast<CpuPtr>(xbt_lib_get_or_null(host_lib, name, SURF_CPU_LEVEL)));
 
   xbt_lib_set(host_lib, name, SURF_WKS_LEVEL, static_cast<ResourcePtr>(wk));
 
@@ -349,10 +342,7 @@ void WorkstationL07Model::addTraces()
   /* Connect traces relative to cpu */
   xbt_dict_foreach(trace_connect_list_host_avail, cursor, trace_name, elm) {
     tmgr_trace_t trace = (tmgr_trace_t) xbt_dict_get_or_null(traces_set_list, trace_name);
-    CpuL07Ptr host = dynamic_cast<CpuL07Ptr>(
-	                   static_cast<ResourcePtr>(
-	                     surf_cpu_resource_priv(
-	                       surf_cpu_resource_by_name(elm))));
+    CpuL07Ptr host = static_cast<CpuL07Ptr>(surf_cpu_resource_priv(surf_cpu_resource_by_name(elm)));
 
     xbt_assert(host, "Host %s undefined", elm);
     xbt_assert(trace, "Trace %s undefined", trace_name);
@@ -362,10 +352,7 @@ void WorkstationL07Model::addTraces()
 
   xbt_dict_foreach(trace_connect_list_power, cursor, trace_name, elm) {
     tmgr_trace_t trace = (tmgr_trace_t) xbt_dict_get_or_null(traces_set_list, trace_name);
-    CpuL07Ptr host = dynamic_cast<CpuL07Ptr>(
-    		           static_cast<ResourcePtr>(
-    		             surf_cpu_resource_priv(
-    		               surf_cpu_resource_by_name(elm))));
+    CpuL07Ptr host = static_cast<CpuL07Ptr>(surf_cpu_resource_priv(surf_cpu_resource_by_name(elm)));
 
     xbt_assert(host, "Host %s undefined", elm);
     xbt_assert(trace, "Trace %s undefined", trace_name);
@@ -376,7 +363,7 @@ void WorkstationL07Model::addTraces()
   /* Connect traces relative to network */
   xbt_dict_foreach(trace_connect_list_link_avail, cursor, trace_name, elm) {
     tmgr_trace_t trace = (tmgr_trace_t) xbt_dict_get_or_null(traces_set_list, trace_name);
-    LinkL07Ptr link = dynamic_cast<LinkL07Ptr>(static_cast<ResourcePtr>(xbt_lib_get_or_null(link_lib, elm, SURF_LINK_LEVEL)));
+    LinkL07Ptr link = static_cast<LinkL07Ptr>(xbt_lib_get_or_null(link_lib, elm, SURF_LINK_LEVEL));
 
     xbt_assert(link, "Link %s undefined", elm);
     xbt_assert(trace, "Trace %s undefined", trace_name);
@@ -386,7 +373,7 @@ void WorkstationL07Model::addTraces()
 
   xbt_dict_foreach(trace_connect_list_bandwidth, cursor, trace_name, elm) {
     tmgr_trace_t trace = (tmgr_trace_t) xbt_dict_get_or_null(traces_set_list, trace_name);
-    LinkL07Ptr link = dynamic_cast<LinkL07Ptr>(static_cast<ResourcePtr>(xbt_lib_get_or_null(link_lib, elm, SURF_LINK_LEVEL)));
+    LinkL07Ptr link = static_cast<LinkL07Ptr>(xbt_lib_get_or_null(link_lib, elm, SURF_LINK_LEVEL));
 
     xbt_assert(link, "Link %s undefined", elm);
     xbt_assert(trace, "Trace %s undefined", trace_name);
@@ -396,7 +383,7 @@ void WorkstationL07Model::addTraces()
 
   xbt_dict_foreach(trace_connect_list_latency, cursor, trace_name, elm) {
     tmgr_trace_t trace = (tmgr_trace_t) xbt_dict_get_or_null(traces_set_list, trace_name);
-    LinkL07Ptr link = dynamic_cast<LinkL07Ptr>(static_cast<ResourcePtr>(xbt_lib_get_or_null(link_lib, elm, SURF_LINK_LEVEL)));
+    LinkL07Ptr link = static_cast<LinkL07Ptr>(xbt_lib_get_or_null(link_lib, elm, SURF_LINK_LEVEL));
 
     xbt_assert(link, "Link %s undefined", elm);
     xbt_assert(trace, "Trace %s undefined", trace_name);
@@ -583,7 +570,7 @@ ActionPtr WorkstationL07::sleep(double duration)
 
   XBT_IN("(%s,%g)", getName(), duration);
 
-  action = dynamic_cast<WorkstationL07ActionPtr>(execute(1.0));
+  action = static_cast<WorkstationL07ActionPtr>(execute(1.0));
   action->m_maxDuration = duration;
   action->m_suspended = 2;
   lmm_update_variable_weight(ptask_maxmin_system, action->getVariable(), 0.0);
@@ -629,10 +616,8 @@ void WorkstationL07Action::updateBound()
 
       if (p_communicationAmount[i * m_workstationNb + j] > 0) {
         double lat = 0.0;
-        routing_platf->getRouteAndLatency(dynamic_cast<WorkstationL07Ptr>(
-                                           static_cast<ResourcePtr>(((void**)p_workstationList)[i]))->p_netElm,
-                                          dynamic_cast<WorkstationL07Ptr>(
-                                           static_cast<ResourcePtr>(((void**)p_workstationList)[j]))->p_netElm,
+        routing_platf->getRouteAndLatency(static_cast<WorkstationL07Ptr>(((void**)p_workstationList)[i])->p_netElm,
+                                          static_cast<WorkstationL07Ptr>(((void**)p_workstationList)[j])->p_netElm,
                 				          &route, &lat);
 
         lat_current = MAX(lat_current, lat * p_communicationAmount[i * m_workstationNb + j]);

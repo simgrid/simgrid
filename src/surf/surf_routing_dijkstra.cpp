@@ -256,7 +256,7 @@ void AsDijkstra::getRouteAndLatency(RoutingEdgePtr src, RoutingEdgePtr dst, sg_p
     xbt_dynar_foreach(links, cpt, link) {
       xbt_dynar_unshift(route->link_list, &link);
       if (lat)
-        *lat += dynamic_cast<NetworkLinkPtr>(static_cast<ResourcePtr>(link))->getLatency();
+        *lat += static_cast<NetworkLinkPtr>(link)->getLatency();
     }
 
   }
@@ -364,7 +364,7 @@ void AsDijkstra::getRouteAndLatency(RoutingEdgePtr src, RoutingEdgePtr dst, sg_p
       xbt_dynar_foreach(links, cpt, link) {
         xbt_dynar_insert_at(route->link_list, pos, &link);
         if (lat)
-          *lat += dynamic_cast<NetworkLinkPtr>(static_cast<ResourcePtr>(link))->getLatency();
+          *lat += static_cast<NetworkLinkPtr>(link)->getLatency();
         pos++;
       }
     }
@@ -373,7 +373,7 @@ void AsDijkstra::getRouteAndLatency(RoutingEdgePtr src, RoutingEdgePtr dst, sg_p
     xbt_dynar_foreach(links, cpt, link) {
       xbt_dynar_unshift(route->link_list, &link);
       if (lat)
-        *lat += dynamic_cast<NetworkLinkPtr>(static_cast<ResourcePtr>(link))->getLatency();
+        *lat += static_cast<NetworkLinkPtr>(link)->getLatency();
     }
     size++;
   }

@@ -39,10 +39,8 @@ void WorkstationModel::adjustWeightOfDummyCpuActions()
   void **ind_host;
 
   xbt_lib_foreach(host_lib, cursor, key, ind_host) {
-    WorkstationPtr ws = dynamic_cast<WorkstationPtr>(
-    		                       static_cast<ResourcePtr>(ind_host[SURF_WKS_LEVEL]));
-    CpuCas01Ptr cpu_cas01 = dynamic_cast<CpuCas01Ptr>(
-                               static_cast<ResourcePtr>(ind_host[SURF_CPU_LEVEL]));
+    WorkstationPtr ws = static_cast<WorkstationPtr>(ind_host[SURF_WKS_LEVEL]);
+    CpuCas01Ptr cpu_cas01 = static_cast<CpuCas01Ptr>(ind_host[SURF_CPU_LEVEL]);
 
     if (!ws)
       continue;
@@ -52,7 +50,7 @@ void WorkstationModel::adjustWeightOfDummyCpuActions()
     xbt_assert(cpu_cas01, "cpu-less workstation");
 
     /* It is a virtual machine, so we can cast it to workstation_VM2013_t */
-    WorkstationVMPtr ws_vm = dynamic_cast<WorkstationVMPtr>(ws);
+    WorkstationVMPtr ws_vm = static_cast<WorkstationVMPtr>(ws);
 
     int is_active = lmm_constraint_used(cpu_cas01->getModel()->getMaxminSystem(), cpu_cas01->getConstraint());
     // int is_active_old = constraint_is_active(cpu_cas01);
@@ -147,7 +145,7 @@ StoragePtr Workstation::findStorageOnMountList(const char* mount)
   {
     XBT_DEBUG("See '%s'",mnt.name);
     if(!strcmp(mount,mnt.name)){
-      st = dynamic_cast<StoragePtr>(static_cast<ResourcePtr>(mnt.storage));
+      st = static_cast<StoragePtr>(mnt.storage);
       break;
     }
   }
@@ -163,7 +161,7 @@ xbt_dict_t Workstation::getStorageList()
   char *storage_name = NULL;
 
   xbt_dynar_foreach(p_storage,i,mnt){
-    storage_name = (char *)dynamic_cast<StoragePtr>(static_cast<ResourcePtr>(mnt.storage))->getName();
+    storage_name = (char *)static_cast<StoragePtr>(mnt.storage)->getName();
     xbt_dict_set(storage_list,mnt.name,storage_name,NULL);
   }
   return storage_list;
@@ -289,7 +287,7 @@ xbt_dynar_t Workstation::getVms()
   char *key;
   void **ind_host;
   xbt_lib_foreach(host_lib, cursor, key, ind_host) {
-    WorkstationPtr ws = dynamic_cast<WorkstationPtr>(static_cast<ResourcePtr>(ind_host[SURF_WKS_LEVEL]));
+    WorkstationPtr ws = static_cast<WorkstationPtr>(ind_host[SURF_WKS_LEVEL]);
     if (!ws)
       continue;
     /* skip if it is not a virtual machine */
@@ -297,7 +295,7 @@ xbt_dynar_t Workstation::getVms()
       continue;
 
     /* It is a virtual machine, so we can cast it to workstation_VM2013_t */
-    WorkstationVMPtr ws_vm = dynamic_cast<WorkstationVMPtr>(ws);
+    WorkstationVMPtr ws_vm = static_cast<WorkstationVMPtr>(ws);
     if (this == ws_vm-> p_subWs)
       xbt_dynar_push(dyn, &ws_vm->p_subWs);
   }

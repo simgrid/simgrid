@@ -25,7 +25,7 @@ static XBT_INLINE void routing_storage_type_free(void *r)
 static XBT_INLINE void surf_storage_resource_free(void *r)
 {
   // specific to storage
-  StoragePtr storage = dynamic_cast<StoragePtr>(static_cast<ResourcePtr>(r));
+  StoragePtr storage = static_cast<StoragePtr>(r);
   // generic resource
   delete storage;
 }
@@ -278,7 +278,7 @@ double StorageN11Model::shareResources(double now)
     // Foreach write action on disk
     xbt_dynar_foreach(storage->p_writeActions, j, _write_action)
     {
-      write_action = dynamic_cast<StorageActionPtr>(static_cast<ActionPtr>(_write_action));
+      write_action = static_cast<StorageActionPtr>(_write_action);
       rate += lmm_variable_getvalue(write_action->getVariable());
     }
     if(rate > 0)
@@ -296,7 +296,7 @@ void StorageN11Model::updateActionsState(double /*now*/, double delta)
   for(ActionList::iterator it(actionSet->begin()), itNext=it, itend(actionSet->end())
      ; it != itend ; it=itNext) {
     ++itNext;
-    action = dynamic_cast<StorageActionPtr>(&*it);
+    action = static_cast<StorageActionPtr>(&*it);
     if(action->m_type == WRITE)
     {
       // Update the disk usage
@@ -435,7 +435,7 @@ StorageActionPtr StorageN11::close(surf_file_t fd)
   StorageActionPtr write_action;
   unsigned int i;
   xbt_dynar_foreach(p_writeActions, i, _write_action) {
-	write_action = dynamic_cast<StorageActionPtr>(static_cast<ActionPtr>(_write_action));
+	write_action = static_cast<StorageActionPtr>(static_cast<ActionPtr>(_write_action));
     if ((write_action->p_file) == fd) {
       xbt_dynar_cursor_rm(p_writeActions, &i);
       write_action->unref();

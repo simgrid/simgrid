@@ -342,17 +342,17 @@ static XBT_INLINE void routing_asr_prop_free(void *p)
 
 static XBT_INLINE void surf_cpu_free(void *r)
 {
-  delete dynamic_cast<CpuPtr>(static_cast<ResourcePtr>(r));
+  delete static_cast<CpuPtr>(r);
 }
 
 static XBT_INLINE void surf_link_free(void *r)
 {
-  delete dynamic_cast<NetworkLinkPtr>(static_cast<ResourcePtr>(r));
+  delete static_cast<NetworkLinkPtr>(r);
 }
 
 static XBT_INLINE void surf_workstation_free(void *r)
 {
-  delete dynamic_cast<WorkstationPtr>(static_cast<ResourcePtr>(r));
+  delete static_cast<WorkstationPtr>(r);
 }
 
 
@@ -922,7 +922,8 @@ void Action::setPriority(double priority)
 void Action::cancel(){
   setState(SURF_ACTION_FAILED);
   if (getModel()->getUpdateMechanism() == UM_LAZY) {
-	getModel()->getModifiedSet()->erase(getModel()->getModifiedSet()->iterator_to(*this));
+	if (actionLmmHook::is_linked())
+	  getModel()->getModifiedSet()->erase(getModel()->getModifiedSet()->iterator_to(*this));
     heapRemove(getModel()->getActionHeap());
   }
 }

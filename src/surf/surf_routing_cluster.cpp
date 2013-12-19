@@ -38,7 +38,7 @@ void AsCluster::getRouteAndLatency(RoutingEdgePtr src, RoutingEdgePtr dst, sg_pl
     if((src->m_id == dst->m_id) && info.loopback_link  ){
       xbt_dynar_push_as(route->link_list, void *, info.loopback_link);
       if (lat)
-        *lat += dynamic_cast<NetworkLinkPtr>(static_cast<ResourcePtr>(info.loopback_link))->getLatency();
+        *lat += static_cast<NetworkLinkPtr>(info.loopback_link)->getLatency();
       return;
     }
 
@@ -49,7 +49,7 @@ void AsCluster::getRouteAndLatency(RoutingEdgePtr src, RoutingEdgePtr dst, sg_pl
     if (info.link_up) {         // link up
       xbt_dynar_push_as(route->link_list, void *, info.link_up);
       if (lat)
-        *lat += dynamic_cast<NetworkLinkPtr>(static_cast<ResourcePtr>(info.link_up))->getLatency();
+        *lat += static_cast<NetworkLinkPtr>(info.link_up)->getLatency();
     }
   }
 
@@ -65,7 +65,7 @@ void AsCluster::getRouteAndLatency(RoutingEdgePtr src, RoutingEdgePtr dst, sg_pl
     if (info.link_down) {       // link down
       xbt_dynar_push_as(route->link_list, void *, info.link_down);
       if (lat)
-        *lat += dynamic_cast<NetworkLinkPtr>(static_cast<ResourcePtr>(info.link_down))->getLatency();
+        *lat += static_cast<NetworkLinkPtr>(info.link_down)->getLatency();
     }
 
     if (info.limiter_link)          // limiter for receiver

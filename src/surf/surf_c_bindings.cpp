@@ -12,15 +12,15 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_kernel);
  *********/
 
 static CpuPtr get_casted_cpu(surf_resource_t resource){
-  return dynamic_cast<CpuPtr>(static_cast<ResourcePtr>(surf_cpu_resource_priv(resource)));
+  return static_cast<CpuPtr>(surf_cpu_resource_priv(resource));
 }
 
 static WorkstationPtr get_casted_workstation(surf_resource_t resource){
-  return dynamic_cast<WorkstationPtr>(static_cast<ResourcePtr>(surf_workstation_resource_priv(resource)));
+  return static_cast<WorkstationPtr>(surf_workstation_resource_priv(resource));
 }
 
 static WorkstationVMPtr get_casted_vm_workstation(surf_resource_t resource){
-  return dynamic_cast<WorkstationVMPtr>(static_cast<ResourcePtr>(surf_workstation_resource_priv(resource)));
+  return static_cast<WorkstationVMPtr>(surf_workstation_resource_priv(resource));
 }
 
 char *surf_routing_edge_name(sg_routing_edge_t edge){
@@ -215,7 +215,7 @@ void *surf_as_cluster_get_backbone(AS_t as){
 }
 
 void surf_as_cluster_set_backbone(AS_t as, void* backbone){
-  static_cast<AsClusterPtr>(as)->p_backbone = dynamic_cast<NetworkLinkPtr>(static_cast<ResourcePtr>(backbone));
+  static_cast<AsClusterPtr>(as)->p_backbone = static_cast<NetworkLinkPtr>(backbone);
 }
 
 const char *surf_model_name(surf_model_t model){
@@ -438,27 +438,27 @@ void surf_vm_workstation_set_affinity(surf_resource_t resource, surf_resource_t 
 }
 
 int surf_network_link_is_shared(surf_cpp_resource_t link){
-  return dynamic_cast<NetworkLinkPtr>(link)->isShared();
+  return static_cast<NetworkLinkPtr>(link)->isShared();
 }
 
 double surf_network_link_get_bandwidth(surf_cpp_resource_t link){
-  return dynamic_cast<NetworkLinkPtr>(link)->getBandwidth();
+  return static_cast<NetworkLinkPtr>(link)->getBandwidth();
 }
 
 double surf_network_link_get_latency(surf_cpp_resource_t link){
-  return dynamic_cast<NetworkLinkPtr>(link)->getLatency();
+  return static_cast<NetworkLinkPtr>(link)->getLatency();
 }
 
 xbt_dict_t surf_storage_get_content(surf_resource_t resource){
-  return dynamic_cast<StoragePtr>(static_cast<ResourcePtr>(surf_storage_resource_priv(resource)))->getContent();
+  return static_cast<StoragePtr>(surf_storage_resource_priv(resource))->getContent();
 }
 
 sg_size_t surf_storage_get_size(surf_resource_t resource){
-  return dynamic_cast<StoragePtr>(static_cast<ResourcePtr>(surf_storage_resource_priv(resource)))->getSize();
+  return static_cast<StoragePtr>(surf_storage_resource_priv(resource))->getSize();
 }
 
 void surf_storage_rename(surf_resource_t resource, const char* src, const char* dest){
-  dynamic_cast<StoragePtr>(static_cast<ResourcePtr>(surf_storage_resource_priv(resource)))->rename(src, dest);
+  static_cast<StoragePtr>(surf_storage_resource_priv(resource))->rename(src, dest);
 }
 
 surf_action_t surf_cpu_execute(surf_resource_t cpu, double size){
@@ -522,19 +522,19 @@ int surf_action_get_cost(surf_action_t action){
 }
 
 void surf_cpu_action_set_affinity(surf_action_t action, surf_resource_t cpu, unsigned long mask) {
-  dynamic_cast<CpuActionPtr>(action)->setAffinity(get_casted_cpu(cpu), mask);
+  static_cast<CpuActionPtr>(action)->setAffinity(get_casted_cpu(cpu), mask);
 }
 
 void surf_cpu_action_set_bound(surf_action_t action, double bound) {
-  dynamic_cast<CpuActionPtr>(action)->setBound(bound);
+  static_cast<CpuActionPtr>(action)->setBound(bound);
 }
 
 surf_file_t surf_storage_action_get_file(surf_action_t action){
-  return dynamic_cast<StorageActionPtr>(action)->p_file;
+  return static_cast<StorageActionPtr>(action)->p_file;
 }
 
 xbt_dict_t surf_storage_action_get_ls_dict(surf_action_t action){
-  return dynamic_cast<StorageActionPtr>(action)->p_lsDict;
+  return static_cast<StorageActionPtr>(action)->p_lsDict;
 }
 
 
