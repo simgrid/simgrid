@@ -371,8 +371,14 @@ static xbt_dict_t MC_dwarf_get_location_list(const char *elf_file){
     xbt_str_strip_spaces(line);
     split = xbt_str_split(line, " ");
 
+    char *key = NULL;
     while(read != -1 && strcmp("<End", (char *)xbt_dynar_get_as(split, 1, char *)) != 0){
       
+      // Take the key from the first line of the list:
+      if(key==NULL){
+        key = bprintf("%d", (int)strtoul((char *)xbt_dynar_get_as(split, 0, char *), NULL, 16));
+      }
+
       dw_location_entry_t new_entry = xbt_new0(s_dw_location_entry_t, 1);
       new_entry->lowpc = strtoul((char *)xbt_dynar_get_as(split, 1, char *), NULL, 16);
       new_entry->highpc = strtoul((char *)xbt_dynar_get_as(split, 2, char *), NULL, 16);
@@ -403,7 +409,6 @@ static xbt_dict_t MC_dwarf_get_location_list(const char *elf_file){
     }
 
 
-    char *key = bprintf("%d", (int)strtoul((char *)xbt_dynar_get_as(split, 0, char *), NULL, 16));
     xbt_dict_set(location_list, key, loclist, NULL);
     xbt_free(key);
     
