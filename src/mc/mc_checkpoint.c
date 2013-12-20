@@ -177,7 +177,7 @@ static void MC_get_memory_regions(mc_snapshot_t snapshot){
               }
               tok = strtok(lfields[0], "-");
               start_addr1 = (void *)strtoul(tok, NULL, 16);
-              if(lfields[1][1] == 'w' && lfields[5] == NULL){
+              if(lfields[1][1] == 'w'){
                 if(start_addr1 == std_heap){     /* Std_heap ? */
                   tok = strtok(NULL, "-");
                   end_addr = (void *)strtoul(tok, NULL, 16);
