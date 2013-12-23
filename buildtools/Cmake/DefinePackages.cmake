@@ -974,6 +974,7 @@ set(CMAKE_SOURCE_FILES
   buildtools/Cmake/Modules/FindGTnets.cmake
   buildtools/Cmake/Modules/FindGraphviz.cmake
   buildtools/Cmake/Modules/FindLibunwind.cmake
+  buildtools/Cmake/Modules/FindLibdw.cmake
   buildtools/Cmake/Modules/FindLua51Simgrid.cmake
   buildtools/Cmake/Modules/FindNS3.cmake
   buildtools/Cmake/Modules/FindRngStream.cmake
