@@ -334,6 +334,7 @@ void MC_dump_stack_liveness(xbt_fifo_t stack);
 /********************************** Variables with DWARF **********************************/
 
 typedef struct s_mc_object_info {
+  char* file_name;
   xbt_dict_t local_variables;
   xbt_dynar_t global_variables;
   xbt_dict_t types;

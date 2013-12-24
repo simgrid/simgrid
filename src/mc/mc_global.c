@@ -176,6 +176,7 @@ static void dw_variable_free_voidp(void *t){
 
 mc_object_info_t MC_new_object_info() {
   mc_object_info_t res = xbt_new(s_mc_object_info_t, 1);
+  res->file_name = NULL;
   res->local_variables = xbt_dict_new_homogeneous(NULL);
   res->global_variables = xbt_dynar_new(sizeof(dw_variable_t), dw_variable_free_voidp);
   res->types = xbt_dict_new_homogeneous(NULL);
@@ -183,6 +184,7 @@ mc_object_info_t MC_new_object_info() {
 }
 
 void MC_free_object_info(mc_object_info_t* info) {
+  xbt_free(&(*info)->file_name);
   xbt_dict_free(&(*info)->local_variables);
   xbt_dynar_free(&(*info)->global_variables);
   xbt_dict_free(&(*info)->types);
@@ -528,6 +530,8 @@ static mc_object_info_t MC_dwarf_get_variables(const char *elf_file){
     perror("popen for objdump failed");
 
   mc_object_info_t result = MC_new_object_info();
+  result->file_name = xbt_strdup(elf_file);
+
   xbt_dict_t *local_variables = &result->local_variables;
   xbt_dynar_t *global_variables = &result->global_variables;
   xbt_dict_t *types = &result->types;
