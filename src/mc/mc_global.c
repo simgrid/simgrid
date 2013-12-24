@@ -8,6 +8,7 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <sys/time.h>
+#include <libgen.h>
 
 #include "simgrid/sg_config.h"
 #include "../surf/surf_private.h"
@@ -177,6 +178,8 @@ static void dw_variable_free_voidp(void *t){
 mc_object_info_t MC_new_object_info() {
   mc_object_info_t res = xbt_new(s_mc_object_info_t, 1);
   res->file_name = NULL;
+  res->start_text = NULL;
+  res->start_data = NULL;
   res->local_variables = xbt_dict_new_homogeneous(NULL);
   res->global_variables = xbt_dynar_new(sizeof(dw_variable_t), dw_variable_free_voidp);
   res->types = xbt_dict_new_homogeneous(NULL);
@@ -518,7 +521,9 @@ static int MC_dwarf_get_variable_index(xbt_dynar_t variables, char* var, void *a
 
 }
 
-static mc_object_info_t MC_dwarf_get_variables(const char *elf_file){
+static void MC_dwarf_get_variables(mc_object_info_t info){
+  mc_object_info_t result = info;
+  const char *elf_file = info->file_name;
 
   xbt_dict_t location_list = MC_dwarf_get_location_list(elf_file);
 
@@ -528,9 +533,6 @@ static mc_object_info_t MC_dwarf_get_variables(const char *elf_file){
 
   if(fp == NULL)
     perror("popen for objdump failed");
-
-  mc_object_info_t result = MC_new_object_info();
-  result->file_name = xbt_strdup(elf_file);
 
   xbt_dict_t *local_variables = &result->local_variables;
   xbt_dynar_t *global_variables = &result->global_variables;
@@ -781,8 +783,9 @@ static mc_object_info_t MC_dwarf_get_variables(const char *elf_file){
                   xbt_dynar_free(&split2);
                   split2 = xbt_str_split(loc_expr, " ");
                   if(strcmp(elf_file, xbt_binary_name) != 0)
-                    var->address.address = (char *)start_text_libsimgrid + (long)((void *)strtoul(xbt_dynar_get_as(split2, xbt_dynar_length(split2) - 1, char*), NULL, 16));
+                    var->address.address = (char *) info->start_text + (long)((void *)strtoul(xbt_dynar_get_as(split2, xbt_dynar_length(split2) - 1, char*), NULL, 16));
                   else
+                    // Why is it different ?
                     var->address.address = (void *)strtoul(xbt_dynar_get_as(split2, xbt_dynar_length(split2) - 1, char*), NULL, 16);
                 }else{
                   var->address.location = MC_dwarf_get_location(NULL, loc_expr);
@@ -794,8 +797,9 @@ static mc_object_info_t MC_dwarf_get_variables(const char *elf_file){
               global_address = xbt_strdup(xbt_dynar_get_as(split, xbt_dynar_length(split) - 1, char *));
               xbt_str_rtrim(global_address, ")");
               if(strcmp(elf_file, xbt_binary_name) != 0)
-                var->address.address = (char *)start_text_libsimgrid + (long)((void *)strtoul(global_address, NULL, 16));
+                var->address.address = (char *) info->start_text + (long)((void *)strtoul(global_address, NULL, 16));
               else
+                // Why is it different ?
                 var->address.address = (void *)strtoul(global_address, NULL, 16);
               xbt_free(global_address);
               global_address = NULL;
@@ -1258,7 +1262,6 @@ static mc_object_info_t MC_dwarf_get_variables(const char *elf_file){
   xbt_dict_free(&location_list);
 
   pclose(fp);
-  return result;
 }
 
 
@@ -1749,9 +1752,15 @@ void MC_init(){
 
   XBT_INFO("Get debug information ...");
 
+  memory_map_t maps = MC_get_memory_map();
+
   /* Get local variables for state equality detection */
-  mc_binary_info = MC_dwarf_get_variables(xbt_binary_name);
-  mc_libsimgrid_info = MC_dwarf_get_variables(libsimgrid_path);
+
+  mc_binary_info = MC_find_object_address(maps, xbt_binary_name);
+  MC_dwarf_get_variables(mc_binary_info);
+
+  mc_libsimgrid_info = MC_find_object_address(maps, libsimgrid_path);
+  MC_dwarf_get_variables(mc_libsimgrid_info);
 
   XBT_INFO("Get debug information done !");
 
@@ -1765,6 +1774,8 @@ void MC_init(){
 
    /* Init parmap */
   parmap = xbt_parmap_mc_new(xbt_os_get_numcores(), XBT_PARMAP_DEFAULT);
+
+  MC_free_memory_map(maps);
 
   MC_UNSET_RAW_MEM;
 

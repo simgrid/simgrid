@@ -221,13 +221,7 @@ void MC_free_memory_map(memory_map_t map);
 void MC_get_libsimgrid_plt_section(void);
 void MC_get_binary_plt_section(void);
 
-extern void *start_data_libsimgrid;
-extern void *start_data_binary;
-extern void *start_bss_binary;
 extern char *libsimgrid_path;
-extern void *start_text_libsimgrid;
-extern void *start_text_binary;
-extern void *start_bss_libsimgrid;
 extern void *start_plt_libsimgrid;
 extern void *end_plt_libsimgrid;
 extern void *start_plt_binary;
@@ -236,7 +230,6 @@ extern void *start_got_plt_libsimgrid;
 extern void *end_got_plt_libsimgrid;
 extern void *start_got_plt_binary;
 extern void *end_got_plt_binary;
-
 
 /********************************** Snapshot comparison **********************************/
 
@@ -335,6 +328,8 @@ void MC_dump_stack_liveness(xbt_fifo_t stack);
 
 typedef struct s_mc_object_info {
   char* file_name;
+  char* start_text;
+  char* start_data;
   xbt_dict_t local_variables;
   xbt_dynar_t global_variables;
   xbt_dict_t types;
@@ -342,6 +337,7 @@ typedef struct s_mc_object_info {
 } s_mc_object_info_t, *mc_object_info_t;
 
 mc_object_info_t MC_new_object_info();
+mc_object_info_t MC_find_object_address(memory_map_t maps, char* name);
 void MC_free_object_info(mc_object_info_t* p);
 
 extern mc_object_info_t mc_libsimgrid_info;

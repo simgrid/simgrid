@@ -248,6 +248,8 @@ static int compare_global_variables(int region_type, mc_mem_region_t r1, mc_mem_
   dw_variable_t current_var;
   size_t offset;
   void *start_data;
+  void* start_data_binary = mc_binary_info->start_data;
+  void* start_data_libsimgrid = mc_libsimgrid_info->start_data;
 
   mc_object_info_t object_info = NULL;
   mc_object_info_t other_object_info = NULL;
@@ -289,6 +291,8 @@ static int compare_global_variables(int region_type, mc_mem_region_t r1, mc_mem_
 }
 
 static int compare_local_variables(mc_snapshot_stack_t stack1, mc_snapshot_stack_t stack2, void *heap1, void *heap2){
+  void* start_data_binary = mc_binary_info->start_data;
+  void* start_data_libsimgrid = mc_libsimgrid_info->start_data;
 
   if(!compared_pointers){
     compared_pointers = xbt_dynar_new(sizeof(pointers_pair_t), pointers_pair_free_voidp);

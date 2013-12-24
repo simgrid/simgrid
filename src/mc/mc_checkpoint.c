@@ -21,9 +21,6 @@ void *start_got_plt_libsimgrid, *end_got_plt_libsimgrid;
 void *start_plt_binary, *end_plt_binary;
 void *start_got_plt_binary, *end_got_plt_binary;
 char *libsimgrid_path;
-void *start_data_libsimgrid, *start_bss_libsimgrid;
-void *start_data_binary, *start_bss_binary;
-void *start_text_binary;
 
 /************************************  Free functions **************************************/
 /*****************************************************************************************/
@@ -213,45 +210,62 @@ void MC_init_memory_map_info(){
   s_map_region_t reg;
   memory_map_t maps = MC_get_memory_map();
 
+  maestro_stack_start = NULL;
+  maestro_stack_end = NULL;
+  libsimgrid_path = NULL;
+
   while (i < maps->mapsize) {
     reg = maps->regions[i];
-    if ((reg.prot & PROT_WRITE)){
-      if (maps->regions[i].pathname != NULL){
-        if (!memcmp(basename(maps->regions[i].pathname), "libsimgrid", 10)){
-          start_data_libsimgrid = reg.start_addr;
-          i++;
-          reg = maps->regions[i];
-          if(reg.pathname == NULL && (reg.prot & PROT_WRITE) && i < maps->mapsize)
-            start_bss_libsimgrid = reg.start_addr;
-        }else if (!memcmp(basename(maps->regions[i].pathname), basename(xbt_binary_name), strlen(basename(xbt_binary_name)))){
-          start_data_binary = reg.start_addr;
-          i++;
-          reg = maps->regions[i];
-          if(reg.pathname == NULL && (reg.prot & PROT_WRITE) && reg.start_addr != std_heap && reg.start_addr != raw_heap && i < maps->mapsize){
-            start_bss_binary = reg.start_addr;
-            i++;
-          }
-        }else if(!memcmp(maps->regions[i].pathname, "[stack]", 7)){
+    if (maps->regions[i].pathname == NULL) {
+      // Nothing to do
+    }
+    else if ((reg.prot & PROT_WRITE) && !memcmp(maps->regions[i].pathname, "[stack]", 7)){
           maestro_stack_start = reg.start_addr;
           maestro_stack_end = reg.end_addr;
-          i++;
-        }
-      }
-    }else if ((reg.prot & PROT_READ) && (reg.prot & PROT_EXEC)){
-      if (maps->regions[i].pathname != NULL){
-        if (!memcmp(basename(maps->regions[i].pathname), "libsimgrid", 10)){
-          start_text_libsimgrid = reg.start_addr;
+    }else if ((reg.prot & PROT_READ) && (reg.prot & PROT_EXEC) && !memcmp(basename(maps->regions[i].pathname), "libsimgrid", 10)){
+      if(libsimgrid_path == NULL)
           libsimgrid_path = strdup(maps->regions[i].pathname);
-        }else if (!memcmp(basename(maps->regions[i].pathname), basename(xbt_binary_name), strlen(basename(xbt_binary_name)))){
-          start_text_binary = reg.start_addr;
-        }
-      }
     }
     i++;
   }
-   
+
+  xbt_assert(maestro_stack_start, "maestro_stack_start");
+  xbt_assert(maestro_stack_end, "maestro_stack_end");
+  xbt_assert(libsimgrid_path, "libsimgrid_path&");
+
   MC_free_memory_map(maps);
 
+}
+
+mc_object_info_t MC_find_object_address(memory_map_t maps, char* name) {
+  mc_object_info_t result = MC_new_object_info();
+  result->file_name = xbt_strdup(name);
+  result->start_data = NULL;
+  result->start_text = NULL;
+
+  unsigned int i = 0;
+  s_map_region_t reg;
+  int len = strlen(basename(name));
+  while (i < maps->mapsize) {
+    reg = maps->regions[i];
+    if (maps->regions[i].pathname == NULL || memcmp(basename(maps->regions[i].pathname), basename(name), len)){
+      // Nothing to do
+    }
+    else if ((reg.prot & PROT_WRITE)){
+          result->start_data = reg.start_addr;
+          i++;
+          reg = maps->regions[i];
+    }else if (reg.prot & PROT_READ) {
+          result->start_text = reg.start_addr;
+    }
+    i++;
+  }
+
+  xbt_assert(result->file_name);
+  xbt_assert(result->start_data);
+  xbt_assert(result->start_text);
+
+  return result;
 }
 
 void MC_get_libsimgrid_plt_section(){
@@ -517,7 +531,7 @@ static xbt_dynar_t MC_get_local_variables_values(void *stack_context){
     if(!strcmp(frame_name, "smx_ctx_sysv_wrapper")) /* Stop before context switch with maestro */
       stop = 1;
 
-    if((long)ip > (long)start_text_libsimgrid)
+    if((long)ip > (long) mc_libsimgrid_info->start_text)
       frame = xbt_dict_get_or_null(mc_libsimgrid_info->local_variables, frame_name);
     else
       frame = xbt_dict_get_or_null(mc_binary_info->local_variables, frame_name);
@@ -577,7 +591,7 @@ static xbt_dynar_t MC_get_local_variables_values(void *stack_context){
 
     xbt_dynar_foreach(frame->variables, cursor, current_variable){
       
-      if((long)ip > (long)start_text_libsimgrid)
+      if((long)ip > (long)mc_libsimgrid_info->start_text)
         region_type = 1;
       else
         region_type = 2;
