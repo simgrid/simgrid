@@ -314,6 +314,11 @@ static dw_location_t MC_dwarf_get_location(xbt_dict_t location_list, char *expr)
 
 }
 
+/** @brief Extract the location lists from an ELF file (.debug_loc)
+ *
+ *  @return A map from the offset in the list (in hexadecimal string)
+ *          into a location list (dynar of dw_location_entry_t).
+ */
 static xbt_dict_t MC_dwarf_get_location_list(const char *elf_file){
 
   char *command = bprintf("objdump -Wo %s", elf_file);
@@ -555,6 +560,8 @@ static void MC_dwarf_get_variables(const char *elf_file, xbt_dict_t location_lis
     node_type = xbt_dynar_get_as(split, xbt_dynar_length(split) - 1, char *);
 
     if(strcmp(node_type, "(DW_TAG_subprogram)") == 0){ /* New frame */
+      /* We build/complete a dw_frame_t object
+       * and append it if necessary to the local_variables dictionnary */
 
       dw_frame_t frame = NULL;
 
@@ -670,6 +677,9 @@ static void MC_dwarf_get_variables(const char *elf_file, xbt_dict_t location_lis
         
 
     }else if(strcmp(node_type, "(DW_TAG_variable)") == 0){ /* New variable */
+      /* We build a dw_variable_t object and append it either to
+         the list of variables of the frame (local variable)
+         or to the list of global variables (global variables). */
 
       dw_variable_t var = NULL;
       
@@ -822,6 +832,7 @@ static void MC_dwarf_get_variables(const char *elf_file, xbt_dict_t location_lis
       new_variable = 1;
 
     }else if(strcmp(node_type, "(DW_TAG_inlined_subroutine)") == 0){
+      /* Update the information on the frame (we should duplicate it instead). */
 
       read = xbt_getline(&line, &n, fp);
 
@@ -875,6 +886,8 @@ static void MC_dwarf_get_variables(const char *elf_file, xbt_dict_t location_lis
              || strcmp(node_type, "(DW_TAG_subroutine_type)") == 0
              || strcmp(node_type, "(DW_TAG_volatile_type)") == 0
              || (is_pointer = !strcmp(node_type, "(DW_TAG_pointer_type)"))){
+
+      /* Create the and add it to the types dictionnary */
 
       if(strcmp(node_type, "(DW_TAG_base_type)") == 0)
         type_type = e_dw_base_type;

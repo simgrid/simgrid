@@ -206,6 +206,7 @@ static void MC_get_memory_regions(mc_snapshot_t snapshot){
 
 }
 
+/** @brief Find the range of the different memory segments and binary paths */
 void MC_init_memory_map_info(){
  
   unsigned int i = 0;
