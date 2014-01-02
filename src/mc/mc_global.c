@@ -116,6 +116,8 @@ xbt_dynar_t mc_global_variables_libsimgrid = NULL;
 xbt_dynar_t mc_global_variables_binary = NULL;
 xbt_dict_t mc_variables_type_libsimgrid = NULL;
 xbt_dict_t mc_variables_type_binary = NULL;
+mc_object_info_t mc_libsimgrid_info = NULL;
+mc_object_info_t mc_binary_info = NULL;
 
 /* Ignore mechanism */
 xbt_dynar_t mc_stack_comparison_ignore;
@@ -174,6 +176,24 @@ static void dw_variable_free(dw_variable_t v){
 
 static void dw_variable_free_voidp(void *t){
   dw_variable_free((dw_variable_t) * (void **) t);
+}
+
+// object_info
+
+mc_object_info_t MC_new_object_info() {
+  mc_object_info_t res = xbt_new(s_mc_object_info_t, 1);
+  res->local_variables = xbt_dict_new_homogeneous(NULL);
+  res->global_variables = xbt_dynar_new(sizeof(dw_variable_t), dw_variable_free_voidp);
+  res->types = xbt_dict_new_homogeneous(NULL);
+  return res;
+}
+
+void MC_free_object_info(mc_object_info_t* info) {
+  xbt_dict_free(&(*info)->local_variables);
+  xbt_dynar_free(&(*info)->global_variables);
+  xbt_dict_free(&(*info)->types);
+  xbt_free(info);
+  info = NULL;
 }
 
 /*************************************************************************/
@@ -502,8 +522,9 @@ static int MC_dwarf_get_variable_index(xbt_dynar_t variables, char* var, void *a
 
 }
 
+static mc_object_info_t MC_dwarf_get_variables(const char *elf_file){
 
-static void MC_dwarf_get_variables(const char *elf_file, xbt_dict_t location_list, xbt_dict_t *local_variables, xbt_dynar_t *global_variables, xbt_dict_t *types){
+  xbt_dict_t location_list = MC_dwarf_get_location_list(elf_file);
 
   char *command = bprintf("LANG=C objdump -Wi %s", elf_file);
   
@@ -511,6 +532,11 @@ static void MC_dwarf_get_variables(const char *elf_file, xbt_dict_t location_lis
 
   if(fp == NULL)
     perror("popen for objdump failed");
+
+  mc_object_info_t result = MC_new_object_info();
+  xbt_dict_t *local_variables = &result->local_variables;
+  xbt_dynar_t *global_variables = &result->global_variables;
+  xbt_dict_t *types = &result->types;
 
   char *line = NULL, *origin, *abstract_origin, *current_frame = NULL, 
     *subprogram_name = NULL, *subprogram_start = NULL, *subprogram_end = NULL,
@@ -1231,8 +1257,10 @@ static void MC_dwarf_get_variables(const char *elf_file, xbt_dict_t location_lis
   xbt_dict_free(&subprograms_origin);
   xbt_free(line);
   xbt_free(command);
+  xbt_dict_free(&location_list);
+
   pclose(fp);
-  
+  return result;
 }
 
 
@@ -1393,7 +1421,7 @@ void MC_ignore_global_variable(const char *name){
 
   MC_SET_RAW_MEM;
 
-  if(mc_global_variables_libsimgrid){
+  if(mc_local_variables_libsimgrid){
 
     unsigned int cursor = 0;
     dw_variable_t current_var;
@@ -1467,7 +1495,7 @@ void MC_ignore_local_variable(const char *var_name, const char *frame_name){
 
   MC_SET_RAW_MEM;
 
-  if(mc_local_variables_libsimgrid){
+  if(mc_libsimgrid_info){
     unsigned int cursor = 0;
     dw_variable_t current_var;
     int start, end;
@@ -1719,26 +1747,19 @@ void MC_init(){
   MC_SET_RAW_MEM;
 
   MC_init_memory_map_info();
-  
-  mc_local_variables_libsimgrid = xbt_dict_new_homogeneous(NULL);
-  mc_local_variables_binary = xbt_dict_new_homogeneous(NULL);
-  mc_global_variables_libsimgrid = xbt_dynar_new(sizeof(dw_variable_t), dw_variable_free_voidp);
-  mc_global_variables_binary = xbt_dynar_new(sizeof(dw_variable_t), dw_variable_free_voidp);
-  mc_variables_type_libsimgrid = xbt_dict_new_homogeneous(NULL);
-  mc_variables_type_binary = xbt_dict_new_homogeneous(NULL);
 
   XBT_INFO("Get debug information ...");
 
-  /* Get local variables in binary for state equality detection */
-  xbt_dict_t binary_location_list = MC_dwarf_get_location_list(xbt_binary_name);
-  MC_dwarf_get_variables(xbt_binary_name, binary_location_list, &mc_local_variables_binary, &mc_global_variables_binary, &mc_variables_type_binary);
+  /* Get local variables for state equality detection */
+  mc_binary_info = MC_dwarf_get_variables(xbt_binary_name);
+  mc_libsimgrid_info = MC_dwarf_get_variables(libsimgrid_path);
 
-  /* Get local variables in libsimgrid for state equality detection */
-  xbt_dict_t libsimgrid_location_list = MC_dwarf_get_location_list(libsimgrid_path);
-  MC_dwarf_get_variables(libsimgrid_path, libsimgrid_location_list, &mc_local_variables_libsimgrid, &mc_global_variables_libsimgrid, &mc_variables_type_libsimgrid);
-
-  xbt_dict_free(&libsimgrid_location_list);
-  xbt_dict_free(&binary_location_list);
+  mc_local_variables_libsimgrid = mc_libsimgrid_info->local_variables;
+  mc_local_variables_binary = mc_binary_info->local_variables;
+  mc_global_variables_libsimgrid = mc_libsimgrid_info->global_variables;
+  mc_global_variables_binary = mc_binary_info->global_variables;
+  mc_variables_type_libsimgrid = mc_libsimgrid_info->types;
+  mc_variables_type_binary = mc_binary_info->types;
 
   XBT_INFO("Get debug information done !");
 

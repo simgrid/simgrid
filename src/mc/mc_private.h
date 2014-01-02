@@ -340,6 +340,19 @@ extern xbt_dynar_t mc_global_variables_binary;
 extern xbt_dict_t mc_variables_type_libsimgrid;
 extern xbt_dict_t mc_variables_type_binary;
 
+typedef struct s_mc_object_info {
+  xbt_dict_t local_variables;
+  xbt_dynar_t global_variables;
+  xbt_dict_t types;
+  // TODO, add start_data, end _data ...
+} s_mc_object_info_t, *mc_object_info_t;
+
+mc_object_info_t MC_new_object_info();
+void MC_free_object_info(mc_object_info_t* p);
+
+extern mc_object_info_t mc_libsimgrid_info;
+extern mc_object_info_t mc_binary_info;
+
 typedef enum {
   e_dw_loclist,
   e_dw_register,
