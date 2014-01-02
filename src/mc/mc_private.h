@@ -333,13 +333,6 @@ void MC_dump_stack_liveness(xbt_fifo_t stack);
 
 /********************************** Variables with DWARF **********************************/
 
-extern xbt_dict_t mc_local_variables_libsimgrid;
-extern xbt_dict_t mc_local_variables_binary;
-extern xbt_dynar_t mc_global_variables_libsimgrid;
-extern xbt_dynar_t mc_global_variables_binary;
-extern xbt_dict_t mc_variables_type_libsimgrid;
-extern xbt_dict_t mc_variables_type_binary;
-
 typedef struct s_mc_object_info {
   xbt_dict_t local_variables;
   xbt_dynar_t global_variables;

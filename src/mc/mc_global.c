@@ -110,12 +110,6 @@ int compare;
 xbt_automaton_t _mc_property_automaton = NULL;
 
 /* Variables */
-xbt_dict_t mc_local_variables_libsimgrid = NULL;
-xbt_dict_t mc_local_variables_binary = NULL;
-xbt_dynar_t mc_global_variables_libsimgrid = NULL;
-xbt_dynar_t mc_global_variables_binary = NULL;
-xbt_dict_t mc_variables_type_libsimgrid = NULL;
-xbt_dict_t mc_variables_type_binary = NULL;
 mc_object_info_t mc_libsimgrid_info = NULL;
 mc_object_info_t mc_binary_info = NULL;
 
@@ -1754,13 +1748,6 @@ void MC_init(){
   /* Get local variables for state equality detection */
   mc_binary_info = MC_dwarf_get_variables(xbt_binary_name);
   mc_libsimgrid_info = MC_dwarf_get_variables(libsimgrid_path);
-
-  mc_local_variables_libsimgrid = mc_libsimgrid_info->local_variables;
-  mc_local_variables_binary = mc_binary_info->local_variables;
-  mc_global_variables_libsimgrid = mc_libsimgrid_info->global_variables;
-  mc_global_variables_binary = mc_binary_info->global_variables;
-  mc_variables_type_libsimgrid = mc_libsimgrid_info->types;
-  mc_variables_type_binary = mc_binary_info->types;
 
   XBT_INFO("Get debug information done !");
 
