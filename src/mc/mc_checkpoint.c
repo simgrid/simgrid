@@ -265,7 +265,7 @@ void MC_get_libsimgrid_plt_section(){
   int i, plt_found = 0;
   unsigned long int size, offset;
 
-  char *command = bprintf("objdump --section-headers %s", libsimgrid_path);
+  char *command = bprintf("LANG=C objdump --section-headers %s", libsimgrid_path);
 
   fp = popen(command, "r");
 
@@ -330,7 +330,7 @@ void MC_get_binary_plt_section(){
   int i, plt_found = 0;
   unsigned long int size;
 
-  char *command = bprintf( "objdump --section-headers %s", xbt_binary_name);
+  char *command = bprintf("LANG=C objdump --section-headers %s", xbt_binary_name);
 
   fp = popen(command, "r");
 

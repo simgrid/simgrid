@@ -321,7 +321,7 @@ static dw_location_t MC_dwarf_get_location(xbt_dict_t location_list, char *expr)
  */
 static xbt_dict_t MC_dwarf_get_location_list(const char *elf_file){
 
-  char *command = bprintf("objdump -Wo %s", elf_file);
+  char *command = bprintf("LANG=C objdump -Wo %s", elf_file);
 
   FILE *fp = popen(command, "r");
 
@@ -505,7 +505,7 @@ static int MC_dwarf_get_variable_index(xbt_dynar_t variables, char* var, void *a
 
 static void MC_dwarf_get_variables(const char *elf_file, xbt_dict_t location_list, xbt_dict_t *local_variables, xbt_dynar_t *global_variables, xbt_dict_t *types){
 
-  char *command = bprintf("objdump -Wi %s", elf_file);
+  char *command = bprintf("LANG=C objdump -Wi %s", elf_file);
   
   FILE *fp = popen(command, "r");
 
