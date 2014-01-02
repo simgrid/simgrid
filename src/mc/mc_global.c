@@ -1421,20 +1421,20 @@ void MC_ignore_global_variable(const char *name){
 
   MC_SET_RAW_MEM;
 
-  if(mc_local_variables_libsimgrid){
+  if(mc_libsimgrid_info){
 
     unsigned int cursor = 0;
     dw_variable_t current_var;
     int start = 0;
-    int end = xbt_dynar_length(mc_global_variables_libsimgrid) - 1;
+    int end = xbt_dynar_length(mc_libsimgrid_info->global_variables) - 1;
 
     while(start <= end){
       cursor = (start + end) /2;
-      current_var = (dw_variable_t)xbt_dynar_get_as(mc_global_variables_libsimgrid, cursor, dw_variable_t);
+      current_var = (dw_variable_t)xbt_dynar_get_as(mc_libsimgrid_info->global_variables, cursor, dw_variable_t);
       if(strcmp(current_var->name, name) == 0){
-        xbt_dynar_remove_at(mc_global_variables_libsimgrid, cursor, NULL);
+        xbt_dynar_remove_at(mc_libsimgrid_info->global_variables, cursor, NULL);
         start = 0;
-        end = xbt_dynar_length(mc_global_variables_libsimgrid) - 1;
+        end = xbt_dynar_length(mc_libsimgrid_info->global_variables) - 1;
       }else if(strcmp(current_var->name, name) < 0){
         start = cursor + 1;
       }else{
@@ -1503,7 +1503,7 @@ void MC_ignore_local_variable(const char *var_name, const char *frame_name){
       xbt_dict_cursor_t dict_cursor;
       char *current_frame_name;
       dw_frame_t frame;
-      xbt_dict_foreach(mc_local_variables_libsimgrid, dict_cursor, current_frame_name, frame){
+      xbt_dict_foreach(mc_libsimgrid_info->local_variables, dict_cursor, current_frame_name, frame){
         start = 0;
         end = xbt_dynar_length(frame->variables) - 1;
         while(start <= end){
@@ -1520,7 +1520,7 @@ void MC_ignore_local_variable(const char *var_name, const char *frame_name){
           } 
         }
       }
-       xbt_dict_foreach(mc_local_variables_binary, dict_cursor, current_frame_name, frame){
+       xbt_dict_foreach(mc_binary_info->local_variables, dict_cursor, current_frame_name, frame){
         start = 0;
         end = xbt_dynar_length(frame->variables) - 1;
         while(start <= end){
@@ -1538,7 +1538,8 @@ void MC_ignore_local_variable(const char *var_name, const char *frame_name){
         }
       }
     }else{
-      xbt_dynar_t variables_list = ((dw_frame_t)xbt_dict_get_or_null(mc_local_variables_libsimgrid, frame_name))->variables;
+      xbt_dynar_t variables_list = ((dw_frame_t)xbt_dict_get_or_null(
+                                      mc_libsimgrid_info->local_variables, frame_name))->variables;
       start = 0;
       end = xbt_dynar_length(variables_list) - 1;
       while(start <= end){

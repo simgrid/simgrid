@@ -249,17 +249,20 @@ static int compare_global_variables(int region_type, mc_mem_region_t r1, mc_mem_
   size_t offset;
   void *start_data;
 
+  mc_object_info_t object_info = NULL;
+  mc_object_info_t other_object_info = NULL;
   if(region_type == 2){
-    variables = mc_global_variables_binary;
-    types = mc_variables_type_binary;
-    other_types = mc_variables_type_libsimgrid;
+    object_info = mc_binary_info;
+    other_object_info = mc_libsimgrid_info;
     start_data = start_data_binary;
   }else{
-    variables = mc_global_variables_libsimgrid;
-    types = mc_variables_type_libsimgrid;
-    other_types = mc_variables_type_binary;
+    object_info = mc_libsimgrid_info;
+    other_object_info = mc_binary_info;
     start_data = start_data_libsimgrid;
   }
+  variables = object_info->global_variables;
+  types = object_info->types;
+  other_types = other_object_info->types;
 
   xbt_dynar_foreach(variables, cursor, current_var){
 
@@ -314,9 +317,9 @@ static int compare_local_variables(mc_snapshot_stack_t stack1, mc_snapshot_stack
       offset1 = (char *)current_var1->address - (char *)std_heap;
       offset2 = (char *)current_var2->address - (char *)std_heap;
       if(current_var1->region == 1)
-        res = compare_areas_with_type( (char *)heap1 + offset1, (char *)heap2 + offset2, mc_variables_type_libsimgrid, mc_variables_type_binary, current_var1->type, 0, 1, start_data_libsimgrid, 0);
+        res = compare_areas_with_type( (char *)heap1 + offset1, (char *)heap2 + offset2, mc_libsimgrid_info->types, mc_binary_info->types, current_var1->type, 0, 1, start_data_libsimgrid, 0);
       else
-        res = compare_areas_with_type( (char *)heap1 + offset1, (char *)heap2 + offset2, mc_variables_type_binary, mc_variables_type_libsimgrid, current_var1->type, 0, 2, start_data_binary, 0);
+        res = compare_areas_with_type( (char *)heap1 + offset1, (char *)heap2 + offset2, mc_binary_info->types, mc_libsimgrid_info->types, current_var1->type, 0, 2, start_data_binary, 0);
       if(res == 1){
         XBT_VERB("Local variable %s (%p - %p) in frame %s  is different between snapshots", current_var1->name,(char *)heap1 + offset1, (char *)heap2 + offset2, current_var1->frame);
         xbt_dynar_free(&compared_pointers);
@@ -586,7 +589,10 @@ int snapshot_compare(void *state1, void *state2){
   #endif
 
   /* Compare heap */
-    if(mmalloc_compare_heap((xbt_mheap_t)s1->regions[0]->data, (xbt_mheap_t)s2->regions[0]->data, mc_variables_type_libsimgrid, mc_variables_type_binary) > 0){
+    if(mmalloc_compare_heap((xbt_mheap_t)s1->regions[0]->data,
+                            (xbt_mheap_t)s2->regions[0]->data,
+                            mc_libsimgrid_info->types,
+                            mc_binary_info->types) > 0){
 
     #ifdef MC_DEBUG
       xbt_os_walltimer_stop(timer);

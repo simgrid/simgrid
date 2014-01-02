@@ -518,9 +518,9 @@ static xbt_dynar_t MC_get_local_variables_values(void *stack_context){
       stop = 1;
 
     if((long)ip > (long)start_text_libsimgrid)
-      frame = xbt_dict_get_or_null(mc_local_variables_libsimgrid, frame_name);
+      frame = xbt_dict_get_or_null(mc_libsimgrid_info->local_variables, frame_name);
     else
-      frame = xbt_dict_get_or_null(mc_local_variables_binary, frame_name);
+      frame = xbt_dict_get_or_null(mc_binary_info->local_variables, frame_name);
 
     if(frame == NULL){
       ret = unw_step(&c);
