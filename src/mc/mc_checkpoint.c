@@ -15,11 +15,6 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_checkpoint, mc,
                                 "Logging specific to mc_checkpoint");
 
-void *start_text_libsimgrid;
-void *start_plt_libsimgrid, *end_plt_libsimgrid;
-void *start_got_plt_libsimgrid, *end_got_plt_libsimgrid;
-void *start_plt_binary, *end_plt_binary;
-void *start_got_plt_binary, *end_got_plt_binary;
 char *libsimgrid_path;
 
 static void MC_get_plt_section(mc_object_info_t info);

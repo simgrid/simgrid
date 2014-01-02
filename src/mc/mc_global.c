@@ -1758,17 +1758,6 @@ static void MC_init_debug_info() {
 
   MC_free_memory_map(maps);
 
-  /* Get .plt section (start and end addresses) for data libsimgrid and data program comparison */
-  start_plt_libsimgrid = mc_libsimgrid_info->start_plt;
-  end_plt_libsimgrid = mc_libsimgrid_info->end_plt;
-  start_plt_binary = mc_binary_info->start_plt;
-  end_plt_binary = mc_binary_info->end_plt;
-  start_got_plt_libsimgrid = mc_libsimgrid_info->start_got_plt;
-  end_got_plt_libsimgrid = mc_libsimgrid_info->end_got_plt;
-  start_got_plt_binary = mc_binary_info->start_got_plt;
-  end_got_plt_binary = mc_binary_info->end_got_plt;
-
-
   XBT_INFO("Get debug information done !");
 }
 

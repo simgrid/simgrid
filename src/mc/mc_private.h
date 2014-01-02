@@ -220,14 +220,6 @@ memory_map_t MC_get_memory_map(void);
 void MC_free_memory_map(memory_map_t map);
 
 extern char *libsimgrid_path;
-extern void *start_plt_libsimgrid;
-extern void *end_plt_libsimgrid;
-extern void *start_plt_binary;
-extern void *end_plt_binary;
-extern void *start_got_plt_libsimgrid;
-extern void *end_got_plt_libsimgrid;
-extern void *start_got_plt_binary;
-extern void *end_got_plt_binary;
 
 /********************************** Snapshot comparison **********************************/
 
