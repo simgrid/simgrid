@@ -331,8 +331,10 @@ typedef struct s_mc_object_info {
 } s_mc_object_info_t, *mc_object_info_t;
 
 mc_object_info_t MC_new_object_info();
-mc_object_info_t MC_find_object_address(memory_map_t maps, char* name);
+mc_object_info_t MC_find_object_info(memory_map_t maps, char* name);
 void MC_free_object_info(mc_object_info_t* p);
+
+void MC_dwarf_get_variables(mc_object_info_t info);
 
 extern mc_object_info_t mc_libsimgrid_info;
 extern mc_object_info_t mc_binary_info;

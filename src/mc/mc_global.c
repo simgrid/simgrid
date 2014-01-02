@@ -526,7 +526,7 @@ static int MC_dwarf_get_variable_index(xbt_dynar_t variables, char* var, void *a
 
 }
 
-static void MC_dwarf_get_variables(mc_object_info_t info){
+void MC_dwarf_get_variables(mc_object_info_t info) {
   mc_object_info_t result = info;
   const char *elf_file = info->file_name;
 
@@ -1749,15 +1749,10 @@ static void MC_init_debug_info() {
   memory_map_t maps = MC_get_memory_map();
 
   /* Get local variables for state equality detection */
-
-  mc_binary_info = MC_find_object_address(maps, xbt_binary_name);
-  MC_dwarf_get_variables(mc_binary_info);
-
-  mc_libsimgrid_info = MC_find_object_address(maps, libsimgrid_path);
-  MC_dwarf_get_variables(mc_libsimgrid_info);
+  mc_binary_info = MC_find_object_info(maps, xbt_binary_name);
+  mc_libsimgrid_info = MC_find_object_info(maps, libsimgrid_path);
 
   MC_free_memory_map(maps);
-
   XBT_INFO("Get debug information done !");
 }
 

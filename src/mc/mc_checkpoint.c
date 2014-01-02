@@ -17,6 +17,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_checkpoint, mc,
 
 char *libsimgrid_path;
 
+static void MC_find_object_address(memory_map_t maps, mc_object_info_t result);
 static void MC_get_plt_section(mc_object_info_t info);
 
 /************************************  Free functions **************************************/
@@ -234,15 +235,22 @@ void MC_init_memory_map_info(){
 
 }
 
-mc_object_info_t MC_find_object_address(memory_map_t maps, char* name) {
+mc_object_info_t MC_find_object_info(memory_map_t maps, char* name) {
   mc_object_info_t result = MC_new_object_info();
   result->file_name = xbt_strdup(name);
   result->start_data = NULL;
   result->start_text = NULL;
+  MC_find_object_address(maps, result);
+  MC_get_plt_section(result);
+  MC_dwarf_get_variables(result);
+  return result;
+}
 
+static void MC_find_object_address(memory_map_t maps, mc_object_info_t result) {
   unsigned int i = 0;
   s_map_region_t reg;
-  int len = strlen(basename(name));
+  const char* name = result->file_name;
+  int len = strlen(basename(result->file_name));
   while (i < maps->mapsize) {
     reg = maps->regions[i];
     if (maps->regions[i].pathname == NULL || memcmp(basename(maps->regions[i].pathname), basename(name), len)){
