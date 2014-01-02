@@ -22,6 +22,8 @@ void *start_plt_binary, *end_plt_binary;
 void *start_got_plt_binary, *end_got_plt_binary;
 char *libsimgrid_path;
 
+static void MC_get_plt_section(mc_object_info_t info);
+
 /************************************  Free functions **************************************/
 /*****************************************************************************************/
 
@@ -265,10 +267,11 @@ mc_object_info_t MC_find_object_address(memory_map_t maps, char* name) {
   xbt_assert(result->start_data);
   xbt_assert(result->start_text);
 
+  MC_get_plt_section(result);
   return result;
 }
 
-void MC_get_libsimgrid_plt_section(){
+static void MC_get_plt_section(mc_object_info_t info){
 
   FILE *fp;
   char *line = NULL;            /* Temporal storage for each line that is readed */
@@ -279,7 +282,7 @@ void MC_get_libsimgrid_plt_section(){
   int i, plt_found = 0;
   unsigned long int size, offset;
 
-  char *command = bprintf("LANG=C objdump --section-headers %s", libsimgrid_path);
+  char *command = bprintf("LANG=C objdump --section-headers %s", info->file_name);
 
   fp = popen(command, "r");
 
@@ -301,7 +304,7 @@ void MC_get_libsimgrid_plt_section(){
     if(lfields[0] == NULL)
       continue;
 
-    if(strcmp(lfields[0], "Sections:") == 0 || strcmp(lfields[0], "Idx") == 0 || strncmp(lfields[0], libsimgrid_path, strlen(libsimgrid_path)) == 0)
+    if(strcmp(lfields[0], "Sections:") == 0 || strcmp(lfields[0], "Idx") == 0 || strncmp(lfields[0], info->file_name, strlen(info->file_name)) == 0)
       continue;
 
     for (i = 1; i < 7 && lfields[i - 1] != NULL; i++) {
@@ -312,81 +315,18 @@ void MC_get_libsimgrid_plt_section(){
       if(strcmp(lfields[1], ".plt") == 0){
         size = strtoul(lfields[2], NULL, 16);
         offset = strtoul(lfields[5], NULL, 16);
-        start_plt_libsimgrid = (char *)start_text_libsimgrid + offset;
-        end_plt_libsimgrid = (char *)start_plt_libsimgrid + size;
+        info->start_plt = (char *) info->start_text + offset;
+        info->end_plt = (char *) info->start_plt + size;
         plt_found++;
       }else if(strcmp(lfields[1], ".got.plt") == 0){
         size = strtoul(lfields[2], NULL, 16);
         offset = strtoul(lfields[5], NULL, 16);
-        start_got_plt_libsimgrid = (char *)start_text_libsimgrid + offset;
-        end_got_plt_libsimgrid = (char *)start_got_plt_libsimgrid + size;
+        info->start_got_plt = (char *) info->start_text + offset;
+        info->end_got_plt = (char *) info->start_plt + size;
         plt_found++;
        }
 
     }
-    
-  }
-
-  xbt_free(command);
-  xbt_free(line);
-  pclose(fp);
-
-}
-
-void MC_get_binary_plt_section(){
-
-  FILE *fp;
-  char *line = NULL;            /* Temporal storage for each line that is readed */
-  ssize_t read;                 /* Number of bytes readed */
-  size_t n = 0;                 /* Amount of bytes to read by xbt_getline */
-
-  char *lfields[7];
-  int i, plt_found = 0;
-  unsigned long int size;
-
-  char *command = bprintf("LANG=C objdump --section-headers %s", xbt_binary_name);
-
-  fp = popen(command, "r");
-
-  if(fp == NULL){
-    perror("popen failed");
-    xbt_abort();
-  }
-
-  while ((read = xbt_getline(&line, &n, fp)) != -1 && plt_found != 2) {
-
-    if(n == 0)
-      continue;
-
-    /* Wipeout the new line character */
-    line[read - 1] = '\0';
-
-    lfields[0] = strtok(line, " ");
-
-    if(lfields[0] == NULL)
-      continue;
-
-    if(strcmp(lfields[0], "Sections:") == 0 || strcmp(lfields[0], "Idx") == 0 || strncmp(lfields[0], basename(xbt_binary_name), strlen(xbt_binary_name)) == 0)
-      continue;
-
-    for (i = 1; i < 7 && lfields[i - 1] != NULL; i++) {
-      lfields[i] = strtok(NULL, " ");
-    }
-
-    if(i>=6){
-      if(strcmp(lfields[1], ".plt") == 0){
-        size = strtoul(lfields[2], NULL, 16);
-        start_plt_binary = (void *)strtoul(lfields[3], NULL, 16);
-        end_plt_binary = (char *)start_plt_binary + size;
-        plt_found++;
-      }else if(strcmp(lfields[1], ".got.plt") == 0){
-        size = strtoul(lfields[2], NULL, 16);
-        start_got_plt_binary = (char *)strtoul(lfields[3], NULL, 16);
-        end_got_plt_binary = (char *)start_got_plt_binary + size;
-        plt_found++;
-       }
-    }
-    
     
   }
 

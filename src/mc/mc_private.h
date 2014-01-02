@@ -218,8 +218,6 @@ typedef struct s_memory_map {
 void MC_init_memory_map_info(void);
 memory_map_t MC_get_memory_map(void);
 void MC_free_memory_map(memory_map_t map);
-void MC_get_libsimgrid_plt_section(void);
-void MC_get_binary_plt_section(void);
 
 extern char *libsimgrid_path;
 extern void *start_plt_libsimgrid;
@@ -330,10 +328,14 @@ typedef struct s_mc_object_info {
   char* file_name;
   char* start_text;
   char* start_data;
+  char* start_bss;
+  void* start_plt;
+  void* end_plt;
+  void* start_got_plt;
+  void* end_got_plt;
   xbt_dict_t local_variables;
   xbt_dynar_t global_variables;
   xbt_dict_t types;
-  // TODO, add start_data, end _data ...
 } s_mc_object_info_t, *mc_object_info_t;
 
 mc_object_info_t MC_new_object_info();

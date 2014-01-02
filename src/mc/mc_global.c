@@ -180,6 +180,11 @@ mc_object_info_t MC_new_object_info() {
   res->file_name = NULL;
   res->start_text = NULL;
   res->start_data = NULL;
+  res->start_bss = NULL;
+  res->start_plt = NULL;
+  res->end_plt = NULL;
+  res->start_got_plt = NULL;
+  res->end_got_plt = NULL;
   res->local_variables = xbt_dict_new_homogeneous(NULL);
   res->global_variables = xbt_dynar_new(sizeof(dw_variable_t), dw_variable_free_voidp);
   res->types = xbt_dict_new_homogeneous(NULL);
@@ -1737,19 +1742,8 @@ static void MC_dump_ignored_global_variables(void){
 
 }
 
-void MC_init(){
-
-  int raw_mem_set = (mmalloc_get_current_heap() == raw_heap);
-  
-  compare = 0;
-
-  /* Initialize the data structures that must be persistent across every
-     iteration of the model-checker (in RAW memory) */
-
-  MC_SET_RAW_MEM;
-
-  MC_init_memory_map_info();
-
+static void MC_init_debug_info();
+static void MC_init_debug_info() {
   XBT_INFO("Get debug information ...");
 
   memory_map_t maps = MC_get_memory_map();
@@ -1762,20 +1756,42 @@ void MC_init(){
   mc_libsimgrid_info = MC_find_object_address(maps, libsimgrid_path);
   MC_dwarf_get_variables(mc_libsimgrid_info);
 
+  MC_free_memory_map(maps);
+
+  /* Get .plt section (start and end addresses) for data libsimgrid and data program comparison */
+  start_plt_libsimgrid = mc_libsimgrid_info->start_plt;
+  end_plt_libsimgrid = mc_libsimgrid_info->end_plt;
+  start_plt_binary = mc_binary_info->start_plt;
+  end_plt_binary = mc_binary_info->end_plt;
+  start_got_plt_libsimgrid = mc_libsimgrid_info->start_got_plt;
+  end_got_plt_libsimgrid = mc_libsimgrid_info->end_got_plt;
+  start_got_plt_binary = mc_binary_info->start_got_plt;
+  end_got_plt_binary = mc_binary_info->end_got_plt;
+
+
   XBT_INFO("Get debug information done !");
+}
+
+void MC_init(){
+
+  int raw_mem_set = (mmalloc_get_current_heap() == raw_heap);
+
+  compare = 0;
+
+  /* Initialize the data structures that must be persistent across every
+     iteration of the model-checker (in RAW memory) */
+
+  MC_SET_RAW_MEM;
+
+  MC_init_memory_map_info();
+  MC_init_debug_info();
 
   /* Remove variables ignored before getting list of variables */
   MC_dump_ignored_local_variables();
   MC_dump_ignored_global_variables();
-  
-  /* Get .plt section (start and end addresses) for data libsimgrid and data program comparison */
-  MC_get_libsimgrid_plt_section();
-  MC_get_binary_plt_section();
 
    /* Init parmap */
   parmap = xbt_parmap_mc_new(xbt_os_get_numcores(), XBT_PARMAP_DEFAULT);
-
-  MC_free_memory_map(maps);
 
   MC_UNSET_RAW_MEM;
 
@@ -1907,8 +1923,7 @@ void MC_modelcheck_safety(void)
   }else{
     MC_SET_RAW_MEM;
     MC_init_memory_map_info();
-    MC_get_libsimgrid_plt_section();
-    MC_get_binary_plt_section();
+    MC_init();
     MC_UNSET_RAW_MEM;
   }
 
