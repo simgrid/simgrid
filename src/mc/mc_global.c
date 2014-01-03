@@ -1907,7 +1907,7 @@ void MC_modelcheck_safety(void)
   }else{
     MC_SET_RAW_MEM;
     MC_init_memory_map_info();
-    MC_init();
+    MC_init_debug_info();
     MC_UNSET_RAW_MEM;
   }
 
