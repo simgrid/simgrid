@@ -221,7 +221,7 @@ void MC_init_memory_map_info(){
     else if ((reg.prot & PROT_WRITE) && !memcmp(maps->regions[i].pathname, "[stack]", 7)){
           maestro_stack_start = reg.start_addr;
           maestro_stack_end = reg.end_addr;
-    }else if ((reg.prot & PROT_READ) && (reg.prot & PROT_EXEC) && !memcmp(basename(maps->regions[i].pathname), "libsimgrid", 10)){
+    } else if ((reg.prot & PROT_READ) && (reg.prot & PROT_EXEC) && !memcmp(basename(maps->regions[i].pathname), "libsimgrid", 10)){
       if(libsimgrid_path == NULL)
           libsimgrid_path = strdup(maps->regions[i].pathname);
     }
@@ -242,6 +242,10 @@ mc_object_info_t MC_find_object_info(memory_map_t maps, char* name) {
   result->file_name = xbt_strdup(name);
   result->start_data = NULL;
   result->start_text = NULL;
+  result->start_plt = NULL;
+  result->end_plt = NULL;
+  result->start_got_plt = NULL;
+  result->end_got_plt = NULL;
   MC_find_object_address(maps, result);
   MC_get_plt_section(result);
   MC_dwarf_get_variables(result);
@@ -252,18 +256,15 @@ mc_object_info_t MC_find_object_info(memory_map_t maps, char* name) {
 static void MC_find_object_address(memory_map_t maps, mc_object_info_t result) {
   unsigned int i = 0;
   s_map_region_t reg;
-  const char* name = result->file_name;
-  int len = strlen(basename(result->file_name));
+  const char* name = basename(result->file_name);
   while (i < maps->mapsize) {
     reg = maps->regions[i];
-    if (maps->regions[i].pathname == NULL || memcmp(basename(maps->regions[i].pathname), basename(name), len)){
+    if (maps->regions[i].pathname == NULL || strcmp(basename(maps->regions[i].pathname),  name)) {
       // Nothing to do
     }
     else if ((reg.prot & PROT_WRITE)){
           result->start_data = reg.start_addr;
-          i++;
-          reg = maps->regions[i];
-    }else if (reg.prot & PROT_READ) {
+    } else if ((reg.prot & PROT_READ) && (reg.prot & PROT_EXEC)){
           result->start_text = reg.start_addr;
     }
     i++;

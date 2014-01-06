@@ -150,7 +150,7 @@ static void dw_location_entry_free(dw_location_entry_t e){
   xbt_free(e);
 }
 
-static void dw_type_free(dw_type_t t){
+void dw_type_free(dw_type_t t){
   xbt_free(t->name);
   xbt_free(t->dw_type_id);
   xbt_dynar_free(&(t->members));
@@ -534,6 +534,8 @@ static int MC_dwarf_get_variable_index(xbt_dynar_t variables, char* var, void *a
 
 /** \brief Fill DWARf debug infomations (types, frames, variables ...). */
 void MC_dwarf_get_variables(mc_object_info_t info) {
+  if(MC_USE_LIBDW_TYPES)
+    MC_dwarf_get_variables_libdw(info);
   mc_object_info_t result = info;
   const char *elf_file = info->file_name;
 
@@ -918,13 +920,13 @@ void MC_dwarf_get_variables(mc_object_info_t info) {
       
       }
 
-    }else if(strcmp(node_type, "(DW_TAG_base_type)") == 0 
+    }else if(!MC_USE_LIBDW_TYPES&&(strcmp(node_type, "(DW_TAG_base_type)") == 0
              || strcmp(node_type, "(DW_TAG_enumeration_type)") == 0
              || strcmp(node_type, "(DW_TAG_typedef)") == 0
              || strcmp(node_type, "(DW_TAG_const_type)") == 0
              || strcmp(node_type, "(DW_TAG_subroutine_type)") == 0
              || strcmp(node_type, "(DW_TAG_volatile_type)") == 0
-             || (is_pointer = !strcmp(node_type, "(DW_TAG_pointer_type)"))){
+             || (is_pointer = !strcmp(node_type, "(DW_TAG_pointer_type)")))){
 
       /* Create the and add it to the types dictionnary */
 
@@ -1284,17 +1286,23 @@ void MC_dwarf_get_variables(mc_object_info_t info) {
   MC_post_process_types(info);
 }
 
+static void MC_post_process_array_size(mc_object_info_t info, dw_type_t type) {
+  xbt_assert(type->dw_type_id, "No base type for array <%p>%s", type->id, type->name);
+  dw_type_t subtype = xbt_dict_get_or_null(info->types, type->dw_type_id);
+  xbt_assert(subtype, "Unkown base type <%s> for array <%p>%s", type->dw_type_id, type->id, type->name);
+  if(subtype->type==DW_TAG_array_type && type->byte_size==0) {
+	  MC_post_process_array_size(info, subtype);
+  }
+  type->byte_size = type->element_count*subtype->byte_size;
+}
+
 static void MC_post_process_types(mc_object_info_t info) {
   xbt_dict_cursor_t cursor;
   char *origin;
   dw_type_t type;
   xbt_dict_foreach(info->types, cursor, origin, type){
-    if(type->type==DW_TAG_array_type) {
-      xbt_assert(type->dw_type_id, "No base type for array <%p>%s", type->id, type->name);
-      dw_type_t subtype = xbt_dict_get_or_null(info->types, type->dw_type_id);
-	  xbt_assert(subtype, "Unkown base type for array <%p>%s", type->id, type->name);
-      type->byte_size = type->element_count*subtype->byte_size;
-    }
+    if(type->type==DW_TAG_array_type && type->byte_size==0)
+      MC_post_process_array_size(info, type);
   }
 }
 

@@ -335,6 +335,9 @@ mc_object_info_t MC_find_object_info(memory_map_t maps, char* name);
 void MC_free_object_info(mc_object_info_t* p);
 
 void MC_dwarf_get_variables(mc_object_info_t info);
+void MC_dwarf_get_variables_libdw(mc_object_info_t info);
+const char* MC_dwarf_attrname(int attr);
+const char* MC_dwarf_tagname(int tag);
 
 extern mc_object_info_t mc_libsimgrid_info;
 extern mc_object_info_t mc_binary_info;
@@ -421,6 +424,10 @@ typedef struct s_dw_frame{
   unsigned long int end;   /* Dwarf offset of the next sibling */
 }s_dw_frame_t, *dw_frame_t;
 
+void dw_type_free(dw_type_t t);
+
+/********************************** DWARF **********************************/
+
 /********************************** Miscellaneous **********************************/
 
 typedef struct s_local_variable{
@@ -431,6 +438,8 @@ typedef struct s_local_variable{
   void *address;
   int region;
 }s_local_variable_t, *local_variable_t;
+
+#define MC_USE_LIBDW_TYPES 1
 
 #endif
 
