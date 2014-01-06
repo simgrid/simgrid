@@ -134,7 +134,7 @@ static int compare_areas_with_type(void *area1, void *area2, xbt_dict_t types, x
   case e_dw_base_type:
   case e_dw_enumeration_type:
   case e_dw_union_type:
-    return (memcmp(area1, area2, type->size) != 0);
+    return (memcmp(area1, area2, type->byte_size) != 0);
     break;
   case e_dw_typedef:
   case e_dw_volatile_type:
@@ -151,32 +151,32 @@ static int compare_areas_with_type(void *area1, void *area2, xbt_dict_t types, x
     case e_dw_pointer_type:
     case e_dw_structure_type:
     case e_dw_union_type:
-      if(subtype->size == 0){ /*declaration of the type, need the complete description */
+      if(subtype->byte_size == 0){ /*declaration of the type, need the complete description */
         subtype = xbt_dict_get_or_null(types, get_type_description(types, subtype->name));
         if(subtype == NULL){
           subtype = xbt_dict_get_or_null(other_types, get_type_description(other_types, subtype->name));
           switch_types = 1;
         }
       }
-      elm_size = subtype->size;
+      elm_size = subtype->byte_size;
       break;
     case e_dw_typedef:
     case e_dw_volatile_type:
       subsubtype = xbt_dict_get_or_null(types, subtype->dw_type_id);
-      if(subsubtype->size == 0){ /*declaration of the type, need the complete description */
+      if(subsubtype->byte_size == 0){ /*declaration of the type, need the complete description */
         subsubtype = xbt_dict_get_or_null(types, get_type_description(types, subsubtype->name));
         if(subsubtype == NULL){
           subsubtype = xbt_dict_get_or_null(other_types, get_type_description(other_types, subsubtype->name));
           switch_types = 1;
         }
       }
-      elm_size = subsubtype->size;
+      elm_size = subsubtype->byte_size;
       break;
     default : 
       return 0;
       break;
     }
-    for(i=0; i<type->size; i++){
+    for(i=0; i<type->element_count; i++){
       if(switch_types)
         res = compare_areas_with_type((char *)area1 + (i*elm_size), (char *)area2 + (i*elm_size), other_types, types, type->dw_type_id, region_size, region_type, start_data, pointer_level);
       else

@@ -19,6 +19,8 @@
 #include "xbt/automaton.h"
 #include "xbt/dict.h"
 
+static void MC_post_process_types(mc_object_info_t info);
+
 XBT_LOG_NEW_CATEGORY(mc, "All MC categories");
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_global, mc,
                                 "Logging specific to MC (global)");
@@ -999,10 +1001,15 @@ void MC_dwarf_get_variables(mc_object_info_t info) {
       type->id = (void *)strtoul(origin, NULL, 16);
       if(type_origin)
         type->dw_type_id = xbt_strdup(type_origin);
-      if(type_type == e_dw_enumerator)
-        type->size = enumeration_size;
-      else
-        type->size = size;
+      if(type_type == e_dw_enumerator) {
+        type->element_count = enumeration_size;
+        type->byte_size = size;
+      }
+      else {
+        type->byte_size = size;
+        // Not relevant:
+        type->element_count = -1;
+      }
       type->members = NULL;
 
       xbt_dict_set(*types, origin, type, NULL); 
@@ -1087,9 +1094,11 @@ void MC_dwarf_get_variables(mc_object_info_t info) {
         if(member_end && type){         
           member_end = 0;
           
+          // Why are we not simply referencing, the DW_AT_type?
           dw_type_t member_type = xbt_new0(s_dw_type_t, 1);
           member_type->name = xbt_strdup(name);
-          member_type->size = size;
+          member_type->byte_size = size;
+          member_type->element_count = -1;
           member_type->is_pointer_type = is_pointer;
           member_type->id = (void *)strtoul(origin, NULL, 16);
           member_type->offset = offset;
@@ -1122,7 +1131,8 @@ void MC_dwarf_get_variables(mc_object_info_t info) {
           else
             type->type = e_dw_union_type;
           type->name = xbt_strdup(name);
-          type->size = size;
+          type->byte_size = size;
+          type->element_count = -1;
           type->is_pointer_type = is_pointer;
           type->id = (void *)strtoul(origin, NULL, 16);
           if(type_origin)
@@ -1210,8 +1220,8 @@ void MC_dwarf_get_variables(mc_object_info_t info) {
         }
 
         if(subrange && type){         
-          type->size = size;
-      
+          type->element_count = size;
+
           xbt_free(name);
           name = NULL;
           xbt_free(end);
@@ -1236,6 +1246,9 @@ void MC_dwarf_get_variables(mc_object_info_t info) {
           if(type_origin)
             type->dw_type_id = xbt_strdup(type_origin);
           type->members = NULL;
+
+          // Filled in a post processing step:
+          type-> byte_size = 0;
           
           xbt_dict_set(*types, origin, type, NULL); 
           
@@ -1274,8 +1287,23 @@ void MC_dwarf_get_variables(mc_object_info_t info) {
   xbt_dict_free(&location_list);
 
   pclose(fp);
+
+  MC_post_process_types(info);
 }
 
+static void MC_post_process_types(mc_object_info_t info) {
+  xbt_dict_cursor_t cursor;
+  char *origin;
+  dw_type_t type;
+  xbt_dict_foreach(info->types, cursor, origin, type){
+    if(type->type==e_dw_array_type) {
+      xbt_assert(type->dw_type_id, "No base type for array %s %s", type->id, type->name);
+      dw_type_t subtype = xbt_dict_get_or_null(info->types, type->dw_type_id);
+	  xbt_assert(subtype, "Unkown base type for array %s %s", type->id, type->name);
+      type->byte_size = type->element_count*subtype->byte_size;
+    }
+  }
+}
 
 /*******************************  Ignore mechanism *******************************/
 /*********************************************************************************/
