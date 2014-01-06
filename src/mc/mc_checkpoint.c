@@ -273,7 +273,6 @@ static void MC_find_object_address(memory_map_t maps, mc_object_info_t result) {
   xbt_assert(result->start_text);
 
   MC_get_plt_section(result);
-  return result;
 }
 
 /** \brief Fills the position of the .plt and .got.plt sections. */
