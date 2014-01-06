@@ -929,19 +929,19 @@ void MC_dwarf_get_variables(mc_object_info_t info) {
       /* Create the and add it to the types dictionnary */
 
       if(strcmp(node_type, "(DW_TAG_base_type)") == 0)
-        type_type = e_dw_base_type;
+        type_type = DW_TAG_base_type;
       else if(strcmp(node_type, "(DW_TAG_enumeration_type)") == 0)
-        type_type = e_dw_enumeration_type;
+        type_type = DW_TAG_enumeration_type;
       else if(strcmp(node_type, "(DW_TAG_typedef)") == 0)
-        type_type = e_dw_typedef;
+        type_type = DW_TAG_typedef;
       else if(strcmp(node_type, "(DW_TAG_const_type)") == 0)
-        type_type = e_dw_const_type;
+        type_type = DW_TAG_const_type;
       else if(strcmp(node_type, "(DW_TAG_pointer_type)") == 0)
-        type_type = e_dw_pointer_type;
+        type_type = DW_TAG_pointer_type;
       else if(strcmp(node_type, "(DW_TAG_subroutine_type)") == 0)
-        type_type = e_dw_subroutine_type;
+        type_type = DW_TAG_subroutine_type;
       else if(strcmp(node_type, "(DW_TAG_volatile_type)") == 0)
-        type_type = e_dw_volatile_type;
+        type_type = DW_TAG_volatile_type;
 
       strtok(xbt_dynar_get_as(split, 0, char *), "<");
       origin = strdup(strtok(NULL, "<"));
@@ -971,7 +971,7 @@ void MC_dwarf_get_variables(mc_object_info_t info) {
 
         if(strcmp(node_type, "DW_AT_byte_size") == 0){
           size = strtol(xbt_dynar_get_as(split, xbt_dynar_length(split) - 1, char*), NULL, 10);
-          if(type_type == e_dw_enumeration_type)
+          if(type_type == DW_TAG_enumeration_type)
             enumeration_size = size;
         }else if(strcmp(node_type, "DW_AT_name") == 0){
           end = xbt_str_join(split, " ");
@@ -1120,9 +1120,9 @@ void MC_dwarf_get_variables(mc_object_info_t info) {
         if(struct_decl || union_decl){
           type = xbt_new0(s_dw_type_t, 1);
           if(struct_decl)
-            type->type = e_dw_structure_type;
+            type->type = DW_TAG_structure_type;
           else
-            type->type = e_dw_union_type;
+            type->type = DW_TAG_union_type;
           type->name = xbt_strdup(name);
           type->byte_size = size;
           type->element_count = -1;
@@ -1232,7 +1232,7 @@ void MC_dwarf_get_variables(mc_object_info_t info) {
         }else {
           
           type = xbt_new0(s_dw_type_t, 1);
-          type->type = e_dw_array_type;
+          type->type = DW_TAG_array_type;
           type->name = xbt_strdup(name);
           type->is_pointer_type = is_pointer;
           type->id = (void *)strtoul(origin, NULL, 16);
@@ -1289,7 +1289,7 @@ static void MC_post_process_types(mc_object_info_t info) {
   char *origin;
   dw_type_t type;
   xbt_dict_foreach(info->types, cursor, origin, type){
-    if(type->type==e_dw_array_type) {
+    if(type->type==DW_TAG_array_type) {
       xbt_assert(type->dw_type_id, "No base type for array <%p>%s", type->id, type->name);
       dw_type_t subtype = xbt_dict_get_or_null(info->types, type->dw_type_id);
 	  xbt_assert(subtype, "Unkown base type for array <%p>%s", type->id, type->name);

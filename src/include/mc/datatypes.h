@@ -10,6 +10,8 @@
 #include "xbt/swag.h"
 #include "xbt/fifo.h"
 
+#include <dwarf.h>
+
 SG_BEGIN_DECL()
 
 /******************************* Transitions **********************************/
@@ -39,18 +41,7 @@ void heap_ignore_region_free_voidp(void *r);
 
 /************ DWARF structures *************/
 
-typedef enum{
-  e_dw_base_type = 0,
-  e_dw_enumeration_type,
-  e_dw_typedef,
-  e_dw_const_type,
-  e_dw_array_type,
-  e_dw_pointer_type,
-  e_dw_structure_type,
-  e_dw_union_type,
-  e_dw_subroutine_type,
-  e_dw_volatile_type
-}e_dw_type_type;
+typedef int e_dw_type_type;
 
 typedef struct s_dw_type{
   e_dw_type_type type;

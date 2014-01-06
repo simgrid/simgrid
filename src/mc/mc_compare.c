@@ -131,26 +131,26 @@ static int compare_areas_with_type(void *area1, void *area2, xbt_dict_t types, x
   void *addr_pointed1, *addr_pointed2;
 
   switch(type->type){
-  case e_dw_base_type:
-  case e_dw_enumeration_type:
-  case e_dw_union_type:
+  case DW_TAG_base_type:
+  case DW_TAG_enumeration_type:
+  case DW_TAG_union_type:
     return (memcmp(area1, area2, type->byte_size) != 0);
     break;
-  case e_dw_typedef:
-  case e_dw_volatile_type:
+  case DW_TAG_typedef:
+  case DW_TAG_volatile_type:
     return compare_areas_with_type(area1, area2, types, other_types, type->dw_type_id, region_size, region_type, start_data, pointer_level);
     break;
-  case e_dw_const_type: /* Const variable cannot be modified */
+  case DW_TAG_const_type: /* Const variable cannot be modified */
     return -1;
     break;
-  case e_dw_array_type:
+  case DW_TAG_array_type:
     subtype = xbt_dict_get_or_null(types, type->dw_type_id);
     switch(subtype->type){
-    case e_dw_base_type:
-    case e_dw_enumeration_type:
-    case e_dw_pointer_type:
-    case e_dw_structure_type:
-    case e_dw_union_type:
+    case DW_TAG_base_type:
+    case DW_TAG_enumeration_type:
+    case DW_TAG_pointer_type:
+    case DW_TAG_structure_type:
+    case DW_TAG_union_type:
       if(subtype->byte_size == 0){ /*declaration of the type, need the complete description */
         subtype = xbt_dict_get_or_null(types, get_type_description(types, subtype->name));
         if(subtype == NULL){
@@ -160,8 +160,8 @@ static int compare_areas_with_type(void *area1, void *area2, xbt_dict_t types, x
       }
       elm_size = subtype->byte_size;
       break;
-    case e_dw_typedef:
-    case e_dw_volatile_type:
+    case DW_TAG_typedef:
+    case DW_TAG_volatile_type:
       subsubtype = xbt_dict_get_or_null(types, subtype->dw_type_id);
       if(subsubtype->byte_size == 0){ /*declaration of the type, need the complete description */
         subsubtype = xbt_dict_get_or_null(types, get_type_description(types, subsubtype->name));
@@ -185,8 +185,8 @@ static int compare_areas_with_type(void *area1, void *area2, xbt_dict_t types, x
         return res;
     }
     break;
-  case e_dw_pointer_type: 
-    if(type->dw_type_id && ((dw_type_t)xbt_dict_get_or_null(types, type->dw_type_id))->type == e_dw_subroutine_type){
+  case DW_TAG_pointer_type:
+    if(type->dw_type_id && ((dw_type_t)xbt_dict_get_or_null(types, type->dw_type_id))->type == DW_TAG_subroutine_type){
       addr_pointed1 = *((void **)(area1)); 
       addr_pointed2 = *((void **)(area2));
       return (addr_pointed1 != addr_pointed2);
@@ -214,14 +214,14 @@ static int compare_areas_with_type(void *area1, void *area2, xbt_dict_t types, x
       }
     }
     break;
-  case e_dw_structure_type:
+  case DW_TAG_structure_type:
     xbt_dynar_foreach(type->members, cursor, member){
       res = compare_areas_with_type((char *)area1 + member->offset, (char *)area2 + member->offset, types, other_types, member->dw_type_id, region_size, region_type, start_data, pointer_level);
       if(res == 1)
         return res;
     }
     break;
-  case e_dw_subroutine_type:
+  case DW_TAG_subroutine_type:
     return -1;
     break;
   default:

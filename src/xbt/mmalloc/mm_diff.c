@@ -777,7 +777,7 @@ static int compare_heap_area_with_type(void *real_area1, void *real_area2, void 
   char *type_desc;
 
   switch(type->type){
-  case e_dw_base_type:
+  case DW_TAG_base_type:
     if(strcmp(type->name, "char") == 0){ /* String, hence random (arbitrary ?) size */
       if(real_area1 == real_area2)
         return -1;
@@ -791,26 +791,26 @@ static int compare_heap_area_with_type(void *real_area1, void *real_area2, void 
       }
     }
     break;
-  case e_dw_enumeration_type:
+  case DW_TAG_enumeration_type:
     if(area_size != -1 && type->byte_size != area_size)
       return -1;
     else
       return (memcmp(area1, area2, type->byte_size) != 0);
     break;
-  case e_dw_typedef:
+  case DW_TAG_typedef:
     return compare_heap_area_with_type(real_area1, real_area2, area1, area2, previous, all_types, other_types, type->dw_type_id, area_size, check_ignore, pointer_level);
     break;
-  case e_dw_const_type:
+  case DW_TAG_const_type:
     return 0;
     break;
-  case e_dw_array_type:
+  case DW_TAG_array_type:
     subtype = xbt_dict_get_or_null(all_types, type->dw_type_id);
     switch(subtype->type){
-    case e_dw_base_type:
-    case e_dw_enumeration_type:
-    case e_dw_pointer_type:
-    case e_dw_structure_type:
-    case e_dw_union_type:
+    case DW_TAG_base_type:
+    case DW_TAG_enumeration_type:
+    case DW_TAG_pointer_type:
+    case DW_TAG_structure_type:
+    case DW_TAG_union_type:
       if(subtype->byte_size == 0){ /*declaration of the type, need the complete description */
         type_desc = get_type_description(all_types, subtype->name);
         if(type_desc){
@@ -823,8 +823,8 @@ static int compare_heap_area_with_type(void *real_area1, void *real_area2, void 
       elm_size = subtype->byte_size;
       break;
     // TODO, just remove the type indirection?
-    case e_dw_typedef:
-    case e_dw_volatile_type:
+    case DW_TAG_typedef:
+    case DW_TAG_volatile_type:
       subsubtype = xbt_dict_get_or_null(all_types, subtype->dw_type_id);
       if(subsubtype->byte_size == 0){ /*declaration of the type, need the complete description */
         type_desc = get_type_description(all_types, subsubtype->name);
@@ -851,8 +851,8 @@ static int compare_heap_area_with_type(void *real_area1, void *real_area2, void 
         return res;
     }
     break;
-  case e_dw_pointer_type:
-    if(type->dw_type_id && ((dw_type_t)xbt_dict_get_or_null(all_types, type->dw_type_id))->type == e_dw_subroutine_type){
+  case DW_TAG_pointer_type:
+    if(type->dw_type_id && ((dw_type_t)xbt_dict_get_or_null(all_types, type->dw_type_id))->type == DW_TAG_subroutine_type){
       addr_pointed1 = *((void **)(area1)); 
       addr_pointed2 = *((void **)(area2));
       return (addr_pointed1 != addr_pointed2);;
@@ -879,7 +879,7 @@ static int compare_heap_area_with_type(void *real_area1, void *real_area2, void 
       }
     }
     break;
-  case e_dw_structure_type:
+  case DW_TAG_structure_type:
     if(type->byte_size == 0){ /*declaration of the structure, need the complete description */
       type_desc = get_type_description(all_types, type->name);
       if(type_desc){
@@ -915,10 +915,10 @@ static int compare_heap_area_with_type(void *real_area1, void *real_area2, void 
       }
     }
     break;
-  case e_dw_union_type:
+  case DW_TAG_union_type:
     return compare_heap_area_without_type(real_area1, real_area2, area1, area2, previous, all_types, other_types, type->byte_size, check_ignore);
     break;
-  case e_dw_volatile_type:
+  case DW_TAG_volatile_type:
     return compare_heap_area_with_type(real_area1, real_area2, area1, area2, previous, all_types, other_types, type->dw_type_id, area_size, check_ignore, pointer_level);
     break;
   default:
@@ -937,7 +937,7 @@ static char* get_offset_type(char* type_id, int offset, xbt_dict_t all_types, xb
   }
   char* type_desc;
   switch(type->type){
-  case e_dw_structure_type :
+  case DW_TAG_structure_type :
     if(type->byte_size == 0){ /*declaration of the structure, need the complete description */
       if(*switch_type == 0){
         type_desc = get_type_description(all_types, type->name);
@@ -1042,7 +1042,7 @@ int compare_heap_area(void *area1, void* area2, xbt_dynar_t previous, xbt_dict_t
         type = xbt_dict_get_or_null(all_types, type->dw_type_id);
       }
     }
-    if((type->byte_size == e_dw_pointer_type) || ((type->type == e_dw_base_type) && (!strcmp(type->name, "char"))))
+    if((type->byte_size == DW_TAG_pointer_type) || ((type->type == DW_TAG_base_type) && (!strcmp(type->name, "char"))))
       type_size = -1;
     else
       type_size = type->byte_size;
