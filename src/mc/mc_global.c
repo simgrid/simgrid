@@ -920,7 +920,6 @@ void MC_dwarf_get_variables(mc_object_info_t info) {
 
     }else if(strcmp(node_type, "(DW_TAG_base_type)") == 0 
              || strcmp(node_type, "(DW_TAG_enumeration_type)") == 0
-             || strcmp(node_type, "(DW_TAG_enumerator)") == 0
              || strcmp(node_type, "(DW_TAG_typedef)") == 0
              || strcmp(node_type, "(DW_TAG_const_type)") == 0
              || strcmp(node_type, "(DW_TAG_subroutine_type)") == 0
@@ -933,8 +932,6 @@ void MC_dwarf_get_variables(mc_object_info_t info) {
         type_type = e_dw_base_type;
       else if(strcmp(node_type, "(DW_TAG_enumeration_type)") == 0)
         type_type = e_dw_enumeration_type;
-      else if(strcmp(node_type, "(DW_TAG_enumerator)") == 0)
-        type_type = e_dw_enumerator;
       else if(strcmp(node_type, "(DW_TAG_typedef)") == 0)
         type_type = e_dw_typedef;
       else if(strcmp(node_type, "(DW_TAG_const_type)") == 0)
@@ -1001,15 +998,11 @@ void MC_dwarf_get_variables(mc_object_info_t info) {
       type->id = (void *)strtoul(origin, NULL, 16);
       if(type_origin)
         type->dw_type_id = xbt_strdup(type_origin);
-      if(type_type == e_dw_enumerator) {
-        type->element_count = enumeration_size;
-        type->byte_size = size;
-      }
-      else {
-        type->byte_size = size;
-        // Not relevant:
-        type->element_count = -1;
-      }
+
+      type->byte_size = size;
+      // Not relevant:
+      type->element_count = -1;
+
       type->members = NULL;
 
       xbt_dict_set(*types, origin, type, NULL); 

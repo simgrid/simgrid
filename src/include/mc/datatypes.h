@@ -42,7 +42,6 @@ void heap_ignore_region_free_voidp(void *r);
 typedef enum{
   e_dw_base_type = 0,
   e_dw_enumeration_type,
-  e_dw_enumerator,
   e_dw_typedef,
   e_dw_const_type,
   e_dw_array_type,
