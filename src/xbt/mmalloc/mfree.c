@@ -34,7 +34,7 @@ void mfree(struct mdesc *mdp, void *ptr)
   block = BLOCK(ptr);
 
   if ((char *) ptr < (char *) mdp->heapbase || block > mdp->heapsize) {
-    fprintf(stderr,"Ouch, this pointer is not mine. I refuse to free it. I'd rather die than freeing it!!\n");
+    fprintf(stderr,"Ouch, this pointer is not mine, I refuse to free it. Give me valid pointers, or give me death!!\n");
     abort();
   }
 
