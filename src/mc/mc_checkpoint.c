@@ -201,7 +201,7 @@ static void MC_get_memory_regions(mc_snapshot_t snapshot){
 
 }
 
-/** @brief Find the range of the different memory segments and binary paths */
+/** @brief Finds the range of the different memory segments and binary paths */
 void MC_init_memory_map_info(){
  
   unsigned int i = 0;
@@ -235,6 +235,7 @@ void MC_init_memory_map_info(){
 
 }
 
+/** \brief Finds informations about a given shared object/executable */
 mc_object_info_t MC_find_object_info(memory_map_t maps, char* name) {
   mc_object_info_t result = MC_new_object_info();
   result->file_name = xbt_strdup(name);
@@ -246,6 +247,7 @@ mc_object_info_t MC_find_object_info(memory_map_t maps, char* name) {
   return result;
 }
 
+/** \brief Fills the position of the .bss and .data sections. */
 static void MC_find_object_address(memory_map_t maps, mc_object_info_t result) {
   unsigned int i = 0;
   s_map_region_t reg;
@@ -274,6 +276,7 @@ static void MC_find_object_address(memory_map_t maps, mc_object_info_t result) {
   return result;
 }
 
+/** \brief Fills the position of the .plt and .got.plt sections. */
 static void MC_get_plt_section(mc_object_info_t info){
 
   FILE *fp;

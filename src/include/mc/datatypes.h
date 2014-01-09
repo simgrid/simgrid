@@ -55,11 +55,11 @@ typedef enum{
 
 typedef struct s_dw_type{
   e_dw_type_type type;
-  void *id;
-  char *name;
-  int size;
-  char *dw_type_id;
-  xbt_dynar_t members; /* if DW_TAG_structure_type */
+  void *id; /* Offset in the section (in hexadecimal form) */
+  char *name; /* Name of the type */
+  int size; /* Sometimes it si the byte size, sometimes it is the number of elements */
+  char *dw_type_id; /* DW_AT_type */
+  xbt_dynar_t members; /* if DW_TAG_structure_type, DW_TAG_union_type*/
   int is_pointer_type;
   int offset;
 }s_dw_type_t, *dw_type_t;

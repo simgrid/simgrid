@@ -452,6 +452,10 @@ static xbt_dict_t MC_dwarf_get_location_list(const char *elf_file){
   return location_list;
 }
 
+/** \brief Finds a frame (DW_TAG_subprogram) from an DWARF offset in the rangd of this subprogram
+ *
+ * The offset can be an offset of a child DW_TAG_variable.
+ */
 static dw_frame_t MC_dwarf_get_frame_by_offset(xbt_dict_t all_variables, unsigned long int offset){
 
   xbt_dict_cursor_t cursor = NULL;
@@ -526,6 +530,7 @@ static int MC_dwarf_get_variable_index(xbt_dynar_t variables, char* var, void *a
 
 }
 
+/** \brief Fill DWARf debug infomations (types, frames, variables ...). */
 void MC_dwarf_get_variables(mc_object_info_t info) {
   mc_object_info_t result = info;
   const char *elf_file = info->file_name;
@@ -1158,8 +1163,10 @@ void MC_dwarf_get_variables(mc_object_info_t info) {
 
       dw_type_t type = NULL;
 
+      // Read DW_TAG_subrange_type children:
       while(read != -1){
       
+        // Read attributes of the DW_TAG_subrange_type:
         while(read != -1){
         
           /* Wipeout the new line character */
