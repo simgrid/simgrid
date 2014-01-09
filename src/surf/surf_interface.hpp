@@ -289,10 +289,11 @@ public:
   void setCategory(const char *category); /**< Set the category of an action */
 #endif
   virtual double getRemains();     /**< Get the remains of an action */
+  double getRemainsNoUpdate();
+
 #ifdef HAVE_LATENCY_BOUND_TRACKING
   int getLatencyLimited();     /**< Return 1 if action is limited by latency, 0 otherwise */
 #endif
-
 
   double getPriority() {return m_priority;};
   ActionListPtr getStateSet() {return p_stateSet;};

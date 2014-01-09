@@ -149,13 +149,14 @@ Cpu::Cpu(ModelPtr model, const char *name, xbt_dict_t props,
 }
 
 Cpu::~Cpu(){
-  if (getModel()->getUpdateMechanism() != UM_UNDEFINED){
+  if (p_constraintCoreId){
     for (int i = 0; i < m_core; i++) {
 	  xbt_free(p_constraintCoreId[i]);
     }
     xbt_free(p_constraintCore);
-    xbt_free(p_constraintCoreId);
   }
+  if (p_constraintCoreId)
+    xbt_free(p_constraintCoreId);
 }
 
 double Cpu::getSpeed(double load)

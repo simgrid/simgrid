@@ -1015,6 +1015,11 @@ double Action::getRemains()
   return m_remains;
 }
 
+double Action::getRemainsNoUpdate()
+{
+  return m_remains;
+}
+
 //FIXME split code in the right places
 void Action::updateRemainingLazy(double now)
 {

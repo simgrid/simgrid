@@ -30,32 +30,6 @@ WorkstationVMModel::WorkstationVMModel() : WorkstationModel("Virtual Workstation
  */
 WorkstationVM::~WorkstationVM()
 {
-  /* ind_phys_workstation equals to smx_host_t */
-  surf_resource_t ind_vm_workstation = xbt_lib_get_elm_or_null(host_lib, getName());
-
-  /* Before clearing the entries in host_lib, we have to pick up resources. */
-  CpuCas01Ptr cpu = static_cast<CpuCas01Ptr>(surf_cpu_resource_priv(ind_vm_workstation));
-
-  /* We deregister objects from host_lib, without invoking the freeing callback
-   * of each level.
-   *
-   * Do not call xbt_lib_remove() here. It deletes all levels of the key,
-   * including MSG_HOST_LEVEL and others. We should unregister only what we know.
-   */
-  xbt_lib_unset(host_lib, getName(), SURF_CPU_LEVEL, 0);
-  xbt_lib_unset(host_lib, getName(), ROUTING_HOST_LEVEL, 0);
-  xbt_lib_unset(host_lib, getName(), SURF_WKS_LEVEL, 0);
-
-  /* TODO: comment out when VM stroage is implemented. */
-  // xbt_lib_unset(host_lib, name, SURF_STORAGE_LEVEL, 0);
-
-
-  /* Free the cpu_action of the VM. */
-  int ret = p_action->unref();
-  xbt_assert(ret == 1, "Bug: some resource still remains");
-
-  /* Free the cpu resource of the VM. If using power_trace, we will have to */
-  delete cpu;
 }
 
 /*

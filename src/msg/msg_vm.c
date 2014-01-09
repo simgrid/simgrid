@@ -890,7 +890,6 @@ static double send_stage1(msg_host_t vm, const char *src_pm_name, const char *ds
     remaining -= datasize;
 
     send_migration_data(vm_name, src_pm_name, dst_pm_name, datasize, mbox, 1, 0, mig_speed, xfer_cpu_overhead);
-
     double computed = lookup_computed_flop_counts(vm, 1, 0);
     computed_total += computed;
 
@@ -901,7 +900,7 @@ static double send_stage1(msg_host_t vm, const char *src_pm_name, const char *ds
     //   launch_deferred_exec_process(vm, overhead, 10000);
     // }
   }
-
+  xbt_free(mbox);
   return computed_total;
 }
 
@@ -1098,11 +1097,13 @@ static void do_migration(msg_vm_t vm, msg_host_t src_pm, msg_host_t dst_pm)
   {
     msg_task_t task = NULL;
     msg_error_t ret = MSG_task_recv(&task, mbox_ctl);
+
     xbt_assert(ret == MSG_OK);
 
     char *expected_task_name = get_mig_task_name(sg_host_name(vm), sg_host_name(src_pm), sg_host_name(dst_pm), 4);
     xbt_assert(strcmp(task->name, expected_task_name) == 0);
     xbt_free(expected_task_name);
+    MSG_task_destroy(task);
   }
 
   xbt_free(mbox_ctl);

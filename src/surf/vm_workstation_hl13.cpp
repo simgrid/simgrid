@@ -321,7 +321,7 @@ WorkstationVMHL13::~WorkstationVMHL13()
   xbt_assert(ret == 1, "Bug: some resource still remains");
 
   /* Free the cpu resource of the VM. If using power_trace, we will have to */
-  delete cpu;
+  //delete cpu;
 
   /* Free the network resource of the VM. */
 	// Nothing has to be done, because net_elmts is just a pointer on the physical one
@@ -429,8 +429,8 @@ void WorkstationVMHL13::migrate(surf_resource_t ind_dst_pm)
      e_surf_action_state_t state = p_action->getState();
      if (state != SURF_ACTION_DONE)
        XBT_CRITICAL("FIXME: may need a proper handling, %d", state);
-     if (p_action->getRemains() > 0)
-       XBT_CRITICAL("FIXME: need copy the state(?), %f", p_action->getRemains());
+     if (p_action->getRemainsNoUpdate() > 0)
+       XBT_CRITICAL("FIXME: need copy the state(?), %f", p_action->getRemainsNoUpdate());
 
      int ret = p_action->unref();
      xbt_assert(ret == 1, "Bug: some resource still remains");
