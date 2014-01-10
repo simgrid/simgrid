@@ -463,11 +463,9 @@ static xbt_dynar_t MC_get_local_variables_values(void *stack_context){
   unsigned int cursor = 0;
   dw_variable_t current_variable;
   dw_location_entry_t entry = NULL;
-  dw_location_t location_entry = NULL;
-  unw_word_t res;
   int frame_found = 0, region_type;
   void *frame_pointer_address = NULL;
-  long true_ip, value;
+  long true_ip;
   int stop = 0;
 
   xbt_dynar_t variables = xbt_dynar_new(sizeof(local_variable_t), local_variable_free_voidp);
@@ -531,7 +529,7 @@ static xbt_dynar_t MC_get_local_variables_values(void *stack_context){
       new_var->region= region_type;
       
       if(current_variable->address.location != NULL){
-        new_var->address =  MC_dwarf_resolve_location(&c, current_variable->address.location, frame_pointer_address);
+        new_var->address = (void*) MC_dwarf_resolve_location(&c, current_variable->address.location, frame_pointer_address);
       }
 
       xbt_dynar_push(variables, &new_var);

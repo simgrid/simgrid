@@ -412,10 +412,12 @@ typedef struct s_dw_variable{
   char *name;
   char *type_origin;
   union{
-    dw_location_t location;
-    void *address;
+    dw_location_t location; // For global==0
+    void *address; // For global!=0
   }address;
 }s_dw_variable_t, *dw_variable_t;
+
+void MC_dwarf_register_global_variable(mc_object_info_t info, dw_variable_t variable);
 
 typedef struct s_dw_frame{
   char *name;
@@ -428,6 +430,7 @@ typedef struct s_dw_frame{
 }s_dw_frame_t, *dw_frame_t;
 
 void dw_type_free(dw_type_t t);
+void dw_variable_free(dw_variable_t v);
 
 /********************************** DWARF **********************************/
 
@@ -445,6 +448,7 @@ typedef struct s_local_variable{
 }s_local_variable_t, *local_variable_t;
 
 #define MC_USE_LIBDW_TYPES 1
+#define MC_USE_LIBDW_NON_FUNCTION_VARIABLES 1
 
 #endif
 

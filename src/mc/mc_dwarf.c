@@ -93,6 +93,19 @@ static uint64_t MC_dwarf_attr_uint(Dwarf_Die* die, int attribute, uint64_t defau
   return dwarf_formudata(dwarf_attr_integrate(die, attribute, &attr), &value) == 0 ? (uint64_t) value : default_value;
 }
 
+static bool MC_dwarf_attr_flag(Dwarf_Die* die, int attribute, int integrate) {
+  Dwarf_Attribute attr;
+  if ((integrate ? dwarf_attr_integrate(die, attribute, &attr)
+                    : dwarf_attr(die, attribute, &attr))==0)
+    return false;
+
+  bool result;
+  if (dwarf_formflag(&attr, &result))
+    xbt_die("Unexpected form for attribute %s",
+      MC_dwarf_attrname(attribute));
+  return result;
+}
+
 static uint64_t MC_dwarf_default_lower_bound(int lang) {
   switch(lang) {
   case DW_LANG_C:
@@ -217,7 +230,6 @@ static void MC_dwarf_fill_member_location(dw_type_t type, dw_type_t member, Dwar
 
   case DW_FORM_exprloc:
     {
-      //TODO, location can be an integer as well
       Dwarf_Op* expr;
       size_t len;
       if (dwarf_getlocation(&attr, &expr, &len)) {
@@ -354,6 +366,232 @@ static void MC_dwarf_handle_type_die(mc_object_info_t info, Dwarf_Die* die, Dwar
   xbt_dict_set(info->types, key, type, NULL);
 }
 
+/** \brief Convert libdw location expresion elment into native one (or NULL in some cases) */
+static dw_location_t MC_dwarf_get_expression_element(Dwarf_Op* op) {
+  dw_location_t element = xbt_new0(s_dw_location_t, 1);
+  uint8_t atom = op->atom;
+  if (atom >= DW_OP_reg0 && atom<= DW_OP_reg31) {
+    element->type = e_dw_register;
+    element->location.reg = atom - DW_OP_reg0;
+  }
+  else if (atom >= DW_OP_breg0 && atom<= DW_OP_breg31) {
+    element->type = e_dw_bregister_op;
+    element->location.reg = atom - DW_OP_breg0;
+    element->location.breg_op.offset = op->number;
+  }
+  else if (atom >= DW_OP_lit0 && atom<= DW_OP_lit31) {
+    element->type = e_dw_lit;
+    element->location.reg = atom - DW_OP_lit0;
+  }
+  else switch (atom) {
+  case DW_OP_fbreg:
+    element->type = e_dw_fbregister_op;
+    element->location.fbreg_op = op->number;
+    break;
+  case DW_OP_piece:
+    element->type = e_dw_piece;
+    element->location.piece = op->number;
+    break;
+  case DW_OP_plus_uconst:
+    element->type = e_dw_plus_uconst;
+    element->location.plus_uconst = op->number;
+    break;
+  case DW_OP_abs:
+    element->type = e_dw_arithmetic;
+    element->location.arithmetic = xbt_strdup("abs");
+    break;
+  case DW_OP_and:
+    element->type = e_dw_arithmetic;
+    element->location.arithmetic = xbt_strdup("and");
+    break;
+  case DW_OP_div:
+    element->type = e_dw_arithmetic;
+    element->location.arithmetic = xbt_strdup("div");
+    break;
+  case DW_OP_minus:
+    element->type = e_dw_arithmetic;
+    element->location.arithmetic = xbt_strdup("minus");
+    break;
+  case DW_OP_mod:
+    element->type = e_dw_arithmetic;
+    element->location.arithmetic = xbt_strdup("mod");
+    break;
+  case DW_OP_mul:
+    element->type = e_dw_arithmetic;
+    element->location.arithmetic = xbt_strdup("mul");
+    break;
+  case DW_OP_neg:
+    element->type = e_dw_arithmetic;
+    element->location.arithmetic = xbt_strdup("neg");
+    break;
+  case DW_OP_not:
+    element->type = e_dw_arithmetic;
+    element->location.arithmetic = xbt_strdup("not");
+    break;
+  case DW_OP_or:
+    element->type = e_dw_arithmetic;
+    element->location.arithmetic = xbt_strdup("or");
+    break;
+  case DW_OP_plus:
+    element->type = e_dw_arithmetic;
+    element->location.arithmetic = xbt_strdup("plus");
+    break;
+
+  case DW_OP_stack_value:
+    // Why nothing here?
+    xbt_free(element);
+    return NULL;
+
+  case DW_OP_deref_size:
+    element->type = e_dw_deref;
+    element->location.deref_size =  (unsigned int short) op->number;
+    break;
+  case DW_OP_deref:
+    element->type = e_dw_deref;
+    element->location.deref_size = sizeof(void *);
+    break;
+  case DW_OP_constu:
+    element->type = e_dw_uconstant;
+    element->location.uconstant.bytes = 1;
+    element->location.uconstant.value = (unsigned long int) op->number;
+    break;
+  case DW_OP_consts:
+    element->type = e_dw_sconstant;
+    element->location.uconstant.bytes = 1;
+    element->location.uconstant.value = (unsigned long int) op->number;
+    break;
+
+  case DW_OP_const1u:
+    element->type = e_dw_uconstant;
+    element->location.uconstant.bytes = 1;
+    element->location.uconstant.value = (unsigned long int) op->number;
+    break;
+  case DW_OP_const2u:
+    element->type = e_dw_uconstant;
+    element->location.uconstant.bytes = 2;
+    element->location.uconstant.value = (unsigned long int) op->number;
+    break;
+  case DW_OP_const4u:
+    element->type = e_dw_uconstant;
+    element->location.uconstant.bytes = 4;
+    element->location.uconstant.value = (unsigned long int) op->number;
+    break;
+  case DW_OP_const8u:
+    element->type = e_dw_uconstant;
+    element->location.uconstant.bytes = 8;
+    element->location.uconstant.value = (unsigned long int) op->number;
+    break;
+
+  case DW_OP_const1s:
+    element->type = e_dw_sconstant;
+    element->location.uconstant.bytes = 1;
+    element->location.uconstant.value = (unsigned long int) op->number;
+    break;
+  case DW_OP_const2s:
+    element->type = e_dw_sconstant;
+    element->location.uconstant.bytes = 2;
+    element->location.uconstant.value = (unsigned long int) op->number;
+    break;
+  case DW_OP_const4s:
+    element->type = e_dw_sconstant;
+    element->location.uconstant.bytes = 4;
+    element->location.uconstant.value = (unsigned long int) op->number;
+    break;
+  case DW_OP_const8s:
+    element->type = e_dw_sconstant;
+    element->location.uconstant.bytes = 8;
+    element->location.uconstant.value = (unsigned long int) op->number;
+    break;
+  default:
+    element->type = e_dw_unsupported;
+    break;
+  }
+  return element;
+}
+
+/** \brief Convert libdw location expresion into native one */
+static dw_location_t MC_dwarf_get_expression(Dwarf_Op* expr,  size_t len) {
+  dw_location_t loc = xbt_new0(s_dw_location_t, 1);
+  loc->type = e_dw_compose;
+  loc->location.compose = xbt_dynar_new(sizeof(dw_location_t), NULL);
+
+  int i;
+  for (i=0; i!=len; ++i) {
+    dw_location_t element =  MC_dwarf_get_expression_element(expr+i);
+    if (element)
+      xbt_dynar_push(loc->location.compose, &element);
+  }
+
+  return loc;
+}
+
+static dw_variable_t MC_die_to_variable(mc_object_info_t info, Dwarf_Die* die, Dwarf_Die* unit, dw_frame_t frame) {
+  // Drop declaration:
+  if (MC_dwarf_attr_flag(die, DW_AT_declaration, false))
+    return NULL;
+
+  Dwarf_Attribute attr_location;
+  if (dwarf_attr(die, DW_AT_location, &attr_location)==NULL) {
+    // No location: do not add it ?
+    return NULL;
+  }
+
+  dw_variable_t variable = xbt_new0(s_dw_variable_t, 1);
+  variable->dwarf_offset = dwarf_dieoffset(die);
+  variable->global = frame == NULL; // Can be override base on DW_AT_location
+  variable->name = xbt_strdup(MC_dwarf_attr_string(die, DW_AT_name));
+  variable->type_origin = MC_dwarf_at_type(die);
+  variable->address.address = NULL;
+
+  int form;
+  switch (form = dwarf_whatform(&attr_location)) {
+  case DW_FORM_exprloc:
+  case DW_FORM_block1: // Not in the spec but found in the wild.
+    {
+      Dwarf_Op* expr;
+      size_t len;
+      if (dwarf_getlocation(&attr_location, &expr, &len)) {
+        xbt_die(
+          "Could not read location expression in DW_AT_location of variable <%p>%s",
+          (void*) variable->dwarf_offset, variable->name);
+      }
+
+      if (len==1 && expr[0].atom == DW_OP_addr) {
+        variable->global = 1;
+        Dwarf_Off offset = expr[0].number;
+        // TODO, Why is this different base on the object?
+        Dwarf_Off base = strcmp(info->file_name, xbt_binary_name) !=0 ? (Dwarf_Off) info->start_text : 0;
+        variable->address.address = (void*) (base + offset);
+      } else {
+        variable->address.location = MC_dwarf_get_expression(expr, len);
+      }
+
+      break;
+    }
+  case DW_FORM_sec_offset: // type loclistptr
+    xbt_die("Do not handle loclist locations yet");
+    break;
+  default:
+    xbt_die("Unexpected form %i list for location in <%p>%s",
+      form, (void*) variable->dwarf_offset, variable->name);
+  }
+
+  return variable;
+}
+
+static void MC_dwarf_handle_variable_die(mc_object_info_t info, Dwarf_Die* die, Dwarf_Die* unit) {
+  dw_variable_t variable = MC_die_to_variable(info, die, unit, NULL);
+  if(variable==NULL)
+      return;
+  if(variable->global)
+    MC_dwarf_register_global_variable(info, variable);
+  else
+    xbt_die("Unexpected non global variable <%p>%s",
+      (void*) dwarf_dieoffset(die),
+      MC_dwarf_attr_string(die, DW_AT_name)
+      );
+}
+
 
 static void MC_dwarf_handle_children(mc_object_info_t info, Dwarf_Die* die, Dwarf_Die* unit) {
   Dwarf_Die child;
@@ -393,10 +631,11 @@ static void MC_dwarf_handle_die(mc_object_info_t info, Dwarf_Die* die, Dwarf_Die
       break;
     case DW_TAG_inlined_subroutine:
     case DW_TAG_subprogram:
-      // TODO
-      break;
+      // Skip recursive processing
+      return;
     case DW_TAG_variable:
-      // TODO
+      if (MC_USE_LIBDW_NON_FUNCTION_VARIABLES)
+        MC_dwarf_handle_variable_die(info, die, unit);
       break;
   }
 

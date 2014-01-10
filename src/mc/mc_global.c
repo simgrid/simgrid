@@ -161,7 +161,7 @@ static void dw_type_free_voidp(void *t){
   dw_type_free((dw_type_t) * (void **) t);
 }
 
-static void dw_variable_free(dw_variable_t v){
+void dw_variable_free(dw_variable_t v){
   if(v){
     xbt_free(v->name);
     xbt_free(v->type_origin);
@@ -549,7 +549,6 @@ void MC_dwarf_get_variables(mc_object_info_t info) {
     perror("popen for objdump failed");
 
   xbt_dict_t *local_variables = &result->local_variables;
-  xbt_dynar_t *global_variables = &result->global_variables;
   xbt_dict_t *types = &result->types;
 
   char *line = NULL, *origin, *abstract_origin, *current_frame = NULL, 
@@ -721,6 +720,11 @@ void MC_dwarf_get_variables(mc_object_info_t info) {
          the list of variables of the frame (local variable)
          or to the list of global variables (global variables). */
 
+      if (MC_USE_LIBDW_NON_FUNCTION_VARIABLES && parent==1) {
+        read = xbt_getline(&line, &n, fp);
+        continue;
+      }
+
       dw_variable_t var = NULL;
       
       parent_value = strdup(xbt_dynar_get_as(split, 0, char *));
@@ -862,9 +866,7 @@ void MC_dwarf_get_variables(mc_object_info_t info) {
         }else{
           var->type_origin = strdup(type_origin);
           var->global = 1;
-          index = MC_dwarf_get_variable_index(*global_variables, var->name, var->address.address);
-          if(index != -1)
-            xbt_dynar_insert_at(*global_variables, index, &var); 
+          MC_dwarf_register_global_variable(info, var);
         }
 
          xbt_free(type_origin);
@@ -1285,6 +1287,13 @@ void MC_dwarf_get_variables(mc_object_info_t info) {
   pclose(fp);
 
   MC_post_process_types(info);
+}
+
+void MC_dwarf_register_global_variable(mc_object_info_t info, dw_variable_t variable) {
+  int index = MC_dwarf_get_variable_index(info->global_variables, variable->name, variable->address.address);
+  if (index != -1)
+    xbt_dynar_insert_at(info->global_variables, index, &variable);
+  // TODO, else ?
 }
 
 static void MC_post_process_array_size(mc_object_info_t info, dw_type_t type) {
