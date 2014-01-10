@@ -761,6 +761,7 @@ void MC_dwarf_get_variables(mc_object_info_t info) {
         if(strcmp(node_type, "DW_AT_name") == 0){
 
           var = xbt_new0(s_dw_variable_t, 1);
+          var->dwarf_offset = 0;
           var->name = xbt_strdup(xbt_dynar_get_as(split, xbt_dynar_length(split) - 1, char *));
           xbt_dict_set(variables_origin, origin, xbt_strdup(var->name), NULL);
          

@@ -12,6 +12,8 @@
 #ifndef WIN32
 #include <sys/mman.h>
 #endif
+#include <elfutils/libdw.h>
+
 #include "mc/mc.h"
 #include "mc/datatypes.h"
 #include "xbt/fifo.h"
@@ -405,6 +407,7 @@ typedef struct s_dw_location_entry{
 }s_dw_location_entry_t, *dw_location_entry_t;
 
 typedef struct s_dw_variable{
+  Dwarf_Off dwarf_offset; /* Global offset of the field. */
   int global;
   char *name;
   char *type_origin;
