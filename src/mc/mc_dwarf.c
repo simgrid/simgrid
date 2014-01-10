@@ -61,37 +61,6 @@ static inline const char* MC_dwarf_die_tagname(Dwarf_Die* die) {
   return MC_dwarf_tagname(dwarf_tag(die));
 }
 
-static int MC_dwarf_tag_type(int tag) {
-  switch(tag) {
-  case DW_TAG_array_type:
-  case DW_TAG_class_type:
-  case DW_TAG_enumeration_type:
-  case DW_TAG_typedef:
-  case DW_TAG_pointer_type:
-  case DW_TAG_string_type:
-  case DW_TAG_structure_type:
-  case DW_TAG_subroutine_type:
-  case DW_TAG_union_type:
-  case DW_TAG_ptr_to_member_type:
-  case DW_TAG_set_type:
-  case DW_TAG_subrange_type:
-  case DW_TAG_base_type:
-  case DW_TAG_const_type:
-  case DW_TAG_file_type:
-  case DW_TAG_packed_type:
-  case DW_TAG_volatile_type:
-  case DW_TAG_restrict_type:
-  case DW_TAG_interface_type:
-  case DW_TAG_unspecified_type:
-  case DW_TAG_mutable_type:
-  case DW_TAG_shared_type:
-  case DW_TAG_rvalue_reference_type:
-    return 1;
-  default:
-    return 0;
-  }
-}
-
 static const char* MC_dwarf_attr_string(Dwarf_Die* die, int attribute) {
   Dwarf_Attribute attr;
   if (!dwarf_attr_integrate(die, attribute, &attr)) {
@@ -359,19 +328,44 @@ static void MC_dwarf_handle_children(mc_object_info_t info, Dwarf_Die* die, Dwar
 }
 
 static void MC_dwarf_handle_die(mc_object_info_t info, Dwarf_Die* die, Dwarf_Die* unit) {
-	int tag = dwarf_tag(die);
+  int tag = dwarf_tag(die);
 
-	// Register types:
-	if (MC_dwarf_tag_type(tag))
-		MC_dwarf_handle_type_die(info, die, unit);
+  switch (tag) {
+    case DW_TAG_array_type:
+    case DW_TAG_class_type:
+    case DW_TAG_enumeration_type:
+    case DW_TAG_typedef:
+    case DW_TAG_pointer_type:
+    case DW_TAG_string_type:
+    case DW_TAG_structure_type:
+    case DW_TAG_subroutine_type:
+    case DW_TAG_union_type:
+    case DW_TAG_ptr_to_member_type:
+    case DW_TAG_set_type:
+    case DW_TAG_subrange_type:
+    case DW_TAG_base_type:
+    case DW_TAG_const_type:
+    case DW_TAG_file_type:
+    case DW_TAG_packed_type:
+    case DW_TAG_volatile_type:
+    case DW_TAG_restrict_type:
+    case DW_TAG_interface_type:
+    case DW_TAG_unspecified_type:
+    case DW_TAG_mutable_type:
+    case DW_TAG_shared_type:
+      MC_dwarf_handle_type_die(info, die, unit);
+      break;
+    case DW_TAG_inlined_subroutine:
+    case DW_TAG_subprogram:
+      // TODO
+      break;
+    case DW_TAG_variable:
+      // TODO
+      break;
+  }
 
-	// Other tag-specific handling:
-	else switch(tag) {
-
-	}
-
-	// Recursive processing od children DIE:
-	MC_dwarf_handle_children(info, die, unit);
+  // Recursive processing of children DIE:
+  MC_dwarf_handle_children(info, die, unit);
 }
 
 void MC_dwarf_get_variables_libdw(mc_object_info_t info) {
