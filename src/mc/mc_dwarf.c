@@ -61,6 +61,8 @@ static inline const char* MC_dwarf_die_tagname(Dwarf_Die* die) {
   return MC_dwarf_tagname(dwarf_tag(die));
 }
 
+// ***** Attributes
+
 static const char* MC_dwarf_attr_string(Dwarf_Die* die, int attribute) {
   Dwarf_Attribute attr;
   if (!dwarf_attr_integrate(die, attribute, &attr)) {
@@ -159,6 +161,40 @@ static uint64_t MC_dwarf_array_element_count(Dwarf_Die* die, Dwarf_Die* unit) {
   }
   return result;
 }
+
+// ***** Location
+
+Dwarf_Off MC_dwarf_resolve_location(unw_cursor_t* c, dw_location_t location, void* frame_pointer_address) {
+  unw_word_t res;
+  switch (location->type){
+  case e_dw_compose:
+    if (xbt_dynar_length(location->location.compose) > 1){
+      return 0; /* TODO : location list with optimizations enabled */
+    }
+    dw_location_t location_entry = xbt_dynar_get_as(location->location.compose, 0, dw_location_t);
+    switch (location_entry->type){
+    case e_dw_register:
+      unw_get_reg(c, location_entry->location.reg, &res);
+      return res;
+    case e_dw_bregister_op:
+      unw_get_reg(c, location_entry->location.breg_op.reg, &res);
+      return (Dwarf_Off) ((long)res + location_entry->location.breg_op.offset);
+      break;
+    case e_dw_fbregister_op:
+      if (frame_pointer_address != NULL)
+        return (Dwarf_Off)((char *)frame_pointer_address + location_entry->location.fbreg_op);
+      else
+        return 0;
+    default:
+      return 0; /* FIXME : implement other cases (with optimizations enabled) */
+    }
+    break;
+    default:
+      return 0;
+  }
+}
+
+// ***** dw_type_t
 
 static void MC_dwarf_fill_member_location(dw_type_t type, dw_type_t member, Dwarf_Die* child) {
   if (dwarf_hasattr(child, DW_AT_data_bit_offset)) {

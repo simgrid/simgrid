@@ -431,6 +431,8 @@ void dw_type_free(dw_type_t t);
 
 /********************************** DWARF **********************************/
 
+Dwarf_Off MC_dwarf_resolve_location(unw_cursor_t* c, dw_location_t location, void* frame_pointer_address);
+
 /********************************** Miscellaneous **********************************/
 
 typedef struct s_local_variable{

@@ -13,6 +13,8 @@
 
 #include <libunwind.h>
 
+#include "mc_private.h"
+
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_checkpoint, mc,
                                 "Logging specific to mc_checkpoint");
 
@@ -440,6 +442,8 @@ static void MC_get_hash_local(char *snapshot_hash, xbt_dynar_t stacks){
 
 }
 
+
+
 static xbt_dynar_t MC_get_local_variables_values(void *stack_context){
   
   unw_cursor_t c;
@@ -499,31 +503,7 @@ static xbt_dynar_t MC_get_local_variables_values(void *stack_context){
         entry = xbt_dynar_get_as(frame->frame_base->location.loclist, cursor, dw_location_entry_t);
         if((true_ip >= entry->lowpc) && (true_ip < entry->highpc)){
           frame_found = 1;
-          switch(entry->location->type){
-          case e_dw_compose:
-            if(xbt_dynar_length(entry->location->location.compose) > 1){
-              frame_pointer_address = NULL; /* TODO : location list with optimizations enabled */
-            }else{
-              location_entry = xbt_dynar_get_as(entry->location->location.compose, 0, dw_location_t);
-              switch(location_entry->type){
-              case e_dw_register:
-                unw_get_reg(&c, location_entry->location.reg, &res);
-                frame_pointer_address = (void*)(long)res;
-                break;
-              case e_dw_bregister_op:
-                unw_get_reg(&c, location_entry->location.breg_op.reg, &res);
-                frame_pointer_address = (void*)((long)res + location_entry->location.breg_op.offset);
-                break;
-              default:
-                frame_pointer_address = NULL; /* FIXME : implement other cases (with optimizations enabled) */
-                break;
-              }
-            }
-            break;
-          default:
-            frame_pointer_address = NULL; /* FIXME : implement other cases (with optimizations enabled) */
-            break;
-          }
+          frame_pointer_address =  (void*) MC_dwarf_resolve_location(&c, entry->location, NULL);
         }
         cursor++;
       }
@@ -551,42 +531,7 @@ static xbt_dynar_t MC_get_local_variables_values(void *stack_context){
       new_var->region= region_type;
       
       if(current_variable->address.location != NULL){
-        switch(current_variable->address.location->type){
-        case e_dw_compose:
-          if(xbt_dynar_length(current_variable->address.location->location.compose) > 1){
-            /* TODO : location list with optimizations enabled */
-          }else{
-            location_entry = xbt_dynar_get_as(current_variable->address.location->location.compose, 0, dw_location_t);
-            
-            switch(location_entry->type){
-            case e_dw_register:
-              unw_get_reg(&c, location_entry->location.reg, &res);
-              value = (long)res;
-              break;
-            case e_dw_bregister_op:
-              unw_get_reg(&c, location_entry->location.breg_op.reg, &res);
-              value = (long)res + location_entry->location.breg_op.offset;
-              break;
-            case e_dw_fbregister_op:
-              if(frame_pointer_address != NULL)
-                value = (long)((char *)frame_pointer_address + location_entry->location.fbreg_op);
-              else
-                value = 0;
-              break;
-            default:
-              value = 0; /* FIXME : implement other cases (with optimizations enabled)*/
-              break;
-            }
-
-            if(value)
-              new_var->address = (void *)value;
-            else
-              new_var->address = NULL;
-          }
-          break;
-        default :
-          break;
-        }
+        new_var->address =  MC_dwarf_resolve_location(&c, current_variable->address.location, frame_pointer_address);
       }
 
       xbt_dynar_push(variables, &new_var);
