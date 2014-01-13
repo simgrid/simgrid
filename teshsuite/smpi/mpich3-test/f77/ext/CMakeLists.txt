@@ -12,15 +12,13 @@ if(enable_smpi AND enable_smpi_MPICH3_testsuite AND SMPI_F2C)
   include_directories("${CMAKE_HOME_DIRECTORY}/include/smpi")
   include_directories("${CMAKE_CURRENT_SOURCE_DIR}/../include/")
 
-  add_executable(add1size add1size.h ../util/mtestf.f)
-#  add_executable(allocmemf allocmemf.f ../util/mtestf.f)
-#  add_executable(c2f2cf c2f2cf.f c2f2c.c ../util/mtestf.f)
-#  add_executable(ctypesinf ctypesinf.f ctypesfromc.c ../util/mtestf.f)
+#  add_executable(allocmemf allocmemf.f)
+#  add_executable(c2f2cf c2f2cf.f c2f2c.c)
+#  add_executable(ctypesinf ctypesinf.f ctypesfromc.c)
 
-  target_link_libraries(add1size  simgrid)
-#  target_link_libraries(allocmemf  simgrid)
-#  target_link_libraries(c2f2cf  simgrid)
-#  target_link_libraries(ctypesinf  simgrid)
+#  target_link_libraries(allocmemf simgrid mtest_f77)
+#  target_link_libraries(c2f2cf simgrid mtest_f77)
+#  target_link_libraries(ctypesinf simgrid mtest_f77)
 
 endif()
 

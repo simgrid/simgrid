@@ -45,3 +45,22 @@ set(txt_files
   ${CMAKE_CURRENT_SOURCE_DIR}/include/mpitestconf.h
   ${CMAKE_CURRENT_SOURCE_DIR}/include/mpitest.h
   PARENT_SCOPE)
+
+
+#build only once files used in each test (C version compiled here at root, F77 is in f77/util, and F90 in F90/util)
+
+if(WIN32)
+  set(CMAKE_C_FLAGS "-include ${CMAKE_HOME_DIRECTORY}/include/smpi/smpi_main.h")
+else()
+  set(CMAKE_C_COMPILER "${CMAKE_BINARY_DIR}/smpi_script/bin/smpicc")
+endif()
+
+set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}")
+include_directories("${CMAKE_HOME_DIRECTORY}/include/smpi")
+include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include/")
+
+#C version
+add_library(mtest_c STATIC util/mtest.c)
+
+
+
