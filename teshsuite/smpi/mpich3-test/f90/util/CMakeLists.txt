@@ -16,8 +16,9 @@ if(enable_smpi AND enable_smpi_MPICH3_testsuite AND SMPI_F90)
 
 endif()
 
+
 set(txt_files
   ${txt_files}
-  ${CMAKE_CURRENT_SOURCE_DIR}/../util/mtestf.f
+  ${CMAKE_CURRENT_SOURCE_DIR}/../util/mtestf90.f90
   PARENT_SCOPE
   )

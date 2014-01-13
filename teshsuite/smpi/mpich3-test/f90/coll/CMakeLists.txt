@@ -74,7 +74,6 @@ set(bin_files
   )
 set(txt_files
   ${txt_files}
-  ${CMAKE_CURRENT_SOURCE_DIR}/../util/mtestf90.f90
   ${CMAKE_CURRENT_SOURCE_DIR}/testlist
   PARENT_SCOPE
   )

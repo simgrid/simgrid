@@ -15,3 +15,9 @@ if(enable_smpi AND enable_smpi_MPICH3_testsuite AND SMPI_F2C)
   #F77 version of the mtest library
   add_library(mtest_f77 STATIC ../util/mtestf.f)
 endif()
+
+set(txt_files
+  ${txt_files}
+  ${CMAKE_CURRENT_SOURCE_DIR}/../util/mtestf.f
+  PARENT_SCOPE
+  )
