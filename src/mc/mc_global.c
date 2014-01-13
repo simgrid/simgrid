@@ -171,7 +171,7 @@ void dw_variable_free(dw_variable_t v){
   }
 }
 
-static void dw_variable_free_voidp(void *t){
+void dw_variable_free_voidp(void *t){
   dw_variable_free((dw_variable_t) * (void **) t);
 }
 
@@ -198,6 +198,7 @@ void MC_free_object_info(mc_object_info_t* info) {
   xbt_dict_free(&(*info)->local_variables);
   xbt_dynar_free(&(*info)->global_variables);
   xbt_dict_free(&(*info)->types);
+  xbt_dict_free(&((*info)->location_list));
   xbt_free(info);
   info = NULL;
 }
@@ -345,7 +346,7 @@ static dw_location_t MC_dwarf_get_location(xbt_dict_t location_list, char *expr)
  *  @return A map from the offset in the list (in hexadecimal string)
  *          into a location list (dynar of dw_location_entry_t).
  */
-static xbt_dict_t MC_dwarf_get_location_list(const char *elf_file){
+xbt_dict_t MC_dwarf_get_location_list(const char *elf_file){
 
   char *command = bprintf("LANG=C objdump -Wo %s", elf_file);
 
@@ -532,14 +533,22 @@ static int MC_dwarf_get_variable_index(xbt_dynar_t variables, char* var, void *a
 
 }
 
+void MC_dwarf_get_variables_legacy(mc_object_info_t info);
+
 /** \brief Fill DWARf debug infomations (types, frames, variables ...). */
 void MC_dwarf_get_variables(mc_object_info_t info) {
-  if(MC_USE_LIBDW_TYPES)
+  if (MC_USE_LIBDW) {
     MC_dwarf_get_variables_libdw(info);
+    MC_post_process_types(info);
+  } else {
+    MC_dwarf_get_variables_legacy(info);
+  }
+}
+
+void MC_dwarf_get_variables_legacy(mc_object_info_t info) {
+
   mc_object_info_t result = info;
   const char *elf_file = info->file_name;
-
-  xbt_dict_t location_list = MC_dwarf_get_location_list(elf_file);
 
   char *command = bprintf("LANG=C objdump -Wi %s", elf_file);
   
@@ -561,7 +570,7 @@ void MC_dwarf_get_variables(mc_object_info_t info) {
   size_t n = 0;
   int global_variable = 0, parent = 0, new_frame = 0, new_variable = 1, size = 0, 
     is_pointer = 0, struct_decl = 0, member_end = 0,
-    enumeration_size = 0, subrange = 0, union_decl = 0, offset = 0, index = 0;
+    enumeration_size = 0, subrange = 0, union_decl = 0, offset = 0;
   
   xbt_dynar_t split = NULL, split2 = NULL;
 
@@ -664,7 +673,7 @@ void MC_dwarf_get_variables(mc_object_info_t info) {
 
           if(strcmp(location_type, "list)") == 0){ /* Search location in location list */
 
-            frame->frame_base = MC_dwarf_get_location(location_list, xbt_dynar_get_as(split, 3, char *));
+            frame->frame_base = MC_dwarf_get_location(info->location_list, xbt_dynar_get_as(split, 3, char *));
              
           }else{
                 
@@ -719,11 +728,6 @@ void MC_dwarf_get_variables(mc_object_info_t info) {
       /* We build a dw_variable_t object and append it either to
          the list of variables of the frame (local variable)
          or to the list of global variables (global variables). */
-
-      if (MC_USE_LIBDW_NON_FUNCTION_VARIABLES && parent==1) {
-        read = xbt_getline(&line, &n, fp);
-        continue;
-      }
 
       dw_variable_t var = NULL;
       
@@ -790,7 +794,7 @@ void MC_dwarf_get_variables(mc_object_info_t info) {
               location_type = xbt_dynar_get_as(split, xbt_dynar_length(split) - 1, char *);
 
               if(strcmp(location_type, "list)") == 0){ /* Search location in location list */
-                var->address.location = MC_dwarf_get_location(location_list, xbt_dynar_get_as(split, 3, char *));
+                var->address.location = MC_dwarf_get_location(info->location_list, xbt_dynar_get_as(split, 3, char *));
               }else{
                 xbt_str_strip_spaces(line);
                 split2 = xbt_str_split(line, "(");
@@ -856,16 +860,12 @@ void MC_dwarf_get_variables(mc_object_info_t info) {
 
       if(new_variable == 1){
         
+        var->global = global_variable;
+        var->type_origin = strdup(type_origin);
         if(!global_variable){
           variable_frame = xbt_dict_get_or_null(*local_variables, current_frame);
-          var->type_origin = strdup(type_origin);
-          var->global = 0;
-          index = MC_dwarf_get_variable_index(variable_frame->variables, var->name, NULL);
-          if(index != -1)
-            xbt_dynar_insert_at(variable_frame->variables, index, &var);
+          MC_dwarf_register_non_global_variable(info, variable_frame, var);
         }else{
-          var->type_origin = strdup(type_origin);
-          var->global = 1;
           MC_dwarf_register_global_variable(info, var);
         }
 
@@ -923,13 +923,13 @@ void MC_dwarf_get_variables(mc_object_info_t info) {
       
       }
 
-    }else if(!MC_USE_LIBDW_TYPES&&(strcmp(node_type, "(DW_TAG_base_type)") == 0
+    }else if(strcmp(node_type, "(DW_TAG_base_type)") == 0
              || strcmp(node_type, "(DW_TAG_enumeration_type)") == 0
              || strcmp(node_type, "(DW_TAG_typedef)") == 0
              || strcmp(node_type, "(DW_TAG_const_type)") == 0
              || strcmp(node_type, "(DW_TAG_subroutine_type)") == 0
              || strcmp(node_type, "(DW_TAG_volatile_type)") == 0
-             || (is_pointer = !strcmp(node_type, "(DW_TAG_pointer_type)")))){
+             || (is_pointer = !strcmp(node_type, "(DW_TAG_pointer_type)"))){
 
       /* Create the and add it to the types dictionnary */
 
@@ -1282,11 +1282,8 @@ void MC_dwarf_get_variables(mc_object_info_t info) {
   xbt_dict_free(&subprograms_origin);
   xbt_free(line);
   xbt_free(command);
-  xbt_dict_free(&location_list);
 
   pclose(fp);
-
-  MC_post_process_types(info);
 }
 
 void MC_dwarf_register_global_variable(mc_object_info_t info, dw_variable_t variable) {
@@ -1294,6 +1291,23 @@ void MC_dwarf_register_global_variable(mc_object_info_t info, dw_variable_t vari
   if (index != -1)
     xbt_dynar_insert_at(info->global_variables, index, &variable);
   // TODO, else ?
+}
+
+void MC_dwarf_register_non_global_variable(mc_object_info_t info, dw_frame_t frame, dw_variable_t variable) {
+  xbt_assert(frame, "Frame is NULL");
+  int index = MC_dwarf_get_variable_index(frame->variables, variable->name, NULL);
+  if (index != -1)
+    xbt_dynar_insert_at(frame->variables, index, &variable);
+  // TODO, else ?
+}
+
+void MC_dwarf_register_variable(mc_object_info_t info, dw_frame_t frame, dw_variable_t variable) {
+  if(variable->global)
+    MC_dwarf_register_global_variable(info, variable);
+  else if(frame==NULL)
+    xbt_die("No frame for this local variable");
+  else
+    MC_dwarf_register_non_global_variable(info, frame, variable);
 }
 
 static void MC_post_process_array_size(mc_object_info_t info, dw_type_t type) {

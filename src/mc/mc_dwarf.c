@@ -33,11 +33,13 @@ static uint64_t MC_dwarf_array_element_count(Dwarf_Die* die, Dwarf_Die* unit);
 /** \brief Checks if a given tag is a (known) type tag.
  */
 static int MC_dwarf_tag_type(int tag);
-static void MC_dwarf_handle_die(mc_object_info_t info, Dwarf_Die* die, Dwarf_Die* unit);
+static void MC_dwarf_handle_die(mc_object_info_t info, Dwarf_Die* die, Dwarf_Die* unit, dw_frame_t frame);
 static void MC_dwarf_handle_type_die(mc_object_info_t info, Dwarf_Die* die, Dwarf_Die* unit);
-static void MC_dwarf_handle_children(mc_object_info_t info, Dwarf_Die* die, Dwarf_Die* unit);
-static void MC_dwarf_handle_die(mc_object_info_t info, Dwarf_Die* die, Dwarf_Die* unit);
+static void MC_dwarf_handle_children(mc_object_info_t info, Dwarf_Die* die, Dwarf_Die* unit, dw_frame_t frame);
+static void MC_dwarf_handle_variable_die(mc_object_info_t info, Dwarf_Die* die, Dwarf_Die* unit, dw_frame_t frame);
+static dw_location_t MC_dwarf_get_expression(Dwarf_Op* expr,  size_t len);
 static Dwarf_Die* MC_dwarf_resolve_die(Dwarf_Die* die, int attribute);
+static char* MC_dwarf_at_type(Dwarf_Die* die);
 
 const char* MC_dwarf_attrname(int attr) {
   switch (attr) {
@@ -72,6 +74,72 @@ static const char* MC_dwarf_attr_string(Dwarf_Die* die, int attribute) {
   }
 }
 
+/** \brief Get the linkage name (DW_AT_linkage_name or DW_AR_MIPS_linkage_name)
+ *  of a DIE. */
+static const char* MC_dwarf_at_linkage_name(Dwarf_Die* die) {
+  const char* name = MC_dwarf_attr_string(die, DW_AT_linkage_name);
+  if (!name)
+    name = MC_dwarf_attr_string(die, DW_AT_MIPS_linkage_name);
+  return name;
+}
+
+static dw_location_t MC_dwarf_resolve_location_list(mc_object_info_t info, Dwarf_Word offset) {
+  char *key = bprintf("%ld", (long) offset);
+  dw_location_t loc = xbt_new0(s_dw_location_t, 1);
+  loc->type = e_dw_loclist;
+  loc->location.loclist =  (xbt_dynar_t)xbt_dict_get_or_null(info->location_list, key);
+  if (!loc->location.loclist)
+    XBT_INFO("Key not found in loclist");
+  xbt_free(key);
+  return loc;
+}
+
+static dw_location_t MC_dwarf_get_location(Dwarf_Die* die, Dwarf_Attribute* attr, mc_object_info_t info) {
+  int form = dwarf_whatform(attr);
+  switch (form) {
+  case DW_FORM_exprloc:
+  case DW_FORM_block1: // not in the spec
+  case DW_FORM_block2:
+  case DW_FORM_block4:
+  case DW_FORM_block:
+    {
+      Dwarf_Op* expr;
+      size_t len;
+      if (dwarf_getlocation(attr, &expr, &len))
+        xbt_die("Could not read location expression");
+      return MC_dwarf_get_expression(expr, len);
+    }
+  case DW_FORM_sec_offset:
+  case DW_FORM_data2:
+  case DW_FORM_data4:
+  case DW_FORM_data8:
+    {
+      Dwarf_Word offset;
+      if (!dwarf_formudata(attr, &offset))
+        return MC_dwarf_resolve_location_list(info, offset);
+      else
+        xbt_die("Location list not found");
+    }
+    break;
+  default:
+    xbt_die("Unexpected form %i list for location in attribute %s of <%p>%s",
+      form,
+      MC_dwarf_attrname(attr->code),
+      (void*) dwarf_dieoffset(die),
+      MC_dwarf_attr_string(die, DW_AT_name));
+    return NULL;
+  }
+}
+
+static dw_location_t MC_dwarf_at_location(Dwarf_Die* die, int attribute, mc_object_info_t info) {
+  if(!dwarf_hasattr_integrate(die, attribute))
+    return xbt_new0(s_dw_location_t, 1);
+
+  Dwarf_Attribute attr;
+  dwarf_attr_integrate(die, attribute, &attr);
+  return MC_dwarf_get_location(die, &attr, info);
+}
+
 // Return a new string for the type (NULL if none)
 static char* MC_dwarf_at_type(Dwarf_Die* die) {
   Dwarf_Attribute attr;
@@ -87,8 +155,21 @@ static char* MC_dwarf_at_type(Dwarf_Die* die) {
   else return NULL;
 }
 
+static uint64_t MC_dwarf_attr_addr(Dwarf_Die* die, int attribute) {
+  Dwarf_Attribute attr;
+  if(dwarf_attr_integrate(die, attribute, &attr)==NULL)
+    return 0;
+  Dwarf_Addr value;
+  if (dwarf_formaddr(&attr, &value) == 0)
+    return (uint64_t) value;
+  else
+    return 0;
+}
+
 static uint64_t MC_dwarf_attr_uint(Dwarf_Die* die, int attribute, uint64_t default_value) {
   Dwarf_Attribute attr;
+  if (dwarf_attr_integrate(die, attribute, &attr)==NULL)
+    return default_value;
   Dwarf_Word value;
   return dwarf_formudata(dwarf_attr_integrate(die, attribute, &attr), &value) == 0 ? (uint64_t) value : default_value;
 }
@@ -295,6 +376,10 @@ static void MC_dwarf_add_members(mc_object_info_t info, Dwarf_Die* die, Dwarf_Di
       }
 
       MC_dwarf_fill_member_location(type, member, &child);
+
+      if (!member->dw_type_id) {
+        xbt_die("Missing type for member %s of <%p>%s", member->name, type->id, type->name);
+      }
 
       xbt_dynar_push(type->members, &member);
     }
@@ -569,6 +654,7 @@ static dw_variable_t MC_die_to_variable(mc_object_info_t info, Dwarf_Die* die, D
       break;
     }
   case DW_FORM_sec_offset: // type loclistptr
+  case DW_FORM_data4:
     xbt_die("Do not handle loclist locations yet");
     break;
   default:
@@ -579,31 +665,47 @@ static dw_variable_t MC_die_to_variable(mc_object_info_t info, Dwarf_Die* die, D
   return variable;
 }
 
-static void MC_dwarf_handle_variable_die(mc_object_info_t info, Dwarf_Die* die, Dwarf_Die* unit) {
-  dw_variable_t variable = MC_die_to_variable(info, die, unit, NULL);
+static void MC_dwarf_handle_variable_die(mc_object_info_t info, Dwarf_Die* die, Dwarf_Die* unit, dw_frame_t frame) {
+  dw_variable_t variable = MC_die_to_variable(info, die, unit, frame);
   if(variable==NULL)
       return;
-  if(variable->global)
-    MC_dwarf_register_global_variable(info, variable);
-  else
-    xbt_die("Unexpected non global variable <%p>%s",
-      (void*) dwarf_dieoffset(die),
-      MC_dwarf_attr_string(die, DW_AT_name)
-      );
+  MC_dwarf_register_variable(info, frame, variable);
 }
 
+static void MC_dwarf_handle_subprogram_die(mc_object_info_t info, Dwarf_Die* die, Dwarf_Die* unit, dw_frame_t parent_frame) {
+  dw_frame_t frame = xbt_new0(s_dw_frame_t, 1);
 
-static void MC_dwarf_handle_children(mc_object_info_t info, Dwarf_Die* die, Dwarf_Die* unit) {
+  frame->start = dwarf_dieoffset(die);
+
+  const char* name = MC_dwarf_at_linkage_name(die);
+  if (name==NULL)
+    name = MC_dwarf_attr_string(die, DW_AT_name);
+  frame->name = xbt_strdup(name);
+
+  // Variables are filled in the (recursive) call of MC_dwarf_handle_children:
+  frame->variables = xbt_dynar_new(sizeof(dw_variable_t), dw_variable_free_voidp);
+  frame->high_pc = (void*) MC_dwarf_attr_addr(die, DW_AT_high_pc);
+  frame->low_pc = (void*) MC_dwarf_attr_addr(die, DW_AT_low_pc);
+  frame->frame_base = MC_dwarf_at_location(die, DW_AT_frame_base, info);
+  frame->end = -1; // This one is now useless:
+
+  // Handle children:
+  MC_dwarf_handle_children(info, die, unit, frame);
+
+  // Register it:
+  xbt_dict_set(info->local_variables, frame->name, frame, NULL);
+}
+
+static void MC_dwarf_handle_children(mc_object_info_t info, Dwarf_Die* die, Dwarf_Die* unit, dw_frame_t frame) {
   Dwarf_Die child;
   int res;
   for (res=dwarf_child(die, &child); res==0; res=dwarf_siblingof(&child,&child)) {
-    MC_dwarf_handle_die(info, &child, unit);
+    MC_dwarf_handle_die(info, &child, unit, frame);
   }
 }
 
-static void MC_dwarf_handle_die(mc_object_info_t info, Dwarf_Die* die, Dwarf_Die* unit) {
+static void MC_dwarf_handle_die(mc_object_info_t info, Dwarf_Die* die, Dwarf_Die* unit, dw_frame_t frame) {
   int tag = dwarf_tag(die);
-
   switch (tag) {
     case DW_TAG_array_type:
     case DW_TAG_class_type:
@@ -631,16 +733,16 @@ static void MC_dwarf_handle_die(mc_object_info_t info, Dwarf_Die* die, Dwarf_Die
       break;
     case DW_TAG_inlined_subroutine:
     case DW_TAG_subprogram:
-      // Skip recursive processing
+      MC_dwarf_handle_subprogram_die(info, die, unit, frame);
       return;
+    // case DW_TAG_formal_parameter:
     case DW_TAG_variable:
-      if (MC_USE_LIBDW_NON_FUNCTION_VARIABLES)
-        MC_dwarf_handle_variable_die(info, die, unit);
+      MC_dwarf_handle_variable_die(info, die, unit, frame);
       break;
   }
 
   // Recursive processing of children DIE:
-  MC_dwarf_handle_children(info, die, unit);
+  MC_dwarf_handle_children(info, die, unit, frame);
 }
 
 void MC_dwarf_get_variables_libdw(mc_object_info_t info) {
@@ -659,7 +761,7 @@ void MC_dwarf_get_variables_libdw(mc_object_info_t info) {
   while (dwarf_nextcu (dwarf, offset, &next_offset, &length, NULL, NULL, NULL) == 0) {
     Dwarf_Die die;
     if(dwarf_offdie(dwarf, offset+length, &die)!=NULL) {
-      MC_dwarf_handle_die(info, &die, &die);
+      MC_dwarf_handle_die(info, &die, &die, NULL);
     }
     offset = next_offset;
   }
@@ -667,3 +769,4 @@ void MC_dwarf_get_variables_libdw(mc_object_info_t info) {
   dwarf_end(dwarf);
   close(fd);
 }
+

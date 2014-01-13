@@ -330,12 +330,14 @@ typedef struct s_mc_object_info {
   xbt_dict_t local_variables; // xbt_dict_t<frame_name, dw_frame_t>
   xbt_dynar_t global_variables; // xbt_dynar_t<dw_variable_t>
   xbt_dict_t types; // xbt_dict_t<origin as hexadecimal string, dw_type_t>
+  xbt_dict_t location_list; // Location list (probably temporary)
 } s_mc_object_info_t, *mc_object_info_t;
 
 mc_object_info_t MC_new_object_info(void);
 mc_object_info_t MC_find_object_info(memory_map_t maps, char* name);
 void MC_free_object_info(mc_object_info_t* p);
 
+xbt_dict_t MC_dwarf_get_location_list(const char *elf_file);
 void MC_dwarf_get_variables(mc_object_info_t info);
 void MC_dwarf_get_variables_libdw(mc_object_info_t info);
 const char* MC_dwarf_attrname(int attr);
@@ -417,8 +419,6 @@ typedef struct s_dw_variable{
   }address;
 }s_dw_variable_t, *dw_variable_t;
 
-void MC_dwarf_register_global_variable(mc_object_info_t info, dw_variable_t variable);
-
 typedef struct s_dw_frame{
   char *name;
   void *low_pc;
@@ -431,6 +431,12 @@ typedef struct s_dw_frame{
 
 void dw_type_free(dw_type_t t);
 void dw_variable_free(dw_variable_t v);
+void dw_variable_free_voidp(void *t);
+
+void MC_dwarf_register_global_variable(mc_object_info_t info, dw_variable_t variable);
+void MC_register_variable(mc_object_info_t info, dw_frame_t frame, dw_variable_t variable);
+void MC_dwarf_register_non_global_variable(mc_object_info_t info, dw_frame_t frame, dw_variable_t variable);
+void MC_dwarf_register_variable(mc_object_info_t info, dw_frame_t frame, dw_variable_t variable);
 
 /********************************** DWARF **********************************/
 
@@ -447,8 +453,7 @@ typedef struct s_local_variable{
   int region;
 }s_local_variable_t, *local_variable_t;
 
-#define MC_USE_LIBDW_TYPES 1
-#define MC_USE_LIBDW_NON_FUNCTION_VARIABLES 1
+#define MC_USE_LIBDW (getenv("MC_USE_OBJDUMP") == NULL)
 
 #endif
 

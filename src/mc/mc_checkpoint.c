@@ -250,6 +250,7 @@ mc_object_info_t MC_find_object_info(memory_map_t maps, char* name) {
   result->end_got_plt = NULL;
   MC_find_object_address(maps, result);
   MC_get_plt_section(result);
+  result->location_list = MC_dwarf_get_location_list(result->file_name);
   MC_dwarf_get_variables(result);
   return result;
 }
