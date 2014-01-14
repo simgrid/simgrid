@@ -254,6 +254,12 @@ double smpi_process_simulated_elapsed(void)
 MPI_Comm smpi_process_comm_self(void)
 {
   smpi_process_data_t data = smpi_process_data();
+  if(data->comm_self==MPI_COMM_NULL){
+    MPI_Group group = smpi_group_new(1);
+    data->comm_self = smpi_comm_new(group);
+    smpi_group_set_mapping(group, smpi_process_index(), 0);
+  }
+
   return data->comm_self;
 }
 
@@ -314,12 +320,9 @@ void smpi_global_init(void)
     process_data[i]->timer = xbt_os_timer_new();
     if (MC_is_active())
       MC_ignore_heap(process_data[i]->timer, xbt_os_timer_size());
-    group = smpi_group_new(1);
-    process_data[i]->comm_self = smpi_comm_new(group);
+    process_data[i]->comm_self = MPI_COMM_NULL;
     process_data[i]->initialized = 0;
     process_data[i]->sampling = 0;
-
-    smpi_group_set_mapping(group, i, 0);
   }
   group = smpi_group_new(process_count);
   MPI_COMM_WORLD = smpi_comm_new(group);
@@ -344,8 +347,10 @@ void smpi_global_destroy(void)
   xbt_free(MPI_COMM_WORLD);
   MPI_COMM_WORLD = MPI_COMM_NULL;
   for (i = 0; i < count; i++) {
-    smpi_group_unuse(smpi_comm_group(process_data[i]->comm_self));
-    smpi_comm_destroy(process_data[i]->comm_self);
+    if(process_data[i]->comm_self!=MPI_COMM_NULL){
+      smpi_group_unuse(smpi_comm_group(process_data[i]->comm_self));
+      smpi_comm_destroy(process_data[i]->comm_self);
+    }
     xbt_os_timer_free(process_data[i]->timer);
     simcall_rdv_destroy(process_data[i]->mailbox);
     simcall_rdv_destroy(process_data[i]->mailbox_small);
