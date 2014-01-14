@@ -540,6 +540,7 @@ set(MC_SRC
   )
 
 set(headers_to_install
+  include/simgrid.h
   include/instr/instr.h
   include/msg/datatypes.h
   include/msg/msg.h
