@@ -99,7 +99,7 @@ static int dvfs(int argc, char *argv[])
 int main(int argc, char *argv[])
 {
   msg_error_t res = MSG_OK;
-
+  sg_energy_plugin_init();
   MSG_init(&argc, argv);
 
   if (argc != 3) {

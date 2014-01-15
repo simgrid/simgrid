@@ -60,22 +60,16 @@ public:
   CpuActionPtr execute(double size);
   CpuActionPtr sleep(double duration);
 
-  xbt_dynar_t getWattsRangeList();
-  double getCurrentWattsValue(double cpu_load);
-  void updateEnergy(double cpu_load);
-
   double getCurrentPowerPeak();
   double getPowerPeakAt(int pstate_index);
   int getNbPstates();
   void setPowerPeakAt(int pstate_index);
-  double getConsumedEnergy();
 
   bool isUsed();
 
   tmgr_trace_event_t p_powerEvent;
   xbt_dynar_t p_powerPeakList;				/*< List of supported CPU capacities */
   int m_pstate;								/*< Current pstate (index in the power_peak_list)*/
-  energy_cpu_cas01_t p_energy;				/*< Structure with energy-consumption data */
 };
 
 /**********
@@ -89,5 +83,4 @@ public:
   CpuCas01Action(ModelPtr model, double cost, bool failed, double power, lmm_constraint_t constraint);
 
   ~CpuCas01Action() {};
-  void updateEnergy();
 };

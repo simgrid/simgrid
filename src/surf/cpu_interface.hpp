@@ -16,6 +16,18 @@ typedef Cpu *CpuPtr;
 class CpuAction;
 typedef CpuAction *CpuActionPtr;
 
+class CpuPlugin;
+typedef CpuPlugin *CpuPluginPtr;
+
+/*************
+ * Callbacks *
+ *************/
+CpuPtr getActionCpu(CpuActionPtr action);
+
+extern surf_callback(void, CpuPtr) createCpuCallbacks;
+extern surf_callback(void, CpuPtr) deleteCpuCallbacks;
+extern surf_callback(void, CpuActionPtr) updateCpuActionCallbacks;
+
 /*********
  * Model *
  *********/
@@ -34,8 +46,7 @@ public:
  ************/
 class Cpu : public Resource {
 public:
-  Cpu(){};
-  /*Cpu(lmm_constraint_t constraint);*/
+  Cpu(){surf_callback_emit(createCpuCallbacks, this);};
   Cpu(ModelPtr model, const char *name, xbt_dict_t props,
 	  lmm_constraint_t constraint, int core, double powerPeak, double powerScale);
   Cpu(ModelPtr model, const char *name, xbt_dict_t props,
@@ -51,7 +62,6 @@ public:
   virtual double getPowerPeakAt(int pstate_index)=0;
   virtual int getNbPstates()=0;
   virtual void setPowerPeakAt(int pstate_index)=0;
-  virtual double getConsumedEnergy()=0;
 
   void addTraces(void);
   int m_core;
@@ -67,6 +77,7 @@ public:
  * Action *
  **********/
 class CpuAction : public Action {
+friend CpuPtr getActionCpu(CpuActionPtr action);
 public:
   CpuAction(){};
   CpuAction(ModelPtr model, double cost, bool failed)
@@ -77,7 +88,6 @@ public:
   virtual void setBound(double bound);
 
   void updateRemainingLazy(double now);
-  virtual void updateEnergy()=0;
   double m_bound;
 };
 

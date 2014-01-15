@@ -7,6 +7,19 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_cpu, surf,
 CpuModelPtr surf_cpu_model_pm;
 CpuModelPtr surf_cpu_model_vm;
 
+/*************
+ * Callbacks *
+ *************/
+
+CpuPtr getActionCpu(CpuActionPtr action) {
+  return static_cast<CpuPtr>(lmm_constraint_id(lmm_get_cnst_from_var
+		                	 (action->getModel()->getMaxminSystem(),
+		                	 action->getVariable(), 0)));
+}
+surf_callback(void, CpuPtr) createCpuCallbacks;
+surf_callback(void, CpuPtr) deleteCpuCallbacks;
+surf_callback(void, CpuActionPtr) updateCpuActionCallbacks;
+
 /*********
  * Model *
  *********/
@@ -31,7 +44,7 @@ void CpuModel::updateActionsStateLazy(double now, double /*delta*/)
     action->finish();
     XBT_CDEBUG(surf_kernel, "Action %p finished", action);
 
-    action->updateEnergy();
+    surf_callback_emit(updateCpuActionCallbacks, action);
 
     /* set the remains to 0 due to precision problems when updating the remaining amount */
     action->setRemains(0);
@@ -102,7 +115,8 @@ void CpuModel::updateActionsStateFull(double now, double delta)
       action->finish();
       action->setState(SURF_ACTION_DONE);
     }
-    action->updateEnergy();
+    surf_callback_emit(updateCpuActionCallbacks, action);
+    //action->updateEnergy();
   }
 
   return;
@@ -120,7 +134,7 @@ Cpu::Cpu(ModelPtr model, const char *name, xbt_dict_t props,
  , m_powerScale(powerScale)
  , p_constraintCore(NULL)
  , p_constraintCoreId(NULL)
-{}
+{surf_callback_emit(createCpuCallbacks, this);}
 
 Cpu::Cpu(ModelPtr model, const char *name, xbt_dict_t props,
 		 lmm_constraint_t constraint, int core, double powerPeak, double powerScale)
@@ -129,6 +143,7 @@ Cpu::Cpu(ModelPtr model, const char *name, xbt_dict_t props,
  , m_powerPeak(powerPeak)
  , m_powerScale(powerScale)
 {
+  surf_callback_emit(createCpuCallbacks, this);
   /* At now, we assume that a VM does not have a multicore CPU. */
   if (core > 1)
     xbt_assert(model == surf_cpu_model_pm);
@@ -149,6 +164,7 @@ Cpu::Cpu(ModelPtr model, const char *name, xbt_dict_t props,
 }
 
 Cpu::~Cpu(){
+  surf_callback_emit(deleteCpuCallbacks, this);
   if (p_constraintCoreId){
     for (int i = 0; i < m_core; i++) {
 	  xbt_free(p_constraintCoreId[i]);

@@ -69,7 +69,6 @@ public:
   virtual double getPowerPeakAt(int pstate_index);
   virtual int getNbPstates();
   virtual void setPowerPeakAt(int pstate_index);
-  virtual double getConsumedEnergy();
 
   virtual StoragePtr findStorageOnMountList(const char* storage);
   virtual xbt_dict_t getStorageList();

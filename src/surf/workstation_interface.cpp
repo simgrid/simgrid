@@ -123,11 +123,6 @@ void Workstation::setPowerPeakAt(int pstate_index)
 	p_cpu->setPowerPeakAt(pstate_index);
 }
 
-double Workstation::getConsumedEnergy()
-{
-  return p_cpu->getConsumedEnergy();
-}
-
 xbt_dict_t Workstation::getProperties()
 {
   return p_cpu->getProperties();

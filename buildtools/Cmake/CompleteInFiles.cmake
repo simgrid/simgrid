@@ -73,6 +73,7 @@ include(TestBigEndian)
 TEST_BIG_ENDIAN(BIGENDIAN)
 
 include(FindGraphviz)
+include(FindLibSigc++)
 
 set(HAVE_GTNETS 0)
 if(enable_gtnets)

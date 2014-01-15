@@ -82,6 +82,10 @@ if(HAVE_GRAPHVIZ)
   endif()
 endif()
 
+if(HAVE_LIBSIGC++)
+  SET(SIMGRID_DEP "${SIMGRID_DEP} -lsigc-2.0")	  
+endif()
+
 if(HAVE_GTNETS)
   SET(SIMGRID_DEP "${SIMGRID_DEP} -lgtnets")
 endif()

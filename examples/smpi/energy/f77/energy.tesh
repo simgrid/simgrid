@@ -1,10 +1,13 @@
 p Test smpi bindings for dvfs functions (Fortran 77 example)
-$ ../../../smpi_script/bin/smpirun -np 2 -hostfile ${srcdir:=.}/hostfile  -platform ${srcdir:=.}/platform.xml --cfg=smpi/cpu_threshold:-1 ${bindir:=.}/f77/sef
+$ ../../../smpi_script/bin/smpirun -np 2 -hostfile ${srcdir:=.}/hostfile  -platform ${srcdir:=.}/platform.xml --cfg=smpi/cpu_threshold:-1 ${bindir:=.}/f77/sef --cfg=plugin:Energy
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'maxmin/precision' to '1e-9'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'SMPI'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/TCP_gamma' to '4194304'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'smpi/cpu_threshold' to '-1'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'plugin' to 'Energy'
 > [0.000000] [surf_config/INFO] Switching workstation model to compound since you changed the network and/or cpu model(s)
+> [80.000000] [surf_energy/INFO] Total energy (Joules) of host MyHost1: 12900.000000
+> [80.000000] [surf_energy/INFO] Total energy (Joules) of host MyHost2: 2000.000000
 >  [  0.] [rank  0] 3 pstates available
 >  [  0.] [rank  1] 1 pstates available
 >  [  0.] [rank  0] Power:   100000000.

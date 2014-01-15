@@ -16,6 +16,20 @@
 #include "simgrid/platf_interface.h"
 #include "surf/surf.h"
 #include "surf/surf_private.h"
+#include "internal_config.h"
+
+#define LIBSIGC ok
+#ifdef LIBSIGC
+#include <sigc++/sigc++.h>
+#define surf_callback(arg1, ...)  sigc::signal<arg1,__VA_ARGS__>
+#define surf_callback_connect(callback, fun_ptr) callback.connect(sigc::ptr_fun(fun_ptr))
+#define surf_callback_emit(callback, ...) callback.emit(__VA_ARGS__)
+#else
+#include <boost/signals2.hpp>
+#define surf_callback(arg1, ...)  boost::signals2::signal<arg1(__VA_ARGS__)>
+#define surf_callback_connect(callback, fun_ptr) callback.connect(fun_ptr)
+#define surf_callback_emit(callback, ...) callback(__VA_ARGS__)
+#endif
 
 extern tmgr_history_t history;
 #define NO_MAX_DURATION -1.0
@@ -77,6 +91,7 @@ typedef boost::intrusive::list<Action, boost::intrusive::base_hook<boost::intrus
 typedef ActionLmmList* ActionLmmListPtr;
 typedef boost::intrusive::list_base_hook<boost::intrusive::tag<lmmTag> > actionLmmHook;
 
+
 enum heap_action_type{
   LATENCY = 100,
   MAX_DURATION,
@@ -94,7 +109,6 @@ XBT_PUBLIC_DATA(xbt_dict_t) trace_connect_list_power;
 XBT_PUBLIC_DATA(xbt_dict_t) trace_connect_list_link_avail; 
 XBT_PUBLIC_DATA(xbt_dict_t) trace_connect_list_bandwidth; 
 XBT_PUBLIC_DATA(xbt_dict_t) trace_connect_list_latency;
-
 
 /*********
  * Model *

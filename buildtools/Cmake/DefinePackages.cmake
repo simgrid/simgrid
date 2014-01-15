@@ -40,6 +40,7 @@ set(EXTRA_DIST
   src/smpi/colls/coll_tuned_topo.h
   src/smpi/private.h
   src/smpi/smpi_mpi_dt_private.h
+  src/surf/plugins/energy.hpp
   src/surf/cpu_interface.hpp
   src/surf/cpu_ti.hpp
   src/surf/cpu_cas01.hpp
@@ -299,6 +300,7 @@ set(NS3_SRC
   )
 
 set(SURF_SRC
+  src/surf/plugins/energy.cpp
   src/surf/cpu_interface.cpp
   src/surf/cpu_ti.cpp
   src/surf/cpu_cas01.cpp
@@ -550,6 +552,7 @@ set(headers_to_install
   include/simgrid/modelchecker.h
   include/simgrid/platf.h
   include/simgrid/platf_generator.h
+  include/simgrid/plugins.h
   include/simgrid/simix.h
   include/smpi/mpi.h
   include/smpi/smpi.h
@@ -991,6 +994,7 @@ set(CMAKE_SOURCE_FILES
   buildtools/Cmake/Modules/FindGFortran.cmake
   buildtools/Cmake/Modules/FindGTnets.cmake
   buildtools/Cmake/Modules/FindGraphviz.cmake
+  buildtools/Cmake/Modules/FindLibSigc++.cmake
   buildtools/Cmake/Modules/FindLibunwind.cmake
   buildtools/Cmake/Modules/FindLua51Simgrid.cmake
   buildtools/Cmake/Modules/FindNS3.cmake

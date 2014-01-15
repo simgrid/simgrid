@@ -111,6 +111,27 @@ static void sg_config_cmd_line(int *argc, char **argv)
     sg_cfg_exit_early();
 }
 
+/* callback of the plugin variable */
+static void _sg_cfg_cb__plugin(const char *name, int pos)
+{
+  char *val;
+
+  XBT_VERB("PLUGIN");
+  xbt_assert(_sg_cfg_init_status < 2,
+              "Cannot load a plugin after the initialization");
+
+  val = xbt_cfg_get_string(_sg_cfg_set, name);
+
+  if (!strcmp(val, "help")) {
+    model_help("plugin", surf_plugin_description);
+    sg_cfg_exit_early();
+  }
+
+  /* New Module missing */
+  int plugin_id = find_model_description(surf_plugin_description, val);
+  surf_plugin_description[plugin_id].model_init_preparse();
+}
+
 /* callback of the workstation/model variable */
 static void _sg_cfg_cb__workstation_model(const char *name, int pos)
 {
@@ -435,6 +456,21 @@ void sg_config_init(int *argc, char **argv)
 
   /* Create the configuration support */
   if (_sg_cfg_init_status == 0) { /* Only create stuff if not already inited */
+
+	/* Plugins configuration */
+
+	sprintf(description,
+	        "The plugins. Possible values: ");
+	      p = description;
+	while (*(++p) != '\0');
+	for (i = 0; surf_plugin_description[i].name; i++)
+	  p += sprintf(p, "%s%s", (i == 0 ? "" : ", "),
+	               surf_plugin_description[i].name);
+	sprintf(p,
+	        ".\n       (use 'help' as a value to see the long description of each plugin)");
+	xbt_cfg_register(&_sg_cfg_set, "plugin", description,
+	                 xbt_cfgelm_string, 1, 1, &_sg_cfg_cb__plugin, NULL);
+
     sprintf(description,
             "The model to use for the CPU. Possible values: ");
     p = description;

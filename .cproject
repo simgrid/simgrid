@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<?fileVersion 5.0.0?>
-
-<cproject storage_type_id="org.eclipse.cdt.core.XmlProjectDescriptionStorage2">
+<?fileVersion 5.0.0?><cproject storage_type_id="org.eclipse.cdt.core.XmlProjectDescriptionStorage2">
 	<storageModule moduleId="org.eclipse.cdt.core.settings">
 		<cconfiguration id="cdt.managedbuild.toolchain.gnu.base.1053321950">
 			<storageModule externalCElementFile="cdt.managedbuild.toolchain.gnu.base.1053321950_org.eclipse.cdt.core.settings" id="cdt.managedbuild.toolchain.gnu.base.1053321950" name="Default"/>

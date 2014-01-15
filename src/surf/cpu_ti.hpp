@@ -71,7 +71,6 @@ public:
   tmgr_trace_t p_powerTrace;
 };
 
-
 /*********
  * Model *
  *********/
@@ -125,15 +124,10 @@ public:
   CpuActionPtr sleep(double duration);
   double getAvailableSpeed();
 
-  xbt_dynar_t getWattsRangeList() {THROW_UNIMPLEMENTED;};
-  double getCurrentWattsValue(double /*cpu_load*/) {THROW_UNIMPLEMENTED;};
-  void updateEnergy(double /*cpu_load*/) {THROW_UNIMPLEMENTED;};
-
   double getCurrentPowerPeak() {THROW_UNIMPLEMENTED;};
   double getPowerPeakAt(int /*pstate_index*/) {THROW_UNIMPLEMENTED;};
   int getNbPstates() {THROW_UNIMPLEMENTED;};
   void setPowerPeakAt(int /*pstate_index*/) {THROW_UNIMPLEMENTED;};
-  double getConsumedEnergy() {THROW_UNIMPLEMENTED;};
 
   CpuTiTgmrPtr p_availTrace;       /*< Structure with data needed to integrate trace file */
   tmgr_trace_event_t p_stateEvent;       /*< trace file with states events (ON or OFF) */
@@ -177,7 +171,6 @@ public:
   double getRemains();
   void setAffinity(CpuPtr /*cpu*/, unsigned long /*mask*/) {};
   void setBound(double /*bound*/) {};
-  void updateEnergy() {};
 
   CpuTiPtr p_cpu;
   int m_indexHeap;

@@ -14,3 +14,4 @@ $ $SG_TEST_EXENV energy/e2/e2$EXEEXT ${srcdir:=.}/energy/e2/platform_e2.xml ${sr
 > [  9.000000] (1:dvfs_test@MyHost1) Task3 (sleep) simulation time: 4.000000e+00
 > [  9.000000] (1:dvfs_test@MyHost1) Total energy (Joules): 1220.000000
 > [  9.000000] (0:@) Total simulation time: 9.000000e+00
+> [  9.000000] (0:@) Total energy (Joules) of host MyHost1: 1220.000000

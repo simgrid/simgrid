@@ -19,6 +19,7 @@
 #include "surf/surf_routing.h"
 #include "simgrid/platf_interface.h"
 #include "simgrid/datatypes.h"
+#include "simgrid/plugins.h"
 
 SG_BEGIN_DECL()
 /* Actions and models are highly connected structures... */
@@ -299,7 +300,6 @@ XBT_PUBLIC(surf_model_t) surf_resource_model(const void *host, int level);
 /* Implementations of model object */
 /**************************************/
 
-
 /** \ingroup SURF_models
  *  \brief The CPU model object for the physical machine layer
  */
@@ -335,6 +335,11 @@ XBT_PUBLIC(void) surf_cpu_model_init_ti(void);
  *  These optimization modes can be set using --cfg=cpu/optim:... and --cfg=network/optim:...
  */
 XBT_PUBLIC_DATA(s_surf_model_description_t) surf_optimization_mode_description[];
+
+/** \ingroup SURF_plugins
+ *  \brief The list of all available surf plugins
+ */
+XBT_PUBLIC_DATA(s_surf_model_description_t) surf_plugin_description[];
 
 /** \ingroup SURF_models
  *  \brief The list of all available cpu model models

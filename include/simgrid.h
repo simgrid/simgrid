@@ -15,7 +15,7 @@
 #include <simgrid/platf_generator.h>
 #include <simgrid/platf.h>
 #include <simgrid/simix.h>
-
+#include <simgrid/plugins.h>
 
 // SG_BEGIN_DECL()
 // nothing

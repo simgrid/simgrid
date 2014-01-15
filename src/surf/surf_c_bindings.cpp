@@ -4,6 +4,7 @@
 #include "network_interface.hpp"
 #include "surf_routing_cluster.hpp"
 #include "instr/instr_private.h"
+#include "plugins/energy.hpp"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_kernel);
 
@@ -334,7 +335,9 @@ void surf_workstation_set_power_peak_at(surf_resource_t resource, int pstate_ind
 }
 
 double surf_workstation_get_consumed_energy(surf_resource_t resource){
-  return get_casted_workstation(resource)->getConsumedEnergy();
+  xbt_assert(surf_energy!=NULL, "The Energy plugin is not active.");
+  std::map<CpuPtr, CpuEnergyPtr>::iterator cpuIt = surf_energy->find(get_casted_workstation(resource)->p_cpu);
+  return cpuIt->second->getConsumedEnergy();
 }
 
 xbt_dict_t surf_workstation_get_storage_list(surf_resource_t workstation){

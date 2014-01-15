@@ -84,6 +84,13 @@ xbt_dynar_t surf_path = NULL;
 xbt_dynar_t host_that_restart = NULL;
 xbt_dict_t watched_hosts_lib;
 
+s_surf_model_description_t surf_plugin_description[] = {
+		  {"Energy",
+		   "Cpu energy consumption.",
+		   sg_energy_plugin_init},
+		  {NULL, NULL,  NULL}      /* this array must be NULL terminated */
+};
+
 /* Don't forget to update the option description in smx_config when you change this */
 s_surf_model_description_t surf_network_model_description[] = {
   {"LV08",
