@@ -18,7 +18,6 @@
 #include "surf/surf_private.h"
 #include "internal_config.h"
 
-#define LIBSIGC ok
 #ifdef LIBSIGC
 #include <sigc++/sigc++.h>
 #define surf_callback(arg1, ...)  sigc::signal<arg1,__VA_ARGS__>
