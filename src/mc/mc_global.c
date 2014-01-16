@@ -195,7 +195,7 @@ void MC_free_object_info(mc_object_info_t* info) {
   xbt_dynar_free(&(*info)->global_variables);
   xbt_dict_free(&(*info)->types);
   xbt_free(info);
-  info = NULL;
+  *info = NULL;
 }
 
 /*************************************************************************/
@@ -1160,6 +1160,7 @@ void MC_modelcheck_liveness(){
 void MC_exit(void)
 {
   xbt_free(mc_time);
+
   MC_memory_exit();
   //xbt_abort();
 }
