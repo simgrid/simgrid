@@ -165,8 +165,7 @@ static const char* MC_dwarf_at_linkage_name(Dwarf_Die* die) {
  *  \return MC specific representation of the location list represented by the given attribute
  *  of the given die
  */
-static dw_location_t MC_dwarf_get_location_list_libdw(Dwarf_Die* die, Dwarf_Attribute* attr) {
-
+static dw_location_t MC_dwarf_get_location_list(Dwarf_Die* die, Dwarf_Attribute* attr) {
 
   dw_location_t location = xbt_new0(s_dw_location_t, 1);
   location->type = e_dw_loclist;
@@ -229,7 +228,7 @@ static dw_location_t MC_dwarf_get_location(Dwarf_Die* die, Dwarf_Attribute* attr
   case DW_FORM_data4:
   case DW_FORM_data8:
     {
-      return MC_dwarf_get_location_list_libdw(die, attr);
+      return MC_dwarf_get_location_list(die, attr);
     }
     break;
 
@@ -252,7 +251,7 @@ static dw_location_t MC_dwarf_get_location(Dwarf_Die* die, Dwarf_Attribute* attr
  *  \return MC specific representation of the location represented by the given attribute
  *  of the given die
  */
-static dw_location_t MC_dwarf_at_location(Dwarf_Die* die, int attribute, mc_object_info_t info) {
+static dw_location_t MC_dwarf_at_location(Dwarf_Die* die, int attribute) {
   if(!dwarf_hasattr_integrate(die, attribute))
     return xbt_new0(s_dw_location_t, 1);
 
@@ -816,7 +815,7 @@ static void MC_dwarf_handle_subprogram_die(mc_object_info_t info, Dwarf_Die* die
   frame->variables = xbt_dynar_new(sizeof(dw_variable_t), dw_variable_free_voidp);
   frame->high_pc = (void*) MC_dwarf_attr_addr(die, DW_AT_high_pc);
   frame->low_pc = (void*) MC_dwarf_attr_addr(die, DW_AT_low_pc);
-  frame->frame_base = MC_dwarf_at_location(die, DW_AT_frame_base, info);
+  frame->frame_base = MC_dwarf_at_location(die, DW_AT_frame_base);
   frame->end = -1; // This one is now useless:
 
   // Handle children:

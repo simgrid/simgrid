@@ -332,7 +332,6 @@ mc_object_info_t MC_new_object_info(void);
 mc_object_info_t MC_find_object_info(memory_map_t maps, char* name);
 void MC_free_object_info(mc_object_info_t* p);
 
-xbt_dict_t MC_dwarf_get_location_list(const char *elf_file);
 void MC_dwarf_get_variables(mc_object_info_t info);
 void MC_dwarf_get_variables_libdw(mc_object_info_t info);
 const char* MC_dwarf_attrname(int attr);
