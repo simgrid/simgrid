@@ -20,27 +20,81 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_dwarf, mc, "DWARF processing");
 /** \brief The default DW_TAG_lower_bound for a given DW_AT_language.
  *
  *  The default for a given language is defined in the DWARF spec.
+ *
+ *  \param language consant as defined by the DWARf spec
  */
 static uint64_t MC_dwarf_default_lower_bound(int lang);
 
+/** \brief Computes the the element_count of a DW_TAG_enumeration_type DIE
+ *
+ * This is the number of elements in a given array dimension.
+ *
+ * A reference of the compilation unit (DW_TAG_compile_unit) is
+ * needed because the default lower bound (when there is no DW_AT_lower_bound)
+ * depends of the language of the compilation unit (DW_AT_language).
+ *
+ * \param die  DIE for the DW_TAG_enumeration_type or DW_TAG_subrange_type
+ * \param unit DIE of the DW_TAG_compile_unit
+ */
 static uint64_t MC_dwarf_subrange_element_count(Dwarf_Die* die, Dwarf_Die* unit);
 
-/** \brief Computes the number of elements of a given DW_TAG_array_type
+/** \brief Computes the number of elements of a given DW_TAG_array_type.
  *
+ * \param die DIE for the DW_TAG_array_type
  */
 static uint64_t MC_dwarf_array_element_count(Dwarf_Die* die, Dwarf_Die* unit);
 
-/** \brief Checks if a given tag is a (known) type tag.
+/** \brief Process a DIE
+ *
+ *  \param info the resulting object fot the library/binary file (output)
+ *  \param die  the current DIE
+ *  \param unit the DIE of the compile unit of the current DIE
+ *  \param frame containg frame if any
  */
-static int MC_dwarf_tag_type(int tag);
 static void MC_dwarf_handle_die(mc_object_info_t info, Dwarf_Die* die, Dwarf_Die* unit, dw_frame_t frame);
+
+/** \brief Process a type DIE
+ */
 static void MC_dwarf_handle_type_die(mc_object_info_t info, Dwarf_Die* die, Dwarf_Die* unit);
+
+/** \brief Calls MC_dwarf_handle_die on all childrend of the given die
+ *
+ *  \param info the resulting object fot the library/binary file (output)
+ *  \param die  the current DIE
+ *  \param unit the DIE of the compile unit of the current DIE
+ *  \param frame containg frame if any
+ */
 static void MC_dwarf_handle_children(mc_object_info_t info, Dwarf_Die* die, Dwarf_Die* unit, dw_frame_t frame);
+
+/** \brief Handle a variable (DW_TAG_variable or other)
+ *
+ *  \param info the resulting object fot the library/binary file (output)
+ *  \param die  the current DIE
+ *  \param unit the DIE of the compile unit of the current DIE
+ *  \param frame containg frame if any
+ */
 static void MC_dwarf_handle_variable_die(mc_object_info_t info, Dwarf_Die* die, Dwarf_Die* unit, dw_frame_t frame);
+
+/** \brief Convert a libdw DWARF expression into a MC representation of the location
+ *
+ *  \param expr array of DWARf operations
+ *  \param len  number of elements
+ *  \return a new MC expression
+ */
 static dw_location_t MC_dwarf_get_expression(Dwarf_Op* expr,  size_t len);
-static Dwarf_Die* MC_dwarf_resolve_die(Dwarf_Die* die, int attribute);
+
+/** \brief Get the DW_TAG_type of the DIE
+ *
+ *  \param die DIE
+ *  \return DW_TAG_type attribute as a new string (NULL if none)
+ */
 static char* MC_dwarf_at_type(Dwarf_Die* die);
 
+/** \brief Get the name of an attribute (DW_AT_*) from its code
+ *
+ *  \param attr attribute code (see the DWARF specification)
+ *  \return name of the attribute
+ */
 const char* MC_dwarf_attrname(int attr) {
   switch (attr) {
 #include "mc_dwarf_attrnames.h"
@@ -49,6 +103,11 @@ const char* MC_dwarf_attrname(int attr) {
   }
 }
 
+/** \brief Get the name of a dwarf tag (DW_TAG_*) from its code
+ *
+ *  \param tag tag code (see the DWARF specification)
+ *  \return name of the tag
+ */
 const char* MC_dwarf_tagname(int tag) {
   switch (tag) {
 #include "mc_dwarf_tagnames.h"
@@ -59,12 +118,23 @@ const char* MC_dwarf_tagname(int tag) {
   }
 }
 
+/** \brief Get the name of the tag of a given DIE
+ *
+ *  \param die DIE
+ *  \return name of the tag of this DIE
+ */
 static inline const char* MC_dwarf_die_tagname(Dwarf_Die* die) {
   return MC_dwarf_tagname(dwarf_tag(die));
 }
 
 // ***** Attributes
 
+/** \brief Get an attribute of a given DIE as a string
+ *
+ *  \param the DIE
+ *  \param attribute attribute
+ *  \return value of the given attribute of the given DIE
+ */
 static const char* MC_dwarf_attr_string(Dwarf_Die* die, int attribute) {
   Dwarf_Attribute attr;
   if (!dwarf_attr_integrate(die, attribute, &attr)) {
@@ -74,8 +144,13 @@ static const char* MC_dwarf_attr_string(Dwarf_Die* die, int attribute) {
   }
 }
 
-/** \brief Get the linkage name (DW_AT_linkage_name or DW_AR_MIPS_linkage_name)
- *  of a DIE. */
+/** \brief Get the linkage name of a DIE.
+ *
+ *  Use either DW_AT_linkage_name or DW_AR_MIPS_linkage_name.
+ *
+ *  \param DIE
+ *  \return linkage name of the given DIE (or NULL)
+ * */
 static const char* MC_dwarf_at_linkage_name(Dwarf_Die* die) {
   const char* name = MC_dwarf_attr_string(die, DW_AT_linkage_name);
   if (!name)
@@ -83,7 +158,13 @@ static const char* MC_dwarf_at_linkage_name(Dwarf_Die* die) {
   return name;
 }
 
-/** \brief Create a location_list from a given attribute */
+/** \brief Create a location list from a given attribute
+ *
+ *  \param die the DIE
+ *  \param attr the attribute
+ *  \return MC specific representation of the location list represented by the given attribute
+ *  of the given die
+ */
 static dw_location_t MC_dwarf_get_location_list_libdw(Dwarf_Die* die, Dwarf_Attribute* attr) {
 
 
@@ -115,9 +196,20 @@ static dw_location_t MC_dwarf_get_location_list_libdw(Dwarf_Die* die, Dwarf_Attr
   }
 }
 
+/** \brief Get the location expression or location list from an attribute
+ *
+ *  Processes direct expressions as well as location lists.
+ *
+ *  \param die the DIE
+ *  \param attr the attribute
+ *  \return MC specific representation of the location represented by the given attribute
+ *  of the given die
+ */
 static dw_location_t MC_dwarf_get_location(Dwarf_Die* die, Dwarf_Attribute* attr, mc_object_info_t info) {
   int form = dwarf_whatform(attr);
   switch (form) {
+
+  // The attribute is an DWARF location expression:
   case DW_FORM_exprloc:
   case DW_FORM_block1: // not in the spec
   case DW_FORM_block2:
@@ -130,6 +222,8 @@ static dw_location_t MC_dwarf_get_location(Dwarf_Die* die, Dwarf_Attribute* attr
         xbt_die("Could not read location expression");
       return MC_dwarf_get_expression(expr, len);
     }
+
+  // The attribute is a reference to a location list entry:
   case DW_FORM_sec_offset:
   case DW_FORM_data2:
   case DW_FORM_data4:
@@ -138,6 +232,7 @@ static dw_location_t MC_dwarf_get_location(Dwarf_Die* die, Dwarf_Attribute* attr
       return MC_dwarf_get_location_list_libdw(die, attr);
     }
     break;
+
   default:
     xbt_die("Unexpected form %i list for location in attribute %s of <%p>%s",
       form,
@@ -148,6 +243,15 @@ static dw_location_t MC_dwarf_get_location(Dwarf_Die* die, Dwarf_Attribute* attr
   }
 }
 
+/** \brief Get the location expression or location list from an attribute
+ *
+ *  Processes direct expressions as well as location lists.
+ *
+ *  \param die the DIE
+ *  \param attribute the attribute code
+ *  \return MC specific representation of the location represented by the given attribute
+ *  of the given die
+ */
 static dw_location_t MC_dwarf_at_location(Dwarf_Die* die, int attribute, mc_object_info_t info) {
   if(!dwarf_hasattr_integrate(die, attribute))
     return xbt_new0(s_dw_location_t, 1);
@@ -157,7 +261,6 @@ static dw_location_t MC_dwarf_at_location(Dwarf_Die* die, int attribute, mc_obje
   return MC_dwarf_get_location(die, &attr, info);
 }
 
-// Return a new string for the type (NULL if none)
 static char* MC_dwarf_at_type(Dwarf_Die* die) {
   Dwarf_Attribute attr;
   if (dwarf_hasattr_integrate(die, DW_AT_type)) {
@@ -235,6 +338,9 @@ static uint64_t MC_dwarf_default_lower_bound(int lang) {
 }
 
 static uint64_t MC_dwarf_subrange_element_count(Dwarf_Die* die, Dwarf_Die* unit) {
+  xbt_assert(dwarf_tag(die)==DW_TAG_enumeration_type ||dwarf_tag(die)==DW_TAG_subrange_type,
+      "MC_dwarf_subrange_element_count called with DIE of type %s", MC_dwarf_die_tagname(die));
+
   // Use DW_TAG_count if present:
   if (dwarf_hasattr_integrate(die, DW_AT_count)) {
     return MC_dwarf_attr_uint(die, DW_AT_count, 0);
@@ -403,6 +509,13 @@ static void MC_dwarf_add_members(mc_object_info_t info, Dwarf_Die* die, Dwarf_Di
   }
 }
 
+/** \brief Create a MC type object from a DIE
+ *
+ *  \param info current object info object
+ *  \param DIE (for a given type);
+ *  \param unit compilation unit of the current DIE
+ *  \return MC representation of the type
+ */
 static dw_type_t MC_dwarf_die_to_type(mc_object_info_t info, Dwarf_Die* die, Dwarf_Die* unit) {
 
   dw_type_t type = xbt_new0(s_dw_type_t, 1);
