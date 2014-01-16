@@ -6,12 +6,14 @@
 
 #define _GNU_SOURCE
 #include <string.h>
+#include <link.h>
 #include "mc_private.h"
 #include "xbt/module.h"
 
 #include "../simix/smx_private.h"
 
 #include <libunwind.h>
+#include <libelf.h>
 
 #include "mc_private.h"
 
@@ -21,7 +23,6 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_checkpoint, mc,
 char *libsimgrid_path;
 
 static void MC_find_object_address(memory_map_t maps, mc_object_info_t result);
-static void MC_get_plt_section(mc_object_info_t info);
 
 /************************************  Free functions **************************************/
 /*****************************************************************************************/
@@ -244,12 +245,7 @@ mc_object_info_t MC_find_object_info(memory_map_t maps, char* name) {
   result->file_name = xbt_strdup(name);
   result->start_data = NULL;
   result->start_text = NULL;
-  result->start_plt = NULL;
-  result->end_plt = NULL;
-  result->start_got_plt = NULL;
-  result->end_got_plt = NULL;
   MC_find_object_address(maps, result);
-  MC_get_plt_section(result);
   result->location_list = MC_dwarf_get_location_list(result->file_name);
   MC_dwarf_get_variables(result);
   return result;
@@ -257,6 +253,7 @@ mc_object_info_t MC_find_object_info(memory_map_t maps, char* name) {
 
 /** \brief Fills the position of the .bss and .data sections. */
 static void MC_find_object_address(memory_map_t maps, mc_object_info_t result) {
+
   unsigned int i = 0;
   s_map_region_t reg;
   const char* name = basename(result->file_name);
@@ -276,74 +273,6 @@ static void MC_find_object_address(memory_map_t maps, mc_object_info_t result) {
   xbt_assert(result->file_name);
   xbt_assert(result->start_data);
   xbt_assert(result->start_text);
-
-  MC_get_plt_section(result);
-}
-
-/** \brief Fills the position of the .plt and .got.plt sections. */
-static void MC_get_plt_section(mc_object_info_t info){
-
-  FILE *fp;
-  char *line = NULL;            /* Temporal storage for each line that is readed */
-  ssize_t read;                 /* Number of bytes readed */
-  size_t n = 0;                 /* Amount of bytes to read by xbt_getline */
-
-  char *lfields[7];
-  int i, plt_found = 0;
-  unsigned long int size, offset;
-
-  char *command = bprintf("LANG=C objdump --section-headers %s", info->file_name);
-
-  fp = popen(command, "r");
-
-  if(fp == NULL){
-    perror("popen failed");
-    xbt_abort();
-  }
-
-  while ((read = xbt_getline(&line, &n, fp)) != -1 && plt_found != 2) {
-
-    if(n == 0)
-      continue;
-
-    /* Wipeout the new line character */
-    line[read - 1] = '\0';
-
-    lfields[0] = strtok(line, " ");
-
-    if(lfields[0] == NULL)
-      continue;
-
-    if(strcmp(lfields[0], "Sections:") == 0 || strcmp(lfields[0], "Idx") == 0 || strncmp(lfields[0], info->file_name, strlen(info->file_name)) == 0)
-      continue;
-
-    for (i = 1; i < 7 && lfields[i - 1] != NULL; i++) {
-      lfields[i] = strtok(NULL, " ");
-    }
-
-    if(i>=6){
-      if(strcmp(lfields[1], ".plt") == 0){
-        size = strtoul(lfields[2], NULL, 16);
-        offset = strtoul(lfields[5], NULL, 16);
-        info->start_plt = (char *) info->start_text + offset;
-        info->end_plt = (char *) info->start_plt + size;
-        plt_found++;
-      }else if(strcmp(lfields[1], ".got.plt") == 0){
-        size = strtoul(lfields[2], NULL, 16);
-        offset = strtoul(lfields[5], NULL, 16);
-        info->start_got_plt = (char *) info->start_text + offset;
-        info->end_got_plt = (char *) info->start_plt + size;
-        plt_found++;
-       }
-
-    }
-    
-  }
-
-  xbt_free(command);
-  xbt_free(line);
-  pclose(fp);
-
 }
 
 /************************************* Take Snapshot ************************************/

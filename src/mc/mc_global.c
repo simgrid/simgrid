@@ -183,10 +183,6 @@ mc_object_info_t MC_new_object_info(void) {
   res->start_text = NULL;
   res->start_data = NULL;
   res->start_bss = NULL;
-  res->start_plt = NULL;
-  res->end_plt = NULL;
-  res->start_got_plt = NULL;
-  res->end_got_plt = NULL;
   res->local_variables = xbt_dict_new_homogeneous(NULL);
   res->global_variables = xbt_dynar_new(sizeof(dw_variable_t), dw_variable_free_voidp);
   res->types = xbt_dict_new_homogeneous(NULL);

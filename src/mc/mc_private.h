@@ -323,10 +323,6 @@ typedef struct s_mc_object_info {
   char* start_text;
   char* start_data;
   char* start_bss;
-  void* start_plt;
-  void* end_plt;
-  void* start_got_plt;
-  void* end_got_plt;
   xbt_dict_t local_variables; // xbt_dict_t<frame_name, dw_frame_t>
   xbt_dynar_t global_variables; // xbt_dynar_t<dw_variable_t>
   xbt_dict_t types; // xbt_dict_t<origin as hexadecimal string, dw_type_t>
