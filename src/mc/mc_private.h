@@ -454,6 +454,7 @@ typedef struct s_local_variable{
 }s_local_variable_t, *local_variable_t;
 
 #define MC_USE_LIBDW (getenv("MC_USE_OBJDUMP") == NULL)
+#define MC_USE_LIBDW_LOCATION_LIST (getenv("MC_USE_OBJDUMP_LL") == NULL)
 
 #endif
 

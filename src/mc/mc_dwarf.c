@@ -94,6 +94,38 @@ static dw_location_t MC_dwarf_resolve_location_list(mc_object_info_t info, Dwarf
   return loc;
 }
 
+/** \brief Create a location_list from a given attribute */
+static dw_location_t MC_dwarf_get_location_list_libdw(Dwarf_Die* die, Dwarf_Attribute* attr) {
+
+
+  dw_location_t location = xbt_new0(s_dw_location_t, 1);
+  location->type = e_dw_loclist;
+  xbt_dynar_t loclist = xbt_dynar_new(sizeof(dw_location_entry_t), NULL);
+  location->location.loclist = loclist;
+
+  ptrdiff_t offset = 0;
+  Dwarf_Addr base, start, end;
+  Dwarf_Op *expr;
+  size_t len;
+
+  while (1) {
+
+    offset = dwarf_getlocations(attr, offset, &base, &start, &end, &expr, &len);
+    if (offset==0)
+      return location;
+    else if (offset==-1)
+      xbt_die("Error while loading location list");
+
+    dw_location_entry_t new_entry = xbt_new0(s_dw_location_entry_t, 1);
+    new_entry->lowpc = start;
+    new_entry->highpc = end;
+    new_entry->location = MC_dwarf_get_expression(expr, len);
+
+    xbt_dynar_push(loclist, &new_entry);
+
+  }
+}
+
 static dw_location_t MC_dwarf_get_location(Dwarf_Die* die, Dwarf_Attribute* attr, mc_object_info_t info) {
   int form = dwarf_whatform(attr);
   switch (form) {
@@ -114,6 +146,9 @@ static dw_location_t MC_dwarf_get_location(Dwarf_Die* die, Dwarf_Attribute* attr
   case DW_FORM_data4:
   case DW_FORM_data8:
     {
+      if (MC_USE_LIBDW_LOCATION_LIST)
+        return MC_dwarf_get_location_list_libdw(die, attr);
+
       Dwarf_Word offset;
       if (!dwarf_formudata(attr, &offset))
         return MC_dwarf_resolve_location_list(info, offset);
@@ -769,4 +804,3 @@ void MC_dwarf_get_variables_libdw(mc_object_info_t info) {
   dwarf_end(dwarf);
   close(fd);
 }
-
