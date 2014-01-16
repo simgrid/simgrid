@@ -339,9 +339,9 @@ void *mmalloc_preinit(void)
 
 void mmalloc_postexit(void)
 {
-  /* Do not detach the default mdp or ldl won't be able to free the memory it allocated since we're in memory */
-  //  mmalloc_detach(__mmalloc_default_mdp);
-  xbt_mheap_destroy_no_free(__mmalloc_default_mdp);
+  /* Do not destroy the default mdp or ldl won't be able to free the memory it
+   * allocated since we're in memory */
+  // xbt_mheap_destroy_no_free(__mmalloc_default_mdp);
 }
 
 size_t mmalloc_get_bytes_used(xbt_mheap_t heap){
