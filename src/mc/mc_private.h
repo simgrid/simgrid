@@ -58,6 +58,9 @@ typedef struct s_mc_global_t{
   int raw_mem_set;
   int prev_pair;
   char *prev_req;
+  int initial_communications_pattern_done;
+  int comm_deterministic;
+  int send_deterministic;
 }s_mc_global_t, *mc_global_t;
 
 typedef struct s_mc_checkpoint_ignore_region{
@@ -432,6 +435,25 @@ typedef struct s_local_variable{
   void *address;
   int region;
 }s_local_variable_t, *local_variable_t;
+
+/********************************* Communications pattern ***************************/
+
+typedef struct s_mc_comm_pattern{
+  int num;
+  smx_action_t comm;
+  e_smx_comm_type_t type;
+  int completed;
+  unsigned long src_proc;
+  unsigned long dst_proc;
+  char *rdv;
+  size_t data_size;
+  void *data;
+  int matched_comm;
+}s_mc_comm_pattern_t, *mc_comm_pattern_t;
+
+extern xbt_dynar_t communications_pattern;
+
+void get_comm_pattern(xbt_dynar_t communications_pattern, smx_simcall_t request, int call);
 
 #endif
 

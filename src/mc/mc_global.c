@@ -1876,6 +1876,9 @@ void MC_modelcheck_safety(void)
   /* Save the initial state */
   initial_state_safety = xbt_new0(s_mc_global_t, 1);
   initial_state_safety->snapshot = MC_take_snapshot(0);
+  initial_state_safety->initial_communications_pattern_done = 0;
+  initial_state_safety->comm_deterministic = 1;
+  initial_state_safety->send_deterministic = 1;
   MC_UNSET_RAW_MEM;
 
   MC_dpor();
@@ -1998,6 +2001,7 @@ void MC_replay(xbt_fifo_t stack, int start)
   xbt_fifo_item_t item, start_item;
   mc_state_t state;
   smx_process_t process = NULL;
+  int comm_pattern = 0;
 
   XBT_DEBUG("**** Begin Replay ****");
 
@@ -2027,6 +2031,7 @@ void MC_replay(xbt_fifo_t stack, int start)
       xbt_free(key);
     }
   }
+  xbt_dynar_reset(communications_pattern);
   MC_UNSET_RAW_MEM;
   
 
@@ -2056,8 +2061,22 @@ void MC_replay(xbt_fifo_t stack, int start)
         xbt_free(req_str);
       }
     }
+
+    if(req->call == SIMCALL_COMM_ISEND)
+      comm_pattern = 1;
+    else if(req->call == SIMCALL_COMM_IRECV)
+      comm_pattern = 2;
     
     SIMIX_simcall_pre(req, value);
+
+    MC_SET_RAW_MEM;
+    if(comm_pattern != 0){
+      get_comm_pattern(communications_pattern, req, comm_pattern);
+    }
+    MC_UNSET_RAW_MEM;
+
+    comm_pattern = 0;
+    
     MC_wait_for_requests();
 
     count++;
@@ -2337,6 +2356,10 @@ void MC_print_statistics(mc_stats_t stats)
   if((_sg_mc_dot_output_file != NULL) && (_sg_mc_dot_output_file[0]!='\0')){
     fprintf(dot_output, "}\n");
     fclose(dot_output);
+  }
+  if(initial_state_safety != NULL){
+    XBT_INFO("Communication-deterministic : %s", !initial_state_safety->comm_deterministic ? "No" : "Yes");
+    XBT_INFO("Send-deterministic : %s", !initial_state_safety->send_deterministic ? "No" : "Yes");
   }
   MC_UNSET_RAW_MEM;
 }
