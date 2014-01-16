@@ -83,17 +83,6 @@ static const char* MC_dwarf_at_linkage_name(Dwarf_Die* die) {
   return name;
 }
 
-static dw_location_t MC_dwarf_resolve_location_list(mc_object_info_t info, Dwarf_Word offset) {
-  char *key = bprintf("%ld", (long) offset);
-  dw_location_t loc = xbt_new0(s_dw_location_t, 1);
-  loc->type = e_dw_loclist;
-  loc->location.loclist =  (xbt_dynar_t)xbt_dict_get_or_null(info->location_list, key);
-  if (!loc->location.loclist)
-    XBT_INFO("Key not found in loclist");
-  xbt_free(key);
-  return loc;
-}
-
 /** \brief Create a location_list from a given attribute */
 static dw_location_t MC_dwarf_get_location_list_libdw(Dwarf_Die* die, Dwarf_Attribute* attr) {
 
@@ -146,14 +135,7 @@ static dw_location_t MC_dwarf_get_location(Dwarf_Die* die, Dwarf_Attribute* attr
   case DW_FORM_data4:
   case DW_FORM_data8:
     {
-      if (MC_USE_LIBDW_LOCATION_LIST)
-        return MC_dwarf_get_location_list_libdw(die, attr);
-
-      Dwarf_Word offset;
-      if (!dwarf_formudata(attr, &offset))
-        return MC_dwarf_resolve_location_list(info, offset);
-      else
-        xbt_die("Location list not found");
+      return MC_dwarf_get_location_list_libdw(die, attr);
     }
     break;
   default:
@@ -780,7 +762,7 @@ static void MC_dwarf_handle_die(mc_object_info_t info, Dwarf_Die* die, Dwarf_Die
   MC_dwarf_handle_children(info, die, unit, frame);
 }
 
-void MC_dwarf_get_variables_libdw(mc_object_info_t info) {
+void MC_dwarf_get_variables(mc_object_info_t info) {
   int fd = open(info->file_name, O_RDONLY);
   if (fd<0) {
     xbt_die("Could not open file %s", info->file_name);

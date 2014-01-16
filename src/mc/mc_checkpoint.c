@@ -246,7 +246,6 @@ mc_object_info_t MC_find_object_info(memory_map_t maps, char* name) {
   result->start_data = NULL;
   result->start_text = NULL;
   MC_find_object_address(maps, result);
-  result->location_list = MC_dwarf_get_location_list(result->file_name);
   MC_dwarf_get_variables(result);
   return result;
 }

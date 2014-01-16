@@ -326,7 +326,6 @@ typedef struct s_mc_object_info {
   xbt_dict_t local_variables; // xbt_dict_t<frame_name, dw_frame_t>
   xbt_dynar_t global_variables; // xbt_dynar_t<dw_variable_t>
   xbt_dict_t types; // xbt_dict_t<origin as hexadecimal string, dw_type_t>
-  xbt_dict_t location_list; // Location list (probably temporary)
 } s_mc_object_info_t, *mc_object_info_t;
 
 mc_object_info_t MC_new_object_info(void);
@@ -448,9 +447,6 @@ typedef struct s_local_variable{
   void *address;
   int region;
 }s_local_variable_t, *local_variable_t;
-
-#define MC_USE_LIBDW (getenv("MC_USE_OBJDUMP") == NULL)
-#define MC_USE_LIBDW_LOCATION_LIST (getenv("MC_USE_OBJDUMP_LL") == NULL)
 
 #endif
 
