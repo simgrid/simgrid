@@ -23,6 +23,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_sync_os, xbt,
 /* ********************************* PTHREAD IMPLEMENTATION ************************************ */
 #ifdef HAVE_PTHREAD_H
 
+#include <limits.h>
 #include <semaphore.h>
 
 #ifdef HAVE_MUTEX_TIMEDLOCK
@@ -194,18 +195,35 @@ xbt_os_thread_t xbt_os_thread_create(const char *name,
 
 void xbt_os_thread_setstacksize(int stack_size)
 {
-  size_t def=0;
-  if(stack_size<0)xbt_die("stack size is negative, maybe it exceeds MAX_INT?\n");
-  pthread_attr_init(&attr);
-  pthread_attr_getstacksize (&attr, &def);
-  int res = pthread_attr_setstacksize (&attr, stack_size);
-  if ( res!=0 ) {
-    if(res==EINVAL)XBT_WARN("Thread stack size is either < PTHREAD_STACK_MIN, > the max limit of the system, or perhaps not a multiple of PTHREAD_STACK_MIN - The parameter was ignored");
-    else XBT_WARN("unknown error in pthread stacksize setting");
+  size_t sz;
+  int res;
 
-    pthread_attr_setstacksize (&attr, def);
+  if (stack_size < 0)
+    xbt_die("stack size %d is negative, maybe it exceeds MAX_INT?", stack_size);
+
+  sz = stack_size;
+  pthread_attr_init(&attr);
+  res = pthread_attr_setstacksize(&attr, sz);
+
+#ifdef PTHREAD_STACK_MIN
+  if (res == EINVAL) {
+    /* Invalid size, try again with a multiple of PTHREAD_STACK_MIN. */
+    size_t rem = sz % PTHREAD_STACK_MIN;
+    if (rem != 0 || sz == 0) {
+      size_t sz2 = sz - rem + PTHREAD_STACK_MIN;
+      XBT_DEBUG("pthread_attr_setstacksize failed for %#zx, try again with %#zx",
+                sz, sz2);
+      sz = sz2;
+      res = pthread_attr_setstacksize(&attr, sz);
+    }
   }
-  thread_attr_inited=1;
+#endif
+
+  if (res == EINVAL)
+    XBT_WARN("invalid stack size (maybe too big): %#zx", sz);
+  else if (res != 0)
+    XBT_WARN("unknown error %d in pthread stacksize setting: %#zx", res, sz);
+  thread_attr_inited = 1;
 }
 
 const char *xbt_os_thread_name(xbt_os_thread_t t)

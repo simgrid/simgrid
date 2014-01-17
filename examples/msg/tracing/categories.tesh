@@ -2,12 +2,12 @@
 
 p Tracing multiple categories master/slave application
 
-$ $SG_TEST_EXENV ${bindir:=.}/tracing/categories$EXEEXT --cfg=tracing:1 --cfg=tracing/buffer:1 --cfg=tracing/filename:tracing/categories.trace --cfg=tracing/categorized:1 --cfg=tracing/uncategorized:1 --cfg=viva/categorized:tracing/categories.cat.plist --cfg=viva/uncategorized:tracing/categories.uncat.plist ${srcdir:=.}/tracing/platform.xml ${srcdir:=.}/tracing/deployment.xml
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing' to '1'
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/buffer' to '1'
+$ $SG_TEST_EXENV ${bindir:=.}/tracing/categories$EXEEXT --cfg=tracing:yes --cfg=tracing/buffer:yes --cfg=tracing/filename:tracing/categories.trace --cfg=tracing/categorized:yes --cfg=tracing/uncategorized:yes --cfg=viva/categorized:tracing/categories.cat.plist --cfg=viva/uncategorized:tracing/categories.uncat.plist ${srcdir:=.}/tracing/platform.xml ${srcdir:=.}/tracing/deployment.xml
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing' to 'yes'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/buffer' to 'yes'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/filename' to 'tracing/categories.trace'
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/categorized' to '1'
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/uncategorized' to '1'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/categorized' to 'yes'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/uncategorized' to 'yes'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'viva/categorized' to 'tracing/categories.cat.plist'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'viva/uncategorized' to 'tracing/categories.uncat.plist'
 

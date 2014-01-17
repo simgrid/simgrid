@@ -105,6 +105,7 @@ set(SMPI_SRC
   src/smpi/smpi_c99.c
   src/smpi/smpi_coll.c
   src/smpi/smpi_comm.c
+  src/smpi/smpi_dvfs.c
   src/smpi/smpi_global.c
   src/smpi/smpi_group.c
   src/smpi/smpi_mpi.c
@@ -490,7 +491,9 @@ set(TRACING_SRC
   src/instr/instr_config.c
   src/instr/instr_interface.c
   src/instr/instr_paje_containers.c
+  src/instr/instr_TI_trace.c
   src/instr/instr_paje_trace.c
+  src/instr/instr_trace.c
   src/instr/instr_paje_header.c
   src/instr/instr_paje_types.c
   src/instr/instr_paje_values.c
@@ -514,6 +517,7 @@ set(MC_SRC
   src/mc/mc_compare.c
   src/mc/mc_dpor.c
   src/mc/mc_global.c
+  src/mc/mc_dwarf.c
   src/mc/mc_liveness.c
   src/mc/mc_memory.c
   src/mc/mc_private.h
@@ -898,6 +902,9 @@ set(EXAMPLES_CMAKEFILES_TXT
   examples/simdag/scheduling/CMakeLists.txt
   examples/smpi/CMakeLists.txt
   examples/smpi/MM/CMakeLists.txt
+  examples/smpi/energy/CMakeLists.txt
+  examples/smpi/energy/f77/CMakeLists.txt
+  examples/smpi/energy/f90/CMakeLists.txt
   examples/xbt/CMakeLists.txt
   )
 
@@ -964,9 +971,11 @@ set(CMAKE_SOURCE_FILES
   buildtools/Cmake/MakeLib.cmake
   buildtools/Cmake/MakeLibWin.cmake
   buildtools/Cmake/Modules/FindF2c.cmake
+  buildtools/Cmake/Modules/FindGFortran.cmake
   buildtools/Cmake/Modules/FindGTnets.cmake
   buildtools/Cmake/Modules/FindGraphviz.cmake
   buildtools/Cmake/Modules/FindLibunwind.cmake
+  buildtools/Cmake/Modules/FindLibdw.cmake
   buildtools/Cmake/Modules/FindLua51Simgrid.cmake
   buildtools/Cmake/Modules/FindNS3.cmake
   buildtools/Cmake/Modules/FindRngStream.cmake

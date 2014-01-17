@@ -45,22 +45,27 @@ set(CMAKE_Fortran_LINK_FLAGS "" CACHE TYPE INTERNAL FORCE)
 # 3.7.{0,1} -> release 3.7, 3.7.1
 # 3.8.{0,1} -> release 3.8, 3.8.1
 # 3.9.0 -> release 3.9
-
 # 3.9.90 -> release 3.10pre1
 # 3.10.0 -> release 3.10
 
 set(SIMGRID_VERSION_MAJOR "3")
-set(SIMGRID_VERSION_MINOR "9")
-set(SIMGRID_VERSION_PATCH "90")
+set(SIMGRID_VERSION_MINOR "10")
+set(SIMGRID_VERSION_PATCH "0")
+set(SIMGRID_VERSION_EXTRA "-rc2") # Extra words to add to version string (e.g. -rc1)
+
+set(SIMGRID_VERSION_DATE  "2013") # Year for copyright information
 
 if(${SIMGRID_VERSION_PATCH} EQUAL "0")
   set(release_version "${SIMGRID_VERSION_MAJOR}.${SIMGRID_VERSION_MINOR}")
 else()
   set(release_version "${SIMGRID_VERSION_MAJOR}.${SIMGRID_VERSION_MINOR}.${SIMGRID_VERSION_PATCH}")
 endif()
+
+set(SIMGRID_VERSION_STRING
+  "SimGrid version ${release_version}${SIMGRID_VERSION_EXTRA}\\nCopyright (c) ${SIMGRID_VERSION_DATE}. The Simgrid Team.")
+
 set(libsimgrid_version "${release_version}")
-set(libsmpi_version "${release_version}")
-set(libSG_java_version "${release_version}")
+set(libsimgrid-java_version "${release_version}")
 set(GCC_NEED_VERSION "4.0")
 set(APPLE_NEED_GCC_VERSION "4.6")
 

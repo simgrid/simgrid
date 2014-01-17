@@ -10,6 +10,9 @@
 #include "xbt/swag.h"
 #include "xbt/fifo.h"
 
+#include <libunwind.h>
+#include <dwarf.h>
+
 SG_BEGIN_DECL()
 
 /******************************* Transitions **********************************/
@@ -39,27 +42,16 @@ void heap_ignore_region_free_voidp(void *r);
 
 /************ DWARF structures *************/
 
-typedef enum{
-  e_dw_base_type = 0,
-  e_dw_enumeration_type,
-  e_dw_enumerator,
-  e_dw_typedef,
-  e_dw_const_type,
-  e_dw_array_type,
-  e_dw_pointer_type,
-  e_dw_structure_type,
-  e_dw_union_type,
-  e_dw_subroutine_type,
-  e_dw_volatile_type
-}e_dw_type_type;
+typedef int e_dw_type_type;
 
 typedef struct s_dw_type{
   e_dw_type_type type;
-  void *id;
-  char *name;
-  int size;
-  char *dw_type_id;
-  xbt_dynar_t members; /* if DW_TAG_structure_type */
+  void *id; /* Offset in the section (in hexadecimal form) */
+  char *name; /* Name of the type */
+  int byte_size; /* Size in bytes */
+  int element_count; /* Number of elements for array type */
+  char *dw_type_id; /* DW_AT_type */
+  xbt_dynar_t members; /* if DW_TAG_structure_type, DW_TAG_union_type*/
   int is_pointer_type;
   int offset;
 }s_dw_type_t, *dw_type_t;

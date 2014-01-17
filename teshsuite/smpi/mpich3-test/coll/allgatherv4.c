@@ -22,7 +22,7 @@
 #define LARGE_BUF (256 * 1024)
 
 /* FIXME: MAX_BUF is too large */
-#define MAX_BUF   (128 * 1024 * 1024)
+#define MAX_BUF   (32 * 1024 * 1024)
 #define LOOPS 10
 
 __thread char * sbuf, * rbuf;
@@ -71,6 +71,7 @@ int main(int argc, char ** argv)
 	if (!displs) fprintf(stderr,"\tdispls of %zd bytes\n", comm_size * sizeof(int) );
         fflush(stderr);
         MPI_Abort(MPI_COMM_WORLD, -1);
+        exit(-1);
     }
 
     if (!comm_rank) {
@@ -200,6 +201,7 @@ double run_test(long long msg_size, MPI_Comm comm, test_t test_type,
 	    if (tmp != (int)tmp) {
 		fprintf( stderr, "Integer overflow in variable tmp\n" );
 		MPI_Abort( MPI_COMM_WORLD, 1 );
+                exit(1);
 	    }
             recvcounts[i] = (int) tmp;
 

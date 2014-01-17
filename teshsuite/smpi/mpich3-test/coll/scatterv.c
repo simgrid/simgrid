@@ -119,12 +119,14 @@ int main( int argc, char **argv )
     recvbuf = (double *)malloc( nx * ny * sizeof(double) );
     if (!recvbuf) {
         MPI_Abort( MPI_COMM_WORLD, 1 );
+        exit(1);
     }
     sendbuf = 0;
     if (myrow == 0 && mycol == 0) {
         sendbuf = (double *)malloc( nx * ny * size * sizeof(double) );
         if (!sendbuf) {
             MPI_Abort( MPI_COMM_WORLD, 1 );
+            exit(1);
         }
     }
     sendcounts = (int *) malloc( size * sizeof(int) );

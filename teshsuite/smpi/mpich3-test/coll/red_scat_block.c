@@ -42,6 +42,7 @@ int main(int argc, char **argv)
         err++;
         fprintf(stderr, "unable to allocate send/recv buffers, aborting");
         MPI_Abort(MPI_COMM_WORLD, 1);
+        exit(1);
     }
     for (i=0; i<size; i++)
         sendbuf[i] = rank + i;

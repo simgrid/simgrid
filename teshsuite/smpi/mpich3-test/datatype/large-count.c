@@ -13,6 +13,8 @@
 #include <stdlib.h>
 #include <mpi.h>
 
+#define equals(a, b) ((long long)(a) == (long long)(b))
+
 /* assert-like macro that bumps the err count and emits a message */
 #define check(x_)                                                                 \
     do {                                                                          \
@@ -95,89 +97,89 @@ int main(int argc, char *argv[])
 
     /* MPI_Type_size */
     MPI_Type_size(imax_contig, &size);
-    check(size == INT_MAX);
+    check(equals(size, INT_MAX));
     MPI_Type_size(four_ints, &size);
-    check(size == 4*sizeof(int));
+    check(equals(size, 4*sizeof(int)));
     MPI_Type_size(imx4i, &size);
-    check(size == MPI_UNDEFINED); /* should overflow an int */
+    check(equals(size, MPI_UNDEFINED)); /* should overflow an int */
     MPI_Type_size(imx4i_rsz, &size);
-    check(size == MPI_UNDEFINED); /* should overflow an int */
+    check(equals(size, MPI_UNDEFINED)); /* should overflow an int */
 
     /* MPI_Type_size_x */
     MPI_Type_size_x(imax_contig, &size_x);
-    check(size_x == INT_MAX);
+    check(equals(size_x, INT_MAX));
     MPI_Type_size_x(four_ints, &size_x);
-    check(size_x == 4*sizeof(int));
+    check(equals(size_x, 4*sizeof(int)));
     MPI_Type_size_x(imx4i, &size_x);
-    check(size_x == 4LL*sizeof(int)*(INT_MAX/2)); /* should overflow an int */
+    check(equals(size_x, 4LL*sizeof(int)*(INT_MAX/2))); /* should overflow an int */
     MPI_Type_size_x(imx4i_rsz, &size_x);
-    check(size_x == 4LL*sizeof(int)*(INT_MAX/2)); /* should overflow an int */
+    check(equals(size_x, 4LL*sizeof(int)*(INT_MAX/2))); /* should overflow an int */
 
     /* MPI_Type_get_extent */
     MPI_Type_get_extent(imax_contig, &lb, &extent);
-    check(lb == 0);
-    check(extent == INT_MAX);
+    check(equals(lb, 0));
+    check(equals(extent, INT_MAX));
     MPI_Type_get_extent(four_ints, &lb, &extent);
-    check(lb == 0);
-    check(extent == 4*sizeof(int));
+    check(equals(lb, 0));
+    check(equals(extent, 4*sizeof(int)));
     MPI_Type_get_extent(imx4i, &lb, &extent);
-    check(lb == 0);
+    check(equals(lb, 0));
     if (sizeof(MPI_Aint) == sizeof(int))
-        check(extent == MPI_UNDEFINED);
+        check(equals(extent, MPI_UNDEFINED));
     else
-        check(extent == imx4i_true_extent);
+        check(equals(extent, imx4i_true_extent));
 
     MPI_Type_get_extent(imx4i_rsz, &lb, &extent);
-    check(lb == INT_MAX);
-    check(extent == -1024);
+    check(equals(lb, INT_MAX));
+    check(equals(extent, -1024));
 
     /* MPI_Type_get_extent_x */
     MPI_Type_get_extent_x(imax_contig, &lb_x, &extent_x);
-    check(lb_x == 0);
-    check(extent_x == INT_MAX);
+    check(equals(lb_x, 0));
+    check(equals(extent_x, INT_MAX));
     MPI_Type_get_extent_x(four_ints, &lb_x, &extent_x);
-    check(lb_x == 0);
-    check(extent_x == 4*sizeof(int));
+    check(equals(lb_x, 0));
+    check(equals(extent_x, 4*sizeof(int)));
     MPI_Type_get_extent_x(imx4i, &lb_x, &extent_x);
-    check(lb_x == 0);
-    check(extent_x == imx4i_true_extent);
+    check(equals(lb_x, 0));
+    check(equals(extent_x, imx4i_true_extent));
     MPI_Type_get_extent_x(imx4i_rsz, &lb_x, &extent_x);
-    check(lb_x == INT_MAX);
-    check(extent_x == -1024);
+    check(equals(lb_x, INT_MAX));
+    check(equals(extent_x, -1024));
 
     /* MPI_Type_get_true_extent */
     MPI_Type_get_true_extent(imax_contig, &lb, &extent);
-    check(lb == 0);
-    check(extent == INT_MAX);
+    check(equals(lb, 0));
+    check(equals(extent, INT_MAX));
     MPI_Type_get_true_extent(four_ints, &lb, &extent);
-    check(lb == 0);
-    check(extent == 4*sizeof(int));
+    check(equals(lb, 0));
+    check(equals(extent, 4*sizeof(int)));
     MPI_Type_get_true_extent(imx4i, &lb, &extent);
-    check(lb == 0);
+    check(equals(lb, 0));
     if (sizeof(MPI_Aint) == sizeof(int))
-        check(extent == MPI_UNDEFINED);
+        check(equals(extent, MPI_UNDEFINED));
     else
-        check(extent == imx4i_true_extent);
+        check(equals(extent, imx4i_true_extent));
     MPI_Type_get_true_extent(imx4i_rsz, &lb, &extent);
-    check(lb == 0);
+    check(equals(lb, 0));
     if (sizeof(MPI_Aint) == sizeof(int))
-        check(extent == MPI_UNDEFINED);
+        check(equals(extent, MPI_UNDEFINED));
     else
-        check(extent == imx4i_true_extent);
+        check(equals(extent, imx4i_true_extent));
 
     /* MPI_Type_get_true_extent_x */
     MPI_Type_get_true_extent_x(imax_contig, &lb_x, &extent_x);
-    check(lb_x == 0);
-    check(extent_x == INT_MAX);
+    check(equals(lb_x, 0));
+    check(equals(extent_x, INT_MAX));
     MPI_Type_get_true_extent_x(four_ints, &lb_x, &extent_x);
-    check(lb_x == 0);
-    check(extent_x == 4*sizeof(int));
+    check(equals(lb_x, 0));
+    check(equals(extent_x, 4*sizeof(int)));
     MPI_Type_get_true_extent_x(imx4i, &lb_x, &extent_x);
-    check(lb_x == 0);
-    check(extent_x == imx4i_true_extent);
+    check(equals(lb_x, 0));
+    check(equals(extent_x, imx4i_true_extent));
     MPI_Type_get_true_extent_x(imx4i_rsz, &lb_x, &extent_x);
-    check(lb_x == 0);
-    check(extent_x == imx4i_true_extent);
+    check(equals(lb_x, 0));
+    check(equals(extent_x, imx4i_true_extent));
 
 
     /* MPI_{Status_set_elements,Get_elements}{,_x} */
@@ -187,18 +189,18 @@ int main(int argc, char *argv[])
     MPI_Get_elements(&status, MPI_INT, &elements);
     MPI_Get_elements_x(&status, MPI_INT, &elements_x);
     MPI_Get_count(&status, MPI_INT, &count);
-    check(elements == 10);
-    check(elements_x == 10);
-    check(count == 10);
+    check(equals(elements, 10));
+    check(equals(elements_x, 10));
+    check(equals(count, 10));
 
     /* set_x simple */
     MPI_Status_set_elements_x(&status, MPI_INT, 10);
     MPI_Get_elements(&status, MPI_INT, &elements);
     MPI_Get_elements_x(&status, MPI_INT, &elements_x);
     MPI_Get_count(&status, MPI_INT, &count);
-    check(elements == 10);
-    check(elements_x == 10);
-    check(count == 10);
+    check(equals(elements, 10));
+    check(equals(elements_x, 10));
+    check(equals(count, 10));
 
     /* Sets elements corresponding to count=1 of the given MPI datatype, using
      * set_elements and set_elements_x.  Checks expected values are returned by
@@ -213,9 +215,9 @@ int main(int argc, char *argv[])
             MPI_Get_elements(&status, (type_), &elements);        \
             MPI_Get_elements_x(&status, (type_), &elements_x);    \
             MPI_Get_count(&status, (type_), &count);              \
-            check(elements == (elts_));                           \
-            check(elements_x == (elts_));                         \
-            check(count == 1);                                    \
+            check(equals(elements, (elts_)));                     \
+            check(equals(elements_x, (elts_)));                   \
+            check(equals(count, 1));                              \
         }                                                         \
                                                                   \
         elements = elements_x = count = 0xfeedface;               \
@@ -224,13 +226,13 @@ int main(int argc, char *argv[])
         MPI_Get_elements_x(&status, (type_), &elements_x);        \
         MPI_Get_count(&status, (type_), &count);                  \
         if ((elts_) > INT_MAX) {                                  \
-            check(elements == MPI_UNDEFINED);                     \
+            check(equals(elements, MPI_UNDEFINED));               \
         }                                                         \
         else {                                                    \
-            check(elements == (elts_));                           \
+            check(equals(elements, (elts_)));                     \
         }                                                         \
-        check(elements_x == (elts_));                             \
-        check(count == 1);                                        \
+        check(equals(elements_x, (elts_)));                       \
+        check(equals(count, 1));                                  \
     } while (0)                                                   \
 
     check_set_elements(imax_contig, INT_MAX);

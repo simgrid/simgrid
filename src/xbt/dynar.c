@@ -149,7 +149,7 @@ XBT_INLINE void xbt_dynar_reset(xbt_dynar_t const dynar)
 {
   _sanity_check_dynar(dynar);
 
-  XBT_DEBUG("Reset the dynar %p", (void *) dynar);
+  XBT_CDEBUG(xbt_dyn, "Reset the dynar %p", (void *) dynar);
   if (dynar->free_f) {
     xbt_dynar_map(dynar, dynar->free_f);
   }
@@ -557,7 +557,7 @@ XBT_INLINE void xbt_dynar_push(xbt_dynar_t const dynar,
 XBT_INLINE void *xbt_dynar_pop_ptr(xbt_dynar_t const dynar)
 {
   _check_populated_dynar(dynar);
-  XBT_DEBUG("Pop %p", (void *) dynar);
+  XBT_CDEBUG(xbt_dyn, "Pop %p", (void *) dynar);
   dynar->used--;
   return _xbt_dynar_elm(dynar, dynar->used);
 }
@@ -567,7 +567,7 @@ XBT_INLINE void xbt_dynar_pop(xbt_dynar_t const dynar, void *const dst)
 {
 
   /* sanity checks done by remove_at */
-  XBT_DEBUG("Pop %p", (void *) dynar);
+  XBT_CDEBUG(xbt_dyn, "Pop %p", (void *) dynar);
   xbt_dynar_remove_at(dynar, dynar->used - 1, dst);
 }
 
@@ -707,7 +707,7 @@ XBT_INLINE void * xbt_dynar_to_array (xbt_dynar_t dynar)
 /*
  * Return 0 if d1 and d2 are equal and 1 if not equal
  */
-XBT_INLINE int xbt_dynar_compare(xbt_dynar_t d1, xbt_dynar_t d2,
+int xbt_dynar_compare(xbt_dynar_t d1, xbt_dynar_t d2,
           int(*compar)(const void *, const void *))
 {
   int i ;

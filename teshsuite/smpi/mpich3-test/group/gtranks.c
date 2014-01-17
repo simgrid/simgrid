@@ -33,10 +33,12 @@ int main( int argc, char *argv[] )
 	 "This test requires a comm world with no more than %d processes\n", 
 		 MAX_WORLD_SIZE );
 	MPI_Abort( MPI_COMM_WORLD, 1 );
+        exit(1);
     }
     if (size < 4) {
 	fprintf( stderr, "This test requiers at least 4 processes\n" );
 	MPI_Abort( MPI_COMM_WORLD, 1 );
+        exit(1);
     }
 
     MPI_Comm_group( comm, &gworld );

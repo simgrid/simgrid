@@ -45,6 +45,7 @@ int main( int argc, char **argv )
       if (!sbuf || !rbuf) {
 	fprintf( stderr, "Could not allocated buffers!\n" );
 	MPI_Abort( comm, 1 );
+        exit(1);
       }
       
       /* Load up the buffers */
@@ -61,6 +62,7 @@ int main( int argc, char **argv )
       if (!sendcounts || !recvcounts || !rdispls || !sdispls) {
 	fprintf( stderr, "Could not allocate arg items!\n" );
 	MPI_Abort( comm, 1 );
+        exit(1);
       }
       for (i=0; i<size; i++) {
 	sendcounts[i] = i;
@@ -94,6 +96,7 @@ int main( int argc, char **argv )
       if (!rbuf) {
         fprintf( stderr, "Could not reallocate rbuf!\n" );
         MPI_Abort( comm, 1 );
+        exit(1);
       }
 
       /* Load up the buffers */

@@ -49,6 +49,7 @@ int main( int argc, char **argv )
       if (!sendcounts || !recvcounts || !rdispls || !sdispls) {
 	fprintf( stderr, "Could not allocate arg items!\n" );
 	MPI_Abort( comm, 1 );
+        exit(1);
       }
 
       /* Get the neighbors */
@@ -70,6 +71,7 @@ int main( int argc, char **argv )
 	  if (!sbuf || !rbuf) {
 	      fprintf( stderr, "Could not allocate buffers!\n" );
 	      MPI_Abort( comm, 1 );
+              exit(1);
 	  }
 	  
 	  /* Load up the buffers */

@@ -30,6 +30,7 @@ int main( int argc, char **argv )
 	fprintf( stderr, "Number of processors must divide %d\n",
 		MAX_PROCESSES );
 	MPI_Abort( MPI_COMM_WORLD, 1 );
+        exit(1);
 	}
     MPI_Comm_split(MPI_COMM_WORLD, rank<participants, rank, &test_comm);
 

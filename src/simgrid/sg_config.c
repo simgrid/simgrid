@@ -55,6 +55,9 @@ static void sg_config_cmd_line(int *argc, char **argv)
 
       xbt_cfg_set_parse(_sg_cfg_set, opt);
       XBT_DEBUG("Did apply '%s' as config setting", opt);
+    } else if (!strcmp(argv[i], "--version")) {
+      printf("%s\n", SIMGRID_VERSION_STRING);
+      shall_exit = 1;
     } else if (!strcmp(argv[i], "--cfg-help") || !strcmp(argv[i], "--help")) {
       printf
           ("Description of the configuration accepted by this simulator:\n");
@@ -71,6 +74,8 @@ static void sg_config_cmd_line(int *argc, char **argv)
 #endif
 "\n"
 "You can also use --help-logs and --help-log-categories to see the details of logging output.\n"
+"\n"
+"You can also use --version to get SimGrid version information.\n"
 "\n"
         );
       shall_exit = 1;
@@ -611,12 +616,12 @@ void sg_config_init(int *argc, char **argv)
             "Context factory to use in SIMIX. Possible values: thread");
     const char *dflt_ctx_fact = "thread";
 #ifdef CONTEXT_UCONTEXT
-    strcat(description, ", ucontext");
     dflt_ctx_fact = "ucontext";
+    strcat(strcat(description, ", "), dflt_ctx_fact);
 #endif
 #ifdef HAVE_RAWCTX
-    strcat(description, ", raw");
     dflt_ctx_fact = "raw";
+    strcat(strcat(description, ", "), dflt_ctx_fact);
 #endif
     strcat(description, ".");
     xbt_cfg_register(&_sg_cfg_set, "contexts/factory", description,
@@ -628,6 +633,8 @@ void sg_config_init(int *argc, char **argv)
                      "Stack size of contexts in Kib",
                      xbt_cfgelm_int, 1, 1, _sg_cfg_cb_context_stack_size, NULL);
     xbt_cfg_setdefault_int(_sg_cfg_set, "contexts/stack_size", 128);
+    /* No, it was not set yet (the above setdefault() changed this to 1). */
+    smx_context_stack_size_was_set = 0;
 
     /* number of parallel threads for user processes */
     xbt_cfg_register(&_sg_cfg_set, "contexts/nthreads",
@@ -696,7 +703,7 @@ void sg_config_init(int *argc, char **argv)
     xbt_cfg_setdefault_boolean(_sg_cfg_set, "smpi/use_shared_malloc", "yes");
 
     xbt_cfg_register(&_sg_cfg_set, "smpi/cpu_threshold",
-                     "Minimal computation time (in seconds) not discarded.",
+                     "Minimal computation time (in seconds) not discarded, or -1 for infinity.",
                      xbt_cfgelm_double, 1, 1, NULL, NULL);
     xbt_cfg_setdefault_double(_sg_cfg_set, "smpi/cpu_threshold", 1e-6);
 

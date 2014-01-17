@@ -16,8 +16,8 @@
  * these two hosts, if there is one defined in the platform file, and update the variable
  * of all the links of that route to the value provided.
  * You might want to run this program with the following parameters:
- * --cfg=tracing:1
- * --cfg=tracing/platform:1
+ * --cfg=tracing:yes
+ * --cfg=tracing/platform:yes
  * (See \ref tracing_tracing_options for details)
  */
 

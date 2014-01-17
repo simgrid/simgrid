@@ -108,7 +108,7 @@ tracing
   Safe switch. It activates (or deactivates) the tracing system.
   No other tracing options take effect if this one is not activated.
 \verbatim
---cfg=tracing:1
+--cfg=tracing:yes
 \endverbatim
 
 \li <b>\c
@@ -117,7 +117,7 @@ tracing/categorized
   It activates the categorized resource utilization tracing. It should
   be enabled if tracing categories are used by this simulator.
 \verbatim
---cfg=tracing/categorized:1
+--cfg=tracing/categorized:yes
 \endverbatim
 
 \li <b>\c
@@ -127,7 +127,7 @@ tracing/uncategorized
   this simulator do not use tracing categories and resource use have to be
   traced.
 \verbatim
---cfg=tracing/uncategorized:1
+--cfg=tracing/uncategorized:yes
 \endverbatim
 
 \li <b>\c
@@ -151,7 +151,7 @@ tracing/onelink_only
   This option let the user tell the tracing system to use only the routes
   that are composed with just one link.
 \verbatim
---cfg=tracing/onelink_only:1
+--cfg=tracing/onelink_only:yes
 \endverbatim
 
 \li <b>\c
@@ -162,7 +162,7 @@ tracing/smpi
   visualizations. Every MPI function (implemented by SMPI) is transformed in a
   state, and point-to-point communications can be analyzed with arrows.
 \verbatim
---cfg=tracing/smpi:1
+--cfg=tracing/smpi:yes
 \endverbatim
 
 \li <b>\c
@@ -171,7 +171,7 @@ tracing/smpi/group
   This option only has effect if this simulator is SMPI-based. The processes
   are grouped by the hosts where they were executed.
 \verbatim
---cfg=tracing/smpi/group:1
+--cfg=tracing/smpi/group:yes
 \endverbatim
 
 \li <b>\c
@@ -180,7 +180,7 @@ tracing/smpi/computing
   This option only has effect if this simulator is SMPI-based. The parts external
 to SMPI are also outputted to the trace. Provides better way to analyze the data automatically.
 \verbatim
---cfg=tracing/smpi/computing:1
+--cfg=tracing/smpi/computing:yes
 \endverbatim
 
 \li <b>\c
@@ -189,7 +189,7 @@ tracing/smpi/internals
   This option only has effect if this simulator is SMPI-based. Display internal communications
 happening during a collective MPI call.
 \verbatim
---cfg=tracing/smpi/internals:1
+--cfg=tracing/smpi/internals:yes
 \endverbatim
 
 \li <b>\c
@@ -198,7 +198,7 @@ tracing/smpi/display_sizes
   This option only has effect if this simulator is SMPI-based. Display the sizes of the messages
 exchanged in the trace, both in the links and on the states. For collective, size means the global size of data sent by the process in general.
 \verbatim
---cfg=tracing/smpi/display_sizes:1
+--cfg=tracing/smpi/display_sizes:yes
 \endverbatim
 
 \li <b>\c
@@ -208,7 +208,7 @@ tracing/msg/process
   behavior of all categorized MSG processes, grouping them by hosts. This option
   can be used to track process location if this simulator has process migration.
 \verbatim
---cfg=tracing/msg/process:1
+--cfg=tracing/msg/process:yes
 \endverbatim
 
 \li <b>\c
@@ -221,7 +221,7 @@ tracing/buffer
  impacted if this option is activated, but you are sure to get a trace
  file with events sorted.
 \verbatim
---cfg=tracing/buffer:1
+--cfg=tracing/buffer:yes
 \endverbatim
 
 \li <b>\c
@@ -234,7 +234,7 @@ option is activated, only the routes with one link are used to
 register the topology within an AS.  Routes among AS continue to be
 traced as usual.
 \verbatim
---cfg=tracing/onelink_only:1
+--cfg=tracing/onelink_only:yes
 \endverbatim
 
 \li <b>\c
@@ -244,7 +244,7 @@ Disable the destruction of containers at the end of simulation. This
 can be used with simulators that have a different notion of time
 (different from the simulated time).
 \verbatim
---cfg=tracing/disable_destroy:1
+--cfg=tracing/disable_destroy:yes
 \endverbatim
 
 \li <b>\c
@@ -255,7 +255,7 @@ Use this option if you are using one of these tools to visualize the simulation
 trace. Keep in mind that the trace might be incomplete, without all the
 information that would be registered otherwise.
 \verbatim
---cfg=tracing/basic:1
+--cfg=tracing/basic:yes
 \endverbatim
 
 \li <b>\c
@@ -307,8 +307,8 @@ with the following parameters (it will work with <b>any</b> Simgrid
 simulator):
 \verbatim
 ./your_simulator \
-          --cfg=tracing:1 \
-          --cfg=tracing/uncategorized:1 \
+          --cfg=tracing:yes \
+          --cfg=tracing/uncategorized:yes \
           --cfg=tracing/filename:mytracefile.trace \
           --cfg=viva/uncategorized:uncat.plist
 \endverbatim
@@ -322,8 +322,8 @@ using the <b>MSG_task_set_category (...)</b>
 recompiling, run your simulator with the following parameters:
 \verbatim
 ./your_simulator \
-          --cfg=tracing:1 \
-          --cfg=tracing/categorized:1 \
+          --cfg=tracing:yes \
+          --cfg=tracing/categorized:yes \
           --cfg=tracing/filename:mytracefile.trace \
           --cfg=viva/categorized:cat.plist
 \endverbatim

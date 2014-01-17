@@ -1,4 +1,4 @@
-/* Copyright (c) 2010-2012. The SimGrid Team.
+/* Copyright (c) 2010-2013. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -55,7 +55,7 @@ static void mm_gnuld_legacy_init(void) { /* This function is called from mmalloc
  * To that extend, we have a little area here living in .BSS that we return if asked for memory before the malloc is resolved.
  */
 int allocated_junk=0; /* keep track of whether our little area was already given to someone */
-char junkarea[512];
+char junkarea[4096];
 
 /* This version use mmalloc if there is a current heap, or the legacy implem if not */
 void *malloc(size_t n) {
@@ -83,10 +83,10 @@ void *malloc(size_t n) {
             "Panic: real malloc symbol not resolved yet, and I already gave my little private memory chunk away. "
             "Damn LD, we must extend our code to have several such areas.\n");
         exit(1);
-      } else if (n>512) {
+      } else if (n > sizeof junkarea) {
         fprintf(stderr,
-            "Panic: real malloc symbol not resolved yet, and I need %zu bytes while my little private memory chunk is only 512 bytes wide. "
-            "Damn LD, we must fix our code to extend this area.\n",n);
+            "Panic: real malloc symbol not resolved yet, and I need %zu bytes while my little private memory chunk is only %zu bytes wide. "
+            "Damn LD, we must fix our code to extend this area.\n", n, sizeof junkarea);
         exit(1);
       } else {
         allocated_junk = 1;

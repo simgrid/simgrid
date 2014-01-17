@@ -182,10 +182,12 @@ int main( int argc, char *argv[] )
 	buf = (int *)malloc( max_offset * sizeof(int) );
 	if (!buf) {
 	    MPI_Abort( MPI_COMM_WORLD, 1 );
+            exit(1);
 	}
 	bufout = (int *)malloc( max_offset * sizeof(int) );
 	if (!bufout) {
 	    MPI_Abort( MPI_COMM_WORLD, 1 );
+            exit(1);
 	}
 
 	initMat( comm, buf );

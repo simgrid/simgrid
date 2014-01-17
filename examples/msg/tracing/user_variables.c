@@ -9,8 +9,8 @@
  * - <b>tracing/user_variables.c</b>: This program demonstrates how to
  * trace user variables associated to the hosts of the platform file.
  * You might want to run this program with the following parameters:
- * --cfg=tracing:1
- * --cfg=tracing/platform:1
+ * --cfg=tracing:yes
+ * --cfg=tracing/platform:yes
  * (See \ref tracing_tracing_options for details)
  */
 

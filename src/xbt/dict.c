@@ -171,8 +171,9 @@ XBT_INLINE void xbt_dict_set_ext(xbt_dict_t dict,
   xbt_dictelm_t current, previous = NULL;
   xbt_assert(dict);
 
-  XBT_DEBUG("ADD %.*s hash = %u, size = %d, & = %u", key_len, key, hash_code,
-         dict->table_size, hash_code & dict->table_size);
+  XBT_CDEBUG(xbt_dict,
+             "ADD %.*s hash = %u, size = %d, & = %u", key_len, key, hash_code,
+             dict->table_size, hash_code & dict->table_size);
   current = dict->table[hash_code & dict->table_size];
   while (current != NULL &&
          (hash_code != current->hash_code || key_len != current->key_len
@@ -194,9 +195,9 @@ XBT_INLINE void xbt_dict_set_ext(xbt_dict_t dict,
       previous->next = current;
     }
   } else {
-    XBT_DEBUG("Replace %.*s by %.*s under key %.*s",
-           key_len, (char *) current->content,
-           key_len, (char *) data, key_len, (char *) key);
+    XBT_CDEBUG(xbt_dict, "Replace %.*s by %.*s under key %.*s",
+               key_len, (char *) current->content,
+               key_len, (char *) data, key_len, (char *) key);
     /* there is already an element with the same key: overwrite it */
     xbt_dictelm_set_data(dict, current, data, free_ctn);
   }

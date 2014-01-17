@@ -38,6 +38,8 @@ static int periodic_fix_fingers_delay = 120;
 static int periodic_check_predecessor_delay = 120;
 static int periodic_lookup_delay = 10;
 
+static const double sleep_delay = 4.9999;
+
 extern long int smx_total_comms;
 
 /*
@@ -293,11 +295,9 @@ int node(int argc, char *argv[])
   double next_check_predecessor_date = init_time + periodic_check_predecessor_delay;
   double next_lookup_date = init_time + periodic_lookup_delay;
 
-  #ifdef HAVE_MC
   int listen = 0;
   int no_op = 0;
   int sub_protocol = 0;
-  #endif
 
   xbt_assert(argc == 3 || argc == 5, "Wrong number of arguments for this node");
 
@@ -351,7 +351,6 @@ int node(int argc, char *argv[])
 
         // no task was received: make some periodic calls
 
-#ifdef HAVE_MC
         if(MC_is_active()){
           if(!MC_visited_reduction() && no_op){
               MC_cut();
@@ -367,7 +366,7 @@ int node(int argc, char *argv[])
               random_lookup(&node);
             listen = 1;
           }else{
-            MSG_process_sleep(5);
+            MSG_process_sleep(sleep_delay);
             if(!MC_visited_reduction())
               no_op = 1;
           }
@@ -386,27 +385,9 @@ int node(int argc, char *argv[])
             next_lookup_date = MSG_get_clock() + periodic_lookup_delay;
           }else {
             // nothing to do: sleep for a while
-            MSG_process_sleep(5);
+            MSG_process_sleep(sleep_delay);
           }
         }
-#else
-        if (MSG_get_clock() >= next_stabilize_date) {
-          stabilize(&node);
-          next_stabilize_date = MSG_get_clock() + periodic_stabilize_delay;
-        }else if (MSG_get_clock() >= next_fix_fingers_date) {
-          fix_fingers(&node);
-          next_fix_fingers_date = MSG_get_clock() + periodic_fix_fingers_delay;
-        }else if (MSG_get_clock() >= next_check_predecessor_date) {
-          check_predecessor(&node);
-          next_check_predecessor_date = MSG_get_clock() + periodic_check_predecessor_delay;
-        }else if (MSG_get_clock() >= next_lookup_date) {
-          random_lookup(&node);
-          next_lookup_date = MSG_get_clock() + periodic_lookup_delay;
-        }else {
-          // nothing to do: sleep for a while
-          MSG_process_sleep(5);
-        }
-#endif
 
       } else {
         // a transfer has occurred
@@ -428,6 +409,9 @@ int node(int argc, char *argv[])
     }
 
     if (node.comm_receive) {
+      /* handle last task if any */
+      if (MSG_comm_wait(node.comm_receive, 0) == MSG_OK)
+        task_free(task_received);
       MSG_comm_destroy(node.comm_receive);
       node.comm_receive = NULL;
     }
@@ -535,6 +519,8 @@ static void handle_task(node_t node, msg_task_t task) {
     MSG_task_dsend(task, task_data->answer_to, task_free);
     break;
 
+  default:
+    THROW_IMPOSSIBLE;
   }
 }
 
@@ -793,7 +779,6 @@ static int remote_get_predecessor(node_t node, int ask_to)
         stop = 1;
         MSG_comm_destroy(node->comm_receive);
         node->comm_receive = NULL;
-        task_free(task_sent);
       }
       else {
         msg_task_t task_received = MSG_comm_get_task(node->comm_receive);

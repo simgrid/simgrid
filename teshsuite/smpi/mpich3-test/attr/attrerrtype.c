@@ -65,6 +65,7 @@ void abort_msg( const char *str, int code )
 {
     fprintf( stderr, "%s, err = %d\n", str, code );
     MPI_Abort( MPI_COMM_WORLD, code );
+    exit(code);
 }
 
 int test_attrs( void )

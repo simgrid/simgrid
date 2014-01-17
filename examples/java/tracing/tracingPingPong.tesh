@@ -2,11 +2,11 @@
 
 ! output sort
 
-$ java -cp ${classpath:=.} tracing/TracingTest ${srcdir:=.}/platform.xml ${srcdir:=.}/tracing/tracingPingPongDeployment.xml --cfg=tracing:1  --cfg=tracing/filename:simulation.trace --cfg=tracing/platform:1
+$ java -classpath ${classpath:=.} tracing/TracingTest ${srcdir:=.}/platform.xml ${srcdir:=.}/tracing/tracingPingPongDeployment.xml --cfg=tracing:yes  --cfg=tracing/filename:simulation.trace --cfg=tracing/platform:yes
 > [0.000000] [jmsg/INFO] Using regular java threads. Coroutines could speed your simulation up.
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing' to '1'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing' to 'yes'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/filename' to 'simulation.trace'
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/platform' to '1'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/platform' to 'yes'
 > [4.474401] [jmsg/INFO] MSG_main finished; Cleaning up the simulation...
 > [Boivin:tracing.Receiver:(2) 0.000000] [jmsg/INFO] hello!
 > [Boivin:tracing.Receiver:(2) 0.000000] [jmsg/INFO] try to get a task

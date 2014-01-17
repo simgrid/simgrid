@@ -10,8 +10,8 @@
  * platform file is traced to a Paje trace file format using the tracing
  * mechanism of Simgrid.
  * You might want to run this program with the following parameters:
- * --cfg=tracing:1
- * --cfg=tracing/categorized:1
+ * --cfg=tracing:yes
+ * --cfg=tracing/categorized:yes
  * (See \ref tracing_tracing_options for details)
  */
 

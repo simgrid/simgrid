@@ -40,6 +40,7 @@ int main( int argc, char **argv )
     {
         fprintf(stderr, "Could not make struct type."), fflush(stderr); 
         MPI_Abort( MPI_COMM_WORLD, 1 );
+        exit(1);
     }
     
     memset(s_buf, 0, EL_COUNT*SIZE);

@@ -754,7 +754,7 @@ static int compare_heap_area_without_type(void *real_area1, void *real_area2, vo
  
 }
 
-
+// area_size is either a byte_size or an elements_count?&
 static int compare_heap_area_with_type(void *real_area1, void *real_area2, void *area1, void *area2, 
                                        xbt_dynar_t previous, xbt_dict_t all_types, xbt_dict_t other_types, char *type_id, 
                                        int area_size, int check_ignore, int pointer_level){
@@ -777,41 +777,41 @@ static int compare_heap_area_with_type(void *real_area1, void *real_area2, void 
   char *type_desc;
 
   switch(type->type){
-  case e_dw_base_type:
+  case DW_TAG_base_type:
     if(strcmp(type->name, "char") == 0){ /* String, hence random (arbitrary ?) size */
       if(real_area1 == real_area2)
         return -1;
       else
         return (memcmp(area1, area2, area_size) != 0);
     }else{
-      if(area_size != -1 && type->size != area_size)
+      if(area_size != -1 && type->byte_size != area_size)
         return -1;
       else{
-        return  (memcmp(area1, area2, type->size) != 0);
+        return  (memcmp(area1, area2, type->byte_size) != 0);
       }
     }
     break;
-  case e_dw_enumeration_type:
-    if(area_size != -1 && type->size != area_size)
+  case DW_TAG_enumeration_type:
+    if(area_size != -1 && type->byte_size != area_size)
       return -1;
     else
-      return (memcmp(area1, area2, type->size) != 0);
+      return (memcmp(area1, area2, type->byte_size) != 0);
     break;
-  case e_dw_typedef:
+  case DW_TAG_typedef:
     return compare_heap_area_with_type(real_area1, real_area2, area1, area2, previous, all_types, other_types, type->dw_type_id, area_size, check_ignore, pointer_level);
     break;
-  case e_dw_const_type:
+  case DW_TAG_const_type:
     return 0;
     break;
-  case e_dw_array_type:
+  case DW_TAG_array_type:
     subtype = xbt_dict_get_or_null(all_types, type->dw_type_id);
     switch(subtype->type){
-    case e_dw_base_type:
-    case e_dw_enumeration_type:
-    case e_dw_pointer_type:
-    case e_dw_structure_type:
-    case e_dw_union_type:
-      if(subtype->size == 0){ /*declaration of the type, need the complete description */
+    case DW_TAG_base_type:
+    case DW_TAG_enumeration_type:
+    case DW_TAG_pointer_type:
+    case DW_TAG_structure_type:
+    case DW_TAG_union_type:
+      if(subtype->byte_size == 0){ /*declaration of the type, need the complete description */
         type_desc = get_type_description(all_types, subtype->name);
         if(type_desc){
           subtype = xbt_dict_get_or_null(all_types, type_desc);
@@ -820,12 +820,13 @@ static int compare_heap_area_with_type(void *real_area1, void *real_area2, void 
           switch_types = 1;
         }
       }
-      elm_size = subtype->size;
+      elm_size = subtype->byte_size;
       break;
-    case e_dw_typedef:
-    case e_dw_volatile_type:
+    // TODO, just remove the type indirection?
+    case DW_TAG_typedef:
+    case DW_TAG_volatile_type:
       subsubtype = xbt_dict_get_or_null(all_types, subtype->dw_type_id);
-      if(subsubtype->size == 0){ /*declaration of the type, need the complete description */
+      if(subsubtype->byte_size == 0){ /*declaration of the type, need the complete description */
         type_desc = get_type_description(all_types, subsubtype->name);
         if(type_desc){
           subsubtype = xbt_dict_get_or_null(all_types, type_desc);
@@ -834,23 +835,24 @@ static int compare_heap_area_with_type(void *real_area1, void *real_area2, void 
           switch_types = 1;
         }
       }
-      elm_size = subsubtype->size;
+      elm_size = subsubtype->byte_size;
       break;
     default : 
       return 0;
       break;
     }
-    for(i=0; i<type->size; i++){ 
+    for(i=0; i<type->element_count; i++){
+      // TODO, add support for variable stride (DW_AT_byte_stride)
       if(switch_types)
-        res = compare_heap_area_with_type((char *)real_area1 + (i*elm_size), (char *)real_area2 + (i*elm_size), (char *)area1 + (i*elm_size), (char *)area2 + (i*elm_size), previous, other_types, all_types, type->dw_type_id, type->size, check_ignore, pointer_level);
+        res = compare_heap_area_with_type((char *)real_area1 + (i*elm_size), (char *)real_area2 + (i*elm_size), (char *)area1 + (i*elm_size), (char *)area2 + (i*elm_size), previous, other_types, all_types, type->dw_type_id, subtype->byte_size, check_ignore, pointer_level);
       else
-        res = compare_heap_area_with_type((char *)real_area1 + (i*elm_size), (char *)real_area2 + (i*elm_size), (char *)area1 + (i*elm_size), (char *)area2 + (i*elm_size), previous, all_types, other_types, type->dw_type_id, type->size, check_ignore, pointer_level);
+        res = compare_heap_area_with_type((char *)real_area1 + (i*elm_size), (char *)real_area2 + (i*elm_size), (char *)area1 + (i*elm_size), (char *)area2 + (i*elm_size), previous, all_types, other_types, type->dw_type_id, subtype->byte_size, check_ignore, pointer_level);
       if(res == 1)
         return res;
     }
     break;
-  case e_dw_pointer_type:
-    if(type->dw_type_id && ((dw_type_t)xbt_dict_get_or_null(all_types, type->dw_type_id))->type == e_dw_subroutine_type){
+  case DW_TAG_pointer_type:
+    if(type->dw_type_id && ((dw_type_t)xbt_dict_get_or_null(all_types, type->dw_type_id))->type == DW_TAG_subroutine_type){
       addr_pointed1 = *((void **)(area1)); 
       addr_pointed2 = *((void **)(area2));
       return (addr_pointed1 != addr_pointed2);;
@@ -877,8 +879,8 @@ static int compare_heap_area_with_type(void *real_area1, void *real_area2, void 
       }
     }
     break;
-  case e_dw_structure_type:
-    if(type->size == 0){ /*declaration of the structure, need the complete description */
+  case DW_TAG_structure_type:
+    if(type->byte_size == 0){ /*declaration of the structure, need the complete description */
       type_desc = get_type_description(all_types, type->name);
       if(type_desc){
         type = xbt_dict_get_or_null(all_types, type_desc);
@@ -887,13 +889,13 @@ static int compare_heap_area_with_type(void *real_area1, void *real_area2, void 
         switch_types = 1;
       }
     }
-    if(area_size != -1 && type->size != area_size){
-      if(area_size>type->size && area_size%type->size == 0){
-        for(i=0; i<(area_size/type->size); i++){ 
+    if(area_size != -1 && type->byte_size != area_size){
+      if(area_size>type->byte_size && area_size%type->byte_size == 0){
+        for(i=0; i<(area_size/type->byte_size); i++){
           if(switch_types)
-            res = compare_heap_area_with_type((char *)real_area1 + (i*type->size), (char *)real_area2 + (i*type->size), (char *)area1 + (i*type->size), (char *)area2 + (i*type->size), previous, other_types, all_types, type_id, -1, check_ignore, 0); 
+            res = compare_heap_area_with_type((char *)real_area1 + (i*type->byte_size), (char *)real_area2 + (i*type->byte_size), (char *)area1 + (i*type->byte_size), (char *)area2 + (i*type->byte_size), previous, other_types, all_types, type_id, -1, check_ignore, 0);
           else
-            res = compare_heap_area_with_type((char *)real_area1 + (i*type->size), (char *)real_area2 + (i*type->size), (char *)area1 + (i*type->size), (char *)area2 + (i*type->size), previous, all_types, other_types, type_id, -1, check_ignore, 0); 
+            res = compare_heap_area_with_type((char *)real_area1 + (i*type->byte_size), (char *)real_area2 + (i*type->byte_size), (char *)area1 + (i*type->byte_size), (char *)area2 + (i*type->byte_size), previous, all_types, other_types, type_id, -1, check_ignore, 0);
           if(res == 1)
             return res;
         }
@@ -913,10 +915,10 @@ static int compare_heap_area_with_type(void *real_area1, void *real_area2, void 
       }
     }
     break;
-  case e_dw_union_type:
-    return compare_heap_area_without_type(real_area1, real_area2, area1, area2, previous, all_types, other_types, type->size, check_ignore);
+  case DW_TAG_union_type:
+    return compare_heap_area_without_type(real_area1, real_area2, area1, area2, previous, all_types, other_types, type->byte_size, check_ignore);
     break;
-  case e_dw_volatile_type:
+  case DW_TAG_volatile_type:
     return compare_heap_area_with_type(real_area1, real_area2, area1, area2, previous, all_types, other_types, type->dw_type_id, area_size, check_ignore, pointer_level);
     break;
   default:
@@ -935,8 +937,8 @@ static char* get_offset_type(char* type_id, int offset, xbt_dict_t all_types, xb
   }
   char* type_desc;
   switch(type->type){
-  case e_dw_structure_type :
-    if(type->size == 0){ /*declaration of the structure, need the complete description */
+  case DW_TAG_structure_type :
+    if(type->byte_size == 0){ /*declaration of the structure, need the complete description */
       if(*switch_type == 0){
         type_desc = get_type_description(all_types, type->name);
         if(type_desc){
@@ -956,8 +958,8 @@ static char* get_offset_type(char* type_id, int offset, xbt_dict_t all_types, xb
       }
     
     }
-    if(area_size != -1 && type->size != area_size){
-      if(area_size>type->size && area_size%type->size == 0)
+    if(area_size != -1 && type->byte_size != area_size){
+      if(area_size>type->byte_size && area_size%type->byte_size == 0)
         return type_id;
       else
         return NULL;
@@ -1029,7 +1031,7 @@ int compare_heap_area(void *area1, void* area2, xbt_dynar_t previous, xbt_dict_t
 
   if(type_id){
     type = xbt_dict_get_or_null(all_types, type_id);
-    if(type->size == 0){
+    if(type->byte_size == 0){
       if(type->dw_type_id == NULL){
         type_desc = get_type_description(all_types, type->name);
         if(type_desc)
@@ -1040,10 +1042,10 @@ int compare_heap_area(void *area1, void* area2, xbt_dynar_t previous, xbt_dict_t
         type = xbt_dict_get_or_null(all_types, type->dw_type_id);
       }
     }
-    if((type->type == e_dw_pointer_type) || ((type->type == e_dw_base_type) && (!strcmp(type->name, "char"))))
+    if((type->byte_size == DW_TAG_pointer_type) || ((type->type == DW_TAG_base_type) && (!strcmp(type->name, "char"))))
       type_size = -1;
     else
-      type_size = type->size;
+      type_size = type->byte_size;
   }
   
   if((heapinfo1[block1].type == -1) && (heapinfo2[block2].type == -1)){  /* Free block */
@@ -1209,22 +1211,22 @@ int compare_heap_area(void *area1, void* area2, xbt_dynar_t previous, xbt_dict_t
       if(new_type_id1 !=  NULL && new_type_id2 !=  NULL && !strcmp(new_type_id1, new_type_id2)){
         if(switch_type){
           type = xbt_dict_get_or_null(other_types, new_type_id1);
-          while(type->size == 0 && type->dw_type_id != NULL)
+          while(type->byte_size == 0 && type->dw_type_id != NULL)
             type = xbt_dict_get_or_null(other_types, type->dw_type_id);
-          new_size1 = type->size;
+          new_size1 = type->byte_size;
           type = xbt_dict_get_or_null(other_types, new_type_id2);
-          while(type->size == 0 && type->dw_type_id != NULL)
+          while(type->byte_size == 0 && type->dw_type_id != NULL)
             type = xbt_dict_get_or_null(other_types, type->dw_type_id);
-          new_size2 = type->size;
+          new_size2 = type->byte_size;
         }else{
           type = xbt_dict_get_or_null(all_types, new_type_id1);
-          while(type->size == 0 && type->dw_type_id != NULL)
+          while(type->byte_size == 0 && type->dw_type_id != NULL)
             type = xbt_dict_get_or_null(all_types, type->dw_type_id);
-          new_size1 = type->size;
+          new_size1 = type->byte_size;
           type = xbt_dict_get_or_null(all_types, new_type_id2);
-          while(type->size == 0 && type->dw_type_id != NULL)
+          while(type->byte_size == 0 && type->dw_type_id != NULL)
             type = xbt_dict_get_or_null(all_types, type->dw_type_id);
-          new_size2 = type->size;
+          new_size2 = type->byte_size;
         }
       }else{
         if(match_pairs){
@@ -1342,7 +1344,7 @@ char *get_type_description(xbt_dict_t types, char *type_name){
   dw_type_t type;
 
   xbt_dict_foreach(types, dict_cursor, type_origin, type){
-    if(type->name && (strcmp(type->name, type_name) == 0) && type->size > 0){
+    if(type->name && (strcmp(type->name, type_name) == 0) && type->byte_size > 0){
       xbt_dict_cursor_free(&dict_cursor);
       return type_origin;
     }

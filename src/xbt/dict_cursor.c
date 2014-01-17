@@ -81,9 +81,9 @@ XBT_INLINE void xbt_dict_cursor_rewind(xbt_dict_cursor_t cursor)
 XBT_INLINE void xbt_dict_cursor_first(const xbt_dict_t dict,
                                       xbt_dict_cursor_t * cursor)
 {
-  XBT_DEBUG("xbt_dict_cursor_first");
+  XBT_CDEBUG(xbt_dict_cursor, "xbt_dict_cursor_first");
   if (!*cursor) {
-    XBT_DEBUG("Create the cursor on first use");
+    XBT_CDEBUG(xbt_dict_cursor, "Create the cursor on first use");
     *cursor = xbt_dict_cursor_new(dict);
   } else {
     xbt_dict_cursor_rewind(*cursor);
@@ -102,7 +102,7 @@ XBT_INLINE void xbt_dict_cursor_step(xbt_dict_cursor_t cursor)
   xbt_dictelm_t current;
   int line;
 
-  XBT_DEBUG("xbt_dict_cursor_step");
+  XBT_CDEBUG(xbt_dict_cursor, "xbt_dict_cursor_step");
   xbt_assert(cursor);
 
   current = cursor->current;
@@ -111,17 +111,17 @@ XBT_INLINE void xbt_dict_cursor_step(xbt_dict_cursor_t cursor)
   if (cursor->dict != NULL) {
 
     if (current != NULL) {
-      XBT_DEBUG("current is not null, take the next element");
+      XBT_CDEBUG(xbt_dict_cursor, "current is not null, take the next element");
       current = current->next;
-      XBT_DEBUG("next element: %p", current);
+      XBT_CDEBUG(xbt_dict_cursor, "next element: %p", current);
     }
 
     while (current == NULL && ++line <= cursor->dict->table_size) {
-      XBT_DEBUG("current is NULL, take the next line");
+      XBT_CDEBUG(xbt_dict_cursor, "current is NULL, take the next line");
       current = cursor->dict->table[line];
-      XBT_DEBUG("element in the next line: %p", current);
+      XBT_CDEBUG(xbt_dict_cursor, "element in the next line: %p", current);
     }
-    XBT_DEBUG("search finished, current = %p, line = %d", current, line);
+    XBT_CDEBUG(xbt_dict_cursor, "search finished, current = %p, line = %d", current, line);
 
     cursor->current = current;
     cursor->line = line;
@@ -139,7 +139,7 @@ XBT_INLINE int xbt_dict_cursor_get_or_free(xbt_dict_cursor_t * cursor,
 
   xbt_dictelm_t current;
 
-  XBT_DEBUG("xbt_dict_get_or_free");
+  XBT_CDEBUG(xbt_dict_cursor, "xbt_dict_get_or_free");
 
 
   if (!cursor || !(*cursor))

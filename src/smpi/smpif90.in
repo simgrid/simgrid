@@ -1,6 +1,6 @@
-#! /bin/bash
+#! /usr/bin/env bash
 
-CC=gfortran
+F90=@GFORTRAN_EXE@
 
 INCLUDEARGS="@includeflag@"
 CMAKE_LINKARGS="-L@libdir@"
@@ -11,6 +11,23 @@ main_name=main
 
 declare -a TMPFILES
 trap 'rm -f "${TMPFILES[@]}"' EXIT
+
+# $1: prefix, $2: suffix
+mymktemp () {
+    tmp=$(mktemp --suffix="$2" "$1_XXXXXXXXXX" 2> /dev/null)
+    if [ -z "$tmp" ]; then
+        # mktemp failed (unsupported --suffix ?), try unsafe mode
+        tmp=$(mktemp -u "$1_XXXXXXXXXX" 2> /dev/null)
+        if [ -z "$tmp" ]; then
+            # mktemp failed again (doesn't exist ?), try very unsafe mode
+            tmp="$1_$$x$RANDOM"
+        fi
+        tmp="${tmp}$2"
+        # create temp file, and exit if it existed before
+        sh -C -c "true > \"${tmp}\"" || exit 1
+    fi
+    echo "${tmp}"
+}
 
 CMDLINE=""
 while [ -n "$1" ]; do
@@ -23,8 +40,8 @@ while [ -n "$1" ]; do
       CMDLINE="${CMDLINE} -c "
       ;;
    *.f90|*.F90)
-      TMPFILE=$(mktemp "${ARG}_XXXXXX.f90")
-      TMPFILES+=( "${TMPFILE}" )
+      TMPFILE=$(mymktemp "${ARG}" ".f90")
+      TMPFILES+="${TMPFILE}"
       #replace "program main_name by subroutine user\_main (and the end clause as well)"
       sed 's/[[:space:]]*program[[:space:]]*\([a-zA-Z0-9\-\_]*\)/subroutine user\_main /gI;s/[[:space:]]*use[[:space:]]*mpi/\include \"mpif\.h\" /gI'  ${ARG} > ${TMPFILE}
       SRCFILE="${TMPFILE}"
@@ -36,7 +53,7 @@ while [ -n "$1" ]; do
   esac
 done
 
-CMDLINE="${CC} ${FFLAGS} ${CMDLINE} ${INCLUDEARGS} ${CMAKE_LINKARGS} ${LINKARGS}"
+CMDLINE="${F90} ${FFLAGS} ${CMDLINE} ${INCLUDEARGS} ${CMAKE_LINKARGS} ${LINKARGS}"
 
 #echo "${CMDLINE}"
 ${CMDLINE}

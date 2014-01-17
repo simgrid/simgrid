@@ -7,6 +7,8 @@
 #include "private.h"
 #include <ctype.h>
 #include <wchar.h>
+#include <stdarg.h>
+#include <simgrid/sg_config.h>
 
 
 #ifdef HAVE_TRACING
@@ -41,6 +43,8 @@ static const char *smpi_colors[] ={
     "scatterv",      "0.52 0 0.52",
     "scatter",       "1 0.74 0.54",
     "computing",     "0 1 1",
+    "init",       "0 1 0",
+    "finalize",     "0 1 0",
     NULL, NULL,
 };
 
@@ -113,6 +117,16 @@ static char *TRACE_smpi_get_key(int src, int dst, char *key, int n)
 
 static xbt_dict_t process_category;
 
+static void cleanup_extra_data (instr_extra_data extra){
+  if(extra!=NULL){
+    if(extra->sendcounts!=NULL)
+      xbt_free(extra->sendcounts);
+    if(extra->recvcounts!=NULL)
+      xbt_free(extra->recvcounts);
+    xbt_free(extra);
+  }
+}
+
 void TRACE_internal_smpi_set_category (const char *category)
 {
   if (!TRACE_smpi_is_enabled()) return;
@@ -177,9 +191,12 @@ void TRACE_smpi_finalize(int rank)
   PJ_container_free (container);
 }
 
-void TRACE_smpi_collective_in(int rank, int root, const char *operation, int size)
+void TRACE_smpi_collective_in(int rank, int root, const char *operation, instr_extra_data extra)
 {
-  if (!TRACE_smpi_is_enabled()) return;
+  if (!TRACE_smpi_is_enabled()) {
+      cleanup_extra_data(extra);
+      return;
+  }
 
   char str[INSTR_DEFAULT_STR_SIZE];
   smpi_container(rank, str, INSTR_DEFAULT_STR_SIZE);
@@ -187,8 +204,9 @@ void TRACE_smpi_collective_in(int rank, int root, const char *operation, int siz
   type_t type = PJ_type_get ("MPI_STATE", container->type);
   const char *color = instr_find_color (operation);
   val_t value = PJ_value_get_or_new (operation, color, type);
-  new_pajePushStateWithSize (SIMIX_get_clock(), container, type, value, size);
+   new_pajePushStateWithExtra (SIMIX_get_clock(), container, type, value, (void*)extra);
 }
+
 
 void TRACE_smpi_collective_out(int rank, int root, const char *operation)
 {
@@ -218,17 +236,20 @@ void TRACE_smpi_computing_init(int rank)
   new_pajePushState (SIMIX_get_clock(), container, type, value);
 }
 
-void TRACE_smpi_computing_in(int rank)
+void TRACE_smpi_computing_in(int rank, instr_extra_data extra)
 {
   //do not forget to set the color first, otherwise this will explode
-  if (!TRACE_smpi_is_enabled()|| !TRACE_smpi_is_computing()) return;
+  if (!TRACE_smpi_is_enabled()|| !TRACE_smpi_is_computing()) {
+      cleanup_extra_data(extra);
+      return;
+  }
 
   char str[INSTR_DEFAULT_STR_SIZE];
   smpi_container(rank, str, INSTR_DEFAULT_STR_SIZE);
   container_t container = PJ_container_get (str);
   type_t type = PJ_type_get ("MPI_STATE", container->type);
   val_t value = PJ_value_get_or_new ("computing", NULL, type);
-  new_pajePushState (SIMIX_get_clock(), container, type, value);
+  new_pajePushStateWithExtra  (SIMIX_get_clock(), container, type, value, (void*)extra);
 }
 
 void TRACE_smpi_computing_out(int rank)
@@ -241,10 +262,12 @@ void TRACE_smpi_computing_out(int rank)
   new_pajePopState (SIMIX_get_clock(), container, type);
 }
 
-void TRACE_smpi_ptp_in(int rank, int src, int dst, const char *operation, int size)
+void TRACE_smpi_ptp_in(int rank, int src, int dst, const char *operation, instr_extra_data extra)
 {
-  if (!TRACE_smpi_is_enabled()) return;
-
+  if (!TRACE_smpi_is_enabled()) {
+      cleanup_extra_data(extra);
+      return;
+  }
 
   char str[INSTR_DEFAULT_STR_SIZE];
   smpi_container(rank, str, INSTR_DEFAULT_STR_SIZE);
@@ -252,7 +275,7 @@ void TRACE_smpi_ptp_in(int rank, int src, int dst, const char *operation, int si
   type_t type = PJ_type_get ("MPI_STATE", container->type);
   const char *color = instr_find_color (operation);
   val_t value = PJ_value_get_or_new (operation, color, type);
-  new_pajePushStateWithSize (SIMIX_get_clock(), container, type, value, size);
+  new_pajePushStateWithExtra (SIMIX_get_clock(), container, type, value, (void*)extra);
 }
 
 void TRACE_smpi_ptp_out(int rank, int src, int dst, const char *operation)

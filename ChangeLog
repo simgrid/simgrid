@@ -1,10 +1,12 @@
-SimGrid (3.10pre1) unstable; urgency=low
+SimGrid (3.10-rc2) unstable; urgency=low
+
+ The Clean Diaper Release, a.k.a. SimGrid is leak-free.
 
  Java:
  * Reintegrate Java to the main archive as desynchronizing these
    package is not acceptable anymore (Java is now considered stable)
  * Add explicit synchronization facilities through semaphores
- * Bugfix: Task.setDataSize() only changed the C world, not the value
+ * Bug fix: Task.setDataSize() only changed the C world, not the value
    cached in the Java world
 
  MSG:
@@ -12,7 +14,7 @@ SimGrid (3.10pre1) unstable; urgency=low
    this part of MSG was not considered as production grade either.
  * Add explicit synchronization facilities through semaphores
  * Add a new function MSG_host_get_process_list()
- * Preliminary DVFS support (see /examples/msg/energy for details)
+ * Preliminary DVFS support (see examples/msg/energy/ for details)
 
  SMPI:
  * SMPI is now included directly in the libsimgrid as the windows
@@ -25,7 +27,13 @@ SimGrid (3.10pre1) unstable; urgency=low
    - The replay tool now supports traces produce either by TAU or a modified
      version of MPE.
    - Bug Fix: the compute part of the reduce action is now taken into account.
- * smpirun generates the hostfile if needed (with given hostcount and platform)
+   - Gatherv collective is now supported
+   - SimGrid (SMPI for now) can generate replay traces as well. Option -trace-ti
+     of smpirun outputs time independent traces for the current run. One file
+     is created per process. If too many processes are simulated, this behavior
+     can be changed to one file for all processes by using the
+     tracing/smpi/format/ti_one_file flag
+ * smpirun generates the host file if needed (with given host count and platform)
  * Integration of more than 100 STAR-MPI, MPICH, OpenMPI collective algorithms
    - allows to select one in particular with --cfg=smpi/coll_name:algorithm
    - allows to use the decision logic of OpenMPI(1.7) or MPICH(3.0.4) by setting
@@ -34,11 +42,13 @@ SimGrid (3.10pre1) unstable; urgency=low
    Reduce
  * Add a --cfg:tracing/smpi/internals option, to trace internal communications
    happening inside a collective SMPI call.
- * Fix the behavior of complex data types handling
- * replace MPICH-1 test suite by the one from MPICH 3.0.4. Can be built using
+ * Fix the behavior of complex data types handling.
+ * Make MPI_Wtime another synchronization point to take computations into account.
+ * Replace MPICH-1 test suite by the one from MPICH 3.0.4. Can be built using
    enable_smpi_MPICH3_testsuite flag in cmake. Run with ctest.
  * Add all missing Fortran bindings, SMPI should work with Fortran 90
    (no privatization of global variables yet)
+ * Preliminary DVFS support (see examples/smpi/energy/ for details)
 
  Model-Checking;
  * Verification of liveness properties is now available for SMPI applications
@@ -68,14 +78,23 @@ SimGrid (3.10pre1) unstable; urgency=low
  * Our own implementation of getline is renamed xbt_getline, and gets
    used even if the OS provide a getline(). This should reduce the
    configuration complexity by using the same code on all platforms.
- * new xbt_cfg_elm_boolean type
+ * New type: xbt_cfg_elm_boolean.
+ * Allow to use yes/no for boolean configuration options in the command line.
  * Allow to disable SimGrid cleanups at exit from command line option.
    There are situations where one may want a simulation to end with an exit.
    Unfortunately, calling exit may cause SimGrid to segfault, which is quite
    annoying when scripting around the simulator. Adding a
-   --cfg=clean_atexit:yes allows to circumvent this issue.
+   --cfg=clean_atexit:no allows to circumvent this issue.
 
--- Mon Oct 7 2013 Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
+ Build System:
+ * Lots of memory leaks were corrected in this release.
+ * New command line option --version, to get SimGrid version information.
+   Packagers may want to add extra words to SIMGRID_VERSION_EXTRA defined in
+   CMakeLists.txt.
+ * Supernovae builds are deprecated, and expected to be removed in the next
+   version of SimGrid.
+
+ -- Fri Nov  8 23:54:56 CET 2013 Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
 
 SimGrid (3.9) stable; urgency=low
 
@@ -151,7 +170,7 @@ SimGrid (3.9) stable; urgency=low
  TRACING:
  * Transfer the tracing files into the corresponding modules.
 
- -- Tue Feb 5 11:31:43 CET 2013 Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
+ -- Tue Feb  5 11:31:43 CET 2013 Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
 
 SimGrid (3.8.1) stable; urgency=low
 
@@ -451,7 +470,7 @@ SimGrid (3.7) stable; urgency=low
       Turn model-checking OFF if simulation performance matters to you.
       Not enabling it at runtime is not enough, disable it in cmake.
 
-  -- Tue May 15 11:30:19 UTC 2012 Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
+ -- Tue May 15 11:30:19 UTC 2012 Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
 
 SimGrid (3.6.2) stable; urgency=low
 

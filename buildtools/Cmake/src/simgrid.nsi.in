@@ -174,8 +174,8 @@ Section "Java Bindings" JavaSection
 	# install java library and examples
 	CreateDirectory $INSTDIR\examples\simgrid-java
 	setOutPath $INSTDIR\lib
-	file /nonfatal "lib\SG_java.dll"
-	file /nonfatal "lib\SG_java.def"
+	file /nonfatal "lib\simgrid-java.dll"
+	file /nonfatal "lib\simgrid-java.def"
 	file /nonfatal "simgrid.jar"
 	setOutPath $INSTDIR\examples\simgrid-java
 	file /nonfatal /r ".\examples\"

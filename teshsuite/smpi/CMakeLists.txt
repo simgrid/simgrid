@@ -101,6 +101,7 @@ set(tesh_files
   ${CMAKE_CURRENT_SOURCE_DIR}/reduce_scatter_coll.tesh
   ${CMAKE_CURRENT_SOURCE_DIR}/struct.tesh
   ${CMAKE_CURRENT_SOURCE_DIR}/vector.tesh
+  ${CMAKE_CURRENT_SOURCE_DIR}/TI_output.tesh
   PARENT_SCOPE
   )
 set(xml_files

@@ -53,6 +53,7 @@ int main( int argc, char *argv[] )
 		fprintf( stderr, "Unable to allocate a buffer of %d bytes\n",
 			 bufsize );
 		MPI_Abort( MPI_COMM_WORLD, 1 );
+                exit(1);
 	    }
 	    
 	    MPI_Buffer_attach( buf, bufsize );

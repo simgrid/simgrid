@@ -66,5 +66,5 @@ else()
   message(FATAL_ERROR "Please either install the libunwind7-dev package (or equivalent) or turn off the model-checking option of SimGrid.")
 endif()
 
-mark_as_advanced(PATH_LIBUNWIND_H)
-mark_as_advanced(PATH_LIBUNWIND_LIB)
+mark_as_advanced(PATH_LIBDW_H)
+mark_as_advanced(PATH_LIBDW_LIB)

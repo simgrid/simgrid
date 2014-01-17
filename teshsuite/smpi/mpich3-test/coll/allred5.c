@@ -38,6 +38,7 @@ int main( int argc, char *argv[] )
 	    fprintf( stderr, "Unable to allocated space for buffers (%d)\n",
 		     count );
 	    MPI_Abort( MPI_COMM_WORLD, 1 );
+            exit(1);
 	}
 	for (i=0; i<count; i++) {
 	    bufin[i] = i;

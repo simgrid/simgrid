@@ -38,6 +38,7 @@ int main( int argc, char **argv )
 	fprintf( stderr, "Could not allocate %d ints for sendbuf\n", 
 		 mycount * size );
 	MPI_Abort( MPI_COMM_WORLD, 1 );
+        exit(1);
     }
     idx = 0;
     for (i=0; i<size; i++) {
@@ -50,6 +51,7 @@ int main( int argc, char **argv )
 	fprintf( stderr, "Could not allocate %d ints for recvbuf\n", 
 		 mycount );
 	MPI_Abort( MPI_COMM_WORLD, 1 );
+        exit(1);
     }
 
     MPI_Reduce_scatter_block( sendbuf, recvbuf, mycount, MPI_INT, MPI_SUM, 

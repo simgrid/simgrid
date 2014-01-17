@@ -429,7 +429,7 @@ XBT_INLINE xbt_fifo_item_t xbt_fifo_new_item(void)
  */
 XBT_INLINE xbt_fifo_item_t xbt_fifo_newitem(void)
 {
-  XBT_WARN("This function is deprecated. Use xbt_fifo_new_item.");
+  XBT_CWARN(xbt_fifo, "This function is deprecated. Use xbt_fifo_new_item.");
   return xbt_fifo_new_item();
 }
 
@@ -469,7 +469,7 @@ XBT_INLINE void xbt_fifo_free_item(xbt_fifo_item_t b)
  */
 XBT_INLINE void xbt_fifo_freeitem(xbt_fifo_item_t b)
 {
-  XBT_WARN("This function is deprecated. Use xbt_fifo_free_item.");
+  XBT_CWARN(xbt_fifo, "This function is deprecated. Use xbt_fifo_free_item.");
   xbt_fifo_free_item(b);
   return;
 }
@@ -509,7 +509,7 @@ XBT_INLINE xbt_fifo_item_t xbt_fifo_get_last_item(xbt_fifo_t l)
  */
 XBT_INLINE xbt_fifo_item_t xbt_fifo_getFirstItem(xbt_fifo_t l)
 {
-  XBT_WARN("This function is deprecated. Use xbt_fifo_get_first_item.");
+  XBT_CWARN(xbt_fifo, "This function is deprecated. Use xbt_fifo_get_first_item.");
   return xbt_fifo_get_first_item(l);
 }
 
@@ -530,7 +530,7 @@ XBT_INLINE xbt_fifo_item_t xbt_fifo_get_next_item(xbt_fifo_item_t i)
  */
 xbt_fifo_item_t xbt_fifo_getNextItem(xbt_fifo_item_t i)
 {
-  XBT_WARN("This function is deprecated. Use xbt_fifo_get_next_item.");
+  XBT_CWARN(xbt_fifo, "This function is deprecated. Use xbt_fifo_get_next_item.");
   return xbt_fifo_get_next_item(i);
 }
 

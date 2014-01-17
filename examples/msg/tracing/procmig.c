@@ -11,8 +11,8 @@
  * of where the process has been during its execution. Migrations are represented by
  * arrows from the origin to the destination host.
  * You might want to run this program with the following parameters:
- * --cfg=tracing:1
- * --cfg=tracing/msg/process:1
+ * --cfg=tracing:yes
+ * --cfg=tracing/msg/process:yes
  * (See \ref tracing_tracing_options for details)
  */
 

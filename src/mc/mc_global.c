@@ -8,6 +8,7 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <sys/time.h>
+#include <libgen.h>
 
 #include "simgrid/sg_config.h"
 #include "../surf/surf_private.h"
@@ -17,6 +18,8 @@
 #include "mc_private.h"
 #include "xbt/automaton.h"
 #include "xbt/dict.h"
+
+static void MC_post_process_types(mc_object_info_t info);
 
 XBT_LOG_NEW_CATEGORY(mc, "All MC categories");
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_global, mc,
@@ -110,12 +113,8 @@ int compare;
 xbt_automaton_t _mc_property_automaton = NULL;
 
 /* Variables */
-xbt_dict_t mc_local_variables_libsimgrid = NULL;
-xbt_dict_t mc_local_variables_binary = NULL;
-xbt_dynar_t mc_global_variables_libsimgrid = NULL;
-xbt_dynar_t mc_global_variables_binary = NULL;
-xbt_dict_t mc_variables_type_libsimgrid = NULL;
-xbt_dict_t mc_variables_type_binary = NULL;
+mc_object_info_t mc_libsimgrid_info = NULL;
+mc_object_info_t mc_binary_info = NULL;
 
 /* Ignore mechanism */
 xbt_dynar_t mc_stack_comparison_ignore;
@@ -151,7 +150,7 @@ static void dw_location_entry_free(dw_location_entry_t e){
   xbt_free(e);
 }
 
-static void dw_type_free(dw_type_t t){
+void dw_type_free(dw_type_t t){
   xbt_free(t->name);
   xbt_free(t->dw_type_id);
   xbt_dynar_free(&(t->members));
@@ -162,7 +161,7 @@ static void dw_type_free_voidp(void *t){
   dw_type_free((dw_type_t) * (void **) t);
 }
 
-static void dw_variable_free(dw_variable_t v){
+void dw_variable_free(dw_variable_t v){
   if(v){
     xbt_free(v->name);
     xbt_free(v->type_origin);
@@ -172,8 +171,31 @@ static void dw_variable_free(dw_variable_t v){
   }
 }
 
-static void dw_variable_free_voidp(void *t){
+void dw_variable_free_voidp(void *t){
   dw_variable_free((dw_variable_t) * (void **) t);
+}
+
+// object_info
+
+mc_object_info_t MC_new_object_info(void) {
+  mc_object_info_t res = xbt_new(s_mc_object_info_t, 1);
+  res->file_name = NULL;
+  res->start_text = NULL;
+  res->start_data = NULL;
+  res->start_bss = NULL;
+  res->local_variables = xbt_dict_new_homogeneous(NULL);
+  res->global_variables = xbt_dynar_new(sizeof(dw_variable_t), dw_variable_free_voidp);
+  res->types = xbt_dict_new_homogeneous(NULL);
+  return res;
+}
+
+void MC_free_object_info(mc_object_info_t* info) {
+  xbt_free(&(*info)->file_name);
+  xbt_dict_free(&(*info)->local_variables);
+  xbt_dynar_free(&(*info)->global_variables);
+  xbt_dict_free(&(*info)->types);
+  xbt_free(info);
+  *info = NULL;
 }
 
 /*************************************************************************/
@@ -314,110 +336,11 @@ static dw_location_t MC_dwarf_get_location(xbt_dict_t location_list, char *expr)
 
 }
 
-static xbt_dict_t MC_dwarf_get_location_list(const char *elf_file){
 
-  char *command = bprintf("objdump -Wo %s", elf_file);
-
-  FILE *fp = popen(command, "r");
-
-  if(fp == NULL){
-    perror("popen for objdump failed");
-    xbt_abort();
-  }
-
-  int debug = 0; /*Detect if the program has been compiled with -g */
-
-  xbt_dict_t location_list = xbt_dict_new_homogeneous(NULL);
-  char *line = NULL, *loc_expr = NULL;
-  ssize_t read;
-  size_t n = 0;
-  int cursor_remove;
-  xbt_dynar_t split = NULL;
-
-  while ((read = xbt_getline(&line, &n, fp)) != -1) {
-
-    /* Wipeout the new line character */
-    line[read - 1] = '\0';
-
-    xbt_str_trim(line, NULL);
-    
-    if(n == 0)
-      continue;
-
-    if(strlen(line) == 0)
-      continue;
-
-    if(debug == 0){
-
-      if(strncmp(line, elf_file, strlen(elf_file)) == 0)
-        continue;
-      
-      if(strncmp(line, "Contents", 8) == 0)
-        continue;
-
-      if(strncmp(line, "Offset", 6) == 0){
-        debug = 1;
-        continue;
-      }
-    }
-
-    if(debug == 0){
-      XBT_INFO("Your program must be compiled with -g");
-      xbt_abort();
-    }
-
-    xbt_dynar_t loclist = xbt_dynar_new(sizeof(dw_location_entry_t), NULL);
-
-    xbt_str_strip_spaces(line);
-    split = xbt_str_split(line, " ");
-
-    while(read != -1 && strcmp("<End", (char *)xbt_dynar_get_as(split, 1, char *)) != 0){
-      
-      dw_location_entry_t new_entry = xbt_new0(s_dw_location_entry_t, 1);
-      new_entry->lowpc = strtoul((char *)xbt_dynar_get_as(split, 1, char *), NULL, 16);
-      new_entry->highpc = strtoul((char *)xbt_dynar_get_as(split, 2, char *), NULL, 16);
-      
-      cursor_remove =0;
-      while(cursor_remove < 3){
-        xbt_dynar_remove_at(split, 0, NULL);
-        cursor_remove++;
-      }
-
-      loc_expr = xbt_str_join(split, " ");
-      xbt_str_ltrim(loc_expr, "(");
-      xbt_str_rtrim(loc_expr, ")");
-      new_entry->location = MC_dwarf_get_location(NULL, loc_expr);
-
-      xbt_dynar_push(loclist, &new_entry);
-
-      xbt_dynar_free(&split);
-      free(loc_expr);
-
-      read = xbt_getline(&line, &n, fp);
-      if(read != -1){
-        line[read - 1] = '\0';
-        xbt_str_strip_spaces(line);
-        split = xbt_str_split(line, " ");
-      }
-
-    }
-
-
-    char *key = bprintf("%d", (int)strtoul((char *)xbt_dynar_get_as(split, 0, char *), NULL, 16));
-    xbt_dict_set(location_list, key, loclist, NULL);
-    xbt_free(key);
-    
-    xbt_dynar_free(&split);
-
-  }
-
-  xbt_free(line);
-  xbt_free(command);
-  pclose(fp);
-
-  return location_list;
-}
-
+/** \brief Finds a frame (DW_TAG_subprogram) from an DWARF offset in the rangd of this subprogram
+ *
+ * The offset can be an offset of a child DW_TAG_variable.
+ */
 static dw_frame_t MC_dwarf_get_frame_by_offset(xbt_dict_t all_variables, unsigned long int offset){
 
   xbt_dict_cursor_t cursor = NULL;
@@ -492,731 +415,49 @@ static int MC_dwarf_get_variable_index(xbt_dynar_t variables, char* var, void *a
 
 }
 
-
-static void MC_dwarf_get_variables(const char *elf_file, xbt_dict_t location_list, xbt_dict_t *local_variables, xbt_dynar_t *global_variables, xbt_dict_t *types){
-
-  char *command = bprintf("objdump -Wi %s", elf_file);
-  
-  FILE *fp = popen(command, "r");
-
-  if(fp == NULL)
-    perror("popen for objdump failed");
-
-  char *line = NULL, *origin, *abstract_origin, *current_frame = NULL, 
-    *subprogram_name = NULL, *subprogram_start = NULL, *subprogram_end = NULL,
-    *node_type = NULL, *location_type = NULL, *variable_name = NULL, 
-    *loc_expr = NULL, *name = NULL, *end =NULL, *type_origin = NULL, *global_address = NULL, 
-    *parent_value = NULL;
-
-  ssize_t read =0;
-  size_t n = 0;
-  int global_variable = 0, parent = 0, new_frame = 0, new_variable = 1, size = 0, 
-    is_pointer = 0, struct_decl = 0, member_end = 0,
-    enumeration_size = 0, subrange = 0, union_decl = 0, offset = 0, index = 0;
-  
-  xbt_dynar_t split = NULL, split2 = NULL;
-
-  xbt_dict_t variables_origin = xbt_dict_new_homogeneous(xbt_free);
-  xbt_dict_t subprograms_origin = xbt_dict_new_homogeneous(xbt_free);
-
-  dw_frame_t variable_frame, subroutine_frame = NULL;
-
-  e_dw_type_type type_type = -1;
-
-  read = xbt_getline(&line, &n, fp);
-
-  while (read != -1) {
-
-    /* Wipeout the new line character */
-    line[read - 1] = '\0';
-  
-    if(n == 0 || strlen(line) == 0){
-      read = xbt_getline(&line, &n, fp);
-      continue;
-    }
-
-    xbt_str_ltrim(line, NULL);
-    xbt_str_strip_spaces(line);
-    
-    if(line[0] != '<'){
-      read = xbt_getline(&line, &n, fp);
-      continue;
-    }
-    
-    xbt_dynar_free(&split);
-    split = xbt_str_split(line, " ");
-
-    /* Get node type */
-    node_type = xbt_dynar_get_as(split, xbt_dynar_length(split) - 1, char *);
-
-    if(strcmp(node_type, "(DW_TAG_subprogram)") == 0){ /* New frame */
-
-      dw_frame_t frame = NULL;
-
-      strtok(xbt_dynar_get_as(split, 0, char *), "<");
-      subprogram_start = xbt_strdup(strtok(NULL, "<"));
-      xbt_str_rtrim(subprogram_start, ">:");
-
-      read = xbt_getline(&line, &n, fp);
-   
-      while(read != -1){
-
-        /* Wipeout the new line character */
-        line[read - 1] = '\0';
-
-        if(n == 0 || strlen(line) == 0){
-          read = xbt_getline(&line, &n, fp);
-          continue;
-        }
-        
-        xbt_dynar_free(&split);
-        xbt_str_rtrim(line, NULL);
-        xbt_str_strip_spaces(line);
-        split = xbt_str_split(line, " ");
-          
-        node_type = xbt_dynar_get_as(split, 1, char *);
-
-        if(strncmp(node_type, "DW_AT_", 6) != 0)
-          break;
-
-        if(strcmp(node_type, "DW_AT_sibling") == 0){
-
-          subprogram_end = xbt_strdup(xbt_dynar_get_as(split, 3, char*));
-          xbt_str_ltrim(subprogram_end, "<0x");
-          xbt_str_rtrim(subprogram_end, ">");
-          
-        }else if(strcmp(node_type, "DW_AT_abstract_origin:") == 0){ /* Frame already in dict */
-          
-          new_frame = 0;
-          abstract_origin = xbt_strdup(xbt_dynar_get_as(split, 2, char*));
-          xbt_str_ltrim(abstract_origin, "<0x");
-          xbt_str_rtrim(abstract_origin, ">");
-          subprogram_name = (char *)xbt_dict_get_or_null(subprograms_origin, abstract_origin);
-          frame = xbt_dict_get_or_null(*local_variables, subprogram_name); 
-          xbt_free(abstract_origin);
-
-        }else if(strcmp(node_type, "DW_AT_name") == 0){
-
-          new_frame = 1;
-          xbt_free(current_frame);
-          frame = xbt_new0(s_dw_frame_t, 1);
-          frame->name = strdup(xbt_dynar_get_as(split, xbt_dynar_length(split) - 1, char *)); 
-          frame->variables = xbt_dynar_new(sizeof(dw_variable_t), dw_variable_free_voidp);
-          frame->frame_base = xbt_new0(s_dw_location_t, 1); 
-          current_frame = strdup(frame->name);
-
-          xbt_dict_set(subprograms_origin, subprogram_start, xbt_strdup(frame->name), NULL);
-        
-        }else if(strcmp(node_type, "DW_AT_frame_base") == 0){
-
-          location_type = xbt_dynar_get_as(split, xbt_dynar_length(split) - 1, char *);
-
-          if(strcmp(location_type, "list)") == 0){ /* Search location in location list */
-
-            frame->frame_base = MC_dwarf_get_location(location_list, xbt_dynar_get_as(split, 3, char *));
-             
-          }else{
-                
-            xbt_str_strip_spaces(line);
-            split2 = xbt_str_split(line, "(");
-            xbt_dynar_remove_at(split2, 0, NULL);
-            loc_expr = xbt_str_join(split2, " ");
-            xbt_str_rtrim(loc_expr, ")");
-            frame->frame_base = MC_dwarf_get_location(NULL, loc_expr);
-            xbt_dynar_free(&split2);
-            xbt_free(loc_expr);
-
-          }
- 
-        }else if(strcmp(node_type, "DW_AT_low_pc") == 0){
-          
-          if(frame != NULL)
-            frame->low_pc = (void *)strtoul(xbt_dynar_get_as(split, 3, char *), NULL, 16);
-
-        }else if(strcmp(node_type, "DW_AT_high_pc") == 0){
-
-          if(frame != NULL)
-            frame->high_pc = (void *)strtoul(xbt_dynar_get_as(split, 3, char *), NULL, 16);
-
-        }else if(strcmp(node_type, "DW_AT_MIPS_linkage_name:") == 0){
-
-          xbt_free(frame->name);
-          xbt_free(current_frame);
-          frame->name = strdup(xbt_dynar_get_as(split, xbt_dynar_length(split) - 1, char *));   
-          current_frame = strdup(frame->name);
-          xbt_dict_set(subprograms_origin, subprogram_start, xbt_strdup(frame->name), NULL);
-
-        }
-
-        read = xbt_getline(&line, &n, fp);
-
-      }
- 
-      if(new_frame == 1){
-        frame->start = strtoul(subprogram_start, NULL, 16);
-        if(subprogram_end != NULL)
-          frame->end = strtoul(subprogram_end, NULL, 16);
-        xbt_dict_set(*local_variables, frame->name, frame, NULL);
-      }
-
-      xbt_free(subprogram_start);
-      xbt_free(subprogram_end);
-      subprogram_end = NULL;
-        
-
-    }else if(strcmp(node_type, "(DW_TAG_variable)") == 0){ /* New variable */
-
-      dw_variable_t var = NULL;
-      
-      parent_value = strdup(xbt_dynar_get_as(split, 0, char *));
-      parent_value = strtok(parent_value,"<");
-      xbt_str_rtrim(parent_value, ">");
-      parent = atoi(parent_value);
-      xbt_free(parent_value);
-
-      if(parent == 1)
-        global_variable = 1;
-    
-      strtok(xbt_dynar_get_as(split, 0, char *), "<");
-      origin = xbt_strdup(strtok(NULL, "<"));
-      xbt_str_rtrim(origin, ">:");
-      
-      read = xbt_getline(&line, &n, fp);
-      
-      while(read != -1){
-
-        /* Wipeout the new line character */
-        line[read - 1] = '\0'; 
-
-        if(n == 0 || strlen(line) == 0){
-          read = xbt_getline(&line, &n, fp);
-          continue;
-        }
-    
-        xbt_dynar_free(&split);
-        xbt_str_rtrim(line, NULL);
-        xbt_str_strip_spaces(line);
-        split = xbt_str_split(line, " ");
-  
-        node_type = xbt_dynar_get_as(split, 1, char *);
-
-        if(strncmp(node_type, "DW_AT_", 6) != 0)
-          break;
-
-        if(strcmp(node_type, "DW_AT_name") == 0){
-
-          var = xbt_new0(s_dw_variable_t, 1);
-          var->name = xbt_strdup(xbt_dynar_get_as(split, xbt_dynar_length(split) - 1, char *));
-          xbt_dict_set(variables_origin, origin, xbt_strdup(var->name), NULL);
-         
-        }else if(strcmp(node_type, "DW_AT_abstract_origin:") == 0){
-
-          new_variable = 0;
-
-          abstract_origin = xbt_dynar_get_as(split, 2, char *);
-          xbt_str_ltrim(abstract_origin, "<0x");
-          xbt_str_rtrim(abstract_origin, ">");
-          
-          variable_name = (char *)xbt_dict_get_or_null(variables_origin, abstract_origin);
-          variable_frame = MC_dwarf_get_frame_by_offset(*local_variables, strtoul(abstract_origin, NULL, 16));
-          var = MC_dwarf_get_variable_by_name(variable_frame, variable_name); 
-
-        }else if(strcmp(node_type, "DW_AT_location") == 0){
-
-          if(var != NULL){
-
-            if(!global_variable){
-
-              location_type = xbt_dynar_get_as(split, xbt_dynar_length(split) - 1, char *);
-
-              if(strcmp(location_type, "list)") == 0){ /* Search location in location list */
-                var->address.location = MC_dwarf_get_location(location_list, xbt_dynar_get_as(split, 3, char *));
-              }else{
-                xbt_str_strip_spaces(line);
-                split2 = xbt_str_split(line, "(");
-                xbt_dynar_remove_at(split2, 0, NULL);
-                loc_expr = xbt_str_join(split2, " ");
-                xbt_str_rtrim(loc_expr, ")");
-                if(strncmp("DW_OP_addr", loc_expr, 10) == 0){
-                  global_variable = 1;
-                  xbt_dynar_free(&split2);
-                  split2 = xbt_str_split(loc_expr, " ");
-                  if(strcmp(elf_file, xbt_binary_name) != 0)
-                    var->address.address = (char *)start_text_libsimgrid + (long)((void *)strtoul(xbt_dynar_get_as(split2, xbt_dynar_length(split2) - 1, char*), NULL, 16));
-                  else
-                    var->address.address = (void *)strtoul(xbt_dynar_get_as(split2, xbt_dynar_length(split2) - 1, char*), NULL, 16);
-                }else{
-                  var->address.location = MC_dwarf_get_location(NULL, loc_expr);
-                }
-                xbt_dynar_free(&split2);
-                xbt_free(loc_expr);
-              }
-            }else{
-              global_address = xbt_strdup(xbt_dynar_get_as(split, xbt_dynar_length(split) - 1, char *));
-              xbt_str_rtrim(global_address, ")");
-              if(strcmp(elf_file, xbt_binary_name) != 0)
-                var->address.address = (char *)start_text_libsimgrid + (long)((void *)strtoul(global_address, NULL, 16));
-              else
-                var->address.address = (void *)strtoul(global_address, NULL, 16);
-              xbt_free(global_address);
-              global_address = NULL;
-            }
-
-          }
-                   
-        }else if(strcmp(node_type, "DW_AT_type") == 0){
-          
-          type_origin = xbt_strdup(xbt_dynar_get_as(split, 3, char *));
-          xbt_str_ltrim(type_origin, "<0x");
-          xbt_str_rtrim(type_origin, ">");
-        
-        }else if(strcmp(node_type, "DW_AT_declaration") == 0){
-
-          new_variable = 0;
-          if(new_variable){
-            dw_variable_free(var);
-            var = NULL;
-          }
-        
-        }else if(strcmp(node_type, "DW_AT_artificial") == 0){
-          
-          new_variable = 0;
-          if(new_variable){
-            dw_variable_free(var);
-            var = NULL;
-          }
-        
-        }
-
-        read = xbt_getline(&line, &n, fp);
- 
-      }
-
-      if(new_variable == 1){
-        
-        if(!global_variable){
-          variable_frame = xbt_dict_get_or_null(*local_variables, current_frame);
-          var->type_origin = strdup(type_origin);
-          var->global = 0;
-          index = MC_dwarf_get_variable_index(variable_frame->variables, var->name, NULL);
-          if(index != -1)
-            xbt_dynar_insert_at(variable_frame->variables, index, &var);
-        }else{
-          var->type_origin = strdup(type_origin);
-          var->global = 1;
-          index = MC_dwarf_get_variable_index(*global_variables, var->name, var->address.address);
-          if(index != -1)
-            xbt_dynar_insert_at(*global_variables, index, &var); 
-        }
-
-         xbt_free(type_origin);
-         type_origin = NULL;
-      }
-
-      global_variable = 0;
-      new_variable = 1;
-
-    }else if(strcmp(node_type, "(DW_TAG_inlined_subroutine)") == 0){
-
-      read = xbt_getline(&line, &n, fp);
-
-      while(read != -1){
-
-        /* Wipeout the new line character */
-        line[read - 1] = '\0'; 
-
-        if(n == 0 || strlen(line) == 0){
-          read = xbt_getline(&line, &n, fp);
-          continue;
-        }
-
-        xbt_dynar_free(&split);
-        xbt_str_rtrim(line, NULL);
-        xbt_str_strip_spaces(line);
-        split = xbt_str_split(line, " ");
-        
-        if(strncmp(xbt_dynar_get_as(split, 1, char *), "DW_AT_", 6) != 0)
-          break;
-          
-        node_type = xbt_dynar_get_as(split, 1, char *);
-
-        if(strcmp(node_type, "DW_AT_abstract_origin:") == 0){
-
-          origin = xbt_dynar_get_as(split, 2, char *);
-          xbt_str_ltrim(origin, "<0x");
-          xbt_str_rtrim(origin, ">");
-          
-          subprogram_name = (char *)xbt_dict_get_or_null(subprograms_origin, origin);
-          subroutine_frame = xbt_dict_get_or_null(*local_variables, subprogram_name);
-        
-        }else if(strcmp(node_type, "DW_AT_low_pc") == 0){
-
-          subroutine_frame->low_pc = (void *)strtoul(xbt_dynar_get_as(split, 3, char *), NULL, 16);
-
-        }else if(strcmp(node_type, "DW_AT_high_pc") == 0){
-
-          subroutine_frame->high_pc = (void *)strtoul(xbt_dynar_get_as(split, 3, char *), NULL, 16);
-        }
-
-        read = xbt_getline(&line, &n, fp);
-      
-      }
-
-    }else if(strcmp(node_type, "(DW_TAG_base_type)") == 0 
-             || strcmp(node_type, "(DW_TAG_enumeration_type)") == 0
-             || strcmp(node_type, "(DW_TAG_enumerator)") == 0
-             || strcmp(node_type, "(DW_TAG_typedef)") == 0
-             || strcmp(node_type, "(DW_TAG_const_type)") == 0
-             || strcmp(node_type, "(DW_TAG_subroutine_type)") == 0
-             || strcmp(node_type, "(DW_TAG_volatile_type)") == 0
-             || (is_pointer = !strcmp(node_type, "(DW_TAG_pointer_type)"))){
-
-      if(strcmp(node_type, "(DW_TAG_base_type)") == 0)
-        type_type = e_dw_base_type;
-      else if(strcmp(node_type, "(DW_TAG_enumeration_type)") == 0)
-        type_type = e_dw_enumeration_type;
-      else if(strcmp(node_type, "(DW_TAG_enumerator)") == 0)
-        type_type = e_dw_enumerator;
-      else if(strcmp(node_type, "(DW_TAG_typedef)") == 0)
-        type_type = e_dw_typedef;
-      else if(strcmp(node_type, "(DW_TAG_const_type)") == 0)
-        type_type = e_dw_const_type;
-      else if(strcmp(node_type, "(DW_TAG_pointer_type)") == 0)
-        type_type = e_dw_pointer_type;
-      else if(strcmp(node_type, "(DW_TAG_subroutine_type)") == 0)
-        type_type = e_dw_subroutine_type;
-      else if(strcmp(node_type, "(DW_TAG_volatile_type)") == 0)
-        type_type = e_dw_volatile_type;
-
-      strtok(xbt_dynar_get_as(split, 0, char *), "<");
-      origin = strdup(strtok(NULL, "<"));
-      xbt_str_rtrim(origin, ">:");
-      
-      read = xbt_getline(&line, &n, fp);
-      
-      while(read != -1){
-        
-         /* Wipeout the new line character */
-        line[read - 1] = '\0'; 
-
-        if(n == 0 || strlen(line) == 0){
-          read = xbt_getline(&line, &n, fp);
-          continue;
-        }
-
-        xbt_dynar_free(&split);
-        xbt_str_rtrim(line, NULL);
-        xbt_str_strip_spaces(line);
-        split = xbt_str_split(line, " ");
-        
-        if(strncmp(xbt_dynar_get_as(split, 1, char *), "DW_AT_", 6) != 0)
-          break;
-
-        node_type = xbt_dynar_get_as(split, 1, char *);
-
-        if(strcmp(node_type, "DW_AT_byte_size") == 0){
-          size = strtol(xbt_dynar_get_as(split, xbt_dynar_length(split) - 1, char*), NULL, 10);
-          if(type_type == e_dw_enumeration_type)
-            enumeration_size = size;
-        }else if(strcmp(node_type, "DW_AT_name") == 0){
-          end = xbt_str_join(split, " ");
-          xbt_dynar_free(&split);
-          split = xbt_str_split(end, "):");
-          xbt_str_ltrim(xbt_dynar_get_as(split, xbt_dynar_length(split) - 1, char*), NULL);
-          name = xbt_strdup(xbt_dynar_get_as(split, xbt_dynar_length(split) - 1, char*));
-        }else if(strcmp(node_type, "DW_AT_type") == 0){
-          type_origin = xbt_strdup(xbt_dynar_get_as(split, 3, char *));
-          xbt_str_ltrim(type_origin, "<0x");
-          xbt_str_rtrim(type_origin, ">");
-        }
-        
-        read = xbt_getline(&line, &n, fp);
-      }
-
-      dw_type_t type = xbt_new0(s_dw_type_t, 1);
-      type->type = type_type;
-      if(name)
-        type->name = xbt_strdup(name);
-      else
-        type->name = xbt_strdup("undefined");
-      type->is_pointer_type = is_pointer;
-      type->id = (void *)strtoul(origin, NULL, 16);
-      if(type_origin)
-        type->dw_type_id = xbt_strdup(type_origin);
-      if(type_type == e_dw_enumerator)
-        type->size = enumeration_size;
-      else
-        type->size = size;
-      type->members = NULL;
-
-      xbt_dict_set(*types, origin, type, NULL); 
-
-      xbt_free(name);
-      name = NULL;
-      xbt_free(type_origin);
-      type_origin = NULL;
-      xbt_free(end);
-      end = NULL;
-
-      is_pointer = 0;
-      size = 0;
-      xbt_free(origin);
-
-    }else if(strcmp(node_type, "(DW_TAG_structure_type)") == 0 || strcmp(node_type, "(DW_TAG_union_type)") == 0){
-      
-      if(strcmp(node_type, "(DW_TAG_structure_type)") == 0)
-        struct_decl = 1;
-      else
-        union_decl = 1;
-
-      strtok(xbt_dynar_get_as(split, 0, char *), "<");
-      origin = strdup(strtok(NULL, "<"));
-      xbt_str_rtrim(origin, ">:");
-      
-      read = xbt_getline(&line, &n, fp);
-
-      dw_type_t type = NULL;
-
-      while(read != -1){
-      
-        while(read != -1){
-        
-          /* Wipeout the new line character */
-          line[read - 1] = '\0'; 
-
-          if(n == 0 || strlen(line) == 0){
-            read = xbt_getline(&line, &n, fp);
-            continue;
-          }
-
-          xbt_dynar_free(&split);
-          xbt_str_rtrim(line, NULL);
-          xbt_str_strip_spaces(line);
-          split = xbt_str_split(line, " ");
-        
-          node_type = xbt_dynar_get_as(split, 1, char *);
-
-          if(strncmp(node_type, "DW_AT_", 6) != 0){
-            member_end = 1;
-            break;
-          }
-
-          if(strcmp(node_type, "DW_AT_byte_size") == 0){
-            size = strtol(xbt_dynar_get_as(split, xbt_dynar_length(split) - 1, char*), NULL, 10);
-          }else if(strcmp(node_type, "DW_AT_name") == 0){
-            xbt_free(end);
-            end = xbt_str_join(split, " ");
-            xbt_dynar_free(&split);
-            split = xbt_str_split(end, "):");
-            xbt_str_ltrim(xbt_dynar_get_as(split, xbt_dynar_length(split) - 1, char*), NULL);
-            name = xbt_strdup(xbt_dynar_get_as(split, xbt_dynar_length(split) - 1, char*));
-          }else if(strcmp(node_type, "DW_AT_type") == 0){
-            type_origin = xbt_strdup(xbt_dynar_get_as(split, 3, char *));
-            xbt_str_ltrim(type_origin, "<0x");
-            xbt_str_rtrim(type_origin, ">");
-          }else if(strcmp(node_type, "DW_AT_data_member_location:") == 0){
-            xbt_free(end);
-            end = xbt_str_join(split, " ");
-            xbt_dynar_free(&split);
-            split = xbt_str_split(end, "DW_OP_plus_uconst:");
-            xbt_str_ltrim(xbt_dynar_get_as(split, xbt_dynar_length(split) - 1, char *), NULL);
-            xbt_str_rtrim(xbt_dynar_get_as(split, xbt_dynar_length(split) - 1, char *), ")");
-            offset = strtol(xbt_dynar_get_as(split, xbt_dynar_length(split) - 1, char*), NULL, 10);
-          }
-
-          read = xbt_getline(&line, &n, fp);
-          
-        }
-
-        if(member_end && type){         
-          member_end = 0;
-          
-          dw_type_t member_type = xbt_new0(s_dw_type_t, 1);
-          member_type->name = xbt_strdup(name);
-          member_type->size = size;
-          member_type->is_pointer_type = is_pointer;
-          member_type->id = (void *)strtoul(origin, NULL, 16);
-          member_type->offset = offset;
-          if(type_origin)
-            member_type->dw_type_id = xbt_strdup(type_origin);
-
-          xbt_dynar_push(type->members, &member_type);
-
-          xbt_free(name);
-          name = NULL;
-          xbt_free(end);
-          end = NULL;
-          xbt_free(type_origin);
-          type_origin = NULL;
-          size = 0;
-          offset = 0;
-
-          xbt_free(origin);
-          origin = NULL;
-          strtok(xbt_dynar_get_as(split, 0, char *), "<");
-          origin = strdup(strtok(NULL, "<"));
-          xbt_str_rtrim(origin, ">:");
-
-        }
-
-        if(struct_decl || union_decl){
-          type = xbt_new0(s_dw_type_t, 1);
-          if(struct_decl)
-            type->type = e_dw_structure_type;
-          else
-            type->type = e_dw_union_type;
-          type->name = xbt_strdup(name);
-          type->size = size;
-          type->is_pointer_type = is_pointer;
-          type->id = (void *)strtoul(origin, NULL, 16);
-          if(type_origin)
-            type->dw_type_id = xbt_strdup(type_origin);
-          type->members = xbt_dynar_new(sizeof(dw_type_t), dw_type_free_voidp);
-          
-          xbt_dict_set(*types, origin, type, NULL); 
-          
-          xbt_free(name);
-          name = NULL;
-          xbt_free(end);
-          end = NULL;
-          xbt_free(type_origin);
-          type_origin = NULL;
-          size = 0;
-          struct_decl = 0;
-          union_decl = 0;
-
-        }
-
-        if(strcmp(xbt_dynar_get_as(split, xbt_dynar_length(split) - 1, char *), "(DW_TAG_member)") != 0)
-          break;  
-
-        read = xbt_getline(&line, &n, fp);
-    
-      }
-
-      xbt_free(origin);
-      origin = NULL;
-
-    }else if(strcmp(node_type, "(DW_TAG_array_type)") == 0){
-      
-      strtok(xbt_dynar_get_as(split, 0, char *), "<");
-      origin = strdup(strtok(NULL, "<"));
-      xbt_str_rtrim(origin, ">:");
-      
-      read = xbt_getline(&line, &n, fp);
-
-      dw_type_t type = NULL;
-
-      while(read != -1){
-      
-        while(read != -1){
-        
-          /* Wipeout the new line character */
-          line[read - 1] = '\0'; 
-
-          if(n == 0 || strlen(line) == 0){
-            read = xbt_getline(&line, &n, fp);
-            continue;
-          }
-
-          xbt_dynar_free(&split);
-          xbt_str_rtrim(line, NULL);
-          xbt_str_strip_spaces(line);
-          split = xbt_str_split(line, " ");
-        
-          node_type = xbt_dynar_get_as(split, 1, char *);
-
-          if(strncmp(node_type, "DW_AT_", 6) != 0)
-            break;
-
-          if(strcmp(node_type, "DW_AT_upper_bound") == 0){
-            size = strtol(xbt_dynar_get_as(split, xbt_dynar_length(split) - 1, char*), NULL, 10);
-          }else if(strcmp(node_type, "DW_AT_name") == 0){
-            end = xbt_str_join(split, " ");
-            xbt_dynar_free(&split);
-            split = xbt_str_split(end, "):");
-            xbt_str_ltrim(xbt_dynar_get_as(split, xbt_dynar_length(split) - 1, char*), NULL);
-            name = xbt_strdup(xbt_dynar_get_as(split, xbt_dynar_length(split) - 1, char*));
-          }else if(strcmp(node_type, "DW_AT_type") == 0){
-            type_origin = xbt_strdup(xbt_dynar_get_as(split, 3, char *));
-            xbt_str_ltrim(type_origin, "<0x");
-            xbt_str_rtrim(type_origin, ">");
-          }
-
-          read = xbt_getline(&line, &n, fp);
-          
-        }
-
-        if(strcmp(xbt_dynar_get_as(split, xbt_dynar_length(split) - 1, char *), "(DW_TAG_subrange_type)") == 0){
-          subrange = 1;         
-        }
-
-        if(subrange && type){         
-          type->size = size;
-      
-          xbt_free(name);
-          name = NULL;
-          xbt_free(end);
-          end = NULL;
-          xbt_free(type_origin);
-          type_origin = NULL;
-          size = 0;
-
-          xbt_free(origin);
-          origin = NULL;
-          strtok(xbt_dynar_get_as(split, 0, char *), "<");
-          origin = strdup(strtok(NULL, "<"));
-          xbt_str_rtrim(origin, ">:");
-
-        }else {
-          
-          type = xbt_new0(s_dw_type_t, 1);
-          type->type = e_dw_array_type;
-          type->name = xbt_strdup(name);
-          type->is_pointer_type = is_pointer;
-          type->id = (void *)strtoul(origin, NULL, 16);
-          if(type_origin)
-            type->dw_type_id = xbt_strdup(type_origin);
-          type->members = NULL;
-          
-          xbt_dict_set(*types, origin, type, NULL); 
-          
-          xbt_free(name);
-          name = NULL;
-          xbt_free(end);
-          end = NULL;
-          xbt_free(type_origin);
-          type_origin = NULL;
-          size = 0;
-        }
-
-        if(strcmp(xbt_dynar_get_as(split, xbt_dynar_length(split) - 1, char *), "(DW_TAG_subrange_type)") != 0)
-          break;  
-
-        read = xbt_getline(&line, &n, fp);
-    
-      }
-
-      xbt_free(origin);
-      origin = NULL;
-
-    }else{
-
-      read = xbt_getline(&line, &n, fp);
-
-    }
-
-  }
-  
-  xbt_dynar_free(&split);
-  xbt_dict_free(&variables_origin);
-  xbt_dict_free(&subprograms_origin);
-  xbt_free(line);
-  xbt_free(command);
-  pclose(fp);
-  
+void MC_dwarf_register_global_variable(mc_object_info_t info, dw_variable_t variable) {
+  int index = MC_dwarf_get_variable_index(info->global_variables, variable->name, variable->address.address);
+  if (index != -1)
+    xbt_dynar_insert_at(info->global_variables, index, &variable);
+  // TODO, else ?
 }
 
+void MC_dwarf_register_non_global_variable(mc_object_info_t info, dw_frame_t frame, dw_variable_t variable) {
+  xbt_assert(frame, "Frame is NULL");
+  int index = MC_dwarf_get_variable_index(frame->variables, variable->name, NULL);
+  if (index != -1)
+    xbt_dynar_insert_at(frame->variables, index, &variable);
+  // TODO, else ?
+}
+
+void MC_dwarf_register_variable(mc_object_info_t info, dw_frame_t frame, dw_variable_t variable) {
+  if(variable->global)
+    MC_dwarf_register_global_variable(info, variable);
+  else if(frame==NULL)
+    xbt_die("No frame for this local variable");
+  else
+    MC_dwarf_register_non_global_variable(info, frame, variable);
+}
+
+static void MC_post_process_array_size(mc_object_info_t info, dw_type_t type) {
+  xbt_assert(type->dw_type_id, "No base type for array <%p>%s", type->id, type->name);
+  dw_type_t subtype = xbt_dict_get_or_null(info->types, type->dw_type_id);
+  xbt_assert(subtype, "Unkown base type <%s> for array <%p>%s", type->dw_type_id, type->id, type->name);
+  if(subtype->type==DW_TAG_array_type && type->byte_size==0) {
+	  MC_post_process_array_size(info, subtype);
+  }
+  type->byte_size = type->element_count*subtype->byte_size;
+}
+
+static void MC_post_process_types(mc_object_info_t info) {
+  xbt_dict_cursor_t cursor;
+  char *origin;
+  dw_type_t type;
+  xbt_dict_foreach(info->types, cursor, origin, type){
+    if(type->type==DW_TAG_array_type && type->byte_size==0)
+      MC_post_process_array_size(info, type);
+  }
+}
 
 /*******************************  Ignore mechanism *******************************/
 /*********************************************************************************/
@@ -1375,20 +616,20 @@ void MC_ignore_global_variable(const char *name){
 
   MC_SET_RAW_MEM;
 
-  if(mc_global_variables_libsimgrid){
+  if(mc_libsimgrid_info){
 
     unsigned int cursor = 0;
     dw_variable_t current_var;
     int start = 0;
-    int end = xbt_dynar_length(mc_global_variables_libsimgrid) - 1;
+    int end = xbt_dynar_length(mc_libsimgrid_info->global_variables) - 1;
 
     while(start <= end){
       cursor = (start + end) /2;
-      current_var = (dw_variable_t)xbt_dynar_get_as(mc_global_variables_libsimgrid, cursor, dw_variable_t);
+      current_var = (dw_variable_t)xbt_dynar_get_as(mc_libsimgrid_info->global_variables, cursor, dw_variable_t);
       if(strcmp(current_var->name, name) == 0){
-        xbt_dynar_remove_at(mc_global_variables_libsimgrid, cursor, NULL);
+        xbt_dynar_remove_at(mc_libsimgrid_info->global_variables, cursor, NULL);
         start = 0;
-        end = xbt_dynar_length(mc_global_variables_libsimgrid) - 1;
+        end = xbt_dynar_length(mc_libsimgrid_info->global_variables) - 1;
       }else if(strcmp(current_var->name, name) < 0){
         start = cursor + 1;
       }else{
@@ -1449,7 +690,7 @@ void MC_ignore_local_variable(const char *var_name, const char *frame_name){
 
   MC_SET_RAW_MEM;
 
-  if(mc_local_variables_libsimgrid){
+  if(mc_libsimgrid_info){
     unsigned int cursor = 0;
     dw_variable_t current_var;
     int start, end;
@@ -1457,7 +698,7 @@ void MC_ignore_local_variable(const char *var_name, const char *frame_name){
       xbt_dict_cursor_t dict_cursor;
       char *current_frame_name;
       dw_frame_t frame;
-      xbt_dict_foreach(mc_local_variables_libsimgrid, dict_cursor, current_frame_name, frame){
+      xbt_dict_foreach(mc_libsimgrid_info->local_variables, dict_cursor, current_frame_name, frame){
         start = 0;
         end = xbt_dynar_length(frame->variables) - 1;
         while(start <= end){
@@ -1474,7 +715,7 @@ void MC_ignore_local_variable(const char *var_name, const char *frame_name){
           } 
         }
       }
-       xbt_dict_foreach(mc_local_variables_binary, dict_cursor, current_frame_name, frame){
+       xbt_dict_foreach(mc_binary_info->local_variables, dict_cursor, current_frame_name, frame){
         start = 0;
         end = xbt_dynar_length(frame->variables) - 1;
         while(start <= end){
@@ -1492,7 +733,8 @@ void MC_ignore_local_variable(const char *var_name, const char *frame_name){
         }
       }
     }else{
-      xbt_dynar_t variables_list = ((dw_frame_t)xbt_dict_get_or_null(mc_local_variables_libsimgrid, frame_name))->variables;
+      xbt_dynar_t variables_list = ((dw_frame_t)xbt_dict_get_or_null(
+                                      mc_libsimgrid_info->local_variables, frame_name))->variables;
       start = 0;
       end = xbt_dynar_length(variables_list) - 1;
       while(start <= end){
@@ -1689,10 +931,24 @@ static void MC_dump_ignored_global_variables(void){
 
 }
 
+static void MC_init_debug_info();
+static void MC_init_debug_info() {
+  XBT_INFO("Get debug information ...");
+
+  memory_map_t maps = MC_get_memory_map();
+
+  /* Get local variables for state equality detection */
+  mc_binary_info = MC_find_object_info(maps, xbt_binary_name);
+  mc_libsimgrid_info = MC_find_object_info(maps, libsimgrid_path);
+
+  MC_free_memory_map(maps);
+  XBT_INFO("Get debug information done !");
+}
+
 void MC_init(){
 
   int raw_mem_set = (mmalloc_get_current_heap() == raw_heap);
-  
+
   compare = 0;
 
   /* Initialize the data structures that must be persistent across every
@@ -1701,36 +957,11 @@ void MC_init(){
   MC_SET_RAW_MEM;
 
   MC_init_memory_map_info();
-  
-  mc_local_variables_libsimgrid = xbt_dict_new_homogeneous(NULL);
-  mc_local_variables_binary = xbt_dict_new_homogeneous(NULL);
-  mc_global_variables_libsimgrid = xbt_dynar_new(sizeof(dw_variable_t), dw_variable_free_voidp);
-  mc_global_variables_binary = xbt_dynar_new(sizeof(dw_variable_t), dw_variable_free_voidp);
-  mc_variables_type_libsimgrid = xbt_dict_new_homogeneous(NULL);
-  mc_variables_type_binary = xbt_dict_new_homogeneous(NULL);
-
-  XBT_INFO("Get debug information ...");
-
-  /* Get local variables in binary for state equality detection */
-  xbt_dict_t binary_location_list = MC_dwarf_get_location_list(xbt_binary_name);
-  MC_dwarf_get_variables(xbt_binary_name, binary_location_list, &mc_local_variables_binary, &mc_global_variables_binary, &mc_variables_type_binary);
-
-  /* Get local variables in libsimgrid for state equality detection */
-  xbt_dict_t libsimgrid_location_list = MC_dwarf_get_location_list(libsimgrid_path);
-  MC_dwarf_get_variables(libsimgrid_path, libsimgrid_location_list, &mc_local_variables_libsimgrid, &mc_global_variables_libsimgrid, &mc_variables_type_libsimgrid);
-
-  xbt_dict_free(&libsimgrid_location_list);
-  xbt_dict_free(&binary_location_list);
-
-  XBT_INFO("Get debug information done !");
+  MC_init_debug_info();
 
   /* Remove variables ignored before getting list of variables */
   MC_dump_ignored_local_variables();
   MC_dump_ignored_global_variables();
-  
-  /* Get .plt section (start and end addresses) for data libsimgrid and data program comparison */
-  MC_get_libsimgrid_plt_section();
-  MC_get_binary_plt_section();
 
    /* Init parmap */
   parmap = xbt_parmap_mc_new(xbt_os_get_numcores(), XBT_PARMAP_DEFAULT);
@@ -1865,8 +1096,7 @@ void MC_modelcheck_safety(void)
   }else{
     MC_SET_RAW_MEM;
     MC_init_memory_map_info();
-    MC_get_libsimgrid_plt_section();
-    MC_get_binary_plt_section();
+    MC_init_debug_info();
     MC_UNSET_RAW_MEM;
   }
 
@@ -1933,6 +1163,7 @@ void MC_modelcheck_liveness(){
 void MC_exit(void)
 {
   xbt_free(mc_time);
+
   MC_memory_exit();
   //xbt_abort();
 }

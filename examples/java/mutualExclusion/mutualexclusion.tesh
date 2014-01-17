@@ -2,7 +2,7 @@
 
 ! output sort
 
-$ java -cp ${classpath:=.} mutualExclusion/MutexCentral ${srcdir:=.}/mutualExclusion/ring3.xml ${srcdir:=.}/mutualExclusion/mutex_centralized_deployment.xml
+$ java -classpath ${classpath:=.} mutualExclusion/MutexCentral ${srcdir:=.}/mutualExclusion/ring3.xml ${srcdir:=.}/mutualExclusion/mutex_centralized_deployment.xml
 > [0.000000] [jmsg/INFO] Using regular java threads. Coroutines could speed your simulation up.
 > [0.007806] [jmsg/INFO] MSG_main finished; Cleaning up the simulation...
 > [Host 0:mutualExclusion.Coordinator:(1) 0.001301] [jmsg/INFO] Got a request from mutualExclusion.Node. Queue empty: grant it

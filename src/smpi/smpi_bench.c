@@ -66,6 +66,9 @@ xbt_dict_t samples = NULL;         /* Allocated on first use */
 xbt_dict_t calls = NULL;           /* Allocated on first use */
 __thread int smpi_current_rank = 0;      /* Updated after each MPI call */
 
+double smpi_cpu_threshold;
+double smpi_running_power;
+
 typedef struct {
   int fd;
   int count;
@@ -123,12 +126,23 @@ void smpi_bench_destroy(void)
   xbt_dict_free(&calls);
 }
 
+XBT_PUBLIC(void) smpi_execute_flops_(double *flops);
+void smpi_execute_flops_(double *flops)
+{
+  smpi_execute_flops(*flops);
+}
+
+XBT_PUBLIC(void) smpi_execute_(double *duration);
+void smpi_execute_(double *duration)
+{
+  smpi_execute(*duration);
+}
+
 void smpi_execute_flops(double flops) {
   smx_action_t action;
   smx_host_t host;
   host = SIMIX_host_self();
-
-  XBT_DEBUG("Handle real computation time: %f flops", flops);
+  XBT_DEBUG("Handle real computation time: %g flops", flops);
   action = simcall_host_execute("computation", host, flops, 1);
 #ifdef HAVE_TRACING
   simcall_set_category (action, TRACE_internal_smpi_get_category());
@@ -136,16 +150,27 @@ void smpi_execute_flops(double flops) {
   simcall_host_execution_wait(action);
 }
 
-static void smpi_execute(double duration)
+void smpi_execute(double duration)
 {
-  /* FIXME: a global variable would be less expensive to consult than a call to xbt_cfg_get_double() right on the critical path */
-  if (duration >= sg_cfg_get_double("smpi/cpu_threshold")) {
-    XBT_DEBUG("Sleep for %f to handle real computation time", duration);
-    smpi_execute_flops(duration *
-    		sg_cfg_get_double("smpi/running_power"));
+  if (duration >= smpi_cpu_threshold) {
+    XBT_DEBUG("Sleep for %g to handle real computation time", duration);
+    double flops = duration * smpi_running_power;
+#ifdef HAVE_TRACING
+    int rank = smpi_process_index();
+    instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
+    extra->type=TRACING_COMPUTING;
+    extra->comp_size=flops;
+    TRACE_smpi_computing_in(rank, extra);
+#endif
+    smpi_execute_flops(flops);
+
+#ifdef HAVE_TRACING
+    TRACE_smpi_computing_out(rank);
+#endif
+
   } else {
-    XBT_DEBUG("Real computation took %f while option smpi/cpu_threshold is set to %f => ignore it",
-        duration, sg_cfg_get_double("smpi/cpu_threshold"));
+    XBT_DEBUG("Real computation took %g while option smpi/cpu_threshold is set to %g => ignore it",
+              duration, smpi_cpu_threshold);
   }
 }
 
@@ -158,15 +183,30 @@ void smpi_bench_begin(void)
 void smpi_bench_end(void)
 {
   xbt_os_timer_t timer = smpi_process_timer();
-
   xbt_os_threadtimer_stop(timer);
+  if (smpi_process_get_sampling()) {
+    XBT_CRITICAL("Cannot do recursive benchmarks.");
+    XBT_CRITICAL("Are you trying to make a call to MPI within a SMPI_SAMPLE_ block?");
+    xbt_backtrace_display_current();
+    xbt_die("Aborting.");
+  }
   smpi_execute(xbt_os_timer_elapsed(timer));
 }
 
 unsigned int smpi_sleep(unsigned int secs)
 {
+  smx_action_t action;
+
   smpi_bench_end();
-  smpi_execute_flops((double) secs*simcall_host_get_speed(SIMIX_host_self()));
+
+  double flops = (double) secs*simcall_host_get_speed(SIMIX_host_self());
+  XBT_DEBUG("Sleep for: %f flops", flops);
+  action = simcall_host_execute("computation", SIMIX_host_self(), flops, 1);
+  #ifdef HAVE_TRACING
+    simcall_set_category (action, TRACE_internal_smpi_get_category());
+  #endif
+  simcall_host_execution_wait(action);
+
   smpi_bench_begin();
   return secs;
 }
@@ -210,13 +250,13 @@ unsigned long long smpi_rastro_timestamp (void)
 
 /* ****************************** Functions related to the SMPI_SAMPLE_ macros ************************************/
 typedef struct {
-  int iters;        /* amount of requested iterations */
-  int count;        /* amount of iterations done so far */
   double threshold; /* maximal stderr requested (if positive) */
   double relstderr; /* observed stderr so far */
   double mean;      /* mean of benched times, to be used if the block is disabled */
   double sum;       /* sum of benched times (to compute the mean and stderr) */
   double sum_pow2;  /* sum of the square of the benched times (to compute the stderr) */
+  int iters;        /* amount of requested iterations */
+  int count;        /* amount of iterations done so far */
   int benching;     /* 1: we are benchmarking; 0: we have enough data, no bench anymore */
 } local_data_t;
 
@@ -247,6 +287,8 @@ void smpi_sample_1(int global, const char *file, int line, int iters, double thr
   local_data_t *data;
 
   smpi_bench_end();     /* Take time from previous, unrelated computation into account */
+  smpi_process_set_sampling(1);
+
   if (!samples)
     samples = xbt_dict_new_homogeneous(free);
 
@@ -282,6 +324,7 @@ int smpi_sample_2(int global, const char *file, int line)
 {
   char *loc = sample_location(global, file, line);
   local_data_t *data;
+  int res;
 
   xbt_assert(samples, "Y U NO use SMPI_SAMPLE_* macros? Stop messing directly with smpi_sample_* functions!");
   data = xbt_dict_get(samples, loc);
@@ -292,18 +335,18 @@ int smpi_sample_2(int global, const char *file, int line)
     // we need to run a new bench
     XBT_DEBUG("benchmarking: count:%d iter:%d stderr:%f thres:%f; mean:%f",
         data->count, data->iters, data->relstderr, data->threshold, data->mean);
-    smpi_bench_begin();
-    return 1;
+    res = 1;
   } else {
     // Enough data, no more bench (either we got enough data from previous visits to this benched nest, or we just ran one bench and need to bail out now that our job is done).
     // Just sleep instead
     XBT_DEBUG("No benchmark (either no need, or just ran one): count >= iter (%d >= %d) or stderr<thres (%f<=%f). apply the %fs delay instead",
         data->count, data->iters, data->relstderr, data->threshold, data->mean);
     smpi_execute(data->mean);
-
-    smpi_bench_begin(); // prepare to capture future, unrelated computations
-    return 0;
+    smpi_process_set_sampling(0);
+    res = 0; // prepare to capture future, unrelated computations
   }
+  smpi_bench_begin();
+  return res;
 }
 
 
@@ -397,7 +440,7 @@ void *smpi_shared_malloc(size_t size, const char *file, int line)
           case EEXIST:
             xbt_die("Please cleanup /dev/shm/%s", loc);
           default:
-            xbt_die("An unhandled error occured while opening %s: %s", loc, strerror(errno));
+            xbt_die("An unhandled error occured while opening %s. shm_open: %s", loc, strerror(errno));
         }
       }
       data = xbt_new(shared_data_t, 1);
@@ -406,7 +449,7 @@ void *smpi_shared_malloc(size_t size, const char *file, int line)
       data->loc = loc;
       mem = shm_map(fd, size, data);
       if (shm_unlink(loc) < 0) {
-        XBT_WARN("Could not early unlink %s: %s", loc, strerror(errno));
+        XBT_WARN("Could not early unlink %s. shm_unlink: %s", loc, strerror(errno));
       }
       xbt_dict_set(allocs, loc, data, NULL);
       XBT_DEBUG("Mapping %s at %p through %d", loc, mem, fd);
@@ -465,28 +508,28 @@ void smpi_shared_free(void *ptr)
 }
 #endif
 
-int smpi_shared_known_call(const char* func, const char* input) {
-   char* loc = bprintf("%s:%s", func, input);
-   xbt_ex_t ex;
-   int known;
+int smpi_shared_known_call(const char* func, const char* input)
+{
+  char* loc = bprintf("%s:%s", func, input);
+  xbt_ex_t ex;
+  int known = 0;
 
-   if(!calls) {
-      calls = xbt_dict_new_homogeneous(NULL);
-   }
-   TRY {
-      xbt_dict_get(calls, loc); /* Succeed or throw */
-      known = 1;
-   }
-   CATCH(ex) {
-      if(ex.category == not_found_error) {
-         known = 0;
-         xbt_ex_free(ex);
-      } else {
-         RETHROW;
-      }
-   }
-   free(loc);
-   return known;
+  if (!calls) {
+    calls = xbt_dict_new_homogeneous(NULL);
+  }
+  TRY {
+    xbt_dict_get(calls, loc); /* Succeed or throw */
+    known = 1;
+  }
+  TRY_CLEANUP {
+    xbt_free(loc);
+  }
+  CATCH(ex) {
+    if (ex.category != not_found_error)
+      RETHROW;
+    xbt_ex_free(ex);
+  }
+  return known;
 }
 
 void* smpi_shared_get_call(const char* func, const char* input) {

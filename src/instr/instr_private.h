@@ -9,6 +9,7 @@
 
 #include "instr/instr.h"
 #include "instr/instr_interface.h"
+#include "internal_config.h"
 #include "simgrid_config.h"
 
 #ifdef HAVE_TRACING
@@ -95,6 +96,133 @@ typedef struct s_container {
   xbt_dict_t children;
 }s_container_t;
 
+typedef struct paje_event *paje_event_t;
+typedef struct paje_event {
+  double timestamp;
+  e_event_type event_type;
+  void (*print) (paje_event_t event);
+  void (*free) (paje_event_t event);
+  void *data;
+} s_paje_event_t;
+
+typedef struct s_defineContainerType *defineContainerType_t;
+typedef struct s_defineContainerType {
+  type_t type;
+}s_defineContainerType_t;
+
+typedef struct s_defineVariableType *defineVariableType_t;
+typedef struct s_defineVariableType {
+  type_t type;
+}s_defineVariableType_t;
+
+typedef struct s_defineStateType *defineStateType_t;
+typedef struct s_defineStateType {
+  type_t type;
+}s_defineStateType_t;
+
+typedef struct s_defineEventType *defineEventType_t;
+typedef struct s_defineEventType {
+  type_t type;
+}s_defineEventType_t;
+
+typedef struct s_defineLinkType *defineLinkType_t;
+typedef struct s_defineLinkType {
+  type_t type;
+  type_t source;
+  type_t dest;
+}s_defineLinkType_t;
+
+typedef struct s_defineEntityValue *defineEntityValue_t;
+typedef struct s_defineEntityValue {
+  val_t value;
+}s_defineEntityValue_t;
+
+typedef struct s_createContainer *createContainer_t;
+typedef struct s_createContainer {
+  container_t container;
+}s_createContainer_t;
+
+typedef struct s_destroyContainer *destroyContainer_t;
+typedef struct s_destroyContainer {
+  container_t container;
+}s_destroyContainer_t;
+
+typedef struct s_setVariable *setVariable_t;
+typedef struct s_setVariable {
+  container_t container;
+  type_t type;
+  double value;
+}s_setVariable_t;
+
+typedef struct s_addVariable *addVariable_t;
+typedef struct s_addVariable {
+  container_t container;
+  type_t type;
+  double value;
+}s_addVariable_t;
+
+typedef struct s_subVariable *subVariable_t;
+typedef struct s_subVariable {
+  container_t container;
+  type_t type;
+  double value;
+}s_subVariable_t;
+
+typedef struct s_setState *setState_t;
+typedef struct s_setState {
+  container_t container;
+  type_t type;
+  val_t value;
+}s_setState_t;
+
+typedef struct s_pushState *pushState_t;
+typedef struct s_pushState {
+  container_t container;
+  type_t type;
+  val_t value;
+  int size;
+  void* extra;
+}s_pushState_t;
+
+typedef struct s_popState *popState_t;
+typedef struct s_popState {
+  container_t container;
+  type_t type;
+  xbt_dynar_t extra;
+}s_popState_t;
+
+typedef struct s_resetState *resetState_t;
+typedef struct s_resetState {
+  container_t container;
+  type_t type;
+}s_resetState_t;
+
+typedef struct s_startLink *startLink_t;
+typedef struct s_startLink {
+  container_t container;
+  type_t type;
+  container_t sourceContainer;
+  char *value;
+  char *key;
+  int size;
+}s_startLink_t;
+
+typedef struct s_endLink *endLink_t;
+typedef struct s_endLink {
+  container_t container;
+  type_t type;
+  container_t destContainer;
+  char *value;
+  char *key;
+}s_endLink_t;
+
+typedef struct s_newEvent *newEvent_t;
+typedef struct s_newEvent {
+  container_t container;
+  type_t type;
+  val_t value;
+}s_newEvent_t;
+
 extern xbt_dict_t created_categories;
 extern xbt_dict_t declared_marks;
 extern xbt_dict_t user_host_variables;
@@ -106,6 +234,9 @@ extern double TRACE_last_timestamp_to_dump;
 void TRACE_header(int basic, int size);
 
 /* from paje.c */
+void TRACE_init(void);
+void TRACE_finalize(void);
+void TRACE_paje_init(void);
 void TRACE_paje_start(void);
 void TRACE_paje_end(void);
 void TRACE_paje_dump_buffer (int force);
@@ -122,7 +253,7 @@ XBT_PUBLIC(void) new_pajeAddVariable (double timestamp, container_t container, t
 XBT_PUBLIC(void) new_pajeSubVariable (double timestamp, container_t container, type_t type, double value);
 XBT_PUBLIC(void) new_pajeSetState (double timestamp, container_t container, type_t type, val_t value);
 XBT_PUBLIC(void) new_pajePushState (double timestamp, container_t container, type_t type, val_t value);
-XBT_PUBLIC(void) new_pajePushStateWithSize (double timestamp, container_t container, type_t type, val_t value, int size);
+XBT_PUBLIC(void) new_pajePushStateWithExtra (double timestamp, container_t container, type_t type, val_t value, void* extra);
 XBT_PUBLIC(void) new_pajePopState (double timestamp, container_t container, type_t type);
 XBT_PUBLIC(void) new_pajeResetState (double timestamp, container_t container, type_t type);
 XBT_PUBLIC(void) new_pajeStartLink (double timestamp, container_t container, type_t type, container_t sourceContainer, const char *value, const char *key);
@@ -214,10 +345,128 @@ XBT_PUBLIC(val_t)  PJ_value_get_or_new (const char *name, const char *color, typ
 XBT_PUBLIC(val_t)  PJ_value_get (const char *name, const type_t father);
 void PJ_value_free (val_t value);
 
+
+void print_pajeDefineContainerType(paje_event_t event);
+void print_pajeDefineVariableType(paje_event_t event);
+void print_pajeDefineStateType(paje_event_t event);
+void print_pajeDefineEventType(paje_event_t event);
+void print_pajeDefineLinkType(paje_event_t event);
+void print_pajeDefineEntityValue (paje_event_t event);
+void print_pajeCreateContainer(paje_event_t event);
+void print_pajeDestroyContainer(paje_event_t event);
+void print_pajeSetVariable(paje_event_t event);
+void print_pajeAddVariable(paje_event_t event);
+void print_pajeSubVariable(paje_event_t event);
+void print_pajeSetState(paje_event_t event);
+void print_pajePushState(paje_event_t event);
+void print_pajePopState(paje_event_t event);
+void print_pajeResetState(paje_event_t event);
+void print_pajeStartLink(paje_event_t event);
+void print_pajeEndLink(paje_event_t event);
+void print_pajeNewEvent (paje_event_t event);
+
+void print_TIPushState(paje_event_t event);
+void print_TICreateContainer(paje_event_t event);
+void print_TIDestroyContainer(paje_event_t event);
+void TRACE_TI_start(void);
+void TRACE_TI_end(void);
+void TRACE_TI_init(void);
+
+void print_NULL (paje_event_t event);
+void TRACE_paje_dump_buffer (int force);
+void dump_comment_file (const char *filename);
+void dump_comment (const char *comment);
+
+
+
+
+typedef struct instr_trace_writer {
+  void (*print_DefineContainerType) (paje_event_t event);
+  void (*print_DefineVariableType)(paje_event_t event);
+  void (*print_DefineStateType)(paje_event_t event);
+  void (*print_DefineEventType)(paje_event_t event);
+  void (*print_DefineLinkType)(paje_event_t event);
+  void (*print_DefineEntityValue)(paje_event_t event);
+  void (*print_CreateContainer)(paje_event_t event);
+  void (*print_DestroyContainer)(paje_event_t event);
+  void (*print_SetVariable)(paje_event_t event);
+  void (*print_AddVariable)(paje_event_t event);
+  void (*print_SubVariable)(paje_event_t event);
+  void (*print_SetState)(paje_event_t event);
+  void (*print_PushState)(paje_event_t event);
+  void (*print_PopState)(paje_event_t event);
+  void (*print_ResetState)(paje_event_t event);
+  void (*print_StartLink)(paje_event_t event);
+  void (*print_EndLink)(paje_event_t event);
+  void (*print_NewEvent) (paje_event_t event);
+} s_instr_trace_writer_t;
+
+
+
+struct s_instr_extra_data;
+typedef struct s_instr_extra_data *instr_extra_data;
+
+
+typedef enum{
+  TRACING_INIT,
+  TRACING_FINALIZE,
+  TRACING_COMM_SIZE,
+  TRACING_COMM_SPLIT,
+  TRACING_COMM_DUP,
+  TRACING_SEND,
+  TRACING_ISEND,
+  TRACING_SSEND,
+  TRACING_ISSEND,
+  TRACING_RECV,
+  TRACING_IRECV,
+  TRACING_SENDRECV,
+  TRACING_WAIT,
+  TRACING_WAITALL,
+  TRACING_WAITANY,
+  TRACING_BARRIER,
+  TRACING_BCAST,
+  TRACING_REDUCE,
+  TRACING_ALLREDUCE,
+  TRACING_ALLTOALL,
+  TRACING_ALLTOALLV,
+  TRACING_GATHER,
+  TRACING_GATHERV,
+  TRACING_SCATTER,
+  TRACING_SCATTERV,
+  TRACING_ALLGATHER,
+  TRACING_ALLGATHERV,
+  TRACING_REDUCE_SCATTER,
+  TRACING_COMPUTING,
+  TRACING_SCAN,
+  TRACING_EXSCAN
+} e_caller_type ;
+
+
+
+typedef struct s_instr_extra_data {
+  e_caller_type type;
+  int send_size;
+  int recv_size;
+  double comp_size;
+  int src;
+  int dst;
+  int root;
+  const char* datatype1;
+  const char* datatype2;
+  int * sendcounts;
+  int * recvcounts;
+  int num_processes;
+} s_instr_extra_data_t;
+
 #endif /* HAVE_TRACING */
 
 #ifdef HAVE_JEDULE
 #include "instr/jedule/jedule_sd_binding.h"
 #endif
+
+
+
+
+
 
 #endif /* INSTR_PRIVATE_H_ */

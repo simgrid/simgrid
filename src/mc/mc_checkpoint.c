@@ -4,26 +4,25 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <libgen.h>
+#define _GNU_SOURCE
+#include <string.h>
+#include <link.h>
 #include "mc_private.h"
 #include "xbt/module.h"
 
 #include "../simix/smx_private.h"
 
 #include <libunwind.h>
+#include <libelf.h>
+
+#include "mc_private.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_checkpoint, mc,
                                 "Logging specific to mc_checkpoint");
 
-void *start_text_libsimgrid;
-void *start_plt_libsimgrid, *end_plt_libsimgrid;
-void *start_got_plt_libsimgrid, *end_got_plt_libsimgrid;
-void *start_plt_binary, *end_plt_binary;
-void *start_got_plt_binary, *end_got_plt_binary;
 char *libsimgrid_path;
-void *start_data_libsimgrid, *start_bss_libsimgrid;
-void *start_data_binary, *start_bss_binary;
-void *start_text_binary;
+
+static void MC_find_object_address(memory_map_t maps, mc_object_info_t result);
 
 /************************************  Free functions **************************************/
 /*****************************************************************************************/
@@ -177,7 +176,7 @@ static void MC_get_memory_regions(mc_snapshot_t snapshot){
               }
               tok = strtok(lfields[0], "-");
               start_addr1 = (void *)strtoul(tok, NULL, 16);
-              if(lfields[1][1] == 'w' && lfields[5] == NULL){
+              if(lfields[1][1] == 'w'){
                 if(start_addr1 == std_heap){     /* Std_heap ? */
                   tok = strtok(NULL, "-");
                   end_addr = (void *)strtoul(tok, NULL, 16);
@@ -206,179 +205,73 @@ static void MC_get_memory_regions(mc_snapshot_t snapshot){
 
 }
 
+/** @brief Finds the range of the different memory segments and binary paths */
 void MC_init_memory_map_info(){
  
   unsigned int i = 0;
   s_map_region_t reg;
   memory_map_t maps = MC_get_memory_map();
 
+  maestro_stack_start = NULL;
+  maestro_stack_end = NULL;
+  libsimgrid_path = NULL;
+
   while (i < maps->mapsize) {
     reg = maps->regions[i];
-    if ((reg.prot & PROT_WRITE)){
-      if (maps->regions[i].pathname != NULL){
-        if (!memcmp(basename(maps->regions[i].pathname), "libsimgrid", 10)){
-          start_data_libsimgrid = reg.start_addr;
-          i++;
-          reg = maps->regions[i];
-          if(reg.pathname == NULL && (reg.prot & PROT_WRITE) && i < maps->mapsize)
-            start_bss_libsimgrid = reg.start_addr;
-        }else if (!memcmp(basename(maps->regions[i].pathname), basename(xbt_binary_name), strlen(basename(xbt_binary_name)))){
-          start_data_binary = reg.start_addr;
-          i++;
-          reg = maps->regions[i];
-          if(reg.pathname == NULL && (reg.prot & PROT_WRITE) && reg.start_addr != std_heap && reg.start_addr != raw_heap && i < maps->mapsize){
-            start_bss_binary = reg.start_addr;
-            i++;
-          }
-        }else if(!memcmp(maps->regions[i].pathname, "[stack]", 7)){
+    if (maps->regions[i].pathname == NULL) {
+      // Nothing to do
+    }
+    else if ((reg.prot & PROT_WRITE) && !memcmp(maps->regions[i].pathname, "[stack]", 7)){
           maestro_stack_start = reg.start_addr;
           maestro_stack_end = reg.end_addr;
-          i++;
-        }
-      }
-    }else if ((reg.prot & PROT_READ) && (reg.prot & PROT_EXEC)){
-      if (maps->regions[i].pathname != NULL){
-        if (!memcmp(basename(maps->regions[i].pathname), "libsimgrid", 10)){
-          start_text_libsimgrid = reg.start_addr;
+    } else if ((reg.prot & PROT_READ) && (reg.prot & PROT_EXEC) && !memcmp(basename(maps->regions[i].pathname), "libsimgrid", 10)){
+      if(libsimgrid_path == NULL)
           libsimgrid_path = strdup(maps->regions[i].pathname);
-        }else if (!memcmp(basename(maps->regions[i].pathname), basename(xbt_binary_name), strlen(basename(xbt_binary_name)))){
-          start_text_binary = reg.start_addr;
-        }
-      }
     }
     i++;
   }
-   
+
+  xbt_assert(maestro_stack_start, "maestro_stack_start");
+  xbt_assert(maestro_stack_end, "maestro_stack_end");
+  xbt_assert(libsimgrid_path, "libsimgrid_path&");
+
   MC_free_memory_map(maps);
 
 }
 
-void MC_get_libsimgrid_plt_section(){
-
-  FILE *fp;
-  char *line = NULL;            /* Temporal storage for each line that is readed */
-  ssize_t read;                 /* Number of bytes readed */
-  size_t n = 0;                 /* Amount of bytes to read by xbt_getline */
-
-  char *lfields[7];
-  int i, plt_found = 0;
-  unsigned long int size, offset;
-
-  char *command = bprintf("objdump --section-headers %s", libsimgrid_path);
-
-  fp = popen(command, "r");
-
-  if(fp == NULL){
-    perror("popen failed");
-    xbt_abort();
-  }
-
-  while ((read = xbt_getline(&line, &n, fp)) != -1 && plt_found != 2) {
-
-    if(n == 0)
-      continue;
-
-    /* Wipeout the new line character */
-    line[read - 1] = '\0';
-
-    lfields[0] = strtok(line, " ");
-
-    if(lfields[0] == NULL)
-      continue;
-
-    if(strcmp(lfields[0], "Sections:") == 0 || strcmp(lfields[0], "Idx") == 0 || strncmp(lfields[0], libsimgrid_path, strlen(libsimgrid_path)) == 0)
-      continue;
-
-    for (i = 1; i < 7 && lfields[i - 1] != NULL; i++) {
-      lfields[i] = strtok(NULL, " ");
-    }
-
-    if(i>=6){
-      if(strcmp(lfields[1], ".plt") == 0){
-        size = strtoul(lfields[2], NULL, 16);
-        offset = strtoul(lfields[5], NULL, 16);
-        start_plt_libsimgrid = (char *)start_text_libsimgrid + offset;
-        end_plt_libsimgrid = (char *)start_plt_libsimgrid + size;
-        plt_found++;
-      }else if(strcmp(lfields[1], ".got.plt") == 0){
-        size = strtoul(lfields[2], NULL, 16);
-        offset = strtoul(lfields[5], NULL, 16);
-        start_got_plt_libsimgrid = (char *)start_text_libsimgrid + offset;
-        end_got_plt_libsimgrid = (char *)start_got_plt_libsimgrid + size;
-        plt_found++;
-       }
-
-    }
-    
-  }
-
-  xbt_free(command);
-  xbt_free(line);
-  pclose(fp);
-
+/** \brief Finds informations about a given shared object/executable */
+mc_object_info_t MC_find_object_info(memory_map_t maps, char* name) {
+  mc_object_info_t result = MC_new_object_info();
+  result->file_name = xbt_strdup(name);
+  result->start_data = NULL;
+  result->start_text = NULL;
+  MC_find_object_address(maps, result);
+  MC_dwarf_get_variables(result);
+  return result;
 }
 
-void MC_get_binary_plt_section(){
+/** \brief Fills the position of the .bss and .data sections. */
+static void MC_find_object_address(memory_map_t maps, mc_object_info_t result) {
 
-  FILE *fp;
-  char *line = NULL;            /* Temporal storage for each line that is readed */
-  ssize_t read;                 /* Number of bytes readed */
-  size_t n = 0;                 /* Amount of bytes to read by xbt_getline */
-
-  char *lfields[7];
-  int i, plt_found = 0;
-  unsigned long int size;
-
-  char *command = bprintf( "objdump --section-headers %s", xbt_binary_name);
-
-  fp = popen(command, "r");
-
-  if(fp == NULL){
-    perror("popen failed");
-    xbt_abort();
+  unsigned int i = 0;
+  s_map_region_t reg;
+  const char* name = basename(result->file_name);
+  while (i < maps->mapsize) {
+    reg = maps->regions[i];
+    if (maps->regions[i].pathname == NULL || strcmp(basename(maps->regions[i].pathname),  name)) {
+      // Nothing to do
+    }
+    else if ((reg.prot & PROT_WRITE)){
+          result->start_data = reg.start_addr;
+    } else if ((reg.prot & PROT_READ) && (reg.prot & PROT_EXEC)){
+          result->start_text = reg.start_addr;
+    }
+    i++;
   }
 
-  while ((read = xbt_getline(&line, &n, fp)) != -1 && plt_found != 2) {
-
-    if(n == 0)
-      continue;
-
-    /* Wipeout the new line character */
-    line[read - 1] = '\0';
-
-    lfields[0] = strtok(line, " ");
-
-    if(lfields[0] == NULL)
-      continue;
-
-    if(strcmp(lfields[0], "Sections:") == 0 || strcmp(lfields[0], "Idx") == 0 || strncmp(lfields[0], basename(xbt_binary_name), strlen(xbt_binary_name)) == 0)
-      continue;
-
-    for (i = 1; i < 7 && lfields[i - 1] != NULL; i++) {
-      lfields[i] = strtok(NULL, " ");
-    }
-
-    if(i>=6){
-      if(strcmp(lfields[1], ".plt") == 0){
-        size = strtoul(lfields[2], NULL, 16);
-        start_plt_binary = (void *)strtoul(lfields[3], NULL, 16);
-        end_plt_binary = (char *)start_plt_binary + size;
-        plt_found++;
-      }else if(strcmp(lfields[1], ".got.plt") == 0){
-        size = strtoul(lfields[2], NULL, 16);
-        start_got_plt_binary = (char *)strtoul(lfields[3], NULL, 16);
-        end_got_plt_binary = (char *)start_got_plt_binary + size;
-        plt_found++;
-       }
-    }
-    
-    
-  }
-
-  xbt_free(command);
-  xbt_free(line);
-  pclose(fp);
-
+  xbt_assert(result->file_name);
+  xbt_assert(result->start_data);
+  xbt_assert(result->start_text);
 }
 
 /************************************* Take Snapshot ************************************/
@@ -478,6 +371,8 @@ static void MC_get_hash_local(char *snapshot_hash, xbt_dynar_t stacks){
 
 }
 
+
+
 static xbt_dynar_t MC_get_local_variables_values(void *stack_context){
   
   unw_cursor_t c;
@@ -497,11 +392,9 @@ static xbt_dynar_t MC_get_local_variables_values(void *stack_context){
   unsigned int cursor = 0;
   dw_variable_t current_variable;
   dw_location_entry_t entry = NULL;
-  dw_location_t location_entry = NULL;
-  unw_word_t res;
   int frame_found = 0, region_type;
   void *frame_pointer_address = NULL;
-  long true_ip, value;
+  long true_ip;
   int stop = 0;
 
   xbt_dynar_t variables = xbt_dynar_new(sizeof(local_variable_t), local_variable_free_voidp);
@@ -516,10 +409,10 @@ static xbt_dynar_t MC_get_local_variables_values(void *stack_context){
     if(!strcmp(frame_name, "smx_ctx_sysv_wrapper")) /* Stop before context switch with maestro */
       stop = 1;
 
-    if((long)ip > (long)start_text_libsimgrid)
-      frame = xbt_dict_get_or_null(mc_local_variables_libsimgrid, frame_name);
+    if((long)ip > (long) mc_libsimgrid_info->start_text)
+      frame = xbt_dict_get_or_null(mc_libsimgrid_info->local_variables, frame_name);
     else
-      frame = xbt_dict_get_or_null(mc_local_variables_binary, frame_name);
+      frame = xbt_dict_get_or_null(mc_binary_info->local_variables, frame_name);
 
     if(frame == NULL){
       ret = unw_step(&c);
@@ -537,31 +430,7 @@ static xbt_dynar_t MC_get_local_variables_values(void *stack_context){
         entry = xbt_dynar_get_as(frame->frame_base->location.loclist, cursor, dw_location_entry_t);
         if((true_ip >= entry->lowpc) && (true_ip < entry->highpc)){
           frame_found = 1;
-          switch(entry->location->type){
-          case e_dw_compose:
-            if(xbt_dynar_length(entry->location->location.compose) > 1){
-              frame_pointer_address = NULL; /* TODO : location list with optimizations enabled */
-            }else{
-              location_entry = xbt_dynar_get_as(entry->location->location.compose, 0, dw_location_t);
-              switch(location_entry->type){
-              case e_dw_register:
-                unw_get_reg(&c, location_entry->location.reg, &res);
-                frame_pointer_address = (void*)(long)res;
-                break;
-              case e_dw_bregister_op:
-                unw_get_reg(&c, location_entry->location.breg_op.reg, &res);
-                frame_pointer_address = (void*)((long)res + location_entry->location.breg_op.offset);
-                break;
-              default:
-                frame_pointer_address = NULL; /* FIXME : implement other cases (with optimizations enabled) */
-                break;
-              }
-            }
-            break;
-          default:
-            frame_pointer_address = NULL; /* FIXME : implement other cases (with optimizations enabled) */
-            break;
-          }
+          frame_pointer_address =  (void*) MC_dwarf_resolve_location(&c, entry->location, NULL);
         }
         cursor++;
       }
@@ -576,7 +445,7 @@ static xbt_dynar_t MC_get_local_variables_values(void *stack_context){
 
     xbt_dynar_foreach(frame->variables, cursor, current_variable){
       
-      if((long)ip > (long)start_text_libsimgrid)
+      if((long)ip > (long)mc_libsimgrid_info->start_text)
         region_type = 1;
       else
         region_type = 2;
@@ -589,42 +458,7 @@ static xbt_dynar_t MC_get_local_variables_values(void *stack_context){
       new_var->region= region_type;
       
       if(current_variable->address.location != NULL){
-        switch(current_variable->address.location->type){
-        case e_dw_compose:
-          if(xbt_dynar_length(current_variable->address.location->location.compose) > 1){
-            /* TODO : location list with optimizations enabled */
-          }else{
-            location_entry = xbt_dynar_get_as(current_variable->address.location->location.compose, 0, dw_location_t);
-            
-            switch(location_entry->type){
-            case e_dw_register:
-              unw_get_reg(&c, location_entry->location.reg, &res);
-              value = (long)res;
-              break;
-            case e_dw_bregister_op:
-              unw_get_reg(&c, location_entry->location.breg_op.reg, &res);
-              value = (long)res + location_entry->location.breg_op.offset;
-              break;
-            case e_dw_fbregister_op:
-              if(frame_pointer_address != NULL)
-                value = (long)((char *)frame_pointer_address + location_entry->location.fbreg_op);
-              else
-                value = 0;
-              break;
-            default:
-              value = 0; /* FIXME : implement other cases (with optimizations enabled)*/
-              break;
-            }
-
-            if(value)
-              new_var->address = (void *)value;
-            else
-              new_var->address = NULL;
-          }
-          break;
-        default :
-          break;
-        }
+        new_var->address = (void*) MC_dwarf_resolve_location(&c, current_variable->address.location, frame_pointer_address);
       }
 
       xbt_dynar_push(variables, &new_var);

@@ -12,9 +12,9 @@
  * used to classify tasks. When the program is executed, the tracing mechanism registers
  * the resource utilization of hosts and links according to these categories. You might
  * want to run this program with the following parameters:
- * --cfg=tracing:1
- * --cfg=tracing/categorized:1
- * --cfg=tracing/uncategorized:1
+ * --cfg=tracing:yes
+ * --cfg=tracing/categorized:yes
+ * --cfg=tracing/uncategorized:yes
  * --cfg=viva/categorized:viva_cat.plist
  * --cfg=viva/uncategorized:viva_uncat.plist
  * (See \ref tracing_tracing_options for details)

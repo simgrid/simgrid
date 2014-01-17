@@ -682,6 +682,15 @@ XBT_PUBLIC(MPI_Comm) smpi_process_comm_self(void);
 XBT_PUBLIC(void) smpi_exit(int);
 */
 
+XBT_PUBLIC(void) smpi_execute_flops(double flops);
+XBT_PUBLIC(void) smpi_execute(double duration);
+
+XBT_PUBLIC(double) smpi_get_host_power_peak_at(int pstate_index);
+XBT_PUBLIC(double) smpi_get_host_current_power_peak(void);
+XBT_PUBLIC(int) smpi_get_host_nb_pstates(void);
+XBT_PUBLIC(void) smpi_set_host_power_peak_at(int pstate_index);
+XBT_PUBLIC(double) smpi_get_host_consumed_energy(void);
+
 XBT_PUBLIC(unsigned int) smpi_sleep(unsigned int secs);
 XBT_PUBLIC(int) smpi_gettimeofday(struct timeval *tv);
 XBT_PUBLIC(unsigned long long) smpi_rastro_resolution (void);
@@ -723,6 +732,7 @@ XBT_PUBLIC(int) __attribute__((weak)) MAIN__(void);
 XBT_PUBLIC(int) smpi_main(int (*realmain) (int argc, char *argv[]),int argc, char *argv[]);
 XBT_PUBLIC(void) __attribute__((weak)) user_main_(void);
 XBT_PUBLIC(int) smpi_process_index(void);
+XBT_PUBLIC(void) smpi_process_init(int *argc, char ***argv);
 
 /* Trace replay specific stuff */
 XBT_PUBLIC(void) smpi_replay_init(int *argc, char***argv);

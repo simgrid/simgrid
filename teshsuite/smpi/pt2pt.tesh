@@ -16,7 +16,7 @@ p Test pingpong
 ! setenv LD_LIBRARY_PATH=../../lib
 ! output sort
 $ ../../smpi_script/bin/smpirun -map -hostfile ${srcdir:=.}/hostfile -platform ${srcdir:=.}/../../examples/msg/small_platform.xml -np 4 ./pingpong -q
-> *** Ping-pong test (MPI_Send/MPI_Recv) ***
+>     *** Ping-pong test (MPI_Send/MPI_Recv) ***
 > == pivot=0 : pingpong [0] <--> [1]
 > == pivot=1 : pingpong [1] <--> [2]
 > == pivot=2 : pingpong [2] <--> [3]

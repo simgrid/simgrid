@@ -12,6 +12,8 @@
 #ifndef WIN32
 #include <sys/mman.h>
 #endif
+#include <elfutils/libdw.h>
+
 #include "mc/mc.h"
 #include "mc/datatypes.h"
 #include "xbt/fifo.h"
@@ -221,25 +223,8 @@ typedef struct s_memory_map {
 void MC_init_memory_map_info(void);
 memory_map_t MC_get_memory_map(void);
 void MC_free_memory_map(memory_map_t map);
-void MC_get_libsimgrid_plt_section(void);
-void MC_get_binary_plt_section(void);
 
-extern void *start_data_libsimgrid;
-extern void *start_data_binary;
-extern void *start_bss_binary;
 extern char *libsimgrid_path;
-extern void *start_text_libsimgrid;
-extern void *start_text_binary;
-extern void *start_bss_libsimgrid;
-extern void *start_plt_libsimgrid;
-extern void *end_plt_libsimgrid;
-extern void *start_plt_binary;
-extern void *end_plt_binary;
-extern void *start_got_plt_libsimgrid;
-extern void *end_got_plt_libsimgrid;
-extern void *start_got_plt_binary;
-extern void *end_got_plt_binary;
-
 
 /********************************** Snapshot comparison **********************************/
 
@@ -336,12 +321,27 @@ void MC_dump_stack_liveness(xbt_fifo_t stack);
 
 /********************************** Variables with DWARF **********************************/
 
-extern xbt_dict_t mc_local_variables_libsimgrid;
-extern xbt_dict_t mc_local_variables_binary;
-extern xbt_dynar_t mc_global_variables_libsimgrid;
-extern xbt_dynar_t mc_global_variables_binary;
-extern xbt_dict_t mc_variables_type_libsimgrid;
-extern xbt_dict_t mc_variables_type_binary;
+typedef struct s_mc_object_info {
+  char* file_name;
+  char* start_text;
+  char* start_data;
+  char* start_bss;
+  xbt_dict_t local_variables; // xbt_dict_t<frame_name, dw_frame_t>
+  xbt_dynar_t global_variables; // xbt_dynar_t<dw_variable_t>
+  xbt_dict_t types; // xbt_dict_t<origin as hexadecimal string, dw_type_t>
+} s_mc_object_info_t, *mc_object_info_t;
+
+mc_object_info_t MC_new_object_info(void);
+mc_object_info_t MC_find_object_info(memory_map_t maps, char* name);
+void MC_free_object_info(mc_object_info_t* p);
+
+void MC_dwarf_get_variables(mc_object_info_t info);
+void MC_dwarf_get_variables_libdw(mc_object_info_t info);
+const char* MC_dwarf_attrname(int attr);
+const char* MC_dwarf_tagname(int tag);
+
+extern mc_object_info_t mc_libsimgrid_info;
+extern mc_object_info_t mc_binary_info;
 
 typedef enum {
   e_dw_loclist,
@@ -406,12 +406,13 @@ typedef struct s_dw_location_entry{
 }s_dw_location_entry_t, *dw_location_entry_t;
 
 typedef struct s_dw_variable{
+  Dwarf_Off dwarf_offset; /* Global offset of the field. */
   int global;
   char *name;
   char *type_origin;
   union{
-    dw_location_t location;
-    void *address;
+    dw_location_t location; // For global==0
+    void *address; // For global!=0
   }address;
 }s_dw_variable_t, *dw_variable_t;
 
@@ -420,10 +421,23 @@ typedef struct s_dw_frame{
   void *low_pc;
   void *high_pc;
   dw_location_t frame_base;
-  xbt_dynar_t variables; /* Cannot use dict, there may be several variables with the same name (in different lexical blocks)*/
-  unsigned long int start;
-  unsigned long int end;
+  xbt_dynar_t /* <dw_variable_t> */ variables; /* Cannot use dict, there may be several variables with the same name (in different lexical blocks)*/
+  unsigned long int start; /* DWARF offset of the subprogram */
+  unsigned long int end;   /* Dwarf offset of the next sibling */
 }s_dw_frame_t, *dw_frame_t;
+
+void dw_type_free(dw_type_t t);
+void dw_variable_free(dw_variable_t v);
+void dw_variable_free_voidp(void *t);
+
+void MC_dwarf_register_global_variable(mc_object_info_t info, dw_variable_t variable);
+void MC_register_variable(mc_object_info_t info, dw_frame_t frame, dw_variable_t variable);
+void MC_dwarf_register_non_global_variable(mc_object_info_t info, dw_frame_t frame, dw_variable_t variable);
+void MC_dwarf_register_variable(mc_object_info_t info, dw_frame_t frame, dw_variable_t variable);
+
+/********************************** DWARF **********************************/
+
+Dwarf_Off MC_dwarf_resolve_location(unw_cursor_t* c, dw_location_t location, void* frame_pointer_address);
 
 /********************************** Miscellaneous **********************************/
 

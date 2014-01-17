@@ -20,6 +20,7 @@ my($time_to_wait)=0;
 my $path = $0;
 my $OS;
 my $enable_coverage=0;
+my $sort_prefix = 19;
 my $tesh_file;
 my $tesh_name;
 my $error=0;
@@ -42,18 +43,6 @@ else{
     $OS = "WIN";
     $ENV{"PRINTF_EXPONENT_DIGITS"} = "2"; 
 }
-
-
-sub trim($)
-{
-    my $string = shift;
-    $string =~ s/^\s+//;
-    $string =~ s/\s+$//;
-    return $string;
-}
-
-# make sure we received a tesh file
-scalar @ARGV > 0 || die "Usage:\n  tesh [*options*] *tesh_file*\n";
 
 #Add current directory to path
 $ENV{PATH} = "$ENV{PATH}:.";
@@ -309,25 +298,28 @@ sub parse_out {
   my @got;
   while(defined(my $got=<got>)) {
     $got =~ s/\r//g;
-    $got =~ s/^( )*//g;
     chomp $got;
-    $got=trim($got);
-    if( $got ne ""){
-        if (!($enable_coverage and $got=~ /^profiling:/)){    
-        push @got, "$got";
-     }
-  }
+    if (!($enable_coverage and $got=~ /^profiling:/)){
+      push @got, $got;
+    }
   }    
 
   if ($cmd{'sort'}){   
     sub mysort{
-    $a cmp $b
+        substr($a, 0, $sort_prefix) cmp substr($b, 0, $sort_prefix)
     }
-    use sort qw(defaults _quicksort); # force quicksort
+    use sort 'stable';
     @got = sort mysort @got;
+    while (@got and $got[0] eq "") {
+      shift @got;
+    }
+
     #also resort the other one, as perl sort is not the same as the C one used to generate teshes
     if(defined($cmd{'out'})){
       @{$cmd{'out'}}=sort mysort @{$cmd{'out'}};
+      while (@{$cmd{'out'}} and ${$cmd{'out'}}[0] eq "") {
+        shift @{$cmd{'out'}};
+      }
     }
   }
 
@@ -434,7 +426,7 @@ LINE: while (not $finished and not $error) {
   }
 
   # Push delayed commands on empty lines
-  unless ($line =~ m/^(.).(.*)$/) {
+  unless ($line =~ m/^(.)(.*)$/) {
     if (defined($cmd{'cmd'}))  {
       exec_cmd(\%cmd);
       %cmd = ();
@@ -443,16 +435,14 @@ LINE: while (not $finished and not $error) {
   }     
  
   my ($cmd,$arg) = ($1,$2);
+  $arg =~ s/^ //g;
   $arg =~ s/\r//g;
   $arg =~ s/\\\\/\\/g;
   # handle the commands
   if ($cmd =~ /^#/) {    #comment
   } elsif ($cmd eq '>'){    #expected result line
     print "[TESH/debug] push expected result\n" if $opts{'debug'};
-  $arg=trim($arg);
-    if($arg ne ""){
     push @{$cmd{'out'}}, $arg;
-  }
 
   } elsif ($cmd eq '<') {    # provided input
     print "[TESH/debug] push provided input\n" if $opts{'debug'};
@@ -506,6 +496,9 @@ LINE: while (not $finished and not $error) {
       %cmd = ();
     }
     $cmd{'sort'} = 1;
+    if ($line =~ /^!\s*output sort\s+(\d+)/) {
+        $sort_prefix = $1;
+    }
   }
   elsif($line =~ /^!\s*output ignore/){    #output ignore
     if (defined($cmd{'cmd'})) {
@@ -540,7 +533,7 @@ print "hey\n";
     $line =~ s/\r//g;
     setenv_cmd($line);
   }
-  elsif($line =~ /^!\s*include/){    #output sort
+  elsif($line =~ /^!\s*include/){    #include
     if (defined($cmd{'cmd'})) {
       exec_cmd(\%cmd);
       %cmd = ();

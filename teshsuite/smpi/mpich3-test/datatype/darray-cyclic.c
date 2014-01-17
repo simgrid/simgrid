@@ -28,6 +28,7 @@ int main( int argc, char *argv[] )
     /* Test 1: Simple, 1-D cyclic decomposition */
     if (AllocateGrid( 1, 3*wsize, &srcArray, &destArray ) ) {
 	MPI_Abort( MPI_COMM_WORLD, 1 );
+        exit(1);
     }
 
     /* Simple cyclic with 1-dim global array */
@@ -44,6 +45,7 @@ int main( int argc, char *argv[] )
     if (PackUnpack( darraytype, srcArray, destArray, 3 )) {
 	fprintf( stderr, "Error in pack/unpack check\n" );
 	MPI_Abort( MPI_COMM_WORLD, 1 );
+        exit(1);
     }
     /* Now, check for correct data */
     for (i=0; i<3; i++) {
@@ -61,6 +63,7 @@ int main( int argc, char *argv[] )
     /* Test 2: Simple, 1-D cyclic decomposition, with block size=2 */
     if (AllocateGrid( 1, 4*wsize, &srcArray, &destArray ) ) {
 	MPI_Abort( MPI_COMM_WORLD, 1 );
+        exit(1);
     }
 
     /* Simple cyclic with 1-dim global array */
@@ -77,6 +80,7 @@ int main( int argc, char *argv[] )
     if (PackUnpack( darraytype, srcArray, destArray, 4 )) {
 	fprintf( stderr, "Error in pack/unpack check\n" );
 	MPI_Abort( MPI_COMM_WORLD, 1 );
+        exit(1);
     }
     loc = 0;
     /* for each cyclic element */
@@ -105,11 +109,13 @@ int main( int argc, char *argv[] )
     if (px * py != wsize) {
 	fprintf( stderr, "An even number of processes is required\n" );
 	MPI_Abort( MPI_COMM_WORLD, 1 );
+        exit(1);
     }
 
     /* Cyclic/Cyclic */
     if (AllocateGrid( 5*px, 7*py, &srcArray, &destArray )) {
 	MPI_Abort( MPI_COMM_WORLD, 1 );
+        exit(1);
     }
 
     /* Simple cyclic/cyclic. Note in C order, the [1] index varies most 
@@ -131,6 +137,7 @@ int main( int argc, char *argv[] )
     if (PackUnpack( darraytype, srcArray, destArray, 5*7 )) {
 	fprintf( stderr, "Error in pack/unpack check\n" );
 	MPI_Abort( MPI_COMM_WORLD, 1 );
+        exit(1);
     }
 
     loc = 0;
@@ -153,6 +160,7 @@ int main( int argc, char *argv[] )
     /* Cyclic(2)/Cyclic(3) */
     if (AllocateGrid( 6*px, 4*py, &srcArray, &destArray )) {
 	MPI_Abort( MPI_COMM_WORLD, 1 );
+        exit(1);
     }
 
     /* Block cyclic/cyclic. Note in C order, the [1] index varies most 
@@ -174,6 +182,7 @@ int main( int argc, char *argv[] )
     if (PackUnpack( darraytype, srcArray, destArray, 4*6 )) {
 	fprintf( stderr, "Error in pack/unpack check\n" );
 	MPI_Abort( MPI_COMM_WORLD, 1 );
+        exit(1);
     }
 
     loc = 0;
@@ -239,6 +248,7 @@ int PackUnpack( MPI_Datatype darraytype, const int srcArray[], int destArray[],
 	fprintf( stderr, "Unable to allocate pack array of size %d\n", 
 		 packsize );
 	MPI_Abort( MPI_COMM_WORLD, 1 );
+        exit(1);
     }
     position = 0;
     MPI_Pack( (int*)srcArray, 1, darraytype, packArray, packsize, &position, 

@@ -1,5 +1,3 @@
-#! ./tesh
-
 p Test sorting and filtering of output
 
 $ true

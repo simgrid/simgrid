@@ -213,13 +213,10 @@ void mpi_finalize_(int* ierr) {
    running_processes--;
    if(running_processes==0){
      xbt_dict_free(&op_lookup);
-     op_lookup = NULL;
      xbt_dict_free(&datatype_lookup);
-     datatype_lookup = NULL;
      xbt_dict_free(&request_lookup);
-     request_lookup = NULL;
+     xbt_dict_free(&group_lookup);
      xbt_dict_free(&comm_lookup);
-     comm_lookup = NULL;
    }
 }
 

@@ -25,11 +25,11 @@ public final class Msg {
 			return;
 		try {
 			/* prefer the version on disk, if existing */
-			System.loadLibrary("SG_java");
+			System.loadLibrary("simgrid-java");
 		} catch (UnsatisfiedLinkError e) {
 			/* If not found, unpack the one bundled into the jar file and use it */
 			loadLib("simgrid");
-			loadLib("SG_java");
+			loadLib("simgrid-java");
 		}
 		isNativeInited = true;
 	}

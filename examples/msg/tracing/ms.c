@@ -12,8 +12,8 @@
  * enable the tracing of categorized resource utilization, the use of trace marks,
  * and user variables associated to the hosts of the platform file.
  * You might want to run this program with the following parameters:
- * --cfg=tracing/categorized:1
- * --cfg=tracing/uncategorized:1
+ * --cfg=tracing/categorized:yes
+ * --cfg=tracing/uncategorized:yes
  * --cfg=viva/categorized:viva_cat.plist
  * --cfg=viva/uncategorized:viva_uncat.plist
  * (See \ref tracing_tracing_options for details)

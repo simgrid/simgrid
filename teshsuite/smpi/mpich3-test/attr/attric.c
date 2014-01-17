@@ -57,6 +57,7 @@ int delete_fn( MPI_Comm comm, int keyval, void *attribute_val,
     if ((MPI_Aint)attribute_val != (MPI_Aint)world_rank) {
 	printf( "incorrect attribute value %d\n", *(int*)attribute_val );
 	MPI_Abort(MPI_COMM_WORLD, 1005 );
+        exit(1005);
     }
     return MPI_SUCCESS;
 }
@@ -120,6 +121,7 @@ int test_communicators( void )
 	    printf( "dup_comm key_1 not found on %d\n", world_rank );
 	    fflush( stdout );
 	    MPI_Abort(MPI_COMM_WORLD, 3004 );
+            exit(3004);
 	}
 	
 	if (value != world_rank) {
@@ -127,6 +129,7 @@ int test_communicators( void )
 	    printf( "dup_comm key_1 value incorrect: %ld\n", (long)value );
 	    fflush( stdout );
 	    MPI_Abort(MPI_COMM_WORLD, 3005 );
+            exit(3005);
 	}
 
 	MPI_Attr_get(dup_comm, key_3, (void **)&vvalue, &flag );
@@ -136,6 +139,7 @@ int test_communicators( void )
 	    printf( "dup_comm key_3 found!\n" );
 	    fflush( stdout );
 	    MPI_Abort(MPI_COMM_WORLD, 3008 );
+            exit(3008);
 	}
         MTestPrintfMsg(1, "Keyval_free key=%#x\n", key_1);
 	MPI_Keyval_free(&key_1 );
