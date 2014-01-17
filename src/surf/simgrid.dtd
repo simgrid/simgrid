@@ -79,6 +79,7 @@
 <!ATTLIST cluster bw CDATA #REQUIRED>
 <!ATTLIST cluster lat CDATA #REQUIRED>
 <!ATTLIST cluster sharing_policy (SHARED|FULLDUPLEX|FATPIPE) "FULLDUPLEX">
+<!ATTLIST cluster torus_dimensions CDATA "">
 <!ATTLIST cluster bb_bw CDATA "">
 <!ATTLIST cluster bb_lat CDATA "">
 <!ATTLIST cluster bb_sharing_policy (SHARED|FATPIPE) "SHARED">

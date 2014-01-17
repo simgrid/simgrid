@@ -201,6 +201,7 @@ typedef struct s_sg_platf_cluster_cbarg {
   double loopback_bw;
   double loopback_lat;
   double limiter_link;
+  const char* torus_dimensions;
   xbt_dict_t properties;
   const char* router_id;
   e_surf_link_sharing_policy_t sharing_policy;

@@ -520,6 +520,7 @@ void ETag_surfxml_cluster(void){
     cluster.loopback_bw = surf_parse_get_bandwidth(A_surfxml_cluster_loopback___bw);
   if(strcmp(A_surfxml_cluster_loopback___lat,""))
     cluster.loopback_lat = surf_parse_get_time(A_surfxml_cluster_loopback___lat);
+  cluster.torus_dimensions = A_surfxml_cluster_torus___dimensions;
   cluster.router_id = A_surfxml_cluster_router___id;
 
   switch (AX_surfxml_cluster_sharing___policy) {
