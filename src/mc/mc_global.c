@@ -177,7 +177,7 @@ static void dw_variable_free_voidp(void *t){
 
 // object_info
 
-mc_object_info_t MC_new_object_info() {
+mc_object_info_t MC_new_object_info(void) {
   mc_object_info_t res = xbt_new(s_mc_object_info_t, 1);
   res->file_name = NULL;
   res->start_text = NULL;
@@ -1290,9 +1290,9 @@ static void MC_post_process_types(mc_object_info_t info) {
   dw_type_t type;
   xbt_dict_foreach(info->types, cursor, origin, type){
     if(type->type==e_dw_array_type) {
-      xbt_assert(type->dw_type_id, "No base type for array %s %s", type->id, type->name);
+      xbt_assert(type->dw_type_id, "No base type for array <%p>%s", type->id, type->name);
       dw_type_t subtype = xbt_dict_get_or_null(info->types, type->dw_type_id);
-	  xbt_assert(subtype, "Unkown base type for array %s %s", type->id, type->name);
+	  xbt_assert(subtype, "Unkown base type for array <%p>%s", type->id, type->name);
       type->byte_size = type->element_count*subtype->byte_size;
     }
   }

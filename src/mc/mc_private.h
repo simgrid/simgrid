@@ -330,7 +330,7 @@ typedef struct s_mc_object_info {
   xbt_dict_t types; // xbt_dict_t<origin as hexadecimal string, dw_type_t>
 } s_mc_object_info_t, *mc_object_info_t;
 
-mc_object_info_t MC_new_object_info();
+mc_object_info_t MC_new_object_info(void);
 mc_object_info_t MC_find_object_info(memory_map_t maps, char* name);
 void MC_free_object_info(mc_object_info_t* p);
 
