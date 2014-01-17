@@ -205,7 +205,7 @@ static dw_location_t MC_dwarf_get_location_list_libdw(Dwarf_Die* die, Dwarf_Attr
  *  \return MC specific representation of the location represented by the given attribute
  *  of the given die
  */
-static dw_location_t MC_dwarf_get_location(Dwarf_Die* die, Dwarf_Attribute* attr, mc_object_info_t info) {
+static dw_location_t MC_dwarf_get_location(Dwarf_Die* die, Dwarf_Attribute* attr) {
   int form = dwarf_whatform(attr);
   switch (form) {
 
@@ -258,7 +258,7 @@ static dw_location_t MC_dwarf_at_location(Dwarf_Die* die, int attribute, mc_obje
 
   Dwarf_Attribute attr;
   dwarf_attr_integrate(die, attribute, &attr);
-  return MC_dwarf_get_location(die, &attr, info);
+  return MC_dwarf_get_location(die, &attr);
 }
 
 static char* MC_dwarf_at_type(Dwarf_Die* die) {
