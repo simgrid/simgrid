@@ -783,8 +783,10 @@ static dw_variable_t MC_die_to_variable(mc_object_info_t info, Dwarf_Die* die, D
       break;
     }
   case DW_FORM_sec_offset: // type loclistptr
+  case DW_FORM_data2:
   case DW_FORM_data4:
-    xbt_die("Do not handle loclist locations yet");
+  case DW_FORM_data8:
+    variable->address.location = MC_dwarf_get_location_list(die, &attr_location);
     break;
   default:
     xbt_die("Unexpected form %i list for location in <%p>%s",
@@ -866,6 +868,7 @@ static void MC_dwarf_handle_die(mc_object_info_t info, Dwarf_Die* die, Dwarf_Die
       return;
     // case DW_TAG_formal_parameter:
     case DW_TAG_variable:
+    case DW_TAG_formal_parameter:
       MC_dwarf_handle_variable_die(info, die, unit, frame);
       break;
   }
