@@ -201,14 +201,27 @@ static int compare_areas_with_type(void *area1, void *area2, xbt_dict_t types, x
 
       pointer_level++;
       
-      if(addr_pointed1 > std_heap && (char *)addr_pointed1 < (char*) std_heap + STD_HEAP_SIZE && addr_pointed2 > std_heap && (char *)addr_pointed2 < (char*) std_heap + STD_HEAP_SIZE){
+      // Some cases are not handled here:
+      // * the pointers lead to different areas (one to the heap, the other to the RW segment ...);
+      // * a pointer leads to the read-only segment of the current object;
+      // * a pointer lead to a different ELF object.
+
+      // The pointers are both in the heap:
+      if(addr_pointed1 > std_heap && (char *)addr_pointed1 < (char*) std_heap + STD_HEAP_SIZE
+        && addr_pointed2 > std_heap && (char *)addr_pointed2 < (char*) std_heap + STD_HEAP_SIZE){
         return compare_heap_area(addr_pointed1, addr_pointed2, NULL, types, other_types, type->dw_type_id, pointer_level); 
-      }else if(addr_pointed1 > start_data && (char*)addr_pointed1 <= (char *)start_data + region_size && addr_pointed2 > start_data && (char*)addr_pointed2 <= (char *)start_data + region_size){
+      }
+
+      // The pointers are both in the current object R/W segment:
+      else if(addr_pointed1 > start_data && (char*)addr_pointed1 <= (char *)start_data + region_size
+        && addr_pointed2 > start_data && (char*)addr_pointed2 <= (char *)start_data + region_size){
         if(type->dw_type_id == NULL)
           return  (addr_pointed1 != addr_pointed2);
         else
           return  compare_areas_with_type(addr_pointed1, addr_pointed2, types, other_types, type->dw_type_id, region_size, region_type, start_data, pointer_level); 
-      }else{
+      }
+
+      else{
         return (addr_pointed1 != addr_pointed2);
       }
     }
