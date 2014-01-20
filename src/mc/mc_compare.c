@@ -528,23 +528,36 @@ int snapshot_compare(void *state1, void *state2){
     cursor++;
   }
 
-  #ifdef MC_DEBUG
-    if(is_diff == 0)
-      xbt_os_walltimer_stop(timer);
-    xbt_os_walltimer_start(timer);
-  #endif
 
-  /* Compare binary global variables */
-  is_diff = compare_global_variables(2, s1->regions[2], s2->regions[2]);
+
+ const char* names[3] = { "?", "libsimgrid", "binary" };
+#ifdef MC_DEBUG
+ double *times[3] = {
+   NULL,
+   &mc_comp_times->libsimgrid_global_variables_comparison_time,
+   &mc_comp_times->binary_global_variables_comparison_time
+ };
+#endif
+
+ int k=0;
+ for(k=2; k!=0; --k) {
+    #ifdef MC_DEBUG
+      if(is_diff == 0)
+        xbt_os_walltimer_stop(timer);
+      xbt_os_walltimer_start(timer);
+    #endif
+
+  /* Compare global variables */
+  is_diff = compare_global_variables(k, s1->regions[k], s2->regions[k]);
   if(is_diff != 0){
     #ifdef MC_DEBUG
       xbt_os_walltimer_stop(timer);
-      mc_comp_times->binary_global_variables_comparison_time = xbt_os_timer_elapsed(timer);
-      XBT_DEBUG("(%d - %d) Different global variables in binary", num1, num2);
+      *times[k] = xbt_os_timer_elapsed(timer);
+      XBT_DEBUG("(%d - %d) Different global variables in %s", num1, num2, names[k]);
       errors++;
     #else
       #ifdef MC_VERBOSE
-      XBT_VERB("(%d - %d) Different global variables in binary", num1, num2);
+      XBT_VERB("(%d - %d) Different global variables in %s", num1, num2, names[k]);
       #endif
 
       reset_heap_information();
@@ -557,36 +570,7 @@ int snapshot_compare(void *state1, void *state2){
       return 1;
     #endif
   }
-
-  #ifdef MC_DEBUG
-    if(is_diff == 0)
-      xbt_os_walltimer_stop(timer);
-    xbt_os_walltimer_start(timer);
-  #endif
-
-  /* Compare libsimgrid global variables */
-  is_diff = compare_global_variables(1, s1->regions[1], s2->regions[1]);
-  if(is_diff != 0){
-    #ifdef MC_DEBUG
-      xbt_os_walltimer_stop(timer);
-      mc_comp_times->libsimgrid_global_variables_comparison_time = xbt_os_timer_elapsed(timer);
-      XBT_DEBUG("(%d - %d) Different global variables in libsimgrid", num1, num2);
-      errors++;
-    #else
-      #ifdef MC_VERBOSE
-      XBT_VERB("(%d - %d) Different global variables in libsimgrid", num1, num2);
-      #endif
-        
-      reset_heap_information();
-      xbt_os_walltimer_stop(timer);
-      xbt_os_timer_free(timer);
-      xbt_os_walltimer_stop(global_timer);
-      mc_snapshot_comparison_time = xbt_os_timer_elapsed(global_timer);
-      xbt_os_timer_free(global_timer);
-
-      return 1;
-    #endif
-  }
+ }
 
   #ifdef MC_DEBUG
     xbt_os_walltimer_start(timer);
