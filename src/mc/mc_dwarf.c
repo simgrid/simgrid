@@ -831,7 +831,7 @@ static dw_variable_t MC_die_to_variable(mc_object_info_t info, Dwarf_Die* die, D
         variable->global = 1;
         Dwarf_Off offset = expr[0].number;
         // TODO, Why is this different base on the object?
-        Dwarf_Off base = strcmp(info->file_name, xbt_binary_name) !=0 ? (Dwarf_Off) info->start_text : 0;
+        Dwarf_Off base = strcmp(info->file_name, xbt_binary_name) !=0 ? (Dwarf_Off) info->start_exec : 0;
         variable->address.address = (void*) (base + offset);
       } else {
         variable->address.location = MC_dwarf_get_expression(expr, len);

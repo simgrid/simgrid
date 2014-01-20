@@ -178,11 +178,7 @@ void dw_variable_free_voidp(void *t){
 // object_info
 
 mc_object_info_t MC_new_object_info(void) {
-  mc_object_info_t res = xbt_new(s_mc_object_info_t, 1);
-  res->file_name = NULL;
-  res->start_text = NULL;
-  res->start_data = NULL;
-  res->start_bss = NULL;
+  mc_object_info_t res = xbt_new0(s_mc_object_info_t, 1);
   res->local_variables = xbt_dict_new_homogeneous(NULL);
   res->global_variables = xbt_dynar_new(sizeof(dw_variable_t), dw_variable_free_voidp);
   res->types = xbt_dict_new_homogeneous(NULL);

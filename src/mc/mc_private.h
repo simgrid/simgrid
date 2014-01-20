@@ -323,9 +323,9 @@ void MC_dump_stack_liveness(xbt_fifo_t stack);
 
 typedef struct s_mc_object_info {
   char* file_name;
-  char* start_text;
-  char* start_data;
-  char* start_bss;
+  char *start_exec, *end_exec; // Executable segment
+  char *start_rw, *end_rw; // Read-write segment
+  char *start_ro, *end_ro; // read-only segment
   xbt_dict_t local_variables; // xbt_dict_t<frame_name, dw_frame_t>
   xbt_dynar_t global_variables; // xbt_dynar_t<dw_variable_t>
   xbt_dict_t types; // xbt_dict_t<origin as hexadecimal string, dw_type_t>
