@@ -138,10 +138,8 @@ static int compare_areas_with_type(void *area1, void *area2, xbt_dict_t types, x
     break;
   case DW_TAG_typedef:
   case DW_TAG_volatile_type:
+  case DW_TAG_const_type:
     return compare_areas_with_type(area1, area2, types, other_types, type->dw_type_id, region_size, region_type, start_data, pointer_level);
-    break;
-  case DW_TAG_const_type: /* Const variable cannot be modified */
-    return -1;
     break;
   case DW_TAG_array_type:
     subtype = xbt_dict_get_or_null(types, type->dw_type_id);
@@ -160,6 +158,7 @@ static int compare_areas_with_type(void *area1, void *area2, xbt_dict_t types, x
       }
       elm_size = subtype->byte_size;
       break;
+    case DW_TAG_const_type:
     case DW_TAG_typedef:
     case DW_TAG_volatile_type:
       subsubtype = xbt_dict_get_or_null(types, subtype->dw_type_id);

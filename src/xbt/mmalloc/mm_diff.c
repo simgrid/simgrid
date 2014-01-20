@@ -798,10 +798,9 @@ static int compare_heap_area_with_type(void *real_area1, void *real_area2, void 
       return (memcmp(area1, area2, type->byte_size) != 0);
     break;
   case DW_TAG_typedef:
-    return compare_heap_area_with_type(real_area1, real_area2, area1, area2, previous, all_types, other_types, type->dw_type_id, area_size, check_ignore, pointer_level);
-    break;
   case DW_TAG_const_type:
-    return 0;
+  case DW_TAG_volatile_type:
+    return compare_heap_area_with_type(real_area1, real_area2, area1, area2, previous, all_types, other_types, type->dw_type_id, area_size, check_ignore, pointer_level);
     break;
   case DW_TAG_array_type:
     subtype = xbt_dict_get_or_null(all_types, type->dw_type_id);
@@ -823,6 +822,7 @@ static int compare_heap_area_with_type(void *real_area1, void *real_area2, void 
       elm_size = subtype->byte_size;
       break;
     // TODO, just remove the type indirection?
+    case DW_TAG_const_type:
     case DW_TAG_typedef:
     case DW_TAG_volatile_type:
       subsubtype = xbt_dict_get_or_null(all_types, subtype->dw_type_id);
@@ -917,9 +917,6 @@ static int compare_heap_area_with_type(void *real_area1, void *real_area2, void 
     break;
   case DW_TAG_union_type:
     return compare_heap_area_without_type(real_area1, real_area2, area1, area2, previous, all_types, other_types, type->byte_size, check_ignore);
-    break;
-  case DW_TAG_volatile_type:
-    return compare_heap_area_with_type(real_area1, real_area2, area1, area2, previous, all_types, other_types, type->dw_type_id, area_size, check_ignore, pointer_level);
     break;
   default:
     break;
