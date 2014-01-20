@@ -1589,8 +1589,8 @@ void MC_print_statistics(mc_stats_t stats)
     fclose(dot_output);
   }
   if(initial_state_safety != NULL){
-    XBT_INFO("Communication-deterministic : %s", !initial_state_safety->comm_deterministic ? "No" : "Yes");
-    XBT_INFO("Send-deterministic : %s", !initial_state_safety->send_deterministic ? "No" : "Yes");
+    // XBT_INFO("Communication-deterministic : %s", !initial_state_safety->comm_deterministic ? "No" : "Yes");
+    // XBT_INFO("Send-deterministic : %s", !initial_state_safety->send_deterministic ? "No" : "Yes");
   }
   MC_UNSET_RAW_MEM;
 }
