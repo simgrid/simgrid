@@ -4,6 +4,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include <inttypes.h>
+
 #include "mc_private.h"
 
 #include "xbt/mmalloc.h"
@@ -230,6 +232,7 @@ static int compare_areas_with_type(void *area1, void *area2, xbt_dict_t types, x
     break;
   case DW_TAG_structure_type:
     xbt_dynar_foreach(type->members, cursor, member){
+      XBT_DEBUG("Compare member %s", member->name);
       res = compare_areas_with_type((char *)area1 + member->offset, (char *)area2 + member->offset, types, other_types, member->dw_type_id, region_size, region_type, start_data, pointer_level);
       if(res == 1)
         return res;
@@ -338,6 +341,7 @@ static int compare_local_variables(mc_snapshot_stack_t stack1, mc_snapshot_stack
       }
       offset1 = (char *)current_var1->address - (char *)std_heap;
       offset2 = (char *)current_var2->address - (char *)std_heap;
+      XBT_DEBUG("Compare local variable %s of frame %s", current_var1->name, current_var1->frame);
       if(current_var1->region == 1)
         res = compare_areas_with_type( (char *)heap1 + offset1, (char *)heap2 + offset2, mc_libsimgrid_info->types, mc_binary_info->types, current_var1->type, 0, 1, start_data_libsimgrid, 0);
       else
@@ -390,10 +394,21 @@ int snapshot_compare(void *state1, void *state2){
     xbt_os_walltimer_start(timer);
   #endif
 
-  /* Compare size of stacks */
+  if(MC_USE_SNAPSHOT_HASH) {
+    if(s1->hash != s2->hash) {
+      XBT_VERB("(%d - %d) Different hash : 0x%" PRIx64 "--0x%" PRIx64, num1, num2, s1->hash, s2->hash);
+      return 1;
+    } else {
+      XBT_VERB("(%d - %d) Same hash : 0x%" PRIx64, num1, num2, s1->hash);
+    }
+  }
+
   int i = 0;
   size_t size_used1, size_used2;
   int is_diff = 0;
+
+
+  /* Compare size of stacks */
   while(i < xbt_dynar_length(s1->stacks)){
     size_used1 = s1->stack_sizes[i];
     size_used2 = s2->stack_sizes[i];
@@ -642,6 +657,10 @@ int snapshot_compare(void *state1, void *state2){
     print_comparison_times();
   #endif
 
+#ifdef MC_VERBOSE
+   if(errors==0)
+     XBT_VERB("(%d - %d) No difference found", num1, num2);
+#endif
   return errors > 0;
   
 }

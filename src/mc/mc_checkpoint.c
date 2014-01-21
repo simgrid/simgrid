@@ -409,8 +409,7 @@ static xbt_dynar_t MC_get_local_variables_values(void *stack_context){
 
   unsigned int cursor = 0;
   dw_variable_t current_variable;
-  dw_location_entry_t entry = NULL;
-  int frame_found = 0, region_type;
+  int region_type;
   void *frame_pointer_address = NULL;
   long true_ip;
   int stop = 0;
@@ -438,27 +437,8 @@ static xbt_dynar_t MC_get_local_variables_values(void *stack_context){
     }
     
     true_ip = (long)frame->low_pc + (long)off;
-    frame_pointer_address = NULL;
+    frame_pointer_address = mc_find_frame_base(true_ip, frame, &c);
 
-    /* Get frame pointer */
-    switch(frame->frame_base->type){
-    case e_dw_loclist:
-      cursor = 0;
-      while(cursor < xbt_dynar_length(frame->frame_base->location.loclist) && !frame_found){
-        entry = xbt_dynar_get_as(frame->frame_base->location.loclist, cursor, dw_location_entry_t);
-        if((true_ip >= entry->lowpc) && (true_ip < entry->highpc)){
-          frame_found = 1;
-          frame_pointer_address =  (void*) MC_dwarf_resolve_location(&c, entry->location, NULL);
-        }
-        cursor++;
-      }
-      break;
-    default :
-      frame_pointer_address = NULL; /* FIXME : implement other cases (with optimizations enabled)*/
-      break;
-    }
-
-    frame_found = 0;
     cursor = 0;
 
     xbt_dynar_foreach(frame->variables, cursor, current_variable){
@@ -581,6 +561,11 @@ mc_snapshot_t MC_take_snapshot(int num_state){
 
   mc_snapshot_t snapshot = xbt_new0(s_mc_snapshot_t, 1);
   snapshot->nb_processes = xbt_swag_size(simix_global->process_list);
+  if(MC_USE_SNAPSHOT_HASH) {
+    snapshot->hash = mc_hash_processes_state(num_state);
+  } else {
+    snapshot->hash = 0;
+  }
 
   /* Save the std heap and the writable mapped pages of libsimgrid and binary */
   MC_get_memory_regions(snapshot);

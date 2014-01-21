@@ -948,7 +948,16 @@ void MC_dwarf_get_variables(mc_object_info_t info) {
   size_t length;
   while (dwarf_nextcu (dwarf, offset, &next_offset, &length, NULL, NULL, NULL) == 0) {
     Dwarf_Die die;
+
     if(dwarf_offdie(dwarf, offset+length, &die)!=NULL) {
+
+      // Skip C++ for now (we will add support for it soon):
+      int lang = dwarf_srclang(&die);
+      if((lang==DW_LANG_C_plus_plus) || (lang==DW_LANG_ObjC_plus_plus)) {
+        offset = next_offset;
+        continue;
+      }
+
       MC_dwarf_handle_die(info, &die, &die, NULL);
     }
     offset = next_offset;

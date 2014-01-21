@@ -45,6 +45,7 @@ typedef struct s_mc_snapshot{
   size_t *stack_sizes;
   xbt_dynar_t stacks;
   xbt_dynar_t to_ignore;
+  uint64_t hash;
   char hash_global[41];
   char hash_local[41];
 } s_mc_snapshot_t, *mc_snapshot_t;
@@ -438,6 +439,7 @@ void MC_dwarf_register_variable(mc_object_info_t info, dw_frame_t frame, dw_vari
 /********************************** DWARF **********************************/
 
 Dwarf_Off MC_dwarf_resolve_location(unw_cursor_t* c, dw_location_t location, void* frame_pointer_address);
+void* mc_find_frame_base(unw_word_t ip, dw_frame_t frame, unw_cursor_t* unw_cursor);
 
 /********************************** Miscellaneous **********************************/
 
@@ -468,6 +470,21 @@ typedef struct s_mc_comm_pattern{
 extern xbt_dynar_t communications_pattern;
 
 void get_comm_pattern(xbt_dynar_t communications_pattern, smx_simcall_t request, int call);
+
+/* *********** Sets *********** */
+
+typedef struct s_mc_address_set *mc_address_set_t;
+
+mc_address_set_t mc_address_set_new();
+mc_address_set_t mc_address_set_free(mc_address_set_t* p);
+void mc_address_add(mc_address_set_t p, const void* value);
+bool mc_address_test(mc_address_set_t p, const void* value);
+
+/* *********** Hash *********** */
+
+uint64_t mc_hash_processes_state(int num_state);
+
+#define MC_USE_SNAPSHOT_HASH 1
 
 #endif
 
