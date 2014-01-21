@@ -297,10 +297,10 @@ WorkstationVMHL13::WorkstationVMHL13(WorkstationVMModelPtr model, const char* na
 WorkstationVMHL13::~WorkstationVMHL13()
 {
   /* ind_phys_workstation equals to smx_host_t */
-  surf_resource_t ind_vm_workstation = xbt_lib_get_elm_or_null(host_lib, getName());
+  // surf_resource_t ind_vm_workstation = xbt_lib_get_elm_or_null(host_lib, getName());
 
   /* Before clearing the entries in host_lib, we have to pick up resources. */
-  CpuCas01Ptr cpu = static_cast<CpuCas01Ptr>(surf_cpu_resource_priv(ind_vm_workstation));
+  // CpuCas01Ptr cpu = static_cast<CpuCas01Ptr>(surf_cpu_resource_priv(ind_vm_workstation));
 
   /* We deregister objects from host_lib, without invoking the freeing callback
    * of each level.
@@ -332,7 +332,7 @@ WorkstationVMHL13::~WorkstationVMHL13()
 	/* Free the workstation resource of the VM. */
 }
 
-void WorkstationVMHL13::updateState(tmgr_trace_event_t event_type, double value, double date) {
+void WorkstationVMHL13::updateState(tmgr_trace_event_t /*event_type*/, double /*value*/, double /*date*/) {
   THROW_IMPOSSIBLE;             /* This model does not implement parallel tasks */
 }
 
