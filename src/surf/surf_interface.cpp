@@ -1,4 +1,4 @@
-/* Copyright (c) 2004-2013. The SimGrid Team.
+/* Copyright (c) 2004-2014. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -510,13 +510,13 @@ double Model::shareResourcesLazy(double now)
   double value;
 
   XBT_DEBUG
-      ("Before share resources, the size of modified actions set is %d",
+      ("Before share resources, the size of modified actions set is %zd",
        p_modifiedSet->size());
 
   lmm_solve(p_maxminSystem);
 
   XBT_DEBUG
-      ("After share resources, The size of modified actions set is %d",
+      ("After share resources, The size of modified actions set is %zd",
        p_modifiedSet->size());
 
   while(!p_modifiedSet->empty()) {
