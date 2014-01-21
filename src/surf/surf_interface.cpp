@@ -471,8 +471,8 @@ void surf_exit(void)
  *********/
 
 Model::Model(const char *name)
-  : p_name(name)
-  , p_maxminSystem(NULL)
+  : p_maxminSystem(NULL)
+  , p_name(name)
 {
   p_readyActionSet = new ActionList();
   p_runningActionSet = new ActionList();
@@ -663,18 +663,21 @@ Resource::Resource()
 {}
 
 Resource::Resource(surf_model_t model, const char *name, xbt_dict_t props)
- : p_name(xbt_strdup(name)), p_properties(props), p_model(model)
- , m_running(true), m_stateCurrent(SURF_RESOURCE_ON)
+  : m_stateCurrent(SURF_RESOURCE_ON)
+  , p_name(xbt_strdup(name)), p_properties(props), p_model(model)
+  , m_running(true)
 {}
 
 Resource::Resource(surf_model_t model, const char *name, xbt_dict_t props, lmm_constraint_t constraint)
- : p_name(xbt_strdup(name)), p_properties(props), p_model(model)
- , m_running(true), m_stateCurrent(SURF_RESOURCE_ON), p_constraint(constraint)
+  : m_stateCurrent(SURF_RESOURCE_ON)
+  , p_name(xbt_strdup(name)), p_properties(props), p_model(model)
+  , m_running(true), p_constraint(constraint)
 {}
 
 Resource::Resource(surf_model_t model, const char *name, xbt_dict_t props, e_surf_resource_state_t stateInit)
- : p_name(xbt_strdup(name)), p_properties(props), p_model(model)
- , m_running(true), m_stateCurrent(stateInit)
+  : m_stateCurrent(stateInit)
+  , p_name(xbt_strdup(name)), p_properties(props), p_model(model)
+  , m_running(true)
 {}
 
 Resource::~Resource() {
@@ -746,18 +749,19 @@ Action::Action()
 
 Action::Action(ModelPtr model, double cost, bool failed)
  : m_priority(1.0)
- , m_failed(failed)
- , m_start(surf_get_clock()), m_finish(-1.0)
+ , m_refcount(1)
  , m_remains(cost)
  , m_maxDuration(NO_MAX_DURATION)
+ , m_finish(-1.0)
+ , m_failed(failed)
+ , m_start(surf_get_clock())
  , m_cost(cost)
- , p_data(NULL)
  , p_model(model)
- , m_refcount(1)
+ , p_data(NULL)
+ , p_variable(NULL)
  , m_lastValue(0)
  , m_lastUpdate(0)
  , m_suspended(false)
- , p_variable(NULL)
 {
   #ifdef HAVE_TRACING
     p_category = NULL;
@@ -774,18 +778,19 @@ Action::Action(ModelPtr model, double cost, bool failed)
 
 Action::Action(ModelPtr model, double cost, bool failed, lmm_variable_t var)
  : m_priority(1.0)
- , m_failed(failed)
- , m_start(surf_get_clock()), m_finish(-1.0)
+ , m_refcount(1)
  , m_remains(cost)
  , m_maxDuration(NO_MAX_DURATION)
+ , m_finish(-1.0)
+ , m_failed(failed)
+ , m_start(surf_get_clock())
  , m_cost(cost)
- , p_data(NULL)
  , p_model(model)
- , m_refcount(1)
+ , p_data(NULL)
+ , p_variable(var)
  , m_lastValue(0)
  , m_lastUpdate(0)
  , m_suspended(false)
- , p_variable(var)
 {
   #ifdef HAVE_TRACING
     p_category = NULL;

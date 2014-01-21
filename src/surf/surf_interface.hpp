@@ -1,4 +1,4 @@
-/* Copyright (c) 2004-2013. The SimGrid Team.
+/* Copyright (c) 2004-2014. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -364,9 +364,9 @@ protected:
   e_surf_resource_state_t m_stateCurrent;
 
 private:
-  ModelPtr p_model;
   const char *p_name;
   xbt_dict_t p_properties;
+  ModelPtr p_model;
   void *p_resource;
   bool m_running;
 
@@ -681,7 +681,6 @@ private:
   ActionLmmListPtr p_modifiedSet;
   xbt_heap_t p_actionHeap;
   int m_selectiveUpdate;
-  ModelPtr p_model;
   double m_bound;   /**< the capping of the CPU use  */
   bool m_failed;
   double m_start; /**< start time  */
@@ -691,6 +690,7 @@ private:
   int m_latencyLimited;               /**< Set to 1 if is limited by latency, 0 otherwise */
   #endif
   int    m_cost;
+  ModelPtr p_model;
   void *p_data; /**< for your convenience */
 
   /* LMM */
@@ -708,8 +708,8 @@ public:
 
 protected:
   lmm_variable_t p_variable;
-  double m_lastUpdate;
   double m_lastValue;
+  double m_lastUpdate;
   int m_suspended;
   int m_indexHeap;
   enum heap_action_type m_hat;
