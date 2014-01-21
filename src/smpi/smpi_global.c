@@ -1,4 +1,4 @@
-/* Copyright (c) 2007-2013. The SimGrid Team.
+/* Copyright (c) 2007-2014. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -160,6 +160,7 @@ int smpi_process_getarg(integer * index, char *dst, ftnlen len)
   }
   return 0;
 }
+#endif
 
 int smpi_global_size(void)
 {
@@ -172,7 +173,6 @@ int smpi_global_size(void)
   }
   return atoi(value);
 }
-#endif
 
 smpi_process_data_t smpi_process_data(void)
 {
