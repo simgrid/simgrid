@@ -14,13 +14,16 @@ xbt_edge_t new_xbt_graph_edge (xbt_graph_t graph, xbt_node_t s, xbt_node_t d, xb
 /***********
  * Classes *
  ***********/
-class As;
+
+/* Note: As and RoutingEdge are declard as struct instead of class, to keep
+   compatibility with C files where they are mentioned. */
+struct As;
 typedef As *AsPtr;
 
 class RoutingModelDescription;
 typedef RoutingModelDescription *RoutingModelDescriptionPtr;
 
-class RoutingEdge;
+struct RoutingEdge;
 typedef RoutingEdge *RoutingEdgePtr;
 
 class Onelink;
@@ -33,7 +36,7 @@ typedef RoutingPlatf *RoutingPlatfPtr;
  * @brief The Autonomous System (AS) routing interface
  * @details [TODO]
  */
-class As {
+struct As {
 public:
   xbt_dynar_t p_indexNetworkElm;
   xbt_dict_t p_bypassRoutes;    /* store bypass routes */
@@ -86,7 +89,7 @@ public:
  * @brief A routing edge
  * @details [long description]
  */
-class RoutingEdge {
+struct RoutingEdge {
 public:
   ~RoutingEdge() { xbt_free(p_name);};
   AsPtr p_rcComponent;
