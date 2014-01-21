@@ -1,4 +1,4 @@
-/* Copyright (c) 2007-2013. The SimGrid Team.
+/* Copyright (c) 2007-2014. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -673,6 +673,7 @@ MPI_CALL(XBT_PUBLIC(int), MPI_Comm_get_parent,( MPI_Comm *parent));
 //FIXME: End of all the not yet implemented stuff
 
 // smpi functions
+XBT_PUBLIC(int) smpi_global_size(void);
 XBT_PUBLIC(MPI_Comm) smpi_process_comm_self(void);
 /*
 XBT_PUBLIC(void) smpi_exit(int);
