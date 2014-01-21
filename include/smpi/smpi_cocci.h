@@ -15,7 +15,7 @@
 type *name = NULL;                                              \
 static void __attribute__((constructor)) __preinit_##name(void) { \
    if(!name)                                                    \
-      name = (type*)malloc(smpi_global_size() * sizeof(type));  \
+      name = (type*)calloc(smpi_global_size(), sizeof(type));   \
 }                                                               \
 static void __attribute__((destructor)) __postfini_##name(void) { \
    free(name);                                                  \
@@ -55,7 +55,7 @@ XBT_PUBLIC(void) smpi_free_static(void);
 #define SMPI_VARINIT_STATIC(name,type)                      \
 static type *name = NULL;                                   \
 if(!name) {                                                 \
-   name = (type*)malloc(smpi_global_size() * sizeof(type)); \
+   name = (type*)calloc(smpi_global_size(), sizeof(type));  \
    smpi_register_static(name, xbt_free);                    \
 }
 
