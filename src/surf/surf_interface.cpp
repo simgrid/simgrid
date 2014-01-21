@@ -1,3 +1,9 @@
+/* Copyright (c) 2004-2013. The SimGrid Team.
+ * All rights reserved.                                                     */
+
+/* This program is free software; you can redistribute it and/or modify it
+ * under the terms of the license (GNU LGPL) which comes with this package. */
+
 #include "surf_private.h"
 #include "surf_interface.hpp"
 #include "network_interface.hpp"
@@ -459,14 +465,14 @@ void surf_exit(void)
 
   NOW = 0;                      /* Just in case the user plans to restart the simulation afterward */
 }
+
 /*********
  * Model *
  *********/
 
 Model::Model(const char *name)
-  : p_name(name), p_maxminSystem(0),
-    m_resOnCB(0), m_resOffCB(0),
-    m_actCancelCB(0), m_actSuspendCB(0), m_actResumeCB(0)
+  : p_name(name)
+  , p_maxminSystem(NULL)
 {
   p_readyActionSet = new ActionList();
   p_runningActionSet = new ActionList();
@@ -575,12 +581,10 @@ double Model::shareResourcesFull(double /*now*/) {
   THROW_UNIMPLEMENTED;
 }
 
-
 double Model::shareResourcesMaxMin(ActionListPtr running_actions,
                           lmm_system_t sys,
                           void (*solve) (lmm_system_t))
 {
-  void *_action = NULL;
   ActionPtr action = NULL;
   double min = -1;
   double value = -1;
@@ -644,65 +648,11 @@ void Model::updateActionsState(double now, double delta)
 
 void Model::updateActionsStateLazy(double /*now*/, double /*delta*/)
 {
-
 }
 
 void Model::updateActionsStateFull(double /*now*/, double /*delta*/)
 {
-
 }
-
-
-void Model::addTurnedOnCallback(ResourceCallback rc)
-{
-  m_resOnCB = rc;
-}
-
-void Model::notifyResourceTurnedOn(ResourcePtr r)
-{
-  m_resOnCB(r);
-}
-
-void Model::addTurnedOffCallback(ResourceCallback rc)
-{
-  m_resOffCB = rc;
-}
-
-void Model::notifyResourceTurnedOff(ResourcePtr r)
-{
-  m_resOffCB(r);
-}
-
-void Model::addActionCancelCallback(ActionCallback ac)
-{
-  m_actCancelCB = ac;
-}
-
-void Model::notifyActionCancel(ActionPtr a)
-{
-  m_actCancelCB(a);
-}
-
-void Model::addActionResumeCallback(ActionCallback ac)
-{
-  m_actResumeCB = ac;
-}
-
-void Model::notifyActionResume(ActionPtr a)
-{
-  m_actResumeCB(a);
-}
-
-void Model::addActionSuspendCallback(ActionCallback ac)
-{
-  m_actSuspendCB = ac;
-}
-
-void Model::notifyActionSuspend(ActionPtr a)
-{
-  m_actSuspendCB(a);
-}
-
 
 /************
  * Resource *
@@ -727,6 +677,11 @@ Resource::Resource(surf_model_t model, const char *name, xbt_dict_t props, e_sur
  , m_running(true), m_stateCurrent(stateInit)
 {}
 
+Resource::~Resource() {
+  xbt_free((void*)p_name);
+  xbt_dict_free(&p_properties);
+}
+
 e_surf_resource_state_t Resource::getState()
 {
   return m_stateCurrent;
@@ -746,7 +701,6 @@ void Resource::turnOn()
 {
   if (!m_running) {
     m_running = true;
-    getModel()->notifyResourceTurnedOn(this);
   }
 }
 
@@ -754,8 +708,23 @@ void Resource::turnOff()
 {
   if (m_running) {
     m_running = false;
-    getModel()->notifyResourceTurnedOff(this);
   }
+}
+
+ModelPtr Resource::getModel() {
+  return p_model;
+}
+
+const char *Resource::getName() {
+  return p_name;
+}
+
+xbt_dict_t Resource::getProperties() {
+  return p_properties;
+}
+
+lmm_constraint_t Resource::getConstraint() {
+  return p_constraint;
 }
 
 /**********

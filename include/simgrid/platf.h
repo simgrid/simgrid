@@ -18,7 +18,8 @@ typedef struct RoutingEdge *sg_routing_edge_t;
 
 XBT_PUBLIC(sg_routing_edge_t) sg_routing_edge_by_name_or_null(const char *name);
 
-/** Defines whether a given resource is working or not */
+/** @ingroup SURF_interface
+* @brief Defines whether a given resource is working or not */
 typedef enum {
   SURF_RESOURCE_ON = 1,                   /**< Up & ready        */
   SURF_RESOURCE_OFF = 0                   /**< Down & broken     */

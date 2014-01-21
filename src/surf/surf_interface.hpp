@@ -1,4 +1,8 @@
-//using namespace generic;
+/* Copyright (c) 2004-2013. The SimGrid Team.
+ * All rights reserved.                                                     */
+
+/* This program is free software; you can redistribute it and/or modify it
+ * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #ifndef SURF_MODEL_H_
 #define SURF_MODEL_H_
@@ -35,12 +39,6 @@ extern tmgr_history_t history;
 
 using namespace std;
 
-/** \ingroup SURF_simulation
- *  \brief Return the current time
- *
- *  Return the current time in millisecond.
- */
-
 /*********
  * Utils *
  *********/
@@ -75,11 +73,9 @@ typedef Model* ModelPtr;
 
 //class Resource;
 typedef Resource* ResourcePtr;
-typedef boost::function<void (ResourcePtr r)> ResourceCallback;
 			
 //class Action;
 typedef Action* ActionPtr;
-typedef boost::function<void (ActionPtr a)> ActionCallback;
 
 typedef boost::intrusive::list<Action> ActionList;
 typedef ActionList* ActionListPtr;
@@ -114,119 +110,276 @@ XBT_PUBLIC_DATA(xbt_dict_t) trace_connect_list_latency;
  *********/
 XBT_PUBLIC_DATA(xbt_dynar_t) model_list;
 
+/** @ingroup SURF_interface
+ * @brief SURF model interface class
+ * @details A model is an object which handle the interactions between its Resources and its Actions
+ */
 class Model {
-  const char *p_name;
-
-  ActionListPtr p_readyActionSet; /**< Actions in state SURF_ACTION_READY */
-  ActionListPtr p_runningActionSet; /**< Actions in state SURF_ACTION_RUNNING */
-  ActionListPtr p_failedActionSet; /**< Actions in state SURF_ACTION_FAILED */
-  ActionListPtr p_doneActionSet; /**< Actions in state SURF_ACTION_DONE */
-
-  ResourceCallback m_resOnCB, m_resOffCB;
-  ActionCallback m_actCancelCB, m_actSuspendCB, m_actResumeCB;
-
-protected:
-  ActionLmmListPtr p_modifiedSet;
-
-  lmm_system_t p_maxminSystem;
-  e_UM_t p_updateMechanism;
-  int m_selectiveUpdate;
-  xbt_heap_t p_actionHeap;
-
 public:
+  /** 
+   * @brief Model constructor
+   * 
+   * @param name the name of the model
+   */
   Model(const char *name);
+
+  /** 
+   * @brief Model destructor
+   */
   virtual ~Model();
 
+  /**
+   * @brief Get the name of the current Model
+   * 
+   * @return The name of the current Model
+   */
   const char *getName() {return p_name;}
+
+  /**
+   * @brief Get the set of [actions](@ref Action) in *ready* state 
+   * 
+   * @return The set of [actions](@ref Action) in *ready* state 
+   */
   virtual ActionListPtr getReadyActionSet() {return p_readyActionSet;}
+
+  /**
+   * @brief Get the set of [actions](@ref Action) in *running* state
+   * 
+   * @return The set of [actions](@ref Action) in *running* state
+   */
   virtual ActionListPtr getRunningActionSet() {return p_runningActionSet;}
+
+  /**
+   * @brief Get the set of [actions](@ref Action) in *failed* state
+   * 
+   * @return The set of [actions](@ref Action) in *failed* state
+   */
   virtual ActionListPtr getFailedActionSet() {return p_failedActionSet;}
+
+  /**
+   * @brief Get the set of [actions](@ref Action) in *done* state
+   * 
+   * @return The set of [actions](@ref Action) in *done* state
+   */
   virtual ActionListPtr getDoneActionSet() {return p_doneActionSet;}
+
+  /**
+   * @brief Get the set of modified [actions](@ref Action)
+   * 
+   * @return The set of modified [actions](@ref Action)
+   */
   virtual ActionLmmListPtr getModifiedSet() {return p_modifiedSet;}
+
+  /**
+   * @brief Get the maxmin system of the current Model
+   *
+   * @return The maxmin system of the current Model
+   */
   lmm_system_t getMaxminSystem() {return p_maxminSystem;}
+
+  /**
+   * @brief Get the update mechanism of the current Model
+   * @see e_UM_t
+   * 
+   * @return [description]
+   */
   e_UM_t getUpdateMechanism() {return p_updateMechanism;}
+
+  /**
+   * @brief Get Action heap
+   * @details [TODO]
+   * 
+   * @return The Action heap
+   */
   xbt_heap_t getActionHeap() {return p_actionHeap;}
 
-  ActionPtr createAction(double _cost, bool _failed);
+  /** 
+   * @brief share the resources
+   * @details Share the resources between the actions 
+   * 
+   * @param 
+   * @return the date of the next action will finish
+   */
   virtual double shareResources(double now);
   virtual double shareResourcesLazy(double now);
   virtual double shareResourcesFull(double now);
   double shareResourcesMaxMin(ActionListPtr running_actions,
                                       lmm_system_t sys,
                                       void (*solve) (lmm_system_t));
+
+  /**
+   * @brief Update state of actions
+   * @details [TODO]
+   * 
+   * @param now [TODO]
+   * @param delta [TODO]
+   */
   virtual void updateActionsState(double now, double delta);
   virtual void updateActionsStateLazy(double now, double delta);
   virtual void updateActionsStateFull(double now, double delta);
 
-  void addTurnedOnCallback(ResourceCallback rc);
-  void notifyResourceTurnedOn(ResourcePtr r);
+protected:
+  ActionLmmListPtr p_modifiedSet;
+  lmm_system_t p_maxminSystem;
+  e_UM_t p_updateMechanism;
+  int m_selectiveUpdate;
+  xbt_heap_t p_actionHeap;
 
-  void addTurnedOffCallback(ResourceCallback rc);  
-  void notifyResourceTurnedOff(ResourcePtr r);
+private:
+  const char *p_name;
 
-  void addActionCancelCallback(ActionCallback ac);
-  void notifyActionCancel(ActionPtr a);
-  void addActionResumeCallback(ActionCallback ac);
-  void notifyActionResume(ActionPtr a);
-  void addActionSuspendCallback(ActionCallback ac);  
-  void notifyActionSuspend(ActionPtr a);
+  ActionListPtr p_readyActionSet; /**< Actions in state SURF_ACTION_READY */
+  ActionListPtr p_runningActionSet; /**< Actions in state SURF_ACTION_RUNNING */
+  ActionListPtr p_failedActionSet; /**< Actions in state SURF_ACTION_FAILED */
+  ActionListPtr p_doneActionSet; /**< Actions in state SURF_ACTION_DONE */
 };
 
 /************
  * Resource *
  ************/
 
-/**
- * Resource which have a metric handled by a maxmin system
+/** @ingroup SURF_interface
+ * @brief Resource which have a metric handled by a maxmin system
  */
 typedef struct {
-  double scale;
-  double peak;
-  tmgr_trace_event_t event;
+  double scale;             /**< The scale of the metric */
+  double peak;              /**< The peak of the metric */
+  tmgr_trace_event_t event; /**< The associated trace event associated to the metric */
 } s_surf_metric_t;
 
+/** @ingroup SURF_interface
+ * @brief SURF resource interface class
+ * @details A resource represent an element of a component (e.g.: a link for the network)
+ */
 class Resource {
-  void *p_resource;
-  const char *p_name;
-  ModelPtr p_model;
-  xbt_dict_t p_properties;
-  bool m_running;
+public:
+  /** 
+   * @brief Resource constructor
+   */
+  Resource();
+
+  /** 
+   * @brief Resource constructor
+   * 
+   * @param model Model associated to this Resource
+   * @param name The name of the Resource
+   * @param props Dictionary of properties associated to this Resource
+   */
+  Resource(ModelPtr model, const char *name, xbt_dict_t props);
+
+  /** 
+   * @brief Resource constructor
+   * 
+   * @param model Model associated to this Resource
+   * @param name The name of the Resource
+   * @param props Dictionary of properties associated to this Resource
+   * @param constraint The lmm constraint associated to this Resource if it is part of a LMM component
+   */
+  Resource(ModelPtr model, const char *name, xbt_dict_t props, lmm_constraint_t constraint);
+
+  /** 
+   * @brief Resource constructor
+   * 
+   * @param model Model associated to this Resource
+   * @param name The name of the Resource
+   * @param props Dictionary of properties associated to this Resource
+   * @param stateInit the initial state of the Resource
+   */
+  Resource(ModelPtr model, const char *name, xbt_dict_t props, e_surf_resource_state_t stateInit);
+
+  /**
+   * @brief Resource destructor
+   */
+  virtual ~Resource(); 
+
+  /**
+   * @brief Get the Model of the current Resource
+   * 
+   * @return The Model of the current Resource
+   */
+  ModelPtr getModel();
+
+  /**
+   * @brief Get the name of the current Resource
+   * 
+   * @return The name of the current Resource
+   */
+  const char *getName();
+
+  /**
+   * @brief Get the properties of the current Resource
+   * 
+   * @return The properties of the current Resource
+   */
+  virtual xbt_dict_t getProperties();
+
+  /**
+   * @brief Update the state of the current Resource
+   * @details [TODO]
+   * 
+   * @param event_type [TODO]
+   * @param value [TODO]
+   * @param date [TODO]
+   */
+  virtual void updateState(tmgr_trace_event_t event_type, double value, double date)=0;
+
+  /**
+   * @brief Check if the current Resource is used
+   * @return true if the current Resource is used, false otherwise
+   */
+  virtual bool isUsed()=0;
+
+  /**
+   * @brief Check if the current Resource is active
+   *
+   * @return true if the current Resource is active, false otherwise
+   */
+  bool isOn();
+
+  /**
+   * @brief Turn on the current Resource
+   */
+  void turnOn();
+
+  /**
+   * @brief Turn off the current Resource
+   */
+  void turnOff();
+
+  /**
+   * @brief Get the [state](\ref e_surf_resource_state_t) of the current Resource
+   *
+   * @return The state of the currenrt Resource
+   */
+  virtual e_surf_resource_state_t getState();
+
+  /**
+   * @brief Set the [state](\ref e_surf_resource_state_t) of the current Resource
+   * 
+   * @param state The new state of the current Resource
+   */
+  virtual void setState(e_surf_resource_state_t state);
 
 protected:
   e_surf_resource_state_t m_stateCurrent;
 
-public:
-  Resource();
-  Resource(ModelPtr model, const char *name, xbt_dict_t props);
-  Resource(ModelPtr model, const char *name, xbt_dict_t props, lmm_constraint_t constraint);
-  Resource(ModelPtr model, const char *name, xbt_dict_t props, e_surf_resource_state_t stateInit);
-  Resource(ModelPtr model, const char *name, xbt_dict_t props, e_surf_resource_state_t stateInit, lmm_constraint_t constraint);
-
-  virtual ~Resource() {
-	xbt_free((void*)p_name);
-    xbt_dict_free(&p_properties);
-  };
-
-  ModelPtr getModel() {return p_model;};
-  const char *getName() {return p_name;};
-  virtual xbt_dict_t getProperties() {return p_properties;};
-
-  virtual void updateState(tmgr_trace_event_t event_type, double value, double date)=0;
-  virtual bool isUsed()=0;
-  bool isOn();
-  void turnOn();
-  void turnOff();
-  void setName(string name);
-
-  virtual e_surf_resource_state_t getState();
-  virtual void setState(e_surf_resource_state_t state);
+private:
+  ModelPtr p_model;
+  const char *p_name;
+  xbt_dict_t p_properties;
+  void *p_resource;
+  bool m_running;
 
   /* LMM */
+public:
+  /**
+   * @brief Get the lmm constraint associated to this Resource if it is part of a LMM component
+   * 
+   * @return The lmm constraint associated to this Resource
+   */
+  lmm_constraint_t getConstraint();
 private:
   lmm_constraint_t p_constraint;
-public:
-  lmm_constraint_t getConstraint() {return p_constraint;};
-
 };
 
 /**********
@@ -234,7 +387,297 @@ public:
  **********/
 void surf_action_lmm_update_index_heap(void *action, int i);
 
+/** @ingroup SURF_interface
+ * @brief SURF action interface class
+ * @details An action is an event generated by a resource (e.g.: a communication for the network)
+ */
 class Action : public actionHook, public actionLmmHook {
+public:
+  /**
+   * @brief Action constructor
+   */
+  Action();
+
+  /**
+   * @brief Action constructor
+   * 
+   * @param model The Model associated to this Action
+   * @param cost The cost of the Action
+   * @param failed If the action is impossible (e.g.: execute something on a switched off workstation)
+   */
+  Action(ModelPtr model, double cost, bool failed);
+
+  /**
+   * @brief Action constructor
+   * 
+   * @param model The Model associated to this Action
+   * @param cost The cost of the Action
+   * @param failed If the action is impossible (e.g.: execute something on a switched off workstation)
+   * @param var The lmm variable associated to this Action if it is part of a LMM component
+   */
+  Action(ModelPtr model, double cost, bool failed, lmm_variable_t var);
+
+  /**
+   * @brief Action destructor
+   */
+  virtual ~Action();
+  
+  /**
+   * @brief Finish the action
+   */
+  void finish();
+
+  /**
+   * @brief Get the [state](\ref e_surf_action_state_t) of the current Action
+   * 
+   * @return The state of the current Action
+   */
+  e_surf_action_state_t getState(); /**< get the state*/
+
+  /**
+   * @brief Set the [state](\ref e_surf_action_state_t) of the current Action
+   * 
+   * @param state The new state of the current Action
+   */
+  virtual void setState(e_surf_action_state_t state); /**< Change state*/
+
+  /**
+   * @brief Get the bound of the current Action
+   * 
+   * @return The bound of the current Action
+   */
+  double getBound() {return m_bound;}
+
+  /**
+   * @brief Get the start time of the current action
+   * 
+   * @return The start time of the current action
+   */
+  double getStartTime();
+
+  /**
+   * @brief Get the finish time of the current action
+   * 
+   * @return The finish time of the current action
+   */
+  double getFinishTime();
+
+  /**
+   * @brief Get the data associated to the current action
+   * 
+   * @return The data associated to the current action
+   */
+  void *getData() {return p_data;}
+
+  /**
+   * @brief Set the data associated to the current action
+   * 
+   * @param data The new data associated to the current action
+   */
+  void setData(void* data);
+
+  /**
+   * @brief Get the maximum duration of the current action
+   * 
+   * @return The maximum duration of the current action
+   */
+  double getMaxDuration() {return m_maxDuration;}
+
+  /**
+   * @brief Get the category associated to the current action
+   * 
+   * @return The category associated to the current action
+   */
+  char *getCategory() {return p_category;}
+
+  /**
+   * @brief Get the cost of the current action
+   * 
+   * @return The cost of the current action
+   */
+  double getCost() {return m_cost;}
+
+  /**
+   * @brief Set the cost of the current action
+   * 
+   * @param cost The new cost of the current action
+   */
+  void setCost(double cost) {m_cost = cost;}
+
+  /**
+   * @brief Update the maximum duration of the current action
+   * 
+   * @param delta [TODO]
+   */
+  void updateMaxDuration(double delta) {double_update(&m_maxDuration, delta);}
+
+  /**
+   * @brief Update the remaining time of the current action
+   * 
+   * @param delta [TODO]
+   */
+  void updateRemains(double delta) {double_update(&m_remains, delta);}
+
+  /**
+   * @brief Set the remaining time of the current action
+   * 
+   * @param value The new remaining time of the current action
+   */
+  void setRemains(double value) {m_remains = value;}
+
+  /**
+   * @brief Set the finish time of the current action
+   * 
+   * @param value The new Finush time of the current action
+   */
+  void setFinishTime(double value) {m_finish = value;}
+
+  /**
+   * @brief Add a reference to the current action
+   */
+  void ref();
+
+  /**
+   * @brief Remove a reference to the current action
+   * @details If the Action has no more reference, we destroy it
+   * 
+   * @return true if the action was destroyed and false if someone still has references on it
+   */
+  virtual int unref();
+
+  /**
+   * @brief Cancel the current Action if running
+   */
+  virtual void cancel();
+
+  /**
+   * @brief Recycle an Action
+   */
+  virtual void recycle(){};
+
+  /**
+   * @brief Suspend the current Action
+   */
+  virtual void suspend();
+
+  /**
+   * @brief Resume the current Action
+   */
+  virtual void resume();
+
+  /**
+   * @brief Check if the current action is running
+   * 
+   * @return true if the current Action is suspended, false otherwise
+   */
+  virtual bool isSuspended();
+
+  /**
+   * @brief Set the maximum duration of the current Action
+   * 
+   * @param duration The new maximum duration of the current Action
+   */
+  virtual void setMaxDuration(double duration);
+
+  /**
+   * @brief Set the priority of the current Action
+   * 
+   * @param priority The new priority of the current Action
+   */
+  virtual void setPriority(double priority);
+
+#ifdef HAVE_TRACING
+  /**
+   * @brief Set the category of the current Action
+   * 
+   * @param category The new category of the current Action
+   */
+  void setCategory(const char *category);
+#endif
+
+  /**
+   * @brief Get the remaining time of the current action after updating the resource
+   * 
+   * @return The remaining time
+   */
+  virtual double getRemains();
+
+  /**
+   * @brief Get the remaining time of the current action without updating the resource
+   * 
+   * @return The remaining time
+   */
+  double getRemainsNoUpdate();
+
+#ifdef HAVE_LATENCY_BOUND_TRACKING
+  /**
+   * @brief Check if the action is limited by latency.
+   * 
+   * @return 1 if action is limited by latency, 0 otherwise
+   */
+  int getLatencyLimited();
+#endif
+
+  /**
+   * @brief Get the priority of the current Action
+   * 
+   * @return The priority of the current Action
+   */
+  double getPriority() {return m_priority;};
+
+  /**
+   * @brief Get the state set in which the action is
+   * @details [TODO]
+   * 
+   * @return The state set in which the action is
+   */
+  ActionListPtr getStateSet() {return p_stateSet;};
+
+  s_xbt_swag_hookup_t p_stateHookup;
+
+protected:
+  ActionListPtr p_stateSet;
+  double m_priority; /**< priority (1.0 by default) */
+  int    m_refcount;
+  double m_remains; /**< How much of that cost remains to be done in the currently running task */
+  double m_maxDuration; /*< max_duration (may fluctuate until the task is completed) */
+  double m_finish; /**< finish time : this is modified during the run and fluctuates until the task is completed */
+
+  ModelPtr getModel() {return p_model;}
+
+private:
+  int resourceUsed(void *resource_id);
+
+  /**
+   * @brief Share the resources to the actions
+   * @details [TODO]
+   * 
+   * @param now [TODO]
+   * @return in how much time the next action may terminatedescription]
+   */
+  double shareResources(double now);
+
+  /**
+   * @brief Update the current action state
+   * @details [TODO]
+   * 
+   * @param now [TODO]
+   * @param delta [TODO]
+   */
+  void updateActionsState(double now, double delta);
+
+  /**
+   * @brief Update the [TODO]
+   * @details [TODO]
+   * 
+   * @param id [TODO]
+   * @param event_type [TODO]
+   * @param value [TODO]
+   * @param time [TODO]
+   */
+  void updateResourceState(void *id, tmgr_trace_event_t event_type,
+                                 double value, double time);
+
   ActionLmmListPtr p_modifiedSet;
   xbt_heap_t p_actionHeap;
   int m_selectiveUpdate;
@@ -250,86 +693,7 @@ class Action : public actionHook, public actionLmmHook {
   int    m_cost;
   void *p_data; /**< for your convenience */
 
-protected:
-  ActionListPtr p_stateSet;
-  double m_priority; /**< priority (1.0 by default) */
-  int    m_refcount;
-  double m_remains; /**< How much of that cost remains to be done in the currently running task */
-  double m_maxDuration; /*< max_duration (may fluctuate until the task is completed) */
-  double m_finish; /**< finish time : this is modified during the run and fluctuates until the task is completed */
-
-  ModelPtr getModel() {return p_model;}
-
-public:
-
-  Action();
-  Action(ModelPtr model, double cost, bool failed);
-  Action(ModelPtr model, double cost, bool failed, lmm_variable_t var);
-  virtual ~Action();
-  
-  void finish();
-  s_xbt_swag_hookup_t p_stateHookup;
-
-  e_surf_action_state_t getState(); /**< get the state*/
-  virtual void setState(e_surf_action_state_t state); /**< Change state*/
-  double getBound() {return m_bound;}
-  double getStartTime(); /**< Return the start time of an action */
-  double getFinishTime(); /**< Return the finish time of an action */
-  void *getData() {return p_data;}
-  void setData(void* data);
-  double getMaxDuration() {return m_maxDuration;}
-  char *getCategory() {return p_category;}
-  double getCost() {return m_cost;}
-  void setCost(double cost) {m_cost = cost;}
-
-  void updateMaxDuration(double delta) {double_update(&m_maxDuration, delta);}
-  void updateRemains(double delta) {double_update(&m_remains, delta);}
-  void setRemains(double value) {m_remains = value;}
-  void setFinishTime(double value) {m_finish = value;}
-
-
-  void ref();
-  virtual int unref();     /**< Specify that we don't use that action anymore. Returns true if the action was destroyed and false if someone still has references on it. */
-  virtual void cancel();     /**< Cancel a running action */
-  virtual void recycle(){};     /**< Recycle an action */
-  
-  virtual void suspend();     /**< Suspend an action */
-  virtual void resume();     /**< Resume a suspended action */
-  virtual bool isSuspended();     /**< Return whether an action is suspended */
-  virtual void setMaxDuration(double duration);     /**< Set the max duration of an action*/
-  virtual void setPriority(double priority);     /**< Set the priority of an action */
-#ifdef HAVE_TRACING
-  void setCategory(const char *category); /**< Set the category of an action */
-#endif
-  virtual double getRemains();     /**< Get the remains of an action */
-  double getRemainsNoUpdate();
-
-#ifdef HAVE_LATENCY_BOUND_TRACKING
-  int getLatencyLimited();     /**< Return 1 if action is limited by latency, 0 otherwise */
-#endif
-
-  double getPriority() {return m_priority;};
-  ActionListPtr getStateSet() {return p_stateSet;};
-
-private:
-  int resourceUsed(void *resource_id);
-  /* Share the resources to the actions and return in how much time
-     the next action may terminate */
-  double shareResources(double now);
-  /* Update the actions' state */
-  void updateActionsState(double now, double delta);
-  void updateResourceState(void *id, tmgr_trace_event_t event_type,
-                                 double value, double time);
-
   /* LMM */
-protected:
-  lmm_variable_t p_variable;
-  double m_lastUpdate;
-  double m_lastValue;
-  int m_suspended;
-  int m_indexHeap;
-  enum heap_action_type m_hat;
-
 public:
   virtual void updateRemainingLazy(double now);
   void heapInsert(xbt_heap_t heap, double key, enum heap_action_type hat);
@@ -341,6 +705,14 @@ public:
   enum heap_action_type getHat() {return m_hat;}
   bool is_linked() {return actionLmmHook::is_linked();}
   void gapRemove();
+
+protected:
+  lmm_variable_t p_variable;
+  double m_lastUpdate;
+  double m_lastValue;
+  int m_suspended;
+  int m_indexHeap;
+  enum heap_action_type m_hat;
 };
 
 #endif /* SURF_MODEL_H_ */

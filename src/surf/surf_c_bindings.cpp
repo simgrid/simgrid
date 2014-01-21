@@ -230,6 +230,7 @@ surf_action_t surf_model_extract_done_action_set(surf_model_t model){
   model->getDoneActionSet()->pop_front();
   return res;
 }
+
 surf_action_t surf_model_extract_failed_action_set(surf_model_t model){
   if (model->getFailedActionSet()->empty())
 	return NULL;
@@ -237,6 +238,7 @@ surf_action_t surf_model_extract_failed_action_set(surf_model_t model){
   model->getFailedActionSet()->pop_front();
   return res;
 }
+
 surf_action_t surf_model_extract_ready_action_set(surf_model_t model){
   if (model->getReadyActionSet()->empty())
 	return NULL;
@@ -244,6 +246,7 @@ surf_action_t surf_model_extract_ready_action_set(surf_model_t model){
   model->getReadyActionSet()->pop_front();
   return res;
 }
+
 surf_action_t surf_model_extract_running_action_set(surf_model_t model){
   if (model->getRunningActionSet()->empty())
 	return NULL;
@@ -539,5 +542,3 @@ surf_file_t surf_storage_action_get_file(surf_action_t action){
 xbt_dict_t surf_storage_action_get_ls_dict(surf_action_t action){
   return static_cast<StorageActionPtr>(action)->p_lsDict;
 }
-
-

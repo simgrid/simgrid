@@ -149,14 +149,13 @@ XBT_PUBLIC(int) find_model_description(s_surf_model_description_t * table,
 XBT_PUBLIC(void) model_help(const char *category,
                             s_surf_model_description_t * table);
 
-/** \ingroup SURF_actions
- *  \brief Action states
+/** @ingroup SURF_interface
+ *  @brief Action states
  *
  *  Action states.
  *
- *  \see surf_action_t, surf_action_state_t
+ *  @see Action
  */
-
 typedef enum {
   SURF_ACTION_READY = 0,        /**< Ready        */
   SURF_ACTION_RUNNING,          /**< Running      */
@@ -167,19 +166,20 @@ typedef enum {
                                 /**< Not in the system anymore. Why did you ask ? */
 } e_surf_action_state_t;
 
+/** @ingroup SURF_vm_interface
+ * 
+ * 
+ */
 /* FIXME: Where should the VM state be defined? */
 typedef enum {
-  /* created, but not yet started */
-  SURF_VM_STATE_CREATED,
+  SURF_VM_STATE_CREATED, /**< created, but not yet started */
 
   SURF_VM_STATE_RUNNING,
   SURF_VM_STATE_MIGRATING,
 
-  /* Suspend/resume does not involve disk I/O, so we assume there is no transition states. */
-  SURF_VM_STATE_SUSPENDED,
+  SURF_VM_STATE_SUSPENDED, /**< Suspend/resume does not involve disk I/O, so we assume there is no transition states. */
 
-  /* Save/restore involves disk I/O, so there should be transition states. */
-  SURF_VM_STATE_SAVING,
+  SURF_VM_STATE_SAVING, /**< Save/restore involves disk I/O, so there should be transition states. */
   SURF_VM_STATE_SAVED,
   SURF_VM_STATE_RESTORING,
 
@@ -211,90 +211,689 @@ static inline void *surf_storage_resource_by_name(const char *name){
   return xbt_lib_get_elm_or_null(storage_lib, name);
 }
 
+
 XBT_PUBLIC(char *) surf_routing_edge_name(sg_routing_edge_t edge);
 XBT_PUBLIC(void *) surf_as_cluster_get_backbone(AS_t as);
 XBT_PUBLIC(void) surf_as_cluster_set_backbone(AS_t as, void* backbone);
+
+/** @{ @ingroup SURF_c_bindings */
+
+/** 
+ * @brief Get the name of a surf model
+ * 
+ * @param model A model
+ * @return The name of the model
+ */
 XBT_PUBLIC(const char *) surf_model_name(surf_model_t model);
+
+/**
+ * @brief Pop an action from the done actions set
+ * 
+ * @param model The model from which the action is extracted
+ * @return An action in done state
+ */
 XBT_PUBLIC(surf_action_t) surf_model_extract_done_action_set(surf_model_t model);
+
+/**
+ * @brief Pop an action from the failed actions set
+ * 
+ * @param model The model from which the action is extracted
+ * @return An action in failed state
+ */
 XBT_PUBLIC(surf_action_t) surf_model_extract_failed_action_set(surf_model_t model);
+
+/**
+ * @brief Pop an action from the ready actions set
+ * 
+ * @param model The model from which the action is extracted
+ * @return An action in ready state
+ */
 XBT_PUBLIC(surf_action_t) surf_model_extract_ready_action_set(surf_model_t model);
+
+/**
+ * @brief Pop an action from the running actions set
+ * 
+ * @param model The model from which the action is extracted
+ * @return An action in running state
+ */
 XBT_PUBLIC(surf_action_t) surf_model_extract_running_action_set(surf_model_t model);
+
+/**
+ * @brief Get the size of the running action set of a model
+ * 
+ * @param model The model
+ * @return The size of the running action set
+ */
 XBT_PUBLIC(int) surf_model_running_action_set_size(surf_model_t model);
+
+/**
+ * @brief Execute a parallel task
+ * @details [long description]
+ * 
+ * @param model The model which handle the parallelisation
+ * @param workstation_nb The number of workstations 
+ * @param workstation_list The list of workstations on which the task is executed
+ * @param computation_amount The processing amount (in flop) needed to process
+ * @param communication_amount The amount of data (in bytes) needed to transfer
+ * @param rate [description]
+ * @return The action corresponding to the parallele execution task
+ */
 XBT_PUBLIC(surf_action_t) surf_workstation_model_execute_parallel_task(surf_workstation_model_t model,
 		                                    int workstation_nb,
                                             void **workstation_list,
                                             double *computation_amount,
                                             double *communication_amount,
                                             double rate);
+
+/**
+ * @brief Create a communication between two hosts
+ * 
+ * @param model The model which handle the communication
+ * @param src The source host
+ * @param dst The destination host
+ * @param size The amount of data (in bytes) needed to transfer
+ * @param rate [description]
+ * @return The action corresponding to the communication
+ */
 XBT_PUBLIC(surf_action_t) surf_workstation_model_communicate(surf_workstation_model_t model, surf_resource_t src, surf_resource_t dst, double size, double rate);
+
+/**
+ * @brief Get the route between two hosts
+ * @details [long description]
+ * 
+ * @param model The model which handle the routes
+ * @param src The source host
+ * @param dst The destination host
+ * @return The list of [TODO] from the source to the host
+ */
 XBT_PUBLIC(xbt_dynar_t) surf_workstation_model_get_route(surf_workstation_model_t model, surf_resource_t src, surf_resource_t dst);
+
+/**
+ * @brief Create a new VM on the specified host
+ * 
+ * @param name The name of the workstation
+ * @param ind_phys_host The host on which the VM is created
+ */
 XBT_PUBLIC(void) surf_vm_workstation_model_create(const char *name, surf_resource_t ind_phys_host);
+
+/**
+ * @brief Create a communication between two routing edges [TODO]
+ * @details [long description]
+ * 
+ * @param model The model which handle the communication
+ * @param src The source host
+ * @param dst The destination host
+ * @param size The amount of data (in bytes) needed to transfer
+ * @param rate [description]
+ * @return The action corresponding to the communication
+ */
 XBT_PUBLIC(surf_action_t) surf_network_model_communicate(surf_network_model_t model, sg_routing_edge_t src, sg_routing_edge_t dst, double size, double rate);
+
+/**
+ * @brief Get the name of a surf resource (cpu, workstation, network, …)
+ * 
+ * @param resource The surf resource
+ * @return The name of the surf resource
+ */
 XBT_PUBLIC(const char * ) surf_resource_name(surf_cpp_resource_t resource);
+
+/**
+ * @brief Get the properties of a surf resource (cpu, workstation, network, …)
+ * 
+ * @param resource The surf resource
+ * @return The properties of the surf resource
+ */
 XBT_PUBLIC(xbt_dict_t) surf_resource_get_properties(surf_cpp_resource_t resource);
+
+/**
+ * @brief Get the state of a surf resource (cpu, workstation, network, …)
+ * 
+ * @param resource The surf resource
+ * @return The state of the surf resource
+ */
 XBT_PUBLIC(e_surf_resource_state_t) surf_resource_get_state(surf_cpp_resource_t resource);
+
+/**
+ * @brief Set the state of a surf resource (cpu, workstation, network, …)
+ * 
+ * @param resource The surf resource
+ * @param state The new state of the surf resource
+ */
 XBT_PUBLIC(void) surf_resource_set_state(surf_cpp_resource_t resource, e_surf_resource_state_t state);
+
+/**
+ * @brief Get the speed of the cpu associtated to a workstation
+ * 
+ * @param resource The surf workstation
+ * @param load [description]
+ * 
+ * @return [description]
+ */
 XBT_PUBLIC(double) surf_workstation_get_speed(surf_resource_t resource, double load);
+
+/**
+ * @brief Get the available speed of cpu associtated to a workstation
+ * 
+ * @param resource The surf workstation
+ * @return [description]
+ */
 XBT_PUBLIC(double) surf_workstation_get_available_speed(surf_resource_t resource);
+
+/**
+ * @brief Get the number of cores of the cpu associated to a workstation
+ * 
+ * @param resource The surf workstation
+ * @return The number of cores
+ */
 XBT_PUBLIC(int) surf_workstation_get_core(surf_resource_t resource);
+
+/**
+ * @brief Execute some quantity of computation
+ *
+ * @param resource The surf workstation
+ * @param size The value of the processing amount (in flop) needed to process
+ * 
+ * @return The surf action corresponding to the processing
+ */
 XBT_PUBLIC(surf_action_t) surf_workstation_execute(surf_resource_t resource, double size);
+
+/**
+ * @brief Make the workstation sleep
+ * 
+ * @param resource The surf workstation
+ * @param duration The number of seconds to sleep
+ * @return The surf action corresponding to the sleep
+ */
 XBT_PUBLIC(surf_action_t) surf_workstation_sleep(surf_resource_t resource, double duration);
+
+/**
+ * @brief Open a file on a workstation
+ * 
+ * @param workstation The surf workstation
+ * @param mount The mount point
+ * @param path The path to the file
+ * @return The surf action corresponding to the openning
+ */
 XBT_PUBLIC(surf_action_t) surf_workstation_open(surf_resource_t workstation, const char* mount, const char* path);
+
+/**
+ * @brief Close a file descriptor on a workstation
+ * 
+ * @param workstation The surf workstation
+ * @param fd The file descriptor
+ * 
+ * @return The surf action corresponding to the closing
+ */
 XBT_PUBLIC(surf_action_t) surf_workstation_close(surf_resource_t workstation, surf_file_t fd);
+
+/**
+ * @brief Read a file
+ * 
+ * @param resource The surf workstation
+ * @param fd The file descriptor to read
+ * @param size The size in bytes to read
+ * @return The surf action corresponding to the reading
+ */
 XBT_PUBLIC(surf_action_t) surf_workstation_read(surf_resource_t resource, surf_file_t fd, sg_size_t size);
+
+/**
+ * @brief Write a file
+ * 
+ * @param resource The surf workstation
+ * @param fd The file descriptor to write
+ * @param size The size in bytes to write
+ * @return The surf action corresponding to the writing
+ */
 XBT_PUBLIC(surf_action_t) surf_workstation_write(surf_resource_t resource, surf_file_t fd, sg_size_t size);
+
+/**
+ * @brief Get the informations of a file descriptor
+ * @details The returned xbt_dynar_t contains:
+ *  - the size of the file,
+ *  - the mount point,
+ *  - the storage name,
+ *  - the storage typeId,
+ *  - the storage content type
+ * 
+ * @param resource The surf workstation
+ * @param fd The file descriptor
+ * @return An xbt_dynar_t with the file informations
+ */
 XBT_PUBLIC(xbt_dynar_t) surf_workstation_get_info(surf_resource_t resource, surf_file_t fd);
+
+/**
+ * @brief Get the available space of the storage at the mount point
+ * 
+ * @param resource The surf workstation
+ * @param name The mount point
+ * @return The amount of availble space in bytes
+ */
 XBT_PUBLIC(sg_size_t) surf_workstation_get_free_size(surf_resource_t resource, const char* name);
+
+/**
+ * @brief Get the used space of the storage at the mount point
+ * 
+ * @param resource The surf workstation
+ * @param name The mount point
+ * @return The amount of used space in bytes
+ */
 XBT_PUBLIC(sg_size_t) surf_workstation_get_used_size(surf_resource_t resource, const char* name);
+
+/**
+ * @brief Get the VMs hosted on the workstation
+ * 
+ * @param resource The surf workstation
+ * @return The list of VMs on the workstation
+ */
 XBT_PUBLIC(xbt_dynar_t) surf_workstation_get_vms(surf_resource_t resource);
+
+/**
+ * @brief [brief description]
+ * @details [long description]
+ * 
+ * @param resource [description]
+ * @param params [description]
+ */
 XBT_PUBLIC(void) surf_workstation_get_params(surf_resource_t resource, ws_params_t params);
+
+/**
+ * @brief [brief description]
+ * @details [long description]
+ * 
+ * @param resource [description]
+ * @param params [description]
+ */
 XBT_PUBLIC(void) surf_workstation_set_params(surf_resource_t resource, ws_params_t params);
+
+/**
+ * @brief Destroy a Workstation VM
+ * 
+ * @param resource The surf workstation vm
+ */
 XBT_PUBLIC(void) surf_vm_workstation_destroy(surf_resource_t resource);
+
+/**
+ * @brief Suspend a Workstation VM
+ * 
+ * @param resource The surf workstation vm
+ */
 XBT_PUBLIC(void) surf_vm_workstation_suspend(surf_resource_t resource);
+
+/**
+ * @brief Resume a Workstation VM
+ * 
+ * @param resource The surf workstation vm
+ */
 XBT_PUBLIC(void) surf_vm_workstation_resume(surf_resource_t resource);
+
+/**
+ * @brief Save the Workstation VM (Not yet implemented)
+ * 
+ * @param resource The surf workstation vm
+ */
 XBT_PUBLIC(void) surf_vm_workstation_save(surf_resource_t resource);
+
+/**
+ * @brief Restore the Workstation VM (Not yet implemented)
+ * 
+ * @param resource The surf workstation vm
+ */
 XBT_PUBLIC(void) surf_vm_workstation_restore(surf_resource_t resource);
+
+/**
+ * @brief Migrate the VM to the destination host
+ * 
+ * @param resource The surf workstation vm
+ * @param ind_vm_ws_dest The destination host
+ */
 XBT_PUBLIC(void) surf_vm_workstation_migrate(surf_resource_t resource, surf_resource_t ind_vm_ws_dest);
+
+/**
+ * @brief Get the physical machine hosting the VM
+ * 
+ * @param resource The surf workstation vm
+ * @return The physical machine hosting the VM
+ */
 XBT_PUBLIC(surf_resource_t) surf_vm_workstation_get_pm(surf_resource_t resource);
+
+/**
+ * @brief [brief description]
+ * @details [long description]
+ * 
+ * @param resource [description]
+ * @param bound [description]
+ */
 XBT_PUBLIC(void) surf_vm_workstation_set_bound(surf_resource_t resource, double bound);
+
+/**
+ * @brief [brief description]
+ * @details [long description]
+ * 
+ * @param resource [description]
+ * @param cpu [description]
+ * @param long [description]
+ */
 XBT_PUBLIC(void) surf_vm_workstation_set_affinity(surf_resource_t resource, surf_resource_t cpu, unsigned long mask);
+
+/**
+ * @brief Execute some quantity of computation
+ * 
+ * @param cpu The surf cpu
+ * @param size The value of the processing amount (in flop) needed to process
+ * @return The surf action corresponding to the processing
+ */
 XBT_PUBLIC(surf_action_t) surf_cpu_execute(surf_resource_t cpu, double size);
+
+/**
+ * @brief Make the cpu sleep for duration (in seconds)
+ * @details [long description]
+ * 
+ * @param cpu The surf cpu
+ * @param duration The number of seconds to sleep
+ * @return The surf action corresponding to the sleeping
+ */
 XBT_PUBLIC(surf_action_t) surf_cpu_sleep(surf_resource_t cpu, double duration);
+
+/**
+ * @brief Get the workstation power peak
+ * @details [long description]
+ * 
+ * @param resource The surf workstation
+ * @return The power peak
+ */
 XBT_PUBLIC(double) surf_workstation_get_current_power_peak(surf_resource_t host);
+
+/**
+ * @brief [brief description]
+ * @details [long description]
+ * 
+ * @param resource [description]
+ * @param pstate_index [description]
+ * 
+ * @return [description]
+ */
 XBT_PUBLIC(double) surf_workstation_get_power_peak_at(surf_resource_t host, int pstate_index);
+
+/**
+ * @brief [brief description]
+ * @details [long description]
+ * 
+ * @param resource [description]
+ * @return [description]
+ */
 XBT_PUBLIC(int) surf_workstation_get_nb_pstates(surf_resource_t host);
+
+/**
+ * @brief [brief description]
+ * @details [long description]
+ * 
+ * @param resource [description]
+ * @param pstate_index [description]
+ */
 XBT_PUBLIC(void) surf_workstation_set_power_peak_at(surf_resource_t host, int pstate_index);
+
+/**
+ * @brief Get the consumed energy (in joules) of a workstation
+ * 
+ * @param resource The surf workstation
+ * @return The consumed energy
+ */
 XBT_PUBLIC(double) surf_workstation_get_consumed_energy(surf_resource_t host);
+
+/**
+ * @brief Get the list of storages of a workstation
+ * 
+ * @param workstation The surf workstation
+ * @return Dictionary of mount point, Storage
+ */
 XBT_PUBLIC(xbt_dict_t) surf_workstation_get_storage_list(surf_resource_t workstation);
+
+/**
+ * @brief Unlink a file descriptor
+ * 
+ * @param workstation The surf workstation
+ * @param fd The file descriptor
+ * 
+ * @return 0 if failed to unlink, 1 otherwise
+ */
 XBT_PUBLIC(int) surf_workstation_unlink(surf_resource_t workstation, surf_file_t fd);
+
+/**
+ * @brief List directory contents of a path
+ * @details [long description]
+ * 
+ * @param workstation The surf workstation
+ * @param mount The mount point
+ * @param path The path to the directory
+ * @return The surf action corresponding to the ls action
+ */
 XBT_PUBLIC(surf_action_t) surf_workstation_ls(surf_resource_t workstation, const char* mount, const char *path);
+
+/**
+ * @brief Get the size of a file on a workstation
+ * 
+ * @param workstation The surf workstation
+ * @param fd The file descriptor
+ * 
+ * @return The size in bytes of the file
+ */
 XBT_PUBLIC(size_t) surf_workstation_get_size(surf_resource_t workstation, surf_file_t fd);
+
+/**
+ * @brief Get the current position of the file descriptor
+ * 
+ * @param workstation The surf workstation
+ * @param fd The file descriptor
+ * @return The current position of the file descriptor
+ */
 XBT_PUBLIC(size_t) surf_workstation_file_tell(surf_resource_t workstation, surf_file_t fd);
+
+/**
+ * @brief Set the position indictator assiociated with the file descriptor to a new position
+ * @details [long description]
+ * 
+ * @param workstation The surf workstation
+ * @param fd The file descriptor
+ * @param offset The offset from the origin
+ * @param origin Position used as a reference for the offset
+ *  - SEEK_SET: beginning of the file
+ *  - SEEK_CUR: current position indicator
+ *  - SEEK_END: end of the file
+ * @return MSG_OK if successful, otherwise MSG_TASK_CANCELED
+ */
 XBT_PUBLIC(int) surf_workstation_file_seek(surf_resource_t workstation, surf_file_t fd, sg_size_t offset, int origin);
+
+/**
+ * @brief [brief description]
+ * @details [long description]
+ * 
+ * @param link [description]
+ * @return [description]
+ */
 XBT_PUBLIC(int) surf_network_link_is_shared(surf_cpp_resource_t link);
+
+/**
+ * @brief Get the bandwidth of a link in bytes per second
+ * 
+ * @param link The surf link
+ * @return The bandwidth in bytes per second
+ */
 XBT_PUBLIC(double) surf_network_link_get_bandwidth(surf_cpp_resource_t link);
+
+/**
+ * @brief Get the latency of a link in seconds
+ * 
+ * @param link The surf link
+ * @return The latency in seconds
+ */
 XBT_PUBLIC(double) surf_network_link_get_latency(surf_cpp_resource_t link);
+
+/**
+ * @brief Get the content of a storage
+ * 
+ * @param resource The surf storage
+ * @return A xbt_dict_t with path as keys and size in bytes as values
+ */
 XBT_PUBLIC(xbt_dict_t) surf_storage_get_content(surf_resource_t resource);
+
+/**
+ * @brief Get the size in bytes of a storage
+ * 
+ * @param resource The surf storage
+ * @return The size in bytes of the storage
+ */
 XBT_PUBLIC(sg_size_t) surf_storage_get_size(surf_resource_t resource);
+
+/**
+ * @brief Rename a path
+ * 
+ * @param resource The surf storage
+ * @param src The old path
+ * @param dest The new path
+ */
 XBT_PUBLIC(void) surf_storage_rename(surf_resource_t resource, const char* src, const char* dest);
+
+/**
+ * @brief Get the data associated to the action
+ * 
+ * @param action The surf action
+ * @return The data associated to the action
+ */
 XBT_PUBLIC(void*) surf_action_get_data(surf_action_t action);
+
+/**
+ * @brief Set the data associated to the action
+ * @details [long description]
+ * 
+ * @param action The surf action
+ * @param data The new data associated to the action
+ */
 XBT_PUBLIC(void) surf_action_set_data(surf_action_t action, void *data);
+
+/**
+ * @brief Unreference an action
+ * 
+ * @param action The surf action
+ */
 XBT_PUBLIC(void) surf_action_unref(surf_action_t action);
+
+/**
+ * @brief Get the start time of an action
+ * 
+ * @param action The surf action
+ * @return The start time in seconds from the beginning of the simulation
+ */
 XBT_PUBLIC(double) surf_action_get_start_time(surf_action_t action);
+
+/**
+ * @brief Get the finish time of an action
+ * 
+ * @param action The surf action
+ * @return The finish time in seconds from the beginning of the simulation
+ */
 XBT_PUBLIC(double) surf_action_get_finish_time(surf_action_t action);
+
+/**
+ * @brief Get the remains amount of work to do of an action
+ * 
+ * @param action The surf action
+ * @return  The remains amount of work to do
+ */
 XBT_PUBLIC(double) surf_action_get_remains(surf_action_t action);
+
+/**
+ * @brief Suspend an action
+ * 
+ * @param action The surf action
+ */
 XBT_PUBLIC(void) surf_action_suspend(surf_action_t action);
+
+/**
+ * @brief Resume an action
+ * 
+ * @param action The surf action
+ */
 XBT_PUBLIC(void) surf_action_resume(surf_action_t action);
+
+/**
+ * @brief Cancel an action
+ * 
+ * @param action The surf action
+ */
 XBT_PUBLIC(void) surf_action_cancel(surf_action_t action);
+
+/**
+ * @brief Set the priority of an action
+ * @details [long description]
+ * 
+ * @param action The surf action
+ * @param priority The new priority [TODO]
+ */
 XBT_PUBLIC(void) surf_action_set_priority(surf_action_t action, double priority);
+
+/**
+ * @brief Set the category of an action
+ * @details [long description]
+ * 
+ * @param action The surf action
+ * @param category The new category of the action
+ */
 XBT_PUBLIC(void) surf_action_set_category(surf_action_t action, const char *category);
+
+/**
+ * @brief Get the state of an action 
+ * 
+ * @param action The surf action
+ * @return The state of the action
+ */
 XBT_PUBLIC(e_surf_action_state_t) surf_action_get_state(surf_action_t action);
+
+/**
+ * @brief Get the cost of an action
+ * 
+ * @param action The surf action
+ * @return The cost of the action
+ */
 XBT_PUBLIC(int) surf_action_get_cost(surf_action_t action);
+
+/**
+ * @brief [brief desrciption]
+ * @details [long description]
+ * 
+ * @param action The surf cpu action
+ * @param cpu [description]
+ * @param long [description]
+ */
 XBT_PUBLIC(void) surf_cpu_action_set_affinity(surf_action_t action, surf_resource_t cpu, unsigned long mask);
+
+/**
+ * @brief [brief description]
+ * @details [long description]
+ * 
+ * @param action The surf cpu action
+ * @param bound [description]
+ */
 XBT_PUBLIC(void) surf_cpu_action_set_bound(surf_action_t action, double bound);
+
+/**
+ * @brief Get the file associated to a storage action
+ * 
+ * @param action The surf storage action
+ * @return The file associated to a storage action
+ */
 XBT_PUBLIC(surf_file_t) surf_storage_action_get_file(surf_action_t action);
+
+/**
+ * @brief Get the result dictionary of an ls action
+ * 
+ * @param action The surf storage action
+ * @return The dictionry listing a path
+ */
 XBT_PUBLIC(xbt_dict_t) surf_storage_action_get_ls_dict(surf_action_t action);
+
 XBT_PUBLIC(surf_model_t) surf_resource_model(const void *host, int level);
+
+/** @} */
 
 /**************************************/
 /* Implementations of model object */

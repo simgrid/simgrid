@@ -126,6 +126,10 @@ void CpuModel::updateActionsStateFull(double now, double delta)
  * Resource *
  ************/
 
+Cpu::Cpu(){
+  surf_callback_emit(createCpuCallbacks, this);
+}
+
 Cpu::Cpu(ModelPtr model, const char *name, xbt_dict_t props,
 		 int core, double powerPeak, double powerScale)
  : Resource(model, name, props)
@@ -134,7 +138,9 @@ Cpu::Cpu(ModelPtr model, const char *name, xbt_dict_t props,
  , m_powerScale(powerScale)
  , p_constraintCore(NULL)
  , p_constraintCoreId(NULL)
-{surf_callback_emit(createCpuCallbacks, this);}
+{
+  surf_callback_emit(createCpuCallbacks, this);
+}
 
 Cpu::Cpu(ModelPtr model, const char *name, xbt_dict_t props,
 		 lmm_constraint_t constraint, int core, double powerPeak, double powerScale)

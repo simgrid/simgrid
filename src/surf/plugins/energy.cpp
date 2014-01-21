@@ -1,5 +1,17 @@
+/* Copyright (c) 2010, 2012-2013. The SimGrid Team.
+ * All rights reserved.                                                     */
+
+/* This program is free software; you can redistribute it and/or modify it
+  * under the terms of the license (GNU LGPL) which comes with this package. */
+
 #include "energy.hpp"
 #include "../cpu_cas01.hpp"
+
+/** @addtogroup SURF_plugin_energy
+ *    
+ *  
+ *  BlaBla energy
+ */
 
 XBT_LOG_EXTERNAL_CATEGORY(surf_kernel);
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_energy, surf,
@@ -42,7 +54,10 @@ static void updateActionEnergyCallback(CpuActionPtr action){
   }
 }
 
-/* init Energy plugin */
+/** \ingroup SURF_plugin_energy
+ * \brief Enable energy plugin
+ * \details Enable energy plugin to get joules consumption of each cpu.
+ */
 void sg_energy_plugin_init() {
   if (surf_energy == NULL) {
     surf_energy = new std::map<CpuPtr, CpuEnergyPtr>();
@@ -52,6 +67,9 @@ void sg_energy_plugin_init() {
   }
 }
 
+/**
+ *
+ */
 CpuEnergy::CpuEnergy(CpuPtr ptr)
  : cpu(ptr)
 {

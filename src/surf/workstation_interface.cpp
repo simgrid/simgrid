@@ -128,7 +128,6 @@ xbt_dict_t Workstation::getProperties()
   return p_cpu->getProperties();
 }
 
-
 StoragePtr Workstation::findStorageOnMountList(const char* mount)
 {
   StoragePtr st = NULL;

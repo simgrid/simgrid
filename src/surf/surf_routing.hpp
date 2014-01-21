@@ -14,13 +14,13 @@ xbt_edge_t new_xbt_graph_edge (xbt_graph_t graph, xbt_node_t s, xbt_node_t d, xb
 /***********
  * Classes *
  ***********/
-struct As;
+class As;
 typedef As *AsPtr;
 
 class RoutingModelDescription;
 typedef RoutingModelDescription *RoutingModelDescriptionPtr;
 
-struct RoutingEdge;
+class RoutingEdge;
 typedef RoutingEdge *RoutingEdgePtr;
 
 class Onelink;
@@ -29,7 +29,11 @@ typedef Onelink *OnelinkPtr;
 class RoutingPlatf;
 typedef RoutingPlatf *RoutingPlatfPtr;
 
-struct As {
+/** @ingroup SURF_routing_interface
+ * @brief The Autonomous System (AS) routing interface
+ * @details [TODO]
+ */
+class As {
 public:
   xbt_dynar_t p_indexNetworkElm;
   xbt_dict_t p_bypassRoutes;    /* store bypass routes */
@@ -41,11 +45,27 @@ public:
   RoutingEdgePtr p_netElem;
   xbt_dynar_t p_linkUpDownList;
 
+  /**
+   * @brief The As constructor
+   */
   As(){};
+
+  /**
+   * @brief The As destructor
+   */
   virtual ~As(){
 	xbt_free(p_name);
   };
 
+  /**
+   * @brief Get the route and latency between two RoutingEdgs
+   * @details [long description]
+   * 
+   * @param src [description]
+   * @param dst [description]
+   * @param into [description]
+   * @param latency [description]
+   */
   virtual void getRouteAndLatency(RoutingEdgePtr src, RoutingEdgePtr dst, sg_platf_route_cbarg_t into, double *latency)=0;
   virtual xbt_dynar_t getOneLinkRoutes()=0;
   virtual void getGraph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges)=0;
@@ -62,7 +82,11 @@ public:
   virtual void parseBypassroute(sg_platf_route_cbarg_t e_route)=0;
 };
 
-struct RoutingEdge {
+/** @ingroup SURF_routing_interface
+ * @brief A routing edge
+ * @details [long description]
+ */
+class RoutingEdge {
 public:
   ~RoutingEdge() { xbt_free(p_name);};
   AsPtr p_rcComponent;
@@ -71,8 +95,9 @@ public:
   char *p_name;
 };
 
-/*
- * Link of lenght 1, alongside with its source and destination. This is mainly usefull in the bindings to gtnets and ns3
+
+/** @ingroup SURF_routing_interface
+ * @brief Link of lenght 1, alongside with its source and destination. This is mainly usefull in the bindings to gtnets and ns3
  */
 class Onelink {
 public:
@@ -83,6 +108,9 @@ public:
   void *p_link;
 };
 
+/** @ingroup SURF_routing_interface
+ * @brief The class representing a whole routing platform
+ */
 class RoutingPlatf {
 public:
   ~RoutingPlatf();

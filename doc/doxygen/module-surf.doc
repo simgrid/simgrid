@@ -1,10 +1,21 @@
 /** \addtogroup SURF_API
-
+  
   \section SURF_doc Surf documentation
+   Surf is composed several components:
    - \ref SURF_simulation
    - \ref SURF_actions
    - \ref SURF_resources
    - \ref SURF_build_api
+   - \ref SURF_interface
+   - \ref SURF_routing
+   - \ref SURF_cpu_interface
+   - \ref SURF_network_interface
+   - \ref SURF_storage_interface
+   - \ref SURF_workstation_interface
+   - \ref SURF_vm_workstation_interface
+   - \ref SURF_callbacks
+   - \ref SURF_plugin_energy
+   
 
 */
 
@@ -82,4 +93,84 @@
     interact with SURF. But if you want to create a new API on top of SURF,
     we strongly recommand you to contact us before anyway.
 
+*/
+
+/**
+@defgroup SURF_c_bindings   SURF C bindings
+@ingroup SURF_API
+@brief Describes the c bindings of SURF
+
+@htmlonly <!-- DOXYGEN_NAVBAR_LABEL="Surf C bindings" --> @endhtmlonly
+*/
+
+/**
+@defgroup SURF_routing_interface   SURF Routing Interface
+@ingroup SURF_API
+@brief Describes the routing interface
+
+@htmlonly <!-- DOXYGEN_NAVBAR_LABEL="Surf Routing" --> @endhtmlonly
+*/
+
+/**
+@defgroup SURF_interface   SURF Interface
+@ingroup SURF_API
+@brief Describes the general interface for all components (Cpu, Network, Storage, Workstation, WorkstationVM)
+
+@htmlonly <!-- DOXYGEN_NAVBAR_LABEL="Surf Interface" --> @endhtmlonly
+*/
+
+/**
+@defgroup SURF_cpu_interface   SURF Cpu Interface
+@ingroup SURF_API
+@brief Describes the general Cpu interface for all Cpu implementations
+
+@htmlonly <!-- DOXYGEN_NAVBAR_LABEL="Cpu Interface" --> @endhtmlonly
+*/
+
+/**
+@defgroup SURF_network_interface   SURF Network Interface
+@ingroup SURF_API
+@brief Describes the general Network interface for all Network implementations
+
+@htmlonly <!-- DOXYGEN_NAVBAR_LABEL="Network Interface" --> @endhtmlonly
+*/
+
+/**
+@defgroup SURF_storage_interface   SURF Storage Interface
+@ingroup SURF_API
+@brief Describes the general  interface for all Storage implementations
+
+@htmlonly <!-- DOXYGEN_NAVBAR_LABEL="Storage Interface" --> @endhtmlonly
+*/
+
+/**
+@defgroup SURF_workstation_interface   SURF Workstation Interface
+@ingroup SURF_API
+@brief Describes the general  interface for all Workstation implementations
+
+@htmlonly <!-- DOXYGEN_NAVBAR_LABEL="Workstation Interface" --> @endhtmlonly
+*/
+
+/**
+@defgroup SURF_vm_workstation_interface   SURF VM Workstation Interface
+@ingroup SURF_API
+@brief Describes the general  interface for all VM Workstation implementations
+
+@htmlonly <!-- DOXYGEN_NAVBAR_LABEL="VM Workstation Interface" --> @endhtmlonly
+*/
+
+/**
+@defgroup SURF_callbacks   SURF callbacks
+@ingroup SURF_API
+@brief Describes how to use the SURF callbacks
+
+@htmlonly <!-- DOXYGEN_NAVBAR_LABEL="SURF callbacks" --> @endhtmlonly
+*/
+
+/**
+@defgroup SURF_plugin_energy   SURF Energy Plugin
+@ingroup SURF_API
+@brief Describes how to use the energy plugin.
+
+@htmlonly <!-- DOXYGEN_NAVBAR_LABEL="Energy plugin" --> @endhtmlonly
 */

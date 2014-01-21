@@ -23,10 +23,13 @@ extern xbt_dict_t watched_hosts_lib;
 
 extern const char *surf_action_state_names[6];
 
+/** @ingroup SURF_interface
+ * @brief Possible update mechanisms
+ */
 typedef enum {
-  UM_FULL,
-  UM_LAZY,
-  UM_UNDEFINED
+  UM_FULL,      /**< [TODO] */
+  UM_LAZY,      /**< [TODO] */
+  UM_UNDEFINED  /**< Mechanism not defined */
 } e_UM_t;
 
 /* Generic functions common to all models */

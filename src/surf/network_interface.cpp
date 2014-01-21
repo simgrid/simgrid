@@ -35,7 +35,8 @@ double NetworkModel::bandwidthConstraint(double rate, double /*bound*/, double /
 }
 
 NetworkLink::NetworkLink(NetworkModelPtr model, const char *name, xbt_dict_t props)
-: p_latEvent(NULL)
+: Resource(model, name, props)
+, p_latEvent(NULL)
 {}
 
 NetworkLink::NetworkLink(NetworkModelPtr model, const char *name, xbt_dict_t props,
