@@ -187,7 +187,7 @@ void AsClusterTorus::getRouteAndLatency(RoutingEdgePtr src, RoutingEdgePtr dst, 
 
                  assert(linkOffset >= 0);
                }
-               XBT_DEBUG("torus_get_route_and_latency - current_node: %lu, next_node: %lu, linkOffset is %lu",
+               XBT_DEBUG("torus_get_route_and_latency - current_node: %i, next_node: %u, linkOffset is %i",
                current_node, next_node, linkOffset);
 
                break;
