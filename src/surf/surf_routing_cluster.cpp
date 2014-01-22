@@ -23,6 +23,9 @@ AsCluster::AsCluster() : AsNone()
   p_backbone = 0;
   p_loopback = 0;
   p_router = 0;
+  p_has_limiter = 0;
+  p_has_loopback = 0;
+  p_nb_links_per_node =0;
 }
 
 /* Business methods */
@@ -32,25 +35,33 @@ void AsCluster::getRouteAndLatency(RoutingEdgePtr src, RoutingEdgePtr dst, sg_pl
   XBT_VERB("cluster_get_route_and_latency from '%s'[%d] to '%s'[%d]",
             src->p_name, src->m_id, dst->p_name, dst->m_id);
 
-  if (src->p_rcType != SURF_NETWORK_ELEMENT_ROUTER) {    // No specific link for router
-    info = xbt_dynar_get_as(p_linkUpDownList, src->m_id, s_surf_parsing_link_up_down_t);
+  //retrieve the number of links we stored for each node
+  int nb_links_per_node = p_has_loopback + p_has_limiter +
+      (p_dimensions ? xbt_dynar_length(p_dimensions) : 1);
 
-    if((src->m_id == dst->m_id) && info.loopback_link  ){
-      xbt_dynar_push_as(route->link_list, void *, info.loopback_link);
+  if (src->p_rcType != SURF_NETWORK_ELEMENT_ROUTER) {    // No specific link for router
+
+    if((src->m_id == dst->m_id) && p_has_loopback  ){
+      info = xbt_dynar_get_as(p_linkUpDownList, src->m_id * nb_links_per_node, s_surf_parsing_link_up_down_t);
+      xbt_dynar_push_as(route->link_list, void *, info.link_up);
       if (lat)
-        *lat += static_cast<NetworkLinkPtr>(info.loopback_link)->getLatency();
+        *lat += static_cast<NetworkLinkPtr>(info.link_up)->getLatency();
       return;
     }
 
 
-    if (info.limiter_link)          // limiter for sender
-      xbt_dynar_push_as(route->link_list, void *, info.limiter_link);
+    if (p_has_limiter){          // limiter for sender
+      info = xbt_dynar_get_as(p_linkUpDownList, src->m_id * nb_links_per_node + p_has_loopback, s_surf_parsing_link_up_down_t);
+      xbt_dynar_push_as(route->link_list, void *, info.link_up);
+    }
 
+    info = xbt_dynar_get_as(p_linkUpDownList, src->m_id * nb_links_per_node + p_has_loopback + p_has_limiter, s_surf_parsing_link_up_down_t);
     if (info.link_up) {         // link up
       xbt_dynar_push_as(route->link_list, void *, info.link_up);
       if (lat)
         *lat += static_cast<NetworkLinkPtr>(info.link_up)->getLatency();
     }
+
   }
 
   if (p_backbone) {
@@ -60,17 +71,17 @@ void AsCluster::getRouteAndLatency(RoutingEdgePtr src, RoutingEdgePtr dst, sg_pl
   }
 
   if (dst->p_rcType != SURF_NETWORK_ELEMENT_ROUTER) {    // No specific link for router
-    info =
-        xbt_dynar_get_as(p_linkUpDownList, dst->m_id, s_surf_parsing_link_up_down_t);
+    info = xbt_dynar_get_as(p_linkUpDownList, dst->m_id * nb_links_per_node + p_has_loopback + p_has_limiter, s_surf_parsing_link_up_down_t);
+
     if (info.link_down) {       // link down
       xbt_dynar_push_as(route->link_list, void *, info.link_down);
       if (lat)
         *lat += static_cast<NetworkLinkPtr>(info.link_down)->getLatency();
     }
-
-    if (info.limiter_link)          // limiter for receiver
-      xbt_dynar_push_as(route->link_list, void *, info.limiter_link);
-
+    if (p_has_limiter){          // limiter for receiver
+        info = xbt_dynar_get_as(p_linkUpDownList, dst->m_id * nb_links_per_node + p_has_loopback, s_surf_parsing_link_up_down_t);
+        xbt_dynar_push_as(route->link_list, void *, info.link_up);
+    }
   }
 }
 
@@ -134,6 +145,37 @@ void AsCluster::getGraph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges)
   }
 }
 
+void AsCluster::create_links_for_node(sg_platf_cluster_cbarg_t cluster, int id, int , int position){
+  s_sg_platf_link_cbarg_t link;
+  s_surf_parsing_link_up_down_t info;
+  char* link_id = bprintf("%s_link_%d", cluster->id, id);
+
+  memset(&link, 0, sizeof(link));
+  link.id = link_id;
+  link.bandwidth = cluster->bw;
+  link.latency = cluster->lat;
+  link.state = SURF_RESOURCE_ON;
+  link.policy = cluster->sharing_policy;
+  sg_platf_new_link(&link);
+
+  if (link.policy == SURF_LINK_FULLDUPLEX) {
+    char *tmp_link = bprintf("%s_UP", link_id);
+    info.link_up =
+               xbt_lib_get_or_null(link_lib, tmp_link, SURF_LINK_LEVEL);
+           free(tmp_link);
+           tmp_link = bprintf("%s_DOWN", link_id);
+           info.link_down =
+               xbt_lib_get_or_null(link_lib, tmp_link, SURF_LINK_LEVEL);
+           free(tmp_link);
+         } else {
+           info.link_up = xbt_lib_get_or_null(link_lib, link_id, SURF_LINK_LEVEL);
+           info.link_down = info.link_up;
+         }
+         xbt_dynar_set(p_linkUpDownList, position,
+             &info);
+
+}
+
 int AsCluster::parsePU(RoutingEdgePtr elm) {
   XBT_DEBUG("Load process unit \"%s\"", elm->p_name);
   xbt_dynar_push_as(p_indexNetworkElm, RoutingEdgePtr, elm);
@@ -145,5 +187,4 @@ int AsCluster::parseAS(RoutingEdgePtr elm) {
   xbt_dynar_push_as(p_indexNetworkElm, RoutingEdgePtr, elm);
   return xbt_dynar_length(p_indexNetworkElm)-1;
 }
-
 

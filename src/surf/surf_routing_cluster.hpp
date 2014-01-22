@@ -18,7 +18,7 @@ class AsCluster: public AsNone {
 public:
   AsCluster();
 
-  void getRouteAndLatency(RoutingEdgePtr src, RoutingEdgePtr dst, sg_platf_route_cbarg_t into, double *latency);
+  virtual void getRouteAndLatency(RoutingEdgePtr src, RoutingEdgePtr dst, sg_platf_route_cbarg_t into, double *latency);
   //xbt_dynar_t getOneLinkRoutes();
   //void parseRoute(sg_platf_route_cbarg_t route);
   //void parseASroute(sg_platf_route_cbarg_t route);
@@ -32,10 +32,15 @@ public:
    * Of course, only the routing model of this AS is informed, not every ones */
   int parsePU(RoutingEdgePtr elm); /* A host or a router, whatever */
   int parseAS(RoutingEdgePtr elm);
-
+  virtual void create_links_for_node(sg_platf_cluster_cbarg_t cluster, int id, int rank, int position);
   NetworkLinkPtr p_backbone;
   void *p_loopback;
   RoutingEdgePtr p_router;
+  xbt_dynar_t p_dimensions;
+  int p_has_limiter;
+  int p_has_loopback;
+  int p_nb_links_per_node;
+
 };
 
 

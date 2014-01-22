@@ -520,6 +520,20 @@ void ETag_surfxml_cluster(void){
     cluster.loopback_bw = surf_parse_get_bandwidth(A_surfxml_cluster_loopback___bw);
   if(strcmp(A_surfxml_cluster_loopback___lat,""))
     cluster.loopback_lat = surf_parse_get_time(A_surfxml_cluster_loopback___lat);
+
+  switch(AX_surfxml_cluster_topology){
+  case A_surfxml_cluster_topology_FLAT:
+    cluster.topology= SURF_CLUSTER_FLAT ;
+    break;
+  case A_surfxml_cluster_topology_TORUS:
+    cluster.topology= SURF_CLUSTER_TORUS ;
+    break;
+  default:
+    surf_parse_error("Invalid cluster topology for cluster %s",
+                     cluster.id);
+    break;
+  }
+  cluster.topo_parameters = A_surfxml_cluster_topo___parameters;
   cluster.router_id = A_surfxml_cluster_router___id;
 
   switch (AX_surfxml_cluster_sharing___policy) {

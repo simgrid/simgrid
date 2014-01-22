@@ -1337,81 +1337,81 @@ const char dax__flexml_version[] = "1.9.6";
 int dax__pcdata_ix;
 extern char *dax__bufferstack;
 #define dax__pcdata (dax__bufferstack + dax__pcdata_ix)
-AT_dax__adag_version AX_dax__adag_version;
-#define A_dax__adag_version (dax__bufferstack + AX_dax__adag_version)
-short int dax__adag_version_isset;
-AT_dax__uses_type AX_dax__uses_type;
-#define A_dax__uses_type (dax__bufferstack + AX_dax__uses_type)
-short int dax__uses_type_isset;
-AT_dax__uses_optional AX_dax__uses_optional;
-#define A_dax__uses_optional AX_dax__uses_optional
-short int dax__uses_optional_isset;
-AT_dax__adag_name AX_dax__adag_name;
-#define A_dax__adag_name (dax__bufferstack + AX_dax__adag_name)
-short int dax__adag_name_isset;
 AT_dax__child_ref AX_dax__child_ref;
 #define A_dax__child_ref (dax__bufferstack + AX_dax__child_ref)
 short int dax__child_ref_isset;
+AT_dax__adag_count AX_dax__adag_count;
+#define A_dax__adag_count (dax__bufferstack + AX_dax__adag_count)
+short int dax__adag_count_isset;
+AT_dax__adag_jobCount AX_dax__adag_jobCount;
+#define A_dax__adag_jobCount (dax__bufferstack + AX_dax__adag_jobCount)
+short int dax__adag_jobCount_isset;
+AT_dax__uses_size AX_dax__uses_size;
+#define A_dax__uses_size (dax__bufferstack + AX_dax__uses_size)
+short int dax__uses_size_isset;
+AT_dax__job_name AX_dax__job_name;
+#define A_dax__job_name (dax__bufferstack + AX_dax__job_name)
+short int dax__job_name_isset;
+AT_dax__uses_file AX_dax__uses_file;
+#define A_dax__uses_file (dax__bufferstack + AX_dax__uses_file)
+short int dax__uses_file_isset;
+AT_dax__job_version AX_dax__job_version;
+#define A_dax__job_version (dax__bufferstack + AX_dax__job_version)
+short int dax__job_version_isset;
+AT_dax__job_id AX_dax__job_id;
+#define A_dax__job_id (dax__bufferstack + AX_dax__job_id)
+short int dax__job_id_isset;
+AT_dax__job_runtime AX_dax__job_runtime;
+#define A_dax__job_runtime (dax__bufferstack + AX_dax__job_runtime)
+short int dax__job_runtime_isset;
+AT_dax__uses_link AX_dax__uses_link;
+#define A_dax__uses_link AX_dax__uses_link
+short int dax__uses_link_isset;
+AT_dax__job_level AX_dax__job_level;
+#define A_dax__job_level (dax__bufferstack + AX_dax__job_level)
+short int dax__job_level_isset;
+AT_dax__adag_name AX_dax__adag_name;
+#define A_dax__adag_name (dax__bufferstack + AX_dax__adag_name)
+short int dax__adag_name_isset;
 AT_dax__adag_xmlns AX_dax__adag_xmlns;
 #define A_dax__adag_xmlns (dax__bufferstack + AX_dax__adag_xmlns)
 short int dax__adag_xmlns_isset;
 AT_dax__uses_transfer AX_dax__uses_transfer;
 #define A_dax__uses_transfer AX_dax__uses_transfer
 short int dax__uses_transfer_isset;
-AT_dax__job_id AX_dax__job_id;
-#define A_dax__job_id (dax__bufferstack + AX_dax__job_id)
-short int dax__job_id_isset;
-AT_dax__uses_file AX_dax__uses_file;
-#define A_dax__uses_file (dax__bufferstack + AX_dax__uses_file)
-short int dax__uses_file_isset;
+AT_dax__uses_type AX_dax__uses_type;
+#define A_dax__uses_type (dax__bufferstack + AX_dax__uses_type)
+short int dax__uses_type_isset;
+AT_dax__adag_version AX_dax__adag_version;
+#define A_dax__adag_version (dax__bufferstack + AX_dax__adag_version)
+short int dax__adag_version_isset;
 AT_dax__parent_ref AX_dax__parent_ref;
 #define A_dax__parent_ref (dax__bufferstack + AX_dax__parent_ref)
 short int dax__parent_ref_isset;
-AT_dax__adag_count AX_dax__adag_count;
-#define A_dax__adag_count (dax__bufferstack + AX_dax__adag_count)
-short int dax__adag_count_isset;
-AT_dax__adag_xmlns_c_xsi AX_dax__adag_xmlns_c_xsi;
-#define A_dax__adag_xmlns_c_xsi (dax__bufferstack + AX_dax__adag_xmlns_c_xsi)
-short int dax__adag_xmlns_c_xsi_isset;
-AT_dax__adag_index AX_dax__adag_index;
-#define A_dax__adag_index (dax__bufferstack + AX_dax__adag_index)
-short int dax__adag_index_isset;
-AT_dax__uses_size AX_dax__uses_size;
-#define A_dax__uses_size (dax__bufferstack + AX_dax__uses_size)
-short int dax__uses_size_isset;
-AT_dax__adag_childCount AX_dax__adag_childCount;
-#define A_dax__adag_childCount (dax__bufferstack + AX_dax__adag_childCount)
-short int dax__adag_childCount_isset;
-AT_dax__uses_link AX_dax__uses_link;
-#define A_dax__uses_link AX_dax__uses_link
-short int dax__uses_link_isset;
-AT_dax__job_runtime AX_dax__job_runtime;
-#define A_dax__job_runtime (dax__bufferstack + AX_dax__job_runtime)
-short int dax__job_runtime_isset;
-AT_dax__job_level AX_dax__job_level;
-#define A_dax__job_level (dax__bufferstack + AX_dax__job_level)
-short int dax__job_level_isset;
-AT_dax__job_namespace AX_dax__job_namespace;
-#define A_dax__job_namespace (dax__bufferstack + AX_dax__job_namespace)
-short int dax__job_namespace_isset;
-AT_dax__job_name AX_dax__job_name;
-#define A_dax__job_name (dax__bufferstack + AX_dax__job_name)
-short int dax__job_name_isset;
-AT_dax__adag_jobCount AX_dax__adag_jobCount;
-#define A_dax__adag_jobCount (dax__bufferstack + AX_dax__adag_jobCount)
-short int dax__adag_jobCount_isset;
-AT_dax__job_version AX_dax__job_version;
-#define A_dax__job_version (dax__bufferstack + AX_dax__job_version)
-short int dax__job_version_isset;
 AT_dax__adag_xsi_c_schemaLocation AX_dax__adag_xsi_c_schemaLocation;
 #define A_dax__adag_xsi_c_schemaLocation (dax__bufferstack + AX_dax__adag_xsi_c_schemaLocation)
 short int dax__adag_xsi_c_schemaLocation_isset;
-AT_dax__uses_register AX_dax__uses_register;
-#define A_dax__uses_register AX_dax__uses_register
-short int dax__uses_register_isset;
+AT_dax__adag_index AX_dax__adag_index;
+#define A_dax__adag_index (dax__bufferstack + AX_dax__adag_index)
+short int dax__adag_index_isset;
+AT_dax__uses_optional AX_dax__uses_optional;
+#define A_dax__uses_optional AX_dax__uses_optional
+short int dax__uses_optional_isset;
 AT_dax__adag_fileCount AX_dax__adag_fileCount;
 #define A_dax__adag_fileCount (dax__bufferstack + AX_dax__adag_fileCount)
 short int dax__adag_fileCount_isset;
+AT_dax__job_namespace AX_dax__job_namespace;
+#define A_dax__job_namespace (dax__bufferstack + AX_dax__job_namespace)
+short int dax__job_namespace_isset;
+AT_dax__uses_register AX_dax__uses_register;
+#define A_dax__uses_register AX_dax__uses_register
+short int dax__uses_register_isset;
+AT_dax__adag_childCount AX_dax__adag_childCount;
+#define A_dax__adag_childCount (dax__bufferstack + AX_dax__adag_childCount)
+short int dax__adag_childCount_isset;
+AT_dax__adag_xmlns_c_xsi AX_dax__adag_xmlns_c_xsi;
+#define A_dax__adag_xmlns_c_xsi (dax__bufferstack + AX_dax__adag_xmlns_c_xsi)
+short int dax__adag_xmlns_c_xsi_isset;
 
 /* XML state. */
 #ifdef FLEX_DEBUG
@@ -2203,11 +2203,11 @@ case 44:
 YY_RULE_SETUP
 FAIL("Unexpected character `%c': `</adag>' expected.",dax_text[0]);
 	YY_BREAK
-case YY_STATE_EOF(S_dax__adag_1):
-case YY_STATE_EOF(S_dax__adag_5):
+case YY_STATE_EOF(S_dax__adag):
 case YY_STATE_EOF(E_dax__adag):
 case YY_STATE_EOF(S_dax__adag_3):
-case YY_STATE_EOF(S_dax__adag):
+case YY_STATE_EOF(S_dax__adag_5):
+case YY_STATE_EOF(S_dax__adag_1):
 FAIL("Premature EOF: `</adag>' expected.");
 	YY_BREAK
 
@@ -2313,7 +2313,7 @@ YY_RULE_SETUP
   if (!AX_dax__job_runtime) FAIL("Required attribute `runtime' not set for `job' element.");
   LEAVE; STag_dax__job(); dax__pcdata_ix = 0; ETag_dax__job(); popbuffer(); /* attribute */
   switch (YY_START) {
-   case S_dax__adag_2: case S_dax__adag_3: case S_dax__adag: SET(S_dax__adag_3); break;
+   case S_dax__adag: case S_dax__adag_3: case S_dax__adag_2: SET(S_dax__adag_3); break;
   }
  }
 	YY_BREAK
@@ -2337,7 +2337,7 @@ YY_RULE_SETUP
   ETag_dax__job();
   popbuffer(); /* attribute */
   switch (YY_START) {
-   case S_dax__adag_2: case S_dax__adag_3: case S_dax__adag: SET(S_dax__adag_3); break;
+   case S_dax__adag: case S_dax__adag_3: case S_dax__adag_2: SET(S_dax__adag_3); break;
   }
  }
 	YY_BREAK
@@ -2350,9 +2350,9 @@ case 65:
 YY_RULE_SETUP
 FAIL("Unexpected character `%c': `</job>' expected.",dax_text[0]);
 	YY_BREAK
-case YY_STATE_EOF(S_dax__job):
 case YY_STATE_EOF(E_dax__job):
 case YY_STATE_EOF(S_dax__job_2):
+case YY_STATE_EOF(S_dax__job):
 FAIL("Premature EOF: `</job>' expected.");
 	YY_BREAK
 
@@ -2565,7 +2565,7 @@ YY_RULE_SETUP
   if (!AX_dax__child_ref) FAIL("Required attribute `ref' not set for `child' element.");
   LEAVE; STag_dax__child(); dax__pcdata_ix = 0; ETag_dax__child(); popbuffer(); /* attribute */
   switch (YY_START) {
-   case S_dax__adag_1: case S_dax__adag_4: case S_dax__adag_5: case S_dax__adag_3: case S_dax__adag: SET(S_dax__adag_5); break;
+   case S_dax__adag_3: case S_dax__adag_4: case S_dax__adag_5: case S_dax__adag_1: case S_dax__adag: SET(S_dax__adag_5); break;
   }
  }
 	YY_BREAK
@@ -2589,7 +2589,7 @@ YY_RULE_SETUP
   ETag_dax__child();
   popbuffer(); /* attribute */
   switch (YY_START) {
-   case S_dax__adag_1: case S_dax__adag_4: case S_dax__adag_5: case S_dax__adag_3: case S_dax__adag: SET(S_dax__adag_5); break;
+   case S_dax__adag_3: case S_dax__adag_4: case S_dax__adag_5: case S_dax__adag_1: case S_dax__adag: SET(S_dax__adag_5); break;
   }
  }
 	YY_BREAK
@@ -2602,9 +2602,9 @@ case 107:
 YY_RULE_SETUP
 FAIL("Unexpected character `%c': `</child>' expected.",dax_text[0]);
 	YY_BREAK
-case YY_STATE_EOF(S_dax__child_2):
 case YY_STATE_EOF(E_dax__child):
 case YY_STATE_EOF(S_dax__child):
+case YY_STATE_EOF(S_dax__child_2):
 FAIL("Premature EOF: `</child>' expected.");
 	YY_BREAK
 
@@ -2646,7 +2646,7 @@ YY_RULE_SETUP
   if (!AX_dax__parent_ref) FAIL("Required attribute `ref' not set for `parent' element.");
   LEAVE; STag_dax__parent(); dax__pcdata_ix = 0; ETag_dax__parent(); popbuffer(); /* attribute */
   switch (YY_START) {
-   case S_dax__child_2: case S_dax__child: case S_dax__child_1: SET(S_dax__child_2); break;
+   case S_dax__child: case S_dax__child_2: case S_dax__child_1: SET(S_dax__child_2); break;
   }
  }
 	YY_BREAK
@@ -2670,7 +2670,7 @@ YY_RULE_SETUP
   ETag_dax__parent();
   popbuffer(); /* attribute */
   switch (YY_START) {
-   case S_dax__child_2: case S_dax__child: case S_dax__child_1: SET(S_dax__child_2); break;
+   case S_dax__child: case S_dax__child_2: case S_dax__child_1: SET(S_dax__child_2); break;
   }
  }
 	YY_BREAK

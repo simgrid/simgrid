@@ -44,6 +44,11 @@ typedef enum {
   SURF_PROCESS_ON_FAILURE_RESTART = 0
 } e_surf_process_on_failure_t;
 
+typedef enum {
+  SURF_CLUSTER_FLAT = 1,
+  SURF_CLUSTER_TORUS = 0
+} e_surf_cluster_topology_t;
+
 
 typedef struct tmgr_trace *tmgr_trace_t; /**< Opaque structure defining an availability trace */
 
@@ -202,6 +207,8 @@ typedef struct s_sg_platf_cluster_cbarg {
   double loopback_bw;
   double loopback_lat;
   double limiter_link;
+  e_surf_cluster_topology_t topology;
+  const char* topo_parameters;
   xbt_dict_t properties;
   const char* router_id;
   e_surf_link_sharing_policy_t sharing_policy;
