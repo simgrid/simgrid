@@ -22,6 +22,34 @@ typedef NetworkLink *NetworkLinkPtr;
 class NetworkAction;
 typedef NetworkAction *NetworkActionPtr;
 
+/*************
+ * Callbacks *
+ *************/
+
+/** @ingroup SURF_callbacks
+ * @brief Callbacks handler which emit the callbacks after NetworkLink creation *
+ * @detail Callback functions have the following signature: `void(NetworkLinkPtr)`
+ */
+extern surf_callback(void, NetworkLinkPtr) networkLinkCreatedCallbacks;
+
+/** @ingroup SURF_callbacks
+ * @brief Callbacks handler which emit the callbacks after NetworkLink destruction *
+ * @detail Callback functions have the following signature: `void(NetworkLinkPtr)`
+ */
+extern surf_callback(void, NetworkLinkPtr) networkLinkDestructedCallbacks;
+
+/** @ingroup SURF_callbacks
+ * @brief Callbacks handler which emit the callbacks after NetworkLink State changed *
+ * @detail Callback functions have the following signature: `void(NetworkLinkActionPtr)`
+ */
+extern surf_callback(void, NetworkLinkPtr) networkLinkStateChangedCallbacks;
+
+/** @ingroup SURF_callbacks
+ * @brief Callbacks handler which emit the callbacks after NetworkAction State changed *
+ * @detail Callback functions have the following signature: `void(NetworkActionPtr)`
+ */
+extern surf_callback(void, NetworkActionPtr) networkActionStateChangedCallbacks;
+
 /*********
  * Tools *
  *********/
@@ -188,6 +216,11 @@ public:
   	          tmgr_trace_t state_trace);
 
   /**
+   * @brief NetworkLink destructor
+   */
+  ~NetworkLink();
+
+  /**
    * @brief Get the bandwidth in bytes per second of current NetworkLink
    * 
    * @return The bandwith in bytes per second of the current NetworkLink
@@ -215,6 +248,8 @@ public:
    * @return true if the current NetwokrLink is used, false otherwise
    */
   bool isUsed();
+
+  void setState(e_surf_resource_state_t state);
 
   /* Using this object with the public part of
     model does not make sense */
@@ -255,6 +290,8 @@ public:
    */
   NetworkAction(ModelPtr model, double cost, bool failed, lmm_variable_t var)
   : Action(model, cost, failed, var) {};
+
+  void setState(e_surf_action_state_t state);
 
   double m_latency;
   double m_latCurrent;

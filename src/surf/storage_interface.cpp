@@ -14,6 +14,15 @@ int ROUTING_STORAGE_TYPE_LEVEL; //Routing for storage_type level
 xbt_dynar_t mount_list = NULL;
 StorageModelPtr surf_storage_model = NULL;
 
+/*************
+ * Callbacks *
+ *************/
+
+surf_callback(void, StoragePtr) storageCreatedCallbacks;
+surf_callback(void, StoragePtr) storageDestructedCallbacks;
+surf_callback(void, StoragePtr) storageStateChangedCallbacks;
+surf_callback(void, StorageActionPtr) storageActionStateChangedCallbacks;
+
 /*********
  * Model *
  *********/
@@ -42,8 +51,9 @@ Storage::Storage(ModelPtr model, const char *name, xbt_dict_t props,
  , p_typeId(xbt_strdup(type_id))
  , p_writeActions(xbt_dynar_new(sizeof(ActionPtr),NULL))
 {
+  surf_callback_emit(storageCreatedCallbacks, this);
   p_content = parseContent(content_name);
-  m_stateCurrent = SURF_RESOURCE_ON;
+  setState(SURF_RESOURCE_ON);
 }
 
 Storage::Storage(ModelPtr model, const char *name, xbt_dict_t props,
@@ -54,14 +64,16 @@ Storage::Storage(ModelPtr model, const char *name, xbt_dict_t props,
  , m_size(size), m_usedSize(0)
  , p_typeId(xbt_strdup(type_id))
  , p_writeActions(xbt_dynar_new(sizeof(ActionPtr),NULL)) {
+  surf_callback_emit(storageCreatedCallbacks, this);
   p_content = parseContent(content_name);
-  m_stateCurrent = SURF_RESOURCE_ON;
+  setState(SURF_RESOURCE_ON);
   XBT_DEBUG("Create resource with Bconnection '%f' Bread '%f' Bwrite '%f' and Size '%llu'", bconnection, bread, bwrite, size);
   p_constraintRead  = lmm_constraint_new(maxminSystem, this, bread);
   p_constraintWrite = lmm_constraint_new(maxminSystem, this, bwrite);
 }
 
 Storage::~Storage(){
+  surf_callback_emit(storageDestructedCallbacks, this);
   xbt_dict_free(&p_content);
   xbt_dynar_free(&p_writeActions);
   free(p_typeId);
@@ -116,6 +128,12 @@ void Storage::updateState(tmgr_trace_event_t /*event_type*/, double /*value*/, d
   THROW_UNIMPLEMENTED;
 }
 
+void Storage::setState(e_surf_resource_state_t state)
+{
+  Resource::setState(state);
+  surf_callback_emit(storageStateChangedCallbacks, this);
+}
+
 xbt_dict_t Storage::getContent()
 {
   /* For the moment this action has no cost, but in the future we could take in account access latency of the disk */
@@ -136,8 +154,6 @@ sg_size_t Storage::getSize(){
   return m_size;
 }
 
-
-
 /**********
  * Action *
  **********/
@@ -154,3 +170,7 @@ StorageAction::StorageAction(ModelPtr model, double cost, bool failed, lmm_varia
   , m_type(type), p_storage(storage), p_file(NULL), p_lsDict(NULL) {
 }
 
+void StorageAction::setState(e_surf_action_state_t state){
+  Action::setState(state);
+  surf_callback_emit(storageActionStateChangedCallbacks, this);
+}

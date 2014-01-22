@@ -25,6 +25,34 @@ typedef Workstation *WorkstationPtr;
 class WorkstationAction;
 typedef WorkstationAction *WorkstationActionPtr;
 
+/*************
+ * Callbacks *
+ *************/
+
+/** @ingroup SURF_callbacks
+ * @brief Callbacks handler which emit the callbacks after Workstation creation *
+ * @detail Callback functions have the following signature: `void(WorkstationPtr)`
+ */
+extern surf_callback(void, WorkstationPtr) workstationCreatedCallbacks;
+
+/** @ingroup SURF_callbacks
+ * @brief Callbacks handler which emit the callbacks after Workstation destruction *
+ * @detail Callback functions have the following signature: `void(WorkstationPtr)`
+ */
+extern surf_callback(void, WorkstationPtr) workstationDestructedCallbacks;
+
+/** @ingroup SURF_callbacks
+ * @brief Callbacks handler which emit the callbacks after Workstation State changed *
+ * @detail Callback functions have the following signature: `void(WorkstationActionPtr)`
+ */
+extern surf_callback(void, WorkstationPtr) workstationStateChangedCallbacks;
+
+/** @ingroup SURF_callbacks
+ * @brief Callbacks handler which emit the callbacks after WorkstationAction State changed *
+ * @detail Callback functions have the following signature: `void(WorkstationActionPtr)`
+ */
+extern surf_callback(void, WorkstationActionPtr) workstationActionStateChangedCallbacks;
+
 /*********
  * Tools *
  *********/
@@ -116,9 +144,8 @@ class Workstation : public Resource {
 public:
   /**
    * @brief Workstation consrtuctor
-   * @details [long description]
    */
-  Workstation(){};
+  Workstation();
 
   /**
    * @brief Workstation constructor
@@ -146,6 +173,13 @@ public:
    */
   Workstation(ModelPtr model, const char *name, xbt_dict_t props, lmm_constraint_t constraint,
 		      xbt_dynar_t storage, RoutingEdgePtr netElm, CpuPtr cpu);
+
+  /**
+   * @brief Workstation destructor
+   */
+  ~ Workstation();
+
+  void setState(e_surf_resource_state_t state);
 
   /**
    * @brief Get the properties of the currenrt Workstation
@@ -399,6 +433,7 @@ public:
   WorkstationAction(ModelPtr model, double cost, bool failed, lmm_variable_t var)
   : Action(model, cost, failed, var) {}
 
+  void setState(e_surf_action_state_t state);
 };
 
 

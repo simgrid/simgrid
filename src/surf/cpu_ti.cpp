@@ -567,7 +567,7 @@ CpuTi::CpuTi(CpuTiModelPtr model, const char *name, xbt_dynar_t powerPeak,
 : Cpu(model, name, properties, core, 0, powerScale)
 {
   p_powerEvent = NULL;
-  m_stateCurrent = stateInitial;
+  setState(stateInitial);
   m_powerScale = powerScale;
   m_core = core;
   tmgr_trace_t empty_trace;		
@@ -643,11 +643,11 @@ void CpuTi::updateState(tmgr_trace_event_t event_type,
 
   } else if (event_type == p_stateEvent) {
     if (value > 0) {
-      if(m_stateCurrent == SURF_RESOURCE_OFF)
+      if(getState() == SURF_RESOURCE_OFF)
         xbt_dynar_push_as(host_that_restart, char*, (char *)getName());
-      m_stateCurrent = SURF_RESOURCE_ON;
+      setState(SURF_RESOURCE_ON);
     } else {
-      m_stateCurrent = SURF_RESOURCE_OFF;
+      setState(SURF_RESOURCE_OFF);
 
       /* put all action running on cpu to failed */
       xbt_swag_foreach(_action, p_actionSet) {
@@ -822,7 +822,7 @@ void CpuTi::updateRemainingAmount(double now)
 CpuActionPtr CpuTi::execute(double size)
 {
   XBT_IN("(%s,%g)", getName(), size);
-  CpuTiActionPtr action = new CpuTiAction(static_cast<CpuTiModelPtr>(getModel()), size, m_stateCurrent != SURF_RESOURCE_ON, this);
+  CpuTiActionPtr action = new CpuTiAction(static_cast<CpuTiModelPtr>(getModel()), size, getState() != SURF_RESOURCE_ON, this);
 
   xbt_swag_insert(action, p_actionSet);
 
@@ -837,7 +837,7 @@ CpuActionPtr CpuTi::sleep(double duration)
     duration = MAX(duration, MAXMIN_PRECISION);
 
   XBT_IN("(%s,%g)", getName(), duration);
-  CpuTiActionPtr action = new CpuTiAction(static_cast<CpuTiModelPtr>(getModel()), 1.0, m_stateCurrent != SURF_RESOURCE_ON, this);
+  CpuTiActionPtr action = new CpuTiAction(static_cast<CpuTiModelPtr>(getModel()), 1.0, getState() != SURF_RESOURCE_ON, this);
 
   action->m_maxDuration = duration;
   action->m_suspended = 2;

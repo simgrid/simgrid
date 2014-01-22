@@ -126,7 +126,6 @@ public:
   bool isUsed();
   //bool isUsed() {DIE_IMPOSSIBLE;};
   void updateState(tmgr_trace_event_t event_type, double value, double date);
-  e_surf_resource_state_t getState();
   double getSpeed(double load);
   double getAvailableSpeed();
   CpuActionPtr execute(double /*size*/) {DIE_IMPOSSIBLE;};

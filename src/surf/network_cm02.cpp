@@ -497,7 +497,7 @@ NetworkCm02Link::NetworkCm02Link(NetworkCm02ModelPtr model, const char *name, xb
 	                           e_surf_link_sharing_policy_t policy)
 : NetworkLink(model, name, props, lmm_constraint_new(system, this, constraint_value), history, state_trace)
 {
-  m_stateCurrent = state_init;
+  setState(state_init);
 
   p_power.scale = 1.0;
   p_power.peak = metric_peak;
@@ -581,13 +581,13 @@ void NetworkCm02Link::updateState(tmgr_trace_event_t event_type,
       p_latEvent = NULL;
   } else if (event_type == p_stateEvent) {
     if (value > 0)
-      m_stateCurrent = SURF_RESOURCE_ON;
+      setState(SURF_RESOURCE_ON);
     else {
       lmm_constraint_t cnst = getConstraint();
       lmm_variable_t var = NULL;
       lmm_element_t elem = NULL;
 
-      m_stateCurrent = SURF_RESOURCE_OFF;
+      setState(SURF_RESOURCE_OFF);
       while ((var = lmm_get_var_from_cnst(getModel()->getMaxminSystem(), cnst, &elem))) {
         ActionPtr action = (ActionPtr) lmm_variable_id(var);
 

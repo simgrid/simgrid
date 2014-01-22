@@ -357,7 +357,7 @@ StorageN11::StorageN11(StorageModelPtr model, const char* name, xbt_dict_t prope
 
 StorageActionPtr StorageN11::ls(const char* path)
 {
-  StorageActionPtr action = new StorageN11Action(getModel(), 0, m_stateCurrent != SURF_RESOURCE_ON, this, LS);
+  StorageActionPtr action = new StorageN11Action(getModel(), 0, getState() != SURF_RESOURCE_ON, this, LS);
 
   action->p_lsDict = NULL;
   xbt_dict_t ls_dict = xbt_dict_new_homogeneous(xbt_free);
@@ -421,7 +421,7 @@ StorageActionPtr StorageN11::open(const char* mount, const char* path)
   file->mount = xbt_strdup(mount);
   file->current_position = 0;
 
-  StorageActionPtr action = new StorageN11Action(getModel(), 0, m_stateCurrent != SURF_RESOURCE_ON, this, OPEN);
+  StorageActionPtr action = new StorageN11Action(getModel(), 0, getState() != SURF_RESOURCE_ON, this, OPEN);
   action->p_file = file;
   return action;
 }
@@ -444,7 +444,7 @@ StorageActionPtr StorageN11::close(surf_file_t fd)
   free(fd->name);
   free(fd->mount);
   xbt_free(fd);
-  StorageActionPtr action = new StorageN11Action(getModel(), 0, m_stateCurrent != SURF_RESOURCE_ON, this, CLOSE);
+  StorageActionPtr action = new StorageN11Action(getModel(), 0, getState() != SURF_RESOURCE_ON, this, CLOSE);
   return action;
 }
 
@@ -457,7 +457,7 @@ StorageActionPtr StorageN11::read(surf_file_t fd, sg_size_t size)
   else
 	fd->current_position += size;
 
-  StorageActionPtr action = new StorageN11Action(getModel(), size, m_stateCurrent != SURF_RESOURCE_ON, this, READ);
+  StorageActionPtr action = new StorageN11Action(getModel(), size, getState() != SURF_RESOURCE_ON, this, READ);
   return action;
 }
 
@@ -466,7 +466,7 @@ StorageActionPtr StorageN11::write(surf_file_t fd, sg_size_t size)
   char *filename = fd->name;
   XBT_DEBUG("\tWrite file '%s' size '%llu/%llu'",filename,size,fd->size);
 
-  StorageActionPtr action = new StorageN11Action(getModel(), size, m_stateCurrent != SURF_RESOURCE_ON, this, WRITE);
+  StorageActionPtr action = new StorageN11Action(getModel(), size, getState() != SURF_RESOURCE_ON, this, WRITE);
   action->p_file = fd;
   fd->current_position += size;
   // If the storage is full

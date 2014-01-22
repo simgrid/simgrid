@@ -8,6 +8,15 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_workstation, surf,
 
 WorkstationModelPtr surf_workstation_model = NULL;
 
+/*************
+ * Callbacks *
+ *************/
+
+surf_callback(void, WorkstationPtr) workstationCreatedCallbacks;
+surf_callback(void, WorkstationPtr) workstationDestructedCallbacks;
+surf_callback(void, WorkstationPtr) workstationStateChangedCallbacks;
+surf_callback(void, WorkstationActionPtr) workstationActionStateChangedCallbacks;
+
 /*********
  * Model *
  *********/
@@ -24,8 +33,6 @@ WorkstationModel::WorkstationModel()
 
 WorkstationModel::~WorkstationModel() {
 }
-
-
 
 /* Each VM has a dummy CPU action on the PM layer. This CPU action works as the
  * constraint (capacity) of the VM in the PM layer. If the VM does not have any
@@ -79,17 +86,35 @@ void WorkstationModel::adjustWeightOfDummyCpuActions()
 /************
  * Resource *
  ************/
+Workstation::Workstation()
+{
+  surf_callback_emit(workstationCreatedCallbacks, this);
+}
+
 Workstation::Workstation(ModelPtr model, const char *name, xbt_dict_t props,
 		                 xbt_dynar_t storage, RoutingEdgePtr netElm, CpuPtr cpu)
  : Resource(model, name, props)
  , p_storage(storage), p_netElm(netElm), p_cpu(cpu)
-{}
+{
+  surf_callback_emit(workstationCreatedCallbacks, this);
+}
 
 Workstation::Workstation(ModelPtr model, const char *name, xbt_dict_t props, lmm_constraint_t constraint,
 				         xbt_dynar_t storage, RoutingEdgePtr netElm, CpuPtr cpu)
  : Resource(model, name, props, constraint)
  , p_storage(storage), p_netElm(netElm), p_cpu(cpu)
-{}
+{
+  surf_callback_emit(workstationCreatedCallbacks, this);
+}
+
+Workstation::~Workstation(){
+  surf_callback_emit(workstationDestructedCallbacks, this);
+}
+
+void Workstation::setState(e_surf_resource_state_t state){
+  Resource::setState(state);
+  surf_callback_emit(workstationStateChangedCallbacks, this);
+}
 
 int Workstation::getCore(){
   return p_cpu->getCore();
@@ -311,3 +336,8 @@ void Workstation::setParams(ws_params_t params)
 /**********
  * Action *
  **********/
+
+void WorkstationAction::setState(e_surf_action_state_t state){
+  Action::setState(state);
+  surf_callback_emit(workstationActionStateChangedCallbacks, this);
+}

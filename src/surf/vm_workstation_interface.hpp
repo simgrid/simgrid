@@ -27,6 +27,28 @@ typedef WorkstationVM *WorkstationVMPtr;
 class WorkstationVMLmm;
 typedef WorkstationVMLmm *WorkstationVMLmmPtr;
 
+/*************
+ * Callbacks *
+ *************/
+
+/** @ingroup SURF_callbacks
+ * @brief Callbacks handler which emit the callbacks after WorkstationVM creation *
+ * @detail Callback functions have the following signature: `void(WorkstationVMPtr)`
+ */
+extern surf_callback(void, WorkstationVMPtr) workstationVMCreatedCallbacks;
+
+/** @ingroup SURF_callbacks
+ * @brief Callbacks handler which emit the callbacks after WorkstationVM destruction *
+ * @detail Callback functions have the following signature: `void(WorkstationVMPtr)`
+ */
+extern surf_callback(void, WorkstationVMPtr) workstationVMDestructedCallbacks;
+
+/** @ingroup SURF_callbacks
+ * @brief Callbacks handler which emit the callbacks after WorkstationVM State changed *
+ * @detail Callback functions have the following signature: `void(WorkstationVMActionPtr)`
+ */
+extern surf_callback(void, WorkstationVMPtr) workstationVMStateChangedCallbacks;
+
 /*********
  * Model *
  *********/
@@ -55,7 +77,6 @@ public:
    */
   virtual void createResource(const char *name, void *ind_phys_workstation)=0;
 
-
   void adjustWeightOfDummyCpuActions() {};
 };
 
@@ -79,13 +100,14 @@ public:
    * @param cpu The Cpu associated to this Workstation
    */
   WorkstationVM(ModelPtr model, const char *name, xbt_dict_t props,
-		        RoutingEdgePtr netElm, CpuPtr cpu)
-  : Workstation(model, name, props, NULL, netElm, cpu) {}
+		        RoutingEdgePtr netElm, CpuPtr cpu);
 
   /**
-   * @brief WdorkstationVM estructor
+   * @brief WdorkstationVM destructor
    */
   ~WorkstationVM();
+
+  void setState(e_surf_resource_state_t state);
 
   /**
    * @brief Suspend the VM

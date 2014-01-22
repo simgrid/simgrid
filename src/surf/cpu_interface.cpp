@@ -16,9 +16,11 @@ CpuPtr getActionCpu(CpuActionPtr action) {
 		                	 (action->getModel()->getMaxminSystem(),
 		                	 action->getVariable(), 0)));
 }
-surf_callback(void, CpuPtr) createCpuCallbacks;
-surf_callback(void, CpuPtr) deleteCpuCallbacks;
-surf_callback(void, CpuActionPtr) updateCpuActionCallbacks;
+
+surf_callback(void, CpuPtr) cpuCreatedCallbacks;
+surf_callback(void, CpuPtr) cpuDestructedCallbacks;
+surf_callback(void, CpuPtr) cpuStateChangedCallbacks;
+surf_callback(void, CpuActionPtr) cpuActionStateChangedCallbacks;
 
 /*********
  * Model *
@@ -43,8 +45,6 @@ void CpuModel::updateActionsStateLazy(double now, double /*delta*/)
 
     action->finish();
     XBT_CDEBUG(surf_kernel, "Action %p finished", action);
-
-    surf_callback_emit(updateCpuActionCallbacks, action);
 
     /* set the remains to 0 due to precision problems when updating the remaining amount */
     action->setRemains(0);
@@ -115,8 +115,6 @@ void CpuModel::updateActionsStateFull(double now, double delta)
       action->finish();
       action->setState(SURF_ACTION_DONE);
     }
-    surf_callback_emit(updateCpuActionCallbacks, action);
-    //action->updateEnergy();
   }
 
   return;
@@ -127,7 +125,7 @@ void CpuModel::updateActionsStateFull(double now, double delta)
  ************/
 
 Cpu::Cpu(){
-  surf_callback_emit(createCpuCallbacks, this);
+  surf_callback_emit(cpuCreatedCallbacks, this);
 }
 
 Cpu::Cpu(ModelPtr model, const char *name, xbt_dict_t props,
@@ -139,7 +137,7 @@ Cpu::Cpu(ModelPtr model, const char *name, xbt_dict_t props,
  , p_constraintCore(NULL)
  , p_constraintCoreId(NULL)
 {
-  surf_callback_emit(createCpuCallbacks, this);
+  surf_callback_emit(cpuCreatedCallbacks, this);
 }
 
 Cpu::Cpu(ModelPtr model, const char *name, xbt_dict_t props,
@@ -149,7 +147,7 @@ Cpu::Cpu(ModelPtr model, const char *name, xbt_dict_t props,
  , m_powerPeak(powerPeak)
  , m_powerScale(powerScale)
 {
-  surf_callback_emit(createCpuCallbacks, this);
+  surf_callback_emit(cpuCreatedCallbacks, this);
   /* At now, we assume that a VM does not have a multicore CPU. */
   if (core > 1)
     xbt_assert(model == surf_cpu_model_pm);
@@ -170,7 +168,7 @@ Cpu::Cpu(ModelPtr model, const char *name, xbt_dict_t props,
 }
 
 Cpu::~Cpu(){
-  surf_callback_emit(deleteCpuCallbacks, this);
+  surf_callback_emit(cpuDestructedCallbacks, this);
   if (p_constraintCoreId){
     for (int i = 0; i < m_core; i++) {
 	  xbt_free(p_constraintCoreId[i]);
@@ -197,6 +195,11 @@ int Cpu::getCore()
   return m_core;
 }
 
+void Cpu::setState(e_surf_resource_state_t state)
+{
+  Resource::setState(state);
+  surf_callback_emit(cpuStateChangedCallbacks, this);
+}
 /**********
  * Action *
  **********/
@@ -307,6 +310,10 @@ void CpuAction::setAffinity(CpuPtr cpu, unsigned long mask)
   if (cpu->getModel()->getUpdateMechanism() == UM_LAZY) {
     /* FIXME (hypervisor): Do we need to do something for the LAZY mode? */
   }
-
   XBT_OUT();
+}
+
+void CpuAction::setState(e_surf_action_state_t state){
+  Action::setState(state);
+  surf_callback_emit(cpuActionStateChangedCallbacks, this);
 }

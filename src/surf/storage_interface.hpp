@@ -30,6 +30,34 @@ typedef StorageAction *StorageActionPtr;
 class StorageAction;
 typedef StorageAction *StorageActionPtr;
 
+/*************
+ * Callbacks *
+ *************/
+
+/** @ingroup SURF_callbacks
+ * @brief Callbacks handler which emit the callbacks after Storage creation *
+ * @detail Callback functions have the following signature: `void(StoragePtr)`
+ */
+extern surf_callback(void, StoragePtr) storageCreatedCallbacks;
+
+/** @ingroup SURF_callbacks
+ * @brief Callbacks handler which emit the callbacks after Storage destruction *
+ * @detail Callback functions have the following signature: `void(StoragePtr)`
+ */
+extern surf_callback(void, StoragePtr) storageDestructedCallbacks;
+
+/** @ingroup SURF_callbacks
+ * @brief Callbacks handler which emit the callbacks after Storage State changed *
+ * @detail Callback functions have the following signature: `void(StorageActionPtr)`
+ */
+extern surf_callback(void, StoragePtr) storageStateChangedCallbacks;
+
+/** @ingroup SURF_callbacks
+ * @brief Callbacks handler which emit the callbacks after StorageAction State changed *
+ * @detail Callback functions have the following signature: `void(StorageActionPtr)`
+ */
+extern surf_callback(void, StorageActionPtr) storageActionStateChangedCallbacks;
+
 /*********
  * Model *
  *********/
@@ -132,6 +160,8 @@ public:
    * @param date [description]
    */
   void updateState(tmgr_trace_event_t event_type, double value, double date);
+
+  void setState(e_surf_resource_state_t state);
 
   xbt_dict_t p_content;
   char* p_contentType;
@@ -264,6 +294,8 @@ public:
    */
   StorageAction(ModelPtr model, double cost, bool failed, lmm_variable_t var,
 		            StoragePtr storage, e_surf_action_storage_type_t type);
+
+  void setState(e_surf_action_state_t state);
 
   e_surf_action_storage_type_t m_type;
   StoragePtr p_storage;

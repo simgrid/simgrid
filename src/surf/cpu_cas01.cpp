@@ -203,7 +203,7 @@ CpuCas01::CpuCas01(CpuCas01ModelPtr model, const char *name, xbt_dynar_t powerPe
   XBT_DEBUG("CPU create: peak=%f, pstate=%d", m_powerPeak, m_pstate);
 
   m_core = core;
-  m_stateCurrent = stateInitial;
+  setState(stateInitial);
   if (powerTrace)
     p_powerEvent = tmgr_history_add_trace(history, powerTrace, 0.0, 0, static_cast<ResourcePtr>(this));
 
@@ -253,13 +253,13 @@ void CpuCas01::updateState(tmgr_trace_event_t event_type, double value, double d
     xbt_assert(m_core == 1, "FIXME: add state change code also for constraint_core[i]");
 
     if (value > 0) {
-      if(m_stateCurrent == SURF_RESOURCE_OFF)
+      if(getState() == SURF_RESOURCE_OFF)
         xbt_dynar_push_as(host_that_restart, char*, (char *)getName());
-      m_stateCurrent = SURF_RESOURCE_ON;
+      setState(SURF_RESOURCE_ON);
     } else {
       lmm_constraint_t cnst = getConstraint();
 
-      m_stateCurrent = SURF_RESOURCE_OFF;
+      setState(SURF_RESOURCE_OFF);
 
       while ((var = lmm_get_var_from_cnst(surf_cpu_model_pm->getMaxminSystem(), cnst, &elem))) {
         ActionPtr action = static_cast<ActionPtr>(lmm_variable_id(var));
@@ -286,7 +286,7 @@ CpuActionPtr CpuCas01::execute(double size)
 {
 
   XBT_IN("(%s,%g)", getName(), size);
-  CpuCas01ActionPtr action = new CpuCas01Action(surf_cpu_model_pm, size, m_stateCurrent != SURF_RESOURCE_ON,
+  CpuCas01ActionPtr action = new CpuCas01Action(surf_cpu_model_pm, size, getState() != SURF_RESOURCE_ON,
 		                                              m_powerScale * m_powerPeak, getConstraint());
 
   XBT_OUT();
@@ -299,7 +299,7 @@ CpuActionPtr CpuCas01::sleep(double duration)
     duration = MAX(duration, MAXMIN_PRECISION);
 
   XBT_IN("(%s,%g)", getName(), duration);
-  CpuCas01ActionPtr action = new CpuCas01Action(surf_cpu_model_pm, 1.0, m_stateCurrent != SURF_RESOURCE_ON,
+  CpuCas01ActionPtr action = new CpuCas01Action(surf_cpu_model_pm, 1.0, getState() != SURF_RESOURCE_ON,
                                                       m_powerScale * m_powerPeak, getConstraint());
 
 

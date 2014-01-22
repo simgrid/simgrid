@@ -438,7 +438,7 @@ CpuL07::CpuL07(CpuL07ModelPtr model, const char* name, xbt_dict_t props,
   if (power_trace)
 	p_power.event = tmgr_history_add_trace(history, power_trace, 0.0, 0, static_cast<ResourcePtr>(this));
 
-  m_stateCurrent = state_initial;
+  setState(state_initial);
   if (state_trace)
 	p_stateEvent = tmgr_history_add_trace(history, state_trace, 0.0, 0, static_cast<ResourcePtr>(this));
 }
@@ -457,7 +457,7 @@ LinkL07::LinkL07(NetworkL07ModelPtr model, const char* name, xbt_dict_t props,
   if (bw_trace)
     p_bwEvent = tmgr_history_add_trace(history, bw_trace, 0.0, 0, static_cast<ResourcePtr>(this));
 
-  m_stateCurrent = state_initial;
+  setState(state_initial);
   m_latCurrent = lat_initial;
 
   if (lat_trace)
@@ -484,9 +484,9 @@ void CpuL07::updateState(tmgr_trace_event_t event_type, double value, double /*d
       p_power.event = NULL;
   } else if (event_type == p_stateEvent) {
     if (value > 0)
-      m_stateCurrent = SURF_RESOURCE_ON;
+      setState(SURF_RESOURCE_ON);
     else
-      m_stateCurrent = SURF_RESOURCE_OFF;
+      setState(SURF_RESOURCE_OFF);
     if (tmgr_trace_event_free(event_type))
       p_stateEvent = NULL;
   } else {
@@ -517,9 +517,9 @@ void LinkL07::updateState(tmgr_trace_event_t event_type, double value, double da
       p_latEvent = NULL;
   } else if (event_type == p_stateEvent) {
     if (value > 0)
-      m_stateCurrent = SURF_RESOURCE_ON;
+      setState(SURF_RESOURCE_ON);
     else
-      m_stateCurrent = SURF_RESOURCE_OFF;
+      setState(SURF_RESOURCE_OFF);
     if (tmgr_trace_event_free(event_type))
       p_stateEvent = NULL;
   } else {
@@ -532,11 +532,6 @@ void LinkL07::updateState(tmgr_trace_event_t event_type, double value, double da
 e_surf_resource_state_t WorkstationL07::getState()
 {
   return p_cpu->getState();
-}
-
-e_surf_resource_state_t CpuL07::getState()
-{
-  return m_stateCurrent;
 }
 
 double CpuL07::getSpeed(double load)

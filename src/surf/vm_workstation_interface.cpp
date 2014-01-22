@@ -12,6 +12,14 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_vm_workstation, surf,
 
 WorkstationVMModelPtr surf_vm_workstation_model = NULL;
 
+/*************
+ * Callbacks *
+ *************/
+
+surf_callback(void, WorkstationVMPtr) workstationVMCreatedCallbacks;
+surf_callback(void, WorkstationVMPtr) workstationVMDestructedCallbacks;
+surf_callback(void, WorkstationVMPtr) workstationVMStateChangedCallbacks;
+
 /*********
  * Model *
  *********/
@@ -24,12 +32,25 @@ WorkstationVMModel::WorkstationVMModel() : WorkstationModel("Virtual Workstation
  * Resource *
  ************/
 
+WorkstationVM::WorkstationVM(ModelPtr model, const char *name, xbt_dict_t props,
+		        RoutingEdgePtr netElm, CpuPtr cpu)
+: Workstation(model, name, props, NULL, netElm, cpu)
+{
+  surf_callback_emit(workstationVMCreatedCallbacks, this);
+}
+
 /*
  * A physical host does not disapper in the current SimGrid code, but a VM may
  * disapper during a simulation.
  */
 WorkstationVM::~WorkstationVM()
 {
+  surf_callback_emit(workstationVMDestructedCallbacks, this);
+}
+
+void WorkstationVM::setState(e_surf_resource_state_t state){
+  Resource::setState(state);
+  surf_callback_emit(workstationVMStateChangedCallbacks, this);
 }
 
 /*

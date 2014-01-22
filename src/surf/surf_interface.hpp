@@ -360,15 +360,13 @@ public:
    */
   virtual void setState(e_surf_resource_state_t state);
 
-protected:
-  e_surf_resource_state_t m_stateCurrent;
-
 private:
   const char *p_name;
   xbt_dict_t p_properties;
   ModelPtr p_model;
   void *p_resource;
   bool m_running;
+  e_surf_resource_state_t m_stateCurrent;
 
   /* LMM */
 public:
@@ -439,7 +437,7 @@ public:
    * 
    * @param state The new state of the current Action
    */
-  virtual void setState(e_surf_action_state_t state); /**< Change state*/
+  virtual void setState(e_surf_action_state_t state);
 
   /**
    * @brief Get the bound of the current Action

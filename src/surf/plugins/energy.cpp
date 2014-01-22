@@ -19,11 +19,11 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_energy, surf,
 
 std::map<CpuPtr, CpuEnergyPtr> *surf_energy=NULL;
 
-static void createCpuCallback(CpuPtr cpu){
+static void energyCpuCreatedCallback(CpuPtr cpu){
   (*surf_energy)[cpu] = new CpuEnergy(cpu);
 }
 
-static void deleteCpuCallback(CpuPtr cpu){
+static void energyCpuDestructedCallback(CpuPtr cpu){
   std::map<CpuPtr, CpuEnergyPtr>::iterator cpuIt = surf_energy->find(cpu);
   xbt_assert(cpuIt != surf_energy->end(), "The cpu is not in surf_energy.");
   XBT_INFO("Total energy (Joules) of host %s: %f", cpu->getName(), cpuIt->second->getConsumedEnergy());
@@ -31,7 +31,7 @@ static void deleteCpuCallback(CpuPtr cpu){
   surf_energy->erase(cpuIt);
 }
 
-static void updateActionEnergyCallback(CpuActionPtr action){
+static void energyCpuActionStateChangedCallback(CpuActionPtr action){
   CpuPtr cpu  = getActionCpu(action);
   CpuEnergyPtr cpu_energy = (*surf_energy)[cpu];
 
@@ -61,9 +61,10 @@ static void updateActionEnergyCallback(CpuActionPtr action){
 void sg_energy_plugin_init() {
   if (surf_energy == NULL) {
     surf_energy = new std::map<CpuPtr, CpuEnergyPtr>();
-    surf_callback_connect(createCpuCallbacks, createCpuCallback);
-    surf_callback_connect(deleteCpuCallbacks, deleteCpuCallback);
-    surf_callback_connect(updateCpuActionCallbacks, updateActionEnergyCallback);
+    surf_callback_connect(cpuCreatedCallbacks, energyCpuCreatedCallback);
+    surf_callback_connect(cpuDestructedCallbacks, energyCpuDestructedCallback);
+    surf_callback_connect(cpuActionStateChangedCallbacks, energyCpuActionStateChangedCallback);
+
   }
 }
 

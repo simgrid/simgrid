@@ -13,6 +13,19 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_network, surf,
                                 "Logging specific to the SURF network module");
 
+/*************
+ * Callbacks *
+ *************/
+
+surf_callback(void, NetworkLinkPtr) networkLinkCreatedCallbacks;
+surf_callback(void, NetworkLinkPtr) networkLinkDestructedCallbacks;
+surf_callback(void, NetworkLinkPtr) networkLinkStateChangedCallbacks;
+surf_callback(void, NetworkActionPtr) networkActionStateChangedCallbacks;
+
+/*********
+ * Model *
+ *********/
+
 NetworkModelPtr surf_network_model = NULL;
 
 xbt_dynar_t NetworkModel::getRoute(RoutingEdgePtr src, RoutingEdgePtr dst)
@@ -34,10 +47,16 @@ double NetworkModel::bandwidthConstraint(double rate, double /*bound*/, double /
   return rate;
 }
 
+/************
+ * Resource *
+ ************/
+
 NetworkLink::NetworkLink(NetworkModelPtr model, const char *name, xbt_dict_t props)
 : Resource(model, name, props)
 , p_latEvent(NULL)
-{}
+{
+  surf_callback_emit(networkLinkCreatedCallbacks, this);
+}
 
 NetworkLink::NetworkLink(NetworkModelPtr model, const char *name, xbt_dict_t props,
 		                 lmm_constraint_t constraint,
@@ -46,8 +65,14 @@ NetworkLink::NetworkLink(NetworkModelPtr model, const char *name, xbt_dict_t pro
 : Resource(model, name, props, constraint),
   p_latEvent(NULL)
 {
+  surf_callback_emit(networkLinkCreatedCallbacks, this);
   if (state_trace)
     p_stateEvent = tmgr_history_add_trace(history, state_trace, 0.0, 0, static_cast<ResourcePtr>(this));
+}
+
+NetworkLink::~NetworkLink()
+{
+  surf_callback_emit(networkLinkDestructedCallbacks, this);
 }
 
 bool NetworkLink::isUsed()
@@ -68,6 +93,20 @@ double NetworkLink::getBandwidth()
 bool NetworkLink::isShared()
 {
   return lmm_constraint_is_shared(getConstraint());
+}
+
+void NetworkLink::setState(e_surf_resource_state_t state){
+  Resource::setState(state);
+  surf_callback_emit(networkLinkStateChangedCallbacks, this);
+}
+
+/**********
+ * Action *
+ **********/
+
+void NetworkAction::setState(e_surf_action_state_t state){
+  Action::setState(state);
+  surf_callback_emit(networkActionStateChangedCallbacks, this);
 }
 
 #endif /* NETWORK_INTERFACE_CPP_ */

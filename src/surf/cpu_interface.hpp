@@ -34,19 +34,25 @@ CpuPtr getActionCpu(CpuActionPtr action);
  * @brief Callbacks handler which emit the callbacks after Cpu creation * 
  * @detail Callback functions have the following signature: `void(CpuPtr)`
  */
-extern surf_callback(void, CpuPtr) createCpuCallbacks;
+extern surf_callback(void, CpuPtr) cpuCreatedCallbacks;
 
 /** @ingroup SURF_callbacks
  * @brief Callbacks handler which emit the callbacks after Cpu destruction * 
  * @detail Callback functions have the following signature: `void(CpuPtr)`
  */
-extern surf_callback(void, CpuPtr) deleteCpuCallbacks;
+extern surf_callback(void, CpuPtr) cpuDestructedCallbacks;
 
 /** @ingroup SURF_callbacks
- * @brief Callbacks handler which emit the callbacks after CpuAction update * 
+ * @brief Callbacks handler which emit the callbacks after Cpu State changed * 
  * @detail Callback functions have the following signature: `void(CpuActionPtr)`
  */
-extern surf_callback(void, CpuActionPtr) updateCpuActionCallbacks;
+extern surf_callback(void, CpuPtr) cpuStateChangedCallbacks;
+
+/** @ingroup SURF_callbacks
+ * @brief Callbacks handler which emit the callbacks after CpuAction State changed * 
+ * @detail Callback functions have the following signature: `void(CpuActionPtr)`
+ */
+extern surf_callback(void, CpuActionPtr) cpuActionStateChangedCallbacks;
 
 /*********
  * Model *
@@ -74,6 +80,7 @@ public:
    */
   CpuPtr createResource(string name);
 
+  void setState(e_surf_resource_state_t state);
 
   void updateActionsStateLazy(double now, double delta);
   void updateActionsStateFull(double now, double delta);
@@ -124,7 +131,7 @@ public:
 	  int core, double powerPeak, double powerScale);
 
   /**
-   * @brieaf Cpu destructor
+   * @brief Cpu destructor
    */
   ~Cpu();
 
@@ -182,6 +189,8 @@ public:
   virtual int getNbPstates()=0;
   
   virtual void setPowerPeakAt(int pstate_index)=0;
+
+  void setState(e_surf_resource_state_t state);
 
   void addTraces(void);
   int m_core;
@@ -246,6 +255,8 @@ public:
    * @param bound [TODO]
    */
   virtual void setBound(double bound);
+
+  void setState(e_surf_action_state_t state);
 
   void updateRemainingLazy(double now);
   double m_bound;
