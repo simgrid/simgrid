@@ -1135,42 +1135,42 @@ const char graphxml_flexml_version[] = "1.9.6";
 int graphxml_pcdata_ix;
 extern char *graphxml_bufferstack;
 #define graphxml_pcdata (graphxml_bufferstack + graphxml_pcdata_ix)
-AT_graphxml_node_data AX_graphxml_node_data;
-#define A_graphxml_node_data (graphxml_bufferstack + AX_graphxml_node_data)
-short int graphxml_node_data_isset;
-AT_graphxml_edge_name AX_graphxml_edge_name;
-#define A_graphxml_edge_name (graphxml_bufferstack + AX_graphxml_edge_name)
-short int graphxml_edge_name_isset;
 AT_graphxml_node_label AX_graphxml_node_label;
 #define A_graphxml_node_label (graphxml_bufferstack + AX_graphxml_node_label)
 short int graphxml_node_label_isset;
-AT_graphxml_edge_source AX_graphxml_edge_source;
-#define A_graphxml_edge_source (graphxml_bufferstack + AX_graphxml_edge_source)
-short int graphxml_edge_source_isset;
+AT_graphxml_node_position___y AX_graphxml_node_position___y;
+#define A_graphxml_node_position___y (graphxml_bufferstack + AX_graphxml_node_position___y)
+short int graphxml_node_position___y_isset;
+AT_graphxml_node_name AX_graphxml_node_name;
+#define A_graphxml_node_name (graphxml_bufferstack + AX_graphxml_node_name)
+short int graphxml_node_name_isset;
 AT_graphxml_node_position___x AX_graphxml_node_position___x;
 #define A_graphxml_node_position___x (graphxml_bufferstack + AX_graphxml_node_position___x)
 short int graphxml_node_position___x_isset;
 AT_graphxml_edge_target AX_graphxml_edge_target;
 #define A_graphxml_edge_target (graphxml_bufferstack + AX_graphxml_edge_target)
 short int graphxml_edge_target_isset;
-AT_graphxml_node_name AX_graphxml_node_name;
-#define A_graphxml_node_name (graphxml_bufferstack + AX_graphxml_node_name)
-short int graphxml_node_name_isset;
-AT_graphxml_edge_data AX_graphxml_edge_data;
-#define A_graphxml_edge_data (graphxml_bufferstack + AX_graphxml_edge_data)
-short int graphxml_edge_data_isset;
-AT_graphxml_edge_label AX_graphxml_edge_label;
-#define A_graphxml_edge_label (graphxml_bufferstack + AX_graphxml_edge_label)
-short int graphxml_edge_label_isset;
-AT_graphxml_node_position___y AX_graphxml_node_position___y;
-#define A_graphxml_node_position___y (graphxml_bufferstack + AX_graphxml_node_position___y)
-short int graphxml_node_position___y_isset;
-AT_graphxml_edge_length AX_graphxml_edge_length;
-#define A_graphxml_edge_length (graphxml_bufferstack + AX_graphxml_edge_length)
-short int graphxml_edge_length_isset;
 AT_graphxml_graph_isDirected AX_graphxml_graph_isDirected;
 #define A_graphxml_graph_isDirected AX_graphxml_graph_isDirected
 short int graphxml_graph_isDirected_isset;
+AT_graphxml_edge_label AX_graphxml_edge_label;
+#define A_graphxml_edge_label (graphxml_bufferstack + AX_graphxml_edge_label)
+short int graphxml_edge_label_isset;
+AT_graphxml_node_data AX_graphxml_node_data;
+#define A_graphxml_node_data (graphxml_bufferstack + AX_graphxml_node_data)
+short int graphxml_node_data_isset;
+AT_graphxml_edge_length AX_graphxml_edge_length;
+#define A_graphxml_edge_length (graphxml_bufferstack + AX_graphxml_edge_length)
+short int graphxml_edge_length_isset;
+AT_graphxml_edge_name AX_graphxml_edge_name;
+#define A_graphxml_edge_name (graphxml_bufferstack + AX_graphxml_edge_name)
+short int graphxml_edge_name_isset;
+AT_graphxml_edge_source AX_graphxml_edge_source;
+#define A_graphxml_edge_source (graphxml_bufferstack + AX_graphxml_edge_source)
+short int graphxml_edge_source_isset;
+AT_graphxml_edge_data AX_graphxml_edge_data;
+#define A_graphxml_edge_data (graphxml_bufferstack + AX_graphxml_edge_data)
+short int graphxml_edge_data_isset;
 
 /* XML state. */
 #ifdef FLEX_DEBUG
@@ -1852,10 +1852,10 @@ YY_RULE_SETUP
 FAIL("Unexpected character `%c': `</graph>' expected.",xbt_graph_parse_text[0]);
 	YY_BREAK
 case YY_STATE_EOF(E_graphxml_graph):
-case YY_STATE_EOF(S_graphxml_graph_5):
-case YY_STATE_EOF(S_graphxml_graph_3):
-case YY_STATE_EOF(S_graphxml_graph_1):
 case YY_STATE_EOF(S_graphxml_graph):
+case YY_STATE_EOF(S_graphxml_graph_3):
+case YY_STATE_EOF(S_graphxml_graph_5):
+case YY_STATE_EOF(S_graphxml_graph_1):
 FAIL("Premature EOF: `</graph>' expected.");
 	YY_BREAK
 
@@ -1951,8 +1951,8 @@ YY_RULE_SETUP
   if (!AX_graphxml_node_name) FAIL("Required attribute `name' not set for `node' element.");
   LEAVE; STag_graphxml_node(); graphxml_pcdata_ix = 0; ETag_graphxml_node(); popbuffer(); /* attribute */
   switch (YY_START) {
+   case S_graphxml_graph_3: case S_graphxml_graph: case S_graphxml_graph_2: SET(S_graphxml_graph_3); break;
    case ROOT_graphxml_node: SET(EPILOG); break;
-   case S_graphxml_graph_2: case S_graphxml_graph_3: case S_graphxml_graph: SET(S_graphxml_graph_3); break;
   }
  }
 	YY_BREAK
@@ -1976,8 +1976,8 @@ YY_RULE_SETUP
   ETag_graphxml_node();
   popbuffer(); /* attribute */
   switch (YY_START) {
+   case S_graphxml_graph_3: case S_graphxml_graph: case S_graphxml_graph_2: SET(S_graphxml_graph_3); break;
    case ROOT_graphxml_node: SET(EPILOG); break;
-   case S_graphxml_graph_2: case S_graphxml_graph_3: case S_graphxml_graph: SET(S_graphxml_graph_3); break;
   }
  }
 	YY_BREAK
@@ -2101,8 +2101,8 @@ YY_RULE_SETUP
   if (!AX_graphxml_edge_target) FAIL("Required attribute `target' not set for `edge' element.");
   LEAVE; STag_graphxml_edge(); graphxml_pcdata_ix = 0; ETag_graphxml_edge(); popbuffer(); /* attribute */
   switch (YY_START) {
-   case S_graphxml_graph: case S_graphxml_graph_1: case S_graphxml_graph_3: case S_graphxml_graph_5: case S_graphxml_graph_4: SET(S_graphxml_graph_5); break;
    case ROOT_graphxml_edge: SET(EPILOG); break;
+   case S_graphxml_graph_3: case S_graphxml_graph: case S_graphxml_graph_5: case S_graphxml_graph_1: case S_graphxml_graph_4: SET(S_graphxml_graph_5); break;
   }
  }
 	YY_BREAK
@@ -2126,8 +2126,8 @@ YY_RULE_SETUP
   ETag_graphxml_edge();
   popbuffer(); /* attribute */
   switch (YY_START) {
-   case S_graphxml_graph: case S_graphxml_graph_1: case S_graphxml_graph_3: case S_graphxml_graph_5: case S_graphxml_graph_4: SET(S_graphxml_graph_5); break;
    case ROOT_graphxml_edge: SET(EPILOG); break;
+   case S_graphxml_graph_3: case S_graphxml_graph: case S_graphxml_graph_5: case S_graphxml_graph_1: case S_graphxml_graph_4: SET(S_graphxml_graph_5); break;
   }
  }
 	YY_BREAK
