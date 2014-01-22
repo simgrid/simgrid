@@ -67,6 +67,7 @@ set(EXTRA_DIST
   src/surf/surf_routing_private.hpp
   src/surf/surf_routing.hpp
   src/surf/surf_routing_cluster.hpp
+  src/surf/surf_routing_cluster_torus.hpp
   src/surf/surf_routing_dijkstra.hpp
   src/surf/surf_routing_floyd.hpp
   src/surf/surf_routing_full.hpp
@@ -320,6 +321,7 @@ set(SURF_SRC
   src/surf/surf_c_bindings.cpp
   src/surf/surf_routing.cpp  
   src/surf/surf_routing_cluster.cpp
+  src/surf/surf_routing_cluster_torus.cpp
   src/surf/surf_routing_dijkstra.cpp
   src/surf/surf_routing_floyd.cpp
   src/surf/surf_routing_full.cpp

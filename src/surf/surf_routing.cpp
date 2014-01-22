@@ -7,6 +7,8 @@
 #include "surf_routing.hpp"
 #include "surf_routing_private.hpp"
 #include "surf_routing_cluster.hpp"
+#include "surf_routing_cluster_torus.hpp"
+
 
 #include "simgrid/platf_interface.h"    // platform creation API internal interface
 #include "simgrid/sg_config.h"
@@ -82,7 +84,9 @@ typedef enum {
   SURF_MODEL_DIJKSTRACACHE,
   SURF_MODEL_NONE,
   SURF_MODEL_VIVALDI,
-  SURF_MODEL_CLUSTER
+  SURF_MODEL_CLUSTER,
+  SURF_MODEL_TORUS_CLUSTER,
+
 } e_routing_types;
 
 struct s_model_type routing_models[] = {
@@ -104,6 +108,8 @@ struct s_model_type routing_models[] = {
    model_vivaldi_create, NULL},
   {"Cluster", "Cluster routing",
    model_cluster_create, NULL},
+   {"Torus_Cluster", "Torus Cluster routing",
+    model_torus_cluster_create, NULL},
   {NULL, NULL, NULL, NULL}
 };
 
@@ -347,13 +353,14 @@ void routing_AS_begin(sg_platf_AS_cbarg_t AS)
 
   /* search the routing model */
   switch(AS->routing){
-    case A_surfxml_AS_routing_Cluster:       model = &routing_models[SURF_MODEL_CLUSTER];break;
-    case A_surfxml_AS_routing_Dijkstra:      model = &routing_models[SURF_MODEL_DIJKSTRA];break;
-    case A_surfxml_AS_routing_DijkstraCache: model = &routing_models[SURF_MODEL_DIJKSTRACACHE];break;
-    case A_surfxml_AS_routing_Floyd:         model = &routing_models[SURF_MODEL_FLOYD];break;
-    case A_surfxml_AS_routing_Full:          model = &routing_models[SURF_MODEL_FULL];break;
-    case A_surfxml_AS_routing_None:          model = &routing_models[SURF_MODEL_NONE];break;
-    case A_surfxml_AS_routing_Vivaldi:       model = &routing_models[SURF_MODEL_VIVALDI];break;
+    case A_surfxml_AS_routing_Cluster:         model = &routing_models[SURF_MODEL_CLUSTER];break;
+    case A_surfxml_AS_routing_Cluster___torus: model = &routing_models[SURF_MODEL_TORUS_CLUSTER];break;
+    case A_surfxml_AS_routing_Dijkstra:        model = &routing_models[SURF_MODEL_DIJKSTRA];break;
+    case A_surfxml_AS_routing_DijkstraCache:   model = &routing_models[SURF_MODEL_DIJKSTRACACHE];break;
+    case A_surfxml_AS_routing_Floyd:           model = &routing_models[SURF_MODEL_FLOYD];break;
+    case A_surfxml_AS_routing_Full:            model = &routing_models[SURF_MODEL_FULL];break;
+    case A_surfxml_AS_routing_None:            model = &routing_models[SURF_MODEL_NONE];break;
+    case A_surfxml_AS_routing_Vivaldi:         model = &routing_models[SURF_MODEL_VIVALDI];break;
     default: xbt_die("Not a valid model!!!");
     break;
   }
@@ -798,13 +805,12 @@ static void routing_parse_cluster(sg_platf_cluster_cbarg_t cluster)
 {
   char *host_id, *groups, *link_id = NULL;
   xbt_dict_t patterns = NULL;
-  xbt_dynar_t dimensions;
   int rankId=0;
 
   s_sg_platf_host_cbarg_t host;
   s_sg_platf_link_cbarg_t link;
 
-  unsigned int iter, totalRanks=0;
+  unsigned int iter;
   int start, end, i;
   xbt_dynar_t radical_elements;
   xbt_dynar_t radical_ends;
@@ -817,48 +823,36 @@ static void routing_parse_cluster(sg_platf_cluster_cbarg_t cluster)
     xbt_dict_set(patterns, "suffix", xbt_strdup(cluster->suffix), NULL);
   }
 
-  dimensions = xbt_str_split(cluster->torus_dimensions, ",");
+  /* parse the topology attribute. If we are not in a flat cluster,
+   * switch to the right mode and initialize the routing with
+   * the parameters in topo_parameters attribute
+   */
+  s_sg_platf_AS_cbarg_t AS = SG_PLATF_AS_INITIALIZER;
+  AS.id = cluster->id;
 
-
-  int nb_links_per_node = 1;
-
-  if (!xbt_dynar_is_empty(dimensions)) {
-    /**
-     * We are in a torus cluster
-     * Parse attribute dimensions="dim1,dim2,dim3,...,dimN"
-     * and safe it in a dynarray.
-     * Additionally, we need to know how many ranks we have in total
-     */
-    xbt_dynar_foreach(dimensions, iter, groups) {
-        int tmp = surf_parse_get_int(xbt_dynar_get_as(dimensions, iter, char *));
-        xbt_dynar_set_as(dimensions, iter, int, tmp);
-
-        if (totalRanks == 0)
-            totalRanks = tmp;
-        else
-            totalRanks *= tmp;
-    }
-
-    nb_links_per_node = xbt_dynar_length(dimensions);
-    ((AsClusterPtr)current_routing)-> p_dimensions = dimensions;
-
+  if(cluster->topology == SURF_CLUSTER_TORUS){
+      XBT_DEBUG("<AS id=\"%s\"\trouting=\"Torus_Cluster\">", cluster->id);
+      AS.routing = A_surfxml_AS_routing_Cluster___torus;
+      sg_platf_new_AS_begin(&AS);
+      ((AsClusterTorusPtr)current_routing)->parse_specific_arguments(cluster);
+  }else{
+    XBT_DEBUG("<AS id=\"%s\"\trouting=\"Cluster\">", cluster->id);
+    AS.routing = A_surfxml_AS_routing_Cluster;
+    sg_platf_new_AS_begin(&AS);
+    ((AsClusterPtr)current_routing)->p_nb_links_per_node = 1;
   }
 
   if(cluster->loopback_bw!=0 || cluster->loopback_lat!=0){
-      nb_links_per_node++;
+      ((AsClusterPtr)current_routing)->p_nb_links_per_node++;
       ((AsClusterPtr)current_routing)->p_has_loopback=1;
   }
 
   if(cluster->limiter_link!=0){
-      nb_links_per_node++;
+      ((AsClusterPtr)current_routing)->p_nb_links_per_node++;
       ((AsClusterPtr)current_routing)->p_has_limiter=1;
   }
 
-  XBT_DEBUG("<AS id=\"%s\"\trouting=\"Cluster\">", cluster->id);
-  s_sg_platf_AS_cbarg_t AS = SG_PLATF_AS_INITIALIZER;
-  AS.id = cluster->id;
-  AS.routing = A_surfxml_AS_routing_Cluster;
-  sg_platf_new_AS_begin(&AS);
+
 
   current_routing->p_linkUpDownList
             = xbt_dynar_new(sizeof(s_surf_parsing_link_up_down_t),NULL);
@@ -926,13 +920,13 @@ static void routing_parse_cluster(sg_platf_cluster_cbarg_t cluster)
                 cluster->bw, cluster->lat);
 
 
-      s_surf_parsing_link_up_down_t info, info_lim, info_loop;
+      s_surf_parsing_link_up_down_t info_lim, info_loop;
       // All links are saved in a matrix;
       // every row describes a single node; every node
       // may have multiple links.
       // the first column may store a link from x to x if p_has_loopback is set
       // the second column may store a limiter link if p_has_limiter is set
-      // other columns are to store one or more link, if we are in a torus
+      // other columns are to store one or more link for the node
 
       //add a loopback link
       if(cluster->loopback_bw!=0 || cluster->loopback_lat!=0){
@@ -950,9 +944,9 @@ static void routing_parse_cluster(sg_platf_cluster_cbarg_t cluster)
         sg_platf_new_link(&link);
         info_loop.link_up =
             xbt_lib_get_or_null(link_lib, tmp_link, SURF_LINK_LEVEL);
-        info_loop.link_down = info.link_up;
+        info_loop.link_down = info_loop.link_up;
         free(tmp_link);
-        xbt_dynar_set(current_routing->p_linkUpDownList, rankId*nb_links_per_node, &info_loop);
+        xbt_dynar_set(current_routing->p_linkUpDownList, rankId*((AsClusterPtr)current_routing)->p_nb_links_per_node, &info_loop);
       }
 
       //add a limiter link (shared link to account for maximal bandwidth of the node)
@@ -971,99 +965,22 @@ static void routing_parse_cluster(sg_platf_cluster_cbarg_t cluster)
         sg_platf_new_link(&link);
         info_lim.link_up =
             xbt_lib_get_or_null(link_lib, tmp_link, SURF_LINK_LEVEL);
-        info_lim.link_down = info.link_up;
+        info_lim.link_down = info_lim.link_up;
         free(tmp_link);
         xbt_dynar_set(current_routing->p_linkUpDownList,
-            rankId*nb_links_per_node + ((AsClusterPtr)current_routing)->p_has_loopback ,
+            rankId*((AsClusterPtr)current_routing)->p_nb_links_per_node + ((AsClusterPtr)current_routing)->p_has_loopback ,
             &info_lim);
 
       }
 
 
+      //call the cluster function that adds the others links
 
-      if(xbt_dynar_length(dimensions) == 0 ) {
-        /**
-         * If torus is not specified, generate one link by node
-         */
+      ((AsClusterPtr)current_routing)->create_links_for_node(cluster, i, rankId, rankId*
+          ((AsClusterPtr)current_routing)->p_nb_links_per_node
+          + ((AsClusterPtr)current_routing)->p_has_loopback
+          + ((AsClusterPtr)current_routing)->p_has_limiter );
 
-        memset(&link, 0, sizeof(link));
-        link.id = link_id;
-        link.bandwidth = cluster->bw;
-        link.latency = cluster->lat;
-        link.state = SURF_RESOURCE_ON;
-        link.policy = cluster->sharing_policy;
-        sg_platf_new_link(&link);
-
-        if (link.policy == SURF_LINK_FULLDUPLEX) {
-          char *tmp_link = bprintf("%s_UP", link_id);
-          info.link_up =
-              xbt_lib_get_or_null(link_lib, tmp_link, SURF_LINK_LEVEL);
-          free(tmp_link);
-          tmp_link = bprintf("%s_DOWN", link_id);
-          info.link_down =
-              xbt_lib_get_or_null(link_lib, tmp_link, SURF_LINK_LEVEL);
-          free(tmp_link);
-        } else {
-          info.link_up = xbt_lib_get_or_null(link_lib, link_id, SURF_LINK_LEVEL);
-          info.link_down = info.link_up;
-        }
-        xbt_dynar_set(current_routing->p_linkUpDownList, rankId*nb_links_per_node
-            + ((AsClusterPtr)current_routing)->p_has_loopback
-            + ((AsClusterPtr)current_routing)->p_has_limiter,
-            &info);
-      }else{
-
-        unsigned int j = 0;
-        /**
-         * Create all links that exist in the torus.
-         * Each rank creates #dimensions-1 links
-         */
-        int neighbour_rank_id = 0; // The other node the link connects
-        int current_dimension = 0, // which dimension are we currently in?
-                                   // we need to iterate over all dimensions
-                                   // and create all links there
-            dim_product       = 1; // Needed to calculate the next neighbour_id
-        for (j = 0; j < xbt_dynar_length(dimensions); j++) {
-
-          memset(&link, 0, sizeof(link));
-          current_dimension = xbt_dynar_get_as(dimensions, j, int);
-          neighbour_rank_id = ( ((int) i / dim_product) % current_dimension == current_dimension-1) ? i - (current_dimension-1)*dim_product : i + dim_product;
-          link_id           = bprintf("link_from_%i_to_%i", i, neighbour_rank_id);
-          link.id           = link_id;
-          link.bandwidth    = cluster->bw;
-          link.latency      = cluster->lat;
-          link.state        = SURF_RESOURCE_ON;
-          link.policy       = cluster->sharing_policy;
-          sg_platf_new_link(&link);
-          s_surf_parsing_link_up_down_t info;
-          if (link.policy == SURF_LINK_FULLDUPLEX) {
-            char *tmp_link = bprintf("%s_UP", link_id);
-            info.link_up =
-              xbt_lib_get_or_null(link_lib, tmp_link, SURF_LINK_LEVEL);
-            free(tmp_link);
-            tmp_link = bprintf("%s_DOWN", link_id);
-            info.link_down =
-              xbt_lib_get_or_null(link_lib, tmp_link, SURF_LINK_LEVEL);
-            free(tmp_link);
-          } else {
-            info.link_up = xbt_lib_get_or_null(link_lib, link_id, SURF_LINK_LEVEL);
-            info.link_down = info.link_up;
-          }
-          /**
-           * Add the link to its appropriate position;
-           * note that position rankId*(xbt_dynar_length(dimensions)+has_loopack?+has_limiter?)
-           * holds the link "rankId->rankId"
-           */
-          xbt_dynar_set(current_routing->p_linkUpDownList, rankId*nb_links_per_node
-              + ((AsClusterPtr)current_routing)->p_has_loopback
-              + ((AsClusterPtr)current_routing)->p_has_limiter
-              + j,
-              &info);
-          dim_product   *= current_dimension;
-          xbt_free(link_id);
-
-        }
-      }
       xbt_free(link_id);
       xbt_free(host_id);
       rankId++;
