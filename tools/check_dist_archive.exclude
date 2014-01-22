@@ -43,5 +43,6 @@
 
 + tools/check_dist_archive
 + tools/check_dist_archive\.exclude
++ tools/normalize-pointers\.py
 
 + tools/spell/.*
