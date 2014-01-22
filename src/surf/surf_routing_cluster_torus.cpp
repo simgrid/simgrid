@@ -109,7 +109,7 @@ void AsClusterTorus::parse_specific_arguments(sg_platf_cluster_cbarg_t cluster){
 
 void AsClusterTorus::getRouteAndLatency(RoutingEdgePtr src, RoutingEdgePtr dst, sg_platf_route_cbarg_t route, double *lat){
 
-  XBT_INFO("torus_get_route_and_latency from '%s'[%d] to '%s'[%d]",
+  XBT_VERB("torus_get_route_and_latency from '%s'[%d] to '%s'[%d]",
                src->p_name,src->m_id,
                dst->p_name,dst->m_id);
 
