@@ -26,6 +26,7 @@
   double time1, time2, time_min=DBL_MAX;\
   int min_coll=-1, global_coll=-1;\
   int i;\
+  xbt_ex_t ex;\
   double buf_in, buf_out, max_min=DBL_MAX;\
   for (i = 0; mpi_coll_##cat##_description[i].name; i++){\
       if(!strcmp(mpi_coll_##cat##_description[i].name, "automatic"))continue;\
@@ -33,8 +34,13 @@
       smpi_mpi_barrier(comm);\
       TRACE_AUTO_COLL(cat)\
       time1 = SIMIX_get_clock();\
+      TRY{\
       ((int (*) args)\
           mpi_coll_##cat##_description[i].coll) args2 ;\
+      }\
+      CATCH(ex) {\
+        continue;\
+      }\
       time2 = SIMIX_get_clock();\
       buf_out=time2-time1;\
       smpi_mpi_reduce((void*)&buf_out,(void*)&buf_in, 1, MPI_DOUBLE, MPI_MAX, 0,comm );\

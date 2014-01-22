@@ -16,6 +16,10 @@ int smpi_coll_tuned_allgather_loosely_lr(void *sbuf, int scount,
   int inter_dst, inter_src;
 
   comm_size = smpi_comm_size(comm);
+
+  if(comm_size%4)
+    THROWF(arg_error,0, "allgather loosely lr algorithm can't be used with non multiple of NUM_CORE=4 number of processes ! ");
+
   rank = smpi_comm_rank(comm);
   MPI_Aint rextent, sextent;
   rextent = smpi_datatype_get_extent(rtype);

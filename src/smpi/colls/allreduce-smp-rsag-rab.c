@@ -29,6 +29,10 @@ int smpi_coll_tuned_allreduce_smp_rsag_rab(void *sbuf, void *rbuf, int count,
   int num_core = NUM_CORE;
 
   comm_size = smpi_comm_size(comm);
+
+  if((comm_size&(comm_size-1)))
+    THROWF(arg_error,0, "allreduce smp rsag rab algorithm can't be used with non power of two number of processes ! ");
+
   rank = smpi_comm_rank(comm);
   MPI_Aint extent;
   extent = smpi_datatype_get_extent(dtype);

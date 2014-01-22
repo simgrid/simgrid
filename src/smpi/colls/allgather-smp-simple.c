@@ -10,6 +10,10 @@ int smpi_coll_tuned_allgather_smp_simple(void *send_buf, int scount,
 {
   int src, dst, comm_size, rank;
   comm_size = smpi_comm_size(comm);
+
+  if(comm_size%NUM_CORE)
+     THROWF(arg_error,0, "allgather SMP simple algorithm can't be used with non multiple of NUM_CORE=%d number of processes ! ", NUM_CORE);
+
   rank = smpi_comm_rank(comm);
   MPI_Aint rextent, sextent;
   rextent = smpi_datatype_get_extent(rtype);

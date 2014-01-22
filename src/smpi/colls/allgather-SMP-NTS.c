@@ -23,6 +23,9 @@ int smpi_coll_tuned_allgather_SMP_NTS(void *sbuf, int scount,
   int inter_comm_size = (comm_size + NUM_CORE - 1) / NUM_CORE;
   int num_core_in_current_smp = NUM_CORE;
 
+  if(comm_size%NUM_CORE)
+    THROWF(arg_error,0, "allgather SMP NTS algorithm can't be used with non multiple of NUM_CORE=%d number of processes ! ", NUM_CORE);
+
   /* for too small number of processes, use default implementation */
   if (comm_size <= NUM_CORE) {
     XBT_WARN("MPI_allgather_SMP_NTS use default MPI_allgather.");  	  

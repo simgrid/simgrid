@@ -22,6 +22,9 @@ int smpi_coll_tuned_bcast_SMP_linear(void *buf, int count,
   rank = smpi_comm_rank(comm);
   size = smpi_comm_size(comm);
 
+  if(size%NUM_CORE)
+    THROWF(arg_error,0, "bcast SMP linear can't be used with non multiple of NUM_CORE=%d number of processes ! ",NUM_CORE);
+
   int segment = bcast_SMP_linear_segment_byte / extent;
   int pipe_length = count / segment;
   int remainder = count % segment;

@@ -16,6 +16,9 @@ int smpi_coll_tuned_bcast_SMP_binomial(void *buf, int count,
   size = smpi_comm_size(comm);
   rank = smpi_comm_rank(comm);
 
+  if(size%NUM_CORE)
+    THROWF(arg_error,0, "bcast SMP binomial can't be used with non multiple of NUM_CORE=%d number of processes ! ",NUM_CORE);
+
   int to_intra, to_inter;
   int from_intra, from_inter;
   int inter_rank = rank / NUM_CORE;

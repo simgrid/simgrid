@@ -4,6 +4,7 @@
 #include <math.h>
 #include "smpi/mpi.h"
 #include "smpi/private.h"
+#include "xbt/ex.h"
 #include "xbt.h"
 
 #define COLL_DESCRIPTION(cat, ret, args, name) \
