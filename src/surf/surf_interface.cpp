@@ -663,21 +663,18 @@ Resource::Resource()
 {}
 
 Resource::Resource(surf_model_t model, const char *name, xbt_dict_t props)
-  : m_stateCurrent(SURF_RESOURCE_ON)
-  , p_name(xbt_strdup(name)), p_properties(props), p_model(model)
-  , m_running(true)
+  : p_name(xbt_strdup(name)), p_properties(props), p_model(model)
+  , m_running(true), m_stateCurrent(SURF_RESOURCE_ON)
 {}
 
 Resource::Resource(surf_model_t model, const char *name, xbt_dict_t props, lmm_constraint_t constraint)
-  : m_stateCurrent(SURF_RESOURCE_ON)
-  , p_name(xbt_strdup(name)), p_properties(props), p_model(model)
-  , m_running(true), p_constraint(constraint)
+  : p_name(xbt_strdup(name)), p_properties(props), p_model(model)
+  , m_running(true), m_stateCurrent(SURF_RESOURCE_ON), p_constraint(constraint)
 {}
 
 Resource::Resource(surf_model_t model, const char *name, xbt_dict_t props, e_surf_resource_state_t stateInit)
-  : m_stateCurrent(stateInit)
-  , p_name(xbt_strdup(name)), p_properties(props), p_model(model)
-  , m_running(true)
+  : p_name(xbt_strdup(name)), p_properties(props), p_model(model)
+  , m_running(true), m_stateCurrent(stateInit)
 {}
 
 Resource::~Resource() {
