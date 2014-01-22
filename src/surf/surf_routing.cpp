@@ -839,7 +839,6 @@ static void routing_parse_cluster(sg_platf_cluster_cbarg_t cluster)
     XBT_DEBUG("<AS id=\"%s\"\trouting=\"Cluster\">", cluster->id);
     AS.routing = A_surfxml_AS_routing_Cluster;
     sg_platf_new_AS_begin(&AS);
-    ((AsClusterPtr)current_routing)->p_nb_links_per_node = 1;
   }
 
   if(cluster->loopback_bw!=0 || cluster->loopback_lat!=0){

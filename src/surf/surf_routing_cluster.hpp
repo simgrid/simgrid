@@ -36,7 +36,6 @@ public:
   NetworkLinkPtr p_backbone;
   void *p_loopback;
   RoutingEdgePtr p_router;
-  xbt_dynar_t p_dimensions;
   int p_has_limiter;
   int p_has_loopback;
   int p_nb_links_per_node;

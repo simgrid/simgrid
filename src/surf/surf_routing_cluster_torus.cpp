@@ -130,8 +130,8 @@ void AsClusterTorus::getRouteAndLatency(RoutingEdgePtr src, RoutingEdgePtr dst, 
       * TODO Change to dynamic assignment
       */
      unsigned int j, cur_dim, dim_product   = 1;
-     long current_node    = src->m_id;
-     long unsigned next_node       = 0;
+     int current_node    = src->m_id;
+     int unsigned next_node       = 0;
      /**
       * Arrays that hold the coordinates of the current node and
       * the target; comparing the values at the i-th position of
@@ -148,9 +148,9 @@ void AsClusterTorus::getRouteAndLatency(RoutingEdgePtr src, RoutingEdgePtr dst, 
       * which can only be the case if src->m_id == dst->m_id -- see above
       * for this special case)
       */
-     long nodeOffset = (xbt_dynar_length(p_dimensions)+1)*src->m_id;
+     int nodeOffset = (xbt_dynar_length(p_dimensions)+1)*src->m_id;
 
-     long linkOffset = nodeOffset;
+     int linkOffset = nodeOffset;
      bool use_lnk_up          = false; // Is this link of the form "cur -> next" or "next -> cur"?
                                        // false means: next -> cur
      while (current_node != dst->m_id) {
