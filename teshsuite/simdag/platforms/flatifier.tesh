@@ -1018,3 +1018,787 @@ $ ${bindir:=.}/flatifier$EXEEXT ${srcdir:=.}/examples/platforms/bypassASroute.xm
 >   </route>
 > </AS>
 > </platform>
+
+
+$ ${bindir:=.}/flatifier$EXEEXT ${srcdir:=.}/examples/platforms/torus_cluster.xml "--log=root.fmt:[%10.6r]%e[%i:%P@%h]%e%m%n"
+> [  0.000000] [0:@] surf_workstation_model_init_ptask_L07
+> <?xml version='1.0'?>
+> <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">
+> <platform version="3">
+> <AS id="AS0" routing="Full">
+>   <host id="bob0.hamburger.edu" power="1000000000"/>
+>   <host id="bob1.hamburger.edu" power="1000000000"/>
+>   <host id="bob10.hamburger.edu" power="1000000000"/>
+>   <host id="bob11.hamburger.edu" power="1000000000"/>
+>   <host id="bob2.hamburger.edu" power="1000000000"/>
+>   <host id="bob3.hamburger.edu" power="1000000000"/>
+>   <host id="bob4.hamburger.edu" power="1000000000"/>
+>   <host id="bob5.hamburger.edu" power="1000000000"/>
+>   <host id="bob6.hamburger.edu" power="1000000000"/>
+>   <host id="bob7.hamburger.edu" power="1000000000"/>
+>   <host id="bob8.hamburger.edu" power="1000000000"/>
+>   <host id="bob9.hamburger.edu" power="1000000000"/>
+>   <router id="bobbob_cluster_router.hamburger.edu"/>
+>   <link id="__loopback__" bandwidth="498000000" latency="0.000015000" sharing_policy="FATPIPE"/>
+>   <link id="bob_cluster_link_0_loopback" bandwidth="100000000" latency="0.000000000" sharing_policy="FATPIPE"/>
+>   <link id="bob_cluster_link_10_loopback" bandwidth="100000000" latency="0.000000000" sharing_policy="FATPIPE"/>
+>   <link id="bob_cluster_link_11_loopback" bandwidth="100000000" latency="0.000000000" sharing_policy="FATPIPE"/>
+>   <link id="bob_cluster_link_1_loopback" bandwidth="100000000" latency="0.000000000" sharing_policy="FATPIPE"/>
+>   <link id="bob_cluster_link_2_loopback" bandwidth="100000000" latency="0.000000000" sharing_policy="FATPIPE"/>
+>   <link id="bob_cluster_link_3_loopback" bandwidth="100000000" latency="0.000000000" sharing_policy="FATPIPE"/>
+>   <link id="bob_cluster_link_4_loopback" bandwidth="100000000" latency="0.000000000" sharing_policy="FATPIPE"/>
+>   <link id="bob_cluster_link_5_loopback" bandwidth="100000000" latency="0.000000000" sharing_policy="FATPIPE"/>
+>   <link id="bob_cluster_link_6_loopback" bandwidth="100000000" latency="0.000000000" sharing_policy="FATPIPE"/>
+>   <link id="bob_cluster_link_7_loopback" bandwidth="100000000" latency="0.000000000" sharing_policy="FATPIPE"/>
+>   <link id="bob_cluster_link_8_loopback" bandwidth="100000000" latency="0.000000000" sharing_policy="FATPIPE"/>
+>   <link id="bob_cluster_link_9_loopback" bandwidth="100000000" latency="0.000000000" sharing_policy="FATPIPE"/>
+>   <link id="bob_cluster_link_from_0_to_1_DOWN" bandwidth="125000000" latency="0.000050000"/>
+>   <link id="bob_cluster_link_from_0_to_1_UP" bandwidth="125000000" latency="0.000050000"/>
+>   <link id="bob_cluster_link_from_0_to_3_DOWN" bandwidth="125000000" latency="0.000050000"/>
+>   <link id="bob_cluster_link_from_0_to_3_UP" bandwidth="125000000" latency="0.000050000"/>
+>   <link id="bob_cluster_link_from_0_to_6_DOWN" bandwidth="125000000" latency="0.000050000"/>
+>   <link id="bob_cluster_link_from_0_to_6_UP" bandwidth="125000000" latency="0.000050000"/>
+>   <link id="bob_cluster_link_from_10_to_11_DOWN" bandwidth="125000000" latency="0.000050000"/>
+>   <link id="bob_cluster_link_from_10_to_11_UP" bandwidth="125000000" latency="0.000050000"/>
+>   <link id="bob_cluster_link_from_10_to_4_DOWN" bandwidth="125000000" latency="0.000050000"/>
+>   <link id="bob_cluster_link_from_10_to_4_UP" bandwidth="125000000" latency="0.000050000"/>
+>   <link id="bob_cluster_link_from_10_to_7_DOWN" bandwidth="125000000" latency="0.000050000"/>
+>   <link id="bob_cluster_link_from_10_to_7_UP" bandwidth="125000000" latency="0.000050000"/>
+>   <link id="bob_cluster_link_from_11_to_5_DOWN" bandwidth="125000000" latency="0.000050000"/>
+>   <link id="bob_cluster_link_from_11_to_5_UP" bandwidth="125000000" latency="0.000050000"/>
+>   <link id="bob_cluster_link_from_11_to_8_DOWN" bandwidth="125000000" latency="0.000050000"/>
+>   <link id="bob_cluster_link_from_11_to_8_UP" bandwidth="125000000" latency="0.000050000"/>
+>   <link id="bob_cluster_link_from_11_to_9_DOWN" bandwidth="125000000" latency="0.000050000"/>
+>   <link id="bob_cluster_link_from_11_to_9_UP" bandwidth="125000000" latency="0.000050000"/>
+>   <link id="bob_cluster_link_from_1_to_2_DOWN" bandwidth="125000000" latency="0.000050000"/>
+>   <link id="bob_cluster_link_from_1_to_2_UP" bandwidth="125000000" latency="0.000050000"/>
+>   <link id="bob_cluster_link_from_1_to_4_DOWN" bandwidth="125000000" latency="0.000050000"/>
+>   <link id="bob_cluster_link_from_1_to_4_UP" bandwidth="125000000" latency="0.000050000"/>
+>   <link id="bob_cluster_link_from_1_to_7_DOWN" bandwidth="125000000" latency="0.000050000"/>
+>   <link id="bob_cluster_link_from_1_to_7_UP" bandwidth="125000000" latency="0.000050000"/>
+>   <link id="bob_cluster_link_from_2_to_0_DOWN" bandwidth="125000000" latency="0.000050000"/>
+>   <link id="bob_cluster_link_from_2_to_0_UP" bandwidth="125000000" latency="0.000050000"/>
+>   <link id="bob_cluster_link_from_2_to_5_DOWN" bandwidth="125000000" latency="0.000050000"/>
+>   <link id="bob_cluster_link_from_2_to_5_UP" bandwidth="125000000" latency="0.000050000"/>
+>   <link id="bob_cluster_link_from_2_to_8_DOWN" bandwidth="125000000" latency="0.000050000"/>
+>   <link id="bob_cluster_link_from_2_to_8_UP" bandwidth="125000000" latency="0.000050000"/>
+>   <link id="bob_cluster_link_from_3_to_0_DOWN" bandwidth="125000000" latency="0.000050000"/>
+>   <link id="bob_cluster_link_from_3_to_0_UP" bandwidth="125000000" latency="0.000050000"/>
+>   <link id="bob_cluster_link_from_3_to_4_DOWN" bandwidth="125000000" latency="0.000050000"/>
+>   <link id="bob_cluster_link_from_3_to_4_UP" bandwidth="125000000" latency="0.000050000"/>
+>   <link id="bob_cluster_link_from_3_to_9_DOWN" bandwidth="125000000" latency="0.000050000"/>
+>   <link id="bob_cluster_link_from_3_to_9_UP" bandwidth="125000000" latency="0.000050000"/>
+>   <link id="bob_cluster_link_from_4_to_10_DOWN" bandwidth="125000000" latency="0.000050000"/>
+>   <link id="bob_cluster_link_from_4_to_10_UP" bandwidth="125000000" latency="0.000050000"/>
+>   <link id="bob_cluster_link_from_4_to_1_DOWN" bandwidth="125000000" latency="0.000050000"/>
+>   <link id="bob_cluster_link_from_4_to_1_UP" bandwidth="125000000" latency="0.000050000"/>
+>   <link id="bob_cluster_link_from_4_to_5_DOWN" bandwidth="125000000" latency="0.000050000"/>
+>   <link id="bob_cluster_link_from_4_to_5_UP" bandwidth="125000000" latency="0.000050000"/>
+>   <link id="bob_cluster_link_from_5_to_11_DOWN" bandwidth="125000000" latency="0.000050000"/>
+>   <link id="bob_cluster_link_from_5_to_11_UP" bandwidth="125000000" latency="0.000050000"/>
+>   <link id="bob_cluster_link_from_5_to_2_DOWN" bandwidth="125000000" latency="0.000050000"/>
+>   <link id="bob_cluster_link_from_5_to_2_UP" bandwidth="125000000" latency="0.000050000"/>
+>   <link id="bob_cluster_link_from_5_to_3_DOWN" bandwidth="125000000" latency="0.000050000"/>
+>   <link id="bob_cluster_link_from_5_to_3_UP" bandwidth="125000000" latency="0.000050000"/>
+>   <link id="bob_cluster_link_from_6_to_0_DOWN" bandwidth="125000000" latency="0.000050000"/>
+>   <link id="bob_cluster_link_from_6_to_0_UP" bandwidth="125000000" latency="0.000050000"/>
+>   <link id="bob_cluster_link_from_6_to_7_DOWN" bandwidth="125000000" latency="0.000050000"/>
+>   <link id="bob_cluster_link_from_6_to_7_UP" bandwidth="125000000" latency="0.000050000"/>
+>   <link id="bob_cluster_link_from_6_to_9_DOWN" bandwidth="125000000" latency="0.000050000"/>
+>   <link id="bob_cluster_link_from_6_to_9_UP" bandwidth="125000000" latency="0.000050000"/>
+>   <link id="bob_cluster_link_from_7_to_10_DOWN" bandwidth="125000000" latency="0.000050000"/>
+>   <link id="bob_cluster_link_from_7_to_10_UP" bandwidth="125000000" latency="0.000050000"/>
+>   <link id="bob_cluster_link_from_7_to_1_DOWN" bandwidth="125000000" latency="0.000050000"/>
+>   <link id="bob_cluster_link_from_7_to_1_UP" bandwidth="125000000" latency="0.000050000"/>
+>   <link id="bob_cluster_link_from_7_to_8_DOWN" bandwidth="125000000" latency="0.000050000"/>
+>   <link id="bob_cluster_link_from_7_to_8_UP" bandwidth="125000000" latency="0.000050000"/>
+>   <link id="bob_cluster_link_from_8_to_11_DOWN" bandwidth="125000000" latency="0.000050000"/>
+>   <link id="bob_cluster_link_from_8_to_11_UP" bandwidth="125000000" latency="0.000050000"/>
+>   <link id="bob_cluster_link_from_8_to_2_DOWN" bandwidth="125000000" latency="0.000050000"/>
+>   <link id="bob_cluster_link_from_8_to_2_UP" bandwidth="125000000" latency="0.000050000"/>
+>   <link id="bob_cluster_link_from_8_to_6_DOWN" bandwidth="125000000" latency="0.000050000"/>
+>   <link id="bob_cluster_link_from_8_to_6_UP" bandwidth="125000000" latency="0.000050000"/>
+>   <link id="bob_cluster_link_from_9_to_10_DOWN" bandwidth="125000000" latency="0.000050000"/>
+>   <link id="bob_cluster_link_from_9_to_10_UP" bandwidth="125000000" latency="0.000050000"/>
+>   <link id="bob_cluster_link_from_9_to_3_DOWN" bandwidth="125000000" latency="0.000050000"/>
+>   <link id="bob_cluster_link_from_9_to_3_UP" bandwidth="125000000" latency="0.000050000"/>
+>   <link id="bob_cluster_link_from_9_to_6_DOWN" bandwidth="125000000" latency="0.000050000"/>
+>   <link id="bob_cluster_link_from_9_to_6_UP" bandwidth="125000000" latency="0.000050000"/>
+>   <route src="bob1.hamburger.edu" dst="bob1.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bob1.hamburger.edu'[1] to 'bob1.hamburger.edu'[1]
+>   <link_ctn id="bob_cluster_link_1_loopback"/>
+>   </route>
+>   <route src="bob1.hamburger.edu" dst="bob3.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bob1.hamburger.edu'[1] to 'bob3.hamburger.edu'[3]
+>   <link_ctn id="bob_cluster_link_from_0_to_1_DOWN"/><link_ctn id="bob_cluster_link_from_0_to_3_UP"/>
+>   </route>
+>   <route src="bob1.hamburger.edu" dst="bob5.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bob1.hamburger.edu'[1] to 'bob5.hamburger.edu'[5]
+>   <link_ctn id="bob_cluster_link_from_1_to_2_UP"/><link_ctn id="bob_cluster_link_from_2_to_5_UP"/>
+>   </route>
+>   <route src="bob1.hamburger.edu" dst="bob7.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bob1.hamburger.edu'[1] to 'bob7.hamburger.edu'[7]
+>   <link_ctn id="bob_cluster_link_from_1_to_7_UP"/>
+>   </route>
+>   <route src="bob1.hamburger.edu" dst="bob9.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bob1.hamburger.edu'[1] to 'bob9.hamburger.edu'[9]
+>   <link_ctn id="bob_cluster_link_from_0_to_1_DOWN"/><link_ctn id="bob_cluster_link_from_0_to_3_UP"/><link_ctn id="bob_cluster_link_from_3_to_9_UP"/>
+>   </route>
+>   <route src="bob1.hamburger.edu" dst="bob11.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bob1.hamburger.edu'[1] to 'bob11.hamburger.edu'[11]
+>   <link_ctn id="bob_cluster_link_from_1_to_2_UP"/><link_ctn id="bob_cluster_link_from_2_to_5_UP"/><link_ctn id="bob_cluster_link_from_5_to_11_UP"/>
+>   </route>
+>   <route src="bob1.hamburger.edu" dst="bob0.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bob1.hamburger.edu'[1] to 'bob0.hamburger.edu'[0]
+>   <link_ctn id="bob_cluster_link_from_0_to_1_DOWN"/>
+>   </route>
+>   <route src="bob1.hamburger.edu" dst="bob2.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bob1.hamburger.edu'[1] to 'bob2.hamburger.edu'[2]
+>   <link_ctn id="bob_cluster_link_from_1_to_2_UP"/>
+>   </route>
+>   <route src="bob1.hamburger.edu" dst="bob4.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bob1.hamburger.edu'[1] to 'bob4.hamburger.edu'[4]
+>   <link_ctn id="bob_cluster_link_from_1_to_4_UP"/>
+>   </route>
+>   <route src="bob1.hamburger.edu" dst="bob6.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bob1.hamburger.edu'[1] to 'bob6.hamburger.edu'[6]
+>   <link_ctn id="bob_cluster_link_from_0_to_1_DOWN"/><link_ctn id="bob_cluster_link_from_0_to_6_UP"/>
+>   </route>
+>   <route src="bob1.hamburger.edu" dst="bob8.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bob1.hamburger.edu'[1] to 'bob8.hamburger.edu'[8]
+>   <link_ctn id="bob_cluster_link_from_1_to_2_UP"/><link_ctn id="bob_cluster_link_from_2_to_8_UP"/>
+>   </route>
+>   <route src="bob1.hamburger.edu" dst="bob10.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bob1.hamburger.edu'[1] to 'bob10.hamburger.edu'[10]
+>   <link_ctn id="bob_cluster_link_from_1_to_4_UP"/><link_ctn id="bob_cluster_link_from_4_to_10_UP"/>
+>   </route>
+>   <route src="bob1.hamburger.edu" dst="bobbob_cluster_router.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bob1.hamburger.edu'[1] to 'bobbob_cluster_router.hamburger.edu'[12]
+>   
+>   </route>
+>   <route src="bob3.hamburger.edu" dst="bob1.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bob3.hamburger.edu'[3] to 'bob1.hamburger.edu'[1]
+>   <link_ctn id="bob_cluster_link_from_3_to_4_UP"/><link_ctn id="bob_cluster_link_from_1_to_4_DOWN"/>
+>   </route>
+>   <route src="bob3.hamburger.edu" dst="bob3.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bob3.hamburger.edu'[3] to 'bob3.hamburger.edu'[3]
+>   <link_ctn id="bob_cluster_link_3_loopback"/>
+>   </route>
+>   <route src="bob3.hamburger.edu" dst="bob5.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bob3.hamburger.edu'[3] to 'bob5.hamburger.edu'[5]
+>   <link_ctn id="bob_cluster_link_from_5_to_3_DOWN"/>
+>   </route>
+>   <route src="bob3.hamburger.edu" dst="bob7.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bob3.hamburger.edu'[3] to 'bob7.hamburger.edu'[7]
+>   <link_ctn id="bob_cluster_link_from_3_to_4_UP"/><link_ctn id="bob_cluster_link_from_1_to_4_DOWN"/><link_ctn id="bob_cluster_link_from_1_to_7_UP"/>
+>   </route>
+>   <route src="bob3.hamburger.edu" dst="bob9.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bob3.hamburger.edu'[3] to 'bob9.hamburger.edu'[9]
+>   <link_ctn id="bob_cluster_link_from_3_to_9_UP"/>
+>   </route>
+>   <route src="bob3.hamburger.edu" dst="bob11.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bob3.hamburger.edu'[3] to 'bob11.hamburger.edu'[11]
+>   <link_ctn id="bob_cluster_link_from_5_to_3_DOWN"/><link_ctn id="bob_cluster_link_from_5_to_11_UP"/>
+>   </route>
+>   <route src="bob3.hamburger.edu" dst="bob0.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bob3.hamburger.edu'[3] to 'bob0.hamburger.edu'[0]
+>   <link_ctn id="bob_cluster_link_from_0_to_3_DOWN"/>
+>   </route>
+>   <route src="bob3.hamburger.edu" dst="bob2.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bob3.hamburger.edu'[3] to 'bob2.hamburger.edu'[2]
+>   <link_ctn id="bob_cluster_link_from_5_to_3_DOWN"/><link_ctn id="bob_cluster_link_from_2_to_5_DOWN"/>
+>   </route>
+>   <route src="bob3.hamburger.edu" dst="bob4.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bob3.hamburger.edu'[3] to 'bob4.hamburger.edu'[4]
+>   <link_ctn id="bob_cluster_link_from_3_to_4_UP"/>
+>   </route>
+>   <route src="bob3.hamburger.edu" dst="bob6.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bob3.hamburger.edu'[3] to 'bob6.hamburger.edu'[6]
+>   <link_ctn id="bob_cluster_link_from_0_to_3_DOWN"/><link_ctn id="bob_cluster_link_from_0_to_6_UP"/>
+>   </route>
+>   <route src="bob3.hamburger.edu" dst="bob8.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bob3.hamburger.edu'[3] to 'bob8.hamburger.edu'[8]
+>   <link_ctn id="bob_cluster_link_from_5_to_3_DOWN"/><link_ctn id="bob_cluster_link_from_2_to_5_DOWN"/><link_ctn id="bob_cluster_link_from_2_to_8_UP"/>
+>   </route>
+>   <route src="bob3.hamburger.edu" dst="bob10.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bob3.hamburger.edu'[3] to 'bob10.hamburger.edu'[10]
+>   <link_ctn id="bob_cluster_link_from_3_to_4_UP"/><link_ctn id="bob_cluster_link_from_4_to_10_UP"/>
+>   </route>
+>   <route src="bob3.hamburger.edu" dst="bobbob_cluster_router.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bob3.hamburger.edu'[3] to 'bobbob_cluster_router.hamburger.edu'[12]
+>   
+>   </route>
+>   <route src="bob5.hamburger.edu" dst="bob1.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bob5.hamburger.edu'[5] to 'bob1.hamburger.edu'[1]
+>   <link_ctn id="bob_cluster_link_from_4_to_5_DOWN"/><link_ctn id="bob_cluster_link_from_1_to_4_DOWN"/>
+>   </route>
+>   <route src="bob5.hamburger.edu" dst="bob3.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bob5.hamburger.edu'[5] to 'bob3.hamburger.edu'[3]
+>   <link_ctn id="bob_cluster_link_from_5_to_3_UP"/>
+>   </route>
+>   <route src="bob5.hamburger.edu" dst="bob5.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bob5.hamburger.edu'[5] to 'bob5.hamburger.edu'[5]
+>   <link_ctn id="bob_cluster_link_5_loopback"/>
+>   </route>
+>   <route src="bob5.hamburger.edu" dst="bob7.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bob5.hamburger.edu'[5] to 'bob7.hamburger.edu'[7]
+>   <link_ctn id="bob_cluster_link_from_4_to_5_DOWN"/><link_ctn id="bob_cluster_link_from_1_to_4_DOWN"/><link_ctn id="bob_cluster_link_from_1_to_7_UP"/>
+>   </route>
+>   <route src="bob5.hamburger.edu" dst="bob9.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bob5.hamburger.edu'[5] to 'bob9.hamburger.edu'[9]
+>   <link_ctn id="bob_cluster_link_from_5_to_3_UP"/><link_ctn id="bob_cluster_link_from_3_to_9_UP"/>
+>   </route>
+>   <route src="bob5.hamburger.edu" dst="bob11.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bob5.hamburger.edu'[5] to 'bob11.hamburger.edu'[11]
+>   <link_ctn id="bob_cluster_link_from_5_to_11_UP"/>
+>   </route>
+>   <route src="bob5.hamburger.edu" dst="bob0.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bob5.hamburger.edu'[5] to 'bob0.hamburger.edu'[0]
+>   <link_ctn id="bob_cluster_link_from_5_to_3_UP"/><link_ctn id="bob_cluster_link_from_0_to_3_DOWN"/>
+>   </route>
+>   <route src="bob5.hamburger.edu" dst="bob2.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bob5.hamburger.edu'[5] to 'bob2.hamburger.edu'[2]
+>   <link_ctn id="bob_cluster_link_from_2_to_5_DOWN"/>
+>   </route>
+>   <route src="bob5.hamburger.edu" dst="bob4.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bob5.hamburger.edu'[5] to 'bob4.hamburger.edu'[4]
+>   <link_ctn id="bob_cluster_link_from_4_to_5_DOWN"/>
+>   </route>
+>   <route src="bob5.hamburger.edu" dst="bob6.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bob5.hamburger.edu'[5] to 'bob6.hamburger.edu'[6]
+>   <link_ctn id="bob_cluster_link_from_5_to_3_UP"/><link_ctn id="bob_cluster_link_from_0_to_3_DOWN"/><link_ctn id="bob_cluster_link_from_0_to_6_UP"/>
+>   </route>
+>   <route src="bob5.hamburger.edu" dst="bob8.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bob5.hamburger.edu'[5] to 'bob8.hamburger.edu'[8]
+>   <link_ctn id="bob_cluster_link_from_2_to_5_DOWN"/><link_ctn id="bob_cluster_link_from_2_to_8_UP"/>
+>   </route>
+>   <route src="bob5.hamburger.edu" dst="bob10.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bob5.hamburger.edu'[5] to 'bob10.hamburger.edu'[10]
+>   <link_ctn id="bob_cluster_link_from_4_to_5_DOWN"/><link_ctn id="bob_cluster_link_from_4_to_10_UP"/>
+>   </route>
+>   <route src="bob5.hamburger.edu" dst="bobbob_cluster_router.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bob5.hamburger.edu'[5] to 'bobbob_cluster_router.hamburger.edu'[12]
+>   
+>   </route>
+>   <route src="bob7.hamburger.edu" dst="bob1.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bob7.hamburger.edu'[7] to 'bob1.hamburger.edu'[1]
+>   <link_ctn id="bob_cluster_link_from_1_to_7_DOWN"/>
+>   </route>
+>   <route src="bob7.hamburger.edu" dst="bob3.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bob7.hamburger.edu'[7] to 'bob3.hamburger.edu'[3]
+>   <link_ctn id="bob_cluster_link_from_6_to_7_DOWN"/><link_ctn id="bob_cluster_link_from_6_to_9_UP"/><link_ctn id="bob_cluster_link_from_3_to_9_DOWN"/>
+>   </route>
+>   <route src="bob7.hamburger.edu" dst="bob5.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bob7.hamburger.edu'[7] to 'bob5.hamburger.edu'[5]
+>   <link_ctn id="bob_cluster_link_from_7_to_8_UP"/><link_ctn id="bob_cluster_link_from_8_to_11_UP"/><link_ctn id="bob_cluster_link_from_5_to_11_DOWN"/>
+>   </route>
+>   <route src="bob7.hamburger.edu" dst="bob7.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bob7.hamburger.edu'[7] to 'bob7.hamburger.edu'[7]
+>   <link_ctn id="bob_cluster_link_7_loopback"/>
+>   </route>
+>   <route src="bob7.hamburger.edu" dst="bob9.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bob7.hamburger.edu'[7] to 'bob9.hamburger.edu'[9]
+>   <link_ctn id="bob_cluster_link_from_6_to_7_DOWN"/><link_ctn id="bob_cluster_link_from_6_to_9_UP"/>
+>   </route>
+>   <route src="bob7.hamburger.edu" dst="bob11.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bob7.hamburger.edu'[7] to 'bob11.hamburger.edu'[11]
+>   <link_ctn id="bob_cluster_link_from_7_to_8_UP"/><link_ctn id="bob_cluster_link_from_8_to_11_UP"/>
+>   </route>
+>   <route src="bob7.hamburger.edu" dst="bob0.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bob7.hamburger.edu'[7] to 'bob0.hamburger.edu'[0]
+>   <link_ctn id="bob_cluster_link_from_6_to_7_DOWN"/><link_ctn id="bob_cluster_link_from_0_to_6_DOWN"/>
+>   </route>
+>   <route src="bob7.hamburger.edu" dst="bob2.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bob7.hamburger.edu'[7] to 'bob2.hamburger.edu'[2]
+>   <link_ctn id="bob_cluster_link_from_7_to_8_UP"/><link_ctn id="bob_cluster_link_from_2_to_8_DOWN"/>
+>   </route>
+>   <route src="bob7.hamburger.edu" dst="bob4.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bob7.hamburger.edu'[7] to 'bob4.hamburger.edu'[4]
+>   <link_ctn id="bob_cluster_link_from_7_to_10_UP"/><link_ctn id="bob_cluster_link_from_4_to_10_DOWN"/>
+>   </route>
+>   <route src="bob7.hamburger.edu" dst="bob6.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bob7.hamburger.edu'[7] to 'bob6.hamburger.edu'[6]
+>   <link_ctn id="bob_cluster_link_from_6_to_7_DOWN"/>
+>   </route>
+>   <route src="bob7.hamburger.edu" dst="bob8.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bob7.hamburger.edu'[7] to 'bob8.hamburger.edu'[8]
+>   <link_ctn id="bob_cluster_link_from_7_to_8_UP"/>
+>   </route>
+>   <route src="bob7.hamburger.edu" dst="bob10.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bob7.hamburger.edu'[7] to 'bob10.hamburger.edu'[10]
+>   <link_ctn id="bob_cluster_link_from_7_to_10_UP"/>
+>   </route>
+>   <route src="bob7.hamburger.edu" dst="bobbob_cluster_router.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bob7.hamburger.edu'[7] to 'bobbob_cluster_router.hamburger.edu'[12]
+>   
+>   </route>
+>   <route src="bob9.hamburger.edu" dst="bob1.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bob9.hamburger.edu'[9] to 'bob1.hamburger.edu'[1]
+>   <link_ctn id="bob_cluster_link_from_9_to_10_UP"/><link_ctn id="bob_cluster_link_from_7_to_10_DOWN"/><link_ctn id="bob_cluster_link_from_1_to_7_DOWN"/>
+>   </route>
+>   <route src="bob9.hamburger.edu" dst="bob3.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bob9.hamburger.edu'[9] to 'bob3.hamburger.edu'[3]
+>   <link_ctn id="bob_cluster_link_from_3_to_9_DOWN"/>
+>   </route>
+>   <route src="bob9.hamburger.edu" dst="bob5.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bob9.hamburger.edu'[9] to 'bob5.hamburger.edu'[5]
+>   <link_ctn id="bob_cluster_link_from_11_to_9_DOWN"/><link_ctn id="bob_cluster_link_from_5_to_11_DOWN"/>
+>   </route>
+>   <route src="bob9.hamburger.edu" dst="bob7.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bob9.hamburger.edu'[9] to 'bob7.hamburger.edu'[7]
+>   <link_ctn id="bob_cluster_link_from_9_to_10_UP"/><link_ctn id="bob_cluster_link_from_7_to_10_DOWN"/>
+>   </route>
+>   <route src="bob9.hamburger.edu" dst="bob9.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bob9.hamburger.edu'[9] to 'bob9.hamburger.edu'[9]
+>   <link_ctn id="bob_cluster_link_9_loopback"/>
+>   </route>
+>   <route src="bob9.hamburger.edu" dst="bob11.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bob9.hamburger.edu'[9] to 'bob11.hamburger.edu'[11]
+>   <link_ctn id="bob_cluster_link_from_11_to_9_DOWN"/>
+>   </route>
+>   <route src="bob9.hamburger.edu" dst="bob0.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bob9.hamburger.edu'[9] to 'bob0.hamburger.edu'[0]
+>   <link_ctn id="bob_cluster_link_from_6_to_9_DOWN"/><link_ctn id="bob_cluster_link_from_0_to_6_DOWN"/>
+>   </route>
+>   <route src="bob9.hamburger.edu" dst="bob2.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bob9.hamburger.edu'[9] to 'bob2.hamburger.edu'[2]
+>   <link_ctn id="bob_cluster_link_from_11_to_9_DOWN"/><link_ctn id="bob_cluster_link_from_8_to_11_DOWN"/><link_ctn id="bob_cluster_link_from_2_to_8_DOWN"/>
+>   </route>
+>   <route src="bob9.hamburger.edu" dst="bob4.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bob9.hamburger.edu'[9] to 'bob4.hamburger.edu'[4]
+>   <link_ctn id="bob_cluster_link_from_9_to_10_UP"/><link_ctn id="bob_cluster_link_from_4_to_10_DOWN"/>
+>   </route>
+>   <route src="bob9.hamburger.edu" dst="bob6.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bob9.hamburger.edu'[9] to 'bob6.hamburger.edu'[6]
+>   <link_ctn id="bob_cluster_link_from_6_to_9_DOWN"/>
+>   </route>
+>   <route src="bob9.hamburger.edu" dst="bob8.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bob9.hamburger.edu'[9] to 'bob8.hamburger.edu'[8]
+>   <link_ctn id="bob_cluster_link_from_11_to_9_DOWN"/><link_ctn id="bob_cluster_link_from_8_to_11_DOWN"/>
+>   </route>
+>   <route src="bob9.hamburger.edu" dst="bob10.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bob9.hamburger.edu'[9] to 'bob10.hamburger.edu'[10]
+>   <link_ctn id="bob_cluster_link_from_9_to_10_UP"/>
+>   </route>
+>   <route src="bob9.hamburger.edu" dst="bobbob_cluster_router.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bob9.hamburger.edu'[9] to 'bobbob_cluster_router.hamburger.edu'[12]
+>   
+>   </route>
+>   <route src="bob11.hamburger.edu" dst="bob1.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bob11.hamburger.edu'[11] to 'bob1.hamburger.edu'[1]
+>   <link_ctn id="bob_cluster_link_from_10_to_11_DOWN"/><link_ctn id="bob_cluster_link_from_7_to_10_DOWN"/><link_ctn id="bob_cluster_link_from_1_to_7_DOWN"/>
+>   </route>
+>   <route src="bob11.hamburger.edu" dst="bob3.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bob11.hamburger.edu'[11] to 'bob3.hamburger.edu'[3]
+>   <link_ctn id="bob_cluster_link_from_11_to_9_UP"/><link_ctn id="bob_cluster_link_from_3_to_9_DOWN"/>
+>   </route>
+>   <route src="bob11.hamburger.edu" dst="bob5.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bob11.hamburger.edu'[11] to 'bob5.hamburger.edu'[5]
+>   <link_ctn id="bob_cluster_link_from_5_to_11_DOWN"/>
+>   </route>
+>   <route src="bob11.hamburger.edu" dst="bob7.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bob11.hamburger.edu'[11] to 'bob7.hamburger.edu'[7]
+>   <link_ctn id="bob_cluster_link_from_10_to_11_DOWN"/><link_ctn id="bob_cluster_link_from_7_to_10_DOWN"/>
+>   </route>
+>   <route src="bob11.hamburger.edu" dst="bob9.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bob11.hamburger.edu'[11] to 'bob9.hamburger.edu'[9]
+>   <link_ctn id="bob_cluster_link_from_11_to_9_UP"/>
+>   </route>
+>   <route src="bob11.hamburger.edu" dst="bob11.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bob11.hamburger.edu'[11] to 'bob11.hamburger.edu'[11]
+>   <link_ctn id="bob_cluster_link_11_loopback"/>
+>   </route>
+>   <route src="bob11.hamburger.edu" dst="bob0.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bob11.hamburger.edu'[11] to 'bob0.hamburger.edu'[0]
+>   <link_ctn id="bob_cluster_link_from_11_to_9_UP"/><link_ctn id="bob_cluster_link_from_6_to_9_DOWN"/><link_ctn id="bob_cluster_link_from_0_to_6_DOWN"/>
+>   </route>
+>   <route src="bob11.hamburger.edu" dst="bob2.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bob11.hamburger.edu'[11] to 'bob2.hamburger.edu'[2]
+>   <link_ctn id="bob_cluster_link_from_8_to_11_DOWN"/><link_ctn id="bob_cluster_link_from_2_to_8_DOWN"/>
+>   </route>
+>   <route src="bob11.hamburger.edu" dst="bob4.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bob11.hamburger.edu'[11] to 'bob4.hamburger.edu'[4]
+>   <link_ctn id="bob_cluster_link_from_10_to_11_DOWN"/><link_ctn id="bob_cluster_link_from_4_to_10_DOWN"/>
+>   </route>
+>   <route src="bob11.hamburger.edu" dst="bob6.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bob11.hamburger.edu'[11] to 'bob6.hamburger.edu'[6]
+>   <link_ctn id="bob_cluster_link_from_11_to_9_UP"/><link_ctn id="bob_cluster_link_from_6_to_9_DOWN"/>
+>   </route>
+>   <route src="bob11.hamburger.edu" dst="bob8.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bob11.hamburger.edu'[11] to 'bob8.hamburger.edu'[8]
+>   <link_ctn id="bob_cluster_link_from_8_to_11_DOWN"/>
+>   </route>
+>   <route src="bob11.hamburger.edu" dst="bob10.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bob11.hamburger.edu'[11] to 'bob10.hamburger.edu'[10]
+>   <link_ctn id="bob_cluster_link_from_10_to_11_DOWN"/>
+>   </route>
+>   <route src="bob11.hamburger.edu" dst="bobbob_cluster_router.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bob11.hamburger.edu'[11] to 'bobbob_cluster_router.hamburger.edu'[12]
+>   
+>   </route>
+>   <route src="bob0.hamburger.edu" dst="bob1.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bob0.hamburger.edu'[0] to 'bob1.hamburger.edu'[1]
+>   <link_ctn id="bob_cluster_link_from_0_to_1_UP"/>
+>   </route>
+>   <route src="bob0.hamburger.edu" dst="bob3.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bob0.hamburger.edu'[0] to 'bob3.hamburger.edu'[3]
+>   <link_ctn id="bob_cluster_link_from_0_to_3_UP"/>
+>   </route>
+>   <route src="bob0.hamburger.edu" dst="bob5.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bob0.hamburger.edu'[0] to 'bob5.hamburger.edu'[5]
+>   <link_ctn id="bob_cluster_link_from_2_to_0_DOWN"/><link_ctn id="bob_cluster_link_from_2_to_5_UP"/>
+>   </route>
+>   <route src="bob0.hamburger.edu" dst="bob7.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bob0.hamburger.edu'[0] to 'bob7.hamburger.edu'[7]
+>   <link_ctn id="bob_cluster_link_from_0_to_1_UP"/><link_ctn id="bob_cluster_link_from_1_to_7_UP"/>
+>   </route>
+>   <route src="bob0.hamburger.edu" dst="bob9.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bob0.hamburger.edu'[0] to 'bob9.hamburger.edu'[9]
+>   <link_ctn id="bob_cluster_link_from_0_to_3_UP"/><link_ctn id="bob_cluster_link_from_3_to_9_UP"/>
+>   </route>
+>   <route src="bob0.hamburger.edu" dst="bob11.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bob0.hamburger.edu'[0] to 'bob11.hamburger.edu'[11]
+>   <link_ctn id="bob_cluster_link_from_2_to_0_DOWN"/><link_ctn id="bob_cluster_link_from_2_to_5_UP"/><link_ctn id="bob_cluster_link_from_5_to_11_UP"/>
+>   </route>
+>   <route src="bob0.hamburger.edu" dst="bob0.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bob0.hamburger.edu'[0] to 'bob0.hamburger.edu'[0]
+>   <link_ctn id="bob_cluster_link_0_loopback"/>
+>   </route>
+>   <route src="bob0.hamburger.edu" dst="bob2.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bob0.hamburger.edu'[0] to 'bob2.hamburger.edu'[2]
+>   <link_ctn id="bob_cluster_link_from_2_to_0_DOWN"/>
+>   </route>
+>   <route src="bob0.hamburger.edu" dst="bob4.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bob0.hamburger.edu'[0] to 'bob4.hamburger.edu'[4]
+>   <link_ctn id="bob_cluster_link_from_0_to_1_UP"/><link_ctn id="bob_cluster_link_from_1_to_4_UP"/>
+>   </route>
+>   <route src="bob0.hamburger.edu" dst="bob6.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bob0.hamburger.edu'[0] to 'bob6.hamburger.edu'[6]
+>   <link_ctn id="bob_cluster_link_from_0_to_6_UP"/>
+>   </route>
+>   <route src="bob0.hamburger.edu" dst="bob8.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bob0.hamburger.edu'[0] to 'bob8.hamburger.edu'[8]
+>   <link_ctn id="bob_cluster_link_from_2_to_0_DOWN"/><link_ctn id="bob_cluster_link_from_2_to_8_UP"/>
+>   </route>
+>   <route src="bob0.hamburger.edu" dst="bob10.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bob0.hamburger.edu'[0] to 'bob10.hamburger.edu'[10]
+>   <link_ctn id="bob_cluster_link_from_0_to_1_UP"/><link_ctn id="bob_cluster_link_from_1_to_4_UP"/><link_ctn id="bob_cluster_link_from_4_to_10_UP"/>
+>   </route>
+>   <route src="bob0.hamburger.edu" dst="bobbob_cluster_router.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bob0.hamburger.edu'[0] to 'bobbob_cluster_router.hamburger.edu'[12]
+>   
+>   </route>
+>   <route src="bob2.hamburger.edu" dst="bob1.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bob2.hamburger.edu'[2] to 'bob1.hamburger.edu'[1]
+>   <link_ctn id="bob_cluster_link_from_1_to_2_DOWN"/>
+>   </route>
+>   <route src="bob2.hamburger.edu" dst="bob3.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bob2.hamburger.edu'[2] to 'bob3.hamburger.edu'[3]
+>   <link_ctn id="bob_cluster_link_from_2_to_0_UP"/><link_ctn id="bob_cluster_link_from_0_to_3_UP"/>
+>   </route>
+>   <route src="bob2.hamburger.edu" dst="bob5.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bob2.hamburger.edu'[2] to 'bob5.hamburger.edu'[5]
+>   <link_ctn id="bob_cluster_link_from_2_to_5_UP"/>
+>   </route>
+>   <route src="bob2.hamburger.edu" dst="bob7.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bob2.hamburger.edu'[2] to 'bob7.hamburger.edu'[7]
+>   <link_ctn id="bob_cluster_link_from_1_to_2_DOWN"/><link_ctn id="bob_cluster_link_from_1_to_7_UP"/>
+>   </route>
+>   <route src="bob2.hamburger.edu" dst="bob9.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bob2.hamburger.edu'[2] to 'bob9.hamburger.edu'[9]
+>   <link_ctn id="bob_cluster_link_from_2_to_0_UP"/><link_ctn id="bob_cluster_link_from_0_to_3_UP"/><link_ctn id="bob_cluster_link_from_3_to_9_UP"/>
+>   </route>
+>   <route src="bob2.hamburger.edu" dst="bob11.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bob2.hamburger.edu'[2] to 'bob11.hamburger.edu'[11]
+>   <link_ctn id="bob_cluster_link_from_2_to_5_UP"/><link_ctn id="bob_cluster_link_from_5_to_11_UP"/>
+>   </route>
+>   <route src="bob2.hamburger.edu" dst="bob0.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bob2.hamburger.edu'[2] to 'bob0.hamburger.edu'[0]
+>   <link_ctn id="bob_cluster_link_from_2_to_0_UP"/>
+>   </route>
+>   <route src="bob2.hamburger.edu" dst="bob2.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bob2.hamburger.edu'[2] to 'bob2.hamburger.edu'[2]
+>   <link_ctn id="bob_cluster_link_2_loopback"/>
+>   </route>
+>   <route src="bob2.hamburger.edu" dst="bob4.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bob2.hamburger.edu'[2] to 'bob4.hamburger.edu'[4]
+>   <link_ctn id="bob_cluster_link_from_1_to_2_DOWN"/><link_ctn id="bob_cluster_link_from_1_to_4_UP"/>
+>   </route>
+>   <route src="bob2.hamburger.edu" dst="bob6.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bob2.hamburger.edu'[2] to 'bob6.hamburger.edu'[6]
+>   <link_ctn id="bob_cluster_link_from_2_to_0_UP"/><link_ctn id="bob_cluster_link_from_0_to_6_UP"/>
+>   </route>
+>   <route src="bob2.hamburger.edu" dst="bob8.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bob2.hamburger.edu'[2] to 'bob8.hamburger.edu'[8]
+>   <link_ctn id="bob_cluster_link_from_2_to_8_UP"/>
+>   </route>
+>   <route src="bob2.hamburger.edu" dst="bob10.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bob2.hamburger.edu'[2] to 'bob10.hamburger.edu'[10]
+>   <link_ctn id="bob_cluster_link_from_1_to_2_DOWN"/><link_ctn id="bob_cluster_link_from_1_to_4_UP"/><link_ctn id="bob_cluster_link_from_4_to_10_UP"/>
+>   </route>
+>   <route src="bob2.hamburger.edu" dst="bobbob_cluster_router.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bob2.hamburger.edu'[2] to 'bobbob_cluster_router.hamburger.edu'[12]
+>   
+>   </route>
+>   <route src="bob4.hamburger.edu" dst="bob1.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bob4.hamburger.edu'[4] to 'bob1.hamburger.edu'[1]
+>   <link_ctn id="bob_cluster_link_from_1_to_4_DOWN"/>
+>   </route>
+>   <route src="bob4.hamburger.edu" dst="bob3.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bob4.hamburger.edu'[4] to 'bob3.hamburger.edu'[3]
+>   <link_ctn id="bob_cluster_link_from_3_to_4_DOWN"/>
+>   </route>
+>   <route src="bob4.hamburger.edu" dst="bob5.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bob4.hamburger.edu'[4] to 'bob5.hamburger.edu'[5]
+>   <link_ctn id="bob_cluster_link_from_4_to_5_UP"/>
+>   </route>
+>   <route src="bob4.hamburger.edu" dst="bob7.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bob4.hamburger.edu'[4] to 'bob7.hamburger.edu'[7]
+>   <link_ctn id="bob_cluster_link_from_1_to_4_DOWN"/><link_ctn id="bob_cluster_link_from_1_to_7_UP"/>
+>   </route>
+>   <route src="bob4.hamburger.edu" dst="bob9.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bob4.hamburger.edu'[4] to 'bob9.hamburger.edu'[9]
+>   <link_ctn id="bob_cluster_link_from_3_to_4_DOWN"/><link_ctn id="bob_cluster_link_from_3_to_9_UP"/>
+>   </route>
+>   <route src="bob4.hamburger.edu" dst="bob11.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bob4.hamburger.edu'[4] to 'bob11.hamburger.edu'[11]
+>   <link_ctn id="bob_cluster_link_from_4_to_5_UP"/><link_ctn id="bob_cluster_link_from_5_to_11_UP"/>
+>   </route>
+>   <route src="bob4.hamburger.edu" dst="bob0.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bob4.hamburger.edu'[4] to 'bob0.hamburger.edu'[0]
+>   <link_ctn id="bob_cluster_link_from_3_to_4_DOWN"/><link_ctn id="bob_cluster_link_from_0_to_3_DOWN"/>
+>   </route>
+>   <route src="bob4.hamburger.edu" dst="bob2.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bob4.hamburger.edu'[4] to 'bob2.hamburger.edu'[2]
+>   <link_ctn id="bob_cluster_link_from_4_to_5_UP"/><link_ctn id="bob_cluster_link_from_2_to_5_DOWN"/>
+>   </route>
+>   <route src="bob4.hamburger.edu" dst="bob4.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bob4.hamburger.edu'[4] to 'bob4.hamburger.edu'[4]
+>   <link_ctn id="bob_cluster_link_4_loopback"/>
+>   </route>
+>   <route src="bob4.hamburger.edu" dst="bob6.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bob4.hamburger.edu'[4] to 'bob6.hamburger.edu'[6]
+>   <link_ctn id="bob_cluster_link_from_3_to_4_DOWN"/><link_ctn id="bob_cluster_link_from_0_to_3_DOWN"/><link_ctn id="bob_cluster_link_from_0_to_6_UP"/>
+>   </route>
+>   <route src="bob4.hamburger.edu" dst="bob8.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bob4.hamburger.edu'[4] to 'bob8.hamburger.edu'[8]
+>   <link_ctn id="bob_cluster_link_from_4_to_5_UP"/><link_ctn id="bob_cluster_link_from_2_to_5_DOWN"/><link_ctn id="bob_cluster_link_from_2_to_8_UP"/>
+>   </route>
+>   <route src="bob4.hamburger.edu" dst="bob10.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bob4.hamburger.edu'[4] to 'bob10.hamburger.edu'[10]
+>   <link_ctn id="bob_cluster_link_from_4_to_10_UP"/>
+>   </route>
+>   <route src="bob4.hamburger.edu" dst="bobbob_cluster_router.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bob4.hamburger.edu'[4] to 'bobbob_cluster_router.hamburger.edu'[12]
+>   
+>   </route>
+>   <route src="bob6.hamburger.edu" dst="bob1.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bob6.hamburger.edu'[6] to 'bob1.hamburger.edu'[1]
+>   <link_ctn id="bob_cluster_link_from_6_to_7_UP"/><link_ctn id="bob_cluster_link_from_1_to_7_DOWN"/>
+>   </route>
+>   <route src="bob6.hamburger.edu" dst="bob3.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bob6.hamburger.edu'[6] to 'bob3.hamburger.edu'[3]
+>   <link_ctn id="bob_cluster_link_from_6_to_9_UP"/><link_ctn id="bob_cluster_link_from_3_to_9_DOWN"/>
+>   </route>
+>   <route src="bob6.hamburger.edu" dst="bob5.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bob6.hamburger.edu'[6] to 'bob5.hamburger.edu'[5]
+>   <link_ctn id="bob_cluster_link_from_8_to_6_DOWN"/><link_ctn id="bob_cluster_link_from_8_to_11_UP"/><link_ctn id="bob_cluster_link_from_5_to_11_DOWN"/>
+>   </route>
+>   <route src="bob6.hamburger.edu" dst="bob7.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bob6.hamburger.edu'[6] to 'bob7.hamburger.edu'[7]
+>   <link_ctn id="bob_cluster_link_from_6_to_7_UP"/>
+>   </route>
+>   <route src="bob6.hamburger.edu" dst="bob9.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bob6.hamburger.edu'[6] to 'bob9.hamburger.edu'[9]
+>   <link_ctn id="bob_cluster_link_from_6_to_9_UP"/>
+>   </route>
+>   <route src="bob6.hamburger.edu" dst="bob11.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bob6.hamburger.edu'[6] to 'bob11.hamburger.edu'[11]
+>   <link_ctn id="bob_cluster_link_from_8_to_6_DOWN"/><link_ctn id="bob_cluster_link_from_8_to_11_UP"/>
+>   </route>
+>   <route src="bob6.hamburger.edu" dst="bob0.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bob6.hamburger.edu'[6] to 'bob0.hamburger.edu'[0]
+>   <link_ctn id="bob_cluster_link_from_0_to_6_DOWN"/>
+>   </route>
+>   <route src="bob6.hamburger.edu" dst="bob2.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bob6.hamburger.edu'[6] to 'bob2.hamburger.edu'[2]
+>   <link_ctn id="bob_cluster_link_from_8_to_6_DOWN"/><link_ctn id="bob_cluster_link_from_2_to_8_DOWN"/>
+>   </route>
+>   <route src="bob6.hamburger.edu" dst="bob4.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bob6.hamburger.edu'[6] to 'bob4.hamburger.edu'[4]
+>   <link_ctn id="bob_cluster_link_from_6_to_7_UP"/><link_ctn id="bob_cluster_link_from_7_to_10_UP"/><link_ctn id="bob_cluster_link_from_4_to_10_DOWN"/>
+>   </route>
+>   <route src="bob6.hamburger.edu" dst="bob6.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bob6.hamburger.edu'[6] to 'bob6.hamburger.edu'[6]
+>   <link_ctn id="bob_cluster_link_6_loopback"/>
+>   </route>
+>   <route src="bob6.hamburger.edu" dst="bob8.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bob6.hamburger.edu'[6] to 'bob8.hamburger.edu'[8]
+>   <link_ctn id="bob_cluster_link_from_8_to_6_DOWN"/>
+>   </route>
+>   <route src="bob6.hamburger.edu" dst="bob10.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bob6.hamburger.edu'[6] to 'bob10.hamburger.edu'[10]
+>   <link_ctn id="bob_cluster_link_from_6_to_7_UP"/><link_ctn id="bob_cluster_link_from_7_to_10_UP"/>
+>   </route>
+>   <route src="bob6.hamburger.edu" dst="bobbob_cluster_router.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bob6.hamburger.edu'[6] to 'bobbob_cluster_router.hamburger.edu'[12]
+>   
+>   </route>
+>   <route src="bob8.hamburger.edu" dst="bob1.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bob8.hamburger.edu'[8] to 'bob1.hamburger.edu'[1]
+>   <link_ctn id="bob_cluster_link_from_7_to_8_DOWN"/><link_ctn id="bob_cluster_link_from_1_to_7_DOWN"/>
+>   </route>
+>   <route src="bob8.hamburger.edu" dst="bob3.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bob8.hamburger.edu'[8] to 'bob3.hamburger.edu'[3]
+>   <link_ctn id="bob_cluster_link_from_8_to_6_UP"/><link_ctn id="bob_cluster_link_from_6_to_9_UP"/><link_ctn id="bob_cluster_link_from_3_to_9_DOWN"/>
+>   </route>
+>   <route src="bob8.hamburger.edu" dst="bob5.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bob8.hamburger.edu'[8] to 'bob5.hamburger.edu'[5]
+>   <link_ctn id="bob_cluster_link_from_8_to_11_UP"/><link_ctn id="bob_cluster_link_from_5_to_11_DOWN"/>
+>   </route>
+>   <route src="bob8.hamburger.edu" dst="bob7.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bob8.hamburger.edu'[8] to 'bob7.hamburger.edu'[7]
+>   <link_ctn id="bob_cluster_link_from_7_to_8_DOWN"/>
+>   </route>
+>   <route src="bob8.hamburger.edu" dst="bob9.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bob8.hamburger.edu'[8] to 'bob9.hamburger.edu'[9]
+>   <link_ctn id="bob_cluster_link_from_8_to_6_UP"/><link_ctn id="bob_cluster_link_from_6_to_9_UP"/>
+>   </route>
+>   <route src="bob8.hamburger.edu" dst="bob11.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bob8.hamburger.edu'[8] to 'bob11.hamburger.edu'[11]
+>   <link_ctn id="bob_cluster_link_from_8_to_11_UP"/>
+>   </route>
+>   <route src="bob8.hamburger.edu" dst="bob0.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bob8.hamburger.edu'[8] to 'bob0.hamburger.edu'[0]
+>   <link_ctn id="bob_cluster_link_from_8_to_6_UP"/><link_ctn id="bob_cluster_link_from_0_to_6_DOWN"/>
+>   </route>
+>   <route src="bob8.hamburger.edu" dst="bob2.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bob8.hamburger.edu'[8] to 'bob2.hamburger.edu'[2]
+>   <link_ctn id="bob_cluster_link_from_2_to_8_DOWN"/>
+>   </route>
+>   <route src="bob8.hamburger.edu" dst="bob4.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bob8.hamburger.edu'[8] to 'bob4.hamburger.edu'[4]
+>   <link_ctn id="bob_cluster_link_from_7_to_8_DOWN"/><link_ctn id="bob_cluster_link_from_7_to_10_UP"/><link_ctn id="bob_cluster_link_from_4_to_10_DOWN"/>
+>   </route>
+>   <route src="bob8.hamburger.edu" dst="bob6.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bob8.hamburger.edu'[8] to 'bob6.hamburger.edu'[6]
+>   <link_ctn id="bob_cluster_link_from_8_to_6_UP"/>
+>   </route>
+>   <route src="bob8.hamburger.edu" dst="bob8.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bob8.hamburger.edu'[8] to 'bob8.hamburger.edu'[8]
+>   <link_ctn id="bob_cluster_link_8_loopback"/>
+>   </route>
+>   <route src="bob8.hamburger.edu" dst="bob10.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bob8.hamburger.edu'[8] to 'bob10.hamburger.edu'[10]
+>   <link_ctn id="bob_cluster_link_from_7_to_8_DOWN"/><link_ctn id="bob_cluster_link_from_7_to_10_UP"/>
+>   </route>
+>   <route src="bob8.hamburger.edu" dst="bobbob_cluster_router.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bob8.hamburger.edu'[8] to 'bobbob_cluster_router.hamburger.edu'[12]
+>   
+>   </route>
+>   <route src="bob10.hamburger.edu" dst="bob1.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bob10.hamburger.edu'[10] to 'bob1.hamburger.edu'[1]
+>   <link_ctn id="bob_cluster_link_from_7_to_10_DOWN"/><link_ctn id="bob_cluster_link_from_1_to_7_DOWN"/>
+>   </route>
+>   <route src="bob10.hamburger.edu" dst="bob3.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bob10.hamburger.edu'[10] to 'bob3.hamburger.edu'[3]
+>   <link_ctn id="bob_cluster_link_from_9_to_10_DOWN"/><link_ctn id="bob_cluster_link_from_3_to_9_DOWN"/>
+>   </route>
+>   <route src="bob10.hamburger.edu" dst="bob5.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bob10.hamburger.edu'[10] to 'bob5.hamburger.edu'[5]
+>   <link_ctn id="bob_cluster_link_from_10_to_11_UP"/><link_ctn id="bob_cluster_link_from_5_to_11_DOWN"/>
+>   </route>
+>   <route src="bob10.hamburger.edu" dst="bob7.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bob10.hamburger.edu'[10] to 'bob7.hamburger.edu'[7]
+>   <link_ctn id="bob_cluster_link_from_7_to_10_DOWN"/>
+>   </route>
+>   <route src="bob10.hamburger.edu" dst="bob9.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bob10.hamburger.edu'[10] to 'bob9.hamburger.edu'[9]
+>   <link_ctn id="bob_cluster_link_from_9_to_10_DOWN"/>
+>   </route>
+>   <route src="bob10.hamburger.edu" dst="bob11.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bob10.hamburger.edu'[10] to 'bob11.hamburger.edu'[11]
+>   <link_ctn id="bob_cluster_link_from_10_to_11_UP"/>
+>   </route>
+>   <route src="bob10.hamburger.edu" dst="bob0.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bob10.hamburger.edu'[10] to 'bob0.hamburger.edu'[0]
+>   <link_ctn id="bob_cluster_link_from_9_to_10_DOWN"/><link_ctn id="bob_cluster_link_from_6_to_9_DOWN"/><link_ctn id="bob_cluster_link_from_0_to_6_DOWN"/>
+>   </route>
+>   <route src="bob10.hamburger.edu" dst="bob2.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bob10.hamburger.edu'[10] to 'bob2.hamburger.edu'[2]
+>   <link_ctn id="bob_cluster_link_from_10_to_11_UP"/><link_ctn id="bob_cluster_link_from_8_to_11_DOWN"/><link_ctn id="bob_cluster_link_from_2_to_8_DOWN"/>
+>   </route>
+>   <route src="bob10.hamburger.edu" dst="bob4.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bob10.hamburger.edu'[10] to 'bob4.hamburger.edu'[4]
+>   <link_ctn id="bob_cluster_link_from_4_to_10_DOWN"/>
+>   </route>
+>   <route src="bob10.hamburger.edu" dst="bob6.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bob10.hamburger.edu'[10] to 'bob6.hamburger.edu'[6]
+>   <link_ctn id="bob_cluster_link_from_9_to_10_DOWN"/><link_ctn id="bob_cluster_link_from_6_to_9_DOWN"/>
+>   </route>
+>   <route src="bob10.hamburger.edu" dst="bob8.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bob10.hamburger.edu'[10] to 'bob8.hamburger.edu'[8]
+>   <link_ctn id="bob_cluster_link_from_10_to_11_UP"/><link_ctn id="bob_cluster_link_from_8_to_11_DOWN"/>
+>   </route>
+>   <route src="bob10.hamburger.edu" dst="bob10.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bob10.hamburger.edu'[10] to 'bob10.hamburger.edu'[10]
+>   <link_ctn id="bob_cluster_link_10_loopback"/>
+>   </route>
+>   <route src="bob10.hamburger.edu" dst="bobbob_cluster_router.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bob10.hamburger.edu'[10] to 'bobbob_cluster_router.hamburger.edu'[12]
+>   
+>   </route>
+>   <route src="bobbob_cluster_router.hamburger.edu" dst="bobbob_cluster_router.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bobbob_cluster_router.hamburger.edu'[12] to 'bobbob_cluster_router.hamburger.edu'[12]
+>   
+>   </route>
+>   <route src="bobbob_cluster_router.hamburger.edu" dst="bob1.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bobbob_cluster_router.hamburger.edu'[12] to 'bob1.hamburger.edu'[1]
+>   
+>   </route>
+>   <route src="bobbob_cluster_router.hamburger.edu" dst="bob3.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bobbob_cluster_router.hamburger.edu'[12] to 'bob3.hamburger.edu'[3]
+>   
+>   </route>
+>   <route src="bobbob_cluster_router.hamburger.edu" dst="bob5.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bobbob_cluster_router.hamburger.edu'[12] to 'bob5.hamburger.edu'[5]
+>   
+>   </route>
+>   <route src="bobbob_cluster_router.hamburger.edu" dst="bob7.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bobbob_cluster_router.hamburger.edu'[12] to 'bob7.hamburger.edu'[7]
+>   
+>   </route>
+>   <route src="bobbob_cluster_router.hamburger.edu" dst="bob9.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bobbob_cluster_router.hamburger.edu'[12] to 'bob9.hamburger.edu'[9]
+>   
+>   </route>
+>   <route src="bobbob_cluster_router.hamburger.edu" dst="bob11.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bobbob_cluster_router.hamburger.edu'[12] to 'bob11.hamburger.edu'[11]
+>   
+>   </route>
+>   <route src="bobbob_cluster_router.hamburger.edu" dst="bob0.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bobbob_cluster_router.hamburger.edu'[12] to 'bob0.hamburger.edu'[0]
+>   
+>   </route>
+>   <route src="bobbob_cluster_router.hamburger.edu" dst="bob2.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bobbob_cluster_router.hamburger.edu'[12] to 'bob2.hamburger.edu'[2]
+>   
+>   </route>
+>   <route src="bobbob_cluster_router.hamburger.edu" dst="bob4.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bobbob_cluster_router.hamburger.edu'[12] to 'bob4.hamburger.edu'[4]
+>   
+>   </route>
+>   <route src="bobbob_cluster_router.hamburger.edu" dst="bob6.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bobbob_cluster_router.hamburger.edu'[12] to 'bob6.hamburger.edu'[6]
+>   
+>   </route>
+>   <route src="bobbob_cluster_router.hamburger.edu" dst="bob8.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bobbob_cluster_router.hamburger.edu'[12] to 'bob8.hamburger.edu'[8]
+>   
+>   </route>
+>   <route src="bobbob_cluster_router.hamburger.edu" dst="bob10.hamburger.edu">
+> [  0.000000] [0:@] torus_get_route_and_latency from 'bobbob_cluster_router.hamburger.edu'[12] to 'bob10.hamburger.edu'[10]
+>   
+>   </route>
+> </AS>
+> </platform>
