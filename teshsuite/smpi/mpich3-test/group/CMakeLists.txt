@@ -13,18 +13,18 @@ if(enable_smpi AND enable_smpi_MPICH3_testsuite)
   include_directories("${CMAKE_CURRENT_SOURCE_DIR}/../include/")
 
   add_executable(groupcreate groupcreate.c)
-  add_executable(groupnullincl groupnullincl.c)
+#  add_executable(groupnullincl groupnullincl.c)
   add_executable(grouptest2 grouptest2.c)
   add_executable(grouptest grouptest.c)
   add_executable(gtranks gtranks.c)
-  add_executable(gtranksperf gtranksperf.c)
+#  add_executable(gtranksperf gtranksperf.c)
 
   target_link_libraries(groupcreate simgrid mtest_c)
-  target_link_libraries(groupnullincl simgrid mtest_c)
+#  target_link_libraries(groupnullincl simgrid mtest_c)
   target_link_libraries(grouptest2 simgrid mtest_c)
   target_link_libraries(grouptest simgrid mtest_c)
   target_link_libraries(gtranks simgrid mtest_c)
-  target_link_libraries(gtranksperf simgrid mtest_c)
+#  target_link_libraries(gtranksperf simgrid mtest_c)
 
 endif()
 
