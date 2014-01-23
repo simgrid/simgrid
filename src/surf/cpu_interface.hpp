@@ -1,4 +1,4 @@
-/* Copyright (c) 2004-2013. The SimGrid Team.
+/* Copyright (c) 2004-2014. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -32,25 +32,25 @@ CpuPtr getActionCpu(CpuActionPtr action);
 
 /** @ingroup SURF_callbacks
  * @brief Callbacks handler which emit the callbacks after Cpu creation * 
- * @detail Callback functions have the following signature: `void(CpuPtr)`
+ * @details Callback functions have the following signature: `void(CpuPtr)`
  */
 extern surf_callback(void, CpuPtr) cpuCreatedCallbacks;
 
 /** @ingroup SURF_callbacks
  * @brief Callbacks handler which emit the callbacks after Cpu destruction * 
- * @detail Callback functions have the following signature: `void(CpuPtr)`
+ * @details Callback functions have the following signature: `void(CpuPtr)`
  */
 extern surf_callback(void, CpuPtr) cpuDestructedCallbacks;
 
 /** @ingroup SURF_callbacks
  * @brief Callbacks handler which emit the callbacks after Cpu State changed * 
- * @detail Callback functions have the following signature: `void(CpuActionPtr)`
+ * @details Callback functions have the following signature: `void(CpuActionPtr)`
  */
 extern surf_callback(void, CpuPtr) cpuStateChangedCallbacks;
 
 /** @ingroup SURF_callbacks
  * @brief Callbacks handler which emit the callbacks after CpuAction State changed * 
- * @detail Callback functions have the following signature: `void(CpuActionPtr)`
+ * @details Callback functions have the following signature: `void(CpuActionPtr)`
  */
 extern surf_callback(void, CpuActionPtr) cpuActionStateChangedCallbacks;
 
@@ -244,7 +244,7 @@ public:
    * @details [TODO]
    * 
    * @param cpu [TODO]
-   * @param long [TODO]
+   * @param mask [TODO]
    */
   virtual void setAffinity(CpuPtr cpu, unsigned long mask);
 

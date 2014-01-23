@@ -1,4 +1,4 @@
-/* Copyright (c) 2004-2013. The SimGrid Team.
+/* Copyright (c) 2004-2014. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -33,19 +33,19 @@ typedef WorkstationVMLmm *WorkstationVMLmmPtr;
 
 /** @ingroup SURF_callbacks
  * @brief Callbacks handler which emit the callbacks after WorkstationVM creation *
- * @detail Callback functions have the following signature: `void(WorkstationVMPtr)`
+ * @details Callback functions have the following signature: `void(WorkstationVMPtr)`
  */
 extern surf_callback(void, WorkstationVMPtr) workstationVMCreatedCallbacks;
 
 /** @ingroup SURF_callbacks
  * @brief Callbacks handler which emit the callbacks after WorkstationVM destruction *
- * @detail Callback functions have the following signature: `void(WorkstationVMPtr)`
+ * @details Callback functions have the following signature: `void(WorkstationVMPtr)`
  */
 extern surf_callback(void, WorkstationVMPtr) workstationVMDestructedCallbacks;
 
 /** @ingroup SURF_callbacks
  * @brief Callbacks handler which emit the callbacks after WorkstationVM State changed *
- * @detail Callback functions have the following signature: `void(WorkstationVMActionPtr)`
+ * @details Callback functions have the following signature: `void(WorkstationVMActionPtr)`
  */
 extern surf_callback(void, WorkstationVMPtr) workstationVMStateChangedCallbacks;
 

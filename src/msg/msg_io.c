@@ -1,4 +1,4 @@
-/* Copyright (c) 2004-2013. The SimGrid Team.
+/* Copyright (c) 2004-2014. The SimGrid Team.
  * All rights reserved.                                                       */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -264,7 +264,7 @@ const char *MSG_storage_get_name(msg_storage_t storage) {
 /** \ingroup msg_storage_management
  * \brief Returns the free space size of a storage element
  * \param name the name of a storage
- * \return the free space size of the storage element (as a sg_size_t)
+ * \return the free space size of the storage element (as a #sg_size_t)
  */
 sg_size_t MSG_storage_get_free_size(const char* name){
   return simcall_storage_get_free_size(name);
@@ -273,7 +273,7 @@ sg_size_t MSG_storage_get_free_size(const char* name){
 /** \ingroup msg_storage_management
  * \brief Returns the used space size of a storage element
  * \param name the name of a storage
- * \return the used space size of the storage element (as a sg_size_t)
+ * \return the used space size of the storage element (as a #sg_size_t)
  */
 sg_size_t MSG_storage_get_used_size(const char* name){
   return simcall_storage_get_used_size(name);

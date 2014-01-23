@@ -197,7 +197,7 @@ public:
    * @brief share the resources
    * @details Share the resources between the actions 
    * 
-   * @param 
+   * @param now [TODO]
    * @return the date of the next action will finish
    */
   virtual double shareResources(double now);

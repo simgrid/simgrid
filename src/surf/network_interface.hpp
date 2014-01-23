@@ -1,4 +1,4 @@
-/* Copyright (c) 2004-2013. The SimGrid Team.
+/* Copyright (c) 2004-2014. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -28,25 +28,25 @@ typedef NetworkAction *NetworkActionPtr;
 
 /** @ingroup SURF_callbacks
  * @brief Callbacks handler which emit the callbacks after NetworkLink creation *
- * @detail Callback functions have the following signature: `void(NetworkLinkPtr)`
+ * @details Callback functions have the following signature: `void(NetworkLinkPtr)`
  */
 extern surf_callback(void, NetworkLinkPtr) networkLinkCreatedCallbacks;
 
 /** @ingroup SURF_callbacks
  * @brief Callbacks handler which emit the callbacks after NetworkLink destruction *
- * @detail Callback functions have the following signature: `void(NetworkLinkPtr)`
+ * @details Callback functions have the following signature: `void(NetworkLinkPtr)`
  */
 extern surf_callback(void, NetworkLinkPtr) networkLinkDestructedCallbacks;
 
 /** @ingroup SURF_callbacks
  * @brief Callbacks handler which emit the callbacks after NetworkLink State changed *
- * @detail Callback functions have the following signature: `void(NetworkLinkActionPtr)`
+ * @details Callback functions have the following signature: `void(NetworkLinkActionPtr)`
  */
 extern surf_callback(void, NetworkLinkPtr) networkLinkStateChangedCallbacks;
 
 /** @ingroup SURF_callbacks
  * @brief Callbacks handler which emit the callbacks after NetworkAction State changed *
- * @detail Callback functions have the following signature: `void(NetworkActionPtr)`
+ * @details Callback functions have the following signature: `void(NetworkActionPtr)`
  */
 extern surf_callback(void, NetworkActionPtr) networkActionStateChangedCallbacks;
 

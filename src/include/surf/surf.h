@@ -1,4 +1,4 @@
-/* Copyright (c) 2004-2013. The SimGrid Team.
+/* Copyright (c) 2004-2014. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -571,7 +571,7 @@ XBT_PUBLIC(void) surf_vm_workstation_set_bound(surf_resource_t resource, double 
  * 
  * @param resource [description]
  * @param cpu [description]
- * @param long [description]
+ * @param mask [description]
  */
 XBT_PUBLIC(void) surf_vm_workstation_set_affinity(surf_resource_t resource, surf_resource_t cpu, unsigned long mask);
 
@@ -598,7 +598,7 @@ XBT_PUBLIC(surf_action_t) surf_cpu_sleep(surf_resource_t cpu, double duration);
  * @brief Get the workstation power peak
  * @details [long description]
  * 
- * @param resource The surf workstation
+ * @param host The surf workstation
  * @return The power peak
  */
 XBT_PUBLIC(double) surf_workstation_get_current_power_peak(surf_resource_t host);
@@ -607,7 +607,7 @@ XBT_PUBLIC(double) surf_workstation_get_current_power_peak(surf_resource_t host)
  * @brief [brief description]
  * @details [long description]
  * 
- * @param resource [description]
+ * @param host [description]
  * @param pstate_index [description]
  * 
  * @return [description]
@@ -618,7 +618,7 @@ XBT_PUBLIC(double) surf_workstation_get_power_peak_at(surf_resource_t host, int 
  * @brief [brief description]
  * @details [long description]
  * 
- * @param resource [description]
+ * @param host [description]
  * @return [description]
  */
 XBT_PUBLIC(int) surf_workstation_get_nb_pstates(surf_resource_t host);
@@ -627,7 +627,7 @@ XBT_PUBLIC(int) surf_workstation_get_nb_pstates(surf_resource_t host);
  * @brief [brief description]
  * @details [long description]
  * 
- * @param resource [description]
+ * @param host [description]
  * @param pstate_index [description]
  */
 XBT_PUBLIC(void) surf_workstation_set_power_peak_at(surf_resource_t host, int pstate_index);
@@ -635,7 +635,7 @@ XBT_PUBLIC(void) surf_workstation_set_power_peak_at(surf_resource_t host, int ps
 /**
  * @brief Get the consumed energy (in joules) of a workstation
  * 
- * @param resource The surf workstation
+ * @param host The surf workstation
  * @return The consumed energy
  */
 XBT_PUBLIC(double) surf_workstation_get_consumed_energy(surf_resource_t host);
@@ -862,7 +862,7 @@ XBT_PUBLIC(int) surf_action_get_cost(surf_action_t action);
  * 
  * @param action The surf cpu action
  * @param cpu [description]
- * @param long [description]
+ * @param mask [description]
  */
 XBT_PUBLIC(void) surf_cpu_action_set_affinity(surf_action_t action, surf_resource_t cpu, unsigned long mask);
 

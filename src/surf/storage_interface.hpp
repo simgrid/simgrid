@@ -1,4 +1,4 @@
-/* Copyright (c) 2004-2013. The SimGrid Team.
+/* Copyright (c) 2004-2014. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -36,25 +36,25 @@ typedef StorageAction *StorageActionPtr;
 
 /** @ingroup SURF_callbacks
  * @brief Callbacks handler which emit the callbacks after Storage creation *
- * @detail Callback functions have the following signature: `void(StoragePtr)`
+ * @details Callback functions have the following signature: `void(StoragePtr)`
  */
 extern surf_callback(void, StoragePtr) storageCreatedCallbacks;
 
 /** @ingroup SURF_callbacks
  * @brief Callbacks handler which emit the callbacks after Storage destruction *
- * @detail Callback functions have the following signature: `void(StoragePtr)`
+ * @details Callback functions have the following signature: `void(StoragePtr)`
  */
 extern surf_callback(void, StoragePtr) storageDestructedCallbacks;
 
 /** @ingroup SURF_callbacks
  * @brief Callbacks handler which emit the callbacks after Storage State changed *
- * @detail Callback functions have the following signature: `void(StorageActionPtr)`
+ * @details Callback functions have the following signature: `void(StorageActionPtr)`
  */
 extern surf_callback(void, StoragePtr) storageStateChangedCallbacks;
 
 /** @ingroup SURF_callbacks
  * @brief Callbacks handler which emit the callbacks after StorageAction State changed *
- * @detail Callback functions have the following signature: `void(StorageActionPtr)`
+ * @details Callback functions have the following signature: `void(StorageActionPtr)`
  */
 extern surf_callback(void, StorageActionPtr) storageActionStateChangedCallbacks;
 
@@ -108,17 +108,14 @@ public:
    * @param model StorageModel associated to this Storage
    * @param name The name of the Storage
    * @param props Dictionary of properties associated to this Storage
-   * @param constraint The lmm constraint associated to this Storage if it is part of a LMM component
-   * @param model [description]
-   * @param name [description]
-   * @param props [description]
    * @param type_id [description]
    * @param content_name [description]
    * @param content_type [description]
    * @param size [description]
    */
   Storage(ModelPtr model, const char *name, xbt_dict_t props,
-		  const char* type_id, char *content_name, char *content_type, sg_size_t size);
+          const char* type_id, char *content_name, char *content_type,
+          sg_size_t size);
 
   /**
    * @brief Storage constructor
@@ -126,7 +123,6 @@ public:
    * @param model StorageModel associated to this Storage
    * @param name The name of the Storage
    * @param props Dictionary of properties associated to this Storage
-   * @param constraint The lmm constraint associated to this Storage if it is part of a LMM component
    * @param maxminSystem [description]
    * @param bread [description]
    * @param bwrite [description]
@@ -137,8 +133,10 @@ public:
    * @param size [description]
    */
   Storage(ModelPtr model, const char *name, xbt_dict_t props,
-		  lmm_system_t maxminSystem, double bread, double bwrite, double bconnection,
-		  const char* type_id, char *content_name, char *content_type, sg_size_t size);
+          lmm_system_t maxminSystem, double bread, double bwrite,
+          double bconnection,
+          const char* type_id, char *content_name, char *content_type,
+          sg_size_t size);
 
   /**
    * @brief Storage destructor
