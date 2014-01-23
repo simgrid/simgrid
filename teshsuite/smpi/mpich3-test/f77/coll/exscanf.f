@@ -10,10 +10,12 @@ C
       integer count, datatype
       integer i
       
-!      if (datatype .ne. MPI_INTEGER) then
-!         write(6,*) 'Invalid datatype passed to user_op()'
-!         return
-!      endif
+      if (.false.) then
+         if (datatype .ne. MPI_INTEGER) then
+            write(6,*) 'Invalid datatype passed to user_op()'
+            return
+         endif
+      endif
 
       do i=1, count
          cout(i) = cin(i) + cout(i)
