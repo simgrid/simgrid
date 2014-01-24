@@ -18,16 +18,23 @@ int smpi_coll_tuned_allgather_SMP_NTS(void *sbuf, int scount,
 
   int i, send_offset, recv_offset;
   int intra_rank, inter_rank;
-  intra_rank = rank % NUM_CORE;
-  inter_rank = rank / NUM_CORE;
-  int inter_comm_size = (comm_size + NUM_CORE - 1) / NUM_CORE;
-  int num_core_in_current_smp = NUM_CORE;
 
-  if(comm_size%NUM_CORE)
-    THROWF(arg_error,0, "allgather SMP NTS algorithm can't be used with non multiple of NUM_CORE=%d number of processes ! ", NUM_CORE);
+  int num_core = simcall_host_get_core(SIMIX_host_self());
+  // do we use the default one or the number of cores in the platform ?
+  // if the number of cores is one, the platform may be simulated with 1 node = 1 core
+  if (num_core == 1) num_core = NUM_CORE;
+
+
+  intra_rank = rank % num_core;
+  inter_rank = rank / num_core;
+  int inter_comm_size = (comm_size + num_core - 1) / num_core;
+  int num_core_in_current_smp = num_core;
+
+  if(comm_size%num_core)
+    THROWF(arg_error,0, "allgather SMP NTS algorithm can't be used with non multiple of NUM_CORE=%d number of processes ! ", num_core);
 
   /* for too small number of processes, use default implementation */
-  if (comm_size <= NUM_CORE) {
+  if (comm_size <= num_core) {
     XBT_WARN("MPI_allgather_SMP_NTS use default MPI_allgather.");  	  
     smpi_mpi_allgather(sbuf, scount, stype, rbuf, rcount, rtype, comm);
     return MPI_SUCCESS;    
@@ -35,7 +42,7 @@ int smpi_coll_tuned_allgather_SMP_NTS(void *sbuf, int scount,
 
   // the last SMP node may have fewer number of running processes than all others
   if (inter_rank == (inter_comm_size - 1)) {
-    num_core_in_current_smp = comm_size - (inter_rank * NUM_CORE);
+    num_core_in_current_smp = comm_size - (inter_rank * num_core);
   }
   //copy corresponding message from sbuf to rbuf
   recv_offset = rank * rextent * rcount;
@@ -48,9 +55,9 @@ int smpi_coll_tuned_allgather_SMP_NTS(void *sbuf, int scount,
   for (i = 1; i < num_core_in_current_smp; i++) {
 
     dst =
-        (inter_rank * NUM_CORE) + (intra_rank + i) % (num_core_in_current_smp);
+        (inter_rank * num_core) + (intra_rank + i) % (num_core_in_current_smp);
     src =
-        (inter_rank * NUM_CORE) + (intra_rank - i +
+        (inter_rank * num_core) + (intra_rank - i +
                                    num_core_in_current_smp) %
         (num_core_in_current_smp);
     recv_offset = src * rextent * rcount;
@@ -70,35 +77,35 @@ int smpi_coll_tuned_allgather_SMP_NTS(void *sbuf, int scount,
     MPI_Request *rrequest_array = xbt_new(MPI_Request, inter_comm_size - 1);
     MPI_Request *srequest_array = xbt_new(MPI_Request, inter_comm_size - 1);
 
-    src = ((inter_rank - 1 + inter_comm_size) % inter_comm_size) * NUM_CORE;
-    dst = ((inter_rank + 1) % inter_comm_size) * NUM_CORE;
+    src = ((inter_rank - 1 + inter_comm_size) % inter_comm_size) * num_core;
+    dst = ((inter_rank + 1) % inter_comm_size) * num_core;
 
     // post all inter Irecv
     for (i = 0; i < inter_comm_size - 1; i++) {
       recv_offset =
           ((inter_rank - i - 1 +
-            inter_comm_size) % inter_comm_size) * NUM_CORE * sextent * scount;
-      rrequest_array[i] = smpi_mpi_irecv((char *)rbuf + recv_offset, rcount * NUM_CORE,
+            inter_comm_size) % inter_comm_size) * num_core * sextent * scount;
+      rrequest_array[i] = smpi_mpi_irecv((char *)rbuf + recv_offset, rcount * num_core,
                                          rtype, src, tag + i, comm);
     }
 
     // send first message
     send_offset =
         ((inter_rank +
-          inter_comm_size) % inter_comm_size) * NUM_CORE * sextent * scount;
-    srequest_array[0] = smpi_mpi_isend((char *)rbuf + send_offset, scount * NUM_CORE,
+          inter_comm_size) % inter_comm_size) * num_core * sextent * scount;
+    srequest_array[0] = smpi_mpi_isend((char *)rbuf + send_offset, scount * num_core,
                                        stype, dst, tag, comm);
 
     // loop : recv-inter , send-inter, send-intra (linear-bcast)
     for (i = 0; i < inter_comm_size - 2; i++) {
       recv_offset =
           ((inter_rank - i - 1 +
-            inter_comm_size) % inter_comm_size) * NUM_CORE * sextent * scount;
+            inter_comm_size) % inter_comm_size) * num_core * sextent * scount;
       smpi_mpi_wait(&rrequest_array[i], MPI_STATUS_IGNORE);
-      srequest_array[i + 1] = smpi_mpi_isend((char *)rbuf + recv_offset, scount * NUM_CORE,
+      srequest_array[i + 1] = smpi_mpi_isend((char *)rbuf + recv_offset, scount * num_core,
                                              stype, dst, tag + i + 1, comm);
       if (num_core_in_current_smp > 1) {
-        smpi_mpi_send((char *)rbuf + recv_offset, scount * NUM_CORE,
+        smpi_mpi_send((char *)rbuf + recv_offset, scount * num_core,
                       stype, (rank + 1), tag + i + 1, comm);
       }
     }
@@ -106,12 +113,12 @@ int smpi_coll_tuned_allgather_SMP_NTS(void *sbuf, int scount,
     // recv last message and send_intra
     recv_offset =
         ((inter_rank - i - 1 +
-          inter_comm_size) % inter_comm_size) * NUM_CORE * sextent * scount;
-    //recv_offset = ((inter_rank + 1) % inter_comm_size) * NUM_CORE * sextent * scount;
+          inter_comm_size) % inter_comm_size) * num_core * sextent * scount;
+    //recv_offset = ((inter_rank + 1) % inter_comm_size) * num_core * sextent * scount;
     //i=inter_comm_size-2;
     smpi_mpi_wait(&rrequest_array[i], MPI_STATUS_IGNORE);
     if (num_core_in_current_smp > 1) {
-      smpi_mpi_send((char *)rbuf + recv_offset, scount * NUM_CORE,
+      smpi_mpi_send((char *)rbuf + recv_offset, scount * num_core,
                                   stype, (rank + 1), tag + i + 1, comm);
     }
 
@@ -124,8 +131,8 @@ int smpi_coll_tuned_allgather_SMP_NTS(void *sbuf, int scount,
     for (i = 0; i < inter_comm_size - 1; i++) {
       recv_offset =
           ((inter_rank - i - 1 +
-            inter_comm_size) % inter_comm_size) * NUM_CORE * sextent * scount;
-      smpi_mpi_recv((char *) rbuf + recv_offset, (rcount * NUM_CORE), rtype,
+            inter_comm_size) % inter_comm_size) * num_core * sextent * scount;
+      smpi_mpi_recv((char *) rbuf + recv_offset, (rcount * num_core), rtype,
                     rank - 1, tag + i + 1, comm, MPI_STATUS_IGNORE);
     }
   }
@@ -134,10 +141,10 @@ int smpi_coll_tuned_allgather_SMP_NTS(void *sbuf, int scount,
     for (i = 0; i < inter_comm_size - 1; i++) {
       recv_offset =
           ((inter_rank - i - 1 +
-            inter_comm_size) % inter_comm_size) * NUM_CORE * sextent * scount;
-      smpi_mpi_recv((char *) rbuf + recv_offset, (rcount * NUM_CORE), rtype,
+            inter_comm_size) % inter_comm_size) * num_core * sextent * scount;
+      smpi_mpi_recv((char *) rbuf + recv_offset, (rcount * num_core), rtype,
                     rank - 1, tag + i + 1, comm, MPI_STATUS_IGNORE);
-      smpi_mpi_send((char *) rbuf + recv_offset, (scount * NUM_CORE), stype,
+      smpi_mpi_send((char *) rbuf + recv_offset, (scount * num_core), stype,
                     (rank + 1), tag + i + 1, comm);
     }
   }

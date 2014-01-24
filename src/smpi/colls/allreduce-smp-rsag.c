@@ -22,7 +22,10 @@ int smpi_coll_tuned_allreduce_smp_rsag(void *send_buf, void *recv_buf,
   int tag = COLL_TAG_ALLREDUCE;
   int mask, src, dst;
   MPI_Status status;
-  int num_core = NUM_CORE;
+  int num_core = simcall_host_get_core(SIMIX_host_self());
+  // do we use the default one or the number of cores in the platform ?
+  // if the number of cores is one, the platform may be simulated with 1 node = 1 core
+  if (num_core == 1) num_core = NUM_CORE;
   /*
      #ifdef MPICH2_REDUCTION
      MPI_User_function * uop = MPIR_Op_table[op % 16 - 1];

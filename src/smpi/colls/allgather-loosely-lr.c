@@ -17,8 +17,13 @@ int smpi_coll_tuned_allgather_loosely_lr(void *sbuf, int scount,
 
   comm_size = smpi_comm_size(comm);
 
-  if(comm_size%4)
-    THROWF(arg_error,0, "allgather loosely lr algorithm can't be used with non multiple of NUM_CORE=4 number of processes ! ");
+  int num_core = simcall_host_get_core(SIMIX_host_self());
+  // do we use the default one or the number of cores in the platform ?
+  // if the number of cores is one, the platform may be simulated with 1 node = 1 core
+  if (num_core == 1) num_core = NUM_CORE;
+
+  if(comm_size%num_core)
+    THROWF(arg_error,0, "allgather loosely lr algorithm can't be used with non multiple of NUM_CORE=%d number of processes ! ",num_core);
 
   rank = smpi_comm_rank(comm);
   MPI_Aint rextent, sextent;
@@ -36,10 +41,10 @@ int smpi_coll_tuned_allgather_loosely_lr(void *sbuf, int scount,
 
   MPI_Status status;
 
-  intra_rank = rank % NUM_CORE;
-  inter_rank = rank / NUM_CORE;
-  inter_comm_size = (comm_size + NUM_CORE - 1) / NUM_CORE;
-  intra_comm_size = NUM_CORE;
+  intra_rank = rank % num_core;
+  inter_rank = rank / num_core;
+  inter_comm_size = (comm_size + num_core - 1) / num_core;
+  intra_comm_size = num_core;
 
   int src_seg, dst_seg;
 
@@ -108,7 +113,7 @@ int smpi_coll_tuned_allgather_loosely_lr(void *sbuf, int scount,
     }                           // intra loop
 
 
-    // wait for inter communication to finish for these rounds (# of round equals NUM_CORE)
+    // wait for inter communication to finish for these rounds (# of round equals num_core)
     if (i != inter_comm_size - 1) {
       smpi_mpi_wait(&inter_rrequest, &status);
     }

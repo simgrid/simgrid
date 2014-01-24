@@ -16,17 +16,22 @@ int smpi_coll_tuned_bcast_SMP_binomial(void *buf, int count,
   size = smpi_comm_size(comm);
   rank = smpi_comm_rank(comm);
 
-  if(size%NUM_CORE)
-    THROWF(arg_error,0, "bcast SMP binomial can't be used with non multiple of NUM_CORE=%d number of processes ! ",NUM_CORE);
+  int num_core = simcall_host_get_core(SIMIX_host_self());
+  // do we use the default one or the number of cores in the platform ?
+  // if the number of cores is one, the platform may be simulated with 1 node = 1 core
+  if (num_core == 1) num_core = NUM_CORE;
+
+  if(size%num_core)
+    THROWF(arg_error,0, "bcast SMP binomial can't be used with non multiple of NUM_CORE=%d number of processes ! ",num_core);
 
   int to_intra, to_inter;
   int from_intra, from_inter;
-  int inter_rank = rank / NUM_CORE;
-  int inter_size = (size - 1) / NUM_CORE + 1;
-  int intra_rank = rank % NUM_CORE;
-  int intra_size = NUM_CORE;
-  if (((rank / NUM_CORE) * NUM_CORE) == ((size / NUM_CORE) * NUM_CORE))
-    intra_size = size - (rank / NUM_CORE) * NUM_CORE;
+  int inter_rank = rank / num_core;
+  int inter_size = (size - 1) / num_core + 1;
+  int intra_rank = rank % num_core;
+  int intra_size = num_core;
+  if (((rank / num_core) * num_core) == ((size / num_core) * num_core))
+    intra_size = size - (rank / num_core) * num_core;
 
   // if root is not zero send to rank zero first
   if (root != 0) {
@@ -43,7 +48,7 @@ int smpi_coll_tuned_bcast_SMP_binomial(void *buf, int count,
     mask = 1;
     while (mask < inter_size) {
       if (inter_rank & mask) {
-        from_inter = (inter_rank - mask) * NUM_CORE;
+        from_inter = (inter_rank - mask) * num_core;
         //printf("Node %d recv from node %d when mask is %d\n", rank, from_inter, mask);
         smpi_mpi_recv(buf, count, datatype, from_inter, tag, comm, &status);
         break;
@@ -56,7 +61,7 @@ int smpi_coll_tuned_bcast_SMP_binomial(void *buf, int count,
 
     while (mask > 0) {
       if (inter_rank < inter_size) {
-        to_inter = (inter_rank + mask) * NUM_CORE;
+        to_inter = (inter_rank + mask) * num_core;
         if (to_inter < size) {
           //printf("Node %d send to node %d when mask is %d\n", rank, to_inter, mask);
           smpi_mpi_send(buf, count, datatype, to_inter, tag, comm);
@@ -67,7 +72,7 @@ int smpi_coll_tuned_bcast_SMP_binomial(void *buf, int count,
   }
   // SECOND STEP every root-of-each-SMP send to all children with binomial tree
   // base is a rank of root-of-each-SMP
-  int base = (rank / NUM_CORE) * NUM_CORE;
+  int base = (rank / num_core) * num_core;
   mask = 1;
   while (mask < intra_size) {
     if (intra_rank & mask) {
