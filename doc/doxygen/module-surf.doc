@@ -160,6 +160,14 @@
 */
 
 /**
+@defgroup SURF_lmm   SURF Linear MaxMin
+@ingroup SURF_API
+@brief Describes how the linear MaxMin system work
+
+@htmlonly <!-- DOXYGEN_NAVBAR_LABEL="SURF Linear MaxMin" --> @endhtmlonly
+*/
+
+/**
 @defgroup SURF_callbacks   SURF callbacks
 @ingroup SURF_API
 @brief Describes how to use the SURF callbacks

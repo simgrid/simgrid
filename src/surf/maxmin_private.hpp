@@ -12,6 +12,9 @@
 #include "xbt/mallocator.h"
 #include "surf_interface.hpp"
 
+/** @ingroup SURF_lmm
+ * @brief LMM element
+ */
 typedef struct lmm_element {
   /* hookup to constraint */
   s_xbt_swag_hookup_t element_set_hookup;
@@ -29,6 +32,9 @@ typedef struct lmm_constraint_light {
   lmm_constraint_t cnst;
 } s_lmm_constraint_light_t;
 
+/** @ingroup SURF_lmm
+ * @brief LMM constraint
+ */
 typedef struct lmm_constraint {
   /* hookup to system */
   s_xbt_swag_hookup_t constraint_set_hookup;
@@ -49,6 +55,9 @@ typedef struct lmm_constraint {
   lmm_constraint_light_t cnst_light;
 } s_lmm_constraint_t;
 
+/** @ingroup SURF_lmm
+ * @brief LMM variable
+ */
 typedef struct lmm_variable {
   /* hookup to system */
   s_xbt_swag_hookup_t variable_set_hookup;
@@ -72,6 +81,9 @@ typedef struct lmm_variable {
   /* \end{For Lagrange only} */
 } s_lmm_variable_t;
 
+/** @ingroup SURF_lmm
+ * @brief LMM system
+ */
 typedef struct lmm_system {
   int modified;
   int selective_update_active;  /* flag to update partially the system only selecting changed portions */
@@ -102,6 +114,11 @@ typedef struct lmm_system {
   do { xbt_swag_remove(cnst, &sys->active_constraint_set);              \
     xbt_swag_remove(cnst, &sys->modified_constraint_set); } while (0)
 
+/** @ingroup SURF_lmm
+ * @brief Print informations about a lmm system
+ * 
+ * @param sys A lmm system
+ */
 void lmm_print(lmm_system_t sys);
 
 extern double (*func_f_def) (lmm_variable_t, double);
