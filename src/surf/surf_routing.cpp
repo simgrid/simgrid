@@ -831,10 +831,10 @@ static void routing_parse_cluster(sg_platf_cluster_cbarg_t cluster)
   AS.id = cluster->id;
 
   if(cluster->topology == SURF_CLUSTER_TORUS){
-      XBT_DEBUG("<AS id=\"%s\"\trouting=\"Torus_Cluster\">", cluster->id);
-      AS.routing = A_surfxml_AS_routing_Cluster___torus;
-      sg_platf_new_AS_begin(&AS);
-      ((AsClusterTorusPtr)current_routing)->parse_specific_arguments(cluster);
+    XBT_DEBUG("<AS id=\"%s\"\trouting=\"Torus_Cluster\">", cluster->id);
+    AS.routing = A_surfxml_AS_routing_Cluster___torus;
+    sg_platf_new_AS_begin(&AS);
+    ((AsClusterTorusPtr)current_routing)->parse_specific_arguments(cluster);
   }else{
     XBT_DEBUG("<AS id=\"%s\"\trouting=\"Cluster\">", cluster->id);
     AS.routing = A_surfxml_AS_routing_Cluster;
