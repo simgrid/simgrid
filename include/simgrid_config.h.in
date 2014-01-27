@@ -1,6 +1,6 @@
 /* simgrid_config.h - Results of the configure made visible to user code    */
 
-/* Copyright (c) 2009-2013. The SimGrid Team.
+/* Copyright (c) 2009-2014. The SimGrid Team.
    All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -70,8 +70,8 @@ XBT_PUBLIC_DATA(xbt_dynar_t) sg_cmdline;
 #endif
 
 
-/* Define to 1 if you have the `mmap' function. */
-#cmakedefine HAVE_MMAP @HAVE_MMAP@
+/* Define to 1 if mmalloc is compiled in. */
+#cmakedefine HAVE_MMALLOC @HAVE_MMALLOC@
 
 /* Get the config */
 #undef SIMGRID_NEED_ASPRINTF

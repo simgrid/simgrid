@@ -176,6 +176,12 @@ IF(NOT "${CMAKE_SYSTEM}" MATCHES "Linux" AND NOT "${CMAKE_SYSTEM}" MATCHES "kFre
   message(STATUS "Warning: MMAP is thought as non functional on this architecture (${CMAKE_SYSTEM})")
 ENDIF()
 
+if(HAVE_MMAP AND HAVE_THREAD_LOCAL_STORAGE)
+  SET(HAVE_MMALLOC 1)
+else()
+  SET(HAVE_MMALLOC 0)
+endif()
+
 if(WIN32) #THOSE FILES ARE FUNCTIONS ARE NOT DETECTED BUT THEY SHOULD...
   set(HAVE_UCONTEXT_H 1)
   set(HAVE_MAKECONTEXT 1)
@@ -215,7 +221,7 @@ else()
   SET(MALLOCATOR_IS_WANTED 0)
 endif()
 
-if(enable_model-checking AND HAVE_MMAP)
+if(enable_model-checking AND HAVE_MMALLOC)
   SET(HAVE_MC 1)
   SET(MMALLOC_WANT_OVERRIDE_LEGACY 1)
   include(FindLibunwind)
