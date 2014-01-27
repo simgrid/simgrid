@@ -1,5 +1,7 @@
 #include "colls_private.h"
+#ifdef HAVE_MC
 #include "mc/mc_private.h"
+#endif
 #include <float.h>
 
 //attempt to do a quick autotuning version of the collective,
