@@ -165,9 +165,9 @@ execute_process(
   )
 
 if(HAVE_thread_storage_run)
-  set(HAVE_THREAD_LOCAL_STORAGE 0)
-else()
   set(HAVE_THREAD_LOCAL_STORAGE 1)
+else()
+  set(HAVE_THREAD_LOCAL_STORAGE 0)
 endif()
 
 # Our usage of mmap is Linux-specific (flag MAP_ANONYMOUS), but kFreeBSD uses a GNU libc
