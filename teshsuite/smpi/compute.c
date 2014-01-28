@@ -1,4 +1,4 @@
-/* Copyright (c) 2009-2010, 2012. The SimGrid Team.
+/* Copyright (c) 2009-2010, 2012, 2014. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -9,11 +9,12 @@
 
 int main(int argc, char *argv[])
 {
-  int i;
+  int i, n;
   double d;
   MPI_Init(&argc, &argv);
+  n = argc > 1 ? atoi(argv[1]) : 0;
   d = 2.0;
-  for (i = 0; i < atoi(argv[1]); i++) {
+  for (i = 0; i < n; i++) {
     if (d < 10000) {
       d = d * d;
     } else {

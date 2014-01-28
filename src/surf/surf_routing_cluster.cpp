@@ -1,4 +1,4 @@
-/* Copyright (c) 2009, 2010, 2011, 2013. The SimGrid Team.
+/* Copyright (c) 2009-2011, 2013-2014. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -156,20 +156,17 @@ void AsCluster::create_links_for_node(sg_platf_cluster_cbarg_t cluster, int id, 
 
   if (link.policy == SURF_LINK_FULLDUPLEX) {
     char *tmp_link = bprintf("%s_UP", link_id);
-    info.link_up =
-               xbt_lib_get_or_null(link_lib, tmp_link, SURF_LINK_LEVEL);
-           free(tmp_link);
-           tmp_link = bprintf("%s_DOWN", link_id);
-           info.link_down =
-               xbt_lib_get_or_null(link_lib, tmp_link, SURF_LINK_LEVEL);
-           free(tmp_link);
-         } else {
-           info.link_up = xbt_lib_get_or_null(link_lib, link_id, SURF_LINK_LEVEL);
-           info.link_down = info.link_up;
-         }
-         xbt_dynar_set(p_linkUpDownList, position,
-             &info);
-
+    info.link_up = xbt_lib_get_or_null(link_lib, tmp_link, SURF_LINK_LEVEL);
+    xbt_free(tmp_link);
+    tmp_link = bprintf("%s_DOWN", link_id);
+    info.link_down = xbt_lib_get_or_null(link_lib, tmp_link, SURF_LINK_LEVEL);
+    xbt_free(tmp_link);
+  } else {
+    info.link_up = xbt_lib_get_or_null(link_lib, link_id, SURF_LINK_LEVEL);
+    info.link_down = info.link_up;
+  }
+  xbt_dynar_set(p_linkUpDownList, position, &info);
+  xbt_free(link_id);
 }
 
 int AsCluster::parsePU(RoutingEdgePtr elm) {

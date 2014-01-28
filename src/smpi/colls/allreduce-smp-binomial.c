@@ -34,7 +34,12 @@ int smpi_coll_tuned_allreduce_smp_binomial(void *send_buf, void *recv_buf,
   void *tmp_buf;
   int tag = COLL_TAG_ALLREDUCE;
   int mask, src, dst;
-  int num_core = NUM_CORE;
+
+
+  int num_core = simcall_host_get_core(SIMIX_host_self());
+  // do we use the default one or the number of cores in the platform ?
+  // if the number of cores is one, the platform may be simulated with 1 node = 1 core
+  if (num_core == 1) num_core = NUM_CORE;
   MPI_Status status;
 
   comm_size=smpi_comm_size(comm);

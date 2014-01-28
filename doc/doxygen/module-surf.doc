@@ -7,7 +7,7 @@
    - \ref SURF_resources
    - \ref SURF_build_api
    - \ref SURF_interface
-   - \ref SURF_routing
+   - \ref SURF_routing_interface
    - \ref SURF_cpu_interface
    - \ref SURF_network_interface
    - \ref SURF_storage_interface

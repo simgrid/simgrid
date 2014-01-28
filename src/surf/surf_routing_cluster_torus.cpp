@@ -28,6 +28,11 @@ AsClusterTorus::AsClusterTorus() : AsCluster()
   p_dimensions = NULL;
 }
 
+/* Creation routing model functions */
+AsClusterTorus::~AsClusterTorus()
+{
+  if(p_dimensions) xbt_dynar_free(&p_dimensions);
+}
 
 
 void AsClusterTorus::create_links_for_node(sg_platf_cluster_cbarg_t cluster, int id, int rank, int position){
@@ -88,23 +93,25 @@ void AsClusterTorus::parse_specific_arguments(sg_platf_cluster_cbarg_t cluster){
 
   unsigned int iter;
   char *groups;
-  p_dimensions = xbt_str_split(cluster->topo_parameters, ",");
+  xbt_dynar_t dimensions = xbt_str_split(cluster->topo_parameters, ",");
 
-    if (!xbt_dynar_is_empty(p_dimensions)) {
+    if (!xbt_dynar_is_empty(dimensions)) {
+      p_dimensions= xbt_dynar_new(sizeof(int), NULL);
       /**
        * We are in a torus cluster
        * Parse attribute dimensions="dim1,dim2,dim3,...,dimN"
        * and safe it in a dynarray.
        * Additionally, we need to know how many ranks we have in total
        */
-      xbt_dynar_foreach(p_dimensions, iter, groups) {
-          int tmp = surf_parse_get_int(xbt_dynar_get_as(p_dimensions, iter, char *));
+      xbt_dynar_foreach(dimensions, iter, groups) {
+          int tmp = surf_parse_get_int(xbt_dynar_get_as(dimensions, iter, char *));
           xbt_dynar_set_as(p_dimensions, iter, int, tmp);
       }
 
       p_nb_links_per_node = xbt_dynar_length(p_dimensions);
 
     }
+    xbt_dynar_free(&dimensions);
 }
 
 void AsClusterTorus::getRouteAndLatency(RoutingEdgePtr src, RoutingEdgePtr dst, sg_platf_route_cbarg_t route, double *lat){
@@ -187,7 +194,7 @@ void AsClusterTorus::getRouteAndLatency(RoutingEdgePtr src, RoutingEdgePtr dst, 
 
                  assert(linkOffset >= 0);
                }
-               XBT_DEBUG("torus_get_route_and_latency - current_node: %lu, next_node: %lu, linkOffset is %lu",
+               XBT_DEBUG("torus_get_route_and_latency - current_node: %i, next_node: %u, linkOffset is %i",
                current_node, next_node, linkOffset);
 
                break;

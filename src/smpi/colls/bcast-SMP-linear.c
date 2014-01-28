@@ -21,9 +21,13 @@ int smpi_coll_tuned_bcast_SMP_linear(void *buf, int count,
 
   rank = smpi_comm_rank(comm);
   size = smpi_comm_size(comm);
+  int num_core = simcall_host_get_core(SIMIX_host_self());
+  // do we use the default one or the number of cores in the platform ?
+  // if the number of cores is one, the platform may be simulated with 1 node = 1 core
+  if (num_core == 1) num_core = NUM_CORE;
 
-  if(size%NUM_CORE)
-    THROWF(arg_error,0, "bcast SMP linear can't be used with non multiple of NUM_CORE=%d number of processes ! ",NUM_CORE);
+  if(size%num_core)
+    THROWF(arg_error,0, "bcast SMP linear can't be used with non multiple of num_core=%d number of processes!",num_core);
 
   int segment = bcast_SMP_linear_segment_byte / extent;
   int pipe_length = count / segment;
@@ -33,13 +37,13 @@ int smpi_coll_tuned_bcast_SMP_linear(void *buf, int count,
 
   /* leader of each SMP do inter-communication
      and act as a root for intra-communication */
-  int to_inter = (rank + NUM_CORE) % size;
+  int to_inter = (rank + num_core) % size;
   int to_intra = (rank + 1) % size;
-  int from_inter = (rank - NUM_CORE + size) % size;
+  int from_inter = (rank - num_core + size) % size;
   int from_intra = (rank + size - 1) % size;
 
   // call native when MPI communication size is too small
-  if (size <= NUM_CORE) {
+  if (size <= num_core) {
     XBT_WARN("MPI_bcast_SMP_linear use default MPI_bcast.");	  	  
     smpi_mpi_bcast(buf, count, datatype, root, comm);
     return MPI_SUCCESS;            
@@ -59,20 +63,20 @@ int smpi_coll_tuned_bcast_SMP_linear(void *buf, int count,
       smpi_mpi_send(buf, count, datatype, to_intra, tag, comm);
     }
     // case last ROOT of each SMP
-    else if (rank == (((size - 1) / NUM_CORE) * NUM_CORE)) {
+    else if (rank == (((size - 1) / num_core) * num_core)) {
       request = smpi_mpi_irecv(buf, count, datatype, from_inter, tag, comm);
       smpi_mpi_wait(&request, &status);
       smpi_mpi_send(buf, count, datatype, to_intra, tag, comm);
     }
     // case intermediate ROOT of each SMP
-    else if (rank % NUM_CORE == 0) {
+    else if (rank % num_core == 0) {
       request = smpi_mpi_irecv(buf, count, datatype, from_inter, tag, comm);
       smpi_mpi_wait(&request, &status);
       smpi_mpi_send(buf, count, datatype, to_inter, tag, comm);
       smpi_mpi_send(buf, count, datatype, to_intra, tag, comm);
     }
     // case last non-ROOT of each SMP
-    else if (((rank + 1) % NUM_CORE == 0) || (rank == (size - 1))) {
+    else if (((rank + 1) % num_core == 0) || (rank == (size - 1))) {
       request = smpi_mpi_irecv(buf, count, datatype, from_intra, tag, comm);
       smpi_mpi_wait(&request, &status);
     }
@@ -92,7 +96,7 @@ int smpi_coll_tuned_bcast_SMP_linear(void *buf, int count,
         (MPI_Status *) xbt_malloc((size + pipe_length) * sizeof(MPI_Status));
 
     // case ROOT of each SMP
-    if (rank % NUM_CORE == 0) {
+    if (rank % num_core == 0) {
       // case real root
       if (rank == 0) {
         for (i = 0; i < pipe_length; i++) {
@@ -103,7 +107,7 @@ int smpi_coll_tuned_bcast_SMP_linear(void *buf, int count,
         }
       }
       // case last ROOT of each SMP
-      else if (rank == (((size - 1) / NUM_CORE) * NUM_CORE)) {
+      else if (rank == (((size - 1) / num_core) * num_core)) {
         for (i = 0; i < pipe_length; i++) {
           request_array[i] = smpi_mpi_irecv((char *) buf + (i * increment), segment, datatype,
                     from_inter, (tag + i), comm);
@@ -129,7 +133,7 @@ int smpi_coll_tuned_bcast_SMP_linear(void *buf, int count,
         }
       }
     } else {                    // case last non-ROOT of each SMP
-      if (((rank + 1) % NUM_CORE == 0) || (rank == (size - 1))) {
+      if (((rank + 1) % num_core == 0) || (rank == (size - 1))) {
         for (i = 0; i < pipe_length; i++) {
           request_array[i] = smpi_mpi_irecv((char *) buf + (i * increment), segment, datatype,
                     from_intra, (tag + i), comm);

@@ -1,7 +1,9 @@
 #include "smx_private.h"
 #include "xbt/fifo.h"
 #include "xbt/xbt_os_thread.h"
-#include "../mc/mc_private.h"
+#ifdef HAVE_MC
+#include "mc/mc_private.h"
+#endif
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_smurf, simix,
                                 "Logging specific to SIMIX (SMURF)");

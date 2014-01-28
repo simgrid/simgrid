@@ -165,16 +165,22 @@ execute_process(
   )
 
 if(HAVE_thread_storage_run)
-  set(HAVE_THREAD_LOCAL_STORAGE 0)
-else()
   set(HAVE_THREAD_LOCAL_STORAGE 1)
+else()
+  set(HAVE_THREAD_LOCAL_STORAGE 0)
 endif()
 
 # Our usage of mmap is Linux-specific (flag MAP_ANONYMOUS), but kFreeBSD uses a GNU libc
 IF(NOT "${CMAKE_SYSTEM}" MATCHES "Linux" AND NOT "${CMAKE_SYSTEM}" MATCHES "kFreeBSD" AND NOT "${CMAKE_SYSTEM}" MATCHES "GNU" AND NOT  "${CMAKE_SYSTEM}" MATCHES "Darwin")
   SET(HAVE_MMAP 0)
   message(STATUS "Warning: MMAP is thought as non functional on this architecture (${CMAKE_SYSTEM})")
-ENDIF(NOT "${CMAKE_SYSTEM}" MATCHES "Linux" AND NOT "${CMAKE_SYSTEM}" MATCHES "kFreeBSD" AND NOT "${CMAKE_SYSTEM}" MATCHES "GNU" AND NOT  "${CMAKE_SYSTEM}" MATCHES "Darwin")
+ENDIF()
+
+if(HAVE_MMAP AND HAVE_THREAD_LOCAL_STORAGE)
+  SET(HAVE_MMALLOC 1)
+else()
+  SET(HAVE_MMALLOC 0)
+endif()
 
 if(WIN32) #THOSE FILES ARE FUNCTIONS ARE NOT DETECTED BUT THEY SHOULD...
   set(HAVE_UCONTEXT_H 1)
@@ -215,7 +221,7 @@ else()
   SET(MALLOCATOR_IS_WANTED 0)
 endif()
 
-if(enable_model-checking AND HAVE_MMAP)
+if(enable_model-checking AND HAVE_MMALLOC)
   SET(HAVE_MC 1)
   SET(MMALLOC_WANT_OVERRIDE_LEGACY 1)
   include(FindLibunwind)

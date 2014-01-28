@@ -1,4 +1,4 @@
-/* Copyright (c) 2004-2013. The SimGrid Team.
+/* Copyright (c) 2004-2014. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -31,25 +31,25 @@ typedef WorkstationAction *WorkstationActionPtr;
 
 /** @ingroup SURF_callbacks
  * @brief Callbacks handler which emit the callbacks after Workstation creation *
- * @detail Callback functions have the following signature: `void(WorkstationPtr)`
+ * @details Callback functions have the following signature: `void(WorkstationPtr)`
  */
 extern surf_callback(void, WorkstationPtr) workstationCreatedCallbacks;
 
 /** @ingroup SURF_callbacks
  * @brief Callbacks handler which emit the callbacks after Workstation destruction *
- * @detail Callback functions have the following signature: `void(WorkstationPtr)`
+ * @details Callback functions have the following signature: `void(WorkstationPtr)`
  */
 extern surf_callback(void, WorkstationPtr) workstationDestructedCallbacks;
 
 /** @ingroup SURF_callbacks
  * @brief Callbacks handler which emit the callbacks after Workstation State changed *
- * @detail Callback functions have the following signature: `void(WorkstationActionPtr)`
+ * @details Callback functions have the following signature: `void(WorkstationActionPtr)`
  */
 extern surf_callback(void, WorkstationPtr) workstationStateChangedCallbacks;
 
 /** @ingroup SURF_callbacks
  * @brief Callbacks handler which emit the callbacks after WorkstationAction State changed *
- * @detail Callback functions have the following signature: `void(WorkstationActionPtr)`
+ * @details Callback functions have the following signature: `void(WorkstationActionPtr)`
  */
 extern surf_callback(void, WorkstationActionPtr) workstationActionStateChangedCallbacks;
 
@@ -290,6 +290,7 @@ public:
    * @brief List directory contents of a path
    * @details [long description]
    * 
+   * @param mount [description]
    * @param path The path to the directory
    * @return The StorageAction corresponding to the ls action
    */

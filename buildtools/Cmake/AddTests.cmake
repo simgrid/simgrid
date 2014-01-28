@@ -69,7 +69,7 @@ if(NOT enable_memcheck)
   # teshsuite/xbt
   ADD_TEST(xbt-log-large                        ${TESH_COMMAND} ${TESH_OPTION} --cd ${CMAKE_BINARY_DIR}/teshsuite ${CMAKE_HOME_DIRECTORY}/teshsuite/xbt/log_large_test.tesh)
   ADD_TEST(xbt-log-parallel                     ${TESH_COMMAND} ${TESH_OPTION} --cd ${CMAKE_BINARY_DIR}/teshsuite ${CMAKE_HOME_DIRECTORY}/teshsuite/xbt/parallel_log_crashtest.tesh)
-  IF(HAVE_MMAP)
+  IF(HAVE_MMALLOC)
     IF(${ARCH_32_BITS})
       ADD_TEST(xbt-mmalloc-32                   ${TESH_COMMAND} ${TESH_OPTION} --cd ${CMAKE_BINARY_DIR}/teshsuite ${CMAKE_HOME_DIRECTORY}/teshsuite/xbt/mmalloc_32.tesh)
     ELSE()

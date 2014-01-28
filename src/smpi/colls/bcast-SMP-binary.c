@@ -21,26 +21,30 @@ int smpi_coll_tuned_bcast_SMP_binary(void *buf, int count,
 
   rank = smpi_comm_rank(comm);
   size = smpi_comm_size(comm);
+  int host_num_core = simcall_host_get_core(SIMIX_host_self());
+  // do we use the default one or the number of cores in the platform ?
+  // if the number of cores is one, the platform may be simulated with 1 node = 1 core
+  if (host_num_core == 1) host_num_core = NUM_CORE;
 
-  if(size%NUM_CORE)
-    THROWF(arg_error,0, "bcast SMP binary can't be used with non multiple of NUM_CORE=%d number of processes ! ",NUM_CORE);
+  if(size%host_num_core)
+    THROWF(arg_error,0, "bcast SMP binary can't be used with non multiple of NUM_CORE=%d number of processes ! ",host_num_core);
 
   int segment = bcast_SMP_binary_segment_byte / extent;
   int pipe_length = count / segment;
   int remainder = count % segment;
 
-  int to_intra_left = (rank / NUM_CORE) * NUM_CORE + (rank % NUM_CORE) * 2 + 1;
-  int to_intra_right = (rank / NUM_CORE) * NUM_CORE + (rank % NUM_CORE) * 2 + 2;
-  int to_inter_left = ((rank / NUM_CORE) * 2 + 1) * NUM_CORE;
-  int to_inter_right = ((rank / NUM_CORE) * 2 + 2) * NUM_CORE;
-  int from_inter = (((rank / NUM_CORE) - 1) / 2) * NUM_CORE;
-  int from_intra = (rank / NUM_CORE) * NUM_CORE + ((rank % NUM_CORE) - 1) / 2;
+  int to_intra_left = (rank / host_num_core) * host_num_core + (rank % host_num_core) * 2 + 1;
+  int to_intra_right = (rank / host_num_core) * host_num_core + (rank % host_num_core) * 2 + 2;
+  int to_inter_left = ((rank / host_num_core) * 2 + 1) * host_num_core;
+  int to_inter_right = ((rank / host_num_core) * 2 + 2) * host_num_core;
+  int from_inter = (((rank / host_num_core) - 1) / 2) * host_num_core;
+  int from_intra = (rank / host_num_core) * host_num_core + ((rank % host_num_core) - 1) / 2;
   int increment = segment * extent;
 
-  int base = (rank / NUM_CORE) * NUM_CORE;
-  int num_core = NUM_CORE;
-  if (((rank / NUM_CORE) * NUM_CORE) == ((size / NUM_CORE) * NUM_CORE))
-    num_core = size - (rank / NUM_CORE) * NUM_CORE;
+  int base = (rank / host_num_core) * host_num_core;
+  int num_core = host_num_core;
+  if (((rank / host_num_core) * host_num_core) == ((size / host_num_core) * host_num_core))
+    num_core = size - (rank / host_num_core) * host_num_core;
 
   // if root is not zero send to rank zero first
   if (root != 0) {
@@ -52,7 +56,7 @@ int smpi_coll_tuned_bcast_SMP_binary(void *buf, int count,
   // when a message is smaller than a block size => no pipeline 
   if (count <= segment) {
     // case ROOT-of-each-SMP
-    if (rank % NUM_CORE == 0) {
+    if (rank % host_num_core == 0) {
       // case ROOT
       if (rank == 0) {
         //printf("node %d left %d right %d\n",rank,to_inter_left,to_inter_right);
@@ -117,7 +121,7 @@ int smpi_coll_tuned_bcast_SMP_binary(void *buf, int count,
         (MPI_Status *) xbt_malloc((size + pipe_length) * sizeof(MPI_Status));
 
     // case ROOT-of-each-SMP
-    if (rank % NUM_CORE == 0) {
+    if (rank % host_num_core == 0) {
       // case ROOT
       if (rank == 0) {
         for (i = 0; i < pipe_length; i++) {

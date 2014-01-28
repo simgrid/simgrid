@@ -278,7 +278,7 @@ set(XBT_SRC
   src/xbt_modinter.h
   )
 
-if(HAVE_MMAP)
+if(HAVE_MMALLOC)
   set(XBT_SRC
     ${XBT_SRC}
     src/xbt/mmalloc/mm.c

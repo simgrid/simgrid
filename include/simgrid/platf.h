@@ -1,6 +1,6 @@
 /* platf.h - Public interface to the SimGrid platforms                      */
 
-/* Copyright (c) 2004-2013. The SimGrid Team.
+/* Copyright (c) 2004-2014. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -89,7 +89,9 @@ typedef xbt_dictelm_t sg_storage_t;
 static inline char* sg_storage_name(sg_storage_t storage) {
   return storage->key;
 }
-/* Type for any simgrid size */
+/** @ingroup m_datatypes_management_details
+ * @brief Type for any simgrid size
+ */
 typedef unsigned long long sg_size_t;
 
 /*
