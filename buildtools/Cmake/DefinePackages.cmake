@@ -27,6 +27,12 @@ set(EXTRA_DIST
   src/simdag/dax_dtd.c
   src/simdag/dax_dtd.h
   src/simdag/private.h
+  src/simix/simcalls_generated_enum.h
+  src/simix/simcalls_generated_string.c
+  src/simix/simcalls_generated_res_getter_setter.h
+  src/simix/simcalls_generated_args_getter_setter.h
+  src/simix/simcalls_generated_case.c
+  src/simix/simcalls_generated_body.c
   src/simix/smx_host_private.h
   src/simix/smx_io_private.h
   src/simix/smx_network_private.h
