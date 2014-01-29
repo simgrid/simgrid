@@ -54,7 +54,7 @@ void SIMIX_simcall_pre(smx_simcall_t simcall, int value)
   if (simcall->issuer->context->iwannadie && simcall->call != SIMCALL_PROCESS_CLEANUP)
     return;
   switch (simcall->call) {
-SIMCALL_LIST(SIMCALL_CASE, SIMCALL_SEP_NOTHING)
+#include "simcalls_generated_case.c"
     case NUM_SIMCALLS:;
       break;
     case SIMCALL_NONE:;

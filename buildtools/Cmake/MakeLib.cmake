@@ -140,6 +140,9 @@ endif()
 
 # Dependencies from maintainer mode
 ###################################
+if(enable_maintainer_mode AND PYTHON_EXE)
+  add_dependencies(simgrid simcalls_generated_src)
+endif()
 if(enable_maintainer_mode AND BISON_EXE AND LEX_EXE)
   add_dependencies(simgrid automaton_generated_src)
 endif()

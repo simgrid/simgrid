@@ -1,0 +1,663 @@
+case SIMCALL_HOST_GET_BY_NAME:
+      simcall->result.dp = SIMIX_pre_host_get_by_name(simcall ,  simcall->args[0].cc);
+      SIMIX_simcall_answer(simcall);
+      break;  
+
+case SIMCALL_HOST_GET_NAME:
+      simcall->result.cc = SIMIX_pre_host_get_name(simcall , (smx_host_t) simcall->args[0].dp);
+      SIMIX_simcall_answer(simcall);
+      break;  
+
+case SIMCALL_HOST_ON:
+       SIMIX_pre_host_on(simcall , (smx_host_t) simcall->args[0].dp);
+      SIMIX_simcall_answer(simcall);
+      break;  
+
+case SIMCALL_HOST_OFF:
+       SIMIX_pre_host_off(simcall , (smx_host_t) simcall->args[0].dp);
+      SIMIX_simcall_answer(simcall);
+      break;  
+
+case SIMCALL_HOST_GET_PROPERTIES:
+      simcall->result.dp = SIMIX_pre_host_get_properties(simcall , (smx_host_t) simcall->args[0].dp);
+      SIMIX_simcall_answer(simcall);
+      break;  
+
+case SIMCALL_HOST_GET_CORE:
+      simcall->result.i = SIMIX_pre_host_get_core(simcall , (smx_host_t) simcall->args[0].dp);
+      SIMIX_simcall_answer(simcall);
+      break;  
+
+case SIMCALL_HOST_GET_PROCESS_LIST:
+      simcall->result.dp = SIMIX_pre_host_get_process_list(simcall , (smx_host_t) simcall->args[0].dp);
+      SIMIX_simcall_answer(simcall);
+      break;  
+
+case SIMCALL_HOST_GET_SPEED:
+      simcall->result.d = SIMIX_pre_host_get_speed(simcall , (smx_host_t) simcall->args[0].dp);
+      SIMIX_simcall_answer(simcall);
+      break;  
+
+case SIMCALL_HOST_GET_AVAILABLE_SPEED:
+      simcall->result.d = SIMIX_pre_host_get_available_speed(simcall , (smx_host_t) simcall->args[0].dp);
+      SIMIX_simcall_answer(simcall);
+      break;  
+
+case SIMCALL_HOST_GET_STATE:
+      simcall->result.i = SIMIX_pre_host_get_state(simcall , (smx_host_t) simcall->args[0].dp);
+      SIMIX_simcall_answer(simcall);
+      break;  
+
+case SIMCALL_HOST_GET_DATA:
+      simcall->result.dp = SIMIX_pre_host_get_data(simcall , (smx_host_t) simcall->args[0].dp);
+      SIMIX_simcall_answer(simcall);
+      break;  
+
+case SIMCALL_HOST_SET_DATA:
+       SIMIX_pre_host_set_data(simcall , (smx_host_t) simcall->args[0].dp,  simcall->args[1].dp);
+      SIMIX_simcall_answer(simcall);
+      break;  
+
+case SIMCALL_HOST_GET_CURRENT_POWER_PEAK:
+      simcall->result.d = SIMIX_pre_host_get_current_power_peak(simcall , (smx_host_t) simcall->args[0].dp);
+      SIMIX_simcall_answer(simcall);
+      break;  
+
+case SIMCALL_HOST_GET_POWER_PEAK_AT:
+      simcall->result.d = SIMIX_pre_host_get_power_peak_at(simcall , (smx_host_t) simcall->args[0].dp,  simcall->args[1].i);
+      SIMIX_simcall_answer(simcall);
+      break;  
+
+case SIMCALL_HOST_GET_NB_PSTATES:
+      simcall->result.i = SIMIX_pre_host_get_nb_pstates(simcall , (smx_host_t) simcall->args[0].dp);
+      SIMIX_simcall_answer(simcall);
+      break;  
+
+case SIMCALL_HOST_SET_POWER_PEAK_AT:
+       SIMIX_pre_host_set_power_peak_at(simcall , (smx_host_t) simcall->args[0].dp,  simcall->args[1].i);
+      SIMIX_simcall_answer(simcall);
+      break;  
+
+case SIMCALL_HOST_GET_CONSUMED_ENERGY:
+      simcall->result.d = SIMIX_pre_host_get_consumed_energy(simcall , (smx_host_t) simcall->args[0].dp);
+      SIMIX_simcall_answer(simcall);
+      break;  
+
+case SIMCALL_HOST_EXECUTE:
+      simcall->result.dp = SIMIX_pre_host_execute(simcall ,  simcall->args[0].cc, (smx_host_t) simcall->args[1].dp,  simcall->args[2].d,  simcall->args[3].d,  simcall->args[4].d,  simcall->args[5].ul);
+      SIMIX_simcall_answer(simcall);
+      break;  
+
+case SIMCALL_HOST_PARALLEL_EXECUTE:
+      simcall->result.dp = SIMIX_pre_host_parallel_execute(simcall ,  simcall->args[0].cc,  simcall->args[1].i, (smx_host_t*) simcall->args[2].dp, (double*) simcall->args[3].dp, (double*) simcall->args[4].dp,  simcall->args[5].d,  simcall->args[6].d);
+      SIMIX_simcall_answer(simcall);
+      break;  
+
+case SIMCALL_HOST_EXECUTION_DESTROY:
+       SIMIX_pre_host_execution_destroy(simcall , (smx_action_t) simcall->args[0].dp);
+      SIMIX_simcall_answer(simcall);
+      break;  
+
+case SIMCALL_HOST_EXECUTION_CANCEL:
+       SIMIX_pre_host_execution_cancel(simcall , (smx_action_t) simcall->args[0].dp);
+      SIMIX_simcall_answer(simcall);
+      break;  
+
+case SIMCALL_HOST_EXECUTION_GET_REMAINS:
+      simcall->result.d = SIMIX_pre_host_execution_get_remains(simcall , (smx_action_t) simcall->args[0].dp);
+      SIMIX_simcall_answer(simcall);
+      break;  
+
+case SIMCALL_HOST_EXECUTION_GET_STATE:
+      simcall->result.i = SIMIX_pre_host_execution_get_state(simcall , (smx_action_t) simcall->args[0].dp);
+      SIMIX_simcall_answer(simcall);
+      break;  
+
+case SIMCALL_HOST_EXECUTION_SET_PRIORITY:
+       SIMIX_pre_host_execution_set_priority(simcall , (smx_action_t) simcall->args[0].dp,  simcall->args[1].d);
+      SIMIX_simcall_answer(simcall);
+      break;  
+
+case SIMCALL_HOST_EXECUTION_SET_BOUND:
+       SIMIX_pre_host_execution_set_bound(simcall , (smx_action_t) simcall->args[0].dp,  simcall->args[1].d);
+      SIMIX_simcall_answer(simcall);
+      break;  
+
+case SIMCALL_HOST_EXECUTION_SET_AFFINITY:
+       SIMIX_pre_host_execution_set_affinity(simcall , (smx_action_t) simcall->args[0].dp, (smx_host_t) simcall->args[1].dp,  simcall->args[2].ul);
+      SIMIX_simcall_answer(simcall);
+      break;  
+
+case SIMCALL_HOST_EXECUTION_WAIT:
+       SIMIX_pre_host_execution_wait(simcall , (smx_action_t) simcall->args[0].dp);
+       
+      break;  
+
+case SIMCALL_HOST_GET_STORAGE_LIST:
+      simcall->result.dp = SIMIX_pre_host_get_storage_list(simcall , (smx_host_t) simcall->args[0].dp);
+      SIMIX_simcall_answer(simcall);
+      break;  
+
+case SIMCALL_HOST_GET_PARAMS:
+       SIMIX_pre_host_get_params(simcall , (smx_host_t) simcall->args[0].dp, (ws_params_t) simcall->args[1].dp);
+      SIMIX_simcall_answer(simcall);
+      break;  
+
+case SIMCALL_HOST_SET_PARAMS:
+       SIMIX_pre_host_set_params(simcall , (smx_host_t) simcall->args[0].dp, (ws_params_t) simcall->args[1].dp);
+      SIMIX_simcall_answer(simcall);
+      break;  
+
+case SIMCALL_VM_CREATE:
+      simcall->result.dp = SIMIX_pre_vm_create(simcall ,  simcall->args[0].cc, (smx_host_t) simcall->args[1].dp);
+      SIMIX_simcall_answer(simcall);
+      break;  
+
+case SIMCALL_VM_START:
+       SIMIX_pre_vm_start(simcall , (smx_host_t) simcall->args[0].dp);
+      SIMIX_simcall_answer(simcall);
+      break;  
+
+case SIMCALL_VM_SET_STATE:
+       SIMIX_pre_vm_set_state(simcall , (smx_host_t) simcall->args[0].dp,  simcall->args[1].i);
+      SIMIX_simcall_answer(simcall);
+      break;  
+
+case SIMCALL_VM_GET_STATE:
+      simcall->result.i = SIMIX_pre_vm_get_state(simcall , (smx_host_t) simcall->args[0].dp);
+      SIMIX_simcall_answer(simcall);
+      break;  
+
+case SIMCALL_VM_MIGRATE:
+       SIMIX_pre_vm_migrate(simcall , (smx_host_t) simcall->args[0].dp, (smx_host_t) simcall->args[1].dp);
+      SIMIX_simcall_answer(simcall);
+      break;  
+
+case SIMCALL_VM_GET_PM:
+      simcall->result.dp = SIMIX_pre_vm_get_pm(simcall , (smx_host_t) simcall->args[0].dp);
+      SIMIX_simcall_answer(simcall);
+      break;  
+
+case SIMCALL_VM_SET_BOUND:
+       SIMIX_pre_vm_set_bound(simcall , (smx_host_t) simcall->args[0].dp,  simcall->args[1].d);
+      SIMIX_simcall_answer(simcall);
+      break;  
+
+case SIMCALL_VM_SET_AFFINITY:
+       SIMIX_pre_vm_set_affinity(simcall , (smx_host_t) simcall->args[0].dp, (smx_host_t) simcall->args[1].dp,  simcall->args[2].ul);
+      SIMIX_simcall_answer(simcall);
+      break;  
+
+case SIMCALL_VM_DESTROY:
+       SIMIX_pre_vm_destroy(simcall , (smx_host_t) simcall->args[0].dp);
+      SIMIX_simcall_answer(simcall);
+      break;  
+
+case SIMCALL_VM_SUSPEND:
+       SIMIX_pre_vm_suspend(simcall , (smx_host_t) simcall->args[0].dp);
+      SIMIX_simcall_answer(simcall);
+      break;  
+
+case SIMCALL_VM_RESUME:
+       SIMIX_pre_vm_resume(simcall , (smx_host_t) simcall->args[0].dp);
+      SIMIX_simcall_answer(simcall);
+      break;  
+
+case SIMCALL_VM_SHUTDOWN:
+       SIMIX_pre_vm_shutdown(simcall , (smx_host_t) simcall->args[0].dp);
+      SIMIX_simcall_answer(simcall);
+      break;  
+
+case SIMCALL_VM_SAVE:
+       SIMIX_pre_vm_save(simcall , (smx_host_t) simcall->args[0].dp);
+      SIMIX_simcall_answer(simcall);
+      break;  
+
+case SIMCALL_VM_RESTORE:
+       SIMIX_pre_vm_restore(simcall , (smx_host_t) simcall->args[0].dp);
+      SIMIX_simcall_answer(simcall);
+      break;  
+
+case SIMCALL_PROCESS_CREATE:
+       SIMIX_pre_process_create(simcall , (smx_process_t*) simcall->args[0].dp,  simcall->args[1].cc, (xbt_main_func_t) simcall->args[2].fp,  simcall->args[3].dp,  simcall->args[4].cc,  simcall->args[5].d,  simcall->args[6].i, (char**) simcall->args[7].dp, (xbt_dict_t) simcall->args[8].dp,  simcall->args[9].i);
+      SIMIX_simcall_answer(simcall);
+      break;  
+
+case SIMCALL_PROCESS_KILL:
+       SIMIX_pre_process_kill(simcall , (smx_process_t) simcall->args[0].dp);
+      SIMIX_simcall_answer(simcall);
+      break;  
+
+case SIMCALL_PROCESS_KILLALL:
+       SIMIX_pre_process_killall(simcall ,  simcall->args[0].i);
+      SIMIX_simcall_answer(simcall);
+      break;  
+
+case SIMCALL_PROCESS_CLEANUP:
+       SIMIX_pre_process_cleanup(simcall , (smx_process_t) simcall->args[0].dp);
+      SIMIX_simcall_answer(simcall);
+      break;  
+
+case SIMCALL_PROCESS_CHANGE_HOST:
+       SIMIX_pre_process_change_host(simcall , (smx_process_t) simcall->args[0].dp, (smx_host_t) simcall->args[1].dp);
+      SIMIX_simcall_answer(simcall);
+      break;  
+
+case SIMCALL_PROCESS_SUSPEND:
+       SIMIX_pre_process_suspend(simcall , (smx_process_t) simcall->args[0].dp);
+       
+      break;  
+
+case SIMCALL_PROCESS_RESUME:
+       SIMIX_pre_process_resume(simcall , (smx_process_t) simcall->args[0].dp);
+      SIMIX_simcall_answer(simcall);
+      break;  
+
+case SIMCALL_PROCESS_COUNT:
+      simcall->result.i = SIMIX_pre_process_count(simcall );
+      SIMIX_simcall_answer(simcall);
+      break;  
+
+case SIMCALL_PROCESS_GET_PID:
+      simcall->result.i = SIMIX_pre_process_get_PID(simcall , (smx_process_t) simcall->args[0].dp);
+      SIMIX_simcall_answer(simcall);
+      break;  
+
+case SIMCALL_PROCESS_GET_PPID:
+      simcall->result.i = SIMIX_pre_process_get_PPID(simcall , (smx_process_t) simcall->args[0].dp);
+      SIMIX_simcall_answer(simcall);
+      break;  
+
+case SIMCALL_PROCESS_GET_DATA:
+      simcall->result.dp = SIMIX_pre_process_get_data(simcall , (smx_process_t) simcall->args[0].dp);
+      SIMIX_simcall_answer(simcall);
+      break;  
+
+case SIMCALL_PROCESS_SET_DATA:
+       SIMIX_pre_process_set_data(simcall , (smx_process_t) simcall->args[0].dp,  simcall->args[1].dp);
+      SIMIX_simcall_answer(simcall);
+      break;  
+
+case SIMCALL_PROCESS_GET_HOST:
+      simcall->result.dp = SIMIX_pre_process_get_host(simcall , (smx_process_t) simcall->args[0].dp);
+      SIMIX_simcall_answer(simcall);
+      break;  
+
+case SIMCALL_PROCESS_GET_NAME:
+      simcall->result.cc = SIMIX_pre_process_get_name(simcall , (smx_process_t) simcall->args[0].dp);
+      SIMIX_simcall_answer(simcall);
+      break;  
+
+case SIMCALL_PROCESS_IS_SUSPENDED:
+      simcall->result.i = SIMIX_pre_process_is_suspended(simcall , (smx_process_t) simcall->args[0].dp);
+      SIMIX_simcall_answer(simcall);
+      break;  
+
+case SIMCALL_PROCESS_GET_PROPERTIES:
+      simcall->result.dp = SIMIX_pre_process_get_properties(simcall , (smx_process_t) simcall->args[0].dp);
+      SIMIX_simcall_answer(simcall);
+      break;  
+
+case SIMCALL_PROCESS_SLEEP:
+       SIMIX_pre_process_sleep(simcall ,  simcall->args[0].d);
+       
+      break;  
+
+case SIMCALL_PROCESS_ON_EXIT:
+       SIMIX_pre_process_on_exit(simcall , (smx_process_t) simcall->args[0].dp, (int_f_pvoid_t) simcall->args[1].fp,  simcall->args[2].dp);
+      SIMIX_simcall_answer(simcall);
+      break;  
+
+case SIMCALL_PROCESS_AUTO_RESTART_SET:
+       SIMIX_pre_process_auto_restart_set(simcall , (smx_process_t) simcall->args[0].dp,  simcall->args[1].i);
+      SIMIX_simcall_answer(simcall);
+      break;  
+
+case SIMCALL_PROCESS_RESTART:
+      simcall->result.dp = SIMIX_pre_process_restart(simcall , (smx_process_t) simcall->args[0].dp);
+      SIMIX_simcall_answer(simcall);
+      break;  
+
+case SIMCALL_RDV_CREATE:
+      simcall->result.dp = SIMIX_pre_rdv_create(simcall ,  simcall->args[0].cc);
+      SIMIX_simcall_answer(simcall);
+      break;  
+
+case SIMCALL_RDV_DESTROY:
+       SIMIX_pre_rdv_destroy(simcall , (smx_rdv_t) simcall->args[0].dp);
+      SIMIX_simcall_answer(simcall);
+      break;  
+
+case SIMCALL_RDV_GET_BY_NAME:
+      simcall->result.dp = SIMIX_pre_rdv_get_by_name(simcall ,  simcall->args[0].cc);
+      SIMIX_simcall_answer(simcall);
+      break;  
+
+case SIMCALL_RDV_COMM_COUNT_BY_HOST:
+      simcall->result.ui = SIMIX_pre_rdv_comm_count_by_host(simcall , (smx_rdv_t) simcall->args[0].dp, (smx_host_t) simcall->args[1].dp);
+      SIMIX_simcall_answer(simcall);
+      break;  
+
+case SIMCALL_RDV_GET_HEAD:
+      simcall->result.dp = SIMIX_pre_rdv_get_head(simcall , (smx_rdv_t) simcall->args[0].dp);
+      SIMIX_simcall_answer(simcall);
+      break;  
+
+case SIMCALL_RDV_SET_RECEIVER:
+       SIMIX_pre_rdv_set_receiver(simcall , (smx_rdv_t) simcall->args[0].dp, (smx_process_t) simcall->args[1].dp);
+      SIMIX_simcall_answer(simcall);
+      break;  
+
+case SIMCALL_RDV_GET_RECEIVER:
+      simcall->result.dp = SIMIX_pre_rdv_get_receiver(simcall , (smx_rdv_t) simcall->args[0].dp);
+      SIMIX_simcall_answer(simcall);
+      break;  
+
+case SIMCALL_COMM_IPROBE:
+      simcall->result.dp = SIMIX_pre_comm_iprobe(simcall , (smx_rdv_t) simcall->args[0].dp,  simcall->args[1].i,  simcall->args[2].i, (simix_match_func_t) simcall->args[3].fp,  simcall->args[4].dp);
+      SIMIX_simcall_answer(simcall);
+      break;  
+
+case SIMCALL_COMM_SEND:
+       SIMIX_pre_comm_send(simcall , (smx_rdv_t) simcall->args[0].dp,  simcall->args[1].d,  simcall->args[2].d,  simcall->args[3].dp,  simcall->args[4].sz, (simix_match_func_t) simcall->args[5].fp,  simcall->args[6].dp,  simcall->args[7].d);
+       
+      break;  
+
+case SIMCALL_COMM_ISEND:
+      simcall->result.dp = SIMIX_pre_comm_isend(simcall , (smx_rdv_t) simcall->args[0].dp,  simcall->args[1].d,  simcall->args[2].d,  simcall->args[3].dp,  simcall->args[4].sz, (simix_match_func_t) simcall->args[5].fp, (simix_clean_func_t) simcall->args[6].fp,  simcall->args[7].dp,  simcall->args[8].i);
+      SIMIX_simcall_answer(simcall);
+      break;  
+
+case SIMCALL_COMM_RECV:
+       SIMIX_pre_comm_recv(simcall , (smx_rdv_t) simcall->args[0].dp,  simcall->args[1].dp, (size_t*) simcall->args[2].dp, (simix_match_func_t) simcall->args[3].fp,  simcall->args[4].dp,  simcall->args[5].d);
+       
+      break;  
+
+case SIMCALL_COMM_IRECV:
+      simcall->result.dp = SIMIX_pre_comm_irecv(simcall , (smx_rdv_t) simcall->args[0].dp,  simcall->args[1].dp, (size_t*) simcall->args[2].dp, (simix_match_func_t) simcall->args[3].fp,  simcall->args[4].dp);
+      SIMIX_simcall_answer(simcall);
+      break;  
+
+case SIMCALL_COMM_RECV_BOUNDED:
+       SIMIX_pre_comm_recv_bounded(simcall , (smx_rdv_t) simcall->args[0].dp,  simcall->args[1].dp, (size_t*) simcall->args[2].dp, (simix_match_func_t) simcall->args[3].fp,  simcall->args[4].dp,  simcall->args[5].d,  simcall->args[6].d);
+       
+      break;  
+
+case SIMCALL_COMM_IRECV_BOUNDED:
+      simcall->result.dp = SIMIX_pre_comm_irecv_bounded(simcall , (smx_rdv_t) simcall->args[0].dp,  simcall->args[1].dp, (size_t*) simcall->args[2].dp, (simix_match_func_t) simcall->args[3].fp,  simcall->args[4].dp,  simcall->args[5].d);
+      SIMIX_simcall_answer(simcall);
+      break;  
+
+case SIMCALL_COMM_DESTROY:
+       SIMIX_pre_comm_destroy(simcall , (smx_action_t) simcall->args[0].dp);
+      SIMIX_simcall_answer(simcall);
+      break;  
+
+case SIMCALL_COMM_CANCEL:
+       SIMIX_pre_comm_cancel(simcall , (smx_action_t) simcall->args[0].dp);
+      SIMIX_simcall_answer(simcall);
+      break;  
+
+case SIMCALL_COMM_WAITANY:
+       SIMIX_pre_comm_waitany(simcall , (xbt_dynar_t) simcall->args[0].dp);
+       
+      break;  
+
+case SIMCALL_COMM_WAIT:
+       SIMIX_pre_comm_wait(simcall , (smx_action_t) simcall->args[0].dp,  simcall->args[1].d);
+       
+      break;  
+
+case SIMCALL_COMM_TEST:
+       SIMIX_pre_comm_test(simcall , (smx_action_t) simcall->args[0].dp);
+       
+      break;  
+
+case SIMCALL_COMM_TESTANY:
+       SIMIX_pre_comm_testany(simcall , (xbt_dynar_t) simcall->args[0].dp);
+       
+      break;  
+
+case SIMCALL_COMM_GET_REMAINS:
+      simcall->result.d = SIMIX_pre_comm_get_remains(simcall , (smx_action_t) simcall->args[0].dp);
+      SIMIX_simcall_answer(simcall);
+      break;  
+
+case SIMCALL_COMM_GET_STATE:
+      simcall->result.i = SIMIX_pre_comm_get_state(simcall , (smx_action_t) simcall->args[0].dp);
+      SIMIX_simcall_answer(simcall);
+      break;  
+
+case SIMCALL_COMM_GET_SRC_DATA:
+      simcall->result.dp = SIMIX_pre_comm_get_src_data(simcall , (smx_action_t) simcall->args[0].dp);
+      SIMIX_simcall_answer(simcall);
+      break;  
+
+case SIMCALL_COMM_GET_DST_DATA:
+      simcall->result.dp = SIMIX_pre_comm_get_dst_data(simcall , (smx_action_t) simcall->args[0].dp);
+      SIMIX_simcall_answer(simcall);
+      break;  
+
+case SIMCALL_COMM_GET_SRC_PROC:
+      simcall->result.dp = SIMIX_pre_comm_get_src_proc(simcall , (smx_action_t) simcall->args[0].dp);
+      SIMIX_simcall_answer(simcall);
+      break;  
+
+case SIMCALL_COMM_GET_DST_PROC:
+      simcall->result.dp = SIMIX_pre_comm_get_dst_proc(simcall , (smx_action_t) simcall->args[0].dp);
+      SIMIX_simcall_answer(simcall);
+      break;  
+
+case SIMCALL_MUTEX_INIT:
+      simcall->result.dp = SIMIX_pre_mutex_init(simcall );
+      SIMIX_simcall_answer(simcall);
+      break;  
+
+case SIMCALL_MUTEX_DESTROY:
+       SIMIX_pre_mutex_destroy(simcall , (smx_mutex_t) simcall->args[0].dp);
+      SIMIX_simcall_answer(simcall);
+      break;  
+
+case SIMCALL_MUTEX_LOCK:
+       SIMIX_pre_mutex_lock(simcall , (smx_mutex_t) simcall->args[0].dp);
+       
+      break;  
+
+case SIMCALL_MUTEX_TRYLOCK:
+      simcall->result.i = SIMIX_pre_mutex_trylock(simcall , (smx_mutex_t) simcall->args[0].dp);
+      SIMIX_simcall_answer(simcall);
+      break;  
+
+case SIMCALL_MUTEX_UNLOCK:
+       SIMIX_pre_mutex_unlock(simcall , (smx_mutex_t) simcall->args[0].dp);
+      SIMIX_simcall_answer(simcall);
+      break;  
+
+case SIMCALL_COND_INIT:
+      simcall->result.dp = SIMIX_pre_cond_init(simcall );
+      SIMIX_simcall_answer(simcall);
+      break;  
+
+case SIMCALL_COND_DESTROY:
+       SIMIX_pre_cond_destroy(simcall , (smx_cond_t) simcall->args[0].dp);
+      SIMIX_simcall_answer(simcall);
+      break;  
+
+case SIMCALL_COND_SIGNAL:
+       SIMIX_pre_cond_signal(simcall , (smx_cond_t) simcall->args[0].dp);
+      SIMIX_simcall_answer(simcall);
+      break;  
+
+case SIMCALL_COND_WAIT:
+       SIMIX_pre_cond_wait(simcall , (smx_cond_t) simcall->args[0].dp, (smx_mutex_t) simcall->args[1].dp);
+       
+      break;  
+
+case SIMCALL_COND_WAIT_TIMEOUT:
+       SIMIX_pre_cond_wait_timeout(simcall , (smx_cond_t) simcall->args[0].dp, (smx_mutex_t) simcall->args[1].dp,  simcall->args[2].d);
+       
+      break;  
+
+case SIMCALL_COND_BROADCAST:
+       SIMIX_pre_cond_broadcast(simcall , (smx_cond_t) simcall->args[0].dp);
+      SIMIX_simcall_answer(simcall);
+      break;  
+
+case SIMCALL_SEM_INIT:
+      simcall->result.dp = SIMIX_pre_sem_init(simcall ,  simcall->args[0].i);
+      SIMIX_simcall_answer(simcall);
+      break;  
+
+case SIMCALL_SEM_DESTROY:
+       SIMIX_pre_sem_destroy(simcall , (smx_sem_t) simcall->args[0].dp);
+      SIMIX_simcall_answer(simcall);
+      break;  
+
+case SIMCALL_SEM_RELEASE:
+       SIMIX_pre_sem_release(simcall , (smx_sem_t) simcall->args[0].dp);
+      SIMIX_simcall_answer(simcall);
+      break;  
+
+case SIMCALL_SEM_WOULD_BLOCK:
+      simcall->result.i = SIMIX_pre_sem_would_block(simcall , (smx_sem_t) simcall->args[0].dp);
+      SIMIX_simcall_answer(simcall);
+      break;  
+
+case SIMCALL_SEM_ACQUIRE:
+       SIMIX_pre_sem_acquire(simcall , (smx_sem_t) simcall->args[0].dp);
+       
+      break;  
+
+case SIMCALL_SEM_ACQUIRE_TIMEOUT:
+       SIMIX_pre_sem_acquire_timeout(simcall , (smx_sem_t) simcall->args[0].dp,  simcall->args[1].d);
+       
+      break;  
+
+case SIMCALL_SEM_GET_CAPACITY:
+      simcall->result.i = SIMIX_pre_sem_get_capacity(simcall , (smx_sem_t) simcall->args[0].dp);
+      SIMIX_simcall_answer(simcall);
+      break;  
+
+case SIMCALL_FILE_GET_DATA:
+      simcall->result.dp = SIMIX_pre_file_get_data(simcall , (smx_file_t) simcall->args[0].dp);
+      SIMIX_simcall_answer(simcall);
+      break;  
+
+case SIMCALL_FILE_SET_DATA:
+       SIMIX_pre_file_set_data(simcall , (smx_file_t) simcall->args[0].dp,  simcall->args[1].dp);
+      SIMIX_simcall_answer(simcall);
+      break;  
+
+case SIMCALL_FILE_READ:
+       SIMIX_pre_file_read(simcall , (smx_file_t) simcall->args[0].dp,  simcall->args[1].sgsz);
+       
+      break;  
+
+case SIMCALL_FILE_WRITE:
+       SIMIX_pre_file_write(simcall , (smx_file_t) simcall->args[0].dp,  simcall->args[1].sgsz);
+       
+      break;  
+
+case SIMCALL_FILE_OPEN:
+       SIMIX_pre_file_open(simcall ,  simcall->args[0].cc,  simcall->args[1].cc);
+       
+      break;  
+
+case SIMCALL_FILE_CLOSE:
+       SIMIX_pre_file_close(simcall , (smx_file_t) simcall->args[0].dp);
+       
+      break;  
+
+case SIMCALL_FILE_UNLINK:
+      simcall->result.i = SIMIX_pre_file_unlink(simcall , (smx_file_t) simcall->args[0].dp);
+      SIMIX_simcall_answer(simcall);
+      break;  
+
+case SIMCALL_FILE_LS:
+       SIMIX_pre_file_ls(simcall ,  simcall->args[0].cc,  simcall->args[1].cc);
+       
+      break;  
+
+case SIMCALL_FILE_GET_SIZE:
+      simcall->result.sgsz = SIMIX_pre_file_get_size(simcall , (smx_file_t) simcall->args[0].dp);
+      SIMIX_simcall_answer(simcall);
+      break;  
+
+case SIMCALL_FILE_TELL:
+      simcall->result.sgsz = SIMIX_pre_file_tell(simcall , (smx_file_t) simcall->args[0].dp);
+      SIMIX_simcall_answer(simcall);
+      break;  
+
+case SIMCALL_FILE_SEEK:
+      simcall->result.i = SIMIX_pre_file_seek(simcall , (smx_file_t) simcall->args[0].dp,  simcall->args[1].sgsz,  simcall->args[2].i);
+      SIMIX_simcall_answer(simcall);
+      break;  
+
+case SIMCALL_FILE_GET_INFO:
+      simcall->result.dp = SIMIX_pre_file_get_info(simcall , (smx_file_t) simcall->args[0].dp);
+      SIMIX_simcall_answer(simcall);
+      break;  
+
+case SIMCALL_STORAGE_FILE_RENAME:
+       SIMIX_pre_storage_file_rename(simcall , (smx_storage_t) simcall->args[0].dp,  simcall->args[1].cc,  simcall->args[2].cc);
+      SIMIX_simcall_answer(simcall);
+      break;  
+
+case SIMCALL_STORAGE_GET_FREE_SIZE:
+      simcall->result.sgsz = SIMIX_pre_storage_get_free_size(simcall ,  simcall->args[0].cc);
+      SIMIX_simcall_answer(simcall);
+      break;  
+
+case SIMCALL_STORAGE_GET_USED_SIZE:
+      simcall->result.sgsz = SIMIX_pre_storage_get_used_size(simcall ,  simcall->args[0].cc);
+      SIMIX_simcall_answer(simcall);
+      break;  
+
+case SIMCALL_STORAGE_GET_PROPERTIES:
+      simcall->result.dp = SIMIX_pre_storage_get_properties(simcall , (smx_storage_t) simcall->args[0].dp);
+      SIMIX_simcall_answer(simcall);
+      break;  
+
+case SIMCALL_STORAGE_GET_CONTENT:
+      simcall->result.dp = SIMIX_pre_storage_get_content(simcall , (smx_storage_t) simcall->args[0].dp);
+      SIMIX_simcall_answer(simcall);
+      break;  
+
+case SIMCALL_ASR_GET_PROPERTIES:
+      simcall->result.dp = SIMIX_pre_asr_get_properties(simcall ,  simcall->args[0].cc);
+      SIMIX_simcall_answer(simcall);
+      break;  
+
+#ifdef HAVE_LATENCY_BOUND_TRACKING
+case SIMCALL_COMM_IS_LATENCY_BOUNDED:
+      simcall->result.i = SIMIX_pre_comm_is_latency_bounded(simcall , (smx_action_t) simcall->args[0].dp);
+      SIMIX_simcall_answer(simcall);
+      break;  
+
+#endif
+
+#ifdef HAVE_TRACING
+case SIMCALL_SET_CATEGORY:
+       SIMIX_pre_set_category(simcall , (smx_action_t) simcall->args[0].dp,  simcall->args[1].cc);
+      SIMIX_simcall_answer(simcall);
+      break;  
+
+#endif
+
+#ifdef HAVE_MC
+case SIMCALL_MC_SNAPSHOT:
+      simcall->result.dp = SIMIX_pre_mc_snapshot(simcall );
+      SIMIX_simcall_answer(simcall);
+      break;  
+
+case SIMCALL_MC_COMPARE_SNAPSHOTS:
+      simcall->result.i = SIMIX_pre_mc_compare_snapshots(simcall ,  simcall->args[0].dp,  simcall->args[1].dp);
+      SIMIX_simcall_answer(simcall);
+      break;  
+
+case SIMCALL_MC_RANDOM:
+      simcall->result.i = SIMIX_pre_mc_random(simcall ,  simcall->args[0].i,  simcall->args[1].i);
+      SIMIX_simcall_answer(simcall);
+      break;  
+
+#endif
