@@ -1019,9 +1019,11 @@ void simcall_comm_recv(smx_rdv_t rdv, void *dst_buff, size_t * dst_buff_size,
 
   if (MC_is_active()) {
     /* the model-checker wants two separate simcalls */
-    smx_action_t comm = simcall_comm_irecv(rdv, dst_buff, dst_buff_size,
-                                           match_fun, data, rate);
+    smx_action_t comm = NULL; /* MC needs the comm to be set to NULL during the simcall */
+    comm = simcall_comm_irecv(rdv, dst_buff, dst_buff_size,
+                              match_fun, data, rate);
     simcall_comm_wait(comm, timeout);
+    comm = NULL;
   }
   else {
     simcall_BODY_comm_recv(rdv, dst_buff, dst_buff_size,
