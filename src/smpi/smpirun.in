@@ -420,7 +420,7 @@ fi
 ${EXEC} ${TRACEOPTIONS} ${SIMOPTS} ${PLATFORMTMP} ${APPLICATIONTMP}
 status=$?
 
-if [[ $status -eq 139 ]]; then echo "ERROR: A segmentation fault was triggered. 
+if [ ${status} = 139 ]; then echo "ERROR: A segmentation fault was triggered. 
 A common cause in SimGrid may be the use of a too small stack size for the simulated processes (default 128KiB).
 Please see contexts/stack_size parameter , or http://simgrid.org/simgrid/latest/doc/options.html#options_virt_stacksize "; fi
 
