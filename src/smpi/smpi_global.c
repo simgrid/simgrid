@@ -339,7 +339,8 @@ void smpi_global_init(void)
   if (sg_cfg_is_default_value("smpi/running_power")) {
     XBT_INFO("You did not set the power of the host running the simulation.  "
              "The timings will certainly not be accurate.  "
-             "Use the option \"--cfg=smpi/running_power:<flops>\" to set its value.");
+             "Use the option \"--cfg=smpi/running_power:<flops>\" to set its value."
+             "Check http://simgrid.org/simgrid/latest/doc/options.html#options_smpi_bench for more information. ");
   }
 }
 
