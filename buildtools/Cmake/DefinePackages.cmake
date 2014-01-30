@@ -27,6 +27,8 @@ set(EXTRA_DIST
   src/simdag/dax_dtd.c
   src/simdag/dax_dtd.h
   src/simdag/private.h
+  src/simix/simcalls.in
+  src/simix/simcalls.py
   src/simix/simcalls_generated_enum.h
   src/simix/simcalls_generated_string.c
   src/simix/simcalls_generated_res_getter_setter.h
