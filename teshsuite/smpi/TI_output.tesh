@@ -5,7 +5,7 @@ p Test output of time independent tracing
 p generate a trace with pingpong, and replay itself, then check that output trace of the second run is the same as in the first (once sorted) 
 ! setenv LD_LIBRARY_PATH=../../lib
 ! output sort
-$ ../../smpi_script/bin/smpirun -trace-ti --cfg=tracing/filename:out_in_ti.txt --cfg=smpi/cpu_threshold:-1 -map -hostfile ${srcdir:=.}/hostfile -platform ${srcdir:=.}/../../examples/msg/small_platform.xml -np 4 ./pingpong -q
+$ ../../smpi_script/bin/smpirun -trace-ti --cfg=tracing/filename:out_in_ti.txt --cfg=smpi/cpu_threshold:-1 -map -hostfile ${srcdir:=.}/hostfile -platform ${srcdir:=.}/../../examples/msg/small_platform.xml -np 4 ./pingpong -q --log=smpi_kernel.thres:warning
 >     *** Ping-pong test (MPI_Send/MPI_Recv) ***
 > == pivot=0 : pingpong [0] <--> [1]
 > == pivot=1 : pingpong [1] <--> [2]
@@ -41,7 +41,7 @@ $ ../../smpi_script/bin/smpirun -trace-ti --cfg=tracing/filename:out_in_ti.txt -
 > [rank 2] -> Fafard
 > [rank 3] -> Ginette
 
-$ ../../smpi_script/bin/smpirun -ext smpi_replay --log=replay.:critical -trace-ti --cfg=tracing/filename:out_ti.txt --cfg=smpi/cpu_threshold:-1  -map -hostfile ${srcdir:=.}/hostfile -platform ${srcdir:=.}/../../examples/msg/small_platform.xml -np 4 ../../examples/smpi/smpi_replay ./out_in_ti.txt
+$ ../../smpi_script/bin/smpirun -ext smpi_replay --log=replay.:critical -trace-ti --cfg=tracing/filename:out_ti.txt --cfg=smpi/cpu_threshold:-1  -map -hostfile ${srcdir:=.}/hostfile -platform ${srcdir:=.}/../../examples/msg/small_platform.xml -np 4 ../../examples/smpi/smpi_replay ./out_in_ti.txt --log=smpi_kernel.thres:warning
 > [rank 0] -> Tremblay
 > [rank 1] -> Jupiter
 > [rank 2] -> Fafard
@@ -115,7 +115,7 @@ $ rm out_in_ti.txt
 p Same test, but only using one output file for all processes
 p generate a trace with pingpong, and replay itself, then check that output trace of the second run is the same as in the first (once sorted) 
 ! output sort
-$ ../../smpi_script/bin/smpirun -trace-ti --cfg=tracing/filename:out_in_ti.txt --cfg=tracing/smpi/format/ti_one_file:yes -map -hostfile ${srcdir:=.}/hostfile -platform ${srcdir:=.}/../../examples/msg/small_platform.xml -np 4 ./pingpong -q
+$ ../../smpi_script/bin/smpirun -trace-ti --cfg=tracing/filename:out_in_ti.txt --cfg=tracing/smpi/format/ti_one_file:yes -map -hostfile ${srcdir:=.}/hostfile -platform ${srcdir:=.}/../../examples/msg/small_platform.xml -np 4 ./pingpong -q --log=smpi_kernel.thres:warning
 >     *** Ping-pong test (MPI_Send/MPI_Recv) ***
 > == pivot=0 : pingpong [0] <--> [1]
 > == pivot=1 : pingpong [1] <--> [2]
@@ -151,7 +151,7 @@ $ ../../smpi_script/bin/smpirun -trace-ti --cfg=tracing/filename:out_in_ti.txt -
 > [rank 2] -> Fafard
 > [rank 3] -> Ginette
 
-$ ../../smpi_script/bin/smpirun -ext smpi_replay --log=replay.:critical -trace-ti --cfg=tracing/filename:out_ti.txt --cfg=tracing/smpi/format/ti_one_file:yes   -map -hostfile ${srcdir:=.}/hostfile -platform ${srcdir:=.}/../../examples/msg/small_platform.xml -np 4 ../../examples/smpi/smpi_replay ./out_in_ti.txt
+$ ../../smpi_script/bin/smpirun -ext smpi_replay --log=replay.:critical -trace-ti --cfg=tracing/filename:out_ti.txt --cfg=tracing/smpi/format/ti_one_file:yes   -map -hostfile ${srcdir:=.}/hostfile -platform ${srcdir:=.}/../../examples/msg/small_platform.xml -np 4 ../../examples/smpi/smpi_replay ./out_in_ti.txt --log=smpi_kernel.thres:warning
 > [rank 0] -> Tremblay
 > [rank 1] -> Jupiter
 > [rank 2] -> Fafard
