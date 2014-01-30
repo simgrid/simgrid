@@ -26,12 +26,23 @@ if(NOT WIN32)
 endif()
 
 # binaries
-install(PROGRAMS ${CMAKE_BINARY_DIR}/bin/smpicc
-  ${CMAKE_BINARY_DIR}/bin/smpif2c
-  ${CMAKE_BINARY_DIR}/bin/smpiff
-  ${CMAKE_BINARY_DIR}/bin/smpif90
-  ${CMAKE_BINARY_DIR}/bin/smpirun
-  DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/)
+if(enable_smpi)
+  install(PROGRAMS
+    ${CMAKE_BINARY_DIR}/bin/smpicc
+    ${CMAKE_BINARY_DIR}/bin/smpirun
+    DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/)
+  if(SMPI_F2C)
+    install(PROGRAMS
+      ${CMAKE_BINARY_DIR}/bin/smpif2c
+      ${CMAKE_BINARY_DIR}/bin/smpiff
+      DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/)
+  endif()
+  if(SMPI_F90)
+    install(PROGRAMS
+      ${CMAKE_BINARY_DIR}/bin/smpif90
+      DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/)
+  endif()
+endif()
 
 install(PROGRAMS ${CMAKE_BINARY_DIR}/bin/tesh
   DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/)
