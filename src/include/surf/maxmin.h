@@ -1,4 +1,4 @@
-/* Copyright (c) 2004-2013. The SimGrid Team.
+/* Copyright (c) 2004-2014. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -292,7 +292,7 @@ void *lmm_constraint_id(lmm_constraint_t cnst);
 /**
  * @brief Get the data associated to a variable
  * 
- * @param cnst A variable
+ * @param var A variable
  * @return The data associated to the variable
  */
 void *lmm_variable_id(lmm_variable_t var);
