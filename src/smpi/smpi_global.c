@@ -335,6 +335,12 @@ void smpi_global_init(void)
 
   xbt_assert(sg_cfg_get_int("smpi/async_small_thres") <=
              sg_cfg_get_int("smpi/send_is_detached_thres"));
+
+  if (sg_cfg_is_default_value("smpi/running_power")) {
+    XBT_INFO("You did not set the power of the host running the simulation.  "
+             "The timings will certainly not be accurate.  "
+             "Use the option \"--cfg=smpi/running_power:<flops>\" to set its value.");
+  }
 }
 
 void smpi_global_destroy(void)
