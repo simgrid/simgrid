@@ -319,14 +319,6 @@ static inline void simcall_comm_irecv__set__result(smx_simcall_t simcall, void* 
 }
 
 
-static inline smx_action_t simcall_comm_irecv_bounded__get__result(smx_simcall_t simcall){
-  return (smx_action_t) simcall->result.dp;
-}
-static inline void simcall_comm_irecv_bounded__set__result(smx_simcall_t simcall, void* result){
-    simcall->result.dp = result;
-}
-
-
 
 
 static inline int simcall_comm_waitany__get__result(smx_simcall_t simcall){

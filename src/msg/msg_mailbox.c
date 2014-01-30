@@ -1,6 +1,6 @@
 /* Mailboxes in MSG */
 
-/* Copyright (c) 2008-2013. The SimGrid Team.
+/* Copyright (c) 2008-2014. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -87,58 +87,10 @@ void MSG_mailbox_set_async(const char *alias){
  * #MSG_HOST_FAILURE, or #MSG_TRANSFER_FAILURE otherwise.
  */
 msg_error_t
-MSG_mailbox_get_task_ext(msg_mailbox_t mailbox, msg_task_t * task,
+MSG_mailbox_get_task_ext(msg_mailbox_t mailbox, msg_task_t *task,
                          msg_host_t host, double timeout)
 {
-  xbt_ex_t e;
-  msg_error_t ret = MSG_OK;
-  /* We no longer support getting a task from a specific host */
-  if (host)
-    THROW_UNIMPLEMENTED;
-
-#ifdef HAVE_TRACING
-  TRACE_msg_task_get_start();
-  double start_time = MSG_get_clock();
-#endif
-
-  /* Sanity check */
-  xbt_assert(task, "Null pointer for the task storage");
-
-  if (*task)
-    XBT_WARN
-        ("Asked to write the received task in a non empty struct -- proceeding.");
-
-  /* Try to receive it by calling SIMIX network layer */
-  TRY {
-    simcall_comm_recv(mailbox, task, NULL, NULL, NULL, timeout);
-    XBT_DEBUG("Got task %s from %p",(*task)->name,mailbox);
-    (*task)->simdata->isused=0;
-  }
-  CATCH(e) {
-    switch (e.category) {
-    case cancel_error:
-      ret = MSG_HOST_FAILURE;
-      break;
-    case network_error:
-      ret = MSG_TRANSFER_FAILURE;
-      break;
-    case timeout_error:
-      ret = MSG_TIMEOUT;
-      break;
-    default:
-      RETHROW;
-    }
-    xbt_ex_free(e);
-  }
-
-#ifdef HAVE_TRACING
-  if (ret != MSG_HOST_FAILURE &&
-      ret != MSG_TRANSFER_FAILURE &&
-      ret != MSG_TIMEOUT) {
-    TRACE_msg_task_get_end(start_time, *task);
-  }
-#endif
-  MSG_RETURN(ret);
+  return MSG_mailbox_get_task_ext_bounded(mailbox, task, host, timeout, -1.0);
 }
 
 /** \ingroup msg_mailbox_management
@@ -156,7 +108,7 @@ MSG_mailbox_get_task_ext(msg_mailbox_t mailbox, msg_task_t * task,
  */
 msg_error_t
 MSG_mailbox_get_task_ext_bounded(msg_mailbox_t mailbox, msg_task_t * task,
-                         msg_host_t host, double timeout, double rate)
+                                 msg_host_t host, double timeout, double rate)
 {
   xbt_ex_t e;
   msg_error_t ret = MSG_OK;
@@ -178,7 +130,7 @@ MSG_mailbox_get_task_ext_bounded(msg_mailbox_t mailbox, msg_task_t * task,
 
   /* Try to receive it by calling SIMIX network layer */
   TRY {
-    simcall_comm_recv_bounded(mailbox, task, NULL, NULL, NULL, timeout, rate);
+    simcall_comm_recv(mailbox, task, NULL, NULL, NULL, timeout, rate);
     XBT_DEBUG("Got task %s from %p",(*task)->name,mailbox);
     (*task)->simdata->isused=0;
   }

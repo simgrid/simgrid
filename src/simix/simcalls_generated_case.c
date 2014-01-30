@@ -372,20 +372,11 @@ case SIMCALL_COMM_ISEND:
       break;  
 
 case SIMCALL_COMM_RECV:
-       SIMIX_pre_comm_recv(simcall , (smx_rdv_t) simcall->args[0].dp,  simcall->args[1].dp, (size_t*) simcall->args[2].dp, (simix_match_func_t) simcall->args[3].fp,  simcall->args[4].dp,  simcall->args[5].d);
+       SIMIX_pre_comm_recv(simcall , (smx_rdv_t) simcall->args[0].dp,  simcall->args[1].dp, (size_t*) simcall->args[2].dp, (simix_match_func_t) simcall->args[3].fp,  simcall->args[4].dp,  simcall->args[5].d,  simcall->args[6].d);
        break;  
 
 case SIMCALL_COMM_IRECV:
-      simcall->result.dp = SIMIX_pre_comm_irecv(simcall , (smx_rdv_t) simcall->args[0].dp,  simcall->args[1].dp, (size_t*) simcall->args[2].dp, (simix_match_func_t) simcall->args[3].fp,  simcall->args[4].dp);
-      SIMIX_simcall_answer(simcall);
-      break;  
-
-case SIMCALL_COMM_RECV_BOUNDED:
-       SIMIX_pre_comm_recv_bounded(simcall , (smx_rdv_t) simcall->args[0].dp,  simcall->args[1].dp, (size_t*) simcall->args[2].dp, (simix_match_func_t) simcall->args[3].fp,  simcall->args[4].dp,  simcall->args[5].d,  simcall->args[6].d);
-       break;  
-
-case SIMCALL_COMM_IRECV_BOUNDED:
-      simcall->result.dp = SIMIX_pre_comm_irecv_bounded(simcall , (smx_rdv_t) simcall->args[0].dp,  simcall->args[1].dp, (size_t*) simcall->args[2].dp, (simix_match_func_t) simcall->args[3].fp,  simcall->args[4].dp,  simcall->args[5].d);
+      simcall->result.dp = SIMIX_pre_comm_irecv(simcall , (smx_rdv_t) simcall->args[0].dp,  simcall->args[1].dp, (size_t*) simcall->args[2].dp, (simix_match_func_t) simcall->args[3].fp,  simcall->args[4].dp,  simcall->args[5].d);
       SIMIX_simcall_answer(simcall);
       break;  
 

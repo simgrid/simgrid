@@ -1,4 +1,4 @@
-/* Copyright (c) 2007-2013. The SimGrid Team.
+/* Copyright (c) 2007-2014. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -331,7 +331,9 @@ void smpi_mpi_start(MPI_Request request)
     request->real_size=request->size;
     smpi_datatype_use(request->old_type);
     smpi_comm_use(request->comm);
-    request->action = simcall_comm_irecv(mailbox, request->buf, &request->real_size, &match_recv, request);
+    request->action = simcall_comm_irecv(mailbox, request->buf,
+                                         &request->real_size, &match_recv,
+                                         request, -1.0);
 
     //integrate pseudo-timing for buffering of small messages, do not bother to execute the simcall if 0
     double sleeptime = request->detached ? smpi_or(request->size) : 0.0;

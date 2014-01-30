@@ -1,4 +1,4 @@
-/* Copyright (c) 2004-2013. The SimGrid Team.
+/* Copyright (c) 2004-2014. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -156,7 +156,7 @@ msg_error_t MSG_process_sleep(double nb_sec)
   /*proc->simdata->waiting_action = act_sleep;
 
   FIXME: check if not setting the waiting_action breaks something on msg
-  
+
   proc->simdata->waiting_action = NULL;*/
 
   TRY {
@@ -232,7 +232,7 @@ MSG_task_receive_from_host(msg_task_t * task, const char *alias,
  */
 msg_error_t
 MSG_task_receive_from_host_bounded(msg_task_t * task, const char *alias,
-                           msg_host_t host, double rate)
+                                   msg_host_t host, double rate)
 {
   return MSG_task_receive_ext_bounded(task, alias, -1, host, rate);
 }
@@ -267,7 +267,8 @@ msg_error_t MSG_task_receive(msg_task_t * task, const char *alias)
  * #MSG_OK if the task was successfully received,
  * #MSG_HOST_FAILURE, or #MSG_TRANSFER_FAILURE otherwise.
  */
-msg_error_t MSG_task_receive_bounded(msg_task_t * task, const char *alias, double rate)
+msg_error_t MSG_task_receive_bounded(msg_task_t * task, const char *alias,
+                                     double rate)
 {
   return MSG_task_receive_with_timeout_bounded(task, alias, -1, rate);
 }
@@ -309,9 +310,9 @@ MSG_task_receive_with_timeout(msg_task_t * task, const char *alias,
  */
 msg_error_t
 MSG_task_receive_with_timeout_bounded(msg_task_t * task, const char *alias,
-                              double timeout,double rate)
+                                      double timeout,double rate)
 {
-  return MSG_task_receive_ext_bounded(task, alias, timeout, NULL,rate);
+  return MSG_task_receive_ext_bounded(task, alias, timeout, NULL, rate);
 }
 
 /** \ingroup msg_task_usage
@@ -373,67 +374,23 @@ MSG_task_receive_ext(msg_task_t * task, const char *alias, double timeout,
  */
 msg_error_t
 MSG_task_receive_ext_bounded(msg_task_t * task, const char *alias, double timeout,
-                     msg_host_t host, double rate)
+                             msg_host_t host, double rate)
 {
   XBT_DEBUG
       ("MSG_task_receive_ext: Trying to receive a message on mailbox '%s'",
        alias);
   return MSG_mailbox_get_task_ext_bounded(MSG_mailbox_get_by_alias(alias), task,
-                                  host, timeout, rate);
+                                          host, timeout, rate);
 }
 
-/** \ingroup msg_task_usage
- * \brief Sends a task on a mailbox.
- *
- * This is a non blocking function: use MSG_comm_wait() or MSG_comm_test()
- * to end the communication.
- *
- * \param task a #msg_task_t to send on another location.
- * \param alias name of the mailbox to sent the task to
- * \return the msg_comm_t communication created
+/* Internal function used to factorize code between
+ * MSG_task_isend_with_matching() and MSG_task_dsend().
  */
-msg_comm_t MSG_task_isend(msg_task_t task, const char *alias)
-{
-  return MSG_task_isend_with_matching(task,alias,NULL,NULL);
-}
-
-/** \ingroup msg_task_usage
- * \brief Sends a task on a mailbox with a maximum rate
- *
- * This is a non blocking function: use MSG_comm_wait() or MSG_comm_test()
- * to end the communication. The maxrate parameter allows the application
- * to limit the bandwidth utilization of network links when sending the task.
- *
- * \param task a #msg_task_t to send on another location.
- * \param alias name of the mailbox to sent the task to
- * \param maxrate the maximum communication rate for sending this task .
- * \return the msg_comm_t communication created
- */
-msg_comm_t MSG_task_isend_bounded(msg_task_t task, const char *alias, double maxrate)
-{
-  task->simdata->rate = maxrate;
-  return MSG_task_isend_with_matching(task,alias,NULL,NULL);
-}
-
-
-/** \ingroup msg_task_usage
- * \brief Sends a task on a mailbox, with support for matching requests
- *
- * This is a non blocking function: use MSG_comm_wait() or MSG_comm_test()
- * to end the communication.
- *
- * \param task a #msg_task_t to send on another location.
- * \param alias name of the mailbox to sent the task to
- * \param match_fun boolean function which parameters are:
- *        - match_data_provided_here
- *        - match_data_provided_by_other_side_if_any
- *        - the_smx_action_describing_the_other_side
- * \param match_data user provided data passed to match_fun
- * \return the msg_comm_t communication created
- */
-XBT_INLINE msg_comm_t MSG_task_isend_with_matching(msg_task_t task, const char *alias,
-    int (*match_fun)(void*,void*, smx_action_t),
-    void *match_data)
+static XBT_INLINE
+msg_comm_t MSG_task_isend_internal(msg_task_t task, const char *alias,
+                                   int (*match_fun)(void*,void*, smx_action_t),
+                                   void *match_data, void_f_pvoid_t cleanup,
+                                   int detached)
 {
   simdata_task_t t_simdata = NULL;
   msg_process_t process = MSG_process_self();
@@ -456,14 +413,22 @@ XBT_INLINE msg_comm_t MSG_task_isend_with_matching(msg_task_t task, const char *
   msg_global->sent_msg++;
 
   /* Send it by calling SIMIX network layer */
-  msg_comm_t comm = xbt_new0(s_msg_comm_t, 1);
-  comm->task_sent = task;
-  comm->task_received = NULL;
-  comm->status = MSG_OK;
-  comm->s_comm =
-    simcall_comm_isend(mailbox, t_simdata->message_size,
-                         t_simdata->rate, task, sizeof(void *), match_fun, NULL, match_data, 0);
-  t_simdata->comm = comm->s_comm; /* FIXME: is the field t_simdata->comm still useful? */
+  smx_action_t act = simcall_comm_isend(mailbox, t_simdata->message_size,
+                                        t_simdata->rate, task, sizeof(void *),
+                                        match_fun, cleanup, match_data,detached);
+  t_simdata->comm = act; /* FIXME: is the field t_simdata->comm still useful? */
+
+  msg_comm_t comm;
+  if (detached) {
+    comm = NULL;
+  } else {
+    comm = xbt_new0(s_msg_comm_t, 1);
+    comm->task_sent = task;
+    comm->task_received = NULL;
+    comm->status = MSG_OK;
+    comm->s_comm = act;
+  }
+
 #ifdef HAVE_TRACING
     if (TRACE_is_enabled()) {
       simcall_set_category(comm->s_comm, task->category);
@@ -476,6 +441,65 @@ XBT_INLINE msg_comm_t MSG_task_isend_with_matching(msg_task_t task, const char *
 #endif
 
   return comm;
+}
+
+
+/** \ingroup msg_task_usage
+ * \brief Sends a task on a mailbox.
+ *
+ * This is a non blocking function: use MSG_comm_wait() or MSG_comm_test()
+ * to end the communication.
+ *
+ * \param task a #msg_task_t to send on another location.
+ * \param alias name of the mailbox to sent the task to
+ * \return the msg_comm_t communication created
+ */
+msg_comm_t MSG_task_isend(msg_task_t task, const char *alias)
+{
+  return MSG_task_isend_internal(task, alias, NULL, NULL, NULL, 0);
+}
+
+/** \ingroup msg_task_usage
+ * \brief Sends a task on a mailbox with a maximum rate
+ *
+ * This is a non blocking function: use MSG_comm_wait() or MSG_comm_test()
+ * to end the communication. The maxrate parameter allows the application
+ * to limit the bandwidth utilization of network links when sending the task.
+ *
+ * \param task a #msg_task_t to send on another location.
+ * \param alias name of the mailbox to sent the task to
+ * \param maxrate the maximum communication rate for sending this task .
+ * \return the msg_comm_t communication created
+ */
+msg_comm_t MSG_task_isend_bounded(msg_task_t task, const char *alias,
+                                  double maxrate)
+{
+  task->simdata->rate = maxrate;
+  return MSG_task_isend_internal(task, alias, NULL, NULL, NULL, 0);
+}
+
+
+/** \ingroup msg_task_usage
+ * \brief Sends a task on a mailbox, with support for matching requests
+ *
+ * This is a non blocking function: use MSG_comm_wait() or MSG_comm_test()
+ * to end the communication.
+ *
+ * \param task a #msg_task_t to send on another location.
+ * \param alias name of the mailbox to sent the task to
+ * \param match_fun boolean function which parameters are:
+ *        - match_data_provided_here
+ *        - match_data_provided_by_other_side_if_any
+ *        - the_smx_action_describing_the_other_side
+ * \param match_data user provided data passed to match_fun
+ * \return the msg_comm_t communication created
+ */
+msg_comm_t MSG_task_isend_with_matching(msg_task_t task, const char *alias,
+                                        int (*match_fun)(void*, void*,
+                                                         smx_action_t),
+                                        void *match_data)
+{
+  return MSG_task_isend_internal(task, alias, match_fun, match_data, NULL, 0);
 }
 
 /** \ingroup msg_task_usage
@@ -497,42 +521,8 @@ XBT_INLINE msg_comm_t MSG_task_isend_with_matching(msg_task_t task, const char *
  */
 void MSG_task_dsend(msg_task_t task, const char *alias, void_f_pvoid_t cleanup)
 {
-  simdata_task_t t_simdata = NULL;
-  msg_process_t process = MSG_process_self();
-  msg_mailbox_t mailbox = MSG_mailbox_get_by_alias(alias);
-
-  /* Prepare the task to send */
-  t_simdata = task->simdata;
-  t_simdata->sender = process;
-  t_simdata->source = ((simdata_process_t) SIMIX_process_self_get_data(process))->m_host;
-
-  xbt_assert(t_simdata->isused == 0,
-              "This task is still being used somewhere else. You cannot send it now. Go fix your code!");
-
-  t_simdata->isused = 1;
-  t_simdata->comm = NULL;
-  msg_global->sent_msg++;
-
-#ifdef HAVE_TRACING
-  int call_end = TRACE_msg_task_put_start(task);
-#endif
-
-  /* Send it by calling SIMIX network layer */
-  smx_action_t comm = simcall_comm_isend(mailbox, t_simdata->message_size,
-                       t_simdata->rate, task, sizeof(void *), NULL, cleanup, NULL, 1);
-  t_simdata->comm = comm;
-#ifdef HAVE_TRACING
-    if (TRACE_is_enabled()) {
-      simcall_set_category(comm, task->category);
-    }
-#endif
-
-#ifdef HAVE_TRACING
-  if (call_end)
-    TRACE_msg_task_put_end();
-#endif
+  MSG_task_isend_internal(task, alias, NULL, NULL, cleanup, 1);
 }
-
 
 /** \ingroup msg_task_usage
  * \brief Sends a task on a mailbox with a maximal rate.
@@ -551,46 +541,13 @@ void MSG_task_dsend(msg_task_t task, const char *alias, void_f_pvoid_t cleanup)
  * communication fails, e.g. MSG_task_destroy
  * (if NULL, no function will be called)
  * \param maxrate the maximum communication rate for sending this task
- * 
+ *
  */
-void MSG_task_dsend_bounded(msg_task_t task, const char *alias, void_f_pvoid_t cleanup, double maxrate)
+void MSG_task_dsend_bounded(msg_task_t task, const char *alias,
+                            void_f_pvoid_t cleanup, double maxrate)
 {
   task->simdata->rate = maxrate;
-  
-  simdata_task_t t_simdata = NULL;
-  msg_process_t process = MSG_process_self();
-  msg_mailbox_t mailbox = MSG_mailbox_get_by_alias(alias);
-
-  /* Prepare the task to send */
-  t_simdata = task->simdata;
-  t_simdata->sender = process;
-  t_simdata->source = ((simdata_process_t) SIMIX_process_self_get_data(process))->m_host;
-
-  xbt_assert(t_simdata->isused == 0,
-              "This task is still being used somewhere else. You cannot send it now. Go fix your code!");
-
-  t_simdata->isused = 1;
-  t_simdata->comm = NULL;
-  msg_global->sent_msg++;
-
-#ifdef HAVE_TRACING
-  int call_end = TRACE_msg_task_put_start(task);
-#endif
-
-  /* Send it by calling SIMIX network layer */
-  smx_action_t comm = simcall_comm_isend(mailbox, t_simdata->message_size,
-                       t_simdata->rate, task, sizeof(void *), NULL, cleanup, NULL, 1);
-  t_simdata->comm = comm;
-#ifdef HAVE_TRACING
-    if (TRACE_is_enabled()) {
-      simcall_set_category(comm, task->category);
-    }
-#endif
-
-#ifdef HAVE_TRACING
-  if (call_end)
-    TRACE_msg_task_put_end();
-#endif
+  MSG_task_dsend(task, alias, cleanup);
 }
 
 /** \ingroup msg_task_usage
@@ -598,32 +555,14 @@ void MSG_task_dsend_bounded(msg_task_t task, const char *alias, void_f_pvoid_t c
  *
  * This is a non blocking function: use MSG_comm_wait() or MSG_comm_test()
  * to end the communication.
- * 
+ *
  * \param task a memory location for storing a #msg_task_t. has to be valid until the end of the communication.
  * \param name of the mailbox to receive the task on
  * \return the msg_comm_t communication created
  */
 msg_comm_t MSG_task_irecv(msg_task_t *task, const char *name)
 {
-  smx_rdv_t rdv = MSG_mailbox_get_by_alias(name);
-
-  /* FIXME: these functions are not traceable */
-
-  /* Sanity check */
-  xbt_assert(task, "Null pointer for the task storage");
-
-  if (*task)
-    XBT_CRITICAL
-        ("MSG_task_irecv() was asked to write in a non empty task struct.");
-
-  /* Try to receive it by calling SIMIX network layer */
-  msg_comm_t comm = xbt_new0(s_msg_comm_t, 1);
-  comm->task_sent = NULL;
-  comm->task_received = task;
-  comm->status = MSG_OK;
-  comm->s_comm = simcall_comm_irecv(rdv, task, NULL, NULL, NULL);
-
-  return comm;
+  return MSG_task_irecv_bounded(task, name, -1.0);
 }
 
 /** \ingroup msg_task_usage
@@ -635,10 +574,9 @@ msg_comm_t MSG_task_irecv(msg_task_t *task, const char *name)
  * \param rate limit the bandwidth to the given rate
  * \return the msg_comm_t communication created
  */
-msg_comm_t MSG_task_irecv_bounded(msg_task_t *task, const char *name, double rate)
+msg_comm_t MSG_task_irecv_bounded(msg_task_t *task, const char *name,
+                                  double rate)
 {
-
-
   smx_rdv_t rdv = MSG_mailbox_get_by_alias(name);
 
   /* FIXME: these functions are not traceable */
@@ -655,7 +593,7 @@ msg_comm_t MSG_task_irecv_bounded(msg_task_t *task, const char *name, double rat
   comm->task_sent = NULL;
   comm->task_received = task;
   comm->status = MSG_OK;
-  comm->s_comm = simcall_comm_irecv_bounded(rdv, task, NULL, NULL, NULL, rate);
+  comm->s_comm = simcall_comm_irecv(rdv, task, NULL, NULL, NULL, rate);
 
   return comm;
 }
@@ -773,7 +711,7 @@ void MSG_comm_destroy(msg_comm_t comm)
  *
  * It takes two parameters.
  * \param comm the communication to wait.
- * \param timeout Wait until the communication terminates or the timeout 
+ * \param timeout Wait until the communication terminates or the timeout
  * occurs. You can provide a -1 timeout to obtain an infinite timeout.
  * \return msg_error_t
  */

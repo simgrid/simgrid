@@ -1,4 +1,4 @@
-/* Copyright (c) 2007-2010, 2012-2013. The SimGrid Team.
+/* Copyright (c) 2007-2010, 2012-2014. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -429,24 +429,14 @@ XBT_PUBLIC(smx_action_t) simcall_comm_isend(smx_rdv_t rdv, double task_size,
                                               void *data, int detached);
 
 XBT_PUBLIC(void) simcall_comm_recv(smx_rdv_t rdv, void *dst_buff,
-                                     size_t * dst_buff_size,
-                                     int (*match_fun)(void *, void *, smx_action_t),
-                                     void *data, double timeout);
+                                   size_t * dst_buff_size,
+                                   int (*match_fun)(void *, void *, smx_action_t),
+                                   void *data, double timeout, double rate);
 
 XBT_PUBLIC(smx_action_t) simcall_comm_irecv(smx_rdv_t rdv, void *dst_buff,
-                                              size_t * dst_buff_size,
-                                              int (*match_fun)(void *, void *, smx_action_t),
-                                              void *data);
-
-XBT_PUBLIC(void) simcall_comm_recv_bounded(smx_rdv_t rdv, void *dst_buff,
-                                     size_t * dst_buff_size,
-                                     int (*match_fun)(void *, void *, smx_action_t),
-                                     void *data, double timeout, double rate);
-
-XBT_PUBLIC(smx_action_t) simcall_comm_irecv_bounded(smx_rdv_t rdv, void *dst_buff,
-                                              size_t * dst_buff_size,
-                                              int (*match_fun)(void *, void *, smx_action_t),
-                                              void *data, double rate);
+                                            size_t * dst_buff_size,
+                                            int (*match_fun)(void *, void *, smx_action_t),
+                                            void *data, double rate);
 
 XBT_PUBLIC(void) simcall_comm_destroy(smx_action_t comm);
 XBT_PUBLIC(smx_action_t) simcall_comm_iprobe(smx_rdv_t rdv, int src, int tag,

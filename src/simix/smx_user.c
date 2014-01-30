@@ -1,6 +1,6 @@
 /* smx_user.c - public interface to simix                                   */
 
-/* Copyright (c) 2010-2013. The SimGrid Team.
+/* Copyright (c) 2010-2014. The SimGrid Team.
    All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -1006,70 +1006,38 @@ smx_action_t simcall_comm_isend(smx_rdv_t rdv, double task_size, double rate,
                                  src_buff_size, match_fun,
                                  clean_fun, data, detached);
 }
+
 /**
  * \ingroup simix_comm_management
  */
 void simcall_comm_recv(smx_rdv_t rdv, void *dst_buff, size_t * dst_buff_size,
-                         int (*match_fun)(void *, void *, smx_action_t), void *data, double timeout)
+                       int (*match_fun)(void *, void *, smx_action_t),
+                       void *data, double timeout, double rate)
 {
   xbt_assert(isfinite(timeout), "timeout is not finite!");
   xbt_assert(rdv, "No rendez-vous point defined for recv");
 
   if (MC_is_active()) {
     /* the model-checker wants two separate simcalls */
-    smx_action_t comm = NULL; /* MC needs the comm to be set to NULL during the simcall */
-    comm = simcall_comm_irecv(rdv, dst_buff, dst_buff_size,
-        match_fun, data);
+    smx_action_t comm = simcall_comm_irecv(rdv, dst_buff, dst_buff_size,
+                                           match_fun, data, rate);
     simcall_comm_wait(comm, timeout);
-    comm = NULL;
   }
   else {
     simcall_BODY_comm_recv(rdv, dst_buff, dst_buff_size,
-                           match_fun, data, timeout);
-  }
-}
-/**
- * \ingroup simix_comm_management
- */
-smx_action_t simcall_comm_irecv(smx_rdv_t rdv, void *dst_buff, size_t *dst_buff_size,
-                                  int (*match_fun)(void *, void *, smx_action_t), void *data)
-{
-  xbt_assert(rdv, "No rendez-vous point defined for irecv");
-
-  return simcall_BODY_comm_irecv(rdv, dst_buff, dst_buff_size, 
-                                 match_fun, data);
-}
-
-
-/**
- * \ingroup simix_comm_management
- */
-void simcall_comm_recv_bounded(smx_rdv_t rdv, void *dst_buff, size_t * dst_buff_size,
-                         int (*match_fun)(void *, void *, smx_action_t), void *data, double timeout, double rate)
-{
-  xbt_assert(isfinite(timeout), "timeout is not finite!");
-  xbt_assert(rdv, "No rendez-vous point defined for recv");
-
-  if (MC_is_active()) {
-    /* the model-checker wants two separate simcalls */
-    smx_action_t comm = simcall_comm_irecv_bounded(rdv, dst_buff, dst_buff_size,
-        match_fun, data, rate);
-    simcall_comm_wait(comm, timeout);
-  }
-  else {
-    simcall_BODY_comm_recv_bounded(rdv, dst_buff, dst_buff_size,
                            match_fun, data, timeout, rate);
   }
 }
 /**
  * \ingroup simix_comm_management
  */
-smx_action_t simcall_comm_irecv_bounded(smx_rdv_t rdv, void *dst_buff, size_t *dst_buff_size,
-                                  int (*match_fun)(void *, void *, smx_action_t), void *data, double rate)
+smx_action_t simcall_comm_irecv(smx_rdv_t rdv, void *dst_buff, size_t *dst_buff_size,
+                                int (*match_fun)(void *, void *, smx_action_t),
+                                void *data, double rate)
 {
   xbt_assert(rdv, "No rendez-vous point defined for irecv");
 
-  return simcall_BODY_comm_irecv_bounded(rdv, dst_buff, dst_buff_size,
+  return simcall_BODY_comm_irecv(rdv, dst_buff, dst_buff_size,
                                  match_fun, data, rate);
 }
 

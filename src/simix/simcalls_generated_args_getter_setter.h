@@ -846,6 +846,12 @@ static inline double simcall_comm_recv__get__timeout(smx_simcall_t simcall){
 static inline void simcall_comm_recv__set__timeout(smx_simcall_t simcall, double arg){
     simcall->args[5].d = arg;
 }
+static inline double simcall_comm_recv__get__rate(smx_simcall_t simcall){
+  return  simcall->args[6].d;
+}
+static inline void simcall_comm_recv__set__rate(smx_simcall_t simcall, double arg){
+    simcall->args[6].d = arg;
+}
 static inline smx_rdv_t simcall_comm_irecv__get__rdv(smx_simcall_t simcall){
   return (smx_rdv_t) simcall->args[0].dp;
 }
@@ -876,82 +882,10 @@ static inline void* simcall_comm_irecv__get__data(smx_simcall_t simcall){
 static inline void simcall_comm_irecv__set__data(smx_simcall_t simcall, void* arg){
     simcall->args[4].dp = arg;
 }
-static inline smx_rdv_t simcall_comm_recv_bounded__get__rdv(smx_simcall_t simcall){
-  return (smx_rdv_t) simcall->args[0].dp;
-}
-static inline void simcall_comm_recv_bounded__set__rdv(smx_simcall_t simcall, void* arg){
-    simcall->args[0].dp = arg;
-}
-static inline void* simcall_comm_recv_bounded__get__dst_buff(smx_simcall_t simcall){
-  return  simcall->args[1].dp;
-}
-static inline void simcall_comm_recv_bounded__set__dst_buff(smx_simcall_t simcall, void* arg){
-    simcall->args[1].dp = arg;
-}
-static inline size_t* simcall_comm_recv_bounded__get__dst_buff_size(smx_simcall_t simcall){
-  return (size_t*) simcall->args[2].dp;
-}
-static inline void simcall_comm_recv_bounded__set__dst_buff_size(smx_simcall_t simcall, void* arg){
-    simcall->args[2].dp = arg;
-}
-static inline simix_match_func_t simcall_comm_recv_bounded__get__match_fun(smx_simcall_t simcall){
-  return (simix_match_func_t) simcall->args[3].fp;
-}
-static inline void simcall_comm_recv_bounded__set__match_fun(smx_simcall_t simcall, FPtr arg){
-    simcall->args[3].fp = arg;
-}
-static inline void* simcall_comm_recv_bounded__get__data(smx_simcall_t simcall){
-  return  simcall->args[4].dp;
-}
-static inline void simcall_comm_recv_bounded__set__data(smx_simcall_t simcall, void* arg){
-    simcall->args[4].dp = arg;
-}
-static inline double simcall_comm_recv_bounded__get__timeout(smx_simcall_t simcall){
+static inline double simcall_comm_irecv__get__rate(smx_simcall_t simcall){
   return  simcall->args[5].d;
 }
-static inline void simcall_comm_recv_bounded__set__timeout(smx_simcall_t simcall, double arg){
-    simcall->args[5].d = arg;
-}
-static inline double simcall_comm_recv_bounded__get__rate(smx_simcall_t simcall){
-  return  simcall->args[6].d;
-}
-static inline void simcall_comm_recv_bounded__set__rate(smx_simcall_t simcall, double arg){
-    simcall->args[6].d = arg;
-}
-static inline smx_rdv_t simcall_comm_irecv_bounded__get__rdv(smx_simcall_t simcall){
-  return (smx_rdv_t) simcall->args[0].dp;
-}
-static inline void simcall_comm_irecv_bounded__set__rdv(smx_simcall_t simcall, void* arg){
-    simcall->args[0].dp = arg;
-}
-static inline void* simcall_comm_irecv_bounded__get__dst_buff(smx_simcall_t simcall){
-  return  simcall->args[1].dp;
-}
-static inline void simcall_comm_irecv_bounded__set__dst_buff(smx_simcall_t simcall, void* arg){
-    simcall->args[1].dp = arg;
-}
-static inline size_t* simcall_comm_irecv_bounded__get__dst_buff_size(smx_simcall_t simcall){
-  return (size_t*) simcall->args[2].dp;
-}
-static inline void simcall_comm_irecv_bounded__set__dst_buff_size(smx_simcall_t simcall, void* arg){
-    simcall->args[2].dp = arg;
-}
-static inline simix_match_func_t simcall_comm_irecv_bounded__get__match_fun(smx_simcall_t simcall){
-  return (simix_match_func_t) simcall->args[3].fp;
-}
-static inline void simcall_comm_irecv_bounded__set__match_fun(smx_simcall_t simcall, FPtr arg){
-    simcall->args[3].fp = arg;
-}
-static inline void* simcall_comm_irecv_bounded__get__data(smx_simcall_t simcall){
-  return  simcall->args[4].dp;
-}
-static inline void simcall_comm_irecv_bounded__set__data(smx_simcall_t simcall, void* arg){
-    simcall->args[4].dp = arg;
-}
-static inline double simcall_comm_irecv_bounded__get__rate(smx_simcall_t simcall){
-  return  simcall->args[5].d;
-}
-static inline void simcall_comm_irecv_bounded__set__rate(smx_simcall_t simcall, double arg){
+static inline void simcall_comm_irecv__set__rate(smx_simcall_t simcall, double arg){
     simcall->args[5].d = arg;
 }
 static inline smx_action_t simcall_comm_destroy__get__comm(smx_simcall_t simcall){
