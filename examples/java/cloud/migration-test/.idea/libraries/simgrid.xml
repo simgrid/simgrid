@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="simgrid">
-    <CLASSES>
-      <root url="jar://$PROJECT_DIR$/LIBS/simgrid.jar!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>
