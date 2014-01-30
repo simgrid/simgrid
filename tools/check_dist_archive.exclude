@@ -12,6 +12,7 @@
 + \.cproject
 + \.gitignore
 + \.project
++ COPYRIGHT.template
 + README\.(coding|git)
 + mk_win-dist.sh
 
