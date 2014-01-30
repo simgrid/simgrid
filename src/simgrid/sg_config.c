@@ -1,4 +1,4 @@
-/* Copyright (c) 2009-2010, 2012-2013. The SimGrid Team.
+/* Copyright (c) 2009-2010, 2012-2014. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -951,32 +951,37 @@ void surf_config_models_setup()
 
 }
 
+int sg_cfg_is_default_value(const char *name)
+{
+  return xbt_cfg_is_default_value(_sg_cfg_set, name);
+}
+
 int sg_cfg_get_int(const char* name)
 {
-  return xbt_cfg_get_int(_sg_cfg_set,name);
+  return xbt_cfg_get_int(_sg_cfg_set, name);
 }
 
 double sg_cfg_get_double(const char* name)
 {
-  return xbt_cfg_get_double(_sg_cfg_set,name);
+  return xbt_cfg_get_double(_sg_cfg_set, name);
 }
 
 char* sg_cfg_get_string(const char* name)
 {
-  return xbt_cfg_get_string(_sg_cfg_set,name);
+  return xbt_cfg_get_string(_sg_cfg_set, name);
 }
 
 int sg_cfg_get_boolean(const char* name)
 {
-  return xbt_cfg_get_boolean(_sg_cfg_set,name);
+  return xbt_cfg_get_boolean(_sg_cfg_set, name);
 }
 
 void sg_cfg_get_peer(const char *name, char **peer, int *port)
 {
-  xbt_cfg_get_peer(_sg_cfg_set,name, peer, port);
+  xbt_cfg_get_peer(_sg_cfg_set, name, peer, port);
 }
 
 xbt_dynar_t sg_cfg_get_dynar(const char* name)
 {
-  return xbt_cfg_get_dynar(_sg_cfg_set,name);
+  return xbt_cfg_get_dynar(_sg_cfg_set, name);
 }
