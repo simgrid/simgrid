@@ -1,0 +1,6 @@
+#! tesh
+
+$ java -classpath ${classpath:=.} cloud/migration/Main ${srcdir:=.}/cloud/migration/platform_simple.xml ${srcdir:=.}/cloud/migration/deploy_simple.xml 
+>
+> FIXME: add expected output here!
+>
