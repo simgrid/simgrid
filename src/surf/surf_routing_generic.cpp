@@ -44,14 +44,14 @@ AsGeneric::~AsGeneric() {
 
 int AsGeneric::parsePU(RoutingEdgePtr elm)
 {
-  XBT_DEBUG("Load process unit \"%s\"", elm->p_name);
+  XBT_DEBUG("Load process unit \"%s\"", elm->getName());
   xbt_dynar_push_as(p_indexNetworkElm, RoutingEdgePtr, elm);
   return xbt_dynar_length(p_indexNetworkElm)-1;
 }
 
 int AsGeneric::parseAS(RoutingEdgePtr elm)
 {
-  XBT_DEBUG("Load Autonomous system \"%s\"", elm->p_name);
+  XBT_DEBUG("Load Autonomous system \"%s\"", elm->getName());
   xbt_dynar_push_as(p_indexNetworkElm, RoutingEdgePtr, elm);
   return xbt_dynar_length(p_indexNetworkElm)-1;
 }
@@ -74,7 +74,7 @@ void AsGeneric::parseBypassroute(sg_platf_route_cbarg_t e_route)
       src, dst);
   xbt_assert(!xbt_dict_get_or_null(dict_bypassRoutes, route_name),
       "The bypass route between \"%s\"(\"%s\") and \"%s\"(\"%s\") already exists",
-      src, e_route->gw_src->p_name, dst, e_route->gw_dst->p_name);
+      src, e_route->gw_src->getName(), dst, e_route->gw_dst->getName());
 
   sg_platf_route_cbarg_t new_e_route = NULL;
   if(e_route->gw_dst)
@@ -162,7 +162,7 @@ void AsGeneric::getGraph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges)
 
       getRouteAndLatency(my_src, my_dst, route, NULL);
 
-      XBT_DEBUG ("get_route_and_latency %s -> %s", my_src->p_name, my_dst->p_name);
+      XBT_DEBUG ("get_route_and_latency %s -> %s", my_src->getName(), my_dst->getName());
 
       unsigned int cpt;
       void *link;
@@ -171,11 +171,11 @@ void AsGeneric::getGraph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges)
       const char *previous_name, *current_name;
 
       if (route->gw_src) {
-        previous = new_xbt_graph_node(graph, route->gw_src->p_name, nodes);
-        previous_name = route->gw_src->p_name;
+        previous = new_xbt_graph_node(graph, route->gw_src->getName(), nodes);
+        previous_name = route->gw_src->getName();
       } else {
-        previous = new_xbt_graph_node(graph, my_src->p_name, nodes);
-        previous_name = my_src->p_name;
+        previous = new_xbt_graph_node(graph, my_src->getName(), nodes);
+        previous_name = my_src->getName();
       }
 
       xbt_dynar_foreach(route->link_list, cpt, link) {
@@ -189,11 +189,11 @@ void AsGeneric::getGraph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges)
       }
 
       if (route->gw_dst) {
-        current = new_xbt_graph_node(graph, route->gw_dst->p_name, nodes);
-        current_name = route->gw_dst->p_name;
+        current = new_xbt_graph_node(graph, route->gw_dst->getName(), nodes);
+        current_name = route->gw_dst->getName();
       } else {
-        current = new_xbt_graph_node(graph, my_dst->p_name, nodes);
-        current_name = my_dst->p_name;
+        current = new_xbt_graph_node(graph, my_dst->getName(), nodes);
+        current_name = my_dst->getName();
       }
       new_xbt_graph_edge(graph, previous, current, edges);
       XBT_DEBUG ("  %s -> %s", previous_name, current_name);
@@ -209,15 +209,15 @@ sg_platf_route_cbarg_t AsGeneric::getBypassRoute(RoutingEdgePtr src,
                                                double *lat)
 {
   // If never set a bypass route return NULL without any further computations
-  XBT_DEBUG("generic_get_bypassroute from %s to %s", src->p_name, dst->p_name);
+  XBT_DEBUG("generic_get_bypassroute from %s to %s", src->getName(), dst->getName());
   if (no_bypassroute_declared)
     return NULL;
 
   sg_platf_route_cbarg_t e_route_bypass = NULL;
   xbt_dict_t dict_bypassRoutes = p_bypassRoutes;
 
-  if(dst->p_rcComponent == this && src->p_rcComponent == this ){
-    char *route_name = bprintf("%s#%s", src->p_name, dst->p_name);
+  if(dst->getRcComponent() == this && src->getRcComponent() == this ){
+    char *route_name = bprintf("%s#%s", src->getName(), dst->getName());
     e_route_bypass = (sg_platf_route_cbarg_t) xbt_dict_get_or_null(dict_bypassRoutes, route_name);
     if(e_route_bypass)
       XBT_DEBUG("Find bypass route with %ld links",xbt_dynar_length(e_route_bypass->link_list));
@@ -234,10 +234,10 @@ sg_platf_route_cbarg_t AsGeneric::getBypassRoute(RoutingEdgePtr src,
 
     if (src == NULL || dst == NULL)
       xbt_die("Ask for route \"from\"(%s) or \"to\"(%s) no found at AS \"%s\"",
-          src->p_name, dst->p_name, p_name);
+          src->getName(), dst->getName(), p_name);
 
-    src_as = src->p_rcComponent;
-    dst_as = dst->p_rcComponent;
+    src_as = src->getRcComponent();
+    dst_as = dst->getRcComponent();
 
     /* (2) find the path to the root routing component */
     path_src = xbt_dynar_new(sizeof(AsPtr), NULL);
@@ -408,7 +408,7 @@ AsPtr AsGeneric::autonomousSystemExist(char *element)
   char *key;
   element_as = ((RoutingEdgePtr)
       xbt_lib_get_or_null(as_router_lib, element,
-          ROUTING_ASR_LEVEL))->p_rcComponent;
+          ROUTING_ASR_LEVEL))->getRcComponent();
   result = ((AsPtr) - 1);
   if (element_as != this)
     result = asExist(element_as);
@@ -431,7 +431,7 @@ AsPtr AsGeneric::processingUnitsExist(char *element)
   AsPtr element_as;
   element_as = ((RoutingEdgePtr)
       xbt_lib_get_or_null(host_lib,
-          element, ROUTING_HOST_LEVEL))->p_rcComponent;
+          element, ROUTING_HOST_LEVEL))->getRcComponent();
   if (element_as == this)
     return element_as;
   return asExist(element_as);
@@ -445,25 +445,25 @@ void AsGeneric::srcDstCheck(RoutingEdgePtr src, RoutingEdgePtr dst)
 
   if (src_data == NULL || dst_data == NULL)
     xbt_die("Ask for route \"from\"(%s) or \"to\"(%s) no found at AS \"%s\"",
-        src->p_name,
-        dst->p_name,
+        src->getName(),
+        dst->getName(),
         p_name);
 
   AsPtr src_as =
-      (src_data)->p_rcComponent;
+      (src_data)->getRcComponent();
   AsPtr dst_as =
-      (dst_data)->p_rcComponent;
+      (dst_data)->getRcComponent();
 
   if (src_as != dst_as)
     xbt_die("The src(%s in %s) and dst(%s in %s) are in differents AS",
-        src->p_name, src_as->p_name,
-        dst->p_name, dst_as->p_name);
+        src->getName(), src_as->p_name,
+        dst->getName(), dst_as->p_name);
 
   if (this != dst_as)
     xbt_die
     ("The routing component of src'%s' and dst'%s' is not the same as the network elements belong (%s?=%s?=%s)",
-        src->p_name,
-        dst->p_name,
+        src->getName(),
+        dst->getName(),
         src_as->p_name,
         dst_as->p_name,
         p_name);

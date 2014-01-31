@@ -212,7 +212,8 @@ CpuCas01::CpuCas01(CpuCas01ModelPtr model, const char *name, xbt_dynar_t powerPe
 }
 
 CpuCas01::~CpuCas01(){
-  xbt_dynar_free(&p_powerPeakList);
+  if (getModel() == surf_cpu_model_pm)
+    xbt_dynar_free(&p_powerPeakList);
 }
 
 bool CpuCas01::isUsed()

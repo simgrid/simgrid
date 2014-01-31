@@ -22,11 +22,11 @@ void AsVivaldi::getRouteAndLatency(RoutingEdgePtr src, RoutingEdgePtr dst, sg_pl
   s_surf_parsing_link_up_down_t info;
 
   XBT_DEBUG("vivaldi_get_route_and_latency from '%s'[%d] '%s'[%d]",
-		  src->p_name, src->m_id, dst->p_name, dst->m_id);
+		  src->getName(), src->getId(), dst->getName(), dst->getId());
 
-  if(src->p_rcType == SURF_NETWORK_ELEMENT_AS) {
-    char *src_name = ROUTER_PEER(src->p_name);
-    char *dst_name = ROUTER_PEER(dst->p_name);
+  if(src->getRcType() == SURF_NETWORK_ELEMENT_AS) {
+    char *src_name = ROUTER_PEER(src->getName());
+    char *dst_name = ROUTER_PEER(dst->getName());
     route->gw_src = (sg_routing_edge_t) xbt_lib_get_or_null(as_router_lib, src_name, ROUTING_ASR_LEVEL);
     route->gw_dst = (sg_routing_edge_t) xbt_lib_get_or_null(as_router_lib, dst_name, ROUTING_ASR_LEVEL);
     xbt_free(src_name);
@@ -37,11 +37,11 @@ void AsVivaldi::getRouteAndLatency(RoutingEdgePtr src, RoutingEdgePtr dst, sg_pl
   xbt_dynar_t src_ctn, dst_ctn;
   char *tmp_src_name, *tmp_dst_name;
 
-  if(src->p_rcType == SURF_NETWORK_ELEMENT_HOST){
-    tmp_src_name = HOST_PEER(src->p_name);
+  if(src->getRcType() == SURF_NETWORK_ELEMENT_HOST){
+    tmp_src_name = HOST_PEER(src->getName());
 
     if(p_linkUpDownList){
-      info = xbt_dynar_get_as(p_linkUpDownList, src->m_id, s_surf_parsing_link_up_down_t);
+      info = xbt_dynar_get_as(p_linkUpDownList, src->getId(), s_surf_parsing_link_up_down_t);
       if(info.link_up) { // link up
         xbt_dynar_push_as(route->link_list, void*, info.link_up);
         if (lat)
@@ -49,21 +49,21 @@ void AsVivaldi::getRouteAndLatency(RoutingEdgePtr src, RoutingEdgePtr dst, sg_pl
       }
     }
     src_ctn = (xbt_dynar_t) xbt_lib_get_or_null(host_lib, tmp_src_name, COORD_HOST_LEVEL);
-    if(!src_ctn ) src_ctn = (xbt_dynar_t) xbt_lib_get_or_null(host_lib, src->p_name, COORD_HOST_LEVEL);
+    if(!src_ctn ) src_ctn = (xbt_dynar_t) xbt_lib_get_or_null(host_lib, src->getName(), COORD_HOST_LEVEL);
   }
-  else if(src->p_rcType == SURF_NETWORK_ELEMENT_ROUTER || src->p_rcType == SURF_NETWORK_ELEMENT_AS){
-    tmp_src_name = ROUTER_PEER(src->p_name);
+  else if(src->getRcType() == SURF_NETWORK_ELEMENT_ROUTER || src->getRcType() == SURF_NETWORK_ELEMENT_AS){
+    tmp_src_name = ROUTER_PEER(src->getName());
     src_ctn = (xbt_dynar_t) xbt_lib_get_or_null(as_router_lib, tmp_src_name, COORD_ASR_LEVEL);
   }
   else{
     THROW_IMPOSSIBLE;
   }
 
-  if(dst->p_rcType == SURF_NETWORK_ELEMENT_HOST){
-    tmp_dst_name = HOST_PEER(dst->p_name);
+  if(dst->getRcType() == SURF_NETWORK_ELEMENT_HOST){
+    tmp_dst_name = HOST_PEER(dst->getName());
 
     if(p_linkUpDownList){
-      info = xbt_dynar_get_as(p_linkUpDownList, dst->m_id, s_surf_parsing_link_up_down_t);
+      info = xbt_dynar_get_as(p_linkUpDownList, dst->getId(), s_surf_parsing_link_up_down_t);
       if(info.link_down) { // link down
         xbt_dynar_push_as(route->link_list,void*,info.link_down);
         if (lat)
@@ -71,10 +71,10 @@ void AsVivaldi::getRouteAndLatency(RoutingEdgePtr src, RoutingEdgePtr dst, sg_pl
       }
     }
     dst_ctn = (xbt_dynar_t) xbt_lib_get_or_null(host_lib, tmp_dst_name, COORD_HOST_LEVEL);
-    if(!dst_ctn ) dst_ctn = (xbt_dynar_t) xbt_lib_get_or_null(host_lib, dst->p_name, COORD_HOST_LEVEL);
+    if(!dst_ctn ) dst_ctn = (xbt_dynar_t) xbt_lib_get_or_null(host_lib, dst->getName(), COORD_HOST_LEVEL);
   }
-  else if(dst->p_rcType == SURF_NETWORK_ELEMENT_ROUTER || dst->p_rcType == SURF_NETWORK_ELEMENT_AS){
-    tmp_dst_name = ROUTER_PEER(dst->p_name);
+  else if(dst->getRcType() == SURF_NETWORK_ELEMENT_ROUTER || dst->getRcType() == SURF_NETWORK_ELEMENT_AS){
+    tmp_dst_name = ROUTER_PEER(dst->getName());
     dst_ctn = (xbt_dynar_t) xbt_lib_get_or_null(as_router_lib, tmp_dst_name, COORD_ASR_LEVEL);
   }
   else{
@@ -96,7 +96,7 @@ void AsVivaldi::getRouteAndLatency(RoutingEdgePtr src, RoutingEdgePtr dst, sg_pl
 }
 
 int AsVivaldi::parsePU(RoutingEdgePtr elm) {
-  XBT_DEBUG("Load process unit \"%s\"", elm->p_name);
+  XBT_DEBUG("Load process unit \"%s\"", elm->getName());
   xbt_dynar_push_as(p_indexNetworkElm, sg_routing_edge_t, elm);
   return xbt_dynar_length(p_indexNetworkElm)-1;
 }

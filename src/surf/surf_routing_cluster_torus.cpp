@@ -117,13 +117,13 @@ void AsClusterTorus::parse_specific_arguments(sg_platf_cluster_cbarg_t cluster){
 void AsClusterTorus::getRouteAndLatency(RoutingEdgePtr src, RoutingEdgePtr dst, sg_platf_route_cbarg_t route, double *lat){
 
   XBT_VERB("torus_get_route_and_latency from '%s'[%d] to '%s'[%d]",
-               src->p_name,src->m_id,
-               dst->p_name,dst->m_id);
+               src->getName(), src->getId(),
+               dst->getName(), dst->getId());
 
-     if (dst->p_rcType == SURF_NETWORK_ELEMENT_ROUTER || src->p_rcType == SURF_NETWORK_ELEMENT_ROUTER) return;
+     if (dst->getRcType() == SURF_NETWORK_ELEMENT_ROUTER || src->getRcType() == SURF_NETWORK_ELEMENT_ROUTER) return;
 
-     if((src->m_id == dst->m_id) && p_has_loopback  ){
-       s_surf_parsing_link_up_down_t info = xbt_dynar_get_as(p_linkUpDownList, src->m_id * p_nb_links_per_node, s_surf_parsing_link_up_down_t);
+     if((src->getId() == dst->getId()) && p_has_loopback  ){
+       s_surf_parsing_link_up_down_t info = xbt_dynar_get_as(p_linkUpDownList, src->getId() * p_nb_links_per_node, s_surf_parsing_link_up_down_t);
        xbt_dynar_push_as(route->link_list, void *, info.link_up);
 
        if (lat)
@@ -137,7 +137,7 @@ void AsClusterTorus::getRouteAndLatency(RoutingEdgePtr src, RoutingEdgePtr dst, 
       * TODO Change to dynamic assignment
       */
      unsigned int j, cur_dim, dim_product   = 1;
-     int current_node    = src->m_id;
+     int current_node    = src->getId();
      int unsigned next_node       = 0;
      /**
       * Arrays that hold the coordinates of the current node and
@@ -146,8 +146,8 @@ void AsClusterTorus::getRouteAndLatency(RoutingEdgePtr src, RoutingEdgePtr dst, 
       * into this dimension or not.
       */
      unsigned int* myCoords, *targetCoords;
-     myCoords     = rankId_to_coords(src->m_id, p_dimensions);
-     targetCoords = rankId_to_coords(dst->m_id, p_dimensions);
+     myCoords     = rankId_to_coords(src->getId(), p_dimensions);
+     targetCoords = rankId_to_coords(dst->getId(), p_dimensions);
      /**
       * linkOffset describes the offset where the link
       * we want to use is stored
@@ -155,18 +155,18 @@ void AsClusterTorus::getRouteAndLatency(RoutingEdgePtr src, RoutingEdgePtr dst, 
       * which can only be the case if src->m_id == dst->m_id -- see above
       * for this special case)
       */
-     int nodeOffset = (xbt_dynar_length(p_dimensions)+1)*src->m_id;
+     int nodeOffset = (xbt_dynar_length(p_dimensions)+1)*src->getId();
 
      int linkOffset = nodeOffset;
      bool use_lnk_up          = false; // Is this link of the form "cur -> next" or "next -> cur"?
                                        // false means: next -> cur
-     while (current_node != dst->m_id) {
+     while (current_node != dst->getId()) {
        dim_product = 1; // First, we will route in x-dimension
        for (j = 0; j < xbt_dynar_length(p_dimensions); j++) {
            cur_dim = xbt_dynar_get_as(p_dimensions, j, int);
 
            // current_node/dim_product = position in current dimension
-           if ((current_node/dim_product) % cur_dim != (dst->m_id/dim_product) % cur_dim) {
+           if ((current_node/dim_product) % cur_dim != (dst->getId()/dim_product) % cur_dim) {
 
                if (( targetCoords[j] > myCoords[j] && targetCoords[j] <= myCoords[j]+cur_dim/2) // Is the target node on the right, without the wrap-around?
                    || ( myCoords[j] > cur_dim/2 && (myCoords[j]+cur_dim/2)%cur_dim >= targetCoords[j] )) { // Or do we need to use the wrap around to reach it?

@@ -90,14 +90,14 @@ void AsFloyd::getRouteAndLatency(RoutingEdgePtr src, RoutingEdgePtr dst, sg_plat
   /* create a result route */
   xbt_dynar_t route_stack = xbt_dynar_new(sizeof(sg_platf_route_cbarg_t), NULL);
   int pred;
-  int cur = dst->m_id;
+  int cur = dst->getId();
   do {
-    pred = TO_FLOYD_PRED(src->m_id, cur);
+    pred = TO_FLOYD_PRED(src->getId(), cur);
     if (pred == -1)
-      THROWF(arg_error, 0, "No route from '%s' to '%s'", src->p_name, dst->p_name);
+      THROWF(arg_error, 0, "No route from '%s' to '%s'", src->getName(), dst->getName());
     xbt_dynar_push_as(route_stack, sg_platf_route_cbarg_t, TO_FLOYD_LINK(pred, cur));
     cur = pred;
-  } while (cur != src->m_id);
+  } while (cur != src->getId());
 
   if (p_hierarchy == SURF_ROUTING_RECURSIVE) {
     res->gw_src = xbt_dynar_getlast_as(route_stack, sg_platf_route_cbarg_t)->gw_src;
@@ -112,7 +112,7 @@ void AsFloyd::getRouteAndLatency(RoutingEdgePtr src, RoutingEdgePtr dst, sg_plat
     unsigned int cpt;
 
     if (p_hierarchy == SURF_ROUTING_RECURSIVE && prev_dst_gw != NULL
-        && strcmp(prev_dst_gw->p_name, e_route->gw_src->p_name)) {
+        && strcmp(prev_dst_gw->getName(), e_route->gw_src->getName())) {
       routing_get_route_and_latency(prev_dst_gw, e_route->gw_src,
                                     &res->link_list, lat);
     }
@@ -175,14 +175,14 @@ void AsFloyd::parseRoute(sg_platf_route_cbarg_t route)
   else{
     as_route = 1;
     XBT_DEBUG("Load ASroute from \"%s(%s)\" to \"%s(%s)\"", src,
-        route->gw_src->p_name, dst, route->gw_dst->p_name);
-    if(route->gw_dst->p_rcType == SURF_NETWORK_ELEMENT_NULL)
-      xbt_die("The dst_gateway '%s' does not exist!",route->gw_dst->p_name);
-    if(route->gw_src->p_rcType == SURF_NETWORK_ELEMENT_NULL)
-      xbt_die("The src_gateway '%s' does not exist!",route->gw_src->p_name);
+        route->gw_src->getName(), dst, route->gw_dst->getName());
+    if(route->gw_dst->getRcType() == SURF_NETWORK_ELEMENT_NULL)
+      xbt_die("The dst_gateway '%s' does not exist!",route->gw_dst->getName());
+    if(route->gw_src->getRcType() == SURF_NETWORK_ELEMENT_NULL)
+      xbt_die("The src_gateway '%s' does not exist!",route->gw_src->getName());
   }
 
-  if(TO_FLOYD_LINK(src_net_elm->m_id, dst_net_elm->m_id))
+  if(TO_FLOYD_LINK(src_net_elm->getId(), dst_net_elm->getId()))
   {
 
     char * link_name;
@@ -195,31 +195,31 @@ void AsFloyd::parseRoute(sg_platf_route_cbarg_t route)
       xbt_dynar_push(link_route_to_test,&link);
     }
     xbt_assert(!xbt_dynar_compare(
-        TO_FLOYD_LINK(src_net_elm->m_id, dst_net_elm->m_id)->link_list,
+        TO_FLOYD_LINK(src_net_elm->getId(), dst_net_elm->getId())->link_list,
         link_route_to_test,
         (int_f_cpvoid_cpvoid_t) floyd_pointer_resource_cmp),
         "The route between \"%s\" and \"%s\" already exists", src,dst);
   }
   else
   {
-    TO_FLOYD_LINK(src_net_elm->m_id, dst_net_elm->m_id) =
+    TO_FLOYD_LINK(src_net_elm->getId(), dst_net_elm->getId()) =
         newExtendedRoute(p_hierarchy, route, 1);
-    TO_FLOYD_PRED(src_net_elm->m_id, dst_net_elm->m_id) = src_net_elm->m_id;
-    TO_FLOYD_COST(src_net_elm->m_id, dst_net_elm->m_id) =
-        ((TO_FLOYD_LINK(src_net_elm->m_id, dst_net_elm->m_id))->link_list)->used;   /* count of links, old model assume 1 */
+    TO_FLOYD_PRED(src_net_elm->getId(), dst_net_elm->getId()) = src_net_elm->getId();
+    TO_FLOYD_COST(src_net_elm->getId(), dst_net_elm->getId()) =
+        ((TO_FLOYD_LINK(src_net_elm->getId(), dst_net_elm->getId()))->link_list)->used;   /* count of links, old model assume 1 */
   }
 
   if ( (route->symmetrical == TRUE && as_route == 0)
       || (route->symmetrical == TRUE && as_route == 1)
   )
   {
-    if(TO_FLOYD_LINK(dst_net_elm->m_id, src_net_elm->m_id))
+    if(TO_FLOYD_LINK(dst_net_elm->getId(), src_net_elm->getId()))
     {
       if(!route->gw_dst && !route->gw_src)
         XBT_DEBUG("See Route from \"%s\" to \"%s\"", dst, src);
       else
         XBT_DEBUG("See ASroute from \"%s(%s)\" to \"%s(%s)\"", dst,
-            route->gw_src->p_name, src, route->gw_dst->p_name);
+            route->gw_src->getName(), src, route->gw_dst->getName());
       char * link_name;
       unsigned int i;
       xbt_dynar_t link_route_to_test = xbt_dynar_new(sizeof(sg_routing_link_t), NULL);
@@ -231,7 +231,7 @@ void AsFloyd::parseRoute(sg_platf_route_cbarg_t route)
         xbt_dynar_push(link_route_to_test,&link);
       }
       xbt_assert(!xbt_dynar_compare(
-          TO_FLOYD_LINK(dst_net_elm->m_id, src_net_elm->m_id)->link_list,
+          TO_FLOYD_LINK(dst_net_elm->getId(), src_net_elm->getId())->link_list,
           link_route_to_test,
           (int_f_cpvoid_cpvoid_t) floyd_pointer_resource_cmp),
           "The route between \"%s\" and \"%s\" already exists", src,dst);
@@ -250,13 +250,13 @@ void AsFloyd::parseRoute(sg_platf_route_cbarg_t route)
         XBT_DEBUG("Load Route from \"%s\" to \"%s\"", dst, src);
       else
         XBT_DEBUG("Load ASroute from \"%s(%s)\" to \"%s(%s)\"", dst,
-            route->gw_src->p_name, src, route->gw_dst->p_name);
+            route->gw_src->getName(), src, route->gw_dst->getName());
 
-      TO_FLOYD_LINK(dst_net_elm->m_id, src_net_elm->m_id) =
+      TO_FLOYD_LINK(dst_net_elm->getId(), src_net_elm->getId()) =
     		 newExtendedRoute(p_hierarchy, route, 0);
-      TO_FLOYD_PRED(dst_net_elm->m_id, src_net_elm->m_id) = dst_net_elm->m_id;
-      TO_FLOYD_COST(dst_net_elm->m_id, src_net_elm->m_id) =
-          ((TO_FLOYD_LINK(dst_net_elm->m_id, src_net_elm->m_id))->link_list)->used;   /* count of links, old model assume 1 */
+      TO_FLOYD_PRED(dst_net_elm->getId(), src_net_elm->getId()) = dst_net_elm->getId();
+      TO_FLOYD_COST(dst_net_elm->getId(), src_net_elm->getId()) =
+          ((TO_FLOYD_LINK(dst_net_elm->getId(), src_net_elm->getId()))->link_list)->used;   /* count of links, old model assume 1 */
     }
   }
   xbt_dynar_free(&route->link_list);

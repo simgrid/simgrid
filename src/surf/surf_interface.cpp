@@ -426,6 +426,17 @@ void surf_exit(void)
 
   sg_config_finalize();
 
+  xbt_dynar_free(&host_that_restart);
+  xbt_dynar_free(&surf_path);
+
+  xbt_lib_free(&host_lib);
+  xbt_lib_free(&link_lib);
+  xbt_lib_free(&as_router_lib);
+  xbt_lib_free(&storage_lib);
+  xbt_lib_free(&storage_type_lib);
+
+  xbt_dict_free(&watched_hosts_lib);
+
   xbt_dynar_foreach(model_list, iter, model)
     delete model;
   xbt_dynar_free(&model_list);
@@ -447,17 +458,6 @@ void surf_exit(void)
 
   xbt_free(surf_mins);
   surf_mins = NULL;
-
-  xbt_dynar_free(&host_that_restart);
-  xbt_dynar_free(&surf_path);
-
-  xbt_lib_free(&host_lib);
-  xbt_lib_free(&link_lib);
-  xbt_lib_free(&as_router_lib);
-  xbt_lib_free(&storage_lib);
-  xbt_lib_free(&storage_type_lib);
-
-  xbt_dict_free(&watched_hosts_lib);
 
   tmgr_finalize();
   surf_parse_lex_destroy();

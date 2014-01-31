@@ -75,8 +75,8 @@ void NetworkConstantModel::updateActionsState(double /*now*/, double delta)
 ActionPtr NetworkConstantModel::communicate(RoutingEdgePtr src, RoutingEdgePtr dst,
 		                         double size, double rate)
 {
-  char *src_name = src->p_name;
-  char *dst_name = dst->p_name;
+  char *src_name = src->getName();
+  char *dst_name = dst->getName();
 
   XBT_IN("(%s,%s,%g,%g)", src_name, dst_name, size, rate);
   NetworkConstantActionPtr action = new NetworkConstantAction(this, size, sg_latency_factor);

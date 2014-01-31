@@ -91,13 +91,47 @@ public:
  */
 struct RoutingEdge {
 public:
-  ~RoutingEdge() { xbt_free(p_name);};
+  virtual ~RoutingEdge(){};
+  virtual int getId()=0;
+  virtual int *getIdPtr()=0;
+  virtual void setId(int id)=0;
+  virtual char *getName()=0;
+  virtual AsPtr getRcComponent()=0;
+  virtual e_surf_network_element_type_t getRcType()=0;
+};
+
+struct RoutingEdgeImpl : public RoutingEdge {
+public:
+  RoutingEdgeImpl(char *name, int id, e_surf_network_element_type_t rcType, AsPtr rcComponent)
+  : p_rcComponent(rcComponent), p_rcType(rcType), m_id(id), p_name(name) {}
+  ~RoutingEdgeImpl() { xbt_free(p_name);};
+
+  int getId() {return m_id;}
+  int *getIdPtr() {return &m_id;}
+  void setId(int id) {m_id = id;}
+  char *getName() {return p_name;}
+  AsPtr getRcComponent() {return p_rcComponent;}
+  e_surf_network_element_type_t getRcType() {return p_rcType;}
+private:
   AsPtr p_rcComponent;
   e_surf_network_element_type_t p_rcType;
   int m_id;
   char *p_name;
 };
 
+struct RoutingEdgeWrapper : public RoutingEdge {
+public:
+  RoutingEdgeWrapper(RoutingEdge *re) : p_re(re){}
+  ~RoutingEdgeWrapper(){}
+  int getId() {return p_re->getId();}
+  int *getIdPtr() {return p_re->getIdPtr();}
+  void setId(int id) {p_re->setId(id);}
+  char *getName() {return p_re->getName();}
+  AsPtr getRcComponent() {return p_re->getRcComponent();}
+  e_surf_network_element_type_t getRcType() {return p_re->getRcType();}
+private:
+  RoutingEdge *p_re;
+};
 
 /** @ingroup SURF_routing_interface
  * @brief Link of lenght 1, alongside with its source and destination. This is mainly usefull in the bindings to gtnets and ns3

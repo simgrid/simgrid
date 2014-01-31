@@ -25,7 +25,7 @@ static WorkstationVMPtr get_casted_vm_workstation(surf_resource_t resource){
 }
 
 char *surf_routing_edge_name(sg_routing_edge_t edge){
-  return edge->p_name;
+  return edge->getName();
 }
 
 #ifdef CONTEXT_THREADS

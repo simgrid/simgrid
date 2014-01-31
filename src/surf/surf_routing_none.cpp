@@ -33,14 +33,14 @@ sg_platf_route_cbarg_t AsNone::getBypassRoute(RoutingEdgePtr /*src*/, RoutingEdg
 }
 
 int AsNone::parsePU(RoutingEdgePtr elm) {
-  XBT_DEBUG("Load process unit \"%s\"", elm->p_name);
+  XBT_DEBUG("Load process unit \"%s\"", elm->getName());
   xbt_dynar_push_as(p_indexNetworkElm, RoutingEdgePtr, elm);
   /* don't care about PUs */
   return -1;
 }
 
 int AsNone::parseAS(RoutingEdgePtr elm) {
-  XBT_DEBUG("Load Autonomous system \"%s\"", elm->p_name);
+  XBT_DEBUG("Load Autonomous system \"%s\"", elm->getName());
   xbt_dynar_push_as(p_indexNetworkElm, RoutingEdgePtr, elm);
   /* even don't care about sub-ASes -- I'm as nihilist as an old punk*/
   return -1;
