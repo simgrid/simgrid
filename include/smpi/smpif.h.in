@@ -13,6 +13,9 @@
 
 #include <xbt/misc.h>
 #include <smpi/smpi.h>
+/* those are defined in f2c.h */
+#undef min
+#undef max
 #include <f2c.h>
 
 XBT_PUBLIC_DATA(__thread int) smpi_current_rank;
