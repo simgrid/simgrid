@@ -24,6 +24,7 @@ set(tesh_files
   ${tesh_files}
   ${CMAKE_CURRENT_SOURCE_DIR}/masterslave_virtual_machines.tesh
   ${CMAKE_CURRENT_SOURCE_DIR}/two_tasks_vm.tesh
+   ${CMAKE_CURRENT_SOURCE_DIR}/simple_vm.tesh
   PARENT_SCOPE
   )
 set(xml_files
