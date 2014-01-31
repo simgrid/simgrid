@@ -395,7 +395,7 @@ static uint64_t MC_dwarf_subrange_element_count(Dwarf_Die* die, Dwarf_Die* unit)
     return MC_dwarf_attr_uint(die, DW_AT_count, 0);
   }
 
-  // Otherwise compute DW_TAG_upper_bound-DW_TAG_lower_bound:
+  // Otherwise compute DW_TAG_upper_bound-DW_TAG_lower_bound + 1:
 
   if (!dwarf_hasattr_integrate(die, DW_AT_upper_bound)) {
 	// This is not really 0, but the code expects this (we do not know):
@@ -409,7 +409,7 @@ static uint64_t MC_dwarf_subrange_element_count(Dwarf_Die* die, Dwarf_Die* unit)
   } else {
 	lower_bound = MC_dwarf_default_lower_bound(dwarf_srclang(unit));
   }
-  return upper_bound - lower_bound;
+  return upper_bound - lower_bound + 1;
 }
 
 static uint64_t MC_dwarf_array_element_count(Dwarf_Die* die, Dwarf_Die* unit) {
