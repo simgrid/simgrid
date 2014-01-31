@@ -105,19 +105,10 @@ available on the [online documentation][fn:4] and in the tutorials:
 
 ## Installing SimGrid
 
-    sudo apt-get install simgrid   
-    
-This tutorial requires simgrid 3.8 at last so you may need to get
-the [debian package](http://packages.debian.org/unstable/main/simgrid). Here is a shortcut:
+    sudo apt-get install libsimgrid-dev
 
-- AMD64: http://ftp.de.debian.org/debian/pool/main/s/simgrid/simgrid_3.8.1-2_amd64.deb
-- i386: http://ftp.de.debian.org/debian/pool/main/s/simgrid/simgrid_3.8.1-2_i386.deb
-
-Then
-
-~~~~{.sh}
-sudo dpkg -i simgrid_3.8*.deb
-~~~~
+This tutorial requires simgrid 3.8 at least so you may need to get
+the [debian packages](http://packages.debian.org/libsimgrid-dev).
 
 # Recommended Steps
 
