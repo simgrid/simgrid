@@ -1,15 +1,3 @@
-find_path(HAVE_F2C_H f2c.h
-  HINTS
-  $ENV{LD_LIBRARY_PATH}
-  PATH_SUFFIXES include/
-  PATHS
-  /opt
-  /opt/local
-  /opt/csw
-  /sw
-  /usr
-  )
-
 find_program(F2C_EXE
   NAME f2c
   PATH_SUFFIXES bin/
@@ -21,10 +9,16 @@ find_program(F2C_EXE
   /usr
   )
 
+if(F2C_EXE)
+  message(STATUS "Looking for bin f2c - found: ${F2C_EXE}")
+else()
+  message(STATUS "Looking for bin f2c - not found (http://www.netlib.org/f2c/)")
+endif()
+
 find_library(HAVE_F2C_LIB
   NAME f2c
   HINTS
-  $ENV{LD_LIBRARY_PATH}
+  ENV LD_LIBRARY_PATH
   PATH_SUFFIXES lib/
   PATHS
   /opt
@@ -34,29 +28,33 @@ find_library(HAVE_F2C_LIB
   /usr
   )
 
-if(HAVE_F2C_H)
-  set(HAVE_SMPI_F2C_H 1)
-endif()
-
-message(STATUS "Looking for f2c.h")
-if(HAVE_F2C_H)
-  message(STATUS "Looking for f2c.h - found")
-else()
-  message(STATUS "Looking for f2c.h - not found")
-endif()
-
-message(STATUS "Looking for lib f2c")
 if(HAVE_F2C_LIB)
-  message(STATUS "Looking for lib f2c - found")
+  message(STATUS "Looking for lib f2c - found: ${HAVE_F2C_LIB}")
 else()
   message(STATUS "Looking for lib f2c - not found")
 endif()
 
-message(STATUS "Looking for bin f2c")
-if(F2C_EXE)
-  message(STATUS "Found F2C: ${F2C_EXE}")
+get_filename_component(F2C_HINT ${HAVE_F2C_LIB} PATH)
+find_path(HAVE_F2C_H f2c.h
+  HINTS
+  ${F2C_HINT}/..
+  PATH_SUFFIXES include/
+  PATHS
+  /opt
+  /opt/local
+  /opt/csw
+  /sw
+  /usr
+  )
+
+if(HAVE_F2C_H)
+  message(STATUS "Looking for f2c.h - found: ${HAVE_F2C_H}")
 else()
-  message(STATUS "Looking for bin f2c - not found (http://www.netlib.org/f2c/)")
+  message(STATUS "Looking for f2c.h - not found")
+endif()
+
+if(HAVE_F2C_H)
+  set(HAVE_SMPI_F2C_H 1)
 endif()
 
 mark_as_advanced(HAVE_F2C_H)
