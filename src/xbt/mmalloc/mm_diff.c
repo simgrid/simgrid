@@ -704,7 +704,8 @@ static int compare_heap_area_without_type(void *real_area1, void *real_area2, vo
 
   int i = 0;
   void *addr_pointed1, *addr_pointed2;
-  int pointer_align, ignore1, ignore2, res_compare;
+  int pointer_align, res_compare;
+  ssize_t ignore1, ignore2;
 
   while(i<size){
 
@@ -762,7 +763,7 @@ static int compare_heap_area_with_type(void *real_area1, void *real_area2, void 
   if(is_stack(real_area1) && is_stack(real_area2))
     return 0;
 
-  size_t ignore1, ignore2;
+  ssize_t ignore1, ignore2;
 
   if((check_ignore > 0) && ((ignore1 = heap_comparison_ignore_size(to_ignore1, real_area1)) > 0) && ((ignore2 = heap_comparison_ignore_size(to_ignore2, real_area2))  == ignore1)){
     return 0;
