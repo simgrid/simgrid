@@ -259,6 +259,12 @@ static void action_recv(const char *const *action) {
   TRACE_smpi_ptp_in(rank, src_traced, rank, __FUNCTION__, extra);
 #endif
 
+  //unknow size from the receiver pov
+  if(size==-1){
+      smpi_mpi_probe(from, 0, MPI_COMM_WORLD, &status);
+      size=status.count;
+  }
+
   smpi_mpi_recv(NULL, size, MPI_CURRENT_TYPE, from, 0, MPI_COMM_WORLD, &status);
 
 #ifdef HAVE_TRACING
@@ -290,6 +296,12 @@ static void action_Irecv(const char *const *action)
   extra->datatype1 = encode_datatype(MPI_CURRENT_TYPE);
   TRACE_smpi_ptp_in(rank, src_traced, rank, __FUNCTION__, extra);
 #endif
+  MPI_Status status;
+  //unknow size from the receiver pov
+  if(size==-1){
+      smpi_mpi_probe(from, 0, MPI_COMM_WORLD, &status);
+      size=status.count;
+  }
 
   request = smpi_mpi_irecv(NULL, size, MPI_CURRENT_TYPE, from, 0, MPI_COMM_WORLD);
 
