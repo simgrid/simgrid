@@ -151,8 +151,13 @@ static int compare_areas_with_type(void *area1, void *area2, mc_object_info_t in
     case DW_TAG_structure_type:
     case DW_TAG_union_type:
       if(subtype->byte_size == 0){ /*declaration of the type, need the complete description */
-          subtype = xbt_dict_get_or_null(other_info->types, get_type_description(other_info, subtype->name));
+        dw_type_t full_type = xbt_dict_get_or_null(other_info->types_by_name, subtype->name);
+        if(full_type) {
+          type = full_type;
+        } else {
+          subtype = xbt_dict_get_or_null(other_info->types_by_name, subtype->name);
           switch_types = 1;
+        }
       }
       elm_size = subtype->byte_size;
       break;
@@ -161,7 +166,7 @@ static int compare_areas_with_type(void *area1, void *area2, mc_object_info_t in
     case DW_TAG_volatile_type:
       subsubtype = subtype->subtype;
       if(subsubtype->byte_size == 0){ /*declaration of the type, need the complete description */
-          subsubtype = xbt_dict_get_or_null(other_info->types, get_type_description(other_info, subsubtype->name));
+          subsubtype = xbt_dict_get_or_null(other_info->types_by_name, subsubtype->name);
           switch_types = 1;
       }
       elm_size = subsubtype->byte_size;
