@@ -390,23 +390,6 @@ void lmm_expand_add(lmm_system_t sys, lmm_constraint_t cnst,
     lmm_expand(sys, cnst, var, value);
 }
 
-void lmm_elem_set_value(lmm_system_t sys, lmm_constraint_t cnst,
-                        lmm_variable_t var, double value)
-{
-  int i;
-
-  for (i = 0; i < var->cnsts_number; i++)
-    if (var->cnsts[i].constraint == cnst)
-      break;
-
-  if (i < var->cnsts_number) {
-    var->cnsts[i].value = value;
-    sys->modified = 1;
-    lmm_update_modified_set(sys, cnst);
-  } else
-    DIE_IMPOSSIBLE;
-}
-
 lmm_constraint_t lmm_get_cnst_from_var(lmm_system_t /*sys*/,
                                                   lmm_variable_t var,
                                                   int num)

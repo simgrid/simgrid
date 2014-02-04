@@ -204,17 +204,6 @@ void lmm_expand_add(lmm_system_t sys, lmm_constraint_t cnst,
                     lmm_variable_t var, double value);
 
 /**
- * @brief Change the value of the coefficient between a constraint and a variable
- * 
- * @param sys A system
- * @param cnst A constraint
- * @param var A variable
- * @param value The new value of the coefficient between a constraint and a variable
- */
-void lmm_elem_set_value(lmm_system_t sys, lmm_constraint_t cnst,
-                        lmm_variable_t var, double value);
-
-/**
  * @brief Get the numth constraint associated to the variable
  * 
  * @param sys The system associated to the variable (not used)
