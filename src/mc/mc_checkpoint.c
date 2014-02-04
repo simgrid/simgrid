@@ -9,6 +9,7 @@
 #include <link.h>
 #include "mc_private.h"
 #include "xbt/module.h"
+#include <xbt/mmalloc.h>
 
 #include "../simix/smx_private.h"
 
@@ -72,10 +73,10 @@ void MC_free_snapshot(mc_snapshot_t snapshot){
 
 static mc_mem_region_t MC_region_new(int type, void *start_addr, size_t size)
 {
-  mc_mem_region_t new_reg = xbt_new0(s_mc_mem_region_t, 1);
+  mc_mem_region_t new_reg = xbt_new(s_mc_mem_region_t, 1);
   new_reg->start_addr = start_addr;
   new_reg->size = size;
-  new_reg->data = xbt_malloc0(size);
+  new_reg->data = xbt_malloc(size);
   memcpy(new_reg->data, start_addr, size);
 
   XBT_DEBUG("New region : type : %d, data : %p (real addr %p), size : %zu", type, new_reg->data, start_addr, size);
