@@ -322,7 +322,7 @@ void MC_dump_stack_liveness(xbt_fifo_t stack);
 
 /********************************** Variables with DWARF **********************************/
 
-typedef struct s_mc_object_info {
+struct s_mc_object_info {
   char* file_name;
   char *start_exec, *end_exec; // Executable segment
   char *start_rw, *end_rw; // Read-write segment
@@ -331,7 +331,7 @@ typedef struct s_mc_object_info {
   xbt_dynar_t global_variables; // xbt_dynar_t<dw_variable_t>
   xbt_dict_t types; // xbt_dict_t<origin as hexadecimal string, dw_type_t>
   xbt_dict_t types_by_name; // xbt_dict_t<name, dw_type_t> (full defined type only)
-} s_mc_object_info_t, *mc_object_info_t;
+};
 
 mc_object_info_t MC_new_object_info(void);
 mc_object_info_t MC_find_object_info(memory_map_t maps, char* name);
