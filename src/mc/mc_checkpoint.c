@@ -239,12 +239,17 @@ void MC_init_memory_map_info(){
 
 }
 
+static void MC_post_process_types(mc_object_info_t info) {
+  // Nothing here
+}
+
 /** \brief Finds informations about a given shared object/executable */
 mc_object_info_t MC_find_object_info(memory_map_t maps, char* name) {
   mc_object_info_t result = MC_new_object_info();
   result->file_name = xbt_strdup(name);
   MC_find_object_address(maps, result);
   MC_dwarf_get_variables(result);
+  MC_post_process_types(result);
   return result;
 }
 

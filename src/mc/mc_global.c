@@ -19,8 +19,6 @@
 #include "xbt/automaton.h"
 #include "xbt/dict.h"
 
-static void MC_post_process_types(mc_object_info_t info);
-
 XBT_LOG_NEW_CATEGORY(mc, "All MC categories");
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_global, mc,
                                 "Logging specific to MC (global)");
@@ -433,26 +431,6 @@ void MC_dwarf_register_variable(mc_object_info_t info, dw_frame_t frame, dw_vari
     xbt_die("No frame for this local variable");
   else
     MC_dwarf_register_non_global_variable(info, frame, variable);
-}
-
-static void MC_post_process_array_size(mc_object_info_t info, dw_type_t type) {
-  xbt_assert(type->dw_type_id, "No base type for array <%p>%s", type->id, type->name);
-  dw_type_t subtype = xbt_dict_get_or_null(info->types, type->dw_type_id);
-  xbt_assert(subtype, "Unkown base type <%s> for array <%p>%s", type->dw_type_id, type->id, type->name);
-  if(subtype->type==DW_TAG_array_type && type->byte_size==0) {
-	  MC_post_process_array_size(info, subtype);
-  }
-  type->byte_size = type->element_count*subtype->byte_size;
-}
-
-static void MC_post_process_types(mc_object_info_t info) {
-  xbt_dict_cursor_t cursor;
-  char *origin;
-  dw_type_t type;
-  xbt_dict_foreach(info->types, cursor, origin, type){
-    if(type->type==DW_TAG_array_type && type->byte_size==0)
-      MC_post_process_array_size(info, type);
-  }
 }
 
 /*******************************  Ignore mechanism *******************************/
