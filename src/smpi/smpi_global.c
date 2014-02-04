@@ -29,7 +29,7 @@ typedef struct s_smpi_process_data {
   MPI_Comm comm_self;
   void *data;                   /* user data */
   int index;
-  int initialized;
+  char state;
   int sampling;                 /* inside an SMPI_SAMPLE_ block? */
 } s_smpi_process_data_t;
 
@@ -90,7 +90,7 @@ void smpi_process_init(int *argc, char ***argv)
 void smpi_process_destroy(void)
 {
   int index = smpi_process_index();
-  process_data[index]->index = -100;
+  process_data[index]->state = SMPI_FINALIZED;
   XBT_DEBUG("<%d> Process left the game", index);
 }
 
@@ -110,8 +110,11 @@ void smpi_process_finalize(void)
  */
 int smpi_process_finalized()
 {
-  return (smpi_process_index() == -100);
-  // If finalized, this value has been set to -100;
+  int index = smpi_process_index();
+    if (index != MPI_UNDEFINED)
+      return (process_data[index]->state == SMPI_FINALIZED);
+    else
+      return 0;
 }
 
 /**
@@ -120,8 +123,8 @@ int smpi_process_finalized()
 int smpi_process_initialized(void)
 {
   int index = smpi_process_index();
-  return ((index != -100) && (index != MPI_UNDEFINED)
-          && (process_data[index]->initialized));
+  return ( (index != MPI_UNDEFINED)
+          && (process_data[index]->state == SMPI_INITIALIZED));
 }
 
 /**
@@ -130,8 +133,8 @@ int smpi_process_initialized(void)
 void smpi_process_mark_as_initialized(void)
 {
   int index = smpi_process_index();
-  if ((index != -100) && (index != MPI_UNDEFINED))
-    process_data[index]->initialized = 1;
+  if ((index != MPI_UNDEFINED) && (!process_data[index]->state != SMPI_FINALIZED))
+    process_data[index]->state = SMPI_INITIALIZED;
 }
 
 
@@ -321,7 +324,7 @@ void smpi_global_init(void)
     if (MC_is_active())
       MC_ignore_heap(process_data[i]->timer, xbt_os_timer_size());
     process_data[i]->comm_self = MPI_COMM_NULL;
-    process_data[i]->initialized = 0;
+    process_data[i]->state = SMPI_UNINITIALIZED;
     process_data[i]->sampling = 0;
   }
   group = smpi_group_new(process_count);

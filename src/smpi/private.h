@@ -28,6 +28,14 @@ typedef struct s_smpi_process_data *smpi_process_data_t;
 #define ISEND          0x20
 #define SSEND          0x40
 #define PREPARED       0x80
+
+
+enum smpi_process_state{
+  SMPI_UNINITIALIZED,
+  SMPI_INITIALIZED,
+  SMPI_FINALIZED
+};
+
 // this struct is here to handle the problem of non-contignous data
 // for each such structure these function should be implemented (vector
 // index hvector hindex struct)
