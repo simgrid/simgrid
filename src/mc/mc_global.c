@@ -180,6 +180,7 @@ mc_object_info_t MC_new_object_info(void) {
   res->local_variables = xbt_dict_new_homogeneous(NULL);
   res->global_variables = xbt_dynar_new(sizeof(dw_variable_t), dw_variable_free_voidp);
   res->types = xbt_dict_new_homogeneous(NULL);
+  res->types_by_name = xbt_dict_new_homogeneous(NULL);
   return res;
 }
 
@@ -188,6 +189,7 @@ void MC_free_object_info(mc_object_info_t* info) {
   xbt_dict_free(&(*info)->local_variables);
   xbt_dynar_free(&(*info)->global_variables);
   xbt_dict_free(&(*info)->types);
+  xbt_dict_free(&(*info)->types_by_name);
   xbt_free(info);
   *info = NULL;
 }
@@ -432,6 +434,7 @@ void MC_dwarf_register_variable(mc_object_info_t info, dw_frame_t frame, dw_vari
   else
     MC_dwarf_register_non_global_variable(info, frame, variable);
 }
+
 
 /*******************************  Ignore mechanism *******************************/
 /*********************************************************************************/

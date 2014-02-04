@@ -1,6 +1,5 @@
 /* Copyright (c) 2008-2013. The SimGrid Team.
  * All rights reserved.                                                     */
-
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
@@ -634,6 +633,10 @@ static void MC_dwarf_handle_type_die(mc_object_info_t info, Dwarf_Die* die, Dwar
 
   char* key = bprintf("%" PRIx64, (uint64_t) type->id);
   xbt_dict_set(info->types, key, type, NULL);
+
+  if(type->name && type->byte_size!=0) {
+    xbt_dict_set(info->types_by_name, type->name, type, NULL);
+  }
 }
 
 /** \brief Convert libdw location expresion elment into native one (or NULL in some cases) */

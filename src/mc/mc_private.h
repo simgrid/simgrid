@@ -330,6 +330,7 @@ typedef struct s_mc_object_info {
   xbt_dict_t local_variables; // xbt_dict_t<frame_name, dw_frame_t>
   xbt_dynar_t global_variables; // xbt_dynar_t<dw_variable_t>
   xbt_dict_t types; // xbt_dict_t<origin as hexadecimal string, dw_type_t>
+  xbt_dict_t types_by_name; // xbt_dict_t<name, dw_type_t> (full defined type only)
 } s_mc_object_info_t, *mc_object_info_t;
 
 mc_object_info_t MC_new_object_info(void);

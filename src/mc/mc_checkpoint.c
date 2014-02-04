@@ -239,8 +239,45 @@ void MC_init_memory_map_info(){
 
 }
 
+/** \brief Fill/llokup the "subtype" field.
+ */
+static void MC_resolve_subtype(mc_object_info_t info, dw_type_t type) {
+
+  if(type->dw_type_id==NULL)
+    return;
+  type->subtype = xbt_dict_get_or_null(info->types, type->dw_type_id);
+  if(type->subtype==NULL)
+    return;
+  if(type->subtype->byte_size != 0)
+    return;
+  if(type->subtype->name==NULL)
+    return;
+  // Try to find a more complete description of the type:
+  // We need to fix in order to support C++.
+
+  dw_type_t subtype = xbt_dict_get_or_null(info->types_by_name, type->subtype->name);
+  if(subtype!=NULL) {
+    type->subtype = subtype;
+  }
+
+  // TODO, support "switch type" (looking up the type in another lib) when possible
+}
+
 static void MC_post_process_types(mc_object_info_t info) {
-  // Nothing here
+  xbt_dict_cursor_t cursor = NULL;
+  char *origin;
+  dw_type_t type;
+
+  // Lookup "subtype" field:
+  xbt_dict_foreach(info->types, cursor, origin, type){
+    MC_resolve_subtype(info, type);
+
+    dw_type_t member;
+    unsigned int i = 0;
+    if(type->members!=NULL) xbt_dynar_foreach(type->members, i, member) {
+      MC_resolve_subtype(info, member);
+    }
+  }
 }
 
 /** \brief Finds informations about a given shared object/executable */

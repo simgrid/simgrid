@@ -93,7 +93,7 @@ static void mc_hash_value(mc_hash_t* hash, mc_hashing_state* state, mc_object_in
       return;
 
     long element_count = type->element_count;
-    dw_type_t subtype = xbt_dict_get_or_null(info->types, type->dw_type_id);
+    dw_type_t subtype = type->subtype;
     if(subtype==NULL) {
       XBT_DEBUG("Hash array without subtype");
       return;
@@ -113,10 +113,7 @@ static void mc_hash_value(mc_hash_t* hash, mc_hashing_state* state, mc_object_in
   case DW_TAG_const_type:
   case DW_TAG_restrict_type:
   {
-    if(type->dw_type_id==NULL) {
-      return;
-    }
-    type = xbt_dict_get_or_null(info->types, type->dw_type_id);
+    type = type->subtype;
     if(type==NULL)
       return;
     else
@@ -133,10 +130,9 @@ static void mc_hash_value(mc_hash_t* hash, mc_hashing_state* state, mc_object_in
     dw_type_t member;
     xbt_dynar_foreach(type->members, cursor, member){
       XBT_DEBUG("Hash struct member %s", member->name);
-      dw_type_t subtype = xbt_dict_get_or_null(info->types, member->dw_type_id);
-      if(subtype==NULL)
+      if(type->subtype==NULL)
         return;
-       mc_hash_value(hash, state, info, ((char*)address) + member->offset, subtype);
+       mc_hash_value(hash, state, info, ((char*)address) + member->offset, type->subtype);
     }
     return;
   }
@@ -171,14 +167,13 @@ static void mc_hash_value(mc_hash_t* hash, mc_hashing_state* state, mc_object_in
       return;
     }
 
-    dw_type_t subtype = type->dw_type_id == NULL ? NULL : xbt_dict_get_or_null(info->types, type->dw_type_id);
-    if(subtype==NULL) {
+    if(type->subtype==NULL) {
       XBT_DEBUG("Missing type for %p (type=%s)", pointed, type->dw_type_id);
       return;
     }
 
     address = pointed;
-    type = subtype;
+    type = type->subtype;
     goto top;
   }
 
