@@ -106,7 +106,7 @@ void CpuModel::updateActionsStateFull(double now, double delta)
       action->updateMaxDuration(delta);
 
 
-    if ((action->getRemains() <= 0) &&
+    if ((action->getRemainsNoUpdate() <= 0) &&
         (lmm_get_variable_weight(action->getVariable()) > 0)) {
       action->finish();
       action->setState(SURF_ACTION_DONE);

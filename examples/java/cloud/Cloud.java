@@ -17,7 +17,7 @@ import org.simgrid.msg.MsgException;
 public class Cloud {
 	public static final double task_comp_size = 10;
 	public static final double task_comm_size = 10;
-	public static final int hostNB = 500 ; 
+	public static final int hostNB = 89 ; 
 	public static void main(String[] args) throws MsgException {       
 	    Msg.init(args); 
 	    

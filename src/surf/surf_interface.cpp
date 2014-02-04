@@ -537,7 +537,7 @@ double Model::shareResourcesLazy(double now)
     value = lmm_variable_getvalue(action->getVariable());
     if (value > 0) {
       if (action->getRemains() > 0) {
-        value = action->getRemains() / value;
+        value = action->getRemainsNoUpdate() / value;
         min = now + value;
       } else {
         value = 0.0;
@@ -604,7 +604,7 @@ double Model::shareResourcesMaxMin(ActionListPtr running_actions,
 
   if (value > 0) {
     if (action->getRemains() > 0)
-      min = action->getRemains() / value;
+      min = action->getRemainsNoUpdate() / value;
     else
       min = 0.0;
     if ((action->getMaxDuration() >= 0) && (action->getMaxDuration() < min))
@@ -618,7 +618,7 @@ double Model::shareResourcesMaxMin(ActionListPtr running_actions,
     value = lmm_variable_getvalue(action->getVariable());
     if (value > 0) {
       if (action->getRemains() > 0)
-        value = action->getRemains() / value;
+        value = action->getRemainsNoUpdate() / value;
       else
         value = 0.0;
       if (value < min) {

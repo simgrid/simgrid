@@ -64,10 +64,10 @@ static int master_main(int argc, char *argv[])
   msg_host_t pm0 = xbt_dynar_get_as(hosts_dynar, 0, msg_host_t);
   msg_vm_t vm0;
   vm0 = MSG_vm_create_core(pm0, "VM0");
-
+  MSG_vm_start(vm0);
   //MSG_process_sleep(1);
 
-  launch_computation_worker(pm0);
+  launch_computation_worker(vm0);
 
   while(MSG_get_clock()<100) {
 	if (atask != NULL)

@@ -4,7 +4,7 @@ p Testing a vm with two successive tasks
 
 $ $SG_TEST_EXENV two_tasks_vm$EXEEXT ${srcdir:=.}/simple_plat.xml
 > [0.000000] [surf_vm_workstation/INFO] Create VM(VM0)@PM(PM0) with 0 mounted disks
-> [PM0:compute:(2) 0.000000] [msg_test/INFO] PM0:compute task 1 created 0
+> [VM0:compute:(2) 0.000000] [msg_test/INFO] VM0:compute task 1 created 0
 > [PM0:master_:(1) 0.000000] [msg_test/INFO] aTask remaining duration: 1e+09
 > [PM0:master_:(1) 1.000000] [msg_test/INFO] aTask remaining duration: 9e+08
 > [PM0:master_:(1) 2.000000] [msg_test/INFO] aTask remaining duration: 8e+08
@@ -15,9 +15,9 @@ $ $SG_TEST_EXENV two_tasks_vm$EXEEXT ${srcdir:=.}/simple_plat.xml
 > [PM0:master_:(1) 7.000000] [msg_test/INFO] aTask remaining duration: 3e+08
 > [PM0:master_:(1) 8.000000] [msg_test/INFO] aTask remaining duration: 2e+08
 > [PM0:master_:(1) 9.000000] [msg_test/INFO] aTask remaining duration: 1e+08
-> [PM0:compute:(2) 10.000000] [msg_test/INFO] PM0:compute task 1 executed 10
+> [VM0:compute:(2) 10.000000] [msg_test/INFO] VM0:compute task 1 executed 10
 > [PM0:master_:(1) 10.000000] [msg_test/INFO] aTask remaining duration: 0
-> [PM0:compute:(2) 11.000000] [msg_test/INFO] PM0:compute task 2 created 11
+> [VM0:compute:(2) 11.000000] [msg_test/INFO] VM0:compute task 2 created 11
 > [PM0:master_:(1) 12.000000] [msg_test/INFO] aTask remaining duration: 9.9e+09
 > [PM0:master_:(1) 13.000000] [msg_test/INFO] aTask remaining duration: 9.8e+09
 > [PM0:master_:(1) 14.000000] [msg_test/INFO] aTask remaining duration: 9.7e+09
@@ -106,5 +106,5 @@ $ $SG_TEST_EXENV two_tasks_vm$EXEEXT ${srcdir:=.}/simple_plat.xml
 > [PM0:master_:(1) 97.000000] [msg_test/INFO] aTask remaining duration: 1.4e+09
 > [PM0:master_:(1) 98.000000] [msg_test/INFO] aTask remaining duration: 1.3e+09
 > [PM0:master_:(1) 99.000000] [msg_test/INFO] aTask remaining duration: 1.2e+09
-> [PM0:compute:(2) 111.000000] [msg_test/INFO] PM0:compute task 2 executed 100
+> [VM0:compute:(2) 111.000000] [msg_test/INFO] VM0:compute task 2 executed 100
 > [10100.000000] [msg_test/INFO] Bye (simulation time 10100)

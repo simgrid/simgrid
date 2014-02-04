@@ -61,7 +61,7 @@ void NetworkConstantModel::updateActionsState(double /*now*/, double delta)
     if (action->getMaxDuration() != NO_MAX_DURATION)
       action->updateMaxDuration(delta);
 
-    if (action->getRemains() <= 0) {
+    if (action->getRemainsNoUpdate() <= 0) {
       action->finish();
       action->setState(SURF_ACTION_DONE);
     } else if ((action->getMaxDuration() != NO_MAX_DURATION)

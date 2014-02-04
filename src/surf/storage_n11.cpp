@@ -321,13 +321,13 @@ void StorageN11Model::updateActionsState(double /*now*/, double delta)
     if (action->getMaxDuration() != NO_MAX_DURATION)
       action->updateMaxDuration(delta);
 
-    if(action->getRemains() > 0 &&
+    if(action->getRemainsNoUpdate() > 0 &&
         lmm_get_variable_weight(action->getVariable()) > 0 &&
         action->p_storage->m_usedSize == action->p_storage->m_size)
     {
       action->finish();
       action->setState(SURF_ACTION_FAILED);
-    } else if ((action->getRemains() <= 0) &&
+    } else if ((action->getRemainsNoUpdate() <= 0) &&
         (lmm_get_variable_weight(action->getVariable()) > 0))
     {
       action->finish();

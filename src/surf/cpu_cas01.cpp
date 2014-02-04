@@ -231,7 +231,7 @@ void CpuCas01::updateState(tmgr_trace_event_t event_type, double value, double d
 	xbt_assert(m_core == 1, "FIXME: add power scaling code also for constraint_core[i]");
 
     m_powerScale = value;
-    lmm_update_constraint_bound(surf_cpu_model_pm->getMaxminSystem(), getConstraint(),
+    lmm_update_constraint_bound(getModel()->getMaxminSystem(), getConstraint(),
                                 m_core * m_powerScale *
                                 m_powerPeak);
 #ifdef HAVE_TRACING
@@ -240,10 +240,10 @@ void CpuCas01::updateState(tmgr_trace_event_t event_type, double value, double d
                               m_powerPeak);
 #endif
     while ((var = lmm_get_var_from_cnst
-            (surf_cpu_model_pm->getMaxminSystem(), getConstraint(), &elem))) {
+            (getModel()->getMaxminSystem(), getConstraint(), &elem))) {
       CpuCas01ActionPtr action = static_cast<CpuCas01ActionPtr>(static_cast<ActionPtr>(lmm_variable_id(var)));
 
-      lmm_update_variable_bound(surf_cpu_model_pm->getMaxminSystem(),
+      lmm_update_variable_bound(getModel()->getMaxminSystem(),
                                 action->getVariable(),
                                 m_powerScale * m_powerPeak);
     }
@@ -262,7 +262,7 @@ void CpuCas01::updateState(tmgr_trace_event_t event_type, double value, double d
 
       setState(SURF_RESOURCE_OFF);
 
-      while ((var = lmm_get_var_from_cnst(surf_cpu_model_pm->getMaxminSystem(), cnst, &elem))) {
+      while ((var = lmm_get_var_from_cnst(getModel()->getMaxminSystem(), cnst, &elem))) {
         ActionPtr action = static_cast<ActionPtr>(lmm_variable_id(var));
 
         if (action->getState() == SURF_ACTION_RUNNING ||
@@ -287,7 +287,7 @@ CpuActionPtr CpuCas01::execute(double size)
 {
 
   XBT_IN("(%s,%g)", getName(), size);
-  CpuCas01ActionPtr action = new CpuCas01Action(surf_cpu_model_pm, size, getState() != SURF_RESOURCE_ON,
+  CpuCas01ActionPtr action = new CpuCas01Action(getModel(), size, getState() != SURF_RESOURCE_ON,
 		                                              m_powerScale * m_powerPeak, getConstraint());
 
   XBT_OUT();
@@ -300,7 +300,7 @@ CpuActionPtr CpuCas01::sleep(double duration)
     duration = MAX(duration, MAXMIN_PRECISION);
 
   XBT_IN("(%s,%g)", getName(), duration);
-  CpuCas01ActionPtr action = new CpuCas01Action(surf_cpu_model_pm, 1.0, getState() != SURF_RESOURCE_ON,
+  CpuCas01ActionPtr action = new CpuCas01Action(getModel(), 1.0, getState() != SURF_RESOURCE_ON,
                                                       m_powerScale * m_powerPeak, getConstraint());
 
 
@@ -315,14 +315,14 @@ CpuActionPtr CpuCas01::sleep(double duration)
     action->getStateSet()->push_back(*action);
   }
 
-  lmm_update_variable_weight(surf_cpu_model_pm->getMaxminSystem(),
+  lmm_update_variable_weight(getModel()->getMaxminSystem(),
                              action->getVariable(), 0.0);
-  if (surf_cpu_model_pm->getUpdateMechanism() == UM_LAZY) {     // remove action from the heap
-    action->heapRemove(surf_cpu_model_pm->getActionHeap());
+  if (getModel()->getUpdateMechanism() == UM_LAZY) {     // remove action from the heap
+    action->heapRemove(getModel()->getActionHeap());
     // this is necessary for a variable with weight 0 since such
     // variables are ignored in lmm and we need to set its max_duration
     // correctly at the next call to share_resources
-    surf_cpu_model_pm->getModifiedSet()->push_front(*action);
+    getModel()->getModifiedSet()->push_front(*action);
   }
 
   XBT_OUT();
