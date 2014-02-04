@@ -792,6 +792,7 @@ void SIMIX_comm_finish(smx_action_t action)
   unsigned int destroy_count = 0;
   smx_simcall_t simcall;
 
+
   while ((simcall = xbt_fifo_shift(action->simcalls))) {
 
     /* If a waitany simcall is waiting for this action to finish, then remove
@@ -890,13 +891,33 @@ void SIMIX_comm_finish(smx_action_t action)
     simcall->issuer->waiting_action = NULL;
     xbt_fifo_remove(simcall->issuer->comms, action);
     if(action->comm.detached){
+      smx_process_t proc;
+      int still_alive = 0;
+
       if(simcall->issuer == action->comm.src_proc){
-        if(action->comm.dst_proc)
-          xbt_fifo_remove(action->comm.dst_proc->comms, action);
+        if(action->comm.dst_proc){
+            xbt_swag_foreach(proc, simix_global->process_list)
+            {
+               if(proc==action->comm.dst_proc){
+                   still_alive=1;
+                   break;
+               }
+            }
+        }
+        if(still_alive) xbt_fifo_remove(action->comm.dst_proc->comms, action);
       }
       if(simcall->issuer == action->comm.dst_proc){
         if(action->comm.src_proc)
-          xbt_fifo_remove(action->comm.src_proc->comms, action);
+          if(action->comm.dst_proc){
+            xbt_swag_foreach(proc, simix_global->process_list)
+            {
+              if(proc==action->comm.src_proc){
+                  still_alive=1;
+                  break;
+              }
+            }
+          }
+          if(still_alive) xbt_fifo_remove(action->comm.src_proc->comms, action);
       }
     }
     SIMIX_simcall_answer(simcall);
