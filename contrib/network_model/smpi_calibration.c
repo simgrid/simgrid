@@ -1,3 +1,9 @@
+/* Copyright (c) 2011, 2014. The SimGrid Team.
+ * All rights reserved.                                                     */
+
+/* This program is free software; you can redistribute it and/or modify it
+ * under the terms of the license (GNU LGPL) which comes with this package. */
+
 /**--------- <copy/paste C code snippet in surf/network.c> -------------
   * produced by:
   * ./regression2.py ./pingpong-in.dat 0.15 30 2 2.4e-5 1.25e8

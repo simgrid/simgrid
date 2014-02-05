@@ -3,7 +3,7 @@
 
    Contributed by Fred Fish at Cygnus Support.   fnf@cygnus.com */
 
-/* Copyright (c) 2010-2012. The SimGrid Team.
+/* Copyright (c) 2010-2014. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it

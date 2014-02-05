@@ -1,5 +1,11 @@
 #! /usr/bin/perl
 
+# Copyright (c) 2009, 2014. The SimGrid Team.
+# All rights reserved.
+
+# This program is free software; you can redistribute it and/or modify it
+# under the terms of the license (GNU LGPL) which comes with this package.
+
 use strict;
 
 my $node_count = int($ARGV[0]) || die "Usage: $0 node_count level_count\n";

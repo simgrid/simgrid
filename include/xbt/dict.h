@@ -1,11 +1,10 @@
 /* xbt/dict.h -- api to a generic dictionary                                */
 
-/* Copyright (c) 2004-2013. The SimGrid Team.
+/* Copyright (c) 2004-2014. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
-
 
 #ifndef _XBT_DICT_H
 #define _XBT_DICT_H

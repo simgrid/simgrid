@@ -1,6 +1,11 @@
 #! /usr/bin/perl
 
-# L.Bobelin (Perl newbie) 25th of November
+# Copyright (c) 2011-2012, 2014. The SimGrid Team.
+# All rights reserved.
+
+# This program is free software; you can redistribute it and/or modify it
+# under the terms of the license (GNU LGPL) which comes with this package.
+
 # Quick script to generate hierarchical clusters. Usage : <the script> p s d  where :
 # - p : 2^p gives the total number of hosts.
 # - s : cluster size

@@ -1,5 +1,12 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+
+# Copyright (c) 2014. The SimGrid Team.
+# All rights reserved.
+
+# This program is free software; you can redistribute it and/or modify it
+# under the terms of the license (GNU LGPL) which comes with this package.
+
 import re, glob
 
 types = [('TCHAR', 'char', 'c')

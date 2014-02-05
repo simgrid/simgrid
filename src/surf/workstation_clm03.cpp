@@ -1,3 +1,9 @@
+/* Copyright (c) 2013-2014. The SimGrid Team.
+ * All rights reserved.                                                     */
+
+/* This program is free software; you can redistribute it and/or modify it
+ * under the terms of the license (GNU LGPL) which comes with this package. */
+
 #include "workstation_clm03.hpp"
 #include "vm_workstation_interface.hpp"
 #include "cpu_cas01.hpp"

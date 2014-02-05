@@ -1,8 +1,9 @@
-/* Copyright (c) 2012. The SimGrid Team.
+/* Copyright (c) 2012, 2014. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
+
 #include "task.h"
 #include "answer.h"
 XBT_LOG_NEW_DEFAULT_CATEGORY(msg_kademlia_task,

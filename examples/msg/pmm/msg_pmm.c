@@ -1,10 +1,11 @@
 /* pmm - parallel matrix multiplication "double diffusion"                  */
 
-/* Copyright (c) 2006-2013. The SimGrid Team.
+/* Copyright (c) 2006-2014. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
+
 #include "msg/msg.h"
 #include "xbt/matrix.h"
 #include "xbt/log.h"

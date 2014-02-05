@@ -1,11 +1,10 @@
 /* context_java - implementation of context switching for java threads */
 
-/* Copyright (c) 2009-2010, 2012-2013. The SimGrid Team.
+/* Copyright (c) 2009-2010, 2012-2014. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
-
 
 #include <xbt/function_types.h>
 #include <simgrid/simix.h>

@@ -1,11 +1,10 @@
 /* context_base - Code factorization across context switching implementations */
 
-/* Copyright (c) 2010-2013. The SimGrid Team.
+/* Copyright (c) 2010-2014. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
-
 
 #include "xbt/function_types.h"
 #include "simgrid/simix.h"

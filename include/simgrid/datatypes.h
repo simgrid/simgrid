@@ -1,9 +1,8 @@
-/*
- * datatypes.h
- *
- *  Created on: Nov 28, 2013
- *      Author: bedaride
- */
+/* Copyright (c) 2013-2014. The SimGrid Team.
+ * All rights reserved.                                                     */
+
+/* This program is free software; you can redistribute it and/or modify it
+ * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #ifndef SIMGRID_DATATYPES_H_
 #define SIMGRID_DATATYPES_H_

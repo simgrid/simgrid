@@ -1,11 +1,16 @@
-#include "colls_private.h"
+/* Copyright (c) 2013-2014. The SimGrid Team.
+ * All rights reserved.                                                     */
 
-/* -*- Mode: C; c-basic-offset:4 ; -*- */
+/* This program is free software; you can redistribute it and/or modify it
+ * under the terms of the license (GNU LGPL) which comes with this package. */
+
 /*
  *
  *  (C) 2001 by Argonne National Laboratory.
  *      See COPYRIGHT in top-level directory.
  */
+
+#include "colls_private.h"
 
 /*****************************************************************************
  * Function: allgather_mpich_ring

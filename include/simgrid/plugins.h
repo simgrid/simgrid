@@ -1,9 +1,8 @@
-/*
- * plugins.h
- *
- *  Created on: Jan 15, 2014
- *      Author: bedaride
- */
+/* Copyright (c) 2014. The SimGrid Team.
+ * All rights reserved.                                                     */
+
+/* This program is free software; you can redistribute it and/or modify it
+ * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #ifndef PLUGINS_H_
 #define PLUGINS_H_

@@ -20,6 +20,12 @@
    not, write to the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.  */
 
+/* Copyright (c) 2012-2014. The SimGrid Team.
+ * All rights reserved.                                                     */
+
+/* This program is free software; you can redistribute it and/or modify it
+ * under the terms of the license (GNU LGPL) which comes with this package. */
+
 #include <sys/types.h>
 #include <fcntl.h>              /* After sys/types.h, at least for dpx/2.  */
 #include <sys/stat.h>

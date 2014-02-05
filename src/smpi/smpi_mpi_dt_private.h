@@ -1,10 +1,10 @@
 /* smpi_mpi_dt_private.h -- functions of smpi_mpi_dt.c that are exported to other SMPI modules. */
 
-/* Copyright (c) 2009-2010, 2012-2013. The SimGrid Team.
+/* Copyright (c) 2009-2010, 2012-2014. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
-  * under the terms of the license (GNU LGPL) which comes with this package. */
+ * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #ifndef SMPI_DT_PRIVATE_H
 #define SMPI_DT_PRIVATE_H

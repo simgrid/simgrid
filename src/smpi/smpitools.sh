@@ -1,3 +1,12 @@
+#!/bin/sh
+#---- smpitools.sh --------------------------------------------------------#
+
+# Copyright (c) 2013-2014. The SimGrid Team.
+# All rights reserved.
+
+# This program is free software; you can redistribute it and/or modify it
+# under the terms of the license (GNU LGPL) which comes with this package.
+
 SAVEIFS="$IFS"
 LISTSEP="$(printf '\b')"
 
@@ -65,3 +74,5 @@ list_set () {
 list_get () {
     printf 'IFS="$LISTSEP"; eval set -- \\$%s; IFS="$SAVEIFS"' "$1"
 }
+
+#---- end of smpitools.sh -------------------------------------------------#

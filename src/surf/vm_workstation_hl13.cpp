@@ -1,9 +1,9 @@
-/*
- * vm_workstation.cpp
- *
- *  Created on: Nov 12, 2013
- *      Author: bedaride
- */
+/* Copyright (c) 2013-2014. The SimGrid Team.
+ * All rights reserved.                                                     */
+
+/* This program is free software; you can redistribute it and/or modify it
+ * under the terms of the license (GNU LGPL) which comes with this package. */
+
 #include "vm_workstation_hl13.hpp"
 #include "cpu_cas01.hpp"
 
