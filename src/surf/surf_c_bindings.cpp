@@ -529,7 +529,7 @@ e_surf_action_state_t surf_action_get_state(surf_action_t action){
   return action->getState();
 }
 
-int surf_action_get_cost(surf_action_t action){
+double surf_action_get_cost(surf_action_t action){
   return action->getCost();
 }
 

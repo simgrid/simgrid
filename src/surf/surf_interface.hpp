@@ -695,7 +695,7 @@ private:
   #ifdef HAVE_LATENCY_BOUND_TRACKING
   int m_latencyLimited;               /**< Set to 1 if is limited by latency, 0 otherwise */
   #endif
-  int    m_cost;
+  double    m_cost;
   ModelPtr p_model;
   void *p_data; /**< for your convenience */
 

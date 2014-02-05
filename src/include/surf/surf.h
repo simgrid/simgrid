@@ -854,7 +854,7 @@ XBT_PUBLIC(e_surf_action_state_t) surf_action_get_state(surf_action_t action);
  * @param action The surf action
  * @return The cost of the action
  */
-XBT_PUBLIC(int) surf_action_get_cost(surf_action_t action);
+XBT_PUBLIC(double) surf_action_get_cost(surf_action_t action);
 
 /**
  * @brief [brief desrciption]
