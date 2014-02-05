@@ -850,6 +850,22 @@ void Action::setState(e_surf_action_state_t state)
   XBT_OUT();
 }
 
+double Action::getBound()
+{
+  return (p_variable) ? lmm_variable_getbound(p_variable) : 0;
+}
+
+void Action::setBound(double bound)
+{
+  XBT_IN("(%p,%g)", this, bound);
+  if (p_variable)
+    lmm_update_variable_bound(getModel()->getMaxminSystem(), getVariable(), bound);
+
+  if (getModel()->getUpdateMechanism() == UM_LAZY)
+	heapRemove(getModel()->getActionHeap());
+  XBT_OUT();
+}
+
 double Action::getStartTime()
 {
   return m_start;

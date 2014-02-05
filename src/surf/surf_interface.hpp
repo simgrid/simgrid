@@ -442,6 +442,20 @@ public:
   virtual void setState(e_surf_action_state_t state);
 
   /**
+   * @brief Get the bound of the current Action
+   * 
+   * @return The bound of the current Action
+   */
+  double getBound();
+
+  /**
+   * @brief Set the bound of the current Action
+   *
+   * @param bound The new bound of the current Action
+   */
+  void setBound(double bound);
+
+  /**
    * @brief Get the start time of the current action
    * 
    * @return The start time of the current action

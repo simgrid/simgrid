@@ -240,17 +240,6 @@ void CpuAction::updateRemainingLazy(double now)
   m_lastValue = lmm_variable_getvalue(getVariable());
 }
 
-void CpuAction::setBound(double bound)
-{
-  XBT_IN("(%p,%g)", this, bound);
-  m_bound = bound;
-  lmm_update_variable_bound(getModel()->getMaxminSystem(), getVariable(), bound);
-
-  if (getModel()->getUpdateMechanism() == UM_LAZY)
-	heapRemove(getModel()->getActionHeap());
-  XBT_OUT();
-}
-
 /*
  *
  * This function formulates a constraint problem that pins a given task to

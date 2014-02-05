@@ -252,7 +252,7 @@ double lmm_variable_getvalue(lmm_variable_t var)
   return (var->value);
 }
 
-XBT_INLINE double lmm_variable_getbound(lmm_variable_t var)
+double lmm_variable_getbound(lmm_variable_t var)
 {
   return (var->bound);
 }
