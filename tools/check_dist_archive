@@ -12,7 +12,7 @@ else
 fi
 
 if [ $# -lt 1 -o $# -gt 3 ]; then
-    cat <<EOF
+    cat >&2 <<EOF
 Usage: $0 [-batch] archive.tar.gz [git_url [git_reference]]
 EOF
     exit 1
@@ -20,7 +20,7 @@ fi
 
 archive=$1
 if [ ! -r "$archive" ]; then
-    printf 'File not found: %s\n' "$archive"
+    printf 'File not found: %s\n' "$archive" >&2
     exit 1
 fi
 
@@ -49,7 +49,7 @@ case "$myname" in
 esac
 
 if [ ! -r "$exclude" ]; then
-    printf 'File not found: %s\n' "$exclude"
+    printf 'File not found: %s\n' "$exclude" >&2
     exit 1
 fi
 
