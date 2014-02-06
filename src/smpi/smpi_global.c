@@ -100,6 +100,7 @@ void smpi_process_destroy(void)
 void smpi_process_finalize(void)
 {
   // wait for all pending asynchronous comms to finish
+  if(!MC_is_active())
   while (SIMIX_process_has_pending_comms(SIMIX_process_self())) {
     simcall_process_sleep(0.01);
   }
