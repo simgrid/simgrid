@@ -484,6 +484,9 @@ void sg_config_init(int *argc, char **argv)
                      xbt_cfgelm_string, 1, 1, &_sg_cfg_cb__cpu_model, NULL);
     xbt_cfg_setdefault_string(_sg_cfg_set, "cpu/model", "Cas01");
 
+    sprintf(description,
+            "The optimization modes to use for the CPU. Possible values: ");
+    p = description;
     while (*(++p) != '\0');
     for (i = 0; surf_optimization_mode_description[i].name; i++)
       p += sprintf(p, "%s%s", (i == 0 ? "" : ", "),
