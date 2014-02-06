@@ -457,24 +457,18 @@ void sg_config_init(int *argc, char **argv)
   /* Create the configuration support */
   if (_sg_cfg_init_status == 0) { /* Only create stuff if not already inited */
 
-	/* Plugins configuration */
+    /* Plugins configuration */
+    p = description + sprintf(description, "The plugins. Possible values: ");
+    for (i = 0; surf_plugin_description[i].name; i++)
+      p += sprintf(p, "%s%s", (i == 0 ? "" : ", "),
+                   surf_plugin_description[i].name);
+    sprintf(p,
+            ".\n       (use 'help' as a value to see the long description of each plugin)");
+    xbt_cfg_register(&_sg_cfg_set, "plugin", description,
+                     xbt_cfgelm_string, 1, 1, &_sg_cfg_cb__plugin, NULL);
 
-	sprintf(description,
-	        "The plugins. Possible values: ");
-	      p = description;
-	while (*(++p) != '\0');
-	for (i = 0; surf_plugin_description[i].name; i++)
-	  p += sprintf(p, "%s%s", (i == 0 ? "" : ", "),
-	               surf_plugin_description[i].name);
-	sprintf(p,
-	        ".\n       (use 'help' as a value to see the long description of each plugin)");
-	xbt_cfg_register(&_sg_cfg_set, "plugin", description,
-	                 xbt_cfgelm_string, 1, 1, &_sg_cfg_cb__plugin, NULL);
-
-    sprintf(description,
-            "The model to use for the CPU. Possible values: ");
-    p = description;
-    while (*(++p) != '\0');
+    p = description + sprintf(description,
+                              "The model to use for the CPU. Possible values: ");
     for (i = 0; surf_cpu_model_description[i].name; i++)
       p += sprintf(p, "%s%s", (i == 0 ? "" : ", "),
                    surf_cpu_model_description[i].name);
@@ -484,10 +478,9 @@ void sg_config_init(int *argc, char **argv)
                      xbt_cfgelm_string, 1, 1, &_sg_cfg_cb__cpu_model, NULL);
     xbt_cfg_setdefault_string(_sg_cfg_set, "cpu/model", "Cas01");
 
-    sprintf(description,
-            "The optimization modes to use for the CPU. Possible values: ");
-    p = description;
-    while (*(++p) != '\0');
+    p = description +
+      sprintf(description,
+              "The optimization modes to use for the CPU. Possible values: ");
     for (i = 0; surf_optimization_mode_description[i].name; i++)
       p += sprintf(p, "%s%s", (i == 0 ? "" : ", "),
                    surf_optimization_mode_description[i].name);
@@ -497,10 +490,9 @@ void sg_config_init(int *argc, char **argv)
                      xbt_cfgelm_string, 1, 1, &_sg_cfg_cb__optimization_mode, NULL);
     xbt_cfg_setdefault_string(_sg_cfg_set, "cpu/optim", "Lazy");
 
-    sprintf(description,
-            "The model to use for the storage. Possible values: ");
-    p = description;
-    while (*(++p) != '\0');
+    p = description +
+      sprintf(description,
+              "The model to use for the storage. Possible values: ");
     for (i = 0; surf_storage_model_description[i].name; i++)
       p += sprintf(p, "%s%s", (i == 0 ? "" : ", "),
                    surf_storage_model_description[i].name);
@@ -510,10 +502,9 @@ void sg_config_init(int *argc, char **argv)
                      xbt_cfgelm_string, 1, 1, &_sg_cfg_cb__storage_mode, NULL);
     xbt_cfg_setdefault_string(_sg_cfg_set, "storage/model", "default");
 
-    sprintf(description,
-            "The model to use for the network. Possible values: ");
-    p = description;
-    while (*(++p) != '\0');
+    p = description +
+      sprintf(description,
+              "The model to use for the network. Possible values: ");
     for (i = 0; surf_network_model_description[i].name; i++)
       p += sprintf(p, "%s%s", (i == 0 ? "" : ", "),
                    surf_network_model_description[i].name);
@@ -523,10 +514,9 @@ void sg_config_init(int *argc, char **argv)
                      xbt_cfgelm_string, 1, 1, &_sg_cfg_cb__network_model, NULL);
     xbt_cfg_setdefault_string(_sg_cfg_set, "network/model", "LV08");
 
-    sprintf(description,
-            "The optimization modes to use for the network. Possible values: ");
-    p = description;
-    while (*(++p) != '\0');
+    p = description +
+      sprintf(description,
+              "The optimization modes to use for the network. Possible values: ");
     for (i = 0; surf_optimization_mode_description[i].name; i++)
       p += sprintf(p, "%s%s", (i == 0 ? "" : ", "),
                    surf_optimization_mode_description[i].name);
@@ -536,10 +526,9 @@ void sg_config_init(int *argc, char **argv)
                      xbt_cfgelm_string, 1, 1, &_sg_cfg_cb__optimization_mode, NULL);
     xbt_cfg_setdefault_string(_sg_cfg_set, "network/optim", "Lazy");
 
-    sprintf(description,
-            "The model to use for the workstation. Possible values: ");
-    p = description;
-    while (*(++p) != '\0');
+    p = description +
+      sprintf(description,
+              "The model to use for the workstation. Possible values: ");
     for (i = 0; surf_workstation_model_description[i].name; i++)
       p += sprintf(p, "%s%s", (i == 0 ? "" : ", "),
                    surf_workstation_model_description[i].name);
@@ -658,18 +647,19 @@ void sg_config_init(int *argc, char **argv)
     xbt_cfg_setdefault_boolean(_sg_cfg_set, "verbose-exit", "yes");
 
     /* context factory */
-    sprintf(description,
-            "Context factory to use in SIMIX. Possible values: thread");
+    p = description +
+      sprintf(description,
+              "Context factory to use in SIMIX. Possible values: thread");
     const char *dflt_ctx_fact = "thread";
 #ifdef CONTEXT_UCONTEXT
     dflt_ctx_fact = "ucontext";
-    strcat(strcat(description, ", "), dflt_ctx_fact);
+    p += sprintf(p, ", %s", dflt_ctx_fact);
 #endif
 #ifdef HAVE_RAWCTX
     dflt_ctx_fact = "raw";
-    strcat(strcat(description, ", "), dflt_ctx_fact);
+    p += sprintf(p, ", %s", dflt_ctx_fact);
 #endif
-    strcat(description, ".");
+    sprintf(p, ".");
     xbt_cfg_register(&_sg_cfg_set, "contexts/factory", description,
                      xbt_cfgelm_string, 1, 1, _sg_cfg_cb_context_factory, NULL);
     xbt_cfg_setdefault_string(_sg_cfg_set, "contexts/factory", dflt_ctx_fact);
