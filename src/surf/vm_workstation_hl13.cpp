@@ -252,7 +252,7 @@ WorkstationVMHL13::WorkstationVMHL13(WorkstationVMModelPtr model, const char* na
    * from the VM name, we have to make sure that the system does not call the
    * free callback for the network resource object. The network resource object
    * is still used by the physical machine. */
-  p_netElm = new RoutingEdgeWrapper(static_cast<RoutingEdgePtr>(xbt_lib_get_or_null(host_lib, sub_ws->getName(), ROUTING_HOST_LEVEL)));
+  p_netElm = static_cast<RoutingEdgePtr>(xbt_lib_get_or_null(host_lib, sub_ws->getName(), ROUTING_HOST_LEVEL));
   xbt_lib_set(host_lib, name, ROUTING_HOST_LEVEL, p_netElm);
 
   p_subWs = sub_ws;
@@ -297,10 +297,10 @@ WorkstationVMHL13::WorkstationVMHL13(WorkstationVMModelPtr model, const char* na
 WorkstationVMHL13::~WorkstationVMHL13()
 {
   /* ind_phys_workstation equals to smx_host_t */
-  // surf_resource_t ind_vm_workstation = xbt_lib_get_elm_or_null(host_lib, getName());
+  surf_resource_t ind_vm_workstation = xbt_lib_get_elm_or_null(host_lib, getName());
 
   /* Before clearing the entries in host_lib, we have to pick up resources. */
-  // CpuCas01Ptr cpu = static_cast<CpuCas01Ptr>(surf_cpu_resource_priv(ind_vm_workstation));
+  CpuCas01Ptr cpu = static_cast<CpuCas01Ptr>(surf_cpu_resource_priv(ind_vm_workstation));
 
   /* We deregister objects from host_lib, without invoking the freeing callback
    * of each level.
@@ -321,15 +321,15 @@ WorkstationVMHL13::~WorkstationVMHL13()
   xbt_assert(ret == 1, "Bug: some resource still remains");
 
   /* Free the cpu resource of the VM. If using power_trace, we will have to */
-  //delete cpu;
+  delete cpu;
 
   /* Free the network resource of the VM. */
-	// Nothing has to be done, because net_elmts is just a pointer on the physical one
+  // Nothing has to be done, because net_elmts is just a pointer on the physical one
 
   /* Free the storage resource of the VM. */
   // Not relevant yet
 
-	/* Free the workstation resource of the VM. */
+  /* Free the workstation resource of the VM. */
 }
 
 void WorkstationVMHL13::updateState(tmgr_trace_event_t /*event_type*/, double /*value*/, double /*date*/) {
