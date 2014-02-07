@@ -811,7 +811,6 @@ static dw_variable_t MC_die_to_variable(mc_object_info_t info, Dwarf_Die* die, D
   variable->global = frame == NULL; // Can be override base on DW_AT_location
   variable->name = xbt_strdup(MC_dwarf_attr_string(die, DW_AT_name));
   variable->type_origin = MC_dwarf_at_type(die);
-  variable->address.address = NULL;
 
   int klass = MC_dwarf_form_get_class(dwarf_whatform(&attr_location));
   switch (klass) {
@@ -832,9 +831,9 @@ static dw_variable_t MC_die_to_variable(mc_object_info_t info, Dwarf_Die* die, D
         Dwarf_Off offset = expr[0].number;
         // TODO, Why is this different base on the object?
         Dwarf_Off base = strcmp(info->file_name, xbt_binary_name) !=0 ? (Dwarf_Off) info->start_exec : 0;
-        variable->address.address = (void*) (base + offset);
+        variable->address = (void*) (base + offset);
       } else {
-        variable->address.location = MC_dwarf_get_expression(expr, len);
+        variable->location = MC_dwarf_get_expression(expr, len);
       }
 
       break;
@@ -842,7 +841,7 @@ static dw_variable_t MC_die_to_variable(mc_object_info_t info, Dwarf_Die* die, D
   case MC_DW_CLASS_LOCLISTPTR:
   case MC_DW_CLASS_CONSTANT:
     // Reference to location list:
-    variable->address.location = MC_dwarf_get_location_list(die, &attr_location);
+    variable->location = MC_dwarf_get_location_list(die, &attr_location);
     break;
   default:
     xbt_die("Unexpected calss 0x%x (%i) list for location in <%p>%s",

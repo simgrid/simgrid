@@ -164,7 +164,7 @@ void dw_variable_free(dw_variable_t v){
     xbt_free(v->name);
     xbt_free(v->type_origin);
     if(!v->global)
-      dw_location_free(v->address.location);
+      dw_location_free(v->location);
     xbt_free(v);
   }
 }
@@ -385,9 +385,9 @@ static int MC_dwarf_get_variable_index(xbt_dynar_t variables, char* var, void *a
       end = cursor - 1;
     }else{
       if(address){ /* global variable */
-        if(var_test->address.address == address)
+        if(var_test->address == address)
           return -1;
-        if(var_test->address.address > address)
+        if(var_test->address > address)
           end = cursor - 1;
         else
           start = cursor + 1;
@@ -398,7 +398,7 @@ static int MC_dwarf_get_variable_index(xbt_dynar_t variables, char* var, void *a
   }
 
   if(strcmp(var_test->name, var) == 0){
-    if(address && var_test->address.address < address)
+    if(address && var_test->address < address)
       return cursor+1;
     else
       return cursor;
@@ -410,7 +410,7 @@ static int MC_dwarf_get_variable_index(xbt_dynar_t variables, char* var, void *a
 }
 
 void MC_dwarf_register_global_variable(mc_object_info_t info, dw_variable_t variable) {
-  int index = MC_dwarf_get_variable_index(info->global_variables, variable->name, variable->address.address);
+  int index = MC_dwarf_get_variable_index(info->global_variables, variable->name, variable->address);
   if (index != -1)
     xbt_dynar_insert_at(info->global_variables, index, &variable);
   // TODO, else ?

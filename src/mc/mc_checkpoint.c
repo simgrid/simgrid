@@ -475,8 +475,11 @@ static xbt_dynar_t MC_get_local_variables_values(void *stack_context){
       new_var->type = strdup(current_variable->type_origin);
       new_var->region= region_type;
       
-      if(current_variable->address.location != NULL){
-        new_var->address = (void*) MC_dwarf_resolve_location(&c, current_variable->address.location, frame_pointer_address);
+      /* if(current_variable->address!=NULL) {
+        new_var->address = current_variable->address;
+      } else */
+      if(current_variable->location != NULL){
+        new_var->address = (void*) MC_dwarf_resolve_location(&c, current_variable->location, frame_pointer_address);
       }
 
       xbt_dynar_push(variables, &new_var);

@@ -285,11 +285,11 @@ static int compare_global_variables(int region_type, mc_mem_region_t r1, mc_mem_
     // If the variable is not in this object, skip it:
     // We do not expect to find a pointer to something which is not reachable
     // by the global variables.
-    if((char*) current_var->address.address < (char*) object_info->start_rw
-      || (char*) current_var->address.address > (char*) object_info->end_rw)
+    if((char*) current_var->address < (char*) object_info->start_rw
+      || (char*) current_var->address > (char*) object_info->end_rw)
        continue;
 
-    offset = (char *)current_var->address.address - (char *)object_info->start_rw;
+    offset = (char *)current_var->address - (char *)object_info->start_rw;
 
     res = compare_areas_with_type((char *)r1->data + offset, (char *)r2->data + offset, types, other_types, current_var->type_origin, r1->size, region_type, start_data, 0);
     if(res == 1){

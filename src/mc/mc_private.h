@@ -410,10 +410,11 @@ typedef struct s_dw_variable{
   int global;
   char *name;
   char *type_origin;
-  union{
-    dw_location_t location; // For global==0
-    void *address; // For global!=0
-  }address;
+
+  // Use either of:
+  dw_location_t location;
+  void* address;
+
 }s_dw_variable_t, *dw_variable_t;
 
 typedef struct s_dw_frame{
