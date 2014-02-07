@@ -102,6 +102,7 @@ Workstation::Workstation(ModelPtr model, const char *name, xbt_dict_t props,
  : Resource(model, name, props)
  , p_storage(storage), p_netElm(netElm), p_cpu(cpu)
 {
+  p_params.ramsize = 0;
   surf_callback_emit(workstationCreatedCallbacks, this);
 }
 
@@ -110,6 +111,7 @@ Workstation::Workstation(ModelPtr model, const char *name, xbt_dict_t props, lmm
  : Resource(model, name, props, constraint)
  , p_storage(storage), p_netElm(netElm), p_cpu(cpu)
 {
+  p_params.ramsize = 0;
   surf_callback_emit(workstationCreatedCallbacks, this);
 }
 
@@ -330,13 +332,13 @@ xbt_dynar_t Workstation::getVms()
 
 void Workstation::getParams(ws_params_t params)
 {
-  memcpy(params, &p_params, sizeof(s_ws_params_t));
+  *params = p_params;
 }
 
 void Workstation::setParams(ws_params_t params)
 {
   /* may check something here. */
-  memcpy(&p_params, params, sizeof(s_ws_params_t));
+  p_params = *params;
 }
 
 /**********
