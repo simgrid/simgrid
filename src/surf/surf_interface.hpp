@@ -440,13 +440,6 @@ public:
   virtual void setState(e_surf_action_state_t state);
 
   /**
-   * @brief Get the bound of the current Action
-   * 
-   * @return The bound of the current Action
-   */
-  double getBound() {return m_bound;}
-
-  /**
    * @brief Get the start time of the current action
    * 
    * @return The start time of the current action
@@ -679,7 +672,6 @@ private:
   ActionLmmListPtr p_modifiedSet;
   xbt_heap_t p_actionHeap;
   int m_selectiveUpdate;
-  double m_bound;   /**< the capping of the CPU use  */
   bool m_failed;
   double m_start; /**< start time  */
   char *p_category;               /**< tracing category for categorized resource utilization monitoring */

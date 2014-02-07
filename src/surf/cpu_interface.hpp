@@ -216,7 +216,7 @@ public:
   /**
    * @brief CpuAction constructor
    */
-  CpuAction(){};
+  CpuAction(): m_bound(0) {};
 
   /**
    * @brief CpuAction constructor
@@ -226,7 +226,7 @@ public:
    * @param failed [TODO]
    */
   CpuAction(ModelPtr model, double cost, bool failed)
-  : Action(model, cost, failed) {} //FIXME:REMOVE
+    : Action(model, cost, failed), m_bound(0) {} //FIXME:REMOVE
 
   /**
    * @brief CpuAction constructor
@@ -237,7 +237,7 @@ public:
    * @param var The lmm variable associated to this CpuAction if it is part of a LMM component
    */
   CpuAction(ModelPtr model, double cost, bool failed, lmm_variable_t var)
-  : Action(model, cost, failed, var) {}
+    : Action(model, cost, failed, var), m_bound(0) {}
 
   /**
    * @brief Set the affinity of the current CpuAction
@@ -256,10 +256,17 @@ public:
    */
   virtual void setBound(double bound);
 
+  /**
+   * @brief Get the bound of the current CpuAction
+   *
+   * @return The bound of the current CpuAction
+   */
+  double getBound() { return m_bound; }
+
   void setState(e_surf_action_state_t state);
 
   void updateRemainingLazy(double now);
-  double m_bound;
+  double m_bound;                /*< the capping of the CPU use  */
 };
 
 #endif /* SURF_CPU_INTERFACE_HPP_ */
