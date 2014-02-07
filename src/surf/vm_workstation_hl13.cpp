@@ -432,15 +432,15 @@ void WorkstationVMHL13::migrate(surf_resource_t ind_dst_pm)
      if (p_action->getRemainsNoUpdate() > 0)
        XBT_CRITICAL("FIXME: need copy the state(?), %f", p_action->getRemainsNoUpdate());
 
-     int ret = p_action->unref();
-     xbt_assert(ret == 1, "Bug: some resource still remains");
-
      /* keep the bound value of the cpu action of the VM. */
      double old_bound = p_action->getBound();
      if (old_bound != 0) {
        XBT_INFO("migrate VM(%s): set bound (%lf) at %s", vm_name, old_bound, pm_name_dst);
        new_cpu_action->setBound(old_bound);
      }
+
+     int ret = p_action->unref();
+     xbt_assert(ret == 1, "Bug: some resource still remains");
 
      p_action = new_cpu_action;
    }
