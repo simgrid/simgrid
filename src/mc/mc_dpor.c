@@ -586,6 +586,7 @@ void MC_dpor(void)
       }
 
       MC_SET_RAW_MEM;
+      if(0) {
       if(!initial_state_safety->initial_communications_pattern_done){
         print_communications_pattern(initial_communications_pattern);
       }else{
@@ -595,6 +596,7 @@ void MC_dpor(void)
         }
       }
       initial_state_safety->initial_communications_pattern_done = 1;
+      }
       MC_UNSET_RAW_MEM;
 
       /* Trash the current state, no longer needed */
