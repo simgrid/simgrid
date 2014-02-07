@@ -577,14 +577,12 @@ static void launch_deferred_exec_process(msg_host_t host, double computation, do
 
   int nargvs = 4;
   char **argv = xbt_new(char *, nargvs);
-  argv[0] = xbt_strdup(pr_name);
+  argv[0] = pr_name;
   argv[1] = bprintf("%lf", computation);
   argv[2] = bprintf("%lf", prio);
   argv[3] = NULL;
 
   MSG_process_create_with_arguments(pr_name, deferred_exec_fun, NULL, host, nargvs - 1, argv);
-
-  xbt_free(pr_name);
 }
 
 
@@ -627,15 +625,12 @@ static void start_overhead_process(msg_task_t comm_task)
 
   int nargvs = 3;
   char **argv = xbt_new(char *, nargvs);
-  argv[0] = xbt_strdup(pr_name);
-  argv[1] = xbt_strdup(mbox);
+  argv[0] = pr_name;
+  argv[1] = mbox;
   argv[2] = NULL;
 
   // XBT_INFO("micro start: mbox %s", mbox);
   MSG_process_create_with_arguments(pr_name, task_tx_overhead_fun, NULL, MSG_host_self(), nargvs - 1, argv);
-
-  xbt_free(pr_name);
-  xbt_free(mbox);
 }
 
 static void shutdown_overhead_process(msg_task_t comm_task)
@@ -1068,29 +1063,25 @@ static void do_migration(msg_vm_t vm, msg_host_t src_pm, msg_host_t dst_pm)
     char *pr_name = get_mig_process_rx_name(sg_host_name(vm), sg_host_name(src_pm), sg_host_name(dst_pm));
     int nargvs = 5;
     char **argv = xbt_new(char *, nargvs);
-    argv[0] = xbt_strdup(pr_name);
+    argv[0] = pr_name;
     argv[1] = xbt_strdup(sg_host_name(vm));
     argv[2] = xbt_strdup(sg_host_name(src_pm));
     argv[3] = xbt_strdup(sg_host_name(dst_pm));
     argv[4] = NULL;
 
     MSG_process_create_with_arguments(pr_name, migration_rx_fun, NULL, dst_pm, nargvs - 1, argv);
-
-    xbt_free(pr_name);
   }
 
   {
     char *pr_name = get_mig_process_tx_name(sg_host_name(vm), sg_host_name(src_pm), sg_host_name(dst_pm));
     int nargvs = 5;
     char **argv = xbt_new(char *, nargvs);
-    argv[0] = xbt_strdup(pr_name);
+    argv[0] = pr_name;
     argv[1] = xbt_strdup(sg_host_name(vm));
     argv[2] = xbt_strdup(sg_host_name(src_pm));
     argv[3] = xbt_strdup(sg_host_name(dst_pm));
     argv[4] = NULL;
     MSG_process_create_with_arguments(pr_name, migration_tx_fun, NULL, src_pm, nargvs - 1, argv);
-
-    xbt_free(pr_name);
   }
 
   /* wait until the migration have finished */
