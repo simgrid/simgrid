@@ -279,8 +279,6 @@ extern xbt_fifo_t mc_stack_liveness;
 extern mc_global_t initial_state_liveness;
 extern xbt_automaton_t _mc_property_automaton;
 extern int compare;
-extern xbt_dynar_t mc_stack_comparison_ignore;
-extern xbt_dynar_t mc_data_bss_comparison_ignore;
 
 typedef struct s_mc_pair{
   int num;
