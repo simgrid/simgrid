@@ -779,7 +779,7 @@ static int compare_heap_area_with_type(void *real_area1, void *real_area2, void 
 
   switch(type->type){
   case DW_TAG_base_type:
-    if(strcmp(type->name, "char") == 0){ /* String, hence random (arbitrary ?) size */
+    if(type->name!=NULL && strcmp(type->name, "char") == 0){ /* String, hence random (arbitrary ?) size */
       if(real_area1 == real_area2)
         return -1;
       else
@@ -1040,7 +1040,7 @@ int compare_heap_area(void *area1, void* area2, xbt_dynar_t previous, xbt_dict_t
         type = xbt_dict_get_or_null(all_types, type->dw_type_id);
       }
     }
-    if((type->byte_size == DW_TAG_pointer_type) || ((type->type == DW_TAG_base_type) && (!strcmp(type->name, "char"))))
+    if((type->byte_size == DW_TAG_pointer_type) || ((type->type == DW_TAG_base_type) && type->name!=NULL && (!strcmp(type->name, "char"))))
       type_size = -1;
     else
       type_size = type->byte_size;
@@ -1067,7 +1067,7 @@ int compare_heap_area(void *area1, void* area2, xbt_dynar_t previous, xbt_dict_t
     }
 
     if(type_size != -1){
-      if(type_size != heapinfo1[block1].busy_block.busy_size && type_size != heapinfo2[block2].busy_block.busy_size && !strcmp(type->name, "s_smx_context")){
+      if(type_size != heapinfo1[block1].busy_block.busy_size && type_size != heapinfo2[block2].busy_block.busy_size && type->name!=NULL && !strcmp(type->name, "s_smx_context")){
         if(match_pairs){
           match_equals(previous);
           xbt_dynar_free(&previous);
