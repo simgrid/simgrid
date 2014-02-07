@@ -9,6 +9,7 @@
 #include <link.h>
 #include "mc_private.h"
 #include "xbt/module.h"
+#include <xbt/mmalloc.h>
 
 #include "../simix/smx_private.h"
 
@@ -72,10 +73,10 @@ void MC_free_snapshot(mc_snapshot_t snapshot){
 
 static mc_mem_region_t MC_region_new(int type, void *start_addr, size_t size)
 {
-  mc_mem_region_t new_reg = xbt_new0(s_mc_mem_region_t, 1);
+  mc_mem_region_t new_reg = xbt_new(s_mc_mem_region_t, 1);
   new_reg->start_addr = start_addr;
   new_reg->size = size;
-  new_reg->data = xbt_malloc0(size);
+  new_reg->data = xbt_malloc(size);
   memcpy(new_reg->data, start_addr, size);
 
   XBT_DEBUG("New region : type : %d, data : %p (real addr %p), size : %zu", type, new_reg->data, start_addr, size);
@@ -239,8 +240,45 @@ void MC_init_memory_map_info(){
 
 }
 
+/** \brief Fill/llokup the "subtype" field.
+ */
+static void MC_resolve_subtype(mc_object_info_t info, dw_type_t type) {
+
+  if(type->dw_type_id==NULL)
+    return;
+  type->subtype = xbt_dict_get_or_null(info->types, type->dw_type_id);
+  if(type->subtype==NULL)
+    return;
+  if(type->subtype->byte_size != 0)
+    return;
+  if(type->subtype->name==NULL)
+    return;
+  // Try to find a more complete description of the type:
+  // We need to fix in order to support C++.
+
+  dw_type_t subtype = xbt_dict_get_or_null(info->types_by_name, type->subtype->name);
+  if(subtype!=NULL) {
+    type->subtype = subtype;
+  }
+
+  // TODO, support "switch type" (looking up the type in another lib) when possible
+}
+
 static void MC_post_process_types(mc_object_info_t info) {
-  // Nothing here
+  xbt_dict_cursor_t cursor = NULL;
+  char *origin;
+  dw_type_t type;
+
+  // Lookup "subtype" field:
+  xbt_dict_foreach(info->types, cursor, origin, type){
+    MC_resolve_subtype(info, type);
+
+    dw_type_t member;
+    unsigned int i = 0;
+    if(type->members!=NULL) xbt_dynar_foreach(type->members, i, member) {
+      MC_resolve_subtype(info, member);
+    }
+  }
 }
 
 /** \brief Finds informations about a given shared object/executable */
@@ -295,102 +333,6 @@ static void MC_find_object_address(memory_map_t maps, mc_object_info_t result) {
 /************************************* Take Snapshot ************************************/
 /****************************************************************************************/
 
-static void MC_get_hash_global(char *snapshot_hash, void *data1, void *data2){
-  
-  /* unsigned int cursor = 0; */
-  /* size_t offset;  */
-  /* global_variable_t current_var;  */
-  /* void *addr_pointed = NULL; */
-  /* void *res = NULL; */
-
-  /* xbt_strbuff_t clear = xbt_strbuff_new(); */
-  
-  /* xbt_dynar_foreach(mc_global_variables, cursor, current_var){ */
-  /*   if(current_var->address < start_data_libsimgrid){ /\* binary *\/ */
-  /*     offset = (char *)current_var->address - (char *)start_data_binary; */
-  /*     addr_pointed = *((void **)((char *)data2 + offset)); */
-  /*     if(((addr_pointed >= start_plt_binary && addr_pointed <= end_plt_binary)) || ((addr_pointed >= std_heap && (char *)addr_pointed <= (char *)std_heap + STD_HEAP_SIZE ))) */
-  /*       continue; */
-  /*     res = xbt_malloc0(current_var->size + 1); */
-  /*     memset(res, 0, current_var->size + 1); */
-  /*     memcpy(res, (char*)data2 + offset, current_var->size); */
-  /*   }else{ /\* libsimgrid *\/ */
-  /*     offset = (char *)current_var->address - (char *)start_data_libsimgrid; */
-  /*     addr_pointed = *((void **)((char *)data1 + offset)); */
-  /*     if((addr_pointed >= start_plt_libsimgrid && addr_pointed <= end_plt_libsimgrid) || (addr_pointed >= std_heap && (char *)addr_pointed <= (char *)std_heap + STD_HEAP_SIZE )) */
-  /*       continue; */
-  /*     res = xbt_malloc0(current_var->size + 1); */
-  /*     memset(res, 0, current_var->size + 1); */
-  /*     memcpy(res, (char*)data1 + offset, current_var->size); */
-  /*   } */
-  /*   if(res != NULL){ */
-  /*     xbt_strbuff_append(clear, (const char*)res); */
-  /*     xbt_free(res); */
-  /*     res = NULL; */
-  /*   } */
-  /* } */
-
-  /* xbt_sha(clear->data, snapshot_hash); */
-
-  /* xbt_strbuff_free(clear); */
-
-}
-
-static void MC_get_hash_local(char *snapshot_hash, xbt_dynar_t stacks){
-
-  /* xbt_dynar_t tokens = NULL, s_tokens = NULL; */
-  /* unsigned int cursor1 = 0, cursor2 = 0; */
-  /* mc_snapshot_stack_t current_stack; */
-  /* char *frame_name = NULL; */
-  /* void *addr; */
-
-  /* xbt_strbuff_t clear = xbt_strbuff_new(); */
-
-  /* while(cursor1 < xbt_dynar_length(stacks)){ */
-  /*   current_stack = xbt_dynar_get_as(stacks, cursor1, mc_snapshot_stack_t); */
-  /*   tokens = xbt_str_split(current_stack->local_variables->data, NULL); */
-  /*   cursor2 = 0; */
-  /*   while(cursor2 < xbt_dynar_length(tokens)){ */
-  /*     s_tokens = xbt_str_split(xbt_dynar_get_as(tokens, cursor2, char *), "="); */
-  /*     if(xbt_dynar_length(s_tokens) > 1){ */
-  /*       if(strcmp(xbt_dynar_get_as(s_tokens, 0, char *), "frame_name") == 0){ */
-  /*         xbt_free(frame_name); */
-  /*         frame_name = xbt_strdup(xbt_dynar_get_as(s_tokens, 1, char *)); */
-  /*         xbt_strbuff_append(clear, (const char*)xbt_dynar_get_as(tokens, cursor2, char *)); */
-  /*         cursor2++; */
-  /*         xbt_dynar_free(&s_tokens); */
-  /*         continue; */
-  /*       } */
-  /*       addr = (void *) strtoul(xbt_dynar_get_as(s_tokens, 1, char *), NULL, 16); */
-  /*       if(addr > std_heap && (char *)addr <= (char *)std_heap + STD_HEAP_SIZE){ */
-  /*         cursor2++; */
-  /*         xbt_dynar_free(&s_tokens); */
-  /*         continue; */
-  /*       } */
-  /*       if(is_stack_ignore_variable(frame_name, xbt_dynar_get_as(s_tokens, 0, char *))){ */
-  /*         cursor2++; */
-  /*         xbt_dynar_free(&s_tokens); */
-  /*         continue; */
-  /*       } */
-  /*       xbt_strbuff_append(clear, (const char *)xbt_dynar_get_as(tokens, cursor2, char *)); */
-  /*     } */
-  /*     xbt_dynar_free(&s_tokens); */
-  /*     cursor2++; */
-  /*   } */
-  /*   xbt_dynar_free(&tokens); */
-  /*   cursor1++; */
-  /* } */
-
-  /* xbt_free(frame_name); */
-
-  /* xbt_sha(clear->data, snapshot_hash); */
-
-  /* xbt_strbuff_free(clear); */
-
-}
-
-
-
 static xbt_dynar_t MC_get_local_variables_values(void *stack_context){
   
   unw_cursor_t c;
@@ -409,8 +351,7 @@ static xbt_dynar_t MC_get_local_variables_values(void *stack_context){
 
   unsigned int cursor = 0;
   dw_variable_t current_variable;
-  dw_location_entry_t entry = NULL;
-  int frame_found = 0, region_type;
+  int region_type;
   void *frame_pointer_address = NULL;
   long true_ip;
   int stop = 0;
@@ -438,27 +379,8 @@ static xbt_dynar_t MC_get_local_variables_values(void *stack_context){
     }
     
     true_ip = (long)frame->low_pc + (long)off;
-    frame_pointer_address = NULL;
+    frame_pointer_address = mc_find_frame_base(true_ip, frame, &c);
 
-    /* Get frame pointer */
-    switch(frame->frame_base->type){
-    case e_dw_loclist:
-      cursor = 0;
-      while(cursor < xbt_dynar_length(frame->frame_base->location.loclist) && !frame_found){
-        entry = xbt_dynar_get_as(frame->frame_base->location.loclist, cursor, dw_location_entry_t);
-        if((true_ip >= entry->lowpc) && (true_ip < entry->highpc)){
-          frame_found = 1;
-          frame_pointer_address =  (void*) MC_dwarf_resolve_location(&c, entry->location, NULL);
-        }
-        cursor++;
-      }
-      break;
-    default :
-      frame_pointer_address = NULL; /* FIXME : implement other cases (with optimizations enabled)*/
-      break;
-    }
-
-    frame_found = 0;
     cursor = 0;
 
     xbt_dynar_foreach(frame->variables, cursor, current_variable){
@@ -584,6 +506,11 @@ mc_snapshot_t MC_take_snapshot(int num_state){
 
   mc_snapshot_t snapshot = xbt_new0(s_mc_snapshot_t, 1);
   snapshot->nb_processes = xbt_swag_size(simix_global->process_list);
+  if(MC_USE_SNAPSHOT_HASH) {
+    snapshot->hash = mc_hash_processes_state(num_state);
+  } else {
+    snapshot->hash = 0;
+  }
 
   /* Save the std heap and the writable mapped pages of libsimgrid and binary */
   MC_get_memory_regions(snapshot);
@@ -592,8 +519,6 @@ mc_snapshot_t MC_take_snapshot(int num_state){
 
   if(_sg_mc_visited > 0 || strcmp(_sg_mc_property_file,"")){
     snapshot->stacks = MC_take_snapshot_stacks(&snapshot, snapshot->regions[0]->data);
-    //MC_get_hash_global(snapshot->hash_global, snapshot->regions[1]->data, snapshot->regions[2]->data);
-    //MC_get_hash_local(snapshot->hash_local, snapshot->stacks);
   }
 
   if(num_state > 0)

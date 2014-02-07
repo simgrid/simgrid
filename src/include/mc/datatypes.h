@@ -40,11 +40,17 @@ typedef struct s_stack_region{
 void heap_ignore_region_free(mc_heap_ignore_region_t r);
 void heap_ignore_region_free_voidp(void *r);
 
+/************ Object info *************/
+
+typedef struct s_mc_object_info s_mc_object_info_t, *mc_object_info_t;
+
 /************ DWARF structures *************/
 
 typedef int e_dw_type_type;
 
-typedef struct s_dw_type{
+typedef struct s_dw_type s_dw_type_t, *dw_type_t;
+
+struct s_dw_type{
   e_dw_type_type type;
   void *id; /* Offset in the section (in hexadecimal form) */
   char *name; /* Name of the type */
@@ -54,9 +60,10 @@ typedef struct s_dw_type{
   xbt_dynar_t members; /* if DW_TAG_structure_type, DW_TAG_union_type*/
   int is_pointer_type;
   int offset;
-}s_dw_type_t, *dw_type_t;
+  dw_type_t subtype;
+};
 
-char* get_type_description(xbt_dict_t types, char *type_name);
+char* get_type_description(mc_object_info_t info, char *type_name);
 
 SG_END_DECL()
 #endif                          /* _MC_MC_H */
