@@ -333,102 +333,6 @@ static void MC_find_object_address(memory_map_t maps, mc_object_info_t result) {
 /************************************* Take Snapshot ************************************/
 /****************************************************************************************/
 
-static void MC_get_hash_global(char *snapshot_hash, void *data1, void *data2){
-  
-  /* unsigned int cursor = 0; */
-  /* size_t offset;  */
-  /* global_variable_t current_var;  */
-  /* void *addr_pointed = NULL; */
-  /* void *res = NULL; */
-
-  /* xbt_strbuff_t clear = xbt_strbuff_new(); */
-  
-  /* xbt_dynar_foreach(mc_global_variables, cursor, current_var){ */
-  /*   if(current_var->address < start_data_libsimgrid){ /\* binary *\/ */
-  /*     offset = (char *)current_var->address - (char *)start_data_binary; */
-  /*     addr_pointed = *((void **)((char *)data2 + offset)); */
-  /*     if(((addr_pointed >= start_plt_binary && addr_pointed <= end_plt_binary)) || ((addr_pointed >= std_heap && (char *)addr_pointed <= (char *)std_heap + STD_HEAP_SIZE ))) */
-  /*       continue; */
-  /*     res = xbt_malloc0(current_var->size + 1); */
-  /*     memset(res, 0, current_var->size + 1); */
-  /*     memcpy(res, (char*)data2 + offset, current_var->size); */
-  /*   }else{ /\* libsimgrid *\/ */
-  /*     offset = (char *)current_var->address - (char *)start_data_libsimgrid; */
-  /*     addr_pointed = *((void **)((char *)data1 + offset)); */
-  /*     if((addr_pointed >= start_plt_libsimgrid && addr_pointed <= end_plt_libsimgrid) || (addr_pointed >= std_heap && (char *)addr_pointed <= (char *)std_heap + STD_HEAP_SIZE )) */
-  /*       continue; */
-  /*     res = xbt_malloc0(current_var->size + 1); */
-  /*     memset(res, 0, current_var->size + 1); */
-  /*     memcpy(res, (char*)data1 + offset, current_var->size); */
-  /*   } */
-  /*   if(res != NULL){ */
-  /*     xbt_strbuff_append(clear, (const char*)res); */
-  /*     xbt_free(res); */
-  /*     res = NULL; */
-  /*   } */
-  /* } */
-
-  /* xbt_sha(clear->data, snapshot_hash); */
-
-  /* xbt_strbuff_free(clear); */
-
-}
-
-static void MC_get_hash_local(char *snapshot_hash, xbt_dynar_t stacks){
-
-  /* xbt_dynar_t tokens = NULL, s_tokens = NULL; */
-  /* unsigned int cursor1 = 0, cursor2 = 0; */
-  /* mc_snapshot_stack_t current_stack; */
-  /* char *frame_name = NULL; */
-  /* void *addr; */
-
-  /* xbt_strbuff_t clear = xbt_strbuff_new(); */
-
-  /* while(cursor1 < xbt_dynar_length(stacks)){ */
-  /*   current_stack = xbt_dynar_get_as(stacks, cursor1, mc_snapshot_stack_t); */
-  /*   tokens = xbt_str_split(current_stack->local_variables->data, NULL); */
-  /*   cursor2 = 0; */
-  /*   while(cursor2 < xbt_dynar_length(tokens)){ */
-  /*     s_tokens = xbt_str_split(xbt_dynar_get_as(tokens, cursor2, char *), "="); */
-  /*     if(xbt_dynar_length(s_tokens) > 1){ */
-  /*       if(strcmp(xbt_dynar_get_as(s_tokens, 0, char *), "frame_name") == 0){ */
-  /*         xbt_free(frame_name); */
-  /*         frame_name = xbt_strdup(xbt_dynar_get_as(s_tokens, 1, char *)); */
-  /*         xbt_strbuff_append(clear, (const char*)xbt_dynar_get_as(tokens, cursor2, char *)); */
-  /*         cursor2++; */
-  /*         xbt_dynar_free(&s_tokens); */
-  /*         continue; */
-  /*       } */
-  /*       addr = (void *) strtoul(xbt_dynar_get_as(s_tokens, 1, char *), NULL, 16); */
-  /*       if(addr > std_heap && (char *)addr <= (char *)std_heap + STD_HEAP_SIZE){ */
-  /*         cursor2++; */
-  /*         xbt_dynar_free(&s_tokens); */
-  /*         continue; */
-  /*       } */
-  /*       if(is_stack_ignore_variable(frame_name, xbt_dynar_get_as(s_tokens, 0, char *))){ */
-  /*         cursor2++; */
-  /*         xbt_dynar_free(&s_tokens); */
-  /*         continue; */
-  /*       } */
-  /*       xbt_strbuff_append(clear, (const char *)xbt_dynar_get_as(tokens, cursor2, char *)); */
-  /*     } */
-  /*     xbt_dynar_free(&s_tokens); */
-  /*     cursor2++; */
-  /*   } */
-  /*   xbt_dynar_free(&tokens); */
-  /*   cursor1++; */
-  /* } */
-
-  /* xbt_free(frame_name); */
-
-  /* xbt_sha(clear->data, snapshot_hash); */
-
-  /* xbt_strbuff_free(clear); */
-
-}
-
-
-
 static xbt_dynar_t MC_get_local_variables_values(void *stack_context){
   
   unw_cursor_t c;
@@ -612,8 +516,6 @@ mc_snapshot_t MC_take_snapshot(int num_state){
 
   if(_sg_mc_visited > 0 || strcmp(_sg_mc_property_file,"")){
     snapshot->stacks = MC_take_snapshot_stacks(&snapshot, snapshot->regions[0]->data);
-    //MC_get_hash_global(snapshot->hash_global, snapshot->regions[1]->data, snapshot->regions[2]->data);
-    //MC_get_hash_local(snapshot->hash_local, snapshot->stacks);
   }
 
   if(num_state > 0)
