@@ -2,7 +2,7 @@
 
 p Testing a vm with two successive tasks
 
-$ $SG_TEST_EXENV simple_vm$EXEEXT --log=no_loc ${srcdir:=.}/simple_plat.xml
+$ $SG_TEST_EXENV ${bindir:=.}/simple_vm$EXEEXT --log=no_loc ${srcdir:=.}/simple_plat.xml
 > [PM0:master_:(1) 0.000000] [msg_test/INFO] ## Test 1 (started): check computation on normal PMs
 > [PM0:master_:(1) 0.000000] [msg_test/INFO] ### Put a task on a PM
 > [PM0:compute:(2) 0.010000] [msg_test/INFO] PM0:compute task executed 0.01
