@@ -169,9 +169,9 @@ msg_process_t MSG_process_create_with_environment(const char *name,
  simcall_process_create(&process, name, code, simdata, sg_host_name(host), -1,
                            argc, argv, properties,0);
 
-  #ifdef HAVE_TRACING
-    TRACE_msg_process_create(name, simcall_process_get_PID(process), simdata->m_host);
-  #endif
+#ifdef HAVE_TRACING
+  TRACE_msg_process_create(name, simcall_process_get_PID(process), host);
+#endif
 
   if (!process) {
     /* Undo everything we have just changed */
