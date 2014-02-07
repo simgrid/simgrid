@@ -85,6 +85,7 @@ int master_fun(int argc, char *argv[])
 
     XBT_INFO("put %s on %s", pr_name, vm_name);
     MSG_process_create_with_arguments(pr_name, worker_fun, NULL, vm, 2, wrk_argv);
+    xbt_free(vm_name);
   }
 
 
@@ -125,6 +126,7 @@ int master_fun(int argc, char *argv[])
 
     XBT_INFO("put %s on %s", pr_name, vm_name);
     MSG_process_create_with_arguments(pr_name, worker_fun, NULL, vm, 2, wrk_argv);
+    xbt_free(vm_name);
   }
 
   XBT_INFO("Send a task to %d worker process", workers_count * 2);

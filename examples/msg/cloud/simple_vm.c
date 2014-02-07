@@ -86,6 +86,7 @@ static int communication_rx_fun(int argc, char *argv[])
       MSG_process_get_name(priv->tx_proc),
       host_name, pr_name, clock_end - priv->clock_sta);
 
+  xbt_free(priv);
   MSG_task_destroy(task);
 
   return 0;
@@ -269,6 +270,7 @@ static int master_main(int argc, char *argv[])
   MSG_vm_destroy(vm0);
   XBT_INFO("## Test 6 (ended)");
   
+  xbt_dynar_free(&hosts_dynar);
   return 0;
 }
 
@@ -298,7 +300,7 @@ int main(int argc, char *argv[])
 
   int res = MSG_main();
   XBT_INFO("Bye (simulation time %g)", MSG_get_clock());
-
+  xbt_dynar_free(&hosts_dynar);
 
   return !(res == MSG_OK);
 }

@@ -76,6 +76,8 @@ static int master_main(int argc, char *argv[])
   }
 
   MSG_process_sleep(10000);
+  MSG_vm_destroy(vm0);
+  xbt_dynar_free(&hosts_dynar);
   return 1;
 }
 
@@ -101,6 +103,7 @@ int main(int argc, char *argv[]){
 
   int res = MSG_main();
   XBT_INFO("Bye (simulation time %g)", MSG_get_clock());
+  xbt_dynar_free(&hosts_dynar);
 
   return !(res == MSG_OK);
 }
