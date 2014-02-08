@@ -8,6 +8,8 @@ package cloud.migration;
 
 import org.simgrid.msg.*;
 import org.simgrid.msg.Process;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Test extends Process{
 
@@ -31,6 +33,8 @@ public class Test extends Process{
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
 
+        List<VM> vms = new ArrayList<VM>();
+
       /* Create VM1 */
         int dpRate = 70;
         int load1 = 90;
@@ -48,8 +52,7 @@ public class Test extends Process{
                 125, // Net bandwidth,
                 dpRate // Memory intensity
         );
-
-
+        vms.add(vm1);
         vm1.start();
 
         /* Collocated VMs */
@@ -76,6 +79,7 @@ public class Test extends Process{
                     125, // Net bandwidth,
                     dpRate // Memory intensity
             );
+            vms.add(tmp);
             tmp.start();
             tmp.setLoad(vmSrcLoad[i-1]);
         }
@@ -102,13 +106,10 @@ public class Test extends Process{
                     125, // Net bandwidth,
                     dpRate // Memory intensity
             );
+            vms.add(tmp);
             tmp.start();
             tmp.setLoad(vmDstLoad[i-1]);
         }
-
-
-
-
 
         Msg.info("Round trip of VM1 (load "+load1+"%)");
         vm1.setLoad(load1);
@@ -138,5 +139,8 @@ public class Test extends Process{
 
         waitFor(100000);
         Main.setEndOfTest();
+        Msg.info("Destroy VMs");
+        for (VM vm: vms)
+          vm.destroy();
     }
 }
