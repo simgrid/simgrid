@@ -17,10 +17,10 @@ extern JavaVM *__java_vm;
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(jmsg, bindings, "MSG for Java(TM)");
 
 static smx_context_t
-smx_ctx_java_factory_create_context(xbt_main_func_t code, int argc,
-                                    char **argv,
+smx_ctx_java_factory_create_context(xbt_main_func_t code,
+                                    int argc, char **argv,
                                     void_pfn_smxprocess_t cleanup_func,
-                                    void *data);
+                                    smx_process_t process);
 
 static void smx_ctx_java_free(smx_context_t context);
 static void smx_ctx_java_suspend(smx_context_t context);
@@ -41,7 +41,7 @@ void SIMIX_ctx_java_factory_init(smx_context_factory_t * factory)
   (*factory)->name = "ctx_java_factory";
   //(*factory)->finalize = smx_ctx_base_factory_finalize;
   (*factory)->self = smx_ctx_java_self;
-  (*factory)->get_data = smx_ctx_base_get_data;
+  (*factory)->get_process = smx_ctx_base_get_process;
 }
 smx_context_t smx_ctx_java_self(void)
 {
@@ -49,10 +49,10 @@ smx_context_t smx_ctx_java_self(void)
 }
 
 static smx_context_t
-smx_ctx_java_factory_create_context(xbt_main_func_t code, int argc,
-                                    char **argv,
+smx_ctx_java_factory_create_context(xbt_main_func_t code,
+                                    int argc, char **argv,
                                     void_pfn_smxprocess_t cleanup_func,
-                                    void* data)
+                                    smx_process_t process)
 {
   static int thread_amount=0;
   smx_ctx_java_t context = xbt_new0(s_smx_ctx_java_t, 1);
@@ -86,7 +86,7 @@ smx_ctx_java_factory_create_context(xbt_main_func_t code, int argc,
   	context->thread = NULL;
     xbt_os_thread_set_extra_data(context);
   }
-  context->super.data = data;
+  context->super.process = process;
   
   return (smx_context_t) context;
 }

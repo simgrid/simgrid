@@ -140,8 +140,8 @@ typedef void (*void_pfn_smxhost_t) (smx_host_t);
    factory should implement */
 
 
-typedef smx_context_t(*smx_pfn_context_factory_create_context_t)
-  (xbt_main_func_t, int, char **, void_pfn_smxprocess_t, void* data);
+typedef smx_context_t (*smx_pfn_context_factory_create_context_t)(
+  xbt_main_func_t, int, char **, void_pfn_smxprocess_t, smx_process_t process);
 typedef int (*smx_pfn_context_factory_finalize_t) (smx_context_factory_t*);
 typedef void (*smx_pfn_context_free_t) (smx_context_t);
 typedef void (*smx_pfn_context_start_t) (smx_context_t);
@@ -149,7 +149,7 @@ typedef void (*smx_pfn_context_stop_t) (smx_context_t);
 typedef void (*smx_pfn_context_suspend_t) (smx_context_t context);
 typedef void (*smx_pfn_context_runall_t) (void);
 typedef smx_context_t (*smx_pfn_context_self_t) (void);
-typedef void* (*smx_pfn_context_get_data_t) (smx_context_t context);
+typedef smx_process_t (*smx_pfn_context_get_process_t) (smx_context_t context);
 
 /* interface of the context factories */
 typedef struct s_smx_context_factory {
@@ -161,7 +161,7 @@ typedef struct s_smx_context_factory {
   smx_pfn_context_suspend_t suspend;
   smx_pfn_context_runall_t runall;
   smx_pfn_context_self_t self;
-  smx_pfn_context_get_data_t get_data;
+  smx_pfn_context_get_process_t get_process;
 } s_smx_context_factory_t;
 
 /* Hack: let msg load directly the right factory */
@@ -182,7 +182,7 @@ typedef struct s_smx_context {
   s_xbt_swag_hookup_t hookup;
   xbt_main_func_t code;
   void_pfn_smxprocess_t cleanup_func;
-  void *data;   /* Here SIMIX stores the smx_process_t containing the context */
+  smx_process_t process;
   char **argv;
   int argc;
   unsigned iwannadie:1;
@@ -193,15 +193,14 @@ XBT_PUBLIC(void) smx_ctx_base_factory_init(smx_context_factory_t *factory);
 XBT_PUBLIC(int) smx_ctx_base_factory_finalize(smx_context_factory_t *factory);
 
 XBT_PUBLIC(smx_context_t)
-smx_ctx_base_factory_create_context_sized(size_t size,
-                                          xbt_main_func_t code, int argc,
-                                          char **argv,
+smx_ctx_base_factory_create_context_sized(size_t size, xbt_main_func_t code,
+                                          int argc, char **argv,
                                           void_pfn_smxprocess_t cleanup,
-                                          void* data);
+                                          smx_process_t process);
 XBT_PUBLIC(void) smx_ctx_base_free(smx_context_t context);
 XBT_PUBLIC(void) smx_ctx_base_stop(smx_context_t context);
 XBT_PUBLIC(smx_context_t) smx_ctx_base_self(void);
-XBT_PUBLIC(void) *smx_ctx_base_get_data(smx_context_t context);
+XBT_PUBLIC(smx_process_t) smx_ctx_base_get_process(smx_context_t context);
 
 XBT_PUBLIC(xbt_dynar_t) SIMIX_process_get_runnable(void);
 XBT_PUBLIC(smx_process_t) SIMIX_process_from_PID(int PID);

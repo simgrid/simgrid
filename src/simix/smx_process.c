@@ -26,7 +26,7 @@ XBT_INLINE smx_process_t SIMIX_process_self(void)
 {
   smx_context_t self_context = SIMIX_context_self();
 
-  return self_context ? SIMIX_context_get_data(self_context) : NULL;
+  return self_context ? SIMIX_context_get_process(self_context) : NULL;
 }
 
 /**
