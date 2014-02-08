@@ -4,7 +4,6 @@ SimGrid (3.11) NOT RELEASED; urgency=low
  * Consider the removal of Supernovae mode if no user has manifested since the
    release of version 3.10.
  * Switch to tesh.pl, and kill the now unused parts of xbt that seem fragile
- * Switch to surf++, and reintegrate the hypervisor branch on top of it
  * Clean up CMake files (may need a full rewrite).
    Non exhaustive list of subgoals:
    - Use genuine cmake mechanisms and variables when available,
@@ -18,6 +17,12 @@ SimGrid (3.11) NOT RELEASED; urgency=low
      to get the list of files to pack.
    - For Java, add an option to enable/disable the inclusion of the native
      libraries in the jar file, and avoid to duplicate these files.
+
+ MSG:
+ * [FIXME: elaborate] Merge branch hypervisor
+
+ SURF:
+ * [FIXME: elaborate] Rewrite Surf in C++
 
  -- $date Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
 
