@@ -54,6 +54,12 @@ static void energyCpuActionStateChangedCallback(CpuActionPtr action){
   }
 }
 
+static void sg_energy_plugin_exit()
+{
+  delete surf_energy;
+  surf_energy = NULL;
+}
+
 /** \ingroup SURF_plugin_energy
  * \brief Enable energy plugin
  * \details Enable energy plugin to get joules consumption of each cpu.
@@ -64,7 +70,7 @@ void sg_energy_plugin_init() {
     surf_callback_connect(cpuCreatedCallbacks, energyCpuCreatedCallback);
     surf_callback_connect(cpuDestructedCallbacks, energyCpuDestructedCallback);
     surf_callback_connect(cpuActionStateChangedCallbacks, energyCpuActionStateChangedCallback);
-
+    surf_callback_connect(surfExitCallbacks, sg_energy_plugin_exit);
   }
 }
 
