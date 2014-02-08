@@ -90,6 +90,8 @@ xbt_dynar_t surf_path = NULL;
 xbt_dynar_t host_that_restart = NULL;
 xbt_dict_t watched_hosts_lib;
 
+surf_callback(void, void) surfExitCallbacks;
+
 s_surf_model_description_t surf_plugin_description[] = {
 		  {"Energy",
 		   "Cpu energy consumption.",
@@ -442,6 +444,8 @@ void surf_exit(void)
   xbt_dynar_free(&model_list);
   xbt_dynar_free(&model_list_invoke);
   routing_exit();
+
+  surf_callback_emit(surfExitCallbacks);
 
   if (maxmin_system) {
     lmm_system_free(maxmin_system);
