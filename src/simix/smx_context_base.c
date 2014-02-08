@@ -87,6 +87,7 @@ void smx_ctx_base_stop(smx_context_t context)
 {
   if (context->cleanup_func)
     context->cleanup_func(context->process);
+  context->process->suspended = 0;
   context->iwannadie = 0;
   simcall_process_cleanup(context->process);
   context->iwannadie = 1;
