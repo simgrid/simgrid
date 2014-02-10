@@ -5,6 +5,8 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #define _GNU_SOURCE
+#define UNW_LOCAL_ONLY
+
 #include <string.h>
 #include <link.h>
 #include "mc_private.h"
