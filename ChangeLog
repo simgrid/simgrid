@@ -1,8 +1,6 @@
 SimGrid (3.11) NOT RELEASED; urgency=low
 
  TENTATIVE RELEASE GOALS for 3.11:
- * Consider the removal of Supernovae mode if no user has manifested since the
-   release of version 3.10.
  * Switch to tesh.pl, and kill the now unused parts of xbt that seem fragile
  * Clean up CMake files (may need a full rewrite).
    Non exhaustive list of subgoals:
@@ -23,6 +21,11 @@ SimGrid (3.11) NOT RELEASED; urgency=low
 
  SURF:
  * [FIXME: elaborate] Rewrite Surf in C++
+
+ Build System:
+ * Supernovae build mode is definitively removed. It was used to improve
+   inlining and inter-module optimizations. It is nowadays superseded by
+   link-time optimizations commonly available in compilers.
 
  -- $date Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
 

@@ -18,10 +18,6 @@ if(enable_compile_warnings AND enable_compile_optimizations)
   SET(BUILDNAME "FULL_FLAGS" CACHE TYPE INTERNAL FORCE)
 endif()
 
-if(enable_supernovae)
-  SET(BUILDNAME "SUPERNOVAE" CACHE TYPE INTERNAL FORCE)
-endif()
-
 if(HAVE_GTNETS)
   SET(BUILDNAME "GTNETS" CACHE TYPE INTERNAL FORCE)
 endif()

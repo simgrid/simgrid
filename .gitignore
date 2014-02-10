@@ -36,10 +36,9 @@ examples/lua/console/simgrid.so
 simgrid.jar
 
 ################################################
-### Units and supernovae files
+### Unit files
 src/simgrid_units_main.c
 src/*_unit.c
-src/supernovae_*.c
 
 ################################################
 ### Generated files

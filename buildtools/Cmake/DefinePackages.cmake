@@ -19,7 +19,6 @@ set(EXTRA_DIST
   src/include/surf/trace_mgr.h
   src/include/xbt/wine_dbghelp.h
   src/include/xbt/xbt_os_time.h
-  src/mk_supernovae.pl
   src/msg/msg_mailbox.h
   src/msg/msg_private.h
   src/portable.h
@@ -1027,7 +1026,6 @@ set(CMAKE_SOURCE_FILES
   buildtools/Cmake/Scripts/preinstall.sh
   buildtools/Cmake/Scripts/tesh.pl
   buildtools/Cmake/Scripts/update_tesh.pl
-  buildtools/Cmake/Supernovae.cmake
   buildtools/Cmake/UnitTesting.cmake
   buildtools/Cmake/src/internal_config.h.in
   buildtools/Cmake/src/simgrid.nsi.in

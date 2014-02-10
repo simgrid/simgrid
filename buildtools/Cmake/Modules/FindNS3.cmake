@@ -88,7 +88,3 @@ if(HAVE_NS3)
 else()
   message(STATUS "Warning: To use NS-3 Please install ns3 at least version 3.10 (http://www.nsnam.org/releases/)")
 endif()
-
-if(HAVE_NS3 AND enable_supernovae)
-  set(enable_supernovae OFF)
-endif()

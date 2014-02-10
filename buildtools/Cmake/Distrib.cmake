@@ -374,11 +374,4 @@ add_custom_target(maintainer-clean
   WORKING_DIRECTORY "${CMAKE_HOME_DIRECTORY}"
   )
 
-add_custom_target(supernovae-clean
-  COMMAND ${CMAKE_COMMAND} -E remove -f src/supernovae_sg.c
-  COMMAND ${CMAKE_COMMAND} -E remove -f src/supernovae_smpi.c
-  WORKING_DIRECTORY "${CMAKE_HOME_DIRECTORY}"
-  )
-
-
 include(CPack)
