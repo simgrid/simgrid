@@ -404,7 +404,7 @@ static xbt_dynar_t MC_get_local_variables_values(void *stack_context){
     xbt_abort();
   }
 
-  unw_word_t ip, sp, off;
+  unw_word_t ip, off;
   dw_frame_t frame;
 
   unsigned int cursor = 0;
@@ -420,7 +420,6 @@ static xbt_dynar_t MC_get_local_variables_values(void *stack_context){
   while(ret >= 0 && !stop){
 
     unw_get_reg(&c, UNW_REG_IP, &ip);
-    unw_get_reg(&c, UNW_REG_SP, &sp);
 
     unw_get_proc_name(&c, frame_name, sizeof (frame_name), &off);
 
