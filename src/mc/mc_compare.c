@@ -390,10 +390,14 @@ int snapshot_compare(void *state1, void *state2){
     xbt_os_walltimer_start(timer);
   #endif
 
+  int hash_result = 0;
   if(MC_USE_SNAPSHOT_HASH) {
-    if(s1->hash != s2->hash) {
+    hash_result = (s1->hash != s2->hash);
+    if(hash_result) {
       XBT_VERB("(%d - %d) Different hash : 0x%" PRIx64 "--0x%" PRIx64, num1, num2, s1->hash, s2->hash);
+#ifndef MC_DEBUG
       return 1;
+#endif
     } else {
       XBT_VERB("(%d - %d) Same hash : 0x%" PRIx64, num1, num2, s1->hash);
     }
@@ -598,10 +602,22 @@ int snapshot_compare(void *state1, void *state2){
   #endif
 
 #ifdef MC_VERBOSE
-   if(errors==0)
+   if(errors || hash_result)
+     XBT_VERB("(%d - %d) Difference found", num1, num2);
+   else
      XBT_VERB("(%d - %d) No difference found", num1, num2);
 #endif
-  return errors > 0;
+
+#if defined(MC_DEBUG) && defined(MC_VERBOSE) && MC_USE_SNAPSHOT_HASH
+   // * false positive SHOULD be avoided.
+   // * There MUST not be any false negative.
+
+   XBT_VERB("(%d - %d) State equality hash test is %s %s", num1, num2,
+     (hash_result!=0) == (errors!=0) ? "true" : "false",
+     !hash_result ? "positive" : "negative");
+#endif
+
+   return errors > 0 || hash_result;
   
 }
 

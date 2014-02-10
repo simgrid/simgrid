@@ -263,7 +263,7 @@ void print_comparison_times(void);
 
 //#define MC_DEBUG 1
 #define MC_VERBOSE 1
-
+#define MC_USE_SNAPSHOT_HASH 1
 
 /********************************** DPOR for safety property **************************************/
 
@@ -501,8 +501,6 @@ bool mc_address_test(mc_address_set_t p, const void* value);
  *  \result resulting hash
  * */
 uint64_t mc_hash_processes_state(int num_state, xbt_dynar_t stacks);
-
-#define MC_USE_SNAPSHOT_HASH 1
 
 #endif
 
