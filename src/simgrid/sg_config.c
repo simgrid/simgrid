@@ -67,6 +67,7 @@ static void sg_config_cmd_line(int *argc, char **argv)
 "Each of these configurations can be used by adding\n"
 "    --cfg=<option name>:<option value>\n"
 "to the command line.\n"
+"\n"
 "You can also use --help-models to see the details of all models known by this simulator.\n"
 #ifdef HAVE_TRACING
 "\n"
