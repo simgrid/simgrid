@@ -949,7 +949,7 @@ void SIMIX_post_comm(smx_action_t action)
     action->state = SIMIX_DST_HOST_FAILURE;
   else if (action->comm.surf_comm &&
 	  surf_action_get_state(action->comm.surf_comm) == SURF_ACTION_FAILED) {
-    XBT_DEBUG("Puta madre. Surf says that the link broke");
+    XBT_DEBUG("Puta madre. Surf says that the link broken");
     action->state = SIMIX_LINK_FAILURE;
   } else
     action->state = SIMIX_DONE;
