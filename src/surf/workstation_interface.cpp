@@ -46,24 +46,14 @@ WorkstationModel::~WorkstationModel() {
  * not get any CPU share in the PM layer. */
 void WorkstationModel::adjustWeightOfDummyCpuActions()
 {
-  /* iterate for all hosts including virtual machines */
-  xbt_lib_cursor_t cursor;
-  char *key;
-  void **ind_host;
+  /* iterate for all virtual machines */
+  for (WorkstationVMModel::vm_list_t::iterator iter =
+         WorkstationVMModel::ws_vms.begin();
+       iter !=  WorkstationVMModel::ws_vms.begin(); ++iter) {
 
-  xbt_lib_foreach(host_lib, cursor, key, ind_host) {
-    WorkstationPtr ws = static_cast<WorkstationPtr>(ind_host[SURF_WKS_LEVEL]);
-    CpuCas01Ptr cpu_cas01 = static_cast<CpuCas01Ptr>(ind_host[SURF_CPU_LEVEL]);
-
-    if (!ws)
-      continue;
-    /* skip if it is not a virtual machine */
-    if (ws->getModel() != static_cast<ModelPtr>(surf_vm_workstation_model))
-      continue;
+    WorkstationVMPtr ws_vm = &*iter;
+    CpuCas01Ptr cpu_cas01 = static_cast<CpuCas01Ptr>(ws_vm->p_cpu);
     xbt_assert(cpu_cas01, "cpu-less workstation");
-
-    /* It is a virtual machine, so we can cast it to workstation_VM2013_t */
-    WorkstationVMPtr ws_vm = static_cast<WorkstationVMPtr>(ws);
 
     int is_active = lmm_constraint_used(cpu_cas01->getModel()->getMaxminSystem(), cpu_cas01->getConstraint());
     // int is_active_old = constraint_is_active(cpu_cas01);
@@ -309,20 +299,12 @@ xbt_dynar_t Workstation::getVms()
 {
   xbt_dynar_t dyn = xbt_dynar_new(sizeof(smx_host_t), NULL);
 
-  /* iterate for all hosts including virtual machines */
-  xbt_lib_cursor_t cursor;
-  char *key;
-  void **ind_host;
-  xbt_lib_foreach(host_lib, cursor, key, ind_host) {
-    WorkstationPtr ws = static_cast<WorkstationPtr>(ind_host[SURF_WKS_LEVEL]);
-    if (!ws)
-      continue;
-    /* skip if it is not a virtual machine */
-    if (ws->getModel() != static_cast<ModelPtr>(surf_vm_workstation_model))
-      continue;
+  /* iterate for all virtual machines */
+  for (WorkstationVMModel::vm_list_t::iterator iter =
+         WorkstationVMModel::ws_vms.begin();
+       iter !=  WorkstationVMModel::ws_vms.begin(); ++iter) {
 
-    /* It is a virtual machine, so we can cast it to workstation_VM2013_t */
-    WorkstationVMPtr ws_vm = static_cast<WorkstationVMPtr>(ws);
+    WorkstationVMPtr ws_vm = &*iter;
     if (this == ws_vm-> p_subWs)
       xbt_dynar_push(dyn, &ws_vm->p_subWs);
   }

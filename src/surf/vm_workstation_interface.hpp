@@ -78,6 +78,11 @@ public:
   virtual void createResource(const char *name, void *ind_phys_workstation)=0;
 
   void adjustWeightOfDummyCpuActions() {};
+
+  typedef boost::intrusive::list<WorkstationVM,
+                                 boost::intrusive::constant_time_size<false> >
+          vm_list_t;
+  static vm_list_t ws_vms;
 };
 
 /************
@@ -88,7 +93,8 @@ public:
  * @brief SURF workstation VM interface class
  * @details A workstation VM represent an virtual machine
  */
-class WorkstationVM : public Workstation {
+class WorkstationVM : public Workstation,
+                      public boost::intrusive::list_base_hook<> {
 public:
   /**
    * @brief WorkstationVM consrtructor

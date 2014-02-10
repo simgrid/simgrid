@@ -110,27 +110,18 @@ double WorkstationVMHL13Model::shareResources(double now)
    *
    **/
 
-  /* iterate for all hosts including virtual machines */
-  xbt_lib_cursor_t cursor;
-  char *key;
-  void **ind_host;
-  xbt_lib_foreach(host_lib, cursor, key, ind_host) {
-    WorkstationPtr ws = static_cast<WorkstationPtr>(ind_host[SURF_WKS_LEVEL]);
-    CpuPtr cpu = static_cast<CpuPtr>(ind_host[SURF_CPU_LEVEL]);
+  /* iterate for all virtual machines */
+  for (WorkstationVMModel::vm_list_t::iterator iter =
+         WorkstationVMModel::ws_vms.begin();
+       iter !=  WorkstationVMModel::ws_vms.begin(); ++iter) {
 
-    if (!ws)
-      continue;
-    /* skip if it is not a virtual machine */
-    if (ws->getModel() != static_cast<ModelPtr>(surf_vm_workstation_model))
-      continue;
+    WorkstationVMPtr ws_vm = &*iter;
+    CpuPtr cpu = static_cast<CpuPtr>(ws_vm->p_cpu);
     xbt_assert(cpu, "cpu-less workstation");
-
-    /* It is a virtual machine, so we can cast it to workstation_VM2013_t */
-    WorkstationVMPtr ws_vm = static_cast<WorkstationVMPtr>(ws);
 
     double solved_value = get_solved_value(static_cast<CpuActionPtr>(ws_vm->p_action));
     XBT_DEBUG("assign %f to vm %s @ pm %s", solved_value,
-        ws->getName(), ws_vm->p_subWs->getName());
+        ws_vm->getName(), ws_vm->p_subWs->getName());
 
     // TODO: check lmm_update_constraint_bound() works fine instead of the below manual substitution.
     // cpu_cas01->constraint->bound = solved_value;
@@ -164,20 +155,14 @@ double WorkstationVMHL13Model::shareResources(double now)
 
   /* FIXME: 3. do we have to re-initialize our cpu_action object? */
 #if 0
-  /* iterate for all hosts including virtual machines */
-  xbt_lib_foreach(host_lib, cursor, key, ind_host) {
-    WorkstationCLM03Ptr ws_clm03 = ind_host[SURF_WKS_LEVEL];
+  /* iterate for all virtual machines */
+  for (WorkstationVMModel::vm_list_t::iterator iter =
+         WorkstationVMModel::ws_vms.begin();
+       iter !=  WorkstationVMModel::ws_vms.begin(); ++iter) {
 
-    /* skip if it is not a virtual machine */
-    if (!ws_clm03)
-      continue;
-    if (ws_clm03->getModel() != surf_vm_workstation_model)
-      continue;
-
-    /* It is a virtual machine, so we can cast it to workstation_VM2013_t */
     {
 #if 0
-      WorkstationVM2013Ptr ws_vm2013 = (workstation_VM2013_t) ws_clm03;
+      WorkstationVM2013Ptr ws_vm2013 = static_cast<WorkstationVM2013Ptr>(&*iter);
       XBT_INFO("cost %f remains %f start %f finish %f", ws_vm2013->cpu_action->cost,
           ws_vm2013->cpu_action->remains,
           ws_vm2013->cpu_action->start,

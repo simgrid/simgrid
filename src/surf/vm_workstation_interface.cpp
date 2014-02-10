@@ -28,6 +28,8 @@ WorkstationVMModel::WorkstationVMModel() : WorkstationModel("Virtual Workstation
   p_cpuModel = surf_cpu_model_vm;
 }
 
+WorkstationVMModel::vm_list_t WorkstationVMModel::ws_vms;
+
 /************
  * Resource *
  ************/
@@ -36,6 +38,7 @@ WorkstationVM::WorkstationVM(ModelPtr model, const char *name, xbt_dict_t props,
 		        RoutingEdgePtr netElm, CpuPtr cpu)
 : Workstation(model, name, props, NULL, netElm, cpu)
 {
+  WorkstationVMModel::ws_vms.push_back(*this);
   surf_callback_emit(workstationVMCreatedCallbacks, this);
 }
 
@@ -46,6 +49,8 @@ WorkstationVM::WorkstationVM(ModelPtr model, const char *name, xbt_dict_t props,
 WorkstationVM::~WorkstationVM()
 {
   surf_callback_emit(workstationVMDestructedCallbacks, this);
+  WorkstationVMModel::ws_vms.erase(WorkstationVMModel::
+                                   vm_list_t::s_iterator_to(*this));
 }
 
 void WorkstationVM::setState(e_surf_resource_state_t state){
