@@ -156,7 +156,7 @@ s_surf_model_description_t surf_workstation_model_description[] = {
 
 s_surf_model_description_t surf_vm_workstation_model_description[] = {
   {"default",
-   "Default vm workstation model.)",
+   "Default vm workstation model.",
    surf_vm_workstation_model_init_current_default},
   {NULL, NULL, NULL}      /* this array must be NULL terminated */
 };

@@ -538,6 +538,15 @@ void sg_config_init(int *argc, char **argv)
                      xbt_cfgelm_string, 1, 1, &_sg_cfg_cb__workstation_model, NULL);
     xbt_cfg_setdefault_string(_sg_cfg_set, "workstation/model", "default");
 
+    p = description +
+      sprintf(description,
+              "The model to use for the vm workstation. Possible values: ");
+    for (i = 0; surf_vm_workstation_model_description[i].name; i++)
+      p += sprintf(p, "%s%s", (i == 0 ? "" : ", "),
+                   surf_vm_workstation_model_description[i].name);
+    sprintf(p,
+            ".\n       (use 'help' as a value to see the long description of each model)");
+
     xbt_cfg_register(&_sg_cfg_set, "vm_workstation/model", description,
                      xbt_cfgelm_string, 1, 1, &_sg_cfg_cb__vm_workstation_model, NULL);
     xbt_cfg_setdefault_string(_sg_cfg_set, "vm_workstation/model", "default");
