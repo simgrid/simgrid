@@ -798,6 +798,8 @@ static dw_location_t MC_dwarf_get_expression(Dwarf_Op* expr,  size_t len) {
   return loc;
 }
 
+static int mc_anonymous_variable_index = 0;
+
 static dw_variable_t MC_die_to_variable(mc_object_info_t info, Dwarf_Die* die, Dwarf_Die* unit, dw_frame_t frame) {
   // Drop declaration:
   if (MC_dwarf_attr_flag(die, DW_AT_declaration, false))
@@ -849,6 +851,12 @@ static dw_variable_t MC_die_to_variable(mc_object_info_t info, Dwarf_Die* die, D
   default:
     xbt_die("Unexpected calss 0x%x (%i) list for location in <%p>%s",
       klass, klass, (void*) variable->dwarf_offset, variable->name);
+  }
+
+  // The current code needs a variable name,
+  // generate a fake one:
+  if(!variable->name) {
+    variable->name = bprintf("@anonymous#%i", mc_anonymous_variable_index++);
   }
 
   return variable;

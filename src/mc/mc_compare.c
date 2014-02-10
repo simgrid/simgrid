@@ -209,14 +209,14 @@ static int compare_areas_with_type(void *area1, void *area2, mc_object_info_t in
       // The pointers are both in the heap:
       if(addr_pointed1 > std_heap && (char *)addr_pointed1 < (char*) std_heap + STD_HEAP_SIZE){
         if(!(addr_pointed2 > std_heap && (char *)addr_pointed2 < (char*) std_heap + STD_HEAP_SIZE))
-          xbt_die("Die");
+          return 1;
         return compare_heap_area(addr_pointed1, addr_pointed2, NULL, info, other_info, type->dw_type_id, pointer_level);
       }
 
       // The pointers are both in the current object R/W segment:
       else if(addr_pointed1 > start_data && (char*)addr_pointed1 <= (char *)start_data + region_size){
         if(!(addr_pointed2 > start_data && (char*)addr_pointed2 <= (char *)start_data + region_size))
-          xbt_die("Die");
+          return 1;
         if(type->dw_type_id == NULL)
           return  (addr_pointed1 != addr_pointed2);
         else
