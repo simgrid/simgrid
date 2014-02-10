@@ -99,11 +99,38 @@ void smpi_process_destroy(void)
  */
 void smpi_process_finalize(void)
 {
-  // wait for all pending asynchronous comms to finish
-  if(!MC_is_active())
-  while (SIMIX_process_has_pending_comms(SIMIX_process_self())) {
-    simcall_process_sleep(0.01);
+  int i;
+  int size = smpi_comm_size(MPI_COMM_WORLD);
+  int rank = smpi_comm_rank(MPI_COMM_WORLD);
+  /* All non-root send & receive zero-length message. */
+  if (rank > 0) {
+    smpi_mpi_ssend (NULL, 0, MPI_BYTE, 0,
+                    COLL_TAG_BARRIER,
+                    MPI_COMM_WORLD);
+    smpi_mpi_recv (NULL, 0, MPI_BYTE, 0,
+                    COLL_TAG_BARRIER,
+                    MPI_COMM_WORLD, MPI_STATUS_IGNORE);
   }
+  /* The root collects and broadcasts the messages. */
+  else {
+    MPI_Request* requests;
+    requests = (MPI_Request*)malloc( size * sizeof(MPI_Request) );
+    for (i = 1; i < size; ++i) {
+      requests[i] = smpi_mpi_irecv(NULL, 0, MPI_BYTE, MPI_ANY_SOURCE,
+                                   COLL_TAG_BARRIER, MPI_COMM_WORLD
+                                   );
+    }
+    smpi_mpi_waitall( size-1, requests+1, MPI_STATUSES_IGNORE );
+    for (i = 1; i < size; ++i) {
+      requests[i] = smpi_mpi_issend(NULL, 0, MPI_BYTE, i,
+                                   COLL_TAG_BARRIER,
+                                   MPI_COMM_WORLD
+                                   );
+    }
+    smpi_mpi_waitall( size-1, requests+1, MPI_STATUSES_IGNORE );
+    free( requests );
+  }
+
 }
 
 /**
