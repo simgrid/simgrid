@@ -33,6 +33,7 @@ static void MC_find_object_address(memory_map_t maps, mc_object_info_t result);
 static void MC_snapshot_stack_free(mc_snapshot_stack_t s){
   if(s){
     xbt_dynar_free(&(s->local_variables));
+    xbt_dynar_free(&(s->stack_frames));
     xbt_free(s);
   }
 }
@@ -335,65 +336,27 @@ static void MC_find_object_address(memory_map_t maps, mc_object_info_t result) {
 /************************************* Take Snapshot ************************************/
 /****************************************************************************************/
 
-static xbt_dynar_t MC_get_local_variables_values(void *stack_context){
-  
-  unw_cursor_t c;
-  int ret;
+static xbt_dynar_t MC_get_local_variables_values(xbt_dynar_t stack_frames){
 
-  char frame_name[256];
-  
-  ret = unw_init_local(&c, (unw_context_t *)stack_context);
-  if(ret < 0){
-    XBT_INFO("unw_init_local failed");
-    xbt_abort();
-  }
-
-  unw_word_t ip, off;
-  dw_frame_t frame;
-
-  unsigned int cursor = 0;
-  dw_variable_t current_variable;
-  int region_type;
-  void *frame_pointer_address = NULL;
-  long true_ip;
-  int stop = 0;
-
+  unsigned cursor1 = 0;
+  mc_stack_frame_t stack_frame;
   xbt_dynar_t variables = xbt_dynar_new(sizeof(local_variable_t), local_variable_free_voidp);
 
-  while(ret >= 0 && !stop){
+  xbt_dynar_foreach(stack_frames,cursor1,stack_frame) {
 
-    unw_get_reg(&c, UNW_REG_IP, &ip);
-
-    unw_get_proc_name(&c, frame_name, sizeof (frame_name), &off);
-
-    if(!strcmp(frame_name, "smx_ctx_sysv_wrapper")) /* Stop before context switch with maestro */
-      stop = 1;
-
-    if((long)ip > (long) mc_libsimgrid_info->start_exec)
-      frame = xbt_dict_get_or_null(mc_libsimgrid_info->local_variables, frame_name);
-    else
-      frame = xbt_dict_get_or_null(mc_binary_info->local_variables, frame_name);
-
-    if(frame == NULL){
-      ret = unw_step(&c);
-      continue;
-    }
-    
-    true_ip = (long)frame->low_pc + (long)off;
-    frame_pointer_address = mc_find_frame_base(true_ip, frame, &c);
-
-    cursor = 0;
-
-    xbt_dynar_foreach(frame->variables, cursor, current_variable){
+    unsigned cursor2 = 0;
+    dw_variable_t current_variable;
+    xbt_dynar_foreach(stack_frame->frame->variables, cursor2, current_variable){
       
-      if((long)ip > (long)mc_libsimgrid_info->start_exec)
+      int region_type;
+      if((long)stack_frame->ip > (long)mc_libsimgrid_info->start_exec)
         region_type = 1;
       else
         region_type = 2;
 
       local_variable_t new_var = xbt_new0(s_local_variable_t, 1);
-      new_var->frame = xbt_strdup(frame_name);
-      new_var->ip = (unsigned long)ip;
+      new_var->frame = xbt_strdup(stack_frame->frame_name);
+      new_var->ip = stack_frame->ip;
       new_var->name = xbt_strdup(current_variable->name);
       new_var->type = strdup(current_variable->type_origin);
       new_var->region= region_type;
@@ -402,39 +365,74 @@ static xbt_dynar_t MC_get_local_variables_values(void *stack_context){
         new_var->address = current_variable->address;
       } else */
       if(current_variable->location != NULL){
-        new_var->address = (void*) MC_dwarf_resolve_location(&c, current_variable->location, frame_pointer_address);
+        new_var->address = (void*) MC_dwarf_resolve_location(
+          &(stack_frame->unw_cursor), current_variable->location, (void*)stack_frame->frame_base);
       }
 
       xbt_dynar_push(variables, &new_var);
 
     }
-
-    ret = unw_step(&c);
-     
   }
 
   return variables;
 
 }
 
+static void MC_stack_frame_free_voipd(void *s){
+  mc_stack_frame_t stack_frame = *(mc_stack_frame_t*)s;
+  if(stack_frame) {
+    xbt_free(stack_frame->frame_name);
+    xbt_free(stack_frame);
+  }
+}
 
-static void *MC_get_stack_pointer(void *stack_context, void *heap){
+static xbt_dynar_t MC_unwind_stack_frames(void *stack_context) {
+  xbt_dynar_t result = xbt_dynar_new(sizeof(mc_stack_frame_t), MC_stack_frame_free_voipd);
 
   unw_cursor_t c;
-  int ret;
-  unw_word_t sp;
 
-  ret = unw_init_local(&c, (unw_context_t *)stack_context);
-  if(ret < 0){
+  char frame_name[256];
+
+  int ret;
+  for(ret = unw_init_local(&c, (unw_context_t *)stack_context); ret >= 0; ret = unw_step(&c)){
+    mc_stack_frame_t stack_frame = xbt_new(s_mc_stack_frame_t, 1);
+    xbt_dynar_push(result, &stack_frame);
+
+    stack_frame->unw_cursor = c;
+
+    unw_get_reg(&c, UNW_REG_IP, &stack_frame->ip);
+    unw_get_reg(&c, UNW_REG_SP, &stack_frame->sp);
+
+    unw_word_t off;
+    unw_get_proc_name(&c, frame_name, sizeof (frame_name), &off);
+    stack_frame->frame_name = xbt_strdup(frame_name);
+
+    dw_frame_t frame;
+    if((long)stack_frame->ip > (long) mc_libsimgrid_info->start_exec)
+      frame = xbt_dict_get_or_null(mc_libsimgrid_info->local_variables, frame_name);
+    else
+      frame = xbt_dict_get_or_null(mc_binary_info->local_variables, frame_name);
+    stack_frame->frame = frame;
+
+    if(frame != NULL){
+      unw_word_t normalized_ip = (unw_word_t)frame->low_pc + (unw_word_t)off;
+      stack_frame->frame_base = (unw_word_t)mc_find_frame_base(normalized_ip, frame, &c);
+    } else {
+      stack_frame->frame_base = 0;
+    }
+
+    /* Stop before context switch with maestro */
+    if(!strcmp(frame_name, "smx_ctx_sysv_wrapper"))
+      break;
+  }
+
+  if(xbt_dynar_length(result) == 0){
     XBT_INFO("unw_init_local failed");
     xbt_abort();
   }
 
-  unw_get_reg(&c, UNW_REG_SP, &sp);
-
-  return ((char *)heap + (size_t)(((char *)((long)sp) - (char*)std_heap)));
-
-}
+  return result;
+};
 
 static xbt_dynar_t MC_take_snapshot_stacks(mc_snapshot_t *snapshot, void *heap){
 
@@ -445,8 +443,12 @@ static xbt_dynar_t MC_take_snapshot_stacks(mc_snapshot_t *snapshot, void *heap){
   
   xbt_dynar_foreach(stacks_areas, cursor, current_stack){
     mc_snapshot_stack_t st = xbt_new(s_mc_snapshot_stack_t, 1);
-    st->local_variables = MC_get_local_variables_values(current_stack->context);
-    st->stack_pointer = MC_get_stack_pointer(current_stack->context, heap);
+    st->stack_frames = MC_unwind_stack_frames(current_stack->context);
+    st->local_variables = MC_get_local_variables_values(st->stack_frames);
+
+    unw_word_t sp = xbt_dynar_get_as(st->stack_frames, 0, mc_stack_frame_t)->sp;
+    st->stack_pointer = ((char *)heap + (size_t)(((char *)((long)sp) - (char*)std_heap)));
+
     st->real_address = current_stack->address;
     xbt_dynar_push(res, &st);
     (*snapshot)->stack_sizes = xbt_realloc((*snapshot)->stack_sizes, (cursor + 1) * sizeof(size_t));
@@ -507,11 +509,6 @@ mc_snapshot_t MC_take_snapshot(int num_state){
 
   mc_snapshot_t snapshot = xbt_new0(s_mc_snapshot_t, 1);
   snapshot->nb_processes = xbt_swag_size(simix_global->process_list);
-  if(MC_USE_SNAPSHOT_HASH) {
-    snapshot->hash = mc_hash_processes_state(num_state);
-  } else {
-    snapshot->hash = 0;
-  }
 
   /* Save the std heap and the writable mapped pages of libsimgrid and binary */
   MC_get_memory_regions(snapshot);
@@ -520,6 +517,14 @@ mc_snapshot_t MC_take_snapshot(int num_state){
 
   if(_sg_mc_visited > 0 || strcmp(_sg_mc_property_file,"")){
     snapshot->stacks = MC_take_snapshot_stacks(&snapshot, snapshot->regions[0]->data);
+    if(MC_USE_SNAPSHOT_HASH && snapshot->stacks!=NULL) {
+      snapshot->hash = mc_hash_processes_state(num_state, snapshot->stacks);
+    } else {
+      snapshot->hash = 0;
+    }
+  }
+  else {
+    snapshot->hash = 0;
   }
 
   if(num_state > 0)

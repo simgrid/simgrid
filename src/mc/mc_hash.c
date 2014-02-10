@@ -272,86 +272,43 @@ void* mc_find_frame_base(unw_word_t ip, dw_frame_t frame, unw_cursor_t* unw_curs
   }
 }
 
-static void mc_hash_stack(mc_hash_t *hash, stack_region_t stack, mc_hashing_state* state) {
+static void mc_hash_stack(mc_hash_t *hash, mc_snapshot_stack_t stack, mc_hashing_state* state) {
 
-  unw_cursor_t cursor;
-  if(unw_init_local(&cursor, (unw_context_t *)stack->context)){
-    xbt_die("unw_init_local failed");
-  }
+  unsigned cursor = 0;
+  mc_stack_frame_t stack_frame;
 
-  MC_HASH(*hash, (long)stack->address);
+  xbt_dynar_foreach(stack->stack_frames, cursor, stack_frame) {
 
-  long count = 0;
+    MC_HASH(*hash, stack_frame->ip);
 
-  int ret;
-  for(ret=1; ret >= 0; ret = unw_step(&cursor)) {
-
-    // Find the frame name:
-    unw_word_t off;
-    char frame_name[256];
-    if(unw_get_proc_name(&cursor, frame_name, sizeof (frame_name), &off)!=0) {
-      continue;
-    }
-
-    XBT_DEBUG("Frame #%i %s", (int) count, frame_name);
-
-    // Stop before context switch with maestro
-    if(!strcmp(frame_name, "smx_ctx_sysv_wrapper")) {
-      break;
-    }
-
-    ++count;
-
-    unw_word_t ip, sp;
-    if(unw_get_reg(&cursor, UNW_REG_IP, &ip))
-      continue;
-    if(unw_get_reg(&cursor, UNW_REG_SP, &sp))
-      continue;
-
-    MC_HASH(*hash, ip);
-
-    // Find the object info:
     mc_object_info_t info;
-    if((long)ip >= (long) mc_libsimgrid_info->start_exec && (long)ip < (long) mc_libsimgrid_info->end_exec)
+    if(stack_frame->ip >= (unw_word_t) mc_libsimgrid_info->start_exec && stack_frame->ip < (unw_word_t) mc_libsimgrid_info->end_exec)
       info = mc_libsimgrid_info;
-    else if((long)ip >= (long) mc_binary_info->start_exec && (long)ip < (long) mc_binary_info->end_exec)
+    else if(stack_frame->ip >= (unw_word_t) mc_binary_info->start_exec && stack_frame->ip < (unw_word_t) mc_binary_info->end_exec)
       info = mc_binary_info;
     else
       continue;
 
-    // Find the frame:
-    dw_frame_t frame = xbt_dict_get_or_null(info->local_variables, frame_name);
-    if(frame==NULL)
-      continue;
+    mc_hash_stack_frame(hash, info, &(stack_frame->unw_cursor), stack_frame->frame, (void*)stack_frame->frame_base, state);
 
-    long true_ip = (long)frame->low_pc + (long)off;
-
-    // Find the fame base:
-    void* frame_base = mc_find_frame_base(true_ip, frame, &cursor);
-    if(frame_base==NULL)
-      continue;
-
-    mc_hash_stack_frame(hash, info, &cursor, frame, frame_base, state);
   }
-
-  MC_HASH(*hash, count);
 }
 
-static void mc_hash_stacks(mc_hash_t *hash, mc_hashing_state* state) {
+static void mc_hash_stacks(mc_hash_t *hash, mc_hashing_state* state, xbt_dynar_t stacks) {
   unsigned int cursor = 0;
-  stack_region_t current_stack;
+  mc_snapshot_stack_t current_stack;
 
   MC_HASH(*hash, xbt_dynar_length(stacks_areas));
 
   int i=0;
-  xbt_dynar_foreach(stacks_areas, cursor, current_stack){
+  xbt_dynar_foreach(stacks, cursor, current_stack){
     XBT_DEBUG("Stack %i", i);
     mc_hash_stack(hash, current_stack, state);
     ++i;
   }
 }
 
-uint64_t mc_hash_processes_state(int num_state) {
+uint64_t mc_hash_processes_state(int num_state, xbt_dynar_t stacks) {
   XBT_DEBUG("START hash %i", num_state);
 
   mc_hashing_state state;
@@ -362,7 +319,7 @@ uint64_t mc_hash_processes_state(int num_state) {
   MC_HASH(hash, xbt_swag_size(simix_global->process_list)); // process count
   mc_hash_object_globals(&hash, &state, mc_binary_info);
   // mc_hash_object_globals(&hash, &state, mc_libsimgrid_info);
-  mc_hash_stacks(&hash, &state);
+  mc_hash_stacks(&hash, &state, stacks);
 
   mc_hash_state_destroy(&state);
 

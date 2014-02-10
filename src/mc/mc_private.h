@@ -28,6 +28,8 @@
 #include "xbt/strbuff.h"
 #include "xbt/parmap.h"
 
+typedef struct s_dw_frame s_dw_frame_t, *dw_frame_t;
+
 /****************************** Snapshots ***********************************/
 
 #define NB_REGIONS 3 /* binary data (data + BSS) (type = 2), libsimgrid data (data + BSS) (type = 1), std_heap (type = 0)*/ 
@@ -48,10 +50,25 @@ typedef struct s_mc_snapshot{
   uint64_t hash;
 } s_mc_snapshot_t, *mc_snapshot_t;
 
+/** Information about a given stack frame
+ *
+ */
+typedef struct s_mc_stack_frame {
+  /** Instruction pointer */
+  unw_word_t ip;
+  /** Stack pointer */
+  unw_word_t sp;
+  unw_word_t frame_base;
+  dw_frame_t frame;
+  char* frame_name;
+  unw_cursor_t unw_cursor;
+} s_mc_stack_frame_t, *mc_stack_frame_t;
+
 typedef struct s_mc_snapshot_stack{
   xbt_dynar_t local_variables;
   void *stack_pointer;
   void *real_address;
+  xbt_dynar_t stack_frames; // mc_stack_frame_t
 }s_mc_snapshot_stack_t, *mc_snapshot_stack_t;
 
 typedef struct s_mc_global_t{
@@ -413,7 +430,7 @@ typedef struct s_dw_variable{
 
 }s_dw_variable_t, *dw_variable_t;
 
-typedef struct s_dw_frame{
+struct s_dw_frame{
   char *name;
   void *low_pc;
   void *high_pc;
@@ -421,7 +438,7 @@ typedef struct s_dw_frame{
   xbt_dynar_t /* <dw_variable_t> */ variables; /* Cannot use dict, there may be several variables with the same name (in different lexical blocks)*/
   unsigned long int start; /* DWARF offset of the subprogram */
   unsigned long int end;   /* Dwarf offset of the next sibling */
-}s_dw_frame_t, *dw_frame_t;
+};
 
 void dw_type_free(dw_type_t t);
 void dw_variable_free(dw_variable_t v);
@@ -478,7 +495,12 @@ bool mc_address_test(mc_address_set_t p, const void* value);
 
 /* *********** Hash *********** */
 
-uint64_t mc_hash_processes_state(int num_state);
+/** \brief Hash the current state
+ *  \param num_state number of states
+ *  \param stacks stacks (mc_snapshot_stak_t) used fot the stack unwinding informations
+ *  \result resulting hash
+ * */
+uint64_t mc_hash_processes_state(int num_state, xbt_dynar_t stacks);
 
 #define MC_USE_SNAPSHOT_HASH 1
 
