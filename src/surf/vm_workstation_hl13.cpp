@@ -113,7 +113,7 @@ double WorkstationVMHL13Model::shareResources(double now)
   /* iterate for all virtual machines */
   for (WorkstationVMModel::vm_list_t::iterator iter =
          WorkstationVMModel::ws_vms.begin();
-       iter !=  WorkstationVMModel::ws_vms.begin(); ++iter) {
+       iter !=  WorkstationVMModel::ws_vms.end(); ++iter) {
 
     WorkstationVMPtr ws_vm = &*iter;
     CpuPtr cpu = static_cast<CpuPtr>(ws_vm->p_cpu);
@@ -158,7 +158,7 @@ double WorkstationVMHL13Model::shareResources(double now)
   /* iterate for all virtual machines */
   for (WorkstationVMModel::vm_list_t::iterator iter =
          WorkstationVMModel::ws_vms.begin();
-       iter !=  WorkstationVMModel::ws_vms.begin(); ++iter) {
+       iter !=  WorkstationVMModel::ws_vms.end(); ++iter) {
 
     {
 #if 0

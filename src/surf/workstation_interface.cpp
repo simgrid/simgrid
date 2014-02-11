@@ -49,7 +49,7 @@ void WorkstationModel::adjustWeightOfDummyCpuActions()
   /* iterate for all virtual machines */
   for (WorkstationVMModel::vm_list_t::iterator iter =
          WorkstationVMModel::ws_vms.begin();
-       iter !=  WorkstationVMModel::ws_vms.begin(); ++iter) {
+       iter !=  WorkstationVMModel::ws_vms.end(); ++iter) {
 
     WorkstationVMPtr ws_vm = &*iter;
     CpuCas01Ptr cpu_cas01 = static_cast<CpuCas01Ptr>(ws_vm->p_cpu);
@@ -302,7 +302,7 @@ xbt_dynar_t Workstation::getVms()
   /* iterate for all virtual machines */
   for (WorkstationVMModel::vm_list_t::iterator iter =
          WorkstationVMModel::ws_vms.begin();
-       iter !=  WorkstationVMModel::ws_vms.begin(); ++iter) {
+       iter !=  WorkstationVMModel::ws_vms.end(); ++iter) {
 
     WorkstationVMPtr ws_vm = &*iter;
     if (this == ws_vm-> p_subWs)
