@@ -30,6 +30,7 @@ int _sg_do_model_check = 0;
 int _sg_mc_checkpoint=0;
 char* _sg_mc_property_file=NULL;
 int _sg_mc_timeout=0;
+int _sg_mc_hash=0;
 int _sg_mc_max_depth=1000;
 int _sg_mc_visited=0;
 char *_sg_mc_dot_output_file = NULL;
@@ -68,6 +69,13 @@ void _mc_cfg_cb_timeout(const char *name, int pos) {
     xbt_die("You are specifying a value to enable/disable timeout for wait requests after the initialization (through MSG_config?), but model-checking was not activated at config time (through --cfg=model-check:1). This won't work, sorry.");
   }
   _sg_mc_timeout= xbt_cfg_get_boolean(_sg_cfg_set, name);
+}
+
+void _mc_cfg_cb_hash(const char *name, int pos) {
+  if (_sg_cfg_init_status && !_sg_do_model_check) {
+    xbt_die("You are specifying a value to enable/disable the use of global hash to speedup state comparaison, but model-checking was not activated at config time (through --cfg=model-check:1). This won't work, sorry.");
+  }
+  _sg_mc_hash= xbt_cfg_get_boolean(_sg_cfg_set, name);
 }
 
 void _mc_cfg_cb_max_depth(const char *name, int pos) {

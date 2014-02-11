@@ -261,9 +261,8 @@ int snapshot_compare(void *state1, void *state2);
 int SIMIX_pre_mc_compare_snapshots(smx_simcall_t simcall, mc_snapshot_t s1, mc_snapshot_t s2);
 void print_comparison_times(void);
 
-//#define MC_DEBUG 1
+#define MC_DEBUG 1
 #define MC_VERBOSE 1
-#define MC_USE_SNAPSHOT_HASH 1
 
 /********************************** DPOR for safety property **************************************/
 
