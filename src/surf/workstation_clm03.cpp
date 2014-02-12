@@ -82,7 +82,7 @@ double WorkstationCLM03Model::shareResources(double now){
   adjustWeightOfDummyCpuActions();
 
   double min_by_cpu = p_cpuModel->shareResources(now);
-  double min_by_net = surf_network_model->shareResources(now);
+  double min_by_net = (strcmp(surf_network_model->getName(), "network NS3")) ? surf_network_model->shareResources(now) : -1;
   double min_by_sto = -1;
   if (p_cpuModel == surf_cpu_model_pm)
 	min_by_sto = surf_storage_model->shareResources(now);

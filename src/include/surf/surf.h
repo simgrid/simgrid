@@ -188,6 +188,7 @@ typedef enum {
 /***************************/
 /* Generic model object */
 /***************************/
+
 //FIXME:REMOVE typedef struct s_routing_platf s_routing_platf_t, *routing_platf_t;
 XBT_PUBLIC_DATA(routing_platf_t) routing_platf;
 
@@ -874,6 +875,14 @@ XBT_PUBLIC(void) surf_cpu_action_set_affinity(surf_action_t action, surf_resourc
  * @param bound [description]
  */
 XBT_PUBLIC(void) surf_cpu_action_set_bound(surf_action_t action, double bound);
+
+/**
+ * @brief [brief description]
+ * @details [long description]
+ *
+ * @param action The surf network action
+ */
+XBT_PUBLIC(double) surf_network_action_get_latency_limited(surf_action_t action);
 
 /**
  * @brief Get the file associated to a storage action

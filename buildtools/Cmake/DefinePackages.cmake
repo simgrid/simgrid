@@ -57,7 +57,7 @@ set(EXTRA_DIST
   src/surf/maxmin_private.hpp
   src/surf/network_interface.hpp
   src/surf/network_gtnets.hpp
-  src/surf/network_ns3_private.h
+  src/surf/network_ns3.hpp
   src/surf/network_cm02.hpp
   src/surf/network_smpi.hpp
   src/surf/network_constant.hpp
@@ -300,7 +300,7 @@ set(GTNETS_SRC
   )
 
 set(NS3_SRC
-  src/surf/network_ns3.c
+  src/surf/network_ns3.cpp
   src/surf/ns3/my-point-to-point-helper.cc
   src/surf/ns3/ns3_interface.cc
   src/surf/ns3/ns3_simulator.cc

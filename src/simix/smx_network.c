@@ -1112,7 +1112,7 @@ XBT_INLINE int SIMIX_comm_is_latency_bounded(smx_action_t action)
   }
   if (action->comm.surf_comm){
     XBT_DEBUG("Getting latency limited for surf_action (%p)", action->comm.surf_comm);
-    action->latency_limited = surf_workstation_model->get_latency_limited(action->comm.surf_comm);
+    action->latency_limited = surf_network_action_get_latency_limited(action->comm.surf_comm);
     XBT_DEBUG("Action limited is %d", action->latency_limited);
   }
   return action->latency_limited;

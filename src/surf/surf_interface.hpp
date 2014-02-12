@@ -616,15 +616,6 @@ public:
    */
   double getRemainsNoUpdate();
 
-#ifdef HAVE_LATENCY_BOUND_TRACKING
-  /**
-   * @brief Check if the action is limited by latency.
-   * 
-   * @return 1 if action is limited by latency, 0 otherwise
-   */
-  int getLatencyLimited();
-#endif
-
   /**
    * @brief Get the priority of the current Action
    * 

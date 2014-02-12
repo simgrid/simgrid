@@ -234,7 +234,6 @@ void * ns3_add_link(int src, e_ns3_network_element_type_t type_src,
 		LogComponentEnable("UdpEchoServerApplication", LOG_LEVEL_INFO);
 	}
 
-
 	MyPointToPointHelper pointToPoint;
 
 	NetDeviceContainer netA;

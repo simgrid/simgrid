@@ -135,7 +135,7 @@ double surf_solve(double max_date)
 
     next_event_date = tmgr_history_next_date(history);
 
-    if(!strcmp(surf_network_model->getName(), "network NS3")){//FIXME: add surf_network_model->m_name &&
+    if(!strcmp(surf_network_model->getName(), "network NS3")){
       if(next_event_date!=-1.0 && surf_min!=-1.0) {
         surf_min = MIN(next_event_date - NOW, surf_min);
       } else{
@@ -539,6 +539,10 @@ void surf_cpu_action_set_affinity(surf_action_t action, surf_resource_t cpu, uns
 
 void surf_cpu_action_set_bound(surf_action_t action, double bound) {
   static_cast<CpuActionPtr>(action)->setBound(bound);
+}
+
+double surf_network_action_get_latency_limited(surf_action_t action) {
+  return static_cast<NetworkActionPtr>(action)->getLatencyLimited();
 }
 
 surf_file_t surf_storage_action_get_file(surf_action_t action){
