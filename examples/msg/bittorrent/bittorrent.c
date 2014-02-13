@@ -38,7 +38,7 @@ int main(int argc, char *argv[])
     RngStream stream;
     snprintf(descr, sizeof descr, "RngSream<%s>", MSG_host_get_name(host));
     stream = RngStream_CreateStream(descr);
-    MSG_host_set_data(host, stream);
+    MSG_host_set_property_value(host, "stream", (char*)stream, NULL);
   }
 
   MSG_function_register("tracker", tracker);
@@ -49,7 +49,7 @@ int main(int argc, char *argv[])
   MSG_main();
 
   xbt_dynar_foreach(host_list, i, host) {
-    RngStream stream = MSG_host_get_data(host);
+    RngStream stream = (RngStream) MSG_host_get_property_value(host, "stream");
     RngStream_DeleteStream(&stream);
   }
   xbt_dynar_free(&host_list);

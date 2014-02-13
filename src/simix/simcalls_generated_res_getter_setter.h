@@ -57,14 +57,6 @@ static inline int simcall_host_get_state__get__result(smx_simcall_t simcall){
 static inline void simcall_host_get_state__set__result(smx_simcall_t simcall, int result){
     simcall->result.i = result;
 }
-static inline void* simcall_host_get_data__get__result(smx_simcall_t simcall){
-  return  simcall->result.dp;
-}
-static inline void simcall_host_get_data__set__result(smx_simcall_t simcall, void* result){
-    simcall->result.dp = result;
-}
-
-
 static inline double simcall_host_get_current_power_peak__get__result(smx_simcall_t simcall){
   return  simcall->result.d;
 }

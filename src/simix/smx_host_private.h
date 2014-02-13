@@ -17,7 +17,6 @@ typedef struct s_smx_host_priv {
   xbt_swag_t process_list;
   xbt_dynar_t auto_restart_processes;
   xbt_dynar_t boot_processes; 
-  void *data;              /**< @brief user data */
 } s_smx_host_priv_t;
 
 static inline smx_host_priv_t SIMIX_host_priv(smx_host_t host){
@@ -87,8 +86,6 @@ int SIMIX_pre_host_get_nb_pstates(smx_simcall_t, smx_host_t host);
 void SIMIX_pre_host_set_power_peak_at(smx_simcall_t, smx_host_t host, int pstate_index);
 double SIMIX_pre_host_get_consumed_energy(smx_simcall_t, smx_host_t);
 void* SIMIX_pre_host_self_get_data(smx_simcall_t);
-void* SIMIX_pre_host_get_data(smx_simcall_t, smx_host_t);
-void SIMIX_pre_host_set_data(smx_simcall_t, smx_host_t, void*);
 smx_action_t SIMIX_pre_host_execute(smx_simcall_t, const char*, smx_host_t, double, double, double, unsigned long);
 smx_action_t SIMIX_pre_host_parallel_execute(smx_simcall_t, const char*, int, smx_host_t*,
                                              double*, double*, double, double);

@@ -116,14 +116,11 @@ XBT_PUBLIC(xbt_dict_t) MSG_as_router_get_properties(const char* asr);
 XBT_PUBLIC(void) MSG_as_router_set_property_value(const char* asr, const char *name, char *value,void_f_pvoid_t free_ctn);
 
 /************************** Host handling ***********************************/
-XBT_PUBLIC(msg_error_t) MSG_host_set_data(msg_host_t host, void *data);
-XBT_PUBLIC(void *) MSG_host_get_data(msg_host_t host);
 XBT_PUBLIC(const char *) MSG_host_get_name(msg_host_t host);
 XBT_PUBLIC(void) MSG_host_on(msg_host_t host);
 XBT_PUBLIC(void) MSG_host_off(msg_host_t host);
 XBT_PUBLIC(msg_host_t) MSG_host_self(void);
 XBT_PUBLIC(int) MSG_get_host_msgload(msg_host_t host);
-/* int MSG_get_msgload(void); This function lacks specification; discard it */
 XBT_PUBLIC(double) MSG_get_host_speed(msg_host_t h);
 XBT_PUBLIC(int) MSG_host_get_core_number(msg_host_t h);
 XBT_PUBLIC(xbt_swag_t) MSG_host_get_process_list(msg_host_t h);

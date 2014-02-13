@@ -65,24 +65,6 @@ static inline smx_host_t simcall_host_get_state__get__host(smx_simcall_t simcall
 static inline void simcall_host_get_state__set__host(smx_simcall_t simcall, void* arg){
     simcall->args[0].dp = arg;
 }
-static inline smx_host_t simcall_host_get_data__get__host(smx_simcall_t simcall){
-  return (smx_host_t) simcall->args[0].dp;
-}
-static inline void simcall_host_get_data__set__host(smx_simcall_t simcall, void* arg){
-    simcall->args[0].dp = arg;
-}
-static inline smx_host_t simcall_host_set_data__get__host(smx_simcall_t simcall){
-  return (smx_host_t) simcall->args[0].dp;
-}
-static inline void simcall_host_set_data__set__host(smx_simcall_t simcall, void* arg){
-    simcall->args[0].dp = arg;
-}
-static inline void* simcall_host_set_data__get__data(smx_simcall_t simcall){
-  return  simcall->args[1].dp;
-}
-static inline void simcall_host_set_data__set__data(smx_simcall_t simcall, void* arg){
-    simcall->args[1].dp = arg;
-}
 static inline smx_host_t simcall_host_get_current_power_peak__get__host(smx_simcall_t simcall){
   return (smx_host_t) simcall->args[0].dp;
 }

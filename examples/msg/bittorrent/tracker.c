@@ -20,8 +20,7 @@ int tracker(int argc, char *argv[])
 {
   int i;
 
-  RngStream stream = MSG_host_get_data(MSG_host_self());
-
+  RngStream stream = (RngStream) MSG_host_get_property_value(MSG_host_self(), "stream");
   //Checking arguments
   xbt_assert(argc == 2, "Wrong number of arguments for the tracker.");
   //Retrieving end time

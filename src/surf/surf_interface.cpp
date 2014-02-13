@@ -724,6 +724,8 @@ const char *Resource::getName() {
 }
 
 xbt_dict_t Resource::getProperties() {
+  if (p_properties==NULL)
+	p_properties = xbt_dict_new();
   return p_properties;
 }
 

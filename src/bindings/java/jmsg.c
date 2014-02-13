@@ -33,6 +33,8 @@
 #endif
 /* end of eclipse-mandated pimple */
 
+int JAVA_HOST_LEVEL;
+
 static int create_jprocess(int argc, char *argv[]);
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(jmsg);
@@ -79,6 +81,10 @@ Java_org_simgrid_msg_Msg_getClock(JNIEnv * env, jclass cls)
   return (jdouble) MSG_get_clock();
 }
 
+static void __JAVA_host_priv_free(void *host)
+{
+}
+
 JNIEXPORT void JNICALL
 Java_org_simgrid_msg_Msg_init(JNIEnv * env, jclass cls, jobjectArray jargs)
 {
@@ -123,6 +129,8 @@ Java_org_simgrid_msg_Msg_init(JNIEnv * env, jclass cls, jobjectArray jargs)
 
   MSG_init(&argc, argv);
 
+  JAVA_HOST_LEVEL = xbt_lib_add_level(host_lib, (void_f_pvoid_t) __JAVA_host_priv_free);
+
   for (index = 0; index < argc; index++)
     free(argv[index]);
 
@@ -155,7 +163,7 @@ JNIEXPORT void JNICALL
   /* Cleanup java hosts */
   hosts = MSG_hosts_as_dynar();
   for (index = 0; index < xbt_dynar_length(hosts) - 1; index++) {
-    jhost = (jobject) MSG_host_get_data(xbt_dynar_get_as(hosts,index,msg_host_t));
+    jhost = (jobject) xbt_lib_get_level(xbt_dynar_get_as(hosts,index,msg_host_t), JAVA_HOST_LEVEL);
     if (jhost)
       jhost_unref(env, jhost);
 

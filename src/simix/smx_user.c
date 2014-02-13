@@ -156,31 +156,6 @@ int simcall_host_get_state(smx_host_t host)
 
 /**
  * \ingroup simix_host_management
- * \brief Returns the user data associated to a host.
- *
- * \param host SIMIX host
- * \return the user data of this host
- */
-void* simcall_host_get_data(smx_host_t host)
-{
-  return simcall_BODY_host_get_data(host);
-}
-
-/**
- * \ingroup simix_host_management
- * \brief Sets the user data associated to a host.
- *
- * The host must not have previous user data associated to it.
- * \param host A SIMIX host
- * \param data The user data to set
- */
-void simcall_host_set_data(smx_host_t host, void *data)
-{
-  simcall_host_set_data(host, data);
-}
-
-/**
- * \ingroup simix_host_management
  * \brief Returns the power peak of a host.
  *
  * \param host A SIMIX host

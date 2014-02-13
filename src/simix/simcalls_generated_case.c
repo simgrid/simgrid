@@ -55,16 +55,6 @@ case SIMCALL_HOST_GET_STATE:
       SIMIX_simcall_answer(simcall);
       break;  
 
-case SIMCALL_HOST_GET_DATA:
-      simcall->result.dp = SIMIX_pre_host_get_data(simcall , (smx_host_t) simcall->args[0].dp);
-      SIMIX_simcall_answer(simcall);
-      break;  
-
-case SIMCALL_HOST_SET_DATA:
-       SIMIX_pre_host_set_data(simcall , (smx_host_t) simcall->args[0].dp,  simcall->args[1].dp);
-      SIMIX_simcall_answer(simcall);
-      break;  
-
 case SIMCALL_HOST_GET_CURRENT_POWER_PEAK:
       simcall->result.d = SIMIX_pre_host_get_current_power_peak(simcall , (smx_host_t) simcall->args[0].dp);
       SIMIX_simcall_answer(simcall);

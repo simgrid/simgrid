@@ -11,6 +11,9 @@
 #include <msg/msg.h>
 #include <jni.h>
 
+extern int JAVA_HOST_LEVEL;
+extern xbt_lib_t host_lib;
+
 JavaVM *get_java_VM(void);
 JNIEnv *get_current_thread_env(void);
 /**

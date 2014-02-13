@@ -28,7 +28,6 @@ smx_host_t SIMIX_host_create(const char *name,
   s_smx_process_t proc;
 
   /* Host structure */
-  smx_host->data = data;
   smx_host->process_list =
       xbt_swag_new(xbt_swag_offset(proc, host_proc_hookup));
 
@@ -310,30 +309,6 @@ int SIMIX_host_get_state(smx_host_t host){
   return surf_resource_get_state(surf_workstation_resource_priv(host));
 }
 
-void* SIMIX_pre_host_self_get_data(smx_simcall_t simcall){
-  return SIMIX_host_self_get_data();
-}
-void* SIMIX_host_self_get_data(void)
-{
-  smx_host_t self = SIMIX_host_self();
-  return SIMIX_host_get_data(self);
-}
-
-void SIMIX_host_self_set_data(void *data)
-{
-  smx_host_t self = SIMIX_host_self();
-  SIMIX_host_set_data(self, data);
-}
-
-void* SIMIX_pre_host_get_data(smx_simcall_t simcall,smx_host_t host){
-  return SIMIX_host_get_data(host);
-}
-void* SIMIX_host_get_data(smx_host_t host){
-  xbt_assert((host != NULL), "Invalid parameters (simix host is NULL)");
-
-  return SIMIX_host_priv(host)->data;
-}
-
 void _SIMIX_host_free_process_arg(void *data)
 {
   smx_process_arg_t arg = *(void**)data;
@@ -445,16 +420,6 @@ void SIMIX_host_autorestart(smx_host_t host)
     simix_global->autorestart(host);
   else
     xbt_die("No function for simix_global->autorestart");
-}
-
-void SIMIX_pre_host_set_data(smx_simcall_t simcall, smx_host_t host, void *data) {
-  SIMIX_host_set_data(host, data);
-}
-void SIMIX_host_set_data(smx_host_t host, void *data){
-  xbt_assert((host != NULL), "Invalid parameters");
-  xbt_assert((SIMIX_host_priv(host)->data == NULL), "Data already set");
-
-  SIMIX_host_priv(host)->data = data;
 }
 
 smx_action_t SIMIX_pre_host_execute(smx_simcall_t simcall,const char *name,

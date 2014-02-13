@@ -74,32 +74,6 @@ msg_host_t MSG_get_host_by_name(const char *name)
 
 /** \ingroup m_host_management
  *
- * \brief Set the user data of a #msg_host_t.
- *
- * This functions checks whether some data has already been associated to \a host 
-   or not and attach \a data to \a host if it is possible.
- */
-msg_error_t MSG_host_set_data(msg_host_t host, void *data)
-{
-  SIMIX_host_set_data(host,data);
-
-  return MSG_OK;
-}
-
-/** \ingroup m_host_management
- *
- * \brief Return the user data of a #msg_host_t.
- *
- * This functions checks whether \a host is a valid pointer or not and return
-   the user data associated to \a host if it is possible.
- */
-void *MSG_host_get_data(msg_host_t host)
-{
-  return SIMIX_host_get_data(host);
-}
-
-/** \ingroup m_host_management
- *
  * \brief Return the name of the #msg_host_t.
  *
  * This functions checks whether \a host is a valid pointer or not and return

@@ -263,8 +263,6 @@ XBT_PUBLIC(void) SIMIX_host_on(smx_host_t host);
 XBT_PUBLIC(void) SIMIX_host_off(smx_host_t host, smx_process_t issuer);
 XBT_PUBLIC(void) SIMIX_host_self_set_data(void *data);
 XBT_PUBLIC(void*) SIMIX_host_self_get_data(void);
-XBT_PUBLIC(void*) SIMIX_host_get_data(smx_host_t host);
-XBT_PUBLIC(void) SIMIX_host_set_data(smx_host_t host, void *data);
 XBT_PUBLIC(xbt_dict_t) SIMIX_host_get_storage_list(smx_host_t host);
 /********************************* Process ************************************/
 XBT_PUBLIC(int) SIMIX_process_count(void);

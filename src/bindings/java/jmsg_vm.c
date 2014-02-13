@@ -6,6 +6,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "jmsg.h"
 #include "jmsg_vm.h"
 #include "jmsg_host.h"
 #include "jmsg_process.h"
@@ -157,7 +158,7 @@ Java_org_simgrid_msg_VM_get_pm(JNIEnv *env, jobject jvm) {
   msg_vm_t vm = jvm_get_native(env,jvm);
   msg_host_t host = MSG_vm_get_pm(vm);
 
-  if (!MSG_host_get_data(host)) {
+  if (!xbt_lib_get_level(host, JAVA_HOST_LEVEL)) {
     /* the native host not yet associated with the java host instance */
 
     /* instanciate a new java host instance */
@@ -183,7 +184,7 @@ Java_org_simgrid_msg_VM_get_pm(JNIEnv *env, jobject jvm) {
     jhost_bind(jhost, host, env);
     MSG_host_set_data(host, (void *) jhost);
   } else {
-    jhost = (jobject) MSG_host_get_data(host);
+    jhost = (jobject) xbt_lib_get_level(host, JAVA_HOST_LEVEL);
   }
 
   return jhost;
