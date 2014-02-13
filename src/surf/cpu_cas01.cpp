@@ -171,7 +171,7 @@ void CpuCas01Model::addTraces()
     xbt_assert(host, "Host %s undefined", elm);
     xbt_assert(trace, "Trace %s undefined", trace_name);
 
-    host->p_stateEvent = tmgr_history_add_trace(history, trace, 0.0, 0, static_cast<ResourcePtr>(host));
+    host->setStateEvent(tmgr_history_add_trace(history, trace, 0.0, 0, static_cast<ResourcePtr>(host)));
   }
 
   xbt_dict_foreach(trace_connect_list_power, cursor, trace_name, elm) {
@@ -181,8 +181,7 @@ void CpuCas01Model::addTraces()
     xbt_assert(host, "Host %s undefined", elm);
     xbt_assert(trace, "Trace %s undefined", trace_name);
 
-    host->p_powerEvent =
-        tmgr_history_add_trace(history, trace, 0.0, 0, static_cast<ResourcePtr>(host));
+    host->setPowerEvent(tmgr_history_add_trace(history, trace, 0.0, 0, static_cast<ResourcePtr>(host)));
   }
 }
 
@@ -214,6 +213,25 @@ CpuCas01::CpuCas01(CpuCas01ModelPtr model, const char *name, xbt_dynar_t powerPe
 CpuCas01::~CpuCas01(){
   if (getModel() == surf_cpu_model_pm)
     xbt_dynar_free(&p_powerPeakList);
+}
+
+void CpuCas01::setStateEvent(tmgr_trace_event_t stateEvent)
+{
+  p_stateEvent = stateEvent;
+}
+
+void CpuCas01::setPowerEvent(tmgr_trace_event_t powerEvent)
+{
+  p_powerEvent = powerEvent;
+}
+
+xbt_dynar_t CpuCas01::getPowerPeakList(){
+  return p_powerPeakList;
+}
+
+int CpuCas01::getPState()
+{
+  return m_pstate;
 }
 
 bool CpuCas01::isUsed()

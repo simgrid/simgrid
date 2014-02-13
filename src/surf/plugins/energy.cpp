@@ -112,7 +112,7 @@ double CpuEnergy::getCurrentWattsValue(double cpu_load)
 						cpu->getName());*/
 
     /* retrieve the power values associated with the current pstate */
-    xbt_dynar_t current_power_values = xbt_dynar_get_as(power_range_list, static_cast<CpuCas01Ptr>(cpu)->m_pstate, xbt_dynar_t);
+    xbt_dynar_t current_power_values = xbt_dynar_get_as(power_range_list, static_cast<CpuCas01Ptr>(cpu)->getPState(), xbt_dynar_t);
 
     /* min_power corresponds to the idle power (cpu load = 0) */
     /* max_power is the power consumed at 100% cpu load       */

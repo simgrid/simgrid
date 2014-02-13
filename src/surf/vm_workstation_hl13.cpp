@@ -251,8 +251,8 @@ WorkstationVMHL13::WorkstationVMHL13(WorkstationVMModelPtr model, const char* na
    * Do xbt_lib_set(host_lib, name, SURF_CPU_LEVEL, cpu) if you get the resource. */
 
   p_cpu = static_cast<CpuCas01ModelPtr>(surf_cpu_model_vm)->createResource(name, // name
-      sub_cpu->p_powerPeakList,        // host->power_peak,
-      sub_cpu->m_pstate,
+      sub_cpu->getPowerPeakList(),        // host->power_peak,
+      sub_cpu->getPState(),
       1,                          // host->power_scale,
       NULL,                       // host->power_trace,
       1,                          // host->core_amount,

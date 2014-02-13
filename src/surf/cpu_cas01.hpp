@@ -44,18 +44,8 @@ public:
 /************
  * Resource *
  ************/
-/*
- * Energy-related properties for the cpu_cas01 model
- */
-typedef struct energy_cpu_cas01 {
-	xbt_dynar_t power_range_watts_list;		/*< List of (min_power,max_power) pairs corresponding to each cpu pstate */
-	double total_energy;					/*< Total energy consumed by the host */
-	double last_updated;					/*< Timestamp of the last energy update event*/
-} s_energy_cpu_cas01_t, *energy_cpu_cas01_t;
 
 class CpuCas01 : public Cpu {
-public://FIXME:
-  tmgr_trace_event_t p_stateEvent;
 public:
   CpuCas01(CpuCas01ModelPtr model, const char *name, xbt_dynar_t power_peak,
         int pstate, double powerScale, tmgr_trace_t powerTrace, int core,
@@ -70,9 +60,15 @@ public:
   double getPowerPeakAt(int pstate_index);
   int getNbPstates();
   void setPowerPeakAt(int pstate_index);
-
   bool isUsed();
+  void setStateEvent(tmgr_trace_event_t stateEvent);
+  void setPowerEvent(tmgr_trace_event_t stateEvent);
+  xbt_dynar_t getPowerPeakList();
 
+  int getPState();
+
+private:
+  tmgr_trace_event_t p_stateEvent;
   tmgr_trace_event_t p_powerEvent;
   xbt_dynar_t p_powerPeakList;				/*< List of supported CPU capacities */
   int m_pstate;								/*< Current pstate (index in the power_peak_list)*/
