@@ -132,7 +132,6 @@ examples/msg/simulation.trace
 examples/msg/toto.txt
 examples/msg/z_gtnets.trace
 examples/msg/gpu/test_MSG_gpu_task_create
-examples/msg/cloud/masterslave_virtual_machines
 examples/msg/energy/e1/e1
 examples/msg/energy/e2/e2
 examples/msg/energy/e3/e3
