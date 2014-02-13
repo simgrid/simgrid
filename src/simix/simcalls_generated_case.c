@@ -154,11 +154,6 @@ case SIMCALL_VM_START:
       SIMIX_simcall_answer(simcall);
       break;  
 
-case SIMCALL_VM_SET_STATE:
-       SIMIX_pre_vm_set_state(simcall , (smx_host_t) simcall->args[0].dp,  simcall->args[1].i);
-      SIMIX_simcall_answer(simcall);
-      break;  
-
 case SIMCALL_VM_GET_STATE:
       simcall->result.i = SIMIX_pre_vm_get_state(simcall , (smx_host_t) simcall->args[0].dp);
       SIMIX_simcall_answer(simcall);

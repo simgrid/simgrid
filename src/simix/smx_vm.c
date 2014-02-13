@@ -96,7 +96,7 @@ static int __can_be_started(smx_host_t vm)
 void SIMIX_vm_start(smx_host_t ind_vm)
 {
   if (__can_be_started(ind_vm))
-    SIMIX_vm_set_state(ind_vm, SURF_VM_STATE_RUNNING);
+	surf_resource_set_state(surf_workstation_resource_priv(ind_vm), SURF_VM_STATE_RUNNING);
   else
     THROWF(vm_error, 0, "The VM %s cannot be started", SIMIX_host_get_name(ind_vm));
 }
@@ -106,18 +106,6 @@ void SIMIX_vm_start(smx_host_t ind_vm)
 void SIMIX_pre_vm_start(smx_simcall_t simcall, smx_host_t ind_vm)
 {
   SIMIX_vm_start(ind_vm);
-}
-
-/* ***** set/get state of a VM ***** */
-void SIMIX_vm_set_state(smx_host_t ind_vm, int state)
-{
-  /* jump to vm_ws_set_state */
- surf_resource_set_state(surf_workstation_resource_priv(ind_vm), state);
-}
-
-void SIMIX_pre_vm_set_state(smx_simcall_t simcall, smx_host_t ind_vm, int state)
-{
-  SIMIX_vm_set_state(ind_vm, state);
 }
 
 int SIMIX_vm_get_state(smx_host_t ind_vm)
@@ -369,7 +357,7 @@ void SIMIX_vm_shutdown(smx_host_t ind_vm, smx_process_t issuer)
   }
 
   /* FIXME: we may have to do something at the surf layer, e.g., vcpu action */
-  SIMIX_vm_set_state(ind_vm, SURF_VM_STATE_CREATED);
+  surf_resource_set_state(surf_workstation_resource_priv(ind_vm), SURF_VM_STATE_CREATED);
 }
 
 void SIMIX_pre_vm_shutdown(smx_simcall_t simcall, smx_host_t ind_vm)

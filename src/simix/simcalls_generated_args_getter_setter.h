@@ -305,18 +305,6 @@ static inline smx_host_t simcall_vm_start__get__ind_vm(smx_simcall_t simcall){
 static inline void simcall_vm_start__set__ind_vm(smx_simcall_t simcall, void* arg){
     simcall->args[0].dp = arg;
 }
-static inline smx_host_t simcall_vm_set_state__get__ind_vm(smx_simcall_t simcall){
-  return (smx_host_t) simcall->args[0].dp;
-}
-static inline void simcall_vm_set_state__set__ind_vm(smx_simcall_t simcall, void* arg){
-    simcall->args[0].dp = arg;
-}
-static inline int simcall_vm_set_state__get__state(smx_simcall_t simcall){
-  return  simcall->args[1].i;
-}
-static inline void simcall_vm_set_state__set__state(smx_simcall_t simcall, int arg){
-    simcall->args[1].i = arg;
-}
 static inline smx_host_t simcall_vm_get_state__get__ind_vm(smx_simcall_t simcall){
   return (smx_host_t) simcall->args[0].dp;
 }

@@ -141,8 +141,6 @@ static inline void simcall_vm_create__set__result(smx_simcall_t simcall, void* r
 }
 
 
-
-
 static inline int simcall_vm_get_state__get__result(smx_simcall_t simcall){
   return  simcall->result.i;
 }

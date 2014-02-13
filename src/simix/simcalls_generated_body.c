@@ -475,22 +475,6 @@
     }    
     
   }
-  inline static void simcall_BODY_vm_set_state(smx_host_t ind_vm, int state) {
-    smx_process_t self = SIMIX_process_self();
-    self->simcall.call = SIMCALL_VM_SET_STATE;
-    memset(&self->simcall.result, 0, sizeof(self->simcall.result));
-    memset(self->simcall.args, 0, sizeof(self->simcall.args));
-    self->simcall.args[0].dp = (void*) ind_vm;
-    self->simcall.args[1].i = (int) state;
-    if (self != simix_global->maestro_process) {
-      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name,
-                SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
-      SIMIX_process_yield(self);
-    } else {
-      SIMIX_simcall_pre(&self->simcall, 0);
-    }    
-    
-  }
   inline static int simcall_BODY_vm_get_state(smx_host_t ind_vm) {
     smx_process_t self = SIMIX_process_self();
     self->simcall.call = SIMCALL_VM_GET_STATE;

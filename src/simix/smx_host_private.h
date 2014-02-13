@@ -132,8 +132,6 @@ void SIMIX_pre_vm_start(smx_simcall_t simcall, smx_host_t ind_vm);
 void SIMIX_vm_shutdown(smx_host_t ind_vm, smx_process_t issuer);
 void SIMIX_pre_vm_shutdown(smx_simcall_t simcall, smx_host_t ind_vm);
 // --
-void SIMIX_vm_set_state(smx_host_t ind_vm, int state);
-void SIMIX_pre_vm_set_state(smx_simcall_t simcall, smx_host_t ind_vm, int state);
 
 int SIMIX_vm_get_state(smx_host_t ind_vm);
 int SIMIX_pre_vm_get_state(smx_simcall_t simcall, smx_host_t ind_vm);
