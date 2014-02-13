@@ -521,7 +521,11 @@ int xbt_automaton_parser__flex_debug = 0;
 #define YY_RESTORE_YY_MORE_OFFSET
 char *xbt_automaton_parser_text;
 #line 1 "parserPromela.lex"
-#line 4 "parserPromela.lex"
+/* Copyright (c) 2012, 2014. The SimGrid Team.
+ * All rights reserved.                                                     */
+/* This program is free software; you can redistribute it and/or modify it
+ * under the terms of the license (GNU LGPL) which comes with this package. */
+#line 10 "parserPromela.lex"
 
 
 #include <stdio.h>
@@ -529,7 +533,7 @@ char *xbt_automaton_parser_text;
   
   extern YYSTYPE yylval;
  
-#line 533 "automaton_lexer.yy.c"
+#line 537 "automaton_lexer.yy.c"
 
 #define INITIAL 0
 
@@ -716,10 +720,10 @@ YY_DECL
 	register char *yy_cp, *yy_bp;
 	register int yy_act;
     
-#line 28 "parserPromela.lex"
+#line 34 "parserPromela.lex"
 
 
-#line 723 "automaton_lexer.yy.c"
+#line 727 "automaton_lexer.yy.c"
 
 	if ( !(yy_init) )
 		{
@@ -804,118 +808,118 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 30 "parserPromela.lex"
+#line 36 "parserPromela.lex"
 { return (NEVER); }
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 31 "parserPromela.lex"
+#line 37 "parserPromela.lex"
 { return (IF); }
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 32 "parserPromela.lex"
+#line 38 "parserPromela.lex"
 { return (FI); }
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 33 "parserPromela.lex"
+#line 39 "parserPromela.lex"
 { return (IMPLIES); }
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 34 "parserPromela.lex"
+#line 40 "parserPromela.lex"
 { return (GOTO); }
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 35 "parserPromela.lex"
+#line 41 "parserPromela.lex"
 { return (AND); }
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 36 "parserPromela.lex"
+#line 42 "parserPromela.lex"
 { return (OR); }
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 37 "parserPromela.lex"
+#line 43 "parserPromela.lex"
 { return (NOT); }
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 38 "parserPromela.lex"
+#line 44 "parserPromela.lex"
 { return (LEFT_PAR); }
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 39 "parserPromela.lex"
+#line 45 "parserPromela.lex"
 { return (RIGHT_PAR); }
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 40 "parserPromela.lex"
+#line 46 "parserPromela.lex"
 { return (CASE); }
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 41 "parserPromela.lex"
+#line 47 "parserPromela.lex"
 { return (COLON); }
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 42 "parserPromela.lex"
+#line 48 "parserPromela.lex"
 { return (SEMI_COLON); }
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 43 "parserPromela.lex"
+#line 49 "parserPromela.lex"
 { return (CASE_TRUE); }
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 44 "parserPromela.lex"
+#line 50 "parserPromela.lex"
 { return (LEFT_BRACE); }
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 45 "parserPromela.lex"
+#line 51 "parserPromela.lex"
 { return (RIGHT_BRACE); }
 	YY_BREAK
 case 17:
 /* rule 17 can match eol */
 YY_RULE_SETUP
-#line 48 "parserPromela.lex"
+#line 54 "parserPromela.lex"
 { }
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 50 "parserPromela.lex"
+#line 56 "parserPromela.lex"
 { }
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 53 "parserPromela.lex"
+#line 59 "parserPromela.lex"
 { sscanf(xbt_automaton_parser_text,"%lf",&yylval.real); 
                             return (LITT_REEL); }
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 56 "parserPromela.lex"
+#line 62 "parserPromela.lex"
 { sscanf(xbt_automaton_parser_text,"%d",&yylval.integer); 
                             return (LITT_ENT); }
 	YY_BREAK
 case 21:
 /* rule 21 can match eol */
 YY_RULE_SETUP
-#line 59 "parserPromela.lex"
+#line 65 "parserPromela.lex"
 { yylval.string=(char *)malloc(strlen(xbt_automaton_parser_text)+1);
                             sscanf(xbt_automaton_parser_text,"%s",yylval.string); 
                             return (LITT_CHAINE); }
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 63 "parserPromela.lex"
+#line 69 "parserPromela.lex"
 { yylval.string=(char *)malloc(strlen(xbt_automaton_parser_text)+1);
                             sscanf(xbt_automaton_parser_text,"%s",yylval.string);
 			                      return (ID); }
@@ -923,20 +927,20 @@ YY_RULE_SETUP
 case 23:
 /* rule 23 can match eol */
 YY_RULE_SETUP
-#line 67 "parserPromela.lex"
+#line 73 "parserPromela.lex"
 { }
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 69 "parserPromela.lex"
+#line 75 "parserPromela.lex"
 { }
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 71 "parserPromela.lex"
+#line 77 "parserPromela.lex"
 ECHO;
 	YY_BREAK
-#line 940 "automaton_lexer.yy.c"
+#line 944 "automaton_lexer.yy.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -1934,7 +1938,7 @@ void xbt_automaton_parser_free (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 71 "parserPromela.lex"
+#line 77 "parserPromela.lex"
 
 
 
