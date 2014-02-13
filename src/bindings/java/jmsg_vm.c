@@ -182,7 +182,7 @@ Java_org_simgrid_msg_VM_get_pm(JNIEnv *env, jobject jvm) {
     (*env)->SetObjectField(env, jhost, jxbt_get_jfield(env, (*env)->FindClass(env, "org/simgrid/msg/Host"), "name", "Ljava/lang/String;"), jname);
     /* Bind & store it */
     jhost_bind(jhost, host, env);
-    MSG_host_set_data(host, (void *) jhost);
+    xbt_lib_set(host_lib, host->key, JAVA_HOST_LEVEL, (void *) jhost);
   } else {
     jhost = (jobject) xbt_lib_get_level(host, JAVA_HOST_LEVEL);
   }
