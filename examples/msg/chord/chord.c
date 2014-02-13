@@ -707,7 +707,8 @@ static int remote_find_successor(node_t node, int ask_to, int id)
 	//   MC to fail any further under that condition, but this comment is here to as a memorial for this first 
 	//   brillant victory of the model-checking in the SimGrid community :)
 
-        if (task_received != task_sent) {
+        if (task_received != task_sent ||
+            ans_data->type != TASK_FIND_SUCCESSOR_ANSWER) {
           // this is not the expected answer
           MSG_comm_destroy(node->comm_receive);
           node->comm_receive = NULL;
@@ -787,7 +788,8 @@ static int remote_get_predecessor(node_t node, int ask_to)
           MC_assert(task_received == task_sent);
           }*/
 
-        if (task_received != task_sent) {
+        if (task_received != task_sent ||
+            ans_data->type != TASK_GET_PREDECESSOR_ANSWER) {
           MSG_comm_destroy(node->comm_receive);
           node->comm_receive = NULL;
           handle_task(node, task_received);
