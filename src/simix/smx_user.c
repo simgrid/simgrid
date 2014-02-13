@@ -1011,7 +1011,6 @@ smx_action_t simcall_comm_irecv(smx_rdv_t rdv, void *dst_buff, size_t *dst_buff_
                                  match_fun, data, rate);
 }
 
-
 /**
  * \ingroup simix_comm_management
  */
@@ -1266,7 +1265,7 @@ smx_sem_t simcall_sem_init(int capacity)
  */
 void simcall_sem_destroy(smx_sem_t sem)
 {
-  simcall_sem_destroy(sem);
+  simcall_BODY_sem_destroy(sem);
 }
 
 /**
@@ -1336,7 +1335,7 @@ void* simcall_file_get_data(smx_file_t fd)
  */
 void simcall_file_set_data(smx_file_t fd, void *data)
 {
-  simcall_file_set_data(fd, data);
+  simcall_BODY_file_set_data(fd, data);
 }
 
 /**
