@@ -309,8 +309,6 @@ static inline void simcall_comm_irecv__set__result(smx_simcall_t simcall, void* 
 }
 
 
-
-
 static inline int simcall_comm_waitany__get__result(smx_simcall_t simcall){
   return  simcall->result.i;
 }

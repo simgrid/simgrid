@@ -858,12 +858,6 @@ static inline double simcall_comm_irecv__get__rate(smx_simcall_t simcall){
 static inline void simcall_comm_irecv__set__rate(smx_simcall_t simcall, double arg){
     simcall->args[5].d = arg;
 }
-static inline smx_action_t simcall_comm_destroy__get__comm(smx_simcall_t simcall){
-  return (smx_action_t) simcall->args[0].dp;
-}
-static inline void simcall_comm_destroy__set__comm(smx_simcall_t simcall, void* arg){
-    simcall->args[0].dp = arg;
-}
 static inline smx_action_t simcall_comm_cancel__get__comm(smx_simcall_t simcall){
   return (smx_action_t) simcall->args[0].dp;
 }

@@ -888,13 +888,6 @@ smx_rdv_t simcall_rdv_get_by_name(const char *name)
    * skipping the simcall (for now). It works in parallel, it won't work on
    * distributed but probably we will change MSG for that. */
 
-  /*
-  smx_simcall_t simcall = simcall_mine();
-  simcall->call = SIMCALL_RDV_GEY_BY_NAME;
-  simcall->rdv_get_by_name.name = name;
-  SIMIX_simcall_push(simcall->issuer);
-  return simcall->rdv_get_by_name.result;*/
-
   return SIMIX_rdv_get_by_name(name);
 }
 
@@ -1028,22 +1021,6 @@ smx_action_t simcall_comm_iprobe(smx_rdv_t rdv, int src, int tag,
   xbt_assert(rdv, "No rendez-vous point defined for iprobe");
 
   return simcall_BODY_comm_iprobe(rdv, src, tag, match_fun, data);
-}
-
-void simcall_comm_destroy(smx_action_t comm)
-{
-  xbt_assert(comm, "Invalid parameter");
-
-  /* FIXME remove this simcall type: comms are auto-destroyed now */
-
-  /*
-  smx_simcall_t simcall = simcall_mine();
-
-  simcall->call = SIMCALL_COMM_DESTROY;
-  simcall->comm_destroy.comm = comm;
-
-  SIMIX_simcall_push(simcall->issuer);
-  */
 }
 
 /**

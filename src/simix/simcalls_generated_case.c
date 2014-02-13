@@ -365,11 +365,6 @@ case SIMCALL_COMM_IRECV:
       SIMIX_simcall_answer(simcall);
       break;  
 
-case SIMCALL_COMM_DESTROY:
-       SIMIX_pre_comm_destroy(simcall , (smx_action_t) simcall->args[0].dp);
-      SIMIX_simcall_answer(simcall);
-      break;  
-
 case SIMCALL_COMM_CANCEL:
        SIMIX_pre_comm_cancel(simcall , (smx_action_t) simcall->args[0].dp);
       SIMIX_simcall_answer(simcall);

@@ -290,9 +290,6 @@ smx_action_t SIMIX_comm_new(e_smx_comm_type_t type)
   return act;
 }
 
-void SIMIX_pre_comm_destroy(smx_simcall_t simcall, smx_action_t action){
-  SIMIX_comm_destroy(action);
-}
 /**
  *  \brief Destroy a communicate action
  *  \param action The communicate action to be destroyed
@@ -1105,7 +1102,7 @@ int SIMIX_pre_comm_is_latency_bounded(smx_simcall_t simcall, smx_action_t action
  *  \brief verify if communication is latency bounded
  *  \param comm The communication
  */
-XBT_INLINE int SIMIX_comm_is_latency_bounded(smx_action_t action)
+int SIMIX_comm_is_latency_bounded(smx_action_t action)
 {
   if(!action){
     return 0;
