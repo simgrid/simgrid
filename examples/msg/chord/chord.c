@@ -92,6 +92,7 @@ typedef struct s_task_data {
 } s_task_data_t, *task_data_t;
 
 static int *powers2;
+static xbt_dynar_t host_list;
 
 // utility functions
 static void chord_initialize(void);
@@ -132,17 +133,35 @@ static void chord_initialize(void)
   // compute the powers of 2 once for all
   powers2 = xbt_new(int, nb_bits);
   int pow = 1;
-  int i;
+  unsigned i;
   for (i = 0; i < nb_bits; i++) {
     powers2[i] = pow;
     pow = pow << 1;
   }
   nb_keys = pow;
   XBT_DEBUG("Sets nb_keys to %d", nb_keys);
+
+  msg_host_t host;
+  host_list = MSG_hosts_as_dynar();
+  xbt_dynar_foreach(host_list, i, host) {
+    char descr[512];
+    RngStream stream;
+    snprintf(descr, sizeof descr, "RngSream<%s>", MSG_host_get_name(host));
+    stream = RngStream_CreateStream(descr);
+    MSG_host_set_property_value(host, "stream", (char*)stream, NULL);
+  }
 }
 
 static void chord_exit(void)
 {
+  msg_host_t host;
+  unsigned i;
+  xbt_dynar_foreach(host_list, i, host) {
+    RngStream stream = (RngStream)MSG_host_get_property_value(host, "stream");
+    RngStream_DeleteStream(&stream);
+  }
+  xbt_dynar_free(&host_list);
+
   xbt_free(powers2);
 }
 
@@ -303,6 +322,8 @@ int node(int argc, char *argv[])
   // initialize my node
   s_node_t node = {0};
   node.id = atoi(argv[1]);
+  node.stream =
+    (RngStream)MSG_host_get_property_value(MSG_host_self(), "stream");
   get_mailbox(node.id, node.mailbox);
   node.next_finger_to_fix = 0;
   node.fingers = xbt_new0(s_finger_t, nb_bits);
@@ -573,7 +594,6 @@ static void leave(node_t node)
 {
   XBT_DEBUG("Well Guys! I Think it's time for me to quit ;)");
   quit_notify(node);
-  RngStream_DeleteStream(&node->stream);
 }
 
 /**
@@ -991,18 +1011,11 @@ static void check_predecessor(node_t node)
  */
 static void random_lookup(node_t node)
 {
-  
-  int id = 1337; 
-  find_successor(node, id);
-
-  /*** Random lookup disabled for tesh examples ***/
-  /*if(node->stream == NULL)
-    node->stream = RngStream_CreateStream("");
   int random_index = RngStream_RandInt (node->stream, 0, nb_bits - 1);
   int random_id = node->fingers[random_index].id;
   XBT_DEBUG("Making a lookup request for id %d", random_id);
   int res = find_successor(node, random_id);
-  XBT_DEBUG("The successor of node %d is %d", random_id, res);*/
+  XBT_DEBUG("The successor of node %d is %d", random_id, res);
 
 }
 
@@ -1043,9 +1056,9 @@ int main(int argc, char *argv[])
   const char* platform_file = options[0];
   const char* application_file = options[1];
 
-  chord_initialize();
-
   MSG_create_environment(platform_file);
+
+  chord_initialize();
 
   MSG_function_register("node", node);
   MSG_launch_application(application_file);
