@@ -242,7 +242,8 @@ void peer_init(peer_t peer, int id, int seed)
 
   peer->current_pieces = xbt_dynar_new(sizeof(int), NULL);
 
-  peer->stream = RngStream_CreateStream("");
+  peer->stream =
+    (RngStream)MSG_host_get_property_value(MSG_host_self(), "stream");
   peer->comm_received = NULL;
 
   peer->round = 0;
@@ -266,8 +267,6 @@ void peer_free(peer_t peer)
   xbt_free(peer->pieces_count);
   xbt_free(peer->bitfield);
   xbt_free(peer->bitfield_blocks);
-
-  RngStream_DeleteStream(&peer->stream);
 }
 
 /**
