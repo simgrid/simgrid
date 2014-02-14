@@ -6,8 +6,6 @@ $ ../../../smpi_script/bin/smpirun -np 2 -hostfile ${srcdir:=.}/hostfile  -platf
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'smpi/cpu_threshold' to '-1'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'plugin' to 'Energy'
 > [0.000000] [surf_config/INFO] Switching workstation model to compound since you changed the network and/or cpu model(s)
-> [80.000000] [surf_energy/INFO] Total energy (Joules) of host MyHost1: 12900.000000
-> [80.000000] [surf_energy/INFO] Total energy (Joules) of host MyHost2: 2000.000000
 > [0.000000] [rank 1] Pstates: 1; Powers: 100000000
 > [0.000000] [rank 0] Pstates: 3; Powers: 100000000, 50000000, 20000000
 > [0.000000] [rank 1] Current pstate: 0; Current power: 100000000
@@ -18,3 +16,5 @@ $ ../../../smpi_script/bin/smpirun -np 2 -hostfile ${srcdir:=.}/hostfile  -platf
 > [30.000000] [rank 0] Energy consumed: 5400 Joules.
 > [30.000000] [rank 0] Current pstate: 2; Current power: 20000000
 > [80.000000] [rank 0] Energy consumed: 12900 Joules.
+> [80.000000] [surf_energy/INFO] Total energy (Joules) of host MyHost1: 12900.000000
+> [80.000000] [surf_energy/INFO] Total energy (Joules) of host MyHost2: 2000.000000
