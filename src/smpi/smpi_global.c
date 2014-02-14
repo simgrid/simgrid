@@ -7,6 +7,7 @@
 #include "private.h"
 #include "smpi_mpi_dt_private.h"
 #include "mc/mc.h"
+#include "xbt/replay.h"
 #include "surf/surf.h"
 #include "simix/smx_private.h"
 #include "simgrid/sg_config.h"
@@ -318,6 +319,7 @@ static void smpi_comm_copy_buffer_callback(smx_action_t comm,
                                            void *buff, size_t buff_size)
 {
   XBT_DEBUG("Copy the data over");
+  if(_xbt_replay_is_active()) return;
   memcpy(comm->comm.dst_buff, buff, buff_size);
   if (comm->comm.detached) {
     // if this is a detached send, the source buffer was duplicated by SMPI

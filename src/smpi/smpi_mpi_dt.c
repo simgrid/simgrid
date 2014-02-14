@@ -14,6 +14,7 @@
 #include "private.h"
 #include "smpi_mpi_dt_private.h"
 #include "mc/mc.h"
+#include "xbt/replay.h"
 #include "simgrid/modelchecker.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_mpi_dt, smpi,
@@ -165,7 +166,7 @@ int smpi_datatype_copy(void *sendbuf, int sendcount, MPI_Datatype sendtype,
     count = sendcount < recvcount ? sendcount : recvcount;
 
     if(sendtype->has_subtype == 0 && recvtype->has_subtype == 0) {
-      memcpy(recvbuf, sendbuf, count);
+      if(!_xbt_replay_is_active()) memcpy(recvbuf, sendbuf, count);
     }
     else if (sendtype->has_subtype == 0)
     {
@@ -1488,5 +1489,6 @@ void smpi_op_destroy(MPI_Op op)
 void smpi_op_apply(MPI_Op op, void *invec, void *inoutvec, int *len,
                    MPI_Datatype * datatype)
 {
+  if(!_xbt_replay_is_active())
   op->func(invec, inoutvec, len, datatype);
 }
