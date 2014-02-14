@@ -36,6 +36,10 @@ static xbt_dynar_t get_atomic_propositions_values(){
   return values;
 }
 
+/** \brief Find a suitable subrange of candidate duplicates for a given state
+ *
+ *  See mc_dpor.c with a similar (same?) function.
+ */
 static int get_search_interval(xbt_dynar_t all_pairs, mc_visited_pair_t pair, int *min, int *max){
 
   int raw_mem_set = (mmalloc_get_current_heap() == raw_heap);
@@ -114,12 +118,15 @@ static mc_visited_pair_t is_reached_acceptance_pair(int pair_num, xbt_automaton_
     index = get_search_interval(acceptance_pairs, pair, &min, &max);
 
     if(min != -1 && max != -1){ // Acceptance pair with same number of processes and same heap bytes used exists
+
+      // Parallell implementation
       /*res = xbt_parmap_mc_apply(parmap, snapshot_compare, xbt_dynar_get_ptr(acceptance_pairs, min), (max-min)+1, pair);
       if(res != -1){
         if(!raw_mem_set)
           MC_UNSET_RAW_MEM;
         return ((mc_pair_t)xbt_dynar_get_as(acceptance_pairs, (min+res)-1, mc_pair_t))->num;
         }*/
+
       cursor = min;
       while(cursor <= max){
         pair_test = (mc_visited_pair_t)xbt_dynar_get_as(acceptance_pairs, cursor, mc_visited_pair_t);
@@ -192,6 +199,9 @@ static void remove_acceptance_pair(int pair_num){
     MC_UNSET_RAW_MEM;
 }
 
+/** \brief Checks whether a given state has already been visited by the algorithm.
+ *
+ */
 static int is_visited_pair(mc_visited_pair_t pair, int pair_num, xbt_automaton_state_t automaton_state, xbt_dynar_t atomic_propositions){
 
   if(_sg_mc_visited == 0)
