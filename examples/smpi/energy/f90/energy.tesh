@@ -1,4 +1,5 @@
 p Test smpi bindings for dvfs functions (Fortran 90 example)
+! output sort 1
 $ ../../../smpi_script/bin/smpirun -np 2 -hostfile ${srcdir:=.}/hostfile  -platform ${srcdir:=.}/platform.xml --cfg=smpi/cpu_threshold:-1 ${bindir:=.}/f90/sef90 --cfg=plugin:Energy  --log=smpi_kernel.thres:warning
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'maxmin/precision' to '1e-9'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'SMPI'
@@ -6,6 +7,8 @@ $ ../../../smpi_script/bin/smpirun -np 2 -hostfile ${srcdir:=.}/hostfile  -platf
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'smpi/cpu_threshold' to '-1'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'plugin' to 'Energy'
 > [0.000000] [surf_config/INFO] Switching workstation model to compound since you changed the network and/or cpu model(s)
+> [80.000000] [surf_energy/INFO] Total energy (Joules) of host MyHost1: 12900.000000
+> [80.000000] [surf_energy/INFO] Total energy (Joules) of host MyHost2: 2000.000000
 >  [   0.0000000000000000      ] [rank            0 ]           3 pstates available
 >  [   0.0000000000000000      ] [rank            1 ]           1 pstates available
 >  [   0.0000000000000000      ] [rank            0 ] Power:    100000000.00000000     
@@ -20,5 +23,3 @@ $ ../../../smpi_script/bin/smpirun -np 2 -hostfile ${srcdir:=.}/hostfile  -platf
 >  [   30.000000000000000      ] [rank            0 ] Energy consumed (Joules):    5400.0000000000000     
 >  [   30.000000000000000      ] [rank            0 ] Current pstate:            2 ; Current power:    20000000.000000000     
 >  [   80.000000000000000      ] [rank            0 ] Energy consumed (Joules):    12900.000000000000     
-> [80.000000] [surf_energy/INFO] Total energy (Joules) of host MyHost1: 12900.000000
-> [80.000000] [surf_energy/INFO] Total energy (Joules) of host MyHost2: 2000.000000
