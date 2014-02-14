@@ -558,14 +558,14 @@ double Model::shareResourcesLazy(double now)
       max_dur_flag = 1;
     }
 
-    XBT_DEBUG("Action(%p) Start %lf Finish %lf Max_duration %lf", action,
+    XBT_DEBUG("Action(%p) Start %f Finish %f Max_duration %f", action,
         action->getStartTime(), now + value,
         action->getMaxDuration());
 
     if (min != -1) {
       action->heapRemove(p_actionHeap);
       action->heapInsert(p_actionHeap, min, max_dur_flag ? MAX_DURATION : NORMAL);
-      XBT_DEBUG("Insert at heap action(%p) min %lf now %lf", action, min,
+      XBT_DEBUG("Insert at heap action(%p) min %f now %f", action, min,
                 now);
     } else DIE_IMPOSSIBLE;
   }
@@ -576,7 +576,7 @@ double Model::shareResourcesLazy(double now)
   else
     min = -1;
 
-  XBT_DEBUG("The minimum with the HEAP %lf", min);
+  XBT_DEBUG("The minimum with the HEAP %f", min);
 
   return min;
 }

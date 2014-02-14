@@ -318,7 +318,7 @@ CpuTiTgmr::CpuTiTgmr(tmgr_trace_t power_trace, double value)
   if (!power_trace) {
     m_type = TRACE_FIXED;
     m_value = value;
-    XBT_DEBUG("No availability trace. Constant value = %lf", value);
+    XBT_DEBUG("No availability trace. Constant value = %f", value);
     return;
   }
 
@@ -341,7 +341,7 @@ CpuTiTgmr::CpuTiTgmr(tmgr_trace_t power_trace, double value)
   m_lastTime = total_time;
   m_total = p_trace->integrateSimple(0, total_time);
 
-  XBT_DEBUG("Total integral %lf, last_time %lf ",
+  XBT_DEBUG("Total integral %f, last_time %f ",
             m_total, m_lastTime);
 }
 
@@ -579,7 +579,7 @@ CpuTi::CpuTi(CpuTiModelPtr model, const char *name, xbt_dynar_t powerPeak,
   tmgr_trace_t empty_trace;		
   s_tmgr_event_t val;		
   xbt_assert(core==1,"Multi-core not handled with this model yet");
-  XBT_DEBUG("power scale %lf", powerScale);
+  XBT_DEBUG("power scale %f", powerScale);
   p_availTrace = new CpuTiTgmr(powerTrace, powerScale);
 
   CpuTiActionPtr action = NULL;
@@ -626,7 +626,7 @@ void CpuTi::updateState(tmgr_trace_event_t event_type,
     CpuTiTgmrPtr trace;
     s_tmgr_event_t val;
 
-    XBT_DEBUG("Finish trace date: %f value %lf date %f", surf_get_clock(),
+    XBT_DEBUG("Finish trace date: %f value %f date %f", surf_get_clock(),
            value, date);
     /* update remaining of actions and put in modified cpu swag */
     updateRemainingAmount(date);

@@ -630,10 +630,10 @@ void NetworkCm02Action::updateRemainingLazy(double now)
   delta = now - m_lastUpdate;
 
   if (m_remains > 0) {
-    XBT_DEBUG("Updating action(%p): remains was %lf, last_update was: %lf", this, m_remains, m_lastUpdate);
+    XBT_DEBUG("Updating action(%p): remains was %f, last_update was: %f", this, m_remains, m_lastUpdate);
     double_update(&(m_remains), m_lastValue * delta);
 
-    XBT_DEBUG("Updating action(%p): remains is now %lf", this, m_remains);
+    XBT_DEBUG("Updating action(%p): remains is now %f", this, m_remains);
   }
 
   if (m_maxDuration != NO_MAX_DURATION)

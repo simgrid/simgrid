@@ -54,9 +54,9 @@ static void launch_worker(msg_host_t host, const char *pr_name, double computati
 {
   char **argv = xbt_new(char *, 5);
   argv[0] = xbt_strdup(pr_name);
-  argv[1] = bprintf("%lf", computation_amount);
+  argv[1] = bprintf("%f", computation_amount);
   argv[2] = bprintf("%d", use_bound);
-  argv[3] = bprintf("%lf", bound);
+  argv[3] = bprintf("%f", bound);
   argv[4] = NULL;
 
   MSG_process_create_with_arguments(pr_name, worker_main, NULL, host, 4, argv);

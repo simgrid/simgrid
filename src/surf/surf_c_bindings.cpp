@@ -171,7 +171,7 @@ double surf_solve(double max_date)
       }
       /* update state of model_obj according to new value. Does not touch lmm.
          It will be modified if needed when updating actions */
-      XBT_DEBUG("Calling update_resource_state for resource %s with min %lf",
+      XBT_DEBUG("Calling update_resource_state for resource %s with min %f",
              resource->getName(), surf_min);
       resource->updateState(event, value, next_event_date);
     }

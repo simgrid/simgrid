@@ -306,7 +306,7 @@ void lmm_shrink(lmm_system_t sys, lmm_constraint_t cnst,
 
   sys->modified = 1;
 
-  XBT_DEBUG("remove elem(value %lf, cnst %p, var %p) in var %p",
+  XBT_DEBUG("remove elem(value %f, cnst %p, var %p) in var %p",
       elem->value, elem->constraint, elem->variable, var);
 
 

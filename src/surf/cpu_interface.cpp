@@ -224,7 +224,7 @@ void CpuAction::updateRemainingLazy(double now)
   delta = now - m_lastUpdate;
 
   if (m_remains > 0) {
-    XBT_CDEBUG(surf_kernel, "Updating action(%p): remains was %lf, last_update was: %lf", this, m_remains, m_lastUpdate);
+    XBT_CDEBUG(surf_kernel, "Updating action(%p): remains was %f, last_update was: %f", this, m_remains, m_lastUpdate);
     double_update(&(m_remains), m_lastValue * delta);
 
 #ifdef HAVE_TRACING
@@ -233,7 +233,7 @@ void CpuAction::updateRemainingLazy(double now)
       TRACE_surf_host_set_utilization(cpu->getName(), getCategory(), m_lastValue, m_lastUpdate, now - m_lastUpdate);
     }
 #endif
-    XBT_CDEBUG(surf_kernel, "Updating action(%p): remains is now %lf", this, m_remains);
+    XBT_CDEBUG(surf_kernel, "Updating action(%p): remains is now %f", this, m_remains);
   }
 
   m_lastUpdate = now;

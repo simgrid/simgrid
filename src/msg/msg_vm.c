@@ -578,8 +578,8 @@ static void launch_deferred_exec_process(msg_host_t host, double computation, do
   int nargvs = 4;
   char **argv = xbt_new(char *, nargvs);
   argv[0] = pr_name;
-  argv[1] = bprintf("%lf", computation);
-  argv[2] = bprintf("%lf", prio);
+  argv[1] = bprintf("%f", computation);
+  argv[2] = bprintf("%f", prio);
   argv[3] = NULL;
 
   MSG_process_create_with_arguments(pr_name, deferred_exec_fun, NULL, host, nargvs - 1, argv);
