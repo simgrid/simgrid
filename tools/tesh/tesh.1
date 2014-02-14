@@ -105,7 +105,7 @@ parallel). To ensure that the simulator outputs still match, we have
 to sort the output back before comparing it.
 
 We expect the simulators to run with that log formatting argument:
-   -log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n
+   --log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n
 Then, tesh sorts string on the 19 first chars only, and is stable when
 line beginnings are equal. This should ensure that:
  (1) tesh is effective (no false positive, no false negative)
