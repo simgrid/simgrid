@@ -384,9 +384,7 @@ CpuCas01Action::CpuCas01Action(ModelPtr model, double cost, bool failed, double 
 		     lmm_variable_new(model->getMaxminSystem(), static_cast<ActionPtr>(this),
 		     1.0, power, 1))
 {
-  m_suspended = 0;     /* Should be useless because of the
-	                                                   calloc but it seems to help valgrind... */
-
+  m_suspended = 0;
   if (model->getUpdateMechanism() == UM_LAZY) {
     m_indexHeap = -1;
     m_lastUpdate = surf_get_clock();
