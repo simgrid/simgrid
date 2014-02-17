@@ -13,6 +13,8 @@
 #include "xbt/module.h"
 #include <xbt/mmalloc.h>
 
+#include "xbt/mmalloc/mmprivate.h"
+
 #include "../simix/smx_private.h"
 
 #include <libunwind.h>
@@ -105,6 +107,12 @@ static void MC_snapshot_add_region(mc_snapshot_t snapshot, int type, void *start
 
 static void MC_get_memory_regions(mc_snapshot_t snapshot){
 
+  void* start_heap = ((xbt_mheap_t)std_heap)->base;
+  void* end_heap   = ((xbt_mheap_t)std_heap)->breakval;
+  MC_snapshot_add_region(snapshot, 0, start_heap, (char*) end_heap - (char*) start_heap);
+  snapshot->heap_bytes_used = mmalloc_get_bytes_used(std_heap);
+
+
   FILE *fp;
   char *line = NULL;
   ssize_t read;
@@ -140,12 +148,9 @@ static void MC_get_memory_regions(mc_snapshot_t snapshot){
       /* Get the start address of the map */
       tok = strtok(lfields[0], "-");
       start_addr = (void *)strtoul(tok, NULL, 16);
-    
+
       if(start_addr == std_heap){     /* Std_heap ? */
-        tok = strtok(NULL, "-");
-        end_addr = (void *)strtoul(tok, NULL, 16);
-        MC_snapshot_add_region(snapshot, 0, start_addr, (char*)end_addr - (char*)start_addr);
-        snapshot->heap_bytes_used = mmalloc_get_bytes_used(std_heap);
+
       }else{ /* map name == libsimgrid || binary_name ? */
         if(lfields[5] != NULL){
           if(!memcmp(basename(lfields[5]), "libsimgrid", 10)){
@@ -182,10 +187,7 @@ static void MC_get_memory_regions(mc_snapshot_t snapshot){
               start_addr1 = (void *)strtoul(tok, NULL, 16);
               if(lfields[1][1] == 'w'){
                 if(start_addr1 == std_heap){     /* Std_heap ? */
-                  tok = strtok(NULL, "-");
-                  end_addr = (void *)strtoul(tok, NULL, 16);
-                  MC_snapshot_add_region(snapshot, 0, start_addr1, (char*)end_addr - (char*)start_addr1);
-                  snapshot->heap_bytes_used = mmalloc_get_bytes_used(std_heap);
+
                 }else if(start_addr1 != raw_heap){
                   tok = strtok(NULL, "-");
                   size += (char *)(void *)strtoul(tok, NULL, 16) - (char *)start_addr1;
