@@ -313,6 +313,12 @@ static void MC_find_object_address(memory_map_t maps, mc_object_info_t result) {
             maps->regions[i].pathname);
           result->start_rw = reg.start_addr;
           result->end_rw   = reg.end_addr;
+          // .bss is usually after the .data:
+          // TODO, use dl_iterate_phdr to be more robust
+          s_map_region_t* next = &(maps->regions[i+1]);
+          if(next->pathname == NULL && (next->prot & PROT_WRITE) && next->start_addr == reg.end_addr) {
+            result->end_rw = maps->regions[i+1].end_addr;
+          }
     } else if ((reg.prot & PROT_READ) && (reg.prot & PROT_EXEC)){
           xbt_assert(!result->start_exec,
             "Multiple executable segments for %s, not supported",
