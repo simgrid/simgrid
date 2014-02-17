@@ -72,6 +72,32 @@ msg_host_t MSG_get_host_by_name(const char *name)
   return (msg_host_t) xbt_lib_get_elm_or_null(host_lib,name);
 }
 
+static const char *msg_data = "data";
+/** \ingroup m_host_management
+ *
+ * \brief Set the user data of a #msg_host_t.
+ *
+ * This functions checks whether some data has already been associated to \a host
+   or not and attach \a data to \a host if it is possible.
+ */
+msg_error_t MSG_host_set_data(msg_host_t host, void *data)
+{
+  MSG_host_set_property_value(host, msg_data, data, NULL);
+  return MSG_OK;
+}
+
+/** \ingroup m_host_management
+ *
+ * \brief Return the user data of a #msg_host_t.
+ *
+ * This functions checks whether \a host is a valid pointer or not and return
+   the user data associated to \a host if it is possible.
+ */
+void *MSG_host_get_data(msg_host_t host)
+{
+  return (void *)MSG_host_get_property_value(host, msg_data);
+}
+
 /** \ingroup m_host_management
  *
  * \brief Return the name of the #msg_host_t.
