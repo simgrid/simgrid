@@ -339,6 +339,8 @@ int MC_request_is_enabled(smx_simcall_t req)
       }
     }else{
       act = simcall_comm_wait__get__comm(req);
+      if(act->comm.detached && act->comm.src_proc == NULL && act->comm.type == SIMIX_COMM_READY)
+        return (act->comm.dst_proc != NULL);
       return (act->comm.src_proc && act->comm.dst_proc);
     }
     break;
