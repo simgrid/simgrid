@@ -704,7 +704,8 @@ static int compare_heap_area_without_type(void *real_area1, void *real_area2, vo
 
   int i = 0;
   void *addr_pointed1, *addr_pointed2;
-  int pointer_align, ignore1, ignore2, res_compare;
+  int pointer_align, res_compare;
+  ssize_t ignore1, ignore2;
 
   while(i<size){
 
@@ -762,7 +763,7 @@ static int compare_heap_area_with_type(void *real_area1, void *real_area2, void 
   if(is_stack(real_area1) && is_stack(real_area2))
     return 0;
 
-  size_t ignore1, ignore2;
+  ssize_t ignore1, ignore2;
 
   if((check_ignore > 0) && ((ignore1 = heap_comparison_ignore_size(to_ignore1, real_area1)) > 0) && ((ignore2 = heap_comparison_ignore_size(to_ignore2, real_area2))  == ignore1)){
     return 0;
@@ -778,7 +779,7 @@ static int compare_heap_area_with_type(void *real_area1, void *real_area2, void 
 
   switch(type->type){
   case DW_TAG_base_type:
-    if(strcmp(type->name, "char") == 0){ /* String, hence random (arbitrary ?) size */
+    if(type->name!=NULL && strcmp(type->name, "char") == 0){ /* String, hence random (arbitrary ?) size */
       if(real_area1 == real_area2)
         return -1;
       else
@@ -798,10 +799,9 @@ static int compare_heap_area_with_type(void *real_area1, void *real_area2, void 
       return (memcmp(area1, area2, type->byte_size) != 0);
     break;
   case DW_TAG_typedef:
-    return compare_heap_area_with_type(real_area1, real_area2, area1, area2, previous, all_types, other_types, type->dw_type_id, area_size, check_ignore, pointer_level);
-    break;
   case DW_TAG_const_type:
-    return 0;
+  case DW_TAG_volatile_type:
+    return compare_heap_area_with_type(real_area1, real_area2, area1, area2, previous, all_types, other_types, type->dw_type_id, area_size, check_ignore, pointer_level);
     break;
   case DW_TAG_array_type:
     subtype = xbt_dict_get_or_null(all_types, type->dw_type_id);
@@ -823,6 +823,7 @@ static int compare_heap_area_with_type(void *real_area1, void *real_area2, void 
       elm_size = subtype->byte_size;
       break;
     // TODO, just remove the type indirection?
+    case DW_TAG_const_type:
     case DW_TAG_typedef:
     case DW_TAG_volatile_type:
       subsubtype = xbt_dict_get_or_null(all_types, subtype->dw_type_id);
@@ -917,9 +918,6 @@ static int compare_heap_area_with_type(void *real_area1, void *real_area2, void 
     break;
   case DW_TAG_union_type:
     return compare_heap_area_without_type(real_area1, real_area2, area1, area2, previous, all_types, other_types, type->byte_size, check_ignore);
-    break;
-  case DW_TAG_volatile_type:
-    return compare_heap_area_with_type(real_area1, real_area2, area1, area2, previous, all_types, other_types, type->dw_type_id, area_size, check_ignore, pointer_level);
     break;
   default:
     break;
@@ -1042,7 +1040,7 @@ int compare_heap_area(void *area1, void* area2, xbt_dynar_t previous, xbt_dict_t
         type = xbt_dict_get_or_null(all_types, type->dw_type_id);
       }
     }
-    if((type->byte_size == DW_TAG_pointer_type) || ((type->type == DW_TAG_base_type) && (!strcmp(type->name, "char"))))
+    if((type->byte_size == DW_TAG_pointer_type) || ((type->type == DW_TAG_base_type) && type->name!=NULL && (!strcmp(type->name, "char"))))
       type_size = -1;
     else
       type_size = type->byte_size;
@@ -1069,7 +1067,7 @@ int compare_heap_area(void *area1, void* area2, xbt_dynar_t previous, xbt_dict_t
     }
 
     if(type_size != -1){
-      if(type_size != heapinfo1[block1].busy_block.busy_size && type_size != heapinfo2[block2].busy_block.busy_size && !strcmp(type->name, "s_smx_context")){
+      if(type_size != heapinfo1[block1].busy_block.busy_size && type_size != heapinfo2[block2].busy_block.busy_size && type->name!=NULL && !strcmp(type->name, "s_smx_context")){
         if(match_pairs){
           match_equals(previous);
           xbt_dynar_free(&previous);

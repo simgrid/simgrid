@@ -118,6 +118,56 @@ const char* MC_dwarf_tagname(int tag) {
   }
 }
 
+#define MC_DW_CLASS_UNKNOWN 0
+#define MC_DW_CLASS_ADDRESS 1   // Location in the address space of the program
+#define MC_DW_CLASS_BLOCK 2     // Arbitrary block of bytes
+#define MC_DW_CLASS_CONSTANT 3
+#define MC_DW_CLASS_STRING 3    // String
+#define MC_DW_CLASS_FLAG 4      // Boolean
+#define MC_DW_CLASS_REFERENCE 5 // Reference to another DIE
+#define MC_DW_CLASS_EXPRLOC 6   // DWARF expression/location description
+#define MC_DW_CLASS_LINEPTR 7
+#define MC_DW_CLASS_LOCLISTPTR 8
+#define MC_DW_CLASS_MACPTR 9
+#define MC_DW_CLASS_RANGELISTPTR 10
+
+static int MC_dwarf_form_get_class(int form) {
+  switch(form) {
+  case DW_FORM_addr:
+    return MC_DW_CLASS_ADDRESS;
+  case DW_FORM_block2:
+  case DW_FORM_block4:
+  case DW_FORM_block:
+  case DW_FORM_block1:
+    return MC_DW_CLASS_BLOCK;
+  case DW_FORM_data2:
+  case DW_FORM_data4:
+  case DW_FORM_data8:
+  case DW_FORM_udata:
+  case DW_FORM_sdata:
+    return MC_DW_CLASS_CONSTANT;
+  case DW_FORM_string:
+  case DW_FORM_strp:
+    return MC_DW_CLASS_STRING;
+  case DW_FORM_ref_addr:
+  case DW_FORM_ref1:
+  case DW_FORM_ref2:
+  case DW_FORM_ref4:
+  case DW_FORM_ref8:
+  case DW_FORM_ref_udata:
+    return MC_DW_CLASS_REFERENCE;
+  case DW_FORM_flag:
+  case DW_FORM_flag_present:
+    return MC_DW_CLASS_FLAG;
+  case DW_FORM_exprloc:
+    return MC_DW_CLASS_EXPRLOC;
+  // TODO sec offset
+  // TODO indirect
+  default:
+    return MC_DW_CLASS_UNKNOWN;
+  }
+}
+
 /** \brief Get the name of the tag of a given DIE
  *
  *  \param die DIE
@@ -345,7 +395,7 @@ static uint64_t MC_dwarf_subrange_element_count(Dwarf_Die* die, Dwarf_Die* unit)
     return MC_dwarf_attr_uint(die, DW_AT_count, 0);
   }
 
-  // Otherwise compute DW_TAG_upper_bound-DW_TAG_lower_bound:
+  // Otherwise compute DW_TAG_upper_bound-DW_TAG_lower_bound + 1:
 
   if (!dwarf_hasattr_integrate(die, DW_AT_upper_bound)) {
 	// This is not really 0, but the code expects this (we do not know):
@@ -359,7 +409,7 @@ static uint64_t MC_dwarf_subrange_element_count(Dwarf_Die* die, Dwarf_Die* unit)
   } else {
 	lower_bound = MC_dwarf_default_lower_bound(dwarf_srclang(unit));
   }
-  return upper_bound - lower_bound;
+  return upper_bound - lower_bound + 1;
 }
 
 static uint64_t MC_dwarf_array_element_count(Dwarf_Die* die, Dwarf_Die* unit) {
@@ -429,9 +479,11 @@ static void MC_dwarf_fill_member_location(dw_type_t type, dw_type_t member, Dwar
 
   Dwarf_Attribute attr;
   dwarf_attr_integrate(child, DW_AT_data_member_location, &attr);
-  switch (dwarf_whatform(&attr)) {
-
-  case DW_FORM_exprloc:
+  int klass = MC_dwarf_form_get_class(dwarf_whatform(&attr));
+  switch (klass) {
+  case MC_DW_CLASS_EXPRLOC:
+  case MC_DW_CLASS_BLOCK:
+    // Location expression:
     {
       Dwarf_Op* expr;
       size_t len;
@@ -444,28 +496,32 @@ static void MC_dwarf_fill_member_location(dw_type_t type, dw_type_t member, Dwar
       if (len==1 && expr[0].atom == DW_OP_plus_uconst) {
         member->offset =  expr[0].number;
       } else {
-        xbt_die("Can't groke this location expression yet. %i %i",
-          len==1 , expr[0].atom == DW_OP_plus_uconst);
+        xbt_die("Can't groke this location expression yet.");
       }
       break;
     }
-  case DW_FORM_data1:
-  case DW_FORM_data2:
-  case DW_FORM_data4:
-  case DW_FORM_data8:
-  case DW_FORM_sdata:
-  case DW_FORM_udata:
+  case MC_DW_CLASS_CONSTANT:
+    // Offset from the base address of the object:
     {
       Dwarf_Word offset;
       if (!dwarf_formudata(&attr, &offset))
         member->offset = offset;
       else
-        xbt_die("Cannot get DW_AT_data_member_%s location <%p>%s",
+        xbt_die("Cannot get %s location <%p>%s",
           MC_dwarf_attr_string(child, DW_AT_name),
           type->id, type->name);
       break;
     }
+  case MC_DW_CLASS_LOCLISTPTR:
+    // Reference to a location list:
+    // TODO
+  case MC_DW_CLASS_REFERENCE:
+    // It's supposed to be possible in DWARF2 but I couldn't find its semantic
+    // in the spec.
+  default:
+    xbt_die("Can't handle form class 0x%x (%i) as DW_AT_member_location", klass, klass);
   }
+
 }
 
 static void MC_dwarf_add_members(mc_object_info_t info, Dwarf_Die* die, Dwarf_Die* unit, dw_type_t type) {
@@ -739,6 +795,8 @@ static dw_location_t MC_dwarf_get_expression(Dwarf_Op* expr,  size_t len) {
   return loc;
 }
 
+static int mc_anonymous_variable_index = 0;
+
 static dw_variable_t MC_die_to_variable(mc_object_info_t info, Dwarf_Die* die, Dwarf_Die* unit, dw_frame_t frame) {
   // Drop declaration:
   if (MC_dwarf_attr_flag(die, DW_AT_declaration, false))
@@ -755,12 +813,12 @@ static dw_variable_t MC_die_to_variable(mc_object_info_t info, Dwarf_Die* die, D
   variable->global = frame == NULL; // Can be override base on DW_AT_location
   variable->name = xbt_strdup(MC_dwarf_attr_string(die, DW_AT_name));
   variable->type_origin = MC_dwarf_at_type(die);
-  variable->address.address = NULL;
 
-  int form;
-  switch (form = dwarf_whatform(&attr_location)) {
-  case DW_FORM_exprloc:
-  case DW_FORM_block1: // Not in the spec but found in the wild.
+  int klass = MC_dwarf_form_get_class(dwarf_whatform(&attr_location));
+  switch (klass) {
+  case MC_DW_CLASS_EXPRLOC:
+  case MC_DW_CLASS_BLOCK:
+    // Location expression:
     {
       Dwarf_Op* expr;
       size_t len;
@@ -774,23 +832,28 @@ static dw_variable_t MC_die_to_variable(mc_object_info_t info, Dwarf_Die* die, D
         variable->global = 1;
         Dwarf_Off offset = expr[0].number;
         // TODO, Why is this different base on the object?
-        Dwarf_Off base = strcmp(info->file_name, xbt_binary_name) !=0 ? (Dwarf_Off) info->start_text : 0;
-        variable->address.address = (void*) (base + offset);
+        Dwarf_Off base = strcmp(info->file_name, xbt_binary_name) !=0 ? (Dwarf_Off) info->start_exec : 0;
+        variable->address = (void*) (base + offset);
       } else {
-        variable->address.location = MC_dwarf_get_expression(expr, len);
+        variable->location = MC_dwarf_get_expression(expr, len);
       }
 
       break;
     }
-  case DW_FORM_sec_offset: // type loclistptr
-  case DW_FORM_data2:
-  case DW_FORM_data4:
-  case DW_FORM_data8:
-    variable->address.location = MC_dwarf_get_location_list(die, &attr_location);
+  case MC_DW_CLASS_LOCLISTPTR:
+  case MC_DW_CLASS_CONSTANT:
+    // Reference to location list:
+    variable->location = MC_dwarf_get_location_list(die, &attr_location);
     break;
   default:
-    xbt_die("Unexpected form %i list for location in <%p>%s",
-      form, (void*) variable->dwarf_offset, variable->name);
+    xbt_die("Unexpected calss 0x%x (%i) list for location in <%p>%s",
+      klass, klass, (void*) variable->dwarf_offset, variable->name);
+  }
+
+  // The current code needs a variable name,
+  // generate a fake one:
+  if(!variable->name) {
+    variable->name = bprintf("@anonymous#%i", mc_anonymous_variable_index++);
   }
 
   return variable;

@@ -138,10 +138,8 @@ static int compare_areas_with_type(void *area1, void *area2, xbt_dict_t types, x
     break;
   case DW_TAG_typedef:
   case DW_TAG_volatile_type:
+  case DW_TAG_const_type:
     return compare_areas_with_type(area1, area2, types, other_types, type->dw_type_id, region_size, region_type, start_data, pointer_level);
-    break;
-  case DW_TAG_const_type: /* Const variable cannot be modified */
-    return -1;
     break;
   case DW_TAG_array_type:
     subtype = xbt_dict_get_or_null(types, type->dw_type_id);
@@ -160,6 +158,7 @@ static int compare_areas_with_type(void *area1, void *area2, xbt_dict_t types, x
       }
       elm_size = subtype->byte_size;
       break;
+    case DW_TAG_const_type:
     case DW_TAG_typedef:
     case DW_TAG_volatile_type:
       subsubtype = xbt_dict_get_or_null(types, subtype->dw_type_id);
@@ -202,14 +201,29 @@ static int compare_areas_with_type(void *area1, void *area2, xbt_dict_t types, x
 
       pointer_level++;
       
-      if(addr_pointed1 > std_heap && (char *)addr_pointed1 < (char*) std_heap + STD_HEAP_SIZE && addr_pointed2 > std_heap && (char *)addr_pointed2 < (char*) std_heap + STD_HEAP_SIZE){
+      // Some cases are not handled here:
+      // * the pointers lead to different areas (one to the heap, the other to the RW segment ...);
+      // * a pointer leads to the read-only segment of the current object;
+      // * a pointer lead to a different ELF object.
+
+      // The pointers are both in the heap:
+      if(addr_pointed1 > std_heap && (char *)addr_pointed1 < (char*) std_heap + STD_HEAP_SIZE){
+        if(!(addr_pointed2 > std_heap && (char *)addr_pointed2 < (char*) std_heap + STD_HEAP_SIZE))
+          return 1;
         return compare_heap_area(addr_pointed1, addr_pointed2, NULL, types, other_types, type->dw_type_id, pointer_level); 
-      }else if(addr_pointed1 > start_data && (char*)addr_pointed1 <= (char *)start_data + region_size && addr_pointed2 > start_data && (char*)addr_pointed2 <= (char *)start_data + region_size){
+      }
+
+      // The pointers are both in the current object R/W segment:
+      else if(addr_pointed1 > start_data && (char*)addr_pointed1 <= (char *)start_data + region_size){
+        if(!(addr_pointed2 > start_data && (char*)addr_pointed2 <= (char *)start_data + region_size))
+          return 1;
         if(type->dw_type_id == NULL)
           return  (addr_pointed1 != addr_pointed2);
         else
           return  compare_areas_with_type(addr_pointed1, addr_pointed2, types, other_types, type->dw_type_id, region_size, region_type, start_data, pointer_level); 
-      }else{
+      }
+
+      else{
         return (addr_pointed1 != addr_pointed2);
       }
     }
@@ -248,8 +262,8 @@ static int compare_global_variables(int region_type, mc_mem_region_t r1, mc_mem_
   dw_variable_t current_var;
   size_t offset;
   void *start_data;
-  void* start_data_binary = mc_binary_info->start_data;
-  void* start_data_libsimgrid = mc_libsimgrid_info->start_data;
+  void* start_data_binary = mc_binary_info->start_rw;
+  void* start_data_libsimgrid = mc_libsimgrid_info->start_rw;
 
   mc_object_info_t object_info = NULL;
   mc_object_info_t other_object_info = NULL;
@@ -268,10 +282,14 @@ static int compare_global_variables(int region_type, mc_mem_region_t r1, mc_mem_
 
   xbt_dynar_foreach(variables, cursor, current_var){
 
-    if(region_type == 2)
-      offset = (char *)current_var->address.address - (char *)start_data_binary;
-    else
-      offset = (char *)current_var->address.address - (char *)start_data_libsimgrid;
+    // If the variable is not in this object, skip it:
+    // We do not expect to find a pointer to something which is not reachable
+    // by the global variables.
+    if((char*) current_var->address < (char*) object_info->start_rw
+      || (char*) current_var->address > (char*) object_info->end_rw)
+       continue;
+
+    offset = (char *)current_var->address - (char *)object_info->start_rw;
 
     res = compare_areas_with_type((char *)r1->data + offset, (char *)r2->data + offset, types, other_types, current_var->type_origin, r1->size, region_type, start_data, 0);
     if(res == 1){
@@ -291,8 +309,8 @@ static int compare_global_variables(int region_type, mc_mem_region_t r1, mc_mem_
 }
 
 static int compare_local_variables(mc_snapshot_stack_t stack1, mc_snapshot_stack_t stack2, void *heap1, void *heap2){
-  void* start_data_binary = mc_binary_info->start_data;
-  void* start_data_libsimgrid = mc_libsimgrid_info->start_data;
+  void* start_data_binary = mc_binary_info->start_rw;
+  void* start_data_libsimgrid = mc_libsimgrid_info->start_rw;
 
   if(!compared_pointers){
     compared_pointers = xbt_dynar_new(sizeof(pointers_pair_t), pointers_pair_free_voidp);
@@ -528,23 +546,36 @@ int snapshot_compare(void *state1, void *state2){
     cursor++;
   }
 
-  #ifdef MC_DEBUG
-    if(is_diff == 0)
-      xbt_os_walltimer_stop(timer);
-    xbt_os_walltimer_start(timer);
-  #endif
 
-  /* Compare binary global variables */
-  is_diff = compare_global_variables(2, s1->regions[2], s2->regions[2]);
+
+ const char* names[3] = { "?", "libsimgrid", "binary" };
+#ifdef MC_DEBUG
+ double *times[3] = {
+   NULL,
+   &mc_comp_times->libsimgrid_global_variables_comparison_time,
+   &mc_comp_times->binary_global_variables_comparison_time
+ };
+#endif
+
+ int k=0;
+ for(k=2; k!=0; --k) {
+    #ifdef MC_DEBUG
+      if(is_diff == 0)
+        xbt_os_walltimer_stop(timer);
+      xbt_os_walltimer_start(timer);
+    #endif
+
+  /* Compare global variables */
+  is_diff = compare_global_variables(k, s1->regions[k], s2->regions[k]);
   if(is_diff != 0){
     #ifdef MC_DEBUG
       xbt_os_walltimer_stop(timer);
-      mc_comp_times->binary_global_variables_comparison_time = xbt_os_timer_elapsed(timer);
-      XBT_DEBUG("(%d - %d) Different global variables in binary", num1, num2);
+      *times[k] = xbt_os_timer_elapsed(timer);
+      XBT_DEBUG("(%d - %d) Different global variables in %s", num1, num2, names[k]);
       errors++;
     #else
       #ifdef MC_VERBOSE
-      XBT_VERB("(%d - %d) Different global variables in binary", num1, num2);
+      XBT_VERB("(%d - %d) Different global variables in %s", num1, num2, names[k]);
       #endif
 
       reset_heap_information();
@@ -557,36 +588,7 @@ int snapshot_compare(void *state1, void *state2){
       return 1;
     #endif
   }
-
-  #ifdef MC_DEBUG
-    if(is_diff == 0)
-      xbt_os_walltimer_stop(timer);
-    xbt_os_walltimer_start(timer);
-  #endif
-
-  /* Compare libsimgrid global variables */
-  is_diff = compare_global_variables(1, s1->regions[1], s2->regions[1]);
-  if(is_diff != 0){
-    #ifdef MC_DEBUG
-      xbt_os_walltimer_stop(timer);
-      mc_comp_times->libsimgrid_global_variables_comparison_time = xbt_os_timer_elapsed(timer);
-      XBT_DEBUG("(%d - %d) Different global variables in libsimgrid", num1, num2);
-      errors++;
-    #else
-      #ifdef MC_VERBOSE
-      XBT_VERB("(%d - %d) Different global variables in libsimgrid", num1, num2);
-      #endif
-        
-      reset_heap_information();
-      xbt_os_walltimer_stop(timer);
-      xbt_os_timer_free(timer);
-      xbt_os_walltimer_stop(global_timer);
-      mc_snapshot_comparison_time = xbt_os_timer_elapsed(global_timer);
-      xbt_os_timer_free(global_timer);
-
-      return 1;
-    #endif
-  }
+ }
 
   #ifdef MC_DEBUG
     xbt_os_walltimer_start(timer);

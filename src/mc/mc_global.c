@@ -19,8 +19,6 @@
 #include "xbt/automaton.h"
 #include "xbt/dict.h"
 
-static void MC_post_process_types(mc_object_info_t info);
-
 XBT_LOG_NEW_CATEGORY(mc, "All MC categories");
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_global, mc,
                                 "Logging specific to MC (global)");
@@ -174,7 +172,7 @@ void dw_variable_free(dw_variable_t v){
     xbt_free(v->name);
     xbt_free(v->type_origin);
     if(!v->global)
-      dw_location_free(v->address.location);
+      dw_location_free(v->location);
     xbt_free(v);
   }
 }
@@ -186,11 +184,7 @@ void dw_variable_free_voidp(void *t){
 // object_info
 
 mc_object_info_t MC_new_object_info(void) {
-  mc_object_info_t res = xbt_new(s_mc_object_info_t, 1);
-  res->file_name = NULL;
-  res->start_text = NULL;
-  res->start_data = NULL;
-  res->start_bss = NULL;
+  mc_object_info_t res = xbt_new0(s_mc_object_info_t, 1);
   res->local_variables = xbt_dict_new_homogeneous(NULL);
   res->global_variables = xbt_dynar_new(sizeof(dw_variable_t), dw_variable_free_voidp);
   res->types = xbt_dict_new_homogeneous(NULL);
@@ -399,9 +393,9 @@ static int MC_dwarf_get_variable_index(xbt_dynar_t variables, char* var, void *a
       end = cursor - 1;
     }else{
       if(address){ /* global variable */
-        if(var_test->address.address == address)
+        if(var_test->address == address)
           return -1;
-        if(var_test->address.address > address)
+        if(var_test->address > address)
           end = cursor - 1;
         else
           start = cursor + 1;
@@ -412,7 +406,7 @@ static int MC_dwarf_get_variable_index(xbt_dynar_t variables, char* var, void *a
   }
 
   if(strcmp(var_test->name, var) == 0){
-    if(address && var_test->address.address < address)
+    if(address && var_test->address < address)
       return cursor+1;
     else
       return cursor;
@@ -424,7 +418,7 @@ static int MC_dwarf_get_variable_index(xbt_dynar_t variables, char* var, void *a
 }
 
 void MC_dwarf_register_global_variable(mc_object_info_t info, dw_variable_t variable) {
-  int index = MC_dwarf_get_variable_index(info->global_variables, variable->name, variable->address.address);
+  int index = MC_dwarf_get_variable_index(info->global_variables, variable->name, variable->address);
   if (index != -1)
     xbt_dynar_insert_at(info->global_variables, index, &variable);
   // TODO, else ?
@@ -445,26 +439,6 @@ void MC_dwarf_register_variable(mc_object_info_t info, dw_frame_t frame, dw_vari
     xbt_die("No frame for this local variable");
   else
     MC_dwarf_register_non_global_variable(info, frame, variable);
-}
-
-static void MC_post_process_array_size(mc_object_info_t info, dw_type_t type) {
-  xbt_assert(type->dw_type_id, "No base type for array <%p>%s", type->id, type->name);
-  dw_type_t subtype = xbt_dict_get_or_null(info->types, type->dw_type_id);
-  xbt_assert(subtype, "Unkown base type <%s> for array <%p>%s", type->dw_type_id, type->id, type->name);
-  if(subtype->type==DW_TAG_array_type && type->byte_size==0) {
-	  MC_post_process_array_size(info, subtype);
-  }
-  type->byte_size = type->element_count*subtype->byte_size;
-}
-
-static void MC_post_process_types(mc_object_info_t info) {
-  xbt_dict_cursor_t cursor;
-  char *origin;
-  dw_type_t type;
-  xbt_dict_foreach(info->types, cursor, origin, type){
-    if(type->type==DW_TAG_array_type && type->byte_size==0)
-      MC_post_process_array_size(info, type);
-  }
 }
 
 /*******************************  Ignore mechanism *******************************/

@@ -92,7 +92,7 @@ static void deterministic_pattern(xbt_dynar_t initial_pattern, xbt_dynar_t patte
     recv_index = 0;
     current_process++;
   }
-  XBT_DEBUG("Communication-deterministic : %d, Send-deterministic : %d", initial_state_safety->comm_deterministic, initial_state_safety->send_deterministic);
+  // XBT_DEBUG("Communication-deterministic : %d, Send-deterministic : %d", initial_state_safety->comm_deterministic, initial_state_safety->send_deterministic);
 }
 
 static int complete_comm_pattern(xbt_dynar_t list, mc_comm_pattern_t pattern){
@@ -157,7 +157,7 @@ static void print_communications_pattern(xbt_dynar_t comms_pattern){
   unsigned int cursor = 0;
   mc_comm_pattern_t current_comm;
   xbt_dynar_foreach(comms_pattern, cursor, current_comm){
-    fprintf(stderr, "%s (%d - comm %p, src : %lu, dst %lu, rdv name %s, data %p, matched with %d)\n", current_comm->type == SIMIX_COMM_SEND ? "iSend" : "iRecv", current_comm->num, current_comm->comm, current_comm->src_proc, current_comm->dst_proc, current_comm->rdv, current_comm->data, current_comm->matched_comm);
+    // fprintf(stderr, "%s (%d - comm %p, src : %lu, dst %lu, rdv name %s, data %p, matched with %d)\n", current_comm->type == SIMIX_COMM_SEND ? "iSend" : "iRecv", current_comm->num, current_comm->comm, current_comm->src_proc, current_comm->dst_proc, current_comm->rdv, current_comm->data, current_comm->matched_comm);
   }
 }
 

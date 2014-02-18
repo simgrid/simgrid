@@ -239,14 +239,17 @@ void MC_init_memory_map_info(){
 
 }
 
+static void MC_post_process_types(mc_object_info_t info) {
+  // Nothing here
+}
+
 /** \brief Finds informations about a given shared object/executable */
 mc_object_info_t MC_find_object_info(memory_map_t maps, char* name) {
   mc_object_info_t result = MC_new_object_info();
   result->file_name = xbt_strdup(name);
-  result->start_data = NULL;
-  result->start_text = NULL;
   MC_find_object_address(maps, result);
   MC_dwarf_get_variables(result);
+  MC_post_process_types(result);
   return result;
 }
 
@@ -262,16 +265,31 @@ static void MC_find_object_address(memory_map_t maps, mc_object_info_t result) {
       // Nothing to do
     }
     else if ((reg.prot & PROT_WRITE)){
-          result->start_data = reg.start_addr;
+          xbt_assert(!result->start_rw,
+            "Multiple read-write segments for %s, not supported",
+            maps->regions[i].pathname);
+          result->start_rw = reg.start_addr;
+          result->end_rw   = reg.end_addr;
     } else if ((reg.prot & PROT_READ) && (reg.prot & PROT_EXEC)){
-          result->start_text = reg.start_addr;
+          xbt_assert(!result->start_exec,
+            "Multiple executable segments for %s, not supported",
+            maps->regions[i].pathname);
+          result->start_exec = reg.start_addr;
+          result->end_exec   = reg.end_addr;
+    }
+    else if((reg.prot & PROT_READ) && !(reg.prot & PROT_EXEC)) {
+        xbt_assert(!result->start_ro,
+          "Multiple read only segments for %s, not supported",
+          maps->regions[i].pathname);
+        result->start_ro = reg.start_addr;
+        result->end_ro   = reg.end_addr;
     }
     i++;
   }
 
   xbt_assert(result->file_name);
-  xbt_assert(result->start_data);
-  xbt_assert(result->start_text);
+  xbt_assert(result->start_rw);
+  xbt_assert(result->start_exec);
 }
 
 /************************************* Take Snapshot ************************************/
@@ -386,7 +404,7 @@ static xbt_dynar_t MC_get_local_variables_values(void *stack_context){
     xbt_abort();
   }
 
-  unw_word_t ip, sp, off;
+  unw_word_t ip, off;
   dw_frame_t frame;
 
   unsigned int cursor = 0;
@@ -402,14 +420,13 @@ static xbt_dynar_t MC_get_local_variables_values(void *stack_context){
   while(ret >= 0 && !stop){
 
     unw_get_reg(&c, UNW_REG_IP, &ip);
-    unw_get_reg(&c, UNW_REG_SP, &sp);
 
     unw_get_proc_name(&c, frame_name, sizeof (frame_name), &off);
 
     if(!strcmp(frame_name, "smx_ctx_sysv_wrapper")) /* Stop before context switch with maestro */
       stop = 1;
 
-    if((long)ip > (long) mc_libsimgrid_info->start_text)
+    if((long)ip > (long) mc_libsimgrid_info->start_exec)
       frame = xbt_dict_get_or_null(mc_libsimgrid_info->local_variables, frame_name);
     else
       frame = xbt_dict_get_or_null(mc_binary_info->local_variables, frame_name);
@@ -445,7 +462,7 @@ static xbt_dynar_t MC_get_local_variables_values(void *stack_context){
 
     xbt_dynar_foreach(frame->variables, cursor, current_variable){
       
-      if((long)ip > (long)mc_libsimgrid_info->start_text)
+      if((long)ip > (long)mc_libsimgrid_info->start_exec)
         region_type = 1;
       else
         region_type = 2;
@@ -457,8 +474,11 @@ static xbt_dynar_t MC_get_local_variables_values(void *stack_context){
       new_var->type = strdup(current_variable->type_origin);
       new_var->region= region_type;
       
-      if(current_variable->address.location != NULL){
-        new_var->address = (void*) MC_dwarf_resolve_location(&c, current_variable->address.location, frame_pointer_address);
+      /* if(current_variable->address!=NULL) {
+        new_var->address = current_variable->address;
+      } else */
+      if(current_variable->location != NULL){
+        new_var->address = (void*) MC_dwarf_resolve_location(&c, current_variable->location, frame_pointer_address);
       }
 
       xbt_dynar_push(variables, &new_var);
