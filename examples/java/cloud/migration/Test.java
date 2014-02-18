@@ -39,7 +39,12 @@ public class Test extends Process{
         int dpRate = 70;
         int load1 = 90;
         int load2 = 80;
+		
 
+		  Msg.info("This example evaluates the migration time of a VM in presence of collocated VMs on the source and the dest nodes");
+		  Msg.info("The migrated VM has a memory intensity rate of 70% of the network BW and a cpu load of 90% \"(see cloudcom 2013 paper \"Adding a Live Migration Model Into SimGrid\" for further information) "); 
+
+		  Msg.info("Load of collocated VMs fluctuate between 0 and 90% in order to create a starvation issue and see whether it impacts or not the migration time");
         XVM vm1 = null;
         vm1 = new XVM(
                 host0,
@@ -97,7 +102,7 @@ public class Test extends Process{
         for (int i=1 ; i <= collocatedDst ; i++){
             tmp = new XVM(
                     host1,
-                    "vm"+i+collocatedSrc,
+                    "vm"+(i+collocatedSrc),
                     1, // Nb of vcpu
                     2048, // Ramsize,
                     125, // Net Bandwidth
@@ -137,7 +142,6 @@ public class Test extends Process{
         endTime = Msg.getClock();
         Msg.info("     - End of Migration from host 1 to host 0 (duration:"+(endTime-startTime)+")");
 
-        waitFor(100000);
         Main.setEndOfTest();
         Msg.info("Destroy VMs");
         for (VM vm: vms)
