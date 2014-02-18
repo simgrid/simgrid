@@ -264,7 +264,7 @@ static int is_visited_pair(mc_visited_pair_t pair, int pair_num, xbt_automaton_s
                 if(dot_output == NULL)
                   XBT_DEBUG("Pair %d already visited ! (equal to pair %d)", new_pair->num, pair_test->num);
                 else
-                  XBT_DEBUG("Pair %d already visited ! (equal to pair %d (pair %d in dot_output))", new_pair->num, pair_test->num, pair->other_num);
+                  XBT_DEBUG("Pair %d already visited ! (equal to pair %d (pair %d in dot_output))", new_pair->num, pair_test->num, new_pair->other_num);
                 xbt_dynar_remove_at(visited_pairs, cursor, NULL);
                 xbt_dynar_insert_at(visited_pairs, cursor, &new_pair);
                 pair_test->visited_removed = 1;
