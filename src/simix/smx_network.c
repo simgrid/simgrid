@@ -445,7 +445,7 @@ smx_action_t SIMIX_comm_isend(smx_process_t src_proc, smx_rdv_t rdv,
 
   if (MC_is_active()) {
     other_action->state = SIMIX_RUNNING;
-    return other_action;
+    return (detached ? NULL : other_action);
   }
 
   SIMIX_comm_start(other_action);
