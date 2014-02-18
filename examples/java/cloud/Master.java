@@ -60,7 +60,7 @@ public class Master extends Process {
 		Msg.info("Sleep long enough for everyone to be done with previous batch of work");
 		waitFor(1000 - Msg.getClock());
 		
-		Msg.info("Add one more process per VM.");
+/*		Msg.info("Add one more process per VM.");
 		for (int i = 0; i < vms.size(); i++) {
 			VM vm = vms.get(i);
 			Slave slave = new Slave(vm,i + vms.size());
@@ -68,24 +68,14 @@ public class Master extends Process {
 		}
 	
 		workBatch(slavesCount * 2);
-		
-		Msg.info("Migrate everyone to "+hosts[2].getName());
+*/
+
+		Msg.info("Migrate everyone to "+hosts[3].getName());
 		for (int i = 0; i < vms.size(); i++) {
+			Msg.info("Migrate "+vms.get(i).getName()+"from"+hosts[i+1].getName()+"to "+hosts[3].getName());
 			vms.get(i).migrate(hosts[2]);
 		}
 		
-//		Msg.info("Suspend everyone, move them to the third host, and resume them.");
-		Msg.info("Migrate everyone to the third host (please note that cold migration is not yet available");
-		
-
-		for (int i = 0; i < vms.size(); i++) {
-			VM vm = vms.get(i);
-	//		vm.suspend();
-			vm.migrate(hosts[3]);
-		//	vm.resume();
-		}
-		
-	
 		
 		Msg.info("Let's shut down the simulation and kill everyone.");
 		
