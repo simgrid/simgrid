@@ -423,15 +423,15 @@ void MC_dpor(void)
   char *req_str = NULL;
   int value;
   smx_simcall_t req = NULL, prev_req = NULL;
-  mc_state_t state = NULL, prev_state = NULL, next_state = NULL, restore_state=NULL;
+  mc_state_t state = NULL, prev_state = NULL, next_state = NULL, restored_state=NULL;
   smx_process_t process = NULL;
   xbt_fifo_item_t item = NULL;
   mc_state_t state_test = NULL;
   int pos;
   int visited_state = -1;
   int enabled = 0;
-  int comm_pattern = 0;
   int interleave_size = 0;
+  int comm_pattern = 0;
 
   while (xbt_fifo_size(mc_stack_safety) > 0) {
 
@@ -474,25 +474,28 @@ void MC_dpor(void)
       xbt_dict_remove(first_enabled_state, key); 
       xbt_free(key);
       MC_UNSET_RAW_MEM;
-
-      if(req->call == SIMCALL_COMM_ISEND)
-        comm_pattern = 1;
-      else if(req->call == SIMCALL_COMM_IRECV)
-        comm_pattern = 2;
+      
+      if(_sg_mc_comms_determinism){
+        if(req->call == SIMCALL_COMM_ISEND)
+          comm_pattern = 1;
+        else if(req->call == SIMCALL_COMM_IRECV)
+          comm_pattern = 2;
+      }
 
       /* Answer the request */
       SIMIX_simcall_pre(req, value); /* After this call req is no longer usefull */
 
-      MC_SET_RAW_MEM;
-      if(comm_pattern != 0){
-        if(!initial_state_safety->initial_communications_pattern_done)
-          get_comm_pattern(initial_communications_pattern, req, comm_pattern);
-        else
-          get_comm_pattern(communications_pattern, req, comm_pattern);
+      if(_sg_mc_comms_determinism){
+        MC_SET_RAW_MEM;
+        if(comm_pattern != 0){
+          if(!initial_state_safety->initial_communications_pattern_done)
+            get_comm_pattern(initial_communications_pattern, req, comm_pattern);
+          else
+            get_comm_pattern(communications_pattern, req, comm_pattern);
+        }
+        MC_UNSET_RAW_MEM; 
+        comm_pattern = 0;
       }
-      MC_UNSET_RAW_MEM;
-
-      comm_pattern = 0;
 
       /* Wait for requests (schedules processes) */
       MC_wait_for_requests();
@@ -586,22 +589,24 @@ void MC_dpor(void)
       }
 
       MC_SET_RAW_MEM;
-      if(!initial_state_safety->initial_communications_pattern_done){
-        //print_communications_pattern(initial_communications_pattern);
-      }else{
-        if(interleave_size == 0){ /* if (interleave_size > 0), process interleaved but not enabled => "incorrect" path, determinism not evaluated */
-          //print_communications_pattern(communications_pattern);
-          deterministic_pattern(initial_communications_pattern, communications_pattern);
+
+      if(_sg_mc_comms_determinism){
+        if(!initial_state_safety->initial_communications_pattern_done){
+          //print_communications_pattern(initial_communications_pattern);
+        }else{
+          if(interleave_size == 0){ /* if (interleave_size > 0), process interleaved but not enabled => "incorrect" path, determinism not evaluated */
+            //print_communications_pattern(communications_pattern);
+            deterministic_pattern(initial_communications_pattern, communications_pattern);
+          }
         }
+        initial_state_safety->initial_communications_pattern_done = 1;
       }
-      initial_state_safety->initial_communications_pattern_done = 1;
-      MC_UNSET_RAW_MEM;
 
       /* Trash the current state, no longer needed */
-      MC_SET_RAW_MEM;
       xbt_fifo_shift(mc_stack_safety);
       MC_state_delete(state);
       XBT_DEBUG("Delete state %d at depth %d", state->num, xbt_fifo_size(mc_stack_safety) + 1);
+
       MC_UNSET_RAW_MEM;        
       
       /* Check for deadlocks */
@@ -667,15 +672,15 @@ void MC_dpor(void)
               pos = xbt_fifo_size(mc_stack_safety);
               item = xbt_fifo_get_first_item(mc_stack_safety);
               while(pos>0){
-                restore_state = (mc_state_t) xbt_fifo_get_item_content(item);
-                if(restore_state->system_state != NULL){
+                restored_state = (mc_state_t) xbt_fifo_get_item_content(item);
+                if(restored_state->system_state != NULL){
                   break;
                 }else{
                   item = xbt_fifo_get_next_item(item);
                   pos--;
                 }
               }
-              MC_restore_snapshot(restore_state->system_state);
+              MC_restore_snapshot(restored_state->system_state);
               xbt_fifo_unshift(mc_stack_safety, state);
               MC_UNSET_RAW_MEM;
               MC_replay(mc_stack_safety, pos);
@@ -689,9 +694,11 @@ void MC_dpor(void)
           break;
         } else {
           req = MC_state_get_internal_request(state);
-          if(req->call == SIMCALL_COMM_ISEND || req->call == SIMCALL_COMM_IRECV){
-            if(!xbt_dynar_is_empty(communications_pattern))
-              xbt_dynar_remove_at(communications_pattern, xbt_dynar_length(communications_pattern) - 1, NULL);
+          if(_sg_mc_comms_determinism){
+            if(req->call == SIMCALL_COMM_ISEND || req->call == SIMCALL_COMM_IRECV){
+              if(!xbt_dynar_is_empty(communications_pattern))
+                xbt_dynar_remove_at(communications_pattern, xbt_dynar_length(communications_pattern) - 1, NULL);
+            }
           }
           XBT_DEBUG("Delete state %d at depth %d", state->num, xbt_fifo_size(mc_stack_safety) + 1); 
           MC_state_delete(state);

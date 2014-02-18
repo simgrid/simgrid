@@ -574,6 +574,12 @@ void sg_config_init(int *argc, char **argv)
                      xbt_cfgelm_string, 0, 1, _mc_cfg_cb_property, NULL);
     xbt_cfg_setdefault_string(_sg_cfg_set, "model-check/property", "");
 
+    /* do determinism model-checking */
+        xbt_cfg_register(&_sg_cfg_set, "model-check/communications_determinism",
+                     "Enable/disable the detection of determinism in the communications schemes",
+                     xbt_cfgelm_boolean, 0, 1, _mc_cfg_cb_comms_determinism, NULL);
+    xbt_cfg_setdefault_boolean(_sg_cfg_set, "model-check/communications_determinism", "no");
+
     /* Specify the kind of model-checking reduction */
     xbt_cfg_register(&_sg_cfg_set, "model-check/reduction",
                      "Specify the kind of exploration reduction (either none or DPOR)",
