@@ -666,17 +666,17 @@ Resource::Resource()
 : p_name(NULL), p_properties(NULL), p_model(NULL)
 {}
 
-Resource::Resource(surf_model_t model, const char *name, xbt_dict_t props)
+Resource::Resource(ModelPtr model, const char *name, xbt_dict_t props)
   : p_name(xbt_strdup(name)), p_properties(props), p_model(model)
   , m_running(true), m_stateCurrent(SURF_RESOURCE_ON)
 {}
 
-Resource::Resource(surf_model_t model, const char *name, xbt_dict_t props, lmm_constraint_t constraint)
+Resource::Resource(ModelPtr model, const char *name, xbt_dict_t props, lmm_constraint_t constraint)
   : p_name(xbt_strdup(name)), p_properties(props), p_model(model)
   , m_running(true), m_stateCurrent(SURF_RESOURCE_ON), p_constraint(constraint)
 {}
 
-Resource::Resource(surf_model_t model, const char *name, xbt_dict_t props, e_surf_resource_state_t stateInit)
+Resource::Resource(ModelPtr model, const char *name, xbt_dict_t props, e_surf_resource_state_t stateInit)
   : p_name(xbt_strdup(name)), p_properties(props), p_model(model)
   , m_running(true), m_stateCurrent(stateInit)
 {}

@@ -128,7 +128,7 @@ http://graal.ens-lyon.fr/~jrouzaud/files/corosimple-linux-amd64-20120914.tgz
 ~~~~{.sh}
 sudo apt-get install mercurial ksh libfreetype6-dev libcups2-dev libasound2-dev gawk openjdk-7-jdk libxext-dev libxrender-dev libxtst-dev
 # Grab the forest extension: we need to source-install it
-hg clone https://bitbucket.org/gxti/hgforest hgforest \endverbatim
+hg clone https://bitbucket.org/gxti/hgforest hgforest
 ~~~~
  -# Configure the mercurial extensions: Edit ~/.hgrc and paste the
     following lines. Don't forget to change the /path/to/forest.py to
@@ -163,13 +163,12 @@ ls -i patches/hotspot/series sources/hotspot/.hg/patches/series
 #  9707849 patches/hotspot/series  
 #  9707849 sources/hotspot/.hg/patches/series
 
-
 # Specify what to compile. 
-export davinci=$(pwd) guards="buildable testable coro-simple"
+export davinci=${pwd} guards="buildable testable coro-simple"
 # Apply the patches
-sh patches/make/each-patch-repo.sh hg qselect --reapply $guards '$(sh $davinci/patches/make/current-release.sh)'
+sh patches/make/each-patch-repo.sh hg qselect --reapply $guards `sh $davinci/patches/make/current-release.sh`
 # Check that it understood that you want the patch applied:
-grep GLOBAL_GUARDS patches/make/* -r
+grep -r GLOBAL_GUARDS patches/make/
 # this should display something like the following (maybe amonst other unrelated lines)
 # GLOBAL_GUARDS=buildable testable coro-simple
 # If this does not work, edit patches/make/Makefile,
@@ -178,9 +177,10 @@ grep GLOBAL_GUARDS patches/make/* -r
 
 
 # Finish the setup
-(cd patches/make; make setup && make force && make && make FORCE_VERSIONS=1 && echo "Sources are properly setup")
+cd patches/make;
+make setup && make force && make && make FORCE_VERSIONS=1 && echo "Sources are properly setup"
 # If this last command failed, check your mercurial config within ~/.hgrc (see above)
-~~~~       
+~~~~
  -# Compile it all
 ~~~~{.sh}
 unset LD_LIBRARY_PATH

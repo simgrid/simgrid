@@ -113,6 +113,12 @@ XBT_PUBLIC(uintptr_t) xbt_dicti_get(xbt_dict_t dict, uintptr_t key);
 XBT_PUBLIC(void) xbt_dicti_remove(xbt_dict_t dict, uintptr_t key);
 #endif
 
+struct s_xbt_dict_cursor {
+  xbt_dictelm_t current;
+  int line;
+  xbt_dict_t dict;
+};
+
 /** @} */
 /** @defgroup XBT_dict_curs Cursors on dictionaries
  *  @ingroup XBT_dict
@@ -136,11 +142,6 @@ XBT_PUBLIC(void) xbt_dicti_remove(xbt_dict_t dict, uintptr_t key);
  *  @{ */
 
   /** @brief Cursor on dictionaries (opaque type) */
-struct s_xbt_dict_cursor {
-  xbt_dictelm_t current;
-  int line;
-  xbt_dict_t dict;
-};
 typedef struct s_xbt_dict_cursor *xbt_dict_cursor_t;
 
 static inline xbt_dictelm_t xbt_dict_cursor_get_elm(xbt_dict_cursor_t cursor) {
