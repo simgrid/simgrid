@@ -202,7 +202,7 @@
    <link id="108" bandwidth="990.5kBps" latency="1.742977ms"/>
    <link id="115" bandwidth="926.625kBps" latency="601.375us"/>
    <link id="92" bandwidth="1.564125MBps" latency="788.956us"/>
-   <link id="103" bandwidth="472.125kBps" latency="5.161451ms"/>
+   <link id="103" bandwidth="472.125MBps" latency="5.161451ms"/>
    <link id="10" bandwidth="34.285625MBps" latency="514.433us"/>
    <link id="113" bandwidth="1.858MBps" latency="820.952us"/>
    <link id="152" bandwidth="7.20975MBps" latency="1.461517ms"/>
@@ -240,7 +240,7 @@
    <link id="88" bandwidth="10.314625MBps" latency="6.932556ms"/>
    <link id="116" bandwidth="2.368MBps" latency="9.547561ms"/>
    <link id="144" bandwidth="259.125kBps" latency="4.460898ms"/>
-   <link id="141" bandwidth="472.125kBps" latency="5.161451ms"/>
+   <link id="141" bandwidth="472.125MBps" latency="5.161451ms"/>
    <link id="30" bandwidth="10.099625MBps" latency="479.78us"/>
    <link id="100" bandwidth="721.625kBps" latency="6.406us"/>
    <link id="25" bandwidth="8.015125MBps" latency="35.076518ms"/>
