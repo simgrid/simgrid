@@ -587,10 +587,10 @@ void MC_dpor(void)
 
       MC_SET_RAW_MEM;
       if(!initial_state_safety->initial_communications_pattern_done){
-        print_communications_pattern(initial_communications_pattern);
+        //print_communications_pattern(initial_communications_pattern);
       }else{
         if(interleave_size == 0){ /* if (interleave_size > 0), process interleaved but not enabled => "incorrect" path, determinism not evaluated */
-          print_communications_pattern(communications_pattern);
+          //print_communications_pattern(communications_pattern);
           deterministic_pattern(initial_communications_pattern, communications_pattern);
         }
       }
@@ -690,7 +690,6 @@ void MC_dpor(void)
         } else {
           req = MC_state_get_internal_request(state);
           if(req->call == SIMCALL_COMM_ISEND || req->call == SIMCALL_COMM_IRECV){
-            fprintf(stderr, "Remove state with isend or irecv\n");
             if(!xbt_dynar_is_empty(communications_pattern))
               xbt_dynar_remove_at(communications_pattern, xbt_dynar_length(communications_pattern) - 1, NULL);
           }
