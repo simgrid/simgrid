@@ -17,7 +17,11 @@ int MC_request_depend(smx_simcall_t r1, smx_simcall_t r2) {
     return TRUE;
 
   if (r1->issuer == r2->issuer)
-      return FALSE;
+    return FALSE;
+
+  /* Wait with timeout transitions are not considered by the independance theorem, thus we consider them as dependant with all other transitions */
+  if((r1->call == SIMCALL_COMM_WAIT && simcall_comm_wait__get__timeout(r1) > 0) || (r2->call == SIMCALL_COMM_WAIT && simcall_comm_wait__get__timeout(r2) > 0))
+    return TRUE;
 
   if(r1->call == SIMCALL_COMM_ISEND && r2->call == SIMCALL_COMM_IRECV)
     return FALSE;
