@@ -179,7 +179,7 @@ void dw_variable_free_voidp(void *t){
   dw_variable_free((dw_variable_t) * (void **) t);
 }
 
-// object_info
+// ***** object_info
 
 mc_object_info_t MC_new_object_info(void) {
   mc_object_info_t res = xbt_new0(s_mc_object_info_t, 1);
@@ -190,6 +190,7 @@ mc_object_info_t MC_new_object_info(void) {
   return res;
 }
 
+
 void MC_free_object_info(mc_object_info_t* info) {
   xbt_free(&(*info)->file_name);
   xbt_dict_free(&(*info)->local_variables);
@@ -197,7 +198,113 @@ void MC_free_object_info(mc_object_info_t* info) {
   xbt_dict_free(&(*info)->types);
   xbt_dict_free(&(*info)->types_by_name);
   xbt_free(info);
+  xbt_dynar_free(&(*info)->functions_index);
   *info = NULL;
+}
+
+// ***** Helpers
+
+void* MC_object_base_address(mc_object_info_t info) {
+  void* result = info->start_exec;
+  if(info->start_rw!=NULL && result > (void*) info->start_rw) result = info->start_rw;
+  if(info->start_ro!=NULL && result > (void*) info->start_ro) result = info->start_ro;
+  return result;
+}
+
+// ***** Functions index
+
+static int MC_compare_frame_index_items(mc_function_index_item_t a, mc_function_index_item_t b) {
+  if(a->low_pc < b->low_pc)
+    return -1;
+  else if(a->low_pc == b->low_pc)
+    return 0;
+  else
+    return 1;
+}
+
+static void MC_make_functions_index(mc_object_info_t info) {
+  xbt_dynar_t index = xbt_dynar_new(sizeof(s_mc_function_index_item_t), NULL);
+
+  // The base address of the function must be used to offset the addresses.
+  // This should be fixed this in the frame_t structure instead.
+  // Relocated addresses are offset for shared objets and constant for executables objects.
+  // See DWARF4 spec 7.5
+  void* offset = info->flags & MC_OBJECT_INFO_EXECUTABLE ? 0 : MC_object_base_address(info);
+
+  // Populate the array:
+  dw_frame_t frame = NULL;
+  xbt_dict_cursor_t cursor = NULL;
+  const char* name = NULL;
+  xbt_dict_foreach(info->local_variables, cursor, name, frame) {
+    if(frame->low_pc==NULL)
+      continue;
+    s_mc_function_index_item_t entry;
+    entry.low_pc = (char*) frame->low_pc + (unsigned long) offset;
+    entry.high_pc = (char*) frame->high_pc + (unsigned long) offset;
+    entry.function = frame;
+    xbt_dynar_push(index, &entry);
+  }
+
+  mc_function_index_item_t base = (mc_function_index_item_t) xbt_dynar_get_ptr(index, 0);
+
+  // Sort the array by low_pc:
+  qsort(base,
+    xbt_dynar_length(index),
+    sizeof(s_mc_function_index_item_t),
+    (int (*)(const void *, const void *))MC_compare_frame_index_items);
+
+  info->functions_index = index;
+}
+
+mc_object_info_t MC_ip_find_object_info(void* ip) {
+  mc_object_info_t infos[2] = { mc_binary_info, mc_libsimgrid_info };
+  size_t n = 2;
+  size_t i;
+  for(i=0; i!=n; ++i) {
+    if(ip >= (void*)infos[i]->start_exec && ip <= (void*)infos[i]->end_exec) {
+      return infos[i];
+    }
+  }
+  return NULL;
+}
+
+static dw_frame_t MC_find_function_by_ip_and_object(void* ip, mc_object_info_t info) {
+  xbt_dynar_t dynar = info->functions_index;
+  mc_function_index_item_t base = (mc_function_index_item_t) xbt_dynar_get_ptr(dynar, 0);
+  int i = 0;
+  int j = xbt_dynar_length(dynar) - 1;
+  while(j>=i) {
+    int k = i + ((j-i)/2);
+    if(ip < base[k].low_pc) {
+      j = k-1;
+    } else if(ip > base[k].high_pc) {
+      i = k+1;
+    } else {
+      return base[k].function;
+    }
+  }
+  return NULL;
+}
+
+dw_frame_t MC_find_function_by_ip(void* ip) {
+  mc_object_info_t info = MC_ip_find_object_info(ip);
+  if(info==NULL)
+    return NULL;
+  else
+    return MC_find_function_by_ip_and_object(ip, info);
+}
+
+/** \brief Finds informations about a given shared object/executable */
+mc_object_info_t MC_find_object_info(memory_map_t maps, char* name, int executable) {
+  mc_object_info_t result = MC_new_object_info();
+  if(executable)
+    result->flags |= MC_OBJECT_INFO_EXECUTABLE;
+  result->file_name = xbt_strdup(name);
+  MC_find_object_address(maps, result);
+  MC_dwarf_get_variables(result);
+  MC_post_process_types(result);
+  MC_make_functions_index(result);
+  return result;
 }
 
 /*************************************************************************/
@@ -775,8 +882,8 @@ static void MC_init_debug_info() {
   memory_map_t maps = MC_get_memory_map();
 
   /* Get local variables for state equality detection */
-  mc_binary_info = MC_find_object_info(maps, xbt_binary_name);
-  mc_libsimgrid_info = MC_find_object_info(maps, libsimgrid_path);
+  mc_binary_info = MC_find_object_info(maps, xbt_binary_name, 1);
+  mc_libsimgrid_info = MC_find_object_info(maps, libsimgrid_path, 0);
 
   MC_free_memory_map(maps);
   XBT_INFO("Get debug information done !");

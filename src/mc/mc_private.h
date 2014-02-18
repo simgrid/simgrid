@@ -29,6 +29,7 @@
 #include "xbt/parmap.h"
 
 typedef struct s_dw_frame s_dw_frame_t, *dw_frame_t;
+typedef struct s_mc_function_index_item s_mc_function_index_item_t, *mc_function_index_item_t;
 
 /****************************** Snapshots ***********************************/
 
@@ -332,7 +333,10 @@ void MC_dump_stack_liveness(xbt_fifo_t stack);
 
 /********************************** Variables with DWARF **********************************/
 
+#define MC_OBJECT_INFO_EXECUTABLE 1
+
 struct s_mc_object_info {
+  size_t flags;
   char* file_name;
   char *start_exec, *end_exec; // Executable segment
   char *start_rw, *end_rw; // Read-write segment
@@ -341,10 +345,15 @@ struct s_mc_object_info {
   xbt_dynar_t global_variables; // xbt_dynar_t<dw_variable_t>
   xbt_dict_t types; // xbt_dict_t<origin as hexadecimal string, dw_type_t>
   xbt_dict_t types_by_name; // xbt_dict_t<name, dw_type_t> (full defined type only)
+
+  // Here we sort the minimal information for an efficient (and cache-efficient)
+  // lookup of a function given an instruction pointer.
+  // The entries are sorted by low_pc and a binary search can be used to look them up.
+  xbt_dynar_t functions_index;
 };
 
 mc_object_info_t MC_new_object_info(void);
-mc_object_info_t MC_find_object_info(memory_map_t maps, char* name);
+mc_object_info_t MC_find_object_info(memory_map_t maps, char* name, int executable);
 void MC_free_object_info(mc_object_info_t* p);
 
 void MC_dwarf_get_variables(mc_object_info_t info);
@@ -352,8 +361,14 @@ void MC_dwarf_get_variables_libdw(mc_object_info_t info);
 const char* MC_dwarf_attrname(int attr);
 const char* MC_dwarf_tagname(int tag);
 
+dw_frame_t MC_find_function_by_ip(void* ip);
+mc_object_info_t MC_ip_find_object_info(void* ip);
+
 extern mc_object_info_t mc_libsimgrid_info;
 extern mc_object_info_t mc_binary_info;
+
+void MC_find_object_address(memory_map_t maps, mc_object_info_t result);
+void MC_post_process_types(mc_object_info_t info);
 
 typedef enum {
   e_dw_loclist,
@@ -439,6 +454,11 @@ struct s_dw_frame{
   unsigned long int end;   /* Dwarf offset of the next sibling */
 };
 
+struct s_mc_function_index_item {
+  void* low_pc, *high_pc;
+  dw_frame_t function;
+};
+
 void dw_type_free(dw_type_t t);
 void dw_variable_free(dw_variable_t v);
 void dw_variable_free_voidp(void *t);
@@ -447,6 +467,7 @@ void MC_dwarf_register_global_variable(mc_object_info_t info, dw_variable_t vari
 void MC_register_variable(mc_object_info_t info, dw_frame_t frame, dw_variable_t variable);
 void MC_dwarf_register_non_global_variable(mc_object_info_t info, dw_frame_t frame, dw_variable_t variable);
 void MC_dwarf_register_variable(mc_object_info_t info, dw_frame_t frame, dw_variable_t variable);
+void* MC_object_base_address(mc_object_info_t info);
 
 /********************************** DWARF **********************************/
 

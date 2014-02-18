@@ -928,7 +928,6 @@ static void MC_dwarf_handle_die(mc_object_info_t info, Dwarf_Die* die, Dwarf_Die
     case DW_TAG_shared_type:
       MC_dwarf_handle_type_die(info, die, unit);
       break;
-    case DW_TAG_inlined_subroutine:
     case DW_TAG_subprogram:
       MC_dwarf_handle_subprogram_die(info, die, unit, frame);
       return;

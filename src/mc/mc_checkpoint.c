@@ -27,8 +27,6 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_checkpoint, mc,
 
 char *libsimgrid_path;
 
-static void MC_find_object_address(memory_map_t maps, mc_object_info_t result);
-
 /************************************  Free functions **************************************/
 /*****************************************************************************************/
 
@@ -174,7 +172,7 @@ static void MC_resolve_subtype(mc_object_info_t info, dw_type_t type) {
   // TODO, support "switch type" (looking up the type in another lib) when possible
 }
 
-static void MC_post_process_types(mc_object_info_t info) {
+void MC_post_process_types(mc_object_info_t info) {
   xbt_dict_cursor_t cursor = NULL;
   char *origin;
   dw_type_t type;
@@ -191,18 +189,8 @@ static void MC_post_process_types(mc_object_info_t info) {
   }
 }
 
-/** \brief Finds informations about a given shared object/executable */
-mc_object_info_t MC_find_object_info(memory_map_t maps, char* name) {
-  mc_object_info_t result = MC_new_object_info();
-  result->file_name = xbt_strdup(name);
-  MC_find_object_address(maps, result);
-  MC_dwarf_get_variables(result);
-  MC_post_process_types(result);
-  return result;
-}
-
 /** \brief Fills the position of the .bss and .data sections. */
-static void MC_find_object_address(memory_map_t maps, mc_object_info_t result) {
+void MC_find_object_address(memory_map_t maps, mc_object_info_t result) {
 
   unsigned int i = 0;
   s_map_region_t reg;
@@ -304,7 +292,8 @@ static xbt_dynar_t MC_unwind_stack_frames(void *stack_context) {
 
   unw_cursor_t c;
 
-  char frame_name[256];
+  dw_frame_t test = MC_find_function_by_ip(&MC_unwind_stack_frames);
+  xbt_assert(test);
 
   int ret;
   for(ret = unw_init_local(&c, (unw_context_t *)stack_context); ret >= 0; ret = unw_step(&c)){
@@ -313,29 +302,42 @@ static xbt_dynar_t MC_unwind_stack_frames(void *stack_context) {
 
     stack_frame->unw_cursor = c;
 
-    unw_get_reg(&c, UNW_REG_IP, &stack_frame->ip);
-    unw_get_reg(&c, UNW_REG_SP, &stack_frame->sp);
+    unw_word_t ip, sp;
 
-    unw_word_t off;
-    unw_get_proc_name(&c, frame_name, sizeof (frame_name), &off);
-    stack_frame->frame_name = xbt_strdup(frame_name);
+    unw_get_reg(&c, UNW_REG_IP, &ip);
+    unw_get_reg(&c, UNW_REG_SP, &sp);
 
-    dw_frame_t frame;
-    if((long)stack_frame->ip > (long) mc_libsimgrid_info->start_exec)
-      frame = xbt_dict_get_or_null(mc_libsimgrid_info->local_variables, frame_name);
-    else
-      frame = xbt_dict_get_or_null(mc_binary_info->local_variables, frame_name);
+    stack_frame->ip = ip;
+    stack_frame->sp = sp;
+
+    // TODO, use real addresses in frame_t instead of fixing it here
+
+    dw_frame_t frame = MC_find_function_by_ip((void*) ip);
     stack_frame->frame = frame;
 
-    if(frame != NULL){
-      unw_word_t normalized_ip = (unw_word_t)frame->low_pc + (unw_word_t)off;
+    if(frame) {
+      stack_frame->frame_name = xbt_strdup(frame->name);
+
+      mc_object_info_t info = MC_ip_find_object_info((void*)ip);
+
+      // This is the instruction pointer as present in the DWARF of the object:
+      // Relocated addresses are offset for shared objets and constant for executables objects.
+      // See DWARF4 spec 7.5
+      unw_word_t normalized_ip;
+      if(info->flags & MC_OBJECT_INFO_EXECUTABLE) {
+        normalized_ip = ip;
+      } else {
+        void* base = MC_object_base_address(info);
+        normalized_ip = (unw_word_t) ip - (unw_word_t) base;
+      }
+
       stack_frame->frame_base = (unw_word_t)mc_find_frame_base(normalized_ip, frame, &c);
     } else {
       stack_frame->frame_base = 0;
     }
 
     /* Stop before context switch with maestro */
-    if(!strcmp(frame_name, "smx_ctx_sysv_wrapper"))
+    if(frame!=NULL && frame->name!=NULL && !strcmp(frame->name, "smx_ctx_sysv_wrapper"))
       break;
   }
 
