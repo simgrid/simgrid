@@ -27,13 +27,13 @@ $ $SG_TEST_EXENV ${bindir:=.}/simple_vm$EXEEXT --log=no_loc ${srcdir:=.}/simple_
 > [PM0:master_:(1) 10.000000] [msg_test/INFO] ### Put two VMs on a PM, and put a task to each VM
 > [10.000000] [surf_vm_workstation/INFO] Create VM(VM0)@PM(PM0) with 0 mounted disks
 > [10.000000] [surf_vm_workstation/INFO] Create VM(VM1)@PM(PM0) with 0 mounted disks
-> [VM1:compute:(10) 10.010000] [msg_test/INFO] VM1:compute task executed 0.01
-> [VM0:compute:(9) 10.010000] [msg_test/INFO] VM0:compute task executed 0.01
+> [VM0:compute:(9) 10.020000] [msg_test/INFO] VM0:compute task executed 0.02
+> [VM1:compute:(10) 10.020000] [msg_test/INFO] VM1:compute task executed 0.02
 > [PM0:master_:(1) 12.000000] [msg_test/INFO] ### Put a VM on each PM, and put a task to each VM
 > [12.000000] [surf_vm_workstation/INFO] Create VM(VM0)@PM(PM0) with 0 mounted disks
 > [12.000000] [surf_vm_workstation/INFO] Create VM(VM1)@PM(PM1) with 0 mounted disks
-> [VM1:compute:(12) 12.010000] [msg_test/INFO] VM1:compute task executed 0.01
 > [VM0:compute:(11) 12.010000] [msg_test/INFO] VM0:compute task executed 0.01
+> [VM1:compute:(12) 12.010000] [msg_test/INFO] VM1:compute task executed 0.01
 > [PM0:master_:(1) 14.000000] [msg_test/INFO] ## Test 4 (ended)
 > [PM0:master_:(1) 14.000000] [msg_test/INFO] ## Test 5  (started): Analyse network impact
 > [PM0:master_:(1) 14.000000] [msg_test/INFO] ### Make a connection between PM0 and PM1
@@ -71,6 +71,7 @@ $ $SG_TEST_EXENV ${bindir:=.}/simple_vm$EXEEXT --log=no_loc ${srcdir:=.}/simple_
 > [PM0:__pr_mig_tx:VM0(PM0-PM1):(38) 142.200526] [msg_vm/INFO] mig-stage 2:0 updated_size 0.000000 computed_during_stage1 0.000000 dp_rate 0.000000 dp_cap 0.000000
 > [PM0:__pr_mig_tx:VM0(PM0-PM1):(38) 142.200526] [msg_vm/INFO] mig-stage2.0: remaining_size 0.000000 (< threshold 345660.187833)
 > [PM0:__pr_mig_tx:VM0(PM0-PM1):(38) 142.200526] [msg_vm/INFO] mig-stage3: remaining_size 0.000000
+> [142.330626] [surf_vm_workstation/INFO] migrate VM(VM0): set bound (100000000.000000) at PM1
 > [PM1:__pr_mig_rx:VM0(PM0-PM1):(37) 142.330626] [msg_vm/INFO] set affinity(0x0000@PM1) for VM0
 > [PM1:__pr_mig_tx:VM0(PM1-PM0):(42) 142.470726] [msg_vm/WARNING] use the default max_downtime value 30ms
 > [PM1:__pr_mig_tx:VM0(PM1-PM0):(42) 142.470726] [msg_vm/INFO] mig-stage1: remaining_size 1073741824.000000
@@ -78,6 +79,8 @@ $ $SG_TEST_EXENV ${bindir:=.}/simple_vm$EXEEXT --log=no_loc ${srcdir:=.}/simple_
 > [PM1:__pr_mig_tx:VM0(PM1-PM0):(42) 235.584654] [msg_vm/INFO] mig-stage 2:0 updated_size 0.000000 computed_during_stage1 0.000000 dp_rate 0.000000 dp_cap 0.000000
 > [PM1:__pr_mig_tx:VM0(PM1-PM0):(42) 235.584654] [msg_vm/INFO] mig-stage2.0: remaining_size 0.000000 (< threshold 345944.536891)
 > [PM1:__pr_mig_tx:VM0(PM1-PM0):(42) 235.584654] [msg_vm/INFO] mig-stage3: remaining_size 0.000000
+> [235.714754] [surf_vm_workstation/CRITICAL] FIXME: may need a proper handling, 1
+> [235.714754] [surf_vm_workstation/INFO] migrate VM(VM0): set bound (100000000.000000) at PM0
 > [PM0:__pr_mig_rx:VM0(PM1-PM0):(41) 235.714754] [msg_vm/INFO] set affinity(0x0000@PM0) for VM0
 > [PM0:master_:(1) 240.714949] [msg_test/INFO] ## Test 6 (ended)
 > [240.714949] [msg_test/INFO] Bye (simulation time 240.715)
