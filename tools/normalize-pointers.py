@@ -23,7 +23,7 @@ f = open(sys.argv[1])
 t = f.read()
 f.close()
 
-r = re.compile(r"0x[0-9a-f]{7}")
+r = re.compile(r"0x[0-9a-f]+")
 s = r.search(t)
 offset = 0
 pointers = {}
