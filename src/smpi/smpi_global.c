@@ -419,7 +419,6 @@ int __attribute__ ((weak)) smpi_simulated_main_(int argc, char **argv)
 {
   smpi_process_init(&argc, &argv);
   user_main_();
-  //xbt_die("Should not be in this smpi_simulated_main");
   return 0;
 }
 
