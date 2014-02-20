@@ -349,7 +349,7 @@ xbt_dict_t SIMIX_pre_storage_get_properties(smx_simcall_t simcall, smx_storage_t
 }
 xbt_dict_t SIMIX_storage_get_properties(smx_storage_t storage){
   xbt_assert((storage != NULL), "Invalid parameters (simix storage is NULL)");
-  return surf_resource_get_properties(surf_workstation_resource_priv(storage));
+  return surf_resource_get_properties(surf_storage_resource_priv(storage));
 }
 
 const char* SIMIX_pre_storage_get_name(smx_simcall_t simcall, smx_storage_t storage){

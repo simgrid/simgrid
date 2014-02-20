@@ -66,7 +66,7 @@ static void parse_storage_init(sg_platf_storage_cbarg_t storage)
       ((storage_type_t) stype)->type_id,
       storage->content,
       storage->content_type,
-      ((storage_type_t) stype)->properties);
+      storage->properties);
 
   surf_storage_model->createResource(storage->id,
                                      ((storage_type_t) stype)->type_id,
@@ -256,7 +256,7 @@ StoragePtr StorageN11Model::createResource(const char* id, const char* type_id,
   XBT_DEBUG("SURF storage create resource\n\t\tid '%s'\n\t\ttype '%s'\n\t\tproperties '%p'\n\t\tBread '%f'\n",
       id,
       type_id,
-      storage_type->properties,
+      properties,
       Bread);
 
   if(!p_storageList)
