@@ -247,6 +247,31 @@ static dw_location_t MC_dwarf_get_location_list(mc_object_info_t info, Dwarf_Die
   }
 }
 
+/** \brief Find the frame base of a given frame
+ *
+ *  \param ip         Instruction pointer
+ *  \param frame
+ *  \param unw_cursor
+ */
+void* mc_find_frame_base(void* ip, dw_frame_t frame, unw_cursor_t* unw_cursor) {
+  switch(frame->frame_base->type) {
+  case e_dw_loclist:
+  {
+    int loclist_cursor;
+    for(loclist_cursor=0; loclist_cursor < xbt_dynar_length(frame->frame_base->location.loclist); loclist_cursor++){
+      dw_location_entry_t entry = xbt_dynar_get_as(frame->frame_base->location.loclist, loclist_cursor, dw_location_entry_t);
+      if((ip >= entry->lowpc) && (ip < entry->highpc)){
+        return (void*) MC_dwarf_resolve_location(unw_cursor, entry->location, NULL);
+      }
+    }
+    return NULL;
+  }
+  // Not handled:
+  default:
+    return NULL;
+  }
+}
+
 /** \brief Get the location expression or location list from an attribute
  *
  *  Processes direct expressions as well as location lists.
