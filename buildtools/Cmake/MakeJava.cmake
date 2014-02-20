@@ -56,7 +56,10 @@ endif()
 ## Files to include in simgrid.jar
 ##
 set(SIMGRID_JAR "${CMAKE_BINARY_DIR}/simgrid.jar")
-set(MANIFEST_FILE "${CMAKE_HOME_DIRECTORY}/src/bindings/java/MANIFEST.MF")
+set(MANIFEST_IN_FILE "${CMAKE_HOME_DIRECTORY}/src/bindings/java/MANIFEST.MF.in")
+set(MANIFEST_FILE "${CMAKE_BINARY_DIR}/src/bindings/java/MANIFEST.MF")
+
+
 set(LIBSIMGRID_SO
   libsimgrid${CMAKE_SHARED_LIBRARY_SUFFIX})
 set(LIBSIMGRID_JAVA_SO
@@ -97,7 +100,7 @@ add_custom_command(
   COMMENT "Finalize simgrid.jar..."
   OUTPUT ${SIMGRID_JAR}_finalized
   DEPENDS simgrid simgrid-java simgrid-java_pre_jar
-          ${SIMGRID_JAR} ${MANIFEST_FILE}
+          ${SIMGRID_JAR} ${MANIFEST_IN_FILE}
           ${CMAKE_BINARY_DIR}/lib/${LIBSIMGRID_SO}
           ${CMAKE_BINARY_DIR}/lib/${LIBSIMGRID_JAVA_SO}
           ${CMAKE_HOME_DIRECTORY}/COPYING
@@ -114,6 +117,9 @@ add_custom_command(
   COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_HOME_DIRECTORY}/ChangeLog" "${JSG_BUNDLE}"
   COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_HOME_DIRECTORY}/ChangeLog.SimGrid-java" "${JSG_BUNDLE}"
   COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_HOME_DIRECTORY}/LICENSE-LGPL-2.1" "${JSG_BUNDLE}"
+  COMMAND ${CMAKE_COMMAND} -E copy ${MANIFEST_IN_FILE} ${MANIFEST_FILE}
+  COMMAND ${CMAKE_COMMAND} -E echo "Specification-Version: \\\"${SIMGRID_VERSION_MAJOR}.${SIMGRID_VERSION_MINOR}.${SIMGRID_VERSION_PATCH}\\\"" >> ${MANIFEST_FILE}
+  COMMAND ${CMAKE_COMMAND} -E echo "Implementation-Version: \\\"${GIT_VERSION}\\\"" >> ${MANIFEST_FILE}
   COMMAND ${JAVA_ARCHIVE} -uvmf ${MANIFEST_FILE} ${SIMGRID_JAR} "NATIVE"
   COMMAND ${CMAKE_COMMAND} -E remove ${SIMGRID_JAR}_finalized
   COMMAND ${CMAKE_COMMAND} -E touch ${SIMGRID_JAR}_finalized
