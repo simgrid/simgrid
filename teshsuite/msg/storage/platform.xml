@@ -5,22 +5,22 @@
 	<AS id="AS0" routing="Full">
 		<!-- STORAGE TYPES -->
 		<storage_type id="crucial" model="SSD" size="500">
-			<prop id="Bwrite" value="30000000" /> <!-- 30Mo/s -->
-			<prop id="Bread" value="100000000" /> <!-- 100Mo/s -->
-			<prop id="Bconnection" value="150000000" /> <!-- 150Mo/s -->
+			<model_prop id="Bwrite" value="30000000" /> <!-- 30Mo/s -->
+			<model_prop id="Bread" value="100000000" /> <!-- 100Mo/s -->
+			<model_prop id="Bconnection" value="150000000" /> <!-- 150Mo/s -->
 		</storage_type>
 
 		<storage_type id="single_HDD" model="linear_no_lat" size="500GiB" content_type="txt_unix">
-			<prop id="Bwrite" value="30MBps" />
-			<prop id="Bread" value="100MBps" />
-			<prop id="Bconnection" value="150MBps" />
+			<model_prop id="Bwrite" value="30MBps" />
+			<model_prop id="Bread" value="100MBps" />
+			<model_prop id="Bconnection" value="150MBps" />
 		</storage_type>
 
 		<storage_type id="single_SSD" model="linear_no_lat"
 			content="content/storage_content.txt" size="500GiB">
-			<prop id="Bwrite" value="30MBps" />
-			<prop id="Bread" value="100MBps" />
-			<prop id="Bconnection" value="150MBps" />
+			<model_prop id="Bwrite" value="30MBps" />
+			<model_prop id="Bread" value="100MBps" />
+			<model_prop id="Bconnection" value="150MBps" />
 		</storage_type>
 
 		<!-- DISKS -->

@@ -29,7 +29,7 @@
 <!ATTLIST AS id CDATA #REQUIRED>
 <!ATTLIST AS routing (Full|Floyd|Dijkstra|DijkstraCache|None|Vivaldi|Cluster|Cluster_torus) #REQUIRED>
 
-<!ELEMENT storage_type (prop*)>
+<!ELEMENT storage_type ((model_prop|prop)*)>
 <!ATTLIST storage_type id       CDATA #REQUIRED>
 <!ATTLIST storage_type model    CDATA #REQUIRED>
 <!ATTLIST storage_type size     CDATA #REQUIRED>
@@ -171,3 +171,7 @@
 <!ELEMENT prop EMPTY>
 <!ATTLIST prop id CDATA #REQUIRED> <!-- <!ATTLIST prop key CDATA #REQUIRED> -->
 <!ATTLIST prop value CDATA #REQUIRED>
+
+<!ELEMENT model_prop EMPTY>
+<!ATTLIST model_prop id CDATA #REQUIRED> <!-- <!ATTLIST model_prop key CDATA #REQUIRED> -->
+<!ATTLIST model_prop value CDATA #REQUIRED>

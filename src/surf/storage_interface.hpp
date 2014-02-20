@@ -112,6 +112,7 @@ public:
    * @param content_name [description]
    * @param content_type [description]
    * @param size [description]
+   * @param model_props Dictionary of model specific properties associated to this Storage
    */
   Storage(ModelPtr model, const char *name, xbt_dict_t props,
           const char* type_id, char *content_name, char *content_type,
@@ -307,6 +308,7 @@ typedef struct s_storage_type {
   char *content_type;
   char *type_id;
   xbt_dict_t properties;
+  xbt_dict_t model_properties;
   sg_size_t size;
 } s_storage_type_t, *storage_type_t;
 

@@ -24,7 +24,7 @@ static XBT_INLINE void routing_storage_type_free(void *r)
   free(stype->content);
   free(stype->content_type);
   xbt_dict_free(&(stype->properties));
-  xbt_dict_free(&(stype->properties));
+  xbt_dict_free(&(stype->model_properties));
   free(stype);
 }
 
@@ -60,7 +60,7 @@ static void parse_storage_init(sg_platf_storage_cbarg_t storage)
 
   XBT_DEBUG("SURF storage create resource\n\t\tid '%s'\n\t\ttype '%s' "
       "\n\t\tmodel '%s' \n\t\tcontent '%s'\n\t\tcontent_type '%s' "
-      "\n\t\tproperties '%p'\n",
+      "\n\t\tproperties '%p''\n",
       storage->id,
       ((storage_type_t) stype)->model,
       ((storage_type_t) stype)->type_id,
@@ -124,6 +124,7 @@ static void storage_parse_storage_type(sg_platf_storage_type_cbarg_t storage_typ
   stype->content_type = xbt_strdup(storage_type->content_type);
   stype->type_id = xbt_strdup(storage_type->id);
   stype->size = storage_type->size;
+  stype->model_properties = storage_type->model_properties;
 
   XBT_DEBUG("ROUTING Create a storage type id '%s' with model '%s', "
       "content '%s', and content_type '%s'",
@@ -242,9 +243,9 @@ StoragePtr StorageN11Model::createResource(const char* id, const char* type_id,
 
   storage_type_t storage_type = (storage_type_t) xbt_lib_get_or_null(storage_type_lib, type_id,ROUTING_STORAGE_TYPE_LEVEL);
 
-  double Bread  = surf_parse_get_bandwidth((char*)xbt_dict_get(storage_type->properties, "Bread"));
-  double Bwrite = surf_parse_get_bandwidth((char*)xbt_dict_get(storage_type->properties, "Bwrite"));
-  double Bconnection   = surf_parse_get_bandwidth((char*)xbt_dict_get(storage_type->properties, "Bconnection"));
+  double Bread  = surf_parse_get_bandwidth((char*)xbt_dict_get(storage_type->model_properties, "Bread"));
+  double Bwrite = surf_parse_get_bandwidth((char*)xbt_dict_get(storage_type->model_properties, "Bwrite"));
+  double Bconnection   = surf_parse_get_bandwidth((char*)xbt_dict_get(storage_type->model_properties, "Bconnection"));
 
   StoragePtr storage = new StorageN11(this, id, properties, p_maxminSystem,
 		  Bread, Bwrite, Bconnection,
@@ -317,7 +318,6 @@ void StorageN11Model::updateActionsState(double /*now*/, double delta)
 
       sg_size_t *psize = xbt_new(sg_size_t,1);
       *psize = action->p_file->size;
-
       xbt_dict_t content_dict = action->p_storage->p_content;
       xbt_dict_set(content_dict, action->p_file->name, psize, NULL);
     }

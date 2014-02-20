@@ -251,6 +251,7 @@ typedef struct {
   const char* content;
   const char* content_type;
   xbt_dict_t properties;
+  xbt_dict_t model_properties;
   sg_size_t size;
 } s_sg_platf_storage_type_cbarg_t, *sg_platf_storage_type_cbarg_t;
 
