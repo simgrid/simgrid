@@ -214,7 +214,7 @@ static const char* MC_dwarf_at_linkage_name(Dwarf_Die* die) {
  *  \return MC specific representation of the location list represented by the given attribute
  *  of the given die
  */
-static dw_location_t MC_dwarf_get_location_list(Dwarf_Die* die, Dwarf_Attribute* attr) {
+static dw_location_t MC_dwarf_get_location_list(mc_object_info_t info, Dwarf_Die* die, Dwarf_Attribute* attr) {
 
   dw_location_t location = xbt_new0(s_dw_location_t, 1);
   location->type = e_dw_loclist;
@@ -235,8 +235,11 @@ static dw_location_t MC_dwarf_get_location_list(Dwarf_Die* die, Dwarf_Attribute*
       xbt_die("Error while loading location list");
 
     dw_location_entry_t new_entry = xbt_new0(s_dw_location_entry_t, 1);
-    new_entry->lowpc = start;
-    new_entry->highpc = end;
+
+    void* base = info->flags & MC_OBJECT_INFO_EXECUTABLE ? 0 : MC_object_base_address(info);
+
+    new_entry->lowpc = (char*) base + start;
+    new_entry->highpc = (char*) base + end;
     new_entry->location = MC_dwarf_get_expression(expr, len);
 
     xbt_dynar_push(loclist, &new_entry);
@@ -253,7 +256,7 @@ static dw_location_t MC_dwarf_get_location_list(Dwarf_Die* die, Dwarf_Attribute*
  *  \return MC specific representation of the location represented by the given attribute
  *  of the given die
  */
-static dw_location_t MC_dwarf_get_location(Dwarf_Die* die, Dwarf_Attribute* attr) {
+static dw_location_t MC_dwarf_get_location(mc_object_info_t info, Dwarf_Die* die, Dwarf_Attribute* attr) {
   int form = dwarf_whatform(attr);
   switch (form) {
 
@@ -277,7 +280,7 @@ static dw_location_t MC_dwarf_get_location(Dwarf_Die* die, Dwarf_Attribute* attr
   case DW_FORM_data4:
   case DW_FORM_data8:
     {
-      return MC_dwarf_get_location_list(die, attr);
+      return MC_dwarf_get_location_list(info, die, attr);
     }
     break;
 
@@ -300,13 +303,13 @@ static dw_location_t MC_dwarf_get_location(Dwarf_Die* die, Dwarf_Attribute* attr
  *  \return MC specific representation of the location represented by the given attribute
  *  of the given die
  */
-static dw_location_t MC_dwarf_at_location(Dwarf_Die* die, int attribute) {
+static dw_location_t MC_dwarf_at_location(mc_object_info_t info, Dwarf_Die* die, int attribute) {
   if(!dwarf_hasattr_integrate(die, attribute))
     return xbt_new0(s_dw_location_t, 1);
 
   Dwarf_Attribute attr;
   dwarf_attr_integrate(die, attribute, &attr);
-  return MC_dwarf_get_location(die, &attr);
+  return MC_dwarf_get_location(info, die, &attr);
 }
 
 static char* MC_dwarf_at_type(Dwarf_Die* die) {
@@ -846,7 +849,7 @@ static dw_variable_t MC_die_to_variable(mc_object_info_t info, Dwarf_Die* die, D
   case MC_DW_CLASS_LOCLISTPTR:
   case MC_DW_CLASS_CONSTANT:
     // Reference to location list:
-    variable->location = MC_dwarf_get_location_list(die, &attr_location);
+    variable->location = MC_dwarf_get_location_list(info, die, &attr_location);
     break;
   default:
     xbt_die("Unexpected calss 0x%x (%i) list for location in <%p>%s",
@@ -888,7 +891,7 @@ static void MC_dwarf_handle_subprogram_die(mc_object_info_t info, Dwarf_Die* die
   frame->variables = xbt_dynar_new(sizeof(dw_variable_t), dw_variable_free_voidp);
   frame->high_pc = ((char*) base) + MC_dwarf_attr_addr(die, DW_AT_high_pc);
   frame->low_pc = ((char*) base) + MC_dwarf_attr_addr(die, DW_AT_low_pc);
-  frame->frame_base = MC_dwarf_at_location(die, DW_AT_frame_base);
+  frame->frame_base = MC_dwarf_at_location(info, die, DW_AT_frame_base);
   frame->end = -1; // This one is now useless:
 
   // Handle children:

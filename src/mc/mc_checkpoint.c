@@ -317,21 +317,7 @@ static xbt_dynar_t MC_unwind_stack_frames(void *stack_context) {
 
     if(frame) {
       stack_frame->frame_name = xbt_strdup(frame->name);
-
-      mc_object_info_t info = MC_ip_find_object_info((void*)ip);
-
-      // This is the instruction pointer as present in the DWARF of the object:
-      // Relocated addresses are offset for shared objets and constant for executables objects.
-      // See DWARF4 spec 7.5
-      unw_word_t normalized_ip;
-      if(info->flags & MC_OBJECT_INFO_EXECUTABLE) {
-        normalized_ip = ip;
-      } else {
-        void* base = MC_object_base_address(info);
-        normalized_ip = (unw_word_t) ip - (unw_word_t) base;
-      }
-
-      stack_frame->frame_base = (unw_word_t)mc_find_frame_base(normalized_ip, frame, &c);
+      stack_frame->frame_base = (unw_word_t)mc_find_frame_base((void*)ip, frame, &c);
     } else {
       stack_frame->frame_base = 0;
     }

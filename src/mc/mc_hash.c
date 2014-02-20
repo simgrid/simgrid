@@ -253,7 +253,7 @@ static void mc_hash_stack_frame(
  *  \param frame
  *  \param unw_cursor
  */
-void* mc_find_frame_base(unw_word_t ip, dw_frame_t frame, unw_cursor_t* unw_cursor) {
+void* mc_find_frame_base(void* ip, dw_frame_t frame, unw_cursor_t* unw_cursor) {
   switch(frame->frame_base->type) {
   case e_dw_loclist:
   {

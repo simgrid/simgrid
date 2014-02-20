@@ -427,8 +427,8 @@ typedef struct s_dw_location{
 }s_dw_location_t, *dw_location_t;
 
 typedef struct s_dw_location_entry{
-  long lowpc;
-  long highpc;
+  void* lowpc;
+  void* highpc;
   dw_location_t location;
 }s_dw_location_entry_t, *dw_location_entry_t;
 
@@ -472,7 +472,7 @@ void* MC_object_base_address(mc_object_info_t info);
 /********************************** DWARF **********************************/
 
 Dwarf_Off MC_dwarf_resolve_location(unw_cursor_t* c, dw_location_t location, void* frame_pointer_address);
-void* mc_find_frame_base(unw_word_t ip, dw_frame_t frame, unw_cursor_t* unw_cursor);
+void* mc_find_frame_base(void* ip, dw_frame_t frame, unw_cursor_t* unw_cursor);
 
 /********************************** Miscellaneous **********************************/
 
