@@ -225,12 +225,6 @@ static int MC_compare_frame_index_items(mc_function_index_item_t a, mc_function_
 static void MC_make_functions_index(mc_object_info_t info) {
   xbt_dynar_t index = xbt_dynar_new(sizeof(s_mc_function_index_item_t), NULL);
 
-  // The base address of the function must be used to offset the addresses.
-  // This should be fixed this in the frame_t structure instead.
-  // Relocated addresses are offset for shared objets and constant for executables objects.
-  // See DWARF4 spec 7.5
-  void* offset = info->flags & MC_OBJECT_INFO_EXECUTABLE ? 0 : MC_object_base_address(info);
-
   // Populate the array:
   dw_frame_t frame = NULL;
   xbt_dict_cursor_t cursor = NULL;
@@ -239,8 +233,8 @@ static void MC_make_functions_index(mc_object_info_t info) {
     if(frame->low_pc==NULL)
       continue;
     s_mc_function_index_item_t entry;
-    entry.low_pc = (char*) frame->low_pc + (unsigned long) offset;
-    entry.high_pc = (char*) frame->high_pc + (unsigned long) offset;
+    entry.low_pc = frame->low_pc;
+    entry.high_pc = frame->high_pc;
     entry.function = frame;
     xbt_dynar_push(index, &entry);
   }

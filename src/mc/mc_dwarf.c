@@ -879,10 +879,15 @@ static void MC_dwarf_handle_subprogram_die(mc_object_info_t info, Dwarf_Die* die
     name = MC_dwarf_attr_string(die, DW_AT_name);
   frame->name = xbt_strdup(name);
 
+  // This is the base address for DWARF addresses.
+  // Relocated addresses are offset from this base address.
+  // See DWARF4 spec 7.5
+  void* base = info->flags & MC_OBJECT_INFO_EXECUTABLE ? 0 : MC_object_base_address(info);
+
   // Variables are filled in the (recursive) call of MC_dwarf_handle_children:
   frame->variables = xbt_dynar_new(sizeof(dw_variable_t), dw_variable_free_voidp);
-  frame->high_pc = (void*) MC_dwarf_attr_addr(die, DW_AT_high_pc);
-  frame->low_pc = (void*) MC_dwarf_attr_addr(die, DW_AT_low_pc);
+  frame->high_pc = ((char*) base) + MC_dwarf_attr_addr(die, DW_AT_high_pc);
+  frame->low_pc = ((char*) base) + MC_dwarf_attr_addr(die, DW_AT_low_pc);
   frame->frame_base = MC_dwarf_at_location(die, DW_AT_frame_base);
   frame->end = -1; // This one is now useless:
 
