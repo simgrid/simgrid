@@ -64,6 +64,7 @@ struct s_dw_type{
   int is_pointer_type;
   int offset;
   dw_type_t subtype;
+  dw_type_t other_object_same_type; // The same (but more complete) type in the other object.
 };
 
 char* get_type_description(mc_object_info_t info, char *type_name);

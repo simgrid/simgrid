@@ -151,7 +151,7 @@ static int compare_areas_with_type(void *area1, void *area2, mc_object_info_t in
     case DW_TAG_structure_type:
     case DW_TAG_union_type:
       if(subtype->byte_size == 0){ /*declaration of the type, need the complete description */
-          subtype = xbt_dict_get_or_null(other_info->types_by_name, subtype->name);
+          subtype = subtype->other_object_same_type;
           switch_types = 1;
       }
       elm_size = subtype->byte_size;
@@ -161,7 +161,7 @@ static int compare_areas_with_type(void *area1, void *area2, mc_object_info_t in
     case DW_TAG_volatile_type:
       subsubtype = subtype->subtype;
       if(subsubtype->byte_size == 0){ /*declaration of the type, need the complete description */
-          subsubtype = xbt_dict_get_or_null(other_info->types_by_name, subsubtype->name);
+          subsubtype = subsubtype->other_object_same_type;
           switch_types = 1;
       }
       elm_size = subsubtype->byte_size;
@@ -180,7 +180,7 @@ static int compare_areas_with_type(void *area1, void *area2, mc_object_info_t in
     }
     break;
   case DW_TAG_pointer_type:
-    if(type->dw_type_id && ((dw_type_t)xbt_dict_get_or_null(info->types, type->dw_type_id))->type == DW_TAG_subroutine_type){
+    if(type->subtype && type->subtype->type == DW_TAG_subroutine_type){
       addr_pointed1 = *((void **)(area1)); 
       addr_pointed2 = *((void **)(area2));
       return (addr_pointed1 != addr_pointed2);
@@ -284,7 +284,7 @@ static int compare_global_variables(int region_type, mc_mem_region_t r1, mc_mem_
 
     offset = (char *)current_var->address - (char *)object_info->start_rw;
 
-    dw_type_t bvariable_type = xbt_dict_get_or_null(object_info->types, current_var->type_origin);
+    dw_type_t bvariable_type = current_var->type;
     res = compare_areas_with_type((char *)r1->data + offset, (char *)r2->data + offset, object_info, other_object_info, bvariable_type, r1->size, region_type, start_data, 0);
     if(res == 1){
       XBT_VERB("Global variable %s (%p - %p) is different between snapshots", current_var->name, (char *)r1->data + offset, (char *)r2->data + offset);
@@ -336,10 +336,10 @@ static int compare_local_variables(mc_snapshot_stack_t stack1, mc_snapshot_stack
 
 
       if(current_var1->region == 1) {
-        dw_type_t subtype = xbt_dict_get_or_null(mc_libsimgrid_info->types, current_var1->type);
+        dw_type_t subtype = current_var1->type;
         res = compare_areas_with_type( (char *)heap1 + offset1, (char *)heap2 + offset2, mc_libsimgrid_info, mc_binary_info, subtype, 0, 1, start_data_libsimgrid, 0);
       } else {
-        dw_type_t subtype = xbt_dict_get_or_null(mc_binary_info->types, current_var1->type);
+        dw_type_t subtype = current_var2->type;
         res = compare_areas_with_type( (char *)heap1 + offset1, (char *)heap2 + offset2, mc_binary_info, mc_libsimgrid_info, subtype, 0, 2, start_data_binary, 0);
       }
       if(res == 1){

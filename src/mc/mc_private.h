@@ -437,6 +437,7 @@ typedef struct s_dw_variable{
   int global;
   char *name;
   char *type_origin;
+  dw_type_t type;
 
   // Use either of:
   dw_location_t location;
@@ -480,7 +481,7 @@ typedef struct s_local_variable{
   char *frame;
   unsigned long ip;
   char *name;
-  char *type;
+  dw_type_t type;
   void *address;
   int region;
 }s_local_variable_t, *local_variable_t;

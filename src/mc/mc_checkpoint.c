@@ -45,7 +45,6 @@ static void MC_snapshot_stack_free_voidp(void *s){
 static void local_variable_free(local_variable_t v){
   xbt_free(v->frame);
   xbt_free(v->name);
-  xbt_free(v->type);
   xbt_free(v);
 }
 
@@ -259,7 +258,7 @@ static xbt_dynar_t MC_get_local_variables_values(xbt_dynar_t stack_frames){
       new_var->frame = xbt_strdup(stack_frame->frame_name);
       new_var->ip = stack_frame->ip;
       new_var->name = xbt_strdup(current_variable->name);
-      new_var->type = strdup(current_variable->type_origin);
+      new_var->type = current_variable->type;
       new_var->region= region_type;
       
       /* if(current_variable->address!=NULL) {

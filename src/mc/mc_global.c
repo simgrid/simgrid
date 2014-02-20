@@ -288,6 +288,31 @@ dw_frame_t MC_find_function_by_ip(void* ip) {
     return MC_find_function_by_ip_and_object(ip, info);
 }
 
+static void MC_post_process_variables(mc_object_info_t info) {
+  unsigned cursor = 0;
+  dw_variable_t variable = NULL;
+  xbt_dynar_foreach(info->global_variables, cursor, variable) {
+    if(variable->type_origin) {
+      variable->type = xbt_dict_get_or_null(info->types, variable->type_origin);
+    }
+  }
+}
+
+static void MC_post_process_functions(mc_object_info_t info) {
+  xbt_dict_cursor_t cursor = NULL;
+  char* key = NULL;
+  dw_frame_t function = NULL;
+  xbt_dict_foreach(info->local_variables, cursor, key, function) {
+    unsigned cursor2 = 0;
+    dw_variable_t variable = NULL;
+    xbt_dynar_foreach(function->variables, cursor2, variable) {
+      if(variable->type_origin) {
+        variable->type = xbt_dict_get_or_null(info->types, variable->type_origin);
+      }
+    }
+  }
+}
+
 /** \brief Finds informations about a given shared object/executable */
 mc_object_info_t MC_find_object_info(memory_map_t maps, char* name, int executable) {
   mc_object_info_t result = MC_new_object_info();
@@ -297,6 +322,8 @@ mc_object_info_t MC_find_object_info(memory_map_t maps, char* name, int executab
   MC_find_object_address(maps, result);
   MC_dwarf_get_variables(result);
   MC_post_process_types(result);
+  MC_post_process_variables(result);
+  MC_post_process_functions(result);
   MC_make_functions_index(result);
   return result;
 }
@@ -869,8 +896,19 @@ void MC_ignore(void *addr, size_t size){
 /*******************************  Initialisation of MC *******************************/
 /*********************************************************************************/
 
-static void MC_init_debug_info();
-static void MC_init_debug_info() {
+static void MC_post_process_object_info(mc_object_info_t info) {
+  mc_object_info_t other_info = info == mc_binary_info ? mc_libsimgrid_info : mc_binary_info;
+  xbt_dict_cursor_t cursor = NULL;
+  char* key = NULL;
+  dw_type_t type = NULL;
+  xbt_dict_foreach(info->types, cursor, key, type){
+    if(type->name && type->byte_size == 0) {
+      type->other_object_same_type = xbt_dict_get_or_null(other_info->types_by_name, type->name);
+    }
+  }
+}
+
+static void MC_init_debug_info(void) {
   XBT_INFO("Get debug information ...");
 
   memory_map_t maps = MC_get_memory_map();
@@ -878,6 +916,10 @@ static void MC_init_debug_info() {
   /* Get local variables for state equality detection */
   mc_binary_info = MC_find_object_info(maps, xbt_binary_name, 1);
   mc_libsimgrid_info = MC_find_object_info(maps, libsimgrid_path, 0);
+
+  // Use information of the other objects:
+  MC_post_process_object_info(mc_binary_info);
+  MC_post_process_object_info(mc_libsimgrid_info);
 
   MC_free_memory_map(maps);
   XBT_INFO("Get debug information done !");

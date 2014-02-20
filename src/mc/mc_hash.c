@@ -197,7 +197,7 @@ static void mc_hash_object_globals(mc_hash_t *hash, mc_hashing_state* state, mc_
       continue;
     }
 
-    dw_type_t type = xbt_dict_get_or_null(info->types, variable->type_origin);
+    dw_type_t type = variable->type;
     if(type==NULL) {
       // Nothing
       continue;
@@ -237,7 +237,7 @@ static void mc_hash_stack_frame(
 
     void* variable_address = (void*) MC_dwarf_resolve_location(unw_cursor, variable->location, frame_pointer);
 
-    dw_type_t type = xbt_dict_get_or_null(info->types, variable->type_origin);
+    dw_type_t type = variable->type;
     if(type==NULL) {
       XBT_DEBUG("Hash local variable %s without loctypeation", variable->name);
       continue;
