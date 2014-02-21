@@ -11,51 +11,51 @@ $ msg/storage/storage_basic --cfg=path:${srcdir:=.} ${srcdir:=.}/msg/storage/pla
 > [  0.000000] (1:server@server) 	./doc/simgrid/examples/cxx/autoDestination/Forwarder.cxx size: 10 bytes
 > [  0.000000] (1:server@server) 	./doc/simgrid/examples/cxx/autoDestination/Master.cxx size: 10 bytes
 > [  0.000000] (1:server@server) 	./doc/simgrid/examples/cxx/basic/FinalizeTask.cxx size: 10 bytes
-> [  0.400000] (1:server@server) 	Storage name: sdisk2, mount name: /sd2
-> [  0.400000] (1:server@server) 		Free size: 805306367980 bytes
-> [  0.400000] (1:server@server) 		Used size: 20 bytes
-> [  0.400000] (1:server@server) 	Properties of mounted storage: sdisk2
-> [  0.400000] (1:server@server) 		'usage' -> 'Cache'
-> [  0.400000] (1:server@server) *** Dump a storage element ***
-> [  0.400000] (1:server@server) Print the content of the storage element: sdisk2
-> [  0.400000] (1:server@server) 	./doc/simgrid/examples/cxx/basic/Slave.cxx size: 10 bytes
-> [  0.400000] (1:server@server) 	./doc/simgrid/examples/cxx/basic/Main.cxx size: 10 bytes
-> [  0.800000] (1:server@server) Server waiting for transfers ...
-> [  0.805000] (2:client@client) client has read 500001 on ./doc/simgrid/examples/cxx/autoDestination/FinalizeTask.cxx
-> [  0.805000] (2:client@client) client sends 500001 to server
-> [  0.826647] (1:server@server) 500001 bytes on 500001 bytes have been written by server on /sd1
-> [  1.217980] (2:client@client) client has read 800000 on ./doc/simgrid/examples/cxx/autoDestination/autoDestination_deployment.xml
-> [  1.217980] (2:client@client) client sends 800000 to server
-> [  1.252225] (1:server@server) 800000 bytes on 800000 bytes have been written by server on /sd1
-> [  2.083559] (2:client@client) client has read 45800000 on ./doc/simgrid/examples/cxx/autoDestination/Slave.cxx
-> [  2.083559] (2:client@client) client sends 45800000 to server
-> [  4.007494] (1:server@server) 45800000 bytes on 45800000 bytes have been written by server on /sd1
-> [  4.008145] (2:client@client) *** GET/SET DATA for storage element: cdisk ***
-> [  4.008145] (2:client@client) Get data: '(null)'
-> [  4.008145] (2:client@client) 	Set and get data: 'Some data'
-> [  4.008145] (1:server@server) *** Storage info on server ***
-> [  4.008145] (1:server@server) 	Storage name: sdisk1, mount name: /sd1
-> [  4.008145] (1:server@server) 		Free size: 322087447159 bytes
-> [  4.008145] (1:server@server) 		Used size: 35100041 bytes
-> [  4.008145] (1:server@server) 	Properties of mounted storage: sdisk1
-> [  4.008145] (1:server@server) 		'usage' -> 'File system'
-> [  4.008145] (1:server@server) *** Dump a storage element ***
-> [  4.008145] (1:server@server) Print the content of the storage element: sdisk1
-> [  4.008145] (1:server@server) 	./scratch/titi.xml size: 800000 bytes
-> [  4.008145] (1:server@server) 	./doc/simgrid/examples/cxx/autoDestination/autoDestination_platform.xml size: 10 bytes
-> [  4.008145] (1:server@server) 	./scratch/tata.cxx size: 45800000 bytes
-> [  4.008145] (1:server@server) 	./doc/simgrid/examples/cxx/autoDestination/Forwarder.cxx size: 10 bytes
-> [  4.008145] (1:server@server) 	./scratch/toto.cxx size: 500001 bytes
-> [  4.008145] (1:server@server) 	./doc/simgrid/examples/cxx/autoDestination/Master.cxx size: 10 bytes
-> [  4.008145] (1:server@server) 	./doc/simgrid/examples/cxx/basic/FinalizeTask.cxx size: 10 bytes
-> [  4.408145] (1:server@server) 	Storage name: sdisk2, mount name: /sd2
-> [  4.408145] (1:server@server) 		Free size: 805306367980 bytes
-> [  4.408145] (1:server@server) 		Used size: 20 bytes
-> [  4.408145] (1:server@server) 	Properties of mounted storage: sdisk2
-> [  4.408145] (1:server@server) 		'usage' -> 'Cache'
-> [  4.408145] (1:server@server) *** Dump a storage element ***
-> [  4.408145] (1:server@server) Print the content of the storage element: sdisk2
-> [  4.408145] (1:server@server) 	./doc/simgrid/examples/cxx/basic/Slave.cxx size: 10 bytes
-> [  4.408145] (1:server@server) 	./doc/simgrid/examples/cxx/basic/Main.cxx size: 10 bytes
-> [  4.808145] (0:@) Simulated time: 4.80814
+> [  0.000000] (1:server@server) 	Storage name: sdisk2, mount name: /sd2
+> [  0.000000] (1:server@server) 		Free size: 805306367980 bytes
+> [  0.000000] (1:server@server) 		Used size: 20 bytes
+> [  0.000000] (1:server@server) 	Properties of mounted storage: sdisk2
+> [  0.000000] (1:server@server) 		'usage' -> 'Cache'
+> [  0.000000] (1:server@server) *** Dump a storage element ***
+> [  0.000000] (1:server@server) Print the content of the storage element: sdisk2
+> [  0.000000] (1:server@server) 	./doc/simgrid/examples/cxx/basic/Slave.cxx size: 10 bytes
+> [  0.000000] (1:server@server) 	./doc/simgrid/examples/cxx/basic/Main.cxx size: 10 bytes
+> [  0.000000] (1:server@server) Server waiting for transfers ...
+> [  0.005000] (2:client@client) client has read 500001 on ./doc/simgrid/examples/cxx/autoDestination/FinalizeTask.cxx
+> [  0.005000] (2:client@client) client sends 500001 to server
+> [  0.026647] (1:server@server) 500001 bytes on 500001 bytes have been written by server on /sd1
+> [  0.417980] (2:client@client) client has read 800000 on ./doc/simgrid/examples/cxx/autoDestination/autoDestination_deployment.xml
+> [  0.417980] (2:client@client) client sends 800000 to server
+> [  0.452225] (1:server@server) 800000 bytes on 800000 bytes have been written by server on /sd1
+> [  1.283559] (2:client@client) client has read 45800000 on ./doc/simgrid/examples/cxx/autoDestination/Slave.cxx
+> [  1.283559] (2:client@client) client sends 45800000 to server
+> [  3.207494] (1:server@server) 45800000 bytes on 45800000 bytes have been written by server on /sd1
+> [  3.208145] (2:client@client) *** GET/SET DATA for storage element: cdisk ***
+> [  3.208145] (2:client@client) Get data: '(null)'
+> [  3.208145] (2:client@client) 	Set and get data: 'Some data'
+> [  3.208145] (1:server@server) *** Storage info on server ***
+> [  3.208145] (1:server@server) 	Storage name: sdisk1, mount name: /sd1
+> [  3.208145] (1:server@server) 		Free size: 322075447159 bytes
+> [  3.208145] (1:server@server) 		Used size: 47100041 bytes
+> [  3.208145] (1:server@server) 	Properties of mounted storage: sdisk1
+> [  3.208145] (1:server@server) 		'usage' -> 'File system'
+> [  3.208145] (1:server@server) *** Dump a storage element ***
+> [  3.208145] (1:server@server) Print the content of the storage element: sdisk1
+> [  3.208145] (1:server@server) 	./scratch/titi.xml size: 800000 bytes
+> [  3.208145] (1:server@server) 	./doc/simgrid/examples/cxx/autoDestination/autoDestination_platform.xml size: 10 bytes
+> [  3.208145] (1:server@server) 	./scratch/tata.cxx size: 45800000 bytes
+> [  3.208145] (1:server@server) 	./doc/simgrid/examples/cxx/autoDestination/Forwarder.cxx size: 10 bytes
+> [  3.208145] (1:server@server) 	./scratch/toto.cxx size: 500001 bytes
+> [  3.208145] (1:server@server) 	./doc/simgrid/examples/cxx/autoDestination/Master.cxx size: 10 bytes
+> [  3.208145] (1:server@server) 	./doc/simgrid/examples/cxx/basic/FinalizeTask.cxx size: 10 bytes
+> [  3.208145] (1:server@server) 	Storage name: sdisk2, mount name: /sd2
+> [  3.208145] (1:server@server) 		Free size: 805306367980 bytes
+> [  3.208145] (1:server@server) 		Used size: 20 bytes
+> [  3.208145] (1:server@server) 	Properties of mounted storage: sdisk2
+> [  3.208145] (1:server@server) 		'usage' -> 'Cache'
+> [  3.208145] (1:server@server) *** Dump a storage element ***
+> [  3.208145] (1:server@server) Print the content of the storage element: sdisk2
+> [  3.208145] (1:server@server) 	./doc/simgrid/examples/cxx/basic/Slave.cxx size: 10 bytes
+> [  3.208145] (1:server@server) 	./doc/simgrid/examples/cxx/basic/Main.cxx size: 10 bytes
+> [  3.208145] (0:@) Simulated time: 3.20814
 
