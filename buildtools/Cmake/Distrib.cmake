@@ -78,10 +78,16 @@ if(enable_lib_static AND NOT WIN32)
 endif()
 
 if(enable_java)
+  if(enable_lib_in_jar)
+    set(SIMGRID_JAR_TO_INSTALL "${SIMGRID_FULL_JAR}")
+  else()
+    set(SIMGRID_JAR_TO_INSTALL "${SIMGRID_JAR}")
+  endif()
   install(TARGETS simgrid-java
       DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/)
-  install(FILES ${SIMGRID_JAR}
-      DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/java/)
+  install(FILES ${SIMGRID_JAR_TO_INSTALL}
+      DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/java/
+      RENAME simgrid.jar)
 endif()
 
 # include files

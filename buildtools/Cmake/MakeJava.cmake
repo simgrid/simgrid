@@ -56,6 +56,7 @@ endif()
 ## Files to include in simgrid.jar
 ##
 set(SIMGRID_JAR "${CMAKE_BINARY_DIR}/simgrid.jar")
+set(SIMGRID_FULL_JAR "${CMAKE_BINARY_DIR}/simgrid_full.jar")
 set(MANIFEST_IN_FILE "${CMAKE_HOME_DIRECTORY}/src/bindings/java/MANIFEST.MF.in")
 set(MANIFEST_FILE "${CMAKE_BINARY_DIR}/src/bindings/java/MANIFEST.MF")
 
@@ -103,7 +104,9 @@ add_custom_command(
   COMMAND ${CMAKE_COMMAND} -E copy ${MANIFEST_IN_FILE} ${MANIFEST_FILE}
   COMMAND ${CMAKE_COMMAND} -E echo "Specification-Version: \\\"${SIMGRID_VERSION_MAJOR}.${SIMGRID_VERSION_MINOR}.${SIMGRID_VERSION_PATCH}\\\"" >> ${MANIFEST_FILE}
   COMMAND ${CMAKE_COMMAND} -E echo "Implementation-Version: \\\"${GIT_VERSION}\\\"" >> ${MANIFEST_FILE}
-  COMMAND ${JAVA_ARCHIVE} -uvmf ${MANIFEST_FILE} ${SIMGRID_JAR} "NATIVE"
+  COMMAND ${JAVA_ARCHIVE} -uvmf ${MANIFEST_FILE} ${SIMGRID_JAR}
+  COMMAND ${CMAKE_COMMAND} -E copy ${SIMGRID_JAR} ${SIMGRID_FULL_JAR}
+  COMMAND ${JAVA_ARCHIVE} -uvf ${SIMGRID_FULL_JAR} "NATIVE"
   COMMAND ${CMAKE_COMMAND} -E remove ${SIMGRID_JAR}_finalized
   COMMAND ${CMAKE_COMMAND} -E touch ${SIMGRID_JAR}_finalized
   )
