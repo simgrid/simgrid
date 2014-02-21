@@ -498,7 +498,7 @@ endif()
 ###############
 ## GIT version check
 ##
-if(EXISTS ${CMAKE_HOME_DIRECTORY}/.git/ AND NOT WIN32)
+if(EXISTS ${CMAKE_HOME_DIRECTORY}/.git/)
   execute_process(COMMAND git remote
   COMMAND head -n 1
   WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY}/.git/
