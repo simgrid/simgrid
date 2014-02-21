@@ -531,6 +531,8 @@ if(EXISTS ${CMAKE_HOME_DIRECTORY}/.git/ AND NOT WIN32)
     message(STATUS "Git date: ${GIT_DATE}")
     string(REGEX REPLACE " .*" "" GIT_VERSION "${GIT_VERSION}")
   endif()
+elseif(EXISTS ${CMAKE_HOME_DIRECTORY}/.gitversion)
+  FILE(STRINGS ${CMAKE_HOME_DIRECTORY}/.gitversion GIT_VERSION)
 endif()
 
 if(release)
