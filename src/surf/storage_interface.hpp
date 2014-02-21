@@ -112,7 +112,6 @@ public:
    * @param content_name [description]
    * @param content_type [description]
    * @param size [description]
-   * @param model_props Dictionary of model specific properties associated to this Storage
    */
   Storage(ModelPtr model, const char *name, xbt_dict_t props,
           const char* type_id, char *content_name, char *content_type,

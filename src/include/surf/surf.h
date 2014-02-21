@@ -82,7 +82,7 @@ typedef struct RoutingEdge RoutingEdge;
 typedef struct RoutingPlatf RoutingPlatf;
 #endif
 
-/** \ingroup SURF_models
+/** @ingroup SURF_c_bindings
  *  \brief Model datatype
  *
  *  Generic data structure for a model. The workstations,
@@ -102,7 +102,7 @@ typedef WorkstationCLM03 *surf_workstation_CLM03_t;
 typedef NetworkCm02Link *surf_network_link_t;
 typedef Cpu *surf_cpu_t;
 
-/** \ingroup SURF_actions
+/** @ingroup SURF_c_bindings 
  *  \brief Action structure
  *
  *  Never create s_surf_action_t by yourself ! The actions are created
@@ -111,8 +111,6 @@ typedef Cpu *surf_cpu_t;
  *  \see e_surf_action_state_t
  */
 typedef Action *surf_action_t;
-typedef ActionLmm *surf_action_lmm_t;
-typedef StorageActionLmm *surf_storage_action_lmm_t;
 
 typedef As *AS_t;
 typedef RoutingEdge *routing_edge_t;

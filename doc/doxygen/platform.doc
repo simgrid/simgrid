@@ -622,12 +622,14 @@ to define additional information on this storage_type following the
 attribute/value schema. You may want to use it to give information to
 the tool you use for rendering your simulation, for example.
 
+\verbatim
 <storage_type id="single_HDD" model="linear_no_lat" size="4000" content_type="txt_unix">
   <model_prop id="Bwrite" value="30MBps" />
   <model_prop id="Bread" value="100MBps" />
   <model_prop id="Bconnection" value="150MBps" />
   <b><prop id="Brand" value="Western Digital" /></b>
 </storage_type>
+\endverbatim
 
 \subsubsection pf_sto_st storage
 

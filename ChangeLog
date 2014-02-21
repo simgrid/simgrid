@@ -21,6 +21,10 @@ SimGrid (3.11) NOT RELEASED; urgency=low
 
  EXAMPLES:
  * Add cloud examples using new VMs
+   - examples/msg/cloud/two_tasks_vm.tesh
+   - examples/msg/cloud/simple_vm.tesh
+   - examples/java/cloud/cloud.tesh
+   - examples/java/cloud/migration/migration.tesh
 
  MSG:
  * Add virtual machine
@@ -44,10 +48,17 @@ SimGrid (3.11) NOT RELEASED; urgency=low
  * Translate surf routings from C to C++
  * Add callbacks using sigc++ or boost::signals2
    - Add callback functions for resource creation/destruction
-   - Add callback finctions for resource updtating status
+   - Add callback finctions for action state change
    - Handle Energy as a plugin
  * Replace swag by boost::intrusive 
+ * Add new routing model for torus clusters
  * More documentation
+
+ SMPI:
+ * hostfiles support host:nb_processes construct to deploy several processes on
+   one node
+ * Collective communication algorithms should not crash if used with
+   improper number of nodes and report the error.
 
  Build System:
  * Supernovae build mode is definitively removed. It was used to improve

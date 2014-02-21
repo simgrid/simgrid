@@ -118,13 +118,19 @@ details).
  *
  */
 
+/** @defgroup msg_storage_management Storage Management Functions
+ *  @ingroup MSG_API
+ *  @brief This section describes the storage structure of MSG
+ *         (#msg_storage_t) and the functions for managing it. It
+ *   is based on POSIX functions.
+ */
+
 /** @defgroup msg_file_management File Management Functions
  *  @ingroup MSG_API
  *  @brief This section describes the file structure of MSG
  *         (#msg_file_t) and the functions for managing it. It
  *   is based on POSIX functions.
  */
-
 
 /**
 @defgroup msg_trace_driven Trace-driven simulations
