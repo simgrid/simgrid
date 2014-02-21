@@ -47,7 +47,14 @@ SimGrid (3.11) NOT RELEASED; urgency=low
    - Add callback finctions for resource updtating status
    - Handle Energy as a plugin
  * Replace swag by boost::intrusive 
+ * Add new routing model for torus clusters
  * More documentation
+
+ SMPI:
+ * hostfiles support host:nb_processes construct to deploy several processes on
+   one node
+ * Collective communication algorithms should not crash if used with
+   improper number of nodes and report the error.
 
  Build System:
  * Supernovae build mode is definitively removed. It was used to improve
