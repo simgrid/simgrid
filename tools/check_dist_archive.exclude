@@ -5,6 +5,7 @@
 # lines beginning with '+ ' are expected in git only
 # each line is an extended regexp that should match full file names
 
+- \.gitversion
 - Makefile
 - doc/html/.*
 
