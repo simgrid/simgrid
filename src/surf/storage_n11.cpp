@@ -314,7 +314,7 @@ void StorageN11Model::updateActionsState(double /*now*/, double delta)
        * (note that the next sizes are of type sg_size_t). */
       long incr = delta * rate + MAXMIN_PRECISION;
       action->p_storage->m_usedSize += (incr - action->p_file->size); // disk usage
-      action->p_file->size = incr; // file size
+      action->p_file->size += incr; // file size
 
       sg_size_t *psize = xbt_new(sg_size_t,1);
       *psize = action->p_file->size;

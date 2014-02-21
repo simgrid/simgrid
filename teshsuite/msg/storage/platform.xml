@@ -4,33 +4,35 @@
 <platform version="3">
 	<AS id="AS0" routing="Full">
 		<!-- STORAGE TYPES -->
-		<storage_type id="crucial" model="SSD" size="500">
+		<storage_type id="crucial" model="SSD" size="500GiB">
 			<model_prop id="Bwrite" value="30000000" /> <!-- 30Mo/s -->
 			<model_prop id="Bread" value="100000000" /> <!-- 100Mo/s -->
 			<model_prop id="Bconnection" value="150000000" /> <!-- 150Mo/s -->
 		</storage_type>
 
-		<storage_type id="single_HDD" model="linear_no_lat" size="500GiB" content_type="txt_unix">
+		<storage_type id="single_HDD" model="linear_no_lat" size="750GiB" content_type="txt_unix">
 			<model_prop id="Bwrite" value="30MBps" />
 			<model_prop id="Bread" value="100MBps" />
 			<model_prop id="Bconnection" value="150MBps" />
 		</storage_type>
 
 		<storage_type id="single_SSD" model="linear_no_lat"
-			content="content/storage_content.txt" size="500GiB">
+			content="content/storage_content.txt" size="300GiB">
 			<model_prop id="Bwrite" value="30MBps" />
 			<model_prop id="Bread" value="100MBps" />
 			<model_prop id="Bconnection" value="150MBps" />
 		</storage_type>
 
 		<!-- DISKS -->
-		<storage id="cdisk" typeId="single_HDD" content="msg/storage/storage_content_c.txt">
-		   <prop id="filename" value="prop.xml"/>
-   		   <prop id="date" value="31-08-12"/>
-           <prop id="author" value="pnavarro"/>
+		<storage id="cdisk" typeId="single_HDD" content="msg/storage/storage_content_c.txt" />
+
+		<storage id="sdisk1" typeId="single_SSD" content="msg/storage/storage_content_s1.txt">
+			<prop id="usage" value="File system"/>
 		</storage>
-		<storage id="sdisk1" typeId="single_SSD" content="msg/storage/storage_content_s1.txt" />
-		<storage id="sdisk2" typeId="single_HDD" content="msg/storage/storage_content_s2.txt" />
+			
+		<storage id="sdisk2" typeId="single_HDD" content="msg/storage/storage_content_s2.txt" >
+			<prop id="usage" value="Cache"/>
+		</storage>
 
 		<!-- HOSTS -->
 		<host id="client" power="1000000000">
