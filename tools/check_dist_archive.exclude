@@ -45,6 +45,7 @@
 
 + tools/check_dist_archive
 + tools/check_dist_archive\.exclude
++ tools/generate-multi-jar\.py
 + tools/normalize-pointers\.py
 + tools/update_copyright_header
 
