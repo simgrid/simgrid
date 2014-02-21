@@ -45,38 +45,12 @@ static void pointers_pair_free_voidp(void *p){
 /************************** Snapshot comparison *******************************/
 /******************************************************************************/
 
-static int already_compared_pointers(void *p1, void *p2){
-
-  if(xbt_dynar_is_empty(compared_pointers))
-    return -1;
-
-  unsigned int cursor = 0;
-  int start = 0;
-  int end = xbt_dynar_length(compared_pointers) - 1;
-  pointers_pair_t pair;
-
-  while(start <= end){
-    cursor = (start + end) / 2;
-    pair = (pointers_pair_t)xbt_dynar_get_as(compared_pointers, cursor, pointers_pair_t);
-    if(pair->p1 == p1){
-      if(pair->p2 == p2)
-        return 0;
-      else if(pair->p2 < p2)
-        start = cursor + 1;
-      else
-        end = cursor - 1;
-    }else if(pair->p1 < p1){
-      start = cursor + 1;
-    }else{
-      end = cursor - 1 ;
-    }
-  }
-
-  return -1;
-
-}
-
-static void add_compared_pointers(void *p1, void *p2){
+/** \brief Try to add a pair a compared pointers to the set of compared pointers
+ *
+ *  \result !=0 if the pointers were added (they were not in the set),
+ *      0 otherwise (they were already in the set)
+ */
+static int add_compared_pointers(void *p1, void *p2){
 
   pointers_pair_t new_pair = xbt_new0(s_pointers_pair_t, 1);
   new_pair->p1 = p1;
@@ -84,7 +58,7 @@ static void add_compared_pointers(void *p1, void *p2){
   
   if(xbt_dynar_is_empty(compared_pointers)){
     xbt_dynar_push(compared_pointers, &new_pair);
-    return;
+    return 1;
   }
 
   unsigned int cursor = 0;
@@ -92,36 +66,37 @@ static void add_compared_pointers(void *p1, void *p2){
   int end = xbt_dynar_length(compared_pointers) - 1;
   pointers_pair_t pair = NULL;
 
+  pointers_pair_t* p = (pointers_pair_t*) xbt_dynar_get_ptr(compared_pointers, 0);
+
   while(start <= end){
     cursor = (start + end) / 2;
-    pair = (pointers_pair_t)xbt_dynar_get_as(compared_pointers, cursor, pointers_pair_t);
-    if(pair->p1 == p1){
-      if(pair->p2 == p2){
-        pointers_pair_free(new_pair);
-        return;
-      }else if(pair->p2 < p2)
-        start = cursor + 1;
-      else
-        end = cursor - 1;
-    }else if(pair->p1 < p1){
+    pair = p[cursor];
+    if(pair->p1 < p1){
       start = cursor + 1;
-    }else{
+    } else if(pair->p1 > p1) {
       end = cursor - 1 ;
+    } else if(pair->p2 < p2){
+      start = cursor + 1;
+    } else if(pair->p2 > p2) {
+      end = cursor - 1 ;
+    } else {
+      pointers_pair_free(new_pair);
+      return 0;
     }
   }
 
-  if(pair->p1 == p1){
-    if(pair->p2 < p2)
-      xbt_dynar_insert_at(compared_pointers, cursor + 1, &new_pair);
-    else
-      xbt_dynar_insert_at(compared_pointers, cursor, &new_pair); 
-  }else{
-    if(pair->p1 < p1)
-      xbt_dynar_insert_at(compared_pointers, cursor + 1, &new_pair);
-    else
-      xbt_dynar_insert_at(compared_pointers, cursor, &new_pair);   
-  }
+  if(pair->p1 < p1)
+    xbt_dynar_insert_at(compared_pointers, cursor + 1, &new_pair);
+  else if(pair->p1 > p1)
+    xbt_dynar_insert_at(compared_pointers, cursor, &new_pair);
+  else if(pair->p2 < p2)
+    xbt_dynar_insert_at(compared_pointers, cursor + 1, &new_pair);
+  else if(pair->p2 > p2)
+    xbt_dynar_insert_at(compared_pointers, cursor, &new_pair);
+  else
+    xbt_die("Unrecheable");
 
+  return 1;
 }
 
 static int compare_areas_with_type(void *area1, void *area2, mc_object_info_t info, mc_object_info_t other_info, dw_type_t type, int region_size, int region_type, void *start_data, int pointer_level){
@@ -190,9 +165,8 @@ static int compare_areas_with_type(void *area1, void *area2, mc_object_info_t in
       
       if(addr_pointed1 == NULL && addr_pointed2 == NULL)
         return 0;
-      if(already_compared_pointers(addr_pointed1, addr_pointed2) != -1)
+      if(!add_compared_pointers(addr_pointed1, addr_pointed2))
         return 0;
-      add_compared_pointers(addr_pointed1, addr_pointed2);
 
       pointer_level++;
       
