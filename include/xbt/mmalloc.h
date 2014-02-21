@@ -63,7 +63,6 @@ int mmalloc_linear_compare_heap(xbt_mheap_t heap1, xbt_mheap_t heap2);
 int init_heap_information(xbt_mheap_t heap1, xbt_mheap_t heap2, xbt_dynar_t to_ignore1, xbt_dynar_t to_ignore2);
 int compare_heap_area(void *area1, void* area2, xbt_dynar_t previous, mc_object_info_t info, mc_object_info_t other_info, char *type, int pointer_level);
 void reset_heap_information(void);
-int get_pointed_area_size(void *area, int heap);
 
 size_t mmalloc_get_bytes_used(xbt_mheap_t);
 ssize_t mmalloc_get_busy_size(xbt_mheap_t, void *ptr);
