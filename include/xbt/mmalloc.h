@@ -20,6 +20,7 @@
 
 #include "xbt/dynar.h"
 #include "xbt/dict.h"
+#include "mc/datatypes.h"
 
 /* Datatype representing a separate heap. The whole point of the mmalloc module
  * is to allow several such heaps in the process. It thus works by redefining
@@ -38,6 +39,7 @@ void *mmalloc_no_memset(xbt_mheap_t mdp, size_t size);
 
 /* Re-allocate the previously allocated block in void*, making the new block
    SIZE bytes long.  */
+
 XBT_PUBLIC( void ) *mrealloc(xbt_mheap_t md, void *ptr, size_t size);
 
 /* Free a block allocated by `mmalloc', `mrealloc' or `mcalloc'.  */
@@ -56,12 +58,11 @@ XBT_PUBLIC( xbt_mheap_t ) mmalloc_get_default_md(void);
 void mmalloc_set_current_heap(xbt_mheap_t new_heap);
 xbt_mheap_t mmalloc_get_current_heap(void);
 
-int mmalloc_compare_heap(xbt_mheap_t heap1, xbt_mheap_t heap2, xbt_dict_t all_types, xbt_dict_t other_types);
+int mmalloc_compare_heap(xbt_mheap_t heap1, xbt_mheap_t heap2, mc_object_info_t info, mc_object_info_t other_info);
 int mmalloc_linear_compare_heap(xbt_mheap_t heap1, xbt_mheap_t heap2);
 int init_heap_information(xbt_mheap_t heap1, xbt_mheap_t heap2, xbt_dynar_t to_ignore1, xbt_dynar_t to_ignore2);
-int compare_heap_area(void *area1, void* area2, xbt_dynar_t previous, xbt_dict_t all_types, xbt_dict_t other_types, char *type, int pointer_level);
+int compare_heap_area(void *area1, void* area2, xbt_dynar_t previous, mc_object_info_t info, mc_object_info_t other_info, char *type, int pointer_level);
 void reset_heap_information(void);
-int get_pointed_area_size(void *area, int heap);
 
 size_t mmalloc_get_bytes_used(xbt_mheap_t);
 ssize_t mmalloc_get_busy_size(xbt_mheap_t, void *ptr);

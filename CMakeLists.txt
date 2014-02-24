@@ -4,7 +4,7 @@ if(WIN32)
   SET(CMAKE_RC_COMPILER "windres")
 endif()
 project(SimGrid C)
-if (enable_gtnets OR enable_ns3)
+if (enable_gtnets OR enable_ns3 OR enable_model-checking)
   enable_language(CXX)
 endif()
 if (NOT DEFINED enable_smpi OR enable_smpi) # smpi is enabled by default

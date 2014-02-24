@@ -172,6 +172,10 @@ static void visited_state_free_voidp(void *s){
   visited_state_free((mc_visited_state_t) * (void **) s);
 }
 
+/** \brief Save the current state
+ *
+ *  \return Snapshot of the current state.
+ */
 static mc_visited_state_t visited_state_new(){
 
   mc_visited_state_t new_state = NULL;
@@ -186,6 +190,22 @@ static mc_visited_state_t visited_state_new(){
   
 }
 
+/** \brief Find a suitable subrange of candidate duplicates for a given state
+ *
+ *  \param all_ pairs dynamic array of states with candidate duplicates of the current state;
+ *  \param pair current state;
+ *  \param min (output) index of the beginning of the the subrange
+ *  \param max (output) index of the enf of the subrange
+ *
+ *  Given a suitably ordered array of state, this function extracts a subrange
+ *  (with index *min <= i <= *max) with candidate duplicates of the given state.
+ *  This function uses only fast discriminating criterions and does not use the
+ *  full state comparison algorithms.
+ *
+ *  The states in all_pairs MUST be ordered using a (given) weak order
+ *  (based on nb_processes and heap_bytes_used).
+ *  The subrange is the subrange of "equivalence" of the given state.
+ */
 static int get_search_interval(xbt_dynar_t all_states, mc_visited_state_t state, int *min, int *max){
 
   int raw_mem_set = (mmalloc_get_current_heap() == raw_heap);
@@ -240,6 +260,10 @@ static int get_search_interval(xbt_dynar_t all_states, mc_visited_state_t state,
   return cursor;
 }
 
+/** \brief Take a snapshot the current state and process it.
+ *
+ *  \return number of the duplicate state or -1 (not visited)
+ */
 static int is_visited_state(){
 
   if(_sg_mc_visited == 0)
@@ -270,6 +294,8 @@ static int is_visited_state(){
     index = get_search_interval(visited_states, new_state, &min, &max);
 
     if(min != -1 && max != -1){
+
+      // Parallell implementation
       /*res = xbt_parmap_mc_apply(parmap, snapshot_compare, xbt_dynar_get_ptr(visited_states, min), (max-min)+1, new_state);
       if(res != -1){
         state_test = (mc_visited_state_t)xbt_dynar_get_as(visited_states, (min+res)-1, mc_visited_state_t);
@@ -287,10 +313,13 @@ static int is_visited_state(){
           MC_UNSET_RAW_MEM;
         return new_state->other_num;
         }*/
+
       cursor = min;
       while(cursor <= max){
         state_test = (mc_visited_state_t)xbt_dynar_get_as(visited_states, cursor, mc_visited_state_t);
         if(snapshot_compare(state_test, new_state) == 0){
+          // The state has been visited:
+
           if(state_test->other_num == -1)
             new_state->other_num = state_test->num;
           else
@@ -299,16 +328,24 @@ static int is_visited_state(){
             XBT_DEBUG("State %d already visited ! (equal to state %d)", new_state->num, state_test->num);
           else
             XBT_DEBUG("State %d already visited ! (equal to state %d (state %d in dot_output))", new_state->num, state_test->num, new_state->other_num);
+
+          // Replace the old state with the new one (why?):
           xbt_dynar_remove_at(visited_states, cursor, NULL);
           xbt_dynar_insert_at(visited_states, cursor, &new_state);
+
           if(!raw_mem_set)
             MC_UNSET_RAW_MEM;
           return new_state->other_num;
         }
         cursor++;
       }
+
+      // The state has not been visited, add it to the list:
       xbt_dynar_insert_at(visited_states, min, &new_state);
+
     }else{
+
+      // The state has not been visited: insert the state in the dynamic array.
       state_test = (mc_visited_state_t)xbt_dynar_get_as(visited_states, index, mc_visited_state_t);
       if(state_test->nb_processes < new_state->nb_processes){
         xbt_dynar_insert_at(visited_states, index+1, &new_state);
@@ -318,9 +355,13 @@ static int is_visited_state(){
         else
           xbt_dynar_insert_at(visited_states, index, &new_state);
       }
+
     }
 
+    // We have reached the maximum number of stored states;
     if(xbt_dynar_length(visited_states) > _sg_mc_visited){
+
+      // Find the (index of the) older state:
       int min2 = mc_stats->expanded_states;
       unsigned int cursor2 = 0;
       unsigned int index2 = 0;
@@ -330,6 +371,8 @@ static int is_visited_state(){
           min2 = state_test->num;
         }
       }
+
+      // and drop it:
       xbt_dynar_remove_at(visited_states, index2, NULL);
     }
 
@@ -413,9 +456,8 @@ void MC_dpor_init()
 }
 
 
-/**
- *   \brief Perform the model-checking operation using a depth-first search exploration
- *         with Dynamic Partial Order Reductions
+/** \brief Model-check the application using a DFS exploration
+ *         with DPOR (Dynamic Partial Order Reductions)
  */
 void MC_dpor(void)
 {

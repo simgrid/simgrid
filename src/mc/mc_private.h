@@ -28,6 +28,9 @@
 #include "xbt/strbuff.h"
 #include "xbt/parmap.h"
 
+typedef struct s_dw_frame s_dw_frame_t, *dw_frame_t;
+typedef struct s_mc_function_index_item s_mc_function_index_item_t, *mc_function_index_item_t;
+
 /****************************** Snapshots ***********************************/
 
 #define NB_REGIONS 3 /* binary data (data + BSS) (type = 2), libsimgrid data (data + BSS) (type = 1), std_heap (type = 0)*/ 
@@ -45,14 +48,28 @@ typedef struct s_mc_snapshot{
   size_t *stack_sizes;
   xbt_dynar_t stacks;
   xbt_dynar_t to_ignore;
-  char hash_global[41];
-  char hash_local[41];
+  uint64_t hash;
 } s_mc_snapshot_t, *mc_snapshot_t;
+
+/** Information about a given stack frame
+ *
+ */
+typedef struct s_mc_stack_frame {
+  /** Instruction pointer */
+  unw_word_t ip;
+  /** Stack pointer */
+  unw_word_t sp;
+  unw_word_t frame_base;
+  dw_frame_t frame;
+  char* frame_name;
+  unw_cursor_t unw_cursor;
+} s_mc_stack_frame_t, *mc_stack_frame_t;
 
 typedef struct s_mc_snapshot_stack{
   xbt_dynar_t local_variables;
   void *stack_pointer;
   void *real_address;
+  xbt_dynar_t stack_frames; // mc_stack_frame_t
 }s_mc_snapshot_stack_t, *mc_snapshot_stack_t;
 
 typedef struct s_mc_global_t{
@@ -236,8 +253,6 @@ typedef struct s_mc_comparison_times{
   double libsimgrid_global_variables_comparison_time;
   double heap_comparison_time;
   double stacks_comparison_time;
-  double hash_global_variables_comparison_time;
-  double hash_local_variables_comparison_time;
 }s_mc_comparison_times_t, *mc_comparison_times_t;
 
 extern __thread mc_comparison_times_t mc_comp_times;
@@ -249,7 +264,6 @@ void print_comparison_times(void);
 
 //#define MC_DEBUG 1
 #define MC_VERBOSE 1
-
 
 /********************************** DPOR for safety property **************************************/
 
@@ -282,8 +296,6 @@ extern xbt_fifo_t mc_stack_liveness;
 extern mc_global_t initial_state_liveness;
 extern xbt_automaton_t _mc_property_automaton;
 extern int compare;
-extern xbt_dynar_t mc_stack_comparison_ignore;
-extern xbt_dynar_t mc_data_bss_comparison_ignore;
 
 typedef struct s_mc_pair{
   int num;
@@ -321,7 +333,10 @@ void MC_dump_stack_liveness(xbt_fifo_t stack);
 
 /********************************** Variables with DWARF **********************************/
 
-typedef struct s_mc_object_info {
+#define MC_OBJECT_INFO_EXECUTABLE 1
+
+struct s_mc_object_info {
+  size_t flags;
   char* file_name;
   char *start_exec, *end_exec; // Executable segment
   char *start_rw, *end_rw; // Read-write segment
@@ -329,10 +344,16 @@ typedef struct s_mc_object_info {
   xbt_dict_t local_variables; // xbt_dict_t<frame_name, dw_frame_t>
   xbt_dynar_t global_variables; // xbt_dynar_t<dw_variable_t>
   xbt_dict_t types; // xbt_dict_t<origin as hexadecimal string, dw_type_t>
-} s_mc_object_info_t, *mc_object_info_t;
+  xbt_dict_t types_by_name; // xbt_dict_t<name, dw_type_t> (full defined type only)
+
+  // Here we sort the minimal information for an efficient (and cache-efficient)
+  // lookup of a function given an instruction pointer.
+  // The entries are sorted by low_pc and a binary search can be used to look them up.
+  xbt_dynar_t functions_index;
+};
 
 mc_object_info_t MC_new_object_info(void);
-mc_object_info_t MC_find_object_info(memory_map_t maps, char* name);
+mc_object_info_t MC_find_object_info(memory_map_t maps, char* name, int executable);
 void MC_free_object_info(mc_object_info_t* p);
 
 void MC_dwarf_get_variables(mc_object_info_t info);
@@ -340,8 +361,14 @@ void MC_dwarf_get_variables_libdw(mc_object_info_t info);
 const char* MC_dwarf_attrname(int attr);
 const char* MC_dwarf_tagname(int tag);
 
+dw_frame_t MC_find_function_by_ip(void* ip);
+mc_object_info_t MC_ip_find_object_info(void* ip);
+
 extern mc_object_info_t mc_libsimgrid_info;
 extern mc_object_info_t mc_binary_info;
+
+void MC_find_object_address(memory_map_t maps, mc_object_info_t result);
+void MC_post_process_types(mc_object_info_t info);
 
 typedef enum {
   e_dw_loclist,
@@ -400,8 +427,8 @@ typedef struct s_dw_location{
 }s_dw_location_t, *dw_location_t;
 
 typedef struct s_dw_location_entry{
-  long lowpc;
-  long highpc;
+  void* lowpc;
+  void* highpc;
   dw_location_t location;
 }s_dw_location_entry_t, *dw_location_entry_t;
 
@@ -410,6 +437,7 @@ typedef struct s_dw_variable{
   int global;
   char *name;
   char *type_origin;
+  dw_type_t type;
 
   // Use either of:
   dw_location_t location;
@@ -417,7 +445,7 @@ typedef struct s_dw_variable{
 
 }s_dw_variable_t, *dw_variable_t;
 
-typedef struct s_dw_frame{
+struct s_dw_frame{
   char *name;
   void *low_pc;
   void *high_pc;
@@ -425,7 +453,12 @@ typedef struct s_dw_frame{
   xbt_dynar_t /* <dw_variable_t> */ variables; /* Cannot use dict, there may be several variables with the same name (in different lexical blocks)*/
   unsigned long int start; /* DWARF offset of the subprogram */
   unsigned long int end;   /* Dwarf offset of the next sibling */
-}s_dw_frame_t, *dw_frame_t;
+};
+
+struct s_mc_function_index_item {
+  void* low_pc, *high_pc;
+  dw_frame_t function;
+};
 
 void dw_type_free(dw_type_t t);
 void dw_variable_free(dw_variable_t v);
@@ -435,10 +468,12 @@ void MC_dwarf_register_global_variable(mc_object_info_t info, dw_variable_t vari
 void MC_register_variable(mc_object_info_t info, dw_frame_t frame, dw_variable_t variable);
 void MC_dwarf_register_non_global_variable(mc_object_info_t info, dw_frame_t frame, dw_variable_t variable);
 void MC_dwarf_register_variable(mc_object_info_t info, dw_frame_t frame, dw_variable_t variable);
+void* MC_object_base_address(mc_object_info_t info);
 
 /********************************** DWARF **********************************/
 
 Dwarf_Off MC_dwarf_resolve_location(unw_cursor_t* c, dw_location_t location, void* frame_pointer_address);
+void* mc_find_frame_base(void* ip, dw_frame_t frame, unw_cursor_t* unw_cursor);
 
 /********************************** Miscellaneous **********************************/
 
@@ -446,7 +481,7 @@ typedef struct s_local_variable{
   char *frame;
   unsigned long ip;
   char *name;
-  char *type;
+  dw_type_t type;
   void *address;
   int region;
 }s_local_variable_t, *local_variable_t;
@@ -469,6 +504,24 @@ typedef struct s_mc_comm_pattern{
 extern xbt_dynar_t communications_pattern;
 
 void get_comm_pattern(xbt_dynar_t communications_pattern, smx_simcall_t request, int call);
+
+/* *********** Sets *********** */
+
+typedef struct s_mc_address_set *mc_address_set_t;
+
+mc_address_set_t mc_address_set_new();
+mc_address_set_t mc_address_set_free(mc_address_set_t* p);
+void mc_address_add(mc_address_set_t p, const void* value);
+bool mc_address_test(mc_address_set_t p, const void* value);
+
+/* *********** Hash *********** */
+
+/** \brief Hash the current state
+ *  \param num_state number of states
+ *  \param stacks stacks (mc_snapshot_stak_t) used fot the stack unwinding informations
+ *  \result resulting hash
+ * */
+uint64_t mc_hash_processes_state(int num_state, xbt_dynar_t stacks);
 
 #endif
 

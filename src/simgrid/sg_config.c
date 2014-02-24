@@ -592,6 +592,12 @@ void sg_config_init(int *argc, char **argv)
                      xbt_cfgelm_boolean, 0, 1, _mc_cfg_cb_timeout, NULL);
     xbt_cfg_setdefault_boolean(_sg_cfg_set, "model-check/timeout", "no");
 
+    /* Enable/disable global hash computation with model-checking */
+    xbt_cfg_register(&_sg_cfg_set, "model-check/hash",
+                     "Enable/Disable state hash for state comparison",
+                     xbt_cfgelm_boolean, 0, 1, _mc_cfg_cb_hash, NULL);
+    xbt_cfg_setdefault_boolean(_sg_cfg_set, "model-check/hash", "no");
+
     /* Set max depth exploration */
     xbt_cfg_register(&_sg_cfg_set, "model-check/max_depth",
                      "Specify the max depth of exploration (default : 1000)",

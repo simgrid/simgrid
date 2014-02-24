@@ -30,6 +30,7 @@ int _sg_do_model_check = 0;
 int _sg_mc_checkpoint=0;
 char* _sg_mc_property_file=NULL;
 int _sg_mc_timeout=0;
+int _sg_mc_hash=0;
 int _sg_mc_max_depth=1000;
 int _sg_mc_visited=0;
 char *_sg_mc_dot_output_file = NULL;
@@ -69,6 +70,13 @@ void _mc_cfg_cb_timeout(const char *name, int pos) {
     xbt_die("You are specifying a value to enable/disable timeout for wait requests after the initialization (through MSG_config?), but model-checking was not activated at config time (through --cfg=model-check:1). This won't work, sorry.");
   }
   _sg_mc_timeout= xbt_cfg_get_boolean(_sg_cfg_set, name);
+}
+
+void _mc_cfg_cb_hash(const char *name, int pos) {
+  if (_sg_cfg_init_status && !_sg_do_model_check) {
+    xbt_die("You are specifying a value to enable/disable the use of global hash to speedup state comparaison, but model-checking was not activated at config time (through --cfg=model-check:1). This won't work, sorry.");
+  }
+  _sg_mc_hash= xbt_cfg_get_boolean(_sg_cfg_set, name);
 }
 
 void _mc_cfg_cb_max_depth(const char *name, int pos) {
@@ -123,8 +131,6 @@ mc_object_info_t mc_libsimgrid_info = NULL;
 mc_object_info_t mc_binary_info = NULL;
 
 /* Ignore mechanism */
-xbt_dynar_t mc_stack_comparison_ignore;
-xbt_dynar_t mc_data_bss_comparison_ignore;
 extern xbt_dynar_t mc_heap_comparison_ignore;
 extern xbt_dynar_t stacks_areas;
 
@@ -181,23 +187,153 @@ void dw_variable_free_voidp(void *t){
   dw_variable_free((dw_variable_t) * (void **) t);
 }
 
-// object_info
+// ***** object_info
 
 mc_object_info_t MC_new_object_info(void) {
   mc_object_info_t res = xbt_new0(s_mc_object_info_t, 1);
   res->local_variables = xbt_dict_new_homogeneous(NULL);
   res->global_variables = xbt_dynar_new(sizeof(dw_variable_t), dw_variable_free_voidp);
   res->types = xbt_dict_new_homogeneous(NULL);
+  res->types_by_name = xbt_dict_new_homogeneous(NULL);
   return res;
 }
+
 
 void MC_free_object_info(mc_object_info_t* info) {
   xbt_free(&(*info)->file_name);
   xbt_dict_free(&(*info)->local_variables);
   xbt_dynar_free(&(*info)->global_variables);
   xbt_dict_free(&(*info)->types);
+  xbt_dict_free(&(*info)->types_by_name);
   xbt_free(info);
+  xbt_dynar_free(&(*info)->functions_index);
   *info = NULL;
+}
+
+// ***** Helpers
+
+void* MC_object_base_address(mc_object_info_t info) {
+  void* result = info->start_exec;
+  if(info->start_rw!=NULL && result > (void*) info->start_rw) result = info->start_rw;
+  if(info->start_ro!=NULL && result > (void*) info->start_ro) result = info->start_ro;
+  return result;
+}
+
+// ***** Functions index
+
+static int MC_compare_frame_index_items(mc_function_index_item_t a, mc_function_index_item_t b) {
+  if(a->low_pc < b->low_pc)
+    return -1;
+  else if(a->low_pc == b->low_pc)
+    return 0;
+  else
+    return 1;
+}
+
+static void MC_make_functions_index(mc_object_info_t info) {
+  xbt_dynar_t index = xbt_dynar_new(sizeof(s_mc_function_index_item_t), NULL);
+
+  // Populate the array:
+  dw_frame_t frame = NULL;
+  xbt_dict_cursor_t cursor = NULL;
+  const char* name = NULL;
+  xbt_dict_foreach(info->local_variables, cursor, name, frame) {
+    if(frame->low_pc==NULL)
+      continue;
+    s_mc_function_index_item_t entry;
+    entry.low_pc = frame->low_pc;
+    entry.high_pc = frame->high_pc;
+    entry.function = frame;
+    xbt_dynar_push(index, &entry);
+  }
+
+  mc_function_index_item_t base = (mc_function_index_item_t) xbt_dynar_get_ptr(index, 0);
+
+  // Sort the array by low_pc:
+  qsort(base,
+    xbt_dynar_length(index),
+    sizeof(s_mc_function_index_item_t),
+    (int (*)(const void *, const void *))MC_compare_frame_index_items);
+
+  info->functions_index = index;
+}
+
+mc_object_info_t MC_ip_find_object_info(void* ip) {
+  mc_object_info_t infos[2] = { mc_binary_info, mc_libsimgrid_info };
+  size_t n = 2;
+  size_t i;
+  for(i=0; i!=n; ++i) {
+    if(ip >= (void*)infos[i]->start_exec && ip <= (void*)infos[i]->end_exec) {
+      return infos[i];
+    }
+  }
+  return NULL;
+}
+
+static dw_frame_t MC_find_function_by_ip_and_object(void* ip, mc_object_info_t info) {
+  xbt_dynar_t dynar = info->functions_index;
+  mc_function_index_item_t base = (mc_function_index_item_t) xbt_dynar_get_ptr(dynar, 0);
+  int i = 0;
+  int j = xbt_dynar_length(dynar) - 1;
+  while(j>=i) {
+    int k = i + ((j-i)/2);
+    if(ip < base[k].low_pc) {
+      j = k-1;
+    } else if(ip > base[k].high_pc) {
+      i = k+1;
+    } else {
+      return base[k].function;
+    }
+  }
+  return NULL;
+}
+
+dw_frame_t MC_find_function_by_ip(void* ip) {
+  mc_object_info_t info = MC_ip_find_object_info(ip);
+  if(info==NULL)
+    return NULL;
+  else
+    return MC_find_function_by_ip_and_object(ip, info);
+}
+
+static void MC_post_process_variables(mc_object_info_t info) {
+  unsigned cursor = 0;
+  dw_variable_t variable = NULL;
+  xbt_dynar_foreach(info->global_variables, cursor, variable) {
+    if(variable->type_origin) {
+      variable->type = xbt_dict_get_or_null(info->types, variable->type_origin);
+    }
+  }
+}
+
+static void MC_post_process_functions(mc_object_info_t info) {
+  xbt_dict_cursor_t cursor = NULL;
+  char* key = NULL;
+  dw_frame_t function = NULL;
+  xbt_dict_foreach(info->local_variables, cursor, key, function) {
+    unsigned cursor2 = 0;
+    dw_variable_t variable = NULL;
+    xbt_dynar_foreach(function->variables, cursor2, variable) {
+      if(variable->type_origin) {
+        variable->type = xbt_dict_get_or_null(info->types, variable->type_origin);
+      }
+    }
+  }
+}
+
+/** \brief Finds informations about a given shared object/executable */
+mc_object_info_t MC_find_object_info(memory_map_t maps, char* name, int executable) {
+  mc_object_info_t result = MC_new_object_info();
+  if(executable)
+    result->flags |= MC_OBJECT_INFO_EXECUTABLE;
+  result->file_name = xbt_strdup(name);
+  MC_find_object_address(maps, result);
+  MC_dwarf_get_variables(result);
+  MC_post_process_types(result);
+  MC_post_process_variables(result);
+  MC_post_process_functions(result);
+  MC_make_functions_index(result);
+  return result;
 }
 
 /*************************************************************************/
@@ -441,6 +577,7 @@ void MC_dwarf_register_variable(mc_object_info_t info, dw_frame_t frame, dw_vari
     MC_dwarf_register_non_global_variable(info, frame, variable);
 }
 
+
 /*******************************  Ignore mechanism *******************************/
 /*********************************************************************************/
 
@@ -450,10 +587,6 @@ typedef struct s_mc_stack_ignore_variable{
   char *var_name;
   char *frame;
 }s_mc_stack_ignore_variable_t, *mc_stack_ignore_variable_t;
-
-typedef struct s_mc_data_bss_ignore_variable{
-  char *name;
-}s_mc_data_bss_ignore_variable_t, *mc_data_bss_ignore_variable_t;
 
 /**************************** Free functions ******************************/
 
@@ -473,15 +606,6 @@ void heap_ignore_region_free(mc_heap_ignore_region_t r){
 
 void heap_ignore_region_free_voidp(void *r){
   heap_ignore_region_free((mc_heap_ignore_region_t) * (void **) r);
-}
-
-static void data_bss_ignore_variable_free(mc_data_bss_ignore_variable_t v){
-  xbt_free(v->name);
-  xbt_free(v);
-}
-
-static void data_bss_ignore_variable_free_voidp(void *v){
-  data_bss_ignore_variable_free((mc_data_bss_ignore_variable_t) * (void **) v);
 }
 
 static void checkpoint_ignore_region_free(mc_checkpoint_ignore_region_t r){
@@ -598,7 +722,7 @@ void MC_ignore_global_variable(const char *name){
 
   MC_SET_RAW_MEM;
 
-  if(mc_libsimgrid_info){
+  xbt_assert(mc_libsimgrid_info, "MC subsystem not initialized");
 
     unsigned int cursor = 0;
     dw_variable_t current_var;
@@ -618,49 +742,6 @@ void MC_ignore_global_variable(const char *name){
         end = cursor - 1;
       } 
     }
-   
-  }else{
-
-    if(mc_data_bss_comparison_ignore == NULL)
-      mc_data_bss_comparison_ignore = xbt_dynar_new(sizeof(mc_data_bss_ignore_variable_t), data_bss_ignore_variable_free_voidp);
-
-    mc_data_bss_ignore_variable_t var = NULL;
-    var = xbt_new0(s_mc_data_bss_ignore_variable_t, 1);
-    var->name = strdup(name);
-
-    if(xbt_dynar_is_empty(mc_data_bss_comparison_ignore)){
-
-      xbt_dynar_insert_at(mc_data_bss_comparison_ignore, 0, &var);
-
-    }else{
-    
-      unsigned int cursor = 0;
-      int start = 0;
-      int end = xbt_dynar_length(mc_data_bss_comparison_ignore) - 1;
-      mc_data_bss_ignore_variable_t current_var = NULL;
-
-      while(start <= end){
-        cursor = (start + end) / 2;
-        current_var = (mc_data_bss_ignore_variable_t)xbt_dynar_get_as(mc_data_bss_comparison_ignore, cursor, mc_data_bss_ignore_variable_t);
-        if(strcmp(current_var->name, name) == 0){
-          data_bss_ignore_variable_free(var);
-          if(!raw_mem_set)
-            MC_UNSET_RAW_MEM;
-          return;
-        }else if(strcmp(current_var->name, name) < 0){
-          start = cursor + 1;
-        }else{
-          end = cursor - 1;
-        }
-      }
-
-      if(strcmp(current_var->name, name) < 0)
-        xbt_dynar_insert_at(mc_data_bss_comparison_ignore, cursor + 1, &var);
-      else
-        xbt_dynar_insert_at(mc_data_bss_comparison_ignore, cursor, &var);
-
-    }
-  }
 
   if(!raw_mem_set)
     MC_UNSET_RAW_MEM;
@@ -672,7 +753,6 @@ void MC_ignore_local_variable(const char *var_name, const char *frame_name){
 
   MC_SET_RAW_MEM;
 
-  if(mc_libsimgrid_info){
     unsigned int cursor = 0;
     dw_variable_t current_var;
     int start, end;
@@ -733,61 +813,6 @@ void MC_ignore_local_variable(const char *var_name, const char *frame_name){
         } 
       }
     } 
-  }else{
-
-    if(mc_stack_comparison_ignore == NULL)
-      mc_stack_comparison_ignore = xbt_dynar_new(sizeof(mc_stack_ignore_variable_t), stack_ignore_variable_free_voidp);
-  
-    mc_stack_ignore_variable_t var = NULL;
-    var = xbt_new0(s_mc_stack_ignore_variable_t, 1);
-    var->var_name = strdup(var_name);
-    var->frame = strdup(frame_name);
-  
-    if(xbt_dynar_is_empty(mc_stack_comparison_ignore)){
-
-      xbt_dynar_insert_at(mc_stack_comparison_ignore, 0, &var);
-
-    }else{
-    
-      unsigned int cursor = 0;
-      int start = 0;
-      int end = xbt_dynar_length(mc_stack_comparison_ignore) - 1;
-      mc_stack_ignore_variable_t current_var = NULL;
-
-      while(start <= end){
-        cursor = (start + end) / 2;
-        current_var = (mc_stack_ignore_variable_t)xbt_dynar_get_as(mc_stack_comparison_ignore, cursor, mc_stack_ignore_variable_t);
-        if(strcmp(current_var->frame, frame_name) == 0){
-          if(strcmp(current_var->var_name, var_name) == 0){
-            stack_ignore_variable_free(var);
-            if(!raw_mem_set)
-              MC_UNSET_RAW_MEM;
-            return;
-          }else if(strcmp(current_var->var_name, var_name) < 0){
-            start = cursor + 1;
-          }else{
-            end = cursor - 1;
-          }
-        }else if(strcmp(current_var->frame, frame_name) < 0){
-          start = cursor + 1;
-        }else{
-          end = cursor - 1;
-        }
-      }
-
-      if(strcmp(current_var->frame, frame_name) == 0){
-        if(strcmp(current_var->var_name, var_name) < 0){
-          xbt_dynar_insert_at(mc_stack_comparison_ignore, cursor + 1, &var);
-        }else{
-          xbt_dynar_insert_at(mc_stack_comparison_ignore, cursor, &var);
-        }
-      }else if(strcmp(current_var->frame, frame_name) < 0){
-        xbt_dynar_insert_at(mc_stack_comparison_ignore, cursor + 1, &var);
-      }else{
-        xbt_dynar_insert_at(mc_stack_comparison_ignore, cursor, &var);
-      }
-    }
-  }
 
   if(!raw_mem_set)
     MC_UNSET_RAW_MEM;
@@ -879,49 +904,30 @@ void MC_ignore(void *addr, size_t size){
 /*******************************  Initialisation of MC *******************************/
 /*********************************************************************************/
 
-static void MC_dump_ignored_local_variables(void){
-
-  if(mc_stack_comparison_ignore == NULL || xbt_dynar_is_empty(mc_stack_comparison_ignore))
-    return;
-
-  unsigned int cursor = 0;
-  mc_stack_ignore_variable_t current_var;
-
-  xbt_dynar_foreach(mc_stack_comparison_ignore, cursor, current_var){
-    MC_ignore_local_variable(current_var->var_name, current_var->frame);
+static void MC_post_process_object_info(mc_object_info_t info) {
+  mc_object_info_t other_info = info == mc_binary_info ? mc_libsimgrid_info : mc_binary_info;
+  xbt_dict_cursor_t cursor = NULL;
+  char* key = NULL;
+  dw_type_t type = NULL;
+  xbt_dict_foreach(info->types, cursor, key, type){
+    if(type->name && type->byte_size == 0) {
+      type->other_object_same_type = xbt_dict_get_or_null(other_info->types_by_name, type->name);
+    }
   }
-
-  xbt_dynar_free(&mc_stack_comparison_ignore);
-  mc_stack_comparison_ignore = NULL;
- 
 }
 
-static void MC_dump_ignored_global_variables(void){
-
-  if(mc_data_bss_comparison_ignore == NULL || xbt_dynar_is_empty(mc_data_bss_comparison_ignore))
-    return;
-
-  unsigned int cursor = 0;
-  mc_data_bss_ignore_variable_t current_var;
-
-  xbt_dynar_foreach(mc_data_bss_comparison_ignore, cursor, current_var){
-    MC_ignore_global_variable(current_var->name);
-  } 
-
-  xbt_dynar_free(&mc_data_bss_comparison_ignore);
-  mc_data_bss_comparison_ignore = NULL;
-
-}
-
-static void MC_init_debug_info();
-static void MC_init_debug_info() {
+static void MC_init_debug_info(void) {
   XBT_INFO("Get debug information ...");
 
   memory_map_t maps = MC_get_memory_map();
 
   /* Get local variables for state equality detection */
-  mc_binary_info = MC_find_object_info(maps, xbt_binary_name);
-  mc_libsimgrid_info = MC_find_object_info(maps, libsimgrid_path);
+  mc_binary_info = MC_find_object_info(maps, xbt_binary_name, 1);
+  mc_libsimgrid_info = MC_find_object_info(maps, libsimgrid_path, 0);
+
+  // Use information of the other objects:
+  MC_post_process_object_info(mc_binary_info);
+  MC_post_process_object_info(mc_libsimgrid_info);
 
   MC_free_memory_map(maps);
   XBT_INFO("Get debug information done !");
@@ -940,10 +946,6 @@ void MC_init(){
 
   MC_init_memory_map_info();
   MC_init_debug_info();
-
-  /* Remove variables ignored before getting list of variables */
-  MC_dump_ignored_local_variables();
-  MC_dump_ignored_global_variables();
 
    /* Init parmap */
   parmap = xbt_parmap_mc_new(xbt_os_get_numcores(), XBT_PARMAP_DEFAULT);
@@ -973,6 +975,7 @@ void MC_init(){
   MC_ignore_global_variable("counter"); /* Static variable used for tracing */
   MC_ignore_global_variable("maestro_stack_start");
   MC_ignore_global_variable("maestro_stack_end");
+  MC_ignore_global_variable("smx_total_comms");
 
   MC_ignore_heap(&(simix_global->process_to_run), sizeof(simix_global->process_to_run));
   MC_ignore_heap(&(simix_global->process_that_ran), sizeof(simix_global->process_that_ran));
