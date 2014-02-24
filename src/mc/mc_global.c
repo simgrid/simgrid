@@ -954,12 +954,14 @@ void MC_init(){
   MC_ignore_local_variable("_throw_ctx", "*");
   MC_ignore_local_variable("ctx", "*");
 
+  MC_ignore_local_variable("self", "simcall_BODY_mc_snapshot");
   MC_ignore_local_variable("next_context", "smx_ctx_sysv_suspend_serial");
   MC_ignore_local_variable("i", "smx_ctx_sysv_suspend_serial");
 
   /* Ignore local variable about time used for tracing */
   MC_ignore_local_variable("start_time", "*"); 
 
+  MC_ignore_global_variable("compared_pointers");
   MC_ignore_global_variable("mc_comp_times");
   MC_ignore_global_variable("mc_snapshot_comparison_time"); 
   MC_ignore_global_variable("mc_time");
