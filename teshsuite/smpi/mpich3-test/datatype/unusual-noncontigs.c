@@ -534,7 +534,7 @@ static int pack_and_check_expected(MPI_Datatype type, const char *name,
     err = MPI_Pack_size(type_size/sizeof(int), MPI_INT, MPI_COMM_SELF, &pack_size);
     check_err(MPI_Pack_size);
     pack_buf = malloc(pack_size);
-    assert(pack_buf);
+    assert(pack_buf!=NULL);
 
     pos = 0;
     err = MPI_Pack(&sendbuf[0], type_size/sizeof(int), MPI_INT, pack_buf, pack_size, &pos, MPI_COMM_SELF);
