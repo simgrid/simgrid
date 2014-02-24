@@ -35,6 +35,7 @@ int _sg_mc_max_depth=1000;
 int _sg_mc_visited=0;
 char *_sg_mc_dot_output_file = NULL;
 int _sg_mc_comms_determinism=0;
+int _sg_mc_send_determinism=0;
 
 int user_max_depth_reached = 0;
 
@@ -105,6 +106,13 @@ void _mc_cfg_cb_comms_determinism(const char *name, int pos) {
     xbt_die("You are specifying a value to enable/disable the detection of determinism in the communications schemes after the initialization (through MSG_config?), but model-checking was not activated at config time (through --cfg=model-check:1). This won't work, sorry.");
   }
   _sg_mc_comms_determinism= xbt_cfg_get_boolean(_sg_cfg_set, name);
+}
+
+void _mc_cfg_cb_send_determinism(const char *name, int pos) {
+  if (_sg_cfg_init_status && !_sg_do_model_check) {
+    xbt_die("You are specifying a value to enable/disable the detection of send-determinism in the communications schemes after the initialization (through MSG_config?), but model-checking was not activated at config time (through --cfg=model-check:1). This won't work, sorry.");
+  }
+  _sg_mc_send_determinism= xbt_cfg_get_boolean(_sg_cfg_set, name);
 }
 
 /* MC global data structures */
@@ -1247,7 +1255,7 @@ void MC_replay(xbt_fifo_t stack, int start)
       xbt_free(key);
     }
   }
-  if(_sg_mc_comms_determinism)
+  if(_sg_mc_comms_determinism || _sg_mc_send_determinism)
     xbt_dynar_reset(communications_pattern);
   MC_UNSET_RAW_MEM;
   
@@ -1279,7 +1287,7 @@ void MC_replay(xbt_fifo_t stack, int start)
       }
     }
 
-    if(_sg_mc_comms_determinism){
+    if(_sg_mc_comms_determinism || _sg_mc_send_determinism){
       if(req->call == SIMCALL_COMM_ISEND)
         comm_pattern = 1;
       else if(req->call == SIMCALL_COMM_IRECV)
@@ -1288,7 +1296,7 @@ void MC_replay(xbt_fifo_t stack, int start)
 
     SIMIX_simcall_pre(req, value);
 
-    if(_sg_mc_comms_determinism){
+    if(_sg_mc_comms_determinism || _sg_mc_send_determinism){
       MC_SET_RAW_MEM;
       if(comm_pattern != 0){
         get_comm_pattern(communications_pattern, req, comm_pattern);
@@ -1577,9 +1585,11 @@ void MC_print_statistics(mc_stats_t stats)
     fprintf(dot_output, "}\n");
     fclose(dot_output);
   }
-  if(initial_state_safety != NULL && _sg_mc_comms_determinism){
-    XBT_INFO("Communication-deterministic : %s", !initial_state_safety->comm_deterministic ? "No" : "Yes");
-    XBT_INFO("Send-deterministic : %s", !initial_state_safety->send_deterministic ? "No" : "Yes");
+  if(initial_state_safety != NULL){
+    if(_sg_mc_comms_determinism)
+      XBT_INFO("Communication-deterministic : %s", !initial_state_safety->comm_deterministic ? "No" : "Yes");
+    if (_sg_mc_send_determinism)
+      XBT_INFO("Send-deterministic : %s", !initial_state_safety->send_deterministic ? "No" : "Yes");
   }
   MC_UNSET_RAW_MEM;
 }

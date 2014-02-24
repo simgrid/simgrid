@@ -92,7 +92,6 @@ static void deterministic_pattern(xbt_dynar_t initial_pattern, xbt_dynar_t patte
     recv_index = 0;
     current_process++;
   }
-  // XBT_DEBUG("Communication-deterministic : %d, Send-deterministic : %d", initial_state_safety->comm_deterministic, initial_state_safety->send_deterministic);
 }
 
 static int complete_comm_pattern(xbt_dynar_t list, mc_comm_pattern_t pattern){
@@ -517,7 +516,7 @@ void MC_dpor(void)
       xbt_free(key);
       MC_UNSET_RAW_MEM;
       
-      if(_sg_mc_comms_determinism){
+      if(_sg_mc_comms_determinism || _sg_mc_send_determinism){
         if(req->call == SIMCALL_COMM_ISEND)
           comm_pattern = 1;
         else if(req->call == SIMCALL_COMM_IRECV)
@@ -527,7 +526,7 @@ void MC_dpor(void)
       /* Answer the request */
       SIMIX_simcall_pre(req, value); /* After this call req is no longer usefull */
 
-      if(_sg_mc_comms_determinism){
+      if(_sg_mc_comms_determinism || _sg_mc_send_determinism){
         MC_SET_RAW_MEM;
         if(comm_pattern != 0){
           if(!initial_state_safety->initial_communications_pattern_done)
@@ -632,16 +631,36 @@ void MC_dpor(void)
 
       MC_SET_RAW_MEM;
 
-      if(_sg_mc_comms_determinism){
-        if(!initial_state_safety->initial_communications_pattern_done){
-          //print_communications_pattern(initial_communications_pattern);
-        }else{
+      if(_sg_mc_comms_determinism || _sg_mc_send_determinism){
+        if(initial_state_safety->initial_communications_pattern_done){
           if(interleave_size == 0){ /* if (interleave_size > 0), process interleaved but not enabled => "incorrect" path, determinism not evaluated */
             //print_communications_pattern(communications_pattern);
             deterministic_pattern(initial_communications_pattern, communications_pattern);
+            if(initial_state_safety->comm_deterministic == 0 && _sg_mc_comms_determinism){
+              XBT_INFO("****************************************************");
+              XBT_INFO("***** Non-deterministic communications pattern *****");
+              XBT_INFO("****************************************************");
+              XBT_INFO("Initial communications pattern:");
+              print_communications_pattern(initial_communications_pattern);
+              XBT_INFO("Communications pattern counter-example:");
+              print_communications_pattern(communications_pattern);
+              MC_print_statistics(mc_stats);
+              return;
+            }else if(initial_state_safety->send_deterministic == 0 && _sg_mc_send_determinism){
+              XBT_INFO("****************************************************");
+              XBT_INFO("***** Non-send-deterministic communications pattern *****");
+              XBT_INFO("****************************************************");
+              XBT_INFO("Initial communications pattern:");
+              print_communications_pattern(initial_communications_pattern);
+              XBT_INFO("Communications pattern counter-example:");
+              print_communications_pattern(communications_pattern);
+              MC_print_statistics(mc_stats);
+              return;
+            }
           }
+        }else{
+          initial_state_safety->initial_communications_pattern_done = 1;
         }
-        initial_state_safety->initial_communications_pattern_done = 1;
       }
 
       /* Trash the current state, no longer needed */
