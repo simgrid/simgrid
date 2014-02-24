@@ -50,11 +50,11 @@ static uint64_t MC_dwarf_array_element_count(Dwarf_Die* die, Dwarf_Die* unit);
  *  \param unit the DIE of the compile unit of the current DIE
  *  \param frame containg frame if any
  */
-static void MC_dwarf_handle_die(mc_object_info_t info, Dwarf_Die* die, Dwarf_Die* unit, dw_frame_t frame);
+static void MC_dwarf_handle_die(mc_object_info_t info, Dwarf_Die* die, Dwarf_Die* unit, dw_frame_t frame, const char* namespace);
 
 /** \brief Process a type DIE
  */
-static void MC_dwarf_handle_type_die(mc_object_info_t info, Dwarf_Die* die, Dwarf_Die* unit);
+static void MC_dwarf_handle_type_die(mc_object_info_t info, Dwarf_Die* die, Dwarf_Die* unit, dw_frame_t frame, const char* namespace);
 
 /** \brief Calls MC_dwarf_handle_die on all childrend of the given die
  *
@@ -63,7 +63,7 @@ static void MC_dwarf_handle_type_die(mc_object_info_t info, Dwarf_Die* die, Dwar
  *  \param unit the DIE of the compile unit of the current DIE
  *  \param frame containg frame if any
  */
-static void MC_dwarf_handle_children(mc_object_info_t info, Dwarf_Die* die, Dwarf_Die* unit, dw_frame_t frame);
+static void MC_dwarf_handle_children(mc_object_info_t info, Dwarf_Die* die, Dwarf_Die* unit, dw_frame_t frame, const char* namespace);
 
 /** \brief Handle a variable (DW_TAG_variable or other)
  *
@@ -72,7 +72,7 @@ static void MC_dwarf_handle_children(mc_object_info_t info, Dwarf_Die* die, Dwar
  *  \param unit the DIE of the compile unit of the current DIE
  *  \param frame containg frame if any
  */
-static void MC_dwarf_handle_variable_die(mc_object_info_t info, Dwarf_Die* die, Dwarf_Die* unit, dw_frame_t frame);
+static void MC_dwarf_handle_variable_die(mc_object_info_t info, Dwarf_Die* die, Dwarf_Die* unit, dw_frame_t frame, const char* namespace);
 
 /** \brief Convert a libdw DWARF expression into a MC representation of the location
  *
@@ -658,7 +658,7 @@ static void MC_dwarf_add_members(mc_object_info_t info, Dwarf_Die* die, Dwarf_Di
  *  \param unit compilation unit of the current DIE
  *  \return MC representation of the type
  */
-static dw_type_t MC_dwarf_die_to_type(mc_object_info_t info, Dwarf_Die* die, Dwarf_Die* unit) {
+static dw_type_t MC_dwarf_die_to_type(mc_object_info_t info, Dwarf_Die* die, Dwarf_Die* unit, dw_frame_t frame, const char* namespace) {
 
   dw_type_t type = xbt_new0(s_dw_type_t, 1);
   type->type = -1;
@@ -711,13 +711,18 @@ static dw_type_t MC_dwarf_die_to_type(mc_object_info_t info, Dwarf_Die* die, Dwa
   case DW_TAG_union_type:
   case DW_TAG_class_type:
 	  MC_dwarf_add_members(info, die, unit, type);
+	  char* new_namespace = namespace == NULL ? xbt_strdup(type->name)
+	    : bprintf("%s::%s", namespace, type->name);
+	  MC_dwarf_handle_children(info, die, unit, frame, new_namespace);
+	  free(new_namespace);
+	  break;
   }
 
   return type;
 }
 
-static void MC_dwarf_handle_type_die(mc_object_info_t info, Dwarf_Die* die, Dwarf_Die* unit) {
-  dw_type_t type = MC_dwarf_die_to_type(info, die, unit);
+static void MC_dwarf_handle_type_die(mc_object_info_t info, Dwarf_Die* die, Dwarf_Die* unit, dw_frame_t frame, const char* namespace) {
+  dw_type_t type = MC_dwarf_die_to_type(info, die, unit, frame, namespace);
 
   char* key = bprintf("%" PRIx64, (uint64_t) type->id);
   xbt_dict_set(info->types, key, type, NULL);
@@ -888,7 +893,7 @@ static dw_location_t MC_dwarf_get_expression(Dwarf_Op* expr,  size_t len) {
 
 static int mc_anonymous_variable_index = 0;
 
-static dw_variable_t MC_die_to_variable(mc_object_info_t info, Dwarf_Die* die, Dwarf_Die* unit, dw_frame_t frame) {
+static dw_variable_t MC_die_to_variable(mc_object_info_t info, Dwarf_Die* die, Dwarf_Die* unit, dw_frame_t frame, const char* namespace) {
   // Drop declaration:
   if (MC_dwarf_attr_flag(die, DW_AT_declaration, false))
     return NULL;
@@ -902,7 +907,10 @@ static dw_variable_t MC_die_to_variable(mc_object_info_t info, Dwarf_Die* die, D
   dw_variable_t variable = xbt_new0(s_dw_variable_t, 1);
   variable->dwarf_offset = dwarf_dieoffset(die);
   variable->global = frame == NULL; // Can be override base on DW_AT_location
-  variable->name = xbt_strdup(MC_dwarf_attr_string(die, DW_AT_name));
+
+  const char* name = MC_dwarf_attr_string(die, DW_AT_name);
+  variable->name = xbt_strdup(name);
+
   variable->type_origin = MC_dwarf_at_type(die);
 
   int klass = MC_dwarf_form_get_class(dwarf_whatform(&attr_location));
@@ -941,6 +949,12 @@ static dw_variable_t MC_die_to_variable(mc_object_info_t info, Dwarf_Die* die, D
       klass, klass, (void*) variable->dwarf_offset, variable->name);
   }
 
+  if(namespace && variable->global) {
+    char* old_name = variable->name;
+    variable->name = bprintf("%s::%s", namespace, old_name);
+    free(old_name);
+  }
+
   // The current code needs a variable name,
   // generate a fake one:
   if(!variable->name) {
@@ -950,20 +964,20 @@ static dw_variable_t MC_die_to_variable(mc_object_info_t info, Dwarf_Die* die, D
   return variable;
 }
 
-static void MC_dwarf_handle_variable_die(mc_object_info_t info, Dwarf_Die* die, Dwarf_Die* unit, dw_frame_t frame) {
-  dw_variable_t variable = MC_die_to_variable(info, die, unit, frame);
+static void MC_dwarf_handle_variable_die(mc_object_info_t info, Dwarf_Die* die, Dwarf_Die* unit, dw_frame_t frame, const char* namespace) {
+  dw_variable_t variable = MC_die_to_variable(info, die, unit, frame, namespace);
   if(variable==NULL)
       return;
   MC_dwarf_register_variable(info, frame, variable);
 }
 
-static void MC_dwarf_handle_subprogram_die(mc_object_info_t info, Dwarf_Die* die, Dwarf_Die* unit, dw_frame_t parent_frame) {
+static void MC_dwarf_handle_subprogram_die(mc_object_info_t info, Dwarf_Die* die, Dwarf_Die* unit, dw_frame_t parent_frame, const char* namespace) {
   dw_frame_t frame = xbt_new0(s_dw_frame_t, 1);
 
   frame->start = dwarf_dieoffset(die);
 
   const char* name = MC_dwarf_attr_string(die, DW_AT_name);
-  frame->name = xbt_strdup(name);
+  frame->name = namespace ? bprintf("%s::%s", namespace, name) : xbt_strdup(name);
 
   // This is the base address for DWARF addresses.
   // Relocated addresses are offset from this base address.
@@ -977,39 +991,39 @@ static void MC_dwarf_handle_subprogram_die(mc_object_info_t info, Dwarf_Die* die
   frame->frame_base = MC_dwarf_at_location(info, die, DW_AT_frame_base);
   frame->end = -1; // This one is now useless:
 
-  // Handle children:
-  MC_dwarf_handle_children(info, die, unit, frame);
-
   // Register it:
   xbt_dynar_push(info->subprograms, &frame);
+
+  // Handle children:
+  MC_dwarf_handle_children(info, die, unit, frame, namespace);
 }
 
-static void MC_dwarf_handle_children(mc_object_info_t info, Dwarf_Die* die, Dwarf_Die* unit, dw_frame_t frame) {
+static void MC_dwarf_handle_children(mc_object_info_t info, Dwarf_Die* die, Dwarf_Die* unit, dw_frame_t frame, const char* namespace) {
   Dwarf_Die child;
   int res;
   for (res=dwarf_child(die, &child); res==0; res=dwarf_siblingof(&child,&child)) {
-    MC_dwarf_handle_die(info, &child, unit, frame);
+    MC_dwarf_handle_die(info, &child, unit, frame, namespace);
   }
 }
 
-static void MC_dwarf_handle_die(mc_object_info_t info, Dwarf_Die* die, Dwarf_Die* unit, dw_frame_t frame) {
+static void MC_dwarf_handle_die(mc_object_info_t info, Dwarf_Die* die, Dwarf_Die* unit, dw_frame_t frame, const char* namespace) {
   int tag = dwarf_tag(die);
   mc_tag_class klass = MC_dwarg_tag_classify(tag);
   switch (klass) {
 
     // Type:
     case mc_tag_type:
-      MC_dwarf_handle_type_die(info, die, unit);
+      MC_dwarf_handle_type_die(info, die, unit, frame, namespace);
       break;
 
     // Program:
     case mc_tag_subprogram:
-      MC_dwarf_handle_subprogram_die(info, die, unit, frame);
+      MC_dwarf_handle_subprogram_die(info, die, unit, frame, namespace);
       return;
 
     // Variable:
     case mc_tag_variable:
-      MC_dwarf_handle_variable_die(info, die, unit, frame);
+      MC_dwarf_handle_variable_die(info, die, unit, frame, namespace);
       break;
 
     // Scope:
@@ -1043,7 +1057,7 @@ void MC_dwarf_get_variables(mc_object_info_t info) {
       Dwarf_Die child;
       int res;
       for (res=dwarf_child(&unit_die, &child); res==0; res=dwarf_siblingof(&child,&child)) {
-        MC_dwarf_handle_die(info, &child, &unit_die, NULL);
+        MC_dwarf_handle_die(info, &child, &unit_die, NULL, NULL);
       }
     }
     offset = next_offset;
