@@ -117,6 +117,61 @@ const char* MC_dwarf_tagname(int tag) {
   }
 }
 
+/** \brief A class of DWARF tags (DW_TAG_*)
+ */
+typedef enum mc_tag_class {
+  mc_tag_unkonwn,
+  mc_tag_type,
+  mc_tag_subprogram,
+  mc_tag_variable,
+  mc_tag_scope
+} mc_tag_class;
+
+static mc_tag_class MC_dwarg_tag_classify(int tag) {
+  switch (tag) {
+
+    case DW_TAG_array_type:
+    case DW_TAG_class_type:
+    case DW_TAG_enumeration_type:
+    case DW_TAG_typedef:
+    case DW_TAG_pointer_type:
+    case DW_TAG_string_type:
+    case DW_TAG_structure_type:
+    case DW_TAG_subroutine_type:
+    case DW_TAG_union_type:
+    case DW_TAG_ptr_to_member_type:
+    case DW_TAG_set_type:
+    case DW_TAG_subrange_type:
+    case DW_TAG_base_type:
+    case DW_TAG_const_type:
+    case DW_TAG_file_type:
+    case DW_TAG_packed_type:
+    case DW_TAG_volatile_type:
+    case DW_TAG_restrict_type:
+    case DW_TAG_interface_type:
+    case DW_TAG_unspecified_type:
+    case DW_TAG_mutable_type:
+    case DW_TAG_shared_type:
+      return mc_tag_type;
+
+    case DW_TAG_subprogram:
+      return mc_tag_subprogram;
+
+    case DW_TAG_variable:
+    case DW_TAG_formal_parameter:
+      return mc_tag_variable;
+
+    case DW_TAG_lexical_block:
+    case DW_TAG_try_block:
+    case DW_TAG_inlined_subroutine:
+      return mc_tag_scope;
+
+    default:
+      return mc_tag_unkonwn;
+
+  }
+}
+
 #define MC_DW_CLASS_UNKNOWN 0
 #define MC_DW_CLASS_ADDRESS 1   // Location in the address space of the program
 #define MC_DW_CLASS_BLOCK 2     // Arbitrary block of bytes
@@ -941,50 +996,30 @@ static void MC_dwarf_handle_children(mc_object_info_t info, Dwarf_Die* die, Dwar
 
 static void MC_dwarf_handle_die(mc_object_info_t info, Dwarf_Die* die, Dwarf_Die* unit, dw_frame_t frame) {
   int tag = dwarf_tag(die);
-  switch (tag) {
+  mc_tag_class klass = MC_dwarg_tag_classify(tag);
+  switch (klass) {
 
     // Type:
-    case DW_TAG_array_type:
-    case DW_TAG_class_type:
-    case DW_TAG_enumeration_type:
-    case DW_TAG_typedef:
-    case DW_TAG_pointer_type:
-    case DW_TAG_string_type:
-    case DW_TAG_structure_type:
-    case DW_TAG_subroutine_type:
-    case DW_TAG_union_type:
-    case DW_TAG_ptr_to_member_type:
-    case DW_TAG_set_type:
-    case DW_TAG_subrange_type:
-    case DW_TAG_base_type:
-    case DW_TAG_const_type:
-    case DW_TAG_file_type:
-    case DW_TAG_packed_type:
-    case DW_TAG_volatile_type:
-    case DW_TAG_restrict_type:
-    case DW_TAG_interface_type:
-    case DW_TAG_unspecified_type:
-    case DW_TAG_mutable_type:
-    case DW_TAG_shared_type:
+    case mc_tag_type:
       MC_dwarf_handle_type_die(info, die, unit);
       break;
 
     // Program:
-    case DW_TAG_subprogram:
+    case mc_tag_subprogram:
       MC_dwarf_handle_subprogram_die(info, die, unit, frame);
       return;
 
     // Variable:
-    case DW_TAG_variable:
-    case DW_TAG_formal_parameter:
+    case mc_tag_variable:
       MC_dwarf_handle_variable_die(info, die, unit, frame);
       break;
 
     // Scope:
-    case DW_TAG_lexical_block:
-    case DW_TAG_try_block:
-    case DW_TAG_inlined_subroutine:
+    case mc_tag_scope:
       // TODO
+      break;
+
+    default:
       break;
 
   }
