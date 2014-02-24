@@ -962,9 +962,7 @@ static void MC_dwarf_handle_subprogram_die(mc_object_info_t info, Dwarf_Die* die
 
   frame->start = dwarf_dieoffset(die);
 
-  const char* name = MC_dwarf_at_linkage_name(die);
-  if (name==NULL)
-    name = MC_dwarf_attr_string(die, DW_AT_name);
+  const char* name = MC_dwarf_attr_string(die, DW_AT_name);
   frame->name = xbt_strdup(name);
 
   // This is the base address for DWARF addresses.
