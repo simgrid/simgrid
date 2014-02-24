@@ -1,4 +1,4 @@
-/* Copyright (c) 2008-2010, 2012-2013. The SimGrid Team.
+/* Copyright (c) 2008-2010, 2012-2014. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -16,7 +16,7 @@
  */
 
 #define FILENAME1 "./doc/simgrid/examples/platforms/g5k.xml"
-#define FILENAME2 "./doc/simgrid/examples/platforms/One_cluster_no_backbone.xml"
+#define FILENAME2 ".\\Windows\\setupact.log"
 #define FILENAME3 "./doc/simgrid/examples/platforms/g5k_cabinets.xml"
 #define FILENAME4 "./doc/simgrid/examples/platforms/nancy.xml"
 
@@ -24,7 +24,6 @@
 #include <stdlib.h>
 #include "msg/msg.h"
 #include "surf/surf_private.h"
-#include "inttypes.h"
 
 int host(int argc, char *argv[]);
 
@@ -35,29 +34,31 @@ int host(int argc, char *argv[])
 {
   msg_file_t file = NULL;
   char* mount = xbt_strdup("/home");
-  sg_storage_size_t read,write;
+  sg_size_t read,write;
 
   if(!strcmp(MSG_process_get_name(MSG_process_self()),"0")){
     file = MSG_file_open(mount,FILENAME1, NULL);
     MSG_file_dump(file);
-  } else if(!strcmp(MSG_process_get_name(MSG_process_self()),"1"))
+  } else if(!strcmp(MSG_process_get_name(MSG_process_self()),"1")) {
+    free(mount);
+    mount = xbt_strdup("/windows");
     file = MSG_file_open(mount,FILENAME2, NULL);
-  else if(!strcmp(MSG_process_get_name(MSG_process_self()),"2"))
+  } else if(!strcmp(MSG_process_get_name(MSG_process_self()),"2")){
     file = MSG_file_open(mount,FILENAME3, NULL);
-  else if(!strcmp(MSG_process_get_name(MSG_process_self()),"3"))
+  } else if(!strcmp(MSG_process_get_name(MSG_process_self()),"3"))
     file = MSG_file_open(mount,FILENAME4, NULL);
   else xbt_die("FILENAME NOT DEFINED %s",MSG_process_get_name(MSG_process_self()));
 
   XBT_INFO("\tOpen file '%s'",file->fullname);
 
   read = MSG_file_read(file, 10000000);     // Read for 10MB
-  XBT_INFO("\tHave read    %" PRIu64 " on %s",read,file->fullname);
+  XBT_INFO("\tHave read    %llu on %s",read,file->fullname);
 
   write = MSG_file_write(file, 100000);  // Write for 100KB
-  XBT_INFO("\tHave written %" PRIu64 " on %s",write,file->fullname);
+  XBT_INFO("\tHave written %llu on %s",write,file->fullname);
 
   read = MSG_file_read(file, 110000);     // Read for 110KB
-  XBT_INFO("\tHave read    %" PRIu64 " on %s (of size %" PRIu64 ")",read,file->fullname,
+  XBT_INFO("\tHave read    %llu on %s (of size %llu)",read,file->fullname,
       MSG_file_get_size(file));
 
   XBT_INFO("\tClose file '%s'",file->fullname);

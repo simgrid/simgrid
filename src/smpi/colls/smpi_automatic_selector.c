@@ -1,5 +1,13 @@
+/* Copyright (c) 2013-2014. The SimGrid Team.
+ * All rights reserved.                                                     */
+
+/* This program is free software; you can redistribute it and/or modify it
+ * under the terms of the license (GNU LGPL) which comes with this package. */
+
 #include "colls_private.h"
+#ifdef HAVE_MC
 #include "mc/mc_private.h"
+#endif
 #include <float.h>
 
 //attempt to do a quick autotuning version of the collective,
@@ -24,8 +32,9 @@
     ret smpi_coll_tuned_ ## cat ## _ ## automatic(COLL_UNPAREN args)\
 {\
   double time1, time2, time_min=DBL_MAX;\
-  int min_coll=-1, global_coll=-1;\
-  int i;\
+  volatile int min_coll=-1, global_coll=-1;\
+  volatile int i;\
+  xbt_ex_t ex;\
   double buf_in, buf_out, max_min=DBL_MAX;\
   for (i = 0; mpi_coll_##cat##_description[i].name; i++){\
       if(!strcmp(mpi_coll_##cat##_description[i].name, "automatic"))continue;\
@@ -33,8 +42,14 @@
       smpi_mpi_barrier(comm);\
       TRACE_AUTO_COLL(cat)\
       time1 = SIMIX_get_clock();\
+      TRY{\
       ((int (*) args)\
           mpi_coll_##cat##_description[i].coll) args2 ;\
+      }\
+      CATCH(ex) {\
+        xbt_ex_free(ex);\
+        continue;\
+      }\
       time2 = SIMIX_get_clock();\
       buf_out=time2-time1;\
       smpi_mpi_reduce((void*)&buf_out,(void*)&buf_in, 1, MPI_DOUBLE, MPI_MAX, 0,comm );\

@@ -1,8 +1,9 @@
-/* Copyright (c) 2012-2013. The SimGrid Team.
+/* Copyright (c) 2012-2014. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
+
 #include "tracker.h"
 #include <msg/msg.h>
 #include <xbt/RngStream.h>
@@ -19,8 +20,7 @@ int tracker(int argc, char *argv[])
 {
   int i;
 
-  RngStream stream = MSG_host_get_data(MSG_host_self());
-
+  RngStream stream = (RngStream) MSG_host_get_property_value(MSG_host_self(), "stream");
   //Checking arguments
   xbt_assert(argc == 2, "Wrong number of arguments for the tracker.");
   //Retrieving end time

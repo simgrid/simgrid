@@ -3,11 +3,8 @@
 ###############################
 # Declare the library content #
 ###############################
-# If we want supernovae, rewrite the libs' content to use it
-include(${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/Supernovae.cmake)
 
 # Actually declare our libraries
-
 add_library(simgrid SHARED ${simgrid_sources})
 set_target_properties(simgrid PROPERTIES VERSION ${libsimgrid_version})
 
@@ -21,24 +18,9 @@ endif()
 
 add_dependencies(simgrid maintainer_files)
 
-# if supernovaeing, we need some depends to make sure that the source gets generated
-if (enable_supernovae)
-  add_dependencies(simgrid ${CMAKE_CURRENT_BINARY_DIR}/src/supernovae_sg.c)
-  if(enable_lib_static)
-    add_dependencies(simgrid_static ${CMAKE_CURRENT_BINARY_DIR}/src/supernovae_sg.c)
-  endif()
-
-  if(enable_smpi)
-    add_dependencies(simgrid ${CMAKE_CURRENT_BINARY_DIR}/src/supernovae_smpi.c)
-    if(enable_lib_static)
-      add_dependencies(simgrid_static ${CMAKE_CURRENT_BINARY_DIR}/src/supernovae_smpi.c)
-    endif()
-  endif()
-endif()
-
 # Compute the dependencies of SimGrid
 #####################################
-set(SIMGRID_DEP "-lm")
+set(SIMGRID_DEP "-lm -lstdc++")
 
 if(pthread)
   if(${CONTEXT_THREADS})
@@ -82,6 +64,10 @@ if(HAVE_GRAPHVIZ)
   endif()
 endif()
 
+if(HAVE_LIBSIGC++)
+  SET(SIMGRID_DEP "${SIMGRID_DEP} -lsigc-2.0")	  
+endif()
+
 if(HAVE_GTNETS)
   SET(SIMGRID_DEP "${SIMGRID_DEP} -lgtnets")
 endif()
@@ -108,12 +94,12 @@ if(MMALLOC_WANT_OVERRIDE_LEGACY AND HAVE_GNU_LD)
 endif()
 
 if(HAVE_NS3)
-  if(${NS3_VERSION} EQUAL 310)
+  if(${NS3_VERSION_MINOR} EQUAL 10)
     SET(SIMGRID_DEP "${SIMGRID_DEP} -lns3")
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -D_NS3_3_10")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_NS3_3_10")
   else()
-    SET(SIMGRID_DEP "${SIMGRID_DEP} -lns3-core -lns3-csma -lns3-point-to-point -lns3-internet -lns3-applications")
+    SET(SIMGRID_DEP "${SIMGRID_DEP} -lns3.${NS3_VERSION_MINOR}-core -lns3.${NS3_VERSION_MINOR}-csma -lns3.${NS3_VERSION_MINOR}-point-to-point -lns3.${NS3_VERSION_MINOR}-internet -lns3.${NS3_VERSION_MINOR}-applications")
   endif()
 endif()
 
@@ -139,6 +125,9 @@ endif()
 
 # Dependencies from maintainer mode
 ###################################
+if(enable_maintainer_mode AND PYTHON_EXE)
+  add_dependencies(simgrid simcalls_generated_src)
+endif()
 if(enable_maintainer_mode AND BISON_EXE AND LEX_EXE)
   add_dependencies(simgrid automaton_generated_src)
 endif()

@@ -1,8 +1,8 @@
-/* Copyright (c) 2007-2013. The SimGrid Team.
+/* Copyright (c) 2007-2014. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
-  * under the terms of the license (GNU LGPL) which comes with this package. */
+ * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "private.h"
 #include "smpi_mpi_dt_private.h"
@@ -1230,9 +1230,11 @@ int PMPI_Recv(void *buf, int count, MPI_Datatype datatype, int src, int tag,
 
 #ifdef HAVE_TRACING
   //the src may not have been known at the beginning of the recv (MPI_ANY_SOURCE)
-  if(status!=MPI_STATUS_IGNORE)src_traced = smpi_group_index(smpi_comm_group(comm), status->MPI_SOURCE);
+  if(status!=MPI_STATUS_IGNORE){
+    src_traced = smpi_group_index(smpi_comm_group(comm), status->MPI_SOURCE);
+    TRACE_smpi_recv(rank, src_traced, rank);
+  }
   TRACE_smpi_ptp_out(rank, src_traced, rank, __FUNCTION__);
-  TRACE_smpi_recv(rank, src_traced, rank);
 #endif
   }
 

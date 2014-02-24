@@ -1,10 +1,11 @@
 /* A few basic tests for the surf library                                   */
 
-/* Copyright (c) 2004-2012. The SimGrid Team.
+/* Copyright (c) 2004-2014. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
+
 #ifdef __BORLANDC__
 #pragma hdrstop
 #endif
@@ -62,12 +63,11 @@ void test(char *platform)
   XBT_DEBUG("%s : %p", surf_resource_name(workstationB), workstationB);
 
   /* Let's do something on it */
-  surf_workstation_model->extension.workstation.execute(workstationA, 1000.0);
-  surf_workstation_model->extension.workstation.execute(workstationB, 1000.0);
-      surf_workstation_model->extension.workstation.sleep(workstationB, 7.32);
+  surf_workstation_execute(workstationA, 1000.0);
+  surf_workstation_execute(workstationB, 1000.0);
+  surf_workstation_sleep(workstationB, 7.32);
 
-  surf_workstation_model->extension.workstation.
-      communicate(workstationA, workstationB, 150.0, -1.0);
+  surf_workstation_model_communicate(surf_workstation_model, workstationA, workstationB, 150.0, -1.0);
 
   surf_solve(-1.0);                 /* Takes traces into account. Returns 0.0 */
   do {
@@ -80,17 +80,17 @@ void test(char *platform)
     XBT_DEBUG("Next Event : %g", now);
 
     xbt_dynar_foreach(model_list, iter, model) {
-      XBT_DEBUG("\t %s actions", model->name);
-      while ((action = xbt_swag_extract(model->states.failed_action_set))) {
+      XBT_DEBUG("\t %s actions", surf_model_name(model));
+      while ((action = surf_model_extract_failed_action_set((surf_model_t)model))) {
         XBT_DEBUG("\t * Failed : %p", action);
-        model->action_unref(action);
+        surf_action_unref(action);
       }
-      while ((action = xbt_swag_extract(model->states.done_action_set))) {
+      while ((action = surf_model_extract_done_action_set((surf_model_t)model))) {
         XBT_DEBUG("\t * Done : %p", action);
-        model->action_unref(action);
+        surf_action_unref(action);
       }
-      if (xbt_swag_size(model->states.running_action_set)) {
-        XBT_DEBUG("running %s", model->name);
+      if (surf_model_running_action_set_size((surf_model_t)model)) {
+        XBT_DEBUG("running %s", surf_model_name(model));
         running = 1;
       }
     }

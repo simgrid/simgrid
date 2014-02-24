@@ -1,4 +1,4 @@
-/* Copyright (c) 2007-2010, 2012-2013. The SimGrid Team.
+/* Copyright (c) 2007-2010, 2012-2014. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -23,7 +23,7 @@ void SIMIX_network_init(void);
 void SIMIX_network_exit(void);
 
 #ifdef HAVE_LATENCY_BOUND_TRACKING
-XBT_INLINE XBT_PUBLIC(int) SIMIX_comm_is_latency_bounded(smx_action_t comm);
+XBT_PUBLIC(int) SIMIX_comm_is_latency_bounded(smx_action_t comm);
 #endif
 
 smx_rdv_t SIMIX_rdv_create(const char *name);
@@ -43,10 +43,8 @@ smx_action_t SIMIX_comm_isend(smx_process_t src_proc, smx_rdv_t rdv,
                               int detached);
 smx_action_t SIMIX_comm_irecv(smx_process_t dst_proc, smx_rdv_t rdv,
                               void *dst_buff, size_t *dst_buff_size,
-                              int (*)(void *, void *, smx_action_t), void *data);
-smx_action_t SIMIX_comm_irecv_bounded(smx_process_t dst_proc, smx_rdv_t rdv,
-                              void *dst_buff, size_t *dst_buff_size,
-                              int (*)(void *, void *, smx_action_t), void *data, double rate);
+                              int (*)(void *, void *, smx_action_t),
+                              void *data, double rate);
 void SIMIX_comm_destroy(smx_action_t action);
 void SIMIX_comm_destroy_internal_actions(smx_action_t action);
 smx_action_t SIMIX_comm_iprobe(smx_process_t dst_proc, smx_rdv_t rdv, int src,
@@ -89,22 +87,13 @@ smx_action_t SIMIX_pre_comm_isend(smx_simcall_t simcall, smx_rdv_t rdv,
                                   void (*clean_fun)(void *), 
 				  void *data, int detached);
 void SIMIX_pre_comm_recv(smx_simcall_t simcall, smx_rdv_t rdv,
-                                  void *dst_buff, size_t *dst_buff_size,
-                                  int (*match_fun)(void *, void *, smx_action_t),
-				  void *data, double timeout);
-void SIMIX_pre_comm_recv_bounded(smx_simcall_t simcall, smx_rdv_t rdv,
-                                  void *dst_buff, size_t *dst_buff_size,
-                                  int (*match_fun)(void *, void *, smx_action_t),
-				  void *data, double timeout, double rate);
+                         void *dst_buff, size_t *dst_buff_size,
+                         int (*match_fun)(void *, void *, smx_action_t),
+                         void *data, double timeout, double rate);
 smx_action_t SIMIX_pre_comm_irecv(smx_simcall_t simcall, smx_rdv_t rdv,
                                   void *dst_buff, size_t *dst_buff_size,
                                   int (*match_fun)(void *, void *, smx_action_t),
-				  void *data);
-smx_action_t SIMIX_pre_comm_irecv_bounded(smx_simcall_t simcall, smx_rdv_t rdv,
-                                  void *dst_buff, size_t *dst_buff_size,
-                                  int (*match_fun)(void *, void *, smx_action_t),
 				  void *data, double rate);
-void SIMIX_pre_comm_destroy(smx_simcall_t simcall, smx_action_t action);
 void SIMIX_pre_comm_cancel(smx_simcall_t simcall, smx_action_t action);
 double SIMIX_pre_comm_get_remains(smx_simcall_t simcall, smx_action_t action);
 e_smx_state_t SIMIX_pre_comm_get_state(smx_simcall_t simcall, smx_action_t action);

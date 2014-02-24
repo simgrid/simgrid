@@ -9,7 +9,7 @@ set(CMAKE_MODULE_PATH
 
 ### Determine the assembly flavor that we need today
 include(CMakeDetermineSystem)
-IF(CMAKE_SYSTEM_PROCESSOR MATCHES ".86|AMD64")
+IF(CMAKE_SYSTEM_PROCESSOR MATCHES ".86|AMD64|amd64")
   IF(${ARCH_32_BITS})
     message(STATUS "System processor: i686 (${CMAKE_SYSTEM_PROCESSOR}, 32 bits)")
     set(PROCESSOR_i686 1)
@@ -73,6 +73,7 @@ include(TestBigEndian)
 TEST_BIG_ENDIAN(BIGENDIAN)
 
 include(FindGraphviz)
+include(FindLibSigc++)
 
 set(HAVE_GTNETS 0)
 if(enable_gtnets)
@@ -96,6 +97,13 @@ endif()
 set(HAVE_NS3 0)
 if(enable_ns3)
   include(FindNS3)
+endif()
+
+find_package(Boost REQUIRED)
+if(Boost_FOUND)
+  include_directories(${Boost_INCLUDE_DIRS})
+else()
+  message(FATAL_ERROR, "Failed to find Boost libraries")
 endif()
 
 # Checks for header libraries functions.
@@ -148,7 +156,6 @@ CHECK_FUNCTION_EXISTS(asprintf HAVE_ASPRINTF)
 CHECK_FUNCTION_EXISTS(vasprintf HAVE_VASPRINTF)
 CHECK_FUNCTION_EXISTS(makecontext HAVE_MAKECONTEXT)
 CHECK_FUNCTION_EXISTS(mmap HAVE_MMAP)
-CHECK_FUNCTION_EXISTS(mergesort HAVE_MERGESORT)
 
 #Check if __thread is defined
 execute_process(
@@ -158,16 +165,22 @@ execute_process(
   )
 
 if(HAVE_thread_storage_run)
-  set(HAVE_THREAD_LOCAL_STORAGE 0)
-else()
   set(HAVE_THREAD_LOCAL_STORAGE 1)
+else()
+  set(HAVE_THREAD_LOCAL_STORAGE 0)
 endif()
 
 # Our usage of mmap is Linux-specific (flag MAP_ANONYMOUS), but kFreeBSD uses a GNU libc
 IF(NOT "${CMAKE_SYSTEM}" MATCHES "Linux" AND NOT "${CMAKE_SYSTEM}" MATCHES "kFreeBSD" AND NOT "${CMAKE_SYSTEM}" MATCHES "GNU" AND NOT  "${CMAKE_SYSTEM}" MATCHES "Darwin")
   SET(HAVE_MMAP 0)
   message(STATUS "Warning: MMAP is thought as non functional on this architecture (${CMAKE_SYSTEM})")
-ENDIF(NOT "${CMAKE_SYSTEM}" MATCHES "Linux" AND NOT "${CMAKE_SYSTEM}" MATCHES "kFreeBSD" AND NOT "${CMAKE_SYSTEM}" MATCHES "GNU" AND NOT  "${CMAKE_SYSTEM}" MATCHES "Darwin")
+ENDIF()
+
+if(HAVE_MMAP AND HAVE_THREAD_LOCAL_STORAGE)
+  SET(HAVE_MMALLOC 1)
+else()
+  SET(HAVE_MMALLOC 0)
+endif()
 
 if(WIN32) #THOSE FILES ARE FUNCTIONS ARE NOT DETECTED BUT THEY SHOULD...
   set(HAVE_UCONTEXT_H 1)
@@ -208,12 +221,15 @@ else()
   SET(MALLOCATOR_IS_WANTED 0)
 endif()
 
-if(enable_model-checking AND HAVE_MMAP)
+if(enable_model-checking AND HAVE_MMALLOC)
   SET(HAVE_MC 1)
   SET(MMALLOC_WANT_OVERRIDE_LEGACY 1)
   include(FindLibunwind)
   include(FindLibdw)
 else()
+  if(enable_model-checking)
+    message(STATUS "Warning: support for model-checking has been disabled because HAVE_MMALLOC is false")
+  endif()
   SET(HAVE_MC 0)
   SET(MMALLOC_WANT_OVERRIDE_LEGACY 0)
 endif()
@@ -483,7 +499,7 @@ endif()
 ###############
 ## GIT version check
 ##
-if(EXISTS ${CMAKE_HOME_DIRECTORY}/.git/ AND NOT WIN32)
+if(EXISTS ${CMAKE_HOME_DIRECTORY}/.git/)
   execute_process(COMMAND git remote
   COMMAND head -n 1
   WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY}/.git/
@@ -516,6 +532,8 @@ if(EXISTS ${CMAKE_HOME_DIRECTORY}/.git/ AND NOT WIN32)
     message(STATUS "Git date: ${GIT_DATE}")
     string(REGEX REPLACE " .*" "" GIT_VERSION "${GIT_VERSION}")
   endif()
+elseif(EXISTS ${CMAKE_HOME_DIRECTORY}/.gitversion)
+  FILE(STRINGS ${CMAKE_HOME_DIRECTORY}/.gitversion GIT_VERSION)
 endif()
 
 if(release)
@@ -810,6 +828,7 @@ if(HAVE_NS3_LIB)
 endif()
 set(CMAKE_SMPI_COMMAND "${CMAKE_SMPI_COMMAND}:\${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}\"")
 
+file(READ ${CMAKE_HOME_DIRECTORY}/src/smpi/smpitools.sh SMPITOOLS_SH)
 configure_file(${CMAKE_HOME_DIRECTORY}/include/smpi/mpif.h.in ${CMAKE_BINARY_DIR}/include/smpi/mpif.h @ONLY)
 configure_file(${CMAKE_HOME_DIRECTORY}/include/smpi/smpif.h.in ${CMAKE_BINARY_DIR}/include/smpi/smpif.h @ONLY)
 configure_file(${CMAKE_HOME_DIRECTORY}/src/smpi/smpicc.in ${CMAKE_BINARY_DIR}/bin/smpicc @ONLY)
@@ -876,8 +895,6 @@ set(generated_files_to_clean
   ${CMAKE_BINARY_DIR}/bin/colorize
   ${CMAKE_BINARY_DIR}/bin/simgrid_update_xml
   ${CMAKE_BINARY_DIR}/examples/smpi/tracing/smpi_traced.trace
-  ${CMAKE_BINARY_DIR}/src/supernovae_sg.c
-  ${CMAKE_BINARY_DIR}/src/supernovae_smpi.c
   )
 
 if("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_HOME_DIRECTORY}")

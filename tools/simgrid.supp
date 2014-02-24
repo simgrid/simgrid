@@ -31,6 +31,16 @@
    fun:__libc_dlopen_mode
 }
 
+# Another problem in glibc, where makecontext does not reset the EBP register,
+# and backtrace goes too far when walking up the stack frames
+{
+   Invalid read in backtrace, called after makecontext
+   Memcheck:Addr4
+   fun:backtrace
+   ...
+   fun:makecontext
+}
+
 # Memory leaks appearing to be in libcgraph.  They can be seen with the
 # following simple program:
 # ,----

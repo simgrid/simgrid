@@ -1,5 +1,11 @@
 #!/usr/bin/env python
 
+# Copyright (c) 2010-2011, 2014. The SimGrid Team.
+# All rights reserved.
+
+# This program is free software; you can redistribute it and/or modify it
+# under the terms of the license (GNU LGPL) which comes with this package.
+
 #---------------------------------------------------------------------------------------------------
 # Example invokation:
 # % ./regress.py griffon_skampi_pt2pt.ski.dat 65536 120832

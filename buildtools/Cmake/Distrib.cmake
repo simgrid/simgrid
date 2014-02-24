@@ -26,12 +26,23 @@ if(NOT WIN32)
 endif()
 
 # binaries
-install(PROGRAMS ${CMAKE_BINARY_DIR}/bin/smpicc
-  ${CMAKE_BINARY_DIR}/bin/smpif2c
-  ${CMAKE_BINARY_DIR}/bin/smpiff
-  ${CMAKE_BINARY_DIR}/bin/smpif90
-  ${CMAKE_BINARY_DIR}/bin/smpirun
-  DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/)
+if(enable_smpi)
+  install(PROGRAMS
+    ${CMAKE_BINARY_DIR}/bin/smpicc
+    ${CMAKE_BINARY_DIR}/bin/smpirun
+    DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/)
+  if(SMPI_F2C)
+    install(PROGRAMS
+      ${CMAKE_BINARY_DIR}/bin/smpif2c
+      ${CMAKE_BINARY_DIR}/bin/smpiff
+      DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/)
+  endif()
+  if(SMPI_F90)
+    install(PROGRAMS
+      ${CMAKE_BINARY_DIR}/bin/smpif90
+      DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/)
+  endif()
+endif()
 
 install(PROGRAMS ${CMAKE_BINARY_DIR}/bin/tesh
   DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/)
@@ -67,10 +78,16 @@ if(enable_lib_static AND NOT WIN32)
 endif()
 
 if(enable_java)
+  if(enable_lib_in_jar)
+    set(SIMGRID_JAR_TO_INSTALL "${SIMGRID_FULL_JAR}")
+  else()
+    set(SIMGRID_JAR_TO_INSTALL "${SIMGRID_JAR}")
+  endif()
   install(TARGETS simgrid-java
       DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/)
-  install(FILES ${SIMGRID_JAR}
-      DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/java/)
+  install(FILES ${SIMGRID_JAR_TO_INSTALL}
+      DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/java/
+      RENAME simgrid.jar)
 endif()
 
 # include files
@@ -139,6 +156,7 @@ add_custom_target(uninstall
   COMMAND ${CMAKE_COMMAND} -E	remove_directory ${CMAKE_INSTALL_PREFIX}/include/xbt
   COMMAND ${CMAKE_COMMAND} -E	remove_directory ${CMAKE_INSTALL_PREFIX}/include/mc
   COMMAND ${CMAKE_COMMAND} -E	remove_directory ${CMAKE_INSTALL_PREFIX}/include/simgrid
+  COMMAND ${CMAKE_COMMAND} -E	remove -f ${CMAKE_INSTALL_PREFIX}/include/simgrid.h
   COMMAND ${CMAKE_COMMAND} -E	remove -f ${CMAKE_INSTALL_PREFIX}/include/simgrid_config.h
   COMMAND ${CMAKE_COMMAND} -E	remove -f ${CMAKE_INSTALL_PREFIX}/include/xbt.h
   COMMAND ${CMAKE_COMMAND} -E	echo "uninstall include ok"
@@ -248,6 +266,7 @@ endforeach(file ${source_to_pack})
 add_custom_command(
   TARGET dist-dir
   COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/Scripts/Makefile.default ${PROJECT_NAME}-${release_version}/Makefile
+  COMMAND ${CMAKE_COMMAND} -E echo "${GIT_VERSION}" > ${PROJECT_NAME}-${release_version}/.gitversion
   )
 
 ######################################
@@ -361,12 +380,5 @@ add_custom_target(maintainer-clean
   COMMAND ${CMAKE_COMMAND} -E remove -f src/xbt_synchro_unit.c
   WORKING_DIRECTORY "${CMAKE_HOME_DIRECTORY}"
   )
-
-add_custom_target(supernovae-clean
-  COMMAND ${CMAKE_COMMAND} -E remove -f src/supernovae_sg.c
-  COMMAND ${CMAKE_COMMAND} -E remove -f src/supernovae_smpi.c
-  WORKING_DIRECTORY "${CMAKE_HOME_DIRECTORY}"
-  )
-
 
 include(CPack)

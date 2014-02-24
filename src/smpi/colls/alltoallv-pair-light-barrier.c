@@ -1,3 +1,9 @@
+/* Copyright (c) 2013-2014. The SimGrid Team.
+ * All rights reserved.                                                     */
+
+/* This program is free software; you can redistribute it and/or modify it
+ * under the terms of the license (GNU LGPL) which comes with this package. */
+
 #include "colls_private.h"
 /*****************************************************************************
 
@@ -39,6 +45,10 @@ smpi_coll_tuned_alltoallv_pair_light_barrier(void *send_buff, int *send_counts, 
 
   rank = smpi_comm_rank(comm);
   num_procs = smpi_comm_size(comm);
+
+  if((num_procs&(num_procs-1)))
+    THROWF(arg_error,0, "alltoallv pair algorithm can't be used with non power of two number of processes ! ");
+
   send_chunk = smpi_datatype_get_extent(send_type);
   recv_chunk = smpi_datatype_get_extent(recv_type);
 

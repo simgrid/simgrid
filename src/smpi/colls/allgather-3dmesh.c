@@ -1,3 +1,9 @@
+/* Copyright (c) 2013-2014. The SimGrid Team.
+ * All rights reserved.                                                     */
+
+/* This program is free software; you can redistribute it and/or modify it
+ * under the terms of the license (GNU LGPL) which comes with this package. */
+
 #include "colls_private.h"
 
 /*****************************************************************************
@@ -103,7 +109,9 @@ int smpi_coll_tuned_allgather_3dmesh(void *send_buff, int send_count,
   num_procs = smpi_comm_size(comm);
   extent = smpi_datatype_get_extent(send_type);
 
-  is_3dmesh(num_procs, &X, &Y, &Z);
+  if (!is_3dmesh(num_procs, &X, &Y, &Z))
+    THROWF(arg_error,0, "allgather_3dmesh algorithm can't be used with this number of processes! ");
+
 
   num_reqs = X;
 

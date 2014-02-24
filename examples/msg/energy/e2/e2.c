@@ -1,5 +1,4 @@
-
-/* Copyright (c) 2007-2010, 2013. The SimGrid Team.
+/* Copyright (c) 2007-2010, 2013-2014. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -9,6 +8,7 @@
 
 #include "msg/msg.h"
 #include "xbt/sysdep.h"         /* calloc */
+#include "simgrid/plugins.h"
 
 /* Create a log channel to have nice outputs. */
 #include "xbt/log.h"
@@ -70,14 +70,13 @@ int dvfs(int argc, char *argv[])
   consumed_energy = MSG_get_host_consumed_energy(host);
   XBT_INFO("Total energy (Joules): %f", consumed_energy);
 
-
   return 0;
 }
 
 int main(int argc, char *argv[])
 {
   msg_error_t res = MSG_OK;
-
+  sg_energy_plugin_init();
   MSG_init(&argc, argv);
 
   if (argc != 3) {

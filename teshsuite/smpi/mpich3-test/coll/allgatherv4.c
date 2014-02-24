@@ -7,6 +7,7 @@
 
 #include "mpi.h"
 #include "mpitest.h"
+#include "smpi_cocci.h"
 #include <stdio.h>
 #include <stdlib.h>
 #ifdef HAVE_SYS_TIME_H
@@ -25,9 +26,11 @@
 #define MAX_BUF   (32 * 1024 * 1024)
 #define LOOPS 10
 
-__thread char * sbuf, * rbuf;
-__thread int * recvcounts, * displs;
-int errs = 0;
+SMPI_VARINIT_GLOBAL(sbuf, char*);
+SMPI_VARINIT_GLOBAL(rbuf, char*);
+SMPI_VARINIT_GLOBAL(recvcounts, int*);
+SMPI_VARINIT_GLOBAL(displs, int*);
+SMPI_VARINIT_GLOBAL_AND_SET(errs, int, 0);
 
 /* #define dprintf printf */
 #define dprintf(...)
@@ -56,19 +59,19 @@ int main(int argc, char ** argv)
     if (LARGE_BUF * comm_size > MAX_BUF)
         goto fn_exit;
 
-    sbuf = (void *) calloc(MAX_BUF, 1);
-    rbuf = (void *) calloc(MAX_BUF, 1);
+    SMPI_VARGET_GLOBAL(sbuf) = (void *) calloc(MAX_BUF, 1);
+    SMPI_VARGET_GLOBAL(rbuf) = (void *) calloc(MAX_BUF, 1);
 
     srand(time(NULL));
 
-    recvcounts = (void *) malloc(comm_size * sizeof(int));
-    displs = (void *) malloc(comm_size * sizeof(int));
-    if (!recvcounts || !displs || !sbuf || !rbuf) {
+    SMPI_VARGET_GLOBAL(recvcounts) = (void *) malloc(comm_size * sizeof(int));
+    SMPI_VARGET_GLOBAL(displs) = (void *) malloc(comm_size * sizeof(int));
+    if (!SMPI_VARGET_GLOBAL(recvcounts) || !SMPI_VARGET_GLOBAL(displs) || !SMPI_VARGET_GLOBAL(sbuf) || !SMPI_VARGET_GLOBAL(rbuf)) {
         fprintf(stderr, "Unable to allocate memory:\n");
-	if (!sbuf) fprintf(stderr,"\tsbuf of %d bytes\n", MAX_BUF );
-	if (!rbuf) fprintf(stderr,"\trbuf of %d bytes\n", MAX_BUF );
-	if (!recvcounts) fprintf(stderr,"\trecvcounts of %zd bytes\n", comm_size * sizeof(int) );
-	if (!displs) fprintf(stderr,"\tdispls of %zd bytes\n", comm_size * sizeof(int) );
+	if (!SMPI_VARGET_GLOBAL(sbuf)) fprintf(stderr,"\tsbuf of %d bytes\n", MAX_BUF );
+	if (!SMPI_VARGET_GLOBAL(rbuf)) fprintf(stderr,"\trbuf of %d bytes\n", MAX_BUF );
+	if (!SMPI_VARGET_GLOBAL(recvcounts)) fprintf(stderr,"\trecvcounts of %zd bytes\n", comm_size * sizeof(int) );
+	if (!SMPI_VARGET_GLOBAL(displs)) fprintf(stderr,"\tdispls of %zd bytes\n", comm_size * sizeof(int) );
         fflush(stderr);
         MPI_Abort(MPI_COMM_WORLD, -1);
         exit(-1);
@@ -109,13 +112,13 @@ int main(int argc, char ** argv)
     comm_tests(comm);
     MPI_Comm_free(&comm);
 
-    //free(sbuf);
-    //free(rbuf);
-    free(recvcounts);
-    free(displs);
+    //free(SMPI_VARGET_GLOBAL(sbuf));
+    //free(SMPI_VARGET_GLOBAL(rbuf));
+    free(SMPI_VARGET_GLOBAL(recvcounts));
+    free(SMPI_VARGET_GLOBAL(displs));
 
 fn_exit:
-    MTest_Finalize(errs);
+    MTest_Finalize(SMPI_VARGET_GLOBAL(errs));
     MPI_Finalize();
 
     return 0;
@@ -124,7 +127,8 @@ fn_exit:
 void comm_tests(MPI_Comm comm)
 {
     int comm_size, comm_rank;
-    double rtime, max_time;
+    double rtime = rtime;       /* stop warning about unused variable */
+    double max_time;
     long long msg_size;
 
     MPI_Comm_size(comm, &comm_size);
@@ -186,16 +190,16 @@ double run_test(long long msg_size, MPI_Comm comm, test_t test_type,
     MPI_Comm_size(comm, &comm_size);
     MPI_Comm_rank(comm, &comm_rank);
 
-    displs[0] = 0;
+    SMPI_VARGET_GLOBAL(displs)[0] = 0;
     for (i = 0; i < comm_size; i++) {
         if (test_type == REGULAR)
-            recvcounts[i] = msg_size;
+            SMPI_VARGET_GLOBAL(recvcounts)[i] = msg_size;
         else if (test_type == BCAST)
-            recvcounts[i] = (!i) ? msg_size : 0;
+            SMPI_VARGET_GLOBAL(recvcounts)[i] = (!i) ? msg_size : 0;
         else if (test_type == SPIKE)
-            recvcounts[i] = (!i) ? (msg_size / 2) : (msg_size / (2 * (comm_size - 1)));
+            SMPI_VARGET_GLOBAL(recvcounts)[i] = (!i) ? (msg_size / 2) : (msg_size / (2 * (comm_size - 1)));
         else if (test_type == HALF_FULL)
-            recvcounts[i] = (i < (comm_size / 2)) ? (2 * msg_size) : 0;
+            SMPI_VARGET_GLOBAL(recvcounts)[i] = (i < (comm_size / 2)) ? (2 * msg_size) : 0;
         else if (test_type == LINEAR_DECREASE) {
             tmp = 2 * msg_size * (comm_size - 1 - i) / (comm_size - 1);
 	    if (tmp != (int)tmp) {
@@ -203,7 +207,7 @@ double run_test(long long msg_size, MPI_Comm comm, test_t test_type,
 		MPI_Abort( MPI_COMM_WORLD, 1 );
                 exit(1);
 	    }
-            recvcounts[i] = (int) tmp;
+            SMPI_VARGET_GLOBAL(recvcounts)[i] = (int) tmp;
 
             /* If the maximum message size is too large, don't run */
             if (tmp > MAX_BUF) return 0;
@@ -212,8 +216,8 @@ double run_test(long long msg_size, MPI_Comm comm, test_t test_type,
             for (j = 0; j < i; j++) {
                 if (i - 1 + j >= comm_size) continue;
                 tmp = msg_size * comm_size / (log(comm_size) * i);
-                recvcounts[i - 1 + j] = (int) tmp;
-                displs[i - 1 + j] = 0;
+                SMPI_VARGET_GLOBAL(recvcounts)[i - 1 + j] = (int) tmp;
+                SMPI_VARGET_GLOBAL(displs)[i - 1 + j] = 0;
 
                 /* If the maximum message size is too large, don't run */
                 if (tmp > MAX_BUF) return 0;
@@ -221,7 +225,7 @@ double run_test(long long msg_size, MPI_Comm comm, test_t test_type,
         }
 
         if (i < comm_size - 1)
-            displs[i+1] = displs[i] + recvcounts[i];
+            SMPI_VARGET_GLOBAL(displs)[i+1] = SMPI_VARGET_GLOBAL(displs)[i] + SMPI_VARGET_GLOBAL(recvcounts)[i];
     }
 
     /* Test that:
@@ -232,8 +236,8 @@ double run_test(long long msg_size, MPI_Comm comm, test_t test_type,
     MPI_Barrier(comm);
     start = MPI_Wtime();
     for (i = 0; i < LOOPS; i++) {
-        MPI_Allgatherv(sbuf, recvcounts[comm_rank], MPI_CHAR,
-                       rbuf, recvcounts, displs, MPI_CHAR, comm);
+        MPI_Allgatherv(SMPI_VARGET_GLOBAL(sbuf), SMPI_VARGET_GLOBAL(recvcounts)[comm_rank], MPI_CHAR,
+                       SMPI_VARGET_GLOBAL(rbuf), SMPI_VARGET_GLOBAL(recvcounts), SMPI_VARGET_GLOBAL(displs), MPI_CHAR, comm);
     }
     end = MPI_Wtime();
     MPI_Barrier(comm);

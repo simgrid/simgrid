@@ -1,11 +1,10 @@
 /* context_java - implementation of context switching for java threads */
 
-/* Copyright (c) 2009-2010, 2012-2013. The SimGrid Team.
+/* Copyright (c) 2009-2010, 2012-2014. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
-
 
 #include <xbt/function_types.h>
 #include <simgrid/simix.h>
@@ -18,10 +17,10 @@ extern JavaVM *__java_vm;
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(jmsg, bindings, "MSG for Java(TM)");
 
 static smx_context_t
-smx_ctx_java_factory_create_context(xbt_main_func_t code, int argc,
-                                    char **argv,
+smx_ctx_java_factory_create_context(xbt_main_func_t code,
+                                    int argc, char **argv,
                                     void_pfn_smxprocess_t cleanup_func,
-                                    void *data);
+                                    smx_process_t process);
 
 static void smx_ctx_java_free(smx_context_t context);
 static void smx_ctx_java_suspend(smx_context_t context);
@@ -42,7 +41,7 @@ void SIMIX_ctx_java_factory_init(smx_context_factory_t * factory)
   (*factory)->name = "ctx_java_factory";
   //(*factory)->finalize = smx_ctx_base_factory_finalize;
   (*factory)->self = smx_ctx_java_self;
-  (*factory)->get_data = smx_ctx_base_get_data;
+  (*factory)->get_process = smx_ctx_base_get_process;
 }
 smx_context_t smx_ctx_java_self(void)
 {
@@ -50,10 +49,10 @@ smx_context_t smx_ctx_java_self(void)
 }
 
 static smx_context_t
-smx_ctx_java_factory_create_context(xbt_main_func_t code, int argc,
-                                    char **argv,
+smx_ctx_java_factory_create_context(xbt_main_func_t code,
+                                    int argc, char **argv,
                                     void_pfn_smxprocess_t cleanup_func,
-                                    void* data)
+                                    smx_process_t process)
 {
   static int thread_amount=0;
   smx_ctx_java_t context = xbt_new0(s_smx_ctx_java_t, 1);
@@ -87,7 +86,7 @@ smx_ctx_java_factory_create_context(xbt_main_func_t code, int argc,
   	context->thread = NULL;
     xbt_os_thread_set_extra_data(context);
   }
-  context->super.data = data;
+  context->super.process = process;
   
   return (smx_context_t) context;
 }
@@ -111,18 +110,23 @@ static void* smx_ctx_java_thread_run(void *data) {
     (*env)->SetLongField(env, context->jprocess, jprocess_field_Process_bind,
                          (intptr_t)process);
   }
-  xbt_assert((context->jprocess != NULL), "Process not created...");
-  //wait for the process to be able to begin
-  //TODO: Cache it
+
+  // Adrien, ugly path, just to bypass creation of context at low levels
+  // (i.e such as for the VM migration for instance)
+  if(context->jprocess != NULL){
+	xbt_assert((context->jprocess != NULL), "Process not created...");
+	//wait for the process to be able to begin
+	//TODO: Cache it
 	jfieldID jprocess_field_Process_startTime = jxbt_get_sfield(env, "org/simgrid/msg/Process", "startTime", "D");
-  jdouble startTime =  (*env)->GetDoubleField(env, context->jprocess, jprocess_field_Process_startTime);
-  if (startTime > MSG_get_clock()) {
-  	MSG_process_sleep(startTime - MSG_get_clock());
+	jdouble startTime =  (*env)->GetDoubleField(env, context->jprocess, jprocess_field_Process_startTime);
+	if (startTime > MSG_get_clock()) {
+		MSG_process_sleep(startTime - MSG_get_clock());
+	}
+	//Execution of the "run" method.
+	jmethodID id = jxbt_get_smethod(env, "org/simgrid/msg/Process", "run", "()V");
+	xbt_assert( (id != NULL), "Method not found...");
+	(*env)->CallVoidMethod(env, context->jprocess, id);
   }
-  //Execution of the "run" method.
-  jmethodID id = jxbt_get_smethod(env, "org/simgrid/msg/Process", "run", "()V");
-  xbt_assert( (id != NULL), "Method not found...");
-  (*env)->CallVoidMethod(env, context->jprocess, id);
   smx_ctx_java_stop((smx_context_t)context);
 
   return NULL;

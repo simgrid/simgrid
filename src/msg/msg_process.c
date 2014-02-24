@@ -1,4 +1,4 @@
-/* Copyright (c) 2004-2013. The SimGrid Team.
+/* Copyright (c) 2004-2014. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -48,12 +48,6 @@ void MSG_process_cleanup_from_SIMIX(smx_process_t smx_proc)
   // free the data if a function was provided
   if (msg_proc && msg_proc->data && msg_global->process_data_cleanup) {
     msg_global->process_data_cleanup(msg_proc->data);
-  }
-
-  // remove the process from its virtual machine
-  if (msg_proc && msg_proc->vm) {
-    int pos = xbt_dynar_search(msg_proc->vm->processes,&smx_proc);
-    xbt_dynar_remove_at(msg_proc->vm->processes,pos, NULL);
   }
 
   // free the MSG process
@@ -175,9 +169,9 @@ msg_process_t MSG_process_create_with_environment(const char *name,
  simcall_process_create(&process, name, code, simdata, sg_host_name(host), -1,
                            argc, argv, properties,0);
 
-  #ifdef HAVE_TRACING
-    TRACE_msg_process_create(name, simcall_process_get_PID(process), simdata->m_host);
-  #endif
+#ifdef HAVE_TRACING
+  TRACE_msg_process_create(name, simcall_process_get_PID(process), host);
+#endif
 
   if (!process) {
     /* Undo everything we have just changed */

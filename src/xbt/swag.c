@@ -1,4 +1,4 @@
-/* Copyright (c) 2004-2012. The SimGrid Team.
+/* Copyright (c) 2004-2014. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -13,7 +13,6 @@
 #include "xbt/sysdep.h"
 #include "xbt/log.h"
 #include "xbt/swag.h"
-
 
 /** Creates a new swag.
  * \param offset where the hookup is located in the structure

@@ -1,5 +1,11 @@
 #!/bin/bash
 
+# Copyright (c) 2013-2014. The SimGrid Team.
+# All rights reserved.
+
+# This program is free software; you can redistribute it and/or modify it
+# under the terms of the license (GNU LGPL) which comes with this package.
+
 set -e
 
 if [ "$1" = "-batch" ]; then
@@ -12,7 +18,7 @@ else
 fi
 
 if [ $# -lt 1 -o $# -gt 3 ]; then
-    cat <<EOF
+    cat >&2 <<EOF
 Usage: $0 [-batch] archive.tar.gz [git_url [git_reference]]
 EOF
     exit 1
@@ -20,7 +26,7 @@ fi
 
 archive=$1
 if [ ! -r "$archive" ]; then
-    printf 'File not found: %s\n' "$archive"
+    printf 'File not found: %s\n' "$archive" >&2
     exit 1
 fi
 
@@ -49,7 +55,7 @@ case "$myname" in
 esac
 
 if [ ! -r "$exclude" ]; then
-    printf 'File not found: %s\n' "$exclude"
+    printf 'File not found: %s\n' "$exclude" >&2
     exit 1
 fi
 

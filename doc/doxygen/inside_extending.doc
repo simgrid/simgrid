@@ -26,60 +26,70 @@ user@caraja:~/workspace/simgrid/src$ cg "TUTORIAL: New API"
 \endverbatim
 
 \section simgrid_dev_guide_model How to add a new model in surf?
-Search for expression \"TUTORIAL: New model\".
-\verbatim
-user@caraja:~/workspace/simgrid/src$ cg "TUTORIAL: New model"
-0 surf/new_model_private.h   2 /* TUTORIAL: New model
-1 surf/surf.c              213 /* TUTORIAL: New model*/
-2 surf/surf_config.c       380 /* TUTORIAL: New model*/
-3 surf/surf_config.c       746 /* TUTORIAL: New model*/
-4 surf/new_model.c           8 /* TUTORIAL: New model*/
-5 include/surf/surf.h      157 /* TUTORIAL: New model*/
-6 include/surf/surf.h      345 /* TUTORIAL: New model*/
-7 include/surf/surf.h      661 /* TUTORIAL: New model*/
-\endverbatim
+A model in simgrid is composed of three classes: Model, Resource and Action
+(surf_interface.hpp). 
+
+Actually there are five kind of models: CpuModel, NetworkModel, WorkstationModel,
+WorkstationVMModel and StorageModel. For each kind of model, there is an
+interface (e.g.: cpu_interface.hpp) and some implementations (e.g.: cpu_cas01.hpp,
+cpu_ti.hpp). 
+
+If you want to create a new implementation of a kind of model you must extend
+the classes of the corresponding interface.
+
+If you want to create a new kind of model, you must create a new interface
+ where you extend the classes Model, Resource and Action, and then create an
+ implementation of this interface.
 
 \section simgrid_dev_guide_simcall How to add a new simcall?
-To add a simcall called `<name>` with three arguments `arg1`, `arg2` and `arg3`
-of type `targ1`, `targ2`, `targ3` respectively and which return a value of
-type `tret` you must first define the simcall function in the the
-`include/simgrid/simix.h` and make it call the automatically generated `BODY`
-function which will do all the bad stuff.
+A simcall is used to go from user mode to kernel mode. The workflow of
+a simcall is the following:
 
-~~~~{.c}
-tret simcall_<NAME>(targ1 arg1, targ2 arg2, targ3 arg3){
-  return simcall_BODY_<NAME>(arg1, arg2, arg3);
-}
+- `<ret> simcall_<name>(<args>)`
+ - `simcall_BODY_<name>(<args>)`
+  - create the simcall
+  - `SIMIX_process_yield` if not maestro
+  - ========== KERNEL MODE ==========
+  - `SIMIX_simcall_pre`
+   - `SIMIX_pre_<name>(simcall, <args>)`
+   - `SIMIX_simcall_answer(simcall)`
+
+To simplify the simcall creation, we have made a python script that
+generate most of the code and give helpers for the remaining stuff.
+The script generating the simcalls (src/simix/simcalls.in) take in input
+the src/simix/simcalls.in file where the simcalls are defined and generate
+the following files:
+
+- simcall_generated_args_getter_setter.h:
+  functions to get and set simcall arguments
+- simcall_generated_res_getter_setter.h:
+  functions to get and set simcall result
+- simcall_generated_body.c:
+  the BODY function of the simcall
+- simcall_generated_case.c:
+  the case of the SIMIX_simcall_pre function
+- simcall_generated_enum.h:
+  the enum of simcalls
+- simcall_generated_string.c:
+  string corresponding to the enum to debug
+
+Furthermode if the simcall_<name> or the SIMIX_pre_<name> function are missing,
+a warning will show up with a prototype of the corresponding fonction to fill.
+
+The simcall.in file list all the simcalls in sections. A line starting by "##"
+define a new section which will be replace by a "ifdef" in the generated code.
+There is a simcall by line which follow this format:
+
 ~~~~
-
-Then you must add an new line in the list `SIMCALL_LIST1` of simcall actions in
-`src/simix/smx_smurf_private.h`. The arguments of the `ACTION` are:
-- the simcall enum name,
-- the `<name>` of the simcall,
-- if the result must be automatically saved in the simcall
- (`WITH_ANSWER`/`WITHOUT_ANSWER`)
-- the return type,
-- the arguments.
-
-The return type and the arguments must be define by using `TSPEC(name, type)`,
-or one of the predefined type (e.g., `TSTRING(n)`, `TINT(n)`, `TVOID(n)`,
-`TPTR(n)`, …). You must get something like this:
-
-~~~~{.c}
-ACTION(SIMCALL_<NAME>, <name>, WITH_ANSWER, TSPEC(result, tret), TSPEC(arg1, targ1), TSPEC(arg2, targ2), TSPEC(arg3, targ3)) sep  \
-~~~~
-
-Finaly you have to define the kernel code in a `SIMIX_pre_<name>` in the
-corresponding src/simix/smx_*.c file:
-
-~~~~{.c}
-tret SIMIX_pre_<name>(smx_simcall_t simcall, targ1 arg1, targ2 arg2, targ3 arg3) {
-  SIMIX_<NAME>(arg1, arg2, arg3);
-}
-
-tret SIMIX_<name>(targ1 arg1, targ2 arg2, targ3 arg3) {
-  // Your code in kernel mode
-}
+Simcall -> Name HasAnswer Res Args
+Name -> [a-z0-9_]+
+Has_Answer -> "True" | "False"
+Res -> "(" Type MaybeCast ")"
+Args -> Args Arg | Arg
+Arg -> "(" Name "," Type MaybeCast ")"
+Type -> "char" | "const char*" | "int" | "long" | "unsigned char" | "unsigned short" | "unsigned int" | "unsigned long" | "float" | "double" | "void*" | "FPtr" | "const void*" | "size_t" | "sg_size_t" | "void" | "void*"
+MaybeCast -> "," Cast | ""
+Cast -> [a-z0-9_* ]+
 ~~~~
 
 \section simgrid_dev_guide_tag What is How to add a new tag for xml files?

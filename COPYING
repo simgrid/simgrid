@@ -91,8 +91,8 @@ include/xbt/mmalloc.h
 =========================================================================
 
 In order to use ucontext with windows platform we had those files :
-	src/xbt/win32_ucontext.c
-	include/xbt/win32_ucontext.h
+        src/xbt/win32_ucontext.c
+        include/xbt/win32_ucontext.h
 
 Their copyright is the following:
 
@@ -155,8 +155,8 @@ List of files:
 
 =========================================================================
 
-The SMPI testsuite was borrowed from the MPICH3 test files. It can be found 
-inside ./teshsuite/smpi/mpich3-test. Some of the collective algorithms 
+The SMPI testsuite was borrowed from the MPICH3 test files. It can be found
+inside ./teshsuite/smpi/mpich3-test. Some of the collective algorithms
 available in src/smpi/colls/ were also copied from MPICH
 
 
@@ -166,7 +166,7 @@ available in src/smpi/colls/ were also copied from MPICH
  */
 <------------- COPYRIGHT file in the top-level ----------------------->
 
-				  COPYRIGHT
+                                  COPYRIGHT
 
 The following is a notice of limited availability of the code, and disclaimer
 which must be included in the prologue of the code and in all source listings
@@ -187,7 +187,7 @@ Department of Computer Science
 University of Illinois at Urbana-Champaign
 
 
-			      GOVERNMENT LICENSE
+                              GOVERNMENT LICENSE
 
 Portions of this material resulted from work developed under a U.S.
 Government Contract and are subject to the following license: the Government
@@ -195,7 +195,7 @@ is granted for itself and others acting on its behalf a paid-up, nonexclusive,
 irrevocable worldwide license in this computer software to reproduce, prepare
 derivative works, and perform publicly and display publicly.
 
-				  DISCLAIMER
+                                  DISCLAIMER
 
 This computer code material was prepared, in part, as an account of work
 sponsored by an agency of the United States Government.  Neither the United
@@ -289,12 +289,12 @@ Copyright (c) 2004-2010 The Trustees of Indiana University and Indiana
 Copyright (c) 2004-2010 The University of Tennessee and The University
                         of Tennessee Research Foundation.  All rights
                         reserved.
-Copyright (c) 2004-2010 High Performance Computing Center Stuttgart, 
+Copyright (c) 2004-2010 High Performance Computing Center Stuttgart,
                         University of Stuttgart.  All rights reserved.
 Copyright (c) 2004-2008 The Regents of the University of California.
                         All rights reserved.
 Copyright (c) 2006-2010 Los Alamos National Security, LLC.  All rights
-                        reserved. 
+                        reserved.
 Copyright (c) 2006-2010 Cisco Systems, Inc.  All rights reserved.
 Copyright (c) 2006-2010 Voltaire, Inc. All rights reserved.
 Copyright (c) 2006-2011 Sandia National Laboratories. All rights reserved.
@@ -304,7 +304,7 @@ Copyright (c) 2006-2010 The University of Houston. All rights reserved.
 Copyright (c) 2006-2009 Myricom, Inc.  All rights reserved.
 Copyright (c) 2007-2008 UT-Battelle, LLC. All rights reserved.
 Copyright (c) 2007-2010 IBM Corporation.  All rights reserved.
-Copyright (c) 1998-2005 Forschungszentrum Juelich, Juelich Supercomputing 
+Copyright (c) 1998-2005 Forschungszentrum Juelich, Juelich Supercomputing
                         Centre, Federal Republic of Germany
 Copyright (c) 2005-2008 ZIH, TU Dresden, Federal Republic of Germany
 Copyright (c) 2007      Evergrid, Inc. All rights reserved.

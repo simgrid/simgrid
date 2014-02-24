@@ -1,8 +1,8 @@
-/* Copyright (c) 2007, 2009-2013. The SimGrid Team.
+/* Copyright (c) 2007, 2009-2014. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
-  * under the terms of the license (GNU LGPL) which comes with this package. */
+ * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "private.h"
 #include "xbt/dict.h"
@@ -142,8 +142,8 @@ void smpi_execute_flops(double flops) {
   smx_action_t action;
   smx_host_t host;
   host = SIMIX_host_self();
-  XBT_DEBUG("Handle real computation time: %g flops", flops);
-  action = simcall_host_execute("computation", host, flops, 1);
+  XBT_DEBUG("Handle real computation time: %f flops", flops);
+  action = simcall_host_execute("computation", host, flops, 1, 0, 0);
 #ifdef HAVE_TRACING
   simcall_set_category (action, TRACE_internal_smpi_get_category());
 #endif
@@ -201,7 +201,7 @@ unsigned int smpi_sleep(unsigned int secs)
 
   double flops = (double) secs*simcall_host_get_speed(SIMIX_host_self());
   XBT_DEBUG("Sleep for: %f flops", flops);
-  action = simcall_host_execute("computation", SIMIX_host_self(), flops, 1);
+  action = simcall_host_execute("computation", SIMIX_host_self(), flops, 1, 0, 0);
   #ifdef HAVE_TRACING
     simcall_set_category (action, TRACE_internal_smpi_get_category());
   #endif

@@ -1,13 +1,10 @@
-/*
- * JNI interface to C code for MSG.
- * 
- * Copyright (c) 2006-2013. The SimGrid Team.
- * All right reserved. 
- *
- * This program is free software; you can redistribute 
- * it and/or modify it under the terms of the license 
- * (GNU LGPL) which comes with this package.
- */
+/* JNI interface to C code for MSG. */
+
+/* Copyright (c) 2006-2014. The SimGrid Team.
+ * All rights reserved.                                                     */
+
+/* This program is free software; you can redistribute it and/or modify it
+ * under the terms of the license (GNU LGPL) which comes with this package. */
 
 package org.simgrid.msg;
 
@@ -37,19 +34,7 @@ public final class Msg {
 		nativeInit();
 	}
 	private static void loadLib (String name) {
-		String Os = System.getProperty("os.name");
-		String Arch = System.getProperty("os.arch");
-		// Some OS/Arch may be different between Java and Cmake,
-		// which generated the path
-		if (Os.toLowerCase().startsWith("win"))
-			Os = "Windows";
-		else if (Os.contains("OS X"))
-			Os = "Darwin";
-		if (Arch.equalsIgnoreCase("x86"))
-			Arch = "i386";
-		else if (Arch.equalsIgnoreCase("x86_64"))
-			Arch = "amd64";
-		String Path = "NATIVE/" + Os + "/" + Arch + "/";
+		String Path = NativeLib.getPath();
 
 		String filename=name;
 		InputStream in = Msg.class.getClassLoader().getResourceAsStream(Path+filename);

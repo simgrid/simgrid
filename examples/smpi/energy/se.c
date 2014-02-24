@@ -1,3 +1,9 @@
+/* Copyright (c) 2013-2014. The SimGrid Team.
+ * All rights reserved.                                                     */
+
+/* This program is free software; you can redistribute it and/or modify it
+ * under the terms of the license (GNU LGPL) which comes with this package. */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <mpi.h>
@@ -12,7 +18,7 @@ int main(int argc, char *argv[])
   size_t sz, x;
 
   if (MPI_Init(&argc, &argv) != MPI_SUCCESS) {
-    printf("MPI initialization failed!\n");
+    fprintf(stderr, "MPI initialization failed!\n");
     exit(EXIT_FAILURE);
   }
 
@@ -38,19 +44,19 @@ int main(int argc, char *argv[])
     } else
       sz = 0;
   }
-  printf("%s%s\n", buf, (sz ? "" : " [...]"));
+  fprintf(stderr, "%s%s\n", buf, (sz ? "" : " [...]"));
 
   for (i = 0; i < pstates; i++) {
     smpi_set_host_power_peak_at(i);
-    printf("[%.6f] [rank %d] Current pstate: %d; Current power: %.0f\n",
-           MPI_Wtime(), rank, i, smpi_get_host_current_power_peak());
+    fprintf(stderr, "[%.6f] [rank %d] Current pstate: %d; Current power: %.0f\n",
+            MPI_Wtime(), rank, i, smpi_get_host_current_power_peak());
 
     SMPI_SAMPLE_FLOPS(1e9) {
       /* imagine here some code running for 1e9 flops... */
     }
 
-    printf("[%.6f] [rank %d] Energy consumed: %g Joules.\n",
-           MPI_Wtime(), rank, smpi_get_host_consumed_energy());
+    fprintf(stderr, "[%.6f] [rank %d] Energy consumed: %g Joules.\n",
+            MPI_Wtime(), rank, smpi_get_host_consumed_energy());
   }
 
   return MPI_Finalize();

@@ -1,10 +1,10 @@
 /* Functions related to the java host instances.                            */
 
-/* Copyright (c) 2007-2013. The SimGrid Team.
+/* Copyright (c) 2007-2014. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
-  * under the terms of the license (GNU LGPL) which comes with this package. */
+ * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "xbt/str.h"
 #include "msg/msg.h"
@@ -17,7 +17,6 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(jmsg);
 static jmethodID jhost_method_Host_constructor;
 static jfieldID jhost_field_Host_bind;
 static jfieldID jhost_field_Host_name;
-
 
 jobject jhost_new_instance(JNIEnv * env) {
   jclass cls = jxbt_get_class(env, "org/simgrid/msg/Host");
@@ -85,7 +84,7 @@ Java_org_simgrid_msg_Host_getByName(JNIEnv * env, jclass cls,
   }
   (*env)->ReleaseStringUTFChars(env, jname, name);
 
-  if (!MSG_host_get_data(host)) {       /* native host not associated yet with java host */
+  if (!xbt_lib_get_level(host, JAVA_HOST_LEVEL)) {       /* native host not associated yet with java host */
 
     /* Instantiate a new java host */
     jhost = jhost_new_instance(env);
@@ -110,11 +109,11 @@ Java_org_simgrid_msg_Host_getByName(JNIEnv * env, jclass cls,
     /* the native host data field is set with the global reference to the
      * java host returned by this function
      */
-    MSG_host_set_data(host, (void *) jhost);
+    xbt_lib_set(host_lib, host->key, JAVA_HOST_LEVEL, (void *) jhost);
   }
 
   /* return the global reference to the java host instance */
-  return (jobject) MSG_host_get_data(host);
+  return (jobject) xbt_lib_get_level(host, JAVA_HOST_LEVEL);
 }
 
 JNIEXPORT jobject JNICALL
@@ -123,7 +122,7 @@ Java_org_simgrid_msg_Host_currentHost(JNIEnv * env, jclass cls) {
 
   msg_host_t host = MSG_host_self();
 
-  if (!MSG_host_get_data(host)) {
+  if (!xbt_lib_get_level(host, JAVA_HOST_LEVEL)) {
     /* the native host not yet associated with the java host instance */
 
     /* instanciate a new java host instance */
@@ -147,13 +146,26 @@ Java_org_simgrid_msg_Host_currentHost(JNIEnv * env, jclass cls) {
     (*env)->SetObjectField(env, jhost, jhost_field_Host_name, jname);
     /* Bind & store it */
     jhost_bind(jhost, host, env);
-    MSG_host_set_data(host, (void *) jhost);
+    xbt_lib_set(host_lib, host->key, JAVA_HOST_LEVEL, (void *) jhost);
   } else {
-    jhost = (jobject) MSG_host_get_data(host);
+    jhost = (jobject) xbt_lib_get_level(host, JAVA_HOST_LEVEL);
   }
 
   return jhost;
 }
+
+JNIEXPORT void JNICALL
+Java_org_simgrid_msg_Host_on(JNIEnv *env, jobject jhost) {
+  msg_host_t host = jhost_get_native(env, jhost);
+  MSG_host_on(host);
+}
+
+JNIEXPORT void JNICALL
+Java_org_simgrid_msg_Host_off(JNIEnv *env, jobject jhost) {
+  msg_host_t host = jhost_get_native(env, jhost);
+  MSG_host_off(host);
+}
+
 JNIEXPORT jint JNICALL
 Java_org_simgrid_msg_Host_getCount(JNIEnv * env, jclass cls) {
   xbt_dynar_t hosts =  MSG_hosts_as_dynar();
@@ -278,7 +290,7 @@ Java_org_simgrid_msg_Host_all(JNIEnv * env, jclass cls_arg)
 
   for (index = 0; index < count; index++) {
     host = xbt_dynar_get_as(table,index,msg_host_t);
-    jhost = (jobject) (MSG_host_get_data(host));
+    jhost = (jobject) (xbt_lib_get_level(host, JAVA_HOST_LEVEL));
 
     if (!jhost) {
       jname = (*env)->NewStringUTF(env, MSG_host_get_name(host));

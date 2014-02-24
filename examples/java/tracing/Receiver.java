@@ -1,13 +1,9 @@
-/*
- * $Id$
- *
- * Copyright 2006,2007 Martin Quinson, Malek Cherier         
- * Copyright (c) 2012-2013. The SimGrid Team.
- * All rights reserved.
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the license (GNU LGPL) which comes with this package. 
- */
+/* Copyright (c) 2006-2007, 2012-2014. The SimGrid Team.
+ * All rights reserved.                                                     */
+
+/* This program is free software; you can redistribute it and/or modify it
+ * under the terms of the license (GNU LGPL) which comes with this package. */
+
 package tracing;
 import org.simgrid.msg.Host;
 import org.simgrid.msg.Msg;

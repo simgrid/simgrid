@@ -1,3 +1,9 @@
+/* Copyright (c) 2013-2014. The SimGrid Team.
+ * All rights reserved.                                                     */
+
+/* This program is free software; you can redistribute it and/or modify it
+ * under the terms of the license (GNU LGPL) which comes with this package. */
+
 #include "colls_private.h"
 
 // now only work with power of two processes
@@ -21,6 +27,10 @@ smpi_coll_tuned_allgather_rhv(void *sbuf, int send_count,
 
   // get size of the communicator, followed by rank 
   num_procs = smpi_comm_size(comm);
+
+  if((num_procs&(num_procs-1)))
+    THROWF(arg_error,0, "allgather rhv algorithm can't be used with non power of two number of processes ! ");
+
   rank = smpi_comm_rank(comm);
 
   // get size of single element's type for send buffer and recv buffer

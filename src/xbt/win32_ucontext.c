@@ -1,3 +1,9 @@
+/* Copyright (c) 2010-2012, 2014. The SimGrid Team.
+ * All rights reserved.                                                     */
+
+/* This program is free software; you can redistribute it and/or modify it
+ * under the terms of the license (GNU LGPL) which comes with this package. */
+
 /*
  *      win32-ucontext: Unix ucontext_t operations on Windows platforms
  *      Copyright(C) 2007 Panagiotis E. Hadjidoukas

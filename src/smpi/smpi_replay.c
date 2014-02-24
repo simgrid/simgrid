@@ -1,9 +1,8 @@
-/* Copyright (c) 2009-2013. The SimGrid Team.
+/* Copyright (c) 2009-2014. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
-
 
 #include "private.h"
 #include <stdio.h>
@@ -259,6 +258,12 @@ static void action_recv(const char *const *action) {
   TRACE_smpi_ptp_in(rank, src_traced, rank, __FUNCTION__, extra);
 #endif
 
+  //unknow size from the receiver pov
+  if(size==-1){
+      smpi_mpi_probe(from, 0, MPI_COMM_WORLD, &status);
+      size=status.count;
+  }
+
   smpi_mpi_recv(NULL, size, MPI_CURRENT_TYPE, from, 0, MPI_COMM_WORLD, &status);
 
 #ifdef HAVE_TRACING
@@ -290,6 +295,12 @@ static void action_Irecv(const char *const *action)
   extra->datatype1 = encode_datatype(MPI_CURRENT_TYPE);
   TRACE_smpi_ptp_in(rank, src_traced, rank, __FUNCTION__, extra);
 #endif
+  MPI_Status status;
+  //unknow size from the receiver pov
+  if(size==-1){
+      smpi_mpi_probe(from, 0, MPI_COMM_WORLD, &status);
+      size=status.count;
+  }
 
   request = smpi_mpi_irecv(NULL, size, MPI_CURRENT_TYPE, from, 0, MPI_COMM_WORLD);
 
@@ -986,7 +997,7 @@ int smpi_replay_finalize(){
     /* Last process alive speaking */
     /* end the simulated timer */
     sim_time = smpi_process_simulated_elapsed();
-    XBT_INFO("Simulation time %g", sim_time);
+    XBT_INFO("Simulation time %f", sim_time);
     _xbt_replay_action_exit();
     xbt_free(reqq);
     reqq = NULL;

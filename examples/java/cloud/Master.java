@@ -1,10 +1,9 @@
-/*
- * Copyright (c) 2012-2013. The SimGrid Team.
- * All rights reserved.
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the license (GNU LGPL) which comes with this package. 
- */
+/* Copyright (c) 2012-2014. The SimGrid Team.
+ * All rights reserved.                                                     */
+
+/* This program is free software; you can redistribute it and/or modify it
+ * under the terms of the license (GNU LGPL) which comes with this package. */
+
 package cloud;
 
 import java.util.ArrayList;
@@ -24,31 +23,36 @@ public class Master extends Process {
 		this.hosts = hosts;
 	}
 	public void main(String[] args) throws MsgException {
-		int slavesCount = 10;
+		int slavesCount = Cloud.hostNB;
 		
 		ArrayList<VM> vms = new ArrayList<VM>();
 		
+		// Create one VM per host and bind a process inside each one. 
 		for (int i = 0; i < slavesCount; i++) {
-			Slave slave = new Slave(hosts[i],i);
-			slave.start();
-			VM vm = new VM(hosts[i],hosts[i]+"_"+i,1);
-			vm.bind(slave);
+			Msg.info("create VM0"+i);	
+			VM vm = new VM(hosts[i+1],"VM0"+i);
+			vm.start();
 			vms.add(vm);
+			Slave slave = new Slave(vm,i);
+			Msg.info("Put Worker "+slave.msgName()+ " on "+vm.getName());
+			slave.start();
+	
 		}
 		Msg.info("Launched " + vms.size() + " VMs");
 		
 		Msg.info("Send a first batch of work to everyone");
 		workBatch(slavesCount);
 		
-		Msg.info("Now suspend all VMs, just for fun");
+		Msg.info("Suspend all VMs");
 		for (int i = 0; i < vms.size(); i++) {
+			Msg.info("Suspend "+vms.get(i).getName());
 			vms.get(i).suspend();
 		}
 		
 		Msg.info("Wait a while");
 		waitFor(2);
 		
-		Msg.info("Enough. Let's resume everybody.");
+		Msg.info("Resume all VMs.");
 		for (int i = 0; i < vms.size(); i++) {
 			vms.get(i).resume();
 		}
@@ -56,42 +60,37 @@ public class Master extends Process {
 		Msg.info("Sleep long enough for everyone to be done with previous batch of work");
 		waitFor(1000 - Msg.getClock());
 		
-		Msg.info("Add one more process per VM.");
+/*		Msg.info("Add one more process per VM.");
 		for (int i = 0; i < vms.size(); i++) {
 			VM vm = vms.get(i);
-			Slave slave = new Slave(hosts[i],i + vms.size());
+			Slave slave = new Slave(vm,i + vms.size());
 			slave.start();
-			vm.bind(slave);
 		}
-		
-		Msg.info("Migrate everyone to the second host.");
-		for (int i = 0; i < vms.size(); i++) {
-			vms.get(i).migrate(hosts[1]);
-		}
-		
-		Msg.info("Suspend everyone, move them to the third host, and resume them.");
-		for (int i = 0; i < vms.size(); i++) {
-			VM vm = vms.get(i);
-			vm.suspend();
-			vm.migrate(hosts[2]);
-			vm.resume();
-		}
-		
+	
 		workBatch(slavesCount * 2);
+*/
+
+		Msg.info("Migrate everyone to "+hosts[3].getName());
+		for (int i = 0; i < vms.size(); i++) {
+			Msg.info("Migrate "+vms.get(i).getName()+"from"+hosts[i+1].getName()+"to "+hosts[3].getName());
+			vms.get(i).migrate(hosts[2]);
+		}
+		
 		
 		Msg.info("Let's shut down the simulation and kill everyone.");
 		
 		for (int i = 0; i < vms.size(); i++) {
 			vms.get(i).shutdown();
+			vms.get(i).destroy();
 		}				
 		Msg.info("Master done.");
 	}
 	
 	public void workBatch(int slavesCount) throws MsgException {
 		for (int i = 0; i < slavesCount; i++) {
-			Task task = new Task("Task_" + i, Cloud.task_comp_size, Cloud.task_comm_size);
-			Msg.info("Sending to " + i);
-			task.send("slave_" + i);
+			Task task = new Task("Task0" + i, Cloud.task_comp_size, Cloud.task_comm_size);
+			Msg.info("Sending to WRK0" + i);
+			task.send("MBOX:WRK0" + i);
 		}
 	}
 }

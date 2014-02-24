@@ -4,7 +4,7 @@
    Written May 1989 by Mike Haertel.
    Heavily modified Mar 1992 by Fred Fish.  (fnf@cygnus.com) */
 
-/* Copyright (c) 2010-2013. The SimGrid Team.
+/* Copyright (c) 2010-2014. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -34,7 +34,7 @@ void mfree(struct mdesc *mdp, void *ptr)
   block = BLOCK(ptr);
 
   if ((char *) ptr < (char *) mdp->heapbase || block > mdp->heapsize) {
-    fprintf(stderr,"Ouch, this pointer is not mine. I refuse to free it. I refuse it to death!!\n");
+    fprintf(stderr,"Ouch, this pointer is not mine, I refuse to free it. Give me valid pointers, or give me death!!\n");
     abort();
   }
 

@@ -1,10 +1,10 @@
 /* Java Wrappers to the MSG API.                                            */
 
-/* Copyright (c) 2007-2013. The SimGrid Team.
+/* Copyright (c) 2007-2014. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
-  * under the terms of the license (GNU LGPL) which comes with this package. */
+ * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include <msg/msg.h>
 #include <simgrid/simix.h>
@@ -32,6 +32,8 @@
 #define JNICALL
 #endif
 /* end of eclipse-mandated pimple */
+
+int JAVA_HOST_LEVEL;
 
 static int create_jprocess(int argc, char *argv[]);
 
@@ -79,6 +81,10 @@ Java_org_simgrid_msg_Msg_getClock(JNIEnv * env, jclass cls)
   return (jdouble) MSG_get_clock();
 }
 
+static void __JAVA_host_priv_free(void *host)
+{
+}
+
 JNIEXPORT void JNICALL
 Java_org_simgrid_msg_Msg_init(JNIEnv * env, jclass cls, jobjectArray jargs)
 {
@@ -95,14 +101,10 @@ Java_org_simgrid_msg_Msg_init(JNIEnv * env, jclass cls, jobjectArray jargs)
 
   (*env)->GetJavaVM(env, &__java_vm);
 
-  if ((*env)->FindClass(env, "java/dyn/Coroutine")) {
-  	XBT_INFO("Using Coroutines. Your simulation is on steroid.");
-  	smx_factory_initializer_to_use = SIMIX_ctx_cojava_factory_init;
-  }
-  else {
-  	XBT_INFO("Using regular java threads. Coroutines could speed your simulation up.");
-  	smx_factory_initializer_to_use = SIMIX_ctx_java_factory_init;
-  }
+  if ((*env)->FindClass(env, "java/dyn/Coroutine"))
+    smx_factory_initializer_to_use = SIMIX_ctx_cojava_factory_init;
+  else
+    smx_factory_initializer_to_use = SIMIX_ctx_java_factory_init;
   jthrowable exc = (*env)->ExceptionOccurred(env);
   if (exc) {
     (*env)->ExceptionClear(env);
@@ -127,10 +129,19 @@ Java_org_simgrid_msg_Msg_init(JNIEnv * env, jclass cls, jobjectArray jargs)
 
   MSG_init(&argc, argv);
 
+  JAVA_HOST_LEVEL = xbt_lib_add_level(host_lib, (void_f_pvoid_t) __JAVA_host_priv_free);
+
   for (index = 0; index < argc; index++)
     free(argv[index]);
 
   free(argv);
+
+  if (smx_factory_initializer_to_use == SIMIX_ctx_cojava_factory_init)
+    XBT_INFO("Using Coroutines. Your simulation is on steroid.");
+  else if (smx_factory_initializer_to_use == SIMIX_ctx_java_factory_init)
+    XBT_INFO("Using regular java threads. Coroutines could speed your simulation up.");
+  else
+    xbt_die("Unknown context factory. Please report bug.");
 }
 
 JNIEXPORT void JNICALL
@@ -152,7 +163,7 @@ JNIEXPORT void JNICALL
   /* Cleanup java hosts */
   hosts = MSG_hosts_as_dynar();
   for (index = 0; index < xbt_dynar_length(hosts) - 1; index++) {
-    jhost = (jobject) MSG_host_get_data(xbt_dynar_get_as(hosts,index,msg_host_t));
+    jhost = (jobject) xbt_lib_get_level(xbt_dynar_get_as(hosts,index,msg_host_t), JAVA_HOST_LEVEL);
     if (jhost)
       jhost_unref(env, jhost);
 

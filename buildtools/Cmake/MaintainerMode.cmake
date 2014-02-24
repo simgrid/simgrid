@@ -4,6 +4,42 @@ set(FLEXML_MIN_MINOR 9)
 set(FLEXML_MIN_PATCH 6)
 
 # the rest should only be changed if you understand what you're doing
+if(enable_maintainer_mode AND NOT WIN32)
+  find_program(PYTHON_EXE NAMES python)
+  if (PYTHON_EXE)
+    add_custom_command(
+      OUTPUT
+      ${CMAKE_HOME_DIRECTORY}/src/simix/simcalls_generated_enum.h
+      ${CMAKE_HOME_DIRECTORY}/src/simix/simcalls_generated_string.c
+      ${CMAKE_HOME_DIRECTORY}/src/simix/simcalls_generated_res_getter_setter.h
+      ${CMAKE_HOME_DIRECTORY}/src/simix/simcalls_generated_args_getter_setter.h
+      ${CMAKE_HOME_DIRECTORY}/src/simix/simcalls_generated_case.c
+      ${CMAKE_HOME_DIRECTORY}/src/simix/simcalls_generated_body.c
+      
+      DEPENDS
+      ${CMAKE_HOME_DIRECTORY}/src/simix/simcalls.py
+      ${CMAKE_HOME_DIRECTORY}/src/simix/simcalls.in
+
+      COMMENT "Generating simcalls source files"
+      COMMAND ${PYTHON_EXE} simcalls.py
+      WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY}/src/simix/
+      )
+
+    add_custom_target(simcalls_generated_src
+      DEPENDS
+      ${CMAKE_HOME_DIRECTORY}/src/simix/simcalls_generated_enum.h
+      ${CMAKE_HOME_DIRECTORY}/src/simix/simcalls_generated_string.c
+      ${CMAKE_HOME_DIRECTORY}/src/simix/simcalls_generated_res_getter_setter.h
+      ${CMAKE_HOME_DIRECTORY}/src/simix/simcalls_generated_args_getter_setter.h
+      ${CMAKE_HOME_DIRECTORY}/src/simix/simcalls_generated_case.c
+      ${CMAKE_HOME_DIRECTORY}/src/simix/simcalls_generated_body.c
+      )
+
+    SET_DIRECTORY_PROPERTIES(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES
+      "${CMAKE_HOME_DIRECTORY}/src/simix/simcalls_generated_enum.h;${CMAKE_HOME_DIRECTORY}/src/simix/simcalls_generated_string.c;${CMAKE_HOME_DIRECTORY}/src/simix/simcalls_generated_res_getter_setter.h;${CMAKE_HOME_DIRECTORY}/src/simix/simcalls_generated_args_getter_setter.h;${CMAKE_HOME_DIRECTORY}/src/simix/simcalls_generated_case.c;${CMAKE_HOME_DIRECTORY}/src/simix/simcalls_generated_body.c"
+      )
+  endif()
+endif()
 
 if(enable_maintainer_mode AND NOT WIN32)
   find_program(FLEX_EXE NAMES flex)

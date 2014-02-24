@@ -18,7 +18,7 @@ type the following: \verbatim
 my_simulator --cfg=Item:Value (other arguments)
 \endverbatim
 
-Several \c --cfg command line arguments can naturally be used. If you
+Several \c `--cfg` command line arguments can naturally be used. If you
 need to include spaces in the argument, don't forget to quote the
 argument. You can even escape the included quotes (write \' for ' if
 you have your argument between ').
@@ -31,7 +31,8 @@ ignored so you don't really need to pass it. The important par is that
 within that tag, you can pass one or several \c \<prop\> tags to specify
 the configuration to use. For example, setting \c Item to \c Value
 can be done by adding the following to the beginning of your platform
-file: \verbatim
+file: 
+\verbatim
 <config>
   <prop id="Item" value="Value"/>
 </config>
@@ -390,8 +391,8 @@ stacks), leading to segfaults with corrupted stack traces.
 
 If you want to push the scalability limits of your code, you really
 want to reduce the \b contexts/stack_size item. Its default value
-is 128 (in Kib), while our Chord simulation works with stacks as small
-as 16 Kib, for example. For the thread factory, the default value 
+is 128 (in KiB), while our Chord simulation works with stacks as small
+as 16 KiB, for example. For the thread factory, the default value 
 is the one of the system, if it is too large/small, it has to be set 
 with this parameter.
 

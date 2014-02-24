@@ -1,5 +1,11 @@
 #!/bin/perl
 
+# Copyright (c) 2013-2014. The SimGrid Team.
+# All rights reserved.
+
+# This program is free software; you can redistribute it and/or modify it
+# under the terms of the license (GNU LGPL) which comes with this package.
+
 # C comment spell checker
 # For each given source file, print the filename, a colon, and the number
 # of misspelled words, then a list of misspelled words.

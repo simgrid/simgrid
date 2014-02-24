@@ -1,4 +1,4 @@
-/* Copyright (c) 2007-2013. The SimGrid Team.
+/* Copyright (c) 2007-2014. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -77,7 +77,8 @@ xbt_dynar_t smpi_ois_values = NULL;
 
 static int factor_cmp(const void *pa, const void *pb)
 {
-  return (((s_smpi_factor_t*)pa)->factor > ((s_smpi_factor_t*)pb)->factor);
+  return (((s_smpi_factor_t*)pa)->factor > ((s_smpi_factor_t*)pb)->factor) ? 1 :
+         (((s_smpi_factor_t*)pa)->factor < ((s_smpi_factor_t*)pb)->factor) ? -1 : 0;
 }
 
 
@@ -93,6 +94,7 @@ static xbt_dynar_t parse_factor(const char *smpi_coef_string)
   smpi_factor = xbt_dynar_new(sizeof(s_smpi_factor_t), NULL);
   radical_elements = xbt_str_split(smpi_coef_string, ";");
   xbt_dynar_foreach(radical_elements, iter, value) {
+    memset(&fact, 0, sizeof(s_smpi_factor_t));
     radical_elements2 = xbt_str_split(value, ":");
     if (xbt_dynar_length(radical_elements2) <2 || xbt_dynar_length(radical_elements2) > 5)
       xbt_die("Malformed radical for smpi factor!");
@@ -329,7 +331,9 @@ void smpi_mpi_start(MPI_Request request)
     request->real_size=request->size;
     smpi_datatype_use(request->old_type);
     smpi_comm_use(request->comm);
-    request->action = simcall_comm_irecv(mailbox, request->buf, &request->real_size, &match_recv, request);
+    request->action = simcall_comm_irecv(mailbox, request->buf,
+                                         &request->real_size, &match_recv,
+                                         request, -1.0);
 
     //integrate pseudo-timing for buffering of small messages, do not bother to execute the simcall if 0
     double sleeptime = request->detached ? smpi_or(request->size) : 0.0;
@@ -366,7 +370,7 @@ void smpi_mpi_start(MPI_Request request)
       request->refcount++;
       if(request->old_type->has_subtype == 0){
         oldbuf = request->buf;
-        if (oldbuf && request->size!=0){
+        if (!_xbt_replay_is_active() && oldbuf && request->size!=0){
           request->buf = xbt_malloc(request->size);
           memcpy(request->buf,oldbuf,request->size);
         }
@@ -395,7 +399,7 @@ void smpi_mpi_start(MPI_Request request)
       simcall_comm_isend(mailbox, request->size, -1.0,
                          request->buf, request->real_size,
                          &match_send,
-                         &smpi_mpi_request_free_voidp, // how to free the userdata if a detached send fails
+                         &xbt_free, // how to free the userdata if a detached send fails
                          request,
                          // detach if msg size < eager/rdv switch limit
                          request->detached);
@@ -760,12 +764,11 @@ void smpi_mpi_wait(MPI_Request * request, MPI_Status * status)
 
   if ((*request)->action != NULL) { // this is not a detached send
     simcall_comm_wait((*request)->action, -1.0);
-  }
-
 #ifdef HAVE_MC
   if(MC_is_active())
     (*request)->action->comm.dst_data = NULL; // dangling pointer : dst_data is freed with a wait, need to set it to NULL for system state comparison
 #endif
+  }
 
   finish_wait(request, status);
   *request = MPI_REQUEST_NULL;

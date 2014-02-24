@@ -1,7 +1,15 @@
+/* Copyright (c) 2010-2014. The SimGrid Team.
+ * All rights reserved.                                                     */
+
+/* This program is free software; you can redistribute it and/or modify it
+ * under the terms of the license (GNU LGPL) which comes with this package. */
+
 #include "smx_private.h"
 #include "xbt/fifo.h"
 #include "xbt/xbt_os_thread.h"
-#include "../mc/mc_private.h"
+#ifdef HAVE_MC
+#include "mc/mc_private.h"
+#endif
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_smurf, simix,
                                 "Logging specific to SIMIX (SMURF)");
@@ -49,8 +57,10 @@ void SIMIX_simcall_pre(smx_simcall_t simcall, int value)
 {
   XBT_DEBUG("Handling simcall %p: %s", simcall, SIMIX_simcall_name(simcall->call));
   simcall->mc_value = value;
+  if (simcall->issuer->context->iwannadie && simcall->call != SIMCALL_PROCESS_CLEANUP)
+    return;
   switch (simcall->call) {
-SIMCALL_LIST(SIMCALL_CASE, SIMCALL_SEP_NOTHING)
+#include "simcalls_generated_case.c"
     case NUM_SIMCALLS:;
       break;
     case SIMCALL_NONE:;

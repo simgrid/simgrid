@@ -1,3 +1,9 @@
+/* Copyright (c) 2013-2014. The SimGrid Team.
+ * All rights reserved.                                                     */
+
+/* This program is free software; you can redistribute it and/or modify it
+ * under the terms of the license (GNU LGPL) which comes with this package. */
+
 /* Copy to src/include/xbt/ folder  */
 
 /* Benchmarking a code block */
@@ -91,7 +97,7 @@ static inline int bench_end_block(char* block_id)
 		clock_gettime(CLOCK_REALTIME, &mybench->end_time);
 		struct timespec interval;
 		xbt_diff_time(&mybench->start_time, &mybench->end_time, &interval);
-		fprintf(mybench->output, "%s %lf %lf %lf\n", block_id, xbt_get_time(&mybench->start_time), xbt_get_time(&mybench->end_time), xbt_get_time(&interval));
+		fprintf(mybench->output, "%s %f %f %f\n", block_id, xbt_get_time(&mybench->start_time), xbt_get_time(&mybench->end_time), xbt_get_time(&interval));
 		return 0;
 	}
 }
@@ -127,7 +133,7 @@ static inline int xbt_bench_end(char* block_id)
 	if(mybench->block_id == NULL)
 		strcat (mybench->block_id, "NONAME");
 
-	fprintf(mybench->output, "%s %lf %lf %lf\n", mybench->block_id, xbt_get_time(&mybench->start_time), xbt_get_time(&mybench->end_time), xbt_get_time(&interval));
+	fprintf(mybench->output, "%s %f %f %f\n", mybench->block_id, xbt_get_time(&mybench->start_time), xbt_get_time(&mybench->end_time), xbt_get_time(&interval));
 	return 0;
 }
 

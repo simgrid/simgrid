@@ -3,7 +3,7 @@
 p Testing the mechanism for computing host energy consumption for concurrent tasks 
 
 ! output sort
-$ $SG_TEST_EXENV energy/e3/e3$EXEEXT ${srcdir:=.}/energy/e3/platform_e3.xml ${srcdir:=.}/energy/e3/deployment_e3.xml --log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n
+$ $SG_TEST_EXENV energy/e3/e3$EXEEXT ${srcdir:=.}/energy/e3/platform_e3.xml ${srcdir:=.}/energy/e3/deployment_e3.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (1:dvfs_test@MyHost1) Current power peak=100000000.000000
 > [  0.000000] (1:dvfs_test@MyHost1) Total energy (Joules): 0.000000
 > [  2.000000] (4:proc3@MyHost1) Process proc3 executed task sleep cpu=0.000000, duration = 2.000000
@@ -19,3 +19,4 @@ $ $SG_TEST_EXENV energy/e3/e3$EXEEXT ${srcdir:=.}/energy/e3/platform_e3.xml ${sr
 > [  8.000000] (1:dvfs_test@MyHost1) Task simulation time: 8.000000e+00
 > [  8.000000] (1:dvfs_test@MyHost1) Total energy (Joules): 1390.000000
 > [  8.000000] (0:@) Total simulation time: 8.000000e+00
+> [  8.000000] (0:@) Total energy (Joules) of host MyHost1: 1390.000000

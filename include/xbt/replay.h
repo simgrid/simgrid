@@ -1,6 +1,6 @@
 /* xbt/replay_reader.h -- Tools to parse a replay file                */
 
-/* Copyright (c) 2010, 2012-2013. The SimGrid Team.
+/* Copyright (c) 2010, 2012-2014. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -27,6 +27,8 @@ XBT_PUBLIC(void) xbt_replay_reader_free(xbt_replay_reader_t *reader);
 XBT_PUBLIC(const char *) xbt_replay_reader_position(xbt_replay_reader_t reader);
 
 XBT_PUBLIC(int) xbt_replay_action_runner(int argc, char *argv[]);
+
+XBT_PUBLIC(int) _xbt_replay_is_active(void);
 
 XBT_PUBLIC(void) _xbt_replay_action_init(void);
 XBT_PUBLIC(void) _xbt_replay_action_exit(void);

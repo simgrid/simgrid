@@ -1,10 +1,10 @@
 /* Functions related to the java host instances.                            */
 
-/* Copyright (c) 2007-2013. The SimGrid Team.
+/* Copyright (c) 2007-2014. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
-  * under the terms of the license (GNU LGPL) which comes with this package. */
+ * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "xbt/str.h"
 #include "xbt/dict.h"
@@ -158,7 +158,7 @@ Java_org_simgrid_msg_As_getHosts(JNIEnv * env, jobject jas)
 
     host = xbt_dynar_get_as(table,index,msg_host_t);
 
-    jhost = (jobject) (MSG_host_get_data(host));
+    jhost = (jobject) xbt_lib_get_level(host, JAVA_HOST_LEVEL);
     if (!jhost) {
       jname = (*env)->NewStringUTF(env, MSG_host_get_name(host));
 

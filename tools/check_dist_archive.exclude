@@ -5,6 +5,7 @@
 # lines beginning with '+ ' are expected in git only
 # each line is an extended regexp that should match full file names
 
+- \.gitversion
 - Makefile
 - doc/html/.*
 
@@ -12,6 +13,7 @@
 + \.cproject
 + \.gitignore
 + \.project
++ COPYRIGHT.template
 + README\.(coding|git)
 + mk_win-dist.sh
 
@@ -43,5 +45,8 @@
 
 + tools/check_dist_archive
 + tools/check_dist_archive\.exclude
++ tools/generate-multi-jar\.py
++ tools/normalize-pointers\.py
++ tools/update_copyright_header
 
 + tools/spell/.*

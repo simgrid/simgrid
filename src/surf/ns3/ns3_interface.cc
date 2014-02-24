@@ -1,4 +1,4 @@
-/* Copyright (c) 2007-2012. The SimGrid Team.
+/* Copyright (c) 2007-2014. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -233,7 +233,6 @@ void * ns3_add_link(int src, e_ns3_network_element_type_t type_src,
 		LogComponentEnable("UdpEchoClientApplication", LOG_LEVEL_INFO);
 		LogComponentEnable("UdpEchoServerApplication", LOG_LEVEL_INFO);
 	}
-
 
 	MyPointToPointHelper pointToPoint;
 

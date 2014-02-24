@@ -1,4 +1,4 @@
-/* Copyright (c) 2007-2013. The SimGrid Team.
+/* Copyright (c) 2007-2014. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -41,12 +41,10 @@ SG_BEGIN_DECL()
 #define SMPI_RAND_SEED 5
 #define MPI_ANY_SOURCE -555
 #define MPI_BOTTOM (void *)-111
-#define MPI_FORTRAN_BOTTOM -111
 #define MPI_PROC_NULL -666
 #define MPI_ANY_TAG -444
 #define MPI_UNDEFINED -333
 #define MPI_IN_PLACE (void *)-222
-#define MPI_FORTRAN_IN_PLACE -222
 
 // errorcodes
 #define MPI_SUCCESS       0
@@ -167,8 +165,6 @@ typedef struct {
 
 #define MPI_STATUS_IGNORE ((MPI_Status*)NULL)
 #define MPI_STATUSES_IGNORE ((MPI_Status*)NULL)
-#define MPI_FORTRAN_STATUS_IGNORE -1
-#define MPI_FORTRAN_STATUSES_IGNORE -1
 
 #define MPI_DATATYPE_NULL ((MPI_Datatype)NULL)
 XBT_PUBLIC_DATA( MPI_Datatype ) MPI_CHAR;
@@ -677,6 +673,7 @@ MPI_CALL(XBT_PUBLIC(int), MPI_Comm_get_parent,( MPI_Comm *parent));
 //FIXME: End of all the not yet implemented stuff
 
 // smpi functions
+XBT_PUBLIC(int) smpi_global_size(void);
 XBT_PUBLIC(MPI_Comm) smpi_process_comm_self(void);
 /*
 XBT_PUBLIC(void) smpi_exit(int);

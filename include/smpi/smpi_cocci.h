@@ -1,4 +1,4 @@
-/* Copyright (c) 2011-2013. The SimGrid Team.
+/* Copyright (c) 2011-2014. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -13,18 +13,18 @@
 
 #define SMPI_VARINIT_GLOBAL(name,type)                          \
 type *name = NULL;                                              \
-void __attribute__((weak,constructor)) __preinit_##name(void) { \
+static void __attribute__((constructor)) __preinit_##name(void) { \
    if(!name)                                                    \
-      name = (type*)malloc(smpi_global_size() * sizeof(type));  \
+      name = (type*)calloc(smpi_global_size(), sizeof(type));   \
 }                                                               \
-void __attribute__((weak,destructor)) __postfini_##name(void) { \
+static void __attribute__((destructor)) __postfini_##name(void) { \
    free(name);                                                  \
    name = NULL;                                                 \
 }
 
 #define SMPI_VARINIT_GLOBAL_AND_SET(name,type,expr)             \
 type *name = NULL;                                              \
-void __attribute__((weak,constructor)) __preinit_##name(void) { \
+static void __attribute__((constructor)) __preinit_##name(void) { \
    size_t size = smpi_global_size();                            \
    size_t i;                                                    \
    type value = expr;                                           \
@@ -35,7 +35,7 @@ void __attribute__((weak,constructor)) __preinit_##name(void) { \
       }                                                         \
    }                                                            \
 }                                                               \
-void __attribute__((weak,destructor)) __postfini_##name(void) { \
+static void __attribute__((destructor)) __postfini_##name(void) { \
    free(name);                                                  \
    name = NULL;                                                 \
 }
@@ -55,7 +55,7 @@ XBT_PUBLIC(void) smpi_free_static(void);
 #define SMPI_VARINIT_STATIC(name,type)                      \
 static type *name = NULL;                                   \
 if(!name) {                                                 \
-   name = (type*)malloc(smpi_global_size() * sizeof(type)); \
+   name = (type*)calloc(smpi_global_size(), sizeof(type));  \
    smpi_register_static(name, xbt_free);                    \
 }
 

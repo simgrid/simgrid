@@ -1,4 +1,4 @@
-/* Copyright (c) 2010, 2012-2013. The SimGrid Team.
+/* Copyright (c) 2010, 2012-2014. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -31,6 +31,8 @@ xbt_dict_t action_queues;
 static char *action_line = NULL;
 static size_t action_len = 0;
 
+int is_replay_active = 0 ;
+
 static char **action_get_action(char *name);
 
 static char *str_tolower (const char *str)
@@ -42,6 +44,9 @@ static char *str_tolower (const char *str)
   return ret;
 }
 
+int _xbt_replay_is_active(void){
+  return is_replay_active;
+}
 
 xbt_replay_reader_t xbt_replay_reader_new(const char *filename)
 {
@@ -127,6 +132,7 @@ void xbt_replay_action_unregister(const char *action_name)
 
 void _xbt_replay_action_init(void)
 {
+  is_replay_active = 1;
   action_funs = xbt_dict_new_homogeneous(NULL);
   action_queues = xbt_dict_new_homogeneous(NULL);
 }

@@ -1,11 +1,10 @@
 /* log - a generic logging facility in the spirit of log4j                  */
 
-/* Copyright (c) 2004-2013. The SimGrid Team.
+/* Copyright (c) 2004-2014. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
-
 
 #include <stdarg.h>
 #include <ctype.h>
@@ -546,7 +545,7 @@ static void xbt_log_connect_categories(void)
   XBT_LOG_CONNECT(xbt);
   XBT_LOG_CONNECT(graphxml_parse);
   XBT_LOG_CONNECT(log);
-#if HAVE_MMAP
+#if HAVE_MMALLOC
   XBT_LOG_CONNECT(mm_diff);
 #endif
   XBT_LOG_CONNECT(module);
@@ -667,6 +666,7 @@ static void xbt_log_connect_categories(void)
   XBT_LOG_CONNECT(simix_process);
   XBT_LOG_CONNECT(simix_smurf);
   XBT_LOG_CONNECT(simix_synchro);
+  XBT_LOG_CONNECT(simix_vm);
 
   /* smpi */
   /* SMPI categories are connected in smpi_global.c */
@@ -677,13 +677,14 @@ static void xbt_log_connect_categories(void)
   XBT_LOG_CONNECT(random);
   XBT_LOG_CONNECT(surf_config);
   XBT_LOG_CONNECT(surf_cpu);
+  XBT_LOG_CONNECT(surf_cpu_cas);
   XBT_LOG_CONNECT(surf_cpu_ti);
+  XBT_LOG_CONNECT(surf_energy);
   XBT_LOG_CONNECT(surf_kernel);
   XBT_LOG_CONNECT(surf_lagrange);
   XBT_LOG_CONNECT(surf_lagrange_dichotomy);
   XBT_LOG_CONNECT(surf_maxmin);
   XBT_LOG_CONNECT(surf_network);
-  XBT_LOG_CONNECT(surf_new_model);
 #ifdef HAVE_GTNETS
   XBT_LOG_CONNECT(surf_network_gtnets);
   XBT_LOG_CONNECT(surf_network_gtnets_interface);
@@ -699,6 +700,7 @@ static void xbt_log_connect_categories(void)
   XBT_LOG_CONNECT(surf_route);
   XBT_LOG_CONNECT(surf_routing_generic);
   XBT_LOG_CONNECT(surf_route_cluster);
+  XBT_LOG_CONNECT(surf_route_cluster_torus);
   XBT_LOG_CONNECT(surf_route_dijkstra);
   XBT_LOG_CONNECT(surf_route_floyd);
   XBT_LOG_CONNECT(surf_route_full);
@@ -706,6 +708,7 @@ static void xbt_log_connect_categories(void)
   XBT_LOG_CONNECT(surf_route_vivaldi);
   XBT_LOG_CONNECT(surf_storage);
   XBT_LOG_CONNECT(surf_trace);
+  XBT_LOG_CONNECT(surf_vm_workstation);
   XBT_LOG_CONNECT(surf_workstation);
 
 #endif /* simgrid_EXPORTS */

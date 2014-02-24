@@ -1,10 +1,10 @@
 /* Functions related to the java host instances.                            */
 
-/* Copyright (c) 2007-2013. The SimGrid Team.
+/* Copyright (c) 2007-2014. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
-  * under the terms of the license (GNU LGPL) which comes with this package. */
+ * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #ifndef MSG_JHOST_H
 #define MSG_JHOST_H
@@ -111,6 +111,24 @@ Java_org_simgrid_msg_Host_nativeInit(JNIEnv *env, jclass cls);
  */
 JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Host_getByName
     (JNIEnv *, jclass, jstring);
+
+/**
+ * This function start the host if it is off
+ *
+ * @param jhost			The host to test the validity.
+ * @param env			The environment of the current thread
+ *
+ */
+JNIEXPORT void JNICALL Java_org_simgrid_msg_Host_on(JNIEnv *env, jobject jhost);
+
+/**
+ * This function stop the host if it is on
+ *
+ * @param jhost			The host to test the validity.
+ * @param env			The environment of the current thread
+ *
+ */
+JNIEXPORT void JNICALL Java_org_simgrid_msg_Host_off(JNIEnv *env, jobject jhost);
 
 /*
  * Class		org_simgrid_msg_Host

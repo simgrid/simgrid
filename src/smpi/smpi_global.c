@@ -1,12 +1,13 @@
-/* Copyright (c) 2007-2013. The SimGrid Team.
+/* Copyright (c) 2007-2014. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
-  * under the terms of the license (GNU LGPL) which comes with this package. */
+ * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "private.h"
 #include "smpi_mpi_dt_private.h"
 #include "mc/mc.h"
+#include "xbt/replay.h"
 #include "surf/surf.h"
 #include "simix/smx_private.h"
 #include "simgrid/sg_config.h"
@@ -29,7 +30,7 @@ typedef struct s_smpi_process_data {
   MPI_Comm comm_self;
   void *data;                   /* user data */
   int index;
-  int initialized;
+  char state;
   int sampling;                 /* inside an SMPI_SAMPLE_ block? */
 } s_smpi_process_data_t;
 
@@ -68,6 +69,9 @@ void smpi_process_init(int *argc, char ***argv)
   if (argc && argv) {
     proc = SIMIX_process_self();
     index = atoi((*argv)[1]);
+#ifdef SMPI_F2C
+    smpi_current_rank = index;
+#endif
     data = smpi_process_remote_data(index);
     simcall_process_set_data(proc, data);
     if (*argc > 2) {
@@ -87,7 +91,7 @@ void smpi_process_init(int *argc, char ***argv)
 void smpi_process_destroy(void)
 {
   int index = smpi_process_index();
-  process_data[index]->index = -100;
+  process_data[index]->state = SMPI_FINALIZED;
   XBT_DEBUG("<%d> Process left the game", index);
 }
 
@@ -96,10 +100,38 @@ void smpi_process_destroy(void)
  */
 void smpi_process_finalize(void)
 {
-  // wait for all pending asynchronous comms to finish
-  while (SIMIX_process_has_pending_comms(SIMIX_process_self())) {
-    simcall_process_sleep(0.01);
+  int i;
+  int size = smpi_comm_size(MPI_COMM_WORLD);
+  int rank = smpi_comm_rank(MPI_COMM_WORLD);
+  /* All non-root send & receive zero-length message. */
+  if (rank > 0) {
+    smpi_mpi_ssend (NULL, 0, MPI_BYTE, 0,
+                    COLL_TAG_BARRIER,
+                    MPI_COMM_WORLD);
+    smpi_mpi_recv (NULL, 0, MPI_BYTE, 0,
+                    COLL_TAG_BARRIER,
+                    MPI_COMM_WORLD, MPI_STATUS_IGNORE);
   }
+  /* The root collects and broadcasts the messages. */
+  else {
+    MPI_Request* requests;
+    requests = (MPI_Request*)malloc( size * sizeof(MPI_Request) );
+    for (i = 1; i < size; ++i) {
+      requests[i] = smpi_mpi_irecv(NULL, 0, MPI_BYTE, MPI_ANY_SOURCE,
+                                   COLL_TAG_BARRIER, MPI_COMM_WORLD
+                                   );
+    }
+    smpi_mpi_waitall( size-1, requests+1, MPI_STATUSES_IGNORE );
+    for (i = 1; i < size; ++i) {
+      requests[i] = smpi_mpi_issend(NULL, 0, MPI_BYTE, i,
+                                   COLL_TAG_BARRIER,
+                                   MPI_COMM_WORLD
+                                   );
+    }
+    smpi_mpi_waitall( size-1, requests+1, MPI_STATUSES_IGNORE );
+    free( requests );
+  }
+
 }
 
 /**
@@ -107,8 +139,11 @@ void smpi_process_finalize(void)
  */
 int smpi_process_finalized()
 {
-  return (smpi_process_index() == -100);
-  // If finalized, this value has been set to -100;
+  int index = smpi_process_index();
+    if (index != MPI_UNDEFINED)
+      return (process_data[index]->state == SMPI_FINALIZED);
+    else
+      return 0;
 }
 
 /**
@@ -117,8 +152,8 @@ int smpi_process_finalized()
 int smpi_process_initialized(void)
 {
   int index = smpi_process_index();
-  return ((index != -100) && (index != MPI_UNDEFINED)
-          && (process_data[index]->initialized));
+  return ( (index != MPI_UNDEFINED)
+          && (process_data[index]->state == SMPI_INITIALIZED));
 }
 
 /**
@@ -127,8 +162,8 @@ int smpi_process_initialized(void)
 void smpi_process_mark_as_initialized(void)
 {
   int index = smpi_process_index();
-  if ((index != -100) && (index != MPI_UNDEFINED))
-    process_data[index]->initialized = 1;
+  if ((index != MPI_UNDEFINED) && (!process_data[index]->state != SMPI_FINALIZED))
+    process_data[index]->state = SMPI_INITIALIZED;
 }
 
 
@@ -157,6 +192,7 @@ int smpi_process_getarg(integer * index, char *dst, ftnlen len)
   }
   return 0;
 }
+#endif
 
 int smpi_global_size(void)
 {
@@ -169,7 +205,6 @@ int smpi_global_size(void)
   }
   return atoi(value);
 }
-#endif
 
 smpi_process_data_t smpi_process_data(void)
 {
@@ -251,6 +286,12 @@ double smpi_process_simulated_elapsed(void)
 MPI_Comm smpi_process_comm_self(void)
 {
   smpi_process_data_t data = smpi_process_data();
+  if(data->comm_self==MPI_COMM_NULL){
+    MPI_Group group = smpi_group_new(1);
+    data->comm_self = smpi_comm_new(group);
+    smpi_group_set_mapping(group, smpi_process_index(), 0);
+  }
+
   return data->comm_self;
 }
 
@@ -278,6 +319,7 @@ static void smpi_comm_copy_buffer_callback(smx_action_t comm,
                                            void *buff, size_t buff_size)
 {
   XBT_DEBUG("Copy the data over");
+  if(_xbt_replay_is_active()) return;
   memcpy(comm->comm.dst_buff, buff, buff_size);
   if (comm->comm.detached) {
     // if this is a detached send, the source buffer was duplicated by SMPI
@@ -311,12 +353,9 @@ void smpi_global_init(void)
     process_data[i]->timer = xbt_os_timer_new();
     if (MC_is_active())
       MC_ignore_heap(process_data[i]->timer, xbt_os_timer_size());
-    group = smpi_group_new(1);
-    process_data[i]->comm_self = smpi_comm_new(group);
-    process_data[i]->initialized = 0;
+    process_data[i]->comm_self = MPI_COMM_NULL;
+    process_data[i]->state = SMPI_UNINITIALIZED;
     process_data[i]->sampling = 0;
-
-    smpi_group_set_mapping(group, i, 0);
   }
   group = smpi_group_new(process_count);
   MPI_COMM_WORLD = smpi_comm_new(group);
@@ -329,6 +368,13 @@ void smpi_global_init(void)
 
   xbt_assert(sg_cfg_get_int("smpi/async_small_thres") <=
              sg_cfg_get_int("smpi/send_is_detached_thres"));
+
+  if (sg_cfg_is_default_value("smpi/running_power")) {
+    XBT_INFO("You did not set the power of the host running the simulation.  "
+             "The timings will certainly not be accurate.  "
+             "Use the option \"--cfg=smpi/running_power:<flops>\" to set its value."
+             "Check http://simgrid.org/simgrid/latest/doc/options.html#options_smpi_bench for more information. ");
+  }
 }
 
 void smpi_global_destroy(void)
@@ -341,8 +387,10 @@ void smpi_global_destroy(void)
   xbt_free(MPI_COMM_WORLD);
   MPI_COMM_WORLD = MPI_COMM_NULL;
   for (i = 0; i < count; i++) {
-    smpi_group_unuse(smpi_comm_group(process_data[i]->comm_self));
-    smpi_comm_destroy(process_data[i]->comm_self);
+    if(process_data[i]->comm_self!=MPI_COMM_NULL){
+      smpi_group_unuse(smpi_comm_group(process_data[i]->comm_self));
+      smpi_comm_destroy(process_data[i]->comm_self);
+    }
     xbt_os_timer_free(process_data[i]->timer);
     simcall_rdv_destroy(process_data[i]->mailbox);
     simcall_rdv_destroy(process_data[i]->mailbox_small);
@@ -371,7 +419,6 @@ int __attribute__ ((weak)) smpi_simulated_main_(int argc, char **argv)
 {
   smpi_process_init(&argc, &argv);
   user_main_();
-  //xbt_die("Should not be in this smpi_simulated_main");
   return 0;
 }
 

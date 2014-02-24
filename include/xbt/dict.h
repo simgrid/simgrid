@@ -1,11 +1,10 @@
 /* xbt/dict.h -- api to a generic dictionary                                */
 
-/* Copyright (c) 2004-2013. The SimGrid Team.
+/* Copyright (c) 2004-2014. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
-
 
 #ifndef _XBT_DICT_H
 #define _XBT_DICT_H
@@ -114,6 +113,12 @@ XBT_PUBLIC(uintptr_t) xbt_dicti_get(xbt_dict_t dict, uintptr_t key);
 XBT_PUBLIC(void) xbt_dicti_remove(xbt_dict_t dict, uintptr_t key);
 #endif
 
+struct s_xbt_dict_cursor {
+  xbt_dictelm_t current;
+  int line;
+  xbt_dict_t dict;
+};
+
 /** @} */
 /** @defgroup XBT_dict_curs Cursors on dictionaries
  *  @ingroup XBT_dict
@@ -137,11 +142,6 @@ XBT_PUBLIC(void) xbt_dicti_remove(xbt_dict_t dict, uintptr_t key);
  *  @{ */
 
   /** @brief Cursor on dictionaries (opaque type) */
-struct s_xbt_dict_cursor {
-  xbt_dictelm_t current;
-  int line;
-  xbt_dict_t dict;
-};
 typedef struct s_xbt_dict_cursor *xbt_dict_cursor_t;
 
 static inline xbt_dictelm_t xbt_dict_cursor_get_elm(xbt_dict_cursor_t cursor) {

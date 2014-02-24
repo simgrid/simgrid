@@ -1,3 +1,9 @@
+! Copyright (c) 2013-2014. The SimGrid Team.
+! All rights reserved.
+
+! This program is free software; you can redistribute it and/or modify it
+! under the terms of the license (GNU LGPL) which comes with this package.
+
       program main
       include 'mpif.h'
 
@@ -14,7 +20,7 @@
       t = MPI_Wtime()
 
       print *, '[', t, '] [rank ', rank, ']',
-     &     pstates, 'pstates available'
+     &     pstates, ' pstates available'
 
       do i = 0, pstates - 1
          p = smpi_get_host_power_peak_at(i)
@@ -34,7 +40,7 @@
          t = MPI_Wtime()
          e = smpi_get_host_consumed_energy()
          print *, '[', t, '] [rank ', rank, ']',
-     &        'Energy consumed (Joules): ', e
+     &        ' Energy consumed (Joules): ', e
       end do
 
       call MPI_Finalize(ierr)

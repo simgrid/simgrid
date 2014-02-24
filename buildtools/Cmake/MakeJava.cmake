@@ -56,25 +56,15 @@ endif()
 ## Files to include in simgrid.jar
 ##
 set(SIMGRID_JAR "${CMAKE_BINARY_DIR}/simgrid.jar")
-set(MANIFEST_FILE "${CMAKE_HOME_DIRECTORY}/src/bindings/java/MANIFEST.MF")
+set(SIMGRID_FULL_JAR "${CMAKE_BINARY_DIR}/simgrid_full.jar")
+set(MANIFEST_IN_FILE "${CMAKE_HOME_DIRECTORY}/src/bindings/java/MANIFEST.MF.in")
+set(MANIFEST_FILE "${CMAKE_BINARY_DIR}/src/bindings/java/MANIFEST.MF")
+
+
 set(LIBSIMGRID_SO
   libsimgrid${CMAKE_SHARED_LIBRARY_SUFFIX})
 set(LIBSIMGRID_JAVA_SO
   ${CMAKE_SHARED_LIBRARY_PREFIX}simgrid-java${CMAKE_SHARED_LIBRARY_SUFFIX})
-
-## Name of the "NATIVE" folder in simgrid.jar
-##
-if(CMAKE_SYSTEM_PROCESSOR MATCHES ".86")
-  if(${ARCH_32_BITS})
-    set(JSG_BUNDLE "NATIVE/${CMAKE_SYSTEM_NAME}/i386/")
-  else()
-    set(JSG_BUNDLE "NATIVE/${CMAKE_SYSTEM_NAME}/amd64/")
-  endif()
-else()
-  message(WARNING "Unknown system type. Processor: ${CMAKE_SYSTEM_PROCESSOR}; System: ${CMAKE_SYSTEM_NAME}")
-  set(JSG_BUNDLE "NATIVE/${CMAKE_SYSTEM_NAME}/${CMAKE_SYSTEM_PROCESSOR}/")
-endif()
-message("-- [Java] Native libraries bundled into: ${JSG_BUNDLE}")
 
 ## Don't strip libraries if not in release mode
 ##
@@ -93,28 +83,30 @@ else()
   add_jar(simgrid-java_pre_jar ${JMSG_JAVA_SRC} OUTPUT_NAME simgrid)
 endif()
 
+set(JAVA_BUNDLE "${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/Scripts/java_bundle.sh")
+set(JAVA_BUNDLE_SO_FILES
+  ${CMAKE_BINARY_DIR}/lib/${LIBSIMGRID_SO}
+  ${CMAKE_BINARY_DIR}/lib/${LIBSIMGRID_JAVA_SO}
+  )
+set(JAVA_BUNDLE_TXT_FILES
+  ${CMAKE_HOME_DIRECTORY}/COPYING
+  ${CMAKE_HOME_DIRECTORY}/ChangeLog
+  ${CMAKE_HOME_DIRECTORY}/ChangeLog.SimGrid-java
+  ${CMAKE_HOME_DIRECTORY}/LICENSE-LGPL-2.1
+  )
 add_custom_command(
   COMMENT "Finalize simgrid.jar..."
   OUTPUT ${SIMGRID_JAR}_finalized
   DEPENDS simgrid simgrid-java simgrid-java_pre_jar
-          ${SIMGRID_JAR} ${MANIFEST_FILE}
-          ${CMAKE_BINARY_DIR}/lib/${LIBSIMGRID_SO}
-          ${CMAKE_BINARY_DIR}/lib/${LIBSIMGRID_JAVA_SO}
-          ${CMAKE_HOME_DIRECTORY}/COPYING
-          ${CMAKE_HOME_DIRECTORY}/ChangeLog
-          ${CMAKE_HOME_DIRECTORY}/ChangeLog.SimGrid-java
-          ${CMAKE_HOME_DIRECTORY}/LICENSE-LGPL-2.1
-  COMMAND ${CMAKE_COMMAND} -E remove_directory "NATIVE"
-  COMMAND ${CMAKE_COMMAND} -E make_directory "${JSG_BUNDLE}"
-  COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_BINARY_DIR}/lib/${LIBSIMGRID_SO}" "${JSG_BUNDLE}"
-  COMMAND ${STRIP_COMMAND} -S "${JSG_BUNDLE}/${LIBSIMGRID_SO}"
-  COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_BINARY_DIR}/lib/${LIBSIMGRID_JAVA_SO}" "${JSG_BUNDLE}"
-  COMMAND ${STRIP_COMMAND} -S "${JSG_BUNDLE}/${LIBSIMGRID_JAVA_SO}"
-  COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_HOME_DIRECTORY}/COPYING" "${JSG_BUNDLE}"
-  COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_HOME_DIRECTORY}/ChangeLog" "${JSG_BUNDLE}"
-  COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_HOME_DIRECTORY}/ChangeLog.SimGrid-java" "${JSG_BUNDLE}"
-  COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_HOME_DIRECTORY}/LICENSE-LGPL-2.1" "${JSG_BUNDLE}"
-  COMMAND ${JAVA_ARCHIVE} -uvmf ${MANIFEST_FILE} ${SIMGRID_JAR} "NATIVE"
+          ${SIMGRID_JAR} ${MANIFEST_IN_FILE}
+          ${JAVA_BUNDLE_SO_FILES} ${JAVA_BUNDLE_TXT_FILES}
+  COMMAND ${JAVA_BUNDLE} "${SIMGRID_JAR}" "${Java_JAVA_EXECUTABLE}" "${STRIP_COMMAND}" -so ${JAVA_BUNDLE_SO_FILES} -txt ${JAVA_BUNDLE_TXT_FILES}
+  COMMAND ${CMAKE_COMMAND} -E copy ${MANIFEST_IN_FILE} ${MANIFEST_FILE}
+  COMMAND ${CMAKE_COMMAND} -E echo "Specification-Version: \\\"${SIMGRID_VERSION_MAJOR}.${SIMGRID_VERSION_MINOR}.${SIMGRID_VERSION_PATCH}\\\"" >> ${MANIFEST_FILE}
+  COMMAND ${CMAKE_COMMAND} -E echo "Implementation-Version: \\\"${GIT_VERSION}\\\"" >> ${MANIFEST_FILE}
+  COMMAND ${JAVA_ARCHIVE} -uvmf ${MANIFEST_FILE} ${SIMGRID_JAR}
+  COMMAND ${CMAKE_COMMAND} -E copy ${SIMGRID_JAR} ${SIMGRID_FULL_JAR}
+  COMMAND ${JAVA_ARCHIVE} -uvf ${SIMGRID_FULL_JAR} "NATIVE"
   COMMAND ${CMAKE_COMMAND} -E remove ${SIMGRID_JAR}_finalized
   COMMAND ${CMAKE_COMMAND} -E touch ${SIMGRID_JAR}_finalized
   )

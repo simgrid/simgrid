@@ -1,6 +1,6 @@
 /* simgrid/modelchecker.h - Formal Verification made possible in SimGrid    */
 
-/* Copyright (c) 2008-2013. The SimGrid Team.
+/* Copyright (c) 2008-2014. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -12,6 +12,8 @@
 
 #ifndef SIMGRID_MODELCHECKER_H
 #define SIMGRID_MODELCHECKER_H
+
+SG_BEGIN_DECL()
 
 #ifdef HAVE_MC
 
@@ -44,6 +46,6 @@ XBT_PUBLIC(void) MC_ignore(void *addr, size_t size);
 
 #endif
 
-
+SG_END_DECL()
 
 #endif /* SIMGRID_MODELCHECKER_H */

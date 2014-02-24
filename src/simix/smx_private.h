@@ -1,4 +1,4 @@
-/* Copyright (c) 2007-2010, 2012-2013. The SimGrid Team.
+/* Copyright (c) 2007-2010, 2012-2014. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -320,13 +320,13 @@ static XBT_INLINE smx_context_t SIMIX_context_self(void)
 }
 
 /**
- \brief returns the data associated to a context
+ \brief returns the SIMIX process associated to a context
  \param context The context
- \return The data
+ \return The SIMIX process
  */
-static XBT_INLINE void* SIMIX_context_get_data(smx_context_t context)
+static XBT_INLINE smx_process_t SIMIX_context_get_process(smx_context_t context)
 {
-  return simix_global->context_factory->get_data(context);
+  return simix_global->context_factory->get_process(context);
 }
 
 XBT_PUBLIC(int) SIMIX_process_get_maxpid(void);

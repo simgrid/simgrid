@@ -1,8 +1,8 @@
-/* Copyright (c) 2010-2013. The SimGrid Team.
+/* Copyright (c) 2010-2014. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
-  * under the terms of the license (GNU LGPL) which comes with this package. */
+ * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "instr/instr_private.h"
 #include "simgrid/sg_config.h"
@@ -585,17 +585,18 @@ void TRACE_help (int detailed)
       "  information that would be registered otherwise.",
       detailed);
   print_line (OPT_TRACING_DISPLAY_SIZES, "Only works for SMPI now. Add message size information",
-      "Message size (in bytes) is added to links, and to states. For collectives, the displayed value \n"
-      "is the more relevant to the collective (total sent by the process, usually)",
+      "  Message size (in bytes) is added to links, and to states. For collectives,\n"
+      "  the displayed value is the more relevant to the collective (total sent by\n"
+      "  the process, usually)",
       detailed);
   print_line (OPT_TRACING_FORMAT, "Only works for SMPI now. Switch output format",
-      "Default format is Paje. Time independent traces are also supported, \n"
-      "to output traces that can later be used by the trace replay tool",
+      "  Default format is Paje. Time independent traces are also supported,\n"
+      "  to output traces that can later be used by the trace replay tool",
       detailed);
   print_line (OPT_TRACING_FORMAT_TI_ONEFILE, "Only works for SMPI now, and TI output format",
-      "By default, each process outputs to a separate file, inside a filename_files folder \n"
-      "By setting this option to yes, all processes will output to only one file \n"
-      "This is meant to avoid opening thousands of files with large simulations",
+      "  By default, each process outputs to a separate file, inside a filename_files folder\n"
+      "  By setting this option to yes, all processes will output to only one file\n"
+      "  This is meant to avoid opening thousands of files with large simulations",
       detailed);
   print_line (OPT_TRACING_COMMENT, "Comment to be added on the top of the trace file.",
       "  Use this to add a comment line to the top of the trace file.",

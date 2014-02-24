@@ -1,7 +1,7 @@
 /* smx_user.c - public interface to simix                                   */
 
-/* Copyright (c) 2010-2013. The SimGrid Team.
-   All rights reserved.                                                     */
+/* Copyright (c) 2010-2014. The SimGrid Team.
+ * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -15,11 +15,11 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix);
 
 /* generate strings from the enumeration values */
 static const char* simcall_names[] = {
-SIMCALL_LIST(SIMCALL_STRING_TYPE, SIMCALL_SEP_COMMA)
+#include "simcalls_generated_string.c"
 [SIMCALL_NONE] = "NONE"
 };
 
-SIMCALL_LIST(SIMCALL_FUNC, SIMCALL_SEP_NOTHING)
+#include "simcalls_generated_body.c"
 
 /**
  * \ingroup simix_host_management
@@ -43,6 +43,28 @@ smx_host_t simcall_host_get_by_name(const char *name)
 const char* simcall_host_get_name(smx_host_t host)
 {
   return simcall_BODY_host_get_name(host);
+}
+
+/**
+ * \ingroup simix_host_management
+ * \brief Start the host if it is off
+ *
+ * \param host A SIMIX host
+ */
+void simcall_host_on(smx_host_t host)
+{
+  simcall_BODY_host_on(host);
+}
+
+/**
+ * \ingroup simix_host_management
+ * \brief Stop the host if it is on
+ *
+ * \param host A SIMIX host
+ */
+void simcall_host_off(smx_host_t host)
+{
+  simcall_BODY_host_off(host);
 }
 
 /**
@@ -134,31 +156,6 @@ int simcall_host_get_state(smx_host_t host)
 
 /**
  * \ingroup simix_host_management
- * \brief Returns the user data associated to a host.
- *
- * \param host SIMIX host
- * \return the user data of this host
- */
-void* simcall_host_get_data(smx_host_t host)
-{
-  return simcall_BODY_host_get_data(host);
-}
-
-/**
- * \ingroup simix_host_management
- * \brief Sets the user data associated to a host.
- *
- * The host must not have previous user data associated to it.
- * \param host A SIMIX host
- * \param data The user data to set
- */
-void simcall_host_set_data(smx_host_t host, void *data)
-{
-  simcall_host_set_data(host, data);
-}
-
-/**
- * \ingroup simix_host_management
  * \brief Returns the power peak of a host.
  *
  * \param host A SIMIX host
@@ -231,17 +228,19 @@ double simcall_host_get_consumed_energy(smx_host_t host)
  * \param host SIMIX host where the action will be executed
  * \param computation_amount amount Computation amount (in bytes)
  * \param priority computation priority
+ * \param bound
+ * \param affinity_mask
  * \return A new SIMIX execution action
  */
 smx_action_t simcall_host_execute(const char *name, smx_host_t host,
                                     double computation_amount,
-                                    double priority)
+                                    double priority, double bound, unsigned long affinity_mask)
 {
   /* checking for infinite values */
   xbt_assert(isfinite(computation_amount), "computation_amount is not finite!");
   xbt_assert(isfinite(priority), "priority is not finite!");
   
-  return simcall_BODY_host_execute(name, host, computation_amount, priority);
+  return simcall_BODY_host_execute(name, host, computation_amount, priority, bound, affinity_mask);
 }
 
 /**
@@ -353,6 +352,33 @@ void simcall_host_execution_set_priority(smx_action_t execution, double priority
 
 /**
  * \ingroup simix_host_management
+ * \brief Changes the capping (the maximum CPU utilization) of an execution action.
+ *
+ * This functions changes the capping only. It calls a surf function.
+ * \param execution The execution action
+ * \param bound The new bound
+ */
+void simcall_host_execution_set_bound(smx_action_t execution, double bound)
+{
+  simcall_BODY_host_execution_set_bound(execution, bound);
+}
+
+/**
+ * \ingroup simix_host_management
+ * \brief Changes the CPU affinity of an execution action.
+ *
+ * This functions changes the CPU affinity of an execution action. See taskset(1) on Linux.
+ * \param execution The execution action
+ * \param host Host
+ * \param mask Affinity mask
+ */
+void simcall_host_execution_set_affinity(smx_action_t execution, smx_host_t host, unsigned long mask)
+{
+  simcall_BODY_host_execution_set_affinity(execution, host, mask);
+}
+
+/**
+ * \ingroup simix_host_management
  * \brief Waits for the completion of an execution action and destroy it.
  *
  * \param execution The execution action
@@ -361,6 +387,169 @@ e_smx_state_t simcall_host_execution_wait(smx_action_t execution)
 {
   return simcall_BODY_host_execution_wait(execution);
 }
+
+
+/**
+ * \ingroup simix_vm_management
+ * \brief Create a VM on the given physical host.
+ *
+ * \param name VM name
+ * \param host Physical host
+ *
+ * \return The host object of the VM
+ */
+void* simcall_vm_create(const char *name, smx_host_t phys_host){
+  /* will jump to SIMIX_pre_vm_create() in src/simix/smx_smurf_private.h */
+  return simcall_BODY_vm_create(name, phys_host);
+}
+
+/**
+ * \ingroup simix_vm_management
+ * \brief Start the given VM to the given physical host
+ *
+ * \param vm VM
+ */
+void simcall_vm_start(smx_host_t vm)
+{
+  /* will jump to SIMIX_pre_vm_start in src/simix/smx_smurf_private.h */
+  simcall_BODY_vm_start(vm);
+}
+
+/**
+ * \ingroup simix_vm_management
+ * \brief Get the state of the given VM
+ *
+ * \param vm VM
+ * \return The state of the VM
+ */
+int simcall_vm_get_state(smx_host_t vm)
+{
+  /* will jump to SIMIX_pre_vm_get_state in src/simix/smx_smurf_private.h */
+  return simcall_BODY_vm_get_state(vm);
+}
+
+/**
+ * \ingroup simix_vm_management
+ * \brief Get the name of the physical host on which the given VM runs.
+ *
+ * \param vm VM
+ * \return The name of the physical host
+ */
+void *simcall_vm_get_pm(smx_host_t vm)
+{
+  /* will jump to SIMIX_pre_vm_migrate in src/simix/smx_smurf_private.h */
+  return simcall_BODY_vm_get_pm(vm);
+}
+
+void simcall_vm_set_bound(smx_host_t vm, double bound)
+{
+  /* will jump to SIMIX_pre_vm_set_bound in src/simix/smx_smurf_private.h */
+  simcall_BODY_vm_set_bound(vm, bound);
+}
+
+void simcall_vm_set_affinity(smx_host_t vm, smx_host_t pm, unsigned long mask)
+{
+  /* will jump to SIMIX_pre_vm_set_affinity in src/simix/smx_smurf_private.h */
+  simcall_BODY_vm_set_affinity(vm, pm, mask);
+}
+
+void simcall_host_get_params(smx_host_t vm, ws_params_t params)
+{
+  /* will jump to SIMIX_pre_host_get_params in src/simix/smx_smurf_private.h */
+  simcall_BODY_host_get_params(vm, params);
+}
+
+void simcall_host_set_params(smx_host_t vm, ws_params_t params)
+{
+  /* will jump to SIMIX_pre_host_set_params in src/simix/smx_smurf_private.h */
+  simcall_BODY_host_set_params(vm, params);
+}
+
+/**
+ * \ingroup simix_vm_management
+ * \brief Migrate the given VM to the given physical host
+ *
+ * \param vm VM
+ * \param host Destination physical host
+ */
+void simcall_vm_migrate(smx_host_t vm, smx_host_t host)
+{
+  /* will jump to SIMIX_pre_vm_migrate in src/simix/smx_smurf_private.h */
+  simcall_BODY_vm_migrate(vm, host);
+}
+
+/**
+ * \ingroup simix_vm_management
+ * \brief Suspend the given VM
+ *
+ * \param vm VM
+ */
+void simcall_vm_suspend(smx_host_t vm)
+{
+  /* will jump to SIMIX_pre_vm_suspend in src/simix/smx_smurf_private.h */
+  simcall_BODY_vm_suspend(vm);
+}
+
+/**
+ * \ingroup simix_vm_management
+ * \brief Resume the given VM
+ *
+ * \param vm VM
+ */
+void simcall_vm_resume(smx_host_t vm)
+{
+  /* will jump to SIMIX_pre_vm_resume in src/simix/smx_smurf_private.h */
+  simcall_BODY_vm_resume(vm);
+}
+
+/**
+ * \ingroup simix_vm_management
+ * \brief Save the given VM
+ *
+ * \param vm VM
+ */
+void simcall_vm_save(smx_host_t vm)
+{
+  /* will jump to SIMIX_pre_vm_save in src/simix/smx_smurf_private.h */
+  simcall_BODY_vm_save(vm);
+}
+
+/**
+ * \ingroup simix_vm_management
+ * \brief Restore the given VM
+ *
+ * \param vm VM
+ */
+void simcall_vm_restore(smx_host_t vm)
+{
+  /* will jump to SIMIX_pre_vm_restore in src/simix/smx_smurf_private.h */
+  simcall_BODY_vm_restore(vm);
+}
+
+/**
+ * \ingroup simix_vm_management
+ * \brief Shutdown the given VM
+ *
+ * \param vm VM
+ */
+void simcall_vm_shutdown(smx_host_t vm)
+{
+  /* will jump to SIMIX_pre_vm_shutdown in src/simix/smx_smurf_private.h */
+  simcall_BODY_vm_shutdown(vm);
+}
+
+/**
+ * \ingroup simix_vm_management
+ * \brief Destroy the given VM
+ *
+ * \param vm VM
+ */
+void simcall_vm_destroy(smx_host_t vm)
+{
+   /* will jump to SIMIX_pre_vm_destroy in src/simix/smx_smurf_private.h */
+  simcall_BODY_vm_destroy(vm);
+}
+
 
 /**
  * \ingroup simix_process_management
@@ -699,13 +888,6 @@ smx_rdv_t simcall_rdv_get_by_name(const char *name)
    * skipping the simcall (for now). It works in parallel, it won't work on
    * distributed but probably we will change MSG for that. */
 
-  /*
-  smx_simcall_t simcall = simcall_mine();
-  simcall->call = SIMCALL_RDV_GEY_BY_NAME;
-  simcall->rdv_get_by_name.name = name;
-  SIMIX_simcall_push(simcall->issuer);
-  return simcall->rdv_get_by_name.result;*/
-
   return SIMIX_rdv_get_by_name(name);
 }
 
@@ -792,11 +974,13 @@ smx_action_t simcall_comm_isend(smx_rdv_t rdv, double task_size, double rate,
                                  src_buff_size, match_fun,
                                  clean_fun, data, detached);
 }
+
 /**
  * \ingroup simix_comm_management
  */
 void simcall_comm_recv(smx_rdv_t rdv, void *dst_buff, size_t * dst_buff_size,
-                         int (*match_fun)(void *, void *, smx_action_t), void *data, double timeout)
+                       int (*match_fun)(void *, void *, smx_action_t),
+                       void *data, double timeout, double rate)
 {
   xbt_assert(isfinite(timeout), "timeout is not finite!");
   xbt_assert(rdv, "No rendez-vous point defined for recv");
@@ -805,60 +989,27 @@ void simcall_comm_recv(smx_rdv_t rdv, void *dst_buff, size_t * dst_buff_size,
     /* the model-checker wants two separate simcalls */
     smx_action_t comm = NULL; /* MC needs the comm to be set to NULL during the simcall */
     comm = simcall_comm_irecv(rdv, dst_buff, dst_buff_size,
-        match_fun, data);
+                              match_fun, data, rate);
     simcall_comm_wait(comm, timeout);
     comm = NULL;
   }
   else {
     simcall_BODY_comm_recv(rdv, dst_buff, dst_buff_size,
-                           match_fun, data, timeout);
-  }
-}
-/**
- * \ingroup simix_comm_management
- */
-smx_action_t simcall_comm_irecv(smx_rdv_t rdv, void *dst_buff, size_t *dst_buff_size,
-                                  int (*match_fun)(void *, void *, smx_action_t), void *data)
-{
-  xbt_assert(rdv, "No rendez-vous point defined for irecv");
-
-  return simcall_BODY_comm_irecv(rdv, dst_buff, dst_buff_size, 
-                                 match_fun, data);
-}
-
-
-/**
- * \ingroup simix_comm_management
- */
-void simcall_comm_recv_bounded(smx_rdv_t rdv, void *dst_buff, size_t * dst_buff_size,
-                         int (*match_fun)(void *, void *, smx_action_t), void *data, double timeout, double rate)
-{
-  xbt_assert(isfinite(timeout), "timeout is not finite!");
-  xbt_assert(rdv, "No rendez-vous point defined for recv");
-
-  if (MC_is_active()) {
-    /* the model-checker wants two separate simcalls */
-    smx_action_t comm = simcall_comm_irecv_bounded(rdv, dst_buff, dst_buff_size,
-        match_fun, data, rate);
-    simcall_comm_wait(comm, timeout);
-  }
-  else {
-    simcall_BODY_comm_recv_bounded(rdv, dst_buff, dst_buff_size,
                            match_fun, data, timeout, rate);
   }
 }
 /**
  * \ingroup simix_comm_management
  */
-smx_action_t simcall_comm_irecv_bounded(smx_rdv_t rdv, void *dst_buff, size_t *dst_buff_size,
-                                  int (*match_fun)(void *, void *, smx_action_t), void *data, double rate)
+smx_action_t simcall_comm_irecv(smx_rdv_t rdv, void *dst_buff, size_t *dst_buff_size,
+                                int (*match_fun)(void *, void *, smx_action_t),
+                                void *data, double rate)
 {
   xbt_assert(rdv, "No rendez-vous point defined for irecv");
 
-  return simcall_BODY_comm_irecv_bounded(rdv, dst_buff, dst_buff_size,
+  return simcall_BODY_comm_irecv(rdv, dst_buff, dst_buff_size,
                                  match_fun, data, rate);
 }
-
 
 /**
  * \ingroup simix_comm_management
@@ -869,22 +1020,6 @@ smx_action_t simcall_comm_iprobe(smx_rdv_t rdv, int src, int tag,
   xbt_assert(rdv, "No rendez-vous point defined for iprobe");
 
   return simcall_BODY_comm_iprobe(rdv, src, tag, match_fun, data);
-}
-
-void simcall_comm_destroy(smx_action_t comm)
-{
-  xbt_assert(comm, "Invalid parameter");
-
-  /* FIXME remove this simcall type: comms are auto-destroyed now */
-
-  /*
-  smx_simcall_t simcall = simcall_mine();
-
-  simcall->call = SIMCALL_COMM_DESTROY;
-  simcall->comm_destroy.comm = comm;
-
-  SIMIX_simcall_push(simcall->issuer);
-  */
 }
 
 /**
@@ -1130,7 +1265,7 @@ smx_sem_t simcall_sem_init(int capacity)
  */
 void simcall_sem_destroy(smx_sem_t sem)
 {
-  simcall_sem_destroy(sem);
+  simcall_BODY_sem_destroy(sem);
 }
 
 /**
@@ -1200,14 +1335,14 @@ void* simcall_file_get_data(smx_file_t fd)
  */
 void simcall_file_set_data(smx_file_t fd, void *data)
 {
-  simcall_file_set_data(fd, data);
+  simcall_BODY_file_set_data(fd, data);
 }
 
 /**
  * \ingroup simix_file_management
  *
  */
-sg_storage_size_t simcall_file_read(smx_file_t fd, sg_storage_size_t size)
+sg_size_t simcall_file_read(smx_file_t fd, sg_size_t size)
 {
   return simcall_BODY_file_read(fd, size);
 }
@@ -1216,7 +1351,7 @@ sg_storage_size_t simcall_file_read(smx_file_t fd, sg_storage_size_t size)
  * \ingroup simix_file_management
  *
  */
-sg_storage_size_t simcall_file_write(smx_file_t fd, sg_storage_size_t size)
+sg_size_t simcall_file_write(smx_file_t fd, sg_size_t size)
 {
   return simcall_BODY_file_write(fd, size);
 }
@@ -1260,8 +1395,16 @@ xbt_dict_t simcall_file_ls(const char* mount, const char* path)
  * \ingroup simix_file_management
  *
  */
-sg_storage_size_t simcall_file_get_size (smx_file_t fd){
+sg_size_t simcall_file_get_size(smx_file_t fd){
   return simcall_BODY_file_get_size(fd);
+}
+
+/**
+ * \ingroup simix_file_management
+ *
+ */
+sg_size_t simcall_file_tell(smx_file_t fd){
+  return simcall_BODY_file_tell(fd);
 }
 
 /**
@@ -1274,12 +1417,29 @@ xbt_dynar_t simcall_file_get_info(smx_file_t fd)
 }
 
 /**
+ * \ingroup simix_file_management
+ *
+ */
+int simcall_file_seek(smx_file_t fd, sg_size_t offset, int origin){
+  return simcall_BODY_file_seek(fd, offset, origin);
+}
+
+/**
+ * \ingroup simix_file_management
+ *
+ */
+void simcall_storage_file_rename(smx_storage_t storage, const char* src,  const char* dest)
+{
+  return simcall_BODY_storage_file_rename(storage, src, dest);
+}
+
+/**
  * \ingroup simix_storage_management
  * \brief Returns the free space size on a given storage element.
  * \param storage name
- * \return Return the free space size on a given storage element (as sg_storage_size_t)
+ * \return Return the free space size on a given storage element (as sg_size_t)
  */
-sg_storage_size_t simcall_storage_get_free_size (const char* name){
+sg_size_t simcall_storage_get_free_size (const char* name){
   return simcall_BODY_storage_get_free_size(name);
 }
 
@@ -1287,9 +1447,9 @@ sg_storage_size_t simcall_storage_get_free_size (const char* name){
  * \ingroup simix_storage_management
  * \brief Returns the used space size on a given storage element.
  * \param storage name
- * \return Return the used space size on a given storage element (as sg_storage_size_t)
+ * \return Return the used space size on a given storage element (as sg_size_t)
  */
-sg_storage_size_t simcall_storage_get_used_size (const char* name){
+sg_size_t simcall_storage_get_used_size (const char* name){
   return simcall_BODY_storage_get_used_size(name);
 }
 

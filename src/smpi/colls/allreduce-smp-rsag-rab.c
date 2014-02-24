@@ -1,7 +1,13 @@
-#include "colls_private.h"
+/* Copyright (c) 2013-2014. The SimGrid Team.
+ * All rights reserved.                                                     */
+
+/* This program is free software; you can redistribute it and/or modify it
+ * under the terms of the license (GNU LGPL) which comes with this package. */
+
 /* 
  * implemented by Pitch Patarasuk, 07/01/2007
  */
+#include "colls_private.h"
 //#include <star-reduction.c>
 
 /* change number of core per smp-node
@@ -26,9 +32,16 @@ int smpi_coll_tuned_allreduce_smp_rsag_rab(void *sbuf, void *rbuf, int count,
   int tag = COLL_TAG_ALLREDUCE;
   int mask, src, dst;
   MPI_Status status;
-  int num_core = NUM_CORE;
+  int num_core = simcall_host_get_core(SIMIX_host_self());
+  // do we use the default one or the number of cores in the platform ?
+  // if the number of cores is one, the platform may be simulated with 1 node = 1 core
+  if (num_core == 1) num_core = NUM_CORE;
 
   comm_size = smpi_comm_size(comm);
+
+  if((comm_size&(comm_size-1)))
+    THROWF(arg_error,0, "allreduce smp rsag rab algorithm can't be used with non power of two number of processes ! ");
+
   rank = smpi_comm_rank(comm);
   MPI_Aint extent;
   extent = smpi_datatype_get_extent(dtype);

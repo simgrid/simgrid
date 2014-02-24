@@ -12,5 +12,9 @@
   <host id="MyHost2" power="100.0Mf" >
         <prop id="power_per_state" value="95.0:200.0" />
   </host>
+
+  <link id="link1" bandwidth="100kBps" latency="0"/>
+  <route src="MyHost1" dst="MyHost2"><link_ctn id="link1"/></route>
+  
 </AS>
 </platform>

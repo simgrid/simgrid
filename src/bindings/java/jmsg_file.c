@@ -1,9 +1,11 @@
 /* Functions related to the java file API.                            */
-/* Copyright (c) 2012-2013. The SimGrid Team.
+
+/* Copyright (c) 2012-2014. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
-  * under the terms of the license (GNU LGPL) which comes with this package. */
+ * under the terms of the license (GNU LGPL) which comes with this package. */
+
 #include "jmsg_file.h"
 #include "jxbt_utilities.h"
 
@@ -38,13 +40,13 @@ Java_org_simgrid_msg_File_open(JNIEnv *env, jobject jfile, jobject jstorage, job
 JNIEXPORT jlong JNICALL
 Java_org_simgrid_msg_File_read(JNIEnv *env, jobject jfile, jlong jsize) {
   msg_file_t file = jfile_get_native(env, jfile);
-  return (jlong)MSG_file_read(file, (sg_storage_size_t)jsize);
+  return (jlong)MSG_file_read(file, (sg_size_t)jsize);
 }
 
 JNIEXPORT jlong JNICALL
 Java_org_simgrid_msg_File_write(JNIEnv *env, jobject jfile, jlong jsize) {
   msg_file_t file = jfile_get_native(env, jfile);
-  return (jlong)MSG_file_write(file, (sg_storage_size_t)jsize);
+  return (jlong)MSG_file_write(file, (sg_size_t)jsize);
 }
 JNIEXPORT void JNICALL
 Java_org_simgrid_msg_File_close(JNIEnv *env, jobject jfile) {

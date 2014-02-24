@@ -1,4 +1,4 @@
-/* Copyright (c) 2007-2012. The SimGrid Team.
+/* Copyright (c) 2007-2014. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -25,9 +25,7 @@ typedef struct ns3_nodes{
   void * data;
 }s_ns3_nodes_t, *ns3_nodes_t;
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+SG_BEGIN_DECL()
 
 XBT_PUBLIC(int)    ns3_finalize(void);
 XBT_PUBLIC(int)    ns3_initialize(const char* TcpProtocol);
@@ -47,8 +45,7 @@ XBT_PUBLIC(void *) ns3_add_link(int src, e_ns3_network_element_type_t type_src,
                 char * bw,char * lat);
 XBT_PUBLIC(void *) ns3_end_platform(void);
 XBT_PUBLIC(void *) ns3_add_cluster(char * bw,char * lat,const char *id);
-#ifdef __cplusplus
-}
-#endif
+
+SG_END_DECL()
 
 #endif

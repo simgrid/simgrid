@@ -1,4 +1,4 @@
-/* Copyright (c) 2007-2013. The SimGrid Team.
+/* Copyright (c) 2007-2014. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -13,13 +13,15 @@
 
 #include <xbt/misc.h>
 #include <smpi/smpi.h>
+/* those are defined in f2c.h */
+#undef min
+#undef max
 #include <f2c.h>
 
 XBT_PUBLIC_DATA(__thread int) smpi_current_rank;
 
 XBT_PUBLIC(int) smpi_process_argc(void);
 XBT_PUBLIC(int) smpi_process_getarg(integer* index, char* dst, ftnlen len);
-XBT_PUBLIC(int) smpi_global_size(void);
 
 #define smpi_sample_local__(pi,pt) \
    { \

@@ -1,4 +1,4 @@
-/* Copyright (c) 2007-2013. The SimGrid Team.
+/* Copyright (c) 2007-2014. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -215,7 +215,6 @@ void SIMIX_run(void)
 {
   double time = 0;
   smx_process_t process;
-  xbt_swag_t set;
   surf_action_t action;
   smx_timer_t timer;
   surf_model_t model;
@@ -324,14 +323,18 @@ void SIMIX_run(void)
          ((void (*)(void*))timer->func)(timer->args);
        xbt_free(timer);
     }
+
     /* Wake up all processes waiting for a Surf action to finish */
     xbt_dynar_foreach(model_list, iter, model) {
-      set = model->states.failed_action_set;
-      while ((action = xbt_swag_extract(set)))
-        SIMIX_simcall_post((smx_action_t) action->data);
-      set = model->states.done_action_set;
-      while ((action = xbt_swag_extract(set)))
-        SIMIX_simcall_post((smx_action_t) action->data);
+      while ((action = surf_model_extract_failed_action_set(model)))
+
+      SIMIX_simcall_post((smx_action_t) surf_action_get_data(action));
+
+      while ((action = surf_model_extract_done_action_set(model)))
+        if (surf_action_get_data(action) == NULL)
+          XBT_DEBUG("probably vcpu's action %p, skip", action);
+        else
+          SIMIX_simcall_post((smx_action_t) surf_action_get_data(action));
     }
 
     /* Autorestart all process */
@@ -346,6 +349,11 @@ void SIMIX_run(void)
 
     /* Clean processes to destroy */
     SIMIX_process_empty_trash();
+
+
+    XBT_DEBUG("### time %f, empty %d", time, xbt_dynar_is_empty(simix_global->process_to_run));
+    // !(time == -1.0 && xbt_dynar_is_empty()) 
+
 
   } while (time != -1.0 || !xbt_dynar_is_empty(simix_global->process_to_run));
 

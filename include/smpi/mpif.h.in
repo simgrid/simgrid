@@ -1,5 +1,5 @@
 ! -*- fortran -*-
-! Copyright (c) 2010, 2012-2013. The SimGrid Team.
+! Copyright (c) 2010, 2012-2014. The SimGrid Team.
 ! All rights reserved.
 
 ! This program is free software; you can redistribute it and/or modify it
@@ -18,7 +18,7 @@
       integer MPI_MAX_DATAREP_STRIN, MPI_MAX_INFO_KEY
       integer MPI_MAX_INFO_VAL, MPI_MAX_OBJECT_NAME, MPI_MAX_PORT_NAME
       integer MPI_ANY_SOURCE, MPI_PROC_NULL, MPI_ANY_TAG, MPI_UNDEFINED
-      integer MPI_IN_PLACE, MPI_BOTTOM, MPI_TAG_UB, MPI_TAG_LB
+      integer MPI_TAG_UB, MPI_TAG_LB
       integer MPI_SOURCE, MPI_TAG, MPI_ERROR
       integer MPI_VERSION, MPI_SUBVERSION
       parameter(MPI_MAX_PROCESSOR_NAME=100)
@@ -32,8 +32,6 @@
       parameter(MPI_PROC_NULL=-666)
       parameter(MPI_ANY_TAG=-444)
       parameter(MPI_UNDEFINED=-333)
-      parameter(MPI_IN_PLACE=-222)
-      parameter(MPI_BOTTOM=-111)
       parameter(MPI_SOURCE=1)
       parameter(MPI_TAG=2)
       parameter(MPI_ERROR=3)
@@ -109,12 +107,14 @@
       parameter(MPI_ERRHANDLER_NULL=2)
 
 ! This should be equal to the number of int fields in MPI_Status
-      integer MPI_STATUS_SIZE, MPI_STATUSES_IGNORE
+      integer MPI_STATUS_SIZE
       parameter(MPI_STATUS_SIZE=4)
-      parameter(MPI_STATUSES_IGNORE=-1)
 
-      integer MPI_STATUS_IGNORE
-      parameter(MPI_STATUS_IGNORE=-1)
+! These should be ordered as in smpi_f77.c
+      integer MPI_IN_PLACE, MPI_BOTTOM
+      integer MPI_STATUS_IGNORE, MPI_STATUSES_IGNORE
+      common /smpi/ MPI_IN_PLACE, MPI_BOTTOM
+      common /smpi/ MPI_STATUS_IGNORE, MPI_STATUSES_IGNORE
 
       integer MPI_REQUEST_NULL
       parameter(MPI_REQUEST_NULL=-1)
@@ -122,7 +122,6 @@
       integer MPI_INTEGER_KIND
       parameter(MPI_INTEGER_KIND=4)
 
-! These should be ordered as in smpi_f77.c
       integer MPI_DATATYPE_NULL, MPI_BYTE, MPI_CHARACTER, MPI_LOGICAL
       integer MPI_INTEGER, MPI_INTEGER1, MPI_INTEGER2, MPI_INTEGER4
       integer MPI_INTEGER8, MPI_REAL, MPI_REAL4, MPI_REAL8

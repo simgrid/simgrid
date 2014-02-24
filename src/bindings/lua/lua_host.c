@@ -1,4 +1,4 @@
-/* Copyright (c) 2010, 2012-2013. The SimGrid Team.
+/* Copyright (c) 2010, 2012-2014. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -184,7 +184,7 @@ static int l_host_sleep(lua_State *L)
 static int l_host_destroy(lua_State *L)
 {
   msg_host_t ht = sglua_check_host(L, 1);
-  __MSG_host_destroy(MSG_host_priv(ht));
+  __MSG_host_priv_free(MSG_host_priv(ht));
   return 0;
 }
 

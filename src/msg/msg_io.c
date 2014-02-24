@@ -1,12 +1,11 @@
-/* Copyright (c) 2004-2013. The SimGrid Team.
- * All rights reserved.                                                       */
+/* Copyright (c) 2004-2014. The SimGrid Team.
+ * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
- * under the terms of the license (GNU LGPL) which comes with this package.   */
+ * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "msg_private.h"
 #include "xbt/log.h"
-#include <inttypes.h>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_io, msg,
                                 "Logging specific to MSG (io)");
@@ -21,13 +20,13 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_io, msg,
 /********************************* File **************************************/
 void __MSG_file_get_info(msg_file_t fd){
   xbt_dynar_t info = simcall_file_get_info(fd->simdata->smx_file);
-  sg_storage_size_t *psize;
+  sg_size_t *psize;
 
   fd->info->content_type = xbt_dynar_pop_as(info, char *);
   fd->info->storage_type = xbt_dynar_pop_as(info, char *);
   fd->info->storageId = xbt_dynar_pop_as(info, char *);
   fd->info->mount_point = xbt_dynar_pop_as(info, char *);
-  psize = xbt_dynar_pop_as(info, sg_storage_size_t*);
+  psize = xbt_dynar_pop_as(info, sg_size_t*);
   fd->info->size = *psize;
   xbt_free(psize);
   xbt_dynar_free_container(&info);
@@ -71,7 +70,7 @@ void MSG_file_dump (msg_file_t fd){
   __MSG_file_get_info(fd);
   XBT_INFO("File Descriptor information:\n"
            "\t\tFull name: '%s'\n"
-           "\t\tSize: %" PRIu64 "\n"
+           "\t\tSize: %llu\n"
            "\t\tMount point: '%s'\n"
            "\t\tStorage Id: '%s'\n"
            "\t\tStorage Type: '%s'\n"
@@ -88,7 +87,7 @@ void MSG_file_dump (msg_file_t fd){
  * \param fd is a the file descriptor
  * \return the number of bytes successfully read
  */
-sg_storage_size_t MSG_file_read(msg_file_t fd, sg_storage_size_t size)
+sg_size_t MSG_file_read(msg_file_t fd, sg_size_t size)
 {
   return simcall_file_read(fd->simdata->smx_file, size);
 }
@@ -100,7 +99,7 @@ sg_storage_size_t MSG_file_read(msg_file_t fd, sg_storage_size_t size)
  * \param fd is a the file descriptor
  * \return the number of bytes successfully write
  */
-sg_storage_size_t MSG_file_write(msg_file_t fd, sg_storage_size_t size)
+sg_size_t MSG_file_write(msg_file_t fd, sg_size_t size)
 {
   return simcall_file_write(fd->simdata->smx_file, size);
 }
@@ -161,9 +160,9 @@ int MSG_file_unlink(msg_file_t fd)
  * \brief Return the size of a file
  *
  * \param fd is the file descriptor (#msg_file_t)
- * \return the size of the file (as a sg_storage_size_t)
+ * \return the size of the file (as a #sg_size_t)
  */
-sg_storage_size_t MSG_file_get_size(msg_file_t fd){
+sg_size_t MSG_file_get_size(msg_file_t fd){
   return simcall_file_get_size(fd->simdata->smx_file);
 }
 
@@ -192,35 +191,40 @@ xbt_dict_t MSG_file_ls(const char *mount, const char *path)
 }
 
 /*
- * Move a file to another location. Depending on the values of dest, dest, mount,
- * and fullname, this move can be local or remote and, within a host, on the same
- * mounted disk or between mounted disks.
+ * \ingroup msg_file_management
+ * \brief Set the file position indicator in the msg_file_t by adding offset bytes
+ * to the position specified by origin (either SEEK_SET, SEEK_CUR, or SEEK_END).
+ *
+ * \param fd : file object that identifies the stream
+ * \param offset : number of bytes to offset from origin
+ * \param origin : Position used as reference for the offset. It is specified by
+ * one of the following constants defined in <cstdio> exclusively to be used as
+ * arguments for this function (SEEK_SET = beginning of file, SEEK_CUR = current
+ * position of the file pointer, SEEK_END = end of file)
+ *
+ * \return If successful, the function returns MSG_OK (=0). Otherwise, it returns
+ * MSG_TASK_CANCELED (=8).
  *
  */
-msg_error_t MSG_file_move (msg_file_t fd, msg_host_t dest, char* mount, char* fullname)
+msg_error_t MSG_file_seek(msg_file_t fd, sg_size_t offset, int origin)
 {
-  THROW_UNIMPLEMENTED;
-  return MSG_OK;
+  //THROW_UNIMPLEMENTED;
+  return simcall_file_seek(fd->simdata->smx_file, offset, origin);
 }
 
 /*
- * Set the file position indicator in the msg_file_t by adding offset bytes
- * to the position specified by whence (either SEEK_SET, SEEK_CUR, or SEEK_END).
+ * \ingroup msg_file_management
+ * \brief Returns the current value of the position indicator of the file
+ *
+ * \param fd : file object that identifies the stream
+ * \return On success, the current value of the position indicator is returned.
+ *
  */
-msg_error_t MSG_file_seek (msg_file_t fd, sg_storage_size_t offset, int whence)
+sg_size_t MSG_file_tell(msg_file_t fd)
 {
-  THROW_UNIMPLEMENTED;
-  return MSG_OK;
+  return simcall_file_tell(fd->simdata->smx_file);
 }
 
-/*
- * Rename the file in the contents of its associated storage.
- */
-msg_error_t MSG_file_rename (msg_file_t fd, char* new_name)
-{
-  THROW_UNIMPLEMENTED;
-  return MSG_OK;
-}
 
 /********************************* Storage **************************************/
 
@@ -260,18 +264,18 @@ const char *MSG_storage_get_name(msg_storage_t storage) {
 /** \ingroup msg_storage_management
  * \brief Returns the free space size of a storage element
  * \param name the name of a storage
- * \return the free space size of the storage element (as a sg_storage_size_t)
+ * \return the free space size of the storage element (as a #sg_size_t)
  */
-sg_storage_size_t MSG_storage_get_free_size(const char* name){
+sg_size_t MSG_storage_get_free_size(const char* name){
   return simcall_storage_get_free_size(name);
 }
 
 /** \ingroup msg_storage_management
  * \brief Returns the used space size of a storage element
  * \param name the name of a storage
- * \return the used space size of the storage element (as a sg_storage_size_t)
+ * \return the used space size of the storage element (as a #sg_size_t)
  */
-sg_storage_size_t MSG_storage_get_used_size(const char* name){
+sg_size_t MSG_storage_get_used_size(const char* name){
   return simcall_storage_get_used_size(name);
 }
 
@@ -365,8 +369,31 @@ xbt_dict_t MSG_storage_get_content(msg_storage_t storage)
   return SIMIX_storage_get_content(storage);
 }
 
-sg_storage_size_t MSG_storage_get_size(msg_storage_t storage)
+sg_size_t MSG_storage_get_size(msg_storage_t storage)
 {
   return SIMIX_storage_get_size(storage);
 }
 
+/*
+ * \ingroup msg_storage_management
+ *
+ * \brief Rename the file in the contents of its associated storage.
+ */
+msg_error_t MSG_storage_file_rename(msg_storage_t storage, const char* src,  const char* dest)
+{
+  simcall_storage_file_rename(storage, src, dest);
+  return MSG_OK;
+}
+
+/*
+ * \ingroup msg_storage_management
+ * \brief Move a file to another location. Depending on the values of dest, dest, mount,
+ * and fullname, this move can be local or remote and, within a host, on the same
+ * mounted disk or between mounted disks.
+ *
+ */
+msg_error_t MSG_storage_file_move (msg_file_t fd, msg_host_t dest, char* mount, char* fullname)
+{
+  THROW_UNIMPLEMENTED;
+  return MSG_OK;
+}

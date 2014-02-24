@@ -1,15 +1,15 @@
 /* Example of scatter communication, accepting a large amount of processes. 
  * This based the experiment of Fig. 4 in http://hal.inria.fr/hal-00650233/
  * That experiment is a comparison to the LogOPSim simulator, that takes 
- *  GOAL files as an input, thus the file name. But there is no actual link
- *  to the GOAL formalism beside of this.
- * 
- * Copyright (c) 2011-2013. The SimGrid Team.
- * All rights reserved.
- * 
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the license (GNU LGPL) which comes with this package.
+ * GOAL files as an input, thus the file name. But there is no actual link
+ * to the GOAL formalism beside of this.
  */
+
+/* Copyright (c) 2011-2014. The SimGrid Team.
+ * All rights reserved.                                                     */
+
+/* This program is free software; you can redistribute it and/or modify it
+ * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include <stdlib.h>
 #include <stdio.h>

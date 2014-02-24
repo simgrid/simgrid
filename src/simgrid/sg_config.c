@@ -1,4 +1,4 @@
-/* Copyright (c) 2009-2010, 2012-2013. The SimGrid Team.
+/* Copyright (c) 2009-2010, 2012-2014. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -67,6 +67,7 @@ static void sg_config_cmd_line(int *argc, char **argv)
 "Each of these configurations can be used by adding\n"
 "    --cfg=<option name>:<option value>\n"
 "to the command line.\n"
+"\n"
 "You can also use --help-models to see the details of all models known by this simulator.\n"
 #ifdef HAVE_TRACING
 "\n"
@@ -111,6 +112,27 @@ static void sg_config_cmd_line(int *argc, char **argv)
     sg_cfg_exit_early();
 }
 
+/* callback of the plugin variable */
+static void _sg_cfg_cb__plugin(const char *name, int pos)
+{
+  char *val;
+
+  XBT_VERB("PLUGIN");
+  xbt_assert(_sg_cfg_init_status < 2,
+              "Cannot load a plugin after the initialization");
+
+  val = xbt_cfg_get_string(_sg_cfg_set, name);
+
+  if (!strcmp(val, "help")) {
+    model_help("plugin", surf_plugin_description);
+    sg_cfg_exit_early();
+  }
+
+  /* New Module missing */
+  int plugin_id = find_model_description(surf_plugin_description, val);
+  surf_plugin_description[plugin_id].model_init_preparse();
+}
+
 /* callback of the workstation/model variable */
 static void _sg_cfg_cb__workstation_model(const char *name, int pos)
 {
@@ -128,6 +150,25 @@ static void _sg_cfg_cb__workstation_model(const char *name, int pos)
 
   /* Make sure that the model exists */
   find_model_description(surf_workstation_model_description, val);
+}
+
+/* callback of the vm_workstation/model variable */
+static void _sg_cfg_cb__vm_workstation_model(const char *name, int pos)
+{
+  char *val;
+
+  xbt_assert(_sg_cfg_init_status < 2,
+              "Cannot change the model after the initialization");
+
+  val = xbt_cfg_get_string(_sg_cfg_set, name);
+
+  if (!strcmp(val, "help")) {
+    model_help("vm_workstation", surf_vm_workstation_model_description);
+    sg_cfg_exit_early();
+  }
+
+  /* Make sure that the model exists */
+  find_model_description(surf_vm_workstation_model_description, val);
 }
 
 /* callback of the cpu/model variable */
@@ -407,105 +448,80 @@ static void _sg_cfg_cb__gtnets_jitter_seed(const char *name, int pos)
 }
 #endif
 
+/* build description line with possible values */
+static void describe_model(char *result,
+                           const s_surf_model_description_t model_description[],
+                           const char *name,
+                           const char *description)
+{
+  char *p = result +
+    sprintf(result, "%s. Possible values: %s", description,
+            model_description[0].name ? model_description[0].name : "n/a");
+  int i;
+  for (i = 1; model_description[i].name; i++)
+    p += sprintf(p, ", %s", model_description[i].name);
+  sprintf(p,
+      ".\n       (use 'help' as a value to see the long description of each %s)",
+          name);
+}
+
 /* create the config set, register what should be and parse the command line*/
 void sg_config_init(int *argc, char **argv)
 {
-  char *description = xbt_malloc(1024);
-  char *p;
-  int i;
+  char description[1024];
 
   /* Create the configuration support */
   if (_sg_cfg_init_status == 0) { /* Only create stuff if not already inited */
-    sprintf(description,
-            "The model to use for the CPU. Possible values: ");
-    p = description;
-    while (*(++p) != '\0');
-    for (i = 0; surf_cpu_model_description[i].name; i++)
-      p += sprintf(p, "%s%s", (i == 0 ? "" : ", "),
-                   surf_cpu_model_description[i].name);
-    sprintf(p,
-            ".\n       (use 'help' as a value to see the long description of each model)");
+
+    /* Plugins configuration */
+    describe_model(description, surf_plugin_description,
+                   "plugin", "The plugins");
+    xbt_cfg_register(&_sg_cfg_set, "plugin", description,
+                     xbt_cfgelm_string, 1, 1, &_sg_cfg_cb__plugin, NULL);
+
+    describe_model(description, surf_cpu_model_description,
+                   "model", "The model to use for the CPU");
     xbt_cfg_register(&_sg_cfg_set, "cpu/model", description,
                      xbt_cfgelm_string, 1, 1, &_sg_cfg_cb__cpu_model, NULL);
     xbt_cfg_setdefault_string(_sg_cfg_set, "cpu/model", "Cas01");
 
-    while (*(++p) != '\0');
-    for (i = 0; surf_optimization_mode_description[i].name; i++)
-      p += sprintf(p, "%s%s", (i == 0 ? "" : ", "),
-                   surf_optimization_mode_description[i].name);
-    sprintf(p,
-            ".\n       (use 'help' as a value to see the long description of each optimization mode)");
+    describe_model(description, surf_optimization_mode_description,
+                   "optimization mode",
+                   "The optimization modes to use for the CPU");
     xbt_cfg_register(&_sg_cfg_set, "cpu/optim", description,
                      xbt_cfgelm_string, 1, 1, &_sg_cfg_cb__optimization_mode, NULL);
     xbt_cfg_setdefault_string(_sg_cfg_set, "cpu/optim", "Lazy");
 
-    sprintf(description,
-            "The model to use for the storage. Possible values: ");
-    p = description;
-    while (*(++p) != '\0');
-    for (i = 0; surf_storage_model_description[i].name; i++)
-      p += sprintf(p, "%s%s", (i == 0 ? "" : ", "),
-                   surf_storage_model_description[i].name);
-    sprintf(p,
-            ".\n       (use 'help' as a value to see the long description of each model)");
+    describe_model(description, surf_storage_model_description,
+                   "model", "The model to use for the storage");
     xbt_cfg_register(&_sg_cfg_set, "storage/model", description,
                      xbt_cfgelm_string, 1, 1, &_sg_cfg_cb__storage_mode, NULL);
     xbt_cfg_setdefault_string(_sg_cfg_set, "storage/model", "default");
 
-    /* ********************************************************************* */
-    /* TUTORIAL: New model                                                   */
-    sprintf(description,
-            "The model to use for the New model. Possible values: ");
-    p = description;
-    while (*(++p) != '\0');
-    for (i = 0; surf_new_model_description[i].name; i++)
-      p += sprintf(p, "%s%s", (i == 0 ? "" : ", "),
-                   surf_new_model_description[i].name);
-    sprintf(p,
-            ".\n       (use 'help' as a value to see the long description of each model)");
-    xbt_cfg_register(&_sg_cfg_set, "new_model/model", description,
-                     xbt_cfgelm_string, 1, 1, &_sg_cfg_cb__storage_mode, NULL);
-    xbt_cfg_setdefault_string(_sg_cfg_set, "new_model/model", "default");
-    /* ********************************************************************* */
-
-    sprintf(description,
-            "The model to use for the network. Possible values: ");
-    p = description;
-    while (*(++p) != '\0');
-    for (i = 0; surf_network_model_description[i].name; i++)
-      p += sprintf(p, "%s%s", (i == 0 ? "" : ", "),
-                   surf_network_model_description[i].name);
-    sprintf(p,
-            ".\n       (use 'help' as a value to see the long description of each model)");
+    describe_model(description, surf_network_model_description,
+                   "model", "The model to use for the network");
     xbt_cfg_register(&_sg_cfg_set, "network/model", description,
                      xbt_cfgelm_string, 1, 1, &_sg_cfg_cb__network_model, NULL);
     xbt_cfg_setdefault_string(_sg_cfg_set, "network/model", "LV08");
 
-    sprintf(description,
-            "The optimization modes to use for the network. Possible values: ");
-    p = description;
-    while (*(++p) != '\0');
-    for (i = 0; surf_optimization_mode_description[i].name; i++)
-      p += sprintf(p, "%s%s", (i == 0 ? "" : ", "),
-                   surf_optimization_mode_description[i].name);
-    sprintf(p,
-            ".\n       (use 'help' as a value to see the long description of each optimization mode)");
+    describe_model(description, surf_optimization_mode_description,
+                   "optimization mode",
+                   "The optimization modes to use for the network");
     xbt_cfg_register(&_sg_cfg_set, "network/optim", description,
                      xbt_cfgelm_string, 1, 1, &_sg_cfg_cb__optimization_mode, NULL);
     xbt_cfg_setdefault_string(_sg_cfg_set, "network/optim", "Lazy");
 
-    sprintf(description,
-            "The model to use for the workstation. Possible values: ");
-    p = description;
-    while (*(++p) != '\0');
-    for (i = 0; surf_workstation_model_description[i].name; i++)
-      p += sprintf(p, "%s%s", (i == 0 ? "" : ", "),
-                   surf_workstation_model_description[i].name);
-    sprintf(p,
-            ".\n       (use 'help' as a value to see the long description of each model)");
+    describe_model(description, surf_workstation_model_description,
+                   "model", "The model to use for the workstation");
     xbt_cfg_register(&_sg_cfg_set, "workstation/model", description,
                      xbt_cfgelm_string, 1, 1, &_sg_cfg_cb__workstation_model, NULL);
     xbt_cfg_setdefault_string(_sg_cfg_set, "workstation/model", "default");
+
+    describe_model(description, surf_vm_workstation_model_description,
+                   "model", "The model to use for the vm workstation");
+    xbt_cfg_register(&_sg_cfg_set, "vm_workstation/model", description,
+                     xbt_cfgelm_string, 1, 1, &_sg_cfg_cb__vm_workstation_model, NULL);
+    xbt_cfg_setdefault_string(_sg_cfg_set, "vm_workstation/model", "default");
 
     xbt_cfg_register(&_sg_cfg_set, "network/TCP_gamma",
                      "Size of the biggest TCP window (cat /proc/sys/net/ipv4/tcp_[rw]mem for recv/send window; Use the last given value, which is the max window size)",
@@ -624,18 +640,22 @@ void sg_config_init(int *argc, char **argv)
     xbt_cfg_setdefault_boolean(_sg_cfg_set, "verbose-exit", "yes");
 
     /* context factory */
-    sprintf(description,
-            "Context factory to use in SIMIX. Possible values: thread");
     const char *dflt_ctx_fact = "thread";
+    {
+      char *p = description +
+        sprintf(description,
+                "Context factory to use in SIMIX. Possible values: %s",
+                dflt_ctx_fact);
 #ifdef CONTEXT_UCONTEXT
-    dflt_ctx_fact = "ucontext";
-    strcat(strcat(description, ", "), dflt_ctx_fact);
+      dflt_ctx_fact = "ucontext";
+      p += sprintf(p, ", %s", dflt_ctx_fact);
 #endif
 #ifdef HAVE_RAWCTX
-    dflt_ctx_fact = "raw";
-    strcat(strcat(description, ", "), dflt_ctx_fact);
+      dflt_ctx_fact = "raw";
+      p += sprintf(p, ", %s", dflt_ctx_fact);
 #endif
-    strcat(description, ".");
+      sprintf(p, ".");
+    }
     xbt_cfg_register(&_sg_cfg_set, "contexts/factory", description,
                      xbt_cfgelm_string, 1, 1, _sg_cfg_cb_context_factory, NULL);
     xbt_cfg_setdefault_string(_sg_cfg_set, "contexts/factory", dflt_ctx_fact);
@@ -836,8 +856,6 @@ void sg_config_init(int *argc, char **argv)
   } else {
     XBT_WARN("Call to sg_config_init() after initialization ignored");
   }
-
-  xbt_free(description);
 }
 
 void sg_config_finalize(void)
@@ -853,7 +871,9 @@ void sg_config_finalize(void)
 void surf_config_models_setup()
 {
   const char *workstation_model_name;
+  const char *vm_workstation_model_name;
   int workstation_id = -1;
+  int vm_workstation_id = -1;
   char *network_model_name = NULL;
   char *cpu_model_name = NULL;
   int storage_id = -1;
@@ -861,6 +881,8 @@ void surf_config_models_setup()
 
   workstation_model_name =
       xbt_cfg_get_string(_sg_cfg_set, "workstation/model");
+  vm_workstation_model_name =
+      xbt_cfg_get_string(_sg_cfg_set, "vm_workstation/model");
   network_model_name = xbt_cfg_get_string(_sg_cfg_set, "network/model");
   cpu_model_name = xbt_cfg_get_string(_sg_cfg_set, "cpu/model");
   storage_model_name = xbt_cfg_get_string(_sg_cfg_set, "storage/model");
@@ -905,47 +927,48 @@ void surf_config_models_setup()
   XBT_DEBUG("Call workstation_model_init");
   surf_workstation_model_description[workstation_id].model_init_preparse();
 
+  XBT_DEBUG("Call vm_workstation_model_init");
+  vm_workstation_id = find_model_description(surf_vm_workstation_model_description,
+                                          vm_workstation_model_name);
+  surf_vm_workstation_model_description[vm_workstation_id].model_init_preparse();
+
   XBT_DEBUG("Call storage_model_init");
   storage_id = find_model_description(surf_storage_model_description, storage_model_name);
   surf_storage_model_description[storage_id].model_init_preparse();
 
-  /* ********************************************************************* */
-  /* TUTORIAL: New model                                                   */
-  int new_model_id = -1;
-  char *new_model_name = NULL;
-  new_model_name = xbt_cfg_get_string(_sg_cfg_set, "new_model/model");
-  XBT_DEBUG("Call new model_init");
-  new_model_id = find_model_description(surf_new_model_description, new_model_name);
-  surf_new_model_description[new_model_id].model_init_preparse();
-  /* ********************************************************************* */
+}
+
+int sg_cfg_is_default_value(const char *name)
+{
+  return xbt_cfg_is_default_value(_sg_cfg_set, name);
 }
 
 int sg_cfg_get_int(const char* name)
 {
-  return xbt_cfg_get_int(_sg_cfg_set,name);
+  return xbt_cfg_get_int(_sg_cfg_set, name);
 }
 
 double sg_cfg_get_double(const char* name)
 {
-  return xbt_cfg_get_double(_sg_cfg_set,name);
+  return xbt_cfg_get_double(_sg_cfg_set, name);
 }
 
 char* sg_cfg_get_string(const char* name)
 {
-  return xbt_cfg_get_string(_sg_cfg_set,name);
+  return xbt_cfg_get_string(_sg_cfg_set, name);
 }
 
 int sg_cfg_get_boolean(const char* name)
 {
-  return xbt_cfg_get_boolean(_sg_cfg_set,name);
+  return xbt_cfg_get_boolean(_sg_cfg_set, name);
 }
 
 void sg_cfg_get_peer(const char *name, char **peer, int *port)
 {
-  xbt_cfg_get_peer(_sg_cfg_set,name, peer, port);
+  xbt_cfg_get_peer(_sg_cfg_set, name, peer, port);
 }
 
 xbt_dynar_t sg_cfg_get_dynar(const char* name)
 {
-  return xbt_cfg_get_dynar(_sg_cfg_set,name);
+  return xbt_cfg_get_dynar(_sg_cfg_set, name);
 }

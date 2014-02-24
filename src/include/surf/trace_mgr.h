@@ -1,4 +1,4 @@
-/* Copyright (c) 2004-2007, 2009-2012. The SimGrid Team.
+/* Copyright (c) 2004-2007, 2009-2014. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -12,6 +12,8 @@
 #include "surf/maxmin.h"
 #include "surf/datatypes.h"
 #include "simgrid/platf_interface.h"
+
+SG_BEGIN_DECL()
 
 /* Creation functions */
 XBT_PUBLIC(tmgr_history_t) tmgr_history_new(void);
@@ -42,5 +44,7 @@ XBT_PUBLIC(tmgr_trace_event_t)
                                 double *value, void **model);
 
 XBT_PUBLIC(void) tmgr_finalize(void);
+
+SG_END_DECL()
 
 #endif                          /* _SURF_TMGR_H */

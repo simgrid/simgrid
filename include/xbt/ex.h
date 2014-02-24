@@ -1,6 +1,8 @@
 /* ex - Exception Handling                                                  */
 
-/*  Copyright (c) 2005-2013. The SimGrid Team.                              */
+/* Copyright (c) 2005-2014. The SimGrid Team.
+ * All rights reserved.                                                     */
+
 /*  Copyright (c) 2002-2004 Ralf S. Engelschall <rse@engelschall.com>       */
 /*  Copyright (c) 2002-2004 The OSSP Project <http://www.ossp.org/>         */
 /*  Copyright (c) 2002-2004 Cable & Wireless <http://www.cw.com/>           */
@@ -262,7 +264,8 @@ typedef enum {
   thread_error,                 /**< error while [un]locking */
   host_error,                   /**< host failed */
   tracing_error,                /**< error during the simulation tracing */
-  io_error                      /**< disk or file error */
+  io_error,                     /**< disk or file error */
+  vm_error                      /**< vm  error */
 } xbt_errcat_t;
 
 XBT_PUBLIC(const char *) xbt_ex_catname(xbt_errcat_t cat);

@@ -7,6 +7,9 @@ project(SimGrid C)
 if (enable_gtnets OR enable_ns3 OR enable_model-checking)
   enable_language(CXX)
 endif()
+
+enable_language(CXX)
+
 if (NOT DEFINED enable_smpi OR enable_smpi) # smpi is enabled by default
   # Call enable_language(Fortran) in order to load the build rules for
   # this language, needed by teshsuite/smpi/mpich-test/.  Use
@@ -47,11 +50,12 @@ set(CMAKE_Fortran_LINK_FLAGS "" CACHE TYPE INTERNAL FORCE)
 # 3.9.0 -> release 3.9
 # 3.9.90 -> release 3.10pre1
 # 3.10.0 -> release 3.10
+# 3.11.0 -> release 3.11
 
 set(SIMGRID_VERSION_MAJOR "3")
-set(SIMGRID_VERSION_MINOR "10")
+set(SIMGRID_VERSION_MINOR "11")
 set(SIMGRID_VERSION_PATCH "0")
-set(SIMGRID_VERSION_EXTRA "-rc2") # Extra words to add to version string (e.g. -rc1)
+set(SIMGRID_VERSION_EXTRA "-devel") # Extra words to add to version string (e.g. -rc1)
 
 set(SIMGRID_VERSION_DATE  "2013") # Year for copyright information
 
@@ -166,9 +170,9 @@ if(WIN32)
     message(FATAL_ERROR "Please use MinGW to compile SimGrid!")
   endif()
 
-  if(ARCH_32_BITS)	### Arch 32bits
+  if(ARCH_32_BITS)      ### Arch 32bits
     set(_WIN32 1)
-  else()	### Arch 64bits
+  else()        ### Arch 64bits
     set(_WIN64 1)
   endif()
 
@@ -180,18 +184,18 @@ if(WIN32)
 
   set(_XBT_WIN32 1)
 
-  message(STATUS "C_COMPILER			${CMAKE_C_COMPILER} ${COMPILER_C_VERSION}")
-  message(STATUS "CXX_COMPILER			${CMAKE_CXX_COMPILER} ${COMPILER_CXX_VERSION}")
-  message(STATUS "CMAKE_RC_COMPILER		${CMAKE_RC_COMPILER}")
-  message(STATUS "INCLUDE			${CMAKE_INCLUDE_WIN}")
-  message(STATUS "LIB				${CMAKE_LIB_WIN}")
-  message(STATUS "MAKE_PROGRAM			${CMAKE_MAKE_PROGRAM}")
-  message(STATUS "CMAKE_BUILD_TOOL		${CMAKE_BUILD_TOOL}")
-  message(STATUS "LINKER			${CMAKE_LINKER}")
-  message(STATUS "CMAKE_GENERATOR		${CMAKE_GENERATOR}")
-  message(STATUS "BORLAND			${BORLAND}")
-  message(STATUS "VISUALC			${MSVC}")
-  message(STATUS "GNUC				${CMAKE_COMPILER_IS_GNUCC}")
+  message(STATUS "C_COMPILER                    ${CMAKE_C_COMPILER} ${COMPILER_C_VERSION}")
+  message(STATUS "CXX_COMPILER                  ${CMAKE_CXX_COMPILER} ${COMPILER_CXX_VERSION}")
+  message(STATUS "CMAKE_RC_COMPILER             ${CMAKE_RC_COMPILER}")
+  message(STATUS "INCLUDE                       ${CMAKE_INCLUDE_WIN}")
+  message(STATUS "LIB                           ${CMAKE_LIB_WIN}")
+  message(STATUS "MAKE_PROGRAM                  ${CMAKE_MAKE_PROGRAM}")
+  message(STATUS "CMAKE_BUILD_TOOL              ${CMAKE_BUILD_TOOL}")
+  message(STATUS "LINKER                        ${CMAKE_LINKER}")
+  message(STATUS "CMAKE_GENERATOR               ${CMAKE_GENERATOR}")
+  message(STATUS "BORLAND                       ${BORLAND}")
+  message(STATUS "VISUALC                       ${MSVC}")
+  message(STATUS "GNUC                          ${CMAKE_COMPILER_IS_GNUCC}")
 
 endif()
 

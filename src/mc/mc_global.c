@@ -1,4 +1,4 @@
-/* Copyright (c) 2008-2013. The SimGrid Team.
+/* Copyright (c) 2008-2014. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -344,7 +344,7 @@ static dw_location_t MC_dwarf_get_location(xbt_dict_t location_list, char *expr)
 
   if(location_list != NULL){
     
-    char *key = bprintf("%d", (int)strtoul(expr, NULL, 16));
+    char *key = bprintf("%lu", strtoul(expr, NULL, 16));
     loc->type = e_dw_loclist;
     loc->location.loclist =  (xbt_dynar_t)xbt_dict_get_or_null(location_list, key);
     if(loc->location.loclist == NULL)
@@ -473,7 +473,6 @@ static dw_location_t MC_dwarf_get_location(xbt_dict_t location_list, char *expr)
   }
 
 }
-
 
 /** \brief Finds a frame (DW_TAG_subprogram) from an DWARF offset in the rangd of this subprogram
  *

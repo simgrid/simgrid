@@ -1,6 +1,11 @@
 #! /usr/bin/perl
 
-# L.Bobelin (Perl newbie) 24th of November
+# Copyright (c) 2011-2012, 2014. The SimGrid Team.
+# All rights reserved.
+
+# This program is free software; you can redistribute it and/or modify it
+# under the terms of the license (GNU LGPL) which comes with this package.
+
 # Quick script to generate hierarchical clusters. Usage : add the special cluster tag (description below) in your "normal" platform file. Then run the script :
 # - First arg : the input file where you midified your cluster tag
 # - Second one : the output file where all the stuff will be generated.

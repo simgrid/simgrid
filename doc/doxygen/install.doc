@@ -188,13 +188,6 @@ accepts several options, as listed below.
       your simulation speed even if you simulate without activating
       the model-checker. We are working on improving this situation.
 
-  @li <b>enable_supernovae</b> (ON/OFF): If you use an ancient
-      compiler (such as gcc prior to 4.6), you want to enable this
-      option to ensure that the whole SimGrid library is presented to
-      the compiler as a unique compilation unit to allow cross-units
-      optimizations. This is useless on modern compilers (and will
-      soon be droped).
-
   @li <b>enable_compile_warnings</b> (ON/OFF): request the compiler to
       issue error message whenever the source code is not perfectly
       clean. If you develop SimGrid itself, you must activate it to

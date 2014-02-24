@@ -5,12 +5,11 @@ eval 'exec perl -S $0 ${1+"$@"}'
 # This script updates the simgrid XML file passed as argument (modification in place)
 # It is built to do the conversion incrementally.
 
-# Copyright (c) 2006-2012. The SimGrid Team.
+# Copyright (c) 2006-2014. The SimGrid Team.
 # All rights reserved.
 #
-# This file is part of the SimGrid project. This is free software:
-# You can redistribute and/or modify it under the terms of the
-# GNU LGPL (v2.1) licence.
+# This program is free software; you can redistribute it and/or modify it
+# under the terms of the license (GNU LGPL) which comes with this package.
 
 =encoding UTF-8
 
@@ -96,7 +95,7 @@ Several tags were renamed (for sake of XML sanity):
   
 =head1 COPYRIGHT AND LICENSE
 
-Copyright (c) 2006-2012. The SimGrid Team. All rights reserved.
+Copyright (c) 2006-2014. The SimGrid Team. All rights reserved.
   
 This program is free software; you may redistribute it and/or modify it
 under the terms of GNU LGPL (v2.1) license.

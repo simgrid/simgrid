@@ -1,4 +1,4 @@
-/* Copyright (c) 2009-2013. The SimGrid Team.
+/* Copyright (c) 2009-2014. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -7,22 +7,6 @@
 #ifndef MAXMIN_DATATYPES_H
 #define MAXMIN_DATATYPES_H
 
-/** \ingroup SURF_models
- *  \brief Model datatype
- *
- *  Generic data structure for a model. The workstations,
- *  the CPUs and the network links are examples of models.
- */
-typedef struct surf_model *surf_model_t;
-
-/** \ingroup SURF_actions
- *  \brief Action datatype
- *
- * An action is some working amount on a model.
- * It is represented as a cost, a priority, a duration and a state.
- */
-typedef struct surf_action *surf_action_t;
-typedef struct surf_file *surf_file_t;
 typedef struct surf_storage *surf_storage_t;
 typedef struct surf_stat *surf_stat_t;
 

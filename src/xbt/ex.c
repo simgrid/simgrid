@@ -1,6 +1,8 @@
 /* ex - Exception Handling                                                  */
 
-/*  Copyright (c) 2005-2013. The SimGrid Team.                              */
+/* Copyright (c) 2005-2014. The SimGrid Team.
+ * All rights reserved.                                                     */
+
 /*  Copyright (c) 2002-2004 Ralf S. Engelschall <rse@engelschall.com>       */
 /*  Copyright (c) 2002-2004 The OSSP Project <http://www.ossp.org/>         */
 /*  Copyright (c) 2002-2004 Cable & Wireless <http://www.cw.com/>           */
@@ -223,6 +225,9 @@ const char *xbt_ex_catname(xbt_errcat_t cat)
     return "tracing error";
   case io_error:
     return "io error";
+  case vm_error:
+    return "vm error";
+
   }
   return "INVALID ERROR";
 }

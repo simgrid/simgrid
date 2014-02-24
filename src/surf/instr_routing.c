@@ -1,14 +1,13 @@
-/* Copyright (c) 2010, 2012-2013. The SimGrid Team.
+/* Copyright (c) 2010, 2012-2014. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
-  * under the terms of the license (GNU LGPL) which comes with this package. */
+ * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "instr/instr_private.h"
 
 #ifdef HAVE_TRACING
 #include "surf/surf_private.h"
-#include "surf/network_private.h"
 #include "xbt/graph.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_routing, instr, "Tracing platform hierarchy");
@@ -130,14 +129,14 @@ static void recursiveGraphExtraction (AS_t rc, container_t container, xbt_dict_t
     XBT_DEBUG("Graph extraction disabled by user.");
     return;
   }
-  XBT_DEBUG ("Graph extraction for routing_component = %s", rc->name);
-  if (!xbt_dict_is_empty(rc->routing_sons)){
+  XBT_DEBUG ("Graph extraction for routing_component = %s", surf_AS_get_name(rc));
+  if (!xbt_dict_is_empty(surf_AS_get_routing_sons(rc))){
     xbt_dict_cursor_t cursor = NULL;
     AS_t rc_son;
     char *child_name;
     //bottom-up recursion
-    xbt_dict_foreach(rc->routing_sons, cursor, child_name, rc_son) {
-      container_t child_container = xbt_dict_get (container->children, rc_son->name);
+    xbt_dict_foreach(surf_AS_get_routing_sons(rc), cursor, child_name, rc_son) {
+      container_t child_container = xbt_dict_get (container->children, surf_AS_get_name(rc_son));
       recursiveGraphExtraction (rc_son, child_container, filter);
     }
   }
@@ -151,7 +150,7 @@ static void recursiveGraphExtraction (AS_t rc, container_t container, xbt_dict_t
     xbt_dict_cursor_t cursor = NULL;
     char *edge_name;
 
-    rc->get_graph(graph,nodes,edges,rc);
+    surf_AS_get_graph(rc, graph, nodes, edges);
     xbt_dict_foreach(edges,cursor,edge_name,edge) {
         linkContainers(PJ_container_get(edge->src->data), PJ_container_get(edge->dst->data), filter);
     }
@@ -329,7 +328,7 @@ static void instr_routing_parse_end_platform ()
   currentContainer = NULL;
   xbt_dict_t filter = xbt_dict_new_homogeneous(xbt_free);
   XBT_DEBUG ("Starting graph extraction.");
-  recursiveGraphExtraction (routing_platf->root, PJ_container_get_root(), filter);
+  recursiveGraphExtraction (surf_platf_get_root(routing_platf), PJ_container_get_root(), filter);
   XBT_DEBUG ("Graph extraction finished.");
   xbt_dict_free(&filter);
   platform_created = 1;
@@ -449,18 +448,18 @@ int instr_platform_traced ()
 static void recursiveXBTGraphExtraction (xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges,
     AS_t rc, container_t container)
 {
-  if (!xbt_dict_is_empty(rc->routing_sons)){
+  if (!xbt_dict_is_empty(surf_AS_get_routing_sons(rc))){
     xbt_dict_cursor_t cursor = NULL;
     AS_t rc_son;
     char *child_name;
     //bottom-up recursion
-    xbt_dict_foreach(rc->routing_sons, cursor, child_name, rc_son) {
-      container_t child_container = xbt_dict_get (container->children, rc_son->name);
+    xbt_dict_foreach(surf_AS_get_routing_sons(rc), cursor, child_name, rc_son) {
+      container_t child_container = xbt_dict_get (container->children, surf_AS_get_name(rc_son));
       recursiveXBTGraphExtraction (graph, nodes, edges, rc_son, child_container);
     }
   }
 
-  rc->get_graph(graph,nodes,edges,rc);
+  surf_AS_get_graph(rc, graph, nodes, edges);
 }
 
 xbt_graph_t instr_routing_platform_graph (void)
@@ -468,7 +467,7 @@ xbt_graph_t instr_routing_platform_graph (void)
   xbt_graph_t ret = xbt_graph_new_graph (0, NULL);
   xbt_dict_t nodes = xbt_dict_new_homogeneous(NULL);
   xbt_dict_t edges = xbt_dict_new_homogeneous(NULL);
-  recursiveXBTGraphExtraction (ret, nodes, edges, routing_platf->root, PJ_container_get_root());
+  recursiveXBTGraphExtraction (ret, nodes, edges, surf_platf_get_root(routing_platf), PJ_container_get_root());
   xbt_dict_free (&nodes);
   xbt_dict_free (&edges);
   return ret;

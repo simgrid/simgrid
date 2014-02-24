@@ -1,42 +1,57 @@
-#! /usr/bin/env bash
+#! /bin/sh
+
+# Copyright (c) 2007-2014. The SimGrid Team.
+# All rights reserved.
+
+# This program is free software; you can redistribute it and/or modify it
+# under the terms of the license (GNU LGPL) which comes with this package.
 
 CC=@CMAKE_C_COMPILER@
 
 INCLUDEARGS="@includeflag@"
 CMAKE_LINKARGS="-L@libdir@"
 
+@SMPITOOLS_SH@
+
+list_set CFLAGS
+list_set LINKARGS
 if [ "@WIN32@" != "1" ]; then
-  CFLAGS="-Dmain=smpi_simulated_main_"
-  LINKARGS="-lsimgrid"
+    list_add CFLAGS "-Dmain=smpi_simulated_main_"
+    list_add LINKARGS "-lsimgrid"
 else
-  CFLAGS="-include @includedir@/smpi/smpi_main.h"
-  LINKARGS="@libdir@\libsimgrid.dll"
+    list_add CFLAGS "-include" "@includedir@/smpi/smpi_main.h"
+    list_add LINKARGS "@libdir@\libsimgrid.dll"
 fi
 
-CMDLINE=""
-while [ -n "$1" ]; do
-  ARG="$1"
-  shift
-  case "${ARG}" in
-   -c)
-      CMAKE_LINKARGS=""
-      LINKARGS=""
-      CMDLINE="${CMDLINE} -c "
-      ;;
-   *.c)
-      SRCFILE="$(readlink -f ${ARG} 2>/dev/null)"
-      if [ -z $SRCFILE ] ; then
-         SRCFILE="$ARG"
-      fi
-      CMDLINE="${CMDLINE} ${SRCFILE} "
-      ;;
-   *)
-      CMDLINE="${CMDLINE} ${ARG} "
+list_set CMDARGS
+while [ $# -gt 0 ]; do
+    ARG="$1"
+    shift
+    case "${ARG}" in
+        -c)
+            CMAKE_LINKARGS=""
+            LINKARGS=""
+            list_add CMDARGS "-c"
+            ;;
+        *.c)
+            SRCFILE="$(readlink -f ${ARG} 2>/dev/null)"
+            if [ -z "$SRCFILE" ] ; then
+                SRCFILE="$ARG"
+            fi
+            list_add CMDARGS "${SRCFILE}"
+            ;;
+        *)
+            list_add CMDARGS "${ARG}"
       ;;
   esac
 done
 
-CMDLINE="${CC} ${CFLAGS} ${CMDLINE} ${INCLUDEARGS} ${CMAKE_LINKARGS} ${LINKARGS}"
+list_set CMDLINE "${CC}"
+list_add_not_empty CMDLINE "${CFLAGS}"
+list_add_not_empty CMDLINE ${INCLUDEARGS}
+list_add_not_empty CMDLINE ${CMAKE_LINKARGS}
+list_add_not_empty CMDLINE "${CMDARGS}"
+list_add_not_empty CMDLINE "${LINKARGS}"
 
-#echo "${CMDLINE}"
-${CMDLINE}
+eval $(list_get CMDLINE)
+"$@"

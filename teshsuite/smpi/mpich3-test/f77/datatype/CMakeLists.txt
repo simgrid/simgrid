@@ -14,29 +14,29 @@ if(enable_smpi AND enable_smpi_MPICH3_testsuite AND SMPI_F2C)
 
   configure_file(${CMAKE_CURRENT_SOURCE_DIR}/typeaints.h.in ${CMAKE_CURRENT_SOURCE_DIR}/typeaints.h @ONLY)
 
-  add_executable(allctypesf allctypesf.f ../util/mtestf.f)
-  add_executable(gaddressf gaddressf.f ../util/mtestf.f)
-  add_executable(hindex1f hindex1f.f ../util/mtestf.f)
-  add_executable(hindexed_blockf hindexed_blockf.f ../util/mtestf.f)
-  add_executable(packef packef.f ../util/mtestf.f)
-  add_executable(typecntsf typecntsf.f ../util/mtestf.f)
-  add_executable(typem2f typem2f.f ../util/mtestf.f)
-  add_executable(typename3f typename3f.f ../util/mtestf.f)
-  add_executable(typenamef typenamef.f ../util/mtestf.f)
-  add_executable(typesnamef typesnamef.f ../util/mtestf.f)
-  add_executable(typesubf typesubf.f ../util/mtestf.f)
+#  add_executable(allctypesf allctypesf.f)
+  add_executable(gaddressf gaddressf.f)
+#  add_executable(hindex1f hindex1f.f)
+#  add_executable(hindexed_blockf hindexed_blockf.f)
+#  add_executable(packef packef.f)
+#  add_executable(typecntsf typecntsf.f)
+#  add_executable(typem2f typem2f.f)
+#  add_executable(typename3f typename3f.f)
+#  add_executable(typenamef typenamef.f)
+#  add_executable(typesnamef typesnamef.f)
+#  add_executable(typesubf typesubf.f)
 
-  target_link_libraries(allctypesf  simgrid)
-  target_link_libraries(gaddressf  simgrid)
-  target_link_libraries(hindex1f  simgrid)
-  target_link_libraries(hindexed_blockf  simgrid)
-  target_link_libraries(packef  simgrid)
-  target_link_libraries(typecntsf  simgrid)
-  target_link_libraries(typem2f  simgrid)
-  target_link_libraries(typename3f  simgrid)
-  target_link_libraries(typenamef  simgrid)
-  target_link_libraries(typesnamef  simgrid)
-  target_link_libraries(typesubf  simgrid)
+#  target_link_libraries(allctypesf simgrid mtest_f77)
+  target_link_libraries(gaddressf simgrid mtest_f77)
+#  target_link_libraries(hindex1f simgrid mtest_f77)
+#  target_link_libraries(hindexed_blockf simgrid mtest_f77)
+#  target_link_libraries(packef simgrid mtest_f77)
+#  target_link_libraries(typecntsf simgrid mtest_f77)
+#  target_link_libraries(typem2f simgrid mtest_f77)
+#  target_link_libraries(typename3f simgrid mtest_f77)
+#  target_link_libraries(typenamef simgrid mtest_f77)
+#  target_link_libraries(typesnamef simgrid mtest_f77)
+#  target_link_libraries(typesubf simgrid mtest_f77)
 
 endif()
 
@@ -71,6 +71,5 @@ set(bin_files
 set(txt_files
   ${txt_files}
   ${CMAKE_CURRENT_SOURCE_DIR}/testlist
-  ${CMAKE_CURRENT_SOURCE_DIR}/../util/mtestf.f
   PARENT_SCOPE
   )

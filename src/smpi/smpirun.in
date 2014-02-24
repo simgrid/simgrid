@@ -1,4 +1,10 @@
-#! /usr/bin/env bash
+#! /bin/sh
+
+# Copyright (c) 2007-2014. The SimGrid Team.
+# All rights reserved.
+
+# This program is free software; you can redistribute it and/or modify it
+# under the terms of the license (GNU LGPL) which comes with this package.
 
 @CMAKE_SMPI_COMMAND@
 
@@ -18,7 +24,7 @@ POWER="${DEFAULT_POWER}"
 SIMOPTS="--cfg=maxmin/precision:1e-9 --cfg=network/model:SMPI --cfg=network/TCP_gamma:4194304"
 
 #usage to print the way this script should be called
-function usage () {
+usage () {
 cat <<EOF
 Usage: $0 [OPTIONS] -platform <xmldesc> -hostfile <hostfile> program [program-options]
 Options:
@@ -33,7 +39,7 @@ Options:
   -trace-comment-file <file> # put file contents on the top of the trace file as comment
   -trace-grouped             # group MPI processes by location
   -trace-resource            # trace resource utilization
-  -trace-viva               # generate configuration for Viva's GraphView
+  -trace-viva                # generate configuration for Viva's GraphView
   -trace-file <tracefile>    # name of the tracefile (simgrid_smpi.trace)
   -ext <value>               # additional parameter (reserved)
 
@@ -52,6 +58,7 @@ fi
 
 EXTOPT=""
 WRAPPER=""
+HOSTFILE=""
 
 while true; do
   case "$1" in
@@ -76,6 +83,15 @@ while true; do
 	shift 2
     ;;
    "-hostfile")
+	HOSTFILE="$2"
+      if [ ! -f "${HOSTFILE}" ]; then
+		echo "[$0] ** error: the file '${HOSTFILE}' does not exist. Aborting."
+		exit 1
+      fi
+	shift 2
+    ;;
+
+   "-machinefile")
 	HOSTFILE="$2"
       if [ ! -f "${HOSTFILE}" ]; then
 		echo "[$0] ** error: the file '${HOSTFILE}' does not exist. Aborting."
@@ -190,12 +206,6 @@ done
 
 ##-----------------------------------
 
-# Basic checks on the provided arguments
-if [ -z "${EXEC}" ] ; then
-    echo "You must provide a program to execute."
-    usage
-    exit 1
-fi
 
 if [ -z "${HOSTFILE}" ] && [ -z "${PLATFORM}" ] ; then
     echo "No hostfile nor platform specified."
@@ -209,6 +219,21 @@ if [ -z "${HOSTFILE}" ] ; then
     HOSTFILE="$(mktemp tmphostXXXXXX)"
     perl -ne 'print "$1\n" if /.*<host.*?id="(.*?)".*?\/>.*/' ${PLATFORM} > ${HOSTFILE}
 fi
+UNROLLEDHOSTFILETMP=0
+
+#parse if our lines are terminated by :num_process
+multiple_processes=`grep -c ":" $HOSTFILE`
+if [ "${multiple_processes}" -gt 0 ] ; then
+    UNROLLEDHOSTFILETMP=1
+    UNROLLEDHOSTFILE="$(mktemp tmphostXXXXXX)"
+    perl -ne ' do{ for ( 1 .. $2 ) { print "$1\n" } } if /(.*?):(\d+).*/'  ${HOSTFILE}  > ${UNROLLEDHOSTFILE}
+    if [ ${HOSTFILETMP} = 1 ] ; then
+        rm ${HOSTFILE}
+        HOSTFILETMP=0
+    fi
+    HOSTFILE=$UNROLLEDHOSTFILE
+fi
+
 
 # Don't use wc -l to compute it to avoid issues with trailing \n at EOF
 hostfile_procs=`grep -c "[a-zA-Z0-9]" $HOSTFILE`
@@ -234,20 +259,26 @@ if [ -z "${PLATFORM}" ]; then
 <AS id="AS0" routing="Full">
 PLATFORMHEAD
 
-for (( i=${NUMPROCS}; $i ; i=$i-1 )) do
+i=${NUMPROCS}
+while [ $i -gt 0 ]; do
   echo "  <host id=\"host$i\" power=\"${POWER}\"/>" >> ${PLATFORMTMP}
   echo "  <link id=\"loop$i\" bandwidth=\"${LOOPBACK_BANDWIDTH}\" latency=\"${LOOPBACK_LATENCY}\"/>" >> ${PLATFORMTMP}
   echo "  <link id=\"link$i\" bandwidth=\"${NETWORK_BANDWIDTH}\" latency=\"${NETWORK_LATENCY}\"/>" >> ${PLATFORMTMP}
+  i=$((i - 1))
 done
 
-for (( i=${NUMPROCS}; $i ; i=$i-1 )) do
-  for (( j=${NUMPROCS}; $j ; j=$j-1 )) do
+i=${NUMPROCS}
+while [ $i -gt 0 ]; do
+  j=${NUMPROCS}
+  while [ $j -gt 0 ]; do
     if [ $i -eq $j ]; then
       echo "  <route src=\"host$i\" dst=\"host$j\"><link_ctn id=\"loop$i\"/></route>" >> ${PLATFORMTMP}
     else
       echo "  <route src=\"host$i\" dst=\"host$j\"><link_ctn id=\"link$i\"/><link_ctn id=\"link$j\"/></route>" >> ${PLATFORMTMP}
     fi
+    j=$((j - 1))
   done
+  i=$((i - 1))
 done
 
 cat >> ${PLATFORMTMP} <<PLATFORMFOOT
@@ -273,15 +304,15 @@ APPLICATIONHEAD
 
 ##---- cache hostnames of hostfile---------------
 if [ -n "${HOSTFILE}" ] && [ -f ${HOSTFILE} ]; then
-	hostnames=(`cat ${HOSTFILE} | tr \\\n " "`)
-      NUMHOSTS=`cat ${HOSTFILE} | wc -l`
+  hostnames=$(cat ${HOSTFILE} | tr '\n\r' '  ')
+  NUMHOSTS=$(cat ${HOSTFILE} | wc -l)
 fi
 
 if [ "${EXTOPT}" = "smpi_replay" ]; then
   APP_TRACES=$PROC_ARGS
   if [ -n "${APP_TRACES}" ] && [ -f "${APP_TRACES}" ]; then
-     hosttraces=(`cat ${APP_TRACES} | tr \\\n " "`)
-     NUMTRACES=`cat ${APP_TRACES} | wc -l`
+     hosttraces=$(cat ${APP_TRACES} | tr '\n\r' '  ' )
+     NUMTRACES=$(cat ${APP_TRACES} | wc -l)
   else
      printf "File not found: %s\n", "${APP_TRACES:-\${APP_TRACES\}}" >&2
      exit 1
@@ -312,25 +343,25 @@ fi
 for i in ${SEQ}
 do
   if [ -n "${HOSTFILE}" ]; then
-	j=$(( $i % ${NUMHOSTS} ))
+	j=$(( $i % ${NUMHOSTS} + 1 ))
   fi
   ##---- optional display of ranks to process mapping
   if [ -n "${MAPOPT}" ]; then
-	echo "[rank $i] -> ${hostnames[$j]}"
+	echo "[rank $i] -> $(echo $hostnames|cut -d' ' -f$j)"
   fi
 
-  if [ -z "${hostnames[$j]}" ]; then
-	host="host"$(($j+1))
+  if [ -z "$(echo $hostnames|cut -d' ' -f$j)" ]; then
+	host="host"$($j)
   else
-	host="${hostnames[$j]}"
+	host="$(echo $hostnames|cut -d' ' -f$j)"
   fi
   echo "  <process host=\"${host}\" function=\"$i\"> <!-- function name used only for logging -->" >> ${APPLICATIONTMP}
   echo "    <argument value=\"$i\"/> <!-- rank -->" >> ${APPLICATIONTMP}
   if [ "${EXTOPT}" = "smpi_replay" ]; then
     if  [ ${NUMTRACES} -gt 1 ]; then
-      echo "    <argument value=\"${hosttraces[$j]}\"/>" >> ${APPLICATIONTMP}
+      echo "    <argument value=\"$(echo $hosttraces|cut -d' ' -f$j)\"/>" >> ${APPLICATIONTMP}
     else
-      echo "    <argument value=\"${hosttraces[0]}\"/>" >> ${APPLICATIONTMP}
+      echo "    <argument value=\"$(echo $hosttraces|cut -d' ' -f1)\"/>" >> ${APPLICATIONTMP}
     fi
   else 
     for ARG in $PROC_ARGS; do
@@ -388,9 +419,16 @@ if [ -n "${KEEP}" ] ; then
   if [ ${HOSTFILETMP} = 1 ] ; then
     echo "Generated hostfile ${HOSTFILE} keeped."
   fi
+  if [ ${UNROLLEDHOSTFILETMP} = 1 ] ; then
+    echo "Generated unrolled hostfile ${UNROLLEDHOSTFILE} keeped." 
+  fi
 fi
 ${EXEC} ${TRACEOPTIONS} ${SIMOPTS} ${PLATFORMTMP} ${APPLICATIONTMP}
 status=$?
+
+if [ ${status} = 139 ]; then echo "ERROR: A segmentation fault was triggered. 
+A common cause in SimGrid may be the use of a too small stack size for the simulated processes (default 128KiB).
+Please see contexts/stack_size parameter , or http://simgrid.org/simgrid/latest/doc/options.html#options_virt_stacksize "; fi
 
 if [ -z "${KEEP}" ] ; then
    if [ -z "${PLATFORM}" ]; then
@@ -398,6 +436,9 @@ if [ -z "${KEEP}" ] ; then
    fi
    if [ ${HOSTFILETMP} = 1 ] ; then
         rm ${HOSTFILE}
+   fi
+   if [ ${UNROLLEDHOSTFILETMP} = 1 ] ; then
+        rm ${UNROLLEDHOSTFILE}
    fi
    rm ${APPLICATIONTMP}
 fi

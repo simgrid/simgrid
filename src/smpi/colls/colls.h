@@ -1,9 +1,16 @@
+/* Copyright (c) 2013-2014. The SimGrid Team.
+ * All rights reserved.                                                     */
+
+/* This program is free software; you can redistribute it and/or modify it
+ * under the terms of the license (GNU LGPL) which comes with this package. */
+
 #ifndef SMPI_COLLS_H
 #define SMPI_COLLS_H
 
 #include <math.h>
 #include "smpi/mpi.h"
 #include "smpi/private.h"
+#include "xbt/ex.h"
 #include "xbt.h"
 
 #define COLL_DESCRIPTION(cat, ret, args, name) \

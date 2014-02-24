@@ -1,3 +1,9 @@
+/* Copyright (c) 2012, 2014. The SimGrid Team.
+ * All rights reserved.                                                     */
+
+/* This program is free software; you can redistribute it and/or modify it
+ * under the terms of the license (GNU LGPL) which comes with this package. */
+
 /***********************************************************************\
  *
  * File:           RngStream.c for multiple streams of Random Numbers
@@ -539,15 +545,3 @@ int RngStream_RandInt (RngStream g, int i, int j)
 {
    return i + (int) ((j - i + 1.0) * RngStream_RandU01 (g));
 }
-
-/* Undefine this terms, or supernovae build will fail. */
-#undef norm
-#undef m1
-#undef m2
-#undef a12
-#undef a13n
-#undef a21
-#undef a23n
-#undef two17
-#undef two53
-#undef fact

@@ -1,8 +1,8 @@
-/* Copyright (c) 2012-2013. The SimGrid Team.
+/* Copyright (c) 2012-2014. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
-  * under the terms of the license (GNU LGPL) which comes with this package. */
+ * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "msg_private.h"
 
@@ -13,7 +13,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_msg_vm, instr, "MSG VM");
 
 char *instr_vm_id (msg_vm_t vm, char *str, int len)
 {
-  return instr_vm_id_2 (vm->name, str, len);
+	return instr_vm_id_2 (MSG_vm_get_name(vm), str, len);
 }
 
 char *instr_vm_id_2 (const char *vm_name, char *str, int len)
@@ -55,7 +55,7 @@ void TRACE_msg_vm_change_host(msg_vm_t vm, msg_host_t old_host, msg_host_t new_h
   }
 }
 
-void TRACE_msg_vm_create (const char *vm_name, msg_host_t host)
+void TRACE_msg_vm_create(const char *vm_name, msg_host_t host)
 {
   if (TRACE_msg_vm_is_enabled()){
     int len = INSTR_DEFAULT_STR_SIZE;
@@ -64,6 +64,20 @@ void TRACE_msg_vm_create (const char *vm_name, msg_host_t host)
     container_t host_container = PJ_container_get (SIMIX_host_get_name(host));
     PJ_container_new(instr_vm_id_2(vm_name, str, len), INSTR_MSG_VM, host_container);
   }
+}
+
+void TRACE_msg_vm_start(msg_vm_t vm)
+{
+  if (TRACE_msg_vm_is_enabled()){
+    int len = INSTR_DEFAULT_STR_SIZE;
+    char str[INSTR_DEFAULT_STR_SIZE];
+
+    container_t vm_container = PJ_container_get (instr_vm_id(vm, str, len));
+    type_t type = PJ_type_get ("MSG_VM_STATE", vm_container->type);
+    val_t value = PJ_value_get ("start", type);
+    new_pajePushState (MSG_get_clock(), vm_container, type, value);
+  }
+
 }
 
 void TRACE_msg_vm_kill(msg_vm_t vm) {
@@ -103,7 +117,7 @@ void TRACE_msg_vm_resume(msg_vm_t vm)
   }
 }
 
-void TRACE_msg_vm_sleep_in(msg_vm_t vm)
+void TRACE_msg_vm_save(msg_vm_t vm)
 {
   if (TRACE_msg_vm_is_enabled()){
     int len = INSTR_DEFAULT_STR_SIZE;
@@ -111,12 +125,12 @@ void TRACE_msg_vm_sleep_in(msg_vm_t vm)
 
     container_t vm_container = PJ_container_get (instr_vm_id(vm, str, len));
     type_t type = PJ_type_get ("MSG_VM_STATE", vm_container->type);
-    val_t value = PJ_value_get ("sleep", type);
+    val_t value = PJ_value_get ("save", type);
     new_pajePushState (MSG_get_clock(), vm_container, type, value);
   }
 }
 
-void TRACE_msg_vm_sleep_out(msg_vm_t vm)
+void TRACE_msg_vm_restore(msg_vm_t vm)
 {
   if (TRACE_msg_vm_is_enabled()){
     int len = INSTR_DEFAULT_STR_SIZE;

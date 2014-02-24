@@ -27,9 +27,9 @@
 
 <!ELEMENT AS ((prop*),(((AS|include|storage_type|storage|link|backbone|cabinet|cluster|peer|trace|trace_connect)*,(ASroute|trace|trace_connect|bypassASroute)*,(trace|trace_connect)*)|((include|storage_type|storage|host|gpu|cabinet|router|link|backbone|trace|trace_connect|host_link)*,(route|trace|trace_connect|bypassRoute)*)))>
 <!ATTLIST AS id CDATA #REQUIRED>
-<!ATTLIST AS routing (Full|Floyd|Dijkstra|DijkstraCache|None|Vivaldi|Cluster) "None">
+<!ATTLIST AS routing (Full|Floyd|Dijkstra|DijkstraCache|None|Vivaldi|Cluster|Cluster_torus) #REQUIRED>
 
-<!ELEMENT storage_type (prop*)>
+<!ELEMENT storage_type ((model_prop|prop)*)>
 <!ATTLIST storage_type id       CDATA #REQUIRED>
 <!ATTLIST storage_type model    CDATA #REQUIRED>
 <!ATTLIST storage_type size     CDATA #REQUIRED>
@@ -79,6 +79,8 @@
 <!ATTLIST cluster bw CDATA #REQUIRED>
 <!ATTLIST cluster lat CDATA #REQUIRED>
 <!ATTLIST cluster sharing_policy (SHARED|FULLDUPLEX|FATPIPE) "FULLDUPLEX">
+<!ATTLIST cluster topology (FLAT|TORUS) "FLAT">
+<!ATTLIST cluster topo_parameters CDATA "">
 <!ATTLIST cluster bb_bw CDATA "">
 <!ATTLIST cluster bb_lat CDATA "">
 <!ATTLIST cluster bb_sharing_policy (SHARED|FATPIPE) "SHARED">
@@ -169,3 +171,7 @@
 <!ELEMENT prop EMPTY>
 <!ATTLIST prop id CDATA #REQUIRED> <!-- <!ATTLIST prop key CDATA #REQUIRED> -->
 <!ATTLIST prop value CDATA #REQUIRED>
+
+<!ELEMENT model_prop EMPTY>
+<!ATTLIST model_prop id CDATA #REQUIRED> <!-- <!ATTLIST model_prop key CDATA #REQUIRED> -->
+<!ATTLIST model_prop value CDATA #REQUIRED>

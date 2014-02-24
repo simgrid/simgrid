@@ -1,10 +1,10 @@
 /* Functions related to the java task instances.                            */
 
-/* Copyright (c) 2007-2013. The SimGrid Team.
+/* Copyright (c) 2007-2014. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
-  * under the terms of the license (GNU LGPL) which comes with this package. */
+ * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #ifndef MSG_JTASK_H
 #define MSG_JTASK_H
@@ -123,6 +123,14 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Task_cancel
  */
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Task_execute
     (JNIEnv *, jobject);
+
+/*
+ * Class		org_simgrid_msg_Task
+ * Method		setBound
+ * Signature	()V
+ */
+JNIEXPORT void JNICALL Java_org_simgrid_msg_Task_setBound
+    (JNIEnv *, jobject, jdouble);
 
 /*
  * Class		org_simgrid_msg_Task

@@ -1,4 +1,11 @@
 #!/usr/bin/python
+
+# Copyright (c) 2011, 2014. The SimGrid Team.
+# All rights reserved.
+
+# This program is free software; you can redistribute it and/or modify it
+# under the terms of the license (GNU LGPL) which comes with this package.
+
 # This script takes the following command line parameters
 # 1) an input file containing 2 columns: message size and 1-way trip time
 # 2) the maximum relative error for a line segment

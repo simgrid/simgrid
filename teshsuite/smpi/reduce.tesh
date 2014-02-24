@@ -3,7 +3,7 @@
 # Go for the first test
 p Test Reduce with 3 processes
 ! output sort
-$ ../../smpi_script/bin/smpirun -map -hostfile ${srcdir:=.}/hostfile -platform ${srcdir:=.}/../../examples/msg/small_platform.xml -np 3 ./reduce -q
+$ ../../smpi_script/bin/smpirun -map -hostfile ${srcdir:=.}/hostfile -platform ${srcdir:=.}/../../examples/msg/small_platform.xml -np 3 ./reduce -q --log=smpi_kernel.thres:warning
 > [rank 0] -> Tremblay
 > [rank 1] -> Jupiter
 > [rank 2] -> Fafard
@@ -24,7 +24,7 @@ $ ../../smpi_script/bin/smpirun -map -hostfile ${srcdir:=.}/hostfile -platform $
 ! setenv LD_LIBRARY_PATH=../../lib
 ! output sort
 p Test Reduce with 5 processes
-$ ../../smpi_script/bin/smpirun -map -hostfile ${srcdir:=.}/hostfile -platform ${srcdir:=.}/../../examples/msg/small_platform.xml -np 5 ./reduce -q
+$ ../../smpi_script/bin/smpirun -map -hostfile ${srcdir:=.}/hostfile -platform ${srcdir:=.}/../../examples/msg/small_platform.xml -np 5 ./reduce -q --log=smpi_kernel.thres:warning
 > [rank 0] -> Tremblay
 > [rank 1] -> Jupiter
 > [rank 2] -> Fafard
@@ -49,7 +49,7 @@ $ ../../smpi_script/bin/smpirun -map -hostfile ${srcdir:=.}/hostfile -platform $
 ! output sort
 ! setenv LD_LIBRARY_PATH=../../lib
 p Test Reduce with 12 processes
-$ ../../smpi_script/bin/smpirun -map -hostfile ${srcdir:=.}/hostfile -platform ${srcdir:=.}/../../examples/msg/small_platform.xml -np 12 ./reduce -q
+$ ../../smpi_script/bin/smpirun -map -hostfile ${srcdir:=.}/hostfile -platform ${srcdir:=.}/../../examples/msg/small_platform.xml -np 12 ./reduce -q --log=smpi_kernel.thres:warning
 > You requested to use 12 processes, but there is only 5 processes in your hostfile...
 > [rank 0] -> Tremblay
 > [rank 1] -> Jupiter

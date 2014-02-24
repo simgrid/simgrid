@@ -1,11 +1,10 @@
 /* context_cojava - implementation of context switching for java coroutines */
 
-/* Copyright (c) 2012-2013. The SimGrid Team.
+/* Copyright (c) 2012-2014. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
-
 
 #include <xbt/function_types.h>
 #include <simgrid/simix.h>
@@ -39,10 +38,10 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(jmsg);
 
 
 static smx_context_t
-smx_ctx_cojava_factory_create_context(xbt_main_func_t code, int argc,
-                                    char **argv,
-                                    void_pfn_smxprocess_t cleanup_func,
-                                    void *data);
+smx_ctx_cojava_factory_create_context(xbt_main_func_t code,
+                                      int argc, char **argv,
+                                      void_pfn_smxprocess_t cleanup_func,
+                                      smx_process_t process);
 
 static void smx_ctx_cojava_free(smx_context_t context);
 static void smx_ctx_cojava_suspend(smx_context_t context);
@@ -64,7 +63,7 @@ void SIMIX_ctx_cojava_factory_init(smx_context_factory_t * factory)
   (*factory)->name = "ctx_cojava_factory";
   //(*factory)->finalize = smx_ctx_base_factory_finalize;
   (*factory)->self = smx_ctx_cojava_self;
-  (*factory)->get_data = smx_ctx_base_get_data;
+  (*factory)->get_process = smx_ctx_base_get_process;
 
   global_env = get_current_thread_env();
 
@@ -115,10 +114,10 @@ smx_context_t smx_ctx_cojava_self(void)
 }
 
 static smx_context_t
-smx_ctx_cojava_factory_create_context(xbt_main_func_t code, int argc,
-                                    char **argv,
-                                    void_pfn_smxprocess_t cleanup_func,
-                                    void* data)
+smx_ctx_cojava_factory_create_context(xbt_main_func_t code,
+                                      int argc, char **argv,
+                                      void_pfn_smxprocess_t cleanup_func,
+                                      smx_process_t process)
 {
 	smx_ctx_cojava_t context = xbt_new0(s_smx_ctx_cojava_t, 1);
   /* If the user provided a function for the process then use it
@@ -144,7 +143,7 @@ smx_ctx_cojava_factory_create_context(xbt_main_func_t code, int argc,
   	maestro_context = (smx_context_t)context;
   }
   context->bound = 0;
-  context->super.data = data;
+  context->super.process = process;
   return (smx_context_t) context;
 }
 

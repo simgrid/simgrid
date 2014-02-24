@@ -1,8 +1,8 @@
-/* Copyright (c) 2007, 2009-2013. The SimGrid Team.
+/* Copyright (c) 2007, 2009-2014. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
-  * under the terms of the license (GNU LGPL) which comes with this package. */
+ * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #ifndef SMPI_PRIVATE_H
 #define SMPI_PRIVATE_H
@@ -28,6 +28,14 @@ typedef struct s_smpi_process_data *smpi_process_data_t;
 #define ISEND          0x20
 #define SSEND          0x40
 #define PREPARED       0x80
+
+
+enum smpi_process_state{
+  SMPI_UNINITIALIZED,
+  SMPI_INITIALIZED,
+  SMPI_FINALIZED
+};
+
 // this struct is here to handle the problem of non-contignous data
 // for each such structure these function should be implemented (vector
 // index hvector hindex struct)

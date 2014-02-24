@@ -1,6 +1,6 @@
 /* a generic DYNamic ARray implementation.                                  */
 
-/* Copyright (c) 2004-2013. The SimGrid Team.
+/* Copyright (c) 2004-2014. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -638,11 +638,7 @@ XBT_INLINE void xbt_dynar_cursor_rm(xbt_dynar_t dynar,
 XBT_INLINE void xbt_dynar_sort(xbt_dynar_t dynar,
                                int_f_cpvoid_cpvoid_t compar_fn)
 {
-#ifdef HAVE_MERGESORT
-  mergesort(dynar->data, dynar->used, dynar->elmsize, compar_fn);
-#else
   qsort(dynar->data, dynar->used, dynar->elmsize, compar_fn);
-#endif
 }
 
 /** @brief Sorts a dynar according to their color assuming elements can have only three colors.
@@ -691,10 +687,13 @@ XBT_PUBLIC(void) xbt_dynar_three_way_partition(xbt_dynar_t const dynar,
 }
 
 /** @brief Transform a dynar into a NULL terminated array. 
- *  The dynar won't be usable afterwards.
- * \param dynar the dynar to transform
+ *
+ *  \param dynar the dynar to transform
+ *  \return pointer to the first element of the array
+ *
+ *  Note: The dynar won't be usable afterwards.
  */
-XBT_INLINE void * xbt_dynar_to_array (xbt_dynar_t dynar)
+XBT_INLINE void *xbt_dynar_to_array(xbt_dynar_t dynar)
 {
   void *res;
   xbt_dynar_shrink(dynar, 1);
@@ -704,8 +703,17 @@ XBT_INLINE void * xbt_dynar_to_array (xbt_dynar_t dynar)
   return res;
 }
 
-/*
- * Return 0 if d1 and d2 are equal and 1 if not equal
+/** @brief Compare two dynars
+ *
+ *  \param d1 first dynar to compare
+ *  \param d2 second dynar to compare
+ *  \param compar function to use to compare elements
+ *  \return 0 if d1 and d2 are equal and 1 if not equal
+ *
+ *  d1 and d2 should be dynars of pointers. The compar function takes two
+ *  elements and returns 0 when they are considered equal, and a value different
+ *  of zero when they are considered different. Finally, d2 is destroyed
+ *  afterwards.
  */
 int xbt_dynar_compare(xbt_dynar_t d1, xbt_dynar_t d2,
           int(*compar)(const void *, const void *))

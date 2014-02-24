@@ -1,8 +1,9 @@
-/* Copyright (c) 2010-2013. The SimGrid Team.
+/* Copyright (c) 2010-2014. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
-  * under the terms of the license (GNU LGPL) which comes with this package. */
+ * under the terms of the license (GNU LGPL) which comes with this package. */
+
 #include "instr/instr_private.h"
 #include "xbt/virtu.h" /* sg_cmdline */
 #include "xbt/xbt_os_time.h"
@@ -71,7 +72,11 @@ void print_TICreateContainer(paje_event_t event)
     char *folder_name = bprintf("%s_files", TRACE_get_filename());
     char *filename = bprintf("%s/%f_%s.txt", folder_name, prefix,
                              ((createContainer_t) event->data)->container->name);
+#ifdef WIN32
+    mkdir(folder_name);
+#else
     mkdir(folder_name, S_IRWXU | S_IRWXG | S_IRWXO);
+#endif
     temp = fopen(filename, "w");
     if (temp == NULL)
       xbt_die("Tracefile %s could not be opened for writing: %s",

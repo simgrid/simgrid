@@ -1,3 +1,9 @@
+/* Copyright (c) 2011-2014. The SimGrid Team.
+ * All rights reserved.                                                     */
+
+/* This program is free software; you can redistribute it and/or modify it
+ * under the terms of the license (GNU LGPL) which comes with this package. */
+
 #ifndef _XBT_AUTOMATON_H
 #define _XBT_AUTOMATON_H
 
@@ -28,7 +34,7 @@ typedef struct xbt_automaton {
 typedef struct xbt_automaton* xbt_automaton_t;
 
 typedef struct xbt_automaton_exp_label{
-  enum{or=0, and=1, not=2, predicat=3, one=4} type;
+  enum{AUT_OR=0, AUT_AND=1, AUT_NOT=2, AUT_PREDICAT=3, AUT_ONE=4} type;
   union{
     struct{
       struct xbt_automaton_exp_label* left_exp;

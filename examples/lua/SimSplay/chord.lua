@@ -1,3 +1,9 @@
+-- Copyright (c) 2011, 2014. The SimGrid Team.
+-- All rights reserved.
+
+-- This program is free software; you can redistribute it and/or modify it
+-- under the terms of the license (GNU LGPL) which comes with this package.
+
 dofile "sim_splay.lua"
 between, call, thread, ping = misc.between_c, rpc.call, events.thread, rpc.ping
 n, predecessor, finger, timeout, m = {}, nil, {}, 5, 24

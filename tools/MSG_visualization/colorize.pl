@@ -1,5 +1,11 @@
 #!/usr/bin/perl
 
+# Copyright (c) 2005, 2007, 2010, 2014. The SimGrid Team.
+# All rights reserved.
+
+# This program is free software; you can redistribute it and/or modify it
+# under the terms of the license (GNU LGPL) which comes with this package.
+
 $col_white    = "\033[00m";
 $col_black    = "\033[30m";
 $col_red      = "\033[31m";

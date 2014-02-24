@@ -1,8 +1,8 @@
-/* Copyright (c) 2010-2013. The SimGrid Team.
+/* Copyright (c) 2010-2014. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
-  * under the terms of the license (GNU LGPL) which comes with this package. */
+ * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #ifndef INSTR_PRIVATE_H_
 #define INSTR_PRIVATE_H_
@@ -13,6 +13,8 @@
 #include "simgrid_config.h"
 
 #ifdef HAVE_TRACING
+
+SG_BEGIN_DECL()
 
 /* Need to define function drand48 for Windows */
 #ifdef _WIN32
@@ -345,7 +347,6 @@ XBT_PUBLIC(val_t)  PJ_value_get_or_new (const char *name, const char *color, typ
 XBT_PUBLIC(val_t)  PJ_value_get (const char *name, const type_t father);
 void PJ_value_free (val_t value);
 
-
 void print_pajeDefineContainerType(paje_event_t event);
 void print_pajeDefineVariableType(paje_event_t event);
 void print_pajeDefineStateType(paje_event_t event);
@@ -458,15 +459,12 @@ typedef struct s_instr_extra_data {
   int num_processes;
 } s_instr_extra_data_t;
 
+SG_END_DECL()
+
 #endif /* HAVE_TRACING */
 
 #ifdef HAVE_JEDULE
 #include "instr/jedule/jedule_sd_binding.h"
 #endif
-
-
-
-
-
 
 #endif /* INSTR_PRIVATE_H_ */

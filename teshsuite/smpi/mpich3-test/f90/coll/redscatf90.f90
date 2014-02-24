@@ -30,7 +30,7 @@
 
       program main
       use mpi
-      integer errs, ierr, toterr
+      integer errs, ierr
       integer maxsize
       parameter (maxsize=1024)
       integer recvbuf

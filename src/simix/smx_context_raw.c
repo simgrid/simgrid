@@ -1,6 +1,6 @@
 /* context_raw - fast context switching inspired from System V ucontexts   */
 
-/* Copyright (c) 2009-2013. The SimGrid Team.
+/* Copyright (c) 2009-2014. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -210,7 +210,7 @@ static char new_sr = 0;
 static void smx_ctx_raw_wrapper(smx_ctx_raw_t context);
 static int smx_ctx_raw_factory_finalize(smx_context_factory_t *factory);
 static smx_context_t smx_ctx_raw_create_context(xbt_main_func_t code, int argc,
-    char **argv, void_pfn_smxprocess_t cleanup_func, void *data);
+    char **argv, void_pfn_smxprocess_t cleanup_func, smx_process_t process);
 static void smx_ctx_raw_free(smx_context_t context);
 static void smx_ctx_raw_wrapper(smx_ctx_raw_t context);
 static void smx_ctx_raw_stop(smx_context_t context);
@@ -296,12 +296,12 @@ static int smx_ctx_raw_factory_finalize(smx_context_factory_t *factory)
  * \param argv arguments to pass to the main function
  * \param cleanup_func a function to call to free the user data when the
  * context finished
- * \param data user data
+ * \param process SIMIX process
  */
 static smx_context_t
 smx_ctx_raw_create_context(xbt_main_func_t code, int argc, char **argv,
-    void_pfn_smxprocess_t cleanup_func,
-    void *data)
+                           void_pfn_smxprocess_t cleanup_func,
+                           smx_process_t process)
 {
 
   smx_ctx_raw_t context =
@@ -311,7 +311,7 @@ smx_ctx_raw_create_context(xbt_main_func_t code, int argc, char **argv,
           argc,
           argv,
           cleanup_func,
-          data);
+          process);
 
   /* if the user provided a function for the process then use it,
      otherwise it is the context for maestro */
@@ -328,7 +328,7 @@ smx_ctx_raw_create_context(xbt_main_func_t code, int argc, char **argv,
 #endif                          /* HAVE_VALGRIND_VALGRIND_H */
 
      } else {
-       if(data != NULL && raw_maestro_context==NULL)
+       if(process != NULL && raw_maestro_context==NULL)
          raw_maestro_context = context;
 
        if(MC_is_active())

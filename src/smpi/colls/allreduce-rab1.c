@@ -1,3 +1,9 @@
+/* Copyright (c) 2013-2014. The SimGrid Team.
+ * All rights reserved.                                                     */
+
+/* This program is free software; you can redistribute it and/or modify it
+ * under the terms of the license (GNU LGPL) which comes with this package. */
+
 #include "colls_private.h"
 //#include <star-reduction.c>
 
@@ -15,6 +21,9 @@ int smpi_coll_tuned_allreduce_rab1(void *sbuff, void *rbuff,
 
   rank = smpi_comm_rank(comm);
   nprocs = smpi_comm_size(comm);
+
+  if((nprocs&(nprocs-1)))
+    THROWF(arg_error,0, "allreduce rab1 algorithm can't be used with non power of two number of processes ! ");
 
   extent = smpi_datatype_get_extent(dtype);
 

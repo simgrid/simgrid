@@ -1,8 +1,9 @@
-/* Copyright (c) 2012-2013. The SimGrid Team.
+/* Copyright (c) 2012-2014. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
+
 #include "bittorrent.h"
 #include "peer.h"
 #include "tracker.h"
@@ -37,7 +38,7 @@ int main(int argc, char *argv[])
     RngStream stream;
     snprintf(descr, sizeof descr, "RngSream<%s>", MSG_host_get_name(host));
     stream = RngStream_CreateStream(descr);
-    MSG_host_set_data(host, stream);
+    MSG_host_set_property_value(host, "stream", (char*)stream, NULL);
   }
 
   MSG_function_register("tracker", tracker);
@@ -48,7 +49,7 @@ int main(int argc, char *argv[])
   MSG_main();
 
   xbt_dynar_foreach(host_list, i, host) {
-    RngStream stream = MSG_host_get_data(host);
+    RngStream stream = (RngStream) MSG_host_get_property_value(host, "stream");
     RngStream_DeleteStream(&stream);
   }
   xbt_dynar_free(&host_list);

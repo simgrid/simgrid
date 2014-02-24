@@ -372,14 +372,17 @@ router_name = prefix + clusterId + router_ + suffix;
 
 <b>cluster example</b>
 \verbatim
-<cluster id="my_cluster_1" prefix="" suffix=""
-  		radical="0-262144"	power="1000000000"    bw="125000000"     lat="5E-5"/>
-<cluster id="my_cluster_1" prefix="c-" suffix=".me"
-  		radical="0-99"	power="1000000000"    bw="125000000"     lat="5E-5"
-        bb_bw="2250000000" bb_lat="5E-4"/>
+<cluster id="my_cluster_1" prefix="" suffix="" radical="0-262144"
+         power="1e9" bw="125e6" lat="5E-5"/>
+
+<cluster id="my_cluster_1" prefix="c-" suffix=".me" radical="0-99"
+         power="1e9" bw="125e6" lat="5E-5"
+         bb_bw="2.25e9" bb_lat="5E-4"/>
 \endverbatim
-The second examples creates 100 machines, which names are the following:
+The second examples creates one router and 100 machines, which names 
+are the following:
 \verbatim
+c-my_cluster_1_router.me
 c-0.my_cluster_1.me
 c-1.my_cluster_1.me
 c-2.my_cluster_1.me
@@ -606,13 +609,27 @@ find /path/you/want -type f -exec ls -l {} \; 2>/dev/null > ./content.txt
 \li <b>content</b>: default value 0. The file containing the disk
     content. (may be moved soon or later to <b>storage</b> tag. 
 
-The tag must contains some predefined prop, as may do some other
-resources tags. This should moved to attributes soon or later. 
-<b>storage_type</b> mandatory <b>prop</b> :
+The tag must contains some predefined model prop, as may do some other
+resources tags.
+<b>storage_type</b> mandatory <b>model_prop</b> :
 \li <b>Bwrite</b>: value in B/s. Write throughput
 \li <b>Bread</b>: value in B/s. Read throughput
 \li <b>Bconnexion</b>: value in B/s. Connection throughput (i.e. the
     throughput of the storage connector). 
+
+A storage_type can also contain the <b>prop</b> tag. The prop tag allows you
+to define additional information on this storage_type following the
+attribute/value schema. You may want to use it to give information to
+the tool you use for rendering your simulation, for example.
+
+\verbatim
+<storage_type id="single_HDD" model="linear_no_lat" size="4000" content_type="txt_unix">
+  <model_prop id="Bwrite" value="30MBps" />
+  <model_prop id="Bread" value="100MBps" />
+  <model_prop id="Bconnection" value="150MBps" />
+  <b><prop id="Brand" value="Western Digital" /></b>
+</storage_type>
+\endverbatim
 
 \subsubsection pf_sto_st storage
 

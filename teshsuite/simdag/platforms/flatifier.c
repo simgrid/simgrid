@@ -1,4 +1,4 @@
-/* Copyright (c) 2008-2013. The SimGrid Team.
+/* Copyright (c) 2008-2014. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -160,8 +160,8 @@ int main(int argc, char **argv)
 
     // Routers
     xbt_lib_foreach(as_router_lib, cursor_src, key, value1) {
-      if(((sg_routing_edge_t)xbt_lib_get_or_null(as_router_lib, key,
-          ROUTING_ASR_LEVEL))->rc_type == SURF_NETWORK_ELEMENT_ROUTER)
+      if(surf_routing_edge_get_rc_type(xbt_lib_get_or_null(as_router_lib, key,
+          ROUTING_ASR_LEVEL)) == SURF_NETWORK_ELEMENT_ROUTER)
       {
         printf("  <router id=\"%s\"/>\n",key);
       }
@@ -203,7 +203,7 @@ int main(int argc, char **argv)
         {
           void *link = xbt_dynar_get_as(route,i,void *);
 
-          char *link_name = xbt_strdup(((surf_resource_t)link)->name);
+          char *link_name = xbt_strdup(surf_resource_name(link));
           printf("<%s id=\"%s\"/>",link_ctn,link_name);
           free(link_name);
         }
@@ -222,7 +222,7 @@ int main(int argc, char **argv)
           {
             void *link = xbt_dynar_get_as(route,i,void *);
 
-            char *link_name = xbt_strdup(((surf_resource_t)link)->name);
+            char *link_name = xbt_strdup(surf_resource_name(link));
             printf("<%s id=\"%s\"/>",link_ctn,link_name);
             free(link_name);
           }
@@ -248,7 +248,7 @@ int main(int argc, char **argv)
             {
               void *link = xbt_dynar_get_as(route,i,void *);
 
-              char *link_name = xbt_strdup(((surf_resource_t)link)->name);
+              char *link_name = xbt_strdup(surf_resource_name(link));
               printf("<%s id=\"%s\"/>",link_ctn,link_name);
               free(link_name);
             }
@@ -266,7 +266,7 @@ int main(int argc, char **argv)
           {
             void *link = xbt_dynar_get_as(route,i,void *);
 
-            char *link_name = xbt_strdup(((surf_resource_t)link)->name);
+            char *link_name = xbt_strdup(surf_resource_name(link));
             printf("<%s id=\"%s\"/>",link_ctn,link_name);
             free(link_name);
           }

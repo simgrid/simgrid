@@ -1,6 +1,6 @@
 /* log - a generic logging facility in the spirit of log4j                  */
 
-/* Copyright (c) 2004-2013. The SimGrid Team.
+/* Copyright (c) 2004-2014. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -126,6 +126,7 @@ typedef enum {
  * to avoid an extra declaration of root when XBT_LOG_NEW_SUBCATEGORY is called by
  * XBT_LOG_NEW_CATEGORY */
 #define XBT_LOG_NEW_SUBCATEGORY_helper(catName, parent, desc)           \
+  SG_BEGIN_DECL()                                                       \
   XBT_PUBLIC(void) _XBT_LOGV_CTOR(catName)(void) _XBT_LOGV_CTOR_ATTRIBUTE; \
   void _XBT_LOGV_CTOR(catName)(void)                                    \
   {                                                                     \
@@ -134,6 +135,7 @@ typedef enum {
       _xbt_log_cat_init(&_XBT_LOGV(catName), xbt_log_priority_uninitialized); \
     }                                                                   \
   }                                                                     \
+  SG_END_DECL()                                                         \
   XBT_EXPORT_NO_IMPORT(s_xbt_log_category_t) _XBT_LOGV(catName) = {     \
     &_XBT_LOGV(parent),                                                 \
     NULL /* firstChild */,                                              \
@@ -181,7 +183,7 @@ typedef enum {
  * Indicates which category is the default one.
  */
 
-#if defined(XBT_LOG_MAYDAY) || defined(SUPERNOVAE_MODE) /*|| defined (NLOG) * turning logging off */
+#if defined(XBT_LOG_MAYDAY) /*|| defined (NLOG) * turning logging off */
 # define XBT_LOG_DEFAULT_CATEGORY(cname)
 #else
 # define XBT_LOG_DEFAULT_CATEGORY(cname) \

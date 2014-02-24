@@ -1,4 +1,4 @@
-/* Copyright (c) 2006-2013. The SimGrid Team.
+/* Copyright (c) 2006-2014. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -11,8 +11,6 @@
 #include "xbt/sysdep.h"
 #include "surf/surf.h"
 #include "surf/surf_resource.h"
-
-
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(sd_workstation, sd,
                                 "Logging specific to SimDag (workstation)");
@@ -178,8 +176,7 @@ const char *SD_workstation_get_property_value(SD_workstation_t ws,
  */
 xbt_dict_t SD_workstation_get_properties(SD_workstation_t workstation)
 {
-  return surf_workstation_model->extension.
-      workstation.get_properties(surf_workstation_resource_priv(workstation));
+  return surf_resource_get_properties(surf_workstation_resource_priv(workstation));
 }
 
 
@@ -247,9 +244,9 @@ const SD_link_t *SD_route_get_list(SD_workstation_t src,
 
   surf_src = src;
   surf_dst = dst;
-  surf_route =
-      surf_workstation_model->extension.workstation.get_route(surf_src,
-                                                              surf_dst);
+
+  surf_route = surf_workstation_model_get_route((surf_workstation_model_t)surf_workstation_model,
+		                                        surf_src, surf_dst);
 
   xbt_dynar_foreach(surf_route, cpt, surf_link) {
     link_name = surf_resource_name(surf_link);
@@ -269,8 +266,8 @@ const SD_link_t *SD_route_get_list(SD_workstation_t src,
  */
 int SD_route_get_size(SD_workstation_t src, SD_workstation_t dst)
 {
-  return xbt_dynar_length(surf_workstation_model->extension.
-                          workstation.get_route(src, dst));
+  return xbt_dynar_length(surf_workstation_model_get_route(
+		    (surf_workstation_model_t)surf_workstation_model, src, dst));
 }
 
 /**
@@ -282,8 +279,7 @@ int SD_route_get_size(SD_workstation_t src, SD_workstation_t dst)
  */
 double SD_workstation_get_power(SD_workstation_t workstation)
 {
-  return surf_workstation_model->extension.workstation.
-      get_speed(workstation, 1.0);
+  return surf_workstation_get_speed(workstation, 1.0);
 }
 
 /**
@@ -295,8 +291,7 @@ double SD_workstation_get_power(SD_workstation_t workstation)
  */
 double SD_workstation_get_available_power(SD_workstation_t workstation)
 {
-  return surf_workstation_model->extension.
-      workstation.get_available_speed(workstation);
+  return surf_workstation_get_available_speed(workstation);
 }
 
 /**
@@ -482,7 +477,7 @@ void SD_workstation_set_access_mode(SD_workstation_t workstation,
  * \return a dynar containing all mounted storages on the workstation
  */
 xbt_dict_t SD_workstation_get_storage_list(SD_workstation_t workstation){
-  return surf_workstation_model->extension.workstation.get_storage_list(workstation);
+  return surf_workstation_get_storage_list(workstation);
 }
 
 /* Returns whether a task can start now on a workstation*/

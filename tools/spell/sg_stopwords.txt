@@ -2558,8 +2558,6 @@ memset
 Memset
 memuse
 ment
-mergesort
-MERGESORT
 merr
 messageSize
 messageSizes
@@ -3442,7 +3440,6 @@ printTasks
 prio
 prioritarily
 PriorityClass
-PRIu
 priv
 PRN
 PRNG

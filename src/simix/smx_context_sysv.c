@@ -1,10 +1,10 @@
 /* context_sysv - context switching with ucontexts from System V           */
 
-/* Copyright (c) 2009-2013. The SimGrid Team.
+/* Copyright (c) 2009-2014. The SimGrid Team.
  * All rights reserved.                                                     */
 
- /* This program is free software; you can redistribute it and/or modify it
-  * under the terms of the license (GNU LGPL) which comes with this package. */
+/* This program is free software; you can redistribute it and/or modify it
+ * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include <stdarg.h>
 
@@ -51,11 +51,11 @@ smx_ctx_sysv_create_context_sized(size_t structure_size,
                                   xbt_main_func_t code, int argc,
                                   char **argv,
                                   void_pfn_smxprocess_t cleanup_func,
-                                  void *data);
+                                  smx_process_t process);
 static void smx_ctx_sysv_free(smx_context_t context);
 static smx_context_t
 smx_ctx_sysv_create_context(xbt_main_func_t code, int argc, char **argv,
-    void_pfn_smxprocess_t cleanup_func, void* data);
+    void_pfn_smxprocess_t cleanup_func, smx_process_t process);
 
 static void smx_ctx_sysv_wrapper(int count, ...);
 
@@ -120,7 +120,7 @@ static smx_context_t
 smx_ctx_sysv_create_context_sized(size_t size, xbt_main_func_t code,
                                   int argc, char **argv,
                                   void_pfn_smxprocess_t cleanup_func,
-                                  void *data)
+                                  smx_process_t process)
 {
   int ctx_addr[CTX_ADDR_LEN];
   smx_ctx_sysv_t context =
@@ -129,7 +129,7 @@ smx_ctx_sysv_create_context_sized(size_t size, xbt_main_func_t code,
                                                                  argc,
                                                                  argv,
                                                                  cleanup_func,
-                                                                 data);
+                                                                 process);
 
   /* if the user provided a function for the process then use it,
      otherwise it is the context for maestro */
@@ -166,25 +166,27 @@ smx_ctx_sysv_create_context_sized(size_t size, xbt_main_func_t code,
               sizeof(smx_ctx_sysv_t), sizeof(int), CTX_ADDR_LEN);
     }
   } else {
-    if(data != NULL && sysv_maestro_context == NULL)
+    if (process != NULL && sysv_maestro_context == NULL)
       sysv_maestro_context = context;
   }
 
   if(MC_is_active() && code)
-    MC_new_stack_area(context, ((smx_process_t)((smx_context_t)context)->data)->name, &(context->uc), size);
+    MC_new_stack_area(context, ((smx_context_t)context)->process->name,
+                      &(context->uc), size);
 
   return (smx_context_t) context;
 }
 
 static smx_context_t
 smx_ctx_sysv_create_context(xbt_main_func_t code, int argc, char **argv,
-    void_pfn_smxprocess_t cleanup_func,
-    void *data)
+                            void_pfn_smxprocess_t cleanup_func,
+                            smx_process_t process)
 {
 
-  return smx_ctx_sysv_create_context_sized(sizeof(s_smx_ctx_sysv_t) + smx_context_stack_size,
+  return smx_ctx_sysv_create_context_sized(sizeof(s_smx_ctx_sysv_t) +
+                                           smx_context_stack_size,
                                            code, argc, argv, cleanup_func,
-                                           data);
+                                           process);
 
 }
 

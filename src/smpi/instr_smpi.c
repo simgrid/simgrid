@@ -1,8 +1,8 @@
-/* Copyright (c) 2010, 2012-2013. The SimGrid Team.
+/* Copyright (c) 2010, 2012-2014. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
-  * under the terms of the license (GNU LGPL) which comes with this package. */
+ * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "private.h"
 #include <ctype.h>
@@ -79,16 +79,28 @@ static char *smpi_container(int rank, char *container, int n)
   return container;
 }
 
+static char *TRACE_smpi_get_key(int src, int dst, char *key, int n);
+
+
 static char *TRACE_smpi_put_key(int src, int dst, char *key, int n)
 {
   //get the dynar for src#dst
   char aux[INSTR_DEFAULT_STR_SIZE];
   snprintf(aux, INSTR_DEFAULT_STR_SIZE, "%d#%d", src, dst);
   xbt_dynar_t d = xbt_dict_get_or_null(keys, aux);
+
+
+  if(!xbt_dynar_is_empty(d)){
+    //receive was already pushed, perform a get instead
+    TRACE_smpi_get_key(src , dst, key ,n);
+    return key;
+  }
+
   if (d == NULL) {
     d = xbt_dynar_new(sizeof(char *), &xbt_free_ref);
     xbt_dict_set(keys, aux, d, NULL);
   }
+
   //generate the key
   static unsigned long long counter = 0;
 
@@ -107,8 +119,15 @@ static char *TRACE_smpi_get_key(int src, int dst, char *key, int n)
   snprintf(aux, INSTR_DEFAULT_STR_SIZE, "%d#%d", src, dst);
   xbt_dynar_t d = xbt_dict_get_or_null(keys, aux);
 
-  xbt_assert(!xbt_dynar_is_empty(d),
-      "Trying to get a link key (for message reception) that has no corresponding send (%s).", __FUNCTION__);
+ // xbt_assert(!xbt_dynar_is_empty(d),
+ //     "Trying to get a link key (for message reception) that has no corresponding send (%s).", __FUNCTION__);
+
+  // sometimes the receive may be posted before the send
+  if(xbt_dynar_is_empty(d)){
+      TRACE_smpi_put_key(src, dst, key, n);
+      return key;
+  }
+
   char *s = xbt_dynar_get_as (d, 0, char *);
   snprintf (key, n, "%s", s);
   xbt_dynar_remove_at (d, 0, NULL);

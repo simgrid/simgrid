@@ -1,4 +1,4 @@
-/* Copyright (c) 2004-2013. The SimGrid Team.
+/* Copyright (c) 2004-2014. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -29,28 +29,32 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(msg);
 msg_host_t __MSG_host_create(smx_host_t workstation)
 {
   const char *name = SIMIX_host_get_name(workstation);
-  msg_host_priv_t host = xbt_new0(s_msg_host_priv_t, 1);
-  s_msg_vm_t vm; // simply to compute the offset
-
-  host->vms = xbt_swag_new(xbt_swag_offset(vm,host_vms_hookup));
+  msg_host_priv_t priv = xbt_new0(s_msg_host_priv_t, 1);
 
 #ifdef MSG_USE_DEPRECATED
   int i;
   char alias[MAX_ALIAS_NAME + 1] = { 0 };       /* buffer used to build the key of the mailbox */
 
-  if (msg_global->max_channel > 0)
-    host->mailboxes = xbt_new0(msg_mailbox_t, msg_global->max_channel);
+  priv->mailboxes = (msg_global->max_channel > 0) ?
+    xbt_new0(msg_mailbox_t, msg_global->max_channel) : NULL;
 
   for (i = 0; i < msg_global->max_channel; i++) {
     sprintf(alias, "%s:%d", name, i);
 
     /* the key of the mailbox (in this case) is build from the name of the host and the channel number */
-    host->mailboxes[i] = MSG_mailbox_new(alias);
+    priv->mailboxes[i] = MSG_mailbox_new(alias);
     memset(alias, 0, MAX_ALIAS_NAME + 1);
   }
 #endif
 
-  xbt_lib_set(host_lib,name,MSG_HOST_LEVEL,host);
+
+  priv->dp_objs = xbt_dict_new();
+  priv->dp_enabled = 0;
+  priv->dp_updated_by_deleted_tasks = 0;
+
+  priv->affinity_mask_db = xbt_dict_new_homogeneous(NULL);
+
+  xbt_lib_set(host_lib, name, MSG_HOST_LEVEL, priv);
   
   return xbt_lib_get_elm_or_null(host_lib, name);
 }
@@ -68,17 +72,17 @@ msg_host_t MSG_get_host_by_name(const char *name)
   return (msg_host_t) xbt_lib_get_elm_or_null(host_lib,name);
 }
 
+static const char *msg_data = "data";
 /** \ingroup m_host_management
  *
  * \brief Set the user data of a #msg_host_t.
  *
- * This functions checks whether some data has already been associated to \a host 
+ * This functions checks whether some data has already been associated to \a host
    or not and attach \a data to \a host if it is possible.
  */
 msg_error_t MSG_host_set_data(msg_host_t host, void *data)
 {
-  SIMIX_host_set_data(host,data);
-
+  MSG_host_set_property_value(host, msg_data, data, NULL);
   return MSG_OK;
 }
 
@@ -91,7 +95,7 @@ msg_error_t MSG_host_set_data(msg_host_t host, void *data)
  */
 void *MSG_host_get_data(msg_host_t host)
 {
-  return SIMIX_host_get_data(host);
+  return (void *)MSG_host_get_property_value(host, msg_data);
 }
 
 /** \ingroup m_host_management
@@ -114,20 +118,53 @@ msg_host_t MSG_host_self(void)
   return MSG_process_get_host(NULL);
 }
 
+
+/*
+ * \brief Start the host if it is off
+ */
+void MSG_host_on(msg_host_t host)
+{
+  simcall_host_on(host);
+}
+
+/*
+ * \brief Stop the host if it is on
+ */
+void MSG_host_off(msg_host_t host)
+{
+  simcall_host_off(host);
+}
+
+/*
+ * \brief Frees private data of a host (internal call only)
+ */
+void __MSG_host_priv_free(msg_host_priv_t priv)
+{
+  unsigned int size = xbt_dict_size(priv->dp_objs);
+  if (size > 0)
+    XBT_WARN("dp_objs: %u pending task?", size);
+  xbt_dict_free(&priv->dp_objs);
+  xbt_dict_free(&priv->affinity_mask_db);
+
+#ifdef MSG_USE_DEPRECATED
+  free(priv->mailboxes);
+#endif
+
+  free(priv);
+}
+
 /*
  * \brief Destroys a host (internal call only)
  */
-void __MSG_host_destroy(msg_host_priv_t host) {
+void __MSG_host_destroy(msg_host_t host)
+{
+  const char *name = MSG_host_get_name(host);
+  /* TODO:
+   * What happens if VMs still remain on this host?
+   * Revisit here after the surf layer gets stable.
+   **/
 
-#ifdef MSG_USE_DEPRECATED
-  if (msg_global->max_channel > 0)
-    free(host->mailboxes);
-#endif
-  if (xbt_swag_size(host->vms) > 0 ) {
-    XBT_VERB("Host shut down, but it still hosts %d VMs. They will be leaked.",xbt_swag_size(host->vms));
-  }
-  xbt_swag_free(host->vms);
-  free(host);
+  xbt_lib_unset(host_lib, name, MSG_HOST_LEVEL, 1);
 }
 
 /** \ingroup m_host_management
@@ -282,6 +319,28 @@ int MSG_host_is_avail(msg_host_t host)
 }
 
 /** \ingroup m_host_management
+ * \brief Set the parameters of a given host
+ *
+ * \param host a host
+ * \param params a prameter object
+ */
+void MSG_host_set_params(msg_host_t host, ws_params_t params)
+{
+  simcall_host_set_params(host, params);
+}
+
+/** \ingroup m_host_management
+ * \brief Get the parameters of a given host
+ *
+ * \param host a host
+ * \param params a prameter object
+ */
+void MSG_host_get_params(msg_host_t host, ws_params_t params)
+{
+  simcall_host_get_params(host, params);
+}
+
+/** \ingroup m_host_management
  * \brief Return the speed of the processor (in flop/s) at a given pstate
  *
  * \param  host host to test
@@ -366,9 +425,10 @@ xbt_dict_t MSG_host_get_storage_content(msg_host_t host)
   xbt_dict_t storage_list = simcall_host_get_storage_list(host);
 
   xbt_dict_foreach(storage_list,cursor,mount_name,storage_name){
-	storage = (msg_storage_t)xbt_lib_get_elm_or_null(storage_lib,storage_name);
-	xbt_dict_t content = simcall_storage_get_content(storage);
-	xbt_dict_set(contents,mount_name, content,NULL);
+    storage = (msg_storage_t)xbt_lib_get_elm_or_null(storage_lib,storage_name);
+    xbt_dict_t content = simcall_storage_get_content(storage);
+    xbt_dict_set(contents,mount_name, content,NULL);
   }
+  xbt_dict_free(&storage_list);
   return contents;
 }

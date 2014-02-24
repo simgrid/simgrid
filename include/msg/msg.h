@@ -1,4 +1,4 @@
-/* Copyright (c) 2004-2013. The SimGrid Team.
+/* Copyright (c) 2004-2014. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -81,26 +81,25 @@ XBT_PUBLIC(const char *) MSG_environment_as_get_model(msg_as_t as);
 XBT_PUBLIC(xbt_dynar_t) MSG_environment_as_get_hosts(msg_as_t as);
 
 /************************** File handling ***********************************/
-XBT_PUBLIC(sg_storage_size_t) MSG_file_read(msg_file_t fd, sg_storage_size_t size);
-XBT_PUBLIC(sg_storage_size_t) MSG_file_write(msg_file_t fd, sg_storage_size_t size);
+XBT_PUBLIC(sg_size_t) MSG_file_read(msg_file_t fd, sg_size_t size);
+XBT_PUBLIC(sg_size_t) MSG_file_write(msg_file_t fd, sg_size_t size);
 XBT_PUBLIC(msg_file_t) MSG_file_open(const char* mount, const char* path,
                                      void* data);
 XBT_PUBLIC(void*) MSG_file_get_data(msg_file_t fd);
 XBT_PUBLIC(msg_error_t) MSG_file_set_data(msg_file_t fd, void * data);
 XBT_PUBLIC(int) MSG_file_close(msg_file_t fd);
-XBT_PUBLIC(sg_storage_size_t) MSG_file_get_size(msg_file_t fd);
+XBT_PUBLIC(sg_size_t) MSG_file_get_size(msg_file_t fd);
 XBT_PUBLIC(void) MSG_file_dump(msg_file_t fd);
 XBT_PUBLIC(int) MSG_file_unlink(msg_file_t fd);
 XBT_PUBLIC(xbt_dict_t) MSG_file_ls(const char *mount, const char *path);
-XBT_PUBLIC(msg_error_t) MSG_file_move (msg_file_t fd, msg_host_t dest, char* mount, char* fullname);
-XBT_PUBLIC(msg_error_t) MSG_file_seek (msg_file_t fd, sg_storage_size_t offset, int whence);
-XBT_PUBLIC(msg_error_t) MSG_file_rename (msg_file_t fd, char* new_name);
+XBT_PUBLIC(msg_error_t) MSG_file_seek(msg_file_t fd, sg_size_t offset, int origin);
+XBT_PUBLIC(sg_size_t) MSG_file_tell (msg_file_t fd);
 XBT_PUBLIC(void) __MSG_file_get_info(msg_file_t fd);
 /************************** Storage handling ***********************************/
 XBT_PUBLIC(msg_host_t) MSG_get_storage_by_name(const char *name);
 XBT_PUBLIC(const char *) MSG_storage_get_name(msg_storage_t storage);
-XBT_PUBLIC(sg_storage_size_t) MSG_storage_get_free_size(const char* name);
-XBT_PUBLIC(sg_storage_size_t) MSG_storage_get_used_size(const char* name);
+XBT_PUBLIC(sg_size_t) MSG_storage_get_free_size(const char* name);
+XBT_PUBLIC(sg_size_t) MSG_storage_get_used_size(const char* name);
 XBT_PUBLIC(msg_storage_t) MSG_storage_get_by_name(const char *name);
 XBT_PUBLIC(xbt_dict_t) MSG_storage_get_properties(msg_storage_t storage);
 XBT_PUBLIC(void) MSG_storage_set_property_value(msg_storage_t storage, const char *name, char *value,void_f_pvoid_t free_ctn);
@@ -108,7 +107,9 @@ XBT_PUBLIC(xbt_dynar_t) MSG_storages_as_dynar(void);
 XBT_PUBLIC(msg_error_t) MSG_storage_set_data(msg_storage_t host, void *data);
 XBT_PUBLIC(void *) MSG_storage_get_data(msg_storage_t storage);
 XBT_PUBLIC(xbt_dict_t) MSG_storage_get_content(msg_storage_t storage);
-XBT_PUBLIC(sg_storage_size_t) MSG_storage_get_size(msg_storage_t storage);
+XBT_PUBLIC(sg_size_t) MSG_storage_get_size(msg_storage_t storage);
+XBT_PUBLIC(msg_error_t) MSG_storage_file_move(msg_file_t fd, msg_host_t dest, char* mount, char* fullname);
+XBT_PUBLIC(msg_error_t) MSG_storage_file_rename(msg_storage_t storage, const char* src,  const char* dest);
 /************************** AS Router handling ************************************/
 XBT_PUBLIC(const char *) MSG_as_router_get_property_value(const char* asr, const char *name);
 XBT_PUBLIC(xbt_dict_t) MSG_as_router_get_properties(const char* asr);
@@ -118,14 +119,16 @@ XBT_PUBLIC(void) MSG_as_router_set_property_value(const char* asr, const char *n
 XBT_PUBLIC(msg_error_t) MSG_host_set_data(msg_host_t host, void *data);
 XBT_PUBLIC(void *) MSG_host_get_data(msg_host_t host);
 XBT_PUBLIC(const char *) MSG_host_get_name(msg_host_t host);
+XBT_PUBLIC(void) MSG_host_on(msg_host_t host);
+XBT_PUBLIC(void) MSG_host_off(msg_host_t host);
 XBT_PUBLIC(msg_host_t) MSG_host_self(void);
 XBT_PUBLIC(int) MSG_get_host_msgload(msg_host_t host);
-/* int MSG_get_msgload(void); This function lacks specification; discard it */
 XBT_PUBLIC(double) MSG_get_host_speed(msg_host_t h);
 XBT_PUBLIC(int) MSG_host_get_core_number(msg_host_t h);
 XBT_PUBLIC(xbt_swag_t) MSG_host_get_process_list(msg_host_t h);
 XBT_PUBLIC(int) MSG_host_is_avail(msg_host_t h);
-XBT_PUBLIC(void) __MSG_host_destroy(msg_host_priv_t host);
+XBT_PUBLIC(void) __MSG_host_priv_free(msg_host_priv_t priv);
+XBT_PUBLIC(void) __MSG_host_destroy(msg_host_t host);
 
 XBT_PUBLIC(double) MSG_get_host_power_peak_at(msg_host_t h, int pstate_index);
 XBT_PUBLIC(double) MSG_get_host_current_power_peak(msg_host_t h);
@@ -147,6 +150,8 @@ XBT_PUBLIC(void) MSG_create_environment(const char *file);
 XBT_PUBLIC(msg_host_t) MSG_get_host_by_name(const char *name);
 XBT_PUBLIC(xbt_dynar_t) MSG_hosts_as_dynar(void);
 XBT_PUBLIC(int) MSG_get_host_number(void);
+XBT_PUBLIC(void) MSG_host_get_params(msg_host_t ind_pm, ws_params_t params);
+XBT_PUBLIC(void) MSG_host_set_params(msg_host_t ind_pm, ws_params_t params);
 XBT_PUBLIC(xbt_dict_t) MSG_host_get_storage_list(msg_host_t host);
 XBT_PUBLIC(xbt_dict_t) MSG_host_get_storage_content(msg_host_t host);
 /************************** Process handling *********************************/
@@ -238,6 +243,8 @@ XBT_PUBLIC(msg_error_t) MSG_task_receive_from_host_bounded(msg_task_t * task, co
 XBT_PUBLIC(msg_error_t) MSG_task_execute(msg_task_t task);
 XBT_PUBLIC(msg_error_t) MSG_parallel_task_execute(msg_task_t task);
 XBT_PUBLIC(void) MSG_task_set_priority(msg_task_t task, double priority);
+XBT_PUBLIC(void) MSG_task_set_bound(msg_task_t task, double bound);
+XBT_PUBLIC(void) MSG_task_set_affinity(msg_task_t task, msg_host_t host, unsigned long mask);
 
 XBT_PUBLIC(msg_error_t) MSG_process_sleep(double nb_sec);
 
@@ -411,30 +418,47 @@ XBT_PUBLIC(int) MSG_sem_would_block(msg_sem_t sem);
  * Usual lack of guaranty of any kind applies here, and is even increased.
  *
  */
-/* This function should not be called directly, but rather from MSG_vm_start_from_template that does not exist yet*/
-XBT_PUBLIC(msg_vm_t) MSG_vm_start(msg_host_t location, const char *name, int coreAmount);
+
+XBT_PUBLIC(int) MSG_vm_is_created(msg_vm_t);
+XBT_PUBLIC(int) MSG_vm_is_running(msg_vm_t);
+XBT_PUBLIC(int) MSG_vm_is_migrating(msg_vm_t);
 
 XBT_PUBLIC(int) MSG_vm_is_suspended(msg_vm_t);
-XBT_PUBLIC(int) MSG_vm_is_running(msg_vm_t);
+XBT_PUBLIC(int) MSG_vm_is_saving(msg_vm_t);
+XBT_PUBLIC(int) MSG_vm_is_saved(msg_vm_t);
+XBT_PUBLIC(int) MSG_vm_is_restoring(msg_vm_t);
 
-XBT_PUBLIC(void) MSG_vm_bind(msg_vm_t vm, msg_process_t process);
-XBT_PUBLIC(void) MSG_vm_unbind(msg_vm_t vm, msg_process_t process); // simple wrapper over process_kill
 
-XBT_PUBLIC(void) MSG_vm_migrate(msg_vm_t vm, msg_host_t destination);
+XBT_PUBLIC(const char*) MSG_vm_get_name(msg_vm_t);
 
-XBT_PUBLIC(void) MSG_vm_suspend(msg_vm_t vm);
-  // \forall p in VM, MSG_process_suspend(p) // Freeze the processes
-
-XBT_PUBLIC(void) MSG_vm_resume(msg_vm_t vm);  // Simulate the fact of reading the processes from disk and resuming them
-  // \forall p in VM, MSG_process_resume(p) // unfreeze them
-
-XBT_PUBLIC(void) MSG_vm_shutdown(msg_vm_t vm); // killall
-
-XBT_PUBLIC(void) MSG_vm_reboot(msg_vm_t vm);
+// TODO add VDI later
+XBT_PUBLIC(msg_vm_t) MSG_vm_create_core(msg_host_t location, const char *name);
+XBT_PUBLIC(msg_vm_t) MSG_vm_create(msg_host_t ind_pm, const char *name,
+    int core_nb, int mem_cap, int net_cap, char *disk_path, int disk_size, int mig_netspeed, int dp_intensity);
 
 XBT_PUBLIC(void) MSG_vm_destroy(msg_vm_t vm);
 
-XBT_PUBLIC(xbt_dynar_t) MSG_vms_as_dynar(void);
+XBT_PUBLIC(void) MSG_vm_start(msg_vm_t);
+
+/* Shutdown the guest operating system. */
+XBT_PUBLIC(void) MSG_vm_shutdown(msg_vm_t vm);
+
+XBT_PUBLIC(void) MSG_vm_migrate(msg_vm_t vm, msg_host_t destination);
+
+/* Suspend the execution of the VM, but keep its state on memory. */
+XBT_PUBLIC(void) MSG_vm_suspend(msg_vm_t vm);
+XBT_PUBLIC(void) MSG_vm_resume(msg_vm_t vm);
+
+/* Save the VM state to a disk. */
+XBT_PUBLIC(void) MSG_vm_save(msg_vm_t vm);
+XBT_PUBLIC(void) MSG_vm_restore(msg_vm_t vm);
+
+XBT_PUBLIC(msg_host_t) MSG_vm_get_pm(msg_vm_t vm);
+XBT_PUBLIC(void) MSG_vm_set_bound(msg_vm_t vm, double bound);
+XBT_PUBLIC(void) MSG_vm_set_affinity(msg_vm_t vm, msg_host_t pm, unsigned long mask);
+
+/* TODO: do we need this? */
+// XBT_PUBLIC(xbt_dynar_t) MSG_vms_as_dynar(void);
 
 /*
 void* MSG_process_get_property(msg_process_t, char* key)

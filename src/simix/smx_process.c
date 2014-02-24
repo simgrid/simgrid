@@ -1,4 +1,4 @@
-/* Copyright (c) 2007-2013. The SimGrid Team.
+/* Copyright (c) 2007-2014. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -26,7 +26,7 @@ XBT_INLINE smx_process_t SIMIX_process_self(void)
 {
   smx_context_t self_context = SIMIX_context_self();
 
-  return self_context ? SIMIX_context_get_data(self_context) : NULL;
+  return self_context ? SIMIX_context_get_process(self_context) : NULL;
 }
 
 /**
@@ -491,7 +491,8 @@ smx_action_t SIMIX_process_suspend(smx_process_t process, smx_process_t issuer)
       return NULL;
     }
   } else {
-    return SIMIX_host_execute("suspend", process->smx_host, 0.0, 1.0);
+    /* FIXME: computation size is zero. Is it okay that bound is zero ? */
+    return SIMIX_host_execute("suspend", process->smx_host, 0.0, 1.0, 0.0, 0);
   }
 }
 
@@ -695,8 +696,7 @@ smx_action_t SIMIX_process_sleep(smx_process_t process, double duration)
   smx_host_t host = process->smx_host;
 
   /* check if the host is active */
-  if (surf_workstation_model->extension.
-      workstation.get_state(host) != SURF_RESOURCE_ON) {
+  if (surf_resource_get_state(surf_workstation_resource_priv(host)) != SURF_RESOURCE_ON) {
     THROWF(host_error, 0, "Host %s failed, you cannot call this function",
            sg_host_name(host));
   }
@@ -710,9 +710,9 @@ smx_action_t SIMIX_process_sleep(smx_process_t process, double duration)
 
   action->sleep.host = host;
   action->sleep.surf_sleep =
-      surf_workstation_model->extension.workstation.sleep(host, duration);
+      surf_workstation_sleep(host, duration);
 
-  surf_workstation_model->action_data_set(action->sleep.surf_sleep, action);
+  surf_action_set_data(action->sleep.surf_sleep, action);
   XBT_DEBUG("Create sleep action %p", action);
 
   return action;
@@ -723,9 +723,11 @@ void SIMIX_post_process_sleep(smx_action_t action)
   smx_simcall_t simcall;
   e_smx_state_t state;
 
+  xbt_assert(action->type == SIMIX_ACTION_SLEEP);
+
   while ((simcall = xbt_fifo_shift(action->simcalls))) {
 
-    switch(surf_workstation_model->action_state_get(action->sleep.surf_sleep)){
+    switch(surf_action_get_state(action->sleep.surf_sleep)){
       case SURF_ACTION_FAILED:
         simcall->issuer->context->iwannadie = 1;
         //SMX_EXCEPTION(simcall->issuer, host_error, 0, "Host failed");
@@ -740,8 +742,7 @@ void SIMIX_post_process_sleep(smx_action_t action)
         THROW_IMPOSSIBLE;
         break;
     }
-    if (surf_workstation_model->extension.
-        workstation.get_state(simcall->issuer->smx_host) != SURF_RESOURCE_ON) {
+    if (surf_resource_get_state(surf_workstation_resource_priv(simcall->issuer->smx_host)) != SURF_RESOURCE_ON) {
       simcall->issuer->context->iwannadie = 1;
     }
     simcall_process_sleep__set__result(simcall, state);
@@ -755,19 +756,23 @@ void SIMIX_post_process_sleep(smx_action_t action)
 void SIMIX_process_sleep_destroy(smx_action_t action)
 {
   XBT_DEBUG("Destroy action %p", action);
+  xbt_assert(action->type == SIMIX_ACTION_SLEEP);
+
   if (action->sleep.surf_sleep)
-    action->sleep.surf_sleep->model_type->action_unref(action->sleep.surf_sleep);
+    surf_action_unref(action->sleep.surf_sleep);
   xbt_mallocator_release(simix_global->action_mallocator, action);
 }
 
 void SIMIX_process_sleep_suspend(smx_action_t action)
 {
-  surf_workstation_model->suspend(action->sleep.surf_sleep);
+  xbt_assert(action->type == SIMIX_ACTION_SLEEP);
+  surf_action_suspend(action->sleep.surf_sleep);
 }
 
 void SIMIX_process_sleep_resume(smx_action_t action)
 {
-  surf_workstation_model->resume(action->sleep.surf_sleep);
+  xbt_assert(action->type == SIMIX_ACTION_SLEEP);
+  surf_action_resume(action->sleep.surf_sleep);
 }
 
 /** 

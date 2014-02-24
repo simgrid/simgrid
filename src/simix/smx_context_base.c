@@ -1,11 +1,10 @@
 /* context_base - Code factorization across context switching implementations */
 
-/* Copyright (c) 2010-2013. The SimGrid Team.
+/* Copyright (c) 2010-2014. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
-
 
 #include "xbt/function_types.h"
 #include "simgrid/simix.h"
@@ -26,7 +25,7 @@ void smx_ctx_base_factory_init(smx_context_factory_t *factory)
   (*factory)->suspend = NULL;
   (*factory)->runall = NULL;
   (*factory)->self = smx_ctx_base_self;
-  (*factory)->get_data = smx_ctx_base_get_data;
+  (*factory)->get_process = smx_ctx_base_get_process;
 
   (*factory)->name = "base context factory";
 }
@@ -39,11 +38,10 @@ int smx_ctx_base_factory_finalize(smx_context_factory_t * factory)
 }
 
 smx_context_t
-smx_ctx_base_factory_create_context_sized(size_t size,
-                                          xbt_main_func_t code, int argc,
-                                          char **argv,
+smx_ctx_base_factory_create_context_sized(size_t size, xbt_main_func_t code,
+                                          int argc, char **argv,
                                           void_pfn_smxprocess_t cleanup_func,
-                                          void *data)
+                                          smx_process_t process)
 {
   smx_context_t context = xbt_malloc0(size);
 
@@ -62,7 +60,7 @@ smx_ctx_base_factory_create_context_sized(size_t size,
   } else {
     SIMIX_context_set_current(context);
   }
-  context->data = data;
+  context->process = process;
 
   return context;
 }
@@ -88,9 +86,10 @@ void smx_ctx_base_free(smx_context_t context)
 void smx_ctx_base_stop(smx_context_t context)
 {
   if (context->cleanup_func)
-    context->cleanup_func(context->data);
+    context->cleanup_func(context->process);
+  context->process->suspended = 0;
   context->iwannadie = 0;
-  simcall_process_cleanup(context->data);
+  simcall_process_cleanup(context->process);
   context->iwannadie = 1;
 }
 
@@ -99,7 +98,7 @@ smx_context_t smx_ctx_base_self(void)
   return SIMIX_context_get_current();
 }
 
-void *smx_ctx_base_get_data(smx_context_t context)
+smx_process_t smx_ctx_base_get_process(smx_context_t context)
 {
-  return context->data;
+  return context->process;
 }

@@ -1,4 +1,4 @@
-/* Copyright (c) 2006-2013. The SimGrid Team.
+/* Copyright (c) 2006-2014. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -14,6 +14,7 @@
 #include "xbt/dict.h"
 #include "surf/surfxml_parse.h"
 #include "surf/surf_private.h"
+#include "surf/random_mgr.h"
 #include "simgrid/sg_config.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_parse, surf,
@@ -202,6 +203,7 @@ double surf_parse_get_power(const char *string)
 
 /* The default current property receiver. Setup in the corresponding opening callbacks. */
 xbt_dict_t current_property_set = NULL;
+xbt_dict_t current_model_property_set = NULL;
 xbt_dict_t as_current_property_set = NULL;
 int AS_TAG = 0;
 char* as_name_tab[1024];
@@ -245,6 +247,7 @@ void STag_surfxml_storage___type(void)
   AS_TAG = 0;
   XBT_DEBUG("STag_surfxml_storage___type");
   xbt_assert(current_property_set == NULL, "Someone forgot to reset the property set to NULL in its closing tag (or XML malformed)");
+  xbt_assert(current_model_property_set == NULL, "Someone forgot to reset the model property set to NULL in its closing tag (or XML malformed)");
 }
 void ETag_surfxml_storage___type(void)
 {
@@ -256,9 +259,11 @@ void ETag_surfxml_storage___type(void)
   storage_type.id = A_surfxml_storage___type_id;
   storage_type.model = A_surfxml_storage___type_model;
   storage_type.properties = current_property_set;
+  storage_type.model_properties = current_model_property_set;
   storage_type.size = surf_parse_get_size(A_surfxml_storage___type_size);
   sg_platf_new_storage_type(&storage_type);
   current_property_set = NULL;
+  current_model_property_set = NULL;
 }
 void STag_surfxml_mstorage(void)
 {
@@ -519,6 +524,20 @@ void ETag_surfxml_cluster(void){
     cluster.loopback_bw = surf_parse_get_bandwidth(A_surfxml_cluster_loopback___bw);
   if(strcmp(A_surfxml_cluster_loopback___lat,""))
     cluster.loopback_lat = surf_parse_get_time(A_surfxml_cluster_loopback___lat);
+
+  switch(AX_surfxml_cluster_topology){
+  case A_surfxml_cluster_topology_FLAT:
+    cluster.topology= SURF_CLUSTER_FLAT ;
+    break;
+  case A_surfxml_cluster_topology_TORUS:
+    cluster.topology= SURF_CLUSTER_TORUS ;
+    break;
+  default:
+    surf_parse_error("Invalid cluster topology for cluster %s",
+                     cluster.id);
+    break;
+  }
+  cluster.topo_parameters = A_surfxml_cluster_topo___parameters;
   cluster.router_id = A_surfxml_cluster_router___id;
 
   switch (AX_surfxml_cluster_sharing___policy) {
@@ -930,6 +949,13 @@ void STag_surfxml_argument(void){
   argv[(argc) - 1] = xbt_strdup(A_surfxml_argument_value);
 }
 
+void STag_surfxml_model___prop(void){
+  if (!current_model_property_set)
+    current_model_property_set = xbt_dict_new_homogeneous(xbt_free_f);
+
+  xbt_dict_set(current_model_property_set, A_surfxml_model___prop_id, xbt_strdup(A_surfxml_model___prop_value), NULL);
+}
+
 /* ***************************************** */
 /* TUTORIAL: New TAG                         */
 void STag_surfxml_gpu(void)
@@ -960,6 +986,7 @@ void ETag_surfxml_peer(void){}
 void STag_surfxml_backbone(void){}
 void ETag_surfxml_link___ctn(void){}
 void ETag_surfxml_argument(void){}
+void ETag_surfxml_model___prop(void){}
 
 /* Open and Close parse file */
 

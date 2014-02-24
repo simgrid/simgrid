@@ -1,14 +1,15 @@
-/* Copyright (c) 2010-2013. The SimGrid Team.
+/* Copyright (c) 2010-2014. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
-  * under the terms of the license (GNU LGPL) which comes with this package. */
+ * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "simgrid_config.h"
 
 #ifdef HAVE_TRACING
 #include "instr/instr_private.h"
-#include "surf/network_private.h"
+#include "surf/surf.h"
+#include "surf/surf_private.h"
 
 typedef enum {
   INSTR_US_DECLARE,
@@ -374,7 +375,7 @@ static void instr_user_srcdst_variable(double time,
   unsigned int i;
   void *link;
   xbt_dynar_foreach (route, i, link) {
-    char *link_name = ((link_CM02_t)link)->lmm_resource.generic_resource.name;
+    char *link_name = (char*)surf_resource_name(link);
     instr_user_variable (time, link_name, variable, father_type, value, what, NULL, user_link_variables);
   }
 }

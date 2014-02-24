@@ -1,10 +1,9 @@
-/*
- * Copyright (c) 2012-2013. The SimGrid Team.
- * All rights reserved.
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the license (GNU LGPL) which comes with this package. 
- */
+/* Copyright (c) 2012-2014. The SimGrid Team.
+ * All rights reserved.                                                     */
+
+/* This program is free software; you can redistribute it and/or modify it
+ * under the terms of the license (GNU LGPL) which comes with this package. */
+
 package cloud;
 
 import org.simgrid.msg.Host;
@@ -16,15 +15,15 @@ import org.simgrid.msg.Task;
 public class Slave extends Process {
 	private int number;
 	public Slave(Host host, int number) {
-		super(host,"Slave " + number,null);
+		super(host,"WRK0" + number,null);
 		this.number = number;
 	}
 	public void main(String[] args) throws MsgException {
+		Msg.info(this.msgName() +" is listenning on MBOX:WRK0"+ number);
 		while(true) {  			
-			Msg.info("Receiving on " + "slave_" + number);
 			Task task;
                         try {
-                                task = Task.receive("slave_"+number);
+                                task = Task.receive("MBOX:WRK0"+number);
                         } catch (MsgException e) {
                                 Msg.debug("Received failed. I'm done. See you!");
                                 break;
@@ -39,7 +38,7 @@ public class Slave extends Process {
 			} catch (MsgException e) {
 
 			}
-			Msg.info("\"" + task.getName() + "\" done ");
+			Msg.info(this.msgName() +" executed task (" + task.getName()+")");
 		}
 
 		

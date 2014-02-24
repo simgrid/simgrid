@@ -1,4 +1,4 @@
-/* Copyright (c) 2004-2013. The SimGrid Team.
+/* Copyright (c) 2004-2014. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -28,7 +28,7 @@ SG_BEGIN_DECL()
 typedef struct s_smx_rvpoint *msg_mailbox_t;
 
 /* ******************************** Environment ************************************ */
-typedef struct s_as *msg_as_t;
+typedef struct As *msg_as_t;
 
 /* ******************************** Host ************************************ */
 
@@ -48,7 +48,12 @@ typedef xbt_dictelm_t msg_host_t;
 typedef s_xbt_dictelm_t s_msg_host_t;
 
 typedef struct msg_host_priv {
-  xbt_swag_t vms;
+  int        dp_enabled;
+  xbt_dict_t dp_objs;
+  double     dp_updated_by_deleted_tasks;
+
+  xbt_dict_t affinity_mask_db;
+
 #ifdef MSG_USE_DEPRECATED
   msg_mailbox_t *mailboxes;     /**< the channels  */
 #endif
@@ -83,28 +88,19 @@ typedef struct msg_task {
  */
 typedef struct msg_task *msg_task_t;
 
-/* ********************************  VM ************************************* */
-typedef struct msg_vm *msg_vm_t;
+/* ******************************** VM ************************************* */
+typedef msg_host_t msg_vm_t;
+typedef msg_host_priv_t msg_vm_priv_t;
 
-typedef enum {
-  msg_vm_state_suspended, msg_vm_state_running, msg_vm_state_migrating
-} e_msg_vm_state_t;
-
-typedef struct msg_vm {
-  char *name;
-  s_xbt_swag_hookup_t all_vms_hookup;
-  s_xbt_swag_hookup_t host_vms_hookup;
-  xbt_dynar_t processes;
-  e_msg_vm_state_t state;
-  msg_host_t location;
-  int coreAmount;
-} s_msg_vm_t;
+static inline msg_vm_priv_t MSG_vm_priv(msg_vm_t vm){
+  return (msg_vm_priv_t) xbt_lib_get_level(vm, MSG_HOST_LEVEL);
+}
 
 /* ******************************** File ************************************ */
 typedef struct simdata_file *simdata_file_t;
 
 typedef struct s_msg_file_info {
-  sg_storage_size_t size;
+  sg_size_t size;
   char* mount_point;
   char* storageId;
   char* storage_type;

@@ -1,4 +1,4 @@
-/* Copyright (c) 2004-2013. The SimGrid Team.
+/* Copyright (c) 2004-2014. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -9,6 +9,8 @@
 
 #include "xbt/lib.h"
 #include "simgrid/platf_interface.h"
+
+SG_BEGIN_DECL()
 
 XBT_PUBLIC(xbt_lib_t) host_lib;
 XBT_PUBLIC(int) ROUTING_HOST_LEVEL; //Routing level
@@ -46,5 +48,7 @@ void routing_AS_begin(sg_platf_AS_cbarg_t AS);
 void routing_AS_end(sg_platf_AS_cbarg_t AS);
 
 void routing_cluster_add_backbone(void* bb);
+
+SG_END_DECL()
 
 #endif                          /* _SURF_SURF_H */

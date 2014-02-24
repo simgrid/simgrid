@@ -1,6 +1,6 @@
 /* platf.h - Public interface to the SimGrid platforms                      */
 
-/* Copyright (c) 2004-2013. The SimGrid Team.
+/* Copyright (c) 2004-2014. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -11,12 +11,15 @@
 
 #include <xbt.h>
 
-typedef void *sg_routing_link_t; /* The actual type is model-dependent so use void* instead*/
-typedef struct s_routing_edge *sg_routing_edge_t;
+SG_BEGIN_DECL()
+
+typedef void *sg_routing_link_t; /* FIXME:The actual type is model-dependent so use void* instead*/
+typedef struct RoutingEdge *sg_routing_edge_t;
 
 XBT_PUBLIC(sg_routing_edge_t) sg_routing_edge_by_name_or_null(const char *name);
 
-/** Defines whether a given resource is working or not */
+/** @ingroup SURF_interface
+* @brief Defines whether a given resource is working or not */
 typedef enum {
   SURF_RESOURCE_ON = 1,                   /**< Up & ready        */
   SURF_RESOURCE_OFF = 0                   /**< Down & broken     */
@@ -40,6 +43,11 @@ typedef enum {
   SURF_PROCESS_ON_FAILURE_DIE = 1,
   SURF_PROCESS_ON_FAILURE_RESTART = 0
 } e_surf_process_on_failure_t;
+
+typedef enum {
+  SURF_CLUSTER_FLAT = 1,
+  SURF_CLUSTER_TORUS = 0
+} e_surf_cluster_topology_t;
 
 
 typedef struct tmgr_trace *tmgr_trace_t; /**< Opaque structure defining an availability trace */
@@ -71,6 +79,7 @@ XBT_PUBLIC(probabilist_event_generator_t) tmgr_event_generator_new_exponential(c
 XBT_PUBLIC(probabilist_event_generator_t) tmgr_event_generator_new_weibull(const char* id,
                                                                            double scale,
                                                                            double shape);
+
 typedef xbt_dictelm_t sg_host_t;
 static inline char* sg_host_name(sg_host_t host) {
   return host->key;
@@ -80,9 +89,10 @@ typedef xbt_dictelm_t sg_storage_t;
 static inline char* sg_storage_name(sg_storage_t storage) {
   return storage->key;
 }
-/* Type for any integer storage size  */
-typedef uint64_t sg_storage_size_t;
-
+/** @ingroup m_datatypes_management_details
+ * @brief Type for any simgrid size
+ */
+typedef unsigned long long sg_size_t;
 
 /*
  * Platform creation functions. Instead of passing 123 arguments to the creation functions
@@ -199,6 +209,8 @@ typedef struct s_sg_platf_cluster_cbarg {
   double loopback_bw;
   double loopback_lat;
   double limiter_link;
+  e_surf_cluster_topology_t topology;
+  const char* topo_parameters;
   xbt_dict_t properties;
   const char* router_id;
   e_surf_link_sharing_policy_t sharing_policy;
@@ -239,7 +251,8 @@ typedef struct {
   const char* content;
   const char* content_type;
   xbt_dict_t properties;
-  sg_storage_size_t size;
+  xbt_dict_t model_properties;
+  sg_size_t size;
 } s_sg_platf_storage_type_cbarg_t, *sg_platf_storage_type_cbarg_t;
 
 #define SG_PLATF_STORAGE_TYPE_INITIALIZER {NULL,NULL,NULL,NULL,NULL}
@@ -368,5 +381,6 @@ XBT_PUBLIC(void) sg_platf_ASroute_add_link (const char* link_id, sg_platf_route_
 typedef void (*sg_platf_process_cb_t)(sg_platf_process_cbarg_t);
 XBT_PUBLIC(void) sg_platf_process_add_cb(sg_platf_process_cb_t fct);
 
+SG_END_DECL()
 
 #endif                          /* SG_PLATF_H */
