@@ -183,17 +183,16 @@ void dw_variable_free_voidp(void *t){
 
 mc_object_info_t MC_new_object_info(void) {
   mc_object_info_t res = xbt_new0(s_mc_object_info_t, 1);
-  res->local_variables = xbt_dict_new_homogeneous(NULL);
+  res->subprograms = xbt_dynar_new(sizeof(dw_frame_t), NULL);
   res->global_variables = xbt_dynar_new(sizeof(dw_variable_t), dw_variable_free_voidp);
   res->types = xbt_dict_new_homogeneous(NULL);
   res->types_by_name = xbt_dict_new_homogeneous(NULL);
   return res;
 }
 
-
 void MC_free_object_info(mc_object_info_t* info) {
   xbt_free(&(*info)->file_name);
-  xbt_dict_free(&(*info)->local_variables);
+  xbt_dynar_free(&(*info)->subprograms);
   xbt_dynar_free(&(*info)->global_variables);
   xbt_dict_free(&(*info)->types);
   xbt_dict_free(&(*info)->types_by_name);
@@ -227,9 +226,8 @@ static void MC_make_functions_index(mc_object_info_t info) {
 
   // Populate the array:
   dw_frame_t frame = NULL;
-  xbt_dict_cursor_t cursor = NULL;
-  const char* name = NULL;
-  xbt_dict_foreach(info->local_variables, cursor, name, frame) {
+  unsigned cursor = 0;
+  xbt_dynar_foreach(info->subprograms, cursor, frame) {
     if(frame->low_pc==NULL)
       continue;
     s_mc_function_index_item_t entry;
@@ -299,10 +297,9 @@ static void MC_post_process_variables(mc_object_info_t info) {
 }
 
 static void MC_post_process_functions(mc_object_info_t info) {
-  xbt_dict_cursor_t cursor = NULL;
-  char* key = NULL;
+  unsigned cursor = 0;
   dw_frame_t function = NULL;
-  xbt_dict_foreach(info->local_variables, cursor, key, function) {
+  xbt_dynar_foreach(info->subprograms, cursor, function) {
     unsigned cursor2 = 0;
     dw_variable_t variable = NULL;
     xbt_dynar_foreach(function->variables, cursor2, variable) {
@@ -739,72 +736,50 @@ void MC_ignore_global_variable(const char *name){
     MC_UNSET_RAW_MEM;
 }
 
+static void MC_ignore_local_variable_in_object(const char *var_name, const char *frame_name, mc_object_info_t info) {
+  unsigned cursor2;
+  dw_frame_t frame;
+  int start, end;
+  int cursor = 0;
+  dw_variable_t current_var;
+
+  xbt_dynar_foreach(info->subprograms, cursor2, frame) {
+
+    if(frame_name && strcmp(frame_name, frame->name))
+      continue;
+
+    start = 0;
+    end = xbt_dynar_length(frame->variables) - 1;
+    while(start <= end){
+      cursor = (start + end) / 2;
+      current_var = (dw_variable_t)xbt_dynar_get_as(frame->variables, cursor, dw_variable_t);
+
+      int compare = strcmp(current_var->name, var_name);
+      if(compare == 0){
+        xbt_dynar_remove_at(frame->variables, cursor, NULL);
+        start = 0;
+        end = xbt_dynar_length(frame->variables) - 1;
+      }else if(compare < 0){
+        start = cursor + 1;
+      }else{
+        end = cursor - 1;
+      }
+    }
+  }
+}
+
 void MC_ignore_local_variable(const char *var_name, const char *frame_name){
   
   int raw_mem_set = (mmalloc_get_current_heap() == raw_heap);
 
+  if(strcmp(frame_name, "*") == 0)
+    frame_name = NULL;
+
   MC_SET_RAW_MEM;
 
-    unsigned int cursor = 0;
-    dw_variable_t current_var;
-    int start, end;
-    if(strcmp(frame_name, "*") == 0){ /* Remove variable in all frames */
-      xbt_dict_cursor_t dict_cursor;
-      char *current_frame_name;
-      dw_frame_t frame;
-      xbt_dict_foreach(mc_libsimgrid_info->local_variables, dict_cursor, current_frame_name, frame){
-        start = 0;
-        end = xbt_dynar_length(frame->variables) - 1;
-        while(start <= end){
-          cursor = (start + end) / 2;
-          current_var = (dw_variable_t)xbt_dynar_get_as(frame->variables, cursor, dw_variable_t); 
-          if(strcmp(current_var->name, var_name) == 0){
-            xbt_dynar_remove_at(frame->variables, cursor, NULL);
-            start = 0;
-            end = xbt_dynar_length(frame->variables) - 1;
-          }else if(strcmp(current_var->name, var_name) < 0){
-            start = cursor + 1;
-          }else{
-            end = cursor - 1;
-          } 
-        }
-      }
-       xbt_dict_foreach(mc_binary_info->local_variables, dict_cursor, current_frame_name, frame){
-        start = 0;
-        end = xbt_dynar_length(frame->variables) - 1;
-        while(start <= end){
-          cursor = (start + end) / 2;
-          current_var = (dw_variable_t)xbt_dynar_get_as(frame->variables, cursor, dw_variable_t); 
-          if(strcmp(current_var->name, var_name) == 0){
-            xbt_dynar_remove_at(frame->variables, cursor, NULL);
-            start = 0;
-            end = xbt_dynar_length(frame->variables) - 1;
-          }else if(strcmp(current_var->name, var_name) < 0){
-            start = cursor + 1;
-          }else{
-            end = cursor - 1;
-          } 
-        }
-      }
-    }else{
-      xbt_dynar_t variables_list = ((dw_frame_t)xbt_dict_get_or_null(
-                                      mc_libsimgrid_info->local_variables, frame_name))->variables;
-      start = 0;
-      end = xbt_dynar_length(variables_list) - 1;
-      while(start <= end){
-        cursor = (start + end) / 2;
-        current_var = (dw_variable_t)xbt_dynar_get_as(variables_list, cursor, dw_variable_t);
-        if(strcmp(current_var->name, var_name) == 0){
-          xbt_dynar_remove_at(variables_list, cursor, NULL);
-          start = 0;
-          end = xbt_dynar_length(variables_list) - 1;
-        }else if(strcmp(current_var->name, var_name) < 0){
-          start = cursor + 1;
-        }else{
-          end = cursor - 1;
-        } 
-      }
-    } 
+  MC_ignore_local_variable_in_object(var_name, frame_name, mc_libsimgrid_info);
+  if(frame_name!=NULL)
+    MC_ignore_local_variable_in_object(var_name, frame_name, mc_binary_info);
 
   if(!raw_mem_set)
     MC_UNSET_RAW_MEM;

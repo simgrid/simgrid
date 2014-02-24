@@ -928,7 +928,7 @@ static void MC_dwarf_handle_subprogram_die(mc_object_info_t info, Dwarf_Die* die
   MC_dwarf_handle_children(info, die, unit, frame);
 
   // Register it:
-  xbt_dict_set(info->local_variables, frame->name, frame, NULL);
+  xbt_dynar_push(info->subprograms, &frame);
 }
 
 static void MC_dwarf_handle_children(mc_object_info_t info, Dwarf_Die* die, Dwarf_Die* unit, dw_frame_t frame) {
