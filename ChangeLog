@@ -14,6 +14,8 @@ SimGrid (3.11) NOT RELEASED; urgency=low
      generate the tarball, or keep using cmake -E tar, but use git-ls-files
      to get the list of files to pack.
 
+ The Class Release.
+
  Tools:
  * Normalizing pointers addresses tool for better diff between logs
 
@@ -46,7 +48,7 @@ SimGrid (3.11) NOT RELEASED; urgency=low
  * Translate surf routings from C to C++
  * Add callbacks using sigc++ or boost::signals2
    - Add callback functions for resource creation/destruction
-   - Add callback finctions for action state change
+   - Add callback functions for action state change
    - Handle Energy as a plugin
  * Replace swag by boost::intrusive
  * Add new routing model for torus clusters
@@ -68,7 +70,7 @@ SimGrid (3.11) NOT RELEASED; urgency=low
  * Supernovae build mode is definitively removed. It was used to improve
    inlining and inter-module optimizations. It is nowadays superseded by
    link-time optimizations commonly available in compilers.
- * Update ns3 find lib
+ * Update ns3 find lib. NS3 bindings should work again now.
  * Add boost dependency for surf++
 
  -- $date Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
