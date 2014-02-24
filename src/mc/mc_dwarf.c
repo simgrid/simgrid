@@ -942,6 +942,8 @@ static void MC_dwarf_handle_children(mc_object_info_t info, Dwarf_Die* die, Dwar
 static void MC_dwarf_handle_die(mc_object_info_t info, Dwarf_Die* die, Dwarf_Die* unit, dw_frame_t frame) {
   int tag = dwarf_tag(die);
   switch (tag) {
+
+    // Type:
     case DW_TAG_array_type:
     case DW_TAG_class_type:
     case DW_TAG_enumeration_type:
@@ -966,18 +968,26 @@ static void MC_dwarf_handle_die(mc_object_info_t info, Dwarf_Die* die, Dwarf_Die
     case DW_TAG_shared_type:
       MC_dwarf_handle_type_die(info, die, unit);
       break;
+
+    // Program:
     case DW_TAG_subprogram:
       MC_dwarf_handle_subprogram_die(info, die, unit, frame);
       return;
-    // case DW_TAG_formal_parameter:
+
+    // Variable:
     case DW_TAG_variable:
     case DW_TAG_formal_parameter:
       MC_dwarf_handle_variable_die(info, die, unit, frame);
       break;
-  }
 
-  // Recursive processing of children DIE:
-  MC_dwarf_handle_children(info, die, unit, frame);
+    // Scope:
+    case DW_TAG_lexical_block:
+    case DW_TAG_try_block:
+    case DW_TAG_inlined_subroutine:
+      // TODO
+      break;
+
+  }
 }
 
 void MC_dwarf_get_variables(mc_object_info_t info) {
@@ -994,10 +1004,14 @@ void MC_dwarf_get_variables(mc_object_info_t info) {
   Dwarf_Off next_offset = 0;
   size_t length;
   while (dwarf_nextcu (dwarf, offset, &next_offset, &length, NULL, NULL, NULL) == 0) {
-    Dwarf_Die die;
+    Dwarf_Die unit_die;
 
-    if(dwarf_offdie(dwarf, offset+length, &die)!=NULL) {
-      MC_dwarf_handle_die(info, &die, &die, NULL);
+    if(dwarf_offdie(dwarf, offset+length, &unit_die)!=NULL) {
+      Dwarf_Die child;
+      int res;
+      for (res=dwarf_child(&unit_die, &child); res==0; res=dwarf_siblingof(&child,&child)) {
+        MC_dwarf_handle_die(info, &child, &unit_die, NULL);
+      }
     }
     offset = next_offset;
   }
