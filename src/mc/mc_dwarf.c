@@ -98,7 +98,7 @@ const char* MC_dwarf_attrname(int attr) {
   switch (attr) {
 #include "mc_dwarf_attrnames.h"
   default:
-    return "DW_AT_unkown";
+    return "DW_AT_unknown";
   }
 }
 
@@ -113,14 +113,14 @@ const char* MC_dwarf_tagname(int tag) {
   case DW_TAG_invalid:
     return "DW_TAG_invalid";
   default:
-    return "DW_TAG_unkown";
+    return "DW_TAG_unknown";
   }
 }
 
 /** \brief A class of DWARF tags (DW_TAG_*)
  */
 typedef enum mc_tag_class {
-  mc_tag_unkonwn,
+  mc_tag_unknown,
   mc_tag_type,
   mc_tag_subprogram,
   mc_tag_variable,
@@ -128,7 +128,7 @@ typedef enum mc_tag_class {
   mc_tag_namespace
 } mc_tag_class;
 
-static mc_tag_class MC_dwarg_tag_classify(int tag) {
+static mc_tag_class MC_dwarf_tag_classify(int tag) {
   switch (tag) {
 
     case DW_TAG_array_type:
@@ -171,7 +171,7 @@ static mc_tag_class MC_dwarg_tag_classify(int tag) {
       return mc_tag_namespace;
 
     default:
-      return mc_tag_unkonwn;
+      return mc_tag_unknown;
 
   }
 }
@@ -1041,7 +1041,7 @@ static void MC_dwarf_handle_children(mc_object_info_t info, Dwarf_Die* die, Dwar
 
 static void MC_dwarf_handle_die(mc_object_info_t info, Dwarf_Die* die, Dwarf_Die* unit, dw_frame_t frame, const char* namespace) {
   int tag = dwarf_tag(die);
-  mc_tag_class klass = MC_dwarg_tag_classify(tag);
+  mc_tag_class klass = MC_dwarf_tag_classify(tag);
   switch (klass) {
 
     // Type:
