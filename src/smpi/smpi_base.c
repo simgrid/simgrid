@@ -771,7 +771,8 @@ void smpi_mpi_wait(MPI_Request * request, MPI_Status * status)
   }
 
   finish_wait(request, status);
-  *request = MPI_REQUEST_NULL;
+  if (*request != MPI_REQUEST_NULL && !((*request)->flags & PERSISTENT))
+      *request = MPI_REQUEST_NULL;
   // FIXME for a detached send, finish_wait is not called:
 }
 
