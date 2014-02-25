@@ -124,7 +124,8 @@ typedef enum mc_tag_class {
   mc_tag_type,
   mc_tag_subprogram,
   mc_tag_variable,
-  mc_tag_scope
+  mc_tag_scope,
+  mc_tag_namespace
 } mc_tag_class;
 
 static mc_tag_class MC_dwarg_tag_classify(int tag) {
@@ -165,6 +166,9 @@ static mc_tag_class MC_dwarg_tag_classify(int tag) {
     case DW_TAG_try_block:
     case DW_TAG_inlined_subroutine:
       return mc_tag_scope;
+
+    case DW_TAG_namespace:
+      return mc_tag_namespace;
 
     default:
       return mc_tag_unkonwn;
@@ -998,6 +1002,16 @@ static void MC_dwarf_handle_subprogram_die(mc_object_info_t info, Dwarf_Die* die
   MC_dwarf_handle_children(info, die, unit, frame, namespace);
 }
 
+static void mc_dwarf_handle_namespace_die(
+    mc_object_info_t info, Dwarf_Die* die, Dwarf_Die* unit, dw_frame_t frame, const char* namespace) {
+  const char* name = MC_dwarf_attr_string(die, DW_AT_name);
+  if(frame)
+    xbt_die("Unexpected namespace in a subprogram");
+  char* new_namespace = namespace == NULL ? xbt_strdup(name)
+    : bprintf("%s::%s", namespace, name);
+  MC_dwarf_handle_children(info, die, unit, frame, new_namespace);
+}
+
 static void MC_dwarf_handle_children(mc_object_info_t info, Dwarf_Die* die, Dwarf_Die* unit, dw_frame_t frame, const char* namespace) {
   Dwarf_Die child;
   int res;
@@ -1030,6 +1044,9 @@ static void MC_dwarf_handle_die(mc_object_info_t info, Dwarf_Die* die, Dwarf_Die
     case mc_tag_scope:
       // TODO
       break;
+
+    case mc_tag_namespace:
+      mc_dwarf_handle_namespace_die(info, die, unit, frame, namespace);
 
     default:
       break;
