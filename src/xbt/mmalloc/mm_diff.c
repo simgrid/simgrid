@@ -1042,7 +1042,7 @@ int compare_heap_area(void *area1, void* area2, xbt_dynar_t previous, xbt_dict_t
         type = xbt_dict_get_or_null(all_types, type->dw_type_id);
       }
     }
-    if((type->byte_size == e_dw_pointer_type) || ((type->type == e_dw_base_type) && (!strcmp(type->name, "char"))))
+    if((type->type == e_dw_pointer_type) || ((type->type == e_dw_base_type) && (!strcmp(type->name, "char"))))
       type_size = -1;
     else
       type_size = type->byte_size;
