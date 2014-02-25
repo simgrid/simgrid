@@ -123,6 +123,8 @@ static int compare_areas_with_type(void *area1, void *area2, mc_object_info_t in
     case DW_TAG_base_type:
     case DW_TAG_enumeration_type:
     case DW_TAG_pointer_type:
+    case DW_TAG_reference_type:
+    case DW_TAG_rvalue_reference_type:
     case DW_TAG_structure_type:
     case DW_TAG_union_type:
       if(subtype->byte_size == 0){ /*declaration of the type, need the complete description */
@@ -155,6 +157,8 @@ static int compare_areas_with_type(void *area1, void *area2, mc_object_info_t in
     }
     break;
   case DW_TAG_pointer_type:
+  case DW_TAG_reference_type:
+  case DW_TAG_rvalue_reference_type:
     if(type->subtype && type->subtype->type == DW_TAG_subroutine_type){
       addr_pointed1 = *((void **)(area1)); 
       addr_pointed2 = *((void **)(area2));

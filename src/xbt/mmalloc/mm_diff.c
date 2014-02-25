@@ -812,6 +812,8 @@ static int compare_heap_area_with_type(struct s_mm_diff *state, void *real_area1
     case DW_TAG_base_type:
     case DW_TAG_enumeration_type:
     case DW_TAG_pointer_type:
+    case DW_TAG_reference_type:
+    case DW_TAG_rvalue_reference_type:
     case DW_TAG_structure_type:
     case DW_TAG_union_type:
       if(subtype->byte_size == 0){ /*declaration of the type, need the complete description */
@@ -845,6 +847,8 @@ static int compare_heap_area_with_type(struct s_mm_diff *state, void *real_area1
         return res;
     }
     break;
+  case DW_TAG_reference_type:
+  case DW_TAG_rvalue_reference_type:
   case DW_TAG_pointer_type:
     if(type->dw_type_id && ((dw_type_t)xbt_dict_get_or_null(info->types, type->dw_type_id))->type == DW_TAG_subroutine_type){
       addr_pointed1 = *((void **)(area1)); 
