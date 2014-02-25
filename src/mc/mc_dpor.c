@@ -162,9 +162,9 @@ static void print_communications_pattern(xbt_dynar_t comms_pattern){
   mc_comm_pattern_t current_comm;
   xbt_dynar_foreach(comms_pattern, cursor, current_comm){
     if(current_comm->type == SIMIX_COMM_SEND)
-      XBT_INFO("[(%d) %s -> %s] %s ", current_comm->src_proc, current_comm->src_host, current_comm->dst_host, "iSend");
+      XBT_INFO("[(%lu) %s -> %s] %s ", current_comm->src_proc, current_comm->src_host, current_comm->dst_host, "iSend");
     else
-      XBT_INFO("[(%d) %s <- %s] %s ", current_comm->dst_proc, current_comm->dst_host, current_comm->src_host, "iRecv");
+      XBT_INFO("[(%lu) %s <- %s] %s ", current_comm->dst_proc, current_comm->dst_host, current_comm->src_host, "iRecv");
   }
 }
 

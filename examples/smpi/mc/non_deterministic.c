@@ -38,7 +38,7 @@ int main(int argc, char **argv)
       MPI_Recv(&recv_buff, 1, MPI_INT, MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
       printf("Message received from %d\n", recv_buff);
       MPI_Send(&recv_buff, 1, MPI_INT, status.MPI_SOURCE, 42, MPI_COMM_WORLD);
-      printf("Sent %d to rank %d\n", status.MPI_SOURCE);
+      // printf("Sent %d to rank %d\n", status.MPI_SOURCE);
     }
 
   }else{
