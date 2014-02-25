@@ -139,6 +139,7 @@ static int MC_dwarf_form_get_class(int form) {
   case DW_FORM_block:
   case DW_FORM_block1:
     return MC_DW_CLASS_BLOCK;
+  case DW_FORM_data1:
   case DW_FORM_data2:
   case DW_FORM_data4:
   case DW_FORM_data8:
@@ -301,6 +302,7 @@ static dw_location_t MC_dwarf_get_location(mc_object_info_t info, Dwarf_Die* die
 
   // The attribute is a reference to a location list entry:
   case DW_FORM_sec_offset:
+  case DW_FORM_data1:
   case DW_FORM_data2:
   case DW_FORM_data4:
   case DW_FORM_data8:
@@ -506,7 +508,8 @@ static void MC_dwarf_fill_member_location(dw_type_t type, dw_type_t member, Dwar
 
   Dwarf_Attribute attr;
   dwarf_attr_integrate(child, DW_AT_data_member_location, &attr);
-  int klass = MC_dwarf_form_get_class(dwarf_whatform(&attr));
+  int form  = dwarf_whatform(&attr);
+  int klass = MC_dwarf_form_get_class(form);
   switch (klass) {
   case MC_DW_CLASS_EXPRLOC:
   case MC_DW_CLASS_BLOCK:
@@ -546,7 +549,9 @@ static void MC_dwarf_fill_member_location(dw_type_t type, dw_type_t member, Dwar
     // It's supposed to be possible in DWARF2 but I couldn't find its semantic
     // in the spec.
   default:
-    xbt_die("Can't handle form class 0x%x (%i) as DW_AT_member_location", klass, klass);
+    xbt_die(
+      "Can't handle form class (%i) / form 0x%x as DW_AT_member_location",
+      klass, form);
   }
 
 }
@@ -992,14 +997,6 @@ void MC_dwarf_get_variables(mc_object_info_t info) {
     Dwarf_Die die;
 
     if(dwarf_offdie(dwarf, offset+length, &die)!=NULL) {
-
-      // Skip C++ for now (we will add support for it soon):
-      int lang = dwarf_srclang(&die);
-      if((lang==DW_LANG_C_plus_plus) || (lang==DW_LANG_ObjC_plus_plus)) {
-        offset = next_offset;
-        continue;
-      }
-
       MC_dwarf_handle_die(info, &die, &die, NULL);
     }
     offset = next_offset;

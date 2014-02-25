@@ -220,7 +220,6 @@ static int compare_global_variables(int region_type, mc_mem_region_t r1, mc_mem_
 
   if(!compared_pointers){
     compared_pointers = xbt_dynar_new(sizeof(pointers_pair_t), pointers_pair_free_voidp);
-    MC_ignore_global_variable("compared_pointers");
   }else{
     xbt_dynar_reset(compared_pointers);
   }
@@ -282,7 +281,6 @@ static int compare_local_variables(mc_snapshot_stack_t stack1, mc_snapshot_stack
 
   if(!compared_pointers){
     compared_pointers = xbt_dynar_new(sizeof(pointers_pair_t), pointers_pair_free_voidp);
-    MC_ignore_global_variable("compared_pointers");
   }else{
     xbt_dynar_reset(compared_pointers);
   }
@@ -620,8 +618,7 @@ int SIMIX_pre_mc_compare_snapshots(smx_simcall_t simcall,
 }
 
 int MC_compare_snapshots(void *s1, void *s2){
-  
-  MC_ignore_local_variable("self", "simcall_BODY_mc_snapshot");
+
   return simcall_mc_compare_snapshots(s1, s2);
 
 }
