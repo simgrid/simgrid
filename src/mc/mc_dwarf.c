@@ -953,6 +953,25 @@ static dw_variable_t MC_die_to_variable(mc_object_info_t info, Dwarf_Die* die, D
       klass, klass, (void*) variable->dwarf_offset, variable->name);
   }
 
+  // Handle start_scope:
+  if (dwarf_hasattr(die, DW_AT_start_scope)) {
+    Dwarf_Attribute attr;
+    dwarf_attr(die, DW_AT_start_scope, &attr);
+    int form  = dwarf_whatform(&attr);
+    int klass = MC_dwarf_form_get_class(form);
+    switch(klass) {
+    case MC_DW_CLASS_CONSTANT:
+    {
+      Dwarf_Word value;
+      variable->start_scope = dwarf_formudata(&attr, &value) == 0 ? (size_t) value : 0;
+      break;
+    }
+    default:
+      xbt_die("Unhandled form 0x%x, class 0x%X for DW_AT_start_scope of variable %s",
+        form, klass, name==NULL ? "?" : name);
+    }
+  }
+
   if(namespace && variable->global) {
     char* old_name = variable->name;
     variable->name = bprintf("%s::%s", namespace, old_name);
@@ -1047,6 +1066,7 @@ static void MC_dwarf_handle_die(mc_object_info_t info, Dwarf_Die* die, Dwarf_Die
 
     case mc_tag_namespace:
       mc_dwarf_handle_namespace_die(info, die, unit, frame, namespace);
+      break;
 
     default:
       break;

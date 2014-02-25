@@ -443,6 +443,8 @@ typedef struct s_dw_variable{
   dw_location_t location;
   void* address;
 
+  size_t start_scope;
+
 }s_dw_variable_t, *dw_variable_t;
 
 struct s_dw_frame{
