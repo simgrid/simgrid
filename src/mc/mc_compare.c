@@ -126,6 +126,7 @@ static int compare_areas_with_type(void *area1, void *area2, mc_object_info_t in
     case DW_TAG_reference_type:
     case DW_TAG_rvalue_reference_type:
     case DW_TAG_structure_type:
+    case DW_TAG_class_type:
     case DW_TAG_union_type:
       if(subtype->byte_size == 0){ /*declaration of the type, need the complete description */
           subtype = subtype->other_object_same_type;
@@ -202,6 +203,7 @@ static int compare_areas_with_type(void *area1, void *area2, mc_object_info_t in
     }
     break;
   case DW_TAG_structure_type:
+  case DW_TAG_class_type:
     xbt_dynar_foreach(type->members, cursor, member){
       XBT_DEBUG("Compare member %s", member->name);
       res = compare_areas_with_type((char *)area1 + member->offset, (char *)area2 + member->offset, info, other_info, member->subtype, region_size, region_type, start_data, pointer_level);

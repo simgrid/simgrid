@@ -815,6 +815,7 @@ static int compare_heap_area_with_type(struct s_mm_diff *state, void *real_area1
     case DW_TAG_reference_type:
     case DW_TAG_rvalue_reference_type:
     case DW_TAG_structure_type:
+    case DW_TAG_class_type:
     case DW_TAG_union_type:
       if(subtype->byte_size == 0){ /*declaration of the type, need the complete description */
           subtype = xbt_dict_get_or_null(other_info->types_by_name, subtype->name);
@@ -878,6 +879,7 @@ static int compare_heap_area_with_type(struct s_mm_diff *state, void *real_area1
     }
     break;
   case DW_TAG_structure_type:
+  case DW_TAG_class_type:
     if(type->byte_size == 0){ /*declaration of the structure, need the complete description */
       dw_type_t full_type = xbt_dict_get_or_null(info->types_by_name, type->name);
       if(full_type){
@@ -932,6 +934,7 @@ static char* get_offset_type(char* type_id, int offset, mc_object_info_t info, m
   }
   switch(type->type){
   case DW_TAG_structure_type :
+  case DW_TAG_class_type:
     if(type->byte_size == 0){ /*declaration of the structure, need the complete description */
       if(*switch_type == 0){
         dw_type_t full_type = xbt_dict_get_or_null(info->types_by_name, type->name);
