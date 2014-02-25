@@ -1033,7 +1033,7 @@ int compare_heap_area(void *area1, void* area2, xbt_dynar_t previous, mc_object_
         type = type->subtype;
       }
     }
-    if((type->byte_size == DW_TAG_pointer_type) || ((type->type == DW_TAG_base_type) && type->name!=NULL && (!strcmp(type->name, "char"))))
+    if((type->type == DW_TAG_pointer_type) || ((type->type == DW_TAG_base_type) && type->name!=NULL && (!strcmp(type->name, "char"))))
       type_size = -1;
     else
       type_size = type->byte_size;
