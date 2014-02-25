@@ -214,6 +214,8 @@ static mc_visited_state_t visited_state_new(){
  *  The subrange is the subrange of "equivalence" of the given state.
  */
 static int get_search_interval(xbt_dynar_t all_states, mc_visited_state_t state, int *min, int *max){
+  XBT_VERB("Searching interval for state %i: nd_processes=%zu heap_bytes_used=%zu",
+    state->num, (size_t)state->nb_processes, (size_t)state->heap_bytes_used);
 
   int raw_mem_set = (mmalloc_get_current_heap() == raw_heap);
 
