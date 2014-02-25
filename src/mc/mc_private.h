@@ -497,6 +497,8 @@ typedef struct s_mc_comm_pattern{
   int completed;
   unsigned long src_proc;
   unsigned long dst_proc;
+  const char *src_host;
+  const char *dst_host;
   char *rdv;
   size_t data_size;
   void *data;

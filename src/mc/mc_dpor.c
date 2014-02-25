@@ -92,7 +92,6 @@ static void deterministic_pattern(xbt_dynar_t initial_pattern, xbt_dynar_t patte
     recv_index = 0;
     current_process++;
   }
-  // XBT_DEBUG("Communication-deterministic : %d, Send-deterministic : %d", initial_state_safety->comm_deterministic, initial_state_safety->send_deterministic);
 }
 
 static int complete_comm_pattern(xbt_dynar_t list, mc_comm_pattern_t pattern){
@@ -102,7 +101,9 @@ static int complete_comm_pattern(xbt_dynar_t list, mc_comm_pattern_t pattern){
     if(current_pattern->comm == pattern->comm){
       if(!current_pattern->completed){
         current_pattern->src_proc = pattern->comm->comm.src_proc->pid;
+        current_pattern->src_host = simcall_host_get_name(pattern->comm->comm.src_proc->smx_host);
         current_pattern->dst_proc = pattern->comm->comm.dst_proc->pid;
+        current_pattern->dst_host = simcall_host_get_name(pattern->comm->comm.dst_proc->smx_host);
         current_pattern->data_size = pattern->comm->comm.src_buff_size;
         current_pattern->data = xbt_malloc0(current_pattern->data_size);
         current_pattern->matched_comm = pattern->num;
@@ -123,13 +124,14 @@ void get_comm_pattern(xbt_dynar_t list, smx_simcall_t request, int call){
   if(call == 1){ // ISEND
     pattern->comm = simcall_comm_isend__get__result(request);
     pattern->type = SIMIX_COMM_SEND;
-    if(pattern->comm->comm.dst_proc != NULL){
- 
+    if(pattern->comm->comm.dst_proc != NULL){ 
       pattern->matched_comm = complete_comm_pattern(list, pattern);
       pattern->dst_proc = pattern->comm->comm.dst_proc->pid;
       pattern->completed = 1;
+      pattern->dst_host = simcall_host_get_name(pattern->comm->comm.dst_proc->smx_host);
     }
     pattern->src_proc = pattern->comm->comm.src_proc->pid;
+    pattern->src_host = simcall_host_get_name(request->issuer->smx_host);
     pattern->data_size = pattern->comm->comm.src_buff_size;
     pattern->data=xbt_malloc0(pattern->data_size);
     memcpy(pattern->data, pattern->comm->comm.src_buff, pattern->data_size);
@@ -139,12 +141,14 @@ void get_comm_pattern(xbt_dynar_t list, smx_simcall_t request, int call){
     if(pattern->comm->comm.src_proc != NULL){
       pattern->matched_comm = complete_comm_pattern(list, pattern);
       pattern->src_proc = pattern->comm->comm.src_proc->pid;
+      pattern->src_host = simcall_host_get_name(pattern->comm->comm.src_proc->smx_host);
       pattern->completed = 1;
       pattern->data_size = pattern->comm->comm.src_buff_size;
       pattern->data=xbt_malloc0(pattern->data_size);
       memcpy(pattern->data, pattern->comm->comm.src_buff, pattern->data_size);
     }
     pattern->dst_proc = pattern->comm->comm.dst_proc->pid;
+    pattern->dst_host = simcall_host_get_name(request->issuer->smx_host);
   }
   if(pattern->comm->comm.rdv != NULL)
     pattern->rdv = strdup(pattern->comm->comm.rdv->name);
@@ -157,7 +161,10 @@ static void print_communications_pattern(xbt_dynar_t comms_pattern){
   unsigned int cursor = 0;
   mc_comm_pattern_t current_comm;
   xbt_dynar_foreach(comms_pattern, cursor, current_comm){
-    // fprintf(stderr, "%s (%d - comm %p, src : %lu, dst %lu, rdv name %s, data %p, matched with %d)\n", current_comm->type == SIMIX_COMM_SEND ? "iSend" : "iRecv", current_comm->num, current_comm->comm, current_comm->src_proc, current_comm->dst_proc, current_comm->rdv, current_comm->data, current_comm->matched_comm);
+    if(current_comm->type == SIMIX_COMM_SEND)
+      XBT_INFO("[(%lu) %s -> %s] %s ", current_comm->src_proc, current_comm->src_host, current_comm->dst_host, "iSend");
+    else
+      XBT_INFO("[(%lu) %s <- %s] %s ", current_comm->dst_proc, current_comm->dst_host, current_comm->src_host, "iRecv");
   }
 }
 
@@ -465,15 +472,15 @@ void MC_dpor(void)
   char *req_str = NULL;
   int value;
   smx_simcall_t req = NULL, prev_req = NULL;
-  mc_state_t state = NULL, prev_state = NULL, next_state = NULL, restore_state=NULL;
+  mc_state_t state = NULL, prev_state = NULL, next_state = NULL, restored_state=NULL;
   smx_process_t process = NULL;
   xbt_fifo_item_t item = NULL;
   mc_state_t state_test = NULL;
   int pos;
   int visited_state = -1;
   int enabled = 0;
-  int comm_pattern = 0;
   int interleave_size = 0;
+  int comm_pattern = 0;
 
   while (xbt_fifo_size(mc_stack_safety) > 0) {
 
@@ -516,25 +523,28 @@ void MC_dpor(void)
       xbt_dict_remove(first_enabled_state, key); 
       xbt_free(key);
       MC_UNSET_RAW_MEM;
-
-      if(req->call == SIMCALL_COMM_ISEND)
-        comm_pattern = 1;
-      else if(req->call == SIMCALL_COMM_IRECV)
-        comm_pattern = 2;
+      
+      if(_sg_mc_comms_determinism || _sg_mc_send_determinism){
+        if(req->call == SIMCALL_COMM_ISEND)
+          comm_pattern = 1;
+        else if(req->call == SIMCALL_COMM_IRECV)
+          comm_pattern = 2;
+      }
 
       /* Answer the request */
       SIMIX_simcall_pre(req, value); /* After this call req is no longer usefull */
 
-      MC_SET_RAW_MEM;
-      if(comm_pattern != 0){
-        if(!initial_state_safety->initial_communications_pattern_done)
-          get_comm_pattern(initial_communications_pattern, req, comm_pattern);
-        else
-          get_comm_pattern(communications_pattern, req, comm_pattern);
+      if(_sg_mc_comms_determinism || _sg_mc_send_determinism){
+        MC_SET_RAW_MEM;
+        if(comm_pattern != 0){
+          if(!initial_state_safety->initial_communications_pattern_done)
+            get_comm_pattern(initial_communications_pattern, req, comm_pattern);
+          else
+            get_comm_pattern(communications_pattern, req, comm_pattern);
+        }
+        MC_UNSET_RAW_MEM; 
+        comm_pattern = 0;
       }
-      MC_UNSET_RAW_MEM;
-
-      comm_pattern = 0;
 
       /* Wait for requests (schedules processes) */
       MC_wait_for_requests();
@@ -628,24 +638,44 @@ void MC_dpor(void)
       }
 
       MC_SET_RAW_MEM;
-      if(0) {
-      if(!initial_state_safety->initial_communications_pattern_done){
-        print_communications_pattern(initial_communications_pattern);
-      }else{
-        if(interleave_size == 0){ /* if (interleave_size > 0), process interleaved but not enabled => "incorrect" path, determinism not evaluated */
-          print_communications_pattern(communications_pattern);
-          deterministic_pattern(initial_communications_pattern, communications_pattern);
+
+      if(_sg_mc_comms_determinism || _sg_mc_send_determinism){
+        if(initial_state_safety->initial_communications_pattern_done){
+          if(interleave_size == 0){ /* if (interleave_size > 0), process interleaved but not enabled => "incorrect" path, determinism not evaluated */
+            //print_communications_pattern(communications_pattern);
+            deterministic_pattern(initial_communications_pattern, communications_pattern);
+            if(initial_state_safety->comm_deterministic == 0 && _sg_mc_comms_determinism){
+              XBT_INFO("****************************************************");
+              XBT_INFO("***** Non-deterministic communications pattern *****");
+              XBT_INFO("****************************************************");
+              XBT_INFO("Initial communications pattern:");
+              print_communications_pattern(initial_communications_pattern);
+              XBT_INFO("Communications pattern counter-example:");
+              print_communications_pattern(communications_pattern);
+              MC_print_statistics(mc_stats);
+              return;
+            }else if(initial_state_safety->send_deterministic == 0 && _sg_mc_send_determinism){
+              XBT_INFO("****************************************************");
+              XBT_INFO("***** Non-send-deterministic communications pattern *****");
+              XBT_INFO("****************************************************");
+              XBT_INFO("Initial communications pattern:");
+              print_communications_pattern(initial_communications_pattern);
+              XBT_INFO("Communications pattern counter-example:");
+              print_communications_pattern(communications_pattern);
+              MC_print_statistics(mc_stats);
+              return;
+            }
+          }
+        }else{
+          initial_state_safety->initial_communications_pattern_done = 1;
         }
       }
-      initial_state_safety->initial_communications_pattern_done = 1;
-      }
-      MC_UNSET_RAW_MEM;
 
       /* Trash the current state, no longer needed */
-      MC_SET_RAW_MEM;
       xbt_fifo_shift(mc_stack_safety);
       MC_state_delete(state);
       XBT_DEBUG("Delete state %d at depth %d", state->num, xbt_fifo_size(mc_stack_safety) + 1);
+
       MC_UNSET_RAW_MEM;        
       
       /* Check for deadlocks */
@@ -711,15 +741,15 @@ void MC_dpor(void)
               pos = xbt_fifo_size(mc_stack_safety);
               item = xbt_fifo_get_first_item(mc_stack_safety);
               while(pos>0){
-                restore_state = (mc_state_t) xbt_fifo_get_item_content(item);
-                if(restore_state->system_state != NULL){
+                restored_state = (mc_state_t) xbt_fifo_get_item_content(item);
+                if(restored_state->system_state != NULL){
                   break;
                 }else{
                   item = xbt_fifo_get_next_item(item);
                   pos--;
                 }
               }
-              MC_restore_snapshot(restore_state->system_state);
+              MC_restore_snapshot(restored_state->system_state);
               xbt_fifo_unshift(mc_stack_safety, state);
               MC_UNSET_RAW_MEM;
               MC_replay(mc_stack_safety, pos);
@@ -733,10 +763,11 @@ void MC_dpor(void)
           break;
         } else {
           req = MC_state_get_internal_request(state);
-          if(req->call == SIMCALL_COMM_ISEND || req->call == SIMCALL_COMM_IRECV){
-            // fprintf(stderr, "Remove state with isend or irecv\n");
-            if(!xbt_dynar_is_empty(communications_pattern))
-              xbt_dynar_remove_at(communications_pattern, xbt_dynar_length(communications_pattern) - 1, NULL);
+          if(_sg_mc_comms_determinism){
+            if(req->call == SIMCALL_COMM_ISEND || req->call == SIMCALL_COMM_IRECV){
+              if(!xbt_dynar_is_empty(communications_pattern))
+                xbt_dynar_remove_at(communications_pattern, xbt_dynar_length(communications_pattern) - 1, NULL);
+            }
           }
           XBT_DEBUG("Delete state %d at depth %d", state->num, xbt_fifo_size(mc_stack_safety) + 1); 
           MC_state_delete(state);
