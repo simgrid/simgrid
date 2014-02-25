@@ -623,6 +623,10 @@ static void MC_dwarf_add_members(mc_object_info_t info, Dwarf_Die* die, Dwarf_Di
   for (res=dwarf_child(die, &child); res==0; res=dwarf_siblingof(&child,&child)) {
     if (dwarf_tag(&child)==DW_TAG_member) {
 
+      // Skip declarations:
+      if (MC_dwarf_attr_flag(&child, DW_AT_declaration, false))
+        continue;
+
       // Skip compile time constants:
       if(dwarf_hasattr(&child, DW_AT_const_value))
         continue;
