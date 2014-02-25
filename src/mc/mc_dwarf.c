@@ -622,6 +622,11 @@ static void MC_dwarf_add_members(mc_object_info_t info, Dwarf_Die* die, Dwarf_Di
   type->members = xbt_dynar_new(sizeof(dw_type_t), (void(*)(void*))dw_type_free);
   for (res=dwarf_child(die, &child); res==0; res=dwarf_siblingof(&child,&child)) {
     if (dwarf_tag(&child)==DW_TAG_member) {
+
+      // Skip compile time constants:
+      if(dwarf_hasattr(&child, DW_AT_const_value))
+        continue;
+
       // TODO, we should use another type (because is is not a type but a member)
       dw_type_t member = xbt_new0(s_dw_type_t, 1);
       member->type = -1;
@@ -898,8 +903,12 @@ static dw_location_t MC_dwarf_get_expression(Dwarf_Op* expr,  size_t len) {
 static int mc_anonymous_variable_index = 0;
 
 static dw_variable_t MC_die_to_variable(mc_object_info_t info, Dwarf_Die* die, Dwarf_Die* unit, dw_frame_t frame, const char* namespace) {
-  // Drop declaration:
+  // Skip declarations:
   if (MC_dwarf_attr_flag(die, DW_AT_declaration, false))
+    return NULL;
+
+  // Skip compile time constants:
+  if(dwarf_hasattr(die, DW_AT_const_value))
     return NULL;
 
   Dwarf_Attribute attr_location;
