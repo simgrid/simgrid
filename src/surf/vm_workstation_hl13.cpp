@@ -31,11 +31,6 @@ void WorkstationVMHL13Model::updateActionsState(double /*now*/, double /*delta*/
   return;
 }
 
-xbt_dynar_t WorkstationVMHL13Model::getRoute(WorkstationPtr src, WorkstationPtr dst){
-  XBT_DEBUG("ws_get_route");
-  return surf_network_model->getRoute(src->p_netElm, dst->p_netElm);
-}
-
 ActionPtr WorkstationVMHL13Model::communicate(WorkstationPtr src, WorkstationPtr dst, double size, double rate){
   return surf_network_model->communicate(src->p_netElm, dst->p_netElm, size, rate);
 }

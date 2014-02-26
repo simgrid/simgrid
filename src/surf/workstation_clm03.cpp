@@ -50,11 +50,6 @@ void surf_workstation_model_init_compound()
   sg_platf_host_add_cb(workstation_new);
 }
 
-WorkstationCLM03Model::WorkstationCLM03Model(const char *name)
- : WorkstationModel(name)
-{}
-
-
 WorkstationCLM03Model::WorkstationCLM03Model()
  : WorkstationModel("Workstation")
 {
@@ -137,13 +132,6 @@ ActionPtr WorkstationCLM03Model::executeParallelTask(int workstation_nb,
 
   THROW_UNIMPLEMENTED;          /* This model does not implement parallel tasks */
   return NULL;
-}
-
-/* returns an array of network_link_CM02_t */
-xbt_dynar_t WorkstationCLM03Model::getRoute(WorkstationPtr src, WorkstationPtr dst)
-{
-  XBT_DEBUG("ws_get_route");
-  return surf_network_model->getRoute(src->p_netElm, dst->p_netElm);
 }
 
 ActionPtr WorkstationCLM03Model::communicate(WorkstationPtr src, WorkstationPtr dst, double size, double rate){

@@ -39,7 +39,6 @@ public:
   void createResource(const char *name, void *ind_phys_workstation);
   double shareResources(double now);
   void adjustWeightOfDummyCpuActions() {};
-  xbt_dynar_t getRoute(WorkstationPtr src, WorkstationPtr dst);
   ActionPtr communicate(WorkstationPtr src, WorkstationPtr dst, double size, double rate);
   ActionPtr executeParallelTask(int workstation_nb,
                                           void **workstation_list,

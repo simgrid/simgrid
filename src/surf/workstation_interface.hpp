@@ -113,17 +113,6 @@ public:
   * 
   * @param src [description]
   * @param dst [description]
-  * 
-  * @return [description]
-  */
- virtual xbt_dynar_t getRoute(WorkstationPtr src, WorkstationPtr dst)=0;
-
- /**
-  * @brief [brief description]
-  * @details [long description]
-  * 
-  * @param src [description]
-  * @param dst [description]
   * @param size [description]
   * @param rate [description]
   * @return [description]
@@ -408,6 +397,7 @@ public:
 /**********
  * Action *
  **********/
+
 /** @ingroup SURF_workstation_interface
  * @brief SURF workstation action interface class
  */

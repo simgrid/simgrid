@@ -56,8 +56,6 @@ public:
   StorageActionPtr open(const char* mount, const char* path);
   StorageActionPtr close(surf_file_t fd);
   StorageActionPtr ls(const char *path);
-  xbt_dict_t getContent();
-  sg_size_t getSize();
   StorageActionPtr read(surf_file_t fd, sg_size_t size);//FIXME:why we have a useless param ptr ??
   StorageActionPtr write(surf_file_t fd, sg_size_t size);//FIXME:why we have a useless param ptr ??
   void rename(const char *src, const char *dest);

@@ -92,7 +92,6 @@ public:
                           e_surf_resource_state_t state_initial,
                           tmgr_trace_t state_trace,
                           xbt_dict_t cpu_properties);
-  CpuTiActionPtr createAction(double cost, bool failed);
   double shareResources(double now);
   void updateActionsState(double now, double delta);
   void addTraces();

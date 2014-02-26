@@ -28,13 +28,6 @@ surf_callback(void, NetworkActionPtr) networkActionStateChangedCallbacks;
 
 NetworkModelPtr surf_network_model = NULL;
 
-xbt_dynar_t NetworkModel::getRoute(RoutingEdgePtr src, RoutingEdgePtr dst)
-{
-  xbt_dynar_t route = NULL;
-  routing_platf->getRouteAndLatency(src, dst, &route, NULL);
-  return route;
-}
-
 double NetworkModel::latencyFactor(double /*size*/) {
   return sg_latency_factor;
 }

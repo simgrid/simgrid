@@ -134,17 +134,6 @@ public:
 		                           double size, double rate)=0;
 
   /**
-   * @brief Get the route between two RoutingEdge
-   * @details [TODO]
-   * 
-   * @param src [TODO]
-   * @param dst [TODO]
-   * 
-   * @return A xbt_dynar_t of [TODO]
-   */
-  virtual xbt_dynar_t getRoute(RoutingEdgePtr src, RoutingEdgePtr dst); //FIXME: kill field? That is done by the routing nowadays
-
-  /**
    * @brief Function pointer to the function to use to solve the lmm_system_t
    * 
    * @param system The lmm_system_t to solve

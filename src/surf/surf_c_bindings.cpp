@@ -280,7 +280,10 @@ surf_action_t surf_workstation_model_communicate(surf_workstation_model_t model,
 
 xbt_dynar_t surf_workstation_model_get_route(surf_workstation_model_t model,
 		                                     surf_resource_t src, surf_resource_t dst){
-  return model->getRoute(get_casted_workstation(src), get_casted_workstation(dst));
+  xbt_dynar_t route = NULL;
+  routing_platf->getRouteAndLatency(get_casted_workstation(src)->p_netElm,
+		                            get_casted_workstation(dst)->p_netElm, &route, NULL);
+  return route;
 }
 
 void surf_vm_workstation_model_create(const char *name, surf_resource_t ind_phys_host){

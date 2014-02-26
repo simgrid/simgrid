@@ -496,26 +496,6 @@ void StorageN11::rename(const char *src, const char *dest)
     XBT_DEBUG("File %s doesn't exist",src);
 }
 
-xbt_dict_t StorageN11::getContent()
-{
-  /* For the moment this action has no cost, but in the future we could take in account access latency of the disk */
-  /*surf_action_t action = storage_action_execute(storage,0, LS);*/
-
-  xbt_dict_t content_dict = xbt_dict_new_homogeneous(NULL);
-  xbt_dict_cursor_t cursor = NULL;
-  char *file;
-  sg_size_t *psize;
-
-  xbt_dict_foreach(p_content, cursor, file, psize){
-    xbt_dict_set(content_dict,file,psize,NULL);
-  }
-  return content_dict;
-}
-
-sg_size_t StorageN11::getSize(){
-  return m_size;
-}
-
 /**********
  * Action *
  **********/

@@ -468,11 +468,6 @@ CpuTiPtr CpuTiModel::createResource(const char *name,
   return cpu;
 }
 
-CpuTiActionPtr CpuTiModel::createAction(double /*cost*/, bool /*failed*/)
-{
-  return NULL;//new CpuTiAction(this, cost, failed);
-}
-
 double CpuTiModel::shareResources(double now)
 {
   void *_cpu, *_cpu_next;

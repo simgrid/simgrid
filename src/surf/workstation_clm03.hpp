@@ -31,7 +31,6 @@ typedef WorkstationCLM03Action *WorkstationCLM03ActionPtr;
 
 class WorkstationCLM03Model : public WorkstationModel {
 public:
-  WorkstationCLM03Model(const char *name);
   WorkstationCLM03Model();
   ~WorkstationCLM03Model();
   void parseInit(sg_platf_host_cbarg_t host);
@@ -45,7 +44,6 @@ public:
                                         double *computation_amount,
                                         double *communication_amount,
                                         double rate);
- xbt_dynar_t getRoute(WorkstationPtr src, WorkstationPtr dst);
  ActionPtr communicate(WorkstationPtr src, WorkstationPtr dst, double size, double rate);
 };
 
@@ -77,11 +75,6 @@ public:
  * Action *
  **********/
 
-class WorkstationCLM03Action : public WorkstationAction {
-public:
-  WorkstationCLM03Action(ModelPtr model, double cost, bool failed)
-  : WorkstationAction(model, cost, failed) {}
-};
 
 
 #endif /* SURF_WORKSTATION_CLM03_HPP_ */
