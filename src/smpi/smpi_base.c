@@ -625,6 +625,7 @@ int smpi_mpi_test(MPI_Request * request, MPI_Status * status) {
       flag = simcall_comm_test((*request)->action);
     if (flag) {
       finish_wait(request, status);
+      if (*request != MPI_REQUEST_NULL && !((*request)->flags & PERSISTENT))
       *request = MPI_REQUEST_NULL;
     }
   }
@@ -657,6 +658,7 @@ int smpi_mpi_testany(int count, MPI_Request requests[], int *index,
     if(i != -1) {
       *index = map[i];
       finish_wait(&requests[*index], status);
+      if (requests[*index] != MPI_REQUEST_NULL && (requests[*index]->flags & NON_PERSISTENT))
       requests[*index] = MPI_REQUEST_NULL;
       flag = 1;
     }
@@ -771,7 +773,7 @@ void smpi_mpi_wait(MPI_Request * request, MPI_Status * status)
   }
 
   finish_wait(request, status);
-  if (*request != MPI_REQUEST_NULL && !((*request)->flags & PERSISTENT))
+  if (*request != MPI_REQUEST_NULL && ((*request)->flags & NON_PERSISTENT))
       *request = MPI_REQUEST_NULL;
   // FIXME for a detached send, finish_wait is not called:
 }
@@ -802,6 +804,7 @@ int smpi_mpi_waitany(int count, MPI_Request requests[],
          size=0;//so we free the dynar but don't do the waitany call
          index=i;
          finish_wait(&requests[i], status);//cleanup if refcount = 0
+         if (requests[i] != MPI_REQUEST_NULL && (requests[i]->flags & NON_PERSISTENT))
          requests[i]=MPI_REQUEST_NULL;//set to null
          break;
          }
@@ -814,6 +817,7 @@ int smpi_mpi_waitany(int count, MPI_Request requests[],
       if (i != -1) {
         index = map[i];
         finish_wait(&requests[index], status);
+        if (requests[i] != MPI_REQUEST_NULL && (requests[i]->flags & NON_PERSISTENT))
         requests[index] = MPI_REQUEST_NULL;
       }
     }
@@ -854,6 +858,7 @@ int smpi_mpi_waitall(int count, MPI_Request requests[],
       index = smpi_mpi_waitany(count, requests, pstat);
       if (index == MPI_UNDEFINED)
         break;
+      if (requests[index] != MPI_REQUEST_NULL && (requests[index]->flags & NON_PERSISTENT))
       requests[index]=MPI_REQUEST_NULL;
     }
     if (status != MPI_STATUSES_IGNORE) {
@@ -883,6 +888,7 @@ int smpi_mpi_waitsome(int incount, MPI_Request requests[], int *indices,
       if(status != MPI_STATUSES_IGNORE) {
         status[index] = *pstat;
       }
+     if (requests[index] != MPI_REQUEST_NULL && (requests[index]->flags & NON_PERSISTENT))
      requests[index]=MPI_REQUEST_NULL;
     }else{
       return MPI_UNDEFINED;
@@ -908,8 +914,8 @@ int smpi_mpi_testsome(int incount, MPI_Request requests[], int *indices,
          if(status != MPI_STATUSES_IGNORE) {
            status[i] = *pstat;
          }
+         if (requests[i]->flags & NON_PERSISTENT)
          requests[i]=MPI_REQUEST_NULL;
-
       }
     }else{
       count_dead++;
