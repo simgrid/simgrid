@@ -367,6 +367,8 @@ void smpi_mpi_start(MPI_Request request)
       XBT_DEBUG("Send request %p is not in the permanent receive mailbox (buf: %p)",request,request->buf);
       mailbox = smpi_process_remote_mailbox(receiver);
     }
+
+    void* buf = request->buf;
     if ( (! (request->flags & SSEND)) && (request->size < sg_cfg_get_int("smpi/send_is_detached_thres"))) {
       void *oldbuf = NULL;
       request->detached = 1;
@@ -374,8 +376,8 @@ void smpi_mpi_start(MPI_Request request)
       if(request->old_type->has_subtype == 0){
         oldbuf = request->buf;
         if (!_xbt_replay_is_active() && oldbuf && request->size!=0){
-          request->buf = xbt_malloc(request->size);
-          memcpy(request->buf,oldbuf,request->size);
+          buf = xbt_malloc(request->size);
+          memcpy(buf,oldbuf,request->size);
         }
       }
       XBT_DEBUG("Send request %p is detached; buf %p copied into %p",request,oldbuf,request->buf);
@@ -387,20 +389,20 @@ void smpi_mpi_start(MPI_Request request)
     smpi_comm_use(request->comm);
 
     //if we are giving back the control to the user without waiting for completion, we have to inject timings
-    double sleeptime =0.0;
+    double sleeptime = 0.0;
     if(request->detached || (request->flags & (ISEND|SSEND))){// issend should be treated as isend
       //isend and send timings may be different
       sleeptime = (request->flags & ISEND)? smpi_ois(request->size) : smpi_os(request->size);
     }
 
-    if(sleeptime!=0.0){
+    if(sleeptime != 0.0){
         simcall_process_sleep(sleeptime);
         XBT_DEBUG("sending size of %zu : sleep %f ", request->size, smpi_os(request->size));
     }
 
     request->action =
       simcall_comm_isend(mailbox, request->size, -1.0,
-                         request->buf, request->real_size,
+                         buf, request->real_size,
                          &match_send,
                          &xbt_free, // how to free the userdata if a detached send fails
                          request,
