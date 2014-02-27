@@ -1020,7 +1020,6 @@ int PMPI_Request_free(MPI_Request * request)
   if (*request == MPI_REQUEST_NULL) {
     retval = MPI_ERR_ARG;
   } else {
-    if((*request)->flags & PERSISTENT)(*request)->refcount--;
     smpi_mpi_request_free(request);
     retval = MPI_SUCCESS;
   }

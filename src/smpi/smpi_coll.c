@@ -274,6 +274,9 @@ static void tree_bcast(void *buf, int count, MPI_Datatype datatype,
   }
   smpi_mpi_startall(tree->numChildren, requests);
   smpi_mpi_waitall(tree->numChildren, requests, MPI_STATUS_IGNORE);
+  for(i = 0; i < tree->numChildren; i++) {
+    if(requests[i]!=MPI_REQUEST_NULL) smpi_mpi_request_free(&requests[i]);
+  }
   xbt_free(requests);
 }
 
@@ -312,6 +315,9 @@ static void tree_antibcast(void *buf, int count, MPI_Datatype datatype,
   }
   smpi_mpi_startall(tree->numChildren, requests);
   smpi_mpi_waitall(tree->numChildren, requests, MPI_STATUS_IGNORE);
+  for(i = 0; i < tree->numChildren; i++) {
+    if(requests[i]!=MPI_REQUEST_NULL) smpi_mpi_request_free(&requests[i]);
+  }
   xbt_free(requests);
 }
 
@@ -437,6 +443,9 @@ int smpi_coll_tuned_alltoall_bruck(void *sendbuf, int sendcount,
     smpi_mpi_startall(count, requests);
     XBT_DEBUG("<%d> wait for %d requests", rank, count);
     smpi_mpi_waitall(count, requests, MPI_STATUS_IGNORE);
+    for(i = 0; i < count; i++) {
+      if(requests[i]!=MPI_REQUEST_NULL) smpi_mpi_request_free(&requests[i]);
+    }
     xbt_free(requests);
   }
   return MPI_SUCCESS;
@@ -493,6 +502,9 @@ int smpi_coll_tuned_alltoall_basic_linear(void *sendbuf, int sendcount,
     smpi_mpi_startall(count, requests);
     XBT_DEBUG("<%d> wait for %d requests", rank, count);
     smpi_mpi_waitall(count, requests, MPI_STATUS_IGNORE);
+    for(i = 0; i < count; i++) {
+      if(requests[i]!=MPI_REQUEST_NULL) smpi_mpi_request_free(&requests[i]);
+    }
     xbt_free(requests);
   }
   return err;
@@ -555,6 +567,9 @@ int smpi_coll_basic_alltoallv(void *sendbuf, int *sendcounts,
     smpi_mpi_startall(count, requests);
     XBT_DEBUG("<%d> wait for %d requests", rank, count);
     smpi_mpi_waitall(count, requests, MPI_STATUS_IGNORE);
+    for(i = 0; i < count; i++) {
+      if(requests[i]!=MPI_REQUEST_NULL) smpi_mpi_request_free(&requests[i]);
+    }
     xbt_free(requests);
   }
   return err;

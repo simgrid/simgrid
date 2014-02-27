@@ -28,6 +28,7 @@ typedef struct s_smpi_process_data *smpi_process_data_t;
 #define ISEND          0x20
 #define SSEND          0x40
 #define PREPARED       0x80
+#define FINISHED       0x100
 
 
 enum smpi_process_state{

@@ -226,8 +226,11 @@ static MPI_Request build_request(void *buf, int count,
   request->truncated = 0;
   request->real_size = 0;
   request->real_tag = 0;
+  if(flags & PERSISTENT)
+    request->refcount = 1;
+  else
+    request->refcount = 0;
 
-  request->refcount=1;
 #ifdef HAVE_TRACING
   request->send = 0;
   request->recv = 0;
@@ -290,7 +293,6 @@ MPI_Request smpi_mpi_send_init(void *buf, int count, MPI_Datatype datatype,
   MPI_Request request = NULL; /* MC needs the comm to be set to NULL during the call */
   request = build_request(buf==MPI_BOTTOM ? (void*)0 : buf, count, datatype, smpi_process_index(), smpi_group_index(smpi_comm_group(comm), dst), tag,
                           comm, PERSISTENT | SEND | PREPARED);
-  request->refcount++;
   return request;
 }
 
@@ -300,7 +302,6 @@ MPI_Request smpi_mpi_ssend_init(void *buf, int count, MPI_Datatype datatype,
   MPI_Request request = NULL; /* MC needs the comm to be set to NULL during the call */
   request = build_request(buf==MPI_BOTTOM ? (void*)0 : buf, count, datatype, smpi_process_index(), smpi_group_index(smpi_comm_group(comm), dst), tag,
                           comm, PERSISTENT | SSEND | SEND | PREPARED);
-  request->refcount++;
   return request;
 }
 
@@ -310,7 +311,6 @@ MPI_Request smpi_mpi_recv_init(void *buf, int count, MPI_Datatype datatype,
   MPI_Request request = NULL; /* MC needs the comm to be set to NULL during the call */
   request = build_request(buf==MPI_BOTTOM ? (void*)0 : buf, count, datatype, src == MPI_ANY_SOURCE ? MPI_ANY_SOURCE : smpi_group_index(smpi_comm_group(comm), src), smpi_process_index(), tag,
                           comm, PERSISTENT | RECV | PREPARED);
-  request->refcount++;
   return request;
 }
 
@@ -320,6 +320,9 @@ void smpi_mpi_start(MPI_Request request)
 
   xbt_assert(!request->action, "Cannot (re)start a non-finished communication");
   request->flags &= ~PREPARED;
+  request->flags &= ~FINISHED;
+  request->refcount++;
+
   if (request->flags & RECV) {
     print_request("New recv", request);
     //FIXME: if receive is posted with a large size, but send is smaller, mailboxes may not match !
@@ -437,7 +440,6 @@ void smpi_mpi_request_free(MPI_Request * request)
         *request = MPI_REQUEST_NULL;
     }else{
         print_request("Decrementing", (*request));
-
     }
   }else{
       xbt_die("freeing an already free request");
@@ -449,7 +451,7 @@ MPI_Request smpi_isend_init(void *buf, int count, MPI_Datatype datatype,
 {
   MPI_Request request = NULL; /* MC needs the comm to be set to NULL during the call */
   request = build_request(buf==MPI_BOTTOM ? (void*)0 : buf , count, datatype, smpi_process_index(), smpi_group_index(smpi_comm_group(comm), dst), tag,
-                          comm, NON_PERSISTENT | ISEND | SEND | PREPARED);
+                          comm, PERSISTENT | ISEND | SEND | PREPARED);
   return request;
 }
 
@@ -480,7 +482,7 @@ MPI_Request smpi_irecv_init(void *buf, int count, MPI_Datatype datatype,
 {
   MPI_Request request = NULL; /* MC needs the comm to be set to NULL during the call */
   request = build_request(buf==MPI_BOTTOM ? (void*)0 : buf, count, datatype, src == MPI_ANY_SOURCE ? MPI_ANY_SOURCE : smpi_group_index(smpi_comm_group(comm), src), smpi_process_index(), tag,
-                          comm, NON_PERSISTENT | RECV | PREPARED);
+                          comm, PERSISTENT | RECV | PREPARED);
   return request;
 }
 
@@ -548,6 +550,8 @@ void smpi_mpi_sendrecv(void *sendbuf, int sendcount, MPI_Datatype sendtype,
     smpi_irecv_init(recvbuf, recvcount, recvtype, src, recvtag, comm);
   smpi_mpi_startall(2, requests);
   smpi_mpi_waitall(2, requests, stats);
+  smpi_mpi_request_free(&requests[0]);
+  smpi_mpi_request_free(&requests[1]);
   if(status != MPI_STATUS_IGNORE) {
     // Copy receive status
     *status = stats[1];
@@ -564,7 +568,8 @@ static void finish_wait(MPI_Request * request, MPI_Status * status)
   MPI_Request req = *request;
   smpi_empty_status(status);
 
-  if(!(req->detached && req->flags & SEND) && !(req->flags & PREPARED)){
+  if(!(req->detached && req->flags & SEND)
+      && !(req->flags & PREPARED)){
     if(status != MPI_STATUS_IGNORE) {
       int src = req->src == MPI_ANY_SOURCE ? req->real_src : req->src;
       status->MPI_SOURCE = smpi_group_rank(smpi_comm_group(req->comm), src);
@@ -606,12 +611,12 @@ static void finish_wait(MPI_Request * request, MPI_Status * status)
   if(req->detached_sender!=NULL){
     smpi_mpi_request_free(&(req->detached_sender));
   }
-
-  if(req->flags & NON_PERSISTENT) {
-    smpi_mpi_request_free(request);
-  } else {
+  if(req->flags & PERSISTENT)
     req->action = NULL;
-  }
+  req->flags |= FINISHED;
+
+  smpi_mpi_request_free(request);
+
 }
 
 int smpi_mpi_test(MPI_Request * request, MPI_Status * status) {
@@ -711,7 +716,7 @@ void smpi_mpi_probe(int source, int tag, MPI_Comm comm, MPI_Status* status){
 void smpi_mpi_iprobe(int source, int tag, MPI_Comm comm, int* flag, MPI_Status* status){
 
   MPI_Request request =build_request(NULL, 0, MPI_CHAR, source == MPI_ANY_SOURCE ? MPI_ANY_SOURCE : smpi_group_index(smpi_comm_group(comm), source), smpi_comm_rank(comm), tag,
-            comm, NON_PERSISTENT | RECV);
+            comm, PERSISTENT | RECV);
 
   //to avoid deadlock, we have to sleep some time here, or the timer won't advance and we will only do iprobe simcalls
   double sleeptime= sg_cfg_get_double("smpi/iprobe");
@@ -793,7 +798,9 @@ int smpi_mpi_waitany(int count, MPI_Request requests[],
     size = 0;
     XBT_DEBUG("Wait for one of %d", count);
     for(i = 0; i < count; i++) {
-      if (requests[i] != MPI_REQUEST_NULL && !(requests[i]->flags & PREPARED)) {
+      if (requests[i] != MPI_REQUEST_NULL
+          && !(requests[i]->flags & PREPARED)
+          && !(requests[i]->flags & FINISHED)) {
         if (requests[i]->action != NULL) {
           XBT_DEBUG("Waiting any %p ", requests[i]);
           xbt_dynar_push(comms, &requests[i]->action);
@@ -851,6 +858,7 @@ int smpi_mpi_waitall(int count, MPI_Request requests[],
     }
   }
   for(c = 0; c < count; c++) {
+
     if (MC_is_active()) {
       smpi_mpi_wait(&requests[c], pstat);
       index = c;
@@ -914,7 +922,7 @@ int smpi_mpi_testsome(int incount, MPI_Request requests[], int *indices,
          if(status != MPI_STATUSES_IGNORE) {
            status[i] = *pstat;
          }
-         if (requests[i]->flags & NON_PERSISTENT)
+         if ((requests[i] != MPI_REQUEST_NULL) && requests[i]->flags & NON_PERSISTENT)
          requests[i]=MPI_REQUEST_NULL;
       }
     }else{
@@ -972,6 +980,9 @@ void smpi_mpi_gather(void *sendbuf, int sendcount, MPI_Datatype sendtype,
     // Wait for completion of irecv's.
     smpi_mpi_startall(size - 1, requests);
     smpi_mpi_waitall(size - 1, requests, MPI_STATUS_IGNORE);
+    for(src = 0; src < size-1; src++) {
+      smpi_mpi_request_free(&requests[src]);
+    }
     xbt_free(requests);
   }
 }
@@ -1036,6 +1047,9 @@ void smpi_mpi_gatherv(void *sendbuf, int sendcount, MPI_Datatype sendtype,
     // Wait for completion of irecv's.
     smpi_mpi_startall(size - 1, requests);
     smpi_mpi_waitall(size - 1, requests, MPI_STATUS_IGNORE);
+    for(src = 0; src < size-1; src++) {
+      smpi_mpi_request_free(&requests[src]);
+    }
     xbt_free(requests);
   }
 }
@@ -1076,6 +1090,9 @@ void smpi_mpi_allgather(void *sendbuf, int sendcount,
   // Wait for completion of all comms.
   smpi_mpi_startall(2 * (size - 1), requests);
   smpi_mpi_waitall(2 * (size - 1), requests, MPI_STATUS_IGNORE);
+  for(other = 0; other < 2*(size-1); other++) {
+    smpi_mpi_request_free(&requests[other]);
+  }
   xbt_free(requests);
 }
 
@@ -1115,6 +1132,9 @@ void smpi_mpi_allgatherv(void *sendbuf, int sendcount,
   // Wait for completion of all comms.
   smpi_mpi_startall(2 * (size - 1), requests);
   smpi_mpi_waitall(2 * (size - 1), requests, MPI_STATUS_IGNORE);
+  for(other = 0; other < 2*(size-1); other++) {
+    smpi_mpi_request_free(&requests[other]);
+  }
   xbt_free(requests);
 }
 
@@ -1155,6 +1175,9 @@ void smpi_mpi_scatter(void *sendbuf, int sendcount, MPI_Datatype sendtype,
     // Wait for completion of isend's.
     smpi_mpi_startall(size - 1, requests);
     smpi_mpi_waitall(size - 1, requests, MPI_STATUS_IGNORE);
+    for(dst = 0; dst < size-1; dst++) {
+      smpi_mpi_request_free(&requests[dst]);
+    }
     xbt_free(requests);
   }
 }
@@ -1196,6 +1219,9 @@ void smpi_mpi_scatterv(void *sendbuf, int *sendcounts, int *displs,
     // Wait for completion of isend's.
     smpi_mpi_startall(size - 1, requests);
     smpi_mpi_waitall(size - 1, requests, MPI_STATUS_IGNORE);
+    for(dst = 0; dst < size-1; dst++) {
+      smpi_mpi_request_free(&requests[dst]);
+    }
     xbt_free(requests);
   }
 }
@@ -1258,6 +1284,8 @@ void smpi_mpi_reduce(void *sendbuf, void *recvbuf, int count,
       XBT_DEBUG("finished waiting any request with index %d", index);
       if(index == MPI_UNDEFINED) {
         break;
+      }else{
+        smpi_mpi_request_free(&requests[index]);
       }
       if(op) /* op can be MPI_OP_NULL that does nothing */
         smpi_op_apply(op, tmpbufs[index], recvbuf, &count, &datatype);
@@ -1343,6 +1371,9 @@ void smpi_mpi_scan(void *sendbuf, void *recvbuf, int count,
   for(index = 0; index < rank; index++) {
     xbt_free(tmpbufs[index]);
   }
+  for(index = 0; index < size-1; index++) {
+    smpi_mpi_request_free(&requests[index]);
+  }
   xbt_free(tmpbufs);
   xbt_free(requests);
 }
@@ -1411,6 +1442,9 @@ void smpi_mpi_exscan(void *sendbuf, void *recvbuf, int count,
   }
   for(index = 0; index < rank; index++) {
     xbt_free(tmpbufs[index]);
+  }
+  for(index = 0; index < size-1; index++) {
+    smpi_mpi_request_free(&requests[index]);
   }
   xbt_free(tmpbufs);
   xbt_free(requests);
