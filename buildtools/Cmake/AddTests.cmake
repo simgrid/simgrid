@@ -113,7 +113,7 @@ if(NOT enable_memcheck)
   # these tests need the assertion mechanism
   # exclude them from memcheck, as they normally die, leaving lots of unfree'd objects
   IF(enable_debug AND NOT enable_memcheck)
-    ADD_TEST(tesh-simdag-parser-bogus-symmetric ${TESH_COMMAND} ${TESH_OPTION} --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/simdag/platforms --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/simdag/platforms two_hosts_asymetric.tesh)
+    ADD_TEST(tesh-parser-bogus-symmetric ${TESH_COMMAND} ${TESH_OPTION} --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/simdag/platforms --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/simdag/platforms bogus_two_hosts_asymetric.tesh)
   ENDIF()
 
   ADD_TEST(tesh-simdag-bypass                   ${TESH_COMMAND} ${TESH_OPTION} --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/simdag/platforms --setenv srcdir=${CMAKE_HOME_DIRECTORY} --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/simdag/platforms basic_parsing_test_bypass.tesh)
