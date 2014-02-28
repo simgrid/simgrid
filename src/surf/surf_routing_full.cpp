@@ -182,7 +182,7 @@ void AsFull::parseRoute(sg_platf_route_cbarg_t route)
           "between \"%s\" and \"%s\"", src, dst);
     }
   } else {
-    if (!route->gw_dst && !route->gw_dst)
+    if (!route->gw_src && !route->gw_dst)
       XBT_DEBUG("Load Route from \"%s\" to \"%s\"", src, dst);
     else {
       // FIXME We can call a gw which is down the current AS (cf g5k.xml) but not upper.
