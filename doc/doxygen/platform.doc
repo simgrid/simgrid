@@ -366,7 +366,7 @@ the router name is defined as the resulting String in the following
 java line of code: 
 
 @verbatim
-router_name = prefix + clusterId + router_ + suffix;
+router_name = prefix + clusterId + _router + suffix;
 @endverbatim
 
 
