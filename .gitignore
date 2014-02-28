@@ -132,6 +132,12 @@ examples/msg/simulation.trace
 examples/msg/toto.txt
 examples/msg/z_gtnets.trace
 examples/msg/gpu/test_MSG_gpu_task_create
+examples/msg/cloud/bound
+examples/msg/cloud/migrate_vm
+examples/msg/cloud/multicore
+examples/msg/cloud/scale
+examples/msg/cloud/simple_vm
+examples/msg/cloud/two_tasks_vm
 examples/msg/energy/e1/e1
 examples/msg/energy/e2/e2
 examples/msg/energy/e3/e3
@@ -217,6 +223,9 @@ examples/msg/mc/bugged1
 examples/msg/parallel_contexts/pcontexts
 examples/msg/parallel_contexts/pcontexts2
 examples/msg/pmm/msg_pmm
+examples/smpi/energy/f77/sef
+examples/smpi/energy/f90/sef90
+examples/smpi/energy/se
 examples/smpi/toto.txt
 examples/smpi/MM/MM_mpi
 examples/smpi/smpi_replay
