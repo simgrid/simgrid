@@ -341,7 +341,7 @@ struct s_mc_object_info {
   char *start_exec, *end_exec; // Executable segment
   char *start_rw, *end_rw; // Read-write segment
   char *start_ro, *end_ro; // read-only segment
-  xbt_dict_t local_variables; // xbt_dict_t<frame_name, dw_frame_t>
+  xbt_dynar_t subprograms; // xbt_dynar_t<dw_frame_t>
   xbt_dynar_t global_variables; // xbt_dynar_t<dw_variable_t>
   xbt_dict_t types; // xbt_dict_t<origin as hexadecimal string, dw_type_t>
   xbt_dict_t types_by_name; // xbt_dict_t<name, dw_type_t> (full defined type only)
@@ -443,6 +443,8 @@ typedef struct s_dw_variable{
   dw_location_t location;
   void* address;
 
+  size_t start_scope;
+
 }s_dw_variable_t, *dw_variable_t;
 
 struct s_dw_frame{
@@ -495,6 +497,8 @@ typedef struct s_mc_comm_pattern{
   int completed;
   unsigned long src_proc;
   unsigned long dst_proc;
+  const char *src_host;
+  const char *dst_host;
   char *rdv;
   size_t data_size;
   void *data;

@@ -123,7 +123,10 @@ static int compare_areas_with_type(void *area1, void *area2, mc_object_info_t in
     case DW_TAG_base_type:
     case DW_TAG_enumeration_type:
     case DW_TAG_pointer_type:
+    case DW_TAG_reference_type:
+    case DW_TAG_rvalue_reference_type:
     case DW_TAG_structure_type:
+    case DW_TAG_class_type:
     case DW_TAG_union_type:
       if(subtype->byte_size == 0){ /*declaration of the type, need the complete description */
           subtype = subtype->other_object_same_type;
@@ -155,6 +158,8 @@ static int compare_areas_with_type(void *area1, void *area2, mc_object_info_t in
     }
     break;
   case DW_TAG_pointer_type:
+  case DW_TAG_reference_type:
+  case DW_TAG_rvalue_reference_type:
     if(type->subtype && type->subtype->type == DW_TAG_subroutine_type){
       addr_pointed1 = *((void **)(area1)); 
       addr_pointed2 = *((void **)(area2));
@@ -198,6 +203,7 @@ static int compare_areas_with_type(void *area1, void *area2, mc_object_info_t in
     }
     break;
   case DW_TAG_structure_type:
+  case DW_TAG_class_type:
     xbt_dynar_foreach(type->members, cursor, member){
       XBT_DEBUG("Compare member %s", member->name);
       res = compare_areas_with_type((char *)area1 + member->offset, (char *)area2 + member->offset, info, other_info, member->subtype, region_size, region_type, start_data, pointer_level);
@@ -220,7 +226,6 @@ static int compare_global_variables(int region_type, mc_mem_region_t r1, mc_mem_
 
   if(!compared_pointers){
     compared_pointers = xbt_dynar_new(sizeof(pointers_pair_t), pointers_pair_free_voidp);
-    MC_ignore_global_variable("compared_pointers");
   }else{
     xbt_dynar_reset(compared_pointers);
   }
@@ -282,7 +287,6 @@ static int compare_local_variables(mc_snapshot_stack_t stack1, mc_snapshot_stack
 
   if(!compared_pointers){
     compared_pointers = xbt_dynar_new(sizeof(pointers_pair_t), pointers_pair_free_voidp);
-    MC_ignore_global_variable("compared_pointers");
   }else{
     xbt_dynar_reset(compared_pointers);
   }
@@ -620,8 +624,7 @@ int SIMIX_pre_mc_compare_snapshots(smx_simcall_t simcall,
 }
 
 int MC_compare_snapshots(void *s1, void *s2){
-  
-  MC_ignore_local_variable("self", "simcall_BODY_mc_snapshot");
+
   return simcall_mc_compare_snapshots(s1, s2);
 
 }

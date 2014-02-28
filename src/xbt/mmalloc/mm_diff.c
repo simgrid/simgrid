@@ -812,7 +812,10 @@ static int compare_heap_area_with_type(struct s_mm_diff *state, void *real_area1
     case DW_TAG_base_type:
     case DW_TAG_enumeration_type:
     case DW_TAG_pointer_type:
+    case DW_TAG_reference_type:
+    case DW_TAG_rvalue_reference_type:
     case DW_TAG_structure_type:
+    case DW_TAG_class_type:
     case DW_TAG_union_type:
       if(subtype->byte_size == 0){ /*declaration of the type, need the complete description */
           subtype = xbt_dict_get_or_null(other_info->types_by_name, subtype->name);
@@ -845,6 +848,8 @@ static int compare_heap_area_with_type(struct s_mm_diff *state, void *real_area1
         return res;
     }
     break;
+  case DW_TAG_reference_type:
+  case DW_TAG_rvalue_reference_type:
   case DW_TAG_pointer_type:
     if(type->dw_type_id && ((dw_type_t)xbt_dict_get_or_null(info->types, type->dw_type_id))->type == DW_TAG_subroutine_type){
       addr_pointed1 = *((void **)(area1)); 
@@ -874,6 +879,7 @@ static int compare_heap_area_with_type(struct s_mm_diff *state, void *real_area1
     }
     break;
   case DW_TAG_structure_type:
+  case DW_TAG_class_type:
     if(type->byte_size == 0){ /*declaration of the structure, need the complete description */
       dw_type_t full_type = xbt_dict_get_or_null(info->types_by_name, type->name);
       if(full_type){
@@ -928,6 +934,7 @@ static char* get_offset_type(char* type_id, int offset, mc_object_info_t info, m
   }
   switch(type->type){
   case DW_TAG_structure_type :
+  case DW_TAG_class_type:
     if(type->byte_size == 0){ /*declaration of the structure, need the complete description */
       if(*switch_type == 0){
         dw_type_t full_type = xbt_dict_get_or_null(info->types_by_name, type->name);
@@ -1033,7 +1040,7 @@ int compare_heap_area(void *area1, void* area2, xbt_dynar_t previous, mc_object_
         type = type->subtype;
       }
     }
-    if((type->byte_size == DW_TAG_pointer_type) || ((type->type == DW_TAG_base_type) && type->name!=NULL && (!strcmp(type->name, "char"))))
+    if((type->type == DW_TAG_pointer_type) || ((type->type == DW_TAG_base_type) && type->name!=NULL && (!strcmp(type->name, "char"))))
       type_size = -1;
     else
       type_size = type->byte_size;

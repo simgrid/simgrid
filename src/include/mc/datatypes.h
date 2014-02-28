@@ -60,7 +60,7 @@ struct s_dw_type{
   int byte_size; /* Size in bytes */
   int element_count; /* Number of elements for array type */
   char *dw_type_id; /* DW_AT_type */
-  xbt_dynar_t members; /* if DW_TAG_structure_type, DW_TAG_union_type*/
+  xbt_dynar_t members; /* if DW_TAG_structure_type, DW_TAG_class_type, DW_TAG_union_type*/
   int is_pointer_type;
   int offset;
   dw_type_t subtype;

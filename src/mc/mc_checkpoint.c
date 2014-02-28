@@ -236,6 +236,14 @@ void MC_find_object_address(memory_map_t maps, mc_object_info_t result) {
 /************************************* Take Snapshot ************************************/
 /****************************************************************************************/
 
+static bool mc_valid_variable(dw_variable_t var, dw_frame_t frame, const void* ip) {
+  // The variable is not yet valid:
+  if((const void*)((const char*) frame->low_pc + var->start_scope) > ip)
+    return false;
+  else
+    return true;
+}
+
 static xbt_dynar_t MC_get_local_variables_values(xbt_dynar_t stack_frames){
 
   unsigned cursor1 = 0;
@@ -248,6 +256,9 @@ static xbt_dynar_t MC_get_local_variables_values(xbt_dynar_t stack_frames){
     dw_variable_t current_variable;
     xbt_dynar_foreach(stack_frame->frame->variables, cursor2, current_variable){
       
+      if(!mc_valid_variable(current_variable, stack_frame->frame, (void*) stack_frame->ip))
+        continue;
+
       int region_type;
       if((long)stack_frame->ip > (long)mc_libsimgrid_info->start_exec)
         region_type = 1;

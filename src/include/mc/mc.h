@@ -31,6 +31,7 @@ extern int _sg_mc_max_depth;
 extern int _sg_mc_visited;
 extern char* _sg_mc_dot_output_file;
 extern int _sg_mc_comms_determinism;
+extern int _sg_mc_send_determinism;
 
 extern xbt_dynar_t mc_heap_comparison_ignore;
 extern xbt_dynar_t stacks_areas;
@@ -47,6 +48,7 @@ void _mc_cfg_cb_max_depth(const char *name, int pos);
 void _mc_cfg_cb_visited(const char *name, int pos);
 void _mc_cfg_cb_dot_output(const char *name, int pos);
 void _mc_cfg_cb_comms_determinism(const char *name, int pos);
+void _mc_cfg_cb_send_determinism(const char *name, int pos);
 
 XBT_PUBLIC(void) MC_do_the_modelcheck_for_real(void);
 
