@@ -1,0 +1,4 @@
+$ ${bindir:=.}/flatifier bogus_missing_src_gateway.xml "--log=root.fmt:[%10.6r]%e[%i:%P@%h]%e%m%n"
+> [  0.000000] [0:@] surf_workstation_model_init_ptask_L07
+> [  0.000000] [0:@] Parse error <some informative message>
+
