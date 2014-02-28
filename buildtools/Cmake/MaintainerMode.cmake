@@ -6,6 +6,7 @@ set(FLEXML_MIN_PATCH 6)
 # the rest should only be changed if you understand what you're doing
 if(enable_maintainer_mode AND NOT WIN32)
   find_program(PYTHON_EXE NAMES python)
+  mark_as_advanced(PYTHON_EXE)
   if (PYTHON_EXE)
     add_custom_command(
       OUTPUT
