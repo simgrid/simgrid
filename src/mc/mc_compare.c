@@ -107,6 +107,9 @@ static int compare_areas_with_type(void *area1, void *area2, mc_object_info_t in
   void *addr_pointed1, *addr_pointed2;
 
   switch(type->type){
+  case DW_TAG_unspecified_type:
+    return 1;
+
   case DW_TAG_base_type:
   case DW_TAG_enumeration_type:
   case DW_TAG_union_type:
@@ -120,6 +123,9 @@ static int compare_areas_with_type(void *area1, void *area2, mc_object_info_t in
   case DW_TAG_array_type:
     subtype = type->subtype;
     switch(subtype->type){
+    case DW_TAG_unspecified_type:
+      return 1;
+
     case DW_TAG_base_type:
     case DW_TAG_enumeration_type:
     case DW_TAG_pointer_type:

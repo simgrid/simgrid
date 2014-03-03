@@ -781,6 +781,9 @@ static int compare_heap_area_with_type(struct s_mm_diff *state, void *real_area1
   void *addr_pointed1, *addr_pointed2;;
 
   switch(type->type){
+  case DW_TAG_unspecified_type:
+    return 1;
+
   case DW_TAG_base_type:
     if(type->name!=NULL && strcmp(type->name, "char") == 0){ /* String, hence random (arbitrary ?) size */
       if(real_area1 == real_area2)
@@ -809,6 +812,9 @@ static int compare_heap_area_with_type(struct s_mm_diff *state, void *real_area1
   case DW_TAG_array_type:
     subtype = xbt_dict_get_or_null(info->types, type->dw_type_id);
     switch(subtype->type){
+    case DW_TAG_unspecified_type:
+      return 1;
+
     case DW_TAG_base_type:
     case DW_TAG_enumeration_type:
     case DW_TAG_pointer_type:

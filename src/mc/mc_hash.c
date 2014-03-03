@@ -77,6 +77,11 @@ static void mc_hash_value(mc_hash_t* hash, mc_hashing_state* state, mc_object_in
   top:
 
   switch(type->type){
+
+  // Not relevant, do nothing:
+  case DW_TAG_unspecified_type:
+    return;
+
   // Simple case, hash this has binary:
   case DW_TAG_base_type:
   case DW_TAG_enumeration_type:
