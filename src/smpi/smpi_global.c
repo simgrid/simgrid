@@ -100,6 +100,12 @@ void smpi_process_destroy(void)
  */
 void smpi_process_finalize(void)
 {
+#if 0
+  // wait for all pending asynchronous comms to finish
+  while (SIMIX_process_has_pending_comms(SIMIX_process_self())) {
+    simcall_process_sleep(0.01);
+  }
+#else
   int i;
   int size = smpi_comm_size(MPI_COMM_WORLD);
   int rank = smpi_comm_rank(MPI_COMM_WORLD);
@@ -131,7 +137,7 @@ void smpi_process_finalize(void)
     smpi_mpi_waitall( size-1, requests+1, MPI_STATUSES_IGNORE );
     free( requests );
   }
-
+#endif
 }
 
 /**
