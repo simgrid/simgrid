@@ -452,7 +452,8 @@ static void MC_dwarf_add_members(mc_object_info_t info, Dwarf_Die* die, Dwarf_Di
   xbt_assert(!type->members);
   type->members = xbt_dynar_new(sizeof(dw_type_t), (void(*)(void*))dw_type_free);
   for (res=dwarf_child(die, &child); res==0; res=dwarf_siblingof(&child,&child)) {
-    if (dwarf_tag(&child)==DW_TAG_member) {
+    int tag = dwarf_tag(&child);
+    if (tag==DW_TAG_member || tag==DW_TAG_inheritance) {
 
       // Skip declarations:
       if (MC_dwarf_attr_flag(&child, DW_AT_declaration, false))
@@ -464,8 +465,10 @@ static void MC_dwarf_add_members(mc_object_info_t info, Dwarf_Die* die, Dwarf_Di
 
       // TODO, we should use another type (because is is not a type but a member)
       dw_type_t member = xbt_new0(s_dw_type_t, 1);
-      member->type = -1;
-      member->id = NULL;
+      member->type = tag;
+
+      // Global Offset:
+      member->id = (void *) dwarf_dieoffset(&child);
 
       const char* name = MC_dwarf_attr_string(&child, DW_AT_name);
       if(name)
