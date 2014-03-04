@@ -103,8 +103,8 @@ void SIMIX_host_off(smx_host_t h, smx_process_t issuer)
 
   xbt_assert((host != NULL), "Invalid parameters");
   
-  if (surf_resource_get_state(surf_workstation_resource_priv(h))==SURF_RESOURCE_OFF) {
-	surf_resource_set_state(surf_workstation_resource_priv(h), SURF_RESOURCE_ON);
+  if (surf_resource_get_state(surf_workstation_resource_priv(h))==SURF_RESOURCE_ON) {
+	surf_resource_set_state(surf_workstation_resource_priv(h), SURF_RESOURCE_OFF);
 
     /* Clean Simulator data */
     if (xbt_swag_size(host->process_list) != 0) {
