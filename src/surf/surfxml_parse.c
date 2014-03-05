@@ -768,6 +768,13 @@ void ETag_surfxml_ASroute(void){
   ASroute.gw_src = sg_routing_edge_by_name_or_null(A_surfxml_ASroute_gw___src);
   ASroute.gw_dst = sg_routing_edge_by_name_or_null(A_surfxml_ASroute_gw___dst);
 
+  if (A_surfxml_ASroute_gw___src && !ASroute.gw_src)
+    surf_parse_error("gw_src=\"%s\" not found for ASroute from \"%s\" to \"%s\"",
+                     A_surfxml_ASroute_gw___src, ASroute.src, ASroute.dst);
+  if (A_surfxml_ASroute_gw___dst && !ASroute.gw_dst)
+    surf_parse_error("gw_dst=\"%s\" not found for ASroute from \"%s\" to \"%s\"",
+                     A_surfxml_ASroute_gw___dst, ASroute.src, ASroute.dst);
+
   ASroute.link_list = parsed_link_list;
 
   switch (A_surfxml_ASroute_symmetrical) {
