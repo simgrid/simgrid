@@ -37,7 +37,7 @@ set(tesh_files
   ${CMAKE_CURRENT_SOURCE_DIR}/flatifier.tesh
   ${CMAKE_CURRENT_SOURCE_DIR}/get_full_link.tesh
   ${CMAKE_CURRENT_SOURCE_DIR}/bogus_two_hosts_asymetric.tesh
-  ${CMAKE_CURRENT_SOURCE_DIR}/bogus_missing_src_gateway.tesh
+  ${CMAKE_CURRENT_SOURCE_DIR}/bogus_missing_gateway.tesh
   PARENT_SCOPE
   )
 set(xml_files
@@ -79,6 +79,7 @@ set(xml_files
   ${CMAKE_CURRENT_SOURCE_DIR}/two_clusters_symmetric.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/two_clusters.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/bogus_missing_src_gateway.xml
+  ${CMAKE_CURRENT_SOURCE_DIR}/bogus_missing_dst_gateway.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/bogus_two_hosts_asymetric.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/bogus_two_hosts_asymetric-2.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/two_hosts_one_link_fullduplex.xml
