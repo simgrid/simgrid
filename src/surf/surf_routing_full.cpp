@@ -54,17 +54,19 @@ AsFull::AsFull(){
 }
 
 AsFull::~AsFull(){
-  int table_size = (int)xbt_dynar_length(p_indexNetworkElm);
-  int i, j;
-  /* Delete routing table */
-  for (i = 0; i < table_size; i++)
-    for (j = 0; j < table_size; j++) {
-      if (TO_ROUTE_FULL(i,j)){
-        xbt_dynar_free(&TO_ROUTE_FULL(i,j)->link_list);
-        xbt_free(TO_ROUTE_FULL(i,j));
+  if (p_routingTable) {
+    int table_size = (int)xbt_dynar_length(p_indexNetworkElm);
+    int i, j;
+    /* Delete routing table */
+    for (i = 0; i < table_size; i++)
+      for (j = 0; j < table_size; j++) {
+        if (TO_ROUTE_FULL(i,j)){
+          xbt_dynar_free(&TO_ROUTE_FULL(i,j)->link_list);
+          xbt_free(TO_ROUTE_FULL(i,j));
+        }
       }
-    }
-  xbt_free(p_routingTable);
+    xbt_free(p_routingTable);
+  }
 }
 
 xbt_dynar_t AsFull::getOneLinkRoutes()
