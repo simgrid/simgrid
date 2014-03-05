@@ -278,8 +278,8 @@ surf_action_t surf_workstation_model_communicate(surf_workstation_model_t model,
   return model->communicate(get_casted_workstation(src), get_casted_workstation(dst), size, rate);
 }
 
-xbt_dynar_t surf_workstation_model_get_route(surf_workstation_model_t model,
-		                                     surf_resource_t src, surf_resource_t dst){
+xbt_dynar_t surf_workstation_model_get_route(surf_workstation_model_t /*model*/,
+                                             surf_resource_t src, surf_resource_t dst){
   xbt_dynar_t route = NULL;
   routing_platf->getRouteAndLatency(get_casted_workstation(src)->p_netElm,
 		                            get_casted_workstation(dst)->p_netElm, &route, NULL);
