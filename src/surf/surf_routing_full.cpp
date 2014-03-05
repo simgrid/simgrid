@@ -214,12 +214,17 @@ void AsFull::parseRoute(sg_platf_route_cbarg_t route)
       //                         "but '%s' is not in '%s'.",
       //                         route->dst_gateway, subas->name);
       as_route = 1;
-      XBT_DEBUG("Load ASroute from \"%s(%s)\" to \"%s(%s)\"",
-          src, route->gw_src->getName(), dst, route->gw_dst->getName());
-      if (route->gw_dst->getRcType() == SURF_NETWORK_ELEMENT_NULL)
-        xbt_die("The dst_gateway '%s' does not exist!", route->gw_dst->getName());
-      if (route->gw_src->getRcType() == SURF_NETWORK_ELEMENT_NULL)
-        xbt_die("The src_gateway '%s' does not exist!", route->gw_src->getName());
+      XBT_DEBUG("Load ASroute from \"%s\" to \"%s\"", src, dst);
+      if (!route->gw_src ||
+          route->gw_src->getRcType() == SURF_NETWORK_ELEMENT_NULL)
+        xbt_die("The src_gateway \"%s\" does not exist!",
+                route->gw_src ? route->gw_src->getName() : "(null)");
+      if (!route->gw_dst ||
+          route->gw_dst->getRcType() == SURF_NETWORK_ELEMENT_NULL)
+        xbt_die("The dst_gateway \"%s\" does not exist!",
+                route->gw_dst ? route->gw_dst->getName() : "(null)");
+      XBT_DEBUG("ASroute goes from \"%s\" to \"%s\"",
+                route->gw_src->getName(), route->gw_dst->getName());
     }
     TO_ROUTE_FULL(src_net_elm->getId(), dst_net_elm->getId()) = newExtendedRoute(p_hierarchy, route, 1);
     xbt_dynar_shrink(TO_ROUTE_FULL(src_net_elm->getId(), dst_net_elm->getId())->link_list, 0);
