@@ -10,7 +10,7 @@ $ msg/task_destroy_cancel ${srcdir:=.}/msg/task_destroy_cancel_p.xml ${srcdir:=.
 > [Jupiter:slave:(2) 0.709348] [msg_test/INFO] Handling task "cancel"
 > [Jupiter:worker1:(3) 0.709348] [msg_test/INFO] Start cancel
 > [Jupiter:slave:(2) 0.709348] [msg_test/INFO] Canceling task "cancel"
-> [Jupiter:worker1:(3) 0.710127] [msg_test/INFO] Task done
+> [Jupiter:worker1:(3) 0.710127] [msg_test/INFO] Task failed
 > [Tremblay:master:(1) 0.736350] [msg_test/INFO] Goodbye now!
 > [Jupiter:slave:(2) 0.736350] [msg_test/INFO] Handling task "finalize"
 > [Jupiter:slave:(2) 0.736350] [msg_test/INFO] Destroying task "finalize"

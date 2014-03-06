@@ -80,9 +80,10 @@ int master(int argc, char *argv[])
 static int worker_main(int argc, char *argv[])
 {
   msg_task_t task = MSG_process_get_data(MSG_process_self());
+  msg_error_t res;
   XBT_INFO("Start %s", task->name);
-  MSG_task_execute(task);
-  XBT_INFO("Task done");
+  res = MSG_task_execute(task);
+  XBT_INFO("Task %s", res == MSG_OK ? "done" : "failed");
   return 0;
 }
 
