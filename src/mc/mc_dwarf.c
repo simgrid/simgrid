@@ -468,9 +468,6 @@ Dwarf_Off MC_dwarf_resolve_location(unw_cursor_t* c, dw_location_t location, voi
     }
     dw_location_t location_entry = xbt_dynar_get_as(location->location.compose, 0, dw_location_t);
     switch (location_entry->type){
-    case e_dw_register:
-      unw_get_reg(c, location_entry->location.reg, &res);
-      return res;
     case e_dw_bregister_op:
       unw_get_reg(c, location_entry->location.breg_op.reg, &res);
       return (Dwarf_Off) ((long)res + location_entry->location.breg_op.offset);
