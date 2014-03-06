@@ -60,7 +60,9 @@ static void jed_free_container(jed_simgrid_container_t container) {
   xbt_free(container);
 }
 
-void jed_simgrid_create_container(jed_simgrid_container_t *container, char *name) {
+void jed_simgrid_create_container(jed_simgrid_container_t *container,
+                                  const char *name)
+{
   xbt_assert( name != NULL );
 
   *container = xbt_new0(s_jed_simgrid_container_t,1);

@@ -16,6 +16,8 @@
 #include "instr/jedule/jedule_platform.h"
 #include "instr/jedule/jedule_output.h"
 
+#include "simdag/private.h"
+
 #include <stdio.h>
 
 #ifdef HAVE_JEDULE
@@ -57,31 +59,33 @@ static void create_hierarchy(AS_t current_comp,
                              jed_simgrid_container_t current_container)
 {
   xbt_dict_cursor_t cursor = NULL;
-  unsigned int dynar_cursor;
   char *key;
   AS_t elem;
-  sg_routing_edge_t network_elem;
+  xbt_dict_t routing_sons = surf_AS_get_routing_sons(current_comp);
 
-  if(xbt_dict_is_empty(current_comp->routing_sons)) {
+  if (xbt_dict_is_empty(routing_sons)) {
     // I am no AS
     // add hosts to jedule platform
+    xbt_dynar_t table = surf_AS_get_hosts(current_comp);
     xbt_dynar_t hosts;
+    unsigned int dynar_cursor;
+    sg_host_t host_elem;
 
     hosts = xbt_dynar_new(sizeof(char*), NULL);
 
-    xbt_dynar_foreach(current_comp->index_network_elm,
-          dynar_cursor, network_elem) {
-      xbt_dynar_push_as(hosts, char*, network_elem->name);
+    xbt_dynar_foreach(table, dynar_cursor, host_elem) {
+      xbt_dynar_push_as(hosts, char*, sg_host_name(host_elem));
     }
 
     jed_simgrid_add_resources(current_container, hosts);
     xbt_dynar_free(&hosts);
+    xbt_dynar_free(&table);
   } else {
-    xbt_dict_foreach(current_comp->routing_sons, cursor, key, elem) {
+    xbt_dict_foreach(routing_sons, cursor, key, elem) {
       jed_simgrid_container_t child_container;
-      jed_simgrid_create_container(&child_container, elem->name);
+      jed_simgrid_create_container(&child_container, surf_AS_get_name(elem));
       jed_simgrid_add_container(current_container, child_container);
-      XBT_DEBUG("name : %s\n", elem->name);
+      XBT_DEBUG("name : %s\n", surf_AS_get_name(elem));
       create_hierarchy(elem, child_container);
     }
   }
@@ -94,20 +98,15 @@ void jedule_setup_platform()
 
   jed_simgrid_container_t root_container;
 
-
   jed_create_jedule(&jedule);
 
-  root_comp = routing_platf->root;
-  XBT_DEBUG("root name %s\n", root_comp->name);
+  root_comp = surf_AS_get_routing_root();
+  XBT_DEBUG("root name %s\n", surf_AS_get_name(root_comp));
 
-  // that doesn't work
-  // type = root_comp->get_network_element_type(root_comp->name);
-
-  jed_simgrid_create_container(&root_container, root_comp->name);
+  jed_simgrid_create_container(&root_container, surf_AS_get_name(root_comp));
   jedule->root_container = root_container;
 
   create_hierarchy(root_comp, root_container);
-
 }
 
 

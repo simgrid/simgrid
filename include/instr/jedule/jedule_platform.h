@@ -57,7 +57,8 @@ void jed_free_jedule(jedule_t jedule);
 
 void jedule_add_meta_info(jedule_t jedule, char *key, char *value);
 
-void jed_simgrid_create_container(jed_simgrid_container_t *container, char *name);
+void jed_simgrid_create_container(jed_simgrid_container_t *container,
+                                  const char *name);
 
 void jed_simgrid_add_container(jed_simgrid_container_t parent,
     jed_simgrid_container_t child);
