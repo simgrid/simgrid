@@ -543,6 +543,7 @@ set(MC_SRC
   src/mc/mc_dpor.c
   src/mc/mc_global.c
   src/mc/mc_dwarf.c
+  src/mc/mc_dwarf_expression.c
   src/mc/mc_liveness.c
   src/mc/mc_memory.c
   src/mc/mc_private.h
@@ -986,6 +987,7 @@ set(TOOLS_CMAKEFILES_TXT
 set(TESTSUITE_CMAKEFILES_TXT
   testsuite/surf/CMakeLists.txt
   testsuite/xbt/CMakeLists.txt
+  testsuite/mc/CMakeLists.txt
   )
 
 set(CMAKE_SOURCE_FILES

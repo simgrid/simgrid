@@ -370,6 +370,24 @@ extern mc_object_info_t mc_binary_info;
 void MC_find_object_address(memory_map_t maps, mc_object_info_t result);
 void MC_post_process_types(mc_object_info_t info);
 
+// ***** Expressions
+
+/** \brief a DWARF expression with optional validity contraints */
+typedef struct s_mc_expression {
+  size_t size;
+  Dwarf_Op* ops;
+  // Optional validity:
+  void* lowpc, *highpc;
+} s_mc_expression_t, *mc_expression_t;
+
+/** A location list (list of location expressions) */
+typedef struct s_mc_location_list {
+  size_t size;
+  mc_expression_t locations;
+} s_mc_location_list_t, *mc_location_list_t;
+
+// ***** Deprecated locations:
+
 typedef enum {
   e_dw_loclist,
   e_dw_register,
@@ -432,6 +450,8 @@ typedef struct s_dw_location_entry{
   dw_location_t location;
 }s_dw_location_entry_t, *dw_location_entry_t;
 
+// ***** Variables and functions
+
 typedef struct s_dw_variable{
   Dwarf_Off dwarf_offset; /* Global offset of the field. */
   int global;
@@ -476,6 +496,25 @@ void* MC_object_base_address(mc_object_info_t info);
 
 Dwarf_Off MC_dwarf_resolve_location(unw_cursor_t* c, dw_location_t location, void* frame_pointer_address);
 void* mc_find_frame_base(void* ip, dw_frame_t frame, unw_cursor_t* unw_cursor);
+
+#define MC_EXPRESSION_STACK_SIZE 64
+
+#define MC_EXPRESSION_OK 0
+#define MC_EXPRESSION_E_UNSUPPORTED_OPERATION 1
+#define MC_EXPRESSION_E_STACK_OVERFLOW 2
+#define MC_EXPRESSION_E_STACK_UNDERFLOW 3
+#define MC_EXPRESSION_E_MISSING_STACK_CONTEXT 4
+#define MC_EXPRESSION_E_MISSING_FRAME_BASE 5
+
+typedef struct s_mc_expression_state {
+  uintptr_t stack[MC_EXPRESSION_STACK_SIZE];
+  size_t stack_size;
+
+  unw_cursor_t* cursor;
+  void* frame_base;
+} s_mc_expression_state_t, *mc_expression_state_t;
+
+int mc_dwarf_execute_expression(size_t n, const Dwarf_Op* ops, mc_expression_state_t state);
 
 /********************************** Miscellaneous **********************************/
 
