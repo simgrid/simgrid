@@ -77,7 +77,7 @@ int slave(int argc, char *argv[])
   _XBT_GNUC_UNUSED int res;
   int id = -1;
   char mailbox[80];
-  double duration, start, end;
+  double start, end;
   sprintf(mailbox, "jupi");
 
   while (1) {
@@ -99,7 +99,6 @@ int slave(int argc, char *argv[])
       continue;
     }
 
-    duration = MSG_task_get_compute_duration(task);
     start = MSG_get_clock();
     MSG_task_execute(task);
     end = MSG_get_clock();
