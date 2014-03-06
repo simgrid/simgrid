@@ -7,8 +7,18 @@ $ $SG_TEST_EXENV suspend/suspend ${srcdir:=.}/msg_platform.xml ${srcdir:=.}/susp
 > [  0.000000] (1:dream_master@Jacquelin) Let's create a lazy guy.
 > [  0.000000] (1:dream_master@Jacquelin) Let's wait a little bit...
 > [  0.000000] (2:Lazy@Jacquelin) Nobody's watching me ? Let's go to sleep.
-> [ 10.000000] (0:@) Simulation time 10
 > [ 10.000000] (1:dream_master@Jacquelin) Let's wake the lazy guy up! >:) BOOOOOUUUHHH!!!!
-> [ 10.000000] (1:dream_master@Jacquelin) OK, goodbye now.
 > [ 10.000000] (2:Lazy@Jacquelin) Uuuh ? Did somebody call me ?
-> [ 10.000000] (2:Lazy@Jacquelin) Mmmh, goodbye now.
+> [ 10.000000] (2:Lazy@Jacquelin) Going to sleep...
+> [ 15.000000] (1:dream_master@Jacquelin) Suspend the lazy guy while he's sleeping...
+> [ 15.000000] (1:dream_master@Jacquelin) Let him finish his siesta.
+> [ 25.000000] (1:dream_master@Jacquelin) Wake up, lazy guy!
+> [ 25.000000] (2:Lazy@Jacquelin) Mmm... waking up.
+> [ 25.000000] (2:Lazy@Jacquelin) Going to sleep one more time...
+> [ 30.000000] (1:dream_master@Jacquelin) Suspend again the lazy guy while he's sleeping...
+> [ 30.000000] (1:dream_master@Jacquelin) This time, don't let him finish his siesta.
+> [ 32.000000] (1:dream_master@Jacquelin) Wake up, lazy guy!
+> [ 32.000000] (1:dream_master@Jacquelin) OK, goodbye now.
+> [ 35.000000] (0:@) Simulation time 35
+> [ 35.000000] (2:Lazy@Jacquelin) Waking up once for all!
+> [ 35.000000] (2:Lazy@Jacquelin) Mmmh, goodbye now.
