@@ -508,7 +508,7 @@ static void MC_dwarf_fill_member_location(dw_type_t type, dw_type_t member, Dwar
 
   Dwarf_Attribute attr;
   dwarf_attr_integrate(child, DW_AT_data_member_location, &attr);
-  int form  = dwarf_whatform(&attr);
+  int form = dwarf_whatform(&attr);
   int klass = MC_dwarf_form_get_class(form);
   switch (klass) {
   case MC_DW_CLASS_EXPRLOC:
@@ -850,7 +850,8 @@ static dw_variable_t MC_die_to_variable(mc_object_info_t info, Dwarf_Die* die, D
   variable->name = xbt_strdup(MC_dwarf_attr_string(die, DW_AT_name));
   variable->type_origin = MC_dwarf_at_type(die);
 
-  int klass = MC_dwarf_form_get_class(dwarf_whatform(&attr_location));
+  int form = dwarf_whatform(&attr_location);
+  int klass = form == DW_FORM_sec_offset ? MC_DW_CLASS_CONSTANT : MC_dwarf_form_get_class(form);
   switch (klass) {
   case MC_DW_CLASS_EXPRLOC:
   case MC_DW_CLASS_BLOCK:
@@ -882,8 +883,8 @@ static dw_variable_t MC_die_to_variable(mc_object_info_t info, Dwarf_Die* die, D
     variable->location = MC_dwarf_get_location_list(info, die, &attr_location);
     break;
   default:
-    xbt_die("Unexpected calss 0x%x (%i) list for location in <%p>%s",
-      klass, klass, (void*) variable->dwarf_offset, variable->name);
+    xbt_die("Unexpected form 0x%x (%i), class 0x%x (%i) list for location in <%p>%s",
+      form, form, klass, klass, (void*) variable->dwarf_offset, variable->name);
   }
 
   // The current code needs a variable name,
