@@ -211,8 +211,8 @@ void SIMIX_pre_process_create(smx_simcall_t simcall,
                           int argc, char **argv,
                           xbt_dict_t properties,
                           int auto_restart){
-  return SIMIX_process_create(process, name, code, data, hostname,
-                              kill_time, argc, argv, properties, auto_restart);
+  SIMIX_process_create(process, name, code, data, hostname,
+                       kill_time, argc, argv, properties, auto_restart);
 }
 /**
  * \brief Internal function to create a process.
