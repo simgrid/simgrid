@@ -30,20 +30,23 @@ int master(int argc, char *argv[])
 
   task = MSG_task_create("task on", task_comp_size, task_comm_size, NULL);
   XBT_INFO("Sending \"%s\"", task->name);
-  MSG_task_send_with_timeout(task, mailbox, 1);
+  if (MSG_task_send_with_timeout(task, mailbox, 1) != MSG_OK)
+    MSG_task_destroy(task);
 
   MSG_process_sleep(1);
   MSG_host_off(MSG_get_host_by_name("Jupiter"));
 
   task = MSG_task_create("task off", task_comp_size, task_comm_size, NULL);
   XBT_INFO("Sending \"%s\"", task->name);
-  MSG_task_send_with_timeout(task, mailbox, 1);
+  if (MSG_task_send_with_timeout(task, mailbox, 1) != MSG_OK)
+    MSG_task_destroy(task);
 
   MSG_host_on(MSG_get_host_by_name("Jupiter"));
 
   task = MSG_task_create("task on without proc", task_comp_size, task_comm_size, NULL);
   XBT_INFO("Sending \"%s\"", task->name);
-  MSG_task_send_with_timeout(task, mailbox, 1);
+  if (MSG_task_send_with_timeout(task, mailbox, 1) != MSG_OK)
+    MSG_task_destroy(task);
 
   char **argvF = xbt_new(char*, 2);
   argvF[0] = xbt_strdup("slave");
@@ -51,11 +54,13 @@ int master(int argc, char *argv[])
 
   task = MSG_task_create("task on with proc", task_comp_size, task_comm_size, NULL);
   XBT_INFO("Sending \"%s\"", task->name);
-  MSG_task_send_with_timeout(task, mailbox, 1);
+  if (MSG_task_send_with_timeout(task, mailbox, 1) != MSG_OK)
+    MSG_task_destroy(task);
 
   task = MSG_task_create("finalize", 0, 0, 0);
   XBT_INFO("Sending \"%s\"", task->name);
-  MSG_task_send_with_timeout(task, mailbox, 1);
+  if (MSG_task_send_with_timeout(task, mailbox, 1) != MSG_OK)
+    MSG_task_destroy(task);
 
   XBT_INFO("Goodbye now!");
   return 0;
