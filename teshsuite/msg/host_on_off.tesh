@@ -1,5 +1,5 @@
 
-$ msg/host_on_off  ${srcdir:=.}/msg/host_on_off.xml
+$ msg/host_on_off ${srcdir:=.}/msg/host_on_off_p.xml ${srcdir:=.}/msg/host_on_off_d.xml
 > [Tremblay:master:(1) 0.000000] [msg_test/INFO] Sending "task on"
 > [Jupiter:slave:(2) 0.682345] [msg_test/INFO] Task "task on" done
 > [Tremblay:master:(1) 1.027003] [msg_test/INFO] Sending "task off"

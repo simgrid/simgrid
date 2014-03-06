@@ -125,13 +125,13 @@ int main(int argc, char *argv[])
   const char *application_file;
 
   MSG_init(&argc, argv);
-  if (argc < 2) {
+  if (argc != 3) {
     printf("Usage: %s platform_file deployment_file\n", argv[0]);
     printf("example: %s msg_platform.xml msg_deployment.xml\n", argv[0]);
     exit(1);
   }
   platform_file = argv[1];
-  application_file = argv[1];
+  application_file = argv[2];
 
   /* MSG_config("workstation/model","KCCFLN05"); */
   {                             /*  Simulation setting */

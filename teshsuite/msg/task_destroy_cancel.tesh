@@ -1,5 +1,5 @@
 
-$ msg/task_destroy_cancel ${srcdir:=.}/msg/task_destroy_cancel.xml
+$ msg/task_destroy_cancel ${srcdir:=.}/msg/task_destroy_cancel_p.xml ${srcdir:=.}/msg/task_destroy_cancel_d.xml
 > [Tremblay:master:(1) 0.000000] [msg_test/INFO] Sending task: "normal"
 > [Jupiter:slave:(2) 0.027003] [msg_test/INFO] Handling task "normal"
 > [Tremblay:master:(1) 0.027003] [msg_test/INFO] Canceling task "cancel directly" directly

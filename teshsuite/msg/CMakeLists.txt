@@ -32,8 +32,10 @@ set(xml_files
   ${CMAKE_CURRENT_SOURCE_DIR}/get_sender_p.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/pid_d.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/pid_p.xml
-  ${CMAKE_CURRENT_SOURCE_DIR}/host_on_off.xml
-  ${CMAKE_CURRENT_SOURCE_DIR}/task_destroy_cancel.xml
+  ${CMAKE_CURRENT_SOURCE_DIR}/host_on_off_d.xml
+  ${CMAKE_CURRENT_SOURCE_DIR}/host_on_off_p.xml
+  ${CMAKE_CURRENT_SOURCE_DIR}/task_destroy_cancel_d.xml
+  ${CMAKE_CURRENT_SOURCE_DIR}/task_destroy_cancel_p.xml
   PARENT_SCOPE
   )
 set(teshsuite_src

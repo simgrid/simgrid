@@ -10,12 +10,4 @@
     <link_ctn id="1"/>
    </route>
   </AS>
-
-  <!-- The master process (with some arguments) -->
-  <process host="Tremblay" function="master">
-  </process>
-  
-  <!-- The slave processes (with mailbox to listen on as argument) -->
-  <process host="Jupiter" function="slave">
-  </process>
- </platform>
+</platform>
