@@ -27,6 +27,8 @@ int master(int argc, char *argv[])
   char mailbox[256];
   msg_task_t task = NULL;
   msg_comm_t comm = NULL;
+  xbt_ex_t ex;
+
   sprintf(mailbox, "jupi");
 
   task = MSG_task_create("normal", task_comp_size, task_comm_size, NULL);
@@ -45,11 +47,25 @@ int master(int argc, char *argv[])
   comm = MSG_task_isend(task, mailbox);
   XBT_INFO("Canceling task \"%s\" during comm", task->name);
   MSG_task_cancel(task);
+  TRY {
+    MSG_comm_wait(comm, -1);
+  }
+  CATCH (ex) {
+    xbt_ex_free(ex);
+    MSG_comm_destroy(comm);
+  }
 
   task = MSG_task_create("finalize", task_comp_size, task_comm_size, NULL);
   comm = MSG_task_isend(task, mailbox);
   XBT_INFO("Destroying task \"%s\" during comm", task->name);
   MSG_task_destroy(task);
+  TRY {
+    MSG_comm_wait(comm, -1);
+  }
+  CATCH (ex) {
+    xbt_ex_free(ex);
+    MSG_comm_destroy(comm);
+  }
 
   task = MSG_task_create("cancel", task_comp_size, task_comm_size, NULL);
   MSG_task_send_with_timeout(task, mailbox, timeout);
