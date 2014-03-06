@@ -38,6 +38,7 @@ int master(int argc, char *argv[])
   task = MSG_task_create("cancel directly", task_comp_size, task_comm_size, NULL);
   XBT_INFO("Canceling task \"%s\" directly", task->name);
   MSG_task_cancel(task);
+  MSG_task_destroy(task);
 
   task = MSG_task_create("destroy directly", task_comp_size, task_comm_size, NULL);
   XBT_INFO("Destroying task \"%s\" directly", task->name);
@@ -54,6 +55,7 @@ int master(int argc, char *argv[])
     xbt_ex_free(ex);
     MSG_comm_destroy(comm);
   }
+  MSG_task_destroy(task);
 
   task = MSG_task_create("finalize", task_comp_size, task_comm_size, NULL);
   comm = MSG_task_isend(task, mailbox);
@@ -84,6 +86,7 @@ static int worker_main(int argc, char *argv[])
   XBT_INFO("Start %s", task->name);
   res = MSG_task_execute(task);
   XBT_INFO("Task %s", res == MSG_OK ? "done" : "failed");
+  MSG_task_destroy(task);
   return 0;
 }
 
