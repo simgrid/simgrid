@@ -39,7 +39,7 @@ XBT_PUBLIC(xbt_lib_t) storage_lib;
 XBT_PUBLIC(int) ROUTING_STORAGE_LEVEL;        //Routing storage level
 XBT_PUBLIC(int) ROUTING_STORAGE_HOST_LEVEL;
 XBT_PUBLIC(int) SURF_STORAGE_LEVEL;  // Surf storage level
-
+XBT_PUBLIC(xbt_lib_t) file_lib;
 XBT_PUBLIC(xbt_lib_t) storage_type_lib;
 XBT_PUBLIC(int) ROUTING_STORAGE_TYPE_LEVEL;   //Routing storage_type level
 

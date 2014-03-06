@@ -10,13 +10,13 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_storage, surf,
                                 "Logging specific to the SURF storage module");
 
+xbt_lib_t file_lib;
 xbt_lib_t storage_lib;
 int ROUTING_STORAGE_LEVEL;      //Routing for storagelevel
 int ROUTING_STORAGE_HOST_LEVEL;
 int SURF_STORAGE_LEVEL;
 xbt_lib_t storage_type_lib;
 int ROUTING_STORAGE_TYPE_LEVEL; //Routing for storage_type level
-
 xbt_dynar_t mount_list = NULL;
 StorageModelPtr surf_storage_model = NULL;
 

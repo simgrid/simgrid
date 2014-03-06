@@ -988,21 +988,6 @@
     }    
     
   }
-  inline static smx_host_t simcall_BODY_rdv_get_by_name(const char* name) {
-    smx_process_t self = SIMIX_process_self();
-    self->simcall.call = SIMCALL_RDV_GET_BY_NAME;
-    memset(&self->simcall.result, 0, sizeof(self->simcall.result));
-    memset(self->simcall.args, 0, sizeof(self->simcall.args));
-    self->simcall.args[0].cc = (const char*) name;
-    if (self != simix_global->maestro_process) {
-      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name,
-                SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
-      SIMIX_process_yield(self);
-    } else {
-      SIMIX_simcall_pre(&self->simcall, 0);
-    }    
-    return self->simcall.result.dp;
-  }
   inline static unsigned int simcall_BODY_rdv_comm_count_by_host(smx_rdv_t rdv, smx_host_t host) {
     smx_process_t self = SIMIX_process_self();
     self->simcall.call = SIMCALL_RDV_COMM_COUNT_BY_HOST;
@@ -1609,37 +1594,6 @@
       SIMIX_simcall_pre(&self->simcall, 0);
     }    
     return self->simcall.result.i;
-  }
-  inline static void* simcall_BODY_file_get_data(smx_file_t fd) {
-    smx_process_t self = SIMIX_process_self();
-    self->simcall.call = SIMCALL_FILE_GET_DATA;
-    memset(&self->simcall.result, 0, sizeof(self->simcall.result));
-    memset(self->simcall.args, 0, sizeof(self->simcall.args));
-    self->simcall.args[0].dp = (void*) fd;
-    if (self != simix_global->maestro_process) {
-      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name,
-                SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
-      SIMIX_process_yield(self);
-    } else {
-      SIMIX_simcall_pre(&self->simcall, 0);
-    }    
-    return self->simcall.result.dp;
-  }
-  inline static void simcall_BODY_file_set_data(smx_file_t fd, void* data) {
-    smx_process_t self = SIMIX_process_self();
-    self->simcall.call = SIMCALL_FILE_SET_DATA;
-    memset(&self->simcall.result, 0, sizeof(self->simcall.result));
-    memset(self->simcall.args, 0, sizeof(self->simcall.args));
-    self->simcall.args[0].dp = (void*) fd;
-    self->simcall.args[1].dp = (void*) data;
-    if (self != simix_global->maestro_process) {
-      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name,
-                SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
-      SIMIX_process_yield(self);
-    } else {
-      SIMIX_simcall_pre(&self->simcall, 0);
-    }    
-    
   }
   inline static sg_size_t simcall_BODY_file_read(smx_file_t fd, sg_size_t size) {
     smx_process_t self = SIMIX_process_self();

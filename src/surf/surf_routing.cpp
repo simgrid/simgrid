@@ -28,6 +28,7 @@ int SIMIX_HOST_LEVEL;           //Simix host level
 int SIMIX_STORAGE_LEVEL;        //Simix storage level
 int MSG_HOST_LEVEL;             //Msg host level
 int MSG_STORAGE_LEVEL;          //Msg storage level
+int MSG_FILE_LEVEL;             //Msg file level
 int SD_HOST_LEVEL;              //Simdag host level
 int SD_STORAGE_LEVEL;           //Simdag storage level
 int COORD_HOST_LEVEL=0;         //Coordinates level

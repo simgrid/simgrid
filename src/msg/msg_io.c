@@ -19,15 +19,17 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_io, msg,
 
 /********************************* File **************************************/
 void __MSG_file_get_info(msg_file_t fd){
-  xbt_dynar_t info = simcall_file_get_info(fd->simdata->smx_file);
+
+  msg_file_priv_t priv = MSG_file_priv(fd);
+  xbt_dynar_t info = simcall_file_get_info(priv->simdata->smx_file);
   sg_size_t *psize;
 
-  fd->info->content_type = xbt_dynar_pop_as(info, char *);
-  fd->info->storage_type = xbt_dynar_pop_as(info, char *);
-  fd->info->storageId = xbt_dynar_pop_as(info, char *);
-  fd->info->mount_point = xbt_dynar_pop_as(info, char *);
+  priv->content_type = xbt_dynar_pop_as(info, char *);
+  priv->storage_type = xbt_dynar_pop_as(info, char *);
+  priv->storageId = xbt_dynar_pop_as(info, char *);
+  priv->mount_point = xbt_dynar_pop_as(info, char *);
   psize = xbt_dynar_pop_as(info, sg_size_t*);
-  fd->info->size = *psize;
+  priv->size = *psize;
   xbt_free(psize);
   xbt_dynar_free_container(&info);
 }
@@ -41,8 +43,8 @@ void __MSG_file_get_info(msg_file_t fd){
  */
 msg_error_t MSG_file_set_data(msg_file_t fd, void *data)
 {
-  SIMIX_file_set_data(fd->simdata->smx_file,data);
-
+  msg_file_priv_t priv = MSG_file_priv(fd);
+  priv->data = data;
   return MSG_OK;
 }
 
@@ -55,7 +57,8 @@ msg_error_t MSG_file_set_data(msg_file_t fd, void *data)
  */
 void *MSG_file_get_data(msg_file_t fd)
 {
-  return SIMIX_file_get_data(fd->simdata->smx_file);
+  msg_file_priv_t priv = MSG_file_priv(fd);
+  return priv->data;
 }
 
 /** \ingroup msg_file_management
@@ -65,9 +68,10 @@ void *MSG_file_get_data(msg_file_t fd)
  */
 
 void MSG_file_dump (msg_file_t fd){
-//   THROW_UNIMPLEMENTED;
   /* Update the cached information first */
   __MSG_file_get_info(fd);
+
+  msg_file_priv_t priv = MSG_file_priv(fd);
   XBT_INFO("File Descriptor information:\n"
            "\t\tFull name: '%s'\n"
            "\t\tSize: %llu\n"
@@ -75,9 +79,9 @@ void MSG_file_dump (msg_file_t fd){
            "\t\tStorage Id: '%s'\n"
            "\t\tStorage Type: '%s'\n"
            "\t\tContent Type: '%s'",
-           fd->fullname, fd->info->size, fd->info->mount_point,
-           fd->info->storageId, fd->info->storage_type,
-           fd->info->content_type);
+           priv->fullname, priv->size, priv->mount_point,
+           priv->storageId, priv->storage_type,
+           priv->content_type);
 }
 
 /** \ingroup msg_file_management
@@ -89,7 +93,8 @@ void MSG_file_dump (msg_file_t fd){
  */
 sg_size_t MSG_file_read(msg_file_t fd, sg_size_t size)
 {
-  return simcall_file_read(fd->simdata->smx_file, size);
+  msg_file_priv_t priv = MSG_file_priv(fd);
+  return simcall_file_read(priv->simdata->smx_file, size);
 }
 
 /** \ingroup msg_file_management
@@ -101,7 +106,8 @@ sg_size_t MSG_file_read(msg_file_t fd, sg_size_t size)
  */
 sg_size_t MSG_file_write(msg_file_t fd, sg_size_t size)
 {
-  return simcall_file_write(fd->simdata->smx_file, size);
+  msg_file_priv_t priv = MSG_file_priv(fd);
+  return simcall_file_write(priv->simdata->smx_file, size);
 }
 
 /** \ingroup msg_file_management
@@ -113,15 +119,24 @@ sg_size_t MSG_file_write(msg_file_t fd, sg_size_t size)
  *
  * \return An #msg_file_t associated to the file
  */
-msg_file_t MSG_file_open(const char* mount, const char* fullname, void* data)
+msg_file_t MSG_file_open(const char* mount,const char* fullname, void* data)
 {
-  msg_file_t file = xbt_new(s_msg_file_t,1);
-  file->fullname = xbt_strdup(fullname);
-  file->simdata = xbt_new0(s_simdata_file_t,1);
-  file->info = xbt_new0(s_msg_file_info_t,1);
-  file->simdata->smx_file = simcall_file_open(mount, fullname);
-  SIMIX_file_set_data(file->simdata->smx_file, data);
-  return file;
+  msg_file_priv_t priv = xbt_new(s_msg_file_priv_t, 1);
+  priv->data = data;
+  priv->fullname = xbt_strdup(fullname);
+  priv->simdata = xbt_new0(s_simdata_file_t,1);
+  priv->simdata->smx_file = simcall_file_open(mount, fullname);
+  xbt_lib_set(file_lib, fullname, MSG_FILE_LEVEL, priv);
+  return (msg_file_t) xbt_lib_get_elm_or_null(file_lib, fullname);
+}
+
+/**
+ * \brief Frees private data of a file (internal call only)
+ */
+void __MSG_file_priv_free(msg_file_priv_t priv)
+{
+  xbt_free(&priv->simdata->smx_file);
+  free(priv);
 }
 
 /** \ingroup msg_file_management
@@ -132,11 +147,9 @@ msg_file_t MSG_file_open(const char* mount, const char* fullname, void* data)
  */
 int MSG_file_close(msg_file_t fd)
 {
-  int res = simcall_file_close(fd->simdata->smx_file);
-  free(fd->fullname);
-  xbt_free(fd->simdata);
-  xbt_free(fd->info);
-  xbt_free(fd);
+  msg_file_priv_t priv = MSG_file_priv(fd);
+  int res = simcall_file_close(priv->simdata->smx_file);
+  xbt_lib_unset(file_lib, priv->fullname, MSG_FILE_LEVEL, 1);
   return res;
 }
 
@@ -148,11 +161,8 @@ int MSG_file_close(msg_file_t fd)
  */
 int MSG_file_unlink(msg_file_t fd)
 {
-  int res = simcall_file_unlink(fd->simdata->smx_file);
-  free(fd->fullname);
-  xbt_free(fd->simdata);
-  xbt_free(fd->info);
-  xbt_free(fd);
+  msg_file_priv_t priv = MSG_file_priv(fd);
+  int res = simcall_file_unlink(priv->simdata->smx_file);
   return res;
 }
 
@@ -163,7 +173,8 @@ int MSG_file_unlink(msg_file_t fd)
  * \return the size of the file (as a #sg_size_t)
  */
 sg_size_t MSG_file_get_size(msg_file_t fd){
-  return simcall_file_get_size(fd->simdata->smx_file);
+  msg_file_priv_t priv = MSG_file_priv(fd);
+  return simcall_file_get_size(priv->simdata->smx_file);
 }
 
 /** \ingroup msg_file_management
@@ -190,7 +201,7 @@ xbt_dict_t MSG_file_ls(const char *mount, const char *path)
   return simcall_file_ls(mount, path);
 }
 
-/*
+/**
  * \ingroup msg_file_management
  * \brief Set the file position indicator in the msg_file_t by adding offset bytes
  * to the position specified by origin (either SEEK_SET, SEEK_CUR, or SEEK_END).
@@ -208,11 +219,11 @@ xbt_dict_t MSG_file_ls(const char *mount, const char *path)
  */
 msg_error_t MSG_file_seek(msg_file_t fd, sg_size_t offset, int origin)
 {
-  //THROW_UNIMPLEMENTED;
-  return simcall_file_seek(fd->simdata->smx_file, offset, origin);
+  msg_file_priv_t priv = MSG_file_priv(fd);
+  return simcall_file_seek(priv->simdata->smx_file, offset, origin);
 }
 
-/*
+/**
  * \ingroup msg_file_management
  * \brief Returns the current value of the position indicator of the file
  *
@@ -222,10 +233,23 @@ msg_error_t MSG_file_seek(msg_file_t fd, sg_size_t offset, int origin)
  */
 sg_size_t MSG_file_tell(msg_file_t fd)
 {
-  return simcall_file_tell(fd->simdata->smx_file);
+  msg_file_priv_t priv = MSG_file_priv(fd);
+  return simcall_file_tell(priv->simdata->smx_file);
+}
+
+const char *MSG_file_get_name(msg_file_t fd) {
+  xbt_assert((fd != NULL), "Invalid parameters");
+  msg_file_priv_t priv = MSG_file_priv(fd);
+  return priv->fullname;
 }
 
 
+/*
+ * \brief Destroys a file (internal call only)
+ */
+void __MSG_file_destroy(msg_file_priv_t file) {
+  xbt_free(file);
+}
 /********************************* Storage **************************************/
 
 /** @addtogroup msg_storage_management
@@ -246,9 +270,9 @@ msg_storage_t __MSG_storage_create(smx_storage_t storage)
  * \brief Destroys a storage (internal call only)
  */
 void __MSG_storage_destroy(msg_storage_priv_t storage) {
-
   free(storage);
 }
+
 
 /** \ingroup msg_storage_management
  *
@@ -374,7 +398,7 @@ sg_size_t MSG_storage_get_size(msg_storage_t storage)
   return SIMIX_storage_get_size(storage);
 }
 
-/*
+/**
  * \ingroup msg_storage_management
  *
  * \brief Rename the file in the contents of its associated storage.
@@ -385,7 +409,7 @@ msg_error_t MSG_storage_file_rename(msg_storage_t storage, const char* src,  con
   return MSG_OK;
 }
 
-/*
+/**
  * \ingroup msg_storage_management
  * \brief Move a file to another location. Depending on the values of dest, dest, mount,
  * and fullname, this move can be local or remote and, within a host, on the same

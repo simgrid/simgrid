@@ -385,6 +385,7 @@ void surf_init(int *argc, char **argv)
   as_router_lib = xbt_lib_new();
   storage_lib = xbt_lib_new();
   storage_type_lib = xbt_lib_new();
+  file_lib = xbt_lib_new();
   watched_hosts_lib = xbt_dict_new_homogeneous(NULL);
 
   XBT_DEBUG("Add routing levels");
