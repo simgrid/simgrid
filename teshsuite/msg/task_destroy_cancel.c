@@ -73,7 +73,7 @@ static int worker_main(int argc, char *argv[])
 /** Receiver function  */
 int slave(int argc, char *argv[])
 {
-  msg_task_t task = NULL;
+  msg_task_t task;
   _XBT_GNUC_UNUSED int res;
   int id = -1;
   char mailbox[80];
@@ -82,6 +82,7 @@ int slave(int argc, char *argv[])
   sprintf(mailbox, "jupi");
 
   while (1) {
+    task = NULL;
     res = MSG_task_receive(&(task), mailbox);
     xbt_assert(res == MSG_OK, "MSG_task_get failed");
     XBT_INFO("Handleling task \"%s\"", MSG_task_get_name(task));

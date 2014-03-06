@@ -10,7 +10,6 @@ $ msg/task_destroy_cancel ${srcdir:=.}/msg/task_destroy_cancel.xml
 > [Jupiter:slave:(2) 0.709348] [msg_test/INFO] Handleling Task "cancel"
 > [Jupiter:worker1:(3) 0.709348] [msg_test/INFO] Start cancel
 > [Jupiter:slave:(2) 0.709348] [msg_test/INFO] Canceling task "cancel"
-> [Jupiter:slave:(2) 0.709348] /home/bedaride/Boulot/simgrid/src/msg/msg_mailbox.c:129: [msg_mailbox/WARNING] Asked to write the received task in a non empty struct -- proceeding.
 > [Jupiter:worker1:(3) 0.710127] [msg_test/INFO] Task done
 > [Tremblay:master:(1) 0.736350] [msg_test/INFO] Goodbye now!
 > [Jupiter:slave:(2) 0.736350] [msg_test/INFO] Handleling Task "finalize"
