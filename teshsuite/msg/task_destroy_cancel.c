@@ -85,7 +85,7 @@ int slave(int argc, char *argv[])
     task = NULL;
     res = MSG_task_receive(&(task), mailbox);
     xbt_assert(res == MSG_OK, "MSG_task_get failed");
-    XBT_INFO("Handleling task \"%s\"", MSG_task_get_name(task));
+    XBT_INFO("Handling task \"%s\"", MSG_task_get_name(task));
 
     if (!strcmp(MSG_task_get_name(task), "finalize")) {
       XBT_INFO("Destroying task \"%s\"", task->name);

@@ -1,18 +1,18 @@
 
 $ msg/task_destroy_cancel ${srcdir:=.}/msg/task_destroy_cancel.xml
 > [Tremblay:master:(1) 0.000000] [msg_test/INFO] Sending task: "normal"
-> [Jupiter:slave:(2) 0.027003] [msg_test/INFO] Handleling Task "normal"
+> [Jupiter:slave:(2) 0.027003] [msg_test/INFO] Handling task "normal"
 > [Tremblay:master:(1) 0.027003] [msg_test/INFO] Canceling task "cancel directly" directly
 > [Tremblay:master:(1) 0.027003] [msg_test/INFO] Destroying task "destroy directly" directly
 > [Tremblay:master:(1) 0.027003] [msg_test/INFO] Canceling task "cancel" during comm
 > [Tremblay:master:(1) 0.027003] [msg_test/INFO] Destroying task "finalize" during comm
 > [Jupiter:slave:(2) 0.682345] [msg_test/INFO] Task "normal" done in 0.655342 (amount 0.000000)
-> [Jupiter:slave:(2) 0.709348] [msg_test/INFO] Handleling Task "cancel"
+> [Jupiter:slave:(2) 0.709348] [msg_test/INFO] Handling task "cancel"
 > [Jupiter:worker1:(3) 0.709348] [msg_test/INFO] Start cancel
 > [Jupiter:slave:(2) 0.709348] [msg_test/INFO] Canceling task "cancel"
 > [Jupiter:worker1:(3) 0.710127] [msg_test/INFO] Task done
 > [Tremblay:master:(1) 0.736350] [msg_test/INFO] Goodbye now!
-> [Jupiter:slave:(2) 0.736350] [msg_test/INFO] Handleling Task "finalize"
+> [Jupiter:slave:(2) 0.736350] [msg_test/INFO] Handling task "finalize"
 > [Jupiter:slave:(2) 0.736350] [msg_test/INFO] Destroying task "finalize"
 > [Jupiter:slave:(2) 0.736350] [msg_test/INFO] I'm done. See you!
 > [0.736350] [msg_test/INFO] Simulation time 0.73635
