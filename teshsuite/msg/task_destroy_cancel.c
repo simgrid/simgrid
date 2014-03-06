@@ -77,7 +77,6 @@ int slave(int argc, char *argv[])
   _XBT_GNUC_UNUSED int res;
   int id = -1;
   char mailbox[80];
-  _XBT_GNUC_UNUSED int read;
   double duration, start, end;
   sprintf(mailbox, "jupi");
 
