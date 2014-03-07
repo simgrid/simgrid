@@ -637,8 +637,9 @@ the tool you use for rendering your simulation, for example.
 \li <b>id (mandatory)</b>: the identifier of the storage to be used
     when referring to it. 
 \li <b>typeId (mandatory)</b>: the identifier of the storage_type that
-    this storage  belongs to. 
-
+    this storage belongs to. 
+\li <b>attach (mandatory)</b>: the host (name) to which the storage is 
+	attached to.
 
 \subsubsection pf_sto_mo mount
 

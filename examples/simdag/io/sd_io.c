@@ -32,7 +32,7 @@ int main(int argc, char **argv)
   total_nworkstations = SD_workstation_get_number();
 
   for (ctr=0; ctr<total_nworkstations;ctr++){
-    current_storage_list = SD_workstation_get_storage_list(workstations[ctr]);
+    current_storage_list = SD_workstation_get_mounted_storage_list(workstations[ctr]);
     xbt_dict_foreach(current_storage_list,cursor,mount_name,storage_name)
       XBT_INFO("Workstation '%s' mounts '%s'",
          SD_workstation_get_name(workstations[ctr]), mount_name);

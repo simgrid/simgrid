@@ -23,14 +23,14 @@
       <model_prop id="Bconnection" value="220MBps" />
    </storage_type>
 
-    <storage id="Disk1" typeId="single_HDD" />
+    <storage id="Disk1" typeId="single_HDD" attach="bob" />
     <storage id="Disk2" typeId="single_SSD"
              content="content/win_storage_content.txt"
-             content_type="txt_windows" />
-    <storage id="Disk3" typeId="single_HDD" />
+             content_type="txt_windows" attach="alice" />
+    <storage id="Disk3" typeId="single_HDD" attach="carl" />
     <storage id="Disk4" typeId="single_SSD"
              content="content/small_content.txt"
-             content_type="txt_unix" />
+             content_type="txt_unix" attach="denise"/>
 
     <host id="bob" power="1Gf">
       <mount storageId="Disk1" name="/home"/>

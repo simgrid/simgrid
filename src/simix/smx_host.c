@@ -758,12 +758,22 @@ void SIMIX_pre_host_set_params(smx_simcall_t simcall, smx_host_t ind_vm, ws_para
   SIMIX_host_set_params(ind_vm, params);
 }
 
-xbt_dict_t SIMIX_pre_host_get_storage_list(smx_simcall_t simcall, smx_host_t host){
-  return SIMIX_host_get_storage_list(host);
+xbt_dict_t SIMIX_pre_host_get_mounted_storage_list(smx_simcall_t simcall, smx_host_t host){
+  return SIMIX_host_get_mounted_storage_list(host);
 }
 
-xbt_dict_t SIMIX_host_get_storage_list(smx_host_t host){
+xbt_dict_t SIMIX_host_get_mounted_storage_list(smx_host_t host){
   xbt_assert((host != NULL), "Invalid parameters (simix host is NULL)");
 
-  return surf_workstation_get_storage_list(host);
+  return surf_workstation_get_mounted_storage_list(host);
+}
+
+xbt_dict_t SIMIX_pre_host_get_attached_storage_list(smx_simcall_t simcall, smx_host_t host){
+  return SIMIX_host_get_attached_storage_list(host);
+}
+
+xbt_dict_t SIMIX_host_get_attached_storage_list(smx_host_t host){
+  xbt_assert((host != NULL), "Invalid parameters (simix host is NULL)");
+
+  return surf_workstation_get_attached_storage_list(host);
 }

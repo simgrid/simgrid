@@ -352,8 +352,12 @@ double surf_workstation_get_consumed_energy(surf_resource_t resource){
   return cpuIt->second->getConsumedEnergy();
 }
 
-xbt_dict_t surf_workstation_get_storage_list(surf_resource_t workstation){
-  return get_casted_workstation(workstation)->getStorageList();
+xbt_dict_t surf_workstation_get_mounted_storage_list(surf_resource_t workstation){
+  return get_casted_workstation(workstation)->getMountedStorageList();
+}
+
+xbt_dict_t surf_workstation_get_attached_storage_list(surf_resource_t workstation){
+  return get_casted_workstation(workstation)->getAttachedStorageList();
 }
 
 surf_action_t surf_workstation_open(surf_resource_t workstation, const char* mount, const char* path){

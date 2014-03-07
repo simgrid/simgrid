@@ -397,9 +397,24 @@
     }    
     return self->simcall.result.i;
   }
-  inline static xbt_dict_t simcall_BODY_host_get_storage_list(smx_host_t host) {
+  inline static xbt_dict_t simcall_BODY_host_get_mounted_storage_list(smx_host_t host) {
     smx_process_t self = SIMIX_process_self();
-    self->simcall.call = SIMCALL_HOST_GET_STORAGE_LIST;
+    self->simcall.call = SIMCALL_HOST_GET_MOUNTED_STORAGE_LIST;
+    memset(&self->simcall.result, 0, sizeof(self->simcall.result));
+    memset(self->simcall.args, 0, sizeof(self->simcall.args));
+    self->simcall.args[0].dp = (void*) host;
+    if (self != simix_global->maestro_process) {
+      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name,
+                SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
+      SIMIX_process_yield(self);
+    } else {
+      SIMIX_simcall_pre(&self->simcall, 0);
+    }    
+    return self->simcall.result.dp;
+  }
+  inline static xbt_dict_t simcall_BODY_host_get_attached_storage_list(smx_host_t host) {
+    smx_process_t self = SIMIX_process_self();
+    self->simcall.call = SIMCALL_HOST_GET_ATTACHED_STORAGE_LIST;
     memset(&self->simcall.result, 0, sizeof(self->simcall.result));
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
     self->simcall.args[0].dp = (void*) host;

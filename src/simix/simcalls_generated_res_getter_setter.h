@@ -123,10 +123,16 @@ static inline int simcall_host_execution_wait__get__result(smx_simcall_t simcall
 static inline void simcall_host_execution_wait__set__result(smx_simcall_t simcall, int result){
     simcall->result.i = result;
 }
-static inline xbt_dict_t simcall_host_get_storage_list__get__result(smx_simcall_t simcall){
+static inline xbt_dict_t simcall_host_get_mounted_storage_list__get__result(smx_simcall_t simcall){
   return (xbt_dict_t) simcall->result.dp;
 }
-static inline void simcall_host_get_storage_list__set__result(smx_simcall_t simcall, void* result){
+static inline void simcall_host_get_mounted_storage_list__set__result(smx_simcall_t simcall, void* result){
+    simcall->result.dp = result;
+}
+static inline xbt_dict_t simcall_host_get_attached_storage_list__get__result(smx_simcall_t simcall){
+  return (xbt_dict_t) simcall->result.dp;
+}
+static inline void simcall_host_get_attached_storage_list__set__result(smx_simcall_t simcall, void* result){
     simcall->result.dp = result;
 }
 

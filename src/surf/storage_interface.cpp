@@ -64,7 +64,7 @@ Storage::Storage(ModelPtr model, const char *name, xbt_dict_t props,
 
 Storage::Storage(ModelPtr model, const char *name, xbt_dict_t props,
 		         lmm_system_t maxminSystem, double bread, double bwrite, double bconnection,
-	             const char* type_id, char *content_name, char *content_type, sg_size_t size)
+	             const char* type_id, char *content_name, char *content_type, sg_size_t size, char *attach)
  :  Resource(model, name, props, lmm_constraint_new(maxminSystem, this, bconnection))
  , p_contentType(content_type)
  , m_size(size), m_usedSize(0)
@@ -72,6 +72,7 @@ Storage::Storage(ModelPtr model, const char *name, xbt_dict_t props,
  , p_writeActions(xbt_dynar_new(sizeof(ActionPtr),NULL)) {
   surf_callback_emit(storageCreatedCallbacks, this);
   p_content = parseContent(content_name);
+  p_attach = (xbt_strdup(attach));
   setState(SURF_RESOURCE_ON);
   XBT_DEBUG("Create resource with Bconnection '%f' Bread '%f' Bwrite '%f' and Size '%llu'", bconnection, bread, bwrite, size);
   p_constraintRead  = lmm_constraint_new(maxminSystem, this, bread);
@@ -84,6 +85,7 @@ Storage::~Storage(){
   xbt_dynar_free(&p_writeActions);
   free(p_typeId);
   free(p_contentType);
+  free(p_attach);
 }
 
 xbt_dict_t Storage::parseContent(char *filename)

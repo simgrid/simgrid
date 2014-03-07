@@ -239,6 +239,7 @@ void ETag_surfxml_storage(void)
   storage.content = A_surfxml_storage_content;
   storage.content_type = A_surfxml_storage_content___type;
   storage.properties = current_property_set;
+  storage.attach = A_surfxml_storage_attach;
   sg_platf_new_storage(&storage);
   current_property_set = NULL;
 }

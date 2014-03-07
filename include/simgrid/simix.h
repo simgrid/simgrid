@@ -260,7 +260,7 @@ XBT_PUBLIC(void) SIMIX_host_on(smx_host_t host);
 XBT_PUBLIC(void) SIMIX_host_off(smx_host_t host, smx_process_t issuer);
 XBT_PUBLIC(void) SIMIX_host_self_set_data(void *data);
 XBT_PUBLIC(void*) SIMIX_host_self_get_data(void);
-XBT_PUBLIC(xbt_dict_t) SIMIX_host_get_storage_list(smx_host_t host);
+XBT_PUBLIC(xbt_dict_t) SIMIX_host_get_mounted_storage_list(smx_host_t host);
 /********************************* Process ************************************/
 XBT_PUBLIC(int) SIMIX_process_count(void);
 XBT_PUBLIC(smx_process_t) SIMIX_process_self(void);
@@ -331,7 +331,8 @@ XBT_PUBLIC(void) simcall_host_execution_set_priority(smx_action_t execution, dou
 XBT_PUBLIC(void) simcall_host_execution_set_bound(smx_action_t execution, double bound);
 XBT_PUBLIC(void) simcall_host_execution_set_affinity(smx_action_t execution, smx_host_t host, unsigned long mask);
 XBT_PUBLIC(e_smx_state_t) simcall_host_execution_wait(smx_action_t execution);
-XBT_PUBLIC(xbt_dict_t) simcall_host_get_storage_list(smx_host_t host);
+XBT_PUBLIC(xbt_dict_t) simcall_host_get_mounted_storage_list(smx_host_t host);
+XBT_PUBLIC(xbt_dict_t) simcall_host_get_attached_storage_list(smx_host_t host);
 XBT_PUBLIC(void) simcall_host_get_params(smx_host_t vm, ws_params_t param);
 XBT_PUBLIC(void) simcall_host_set_params(smx_host_t vm, ws_params_t param);
 

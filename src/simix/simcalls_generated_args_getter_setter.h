@@ -257,10 +257,16 @@ static inline smx_action_t simcall_host_execution_wait__get__execution(smx_simca
 static inline void simcall_host_execution_wait__set__execution(smx_simcall_t simcall, void* arg){
     simcall->args[0].dp = arg;
 }
-static inline smx_host_t simcall_host_get_storage_list__get__host(smx_simcall_t simcall){
+static inline smx_host_t simcall_host_get_mounted_storage_list__get__host(smx_simcall_t simcall){
   return (smx_host_t) simcall->args[0].dp;
 }
-static inline void simcall_host_get_storage_list__set__host(smx_simcall_t simcall, void* arg){
+static inline void simcall_host_get_mounted_storage_list__set__host(smx_simcall_t simcall, void* arg){
+    simcall->args[0].dp = arg;
+}
+static inline smx_host_t simcall_host_get_attached_storage_list__get__host(smx_simcall_t simcall){
+  return (smx_host_t) simcall->args[0].dp;
+}
+static inline void simcall_host_get_attached_storage_list__set__host(smx_simcall_t simcall, void* arg){
     simcall->args[0].dp = arg;
 }
 static inline smx_host_t simcall_host_get_params__get__ind_vm(smx_simcall_t simcall){

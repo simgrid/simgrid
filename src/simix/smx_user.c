@@ -1435,9 +1435,20 @@ sg_size_t simcall_storage_get_used_size (const char* name){
  * \param host A SIMIX host
  * \return a dict containing all storages mounted on the host
  */
-xbt_dict_t simcall_host_get_storage_list(smx_host_t host)
+xbt_dict_t simcall_host_get_mounted_storage_list(smx_host_t host)
 {
-  return simcall_BODY_host_get_storage_list(host);
+  return simcall_BODY_host_get_mounted_storage_list(host);
+}
+
+/**
+ * \ingroup simix_storage_management
+ * \brief Returns the list of storages attached to an host.
+ * \param host A SIMIX host
+ * \return a dict containing all storages attached to the host
+ */
+xbt_dict_t simcall_host_get_attached_storage_list(smx_host_t host)
+{
+  return simcall_BODY_host_get_attached_storage_list(host);
 }
 
 /**

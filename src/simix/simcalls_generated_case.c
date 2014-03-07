@@ -129,8 +129,13 @@ case SIMCALL_HOST_EXECUTION_WAIT:
        SIMIX_pre_host_execution_wait(simcall , (smx_action_t) simcall->args[0].dp);
        break;  
 
-case SIMCALL_HOST_GET_STORAGE_LIST:
-      simcall->result.dp = SIMIX_pre_host_get_storage_list(simcall , (smx_host_t) simcall->args[0].dp);
+case SIMCALL_HOST_GET_MOUNTED_STORAGE_LIST:
+      simcall->result.dp = SIMIX_pre_host_get_mounted_storage_list(simcall , (smx_host_t) simcall->args[0].dp);
+      SIMIX_simcall_answer(simcall);
+      break;  
+
+case SIMCALL_HOST_GET_ATTACHED_STORAGE_LIST:
+      simcall->result.dp = SIMIX_pre_host_get_attached_storage_list(simcall , (smx_host_t) simcall->args[0].dp);
       SIMIX_simcall_answer(simcall);
       break;  
 
