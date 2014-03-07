@@ -736,7 +736,6 @@ void SIMIX_post_process_sleep(smx_action_t action)
 {
   smx_simcall_t simcall;
   e_smx_state_t state;
-  smx_process_t issuer;
   xbt_assert(action->type == SIMIX_ACTION_SLEEP);
 
   while ((simcall = xbt_fifo_shift(action->simcalls))) {
@@ -762,13 +761,9 @@ void SIMIX_post_process_sleep(smx_action_t action)
     simcall_process_sleep__set__result(simcall, state);
     simcall->issuer->waiting_action = NULL;
     SIMIX_simcall_answer(simcall);
-    issuer = simcall->issuer;
-
   }
 
   SIMIX_process_sleep_destroy(action);
-  if (issuer->suspended)
-	simcall_process_suspend(issuer);
 }
 
 void SIMIX_process_sleep_destroy(smx_action_t action)
