@@ -86,6 +86,8 @@ void smpi_process_init(int *argc, char ***argv)
     simcall_rdv_set_receiver(data->mailbox_small, proc);
     XBT_DEBUG("<%d> New process in the game: %p", index, proc);
   }
+  if (smpi_process_data() == NULL)
+    xbt_die("smpi_process_data() returned NULL. You probably gave a NULL parameter to MPI_Init. Although it's required by MPI-2, this is currently not supported by SMPI.");
 }
 
 void smpi_process_destroy(void)
