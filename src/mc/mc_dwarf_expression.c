@@ -236,3 +236,91 @@ Dwarf_Off mc_dwarf_resolve_location(mc_expression_t expression, unw_cursor_t* c,
     return (Dwarf_Off) state.stack[state.stack_size-1];
 }
 
+Dwarf_Off mc_dwarf_resolve_locations(mc_location_list_t locations, unw_cursor_t* c, void* frame_pointer_address) {
+
+  unw_word_t ip;
+  if(c) {
+    if(unw_get_reg(c, UNW_REG_IP, &ip))
+      xbt_die("Could not resolve IP");
+  }
+
+  for(size_t i=0; i!=locations->size; ++i) {
+    mc_expression_t expression = locations->locations + i;
+    if( (expression->lowpc==NULL && expression->highpc==NULL)
+      || (c && ip >= (unw_word_t) expression->lowpc && ip < (unw_word_t) expression->highpc)) {
+      return mc_dwarf_resolve_location(expression, c, frame_pointer_address);
+    }
+  }
+  xbt_die("Could not resolve location");
+}
+
+static
+void mc_dwarf_expression_clear(mc_expression_t expression) {
+  free(expression->ops);
+  expression->ops = NULL;
+  expression->size = 0;
+  expression->lowpc = NULL;
+  expression->highpc = NULL;
+}
+
+void mc_dwarf_location_list_clear(mc_location_list_t list) {
+  for(size_t i=0; i!=list->size; ++i) {
+    mc_dwarf_expression_clear(list->locations + i);
+  }
+  free(list->locations);
+  list->locations = NULL;
+  list->size = 0;
+}
+
+static
+void mc_dwarf_expression_init(mc_expression_t expression, size_t len, Dwarf_Op* ops) {
+  if(expression->ops) {
+    free(expression->ops);
+  }
+  expression->lowpc = NULL;
+  expression->highpc = NULL;
+  expression->size = len;
+  expression->ops = xbt_malloc(len*sizeof(Dwarf_Op));
+  memcpy(expression->ops, ops, len*sizeof(Dwarf_Op));
+}
+
+void mc_dwarf_location_list_init_from_expression(mc_location_list_t target, size_t len, Dwarf_Op* ops) {
+  if(target->locations) {
+    mc_dwarf_location_list_clear(target);
+  }
+  target->size = 1;
+  target->locations = (mc_expression_t) xbt_malloc(sizeof(s_mc_expression_t));
+  mc_dwarf_expression_init(target->locations, len, ops);
+}
+
+void mc_dwarf_location_list_init(mc_location_list_t list, mc_object_info_t info, Dwarf_Die* die, Dwarf_Attribute* attr) {
+  if(list->locations) {
+    mc_dwarf_location_list_clear(list);
+  }
+  list->size = 0;
+
+  ptrdiff_t offset = 0;
+  Dwarf_Addr base, start, end;
+  Dwarf_Op *ops;
+  size_t len;
+
+  while (1) {
+
+    offset = dwarf_getlocations(attr, offset, &base, &start, &end, &ops, &len);
+    if (offset==0)
+      return;
+    else if (offset==-1)
+      xbt_die("Error while loading location list");
+
+    int i = list->size;
+    list->size++;
+    list->locations = (mc_expression_t) realloc(list->locations, list->size*sizeof(s_mc_expression_t));
+    mc_expression_t expression = list->locations + i;
+
+    void* base = info->flags & MC_OBJECT_INFO_EXECUTABLE ? 0 : MC_object_base_address(info);
+    mc_dwarf_expression_init(expression, len, ops);
+    expression->lowpc = (char*) base + start;
+    expression->highpc = (char*) base + end;
+  }
+
+}

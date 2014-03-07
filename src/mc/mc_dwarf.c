@@ -951,7 +951,7 @@ static dw_variable_t MC_die_to_variable(mc_object_info_t info, Dwarf_Die* die, D
         Dwarf_Off base = strcmp(info->file_name, xbt_binary_name) !=0 ? (Dwarf_Off) info->start_exec : 0;
         variable->address = (void*) (base + offset);
       } else {
-        variable->location = MC_dwarf_get_expression(expr, len);
+        mc_dwarf_location_list_init_from_expression(&variable->locations, len, expr);
       }
 
       break;
@@ -959,7 +959,7 @@ static dw_variable_t MC_die_to_variable(mc_object_info_t info, Dwarf_Die* die, D
   case MC_DW_CLASS_LOCLISTPTR:
   case MC_DW_CLASS_CONSTANT:
     // Reference to location list:
-    variable->location = MC_dwarf_get_location_list(info, die, &attr_location);
+    mc_dwarf_location_list_init(&variable->locations, info, die, &attr_location);
     break;
   default:
     xbt_die("Unexpected form 0x%x (%i), class 0x%x (%i) list for location in <%p>%s",

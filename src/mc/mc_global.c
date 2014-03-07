@@ -185,8 +185,9 @@ void dw_variable_free(dw_variable_t v){
   if(v){
     xbt_free(v->name);
     xbt_free(v->type_origin);
-    if(!v->global)
-      dw_location_free(v->location);
+
+    if(v->locations.locations)
+      mc_dwarf_location_list_clear(&v->locations);
     xbt_free(v);
   }
 }

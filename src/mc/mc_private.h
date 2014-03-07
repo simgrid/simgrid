@@ -386,6 +386,14 @@ typedef struct s_mc_location_list {
   mc_expression_t locations;
 } s_mc_location_list_t, *mc_location_list_t;
 
+Dwarf_Off mc_dwarf_resolve_location(mc_expression_t expression, unw_cursor_t* c, void* frame_pointer_address);
+Dwarf_Off mc_dwarf_resolve_locations(mc_location_list_t locations, unw_cursor_t* c, void* frame_pointer_address);
+
+void mc_dwarf_location_list_clear(mc_location_list_t list);
+
+void mc_dwarf_location_list_init_from_expression(mc_location_list_t target, size_t len, Dwarf_Op* ops);
+void mc_dwarf_location_list_init(mc_location_list_t target, mc_object_info_t info, Dwarf_Die* die, Dwarf_Attribute* attr);
+
 // ***** Deprecated locations:
 
 typedef enum {
@@ -460,7 +468,7 @@ typedef struct s_dw_variable{
   dw_type_t type;
 
   // Use either of:
-  dw_location_t location;
+  s_mc_location_list_t locations;
   void* address;
 
   size_t start_scope;

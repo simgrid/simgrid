@@ -275,9 +275,9 @@ static xbt_dynar_t MC_get_local_variables_values(xbt_dynar_t stack_frames){
       /* if(current_variable->address!=NULL) {
         new_var->address = current_variable->address;
       } else */
-      if(current_variable->location != NULL){
-        new_var->address = (void*) MC_dwarf_resolve_location(
-          &(stack_frame->unw_cursor), current_variable->location, (void*)stack_frame->frame_base);
+      if(current_variable->locations.size != 0){
+        new_var->address = (void*) mc_dwarf_resolve_locations(&current_variable->locations,
+          &(stack_frame->unw_cursor), (void*)stack_frame->frame_base);
       }
 
       xbt_dynar_push(variables, &new_var);
