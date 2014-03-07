@@ -279,6 +279,15 @@ Dwarf_Off mc_dwarf_resolve_locations(mc_location_list_t locations, unw_cursor_t*
   xbt_die("Could not resolve location");
 }
 
+/** \brief Find the frame base of a given frame
+ *
+ *  \param frame
+ *  \param unw_cursor
+ */
+void* mc_find_frame_base(dw_frame_t frame, unw_cursor_t* unw_cursor) {
+  return (void*) mc_dwarf_resolve_locations(&frame->frame_base, unw_cursor, NULL);
+}
+
 static
 void mc_dwarf_expression_clear(mc_expression_t expression) {
   free(expression->ops);
@@ -344,8 +353,10 @@ void mc_dwarf_location_list_init(mc_location_list_t list, mc_object_info_t info,
 
     void* base = info->flags & MC_OBJECT_INFO_EXECUTABLE ? 0 : MC_object_base_address(info);
     mc_dwarf_expression_init(expression, len, ops);
-    expression->lowpc = (char*) base + start;
-    expression->highpc = (char*) base + end;
+
+    // If start == 0, this is not a location list:
+    expression->lowpc = start == 0 ? NULL : (char*) base + start;
+    expression->highpc = start == 0 ? NULL : (char*) base + end;
   }
 
 }

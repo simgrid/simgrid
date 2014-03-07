@@ -479,7 +479,7 @@ struct s_dw_frame{
   char *name;
   void *low_pc;
   void *high_pc;
-  dw_location_t frame_base;
+  s_mc_location_list_t frame_base;
   xbt_dynar_t /* <dw_variable_t> */ variables; /* Cannot use dict, there may be several variables with the same name (in different lexical blocks)*/
   unsigned long int start; /* DWARF offset of the subprogram */
   unsigned long int end;   /* Dwarf offset of the next sibling */
@@ -503,7 +503,6 @@ void* MC_object_base_address(mc_object_info_t info);
 /********************************** DWARF **********************************/
 
 Dwarf_Off MC_dwarf_resolve_location(unw_cursor_t* c, dw_location_t location, void* frame_pointer_address);
-void* mc_find_frame_base(void* ip, dw_frame_t frame, unw_cursor_t* unw_cursor);
 
 #define MC_EXPRESSION_STACK_SIZE 64
 
@@ -523,6 +522,8 @@ typedef struct s_mc_expression_state {
 } s_mc_expression_state_t, *mc_expression_state_t;
 
 int mc_dwarf_execute_expression(size_t n, const Dwarf_Op* ops, mc_expression_state_t state);
+
+void* mc_find_frame_base(dw_frame_t frame, unw_cursor_t* unw_cursor);
 
 /********************************** Miscellaneous **********************************/
 

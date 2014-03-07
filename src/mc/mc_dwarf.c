@@ -309,31 +309,6 @@ static dw_location_t MC_dwarf_get_location_list(mc_object_info_t info, Dwarf_Die
   }
 }
 
-/** \brief Find the frame base of a given frame
- *
- *  \param ip         Instruction pointer
- *  \param frame
- *  \param unw_cursor
- */
-void* mc_find_frame_base(void* ip, dw_frame_t frame, unw_cursor_t* unw_cursor) {
-  switch(frame->frame_base->type) {
-  case e_dw_loclist:
-  {
-    int loclist_cursor;
-    for(loclist_cursor=0; loclist_cursor < xbt_dynar_length(frame->frame_base->location.loclist); loclist_cursor++){
-      dw_location_entry_t entry = xbt_dynar_get_as(frame->frame_base->location.loclist, loclist_cursor, dw_location_entry_t);
-      if((ip >= entry->lowpc) && (ip < entry->highpc)){
-        return (void*) MC_dwarf_resolve_location(unw_cursor, entry->location, NULL);
-      }
-    }
-    return NULL;
-  }
-  // Not handled:
-  default:
-    return NULL;
-  }
-}
-
 /** \brief Get the location expression or location list from an attribute
  *
  *  Processes direct expressions as well as location lists.
@@ -1008,6 +983,22 @@ static void MC_dwarf_handle_variable_die(mc_object_info_t info, Dwarf_Die* die, 
 }
 
 static void MC_dwarf_handle_subprogram_die(mc_object_info_t info, Dwarf_Die* die, Dwarf_Die* unit, dw_frame_t parent_frame, const char* namespace) {
+
+  // (Template) Subprogram declaration:
+  if (MC_dwarf_attr_flag(die, DW_AT_declaration, false))
+    return;
+
+  // Abstract inline instance (DW_AT_inline != DW_INL_not_inlined):
+  if (dwarf_func_inline(die))
+    return;
+
+  // This is probably not a concrete instance:
+  // DWARF2/3 and DWARF4 do not agree on the meaning of DW_INL_not_inlined.
+  // For DWARF2/3, the subprogram is abstract.
+  // For DARF4, the subprogram is not abstract.
+  if(!dwarf_hasattr_integrate(die, DW_AT_low_pc))
+    return;
+
   dw_frame_t frame = xbt_new0(s_dw_frame_t, 1);
 
   frame->start = dwarf_dieoffset(die);
@@ -1024,7 +1015,15 @@ static void MC_dwarf_handle_subprogram_die(mc_object_info_t info, Dwarf_Die* die
   frame->variables = xbt_dynar_new(sizeof(dw_variable_t), dw_variable_free_voidp);
   frame->high_pc = ((char*) base) + MC_dwarf_attr_addr(die, DW_AT_high_pc);
   frame->low_pc = ((char*) base) + MC_dwarf_attr_addr(die, DW_AT_low_pc);
-  frame->frame_base = MC_dwarf_at_location(info, die, DW_AT_frame_base);
+
+  if(frame->high_pc==0 || frame->low_pc==0)
+    xbt_die("Could not resolve highpc/lowpc");
+
+  Dwarf_Attribute attr_frame_base;
+  if (!dwarf_attr_integrate(die, DW_AT_frame_base, &attr_frame_base))
+    xbt_die("Coult not find DW_AT_frame_base for subprogram %s %p", frame->name, frame->start);
+  mc_dwarf_location_list_init(&frame->frame_base, info, die, &attr_frame_base);
+
   frame->end = -1; // This one is now useless:
 
   // Register it:

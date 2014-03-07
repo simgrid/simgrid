@@ -37,6 +37,41 @@ static dw_variable_t find_global_variable_by_name(mc_object_info_t info, const c
   return NULL;
 }
 
+static dw_frame_t find_function_by_name(mc_object_info_t info, const char* name) {
+  unsigned int cursor = 0;
+  dw_frame_t subprogram;
+  xbt_dynar_foreach(info->subprograms, cursor, subprogram){
+    if(!strcmp(name, subprogram->name))
+      return subprogram;
+  }
+
+  return NULL;
+}
+
+static dw_variable_t find_local_variable(dw_frame_t frame, const char* argument_name) {
+  unsigned int cursor = 0;
+  dw_variable_t variable;
+  xbt_dynar_foreach(frame->variables, cursor, variable){
+    if(!strcmp(argument_name, variable->name))
+      return variable;
+  }
+
+  return NULL;
+}
+
+static void test_local_argument(mc_object_info_t info, const char* function, const char* variable, void* address, unw_cursor_t* cursor) {
+  dw_frame_t subprogram = find_function_by_name(info, function);
+  assert(subprogram);
+  // TODO, Lookup frame by IP and test against name instead
+
+  dw_variable_t var = find_local_variable(subprogram, variable);
+  assert(var);
+
+  void* frame_base = mc_find_frame_base(subprogram, cursor);
+  assert((void*)mc_dwarf_resolve_locations(&var->locations, cursor, frame_base) == address);
+
+}
+
 static dw_variable_t test_global_variable(mc_object_info_t info, const char* name, void* address, long byte_size) {
   dw_variable_t variable = find_global_variable_by_name(info, name);
   xbt_assert(variable, "Global variable %s was not found", name);
@@ -84,6 +119,13 @@ int main(int argc, char** argv) {
   assert(find_type(mc_binary_info, "first", type)->offset == 0);
   assert(find_type(mc_binary_info, "second", type)->offset
       == ((const char*)&test_some_struct.second) - (const char*)&test_some_struct);
+
+  unw_context_t context;
+  unw_cursor_t cursor;
+  unw_getcontext(&context);
+  unw_init_local(&cursor, &context);
+
+  test_local_argument(mc_binary_info, "main", "argc", &argc, &cursor);
 
   _exit(0);
 }

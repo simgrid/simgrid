@@ -327,7 +327,7 @@ static xbt_dynar_t MC_unwind_stack_frames(void *stack_context) {
 
     if(frame) {
       stack_frame->frame_name = xbt_strdup(frame->name);
-      stack_frame->frame_base = (unw_word_t)mc_find_frame_base((void*)ip, frame, &c);
+      stack_frame->frame_base = (unw_word_t)mc_find_frame_base(frame, &c);
     } else {
       stack_frame->frame_base = 0;
     }
