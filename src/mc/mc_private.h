@@ -394,70 +394,6 @@ void mc_dwarf_location_list_clear(mc_location_list_t list);
 void mc_dwarf_location_list_init_from_expression(mc_location_list_t target, size_t len, Dwarf_Op* ops);
 void mc_dwarf_location_list_init(mc_location_list_t target, mc_object_info_t info, Dwarf_Die* die, Dwarf_Attribute* attr);
 
-// ***** Deprecated locations:
-
-typedef enum {
-  e_dw_loclist,
-  e_dw_register,
-  e_dw_bregister_op,
-  e_dw_lit,
-  e_dw_fbregister_op,
-  e_dw_piece,
-  e_dw_arithmetic,
-  e_dw_plus_uconst,
-  e_dw_compose,
-  e_dw_deref,
-  e_dw_uconstant,
-  e_dw_sconstant,
-  e_dw_unsupported
-} e_dw_location_type;
-
-typedef struct s_dw_location{
-  e_dw_location_type type;
-  union{
-    
-    xbt_dynar_t loclist;
-    
-    int reg;
-    
-    struct{
-      unsigned int reg;
-      int offset;
-    }breg_op;
-
-    unsigned int lit;
-
-    int fbreg_op;
-
-    int piece;
-
-    unsigned short int deref_size;
-
-    xbt_dynar_t compose;
-
-    char *arithmetic;
-
-    struct{
-      int bytes;
-      long unsigned int value;
-    }uconstant;
-
-    struct{
-      int bytes;
-      long signed int value;
-    }sconstant;
-
-    unsigned int plus_uconst;
-
-  }location;
-}s_dw_location_t, *dw_location_t;
-
-typedef struct s_dw_location_entry{
-  void* lowpc;
-  void* highpc;
-  dw_location_t location;
-}s_dw_location_entry_t, *dw_location_entry_t;
-
 // ***** Variables and functions
 
 typedef struct s_dw_variable{
@@ -501,8 +437,6 @@ void MC_dwarf_register_variable(mc_object_info_t info, dw_frame_t frame, dw_vari
 void* MC_object_base_address(mc_object_info_t info);
 
 /********************************** DWARF **********************************/
-
-Dwarf_Off MC_dwarf_resolve_location(unw_cursor_t* c, dw_location_t location, void* frame_pointer_address);
 
 #define MC_EXPRESSION_STACK_SIZE 64
 
