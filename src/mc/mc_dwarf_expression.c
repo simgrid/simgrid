@@ -43,6 +43,31 @@ int mc_dwarf_execute_expression(
         break;
       }
 
+    // Push the CFA (Call Frame Addresse):
+    case DW_OP_call_frame_cfa:
+    {
+      unw_word_t res;
+
+      int register_id =
+#if defined(UNW_TARGET_X86_64)
+          UNW_X86_64_CFA
+#elif defined(UNW_TARGET_X86)
+          UNW_X86_CFA
+#else
+          -1;
+#endif
+        ;
+      if(register_id<0)
+        xbt_die("Support for CFA not implemented for this achitecture.");
+
+      if(!state->cursor)
+        return MC_EXPRESSION_E_MISSING_STACK_CONTEXT;
+
+      unw_get_reg(state->cursor, register_id, &res);
+      error = mc_dwarf_push_value(state, res + op->number);
+      break;
+    }
+
     // Frame base:
 
     case DW_OP_fbreg:
