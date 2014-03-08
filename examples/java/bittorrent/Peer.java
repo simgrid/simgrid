@@ -419,10 +419,9 @@ public class Peer extends Process {
 			return;
 		}
 		if (true || pieces < 3) {
-			int i = 0, peerPiece;
+			int peerPiece;
 			do {
 				currentPiece = stream.randInt(0,Common.FILE_PIECES - 1);
-				i++;
 			} while (!(bitfield[currentPiece] == '0' && !currentPieces.contains(currentPiece)));
 		}
 		else {
