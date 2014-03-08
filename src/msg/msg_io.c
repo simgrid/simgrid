@@ -248,6 +248,8 @@ const char *MSG_file_get_name(msg_file_t fd) {
  * \brief Destroys a file (internal call only)
  */
 void __MSG_file_destroy(msg_file_priv_t file) {
+  xbt_free(file->fullname);
+  xbt_free(file->simdata);
   xbt_free(file);
 }
 /********************************* Storage **************************************/

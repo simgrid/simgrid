@@ -110,7 +110,7 @@ extern int MSG_FILE_LEVEL;
 typedef struct simdata_file *simdata_file_t;
 
 typedef struct msg_file_priv  {
-  const char *fullname;
+  char *fullname;
   sg_size_t size;
   char* mount_point;
   char* storageId;
