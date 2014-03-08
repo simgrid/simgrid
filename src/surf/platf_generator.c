@@ -670,6 +670,7 @@ void platf_generate(void) {
         node_data->router_id = bprintf("router-%d", ++last_router);
         router_parameters.id = node_data->router_id;
         sg_platf_new_router(&router_parameters);
+        break;
     }
   }
 
@@ -699,6 +700,7 @@ void platf_generate(void) {
         break;
       case HOST:
         route_parameters.src = src_data->host_parameters.id;
+        break;
     }
     switch(dst_data->kind) {
       case ROUTER:
@@ -709,6 +711,7 @@ void platf_generate(void) {
         break;
       case HOST:
         route_parameters.dst = dst_data->host_parameters.id;
+        break;
     }
     sg_platf_route_begin(&route_parameters);
     sg_platf_route_add_link(link_parameters->id, &route_parameters);
