@@ -17,7 +17,7 @@
 /******************************************/
 /* return the name of a signal, aliasing SIGBUS to SIGSEGV since
    segfault leads to any of them depending on the system */
-const char *signal_name(unsigned int got, char *expected);
+const char *signal_name(int got, char *expected);
 
 #include "run_context.h"
 

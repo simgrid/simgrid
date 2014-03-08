@@ -48,7 +48,7 @@ static const s_signal_entry_t signals[] = {
 };
 
 
-const char *signal_name(unsigned int got, char *expected)
+const char *signal_name(int got, char *expected)
 {
   int i;
 
