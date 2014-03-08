@@ -62,8 +62,8 @@ int host(int argc, char *argv[])
   XBT_INFO("\tHave read    %llu on %s (of size %llu)",read,filename,
       MSG_file_get_size(file));
 
-  MSG_file_close(file);
   XBT_INFO("\tClose file '%s'",filename);
+  MSG_file_close(file);
 
   free(mount);
   return 0;
