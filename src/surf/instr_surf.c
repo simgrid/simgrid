@@ -6,7 +6,6 @@
 
 #include "instr/instr_private.h"
 #include "surf/surf_private.h"
-//FIXME:#include "surf/network_gtnets_private.h"
 
 #ifdef HAVE_TRACING
 

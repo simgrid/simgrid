@@ -524,15 +524,6 @@ smx_action_t SIMIX_host_parallel_execute(const char *name,
   return action;
 }
 
-//FIXME: REMOVE not used
-static surf_model_t get_ws_model_from_action(smx_action_t action)
-{
-  xbt_assert(action->type == SIMIX_ACTION_EXECUTE);
-  smx_host_t host = action->execution.host;
-  surf_model_t model = surf_resource_model(host, SURF_WKS_LEVEL);
-  return model;
-}
-
 void SIMIX_pre_host_execution_destroy(smx_simcall_t simcall, smx_action_t action){
   SIMIX_host_execution_destroy(action);
 }

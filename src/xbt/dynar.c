@@ -82,17 +82,6 @@ _xbt_dynar_get_elm(void *const dst,
   memcpy(dst, elm, dynar->elmsize);
 }
 
-static XBT_INLINE
-    void
-_xbt_dynar_put_elm(const xbt_dynar_t dynar,
-                   const unsigned long idx, const void *const src)
-{
-  void *const elm = _xbt_dynar_elm(dynar, idx);
-  const unsigned long elmsize = dynar->elmsize;
-
-  memcpy(elm, src, elmsize);
-}
-
 void xbt_dynar_dump(xbt_dynar_t dynar)
 {
   XBT_INFO("Dynar dump: size=%lu; used=%lu; elmsize=%lu; data=%p; free_f=%p",

@@ -27,7 +27,6 @@ int ETag_surfxml_include_state(void);
 char* surf_parsed_filename = NULL; // to locate parse error messages
 
 xbt_dynar_t parsed_link_list = NULL;   /* temporary store of current list link of a route */
-extern AS_t current_routing;
 /*
  * Helping functions
  */
@@ -216,9 +215,6 @@ xbt_dict_t random_data_list = NULL;
 
 YY_BUFFER_STATE surf_input_buffer;
 FILE *surf_file_to_parse = NULL;
-
-static void init_randomness(void);
-static void add_randomness(void);
 
 /*
  * Stuff relative to storage
@@ -1057,8 +1053,6 @@ int_f_void_t surf_parse = _surf_parse;
  * With XML parser
  */
 
-/* Random tag functions */
-
 double get_cpu_power(const char *power)
 {
   double power_scale = 0.0;
@@ -1085,44 +1079,6 @@ double get_cpu_power(const char *power)
 double random_min, random_max, random_mean, random_std_deviation;
 e_random_generator_t random_generator;
 char *random_id;
-
-static void init_randomness(void)
-{
-  random_id = A_surfxml_random_id;
-  random_min = surf_parse_get_double(A_surfxml_random_min);
-  random_max = surf_parse_get_double(A_surfxml_random_max);
-  random_mean = surf_parse_get_double(A_surfxml_random_mean);
-  random_std_deviation = surf_parse_get_double(A_surfxml_random_std___deviation);
-  switch (A_surfxml_random_generator) {
-  case AU_surfxml_random_generator:
-  case A_surfxml_random_generator_NONE:
-    random_generator = NONE;
-    break;
-  case A_surfxml_random_generator_DRAND48:
-    random_generator = DRAND48;
-    break;
-  case A_surfxml_random_generator_RAND:
-    random_generator = RAND;
-    break;
-  case A_surfxml_random_generator_RNGSTREAM:
-    random_generator = RNGSTREAM;
-    break;
-  default:
-    surf_parse_error("Invalid random generator");
-    break;
-  }
-}
-
-static void add_randomness(void)
-{
-  /* If needed, additional properties can be added by using the prop tag */
-  random_data_t random =
-      random_new(random_generator, 0, random_min, random_max, random_mean,
-                 random_std_deviation);
-  xbt_dict_set(random_data_list, random_id, (void *) random,
-               &xbt_free_ref);
-}
-
 
 xbt_dict_t get_as_router_properties(const char* name)
 {

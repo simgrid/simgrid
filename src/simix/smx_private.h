@@ -198,23 +198,6 @@ typedef struct s_smx_action {
 #endif
 } s_smx_action_t;
 
-/* FIXME: check if we can delete this function */
-static XBT_INLINE e_smx_state_t SIMIX_action_map_state(e_surf_action_state_t state)
-{
-  switch (state) {
-    case SURF_ACTION_READY:
-      return SIMIX_READY;
-    case SURF_ACTION_RUNNING:
-      return SIMIX_RUNNING;
-    case SURF_ACTION_FAILED:
-      return SIMIX_FAILED;
-    case SURF_ACTION_DONE:
-      return SIMIX_DONE;
-    default:
-      xbt_die("Unexpected SURF action state");
-  }
-}
-
 void SIMIX_context_mod_init(void);
 void SIMIX_context_mod_exit(void);
 
