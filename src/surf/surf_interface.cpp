@@ -437,7 +437,7 @@ void surf_exit(void)
   xbt_lib_free(&as_router_lib);
   xbt_lib_free(&storage_lib);
   xbt_lib_free(&storage_type_lib);
-
+  xbt_lib_free(&file_lib);
   xbt_dict_free(&watched_hosts_lib);
 
   xbt_dynar_foreach(model_list, iter, model)
