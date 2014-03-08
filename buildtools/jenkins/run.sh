@@ -75,7 +75,7 @@ fi
 
 echo "running tests with $NUMBER_OF_PROCESSORS processors"
 
-ctest -T test --no-compress-output  --timeout 100 -j$NUMBER_OF_PROCESSORS || true
+ctest --output-on-failure -T test --no-compress-output  --timeout 100 -j$NUMBER_OF_PROCESSORS || true
 if [ -f Testing/TAG ] ; then
    xsltproc $WORKSPACE/buildtools/jenkins/ctest2junit.xsl -o "$WORKSPACE/CTestResults.xml" Testing/`head -n 1 < Testing/TAG`/Test.xml
 fi
