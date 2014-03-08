@@ -99,17 +99,15 @@ static inline msg_vm_priv_t MSG_vm_priv(msg_vm_t vm){
 /** ******************************** File ************************************ */
 
 /** @brief File datatype.
-// *  @ingroup msg_file_management
-// *
-// *  You should consider this as an opaque object.
-// */
-//
-//typedef struct msg_file *msg_file_t;
-extern int MSG_FILE_LEVEL;
-typedef struct simdata_file *simdata_file_t;
-
+*  @ingroup msg_file_management
+*
+*  You should consider this as an opaque object.
+*/
 typedef xbt_dictelm_t msg_file_t;
 typedef s_xbt_dictelm_t s_msg_file_t;
+
+extern int MSG_FILE_LEVEL;
+typedef struct simdata_file *simdata_file_t;
 
 typedef struct msg_file_priv  {
   const char *fullname;

@@ -209,7 +209,7 @@ xbt_dict_t MSG_file_ls(const char *mount, const char *path)
  * \param fd : file object that identifies the stream
  * \param offset : number of bytes to offset from origin
  * \param origin : Position used as reference for the offset. It is specified by
- * one of the following constants defined in <cstdio> exclusively to be used as
+ * one of the following constants defined in \<stdio.h\> exclusively to be used as
  * arguments for this function (SEEK_SET = beginning of file, SEEK_CUR = current
  * position of the file pointer, SEEK_END = end of file)
  *

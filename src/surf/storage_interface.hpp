@@ -85,10 +85,15 @@ public:
    * @param content_name [description]
    * @param content_type [description]
    * @param properties [description]
+   * @param attach [description]
    * @return The created Storage
    */
-  virtual StoragePtr createResource(const char* id, const char* type_id,
-		   const char* content_name, const char* content_type, xbt_dict_t properties,const char *attach)=0;
+  virtual StoragePtr createResource(const char* id,
+                                    const char* type_id,
+                                    const char* content_name,
+                                    const char* content_type,
+                                    xbt_dict_t properties,
+                                    const char *attach) = 0;
 
   xbt_dynar_t p_storageList;
 };
@@ -131,6 +136,7 @@ public:
    * @param content_name [description]
    * @param content_type [description]
    * @param size [description]
+   * @param attach [description]
    */
   Storage(ModelPtr model, const char *name, xbt_dict_t props,
           lmm_system_t maxminSystem, double bread, double bwrite,

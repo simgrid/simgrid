@@ -3,9 +3,8 @@
   \section SURF_doc Surf documentation
    Surf is composed several components:
    - \ref SURF_simulation
-   - \ref SURF_actions
-   - \ref SURF_resources
    - \ref SURF_build_api
+   - \ref SURF_c_bindings
    - \ref SURF_interface
    - \ref SURF_routing_interface
    - \ref SURF_cpu_interface
@@ -13,6 +12,7 @@
    - \ref SURF_storage_interface
    - \ref SURF_workstation_interface
    - \ref SURF_vm_workstation_interface
+   - \ref SURF_lmm
    - \ref SURF_callbacks
    - \ref SURF_plugin_energy
    
@@ -90,19 +90,19 @@
 */
 
 /**
-@defgroup SURF_routing_interface   SURF Routing Interface
-@ingroup SURF_API
-@brief Describes the routing interface
-
-@htmlonly <!-- DOXYGEN_NAVBAR_LABEL="Surf Routing" --> @endhtmlonly
-*/
-
-/**
 @defgroup SURF_interface   SURF Interface
 @ingroup SURF_API
 @brief Describes the general interface for all components (Cpu, Network, Storage, Workstation, WorkstationVM)
 
 @htmlonly <!-- DOXYGEN_NAVBAR_LABEL="Surf Interface" --> @endhtmlonly
+*/
+
+/**
+@defgroup SURF_routing_interface   SURF Routing Interface
+@ingroup SURF_API
+@brief Describes the routing interface
+
+@htmlonly <!-- DOXYGEN_NAVBAR_LABEL="Surf Routing" --> @endhtmlonly
 */
 
 /**
