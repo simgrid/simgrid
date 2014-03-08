@@ -640,12 +640,20 @@ XBT_PUBLIC(void) surf_workstation_set_power_peak_at(surf_resource_t host, int ps
 XBT_PUBLIC(double) surf_workstation_get_consumed_energy(surf_resource_t host);
 
 /**
- * @brief Get the list of storages of a workstation
+ * @brief Get the list of storages mounted on a workstation
  * 
  * @param workstation The surf workstation
  * @return Dictionary of mount point, Storage
  */
-XBT_PUBLIC(xbt_dict_t) surf_workstation_get_storage_list(surf_resource_t workstation);
+XBT_PUBLIC(xbt_dict_t) surf_workstation_get_mounted_storage_list(surf_resource_t workstation);
+
+/**
+ * @brief Get the list of storages attached to a workstation
+ *
+ * @param workstation The surf workstation
+ * @return Dictionary of storage
+ */
+XBT_PUBLIC(xbt_dict_t) surf_workstation_get_attached_storage_list(surf_resource_t workstation);
 
 /**
  * @brief Unlink a file descriptor

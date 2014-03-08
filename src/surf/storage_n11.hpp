@@ -38,7 +38,7 @@ public:
   StorageN11Model();
   ~StorageN11Model();
   StoragePtr createResource(const char* id, const char* type_id,
-		   const char* content_name, const char* content_type, xbt_dict_t properties);
+		   const char* content_name, const char* content_type, xbt_dict_t properties, const char* attach);
   double shareResources(double now);
   void updateActionsState(double now, double delta);
 };
@@ -51,7 +51,7 @@ class StorageN11 : public Storage {
 public:
   StorageN11(StorageModelPtr model, const char* name, xbt_dict_t properties,
 		     lmm_system_t maxminSystem, double bread, double bwrite, double bconnection,
-		     const char* type_id, char *content_name, char *content_type, sg_size_t size);
+		     const char* type_id, char *content_name, char *content_type, sg_size_t size, char *attach);
 
   StorageActionPtr open(const char* mount, const char* path);
   StorageActionPtr close(surf_file_t fd);

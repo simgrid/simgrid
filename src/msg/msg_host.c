@@ -402,10 +402,21 @@ double MSG_get_host_consumed_energy(msg_host_t host) {
  * \param host a host
  * \return a dict containing all mount point on the host (mount_name => msg_storage_t)
  */
-xbt_dict_t MSG_host_get_storage_list(msg_host_t host)
+xbt_dict_t MSG_host_get_mounted_storage_list(msg_host_t host)
 {
   xbt_assert((host != NULL), "Invalid parameters");
-  return (simcall_host_get_storage_list(host));
+  return (simcall_host_get_mounted_storage_list(host));
+}
+
+/** \ingroup m_host_management
+ * \brief Return the list of storages attached to an host.
+ * \param host a host
+ * \return a dict containing all storages attached to the host (storage name => msg_storage_t)
+ */
+xbt_dict_t MSG_host_get_attached_storage_list(msg_host_t host)
+{
+  xbt_assert((host != NULL), "Invalid parameters");
+  return (simcall_host_get_attached_storage_list(host));
 }
 
 /** \ingroup msg_host_management
@@ -422,7 +433,7 @@ xbt_dict_t MSG_host_get_storage_content(msg_host_t host)
   char* mount_name;
   xbt_dict_cursor_t cursor = NULL;
 
-  xbt_dict_t storage_list = simcall_host_get_storage_list(host);
+  xbt_dict_t storage_list = simcall_host_get_mounted_storage_list(host);
 
   xbt_dict_foreach(storage_list,cursor,mount_name,storage_name){
     storage = (msg_storage_t)xbt_lib_get_elm_or_null(storage_lib,storage_name);

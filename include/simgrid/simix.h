@@ -69,7 +69,6 @@ typedef struct s_smx_cond *smx_cond_t;
 typedef struct s_smx_sem *smx_sem_t;
 
 /********************************** File *************************************/
-
 typedef struct s_smx_file *smx_file_t;
 
 /********************************** Storage *************************************/
@@ -78,8 +77,6 @@ typedef struct s_smx_storage_priv *smx_storage_priv_t;
 
 /********************************** Action *************************************/
 typedef struct s_smx_action *smx_action_t; /* FIXME: replace by specialized action handlers */
-
-
 
 /* ****************************** Process *********************************** */
 /** @brief Process datatype
@@ -263,7 +260,7 @@ XBT_PUBLIC(void) SIMIX_host_on(smx_host_t host);
 XBT_PUBLIC(void) SIMIX_host_off(smx_host_t host, smx_process_t issuer);
 XBT_PUBLIC(void) SIMIX_host_self_set_data(void *data);
 XBT_PUBLIC(void*) SIMIX_host_self_get_data(void);
-XBT_PUBLIC(xbt_dict_t) SIMIX_host_get_storage_list(smx_host_t host);
+XBT_PUBLIC(xbt_dict_t) SIMIX_host_get_mounted_storage_list(smx_host_t host);
 /********************************* Process ************************************/
 XBT_PUBLIC(int) SIMIX_process_count(void);
 XBT_PUBLIC(smx_process_t) SIMIX_process_self(void);
@@ -285,10 +282,6 @@ XBT_PUBLIC(smx_action_t) SIMIX_comm_get_send_match(smx_rdv_t rdv, int (*match_fu
 XBT_PUBLIC(int) SIMIX_comm_has_send_match(smx_rdv_t rdv, int (*match_fun)(void*, void*), void* data);
 XBT_PUBLIC(int) SIMIX_comm_has_recv_match(smx_rdv_t rdv, int (*match_fun)(void*, void*), void* data);
 XBT_PUBLIC(void) SIMIX_comm_finish(smx_action_t action);
-
-/*********************************** File *************************************/
-XBT_PUBLIC(void*) SIMIX_file_get_data(smx_file_t fd);
-XBT_PUBLIC(void) SIMIX_file_set_data(smx_file_t fd, void *data);
 
 /******************************************************************************/
 /*                            SIMIX simcalls                                  */
@@ -338,7 +331,8 @@ XBT_PUBLIC(void) simcall_host_execution_set_priority(smx_action_t execution, dou
 XBT_PUBLIC(void) simcall_host_execution_set_bound(smx_action_t execution, double bound);
 XBT_PUBLIC(void) simcall_host_execution_set_affinity(smx_action_t execution, smx_host_t host, unsigned long mask);
 XBT_PUBLIC(e_smx_state_t) simcall_host_execution_wait(smx_action_t execution);
-XBT_PUBLIC(xbt_dict_t) simcall_host_get_storage_list(smx_host_t host);
+XBT_PUBLIC(xbt_dict_t) simcall_host_get_mounted_storage_list(smx_host_t host);
+XBT_PUBLIC(xbt_dict_t) simcall_host_get_attached_storage_list(smx_host_t host);
 XBT_PUBLIC(void) simcall_host_get_params(smx_host_t vm, ws_params_t param);
 XBT_PUBLIC(void) simcall_host_set_params(smx_host_t vm, ws_params_t param);
 
@@ -509,7 +503,7 @@ XBT_PUBLIC(void*) SIMIX_storage_get_data(smx_storage_t storage);
 XBT_PUBLIC(void) SIMIX_storage_set_data(smx_storage_t storage, void *data);
 XBT_PUBLIC(xbt_dict_t) SIMIX_storage_get_content(smx_storage_t storage);
 XBT_PUBLIC(xbt_dict_t) simcall_storage_get_content(smx_storage_t storage);
-XBT_PUBLIC(const char*) SIMIX_storage_get_name(smx_host_t host);
+XBT_PUBLIC(const char*) SIMIX_storage_get_name(smx_storage_t storage);
 XBT_PUBLIC(sg_size_t) SIMIX_storage_get_size(smx_storage_t storage);
 XBT_PUBLIC(void) simcall_storage_file_rename(smx_storage_t storage, const char* src,  const char* dest);
 /************************** AS router   **********************************/

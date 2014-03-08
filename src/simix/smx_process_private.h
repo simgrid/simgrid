@@ -71,6 +71,16 @@ void SIMIX_process_create(smx_process_t *process,
                           int argc, char **argv,
                           xbt_dict_t properties,
                           int auto_restart);
+void SIMIX_process_create_with_parent(smx_process_t *process,
+	                          const char *name,
+	                          xbt_main_func_t code,
+	                          void *data,
+	                          const char *hostname,
+	                          double kill_time,
+	                          int argc, char **argv,
+	                          xbt_dict_t properties,
+	                          int auto_restart,
+	                          smx_process_t parent_process);
 void SIMIX_process_runall(void);
 void SIMIX_process_kill(smx_process_t process, smx_process_t issuer);
 void SIMIX_process_killall(smx_process_t issuer, int reset_pid);

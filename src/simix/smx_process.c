@@ -211,8 +211,9 @@ void SIMIX_pre_process_create(smx_simcall_t simcall,
                           int argc, char **argv,
                           xbt_dict_t properties,
                           int auto_restart){
-  return SIMIX_process_create(process, name, code, data, hostname,
-                              kill_time, argc, argv, properties, auto_restart);
+  SIMIX_process_create_with_parent(process, name, code, data, hostname,
+                              kill_time, argc, argv, properties, auto_restart,
+                              simcall->issuer);
 }
 /**
  * \brief Internal function to create a process.
@@ -232,7 +233,20 @@ void SIMIX_process_create(smx_process_t *process,
                           int argc, char **argv,
                           xbt_dict_t properties,
                           int auto_restart) {
+  SIMIX_process_create_with_parent(process, name, code, data, hostname,
+                                   kill_time, argc, argv, properties, auto_restart, NULL);
+}
 
+void SIMIX_process_create_with_parent(smx_process_t *process,
+	                          const char *name,
+	                          xbt_main_func_t code,
+	                          void *data,
+	                          const char *hostname,
+	                          double kill_time,
+	                          int argc, char **argv,
+	                          xbt_dict_t properties,
+	                          int auto_restart,
+	                          smx_process_t parent_process) {
   *process = NULL;
   smx_host_t host = SIMIX_host_get_by_name(hostname);
 
@@ -258,8 +272,8 @@ void SIMIX_process_create(smx_process_t *process,
     (*process)->comms = xbt_fifo_new();
     (*process)->simcall.issuer = *process;
     
-     if (SIMIX_process_self()) {
-       (*process)->ppid = SIMIX_process_get_PID(SIMIX_process_self());
+     if (parent_process) {
+       (*process)->ppid = SIMIX_process_get_PID(parent_process);
      } else {
        (*process)->ppid = -1;
      }
@@ -722,7 +736,6 @@ void SIMIX_post_process_sleep(smx_action_t action)
 {
   smx_simcall_t simcall;
   e_smx_state_t state;
-
   xbt_assert(action->type == SIMIX_ACTION_SLEEP);
 
   while ((simcall = xbt_fifo_shift(action->simcalls))) {
@@ -748,8 +761,8 @@ void SIMIX_post_process_sleep(smx_action_t action)
     simcall_process_sleep__set__result(simcall, state);
     simcall->issuer->waiting_action = NULL;
     SIMIX_simcall_answer(simcall);
-
   }
+
   SIMIX_process_sleep_destroy(action);
 }
 

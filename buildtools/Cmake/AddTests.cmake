@@ -110,11 +110,36 @@ if(NOT enable_memcheck)
     ADD_TEST(tesh-msg-pid-ucontext              ${TESH_COMMAND} ${TESH_OPTION} --cfg contexts/factory:ucontext --setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite --cd ${CMAKE_BINARY_DIR}/teshsuite ${CMAKE_HOME_DIRECTORY}/teshsuite/msg/pid.tesh)
   endif()
 
+  ADD_TEST(tesh-msg-host-on-off-thread          ${TESH_COMMAND} ${TESH_OPTION} --cfg contexts/factory:thread --setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite --cd ${CMAKE_BINARY_DIR}/teshsuite ${CMAKE_HOME_DIRECTORY}/teshsuite/msg/host_on_off.tesh)
+  if(HAVE_RAWCTX)
+    ADD_TEST(tesh-msg-host-on-off-raw           ${TESH_COMMAND} ${TESH_OPTION} --cfg contexts/factory:raw --setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite --cd ${CMAKE_BINARY_DIR}/teshsuite ${CMAKE_HOME_DIRECTORY}/teshsuite/msg/host_on_off.tesh)
+  endif()
+  if(CONTEXT_UCONTEXT)
+    ADD_TEST(tesh-msg-host-on-off-ucontext      ${TESH_COMMAND} ${TESH_OPTION} --cfg contexts/factory:ucontext --setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite --cd ${CMAKE_BINARY_DIR}/teshsuite ${CMAKE_HOME_DIRECTORY}/teshsuite/msg/host_on_off.tesh)
+  endif()
+
+  ADD_TEST(tesh-msg-task-destroy-cancel-thread          ${TESH_COMMAND} ${TESH_OPTION} --cfg contexts/factory:thread --setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite --cd ${CMAKE_BINARY_DIR}/teshsuite ${CMAKE_HOME_DIRECTORY}/teshsuite/msg/task_destroy_cancel.tesh)
+  if(HAVE_RAWCTX)
+    ADD_TEST(tesh-msg-task-destroy-cancel-raw           ${TESH_COMMAND} ${TESH_OPTION} --cfg contexts/factory:raw --setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite --cd ${CMAKE_BINARY_DIR}/teshsuite ${CMAKE_HOME_DIRECTORY}/teshsuite/msg/task_destroy_cancel.tesh)
+  endif()
+  if(CONTEXT_UCONTEXT)
+    ADD_TEST(tesh-msg-task-destroy-cancel-ucontext      ${TESH_COMMAND} ${TESH_OPTION} --cfg contexts/factory:ucontext --setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite --cd ${CMAKE_BINARY_DIR}/teshsuite ${CMAKE_HOME_DIRECTORY}/teshsuite/msg/task_destroy_cancel.tesh)
+  endif()
+
+  ADD_TEST(tesh-msg-process-thread          ${TESH_COMMAND} ${TESH_OPTION} --cfg contexts/factory:thread --setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite --cd ${CMAKE_BINARY_DIR}/teshsuite ${CMAKE_HOME_DIRECTORY}/teshsuite/msg/process.tesh)
+  if(HAVE_RAWCTX)
+    ADD_TEST(tesh-msg-process-raw           ${TESH_COMMAND} ${TESH_OPTION} --cfg contexts/factory:raw --setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite --cd ${CMAKE_BINARY_DIR}/teshsuite ${CMAKE_HOME_DIRECTORY}/teshsuite/msg/process.tesh)
+  endif()
+  if(CONTEXT_UCONTEXT)
+    ADD_TEST(tesh-msg-process-ucontext      ${TESH_COMMAND} ${TESH_OPTION} --cfg contexts/factory:ucontext --setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite --cd ${CMAKE_BINARY_DIR}/teshsuite ${CMAKE_HOME_DIRECTORY}/teshsuite/msg/process.tesh)
+  endif()
+
+
   # these tests need the assertion mechanism
   # exclude them from memcheck, as they normally die, leaving lots of unfree'd objects
   IF(enable_debug AND NOT enable_memcheck)
     ADD_TEST(tesh-parser-bogus-symmetric     ${TESH_COMMAND} ${TESH_OPTION} --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/simdag/platforms --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/simdag/platforms bogus_two_hosts_asymetric.tesh)
-    ADD_TEST(tesh-parser-bogus-missing-srcgw ${TESH_COMMAND} ${TESH_OPTION} --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/simdag/platforms --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/simdag/platforms bogus_missing_src_gateway.tesh)
+    ADD_TEST(tesh-parser-bogus-missing-gw ${TESH_COMMAND} ${TESH_OPTION} --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/simdag/platforms --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/simdag/platforms bogus_missing_gateway.tesh)
   ENDIF()
 
   ADD_TEST(tesh-simdag-bypass                   ${TESH_COMMAND} ${TESH_OPTION} --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/simdag/platforms --setenv srcdir=${CMAKE_HOME_DIRECTORY} --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/simdag/platforms basic_parsing_test_bypass.tesh)

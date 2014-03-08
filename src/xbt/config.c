@@ -380,10 +380,11 @@ void xbt_cfg_help(xbt_cfg_t cfg)
     printf("   %s: %s\n", name, variable->desc);
     printf("       Type: %s; ", xbt_cfgelm_type_name[variable->type]);
     if (variable->min != 1 || variable->max != 1) {
-      if (variable->min == 0 && variable->max == 0)
-        printf("Arity: no bound; ");
+      printf("Arity: min:%d to max:", variable->min);
+      if (variable->max == 0)
+        printf("(no bound); ");
       else
-        printf("Arity: min:%d to max:%d; ", variable->min, variable->max);
+        printf("%d; ", variable->max);
     }
     size = xbt_dynar_length(variable->content);
     printf("Current value%s: ", (size <= 1 ? "" : "s"));
@@ -451,6 +452,13 @@ void xbt_cfg_check(xbt_cfg_t cfg)
              "Config elem %s needs at least %d %s, but there is only %d values.",
              name, variable->min, xbt_cfgelm_type_name[variable->type],
              size);
+    }
+
+    if (variable->isdefault && size > variable->min) {
+      xbt_dict_cursor_free(&cursor);
+      THROWF(mismatch_error, 0,
+             "Config elem %s theoretically accepts %d %s, but has a default of %d values.",
+             name, variable->min, xbt_cfgelm_type_name[variable->type], size);
     }
 
     if (variable->max > 0 && variable->max < size) {

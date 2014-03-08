@@ -50,11 +50,6 @@ typedef struct simdata_file {
   smx_file_t smx_file;
 } s_simdata_file_t;
 
-/********************************* Storage **************************************/
-typedef struct simdata_storage {
-  smx_storage_t smx_storage;
-} s_simdata_storage_t;
-
 /*************** Begin GPU ***************/
 typedef struct simdata_gpu_task {
   double computation_amount;    /* Computation size */
@@ -146,6 +141,7 @@ msg_host_t __MSG_host_create(smx_host_t workstation);
 msg_storage_t __MSG_storage_create(smx_storage_t storage);
 void __MSG_host_destroy(msg_host_t host);
 void __MSG_storage_destroy(msg_storage_priv_t host);
+void __MSG_file_destroy(msg_file_priv_t host);
 
 void MSG_process_cleanup_from_SIMIX(smx_process_t smx_proc);
 void MSG_process_create_from_SIMIX(smx_process_t *process, const char *name,

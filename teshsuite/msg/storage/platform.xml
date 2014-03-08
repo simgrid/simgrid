@@ -24,13 +24,13 @@
 		</storage_type>
 
 		<!-- DISKS -->
-		<storage id="cdisk" typeId="single_HDD" content="msg/storage/storage_content_c.txt" />
+		<storage id="cdisk" typeId="single_HDD" content="msg/storage/storage_content_c.txt" attach="client"/>
 
-		<storage id="sdisk1" typeId="single_SSD" content="msg/storage/storage_content_s1.txt">
+		<storage id="sdisk1" typeId="single_SSD" content="msg/storage/storage_content_s1.txt" attach="server">
 			<prop id="usage" value="File system"/>
 		</storage>
 			
-		<storage id="sdisk2" typeId="single_HDD" content="msg/storage/storage_content_s2.txt" >
+		<storage id="sdisk2" typeId="single_HDD" content="msg/storage/storage_content_s2.txt" attach="server">
 			<prop id="usage" value="Cache"/>
 		</storage>
 

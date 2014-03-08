@@ -123,10 +123,16 @@ static inline int simcall_host_execution_wait__get__result(smx_simcall_t simcall
 static inline void simcall_host_execution_wait__set__result(smx_simcall_t simcall, int result){
     simcall->result.i = result;
 }
-static inline xbt_dict_t simcall_host_get_storage_list__get__result(smx_simcall_t simcall){
+static inline xbt_dict_t simcall_host_get_mounted_storage_list__get__result(smx_simcall_t simcall){
   return (xbt_dict_t) simcall->result.dp;
 }
-static inline void simcall_host_get_storage_list__set__result(smx_simcall_t simcall, void* result){
+static inline void simcall_host_get_mounted_storage_list__set__result(smx_simcall_t simcall, void* result){
+    simcall->result.dp = result;
+}
+static inline xbt_dict_t simcall_host_get_attached_storage_list__get__result(smx_simcall_t simcall){
+  return (xbt_dict_t) simcall->result.dp;
+}
+static inline void simcall_host_get_attached_storage_list__set__result(smx_simcall_t simcall, void* result){
     simcall->result.dp = result;
 }
 
@@ -259,12 +265,6 @@ static inline void simcall_rdv_create__set__result(smx_simcall_t simcall, void* 
 }
 
 
-static inline smx_host_t simcall_rdv_get_by_name__get__result(smx_simcall_t simcall){
-  return (smx_host_t) simcall->result.dp;
-}
-static inline void simcall_rdv_get_by_name__set__result(smx_simcall_t simcall, void* result){
-    simcall->result.dp = result;
-}
 static inline unsigned int simcall_rdv_comm_count_by_host__get__result(smx_simcall_t simcall){
   return  simcall->result.ui;
 }
@@ -425,14 +425,6 @@ static inline int simcall_sem_get_capacity__get__result(smx_simcall_t simcall){
 static inline void simcall_sem_get_capacity__set__result(smx_simcall_t simcall, int result){
     simcall->result.i = result;
 }
-static inline void* simcall_file_get_data__get__result(smx_simcall_t simcall){
-  return  simcall->result.dp;
-}
-static inline void simcall_file_get_data__set__result(smx_simcall_t simcall, void* result){
-    simcall->result.dp = result;
-}
-
-
 static inline sg_size_t simcall_file_read__get__result(smx_simcall_t simcall){
   return  simcall->result.sgsz;
 }

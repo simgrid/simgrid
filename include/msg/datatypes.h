@@ -96,30 +96,35 @@ static inline msg_vm_priv_t MSG_vm_priv(msg_vm_t vm){
   return (msg_vm_priv_t) xbt_lib_get_level(vm, MSG_HOST_LEVEL);
 }
 
-/* ******************************** File ************************************ */
+/** ******************************** File ************************************ */
+
+/** @brief File datatype.
+// *  @ingroup msg_file_management
+// *
+// *  You should consider this as an opaque object.
+// */
+//
+//typedef struct msg_file *msg_file_t;
+extern int MSG_FILE_LEVEL;
 typedef struct simdata_file *simdata_file_t;
 
-typedef struct s_msg_file_info {
+typedef xbt_dictelm_t msg_file_t;
+typedef s_xbt_dictelm_t s_msg_file_t;
+
+typedef struct msg_file_priv  {
+  const char *fullname;
   sg_size_t size;
   char* mount_point;
   char* storageId;
   char* storage_type;
   char* content_type;
-} s_msg_file_info_t, *msg_file_info_t;
+  void *data;
+  simdata_file_t simdata;
+} s_msg_file_priv_t, *msg_file_priv_t;
 
-typedef struct msg_file {
-  char *fullname;               /**< @brief file full name (path+name)*/
-  simdata_file_t simdata;       /**< @brief simulator data  */
-  msg_file_info_t info;
-} s_msg_file_t;
-
-/** @brief File datatype.
- *  @ingroup msg_file_management
- *
- *  You should consider this as an opaque object.
- */
-
-typedef struct msg_file *msg_file_t;
+static inline msg_file_priv_t MSG_file_priv(msg_file_t file){
+  return (msg_file_priv_t )xbt_lib_get_level(file, MSG_FILE_LEVEL);
+}
 
 /* ******************************** Storage ************************************ */
 /* TODO: PV: to comment */
@@ -138,6 +143,10 @@ typedef struct msg_storage_priv  {
   // TODO PV: fill it (or not) !
   void * dummy;
 } s_msg_storage_priv_t, *msg_storage_priv_t;
+
+static inline msg_storage_priv_t MSG_storage_priv(msg_storage_t storage){
+  return (msg_storage_priv_t )xbt_lib_get_level(storage, MSG_STORAGE_LEVEL);
+}
 
 /*************** Begin GPU ***************/
 typedef struct simdata_gpu_task *simdata_gpu_task_t;

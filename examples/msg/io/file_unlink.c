@@ -38,7 +38,7 @@ int host(int argc, char *argv[])
   file = MSG_file_open(mount,FILENAME1, NULL);
 
   // Unlink the file
-  XBT_INFO("\tUnlink file '%s'",file->fullname);
+  XBT_INFO("\tUnlink file '%s'",MSG_file_get_name(file));
   MSG_file_unlink(file);
 
   // Re Open the file wich is in fact created
@@ -47,10 +47,10 @@ int host(int argc, char *argv[])
 
   // Write into the new file
   write = MSG_file_write(file,100000);  // Write for 100Ko
-  XBT_INFO("\tHave written %llu on %s",write,file->fullname);
+  XBT_INFO("\tHave written %llu on %s",write,MSG_file_get_name(file));
 
   // Close the file
-  XBT_INFO("\tClose file '%s'",file->fullname);
+  XBT_INFO("\tClose file '%s'",MSG_file_get_name(file));
   MSG_file_close(file);
 
   xbt_dict_t dict_ls;

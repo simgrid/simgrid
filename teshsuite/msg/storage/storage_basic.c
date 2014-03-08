@@ -30,7 +30,7 @@ void storage_info(msg_host_t host)
   char* storage_name;
   msg_storage_t storage;
 
-  xbt_dict_t storage_list = MSG_host_get_storage_list(MSG_host_self());
+  xbt_dict_t storage_list = MSG_host_get_mounted_storage_list(MSG_host_self());
 
   xbt_dict_foreach(storage_list,cursor,mount_name,storage_name)
   {

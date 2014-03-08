@@ -88,7 +88,7 @@ public:
    * @return The created Storage
    */
   virtual StoragePtr createResource(const char* id, const char* type_id,
-		   const char* content_name, const char* content_type, xbt_dict_t properties)=0;
+		   const char* content_name, const char* content_type, xbt_dict_t properties,const char *attach)=0;
 
   xbt_dynar_t p_storageList;
 };
@@ -136,7 +136,7 @@ public:
           lmm_system_t maxminSystem, double bread, double bwrite,
           double bconnection,
           const char* type_id, char *content_name, char *content_type,
-          sg_size_t size);
+          sg_size_t size, char *attach);
 
   /**
    * @brief Storage destructor
@@ -166,6 +166,7 @@ public:
   sg_size_t m_size;
   sg_size_t m_usedSize;
   char * p_typeId;
+  char* p_attach;
 
   /**
    * @brief Open a file

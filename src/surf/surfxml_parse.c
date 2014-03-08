@@ -239,6 +239,7 @@ void ETag_surfxml_storage(void)
   storage.content = A_surfxml_storage_content;
   storage.content_type = A_surfxml_storage_content___type;
   storage.properties = current_property_set;
+  storage.attach = A_surfxml_storage_attach;
   sg_platf_new_storage(&storage);
   current_property_set = NULL;
 }
@@ -767,6 +768,13 @@ void ETag_surfxml_ASroute(void){
 
   ASroute.gw_src = sg_routing_edge_by_name_or_null(A_surfxml_ASroute_gw___src);
   ASroute.gw_dst = sg_routing_edge_by_name_or_null(A_surfxml_ASroute_gw___dst);
+
+  if (A_surfxml_ASroute_gw___src && !ASroute.gw_src)
+    surf_parse_error("gw_src=\"%s\" not found for ASroute from \"%s\" to \"%s\"",
+                     A_surfxml_ASroute_gw___src, ASroute.src, ASroute.dst);
+  if (A_surfxml_ASroute_gw___dst && !ASroute.gw_dst)
+    surf_parse_error("gw_dst=\"%s\" not found for ASroute from \"%s\" to \"%s\"",
+                     A_surfxml_ASroute_gw___dst, ASroute.src, ASroute.dst);
 
   ASroute.link_list = parsed_link_list;
 

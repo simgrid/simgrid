@@ -234,7 +234,8 @@ sg_platf_route_cbarg_t AsGeneric::getBypassRoute(RoutingEdgePtr src,
 
     if (src == NULL || dst == NULL)
       xbt_die("Ask for route \"from\"(%s) or \"to\"(%s) no found at AS \"%s\"",
-          src->getName(), dst->getName(), p_name);
+              src ? src->getName() : "(null)",
+              dst ? dst->getName() : "(null)", p_name);
 
     src_as = src->getRcComponent();
     dst_as = dst->getRcComponent();
@@ -439,20 +440,14 @@ AsPtr AsGeneric::processingUnitsExist(char *element)
 
 void AsGeneric::srcDstCheck(RoutingEdgePtr src, RoutingEdgePtr dst)
 {
-
-  RoutingEdgePtr src_data = src;
-  RoutingEdgePtr dst_data = dst;
-
-  if (src_data == NULL || dst_data == NULL)
+  if (src == NULL || dst == NULL)
     xbt_die("Ask for route \"from\"(%s) or \"to\"(%s) no found at AS \"%s\"",
-        src->getName(),
-        dst->getName(),
-        p_name);
+            src ? src->getName() : "(null)",
+            dst ? dst->getName() : "(null)",
+            p_name);
 
-  AsPtr src_as =
-      (src_data)->getRcComponent();
-  AsPtr dst_as =
-      (dst_data)->getRcComponent();
+  AsPtr src_as = src->getRcComponent();
+  AsPtr dst_as = dst->getRcComponent();
 
   if (src_as != dst_as)
     xbt_die("The src(%s in %s) and dst(%s in %s) are in differents AS",

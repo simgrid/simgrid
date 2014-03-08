@@ -246,7 +246,14 @@ public:
    * 
    * @return The xbt_dict_t of mount_point: Storage
    */
-  virtual xbt_dict_t getStorageList();
+  virtual xbt_dict_t getMountedStorageList();
+
+  /**
+   * @brief Get the xbt_dict_t of storages attached to the workstation
+   *
+   * @return The xbt_dict_t of Storage
+   */
+  virtual xbt_dict_t getAttachedStorageList();
 
   /**
    * @brief Open a file

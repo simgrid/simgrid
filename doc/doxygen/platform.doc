@@ -383,11 +383,11 @@ The second examples creates one router and 100 machines, which names
 are the following:
 \verbatim
 c-my_cluster_1_router.me
-c-0.my_cluster_1.me
-c-1.my_cluster_1.me
-c-2.my_cluster_1.me
+c-0.me
+c-1.me
+c-2.me
 ...
-c-99.my_cluster_1.me
+c-99.me
 \endverbatim
 
 \subsubsection pf_peer peer
@@ -637,8 +637,9 @@ the tool you use for rendering your simulation, for example.
 \li <b>id (mandatory)</b>: the identifier of the storage to be used
     when referring to it. 
 \li <b>typeId (mandatory)</b>: the identifier of the storage_type that
-    this storage  belongs to. 
-
+    this storage belongs to. 
+\li <b>attach (mandatory)</b>: the host (name) to which the storage is 
+	attached to.
 
 \subsubsection pf_sto_mo mount
 

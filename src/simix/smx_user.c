@@ -1316,30 +1316,6 @@ int simcall_sem_get_capacity(smx_sem_t sem)
 
 /**
  * \ingroup simix_file_management
- * \brief Returns the user data associated to a file.
- *
- * \param fd A simix file
- * \return the user data of this file
- */
-void* simcall_file_get_data(smx_file_t fd)
-{
-  return simcall_BODY_file_get_data(fd);
-}
-
-/**
- * \ingroup simix_file_management
- * \brief Sets the user data associated to a file.
- *
- * \param fd A SIMIX file
- * \param data The user data to set
- */
-void simcall_file_set_data(smx_file_t fd, void *data)
-{
-  simcall_BODY_file_set_data(fd, data);
-}
-
-/**
- * \ingroup simix_file_management
  *
  */
 sg_size_t simcall_file_read(smx_file_t fd, sg_size_t size)
@@ -1459,9 +1435,20 @@ sg_size_t simcall_storage_get_used_size (const char* name){
  * \param host A SIMIX host
  * \return a dict containing all storages mounted on the host
  */
-xbt_dict_t simcall_host_get_storage_list(smx_host_t host)
+xbt_dict_t simcall_host_get_mounted_storage_list(smx_host_t host)
 {
-  return simcall_BODY_host_get_storage_list(host);
+  return simcall_BODY_host_get_mounted_storage_list(host);
+}
+
+/**
+ * \ingroup simix_storage_management
+ * \brief Returns the list of storages attached to an host.
+ * \param host A SIMIX host
+ * \return a dict containing all storages attached to the host
+ */
+xbt_dict_t simcall_host_get_attached_storage_list(smx_host_t host)
+{
+  return simcall_BODY_host_get_attached_storage_list(host);
 }
 
 /**

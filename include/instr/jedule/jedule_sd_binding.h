@@ -9,7 +9,6 @@
 
 #include "simgrid_config.h"
 
-#include "simdag/private.h"
 #include "simdag/datatypes.h"
 #include "simdag/simdag.h"
 

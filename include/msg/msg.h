@@ -95,6 +95,8 @@ XBT_PUBLIC(xbt_dict_t) MSG_file_ls(const char *mount, const char *path);
 XBT_PUBLIC(msg_error_t) MSG_file_seek(msg_file_t fd, sg_size_t offset, int origin);
 XBT_PUBLIC(sg_size_t) MSG_file_tell (msg_file_t fd);
 XBT_PUBLIC(void) __MSG_file_get_info(msg_file_t fd);
+XBT_PUBLIC(void) __MSG_file_priv_free(msg_file_priv_t priv);
+XBT_PUBLIC(const char *) MSG_file_get_name(msg_file_t storage);
 /************************** Storage handling ***********************************/
 XBT_PUBLIC(msg_host_t) MSG_get_storage_by_name(const char *name);
 XBT_PUBLIC(const char *) MSG_storage_get_name(msg_storage_t storage);
@@ -152,7 +154,8 @@ XBT_PUBLIC(xbt_dynar_t) MSG_hosts_as_dynar(void);
 XBT_PUBLIC(int) MSG_get_host_number(void);
 XBT_PUBLIC(void) MSG_host_get_params(msg_host_t ind_pm, ws_params_t params);
 XBT_PUBLIC(void) MSG_host_set_params(msg_host_t ind_pm, ws_params_t params);
-XBT_PUBLIC(xbt_dict_t) MSG_host_get_storage_list(msg_host_t host);
+XBT_PUBLIC(xbt_dict_t) MSG_host_get_mounted_storage_list(msg_host_t host);
+XBT_PUBLIC(xbt_dict_t) MSG_host_get_attached_storage_list(msg_host_t host);
 XBT_PUBLIC(xbt_dict_t) MSG_host_get_storage_content(msg_host_t host);
 /************************** Process handling *********************************/
 XBT_PUBLIC(msg_process_t) MSG_process_create(const char *name,

@@ -129,8 +129,13 @@ case SIMCALL_HOST_EXECUTION_WAIT:
        SIMIX_pre_host_execution_wait(simcall , (smx_action_t) simcall->args[0].dp);
        break;  
 
-case SIMCALL_HOST_GET_STORAGE_LIST:
-      simcall->result.dp = SIMIX_pre_host_get_storage_list(simcall , (smx_host_t) simcall->args[0].dp);
+case SIMCALL_HOST_GET_MOUNTED_STORAGE_LIST:
+      simcall->result.dp = SIMIX_pre_host_get_mounted_storage_list(simcall , (smx_host_t) simcall->args[0].dp);
+      SIMIX_simcall_answer(simcall);
+      break;  
+
+case SIMCALL_HOST_GET_ATTACHED_STORAGE_LIST:
+      simcall->result.dp = SIMIX_pre_host_get_attached_storage_list(simcall , (smx_host_t) simcall->args[0].dp);
       SIMIX_simcall_answer(simcall);
       break;  
 
@@ -317,11 +322,6 @@ case SIMCALL_RDV_DESTROY:
       SIMIX_simcall_answer(simcall);
       break;  
 
-case SIMCALL_RDV_GET_BY_NAME:
-      simcall->result.dp = SIMIX_pre_rdv_get_by_name(simcall ,  simcall->args[0].cc);
-      SIMIX_simcall_answer(simcall);
-      break;  
-
 case SIMCALL_RDV_COMM_COUNT_BY_HOST:
       simcall->result.ui = SIMIX_pre_rdv_comm_count_by_host(simcall , (smx_rdv_t) simcall->args[0].dp, (smx_host_t) simcall->args[1].dp);
       SIMIX_simcall_answer(simcall);
@@ -498,16 +498,6 @@ case SIMCALL_SEM_ACQUIRE_TIMEOUT:
 
 case SIMCALL_SEM_GET_CAPACITY:
       simcall->result.i = SIMIX_pre_sem_get_capacity(simcall , (smx_sem_t) simcall->args[0].dp);
-      SIMIX_simcall_answer(simcall);
-      break;  
-
-case SIMCALL_FILE_GET_DATA:
-      simcall->result.dp = SIMIX_pre_file_get_data(simcall , (smx_file_t) simcall->args[0].dp);
-      SIMIX_simcall_answer(simcall);
-      break;  
-
-case SIMCALL_FILE_SET_DATA:
-       SIMIX_pre_file_set_data(simcall , (smx_file_t) simcall->args[0].dp,  simcall->args[1].dp);
       SIMIX_simcall_answer(simcall);
       break;  
 
