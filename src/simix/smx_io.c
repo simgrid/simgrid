@@ -406,12 +406,12 @@ void SIMIX_post_io(smx_action_t action)
 
   xbt_fifo_foreach(action->simcalls,i,simcall,smx_simcall_t) {
     switch (simcall->call) {
-    case SIMCALL_FILE_OPEN:;
+    case SIMCALL_FILE_OPEN: {
       smx_file_t tmp = xbt_new(s_smx_file_t,1);
       tmp->surf_file = surf_storage_action_get_file(action->io.surf_io);
       simcall_file_open__set__result(simcall, tmp);
       break;
-
+    }
     case SIMCALL_FILE_CLOSE:
       xbt_free(simcall_file_close__get__fd(simcall));
       simcall_file_close__set__result(simcall, 0);

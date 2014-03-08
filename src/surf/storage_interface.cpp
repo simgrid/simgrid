@@ -72,7 +72,7 @@ Storage::Storage(ModelPtr model, const char *name, xbt_dict_t props,
  , p_writeActions(xbt_dynar_new(sizeof(ActionPtr),NULL)) {
   surf_callback_emit(storageCreatedCallbacks, this);
   p_content = parseContent(content_name);
-  p_attach = (xbt_strdup(attach));
+  p_attach = xbt_strdup(attach);
   setState(SURF_RESOURCE_ON);
   XBT_DEBUG("Create resource with Bconnection '%f' Bread '%f' Bwrite '%f' and Size '%llu'", bconnection, bread, bwrite, size);
   p_constraintRead  = lmm_constraint_new(maxminSystem, this, bread);

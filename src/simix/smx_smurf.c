@@ -61,9 +61,9 @@ void SIMIX_simcall_pre(smx_simcall_t simcall, int value)
     return;
   switch (simcall->call) {
 #include "simcalls_generated_case.c"
-    case NUM_SIMCALLS:;
+    case NUM_SIMCALLS:
       break;
-    case SIMCALL_NONE:;
+    case SIMCALL_NONE:
       THROWF(arg_error,0,"Asked to do the noop syscall on %s@%s",
           SIMIX_process_get_name(simcall->issuer),
           SIMIX_host_get_name(SIMIX_process_get_host(simcall->issuer))

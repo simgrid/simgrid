@@ -213,7 +213,7 @@ static void handle_task(node_t node, msg_task_t task) {
     /*
      * Try to join the ring
      */
-    case TASK_JOIN:;
+    case TASK_JOIN: {
       int next = routing_next(node, task_data->answer_id);
       XBT_DEBUG("Join request from %08x forwarding to %08x", task_data->answer_id, next);      
       type = TASK_JOIN_LAST_REPLY;
@@ -240,7 +240,7 @@ static void handle_task(node_t node, msg_task_t task) {
       task_sent = MSG_task_create(NULL, COMP_SIZE, COMM_SIZE, req_data);
       MSG_task_send_with_timeout(task_sent, task_data->answer_to, timeout);
       break;
-
+    }
     /*
      * Join reply from all the node touched by the join
      */

@@ -327,8 +327,7 @@ void SIMIX_run(void)
     /* Wake up all processes waiting for a Surf action to finish */
     xbt_dynar_foreach(model_list, iter, model) {
       while ((action = surf_model_extract_failed_action_set(model)))
-
-      SIMIX_simcall_post((smx_action_t) surf_action_get_data(action));
+        SIMIX_simcall_post((smx_action_t) surf_action_get_data(action));
 
       while ((action = surf_model_extract_done_action_set(model)))
         if (surf_action_get_data(action) == NULL)
