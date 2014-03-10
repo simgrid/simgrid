@@ -299,7 +299,6 @@ void* mc_find_frame_base(dw_frame_t frame, unw_cursor_t* unw_cursor) {
   return (void*) mc_dwarf_resolve_locations(&frame->frame_base, unw_cursor, NULL, NULL);
 }
 
-static
 void mc_dwarf_expression_clear(mc_expression_t expression) {
   free(expression->ops);
   expression->ops = NULL;
@@ -317,7 +316,6 @@ void mc_dwarf_location_list_clear(mc_location_list_t list) {
   list->size = 0;
 }
 
-static
 void mc_dwarf_expression_init(mc_expression_t expression, size_t len, Dwarf_Op* ops) {
   if(expression->ops) {
     free(expression->ops);

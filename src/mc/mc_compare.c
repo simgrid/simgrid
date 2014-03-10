@@ -212,7 +212,9 @@ static int compare_areas_with_type(void *area1, void *area2, mc_snapshot_t snaps
   case DW_TAG_class_type:
     xbt_dynar_foreach(type->members, cursor, member){
       XBT_DEBUG("Compare member %s", member->name);
-      res = compare_areas_with_type((char *)area1 + member->offset, (char *)area2 + member->offset, snapshot1, snapshot2, info, other_info, member->subtype, region_size, region_type, start_data, pointer_level);
+      void* member1 = mc_member_snapshot_resolve(area1, type, member, snapshot1);
+      void* member2 = mc_member_snapshot_resolve(area2, type, member, snapshot2);
+      res = compare_areas_with_type(member1, member2, snapshot1, snapshot2, info, other_info, member->subtype, region_size, region_type, start_data, pointer_level);
       if(res == 1)
         return res;
     }

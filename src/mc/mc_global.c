@@ -156,6 +156,7 @@ void dw_type_free(dw_type_t t){
   xbt_free(t->name);
   xbt_free(t->dw_type_id);
   xbt_dynar_free(&(t->members));
+  mc_dwarf_expression_clear(&t->location);
   xbt_free(t);
 }
 

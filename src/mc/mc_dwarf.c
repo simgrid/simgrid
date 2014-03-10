@@ -416,7 +416,7 @@ static void MC_dwarf_fill_member_location(dw_type_t type, dw_type_t member, Dwar
       if (len==1 && expr[0].atom == DW_OP_plus_uconst) {
         member->offset =  expr[0].number;
       } else {
-        xbt_die("Can't groke this location expression yet.");
+        mc_dwarf_expression_init(&member->location, len, expr);
       }
       break;
     }

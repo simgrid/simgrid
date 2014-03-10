@@ -95,6 +95,7 @@ mc_snapshot_t MC_take_snapshot(int num_state);
 void MC_restore_snapshot(mc_snapshot_t);
 void MC_free_snapshot(mc_snapshot_t);
 void* mc_translate_address(uintptr_t addr, mc_snapshot_t snapshot);
+uintptr_t mc_untranslate_address(void* addr, mc_snapshot_t snapshot);
 
 extern xbt_dynar_t mc_checkpoint_ignore;
 
@@ -393,12 +394,36 @@ typedef struct s_mc_location_list {
 Dwarf_Off mc_dwarf_resolve_location(mc_expression_t expression, unw_cursor_t* c, void* frame_pointer_address, mc_snapshot_t snapshot);
 Dwarf_Off mc_dwarf_resolve_locations(mc_location_list_t locations, unw_cursor_t* c, void* frame_pointer_address, mc_snapshot_t snapshot);
 
+void mc_dwarf_expression_clear(mc_expression_t expression);
+void mc_dwarf_expression_init(mc_expression_t expression, size_t len, Dwarf_Op* ops);
+
 void mc_dwarf_location_list_clear(mc_location_list_t list);
 
 void mc_dwarf_location_list_init_from_expression(mc_location_list_t target, size_t len, Dwarf_Op* ops);
 void mc_dwarf_location_list_init(mc_location_list_t target, mc_object_info_t info, Dwarf_Die* die, Dwarf_Attribute* attr);
 
 // ***** Variables and functions
+
+struct s_dw_type{
+  e_dw_type_type type;
+  void *id; /* Offset in the section (in hexadecimal form) */
+  char *name; /* Name of the type */
+  int byte_size; /* Size in bytes */
+  int element_count; /* Number of elements for array type */
+  char *dw_type_id; /* DW_AT_type id */
+  xbt_dynar_t members; /* if DW_TAG_structure_type, DW_TAG_class_type, DW_TAG_union_type*/
+  int is_pointer_type;
+
+  // Location (for members) is either of:
+  struct s_mc_expression location;
+  int offset;
+
+  dw_type_t subtype; // DW_AT_type
+  dw_type_t other_object_same_type; // The same (but more complete) type in the other object.
+};
+
+void* mc_member_resolve(const void* base, dw_type_t type, dw_type_t member, mc_snapshot_t snapshot);
+void* mc_member_snapshot_resolve(const void* base, dw_type_t type, dw_type_t member, mc_snapshot_t snapshot);
 
 typedef struct s_dw_variable{
   Dwarf_Off dwarf_offset; /* Global offset of the field. */

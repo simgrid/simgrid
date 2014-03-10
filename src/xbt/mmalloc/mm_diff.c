@@ -136,7 +136,9 @@ typedef char* type_name;
 struct s_mm_diff {
   void *s_heap, *heapbase1, *heapbase2;
   malloc_info *heapinfo1, *heapinfo2;
-  size_t heaplimit, heapsize1, heapsize2;
+  size_t heaplimit;
+  // Number of blocks in the heaps:
+  size_t heapsize1, heapsize2;
   xbt_dynar_t to_ignore1, to_ignore2;
   heap_area_t **equals_to1, **equals_to2;
   type_name **types1, **types2;
@@ -296,6 +298,13 @@ static void match_equals(struct s_mm_diff *state, xbt_dynar_t list){
   }
 }
 
+/** Check whether two blocks are known to be matching
+ *
+ *  @param state  State used
+ *  @param b1     Block of state 1
+ *  @param b2     Block of state 2
+ *  @return       if the blocks are known to be matching
+ */
 static int equal_blocks(struct s_mm_diff *state, int b1, int b2){
   
   if(state->equals_to1[b1][0]->block == b2 && state->equals_to2[b2][0]->block == b1)
@@ -304,6 +313,15 @@ static int equal_blocks(struct s_mm_diff *state, int b1, int b2){
   return 0;
 }
 
+/** Check whether two fragments are known to be matching
+ *
+ *  @param state  State used
+ *  @param b1     Block of state 1
+ *  @param f1     Fragment of state 1
+ *  @param b2     Block of state 2
+ *  @param f2     Fragment of state 2
+ *  @return       if the fragments are known to be matching
+ */
 static int equal_fragments(struct s_mm_diff *state, int b1, int f1, int b2, int f2){
   
   if(state->equals_to1[b1][f1]->block == b2
@@ -704,6 +722,21 @@ int mmalloc_compare_heap(mc_snapshot_t snapshot1, mc_snapshot_t snapshot2, xbt_m
   return ((nb_diff1 > 0) || (nb_diff2 > 0));
 }
 
+/**
+ *
+ * @param state
+ * @param real_area1     Process address for state 1
+ * @param real_area2     Process address for state 2
+ * @param area1          Snapshot address for state 1
+ * @param area2          Snapshot address for state 2
+ * @param snapshot1      Snapshot of state 1
+ * @param snapshot2      Snapshot of state 2
+ * @param previous
+ * @param info
+ * @param other_info
+ * @param size
+ * @param check_ignore
+ */
 static int compare_heap_area_without_type(struct s_mm_diff *state, void *real_area1, void *real_area2, void *area1, void *area2, mc_snapshot_t snapshot1, mc_snapshot_t snapshot2, xbt_dynar_t previous, mc_object_info_t info, mc_object_info_t other_info, int size, int check_ignore){
 
   int i = 0;
@@ -759,7 +792,24 @@ static int compare_heap_area_without_type(struct s_mm_diff *state, void *real_ar
  
 }
 
-// area_size is either a byte_size or an elements_count?&
+/**
+ *
+ * @param state
+ * @param real_area1     Process address for state 1
+ * @param real_area2     Process address for state 2
+ * @param area1          Snapshot address for state 1
+ * @param area2          Snapshot address for state 2
+ * @param snapshot1      Snapshot of state 1
+ * @param snapshot2      Snapshot of state 2
+ * @param previous
+ * @param info
+ * @param other_info
+ * @param type_id
+ * @param area_size      either a byte_size or an elements_count (?)
+ * @param check_ignore
+ * @param pointer_level
+ * @return               0 (same), 1 (different), -1 (unknown)
+ */
 static int compare_heap_area_with_type(struct s_mm_diff *state, void *real_area1, void *real_area2, void *area1, void *area2,
                                        mc_snapshot_t snapshot1, mc_snapshot_t snapshot2,
                                        xbt_dynar_t previous, mc_object_info_t info, mc_object_info_t other_info, char *type_id,
@@ -911,11 +961,16 @@ static int compare_heap_area_with_type(struct s_mm_diff *state, void *real_area1
       }
     }else{
       cursor = 0;
-      xbt_dynar_foreach(type->members, cursor, member){ 
+      xbt_dynar_foreach(type->members, cursor, member){
+        // TODO, optimize this? (for the offset case)
+        char* real_member1 = mc_member_resolve(real_area1, type, member, snapshot1);
+        char* real_member2 = mc_member_resolve(real_area2, type, member, snapshot2);
+        char* member1 = mc_translate_address((uintptr_t)real_member1, snapshot1);
+        char* member2 = mc_translate_address((uintptr_t)real_member2, snapshot2);
         if(switch_types)
-          res = compare_heap_area_with_type(state, (char *)real_area1 + member->offset, (char *)real_area2 + member->offset, (char *)area1 + member->offset, (char *)area2 + member->offset, snapshot1, snapshot2, previous, other_info, info, member->dw_type_id, -1, check_ignore, 0);
+          res = compare_heap_area_with_type(state, real_member1, real_member2, member1, member2, snapshot1, snapshot2, previous, other_info, info, member->dw_type_id, -1, check_ignore, 0);
         else
-          res = compare_heap_area_with_type(state, (char *)real_area1 + member->offset, (char *)real_area2 + member->offset, (char *)area1 + member->offset, (char *)area2 + member->offset, snapshot1, snapshot2, previous, info, other_info, member->dw_type_id, -1, check_ignore, 0);
+          res = compare_heap_area_with_type(state, real_member1, real_member2, member1, member2, snapshot1, snapshot2, previous, info, other_info, member->dw_type_id, -1, check_ignore, 0);
         if(res == 1){
           return res;
         }
@@ -933,12 +988,31 @@ static int compare_heap_area_with_type(struct s_mm_diff *state, void *real_area1
 
 }
 
-static char* get_offset_type(char* type_id, int offset, mc_object_info_t info, mc_object_info_t other_info, int area_size, int *switch_type){
+/** Infer the type of a part of the block from the type of the block
+ *
+ * TODO, handle DW_TAG_array_type as well as arrays of the object ((*p)[5], p[5])
+ *
+ * TODO, handle subfields ((*p).bar.foo, (*p)[5].bar…)
+ *
+ * @param  type_id            DWARF type ID of the root address (in info)
+ * @param  info               object debug information of the type of ther root address
+ * @param  other_info         other debug information
+ * @param  area_size
+ * @param  switch_type (out)  whether the resulting type is in info (false) or in other_info (true)
+ * @return                    DWARF type ID in either info or other_info
+ */
+static char* get_offset_type(void* real_base_address, char* type_id, int offset, mc_object_info_t info, mc_object_info_t other_info, int area_size, mc_snapshot_t snapshot, int *switch_type){
+
+  // Beginning of the block, the infered variable type if the type of the block:
+  if(offset==0)
+    return type_id;
+
   dw_type_t type = xbt_dict_get_or_null(info->types, type_id);
   if(type == NULL){
     type = xbt_dict_get_or_null(other_info->types, type_id);
     *switch_type = 1;
   }
+
   switch(type->type){
   case DW_TAG_structure_type :
   case DW_TAG_class_type:
@@ -971,8 +1045,17 @@ static char* get_offset_type(char* type_id, int offset, mc_object_info_t info, m
       unsigned int cursor = 0;
       dw_type_t member;
       xbt_dynar_foreach(type->members, cursor, member){ 
-        if(member->offset == offset)
-          return member->dw_type_id;
+
+        if(!member->location.size) {
+          // We have the offset, use it directly (shortcut):
+          if(member->offset == offset)
+            return member->dw_type_id;
+        } else {
+          char* real_member = mc_member_resolve(real_base_address, type, member, snapshot);
+          if(real_member - (char*)real_base_address == offset)
+            return member->dw_type_id;
+        }
+
       }
       return NULL;
     }
@@ -984,6 +1067,19 @@ static char* get_offset_type(char* type_id, int offset, mc_object_info_t info, m
   }
 }
 
+/**
+ *
+ * @param area1          Process address for state 1
+ * @param area2          Process address for state 2
+ * @param snapshot1      Snapshot of state 1
+ * @param snapshot2      Snapshot of state 2
+ * @param previous       Pairs of blocks already compared on the current path (or NULL)
+ * @param info
+ * @param other_info
+ * @param type_id        Type of variable
+ * @param pointer_level
+ * @return 0 (same), 1 (different), -1
+ */
 int compare_heap_area(void *area1, void* area2, mc_snapshot_t snapshot1, mc_snapshot_t snapshot2, xbt_dynar_t previous, mc_object_info_t info, mc_object_info_t other_info, char *type_id, int pointer_level){
 
   struct s_mm_diff* state = mm_diff_info;
@@ -1009,9 +1105,11 @@ int compare_heap_area(void *area1, void* area2, mc_snapshot_t snapshot1, mc_snap
     match_pairs = 1;
   }
 
+  // Get block number:
   block1 = ((char*)area1 - (char*)((xbt_mheap_t)state->s_heap)->heapbase) / BLOCKSIZE + 1;
   block2 = ((char*)area2 - (char*)((xbt_mheap_t)state->s_heap)->heapbase) / BLOCKSIZE + 1;
 
+  // If either block is a stack block:
   if(is_block_stack((int)block1) && is_block_stack((int)block2)){
     add_heap_area_pair(previous, block1, -1, block2, -1);
     if(match_pairs){
@@ -1021,20 +1119,26 @@ int compare_heap_area(void *area1, void* area2, mc_snapshot_t snapshot1, mc_snap
     return 0;
   }
 
-  if(((char *)area1 < (char*)((xbt_mheap_t)state->s_heap)->heapbase)  || (block1 > state->heapsize1) || (block1 < 1) || ((char *)area2 < (char*)((xbt_mheap_t)state->s_heap)->heapbase) || (block2 > state->heapsize2) || (block2 < 1)){
+  // If either block is not in the expected area of memory:
+  if(((char *)area1 < (char*)((xbt_mheap_t)state->s_heap)->heapbase)  || (block1 > state->heapsize1) || (block1 < 1)
+    || ((char *)area2 < (char*)((xbt_mheap_t)state->s_heap)->heapbase) || (block2 > state->heapsize2) || (block2 < 1)){
     if(match_pairs){
       xbt_dynar_free(&previous);
     }
     return 1;
   }
 
+  // Snapshot address of the block:
   addr_block1 = ((void*) (((ADDR2UINT(block1)) - 1) * BLOCKSIZE + (char*)state->heapbase1));
   addr_block2 = ((void*) (((ADDR2UINT(block2)) - 1) * BLOCKSIZE + (char*)state->heapbase2));
 
+  // Process address of the block:
   real_addr_block1 = ((void*) (((ADDR2UINT(block1)) - 1) * BLOCKSIZE + (char*)((xbt_mheap_t)state->s_heap)->heapbase));
   real_addr_block2 = ((void*) (((ADDR2UINT(block2)) - 1) * BLOCKSIZE + (char*)((xbt_mheap_t)state->s_heap)->heapbase));
 
   if(type_id){
+
+    // Lookup type:
     type = xbt_dict_get_or_null(info->types, type_id);
     if(type->byte_size == 0){
       if(type->subtype == NULL){
@@ -1047,10 +1151,13 @@ int compare_heap_area(void *area1, void* area2, mc_snapshot_t snapshot1, mc_snap
         type = type->subtype;
       }
     }
+
+    // Find type_size:
     if((type->type == DW_TAG_pointer_type) || ((type->type == DW_TAG_base_type) && type->name!=NULL && (!strcmp(type->name, "char"))))
       type_size = -1;
     else
       type_size = type->byte_size;
+
   }
   
   if((state->heapinfo1[block1].type == -1) && (state->heapinfo2[block2].type == -1)){  /* Free block */
@@ -1063,6 +1170,8 @@ int compare_heap_area(void *area1, void* area2, mc_snapshot_t snapshot1, mc_snap
 
   }else if((state->heapinfo1[block1].type == 0) && (state->heapinfo2[block2].type == 0)){ /* Complete block */
     
+    // TODO, lookup variable type from block type as done for fragmented blocks
+
     if(state->equals_to1[block1][0] != NULL && state->equals_to2[block2][0] != NULL){
       if(equal_blocks(state, block1, block2)){
         if(match_pairs){
@@ -1109,10 +1218,14 @@ int compare_heap_area(void *area1, void* area2, mc_snapshot_t snapshot1, mc_snap
  
     size = state->heapinfo1[block1].busy_block.busy_size;
     
-    if(type_id != NULL){
+    // Remember (basic) type inference.
+    // The current data structure only allows us to do this for the whole block.
+    if (type_id != NULL && area1==real_addr_block1) {
       xbt_free(state->types1[block1][0]);
-      xbt_free(state->types2[block2][0]);
       state->types1[block1][0] = strdup(type_id);
+    }
+    if (type_id != NULL && area2==real_addr_block2) {
+      xbt_free(state->types2[block2][0]);
       state->types2[block2][0] = strdup(type_id);
     }
 
@@ -1135,15 +1248,19 @@ int compare_heap_area(void *area1, void* area2, mc_snapshot_t snapshot1, mc_snap
       
   }else if((state->heapinfo1[block1].type > 0) && (state->heapinfo2[block2].type > 0)){ /* Fragmented block */
 
+    // Fragment number:
     frag1 = ((uintptr_t) (ADDR2UINT (area1) % (BLOCKSIZE))) >> state->heapinfo1[block1].type;
     frag2 = ((uintptr_t) (ADDR2UINT (area2) % (BLOCKSIZE))) >> state->heapinfo2[block2].type;
 
+    // Snapshot address of the fragment:
     addr_frag1 = (void*) ((char *)addr_block1 + (frag1 << state->heapinfo1[block1].type));
     addr_frag2 = (void*) ((char *)addr_block2 + (frag2 << state->heapinfo2[block2].type));
 
+    // Process address of the fragment:
     real_addr_frag1 = (void*) ((char *)real_addr_block1 + (frag1 << ((xbt_mheap_t)state->s_heap)->heapinfo[block1].type));
     real_addr_frag2 = (void*) ((char *)real_addr_block2 + (frag2 << ((xbt_mheap_t)state->s_heap)->heapinfo[block2].type));
 
+    // Check the size of the fragments against the size of the type:
     if(type_size != -1){
       if(state->heapinfo1[block1].busy_frag.frag_size[frag1] == -1 || state->heapinfo2[block2].busy_frag.frag_size[frag2] == -1){
         if(match_pairs){
@@ -1161,6 +1278,7 @@ int compare_heap_area(void *area1, void* area2, mc_snapshot_t snapshot1, mc_snap
       }
     }
 
+    // Check if the blocks are already matched together:
     if(state->equals_to1[block1][frag1] != NULL && state->equals_to2[block2][frag2] != NULL){
       if(equal_fragments(state, block1, frag1, block2, frag2)){
         if(match_pairs){
@@ -1171,6 +1289,7 @@ int compare_heap_area(void *area1, void* area2, mc_snapshot_t snapshot1, mc_snap
       }
     }
 
+    // Compare the size of both fragments:
     if(state->heapinfo1[block1].busy_frag.frag_size[frag1] != state->heapinfo2[block2].busy_frag.frag_size[frag2]){
       if(type_size == -1){
          if(match_pairs){
@@ -1186,27 +1305,44 @@ int compare_heap_area(void *area1, void* area2, mc_snapshot_t snapshot1, mc_snap
       }
     }
       
+    // Size of the fragment:
     size = state->heapinfo1[block1].busy_frag.frag_size[frag1];
 
-    if(type_id != NULL){
+    // Remember (basic) type inference.
+    // The current data structure only allows us to do this for the whole block.
+    if(type_id != NULL && area1==real_addr_frag1){
       xbt_free(state->types1[block1][frag1]);
-      xbt_free(state->types2[block2][frag2]);
       state->types1[block1][frag1] = strdup(type_id);
+    }
+    if(type_id != NULL && area2==real_addr_frag2) {
+      xbt_free(state->types2[block2][frag2]);
       state->types2[block2][frag2] = strdup(type_id);
     }
 
-    if(real_addr_frag1 != area1 || real_addr_frag2 != area2){
+    // The type of the variable is already known:
+    if(type_id) {
+      new_type_id1 = type_id;
+      new_type_id2 = type_id;
+    }
+
+    // Type inference from the block type.
+    // Correctness bug: we do not know from which object the type comes.
+    // This code is disabled for this reason.
+    // TODO, fix by using the type instead of the type global DWARF offset.
+    else if(0 && (state->types1[block1][frag1] != NULL || state->types2[block2][frag2] != NULL)) {
+
       offset1 = (char *)area1 - (char *)real_addr_frag1;
       offset2 = (char *)area2 - (char *)real_addr_frag2;
+
       if(state->types1[block1][frag1] != NULL && state->types2[block2][frag2] != NULL){
-        new_type_id1 = get_offset_type(state->types1[block1][frag1], offset1, info, other_info, size, &switch_type);
-        new_type_id2 = get_offset_type(state->types2[block2][frag2], offset1, info, other_info, size, &switch_type);
+        new_type_id1 = get_offset_type(real_addr_frag1, state->types1[block1][frag1], offset1, info, other_info, size, snapshot1, &switch_type);
+        new_type_id2 = get_offset_type(real_addr_frag2, state->types2[block2][frag2], offset1, info, other_info, size, snapshot2, &switch_type);
       }else if(state->types1[block1][frag1] != NULL){
-        new_type_id1 = get_offset_type(state->types1[block1][frag1], offset1, info, other_info, size, &switch_type);
-        new_type_id2 = get_offset_type(state->types1[block1][frag1], offset2, info, other_info, size, &switch_type);
+        new_type_id1 = get_offset_type(real_addr_frag1, state->types1[block1][frag1], offset1, info, other_info, size, snapshot1, &switch_type);
+        new_type_id2 = get_offset_type(real_addr_frag2, state->types1[block1][frag1], offset2, info, other_info, size, snapshot2, &switch_type);
       }else if(state->types2[block2][frag2] != NULL){
-        new_type_id1 = get_offset_type(state->types2[block2][frag2], offset1, info, other_info, size, &switch_type);
-        new_type_id2 = get_offset_type(state->types2[block2][frag2], offset2, info, other_info, size, &switch_type);
+        new_type_id1 = get_offset_type(real_addr_frag1, state->types2[block2][frag2], offset1, info, other_info, size, snapshot1, &switch_type);
+        new_type_id2 = get_offset_type(real_addr_frag2, state->types2[block2][frag2], offset2, info, other_info, size, snapshot2, &switch_type);
       }else{
         if(match_pairs){
           match_equals(state, previous);

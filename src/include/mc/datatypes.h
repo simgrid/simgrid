@@ -53,20 +53,6 @@ typedef int e_dw_type_type;
 
 typedef struct s_dw_type s_dw_type_t, *dw_type_t;
 
-struct s_dw_type{
-  e_dw_type_type type;
-  void *id; /* Offset in the section (in hexadecimal form) */
-  char *name; /* Name of the type */
-  int byte_size; /* Size in bytes */
-  int element_count; /* Number of elements for array type */
-  char *dw_type_id; /* DW_AT_type */
-  xbt_dynar_t members; /* if DW_TAG_structure_type, DW_TAG_class_type, DW_TAG_union_type*/
-  int is_pointer_type;
-  int offset;
-  dw_type_t subtype;
-  dw_type_t other_object_same_type; // The same (but more complete) type in the other object.
-};
-
 char* get_type_description(mc_object_info_t info, char *type_name);
 
 SG_END_DECL()

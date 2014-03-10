@@ -137,7 +137,8 @@ static void mc_hash_value(mc_hash_t* hash, mc_hashing_state* state, mc_object_in
       XBT_DEBUG("Hash struct member %s", member->name);
       if(type->subtype==NULL)
         return;
-       mc_hash_value(hash, state, info, ((char*)address) + member->offset, type->subtype);
+      void* member_variable = mc_member_resolve(address, type, member, NULL);
+      mc_hash_value(hash, state, info, member_variable, type->subtype);
     }
     return;
   }
