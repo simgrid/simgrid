@@ -36,8 +36,11 @@ typedef struct s_mc_function_index_item s_mc_function_index_item_t, *mc_function
 #define NB_REGIONS 3 /* binary data (data + BSS) (type = 2), libsimgrid data (data + BSS) (type = 1), std_heap (type = 0)*/ 
 
 typedef struct s_mc_mem_region{
+  // Real address:
   void *start_addr;
+  // Copy of the datra:
   void *data;
+  // Size of the data region:
   size_t size;
 } s_mc_mem_region_t, *mc_mem_region_t;
 
@@ -91,6 +94,7 @@ mc_snapshot_t SIMIX_pre_mc_snapshot(smx_simcall_t simcall);
 mc_snapshot_t MC_take_snapshot(int num_state);
 void MC_restore_snapshot(mc_snapshot_t);
 void MC_free_snapshot(mc_snapshot_t);
+void* mc_translate_address(uintptr_t addr, mc_snapshot_t snapshot);
 
 extern xbt_dynar_t mc_checkpoint_ignore;
 
@@ -386,8 +390,8 @@ typedef struct s_mc_location_list {
   mc_expression_t locations;
 } s_mc_location_list_t, *mc_location_list_t;
 
-Dwarf_Off mc_dwarf_resolve_location(mc_expression_t expression, unw_cursor_t* c, void* frame_pointer_address);
-Dwarf_Off mc_dwarf_resolve_locations(mc_location_list_t locations, unw_cursor_t* c, void* frame_pointer_address);
+Dwarf_Off mc_dwarf_resolve_location(mc_expression_t expression, unw_cursor_t* c, void* frame_pointer_address, mc_snapshot_t snapshot);
+Dwarf_Off mc_dwarf_resolve_locations(mc_location_list_t locations, unw_cursor_t* c, void* frame_pointer_address, mc_snapshot_t snapshot);
 
 void mc_dwarf_location_list_clear(mc_location_list_t list);
 
@@ -453,6 +457,7 @@ typedef struct s_mc_expression_state {
 
   unw_cursor_t* cursor;
   void* frame_base;
+  mc_snapshot_t snapshot;
 } s_mc_expression_state_t, *mc_expression_state_t;
 
 int mc_dwarf_execute_expression(size_t n, const Dwarf_Op* ops, mc_expression_state_t state);

@@ -88,6 +88,20 @@ void basic_test(mc_expression_state_t state) {
   assert(state->stack[state->stack_size-2]== b);
 }
 
+int test_deref(mc_expression_state_t state) {
+  uintptr_t foo = 42;
+
+  Dwarf_Op ops[60];
+  ops[0].atom = DW_OP_addr;
+  ops[0].number = (Dwarf_Word) &foo;
+  ops[1].atom = DW_OP_deref;
+  state->stack_size = 0;
+
+  assert(mc_dwarf_execute_expression(2, ops, state) == MC_EXPRESSION_OK);
+  assert(state->stack_size==1);
+  assert(state->stack[state->stack_size-1] == foo);
+}
+
 int main(int argc, char** argv) {
   s_mc_expression_state_t state;
   memset(&state, 0, sizeof(s_mc_expression_state_t));
@@ -117,6 +131,8 @@ int main(int argc, char** argv) {
     uintptr_t b = rand();
     assert(eval_binary_operation(&state, DW_OP_xor, a, b) == (a ^ b));
   }
+
+  test_deref(&state);
 
   return 0;
 }

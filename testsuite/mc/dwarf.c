@@ -59,7 +59,7 @@ static dw_variable_t find_local_variable(dw_frame_t frame, const char* argument_
   return NULL;
 }
 
-static void test_local_argument(mc_object_info_t info, const char* function, const char* variable, void* address, unw_cursor_t* cursor) {
+static void test_local_variable(mc_object_info_t info, const char* function, const char* variable, void* address, unw_cursor_t* cursor) {
   dw_frame_t subprogram = find_function_by_name(info, function);
   assert(subprogram);
   // TODO, Lookup frame by IP and test against name instead
@@ -68,7 +68,8 @@ static void test_local_argument(mc_object_info_t info, const char* function, con
   assert(var);
 
   void* frame_base = mc_find_frame_base(subprogram, cursor);
-  assert((void*)mc_dwarf_resolve_locations(&var->locations, cursor, frame_base) == address);
+  xbt_assert((void*)mc_dwarf_resolve_locations(&var->locations, cursor, frame_base, NULL) == address,
+    "Bad resolution of local variable %s of %s", variable, function);
 
 }
 
@@ -125,7 +126,7 @@ int main(int argc, char** argv) {
   unw_getcontext(&context);
   unw_init_local(&cursor, &context);
 
-  test_local_argument(mc_binary_info, "main", "argc", &argc, &cursor);
+  test_local_variable(mc_binary_info, "main", "argc", &argc, &cursor);
 
   _exit(0);
 }

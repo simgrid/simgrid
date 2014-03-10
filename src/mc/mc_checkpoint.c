@@ -277,7 +277,7 @@ static xbt_dynar_t MC_get_local_variables_values(xbt_dynar_t stack_frames){
       } else */
       if(current_variable->locations.size != 0){
         new_var->address = (void*) mc_dwarf_resolve_locations(&current_variable->locations,
-          &(stack_frame->unw_cursor), (void*)stack_frame->frame_base);
+          &(stack_frame->unw_cursor), (void*)stack_frame->frame_base, NULL);
       }
 
       xbt_dynar_push(variables, &new_var);
@@ -451,6 +451,31 @@ void MC_restore_snapshot(mc_snapshot_t snapshot){
     MC_region_restore(snapshot->regions[i]);
   }
 
+}
+
+void* mc_translate_address(uintptr_t addr, mc_snapshot_t snapshot) {
+
+  // If not in a process state/clone:
+  if(!snapshot) {
+    return (uintptr_t*) addr;
+  }
+
+  // If it is in a snapshot:
+  for(size_t i=0; i!=NB_REGIONS; ++i) {
+    mc_mem_region_t region = snapshot->regions[i];
+    uintptr_t start = (uintptr_t) region->start_addr;
+    uintptr_t end = start + region->size;
+
+    // The address is in this region:
+    if(addr >= start && addr < end) {
+      uintptr_t offset = addr - start;
+      return (void*) ((uintptr_t)region->data + offset);
+    }
+
+  }
+
+  // It is not in a snapshot:
+  return (void*) addr;
 }
 
 mc_snapshot_t SIMIX_pre_mc_snapshot(smx_simcall_t simcall){
