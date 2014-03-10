@@ -112,6 +112,7 @@ XBT_PUBLIC(xbt_dict_t) MSG_storage_get_content(msg_storage_t storage);
 XBT_PUBLIC(sg_size_t) MSG_storage_get_size(msg_storage_t storage);
 XBT_PUBLIC(msg_error_t) MSG_storage_file_move(msg_file_t fd, msg_host_t dest, char* mount, char* fullname);
 XBT_PUBLIC(msg_error_t) MSG_storage_file_rename(msg_storage_t storage, const char* src,  const char* dest);
+XBT_PUBLIC(const char *) MSG_storage_get_host(msg_storage_t storage);
 /************************** AS Router handling ************************************/
 XBT_PUBLIC(const char *) MSG_as_router_get_property_value(const char* asr, const char *name);
 XBT_PUBLIC(xbt_dict_t) MSG_as_router_get_properties(const char* asr);

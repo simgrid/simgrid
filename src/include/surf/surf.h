@@ -906,6 +906,15 @@ XBT_PUBLIC(surf_file_t) surf_storage_action_get_file(surf_action_t action);
  */
 XBT_PUBLIC(xbt_dict_t) surf_storage_action_get_ls_dict(surf_action_t action);
 
+
+/**
+ * @brief Get the host the storage is attached to
+ *
+ * @param resource The surf storage
+ * @return The host name
+ */
+XBT_PUBLIC(const char * ) surf_storage_get_host(surf_resource_t resource);
+
 XBT_PUBLIC(surf_model_t) surf_resource_model(const void *host, int level);
 
 /** @} */

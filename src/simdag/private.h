@@ -73,8 +73,12 @@ static inline SD_workstation_priv_t SD_workstation_priv(SD_workstation_t host){
 typedef s_xbt_dictelm_t s_SD_storage_t;
 typedef struct SD_storage {
   void *data;                   /* user data */
+  const char *host;
 } s_SD_storage_priv_t, *SD_storage_priv_t;
 
+static inline SD_storage_priv_t SD_storage_priv(SD_storage_t storage){
+  return xbt_lib_get_level(storage, SD_STORAGE_LEVEL);
+}
 
 /* Task */
 typedef struct SD_task {

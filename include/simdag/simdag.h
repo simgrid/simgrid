@@ -109,6 +109,7 @@ XBT_PUBLIC(xbt_dict_t)
     SD_workstation_get_mounted_storage_list(SD_workstation_t workstation);
 XBT_PUBLIC(xbt_dynar_t)
     SD_workstation_get_attached_storage_list(SD_workstation_t workstation);
+XBT_PUBLIC(const char*) SD_storage_get_host(SD_storage_t storage);
 /** @} */
 
 /************************** Task handling ************************************/

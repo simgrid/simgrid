@@ -138,8 +138,7 @@ typedef xbt_dictelm_t msg_storage_t;
 typedef s_xbt_dictelm_t s_msg_storage_t;
 
 typedef struct msg_storage_priv  {
-  // TODO PV: fill it (or not) !
-  void * dummy;
+  const char *host;
 } s_msg_storage_priv_t, *msg_storage_priv_t;
 
 static inline msg_storage_priv_t MSG_storage_priv(msg_storage_t storage){

@@ -263,7 +263,9 @@ void __MSG_file_destroy(msg_file_priv_t file) {
 msg_storage_t __MSG_storage_create(smx_storage_t storage)
 {
   const char *name = SIMIX_storage_get_name(storage);
+  const char *host = SIMIX_storage_get_host(storage);
   msg_storage_priv_t storage_private = xbt_new0(s_msg_storage_priv_t, 1);
+  storage_private->host = host;
   xbt_lib_set(storage_lib,name,MSG_STORAGE_LEVEL,storage_private);
   return xbt_lib_get_elm_or_null(storage_lib, name);
 }
@@ -422,4 +424,16 @@ msg_error_t MSG_storage_file_move (msg_file_t fd, msg_host_t dest, char* mount, 
 {
   THROW_UNIMPLEMENTED;
   return MSG_OK;
+}
+
+/** \ingroup msg_storage_management
+ *
+ * \brief Returns the host name the storage is attached to
+ *
+ * This functions checks whether a storage is a valid pointer or not and return its name.
+ */
+const char *MSG_storage_get_host(msg_storage_t storage) {
+  xbt_assert((storage != NULL), "Invalid parameters");
+  msg_storage_priv_t priv = MSG_storage_priv(storage);
+  return priv->host;
 }

@@ -45,7 +45,7 @@ SD_storage_t __SD_storage_create(void *surf_storage, void *data)
 
   storage = xbt_new(s_SD_storage_priv_t, 1);
   storage->data = data;     /* user data */
-
+  storage->host = surf_storage_get_host(surf_storage);
   name = surf_resource_name(surf_storage);
   xbt_lib_set(storage_lib,name, SD_STORAGE_LEVEL, storage);
   return xbt_lib_get_elm_or_null(storage_lib, name);
@@ -490,6 +490,16 @@ xbt_dynar_t SD_workstation_get_attached_storage_list(SD_workstation_t workstatio
   return surf_workstation_get_attached_storage_list(workstation);
 }
 
+/**
+ * \brief Returns the host name the storage is attached to
+ *
+ * This functions checks whether a storage is a valid pointer or not and return its name.
+ */
+const char *SD_storage_get_host(msg_storage_t storage) {
+  xbt_assert((storage != NULL), "Invalid parameters");
+  SD_storage_priv_t priv = SD_storage_priv(storage);
+  return priv->host;
+}
 
 /* Returns whether a task can start now on a workstation*/
 /*

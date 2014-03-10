@@ -476,6 +476,10 @@ sg_size_t surf_storage_get_size(surf_resource_t resource){
   return static_cast<StoragePtr>(surf_storage_resource_priv(resource))->getSize();
 }
 
+const char* surf_storage_get_host(surf_resource_t resource){
+  return static_cast<StoragePtr>(surf_storage_resource_priv(resource))->p_attach;
+}
+
 void surf_storage_rename(surf_resource_t resource, const char* src, const char* dest){
   static_cast<StoragePtr>(surf_storage_resource_priv(resource))->rename(src, dest);
 }

@@ -70,7 +70,7 @@ xbt_dict_t SIMIX_pre_storage_get_content(smx_simcall_t simcall, smx_storage_t st
 xbt_dict_t SIMIX_storage_get_content(smx_storage_t storage);
 
 const char* SIMIX_pre_storage_get_name(smx_simcall_t simcall, smx_storage_t storage);
-
+const char* SIMIX_pre_storage_get_host(smx_simcall_t simcall, smx_storage_t storage);
 void SIMIX_post_io(smx_action_t action);
 void SIMIX_io_destroy(smx_action_t action);
 void SIMIX_io_finish(smx_action_t action);
