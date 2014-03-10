@@ -129,8 +129,8 @@ static inline xbt_dict_t simcall_host_get_mounted_storage_list__get__result(smx_
 static inline void simcall_host_get_mounted_storage_list__set__result(smx_simcall_t simcall, void* result){
     simcall->result.dp = result;
 }
-static inline xbt_dict_t simcall_host_get_attached_storage_list__get__result(smx_simcall_t simcall){
-  return (xbt_dict_t) simcall->result.dp;
+static inline xbt_dynar_t simcall_host_get_attached_storage_list__get__result(smx_simcall_t simcall){
+  return (xbt_dynar_t) simcall->result.dp;
 }
 static inline void simcall_host_get_attached_storage_list__set__result(smx_simcall_t simcall, void* result){
     simcall->result.dp = result;

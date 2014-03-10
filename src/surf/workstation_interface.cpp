@@ -184,23 +184,22 @@ xbt_dict_t Workstation::getMountedStorageList()
   return storage_list;
 }
 
-xbt_dict_t Workstation::getAttachedStorageList()
+xbt_dynar_t Workstation::getAttachedStorageList()
 {
   xbt_lib_cursor_t cursor;
   char *key;
   void **data;
-  xbt_dict_t res = xbt_dict_new_homogeneous(NULL);
+  xbt_dynar_t result = xbt_dynar_new(sizeof(void*), NULL);
   xbt_lib_foreach(storage_lib, cursor, key, data) {
-    if(routing_get_network_element_type(key) == SURF_STORAGE_LEVEL) {
-      xbt_dictelm_t elm = xbt_dict_cursor_get_elm(cursor);
-      if ( (static_cast<StoragePtr>(surf_storage_resource_priv(surf_storage_resource_by_name((const char*)elm))))->p_attach == this->getName())
-    	  xbt_dict_set(res,(const char*)elm,xbt_lib_get_level(elm,MSG_STORAGE_LEVEL),NULL);
-    }
+	  if(xbt_lib_get_level(xbt_lib_get_elm_or_null(storage_lib, key), SURF_STORAGE_LEVEL) != NULL) {
+	    StoragePtr storage = static_cast<StoragePtr>(xbt_lib_get_level(xbt_lib_get_elm_or_null(storage_lib, key), SURF_STORAGE_LEVEL));
+	    if(!strcmp((const char*)storage->p_attach,this->getName())){
+	      xbt_dynar_push_as(result, void *,(void *)static_cast<ResourcePtr>(storage)->getName());
+	    }
+	  }
   }
-  return res;
-
+  return result;
 }
-
 
 ActionPtr Workstation::open(const char* mount, const char* path) {
   StoragePtr st = findStorageOnMountList(mount);

@@ -412,7 +412,7 @@
     }    
     return self->simcall.result.dp;
   }
-  inline static xbt_dict_t simcall_BODY_host_get_attached_storage_list(smx_host_t host) {
+  inline static xbt_dynar_t simcall_BODY_host_get_attached_storage_list(smx_host_t host) {
     smx_process_t self = SIMIX_process_self();
     self->simcall.call = SIMCALL_HOST_GET_ATTACHED_STORAGE_LIST;
     memset(&self->simcall.result, 0, sizeof(self->simcall.result));

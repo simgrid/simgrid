@@ -486,7 +486,7 @@ xbt_dict_t SD_workstation_get_mounted_storage_list(SD_workstation_t workstation)
  * \param workstation a workstation
  * \return a dynar containing all mounted storages on the workstation
  */
-xbt_dict_t SD_workstation_get_attached_storage_list(SD_workstation_t workstation){
+xbt_dynar_t SD_workstation_get_attached_storage_list(SD_workstation_t workstation){
   return surf_workstation_get_attached_storage_list(workstation);
 }
 

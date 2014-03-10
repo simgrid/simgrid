@@ -1446,7 +1446,7 @@ xbt_dict_t simcall_host_get_mounted_storage_list(smx_host_t host)
  * \param host A SIMIX host
  * \return a dict containing all storages attached to the host
  */
-xbt_dict_t simcall_host_get_attached_storage_list(smx_host_t host)
+xbt_dynar_t simcall_host_get_attached_storage_list(smx_host_t host)
 {
   return simcall_BODY_host_get_attached_storage_list(host);
 }

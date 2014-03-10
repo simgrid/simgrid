@@ -356,7 +356,7 @@ xbt_dict_t surf_workstation_get_mounted_storage_list(surf_resource_t workstation
   return get_casted_workstation(workstation)->getMountedStorageList();
 }
 
-xbt_dict_t surf_workstation_get_attached_storage_list(surf_resource_t workstation){
+xbt_dynar_t surf_workstation_get_attached_storage_list(surf_resource_t workstation){
   return get_casted_workstation(workstation)->getAttachedStorageList();
 }
 

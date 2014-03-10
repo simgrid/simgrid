@@ -107,7 +107,7 @@ XBT_PUBLIC(SD_task_t) SD_workstation_get_current_task(SD_workstation_t
                                                       workstation);
 XBT_PUBLIC(xbt_dict_t)
     SD_workstation_get_mounted_storage_list(SD_workstation_t workstation);
-XBT_PUBLIC(xbt_dict_t)
+XBT_PUBLIC(xbt_dynar_t)
     SD_workstation_get_attached_storage_list(SD_workstation_t workstation);
 /** @} */
 

@@ -253,7 +253,7 @@ public:
    *
    * @return The xbt_dict_t of Storage
    */
-  virtual xbt_dict_t getAttachedStorageList();
+  virtual xbt_dynar_t getAttachedStorageList();
 
   /**
    * @brief Open a file

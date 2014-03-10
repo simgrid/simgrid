@@ -67,7 +67,7 @@ void SIMIX_host_execution_set_bound(smx_action_t action, double bound);
 void SIMIX_host_execution_set_affinity(smx_action_t action, smx_host_t host, unsigned long mask);
 void SIMIX_pre_host_execution_wait(smx_simcall_t simcall, smx_action_t action);
 xbt_dict_t SIMIX_host_get_mounted_storage_list(smx_host_t host);
-xbt_dict_t SIMIX_host_get_attached_storage_list(smx_host_t host);
+xbt_dynar_t SIMIX_host_get_attached_storage_list(smx_host_t host);
 // pre prototypes
 smx_host_t SIMIX_pre_host_get_by_name(smx_simcall_t, const char*);
 const char* SIMIX_pre_host_self_get_name(smx_simcall_t);
@@ -102,7 +102,7 @@ void SIMIX_host_execution_resume(smx_action_t action);
 
 void SIMIX_post_host_execute(smx_action_t action);
 xbt_dict_t SIMIX_pre_host_get_mounted_storage_list(smx_simcall_t, smx_host_t);
-xbt_dict_t SIMIX_pre_host_get_attached_storage_list(smx_simcall_t, smx_host_t);
+xbt_dynar_t SIMIX_pre_host_get_attached_storage_list(smx_simcall_t, smx_host_t);
 #ifdef HAVE_TRACING
 void SIMIX_pre_set_category(smx_simcall_t simcall, smx_action_t action,
 		            const char *category);

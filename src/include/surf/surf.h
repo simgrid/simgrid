@@ -653,7 +653,7 @@ XBT_PUBLIC(xbt_dict_t) surf_workstation_get_mounted_storage_list(surf_resource_t
  * @param workstation The surf workstation
  * @return Dictionary of storage
  */
-XBT_PUBLIC(xbt_dict_t) surf_workstation_get_attached_storage_list(surf_resource_t workstation);
+XBT_PUBLIC(xbt_dynar_t) surf_workstation_get_attached_storage_list(surf_resource_t workstation);
 
 /**
  * @brief Unlink a file descriptor

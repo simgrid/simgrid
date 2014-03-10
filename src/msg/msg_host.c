@@ -413,7 +413,7 @@ xbt_dict_t MSG_host_get_mounted_storage_list(msg_host_t host)
  * \param host a host
  * \return a dict containing all storages attached to the host (storage name => msg_storage_t)
  */
-xbt_dict_t MSG_host_get_attached_storage_list(msg_host_t host)
+xbt_dynar_t MSG_host_get_attached_storage_list(msg_host_t host)
 {
   xbt_assert((host != NULL), "Invalid parameters");
   return (simcall_host_get_attached_storage_list(host));

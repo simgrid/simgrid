@@ -370,6 +370,11 @@ static XBT_INLINE void surf_workstation_free(void *r)
   delete static_cast<WorkstationPtr>(r);
 }
 
+static XBT_INLINE void surf_storage_free(void *r)
+{
+  delete static_cast<StoragePtr>(r);
+}
+
 
 void sg_version(int *ver_major,int *ver_minor,int *ver_patch) {
   *ver_major = SIMGRID_VERSION_MAJOR;
@@ -397,6 +402,7 @@ void surf_init(int *argc, char **argv)
   SURF_CPU_LEVEL = xbt_lib_add_level(host_lib,surf_cpu_free);
   SURF_WKS_LEVEL = xbt_lib_add_level(host_lib,surf_workstation_free);
   SURF_LINK_LEVEL = xbt_lib_add_level(link_lib,surf_link_free);
+  SURF_STORAGE_LEVEL = xbt_lib_add_level(storage_lib,surf_storage_free);
 
   xbt_init(argc, argv);
   if (!model_list)

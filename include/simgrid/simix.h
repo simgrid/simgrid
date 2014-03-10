@@ -332,7 +332,7 @@ XBT_PUBLIC(void) simcall_host_execution_set_bound(smx_action_t execution, double
 XBT_PUBLIC(void) simcall_host_execution_set_affinity(smx_action_t execution, smx_host_t host, unsigned long mask);
 XBT_PUBLIC(e_smx_state_t) simcall_host_execution_wait(smx_action_t execution);
 XBT_PUBLIC(xbt_dict_t) simcall_host_get_mounted_storage_list(smx_host_t host);
-XBT_PUBLIC(xbt_dict_t) simcall_host_get_attached_storage_list(smx_host_t host);
+XBT_PUBLIC(xbt_dynar_t) simcall_host_get_attached_storage_list(smx_host_t host);
 XBT_PUBLIC(void) simcall_host_get_params(smx_host_t vm, ws_params_t param);
 XBT_PUBLIC(void) simcall_host_set_params(smx_host_t vm, ws_params_t param);
 
