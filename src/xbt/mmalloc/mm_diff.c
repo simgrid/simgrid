@@ -410,7 +410,7 @@ void reset_heap_information(){
 
 }
 
-int mmalloc_compare_heap(xbt_mheap_t heap1, xbt_mheap_t heap2, mc_object_info_t info, mc_object_info_t other_info){
+int mmalloc_compare_heap(mc_snapshot_t snapshot1, mc_snapshot_t snapshot2, xbt_mheap_t heap1, xbt_mheap_t heap2, mc_object_info_t info, mc_object_info_t other_info){
 
   struct s_mm_diff *state = mm_diff_info;
 
@@ -468,7 +468,7 @@ int mmalloc_compare_heap(xbt_mheap_t heap1, xbt_mheap_t heap2, mc_object_info_t 
 
           addr_block2 = ((void*) (((ADDR2UINT(i1)) - 1) * BLOCKSIZE + (char*)((xbt_mheap_t)state->s_heap)->heapbase));
         
-          res_compare = compare_heap_area(addr_block1, addr_block2, NULL, info, other_info, NULL, 0);
+          res_compare = compare_heap_area(addr_block1, addr_block2, snapshot1, snapshot2, NULL, info, other_info, NULL, 0);
         
           if(res_compare != 1){
             for(k=1; k < state->heapinfo2[i1].busy_block.size; k++)
@@ -504,7 +504,7 @@ int mmalloc_compare_heap(xbt_mheap_t heap1, xbt_mheap_t heap2, mc_object_info_t 
           continue;
         }
           
-        res_compare = compare_heap_area(addr_block1, addr_block2, NULL, info, other_info, NULL, 0);
+        res_compare = compare_heap_area(addr_block1, addr_block2, snapshot1, snapshot2, NULL, info, other_info, NULL, 0);
         
         if(res_compare != 1 ){
           for(k=1; k < state->heapinfo2[i2].busy_block.size; k++)
@@ -551,7 +551,7 @@ int mmalloc_compare_heap(xbt_mheap_t heap1, xbt_mheap_t heap2, mc_object_info_t 
             addr_block2 = ((void*) (((ADDR2UINT(i1)) - 1) * BLOCKSIZE + (char*)((xbt_mheap_t)state->s_heap)->heapbase));
             addr_frag2 = (void*) ((char *)addr_block2 + (j1 << ((xbt_mheap_t)state->s_heap)->heapinfo[i1].type));
 
-            res_compare = compare_heap_area(addr_frag1, addr_frag2, NULL, info, other_info, NULL, 0);
+            res_compare = compare_heap_area(addr_frag1, addr_frag2, snapshot1, snapshot2, NULL, info, other_info, NULL, 0);
 
             if(res_compare !=  1)
               equal = 1;
@@ -580,7 +580,7 @@ int mmalloc_compare_heap(xbt_mheap_t heap1, xbt_mheap_t heap2, mc_object_info_t 
             addr_block2 = ((void*) (((ADDR2UINT(i2)) - 1) * BLOCKSIZE + (char*)((xbt_mheap_t)state->s_heap)->heapbase));
             addr_frag2 = (void*) ((char *)addr_block2 + (j2 <<((xbt_mheap_t)state->s_heap)->heapinfo[i2].type));
 
-            res_compare = compare_heap_area(addr_frag1, addr_frag2, NULL, info, other_info, NULL, 0);
+            res_compare = compare_heap_area(addr_frag1, addr_frag2, snapshot2, snapshot2, NULL, info, other_info, NULL, 0);
             
             if(res_compare != 1){
               equal = 1;
@@ -704,7 +704,7 @@ int mmalloc_compare_heap(xbt_mheap_t heap1, xbt_mheap_t heap2, mc_object_info_t 
   return ((nb_diff1 > 0) || (nb_diff2 > 0));
 }
 
-static int compare_heap_area_without_type(struct s_mm_diff *state, void *real_area1, void *real_area2, void *area1, void *area2, xbt_dynar_t previous, mc_object_info_t info, mc_object_info_t other_info, int size, int check_ignore){
+static int compare_heap_area_without_type(struct s_mm_diff *state, void *real_area1, void *real_area2, void *area1, void *area2, mc_snapshot_t snapshot1, mc_snapshot_t snapshot2, xbt_dynar_t previous, mc_object_info_t info, mc_object_info_t other_info, int size, int check_ignore){
 
   int i = 0;
   void *addr_pointed1, *addr_pointed2;
@@ -739,7 +739,7 @@ static int compare_heap_area_without_type(struct s_mm_diff *state, void *real_ar
         continue;
       }else if((addr_pointed1 > state->s_heap) && ((char *)addr_pointed1 < (char *)state->s_heap + STD_HEAP_SIZE)
                && (addr_pointed2 > state->s_heap) && ((char *)addr_pointed2 < (char *)state->s_heap + STD_HEAP_SIZE)){
-        res_compare = compare_heap_area(addr_pointed1, addr_pointed2, previous, info, other_info, NULL, 0);
+        res_compare = compare_heap_area(addr_pointed1, addr_pointed2, snapshot1, snapshot2, previous, info, other_info, NULL, 0);
         if(res_compare == 1){
           return res_compare;
         }
@@ -761,6 +761,7 @@ static int compare_heap_area_without_type(struct s_mm_diff *state, void *real_ar
 
 // area_size is either a byte_size or an elements_count?&
 static int compare_heap_area_with_type(struct s_mm_diff *state, void *real_area1, void *real_area2, void *area1, void *area2,
+                                       mc_snapshot_t snapshot1, mc_snapshot_t snapshot2,
                                        xbt_dynar_t previous, mc_object_info_t info, mc_object_info_t other_info, char *type_id,
                                        int area_size, int check_ignore, int pointer_level){
 
@@ -807,7 +808,7 @@ static int compare_heap_area_with_type(struct s_mm_diff *state, void *real_area1
   case DW_TAG_typedef:
   case DW_TAG_const_type:
   case DW_TAG_volatile_type:
-    return compare_heap_area_with_type(state, real_area1, real_area2, area1, area2, previous, info, other_info, type->dw_type_id, area_size, check_ignore, pointer_level);
+    return compare_heap_area_with_type(state, real_area1, real_area2, area1, area2, snapshot1, snapshot2, previous, info, other_info, type->dw_type_id, area_size, check_ignore, pointer_level);
     break;
   case DW_TAG_array_type:
     subtype = xbt_dict_get_or_null(info->types, type->dw_type_id);
@@ -847,9 +848,9 @@ static int compare_heap_area_with_type(struct s_mm_diff *state, void *real_area1
     for(i=0; i<type->element_count; i++){
       // TODO, add support for variable stride (DW_AT_byte_stride)
       if(switch_types)
-        res = compare_heap_area_with_type(state, (char *)real_area1 + (i*elm_size), (char *)real_area2 + (i*elm_size), (char *)area1 + (i*elm_size), (char *)area2 + (i*elm_size), previous, other_info, info, type->dw_type_id, subtype->byte_size, check_ignore, pointer_level);
+        res = compare_heap_area_with_type(state, (char *)real_area1 + (i*elm_size), (char *)real_area2 + (i*elm_size), (char *)area1 + (i*elm_size), (char *)area2 + (i*elm_size), snapshot1, snapshot2, previous, other_info, info, type->dw_type_id, subtype->byte_size, check_ignore, pointer_level);
       else
-        res = compare_heap_area_with_type(state, (char *)real_area1 + (i*elm_size), (char *)real_area2 + (i*elm_size), (char *)area1 + (i*elm_size), (char *)area2 + (i*elm_size), previous, info, other_info, type->dw_type_id, subtype->byte_size, check_ignore, pointer_level);
+        res = compare_heap_area_with_type(state, (char *)real_area1 + (i*elm_size), (char *)real_area2 + (i*elm_size), (char *)area1 + (i*elm_size), (char *)area2 + (i*elm_size), snapshot1, snapshot2, previous, info, other_info, type->dw_type_id, subtype->byte_size, check_ignore, pointer_level);
       if(res == 1)
         return res;
     }
@@ -868,7 +869,7 @@ static int compare_heap_area_with_type(struct s_mm_diff *state, void *real_area1
           addr_pointed1 = *((void **)((char *)area1 + (i*sizeof(void *)))); 
           addr_pointed2 = *((void **)((char *)area2 + (i*sizeof(void *)))); 
           if(addr_pointed1 > state->s_heap && (char *)addr_pointed1 < (char*) state->s_heap + STD_HEAP_SIZE && addr_pointed2 > state->s_heap && (char *)addr_pointed2 < (char*) state->s_heap + STD_HEAP_SIZE)
-            res =  compare_heap_area(addr_pointed1, addr_pointed2, previous, info, other_info, type->dw_type_id, pointer_level);
+            res =  compare_heap_area(addr_pointed1, addr_pointed2, snapshot1, snapshot2, previous, info, other_info, type->dw_type_id, pointer_level);
           else
             res =  (addr_pointed1 != addr_pointed2);
           if(res == 1)
@@ -878,7 +879,7 @@ static int compare_heap_area_with_type(struct s_mm_diff *state, void *real_area1
         addr_pointed1 = *((void **)(area1)); 
         addr_pointed2 = *((void **)(area2));
         if(addr_pointed1 > state->s_heap && (char *)addr_pointed1 < (char*) state->s_heap + STD_HEAP_SIZE && addr_pointed2 > state->s_heap && (char *)addr_pointed2 < (char*) state->s_heap + STD_HEAP_SIZE)
-          return compare_heap_area(addr_pointed1, addr_pointed2, previous, info, other_info, type->dw_type_id, pointer_level);
+          return compare_heap_area(addr_pointed1, addr_pointed2, snapshot1, snapshot2, previous, info, other_info, type->dw_type_id, pointer_level);
         else
           return  (addr_pointed1 != addr_pointed2);
       }
@@ -899,9 +900,9 @@ static int compare_heap_area_with_type(struct s_mm_diff *state, void *real_area1
       if(area_size>type->byte_size && area_size%type->byte_size == 0){
         for(i=0; i<(area_size/type->byte_size); i++){
           if(switch_types)
-            res = compare_heap_area_with_type(state, (char *)real_area1 + (i*type->byte_size), (char *)real_area2 + (i*type->byte_size), (char *)area1 + (i*type->byte_size), (char *)area2 + (i*type->byte_size), previous, other_info, info, type_id, -1, check_ignore, 0);
+            res = compare_heap_area_with_type(state, (char *)real_area1 + (i*type->byte_size), (char *)real_area2 + (i*type->byte_size), (char *)area1 + (i*type->byte_size), (char *)area2 + (i*type->byte_size), snapshot1, snapshot2, previous, other_info, info, type_id, -1, check_ignore, 0);
           else
-            res = compare_heap_area_with_type(state, (char *)real_area1 + (i*type->byte_size), (char *)real_area2 + (i*type->byte_size), (char *)area1 + (i*type->byte_size), (char *)area2 + (i*type->byte_size), previous, info, other_info, type_id, -1, check_ignore, 0);
+            res = compare_heap_area_with_type(state, (char *)real_area1 + (i*type->byte_size), (char *)real_area2 + (i*type->byte_size), (char *)area1 + (i*type->byte_size), (char *)area2 + (i*type->byte_size), snapshot1, snapshot2, previous, info, other_info, type_id, -1, check_ignore, 0);
           if(res == 1)
             return res;
         }
@@ -912,9 +913,9 @@ static int compare_heap_area_with_type(struct s_mm_diff *state, void *real_area1
       cursor = 0;
       xbt_dynar_foreach(type->members, cursor, member){ 
         if(switch_types)
-          res = compare_heap_area_with_type(state, (char *)real_area1 + member->offset, (char *)real_area2 + member->offset, (char *)area1 + member->offset, (char *)area2 + member->offset, previous, other_info, info, member->dw_type_id, -1, check_ignore, 0);
+          res = compare_heap_area_with_type(state, (char *)real_area1 + member->offset, (char *)real_area2 + member->offset, (char *)area1 + member->offset, (char *)area2 + member->offset, snapshot1, snapshot2, previous, other_info, info, member->dw_type_id, -1, check_ignore, 0);
         else
-          res = compare_heap_area_with_type(state, (char *)real_area1 + member->offset, (char *)real_area2 + member->offset, (char *)area1 + member->offset, (char *)area2 + member->offset, previous, info, other_info, member->dw_type_id, -1, check_ignore, 0);
+          res = compare_heap_area_with_type(state, (char *)real_area1 + member->offset, (char *)real_area2 + member->offset, (char *)area1 + member->offset, (char *)area2 + member->offset, snapshot1, snapshot2, previous, info, other_info, member->dw_type_id, -1, check_ignore, 0);
         if(res == 1){
           return res;
         }
@@ -922,7 +923,7 @@ static int compare_heap_area_with_type(struct s_mm_diff *state, void *real_area1
     }
     break;
   case DW_TAG_union_type:
-    return compare_heap_area_without_type(state, real_area1, real_area2, area1, area2, previous, info, other_info, type->byte_size, check_ignore);
+    return compare_heap_area_without_type(state, real_area1, real_area2, area1, area2, snapshot1, snapshot2, previous, info, other_info, type->byte_size, check_ignore);
     break;
   default:
     break;
@@ -983,7 +984,7 @@ static char* get_offset_type(char* type_id, int offset, mc_object_info_t info, m
   }
 }
 
-int compare_heap_area(void *area1, void* area2, xbt_dynar_t previous, mc_object_info_t info, mc_object_info_t other_info, char *type_id, int pointer_level){
+int compare_heap_area(void *area1, void* area2, mc_snapshot_t snapshot1, mc_snapshot_t snapshot2, xbt_dynar_t previous, mc_object_info_t info, mc_object_info_t other_info, char *type_id, int pointer_level){
 
   struct s_mm_diff* state = mm_diff_info;
 
@@ -1285,9 +1286,9 @@ int compare_heap_area(void *area1, void* area2, xbt_dynar_t previous, mc_object_
   /* Start comparison*/
   if(type_id != NULL){
     if(switch_type)
-      res_compare = compare_heap_area_with_type(state, area1, area2, area1_to_compare, area2_to_compare, previous, other_info, info, type_id, size, check_ignore, pointer_level);
+      res_compare = compare_heap_area_with_type(state, area1, area2, area1_to_compare, area2_to_compare, snapshot1, snapshot2, previous, other_info, info, type_id, size, check_ignore, pointer_level);
     else
-      res_compare = compare_heap_area_with_type(state, area1, area2, area1_to_compare, area2_to_compare, previous, info, other_info, type_id, size, check_ignore, pointer_level);
+      res_compare = compare_heap_area_with_type(state, area1, area2, area1_to_compare, area2_to_compare, snapshot1, snapshot2, previous, info, other_info, type_id, size, check_ignore, pointer_level);
     if(res_compare == 1){
       if(match_pairs)
         xbt_dynar_free(&previous);
@@ -1295,9 +1296,9 @@ int compare_heap_area(void *area1, void* area2, xbt_dynar_t previous, mc_object_
     }
   }else{
     if(switch_type)
-      res_compare = compare_heap_area_without_type(state, area1, area2, area1_to_compare, area2_to_compare, previous, other_info, info, size, check_ignore);
+      res_compare = compare_heap_area_without_type(state, area1, area2, area1_to_compare, area2_to_compare, snapshot1, snapshot2, previous, other_info, info, size, check_ignore);
     else
-      res_compare = compare_heap_area_without_type(state, area1, area2, area1_to_compare, area2_to_compare, previous, info, other_info, size, check_ignore);
+      res_compare = compare_heap_area_without_type(state, area1, area2, area1_to_compare, area2_to_compare, snapshot1, snapshot2, previous, info, other_info, size, check_ignore);
     if(res_compare == 1){
       if(match_pairs)
         xbt_dynar_free(&previous);
