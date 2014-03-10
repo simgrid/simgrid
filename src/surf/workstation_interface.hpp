@@ -249,9 +249,9 @@ public:
   virtual xbt_dict_t getMountedStorageList();
 
   /**
-   * @brief Get the xbt_dict_t of storages attached to the workstation
+   * @brief Get the xbt_dynar_t of storages attached to the workstation
    *
-   * @return The xbt_dict_t of Storage
+   * @return The xbt_dynar_t of Storage names
    */
   virtual xbt_dynar_t getAttachedStorageList();
 

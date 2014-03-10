@@ -411,7 +411,7 @@ xbt_dict_t MSG_host_get_mounted_storage_list(msg_host_t host)
 /** \ingroup m_host_management
  * \brief Return the list of storages attached to an host.
  * \param host a host
- * \return a dict containing all storages attached to the host (storage name => msg_storage_t)
+ * \return a dynar containing all storages (name) attached to the host
  */
 xbt_dynar_t MSG_host_get_attached_storage_list(msg_host_t host)
 {
