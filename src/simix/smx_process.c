@@ -137,18 +137,12 @@ void SIMIX_create_maestro_process()
   /* Create maestro process and intilialize it */
   maestro = xbt_new0(s_smx_process_t, 1);
   maestro->pid = simix_process_maxpid++;
+  maestro->ppid = -1;
   maestro->name = (char *) "";
   maestro->running_ctx = xbt_new(xbt_running_ctx_t, 1);
   XBT_RUNNING_CTX_INITIALIZE(maestro->running_ctx);
   maestro->context = SIMIX_context_new(NULL, 0, NULL, NULL, maestro);
   maestro->simcall.issuer = maestro;
-
-  if (SIMIX_process_self()) {
-    maestro->ppid = SIMIX_process_get_PID(SIMIX_process_self());
-  } else {
-    maestro->ppid = -1;
-  }
-
   simix_global->maestro_process = maestro;
   return;
 }
