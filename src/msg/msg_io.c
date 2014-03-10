@@ -352,12 +352,11 @@ xbt_dynar_t MSG_storages_as_dynar(void) {
   xbt_dynar_t res = xbt_dynar_new(sizeof(msg_storage_t),NULL);
 
   xbt_lib_foreach(storage_lib, cursor, key, data) {
-    if(routing_get_network_element_type(key) == MSG_STORAGE_LEVEL) {
+	  if(xbt_lib_get_level(xbt_lib_get_elm_or_null(storage_lib, key), MSG_STORAGE_LEVEL) != NULL) {
       xbt_dictelm_t elm = xbt_dict_cursor_get_elm(cursor);
       xbt_dynar_push(res, &elm);
     }
   }
-
   return res;
 }
 
