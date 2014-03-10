@@ -179,17 +179,17 @@ void SIMIX_process_stop(smx_process_t arg) {
 smx_process_t SIMIX_process_create_from_wrapper(smx_process_arg_t args) {
 
   smx_process_t process;
-  simix_global->create_process_function(
-      &process,
-      args->name,
-      args->code,
-      args->data,
-      args->hostname,
-      args->kill_time,
-      args->argc,
-      args->argv,
-      args->properties,
-      args->auto_restart);
+  simix_global->create_process_function(&process,
+                                        args->name,
+                                        args->code,
+                                        args->data,
+                                        args->hostname,
+                                        args->kill_time,
+                                        args->argc,
+                                        args->argv,
+                                        args->properties,
+                                        args->auto_restart,
+                                        NULL);
   xbt_free(args);
   return process;
 }
@@ -205,9 +205,9 @@ void SIMIX_pre_process_create(smx_simcall_t simcall,
                           int argc, char **argv,
                           xbt_dict_t properties,
                           int auto_restart){
-  SIMIX_process_create_with_parent(process, name, code, data, hostname,
-                              kill_time, argc, argv, properties, auto_restart,
-                              simcall->issuer);
+  SIMIX_process_create(process, name, code, data, hostname,
+                       kill_time, argc, argv, properties, auto_restart,
+                       simcall->issuer);
 }
 /**
  * \brief Internal function to create a process.
@@ -226,21 +226,9 @@ void SIMIX_process_create(smx_process_t *process,
                           double kill_time,
                           int argc, char **argv,
                           xbt_dict_t properties,
-                          int auto_restart) {
-  SIMIX_process_create_with_parent(process, name, code, data, hostname,
-                                   kill_time, argc, argv, properties, auto_restart, NULL);
-}
-
-void SIMIX_process_create_with_parent(smx_process_t *process,
-	                          const char *name,
-	                          xbt_main_func_t code,
-	                          void *data,
-	                          const char *hostname,
-	                          double kill_time,
-	                          int argc, char **argv,
-	                          xbt_dict_t properties,
-	                          int auto_restart,
-	                          smx_process_t parent_process) {
+                          int auto_restart,
+                          smx_process_t parent_process)
+{
   *process = NULL;
   smx_host_t host = SIMIX_host_get_by_name(hostname);
 
@@ -956,19 +944,19 @@ smx_process_t SIMIX_process_restart(smx_process_t process, smx_process_t issuer)
                                           arg.argc,
                                           arg.argv,
                                           arg.properties,
-                                          arg.auto_restart);
-  }
-  else {
+                                          arg.auto_restart,
+                                          NULL);
+  } else {
     simcall_process_create(&new_process,
-                                          arg.argv[0],
-                                          arg.code,
-                                          arg.data,
-                                          arg.hostname,
-                                          arg.kill_time,
-                                          arg.argc,
-                                          arg.argv,
-                                          arg.properties,
-                                          arg.auto_restart);
+                           arg.argv[0],
+                           arg.code,
+                           arg.data,
+                           arg.hostname,
+                           arg.kill_time,
+                           arg.argc,
+                           arg.argv,
+                           arg.properties,
+                           arg.auto_restart);
 
   }
   return new_process;
