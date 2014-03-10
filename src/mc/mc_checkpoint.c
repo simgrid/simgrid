@@ -302,9 +302,6 @@ static xbt_dynar_t MC_unwind_stack_frames(void *stack_context) {
 
   unw_cursor_t c;
 
-  dw_frame_t test = MC_find_function_by_ip(&MC_unwind_stack_frames);
-  xbt_assert(test);
-
   int ret;
   for(ret = unw_init_local(&c, (unw_context_t *)stack_context); ret >= 0; ret = unw_step(&c)){
     mc_stack_frame_t stack_frame = xbt_new(s_mc_stack_frame_t, 1);
