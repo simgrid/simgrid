@@ -58,7 +58,9 @@ union u_smx_scalar {
 typedef struct s_smx_simcall {
   e_smx_simcall_t call;
   smx_process_t issuer;
+#ifdef HAVE_MC
   int mc_value;
+#endif
   union u_smx_scalar args[10];
   union u_smx_scalar result;
   //FIXME: union u_smx_scalar retval;
@@ -71,6 +73,14 @@ typedef struct s_smx_simcall {
 
   };
 } s_smx_simcall_t, *smx_simcall_t;
+
+#if HAVE_MC
+#define SIMCALL_SET_MC_VALUE(simcall, value) ((simcall)->mc_value = (value))
+#define SIMCALL_GET_MC_VALUE(simcall) ((simcall)->mc_value)
+#else
+#define SIMCALL_SET_MC_VALUE(simcall, value) ((void)0)
+#define SIMCALL_GET_MC_VALUE(simcall) 0
+#endif
 
 #include "simcalls_generated_res_getter_setter.h"
 #include "simcalls_generated_args_getter_setter.h"
