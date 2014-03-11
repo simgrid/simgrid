@@ -368,8 +368,8 @@ xbt_dynar_t MSG_storages_as_dynar(void) {
  */
 msg_error_t MSG_storage_set_data(msg_storage_t storage, void *data)
 {
-  SIMIX_storage_set_data(storage,data);
-
+  msg_storage_priv_t priv = MSG_storage_priv(storage);
+  priv->data = data;
   return MSG_OK;
 }
 
@@ -382,7 +382,9 @@ msg_error_t MSG_storage_set_data(msg_storage_t storage, void *data)
  */
 void *MSG_storage_get_data(msg_storage_t storage)
 {
-  return SIMIX_storage_get_data(storage);
+  xbt_assert((storage != NULL), "Invalid parameters");
+  msg_storage_priv_t priv = MSG_storage_priv(storage);
+  return priv->data;
 }
 
 /** \ingroup msg_storage_management

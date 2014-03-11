@@ -49,26 +49,6 @@ void SIMIX_storage_destroy(void *s)
   free(storage);
 }
 
-void* SIMIX_pre_file_get_data(smx_simcall_t simcall,smx_file_t fd){
-  return SIMIX_file_get_data(fd);
-}
-
-void* SIMIX_file_get_data(smx_file_t fd){
-  xbt_assert((fd != NULL), "Invalid parameters (simix file is NULL)");
-
-  return fd->data;
-}
-
-void SIMIX_pre_file_set_data(smx_simcall_t simcall, smx_file_t fd, void *data) {
-  SIMIX_file_set_data(fd, data);
-}
-
-void SIMIX_file_set_data(smx_file_t fd, void *data){
-  xbt_assert((fd != NULL), "Invalid parameter");
-
-  fd->data = data;
-}
-
 //SIMIX FILE READ
 void SIMIX_pre_file_read(smx_simcall_t simcall, smx_file_t fd, sg_size_t size)
 {
@@ -359,26 +339,6 @@ const char* SIMIX_pre_storage_get_name(smx_simcall_t simcall, smx_storage_t stor
 const char* SIMIX_storage_get_name(smx_storage_t storage){
   xbt_assert((storage != NULL), "Invalid parameters");
   return sg_storage_name(storage);
-}
-
-void SIMIX_pre_storage_set_data(smx_simcall_t simcall, smx_storage_t storage, void *data) {
-  SIMIX_storage_set_data(storage, data);
-}
-void SIMIX_storage_set_data(smx_storage_t storage, void *data){
-  xbt_assert((storage != NULL), "Invalid parameters");
-  xbt_assert((SIMIX_storage_priv(storage)->data == NULL), "Data already set");
-
-  SIMIX_storage_priv(storage)->data = data;
-}
-
-void* SIMIX_pre_storage_get_data(smx_simcall_t simcall,smx_storage_t storage){
-  return SIMIX_storage_get_data(storage);
-}
-
-void* SIMIX_storage_get_data(smx_storage_t storage){
-  xbt_assert((storage != NULL), "Invalid parameters (simix storage is NULL)");
-
-  return SIMIX_storage_priv(storage)->data;
 }
 
 xbt_dict_t SIMIX_pre_storage_get_content(smx_simcall_t simcall, smx_storage_t storage){

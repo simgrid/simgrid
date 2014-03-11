@@ -139,6 +139,7 @@ typedef s_xbt_dictelm_t s_msg_storage_t;
 
 typedef struct msg_storage_priv  {
   const char *host;
+  void *data;
 } s_msg_storage_priv_t, *msg_storage_priv_t;
 
 static inline msg_storage_priv_t MSG_storage_priv(msg_storage_t storage){

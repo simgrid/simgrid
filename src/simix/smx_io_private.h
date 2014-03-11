@@ -22,8 +22,6 @@ static inline smx_storage_priv_t SIMIX_storage_priv(smx_storage_t storage){
 
 smx_storage_t SIMIX_storage_create(const char *name, void *storage, void *data);
 void SIMIX_storage_destroy(void *s);
-void* SIMIX_pre_file_get_data(smx_simcall_t simcall,smx_file_t fd);
-void SIMIX_pre_file_set_data(smx_simcall_t simcall, smx_file_t fd, void *data);
 void SIMIX_pre_file_read(smx_simcall_t simcall, smx_file_t fd, sg_size_t size);
 void SIMIX_pre_file_write(smx_simcall_t simcall,smx_file_t fd, sg_size_t size);
 void SIMIX_pre_file_open(smx_simcall_t simcall, const char* mount,
@@ -38,8 +36,6 @@ xbt_dynar_t SIMIX_pre_file_get_info(smx_simcall_t simcall, smx_file_t fd);
 int SIMIX_pre_file_seek(smx_simcall_t simcall, smx_file_t fd, sg_size_t offset, int origin);
 void SIMIX_pre_storage_file_rename(smx_simcall_t simcall,smx_storage_t storage, const char* src, const char* dest);
 
-void* SIMIX_file_get_data(smx_file_t fd);
-void SIMIX_file_set_data(smx_file_t fd, void *data);
 smx_action_t SIMIX_file_read(smx_process_t process, smx_file_t fd, sg_size_t size);
 smx_action_t SIMIX_file_write(smx_process_t process, smx_file_t fd, sg_size_t size);
 smx_action_t SIMIX_file_open(smx_process_t process, const char* storage,
@@ -62,9 +58,6 @@ sg_size_t SIMIX_storage_get_used_size(smx_process_t process,const char* name);
 
 xbt_dict_t SIMIX_storage_get_properties(smx_storage_t storage);
 xbt_dict_t SIMIX_pre_storage_get_properties(smx_simcall_t, smx_storage_t);
-
-void SIMIX_pre_storage_set_data(smx_simcall_t, smx_storage_t, void*);
-void* SIMIX_pre_storage_get_data(smx_simcall_t, smx_storage_t);
 
 xbt_dict_t SIMIX_pre_storage_get_content(smx_simcall_t simcall, smx_storage_t storage);
 xbt_dict_t SIMIX_storage_get_content(smx_storage_t storage);
