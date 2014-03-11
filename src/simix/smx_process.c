@@ -742,7 +742,13 @@ void SIMIX_post_process_sleep(smx_action_t action)
     }
     simcall_process_sleep__set__result(simcall, state);
     simcall->issuer->waiting_action = NULL;
-    SIMIX_simcall_answer(simcall);
+    if (simcall->issuer->suspended) {
+      XBT_DEBUG("Wait! This process is suspended and can't wake up now.");
+      simcall->issuer->suspended = 0;
+      SIMIX_pre_process_suspend(simcall, simcall->issuer);
+    } else {
+      SIMIX_simcall_answer(simcall);
+    }
   }
 
   SIMIX_process_sleep_destroy(action);
