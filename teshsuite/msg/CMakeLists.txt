@@ -23,32 +23,33 @@ endif()
 set(tesh_files
   ${tesh_files}
   ${CMAKE_CURRENT_SOURCE_DIR}/get_sender.tesh
-  ${CMAKE_CURRENT_SOURCE_DIR}/pid.tesh
   ${CMAKE_CURRENT_SOURCE_DIR}/host_on_off.tesh
-  ${CMAKE_CURRENT_SOURCE_DIR}/task_destroy_cancel.tesh
+  ${CMAKE_CURRENT_SOURCE_DIR}/pid.tesh
   ${CMAKE_CURRENT_SOURCE_DIR}/process.tesh
+  ${CMAKE_CURRENT_SOURCE_DIR}/task_destroy_cancel.tesh
   PARENT_SCOPE
   )
 set(xml_files
   ${xml_files}
   ${CMAKE_CURRENT_SOURCE_DIR}/get_sender_d.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/get_sender_p.xml
-  ${CMAKE_CURRENT_SOURCE_DIR}/pid_d.xml
-  ${CMAKE_CURRENT_SOURCE_DIR}/pid_p.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/host_on_off_d.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/host_on_off_p.xml
+  ${CMAKE_CURRENT_SOURCE_DIR}/pid_d.xml
+  ${CMAKE_CURRENT_SOURCE_DIR}/pid_p.xml
+  ${CMAKE_CURRENT_SOURCE_DIR}/process_d.xml
+  ${CMAKE_CURRENT_SOURCE_DIR}/process_p.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/task_destroy_cancel_d.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/task_destroy_cancel_p.xml
-  ${CMAKE_CURRENT_SOURCE_DIR}/process.xml
   PARENT_SCOPE
   )
 set(teshsuite_src
   ${teshsuite_src}
   ${CMAKE_CURRENT_SOURCE_DIR}/get_sender.c
-  ${CMAKE_CURRENT_SOURCE_DIR}/pid.c
   ${CMAKE_CURRENT_SOURCE_DIR}/host_on_off.c
-  ${CMAKE_CURRENT_SOURCE_DIR}/task_destroy_cancel.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/pid.c
   ${CMAKE_CURRENT_SOURCE_DIR}/process.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/task_destroy_cancel.c
   PARENT_SCOPE
   )
 set(bin_files
