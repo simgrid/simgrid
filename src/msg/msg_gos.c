@@ -430,12 +430,10 @@ msg_comm_t MSG_task_isend_internal(msg_task_t task, const char *alias,
   }
 
 #ifdef HAVE_TRACING
-    if (TRACE_is_enabled()) {
-      simcall_set_category(comm->s_comm, task->category);
-    }
-#endif
+  if (TRACE_is_enabled()) {
+    simcall_set_category(act, task->category);
+  }
 
-#ifdef HAVE_TRACING
   if (call_end)
     TRACE_msg_task_put_end();
 #endif
