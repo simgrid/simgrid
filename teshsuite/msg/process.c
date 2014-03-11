@@ -24,27 +24,30 @@ int master(int argc, char *argv[])
   msg_process_t process = NULL;
   MSG_process_sleep(1);
   xbt_swag_foreach(process, process_list) {
-	XBT_INFO("Process(pid=%d, ppid=%d, name=%s)", MSG_process_get_PID(process), MSG_process_get_PPID(process), MSG_process_get_name(process));
-    if (MSG_process_self_PID()!=MSG_process_get_PID(process))
+    XBT_INFO("Process(pid=%d, ppid=%d, name=%s)",
+             MSG_process_get_PID(process), MSG_process_get_PPID(process),
+             MSG_process_get_name(process));
+    if (MSG_process_self_PID() != MSG_process_get_PID(process))
       MSG_process_kill(process);
   }
-  process = MSG_process_create("slave from master", slave, NULL, MSG_host_self());
+  process = MSG_process_create("slave from master",
+                               slave, NULL, MSG_host_self());
   MSG_process_sleep(2);
 
   XBT_INFO("Suspend Process(pid=%d)", MSG_process_get_PID(process));
   MSG_process_suspend(process);
 
-  XBT_INFO("Process(pid=%d) is %ssuspended"
-		  ,MSG_process_get_PID(process)
-		  ,(MSG_process_is_suspended(process)) ? "" : "not ");
+  XBT_INFO("Process(pid=%d) is %ssuspended",
+           MSG_process_get_PID(process),
+           (MSG_process_is_suspended(process)) ? "" : "not ");
   MSG_process_sleep(2);
 
   XBT_INFO("Resume Process(pid=%d)", MSG_process_get_PID(process));
   MSG_process_resume(process);
 
-  XBT_INFO("Process(pid=%d) is %ssuspended"
-		  ,MSG_process_get_PID(process)
-		  ,(MSG_process_is_suspended(process)) ? "" : "not ");
+  XBT_INFO("Process(pid=%d) is %ssuspended",
+           MSG_process_get_PID(process),
+           (MSG_process_is_suspended(process)) ? "" : "not ");
   MSG_process_sleep(2);
   MSG_process_kill(process);
 
@@ -56,11 +59,12 @@ int master(int argc, char *argv[])
 int slave(int argc, char *argv[])
 {
   MSG_process_sleep(.5);
-  XBT_INFO("Slave started (PID:%d, PPID:%d)", MSG_process_self_PID(), MSG_process_self_PPID());
+  XBT_INFO("Slave started (PID:%d, PPID:%d)",
+           MSG_process_self_PID(), MSG_process_self_PPID());
   while(1){
-	XBT_INFO("Plop i am %ssuspended", (MSG_process_is_suspended(MSG_process_self())) ? "" : "not ");
+    XBT_INFO("Plop i am %ssuspended",
+             (MSG_process_is_suspended(MSG_process_self())) ? "" : "not ");
     MSG_process_sleep(1);
-    //MSG_process_suspend(MSG_process_self());
   }
   XBT_INFO("I'm done. See you!");
   return 0;
