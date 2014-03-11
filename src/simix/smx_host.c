@@ -463,7 +463,7 @@ smx_action_t SIMIX_host_execute(const char *name,
     }
   }
 
-  XBT_DEBUG("Create execute action %p", action);
+  XBT_DEBUG("Create execute action %p: %s", action, action->name);
 
   return action;
 }

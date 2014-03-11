@@ -766,6 +766,7 @@ void SIMIX_process_sleep_suspend(smx_action_t action)
 
 void SIMIX_process_sleep_resume(smx_action_t action)
 {
+  XBT_DEBUG("Action state is %d on process_sleep_resume.", action->state);
   xbt_assert(action->type == SIMIX_ACTION_SLEEP);
   surf_action_resume(action->sleep.surf_sleep);
 }
@@ -798,10 +799,11 @@ void SIMIX_process_yield(smx_process_t self)
     SIMIX_process_stop(self);
   }
 
-  if(self->suspended) {
+  if (self->suspended) {
+    XBT_DEBUG("Hey! I'm suspended.");
     xbt_assert(!self->doexception, "Gloups! This exception may be lost by subsequent calls.");
     self->suspended = 0;
-    SIMIX_process_suspend(self,self);
+    SIMIX_process_suspend(self, self);
   }
 
   if (self->doexception) {
