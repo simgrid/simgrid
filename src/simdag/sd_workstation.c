@@ -45,8 +45,8 @@ SD_storage_t __SD_storage_create(void *surf_storage, void *data)
 
   storage = xbt_new(s_SD_storage_priv_t, 1);
   storage->data = data;     /* user data */
-  storage->host = surf_storage_get_host(surf_storage);
   name = surf_resource_name(surf_storage);
+  storage->host = surf_storage_get_host(surf_storage_resource_by_name(name));
   xbt_lib_set(storage_lib,name, SD_STORAGE_LEVEL, storage);
   return xbt_lib_get_elm_or_null(storage_lib, name);
 }
