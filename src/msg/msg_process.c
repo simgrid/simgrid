@@ -56,9 +56,11 @@ void MSG_process_cleanup_from_SIMIX(smx_process_t smx_proc)
 
 /* This function creates a MSG process. It has the prototype enforced by SIMIX_function_register_process_create */
 void MSG_process_create_from_SIMIX(smx_process_t* process, const char *name,
-                                    xbt_main_func_t code, void *data,
-                                    const char *hostname, double kill_time, int argc, char **argv,
-                                    xbt_dict_t properties, int auto_restart)
+                                   xbt_main_func_t code, void *data,
+                                   const char *hostname, double kill_time,
+                                   int argc, char **argv,
+                                   xbt_dict_t properties, int auto_restart,
+                                   smx_process_t parent_process)
 {
   msg_host_t host = MSG_get_host_by_name(hostname);
   msg_process_t p = MSG_process_create_with_environment(name, code, data,

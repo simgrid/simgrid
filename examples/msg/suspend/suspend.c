@@ -12,6 +12,12 @@
 XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test,
                              "Messages specific for this msg example");
 
+#define SLEEP(duration)                                 \
+  if (MSG_process_sleep(duration) != MSG_OK)            \
+    xbt_die("What's going on??? I failed to sleep!");   \
+  else                                                  \
+    (void)0
+
 /** @addtogroup MSG_examples
  * 
  * - <b>suspend/suspend.c</b>: Demonstrates how to suspend and resume processes using @ref MSG_process_suspend and @ref MSG_process_resume.
@@ -23,6 +29,15 @@ static int lazy_guy(int argc, char *argv[])
   XBT_INFO("Nobody's watching me ? Let's go to sleep.");
   MSG_process_suspend(MSG_process_self());
   XBT_INFO("Uuuh ? Did somebody call me ?");
+
+  XBT_INFO("Going to sleep...");
+  SLEEP(10.0);
+  XBT_INFO("Mmm... waking up.");
+
+  XBT_INFO("Going to sleep one more time...");
+  SLEEP(10.0);
+  XBT_INFO("Waking up once for all!");
+
   XBT_INFO("Mmmh, goodbye now.");
   return 0;
 }                               /* end_of_lazy_guy */
@@ -36,9 +51,26 @@ static int dream_master(int argc, char *argv[])
   XBT_INFO("Let's create a lazy guy.");
   lazy = MSG_process_create("Lazy", lazy_guy, NULL, MSG_host_self());
   XBT_INFO("Let's wait a little bit...");
-  MSG_process_sleep(10.0);
+  SLEEP(10.0);
   XBT_INFO("Let's wake the lazy guy up! >:) BOOOOOUUUHHH!!!!");
   MSG_process_resume(lazy);
+
+  SLEEP(5.0);
+  XBT_INFO("Suspend the lazy guy while he's sleeping...");
+  MSG_process_suspend(lazy);
+  XBT_INFO("Let him finish his siesta.");
+  SLEEP(10.0);
+  XBT_INFO("Wake up, lazy guy!");
+  MSG_process_resume(lazy);
+
+  SLEEP(5.0);
+  XBT_INFO("Suspend again the lazy guy while he's sleeping...");
+  MSG_process_suspend(lazy);
+  XBT_INFO("This time, don't let him finish his siesta.");
+  SLEEP(2.0);
+  XBT_INFO("Wake up, lazy guy!");
+  MSG_process_resume(lazy);
+
   XBT_INFO("OK, goodbye now.");
   return 0;
 }                               /* end_of_dram_master */

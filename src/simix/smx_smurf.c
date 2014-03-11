@@ -56,7 +56,7 @@ void SIMIX_simcall_answer(smx_simcall_t simcall)
 void SIMIX_simcall_pre(smx_simcall_t simcall, int value)
 {
   XBT_DEBUG("Handling simcall %p: %s", simcall, SIMIX_simcall_name(simcall->call));
-  simcall->mc_value = value;
+  SIMCALL_SET_MC_VALUE(simcall, value);
   if (simcall->issuer->context->iwannadie && simcall->call != SIMCALL_PROCESS_CLEANUP)
     return;
   switch (simcall->call) {

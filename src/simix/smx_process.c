@@ -137,18 +137,12 @@ void SIMIX_create_maestro_process()
   /* Create maestro process and intilialize it */
   maestro = xbt_new0(s_smx_process_t, 1);
   maestro->pid = simix_process_maxpid++;
+  maestro->ppid = -1;
   maestro->name = (char *) "";
   maestro->running_ctx = xbt_new(xbt_running_ctx_t, 1);
   XBT_RUNNING_CTX_INITIALIZE(maestro->running_ctx);
   maestro->context = SIMIX_context_new(NULL, 0, NULL, NULL, maestro);
   maestro->simcall.issuer = maestro;
-
-  if (SIMIX_process_self()) {
-    maestro->ppid = SIMIX_process_get_PID(SIMIX_process_self());
-  } else {
-    maestro->ppid = -1;
-  }
-
   simix_global->maestro_process = maestro;
   return;
 }
@@ -185,17 +179,17 @@ void SIMIX_process_stop(smx_process_t arg) {
 smx_process_t SIMIX_process_create_from_wrapper(smx_process_arg_t args) {
 
   smx_process_t process;
-  simix_global->create_process_function(
-      &process,
-      args->name,
-      args->code,
-      args->data,
-      args->hostname,
-      args->kill_time,
-      args->argc,
-      args->argv,
-      args->properties,
-      args->auto_restart);
+  simix_global->create_process_function(&process,
+                                        args->name,
+                                        args->code,
+                                        args->data,
+                                        args->hostname,
+                                        args->kill_time,
+                                        args->argc,
+                                        args->argv,
+                                        args->properties,
+                                        args->auto_restart,
+                                        NULL);
   xbt_free(args);
   return process;
 }
@@ -211,9 +205,9 @@ void SIMIX_pre_process_create(smx_simcall_t simcall,
                           int argc, char **argv,
                           xbt_dict_t properties,
                           int auto_restart){
-  SIMIX_process_create_with_parent(process, name, code, data, hostname,
-                              kill_time, argc, argv, properties, auto_restart,
-                              simcall->issuer);
+  SIMIX_process_create(process, name, code, data, hostname,
+                       kill_time, argc, argv, properties, auto_restart,
+                       simcall->issuer);
 }
 /**
  * \brief Internal function to create a process.
@@ -232,21 +226,9 @@ void SIMIX_process_create(smx_process_t *process,
                           double kill_time,
                           int argc, char **argv,
                           xbt_dict_t properties,
-                          int auto_restart) {
-  SIMIX_process_create_with_parent(process, name, code, data, hostname,
-                                   kill_time, argc, argv, properties, auto_restart, NULL);
-}
-
-void SIMIX_process_create_with_parent(smx_process_t *process,
-	                          const char *name,
-	                          xbt_main_func_t code,
-	                          void *data,
-	                          const char *hostname,
-	                          double kill_time,
-	                          int argc, char **argv,
-	                          xbt_dict_t properties,
-	                          int auto_restart,
-	                          smx_process_t parent_process) {
+                          int auto_restart,
+                          smx_process_t parent_process)
+{
   *process = NULL;
   smx_host_t host = SIMIX_host_get_by_name(hostname);
 
@@ -760,7 +742,13 @@ void SIMIX_post_process_sleep(smx_action_t action)
     }
     simcall_process_sleep__set__result(simcall, state);
     simcall->issuer->waiting_action = NULL;
-    SIMIX_simcall_answer(simcall);
+    if (simcall->issuer->suspended) {
+      XBT_DEBUG("Wait! This process is suspended and can't wake up now.");
+      simcall->issuer->suspended = 0;
+      SIMIX_pre_process_suspend(simcall, simcall->issuer);
+    } else {
+      SIMIX_simcall_answer(simcall);
+    }
   }
 
   SIMIX_process_sleep_destroy(action);
@@ -784,6 +772,7 @@ void SIMIX_process_sleep_suspend(smx_action_t action)
 
 void SIMIX_process_sleep_resume(smx_action_t action)
 {
+  XBT_DEBUG("Action state is %d on process_sleep_resume.", action->state);
   xbt_assert(action->type == SIMIX_ACTION_SLEEP);
   surf_action_resume(action->sleep.surf_sleep);
 }
@@ -816,10 +805,11 @@ void SIMIX_process_yield(smx_process_t self)
     SIMIX_process_stop(self);
   }
 
-  if(self->suspended) {
+  if (self->suspended) {
+    XBT_DEBUG("Hey! I'm suspended.");
     xbt_assert(!self->doexception, "Gloups! This exception may be lost by subsequent calls.");
     self->suspended = 0;
-    SIMIX_process_suspend(self,self);
+    SIMIX_process_suspend(self, self);
   }
 
   if (self->doexception) {
@@ -962,19 +952,19 @@ smx_process_t SIMIX_process_restart(smx_process_t process, smx_process_t issuer)
                                           arg.argc,
                                           arg.argv,
                                           arg.properties,
-                                          arg.auto_restart);
-  }
-  else {
+                                          arg.auto_restart,
+                                          NULL);
+  } else {
     simcall_process_create(&new_process,
-                                          arg.argv[0],
-                                          arg.code,
-                                          arg.data,
-                                          arg.hostname,
-                                          arg.kill_time,
-                                          arg.argc,
-                                          arg.argv,
-                                          arg.properties,
-                                          arg.auto_restart);
+                           arg.argv[0],
+                           arg.code,
+                           arg.data,
+                           arg.hostname,
+                           arg.kill_time,
+                           arg.argc,
+                           arg.argv,
+                           arg.properties,
+                           arg.auto_restart);
 
   }
   return new_process;

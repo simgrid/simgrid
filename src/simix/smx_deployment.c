@@ -80,7 +80,7 @@ static void parse_process(sg_platf_process_cbarg_t process)
                                             process->argc,
                                             (char**)(process->argv),
                                             current_property_set,
-                                            auto_restart);
+                                            auto_restart, NULL);
     else
       simcall_process_create(&process_created, (char*)(process->argv)[0], parse_code, NULL, sg_host_name(host), kill_time, process->argc,
           (char**)process->argv, current_property_set,auto_restart);

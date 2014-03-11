@@ -110,7 +110,8 @@ typedef void (*smx_creation_func_t) ( /* process */ smx_process_t*,
                                       /* argc */ int,
                                       /* argv */ char**,
                                       /* props */ xbt_dict_t,
-                                      /* auto_restart */ int);
+                                      /* auto_restart */ int,
+                                      /* parent_process */ smx_process_t);
 
 
 /******************************* Networking ***********************************/

@@ -53,7 +53,7 @@ void SIMIX_host_on(smx_host_t h)
   xbt_assert((host != NULL), "Invalid parameters");
 
   if (surf_resource_get_state(surf_workstation_resource_priv(h))==SURF_RESOURCE_OFF) {
-	surf_resource_set_state(surf_workstation_resource_priv(h), SURF_RESOURCE_ON);
+    surf_resource_set_state(surf_workstation_resource_priv(h), SURF_RESOURCE_ON);
     unsigned int cpt;
     smx_process_arg_t arg;
     xbt_dynar_foreach(host->boot_processes,cpt,arg) {
@@ -70,19 +70,19 @@ void SIMIX_host_on(smx_host_t h)
                                               arg->argc,
                                               arg->argv,
                                               arg->properties,
-                                              arg->auto_restart);
-      }
-      else {
+                                              arg->auto_restart,
+                                              NULL);
+      } else {
         simcall_process_create(&process,
-                                              arg->argv[0],
-                                              arg->code,
-                                              NULL,
-                                              arg->hostname,
-                                              arg->kill_time,
-                                              arg->argc,
-                                              arg->argv,
-                                              arg->properties,
-                                              arg->auto_restart);
+                               arg->argv[0],
+                               arg->code,
+                               NULL,
+                               arg->hostname,
+                               arg->kill_time,
+                               arg->argc,
+                               arg->argv,
+                               arg->properties,
+                               arg->auto_restart);
       }
     }
   }
@@ -391,7 +391,8 @@ void SIMIX_host_restart_processes(smx_host_t host)
                                             arg->argc,
                                             arg->argv,
                                             arg->properties,
-                                            arg->auto_restart);
+                                            arg->auto_restart,
+                                            NULL);
     } else {
       simcall_process_create(&process,
                              arg->argv[0],
@@ -462,7 +463,7 @@ smx_action_t SIMIX_host_execute(const char *name,
     }
   }
 
-  XBT_DEBUG("Create execute action %p", action);
+  XBT_DEBUG("Create execute action %p: %s", action, action->name);
 
   return action;
 }
