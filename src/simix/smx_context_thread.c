@@ -153,6 +153,13 @@ static void *smx_ctx_thread_wrapper(void *param)
 {
   smx_ctx_thread_t context = (smx_ctx_thread_t) param;
 
+  /* Install alternate signal stack, for SIGSEGV handler. */
+  stack_t stack;
+  stack.ss_sp = sigsegv_stack;
+  stack.ss_size = sizeof sigsegv_stack;
+  stack.ss_flags = 0;
+  sigaltstack(&stack, NULL);
+
   /* Tell the maestro we are starting, and wait for its green light */
   xbt_os_sem_release(context->end);
   xbt_os_sem_acquire(context->begin);
