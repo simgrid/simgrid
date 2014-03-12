@@ -97,6 +97,7 @@ add_subdirectory(${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich3-test/coll)
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich3-test/comm)
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich3-test/datatype)
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich3-test/group)
+add_subdirectory(${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich3-test/topo)
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich3-test/init)
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich3-test/pt2pt)
 
