@@ -68,6 +68,7 @@ XBT_PUBLIC(void) xbt_os_thread_yield(void);
 XBT_PUBLIC(void) xbt_os_thread_cancel(xbt_os_thread_t thread);
 XBT_PUBLIC(void *) xbt_os_thread_getparam(void);
 XBT_PUBLIC(void) xbt_os_thread_setstacksize(int stack_size);
+XBT_PUBLIC(void) xbt_os_thread_setguardsize(int guard_size);
 
   /** \brief Thread mutex data type (opaque structure) */
 typedef struct xbt_os_mutex_ *xbt_os_mutex_t;

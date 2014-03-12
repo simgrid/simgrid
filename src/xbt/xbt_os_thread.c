@@ -230,6 +230,14 @@ void xbt_os_thread_setstacksize(int stack_size)
     XBT_WARN("unknown error %d in pthread stacksize setting: %zd", res, sz);
 }
 
+void xbt_os_thread_setguardsize(int guard_size)
+{
+  size_t sz = guard_size;
+  int res = pthread_attr_setguardsize(&thread_attr, sz);
+  if (res)
+    XBT_WARN("pthread_attr_setguardsize failed (%d) for size: %zd", res, sz);
+}
+
 const char *xbt_os_thread_name(xbt_os_thread_t t)
 {
   return t->name;
@@ -756,6 +764,11 @@ xbt_os_thread_t xbt_os_thread_create(const char *name,
 void xbt_os_thread_setstacksize(int size)
 {
   stack_size = size;
+}
+
+void xbt_os_thread_setguardsize(int size)
+{
+  XBT_WARN("xbt_os_thread_setguardsize is not implemented (%d)", size);
 }
 
 const char *xbt_os_thread_name(xbt_os_thread_t t)
