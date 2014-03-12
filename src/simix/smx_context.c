@@ -25,6 +25,8 @@ char* smx_context_factory_name = NULL; /* factory name specified by --cfg=contex
 smx_ctx_factory_initializer_t smx_factory_initializer_to_use = NULL;
 int smx_context_stack_size;
 int smx_context_stack_size_was_set = 0;
+int smx_context_guard_size;
+int smx_context_guard_size_was_set = 0;
 #ifdef HAVE_THREAD_LOCAL_STORAGE
 static __thread smx_context_t smx_current_context_parallel;
 #else
