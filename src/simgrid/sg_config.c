@@ -650,9 +650,9 @@ void sg_config_init(int *argc, char **argv)
                      xbt_cfgelm_string, 1, 1, _sg_cfg_cb_context_factory, NULL);
     xbt_cfg_setdefault_string(_sg_cfg_set, "contexts/factory", dflt_ctx_fact);
 
-    /* stack size of contexts in Ko */
+    /* stack size of contexts in KiB */
     xbt_cfg_register(&_sg_cfg_set, "contexts/stack_size",
-                     "Stack size of contexts in Kib",
+                     "Stack size of contexts in KiB",
                      xbt_cfgelm_int, 1, 1, _sg_cfg_cb_context_stack_size, NULL);
     xbt_cfg_setdefault_int(_sg_cfg_set, "contexts/stack_size", 8*1024);
     /* No, it was not set yet (the above setdefault() changed this to 1). */

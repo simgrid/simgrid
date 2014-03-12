@@ -391,7 +391,7 @@ stacks), leading to segfaults with corrupted stack traces.
 
 If you want to push the scalability limits of your code, you really
 want to reduce the \b contexts/stack_size item. Its default value
-is 8 (in MiB), while our Chord simulation works with stacks as small
+is 8192 (in KiB), while our Chord simulation works with stacks as small
 as 16 KiB, for example. For the thread factory, the default value 
 is the one of the system, if it is too large/small, it has to be set 
 with this parameter.
