@@ -32,7 +32,7 @@ typedef struct s_smx_ctx_sysv {
 #ifdef HAVE_VALGRIND_VALGRIND_H
   unsigned int valgrind_stack_id;       /* the valgrind stack id */
 #endif
-  char stack[0];                /* the thread stack (must remain the last element of the structure) */
+  char *stack;                  /* the thread stack */
 } s_smx_ctx_sysv_t, *smx_ctx_sysv_t;
 
 #ifdef CONTEXT_THREADS
@@ -135,6 +135,7 @@ smx_ctx_sysv_create_context_sized(size_t size, xbt_main_func_t code,
      otherwise it is the context for maestro */
   if (code) {
 
+    context->stack = SIMIX_context_stack_new();
     getcontext(&(context->uc));
 
     context->uc.uc_link = NULL;
@@ -183,8 +184,7 @@ smx_ctx_sysv_create_context(xbt_main_func_t code, int argc, char **argv,
                             smx_process_t process)
 {
 
-  return smx_ctx_sysv_create_context_sized(sizeof(s_smx_ctx_sysv_t) +
-                                           smx_context_stack_size,
+  return smx_ctx_sysv_create_context_sized(sizeof(s_smx_ctx_sysv_t),
                                            code, argc, argv, cleanup_func,
                                            process);
 
@@ -199,7 +199,7 @@ static void smx_ctx_sysv_free(smx_context_t context)
     VALGRIND_STACK_DEREGISTER(((smx_ctx_sysv_t)
                                context)->valgrind_stack_id);
 #endif                          /* HAVE_VALGRIND_VALGRIND_H */
-
+    SIMIX_context_stack_delete(((smx_ctx_sysv_t)context)->stack);
   }
   smx_ctx_base_free(context);
 }
