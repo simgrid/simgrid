@@ -132,9 +132,10 @@ void get_set_storage_data(const char *storage_name){
   char *data = MSG_storage_get_data(storage);
   XBT_INFO("Get data: '%s'", data);
 
-  MSG_storage_set_data(storage,strdup("Some data"));
+  MSG_storage_set_data(storage, xbt_strdup("Some data"));
   data = MSG_storage_get_data(storage);
   XBT_INFO("\tSet and get data: '%s'", data);
+  xbt_free(data);
 }
 
 int client(int argc, char *argv[])
