@@ -382,6 +382,9 @@ static void search_name(xbt_set_t head, const char *key)
   elm = (my_elem_t) xbt_set_get_by_name(head, key);
   xbt_test_log(" Found %s (under ID %u)\n",
                 elm ? elm->data : "(null)", elm ? elm->ID : -1);
+  if (elm == NULL)
+    THROWF(mismatch_error, 0,
+           "Got a null elm for name %s", key);
   if (strcmp(key, elm->name))
     THROWF(mismatch_error, 0, "The key (%s) is not the one expected (%s)",
            key, elm->name);
@@ -399,6 +402,9 @@ static void search_id(xbt_set_t head, int id, const char *key)
   elm = (my_elem_t) xbt_set_get_by_id(head, id);
   xbt_test_log("Found %s (data %s)",
                 elm ? elm->name : "(null)", elm ? elm->data : "(null)");
+  if (elm == NULL)
+    THROWF(mismatch_error, 0,
+           "Got a null elm for id %d", id);
   if (id != elm->ID)
     THROWF(mismatch_error, 0,
            "The found ID (%u) is not the one expected (%d)", elm->ID, id);
@@ -418,6 +424,8 @@ static void traverse(xbt_set_t set)
 
   xbt_set_foreach(set, cursor, elm) {
     xbt_test_assert(elm, "Dude ! Got a null elm during traversal!");
+    if (!elm)
+      continue;
     xbt_test_log("Id(%u):  %s->%s\n", elm->ID, elm->name, elm->data);
     xbt_test_assert(!strcmp(elm->name, elm->data),
                      "Key(%s) != value(%s). Aborting", elm->name,
@@ -489,7 +497,7 @@ XBT_TEST_UNIT("retrieve", test_set_retrieve, "Retrieving some values")
   xbt_test_add("Search 123");
   elm = (my_elem_t) xbt_set_get_by_name(set, "123");
   xbt_test_assert(elm, "elm must be there");
-  xbt_assert(!strcmp("123", elm->data));
+  xbt_assert(elm && !strcmp("123", elm->data));
 
   search_not_found(set, "Can't be found");
   search_not_found(set, "123 Can't be found");

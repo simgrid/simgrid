@@ -201,6 +201,9 @@ typedef struct s_smx_action {
 void SIMIX_context_mod_init(void);
 void SIMIX_context_mod_exit(void);
 
+void *SIMIX_context_stack_new(void);
+void SIMIX_context_stack_delete(void *stack);
+
 void SIMIX_context_set_current(smx_context_t context);
 smx_context_t SIMIX_context_get_current(void);
 

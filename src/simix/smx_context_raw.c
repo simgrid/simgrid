@@ -316,7 +316,7 @@ smx_ctx_raw_create_context(xbt_main_func_t code, int argc, char **argv,
   /* if the user provided a function for the process then use it,
      otherwise it is the context for maestro */
      if (code) {
-       context->malloced_stack = xbt_malloc0(smx_context_stack_size);
+       context->malloced_stack = SIMIX_context_stack_new();
        context->stack_top =
            raw_makecontext(context->malloced_stack, smx_context_stack_size,
                (void_f_pvoid_t) smx_ctx_raw_wrapper, context);
@@ -352,7 +352,8 @@ static void smx_ctx_raw_free(smx_context_t context)
         context)->valgrind_stack_id);
 #endif                          /* HAVE_VALGRIND_VALGRIND_H */
 
-    free(((smx_ctx_raw_t) context)->malloced_stack);
+    SIMIX_context_stack_delete(((smx_ctx_raw_t) context)->malloced_stack);
+
   }
   smx_ctx_base_free(context);
 }

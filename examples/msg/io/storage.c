@@ -101,9 +101,10 @@ static int host(int argc, char *argv[]){
 
   XBT_INFO("Get data: '%s'", data);
 
-  MSG_storage_set_data(storage,strdup("Some user data"));
+  MSG_storage_set_data(storage, xbt_strdup("Some user data"));
   data = MSG_storage_get_data(storage);
   XBT_INFO("Set and get data: '%s'", data);
+  xbt_free(data);
   xbt_free(storage_name);
 
 
