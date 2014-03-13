@@ -20,18 +20,11 @@
 #  include <ucontext.h>           /* context relative declarations */
 #endif
 
-#ifdef HAVE_VALGRIND_VALGRIND_H
-#  include <valgrind/valgrind.h>
-#endif                          /* HAVE_VALGRIND_VALGRIND_H */
-
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_context);
 
 typedef struct s_smx_ctx_sysv {
   s_smx_ctx_base_t super;       /* Fields of super implementation */
   ucontext_t uc;                /* the ucontext that executes the code */
-#ifdef HAVE_VALGRIND_VALGRIND_H
-  unsigned int valgrind_stack_id;       /* the valgrind stack id */
-#endif
   char *stack;                  /* the thread stack */
 } s_smx_ctx_sysv_t, *smx_ctx_sysv_t;
 
@@ -135,17 +128,11 @@ smx_ctx_sysv_create_context(xbt_main_func_t code, int argc, char **argv,
     context->uc.uc_link = NULL;
 
     context->uc.uc_stack.ss_sp =
-        pth_skaddr_makecontext(context->stack, smx_context_stack_size);
+        pth_skaddr_makecontext(context->stack, smx_context_usable_stack_size);
 
     context->uc.uc_stack.ss_size =
-        pth_sksize_makecontext(context->stack, smx_context_stack_size);
+        pth_sksize_makecontext(context->stack, smx_context_usable_stack_size);
 
-#ifdef HAVE_VALGRIND_VALGRIND_H
-    context->valgrind_stack_id =
-        VALGRIND_STACK_REGISTER(context->uc.uc_stack.ss_sp,
-                                ((char *) context->uc.uc_stack.ss_sp) +
-                                context->uc.uc_stack.ss_size);
-#endif                          /* HAVE_VALGRIND_VALGRIND_H */
     memcpy(ctx_addr, &context, sizeof(smx_ctx_sysv_t));
     switch (CTX_ADDR_LEN) {
     case 1:
@@ -167,7 +154,7 @@ smx_ctx_sysv_create_context(xbt_main_func_t code, int argc, char **argv,
 
   if(MC_is_active() && code)
     MC_new_stack_area(context->stack, ((smx_context_t)context)->process->name,
-                      &(context->uc), smx_context_stack_size);
+                      &(context->uc), smx_context_usable_stack_size);
 
   return (smx_context_t) context;
 }
@@ -176,11 +163,6 @@ static void smx_ctx_sysv_free(smx_context_t context)
 {
 
   if (context) {
-
-#ifdef HAVE_VALGRIND_VALGRIND_H
-    VALGRIND_STACK_DEREGISTER(((smx_ctx_sysv_t)
-                               context)->valgrind_stack_id);
-#endif                          /* HAVE_VALGRIND_VALGRIND_H */
     SIMIX_context_stack_delete(((smx_ctx_sysv_t)context)->stack);
   }
   smx_ctx_base_free(context);

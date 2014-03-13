@@ -201,6 +201,16 @@ typedef struct s_smx_action {
 void SIMIX_context_mod_init(void);
 void SIMIX_context_mod_exit(void);
 
+/* We are using the bottom of the stack to save some information, like the
+ * valgrind_stack_id. Define smx_context_usable_stack_size to give the remaining
+ * size for the stack. */
+#ifdef HAVE_VALGRIND_VALGRIND_H
+# define smx_context_usable_stack_size                                  \
+  (smx_context_stack_size - sizeof(unsigned int)) /* for valgrind_stack_id */
+#else
+# define smx_context_usable_stack_size smx_context_stack_size
+#endif
+
 void *SIMIX_context_stack_new(void);
 void SIMIX_context_stack_delete(void *stack);
 
