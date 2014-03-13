@@ -323,7 +323,7 @@ void *mmalloc_preinit(void)
 {
   int res;
   if (__mmalloc_default_mdp == NULL) {
-    unsigned long mask = ~((unsigned long)getpagesize() - 1);
+    unsigned long mask = ~((unsigned long)xbt_pagesize - 1);
     void *addr = (void*)(((unsigned long)sbrk(0) + HEAP_OFFSET) & mask);
     __mmalloc_default_mdp = xbt_mheap_new(-1, addr);
     /* Fixme? only the default mdp in protected against forks */
