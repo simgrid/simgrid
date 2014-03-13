@@ -140,7 +140,7 @@ static void parse_S_host_link(sg_platf_host_link_cbarg_t host)
   // If dynar is is greater than edge id and if the host_link is already defined
   if((int)xbt_dynar_length(current_routing->p_linkUpDownList) > info->getId() &&
       xbt_dynar_get_as(current_routing->p_linkUpDownList, info->getId(), void*))
-    xbt_die("Host_link for '%s' is already defined!",host->id);
+	surf_parse_error("Host_link for '%s' is already defined!",host->id);
 
   XBT_DEBUG("Push Host_link for host '%s' to position %d", info->getName(), info->getId());
   xbt_dynar_set_as(current_routing->p_linkUpDownList, info->getId(), s_surf_parsing_link_up_down_t, link_up_down);
@@ -322,7 +322,7 @@ static void routing_parse_trace_connect(sg_platf_trace_connect_cbarg_t trace_con
         xbt_strdup(trace_connect->element), NULL);
     break;
   default:
-    xbt_die("Cannot connect trace %s to %s: kind of trace unknown",
+	surf_parse_error("Cannot connect trace %s to %s: kind of trace unknown",
         trace_connect->trace, trace_connect->element);
     break;
   }

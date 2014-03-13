@@ -119,6 +119,6 @@ void parse_platform_file(const char *file)
   /* Stop the flex parser */
   surf_parse_close();
   if (parse_status)
-    xbt_die("Parse error in %s", file);
+    surf_parse_error("Parse error in %s", file);
 }
 

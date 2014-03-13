@@ -177,9 +177,9 @@ void AsFloyd::parseRoute(sg_platf_route_cbarg_t route)
     XBT_DEBUG("Load ASroute from \"%s(%s)\" to \"%s(%s)\"", src,
         route->gw_src->getName(), dst, route->gw_dst->getName());
     if(route->gw_dst->getRcType() == SURF_NETWORK_ELEMENT_NULL)
-      xbt_die("The dst_gateway '%s' does not exist!",route->gw_dst->getName());
+      surf_parse_error("The dst_gateway '%s' does not exist!",route->gw_dst->getName());
     if(route->gw_src->getRcType() == SURF_NETWORK_ELEMENT_NULL)
-      xbt_die("The src_gateway '%s' does not exist!",route->gw_src->getName());
+      surf_parse_error("The src_gateway '%s' does not exist!",route->gw_src->getName());
   }
 
   if(TO_FLOYD_LINK(src_net_elm->getId(), dst_net_elm->getId()))

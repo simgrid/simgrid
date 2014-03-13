@@ -475,9 +475,9 @@ void AsDijkstra::parseRoute(sg_platf_route_cbarg_t route)
         route->gw_src->getName(), dst, route->gw_dst->getName());
     as_route = 1;
     if(route->gw_dst->getRcType() == SURF_NETWORK_ELEMENT_NULL)
-      xbt_die("The gw_dst '%s' does not exist!",route->gw_dst->getName());
+      surf_parse_error("The gw_dst '%s' does not exist!",route->gw_dst->getName());
     if(route->gw_src->getRcType() == SURF_NETWORK_ELEMENT_NULL)
-      xbt_die("The gw_src '%s' does not exist!",route->gw_src->getName());
+      surf_parse_error("The gw_src '%s' does not exist!",route->gw_src->getName());
   }
 
   RoutingEdgePtr src_net_elm, dst_net_elm;
