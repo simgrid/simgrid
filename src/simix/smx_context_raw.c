@@ -62,6 +62,7 @@ __asm__ (
 #endif
    "   mov %rdi,%rax\n"      /* stack */
    "   add %rsi,%rax\n"      /* size  */
+   "   andq $-16, %rax\n"    /* align stack */
    "   movq $0,   -8(%rax)\n" /* @return for func */
    "   mov %rdx,-16(%rax)\n" /* func */
    "   mov %rcx,-24(%rax)\n" /* arg/rdi */
@@ -137,6 +138,7 @@ __asm__ (
 #endif
    "   movl 4(%esp),%eax\n"   /* stack */
    "   addl 8(%esp),%eax\n"   /* size  */
+   "   andl $-16, %eax\n"     /* align stack */
    "   movl 12(%esp),%ecx\n"  /* func  */
    "   movl 16(%esp),%edx\n"  /* arg   */
    "   movl %edx, -4(%eax)\n"
