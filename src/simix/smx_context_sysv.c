@@ -166,8 +166,8 @@ smx_ctx_sysv_create_context(xbt_main_func_t code, int argc, char **argv,
   }
 
   if(MC_is_active() && code)
-    MC_new_stack_area(context, ((smx_context_t)context)->process->name,
-                      &(context->uc), sizeof(s_smx_ctx_sysv_t));
+    MC_new_stack_area(context->stack, ((smx_context_t)context)->process->name,
+                      &(context->uc), smx_context_stack_size);
 
   return (smx_context_t) context;
 }
