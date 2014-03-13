@@ -12,8 +12,10 @@
 
 #include "simgrid/platf_interface.h"    // platform creation API internal interface
 #include "simgrid/sg_config.h"
+#include "storage_interface.hpp"
 
 #include "surf/surfxml_parse_values.h"
+
 
 /**
  * @ingroup SURF_build_api
@@ -1239,6 +1241,22 @@ static void routing_parse_peer(sg_platf_peer_cbarg_t peer)
 //   }
 // }
 
+static void check_disk_attachment()
+{
+  xbt_lib_cursor_t cursor;
+  char *key;
+  void **data;
+  RoutingEdgePtr host_elm;
+  xbt_lib_foreach(storage_lib, cursor, key, data) {
+    if(xbt_lib_get_level(xbt_lib_get_elm_or_null(storage_lib, key), SURF_STORAGE_LEVEL) != NULL) {
+	  StoragePtr storage = static_cast<StoragePtr>(xbt_lib_get_level(xbt_lib_get_elm_or_null(storage_lib, key), SURF_STORAGE_LEVEL));
+	  host_elm = sg_routing_edge_by_name_or_null(storage->p_attach);
+	  if(!host_elm)
+		  surf_parse_error("Enable to attach storage %s: host %s doesn't exist.", storage->getName(), storage->p_attach);
+    }
+  }
+}
+
 void routing_register_callbacks()
 {
   sg_platf_host_add_cb(parse_S_host);
@@ -1254,6 +1272,7 @@ void routing_register_callbacks()
 
   sg_platf_peer_add_cb(routing_parse_peer);
   sg_platf_postparse_add_cb(routing_parse_postparse);
+  sg_platf_postparse_add_cb(check_disk_attachment);
 
   /* we care about the ASes while parsing the platf. Incredible, isnt it? */
   sg_platf_AS_end_add_cb(routing_AS_end);

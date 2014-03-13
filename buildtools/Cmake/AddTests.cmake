@@ -140,6 +140,7 @@ if(NOT enable_memcheck)
   IF(enable_debug AND NOT enable_memcheck)
     ADD_TEST(tesh-parser-bogus-symmetric     ${TESH_COMMAND} ${TESH_OPTION} --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/simdag/platforms --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/simdag/platforms bogus_two_hosts_asymetric.tesh)
     ADD_TEST(tesh-parser-bogus-missing-gw ${TESH_COMMAND} ${TESH_OPTION} --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/simdag/platforms --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/simdag/platforms bogus_missing_gateway.tesh)
+    ADD_TEST(tesh-disk-attachment ${TESH_COMMAND} ${TESH_OPTION} --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/simdag/platforms --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/simdag/platforms bogus_disk_attachment.tesh)
   ENDIF()
 
   ADD_TEST(tesh-simdag-bypass                   ${TESH_COMMAND} ${TESH_OPTION} --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/simdag/platforms --setenv srcdir=${CMAKE_HOME_DIRECTORY} --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/simdag/platforms basic_parsing_test_bypass.tesh)

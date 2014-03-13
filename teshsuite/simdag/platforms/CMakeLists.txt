@@ -38,6 +38,7 @@ set(tesh_files
   ${CMAKE_CURRENT_SOURCE_DIR}/get_full_link.tesh
   ${CMAKE_CURRENT_SOURCE_DIR}/bogus_two_hosts_asymetric.tesh
   ${CMAKE_CURRENT_SOURCE_DIR}/bogus_missing_gateway.tesh
+  ${CMAKE_CURRENT_SOURCE_DIR}/bogus_disk_attachment.tesh
   PARENT_SCOPE
   )
 set(xml_files
@@ -88,6 +89,7 @@ set(xml_files
   ${CMAKE_CURRENT_SOURCE_DIR}/clusterA.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/clusterB.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/Dijkstra.xml
+  ${CMAKE_CURRENT_SOURCE_DIR}/bogus_disk_attachment.xml
   PARENT_SCOPE
   )
 set(teshsuite_src
