@@ -10,10 +10,6 @@
 #include "xbt/parmap.h"
 #include "mc/mc.h"
 
-#ifdef HAVE_VALGRIND_VALGRIND_H
-#  include <valgrind/valgrind.h>
-#endif                          /* HAVE_VALGRIND_VALGRIND_H */
-
 typedef char * raw_stack_t;
 typedef void (*rawctx_entry_point_t)(void *);
 
@@ -21,9 +17,6 @@ typedef struct s_smx_ctx_raw {
   s_smx_ctx_base_t super;         /* Fields of super implementation */
   char *malloced_stack;           /* malloced area containing the stack */
   raw_stack_t stack_top;          /* pointer to stack top (within previous area) */
-#ifdef HAVE_VALGRIND_VALGRIND_H
-  unsigned int valgrind_stack_id; /* the valgrind stack id */
-#endif
 #ifdef TIME_BENCH_PER_SR
   unsigned int thread;            /* Just for measuring purposes */
 #endif
@@ -62,6 +55,7 @@ __asm__ (
 #endif
    "   mov %rdi,%rax\n"      /* stack */
    "   add %rsi,%rax\n"      /* size  */
+   "   andq $-16, %rax\n"    /* align stack */
    "   movq $0,   -8(%rax)\n" /* @return for func */
    "   mov %rdx,-16(%rax)\n" /* func */
    "   mov %rcx,-24(%rax)\n" /* arg/rdi */
@@ -137,6 +131,7 @@ __asm__ (
 #endif
    "   movl 4(%esp),%eax\n"   /* stack */
    "   addl 8(%esp),%eax\n"   /* size  */
+   "   andl $-16, %eax\n"     /* align stack */
    "   movl 12(%esp),%ecx\n"  /* func  */
    "   movl 16(%esp),%edx\n"  /* arg   */
    "   movl %edx, -4(%eax)\n"
@@ -318,14 +313,9 @@ smx_ctx_raw_create_context(xbt_main_func_t code, int argc, char **argv,
      if (code) {
        context->malloced_stack = SIMIX_context_stack_new();
        context->stack_top =
-           raw_makecontext(context->malloced_stack, smx_context_stack_size,
-               (void_f_pvoid_t) smx_ctx_raw_wrapper, context);
-
-#ifdef HAVE_VALGRIND_VALGRIND_H
-       context->valgrind_stack_id =
-           VALGRIND_STACK_REGISTER(context->malloced_stack,
-               context->malloced_stack + smx_context_stack_size);
-#endif                          /* HAVE_VALGRIND_VALGRIND_H */
+           raw_makecontext(context->malloced_stack,
+                           smx_context_usable_stack_size,
+                           (void_f_pvoid_t)smx_ctx_raw_wrapper, context);
 
      } else {
        if(process != NULL && raw_maestro_context==NULL)
@@ -346,14 +336,7 @@ smx_ctx_raw_create_context(xbt_main_func_t code, int argc, char **argv,
 static void smx_ctx_raw_free(smx_context_t context)
 {
   if (context) {
-
-#ifdef HAVE_VALGRIND_VALGRIND_H
-    VALGRIND_STACK_DEREGISTER(((smx_ctx_raw_t)
-        context)->valgrind_stack_id);
-#endif                          /* HAVE_VALGRIND_VALGRIND_H */
-
     SIMIX_context_stack_delete(((smx_ctx_raw_t) context)->malloced_stack);
-
   }
   smx_ctx_base_free(context);
 }

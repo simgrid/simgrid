@@ -14,6 +14,10 @@
 #include "simgrid/sg_config.h"
 #include "internal_config.h"
 
+#ifdef HAVE_VALGRIND_VALGRIND_H
+# include <valgrind/valgrind.h>
+#endif
+
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_context, simix,
                                 "Context switching mechanism");
 
@@ -101,11 +105,30 @@ void SIMIX_context_mod_exit(void)
 
 void *SIMIX_context_stack_new(void)
 {
-  return xbt_malloc0(smx_context_stack_size);
+  void *stack = xbt_malloc0(smx_context_stack_size);
+
+#ifdef HAVE_VALGRIND_VALGRIND_H
+  unsigned int valgrind_stack_id =
+    VALGRIND_STACK_REGISTER(stack, (char *)stack + smx_context_stack_size);
+  memcpy((char *)stack + smx_context_usable_stack_size, &valgrind_stack_id,
+         sizeof valgrind_stack_id);
+#endif
+
+  return stack;
 }
 
 void SIMIX_context_stack_delete(void *stack)
 {
+  if (!stack)
+    return;
+
+#ifdef HAVE_VALGRIND_VALGRIND_H
+  unsigned int valgrind_stack_id;
+  memcpy(&valgrind_stack_id, (char *)stack + smx_context_usable_stack_size,
+         sizeof valgrind_stack_id);
+  VALGRIND_STACK_DEREGISTER(valgrind_stack_id);
+#endif
+
   xbt_free(stack);
 }
 
