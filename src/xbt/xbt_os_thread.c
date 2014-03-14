@@ -195,8 +195,16 @@ xbt_os_thread_t xbt_os_thread_create(const char *name,
 
 void xbt_os_thread_setstacksize(int stack_size)
 {
+  size_t alignment[] = {
+    xbt_pagesize,
+#ifdef PTHREAD_STACK_MIN
+    PTHREAD_STACK_MIN,
+#endif
+    0
+  };
   size_t sz;
   int res;
+  int i;
 
   if (stack_size < 0)
     xbt_die("stack size %d is negative, maybe it exceeds MAX_INT?", stack_size);
@@ -204,24 +212,22 @@ void xbt_os_thread_setstacksize(int stack_size)
   sz = stack_size;
   res = pthread_attr_setstacksize(&thread_attr, sz);
 
-#ifdef PTHREAD_STACK_MIN
-  if (res == EINVAL) {
-    /* Invalid size, try again with a multiple of PTHREAD_STACK_MIN. */
-    size_t rem = sz % PTHREAD_STACK_MIN;
+  for (i = 0; res == EINVAL && alignment[i] > 0; i++) {
+    /* Invalid size, try again with next multiple of alignment[i]. */
+    size_t rem = sz % alignment[i];
     if (rem != 0 || sz == 0) {
-      size_t sz2 = sz - rem + PTHREAD_STACK_MIN;
-      XBT_DEBUG("pthread_attr_setstacksize failed for %#zx, try again with %#zx",
+      size_t sz2 = sz - rem + alignment[i];
+      XBT_DEBUG("pthread_attr_setstacksize failed for %zd, try again with %zd",
                 sz, sz2);
       sz = sz2;
       res = pthread_attr_setstacksize(&thread_attr, sz);
     }
   }
-#endif
 
   if (res == EINVAL)
-    XBT_WARN("invalid stack size (maybe too big): %#zx", sz);
+    XBT_WARN("invalid stack size (maybe too big): %zd", sz);
   else if (res != 0)
-    XBT_WARN("unknown error %d in pthread stacksize setting: %#zx", res, sz);
+    XBT_WARN("unknown error %d in pthread stacksize setting: %zd", res, sz);
 }
 
 const char *xbt_os_thread_name(xbt_os_thread_t t)
