@@ -13,10 +13,12 @@ set(tesh_files
   ${CMAKE_CURRENT_SOURCE_DIR}/factory_raw.tesh
   ${CMAKE_CURRENT_SOURCE_DIR}/factory_thread.tesh
   ${CMAKE_CURRENT_SOURCE_DIR}/factory_ucontext.tesh
+  ${CMAKE_CURRENT_SOURCE_DIR}/stack_overflow.tesh
   PARENT_SCOPE
   )
 set(xml_files
   ${xml_files}
+  ${CMAKE_CURRENT_SOURCE_DIR}/stack_overflow.xml
   PARENT_SCOPE
   )
 set(teshsuite_src

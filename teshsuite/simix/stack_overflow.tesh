@@ -1,0 +1,5 @@
+! expect signal SIGSEGV
+$ ./simix/stack_overflow ${srcdir:=.}/simix/stack_overflow.xml
+> [Tremblay:master:(0) 0.000000] [test/INFO] Launching our nice bugged recursive function...
+> Access violation detected. This can result from a stack overflow.
+> Try to increase stack size with --cfg=contexts/stack_size (current size is 8192 KiB).
