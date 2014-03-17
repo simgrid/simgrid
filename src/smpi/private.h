@@ -110,6 +110,19 @@ int smpi_process_finalized(void);
 int smpi_process_initialized(void);
 void smpi_process_mark_as_initialized(void);
 
+void smpi_topo_destroy(MPI_Topology topo);
+MPI_Topology smpi_topo_create(int ndims);
+int smpi_mpi_cart_create(MPI_Comm comm_old, int ndims, int dims[],
+                         int periodic[], int reorder, MPI_Comm *comm_cart);
+int smpi_mpi_cart_shift(MPI_Comm comm, int direction, int disp,
+                        int *rank_source, int *rank_dest);
+int smpi_mpi_cart_rank(MPI_Comm comm, int* coords, int* rank);
+int smpi_mpi_cart_get(MPI_Comm comm, int maxdims, int* dims, int* periods, int* coords);
+int smpi_mpi_cart_coords(MPI_Comm comm, int rank, int maxdims,
+                         int coords[]);
+int smpi_mpi_cartdim_get(MPI_Comm comm, int *ndims);
+int smpi_mpi_dims_create(int nnodes, int ndims, int dims[]);
+int smpi_mpi_cart_sub(MPI_Comm comm, const int remain_dims[], MPI_Comm *newcomm);
 
 smpi_process_data_t smpi_process_data(void);
 smpi_process_data_t smpi_process_remote_data(int index);
@@ -181,7 +194,8 @@ int smpi_group_unuse(MPI_Group group);
 int smpi_group_size(MPI_Group group);
 int smpi_group_compare(MPI_Group group1, MPI_Group group2);
 
-MPI_Comm smpi_comm_new(MPI_Group group);
+MPI_Topology smpi_comm_topo(MPI_Comm comm);
+MPI_Comm smpi_comm_new(MPI_Group group, MPI_Topology topo);
 void smpi_comm_destroy(MPI_Comm comm);
 MPI_Group smpi_comm_group(MPI_Comm comm);
 int smpi_comm_size(MPI_Comm comm);

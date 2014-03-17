@@ -13,7 +13,7 @@ init
 pt2pt
 #
 #spawn
-#topo
+topo
 #perf
 #io
 f77

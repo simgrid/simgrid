@@ -64,6 +64,9 @@ SG_BEGIN_DECL()
 #define MPI_ERR_PENDING   14
 #define MPI_ERR_BUFFER    15
 #define MPI_ERR_NAME      16
+#define MPI_ERR_DIMS      17
+#define MPI_ERR_TOPOLOGY  18
+#define MPI_ERR_NO_MEM    19
 #define MPI_ERRCODES_IGNORE (int *)0
 #define MPI_IDENT     0
 #define MPI_SIMILAR   1
@@ -233,6 +236,9 @@ XBT_PUBLIC_DATA( MPI_Op ) MPI_BAND;
 XBT_PUBLIC_DATA( MPI_Op ) MPI_BOR;
 XBT_PUBLIC_DATA( MPI_Op ) MPI_BXOR;
 
+struct s_smpi_mpi_topology;
+typedef struct s_smpi_mpi_topology *MPI_Topology;
+                          
 struct s_smpi_mpi_group;
 typedef struct s_smpi_mpi_group *MPI_Group;
 
