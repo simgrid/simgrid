@@ -120,10 +120,13 @@ void *SIMIX_context_stack_new(void)
     stack = alloc - ((uintptr_t)alloc & (xbt_pagesize - 1)) + xbt_pagesize;
     *((void **)stack - 1) = alloc;
 #else
-    posix_memalign(&stack, xbt_pagesize, size);
+    if (posix_memalign(&stack, xbt_pagesize, size) != 0)
+      xbt_die("Failed to allocate stack.");
 #endif
-    if (!stack || mprotect(stack, smx_context_guard_size, PROT_NONE) == -1)
-      xbt_die("Failed to allocate stack: %s", strerror(errno));
+    if (mprotect(stack, smx_context_guard_size, PROT_NONE) == -1) {
+      XBT_WARN("Failed to protect stack: %s", strerror(errno));
+      /* That's not fatal, pursue anyway. */
+    }
     stack = (char *)stack + smx_context_guard_size;
   } else {
     stack = xbt_malloc0(smx_context_stack_size);
@@ -154,9 +157,10 @@ void SIMIX_context_stack_delete(void *stack)
   if (smx_context_guard_size > 0 && !MC_is_active()) {
     stack = (char *)stack - smx_context_guard_size;
     if (mprotect(stack, smx_context_guard_size,
-                 PROT_READ | PROT_WRITE | PROT_EXEC) == -1)
+                 PROT_READ | PROT_WRITE | PROT_EXEC) == -1) {
       XBT_WARN("Failed to remove page protection: %s", strerror(errno));
-    /* try to pursue anyway */
+      /* try to pursue anyway */
+    }
 #ifdef HAVE_MC
     /* Retrieve the saved pointer.  See SIMIX_context_stack_new above. */
     stack = *((void **)stack - 1);
