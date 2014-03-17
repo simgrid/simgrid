@@ -16,13 +16,20 @@ int main(int argc, char *argv[])
   char buf[1024];
   char *s;
   size_t sz, x;
+  int err;
 
-  if (MPI_Init(&argc, &argv) != MPI_SUCCESS) {
-    fprintf(stderr, "MPI initialization failed!\n");
+  err = MPI_Init(&argc, &argv);
+  if (err != MPI_SUCCESS) {
+    fprintf(stderr, "MPI_init failed: %d\n", err);
     exit(EXIT_FAILURE);
   }
 
-  MPI_Comm_rank(MPI_COMM_WORLD, &rank);   /* Get id of this process */
+  err = MPI_Comm_rank(MPI_COMM_WORLD, &rank);   /* Get id of this process */
+  if (err != MPI_SUCCESS) {
+    fprintf(stderr, "MPI_Comm_rank failed: %d", err);
+    MPI_Abort(MPI_COMM_WORLD, EXIT_FAILURE);
+    exit(EXIT_FAILURE);
+  }
 
   pstates = smpi_get_host_nb_pstates();
 
@@ -59,5 +66,12 @@ int main(int argc, char *argv[])
             MPI_Wtime(), rank, smpi_get_host_consumed_energy());
   }
 
-  return MPI_Finalize();
+  err = MPI_Finalize();
+  if (err != MPI_SUCCESS) {
+    fprintf(stderr, "MPI_Finalize failed: %d\n", err);
+    MPI_Abort(MPI_COMM_WORLD, EXIT_FAILURE);
+    exit(EXIT_FAILURE);
+  }
+
+  return EXIT_SUCCESS;
 }

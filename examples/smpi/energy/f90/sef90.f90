@@ -13,7 +13,16 @@ program main
   double precision p, t, e
 
   call MPI_Init(ierr)
+  if (ierr .ne. MPI_SUCCESS) then
+     print *, 'MPI_Init failed:', ierr
+     stop 1
+  endif
   call MPI_Comm_rank(MPI_COMM_WORLD, rank, ierr)
+  if (ierr .ne. MPI_SUCCESS) then
+     print *, 'MPI_Comm_rank failed:', ierr
+     call MPI_Abort(MPI_COMM_WORLD, 1, ierr)
+     stop 1
+  endif
 
   pstates = smpi_get_host_nb_pstates()
 
@@ -40,5 +49,10 @@ program main
   end do
 
   call MPI_Finalize(ierr)
+  if (ierr .ne. MPI_SUCCESS) then
+     print *, 'MPI_Finalize failed:', ierr
+     call MPI_Abort(MPI_COMM_WORLD, 1, ierr)
+     stop 1
+  endif
 
 end program main
