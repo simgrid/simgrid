@@ -4,7 +4,7 @@
 
 ! timeout 20
 p Test allreduce
-$ ../../smpi_script/bin/smpirun -map -hostfile ${srcdir:=.}/hostfile -platform ${srcdir:=.}/../../examples/msg/small_platform.xml -np 16 --log=xbt_cfg.thres:critical ./allreduce_coll 300000 --log=smpi_kernel.thres:warning
+$ ../../smpi_script/bin/smpirun -map -hostfile ${srcdir:=.}/hostfile -platform ${srcdir:=.}/../../examples/msg/small_platform.xml -np 16 --log=xbt_cfg.thres:critical ./allreduce_coll 30000 --log=smpi_kernel.thres:warning
 > You requested to use 16 processes, but there is only 5 processes in your hostfile...
 > [rank 0] -> Tremblay
 > [rank 1] -> Jupiter
