@@ -166,13 +166,13 @@ static int compare_areas_with_type(void *area1, void *area2, mc_snapshot_t snaps
   case DW_TAG_pointer_type:
   case DW_TAG_reference_type:
   case DW_TAG_rvalue_reference_type:
+
+    addr_pointed1 = *((void **)(area1));
+    addr_pointed2 = *((void **)(area2));
+
     if(type->subtype && type->subtype->type == DW_TAG_subroutine_type){
-      addr_pointed1 = *((void **)(area1)); 
-      addr_pointed2 = *((void **)(area2));
       return (addr_pointed1 != addr_pointed2);
     }else{
-      addr_pointed1 = *((void **)(area1)); 
-      addr_pointed2 = *((void **)(area2));
       
       if(addr_pointed1 == NULL && addr_pointed2 == NULL)
         return 0;
@@ -199,8 +199,12 @@ static int compare_areas_with_type(void *area1, void *area2, mc_snapshot_t snaps
           return 1;
         if(type->dw_type_id == NULL)
           return  (addr_pointed1 != addr_pointed2);
-        else
-          return  compare_areas_with_type(addr_pointed1, addr_pointed2, snapshot1, snapshot2, info, other_info, type->subtype, region_size, region_type, start_data, pointer_level);
+        else {
+          void* translated_addr_pointer1 = mc_translate_address((uintptr_t)addr_pointed1, snapshot1);
+          void* translated_addr_pointer2 = mc_translate_address((uintptr_t)addr_pointed2, snapshot2);
+          return  compare_areas_with_type(
+            translated_addr_pointer1, translated_addr_pointer2, snapshot1, snapshot2, info, other_info, type->subtype, region_size, region_type, start_data, pointer_level);
+        }
       }
 
       else{
