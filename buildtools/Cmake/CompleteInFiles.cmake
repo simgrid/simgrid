@@ -173,7 +173,7 @@ else()
 endif()
 
 # Our usage of mmap is Linux-specific (flag MAP_ANONYMOUS), but kFreeBSD uses a GNU libc
-IF(NOT "${CMAKE_SYSTEM}" MATCHES "Linux" AND NOT "${CMAKE_SYSTEM}" MATCHES "FreeBSD" AND NOT "${CMAKE_SYSTEM}" MATCHES "GNU" AND NOT  "${CMAKE_SYSTEM}" MATCHES "Darwin")
+IF(NOT "${CMAKE_SYSTEM}" MATCHES "Linux" AND NOT "${CMAKE_SYSTEM}" MATCHES "kFreeBSD" AND NOT "${CMAKE_SYSTEM}" MATCHES "GNU" AND NOT  "${CMAKE_SYSTEM}" MATCHES "Darwin")
   SET(HAVE_MMAP 0)
   message(STATUS "Warning: MMAP is thought as non functional on this architecture (${CMAKE_SYSTEM})")
 ENDIF()
