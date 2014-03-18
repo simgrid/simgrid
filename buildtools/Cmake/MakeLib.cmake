@@ -87,7 +87,7 @@ if(HAVE_MC)
 endif()
 
 if(MMALLOC_WANT_OVERRIDE_LEGACY AND HAVE_GNU_LD)
-  SET(SIMGRID_DEP "${SIMGRID_DEP} -ldl")
+  SET(SIMGRID_DEP "${SIMGRID_DEP} ${DL_LIBRARY}")
 endif()
 
 if(HAVE_NS3)
@@ -103,6 +103,10 @@ endif()
 if(HAVE_POSIX_GETTIME)
   SET(SIMGRID_DEP "${SIMGRID_DEP} -lrt")
 endif()
+
+if(HAVE_BACKTRACE_IN_LIBEXECINFO)
+  SET(SIMGRID_DEP "${SIMGRID_DEP} -lexecinfo")
+endif(HAVE_BACKTRACE_IN_LIBEXECINFO)
 
 # Compute the dependencies of SMPI
 ##################################
