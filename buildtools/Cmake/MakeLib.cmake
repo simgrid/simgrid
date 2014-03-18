@@ -22,14 +22,14 @@ add_dependencies(simgrid maintainer_files)
 #####################################
 set(SIMGRID_DEP "-lm")
 
-if(${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU")
-  set(SIMGRID_DEP "${SIMGRID_DEP} -lstdc++")
-elseif(${CMAKE_SYSTEM_NAME} STREQUAL "FreeBSD" 
+if(${CMAKE_SYSTEM_NAME} STREQUAL "FreeBSD"
     AND NOT ${CMAKE_SYSTEM_VERSION} VERSION_LESS 10.0
     AND ${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")
   # FreeBSD from 10.0 provide a internal C++ stack (unused by gcc)
   set(SIMGRID_DEP "${SIMGRID_DEP} -lc++")
-endif(${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU")
+else()
+  set(SIMGRID_DEP "${SIMGRID_DEP} -lstdc++")
+endif()
 
 if(pthread)
   if(${CONTEXT_THREADS})
