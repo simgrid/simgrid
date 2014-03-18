@@ -12,7 +12,7 @@ $ cd temp_testdir-set-return
 < }
 $ mkfile return1.c
 
-$ gcc -o return1 return1.c
+$ cc -o return1 return1.c
 
 ! expect return 1
 $ ./return1

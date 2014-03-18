@@ -13,7 +13,7 @@ $ cd temp_testdir-catch-signal
 < }
 $ mkfile segfault.c
 
-$ gcc -o segfault segfault.c
+$ cc -o segfault segfault.c
 
 ! expect return 15
 < $ ./segfault
