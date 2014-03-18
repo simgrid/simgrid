@@ -19,6 +19,7 @@
 #include <stdio.h>
 #include <fcntl.h>
 #include <sys/mman.h>
+#include <sys/wait.h>
 
 #include "mmprivate.h"
 
