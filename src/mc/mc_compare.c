@@ -245,14 +245,11 @@ static int compare_global_variables(int region_type, mc_mem_region_t r1, mc_mem_
   void* start_data_libsimgrid = mc_libsimgrid_info->start_rw;
 
   mc_object_info_t object_info = NULL;
-  mc_object_info_t other_object_info = NULL;
   if(region_type == 2){
     object_info = mc_binary_info;
-    other_object_info = mc_libsimgrid_info;
     start_data = start_data_binary;
   }else{
     object_info = mc_libsimgrid_info;
-    other_object_info = mc_binary_info;
     start_data = start_data_libsimgrid;
   }
   variables = object_info->global_variables;

@@ -482,9 +482,9 @@ uintptr_t mc_untranslate_address(void* addr, mc_snapshot_t snapshot) {
 
   for(size_t i=0; i!=NB_REGIONS; ++i) {
     mc_mem_region_t region = snapshot->regions[i];
-    if(addr>=region->data && addr<=region->data+region->size) {
+    if(addr>=region->data && addr<=(void*)(((char*)region->data)+region->size)) {
       size_t offset = (size_t) ((char*) addr - (char*) region->data);
-      return (uintptr_t) (region->start_addr + offset);
+      return ((uintptr_t) region->start_addr) + offset;
     }
   }
 

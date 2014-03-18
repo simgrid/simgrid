@@ -520,7 +520,7 @@ static dw_type_t MC_dwarf_die_to_type(mc_object_info_t info, Dwarf_Die* die, Dwa
   // Global Offset
   type->id = (void *) dwarf_dieoffset(die);
 
-  char* prefix = "";
+  const char* prefix = "";
   switch (type->type) {
   case DW_TAG_structure_type:
     prefix = "struct ";
@@ -734,7 +734,7 @@ static void MC_dwarf_handle_subprogram_die(mc_object_info_t info, Dwarf_Die* die
 
   Dwarf_Attribute attr_frame_base;
   if (!dwarf_attr_integrate(die, DW_AT_frame_base, &attr_frame_base))
-    xbt_die("Coult not find DW_AT_frame_base for subprogram %s %p", frame->name, frame->start);
+    xbt_die("Coult not find DW_AT_frame_base for subprogram %s 0x%lx", frame->name, frame->start);
   mc_dwarf_location_list_init(&frame->frame_base, info, die, &attr_frame_base);
 
   frame->end = -1; // This one is now useless:

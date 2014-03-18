@@ -101,6 +101,10 @@ int some_local_variable = 0;
 
 typedef struct foo {int i;} s_foo;
 
+static void test_type_by_name(s_foo my_foo) {
+  assert(xbt_dict_get_or_null(mc_binary_info->full_types_by_name, "struct foo"));
+}
+
 int main(int argc, char** argv) {
 
   // xbt_init(&argc, argv);
@@ -131,8 +135,7 @@ int main(int argc, char** argv) {
   test_local_variable(mc_binary_info, "main", "argc", &argc, &cursor);
 
   s_foo my_foo;
-
-  assert(xbt_dict_get_or_null(mc_binary_info->full_types_by_name, "struct foo"));
+  test_type_by_name(my_foo);
 
   _exit(0);
 }

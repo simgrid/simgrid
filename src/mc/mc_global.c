@@ -252,7 +252,6 @@ static void MC_make_functions_index(mc_object_info_t info) {
 }
 
 mc_object_info_t MC_ip_find_object_info(void* ip) {
-  size_t n = 2;
   size_t i;
   for(i=0; i!=mc_object_infos_size; ++i) {
     if(ip >= (void*)mc_object_infos[i]->start_exec && ip <= (void*)mc_object_infos[i]->end_exec) {

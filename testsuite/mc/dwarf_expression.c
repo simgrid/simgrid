@@ -8,6 +8,7 @@
 
 #include "../src/mc/mc_private.h"
 
+static
 uintptr_t eval_binary_operation(mc_expression_state_t state, int op, uintptr_t a, uintptr_t b) {
   state->stack_size = 0;
 
@@ -23,6 +24,7 @@ uintptr_t eval_binary_operation(mc_expression_state_t state, int op, uintptr_t a
   return state->stack[state->stack_size - 1];
 }
 
+static
 void basic_test(mc_expression_state_t state) {
   Dwarf_Op ops[60];
 
@@ -88,7 +90,8 @@ void basic_test(mc_expression_state_t state) {
   assert(state->stack[state->stack_size-2]== b);
 }
 
-int test_deref(mc_expression_state_t state) {
+static
+void test_deref(mc_expression_state_t state) {
   uintptr_t foo = 42;
 
   Dwarf_Op ops[60];

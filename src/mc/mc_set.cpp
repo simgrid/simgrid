@@ -12,7 +12,7 @@ typedef std::set<const void*>*  mc_address_set_t;
 extern "C" {
 
 mc_address_set_t mc_address_set_new();
-mc_address_set_t mc_address_set_free(mc_address_set_t* p);
+void mc_address_set_free(mc_address_set_t* p);
 void mc_address_add(mc_address_set_t p, const void* value);
 bool mc_address_test(mc_address_set_t p, const void* value);
 
@@ -20,7 +20,7 @@ mc_address_set_t mc_address_set_new() {
   return new std::set<const void*>();
 }
 
-mc_address_set_t mc_address_set_free(mc_address_set_t* p) {
+void mc_address_set_free(mc_address_set_t* p) {
   delete *p;
   *p = NULL;
 }
