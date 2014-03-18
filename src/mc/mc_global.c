@@ -138,6 +138,9 @@ xbt_automaton_t _mc_property_automaton = NULL;
 mc_object_info_t mc_libsimgrid_info = NULL;
 mc_object_info_t mc_binary_info = NULL;
 
+mc_object_info_t mc_object_infos[2] = { NULL, NULL };
+size_t mc_object_infos_size = 2;
+
 /* Ignore mechanism */
 extern xbt_dynar_t mc_heap_comparison_ignore;
 extern xbt_dynar_t stacks_areas;
@@ -249,12 +252,11 @@ static void MC_make_functions_index(mc_object_info_t info) {
 }
 
 mc_object_info_t MC_ip_find_object_info(void* ip) {
-  mc_object_info_t infos[2] = { mc_binary_info, mc_libsimgrid_info };
   size_t n = 2;
   size_t i;
-  for(i=0; i!=n; ++i) {
-    if(ip >= (void*)infos[i]->start_exec && ip <= (void*)infos[i]->end_exec) {
-      return infos[i];
+  for(i=0; i!=mc_object_infos_size; ++i) {
+    if(ip >= (void*)mc_object_infos[i]->start_exec && ip <= (void*)mc_object_infos[i]->end_exec) {
+      return mc_object_infos[i];
     }
   }
   return NULL;
@@ -735,14 +737,22 @@ void MC_ignore(void *addr, size_t size){
 /*********************************************************************************/
 
 static void MC_post_process_object_info(mc_object_info_t info) {
-  mc_object_info_t other_info = info == mc_binary_info ? mc_libsimgrid_info : mc_binary_info;
   xbt_dict_cursor_t cursor = NULL;
   char* key = NULL;
   dw_type_t type = NULL;
   xbt_dict_foreach(info->types, cursor, key, type){
+
+    // Resolve full_type:
     if(type->name && type->byte_size == 0) {
-      type->other_object_same_type = xbt_dict_get_or_null(other_info->full_types_by_name, type->name);
+      for(size_t i=0; i!=mc_object_infos_size; ++i) {
+        dw_type_t same_type =  xbt_dict_get_or_null(mc_object_infos[i]->full_types_by_name, type->name);
+        if(same_type && same_type->name && same_type->byte_size) {
+          type->full_type = same_type;
+          break;
+        }
+      }
     }
+
   }
 }
 
@@ -753,7 +763,10 @@ static void MC_init_debug_info(void) {
 
   /* Get local variables for state equality detection */
   mc_binary_info = MC_find_object_info(maps, xbt_binary_name, 1);
+  mc_object_infos[0] = mc_binary_info;
+
   mc_libsimgrid_info = MC_find_object_info(maps, libsimgrid_path, 0);
+  mc_object_infos[1] = mc_libsimgrid_info;
 
   // Use information of the other objects:
   MC_post_process_object_info(mc_binary_info);

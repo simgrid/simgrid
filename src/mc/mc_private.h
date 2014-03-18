@@ -371,6 +371,8 @@ mc_object_info_t MC_ip_find_object_info(void* ip);
 
 extern mc_object_info_t mc_libsimgrid_info;
 extern mc_object_info_t mc_binary_info;
+extern mc_object_info_t mc_object_infos[2];
+extern size_t mc_object_infos_size;
 
 void MC_find_object_address(memory_map_t maps, mc_object_info_t result);
 void MC_post_process_types(mc_object_info_t info);
@@ -419,7 +421,7 @@ struct s_dw_type{
   int offset;
 
   dw_type_t subtype; // DW_AT_type
-  dw_type_t other_object_same_type; // The same (but more complete) type in the other object.
+  dw_type_t full_type; // The same (but more complete) type in the other object.
 };
 
 void* mc_member_resolve(const void* base, dw_type_t type, dw_type_t member, mc_snapshot_t snapshot);

@@ -59,10 +59,10 @@ xbt_mheap_t mmalloc_get_current_heap(void);
 
 struct s_mc_snapshot;
 
-int mmalloc_compare_heap(struct s_mc_snapshot* snapshot1, struct s_mc_snapshot* snapshot2, xbt_mheap_t heap1, xbt_mheap_t heap2, mc_object_info_t info, mc_object_info_t other_info);
+int mmalloc_compare_heap(struct s_mc_snapshot* snapshot1, struct s_mc_snapshot* snapshot2, xbt_mheap_t heap1, xbt_mheap_t heap2);
 int mmalloc_linear_compare_heap(xbt_mheap_t heap1, xbt_mheap_t heap2);
 int init_heap_information(xbt_mheap_t heap1, xbt_mheap_t heap2, xbt_dynar_t to_ignore1, xbt_dynar_t to_ignore2);
-int compare_heap_area(void *area1, void* area2, struct s_mc_snapshot* snapshot1, struct s_mc_snapshot* snapshot2, xbt_dynar_t previous, mc_object_info_t info, mc_object_info_t other_info, char *type, int pointer_level);
+int compare_heap_area(void *area1, void* area2, struct s_mc_snapshot* snapshot1, struct s_mc_snapshot* snapshot2, xbt_dynar_t previous, dw_type_t type, int pointer_level);
 void reset_heap_information(void);
 
 size_t mmalloc_get_bytes_used(xbt_mheap_t);
