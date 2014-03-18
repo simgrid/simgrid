@@ -426,14 +426,6 @@ fi
 ${EXEC} ${TRACEOPTIONS} ${SIMOPTS} ${PLATFORMTMP} ${APPLICATIONTMP}
 status=$?
 
-if [ ${status} = 139 ]; then
-    cat >&2 <<EOF
-ERROR: A segmentation fault was triggered.
-A common cause in SimGrid may be the use of a too small stack size for the simulated processes (default 8192 KiB).
-Please see contexts/stack_size parameter, or http://simgrid.org/simgrid/latest/doc/options.html#options_virt_stacksize
-EOF
-fi
-
 if [ -z "${KEEP}" ] ; then
    if [ -z "${PLATFORM}" ]; then
 	rm ${PLATFORMTMP}
