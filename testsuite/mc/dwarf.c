@@ -87,7 +87,7 @@ static dw_variable_t test_global_variable(mc_object_info_t info, const char* nam
   return variable;
 }
 
-static dw_type_t find_type(mc_object_info_t info, const char* name, dw_type_t type) {
+static dw_type_t find_member(mc_object_info_t info, const char* name, dw_type_t type) {
   unsigned int cursor = 0;
   dw_type_t member;
   xbt_dynar_foreach(type->members, cursor, member){
@@ -98,6 +98,8 @@ static dw_type_t find_type(mc_object_info_t info, const char* name, dw_type_t ty
 }
 
 int some_local_variable = 0;
+
+typedef struct foo {int i;} s_foo;
 
 int main(int argc, char** argv) {
 
@@ -117,8 +119,8 @@ int main(int argc, char** argv) {
 
   var = test_global_variable(mc_binary_info, "test_some_struct", &test_some_struct, sizeof(test_some_struct));
   type = xbt_dict_get_or_null(mc_binary_info->types, var->type_origin);
-  assert(find_type(mc_binary_info, "first", type)->offset == 0);
-  assert(find_type(mc_binary_info, "second", type)->offset
+  assert(find_member(mc_binary_info, "first", type)->offset == 0);
+  assert(find_member(mc_binary_info, "second", type)->offset
       == ((const char*)&test_some_struct.second) - (const char*)&test_some_struct);
 
   unw_context_t context;
@@ -127,6 +129,10 @@ int main(int argc, char** argv) {
   unw_init_local(&cursor, &context);
 
   test_local_variable(mc_binary_info, "main", "argc", &argc, &cursor);
+
+  s_foo my_foo;
+
+  assert(xbt_dict_get_or_null(mc_binary_info->full_types_by_name, "struct foo"));
 
   _exit(0);
 }

@@ -186,7 +186,7 @@ mc_object_info_t MC_new_object_info(void) {
   res->subprograms = xbt_dynar_new(sizeof(dw_frame_t), NULL);
   res->global_variables = xbt_dynar_new(sizeof(dw_variable_t), dw_variable_free_voidp);
   res->types = xbt_dict_new_homogeneous(NULL);
-  res->types_by_name = xbt_dict_new_homogeneous(NULL);
+  res->full_types_by_name = xbt_dict_new_homogeneous(NULL);
   return res;
 }
 
@@ -195,7 +195,7 @@ void MC_free_object_info(mc_object_info_t* info) {
   xbt_dynar_free(&(*info)->subprograms);
   xbt_dynar_free(&(*info)->global_variables);
   xbt_dict_free(&(*info)->types);
-  xbt_dict_free(&(*info)->types_by_name);
+  xbt_dict_free(&(*info)->full_types_by_name);
   xbt_free(info);
   xbt_dynar_free(&(*info)->functions_index);
   *info = NULL;
@@ -741,7 +741,7 @@ static void MC_post_process_object_info(mc_object_info_t info) {
   dw_type_t type = NULL;
   xbt_dict_foreach(info->types, cursor, key, type){
     if(type->name && type->byte_size == 0) {
-      type->other_object_same_type = xbt_dict_get_or_null(other_info->types_by_name, type->name);
+      type->other_object_same_type = xbt_dict_get_or_null(other_info->full_types_by_name, type->name);
     }
   }
 }

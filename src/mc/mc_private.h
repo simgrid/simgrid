@@ -349,7 +349,7 @@ struct s_mc_object_info {
   xbt_dynar_t subprograms; // xbt_dynar_t<dw_frame_t>
   xbt_dynar_t global_variables; // xbt_dynar_t<dw_variable_t>
   xbt_dict_t types; // xbt_dict_t<origin as hexadecimal string, dw_type_t>
-  xbt_dict_t types_by_name; // xbt_dict_t<name, dw_type_t> (full defined type only)
+  xbt_dict_t full_types_by_name; // xbt_dict_t<name, dw_type_t> (full defined type only)
 
   // Here we sort the minimal information for an efficient (and cache-efficient)
   // lookup of a function given an instruction pointer.

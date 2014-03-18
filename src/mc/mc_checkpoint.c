@@ -163,7 +163,7 @@ static void MC_resolve_subtype(mc_object_info_t info, dw_type_t type) {
   // Try to find a more complete description of the type:
   // We need to fix in order to support C++.
 
-  dw_type_t subtype = xbt_dict_get_or_null(info->types_by_name, type->subtype->name);
+  dw_type_t subtype = xbt_dict_get_or_null(info->full_types_by_name, type->subtype->name);
   if(subtype!=NULL) {
     type->subtype = subtype;
   }

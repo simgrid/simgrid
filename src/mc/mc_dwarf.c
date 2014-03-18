@@ -520,9 +520,24 @@ static dw_type_t MC_dwarf_die_to_type(mc_object_info_t info, Dwarf_Die* die, Dwa
   // Global Offset
   type->id = (void *) dwarf_dieoffset(die);
 
+  char* prefix = "";
+  switch (type->type) {
+  case DW_TAG_structure_type:
+    prefix = "struct ";
+    break;
+  case DW_TAG_union_type:
+    prefix = "union ";
+    break;
+  case DW_TAG_class_type:
+    prefix = "class ";
+    break;
+  default:
+    prefix = "";
+  }
+
   const char* name = MC_dwarf_attr_string(die, DW_AT_name);
   if (name!=NULL) {
-	type->name = xbt_strdup(name);
+    type->name = namespace ? bprintf("%s%s::%s", prefix, namespace, name) : bprintf("%s%s", prefix, name);
   }
 
   XBT_DEBUG("Processing type <%p>%s", type->id, type->name);
@@ -556,7 +571,7 @@ static dw_type_t MC_dwarf_die_to_type(mc_object_info_t info, Dwarf_Die* die, Dwa
   case DW_TAG_class_type:
 	  MC_dwarf_add_members(info, die, unit, type);
 	  char* new_namespace = namespace == NULL ? xbt_strdup(type->name)
-	    : bprintf("%s::%s", namespace, type->name);
+	    : bprintf("%s::%s", namespace, name);
 	  MC_dwarf_handle_children(info, die, unit, frame, new_namespace);
 	  free(new_namespace);
 	  break;
@@ -572,7 +587,7 @@ static void MC_dwarf_handle_type_die(mc_object_info_t info, Dwarf_Die* die, Dwar
   xbt_dict_set(info->types, key, type, NULL);
 
   if(type->name && type->byte_size!=0) {
-    xbt_dict_set(info->types_by_name, type->name, type, NULL);
+    xbt_dict_set(info->full_types_by_name, type->name, type, NULL);
   }
 }
 

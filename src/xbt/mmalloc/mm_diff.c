@@ -875,7 +875,7 @@ static int compare_heap_area_with_type(struct s_mm_diff *state, void *real_area1
     case DW_TAG_class_type:
     case DW_TAG_union_type:
       if(subtype->byte_size == 0){ /*declaration of the type, need the complete description */
-          subtype = xbt_dict_get_or_null(other_info->types_by_name, subtype->name);
+          subtype = xbt_dict_get_or_null(other_info->full_types_by_name, subtype->name);
           switch_types = 1;
       }
       elm_size = subtype->byte_size;
@@ -886,7 +886,7 @@ static int compare_heap_area_with_type(struct s_mm_diff *state, void *real_area1
     case DW_TAG_volatile_type:
       subsubtype = subtype->subtype;
       if(subsubtype->byte_size == 0){ /*declaration of the type, need the complete description */
-          subsubtype = xbt_dict_get_or_null(other_info->types_by_name, subtype->name);
+          subsubtype = xbt_dict_get_or_null(other_info->full_types_by_name, subtype->name);
           switch_types = 1;
       }
       elm_size = subsubtype->byte_size;
@@ -938,11 +938,11 @@ static int compare_heap_area_with_type(struct s_mm_diff *state, void *real_area1
   case DW_TAG_structure_type:
   case DW_TAG_class_type:
     if(type->byte_size == 0){ /*declaration of the structure, need the complete description */
-      dw_type_t full_type = xbt_dict_get_or_null(info->types_by_name, type->name);
+      dw_type_t full_type = xbt_dict_get_or_null(info->full_types_by_name, type->name);
       if(full_type){
         type = full_type;
       }else{
-        type = xbt_dict_get_or_null(other_info->types_by_name, type->name);
+        type = xbt_dict_get_or_null(other_info->full_types_by_name, type->name);
         switch_types = 1;
       }
     }
@@ -1018,19 +1018,19 @@ static char* get_offset_type(void* real_base_address, char* type_id, int offset,
   case DW_TAG_class_type:
     if(type->byte_size == 0){ /*declaration of the structure, need the complete description */
       if(*switch_type == 0){
-        dw_type_t full_type = xbt_dict_get_or_null(info->types_by_name, type->name);
+        dw_type_t full_type = xbt_dict_get_or_null(info->full_types_by_name, type->name);
         if(full_type){
           type = full_type;
         }else{
-          type = xbt_dict_get_or_null(other_info->types_by_name, type->name);
+          type = xbt_dict_get_or_null(other_info->full_types_by_name, type->name);
           *switch_type = 1;
         }
       }else{
-        dw_type_t full_type = xbt_dict_get_or_null(other_info->types_by_name, type->name);
+        dw_type_t full_type = xbt_dict_get_or_null(other_info->full_types_by_name, type->name);
         if(full_type){
           type = full_type;
         }else{
-          type = xbt_dict_get_or_null(info->types_by_name, type->name);
+          type = xbt_dict_get_or_null(info->full_types_by_name, type->name);
           *switch_type = 0;
         }
       }
@@ -1142,11 +1142,11 @@ int compare_heap_area(void *area1, void* area2, mc_snapshot_t snapshot1, mc_snap
     type = xbt_dict_get_or_null(info->types, type_id);
     if(type->byte_size == 0){
       if(type->subtype == NULL){
-        dw_type_t full_type = xbt_dict_get_or_null(info->types_by_name, type->name);
+        dw_type_t full_type = xbt_dict_get_or_null(info->full_types_by_name, type->name);
         if(full_type)
           type = full_type;
         else
-          type = xbt_dict_get_or_null(other_info->types_by_name, type->name);
+          type = xbt_dict_get_or_null(other_info->full_types_by_name, type->name);
       }else{
         type = type->subtype;
       }
