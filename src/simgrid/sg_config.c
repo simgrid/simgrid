@@ -388,6 +388,12 @@ static void _sg_cfg_cb_context_stack_size(const char *name, int pos)
   smx_context_stack_size = xbt_cfg_get_int(_sg_cfg_set, name) * 1024;
 }
 
+static void _sg_cfg_cb_context_guard_size(const char *name, int pos)
+{
+  smx_context_guard_size_was_set = 1;
+  smx_context_guard_size = xbt_cfg_get_int(_sg_cfg_set, name) * xbt_pagesize;
+}
+
 static void _sg_cfg_cb_contexts_nthreads(const char *name, int pos)
 {
   SIMIX_context_set_nthreads(xbt_cfg_get_int(_sg_cfg_set, name));
@@ -657,6 +663,14 @@ void sg_config_init(int *argc, char **argv)
     xbt_cfg_setdefault_int(_sg_cfg_set, "contexts/stack_size", 8*1024);
     /* No, it was not set yet (the above setdefault() changed this to 1). */
     smx_context_stack_size_was_set = 0;
+
+    /* guard size for contexts stacks in memory pages */
+    xbt_cfg_register(&_sg_cfg_set, "contexts/guard_size",
+                     "Guard size for contexts stacks in memory pages",
+                     xbt_cfgelm_int, 1, 1, _sg_cfg_cb_context_guard_size, NULL);
+    xbt_cfg_setdefault_int(_sg_cfg_set, "contexts/guard_size", 1);
+    /* No, it was not set yet (the above setdefault() changed this to 1). */
+    smx_context_guard_size_was_set = 0;
 
     /* number of parallel threads for user processes */
     xbt_cfg_register(&_sg_cfg_set, "contexts/nthreads",

@@ -316,7 +316,7 @@ int init_heap_information(xbt_mheap_t heap1, xbt_mheap_t heap2, xbt_dynar_t i1, 
 
   heaplimit = ((struct mdesc *)heap1)->heaplimit;
 
-  s_heap = (char *)mmalloc_get_current_heap() - STD_HEAP_SIZE - getpagesize();
+  s_heap = (char *)mmalloc_get_current_heap() - STD_HEAP_SIZE - xbt_pagesize;
 
   heapbase1 = (char *)heap1 + BLOCKSIZE;
   heapbase2 = (char *)heap2 + BLOCKSIZE;
@@ -1372,7 +1372,7 @@ int mmalloc_linear_compare_heap(xbt_mheap_t heap1, xbt_mheap_t heap2){
   /* Heap information */
   heaplimit = ((struct mdesc *)heap1)->heaplimit;
 
-  s_heap = (char *)mmalloc_get_current_heap() - STD_HEAP_SIZE - getpagesize();
+  s_heap = (char *)mmalloc_get_current_heap() - STD_HEAP_SIZE - xbt_pagesize;
 
   heapbase1 = (char *)heap1 + BLOCKSIZE;
   heapbase2 = (char *)heap2 + BLOCKSIZE;

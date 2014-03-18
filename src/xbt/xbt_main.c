@@ -9,7 +9,7 @@
 #include "xbt/misc.h"
 #include "simgrid_config.h"     /* _XBT_WIN32 */
 #include "internal_config.h"    /* MMALLOC_WANT_OVERRIDE_LEGACY */
-
+#include "portable.h"
 #include "xbt/sysdep.h"
 #include "xbt/log.h"
 #include "xbt/dynar.h"
@@ -34,6 +34,8 @@ xbt_dynar_t xbt_cmdline = NULL; /* all we got in argv */
 
 int xbt_initialized = 0;
 int _sg_do_clean_atexit = 1;
+
+int xbt_pagesize;
 
 /* Declare xbt_preinit and xbt_postexit as constructor/destructor of the library.
  * This is crude and rather compiler-specific, unfortunately.
@@ -83,6 +85,8 @@ BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason,
 
 static void xbt_preinit(void) {
   unsigned int seed = 2147483647;
+
+  xbt_pagesize = sysconf(_SC_PAGESIZE);
 
 #ifdef MMALLOC_WANT_OVERRIDE_LEGACY
   mmalloc_preinit();

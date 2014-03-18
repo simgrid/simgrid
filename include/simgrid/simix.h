@@ -168,6 +168,8 @@ XBT_PUBLIC(smx_ctx_factory_initializer_t) smx_factory_initializer_to_use;
 extern char* smx_context_factory_name;
 extern int smx_context_stack_size;
 extern int smx_context_stack_size_was_set;
+extern int smx_context_guard_size;
+extern int smx_context_guard_size_was_set;
 
 /* *********************** */
 /* Context type definition */

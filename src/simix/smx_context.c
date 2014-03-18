@@ -13,6 +13,8 @@
 #include "smx_private.h"
 #include "simgrid/sg_config.h"
 #include "internal_config.h"
+#include "simgrid/modelchecker.h"
+#include <sys/mman.h>
 
 #ifdef HAVE_VALGRIND_VALGRIND_H
 # include <valgrind/valgrind.h>
@@ -25,6 +27,8 @@ char* smx_context_factory_name = NULL; /* factory name specified by --cfg=contex
 smx_ctx_factory_initializer_t smx_factory_initializer_to_use = NULL;
 int smx_context_stack_size;
 int smx_context_stack_size_was_set = 0;
+int smx_context_guard_size;
+int smx_context_guard_size_was_set = 0;
 #ifdef HAVE_THREAD_LOCAL_STORAGE
 static __thread smx_context_t smx_current_context_parallel;
 #else
@@ -105,7 +109,28 @@ void SIMIX_context_mod_exit(void)
 
 void *SIMIX_context_stack_new(void)
 {
-  void *stack = xbt_malloc0(smx_context_stack_size);
+  void *stack;
+
+  if (smx_context_guard_size > 0 && !MC_is_active()) {
+    size_t size = smx_context_stack_size + smx_context_guard_size;
+#ifdef HAVE_MC
+    /* Cannot use posix_memalign when HAVE_MC. Align stack by hand, and save the
+     * pointer returned by xbt_malloc0. */
+    char *alloc = xbt_malloc0(size + xbt_pagesize);
+    stack = alloc - ((uintptr_t)alloc & (xbt_pagesize - 1)) + xbt_pagesize;
+    *((void **)stack - 1) = alloc;
+#else
+    if (posix_memalign(&stack, xbt_pagesize, size) != 0)
+      xbt_die("Failed to allocate stack.");
+#endif
+    if (mprotect(stack, smx_context_guard_size, PROT_NONE) == -1) {
+      XBT_WARN("Failed to protect stack: %s", strerror(errno));
+      /* That's not fatal, pursue anyway. */
+    }
+    stack = (char *)stack + smx_context_guard_size;
+  } else {
+    stack = xbt_malloc0(smx_context_stack_size);
+  }
 
 #ifdef HAVE_VALGRIND_VALGRIND_H
   unsigned int valgrind_stack_id =
@@ -129,6 +154,18 @@ void SIMIX_context_stack_delete(void *stack)
   VALGRIND_STACK_DEREGISTER(valgrind_stack_id);
 #endif
 
+  if (smx_context_guard_size > 0 && !MC_is_active()) {
+    stack = (char *)stack - smx_context_guard_size;
+    if (mprotect(stack, smx_context_guard_size,
+                 PROT_READ | PROT_WRITE | PROT_EXEC) == -1) {
+      XBT_WARN("Failed to remove page protection: %s", strerror(errno));
+      /* try to pursue anyway */
+    }
+#ifdef HAVE_MC
+    /* Retrieve the saved pointer.  See SIMIX_context_stack_new above. */
+    stack = *((void **)stack - 1);
+#endif
+  }
   xbt_free(stack);
 }
 

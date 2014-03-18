@@ -22,15 +22,8 @@
 
 #include "mmprivate.h"
 
-/* Cache the pagesize for the current host machine.  Note that if the host
-   does not readily provide a getpagesize() function, we need to emulate it
-   elsewhere, not clutter up this file with lots of kluges to try to figure
-   it out. */
-
-static size_t pagesize;
-
-#define PAGE_ALIGN(addr) (void*) (((long)(addr) + pagesize - 1) & \
-                                  ~(pagesize - 1))
+#define PAGE_ALIGN(addr) (void*) (((long)(addr) + xbt_pagesize - 1) &   \
+                                  ~((long)xbt_pagesize - 1))
 
 /* Return MAP_PRIVATE if MDP represents /dev/zero.  Otherwise, return
    MAP_SHARED.  */
@@ -65,8 +58,6 @@ void *mmorecore(struct mdesc *mdp, ssize_t size)
   char buf = 0;                 /* Single byte to write to extend mapped file */
 
 //  fprintf(stderr,"increase %p by %u\n",mdp,size);
-  if (pagesize == 0)
-    pagesize = getpagesize();
 
   if (size == 0) {
     /* Just return the current "break" value. */

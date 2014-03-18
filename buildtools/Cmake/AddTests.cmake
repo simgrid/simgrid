@@ -644,6 +644,14 @@ if(NOT enable_memcheck)
     ADD_TEST(scala-masterslave                  ${TESH_COMMAND} ${TESH_OPTION} --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/scala --setenv classpath=${TESH_CLASSPATH} --cd ${CMAKE_BINARY_DIR}/examples/scala ${CMAKE_HOME_DIRECTORY}/examples/scala/masterslave/masterslave.tesh)
   endif()
 
+  ADD_TEST(stack-overflow-thread                ${TESH_COMMAND} ${TESH_OPTION} --cfg contexts/factory:thread --setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite --cd ${CMAKE_BINARY_DIR}/teshsuite ${CMAKE_HOME_DIRECTORY}/teshsuite/simix/stack_overflow.tesh)
+  if(CONTEXT_UCONTEXT)
+    ADD_TEST(stack-overflow-ucontext            ${TESH_COMMAND} ${TESH_OPTION} --cfg contexts/factory:ucontext --setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite --cd ${CMAKE_BINARY_DIR}/teshsuite ${CMAKE_HOME_DIRECTORY}/teshsuite/simix/stack_overflow.tesh)
+  endif()
+  if(HAVE_RAWCTX)
+  ADD_TEST(stack-overflow-raw                   ${TESH_COMMAND} ${TESH_OPTION} --cfg contexts/factory:raw --setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite --cd ${CMAKE_BINARY_DIR}/teshsuite ${CMAKE_HOME_DIRECTORY}/teshsuite/simix/stack_overflow.tesh)
+  endif()
+
   # examples/msg/mc
   if(HAVE_MC)
     if(CONTEXT_UCONTEXT)

@@ -54,10 +54,9 @@ static xbt_os_thread_t main_thread = NULL;
 static pthread_key_t xbt_self_thread_key;
 static int thread_mod_inited = 0;
 
-/* attribute structure to handle pthread stack size changing */
+/* defaults attribute for pthreads */
 //FIXME: find where to put this
-static pthread_attr_t attr;
-static int thread_attr_inited = 0;
+static pthread_attr_t thread_attr;
 
 /* frees the xbt_os_thread_t corresponding to the current thread */
 static void xbt_os_thread_free_thread_data(xbt_os_thread_t thread)
@@ -105,10 +104,11 @@ void xbt_os_thread_mod_preinit(void)
   if ((errcode = pthread_setspecific(xbt_self_thread_key, main_thread)))
     THROWF(system_error, errcode,
            "pthread_setspecific failed for xbt_self_thread_key");
-
   
   __xbt_running_ctx_fetch = _os_thread_get_running_ctx;
   __xbt_ex_terminate = _os_thread_ex_terminate;
+
+  pthread_attr_init(&thread_attr);
 
   thread_mod_inited = 1;
 
@@ -182,7 +182,7 @@ xbt_os_thread_t xbt_os_thread_create(const char *name,
   XBT_RUNNING_CTX_INITIALIZE(res_thread->running_ctx);
   res_thread->extra_data = extra_data;
   
-  if ((errcode = pthread_create(&(res_thread->t), thread_attr_inited!=0? &attr: NULL,
+  if ((errcode = pthread_create(&(res_thread->t), &thread_attr,
                                 wrapper_start_routine, res_thread)))
     THROWF(system_error, errcode,
            "pthread_create failed: %s", strerror(errcode));
@@ -195,35 +195,47 @@ xbt_os_thread_t xbt_os_thread_create(const char *name,
 
 void xbt_os_thread_setstacksize(int stack_size)
 {
+  size_t alignment[] = {
+    xbt_pagesize,
+#ifdef PTHREAD_STACK_MIN
+    PTHREAD_STACK_MIN,
+#endif
+    0
+  };
   size_t sz;
   int res;
+  int i;
 
   if (stack_size < 0)
     xbt_die("stack size %d is negative, maybe it exceeds MAX_INT?", stack_size);
 
   sz = stack_size;
-  pthread_attr_init(&attr);
-  res = pthread_attr_setstacksize(&attr, sz);
+  res = pthread_attr_setstacksize(&thread_attr, sz);
 
-#ifdef PTHREAD_STACK_MIN
-  if (res == EINVAL) {
-    /* Invalid size, try again with a multiple of PTHREAD_STACK_MIN. */
-    size_t rem = sz % PTHREAD_STACK_MIN;
+  for (i = 0; res == EINVAL && alignment[i] > 0; i++) {
+    /* Invalid size, try again with next multiple of alignment[i]. */
+    size_t rem = sz % alignment[i];
     if (rem != 0 || sz == 0) {
-      size_t sz2 = sz - rem + PTHREAD_STACK_MIN;
-      XBT_DEBUG("pthread_attr_setstacksize failed for %#zx, try again with %#zx",
+      size_t sz2 = sz - rem + alignment[i];
+      XBT_DEBUG("pthread_attr_setstacksize failed for %zd, try again with %zd",
                 sz, sz2);
       sz = sz2;
-      res = pthread_attr_setstacksize(&attr, sz);
+      res = pthread_attr_setstacksize(&thread_attr, sz);
     }
   }
-#endif
 
   if (res == EINVAL)
-    XBT_WARN("invalid stack size (maybe too big): %#zx", sz);
+    XBT_WARN("invalid stack size (maybe too big): %zd", sz);
   else if (res != 0)
-    XBT_WARN("unknown error %d in pthread stacksize setting: %#zx", res, sz);
-  thread_attr_inited = 1;
+    XBT_WARN("unknown error %d in pthread stacksize setting: %zd", res, sz);
+}
+
+void xbt_os_thread_setguardsize(int guard_size)
+{
+  size_t sz = guard_size;
+  int res = pthread_attr_setguardsize(&thread_attr, sz);
+  if (res)
+    XBT_WARN("pthread_attr_setguardsize failed (%d) for size: %zd", res, sz);
 }
 
 const char *xbt_os_thread_name(xbt_os_thread_t t)
@@ -752,6 +764,11 @@ xbt_os_thread_t xbt_os_thread_create(const char *name,
 void xbt_os_thread_setstacksize(int size)
 {
   stack_size = size;
+}
+
+void xbt_os_thread_setguardsize(int size)
+{
+  XBT_WARN("xbt_os_thread_setguardsize is not implemented (%d)", size);
 }
 
 const char *xbt_os_thread_name(xbt_os_thread_t t)

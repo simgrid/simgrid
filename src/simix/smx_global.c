@@ -42,6 +42,64 @@ static void _XBT_CALL inthandler(int ignored)
   exit(1);
 }
 
+static void _XBT_CALL segvhandler(int signum, siginfo_t *siginfo, void *context)
+{
+  if (siginfo->si_signo == SIGSEGV && siginfo->si_code == SEGV_ACCERR) {
+    fprintf(stderr,
+            "Access violation detected. This can result from a stack overflow.\n"
+            "Try to increase stack size with --cfg=contexts/stack_size (current size is %d KiB).\n",
+            smx_context_stack_size / 1024);
+    if (XBT_LOG_ISENABLED(simix_kernel, xbt_log_priority_debug)) {
+      fprintf(stderr,
+              "siginfo = {si_signo = %d, si_errno = %d, si_code = %d, si_addr = %p}\n",
+              siginfo->si_signo, siginfo->si_errno, siginfo->si_code, siginfo->si_addr);
+    }
+  }
+  raise(signum);
+}
+
+char sigsegv_stack[SIGSTKSZ];   /* alternate stack for SIGSEGV handler */
+
+/**
+ * Install signal handler for SIGSEGV.  Check that nobody has already installed
+ * its own handler.  For example, the Java VM does this.
+ */
+static void install_segvhandler(void)
+{
+  stack_t stack, old_stack;
+  stack.ss_sp = sigsegv_stack;
+  stack.ss_size = sizeof sigsegv_stack;
+  stack.ss_flags = 0;
+
+  if (sigaltstack(&stack, &old_stack) == -1) {
+    XBT_WARN("Failed to register alternate signal stack: %s",
+             strerror(errno));
+    return;
+  }
+  if (!(old_stack.ss_flags & SS_DISABLE)) {
+    XBT_DEBUG("An alternate stack was already installed (sp=%p, size=%zd, flags=%x). Restore it.",
+              old_stack.ss_sp, old_stack.ss_size, old_stack.ss_flags);
+    sigaltstack(&old_stack, NULL);
+  }
+
+  struct sigaction action, old_action;
+  action.sa_sigaction = segvhandler;
+  action.sa_flags = SA_ONSTACK | SA_RESETHAND | SA_SIGINFO;
+  sigemptyset(&action.sa_mask);
+
+  if (sigaction(SIGSEGV, &action, &old_action) == -1) {
+    XBT_WARN("Failed to register signal handler for SIGSEGV: %s",
+             strerror(errno));
+    return;
+  }
+  if ((old_action.sa_flags & SA_SIGINFO) || old_action.sa_handler != SIG_DFL) {
+    XBT_DEBUG("A signal handler was already installed for SIGSEGV (%p). Restore it.",
+             (old_action.sa_flags & SA_SIGINFO) ?
+             (void*)old_action.sa_sigaction : (void*)old_action.sa_handler);
+    sigaction(SIGSEGV, &old_action, NULL);
+  }
+}
+
 /********************************* SIMIX **************************************/
 
 XBT_INLINE double SIMIX_timer_next(void)
@@ -98,6 +156,9 @@ void SIMIX_global_init(int *argc, char **argv)
 
     /* Prepare to display some more info when dying on Ctrl-C pressing */
     signal(SIGINT, inthandler);
+
+    /* Install SEGV handler */
+    install_segvhandler();
 
     /* register a function to be called by SURF after the environment creation */
     sg_platf_init();

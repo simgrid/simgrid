@@ -224,6 +224,9 @@
 
 SG_BEGIN_DECL()
 
+/** Cache the size of a memory page for the current system. */
+XBT_PUBLIC_DATA(int) xbt_pagesize;
+
 XBT_PUBLIC(const char *) xbt_procname(void);
 
 #define XBT_BACKTRACE_SIZE 10   /* FIXME: better place? Do document */
