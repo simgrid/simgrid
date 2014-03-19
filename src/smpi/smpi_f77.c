@@ -27,9 +27,9 @@ union u_smpi_common {
     integer _MPI_BOTTOM;
     integer _MPI_STATUS_IGNORE;
     integer _MPI_STATUSES_IGNORE;
-  } f90;                        /* with gftortran */
-  struct s_smpi_common *f77;    /* with f2c, remains NULL with gfortran */
-} smpi_;
+  } *f77;                       /* with f2c, remains NULL with gfortran */
+  struct s_smpi_common f90;     /* with gftortran */
+} smpi_ = { NULL };
 
 /* Convert between Fortran and C */
 #define F2C_ADDR(addr, val)                                             \
