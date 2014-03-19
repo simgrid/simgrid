@@ -13,7 +13,7 @@ $ cd temp_testdir-set-signal
 < }
 $ mkfile segfault.c
 
-$ gcc -o segfault segfault.c
+$ cc -o segfault segfault.c
 ! expect signal SIGSEGV
 $ ./segfault
 $ cd ..

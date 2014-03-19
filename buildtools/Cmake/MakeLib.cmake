@@ -20,7 +20,16 @@ add_dependencies(simgrid maintainer_files)
 
 # Compute the dependencies of SimGrid
 #####################################
-set(SIMGRID_DEP "-lm -lstdc++")
+set(SIMGRID_DEP "-lm")
+
+if(${CMAKE_SYSTEM_NAME} STREQUAL "FreeBSD"
+    AND NOT ${CMAKE_SYSTEM_VERSION} VERSION_LESS 10.0
+    AND ${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")
+  # FreeBSD from 10.0 provide a internal C++ stack (unused by gcc)
+  set(SIMGRID_DEP "${SIMGRID_DEP} -lc++")
+else()
+  set(SIMGRID_DEP "${SIMGRID_DEP} -lstdc++")
+endif()
 
 if(pthread)
   if(${CONTEXT_THREADS})
@@ -87,7 +96,7 @@ if(HAVE_MC)
 endif()
 
 if(MMALLOC_WANT_OVERRIDE_LEGACY AND HAVE_GNU_LD)
-  SET(SIMGRID_DEP "${SIMGRID_DEP} -ldl")
+  SET(SIMGRID_DEP "${SIMGRID_DEP} ${DL_LIBRARY}")
 endif()
 
 if(HAVE_NS3)
@@ -103,6 +112,10 @@ endif()
 if(HAVE_POSIX_GETTIME)
   SET(SIMGRID_DEP "${SIMGRID_DEP} -lrt")
 endif()
+
+if(HAVE_BACKTRACE_IN_LIBEXECINFO)
+  SET(SIMGRID_DEP "${SIMGRID_DEP} -lexecinfo")
+endif(HAVE_BACKTRACE_IN_LIBEXECINFO)
 
 # Compute the dependencies of SMPI
 ##################################

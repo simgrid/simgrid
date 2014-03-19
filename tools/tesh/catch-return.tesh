@@ -12,7 +12,7 @@ $ cd temp_testdir-catch-return
 < }
 $ mkfile return1.c
 
-$ gcc -o return1 return1.c
+$ cc -o return1 return1.c
 
 ! expect return 41
 < $ ./return1

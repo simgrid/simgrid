@@ -107,6 +107,8 @@ else()
 endif()
 
 # Checks for header libraries functions.
+CHECK_LIBRARY_EXISTS(dl      dlopen                  "" HAVE_DLOPEN_IN_LIBDL)
+CHECK_LIBRARY_EXISTS(execinfo backtrace              "" HAVE_BACKTRACE_IN_LIBEXECINFO)
 CHECK_LIBRARY_EXISTS(pthread pthread_create          "" pthread)
 CHECK_LIBRARY_EXISTS(pthread sem_init                "" HAVE_SEM_INIT_LIB)
 CHECK_LIBRARY_EXISTS(pthread sem_open                "" HAVE_SEM_OPEN_LIB)
@@ -249,7 +251,10 @@ CHECK_TYPE_SIZE(void* SIZEOF_VOIDP)
 ### Check for GNU dynamic linker
 CHECK_INCLUDE_FILE("dlfcn.h" HAVE_DLFCN_H)
 if (HAVE_DLFCN_H)
-    execute_process(COMMAND ${CMAKE_C_COMPILER} ${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/test_prog/prog_gnu_dynlinker.c -ldl -o test_gnu_ld
+    if(HAVE_DLOPEN_IN_LIBDL)
+      set(DL_LIBRARY "-ldl")
+    endif(HAVE_DLOPEN_IN_LIBDL)
+    execute_process(COMMAND ${CMAKE_C_COMPILER} ${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/test_prog/prog_gnu_dynlinker.c ${DL_LIBRARY} -o test_gnu_ld
       WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
       OUTPUT_VARIABLE HAVE_GNU_LD_compil
     )

@@ -43,7 +43,7 @@ $ cd temp_testdir_background
 < }
 $ mkfile delayed_cat.c
 
-$ gcc -Wall -o delayed_cat delayed_cat.c
+$ cc -Wall -o delayed_cat delayed_cat.c
 
 & ./delayed_cat
 > TOTO

@@ -21,7 +21,7 @@ $ cd temp_testdir-setenv
 < }
 $ mkfile getenv.c
 
-$ gcc -o getenv getenv.c -g
+$ cc -o getenv getenv.c -g
 
 ! setenv tesh_test_toto=blah
 $ ./getenv
