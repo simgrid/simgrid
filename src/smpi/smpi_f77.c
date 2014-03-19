@@ -28,7 +28,7 @@ union u_smpi_common {
     integer _MPI_STATUS_IGNORE;
     integer _MPI_STATUSES_IGNORE;
   } *f77;                       /* with f2c, remains NULL with gfortran */
-  struct s_smpi_common f90;     /* with gftortran */
+  struct s_smpi_common f90;     /* with gfortran */
 } smpi_ = { NULL };
 
 /* Convert between Fortran and C */
