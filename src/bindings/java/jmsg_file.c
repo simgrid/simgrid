@@ -33,7 +33,6 @@ Java_org_simgrid_msg_File_open(JNIEnv *env, jobject jfile, jobject jpath) {
   file = MSG_file_open(path, NULL);
   jfile_bind(env, jfile, file);
 
-  (*env)->ReleaseStringUTFChars(env, jstorage, storage);
   (*env)->ReleaseStringUTFChars(env, jpath, path);
 }
 JNIEXPORT jlong JNICALL
