@@ -631,6 +631,8 @@ public:
 
   s_xbt_swag_hookup_t p_stateHookup;
 
+  ModelPtr getModel() {return p_model;}
+
 protected:
   ActionListPtr p_stateSet;
   double m_priority; /**< priority (1.0 by default) */
@@ -638,8 +640,6 @@ protected:
   double m_remains; /**< How much of that cost remains to be done in the currently running task */
   double m_maxDuration; /*< max_duration (may fluctuate until the task is completed) */
   double m_finish; /**< finish time : this is modified during the run and fluctuates until the task is completed */
-
-  ModelPtr getModel() {return p_model;}
 
 private:
   int resourceUsed(void *resource_id);

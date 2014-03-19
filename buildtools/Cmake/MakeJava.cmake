@@ -29,8 +29,6 @@ message("-- [Java] simgrid-java includes: ${CHECK_INCLUDES}")
 target_link_libraries(simgrid-java simgrid)
 
 
-
-
 if(WIN32)
   exec_program("java -d32 -version"
                 OUTPUT_VARIABLE IS_32_BITS_JVM)
@@ -65,6 +63,8 @@ set(LIBSIMGRID_SO
   libsimgrid${CMAKE_SHARED_LIBRARY_SUFFIX})
 set(LIBSIMGRID_JAVA_SO
   ${CMAKE_SHARED_LIBRARY_PREFIX}simgrid-java${CMAKE_SHARED_LIBRARY_SUFFIX})
+set(LIBSURF_JAVA_SO
+  ${CMAKE_SHARED_LIBRARY_PREFIX}surf-java.so)
 
 ## Don't strip libraries if not in release mode
 ##
@@ -87,6 +87,7 @@ set(JAVA_BUNDLE "${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/Scripts/java_bundle.sh
 set(JAVA_BUNDLE_SO_FILES
   ${CMAKE_BINARY_DIR}/lib/${LIBSIMGRID_SO}
   ${CMAKE_BINARY_DIR}/lib/${LIBSIMGRID_JAVA_SO}
+  ${CMAKE_BINARY_DIR}/lib/${LIBSURF_JAVA_SO}
   )
 set(JAVA_BUNDLE_TXT_FILES
   ${CMAKE_HOME_DIRECTORY}/COPYING
@@ -111,3 +112,15 @@ add_custom_command(
   COMMAND ${CMAKE_COMMAND} -E touch ${SIMGRID_JAR}_finalized
   )
 add_custom_target(simgrid-java_jar ALL DEPENDS ${SIMGRID_JAR}_finalized)
+
+set(CMAKE_SWIG_FLAGS "-package" "org.simgrid.surf")
+set(CMAKE_SWIG_OUTDIR "${CMAKE_HOME_DIRECTORY}/src/bindings/java/org/simgrid/surf")
+
+set(SURF_SWIG_FILE "${CMAKE_HOME_DIRECTORY}/src/bindings/java/surf.i")
+set_source_files_properties(${SURF_SWIG_FILE} PROPERTIES CPLUSPLUS 1)
+#set_source_files_properties(${SURF_SWIG_FILE} PROPERTIES SWIG_FLAGS "-includeall")
+include_directories(${JNI_INCLUDE_DIRS})
+swig_add_module(surf-java java ${SURF_SWIG_FILE} "${CMAKE_HOME_DIRECTORY}/src/surf/surf_interface.hpp" "${CMAKE_HOME_DIRECTORY}/src/bindings/java/surf_swig.hpp" "${CMAKE_HOME_DIRECTORY}/src/bindings/java/surf_swig.cpp")
+swig_link_libraries(surf-java simgrid)
+
+add_dependencies(simgrid-java surf-java)

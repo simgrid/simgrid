@@ -460,6 +460,9 @@ set(JMSG_C_SRC
 )
 
 set(JMSG_JAVA_SRC
+  src/bindings/java/org/simgrid/NativeLib.java
+  #src/bindings/java/org/simgrid/NativeException.java
+
   src/bindings/java/org/simgrid/msg/As.java	
   src/bindings/java/org/simgrid/msg/Comm.java
   src/bindings/java/org/simgrid/msg/File.java
@@ -470,8 +473,7 @@ set(JMSG_JAVA_SRC
   src/bindings/java/org/simgrid/msg/Msg.java
   src/bindings/java/org/simgrid/msg/MsgException.java
   src/bindings/java/org/simgrid/msg/Mutex.java
-  src/bindings/java/org/simgrid/msg/NativeException.java
-  src/bindings/java/org/simgrid/msg/NativeLib.java
+  src/bindings/java/org/simgrid/msg/NativeException.java    
   src/bindings/java/org/simgrid/msg/Process.java
   src/bindings/java/org/simgrid/msg/ProcessKilledError.java
   src/bindings/java/org/simgrid/msg/ProcessNotFoundException.java
@@ -482,6 +484,20 @@ set(JMSG_JAVA_SRC
   src/bindings/java/org/simgrid/msg/TimeoutException.java
   src/bindings/java/org/simgrid/msg/TransferFailureException.java
   src/bindings/java/org/simgrid/msg/VM.java
+
+  src/bindings/java/org/simgrid/surf/Surf.java
+  src/bindings/java/org/simgrid/surf/SurfJNI.java
+  src/bindings/java/org/simgrid/surf/Plugin.java
+  src/bindings/java/org/simgrid/surf/Model.java
+  src/bindings/java/org/simgrid/surf/Resource.java
+  src/bindings/java/org/simgrid/surf/Action.java  
+  src/bindings/java/org/simgrid/surf/Cpu.java
+  src/bindings/java/org/simgrid/surf/CpuAction.java  
+  src/bindings/java/org/simgrid/surf/NetworkLink.java  
+  src/bindings/java/org/simgrid/surf/NetworkAction.java  
+
+  src/bindings/java/org/simgrid/surf/LmmConstraint.java  
+  src/bindings/java/org/simgrid/surf/XbtDict.java    
 )
 
 set(JTRACE_C_SRC
@@ -875,6 +891,7 @@ set(EXAMPLES_CMAKEFILES_TXT
   examples/java/cloud/CMakeLists.txt
   examples/java/cloud/migration/CMakeLists.txt
   examples/java/commTime/CMakeLists.txt
+  examples/java/surfPlugin/CMakeLists.txt
   examples/java/io/CMakeLists.txt
   examples/java/kademlia/CMakeLists.txt
   examples/java/master_slave_bypass/CMakeLists.txt

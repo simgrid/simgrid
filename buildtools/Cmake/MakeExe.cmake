@@ -19,6 +19,7 @@ add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/java/mutualExclusion)
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/java/pingPong)
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/java/priority)
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/java/startKillTime)
+add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/java/surfPlugin)
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/java/suspend)
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/java/tracing)
 
