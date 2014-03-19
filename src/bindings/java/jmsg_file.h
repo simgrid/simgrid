@@ -28,7 +28,7 @@ Java_org_simgrid_msg_File_nativeInit(JNIEnv*, jclass);
  * Signature	(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
  */
 JNIEXPORT void JNICALL
-Java_org_simgrid_msg_File_open(JNIEnv*, jobject, jobject, jobject);
+Java_org_simgrid_msg_File_open(JNIEnv*, jobject, jobject);
 /**
  * Class 			org_simgrid_msg_File
  * Method			read

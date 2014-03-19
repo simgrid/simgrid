@@ -26,12 +26,12 @@ Java_org_simgrid_msg_File_nativeInit(JNIEnv *env, jclass cls) {
   xbt_assert((jfile_field_bind != NULL), "Can't find \"bind\" field in File class.");
 }
 JNIEXPORT void JNICALL
-Java_org_simgrid_msg_File_open(JNIEnv *env, jobject jfile, jobject jstorage, jobject jpath) {
+Java_org_simgrid_msg_File_open(JNIEnv *env, jobject jfile, jobject jpath) {
   const char *storage = (*env)->GetStringUTFChars(env, jstorage, 0);
   const char *path = (*env)->GetStringUTFChars(env, jpath, 0);
   msg_file_t file;
 
-  file = MSG_file_open(storage, path, NULL);
+  file = MSG_file_open(path, NULL);
   jfile_bind(env, jfile, file);
 
   (*env)->ReleaseStringUTFChars(env, jstorage, storage);
