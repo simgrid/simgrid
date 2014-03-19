@@ -73,13 +73,13 @@ void MSG_file_dump (msg_file_t fd){
 
   msg_file_priv_t priv = MSG_file_priv(fd);
   XBT_INFO("File Descriptor information:\n"
-           "\t\tFull name: '%s'\n"
+           "\t\tFull path: '%s'\n"
            "\t\tSize: %llu\n"
            "\t\tMount point: '%s'\n"
            "\t\tStorage Id: '%s'\n"
            "\t\tStorage Type: '%s'\n"
            "\t\tContent Type: '%s'",
-           priv->fullname, priv->size, priv->mount_point,
+           priv->fullpath, priv->size, priv->mount_point,
            priv->storageId, priv->storage_type,
            priv->content_type);
 }
@@ -114,20 +114,20 @@ sg_size_t MSG_file_write(msg_file_t fd, sg_size_t size)
  * \brief Opens the file whose name is the string pointed to by path
  *
  * \param mount is the mount point where find the file is located
- * \param fullname is the file location on the storage
+ * \param fullpath is the file location on the storage
  * \param data user data to attach to the file
  *
  * \return An #msg_file_t associated to the file
  */
-msg_file_t MSG_file_open(const char* mount,const char* fullname, void* data)
+msg_file_t MSG_file_open(const char* fullpath, void* data)
 {
   msg_file_priv_t priv = xbt_new(s_msg_file_priv_t, 1);
   priv->data = data;
-  priv->fullname = xbt_strdup(fullname);
+  priv->fullpath = xbt_strdup(fullpath);
   priv->simdata = xbt_new0(s_simdata_file_t,1);
-  priv->simdata->smx_file = simcall_file_open(mount, fullname);
-  xbt_lib_set(file_lib, fullname, MSG_FILE_LEVEL, priv);
-  return (msg_file_t) xbt_lib_get_elm_or_null(file_lib, fullname);
+  priv->simdata->smx_file = simcall_file_open(fullpath);
+  xbt_lib_set(file_lib, fullpath, MSG_FILE_LEVEL, priv);
+  return (msg_file_t) xbt_lib_get_elm_or_null(file_lib, fullpath);
 }
 
 /**
@@ -149,7 +149,7 @@ int MSG_file_close(msg_file_t fd)
 {
   msg_file_priv_t priv = MSG_file_priv(fd);
   int res = simcall_file_close(priv->simdata->smx_file);
-  xbt_lib_unset(file_lib, priv->fullname, MSG_FILE_LEVEL, 1);
+  xbt_lib_unset(file_lib, priv->fullpath, MSG_FILE_LEVEL, 1);
   return res;
 }
 
@@ -240,7 +240,7 @@ sg_size_t MSG_file_tell(msg_file_t fd)
 const char *MSG_file_get_name(msg_file_t fd) {
   xbt_assert((fd != NULL), "Invalid parameters");
   msg_file_priv_t priv = MSG_file_priv(fd);
-  return priv->fullname;
+  return priv->fullpath;
 }
 
 
@@ -248,7 +248,7 @@ const char *MSG_file_get_name(msg_file_t fd) {
  * \brief Destroys a file (internal call only)
  */
 void __MSG_file_destroy(msg_file_priv_t file) {
-  xbt_free(file->fullname);
+  xbt_free(file->fullpath);
   xbt_free(file->simdata);
   xbt_free(file);
 }

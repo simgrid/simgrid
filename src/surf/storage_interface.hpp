@@ -182,7 +182,7 @@ public:
    * 
    * @return The StorageAction corresponding to the opening
    */
-  virtual StorageActionPtr open(const char* mount, const char* path)=0;
+  virtual StorageActionPtr open(const char* mount, char* path)=0;
 
   /**
    * @brief Close a file

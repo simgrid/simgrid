@@ -37,7 +37,7 @@
     </host>
 
     <host id="alice" power="1Gf">
-      <mount storageId="Disk2" name="/windows"/>
+      <mount storageId="Disk2" name="c:"/>
     </host>
 
     <host id="carl" power="1Gf">
@@ -45,7 +45,7 @@
     </host>
 
     <host id="denise" power="1Gf">
-      <mount storageId="Disk2" name="/windows"/>	
+      <mount storageId="Disk2" name="c:"/>	
       <mount storageId="Disk4" name="/home"/>	
     </host>
 

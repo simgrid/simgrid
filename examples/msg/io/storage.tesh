@@ -1,106 +1,107 @@
 #! ./tesh
 
-$ ${bindir:=.}/io/storage ${srcdir:=.}/examples/platforms/storage.xml "--log=root.fmt:[%8.6r]%e(%i@%h)%e%m%n"
-> [0.000000] (1@denise) *** Storage info on denise ***
-> [0.000000] (1@denise) Storage name: Disk4, mount name: /home
-> [0.000000] (1@denise) Total size: 536870912000 bytes
-> [0.000000] (1@denise) Free size: 536857690006 bytes
-> [0.000000] (1@denise) Used size: 13221994 bytes
-> [0.000000] (1@denise) Storage name: Disk2, mount name: /windows
-> [0.000000] (1@denise) Total size: 536870912000 bytes
-> [0.000000] (1@denise) Free size: 534479374867 bytes
-> [0.000000] (1@denise) Used size: 2391537133 bytes
-> [0.003333] (1@denise) Create a 200000 bytes file named './tmp/data.txt' on /sd1
-> [0.003333] (1@denise) File Descriptor information:
-> 		Full name: './tmp/data.txt'
-> 		Size: 200000
-> 		Mount point: '/home'
-> 		Storage Id: 'Disk4'
-> 		Storage Type: 'single_SSD'
-> 		Content Type: 'txt_unix'
-> [0.003333] (1@denise) Free size: 536857490006 bytes
-> [0.003333] (1@denise) Used size: 13421994 bytes
-> [0.004583] (1@denise) Read 200000 bytes on ./tmp/data.txt
-> [0.007917] (1@denise) Write 100000 bytes on ./tmp/data.txt
-> [0.007917] (1@denise) File Descriptor information:
-> 		Full name: './tmp/data.txt'
-> 		Size: 300000
-> 		Mount point: '/home'
-> 		Storage Id: 'Disk4'
-> 		Storage Type: 'single_SSD'
-> 		Content Type: 'txt_unix'
-> [0.007917] (1@denise) *** Renaming './tmp/data.txt' into './tmp/simgrid.readme'
-> [0.007917] (1@denise) *** Get/set data for storage element: Disk4 ***
-> [0.007917] (1@denise) Get data: '(null)'
-> [0.007917] (1@denise) Set and get data: 'Some user data'
-> [0.007917] (1@denise) *** Dump content of denise ***
-> [0.007917] (1@denise) Print the content of mount point: /home
-> [0.007917] (1@denise) ./doc/simgrid/examples/platforms/g5k.xml size: 17028 bytes
-> [0.007917] (1@denise) ./include/surf/simgrid_dtd.h size: 23583 bytes
-> [0.007917] (1@denise) ./bin/smpicc size: 918 bytes
-> [0.007917] (1@denise) ./doc/simgrid/examples/smpi/mc_bugged2.c size: 1387 bytes
-> [0.007917] (1@denise) ./include/simdag/simdag.h size: 10325 bytes
-> [0.007917] (1@denise) ./doc/simgrid/examples/smpi/NAS/sys/README size: 1461 bytes
-> [0.007917] (1@denise) ./tmp/simgrid.readme size: 300000 bytes
-> [0.007917] (1@denise) ./doc/simgrid/examples/smpi/NAS/common/randdp.c size: 1441 bytes
-> [0.007917] (1@denise) ./include/msg/datatypes.h size: 4635 bytes
-> [0.007917] (1@denise) ./doc/simgrid/examples/smpi/NAS/EP/randlc.c size: 3300 bytes
-> [0.007917] (1@denise) ./doc/simgrid/examples/msg/parallel_task/test_ptask_deployment.xml size: 654 bytes
-> [0.007917] (1@denise) ./doc/simgrid/examples/msg/icomms/small_platform.xml size: 972 bytes
-> [0.007917] (1@denise) ./doc/simgrid/examples/msg/trace/test9.xml size: 598 bytes
-> [0.007917] (1@denise) ./include/simix/simix.h size: 13003 bytes
-> [0.007917] (1@denise) ./include/mc/modelchecker.h size: 96 bytes
-> [0.007917] (1@denise) ./doc/simgrid/examples/msg/README size: 4805 bytes
-> [0.007917] (1@denise) ./doc/simgrid/examples/smpi/NAS/README size: 1857 bytes
-> [0.007917] (1@denise) ./include/instr/instr.h size: 5750 bytes
-> [0.007917] (1@denise) ./doc/simgrid/html/group__XBT__str.html size: 36192 bytes
-> [0.007917] (1@denise) ./doc/simgrid/examples/smpi/NAS/EP/README size: 347 bytes
-> [0.007917] (1@denise) ./bin/tesh size: 356434 bytes
-> [0.007917] (1@denise) ./doc/simgrid/examples/smpi/NAS/DT/README size: 999 bytes
-> [0.007917] (1@denise) ./doc/simgrid/examples/smpi/NAS/FT/README size: 276 bytes
-> [0.007917] (1@denise) ./lib/libsimgrid.so.3.6.2 size: 12710497 bytes
-> [0.007917] (1@denise) ./doc/simgrid/examples/xbt/sem_basic.c size: 1970 bytes
-> [0.007917] (1@denise) ./doc/simgrid/examples/msg/alias/masterslave_forwarder_with_alias.c size: 6217 bytes
-> [0.007917] (1@denise) ./doc/simgrid/examples/smpi/NAS/SP/README size: 926 bytes
-> [0.007917] (1@denise) ./include/xbt/fifo.h size: 3626 bytes
-> [0.007917] (1@denise) ./doc/simgrid/examples/smpi/NAS/MPI_dummy/README size: 2406 bytes
-> [0.007917] (1@denise) ./doc/simgrid/examples/smpi/NAS/MG/README size: 5465 bytes
-> [0.007917] (1@denise) ./include/smpi/mpif.h size: 4826 bytes
-> [0.007917] (1@denise) Print the content of mount point: /windows
-> [0.007917] (1@denise) .\Windows\dcmdev64.exe size: 93288 bytes
-> [0.007917] (1@denise) .\Windows\WLXPGSS.SCR size: 322048 bytes
-> [0.007917] (1@denise) .\Windows\twain_32.dll size: 50176 bytes
-> [0.007917] (1@denise) .\Windows\bootstat.dat size: 67584 bytes
-> [0.007917] (1@denise) .\Windows\avastSS.scr size: 41664 bytes
-> [0.007917] (1@denise) .\Windows\font1.sii size: 4907 bytes
-> [0.007917] (1@denise) .\Windows\write.exe size: 10752 bytes
-> [0.007917] (1@denise) .\Windows\font2.sii size: 8698 bytes
-> [0.007917] (1@denise) .\Windows\DtcInstall.log size: 1955 bytes
-> [0.007917] (1@denise) .\Windows\vmgcoinstall.log size: 1585 bytes
-> [0.007917] (1@denise) .\Windows\_isusr32.dll size: 180320 bytes
-> [0.007917] (1@denise) .\Windows\winhlp32.exe size: 10752 bytes
-> [0.007917] (1@denise) .\Windows\setuperr.log size: 0 bytes
-> [0.007917] (1@denise) .\Windows\system.ini size: 219 bytes
-> [0.007917] (1@denise) .\Windows\hapint.exe size: 382056 bytes
-> [0.007917] (1@denise) .\Windows\Professional.xml size: 31881 bytes
-> [0.007917] (1@denise) .\Windows\setupact.log size: 101663 bytes
-> [0.007917] (1@denise) .\Windows\notepad.exe size: 243712 bytes
-> [0.007917] (1@denise) .\Windows\explorer.exe size: 2380944 bytes
-> [0.007917] (1@denise) .\Windows\bfsvc.exe size: 75264 bytes
-> [0.007917] (1@denise) .\Windows\WMSysPr9.prx size: 316640 bytes
-> [0.007917] (1@denise) .\Windows\PFRO.log size: 6770 bytes
-> [0.007917] (1@denise) .\Windows\csup.txt size: 12 bytes
-> [0.007917] (1@denise) .\Windows\win.ini size: 92 bytes
-> [0.007917] (1@denise) .\Windows\mib.bin size: 43131 bytes
-> [0.007917] (1@denise) .\Windows\Starter.xml size: 31537 bytes
-> [0.007917] (1@denise) .\Windows\CoreSingleLanguage.xml size: 31497 bytes
-> [0.007917] (1@denise) .\Windows\regedit.exe size: 159232 bytes
-> [0.007917] (1@denise) .\Windows\dchcfg64.exe size: 335464 bytes
-> [0.007917] (1@denise) .\Windows\HelpPane.exe size: 883712 bytes
-> [0.007917] (1@denise) .\Windows\WindowsUpdate.log size: 1518934 bytes
-> [0.007917] (1@denise) .\Windows\hh.exe size: 17408 bytes
-> [0.007917] (1@denise) .\Windows\DPINST.LOG size: 18944 bytes
-> [0.007917] (1@denise) .\Windows\DirectX.log size: 10486 bytes
-> [0.007917] (1@denise) .\Windows\splwow64.exe size: 126464 bytes
-> [0.007917] (1@denise) .\Windows\MEMORY.DMP size: 2384027342 bytes
-> [0.007917] (0@) Simulated time: 0.00791667
+$ ${bindir:=.}/io/storage ${srcdir:=.}/examples/platforms/storage.xml "--log=root.fmt:> [%8.6r]%e(%i@%h)%e%m%n"
+> [  0.000000] (1:(null)@denise) *** Storage info on denise ***
+> [  0.000000] (1:(null)@denise) Storage name: Disk2, mount name: c:
+> [  0.000000] (1:(null)@denise) Total size: 536870912000 bytes
+> [  0.000000] (1:(null)@denise) Free size: 534479374867 bytes
+> [  0.000000] (1:(null)@denise) Used size: 2391537133 bytes
+> [  0.000000] (1:(null)@denise) Storage name: Disk4, mount name: /home
+> [  0.000000] (1:(null)@denise) Total size: 536870912000 bytes
+> [  0.000000] (1:(null)@denise) Free size: 536857690006 bytes
+> [  0.000000] (1:(null)@denise) Used size: 13221994 bytes
+> [  0.003333] (1:(null)@denise) Create a 200000 bytes file named '/home/tmp/data.txt' on /sd1
+> [  0.003333] (1:(null)@denise) File Descriptor information:
+>		Full path: '/home/tmp/data.txt'
+>		Size: 200000
+>		Mount point: '/home'
+>		Storage Id: 'Disk4'
+>		Storage Type: 'single_SSD'
+>		Content Type: 'txt_unix'
+> [  0.003333] (1:(null)@denise) Free size: 536857490006 bytes
+> [  0.003333] (1:(null)@denise) Used size: 13421994 bytes
+> [  0.004583] (1:(null)@denise) Read 200000 bytes on /home/tmp/data.txt
+> [  0.007917] (1:(null)@denise) Write 100000 bytes on /home/tmp/data.txt
+> [  0.007917] (1:(null)@denise) File Descriptor information:
+>		Full path: '/home/tmp/data.txt'
+>		Size: 300000
+>		Mount point: '/home'
+>		Storage Id: 'Disk4'
+>		Storage Type: 'single_SSD'
+>		Content Type: 'txt_unix'
+> [  0.007917] (1:(null)@denise) *** Renaming '/tmp/data.txt' into '/tmp/simgrid.readme'
+> [  0.007917] (1:(null)@denise) *** Get/set data for storage element: Disk4 ***
+> [  0.007917] (1:(null)@denise) Get data: '(null)'
+> [  0.007917] (1:(null)@denise) Set and get data: 'Some user data'
+> [  0.007917] (1:(null)@denise) *** Dump content of denise ***
+> [  0.007917] (1:(null)@denise) Print the content of mount point: c:
+> [  0.007917] (1:(null)@denise) \Windows\win.ini size: 92 bytes
+> [  0.007917] (1:(null)@denise) \Windows\mib.bin size: 43131 bytes
+> [  0.007917] (1:(null)@denise) \Windows\DtcInstall.log size: 1955 bytes
+> [  0.007917] (1:(null)@denise) \Windows\vmgcoinstall.log size: 1585 bytes
+> [  0.007917] (1:(null)@denise) \Windows\Starter.xml size: 31537 bytes
+> [  0.007917] (1:(null)@denise) \Windows\_isusr32.dll size: 180320 bytes
+> [  0.007917] (1:(null)@denise) \Windows\winhlp32.exe size: 10752 bytes
+> [  0.007917] (1:(null)@denise) \Windows\setuperr.log size: 0 bytes
+> [  0.007917] (1:(null)@denise) \Windows\system.ini size: 219 bytes
+> [  0.007917] (1:(null)@denise) \Windows\hapint.exe size: 382056 bytes
+> [  0.007917] (1:(null)@denise) \Windows\Professional.xml size: 31881 bytes
+> [  0.007917] (1:(null)@denise) \Windows\regedit.exe size: 159232 bytes
+> [  0.007917] (1:(null)@denise) \Windows\setupact.log size: 101663 bytes
+> [  0.007917] (1:(null)@denise) \Windows\WindowsUpdate.log size: 1518934 bytes
+> [  0.007917] (1:(null)@denise) \Windows\explorer.exe size: 2380944 bytes
+> [  0.007917] (1:(null)@denise) \Windows\DirectX.log size: 10486 bytes
+> [  0.007917] (1:(null)@denise) \Windows\WMSysPr9.prx size: 316640 bytes
+> [  0.007917] (1:(null)@denise) \Windows\PFRO.log size: 6770 bytes
+> [  0.007917] (1:(null)@denise) \Windows\csup.txt size: 12 bytes
+> [  0.007917] (1:(null)@denise) \Windows\WLXPGSS.SCR size: 322048 bytes
+> [  0.007917] (1:(null)@denise) \Windows\avastSS.scr size: 41664 bytes
+> [  0.007917] (1:(null)@denise) \Windows\font1.sii size: 4907 bytes
+> [  0.007917] (1:(null)@denise) \Windows\write.exe size: 10752 bytes
+> [  0.007917] (1:(null)@denise) \Windows\font2.sii size: 8698 bytes
+> [  0.007917] (1:(null)@denise) \Windows\CoreSingleLanguage.xml size: 31497 bytes
+> [  0.007917] (1:(null)@denise) \Windows\dchcfg64.exe size: 335464 bytes
+> [  0.007917] (1:(null)@denise) \Windows\notepad.exe size: 243712 bytes
+> [  0.007917] (1:(null)@denise) \Windows\HelpPane.exe size: 883712 bytes
+> [  0.007917] (1:(null)@denise) \Windows\hh.exe size: 17408 bytes
+> [  0.007917] (1:(null)@denise) \Windows\DPINST.LOG size: 18944 bytes
+> [  0.007917] (1:(null)@denise) \Windows\bfsvc.exe size: 75264 bytes
+> [  0.007917] (1:(null)@denise) \Windows\splwow64.exe size: 126464 bytes
+> [  0.007917] (1:(null)@denise) \Windows\MEMORY.DMP size: 2384027342 bytes
+> [  0.007917] (1:(null)@denise) \Windows\dcmdev64.exe size: 93288 bytes
+> [  0.007917] (1:(null)@denise) \Windows\twain_32.dll size: 50176 bytes
+> [  0.007917] (1:(null)@denise) \Windows\bootstat.dat size: 67584 bytes
+> [  0.007917] (1:(null)@denise) Print the content of mount point: /home
+> [  0.007917] (1:(null)@denise) /include/simix/simix.h size: 13003 bytes
+> [  0.007917] (1:(null)@denise) /include/mc/modelchecker.h size: 96 bytes
+> [  0.007917] (1:(null)@denise) /doc/simgrid/examples/msg/README size: 4805 bytes
+> [  0.007917] (1:(null)@denise) /include/instr/instr.h size: 5750 bytes
+> [  0.007917] (1:(null)@denise) /doc/simgrid/examples/smpi/mc_bugged2.c size: 1387 bytes
+> [  0.007917] (1:(null)@denise) /doc/simgrid/html/group__XBT__str.html size: 36192 bytes
+> [  0.007917] (1:(null)@denise) /doc/simgrid/examples/smpi/NAS/EP/README size: 347 bytes
+> [  0.007917] (1:(null)@denise) /doc/simgrid/examples/smpi/NAS/DT/README size: 999 bytes
+> [  0.007917] (1:(null)@denise) /doc/simgrid/examples/smpi/NAS/FT/README size: 276 bytes
+> [  0.007917] (1:(null)@denise) /lib/libsimgrid.so.3.6.2 size: 12710497 bytes
+> [  0.007917] (1:(null)@denise) /doc/simgrid/examples/smpi/NAS/sys/README size: 1461 bytes
+> [  0.007917] (1:(null)@denise) /doc/simgrid/examples/msg/alias/masterslave_forwarder_with_alias.c size: 6217 bytes
+> [  0.007917] (1:(null)@denise) /doc/simgrid/examples/smpi/NAS/SP/README size: 926 bytes
+> [  0.007917] (1:(null)@denise) /tmp/simgrid.readme size: 300000 bytes
+> [  0.007917] (1:(null)@denise) /doc/simgrid/examples/msg/parallel_task/test_ptask_deployment.xml size: 654 bytes
+> [  0.007917] (1:(null)@denise) /doc/simgrid/examples/msg/icomms/small_platform.xml size: 972 bytes
+> [  0.007917] (1:(null)@denise) /doc/simgrid/examples/smpi/NAS/MG/README size: 5465 bytes
+> [  0.007917] (1:(null)@denise) /doc/simgrid/examples/msg/trace/test9.xml size: 598 bytes
+> [  0.007917] (1:(null)@denise) /include/smpi/mpif.h size: 4826 bytes
+> [  0.007917] (1:(null)@denise) /doc/simgrid/examples/smpi/NAS/README size: 1857 bytes
+> [  0.007917] (1:(null)@denise) /bin/tesh size: 356434 bytes
+> [  0.007917] (1:(null)@denise) /include/simdag/simdag.h size: 10325 bytes
+> [  0.007917] (1:(null)@denise) /doc/simgrid/examples/xbt/sem_basic.c size: 1970 bytes
+> [  0.007917] (1:(null)@denise) /include/xbt/fifo.h size: 3626 bytes
+> [  0.007917] (1:(null)@denise) /doc/simgrid/examples/smpi/NAS/common/randdp.c size: 1441 bytes
+> [  0.007917] (1:(null)@denise) /include/msg/datatypes.h size: 4635 bytes
+> [  0.007917] (1:(null)@denise) /doc/simgrid/examples/smpi/NAS/EP/randlc.c size: 3300 bytes
+> [  0.007917] (1:(null)@denise) /doc/simgrid/examples/smpi/NAS/MPI_dummy/README size: 2406 bytes
+> [  0.007917] (1:(null)@denise) /doc/simgrid/examples/platforms/g5k.xml size: 17028 bytes
+> [  0.007917] (1:(null)@denise) /include/surf/simgrid_dtd.h size: 23583 bytes
+> [  0.007917] (1:(null)@denise) /bin/smpicc size: 918 bytes
+> [  0.007917] (0:@) Simulated time: 0.00791667
+

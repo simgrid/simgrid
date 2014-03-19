@@ -510,7 +510,7 @@ case SIMCALL_FILE_WRITE:
        break;  
 
 case SIMCALL_FILE_OPEN:
-       SIMIX_pre_file_open(simcall ,  simcall->args[0].cc,  simcall->args[1].cc);
+       SIMIX_pre_file_open(simcall ,  simcall->args[0].cc);
        break;  
 
 case SIMCALL_FILE_CLOSE:

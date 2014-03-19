@@ -259,11 +259,11 @@ public:
    * @brief Open a file
    * 
    * @param mount The mount point
-   * @param path The path to the file
+   * @param path The full path to the file
    * 
    * @return The StorageAction corresponding to the opening
    */
-  virtual ActionPtr open(const char* mount, const char* path);
+  virtual ActionPtr open(const char* fullpath);
 
   /**
    * @brief Close a file

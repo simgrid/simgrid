@@ -15,7 +15,7 @@
  * - <b>io/file.c</b> Example with the disk resource
  */
 
-#define FILENAME1 "./doc/simgrid/examples/platforms/g5k.xml"
+#define FILENAME1 "/home/doc/simgrid/examples/platforms/g5k.xml"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -30,12 +30,11 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(io_file,
 int host(int argc, char *argv[])
 {
   msg_file_t file = NULL;
-  char* mount = xbt_strdup("/home");
   sg_size_t write;
 
   // First open
   XBT_INFO("\tOpen file '%s'",FILENAME1);
-  file = MSG_file_open(mount,FILENAME1, NULL);
+  file = MSG_file_open(FILENAME1, NULL);
 
   // Unlink the file
   XBT_INFO("\tUnlink file '%s'",MSG_file_get_name(file));
@@ -43,7 +42,7 @@ int host(int argc, char *argv[])
 
   // Re Open the file wich is in fact created
   XBT_INFO("\tOpen file '%s'",FILENAME1);
-  file = MSG_file_open(mount,FILENAME1, NULL);
+  file = MSG_file_open(FILENAME1, NULL);
 
   // Write into the new file
   write = MSG_file_write(file,100000);  // Write for 100Ko
@@ -53,36 +52,34 @@ int host(int argc, char *argv[])
   XBT_INFO("\tClose file '%s'",MSG_file_get_name(file));
   MSG_file_close(file);
 
-  xbt_dict_t dict_ls;
-  char* key;
-  surf_stat_t data = NULL;
-  xbt_dict_cursor_t cursor = NULL;
-
-  dict_ls = MSG_file_ls(mount,"./");
-  XBT_INFO(" ");XBT_INFO("ls ./");
-  xbt_dict_foreach(dict_ls,cursor,key,data){
-    if(data) XBT_INFO("FILE : %s",key);
-    else     XBT_INFO("DIR  : %s",key);
-  }
-  xbt_dict_free(&dict_ls);
-
-  dict_ls = MSG_file_ls(mount,"./doc/simgrid/examples/platforms/");
-  XBT_INFO(" ");XBT_INFO("ls ./doc/simgrid/examples/platforms/");
-  xbt_dict_foreach(dict_ls,cursor,key,data){
-    if(data) XBT_INFO("FILE : %s",key);
-    else     XBT_INFO("DIR  : %s",key);
-  }
-  xbt_dict_free(&dict_ls);
-
-  dict_ls = MSG_file_ls(mount,"./doc/simgrid/examples/msg/");
-  XBT_INFO(" ");XBT_INFO("ls ./doc/simgrid/examples/msg/");
-  xbt_dict_foreach(dict_ls,cursor,key,data){
-    if(data) XBT_INFO("FILE : %s",key);
-    else     XBT_INFO("DIR  : %s",key);
-  }
-  xbt_dict_free(&dict_ls);
-
-  free(mount);
+//  xbt_dict_t dict_ls;
+//  char* key;
+//  surf_stat_t data = NULL;
+//  xbt_dict_cursor_t cursor = NULL;
+//
+//  dict_ls = MSG_file_ls(mount,"./");
+//  XBT_INFO(" ");XBT_INFO("ls ./");
+//  xbt_dict_foreach(dict_ls,cursor,key,data){
+//    if(data) XBT_INFO("FILE : %s",key);
+//    else     XBT_INFO("DIR  : %s",key);
+//  }
+//  xbt_dict_free(&dict_ls);
+//
+//  dict_ls = MSG_file_ls(mount,"./doc/simgrid/examples/platforms/");
+//  XBT_INFO(" ");XBT_INFO("ls ./doc/simgrid/examples/platforms/");
+//  xbt_dict_foreach(dict_ls,cursor,key,data){
+//    if(data) XBT_INFO("FILE : %s",key);
+//    else     XBT_INFO("DIR  : %s",key);
+//  }
+//  xbt_dict_free(&dict_ls);
+//
+//  dict_ls = MSG_file_ls(mount,"./doc/simgrid/examples/msg/");
+//  XBT_INFO(" ");XBT_INFO("ls ./doc/simgrid/examples/msg/");
+//  xbt_dict_foreach(dict_ls,cursor,key,data){
+//    if(data) XBT_INFO("FILE : %s",key);
+//    else     XBT_INFO("DIR  : %s",key);
+//  }
+//  xbt_dict_free(&dict_ls);
 
   return 0;
 }

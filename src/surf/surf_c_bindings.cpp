@@ -360,8 +360,8 @@ xbt_dynar_t surf_workstation_get_attached_storage_list(surf_resource_t workstati
   return get_casted_workstation(workstation)->getAttachedStorageList();
 }
 
-surf_action_t surf_workstation_open(surf_resource_t workstation, const char* mount, const char* path){
-  return get_casted_workstation(workstation)->open(mount, path);
+surf_action_t surf_workstation_open(surf_resource_t workstation, const char* fullpath){
+  return get_casted_workstation(workstation)->open(fullpath);
 }
 
 surf_action_t surf_workstation_close(surf_resource_t workstation, surf_file_t fd){

@@ -1336,9 +1336,9 @@ sg_size_t simcall_file_write(smx_file_t fd, sg_size_t size)
  * \ingroup simix_file_management
  * \brief
  */
-smx_file_t simcall_file_open(const char* mount, const char* path)
+smx_file_t simcall_file_open(const char* fullpath)
 {
-  return simcall_BODY_file_open(mount, path);
+  return simcall_BODY_file_open(fullpath);
 }
 
 /**

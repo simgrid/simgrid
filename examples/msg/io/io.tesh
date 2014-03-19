@@ -2,56 +2,40 @@
 
 $ ${bindir:=.}/io/file ${srcdir:=.}/examples/platforms/storage.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (0:@) Number of host '4'
-> [  0.000000] (2:1@alice) 	Open file '.\Windows\setupact.log'
-> [  0.000000] (3:2@carl) 	Open file './doc/simgrid/examples/platforms/g5k_cabinets.xml'
-> [  0.000000] (4:3@bob) 	Open file './doc/simgrid/examples/platforms/nancy.xml'
+> [  0.000000] (2:1@alice) 	Open file 'c:\Windows\setupact.log'
+> [  0.000000] (3:2@carl) 	Open file '/home/doc/simgrid/examples/platforms/g5k_cabinets.xml'
+> [  0.000000] (4:3@bob) 	Open file '/home/doc/simgrid/examples/platforms/nancy.xml'
 > [  0.000000] (1:0@denise) File Descriptor information:
-> 		Full name: './doc/simgrid/examples/platforms/g5k.xml'
+> 		Full path: '/home/doc/simgrid/examples/platforms/g5k.xml'
 > 		Size: 17028
 > 		Mount point: '/home'
 > 		Storage Id: 'Disk4'
 > 		Storage Type: 'single_SSD'
 > 		Content Type: 'txt_unix'
-> [  0.000000] (1:0@denise) 	Open file './doc/simgrid/examples/platforms/g5k.xml'
-> [  0.000040] (4:3@bob) 	Have read    4028 on ./doc/simgrid/examples/platforms/nancy.xml
-> [  0.000085] (1:0@denise) 	Have read    17028 on ./doc/simgrid/examples/platforms/g5k.xml
-> [  0.000226] (3:2@carl) 	Have read    22645 on ./doc/simgrid/examples/platforms/g5k_cabinets.xml
-> [  0.000508] (2:1@alice) 	Have read    101663 on .\Windows\setupact.log
-> [  0.001752] (1:0@denise) 	Have written 100000 on ./doc/simgrid/examples/platforms/g5k.xml
-> [  0.002175] (2:1@alice) 	Have written 100000 on .\Windows\setupact.log
-> [  0.002439] (1:0@denise) 	Have read    110000 on ./doc/simgrid/examples/platforms/g5k.xml (of size 117026)
-> [  0.002439] (1:0@denise) 	Close file './doc/simgrid/examples/platforms/g5k.xml'
-> [  0.002862] (2:1@alice) 	Have read    110000 on .\Windows\setupact.log (of size 201662)
-> [  0.002862] (2:1@alice) 	Close file '.\Windows\setupact.log'
-> [  0.003374] (4:3@bob) 	Have written 100000 on ./doc/simgrid/examples/platforms/nancy.xml
-> [  0.003560] (3:2@carl) 	Have written 100000 on ./doc/simgrid/examples/platforms/g5k_cabinets.xml
-> [  0.004529] (4:3@bob) 	Have read    104023 on ./doc/simgrid/examples/platforms/nancy.xml (of size 104023)
-> [  0.004529] (4:3@bob) 	Close file './doc/simgrid/examples/platforms/nancy.xml'
-> [  0.004782] (3:2@carl) 	Have read    110000 on ./doc/simgrid/examples/platforms/g5k_cabinets.xml (of size 122641)
-> [  0.004782] (3:2@carl) 	Close file './doc/simgrid/examples/platforms/g5k_cabinets.xml'
+> [  0.000000] (1:0@denise) 	Open file '/home/doc/simgrid/examples/platforms/g5k.xml'
+> [  0.000040] (4:3@bob) 	Have read    4028 on /home/doc/simgrid/examples/platforms/nancy.xml
+> [  0.000085] (1:0@denise) 	Have read    17028 on /home/doc/simgrid/examples/platforms/g5k.xml
+> [  0.000226] (3:2@carl) 	Have read    22645 on /home/doc/simgrid/examples/platforms/g5k_cabinets.xml
+> [  0.000508] (2:1@alice) 	Have read    101663 on c:\Windows\setupact.log
+> [  0.001752] (1:0@denise) 	Have written 100000 on /home/doc/simgrid/examples/platforms/g5k.xml
+> [  0.002175] (2:1@alice) 	Have written 100000 on c:\Windows\setupact.log
+> [  0.002439] (1:0@denise) 	Have read    110000 on /home/doc/simgrid/examples/platforms/g5k.xml (of size 117026)
+> [  0.002439] (1:0@denise) 	Close file '/home/doc/simgrid/examples/platforms/g5k.xml'
+> [  0.002862] (2:1@alice) 	Have read    110000 on c:\Windows\setupact.log (of size 201662)
+> [  0.002862] (2:1@alice) 	Close file 'c:\Windows\setupact.log'
+> [  0.003374] (4:3@bob) 	Have written 100000 on /home/doc/simgrid/examples/platforms/nancy.xml
+> [  0.003560] (3:2@carl) 	Have written 100000 on /home/doc/simgrid/examples/platforms/g5k_cabinets.xml
+> [  0.004529] (4:3@bob) 	Have read    104023 on /home/doc/simgrid/examples/platforms/nancy.xml (of size 104023)
+> [  0.004529] (4:3@bob) 	Close file '/home/doc/simgrid/examples/platforms/nancy.xml'
+> [  0.004782] (3:2@carl) 	Have read    110000 on /home/doc/simgrid/examples/platforms/g5k_cabinets.xml (of size 122641)
+> [  0.004782] (3:2@carl) 	Close file '/home/doc/simgrid/examples/platforms/g5k_cabinets.xml'
 > [  0.004782] (0:@) Simulation time 0.00478201
 
 $ ${bindir:=.}/io/file_unlink ${srcdir:=.}/examples/platforms/storage.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (0:@) Number of host '4'
-> [  0.000000] (1:0@denise) 	Open file './doc/simgrid/examples/platforms/g5k.xml'
-> [  0.000000] (1:0@denise) 	Unlink file './doc/simgrid/examples/platforms/g5k.xml'
-> [  0.000000] (1:0@denise) 	Open file './doc/simgrid/examples/platforms/g5k.xml'
-> [  0.001667] (1:0@denise) 	Have written 100000 on ./doc/simgrid/examples/platforms/g5k.xml
-> [  0.001667] (1:0@denise) 	Close file './doc/simgrid/examples/platforms/g5k.xml'
-> [  0.001667] (1:0@denise)  
-> [  0.001667] (1:0@denise) ls ./
-> [  0.001667] (1:0@denise) DIR  : include
-> [  0.001667] (1:0@denise) DIR  : lib
-> [  0.001667] (1:0@denise) DIR  : bin
-> [  0.001667] (1:0@denise) DIR  : doc
-> [  0.001667] (1:0@denise)  
-> [  0.001667] (1:0@denise) ls ./doc/simgrid/examples/platforms/
-> [  0.001667] (1:0@denise) FILE : g5k.xml
-> [  0.001667] (1:0@denise)  
-> [  0.001667] (1:0@denise) ls ./doc/simgrid/examples/msg/
-> [  0.001667] (1:0@denise) DIR  : alias
-> [  0.001667] (1:0@denise) DIR  : trace
-> [  0.001667] (1:0@denise) FILE : README
-> [  0.001667] (1:0@denise) DIR  : parallel_task
-> [  0.001667] (1:0@denise) DIR  : icomms
+> [  0.000000] (1:0@denise) 	Open file '/home/doc/simgrid/examples/platforms/g5k.xml'
+> [  0.000000] (1:0@denise) 	Unlink file '/home/doc/simgrid/examples/platforms/g5k.xml'
+> [  0.000000] (1:0@denise) 	Open file '/home/doc/simgrid/examples/platforms/g5k.xml'
+> [  0.001667] (1:0@denise) 	Have written 100000 on /home/doc/simgrid/examples/platforms/g5k.xml
+> [  0.001667] (1:0@denise) 	Close file '/home/doc/simgrid/examples/platforms/g5k.xml'
 > [  0.001667] (0:@) Simulation time 0.00166667

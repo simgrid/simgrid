@@ -413,7 +413,7 @@ XBT_PUBLIC(surf_action_t) surf_workstation_sleep(surf_resource_t resource, doubl
  * @param path The path to the file
  * @return The surf action corresponding to the openning
  */
-XBT_PUBLIC(surf_action_t) surf_workstation_open(surf_resource_t workstation, const char* mount, const char* path);
+XBT_PUBLIC(surf_action_t) surf_workstation_open(surf_resource_t workstation, const char* fullpath);
 
 /**
  * @brief Close a file descriptor on a workstation

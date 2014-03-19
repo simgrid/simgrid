@@ -12,7 +12,7 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(storage,"Messages specific for this simulation");
 void storage_info(msg_host_t host);
 void display_storage_properties(msg_storage_t storage);
 int hsm_put(const char *remote_host, const char *src, const char *dest);
-sg_size_t write_local_file(char *dest, sg_size_t file_size);
+sg_size_t write_local_file(const char *dest, sg_size_t file_size);
 sg_size_t read_local_file(const char *src);
 void dump_storage_by_name(char *name);
 void display_storage_content(msg_storage_t storage);
@@ -76,10 +76,10 @@ int hsm_put(const char *remote_host, const char *src, const char *dest){
   return 1;
 }
 
-sg_size_t write_local_file(char *dest, sg_size_t file_size)
+sg_size_t write_local_file(const char *dest, sg_size_t file_size)
 {
   sg_size_t written;
-  msg_file_t file = MSG_file_open("/sd1",dest, NULL);
+  msg_file_t file = MSG_file_open(dest, NULL);
   written = MSG_file_write(file, file_size);
   XBT_INFO("%llu bytes on %llu bytes have been written by %s on /sd1",written, file_size, MSG_host_get_name(MSG_host_self()));
   MSG_file_close(file);
@@ -89,7 +89,7 @@ sg_size_t write_local_file(char *dest, sg_size_t file_size)
 sg_size_t read_local_file(const char *src)
 {
   sg_size_t read, file_size;
-  msg_file_t file = MSG_file_open("/sd1",src, NULL);
+  msg_file_t file = MSG_file_open(src, NULL);
   file_size = MSG_file_get_size(file);
 
   read = MSG_file_read(file, file_size);
@@ -140,9 +140,9 @@ void get_set_storage_data(const char *storage_name){
 
 int client(int argc, char *argv[])
 {
-  hsm_put("server","./doc/simgrid/examples/cxx/autoDestination/FinalizeTask.cxx","./scratch/toto.cxx");
-  hsm_put("server","./doc/simgrid/examples/cxx/autoDestination/autoDestination_deployment.xml","./scratch/titi.xml");
-  hsm_put("server","./doc/simgrid/examples/cxx/autoDestination/Slave.cxx","./scratch/tata.cxx");
+  hsm_put("server","/sd1/doc/simgrid/examples/cxx/autoDestination/FinalizeTask.cxx","/sd2/scratch/toto.cxx");
+  hsm_put("server","/sd1/doc/simgrid/examples/cxx/autoDestination/autoDestination_deployment.xml","/sd2/scratch/titi.xml");
+  hsm_put("server","/sd1/doc/simgrid/examples/cxx/autoDestination/Slave.cxx","/sd2/scratch/tata.cxx");
 
   msg_task_t finalize = MSG_task_create("finalize", 0, 0, NULL);
   MSG_task_send(finalize, "server");

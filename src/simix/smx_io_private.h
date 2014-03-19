@@ -24,8 +24,7 @@ smx_storage_t SIMIX_storage_create(const char *name, void *storage, void *data);
 void SIMIX_storage_destroy(void *s);
 void SIMIX_pre_file_read(smx_simcall_t simcall, smx_file_t fd, sg_size_t size);
 void SIMIX_pre_file_write(smx_simcall_t simcall,smx_file_t fd, sg_size_t size);
-void SIMIX_pre_file_open(smx_simcall_t simcall, const char* mount,
-		         const char* path);
+void SIMIX_pre_file_open(smx_simcall_t simcall, const char* fullpath);
 void SIMIX_pre_file_close(smx_simcall_t simcall, smx_file_t fd);
 int SIMIX_pre_file_unlink(smx_simcall_t simcall, smx_file_t fd);
 void SIMIX_pre_file_ls(smx_simcall_t simcall,
@@ -38,8 +37,7 @@ void SIMIX_pre_storage_file_rename(smx_simcall_t simcall,smx_storage_t storage, 
 
 smx_action_t SIMIX_file_read(smx_process_t process, smx_file_t fd, sg_size_t size);
 smx_action_t SIMIX_file_write(smx_process_t process, smx_file_t fd, sg_size_t size);
-smx_action_t SIMIX_file_open(smx_process_t process, const char* storage,
-                             const char* path);
+smx_action_t SIMIX_file_open(smx_process_t process, const char* fullpath);
 smx_action_t SIMIX_file_close(smx_process_t process, smx_file_t fd);
 int SIMIX_file_unlink(smx_process_t process, smx_file_t fd);
 smx_action_t SIMIX_file_ls(smx_process_t process, const char *mount,

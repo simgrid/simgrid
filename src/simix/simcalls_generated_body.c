@@ -1642,13 +1642,12 @@
     }    
     return self->simcall.result.sgsz;
   }
-  inline static smx_file_t simcall_BODY_file_open(const char* mount, const char* path) {
+  inline static smx_file_t simcall_BODY_file_open(const char* fullpath) {
     smx_process_t self = SIMIX_process_self();
     self->simcall.call = SIMCALL_FILE_OPEN;
     memset(&self->simcall.result, 0, sizeof(self->simcall.result));
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
-    self->simcall.args[0].cc = (const char*) mount;
-    self->simcall.args[1].cc = (const char*) path;
+    self->simcall.args[0].cc = (const char*) fullpath;
     if (self != simix_global->maestro_process) {
       XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name,
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);

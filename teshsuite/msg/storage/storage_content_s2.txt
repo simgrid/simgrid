@@ -1,2 +1,2 @@
-./doc/simgrid/examples/cxx/basic/Main.cxx 10
-./doc/simgrid/examples/cxx/basic/Slave.cxx 10   
+/doc/simgrid/examples/cxx/basic/Main.cxx 10
+/doc/simgrid/examples/cxx/basic/Slave.cxx 10   

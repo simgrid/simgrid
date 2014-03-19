@@ -15,10 +15,10 @@
  * - <b>io/file.c</b> Example with the disk resource
  */
 
-#define FILENAME1 "./doc/simgrid/examples/platforms/g5k.xml"
-#define FILENAME2 ".\\Windows\\setupact.log"
-#define FILENAME3 "./doc/simgrid/examples/platforms/g5k_cabinets.xml"
-#define FILENAME4 "./doc/simgrid/examples/platforms/nancy.xml"
+#define FILENAME1 "/home/doc/simgrid/examples/platforms/g5k.xml"
+#define FILENAME2 "c:\\Windows\\setupact.log"
+#define FILENAME3 "/home/doc/simgrid/examples/platforms/g5k_cabinets.xml"
+#define FILENAME4 "/home/doc/simgrid/examples/platforms/nancy.xml"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -33,20 +33,17 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(io_file,
 int host(int argc, char *argv[])
 {
   msg_file_t file = NULL;
-  char* mount = xbt_strdup("/home");
   sg_size_t read,write;
 
   if(!strcmp(MSG_process_get_name(MSG_process_self()),"0")){
-    file = MSG_file_open(mount,FILENAME1, NULL);
+    file = MSG_file_open(FILENAME1, NULL);
     MSG_file_dump(file);
   } else if(!strcmp(MSG_process_get_name(MSG_process_self()),"1")) {
-    free(mount);
-    mount = xbt_strdup("/windows");
-    file = MSG_file_open(mount,FILENAME2, NULL);
+    file = MSG_file_open(FILENAME2, NULL);
   } else if(!strcmp(MSG_process_get_name(MSG_process_self()),"2")){
-    file = MSG_file_open(mount,FILENAME3, NULL);
+    file = MSG_file_open(FILENAME3, NULL);
   } else if(!strcmp(MSG_process_get_name(MSG_process_self()),"3"))
-    file = MSG_file_open(mount,FILENAME4, NULL);
+    file = MSG_file_open(FILENAME4, NULL);
   else xbt_die("FILENAME NOT DEFINED %s",MSG_process_get_name(MSG_process_self()));
 
   const char* filename = MSG_file_get_name(file);
@@ -65,7 +62,7 @@ int host(int argc, char *argv[])
   XBT_INFO("\tClose file '%s'",filename);
   MSG_file_close(file);
 
-  free(mount);
+
   return 0;
 }
 

@@ -56,14 +56,12 @@ static int host(int argc, char *argv[]){
 
 
   // Create a 200,000 bytes file named './tmp/data.txt' on /sd1
-
-  char* mount = xbt_strdup("/home");
-  char* file_name = xbt_strdup("./tmp/data.txt");
+  char* file_name = xbt_strdup("/home/tmp/data.txt");
   msg_file_t file = NULL;
   sg_size_t write, read, file_size;
 
   // Open an non-existing file amounts to create it!
-  file = MSG_file_open(mount, file_name, NULL);
+  file = MSG_file_open(file_name, NULL);
   write = MSG_file_write(file, 200000);  // Write 200,000 bytes
   XBT_INFO("Create a %llu bytes file named '%s' on /sd1", write, file_name);
   MSG_file_dump(file);
@@ -84,15 +82,14 @@ static int host(int argc, char *argv[]){
   MSG_file_dump(file);
 
   MSG_file_close(file);
-  free(mount);
   free(file_name);
 
   storage_name = xbt_strdup("Disk4");
   storage = MSG_storage_get_by_name(storage_name);
 
   // Now rename file from ./tmp/data.txt to ./tmp/simgrid.readme
-  XBT_INFO("*** Renaming './tmp/data.txt' into './tmp/simgrid.readme'");
-  MSG_storage_file_rename(storage, "./tmp/data.txt", "./tmp/simgrid.readme");
+  XBT_INFO("*** Renaming '/tmp/data.txt' into '/tmp/simgrid.readme'");
+  MSG_storage_file_rename(storage, "/tmp/data.txt", "/tmp/simgrid.readme");
 
   // Now attach some user data to disk1
   XBT_INFO("*** Get/set data for storage element: %s ***",storage_name);

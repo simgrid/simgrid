@@ -1,4 +1,4 @@
-./doc/simgrid/examples/cxx/autoDestination/Master.cxx 10 	   
-./doc/simgrid/examples/cxx/autoDestination/autoDestination_platform.xml 10   
-./doc/simgrid/examples/cxx/autoDestination/Forwarder.cxx 10 	   
-./doc/simgrid/examples/cxx/basic/FinalizeTask.cxx 10 	      
+/doc/simgrid/examples/cxx/autoDestination/Master.cxx 10 	   
+/doc/simgrid/examples/cxx/autoDestination/autoDestination_platform.xml 10   
+/doc/simgrid/examples/cxx/autoDestination/Forwarder.cxx 10 	   
+/doc/simgrid/examples/cxx/basic/FinalizeTask.cxx 10 	      

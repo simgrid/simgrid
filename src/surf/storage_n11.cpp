@@ -406,9 +406,10 @@ StorageActionPtr StorageN11::ls(const char* path)
   return action;
 }
 
-StorageActionPtr StorageN11::open(const char* mount, const char* path)
+StorageActionPtr StorageN11::open(const char* mount, char* path)
 {
   XBT_DEBUG("\tOpen file '%s'",path);
+
   sg_size_t size, *psize;
   psize = (sg_size_t*) xbt_dict_get_or_null(p_content, path);
   // if file does not exist create an empty file
@@ -429,6 +430,7 @@ StorageActionPtr StorageN11::open(const char* mount, const char* path)
 
   StorageActionPtr action = new StorageN11Action(getModel(), 0, getState() != SURF_RESOURCE_ON, this, OPEN);
   action->p_file = file;
+
   return action;
 }
 

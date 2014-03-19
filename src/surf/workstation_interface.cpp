@@ -201,10 +201,41 @@ xbt_dynar_t Workstation::getAttachedStorageList()
   return result;
 }
 
-ActionPtr Workstation::open(const char* mount, const char* path) {
-  StoragePtr st = findStorageOnMountList(mount);
-  XBT_DEBUG("OPEN on disk '%s'", st->getName());
-  return st->open(mount, path);
+ActionPtr Workstation::open(const char* fullpath) {
+
+  StoragePtr st = NULL;
+  s_mount_t mnt;
+  unsigned int cursor;
+  size_t pos = 0;
+  char *path, *mount_name;
+
+  XBT_DEBUG("Search for storage name for '%s' on '%s'", fullpath, getName());
+  xbt_dynar_foreach(p_storage,cursor,mnt)
+  {
+    XBT_DEBUG("See '%s'",mnt.name);
+    char *file_mount_name = NULL;
+    file_mount_name = xbt_new(char,strlen(mnt.name)+1);
+    strncpy(file_mount_name,fullpath,strlen(mnt.name));
+    file_mount_name[strlen(mnt.name)] = '\0';
+
+    if(!strcmp(file_mount_name,mnt.name) && strlen(mnt.name)>pos)
+    {/* The current mount name is found in the full path and is bigger than the previous*/
+    	pos = strlen(mnt.name);
+    	mount_name = mnt.name;
+    	st = static_cast<StoragePtr>(mnt.storage);
+    }
+    xbt_free(file_mount_name);
+  }
+  if(pos>0)
+  { /* Mount point found, deduce path + file name from full path (full path = mount name + path + file name)*/
+	path = xbt_new(char, strlen(fullpath)-strlen(mount_name));
+	strncpy(path, fullpath+pos, strlen(fullpath)-strlen(mount_name)+1);
+	XBT_INFO("TROUVE");
+  }
+  else
+    xbt_die("Can't find mount point for '%s' on '%s'", fullpath, getName());
+
+  return st->open(mount_name, path);
 }
 
 ActionPtr Workstation::close(surf_file_t fd) {
