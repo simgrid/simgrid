@@ -170,10 +170,6 @@ void dw_type_free(dw_type_t t){
   xbt_free(t);
 }
 
-static void dw_type_free_voidp(void *t){
-  dw_type_free((dw_type_t) * (void **) t);
-}
-
 void dw_variable_free(dw_variable_t v){
   if(v){
     xbt_free(v->name);

@@ -446,11 +446,15 @@ static void MC_dwarf_fill_member_location(dw_type_t type, dw_type_t member, Dwar
 
 }
 
+static void dw_type_free_voidp(void *t){
+  dw_type_free((dw_type_t) * (void **) t);
+}
+
 static void MC_dwarf_add_members(mc_object_info_t info, Dwarf_Die* die, Dwarf_Die* unit, dw_type_t type) {
   int res;
   Dwarf_Die child;
   xbt_assert(!type->members);
-  type->members = xbt_dynar_new(sizeof(dw_type_t), (void(*)(void*))dw_type_free);
+  type->members = xbt_dynar_new(sizeof(dw_type_t), (void(*)(void*))dw_type_free_voidp);
   for (res=dwarf_child(die, &child); res==0; res=dwarf_siblingof(&child,&child)) {
     int tag = dwarf_tag(&child);
     if (tag==DW_TAG_member || tag==DW_TAG_inheritance) {
