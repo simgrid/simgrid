@@ -11,6 +11,7 @@ sudo yum -y -q install gcc
 sudo yum -y -q install git-core
 sudo yum -y -q install graphviz-dev graphviz
 sudo yum -y -q install java-1.6.0-openjdk
+sudo yum -y -q install swig
 sudo yum -y -q install libunwind libunwind-devel
 sudo yum -y -q install lua-devel lua
 sudo yum -y -q install make
@@ -24,6 +25,7 @@ which_gcc=`which gcc`		#gcc gcc necessary
 which_gpp=`which g++`		#gcc g++ necessary
 which_make=`which make`		#make necessary
 which_java=`which java`		#java optional
+which_swig=`which swig`		#swig optional
 which_lua=`which lua`		#lua
 which_cmake=`which cmake`	#cmake necessary
 which_unzip=`which unzip`	#unzip for gtnets
@@ -38,6 +40,7 @@ echo $which_cmake
 echo $which_unzip
 echo $which_lua
 echo $which_java
+echo $which_swig
 echo $which_make
 echo $which_gcc
 echo $which_gpp
