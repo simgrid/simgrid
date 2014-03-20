@@ -484,21 +484,31 @@ set(JMSG_JAVA_SRC
   src/bindings/java/org/simgrid/msg/TimeoutException.java
   src/bindings/java/org/simgrid/msg/TransferFailureException.java
   src/bindings/java/org/simgrid/msg/VM.java
-
-  src/bindings/java/org/simgrid/surf/Surf.java
-  src/bindings/java/org/simgrid/surf/SurfJNI.java
-  src/bindings/java/org/simgrid/surf/Plugin.java
-  src/bindings/java/org/simgrid/surf/Model.java
-  src/bindings/java/org/simgrid/surf/Resource.java
-  src/bindings/java/org/simgrid/surf/Action.java  
-  src/bindings/java/org/simgrid/surf/Cpu.java
-  src/bindings/java/org/simgrid/surf/CpuAction.java  
-  src/bindings/java/org/simgrid/surf/NetworkLink.java  
-  src/bindings/java/org/simgrid/surf/NetworkAction.java  
-
-  src/bindings/java/org/simgrid/surf/LmmConstraint.java  
-  src/bindings/java/org/simgrid/surf/XbtDict.java    
 )
+
+set(JSURF_SWIG_SRC
+  src/bindings/java/surf.i
+)
+set(JSURF_JAVA_C_SRC
+  src/bindings/java/surf_swig.cpp
+  src/bindings/java/surf_swig.hpp
+)
+
+set(JSURF_JAVA_GENERATED_SRC
+  ${CMAKE_BINARY_DIR}/src/bindings/java/org/simgrid/surf/Surf.java
+  ${CMAKE_BINARY_DIR}/src/bindings/java/org/simgrid/surf/SurfJNI.java
+  ${CMAKE_BINARY_DIR}/src/bindings/java/org/simgrid/surf/Plugin.java
+  ${CMAKE_BINARY_DIR}/src/bindings/java/org/simgrid/surf/Model.java
+  ${CMAKE_BINARY_DIR}/src/bindings/java/org/simgrid/surf/Resource.java
+  ${CMAKE_BINARY_DIR}/src/bindings/java/org/simgrid/surf/Action.java  
+  ${CMAKE_BINARY_DIR}/src/bindings/java/org/simgrid/surf/Cpu.java
+  ${CMAKE_BINARY_DIR}/src/bindings/java/org/simgrid/surf/CpuAction.java  
+  ${CMAKE_BINARY_DIR}/src/bindings/java/org/simgrid/surf/NetworkLink.java  
+  ${CMAKE_BINARY_DIR}/src/bindings/java/org/simgrid/surf/NetworkAction.java  
+
+  ${CMAKE_BINARY_DIR}/src/bindings/java/org/simgrid/surf/LmmConstraint.java  
+  ${CMAKE_BINARY_DIR}/src/bindings/java/org/simgrid/surf/XbtDict.java
+) 
 
 set(JTRACE_C_SRC
   src/bindings/java/jtrace.c
