@@ -3,7 +3,7 @@
 #include "surf_swig.hpp"
 
 double getClock() {
-  surf_get_clock();
+  return surf_get_clock();
 }
 
 void Plugin::activateCpuCreatedCallback(){

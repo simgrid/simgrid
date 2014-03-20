@@ -4,6 +4,7 @@
 #sudo port install gcc46
 #sudo port install graphviz-devel
 #sudo port install lua
+#sudo port install swig
 #sudo port select bf2c
 
 sudo port install ruby19
@@ -16,6 +17,7 @@ which_gcc=`which gcc`		#gcc gcc necessary
 which_gpp=`which g++`		#gcc g++ necessary
 which_make=`which make`		#make necessary
 which_java=`which java`		#java optional
+which_java=`which swig`		#swig optional
 which_lua=`which lua`		#lua
 which_cmake=`which cmake`	#cmake necessary
 which_unzip=`which unzip`	#unzip for gtnets
@@ -30,6 +32,7 @@ echo $which_cmake
 echo $which_unzip
 echo $which_lua
 echo $which_java
+echo $which_swig
 echo $which_make
 echo $which_gcc
 echo $which_gpp

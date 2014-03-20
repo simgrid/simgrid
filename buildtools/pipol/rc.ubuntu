@@ -4,6 +4,7 @@ sudo apt-get update
 
 sudo apt-get -y -qq install cmake
 sudo apt-get -y -qq install default-jdk
+sudo apt-get -y -qq install swig
 sudo apt-get -y -qq install f2c
 sudo apt-get -y -qq install g++
 sudo apt-get -y -qq install gcc
@@ -33,6 +34,7 @@ which_gcc=`which gcc`		#gcc gcc necessary
 which_gpp=`which g++`		#gcc g++ necessary
 which_make=`which make`		#make necessary
 which_java=`which java`		#java optional
+which_swig=`which swig`		#swig optional
 which_lua=`which lua`		#lua
 which_cmake=`which cmake`	#cmake necessary
 which_unzip=`which unzip`	#unzip for gtnets
@@ -47,6 +49,7 @@ echo $which_cmake
 echo $which_unzip
 echo $which_lua
 echo $which_java
+echo $which_swig
 echo $which_make
 echo $which_gcc
 echo $which_gpp
