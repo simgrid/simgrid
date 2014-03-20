@@ -1,6 +1,6 @@
 #! ./tesh
 
-$ ${bindir:=.}/io/storage ${srcdir:=.}/examples/platforms/storage.xml "--log=root.fmt:> [%8.6r]%e(%i@%h)%e%m%n"
+$ ${bindir:=.}/io/storage ${srcdir:=.}/examples/platforms/storage.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (1:(null)@denise) *** Storage info on denise ***
 > [  0.000000] (1:(null)@denise) Storage name: Disk2, mount name: c:
 > [  0.000000] (1:(null)@denise) Total size: 536870912000 bytes
@@ -12,23 +12,23 @@ $ ${bindir:=.}/io/storage ${srcdir:=.}/examples/platforms/storage.xml "--log=roo
 > [  0.000000] (1:(null)@denise) Used size: 13221994 bytes
 > [  0.003333] (1:(null)@denise) Create a 200000 bytes file named '/home/tmp/data.txt' on /sd1
 > [  0.003333] (1:(null)@denise) File Descriptor information:
->		Full path: '/home/tmp/data.txt'
->		Size: 200000
->		Mount point: '/home'
->		Storage Id: 'Disk4'
->		Storage Type: 'single_SSD'
->		Content Type: 'txt_unix'
+> 		Full path: '/home/tmp/data.txt'
+> 		Size: 200000
+> 		Mount point: '/home'
+> 		Storage Id: 'Disk4'
+> 		Storage Type: 'single_SSD'
+> 		Content Type: 'txt_unix'
 > [  0.003333] (1:(null)@denise) Free size: 536857490006 bytes
 > [  0.003333] (1:(null)@denise) Used size: 13421994 bytes
 > [  0.004583] (1:(null)@denise) Read 200000 bytes on /home/tmp/data.txt
 > [  0.007917] (1:(null)@denise) Write 100000 bytes on /home/tmp/data.txt
 > [  0.007917] (1:(null)@denise) File Descriptor information:
->		Full path: '/home/tmp/data.txt'
->		Size: 300000
->		Mount point: '/home'
->		Storage Id: 'Disk4'
->		Storage Type: 'single_SSD'
->		Content Type: 'txt_unix'
+> 		Full path: '/home/tmp/data.txt'
+> 		Size: 300000
+> 		Mount point: '/home'
+> 		Storage Id: 'Disk4'
+> 		Storage Type: 'single_SSD'
+> 		Content Type: 'txt_unix'
 > [  0.007917] (1:(null)@denise) *** Renaming '/tmp/data.txt' into '/tmp/simgrid.readme'
 > [  0.007917] (1:(null)@denise) *** Get/set data for storage element: Disk4 ***
 > [  0.007917] (1:(null)@denise) Get data: '(null)'
@@ -104,4 +104,3 @@ $ ${bindir:=.}/io/storage ${srcdir:=.}/examples/platforms/storage.xml "--log=roo
 > [  0.007917] (1:(null)@denise) /include/surf/simgrid_dtd.h size: 23583 bytes
 > [  0.007917] (1:(null)@denise) /bin/smpicc size: 918 bytes
 > [  0.007917] (0:@) Simulated time: 0.00791667
-

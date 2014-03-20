@@ -207,33 +207,35 @@ ActionPtr Workstation::open(const char* fullpath) {
   s_mount_t mnt;
   unsigned int cursor;
   size_t pos = 0;
-  char *path, *mount_name;
+  char *path, *mount_name, *file_mount_name;
+
 
   XBT_DEBUG("Search for storage name for '%s' on '%s'", fullpath, getName());
   xbt_dynar_foreach(p_storage,cursor,mnt)
   {
     XBT_DEBUG("See '%s'",mnt.name);
-    char *file_mount_name = NULL;
-    file_mount_name = xbt_new(char,strlen(mnt.name)+1);
+
+    file_mount_name = (char *) xbt_malloc ((strlen(mnt.name)+1) * sizeof (char));
     strncpy(file_mount_name,fullpath,strlen(mnt.name));
     file_mount_name[strlen(mnt.name)] = '\0';
 
     if(!strcmp(file_mount_name,mnt.name) && strlen(mnt.name)>pos)
     {/* The current mount name is found in the full path and is bigger than the previous*/
-    	pos = strlen(mnt.name);
-    	mount_name = mnt.name;
-    	st = static_cast<StoragePtr>(mnt.storage);
+      pos = strlen(mnt.name);
+      mount_name = mnt.name;
+      st = static_cast<StoragePtr>(mnt.storage);
     }
-    xbt_free(file_mount_name);
   }
   if(pos>0)
   { /* Mount point found, deduce path + file name from full path (full path = mount name + path + file name)*/
-	path = xbt_new(char, strlen(fullpath)-strlen(mount_name));
-	strncpy(path, fullpath+pos, strlen(fullpath)-strlen(mount_name)+1);
+	path = (char *) xbt_malloc ((strlen(fullpath)-strlen(mount_name)+1) * sizeof (char));
+	strncpy(path, fullpath+pos, strlen(fullpath)-strlen(mount_name));
+	path[strlen(fullpath)-strlen(mount_name)] = '\0';
   }
   else
     xbt_die("Can't find mount point for '%s' on '%s'", fullpath, getName());
 
+  free(file_mount_name);
   return st->open(mount_name, path);
 }
 

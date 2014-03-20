@@ -430,7 +430,7 @@ StorageActionPtr StorageN11::open(const char* mount, char* path)
 
   StorageActionPtr action = new StorageN11Action(getModel(), 0, getState() != SURF_RESOURCE_ON, this, OPEN);
   action->p_file = file;
-
+  free(path);
   return action;
 }
 
