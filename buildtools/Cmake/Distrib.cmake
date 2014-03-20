@@ -189,6 +189,8 @@ set(source_to_pack
   ${JEDULE_SRC}
   ${JMSG_C_SRC}
   ${JMSG_JAVA_SRC}
+  ${JSURF_SWIG_SRC}
+  ${JSURF_JAVA_C_SRC}
   ${LUA_SRC}
   ${MC_SRC}
   ${MSG_SRC}

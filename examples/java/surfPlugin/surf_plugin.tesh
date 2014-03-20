@@ -1,0 +1,23 @@
+#! tesh
+
+$ java -classpath ${classpath:=.} surfPlugin/TestPlugin ${srcdir:=.}/surfPlugin/surfPluginPlatform.xml ${srcdir:=.}/surfPlugin/surfPluginDeployment.xml
+> [0.000000] [jmsg/INFO] Using regular java threads. Coroutines could speed your simulation up.
+> [0.000000] [jmsg/INFO] Trace: NetworkLink created __loopback__
+> [0.000000] [jmsg/INFO] Trace: NetworkLink state changed __loopback__
+> [0.000000] [jmsg/INFO] Trace: Cpu created Jacquelin
+> [0.000000] [jmsg/INFO] Trace: Cpu state changed Jacquelin
+> [0.000000] [jmsg/INFO] Trace: Cpu created Boivin
+> [0.000000] [jmsg/INFO] Trace: Cpu state changed Boivin
+> [0.000000] [jmsg/INFO] Trace: NetworkLink created link
+> [0.000000] [jmsg/INFO] Trace: NetworkLink state changed link
+> [Jacquelin:surfPlugin.Sender:(1) 0.000000] [jmsg/INFO] helloo!
+> [Jacquelin:surfPlugin.Sender:(1) 0.000000] [jmsg/INFO] host count: 1
+> [Jacquelin:surfPlugin.Sender:(1) 0.000000] [jmsg/INFO] sender time: 0.0
+> [Boivin:surfPlugin.Receiver:(2) 0.000000] [jmsg/INFO] helloo!
+> [Boivin:surfPlugin.Receiver:(2) 0.000000] [jmsg/INFO] try to get a task
+> [1.301001] [jmsg/INFO] Trace: NetworkAction state changed network
+> [Boivin:surfPlugin.Receiver:(2) 1.301001] [jmsg/INFO] Got at time 1.3010010824742269
+> [Jacquelin:surfPlugin.Sender:(1) 1.301001] [jmsg/INFO] goodbye!
+> [1.301103] [jmsg/INFO] Trace: CpuAction state changed cpu
+> [Boivin:surfPlugin.Receiver:(2) 1.301103] [jmsg/INFO] goodbye!
+> [1.301103] [jmsg/INFO] MSG_main finished; Cleaning up the simulation...
