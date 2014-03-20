@@ -155,6 +155,13 @@ const char* colors[13];
 
 /************************** Free functions *************************/
 
+void mc_frame_free(dw_frame_t frame){
+  xbt_free(frame->name);
+  mc_dwarf_location_list_clear(&(frame->frame_base));
+  xbt_dynar_free(&(frame->variables));
+  xbt_free(frame);
+}
+
 void dw_type_free(dw_type_t t){
   xbt_free(t->name);
   xbt_free(t->dw_type_id);
@@ -184,9 +191,11 @@ void dw_variable_free_voidp(void *t){
 
 // ***** object_info
 
+
+
 mc_object_info_t MC_new_object_info(void) {
   mc_object_info_t res = xbt_new0(s_mc_object_info_t, 1);
-  res->subprograms = xbt_dynar_new(sizeof(dw_frame_t), NULL);
+  res->subprograms = xbt_dict_new_homogeneous((void (*)(void*))mc_frame_free);
   res->global_variables = xbt_dynar_new(sizeof(dw_variable_t), dw_variable_free_voidp);
   res->types = xbt_dict_new_homogeneous(NULL);
   res->full_types_by_name = xbt_dict_new_homogeneous(NULL);
@@ -195,7 +204,7 @@ mc_object_info_t MC_new_object_info(void) {
 
 void MC_free_object_info(mc_object_info_t* info) {
   xbt_free(&(*info)->file_name);
-  xbt_dynar_free(&(*info)->subprograms);
+  xbt_dict_free(&(*info)->subprograms);
   xbt_dynar_free(&(*info)->global_variables);
   xbt_dict_free(&(*info)->types);
   xbt_dict_free(&(*info)->full_types_by_name);
@@ -229,8 +238,9 @@ static void MC_make_functions_index(mc_object_info_t info) {
 
   // Populate the array:
   dw_frame_t frame = NULL;
-  unsigned cursor = 0;
-  xbt_dynar_foreach(info->subprograms, cursor, frame) {
+  xbt_dict_cursor_t cursor;
+  char* key;
+  xbt_dict_foreach(info->subprograms, cursor, key, frame) {
     if(frame->low_pc==NULL)
       continue;
     s_mc_function_index_item_t entry;
@@ -298,9 +308,10 @@ static void MC_post_process_variables(mc_object_info_t info) {
 }
 
 static void MC_post_process_functions(mc_object_info_t info) {
-  unsigned cursor = 0;
+  xbt_dict_cursor_t cursor;
+  char* key;
   dw_frame_t function = NULL;
-  xbt_dynar_foreach(info->subprograms, cursor, function) {
+  xbt_dict_foreach(info->subprograms, cursor, key, function) {
     unsigned cursor2 = 0;
     dw_variable_t variable = NULL;
     xbt_dynar_foreach(function->variables, cursor2, variable) {
@@ -601,13 +612,13 @@ void MC_ignore_global_variable(const char *name){
 }
 
 static void MC_ignore_local_variable_in_object(const char *var_name, const char *frame_name, mc_object_info_t info) {
-  unsigned cursor2;
+  xbt_dict_cursor_t cursor2;
   dw_frame_t frame;
   int start, end;
   int cursor = 0;
   dw_variable_t current_var;
-
-  xbt_dynar_foreach(info->subprograms, cursor2, frame) {
+  char* key;
+  xbt_dict_foreach(info->subprograms, cursor2, key, frame) {
 
     if(frame_name && strcmp(frame_name, frame->name))
       continue;

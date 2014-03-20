@@ -728,7 +728,8 @@ static void MC_dwarf_handle_subprogram_die(mc_object_info_t info, Dwarf_Die* die
   frame->end = -1; // This one is now useless:
 
   // Register it:
-  xbt_dynar_push(info->subprograms, &frame);
+  const char* key = bprintf("%" PRIx64, (uint64_t) frame->start);
+  xbt_dict_set(info->subprograms,  key, frame, NULL);
 
   // Handle children:
   MC_dwarf_handle_children(info, die, unit, frame, namespace);

@@ -346,7 +346,7 @@ struct s_mc_object_info {
   char *start_exec, *end_exec; // Executable segment
   char *start_rw, *end_rw; // Read-write segment
   char *start_ro, *end_ro; // read-only segment
-  xbt_dynar_t subprograms; // xbt_dynar_t<dw_frame_t>
+  xbt_dict_t subprograms; // xbt_dict_t<origin as hexadecimal string, dw_frame_t>
   xbt_dynar_t global_variables; // xbt_dynar_t<dw_variable_t>
   xbt_dict_t types; // xbt_dict_t<origin as hexadecimal string, dw_type_t>
   xbt_dict_t full_types_by_name; // xbt_dict_t<name, dw_type_t> (full defined type only)
@@ -456,6 +456,8 @@ struct s_mc_function_index_item {
   void* low_pc, *high_pc;
   dw_frame_t function;
 };
+
+void mc_frame_free(dw_frame_t freme);
 
 void dw_type_free(dw_type_t t);
 void dw_variable_free(dw_variable_t v);

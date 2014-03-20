@@ -38,9 +38,10 @@ static dw_variable_t find_global_variable_by_name(mc_object_info_t info, const c
 }
 
 static dw_frame_t find_function_by_name(mc_object_info_t info, const char* name) {
-  unsigned int cursor = 0;
+  xbt_dict_cursor_t cursor = 0;
   dw_frame_t subprogram;
-  xbt_dynar_foreach(info->subprograms, cursor, subprogram){
+  char* key;
+  xbt_dict_foreach(info->subprograms, cursor, key, subprogram){
     if(!strcmp(name, subprogram->name))
       return subprogram;
   }
