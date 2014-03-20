@@ -193,7 +193,7 @@ mc_object_info_t MC_new_object_info(void) {
   mc_object_info_t res = xbt_new0(s_mc_object_info_t, 1);
   res->subprograms = xbt_dict_new_homogeneous((void (*)(void*))mc_frame_free);
   res->global_variables = xbt_dynar_new(sizeof(dw_variable_t), dw_variable_free_voidp);
-  res->types = xbt_dict_new_homogeneous(NULL);
+  res->types = xbt_dict_new_homogeneous((void (*)(void*))dw_type_free);
   res->full_types_by_name = xbt_dict_new_homogeneous(NULL);
   return res;
 }
