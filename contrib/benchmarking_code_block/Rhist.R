@@ -65,15 +65,19 @@ for(i in unique(NAME))
   if (length(vector1)==1)
     {
       #If there is only one element
+      h<-hist(vector1) # Just for R compatibility reasons
       h$breaks<-c(vector1,vector1)
       h$counts<-1
     }
   else
     {
       if (type=="mean")
-        #Mean value only
-        h$breaks<-c(mean(vector1),mean(vector1))
-        h$counts<-length(vector1)
+        {
+          #Mean value only
+          h<-hist(vector1) # Just for R compatibility reasons
+          h$breaks<-c(mean(vector1),mean(vector1))
+          h$counts<-length(vector1)
+        }
       else
         if (type=="default")
           #Standard HISTOGRAM:
