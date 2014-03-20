@@ -421,7 +421,7 @@ struct s_dw_type{
   int offset;
 
   dw_type_t subtype; // DW_AT_type
-  dw_type_t full_type; // The same (but more complete) type in the other object.
+  dw_type_t full_type; // The same (but more complete) type
 };
 
 void* mc_member_resolve(const void* base, dw_type_t type, dw_type_t member, mc_snapshot_t snapshot);
