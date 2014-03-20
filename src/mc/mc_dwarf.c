@@ -704,17 +704,6 @@ static void MC_dwarf_handle_subprogram_die(mc_object_info_t info, Dwarf_Die* die
   if (MC_dwarf_attr_flag(die, DW_AT_declaration, false))
     return;
 
-  // Abstract inline instance (DW_AT_inline != DW_INL_not_inlined):
-  if (dwarf_func_inline(die))
-    return;
-
-  // This is probably not a concrete instance:
-  // DWARF2/3 and DWARF4 do not agree on the meaning of DW_INL_not_inlined.
-  // For DWARF2/3, the subprogram is abstract.
-  // For DARF4, the subprogram is not abstract.
-  if(!dwarf_hasattr_integrate(die, DW_AT_low_pc))
-    return;
-
   dw_frame_t frame = xbt_new0(s_dw_frame_t, 1);
 
   frame->start = dwarf_dieoffset(die);
@@ -732,13 +721,9 @@ static void MC_dwarf_handle_subprogram_die(mc_object_info_t info, Dwarf_Die* die
   frame->high_pc = ((char*) base) + MC_dwarf_attr_addr(die, DW_AT_high_pc);
   frame->low_pc = ((char*) base) + MC_dwarf_attr_addr(die, DW_AT_low_pc);
 
-  if(frame->high_pc==0 || frame->low_pc==0)
-    xbt_die("Could not resolve highpc/lowpc");
-
   Dwarf_Attribute attr_frame_base;
-  if (!dwarf_attr_integrate(die, DW_AT_frame_base, &attr_frame_base))
-    xbt_die("Coult not find DW_AT_frame_base for subprogram %s 0x%lx", frame->name, frame->start);
-  mc_dwarf_location_list_init(&frame->frame_base, info, die, &attr_frame_base);
+  if (dwarf_attr_integrate(die, DW_AT_frame_base, &attr_frame_base))
+    mc_dwarf_location_list_init(&frame->frame_base, info, die, &attr_frame_base);
 
   frame->end = -1; // This one is now useless:
 
