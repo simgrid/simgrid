@@ -230,7 +230,6 @@ ActionPtr Workstation::open(const char* fullpath) {
   { /* Mount point found, deduce path + file name from full path (full path = mount name + path + file name)*/
 	path = xbt_new(char, strlen(fullpath)-strlen(mount_name));
 	strncpy(path, fullpath+pos, strlen(fullpath)-strlen(mount_name)+1);
-	XBT_INFO("TROUVE");
   }
   else
     xbt_die("Can't find mount point for '%s' on '%s'", fullpath, getName());
