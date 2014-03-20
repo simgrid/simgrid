@@ -24,13 +24,14 @@
 #include "xbt/dict.h"
 #include "xbt/sysdep.h"
 
-#define MAX_LINE_INJ 1000
+#define MAX_LINE_INJ 10000
 
 /*
  * Histogram entry for each measured block
  * Each entry is guarded inside xbt dictionary which is read from the file */
 typedef struct xbt_hist {
 	int n;
+	int counts;
 	double mean;
 	double *breaks;
 	double *percentage;
@@ -68,7 +69,7 @@ static inline void xbt_inject_init(char *inputfile)
 		printf("Error input file is empty!");//Skipping first row
 	while (fgets(line, 200, fpInput) != NULL)
 	{
-		key = strtok(line, " \t");
+		key = strtok(line, "\t");
 
 		data = xbt_dict_get_or_null(mydict, key);
 		if (data)
@@ -77,15 +78,16 @@ static inline void xbt_inject_init(char *inputfile)
 		data = (xbt_hist_t *) xbt_new(xbt_hist_t, 1);
 
 		data->block_id = key;
-		data->mean = atof(strtok(NULL, " \t"));
-		data->n = atoi(strtok(NULL, " \t"));
+		data->counts = atoi(strtok(NULL, "\t"));
+		data->mean = atof(strtok(NULL, "\t"));
+		data->n = atoi(strtok(NULL, "\t"));
 
 		data->breaks = (double*) malloc(sizeof(double) * data->n);
 		data->percentage = (double*) malloc(sizeof(double) * (data->n - 1));
 		for (i = 0; i < data->n; i++)
-			data->breaks[i] = atof(strtok(NULL, " \t"));
+			data->breaks[i] = atof(strtok(NULL, "\t"));
 		for (i = 0; i < (data->n - 1); i++)
-			data->percentage[i] = atof(strtok(NULL, " \t"));
+			data->percentage[i] = atof(strtok(NULL, "\t"));
 
 		xbt_dict_set(mydict, key, data, NULL);
 	}
@@ -103,7 +105,10 @@ static inline void inject_init_starpu(char *inputfile, xbt_dict_t *dict, RngStre
 	mydict = *dict;
 	FILE* fpInput = fopen(inputfile, "r");
 	if (fpInput == NULL)
+	{
 		printf("Error while opening the inputfile");
+		return;
+	}
 
 	fseek(fpInput, 0, 0);
 
@@ -113,12 +118,15 @@ static inline void inject_init_starpu(char *inputfile, xbt_dict_t *dict, RngStre
 	xbt_hist_t* data;
 
 	if (fgets(line, MAX_LINE_INJ, fpInput) == NULL)
+	{
 		printf("Error input file is empty!");//Skipping first row
+		return;
+	}
 
 
 	while (fgets(line, MAX_LINE_INJ, fpInput) != NULL)
 	{
-		key = strtok(line, " \t");
+		key = strtok(line, "\t");
 
 		data = xbt_dict_get_or_null(mydict, key);
 		if (data)
@@ -126,16 +134,17 @@ static inline void inject_init_starpu(char *inputfile, xbt_dict_t *dict, RngStre
 
 		data = (xbt_hist_t *) xbt_new(xbt_hist_t, 1);
 		data->block_id = key;
-		data->mean = atof(strtok(NULL, " \t"));
-		data->n = atoi(strtok(NULL, " \t"));
+		data->counts = atoi(strtok(NULL, "\t"));
+		data->mean = atof(strtok(NULL, "\t"));
+		data->n = atoi(strtok(NULL, "\t"));
 		data->breaks = (double*) malloc(sizeof(double) * data->n);
 		data->percentage = (double*) malloc(sizeof(double) * (data->n - 1));
 
 		for (i = 0; i < data->n; i++)
-			data->breaks[i] = atof(strtok(NULL, " \t"));
+			data->breaks[i] = atof(strtok(NULL, "\t"));
 			for (i = 0; i < (data->n - 1); i++)
 			{
-				data->percentage[i] = atof(strtok(NULL, " \t"));
+				data->percentage[i] = atof(strtok(NULL, "\t"));
 			}
 
 		xbt_dict_set(mydict, key, data, NULL);
