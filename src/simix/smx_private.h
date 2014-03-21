@@ -59,6 +59,14 @@ extern unsigned long simix_process_maxpid;
 
 extern xbt_dict_t watched_hosts_lib;
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+void SIMIX_clean(void);
+#ifdef __cplusplus
+}
+#endif
+
 /******************************** Exceptions *********************************/
 
 #define SMX_EXCEPTION(issuer, c, v, m)                                  \
@@ -135,8 +143,8 @@ typedef struct s_smx_action {
       smx_rdv_t rdv;                  /* Rendez-vous where the comm is queued */
 
 #ifdef HAVE_MC
-      smx_rdv_t rdv_cpy;              /* Copy of the rendez-vous where the comm is queued, MC needs it for DPOR 
-                                         (comm.rdv set to NULL when the communication is removed from the mailbox 
+      smx_rdv_t rdv_cpy;              /* Copy of the rendez-vous where the comm is queued, MC needs it for DPOR
+                                         (comm.rdv set to NULL when the communication is removed from the mailbox
                                          (used as garbage collector)) */
 #endif
       int refcount;                   /* Number of processes involved in the cond */
@@ -165,7 +173,7 @@ typedef struct s_smx_action {
 
       void* src_data;                 /* User data associated to communication */
       void* dst_data;
-    } comm;    
+    } comm;
 
     struct {
       smx_host_t host;                /* The host that is sleeping */
@@ -232,12 +240,12 @@ void SIMIX_ctx_raw_factory_init(smx_context_factory_t *factory);
 /* Scenario for the end of a context:
  *
  * CASE 1: death after end of the main function
- *   the context_wrapper, called internally by the context module, calls 
- *   SIMIX_context_stop after user code stops, smx_context_stop calls user 
+ *   the context_wrapper, called internally by the context module, calls
+ *   SIMIX_context_stop after user code stops, smx_context_stop calls user
  *   cleanup_func if any (in context settings), add current process to trashbin
  *   and yields back to maestro.
  *   From time to time, maestro calls SIMIX_context_empty_trash, which destroy
- *   all the process and context data structures, and frees the memory 
+ *   all the process and context data structures, and frees the memory
  *
  * CASE 2: brutal death
  *   SIMIX_process_kill (from any process) set process->iwannadie = 1 and then
@@ -268,7 +276,7 @@ static XBT_INLINE smx_context_t SIMIX_context_new(xbt_main_func_t code,
 }
 
 /**
- * \brief destroy a context 
+ * \brief destroy a context
  * \param context the context to destroy
  * Argument must be stopped first -- runs in maestro context
  */
@@ -307,7 +315,7 @@ static XBT_INLINE void SIMIX_context_runall(void)
 }
 
 /**
- \brief returns the current running context 
+ \brief returns the current running context
  */
 static XBT_INLINE smx_context_t SIMIX_context_self(void)
 {

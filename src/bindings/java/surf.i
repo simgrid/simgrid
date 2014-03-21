@@ -8,6 +8,14 @@ import org.simgrid.NativeLib;
 %pragma(java) jniclasscode=%{
   static {
     NativeLib.nativeInit("surf-java");
+    Runtime.getRuntime().addShutdownHook(
+      new Thread() {
+        public void run() {
+          Thread.currentThread().setName( "Destroyer" );
+          Surf.clean();
+        }
+      }
+    );
   }
 %}
 

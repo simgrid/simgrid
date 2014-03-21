@@ -17,7 +17,7 @@ typedef struct s_smx_storage_priv {
 
 
 static inline smx_storage_priv_t SIMIX_storage_priv(smx_storage_t storage){
-  return xbt_lib_get_level(storage, SIMIX_STORAGE_LEVEL);
+  return (smx_storage_priv_t) xbt_lib_get_level(storage, SIMIX_STORAGE_LEVEL);
 }
 
 smx_storage_t SIMIX_storage_create(const char *name, void *storage, void *data);

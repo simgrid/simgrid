@@ -7,19 +7,23 @@ import java.util.HashMap;
 public class TracePlugin extends Plugin {
 
   public TracePlugin() {
-    activateCpuCreatedCallback(); 
-    //activateCpuDestructedCallback();
-    activateCpuStateChangedCallback();                
+    activateCpuCreatedCallback();
+    activateCpuDestructedCallback();
+    activateCpuStateChangedCallback();
     activateCpuActionStateChangedCallback();
 
-    activateNetworkLinkCreatedCallback(); 
-    //activateCpuDestructedCallback();
-    activateNetworkLinkStateChangedCallback();                
+    activateNetworkLinkCreatedCallback();
+    activateNetworkLinkDestructedCallback();
+    activateNetworkLinkStateChangedCallback();
     activateNetworkActionStateChangedCallback();
   }
- 
+
   public void cpuCreatedCallback(Cpu cpu) {
     Msg.info("Trace: Cpu created "+cpu.getName());
+  }
+
+  public void cpuDestructedCallback(Cpu cpu) {
+    Msg.info("Trace: Cpu destructed "+cpu.getName());
   }
 
   public void cpuStateChangedCallback(Cpu cpu){
@@ -32,6 +36,10 @@ public class TracePlugin extends Plugin {
 
   public void networkLinkCreatedCallback(NetworkLink link) {
     Msg.info("Trace: NetworkLink created "+link.getName());
+  }
+
+  public void networkLinkDestructedCallback(NetworkLink link) {
+    Msg.info("Trace: NetworkLink destructed "+link.getName());
   }
 
   public void networkLinkStateChangedCallback(NetworkLink link){

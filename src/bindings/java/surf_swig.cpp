@@ -1,9 +1,15 @@
 #include <boost/lambda/bind.hpp>
 #include "src/surf/surf_interface.hpp"
 #include "surf_swig.hpp"
+#include "src/simix/smx_private.h"
+
 
 double getClock() {
   return surf_get_clock();
+}
+
+void clean() {
+  SIMIX_clean();
 }
 
 void Plugin::activateCpuCreatedCallback(){
