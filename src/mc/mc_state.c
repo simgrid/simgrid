@@ -143,6 +143,7 @@ smx_simcall_t MC_state_get_request(mc_state_t state, int *value)
   smx_process_t process = NULL;
   mc_procstate_t procstate = NULL;
   unsigned int start_count;
+  smx_action_t act = NULL;
 
   xbt_swag_foreach(process, simix_global->process_list){
     procstate = &state->proc_status[process->pid];
@@ -186,11 +187,14 @@ smx_simcall_t MC_state_get_request(mc_state_t state, int *value)
             break;
 
           case SIMCALL_COMM_WAIT:
-            if(simcall_comm_wait__get__comm(&process->simcall)->comm.src_proc
-               && simcall_comm_wait__get__comm(&process->simcall)->comm.dst_proc){
+            act = simcall_comm_wait__get__comm(&process->simcall);
+            if(act->comm.src_proc && act->comm.dst_proc){
               *value = 0;
             }else{
-              *value = -1;
+              if(act->comm.src_proc == NULL && act->comm.type == SIMIX_COMM_READY && act->comm.detached == 1)
+                *value = 0;
+              else
+                *value = -1;
             }
             procstate->state = MC_DONE;
             return &process->simcall;

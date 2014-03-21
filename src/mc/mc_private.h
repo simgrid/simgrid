@@ -12,6 +12,8 @@
 #ifndef WIN32
 #include <sys/mman.h>
 #endif
+#include <elfutils/libdw.h>
+
 #include "mc/mc.h"
 #include "mc/datatypes.h"
 #include "xbt/fifo.h"
@@ -26,13 +28,19 @@
 #include "xbt/strbuff.h"
 #include "xbt/parmap.h"
 
+typedef struct s_dw_frame s_dw_frame_t, *dw_frame_t;
+typedef struct s_mc_function_index_item s_mc_function_index_item_t, *mc_function_index_item_t;
+
 /****************************** Snapshots ***********************************/
 
 #define NB_REGIONS 3 /* binary data (data + BSS) (type = 2), libsimgrid data (data + BSS) (type = 1), std_heap (type = 0)*/ 
 
 typedef struct s_mc_mem_region{
+  // Real address:
   void *start_addr;
+  // Copy of the datra:
   void *data;
+  // Size of the data region:
   size_t size;
 } s_mc_mem_region_t, *mc_mem_region_t;
 
@@ -43,14 +51,28 @@ typedef struct s_mc_snapshot{
   size_t *stack_sizes;
   xbt_dynar_t stacks;
   xbt_dynar_t to_ignore;
-  char hash_global[41];
-  char hash_local[41];
+  uint64_t hash;
 } s_mc_snapshot_t, *mc_snapshot_t;
+
+/** Information about a given stack frame
+ *
+ */
+typedef struct s_mc_stack_frame {
+  /** Instruction pointer */
+  unw_word_t ip;
+  /** Stack pointer */
+  unw_word_t sp;
+  unw_word_t frame_base;
+  dw_frame_t frame;
+  char* frame_name;
+  unw_cursor_t unw_cursor;
+} s_mc_stack_frame_t, *mc_stack_frame_t;
 
 typedef struct s_mc_snapshot_stack{
   xbt_dynar_t local_variables;
   void *stack_pointer;
   void *real_address;
+  xbt_dynar_t stack_frames; // mc_stack_frame_t
 }s_mc_snapshot_stack_t, *mc_snapshot_stack_t;
 
 typedef struct s_mc_global_t{
@@ -58,6 +80,9 @@ typedef struct s_mc_global_t{
   int raw_mem_set;
   int prev_pair;
   char *prev_req;
+  int initial_communications_pattern_done;
+  int comm_deterministic;
+  int send_deterministic;
 }s_mc_global_t, *mc_global_t;
 
 typedef struct s_mc_checkpoint_ignore_region{
@@ -69,6 +94,8 @@ mc_snapshot_t SIMIX_pre_mc_snapshot(smx_simcall_t simcall);
 mc_snapshot_t MC_take_snapshot(int num_state);
 void MC_restore_snapshot(mc_snapshot_t);
 void MC_free_snapshot(mc_snapshot_t);
+void* mc_translate_address(uintptr_t addr, mc_snapshot_t snapshot);
+uintptr_t mc_untranslate_address(void* addr, mc_snapshot_t snapshot);
 
 extern xbt_dynar_t mc_checkpoint_ignore;
 
@@ -218,25 +245,8 @@ typedef struct s_memory_map {
 void MC_init_memory_map_info(void);
 memory_map_t MC_get_memory_map(void);
 void MC_free_memory_map(memory_map_t map);
-void MC_get_libsimgrid_plt_section(void);
-void MC_get_binary_plt_section(void);
 
-extern void *start_data_libsimgrid;
-extern void *start_data_binary;
-extern void *start_bss_binary;
 extern char *libsimgrid_path;
-extern void *start_text_libsimgrid;
-extern void *start_text_binary;
-extern void *start_bss_libsimgrid;
-extern void *start_plt_libsimgrid;
-extern void *end_plt_libsimgrid;
-extern void *start_plt_binary;
-extern void *end_plt_binary;
-extern void *start_got_plt_libsimgrid;
-extern void *end_got_plt_libsimgrid;
-extern void *start_got_plt_binary;
-extern void *end_got_plt_binary;
-
 
 /********************************** Snapshot comparison **********************************/
 
@@ -248,8 +258,6 @@ typedef struct s_mc_comparison_times{
   double libsimgrid_global_variables_comparison_time;
   double heap_comparison_time;
   double stacks_comparison_time;
-  double hash_global_variables_comparison_time;
-  double hash_local_variables_comparison_time;
 }s_mc_comparison_times_t, *mc_comparison_times_t;
 
 extern __thread mc_comparison_times_t mc_comp_times;
@@ -261,7 +269,6 @@ void print_comparison_times(void);
 
 //#define MC_DEBUG 1
 #define MC_VERBOSE 1
-
 
 /********************************** DPOR for safety property **************************************/
 
@@ -294,8 +301,6 @@ extern xbt_fifo_t mc_stack_liveness;
 extern mc_global_t initial_state_liveness;
 extern xbt_automaton_t _mc_property_automaton;
 extern int compare;
-extern xbt_dynar_t mc_stack_comparison_ignore;
-extern xbt_dynar_t mc_data_bss_comparison_ignore;
 
 typedef struct s_mc_pair{
   int num;
@@ -333,94 +338,160 @@ void MC_dump_stack_liveness(xbt_fifo_t stack);
 
 /********************************** Variables with DWARF **********************************/
 
-extern xbt_dict_t mc_local_variables_libsimgrid;
-extern xbt_dict_t mc_local_variables_binary;
-extern xbt_dynar_t mc_global_variables_libsimgrid;
-extern xbt_dynar_t mc_global_variables_binary;
-extern xbt_dict_t mc_variables_type_libsimgrid;
-extern xbt_dict_t mc_variables_type_binary;
+#define MC_OBJECT_INFO_EXECUTABLE 1
 
-typedef enum {
-  e_dw_loclist,
-  e_dw_register,
-  e_dw_bregister_op,
-  e_dw_lit,
-  e_dw_fbregister_op,
-  e_dw_piece,
-  e_dw_arithmetic,
-  e_dw_plus_uconst,
-  e_dw_compose,
-  e_dw_deref,
-  e_dw_uconstant,
-  e_dw_sconstant,
-  e_dw_unsupported
-} e_dw_location_type;
+struct s_mc_object_info {
+  size_t flags;
+  char* file_name;
+  char *start_exec, *end_exec; // Executable segment
+  char *start_rw, *end_rw; // Read-write segment
+  char *start_ro, *end_ro; // read-only segment
+  xbt_dict_t subprograms; // xbt_dict_t<origin as hexadecimal string, dw_frame_t>
+  xbt_dynar_t global_variables; // xbt_dynar_t<dw_variable_t>
+  xbt_dict_t types; // xbt_dict_t<origin as hexadecimal string, dw_type_t>
+  xbt_dict_t full_types_by_name; // xbt_dict_t<name, dw_type_t> (full defined type only)
 
-typedef struct s_dw_location{
-  e_dw_location_type type;
-  union{
-    
-    xbt_dynar_t loclist;
-    
-    int reg;
-    
-    struct{
-      unsigned int reg;
-      int offset;
-    }breg_op;
+  // Here we sort the minimal information for an efficient (and cache-efficient)
+  // lookup of a function given an instruction pointer.
+  // The entries are sorted by low_pc and a binary search can be used to look them up.
+  xbt_dynar_t functions_index;
+};
 
-    unsigned int lit;
+mc_object_info_t MC_new_object_info(void);
+mc_object_info_t MC_find_object_info(memory_map_t maps, char* name, int executable);
+void MC_free_object_info(mc_object_info_t* p);
 
-    int fbreg_op;
+void MC_dwarf_get_variables(mc_object_info_t info);
+void MC_dwarf_get_variables_libdw(mc_object_info_t info);
+const char* MC_dwarf_attrname(int attr);
+const char* MC_dwarf_tagname(int tag);
 
-    int piece;
+dw_frame_t MC_find_function_by_ip(void* ip);
+mc_object_info_t MC_ip_find_object_info(void* ip);
 
-    unsigned short int deref_size;
+extern mc_object_info_t mc_libsimgrid_info;
+extern mc_object_info_t mc_binary_info;
+extern mc_object_info_t mc_object_infos[2];
+extern size_t mc_object_infos_size;
 
-    xbt_dynar_t compose;
+void MC_find_object_address(memory_map_t maps, mc_object_info_t result);
+void MC_post_process_types(mc_object_info_t info);
 
-    char *arithmetic;
+// ***** Expressions
 
-    struct{
-      int bytes;
-      long unsigned int value;
-    }uconstant;
+/** \brief a DWARF expression with optional validity contraints */
+typedef struct s_mc_expression {
+  size_t size;
+  Dwarf_Op* ops;
+  // Optional validity:
+  void* lowpc, *highpc;
+} s_mc_expression_t, *mc_expression_t;
 
-    struct{
-      int bytes;
-      long signed int value;
-    }sconstant;
+/** A location list (list of location expressions) */
+typedef struct s_mc_location_list {
+  size_t size;
+  mc_expression_t locations;
+} s_mc_location_list_t, *mc_location_list_t;
 
-    unsigned int plus_uconst;
+Dwarf_Off mc_dwarf_resolve_location(mc_expression_t expression, unw_cursor_t* c, void* frame_pointer_address, mc_snapshot_t snapshot);
+Dwarf_Off mc_dwarf_resolve_locations(mc_location_list_t locations, unw_cursor_t* c, void* frame_pointer_address, mc_snapshot_t snapshot);
 
-  }location;
-}s_dw_location_t, *dw_location_t;
+void mc_dwarf_expression_clear(mc_expression_t expression);
+void mc_dwarf_expression_init(mc_expression_t expression, size_t len, Dwarf_Op* ops);
 
-typedef struct s_dw_location_entry{
-  unsigned long lowpc;
-  unsigned long highpc;
-  dw_location_t location;
-}s_dw_location_entry_t, *dw_location_entry_t;
+void mc_dwarf_location_list_clear(mc_location_list_t list);
+
+void mc_dwarf_location_list_init_from_expression(mc_location_list_t target, size_t len, Dwarf_Op* ops);
+void mc_dwarf_location_list_init(mc_location_list_t target, mc_object_info_t info, Dwarf_Die* die, Dwarf_Attribute* attr);
+
+// ***** Variables and functions
+
+struct s_dw_type{
+  e_dw_type_type type;
+  void *id; /* Offset in the section (in hexadecimal form) */
+  char *name; /* Name of the type */
+  int byte_size; /* Size in bytes */
+  int element_count; /* Number of elements for array type */
+  char *dw_type_id; /* DW_AT_type id */
+  xbt_dynar_t members; /* if DW_TAG_structure_type, DW_TAG_class_type, DW_TAG_union_type*/
+  int is_pointer_type;
+
+  // Location (for members) is either of:
+  struct s_mc_expression location;
+  int offset;
+
+  dw_type_t subtype; // DW_AT_type
+  dw_type_t full_type; // The same (but more complete) type
+};
+
+void* mc_member_resolve(const void* base, dw_type_t type, dw_type_t member, mc_snapshot_t snapshot);
+void* mc_member_snapshot_resolve(const void* base, dw_type_t type, dw_type_t member, mc_snapshot_t snapshot);
 
 typedef struct s_dw_variable{
+  Dwarf_Off dwarf_offset; /* Global offset of the field. */
   int global;
   char *name;
   char *type_origin;
-  union{
-    dw_location_t location;
-    void *address;
-  }address;
+  dw_type_t type;
+
+  // Use either of:
+  s_mc_location_list_t locations;
+  void* address;
+
+  size_t start_scope;
+
 }s_dw_variable_t, *dw_variable_t;
 
-typedef struct s_dw_frame{
+struct s_dw_frame{
   char *name;
   void *low_pc;
   void *high_pc;
-  dw_location_t frame_base;
-  xbt_dynar_t variables; /* Cannot use dict, there may be several variables with the same name (in different lexical blocks)*/
-  unsigned long int start;
-  unsigned long int end;
-}s_dw_frame_t, *dw_frame_t;
+  s_mc_location_list_t frame_base;
+  xbt_dynar_t /* <dw_variable_t> */ variables; /* Cannot use dict, there may be several variables with the same name (in different lexical blocks)*/
+  unsigned long int start; /* DWARF offset of the subprogram */
+  unsigned long int end;   /* Dwarf offset of the next sibling */
+};
+
+struct s_mc_function_index_item {
+  void* low_pc, *high_pc;
+  dw_frame_t function;
+};
+
+void mc_frame_free(dw_frame_t freme);
+
+void dw_type_free(dw_type_t t);
+void dw_variable_free(dw_variable_t v);
+void dw_variable_free_voidp(void *t);
+
+void MC_dwarf_register_global_variable(mc_object_info_t info, dw_variable_t variable);
+void MC_register_variable(mc_object_info_t info, dw_frame_t frame, dw_variable_t variable);
+void MC_dwarf_register_non_global_variable(mc_object_info_t info, dw_frame_t frame, dw_variable_t variable);
+void MC_dwarf_register_variable(mc_object_info_t info, dw_frame_t frame, dw_variable_t variable);
+void* MC_object_base_address(mc_object_info_t info);
+
+/********************************** DWARF **********************************/
+
+#define MC_EXPRESSION_STACK_SIZE 64
+
+#define MC_EXPRESSION_OK 0
+#define MC_EXPRESSION_E_UNSUPPORTED_OPERATION 1
+#define MC_EXPRESSION_E_STACK_OVERFLOW 2
+#define MC_EXPRESSION_E_STACK_UNDERFLOW 3
+#define MC_EXPRESSION_E_MISSING_STACK_CONTEXT 4
+#define MC_EXPRESSION_E_MISSING_FRAME_BASE 5
+
+typedef struct s_mc_expression_state {
+  uintptr_t stack[MC_EXPRESSION_STACK_SIZE];
+  size_t stack_size;
+
+  unw_cursor_t* cursor;
+  void* frame_base;
+  mc_snapshot_t snapshot;
+} s_mc_expression_state_t, *mc_expression_state_t;
+
+int mc_dwarf_execute_expression(size_t n, const Dwarf_Op* ops, mc_expression_state_t state);
+
+void* mc_find_frame_base(dw_frame_t frame, unw_cursor_t* unw_cursor);
 
 /********************************** Miscellaneous **********************************/
 
@@ -428,10 +499,49 @@ typedef struct s_local_variable{
   char *frame;
   unsigned long ip;
   char *name;
-  char *type;
+  dw_type_t type;
   void *address;
   int region;
 }s_local_variable_t, *local_variable_t;
+
+/********************************* Communications pattern ***************************/
+
+typedef struct s_mc_comm_pattern{
+  int num;
+  smx_action_t comm;
+  e_smx_comm_type_t type;
+  int completed;
+  unsigned long src_proc;
+  unsigned long dst_proc;
+  const char *src_host;
+  const char *dst_host;
+  char *rdv;
+  size_t data_size;
+  void *data;
+  int matched_comm;
+}s_mc_comm_pattern_t, *mc_comm_pattern_t;
+
+extern xbt_dynar_t communications_pattern;
+
+void get_comm_pattern(xbt_dynar_t communications_pattern, smx_simcall_t request, int call);
+
+/* *********** Sets *********** */
+
+typedef struct s_mc_address_set *mc_address_set_t;
+
+mc_address_set_t mc_address_set_new();
+void mc_address_set_free(mc_address_set_t* p);
+void mc_address_add(mc_address_set_t p, const void* value);
+bool mc_address_test(mc_address_set_t p, const void* value);
+
+/* *********** Hash *********** */
+
+/** \brief Hash the current state
+ *  \param num_state number of states
+ *  \param stacks stacks (mc_snapshot_stak_t) used fot the stack unwinding informations
+ *  \result resulting hash
+ * */
+uint64_t mc_hash_processes_state(int num_state, xbt_dynar_t stacks);
 
 #endif
 

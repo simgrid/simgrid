@@ -568,6 +568,9 @@ set(MC_SRC
   src/mc/mc_compare.c
   src/mc/mc_dpor.c
   src/mc/mc_global.c
+  src/mc/mc_dwarf
+  src/mc/mc_member.c
+  src/mc/mc_dwarf_expression.c
   src/mc/mc_liveness.c
   src/mc/mc_memory.c
   src/mc/mc_private.h
@@ -575,6 +578,8 @@ set(MC_SRC
   src/mc/mc_state.c
   src/mc/memory_map.c
   src/mc/mc_pair.c
+  src/mc/mc_hash.c
+  src/mc/mc_set.cpp
   )
 
 set(headers_to_install
@@ -1011,6 +1016,7 @@ set(TOOLS_CMAKEFILES_TXT
 set(TESTSUITE_CMAKEFILES_TXT
   testsuite/surf/CMakeLists.txt
   testsuite/xbt/CMakeLists.txt
+  testsuite/mc/CMakeLists.txt
   )
 
 set(CMAKE_SOURCE_FILES
@@ -1035,6 +1041,7 @@ set(CMAKE_SOURCE_FILES
   buildtools/Cmake/Modules/FindGraphviz.cmake
   buildtools/Cmake/Modules/FindLibSigc++.cmake
   buildtools/Cmake/Modules/FindLibunwind.cmake
+  buildtools/Cmake/Modules/FindLibdw.cmake
   buildtools/Cmake/Modules/FindLua51Simgrid.cmake
   buildtools/Cmake/Modules/FindNS3.cmake
   buildtools/Cmake/Modules/FindRngStream.cmake

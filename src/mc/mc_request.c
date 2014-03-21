@@ -17,7 +17,11 @@ int MC_request_depend(smx_simcall_t r1, smx_simcall_t r2) {
     return TRUE;
 
   if (r1->issuer == r2->issuer)
-      return FALSE;
+    return FALSE;
+
+  /* Wait with timeout transitions are not considered by the independance theorem, thus we consider them as dependant with all other transitions */
+  if((r1->call == SIMCALL_COMM_WAIT && simcall_comm_wait__get__timeout(r1) > 0) || (r2->call == SIMCALL_COMM_WAIT && simcall_comm_wait__get__timeout(r2) > 0))
+    return TRUE;
 
   if(r1->call == SIMCALL_COMM_ISEND && r2->call == SIMCALL_COMM_IRECV)
     return FALSE;
@@ -275,9 +279,9 @@ char *MC_request_to_string(smx_simcall_t req, int value)
   }
 
   if(args != NULL){
-    str = bprintf("[(%lu)%s (%s)] %s(%s) (%d)", req->issuer->pid , MSG_host_get_name(req->issuer->smx_host), req->issuer->name, type, args, req->call);
+    str = bprintf("[(%lu)%s (%s)] %s(%s)", req->issuer->pid , MSG_host_get_name(req->issuer->smx_host), req->issuer->name, type, args);
   }else{
-    str = bprintf("[(%lu)%s (%s)] %s (%d) ", req->issuer->pid , MSG_host_get_name(req->issuer->smx_host), req->issuer->name, type, req->call);
+    str = bprintf("[(%lu)%s (%s)] %s ", req->issuer->pid , MSG_host_get_name(req->issuer->smx_host), req->issuer->name, type);
   }
 
   xbt_free(args);
@@ -335,6 +339,8 @@ int MC_request_is_enabled(smx_simcall_t req)
       }
     }else{
       act = simcall_comm_wait__get__comm(req);
+      if(act->comm.detached && act->comm.src_proc == NULL && act->comm.type == SIMIX_COMM_READY)
+        return (act->comm.dst_proc != NULL);
       return (act->comm.src_proc && act->comm.dst_proc);
     }
     break;

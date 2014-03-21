@@ -13,6 +13,7 @@
 #include "xbt/module.h"         /* xbt_binary_name */
 #include "xbt_modinter.h"       /* backtrace initialization headers */
 #ifdef HAVE_MC
+#define UNW_LOCAL_ONLY
 #include <libunwind.h>
 #endif
 /* end of "useless" inclusions */
