@@ -53,7 +53,7 @@ public:
 		     lmm_system_t maxminSystem, double bread, double bwrite, double bconnection,
 		     const char* type_id, char *content_name, char *content_type, sg_size_t size, char *attach);
 
-  StorageActionPtr open(char* mount, char* path);
+  StorageActionPtr open(const char* mount, const char* path);
   StorageActionPtr close(surf_file_t fd);
   StorageActionPtr ls(const char *path);
   StorageActionPtr read(surf_file_t fd, sg_size_t size);//FIXME:why we have a useless param ptr ??

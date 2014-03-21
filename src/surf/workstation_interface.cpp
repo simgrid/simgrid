@@ -216,7 +216,7 @@ ActionPtr Workstation::open(const char* fullpath) {
   {
     XBT_DEBUG("See '%s'",mnt.name);
     file_mount_name = (char *) xbt_malloc ((strlen(mnt.name)+1));
-    strncpy(file_mount_name,fullpath,strlen(mnt.name));
+    strncpy(file_mount_name,fullpath,strlen(mnt.name)+1);
     file_mount_name[strlen(mnt.name)] = '\0';
 
     if(!strcmp(file_mount_name,mnt.name) && strlen(mnt.name)>longest_prefix_length)
@@ -230,14 +230,18 @@ ActionPtr Workstation::open(const char* fullpath) {
   { /* Mount point found, split fullpath into mount_name and path+filename*/
 	path = (char *) xbt_malloc ((strlen(fullpath)-longest_prefix_length+1));
 	mount_name = (char *) xbt_malloc ((longest_prefix_length+1));
-	strncpy(mount_name, fullpath, longest_prefix_length);
+	strncpy(mount_name, fullpath, longest_prefix_length+1);
+	strncpy(path, fullpath+longest_prefix_length, strlen(fullpath)-longest_prefix_length+1);
 	path[strlen(fullpath)-longest_prefix_length] = '\0';
 	mount_name[longest_prefix_length] = '\0';
   }
   else
     xbt_die("Can't find mount point for '%s' on '%s'", fullpath, getName());
 
-  return st->open(mount_name, path);
+  ActionPtr action = st->open((const char*)mount_name, (const char*)path);
+  free((char*)path);
+  free((char*)mount_name);
+  return action;
 }
 
 ActionPtr Workstation::close(surf_file_t fd) {
