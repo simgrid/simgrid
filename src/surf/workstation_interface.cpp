@@ -191,12 +191,12 @@ xbt_dynar_t Workstation::getAttachedStorageList()
   void **data;
   xbt_dynar_t result = xbt_dynar_new(sizeof(void*), NULL);
   xbt_lib_foreach(storage_lib, cursor, key, data) {
-	  if(xbt_lib_get_level(xbt_lib_get_elm_or_null(storage_lib, key), SURF_STORAGE_LEVEL) != NULL) {
-	    StoragePtr storage = static_cast<StoragePtr>(xbt_lib_get_level(xbt_lib_get_elm_or_null(storage_lib, key), SURF_STORAGE_LEVEL));
-	    if(!strcmp((const char*)storage->p_attach,this->getName())){
-	      xbt_dynar_push_as(result, void *,(void *)static_cast<ResourcePtr>(storage)->getName());
-	    }
+    if(xbt_lib_get_level(xbt_lib_get_elm_or_null(storage_lib, key), SURF_STORAGE_LEVEL) != NULL) {
+	  StoragePtr storage = static_cast<StoragePtr>(xbt_lib_get_level(xbt_lib_get_elm_or_null(storage_lib, key), SURF_STORAGE_LEVEL));
+	  if(!strcmp((const char*)storage->p_attach,this->getName())){
+	    xbt_dynar_push_as(result, void *,(void *)static_cast<ResourcePtr>(storage)->getName());
 	  }
+	}
   }
   return result;
 }
@@ -206,32 +206,33 @@ ActionPtr Workstation::open(const char* fullpath) {
   StoragePtr st = NULL;
   s_mount_t mnt;
   unsigned int cursor;
-  size_t pos = 0;
-  char *path, *mount_name, *file_mount_name;
-
+  size_t longest_prefix_length = 0;
+  char *path = NULL;
+  char *file_mount_name = NULL;
+  char *mount_name = NULL;
 
   XBT_DEBUG("Search for storage name for '%s' on '%s'", fullpath, getName());
   xbt_dynar_foreach(p_storage,cursor,mnt)
   {
     XBT_DEBUG("See '%s'",mnt.name);
-
-    file_mount_name = (char *) xbt_malloc ((strlen(mnt.name)+1) * sizeof (char));
+    file_mount_name = (char *) xbt_malloc ((strlen(mnt.name)+1));
     strncpy(file_mount_name,fullpath,strlen(mnt.name));
     file_mount_name[strlen(mnt.name)] = '\0';
 
-    if(!strcmp(file_mount_name,mnt.name) && strlen(mnt.name)>pos)
+    if(!strcmp(file_mount_name,mnt.name) && strlen(mnt.name)>longest_prefix_length)
     {/* The current mount name is found in the full path and is bigger than the previous*/
-      pos = strlen(mnt.name);
-      mount_name = strdup(mnt.name);
+      longest_prefix_length = strlen(mnt.name);
       st = static_cast<StoragePtr>(mnt.storage);
     }
     free(file_mount_name);
   }
-  if(pos>0)
-  { /* Mount point found, deduce path + file name from full path (full path = mount name + path + file name)*/
-	path = (char *) xbt_malloc ((strlen(fullpath)-strlen(mount_name)+1) * sizeof (char));
-	strncpy(path, fullpath+pos, strlen(fullpath)-strlen(mount_name));
-	path[strlen(fullpath)-strlen(mount_name)] = '\0';
+  if(longest_prefix_length>0)
+  { /* Mount point found, split fullpath into mount_name and path+filename*/
+	path = (char *) xbt_malloc ((strlen(fullpath)-longest_prefix_length+1));
+	mount_name = (char *) xbt_malloc ((longest_prefix_length+1));
+	strncpy(mount_name, fullpath, longest_prefix_length);
+	path[strlen(fullpath)-longest_prefix_length] = '\0';
+	mount_name[longest_prefix_length] = '\0';
   }
   else
     xbt_die("Can't find mount point for '%s' on '%s'", fullpath, getName());
