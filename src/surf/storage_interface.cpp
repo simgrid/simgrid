@@ -98,8 +98,9 @@ xbt_dict_t Storage::parseContent(char *filename)
   FILE *file = NULL;
 
   file = surf_fopen(filename, "r");
-  xbt_assert(file != NULL, "Cannot open file '%s' (path=%s)", filename,
-              xbt_str_join(surf_path, ":"));
+  if (file == NULL)
+    xbt_die("Cannot open file '%s' (path=%s)", filename,
+            xbt_str_join(surf_path, ":"));
 
   char *line = NULL;
   size_t len = 0;
@@ -107,10 +108,9 @@ xbt_dict_t Storage::parseContent(char *filename)
   char path[1024];
   sg_size_t size;
 
-
   while ((read = xbt_getline(&line, &len, file)) != -1) {
     if (read){
-    if(sscanf(line,"%s %llu", path, &size) == 2) {
+      if(sscanf(line,"%s %llu", path, &size) == 2) {
         m_usedSize += size;
         sg_size_t *psize = xbt_new(sg_size_t, 1);
         *psize = size;

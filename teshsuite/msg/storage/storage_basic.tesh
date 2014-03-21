@@ -1,4 +1,4 @@
-$ msg/storage/storage_basic ${srcdir:=.}/msg/storage/platform.xml ${srcdir:=.}/msg/storage/deployment.xml 0 "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+$ msg/storage/storage_basic --cfg=path:${srcdir:=.} ${srcdir:=.}/msg/storage/platform.xml ${srcdir:=.}/msg/storage/deployment.xml 0 "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (1:server@server) *** Storage info on server ***
 > [  0.000000] (1:server@server) 	Storage name: sdisk1, mount name: /sd1
 > [  0.000000] (1:server@server) 		Free size: 322122547160 bytes
@@ -58,4 +58,3 @@ $ msg/storage/storage_basic ${srcdir:=.}/msg/storage/platform.xml ${srcdir:=.}/m
 > [  3.208145] (1:server@server) 	/scratch/toto.cxx size: 500001 bytes
 > [  3.208145] (1:server@server) 	/doc/simgrid/examples/cxx/basic/Slave.cxx size: 10 bytes
 > [  3.208145] (0:@) Simulated time: 3.20814
-
