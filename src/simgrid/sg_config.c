@@ -771,6 +771,11 @@ void sg_config_init(int *argc, char **argv)
                      xbt_cfgelm_int, 1, 1, NULL, NULL);
     xbt_cfg_setdefault_int(_sg_cfg_set, "smpi/send_is_detached_thres", 65536);
 
+    xbt_cfg_register(&_sg_cfg_set, "smpi/privatize_global_variables",
+                     "Boolean indicating whether we should privatize global variable at runtime.",
+                     xbt_cfgelm_boolean, 1, 1, NULL, NULL);
+    xbt_cfg_setdefault_boolean(_sg_cfg_set, "smpi/privatize_global_variables", "no");
+
     //For smpi/bw_factor and smpi/lat_factor
     //Default value have to be "threshold0:value0;threshold1:value1;...;thresholdN:valueN"
     //test is if( size >= thresholdN ) return valueN;
