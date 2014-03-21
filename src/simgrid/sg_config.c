@@ -598,6 +598,18 @@ void sg_config_init(int *argc, char **argv)
                      xbt_cfgelm_string, 1, 1, _mc_cfg_cb_property, NULL);
     xbt_cfg_setdefault_string(_sg_cfg_set, "model-check/property", "");
 
+    /* do communications determinism model-checking */
+    xbt_cfg_register(&_sg_cfg_set, "model-check/communications_determinism",
+                     "Enable/disable the detection of determinism in the communications schemes",
+                     xbt_cfgelm_boolean, 1, 1, _mc_cfg_cb_comms_determinism, NULL);
+    xbt_cfg_setdefault_boolean(_sg_cfg_set, "model-check/communications_determinism", "no");
+
+    /* do send determinism model-checking */
+    xbt_cfg_register(&_sg_cfg_set, "model-check/send_determinism",
+                     "Enable/disable the detection of send-determinism in the communications schemes",
+                     xbt_cfgelm_boolean, 1, 1, _mc_cfg_cb_send_determinism, NULL);
+    xbt_cfg_setdefault_boolean(_sg_cfg_set, "model-check/send_determinism", "no");
+
     /* Specify the kind of model-checking reduction */
     xbt_cfg_register(&_sg_cfg_set, "model-check/reduction",
                      "Specify the kind of exploration reduction (either none or DPOR)",
@@ -609,6 +621,12 @@ void sg_config_init(int *argc, char **argv)
                      "Enable/Disable timeout for wait requests",
                      xbt_cfgelm_boolean, 1, 1, _mc_cfg_cb_timeout, NULL);
     xbt_cfg_setdefault_boolean(_sg_cfg_set, "model-check/timeout", "no");
+
+    /* Enable/disable global hash computation with model-checking */
+    xbt_cfg_register(&_sg_cfg_set, "model-check/hash",
+                     "Enable/Disable state hash for state comparison (exprimental)",
+                     xbt_cfgelm_boolean, 1, 1, _mc_cfg_cb_hash, NULL);
+    xbt_cfg_setdefault_boolean(_sg_cfg_set, "model-check/hash", "no");
 
     /* Set max depth exploration */
     xbt_cfg_register(&_sg_cfg_set, "model-check/max_depth",

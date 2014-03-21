@@ -16,5 +16,11 @@
 #include <xbt/sysdep.h>
 #include <xbt/log.h>
 #include <xbt/asserts.h>
+#include <simgrid/modelchecker.h>
+
+#ifdef HAVE_MC
+#undef assert
+#define assert(x) MC_assert(x)
+#endif
 
 #endif

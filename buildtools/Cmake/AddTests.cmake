@@ -704,6 +704,11 @@ add_test(test-surf-usage                        ${CMAKE_BINARY_DIR}/testsuite/su
 add_test(test-surf-usage2                       ${CMAKE_BINARY_DIR}/testsuite/surf/surf_usage2 --cfg=path:${CMAKE_HOME_DIRECTORY}/testsuite/surf/ platform.xml)
 add_test(test-surf-trace                        ${CMAKE_BINARY_DIR}/testsuite/surf/trace_usage --cfg=path:${CMAKE_HOME_DIRECTORY}/testsuite/surf/)
 
+if(HAVE_MC)
+  add_test(mc-dwarf                             ${CMAKE_BINARY_DIR}/testsuite/mc/dwarf)
+  add_test(mc-dwarf-expression                  ${CMAKE_BINARY_DIR}/testsuite/mc/dwarf-expression)
+endif()
+
 add_test(testall                                ${CMAKE_BINARY_DIR}/src/testall)
 
 if(enable_auto_install)

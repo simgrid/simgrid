@@ -39,6 +39,9 @@ void MC_memory_init()
 #include "xbt_modinter.h"
 void MC_memory_exit(void)
 {
+  MC_free_object_info(&mc_binary_info);
+  MC_free_object_info(&mc_libsimgrid_info);
+
   if (raw_heap)
     xbt_mheap_destroy(raw_heap);
 }

@@ -17,7 +17,22 @@
 #include "xbt/automaton.h"
 #include "xbt/dynar.h"
 
-#define STD_HEAP_SIZE   20480000        /* Maximum size of the system's heap */
+/* Maximum size of the application heap.
+ *
+ * The model-checker heap is placed at this offset from the
+ * beginning of the application heap.
+ *
+ * In the current implementation, if the application uses more
+ * than this for the application heap the application heap will
+ * smash the beginning of the model-checker heap and bad things
+ * will happen.
+ *
+ * For 64 bits systems, we have a lot of virtual memory available
+ * so we wan use a much bigger value in order to avoid bad things
+ * from happening.
+ * */
+
+#define STD_HEAP_SIZE   (sizeof(void*)<=4 ? (100*1024*1024) : (1ll*1024*1024*1024*1024))
 
 SG_BEGIN_DECL()
 
@@ -26,9 +41,12 @@ extern int _sg_do_model_check;
 extern int _sg_mc_checkpoint;
 extern char* _sg_mc_property_file;
 extern int _sg_mc_timeout;
+extern int _sg_mc_hash;
 extern int _sg_mc_max_depth;
 extern int _sg_mc_visited;
 extern char* _sg_mc_dot_output_file;
+extern int _sg_mc_comms_determinism;
+extern int _sg_mc_send_determinism;
 
 extern xbt_dynar_t mc_heap_comparison_ignore;
 extern xbt_dynar_t stacks_areas;
@@ -40,9 +58,12 @@ void _mc_cfg_cb_reduce(const char *name, int pos);
 void _mc_cfg_cb_checkpoint(const char *name, int pos);
 void _mc_cfg_cb_property(const char *name, int pos);
 void _mc_cfg_cb_timeout(const char *name, int pos);
+void _mc_cfg_cb_hash(const char *name, int pos);
 void _mc_cfg_cb_max_depth(const char *name, int pos);
 void _mc_cfg_cb_visited(const char *name, int pos);
 void _mc_cfg_cb_dot_output(const char *name, int pos);
+void _mc_cfg_cb_comms_determinism(const char *name, int pos);
+void _mc_cfg_cb_send_determinism(const char *name, int pos);
 
 XBT_PUBLIC(void) MC_do_the_modelcheck_for_real(void);
 
