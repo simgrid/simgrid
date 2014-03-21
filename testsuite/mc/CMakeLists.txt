@@ -8,3 +8,10 @@ if(HAVE_MC)
   add_executable(dwarf-expression dwarf_expression.c)
   target_link_libraries(dwarf-expression simgrid)
 endif()
+
+set(testsuite_src
+  ${testsuite_src}
+  ${CMAKE_CURRENT_SOURCE_DIR}/dwarf.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/dwarf_expression.c
+  PARENT_SCOPE
+  )
