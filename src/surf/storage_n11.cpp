@@ -406,7 +406,7 @@ StorageActionPtr StorageN11::ls(const char* path)
   return action;
 }
 
-StorageActionPtr StorageN11::open(const char* mount, char* path)
+StorageActionPtr StorageN11::open(char* mount, char* path)
 {
   XBT_DEBUG("\tOpen file '%s'",path);
 
@@ -431,6 +431,8 @@ StorageActionPtr StorageN11::open(const char* mount, char* path)
   StorageActionPtr action = new StorageN11Action(getModel(), 0, getState() != SURF_RESOURCE_ON, this, OPEN);
   action->p_file = file;
   free(path);
+  free(mount);
+
   return action;
 }
 

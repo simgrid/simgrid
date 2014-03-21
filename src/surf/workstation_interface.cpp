@@ -222,9 +222,10 @@ ActionPtr Workstation::open(const char* fullpath) {
     if(!strcmp(file_mount_name,mnt.name) && strlen(mnt.name)>pos)
     {/* The current mount name is found in the full path and is bigger than the previous*/
       pos = strlen(mnt.name);
-      mount_name = mnt.name;
+      mount_name = strdup(mnt.name);
       st = static_cast<StoragePtr>(mnt.storage);
     }
+    free(file_mount_name);
   }
   if(pos>0)
   { /* Mount point found, deduce path + file name from full path (full path = mount name + path + file name)*/
@@ -235,7 +236,6 @@ ActionPtr Workstation::open(const char* fullpath) {
   else
     xbt_die("Can't find mount point for '%s' on '%s'", fullpath, getName());
 
-  free(file_mount_name);
   return st->open(mount_name, path);
 }
 
