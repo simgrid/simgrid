@@ -17,7 +17,7 @@
 #include "xbt/automaton.h"
 #include "xbt/dynar.h"
 
-#define STD_HEAP_SIZE   20480000        /* Maximum size of the system's heap */
+#define STD_HEAP_SIZE   (50*1024*1024)        /* Maximum size of the system's heap */
 
 SG_BEGIN_DECL()
 
