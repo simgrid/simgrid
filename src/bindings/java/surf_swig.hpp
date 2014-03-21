@@ -6,22 +6,26 @@
 
 double getClock();
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+void clean();
+#ifdef __cplusplus
+}
+#endif
+
 class Plugin {
 public:
- virtual ~Plugin() { 
+ virtual ~Plugin() {
    std::cout << "Plugin::~Plugin()" << std:: endl;
  }
 
- void exit() {
-   surf_exit();
- }
-
- void activateCpuCreatedCallback(); 
+ void activateCpuCreatedCallback();
  virtual void cpuCreatedCallback(Cpu *cpu) {}
 
  void activateCpuDestructedCallback();
  virtual void cpuDestructedCallback(Cpu *cpu) {}
- 
+
  void activateCpuStateChangedCallback();
  virtual void cpuStateChangedCallback(Cpu *cpu) {}
 

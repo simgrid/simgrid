@@ -24,8 +24,6 @@ static void* SIMIX_action_mallocator_new_f(void);
 static void SIMIX_action_mallocator_free_f(void* action);
 static void SIMIX_action_mallocator_reset_f(void* action);
 
-static void SIMIX_clean(void);
-
 /* FIXME: Yeah, I'll do it in a portable maner one day [Mt] */
 #include <signal.h>
 
@@ -185,12 +183,14 @@ void SIMIX_global_init(int *argc, char **argv)
  *
  * This functions remove the memory used by SIMIX
  */
-static void SIMIX_clean(void)
+int cleaned = 0;
+void SIMIX_clean(void)
 {
 #ifdef TIME_BENCH_PER_SR
   smx_ctx_raw_new_sr();
 #endif
-
+  if (cleaned) return; // to avoid double cleaning by java and C
+  cleaned = 1;
   /* Kill everyone (except maestro) */
   SIMIX_process_killall(simix_global->maestro_process, 1);
 
@@ -378,7 +378,7 @@ void SIMIX_run(void)
     /* Handle any pending timer */
     while (xbt_heap_size(simix_timers) > 0 && SIMIX_get_clock() >= SIMIX_timer_next()) {
        //FIXME: make the timers being real callbacks
-       // (i.e. provide dispatchers that read and expand the args) 
+       // (i.e. provide dispatchers that read and expand the args)
        timer = xbt_heap_pop(simix_timers);
        if (timer->func)
          ((void (*)(void*))timer->func)(timer->args);
@@ -412,7 +412,7 @@ void SIMIX_run(void)
 
 
     XBT_DEBUG("### time %f, empty %d", time, xbt_dynar_is_empty(simix_global->process_to_run));
-    // !(time == -1.0 && xbt_dynar_is_empty()) 
+    // !(time == -1.0 && xbt_dynar_is_empty())
 
 
   } while (time != -1.0 || !xbt_dynar_is_empty(simix_global->process_to_run));

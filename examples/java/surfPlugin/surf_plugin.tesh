@@ -21,3 +21,7 @@ $ java -classpath ${classpath:=.} surfPlugin/TestPlugin ${srcdir:=.}/surfPlugin/
 > [1.301103] [jmsg/INFO] Trace: CpuAction state changed cpu
 > [Boivin:surfPlugin.Receiver:(2) 1.301103] [jmsg/INFO] goodbye!
 > [1.301103] [jmsg/INFO] MSG_main finished; Cleaning up the simulation...
+> [1.301103] [jmsg/INFO] Trace: Cpu destructed Jacquelin
+> [1.301103] [jmsg/INFO] Trace: Cpu destructed Boivin
+> [1.301103] [jmsg/INFO] Trace: NetworkLink destructed link
+> [1.301103] [jmsg/INFO] Trace: NetworkLink destructed __loopback__

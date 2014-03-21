@@ -12,13 +12,13 @@ import org.simgrid.surf.Cpu;
 
 public class TestPlugin {
 
-  /* This only contains the launcher. If you do nothing more than than you can run 
+  /* This only contains the launcher. If you do nothing more than than you can run
   *   java simgrid.msg.Msg
   * which also contains such a launcher
   */
-  //static TracePlugin tp = new TracePlugin();
-  
-  public static void main(String[] args) throws NativeException {    	
+  static TracePlugin tp = new TracePlugin();
+
+  public static void main(String[] args) throws NativeException {
     /* initialize the MSG simulation. Must be done before anything else (even logging). */
     Msg.init(args);
     if(args.length < 2) {
@@ -26,8 +26,7 @@ public class TestPlugin {
       Msg.info("example : TestPlugin ping_pong_platform.xml ping_pong_deployment.xml");
       System.exit(1);
     }
-    TracePlugin tp = new TracePlugin();
-         
+
     /* construct the platform and deploy the application */
     Msg.createEnvironment(args[0]);
     Msg.deployApplication(args[1]);
