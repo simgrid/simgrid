@@ -624,7 +624,7 @@ void sg_config_init(int *argc, char **argv)
 
     /* Enable/disable global hash computation with model-checking */
     xbt_cfg_register(&_sg_cfg_set, "model-check/hash",
-                     "Enable/Disable state hash for state comparison",
+                     "Enable/Disable state hash for state comparison (exprimental)",
                      xbt_cfgelm_boolean, 1, 1, _mc_cfg_cb_hash, NULL);
     xbt_cfg_setdefault_boolean(_sg_cfg_set, "model-check/hash", "no");
 
