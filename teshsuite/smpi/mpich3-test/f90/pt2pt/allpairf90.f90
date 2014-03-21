@@ -21,6 +21,7 @@
       call MTest_Init( ierr )
 
       do while ( mtestGetIntraComm( comm, 2, .false. ) )
+
          call test_pair_send( comm, errs )
          call test_pair_ssend( comm, errs )
          !call test_pair_rsend( comm, errs )

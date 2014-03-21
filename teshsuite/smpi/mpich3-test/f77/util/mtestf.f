@@ -15,8 +15,6 @@ C       about out-of-order statements
         logical dbgflag
         integer wrank
         common /mtest/ dbgflag, wrank
-        integer myindex
-        common /grr/ myindex
 
         call MPI_Initialized( flag, ierr )
         if (.not. flag) then
@@ -24,7 +22,6 @@ C       about out-of-order statements
         endif
 
         dbgflag = .false.
-        myindex = 0
         call MPI_Comm_rank( MPI_COMM_WORLD, wrank, ierr )
         end
 C
@@ -56,7 +53,8 @@ C A simple get intracomm for now
         integer comm, min_size, size, rank
         logical qsmaller
         integer myindex
-        common /grr/ myindex 
+        save myindex
+        data myindex /0/
 
         comm = MPI_COMM_NULL
         if (myindex .eq. 0) then
@@ -75,7 +73,6 @@ C A simple get intracomm for now
         endif
         myindex = mod( myindex, 4 ) + 1
         MTestGetIntracomm = comm .ne. MPI_COMM_NULL
-        qsmaller=.true.
         end
 C
         subroutine MTestFreeComm( comm )
