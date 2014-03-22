@@ -623,7 +623,9 @@ static void xbt_log_connect_categories(void)
   XBT_LOG_CONNECT(mc_checkpoint);
   XBT_LOG_CONNECT(mc_compare);
   XBT_LOG_CONNECT(mc_dpor);
+  XBT_LOG_CONNECT(mc_dwarf);
   XBT_LOG_CONNECT(mc_global);
+  XBT_LOG_CONNECT(mc_hash);
   XBT_LOG_CONNECT(mc_liveness);
   XBT_LOG_CONNECT(mc_memory);
   XBT_LOG_CONNECT(mc_memory_map);
