@@ -734,10 +734,10 @@ void smpi_initialize_global_memory_segments(){
 }
 
 void smpi_destroy_global_memory_segments(){
-  int i;
   if(size_data_exe == 0)//no need to switch
     return;
 #ifdef HAVE_MMAP
+  int i;
   for (i=0; i< smpi_process_count(); i++){
     if(munmap(mappings[i],size_data_exe) < 0) {
       XBT_WARN("Unmapping of fd %d failed: %s", fds[i], strerror(errno));
