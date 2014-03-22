@@ -589,7 +589,7 @@ void switch_data_segment(int dest){
 
   if (loaded_page==dest)//no need to switch either
     return;
-
+#ifdef HAVE_MMAP
   int current= fds[dest];
   XBT_VERB("Switching data frame to the one of process %d", dest);
   void* tmp = mmap (TOPAGE(start_data_exe), size_data_exe, PROT_READ | PROT_WRITE, MAP_FIXED | MAP_SHARED, current, 0);
@@ -597,6 +597,7 @@ void switch_data_segment(int dest){
   if (tmp != TOPAGE(start_data_exe))
     xbt_die("Couldn't map the new region");
   loaded_page=dest;
+#endif
 }
 
 void smpi_get_executable_global_size(){
@@ -675,14 +676,20 @@ void smpi_get_executable_global_size(){
 
 void smpi_initialize_global_memory_segments(){
 
+#ifndef HAVE_MMAP
+  smpi_privatize_global_variables=0;
+  return;
+#else
+
   unsigned int i = 0;
   smpi_get_executable_global_size();
 
-  XBT_VERB ("We have a size of bss+data of %d starting at %p",size_data_exe, start_data_exe );
+  XBT_DEBUG ("bss+data segment found : size %d starting at %p",size_data_exe, start_data_exe );
 
-
-  if(size_data_exe == 0)//no need to switch
+  if(size_data_exe == 0){//no need to switch
+    smpi_privatize_global_variables=0;
     return;
+  }
 
   fds= (int*)xbt_malloc((smpi_process_count())*sizeof(int));
   mappings= (void**)xbt_malloc((smpi_process_count())*sizeof(void*));
@@ -722,13 +729,15 @@ void smpi_initialize_global_memory_segments(){
       mappings[i]= address;
   }
 
+#endif
+
 }
 
 void smpi_destroy_global_memory_segments(){
   int i;
   if(size_data_exe == 0)//no need to switch
     return;
-
+#ifdef HAVE_MMAP
   for (i=0; i< smpi_process_count(); i++){
     if(munmap(mappings[i],size_data_exe) < 0) {
       XBT_WARN("Unmapping of fd %d failed: %s", fds[i], strerror(errno));
@@ -737,6 +746,8 @@ void smpi_destroy_global_memory_segments(){
   }
   xbt_free(mappings);
   xbt_free(fds);
+
+#endif
 
 }
 
