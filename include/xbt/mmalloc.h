@@ -22,7 +22,6 @@
 
 #include "xbt/dynar.h"
 #include "xbt/dict.h"
-#include "mc/datatypes.h"
 
 /* Datatype representing a separate heap. The whole point of the mmalloc module
  * is to allow several such heaps in the process. It thus works by redefining
@@ -61,6 +60,8 @@ void mmalloc_set_current_heap(xbt_mheap_t new_heap);
 xbt_mheap_t mmalloc_get_current_heap(void);
 
 struct s_mc_snapshot;
+
+typedef struct s_dw_type *dw_type_t;
 
 int mmalloc_compare_heap(struct s_mc_snapshot* snapshot1, struct s_mc_snapshot* snapshot2, xbt_mheap_t heap1, xbt_mheap_t heap2);
 int mmalloc_linear_compare_heap(xbt_mheap_t heap1, xbt_mheap_t heap2);
