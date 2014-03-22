@@ -92,7 +92,7 @@ include/xbt/mmalloc.h
 
 In order to use ucontext with windows platform we had those files :
         src/xbt/win32_ucontext.c
-        include/xbt/win32_ucontext.h
+        src/include/xbt/win32_ucontext.h
 
 Their copyright is the following:
 

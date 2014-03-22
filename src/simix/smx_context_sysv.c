@@ -15,7 +15,7 @@
 #include "mc/mc.h"
 
 #ifdef _XBT_WIN32
-#  include <win32_ucontext.h>     /* context relative declarations */
+#  include <xbt/win32_ucontext.h>     /* context relative declarations */
 #else
 #  include <ucontext.h>           /* context relative declarations */
 #endif

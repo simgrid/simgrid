@@ -1,7 +1,6 @@
 ### define source packages
 
 set(EXTRA_DIST
-  include/xbt/win32_ucontext.h
   src/bindings/java/MANIFEST.MF.in
   src/include/instr/instr_interface.h
   src/include/mc/datatypes.h
@@ -16,6 +15,7 @@ set(EXTRA_DIST
   src/include/surf/surf_resource_lmm.h
   src/include/surf/surfxml_parse_values.h
   src/include/surf/trace_mgr.h
+  src/include/xbt/win32_ucontext.h
   src/include/xbt/wine_dbghelp.h
   src/include/xbt/xbt_os_time.h
   src/msg/msg_mailbox.h
