@@ -236,6 +236,7 @@ else()
     message(STATUS "Warning: support for model-checking has been disabled because HAVE_MMALLOC is false")
   endif()
   SET(HAVE_MC 0)
+  SET(HAVE_MMALLOC 0)
   SET(MMALLOC_WANT_OVERRIDE_LEGACY 0)
 endif()
 

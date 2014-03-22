@@ -10,6 +10,9 @@
 #ifndef MMALLOC_H
 #define MMALLOC_H 1
 
+#include <simgrid_config.h>
+#ifdef HAVE_MMALLOC
+
 #ifdef HAVE_STDDEF_H
 #  include <stddef.h>
 #else
@@ -68,4 +71,5 @@ void reset_heap_information(void);
 size_t mmalloc_get_bytes_used(xbt_mheap_t);
 ssize_t mmalloc_get_busy_size(xbt_mheap_t, void *ptr);
 
+#endif
 #endif                          /* MMALLOC_H */
