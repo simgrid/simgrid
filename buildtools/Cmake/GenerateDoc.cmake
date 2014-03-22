@@ -63,7 +63,7 @@ if(DOXYGEN_PATH)
     COMMAND ${DOXYGEN_PATH}/doxygen Doxyfile
     COMMAND ${CMAKE_COMMAND} -E remove ${CMAKE_HOME_DIRECTORY}/doc/simgrid_modules.map
     COMMAND ${CMAKE_COMMAND} -E echo "XX Javadoc pass"
-    COMMAND ${JAVADOC_PATH}/javadoc -quiet -d ${CMAKE_HOME_DIRECTORY}/doc/html/javadoc/ ${CMAKE_HOME_DIRECTORY}/src/bindings/java/org/simgrid/msg/*.java
+    COMMAND ${JAVADOC_PATH}/javadoc -quiet -d ${CMAKE_HOME_DIRECTORY}/doc/html/javadoc/ ${CMAKE_HOME_DIRECTORY}/src/bindings/java/org/simgrid/*.java ${CMAKE_HOME_DIRECTORY}/src/bindings/java/org/simgrid/*/*.java
     WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY}/doc
     )
 
