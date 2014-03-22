@@ -258,8 +258,7 @@ public:
   /**
    * @brief Open a file
    * 
-   * @param mount The mount point
-   * @param path The full path to the file
+   * @param fullpath The full path to the file
    * 
    * @return The StorageAction corresponding to the opening
    */

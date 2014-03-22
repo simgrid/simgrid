@@ -409,8 +409,7 @@ XBT_PUBLIC(surf_action_t) surf_workstation_sleep(surf_resource_t resource, doubl
  * @brief Open a file on a workstation
  * 
  * @param workstation The surf workstation
- * @param mount The mount point
- * @param path The path to the file
+ * @param fullpath The path to the file
  * @return The surf action corresponding to the openning
  */
 XBT_PUBLIC(surf_action_t) surf_workstation_open(surf_resource_t workstation, const char* fullpath);
