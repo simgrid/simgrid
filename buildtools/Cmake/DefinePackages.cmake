@@ -5,6 +5,7 @@ set(EXTRA_DIST
   src/include/instr/instr_interface.h
   src/include/mc/datatypes.h
   src/include/mc/mc.h
+  src/include/simgrid/platf_interface.h
   src/include/simgrid/sg_config.h
   src/include/smpi/smpi_interface.h
   src/include/surf/datatypes.h
@@ -594,7 +595,6 @@ set(headers_to_install
   include/simgrid/modelchecker.h
   include/simgrid/platf.h
   include/simgrid/platf_generator.h
-  include/simgrid/platf_interface.h
   include/simgrid/plugins.h
   include/simgrid/simix.h
   include/smpi/mpi.h
