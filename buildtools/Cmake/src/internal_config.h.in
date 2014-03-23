@@ -129,6 +129,9 @@
 /* Define to 1 if mmalloc is compiled in. */
 #cmakedefine HAVE_MMALLOC @HAVE_MMALLOC@
 
+/* Define to 1 if mmap is available */
+#cmakedefine HAVE_MMAP @HAVE_MMAP@
+
 /* Define to 1 if you have the `getdtablesize' function. */
 #cmakedefine HAVE_GETDTABLESIZE @HAVE_GETDTABLESIZE@
 
