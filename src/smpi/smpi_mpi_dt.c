@@ -1489,6 +1489,11 @@ void smpi_op_destroy(MPI_Op op)
 void smpi_op_apply(MPI_Op op, void *invec, void *inoutvec, int *len,
                    MPI_Datatype * datatype)
 {
+  if(smpi_privatize_global_variables){ //we need to switch here, as the called function may silently touch global variables
+    XBT_VERB("Applying operation, switch to the right data frame ");
+    switch_data_segment(smpi_process_index());
+  }
+
   if(!_xbt_replay_is_active())
   op->func(invec, inoutvec, len, datatype);
 }

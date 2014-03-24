@@ -113,7 +113,6 @@ sg_size_t MSG_file_write(msg_file_t fd, sg_size_t size)
 /** \ingroup msg_file_management
  * \brief Opens the file whose name is the string pointed to by path
  *
- * \param mount is the mount point where find the file is located
  * \param fullpath is the file location on the storage
  * \param data user data to attach to the file
  *

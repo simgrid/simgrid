@@ -43,51 +43,34 @@
            endif
         endif
         end
-
-module array
-        integer, dimension(:), allocatable :: myindex
-end module
-
 !
 ! A simple get intracomm for now
         logical function MTestGetIntracomm( comm, min_size, qsmaller )
-        use array
         use mpi
-
         integer ierr
         integer comm, min_size, size, rank
         logical qsmaller
+        integer myindex
+        save myindex
+        data myindex /0/
 
-        integer status
-        call mpi_comm_size( MPI_COMM_WORLD, size, ierr )
-        
-        if(.not. allocated(myindex)) then
-            allocate(myindex(size), STAT=status)
-            call mpi_comm_rank( MPI_COMM_WORLD, rank, ierr )
-            myindex(rank+1)=0
-        endif
-
-        !data myindex /0/
-        
-        
-
-        if (myindex(rank+1) .eq. 0) then
+        comm = MPI_COMM_NULL
+        if (myindex .eq. 0) then
            comm = MPI_COMM_WORLD
-        else if (myindex(rank+1) .eq. 1) then
+        else if (myindex .eq. 1) then
            call mpi_comm_dup( MPI_COMM_WORLD, comm, ierr )
-        else if (myindex(rank+1) .eq. 2) then
+        else if (myindex .eq. 2) then
            call mpi_comm_size( MPI_COMM_WORLD, size, ierr )
            call mpi_comm_rank( MPI_COMM_WORLD, rank, ierr )
            call mpi_comm_split( MPI_COMM_WORLD, 0, size - rank, comm,  &
       &                                 ierr )
         else
-           if (min_size .eq. 1 .and. myindex(rank+1) .eq. 3) then
+           if (min_size .eq. 1 .and. myindex .eq. 3) then
               comm = MPI_COMM_SELF
            endif
         endif
-        myindex(rank+1) = mod( myindex(rank+1), 4 ) + 1
+        myindex = mod( myindex, 4 ) + 1
         MTestGetIntracomm = comm .ne. MPI_COMM_NULL
-        qsmaller=.true.
         end
 !
         subroutine MTestFreeComm( comm )

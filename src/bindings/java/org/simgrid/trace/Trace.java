@@ -302,7 +302,7 @@ public final class Trace {
 	/**
 	 * Set the value of a variable of a VM. 
 	 * 
-	 * @param host
+	 * @param vm
 	 * @param variable
 	 * @param value
 	 */

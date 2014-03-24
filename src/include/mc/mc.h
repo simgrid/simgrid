@@ -11,7 +11,6 @@
 #include "xbt/fifo.h"
 #include "xbt/dict.h"
 #include "xbt/function_types.h"
-#include "mc/datatypes.h"
 #include "simgrid/simix.h"
 #include "simgrid/modelchecker.h" /* our public interface (and definition of HAVE_MC) */
 #include "xbt/automaton.h"

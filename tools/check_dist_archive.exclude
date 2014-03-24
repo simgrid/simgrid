@@ -33,7 +33,6 @@
 + src/simix/simix_network\.tla
 
 + src/smpi/BUGS
-+ src/smpi/colls/allreduce-rab-reduce-scatter\.c
 + src/smpi/colls/alltoall-bruck\.c
 + src/smpi/fixsrc\.pl
 + src/smpi/myprintloc\.cocci
@@ -46,7 +45,6 @@
 + tools/check_dist_archive
 + tools/check_dist_archive\.exclude
 + tools/generate-multi-jar\.py
-+ tools/normalize-pointers\.py
 + tools/update_copyright_header
 
 + tools/spell/.*

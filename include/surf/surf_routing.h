@@ -8,7 +8,7 @@
 #define _SURF_SURF_ROUTING_H
 
 #include "xbt/lib.h"
-#include "simgrid/platf_interface.h"
+#include "simgrid/platf.h"
 
 SG_BEGIN_DECL()
 

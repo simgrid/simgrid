@@ -328,7 +328,29 @@ static void smpi_comm_copy_buffer_callback(smx_action_t comm,
 {
   XBT_DEBUG("Copy the data over");
   if(_xbt_replay_is_active()) return;
-  memcpy(comm->comm.dst_buff, buff, buff_size);
+  void* tmpbuff=buff;
+
+  if((smpi_privatize_global_variables)
+      && ((char*)buff >= start_data_exe)
+      && ((char*)buff < start_data_exe + size_data_exe )
+    ){
+       XBT_WARN("Privatization : We are copying from a zone inside global memory... Saving data to temp buffer !");
+       switch_data_segment(((smpi_process_data_t)SIMIX_process_get_data(comm->comm.src_proc))->index);
+       tmpbuff = (void*)xbt_malloc(buff_size);
+       memcpy(tmpbuff, buff, buff_size);
+  }
+
+
+  if((smpi_privatize_global_variables)
+      && ((char*)comm->comm.dst_buff >= start_data_exe)
+      && ((char*)comm->comm.dst_buff < start_data_exe + size_data_exe )
+    ){
+       XBT_WARN("Privatization : We are copying to a zone inside global memory - Switch data segment");
+       switch_data_segment(((smpi_process_data_t)SIMIX_process_get_data(comm->comm.dst_proc))->index);
+  }
+
+
+  memcpy(comm->comm.dst_buff, tmpbuff, buff_size);
   if (comm->comm.detached) {
     // if this is a detached send, the source buffer was duplicated by SMPI
     // sender to make the original buffer available to the application ASAP
@@ -339,6 +361,9 @@ static void smpi_comm_copy_buffer_callback(smx_action_t comm,
     //inside the user data and should be free 
     comm->comm.src_buff = NULL;
   }
+
+  if(tmpbuff!=buff)xbt_free(tmpbuff);
+
 }
 
 void smpi_global_init(void)
@@ -383,6 +408,8 @@ void smpi_global_init(void)
              "Use the option \"--cfg=smpi/running_power:<flops>\" to set its value."
              "Check http://simgrid.org/simgrid/latest/doc/options.html#options_smpi_bench for more information. ");
   }
+  if(smpi_privatize_global_variables)
+    smpi_initialize_global_memory_segments();
 }
 
 void smpi_global_destroy(void)
@@ -406,7 +433,8 @@ void smpi_global_destroy(void)
   }
   xbt_free(process_data);
   process_data = NULL;
-
+  if(smpi_privatize_global_variables)
+    smpi_destroy_global_memory_segments();
   smpi_free_static();
 }
 
@@ -565,6 +593,7 @@ int smpi_main(int (*realmain) (int argc, char *argv[]), int argc, char *argv[])
 
   smpi_cpu_threshold = sg_cfg_get_double("smpi/cpu_threshold");
   smpi_running_power = sg_cfg_get_double("smpi/running_power");
+  smpi_privatize_global_variables = sg_cfg_get_boolean("smpi/privatize_global_variables");
   if (smpi_cpu_threshold < 0)
     smpi_cpu_threshold = DBL_MAX;
 

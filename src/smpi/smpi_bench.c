@@ -4,6 +4,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "internal_config.h"
 #include "private.h"
 #include "xbt/dict.h"
 #include "xbt/sysdep.h"
@@ -68,6 +69,13 @@ __thread int smpi_current_rank = 0;      /* Updated after each MPI call */
 
 double smpi_cpu_threshold;
 double smpi_running_power;
+
+int* fds;
+void** mappings;
+int loaded_page = -1;
+char* start_data_exe = NULL;
+int size_data_exe = 0;
+int smpi_privatize_global_variables;
 
 typedef struct {
   int fd;
@@ -174,8 +182,11 @@ void smpi_execute(double duration)
   }
 }
 
+void switch_data_segment(int dest);
+
 void smpi_bench_begin(void)
 {
+  switch_data_segment(smpi_process_index());
   xbt_os_threadtimer_start(smpi_process_timer());
   smpi_current_rank = smpi_process_index();
 }
@@ -184,6 +195,7 @@ void smpi_bench_end(void)
 {
   xbt_os_timer_t timer = smpi_process_timer();
   xbt_os_threadtimer_stop(timer);
+//  switch_data_segment(smpi_process_count());
   if (smpi_process_get_sampling()) {
     XBT_CRITICAL("Cannot do recursive benchmarks.");
     XBT_CRITICAL("Are you trying to make a call to MPI within a SMPI_SAMPLE_ block?");
@@ -554,3 +566,191 @@ void* smpi_shared_set_call(const char* func, const char* input, void* data) {
    free(loc);
    return data;
 }
+
+
+
+
+#ifndef WIN32
+#define TOPAGE(addr) (void *)(((unsigned long)(addr) / xbt_pagesize) * xbt_pagesize)
+
+
+/*
+ * - read the executable data+bss section addresses and sizes
+ * - for each process create a copy of these sections with mmap
+ * - store them in a dynar
+ *
+ */
+
+
+
+void switch_data_segment(int dest){
+
+  if(size_data_exe == 0)//no need to switch
+    return;
+
+  if (loaded_page==dest)//no need to switch either
+    return;
+#ifdef HAVE_MMAP
+  int current= fds[dest];
+  XBT_VERB("Switching data frame to the one of process %d", dest);
+  void* tmp = mmap (TOPAGE(start_data_exe), size_data_exe, PROT_READ | PROT_WRITE, MAP_FIXED | MAP_SHARED, current, 0);
+  msync(TOPAGE(start_data_exe), size_data_exe, MS_SYNC | MS_INVALIDATE );
+  if (tmp != TOPAGE(start_data_exe))
+    xbt_die("Couldn't map the new region");
+  loaded_page=dest;
+#endif
+}
+
+void smpi_get_executable_global_size(){
+  int size_bss_binary=0;
+  int size_data_binary=0;
+  FILE *fp;
+  char *line = NULL;            /* Temporal storage for each line that is readed */
+  ssize_t read;                 /* Number of bytes readed */
+  size_t n = 0;                 /* Amount of bytes to read by xbt_getline */
+
+  char *lfields[7];
+  int i, found = 0;
+
+  char *command = bprintf("objdump --section-headers %s", xbt_binary_name);
+
+  fp = popen(command, "r");
+
+  if(fp == NULL){
+    perror("popen failed");
+    xbt_abort();
+  }
+
+  while ((read = xbt_getline(&line, &n, fp)) != -1 && found != 2) {
+
+    if(n == 0)
+      continue;
+
+    /* Wipeout the new line character */
+    line[read - 1] = '\0';
+
+    lfields[0] = strtok(line, " ");
+
+    if(lfields[0] == NULL)
+      continue;
+
+    if(strcmp(lfields[0], "Sections:") == 0
+        || strcmp(lfields[0], "Idx") == 0
+        || strncmp(lfields[0], xbt_binary_name, strlen(xbt_binary_name)) == 0)
+      continue;
+
+    for (i = 1; i < 7 && lfields[i - 1] != NULL; i++) {
+      lfields[i] = strtok(NULL, " ");
+    }
+
+    /*
+     * we are looking for these fields
+    23 .data         02625a20  00000000006013e0  00000000006013e0  000013e0  2**5
+                     CONTENTS, ALLOC, LOAD, DATA
+    24 .bss          02625a40  0000000002c26e00  0000000002c26e00  02626e00  2**5
+                     ALLOC
+    */
+
+    if(i>=6){
+      if(strcmp(lfields[1], ".data") == 0){
+        size_data_binary = strtoul(lfields[2], NULL, 16);
+        start_data_exe = (char*) strtoul(lfields[4], NULL, 16);
+        found++;
+      }else if(strcmp(lfields[1], ".bss") == 0){
+        //the beginning of bss is not exactly the end of data if not aligned, grow bss reported size accordingly
+        //TODO : check if this is OK, as some segments may be inserted between them.. 
+        size_bss_binary = ((char*) strtoul(lfields[4], NULL, 16) - (start_data_exe + size_data_binary))
+                          + strtoul(lfields[2], NULL, 16);
+        found++;
+       }
+
+    }
+
+  }
+
+  size_data_exe =(unsigned long)start_data_exe - (unsigned long)TOPAGE(start_data_exe)+ size_data_binary+size_bss_binary;
+  xbt_free(command);
+  xbt_free(line);
+  pclose(fp);
+
+}
+
+void smpi_initialize_global_memory_segments(){
+
+#ifndef HAVE_MMAP
+  smpi_privatize_global_variables=0;
+  return;
+#else
+
+  unsigned int i = 0;
+  smpi_get_executable_global_size();
+
+  XBT_DEBUG ("bss+data segment found : size %d starting at %p",size_data_exe, start_data_exe );
+
+  if(size_data_exe == 0){//no need to switch
+    smpi_privatize_global_variables=0;
+    return;
+  }
+
+  fds= (int*)xbt_malloc((smpi_process_count())*sizeof(int));
+  mappings= (void**)xbt_malloc((smpi_process_count())*sizeof(void*));
+
+
+  for (i=0; i< SIMIX_process_count(); i++){
+      //create SIMIX_process_count() mappings of this size with the same data inside
+      void *address = NULL, *tmp = NULL;
+      char path[] = "/dev/shm/my-buffer-XXXXXX";
+      int status;
+      int file_descriptor= mkstemp (path);
+      if (file_descriptor < 0)
+        xbt_die("Impossible to create temporary file for memory mapping");
+      status = unlink (path);
+      if (status)
+        xbt_die("Impossible to unlink temporary file for memory mapping");
+
+      status = ftruncate(file_descriptor, size_data_exe);
+      if(status)
+        xbt_die("Impossible to set the size of the temporary file for memory mapping");
+
+      /* Ask for a free region */
+      address = mmap (NULL, size_data_exe, PROT_NONE, MAP_ANONYMOUS | MAP_PRIVATE, -1, 0);
+
+      if (address == MAP_FAILED)
+        xbt_die("Couldn't find a free region for memory mapping");
+
+      tmp = mmap (address, size_data_exe, PROT_READ | PROT_WRITE, MAP_FIXED | MAP_SHARED, file_descriptor, 0);
+
+      if (tmp != address)
+        xbt_die("Couldn't obtain the right address");
+      //initialize the values
+      memcpy(address,TOPAGE(start_data_exe),size_data_exe);
+
+      //store the address of the mapping for further switches
+      fds[i]=file_descriptor;
+      mappings[i]= address;
+  }
+
+#endif
+
+}
+
+void smpi_destroy_global_memory_segments(){
+  if(size_data_exe == 0)//no need to switch
+    return;
+#ifdef HAVE_MMAP
+  int i;
+  for (i=0; i< smpi_process_count(); i++){
+    if(munmap(mappings[i],size_data_exe) < 0) {
+      XBT_WARN("Unmapping of fd %d failed: %s", fds[i], strerror(errno));
+    }
+    close(fds[i]);
+  }
+  xbt_free(mappings);
+  xbt_free(fds);
+
+#endif
+
+}
+
+
+#endif

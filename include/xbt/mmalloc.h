@@ -10,6 +10,9 @@
 #ifndef MMALLOC_H
 #define MMALLOC_H 1
 
+#include <simgrid_config.h>
+#ifdef HAVE_MMALLOC
+
 #ifdef HAVE_STDDEF_H
 #  include <stddef.h>
 #else
@@ -19,7 +22,6 @@
 
 #include "xbt/dynar.h"
 #include "xbt/dict.h"
-#include "mc/datatypes.h"
 
 /* Datatype representing a separate heap. The whole point of the mmalloc module
  * is to allow several such heaps in the process. It thus works by redefining
@@ -59,6 +61,8 @@ xbt_mheap_t mmalloc_get_current_heap(void);
 
 struct s_mc_snapshot;
 
+typedef struct s_dw_type *dw_type_t;
+
 int mmalloc_compare_heap(struct s_mc_snapshot* snapshot1, struct s_mc_snapshot* snapshot2, xbt_mheap_t heap1, xbt_mheap_t heap2);
 int mmalloc_linear_compare_heap(xbt_mheap_t heap1, xbt_mheap_t heap2);
 int init_heap_information(xbt_mheap_t heap1, xbt_mheap_t heap2, xbt_dynar_t to_ignore1, xbt_dynar_t to_ignore2);
@@ -68,4 +72,5 @@ void reset_heap_information(void);
 size_t mmalloc_get_bytes_used(xbt_mheap_t);
 ssize_t mmalloc_get_busy_size(xbt_mheap_t, void *ptr);
 
+#endif
 #endif                          /* MMALLOC_H */

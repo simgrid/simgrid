@@ -376,6 +376,15 @@ void smpi_mpi_start(MPI_Request request)
       if(request->old_type->has_subtype == 0){
         oldbuf = request->buf;
         if (!_xbt_replay_is_active() && oldbuf && request->size!=0){
+          if((smpi_privatize_global_variables)
+      	    && ((char*)request->buf >= start_data_exe)
+	    && ((char*)request->buf < start_data_exe + size_data_exe )
+    	){
+       	  XBT_WARN("Privatization : We are sending from a zone inside global memory. Switch data segment ");
+       	  switch_data_segment(smpi_process_index());
+  	}
+
+
           buf = xbt_malloc(request->size);
           memcpy(buf,oldbuf,request->size);
         }
@@ -587,6 +596,15 @@ static void finish_wait(MPI_Request * request, MPI_Status * status)
     MPI_Datatype datatype = req->old_type;
 
     if(datatype->has_subtype == 1){
+      if (!_xbt_replay_is_active()){
+        if( smpi_privatize_global_variables
+            && ((char*)req->old_buf >= start_data_exe)
+            && ((char*)req->old_buf < start_data_exe + size_data_exe )
+        ){
+            XBT_VERB("Privatization : We are unserializing to a zone in global memory - Switch data segment ");
+            switch_data_segment(smpi_process_index());
+        }
+      }
       // This part handles the problem of non-contignous memory
       // the unserialization at the reception
       s_smpi_subtype_t *subtype = datatype->substruct;

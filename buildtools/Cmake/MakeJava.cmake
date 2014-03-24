@@ -124,3 +124,4 @@ swig_add_module(surf-java java ${JSURF_SWIG_SRC} ${JSURF_JAVA_C_SRC})
 swig_link_libraries(surf-java simgrid)
 
 add_dependencies(simgrid-java surf-java)
+add_dependencies(simgrid-java_pre_jar surf-java)

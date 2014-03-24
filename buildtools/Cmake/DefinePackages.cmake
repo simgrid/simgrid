@@ -1,7 +1,6 @@
 ### define source packages
 
 set(EXTRA_DIST
-  include/xbt/win32_ucontext.h
   src/bindings/java/MANIFEST.MF.in
   src/include/instr/instr_interface.h
   src/include/mc/datatypes.h
@@ -17,6 +16,7 @@ set(EXTRA_DIST
   src/include/surf/surf_resource_lmm.h
   src/include/surf/surfxml_parse_values.h
   src/include/surf/trace_mgr.h
+  src/include/xbt/win32_ucontext.h
   src/include/xbt/wine_dbghelp.h
   src/include/xbt/xbt_os_time.h
   src/msg/msg_mailbox.h
@@ -568,9 +568,11 @@ set(MC_SRC
   src/mc/mc_compare.c
   src/mc/mc_dpor.c
   src/mc/mc_global.c
-  src/mc/mc_dwarf
+  src/mc/mc_dwarf.c
   src/mc/mc_member.c
+  src/mc/mc_dwarf_attrnames.h
   src/mc/mc_dwarf_expression.c
+  src/mc/mc_dwarf_tagnames.h
   src/mc/mc_liveness.c
   src/mc/mc_memory.c
   src/mc/mc_private.h
