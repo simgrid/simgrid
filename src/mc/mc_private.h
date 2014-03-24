@@ -94,7 +94,30 @@ mc_snapshot_t SIMIX_pre_mc_snapshot(smx_simcall_t simcall);
 mc_snapshot_t MC_take_snapshot(int num_state);
 void MC_restore_snapshot(mc_snapshot_t);
 void MC_free_snapshot(mc_snapshot_t);
+
+/** \brief Translate a pointer from process address space to snapshot address space
+ *
+ *  The address space contains snapshot of the main/application memory:
+ *  this function finds the address in a given snaphot for a given
+ *  real/application address.
+ *
+ *  For read only memory regions and other regions which are not int the
+ *  snapshot, the address is not changed.
+ *
+ *  \param addr     Application address
+ *  \param snapshot The snapshot of interest (if NULL no translation is done)
+ *  \return         Translated address in the snapshot address space
+ * */
 void* mc_translate_address(uintptr_t addr, mc_snapshot_t snapshot);
+
+/** \brief Translate a pointer from the snapshot address space to the application address space
+ *
+ *  This is the inverse of mc_translate_address.
+ *
+ * \param addr    Address in the snapshot address space
+ * \param snapsot Snapshot of interest (if NULL no translation is done)
+ * \return        Translated address in the application address space
+ */
 uintptr_t mc_untranslate_address(void* addr, mc_snapshot_t snapshot);
 
 extern xbt_dynar_t mc_checkpoint_ignore;

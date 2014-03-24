@@ -147,7 +147,7 @@ void MC_init_memory_map_info(){
 
 }
 
-/** \brief Fill/llokup the "subtype" field.
+/** \brief Fill/lookup the "subtype" field.
  */
 static void MC_resolve_subtype(mc_object_info_t info, dw_type_t type) {
 
@@ -168,7 +168,6 @@ static void MC_resolve_subtype(mc_object_info_t info, dw_type_t type) {
     type->subtype = subtype;
   }
 
-  // TODO, support "switch type" (looking up the type in another lib) when possible
 }
 
 void MC_post_process_types(mc_object_info_t info) {
@@ -188,7 +187,10 @@ void MC_post_process_types(mc_object_info_t info) {
   }
 }
 
-/** \brief Fills the position of the .bss and .data sections. */
+/** \brief Fills the position of the segments (executable, read-only, read/write).
+ *
+ * TODO, use dl_iterate_phdr to be more robust
+ * */
 void MC_find_object_address(memory_map_t maps, mc_object_info_t result) {
 
   unsigned int i = 0;
@@ -206,7 +208,6 @@ void MC_find_object_address(memory_map_t maps, mc_object_info_t result) {
           result->start_rw = reg.start_addr;
           result->end_rw   = reg.end_addr;
           // .bss is usually after the .data:
-          // TODO, use dl_iterate_phdr to be more robust
           s_map_region_t* next = &(maps->regions[i+1]);
           if(next->pathname == NULL && (next->prot & PROT_WRITE) && next->start_addr == reg.end_addr) {
             result->end_rw = maps->regions[i+1].end_addr;
@@ -236,6 +237,15 @@ void MC_find_object_address(memory_map_t maps, mc_object_info_t result) {
 /************************************* Take Snapshot ************************************/
 /****************************************************************************************/
 
+/** \brief Checks whether the variable is in scope for a given IP.
+ *
+ *  A variable may be defined only from a given value of IP.
+ *
+ *  \param var   Variable description
+ *  \param frame Scope description
+ *  \param ip    Instruction pointer
+ *  \return      true if the variable is valid
+ * */
 static bool mc_valid_variable(dw_variable_t var, dw_frame_t frame, const void* ip) {
   // The variable is not yet valid:
   if((const void*)((const char*) frame->low_pc + var->start_scope) > ip)

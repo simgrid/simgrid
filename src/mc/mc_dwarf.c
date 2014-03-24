@@ -183,6 +183,13 @@ static mc_tag_class MC_dwarf_tag_classify(int tag) {
 #define MC_DW_CLASS_MACPTR 9
 #define MC_DW_CLASS_RANGELISTPTR 10
 
+/** \brief Find the DWARF data class for a given DWARF data form
+ *
+ *  This mapping is defined in the DWARF spec.
+ *
+ *  \param form The form (values taken from the DWARF spec)
+ *  \return An internal representation for the corresponding class
+ * */
 static int MC_dwarf_form_get_class(int form) {
   switch(form) {
   case DW_FORM_addr:
@@ -234,11 +241,11 @@ static inline const char* MC_dwarf_die_tagname(Dwarf_Die* die) {
 
 /** \brief Get an attribute of a given DIE as a string
  *
- *  \param the DIE
+ *  \param die       the DIE
  *  \param attribute attribute
  *  \return value of the given attribute of the given DIE
  */
-static const char* MC_dwarf_attr_string(Dwarf_Die* die, int attribute) {
+static const char* MC_dwarf_attr_integrate_string(Dwarf_Die* die, int attribute) {
   Dwarf_Attribute attr;
   if (!dwarf_attr_integrate(die, attribute, &attr)) {
 	return NULL;
@@ -249,18 +256,26 @@ static const char* MC_dwarf_attr_string(Dwarf_Die* die, int attribute) {
 
 /** \brief Get the linkage name of a DIE.
  *
- *  Use either DW_AT_linkage_name or DW_AR_MIPS_linkage_name.
+ *  Use either DW_AT_linkage_name or DW_AT_MIPS_linkage_name.
+ *  DW_AT_linkage_name is standardized since DWARF 4.
+ *  Before this version of DWARF, the MIPS extensions
+ *  DW_AT_MIPS_linkage_name is used (at least by GCC).
  *
- *  \param DIE
+ *  \param  the DIE
  *  \return linkage name of the given DIE (or NULL)
  * */
 static const char* MC_dwarf_at_linkage_name(Dwarf_Die* die) {
-  const char* name = MC_dwarf_attr_string(die, DW_AT_linkage_name);
+  const char* name = MC_dwarf_attr_integrate_string(die, DW_AT_linkage_name);
   if (!name)
-    name = MC_dwarf_attr_string(die, DW_AT_MIPS_linkage_name);
+    name = MC_dwarf_attr_integrate_string(die, DW_AT_MIPS_linkage_name);
   return name;
 }
 
+/** \brief Find the type/subtype (DW_AT_type) for a DIE
+ *
+ *  \param dit the DIE
+ *  \return DW_AT_type reference as a global offset in hexadecimal (or NULL)
+ */
 static char* MC_dwarf_at_type(Dwarf_Die* die) {
   Dwarf_Attribute attr;
   if (dwarf_hasattr_integrate(die, DW_AT_type)) {
@@ -275,7 +290,7 @@ static char* MC_dwarf_at_type(Dwarf_Die* die) {
   else return NULL;
 }
 
-static uint64_t MC_dwarf_attr_addr(Dwarf_Die* die, int attribute) {
+static uint64_t MC_dwarf_attr_integrate_addr(Dwarf_Die* die, int attribute) {
   Dwarf_Attribute attr;
   if(dwarf_attr_integrate(die, attribute, &attr)==NULL)
     return 0;
@@ -286,7 +301,7 @@ static uint64_t MC_dwarf_attr_addr(Dwarf_Die* die, int attribute) {
     return 0;
 }
 
-static uint64_t MC_dwarf_attr_uint(Dwarf_Die* die, int attribute, uint64_t default_value) {
+static uint64_t MC_dwarf_attr_integrate_uint(Dwarf_Die* die, int attribute, uint64_t default_value) {
   Dwarf_Attribute attr;
   if (dwarf_attr_integrate(die, attribute, &attr)==NULL)
     return default_value;
@@ -294,7 +309,7 @@ static uint64_t MC_dwarf_attr_uint(Dwarf_Die* die, int attribute, uint64_t defau
   return dwarf_formudata(dwarf_attr_integrate(die, attribute, &attr), &value) == 0 ? (uint64_t) value : default_value;
 }
 
-static bool MC_dwarf_attr_flag(Dwarf_Die* die, int attribute, int integrate) {
+static bool MC_dwarf_attr_flag(Dwarf_Die* die, int attribute, bool integrate) {
   Dwarf_Attribute attr;
   if ((integrate ? dwarf_attr_integrate(die, attribute, &attr)
                     : dwarf_attr(die, attribute, &attr))==0)
@@ -307,6 +322,14 @@ static bool MC_dwarf_attr_flag(Dwarf_Die* die, int attribute, int integrate) {
   return result;
 }
 
+/** \brief Find the default lower bound for a given language
+ *
+ *  The default lower bound of an array (when DW_TAG_lower_bound
+ *  is missing) depends on the language of the compilation unit.
+ *
+ *  \param lang Language of the compilation unit (values defined in the DWARF spec)
+ *  \return     Default lower bound of an array in this compilation unit
+ * */
 static uint64_t MC_dwarf_default_lower_bound(int lang) {
   switch(lang) {
   case DW_LANG_C:
@@ -332,18 +355,24 @@ static uint64_t MC_dwarf_default_lower_bound(int lang) {
   case DW_LANG_Cobol85:
     return 1;
   default:
-    xbt_die("No default MT_TAG_lower_bound for language %i and none given", lang);
+    xbt_die("No default DW_TAG_lower_bound for language %i and none given", lang);
     return 0;
   }
 }
 
+/** \brief Finds the number of elements in a DW_TAG_subrange_type or DW_TAG_enumeration_type DIE
+ *
+ *  \param die  the DIE
+ *  \param unit DIE of the compilation unit
+ *  \return     number of elements in the range
+ * */
 static uint64_t MC_dwarf_subrange_element_count(Dwarf_Die* die, Dwarf_Die* unit) {
   xbt_assert(dwarf_tag(die)==DW_TAG_enumeration_type ||dwarf_tag(die)==DW_TAG_subrange_type,
       "MC_dwarf_subrange_element_count called with DIE of type %s", MC_dwarf_die_tagname(die));
 
   // Use DW_TAG_count if present:
   if (dwarf_hasattr_integrate(die, DW_AT_count)) {
-    return MC_dwarf_attr_uint(die, DW_AT_count, 0);
+    return MC_dwarf_attr_integrate_uint(die, DW_AT_count, 0);
   }
 
   // Otherwise compute DW_TAG_upper_bound-DW_TAG_lower_bound + 1:
@@ -352,17 +381,26 @@ static uint64_t MC_dwarf_subrange_element_count(Dwarf_Die* die, Dwarf_Die* unit)
 	// This is not really 0, but the code expects this (we do not know):
     return 0;
   }
-  uint64_t upper_bound = MC_dwarf_attr_uint(die, DW_AT_upper_bound, -1);
+  uint64_t upper_bound = MC_dwarf_attr_integrate_uint(die, DW_AT_upper_bound, -1);
 
   uint64_t lower_bound = 0;
   if (dwarf_hasattr_integrate(die, DW_AT_lower_bound)) {
-    lower_bound = MC_dwarf_attr_uint(die, DW_AT_lower_bound, -1);
+    lower_bound = MC_dwarf_attr_integrate_uint(die, DW_AT_lower_bound, -1);
   } else {
 	lower_bound = MC_dwarf_default_lower_bound(dwarf_srclang(unit));
   }
   return upper_bound - lower_bound + 1;
 }
 
+/** \brief Finds the number of elements in a array type (DW_TAG_array_type)
+ *
+ *  The compilation unit might be needed because the default lower
+ *  bound depends on the language of the compilation unit.
+ *
+ *  \param die the DIE of the DW_TAG_array_type
+ *  \param unit the DIE of the compilation unit
+ *  \return number of elements in this array type
+ * */
 static uint64_t MC_dwarf_array_element_count(Dwarf_Die* die, Dwarf_Die* unit) {
   xbt_assert(dwarf_tag(die)==DW_TAG_array_type,
     "MC_dwarf_array_element_count called with DIE of type %s", MC_dwarf_die_tagname(die));
@@ -381,6 +419,13 @@ static uint64_t MC_dwarf_array_element_count(Dwarf_Die* die, Dwarf_Die* unit) {
 
 // ***** dw_type_t
 
+/** \brief Initialize the location of a member of a type
+ * (DW_AT_data_member_location of a DW_TAG_member).
+ *
+ *  \param  type   a type (struct, class)
+ *  \param  member the member of the type
+ *  \param  child  DIE of the member (DW_TAG_member)
+ */
 static void MC_dwarf_fill_member_location(dw_type_t type, dw_type_t member, Dwarf_Die* child) {
   if (dwarf_hasattr(child, DW_AT_data_bit_offset)) {
     xbt_die("Can't groke DW_AT_data_bit_offset.");
@@ -410,7 +455,7 @@ static void MC_dwarf_fill_member_location(dw_type_t type, dw_type_t member, Dwar
       if (dwarf_getlocation(&attr, &expr, &len)) {
         xbt_die(
           "Could not read location expression DW_AT_data_member_location in DW_TAG_member %s of type <%p>%s",
-          MC_dwarf_attr_string(child, DW_AT_name),
+          MC_dwarf_attr_integrate_string(child, DW_AT_name),
           type->id, type->name);
       }
       if (len==1 && expr[0].atom == DW_OP_plus_uconst) {
@@ -428,7 +473,7 @@ static void MC_dwarf_fill_member_location(dw_type_t type, dw_type_t member, Dwar
         member->offset = offset;
       else
         xbt_die("Cannot get %s location <%p>%s",
-          MC_dwarf_attr_string(child, DW_AT_name),
+          MC_dwarf_attr_integrate_string(child, DW_AT_name),
           type->id, type->name);
       break;
     }
@@ -450,6 +495,13 @@ static void dw_type_free_voidp(void *t){
   dw_type_free((dw_type_t) * (void **) t);
 }
 
+/** \brief Populate the list of members of a type
+ *
+ *  \param info ELF object containing the type DIE
+ *  \param die  DIE of the type
+ *  \param unit DIE of the compilation unit containing the type DIE
+ *  \param type the type
+ */
 static void MC_dwarf_add_members(mc_object_info_t info, Dwarf_Die* die, Dwarf_Die* unit, dw_type_t type) {
   int res;
   Dwarf_Die child;
@@ -474,13 +526,13 @@ static void MC_dwarf_add_members(mc_object_info_t info, Dwarf_Die* die, Dwarf_Di
       // Global Offset:
       member->id = (void *) dwarf_dieoffset(&child);
 
-      const char* name = MC_dwarf_attr_string(&child, DW_AT_name);
+      const char* name = MC_dwarf_attr_integrate_string(&child, DW_AT_name);
       if(name)
         member->name = xbt_strdup(name);
       else
         member->name = NULL;
 
-      member->byte_size = MC_dwarf_attr_uint(&child, DW_AT_byte_size, 0);
+      member->byte_size = MC_dwarf_attr_integrate_uint(&child, DW_AT_byte_size, 0);
       member->element_count = -1;
       member->dw_type_id = MC_dwarf_at_type(&child);
       member->members = NULL;
@@ -542,7 +594,7 @@ static dw_type_t MC_dwarf_die_to_type(mc_object_info_t info, Dwarf_Die* die, Dwa
     prefix = "";
   }
 
-  const char* name = MC_dwarf_attr_string(die, DW_AT_name);
+  const char* name = MC_dwarf_attr_integrate_string(die, DW_AT_name);
   if (name!=NULL) {
     type->name = namespace ? bprintf("%s%s::%s", prefix, namespace, name) : bprintf("%s%s", prefix, name);
   }
@@ -553,7 +605,7 @@ static dw_type_t MC_dwarf_die_to_type(mc_object_info_t info, Dwarf_Die* die, Dwa
 
   // Computation of the byte_size;
   if (dwarf_hasattr_integrate(die, DW_AT_byte_size))
-    type->byte_size = MC_dwarf_attr_uint(die, DW_AT_byte_size, 0);
+    type->byte_size = MC_dwarf_attr_integrate_uint(die, DW_AT_byte_size, 0);
   else if (type->type == DW_TAG_array_type || type->type==DW_TAG_structure_type || type->type==DW_TAG_class_type) {
     Dwarf_Word size;
     if (dwarf_aggregate_size(die, &size)==0) {
@@ -619,7 +671,7 @@ static dw_variable_t MC_die_to_variable(mc_object_info_t info, Dwarf_Die* die, D
   variable->dwarf_offset = dwarf_dieoffset(die);
   variable->global = frame == NULL; // Can be override base on DW_AT_location
 
-  const char* name = MC_dwarf_attr_string(die, DW_AT_name);
+  const char* name = MC_dwarf_attr_integrate_string(die, DW_AT_name);
   variable->name = xbt_strdup(name);
 
   variable->type_origin = MC_dwarf_at_type(die);
@@ -712,7 +764,7 @@ static void MC_dwarf_handle_subprogram_die(mc_object_info_t info, Dwarf_Die* die
 
   frame->start = dwarf_dieoffset(die);
 
-  const char* name = MC_dwarf_attr_string(die, DW_AT_name);
+  const char* name = MC_dwarf_attr_integrate_string(die, DW_AT_name);
   frame->name = namespace ? bprintf("%s::%s", namespace, name) : xbt_strdup(name);
 
   // This is the base address for DWARF addresses.
@@ -722,8 +774,8 @@ static void MC_dwarf_handle_subprogram_die(mc_object_info_t info, Dwarf_Die* die
 
   // Variables are filled in the (recursive) call of MC_dwarf_handle_children:
   frame->variables = xbt_dynar_new(sizeof(dw_variable_t), dw_variable_free_voidp);
-  frame->high_pc = ((char*) base) + MC_dwarf_attr_addr(die, DW_AT_high_pc);
-  frame->low_pc = ((char*) base) + MC_dwarf_attr_addr(die, DW_AT_low_pc);
+  frame->high_pc = ((char*) base) + MC_dwarf_attr_integrate_addr(die, DW_AT_high_pc);
+  frame->low_pc = ((char*) base) + MC_dwarf_attr_integrate_addr(die, DW_AT_low_pc);
 
   Dwarf_Attribute attr_frame_base;
   if (dwarf_attr_integrate(die, DW_AT_frame_base, &attr_frame_base))
@@ -741,7 +793,7 @@ static void MC_dwarf_handle_subprogram_die(mc_object_info_t info, Dwarf_Die* die
 
 static void mc_dwarf_handle_namespace_die(
     mc_object_info_t info, Dwarf_Die* die, Dwarf_Die* unit, dw_frame_t frame, const char* namespace) {
-  const char* name = MC_dwarf_attr_string(die, DW_AT_name);
+  const char* name = MC_dwarf_attr_integrate_string(die, DW_AT_name);
   if(frame)
     xbt_die("Unexpected namespace in a subprogram");
   char* new_namespace = namespace == NULL ? xbt_strdup(name)
@@ -750,6 +802,7 @@ static void mc_dwarf_handle_namespace_die(
 }
 
 static void MC_dwarf_handle_children(mc_object_info_t info, Dwarf_Die* die, Dwarf_Die* unit, dw_frame_t frame, const char* namespace) {
+  // For each child DIE:
   Dwarf_Die child;
   int res;
   for (res=dwarf_child(die, &child); res==0; res=dwarf_siblingof(&child,&child)) {
@@ -792,6 +845,11 @@ static void MC_dwarf_handle_die(mc_object_info_t info, Dwarf_Die* die, Dwarf_Die
   }
 }
 
+/** \brief Populate the debugging informations of the given ELF object
+ *
+ *  Read the DWARf information of the EFFL object and populate the
+ *  lists of types, variables, functions.
+ */
 void MC_dwarf_get_variables(mc_object_info_t info) {
   int fd = open(info->file_name, O_RDONLY);
   if (fd<0) {
@@ -802,18 +860,21 @@ void MC_dwarf_get_variables(mc_object_info_t info) {
     xbt_die("Your program must be compiled with -g");
   }
 
+  // For each compilation unit:
   Dwarf_Off offset = 0;
   Dwarf_Off next_offset = 0;
   size_t length;
   while (dwarf_nextcu (dwarf, offset, &next_offset, &length, NULL, NULL, NULL) == 0) {
     Dwarf_Die unit_die;
-
     if(dwarf_offdie(dwarf, offset+length, &unit_die)!=NULL) {
+
+      // For each child DIE:
       Dwarf_Die child;
       int res;
       for (res=dwarf_child(&unit_die, &child); res==0; res=dwarf_siblingof(&child,&child)) {
         MC_dwarf_handle_die(info, &child, &unit_die, NULL, NULL);
       }
+
     }
     offset = next_offset;
   }
