@@ -1765,14 +1765,13 @@
     }    
     return self->simcall.result.dp;
   }
-  inline static void simcall_BODY_storage_file_rename(smx_storage_t storage, const char* src, const char* dest) {
+  inline static int simcall_BODY_file_move(smx_file_t fd, const char* fullpath) {
     smx_process_t self = SIMIX_process_self();
-    self->simcall.call = SIMCALL_STORAGE_FILE_RENAME;
+    self->simcall.call = SIMCALL_FILE_MOVE;
     memset(&self->simcall.result, 0, sizeof(self->simcall.result));
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
-    self->simcall.args[0].dp = (void*) storage;
-    self->simcall.args[1].cc = (const char*) src;
-    self->simcall.args[2].cc = (const char*) dest;
+    self->simcall.args[0].dp = (void*) fd;
+    self->simcall.args[1].cc = (const char*) fullpath;
     if (self != simix_global->maestro_process) {
       XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name,
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
@@ -1780,7 +1779,7 @@
     } else {
       SIMIX_simcall_pre(&self->simcall, 0);
     }    
-    
+    return self->simcall.result.i;
   }
   inline static sg_size_t simcall_BODY_storage_get_free_size(const char* name) {
     smx_process_t self = SIMIX_process_self();

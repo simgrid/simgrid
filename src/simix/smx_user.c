@@ -1402,11 +1402,12 @@ int simcall_file_seek(smx_file_t fd, sg_size_t offset, int origin){
 
 /**
  * \ingroup simix_file_management
+ * \brief Move a file to another location on the *same mount point*.
  *
  */
-void simcall_storage_file_rename(smx_storage_t storage, const char* src,  const char* dest)
+int simcall_file_move(smx_file_t fd, const char* fullpath)
 {
-  return simcall_BODY_storage_file_rename(storage, src, dest);
+  return simcall_BODY_file_move(fd, fullpath);
 }
 
 /**

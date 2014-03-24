@@ -220,14 +220,6 @@ public:
   virtual StorageActionPtr write(surf_file_t fd, sg_size_t size)=0;
 
   /**
-   * @brief Rename a path
-   * 
-   * @param src The old path
-   * @param dest The new path
-   */
-  virtual void rename(const char *src, const char *dest)=0;
-
-  /**
    * @brief Get the content of the current Storage
    * 
    * @return A xbt_dict_t with path as keys and size in bytes as values

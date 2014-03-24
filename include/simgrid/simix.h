@@ -498,6 +498,7 @@ XBT_PUBLIC(sg_size_t) simcall_file_get_size(smx_file_t fd);
 XBT_PUBLIC(xbt_dynar_t) simcall_file_get_info(smx_file_t fd);
 XBT_PUBLIC(sg_size_t) simcall_file_tell(smx_file_t fd);
 XBT_PUBLIC(int) simcall_file_seek(smx_file_t fd, sg_size_t offset, int origin);
+XBT_PUBLIC(int) simcall_file_move(smx_file_t fd, const char* fullpath);
 /*****************************   Storage   **********************************/
 XBT_PUBLIC(sg_size_t) simcall_storage_get_free_size (const char* name);
 XBT_PUBLIC(sg_size_t) simcall_storage_get_used_size (const char* name);
@@ -508,7 +509,6 @@ XBT_PUBLIC(xbt_dict_t) SIMIX_storage_get_content(smx_storage_t storage);
 XBT_PUBLIC(xbt_dict_t) simcall_storage_get_content(smx_storage_t storage);
 XBT_PUBLIC(const char*) SIMIX_storage_get_name(smx_storage_t storage);
 XBT_PUBLIC(sg_size_t) SIMIX_storage_get_size(smx_storage_t storage);
-XBT_PUBLIC(void) simcall_storage_file_rename(smx_storage_t storage, const char* src,  const char* dest);
 XBT_PUBLIC(const char*) SIMIX_storage_get_host(smx_storage_t storage);
 /************************** AS router   **********************************/
 XBT_PUBLIC(xbt_dict_t) SIMIX_asr_get_properties(const char *name);

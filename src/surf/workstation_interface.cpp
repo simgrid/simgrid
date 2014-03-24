@@ -337,6 +337,37 @@ int Workstation::fileSeek(surf_file_t fd, sg_size_t offset, int origin){
   }
 }
 
+int Workstation::fileMove(surf_file_t fd, const char* fullpath){
+
+  /* Check if the new full path is on the same mount point */
+  if(!strncmp((const char*)fd->mount, fullpath, strlen(fd->mount)))
+  {
+    sg_size_t *psize, *new_psize;
+    psize = (sg_size_t*) xbt_dict_get_or_null(findStorageOnMountList(fd->mount)->p_content,fd->name);
+    new_psize = xbt_new(sg_size_t, 1);
+    *new_psize = *psize;
+    if (psize){// src file exists
+	  xbt_dict_remove(findStorageOnMountList(fd->mount)->p_content, fd->name);
+
+	  char *path = (char *) xbt_malloc ((strlen(fullpath)-strlen(fd->mount)+1));;
+	  strncpy(path, fullpath+strlen(fd->mount), strlen(fullpath)-strlen(fd->mount)+1);
+	  xbt_dict_set(findStorageOnMountList(fd->mount)->p_content, path, new_psize,NULL);
+	  XBT_DEBUG("Move file from %s to %s, size '%llu'",fd->name, fullpath, *psize);
+	  free(path);
+	  return MSG_OK;
+    }
+    else
+	  XBT_WARN("File %s doesn't exist", fd->name);
+      return MSG_TASK_CANCELED;
+    }
+  else
+  {
+	XBT_WARN("New full path %s is not on the same mount point: %s. Action has been canceled.", fullpath, fd->mount);
+	return MSG_TASK_CANCELED;
+  }
+}
+
+
 sg_size_t Workstation::getFreeSize(const char* name)
 {
   StoragePtr st = findStorageOnMountList(name);

@@ -408,6 +408,10 @@ int surf_workstation_file_seek(surf_resource_t workstation, surf_file_t fd, sg_s
   return get_casted_workstation(workstation)->fileSeek(fd, offset, origin);
 }
 
+int surf_workstation_file_move(surf_resource_t workstation, surf_file_t fd, const char* fullpath){
+  return get_casted_workstation(workstation)->fileMove(fd, fullpath);
+}
+
 xbt_dynar_t surf_workstation_get_vms(surf_resource_t resource){
   return get_casted_workstation(resource)->getVms();
 }
@@ -478,10 +482,6 @@ sg_size_t surf_storage_get_size(surf_resource_t resource){
 
 const char* surf_storage_get_host(surf_resource_t resource){
   return static_cast<StoragePtr>(surf_storage_resource_priv(resource))->p_attach;
-}
-
-void surf_storage_rename(surf_resource_t resource, const char* src, const char* dest){
-  static_cast<StoragePtr>(surf_storage_resource_priv(resource))->rename(src, dest);
 }
 
 surf_action_t surf_cpu_execute(surf_resource_t cpu, double size){

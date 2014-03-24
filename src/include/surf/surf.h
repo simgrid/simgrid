@@ -695,6 +695,19 @@ XBT_PUBLIC(size_t) surf_workstation_get_size(surf_resource_t workstation, surf_f
 XBT_PUBLIC(size_t) surf_workstation_file_tell(surf_resource_t workstation, surf_file_t fd);
 
 /**
+ * @brief Move a file to another location on the *same mount point*.
+ * @details [long description]
+ *
+ * @param workstation The surf workstation
+ * @param fd The file descriptor
+ * @param fullpath The new full path
+ * @param origin Position used as a reference for the offset
+ *
+ * @return MSG_OK if successful, otherwise MSG_TASK_CANCELED
+ */
+XBT_PUBLIC(int) surf_workstation_file_move(surf_resource_t workstation, surf_file_t fd, const char* fullpath);
+
+/**
  * @brief Set the position indictator assiociated with the file descriptor to a new position
  * @details [long description]
  * 
@@ -708,6 +721,7 @@ XBT_PUBLIC(size_t) surf_workstation_file_tell(surf_resource_t workstation, surf_
  * @return MSG_OK if successful, otherwise MSG_TASK_CANCELED
  */
 XBT_PUBLIC(int) surf_workstation_file_seek(surf_resource_t workstation, surf_file_t fd, sg_size_t offset, int origin);
+
 
 /**
  * @brief [brief description]
@@ -749,15 +763,6 @@ XBT_PUBLIC(xbt_dict_t) surf_storage_get_content(surf_resource_t resource);
  * @return The size in bytes of the storage
  */
 XBT_PUBLIC(sg_size_t) surf_storage_get_size(surf_resource_t resource);
-
-/**
- * @brief Rename a path
- * 
- * @param resource The surf storage
- * @param src The old path
- * @param dest The new path
- */
-XBT_PUBLIC(void) surf_storage_rename(surf_resource_t resource, const char* src, const char* dest);
 
 /**
  * @brief Get the data associated to the action

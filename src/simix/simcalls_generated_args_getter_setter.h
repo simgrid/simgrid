@@ -1142,23 +1142,17 @@ static inline smx_file_t simcall_file_get_info__get__fd(smx_simcall_t simcall){
 static inline void simcall_file_get_info__set__fd(smx_simcall_t simcall, void* arg){
     simcall->args[0].dp = arg;
 }
-static inline smx_storage_t simcall_storage_file_rename__get__storage(smx_simcall_t simcall){
-  return (smx_storage_t) simcall->args[0].dp;
+static inline smx_file_t simcall_file_move__get__fd(smx_simcall_t simcall){
+  return (smx_file_t) simcall->args[0].dp;
 }
-static inline void simcall_storage_file_rename__set__storage(smx_simcall_t simcall, void* arg){
+static inline void simcall_file_move__set__fd(smx_simcall_t simcall, void* arg){
     simcall->args[0].dp = arg;
 }
-static inline const char* simcall_storage_file_rename__get__src(smx_simcall_t simcall){
+static inline const char* simcall_file_move__get__fullpath(smx_simcall_t simcall){
   return  simcall->args[1].cc;
 }
-static inline void simcall_storage_file_rename__set__src(smx_simcall_t simcall, const char* arg){
+static inline void simcall_file_move__set__fullpath(smx_simcall_t simcall, const char* arg){
     simcall->args[1].cc = arg;
-}
-static inline const char* simcall_storage_file_rename__get__dest(smx_simcall_t simcall){
-  return  simcall->args[2].cc;
-}
-static inline void simcall_storage_file_rename__set__dest(smx_simcall_t simcall, const char* arg){
-    simcall->args[2].cc = arg;
 }
 static inline const char* simcall_storage_get_free_size__get__name(smx_simcall_t simcall){
   return  simcall->args[0].cc;

@@ -546,8 +546,8 @@ case SIMCALL_FILE_GET_INFO:
       SIMIX_simcall_answer(simcall);
       break;  
 
-case SIMCALL_STORAGE_FILE_RENAME:
-       SIMIX_pre_storage_file_rename(simcall , (smx_storage_t) simcall->args[0].dp,  simcall->args[1].cc,  simcall->args[2].cc);
+case SIMCALL_FILE_MOVE:
+      simcall->result.i = SIMIX_pre_file_move(simcall , (smx_file_t) simcall->args[0].dp,  simcall->args[1].cc);
       SIMIX_simcall_answer(simcall);
       break;  
 

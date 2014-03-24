@@ -81,15 +81,15 @@ static int host(int argc, char *argv[]){
   XBT_INFO("Write %llu bytes on %s", write, file_name);
   MSG_file_dump(file);
 
-  MSG_file_close(file);
-  free(file_name);
-
   storage_name = xbt_strdup("Disk4");
   storage = MSG_storage_get_by_name(storage_name);
 
   // Now rename file from ./tmp/data.txt to ./tmp/simgrid.readme
-  XBT_INFO("*** Renaming '/tmp/data.txt' into '/tmp/simgrid.readme'");
-  MSG_storage_file_rename(storage, "/tmp/data.txt", "/tmp/simgrid.readme");
+  XBT_INFO("*** Move '/tmp/data.txt' into '/tmp/simgrid.readme'");
+  MSG_file_move(file, "/home/tmp/simgrid.readme");
+
+  MSG_file_close(file);
+  free(file_name);
 
   // Now attach some user data to disk1
   XBT_INFO("*** Get/set data for storage element: %s ***",storage_name);

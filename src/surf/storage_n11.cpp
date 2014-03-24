@@ -484,21 +484,6 @@ StorageActionPtr StorageN11::write(surf_file_t fd, sg_size_t size)
   return action;
 }
 
-void StorageN11::rename(const char *src, const char *dest)
-{
-  sg_size_t *psize, *new_psize;
-  psize = (sg_size_t*) xbt_dict_get_or_null(p_content,src);
-  new_psize = xbt_new(sg_size_t, 1);
-  *new_psize = *psize;
-  if (psize){// src file exists
-    xbt_dict_remove(p_content, src);
-    xbt_dict_set(p_content, dest, new_psize,NULL);
-    XBT_DEBUG("Change file name from %s to %s, size '%llu'",src, dest, *psize);
-  }
-  else
-    XBT_DEBUG("File %s doesn't exist",src);
-}
-
 /**********
  * Action *
  **********/

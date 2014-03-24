@@ -369,6 +369,17 @@ public:
    */
   virtual int fileSeek(surf_file_t fd, sg_size_t offset, int origin);
 
+  /**
+   * @brief Move a file to another location on the *same mount point*.
+   * @details [long description]
+   *
+   * @param fd The file descriptor
+   * @param fullpath The new full path
+   * @return MSG_OK if successful, MSG_TASK_CANCELED and a warning if the new
+   * full path is not on the same mount point
+   */
+  virtual int fileMove(surf_file_t fd, const char* fullpath);
+
   xbt_dynar_t p_storage;
   RoutingEdgePtr p_netElm;
   CpuPtr p_cpu;

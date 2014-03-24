@@ -242,8 +242,18 @@ const char *MSG_file_get_name(msg_file_t fd) {
   return priv->fullpath;
 }
 
+/**
+ * \ingroup msg_file_management
+ * \brief Move a file to another location on the *same mount point*.
+ *
+ */
+msg_error_t MSG_file_move (msg_file_t fd, const char* fullpath)
+{
+  msg_file_priv_t priv = MSG_file_priv(fd);
+  return simcall_file_move(priv->simdata->smx_file, fullpath);
+}
 
-/*
+/**
  * \brief Destroys a file (internal call only)
  */
 void __MSG_file_destroy(msg_file_priv_t file) {
@@ -269,7 +279,7 @@ msg_storage_t __MSG_storage_create(smx_storage_t storage)
   return xbt_lib_get_elm_or_null(storage_lib, name);
 }
 
-/*
+/**
  * \brief Destroys a storage (internal call only)
  */
 void __MSG_storage_destroy(msg_storage_priv_t storage) {
@@ -400,30 +410,6 @@ xbt_dict_t MSG_storage_get_content(msg_storage_t storage)
 sg_size_t MSG_storage_get_size(msg_storage_t storage)
 {
   return SIMIX_storage_get_size(storage);
-}
-
-/**
- * \ingroup msg_storage_management
- *
- * \brief Rename the file in the contents of its associated storage.
- */
-msg_error_t MSG_storage_file_rename(msg_storage_t storage, const char* src,  const char* dest)
-{
-  simcall_storage_file_rename(storage, src, dest);
-  return MSG_OK;
-}
-
-/**
- * \ingroup msg_storage_management
- * \brief Move a file to another location. Depending on the values of dest, dest, mount,
- * and fullname, this move can be local or remote and, within a host, on the same
- * mounted disk or between mounted disks.
- *
- */
-msg_error_t MSG_storage_file_move (msg_file_t fd, msg_host_t dest, char* mount, char* fullname)
-{
-  THROW_UNIMPLEMENTED;
-  return MSG_OK;
 }
 
 /** \ingroup msg_storage_management

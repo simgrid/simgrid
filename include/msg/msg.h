@@ -96,6 +96,7 @@ XBT_PUBLIC(sg_size_t) MSG_file_tell (msg_file_t fd);
 XBT_PUBLIC(void) __MSG_file_get_info(msg_file_t fd);
 XBT_PUBLIC(void) __MSG_file_priv_free(msg_file_priv_t priv);
 XBT_PUBLIC(const char *) MSG_file_get_name(msg_file_t storage);
+XBT_PUBLIC(msg_error_t) MSG_file_move(msg_file_t fd, const char* fullpath);
 /************************** Storage handling ***********************************/
 XBT_PUBLIC(msg_host_t) MSG_get_storage_by_name(const char *name);
 XBT_PUBLIC(const char *) MSG_storage_get_name(msg_storage_t storage);
@@ -110,7 +111,6 @@ XBT_PUBLIC(void *) MSG_storage_get_data(msg_storage_t storage);
 XBT_PUBLIC(xbt_dict_t) MSG_storage_get_content(msg_storage_t storage);
 XBT_PUBLIC(sg_size_t) MSG_storage_get_size(msg_storage_t storage);
 XBT_PUBLIC(msg_error_t) MSG_storage_file_move(msg_file_t fd, msg_host_t dest, char* mount, char* fullname);
-XBT_PUBLIC(msg_error_t) MSG_storage_file_rename(msg_storage_t storage, const char* src,  const char* dest);
 XBT_PUBLIC(const char *) MSG_storage_get_host(msg_storage_t storage);
 /************************** AS Router handling ************************************/
 XBT_PUBLIC(const char *) MSG_as_router_get_property_value(const char* asr, const char *name);
