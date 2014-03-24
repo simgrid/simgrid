@@ -644,6 +644,7 @@ static void MC_dwarf_handle_type_die(mc_object_info_t info, Dwarf_Die* die, Dwar
 
   char* key = bprintf("%" PRIx64, (uint64_t) type->id);
   xbt_dict_set(info->types, key, type, NULL);
+  xbt_free(key);
 
   if(type->name && type->byte_size!=0) {
     xbt_dict_set(info->full_types_by_name, type->name, type, NULL);
@@ -784,8 +785,9 @@ static void MC_dwarf_handle_subprogram_die(mc_object_info_t info, Dwarf_Die* die
   frame->end = -1; // This one is now useless:
 
   // Register it:
-  const char* key = bprintf("%" PRIx64, (uint64_t) frame->start);
+  char* key = bprintf("%" PRIx64, (uint64_t) frame->start);
   xbt_dict_set(info->subprograms,  key, frame, NULL);
+  xbt_free(key);
 
   // Handle children:
   MC_dwarf_handle_children(info, die, unit, frame, namespace);
@@ -799,6 +801,7 @@ static void mc_dwarf_handle_namespace_die(
   char* new_namespace = namespace == NULL ? xbt_strdup(name)
     : bprintf("%s::%s", namespace, name);
   MC_dwarf_handle_children(info, die, unit, frame, new_namespace);
+  xbt_free(new_namespace);
 }
 
 static void MC_dwarf_handle_children(mc_object_info_t info, Dwarf_Die* die, Dwarf_Die* unit, dw_frame_t frame, const char* namespace) {
