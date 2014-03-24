@@ -277,7 +277,7 @@ static dw_frame_t MC_find_function_by_ip_and_object(void* ip, mc_object_info_t i
     int k = i + ((j-i)/2);
     if(ip < base[k].low_pc) {
       j = k-1;
-    } else if(ip > base[k].high_pc) {
+    } else if(ip >= base[k].high_pc) {
       i = k+1;
     } else {
       return base[k].function;
