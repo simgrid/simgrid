@@ -799,7 +799,6 @@ static void MC_dwarf_handle_scope_die(mc_object_info_t info, Dwarf_Die* die, Dwa
       mc_dwarf_location_list_init(&frame->frame_base, info, die, &attr_frame_base);
   }
 
-  frame->end = -1; // This one is now useless:
   frame->scopes = xbt_dynar_new(sizeof(dw_frame_t), (void_f_pvoid_t) mc_frame_free_voipd);
 
   // Register it:

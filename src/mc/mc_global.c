@@ -336,28 +336,6 @@ mc_object_info_t MC_find_object_info(memory_map_t maps, char* name, int executab
 
 /*************************************************************************/
 
-/** \brief Finds a frame (DW_TAG_subprogram) from an DWARF offset in the rangd of this subprogram
- *
- * The offset can be an offset of a child DW_TAG_variable.
- */
-static dw_frame_t MC_dwarf_get_frame_by_offset(xbt_dict_t all_variables, unsigned long int offset){
-
-  xbt_dict_cursor_t cursor = NULL;
-  char *name;
-  dw_frame_t res;
-
-  xbt_dict_foreach(all_variables, cursor, name, res) {
-    if(offset >= res->start && offset < res->end){
-      xbt_dict_cursor_free(&cursor);
-      return res;
-    }
-  }
-
-  xbt_dict_cursor_free(&cursor);
-  return NULL;
-  
-}
-
 static dw_variable_t MC_dwarf_get_variable_by_name(dw_frame_t frame, char *var){
 
   unsigned int cursor = 0;

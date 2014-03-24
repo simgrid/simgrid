@@ -473,7 +473,6 @@ struct s_dw_frame{
   s_mc_location_list_t frame_base;
   xbt_dynar_t /* <dw_variable_t> */ variables; /* Cannot use dict, there may be several variables with the same name (in different lexical blocks)*/
   unsigned long int start; /* DWARF offset of the subprogram */
-  unsigned long int end;   /* Dwarf offset of the next sibling */
   xbt_dynar_t /* <dw_frame_t> */ scopes;
 };
 
