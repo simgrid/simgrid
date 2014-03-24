@@ -1,9 +1,10 @@
 /* File : example.i */
 %module(directors="1") Surf
 
+%include "arrays_java.i"
+
 %pragma(java) jniclassimports=%{
 import org.simgrid.NativeLib;
-
 %}
 %pragma(java) jniclasscode=%{
   static {
@@ -27,6 +28,24 @@ import org.simgrid.NativeLib;
 typedef struct lmm_constraint *lmm_constraint_t;
 %}
 
+/* Handle xbt_dynar_t of NetworkLink */
+JAVA_ARRAYSOFCLASSES(NetworkLink);
+%apply NetworkLink[] {NetworkLinkDynar};
+%typemap(jstype) NetworkLinkDynar "NetworkLink[]"
+%typemap(javain) NetworkLinkDynar "NetworkLink.cArrayUnwrap($javainput)"
+
+%typemap(javaout) NetworkLinkDynar {
+     return NetworkLink.cArrayWrap($jnicall, $owner);
+}
+%typemap(out) NetworkLinkDynar {
+  long l = xbt_dynar_length($1);
+  $result = jenv->NewLongArray(l);
+  NetworkLink **lout = (NetworkLink **)xbt_dynar_to_array($1);
+  jenv->SetLongArrayRegion($result, 0, l, (const jlong*)lout);
+  free(lout);
+}
+
+/* Allow to subclass Plugin and send java object to C++ code */
 %feature("director") Plugin;
 
 %include "src/bindings/java/surf_swig.hpp"
@@ -79,7 +98,6 @@ public:
 }
 };
 
-
 %rename lmm_constraint LmmConstraint;
 struct lmm_constraint {
 %extend {
@@ -93,4 +111,3 @@ struct s_xbt_dict {
   char *getValue(char *key) {return (char*)xbt_dict_get_or_null($self, key);}
 }
 };
-

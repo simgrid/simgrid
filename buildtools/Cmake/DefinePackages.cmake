@@ -158,7 +158,7 @@ set(SMPI_SRC
   src/smpi/colls/allgather-smp-simple.c
   src/smpi/colls/allgather-spreading-simple.c
   src/smpi/colls/allgather-ompi-neighborexchange.c
-  src/smpi/colls/allgatherv-GB.c  
+  src/smpi/colls/allgatherv-GB.c
   src/smpi/colls/allgatherv-pair.c
   src/smpi/colls/allgatherv-ring.c
   src/smpi/colls/allgatherv-ompi-neighborexchange.c
@@ -190,10 +190,10 @@ set(SMPI_SRC
   src/smpi/colls/alltoall-ring-light-barrier.c
   src/smpi/colls/alltoall-ring-mpi-barrier.c
   src/smpi/colls/alltoall-ring-one-barrier.c
-  src/smpi/colls/alltoallv-pair.c   
+  src/smpi/colls/alltoallv-pair.c
   src/smpi/colls/alltoallv-pair-light-barrier.c
   src/smpi/colls/alltoallv-pair-mpi-barrier.c
-  src/smpi/colls/alltoallv-pair-one-barrier.c 
+  src/smpi/colls/alltoallv-pair-one-barrier.c
   src/smpi/colls/alltoallv-ring.c
   src/smpi/colls/alltoallv-ring-light-barrier.c
   src/smpi/colls/alltoallv-ring-mpi-barrier.c
@@ -319,7 +319,7 @@ set(SURF_SRC
   src/surf/maxmin.cpp
   src/surf/network_interface.cpp
   src/surf/network_cm02.cpp
-  src/surf/network_smpi.cpp  
+  src/surf/network_smpi.cpp
   src/surf/network_constant.cpp
   src/surf/platf_generator.c
   src/surf/random_mgr.c
@@ -328,7 +328,7 @@ set(SURF_SRC
   src/surf/storage_n11.cpp
   src/surf/surf_interface.cpp
   src/surf/surf_c_bindings.cpp
-  src/surf/surf_routing.cpp  
+  src/surf/surf_routing.cpp
   src/surf/surf_routing_cluster.cpp
   src/surf/surf_routing_cluster_torus.cpp
   src/surf/surf_routing_dijkstra.cpp
@@ -461,9 +461,8 @@ set(JMSG_C_SRC
 
 set(JMSG_JAVA_SRC
   src/bindings/java/org/simgrid/NativeLib.java
-  #src/bindings/java/org/simgrid/NativeException.java
 
-  src/bindings/java/org/simgrid/msg/As.java	
+  src/bindings/java/org/simgrid/msg/As.java
   src/bindings/java/org/simgrid/msg/Comm.java
   src/bindings/java/org/simgrid/msg/File.java
   src/bindings/java/org/simgrid/msg/Host.java
@@ -473,7 +472,7 @@ set(JMSG_JAVA_SRC
   src/bindings/java/org/simgrid/msg/Msg.java
   src/bindings/java/org/simgrid/msg/MsgException.java
   src/bindings/java/org/simgrid/msg/Mutex.java
-  src/bindings/java/org/simgrid/msg/NativeException.java    
+  src/bindings/java/org/simgrid/msg/NativeException.java
   src/bindings/java/org/simgrid/msg/Process.java
   src/bindings/java/org/simgrid/msg/ProcessKilledError.java
   src/bindings/java/org/simgrid/msg/ProcessNotFoundException.java
@@ -500,15 +499,15 @@ set(JSURF_JAVA_GENERATED_SRC
   ${CMAKE_BINARY_DIR}/src/bindings/java/org/simgrid/surf/Plugin.java
   ${CMAKE_BINARY_DIR}/src/bindings/java/org/simgrid/surf/Model.java
   ${CMAKE_BINARY_DIR}/src/bindings/java/org/simgrid/surf/Resource.java
-  ${CMAKE_BINARY_DIR}/src/bindings/java/org/simgrid/surf/Action.java  
+  ${CMAKE_BINARY_DIR}/src/bindings/java/org/simgrid/surf/Action.java
   ${CMAKE_BINARY_DIR}/src/bindings/java/org/simgrid/surf/Cpu.java
-  ${CMAKE_BINARY_DIR}/src/bindings/java/org/simgrid/surf/CpuAction.java  
-  ${CMAKE_BINARY_DIR}/src/bindings/java/org/simgrid/surf/NetworkLink.java  
-  ${CMAKE_BINARY_DIR}/src/bindings/java/org/simgrid/surf/NetworkAction.java  
+  ${CMAKE_BINARY_DIR}/src/bindings/java/org/simgrid/surf/CpuAction.java
+  ${CMAKE_BINARY_DIR}/src/bindings/java/org/simgrid/surf/NetworkLink.java
+  ${CMAKE_BINARY_DIR}/src/bindings/java/org/simgrid/surf/NetworkAction.java
 
-  ${CMAKE_BINARY_DIR}/src/bindings/java/org/simgrid/surf/LmmConstraint.java  
+  ${CMAKE_BINARY_DIR}/src/bindings/java/org/simgrid/surf/LmmConstraint.java
   ${CMAKE_BINARY_DIR}/src/bindings/java/org/simgrid/surf/XbtDict.java
-) 
+)
 
 set(JTRACE_C_SRC
   src/bindings/java/jtrace.c
@@ -832,7 +831,7 @@ set(DOC_SOURCES
   doc/msg-tuto-src/platforms/griffon.xml
   doc/msg-tuto-src/platforms/peers.xml
   doc/msg-tuto-src/platforms/platform.xml
-  
+
   CITATION.bib
   )
 
@@ -908,7 +907,6 @@ set(EXAMPLES_CMAKEFILES_TXT
   examples/java/cloud/CMakeLists.txt
   examples/java/cloud/migration/CMakeLists.txt
   examples/java/commTime/CMakeLists.txt
-  examples/java/surfPlugin/CMakeLists.txt
   examples/java/io/CMakeLists.txt
   examples/java/kademlia/CMakeLists.txt
   examples/java/master_slave_bypass/CMakeLists.txt
@@ -918,7 +916,9 @@ set(EXAMPLES_CMAKEFILES_TXT
   examples/java/mutualExclusion/CMakeLists.txt
   examples/java/pingPong/CMakeLists.txt
   examples/java/priority/CMakeLists.txt
+  examples/java/reservationSurfPlugin/CMakeLists.txt
   examples/java/startKillTime/CMakeLists.txt
+  examples/java/surfPlugin/CMakeLists.txt
   examples/java/suspend/CMakeLists.txt
   examples/java/tracing/CMakeLists.txt
   examples/lua/CMakeLists.txt

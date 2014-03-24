@@ -12,6 +12,24 @@ void clean() {
   SIMIX_clean();
 }
 
+/*NetworkModel *getNetworkModel()
+{
+  return surf_network_model;
+}*/
+
+NetworkLinkDynar getRoute(char *srcName, char *dstName) {
+  RoutingEdge *src = (RoutingEdge*)xbt_lib_get_or_null(host_lib, srcName, ROUTING_HOST_LEVEL);
+  RoutingEdge *dst = (RoutingEdge*)xbt_lib_get_or_null(host_lib, dstName, ROUTING_HOST_LEVEL);
+  if (src==NULL)
+    xbt_die("TOTO");
+  if (dst==NULL)
+    xbt_die("TOTO");
+  printf("src: %s\ndst: %s\n", src->getName(), dst->getName());
+  xbt_dynar_t route = xbt_dynar_new(sizeof(RoutingEdgePtr), NULL);
+  routing_platf->getRouteAndLatency(src, dst, &route, NULL);
+  return route;
+}
+
 void Plugin::activateCpuCreatedCallback(){
   surf_callback_connect(cpuCreatedCallbacks, boost::bind(&Plugin::cpuCreatedCallback, this, _1));
 }
