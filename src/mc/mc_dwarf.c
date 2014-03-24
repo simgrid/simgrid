@@ -777,7 +777,7 @@ static void MC_dwarf_handle_scope_die(mc_object_info_t info, Dwarf_Die* die, Dwa
   dw_frame_t frame = xbt_new0(s_dw_frame_t, 1);
 
   frame->tag   = tag;
-  frame->start = dwarf_dieoffset(die);
+  frame->id = dwarf_dieoffset(die);
 
   const char* name = MC_dwarf_attr_integrate_string(die, DW_AT_name);
   if(name)
@@ -803,7 +803,7 @@ static void MC_dwarf_handle_scope_die(mc_object_info_t info, Dwarf_Die* die, Dwa
 
   // Register it:
   if(klass==mc_tag_subprogram) {
-    char* key = bprintf("%" PRIx64, (uint64_t) frame->start);
+    char* key = bprintf("%" PRIx64, (uint64_t) frame->id);
     xbt_dict_set(info->subprograms,  key, frame, NULL);
     xbt_free(key);
   } else if(klass==mc_tag_scope) {
