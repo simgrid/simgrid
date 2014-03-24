@@ -158,7 +158,9 @@ static mc_tag_class MC_dwarf_tag_classify(int tag) {
 
     case DW_TAG_lexical_block:
     case DW_TAG_try_block:
+    case DW_TAG_catch_block:
     case DW_TAG_inlined_subroutine:
+    case DW_TAG_with_stmt:
       return mc_tag_scope;
 
     case DW_TAG_namespace:
@@ -755,18 +757,31 @@ static void MC_dwarf_handle_variable_die(mc_object_info_t info, Dwarf_Die* die, 
   MC_dwarf_register_variable(info, frame, variable);
 }
 
-static void MC_dwarf_handle_subprogram_die(mc_object_info_t info, Dwarf_Die* die, Dwarf_Die* unit, dw_frame_t parent_frame, const char* namespace) {
+static void mc_frame_free_voipd(dw_frame_t* p) {
+  mc_frame_free(*p);
+  *p = NULL;
+}
+
+static void MC_dwarf_handle_scope_die(mc_object_info_t info, Dwarf_Die* die, Dwarf_Die* unit, dw_frame_t parent_frame, const char* namespace) {
+  // TODO, handle DW_TAG_type/DW_TAG_location for DW_TAG_with_stmt
+  int tag = dwarf_tag(die);
+  mc_tag_class klass = MC_dwarf_tag_classify(tag);
 
   // (Template) Subprogram declaration:
-  if (MC_dwarf_attr_flag(die, DW_AT_declaration, false))
+  if(klass==mc_tag_subprogram && MC_dwarf_attr_flag(die, DW_AT_declaration, false))
     return;
+
+  if(klass==mc_tag_scope)
+    xbt_assert(parent_frame, "No parent scope for this scope");
 
   dw_frame_t frame = xbt_new0(s_dw_frame_t, 1);
 
+  frame->tag   = tag;
   frame->start = dwarf_dieoffset(die);
 
   const char* name = MC_dwarf_attr_integrate_string(die, DW_AT_name);
-  frame->name = namespace ? bprintf("%s::%s", namespace, name) : xbt_strdup(name);
+  if(name)
+    frame->name = namespace ? bprintf("%s::%s", namespace, name) : xbt_strdup(name);
 
   // This is the base address for DWARF addresses.
   // Relocated addresses are offset from this base address.
@@ -778,16 +793,23 @@ static void MC_dwarf_handle_subprogram_die(mc_object_info_t info, Dwarf_Die* die
   frame->high_pc = ((char*) base) + MC_dwarf_attr_integrate_addr(die, DW_AT_high_pc);
   frame->low_pc = ((char*) base) + MC_dwarf_attr_integrate_addr(die, DW_AT_low_pc);
 
-  Dwarf_Attribute attr_frame_base;
-  if (dwarf_attr_integrate(die, DW_AT_frame_base, &attr_frame_base))
-    mc_dwarf_location_list_init(&frame->frame_base, info, die, &attr_frame_base);
+  if(klass==mc_tag_subprogram) {
+    Dwarf_Attribute attr_frame_base;
+    if (dwarf_attr_integrate(die, DW_AT_frame_base, &attr_frame_base))
+      mc_dwarf_location_list_init(&frame->frame_base, info, die, &attr_frame_base);
+  }
 
   frame->end = -1; // This one is now useless:
+  frame->scopes = xbt_dynar_new(sizeof(dw_frame_t), (void_f_pvoid_t) mc_frame_free_voipd);
 
   // Register it:
-  char* key = bprintf("%" PRIx64, (uint64_t) frame->start);
-  xbt_dict_set(info->subprograms,  key, frame, NULL);
-  xbt_free(key);
+  if(klass==mc_tag_subprogram) {
+    char* key = bprintf("%" PRIx64, (uint64_t) frame->start);
+    xbt_dict_set(info->subprograms,  key, frame, NULL);
+    xbt_free(key);
+  } else if(klass==mc_tag_scope) {
+    xbt_dynar_push(parent_frame->scopes, &frame);
+  }
 
   // Handle children:
   MC_dwarf_handle_children(info, die, unit, frame, namespace);
@@ -823,19 +845,15 @@ static void MC_dwarf_handle_die(mc_object_info_t info, Dwarf_Die* die, Dwarf_Die
       MC_dwarf_handle_type_die(info, die, unit, frame, namespace);
       break;
 
-    // Program:
+    // Subprogram or scope:
     case mc_tag_subprogram:
-      MC_dwarf_handle_subprogram_die(info, die, unit, frame, namespace);
+    case mc_tag_scope:
+      MC_dwarf_handle_scope_die(info, die, unit, frame, namespace);
       return;
 
     // Variable:
     case mc_tag_variable:
       MC_dwarf_handle_variable_die(info, die, unit, frame, namespace);
-      break;
-
-    // Scope:
-    case mc_tag_scope:
-      // TODO
       break;
 
     case mc_tag_namespace:

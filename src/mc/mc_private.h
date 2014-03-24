@@ -466,6 +466,7 @@ typedef struct s_dw_variable{
 }s_dw_variable_t, *dw_variable_t;
 
 struct s_dw_frame{
+  int tag;
   char *name;
   void *low_pc;
   void *high_pc;
@@ -473,6 +474,7 @@ struct s_dw_frame{
   xbt_dynar_t /* <dw_variable_t> */ variables; /* Cannot use dict, there may be several variables with the same name (in different lexical blocks)*/
   unsigned long int start; /* DWARF offset of the subprogram */
   unsigned long int end;   /* Dwarf offset of the next sibling */
+  xbt_dynar_t /* <dw_frame_t> */ scopes;
 };
 
 struct s_mc_function_index_item {

@@ -159,6 +159,7 @@ void mc_frame_free(dw_frame_t frame){
   xbt_free(frame->name);
   mc_dwarf_location_list_clear(&(frame->frame_base));
   xbt_dynar_free(&(frame->variables));
+  xbt_dynar_free(&(frame->scopes));
   xbt_free(frame);
 }
 
