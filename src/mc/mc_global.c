@@ -596,42 +596,69 @@ void MC_ignore_global_variable(const char *name){
     MC_UNSET_RAW_MEM;
 }
 
-static void mc_ignore_local_variable_in_scope(const char *var_name, dw_frame_t scope) {
+/** \brief Ignore a local variable in a scope
+ *
+ *  Ignore all instances of variables with a given name in
+ *  any (possibly inlined) subprogram with a given namespaced
+ *  name.
+ *
+ *  \param var_name        Name of the local variable (or parameter to ignore)
+ *  \param subprogram_name Name of the subprogram fo ignore (NULL for any)
+ *  \param subprogram      (possibly inlined) Subprogram of the scope
+ *  \param scope           Current scope
+ */
+static void mc_ignore_local_variable_in_scope(
+  const char *var_name, const char *subprogram_name,
+  dw_frame_t subprogram, dw_frame_t scope) {
   // Processing of direct variables:
-  int start = 0;
-  int end = xbt_dynar_length(scope->variables) - 1;
-  while(start <= end){
-    int cursor = (start + end) / 2;
-    dw_variable_t current_var = (dw_variable_t)xbt_dynar_get_as(scope->variables, cursor, dw_variable_t);
 
-    int compare = strcmp(current_var->name, var_name);
-    if(compare == 0){
-      xbt_dynar_remove_at(scope->variables, cursor, NULL);
-      start = 0;
-      end = xbt_dynar_length(scope->variables) - 1;
-    }else if(compare < 0){
-      start = cursor + 1;
-    }else{
-      end = cursor - 1;
+  // If the current subprogram matche the given name:
+  if(subprogram_name==NULL || strcmp(subprogram_name, subprogram->name)==0) {
+
+    // Try to find the variable and remove it:
+    int start = 0;
+    int end = xbt_dynar_length(scope->variables) - 1;
+
+    // Dichotomic search:
+    while(start <= end){
+      int cursor = (start + end) / 2;
+      dw_variable_t current_var = (dw_variable_t)xbt_dynar_get_as(scope->variables, cursor, dw_variable_t);
+
+      int compare = strcmp(current_var->name, var_name);
+      if(compare == 0){
+        // Variable found, remove it:
+        xbt_dynar_remove_at(scope->variables, cursor, NULL);
+
+        // and start again:
+        start = 0;
+        end = xbt_dynar_length(scope->variables) - 1;
+      }else if(compare < 0){
+        start = cursor + 1;
+      }else{
+        end = cursor - 1;
+      }
     }
+
   }
 
   // And recursive processing in nested scopes:
   unsigned cursor = 0;
   dw_frame_t nested_scope = NULL;
   xbt_dynar_foreach(scope->scopes, cursor, nested_scope) {
-    mc_ignore_local_variable_in_scope(var_name, nested_scope);
+    // The new scope may be an inlined subroutine, in this case we want to use its
+    // namespaced name in recursive calls:
+    dw_frame_t nested_subprogram = nested_scope->tag == DW_TAG_inlined_subroutine ? nested_scope : subprogram;
+
+    mc_ignore_local_variable_in_scope(var_name, subprogram_name, nested_subprogram, nested_scope);
   }
 }
 
-static void MC_ignore_local_variable_in_object(const char *var_name, const char *frame_name, mc_object_info_t info) {
+static void MC_ignore_local_variable_in_object(const char *var_name, const char *subprogram_name, mc_object_info_t info) {
   xbt_dict_cursor_t cursor2;
   dw_frame_t frame;
   char* key;
   xbt_dict_foreach(info->subprograms, cursor2, key, frame) {
-    if(frame_name && strcmp(frame_name, frame->name))
-      continue;
-    mc_ignore_local_variable_in_scope(var_name, frame);
+    mc_ignore_local_variable_in_scope(var_name, subprogram_name, frame, frame);
   }
 }
 
