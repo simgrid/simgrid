@@ -336,19 +336,6 @@ mc_object_info_t MC_find_object_info(memory_map_t maps, char* name, int executab
 
 /*************************************************************************/
 
-static dw_variable_t MC_dwarf_get_variable_by_name(dw_frame_t frame, char *var){
-
-  unsigned int cursor = 0;
-  dw_variable_t current_var;
-
-  xbt_dynar_foreach(frame->variables, cursor, current_var){
-    if(strcmp(var, current_var->name) == 0)
-      return current_var;
-  }
-
-  return NULL;
-}
-
 static int MC_dwarf_get_variable_index(xbt_dynar_t variables, char* var, void *address){
 
   if(xbt_dynar_is_empty(variables))
