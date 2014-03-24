@@ -306,6 +306,17 @@ static void MC_post_process_variables(mc_object_info_t info) {
 
 static void mc_post_process_scope(mc_object_info_t info, dw_frame_t scope) {
 
+  if(scope->tag == DW_TAG_inlined_subroutine) {
+
+    // Attach correct namespaced name in inlined subroutine:
+    char* key = bprintf("%" PRIx64, (uint64_t) scope->abstract_origin_id);
+    dw_frame_t abstract_origin = xbt_dict_get_or_null(info->subprograms, key);
+    xbt_assert(abstract_origin, "Could not lookup abstract origin %s", key);
+    xbt_free(key);
+    scope->name = xbt_strdup(abstract_origin->name);
+
+  }
+
   // Direct:
   unsigned cursor = 0;
   dw_variable_t variable = NULL;

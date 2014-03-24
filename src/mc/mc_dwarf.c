@@ -273,23 +273,40 @@ static const char* MC_dwarf_at_linkage_name(Dwarf_Die* die) {
   return name;
 }
 
+static Dwarf_Off MC_dwarf_attr_dieoffset(Dwarf_Die* die, int attribute) {
+  Dwarf_Attribute attr;
+  if (dwarf_hasattr_integrate(die, attribute)) {
+    dwarf_attr_integrate(die, attribute, &attr);
+    Dwarf_Die subtype_die;
+    if (dwarf_formref_die(&attr, &subtype_die)==NULL) {
+      xbt_die("Could not find DIE");
+    }
+    return dwarf_dieoffset(&subtype_die);
+  }
+  else return 0;
+}
+
+static Dwarf_Off MC_dwarf_attr_integrate_dieoffset(Dwarf_Die* die, int attribute) {
+  Dwarf_Attribute attr;
+  if (dwarf_hasattr_integrate(die, attribute)) {
+    dwarf_attr_integrate(die, DW_AT_type, &attr);
+    Dwarf_Die subtype_die;
+    if (dwarf_formref_die(&attr, &subtype_die)==NULL) {
+      xbt_die("Could not find DIE");
+    }
+    return dwarf_dieoffset(&subtype_die);
+  }
+  else return 0;
+}
+
 /** \brief Find the type/subtype (DW_AT_type) for a DIE
  *
  *  \param dit the DIE
  *  \return DW_AT_type reference as a global offset in hexadecimal (or NULL)
  */
 static char* MC_dwarf_at_type(Dwarf_Die* die) {
-  Dwarf_Attribute attr;
-  if (dwarf_hasattr_integrate(die, DW_AT_type)) {
-	dwarf_attr_integrate(die, DW_AT_type, &attr);
-	Dwarf_Die subtype_die;
-	if (dwarf_formref_die(&attr, &subtype_die)==NULL) {
-	  xbt_die("Could not find DIE for type");
-	}
-	Dwarf_Off subtype_global_offset = dwarf_dieoffset(&subtype_die);
-    return bprintf("%" PRIx64 , subtype_global_offset);
-  }
-  else return NULL;
+  Dwarf_Off offset = MC_dwarf_attr_integrate_dieoffset(die, DW_AT_type);
+  return offset == 0 ? NULL : bprintf("%" PRIx64 , offset);
 }
 
 static uint64_t MC_dwarf_attr_integrate_addr(Dwarf_Die* die, int attribute) {
@@ -779,9 +796,12 @@ static void MC_dwarf_handle_scope_die(mc_object_info_t info, Dwarf_Die* die, Dwa
   frame->tag   = tag;
   frame->id = dwarf_dieoffset(die);
 
-  const char* name = MC_dwarf_attr_integrate_string(die, DW_AT_name);
-  if(name)
+  if(klass==mc_tag_subprogram) {
+    const char* name = MC_dwarf_attr_integrate_string(die, DW_AT_name);
     frame->name = namespace ? bprintf("%s::%s", namespace, name) : xbt_strdup(name);
+  }
+
+  frame->abstract_origin_id = MC_dwarf_attr_dieoffset(die, DW_AT_abstract_origin);
 
   // This is the base address for DWARF addresses.
   // Relocated addresses are offset from this base address.
