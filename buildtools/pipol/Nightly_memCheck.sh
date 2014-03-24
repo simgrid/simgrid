@@ -1,5 +1,7 @@
 #!/bin/bash
 
+ulimit -c 0
+
 #PIPOL esn amd64_2010-linux-ubuntu-maverick.dd.gz none 02:00 --user --silent
 
 if [ -e ./pipol ] ; then
