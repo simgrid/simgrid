@@ -520,7 +520,7 @@ void* mc_find_frame_base(dw_frame_t frame, unw_cursor_t* unw_cursor);
 /********************************** Miscellaneous **********************************/
 
 typedef struct s_local_variable{
-  char *frame;
+  dw_frame_t subprogram;
   unsigned long ip;
   char *name;
   dw_type_t type;

@@ -305,14 +305,16 @@ static int compare_local_variables(mc_snapshot_t snapshot1, mc_snapshot_t snapsh
     while(cursor < xbt_dynar_length(stack1->local_variables)){
       current_var1 = (local_variable_t)xbt_dynar_get_as(stack1->local_variables, cursor, local_variable_t);
       current_var2 = (local_variable_t)xbt_dynar_get_as(stack2->local_variables, cursor, local_variable_t);
-      if(strcmp(current_var1->name, current_var2->name) != 0 || strcmp(current_var1->frame, current_var2->frame) != 0 || current_var1->ip != current_var2->ip){
+      if(strcmp(current_var1->name, current_var2->name) != 0 || current_var1->subprogram != current_var1->subprogram || current_var1->ip != current_var2->ip){
         xbt_dynar_free(&compared_pointers);
-        XBT_VERB("Different name of variable (%s - %s) or frame (%s - %s) or ip (%lu - %lu)", current_var1->name, current_var2->name, current_var1->frame, current_var2->frame, current_var1->ip, current_var2->ip);
+        // TODO, fix current_varX->subprogram->name to include name if DW_TAG_inlined_subprogram
+        XBT_VERB("Different name of variable (%s - %s) or frame (%s - %s) or ip (%lu - %lu)", current_var1->name, current_var2->name, current_var1->subprogram->name, current_var2->subprogram->name, current_var1->ip, current_var2->ip);
         return 1;
       }
       offset1 = (char *)current_var1->address - (char *)std_heap;
       offset2 = (char *)current_var2->address - (char *)std_heap;
-      XBT_DEBUG("Compare local variable %s of frame %s", current_var1->name, current_var1->frame);
+      // TODO, fix current_varX->subprogram->name to include name if DW_TAG_inlined_subprogram
+      XBT_DEBUG("Compare local variable %s of frame %s", current_var1->subprogram->name, current_var1->subprogram->name);
 
 
       if(current_var1->region == 1) {
@@ -323,7 +325,8 @@ static int compare_local_variables(mc_snapshot_t snapshot1, mc_snapshot_t snapsh
         res = compare_areas_with_type( (char *)heap1 + offset1, (char *)heap2 + offset2, snapshot1, snapshot2, subtype, 0, 2, start_data_binary, 0);
       }
       if(res == 1){
-        XBT_VERB("Local variable %s (%p - %p) in frame %s  is different between snapshots", current_var1->name,(char *)heap1 + offset1, (char *)heap2 + offset2, current_var1->frame);
+        // TODO, fix current_varX->subprogram->name to include name if DW_TAG_inlined_subprogram
+        XBT_VERB("Local variable %s (%p - %p) in frame %s  is different between snapshots", current_var1->name,(char *)heap1 + offset1, (char *)heap2 + offset2, current_var1->subprogram->name);
         xbt_dynar_free(&compared_pointers);
         compared_pointers = NULL;
         return res;

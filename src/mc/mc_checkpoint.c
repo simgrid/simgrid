@@ -43,7 +43,6 @@ static void MC_snapshot_stack_free_voidp(void *s){
 }
 
 static void local_variable_free(local_variable_t v){
-  xbt_free(v->frame);
   xbt_free(v->name);
   xbt_free(v);
 }
@@ -273,7 +272,7 @@ static void mc_fill_local_variables_values(mc_stack_frame_t stack_frame, dw_fram
       region_type = 2;
 
     local_variable_t new_var = xbt_new0(s_local_variable_t, 1);
-    new_var->frame = xbt_strdup(stack_frame->frame_name);
+    new_var->subprogram = stack_frame->frame;
     new_var->ip = stack_frame->ip;
     new_var->name = xbt_strdup(current_variable->name);
     new_var->type = current_variable->type;
