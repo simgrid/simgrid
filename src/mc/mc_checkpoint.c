@@ -254,6 +254,49 @@ static bool mc_valid_variable(dw_variable_t var, dw_frame_t frame, const void* i
     return true;
 }
 
+static void mc_fill_local_variables_values(mc_stack_frame_t stack_frame, dw_frame_t scope, xbt_dynar_t result) {
+  void* ip = (void*) stack_frame->ip;
+  if(ip < scope->low_pc || ip>= scope->high_pc)
+    return;
+
+  unsigned cursor = 0;
+  dw_variable_t current_variable;
+  xbt_dynar_foreach(scope->variables, cursor, current_variable){
+
+    if(!mc_valid_variable(current_variable, stack_frame->frame, (void*) stack_frame->ip))
+      continue;
+
+    int region_type;
+    if((long)stack_frame->ip > (long)mc_libsimgrid_info->start_exec)
+      region_type = 1;
+    else
+      region_type = 2;
+
+    local_variable_t new_var = xbt_new0(s_local_variable_t, 1);
+    new_var->frame = xbt_strdup(stack_frame->frame_name);
+    new_var->ip = stack_frame->ip;
+    new_var->name = xbt_strdup(current_variable->name);
+    new_var->type = current_variable->type;
+    new_var->region= region_type;
+
+    /* if(current_variable->address!=NULL) {
+      new_var->address = current_variable->address;
+    } else */
+    if(current_variable->locations.size != 0){
+      new_var->address = (void*) mc_dwarf_resolve_locations(&current_variable->locations,
+        &(stack_frame->unw_cursor), (void*)stack_frame->frame_base, NULL);
+    }
+
+    xbt_dynar_push(result, &new_var);
+  }
+
+  // Recursive processing of nested scopes:
+  dw_frame_t nested_scope = NULL;
+  xbt_dynar_foreach(scope->scopes, cursor, nested_scope) {
+    mc_fill_local_variables_values(stack_frame, nested_scope, result);
+  }
+}
+
 static xbt_dynar_t MC_get_local_variables_values(xbt_dynar_t stack_frames){
 
   unsigned cursor1 = 0;
@@ -261,42 +304,10 @@ static xbt_dynar_t MC_get_local_variables_values(xbt_dynar_t stack_frames){
   xbt_dynar_t variables = xbt_dynar_new(sizeof(local_variable_t), local_variable_free_voidp);
 
   xbt_dynar_foreach(stack_frames,cursor1,stack_frame) {
-
-    unsigned cursor2 = 0;
-    dw_variable_t current_variable;
-    xbt_dynar_foreach(stack_frame->frame->variables, cursor2, current_variable){
-      
-      if(!mc_valid_variable(current_variable, stack_frame->frame, (void*) stack_frame->ip))
-        continue;
-
-      int region_type;
-      if((long)stack_frame->ip > (long)mc_libsimgrid_info->start_exec)
-        region_type = 1;
-      else
-        region_type = 2;
-
-      local_variable_t new_var = xbt_new0(s_local_variable_t, 1);
-      new_var->frame = xbt_strdup(stack_frame->frame_name);
-      new_var->ip = stack_frame->ip;
-      new_var->name = xbt_strdup(current_variable->name);
-      new_var->type = current_variable->type;
-      new_var->region= region_type;
-      
-      /* if(current_variable->address!=NULL) {
-        new_var->address = current_variable->address;
-      } else */
-      if(current_variable->locations.size != 0){
-        new_var->address = (void*) mc_dwarf_resolve_locations(&current_variable->locations,
-          &(stack_frame->unw_cursor), (void*)stack_frame->frame_base, NULL);
-      }
-
-      xbt_dynar_push(variables, &new_var);
-
-    }
+    mc_fill_local_variables_values(stack_frame, stack_frame->frame, variables);
   }
 
   return variables;
-
 }
 
 static void MC_stack_frame_free_voipd(void *s){

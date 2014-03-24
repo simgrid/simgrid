@@ -251,6 +251,8 @@ static void mc_hash_stack_frame(
 
     mc_hash_value(hash, state, info, variable_address, type);
   }
+
+  // TODO, handle nested scopes
 }
 
 static void mc_hash_stack(mc_hash_t *hash, mc_snapshot_stack_t stack, mc_hashing_state* state) {
