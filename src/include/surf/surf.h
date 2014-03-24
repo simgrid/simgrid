@@ -701,7 +701,6 @@ XBT_PUBLIC(size_t) surf_workstation_file_tell(surf_resource_t workstation, surf_
  * @param workstation The surf workstation
  * @param fd The file descriptor
  * @param fullpath The new full path
- * @param origin Position used as a reference for the offset
  *
  * @return MSG_OK if successful, otherwise MSG_TASK_CANCELED
  */
