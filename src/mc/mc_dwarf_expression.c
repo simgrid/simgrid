@@ -64,7 +64,7 @@ int mc_dwarf_execute_expression(
         return MC_EXPRESSION_E_MISSING_STACK_CONTEXT;
 
       unw_get_reg(state->cursor, register_id, &res);
-      error = mc_dwarf_push_value(state, res + op->number);
+      error = mc_dwarf_push_value(state, res);
       break;
     }
 
@@ -77,6 +77,7 @@ int mc_dwarf_execute_expression(
         error = mc_dwarf_push_value(state, ((uintptr_t)state->frame_base) + op->number);
         break;
       }
+
 
     // Constants:
 
