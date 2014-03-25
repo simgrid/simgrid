@@ -43,7 +43,6 @@ static void MC_snapshot_stack_free_voidp(void *s){
 }
 
 static void local_variable_free(local_variable_t v){
-  xbt_free(v->frame);
   xbt_free(v->name);
   xbt_free(v);
 }
@@ -147,7 +146,7 @@ void MC_init_memory_map_info(){
 
 }
 
-/** \brief Fill/llokup the "subtype" field.
+/** \brief Fill/lookup the "subtype" field.
  */
 static void MC_resolve_subtype(mc_object_info_t info, dw_type_t type) {
 
@@ -168,7 +167,6 @@ static void MC_resolve_subtype(mc_object_info_t info, dw_type_t type) {
     type->subtype = subtype;
   }
 
-  // TODO, support "switch type" (looking up the type in another lib) when possible
 }
 
 void MC_post_process_types(mc_object_info_t info) {
@@ -188,7 +186,10 @@ void MC_post_process_types(mc_object_info_t info) {
   }
 }
 
-/** \brief Fills the position of the .bss and .data sections. */
+/** \brief Fills the position of the segments (executable, read-only, read/write).
+ *
+ * TODO, use dl_iterate_phdr to be more robust
+ * */
 void MC_find_object_address(memory_map_t maps, mc_object_info_t result) {
 
   unsigned int i = 0;
@@ -206,7 +207,6 @@ void MC_find_object_address(memory_map_t maps, mc_object_info_t result) {
           result->start_rw = reg.start_addr;
           result->end_rw   = reg.end_addr;
           // .bss is usually after the .data:
-          // TODO, use dl_iterate_phdr to be more robust
           s_map_region_t* next = &(maps->regions[i+1]);
           if(next->pathname == NULL && (next->prot & PROT_WRITE) && next->start_addr == reg.end_addr) {
             result->end_rw = maps->regions[i+1].end_addr;
@@ -236,12 +236,65 @@ void MC_find_object_address(memory_map_t maps, mc_object_info_t result) {
 /************************************* Take Snapshot ************************************/
 /****************************************************************************************/
 
+/** \brief Checks whether the variable is in scope for a given IP.
+ *
+ *  A variable may be defined only from a given value of IP.
+ *
+ *  \param var   Variable description
+ *  \param frame Scope description
+ *  \param ip    Instruction pointer
+ *  \return      true if the variable is valid
+ * */
 static bool mc_valid_variable(dw_variable_t var, dw_frame_t frame, const void* ip) {
   // The variable is not yet valid:
   if((const void*)((const char*) frame->low_pc + var->start_scope) > ip)
     return false;
   else
     return true;
+}
+
+static void mc_fill_local_variables_values(mc_stack_frame_t stack_frame, dw_frame_t scope, xbt_dynar_t result) {
+  void* ip = (void*) stack_frame->ip;
+  if(ip < scope->low_pc || ip>= scope->high_pc)
+    return;
+
+  unsigned cursor = 0;
+  dw_variable_t current_variable;
+  xbt_dynar_foreach(scope->variables, cursor, current_variable){
+
+    if(!mc_valid_variable(current_variable, stack_frame->frame, (void*) stack_frame->ip))
+      continue;
+
+    int region_type;
+    if((long)stack_frame->ip > (long)mc_libsimgrid_info->start_exec)
+      region_type = 1;
+    else
+      region_type = 2;
+
+    local_variable_t new_var = xbt_new0(s_local_variable_t, 1);
+    new_var->subprogram = stack_frame->frame;
+    new_var->ip = stack_frame->ip;
+    new_var->name = xbt_strdup(current_variable->name);
+    new_var->type = current_variable->type;
+    new_var->region= region_type;
+
+    /* if(current_variable->address!=NULL) {
+      new_var->address = current_variable->address;
+    } else */
+    if(current_variable->locations.size != 0){
+      new_var->address = (void*) mc_dwarf_resolve_locations(&current_variable->locations,
+        current_variable->object_info,
+        &(stack_frame->unw_cursor), (void*)stack_frame->frame_base, NULL);
+    }
+
+    xbt_dynar_push(result, &new_var);
+  }
+
+  // Recursive processing of nested scopes:
+  dw_frame_t nested_scope = NULL;
+  xbt_dynar_foreach(scope->scopes, cursor, nested_scope) {
+    mc_fill_local_variables_values(stack_frame, nested_scope, result);
+  }
 }
 
 static xbt_dynar_t MC_get_local_variables_values(xbt_dynar_t stack_frames){
@@ -251,42 +304,10 @@ static xbt_dynar_t MC_get_local_variables_values(xbt_dynar_t stack_frames){
   xbt_dynar_t variables = xbt_dynar_new(sizeof(local_variable_t), local_variable_free_voidp);
 
   xbt_dynar_foreach(stack_frames,cursor1,stack_frame) {
-
-    unsigned cursor2 = 0;
-    dw_variable_t current_variable;
-    xbt_dynar_foreach(stack_frame->frame->variables, cursor2, current_variable){
-      
-      if(!mc_valid_variable(current_variable, stack_frame->frame, (void*) stack_frame->ip))
-        continue;
-
-      int region_type;
-      if((long)stack_frame->ip > (long)mc_libsimgrid_info->start_exec)
-        region_type = 1;
-      else
-        region_type = 2;
-
-      local_variable_t new_var = xbt_new0(s_local_variable_t, 1);
-      new_var->frame = xbt_strdup(stack_frame->frame_name);
-      new_var->ip = stack_frame->ip;
-      new_var->name = xbt_strdup(current_variable->name);
-      new_var->type = current_variable->type;
-      new_var->region= region_type;
-      
-      /* if(current_variable->address!=NULL) {
-        new_var->address = current_variable->address;
-      } else */
-      if(current_variable->locations.size != 0){
-        new_var->address = (void*) mc_dwarf_resolve_locations(&current_variable->locations,
-          &(stack_frame->unw_cursor), (void*)stack_frame->frame_base, NULL);
-      }
-
-      xbt_dynar_push(variables, &new_var);
-
-    }
+    mc_fill_local_variables_values(stack_frame, stack_frame->frame, variables);
   }
 
   return variables;
-
 }
 
 static void MC_stack_frame_free_voipd(void *s){
@@ -324,7 +345,7 @@ static xbt_dynar_t MC_unwind_stack_frames(void *stack_context) {
 
     if(frame) {
       stack_frame->frame_name = xbt_strdup(frame->name);
-      stack_frame->frame_base = (unw_word_t)mc_find_frame_base(frame, &c);
+      stack_frame->frame_base = (unw_word_t)mc_find_frame_base(frame, frame->object_info, &c);
     } else {
       stack_frame->frame_base = 0;
     }

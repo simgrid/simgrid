@@ -159,6 +159,7 @@ void mc_frame_free(dw_frame_t frame){
   xbt_free(frame->name);
   mc_dwarf_location_list_clear(&(frame->frame_base));
   xbt_dynar_free(&(frame->variables));
+  xbt_dynar_free(&(frame->scopes));
   xbt_free(frame);
 }
 
@@ -212,6 +213,8 @@ void MC_free_object_info(mc_object_info_t* info) {
 // ***** Helpers
 
 void* MC_object_base_address(mc_object_info_t info) {
+  if(info->flags & MC_OBJECT_INFO_EXECUTABLE)
+    return 0;
   void* result = info->start_exec;
   if(info->start_rw!=NULL && result > (void*) info->start_rw) result = info->start_rw;
   if(info->start_ro!=NULL && result > (void*) info->start_ro) result = info->start_ro;
@@ -276,7 +279,7 @@ static dw_frame_t MC_find_function_by_ip_and_object(void* ip, mc_object_info_t i
     int k = i + ((j-i)/2);
     if(ip < base[k].low_pc) {
       j = k-1;
-    } else if(ip > base[k].high_pc) {
+    } else if(ip >= base[k].high_pc) {
       i = k+1;
     } else {
       return base[k].function;
@@ -303,18 +306,41 @@ static void MC_post_process_variables(mc_object_info_t info) {
   }
 }
 
+static void mc_post_process_scope(mc_object_info_t info, dw_frame_t scope) {
+
+  if(scope->tag == DW_TAG_inlined_subroutine) {
+
+    // Attach correct namespaced name in inlined subroutine:
+    char* key = bprintf("%" PRIx64, (uint64_t) scope->abstract_origin_id);
+    dw_frame_t abstract_origin = xbt_dict_get_or_null(info->subprograms, key);
+    xbt_assert(abstract_origin, "Could not lookup abstract origin %s", key);
+    xbt_free(key);
+    scope->name = xbt_strdup(abstract_origin->name);
+
+  }
+
+  // Direct:
+  unsigned cursor = 0;
+  dw_variable_t variable = NULL;
+  xbt_dynar_foreach(scope->variables, cursor, variable) {
+    if(variable->type_origin) {
+      variable->type = xbt_dict_get_or_null(info->types, variable->type_origin);
+    }
+  }
+
+  // Recursive post-processing of nested-scopes:
+  dw_frame_t nested_scope = NULL;
+  xbt_dynar_foreach(scope->scopes, cursor, nested_scope)
+    mc_post_process_scope(info, nested_scope);
+
+}
+
 static void MC_post_process_functions(mc_object_info_t info) {
   xbt_dict_cursor_t cursor;
   char* key;
-  dw_frame_t function = NULL;
-  xbt_dict_foreach(info->subprograms, cursor, key, function) {
-    unsigned cursor2 = 0;
-    dw_variable_t variable = NULL;
-    xbt_dynar_foreach(function->variables, cursor2, variable) {
-      if(variable->type_origin) {
-        variable->type = xbt_dict_get_or_null(info->types, variable->type_origin);
-      }
-    }
+  dw_frame_t subprogram = NULL;
+  xbt_dict_foreach(info->subprograms, cursor, key, subprogram) {
+    mc_post_process_scope(info, subprogram);
   }
 }
 
@@ -334,41 +360,6 @@ mc_object_info_t MC_find_object_info(memory_map_t maps, char* name, int executab
 }
 
 /*************************************************************************/
-
-/** \brief Finds a frame (DW_TAG_subprogram) from an DWARF offset in the rangd of this subprogram
- *
- * The offset can be an offset of a child DW_TAG_variable.
- */
-static dw_frame_t MC_dwarf_get_frame_by_offset(xbt_dict_t all_variables, unsigned long int offset){
-
-  xbt_dict_cursor_t cursor = NULL;
-  char *name;
-  dw_frame_t res;
-
-  xbt_dict_foreach(all_variables, cursor, name, res) {
-    if(offset >= res->start && offset < res->end){
-      xbt_dict_cursor_free(&cursor);
-      return res;
-    }
-  }
-
-  xbt_dict_cursor_free(&cursor);
-  return NULL;
-  
-}
-
-static dw_variable_t MC_dwarf_get_variable_by_name(dw_frame_t frame, char *var){
-
-  unsigned int cursor = 0;
-  dw_variable_t current_var;
-
-  xbt_dynar_foreach(frame->variables, cursor, current_var){
-    if(strcmp(var, current_var->name) == 0)
-      return current_var;
-  }
-
-  return NULL;
-}
 
 static int MC_dwarf_get_variable_index(xbt_dynar_t variables, char* var, void *address){
 
@@ -607,35 +598,69 @@ void MC_ignore_global_variable(const char *name){
     MC_UNSET_RAW_MEM;
 }
 
-static void MC_ignore_local_variable_in_object(const char *var_name, const char *frame_name, mc_object_info_t info) {
-  xbt_dict_cursor_t cursor2;
-  dw_frame_t frame;
-  int start, end;
-  int cursor = 0;
-  dw_variable_t current_var;
-  char* key;
-  xbt_dict_foreach(info->subprograms, cursor2, key, frame) {
+/** \brief Ignore a local variable in a scope
+ *
+ *  Ignore all instances of variables with a given name in
+ *  any (possibly inlined) subprogram with a given namespaced
+ *  name.
+ *
+ *  \param var_name        Name of the local variable (or parameter to ignore)
+ *  \param subprogram_name Name of the subprogram fo ignore (NULL for any)
+ *  \param subprogram      (possibly inlined) Subprogram of the scope
+ *  \param scope           Current scope
+ */
+static void mc_ignore_local_variable_in_scope(
+  const char *var_name, const char *subprogram_name,
+  dw_frame_t subprogram, dw_frame_t scope) {
+  // Processing of direct variables:
 
-    if(frame_name && strcmp(frame_name, frame->name))
-      continue;
+  // If the current subprogram matche the given name:
+  if(subprogram_name==NULL || strcmp(subprogram_name, subprogram->name)==0) {
 
-    start = 0;
-    end = xbt_dynar_length(frame->variables) - 1;
+    // Try to find the variable and remove it:
+    int start = 0;
+    int end = xbt_dynar_length(scope->variables) - 1;
+
+    // Dichotomic search:
     while(start <= end){
-      cursor = (start + end) / 2;
-      current_var = (dw_variable_t)xbt_dynar_get_as(frame->variables, cursor, dw_variable_t);
+      int cursor = (start + end) / 2;
+      dw_variable_t current_var = (dw_variable_t)xbt_dynar_get_as(scope->variables, cursor, dw_variable_t);
 
       int compare = strcmp(current_var->name, var_name);
       if(compare == 0){
-        xbt_dynar_remove_at(frame->variables, cursor, NULL);
+        // Variable found, remove it:
+        xbt_dynar_remove_at(scope->variables, cursor, NULL);
+
+        // and start again:
         start = 0;
-        end = xbt_dynar_length(frame->variables) - 1;
+        end = xbt_dynar_length(scope->variables) - 1;
       }else if(compare < 0){
         start = cursor + 1;
       }else{
         end = cursor - 1;
       }
     }
+
+  }
+
+  // And recursive processing in nested scopes:
+  unsigned cursor = 0;
+  dw_frame_t nested_scope = NULL;
+  xbt_dynar_foreach(scope->scopes, cursor, nested_scope) {
+    // The new scope may be an inlined subroutine, in this case we want to use its
+    // namespaced name in recursive calls:
+    dw_frame_t nested_subprogram = nested_scope->tag == DW_TAG_inlined_subroutine ? nested_scope : subprogram;
+
+    mc_ignore_local_variable_in_scope(var_name, subprogram_name, nested_subprogram, nested_scope);
+  }
+}
+
+static void MC_ignore_local_variable_in_object(const char *var_name, const char *subprogram_name, mc_object_info_t info) {
+  xbt_dict_cursor_t cursor2;
+  dw_frame_t frame;
+  char* key;
+  xbt_dict_foreach(info->subprograms, cursor2, key, frame) {
+    mc_ignore_local_variable_in_scope(var_name, subprogram_name, frame, frame);
   }
 }
 

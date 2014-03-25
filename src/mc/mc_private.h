@@ -94,7 +94,30 @@ mc_snapshot_t SIMIX_pre_mc_snapshot(smx_simcall_t simcall);
 mc_snapshot_t MC_take_snapshot(int num_state);
 void MC_restore_snapshot(mc_snapshot_t);
 void MC_free_snapshot(mc_snapshot_t);
+
+/** \brief Translate a pointer from process address space to snapshot address space
+ *
+ *  The address space contains snapshot of the main/application memory:
+ *  this function finds the address in a given snaphot for a given
+ *  real/application address.
+ *
+ *  For read only memory regions and other regions which are not int the
+ *  snapshot, the address is not changed.
+ *
+ *  \param addr     Application address
+ *  \param snapshot The snapshot of interest (if NULL no translation is done)
+ *  \return         Translated address in the snapshot address space
+ * */
 void* mc_translate_address(uintptr_t addr, mc_snapshot_t snapshot);
+
+/** \brief Translate a pointer from the snapshot address space to the application address space
+ *
+ *  This is the inverse of mc_translate_address.
+ *
+ * \param addr    Address in the snapshot address space
+ * \param snapsot Snapshot of interest (if NULL no translation is done)
+ * \return        Translated address in the application address space
+ */
 uintptr_t mc_untranslate_address(void* addr, mc_snapshot_t snapshot);
 
 extern xbt_dynar_t mc_checkpoint_ignore;
@@ -393,8 +416,8 @@ typedef struct s_mc_location_list {
   mc_expression_t locations;
 } s_mc_location_list_t, *mc_location_list_t;
 
-Dwarf_Off mc_dwarf_resolve_location(mc_expression_t expression, unw_cursor_t* c, void* frame_pointer_address, mc_snapshot_t snapshot);
-Dwarf_Off mc_dwarf_resolve_locations(mc_location_list_t locations, unw_cursor_t* c, void* frame_pointer_address, mc_snapshot_t snapshot);
+Dwarf_Off mc_dwarf_resolve_location(mc_expression_t expression, mc_object_info_t object_info, unw_cursor_t* c, void* frame_pointer_address, mc_snapshot_t snapshot);
+Dwarf_Off mc_dwarf_resolve_locations(mc_location_list_t locations, mc_object_info_t object_info, unw_cursor_t* c, void* frame_pointer_address, mc_snapshot_t snapshot);
 
 void mc_dwarf_expression_clear(mc_expression_t expression);
 void mc_dwarf_expression_init(mc_expression_t expression, size_t len, Dwarf_Op* ops);
@@ -439,17 +462,21 @@ typedef struct s_dw_variable{
   void* address;
 
   size_t start_scope;
+  mc_object_info_t object_info;
 
 }s_dw_variable_t, *dw_variable_t;
 
 struct s_dw_frame{
+  int tag;
   char *name;
   void *low_pc;
   void *high_pc;
   s_mc_location_list_t frame_base;
   xbt_dynar_t /* <dw_variable_t> */ variables; /* Cannot use dict, there may be several variables with the same name (in different lexical blocks)*/
-  unsigned long int start; /* DWARF offset of the subprogram */
-  unsigned long int end;   /* Dwarf offset of the next sibling */
+  unsigned long int id; /* DWARF offset of the subprogram */
+  xbt_dynar_t /* <dw_frame_t> */ scopes;
+  Dwarf_Off abstract_origin_id;
+  mc_object_info_t object_info;
 };
 
 struct s_mc_function_index_item {
@@ -467,6 +494,21 @@ void MC_dwarf_register_global_variable(mc_object_info_t info, dw_variable_t vari
 void MC_register_variable(mc_object_info_t info, dw_frame_t frame, dw_variable_t variable);
 void MC_dwarf_register_non_global_variable(mc_object_info_t info, dw_frame_t frame, dw_variable_t variable);
 void MC_dwarf_register_variable(mc_object_info_t info, dw_frame_t frame, dw_variable_t variable);
+
+/** Find the DWARF offset for this ELF object
+ *
+ *  An offset is applied to address found in DWARF:
+ *
+ *  <ul>
+ *    <li>for an executable obejct, addresses are virtual address
+ *        (there is no offset) i.e. \f$\text{virtual address} = \{dwarf address}\f$;</li>
+ *    <li>for a shared object, the addreses are offset from the begining
+ *        of the shared object (the base address of the mapped shared
+ *        object must be used as offset
+ *        i.e. \f$\text{virtual address} = \text{shared object base address}
+ *             + \text{dwarf address}\f$.</li>
+ *
+ */
 void* MC_object_base_address(mc_object_info_t info);
 
 /********************************** DWARF **********************************/
@@ -479,6 +521,7 @@ void* MC_object_base_address(mc_object_info_t info);
 #define MC_EXPRESSION_E_STACK_UNDERFLOW 3
 #define MC_EXPRESSION_E_MISSING_STACK_CONTEXT 4
 #define MC_EXPRESSION_E_MISSING_FRAME_BASE 5
+#define MC_EXPRESSION_E_NO_BASE_ADDRESS 6
 
 typedef struct s_mc_expression_state {
   uintptr_t stack[MC_EXPRESSION_STACK_SIZE];
@@ -487,16 +530,17 @@ typedef struct s_mc_expression_state {
   unw_cursor_t* cursor;
   void* frame_base;
   mc_snapshot_t snapshot;
+  mc_object_info_t object_info;
 } s_mc_expression_state_t, *mc_expression_state_t;
 
 int mc_dwarf_execute_expression(size_t n, const Dwarf_Op* ops, mc_expression_state_t state);
 
-void* mc_find_frame_base(dw_frame_t frame, unw_cursor_t* unw_cursor);
+void* mc_find_frame_base(dw_frame_t frame, mc_object_info_t object_info, unw_cursor_t* unw_cursor);
 
 /********************************** Miscellaneous **********************************/
 
 typedef struct s_local_variable{
-  char *frame;
+  dw_frame_t subprogram;
   unsigned long ip;
   char *name;
   dw_type_t type;
