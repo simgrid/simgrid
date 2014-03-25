@@ -30,10 +30,10 @@ endif()
 
 #some tests may take forever on non futexes systems, using busy_wait with n cores < n workers
 # default to posix for these tests if futexes are not supported
-if(NOT HAVE_FUTEX_H) 
+if(NOT HAVE_FUTEX_H)
 SET(CONTEXTS_SYNCHRO --cfg contexts/synchro:posix)
 endif()
- 
+
 
 INCLUDE(CTest)
 ENABLE_TESTING()
@@ -199,7 +199,7 @@ if(NOT enable_memcheck)
   ADD_TEST(msg-masterslave-vivaldi-thread       ${TESH_COMMAND} ${TESH_OPTION} --cfg contexts/factory:thread --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg --cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/masterslave/masterslave_vivaldi.tesh)
 
   ADD_TEST(msg-cloud-two-tasks-vm-thread ${TESH_COMMAND} ${TESH_OPTION} --cfg contexts/factory:thread --setenv bindir=${CMAKE_BINARY_DIR}/examples/msg/cloud/ --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg/cloud/ --cd ${CMAKE_BINARY_DIR}/examples/msg/cloud/ ${CMAKE_HOME_DIRECTORY}/examples/msg/cloud/two_tasks_vm.tesh)
-  
+
   ADD_TEST(msg-cloud-simple-vm-thread ${TESH_COMMAND} ${TESH_OPTION} --cfg contexts/factory:thread --setenv bindir=${CMAKE_BINARY_DIR}/examples/msg/cloud/ --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg/cloud/ --cd ${CMAKE_BINARY_DIR}/examples/msg/cloud/ ${CMAKE_HOME_DIRECTORY}/examples/msg/cloud/simple_vm.tesh)
 
   if(CONTEXT_UCONTEXT)
@@ -624,6 +624,7 @@ if(NOT enable_memcheck)
     ADD_TEST(java-mutualExclusion               ${TESH_COMMAND} ${TESH_OPTION} --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/java --setenv classpath=${TESH_CLASSPATH} --cd ${CMAKE_BINARY_DIR}/examples/java ${CMAKE_HOME_DIRECTORY}/examples/java/mutualExclusion/mutualexclusion.tesh)
     ADD_TEST(java-pingPong                      ${TESH_COMMAND} ${TESH_OPTION} --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/java --setenv classpath=${TESH_CLASSPATH} --cd ${CMAKE_BINARY_DIR}/examples/java ${CMAKE_HOME_DIRECTORY}/examples/java/pingPong/pingpong.tesh)
     ADD_TEST(java-priority                      ${TESH_COMMAND} ${TESH_OPTION} --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/java --setenv classpath=${TESH_CLASSPATH} --cd ${CMAKE_BINARY_DIR}/examples/java ${CMAKE_HOME_DIRECTORY}/examples/java/priority/priority.tesh)
+    ADD_TEST(java-reservation-surf-plugin       ${TESH_COMMAND} ${TESH_OPTION} --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/java --setenv classpath=${TESH_CLASSPATH} --cd ${CMAKE_BINARY_DIR}/examples/java ${CMAKE_HOME_DIRECTORY}/examples/java/reservationSurfPlugin/reservation_surf_plugin.tesh)
     ADD_TEST(java-startKillTime                 ${TESH_COMMAND} ${TESH_OPTION} --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/java --setenv classpath=${TESH_CLASSPATH} --cd ${CMAKE_BINARY_DIR}/examples/java ${CMAKE_HOME_DIRECTORY}/examples/java/startKillTime/startKillTime.tesh)
     ADD_TEST(java-surf-plugin                   ${TESH_COMMAND} ${TESH_OPTION} --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/java --setenv classpath=${TESH_CLASSPATH} --cd ${CMAKE_BINARY_DIR}/examples/java ${CMAKE_HOME_DIRECTORY}/examples/java/surfPlugin/surf_plugin.tesh)
     ADD_TEST(java-suspend                       ${TESH_COMMAND} ${TESH_OPTION} --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/java --setenv classpath=${TESH_CLASSPATH} --cd ${CMAKE_BINARY_DIR}/examples/java ${CMAKE_HOME_DIRECTORY}/examples/java/suspend/suspend.tesh)

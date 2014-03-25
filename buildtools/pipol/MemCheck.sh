@@ -1,5 +1,7 @@
 #!/bin/bash
 
+ulimit -c 0
+
 if [ -e ./pipol ] ; then
 	rm -rf ./pipol/$PIPOL_HOST
 	mkdir ./pipol/$PIPOL_HOST

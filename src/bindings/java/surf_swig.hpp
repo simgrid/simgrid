@@ -4,15 +4,13 @@
 #include "src/surf/network_interface.hpp"
 #include "src/surf/maxmin_private.hpp"
 
+typedef xbt_dynar_t NetworkLinkDynar;
+
 double getClock();
 
-#ifdef __cplusplus
-extern "C" {
-#endif
 void clean();
-#ifdef __cplusplus
-}
-#endif
+
+NetworkLinkDynar getRoute(char *srcName, char *dstName);
 
 class Plugin {
 public:

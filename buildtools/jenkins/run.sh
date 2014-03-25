@@ -12,6 +12,8 @@ die () {
   exit $status
 }
 
+ulimit -c 0
+
 rm -rf $WORKSPACE/build
 
 mkdir $WORKSPACE/build
