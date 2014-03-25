@@ -25,10 +25,10 @@ public:
  virtual void cpuDestructedCallback(Cpu *cpu) {}
 
  void activateCpuStateChangedCallback();
- virtual void cpuStateChangedCallback(Cpu *cpu) {}
+ virtual void cpuStateChangedCallback(Cpu *cpu, e_surf_resource_state_t, e_surf_resource_state_t) {}
 
  void activateCpuActionStateChangedCallback();
- virtual void cpuActionStateChangedCallback(CpuAction *action) {}
+ virtual void cpuActionStateChangedCallback(CpuAction *action, e_surf_action_state_t, e_surf_action_state_t) {}
 
 
  void activateNetworkLinkCreatedCallback();
@@ -38,10 +38,10 @@ public:
  virtual void networkLinkDestructedCallback(NetworkLink *link) {}
 
  void activateNetworkLinkStateChangedCallback();
- virtual void networkLinkStateChangedCallback(NetworkLink *link) {}
+ virtual void networkLinkStateChangedCallback(NetworkLink *link, e_surf_resource_state_t, e_surf_resource_state_t) {}
 
  void activateNetworkActionStateChangedCallback();
- virtual void networkActionStateChangedCallback(NetworkAction *action) {}
+ virtual void networkActionStateChangedCallback(NetworkAction *action, e_surf_action_state_t old, e_surf_action_state_t cur) {}
 
 };
 

@@ -111,3 +111,20 @@ struct s_xbt_dict {
   char *getValue(char *key) {return (char*)xbt_dict_get_or_null($self, key);}
 }
 };
+
+%rename e_surf_action_state_t ActionState;
+typedef enum {
+  SURF_ACTION_READY = 0,        /**< Ready        */
+  SURF_ACTION_RUNNING,          /**< Running      */
+  SURF_ACTION_FAILED,           /**< Task Failure */
+  SURF_ACTION_DONE,             /**< Completed    */
+  SURF_ACTION_TO_FREE,          /**< Action to free in next cleanup */
+  SURF_ACTION_NOT_IN_THE_SYSTEM
+                                /**< Not in the system anymore. Why did you ask ? */
+} e_surf_action_state_t;
+
+%rename e_surf_resource_state_t ResourceState;
+typedef enum {
+  SURF_RESOURCE_ON = 1,                   /**< Up & ready        */
+  SURF_RESOURCE_OFF = 0                   /**< Down & broken     */
+} e_surf_resource_state_t;

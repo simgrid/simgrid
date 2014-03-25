@@ -27,28 +27,28 @@ typedef NetworkAction *NetworkActionPtr;
  *************/
 
 /** @ingroup SURF_callbacks
- * @brief Callbacks handler which emit the callbacks after NetworkLink creation *
+ * @brief Callbacks handler which emit the callbacks after NetworkLink creation
  * @details Callback functions have the following signature: `void(NetworkLinkPtr)`
  */
 extern surf_callback(void, NetworkLinkPtr) networkLinkCreatedCallbacks;
 
 /** @ingroup SURF_callbacks
- * @brief Callbacks handler which emit the callbacks after NetworkLink destruction *
+ * @brief Callbacks handler which emit the callbacks after NetworkLink destruction
  * @details Callback functions have the following signature: `void(NetworkLinkPtr)`
  */
 extern surf_callback(void, NetworkLinkPtr) networkLinkDestructedCallbacks;
 
 /** @ingroup SURF_callbacks
- * @brief Callbacks handler which emit the callbacks after NetworkLink State changed *
- * @details Callback functions have the following signature: `void(NetworkLinkActionPtr)`
+ * @brief Callbacks handler which emit the callbacks after NetworkLink State changed
+ * @details Callback functions have the following signature: `void(NetworkLinkActionPtr action, e_surf_resource_state_t old, e_surf_resource_state_t current)`
  */
-extern surf_callback(void, NetworkLinkPtr) networkLinkStateChangedCallbacks;
+extern surf_callback(void, NetworkLinkPtr, e_surf_resource_state_t, e_surf_resource_state_t) networkLinkStateChangedCallbacks;
 
 /** @ingroup SURF_callbacks
- * @brief Callbacks handler which emit the callbacks after NetworkAction State changed *
- * @details Callback functions have the following signature: `void(NetworkActionPtr)`
+ * @brief Callbacks handler which emit the callbacks after NetworkAction State changed
+ * @details Callback functions have the following signature: `void(NetworkActionPtr action, e_surf_action_state_t old, e_surf_action_state_t current)`
  */
-extern surf_callback(void, NetworkActionPtr) networkActionStateChangedCallbacks;
+extern surf_callback(void, NetworkActionPtr, e_surf_action_state_t, e_surf_action_state_t) networkActionStateChangedCallbacks;
 
 /*********
  * Tools *
@@ -73,7 +73,7 @@ public:
 
   /**
    * @brief NetworkModel constructor
-   * 
+   *
    * @param name The name of the NetworkModel
    */
   NetworkModel(const char *name) : Model(name) {
@@ -95,7 +95,7 @@ public:
 
   /**
    * @brief Create a NetworkLink
-   * 
+   *
    * @param name The name of the NetworkLink
    * @param bw_initial The initial bandwidth of the NetworkLink in bytes per second
    * @param bw_trace The trace associated to the NetworkLink bandwidth [TODO]
@@ -123,11 +123,11 @@ public:
   /**
    * @brief Create a communication between two [TODO]
    * @details [TODO]
-   * 
+   *
    * @param src The source [TODO]
    * @param dst The destination [TODO]
    * @param size The size of the communication in bytes
-   * @param rate The 
+   * @param rate The
    * @return The action representing the communication
    */
   virtual ActionPtr communicate(RoutingEdgePtr src, RoutingEdgePtr dst,
@@ -135,7 +135,7 @@ public:
 
   /**
    * @brief Function pointer to the function to use to solve the lmm_system_t
-   * 
+   *
    * @param system The lmm_system_t to solve
    */
   void (*f_networkSolve)(lmm_system_t);
@@ -143,7 +143,7 @@ public:
   /**
    * @brief [brief description]
    * @details [long description]
-   * 
+   *
    * @param size [description]
    * @return [description]
    */
@@ -152,7 +152,7 @@ public:
   /**
    * @brief [brief description]
    * @details [long description]
-   * 
+   *
    * @param size [description]
    * @return [description]
    */
@@ -161,7 +161,7 @@ public:
   /**
    * @brief [brief description]
    * @details [long description]
-   * 
+   *
    * @param rate [description]
    * @param bound [description]
    * @param size [description]
@@ -182,7 +182,7 @@ class NetworkLink : public Resource {
 public:
   /**
    * @brief NetworkLink constructor
-   * 
+   *
    * @param model The CpuModel associated to this NetworkLink
    * @param name The name of the NetworkLink
    * @param props Dictionary of properties associated to this NetworkLink
@@ -191,7 +191,7 @@ public:
 
   /**
    * @brief NetworkLink constructor
-   * 
+   *
    * @param model The CpuModel associated to this NetworkLink
    * @param name The name of the NetworkLink
    * @param props Dictionary of properties associated to this NetworkLink
@@ -211,14 +211,14 @@ public:
 
   /**
    * @brief Get the bandwidth in bytes per second of current NetworkLink
-   * 
+   *
    * @return The bandwith in bytes per second of the current NetworkLink
    */
   virtual double getBandwidth();
 
   /**
    * @brief Get the latency in seconds of current NetworkLink
-   * 
+   *
    * @return The latency in seconds of the current NetworkLink
    */
   virtual double getLatency();
@@ -226,14 +226,14 @@ public:
   /**
    * @brief Check if the NetworkLink is shared
    * @details [long description]
-   * 
+   *
    * @return true if the current NetwokrLink is shared, false otherwise
    */
   virtual bool isShared();
 
   /**
    * @brief Check if the NetworkLink is used
-   * 
+   *
    * @return true if the current NetwokrLink is used, false otherwise
    */
   bool isUsed();
@@ -261,7 +261,7 @@ class NetworkAction : public Action {
 public:
   /**
    * @brief NetworkAction constructor
-   * 
+   *
    * @param model The NetworkModel associated to this NetworkAction
    * @param cost The cost of this  NetworkAction in [TODO]
    * @param failed [description]
@@ -271,7 +271,7 @@ public:
 
   /**
    * @brief NetworkAction constructor
-   * 
+   *
    * @param model The NetworkModel associated to this NetworkAction
    * @param cost The cost of this  NetworkAction in [TODO]
    * @param failed [description]

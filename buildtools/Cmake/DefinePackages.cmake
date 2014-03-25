@@ -505,6 +505,9 @@ set(JSURF_JAVA_GENERATED_SRC
   ${CMAKE_BINARY_DIR}/src/bindings/java/org/simgrid/surf/NetworkLink.java
   ${CMAKE_BINARY_DIR}/src/bindings/java/org/simgrid/surf/NetworkAction.java
 
+  ${CMAKE_BINARY_DIR}/src/bindings/java/org/simgrid/surf/ActionState.java
+  ${CMAKE_BINARY_DIR}/src/bindings/java/org/simgrid/surf/ResourceState.java
+
   ${CMAKE_BINARY_DIR}/src/bindings/java/org/simgrid/surf/LmmConstraint.java
   ${CMAKE_BINARY_DIR}/src/bindings/java/org/simgrid/surf/XbtDict.java
 )
