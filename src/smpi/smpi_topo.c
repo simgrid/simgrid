@@ -53,10 +53,11 @@ int smpi_mpi_cart_create(MPI_Comm comm_old, int ndims, int dims[],
 
   rank = smpi_comm_rank(comm_old);
 
-  // TODO : add somewhere : if topo != NULL, free...
-  topo = smpi_topo_create(ndims);
+ 
+ 
   newSize = 1;
   if(ndims != 0) {
+    topo = smpi_topo_create(ndims);
     for (i = 0 ; i < ndims ; i++) {
       newSize *= dims[i];
     }
@@ -91,6 +92,7 @@ int smpi_mpi_cart_create(MPI_Comm comm_old, int ndims, int dims[],
   }
   else {
     if (rank == 0) {
+      topo = smpi_topo_create(ndims);
       *comm_cart = smpi_comm_new(smpi_comm_group(MPI_COMM_SELF), topo);
     }
     else {
