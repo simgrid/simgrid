@@ -88,6 +88,13 @@ int mc_dwarf_execute_expression(
       break;
 
     case DW_OP_addr:
+      if(!state->object_info)
+        return MC_EXPRESSION_E_NO_BASE_ADDRESS;
+      if(state->stack_size==MC_EXPRESSION_STACK_SIZE)
+        return MC_EXPRESSION_E_STACK_OVERFLOW;
+      error = mc_dwarf_push_value(state,  (Dwarf_Off)MC_object_base_address(state->object_info) + op->number);
+      break;
+
     case DW_OP_const1u:
     case DW_OP_const2u:
     case DW_OP_const4u:
@@ -253,12 +260,13 @@ int mc_dwarf_execute_expression(
 /** \brief Resolve a location expression
  *  \deprecated Use mc_dwarf_resolve_expression
  */
-Dwarf_Off mc_dwarf_resolve_location(mc_expression_t expression, unw_cursor_t* c, void* frame_pointer_address, mc_snapshot_t snapshot) {
+Dwarf_Off mc_dwarf_resolve_location(mc_expression_t expression, mc_object_info_t object_info, unw_cursor_t* c, void* frame_pointer_address, mc_snapshot_t snapshot) {
   s_mc_expression_state_t state;
   memset(&state, 0, sizeof(s_mc_expression_state_t));
   state.frame_base = frame_pointer_address;
   state.cursor = c;
   state.snapshot = snapshot;
+  state.object_info = object_info;
 
   if(mc_dwarf_execute_expression(expression->size, expression->ops, &state))
     xbt_die("Error evaluating DWARF expression");
@@ -268,7 +276,7 @@ Dwarf_Off mc_dwarf_resolve_location(mc_expression_t expression, unw_cursor_t* c,
     return (Dwarf_Off) state.stack[state.stack_size-1];
 }
 
-Dwarf_Off mc_dwarf_resolve_locations(mc_location_list_t locations, unw_cursor_t* c, void* frame_pointer_address, mc_snapshot_t snapshot) {
+Dwarf_Off mc_dwarf_resolve_locations(mc_location_list_t locations, mc_object_info_t object_info, unw_cursor_t* c, void* frame_pointer_address, mc_snapshot_t snapshot) {
 
   unw_word_t ip;
   if(c) {
@@ -280,7 +288,7 @@ Dwarf_Off mc_dwarf_resolve_locations(mc_location_list_t locations, unw_cursor_t*
     mc_expression_t expression = locations->locations + i;
     if( (expression->lowpc==NULL && expression->highpc==NULL)
       || (c && ip >= (unw_word_t) expression->lowpc && ip < (unw_word_t) expression->highpc)) {
-      return mc_dwarf_resolve_location(expression, c, frame_pointer_address, snapshot);
+      return mc_dwarf_resolve_location(expression, object_info, c, frame_pointer_address, snapshot);
     }
   }
   xbt_die("Could not resolve location");
@@ -291,8 +299,8 @@ Dwarf_Off mc_dwarf_resolve_locations(mc_location_list_t locations, unw_cursor_t*
  *  \param frame
  *  \param unw_cursor
  */
-void* mc_find_frame_base(dw_frame_t frame, unw_cursor_t* unw_cursor) {
-  return (void*) mc_dwarf_resolve_locations(&frame->frame_base, unw_cursor, NULL, NULL);
+void* mc_find_frame_base(dw_frame_t frame, mc_object_info_t object_info, unw_cursor_t* unw_cursor) {
+  return (void*) mc_dwarf_resolve_locations(&frame->frame_base, object_info, unw_cursor, NULL, NULL);
 }
 
 void mc_dwarf_expression_clear(mc_expression_t expression) {

@@ -68,8 +68,8 @@ static void test_local_variable(mc_object_info_t info, const char* function, con
   dw_variable_t var = find_local_variable(subprogram, variable);
   assert(var);
 
-  void* frame_base = mc_find_frame_base(subprogram, cursor);
-  xbt_assert((void*)mc_dwarf_resolve_locations(&var->locations, cursor, frame_base, NULL) == address,
+  void* frame_base = mc_find_frame_base(subprogram, info, cursor);
+  xbt_assert((void*)mc_dwarf_resolve_locations(&var->locations, info, cursor, frame_base, NULL) == address,
     "Bad resolution of local variable %s of %s", variable, function);
 
 }

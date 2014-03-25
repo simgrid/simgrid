@@ -241,7 +241,8 @@ static void mc_hash_stack_frame(
 
     XBT_DEBUG("Hash local variable %s", variable->name);
 
-    void* variable_address = (void*) mc_dwarf_resolve_locations(&variable->locations, unw_cursor, frame_pointer, NULL);
+    void* variable_address = (void*) mc_dwarf_resolve_locations(
+      &variable->locations, variable->object_info, unw_cursor, frame_pointer, NULL);
 
     dw_type_t type = variable->type;
     if(type==NULL) {

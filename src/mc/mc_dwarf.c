@@ -690,6 +690,7 @@ static dw_variable_t MC_die_to_variable(mc_object_info_t info, Dwarf_Die* die, D
   dw_variable_t variable = xbt_new0(s_dw_variable_t, 1);
   variable->dwarf_offset = dwarf_dieoffset(die);
   variable->global = frame == NULL; // Can be override base on DW_AT_location
+  variable->object_info = info;
 
   const char* name = MC_dwarf_attr_integrate_string(die, DW_AT_name);
   variable->name = xbt_strdup(name);
@@ -714,8 +715,7 @@ static dw_variable_t MC_die_to_variable(mc_object_info_t info, Dwarf_Die* die, D
       if (len==1 && expr[0].atom == DW_OP_addr) {
         variable->global = 1;
         Dwarf_Off offset = expr[0].number;
-        // TODO, Why is this different base on the object?
-        Dwarf_Off base = strcmp(info->file_name, xbt_binary_name) !=0 ? (Dwarf_Off) info->start_exec : 0;
+        Dwarf_Off base = (Dwarf_Off) MC_object_base_address(info);
         variable->address = (void*) (base + offset);
       } else {
         mc_dwarf_location_list_init_from_expression(&variable->locations, len, expr);
@@ -795,6 +795,7 @@ static void MC_dwarf_handle_scope_die(mc_object_info_t info, Dwarf_Die* die, Dwa
 
   frame->tag   = tag;
   frame->id = dwarf_dieoffset(die);
+  frame->object_info = info;
 
   if(klass==mc_tag_subprogram) {
     const char* name = MC_dwarf_attr_integrate_string(die, DW_AT_name);
@@ -806,7 +807,7 @@ static void MC_dwarf_handle_scope_die(mc_object_info_t info, Dwarf_Die* die, Dwa
   // This is the base address for DWARF addresses.
   // Relocated addresses are offset from this base address.
   // See DWARF4 spec 7.5
-  void* base = info->flags & MC_OBJECT_INFO_EXECUTABLE ? 0 : MC_object_base_address(info);
+  void* base = MC_object_base_address(info);
 
   // Variables are filled in the (recursive) call of MC_dwarf_handle_children:
   frame->variables = xbt_dynar_new(sizeof(dw_variable_t), dw_variable_free_voidp);

@@ -213,6 +213,8 @@ void MC_free_object_info(mc_object_info_t* info) {
 // ***** Helpers
 
 void* MC_object_base_address(mc_object_info_t info) {
+  if(info->flags & MC_OBJECT_INFO_EXECUTABLE)
+    return 0;
   void* result = info->start_exec;
   if(info->start_rw!=NULL && result > (void*) info->start_rw) result = info->start_rw;
   if(info->start_ro!=NULL && result > (void*) info->start_ro) result = info->start_ro;

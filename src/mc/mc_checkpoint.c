@@ -283,6 +283,7 @@ static void mc_fill_local_variables_values(mc_stack_frame_t stack_frame, dw_fram
     } else */
     if(current_variable->locations.size != 0){
       new_var->address = (void*) mc_dwarf_resolve_locations(&current_variable->locations,
+        current_variable->object_info,
         &(stack_frame->unw_cursor), (void*)stack_frame->frame_base, NULL);
     }
 
@@ -344,7 +345,7 @@ static xbt_dynar_t MC_unwind_stack_frames(void *stack_context) {
 
     if(frame) {
       stack_frame->frame_name = xbt_strdup(frame->name);
-      stack_frame->frame_base = (unw_word_t)mc_find_frame_base(frame, &c);
+      stack_frame->frame_base = (unw_word_t)mc_find_frame_base(frame, frame->object_info, &c);
     } else {
       stack_frame->frame_base = 0;
     }
