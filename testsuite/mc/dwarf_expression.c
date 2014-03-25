@@ -13,9 +13,9 @@ uintptr_t eval_binary_operation(mc_expression_state_t state, int op, uintptr_t a
   state->stack_size = 0;
 
   Dwarf_Op ops[15];
-  ops[0].atom = DW_OP_addr;
+  ops[0].atom = DW_OP_const8u;
   ops[0].number = a;
-  ops[1].atom = DW_OP_addr;
+  ops[1].atom = DW_OP_const8u;
   ops[1].number = b;
   ops[2].atom = op;
 
@@ -39,7 +39,7 @@ void basic_test(mc_expression_state_t state) {
   assert(state->stack_size==1);
   assert(state->stack[state->stack_size-1]==21);
 
-  ops[0].atom = DW_OP_addr;
+  ops[0].atom = DW_OP_const8u;
   ops[0].number = a;
   assert(mc_dwarf_execute_expression(1, ops, state) == MC_EXPRESSION_OK);
   assert(state->stack_size==2);
@@ -58,7 +58,7 @@ void basic_test(mc_expression_state_t state) {
   assert(state->stack[state->stack_size-1]== a + 21);
 
   state->stack_size = 0;
-  ops[0].atom = DW_OP_addr;
+  ops[0].atom = DW_OP_const8u;
   ops[0].number = a;
   ops[1].atom = DW_OP_dup;
   ops[2].atom = DW_OP_plus;
@@ -67,9 +67,9 @@ void basic_test(mc_expression_state_t state) {
   assert(state->stack[state->stack_size-1]== a + a);
 
   state->stack_size = 0;
-  ops[0].atom = DW_OP_addr;
+  ops[0].atom = DW_OP_const8u;
   ops[0].number = a;
-  ops[1].atom = DW_OP_addr;
+  ops[1].atom = DW_OP_const8u;
   ops[1].number = b;
   ops[2].atom = DW_OP_over;
   assert(mc_dwarf_execute_expression(3, ops, state) == MC_EXPRESSION_OK);
@@ -79,9 +79,9 @@ void basic_test(mc_expression_state_t state) {
   assert(state->stack[state->stack_size-3]== a);
 
   state->stack_size = 0;
-  ops[0].atom = DW_OP_addr;
+  ops[0].atom = DW_OP_const8u;
   ops[0].number = a;
-  ops[1].atom = DW_OP_addr;
+  ops[1].atom = DW_OP_const8u;
   ops[1].number = b;
   ops[2].atom = DW_OP_swap;
   assert(mc_dwarf_execute_expression(3, ops, state) == MC_EXPRESSION_OK);
@@ -95,7 +95,7 @@ void test_deref(mc_expression_state_t state) {
   uintptr_t foo = 42;
 
   Dwarf_Op ops[60];
-  ops[0].atom = DW_OP_addr;
+  ops[0].atom = DW_OP_const8u;
   ops[0].number = (Dwarf_Word) &foo;
   ops[1].atom = DW_OP_deref;
   state->stack_size = 0;
