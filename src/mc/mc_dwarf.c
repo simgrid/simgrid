@@ -811,8 +811,31 @@ static void MC_dwarf_handle_scope_die(mc_object_info_t info, Dwarf_Die* die, Dwa
 
   // Variables are filled in the (recursive) call of MC_dwarf_handle_children:
   frame->variables = xbt_dynar_new(sizeof(dw_variable_t), dw_variable_free_voidp);
-  frame->high_pc = ((char*) base) + MC_dwarf_attr_integrate_addr(die, DW_AT_high_pc);
   frame->low_pc = ((char*) base) + MC_dwarf_attr_integrate_addr(die, DW_AT_low_pc);
+
+  // DW_AT_high_pc:
+  {
+    Dwarf_Attribute attr;
+    if(dwarf_attr_integrate(die, DW_AT_high_pc, &attr)) {
+      uint64_t high_pc;
+      Dwarf_Addr value;
+      if (dwarf_formaddr(&attr, &value) == 0)
+        high_pc = (uint64_t) value;
+      else
+        high_pc = 0;
+
+      int form = dwarf_whatform(&attr);
+      int klass = MC_dwarf_form_get_class(form);
+      if (klass == MC_DW_CLASS_CONSTANT)
+        frame->high_pc = frame->low_pc + high_pc;
+      else if(klass == MC_DW_CLASS_ADDRESS)
+        frame->high_pc = ((char*) base) + high_pc;
+      else
+        xbt_die("Unexpected class for DW_AT_high_pc");
+    } else {
+      frame->high_pc = 0;
+    }
+  }
 
   if(klass==mc_tag_subprogram) {
     Dwarf_Attribute attr_frame_base;
