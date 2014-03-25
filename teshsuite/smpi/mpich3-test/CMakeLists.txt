@@ -40,6 +40,7 @@ set(txt_files
   ${CMAKE_CURRENT_SOURCE_DIR}/hostfile
   ${CMAKE_CURRENT_SOURCE_DIR}/checktests
   ${CMAKE_CURRENT_SOURCE_DIR}/util/mtest.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/util/mtest_manual.c
   ${CMAKE_CURRENT_SOURCE_DIR}/f77/testlist
   ${CMAKE_CURRENT_SOURCE_DIR}/f90/testlist
   ${CMAKE_CURRENT_SOURCE_DIR}/include/mpitestconf.h
@@ -59,8 +60,10 @@ set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}")
 include_directories("${CMAKE_HOME_DIRECTORY}/include/smpi")
 include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include/")
 
-#C version
+#C version - use automatic privatization if mmap is supported, manual through SMPI macros if not
+if(HAVE_MMAP)
 add_library(mtest_c STATIC util/mtest.c)
-
-
+else()
+add_library(mtest_c STATIC util/mtest_manual.c)
+endif()
 
