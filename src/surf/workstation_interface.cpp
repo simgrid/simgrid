@@ -267,7 +267,7 @@ int Workstation::unlink(surf_file_t fd) {
     XBT_WARN("No such file descriptor. Impossible to unlink");
     return 0;
   } else {
-//    XBT_INFO("%s %zu", fd->storage, fd->size);
+
     StoragePtr st = findStorageOnMountList(fd->mount);
     /* Check if the file is on this storage */
     if (!xbt_dict_get_or_null(st->p_content, fd->name)){
@@ -367,6 +367,71 @@ int Workstation::fileMove(surf_file_t fd, const char* fullpath){
   }
 }
 
+int Workstation::fileRcopy(surf_file_t fd, surf_resource_t host_dest, const char* fullpath){
+
+  XBT_INFO("FILE %s WKS %s FULLPATH %s",fd->name, host_dest->key, fullpath);
+
+  /* Find the host src where the file is located */
+  StoragePtr storage = findStorageOnMountList(fd->mount);
+  const char* host_name_src = (const char*)storage->p_attach;
+
+  /* Find the host dest where the file will be stored */
+  s_mount_t mnt;
+  unsigned int cursor;
+  StoragePtr storage_dest = NULL;
+  const char* host_name_dest;
+  char *file_mount_name = NULL;
+  size_t longest_prefix_length = 0;
+  xbt_dynar_foreach(((WorkstationPtr)host_dest)->p_storage,cursor,mnt)
+  {
+    file_mount_name = (char *) xbt_malloc ((strlen(mnt.name)+1));
+    strncpy(file_mount_name,fullpath,strlen(mnt.name)+1);
+    file_mount_name[strlen(mnt.name)] = '\0';
+
+	if(!strcmp(file_mount_name,mnt.name) && strlen(mnt.name)>longest_prefix_length)
+	{/* The current mount name is found in the full path and is bigger than the previous*/
+      longest_prefix_length = strlen(mnt.name);
+      storage_dest = static_cast<StoragePtr>(mnt.storage);
+	}
+	free(file_mount_name);
+  }
+  if(longest_prefix_length>0)
+  { /* Mount point found */
+    host_name_dest = storage_dest->p_attach;
+  }
+  else
+  {
+    XBT_WARN("Can't find mount point for '%s' on destination host '%s'", fullpath, host_dest->key);
+    return MSG_TASK_CANCELED;
+  }
+  XBT_INFO("SRC %s DEST %s", host_name_src, host_name_dest);
+  return MSG_OK;
+
+
+//  /* Check that file to copy is local to the src workstation (storage is attached to src workstation) */
+//  StoragePtr storage = findStorageOnMountList(fd->mount);
+//  if(!strcmp((const char*)storage->p_attach, this->getName()))
+//  {
+//    /* Check that there is a route between src and dest workstations */
+//    xbt_dynar_t route = NULL;
+//    routing_get_route_and_latency(this->p_netElm, ((WorkstationPtr)host_dest)->p_netElm, &route, NULL);
+//    if(route){
+//
+//      ATTENTION DISCUSSION AVEC FRED !
+//      return MSG_OK;
+//    }
+//    else
+//    {
+//      XBT_WARN("There is no route between %s and %s. Action has been canceled", this->getName(), host_dest->key);
+//      return MSG_TASK_CANCELED;
+//    }
+//  }
+//  else
+//  {
+//    XBT_WARN("File %s is not local to %s but to %s. Action has been canceled", fd->name,this->getName(), storage->p_attach);
+//    return MSG_TASK_CANCELED;
+//  }
+}
 
 sg_size_t Workstation::getFreeSize(const char* name)
 {
