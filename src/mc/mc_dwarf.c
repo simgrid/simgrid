@@ -827,7 +827,7 @@ static void MC_dwarf_handle_scope_die(mc_object_info_t info, Dwarf_Die* die, Dwa
       int form = dwarf_whatform(&attr);
       int klass = MC_dwarf_form_get_class(form);
       if (klass == MC_DW_CLASS_CONSTANT)
-        frame->high_pc = frame->low_pc + high_pc;
+        frame->high_pc = (void*) ((Dwarf_Off)frame->low_pc + high_pc);
       else if(klass == MC_DW_CLASS_ADDRESS)
         frame->high_pc = ((char*) base) + high_pc;
       else
