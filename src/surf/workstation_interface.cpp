@@ -9,6 +9,8 @@
 #include "cpu_cas01.hpp"
 #include "simgrid/sg_config.h"
 
+#include "network_interface.hpp"
+
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_workstation, surf,
                                 "Logging specific to the SURF workstation module");
 
@@ -369,22 +371,26 @@ int Workstation::fileMove(surf_file_t fd, const char* fullpath){
 
 int Workstation::fileRcopy(surf_file_t fd, surf_resource_t host_dest, const char* fullpath){
 
-  XBT_INFO("FILE %s WKS %s FULLPATH %s",fd->name, host_dest->key, fullpath);
+  XBT_DEBUG("Rcopy file %s on %s to %s",fd->name, host_dest->key, fullpath);
 
   /* Find the host src where the file is located */
   StoragePtr storage = findStorageOnMountList(fd->mount);
   const char* host_name_src = (const char*)storage->p_attach;
 
-  /* Find the host dest where the file will be stored */
+  /* Find the real host dest where the file will be stored */
   s_mount_t mnt;
   unsigned int cursor;
   StoragePtr storage_dest = NULL;
   const char* host_name_dest;
-  char *file_mount_name = NULL;
+  char *file_mount_name;
   size_t longest_prefix_length = 0;
-  xbt_dynar_foreach(((WorkstationPtr)host_dest)->p_storage,cursor,mnt)
+  WorkstationPtr dest_ws, src_ws;
+
+  dest_ws = static_cast<WorkstationPtr>(surf_workstation_resource_priv(host_dest));
+
+  xbt_dynar_foreach(dest_ws->p_storage,cursor,mnt)
   {
-    file_mount_name = (char *) xbt_malloc ((strlen(mnt.name)+1));
+	file_mount_name = (char *) xbt_malloc ((strlen(mnt.name)+1));
     strncpy(file_mount_name,fullpath,strlen(mnt.name)+1);
     file_mount_name[strlen(mnt.name)] = '\0';
 
@@ -396,7 +402,7 @@ int Workstation::fileRcopy(surf_file_t fd, surf_resource_t host_dest, const char
 	free(file_mount_name);
   }
   if(longest_prefix_length>0)
-  { /* Mount point found */
+  { /* Mount point found, retrieve the host the storage is attached to */
     host_name_dest = storage_dest->p_attach;
   }
   else
@@ -404,8 +410,50 @@ int Workstation::fileRcopy(surf_file_t fd, surf_resource_t host_dest, const char
     XBT_WARN("Can't find mount point for '%s' on destination host '%s'", fullpath, host_dest->key);
     return MSG_TASK_CANCELED;
   }
+
+  /* Check that there is a route between src and dest workstations */
+  xbt_dynar_t route = NULL;
+  dest_ws = static_cast<WorkstationPtr>(surf_workstation_resource_priv(xbt_lib_get_elm_or_null(host_lib, host_name_dest)));
+  src_ws = static_cast<WorkstationPtr>(surf_workstation_resource_priv(xbt_lib_get_elm_or_null(host_lib, host_name_src)));
+
+  routing_get_route_and_latency(src_ws->p_netElm, dest_ws->p_netElm, &route, NULL);
+  if(!xbt_dynar_length (route))
+  {
+	XBT_WARN("There is no route between %s and %s. Action has been canceled", src_ws->getName(), dest_ws->getName());
+	return MSG_TASK_CANCELED;
+  }
+  else
+  {/* There is a route between src and dest, let's copy the file */
+
+    /* Read the file on the src side */
+	src_ws->read(fd, fd->size);
+
+	/* Send a message from src to dest to simulate data transfer */
+	surf_network_model->communicate(src_ws->p_netElm, dest_ws->p_netElm, fd->size, -1.0);
+
+	/* Create the file on the dest side and write data into it*/
+	char *mount_name, *path;
+	path = (char *) xbt_malloc ((strlen(fullpath)-longest_prefix_length+1));
+	mount_name = (char *) xbt_malloc ((longest_prefix_length+1));
+	/* deduce mount_name and path from fullpath */
+	strncpy(mount_name, fullpath, longest_prefix_length+1);
+	strncpy(path, fullpath+longest_prefix_length, strlen(fullpath)-longest_prefix_length+1);
+	path[strlen(fullpath)-longest_prefix_length] = '\0';
+	mount_name[longest_prefix_length] = '\0';
+    /* create the file */
+	ActionPtr open_action = storage_dest->open((const char*)mount_name, (const char*)path);
+    /* write data */
+	dest_ws->write(static_cast<StorageActionPtr>(open_action)->p_file, fd->size);
+    dest_ws->close(static_cast<StorageActionPtr>(open_action)->p_file);
+    free(path);
+    free(mount_name);
+    XBT_DEBUG("File %s has been copied on %s to %s",fd->name, host_dest->key, fullpath);
+    return MSG_OK;
+  }
+
+
   XBT_INFO("SRC %s DEST %s", host_name_src, host_name_dest);
-  return MSG_OK;
+
 
 
 //  /* Check that file to copy is local to the src workstation (storage is attached to src workstation) */
