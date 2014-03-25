@@ -301,6 +301,17 @@ int SIMIX_file_move(smx_process_t process, smx_file_t file, const char* fullpath
   return  surf_workstation_file_move(host, file->surf_file, fullpath);
 }
 
+int SIMIX_pre_file_rcopy(smx_simcall_t simcall, smx_file_t fd, smx_host_t host, const char* fullpath)
+{
+  return SIMIX_file_rcopy(simcall->issuer, fd, host, fullpath);
+}
+
+int SIMIX_file_rcopy(smx_process_t process, smx_file_t file, smx_host_t host_dest, const char* fullpath)
+{
+  smx_host_t host = process->smx_host;
+  return  surf_workstation_file_rcopy(host, file->surf_file, host_dest, fullpath);
+}
+
 sg_size_t SIMIX_pre_storage_get_free_size(smx_simcall_t simcall, const char* name)
 {
   return SIMIX_storage_get_free_size(simcall->issuer, name);

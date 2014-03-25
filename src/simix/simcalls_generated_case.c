@@ -551,6 +551,11 @@ case SIMCALL_FILE_MOVE:
       SIMIX_simcall_answer(simcall);
       break;  
 
+case SIMCALL_FILE_RCOPY:
+      simcall->result.i = SIMIX_pre_file_rcopy(simcall , (smx_file_t) simcall->args[0].dp, (smx_host_t) simcall->args[1].dp,  simcall->args[2].cc);
+      SIMIX_simcall_answer(simcall);
+      break;  
+
 case SIMCALL_STORAGE_GET_FREE_SIZE:
       simcall->result.sgsz = SIMIX_pre_storage_get_free_size(simcall ,  simcall->args[0].cc);
       SIMIX_simcall_answer(simcall);

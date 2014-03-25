@@ -1411,6 +1411,16 @@ int simcall_file_move(smx_file_t fd, const char* fullpath)
 }
 
 /**
+ * \ingroup simix_file_management
+ * \brief Copy a file to another location on a remote host.
+ *
+ */
+int simcall_file_rcopy(smx_file_t fd, smx_host_t host, const char* fullpath)
+{
+  return simcall_BODY_file_rcopy(fd, host, fullpath);
+}
+
+/**
  * \ingroup simix_storage_management
  * \brief Returns the free space size on a given storage element.
  * \param storage name

@@ -254,6 +254,22 @@ msg_error_t MSG_file_move (msg_file_t fd, const char* fullpath)
 }
 
 /**
+ * \ingroup msg_file_management
+ * \brief Move a file to another location on a remote host.
+ * \param fd : the file to move
+ * \param host : the remote host where the file has to be moved
+ * \param fullpath : the complete path destination on the remote host
+ * \return If successful, the function returns MSG_OK. Otherwise, it returns
+ * MSG_TASK_CANCELED.
+ */
+msg_error_t MSG_file_rcopy (msg_file_t file, msg_host_t host, const char* fullpath)
+{
+  msg_file_priv_t file_priv = MSG_file_priv(file);
+  return simcall_file_rcopy(file_priv->simdata->smx_file, host, fullpath);
+}
+
+
+/**
  * \brief Destroys a file (internal call only)
  */
 void __MSG_file_destroy(msg_file_priv_t file) {

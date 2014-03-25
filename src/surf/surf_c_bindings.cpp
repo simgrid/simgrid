@@ -412,6 +412,10 @@ int surf_workstation_file_move(surf_resource_t workstation, surf_file_t fd, cons
   return get_casted_workstation(workstation)->fileMove(fd, fullpath);
 }
 
+int surf_workstation_file_rcopy(surf_resource_t workstation, surf_file_t fd, surf_resource_t host_dest, const char* fullpath){
+  return get_casted_workstation(workstation)->fileRcopy(fd, host_dest, fullpath);
+}
+
 xbt_dynar_t surf_workstation_get_vms(surf_resource_t resource){
   return get_casted_workstation(resource)->getVms();
 }
