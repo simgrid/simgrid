@@ -43,27 +43,22 @@ int mc_dwarf_execute_expression(
         break;
       }
 
-    // Push the CFA (Call Frame Addresse):
+    // Push the CFA (Canonical Frame Addresse):
     case DW_OP_call_frame_cfa:
     {
-      unw_word_t res;
-
-      int register_id =
-#if defined(UNW_TARGET_X86_64)
-          UNW_X86_64_CFA
-#elif defined(UNW_TARGET_X86)
-          UNW_X86_CFA
-#else
-          -1;
-#endif
-        ;
-      if(register_id<0)
-        xbt_die("Support for CFA not implemented for this achitecture.");
+      // UNW_X86_64_CFA does not return the CFA DWARF expects
+      // (it is a synonym for UNW_X86_64_RSP) so copy the cursor,
+      // unwind it once in order to find the parent SP:
 
       if(!state->cursor)
         return MC_EXPRESSION_E_MISSING_STACK_CONTEXT;
 
-      unw_get_reg(state->cursor, register_id, &res);
+      // Get frame:
+      unw_cursor_t cursor = *(state->cursor);
+      unw_step(&cursor);
+
+      unw_word_t res;
+      unw_get_reg(&cursor, UNW_TDEP_SP, &res);
       error = mc_dwarf_push_value(state, res);
       break;
     }
