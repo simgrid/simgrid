@@ -76,11 +76,18 @@ class NetworkLink : public Resource {
 public:
   NetworkLink();
   ~NetworkLink();
+  double getBandwidth();
+  void updateBandwidth(double value, double date=surf_get_clock());
+  double getLatency();
+  void updateLatency(double value, double date=surf_get_clock());
 };
 
 class Action {
 public:
   Model *getModel();
+  lmm_variable *getVariable();
+  double getBound();
+  void setBound(double bound);
 };
 
 class CpuAction : public Action {
@@ -98,10 +105,23 @@ public:
 }
 };
 
+%nodefaultctor RoutingEdge;
+class RoutingEdge {
+public:
+  virtual char *getName()=0;
+};
+
 %rename lmm_constraint LmmConstraint;
 struct lmm_constraint {
 %extend {
   double getUsage() {return lmm_constraint_get_usage($self);}
+}
+};
+
+%rename lmm_variable LmmVariable;
+struct lmm_variable {
+%extend {
+  double getValue() {return lmm_variable_getvalue($self);}
 }
 };
 

@@ -24,7 +24,6 @@ NetworkLinkDynar getRoute(char *srcName, char *dstName) {
     xbt_die("TOTO");
   if (dst==NULL)
     xbt_die("TOTO");
-  printf("src: %s\ndst: %s\n", src->getName(), dst->getName());
   xbt_dynar_t route = xbt_dynar_new(sizeof(RoutingEdgePtr), NULL);
   routing_platf->getRouteAndLatency(src, dst, &route, NULL);
   return route;
@@ -62,5 +61,10 @@ void Plugin::activateNetworkLinkStateChangedCallback(){
 void Plugin::activateNetworkActionStateChangedCallback(){
   surf_callback_connect(networkActionStateChangedCallbacks, boost::bind(&Plugin::networkActionStateChangedCallback, this, _1, _2, _3));
 }
+
+void Plugin::activateNetworkCommunicateCallback(){
+  surf_callback_connect(networkCommunicateCallbacks, boost::bind(&Plugin::networkCommunicateCallback, this, _1, _2, _3, _4, _5));
+}
+
 
 

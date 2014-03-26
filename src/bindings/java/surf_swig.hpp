@@ -43,6 +43,6 @@ public:
  void activateNetworkActionStateChangedCallback();
  virtual void networkActionStateChangedCallback(NetworkAction *action, e_surf_action_state_t old, e_surf_action_state_t cur) {}
 
+ void activateNetworkCommunicateCallback();
+ virtual void networkCommunicateCallback(NetworkAction *action, RoutingEdge *src, RoutingEdge *dst, double size, double rate) {}
 };
-
-

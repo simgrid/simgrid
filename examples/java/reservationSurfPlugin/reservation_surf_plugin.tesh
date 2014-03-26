@@ -2,26 +2,18 @@
 
 $ java -classpath ${classpath:=.} reservationSurfPlugin/TestPlugin ${srcdir:=.}/reservationSurfPlugin/reservationSurfPluginPlatform.xml ${srcdir:=.}/reservationSurfPlugin/reservationSurfPluginDeployment.xml
 > [0.000000] [jmsg/INFO] Using regular java threads. Coroutines could speed your simulation up.
-> [0.000000] [jmsg/INFO] Trace: NetworkLink created __loopback__
-> [0.000000] [jmsg/INFO] Trace: NetworkLink state changed __loopback__
-> [0.000000] [jmsg/INFO] Trace: Cpu created Jacquelin
-> [0.000000] [jmsg/INFO] Trace: Cpu state changed Jacquelin
-> [0.000000] [jmsg/INFO] Trace: Cpu created Boivin
-> [0.000000] [jmsg/INFO] Trace: Cpu state changed Boivin
-> [0.000000] [jmsg/INFO] Trace: NetworkLink created link
-> [0.000000] [jmsg/INFO] Trace: NetworkLink state changed link
-> [Jacquelin:surfPlugin.Sender:(1) 0.000000] [jmsg/INFO] helloo!
-> [Jacquelin:surfPlugin.Sender:(1) 0.000000] [jmsg/INFO] host count: 1
-> [Jacquelin:surfPlugin.Sender:(1) 0.000000] [jmsg/INFO] sender time: 0.0
-> [Boivin:surfPlugin.Receiver:(2) 0.000000] [jmsg/INFO] helloo!
-> [Boivin:surfPlugin.Receiver:(2) 0.000000] [jmsg/INFO] try to get a task
-> [1.301001] [jmsg/INFO] Trace: NetworkAction state changed network
-> [Boivin:surfPlugin.Receiver:(2) 1.301001] [jmsg/INFO] Got at time 1.3010010824742269
-> [Jacquelin:surfPlugin.Sender:(1) 1.301001] [jmsg/INFO] goodbye!
-> [1.301103] [jmsg/INFO] Trace: CpuAction state changed cpu
-> [Boivin:surfPlugin.Receiver:(2) 1.301103] [jmsg/INFO] goodbye!
-> [1.301103] [jmsg/INFO] MSG_main finished; Cleaning up the simulation...
-> [1.301103] [jmsg/INFO] Trace: Cpu destructed Jacquelin
-> [1.301103] [jmsg/INFO] Trace: Cpu destructed Boivin
-> [1.301103] [jmsg/INFO] Trace: NetworkLink destructed link
-> [1.301103] [jmsg/INFO] Trace: NetworkLink destructed __loopback__
+> [Jacquelin:reservationSurfPlugin.Sender:(1) 0.000000] [jmsg/INFO] helloo!
+> [Boivin:reservationSurfPlugin.Receiver:(2) 0.000000] [jmsg/INFO] helloo!
+> [0.000000] [jmsg/INFO] Trace: Communicate message of size 1.0 with rate -1.0 and bound 1.048576E9 from Jacquelin to Boivin
+> [Jacquelin:reservationSurfPlugin.Sender:(1) 0.026021] [jmsg/INFO] Send duration: 0.026021082474226805
+> [Jacquelin:reservationSurfPlugin.Sender:(1) 0.026021] [jmsg/INFO] Trace: bandwidth of link0 before 1000000.0
+> [Jacquelin:reservationSurfPlugin.Sender:(1) 0.026021] [jmsg/INFO] Trace: bandwidth of link0 after 1000.0
+> [Jacquelin:reservationSurfPlugin.Sender:(1) 0.026021] [jmsg/INFO] Trace: bandwidth of link1 before 1000000.0
+> [Jacquelin:reservationSurfPlugin.Sender:(1) 0.026021] [jmsg/INFO] Trace: bandwidth of link1 after 1000.0
+> [0.026021] [jmsg/INFO] Trace: Communicate message of size 1.0 with rate -1.0 and bound 1.048576E9 from Jacquelin to Boivin
+> [Jacquelin:reservationSurfPlugin.Sender:(1) 0.053124] [jmsg/INFO] Send duration with update bandwidth: 0.027102474226804125
+> [0.053124] [jmsg/INFO] Trace: Communicate message of size 1.0 with rate -1.0 and bound 100.0 from Jacquelin to Boivin
+> [Boivin:reservationSurfPlugin.Receiver:(2) 0.089144] [jmsg/INFO] goodbye!
+> [Jacquelin:reservationSurfPlugin.Sender:(1) 0.089144] [jmsg/INFO] Send normal duration with limited bandwidth: 0.036019999999999996
+> [Jacquelin:reservationSurfPlugin.Sender:(1) 0.089144] [jmsg/INFO] goodbye!
+> [0.089144] [jmsg/INFO] MSG_main finished; Cleaning up the simulation...
