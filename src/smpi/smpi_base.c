@@ -377,14 +377,11 @@ void smpi_mpi_start(MPI_Request request)
         oldbuf = request->buf;
         if (!_xbt_replay_is_active() && oldbuf && request->size!=0){
           if((smpi_privatize_global_variables)
-      	    && ((char*)request->buf >= start_data_exe)
-	    && ((char*)request->buf < start_data_exe + size_data_exe )
-    	){
-       	  XBT_WARN("Privatization : We are sending from a zone inside global memory. Switch data segment ");
-       	  switch_data_segment(smpi_process_index());
-  	}
-
-
+      	      && ((char*)request->buf >= start_data_exe)
+	      && ((char*)request->buf < start_data_exe + size_data_exe )){
+            XBT_DEBUG("Privatization : We are sending from a zone inside global memory. Switch data segment ");
+       	    switch_data_segment(smpi_process_index());
+  	  }
           buf = xbt_malloc(request->size);
           memcpy(buf,oldbuf,request->size);
         }
