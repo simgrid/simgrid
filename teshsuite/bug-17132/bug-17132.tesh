@@ -1,0 +1,2 @@
+$ smpirun -np 16 -platform small_platform.xml -hostfile hostfile.txt ./bug-17132
+> (some sensible output)
