@@ -981,6 +981,7 @@ set(TESHSUITE_CMAKEFILES_TXT
   teshsuite/msg/CMakeLists.txt
   teshsuite/msg/storage/CMakeLists.txt
   teshsuite/msg/trace/CMakeLists.txt
+  teshsuite/bug-17132/CMakeLists.txt
   teshsuite/simdag/CMakeLists.txt
   teshsuite/simdag/availability/CMakeLists.txt
   teshsuite/simdag/network/CMakeLists.txt
