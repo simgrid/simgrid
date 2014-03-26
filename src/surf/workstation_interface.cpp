@@ -429,56 +429,37 @@ int Workstation::fileRcopy(surf_file_t fd, surf_resource_t host_dest, const char
 	src_ws->read(fd, fd->size);
 
 	/* Send a message from src to dest to simulate data transfer */
-	surf_network_model->communicate(src_ws->p_netElm, dest_ws->p_netElm, fd->size, -1.0);
+	surf_network_model->communicate(src_ws->p_netElm, dest_ws->p_netElm, fd->size, .0);
 
 	/* Create the file on the dest side and write data into it*/
 	char *mount_name, *path;
 	path = (char *) xbt_malloc ((strlen(fullpath)-longest_prefix_length+1));
 	mount_name = (char *) xbt_malloc ((longest_prefix_length+1));
+
 	/* deduce mount_name and path from fullpath */
 	strncpy(mount_name, fullpath, longest_prefix_length+1);
 	strncpy(path, fullpath+longest_prefix_length, strlen(fullpath)-longest_prefix_length+1);
 	path[strlen(fullpath)-longest_prefix_length] = '\0';
 	mount_name[longest_prefix_length] = '\0';
+
     /* create the file */
-	ActionPtr open_action = storage_dest->open((const char*)mount_name, (const char*)path);
-    /* write data */
-	dest_ws->write(static_cast<StorageActionPtr>(open_action)->p_file, fd->size);
-    dest_ws->close(static_cast<StorageActionPtr>(open_action)->p_file);
-    free(path);
+	StorageActionPtr open_action = storage_dest->open((const char*)mount_name, (const char*)path);
+
+	surf_file_t surf_file = xbt_new(s_surf_file_t, 1);
+	surf_file->current_position = 0;
+	surf_file->mount = mount_name;
+	surf_file->name = strdup(path);
+	surf_file->size = 0;
+
+	/* write data and close file*/
+	storage_dest->write(surf_file, fd->size);
+	storage_dest->close(open_action->p_file);
+
+	free(path);
     free(mount_name);
     XBT_DEBUG("File %s has been copied on %s to %s",fd->name, host_dest->key, fullpath);
     return MSG_OK;
   }
-
-
-  XBT_INFO("SRC %s DEST %s", host_name_src, host_name_dest);
-
-
-
-//  /* Check that file to copy is local to the src workstation (storage is attached to src workstation) */
-//  StoragePtr storage = findStorageOnMountList(fd->mount);
-//  if(!strcmp((const char*)storage->p_attach, this->getName()))
-//  {
-//    /* Check that there is a route between src and dest workstations */
-//    xbt_dynar_t route = NULL;
-//    routing_get_route_and_latency(this->p_netElm, ((WorkstationPtr)host_dest)->p_netElm, &route, NULL);
-//    if(route){
-//
-//      ATTENTION DISCUSSION AVEC FRED !
-//      return MSG_OK;
-//    }
-//    else
-//    {
-//      XBT_WARN("There is no route between %s and %s. Action has been canceled", this->getName(), host_dest->key);
-//      return MSG_TASK_CANCELED;
-//    }
-//  }
-//  else
-//  {
-//    XBT_WARN("File %s is not local to %s but to %s. Action has been canceled", fd->name,this->getName(), storage->p_attach);
-//    return MSG_TASK_CANCELED;
-//  }
 }
 
 sg_size_t Workstation::getFreeSize(const char* name)
