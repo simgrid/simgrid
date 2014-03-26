@@ -446,7 +446,7 @@ if(NOT enable_memcheck)
     ADD_TEST(smpi-compute-thread                ${TESH_COMMAND} ${TESH_OPTION} --cfg contexts/factory:thread --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/compute.tesh)
     
     # https://gforge.inria.fr/tracker/index.php?func=detail&aid=17132&group_id=12&atid=165
-    ADD_TEST(smpi-bug-17132                ${TESH_COMMAND} ${TESH_OPTION} --cfg contexts/factory:thread --cd ${CMAKE_BINARY_DIR}/teshsuite/bug-17132 ${CMAKE_HOME_DIRECTORY}/teshsuite/bug-17132.tesh)
+    ADD_TEST(smpi-bug-17132                ${TESH_COMMAND} ${TESH_OPTION} --cfg contexts/factory:thread --setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/bug-17132 --cd ${CMAKE_BINARY_DIR}/teshsuite/bug-17132 ${CMAKE_HOME_DIRECTORY}/teshsuite/bug-17132/bug-17132.tesh)
     
     if (NOT WIN32)
       ADD_TEST(smpi-shared-thread               ${TESH_COMMAND} ${TESH_OPTION} --cfg contexts/factory:thread --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/shared.tesh)

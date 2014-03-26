@@ -1,2 +1,8 @@
-$ smpirun -np 16 -platform small_platform.xml -hostfile hostfile.txt ./bug-17132
+$ ../../smpi_script/bin/smpirun -np 16 -platform ${srcdir:=.}/small_platform.xml -hostfile ${srcdir:=.}/hostfile.txt ./bug-17132 --cfg=smpi/cpu_threshold:-1 --log=smpi_kernel.thres:warning
+> You requested to use 16 processes, but there is only 2 processes in your hostfile...
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'maxmin/precision' to '1e-9'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'SMPI'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/TCP_gamma' to '4194304'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'smpi/cpu_threshold' to '-1'
+> [0.000000] [surf_config/INFO] Switching workstation model to compound since you changed the network and/or cpu model(s)
 > (some sensible output)
