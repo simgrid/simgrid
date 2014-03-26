@@ -50,6 +50,12 @@ extern surf_callback(void, NetworkLinkPtr, e_surf_resource_state_t, e_surf_resou
  */
 extern surf_callback(void, NetworkActionPtr, e_surf_action_state_t, e_surf_action_state_t) networkActionStateChangedCallbacks;
 
+/** @ingroup SURF_callbacks
+ * @brief Callbacks handler which emit the callbacks after communication created
+ * @details Callback functions have the following signature: `void(NetworkActionPtr action, RoutingEdgePtr src, RoutingEdgePtr dst, double size, double rate)`
+ */
+extern surf_callback(void, NetworkActionPtr, RoutingEdgePtr src, RoutingEdgePtr dst, double size, double rate) networkCommunicateCallbacks;
+
 /*********
  * Tools *
  *********/
@@ -217,11 +223,21 @@ public:
   virtual double getBandwidth();
 
   /**
+   * @brief Update the bandwidth in bytes per second of current NetworkLink
+   */
+  virtual void updateBandwidth(double value, double date=surf_get_clock())=0;
+
+  /**
    * @brief Get the latency in seconds of current NetworkLink
    *
    * @return The latency in seconds of the current NetworkLink
    */
   virtual double getLatency();
+
+  /**
+   * @brief Update the latency in seconds of current NetworkLink
+   */
+  virtual void updateLatency(double value, double date=surf_get_clock())=0;
 
   /**
    * @brief Check if the NetworkLink is shared
