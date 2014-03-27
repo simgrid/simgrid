@@ -811,29 +811,40 @@ static void MC_dwarf_handle_scope_die(mc_object_info_t info, Dwarf_Die* die, Dwa
 
   // Variables are filled in the (recursive) call of MC_dwarf_handle_children:
   frame->variables = xbt_dynar_new(sizeof(dw_variable_t), dw_variable_free_voidp);
-  frame->low_pc = ((char*) base) + MC_dwarf_attr_integrate_addr(die, DW_AT_low_pc);
 
-  // DW_AT_high_pc:
-  {
+  // TODO, support DW_AT_ranges
+  uint64_t low_pc = MC_dwarf_attr_integrate_addr(die, DW_AT_low_pc);
+  frame->low_pc = low_pc ? ((char*) base) + low_pc : 0;
+  if(low_pc) {
+    // DW_AT_high_pc:
     Dwarf_Attribute attr;
-    if(dwarf_attr_integrate(die, DW_AT_high_pc, &attr)) {
-      uint64_t high_pc;
-      Dwarf_Addr value;
-      if (dwarf_formaddr(&attr, &value) == 0)
-        high_pc = (uint64_t) value;
-      else
-        high_pc = 0;
+    if(!dwarf_attr_integrate(die, DW_AT_high_pc, &attr)) {
+      xbt_die("Missing DW_AT_high_pc matching with DW_AT_low_pc");
+    }
 
-      int form = dwarf_whatform(&attr);
-      int klass = MC_dwarf_form_get_class(form);
-      if (klass == MC_DW_CLASS_CONSTANT)
-        frame->high_pc = (void*) ((Dwarf_Off)frame->low_pc + high_pc);
-      else if(klass == MC_DW_CLASS_ADDRESS)
-        frame->high_pc = ((char*) base) + high_pc;
-      else
-        xbt_die("Unexpected class for DW_AT_high_pc");
-    } else {
-      frame->high_pc = 0;
+    Dwarf_Sword offset;
+    Dwarf_Addr high_pc;
+
+    switch(MC_dwarf_form_get_class(dwarf_whatform(&attr))) {
+
+    // DW_AT_high_pc if an offset from the low_pc:
+    case MC_DW_CLASS_CONSTANT:
+
+      if (dwarf_formsdata(&attr, &offset) !=0)
+        xbt_die("Could not read constant");
+      frame->high_pc = (void*) ((Dwarf_Off)frame->low_pc + offset);
+      break;
+
+    // DW_AT_high_pc is a relocatable address:
+    case MC_DW_CLASS_ADDRESS:
+      if (dwarf_formaddr(&attr, &high_pc) != 0)
+        xbt_die("Could not read address");
+      frame->high_pc = ((char*) base) + high_pc;
+      break;
+
+    default:
+      xbt_die("Unexpected class for DW_AT_high_pc");
+
     }
   }
 
