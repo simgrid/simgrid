@@ -746,6 +746,7 @@ static dw_variable_t MC_die_to_variable(mc_object_info_t info, Dwarf_Die* die, D
       variable->start_scope = dwarf_formudata(&attr, &value) == 0 ? (size_t) value : 0;
       break;
     }
+    case MC_DW_CLASS_RANGELISTPTR: // TODO
     default:
       xbt_die("Unhandled form 0x%x, class 0x%X for DW_AT_start_scope of variable %s",
         form, klass, name==NULL ? "?" : name);
