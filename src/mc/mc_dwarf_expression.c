@@ -260,7 +260,7 @@ int mc_dwarf_execute_expression(
 /** \brief Resolve a location expression
  *  \deprecated Use mc_dwarf_resolve_expression
  */
-Dwarf_Off mc_dwarf_resolve_location(mc_expression_t expression, mc_object_info_t object_info, unw_cursor_t* c, void* frame_pointer_address, mc_snapshot_t snapshot) {
+uintptr_t mc_dwarf_resolve_location(mc_expression_t expression, mc_object_info_t object_info, unw_cursor_t* c, void* frame_pointer_address, mc_snapshot_t snapshot) {
   s_mc_expression_state_t state;
   memset(&state, 0, sizeof(s_mc_expression_state_t));
   state.frame_base = frame_pointer_address;
@@ -273,10 +273,10 @@ Dwarf_Off mc_dwarf_resolve_location(mc_expression_t expression, mc_object_info_t
   if(state.stack_size==0)
     xbt_die("No value on the stack");
   else
-    return (Dwarf_Off) state.stack[state.stack_size-1];
+    return state.stack[state.stack_size-1];
 }
 
-Dwarf_Off mc_dwarf_resolve_locations(mc_location_list_t locations, mc_object_info_t object_info, unw_cursor_t* c, void* frame_pointer_address, mc_snapshot_t snapshot) {
+uintptr_t mc_dwarf_resolve_locations(mc_location_list_t locations, mc_object_info_t object_info, unw_cursor_t* c, void* frame_pointer_address, mc_snapshot_t snapshot) {
 
   unw_word_t ip;
   if(c) {
