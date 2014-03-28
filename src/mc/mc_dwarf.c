@@ -14,6 +14,10 @@
 
 #include "mc_private.h"
 
+// Define symbols not present in old version of dwarf.h.
+// Old version of dwarf.h, use DW_LANG_Objc instead of this:
+#define DW_LANG_ObjC 0x0010
+
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_dwarf, mc, "DWARF processing");
 
 /** \brief The default DW_TAG_lower_bound for a given DW_AT_language.
