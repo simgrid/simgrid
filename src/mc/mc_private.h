@@ -431,7 +431,7 @@ void mc_dwarf_location_list_init(mc_location_list_t target, mc_object_info_t inf
 
 struct s_dw_type{
   e_dw_type_type type;
-  void *id; /* Offset in the section (in hexadecimal form) */
+  Dwarf_Off id; /* Offset in the section (in hexadecimal form) */
   char *name; /* Name of the type */
   int byte_size; /* Size in bytes */
   int element_count; /* Number of elements for array type */

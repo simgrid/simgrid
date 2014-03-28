@@ -457,8 +457,8 @@ static void MC_dwarf_fill_member_location(dw_type_t type, dw_type_t member, Dwar
   if (!dwarf_hasattr_integrate(child, DW_AT_data_member_location)) {
     if (type->type != DW_TAG_union_type) {
         xbt_die(
-          "Missing DW_AT_data_member_location field in DW_TAG_member %s of type <%p>%s",
-          member->name, type->id, type->name);
+          "Missing DW_AT_data_member_location field in DW_TAG_member %s of type <%"PRIx64">%s",
+          member->name, (uint64_t) type->id, type->name);
     } else {
       return;
     }
@@ -477,9 +477,9 @@ static void MC_dwarf_fill_member_location(dw_type_t type, dw_type_t member, Dwar
       size_t len;
       if (dwarf_getlocation(&attr, &expr, &len)) {
         xbt_die(
-          "Could not read location expression DW_AT_data_member_location in DW_TAG_member %s of type <%p>%s",
+          "Could not read location expression DW_AT_data_member_location in DW_TAG_member %s of type <%"PRIx64">%s",
           MC_dwarf_attr_integrate_string(child, DW_AT_name),
-          type->id, type->name);
+          (uint64_t) type->id, type->name);
       }
       if (len==1 && expr[0].atom == DW_OP_plus_uconst) {
         member->offset =  expr[0].number;
@@ -495,9 +495,9 @@ static void MC_dwarf_fill_member_location(dw_type_t type, dw_type_t member, Dwar
       if (!dwarf_formudata(&attr, &offset))
         member->offset = offset;
       else
-        xbt_die("Cannot get %s location <%p>%s",
+        xbt_die("Cannot get %s location <%"PRIx64">%s",
           MC_dwarf_attr_integrate_string(child, DW_AT_name),
-          type->id, type->name);
+          (uint64_t) type->id, type->name);
       break;
     }
   case MC_DW_CLASS_LOCLISTPTR:
@@ -547,7 +547,7 @@ static void MC_dwarf_add_members(mc_object_info_t info, Dwarf_Die* die, Dwarf_Di
       member->type = tag;
 
       // Global Offset:
-      member->id = (void *) dwarf_dieoffset(&child);
+      member->id = dwarf_dieoffset(&child);
 
       const char* name = MC_dwarf_attr_integrate_string(&child, DW_AT_name);
       if(name)
@@ -569,7 +569,7 @@ static void MC_dwarf_add_members(mc_object_info_t info, Dwarf_Die* die, Dwarf_Di
       MC_dwarf_fill_member_location(type, member, &child);
 
       if (!member->dw_type_id) {
-        xbt_die("Missing type for member %s of <%p>%s", member->name, type->id, type->name);
+        xbt_die("Missing type for member %s of <%"PRIx64">%s", member->name, (uint64_t) type->id, type->name);
       }
 
       xbt_dynar_push(type->members, &member);
@@ -588,7 +588,7 @@ static dw_type_t MC_dwarf_die_to_type(mc_object_info_t info, Dwarf_Die* die, Dwa
 
   dw_type_t type = xbt_new0(s_dw_type_t, 1);
   type->type = -1;
-  type->id = NULL;
+  type->id = 0;
   type->name = NULL;
   type->byte_size = 0;
   type->element_count = -1;
@@ -600,7 +600,7 @@ static dw_type_t MC_dwarf_die_to_type(mc_object_info_t info, Dwarf_Die* die, Dwa
   type->type = dwarf_tag(die);
 
   // Global Offset
-  type->id = (void *) dwarf_dieoffset(die);
+  type->id = dwarf_dieoffset(die);
 
   const char* prefix = "";
   switch (type->type) {
@@ -621,8 +621,6 @@ static dw_type_t MC_dwarf_die_to_type(mc_object_info_t info, Dwarf_Die* die, Dwa
   if (name!=NULL) {
     type->name = namespace ? bprintf("%s%s::%s", prefix, namespace, name) : bprintf("%s%s", prefix, name);
   }
-
-  XBT_DEBUG("Processing type <%p>%s", type->id, type->name);
 
   type->dw_type_id = MC_dwarf_at_type(die);
 
