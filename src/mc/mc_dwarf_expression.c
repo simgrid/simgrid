@@ -92,7 +92,8 @@ int mc_dwarf_execute_expression(
         return MC_EXPRESSION_E_NO_BASE_ADDRESS;
       if(state->stack_size==MC_EXPRESSION_STACK_SIZE)
         return MC_EXPRESSION_E_STACK_OVERFLOW;
-      error = mc_dwarf_push_value(state,  (Dwarf_Off)MC_object_base_address(state->object_info) + op->number);
+      error = mc_dwarf_push_value(state,
+        (Dwarf_Off)(uintptr_t)MC_object_base_address(state->object_info) + op->number);
       break;
 
     case DW_OP_const1u:
