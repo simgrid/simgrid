@@ -711,7 +711,7 @@ static dw_variable_t MC_die_to_variable(mc_object_info_t info, Dwarf_Die* die, D
       if (dwarf_getlocation(&attr_location, &expr, &len)) {
         xbt_die(
           "Could not read location expression in DW_AT_location of variable <%"PRIx64">%s",
-          (uintptr_t) variable->dwarf_offset, variable->name);
+          (uint64_t) variable->dwarf_offset, variable->name);
       }
 
       if (len==1 && expr[0].atom == DW_OP_addr) {
@@ -732,7 +732,7 @@ static dw_variable_t MC_die_to_variable(mc_object_info_t info, Dwarf_Die* die, D
     break;
   default:
     xbt_die("Unexpected form 0x%x (%i), class 0x%x (%i) list for location in <%"PRIx64">%s",
-      form, form, klass, klass, (uintptr_t) variable->dwarf_offset, variable->name);
+      form, form, klass, klass, (uint64_t) variable->dwarf_offset, variable->name);
   }
 
   // Handle start_scope:
