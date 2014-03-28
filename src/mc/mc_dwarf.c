@@ -4,6 +4,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include <stdlib.h>
+#define DW_LANG_Objc DW_LANG_ObjC /* fix spelling error in older dwarf.h */
 #include <dwarf.h>
 #include <elfutils/libdw.h>
 #include <inttypes.h>
@@ -13,10 +14,6 @@
 #include <xbt/sysdep.h>
 
 #include "mc_private.h"
-
-// Define symbols not present in old version of dwarf.h.
-// Old version of dwarf.h, use DW_LANG_Objc instead of this:
-#define DW_LANG_ObjC 0x0010
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_dwarf, mc, "DWARF processing");
 
