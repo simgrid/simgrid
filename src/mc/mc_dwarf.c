@@ -710,14 +710,14 @@ static dw_variable_t MC_die_to_variable(mc_object_info_t info, Dwarf_Die* die, D
       size_t len;
       if (dwarf_getlocation(&attr_location, &expr, &len)) {
         xbt_die(
-          "Could not read location expression in DW_AT_location of variable <%p>%s",
-          (void*) variable->dwarf_offset, variable->name);
+          "Could not read location expression in DW_AT_location of variable <%"PRIx64">%s",
+          (uintptr_t) variable->dwarf_offset, variable->name);
       }
 
       if (len==1 && expr[0].atom == DW_OP_addr) {
         variable->global = 1;
-        Dwarf_Off offset = expr[0].number;
-        Dwarf_Off base = (Dwarf_Off) MC_object_base_address(info);
+        uintptr_t offset = (uintptr_t) expr[0].number;
+        uintptr_t base   = (uintptr_t) MC_object_base_address(info);
         variable->address = (void*) (base + offset);
       } else {
         mc_dwarf_location_list_init_from_expression(&variable->locations, len, expr);
@@ -731,8 +731,8 @@ static dw_variable_t MC_die_to_variable(mc_object_info_t info, Dwarf_Die* die, D
     mc_dwarf_location_list_init(&variable->locations, info, die, &attr_location);
     break;
   default:
-    xbt_die("Unexpected form 0x%x (%i), class 0x%x (%i) list for location in <%p>%s",
-      form, form, klass, klass, (void*) variable->dwarf_offset, variable->name);
+    xbt_die("Unexpected form 0x%x (%i), class 0x%x (%i) list for location in <%"PRIx64">%s",
+      form, form, klass, klass, (uintptr_t) variable->dwarf_offset, variable->name);
   }
 
   // Handle start_scope:
@@ -835,7 +835,7 @@ static void MC_dwarf_handle_scope_die(mc_object_info_t info, Dwarf_Die* die, Dwa
 
       if (dwarf_formsdata(&attr, &offset) !=0)
         xbt_die("Could not read constant");
-      frame->high_pc = (void*) ((Dwarf_Off)frame->low_pc + offset);
+      frame->high_pc = (void*) ((char*)frame->low_pc + offset);
       break;
 
     // DW_AT_high_pc is a relocatable address:
