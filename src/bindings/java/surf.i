@@ -40,9 +40,14 @@ JAVA_ARRAYSOFCLASSES(NetworkLink);
 %typemap(out) NetworkLinkDynar {
   long l = xbt_dynar_length($1);
   $result = jenv->NewLongArray(l);
-  NetworkLink **lout = (NetworkLink **)xbt_dynar_to_array($1);
-  jenv->SetLongArrayRegion($result, 0, l, (const jlong*)lout);
-  free(lout);
+  unsigned i;
+  NetworkLink *link;
+  jlong *elts = jenv->GetLongArrayElements($result, NULL);
+  xbt_dynar_foreach($1, i, link) {
+    elts[i] = (jlong)link;
+  }
+  jenv->ReleaseLongArrayElements($result, elts, 0);
+  xbt_dynar_free(&$1);
 }
 
 /* Allow to subclass Plugin and send java object to C++ code */
