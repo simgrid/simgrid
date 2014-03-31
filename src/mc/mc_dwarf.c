@@ -4,7 +4,6 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include <stdlib.h>
-#define DW_LANG_Objc DW_LANG_ObjC /* fix spelling error in older dwarf.h */
 #include <dwarf.h>
 #include <elfutils/libdw.h>
 #include <inttypes.h>
@@ -454,8 +453,8 @@ static void MC_dwarf_fill_member_location(dw_type_t type, dw_type_t member, Dwar
   if (!dwarf_hasattr_integrate(child, DW_AT_data_member_location)) {
     if (type->type != DW_TAG_union_type) {
         xbt_die(
-          "Missing DW_AT_data_member_location field in DW_TAG_member %s of type <%"PRIx64">%s",
-          member->name, (uint64_t) type->id, type->name);
+          "Missing DW_AT_data_member_location field in DW_TAG_member %s of type <%p>%s",
+          member->name, type->id, type->name);
     } else {
       return;
     }
@@ -474,9 +473,9 @@ static void MC_dwarf_fill_member_location(dw_type_t type, dw_type_t member, Dwar
       size_t len;
       if (dwarf_getlocation(&attr, &expr, &len)) {
         xbt_die(
-          "Could not read location expression DW_AT_data_member_location in DW_TAG_member %s of type <%"PRIx64">%s",
+          "Could not read location expression DW_AT_data_member_location in DW_TAG_member %s of type <%p>%s",
           MC_dwarf_attr_integrate_string(child, DW_AT_name),
-          (uint64_t) type->id, type->name);
+          type->id, type->name);
       }
       if (len==1 && expr[0].atom == DW_OP_plus_uconst) {
         member->offset =  expr[0].number;
@@ -492,9 +491,9 @@ static void MC_dwarf_fill_member_location(dw_type_t type, dw_type_t member, Dwar
       if (!dwarf_formudata(&attr, &offset))
         member->offset = offset;
       else
-        xbt_die("Cannot get %s location <%"PRIx64">%s",
+        xbt_die("Cannot get %s location <%p>%s",
           MC_dwarf_attr_integrate_string(child, DW_AT_name),
-          (uint64_t) type->id, type->name);
+          type->id, type->name);
       break;
     }
   case MC_DW_CLASS_LOCLISTPTR:
@@ -544,7 +543,7 @@ static void MC_dwarf_add_members(mc_object_info_t info, Dwarf_Die* die, Dwarf_Di
       member->type = tag;
 
       // Global Offset:
-      member->id = dwarf_dieoffset(&child);
+      member->id = (void *) dwarf_dieoffset(&child);
 
       const char* name = MC_dwarf_attr_integrate_string(&child, DW_AT_name);
       if(name)
@@ -566,7 +565,7 @@ static void MC_dwarf_add_members(mc_object_info_t info, Dwarf_Die* die, Dwarf_Di
       MC_dwarf_fill_member_location(type, member, &child);
 
       if (!member->dw_type_id) {
-        xbt_die("Missing type for member %s of <%"PRIx64">%s", member->name, (uint64_t) type->id, type->name);
+        xbt_die("Missing type for member %s of <%p>%s", member->name, type->id, type->name);
       }
 
       xbt_dynar_push(type->members, &member);
@@ -585,7 +584,7 @@ static dw_type_t MC_dwarf_die_to_type(mc_object_info_t info, Dwarf_Die* die, Dwa
 
   dw_type_t type = xbt_new0(s_dw_type_t, 1);
   type->type = -1;
-  type->id = 0;
+  type->id = NULL;
   type->name = NULL;
   type->byte_size = 0;
   type->element_count = -1;
@@ -597,7 +596,7 @@ static dw_type_t MC_dwarf_die_to_type(mc_object_info_t info, Dwarf_Die* die, Dwa
   type->type = dwarf_tag(die);
 
   // Global Offset
-  type->id = dwarf_dieoffset(die);
+  type->id = (void *) dwarf_dieoffset(die);
 
   const char* prefix = "";
   switch (type->type) {
@@ -618,6 +617,8 @@ static dw_type_t MC_dwarf_die_to_type(mc_object_info_t info, Dwarf_Die* die, Dwa
   if (name!=NULL) {
     type->name = namespace ? bprintf("%s%s::%s", prefix, namespace, name) : bprintf("%s%s", prefix, name);
   }
+
+  XBT_DEBUG("Processing type <%p>%s", type->id, type->name);
 
   type->dw_type_id = MC_dwarf_at_type(die);
 
@@ -707,14 +708,14 @@ static dw_variable_t MC_die_to_variable(mc_object_info_t info, Dwarf_Die* die, D
       size_t len;
       if (dwarf_getlocation(&attr_location, &expr, &len)) {
         xbt_die(
-          "Could not read location expression in DW_AT_location of variable <%"PRIx64">%s",
-          (uint64_t) variable->dwarf_offset, variable->name);
+          "Could not read location expression in DW_AT_location of variable <%p>%s",
+          (void*) variable->dwarf_offset, variable->name);
       }
 
       if (len==1 && expr[0].atom == DW_OP_addr) {
         variable->global = 1;
-        uintptr_t offset = (uintptr_t) expr[0].number;
-        uintptr_t base   = (uintptr_t) MC_object_base_address(info);
+        Dwarf_Off offset = expr[0].number;
+        Dwarf_Off base = (Dwarf_Off) MC_object_base_address(info);
         variable->address = (void*) (base + offset);
       } else {
         mc_dwarf_location_list_init_from_expression(&variable->locations, len, expr);
@@ -728,8 +729,8 @@ static dw_variable_t MC_die_to_variable(mc_object_info_t info, Dwarf_Die* die, D
     mc_dwarf_location_list_init(&variable->locations, info, die, &attr_location);
     break;
   default:
-    xbt_die("Unexpected form 0x%x (%i), class 0x%x (%i) list for location in <%"PRIx64">%s",
-      form, form, klass, klass, (uint64_t) variable->dwarf_offset, variable->name);
+    xbt_die("Unexpected form 0x%x (%i), class 0x%x (%i) list for location in <%p>%s",
+      form, form, klass, klass, (void*) variable->dwarf_offset, variable->name);
   }
 
   // Handle start_scope:
@@ -745,7 +746,6 @@ static dw_variable_t MC_die_to_variable(mc_object_info_t info, Dwarf_Die* die, D
       variable->start_scope = dwarf_formudata(&attr, &value) == 0 ? (size_t) value : 0;
       break;
     }
-    case MC_DW_CLASS_RANGELISTPTR: // TODO
     default:
       xbt_die("Unhandled form 0x%x, class 0x%X for DW_AT_start_scope of variable %s",
         form, klass, name==NULL ? "?" : name);
@@ -811,40 +811,29 @@ static void MC_dwarf_handle_scope_die(mc_object_info_t info, Dwarf_Die* die, Dwa
 
   // Variables are filled in the (recursive) call of MC_dwarf_handle_children:
   frame->variables = xbt_dynar_new(sizeof(dw_variable_t), dw_variable_free_voidp);
+  frame->low_pc = ((char*) base) + MC_dwarf_attr_integrate_addr(die, DW_AT_low_pc);
 
-  // TODO, support DW_AT_ranges
-  uint64_t low_pc = MC_dwarf_attr_integrate_addr(die, DW_AT_low_pc);
-  frame->low_pc = low_pc ? ((char*) base) + low_pc : 0;
-  if(low_pc) {
-    // DW_AT_high_pc:
+  // DW_AT_high_pc:
+  {
     Dwarf_Attribute attr;
-    if(!dwarf_attr_integrate(die, DW_AT_high_pc, &attr)) {
-      xbt_die("Missing DW_AT_high_pc matching with DW_AT_low_pc");
-    }
+    if(dwarf_attr_integrate(die, DW_AT_high_pc, &attr)) {
+      uint64_t high_pc;
+      Dwarf_Addr value;
+      if (dwarf_formaddr(&attr, &value) == 0)
+        high_pc = (uint64_t) value;
+      else
+        high_pc = 0;
 
-    Dwarf_Sword offset;
-    Dwarf_Addr high_pc;
-
-    switch(MC_dwarf_form_get_class(dwarf_whatform(&attr))) {
-
-    // DW_AT_high_pc if an offset from the low_pc:
-    case MC_DW_CLASS_CONSTANT:
-
-      if (dwarf_formsdata(&attr, &offset) !=0)
-        xbt_die("Could not read constant");
-      frame->high_pc = (void*) ((char*)frame->low_pc + offset);
-      break;
-
-    // DW_AT_high_pc is a relocatable address:
-    case MC_DW_CLASS_ADDRESS:
-      if (dwarf_formaddr(&attr, &high_pc) != 0)
-        xbt_die("Could not read address");
-      frame->high_pc = ((char*) base) + high_pc;
-      break;
-
-    default:
-      xbt_die("Unexpected class for DW_AT_high_pc");
-
+      int form = dwarf_whatform(&attr);
+      int klass = MC_dwarf_form_get_class(form);
+      if (klass == MC_DW_CLASS_CONSTANT)
+        frame->high_pc = (void*) ((Dwarf_Off)frame->low_pc + high_pc);
+      else if(klass == MC_DW_CLASS_ADDRESS)
+        frame->high_pc = ((char*) base) + high_pc;
+      else
+        xbt_die("Unexpected class for DW_AT_high_pc");
+    } else {
+      frame->high_pc = 0;
     }
   }
 

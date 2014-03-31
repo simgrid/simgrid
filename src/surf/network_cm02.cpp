@@ -482,7 +482,6 @@ ActionPtr NetworkCm02Model::communicate(RoutingEdgePtr src, RoutingEdgePtr dst,
   xbt_dynar_free(&route);
   XBT_OUT();
 
-  surf_callback_emit(networkCommunicateCallbacks, action, src, dst, size, rate);
   return action;
 }
 
@@ -531,11 +530,59 @@ void NetworkCm02Link::updateState(tmgr_trace_event_t event_type,
   /*     value, event_type); */
 
   if (event_type == p_power.event) {
-    updateBandwidth(value, date);
+    double delta =
+        sg_weight_S_parameter / value - sg_weight_S_parameter /
+        (p_power.peak * p_power.scale);
+    lmm_variable_t var = NULL;
+    lmm_element_t elem = NULL;
+    NetworkCm02ActionPtr action = NULL;
+
+    p_power.peak = value;
+    lmm_update_constraint_bound(getModel()->getMaxminSystem(),
+    		                    getConstraint(),
+                                sg_bandwidth_factor *
+                                (p_power.peak * p_power.scale));
+#ifdef HAVE_TRACING
+    TRACE_surf_link_set_bandwidth(date, getName(), sg_bandwidth_factor * p_power.peak * p_power.scale);
+#endif
+    if (sg_weight_S_parameter > 0) {
+      while ((var = lmm_get_var_from_cnst(getModel()->getMaxminSystem(), getConstraint(), &elem))) {
+        action = (NetworkCm02ActionPtr) lmm_variable_id(var);
+        action->m_weight += delta;
+        if (!action->isSuspended())
+          lmm_update_variable_weight(getModel()->getMaxminSystem(), action->getVariable(), action->m_weight);
+      }
+    }
     if (tmgr_trace_event_free(event_type))
       p_power.event = NULL;
   } else if (event_type == p_latEvent) {
-    updateLatency(value, date);
+    double delta = value - m_latCurrent;
+    lmm_variable_t var = NULL;
+    lmm_element_t elem = NULL;
+    NetworkCm02ActionPtr action = NULL;
+
+    m_latCurrent = value;
+    while ((var = lmm_get_var_from_cnst(getModel()->getMaxminSystem(), getConstraint(), &elem))) {
+      action = (NetworkCm02ActionPtr) lmm_variable_id(var);
+      action->m_latCurrent += delta;
+      action->m_weight += delta;
+      if (action->m_rate < 0)
+        lmm_update_variable_bound(getModel()->getMaxminSystem(), action->getVariable(), sg_tcp_gamma / (2.0 * action->m_latCurrent));
+      else {
+        lmm_update_variable_bound(getModel()->getMaxminSystem(), action->getVariable(),
+                                  min(action->m_rate, sg_tcp_gamma / (2.0 * action->m_latCurrent)));
+
+        if (action->m_rate < sg_tcp_gamma / (2.0 * action->m_latCurrent)) {
+          XBT_INFO("Flow is limited BYBANDWIDTH");
+        } else {
+          XBT_INFO("Flow is limited BYLATENCY, latency of flow is %f",
+                   action->m_latCurrent);
+        }
+      }
+      if (!action->isSuspended())
+        lmm_update_variable_weight(getModel()->getMaxminSystem(), action->getVariable(), action->m_weight);
+
+    }
     if (tmgr_trace_event_free(event_type))
       p_latEvent = NULL;
   } else if (event_type == p_stateEvent) {
@@ -568,60 +615,6 @@ void NetworkCm02Link::updateState(tmgr_trace_event_t event_type,
       ("There were a resource state event, need to update actions related to the constraint (%p)",
        getConstraint());
   return;
-}
-
-void NetworkCm02Link::updateBandwidth(double value, double date){
-  double delta = sg_weight_S_parameter / value - sg_weight_S_parameter /
-                 (p_power.peak * p_power.scale);
-  lmm_variable_t var = NULL;
-  lmm_element_t elem = NULL;
-  NetworkCm02ActionPtr action = NULL;
-
-  p_power.peak = value;
-  lmm_update_constraint_bound(getModel()->getMaxminSystem(),
-                              getConstraint(),
-                              sg_bandwidth_factor *
-                              (p_power.peak * p_power.scale));
-#ifdef HAVE_TRACING
-  TRACE_surf_link_set_bandwidth(date, getName(), sg_bandwidth_factor * p_power.peak * p_power.scale);
-#endif
-  if (sg_weight_S_parameter > 0) {
-    while ((var = lmm_get_var_from_cnst(getModel()->getMaxminSystem(), getConstraint(), &elem))) {
-      action = (NetworkCm02ActionPtr) lmm_variable_id(var);
-      action->m_weight += delta;
-      if (!action->isSuspended())
-        lmm_update_variable_weight(getModel()->getMaxminSystem(), action->getVariable(), action->m_weight);
-    }
-  }
-}
-
-void NetworkCm02Link::updateLatency(double value, double date){
-  double delta = value - m_latCurrent;
-  lmm_variable_t var = NULL;
-  lmm_element_t elem = NULL;
-  NetworkCm02ActionPtr action = NULL;
-
-  m_latCurrent = value;
-  while ((var = lmm_get_var_from_cnst(getModel()->getMaxminSystem(), getConstraint(), &elem))) {
-    action = (NetworkCm02ActionPtr) lmm_variable_id(var);
-    action->m_latCurrent += delta;
-    action->m_weight += delta;
-    if (action->m_rate < 0)
-      lmm_update_variable_bound(getModel()->getMaxminSystem(), action->getVariable(), sg_tcp_gamma / (2.0 * action->m_latCurrent));
-    else {
-      lmm_update_variable_bound(getModel()->getMaxminSystem(), action->getVariable(),
-                                min(action->m_rate, sg_tcp_gamma / (2.0 * action->m_latCurrent)));
-
-      if (action->m_rate < sg_tcp_gamma / (2.0 * action->m_latCurrent)) {
-        XBT_INFO("Flow is limited BYBANDWIDTH");
-      } else {
-        XBT_INFO("Flow is limited BYLATENCY, latency of flow is %f",
-                 action->m_latCurrent);
-      }
-    }
-    if (!action->isSuspended())
-      lmm_update_variable_weight(getModel()->getMaxminSystem(), action->getVariable(), action->m_weight);
-  }
 }
 
 /**********

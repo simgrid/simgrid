@@ -590,18 +590,11 @@ void switch_data_segment(int dest){
 
   if (loaded_page==dest)//no need to switch either
     return;
-
-
 #ifdef HAVE_MMAP
-  int i;
-  if(loaded_page==-1){//initial switch, do the copy from the real page here
-    for (i=0; i< SIMIX_process_count(); i++){
-      memcpy(mappings[i],TOPAGE(start_data_exe),size_data_exe);
-    }
-  }
   int current= fds[dest];
   XBT_VERB("Switching data frame to the one of process %d", dest);
   void* tmp = mmap (TOPAGE(start_data_exe), size_data_exe, PROT_READ | PROT_WRITE, MAP_FIXED | MAP_SHARED, current, 0);
+  msync(TOPAGE(start_data_exe), size_data_exe, MS_SYNC | MS_INVALIDATE );
   if (tmp != TOPAGE(start_data_exe))
     xbt_die("Couldn't map the new region");
   loaded_page=dest;

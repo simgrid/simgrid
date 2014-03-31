@@ -25,8 +25,8 @@ CpuPtr getActionCpu(CpuActionPtr action) {
 
 surf_callback(void, CpuPtr) cpuCreatedCallbacks;
 surf_callback(void, CpuPtr) cpuDestructedCallbacks;
-surf_callback(void, CpuPtr, e_surf_resource_state_t, e_surf_resource_state_t) cpuStateChangedCallbacks;
-surf_callback(void, CpuActionPtr, e_surf_action_state_t, e_surf_action_state_t) cpuActionStateChangedCallbacks;
+surf_callback(void, CpuPtr) cpuStateChangedCallbacks;
+surf_callback(void, CpuActionPtr) cpuActionStateChangedCallbacks;
 
 /*********
  * Model *
@@ -203,9 +203,8 @@ int Cpu::getCore()
 
 void Cpu::setState(e_surf_resource_state_t state)
 {
-  e_surf_resource_state_t old = Resource::getState();
   Resource::setState(state);
-  surf_callback_emit(cpuStateChangedCallbacks, this, old, state);
+  surf_callback_emit(cpuStateChangedCallbacks, this);
 }
 /**********
  * Action *
@@ -310,7 +309,6 @@ void CpuAction::setAffinity(CpuPtr cpu, unsigned long mask)
 }
 
 void CpuAction::setState(e_surf_action_state_t state){
-  e_surf_action_state_t old = getState();
   Action::setState(state);
-  surf_callback_emit(cpuActionStateChangedCallbacks, this, old, state);
+  surf_callback_emit(cpuActionStateChangedCallbacks, this);
 }

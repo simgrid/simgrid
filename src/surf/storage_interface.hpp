@@ -48,15 +48,15 @@ extern surf_callback(void, StoragePtr) storageDestructedCallbacks;
 
 /** @ingroup SURF_callbacks
  * @brief Callbacks handler which emit the callbacks after Storage State changed *
- * @details Callback functions have the following signature: `void(StorageActionPtr action, e_surf_resource_state_t old, e_surf_resource_state_t current)`
+ * @details Callback functions have the following signature: `void(StorageActionPtr)`
  */
-extern surf_callback(void, StoragePtr, e_surf_resource_state_t, e_surf_resource_state_t) storageStateChangedCallbacks;
+extern surf_callback(void, StoragePtr) storageStateChangedCallbacks;
 
 /** @ingroup SURF_callbacks
  * @brief Callbacks handler which emit the callbacks after StorageAction State changed *
- * @details Callback functions have the following signature: `void(StorageActionPtr action, e_surf_action_state_t old, e_surf_action_state_t current)`
+ * @details Callback functions have the following signature: `void(StorageActionPtr)`
  */
-extern surf_callback(void, StorageActionPtr, e_surf_action_state_t, e_surf_action_state_t) storageActionStateChangedCallbacks;
+extern surf_callback(void, StorageActionPtr) storageActionStateChangedCallbacks;
 
 /*********
  * Model *
@@ -79,7 +79,7 @@ public:
 
   /**
    * @brief Create a Storage
-   *
+   * 
    * @param id [description]
    * @param type_id [description]
    * @param content_name [description]
@@ -109,7 +109,7 @@ class Storage : public Resource {
 public:
   /**
    * @brief Storage constructor
-   *
+   * 
    * @param model StorageModel associated to this Storage
    * @param name The name of the Storage
    * @param props Dictionary of properties associated to this Storage
@@ -124,7 +124,7 @@ public:
 
   /**
    * @brief Storage constructor
-   *
+   * 
    * @param model StorageModel associated to this Storage
    * @param name The name of the Storage
    * @param props Dictionary of properties associated to this Storage
@@ -151,14 +151,14 @@ public:
 
   /**
    * @brief Check if the Storage is used
-   *
+   * 
    * @return true if the current Storage is used, false otherwise
    */
   bool isUsed();
 
   /**
    * @brief Update the state of the current Storage
-   *
+   * 
    * @param event_type [description]
    * @param value [description]
    * @param date [description]
@@ -176,17 +176,17 @@ public:
 
   /**
    * @brief Open a file
-   *
+   * 
    * @param mount The mount point
    * @param path The path to the file
-   *
+   * 
    * @return The StorageAction corresponding to the opening
    */
   virtual StorageActionPtr open(const char* mount, const char* path)=0;
 
   /**
    * @brief Close a file
-   *
+   * 
    * @param fd The file descriptor to close
    * @return The StorageAction corresponding to the closing
    */
@@ -195,7 +195,7 @@ public:
   /**
    * @brief List directory contents of a path
    * @details [long description]
-   *
+   * 
    * @param path The path to the directory
    * @return The StorageAction corresponding to the ls action
    */
@@ -203,7 +203,7 @@ public:
 
   /**
    * @brief Read a file
-   *
+   * 
    * @param fd The file descriptor to read
    * @param size The size in bytes to read
    * @return The StorageAction corresponding to the reading
@@ -212,7 +212,7 @@ public:
 
   /**
    * @brief Write a file
-   *
+   * 
    * @param fd The file descriptor to write
    * @param size The size in bytes to write
    * @return The StorageAction corresponding to the writing
@@ -221,14 +221,14 @@ public:
 
   /**
    * @brief Get the content of the current Storage
-   *
+   * 
    * @return A xbt_dict_t with path as keys and size in bytes as values
    */
   virtual xbt_dict_t getContent();
 
   /**
    * @brief Get the size in bytes of the current Storage
-   *
+   * 
    * @return The size in bytes of the current Storage
    */
   virtual sg_size_t getSize();
@@ -269,7 +269,7 @@ public:
 
   /**
    * @brief StorageAction constructor
-   *
+   * 
    * @param model The StorageModel associated to this StorageAction
    * @param cost The cost of this  NetworkAction in [TODO]
    * @param failed [description]
@@ -281,7 +281,7 @@ public:
 
     /**
    * @brief StorageAction constructor
-   *
+   * 
    * @param model The StorageModel associated to this StorageAction
    * @param cost The cost of this  StorageAction in [TODO]
    * @param failed [description]

@@ -61,10 +61,8 @@ public:
   ~NetworkNS3Link();
 
   void updateState(tmgr_trace_event_t event_type, double value, double date);
-  double getLatency(){THROW_UNIMPLEMENTED;}
-  double getBandwidth(){THROW_UNIMPLEMENTED;}
-  void updateBandwidth(double value, double date=surf_get_clock()){THROW_UNIMPLEMENTED;}
-  void updateLatency(double value, double date=surf_get_clock()){THROW_UNIMPLEMENTED;}
+  double getLatency();
+  double getBandwidth();
 
 //private:
  char *p_id;

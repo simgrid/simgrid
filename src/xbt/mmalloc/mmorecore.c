@@ -123,10 +123,6 @@ void *mmorecore(struct mdesc *mdp, ssize_t size)
         abort();
       }
 
-#ifdef MADV_MERGEABLE
-      madvise(mapto, mapbytes, MADV_MERGEABLE);
-#endif
-
       if (mdp->top == 0)
         mdp->base = mdp->breakval = mapto;
 

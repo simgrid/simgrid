@@ -8,8 +8,8 @@
 #include "../cpu_cas01.hpp"
 
 /** @addtogroup SURF_plugin_energy
- *
- *
+ *    
+ *  
  *  BlaBla energy
  */
 
@@ -31,7 +31,7 @@ static void energyCpuDestructedCallback(CpuPtr cpu){
   surf_energy->erase(cpuIt);
 }
 
-static void energyCpuActionStateChangedCallback(CpuActionPtr action, e_surf_action_state_t old, e_surf_action_state_t cur){
+static void energyCpuActionStateChangedCallback(CpuActionPtr action){
   CpuPtr cpu  = getActionCpu(action);
   CpuEnergyPtr cpu_energy = (*surf_energy)[cpu];
 

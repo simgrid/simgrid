@@ -1,10 +1,5 @@
 ! expect signal SIGSEGV
 $ ./simix/stack_overflow --cfg=contexts/stack_size:96 ${srcdir:=.}/simix/stack_overflow.xml
 > [Tremblay:master:(0) 0.000000] [test/INFO] Launching our nice bugged recursive function...
-> Access violation detected.
-> This can result from a programming error in your code or, although less likely,
-> from a bug in SimGrid itself.  This can also be the sign of a bug in the OS or
-> in third-party libraries.  Failing hardware can sometimes generate such errors
-> too.
-> Finally, if nothing of the above applies, this can result from a stack overflow.
+> Access violation detected. This can result from a stack overflow.
 > Try to increase stack size with --cfg=contexts/stack_size (current size is 96 KiB).

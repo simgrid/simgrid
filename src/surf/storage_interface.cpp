@@ -26,8 +26,8 @@ StorageModelPtr surf_storage_model = NULL;
 
 surf_callback(void, StoragePtr) storageCreatedCallbacks;
 surf_callback(void, StoragePtr) storageDestructedCallbacks;
-surf_callback(void, StoragePtr, e_surf_resource_state_t, e_surf_resource_state_t) storageStateChangedCallbacks;
-surf_callback(void, StorageActionPtr, e_surf_action_state_t, e_surf_action_state_t) storageActionStateChangedCallbacks;
+surf_callback(void, StoragePtr) storageStateChangedCallbacks;
+surf_callback(void, StorageActionPtr) storageActionStateChangedCallbacks;
 
 /*********
  * Model *
@@ -138,9 +138,8 @@ void Storage::updateState(tmgr_trace_event_t /*event_type*/, double /*value*/, d
 
 void Storage::setState(e_surf_resource_state_t state)
 {
-  e_surf_resource_state_t old = Resource::getState();
   Resource::setState(state);
-  surf_callback_emit(storageStateChangedCallbacks, this, old, state);
+  surf_callback_emit(storageStateChangedCallbacks, this);
 }
 
 xbt_dict_t Storage::getContent()
@@ -180,7 +179,6 @@ StorageAction::StorageAction(ModelPtr model, double cost, bool failed, lmm_varia
 }
 
 void StorageAction::setState(e_surf_action_state_t state){
-  e_surf_action_state_t old = getState();
   Action::setState(state);
-  surf_callback_emit(storageActionStateChangedCallbacks, this, old, state);
+  surf_callback_emit(storageActionStateChangedCallbacks, this);
 }

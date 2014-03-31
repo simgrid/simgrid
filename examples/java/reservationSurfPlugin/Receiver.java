@@ -21,11 +21,15 @@ public class Receiver extends Process {
    public void main(String[] args) throws MsgException {
 
       Msg.info("helloo!");
+      double communicationTime=0;
 
-      Task task;
-      task = Task.receive(getHost().getName());
-      task = Task.receive(getHost().getName());
-      task = Task.receive(getHost().getName());
+      Msg.info("try to get a task");
+
+      Task task = Task.receive(getHost().getName());
+      double timeGot = Msg.getClock();
+
+      Msg.info("Got at time "+ timeGot);
+      task.execute();
 
       Msg.info("goodbye!");
     }

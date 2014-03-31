@@ -164,8 +164,6 @@ public:
   double getBandwidth();
   double getLatency();
   bool isShared();
-  void updateBandwidth(double value, double date=surf_get_clock());
-  void updateLatency(double value, double date=surf_get_clock());
 
   double m_latCurrent;
   tmgr_trace_event_t p_latEvent;

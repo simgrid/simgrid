@@ -8,7 +8,6 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <sys/time.h>
-#include <sys/mman.h>
 #include <libgen.h>
 
 #include "simgrid/sg_config.h"
@@ -799,14 +798,6 @@ static void MC_init_debug_info(void) {
 
   mc_libsimgrid_info = MC_find_object_info(maps, libsimgrid_path, 0);
   mc_object_infos[1] = mc_libsimgrid_info;
-
-#ifdef MADV_MERGEABLE
-  for(int i=0; i!=mc_object_infos_size; ++i) {
-    void* start = mc_object_infos[i]->start_rw;
-    void* end = mc_object_infos[i]->end_rw;
-    madvise(start, (char*)end - (char*)start, MADV_MERGEABLE);
-  }
-#endif
 
   // Use information of the other objects:
   MC_post_process_object_info(mc_binary_info);

@@ -323,13 +323,8 @@ static xbt_dynar_t MC_unwind_stack_frames(void *stack_context) {
 
   unw_cursor_t c;
 
-  // TODO, check condition check (unw_init_local==0 means end of frame)
-  if(unw_init_local(&c, (unw_context_t *)stack_context)!=0) {
-
-    xbt_die("Could not initialize stack unwinding");
-
-  } else while(1) {
-
+  int ret;
+  for(ret = unw_init_local(&c, (unw_context_t *)stack_context); ret >= 0; ret = unw_step(&c)){
     mc_stack_frame_t stack_frame = xbt_new(s_mc_stack_frame_t, 1);
     xbt_dynar_push(result, &stack_frame);
 
@@ -353,19 +348,11 @@ static xbt_dynar_t MC_unwind_stack_frames(void *stack_context) {
       stack_frame->frame_base = (unw_word_t)mc_find_frame_base(frame, frame->object_info, &c);
     } else {
       stack_frame->frame_base = 0;
-      stack_frame->frame_name = NULL;
     }
 
     /* Stop before context switch with maestro */
     if(frame!=NULL && frame->name!=NULL && !strcmp(frame->name, "smx_ctx_sysv_wrapper"))
       break;
-
-    int ret = ret = unw_step(&c);
-    if(ret==0) {
-      xbt_die("Unexpected end of stack.");
-    } else if(ret<0) {
-      xbt_die("Error while unwinding stack.");
-    }
   }
 
   if(xbt_dynar_length(result) == 0){

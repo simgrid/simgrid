@@ -26,11 +26,11 @@ public class TracePlugin extends Plugin {
     Msg.info("Trace: Cpu destructed "+cpu.getName());
   }
 
-  public void cpuStateChangedCallback(Cpu cpu, ResourceState old, ResourceState cur){
+  public void cpuStateChangedCallback(Cpu cpu){
     Msg.info("Trace: Cpu state changed "+cpu.getName());
   }
 
-  public void cpuActionStateChangedCallback(CpuAction action, ActionState old, ActionState cur){
+  public void cpuActionStateChangedCallback(CpuAction action){
     Msg.info("Trace: CpuAction state changed "+action.getModel().getName());
   }
 
@@ -42,11 +42,11 @@ public class TracePlugin extends Plugin {
     Msg.info("Trace: NetworkLink destructed "+link.getName());
   }
 
-  public void networkLinkStateChangedCallback(NetworkLink link, ResourceState old, ResourceState cur){
+  public void networkLinkStateChangedCallback(NetworkLink link){
     Msg.info("Trace: NetworkLink state changed "+link.getName());
   }
 
-  public void networkActionStateChangedCallback(NetworkAction action, ActionState old, ActionState cur){
+  public void networkActionStateChangedCallback(NetworkAction action){
     Msg.info("Trace: NetworkAction state changed "+action.getModel().getName());
   }
 

@@ -331,7 +331,6 @@ ActionPtr NetworkNS3Model::communicate(RoutingEdgePtr src, RoutingEdgePtr dst,
   action->p_srcElm = src;
   action->p_dstElm = dst;
 #endif
-  surf_callback_emit(networkCommunicateCallbacks, action, src, dst, size, rate);
 
   return (surf_action_t) action;
 }
@@ -428,8 +427,8 @@ void NetworkNS3Model::updateActionsState(double now, double delta)
 NetworkNS3Link::NetworkNS3Link(NetworkNS3ModelPtr model, const char *name, xbt_dict_t props,
 		                       double bw_initial, double lat_initial)
  : NetworkLink(model, name, props)
- , p_lat(bprintf("%f", lat_initial))
  , p_bdw(bprintf("%f", bw_initial))
+ , p_lat(bprintf("%f", lat_initial))
  , m_created(1)
 {
 }
@@ -439,6 +438,14 @@ NetworkNS3Link::~NetworkNS3Link()
 }
 
 void NetworkNS3Link::updateState(tmgr_trace_event_t event_type, double value, double date)
+{
+
+}
+double NetworkNS3Link::getLatency()
+{
+
+}
+double NetworkNS3Link::getBandwidth()
 {
 
 }

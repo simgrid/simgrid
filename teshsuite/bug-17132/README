@@ -1,8 +1,0 @@
-This is the bug #17132 described on gforge [1]. This small SMPI code
-triggers an issue in SURF, which is still to be debugged.
-
-The problem seems to be related to the order of events, as changing it
-(with another platform or another message size or a MPI_barrier in
-between) fixes the problem.
-
-[1] https://gforge.inria.fr/tracker/index.php?func=detail&aid=17132&group_id=12&atid=165

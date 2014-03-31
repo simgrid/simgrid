@@ -122,7 +122,6 @@ int ns3_initialize(const char* TcpProtocol){
   }
 
   XBT_ERROR("The ns3/TcpModel must be : NewReno or Reno or Tahoe");
-  return 0;
 }
 
 void * ns3_add_host(const char * id)
@@ -168,7 +167,7 @@ void * ns3_add_router(const char * id)
 	return router;
 }
 
-void ns3_add_cluster(char * bw,char * lat,const char *id)
+void * ns3_add_cluster(char * bw,char * lat,const char *id)
 {
 
 	XBT_DEBUG("cluster_id: %s",id);
@@ -176,7 +175,7 @@ void ns3_add_cluster(char * bw,char * lat,const char *id)
 	XBT_DEBUG("Number of %s nodes: %d",id,Cluster_nodes.GetN() - number_of_clusters_nodes);
 
 	NodeContainer Nodes;
-	unsigned int i;
+	int i;
 
 	for(i = number_of_clusters_nodes; i < Cluster_nodes.GetN() ; i++){
 		Nodes.Add(Cluster_nodes.Get(i));
@@ -226,7 +225,7 @@ static char* transformIpv4Address (Ipv4Address from){
 		return bprintf("%s",s.c_str());
 }
 
-void ns3_add_link(int src, e_ns3_network_element_type_t type_src,
+void * ns3_add_link(int src, e_ns3_network_element_type_t type_src,
 					int dst, e_ns3_network_element_type_t type_dst,
 					char * bw,char * lat)
 {
@@ -274,7 +273,7 @@ void ns3_add_link(int src, e_ns3_network_element_type_t type_src,
 	}
 }
 
-void ns3_end_platform(void)
+void * ns3_end_platform(void)
 {
 	XBT_DEBUG("InitializeRoutes");
 	GlobalRouteManager::BuildGlobalRoutingDatabase();

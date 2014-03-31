@@ -88,7 +88,6 @@ ActionPtr NetworkConstantModel::communicate(RoutingEdgePtr src, RoutingEdgePtr d
   NetworkConstantActionPtr action = new NetworkConstantAction(this, size, sg_latency_factor);
   XBT_OUT();
 
-  surf_callback_emit(networkCommunicateCallbacks, action, src, dst, size, rate);
   return action;
 }
 

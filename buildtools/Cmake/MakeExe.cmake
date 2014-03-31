@@ -90,8 +90,6 @@ add_subdirectory(${CMAKE_HOME_DIRECTORY}/teshsuite/simdag/network/p2p)
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/teshsuite/simdag/partask)
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/teshsuite/simdag/platforms)
 
-add_subdirectory(${CMAKE_HOME_DIRECTORY}/teshsuite/bug-17132)
-
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/teshsuite/simix)
 
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/teshsuite/smpi)

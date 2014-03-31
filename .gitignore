@@ -254,7 +254,6 @@ examples/smpi/mc/bugged2
 
 src/replay/replay
 src/testall
-teshsuite/bug-17132/bug-17132
 teshsuite/smpi/allgather_coll
 teshsuite/smpi/allgatherv_coll
 teshsuite/smpi/allreduce_coll

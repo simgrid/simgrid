@@ -416,8 +416,8 @@ typedef struct s_mc_location_list {
   mc_expression_t locations;
 } s_mc_location_list_t, *mc_location_list_t;
 
-uintptr_t mc_dwarf_resolve_location(mc_expression_t expression, mc_object_info_t object_info, unw_cursor_t* c, void* frame_pointer_address, mc_snapshot_t snapshot);
-uintptr_t mc_dwarf_resolve_locations(mc_location_list_t locations, mc_object_info_t object_info, unw_cursor_t* c, void* frame_pointer_address, mc_snapshot_t snapshot);
+Dwarf_Off mc_dwarf_resolve_location(mc_expression_t expression, mc_object_info_t object_info, unw_cursor_t* c, void* frame_pointer_address, mc_snapshot_t snapshot);
+Dwarf_Off mc_dwarf_resolve_locations(mc_location_list_t locations, mc_object_info_t object_info, unw_cursor_t* c, void* frame_pointer_address, mc_snapshot_t snapshot);
 
 void mc_dwarf_expression_clear(mc_expression_t expression);
 void mc_dwarf_expression_init(mc_expression_t expression, size_t len, Dwarf_Op* ops);
@@ -431,7 +431,7 @@ void mc_dwarf_location_list_init(mc_location_list_t target, mc_object_info_t inf
 
 struct s_dw_type{
   e_dw_type_type type;
-  Dwarf_Off id; /* Offset in the section (in hexadecimal form) */
+  void *id; /* Offset in the section (in hexadecimal form) */
   char *name; /* Name of the type */
   int byte_size; /* Size in bytes */
   int element_count; /* Number of elements for array type */

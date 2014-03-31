@@ -19,9 +19,8 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_network, surf,
 
 surf_callback(void, NetworkLinkPtr) networkLinkCreatedCallbacks;
 surf_callback(void, NetworkLinkPtr) networkLinkDestructedCallbacks;
-surf_callback(void, NetworkLinkPtr, e_surf_resource_state_t, e_surf_resource_state_t) networkLinkStateChangedCallbacks;
-surf_callback(void, NetworkActionPtr, e_surf_action_state_t, e_surf_action_state_t) networkActionStateChangedCallbacks;
-surf_callback(void, NetworkActionPtr, RoutingEdgePtr src, RoutingEdgePtr dst, double size, double rate) networkCommunicateCallbacks;
+surf_callback(void, NetworkLinkPtr) networkLinkStateChangedCallbacks;
+surf_callback(void, NetworkActionPtr) networkActionStateChangedCallbacks;
 
 /*********
  * Model *
@@ -90,9 +89,8 @@ bool NetworkLink::isShared()
 }
 
 void NetworkLink::setState(e_surf_resource_state_t state){
-  e_surf_resource_state_t old = Resource::getState();
   Resource::setState(state);
-  surf_callback_emit(networkLinkStateChangedCallbacks, this, old, state);
+  surf_callback_emit(networkLinkStateChangedCallbacks, this);
 }
 
 /**********
@@ -100,9 +98,8 @@ void NetworkLink::setState(e_surf_resource_state_t state){
  **********/
 
 void NetworkAction::setState(e_surf_action_state_t state){
-  e_surf_action_state_t old = getState();
   Action::setState(state);
-  surf_callback_emit(networkActionStateChangedCallbacks, this, old, state);
+  surf_callback_emit(networkActionStateChangedCallbacks, this);
 }
 
 #endif /* NETWORK_INTERFACE_CPP_ */
