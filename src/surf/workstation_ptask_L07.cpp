@@ -502,20 +502,11 @@ void CpuL07::updateState(tmgr_trace_event_t event_type, double value, double /*d
 void LinkL07::updateState(tmgr_trace_event_t event_type, double value, double date){
   XBT_DEBUG("Updating link %s (%p) with value=%f for date=%g", getName(), this, value, date);
   if (event_type == p_bwEvent) {
-    m_bwCurrent = value;
-    lmm_update_constraint_bound(ptask_maxmin_system, getConstraint(), m_bwCurrent);
+    updateBandwidth(value, date);
     if (tmgr_trace_event_free(event_type))
       p_bwEvent = NULL;
   } else if (event_type == p_latEvent) {
-    lmm_variable_t var = NULL;
-    WorkstationL07ActionPtr action;
-    lmm_element_t elem = NULL;
-
-    m_latCurrent = value;
-    while ((var = lmm_get_var_from_cnst(ptask_maxmin_system, getConstraint(), &elem))) {
-      action = (WorkstationL07ActionPtr) lmm_variable_id(var);
-      action->updateBound();
-    }
+    updateLatency(value, date);
     if (tmgr_trace_event_free(event_type))
       p_latEvent = NULL;
   } else if (event_type == p_stateEvent) {
@@ -582,10 +573,30 @@ double LinkL07::getBandwidth()
   return m_bwCurrent;
 }
 
+void LinkL07::updateBandwidth(double value, double date)
+{
+  m_bwCurrent = value;
+  lmm_update_constraint_bound(ptask_maxmin_system, getConstraint(), m_bwCurrent);
+}
+
 double LinkL07::getLatency()
 {
   return m_latCurrent;
 }
+
+void LinkL07::updateLatency(double value, double date)
+{
+  lmm_variable_t var = NULL;
+  WorkstationL07ActionPtr action;
+  lmm_element_t elem = NULL;
+
+  m_latCurrent = value;
+  while ((var = lmm_get_var_from_cnst(ptask_maxmin_system, getConstraint(), &elem))) {
+    action = (WorkstationL07ActionPtr) lmm_variable_id(var);
+    action->updateBound();
+  }
+}
+
 
 bool LinkL07::isShared()
 {

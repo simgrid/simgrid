@@ -80,6 +80,8 @@ public:
 	                           tmgr_trace_t lat_trace,
                                e_surf_link_sharing_policy_t policy);
   void updateState(tmgr_trace_event_t event_type, double value, double date);
+  void updateBandwidth(double value, double date=surf_get_clock());
+  void updateLatency(double value, double date=surf_get_clock());
 };
 
 

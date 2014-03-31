@@ -40,9 +40,14 @@ JAVA_ARRAYSOFCLASSES(NetworkLink);
 %typemap(out) NetworkLinkDynar {
   long l = xbt_dynar_length($1);
   $result = jenv->NewLongArray(l);
-  NetworkLink **lout = (NetworkLink **)xbt_dynar_to_array($1);
-  jenv->SetLongArrayRegion($result, 0, l, (const jlong*)lout);
-  free(lout);
+  unsigned i;
+  NetworkLink *link;
+  jlong *elts = jenv->GetLongArrayElements($result, NULL);
+  xbt_dynar_foreach($1, i, link) {
+    elts[i] = (jlong)link;
+  }
+  jenv->ReleaseLongArrayElements($result, elts, 0);
+  xbt_dynar_free(&$1);
 }
 
 /* Allow to subclass Plugin and send java object to C++ code */
@@ -76,11 +81,18 @@ class NetworkLink : public Resource {
 public:
   NetworkLink();
   ~NetworkLink();
+  double getBandwidth();
+  void updateBandwidth(double value, double date=surf_get_clock());
+  double getLatency();
+  void updateLatency(double value, double date=surf_get_clock());
 };
 
 class Action {
 public:
   Model *getModel();
+  lmm_variable *getVariable();
+  double getBound();
+  void setBound(double bound);
 };
 
 class CpuAction : public Action {
@@ -98,10 +110,23 @@ public:
 }
 };
 
+%nodefaultctor RoutingEdge;
+class RoutingEdge {
+public:
+  virtual char *getName()=0;
+};
+
 %rename lmm_constraint LmmConstraint;
 struct lmm_constraint {
 %extend {
   double getUsage() {return lmm_constraint_get_usage($self);}
+}
+};
+
+%rename lmm_variable LmmVariable;
+struct lmm_variable {
+%extend {
+  double getValue() {return lmm_variable_getvalue($self);}
 }
 };
 
@@ -111,3 +136,20 @@ struct s_xbt_dict {
   char *getValue(char *key) {return (char*)xbt_dict_get_or_null($self, key);}
 }
 };
+
+%rename e_surf_action_state_t ActionState;
+typedef enum {
+  SURF_ACTION_READY = 0,        /**< Ready        */
+  SURF_ACTION_RUNNING,          /**< Running      */
+  SURF_ACTION_FAILED,           /**< Task Failure */
+  SURF_ACTION_DONE,             /**< Completed    */
+  SURF_ACTION_TO_FREE,          /**< Action to free in next cleanup */
+  SURF_ACTION_NOT_IN_THE_SYSTEM
+                                /**< Not in the system anymore. Why did you ask ? */
+} e_surf_action_state_t;
+
+%rename e_surf_resource_state_t ResourceState;
+typedef enum {
+  SURF_RESOURCE_ON = 1,                   /**< Up & ready        */
+  SURF_RESOURCE_OFF = 0                   /**< Down & broken     */
+} e_surf_resource_state_t;

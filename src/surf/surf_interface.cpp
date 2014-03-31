@@ -260,7 +260,7 @@ static const char *disk_drives_letter_table[MAX_DRIVE] = {
   "Y:\\",
   "Z:\\"
 };
-#endif  
+#endif
 
 /*
  * Returns the initial path. On Windows the initial path is
@@ -872,8 +872,8 @@ void Action::setBound(double bound)
   if (p_variable)
     lmm_update_variable_bound(getModel()->getMaxminSystem(), getVariable(), bound);
 
-  if (getModel()->getUpdateMechanism() == UM_LAZY)
-	heapRemove(getModel()->getActionHeap());
+  if (getModel()->getUpdateMechanism() == UM_LAZY && getLastUpdate()!=surf_get_clock())
+	  heapRemove(getModel()->getActionHeap());
   XBT_OUT();
 }
 

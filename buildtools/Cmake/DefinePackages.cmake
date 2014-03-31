@@ -505,7 +505,13 @@ set(JSURF_JAVA_GENERATED_SRC
   ${CMAKE_BINARY_DIR}/src/bindings/java/org/simgrid/surf/NetworkLink.java
   ${CMAKE_BINARY_DIR}/src/bindings/java/org/simgrid/surf/NetworkAction.java
 
+  ${CMAKE_BINARY_DIR}/src/bindings/java/org/simgrid/surf/RoutingEdge.java
+
+  ${CMAKE_BINARY_DIR}/src/bindings/java/org/simgrid/surf/ActionState.java
+  ${CMAKE_BINARY_DIR}/src/bindings/java/org/simgrid/surf/ResourceState.java
+
   ${CMAKE_BINARY_DIR}/src/bindings/java/org/simgrid/surf/LmmConstraint.java
+  ${CMAKE_BINARY_DIR}/src/bindings/java/org/simgrid/surf/LmmVariable.java
   ${CMAKE_BINARY_DIR}/src/bindings/java/org/simgrid/surf/XbtDict.java
 )
 
@@ -975,6 +981,7 @@ set(TESHSUITE_CMAKEFILES_TXT
   teshsuite/msg/CMakeLists.txt
   teshsuite/msg/storage/CMakeLists.txt
   teshsuite/msg/trace/CMakeLists.txt
+  teshsuite/bug-17132/CMakeLists.txt
   teshsuite/simdag/CMakeLists.txt
   teshsuite/simdag/availability/CMakeLists.txt
   teshsuite/simdag/network/CMakeLists.txt

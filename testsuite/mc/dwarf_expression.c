@@ -96,7 +96,7 @@ void test_deref(mc_expression_state_t state) {
 
   Dwarf_Op ops[60];
   ops[0].atom = DW_OP_const8u;
-  ops[0].number = (Dwarf_Word) &foo;
+  ops[0].number = (uintptr_t) &foo;
   ops[1].atom = DW_OP_deref;
   state->stack_size = 0;
 
