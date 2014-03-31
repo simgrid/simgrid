@@ -488,8 +488,8 @@ XBT_PUBLIC(int) simcall_sem_get_capacity(smx_sem_t sem);
 /*****************************   File   **********************************/
 XBT_PUBLIC(void *) simcall_file_get_data(smx_file_t fd);
 XBT_PUBLIC(void) simcall_file_set_data(smx_file_t fd, void *data);
-XBT_PUBLIC(sg_size_t) simcall_file_read(smx_file_t fd, sg_size_t size);
-XBT_PUBLIC(sg_size_t) simcall_file_write(smx_file_t fd, sg_size_t size);
+XBT_PUBLIC(sg_size_t) simcall_file_read(smx_file_t fd, sg_size_t size, smx_host_t host);
+XBT_PUBLIC(sg_size_t) simcall_file_write(smx_file_t fd, sg_size_t size, smx_host_t host);
 XBT_PUBLIC(smx_file_t) simcall_file_open(const char* fullpath);
 XBT_PUBLIC(int) simcall_file_close(smx_file_t fd);
 XBT_PUBLIC(int) simcall_file_unlink(smx_file_t fd);

@@ -1064,6 +1064,12 @@ static inline sg_size_t simcall_file_read__get__size(smx_simcall_t simcall){
 static inline void simcall_file_read__set__size(smx_simcall_t simcall, sg_size_t arg){
     simcall->args[1].sgsz = arg;
 }
+static inline smx_host_t simcall_file_read__get__host(smx_simcall_t simcall){
+  return (smx_host_t) simcall->args[2].dp;
+}
+static inline void simcall_file_read__set__host(smx_simcall_t simcall, void* arg){
+    simcall->args[2].dp = arg;
+}
 static inline smx_file_t simcall_file_write__get__fd(smx_simcall_t simcall){
   return (smx_file_t) simcall->args[0].dp;
 }
@@ -1075,6 +1081,12 @@ static inline sg_size_t simcall_file_write__get__size(smx_simcall_t simcall){
 }
 static inline void simcall_file_write__set__size(smx_simcall_t simcall, sg_size_t arg){
     simcall->args[1].sgsz = arg;
+}
+static inline smx_host_t simcall_file_write__get__host(smx_simcall_t simcall){
+  return (smx_host_t) simcall->args[2].dp;
+}
+static inline void simcall_file_write__set__host(smx_simcall_t simcall, void* arg){
+    simcall->args[2].dp = arg;
 }
 static inline const char* simcall_file_open__get__fullpath(smx_simcall_t simcall){
   return  simcall->args[0].cc;

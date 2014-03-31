@@ -502,11 +502,11 @@ case SIMCALL_SEM_GET_CAPACITY:
       break;  
 
 case SIMCALL_FILE_READ:
-       SIMIX_pre_file_read(simcall , (smx_file_t) simcall->args[0].dp,  simcall->args[1].sgsz);
+       SIMIX_pre_file_read(simcall , (smx_file_t) simcall->args[0].dp,  simcall->args[1].sgsz, (smx_host_t) simcall->args[2].dp);
        break;  
 
 case SIMCALL_FILE_WRITE:
-       SIMIX_pre_file_write(simcall , (smx_file_t) simcall->args[0].dp,  simcall->args[1].sgsz);
+       SIMIX_pre_file_write(simcall , (smx_file_t) simcall->args[0].dp,  simcall->args[1].sgsz, (smx_host_t) simcall->args[2].dp);
        break;  
 
 case SIMCALL_FILE_OPEN:

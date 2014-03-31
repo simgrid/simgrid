@@ -1318,18 +1318,18 @@ int simcall_sem_get_capacity(smx_sem_t sem)
  * \ingroup simix_file_management
  *
  */
-sg_size_t simcall_file_read(smx_file_t fd, sg_size_t size)
+sg_size_t simcall_file_read(smx_file_t fd, sg_size_t size, smx_host_t host)
 {
-  return simcall_BODY_file_read(fd, size);
+  return simcall_BODY_file_read(fd, size, host);
 }
 
 /**
  * \ingroup simix_file_management
  *
  */
-sg_size_t simcall_file_write(smx_file_t fd, sg_size_t size)
+sg_size_t simcall_file_write(smx_file_t fd, sg_size_t size, smx_host_t host)
 {
-  return simcall_BODY_file_write(fd, size);
+  return simcall_BODY_file_write(fd, size, host);
 }
 
 /**

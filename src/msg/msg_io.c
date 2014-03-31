@@ -6,6 +6,7 @@
 
 #include "msg_private.h"
 #include "xbt/log.h"
+#include "msg_mailbox.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_io, msg,
                                 "Logging specific to MSG (io)");
@@ -85,29 +86,95 @@ void MSG_file_dump (msg_file_t fd){
 }
 
 /** \ingroup msg_file_management
- * \brief Read a file
+ * \brief Read a file (local or remote)
  *
  * \param size of the file to read
  * \param fd is a the file descriptor
- * \return the number of bytes successfully read
+ * \return the number of bytes successfully read or -1 if an error occurred
  */
 sg_size_t MSG_file_read(msg_file_t fd, sg_size_t size)
 {
-  msg_file_priv_t priv = MSG_file_priv(fd);
-  return simcall_file_read(priv->simdata->smx_file, size);
+  msg_file_priv_t file_priv = MSG_file_priv(fd);
+  sg_size_t read_size;
+
+  /* Find the host where the file is physically located and read it */
+  msg_storage_t storage_src =(msg_storage_t) xbt_lib_get_elm_or_null(storage_lib, file_priv->storageId);
+  msg_storage_priv_t storage_priv_src = MSG_storage_priv(storage_src);
+  msg_host_t remote_host = MSG_get_host_by_name(storage_priv_src->host);
+  read_size = simcall_file_read(file_priv->simdata->smx_file, size, remote_host);
+
+  if(strcmp(storage_priv_src->host, MSG_host_get_name(MSG_host_self()))){
+    /* the file is hosted on a remote host, initiate a communication between src and dest hosts for data transfer */
+    XBT_DEBUG("File is on %s remote host, initiate data transfer of %llu bytes.", storage_priv_src->host, read_size);
+    msg_host_t *m_host_list = NULL;
+    m_host_list = calloc(2, sizeof(msg_host_t));
+
+    m_host_list[0] = MSG_host_self();
+    m_host_list[1] = remote_host;
+    double computation_amount[] = { 0, 0 };
+    double communication_amount[] = { 0, (double)read_size, 0, 0 };
+
+    msg_task_t task = MSG_parallel_task_create("file transfer for read", 2, m_host_list, computation_amount, communication_amount, NULL);
+    msg_error_t transfer = MSG_parallel_task_execute(task);
+    MSG_task_destroy(task);
+    free(m_host_list);
+    if(transfer != MSG_OK){
+      if (transfer == MSG_HOST_FAILURE)
+        XBT_WARN("Transfer error, remote host just turned off!");
+      if (transfer == MSG_TASK_CANCELED)
+        XBT_WARN("Transfer error, task has been canceled!");
+
+      return -1;
+    }
+  }
+  return read_size;
 }
 
 /** \ingroup msg_file_management
- * \brief Write into a file
+ * \brief Write into a file (local or remote)
  *
  * \param size of the file to write
  * \param fd is a the file descriptor
- * \return the number of bytes successfully write
+ * \return the number of bytes successfully write or -1 if an error occurred
  */
 sg_size_t MSG_file_write(msg_file_t fd, sg_size_t size)
 {
-  msg_file_priv_t priv = MSG_file_priv(fd);
-  return simcall_file_write(priv->simdata->smx_file, size);
+  msg_file_priv_t file_priv = MSG_file_priv(fd);
+  sg_size_t write_size;
+
+  /* Find the host where the file is physically located (remote or local)*/
+  msg_storage_t storage_src =(msg_storage_t) xbt_lib_get_elm_or_null(storage_lib, file_priv->storageId);
+  msg_storage_priv_t storage_priv_src = MSG_storage_priv(storage_src);
+  msg_host_t remote_host = MSG_get_host_by_name(storage_priv_src->host);
+
+  if(strcmp(storage_priv_src->host, MSG_host_get_name(MSG_host_self()))){
+    /* the file is hosted on a remote host, initiate a communication between src and dest hosts for data transfer */
+    XBT_DEBUG("File is on %s remote host, initiate data transfer of %llu bytes.", storage_priv_src->host, size);
+    msg_host_t *m_host_list = NULL;
+    m_host_list = calloc(2, sizeof(msg_host_t));
+
+    m_host_list[0] = MSG_host_self();
+    m_host_list[1] = remote_host;
+    double computation_amount[] = { 0, 0 };
+    double communication_amount[] = { 0, 0, 0, (double)size };
+
+    msg_task_t task = MSG_parallel_task_create("file transfer for write", 2, m_host_list, computation_amount, communication_amount, NULL);
+    msg_error_t transfer = MSG_parallel_task_execute(task);
+    MSG_task_destroy(task);
+    free(m_host_list);
+    if(transfer != MSG_OK){
+      if (transfer == MSG_HOST_FAILURE)
+        XBT_WARN("Transfer error, remote host just turned off!");
+      if (transfer == MSG_TASK_CANCELED)
+        XBT_WARN("Transfer error, task has been canceled!");
+
+      return -1;
+    }
+  }
+  /* Write file on local or remote host */
+  write_size = simcall_file_write(file_priv->simdata->smx_file, size, remote_host);
+
+  return write_size;
 }
 
 /** \ingroup msg_file_management
@@ -126,7 +193,10 @@ msg_file_t MSG_file_open(const char* fullpath, void* data)
   priv->simdata = xbt_new0(s_simdata_file_t,1);
   priv->simdata->smx_file = simcall_file_open(fullpath);
   xbt_lib_set(file_lib, fullpath, MSG_FILE_LEVEL, priv);
-  return (msg_file_t) xbt_lib_get_elm_or_null(file_lib, fullpath);
+  msg_file_t fd = (msg_file_t) xbt_lib_get_elm_or_null(file_lib, fullpath);
+  __MSG_file_get_info(fd);
+
+  return fd;
 }
 
 /**
@@ -265,7 +335,72 @@ msg_error_t MSG_file_move (msg_file_t fd, const char* fullpath)
 msg_error_t MSG_file_rcopy (msg_file_t file, msg_host_t host, const char* fullpath)
 {
   msg_file_priv_t file_priv = MSG_file_priv(file);
-  return simcall_file_rcopy(file_priv->simdata->smx_file, host, fullpath);
+
+  /* Find the host source where the file is physically located */
+  msg_storage_t storage_src =(msg_storage_t) xbt_lib_get_elm_or_null(storage_lib, file_priv->storageId);
+
+  msg_storage_priv_t storage_priv_src = MSG_storage_priv(storage_src);
+  const char *host_name_src, *host_name_dest;
+  host_name_src = storage_priv_src->host;
+
+  /* Find the real host destination where the file will be physically stored */
+  xbt_dict_cursor_t cursor = NULL;
+  char *mount_name, *storage_name, *file_mount_name;
+  msg_storage_t storage_dest;
+  size_t longest_prefix_length = 0;
+
+  xbt_dict_t storage_list = simcall_host_get_mounted_storage_list(host);
+  xbt_dict_foreach(storage_list,cursor,mount_name,storage_name){
+    file_mount_name = (char *) xbt_malloc ((strlen(mount_name)+1));
+    strncpy(file_mount_name,fullpath,strlen(mount_name)+1);
+    file_mount_name[strlen(mount_name)] = '\0';
+
+    if(!strcmp(file_mount_name,mount_name) && strlen(mount_name)>longest_prefix_length){
+      /* The current mount name is found in the full path and is bigger than the previous*/
+      longest_prefix_length = strlen(mount_name);
+      storage_dest = (msg_storage_t) xbt_lib_get_elm_or_null(storage_lib, storage_name);
+    }
+    free(file_mount_name);
+  }
+  if(longest_prefix_length>0){
+    /* Mount point found, retrieve the host the storage is attached to */
+    msg_storage_priv_t storage_dest_priv = MSG_storage_priv(storage_dest);
+    host_name_dest = storage_dest_priv->host;
+
+  }else{
+    XBT_WARN("Can't find mount point for '%s' on destination host '%s'", fullpath, SIMIX_host_get_name(host));
+    return MSG_TASK_CANCELED;
+  }
+  XBT_INFO("HOST SRC %s HOST DEST %s", host_name_src, host_name_dest);
+
+  /* Try to send file calling SIMIX network layer */
+
+  size_t file_size = simcall_file_read(file_priv->simdata->smx_file, file_priv->size, MSG_get_host_by_name(host_name_src));
+  xbt_ex_t e;
+  msg_error_t ret = MSG_OK;
+
+  TRY {
+    msg_mailbox_t mailbox = MSG_mailbox_get_by_alias(host_name_dest);
+    simcall_comm_isend(mailbox, (double) file_size, -1.0, file, sizeof(void *), NULL, NULL, (void*)file, 0);
+    simcall_comm_irecv(mailbox, file, NULL, NULL, NULL, -1.0);
+  }
+  CATCH(e) {
+    switch (e.category) {
+    case cancel_error:
+      ret = MSG_HOST_FAILURE;
+      break;
+    case network_error:
+      ret = MSG_TRANSFER_FAILURE;
+      break;
+    case timeout_error:
+      ret = MSG_TIMEOUT;
+      break;
+    default:
+      RETHROW;
+    }
+    xbt_ex_free(e);
+  }
+  return ret;
 }
 
 /**
