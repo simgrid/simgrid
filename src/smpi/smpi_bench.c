@@ -602,7 +602,6 @@ void switch_data_segment(int dest){
   int current= fds[dest];
   XBT_VERB("Switching data frame to the one of process %d", dest);
   void* tmp = mmap (TOPAGE(start_data_exe), size_data_exe, PROT_READ | PROT_WRITE, MAP_FIXED | MAP_SHARED, current, 0);
-  msync(TOPAGE(start_data_exe), size_data_exe, MS_SYNC | MS_INVALIDATE );
   if (tmp != TOPAGE(start_data_exe))
     xbt_die("Couldn't map the new region");
   loaded_page=dest;
