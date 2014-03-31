@@ -16,7 +16,7 @@ public class TestPlugin {
   *   java simgrid.msg.Msg
   * which also contains such a launcher
   */
-  static ReservationPlugin tp = new ReservationPlugin();
+  public static ReservationPlugin tp = new ReservationPlugin();
 
   public static void main(String[] args) throws NativeException {
     /* initialize the MSG simulation. Must be done before anything else (even logging). */
@@ -26,10 +26,12 @@ public class TestPlugin {
       Msg.info("example : TestPlugin ping_pong_platform.xml ping_pong_deployment.xml");
       System.exit(1);
     }
+
     /* construct the platform and deploy the application */
     Msg.createEnvironment(args[0]);
     Msg.deployApplication(args[1]);
-    tp.init();
+
+
 
     // getName());
     /*  execute the simulation. */

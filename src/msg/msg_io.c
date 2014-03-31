@@ -326,7 +326,7 @@ msg_error_t MSG_file_move (msg_file_t fd, const char* fullpath)
 /**
  * \ingroup msg_file_management
  * \brief Copy a file to another location on a remote host.
- * \param fd : the file to move
+ * \param file : the file to move
  * \param host : the remote host where the file has to be copied
  * \param fullpath : the complete path destination on the remote host
  * \return If successful, the function returns MSG_OK. Otherwise, it returns
@@ -406,7 +406,7 @@ msg_error_t MSG_file_rcopy (msg_file_t file, msg_host_t host, const char* fullpa
 /**
  * \ingroup msg_file_management
  * \brief Move a file to another location on a remote host.
- * \param fd : the file to move
+ * \param file : the file to move
  * \param host : the remote host where the file has to be moved
  * \param fullpath : the complete path destination on the remote host
  * \return If successful, the function returns MSG_OK. Otherwise, it returns

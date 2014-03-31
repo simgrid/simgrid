@@ -1,0 +1,15 @@
+<?xml version='1.0'?>
+<!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">
+<platform version='3'>
+ <AS id='AS0' routing='Full'>
+
+  <host id='host1' power='1.0'/>
+  <host id='host2' power='1.0'/>
+  <link id='link' bandwidth='1e+10' latency='1e-09'/>
+
+  <route src='host1' dst='host2' symmetrical="YES">
+  	<link_ctn id='link'/>
+  </route>
+
+ </AS>
+</platform>

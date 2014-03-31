@@ -22,8 +22,8 @@ WorkstationModelPtr surf_workstation_model = NULL;
 
 surf_callback(void, WorkstationPtr) workstationCreatedCallbacks;
 surf_callback(void, WorkstationPtr) workstationDestructedCallbacks;
-surf_callback(void, WorkstationPtr) workstationStateChangedCallbacks;
-surf_callback(void, WorkstationActionPtr) workstationActionStateChangedCallbacks;
+surf_callback(void, WorkstationPtr, e_surf_resource_state_t, e_surf_resource_state_t) workstationStateChangedCallbacks;
+surf_callback(void, WorkstationActionPtr, e_surf_action_state_t, e_surf_action_state_t) workstationActionStateChangedCallbacks;
 
 /*********
  * Model *
@@ -112,8 +112,9 @@ Workstation::~Workstation(){
 }
 
 void Workstation::setState(e_surf_resource_state_t state){
+  e_surf_resource_state_t old = Resource::getState();
   Resource::setState(state);
-  surf_callback_emit(workstationStateChangedCallbacks, this);
+  surf_callback_emit(workstationStateChangedCallbacks, this, old, state);
 }
 
 int Workstation::getCore(){
@@ -507,6 +508,7 @@ void Workstation::setParams(ws_params_t params)
  **********/
 
 void WorkstationAction::setState(e_surf_action_state_t state){
+  e_surf_action_state_t old = getState();
   Action::setState(state);
-  surf_callback_emit(workstationActionStateChangedCallbacks, this);
+  surf_callback_emit(workstationActionStateChangedCallbacks, this, old, state);
 }

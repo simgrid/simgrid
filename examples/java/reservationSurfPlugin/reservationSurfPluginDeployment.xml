@@ -1,8 +1,8 @@
 <?xml version='1.0'?>
 <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">
 <platform version="3">
-  <process host="Jacquelin" function="surfPlugin.Sender">
+  <process host="Jacquelin" function="reservationSurfPlugin.Sender">
       <argument value="Boivin"/>
   </process>
-<process host="Boivin" function="surfPlugin.Receiver"/>
+<process host="Boivin" function="reservationSurfPlugin.Receiver"/>
 </platform>
