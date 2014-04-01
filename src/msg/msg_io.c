@@ -228,7 +228,7 @@ int MSG_file_close(msg_file_t fd)
  * \param fd is the file descriptor (#msg_file_t)
  * \return 0 on success or 1 on error
  */
-int MSG_file_unlink(msg_file_t fd)
+msg_error_t MSG_file_unlink(msg_file_t fd)
 {
   msg_file_priv_t priv = MSG_file_priv(fd);
   int res = simcall_file_unlink(priv->simdata->smx_file);

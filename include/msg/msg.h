@@ -89,7 +89,7 @@ XBT_PUBLIC(msg_error_t) MSG_file_set_data(msg_file_t fd, void * data);
 XBT_PUBLIC(int) MSG_file_close(msg_file_t fd);
 XBT_PUBLIC(sg_size_t) MSG_file_get_size(msg_file_t fd);
 XBT_PUBLIC(void) MSG_file_dump(msg_file_t fd);
-XBT_PUBLIC(int) MSG_file_unlink(msg_file_t fd);
+XBT_PUBLIC(msg_error_t) MSG_file_unlink(msg_file_t fd);
 XBT_PUBLIC(msg_error_t) MSG_file_seek(msg_file_t fd, sg_size_t offset, int origin);
 XBT_PUBLIC(sg_size_t) MSG_file_tell (msg_file_t fd);
 XBT_PUBLIC(void) __MSG_file_get_info(msg_file_t fd);

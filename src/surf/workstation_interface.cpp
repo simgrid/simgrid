@@ -268,7 +268,7 @@ ActionPtr Workstation::write(surf_file_t fd, sg_size_t size) {
 int Workstation::unlink(surf_file_t fd) {
   if (!fd){
     XBT_WARN("No such file descriptor. Impossible to unlink");
-    return 0;
+    return MSG_TASK_CANCELED;
   } else {
 
     StoragePtr st = findStorageOnMountList(fd->mount);
@@ -276,7 +276,7 @@ int Workstation::unlink(surf_file_t fd) {
     if (!xbt_dict_get_or_null(st->p_content, fd->name)){
       XBT_WARN("File %s is not on disk %s. Impossible to unlink", fd->name,
           st->getName());
-      return 0;
+      return MSG_TASK_CANCELED;
     } else {
       XBT_DEBUG("UNLINK on disk '%s'",st->getName());
       st->m_usedSize -= fd->size;
@@ -287,7 +287,7 @@ int Workstation::unlink(surf_file_t fd) {
       free(fd->name);
       free(fd->mount);
       xbt_free(fd);
-      return 1;
+      return MSG_OK;
     }
   }
 }
