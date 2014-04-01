@@ -369,10 +369,10 @@ void mc_dwarf_location_list_init(mc_location_list_t list, mc_object_info_t info,
     list->size++;
     list->locations = (mc_expression_t) realloc(list->locations, list->size*sizeof(s_mc_expression_t));
     mc_expression_t expression = list->locations + i;
-
-    void* base = info->flags & MC_OBJECT_INFO_EXECUTABLE ? 0 : MC_object_base_address(info);
+    expression->ops = NULL;
     mc_dwarf_expression_init(expression, len, ops);
 
+    void* base = info->flags & MC_OBJECT_INFO_EXECUTABLE ? 0 : MC_object_base_address(info);
     // If start == 0, this is not a location list:
     expression->lowpc = start == 0 ? NULL : (char*) base + start;
     expression->highpc = start == 0 ? NULL : (char*) base + end;
