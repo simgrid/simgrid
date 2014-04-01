@@ -1,12 +1,13 @@
-/* Change the size of a block allocated by `mmalloc'.
-   Copyright 1990, 1991 Free Software Foundation
-   Written May 1989 by Mike Haertel. */
+/* Change the size of a block allocated by `mmalloc'. */
 
 /* Copyright (c) 2010-2014. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
+
+/* Copyright 1990, 1991 Free Software Foundation
+   Written May 1989 by Mike Haertel. */
 
 #include <string.h>             /* Prototypes for memcpy, memmove, memset, etc */
 #include <stdlib.h> /* abort */

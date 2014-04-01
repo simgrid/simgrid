@@ -1,11 +1,11 @@
-/* Copyright (C) 1991, 1992 Free Software Foundation, Inc.
-   This file was then part of the GNU C Library. */
-
 /* Copyright (c) 2010-2014. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
+
+/* Copyright (C) 1991, 1992 Free Software Foundation, Inc.
+   This file was then part of the GNU C Library. */
 
 #ifndef MMALLOC_H
 #define MMALLOC_H 1

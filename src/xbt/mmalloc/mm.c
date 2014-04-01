@@ -4,13 +4,13 @@
    behavior.  It should also still be possible to build the library
    as a standard library with multiple objects. */
 
-/* Copyright 1996, 2000 Free Software Foundation  */
-
 /* Copyright (c) 2010, 2012-2014. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
+
+/* Copyright 1996, 2000 Free Software Foundation  */
 
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>             /* Prototypes for lseek, sbrk (maybe) */

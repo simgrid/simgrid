@@ -1,13 +1,14 @@
-/* Support for an sbrk-like function that uses mmap.
-   Copyright 1992, 2000 Free Software Foundation, Inc.
-
-   Contributed by Fred Fish at Cygnus Support.   fnf@cygnus.com */
+/* Support for an sbrk-like function that uses mmap. */
 
 /* Copyright (c) 2010-2014. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
+
+/* Copyright 1992, 2000 Free Software Foundation, Inc.
+
+   Contributed by Fred Fish at Cygnus Support.   fnf@cygnus.com */
 
 #ifndef MAP_ANONYMOUS
 #define MAP_ANONYMOUS MAP_ANON

@@ -1,14 +1,15 @@
-/* Free a block of memory allocated by `mmalloc'.
-   Copyright 1990, 1991, 1992 Free Software Foundation
-
-   Written May 1989 by Mike Haertel.
-   Heavily modified Mar 1992 by Fred Fish.  (fnf@cygnus.com) */
+/* Free a block of memory allocated by `mmalloc'. */
 
 /* Copyright (c) 2010-2014. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
+
+/* Copyright 1990, 1991, 1992 Free Software Foundation
+
+   Written May 1989 by Mike Haertel.
+   Heavily modified Mar 1992 by Fred Fish.  (fnf@cygnus.com) */
 
 #include "mmprivate.h"
 #include "xbt/ex.h"
