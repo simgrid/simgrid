@@ -100,19 +100,19 @@ sg_size_t MSG_file_read(msg_file_t fd, sg_size_t size)
   /* Find the host where the file is physically located and read it */
   msg_storage_t storage_src =(msg_storage_t) xbt_lib_get_elm_or_null(storage_lib, file_priv->storageId);
   msg_storage_priv_t storage_priv_src = MSG_storage_priv(storage_src);
-  msg_host_t remote_host = MSG_get_host_by_name(storage_priv_src->host);
-  read_size = simcall_file_read(file_priv->simdata->smx_file, size, remote_host);
+  msg_host_t attached_host = MSG_get_host_by_name(storage_priv_src->hostname);
+  read_size = simcall_file_read(file_priv->simdata->smx_file, size, attached_host);
 
-  if(strcmp(storage_priv_src->host, MSG_host_get_name(MSG_host_self()))){
+  if(strcmp(storage_priv_src->hostname, MSG_host_get_name(MSG_host_self()))){
     /* the file is hosted on a remote host, initiate a communication between src and dest hosts for data transfer */
-    XBT_DEBUG("File is on %s remote host, initiate data transfer of %llu bytes.", storage_priv_src->host, read_size);
+    XBT_DEBUG("File is on %s remote host, initiate data transfer of %llu bytes.", storage_priv_src->hostname, read_size);
     msg_host_t *m_host_list = NULL;
     m_host_list = calloc(2, sizeof(msg_host_t));
 
     m_host_list[0] = MSG_host_self();
-    m_host_list[1] = remote_host;
+    m_host_list[1] = attached_host;
     double computation_amount[] = { 0, 0 };
-    double communication_amount[] = { 0, (double)read_size, 0, 0 };
+    double communication_amount[] = { 0, 0, (double)read_size, 0 };
 
     msg_task_t task = MSG_parallel_task_create("file transfer for read", 2, m_host_list, computation_amount, communication_amount, NULL);
     msg_error_t transfer = MSG_parallel_task_execute(task);
@@ -120,7 +120,7 @@ sg_size_t MSG_file_read(msg_file_t fd, sg_size_t size)
     free(m_host_list);
     if(transfer != MSG_OK){
       if (transfer == MSG_HOST_FAILURE)
-        XBT_WARN("Transfer error, remote host just turned off!");
+        XBT_WARN("Transfer error, %s remote host just turned off!", MSG_host_get_name(attached_host));
       if (transfer == MSG_TASK_CANCELED)
         XBT_WARN("Transfer error, task has been canceled!");
 
@@ -145,18 +145,18 @@ sg_size_t MSG_file_write(msg_file_t fd, sg_size_t size)
   /* Find the host where the file is physically located (remote or local)*/
   msg_storage_t storage_src =(msg_storage_t) xbt_lib_get_elm_or_null(storage_lib, file_priv->storageId);
   msg_storage_priv_t storage_priv_src = MSG_storage_priv(storage_src);
-  msg_host_t remote_host = MSG_get_host_by_name(storage_priv_src->host);
+  msg_host_t attached_host = MSG_get_host_by_name(storage_priv_src->hostname);
 
-  if(strcmp(storage_priv_src->host, MSG_host_get_name(MSG_host_self()))){
+  if(strcmp(storage_priv_src->hostname, MSG_host_get_name(MSG_host_self()))){
     /* the file is hosted on a remote host, initiate a communication between src and dest hosts for data transfer */
-    XBT_DEBUG("File is on %s remote host, initiate data transfer of %llu bytes.", storage_priv_src->host, size);
+    XBT_DEBUG("File is on %s remote host, initiate data transfer of %llu bytes.", storage_priv_src->hostname, size);
     msg_host_t *m_host_list = NULL;
     m_host_list = calloc(2, sizeof(msg_host_t));
 
     m_host_list[0] = MSG_host_self();
-    m_host_list[1] = remote_host;
+    m_host_list[1] = attached_host;
     double computation_amount[] = { 0, 0 };
-    double communication_amount[] = { 0, 0, 0, (double)size };
+    double communication_amount[] = { 0, (double)size, 0, 0 };
 
     msg_task_t task = MSG_parallel_task_create("file transfer for write", 2, m_host_list, computation_amount, communication_amount, NULL);
     msg_error_t transfer = MSG_parallel_task_execute(task);
@@ -164,7 +164,7 @@ sg_size_t MSG_file_write(msg_file_t fd, sg_size_t size)
     free(m_host_list);
     if(transfer != MSG_OK){
       if (transfer == MSG_HOST_FAILURE)
-        XBT_WARN("Transfer error, remote host just turned off!");
+        XBT_WARN("Transfer error, %s remote host just turned off!", MSG_host_get_name(attached_host));
       if (transfer == MSG_TASK_CANCELED)
         XBT_WARN("Transfer error, task has been canceled!");
 
@@ -172,7 +172,7 @@ sg_size_t MSG_file_write(msg_file_t fd, sg_size_t size)
     }
   }
   /* Write file on local or remote host */
-  write_size = simcall_file_write(file_priv->simdata->smx_file, size, remote_host);
+  write_size = simcall_file_write(file_priv->simdata->smx_file, size, attached_host);
 
   return write_size;
 }
@@ -317,7 +317,7 @@ msg_error_t MSG_file_rcopy (msg_file_t file, msg_host_t host, const char* fullpa
 
   msg_storage_priv_t storage_priv_src = MSG_storage_priv(storage_src);
   const char *host_name_src, *host_name_dest;
-  host_name_src = storage_priv_src->host;
+  host_name_src = storage_priv_src->hostname;
 
   /* Find the real host destination where the file will be physically stored */
   xbt_dict_cursor_t cursor = NULL;
@@ -341,7 +341,7 @@ msg_error_t MSG_file_rcopy (msg_file_t file, msg_host_t host, const char* fullpa
   if(longest_prefix_length>0){
     /* Mount point found, retrieve the host the storage is attached to */
     msg_storage_priv_t storage_dest_priv = MSG_storage_priv(storage_dest);
-    host_name_dest = storage_dest_priv->host;
+    host_name_dest = storage_dest_priv->hostname;
 
   }else{
     XBT_WARN("Can't find mount point for '%s' on destination host '%s'", fullpath, SIMIX_host_get_name(host));
@@ -417,7 +417,7 @@ msg_storage_t __MSG_storage_create(smx_storage_t storage)
   const char *name = SIMIX_storage_get_name(storage);
   const char *host = SIMIX_storage_get_host(storage);
   msg_storage_priv_t storage_private = xbt_new0(s_msg_storage_priv_t, 1);
-  storage_private->host = host;
+  storage_private->hostname = host;
   xbt_lib_set(storage_lib,name,MSG_STORAGE_LEVEL,storage_private);
   return xbt_lib_get_elm_or_null(storage_lib, name);
 }
@@ -564,5 +564,5 @@ sg_size_t MSG_storage_get_size(msg_storage_t storage)
 const char *MSG_storage_get_host(msg_storage_t storage) {
   xbt_assert((storage != NULL), "Invalid parameters");
   msg_storage_priv_t priv = MSG_storage_priv(storage);
-  return priv->host;
+  return priv->hostname;
 }
