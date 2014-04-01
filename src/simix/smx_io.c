@@ -210,39 +210,6 @@ int SIMIX_file_unlink(smx_process_t process, smx_file_t fd)
     return 0;
 }
 
-//SIMIX FILE LS
-void SIMIX_pre_file_ls(smx_simcall_t simcall,
-                       const char* mount, const char* path)
-{
-  smx_action_t action = SIMIX_file_ls(simcall->issuer, mount, path);
-  xbt_fifo_push(action->simcalls, simcall);
-  simcall->issuer->waiting_action = action;
-}
-smx_action_t SIMIX_file_ls(smx_process_t process, const char* mount, const char *path)
-{
-  smx_action_t action;
-  smx_host_t host = process->smx_host;
-  /* check if the host is active */
-  if (surf_resource_get_state(surf_workstation_resource_priv(host)) != SURF_RESOURCE_ON) {
-    THROWF(host_error, 0, "Host %s failed, you cannot call this function",
-           sg_host_name(host));
-  }
-
-  action = xbt_mallocator_get(simix_global->action_mallocator);
-  action->type = SIMIX_ACTION_IO;
-  action->name = NULL;
-#ifdef HAVE_TRACING
-  action->category = NULL;
-#endif
-
-  action->io.host = host;
-  action->io.surf_io = surf_workstation_ls(host,mount,path);
-
-  surf_action_set_data(action->io.surf_io, action);
-  XBT_DEBUG("Create io action %p", action);
-  return action;
-}
-
 sg_size_t SIMIX_pre_file_get_size(smx_simcall_t simcall, smx_file_t fd)
 {
   return SIMIX_file_get_size(simcall->issuer, fd);
@@ -401,17 +368,6 @@ void SIMIX_post_io(smx_action_t action)
       simcall_file_read__set__result(simcall, surf_action_get_cost(action->io.surf_io));
       break;
 
-    case SIMCALL_FILE_LS:
-//      xbt_dict_foreach((action->io.surf_io)->ls_dict,cursor,key, src){
-//        // if there is a stat we have to duplicate it
-//        if(src){
-//          dst = xbt_new0(s_file_stat_t,1);
-//          file_stat_copy(src, dst);
-//          xbt_dict_set((action->io.surf_io)->ls_dict,key,dst,xbt_free);
-//        }
-//      }
-      simcall_file_ls__set__result(simcall, surf_storage_action_get_ls_dict(action->io.surf_io));
-      break;
     default:
       break;
     }

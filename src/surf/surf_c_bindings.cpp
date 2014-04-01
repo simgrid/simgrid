@@ -372,10 +372,6 @@ int surf_workstation_unlink(surf_resource_t workstation, surf_file_t fd){
   return get_casted_workstation(workstation)->unlink(fd);
 }
 
-surf_action_t surf_workstation_ls(surf_resource_t workstation, const char* mount, const char *path){
-  return get_casted_workstation(workstation)->ls(mount, path);
-}
-
 size_t surf_workstation_get_size(surf_resource_t workstation, surf_file_t fd){
   return get_casted_workstation(workstation)->getSize(fd);
 }

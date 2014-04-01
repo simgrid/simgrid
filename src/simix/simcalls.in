@@ -113,7 +113,6 @@ file_write False (sg_size_t) (fd, void*, smx_file_t) (size, sg_size_t) (host, vo
 file_open False (void*, smx_file_t) (fullpath, const char*)
 file_close False (int) (fd, void*, smx_file_t)
 file_unlink True (int) (fd, void*, smx_file_t)
-file_ls False (void*, xbt_dict_t) (mount, const char*) (path, const char*)
 file_get_size True (sg_size_t) (fd, void*, smx_file_t)
 file_tell True (sg_size_t) (fd, void*, smx_file_t)
 file_seek True (int) (fd, void*, smx_file_t) (offset, sg_size_t) (origin, int)

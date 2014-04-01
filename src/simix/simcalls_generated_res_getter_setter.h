@@ -455,12 +455,6 @@ static inline int simcall_file_unlink__get__result(smx_simcall_t simcall){
 static inline void simcall_file_unlink__set__result(smx_simcall_t simcall, int result){
     simcall->result.i = result;
 }
-static inline xbt_dict_t simcall_file_ls__get__result(smx_simcall_t simcall){
-  return (xbt_dict_t) simcall->result.dp;
-}
-static inline void simcall_file_ls__set__result(smx_simcall_t simcall, void* result){
-    simcall->result.dp = result;
-}
 static inline sg_size_t simcall_file_get_size__get__result(smx_simcall_t simcall){
   return  simcall->result.sgsz;
 }

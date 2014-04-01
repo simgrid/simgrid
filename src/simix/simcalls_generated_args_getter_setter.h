@@ -1106,18 +1106,6 @@ static inline smx_file_t simcall_file_unlink__get__fd(smx_simcall_t simcall){
 static inline void simcall_file_unlink__set__fd(smx_simcall_t simcall, void* arg){
     simcall->args[0].dp = arg;
 }
-static inline const char* simcall_file_ls__get__mount(smx_simcall_t simcall){
-  return  simcall->args[0].cc;
-}
-static inline void simcall_file_ls__set__mount(smx_simcall_t simcall, const char* arg){
-    simcall->args[0].cc = arg;
-}
-static inline const char* simcall_file_ls__get__path(smx_simcall_t simcall){
-  return  simcall->args[1].cc;
-}
-static inline void simcall_file_ls__set__path(smx_simcall_t simcall, const char* arg){
-    simcall->args[1].cc = arg;
-}
 static inline smx_file_t simcall_file_get_size__get__fd(smx_simcall_t simcall){
   return (smx_file_t) simcall->args[0].dp;
 }

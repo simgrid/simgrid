@@ -292,12 +292,6 @@ int Workstation::unlink(surf_file_t fd) {
   }
 }
 
-ActionPtr Workstation::ls(const char* mount, const char *path){
-  XBT_DEBUG("LS on mount '%s' and file '%s'", mount, path);
-  StoragePtr st = findStorageOnMountList(mount);
-  return st->ls(path);
-}
-
 sg_size_t Workstation::getSize(surf_file_t fd){
   return fd->size;
 }

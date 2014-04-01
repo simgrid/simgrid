@@ -282,16 +282,6 @@ public:
   virtual int unlink(surf_file_t fd);
 
   /**
-   * @brief List directory contents of a path
-   * @details [long description]
-   *
-   * @param mount [description]
-   * @param path The path to the directory
-   * @return The StorageAction corresponding to the ls action
-   */
-  virtual ActionPtr ls(const char* mount, const char *path);
-
-  /**
    * @brief Get the size in bytes of the file
    *
    * @param fd The file descriptor to read

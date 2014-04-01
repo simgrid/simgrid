@@ -1689,22 +1689,6 @@
     }    
     return self->simcall.result.i;
   }
-  inline static xbt_dict_t simcall_BODY_file_ls(const char* mount, const char* path) {
-    smx_process_t self = SIMIX_process_self();
-    self->simcall.call = SIMCALL_FILE_LS;
-    memset(&self->simcall.result, 0, sizeof(self->simcall.result));
-    memset(self->simcall.args, 0, sizeof(self->simcall.args));
-    self->simcall.args[0].cc = (const char*) mount;
-    self->simcall.args[1].cc = (const char*) path;
-    if (self != simix_global->maestro_process) {
-      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name,
-                SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
-      SIMIX_process_yield(self);
-    } else {
-      SIMIX_simcall_pre(&self->simcall, 0);
-    }    
-    return self->simcall.result.dp;
-  }
   inline static sg_size_t simcall_BODY_file_get_size(smx_file_t fd) {
     smx_process_t self = SIMIX_process_self();
     self->simcall.call = SIMCALL_FILE_GET_SIZE;

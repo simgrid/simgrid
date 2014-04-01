@@ -522,10 +522,6 @@ case SIMCALL_FILE_UNLINK:
       SIMIX_simcall_answer(simcall);
       break;  
 
-case SIMCALL_FILE_LS:
-       SIMIX_pre_file_ls(simcall ,  simcall->args[0].cc,  simcall->args[1].cc);
-       break;  
-
 case SIMCALL_FILE_GET_SIZE:
       simcall->result.sgsz = SIMIX_pre_file_get_size(simcall , (smx_file_t) simcall->args[0].dp);
       SIMIX_simcall_answer(simcall);

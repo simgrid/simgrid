@@ -665,17 +665,6 @@ XBT_PUBLIC(xbt_dynar_t) surf_workstation_get_attached_storage_list(surf_resource
 XBT_PUBLIC(int) surf_workstation_unlink(surf_resource_t workstation, surf_file_t fd);
 
 /**
- * @brief List directory contents of a path
- * @details [long description]
- * 
- * @param workstation The surf workstation
- * @param mount The mount point
- * @param path The path to the directory
- * @return The surf action corresponding to the ls action
- */
-XBT_PUBLIC(surf_action_t) surf_workstation_ls(surf_resource_t workstation, const char* mount, const char *path);
-
-/**
  * @brief Get the size of a file on a workstation
  * 
  * @param workstation The surf workstation
