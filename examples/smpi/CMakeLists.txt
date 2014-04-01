@@ -25,12 +25,14 @@ if(enable_smpi)
     add_executable(mc/bugged1_liveness mc/bugged1_liveness.c)
     add_executable(mc/send_deterministic mc/send_deterministic.c)
     add_executable(mc/non_deterministic mc/non_deterministic.c)
+    add_executable(mc/mutual_exclusion mc/mutual_exclusion.c)
   
     target_link_libraries(mc/bugged1 simgrid)
     target_link_libraries(mc/bugged2 simgrid)
     target_link_libraries(mc/bugged1_liveness simgrid)
     target_link_libraries(mc/send_deterministic simgrid)
     target_link_libraries(mc/non_deterministic simgrid)
+    target_link_libraries(mc/mutual_exclusion simgrid)
   endif()
   
   target_link_libraries(bcbench simgrid)
@@ -64,6 +66,7 @@ set(examples_src
   ${CMAKE_CURRENT_SOURCE_DIR}/mc/bugged1_liveness.c
   ${CMAKE_CURRENT_SOURCE_DIR}/mc/send_deterministic.c
   ${CMAKE_CURRENT_SOURCE_DIR}/mc/non_deterministic.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/mc/mutual_exclusion.c
   PARENT_SCOPE
   )
 set(bin_files
@@ -75,6 +78,7 @@ set(bin_files
   ${CMAKE_CURRENT_SOURCE_DIR}/mc/hostfile_bugged2
   ${CMAKE_CURRENT_SOURCE_DIR}/mc/hostfile_send_deterministic
   ${CMAKE_CURRENT_SOURCE_DIR}/mc/hostfile_non_deterministic
+  ${CMAKE_CURRENT_SOURCE_DIR}/mc/hostfile_mutual_exclusion	
   PARENT_SCOPE
   )
 set(txt_files

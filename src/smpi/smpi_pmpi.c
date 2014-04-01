@@ -93,14 +93,12 @@ int PMPI_Query_thread(int *provided)
 {
   int retval = 0;
 
-  smpi_bench_end();
   if (provided == NULL) {
     retval = MPI_ERR_ARG;
   } else {
     *provided = MPI_THREAD_MULTIPLE;
     retval = MPI_SUCCESS;
   }
-  smpi_bench_begin();
   return retval;
 }
 
@@ -108,14 +106,12 @@ int PMPI_Is_thread_main(int *flag)
 {
   int retval = 0;
 
-  smpi_bench_end();
   if (flag == NULL) {
     retval = MPI_ERR_ARG;
   } else {
     *flag = smpi_process_index() == 0;
     retval = MPI_SUCCESS;
   }
-  smpi_bench_begin();
   return retval;
 }
 
@@ -151,14 +147,12 @@ int PMPI_Address(void *location, MPI_Aint * address)
 {
   int retval = 0;
 
-  smpi_bench_end();
   if (!address) {
     retval = MPI_ERR_ARG;
   } else {
     *address = (MPI_Aint) location;
     retval = MPI_SUCCESS;
   }
-  smpi_bench_begin();
   return retval;
 }
 
@@ -171,14 +165,12 @@ int PMPI_Type_free(MPI_Datatype * datatype)
 {
   int retval = 0;
 
-  smpi_bench_end();
   if (!datatype) {
     retval = MPI_ERR_ARG;
   } else {
     smpi_datatype_free(datatype);
     retval = MPI_SUCCESS;
   }
-  smpi_bench_begin();
   return retval;
 }
 
@@ -186,7 +178,6 @@ int PMPI_Type_size(MPI_Datatype datatype, int *size)
 {
   int retval = 0;
 
-  smpi_bench_end();
   if (datatype == MPI_DATATYPE_NULL) {
     retval = MPI_ERR_TYPE;
   } else if (size == NULL) {
@@ -195,7 +186,6 @@ int PMPI_Type_size(MPI_Datatype datatype, int *size)
     *size = (int) smpi_datatype_size(datatype);
     retval = MPI_SUCCESS;
   }
-  smpi_bench_begin();
   return retval;
 }
 
@@ -203,7 +193,6 @@ int PMPI_Type_get_extent(MPI_Datatype datatype, MPI_Aint * lb, MPI_Aint * extent
 {
   int retval = 0;
 
-  smpi_bench_end();
   if (datatype == MPI_DATATYPE_NULL) {
     retval = MPI_ERR_TYPE;
   } else if (lb == NULL || extent == NULL) {
@@ -211,7 +200,6 @@ int PMPI_Type_get_extent(MPI_Datatype datatype, MPI_Aint * lb, MPI_Aint * extent
   } else {
     retval = smpi_datatype_extent(datatype, lb, extent);
   }
-  smpi_bench_begin();
   return retval;
 }
 
@@ -224,7 +212,6 @@ int PMPI_Type_extent(MPI_Datatype datatype, MPI_Aint * extent)
 {
   int retval = 0;
 
-  smpi_bench_end();
   if (datatype == MPI_DATATYPE_NULL) {
     retval = MPI_ERR_TYPE;
   } else if (extent == NULL) {
@@ -233,7 +220,6 @@ int PMPI_Type_extent(MPI_Datatype datatype, MPI_Aint * extent)
     *extent = smpi_datatype_get_extent(datatype);
     retval = MPI_SUCCESS;
   }
-  smpi_bench_begin();
   return retval;
 }
 
@@ -241,7 +227,6 @@ int PMPI_Type_lb(MPI_Datatype datatype, MPI_Aint * disp)
 {
   int retval = 0;
 
-  smpi_bench_end();
   if (datatype == MPI_DATATYPE_NULL) {
     retval = MPI_ERR_TYPE;
   } else if (disp == NULL) {
@@ -250,7 +235,6 @@ int PMPI_Type_lb(MPI_Datatype datatype, MPI_Aint * disp)
     *disp = smpi_datatype_lb(datatype);
     retval = MPI_SUCCESS;
   }
-  smpi_bench_begin();
   return retval;
 }
 
@@ -258,7 +242,6 @@ int PMPI_Type_ub(MPI_Datatype datatype, MPI_Aint * disp)
 {
   int retval = 0;
 
-  smpi_bench_end();
   if (datatype == MPI_DATATYPE_NULL) {
     retval = MPI_ERR_TYPE;
   } else if (disp == NULL) {
@@ -267,7 +250,6 @@ int PMPI_Type_ub(MPI_Datatype datatype, MPI_Aint * disp)
     *disp = smpi_datatype_ub(datatype);
     retval = MPI_SUCCESS;
   }
-  smpi_bench_begin();
   return retval;
 }
 
@@ -275,14 +257,12 @@ int PMPI_Op_create(MPI_User_function * function, int commute, MPI_Op * op)
 {
   int retval = 0;
 
-  smpi_bench_end();
   if (function == NULL || op == NULL) {
     retval = MPI_ERR_ARG;
   } else {
     *op = smpi_op_new(function, commute);
     retval = MPI_SUCCESS;
   }
-  smpi_bench_begin();
   return retval;
 }
 
@@ -290,7 +270,6 @@ int PMPI_Op_free(MPI_Op * op)
 {
   int retval = 0;
 
-  smpi_bench_end();
   if (op == NULL) {
     retval = MPI_ERR_ARG;
   } else if (*op == MPI_OP_NULL) {
@@ -300,7 +279,6 @@ int PMPI_Op_free(MPI_Op * op)
     *op = MPI_OP_NULL;
     retval = MPI_SUCCESS;
   }
-  smpi_bench_begin();
   return retval;
 }
 
@@ -308,7 +286,6 @@ int PMPI_Group_free(MPI_Group * group)
 {
   int retval = 0;
 
-  smpi_bench_end();
   if (group == NULL) {
     retval = MPI_ERR_ARG;
   } else {
@@ -316,7 +293,6 @@ int PMPI_Group_free(MPI_Group * group)
     *group = MPI_GROUP_NULL;
     retval = MPI_SUCCESS;
   }
-  smpi_bench_begin();
   return retval;
 }
 
@@ -324,7 +300,6 @@ int PMPI_Group_size(MPI_Group group, int *size)
 {
   int retval = 0;
 
-  smpi_bench_end();
   if (group == MPI_GROUP_NULL) {
     retval = MPI_ERR_GROUP;
   } else if (size == NULL) {
@@ -333,7 +308,6 @@ int PMPI_Group_size(MPI_Group group, int *size)
     *size = smpi_group_size(group);
     retval = MPI_SUCCESS;
   }
-  smpi_bench_begin();
   return retval;
 }
 
@@ -341,7 +315,6 @@ int PMPI_Group_rank(MPI_Group group, int *rank)
 {
   int retval = 0;
 
-  smpi_bench_end();
   if (group == MPI_GROUP_NULL) {
     retval = MPI_ERR_GROUP;
   } else if (rank == NULL) {
@@ -350,7 +323,6 @@ int PMPI_Group_rank(MPI_Group group, int *rank)
     *rank = smpi_group_rank(group, smpi_process_index());
     retval = MPI_SUCCESS;
   }
-  smpi_bench_begin();
   return retval;
 }
 
@@ -358,7 +330,6 @@ int PMPI_Group_translate_ranks(MPI_Group group1, int n, int *ranks1,
                               MPI_Group group2, int *ranks2)
 {
   int retval, i, index;
-  smpi_bench_end();
   if (group1 == MPI_GROUP_NULL || group2 == MPI_GROUP_NULL) {
     retval = MPI_ERR_GROUP;
   } else {
@@ -372,7 +343,6 @@ int PMPI_Group_translate_ranks(MPI_Group group1, int n, int *ranks1,
     }
     retval = MPI_SUCCESS;
   }
-  smpi_bench_begin();
   return retval;
 }
 
@@ -380,7 +350,6 @@ int PMPI_Group_compare(MPI_Group group1, MPI_Group group2, int *result)
 {
   int retval = 0;
 
-  smpi_bench_end();
   if (group1 == MPI_GROUP_NULL || group2 == MPI_GROUP_NULL) {
     retval = MPI_ERR_GROUP;
   } else if (result == NULL) {
@@ -389,7 +358,6 @@ int PMPI_Group_compare(MPI_Group group1, MPI_Group group2, int *result)
     *result = smpi_group_compare(group1, group2);
     retval = MPI_SUCCESS;
   }
-  smpi_bench_begin();
   return retval;
 }
 
@@ -398,7 +366,6 @@ int PMPI_Group_union(MPI_Group group1, MPI_Group group2,
 {
   int retval, i, proc1, proc2, size, size2;
 
-  smpi_bench_end();
   if (group1 == MPI_GROUP_NULL || group2 == MPI_GROUP_NULL) {
     retval = MPI_ERR_GROUP;
   } else if (newgroup == NULL) {
@@ -429,7 +396,6 @@ int PMPI_Group_union(MPI_Group group1, MPI_Group group2,
     }
     retval = MPI_SUCCESS;
   }
-  smpi_bench_begin();
   return retval;
 }
 
@@ -438,7 +404,6 @@ int PMPI_Group_intersection(MPI_Group group1, MPI_Group group2,
 {
   int retval, i, proc1, proc2, size;
 
-  smpi_bench_end();
   if (group1 == MPI_GROUP_NULL || group2 == MPI_GROUP_NULL) {
     retval = MPI_ERR_GROUP;
   } else if (newgroup == NULL) {
@@ -468,7 +433,6 @@ int PMPI_Group_intersection(MPI_Group group1, MPI_Group group2,
     }
     retval = MPI_SUCCESS;
   }
-  smpi_bench_begin();
   return retval;
 }
 
@@ -476,7 +440,6 @@ int PMPI_Group_difference(MPI_Group group1, MPI_Group group2, MPI_Group * newgro
 {
   int retval, i, proc1, proc2, size, size2;
 
-  smpi_bench_end();
   if (group1 == MPI_GROUP_NULL || group2 == MPI_GROUP_NULL) {
     retval = MPI_ERR_GROUP;
   } else if (newgroup == NULL) {
@@ -504,7 +467,6 @@ int PMPI_Group_difference(MPI_Group group1, MPI_Group group2, MPI_Group * newgro
     }
     retval = MPI_SUCCESS;
   }
-  smpi_bench_begin();
   return retval;
 }
 
@@ -512,7 +474,6 @@ int PMPI_Group_incl(MPI_Group group, int n, int *ranks, MPI_Group * newgroup)
 {
   int retval, i, index;
 
-  smpi_bench_end();
   if (group == MPI_GROUP_NULL) {
     retval = MPI_ERR_GROUP;
   } else if (newgroup == NULL) {
@@ -536,7 +497,6 @@ int PMPI_Group_incl(MPI_Group group, int n, int *ranks, MPI_Group * newgroup)
     }
     retval = MPI_SUCCESS;
   }
-  smpi_bench_begin();
   return retval;
 }
 
@@ -544,7 +504,6 @@ int PMPI_Group_excl(MPI_Group group, int n, int *ranks, MPI_Group * newgroup)
 {
   int retval, i, j, newsize, oldsize, index;
 
-  smpi_bench_end();
   if (group == MPI_GROUP_NULL) {
     retval = MPI_ERR_GROUP;
   } else if (newgroup == NULL) {
@@ -583,7 +542,6 @@ int PMPI_Group_excl(MPI_Group group, int n, int *ranks, MPI_Group * newgroup)
     }
     retval = MPI_SUCCESS;
   }
-  smpi_bench_begin();
   return retval;
 }
 
@@ -592,7 +550,6 @@ int PMPI_Group_range_incl(MPI_Group group, int n, int ranges[][3],
 {
   int retval, i, j, rank, size, index;
 
-  smpi_bench_end();
   if (group == MPI_GROUP_NULL) {
     retval = MPI_ERR_GROUP;
   } else if (newgroup == NULL) {
@@ -641,7 +598,6 @@ int PMPI_Group_range_incl(MPI_Group group, int n, int ranges[][3],
     }
     retval = MPI_SUCCESS;
   }
-  smpi_bench_begin();
   return retval;
 }
 
@@ -650,7 +606,6 @@ int PMPI_Group_range_excl(MPI_Group group, int n, int ranges[][3],
 {
   int retval, i, rank, newrank,oldrank, size, index, add;
 
-  smpi_bench_end();
   if (group == MPI_GROUP_NULL) {
     retval = MPI_ERR_GROUP;
   } else if (newgroup == NULL) {
@@ -719,15 +674,12 @@ int PMPI_Group_range_excl(MPI_Group group, int n, int ranges[][3],
 
     retval = MPI_SUCCESS;
   }
-  smpi_bench_begin();
   return retval;
 }
 
 int PMPI_Comm_rank(MPI_Comm comm, int *rank)
 {
   int retval = 0;
-
-  smpi_bench_end();
   if (comm == MPI_COMM_NULL) {
     retval = MPI_ERR_COMM;
   } else if (rank == NULL) {
@@ -736,15 +688,12 @@ int PMPI_Comm_rank(MPI_Comm comm, int *rank)
     *rank = smpi_comm_rank(comm);
     retval = MPI_SUCCESS;
   }
-  smpi_bench_begin();
   return retval;
 }
 
 int PMPI_Comm_size(MPI_Comm comm, int *size)
 {
   int retval = 0;
-
-  smpi_bench_end();
   if (comm == MPI_COMM_NULL) {
     retval = MPI_ERR_COMM;
   } else if (size == NULL) {
@@ -753,7 +702,6 @@ int PMPI_Comm_size(MPI_Comm comm, int *size)
     *size = smpi_comm_size(comm);
     retval = MPI_SUCCESS;
   }
-  smpi_bench_begin();
   return retval;
 }
 
@@ -761,7 +709,6 @@ int PMPI_Comm_get_name (MPI_Comm comm, char* name, int* len)
 {
   int retval = 0;
 
-  smpi_bench_end();
   if (comm == MPI_COMM_NULL)  {
     retval = MPI_ERR_COMM;
   } else if (name == NULL || len == NULL)  {
@@ -770,7 +717,6 @@ int PMPI_Comm_get_name (MPI_Comm comm, char* name, int* len)
     smpi_comm_get_name(comm, name, len);
     retval = MPI_SUCCESS;
   }
-  smpi_bench_begin();
   return retval;
 }
 
@@ -778,7 +724,6 @@ int PMPI_Comm_group(MPI_Comm comm, MPI_Group * group)
 {
   int retval = 0;
 
-  smpi_bench_end();
   if (comm == MPI_COMM_NULL) {
     retval = MPI_ERR_COMM;
   } else if (group == NULL) {
@@ -792,7 +737,6 @@ int PMPI_Comm_group(MPI_Comm comm, MPI_Group * group)
     smpi_group_use(*group);
     retval = MPI_SUCCESS;
   }
-  smpi_bench_begin();
   return retval;
 }
 
@@ -800,7 +744,6 @@ int PMPI_Comm_compare(MPI_Comm comm1, MPI_Comm comm2, int *result)
 {
   int retval = 0;
 
-  smpi_bench_end();
   if (comm1 == MPI_COMM_NULL || comm2 == MPI_COMM_NULL) {
     retval = MPI_ERR_COMM;
   } else if (result == NULL) {
@@ -818,7 +761,6 @@ int PMPI_Comm_compare(MPI_Comm comm1, MPI_Comm comm2, int *result)
     }
     retval = MPI_SUCCESS;
   }
-  smpi_bench_begin();
   return retval;
 }
 
@@ -826,7 +768,6 @@ int PMPI_Comm_dup(MPI_Comm comm, MPI_Comm * newcomm)
 {
   int retval = 0;
 
-  smpi_bench_end();
   if (comm == MPI_COMM_NULL) {
     retval = MPI_ERR_COMM;
   } else if (newcomm == NULL) {
@@ -835,7 +776,6 @@ int PMPI_Comm_dup(MPI_Comm comm, MPI_Comm * newcomm)
     *newcomm = smpi_comm_new(smpi_comm_group(comm));
     retval = MPI_SUCCESS;
   }
-  smpi_bench_begin();
   return retval;
 }
 
@@ -843,7 +783,6 @@ int PMPI_Comm_create(MPI_Comm comm, MPI_Group group, MPI_Comm * newcomm)
 {
   int retval = 0;
 
-  smpi_bench_end();
   if (comm == MPI_COMM_NULL) {
     retval = MPI_ERR_COMM;
   } else if (group == MPI_GROUP_NULL) {
@@ -858,7 +797,6 @@ int PMPI_Comm_create(MPI_Comm comm, MPI_Group group, MPI_Comm * newcomm)
     *newcomm = smpi_comm_new(group);
     retval = MPI_SUCCESS;
   }
-  smpi_bench_begin();
   return retval;
 }
 
@@ -866,7 +804,6 @@ int PMPI_Comm_free(MPI_Comm * comm)
 {
   int retval = 0;
 
-  smpi_bench_end();
   if (comm == NULL) {
     retval = MPI_ERR_ARG;
   } else if (*comm == MPI_COMM_NULL) {
@@ -876,7 +813,6 @@ int PMPI_Comm_free(MPI_Comm * comm)
     *comm = MPI_COMM_NULL;
     retval = MPI_SUCCESS;
   }
-  smpi_bench_begin();
   return retval;
 }
 
@@ -885,7 +821,6 @@ int PMPI_Comm_disconnect(MPI_Comm * comm)
   /* TODO: wait until all communication in comm are done */
   int retval = 0;
 
-  smpi_bench_end();
   if (comm == NULL) {
     retval = MPI_ERR_ARG;
   } else if (*comm == MPI_COMM_NULL) {
@@ -895,15 +830,14 @@ int PMPI_Comm_disconnect(MPI_Comm * comm)
     *comm = MPI_COMM_NULL;
     retval = MPI_SUCCESS;
   }
-  smpi_bench_begin();
   return retval;
 }
 
 int PMPI_Comm_split(MPI_Comm comm, int color, int key, MPI_Comm* comm_out)
 {
   int retval = 0;
-
   smpi_bench_end();
+
   if (comm_out == NULL) {
     retval = MPI_ERR_ARG;
   } else if (comm == MPI_COMM_NULL) {
@@ -913,6 +847,7 @@ int PMPI_Comm_split(MPI_Comm comm, int color, int key, MPI_Comm* comm_out)
     retval = MPI_SUCCESS;
   }
   smpi_bench_begin();
+
   return retval;
 }
 
@@ -2425,7 +2360,6 @@ int PMPI_Get_processor_name(char *name, int *resultlen)
 {
   int retval = MPI_SUCCESS;
 
-  smpi_bench_end();
   strncpy(name, SIMIX_host_get_name(SIMIX_host_self()),
           strlen(SIMIX_host_get_name(SIMIX_host_self())) < MPI_MAX_PROCESSOR_NAME - 1 ?
           strlen(SIMIX_host_get_name(SIMIX_host_self())) +1 :
@@ -2434,7 +2368,6 @@ int PMPI_Get_processor_name(char *name, int *resultlen)
       strlen(name) >
       MPI_MAX_PROCESSOR_NAME ? MPI_MAX_PROCESSOR_NAME : strlen(name);
 
-  smpi_bench_begin();
   return retval;
 }
 
@@ -2443,7 +2376,6 @@ int PMPI_Get_count(MPI_Status * status, MPI_Datatype datatype, int *count)
   int retval = MPI_SUCCESS;
   size_t size;
 
-  smpi_bench_end();
   if (status == NULL || count == NULL) {
     retval = MPI_ERR_ARG;
   } else if (datatype == MPI_DATATYPE_NULL) {
@@ -2458,14 +2390,12 @@ int PMPI_Get_count(MPI_Status * status, MPI_Datatype datatype, int *count)
       *count = smpi_mpi_get_count(status, datatype);
     }
   }
-  smpi_bench_begin();
   return retval;
 }
 
 int PMPI_Type_contiguous(int count, MPI_Datatype old_type, MPI_Datatype* new_type) {
   int retval = 0;
 
-  smpi_bench_end();
   if (old_type == MPI_DATATYPE_NULL) {
     retval = MPI_ERR_TYPE;
   } else if (count<0){
@@ -2473,21 +2403,18 @@ int PMPI_Type_contiguous(int count, MPI_Datatype old_type, MPI_Datatype* new_typ
   } else {
     retval = smpi_datatype_contiguous(count, old_type, new_type, 0);
   }
-  smpi_bench_begin();
   return retval;
 }
 
 int PMPI_Type_commit(MPI_Datatype* datatype) {
   int retval = 0;
 
-  smpi_bench_end();
   if (datatype == NULL || *datatype == MPI_DATATYPE_NULL) {
     retval = MPI_ERR_TYPE;
   } else {
     smpi_datatype_commit(datatype);
     retval = MPI_SUCCESS;
   }
-  smpi_bench_begin();
   return retval;
 }
 
@@ -2495,7 +2422,6 @@ int PMPI_Type_commit(MPI_Datatype* datatype) {
 int PMPI_Type_vector(int count, int blocklen, int stride, MPI_Datatype old_type, MPI_Datatype* new_type) {
   int retval = 0;
 
-  smpi_bench_end();
   if (old_type == MPI_DATATYPE_NULL) {
     retval = MPI_ERR_TYPE;
   } else if (count<0 || blocklen<0){
@@ -2503,14 +2429,12 @@ int PMPI_Type_vector(int count, int blocklen, int stride, MPI_Datatype old_type,
   } else {
     retval = smpi_datatype_vector(count, blocklen, stride, old_type, new_type);
   }
-  smpi_bench_begin();
   return retval;
 }
 
 int PMPI_Type_hvector(int count, int blocklen, MPI_Aint stride, MPI_Datatype old_type, MPI_Datatype* new_type) {
   int retval = 0;
 
-  smpi_bench_end();
   if (old_type == MPI_DATATYPE_NULL) {
     retval = MPI_ERR_TYPE;
   } else if (count<0 || blocklen<0){
@@ -2518,7 +2442,6 @@ int PMPI_Type_hvector(int count, int blocklen, MPI_Aint stride, MPI_Datatype old
   } else {
     retval = smpi_datatype_hvector(count, blocklen, stride, old_type, new_type);
   }
-  smpi_bench_begin();
   return retval;
 }
 
@@ -2529,7 +2452,6 @@ int PMPI_Type_create_hvector(int count, int blocklen, MPI_Aint stride, MPI_Datat
 int PMPI_Type_indexed(int count, int* blocklens, int* indices, MPI_Datatype old_type, MPI_Datatype* new_type) {
   int retval = 0;
 
-  smpi_bench_end();
   if (old_type == MPI_DATATYPE_NULL) {
     retval = MPI_ERR_TYPE;
   } else if (count<0){
@@ -2537,14 +2459,12 @@ int PMPI_Type_indexed(int count, int* blocklens, int* indices, MPI_Datatype old_
   } else {
     retval = smpi_datatype_indexed(count, blocklens, indices, old_type, new_type);
   }
-  smpi_bench_begin();
   return retval;
 }
 
 int PMPI_Type_create_indexed(int count, int* blocklens, int* indices, MPI_Datatype old_type, MPI_Datatype* new_type) {
   int retval = 0;
 
-  smpi_bench_end();
   if (old_type == MPI_DATATYPE_NULL) {
     retval = MPI_ERR_TYPE;
   } else if (count<0){
@@ -2552,14 +2472,12 @@ int PMPI_Type_create_indexed(int count, int* blocklens, int* indices, MPI_Dataty
   } else {
     retval = smpi_datatype_indexed(count, blocklens, indices, old_type, new_type);
   }
-  smpi_bench_begin();
   return retval;
 }
 
 int PMPI_Type_create_indexed_block(int count, int blocklength, int* indices, MPI_Datatype old_type, MPI_Datatype* new_type) {
   int retval,i;
 
-  smpi_bench_end();
   if (old_type == MPI_DATATYPE_NULL) {
     retval = MPI_ERR_TYPE;
   } else if (count<0){
@@ -2570,7 +2488,6 @@ int PMPI_Type_create_indexed_block(int count, int blocklength, int* indices, MPI
     retval = smpi_datatype_indexed(count, blocklens, indices, old_type, new_type);
     xbt_free(blocklens);
   }
-  smpi_bench_begin();
   return retval;
 }
 
@@ -2578,7 +2495,6 @@ int PMPI_Type_create_indexed_block(int count, int blocklength, int* indices, MPI
 int PMPI_Type_hindexed(int count, int* blocklens, MPI_Aint* indices, MPI_Datatype old_type, MPI_Datatype* new_type) {
   int retval = 0;
 
-  smpi_bench_end();
   if (old_type == MPI_DATATYPE_NULL) {
     retval = MPI_ERR_TYPE;
   } else if (count<0){
@@ -2586,7 +2502,6 @@ int PMPI_Type_hindexed(int count, int* blocklens, MPI_Aint* indices, MPI_Datatyp
   } else {
     retval = smpi_datatype_hindexed(count, blocklens, indices, old_type, new_type);
   }
-  smpi_bench_begin();
   return retval;
 }
 
@@ -2597,7 +2512,6 @@ int PMPI_Type_create_hindexed(int count, int* blocklens, MPI_Aint* indices, MPI_
 int PMPI_Type_create_hindexed_block(int count, int blocklength, MPI_Aint* indices, MPI_Datatype old_type, MPI_Datatype* new_type) {
   int retval,i;
 
-  smpi_bench_end();
   if (old_type == MPI_DATATYPE_NULL) {
     retval = MPI_ERR_TYPE;
   } else if (count<0){
@@ -2608,7 +2522,6 @@ int PMPI_Type_create_hindexed_block(int count, int blocklength, MPI_Aint* indice
     retval = smpi_datatype_hindexed(count, blocklens, indices, old_type, new_type);
     xbt_free(blocklens);
   }
-  smpi_bench_begin();
   return retval;
 }
 
@@ -2616,13 +2529,11 @@ int PMPI_Type_create_hindexed_block(int count, int blocklength, MPI_Aint* indice
 int PMPI_Type_struct(int count, int* blocklens, MPI_Aint* indices, MPI_Datatype* old_types, MPI_Datatype* new_type) {
   int retval = 0;
 
-  smpi_bench_end();
   if (count<0){
     retval = MPI_ERR_COUNT;
   } else {
     retval = smpi_datatype_struct(count, blocklens, indices, old_types, new_type);
   }
-  smpi_bench_begin();
   return retval;
 }
 

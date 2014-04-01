@@ -23,33 +23,31 @@ public class Sender extends Process {
 
        Msg.info("helloo!");
 
-       int hostCount = args.length;
-
-       Msg.info("host count: " + hostCount);
-       String mailboxes[] = new String[hostCount];
-       double time;
+       String receiverName = args[0];
+       double oldTime, curTime;
        double computeDuration = 10000;
        Task task;
 
-       for(int pos = 0; pos < args.length ; pos++) {
-	  try {
-	     mailboxes[pos] = Host.getByName(args[pos]).getName();
-	  } catch (HostNotFoundException e) {
-	     Msg.info("Invalid deployment file: " + e.toString());
-	     System.exit(1);
-	  }
-        }
+       oldTime = Msg.getClock();
+	     task = new Task("no name",computeDuration,commSizeLat);
+	     task.send(receiverName);
+       curTime = Msg.getClock();
+       Msg.info("Send duration: " + (curTime - oldTime));
 
-        for (int pos = 0; pos < hostCount; pos++) {
-	   time = Msg.getClock();
+       TestPlugin.tp.updateBandwidthRoute("Jacquelin", "Boivin", 10E2);
+       oldTime = curTime;
+       task = new Task("no name",computeDuration,commSizeLat);
+       task.send(receiverName);
+       curTime = Msg.getClock();
+       Msg.info("Send duration with update bandwidth: " + (curTime - oldTime));
 
-	   Msg.info("sender time: " + time);
+       TestPlugin.tp.limitBandwidthActions("Jacquelin", "Boivin", 10E1);
+       oldTime = curTime;
+       task = new Task("no name",computeDuration,commSizeLat);
+       task.send(receiverName);
+       curTime = Msg.getClock();
+       Msg.info("Send normal duration with limited bandwidth: " + (curTime - oldTime));
 
-	   task = new Task("no name",computeDuration,commSizeLat);
-
-	   task.send(mailboxes[pos]);
-        }
-
-        Msg.info("goodbye!");
+       Msg.info("goodbye!");
     }
 }

@@ -31,28 +31,28 @@ typedef CpuPlugin *CpuPluginPtr;
 CpuPtr getActionCpu(CpuActionPtr action);
 
 /** @ingroup SURF_callbacks
- * @brief Callbacks handler which emit the callbacks after Cpu creation * 
+ * @brief Callbacks handler which emit the callbacks after Cpu creation *
  * @details Callback functions have the following signature: `void(CpuPtr)`
  */
 extern surf_callback(void, CpuPtr) cpuCreatedCallbacks;
 
 /** @ingroup SURF_callbacks
- * @brief Callbacks handler which emit the callbacks after Cpu destruction * 
+ * @brief Callbacks handler which emit the callbacks after Cpu destruction *
  * @details Callback functions have the following signature: `void(CpuPtr)`
  */
 extern surf_callback(void, CpuPtr) cpuDestructedCallbacks;
 
 /** @ingroup SURF_callbacks
- * @brief Callbacks handler which emit the callbacks after Cpu State changed * 
- * @details Callback functions have the following signature: `void(CpuActionPtr)`
+ * @brief Callbacks handler which emit the callbacks after Cpu State changed *
+ * @details Callback functions have the following signature: `void(CpuActionPtr action, e_surf_resource_state_t old, e_surf_resource_state_t current)`
  */
-extern surf_callback(void, CpuPtr) cpuStateChangedCallbacks;
+extern surf_callback(void, CpuPtr, e_surf_resource_state_t, e_surf_resource_state_t) cpuStateChangedCallbacks;
 
 /** @ingroup SURF_callbacks
- * @brief Callbacks handler which emit the callbacks after CpuAction State changed * 
- * @details Callback functions have the following signature: `void(CpuActionPtr)`
+ * @brief Callbacks handler which emit the callbacks after CpuAction State changed *
+ * @details Callback functions have the following signature: `void(CpuActionPtr action, e_surf_action_state_t old, e_surf_action_state_t current)`
  */
-extern surf_callback(void, CpuActionPtr) cpuActionStateChangedCallbacks;
+extern surf_callback(void, CpuActionPtr, e_surf_action_state_t, e_surf_action_state_t) cpuActionStateChangedCallbacks;
 
 /*********
  * Model *
@@ -66,16 +66,16 @@ class CpuModel : public Model {
 public:
   /**
    * @brief CpuModel constructor
-   * 
+   *
    * @param name The name of the model
    */
   CpuModel(const char *name) : Model(name) {};
 
   /**
    * @brief Create a Cpu
-   * 
+   *
    * @param name The name of the Cpu
-   * 
+   *
    * @return The created Cpu
    */
   CpuPtr createResource(string name);
@@ -105,7 +105,7 @@ public:
 
   /**
    * @brief Cpu constructor
-   * 
+   *
    * @param model The CpuModel associated to this Cpu
    * @param name The name of the Cpu
    * @param props Dictionary of properties associated to this Cpu
@@ -119,7 +119,7 @@ public:
 
   /**
    * @brief Cpu constructor
-   * 
+   *
    * @param model The CpuModel associated to this Cpu
    * @param name The name of the Cpu
    * @param props Dictionary of properties associated to this Cpu
@@ -137,7 +137,7 @@ public:
 
   /**
    * @brief Execute some quantity of computation
-   * 
+   *
    * @param size The value of the processing amount (in flop) needed to process
    * @return The CpuAction corresponding to the processing
    */
@@ -145,7 +145,7 @@ public:
 
   /**
    * @brief Make a process sleep for duration (in seconds)
-   * 
+   *
    * @param duration The number of seconds to sleep
    * @return The CpuAction corresponding to the sleeping
    */
@@ -153,7 +153,7 @@ public:
 
   /**
    * @brief Get the number of cores of the current Cpu
-   * 
+   *
    * @return The number of cores of the current Cpu
    */
   virtual int getCore();
@@ -161,9 +161,9 @@ public:
   /**
    * @brief Get the speed of the current Cpu
    * @details [TODO] load * m_powerPeak
-   * 
+   *
    * @param load [TODO]
-   * 
+   *
    * @return The speed of the current Cpu
    */
   virtual double getSpeed(double load);
@@ -171,23 +171,23 @@ public:
   /**
    * @brief Get the available speed of the current Cpu
    * @details [TODO]
-   * 
+   *
    * @return The available speed of the current Cpu
    */
   virtual double getAvailableSpeed();
 
   /**
    * @brief Get the current Cpu power peak
-   * 
+   *
    * @return The current Cpu power peak
    */
   virtual double getCurrentPowerPeak()=0;
 
 
   virtual double getPowerPeakAt(int pstate_index)=0;
-  
+
   virtual int getNbPstates()=0;
-  
+
   virtual void setPowerPeakAt(int pstate_index)=0;
 
   void setState(e_surf_resource_state_t state);
@@ -220,7 +220,7 @@ public:
 
   /**
    * @brief CpuAction constructor
-   * 
+   *
    * @param model The CpuModel associated to this CpuAction
    * @param cost [TODO]
    * @param failed [TODO]
@@ -230,7 +230,7 @@ public:
 
   /**
    * @brief CpuAction constructor
-   * 
+   *
    * @param model The CpuModel associated to this CpuAction
    * @param cost [TODO]
    * @param failed [TODO]
@@ -242,7 +242,7 @@ public:
   /**
    * @brief Set the affinity of the current CpuAction
    * @details [TODO]
-   * 
+   *
    * @param cpu [TODO]
    * @param mask [TODO]
    */
