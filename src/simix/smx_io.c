@@ -112,7 +112,7 @@ smx_action_t SIMIX_file_write(smx_process_t process, smx_file_t fd, sg_size_t si
   action->io.surf_io = surf_workstation_write(host, fd->surf_file, size);
 
   surf_action_set_data(action->io.surf_io, action);
-  XBT_INFO("Create io action %p", action);
+  XBT_DEBUG("Create io action %p", action);
 
   return action;
 }
