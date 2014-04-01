@@ -118,17 +118,16 @@ smx_action_t SIMIX_file_write(smx_process_t process, smx_file_t fd, sg_size_t si
 }
 
 //SIMIX FILE OPEN
-void SIMIX_pre_file_open(smx_simcall_t simcall, const char* fullpath)
+void SIMIX_pre_file_open(smx_simcall_t simcall, const char* fullpath, smx_host_t host)
 {
-  smx_action_t action = SIMIX_file_open(simcall->issuer, fullpath);
+  smx_action_t action = SIMIX_file_open(simcall->issuer, fullpath, host);
   xbt_fifo_push(action->simcalls, simcall);
   simcall->issuer->waiting_action = action;
 }
 
-smx_action_t SIMIX_file_open(smx_process_t process, const char* fullpath)
+smx_action_t SIMIX_file_open(smx_process_t process, const char* fullpath, smx_host_t host)
 {
   smx_action_t action;
-  smx_host_t host = process->smx_host;
 
   /* check if the host is active */
   if (surf_resource_get_state(surf_workstation_resource_priv(host)) != SURF_RESOURCE_ON) {
@@ -153,17 +152,16 @@ smx_action_t SIMIX_file_open(smx_process_t process, const char* fullpath)
 }
 
 //SIMIX FILE CLOSE
-void SIMIX_pre_file_close(smx_simcall_t simcall, smx_file_t fd)
+void SIMIX_pre_file_close(smx_simcall_t simcall, smx_file_t fd, smx_host_t host)
 {
-  smx_action_t action = SIMIX_file_close(simcall->issuer, fd);
+  smx_action_t action = SIMIX_file_close(simcall->issuer, fd, host);
   xbt_fifo_push(action->simcalls, simcall);
   simcall->issuer->waiting_action = action;
 }
 
-smx_action_t SIMIX_file_close(smx_process_t process, smx_file_t fd)
+smx_action_t SIMIX_file_close(smx_process_t process, smx_file_t fd, smx_host_t host)
 {
   smx_action_t action;
-  smx_host_t host = process->smx_host;
 
   /* check if the host is active */
   if (surf_resource_get_state(surf_workstation_resource_priv(host)) != SURF_RESOURCE_ON) {
@@ -264,17 +262,6 @@ int SIMIX_file_move(smx_process_t process, smx_file_t file, const char* fullpath
 {
   smx_host_t host = process->smx_host;
   return  surf_workstation_file_move(host, file->surf_file, fullpath);
-}
-
-int SIMIX_pre_file_rcopy(smx_simcall_t simcall, smx_file_t fd, smx_host_t host, const char* fullpath)
-{
-  return SIMIX_file_rcopy(simcall->issuer, fd, host, fullpath);
-}
-
-int SIMIX_file_rcopy(smx_process_t process, smx_file_t file, smx_host_t host_dest, const char* fullpath)
-{
-  smx_host_t host = process->smx_host;
-  return  surf_workstation_file_rcopy(host, file->surf_file, host_dest, fullpath);
 }
 
 sg_size_t SIMIX_pre_storage_get_free_size(smx_simcall_t simcall, const char* name)

@@ -1336,18 +1336,18 @@ sg_size_t simcall_file_write(smx_file_t fd, sg_size_t size, smx_host_t host)
  * \ingroup simix_file_management
  * \brief
  */
-smx_file_t simcall_file_open(const char* fullpath)
+smx_file_t simcall_file_open(const char* fullpath, smx_host_t host)
 {
-  return simcall_BODY_file_open(fullpath);
+  return simcall_BODY_file_open(fullpath, host);
 }
 
 /**
  * \ingroup simix_file_management
  *
  */
-int simcall_file_close(smx_file_t fd)
+int simcall_file_close(smx_file_t fd,  smx_host_t host)
 {
-  return simcall_BODY_file_close(fd);
+  return simcall_BODY_file_close(fd, host);
 }
 
 /**
@@ -1400,16 +1400,6 @@ int simcall_file_seek(smx_file_t fd, sg_size_t offset, int origin){
 int simcall_file_move(smx_file_t fd, const char* fullpath)
 {
   return simcall_BODY_file_move(fd, fullpath);
-}
-
-/**
- * \ingroup simix_file_management
- * \brief Copy a file to another location on a remote host.
- *
- */
-int simcall_file_rcopy(smx_file_t fd, smx_host_t host, const char* fullpath)
-{
-  return simcall_BODY_file_rcopy(fd, host, fullpath);
 }
 
 /**

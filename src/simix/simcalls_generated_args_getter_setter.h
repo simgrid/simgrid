@@ -1094,11 +1094,23 @@ static inline const char* simcall_file_open__get__fullpath(smx_simcall_t simcall
 static inline void simcall_file_open__set__fullpath(smx_simcall_t simcall, const char* arg){
     simcall->args[0].cc = arg;
 }
+static inline smx_host_t simcall_file_open__get__host(smx_simcall_t simcall){
+  return (smx_host_t) simcall->args[1].dp;
+}
+static inline void simcall_file_open__set__host(smx_simcall_t simcall, void* arg){
+    simcall->args[1].dp = arg;
+}
 static inline smx_file_t simcall_file_close__get__fd(smx_simcall_t simcall){
   return (smx_file_t) simcall->args[0].dp;
 }
 static inline void simcall_file_close__set__fd(smx_simcall_t simcall, void* arg){
     simcall->args[0].dp = arg;
+}
+static inline smx_host_t simcall_file_close__get__host(smx_simcall_t simcall){
+  return (smx_host_t) simcall->args[1].dp;
+}
+static inline void simcall_file_close__set__host(smx_simcall_t simcall, void* arg){
+    simcall->args[1].dp = arg;
 }
 static inline smx_file_t simcall_file_unlink__get__fd(smx_simcall_t simcall){
   return (smx_file_t) simcall->args[0].dp;
@@ -1153,24 +1165,6 @@ static inline const char* simcall_file_move__get__fullpath(smx_simcall_t simcall
 }
 static inline void simcall_file_move__set__fullpath(smx_simcall_t simcall, const char* arg){
     simcall->args[1].cc = arg;
-}
-static inline smx_file_t simcall_file_rcopy__get__fd(smx_simcall_t simcall){
-  return (smx_file_t) simcall->args[0].dp;
-}
-static inline void simcall_file_rcopy__set__fd(smx_simcall_t simcall, void* arg){
-    simcall->args[0].dp = arg;
-}
-static inline smx_host_t simcall_file_rcopy__get__host(smx_simcall_t simcall){
-  return (smx_host_t) simcall->args[1].dp;
-}
-static inline void simcall_file_rcopy__set__host(smx_simcall_t simcall, void* arg){
-    simcall->args[1].dp = arg;
-}
-static inline const char* simcall_file_rcopy__get__fullpath(smx_simcall_t simcall){
-  return  simcall->args[2].cc;
-}
-static inline void simcall_file_rcopy__set__fullpath(smx_simcall_t simcall, const char* arg){
-    simcall->args[2].cc = arg;
 }
 static inline const char* simcall_storage_get_free_size__get__name(smx_simcall_t simcall){
   return  simcall->args[0].cc;

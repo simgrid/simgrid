@@ -370,17 +370,6 @@ public:
    */
   virtual int fileMove(surf_file_t fd, const char* fullpath);
 
-  /**
-   * @brief Copy a file to another location on a remote host.
-   * @details [long description]
-   *
-   * @param fd The file descriptor
-   * @param host_dest The worstation destination
-   * @param fullpath The new full path
-   * @return MSG_OK if successful, otherwise MSG_TASK_CANCELED
-   */
-  virtual int fileRcopy(surf_file_t fd, surf_resource_t host_dest, const char* fullpath);
-
   xbt_dynar_t p_storage;
   RoutingEdgePtr p_netElm;
   CpuPtr p_cpu;

@@ -711,19 +711,6 @@ XBT_PUBLIC(int) surf_workstation_file_move(surf_resource_t workstation, surf_fil
 XBT_PUBLIC(int) surf_workstation_file_seek(surf_resource_t workstation, surf_file_t fd, sg_size_t offset, int origin);
 
 /**
- * @brief Copy a file to another location on a remote host.
- * @details [long description]
- *
- * @param workstation The surf workstation
- * @param fd The file descriptor
- * @param host_dest The workstation destination
- * @param fullpath The new full path
- *
- * @return MSG_OK if successful, otherwise MSG_TASK_CANCELED
- */
-XBT_PUBLIC(int) surf_workstation_file_rcopy(surf_resource_t workstation, surf_file_t fd, surf_resource_t host_dest, const char* fullpath);
-
-/**
  * @brief [brief description]
  * @details [long description]
  * 

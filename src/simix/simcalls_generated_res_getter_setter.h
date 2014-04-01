@@ -485,12 +485,6 @@ static inline int simcall_file_move__get__result(smx_simcall_t simcall){
 static inline void simcall_file_move__set__result(smx_simcall_t simcall, int result){
     simcall->result.i = result;
 }
-static inline int simcall_file_rcopy__get__result(smx_simcall_t simcall){
-  return  simcall->result.i;
-}
-static inline void simcall_file_rcopy__set__result(smx_simcall_t simcall, int result){
-    simcall->result.i = result;
-}
 static inline sg_size_t simcall_storage_get_free_size__get__result(smx_simcall_t simcall){
   return  simcall->result.sgsz;
 }

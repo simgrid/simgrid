@@ -510,11 +510,11 @@ case SIMCALL_FILE_WRITE:
        break;  
 
 case SIMCALL_FILE_OPEN:
-       SIMIX_pre_file_open(simcall ,  simcall->args[0].cc);
+       SIMIX_pre_file_open(simcall ,  simcall->args[0].cc, (smx_host_t) simcall->args[1].dp);
        break;  
 
 case SIMCALL_FILE_CLOSE:
-       SIMIX_pre_file_close(simcall , (smx_file_t) simcall->args[0].dp);
+       SIMIX_pre_file_close(simcall , (smx_file_t) simcall->args[0].dp, (smx_host_t) simcall->args[1].dp);
        break;  
 
 case SIMCALL_FILE_UNLINK:
@@ -544,11 +544,6 @@ case SIMCALL_FILE_GET_INFO:
 
 case SIMCALL_FILE_MOVE:
       simcall->result.i = SIMIX_pre_file_move(simcall , (smx_file_t) simcall->args[0].dp,  simcall->args[1].cc);
-      SIMIX_simcall_answer(simcall);
-      break;  
-
-case SIMCALL_FILE_RCOPY:
-      simcall->result.i = SIMIX_pre_file_rcopy(simcall , (smx_file_t) simcall->args[0].dp, (smx_host_t) simcall->args[1].dp,  simcall->args[2].cc);
       SIMIX_simcall_answer(simcall);
       break;  
 
