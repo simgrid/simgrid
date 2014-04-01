@@ -25,6 +25,10 @@
 #include <string.h>
 #include <stdio.h>
 
+#ifndef MAP_ANONYMOUS
+#define MAP_ANONYMOUS MAP_ANON
+#endif
+
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_bench, smpi,
                                 "Logging specific to SMPI (benchmarking)");
 

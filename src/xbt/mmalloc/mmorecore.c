@@ -10,10 +10,6 @@
 
    Contributed by Fred Fish at Cygnus Support.   fnf@cygnus.com */
 
-#ifndef MAP_ANONYMOUS
-#define MAP_ANONYMOUS MAP_ANON
-#endif
-
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>             /* Prototypes for lseek */
 #endif
@@ -23,6 +19,10 @@
 #include <sys/wait.h>
 
 #include "mmprivate.h"
+
+#ifndef MAP_ANONYMOUS
+#define MAP_ANONYMOUS MAP_ANON
+#endif
 
 #define PAGE_ALIGN(addr) (void*) (((long)(addr) + xbt_pagesize - 1) &   \
                                   ~((long)xbt_pagesize - 1))
