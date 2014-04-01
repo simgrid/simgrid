@@ -1,3 +1,9 @@
+/* Copyright (c) 2014. The SimGrid Team.
+ * All rights reserved.                                                     */
+
+/* This program is free software; you can redistribute it and/or modify it
+ * under the terms of the license (GNU LGPL) which comes with this package. */
+
 case 0x01: return "DW_TAG_array_type";
 case 0x02: return "DW_TAG_class_type";
 case 0x03: return "DW_TAG_entry_point";

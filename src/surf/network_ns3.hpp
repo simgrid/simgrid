@@ -1,7 +1,9 @@
 /* Copyright (c) 2004-2014. The SimGrid Team.
- *
- * This program is free software; you can redistribute it and/or modify it
+ * All rights reserved.                                                     */
+
+/* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
+
 #include "network_interface.hpp"
 #include "surf/ns3/ns3_interface.h"
 
