@@ -322,7 +322,7 @@ msg_error_t MSG_file_rcopy (msg_file_t file, msg_host_t host, const char* fullpa
   /* Find the real host destination where the file will be physically stored */
   xbt_dict_cursor_t cursor = NULL;
   char *mount_name, *storage_name, *file_mount_name, *host_name_dest;
-  msg_storage_t storage_dest;
+  msg_storage_t storage_dest = NULL;
   msg_host_t host_dest;
   size_t longest_prefix_length = 0;
 
