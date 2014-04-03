@@ -702,10 +702,14 @@ void lmm_solve(lmm_system_t sys)
 
       if (min_bound < 0) {
         var->value = min_usage / var->weight;
+        XBT_DEBUG("Setting %p (%d) value to %f\n", var, var->id_int, var->value);
       } else {
-        if (min_bound == var->bound)
+        if (min_bound == var->bound) {
           var->value = var->bound;
+          XBT_DEBUG("Setting %p (%d) value to %f\n", var, var->id_int, var->value);
+        }
         else {
+          XBT_DEBUG("Do not consider %p (%d)\n", var, var->id_int);
           xbt_swag_remove(var, var_list);
           continue;
         }
