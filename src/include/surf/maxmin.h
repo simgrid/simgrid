@@ -17,7 +17,37 @@
  * @details 
  * A linear maxmin solver to resolves inequations systems.
  * 
- * A system is composed of variables, constraints and elements linking them.
+ * Most SimGrid model rely on a "fluid/steady-state" modeling that
+ * samount to share resources between actions at relatively
+ * coarse-grain.  Such sharing is generally done by solving a set of
+ * linear inequations. Let's take an example and assume we have the
+ * variables \f$x_1\f$, \f$x_2\f$, \f$x_3\f$, and \f$x_4\f$ . Let's
+ * say that \f$x_1\f$ and \f$x_2\f$ correspond to activities running
+ * and the same CPU \f$A\f$ whose capacity is \f$C_A\f$ . In such a
+ * case, we need to enforce:
+ *
+ *   \f[ x_1 + x_2 \leq C_A \f]
+ *
+ * Likewise, if \f$x_3\f$ (resp. \f$x_4\f$) corresponds to a network
+ * flow \f$F_3\f$ (resp. \f$F_4\f$) that goes through a set of links
+ * \f$L_1\f$ and \f$L_2\f$ (resp. \f$L_2\f$ and \f$L_3\f$), then we
+ * need to enforce:
+ *
+ *   \f[ x_3  \leq C_{L_1} \f]
+ *   \f[ x_3 + x_4 \leq C_{L_2} \f]
+ *   \f[ x_4 \leq C_{L_3} \f]
+ * 
+ * One could set every variable to 0 to make sure the constraints are
+ * satisfied but this would obviously not be very realistic. A
+ * possible objective is to try to maximize the minimum of the
+ * \f$x_i\f$ . This ensures that all the \f$x_i\f$ are positive and "as
+ * large as possible". 
+ *
+ * This is called *max-min fairness* and is the most commonly used
+ * objective in SimGrid. Another possibility is to maximize
+ * \f$\sum_if(x_i)\f$, where \f$f\f$ is a strictly increasing concave
+ * function.
+ *
  * Constraint: 
  *  - bound (set)
  *  - shared (set)
