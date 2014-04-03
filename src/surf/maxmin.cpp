@@ -746,8 +746,8 @@ void lmm_solve(lmm_system_t sys)
           elem_list = &(cnst->element_set);
           xbt_swag_foreach(_elem, elem_list) {
         	elem = (lmm_element_t)_elem;
-            if (elem->variable->weight <= 0 || elem->variable->value > 0)
-              break;
+            if (elem->variable->weight <= 0) break;
+            if (elem->variable->value > 0) continue;
             if (elem->value > 0)
               cnst->usage = MAX(cnst->usage, elem->value / elem->variable->weight);
           }
