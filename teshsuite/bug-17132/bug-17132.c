@@ -18,6 +18,9 @@ int main(int argc, char ** argv)
 
   MPI_Init(&argc, &argv);
 
+  int rank;
+  MPI_Comm_rank(MPI_COMM_WORLD,&rank);
+
   double *a = malloc(sizeof(double) * M);
   double *b = malloc(sizeof(double) * N);
 
@@ -38,6 +41,10 @@ int main(int argc, char ** argv)
 
   // Commenting out this barrier fixes it!!
   MPI_Barrier(MPI_COMM_WORLD);
+
+  if(rank==0) {
+    printf("Walltime = %g\n",MPI_Wtime());
+  }
 
   MPI_Finalize();
   free(a);
