@@ -520,7 +520,7 @@ double Model::shareResourcesLazy(double now)
 {
   ActionPtr action = NULL;
   double min = -1;
-  double value;
+  double share, time_to_completion;
 
   XBT_DEBUG
       ("Before share resources, the size of modified actions set is %zd",
@@ -533,29 +533,30 @@ double Model::shareResourcesLazy(double now)
        p_modifiedSet->size());
 
   while(!p_modifiedSet->empty()) {
-	action = &(p_modifiedSet->front());
-	p_modifiedSet->pop_front();
+    action = &(p_modifiedSet->front());
+    p_modifiedSet->pop_front();
     int max_dur_flag = 0;
 
     if (action->getStateSet() != p_runningActionSet)
       continue;
 
     /* bogus priority, skip it */
-    if (action->getPriority() <= 0)
+    if (action->getPriority() <= 0 || action->getHat()==LATENCY)
       continue;
 
     action->updateRemainingLazy(now);
 
     min = -1;
-    value = lmm_variable_getvalue(action->getVariable());
-    if (value > 0) {
+    time_to_completion = -1;
+    share = lmm_variable_getvalue(action->getVariable());
+
+    if (share > 0) {
       if (action->getRemains() > 0) {
-        value = action->getRemainsNoUpdate() / value;
-        min = now + value;
+        time_to_completion = action->getRemainsNoUpdate() / share;
       } else {
-        value = 0.0;
-        min = now;
+        time_to_completion = 0.0;
       }
+      min = now + time_to_completion; // when the task will complete if nothing changes
     }
 
     if ((action->getMaxDuration() != NO_MAX_DURATION)
@@ -563,12 +564,15 @@ double Model::shareResourcesLazy(double now)
             || action->getStartTime() +
             action->getMaxDuration() < min)) {
       min = action->getStartTime() +
-          action->getMaxDuration();
+          action->getMaxDuration();  // when the task will complete anyway because of the deadline if any
       max_dur_flag = 1;
     }
 
-    XBT_DEBUG("Action(%p) Start %f Finish %f Max_duration %f", action,
-        action->getStartTime(), now + value,
+
+    XBT_DEBUG("Action(%p) corresponds to variable %d", action, action->getVariable()->id_int);
+
+    XBT_DEBUG("Action(%p) Start %f. May finish at %f (got a share of %f). Max_duration %f", action,
+        action->getStartTime(), min, share,
         action->getMaxDuration());
 
     if (min != -1) {
