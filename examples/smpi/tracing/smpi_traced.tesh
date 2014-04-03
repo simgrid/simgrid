@@ -10,6 +10,7 @@ $ ../../smpi_script/bin/smpirun -trace -trace-resource -trace-file smpi_traced.t
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/categorized' to 'yes'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/uncategorized' to 'yes'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'maxmin/precision' to '1e-9'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'surf/precision' to '1e-9'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'SMPI'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/TCP_gamma' to '4194304'
 > [0.000000] [surf_config/INFO] Switching workstation model to compound since you changed the network and/or cpu model(s)
@@ -22,6 +23,7 @@ $ ../../smpi_script/bin/smpirun -trace -trace-resource -trace-file smpi_traced.t
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/categorized' to 'yes'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/uncategorized' to 'yes'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'maxmin/precision' to '1e-9'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'surf/precision' to '1e-9'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'SMPI'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/TCP_gamma' to '4194304'
 > [0.000000] [surf_config/INFO] Switching workstation model to compound since you changed the network and/or cpu model(s)
@@ -29,6 +31,7 @@ $ ../../smpi_script/bin/smpirun -trace -trace-resource -trace-file smpi_traced.t
 p Testing without trace parameters
 $ ../../smpi_script/bin/smpirun -hostfile ${srcdir:=.}/hostfile -platform ${srcdir:=.}/../msg/tracing/platform.xml -np 3 ./smpi_traced_simple --log=smpi_kernel.thres:warning
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'maxmin/precision' to '1e-9'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'surf/precision' to '1e-9'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'SMPI'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/TCP_gamma' to '4194304'
 > [0.000000] [surf_config/INFO] Switching workstation model to compound since you changed the network and/or cpu model(s)
@@ -40,6 +43,7 @@ $ ../../smpi_script/bin/smpirun -trace -trace-grouped -trace-file smpi_traced.tr
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/smpi' to 'yes'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/smpi/group' to 'yes'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'maxmin/precision' to '1e-9'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'surf/precision' to '1e-9'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'SMPI'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/TCP_gamma' to '4194304'
 > [0.000000] [surf_config/INFO] Switching workstation model to compound since you changed the network and/or cpu model(s)
@@ -54,6 +58,7 @@ $ ../../smpi_script/bin/smpirun -trace -trace-resource -trace-viva -trace-file s
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'viva/categorized' to 'smpi_cat.plist'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'viva/uncategorized' to 'smpi_uncat.plist'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'maxmin/precision' to '1e-9'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'surf/precision' to '1e-9'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'SMPI'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/TCP_gamma' to '4194304'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'smpi/cpu_threshold' to '-1'
@@ -63,6 +68,7 @@ $ ../../smpi_script/bin/smpirun -trace -trace-resource -trace-viva -trace-file s
 p Testing with parameters but without activating them with the safe switch (-trace)
 $ ../../smpi_script/bin/smpirun -trace-resource -trace-viva -trace-file smpi_traced.trace -hostfile ${srcdir:=.}/hostfile -platform ${srcdir:=.}/../msg/tracing/platform.xml -np 3 ./smpi_traced_simple --log=smpi_kernel.thres:warning
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'maxmin/precision' to '1e-9'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'surf/precision' to '1e-9'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'SMPI'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/TCP_gamma' to '4194304'
 > [0.000000] [surf_config/INFO] Switching workstation model to compound since you changed the network and/or cpu model(s)

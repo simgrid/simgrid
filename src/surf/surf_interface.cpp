@@ -1057,7 +1057,7 @@ void Action::updateRemainingLazy(double now)
 
   if (m_remains > 0) {
     XBT_DEBUG("Updating action(%p): remains was %f, last_update was: %f", this, m_remains, m_lastUpdate);
-    double_update(&m_remains, m_lastValue * delta);
+    double_update(&m_remains, m_lastValue * delta, sg_surf_precision*sg_maxmin_precision);
 
 #ifdef HAVE_TRACING
     if (getModel() == static_cast<ModelPtr>(surf_cpu_model_pm) && TRACE_is_enabled()) {
@@ -1071,7 +1071,7 @@ void Action::updateRemainingLazy(double now)
   if(getModel() == static_cast<ModelPtr>(surf_network_model))
   {
     if (m_maxDuration != NO_MAX_DURATION)
-      double_update(&m_maxDuration, delta);
+      double_update(&m_maxDuration, delta, sg_surf_precision);
 
     //FIXME: duplicated code
     if ((m_remains <= 0) &&

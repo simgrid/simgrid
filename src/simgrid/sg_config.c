@@ -258,6 +258,11 @@ static void _sg_cfg_cb__maxmin_precision(const char* name, int pos)
   sg_maxmin_precision = xbt_cfg_get_double(_sg_cfg_set, name);
 }
 
+static void _sg_cfg_cb__surf_precision(const char* name, int pos)
+{
+  sg_surf_precision = xbt_cfg_get_double(_sg_cfg_set, name);
+}
+
 static void _sg_cfg_cb__sender_gap(const char* name, int pos)
 {
   sg_sender_gap = xbt_cfg_get_double(_sg_cfg_set, name);
@@ -534,8 +539,13 @@ void sg_config_init(int *argc, char **argv)
                      xbt_cfgelm_double, 1, 1, _sg_cfg_cb__tcp_gamma, NULL);
     xbt_cfg_setdefault_double(_sg_cfg_set, "network/TCP_gamma", 4194304.0);
 
+    xbt_cfg_register(&_sg_cfg_set, "surf/precision",
+                     "Numerical precision used when updating simulation times (hence this value is expressed in seconds)",
+                     xbt_cfgelm_double, 1, 1, _sg_cfg_cb__surf_precision, NULL);
+    xbt_cfg_setdefault_double(_sg_cfg_set, "surf/precision", 0.00001);
+
     xbt_cfg_register(&_sg_cfg_set, "maxmin/precision",
-                     "Numerical precision used when updating simulation models (epsilon in double comparisons)",
+                     "Numerical precision used when computing resource sharing (hence this value is expressed in ops/sec or bytes/sec)",
                      xbt_cfgelm_double, 1, 1, _sg_cfg_cb__maxmin_precision, NULL);
     xbt_cfg_setdefault_double(_sg_cfg_set, "maxmin/precision", 0.00001);
 

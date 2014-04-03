@@ -514,14 +514,14 @@ public:
    * 
    * @param delta [TODO]
    */
-  void updateMaxDuration(double delta) {double_update(&m_maxDuration, delta);}
+  void updateMaxDuration(double delta) {double_update(&m_maxDuration, delta,sg_surf_precision);}
 
   /**
    * @brief Update the remaining time of the current action
    * 
    * @param delta [TODO]
    */
-  void updateRemains(double delta) {double_update(&m_remains, delta);}
+  void updateRemains(double delta) {double_update(&m_remains, delta, sg_maxmin_precision*sg_surf_precision);}
 
   /**
    * @brief Set the remaining time of the current action

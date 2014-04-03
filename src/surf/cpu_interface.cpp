@@ -36,7 +36,7 @@ void CpuModel::updateActionsStateLazy(double now, double /*delta*/)
 {
   CpuActionPtr action;
   while ((xbt_heap_size(getActionHeap()) > 0)
-         && (double_equals(xbt_heap_maxkey(getActionHeap()), now))) {
+         && (double_equals(xbt_heap_maxkey(getActionHeap()), now, sg_surf_precision))) {
     action = static_cast<CpuActionPtr>(static_cast<ActionPtr>(xbt_heap_pop(getActionHeap())));
     XBT_CDEBUG(surf_kernel, "Something happened to action %p", action);
 #ifdef HAVE_TRACING
@@ -226,7 +226,7 @@ void CpuAction::updateRemainingLazy(double now)
 
   if (m_remains > 0) {
     XBT_CDEBUG(surf_kernel, "Updating action(%p): remains was %f, last_update was: %f", this, m_remains, m_lastUpdate);
-    double_update(&(m_remains), m_lastValue * delta);
+    double_update(&(m_remains), m_lastValue * delta, sg_maxmin_precision*sg_surf_precision);
 
 #ifdef HAVE_TRACING
     if (TRACE_is_enabled()) {

@@ -173,7 +173,7 @@ void test1(method_t method)
     max_deviation =
         MAX(max_deviation, fabs(lmm_variable_getvalue(R_1_2_3) - (a - x)));
 
-    if (max_deviation > MAXMIN_PRECISION) {
+    if (max_deviation > 0.00001) { // Legacy value used in lagrange.c
       XBT_WARN("Max Deviation from optimal solution : %g", max_deviation);
       XBT_WARN("Found x = %1.20f", x);
       XBT_WARN("Deviation from optimal solution (R_1 = %g): %1.20f", x,
@@ -208,7 +208,7 @@ void test1(method_t method)
     max_deviation =
         MAX(max_deviation, fabs(lmm_variable_getvalue(R_1_2_3) - (a - x)));
 
-    if (max_deviation > MAXMIN_PRECISION) {
+    if (max_deviation > 0.00001) { // Legacy value used in lagrange.c
       XBT_WARN("Max Deviation from optimal solution : %g", max_deviation);
       XBT_WARN("Found x = %1.20f", x);
       XBT_WARN("Deviation from optimal solution (R_1 = %g): %1.20f", x,

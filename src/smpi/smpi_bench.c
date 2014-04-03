@@ -244,11 +244,11 @@ int smpi_gettimeofday(struct timeval *tv)
   return 0;
 }
 
-extern double sg_maxmin_precision;
+extern double sg_surf_precision;
 unsigned long long smpi_rastro_resolution (void)
 {
   smpi_bench_end();
-  double resolution = (1/sg_maxmin_precision);
+  double resolution = (1/sg_surf_precision);
   smpi_bench_begin();
   return (unsigned long long)resolution;
 }

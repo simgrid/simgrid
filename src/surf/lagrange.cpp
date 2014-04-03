@@ -63,7 +63,7 @@ static int __check_feasible(xbt_swag_t cnst_list, xbt_swag_t var_list,
       tmp += var->value;
     }
 
-    if (double_positive(tmp - cnst->bound)) {
+    if (double_positive(tmp - cnst->bound, sg_maxmin_precision)) {
       if (warn)
         XBT_WARN
             ("The link (%p) is over-used. Expected less than %f and got %f",
@@ -84,7 +84,7 @@ static int __check_feasible(xbt_swag_t cnst_list, xbt_swag_t var_list,
     XBT_DEBUG("Checking feasability for variable (%p): sat = %f mu = %f", var,
            var->value - var->bound, var->mu);
 
-    if (double_positive(var->value - var->bound)) {
+    if (double_positive(var->value - var->bound, sg_maxmin_precision)) {
       if (warn)
         XBT_WARN
             ("The variable (%p) is too large. Expected less than %f and got %f",
@@ -171,7 +171,7 @@ void lagrange_solve(lmm_system_t sys)
    * Lagrange Variables.
    */
   int max_iterations = 100;
-  double epsilon_min_error = MAXMIN_PRECISION;
+  double epsilon_min_error = 0.00001; /* this is the precision on the objective function so it's none of the configurable values and this value is the legacy one */
   double dichotomy_min_error = 1e-14;
   double overall_modification = 1;
 

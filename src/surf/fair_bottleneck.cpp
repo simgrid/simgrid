@@ -146,7 +146,7 @@ void bottleneck_solve(lmm_system_t sys)
                  cnst, cnst->remaining, elem->variable,
                  elem->variable->mu);
           double_update(&(cnst->remaining),
-                        elem->value * elem->variable->mu);
+                        elem->value * elem->variable->mu, sg_maxmin_precision);
         } else {
           XBT_DEBUG
               ("\tNon-Shared variable. Update constraint usage of %p (%g) with variable %p by %g",
@@ -158,7 +158,7 @@ void bottleneck_solve(lmm_system_t sys)
         XBT_DEBUG("\tUpdate constraint %p (%g) by %g",
                cnst, cnst->remaining, cnst->usage);
 
-        double_update(&(cnst->remaining), cnst->usage);
+        double_update(&(cnst->remaining), cnst->usage, sg_maxmin_precision);
       }
 
       XBT_DEBUG("\tRemaining for %p : %g", cnst, cnst->remaining);

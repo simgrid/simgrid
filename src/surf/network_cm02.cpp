@@ -315,7 +315,7 @@ void NetworkCm02Model::updateActionsStateLazy(double now, double /*delta*/)
 {
   NetworkCm02ActionPtr action;
   while ((xbt_heap_size(p_actionHeap) > 0)
-         && (double_equals(xbt_heap_maxkey(p_actionHeap), now))) {
+         && (double_equals(xbt_heap_maxkey(p_actionHeap), now, sg_surf_precision))) {
     action = (NetworkCm02ActionPtr) xbt_heap_pop(p_actionHeap);
     XBT_DEBUG("Something happened to action %p", action);
 #ifdef HAVE_TRACING
@@ -638,13 +638,13 @@ void NetworkCm02Action::updateRemainingLazy(double now)
 
   if (m_remains > 0) {
     XBT_DEBUG("Updating action(%p): remains was %f, last_update was: %f", this, m_remains, m_lastUpdate);
-    double_update(&(m_remains), m_lastValue * delta);
+    double_update(&(m_remains), m_lastValue * delta, sg_maxmin_precision*sg_surf_precision);
 
     XBT_DEBUG("Updating action(%p): remains is now %f", this, m_remains);
   }
 
   if (m_maxDuration != NO_MAX_DURATION)
-    double_update(&m_maxDuration, delta);
+    double_update(&m_maxDuration, delta, sg_surf_precision);
 
   if (m_remains <= 0 &&
       (lmm_get_variable_weight(getVariable()) > 0)) {

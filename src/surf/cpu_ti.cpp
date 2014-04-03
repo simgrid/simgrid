@@ -148,7 +148,7 @@ double CpuTiTrace::integrateSimplePoint(double a)
       ("a %f ind %d integral %f ind + 1 %f ind %f time +1 %f time %f",
        a, ind, integral, p_integral[ind + 1], p_integral[ind],
        p_timePoints[ind + 1], p_timePoints[ind]);
-  double_update(&a_aux, p_timePoints[ind]);
+  double_update(&a_aux, p_timePoints[ind], sg_maxmin_precision*sg_surf_precision);
   if (a_aux > 0)
     integral +=
         ((p_integral[ind + 1] -
@@ -835,7 +835,7 @@ CpuActionPtr CpuTi::execute(double size)
 CpuActionPtr CpuTi::sleep(double duration)
 {
   if (duration > 0)
-    duration = MAX(duration, MAXMIN_PRECISION);
+    duration = MAX(duration, sg_surf_precision);
 
   XBT_IN("(%s,%g)", getName(), duration);
   CpuTiActionPtr action = new CpuTiAction(static_cast<CpuTiModelPtr>(getModel()), 1.0, getState() != SURF_RESOURCE_ON, this);

@@ -85,10 +85,10 @@ void WorkstationL07Model::updateActionsState(double /*now*/, double delta)
     deltap = delta;
     if (action->m_latency > 0) {
       if (action->m_latency > deltap) {
-        double_update(&(action->m_latency), deltap);
+        double_update(&(action->m_latency), deltap, sg_surf_precision);
         deltap = 0.0;
       } else {
-        double_update(&(deltap), action->m_latency);
+        double_update(&(deltap), action->m_latency, sg_surf_precision);
         action->m_latency = 0.0;
       }
       if ((action->m_latency == 0.0) && (action->isSuspended() == 0)) {

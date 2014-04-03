@@ -58,7 +58,7 @@ void NetworkConstantModel::updateActionsState(double /*now*/, double delta)
 	action = static_cast<NetworkConstantActionPtr>(&*it);
     if (action->m_latency > 0) {
       if (action->m_latency > delta) {
-        double_update(&(action->m_latency), delta);
+        double_update(&(action->m_latency), delta, sg_surf_precision);
       } else {
         action->m_latency = 0.0;
       }

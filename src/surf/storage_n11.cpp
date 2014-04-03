@@ -313,7 +313,7 @@ void StorageN11Model::updateActionsState(double /*now*/, double delta)
       double rate = lmm_variable_getvalue(action->getVariable());
       /* Hack to avoid rounding differences between x86 and x86_64
        * (note that the next sizes are of type sg_size_t). */
-      long incr = delta * rate + MAXMIN_PRECISION;
+      long incr = delta * rate + 0.00001; // Use legacy value. I don't know what this hack can be... FIXME: Pierre, please check.
       action->p_storage->m_usedSize += incr; // disk usage
       action->p_file->size += incr; // file size
 

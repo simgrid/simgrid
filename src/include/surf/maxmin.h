@@ -86,22 +86,23 @@
  */
 
 extern double sg_maxmin_precision;
-#define MAXMIN_PRECISION sg_maxmin_precision
-static XBT_INLINE void double_update(double *variable, double value)
+extern double sg_surf_precision;
+
+static XBT_INLINE void double_update(double *variable, double value, double precision)
 {
   *variable -= value;
-  if (*variable < MAXMIN_PRECISION)
+  if (*variable < precision)
     *variable = 0.0;
 }
 
-static XBT_INLINE int double_positive(double value)
+static XBT_INLINE int double_positive(double value, double precision)
 {
-  return (value > MAXMIN_PRECISION);
+  return (value > precision);
 }
 
-static XBT_INLINE int double_equals(double value1, double value2)
+static XBT_INLINE int double_equals(double value1, double value2, double precision)
 {
-  return (fabs(value1 - value2) < MAXMIN_PRECISION);
+  return (fabs(value1 - value2) < precision);
 }
 
 SG_BEGIN_DECL()

@@ -21,6 +21,7 @@ typedef struct s_dyn_light {
 } s_dyn_light_t, *dyn_light_t;
 
 XBT_EXPORT_NO_IMPORT(double) sg_maxmin_precision = 0.00001;
+XBT_EXPORT_NO_IMPORT(double) sg_surf_precision   = 0.00001;
 
 static void *lmm_variable_mallocator_new_f(void);
 static void lmm_variable_mallocator_free_f(void *var);
@@ -561,7 +562,7 @@ void lmm_print(lmm_system_t sys)
     }
     XBT_DEBUG("%s", trace_buf);
     trace_buf[0] = '\000';
-    xbt_assert(!double_positive(sum - cnst->bound),
+    xbt_assert(!double_positive(sum - cnst->bound, sg_maxmin_precision),
                 "Incorrect value (%f is not smaller than %f): %g",
                 sum, cnst->bound, sum - cnst->bound);
   }
@@ -573,7 +574,7 @@ void lmm_print(lmm_system_t sys)
     if (var->bound > 0) {
       XBT_DEBUG("'%d'(%f) : %f (<=%f)", var->id_int, var->weight, var->value,
              var->bound);
-      xbt_assert(!double_positive(var->value - var->bound),
+      xbt_assert(!double_positive(var->value - var->bound, sg_maxmin_precision),
                   "Incorrect value (%f is not smaller than %f",
                   var->value, var->bound);
     } else {
@@ -724,8 +725,8 @@ void lmm_solve(lmm_system_t sys)
         elem = &var->cnsts[i];
         cnst = elem->constraint;
         if (cnst->shared) {
-          double_update(&(cnst->remaining), elem->value * var->value);
-          double_update(&(cnst->usage), elem->value / var->weight);
+          double_update(&(cnst->remaining), elem->value * var->value, sg_maxmin_precision);
+          double_update(&(cnst->usage), elem->value / var->weight, sg_maxmin_precision);
           if(cnst->usage<=0 || cnst->remaining<=0) {
             if (cnst->cnst_light) {
               int index = (cnst->cnst_light-cnst_light_tab);
@@ -910,7 +911,7 @@ XBT_INLINE lmm_constraint_t lmm_get_next_active_constraint(lmm_system_t
 #ifdef HAVE_LATENCY_BOUND_TRACKING
 XBT_INLINE int lmm_is_variable_limited_by_latency(lmm_variable_t var)
 {
-  return (double_equals(var->bound, var->value));
+  return (double_equals(var->bound, var->value, sg_maxmin_precision));
 }
 #endif
 

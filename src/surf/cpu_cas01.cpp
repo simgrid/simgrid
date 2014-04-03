@@ -315,7 +315,7 @@ CpuActionPtr CpuCas01::execute(double size)
 CpuActionPtr CpuCas01::sleep(double duration)
 {
   if (duration > 0)
-    duration = MAX(duration, MAXMIN_PRECISION);
+    duration = MAX(duration, sg_surf_precision);
 
   XBT_IN("(%s,%g)", getName(), duration);
   CpuCas01ActionPtr action = new CpuCas01Action(getModel(), 1.0, getState() != SURF_RESOURCE_ON,
