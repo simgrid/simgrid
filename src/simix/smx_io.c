@@ -201,11 +201,9 @@ int SIMIX_file_unlink(smx_process_t process, smx_file_t fd)
            sg_host_name(host));
   }
 
-  if (surf_workstation_unlink(host, fd->surf_file)){
-    xbt_free(fd);
-    return 1;
-  } else
-    return 0;
+  int res = surf_workstation_unlink(host, fd->surf_file);
+  xbt_free(fd);
+  return !!res;
 }
 
 sg_size_t SIMIX_pre_file_get_size(smx_simcall_t simcall, smx_file_t fd)

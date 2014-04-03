@@ -284,8 +284,8 @@ int Workstation::unlink(surf_file_t fd) {
       // Remove the file from storage
       xbt_dict_remove(st->p_content, fd->name);
 
-      free(fd->name);
-      free(fd->mount);
+      xbt_free(fd->name);
+      xbt_free(fd->mount);
       xbt_free(fd);
       return MSG_OK;
     }
