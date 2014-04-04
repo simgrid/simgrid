@@ -20,6 +20,45 @@ static int mc_dwarf_push_value(mc_expression_state_t state, Dwarf_Off value) {
   return 0;
 }
 
+static int mc_dwarf_register_to_libunwind(int dwarf_register) {
+  #if defined(UNW_TARGET_X86_64)
+  // It seems for this arch, DWARF and libunwind agree in the numbering:
+  return dwarf_register;
+  #elif defined(UNW_TARGET_X86)
+  // Could't find the authoritative source of information for this.
+  // This is inspired from http://source.winehq.org/source/dlls/dbghelp/cpu_i386.c#L517.
+  switch(dwarf_register) {
+  case 0:  return UNW_X86_EAX;
+  case 1:  return UNW_X86_ECX;
+  case 2:  return UNW_X86_EDX;
+  case 3:  return UNW_X86_EBX;
+  case 4:  return UNW_X86_ESP;
+  case 5:  return UNW_X86_EBP;
+  case 6:  return UNW_X86_ESI;
+  case 7:  return UNW_X86_EDI;
+  case 8:  return UNW_X86_EIP;
+  case 9:  return UNW_X86_EFLAGS;
+  case 10: return UNW_X86_CS;
+  case 11: return UNW_X86_SS;
+  case 12: return UNW_X86_DS;
+  case 13: return UNW_X86_ES;
+  case 14: return UNW_X86_FS;
+  case 15: return UNW_X86_GS;
+  case 16: return UNW_X86_ST0;
+  case 17: return UNW_X86_ST1;
+  case 18: return UNW_X86_ST2;
+  case 19: return UNW_X86_ST3;
+  case 10: return UNW_X86_ST4;
+  case 21: return UNW_X86_ST5;
+  case 22: return UNW_X86_ST6;
+  case 23: return UNW_X86_ST7;
+  default: xbt_die("BAd/unknown register number.");
+  }
+  #else
+  #error This architecture is not supported yet.
+  #endif
+}
+
 int mc_dwarf_execute_expression(
   size_t n, const Dwarf_Op* ops, mc_expression_state_t state) {
   for(int i=0; i!=n; ++i) {
@@ -39,7 +78,7 @@ int mc_dwarf_execute_expression(
     case DW_OP_breg20: case DW_OP_breg21: case DW_OP_breg22: case DW_OP_breg23:
     case DW_OP_breg24: case DW_OP_breg25: case DW_OP_breg26: case DW_OP_breg27:
     case DW_OP_breg28: case DW_OP_breg29: case DW_OP_breg30: case DW_OP_breg31:{
-        int register_id = op->atom - DW_OP_breg0;
+        int register_id = mc_dwarf_register_to_libunwind(op->atom - DW_OP_breg0);
         unw_word_t res;
         if(!state->cursor)
           return MC_EXPRESSION_E_MISSING_STACK_CONTEXT;
