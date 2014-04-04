@@ -70,7 +70,6 @@ public:
 
 class StorageN11Action : public StorageAction {
 public:
-	StorageN11Action() {}; //FIXME:REMOVE
   StorageN11Action(ModelPtr model, double cost, bool failed, StoragePtr storage, e_surf_action_storage_type_t type);
   void suspend();
   int unref();

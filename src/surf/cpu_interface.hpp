@@ -215,11 +215,6 @@ friend CpuPtr getActionCpu(CpuActionPtr action);
 public:
   /**
    * @brief CpuAction constructor
-   */
-  CpuAction() {};
-
-  /**
-   * @brief CpuAction constructor
    *
    * @param model The CpuModel associated to this CpuAction
    * @param cost [TODO]

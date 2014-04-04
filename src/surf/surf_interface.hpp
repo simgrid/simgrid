@@ -400,11 +400,6 @@ private:
 public:
   /**
    * @brief Action constructor
-   */
-  Action();
-
-  /**
-   * @brief Action constructor
    * 
    * @param model The Model associated to this Action
    * @param cost The cost of the Action

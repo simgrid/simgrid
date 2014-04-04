@@ -93,6 +93,7 @@ public:
   void updateLatency(double value, double date=surf_get_clock());
 };
 
+%nodefaultctor Action;
 class Action {
 public:
   Model *getModel();
@@ -101,6 +102,7 @@ public:
   void setBound(double bound);
 };
 
+%nodefaultctor CpuAction;
 class CpuAction : public Action {
 public:
 %extend {

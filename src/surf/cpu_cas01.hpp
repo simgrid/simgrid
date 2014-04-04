@@ -81,7 +81,6 @@ class CpuCas01Action: public CpuAction {
   friend CpuActionPtr CpuCas01::execute(double size);
   friend CpuActionPtr CpuCas01::sleep(double duration);
 public:
-  CpuCas01Action() {};
   CpuCas01Action(ModelPtr model, double cost, bool failed, double power, lmm_constraint_t constraint);
 
   ~CpuCas01Action() {};

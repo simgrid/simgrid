@@ -779,11 +779,6 @@ void Action::initialize(ModelPtr model, double cost, bool failed,
   m_hat = NOTSET;
 }
 
-Action::Action()
-{
-  initialize(NULL, 0.0, false); // FIXME: not used
-}
-
 Action::Action(ModelPtr model, double cost, bool failed)
 {
   initialize(model, cost, failed);

@@ -264,11 +264,6 @@ class StorageAction : public Action {
 public:
   /**
    * @brief StorageAction constructor
-   */
-  StorageAction() : m_type(READ) {};//FIXME:REMOVE
-
-  /**
-   * @brief StorageAction constructor
    *
    * @param model The StorageModel associated to this StorageAction
    * @param cost The cost of this  NetworkAction in [TODO]

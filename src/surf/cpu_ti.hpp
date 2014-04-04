@@ -159,7 +159,6 @@ class CpuTiAction: public CpuAction {
   friend void CpuTi::updateRemainingAmount(double now);//FIXME
 
 public:
-  CpuTiAction() {};
   CpuTiAction(CpuTiModelPtr model, double cost, bool failed,
   		                 CpuTiPtr cpu);
 
