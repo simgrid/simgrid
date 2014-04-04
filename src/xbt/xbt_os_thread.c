@@ -232,10 +232,14 @@ void xbt_os_thread_setstacksize(int stack_size)
 
 void xbt_os_thread_setguardsize(int guard_size)
 {
+#ifdef WIN32
+  THROW_UNIMPLEMENTED; //pthread_attr_setguardsize is not implemented in pthread.h on windows
+#else
   size_t sz = guard_size;
   int res = pthread_attr_setguardsize(&thread_attr, sz);
   if (res)
     XBT_WARN("pthread_attr_setguardsize failed (%d) for size: %zd", res, sz);
+#endif
 }
 
 const char *xbt_os_thread_name(xbt_os_thread_t t)

@@ -14,7 +14,20 @@
 #include "simgrid/sg_config.h"
 #include "internal_config.h"
 #include "simgrid/modelchecker.h"
+
+
+#ifdef _WIN32
+#include <windows.h>
+#else
 #include <sys/mman.h>
+#endif
+
+#ifdef __MINGW32__ 
+#define _aligned_malloc __mingw_aligned_malloc 
+#define _aligned_free  __mingw_aligned_free 
+#endif //MINGW
+
+
 
 #ifdef HAVE_VALGRIND_VALGRIND_H
 # include <valgrind/valgrind.h>
@@ -119,14 +132,19 @@ void *SIMIX_context_stack_new(void)
     char *alloc = xbt_malloc0(size + xbt_pagesize);
     stack = alloc - ((uintptr_t)alloc & (xbt_pagesize - 1)) + xbt_pagesize;
     *((void **)stack - 1) = alloc;
-#else
+#elif !defined(WIN32)
     if (posix_memalign(&stack, xbt_pagesize, size) != 0)
       xbt_die("Failed to allocate stack.");
+#else
+	stack = _aligned_malloc(size, xbt_pagesize);
 #endif
+
+#ifndef WIN32
     if (mprotect(stack, smx_context_guard_size, PROT_NONE) == -1) {
       XBT_WARN("Failed to protect stack: %s", strerror(errno));
       /* That's not fatal, pursue anyway. */
     }
+#endif
     stack = (char *)stack + smx_context_guard_size;
   } else {
     stack = xbt_malloc0(smx_context_stack_size);
@@ -154,6 +172,7 @@ void SIMIX_context_stack_delete(void *stack)
   VALGRIND_STACK_DEREGISTER(valgrind_stack_id);
 #endif
 
+#ifndef WIN32
   if (smx_context_guard_size > 0 && !MC_is_active()) {
     stack = (char *)stack - smx_context_guard_size;
     if (mprotect(stack, smx_context_guard_size,
@@ -166,6 +185,8 @@ void SIMIX_context_stack_delete(void *stack)
     stack = *((void **)stack - 1);
 #endif
   }
+#endif
+
   xbt_free(stack);
 }
 

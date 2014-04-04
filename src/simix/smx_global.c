@@ -40,6 +40,7 @@ static void _XBT_CALL inthandler(int ignored)
   exit(1);
 }
 
+#ifndef WIN32
 static void _XBT_CALL segvhandler(int signum, siginfo_t *siginfo, void *context)
 {
   if (siginfo->si_signo == SIGSEGV && siginfo->si_code == SEGV_ACCERR) {
@@ -103,6 +104,7 @@ static void install_segvhandler(void)
   }
 }
 
+#endif
 /********************************* SIMIX **************************************/
 
 XBT_INLINE double SIMIX_timer_next(void)
@@ -160,9 +162,10 @@ void SIMIX_global_init(int *argc, char **argv)
     /* Prepare to display some more info when dying on Ctrl-C pressing */
     signal(SIGINT, inthandler);
 
+#ifndef WIN32
     /* Install SEGV handler */
     install_segvhandler();
-
+#endif
     /* register a function to be called by SURF after the environment creation */
     sg_platf_init();
     sg_platf_postparse_add_cb(SIMIX_post_create_environment);
