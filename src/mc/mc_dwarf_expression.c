@@ -52,7 +52,7 @@ static int mc_dwarf_register_to_libunwind(int dwarf_register) {
   case 21: return UNW_X86_ST5;
   case 22: return UNW_X86_ST6;
   case 23: return UNW_X86_ST7;
-  default: xbt_die("BAd/unknown register number.");
+  default: xbt_die("Bad/unknown register number.");
   }
   #else
   #error This architecture is not supported yet.
