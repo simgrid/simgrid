@@ -574,7 +574,6 @@ void* smpi_shared_set_call(const char* func, const char* input, void* data) {
 
 
 
-#ifndef WIN32
 #define TOPAGE(addr) (void *)(((unsigned long)(addr) / xbt_pagesize) * xbt_pagesize)
 
 
@@ -763,5 +762,3 @@ void smpi_destroy_global_memory_segments(){
 
 }
 
-
-#endif
