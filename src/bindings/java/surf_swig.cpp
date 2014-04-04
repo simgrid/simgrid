@@ -9,7 +9,6 @@
 #include "surf_swig.hpp"
 #include "src/simix/smx_private.h"
 
-
 double getClock() {
   return surf_get_clock();
 }
@@ -18,10 +17,26 @@ void clean() {
   SIMIX_clean();
 }
 
-/*NetworkModel *getNetworkModel()
-{
-  return surf_network_model;
-}*/
+CpuModel *getCpuModel(){
+  return surf_cpu_model_pm;
+}
+
+CpuModel *java_cpu_model;
+static void java_cpu_model_init_preparse() {
+  surf_cpu_model_pm = java_cpu_model;
+  xbt_dynar_push(model_list, &java_cpu_model);
+  xbt_dynar_push(model_list_invoke, &java_cpu_model);
+  sg_platf_host_add_cb(parse_cpu_init);
+}
+
+void setCpuModel(CpuModel *cpuModel){
+  java_cpu_model = cpuModel;
+  surf_cpu_model_init_preparse = java_cpu_model_init_preparse;
+}
+
+void setCpu(char *name, Cpu *cpu) {
+  xbt_lib_set(host_lib, name, SURF_CPU_LEVEL, cpu);
+}
 
 NetworkLinkDynar getRoute(char *srcName, char *dstName) {
   RoutingEdge *src = (RoutingEdge*)xbt_lib_get_or_null(host_lib, srcName, ROUTING_HOST_LEVEL);

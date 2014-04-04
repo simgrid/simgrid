@@ -498,6 +498,7 @@ set(JSURF_JAVA_GENERATED_SRC
   ${CMAKE_BINARY_DIR}/src/bindings/java/org/simgrid/surf/SurfJNI.java
   ${CMAKE_BINARY_DIR}/src/bindings/java/org/simgrid/surf/Plugin.java
   ${CMAKE_BINARY_DIR}/src/bindings/java/org/simgrid/surf/Model.java
+  ${CMAKE_BINARY_DIR}/src/bindings/java/org/simgrid/surf/CpuModel.java
   ${CMAKE_BINARY_DIR}/src/bindings/java/org/simgrid/surf/Resource.java
   ${CMAKE_BINARY_DIR}/src/bindings/java/org/simgrid/surf/Action.java
   ${CMAKE_BINARY_DIR}/src/bindings/java/org/simgrid/surf/Cpu.java
@@ -506,7 +507,10 @@ set(JSURF_JAVA_GENERATED_SRC
   ${CMAKE_BINARY_DIR}/src/bindings/java/org/simgrid/surf/NetworkAction.java
 
   ${CMAKE_BINARY_DIR}/src/bindings/java/org/simgrid/surf/RoutingEdge.java
+  ${CMAKE_BINARY_DIR}/src/bindings/java/org/simgrid/surf/TmgrTraceEvent.java
+  ${CMAKE_BINARY_DIR}/src/bindings/java/org/simgrid/surf/TmgrTrace.java
 
+  #enums
   ${CMAKE_BINARY_DIR}/src/bindings/java/org/simgrid/surf/ActionState.java
   ${CMAKE_BINARY_DIR}/src/bindings/java/org/simgrid/surf/ResourceState.java
 
@@ -924,6 +928,7 @@ set(EXAMPLES_CMAKEFILES_TXT
   examples/java/priority/CMakeLists.txt
   examples/java/reservationSurfPlugin/CMakeLists.txt
   examples/java/startKillTime/CMakeLists.txt
+  examples/java/surfCpuModel/CMakeLists.txt
   examples/java/surfPlugin/CMakeLists.txt
   examples/java/suspend/CMakeLists.txt
   examples/java/tracing/CMakeLists.txt

@@ -952,13 +952,17 @@ void surf_config_models_setup()
     xbt_assert(network_model_name,
                 "Set a network model to use with the 'compound' workstation model");
 
+    if(surf_cpu_model_init_preparse){
+      surf_cpu_model_init_preparse();
+    } else {
+      cpu_id =
+          find_model_description(surf_cpu_model_description, cpu_model_name);
+      surf_cpu_model_description[cpu_id].model_init_preparse();
+    }
+
     network_id =
         find_model_description(surf_network_model_description,
                                network_model_name);
-    cpu_id =
-        find_model_description(surf_cpu_model_description, cpu_model_name);
-
-    surf_cpu_model_description[cpu_id].model_init_preparse();
     surf_network_model_description[network_id].model_init_preparse();
   }
 

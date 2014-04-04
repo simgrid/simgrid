@@ -1,0 +1,42 @@
+#! tesh
+
+$ java -classpath ${classpath:=.} surfCpuModel/TestCpuModel ${srcdir:=.}/surfCpuModel/surfCpuModelPlatform.xml ${srcdir:=.}/surfCpuModel/surfCpuModelDeployment.xml --cfg=workstation/model:compound
+> [0.000000] [jmsg/INFO] Initialize Cpu Constant Model
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'workstation/model' to 'compound'
+> [0.000000] [jmsg/INFO] Using regular java threads. Coroutines could speed your simulation up.
+> [0.000000] [jmsg/INFO] Create Resource Name: Jacquelin
+> [0.000000] [jmsg/INFO] Create Resource Name: Boivin
+> [0.000000] [jmsg/INFO] Create Resource Name: TeX
+> [0.000000] [jmsg/INFO] updateActionState of 3 cpu and 0 actions
+> [Jacquelin:surfCpuModel.Sender:(1) 0.000000] [jmsg/INFO] helloo!
+> [Boivin:surfCpuModel.Receiver:(2) 0.000000] [jmsg/INFO] helloo!
+> [0.000000] [jmsg/INFO] Sleep action of duration -1.0
+> [0.000000] [jmsg/INFO] Sleep action of duration -1.0
+> [0.000000] [jmsg/INFO] shareResource of 3 cpu and 2 actions
+> [0.000000] [jmsg/INFO] shareResource of 3 cpu and 2 actions
+> [0.026020] [jmsg/INFO] updateActionState of 3 cpu and 2 actions
+> [0.026020] [jmsg/INFO] shareResource of 3 cpu and 2 actions
+> [0.026020] [jmsg/INFO] shareResource of 3 cpu and 2 actions
+> [0.026021] [jmsg/INFO] updateActionState of 3 cpu and 2 actions
+> [Jacquelin:surfCpuModel.Sender:(1) 0.026021] [jmsg/INFO] Send duration: 0.026021030927835052
+> [0.026021] [jmsg/INFO] Sleep action of duration -1.0
+> [0.026021] [jmsg/INFO] Sleep action of duration -1.0
+> [0.026021] [jmsg/INFO] shareResource of 3 cpu and 4 actions
+> [0.026021] [jmsg/INFO] shareResource of 3 cpu and 4 actions
+> [0.052041] [jmsg/INFO] updateActionState of 3 cpu and 4 actions
+> [0.052041] [jmsg/INFO] shareResource of 3 cpu and 4 actions
+> [0.052041] [jmsg/INFO] shareResource of 3 cpu and 4 actions
+> [0.052042] [jmsg/INFO] updateActionState of 3 cpu and 4 actions
+> [Jacquelin:surfCpuModel.Sender:(1) 0.052042] [jmsg/INFO] Send duration with update bandwidth: 0.026021030927835052
+> [0.052042] [jmsg/INFO] Sleep action of duration -1.0
+> [0.052042] [jmsg/INFO] Sleep action of duration -1.0
+> [0.052042] [jmsg/INFO] shareResource of 3 cpu and 6 actions
+> [0.052042] [jmsg/INFO] shareResource of 3 cpu and 6 actions
+> [0.078062] [jmsg/INFO] updateActionState of 3 cpu and 6 actions
+> [0.078062] [jmsg/INFO] shareResource of 3 cpu and 6 actions
+> [0.078062] [jmsg/INFO] shareResource of 3 cpu and 6 actions
+> [0.078063] [jmsg/INFO] updateActionState of 3 cpu and 6 actions
+> [Boivin:surfCpuModel.Receiver:(2) 0.078063] [jmsg/INFO] goodbye!
+> [Jacquelin:surfCpuModel.Sender:(1) 0.078063] [jmsg/INFO] Send normal duration with limited bandwidth: 0.02602103092783506
+> [Jacquelin:surfCpuModel.Sender:(1) 0.078063] [jmsg/INFO] goodbye!
+> [0.078063] [jmsg/INFO] MSG_main finished; Cleaning up the simulation...

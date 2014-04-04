@@ -116,7 +116,7 @@ int main(int argc, char **argv)
   if (parse_cmdline(&timings, &downgrade, &platformFile, argc, argv) || !platformFile) {
     xbt_die("Invalid command line arguments: expected [--timings|--downgrade] platformFile");
   }
- 
+
   XBT_DEBUG("%d,%d,%s", timings, downgrade, platformFile);
 
   if (downgrade) {

@@ -287,19 +287,21 @@ xbt_dynar_t WorkstationL07Model::getRoute(WorkstationPtr src, WorkstationPtr dst
   return route;
 }
 
-ResourcePtr CpuL07Model::createResource(const char *name, double power_scale,
-                               double power_initial,
-                               tmgr_trace_t power_trace,
-                               e_surf_resource_state_t state_initial,
-                               tmgr_trace_t state_trace,
-                               xbt_dict_t cpu_properties)
+CpuPtr CpuL07Model::createResource(const char *name,  xbt_dynar_t powerPeak,
+                          int pstate, double power_scale,
+                          tmgr_trace_t power_trace, int core,
+                          e_surf_resource_state_t state_initial,
+                          tmgr_trace_t state_trace,
+                          xbt_dict_t cpu_properties)
 {
+  double power_initial = xbt_dynar_get_as(powerPeak, pstate, double);
+
   xbt_assert(!surf_workstation_resource_priv(surf_workstation_resource_by_name(name)),
               "Host '%s' declared several times in the platform file.",
               name);
 
   CpuL07Ptr cpu = new CpuL07(this, name, cpu_properties,
-		                     power_scale, power_initial, power_trace,state_initial, state_trace);
+		                     power_initial, power_scale, power_trace,state_initial, state_trace);
 
   xbt_lib_set(host_lib, name, SURF_CPU_LEVEL, static_cast<ResourcePtr>(cpu));
 
@@ -749,21 +751,6 @@ static void ptask_parse_workstation_init(sg_platf_host_cbarg_t host)
       host->properties);
 }
 
-static void ptask_parse_cpu_init(sg_platf_host_cbarg_t host)
-{
-  double power_peak = xbt_dynar_get_as(host->power_peak, host->pstate, double);
-  static_cast<CpuL07ModelPtr>(surf_cpu_model_pm)->createResource(
-      host->id,
-      power_peak,
-      host->power_scale,
-      host->power_trace,
-      host->initial_state,
-      host->state_trace,
-      host->properties);
-}
-
-
-
 static void ptask_parse_link_init(sg_platf_link_cbarg_t link)
 {
   if (link->policy == SURF_LINK_FULLDUPLEX) {
@@ -813,7 +800,7 @@ static void ptask_add_traces(){
 
 static void ptask_define_callbacks()
 {
-  sg_platf_host_add_cb(ptask_parse_cpu_init);
+  sg_platf_host_add_cb(parse_cpu_init);
   sg_platf_host_add_cb(ptask_parse_workstation_init);
   sg_platf_link_add_cb(ptask_parse_link_init);
   sg_platf_postparse_add_cb(ptask_add_traces);

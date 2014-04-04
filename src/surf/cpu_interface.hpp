@@ -54,6 +54,10 @@ XBT_PUBLIC_DATA( surf_callback(void, CpuPtr, e_surf_resource_state_t, e_surf_res
  */
 XBT_PUBLIC_DATA( surf_callback(void, CpuActionPtr, e_surf_action_state_t, e_surf_action_state_t)) cpuActionStateChangedCallbacks;
 
+void parse_cpu_init(sg_platf_host_cbarg_t host);
+
+void add_traces_cpu();
+
 /*********
  * Model *
  *********/
@@ -78,8 +82,14 @@ public:
    *
    * @return The created Cpu
    */
-  CpuPtr createResource(string name);
+  void parseInit(sg_platf_host_cbarg_t host);
 
+  virtual CpuPtr createResource(const char *name, xbt_dynar_t power_peak,
+                      int pstate, double power_scale,
+                          tmgr_trace_t power_trace, int core,
+                          e_surf_resource_state_t state_initial,
+                          tmgr_trace_t state_trace,
+                          xbt_dict_t cpu_properties)=0;
   void setState(e_surf_resource_state_t state);
 
   void updateActionsStateLazy(double now, double delta);

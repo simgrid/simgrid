@@ -8,6 +8,7 @@
 %module(directors="1") Surf
 
 %include "arrays_java.i"
+%include "std_string.i"
 
 %pragma(java) jniclassimports=%{
 import org.simgrid.NativeLib;
@@ -29,9 +30,14 @@ import org.simgrid.NativeLib;
 %{
 #include "src/surf/cpu_interface.hpp"
 #include "src/surf/network_interface.hpp"
+#include "src/surf/trace_mgr_private.h"
 #include "src/bindings/java/surf_swig.hpp"
 #include "src/xbt/dict_private.h"
 typedef struct lmm_constraint *lmm_constraint_t;
+typedef xbt_dynar_t DoubleDynar;
+/*class CpuModel : public CpuModel {
+
+};*/
 %}
 
 /* Handle xbt_dynar_t of NetworkLink */
@@ -56,31 +62,131 @@ JAVA_ARRAYSOFCLASSES(NetworkLink);
   xbt_dynar_free(&$1);
 }
 
+/*%typemap(out) DoubleDynar {
+    $result = (double[])$1;
+}*/
+
+//typedef xbt_dynar_t DoubleDynar;
+%nodefault DoubleDynar;
+%typemap(jni) DoubleDynar "jdoubleArray"
+%rename(DoubleDynar) Double[];
+%typemap(jtype) DoubleDynar "double[]"
+%typemap(jstype) DoubleDynar "double[]"
+%typemap(out) DoubleDynar {
+  long l = xbt_dynar_length($1);
+  $result = jenv->NewDoubleArray(l);
+  double *lout = (double *)xbt_dynar_to_array($1);
+  jenv->SetDoubleArrayRegion($result, 0, l, (const jdouble*)lout);
+  free(lout);
+}
+%typemap(javadirectorin) DoubleDynar "$jniinput"
+%typemap(directorin,descriptor="[D") DoubleDynar %{
+  long l = xbt_dynar_length($1);
+  $input = jenv->NewDoubleArray(l);
+  double *lout = (double *)xbt_dynar_to_array($1);
+  jenv->SetDoubleArrayRegion($input, 0, l, (const jdouble*)lout);
+  free(lout);
+%}
+%typemap(javain) DoubleDynar "$javainput"
+%typemap(javaout) DoubleDynar {return  $jnicall}
+
 /* Allow to subclass Plugin and send java object to C++ code */
 %feature("director") Plugin;
 
 %include "src/bindings/java/surf_swig.hpp"
 
+%rename tmgr_trace TmgrTrace;
+%nodefaultctor tmgr_trace;
+struct tmgr_trace {
+  //enum e_trace_type type;
+  /*union {
+    struct {
+      xbt_dynar_t event_list;
+    } s_list;
+    struct {
+      probabilist_event_generator_t event_generator[2];
+      int is_state_trace;
+      int next_event;
+    } s_probabilist;
+  };*/
+  %extend {
+  }
+};
+
+%rename tmgr_trace_event TmgrTraceEvent;
+%nodefaultctor tmgr_trace_event;
+struct tmgr_trace_event {
+  //tmgr_trace_t trace;
+  //unsigned int idx;
+  //void *model;
+  //int free_me;
+  %extend {
+    unsigned int getIdx() {return 0;}//$self->idx;}
+  }
+};
+
+
 %nodefaultctor Model;
 class Model {
 public:
+  Model(const char *name);
   const char *getName();
+  virtual double shareResources(double now);
+  virtual double shareResourcesLazy(double now);
+  virtual double shareResourcesFull(double now);
+
+  virtual void updateActionsState(double now, double delta);
+  virtual void updateActionsStateLazy(double now, double delta);
+  virtual void updateActionsStateFull(double now, double delta);
 };
+
+%feature("director") CpuModel;
+class CpuModel : public Model {
+public:
+  CpuModel(const char *name);
+  virtual ~CpuModel();
+  virtual Cpu *createResource(const char *name, DoubleDynar power_peak,
+                              int pstate, double power_scale,
+                              tmgr_trace *power_trace, int core,
+                              e_surf_resource_state_t state_initial,
+                              tmgr_trace *state_trace,
+                              s_xbt_dict *cpu_properties)=0;
+  void setState(e_surf_resource_state_t state);
+  virtual void addTraces()=0;
+};
+
 
 class Resource {
 public:
   Resource();
   const char *getName();
   virtual bool isUsed()=0;
+  Model *getModel();
+
+  virtual e_surf_resource_state_t getState();
   lmm_constraint *getConstraint();
   s_xbt_dict *getProperties();
+  virtual void updateState(tmgr_trace_event *event_type, double value, double date)=0;
 };
 
+%feature("director") Cpu;
 class Cpu : public Resource {
 public:
-  Cpu();
-  ~Cpu();
-  double getCurrentPowerPeak();
+  Cpu(Model *model, const char *name, s_xbt_dict *props,
+    lmm_constraint *constraint, int core, double powerPeak, double powerScale);
+  Cpu(Model *model, const char *name, s_xbt_dict *props,
+    int core, double powerPeak, double powerScale);
+  virtual ~Cpu();
+  virtual double getCurrentPowerPeak()=0;
+  virtual CpuAction *execute(double size)=0;
+  virtual CpuAction *sleep(double duration)=0;
+  virtual int getCore();
+  virtual double getSpeed(double load);
+  virtual double getAvailableSpeed();
+  virtual double getPowerPeakAt(int pstate_index)=0;
+  virtual int getNbPstates()=0;
+  virtual void setPowerPeakAt(int pstate_index)=0;
+  void setState(e_surf_resource_state_t state);
 };
 
 class NetworkLink : public Resource {
@@ -103,8 +209,10 @@ public:
 };
 
 %nodefaultctor CpuAction;
+%feature("director") CpuAction;
 class CpuAction : public Action {
 public:
+CpuAction(Model *model, double cost, bool failed);
 %extend {
   Cpu *getCpu() {return getActionCpu($self);}
 }
@@ -117,6 +225,7 @@ public:
   double getLatency() {return $self->m_latency;}
 }
 };
+
 
 %nodefaultctor RoutingEdge;
 class RoutingEdge {

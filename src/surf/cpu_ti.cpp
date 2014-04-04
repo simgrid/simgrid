@@ -119,7 +119,7 @@ double CpuTiTgmr::integrate(double a, double b)
 
 /**
  * \brief Auxiliary function to calculate the integral between a and b.
- *     It simply calculates the integral at point a and b and returns the difference 
+ *     It simply calculates the integral at point a and b and returns the difference
  *   between them.
  * \param trace    Trace structure
  * \param a        Initial point
@@ -257,7 +257,7 @@ double CpuTiTgmr::solveSomewhatSimple(double a, double amount)
  *  It returns the date when the requested amount of flops is available
  * \param trace    Trace structure
  * \param a        Initial point
- * \param amount  Amount of flops 
+ * \param amount  Amount of flops
  * \return The date when amount is available.
 */
 double CpuTiTrace::solveSimple(double a, double amount)
@@ -347,7 +347,7 @@ CpuTiTgmr::CpuTiTgmr(tmgr_trace_t power_trace, double value)
 
 /**
  * \brief Binary search in array.
- *  It returns the first point of the interval in which "a" is. 
+ *  It returns the first point of the interval in which "a" is.
  * \param array    Array
  * \param a        Value to search
  * \param low     Low bound to search in array
@@ -379,18 +379,10 @@ int CpuTiTrace::binarySearch(double *array, double a, int low, int high)
  * CallBacks *
  *************/
 
-static void parse_cpu_ti_init(sg_platf_host_cbarg_t host){
-  ((CpuTiModelPtr)surf_cpu_model_pm)->parseInit(host);
-}
-
-static void add_traces_cpu_ti(){
-  surf_cpu_model_pm->addTraces();
-}
-
 static void cpu_ti_define_callbacks()
 {
-  sg_platf_host_add_cb(parse_cpu_ti_init);
-  sg_platf_postparse_add_cb(add_traces_cpu_ti);
+  sg_platf_host_add_cb(parse_cpu_init);
+  sg_platf_postparse_add_cb(add_traces_cpu);
 }
 
 /*********
@@ -435,20 +427,7 @@ CpuTiModel::~CpuTiModel()
   xbt_heap_free(p_tiActionHeap);
 }
 
-void CpuTiModel::parseInit(sg_platf_host_cbarg_t host)
-{
-  createResource(host->id,
-        host->power_peak,
-        host->pstate,
-        host->power_scale,
-        host->power_trace,
-        host->core_amount,
-        host->initial_state,
-        host->state_trace,
-        host->properties);
-}
-
-CpuTiPtr CpuTiModel::createResource(const char *name,
+CpuPtr CpuTiModel::createResource(const char *name,
 	                       xbt_dynar_t powerPeak,
 	                       int pstate,
                            double powerScale,
@@ -571,8 +550,8 @@ CpuTi::CpuTi(CpuTiModelPtr model, const char *name, xbt_dynar_t powerPeak,
   setState(stateInitial);
   m_powerScale = powerScale;
   m_core = core;
-  tmgr_trace_t empty_trace;		
-  s_tmgr_event_t val;		
+  tmgr_trace_t empty_trace;
+  s_tmgr_event_t val;
   xbt_assert(core==1,"Multi-core not handled with this model yet");
   XBT_DEBUG("power scale %f", powerScale);
   p_availTrace = new CpuTiTgmr(powerTrace, powerScale);
@@ -593,7 +572,7 @@ CpuTi::CpuTi(CpuTiModelPtr model, const char *name, xbt_dynar_t powerPeak,
   if (stateTrace)
     p_stateEvent = tmgr_history_add_trace(history, stateTrace, 0.0, 0, static_cast<ResourcePtr>(this));
   if (powerTrace && xbt_dynar_length(powerTrace->s_list.event_list) > 1) {
-    // add a fake trace event if periodicity == 0 
+    // add a fake trace event if periodicity == 0
     xbt_dynar_get_cpy(powerTrace->s_list.event_list,
                       xbt_dynar_length(powerTrace->s_list.event_list) - 1, &val);
     if (val.delta == 0) {
@@ -886,7 +865,7 @@ void CpuTiAction::updateIndexHeap(int i)
 
 void CpuTiAction::setState(e_surf_action_state_t state)
 {
-  Action::setState(state);
+  CpuAction::setState(state);
   xbt_swag_insert(p_cpu, reinterpret_cast<CpuTiModelPtr>(getModel())->p_modifiedCpu);
 }
 

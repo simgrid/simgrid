@@ -10,9 +10,11 @@ XBT_LOG_EXTERNAL_CATEGORY(surf_kernel);
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_cpu, surf,
                                 "Logging specific to the SURF cpu module");
 
+int autoload_surf_cpu_model = 1;
+void_f_void_t surf_cpu_model_init_preparse = NULL;
+
 CpuModelPtr surf_cpu_model_pm;
 CpuModelPtr surf_cpu_model_vm;
-
 /*************
  * Callbacks *
  *************/
@@ -28,9 +30,29 @@ surf_callback(void, CpuPtr) cpuDestructedCallbacks;
 surf_callback(void, CpuPtr, e_surf_resource_state_t, e_surf_resource_state_t) cpuStateChangedCallbacks;
 surf_callback(void, CpuActionPtr, e_surf_action_state_t, e_surf_action_state_t) cpuActionStateChangedCallbacks;
 
+void parse_cpu_init(sg_platf_host_cbarg_t host){
+  surf_cpu_model_pm->parseInit(host);
+}
+
+void add_traces_cpu(){
+  surf_cpu_model_pm->addTraces();
+}
+
 /*********
  * Model *
  *********/
+void CpuModel::parseInit(sg_platf_host_cbarg_t host)
+{
+  createResource(host->id,
+        host->power_peak,
+        host->pstate,
+        host->power_scale,
+        host->power_trace,
+        host->core_amount,
+        host->initial_state,
+        host->state_trace,
+        host->properties);
+}
 
 void CpuModel::updateActionsStateLazy(double now, double /*delta*/)
 {
