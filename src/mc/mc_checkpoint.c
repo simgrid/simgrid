@@ -68,10 +68,12 @@ void MC_free_snapshot(mc_snapshot_t snapshot){
   xbt_dynar_free(&(snapshot->to_ignore));
 
   size_t n = snapshot->nb_processes;
-  for(i=0; i!=n; ++i) {
-    MC_region_destroy(snapshot->privatization_regions[i]);
+  if(snapshot->privatization_regions) {
+    for(i=0; i!=n; ++i) {
+      MC_region_destroy(snapshot->privatization_regions[i]);
+    }
+    xbt_free(snapshot->privatization_regions);
   }
-  xbt_free(snapshot->privatization_regions);
 
   xbt_free(snapshot);
 }
