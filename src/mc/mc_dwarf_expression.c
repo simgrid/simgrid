@@ -48,7 +48,7 @@ static int mc_dwarf_register_to_libunwind(int dwarf_register) {
   case 17: return UNW_X86_ST1;
   case 18: return UNW_X86_ST2;
   case 19: return UNW_X86_ST3;
-  case 10: return UNW_X86_ST4;
+  case 20: return UNW_X86_ST4;
   case 21: return UNW_X86_ST5;
   case 22: return UNW_X86_ST6;
   case 23: return UNW_X86_ST7;
