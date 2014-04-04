@@ -85,9 +85,13 @@ BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason,
 
 static void xbt_preinit(void) {
   unsigned int seed = 2147483647;
-
+#ifndef WIN32
   xbt_pagesize = sysconf(_SC_PAGESIZE);
-
+#else
+  SYSTEM_INFO si;
+  GetSystemInfo(&si);
+  xbt_pagesize = si.dwPageSize;
+#endif
 #ifdef MMALLOC_WANT_OVERRIDE_LEGACY
   mmalloc_preinit();
 #endif
