@@ -589,5 +589,8 @@ void TRACE_smpi_finalize(int rank);
 
 const char* encode_datatype(MPI_Datatype datatype);
 
+// TODO, make this static and expose it more cleanly
+extern void** mappings;
+extern int loaded_page;
 
 #endif

@@ -12,6 +12,7 @@
 #include "mc_private.h"
 #include "xbt/module.h"
 #include <xbt/mmalloc.h>
+#include "../smpi/private.h"
 
 #include "xbt/mmalloc/mmprivate.h"
 
@@ -65,6 +66,15 @@ void MC_free_snapshot(mc_snapshot_t snapshot){
   xbt_free(snapshot->stack_sizes);
   xbt_dynar_free(&(snapshot->stacks));
   xbt_dynar_free(&(snapshot->to_ignore));
+
+  size_t n = snapshot->nb_processes;
+  if(snapshot->privatization_regions) {
+    for(i=0; i!=n; ++i) {
+      MC_region_destroy(snapshot->privatization_regions[i]);
+    }
+    xbt_free(snapshot->privatization_regions);
+  }
+
   xbt_free(snapshot);
 }
 
@@ -102,6 +112,7 @@ static void MC_snapshot_add_region(mc_snapshot_t snapshot, int type, void *start
 } 
 
 static void MC_get_memory_regions(mc_snapshot_t snapshot){
+  size_t i;
 
   void* start_heap = ((xbt_mheap_t)std_heap)->base;
   void* end_heap   = ((xbt_mheap_t)std_heap)->breakval;
@@ -109,7 +120,17 @@ static void MC_get_memory_regions(mc_snapshot_t snapshot){
   snapshot->heap_bytes_used = mmalloc_get_bytes_used(std_heap);
 
   MC_snapshot_add_region(snapshot, 1,  mc_libsimgrid_info->start_rw, mc_libsimgrid_info->end_rw - mc_libsimgrid_info->start_rw);
-  MC_snapshot_add_region(snapshot, 2,  mc_binary_info->start_rw, mc_binary_info->end_rw - mc_binary_info->start_rw);
+  if(!smpi_privatize_global_variables) {
+    MC_snapshot_add_region(snapshot, 2,  mc_binary_info->start_rw, mc_binary_info->end_rw - mc_binary_info->start_rw);
+    snapshot->privatization_regions = NULL;
+    snapshot->privatization_index = -1;
+  } else {
+    snapshot->privatization_regions = xbt_new(mc_mem_region_t, SIMIX_process_count());
+    for (i=0; i< SIMIX_process_count(); i++){
+      snapshot->privatization_regions[i] = MC_region_new(-1, mappings[i], size_data_exe);
+    }
+    snapshot->privatization_index = loaded_page;
+  }
 }
 
 /** @brief Finds the range of the different memory segments and binary paths */
@@ -479,9 +500,19 @@ mc_snapshot_t MC_take_snapshot(int num_state){
 void MC_restore_snapshot(mc_snapshot_t snapshot){
   unsigned int i;
   for(i=0; i < NB_REGIONS; i++){
-    MC_region_restore(snapshot->regions[i]);
+    // For privatized, variables we decided it was not necessary to take the snapshot:
+    if(snapshot->regions[i])
+      MC_region_restore(snapshot->regions[i]);
   }
 
+  if(snapshot->privatization_regions) {
+    for (i=0; i< SIMIX_process_count(); i++){
+      if(snapshot->privatization_regions[i]) {
+        MC_region_restore(snapshot->privatization_regions[i]);
+      }
+    }
+    switch_data_segment(snapshot->privatization_index);
+  }
 }
 
 void* mc_translate_address(uintptr_t addr, mc_snapshot_t snapshot) {
