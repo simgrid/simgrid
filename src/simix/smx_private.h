@@ -209,7 +209,9 @@ typedef struct s_smx_action {
 void SIMIX_context_mod_init(void);
 void SIMIX_context_mod_exit(void);
 
+#ifndef WIN32
 XBT_PUBLIC_DATA(char sigsegv_stack[SIGSTKSZ]);
+#endif
 
 /* We are using the bottom of the stack to save some information, like the
  * valgrind_stack_id. Define smx_context_usable_stack_size to give the remaining
