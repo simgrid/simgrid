@@ -759,26 +759,34 @@ const char *surf_action_state_names[6] = {
   "SURF_ACTION_NOT_IN_THE_SYSTEM"
 };
 
+void Action::initialize(ModelPtr model, double cost, bool failed,
+                        lmm_variable_t var)
+{
+  m_priority = 1.0;
+  m_refcount = 1;
+  m_remains = cost;
+  m_maxDuration = NO_MAX_DURATION;
+  m_finish = -1.0;
+  m_failed = failed;
+  m_start = surf_get_clock();
+  m_cost = cost;
+  p_model = model;
+  p_data = NULL;
+  p_variable = var;
+  m_lastValue = 0;
+  m_lastUpdate = 0;
+  m_suspended = false;
+  m_hat = NOTSET;
+}
+
 Action::Action()
-: m_refcount(1)
-{}
+{
+  initialize(NULL, 0.0, false); // FIXME: not used
+}
 
 Action::Action(ModelPtr model, double cost, bool failed)
- : m_priority(1.0)
- , m_refcount(1)
- , m_remains(cost)
- , m_maxDuration(NO_MAX_DURATION)
- , m_finish(-1.0)
- , m_failed(failed)
- , m_start(surf_get_clock())
- , m_cost(cost)
- , p_model(model)
- , p_data(NULL)
- , p_variable(NULL)
- , m_lastValue(0)
- , m_lastUpdate(0)
- , m_suspended(false)
 {
+  initialize(model, cost, failed);
   #ifdef HAVE_TRACING
     p_category = NULL;
   #endif
@@ -793,21 +801,8 @@ Action::Action(ModelPtr model, double cost, bool failed)
 }
 
 Action::Action(ModelPtr model, double cost, bool failed, lmm_variable_t var)
- : m_priority(1.0)
- , m_refcount(1)
- , m_remains(cost)
- , m_maxDuration(NO_MAX_DURATION)
- , m_finish(-1.0)
- , m_failed(failed)
- , m_start(surf_get_clock())
- , m_cost(cost)
- , p_model(model)
- , p_data(NULL)
- , p_variable(var)
- , m_lastValue(0)
- , m_lastUpdate(0)
- , m_suspended(false)
 {
+  initialize(model, cost, failed, var);
   #ifdef HAVE_TRACING
     p_category = NULL;
   #endif
