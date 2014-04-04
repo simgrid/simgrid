@@ -28,31 +28,31 @@ typedef CpuPlugin *CpuPluginPtr;
 /*************
  * Callbacks *
  *************/
-CpuPtr getActionCpu(CpuActionPtr action);
+XBT_PUBLIC(CpuPtr) getActionCpu(CpuActionPtr action);
 
 /** @ingroup SURF_callbacks
  * @brief Callbacks handler which emit the callbacks after Cpu creation *
  * @details Callback functions have the following signature: `void(CpuPtr)`
  */
-extern surf_callback(void, CpuPtr) cpuCreatedCallbacks;
+XBT_PUBLIC_DATA( surf_callback(void, CpuPtr)) cpuCreatedCallbacks;
 
 /** @ingroup SURF_callbacks
  * @brief Callbacks handler which emit the callbacks after Cpu destruction *
  * @details Callback functions have the following signature: `void(CpuPtr)`
  */
-extern surf_callback(void, CpuPtr) cpuDestructedCallbacks;
+XBT_PUBLIC_DATA( surf_callback(void, CpuPtr)) cpuDestructedCallbacks;
 
 /** @ingroup SURF_callbacks
  * @brief Callbacks handler which emit the callbacks after Cpu State changed *
  * @details Callback functions have the following signature: `void(CpuActionPtr action, e_surf_resource_state_t old, e_surf_resource_state_t current)`
  */
-extern surf_callback(void, CpuPtr, e_surf_resource_state_t, e_surf_resource_state_t) cpuStateChangedCallbacks;
+XBT_PUBLIC_DATA( surf_callback(void, CpuPtr, e_surf_resource_state_t, e_surf_resource_state_t)) cpuStateChangedCallbacks;
 
 /** @ingroup SURF_callbacks
  * @brief Callbacks handler which emit the callbacks after CpuAction State changed *
  * @details Callback functions have the following signature: `void(CpuActionPtr action, e_surf_action_state_t old, e_surf_action_state_t current)`
  */
-extern surf_callback(void, CpuActionPtr, e_surf_action_state_t, e_surf_action_state_t) cpuActionStateChangedCallbacks;
+XBT_PUBLIC_DATA( surf_callback(void, CpuActionPtr, e_surf_action_state_t, e_surf_action_state_t)) cpuActionStateChangedCallbacks;
 
 /*********
  * Model *

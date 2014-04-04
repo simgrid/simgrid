@@ -138,7 +138,7 @@ XBT_PUBLIC(lmm_constraint_t) lmm_constraint_new(lmm_system_t sys, void *id,
  * 
  * @param cnst The constraint to share
  */
-void lmm_constraint_shared(lmm_constraint_t cnst);
+XBT_PUBLIC(void) lmm_constraint_shared(lmm_constraint_t cnst);
 
 /**
  * @brief Check if a constraint is shared (shared by default)
@@ -146,7 +146,7 @@ void lmm_constraint_shared(lmm_constraint_t cnst);
  * @param cnst The constraint to share
  * @return 1 if shared, 0 otherwise
  */
-int lmm_constraint_is_shared(lmm_constraint_t cnst);
+XBT_PUBLIC(int) lmm_constraint_is_shared(lmm_constraint_t cnst);
 
 /**
  * @brief Free a constraint
@@ -154,7 +154,7 @@ int lmm_constraint_is_shared(lmm_constraint_t cnst);
  * @param sys The system associated to the constraint
  * @param cnst The constraint to free
  */
-void lmm_constraint_free(lmm_system_t sys, lmm_constraint_t cnst);
+XBT_PUBLIC(void) lmm_constraint_free(lmm_system_t sys, lmm_constraint_t cnst);
 
 /**
  * @brief Get the usage of the constraint after the last lmm solve
@@ -162,7 +162,7 @@ void lmm_constraint_free(lmm_system_t sys, lmm_constraint_t cnst);
  * @param cnst A constraint
  * @return The usage of the constraint
  */
-double lmm_constraint_get_usage(lmm_constraint_t cnst);
+XBT_PUBLIC(double) lmm_constraint_get_usage(lmm_constraint_t cnst);
 
 /**
  * @brief Create a new Linear MaxMin variable
@@ -231,7 +231,7 @@ XBT_PUBLIC(void) lmm_expand(lmm_system_t sys, lmm_constraint_t cnst,
  * @param var A variable
  * @param value The value to add to the coefficient associated to the variable in the constraint
  */
-void lmm_expand_add(lmm_system_t sys, lmm_constraint_t cnst,
+XBT_PUBLIC(void) lmm_expand_add(lmm_system_t sys, lmm_constraint_t cnst,
                     lmm_variable_t var, double value);
 
 /**
@@ -242,7 +242,7 @@ void lmm_expand_add(lmm_system_t sys, lmm_constraint_t cnst,
  * @param num The rank of constraint we want to get
  * @return The numth constraint
  */
-lmm_constraint_t lmm_get_cnst_from_var(lmm_system_t sys,
+XBT_PUBLIC(lmm_constraint_t) lmm_get_cnst_from_var(lmm_system_t sys,
                                        lmm_variable_t var, int num);
 
 /**
@@ -253,7 +253,7 @@ lmm_constraint_t lmm_get_cnst_from_var(lmm_system_t sys,
  * @param num The rank of constraint we want to get
  * @return The numth constraint
  */
-double lmm_get_cnst_weight_from_var(lmm_system_t sys, lmm_variable_t var,
+XBT_PUBLIC(double) lmm_get_cnst_weight_from_var(lmm_system_t sys, lmm_variable_t var,
                                     int num);
 
 /**
@@ -263,7 +263,7 @@ double lmm_get_cnst_weight_from_var(lmm_system_t sys, lmm_variable_t var,
  * @param var A variable
  * @return The number of constraint associated to the variable
  */
-int lmm_get_number_of_cnst_from_var(lmm_system_t sys, lmm_variable_t var);
+XBT_PUBLIC(int) lmm_get_number_of_cnst_from_var(lmm_system_t sys, lmm_variable_t var);
 
 /**
  * @brief Get a var associated to a constraint 
@@ -274,7 +274,7 @@ int lmm_get_number_of_cnst_from_var(lmm_system_t sys, lmm_variable_t var);
  * @param elem A element of constraint of the constraint or NULL
  * @return A variable associated to a constraint
  */
-lmm_variable_t lmm_get_var_from_cnst(lmm_system_t sys,
+XBT_PUBLIC(lmm_variable_t) lmm_get_var_from_cnst(lmm_system_t sys,
                                      lmm_constraint_t cnst,
                                      lmm_element_t * elem);
 
@@ -284,7 +284,7 @@ lmm_variable_t lmm_get_var_from_cnst(lmm_system_t sys,
  * @param sys A system
  * @return The first active constraint
  */
-lmm_constraint_t lmm_get_first_active_constraint(lmm_system_t sys);
+XBT_PUBLIC(lmm_constraint_t) lmm_get_first_active_constraint(lmm_system_t sys);
 
 /**
  * @brief Get the next active constraint of a constraint in a system
@@ -294,7 +294,7 @@ lmm_constraint_t lmm_get_first_active_constraint(lmm_system_t sys);
  * 
  * @return The next active constraint
  */
-lmm_constraint_t lmm_get_next_active_constraint(lmm_system_t sys,
+XBT_PUBLIC(lmm_constraint_t) lmm_get_next_active_constraint(lmm_system_t sys,
                                                 lmm_constraint_t cnst);
 
 #ifdef HAVE_LATENCY_BOUND_TRACKING
@@ -307,7 +307,7 @@ XBT_PUBLIC(int) lmm_is_variable_limited_by_latency(lmm_variable_t var);
  * @param cnst A constraint
  * @return The data associated to the constraint
  */
-void *lmm_constraint_id(lmm_constraint_t cnst);
+XBT_PUBLIC(void *) lmm_constraint_id(lmm_constraint_t cnst);
 
 /**
  * @brief Get the data associated to a variable
@@ -315,7 +315,7 @@ void *lmm_constraint_id(lmm_constraint_t cnst);
  * @param var A variable
  * @return The data associated to the variable
  */
-void *lmm_variable_id(lmm_variable_t var);
+XBT_PUBLIC(void *) lmm_variable_id(lmm_variable_t var);
 
 /**
  * @brief Update the value of element linking the constraint and the variable
@@ -325,7 +325,7 @@ void *lmm_variable_id(lmm_variable_t var);
  * @param var A variable
  * @param value The new value
  */
-void lmm_update(lmm_system_t sys, lmm_constraint_t cnst,
+XBT_PUBLIC(void) lmm_update(lmm_system_t sys, lmm_constraint_t cnst,
                 lmm_variable_t var, double value);
 
 /**
@@ -335,7 +335,7 @@ void lmm_update(lmm_system_t sys, lmm_constraint_t cnst,
  * @param var A constraint
  * @param bound The new bound
  */
-void lmm_update_variable_bound(lmm_system_t sys, lmm_variable_t var,
+XBT_PUBLIC(void) lmm_update_variable_bound(lmm_system_t sys, lmm_variable_t var,
                                double bound);
 
 /**
@@ -355,7 +355,7 @@ XBT_PUBLIC(void) lmm_update_variable_weight(lmm_system_t sys,
  * @param var A variable
  * @return The weight of the variable
  */
-double lmm_get_variable_weight(lmm_variable_t var);
+XBT_PUBLIC(double) lmm_get_variable_weight(lmm_variable_t var);
 
 /**
  * @brief Update a constraint bound
@@ -375,7 +375,7 @@ XBT_PUBLIC(void) lmm_update_constraint_bound(lmm_system_t sys,
  * @param cnst A constraint
  * @return [description]
  */
-int lmm_constraint_used(lmm_system_t sys, lmm_constraint_t cnst);
+XBT_PUBLIC(int) lmm_constraint_used(lmm_system_t sys, lmm_constraint_t cnst);
 
 /**
  * @brief Solve the lmm system

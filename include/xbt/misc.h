@@ -171,6 +171,8 @@
 #  define XBT_EXPORT_NO_IMPORT(type)  __declspec(dllexport) type
 #  define XBT_IMPORT_NO_EXPORT(type)  type
 #  define XBT_PUBLIC_DATA(type)       extern __declspec(dllexport) type
+#  define XBT_PUBLIC_CLASS            class __declspec(dllexport)
+
 
 /* Pack everything up statically */
 #elif defined(DLL_STATIC)
@@ -178,6 +180,8 @@
 #  define XBT_EXPORT_NO_IMPORT(type)  type
 #  define XBT_IMPORT_NO_EXPORT(type)  type
 #  define XBT_PUBLIC_DATA(type)       extern type
+#  define XBT_PUBLIC_CLASS            class
+
 
 /* Link against the DLL */
 #elif (defined(_XBT_WIN32) && !defined(DLL_EXPORT) && !defined(DLL_STATIC))
@@ -185,6 +189,8 @@
 #  define XBT_EXPORT_NO_IMPORT(type)  type
 #  define XBT_IMPORT_NO_EXPORT(type)  __declspec(dllimport) type
 #  define XBT_PUBLIC_DATA(type)       extern __declspec(dllimport) type
+#  define XBT_PUBLIC_CLASS            class __declspec(dllimport)
+
 
 /* UNIX build */
 #else
@@ -192,6 +198,8 @@
 #  define XBT_EXPORT_NO_IMPORT(type)  type
 #  define XBT_IMPORT_NO_EXPORT(type)  type
 #  define XBT_PUBLIC_DATA(type)       extern type
+#  define XBT_PUBLIC_CLASS            class
+
 #endif
 
 #if !defined (max) && !defined(__cplusplus)

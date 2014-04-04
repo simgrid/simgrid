@@ -62,7 +62,7 @@ extern xbt_dict_t watched_hosts_lib;
 #ifdef __cplusplus
 extern "C" {
 #endif
-void SIMIX_clean(void);
+XBT_PUBLIC(void) SIMIX_clean(void);
 #ifdef __cplusplus
 }
 #endif

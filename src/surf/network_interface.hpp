@@ -30,31 +30,31 @@ typedef NetworkAction *NetworkActionPtr;
  * @brief Callbacks handler which emit the callbacks after NetworkLink creation
  * @details Callback functions have the following signature: `void(NetworkLinkPtr)`
  */
-extern surf_callback(void, NetworkLinkPtr) networkLinkCreatedCallbacks;
+XBT_PUBLIC_DATA( surf_callback(void, NetworkLinkPtr)) networkLinkCreatedCallbacks;
 
 /** @ingroup SURF_callbacks
  * @brief Callbacks handler which emit the callbacks after NetworkLink destruction
  * @details Callback functions have the following signature: `void(NetworkLinkPtr)`
  */
-extern surf_callback(void, NetworkLinkPtr) networkLinkDestructedCallbacks;
+XBT_PUBLIC_DATA( surf_callback(void, NetworkLinkPtr)) networkLinkDestructedCallbacks;
 
 /** @ingroup SURF_callbacks
  * @brief Callbacks handler which emit the callbacks after NetworkLink State changed
  * @details Callback functions have the following signature: `void(NetworkLinkActionPtr action, e_surf_resource_state_t old, e_surf_resource_state_t current)`
  */
-extern surf_callback(void, NetworkLinkPtr, e_surf_resource_state_t, e_surf_resource_state_t) networkLinkStateChangedCallbacks;
+XBT_PUBLIC_DATA( surf_callback(void, NetworkLinkPtr, e_surf_resource_state_t, e_surf_resource_state_t)) networkLinkStateChangedCallbacks;
 
 /** @ingroup SURF_callbacks
  * @brief Callbacks handler which emit the callbacks after NetworkAction State changed
  * @details Callback functions have the following signature: `void(NetworkActionPtr action, e_surf_action_state_t old, e_surf_action_state_t current)`
  */
-extern surf_callback(void, NetworkActionPtr, e_surf_action_state_t, e_surf_action_state_t) networkActionStateChangedCallbacks;
+XBT_PUBLIC_DATA( surf_callback(void, NetworkActionPtr, e_surf_action_state_t, e_surf_action_state_t)) networkActionStateChangedCallbacks;
 
 /** @ingroup SURF_callbacks
  * @brief Callbacks handler which emit the callbacks after communication created
  * @details Callback functions have the following signature: `void(NetworkActionPtr action, RoutingEdgePtr src, RoutingEdgePtr dst, double size, double rate)`
  */
-extern surf_callback(void, NetworkActionPtr, RoutingEdgePtr src, RoutingEdgePtr dst, double size, double rate) networkCommunicateCallbacks;
+XBT_PUBLIC_DATA( surf_callback(void, NetworkActionPtr, RoutingEdgePtr src, RoutingEdgePtr dst, double size, double rate)) networkCommunicateCallbacks;
 
 /*********
  * Tools *

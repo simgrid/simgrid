@@ -154,7 +154,7 @@ public:
 /** @ingroup SURF_routing_interface
  * @brief The class representing a whole routing platform
  */
-class RoutingPlatf {
+XBT_PUBLIC_CLASS RoutingPlatf {
 public:
   ~RoutingPlatf();
   AsPtr p_root;
