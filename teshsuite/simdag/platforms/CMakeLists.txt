@@ -49,6 +49,7 @@ set(xml_files
   ${CMAKE_CURRENT_SOURCE_DIR}/four_hosts_floyd.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/two_hosts_multi_hop.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/one_cluster_file.xml
+  ${CMAKE_CURRENT_SOURCE_DIR}/one_cluster_multicore.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/one_cluster_foreach.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/one_cluster_fullduplex.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/one_cluster_one_host_random.xml
