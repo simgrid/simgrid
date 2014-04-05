@@ -734,6 +734,7 @@ teshsuite/msg/pid
 teshsuite/msg/get_sender
 teshsuite/msg/trace/test_trace_integration
 teshsuite/simix/check_defaults
+teshsuite/simix/stack_overflow
 teshsuite/simdag/availability/availability_test
 teshsuite/simdag/basic0
 teshsuite/simdag/basic1
@@ -798,6 +799,7 @@ examples/java/async/java_async_compiled
 examples/java/bittorrent/java_bittorrent_compiled
 examples/java/chord/java_chord_compiled
 examples/java/cloud/java_cloud_compiled
+examples/java/cloud/migration/java_cloud_migration_compiled
 examples/java/commTime/java_commTime_compiled
 examples/java/io/java_io_compiled
 examples/java/kademlia/java_kademlia_compiled
@@ -811,3 +813,5 @@ examples/java/priority/java_priority_compiled
 examples/java/startKillTime/java_startKillTime_compiled
 examples/java/suspend/java_suspend_compiled
 examples/java/tracing/java_tracing_compiled
+examples/java/reservationSurfPlugin/java_reservation_surf_plugin_compiled
+examples/java/surfPlugin/java_surf_plugin_compiled
