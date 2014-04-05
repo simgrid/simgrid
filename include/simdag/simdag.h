@@ -83,6 +83,7 @@ XBT_PUBLIC(int) SD_route_get_size(SD_workstation_t src,
 XBT_PUBLIC(double) SD_workstation_get_power(SD_workstation_t workstation);
 XBT_PUBLIC(double) SD_workstation_get_available_power(SD_workstation_t
                                                       workstation);
+XBT_PUBLIC(int) SD_workstation_get_cores(SD_workstation_t workstation);
 XBT_PUBLIC(e_SD_workstation_access_mode_t)
     SD_workstation_get_access_mode(SD_workstation_t workstation);
 XBT_PUBLIC(void) SD_workstation_set_access_mode(SD_workstation_t

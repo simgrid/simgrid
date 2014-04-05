@@ -281,6 +281,15 @@ double SD_workstation_get_power(SD_workstation_t workstation)
 {
   return surf_workstation_get_speed(workstation, 1.0);
 }
+/**
+ * \brief Returns the amount of cores of a workstation
+ *
+ * \param workstation a workstation
+ * \return the amount of cores of this workstation
+ */
+int SD_workstation_get_cores(SD_workstation_t workstation) {
+  return surf_workstation_get_core(workstation);
+}
 
 /**
  * \brief Returns the proportion of available power in a workstation
