@@ -17,6 +17,7 @@ if(enable_smpi)
   set(tesh_files
     ${tesh_files}
     ${CMAKE_CURRENT_SOURCE_DIR}/bug-17132.tesh
+    ${CMAKE_CURRENT_SOURCE_DIR}/bug-17132-surf-debug.tesh
     PARENT_SCOPE)
   set(xml_files
     ${xml_files}
