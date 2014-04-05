@@ -20,7 +20,7 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(tesh, "TEst SHell utility");
 int timeout_value = 5;          /* child timeout value */
 int sort_len = 19;              /* length of the prefix to sort */
 char *option;
-int coverage = 0;        /* whether the code coverage is enable */
+int coverage = 0;        /* whether the code coverage is enabled */
 
 rctx_t rctx;
 const char *testsuite_name;

@@ -8,9 +8,11 @@ tesh \- testing shell
 .SH DESCRIPTION
 This is the TESH tool. It constitutes a testing shell, ie a sort of shell specialized to run tests. The list of actions to take is parsed from files files called testsuite.
 .SH OPTIONS
-  --cd some/directory: ask tesh to switch the working directory before
-                       launching the tests
-  --setenv var=value: set a specific environment variable
+  --cd some/directory : ask tesh to switch the working directory before
+                        launching the tests
+  --setenv var=value  : set a specific environment variable
+  --cfg arg           : add parameter --cfg=arg to each command line
+  --enable-coverage   : ignore output lines starting with "profiling:"
 .SH TESH FILE SYNTAX
 Here is the syntax of these files:
 

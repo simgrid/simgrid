@@ -28,9 +28,11 @@ an error showing the diff (see OUTPUT below).
 Command line arguments
 ----------------------
 Tesh accepts several command line arguments:
-  --cd some/directory: ask tesh to switch the working directory before
-                       launching the tests
-  --setenv var=value: set a specific environment variable
+  --cd some/directory : ask tesh to switch the working directory before
+                        launching the tests
+  --setenv var=value  : set a specific environment variable
+  --cfg arg           : add parameter --cfg=arg to each command line
+  --enable-coverage   : ignore output lines starting with "profiling:"
 
 IO orders
 ---------
