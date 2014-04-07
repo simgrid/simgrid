@@ -74,7 +74,7 @@ int PMPI_Get_version (int *version,int *subversion){
 int PMPI_Get_library_version (char *version,int *len){
   int retval = MPI_SUCCESS;
   smpi_bench_end();
-  snprintf(version,MPI_MAX_LIBRARY_VERSION_STRING,"SMPI Version %d.%d. Copyright The Simgrid Team 2007-2013",SIMGRID_VERSION_MAJOR,
+  snprintf(version,MPI_MAX_LIBRARY_VERSION_STRING,"SMPI Version %d.%d. Copyright The Simgrid Team 2007-2014",SIMGRID_VERSION_MAJOR,
           SIMGRID_VERSION_MINOR);
   *len = strlen(version) > MPI_MAX_LIBRARY_VERSION_STRING ? MPI_MAX_LIBRARY_VERSION_STRING : strlen(version);
   smpi_bench_begin();

@@ -66,7 +66,7 @@ else()
 endif()
 
 set(SIMGRID_VERSION_STRING
-  "SimGrid version ${release_version}${SIMGRID_VERSION_EXTRA}\\nCopyright (c) ${SIMGRID_VERSION_DATE}. The Simgrid Team.")
+  "SimGrid version ${release_version}${SIMGRID_VERSION_EXTRA}\\nCopyright (c) 2004-${SIMGRID_VERSION_DATE}. The Simgrid Team.")
 
 set(libsimgrid_version "${release_version}")
 set(libsimgrid-java_version "${release_version}")
