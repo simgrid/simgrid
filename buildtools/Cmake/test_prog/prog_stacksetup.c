@@ -9,7 +9,7 @@
 #endif
 
 #ifdef _XBT_WIN32
-#include "win32_ucontext.h"
+#include "xbt/win32_ucontext.h"
 #include "win32_ucontext.c"
 #endif
 
@@ -24,7 +24,7 @@
 
 #if defined(TEST_makecontext)
 #ifdef _XBT_WIN32
-#include "win32_ucontext.h"
+#include "xbt/win32_ucontext.h"
 #else
 #include <ucontext.h>
 #endif
