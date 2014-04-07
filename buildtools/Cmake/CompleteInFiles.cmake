@@ -425,14 +425,14 @@ endif()
 # AC_CHECK_MCSC(mcsc=yes, mcsc=no)
 set(mcsc_flags "")
 if(CMAKE_SYSTEM_NAME MATCHES "Darwin")
-  set(mcsc_flags "-D_XOPEN_SOURCE")
+  set(mcsc_flags -D_XOPEN_SOURCE)
 endif()
 
 if(WIN32)
   if(ARCH_32_BITS)
-    set(mcsc_flags "-D_XBT_WIN32 -D_I_X86_ -I${CMAKE_HOME_DIRECTORY}/src/include/xbt -I${CMAKE_HOME_DIRECTORY}/src/xbt")
+    set(mcsc_flags -D_XBT_WIN32 -D_I_X86_ -I${CMAKE_HOME_DIRECTORY}/src/include/xbt -I${CMAKE_HOME_DIRECTORY}/src/xbt)
   else()
-    set(mcsc_flags "-D_XBT_WIN32 -D_AMD64_ -I${CMAKE_HOME_DIRECTORY}/src/include/xbt -I${CMAKE_HOME_DIRECTORY}/src/xbt")
+    set(mcsc_flags -D_XBT_WIN32 -D_AMD64_ -I${CMAKE_HOME_DIRECTORY}/src/include/xbt -I${CMAKE_HOME_DIRECTORY}/src/xbt)
   endif()
 endif()
 
@@ -446,7 +446,7 @@ ELSE()
   file(REMOVE ${CMAKE_BINARY_DIR}/conftestval)
   execute_process(COMMAND ${CMAKE_C_COMPILER} ${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/test_prog/prog_AC_CHECK_MCSC.c ${mcsc_flags} -o testprog
   WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/
-  OUTPUT_VARIABLE COMPILE_mcsc_VAR)
+  OUTPUT_VARIABLE COMPILE_mcsc_VAR ERROR_VARIABLE COMPILE_mcsc_VAR)
 
   if(NOT COMPILE_mcsc_VAR)
     message(STATUS "prog_AC_CHECK_MCSC.c is compilable")
