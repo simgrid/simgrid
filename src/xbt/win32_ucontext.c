@@ -68,13 +68,13 @@ int makecontext(ucontext_t * ucp, void (*func) (), int argc, ...)
   #ifdef _I_X86_
   ucp->uc_mcontext.Eip = (DWORD) func;
   ucp->uc_mcontext.Esp = (DWORD) sp - sizeof(void*);
-  #endif
-  #ifdef _IA64_
+  #elif defined _IA64_
   #  error "_IA64_"
-  #endif
-  #ifdef _AMD64_
+  #elif defined _AMD64_
   ucp->uc_mcontext.Rip = (DWORD64) func;
   ucp->uc_mcontext.Rsp = (DWORD64) sp - sizeof(void*);
+  #else
+  #error "No architecture defined for Windows build. need either _AMD64_ or _I_X86_"
   #endif
 
       /* Save/Restore the full machine context */ 

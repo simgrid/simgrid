@@ -31,11 +31,11 @@ set(SIMGRID_DEP "-lws2_32 -L${PATH_PTHREAD_LIB} -lm -lpthreadGC2")
 
 
 if(ARCH_32_BITS)
-  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -m32 -march=i486")
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -m32 -march=i486")
+  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -m32 -march=i486 -D_I_X86_")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -m32 -march=i486 -D_I_X86_")
 else()
-  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -m64")
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -m64")
+  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -m64 -D_AMD64_")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -m64 -D_AMD64_")
   #        message(FATAL_ERROR "Sorry, Simgrid fails with full 64bits for now! Please contact us.")
 endif()
 
