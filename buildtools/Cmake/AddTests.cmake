@@ -679,9 +679,9 @@ if(NOT enable_memcheck)
   ### Declare that we know that some tests are broken
   ###
   if(release)
-    if(CMAKE_SYSTEM_NAME MATCHES "Darwin")
-      # These tests are known to fail on Mac OS X (the expected error message is
-      # not shown).
+    if(WIN32 OR CMAKE_SYSTEM_NAME MATCHES "Darwin")
+      # These tests are known to fail on Windows and Mac OS X
+      # (the expected error message is not shown).
       set_tests_properties(stack-overflow-thread PROPERTIES WILL_FAIL true)
       if(CONTEXT_UCONTEXT)
         set_tests_properties(stack-overflow-ucontext PROPERTIES WILL_FAIL true)
