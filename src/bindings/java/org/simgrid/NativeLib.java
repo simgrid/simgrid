@@ -23,7 +23,7 @@ public final class NativeLib {
         else if (arch.equalsIgnoreCase("amd64"))
             arch = "x86_64";
 
-        if (os.toLowerCase().startsWith("^win")){
+        if (os.toLowerCase().startsWith("win")){
             os = "Windows";
             arch = "x86";
         }else if (os.contains("OS X"))
