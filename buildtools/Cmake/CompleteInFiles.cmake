@@ -454,7 +454,7 @@ ELSE()
     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/
     OUTPUT_VARIABLE var_compil)
   else()
-    message(STATUS "prog_AC_CHECK_MCSC.c is not compilable")
+    message(STATUS "prog_AC_CHECK_MCSC.c is not compilable:\n${COMPILE_mcsc_VAR}")
   endif()
   file(REMOVE "${CMAKE_BINARY_DIR}/testprog*")
 
