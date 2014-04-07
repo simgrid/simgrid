@@ -405,12 +405,5 @@ Java_org_simgrid_msg_Process_setKillTime (JNIEnv *env , jobject jprocess, jdoubl
 
 JNIEXPORT jint JNICALL
 Java_org_simgrid_msg_Process_getCount(JNIEnv * env, jclass cls) {
-	/* The next test on SimGrid version is to ensure that this still compiles with SG 3.8 while the C function were added in SG 3.9 only.
-	 * This kind of pimple becomes mandatory when you get so slow to release the java version that it begins evolving further after the C release date.
-	 */
-#if SIMGRID_VERSION >= 30900
   return (jint) MSG_process_get_number();
-#else
-  return (jint) -1;
-#endif
 }
