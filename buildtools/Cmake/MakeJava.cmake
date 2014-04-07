@@ -121,7 +121,20 @@ set_source_files_properties(${JSURF_SWIG_SRC} PROPERTIES CPLUSPLUS 1)
 #set_source_files_properties(${SURF_SWIG_FILE} PROPERTIES SWIG_FLAGS "-includeall")
 include_directories(${JNI_INCLUDE_DIRS})
 swig_add_module(surf-java java ${JSURF_SWIG_SRC} ${JSURF_JAVA_C_SRC})
+
+if(WIN32)
+  set_target_properties(surf-java PROPERTIES
+    LINK_FLAGS "-Wl,--subsystem,windows,--kill-at"
+    PREFIX "")
+  if(PEXPORTS_PATH)
+    add_custom_command(TARGET surf-java POST_BUILD
+      COMMAND ${PEXPORTS_PATH}/pexports.exe ${CMAKE_BINARY_DIR}/lib/surf-java.dll > ${CMAKE_BINARY_DIR}/lib/surf-java.def)
+  endif(PEXPORTS_PATH)
+endif()
+
 swig_link_libraries(surf-java simgrid)
 
 add_dependencies(simgrid-java surf-java)
 add_dependencies(simgrid-java_pre_jar surf-java)
+
+
