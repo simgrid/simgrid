@@ -88,7 +88,6 @@ public:
                           e_surf_resource_state_t state_initial,
                           tmgr_trace_t state_trace,
                           xbt_dict_t cpu_properties)=0;
-  void setState(e_surf_resource_state_t state);
 
   void updateActionsStateLazy(double now, double delta);
   void updateActionsStateFull(double now, double delta);
