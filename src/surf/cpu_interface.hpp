@@ -54,9 +54,9 @@ XBT_PUBLIC_DATA( surf_callback(void, CpuPtr, e_surf_resource_state_t, e_surf_res
  */
 XBT_PUBLIC_DATA( surf_callback(void, CpuActionPtr, e_surf_action_state_t, e_surf_action_state_t)) cpuActionStateChangedCallbacks;
 
-void parse_cpu_init(sg_platf_host_cbarg_t host);
+XBT_PUBLIC(void) parse_cpu_init(sg_platf_host_cbarg_t host);
 
-void add_traces_cpu();
+XBT_PUBLIC(void) add_traces_cpu();
 
 /*********
  * Model *
@@ -66,7 +66,7 @@ void add_traces_cpu();
  * @brief SURF cpu model interface class
  * @details A model is an object which handle the interactions between its Resources and its Actions
  */
-class CpuModel : public Model {
+XBT_PUBLIC_CLASS CpuModel : public Model {
 public:
   /**
    * @brief CpuModel constructor
@@ -104,7 +104,7 @@ public:
 * @brief SURF cpu resource interface class
 * @details A Cpu represent a cpu associated to a workstation
 */
-class Cpu : public Resource {
+XBT_PUBLIC_CLASS Cpu : public Resource {
 public:
   /**
    * @brief Cpu constructor
@@ -218,7 +218,7 @@ public:
  * @brief SURF Cpu action interface class
  * @details A CpuAction represent the execution of code on a Cpu
  */
-class CpuAction : public Action {
+XBT_PUBLIC_CLASS CpuAction : public Action {
 friend CpuPtr getActionCpu(CpuActionPtr action);
 public:
   /**

@@ -915,7 +915,7 @@ XBT_PUBLIC(surf_model_t) surf_resource_model(const void *host, int level);
 /**************************************/
 
 XBT_PUBLIC_DATA(int) autoload_surf_cpu_model;
-extern void_f_void_t surf_cpu_model_init_preparse;
+XBT_PUBLIC_DATA(void_f_void_t) surf_cpu_model_init_preparse;
 
 /** \ingroup SURF_models
  *  \brief The CPU model object for the physical machine layer
