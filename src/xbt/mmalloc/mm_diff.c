@@ -140,9 +140,15 @@ struct s_mm_diff {
   // Number of blocks in the heaps:
   size_t heapsize1, heapsize2;
   xbt_dynar_t to_ignore1, to_ignore2;
-  heap_area_t **equals_to1, **equals_to2;
-  dw_type_t **types1, **types2;
+  heap_area_t *equals_to1, *equals_to2;
+  dw_type_t *types1, *types2;
+  size_t available;
 };
+
+#define equals_to1_(i,j) equals_to1[ MAX_FRAGMENT_PER_BLOCK*(i) + (j)]
+#define equals_to2_(i,j) equals_to2[ MAX_FRAGMENT_PER_BLOCK*(i) + (j)]
+#define types1_(i,j) types1[ MAX_FRAGMENT_PER_BLOCK*(i) + (j)]
+#define types2_(i,j) types2[ MAX_FRAGMENT_PER_BLOCK*(i) + (j)]
 
 __thread struct s_mm_diff* mm_diff_info = NULL;
 
@@ -259,39 +265,39 @@ static void match_equals(struct s_mm_diff *state, xbt_dynar_t list){
 
     if(current_pair->fragment1 != -1){
 
-      if(state->equals_to1[current_pair->block1][current_pair->fragment1] != NULL){
-        previous_area = state->equals_to1[current_pair->block1][current_pair->fragment1];
-        heap_area_free(state->equals_to2[previous_area->block][previous_area->fragment]);
-        state->equals_to2[previous_area->block][previous_area->fragment] = NULL;
+      if(state->equals_to1_(current_pair->block1,current_pair->fragment1) != NULL){
+        previous_area = state->equals_to1_(current_pair->block1,current_pair->fragment1);
+        heap_area_free(state->equals_to2_(previous_area->block,previous_area->fragment));
+        state->equals_to2_(previous_area->block,previous_area->fragment) = NULL;
         heap_area_free(previous_area);
       }
-      if(state->equals_to2[current_pair->block2][current_pair->fragment2] != NULL){
-        previous_area = state->equals_to2[current_pair->block2][current_pair->fragment2];
-        heap_area_free(state->equals_to1[previous_area->block][previous_area->fragment]);
-        state->equals_to1[previous_area->block][previous_area->fragment] = NULL;
+      if(state->equals_to2_(current_pair->block2,current_pair->fragment2) != NULL){
+        previous_area = state->equals_to2_(current_pair->block2,current_pair->fragment2);
+        heap_area_free(state->equals_to1_(previous_area->block,previous_area->fragment));
+        state->equals_to1_(previous_area->block,previous_area->fragment) = NULL;
         heap_area_free(previous_area);
       }
 
-      state->equals_to1[current_pair->block1][current_pair->fragment1] = new_heap_area(current_pair->block2, current_pair->fragment2);
-      state->equals_to2[current_pair->block2][current_pair->fragment2] = new_heap_area(current_pair->block1, current_pair->fragment1);
+      state->equals_to1_(current_pair->block1,current_pair->fragment1) = new_heap_area(current_pair->block2, current_pair->fragment2);
+      state->equals_to2_(current_pair->block2,current_pair->fragment2) = new_heap_area(current_pair->block1, current_pair->fragment1);
       
     }else{
 
-      if(state->equals_to1[current_pair->block1][0] != NULL){
-        previous_area = state->equals_to1[current_pair->block1][0];
-        heap_area_free(state->equals_to2[previous_area->block][0]);
-        state->equals_to2[previous_area->block][0] = NULL;
+      if(state->equals_to1_(current_pair->block1,0) != NULL){
+        previous_area = state->equals_to1_(current_pair->block1,0);
+        heap_area_free(state->equals_to2_(previous_area->block,0));
+        state->equals_to2_(previous_area->block,0) = NULL;
         heap_area_free(previous_area);
       }
-      if(state->equals_to2[current_pair->block2][0] != NULL){
-        previous_area = state->equals_to2[current_pair->block2][0];
-        heap_area_free(state->equals_to1[previous_area->block][0]);
-        state->equals_to1[previous_area->block][0] = NULL;
+      if(state->equals_to2_(current_pair->block2,0) != NULL){
+        previous_area = state->equals_to2_(current_pair->block2,0);
+        heap_area_free(state->equals_to1_(previous_area->block,0));
+        state->equals_to1_(previous_area->block,0) = NULL;
         heap_area_free(previous_area);
       }
 
-      state->equals_to1[current_pair->block1][0] = new_heap_area(current_pair->block2, current_pair->fragment2);
-      state->equals_to2[current_pair->block2][0] = new_heap_area(current_pair->block1, current_pair->fragment1);
+      state->equals_to1_(current_pair->block1,0) = new_heap_area(current_pair->block2, current_pair->fragment2);
+      state->equals_to2_(current_pair->block2,0) = new_heap_area(current_pair->block1, current_pair->fragment1);
 
     }
 
@@ -307,7 +313,7 @@ static void match_equals(struct s_mm_diff *state, xbt_dynar_t list){
  */
 static int equal_blocks(struct s_mm_diff *state, int b1, int b2){
   
-  if(state->equals_to1[b1][0]->block == b2 && state->equals_to2[b2][0]->block == b1)
+  if(state->equals_to1_(b1,0)->block == b2 && state->equals_to2_(b2,0)->block == b1)
     return 1;
 
   return 0;
@@ -324,10 +330,10 @@ static int equal_blocks(struct s_mm_diff *state, int b1, int b2){
  */
 static int equal_fragments(struct s_mm_diff *state, int b1, int f1, int b2, int f2){
   
-  if(state->equals_to1[b1][f1]->block == b2
-    && state->equals_to1[b1][f1]->fragment == f2
-    && state->equals_to2[b2][f2]->block == b1
-    && state->equals_to2[b2][f2]->fragment == f1)
+  if(state->equals_to1_(b1,f1)->block == b2
+    && state->equals_to1_(b1,f1)->fragment == f2
+    && state->equals_to2_(b2,f2)->block == b1
+    && state->equals_to2_(b2,f2)->fragment == f1)
     return 1;
 
   return 0;
@@ -342,8 +348,6 @@ int init_heap_information(xbt_mheap_t heap1, xbt_mheap_t heap2, xbt_dynar_t i1, 
   if((((struct mdesc *)heap1)->heaplimit != ((struct mdesc *)heap2)->heaplimit)
     || ((((struct mdesc *)heap1)->heapsize != ((struct mdesc *)heap2)->heapsize) ))
     return -1;
-
-  int i, j;
 
   state->heaplimit = ((struct mdesc *)heap1)->heaplimit;
 
@@ -361,27 +365,12 @@ int init_heap_information(xbt_mheap_t heap1, xbt_mheap_t heap2, xbt_dynar_t i1, 
   state->to_ignore1 = i1;
   state-> to_ignore2 = i2;
 
-  state->equals_to1 = malloc(state->heaplimit * sizeof(heap_area_t *));
-  state->types1 = malloc(state->heaplimit * sizeof(type_name *));
-  for(i=0; i<=state->heaplimit; i++){
-    state->equals_to1[i] = malloc(MAX_FRAGMENT_PER_BLOCK * sizeof(heap_area_t));
-    state->types1[i] = malloc(MAX_FRAGMENT_PER_BLOCK * sizeof(type_name));
-    for(j=0; j<MAX_FRAGMENT_PER_BLOCK; j++){
-      state->equals_to1[i][j] = NULL;
-      state->types1[i][j] = NULL;
-    }      
-  }
+  state->equals_to1 = calloc(state->heaplimit * MAX_FRAGMENT_PER_BLOCK, sizeof(heap_area_t *));
+  state->types1 = calloc(state->heaplimit * MAX_FRAGMENT_PER_BLOCK, sizeof(type_name *));
+  state->equals_to2 = calloc(state->heaplimit * MAX_FRAGMENT_PER_BLOCK, sizeof(heap_area_t *));
+  state->types2 = calloc(state->heaplimit * MAX_FRAGMENT_PER_BLOCK, sizeof(type_name *));
 
-  state->equals_to2 = malloc(state->heaplimit * sizeof(heap_area_t *));
-  state->types2 = malloc(state->heaplimit * sizeof(type_name *));
-  for(i=0; i<=state->heaplimit; i++){
-    state->equals_to2[i] = malloc(MAX_FRAGMENT_PER_BLOCK * sizeof(heap_area_t));
-    state->types2[i] = malloc(MAX_FRAGMENT_PER_BLOCK * sizeof(type_name));
-    for(j=0; j<MAX_FRAGMENT_PER_BLOCK; j++){
-      state->equals_to2[i][j] = NULL;
-      state->types2[i][j] = NULL;
-    }
-  }
+  state->available = state->heaplimit;
 
   if(MC_is_active()){
     MC_ignore_global_variable("mm_diff_info");
@@ -395,22 +384,11 @@ void reset_heap_information(){
 
   struct s_mm_diff *state = mm_diff_info;
 
-  size_t i = 0, j;
-
-  for(i=0; i<=state->heaplimit; i++){
-    for(j=0; j<MAX_FRAGMENT_PER_BLOCK;j++){
-      heap_area_free(state->equals_to1[i][j]);
-      state->equals_to1[i][j] = NULL;
-      heap_area_free(state->equals_to2[i][j]);
-      state-> equals_to2[i][j] = NULL;
-      state->types1[i][j] = NULL;
-      state->types2[i][j] = NULL;
-    }
-    free(state->equals_to1[i]);
-    free(state->equals_to2[i]);
-    free(state->types1[i]);
-    free(state->types2[i]);
-  }
+  size_t i;
+  for(i=0; i!=state->heaplimit * MAX_FRAGMENT_PER_BLOCK; ++i)
+    xbt_free(state->equals_to1[i]);
+  for(i=0; i!=state->heaplimit * MAX_FRAGMENT_PER_BLOCK; ++i)
+    xbt_free(state->equals_to2[i]);
 
   free(state->equals_to1);
   free(state->equals_to2);
@@ -461,14 +439,14 @@ int mmalloc_compare_heap(mc_snapshot_t snapshot1, mc_snapshot_t snapshot2, xbt_m
       
       if(is_stack(addr_block1)){
         for(k=0; k < state->heapinfo1[i1].busy_block.size; k++)
-          state->equals_to1[i1+k][0] = new_heap_area(i1, -1);
+          state->equals_to1_(i1+k,0) = new_heap_area(i1, -1);
         for(k=0; k < state->heapinfo2[i1].busy_block.size; k++)
-          state->equals_to2[i1+k][0] = new_heap_area(i1, -1);
+          state->equals_to2_(i1+k,0) = new_heap_area(i1, -1);
         i1 += state->heapinfo1[i1].busy_block.size;
         continue;
       }
 
-      if(state->equals_to1[i1][0] != NULL){
+      if(state->equals_to1_(i1,0) != NULL){
         i1++;
         continue;
       }
@@ -480,7 +458,7 @@ int mmalloc_compare_heap(mc_snapshot_t snapshot1, mc_snapshot_t snapshot2, xbt_m
       /* Try first to associate to same block in the other heap */
       if(state->heapinfo2[i1].type == state->heapinfo1[i1].type){
 
-        if(state->equals_to2[i1][0] == NULL){
+        if(state->equals_to2_(i1,0) == NULL){
 
           addr_block2 = ((void*) (((ADDR2UINT(i1)) - 1) * BLOCKSIZE + (char*)((xbt_mheap_t)state->s_heap)->heapbase));
         
@@ -488,9 +466,9 @@ int mmalloc_compare_heap(mc_snapshot_t snapshot1, mc_snapshot_t snapshot2, xbt_m
         
           if(res_compare != 1){
             for(k=1; k < state->heapinfo2[i1].busy_block.size; k++)
-              state->equals_to2[i1+k][0] = new_heap_area(i1, -1);
+              state->equals_to2_(i1+k,0) = new_heap_area(i1, -1);
             for(k=1; k < state->heapinfo1[i1].busy_block.size; k++)
-              state->equals_to1[i1+k][0] = new_heap_area(i1, -1);
+              state->equals_to1_(i1+k,0) = new_heap_area(i1, -1);
             equal = 1;
             i1 += state->heapinfo1[i1].busy_block.size;
           }
@@ -515,7 +493,7 @@ int mmalloc_compare_heap(mc_snapshot_t snapshot1, mc_snapshot_t snapshot2, xbt_m
           continue;
         }
     
-        if(state->equals_to2[i2][0] != NULL){
+        if(state->equals_to2_(i2,0) != NULL){
           i2++;
           continue;
         }
@@ -524,9 +502,9 @@ int mmalloc_compare_heap(mc_snapshot_t snapshot1, mc_snapshot_t snapshot2, xbt_m
         
         if(res_compare != 1 ){
           for(k=1; k < state->heapinfo2[i2].busy_block.size; k++)
-            state->equals_to2[i2+k][0] = new_heap_area(i1, -1);
+            state->equals_to2_(i2+k,0) = new_heap_area(i1, -1);
           for(k=1; k < state->heapinfo1[i1].busy_block.size; k++)
-            state->equals_to1[i1+k][0] = new_heap_area(i2, -1);
+            state->equals_to1_(i1+k,0) = new_heap_area(i2, -1);
           equal = 1;
           i1 += state->heapinfo1[i1].busy_block.size;
         }
@@ -551,7 +529,7 @@ int mmalloc_compare_heap(mc_snapshot_t snapshot1, mc_snapshot_t snapshot2, xbt_m
         if(state->heapinfo1[i1].busy_frag.frag_size[j1] == -1) /* Free fragment */
           continue;
 
-        if(state->equals_to1[i1][j1] != NULL)
+        if(state->equals_to1_(i1,j1) != NULL)
           continue;
 
         addr_frag1 = (void*) ((char *)addr_block1 + (j1 << state->heapinfo1[i1].type));
@@ -562,7 +540,7 @@ int mmalloc_compare_heap(mc_snapshot_t snapshot1, mc_snapshot_t snapshot2, xbt_m
         /* Try first to associate to same fragment in the other heap */
         if(state->heapinfo2[i1].type == state->heapinfo1[i1].type){
 
-          if(state->equals_to2[i1][j1] == NULL){
+          if(state->equals_to2_(i1,j1) == NULL){
 
             addr_block2 = ((void*) (((ADDR2UINT(i1)) - 1) * BLOCKSIZE + (char*)((xbt_mheap_t)state->s_heap)->heapbase));
             addr_frag2 = (void*) ((char *)addr_block2 + (j1 << ((xbt_mheap_t)state->s_heap)->heapinfo[i1].type));
@@ -590,7 +568,7 @@ int mmalloc_compare_heap(mc_snapshot_t snapshot1, mc_snapshot_t snapshot2, xbt_m
             if(i2 == i1 && j2 == j1)
               continue;
            
-            if(state->equals_to2[i2][j2] != NULL)
+            if(state->equals_to2_(i2,j2) != NULL)
               continue;
                           
             addr_block2 = ((void*) (((ADDR2UINT(i2)) - 1) * BLOCKSIZE + (char*)((xbt_mheap_t)state->s_heap)->heapbase));
@@ -636,7 +614,7 @@ int mmalloc_compare_heap(mc_snapshot_t snapshot1, mc_snapshot_t snapshot2, xbt_m
     if(state->heapinfo1[i].type == 0){
       if(i1 == state->heaplimit){
         if(state->heapinfo1[i].busy_block.busy_size > 0){
-          if(state->equals_to1[i][0] == NULL){
+          if(state->equals_to1_(i,0) == NULL){
             if(XBT_LOG_ISENABLED(mm_diff, xbt_log_priority_debug)){
               addr_block1 = ((void*) (((ADDR2UINT(i)) - 1) * BLOCKSIZE + (char*)state->heapbase1));
               XBT_DEBUG("Block %zu (%p) not found (size used = %zu)", i, addr_block1, state->heapinfo1[i].busy_block.busy_size);
@@ -653,7 +631,7 @@ int mmalloc_compare_heap(mc_snapshot_t snapshot1, mc_snapshot_t snapshot2, xbt_m
       for(j=0; j < (size_t) (BLOCKSIZE >> state->heapinfo1[i].type); j++){
         if(i1== state->heaplimit){
           if(state->heapinfo1[i].busy_frag.frag_size[j] > 0){
-            if(state->equals_to1[i][j] == NULL){
+            if(state->equals_to1_(i,j) == NULL){
               if(XBT_LOG_ISENABLED(mm_diff, xbt_log_priority_debug)){
                 addr_frag1 = (void*) ((char *)addr_block1 + (j << state->heapinfo1[i].type));
                 real_addr_frag1 = (void*) ((char *)real_addr_block1 + (j << ((struct mdesc *)state->s_heap)->heapinfo[i].type));
@@ -678,7 +656,7 @@ int mmalloc_compare_heap(mc_snapshot_t snapshot1, mc_snapshot_t snapshot2, xbt_m
     if(state->heapinfo2[i].type == 0){
       if(i1 == state->heaplimit){
         if(state->heapinfo2[i].busy_block.busy_size > 0){
-          if(state->equals_to2[i][0] == NULL){
+          if(state->equals_to2_(i,0) == NULL){
             if(XBT_LOG_ISENABLED(mm_diff, xbt_log_priority_debug)){
               addr_block2 = ((void*) (((ADDR2UINT(i)) - 1) * BLOCKSIZE + (char*)state->heapbase2));
               XBT_DEBUG("Block %zu (%p) not found (size used = %zu)", i, addr_block2, state->heapinfo2[i].busy_block.busy_size);
@@ -695,7 +673,7 @@ int mmalloc_compare_heap(mc_snapshot_t snapshot1, mc_snapshot_t snapshot2, xbt_m
       for(j=0; j < (size_t) (BLOCKSIZE >> state->heapinfo2[i].type); j++){
         if(i1 == state->heaplimit){
           if(state->heapinfo2[i].busy_frag.frag_size[j] > 0){
-            if(state->equals_to2[i][j] == NULL){
+            if(state->equals_to2_(i,j) == NULL){
               if(XBT_LOG_ISENABLED(mm_diff, xbt_log_priority_debug)){
                 addr_frag2 = (void*) ((char *)addr_block2 + (j << state->heapinfo2[i].type));
                 real_addr_frag2 = (void*) ((char *)real_addr_block2 + (j << ((struct mdesc *)state->s_heap)->heapinfo[i].type));
@@ -1108,7 +1086,7 @@ int compare_heap_area(void *area1, void* area2, mc_snapshot_t snapshot1, mc_snap
     
     // TODO, lookup variable type from block type as done for fragmented blocks
 
-    if(state->equals_to1[block1][0] != NULL && state->equals_to2[block2][0] != NULL){
+    if(state->equals_to1_(block1,0) != NULL && state->equals_to2_(block2,0) != NULL){
       if(equal_blocks(state, block1, block2)){
         if(match_pairs){
           match_equals(state, previous);
@@ -1157,10 +1135,10 @@ int compare_heap_area(void *area1, void* area2, mc_snapshot_t snapshot1, mc_snap
     // Remember (basic) type inference.
     // The current data structure only allows us to do this for the whole block.
     if (type != NULL && area1==real_addr_block1) {
-      state->types1[block1][0] = type;
+      state->types1_(block1,0) = type;
     }
     if (type != NULL && area2==real_addr_block2) {
-      state->types2[block2][0] = type;
+      state->types2_(block2,0) = type;
     }
 
     if(size <= 0){
@@ -1213,7 +1191,7 @@ int compare_heap_area(void *area1, void* area2, mc_snapshot_t snapshot1, mc_snap
     }
 
     // Check if the blocks are already matched together:
-    if(state->equals_to1[block1][frag1] != NULL && state->equals_to2[block2][frag2] != NULL){
+    if(state->equals_to1_(block1,frag1) != NULL && state->equals_to2_(block2,frag2) != NULL){
       if(equal_fragments(state, block1, frag1, block2, frag2)){
         if(match_pairs){
           match_equals(state, previous);
@@ -1245,10 +1223,10 @@ int compare_heap_area(void *area1, void* area2, mc_snapshot_t snapshot1, mc_snap
     // Remember (basic) type inference.
     // The current data structure only allows us to do this for the whole block.
     if(type != NULL && area1==real_addr_frag1){
-      state->types1[block1][frag1] = type;
+      state->types1_(block1,frag1) = type;
     }
     if(type != NULL && area2==real_addr_frag2) {
-      state->types2[block2][frag2] = type;
+      state->types2_(block2,frag2) = type;
     }
 
     // The type of the variable is already known:
@@ -1258,20 +1236,20 @@ int compare_heap_area(void *area1, void* area2, mc_snapshot_t snapshot1, mc_snap
     }
 
     // Type inference from the block type.
-    else if(state->types1[block1][frag1] != NULL || state->types2[block2][frag2] != NULL) {
+    else if(state->types1_(block1,frag1) != NULL || state->types2_(block2,frag2) != NULL) {
 
       offset1 = (char *)area1 - (char *)real_addr_frag1;
       offset2 = (char *)area2 - (char *)real_addr_frag2;
 
-      if(state->types1[block1][frag1] != NULL && state->types2[block2][frag2] != NULL){
-        new_type1 = get_offset_type(real_addr_frag1, state->types1[block1][frag1], offset1, size, snapshot1);
-        new_type2 = get_offset_type(real_addr_frag2, state->types2[block2][frag2], offset1, size, snapshot2);
-      }else if(state->types1[block1][frag1] != NULL){
-        new_type1 = get_offset_type(real_addr_frag1, state->types1[block1][frag1], offset1, size, snapshot1);
-        new_type2 = get_offset_type(real_addr_frag2, state->types1[block1][frag1], offset2, size, snapshot2);
-      }else if(state->types2[block2][frag2] != NULL){
-        new_type1 = get_offset_type(real_addr_frag1, state->types2[block2][frag2], offset1, size, snapshot1);
-        new_type2 = get_offset_type(real_addr_frag2, state->types2[block2][frag2], offset2, size, snapshot2);
+      if(state->types1_(block1,frag1) != NULL && state->types2_(block2,frag2) != NULL){
+        new_type1 = get_offset_type(real_addr_frag1, state->types1_(block1,frag1), offset1, size, snapshot1);
+        new_type2 = get_offset_type(real_addr_frag2, state->types2_(block2,frag2), offset1, size, snapshot2);
+      }else if(state->types1_(block1,frag1) != NULL){
+        new_type1 = get_offset_type(real_addr_frag1, state->types1_(block1,frag1), offset1, size, snapshot1);
+        new_type2 = get_offset_type(real_addr_frag2, state->types1_(block1,frag1), offset2, size, snapshot2);
+      }else if(state->types2_(block2,frag2) != NULL){
+        new_type1 = get_offset_type(real_addr_frag1, state->types2_(block2,frag2), offset1, size, snapshot1);
+        new_type2 = get_offset_type(real_addr_frag2, state->types2_(block2,frag2), offset2, size, snapshot2);
       }else{
         if(match_pairs){
           match_equals(state, previous);
