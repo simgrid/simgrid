@@ -1580,7 +1580,11 @@ INCLUDE_FILE_PATTERNS  =
 
 PREDEFINED             = DOXYGEN \
                          DOXYGEN_SKIP_IT \
-                         XBT_PUBLIC= \
+                         XBT_PUBLIC(type)="extern type" \
+                         XBT_EXPORT_NO_IMPORT(type)=type \
+                         XBT_IMPORT_NO_EXPORT(type)=type \
+                         XBT_PUBLIC_DATA(type)="extern type" \
+                         XBT_PUBLIC_CLASS=class \
                          XBT_INLINE= \
                          HAVE_TRACING \
                          MSG_USE_DEPRECATED

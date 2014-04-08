@@ -78,9 +78,7 @@ public:
   /**
    * @brief Create a Cpu
    *
-   * @param name The name of the Cpu
-   *
-   * @return The created Cpu
+   * @param host [TODO]
    */
   void parseInit(sg_platf_host_cbarg_t host);
 
