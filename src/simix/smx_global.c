@@ -191,9 +191,9 @@ void SIMIX_global_init(int *argc, char **argv)
  *
  * This functions remove the memory used by SIMIX
  */
-int cleaned = 0;
 void SIMIX_clean(void)
 {
+  static int cleaned = 0;
 #ifdef TIME_BENCH_PER_SR
   smx_ctx_raw_new_sr();
 #endif
