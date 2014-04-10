@@ -62,7 +62,7 @@ int main(int argc, char **argv){
           printf("CS already used.\n");
           xbt_dynar_push(requests, &recv_buff);
         }else{
-          if(recv_buff != 1){
+          if(recv_buff != size - 1){
             printf("CS idle. Grant immediatly.\n");
             MPI_Send(&rank, 1, MPI_INT, recv_buff, GRANT_TAG, MPI_COMM_WORLD);
             CS_used = 1;
@@ -72,7 +72,7 @@ int main(int argc, char **argv){
         if(!xbt_dynar_is_empty(requests)){
           printf("CS release. Grant to queued requests (queue size: %lu)", xbt_dynar_length(requests));
           xbt_dynar_shift(requests, &recv_buff);
-          if(recv_buff != 1){
+          if(recv_buff != size - 1){
             MPI_Send(&rank, 1, MPI_INT, recv_buff, GRANT_TAG, MPI_COMM_WORLD);
             CS_used = 1;
           }else{
@@ -89,18 +89,18 @@ int main(int argc, char **argv){
     while(1){
       printf("%d asks the request.\n", rank);
       MPI_Send(&rank, 1, MPI_INT, 0, REQUEST_TAG, MPI_COMM_WORLD);
-      if(rank == 1){
+      if(rank == size - 1){
         r = 1;
         cs = 0;
       }
       MPI_Recv(&recv_buff, 1, MPI_INT, 0, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
-      if(status.MPI_TAG == GRANT_TAG && rank == 1){
+      if(status.MPI_TAG == GRANT_TAG && rank == size - 1){
         cs = 1;
         r = 0;
       }
       printf("%d got the answer. Release it.\n", rank);
       MPI_Send(&rank, 1, MPI_INT, 0, RELEASE_TAG, MPI_COMM_WORLD);
-      if(rank == 1){
+      if(rank == size - 1){
         r = 0;
         cs = 0;
       }
