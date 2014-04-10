@@ -110,6 +110,7 @@ struct mstats
 };
 
 typedef struct s_heap_area{
+  int valid;
   int block;
   int fragment;
 }s_heap_area_t, *heap_area_t;
