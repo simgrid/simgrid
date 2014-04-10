@@ -315,6 +315,10 @@ static int equal_fragments(struct s_mm_diff *state, int b1, int f1, int b2, int 
 int init_heap_information(xbt_mheap_t heap1, xbt_mheap_t heap2, xbt_dynar_t i1, xbt_dynar_t i2){
   if(mm_diff_info==NULL) {
     mm_diff_info = xbt_new0(struct s_mm_diff, 1);
+    mm_diff_info->equals_to1 = NULL;
+    mm_diff_info->equals_to2 = NULL;
+    mm_diff_info->types1 = NULL;
+    mm_diff_info->types2 = NULL;
   }
   struct s_mm_diff *state = mm_diff_info;
 
@@ -338,12 +342,18 @@ int init_heap_information(xbt_mheap_t heap1, xbt_mheap_t heap2, xbt_dynar_t i1, 
   state->to_ignore1 = i1;
   state-> to_ignore2 = i2;
 
-  state->equals_to1 = calloc(state->heaplimit * MAX_FRAGMENT_PER_BLOCK, sizeof(s_heap_area_t));
-  state->types1 = calloc(state->heaplimit * MAX_FRAGMENT_PER_BLOCK, sizeof(type_name *));
-  state->equals_to2 = calloc(state->heaplimit * MAX_FRAGMENT_PER_BLOCK, sizeof(s_heap_area_t));
-  state->types2 = calloc(state->heaplimit * MAX_FRAGMENT_PER_BLOCK, sizeof(type_name *));
+  if(state->heaplimit > state->available) {
+    state->equals_to1 = realloc(state->equals_to1, state->heaplimit * MAX_FRAGMENT_PER_BLOCK * sizeof(s_heap_area_t));
+    state->types1 = realloc(state->types1, state->heaplimit * MAX_FRAGMENT_PER_BLOCK * sizeof(type_name *));
+    state->equals_to2 = realloc(state->equals_to2, state->heaplimit * MAX_FRAGMENT_PER_BLOCK * sizeof(s_heap_area_t));
+    state->types2 = realloc(state->types2, state->heaplimit * MAX_FRAGMENT_PER_BLOCK * sizeof(type_name *));
+    state->available = state->heaplimit;
+  }
 
-  state->available = state->heaplimit;
+  memset(state->equals_to1, 0, state->heaplimit * MAX_FRAGMENT_PER_BLOCK * sizeof(s_heap_area_t));
+  memset(state->equals_to2, 0, state->heaplimit * MAX_FRAGMENT_PER_BLOCK * sizeof(s_heap_area_t));
+  memset(state->types1, 0, state->heaplimit * MAX_FRAGMENT_PER_BLOCK * sizeof(type_name *));
+  memset(state->types2, 0, state->heaplimit * MAX_FRAGMENT_PER_BLOCK * sizeof(type_name *));
 
   if(MC_is_active()){
     MC_ignore_global_variable("mm_diff_info");
@@ -354,20 +364,6 @@ int init_heap_information(xbt_mheap_t heap1, xbt_mheap_t heap2, xbt_dynar_t i1, 
 }
 
 void reset_heap_information(){
-
-  struct s_mm_diff *state = mm_diff_info;
-
-  free(state->equals_to1);
-  free(state->equals_to2);
-  free(state->types1);
-  free(state->types2);
-
-  state->s_heap = NULL, state->heapbase1 = NULL, state->heapbase2 = NULL;
-  state->heapinfo1 = NULL, state->heapinfo2 = NULL;
-  state->heaplimit = 0, state->heapsize1 = 0, state->heapsize2 = 0;
-  state->to_ignore1 = NULL, state->to_ignore2 = NULL;
-  state->equals_to1 = NULL, state->equals_to2 = NULL;
-  state->types1 = NULL, state->types2 = NULL;
 
 }
 
