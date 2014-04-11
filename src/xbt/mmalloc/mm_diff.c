@@ -1157,11 +1157,9 @@ int compare_heap_area(void *area1, void* area2, mc_snapshot_t snapshot1, mc_snap
     // Remember (basic) type inference.
     // The current data structure only allows us to do this for the whole block.
     if (type != NULL && area1==real_addr_block1) {
-      xbt_free(state->types1[block1][0]);
       state->types1[block1][0] = type;
     }
     if (type != NULL && area2==real_addr_block2) {
-      xbt_free(state->types2[block2][0]);
       state->types2[block2][0] = type;
     }
 
