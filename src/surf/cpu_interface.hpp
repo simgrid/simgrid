@@ -188,7 +188,7 @@ public:
    *
    * @return The current Cpu power peak
    */
-  virtual double getCurrentPowerPeak()=0;
+  virtual double getCurrentPowerPeak();
 
 
   virtual double getPowerPeakAt(int pstate_index)=0;

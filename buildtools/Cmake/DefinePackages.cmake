@@ -510,6 +510,8 @@ set(JSURF_JAVA_GENERATED_SRC
   ${CMAKE_BINARY_DIR}/src/bindings/java/org/simgrid/surf/TmgrTraceEvent.java
   ${CMAKE_BINARY_DIR}/src/bindings/java/org/simgrid/surf/TmgrTrace.java
 
+  ${CMAKE_BINARY_DIR}/src/bindings/java/org/simgrid/surf/ActionList.java
+
   #enums
   ${CMAKE_BINARY_DIR}/src/bindings/java/org/simgrid/surf/ActionState.java
   ${CMAKE_BINARY_DIR}/src/bindings/java/org/simgrid/surf/ResourceState.java

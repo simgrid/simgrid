@@ -25,7 +25,7 @@ public class Sender extends Process {
 
        String receiverName = args[0];
        double oldTime, curTime;
-       double computeDuration = 10000;
+       double computeDuration = 10E8;
        Task task;
 
        oldTime = Msg.getClock();
@@ -33,18 +33,6 @@ public class Sender extends Process {
 	     task.send(receiverName);
        curTime = Msg.getClock();
        Msg.info("Send duration: " + (curTime - oldTime));
-
-       oldTime = curTime;
-       task = new Task("no name",computeDuration,commSizeLat);
-       task.send(receiverName);
-       curTime = Msg.getClock();
-       Msg.info("Send duration with update bandwidth: " + (curTime - oldTime));
-
-       oldTime = curTime;
-       task = new Task("no name",computeDuration,commSizeLat);
-       task.send(receiverName);
-       curTime = Msg.getClock();
-       Msg.info("Send normal duration with limited bandwidth: " + (curTime - oldTime));
 
        Msg.info("goodbye!");
     }

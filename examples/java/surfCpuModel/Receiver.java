@@ -24,8 +24,7 @@ public class Receiver extends Process {
 
       Task task;
       task = Task.receive(getHost().getName());
-      task = Task.receive(getHost().getName());
-      task = Task.receive(getHost().getName());
+      task.execute();
 
       Msg.info("goodbye!");
     }
