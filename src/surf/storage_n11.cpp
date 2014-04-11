@@ -458,12 +458,12 @@ StorageActionPtr StorageN11::close(surf_file_t fd)
 
 StorageActionPtr StorageN11::read(surf_file_t fd, sg_size_t size)
 {
-  if(size > fd->size){
-    size = fd->size;
+  if(fd->current_position + size > fd->size){
+    size = fd->size - fd->current_position;
     fd->current_position = fd->size;
   }
   else
-	fd->current_position += size;
+    fd->current_position += size;
 
   StorageActionPtr action = new StorageN11Action(getModel(), size, getState() != SURF_RESOURCE_ON, this, READ);
   return action;
