@@ -167,16 +167,17 @@ sg_size_t Storage::getSize(){
  * Action *
  **********/
 StorageAction::StorageAction(ModelPtr model, double cost, bool failed,
-		                     StoragePtr storage, e_surf_action_storage_type_t type)
+                             StoragePtr storage, e_surf_action_storage_type_t type)
 : Action(model, cost, failed)
-, m_type(type), p_storage(storage), p_file(NULL), p_lsDict(NULL)
-{
+, m_type(type), p_storage(storage), p_file(NULL), p_lsDict(NULL){
+  progress = 0;
 };
 
 StorageAction::StorageAction(ModelPtr model, double cost, bool failed, lmm_variable_t var,
-		                     StoragePtr storage, e_surf_action_storage_type_t type)
+                             StoragePtr storage, e_surf_action_storage_type_t type)
   : Action(model, cost, failed, var)
   , m_type(type), p_storage(storage), p_file(NULL), p_lsDict(NULL) {
+  progress = 0;
 }
 
 void StorageAction::setState(e_surf_action_state_t state){

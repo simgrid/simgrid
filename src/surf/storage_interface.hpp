@@ -293,6 +293,7 @@ public:
   StoragePtr p_storage;
   surf_file_t p_file;
   xbt_dict_t p_lsDict;
+  double progress;
 };
 
 typedef struct s_storage_type {
