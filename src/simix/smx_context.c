@@ -124,6 +124,10 @@ void *SIMIX_context_stack_new(void)
 {
   void *stack;
 
+  /* FIXME: current code for stack protection assumes that stacks are growing
+   * downward (PTH_STACKGROWTH == -1).  Protected pages need to be but after the
+   * stack when PTH_STACKGROWTH == 1. */
+
   if (smx_context_guard_size > 0 && !MC_is_active()) {
     size_t size = smx_context_stack_size + smx_context_guard_size;
 #ifdef HAVE_MC
