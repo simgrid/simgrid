@@ -752,6 +752,23 @@ XBT_PUBLIC(xbt_dict_t) surf_storage_get_content(surf_resource_t resource);
 XBT_PUBLIC(sg_size_t) surf_storage_get_size(surf_resource_t resource);
 
 /**
+ * @brief Get the available size in bytes of a storage
+ *
+ * @param resource The surf storage
+ * @return The available size in bytes of the storage
+ */
+XBT_PUBLIC(sg_size_t) surf_storage_get_free_size(surf_resource_t resource);
+
+/**
+ * @brief Get the size in bytes of a storage
+ *
+ * @param resource The surf storage
+ * @return The used size in bytes of the storage
+ */
+XBT_PUBLIC(sg_size_t) surf_storage_get_used_size(surf_resource_t resource);
+
+
+/**
  * @brief Get the data associated to the action
  *
  * @param action The surf action

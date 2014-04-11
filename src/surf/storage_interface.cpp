@@ -163,6 +163,14 @@ sg_size_t Storage::getSize(){
   return m_size;
 }
 
+sg_size_t Storage::getFreeSize(){
+  return m_size - m_usedSize;
+}
+
+sg_size_t Storage::getUsedSize(){
+  return m_usedSize;
+}
+
 /**********
  * Action *
  **********/

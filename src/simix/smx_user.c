@@ -1405,21 +1405,21 @@ int simcall_file_move(smx_file_t fd, const char* fullpath)
 /**
  * \ingroup simix_storage_management
  * \brief Returns the free space size on a given storage element.
- * \param storage name
+ * \param storage a storage
  * \return Return the free space size on a given storage element (as sg_size_t)
  */
-sg_size_t simcall_storage_get_free_size (const char* name){
-  return simcall_BODY_storage_get_free_size(name);
+sg_size_t simcall_storage_get_free_size (smx_storage_t storage){
+  return simcall_BODY_storage_get_free_size(storage);
 }
 
 /**
  * \ingroup simix_storage_management
  * \brief Returns the used space size on a given storage element.
- * \param storage name
+ * \param storage a storage
  * \return Return the used space size on a given storage element (as sg_size_t)
  */
-sg_size_t simcall_storage_get_used_size (const char* name){
-  return simcall_BODY_storage_get_used_size(name);
+sg_size_t simcall_storage_get_used_size (smx_storage_t storage){
+  return simcall_BODY_storage_get_used_size(storage);
 }
 
 /**

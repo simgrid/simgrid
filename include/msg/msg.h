@@ -101,8 +101,8 @@ XBT_PUBLIC(msg_error_t) MSG_file_rmove(msg_file_t fd, msg_host_t host, const cha
 /************************** Storage handling ***********************************/
 XBT_PUBLIC(msg_host_t) MSG_get_storage_by_name(const char *name);
 XBT_PUBLIC(const char *) MSG_storage_get_name(msg_storage_t storage);
-XBT_PUBLIC(sg_size_t) MSG_storage_get_free_size(const char* name);
-XBT_PUBLIC(sg_size_t) MSG_storage_get_used_size(const char* name);
+XBT_PUBLIC(sg_size_t) MSG_storage_get_free_size(msg_storage_t storage);
+XBT_PUBLIC(sg_size_t) MSG_storage_get_used_size(msg_storage_t storage);
 XBT_PUBLIC(msg_storage_t) MSG_storage_get_by_name(const char *name);
 XBT_PUBLIC(xbt_dict_t) MSG_storage_get_properties(msg_storage_t storage);
 XBT_PUBLIC(void) MSG_storage_set_property_value(msg_storage_t storage, const char *name, char *value,void_f_pvoid_t free_ctn);

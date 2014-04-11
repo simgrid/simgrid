@@ -233,6 +233,21 @@ public:
    */
   virtual sg_size_t getSize();
 
+  /**
+   * @brief Get the available size in bytes of the current Storage
+   *
+   * @return The available size in bytes of the current Storage
+   */
+  virtual sg_size_t getFreeSize();
+
+  /**
+   * @brief Get the used size in bytes of the current Storage
+   *
+   * @return The used size in bytes of the current Storage
+   */
+  virtual sg_size_t getUsedSize();
+
+
   xbt_dict_t parseContent(char *filename);
 
   xbt_dynar_t p_writeActions;

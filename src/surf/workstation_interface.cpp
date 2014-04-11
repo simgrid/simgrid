@@ -362,18 +362,6 @@ int Workstation::fileMove(surf_file_t fd, const char* fullpath){
   }
 }
 
-sg_size_t Workstation::getFreeSize(const char* name)
-{
-  StoragePtr st = findStorageOnMountList(name);
-  return st->m_size - st->m_usedSize;
-}
-
-sg_size_t Workstation::getUsedSize(const char* name)
-{
-  StoragePtr st = findStorageOnMountList(name);
-  return st->m_usedSize;
-}
-
 xbt_dynar_t Workstation::getVms()
 {
   xbt_dynar_t dyn = xbt_dynar_new(sizeof(smx_host_t), NULL);

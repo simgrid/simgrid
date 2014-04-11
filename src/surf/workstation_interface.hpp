@@ -330,23 +330,7 @@ public:
   virtual sg_size_t fileTell(surf_file_t fd);
 
   /**
-   * @brief Get the available space of the storage at the mount point
-   *
-   * @param name The mount point
-   * @return The amount of availble space in bytes
-   */
-  virtual sg_size_t getFreeSize(const char* name);
-
-  /**
-   * @brief Get the used space of the storage at the mount point
-   *
-   * @param name The mount point
-   * @return The amount of used space in bytes
-   */
-  virtual sg_size_t getUsedSize(const char* name);
-
-  /**
-   * @brief Set the position indictator assiociated with the file descriptor to a new position
+   * @brief Set the position indicator associated with the file descriptor to a new position
    * @details [long description]
    *
    * @param fd The file descriptor
