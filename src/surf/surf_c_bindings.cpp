@@ -557,7 +557,3 @@ double surf_network_action_get_latency_limited(surf_action_t action) {
 surf_file_t surf_storage_action_get_file(surf_action_t action){
   return static_cast<StorageActionPtr>(action)->p_file;
 }
-
-xbt_dict_t surf_storage_action_get_ls_dict(surf_action_t action){
-  return static_cast<StorageActionPtr>(action)->p_lsDict;
-}

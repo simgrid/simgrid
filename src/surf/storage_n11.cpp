@@ -378,51 +378,6 @@ StorageN11::StorageN11(StorageModelPtr model, const char* name, xbt_dict_t prope
   XBT_DEBUG("Create resource with Bconnection '%f' Bread '%f' Bwrite '%f' and Size '%llu'", bconnection, bread, bwrite, size);
 }
 
-StorageActionPtr StorageN11::ls(const char* path)
-{
-  StorageActionPtr action = new StorageN11Action(getModel(), 0, getState() != SURF_RESOURCE_ON, this, LS);
-
-  action->p_lsDict = NULL;
-  xbt_dict_t ls_dict = xbt_dict_new_homogeneous(xbt_free);
-
-  char* key;
-  sg_size_t size = 0;
-  xbt_dict_cursor_t cursor = NULL;
-
-  xbt_dynar_t dyn = NULL;
-  char* file = NULL;
-
-  // for each file in the storage content
-  xbt_dict_foreach(p_content,cursor,key,size){
-    // Search if file start with the prefix 'path'
-    if(xbt_str_start_with(key,path)){
-      file = &key[strlen(path)];
-
-      // Split file with '/'
-      dyn = xbt_str_split(file,"/");
-      file = xbt_dynar_get_as(dyn,0,char*);
-
-      // file
-      if(xbt_dynar_length(dyn) == 1){
-        sg_size_t *psize = xbt_new(sg_size_t, 1);
-        *psize=size;
-        xbt_dict_set(ls_dict, file, psize, NULL);
-      }
-      // Directory
-      else
-      {
-        // if directory does not exist yet in the dictionary
-        if(!xbt_dict_get_or_null(ls_dict,file))
-          xbt_dict_set(ls_dict,file,NULL,NULL);
-      }
-      xbt_dynar_free(&dyn);
-    }
-  }
-
-  action->p_lsDict = ls_dict;
-  return action;
-}
-
 StorageActionPtr StorageN11::open(const char* mount, const char* path)
 {
   XBT_DEBUG("\tOpen file '%s'",path);
@@ -519,7 +474,6 @@ StorageN11Action::StorageN11Action(ModelPtr model, double cost, bool failed, Sto
   case OPEN:
   case CLOSE:
   case STAT:
-  case LS:
     break;
   case READ:
     lmm_expand(model->getMaxminSystem(), storage->p_constraintRead,

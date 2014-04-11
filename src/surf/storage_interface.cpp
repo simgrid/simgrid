@@ -146,7 +146,6 @@ void Storage::setState(e_surf_resource_state_t state)
 xbt_dict_t Storage::getContent()
 {
   /* For the moment this action has no cost, but in the future we could take in account access latency of the disk */
-  /*surf_action_t action = storage_action_execute(storage,0, LS);*/
 
   xbt_dict_t content_dict = xbt_dict_new_homogeneous(NULL);
   xbt_dict_cursor_t cursor = NULL;
@@ -177,14 +176,14 @@ sg_size_t Storage::getUsedSize(){
 StorageAction::StorageAction(ModelPtr model, double cost, bool failed,
                              StoragePtr storage, e_surf_action_storage_type_t type)
 : Action(model, cost, failed)
-, m_type(type), p_storage(storage), p_file(NULL), p_lsDict(NULL){
+, m_type(type), p_storage(storage), p_file(NULL){
   progress = 0;
 };
 
 StorageAction::StorageAction(ModelPtr model, double cost, bool failed, lmm_variable_t var,
                              StoragePtr storage, e_surf_action_storage_type_t type)
   : Action(model, cost, failed, var)
-  , m_type(type), p_storage(storage), p_file(NULL), p_lsDict(NULL) {
+  , m_type(type), p_storage(storage), p_file(NULL){
   progress = 0;
 }
 
