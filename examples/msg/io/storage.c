@@ -33,7 +33,7 @@ static int host(int argc, char *argv[]){
   xbt_dict_cursor_t cursor = NULL;
   char* mount_name;
   char* storage_name;
-  msg_storage_t storage;
+  msg_storage_t storage = NULL;
 
   // Retrieve all mount points of current host
   xbt_dict_t storage_list = MSG_host_get_mounted_storage_list(MSG_host_self());
