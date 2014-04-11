@@ -22,6 +22,9 @@
 #include "simgrid/sg_config.h"
 
 #include <stdio.h>
+#ifdef _XBT_WIN32
+#include <signal.h>
+#endif
 
 XBT_LOG_NEW_CATEGORY(xbt, "All XBT categories (simgrid toolbox)");
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(module, xbt, "module handling");
@@ -165,4 +168,22 @@ XBT_PUBLIC(void) xbt_free_f(void *p)
 XBT_PUBLIC(void) xbt_free_ref(void *d)
 {
   free(*(void **) d);
+}
+
+/** @brief Kill the program in silence */
+void xbt_abort(void)
+{
+#ifdef COVERAGE
+  /* Call __gcov_flush on abort when compiling with coverage options. */
+  extern void __gcov_flush(void);
+  __gcov_flush();
+#endif
+#ifdef _XBT_WIN32
+  /* It was said *in silence*.  We don't want to see the error message printed
+   * by the Microsoft's implementation of abort(). */
+  raise(SIGABRT);
+  signal(SIGABRT, SIG_DFL);
+  raise(SIGABRT);
+#endif
+  abort();
 }
