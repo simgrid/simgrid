@@ -262,26 +262,29 @@ int SIMIX_file_move(smx_process_t process, smx_file_t file, const char* fullpath
   return  surf_workstation_file_move(host, file->surf_file, fullpath);
 }
 
-sg_size_t SIMIX_pre_storage_get_free_size(smx_simcall_t simcall, const char* name)
-{
-  return SIMIX_storage_get_free_size(simcall->issuer, name);
+sg_size_t SIMIX_storage_get_size(smx_storage_t storage){
+  xbt_assert((storage != NULL), "Invalid parameters (simix storage is NULL)");
+  return surf_storage_get_size(storage);
 }
 
-sg_size_t SIMIX_storage_get_free_size(smx_process_t process, const char* name)
+sg_size_t SIMIX_pre_storage_get_free_size(smx_simcall_t simcall, smx_storage_t storage)
 {
-  smx_host_t host = process->smx_host;
-  return  surf_workstation_get_free_size(host, name);
+  return SIMIX_storage_get_free_size(simcall->issuer, storage);
 }
 
-sg_size_t SIMIX_pre_storage_get_used_size(smx_simcall_t simcall, const char* name)
+sg_size_t SIMIX_storage_get_free_size(smx_process_t process, smx_storage_t storage)
 {
-  return SIMIX_storage_get_used_size(simcall->issuer, name);
+  return  surf_storage_get_free_size(storage);
 }
 
-sg_size_t SIMIX_storage_get_used_size(smx_process_t process, const char* name)
+sg_size_t SIMIX_pre_storage_get_used_size(smx_simcall_t simcall, smx_storage_t storage)
 {
-  smx_host_t host = process->smx_host;
-  return  surf_workstation_get_used_size(host, name);
+  return SIMIX_storage_get_used_size(simcall->issuer, storage);
+}
+
+sg_size_t SIMIX_storage_get_used_size(smx_process_t process, smx_storage_t storage)
+{
+  return  surf_storage_get_used_size(storage);
 }
 
 xbt_dict_t SIMIX_pre_storage_get_properties(smx_simcall_t simcall, smx_storage_t storage){
@@ -308,11 +311,6 @@ xbt_dict_t SIMIX_pre_storage_get_content(smx_simcall_t simcall, smx_storage_t st
 xbt_dict_t SIMIX_storage_get_content(smx_storage_t storage){
   xbt_assert((storage != NULL), "Invalid parameters (simix storage is NULL)");
   return surf_storage_get_content(storage);
-}
-
-sg_size_t SIMIX_storage_get_size(smx_storage_t storage){
-  xbt_assert((storage != NULL), "Invalid parameters (simix storage is NULL)");
-  return surf_storage_get_size(storage);
 }
 
 const char* SIMIX_pre_storage_get_host(smx_simcall_t simcall, smx_storage_t storage){

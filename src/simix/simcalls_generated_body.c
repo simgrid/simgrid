@@ -1769,12 +1769,12 @@
     }    
     return self->simcall.result.i;
   }
-  inline static sg_size_t simcall_BODY_storage_get_free_size(const char* name) {
+  inline static sg_size_t simcall_BODY_storage_get_free_size(smx_storage_t storage) {
     smx_process_t self = SIMIX_process_self();
     self->simcall.call = SIMCALL_STORAGE_GET_FREE_SIZE;
     memset(&self->simcall.result, 0, sizeof(self->simcall.result));
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
-    self->simcall.args[0].cc = (const char*) name;
+    self->simcall.args[0].dp = (void*) storage;
     if (self != simix_global->maestro_process) {
       XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name,
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
@@ -1784,12 +1784,12 @@
     }    
     return self->simcall.result.sgsz;
   }
-  inline static sg_size_t simcall_BODY_storage_get_used_size(const char* name) {
+  inline static sg_size_t simcall_BODY_storage_get_used_size(smx_storage_t name) {
     smx_process_t self = SIMIX_process_self();
     self->simcall.call = SIMCALL_STORAGE_GET_USED_SIZE;
     memset(&self->simcall.result, 0, sizeof(self->simcall.result));
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
-    self->simcall.args[0].cc = (const char*) name;
+    self->simcall.args[0].dp = (void*) name;
     if (self != simix_global->maestro_process) {
       XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name,
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);

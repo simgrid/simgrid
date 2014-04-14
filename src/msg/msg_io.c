@@ -443,20 +443,20 @@ const char *MSG_storage_get_name(msg_storage_t storage) {
 
 /** \ingroup msg_storage_management
  * \brief Returns the free space size of a storage element
- * \param name the name of a storage
+ * \param storage a storage
  * \return the free space size of the storage element (as a #sg_size_t)
  */
-sg_size_t MSG_storage_get_free_size(const char* name){
-  return simcall_storage_get_free_size(name);
+sg_size_t MSG_storage_get_free_size(msg_storage_t storage){
+  return simcall_storage_get_free_size(storage);
 }
 
 /** \ingroup msg_storage_management
  * \brief Returns the used space size of a storage element
- * \param name the name of a storage
+ * \param storage a storage
  * \return the used space size of the storage element (as a #sg_size_t)
  */
-sg_size_t MSG_storage_get_used_size(const char* name){
-  return simcall_storage_get_used_size(name);
+sg_size_t MSG_storage_get_used_size(msg_storage_t storage){
+  return simcall_storage_get_used_size(storage);
 }
 
 /** \ingroup msg_storage_management

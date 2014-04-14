@@ -193,15 +193,6 @@ public:
   virtual StorageActionPtr close(surf_file_t fd)=0;
 
   /**
-   * @brief List directory contents of a path
-   * @details [long description]
-   *
-   * @param path The path to the directory
-   * @return The StorageAction corresponding to the ls action
-   */
-  virtual StorageActionPtr ls(const char *path)=0;
-
-  /**
    * @brief Read a file
    *
    * @param fd The file descriptor to read
@@ -233,6 +224,21 @@ public:
    */
   virtual sg_size_t getSize();
 
+  /**
+   * @brief Get the available size in bytes of the current Storage
+   *
+   * @return The available size in bytes of the current Storage
+   */
+  virtual sg_size_t getFreeSize();
+
+  /**
+   * @brief Get the used size in bytes of the current Storage
+   *
+   * @return The used size in bytes of the current Storage
+   */
+  virtual sg_size_t getUsedSize();
+
+
   xbt_dict_t parseContent(char *filename);
 
   xbt_dynar_t p_writeActions;
@@ -253,8 +259,7 @@ typedef enum {
   WRITE,  /**< Write in a file */
   STAT,   /**< Stat a file */
   OPEN,   /**< Open a file */
-  CLOSE,  /**< Close a file */
-  LS      /**< List directory contents */
+  CLOSE  /**< Close a file */
 } e_surf_action_storage_type_t;
 
 /** @ingroup SURF_storage_interface
@@ -292,7 +297,7 @@ public:
   e_surf_action_storage_type_t m_type;
   StoragePtr p_storage;
   surf_file_t p_file;
-  xbt_dict_t p_lsDict;
+  double progress;
 };
 
 typedef struct s_storage_type {

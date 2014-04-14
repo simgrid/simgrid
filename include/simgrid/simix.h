@@ -499,8 +499,8 @@ XBT_PUBLIC(sg_size_t) simcall_file_tell(smx_file_t fd);
 XBT_PUBLIC(int) simcall_file_seek(smx_file_t fd, sg_size_t offset, int origin);
 XBT_PUBLIC(int) simcall_file_move(smx_file_t fd, const char* fullpath);
 /*****************************   Storage   **********************************/
-XBT_PUBLIC(sg_size_t) simcall_storage_get_free_size (const char* name);
-XBT_PUBLIC(sg_size_t) simcall_storage_get_used_size (const char* name);
+XBT_PUBLIC(sg_size_t) simcall_storage_get_free_size (smx_storage_t storage);
+XBT_PUBLIC(sg_size_t) simcall_storage_get_used_size (smx_storage_t storage);
 XBT_PUBLIC(xbt_dict_t) simcall_storage_get_properties(smx_storage_t storage);
 XBT_PUBLIC(void*) SIMIX_storage_get_data(smx_storage_t storage);
 XBT_PUBLIC(void) SIMIX_storage_set_data(smx_storage_t storage, void *data);

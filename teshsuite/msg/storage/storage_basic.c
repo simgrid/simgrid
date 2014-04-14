@@ -36,13 +36,14 @@ void storage_info(msg_host_t host)
   {
     XBT_INFO("\tStorage name: %s, mount name: %s", storage_name, mount_name);
 
-    sg_size_t free_size = MSG_storage_get_free_size(mount_name);
-    sg_size_t used_size = MSG_storage_get_used_size(mount_name);
+    storage = MSG_storage_get_by_name(storage_name);
+
+    sg_size_t free_size = MSG_storage_get_free_size(storage);
+    sg_size_t used_size = MSG_storage_get_used_size(storage);
 
     XBT_INFO("\t\tFree size: %llu bytes", free_size);
     XBT_INFO("\t\tUsed size: %llu bytes", used_size);
 
-    storage = MSG_storage_get_by_name(storage_name);
     display_storage_properties(storage);
     dump_storage_by_name(storage_name);
   }

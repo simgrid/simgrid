@@ -268,7 +268,7 @@ ActionPtr Workstation::write(surf_file_t fd, sg_size_t size) {
 int Workstation::unlink(surf_file_t fd) {
   if (!fd){
     XBT_WARN("No such file descriptor. Impossible to unlink");
-    return MSG_TASK_CANCELED;
+    return -1;
   } else {
 
     StoragePtr st = findStorageOnMountList(fd->mount);
@@ -276,7 +276,7 @@ int Workstation::unlink(surf_file_t fd) {
     if (!xbt_dict_get_or_null(st->p_content, fd->name)){
       XBT_WARN("File %s is not on disk %s. Impossible to unlink", fd->name,
           st->getName());
-      return MSG_TASK_CANCELED;
+      return -1;
     } else {
       XBT_DEBUG("UNLINK on disk '%s'",st->getName());
       st->m_usedSize -= fd->size;
@@ -287,7 +287,7 @@ int Workstation::unlink(surf_file_t fd) {
       xbt_free(fd->name);
       xbt_free(fd->mount);
       xbt_free(fd);
-      return MSG_OK;
+      return 0;
     }
   }
 }
@@ -319,61 +319,47 @@ int Workstation::fileSeek(surf_file_t fd, sg_size_t offset, int origin){
 
   switch (origin) {
   case SEEK_SET:
-    fd->current_position = 0;
-	return MSG_OK;
+    fd->current_position = offset;
+    return 0;
   case SEEK_CUR:
-	if(offset > fd->size)
-	  offset = fd->size;
-	fd->current_position = offset;
-	return MSG_OK;
+    fd->current_position += offset;
+    return 0;
   case SEEK_END:
-	fd->current_position = fd->size;
-	return MSG_OK;
+    fd->current_position = fd->size + offset;
+    return 0;
   default:
-	return MSG_TASK_CANCELED;
+    return -1;
   }
 }
 
 int Workstation::fileMove(surf_file_t fd, const char* fullpath){
-
   /* Check if the new full path is on the same mount point */
-  if(!strncmp((const char*)fd->mount, fullpath, strlen(fd->mount)))
-  {
+  if(!strncmp((const char*)fd->mount, fullpath, strlen(fd->mount))) {
     sg_size_t *psize, *new_psize;
-    psize = (sg_size_t*) xbt_dict_get_or_null(findStorageOnMountList(fd->mount)->p_content,fd->name);
+    psize = (sg_size_t*)
+        xbt_dict_get_or_null(findStorageOnMountList(fd->mount)->p_content,
+                             fd->name);
     new_psize = xbt_new(sg_size_t, 1);
     *new_psize = *psize;
     if (psize){// src file exists
-	  xbt_dict_remove(findStorageOnMountList(fd->mount)->p_content, fd->name);
-
-	  char *path = (char *) xbt_malloc ((strlen(fullpath)-strlen(fd->mount)+1));;
-	  strncpy(path, fullpath+strlen(fd->mount), strlen(fullpath)-strlen(fd->mount)+1);
-	  xbt_dict_set(findStorageOnMountList(fd->mount)->p_content, path, new_psize,NULL);
-	  XBT_DEBUG("Move file from %s to %s, size '%llu'",fd->name, fullpath, *psize);
-	  free(path);
-	  return MSG_OK;
+      xbt_dict_remove(findStorageOnMountList(fd->mount)->p_content, fd->name);
+      char *path = (char *) xbt_malloc ((strlen(fullpath)-strlen(fd->mount)+1));;
+      strncpy(path, fullpath+strlen(fd->mount),
+              strlen(fullpath)-strlen(fd->mount)+1);
+      xbt_dict_set(findStorageOnMountList(fd->mount)->p_content, path,
+                   new_psize,NULL);
+      XBT_DEBUG("Move file from %s to %s, size '%llu'",fd->name, fullpath, *psize);
+      free(path);
+      return 0;
+    } else {
+      XBT_WARN("File %s doesn't exist", fd->name);
+      return -1;
     }
-    else
-	  XBT_WARN("File %s doesn't exist", fd->name);
-      return MSG_TASK_CANCELED;
-    }
-  else
-  {
-	XBT_WARN("New full path %s is not on the same mount point: %s. Action has been canceled.", fullpath, fd->mount);
-	return MSG_TASK_CANCELED;
+  } else {
+    XBT_WARN("New full path %s is not on the same mount point: %s. Action has been canceled.",
+             fullpath, fd->mount);
+    return -1;
   }
-}
-
-sg_size_t Workstation::getFreeSize(const char* name)
-{
-  StoragePtr st = findStorageOnMountList(name);
-  return st->m_size - st->m_usedSize;
-}
-
-sg_size_t Workstation::getUsedSize(const char* name)
-{
-  StoragePtr st = findStorageOnMountList(name);
-  return st->m_usedSize;
 }
 
 xbt_dynar_t Workstation::getVms()

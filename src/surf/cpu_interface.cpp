@@ -207,6 +207,11 @@ Cpu::~Cpu(){
     xbt_free(p_constraintCoreId);
 }
 
+double Cpu::getCurrentPowerPeak()
+{
+  return m_powerPeak;
+}
+
 double Cpu::getSpeed(double load)
 {
   return load * m_powerPeak;

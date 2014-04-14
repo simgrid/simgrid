@@ -548,12 +548,12 @@ case SIMCALL_FILE_MOVE:
       break;  
 
 case SIMCALL_STORAGE_GET_FREE_SIZE:
-      simcall->result.sgsz = SIMIX_pre_storage_get_free_size(simcall ,  simcall->args[0].cc);
+      simcall->result.sgsz = SIMIX_pre_storage_get_free_size(simcall , (smx_storage_t) simcall->args[0].dp);
       SIMIX_simcall_answer(simcall);
       break;  
 
 case SIMCALL_STORAGE_GET_USED_SIZE:
-      simcall->result.sgsz = SIMIX_pre_storage_get_used_size(simcall ,  simcall->args[0].cc);
+      simcall->result.sgsz = SIMIX_pre_storage_get_used_size(simcall , (smx_storage_t) simcall->args[0].dp);
       SIMIX_simcall_answer(simcall);
       break;  
 
