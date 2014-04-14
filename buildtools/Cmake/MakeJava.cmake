@@ -133,7 +133,7 @@ else()
     ${JSURF_C_SRC})
   target_link_libraries(surf-java simgrid)
   set_source_files_properties("${CMAKE_HOME_DIRECTORY}/src/bindings/java/surfJAVA_wrap.cxx"
-    PROPERTIES COMPILE_FLAGS "-fPIC -I${JAVA_INCLUDE_PATH}"
+    PROPERTIES COMPILE_FLAGS "-fPIC -I${JAVA_INCLUDE_PATH} -I${JAVA_INCLUDE_PATH2}"
   )
 endif()
 
