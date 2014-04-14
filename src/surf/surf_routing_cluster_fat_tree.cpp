@@ -20,7 +20,9 @@ void AsClusterFatTree::create_links() {
     return;
   }
   
-  //  for (unsigned int i = 0 ; i < this->levels)
+  for (unsigned int i = 0 ; i < this->levels) {
+    
+  }
 
 }
 
@@ -33,8 +35,8 @@ void AsClusterFatTree::parse_specific_arguments(sg_platf_cluster_cbarg_t
   boost::split(parameters, cluster->topo_parameters, boost::is_any_of(";"));
   
   if (parameters.size() != 4){
-    surf_parse_error("Fat trees are defined by the levels number et 3 vectors," 
-                     " see the documentation for more informations");
+    surf_parse_error("Fat trees are defined by the levels number and 3 vectors" 
+                     ", see the documentation for more informations");
     // Well, there's no doc, yet
   }
 
@@ -44,8 +46,8 @@ void AsClusterFatTree::parse_specific_arguments(sg_platf_cluster_cbarg_t
   // Then, a l-sized vector standing for the childs number by level
   boost::split(tmp, parameters[1], boost::is_any_of(","));
   if(tmp.size() != this->levels) {
-    surf_parse_error("Fat trees are defined by the levels number et 3 vectors," 
-                     " see the documentation for more informations"); 
+    surf_parse_error("Fat trees are defined by the levels number and 3 vectors" 
+                     ", see the documentation for more informations"); 
   }
   for(unsigned int i = 0 ; i < tmp.size() ; i++){
     this->lowerLevelNodesNumber.push_back(std::atoi(tmp[i].c_str())); 
@@ -54,8 +56,8 @@ void AsClusterFatTree::parse_specific_arguments(sg_platf_cluster_cbarg_t
   // Then, a l-sized vector standing for the parents number by level
    boost::split(tmp, parameters[2], boost::is_any_of(","));
   if(tmp.size() != this->levels) {
-    surf_parse_error("Fat trees are defined by the levels number et 3 vectors," 
-                     " see the documentation for more informations"); 
+    surf_parse_error("Fat trees are defined by the levels number and 3 vectors" 
+                     ", see the documentation for more informations"); 
   }
   for(unsigned int i = 0 ; i < tmp.size() ; i++){
     this->upperLevelNodesNumber.push_back(std::atoi(tmp[i].c_str())); 
@@ -64,8 +66,8 @@ void AsClusterFatTree::parse_specific_arguments(sg_platf_cluster_cbarg_t
   // Finally, a l-sized vector standing for the ports number with the lower level
   boost::split(tmp, parameters[3], boost::is_any_of(","));
   if(tmp.size() != this->levels) {
-    surf_parse_error("Fat trees are defined by the levels number et 3 vectors," 
-                     " see the documentation for more informations"); 
+    surf_parse_error("Fat trees are defined by the levels number and 3 vectors" 
+                     ", see the documentation for more informations"); 
     
   }
   for(unsigned int i = 0 ; i < tmp.size() ; i++){
