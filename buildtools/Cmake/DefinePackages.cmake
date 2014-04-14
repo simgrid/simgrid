@@ -124,9 +124,11 @@ set(EXTRA_DIST
   src/xbt/win32_ucontext.c
   tools/tesh/run_context.h
   tools/tesh/tesh.h
+  src/surf/surf_routing_cluster_fat_tree.hpp
   )
 
 set(SMPI_SRC
+  src/surf/surf_routing_cluster_fat_tree.cpp
   src/smpi/instr_smpi.c
   src/smpi/smpi_base.c
   src/smpi/smpi_bench.c
