@@ -130,13 +130,16 @@ Note that compile-time options are very different from @ref options
 
 The default configuration should be ok for most usages, but if you
 need to change something, there is several ways to do so. First, you
-can use environment variable. For example, you can change the used
+can use environment variables. For example, you can change the used
 compilers by issuing these commands before launching cmake:
 
 @verbatim
 export CC=gcc-4.4 
 export CXX=g++-4.4
 @endverbatim
+
+Note that other variables are available, such as CFLAGS and CXXFLAGS to add
+options for respectively the C compiler and the C++ compiler.
 
 Another way to do so is to use the -D argument of cmake as follows.
 Note that the terminating dot is mandatory (see @ref
