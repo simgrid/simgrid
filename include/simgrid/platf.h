@@ -45,6 +45,7 @@ typedef enum {
 } e_surf_process_on_failure_t;
 
 typedef enum {
+  SURF_CLUSTER_FAT_TREE=2,
   SURF_CLUSTER_FLAT = 1,
   SURF_CLUSTER_TORUS = 0
 } e_surf_cluster_topology_t;
@@ -330,6 +331,7 @@ typedef struct s_sg_platf_gpu_cbarg {
 } s_sg_platf_gpu_cbarg_t;
 
 #define SG_PLATF_GPU_INITIALIZER {NULL}
+
 
 /* ***************************************** */
 
