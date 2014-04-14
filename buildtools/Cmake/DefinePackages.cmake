@@ -430,6 +430,42 @@ set(BINDINGS_SRC
   src/bindings/lua/simgrid_lua.h
   )
 
+set(JSURF_SWIG_SRC
+  src/bindings/java/surf.i
+)
+set(JSURF_JAVA_C_SRC
+  src/bindings/java/surf_swig.cpp
+  src/bindings/java/surf_swig.hpp
+)
+
+set(JSURF_JAVA_GENERATED_SRC
+  src/bindings/java/org/simgrid/surf/Surf.java
+  src/bindings/java/org/simgrid/surf/SurfJNI.java
+  src/bindings/java/org/simgrid/surf/Plugin.java
+  src/bindings/java/org/simgrid/surf/Model.java
+  src/bindings/java/org/simgrid/surf/CpuModel.java
+  src/bindings/java/org/simgrid/surf/Resource.java
+  src/bindings/java/org/simgrid/surf/Action.java
+  src/bindings/java/org/simgrid/surf/Cpu.java
+  src/bindings/java/org/simgrid/surf/CpuAction.java
+  src/bindings/java/org/simgrid/surf/NetworkLink.java
+  src/bindings/java/org/simgrid/surf/NetworkAction.java
+
+  src/bindings/java/org/simgrid/surf/RoutingEdge.java
+  src/bindings/java/org/simgrid/surf/TmgrTraceEvent.java
+  src/bindings/java/org/simgrid/surf/TmgrTrace.java
+
+  src/bindings/java/org/simgrid/surf/ActionList.java
+
+  #enums
+  src/bindings/java/org/simgrid/surf/ActionState.java
+  src/bindings/java/org/simgrid/surf/ResourceState.java
+
+  src/bindings/java/org/simgrid/surf/LmmConstraint.java
+  src/bindings/java/org/simgrid/surf/LmmVariable.java
+  src/bindings/java/org/simgrid/surf/XbtDict.java
+)
+
 set(JMSG_C_SRC
   src/bindings/java/jmsg.c
   src/bindings/java/jmsg.h
@@ -457,6 +493,12 @@ set(JMSG_C_SRC
   src/bindings/java/smx_context_cojava.h
   src/bindings/java/smx_context_java.c
   src/bindings/java/smx_context_java.h
+  ${JSURF_JAVA_C_SRC}
+)
+set(JSURF_C_SRC
+  src/bindings/java/surfJAVA_wrap.cxx
+  src/bindings/java/surfJAVA_wrap.h
+  ${JSURF_JAVA_C_SRC}
 )
 
 set(JMSG_JAVA_SRC
@@ -483,42 +525,7 @@ set(JMSG_JAVA_SRC
   src/bindings/java/org/simgrid/msg/TimeoutException.java
   src/bindings/java/org/simgrid/msg/TransferFailureException.java
   src/bindings/java/org/simgrid/msg/VM.java
-)
-
-set(JSURF_SWIG_SRC
-  src/bindings/java/surf.i
-)
-set(JSURF_JAVA_C_SRC
-  src/bindings/java/surf_swig.cpp
-  src/bindings/java/surf_swig.hpp
-)
-
-set(JSURF_JAVA_GENERATED_SRC
-  ${CMAKE_BINARY_DIR}/src/bindings/java/org/simgrid/surf/Surf.java
-  ${CMAKE_BINARY_DIR}/src/bindings/java/org/simgrid/surf/SurfJNI.java
-  ${CMAKE_BINARY_DIR}/src/bindings/java/org/simgrid/surf/Plugin.java
-  ${CMAKE_BINARY_DIR}/src/bindings/java/org/simgrid/surf/Model.java
-  ${CMAKE_BINARY_DIR}/src/bindings/java/org/simgrid/surf/CpuModel.java
-  ${CMAKE_BINARY_DIR}/src/bindings/java/org/simgrid/surf/Resource.java
-  ${CMAKE_BINARY_DIR}/src/bindings/java/org/simgrid/surf/Action.java
-  ${CMAKE_BINARY_DIR}/src/bindings/java/org/simgrid/surf/Cpu.java
-  ${CMAKE_BINARY_DIR}/src/bindings/java/org/simgrid/surf/CpuAction.java
-  ${CMAKE_BINARY_DIR}/src/bindings/java/org/simgrid/surf/NetworkLink.java
-  ${CMAKE_BINARY_DIR}/src/bindings/java/org/simgrid/surf/NetworkAction.java
-
-  ${CMAKE_BINARY_DIR}/src/bindings/java/org/simgrid/surf/RoutingEdge.java
-  ${CMAKE_BINARY_DIR}/src/bindings/java/org/simgrid/surf/TmgrTraceEvent.java
-  ${CMAKE_BINARY_DIR}/src/bindings/java/org/simgrid/surf/TmgrTrace.java
-
-  ${CMAKE_BINARY_DIR}/src/bindings/java/org/simgrid/surf/ActionList.java
-
-  #enums
-  ${CMAKE_BINARY_DIR}/src/bindings/java/org/simgrid/surf/ActionState.java
-  ${CMAKE_BINARY_DIR}/src/bindings/java/org/simgrid/surf/ResourceState.java
-
-  ${CMAKE_BINARY_DIR}/src/bindings/java/org/simgrid/surf/LmmConstraint.java
-  ${CMAKE_BINARY_DIR}/src/bindings/java/org/simgrid/surf/LmmVariable.java
-  ${CMAKE_BINARY_DIR}/src/bindings/java/org/simgrid/surf/XbtDict.java
+  ${JSURF_JAVA_GENERATED_SRC}
 )
 
 set(JTRACE_C_SRC

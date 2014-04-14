@@ -69,7 +69,7 @@ add_custom_target(simgrid_update_xml ALL
   )
 
 # libraries
-install(TARGETS simgrid 
+install(TARGETS simgrid
   DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/)
 
 if(enable_lib_static AND NOT WIN32)
@@ -190,7 +190,7 @@ set(source_to_pack
   ${JMSG_C_SRC}
   ${JMSG_JAVA_SRC}
   ${JSURF_SWIG_SRC}
-  ${JSURF_JAVA_C_SRC}
+  ${JSURF_C_SRC}
   ${LUA_SRC}
   ${MC_SRC}
   ${MSG_SRC}
