@@ -99,6 +99,9 @@ if(${CMAKE_C_COMPILER_ID} STREQUAL "GNU")
   endif()
 endif()
 
+exec_program("${CMAKE_LINKER} --version" OUTPUT_VARIABLE "LINKER_VERSION")
+string(REGEX MATCH "[0-9].[0-9]*" LINKER_VERSION "${LINKER_VERSION}")
+
 string(REGEX MATCH "cl.exe" VBC "${CMAKE_C_COMPILER}")
 if(VBC)
   message(FATAL_ERROR "VB is not yet supported by Simgrid.")
