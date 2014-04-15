@@ -1054,9 +1054,6 @@ SWIGINTERN ActionArrayPtr ActionList_getArray(ActionList *self){
     return self;
   }
 SWIGINTERN unsigned int tmgr_trace_event_getIdx(tmgr_trace_event *self){return 0;}
-SWIGINTERN Action *Model_getRunningActionS(Model *self){
-    return (Action*)(&(self->getRunningActionSet()->front()));
-  }
 SWIGINTERN Cpu *CpuAction_getCpu(CpuAction *self){return getActionCpu(self);}
 SWIGINTERN double NetworkAction_getLatency(NetworkAction *self){return self->m_latency;}
 SWIGINTERN double lmm_constraint_getUsage(lmm_constraint *self){return lmm_constraint_get_usage(self);}
@@ -2955,21 +2952,6 @@ SWIGEXPORT jlong JNICALL Java_org_simgrid_surf_SurfJNI_Model_1getRunningActionSe
   arg1 = *(Model **)&jarg1; 
   result = (ActionList *)(arg1)->getRunningActionSet();
   *(ActionList **)&jresult = result; 
-  return jresult;
-}
-
-
-SWIGEXPORT jlong JNICALL Java_org_simgrid_surf_SurfJNI_Model_1getRunningActionS(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
-  jlong jresult = 0 ;
-  Model *arg1 = (Model *) 0 ;
-  Action *result = 0 ;
-  
-  (void)jenv;
-  (void)jcls;
-  (void)jarg1_;
-  arg1 = *(Model **)&jarg1; 
-  result = (Action *)Model_getRunningActionS(arg1);
-  *(Action **)&jresult = result; 
   return jresult;
 }
 

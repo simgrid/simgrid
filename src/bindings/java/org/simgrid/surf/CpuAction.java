@@ -8,6 +8,11 @@
 
 package org.simgrid.surf;
 
+/**
+  * An cpu action created by a Cpu
+  * @see CpuModel
+  * @see Cpu
+  */
 public class CpuAction extends Action {
   private long swigCPtr;
 
@@ -50,11 +55,22 @@ public class CpuAction extends Action {
     SurfJNI.CpuAction_change_ownership(this, swigCPtr, true);
   }
 
+  
+  /**
+    * CpuAction constructor
+    * @param model The model associated
+    * @param cost The cost of the action (e.g., flops, bytes)
+    * @param failed If the action has failed
+    */
   public CpuAction(Model model, double cost, boolean failed) {
     this(SurfJNI.new_CpuAction(Model.getCPtr(model), model, cost, failed), true);
     SurfJNI.CpuAction_director_connect(this, swigCPtr, swigCMemOwn, true);
   }
 
+  
+  /**
+    * @return The associated cpu
+    */
   public Cpu getCpu() {
   long cPtr = SurfJNI.CpuAction_getCpu(swigCPtr, this);
   return (Cpu)Surf.getCpuDirector(cPtr);

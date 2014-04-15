@@ -8,6 +8,11 @@
 
 package org.simgrid.surf;
 
+/**
+  * The generic model for the Cpu component
+  * @see Cpu
+  * @see CpuAction
+  */
 public class CpuModel extends Model {
   private long swigCPtr;
 
@@ -50,11 +55,32 @@ public class CpuModel extends Model {
     SurfJNI.CpuModel_change_ownership(this, swigCPtr, true);
   }
 
+  
+  /**
+    * CpuModel constructon
+    * @param name The name of the cpumodel
+    */
   public CpuModel(String name) {
     this(SurfJNI.new_CpuModel(name), true);
     SurfJNI.CpuModel_director_connect(this, swigCPtr, swigCMemOwn, true);
   }
 
+  
+  /**
+    * Create a new Cpu
+    *
+    * @param name
+    * @param power_peak
+    * @param pstate
+    * @param power_scale
+    * @param power_trace
+    * @param core
+    * @param state_initial
+    * @param state_trace
+    * @param cpu_properties
+    * @return The new Cpu
+    * @see Cpu
+    */
   public Cpu createResource(String name, double[] power_peak, int pstate, double power_scale, TmgrTrace power_trace, int core, ResourceState state_initial, TmgrTrace state_trace, XbtDict cpu_properties) {
   long cPtr = SurfJNI.CpuModel_createResource(swigCPtr, this, name, power_peak, pstate, power_scale, TmgrTrace.getCPtr(power_trace), power_trace, core, state_initial.swigValue(), TmgrTrace.getCPtr(state_trace), state_trace, XbtDict.getCPtr(cpu_properties), cpu_properties);
   return (Cpu)Surf.getCpuDirector(cPtr);

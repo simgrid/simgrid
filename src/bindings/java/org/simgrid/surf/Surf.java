@@ -25,6 +25,10 @@ public class Surf {
     return SurfJNI.getCpuActionDirector(jarg1);
   }
 
+  
+  /**
+    * @return The current simulated time
+    */
   public static double getClock() {
     return SurfJNI.getClock();
   }

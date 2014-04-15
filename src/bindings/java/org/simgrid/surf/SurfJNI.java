@@ -80,7 +80,6 @@ public class SurfJNI {
   public final static native void Model_updateActionsStateLazy(long jarg1, Model jarg1_, double jarg2, double jarg3);
   public final static native void Model_updateActionsStateFull(long jarg1, Model jarg1_, double jarg2, double jarg3);
   public final static native long Model_getRunningActionSet(long jarg1, Model jarg1_);
-  public final static native long Model_getRunningActionS(long jarg1, Model jarg1_);
   public final static native void delete_Model(long jarg1);
   public final static native long new_CpuModel(String jarg1);
   public final static native void delete_CpuModel(long jarg1);

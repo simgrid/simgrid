@@ -433,6 +433,11 @@ set(BINDINGS_SRC
 set(JSURF_SWIG_SRC
   src/bindings/java/surf.i
 )
+
+set(JSURF_SWIG_SRC_EXTRA
+  src/bindings/java/surfdoc.i
+)
+
 set(JSURF_JAVA_C_SRC
   src/bindings/java/surf_swig.cpp
   src/bindings/java/surf_swig.hpp
@@ -493,8 +498,8 @@ set(JMSG_C_SRC
   src/bindings/java/smx_context_cojava.h
   src/bindings/java/smx_context_java.c
   src/bindings/java/smx_context_java.h
-  ${JSURF_JAVA_C_SRC}
 )
+
 set(JSURF_C_SRC
   src/bindings/java/surfJAVA_wrap.cxx
   src/bindings/java/surfJAVA_wrap.h
