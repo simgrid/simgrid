@@ -36,7 +36,7 @@ if(enable_compile_optimizations)
       endif()
     else()    
       # On non-windows, 4.6 is enough for that
-      if(COMPILER_C_VERSION_MAJOR_MINOR STRGREATER "4.5")
+      if(COMPILER_C_VERSION_MAJOR_MINOR STRGREATER "4.5" AND LINKER_VERSION STRGREATER "2.22")
         set(optCFLAGS "${optCFLAGS} -flto ")
       endif()
     endif()

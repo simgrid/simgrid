@@ -10,16 +10,50 @@
 #define SURF_ROUTING_CLUSTER_FAT_TREE_HPP_
 
 
+/* The class AsClusterFatTree describes PGFT, as introduced by Eitan Zahavi
+ * in "D-Mod-K Routing Providing Non-Blocking Traffic for Shift Permutations
+ * on Real Life Fat Trees" (2010). RLFT are PGFT with some restrictions to 
+ * address real world constraints, which are not currently enforced (but it 
+ * should certainly be checked for)
+ */
 
-class FatTreeLink;
-class FatTreeNode;
+class FatTreeNode {
+public:
+  int id; // ID as given by the user
+  int level; // The 0th level represents the leafs of the PGFT
+  int position; // Position in the level
+  
+  /* We can see the sizes sum of the two following vectors as the device 
+   * ports number. If we use the notations used in Zahavi's paper, 
+   * children.size() = m_level and parents.size() = w_(level+1)
+   * 
+   */
+  std::vector<FatTreeNode*> children;  // m, apply from lvl 0 to levels - 1 
+  std::vector<FatTreeNode*> parents; // w, apply from lvl 1 to levels
+  FatTreeNode(int id, int level=-1, int position=-1);
+};
+
+class FatTreeLink {
+private:
+  unsigned int ports;
+  std::vector<NetworkLink> linksUp; // From source to destination
+  std::vector<NetworkLink> linksDown; // From destination to source
+  FatTreeNode source;
+  FatTreeNode destination;
+public:
+  FatTreeLink(int source, int destination, unsigned int ports = 0);
+  NetworkLink getLink(int number = 0) const;
+};
 
 class AsClusterFatTree : public AsCluster {
 public:
   AsClusterFatTree();
-  virtual void getRouteAndLatency(RoutingEdgePtr src, RoutingEdgePtr dst, sg_platf_route_cbarg_t into, double *latency);
-  virtual void create_links();
+  ~AsClusterFatTree();
+  virtual void getRouteAndLatency(RoutingEdgePtr src, RoutingEdgePtr dst, sg_platf_route_cbarg_t into, double *latency) const;
+  virtual void create_links(sg_platf_cluster_cbarg_t cluster);
   void parse_specific_arguments(sg_platf_cluster_cbarg_t cluster);
+  void addNodes(std::vector<int> const& id);
+  void generateDotFile(string filename = "fatTree.dot");
 
 protected:
   //description of a PGFT (TODO : better doc)
@@ -28,15 +62,11 @@ protected:
   std::vector<int> upperLevelNodesNumber;
   std::vector<int> lowerLevelPortsNumber;
   
-  std::vector<FatTreeNode> nodes;
+  std::vector<FatTreeNode*> nodes;
+  std::map<std::pair<int,int>, FatTreeLink*> links;
+  
 };
 
-class FatTreeLink {
-public:
-};
-class FatTreeNode {
-  int id;
-  std::string name;
-};
+
   
 #endif

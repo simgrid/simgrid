@@ -54,7 +54,7 @@ static void local_variable_free_voidp(void *v){
 
 static void MC_region_destroy(mc_mem_region_t reg)
 {
-  xbt_free(reg->data);
+  munmap(reg->data, reg->size);
   xbt_free(reg);
 }
 
@@ -87,8 +87,10 @@ static mc_mem_region_t MC_region_new(int type, void *start_addr, size_t size)
   mc_mem_region_t new_reg = xbt_new(s_mc_mem_region_t, 1);
   new_reg->start_addr = start_addr;
   new_reg->size = size;
-  new_reg->data = xbt_malloc(size);
+  new_reg->data = mmap(NULL, size, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0);
   memcpy(new_reg->data, start_addr, size);
+  mprotect(new_reg->data, size, PROT_READ);
+  madvise(new_reg->data, size, MADV_MERGEABLE);
 
   XBT_DEBUG("New region : type : %d, data : %p (real addr %p), size : %zu", type, new_reg->data, start_addr, size);
   

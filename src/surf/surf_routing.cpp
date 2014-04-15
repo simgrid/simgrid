@@ -1252,7 +1252,7 @@ static void check_disk_attachment()
 	  StoragePtr storage = static_cast<StoragePtr>(xbt_lib_get_level(xbt_lib_get_elm_or_null(storage_lib, key), SURF_STORAGE_LEVEL));
 	  host_elm = sg_routing_edge_by_name_or_null(storage->p_attach);
 	  if(!host_elm)
-		  surf_parse_error("Enable to attach storage %s: host %s doesn't exist.", storage->getName(), storage->p_attach);
+		  surf_parse_error("Unable to attach storage %s: host %s doesn't exist.", storage->getName(), storage->p_attach);
     }
   }
 }
