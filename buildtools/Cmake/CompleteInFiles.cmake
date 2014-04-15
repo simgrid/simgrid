@@ -84,9 +84,11 @@ if(enable_java)
   find_package(JNI REQUIRED)
   message("-- [Java] JNI found: ${JNI_FOUND}")
   message("-- [Java] JNI include dirs: ${JNI_INCLUDE_DIRS}")
-  find_package(SWIG REQUIRED)
-  include(UseSWIG)
-  message("-- [Java] Swig found: ${SWIG_FOUND} (version ${SWIG_VERSION})")
+  if(enable_maintainer_mode)
+    find_package(SWIG REQUIRED)
+    include(UseSWIG)
+    message("-- [Java] Swig found: ${SWIG_FOUND} (version ${SWIG_VERSION})")
+  endif()
   set(HAVE_Java 1)
 endif()
 if(enable_scala)
@@ -681,7 +683,7 @@ int main(void)
     )
 
   execute_process(
-  COMMAND ${CMAKE_C_COMPILER} "${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/test_prog/prog_va_copy.c" 
+  COMMAND ${CMAKE_C_COMPILER} "${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/test_prog/prog_va_copy.c"
   WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
   RESULT_VARIABLE COMPILE_VA_NULL_VAR
   OUTPUT_QUIET

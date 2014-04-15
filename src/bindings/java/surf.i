@@ -9,6 +9,7 @@
 
 %include "arrays_java.i"
 %include "std_string.i"
+%include "surfdoc.i"
 
 %pragma(java) jniclassimports=%{
 import org.simgrid.NativeLib;
@@ -245,11 +246,6 @@ public:
   virtual void updateActionsStateFull(double now, double delta);
 
   virtual ActionList *getRunningActionSet();
-%extend {
-  Action *getRunningActionS() {
-    return (Action*)(&($self->getRunningActionSet()->front()));
-  }
-}
 };
 
 %feature("director") CpuModel;
