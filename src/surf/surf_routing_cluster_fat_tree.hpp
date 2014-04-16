@@ -17,9 +17,10 @@
  * should certainly be checked for)
  */
 
+
 class FatTreeNode {
 public:
-  int id; // ID as given by the user
+  int id; // ID as given by the user, should be unique
   int level; // The 0th level represents the leafs of the PGFT
   int position; // Position in the level
   
@@ -36,22 +37,30 @@ public:
 class FatTreeLink {
 public:
   unsigned int ports;
-  std::vector<NetworkLink> linksUp; // From source to destination
-  std::vector<NetworkLink> linksDown; // From destination to source
-  FatTreeNode source;
-  FatTreeNode destination;
-  FatTreeLink(int source, int destination, unsigned int ports = 0);
+  std::vector<s_sg_platf_link_cbarg_t> linksUp; // From source to destination
+  std::vector<s_sg_platf_link_cbarg_t> linksDown; // From destination to source
+  /* As it is symetric, it might as well be first / second instead
+   * of source / destination
+   */
+  FatTreeNode *source; 
+  FatTreeNode *destination;
+  //FatTreeLink(FatTreeNode *source, FatTreeNode *destination, unsigned int ports = 0);
 };
 
 class AsClusterFatTree : public AsCluster {
 public:
   AsClusterFatTree();
   ~AsClusterFatTree();
-  virtual void getRouteAndLatency(RoutingEdgePtr src, RoutingEdgePtr dst, sg_platf_route_cbarg_t into, double *latency) const;
+  virtual void getRouteAndLatency(RoutingEdgePtr src, RoutingEdgePtr dst,
+                                  sg_platf_route_cbarg_t into,
+                                  double *latency) const;
+  // virtual void getRouteAndLatency(const int src, const int dst,
+  //                                 std::vector<NetworkLink> *route,
+  //                                 double *latency) const;
   virtual void create_links(sg_platf_cluster_cbarg_t cluster);
   void parse_specific_arguments(sg_platf_cluster_cbarg_t cluster);
   void addNodes(std::vector<int> const& id);
-  void generateDotFile(string filename = "fatTree.dot");
+  void generateDotFile(const string& filename = "fatTree.dot") const;
 
 protected:
   //description of a PGFT (TODO : better doc)
@@ -62,9 +71,9 @@ protected:
   
   std::vector<FatTreeNode*> nodes;
   std::map<std::pair<int,int>, FatTreeLink*> links;
-  
+  std::vector<int> nodesByLevel;
+
+  void addLink(FatTreeNode *parent, FatTreeNode *child);
+  void getLevelPosition(const int level, int &position, int &size);
 };
-
-
-  
 #endif

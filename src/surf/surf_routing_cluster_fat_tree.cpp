@@ -30,7 +30,7 @@ void AsClusterFatTree::create_links(sg_platf_cluster_cbarg_t cluster) {
   if(this->levels == 0) {
     return;
   }
-  std::vector<int> nodesByLevel(this->levels); 
+  this->nodesByLevel.resize(this->levels, 0);
   int nodesRequired = 0;
 
 
@@ -45,40 +45,73 @@ void AsClusterFatTree::create_links(sg_platf_cluster_cbarg_t cluster) {
         nodesInThisLevel *= this->lowerLevelNodesNumber[j];
       }
 
-      nodesByLevel[i] = nodesInThisLevel;
+      this->nodesByLevel[i] = nodesInThisLevel;
       nodesRequired += nodesInThisLevel;
     }
    
     if(nodesRequired > this->nodes.size()) {
-      surf_parse_error("There is not enough nodes to fit to the described topology. Please check your platform description (We need %d nodes, we only got %lu)", nodesRequired, this->nodes.size());
+      surf_parse_error("There is not enough nodes to fit to the described topology."
+                       " Please check your platform description (We need %d nodes, we only got %lu)",
+                       nodesRequired, this->nodes.size());
       return;
     }
 
     // Nodes are totally ordered, by level and then by position, in this->nodes
     int k = 0;
     for (int i = 0 ; i < this->levels ; i++) {
-      for (int j = 0 ; j < nodesByLevel[i] ; j++) {
+      for (int j = 0 ; j < this->nodesByLevel[i] ; j++) {
         this->nodes[k]->level = i;
         this->nodes[k]->position = j;
-
-        if (i == 0) {
-          
-        }
-        else if (i == this->levels - 1) {
-          
-        }
-        else {
-          
-        }
       }
     }
+
+    
 }
 
+void AsClusterFatTree::getLevelPosition(const int level, int &position, int &size) {
+  if (level > this->levels - 1) {
+    position = -1;
+    size =  -1;
+    return;
+  }
+  int tempPosition = 0;
+
+  for (int i = 0 ; i < level ; i++) {
+    tempPosition += this->nodesByLevel[i];
+  }
+  position = tempPosition;
+  size = this->nodesByLevel[level];
+}
 
 void AsClusterFatTree::addNodes(std::vector<int> const& id) {
   for (int i = 0 ; i < id.size() ; i++) {
     this->nodes.push_back(new FatTreeNode(id[i]));
   }
+}
+
+void AsClusterFatTree::addLink(FatTreeNode *parent, FatTreeNode *child) {
+  using std::make_pair;
+  if (parent->children.size() == this->nodesByLevel[parent->level] ||
+      child->parents.size()   == this->nodesByLevel[child->level]) {
+    /* NB : This case should never happen, if this private function is not misused,
+     * so should we keep this test, keep it only for debug, throw an exception
+     * or get rid of it ? In all cases, anytime we get in there, code should be
+     * fixed
+     */
+    xbt_die("I've been asked to create a link that could not possibly exist");
+    return;
+  }
+
+  parent->children.push_back(child);
+  child->parents.push_back(parent);
+
+  // FatTreeLink *newLink;
+
+  // newLink = new FatTreeLink(parent, child, this->lowerLevelPortsNumber[parent->level]);
+  // this->links.insert(make_pair(make_pair(parent->id, child->id), newLink));
+
+  
+
 }
 
 void AsClusterFatTree::parse_specific_arguments(sg_platf_cluster_cbarg_t 
@@ -131,7 +164,7 @@ void AsClusterFatTree::parse_specific_arguments(sg_platf_cluster_cbarg_t
 }
 
 
-void AsClusterFatTree::generateDotFile(string filename) {
+void AsClusterFatTree::generateDotFile(const string& filename) const {
   ofstream file;
   /* Maybe should we get directly a char*, as open takes strings only beginning
    * with C++11...
@@ -140,16 +173,16 @@ void AsClusterFatTree::generateDotFile(string filename) {
   
   if(file.is_open()) {
     // That could also be greatly clarified with C++11
-    std::map<std::pair<int,int>,FatTreeLink*>::iterator iter;
-    file << "graph AsClusterFatTree {\n";
-    for (iter = this->links.begin() ; iter != this->links.end() ; iter++ ) {
-      for (int j = 0 ; j < iter->second->ports ; j++) {
-        file << iter->second->source.id 
-             << " -- " 
-             << iter->second->destination.id
-             << ";\n";
-      }
-    }
+    // std::map<std::pair<int,int>,FatTreeLink*>::iterator iter;
+    // file << "graph AsClusterFatTree {\n";
+    // for (iter = this->links.begin() ; iter != this->links.end() ; iter++ ) {
+    //   for (int j = 0 ; j < iter->second->ports ; j++) {
+    //     file << iter->second->source->id 
+    //          << " -- " 
+    //          << iter->second->destination->id
+    //          << ";\n";
+    //   }
+    //}
     file << "}";
     file.close();
   }
@@ -162,3 +195,9 @@ void AsClusterFatTree::generateDotFile(string filename) {
 FatTreeNode::FatTreeNode(int id, int level, int position) : id(id),
                                                             level(level),
                                                             position(position){}
+
+// FatTreeLink::FatTreeLink(FatTreeNode *source, FatTreeNode *destination,
+//                          int ports) : source(source), destination(destination),
+//                                       ports(ports) {
+  
+// }
