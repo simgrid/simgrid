@@ -126,10 +126,9 @@ public:
 };
 
 class CpuL07 : public Cpu {
-public:
-  s_surf_metric_t p_power;
+  friend void WorkstationL07Model::addTraces();
   tmgr_trace_event_t p_stateEvent;
-
+  tmgr_trace_event_t p_powerEvent;
 public:
   CpuL07(CpuL07ModelPtr model, const char* name, xbt_dict_t properties,
 		 double power_scale,
@@ -138,8 +137,6 @@ public:
   bool isUsed();
   //bool isUsed() {DIE_IMPOSSIBLE;};
   void updateState(tmgr_trace_event_t event_type, double value, double date);
-  double getSpeed(double load);
-  double getAvailableSpeed();
   CpuActionPtr execute(double /*size*/) {DIE_IMPOSSIBLE;};
   CpuActionPtr sleep(double /*duration*/) {DIE_IMPOSSIBLE;};
 
@@ -148,8 +145,6 @@ public:
   int getNbPstates() {THROW_UNIMPLEMENTED;};
   void setPowerPeakAt(int /*pstate_index*/) {THROW_UNIMPLEMENTED;};
   double getConsumedEnergy() {THROW_UNIMPLEMENTED;};
-
-  double m_powerCurrent;
 };
 
 class LinkL07 : public NetworkLink {
