@@ -134,25 +134,24 @@ void AsClusterFatTree::parse_specific_arguments(sg_platf_cluster_cbarg_t
 void AsClusterFatTree::generateDotFile(string filename) {
   ofstream file;
   /* Maybe should we get directly a char*, as open takes strings only beginning
-   * with c++11...
+   * with C++11...
    */
   file.open(filename.c_str(), ios::out | ios::trunc); 
   
   if(file.is_open()) {
-    /* TODO : Iterate through a map takes 10 chars with c++11, 100 with c++98.
-     * All I have to do is write it down...
-     */
-
-    // file << "graph AsClusterFatTree {\n";
-    // for (std::map<std::pair<int,int>, FatTreeLink*>::iterator link = this->links.begin() ; link != this->links.end() ; link++ ) {
-    //   for (int j = 0 ; j < link->ports ; j++) {
-    //   file << this->links[i]->source.id 
-    //        << " -- " this->links[i]->destination.id
-    //        << ";\n";
-    //   }
-    // }
-    // file << "}";
-    // file.close();
+    // That could also be greatly clarified with C++11
+    std::map<std::pair<int,int>,FatTreeLink*>::iterator iter;
+    file << "graph AsClusterFatTree {\n";
+    for (iter = this->links.begin() ; iter != this->links.end() ; iter++ ) {
+      for (int j = 0 ; j < iter->second->ports ; j++) {
+        file << iter->second->source.id 
+             << " -- " 
+             << iter->second->destination.id
+             << ";\n";
+      }
+    }
+    file << "}";
+    file.close();
   }
   else {
     std::cerr << "Unable to open file " << filename << std::endl;

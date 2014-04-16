@@ -34,15 +34,13 @@ public:
 };
 
 class FatTreeLink {
-private:
+public:
   unsigned int ports;
   std::vector<NetworkLink> linksUp; // From source to destination
   std::vector<NetworkLink> linksDown; // From destination to source
   FatTreeNode source;
   FatTreeNode destination;
-public:
   FatTreeLink(int source, int destination, unsigned int ports = 0);
-  NetworkLink getLink(int number = 0) const;
 };
 
 class AsClusterFatTree : public AsCluster {
