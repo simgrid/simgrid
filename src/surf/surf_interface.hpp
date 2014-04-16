@@ -74,7 +74,7 @@ typedef Model* ModelPtr;
 
 //class Resource;
 typedef Resource* ResourcePtr;
-			
+
 //class Action;
 typedef Action* ActionPtr;
 
@@ -102,8 +102,8 @@ enum heap_action_type{
 XBT_PUBLIC_DATA(xbt_dict_t) traces_set_list;
 XBT_PUBLIC_DATA(xbt_dict_t) trace_connect_list_host_avail;
 XBT_PUBLIC_DATA(xbt_dict_t) trace_connect_list_power;
-XBT_PUBLIC_DATA(xbt_dict_t) trace_connect_list_link_avail; 
-XBT_PUBLIC_DATA(xbt_dict_t) trace_connect_list_bandwidth; 
+XBT_PUBLIC_DATA(xbt_dict_t) trace_connect_list_link_avail;
+XBT_PUBLIC_DATA(xbt_dict_t) trace_connect_list_bandwidth;
 XBT_PUBLIC_DATA(xbt_dict_t) trace_connect_list_latency;
 
 /*********
@@ -117,56 +117,56 @@ XBT_PUBLIC_DATA(xbt_dynar_t) model_list;
  */
 XBT_PUBLIC_CLASS Model {
 public:
-  /** 
+  /**
    * @brief Model constructor
-   * 
+   *
    * @param name the name of the model
    */
   Model(const char *name);
 
-  /** 
+  /**
    * @brief Model destructor
    */
   virtual ~Model();
 
   /**
    * @brief Get the name of the current Model
-   * 
+   *
    * @return The name of the current Model
    */
   const char *getName() {return p_name;}
 
   /**
-   * @brief Get the set of [actions](@ref Action) in *ready* state 
-   * 
-   * @return The set of [actions](@ref Action) in *ready* state 
+   * @brief Get the set of [actions](@ref Action) in *ready* state
+   *
+   * @return The set of [actions](@ref Action) in *ready* state
    */
   virtual ActionListPtr getReadyActionSet() {return p_readyActionSet;}
 
   /**
    * @brief Get the set of [actions](@ref Action) in *running* state
-   * 
+   *
    * @return The set of [actions](@ref Action) in *running* state
    */
   virtual ActionListPtr getRunningActionSet() {return p_runningActionSet;}
 
   /**
    * @brief Get the set of [actions](@ref Action) in *failed* state
-   * 
+   *
    * @return The set of [actions](@ref Action) in *failed* state
    */
   virtual ActionListPtr getFailedActionSet() {return p_failedActionSet;}
 
   /**
    * @brief Get the set of [actions](@ref Action) in *done* state
-   * 
+   *
    * @return The set of [actions](@ref Action) in *done* state
    */
   virtual ActionListPtr getDoneActionSet() {return p_doneActionSet;}
 
   /**
    * @brief Get the set of modified [actions](@ref Action)
-   * 
+   *
    * @return The set of modified [actions](@ref Action)
    */
   virtual ActionLmmListPtr getModifiedSet() {return p_modifiedSet;}
@@ -181,7 +181,7 @@ public:
   /**
    * @brief Get the update mechanism of the current Model
    * @see e_UM_t
-   * 
+   *
    * @return [description]
    */
   e_UM_t getUpdateMechanism() {return p_updateMechanism;}
@@ -189,17 +189,17 @@ public:
   /**
    * @brief Get Action heap
    * @details [TODO]
-   * 
+   *
    * @return The Action heap
    */
   xbt_heap_t getActionHeap() {return p_actionHeap;}
 
-  /** 
+  /**
    * @brief share the resources
-   * @details Share the resources between the actions 
-   * 
-   * @param now [TODO]
-   * @return the date of the next action will finish
+   * @details Share the resources between the actions
+   *
+   * @param now The current time of the simulation
+   * @return The delta of time till the next action will finish
    */
   virtual double shareResources(double now);
   virtual double shareResourcesLazy(double now);
@@ -210,10 +210,10 @@ public:
 
   /**
    * @brief Update state of actions
-   * @details [TODO]
-   * 
-   * @param now [TODO]
-   * @param delta [TODO]
+   * @details Update action to the current time
+   *
+   * @param now The current time of the simulation
+   * @param delta The delta of time since the last update
    */
   virtual void updateActionsState(double now, double delta);
   virtual void updateActionsStateLazy(double now, double delta);
@@ -254,23 +254,23 @@ typedef struct {
  */
 XBT_PUBLIC_CLASS Resource {
 public:
-  /** 
+  /**
    * @brief Resource constructor
    */
   Resource();
 
-  /** 
+  /**
    * @brief Resource constructor
-   * 
+   *
    * @param model Model associated to this Resource
    * @param name The name of the Resource
    * @param props Dictionary of properties associated to this Resource
    */
   Resource(ModelPtr model, const char *name, xbt_dict_t props);
 
-  /** 
+  /**
    * @brief Resource constructor
-   * 
+   *
    * @param model Model associated to this Resource
    * @param name The name of the Resource
    * @param props Dictionary of properties associated to this Resource
@@ -278,9 +278,9 @@ public:
    */
   Resource(ModelPtr model, const char *name, xbt_dict_t props, lmm_constraint_t constraint);
 
-  /** 
+  /**
    * @brief Resource constructor
-   * 
+   *
    * @param model Model associated to this Resource
    * @param name The name of the Resource
    * @param props Dictionary of properties associated to this Resource
@@ -291,25 +291,25 @@ public:
   /**
    * @brief Resource destructor
    */
-  virtual ~Resource(); 
+  virtual ~Resource();
 
   /**
    * @brief Get the Model of the current Resource
-   * 
+   *
    * @return The Model of the current Resource
    */
   ModelPtr getModel();
 
   /**
    * @brief Get the name of the current Resource
-   * 
+   *
    * @return The name of the current Resource
    */
   const char *getName();
 
   /**
    * @brief Get the properties of the current Resource
-   * 
+   *
    * @return The properties of the current Resource
    */
   virtual xbt_dict_t getProperties();
@@ -317,7 +317,7 @@ public:
   /**
    * @brief Update the state of the current Resource
    * @details [TODO]
-   * 
+   *
    * @param event_type [TODO]
    * @param value [TODO]
    * @param date [TODO]
@@ -356,7 +356,7 @@ public:
 
   /**
    * @brief Set the [state](\ref e_surf_resource_state_t) of the current Resource
-   * 
+   *
    * @param state The new state of the current Resource
    */
   virtual void setState(e_surf_resource_state_t state);
@@ -372,7 +372,7 @@ private:
 public:
   /**
    * @brief Get the lmm constraint associated to this Resource if it is part of a LMM component
-   * 
+   *
    * @return The lmm constraint associated to this Resource
    */
   lmm_constraint_t getConstraint();
@@ -400,7 +400,7 @@ private:
 public:
   /**
    * @brief Action constructor
-   * 
+   *
    * @param model The Model associated to this Action
    * @param cost The cost of the Action
    * @param failed If the action is impossible (e.g.: execute something on a switched off workstation)
@@ -409,7 +409,7 @@ public:
 
   /**
    * @brief Action constructor
-   * 
+   *
    * @param model The Model associated to this Action
    * @param cost The cost of the Action
    * @param failed If the action is impossible (e.g.: execute something on a switched off workstation)
@@ -421,7 +421,7 @@ public:
    * @brief Action destructor
    */
   virtual ~Action();
-  
+
   /**
    * @brief Finish the action
    */
@@ -429,21 +429,21 @@ public:
 
   /**
    * @brief Get the [state](\ref e_surf_action_state_t) of the current Action
-   * 
+   *
    * @return The state of the current Action
    */
   e_surf_action_state_t getState(); /**< get the state*/
 
   /**
    * @brief Set the [state](\ref e_surf_action_state_t) of the current Action
-   * 
+   *
    * @param state The new state of the current Action
    */
   virtual void setState(e_surf_action_state_t state);
 
   /**
    * @brief Get the bound of the current Action
-   * 
+   *
    * @return The bound of the current Action
    */
   double getBound();
@@ -457,84 +457,84 @@ public:
 
   /**
    * @brief Get the start time of the current action
-   * 
+   *
    * @return The start time of the current action
    */
   double getStartTime();
 
   /**
    * @brief Get the finish time of the current action
-   * 
+   *
    * @return The finish time of the current action
    */
   double getFinishTime();
 
   /**
    * @brief Get the data associated to the current action
-   * 
+   *
    * @return The data associated to the current action
    */
   void *getData() {return p_data;}
 
   /**
    * @brief Set the data associated to the current action
-   * 
+   *
    * @param data The new data associated to the current action
    */
   void setData(void* data);
 
   /**
    * @brief Get the maximum duration of the current action
-   * 
+   *
    * @return The maximum duration of the current action
    */
   double getMaxDuration() {return m_maxDuration;}
 
   /**
    * @brief Get the category associated to the current action
-   * 
+   *
    * @return The category associated to the current action
    */
   char *getCategory() {return p_category;}
 
   /**
    * @brief Get the cost of the current action
-   * 
+   *
    * @return The cost of the current action
    */
   double getCost() {return m_cost;}
 
   /**
    * @brief Set the cost of the current action
-   * 
+   *
    * @param cost The new cost of the current action
    */
   void setCost(double cost) {m_cost = cost;}
 
   /**
    * @brief Update the maximum duration of the current action
-   * 
+   *
    * @param delta [TODO]
    */
   void updateMaxDuration(double delta) {double_update(&m_maxDuration, delta,sg_surf_precision);}
 
   /**
    * @brief Update the remaining time of the current action
-   * 
+   *
    * @param delta [TODO]
    */
   void updateRemains(double delta) {double_update(&m_remains, delta, sg_maxmin_precision*sg_surf_precision);}
 
   /**
    * @brief Set the remaining time of the current action
-   * 
+   *
    * @param value The new remaining time of the current action
    */
   void setRemains(double value) {m_remains = value;}
 
   /**
    * @brief Set the finish time of the current action
-   * 
+   *
    * @param value The new Finush time of the current action
    */
   void setFinishTime(double value) {m_finish = value;}
@@ -547,7 +547,7 @@ public:
   /**
    * @brief Remove a reference to the current action
    * @details If the Action has no more reference, we destroy it
-   * 
+   *
    * @return true if the action was destroyed and false if someone still has references on it
    */
   virtual int unref();
@@ -574,21 +574,21 @@ public:
 
   /**
    * @brief Check if the current action is running
-   * 
+   *
    * @return true if the current Action is suspended, false otherwise
    */
   virtual bool isSuspended();
 
   /**
    * @brief Set the maximum duration of the current Action
-   * 
+   *
    * @param duration The new maximum duration of the current Action
    */
   virtual void setMaxDuration(double duration);
 
   /**
    * @brief Set the priority of the current Action
-   * 
+   *
    * @param priority The new priority of the current Action
    */
   virtual void setPriority(double priority);
@@ -596,7 +596,7 @@ public:
 #ifdef HAVE_TRACING
   /**
    * @brief Set the category of the current Action
-   * 
+   *
    * @param category The new category of the current Action
    */
   void setCategory(const char *category);
@@ -604,21 +604,21 @@ public:
 
   /**
    * @brief Get the remaining time of the current action after updating the resource
-   * 
+   *
    * @return The remaining time
    */
   virtual double getRemains();
 
   /**
    * @brief Get the remaining time of the current action without updating the resource
-   * 
+   *
    * @return The remaining time
    */
   double getRemainsNoUpdate();
 
   /**
    * @brief Get the priority of the current Action
-   * 
+   *
    * @return The priority of the current Action
    */
   double getPriority() {return m_priority;};
@@ -626,7 +626,7 @@ public:
   /**
    * @brief Get the state set in which the action is
    * @details [TODO]
-   * 
+   *
    * @return The state set in which the action is
    */
   ActionListPtr getStateSet() {return p_stateSet;};
@@ -649,7 +649,7 @@ private:
   /**
    * @brief Share the resources to the actions
    * @details [TODO]
-   * 
+   *
    * @param now [TODO]
    * @return in how much time the next action may terminatedescription]
    */
@@ -658,7 +658,7 @@ private:
   /**
    * @brief Update the current action state
    * @details [TODO]
-   * 
+   *
    * @param now [TODO]
    * @param delta [TODO]
    */
@@ -667,7 +667,7 @@ private:
   /**
    * @brief Update the [TODO]
    * @details [TODO]
-   * 
+   *
    * @param id [TODO]
    * @param event_type [TODO]
    * @param value [TODO]
