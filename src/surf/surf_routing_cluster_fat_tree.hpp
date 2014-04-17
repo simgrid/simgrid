@@ -65,8 +65,8 @@ public:
 protected:
   //description of a PGFT (TODO : better doc)
   unsigned int levels;
-  std::vector<int> lowerLevelNodesNumber;
-  std::vector<int> upperLevelNodesNumber;
+  std::vector<int> lowerLevelNodesNumber; // number of children by node
+  std::vector<int> upperLevelNodesNumber; // number of parents by node
   std::vector<int> lowerLevelPortsNumber;
   
   std::vector<FatTreeNode*> nodes;
@@ -74,6 +74,6 @@ protected:
   std::vector<unsigned int> nodesByLevel;
 
   void addLink(FatTreeNode *parent, FatTreeNode *child);
-  void getLevelPosition(const unsigned int level, int &position, int &size);
+  void getLevelPosition(const unsigned int level, int *position, int *size);
 };
 #endif

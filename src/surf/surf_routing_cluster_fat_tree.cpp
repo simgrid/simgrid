@@ -62,15 +62,23 @@ void AsClusterFatTree::create_links(sg_platf_cluster_cbarg_t cluster) {
       for (unsigned int j = 0 ; j < this->nodesByLevel[i] ; j++) {
         this->nodes[k]->level = i;
         this->nodes[k]->position = j;
+        if(i != 0) {
+          int position, size;
+          this->getLevelPosition(i - 1, &position, &size); // TODO : check position and size ?
+          for (unsigned int l = this->upperLevelNodesNumber[i] * j ;
+               l < this->upperLevelNodesNumber[i] * (j + 1) ; l++)
+            this->addLink(this->nodes[position + l], this->nodes[k]);
+        }
+        k++;
       }
     }
     
 }
 
-void AsClusterFatTree::getLevelPosition(const unsigned  int level, int &position, int &size) {
+void AsClusterFatTree::getLevelPosition(const unsigned  int level, int *position, int *size) {
   if (level > this->levels - 1) {
-    position = -1;
-    size =  -1;
+    *position = -1;
+    *size =  -1;
     return;
   }
   int tempPosition = 0;
@@ -78,8 +86,8 @@ void AsClusterFatTree::getLevelPosition(const unsigned  int level, int &position
   for (unsigned int i = 0 ; i < level ; i++) {
     tempPosition += this->nodesByLevel[i];
   }
-  position = tempPosition;
-  size = this->nodesByLevel[level];
+  *position = tempPosition;
+  *size = this->nodesByLevel[level];
 }
 
 void AsClusterFatTree::addNodes(std::vector<int> const& id) {
