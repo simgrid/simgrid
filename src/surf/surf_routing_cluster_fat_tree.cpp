@@ -10,7 +10,7 @@
 AsClusterFatTree::AsClusterFatTree() : levels(0) {}
 
 AsClusterFatTree::~AsClusterFatTree() {
-  for (unsigned int i = 0 ; i < this->nodes.size() ; i++) {
+  for (int i = 0 ; i < this->nodes.size() ; i++) {
     delete this->nodes[i];
   }
 }
@@ -31,7 +31,7 @@ void AsClusterFatTree::create_links(sg_platf_cluster_cbarg_t cluster) {
     return;
   }
   this->nodesByLevel.resize(this->levels, 0);
-  unsigned int nodesRequired = 0;
+  int nodesRequired = 0;
 
 
     for (int i = 0 ; i < this->levels ; i++) {
@@ -84,15 +84,15 @@ void AsClusterFatTree::getLevelPosition(const int level, int &position, int &siz
 }
 
 void AsClusterFatTree::addNodes(std::vector<int> const& id) {
-  for (unsigned int i = 0 ; i < id.size() ; i++) {
+  for (int i = 0 ; i < id.size() ; i++) {
     this->nodes.push_back(new FatTreeNode(id[i]));
   }
 }
 
 void AsClusterFatTree::addLink(FatTreeNode *parent, FatTreeNode *child) {
   using std::make_pair;
-  if ((int)parent->children.size() == this->nodesByLevel[parent->level] ||
-      (int)child->parents.size()   == this->nodesByLevel[child->level]) {
+  if (parent->children.size() == this->nodesByLevel[parent->level] ||
+      child->parents.size()   == this->nodesByLevel[child->level]) {
     /* NB : This case should never happen, if this private function is not misused,
      * so should we keep this test, keep it only for debug, throw an exception
      * or get rid of it ? In all cases, anytime we get in there, code should be
@@ -133,7 +133,7 @@ void AsClusterFatTree::parse_specific_arguments(sg_platf_cluster_cbarg_t
 
   // Then, a l-sized vector standing for the childs number by level
   boost::split(tmp, parameters[1], boost::is_any_of(","));
-  if((int)tmp.size() != this->levels) {
+  if(tmp.size() != this->levels) {
     surf_parse_error("Fat trees are defined by the levels number and 3 vectors" 
                      ", see the documentation for more informations"); 
   }
@@ -143,7 +143,7 @@ void AsClusterFatTree::parse_specific_arguments(sg_platf_cluster_cbarg_t
   
   // Then, a l-sized vector standing for the parents number by level
   boost::split(tmp, parameters[2], boost::is_any_of(","));
-  if((int)tmp.size() != this->levels) {
+  if(tmp.size() != this->levels) {
     surf_parse_error("Fat trees are defined by the levels number and 3 vectors" 
                      ", see the documentation for more informations"); 
   }
@@ -153,7 +153,7 @@ void AsClusterFatTree::parse_specific_arguments(sg_platf_cluster_cbarg_t
   
   // Finally, a l-sized vector standing for the ports number with the lower level
   boost::split(tmp, parameters[3], boost::is_any_of(","));
-  if((int)tmp.size() != this->levels) {
+  if(tmp.size() != this->levels) {
     surf_parse_error("Fat trees are defined by the levels number and 3 vectors" 
                      ", see the documentation for more informations"); 
     

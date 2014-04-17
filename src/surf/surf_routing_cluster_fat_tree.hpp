@@ -64,7 +64,7 @@ public:
 
 protected:
   //description of a PGFT (TODO : better doc)
-  int levels;
+  unsigned int levels;
   std::vector<int> lowerLevelNodesNumber;
   std::vector<int> upperLevelNodesNumber;
   std::vector<int> lowerLevelPortsNumber;
