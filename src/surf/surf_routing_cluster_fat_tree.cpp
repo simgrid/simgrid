@@ -64,7 +64,6 @@ void AsClusterFatTree::create_links(sg_platf_cluster_cbarg_t cluster) {
         this->nodes[k]->position = j;
       }
     }
-
     
 }
 
@@ -173,16 +172,16 @@ void AsClusterFatTree::generateDotFile(const string& filename) const {
   
   if(file.is_open()) {
     // That could also be greatly clarified with C++11
-    // std::map<std::pair<int,int>,FatTreeLink*>::iterator iter;
-    // file << "graph AsClusterFatTree {\n";
-    // for (iter = this->links.begin() ; iter != this->links.end() ; iter++ ) {
-    //   for (int j = 0 ; j < iter->second->ports ; j++) {
-    //     file << iter->second->source->id 
-    //          << " -- " 
-    //          << iter->second->destination->id
-    //          << ";\n";
-    //   }
-    //}
+    std::map<std::pair<int,int>,FatTreeLink*>::const_iterator iter;
+    file << "graph AsClusterFatTree {\n";
+    for (iter = this->links.begin() ; iter != this->links.end() ; iter++ ) {
+      for (unsigned int j = 0 ; j < iter->second->ports ; j++) {
+        file << iter->second->source->id
+             << " -- "
+             << iter->second->destination->id
+             << ";\n";
+      }
+    }
     file << "}";
     file.close();
   }
