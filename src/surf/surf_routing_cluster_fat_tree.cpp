@@ -10,7 +10,7 @@
 AsClusterFatTree::AsClusterFatTree() : levels(0) {}
 
 AsClusterFatTree::~AsClusterFatTree() {
-  for (int i = 0 ; i < this->nodes.size() ; i++) {
+  for (unsigned int i = 0 ; i < this->nodes.size() ; i++) {
     delete this->nodes[i];
   }
 }
@@ -18,7 +18,7 @@ AsClusterFatTree::~AsClusterFatTree() {
 void AsClusterFatTree::getRouteAndLatency(RoutingEdgePtr src,
                                           RoutingEdgePtr dst,
                                           sg_platf_route_cbarg_t into,
-                                          double *latency) const{
+                                          double *latency) {
   // TODO
 }
 
@@ -31,17 +31,17 @@ void AsClusterFatTree::create_links(sg_platf_cluster_cbarg_t cluster) {
     return;
   }
   this->nodesByLevel.resize(this->levels, 0);
-  int nodesRequired = 0;
+  unsigned int nodesRequired = 0;
 
 
-    for (int i = 0 ; i < this->levels ; i++) {
+    for (unsigned int i = 0 ; i < this->levels ; i++) {
       int nodesInThisLevel = 1;
       
-      for (int j = 0 ;  j < i ; j++) {
+      for (unsigned int j = 0 ;  j < i ; j++) {
         nodesInThisLevel *= this->upperLevelNodesNumber[j];
       }
       
-      for (int j = i+1 ; j < this->levels ; j++) {
+      for (unsigned int j = i+1 ; j < this->levels ; j++) {
         nodesInThisLevel *= this->lowerLevelNodesNumber[j];
       }
 
@@ -58,8 +58,8 @@ void AsClusterFatTree::create_links(sg_platf_cluster_cbarg_t cluster) {
 
     // Nodes are totally ordered, by level and then by position, in this->nodes
     int k = 0;
-    for (int i = 0 ; i < this->levels ; i++) {
-      for (int j = 0 ; j < this->nodesByLevel[i] ; j++) {
+    for (unsigned int i = 0 ; i < this->levels ; i++) {
+      for (unsigned int j = 0 ; j < this->nodesByLevel[i] ; j++) {
         this->nodes[k]->level = i;
         this->nodes[k]->position = j;
       }
@@ -68,7 +68,7 @@ void AsClusterFatTree::create_links(sg_platf_cluster_cbarg_t cluster) {
     
 }
 
-void AsClusterFatTree::getLevelPosition(const int level, int &position, int &size) {
+void AsClusterFatTree::getLevelPosition(const unsigned  int level, int &position, int &size) {
   if (level > this->levels - 1) {
     position = -1;
     size =  -1;
@@ -76,7 +76,7 @@ void AsClusterFatTree::getLevelPosition(const int level, int &position, int &siz
   }
   int tempPosition = 0;
 
-  for (int i = 0 ; i < level ; i++) {
+  for (unsigned int i = 0 ; i < level ; i++) {
     tempPosition += this->nodesByLevel[i];
   }
   position = tempPosition;
@@ -84,7 +84,7 @@ void AsClusterFatTree::getLevelPosition(const int level, int &position, int &siz
 }
 
 void AsClusterFatTree::addNodes(std::vector<int> const& id) {
-  for (int i = 0 ; i < id.size() ; i++) {
+  for (unsigned int  i = 0 ; i < id.size() ; i++) {
     this->nodes.push_back(new FatTreeNode(id[i]));
   }
 }

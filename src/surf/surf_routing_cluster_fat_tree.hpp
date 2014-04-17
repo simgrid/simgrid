@@ -53,7 +53,7 @@ public:
   ~AsClusterFatTree();
   virtual void getRouteAndLatency(RoutingEdgePtr src, RoutingEdgePtr dst,
                                   sg_platf_route_cbarg_t into,
-                                  double *latency) const;
+                                  double *latency);
   // virtual void getRouteAndLatency(const int src, const int dst,
   //                                 std::vector<NetworkLink> *route,
   //                                 double *latency) const;
@@ -71,9 +71,9 @@ protected:
   
   std::vector<FatTreeNode*> nodes;
   std::map<std::pair<int,int>, FatTreeLink*> links;
-  std::vector<int> nodesByLevel;
+  std::vector<unsigned int> nodesByLevel;
 
   void addLink(FatTreeNode *parent, FatTreeNode *child);
-  void getLevelPosition(const int level, int &position, int &size);
+  void getLevelPosition(const unsigned int level, int &position, int &size);
 };
 #endif
