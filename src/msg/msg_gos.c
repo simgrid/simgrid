@@ -58,7 +58,7 @@ msg_error_t MSG_parallel_task_execute(msg_task_t task)
 
   xbt_assert((!simdata->compute) && (task->simdata->isused == 0),
              "This task is executed somewhere else. Go fix your code! %d",
-             task->simdata->isused);
+             task->simdata->isused!=NULL);
 
   XBT_DEBUG("Computing on %s", MSG_process_get_name(MSG_process_self()));
 
@@ -71,8 +71,10 @@ msg_error_t MSG_parallel_task_execute(msg_task_t task)
 
 
   TRY {
-
-    simdata->isused=1;
+    if (msg_global->multiple_backtraces)
+      MSG_BT(simdata->isused, "Using Backtrace");
+    else
+      simdata->isused = (void*)1;
 
     if (simdata->host_nb > 0) {
       simdata->compute = simcall_host_parallel_execute(task->name,
@@ -405,10 +407,20 @@ msg_comm_t MSG_task_isend_internal(msg_task_t task, const char *alias,
   t_simdata->sender = process;
   t_simdata->source = ((simdata_process_t) SIMIX_process_self_get_data(process))->m_host;
 
-  xbt_assert(t_simdata->isused == 0,
-              "This task is still being used somewhere else. You cannot send it now. Go fix your code!");
+  if (t_simdata->isused != 0) {
+    if (msg_global->multiple_backtraces){
+      XBT_ERROR("This task is already used in there:");
+      xbt_backtrace_display(t_simdata->isused);
+      THROWF(unknown_error, 0, "And you try to reuse it from here. You cannot send it now. Go fix your code!");
+    } else {
+      THROWF(unknown_error, 0, "This task is still being used somewhere else. You cannot send it now. Go fix your code! (use --cfg=msg/multiple_backtraces:on to get the backtrace of the other process)");
+    }
+  }
 
-  t_simdata->isused = 1;
+  if (msg_global->multiple_backtraces)
+    MSG_BT(t_simdata->isused, "Using Backtrace");
+  else
+    t_simdata->isused = (void*)1;
   t_simdata->comm = NULL;
   msg_global->sent_msg++;
 

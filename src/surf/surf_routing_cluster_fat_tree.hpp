@@ -17,6 +17,9 @@
  * should certainly be checked for)
  */
 
+/* TODO : limiter link ? Loopback?
+ *
+ */
 
 class FatTreeNode {
 public:
@@ -36,15 +39,19 @@ public:
 
 class FatTreeLink {
 public:
+  FatTreeLink(sg_platf_cluster_cbarg_t cluster, FatTreeNode *source,
+              FatTreeNode *destination, unsigned int ports = 0);
   unsigned int ports;
-  std::vector<s_sg_platf_link_cbarg_t> linksUp; // From source to destination
-  std::vector<s_sg_platf_link_cbarg_t> linksDown; // From destination to source
+  /* Links are dependant of the chosen network model, but must implement 
+   * NetworkLink
+   */
+   std::vector<NetworkLink*> linksUp; // From source to destination
+  std::vector<NetworkLink*> linksDown; // From destination to source
   /* As it is symetric, it might as well be first / second instead
    * of source / destination
    */
   FatTreeNode *source; 
   FatTreeNode *destination;
-  //FatTreeLink(FatTreeNode *source, FatTreeNode *destination, unsigned int ports = 0);
 };
 
 class AsClusterFatTree : public AsCluster {
@@ -67,13 +74,14 @@ protected:
   unsigned int levels;
   std::vector<int> lowerLevelNodesNumber; // number of children by node
   std::vector<int> upperLevelNodesNumber; // number of parents by node
-  std::vector<int> lowerLevelPortsNumber;
+  std::vector<int> lowerLevelPortsNumber; // ports between each level l and l-1
   
   std::vector<FatTreeNode*> nodes;
   std::map<std::pair<int,int>, FatTreeLink*> links;
   std::vector<unsigned int> nodesByLevel;
 
-  void addLink(FatTreeNode *parent, FatTreeNode *child);
+  void addLink(sg_platf_cluster_cbarg_t cluster, FatTreeNode *parent,
+               FatTreeNode *child);
   void getLevelPosition(const unsigned int level, int *position, int *size);
 };
 #endif
