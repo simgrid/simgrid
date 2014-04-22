@@ -132,7 +132,10 @@ MSG_mailbox_get_task_ext_bounded(msg_mailbox_t mailbox, msg_task_t * task,
   TRY {
     simcall_comm_recv(mailbox, task, NULL, NULL, NULL, timeout, rate);
     XBT_DEBUG("Got task %s from %p",(*task)->name,mailbox);
-    (*task)->simdata->isused=0;
+    simdata_task_t simdata = (*task)->simdata;
+    if (msg_global->debug_multiple_use && simdata->isused!=0)
+      xbt_ex_free(*(xbt_ex_t*)simdata->isused);
+    simdata->isused = 0;
   }
   CATCH(e) {
     switch (e.category) {
@@ -181,16 +184,18 @@ MSG_mailbox_put_with_timeout(msg_mailbox_t mailbox, msg_task_t task,
   t_simdata->source = ((simdata_process_t) SIMIX_process_self_get_data(process))->m_host;
 
   if (t_simdata->isused != 0) {
-    if (msg_global->multiple_backtraces){
+    if (msg_global->debug_multiple_use){
       XBT_ERROR("This task is already used in there:");
       xbt_backtrace_display(t_simdata->isused);
-      THROWF(unknown_error, 0, "And you try to reuse it from here. You cannot send it now. Go fix your code!");
+      XBT_ERROR("And you try to reuse it from here:");
+      xbt_backtrace_display_current();
     } else {
-      THROWF(unknown_error, 0, "This task is still being used somewhere else. You cannot send it now. Go fix your code! (use --cfg=msg/multiple_backtraces:on to get the backtrace of the other process)");
+      xbt_assert(t_simdata->isused == 0,
+                 "This task is still being used somewhere else. You cannot send it now. Go fix your code! (use --cfg=msg/debug_multiple_use:on to get the backtrace of the other process)");
     }
   }
 
-  if (msg_global->multiple_backtraces)
+  if (msg_global->debug_multiple_use)
     MSG_BT(t_simdata->isused, "Using Backtrace");
   else
     t_simdata->isused = (void*)1;
@@ -232,6 +237,8 @@ MSG_mailbox_put_with_timeout(msg_mailbox_t mailbox, msg_task_t task,
     xbt_ex_free(e);
 
     /* If the send failed, it is not used anymore */
+    if (msg_global->debug_multiple_use && t_simdata->isused!=0)
+      xbt_ex_free(*(xbt_ex_t*)t_simdata->isused);
     t_simdata->isused = 0;
   }
 

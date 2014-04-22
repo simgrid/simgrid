@@ -10,8 +10,8 @@
 #include "xbt/log.h"
 
 /** @addtogroup m_task_management
- *    
- * 
+ *
+ *
  *  Since most scheduling algorithms rely on a concept of task
  *  that can be either <em>computed</em> locally or
  *  <em>transferred</em> on another processor, it seems to be the
@@ -310,7 +310,10 @@ msg_error_t MSG_task_cancel(msg_task_t task)
   }
   else if (task->simdata->comm) {
     simcall_comm_cancel(task->simdata->comm);
-    task->simdata->isused = 0;
+    simdata_task_t simdata = task->simdata;
+    if (msg_global->debug_multiple_use && simdata->isused!=0)
+      xbt_ex_free(*(xbt_ex_t*)simdata->isused);
+    simdata->isused = 0;
   }
   return MSG_OK;
 }
@@ -351,7 +354,7 @@ void MSG_task_set_compute_duration(msg_task_t task,
  * \brief set the amount data attached with a task #msg_task_t.
  *
  * \warning If the transfer is ongoing (already started and not finished),
- * it is not modified by this call. 
+ * it is not modified by this call.
  */
 
 void MSG_task_set_data_size(msg_task_t task,
@@ -428,7 +431,7 @@ double MSG_task_get_data_size(msg_task_t task)
 
 
 /** \ingroup m_task_management
- * \brief Changes the priority of a computation task. This priority doesn't affect 
+ * \brief Changes the priority of a computation task. This priority doesn't affect
  *        the transfer rate. A priority of 2 will make a task receive two times more
  *        cpu power than the other ones.
  *

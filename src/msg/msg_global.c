@@ -25,9 +25,9 @@ static void MSG_exit(void);
 
 /********************************* MSG **************************************/
 
-static void _sg_cfg_cb_msg_multiple_backtraces(const char *name, int pos)
+static void _sg_cfg_cb_msg_debug_multiple_use(const char *name, int pos)
 {
-  msg_global->multiple_backtraces = xbt_cfg_get_boolean(_sg_cfg_set, name);
+  msg_global->debug_multiple_use = xbt_cfg_get_boolean(_sg_cfg_set, name);
 }
 
 /**
@@ -46,10 +46,10 @@ void MSG_init_nocheck(int *argc, char **argv) {
 
     msg_global = xbt_new0(s_MSG_Global_t, 1);
 
-    xbt_cfg_register(&_sg_cfg_set, "msg/multiple_backtraces",
-                     "Keep the severals backtraces",
-                     xbt_cfgelm_boolean, 1, 1, _sg_cfg_cb_msg_multiple_backtraces, NULL);
-    xbt_cfg_setdefault_boolean(_sg_cfg_set, "msg/multiple_backtraces", "no");
+    xbt_cfg_register(&_sg_cfg_set, "msg/debug_multiple_use",
+                     "Print backtraces of both processes when there is a conflict of multiple use of a task",
+                     xbt_cfgelm_boolean, 1, 1, _sg_cfg_cb_msg_debug_multiple_use, NULL);
+    xbt_cfg_setdefault_boolean(_sg_cfg_set, "msg/debug_multiple_use", "no");
 
     SIMIX_global_init(argc, argv);
 

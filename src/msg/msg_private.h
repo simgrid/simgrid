@@ -130,7 +130,7 @@ typedef struct MSG_Global {
   int max_channel;
 #endif
   int session;
-  int multiple_backtraces;
+  int debug_multiple_use;
   unsigned long int sent_msg;   /* Total amount of messages sent during the simulation */
   void (*task_copy_callback) (msg_task_t task, msg_process_t src, msg_process_t dst);
   void_f_pvoid_t process_data_cleanup;

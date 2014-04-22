@@ -71,7 +71,7 @@ msg_error_t MSG_parallel_task_execute(msg_task_t task)
 
 
   TRY {
-    if (msg_global->multiple_backtraces)
+    if (msg_global->debug_multiple_use)
       MSG_BT(simdata->isused, "Using Backtrace");
     else
       simdata->isused = (void*)1;
@@ -105,7 +105,9 @@ msg_error_t MSG_parallel_task_execute(msg_task_t task)
 
     p_simdata->waiting_action = NULL;
 
-    simdata->isused=0;
+    if (msg_global->debug_multiple_use && simdata->isused!=0)
+      xbt_ex_free(*(xbt_ex_t*)simdata->isused);
+    simdata->isused = 0;
 
     XBT_DEBUG("Execution task '%s' finished in state %d",
               task->name, (int)comp_state);
@@ -408,16 +410,18 @@ msg_comm_t MSG_task_isend_internal(msg_task_t task, const char *alias,
   t_simdata->source = ((simdata_process_t) SIMIX_process_self_get_data(process))->m_host;
 
   if (t_simdata->isused != 0) {
-    if (msg_global->multiple_backtraces){
+    if (msg_global->debug_multiple_use){
       XBT_ERROR("This task is already used in there:");
       xbt_backtrace_display(t_simdata->isused);
-      THROWF(unknown_error, 0, "And you try to reuse it from here. You cannot send it now. Go fix your code!");
+      XBT_ERROR("And you try to reuse it from here:");
+      xbt_backtrace_display_current();
     } else {
-      THROWF(unknown_error, 0, "This task is still being used somewhere else. You cannot send it now. Go fix your code! (use --cfg=msg/multiple_backtraces:on to get the backtrace of the other process)");
+      xbt_assert(t_simdata->isused == 0,
+                 "This task is still being used somewhere else. You cannot send it now. Go fix your code! (use --cfg=msg/debug_multiple_use:on to get the backtrace of the other process)");
     }
   }
 
-  if (msg_global->multiple_backtraces)
+  if (msg_global->debug_multiple_use)
     MSG_BT(t_simdata->isused, "Using Backtrace");
   else
     t_simdata->isused = (void*)1;
@@ -626,7 +630,10 @@ int MSG_comm_test(msg_comm_t comm)
 
     if (finished && comm->task_received != NULL) {
       /* I am the receiver */
-      (*comm->task_received)->simdata->isused = 0;
+      simdata_task_t simdata = (*comm->task_received)->simdata;
+      if (msg_global->debug_multiple_use && simdata->isused!=0)
+        xbt_ex_free(*(xbt_ex_t*)simdata->isused);
+      simdata->isused = 0;
     }
   }
   CATCH(e) {
@@ -700,7 +707,10 @@ int MSG_comm_testany(xbt_dynar_t comms)
 
     if (status == MSG_OK && comm->task_received != NULL) {
       /* I am the receiver */
-      (*comm->task_received)->simdata->isused = 0;
+      simdata_task_t simdata = (*comm->task_received)->simdata;
+      if (msg_global->debug_multiple_use && simdata->isused!=0)
+        xbt_ex_free(*(xbt_ex_t*)simdata->isused);
+      simdata->isused = 0;
     }
   }
 
@@ -733,7 +743,10 @@ msg_error_t MSG_comm_wait(msg_comm_t comm, double timeout)
 
     if (comm->task_received != NULL) {
       /* I am the receiver */
-      (*comm->task_received)->simdata->isused = 0;
+      simdata_task_t simdata = (*comm->task_received)->simdata;
+      if (msg_global->debug_multiple_use && simdata->isused!=0)
+        xbt_ex_free(*(xbt_ex_t*)simdata->isused);
+      simdata->isused = 0;
     }
 
     /* FIXME: these functions are not traceable */
@@ -820,7 +833,10 @@ int MSG_comm_waitany(xbt_dynar_t comms)
 
   if (comm->task_received != NULL) {
     /* I am the receiver */
-    (*comm->task_received)->simdata->isused = 0;
+    simdata_task_t simdata = (*comm->task_received)->simdata;
+    if (msg_global->debug_multiple_use && simdata->isused!=0)
+      xbt_ex_free(*(xbt_ex_t*)simdata->isused);
+    simdata->isused = 0;
   }
 
   return finished_index;
