@@ -305,7 +305,7 @@ MPI_Comm smpi_process_comm_self(void)
   smpi_process_data_t data = smpi_process_data();
   if(data->comm_self==MPI_COMM_NULL){
     MPI_Group group = smpi_group_new(1);
-    data->comm_self = smpi_comm_new(group);
+    data->comm_self = smpi_comm_new(group, NULL);
     smpi_group_set_mapping(group, smpi_process_index(), 0);
   }
 
@@ -400,7 +400,7 @@ void smpi_global_init(void)
     process_data[i]->sampling = 0;
   }
   group = smpi_group_new(process_count);
-  MPI_COMM_WORLD = smpi_comm_new(group);
+  MPI_COMM_WORLD = smpi_comm_new(group, NULL);
   MPI_UNIVERSE_SIZE = smpi_comm_size(MPI_COMM_WORLD);
   for (i = 0; i < process_count; i++) {
     smpi_group_set_mapping(group, i, i);
