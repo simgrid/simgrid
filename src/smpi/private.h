@@ -139,6 +139,9 @@ double smpi_process_simulated_elapsed(void);
 void smpi_process_set_sampling(int s);
 int smpi_process_get_sampling(void);
 
+void smpi_comm_copy_buffer_callback(smx_action_t comm,
+                                           void *buff, size_t buff_size);
+
 void print_request(const char *message, MPI_Request request);
 
 void smpi_global_init(void);

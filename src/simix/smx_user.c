@@ -935,7 +935,8 @@ smx_process_t simcall_rdv_get_receiver(smx_rdv_t rdv)
  */
 void simcall_comm_send(smx_rdv_t rdv, double task_size, double rate,
                          void *src_buff, size_t src_buff_size,
-                         int (*match_fun)(void *, void *, smx_action_t), void *data,
+                         int (*match_fun)(void *, void *, smx_action_t),
+                         void (*copy_data_fun)(smx_action_t, void*, size_t), void *data,
                          double timeout)
 {
   /* checking for infinite values */
@@ -949,13 +950,13 @@ void simcall_comm_send(smx_rdv_t rdv, double task_size, double rate,
     /* the model-checker wants two separate simcalls */
     smx_action_t comm = NULL; /* MC needs the comm to be set to NULL during the simcall */
     comm = simcall_comm_isend(rdv, task_size, rate,
-        src_buff, src_buff_size, match_fun, NULL, data, 0);
+        src_buff, src_buff_size, match_fun, NULL, copy_data_fun, data, 0);
     simcall_comm_wait(comm, timeout);
     comm = NULL;
   }
   else {
     simcall_BODY_comm_send(rdv, task_size, rate, src_buff, src_buff_size,
-                         match_fun, data, timeout);
+                         match_fun, copy_data_fun, data, timeout);
   }
 }
 
@@ -966,6 +967,7 @@ smx_action_t simcall_comm_isend(smx_rdv_t rdv, double task_size, double rate,
                               void *src_buff, size_t src_buff_size,
                               int (*match_fun)(void *, void *, smx_action_t),
                               void (*clean_fun)(void *),
+                              void (*copy_data_fun)(smx_action_t, void*, size_t),
                               void *data,
                               int detached)
 {
@@ -977,7 +979,7 @@ smx_action_t simcall_comm_isend(smx_rdv_t rdv, double task_size, double rate,
 
   return simcall_BODY_comm_isend(rdv, task_size, rate, src_buff,
                                  src_buff_size, match_fun,
-                                 clean_fun, data, detached);
+                                 clean_fun, copy_data_fun, data, detached);
 }
 
 /**
@@ -985,6 +987,7 @@ smx_action_t simcall_comm_isend(smx_rdv_t rdv, double task_size, double rate,
  */
 void simcall_comm_recv(smx_rdv_t rdv, void *dst_buff, size_t * dst_buff_size,
                        int (*match_fun)(void *, void *, smx_action_t),
+                       void (*copy_data_fun)(smx_action_t, void*, size_t),
                        void *data, double timeout, double rate)
 {
   xbt_assert(isfinite(timeout), "timeout is not finite!");
@@ -994,13 +997,13 @@ void simcall_comm_recv(smx_rdv_t rdv, void *dst_buff, size_t * dst_buff_size,
     /* the model-checker wants two separate simcalls */
     smx_action_t comm = NULL; /* MC needs the comm to be set to NULL during the simcall */
     comm = simcall_comm_irecv(rdv, dst_buff, dst_buff_size,
-                              match_fun, data, rate);
+                              match_fun, copy_data_fun, data, rate);
     simcall_comm_wait(comm, timeout);
     comm = NULL;
   }
   else {
     simcall_BODY_comm_recv(rdv, dst_buff, dst_buff_size,
-                           match_fun, data, timeout, rate);
+                           match_fun, copy_data_fun, data, timeout, rate);
   }
 }
 /**
@@ -1008,12 +1011,13 @@ void simcall_comm_recv(smx_rdv_t rdv, void *dst_buff, size_t * dst_buff_size,
  */
 smx_action_t simcall_comm_irecv(smx_rdv_t rdv, void *dst_buff, size_t *dst_buff_size,
                                 int (*match_fun)(void *, void *, smx_action_t),
+                                void (*copy_data_fun)(smx_action_t, void*, size_t),
                                 void *data, double rate)
 {
   xbt_assert(rdv, "No rendez-vous point defined for irecv");
 
   return simcall_BODY_comm_irecv(rdv, dst_buff, dst_buff_size,
-                                 match_fun, data, rate);
+                                 match_fun, copy_data_fun, data, rate);
 }
 
 /**

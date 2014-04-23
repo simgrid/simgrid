@@ -431,7 +431,7 @@ msg_comm_t MSG_task_isend_internal(msg_task_t task, const char *alias,
   /* Send it by calling SIMIX network layer */
   smx_action_t act = simcall_comm_isend(mailbox, t_simdata->message_size,
                                         t_simdata->rate, task, sizeof(void *),
-                                        match_fun, cleanup, match_data,detached);
+                                        match_fun, cleanup, NULL, match_data,detached);
   t_simdata->comm = act; /* FIXME: is the field t_simdata->comm still useful? */
 
   msg_comm_t comm;
@@ -607,7 +607,7 @@ msg_comm_t MSG_task_irecv_bounded(msg_task_t *task, const char *name,
   comm->task_sent = NULL;
   comm->task_received = task;
   comm->status = MSG_OK;
-  comm->s_comm = simcall_comm_irecv(rdv, task, NULL, NULL, NULL, rate);
+  comm->s_comm = simcall_comm_irecv(rdv, task, NULL, NULL, NULL, NULL, rate);
 
   return comm;
 }

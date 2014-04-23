@@ -130,7 +130,7 @@ MSG_mailbox_get_task_ext_bounded(msg_mailbox_t mailbox, msg_task_t * task,
 
   /* Try to receive it by calling SIMIX network layer */
   TRY {
-    simcall_comm_recv(mailbox, task, NULL, NULL, NULL, timeout, rate);
+    simcall_comm_recv(mailbox, task, NULL, NULL, NULL, NULL, timeout, rate);
     XBT_DEBUG("Got task %s from %p",(*task)->name,mailbox);
     if (msg_global->debug_multiple_use && (*task)->simdata->isused!=0)
       xbt_ex_free(*(xbt_ex_t*)(*task)->simdata->isused);
@@ -209,7 +209,7 @@ MSG_mailbox_put_with_timeout(msg_mailbox_t mailbox, msg_task_t task,
     smx_action_t comm = NULL; /* MC needs the comm to be set to NULL during the simix call  */
     comm = simcall_comm_isend(mailbox, t_simdata->message_size,
                                   t_simdata->rate, task, sizeof(void *),
-                                  NULL, NULL, task, 0);
+                                  NULL, NULL, NULL, task, 0);
 #ifdef HAVE_TRACING
     if (TRACE_is_enabled()) {
       simcall_set_category(comm, task->category);
