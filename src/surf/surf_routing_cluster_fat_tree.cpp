@@ -51,7 +51,7 @@ void AsClusterFatTree::create_links(sg_platf_cluster_cbarg_t cluster) {
    
   if(nodesRequired > this->nodes.size()) {
     surf_parse_error("There is not enough nodes to fit to the described topology."
-                     " Please check your platform description (We need %d nodes, we only got %lu)",
+                     " Please check your platform description (We need %d nodes, we only got %zu)",
                      nodesRequired, this->nodes.size());
     return;
   }
@@ -92,7 +92,7 @@ void AsClusterFatTree::getLevelPosition(const unsigned  int level, int *position
 }
 
 void AsClusterFatTree::addNodes(std::vector<int> const& id) {
-  for (unsigned int  i = 0 ; i < id.size() ; i++) {
+  for (size_t  i = 0 ; i < id.size() ; i++) {
     this->nodes.push_back(new FatTreeNode(id[i]));
   }
 }
@@ -146,7 +146,7 @@ void AsClusterFatTree::parse_specific_arguments(sg_platf_cluster_cbarg_t
     surf_parse_error("Fat trees are defined by the levels number and 3 vectors" 
                      ", see the documentation for more informations"); 
   }
-  for(unsigned int i = 0 ; i < tmp.size() ; i++){
+  for(size_t i = 0 ; i < tmp.size() ; i++){
     this->lowerLevelNodesNumber.push_back(std::atoi(tmp[i].c_str())); 
   }
   
@@ -156,7 +156,7 @@ void AsClusterFatTree::parse_specific_arguments(sg_platf_cluster_cbarg_t
     surf_parse_error("Fat trees are defined by the levels number and 3 vectors" 
                      ", see the documentation for more informations"); 
   }
-  for(unsigned int i = 0 ; i < tmp.size() ; i++){
+  for(size_t i = 0 ; i < tmp.size() ; i++){
     this->upperLevelNodesNumber.push_back(std::atoi(tmp[i].c_str())); 
   }
   
@@ -167,7 +167,7 @@ void AsClusterFatTree::parse_specific_arguments(sg_platf_cluster_cbarg_t
                      ", see the documentation for more informations"); 
     
   }
-  for(unsigned int i = 0 ; i < tmp.size() ; i++){
+  for(size_t i = 0 ; i < tmp.size() ; i++){
     this->lowerLevelPortsNumber.push_back(std::atoi(tmp[i].c_str())); 
   }
 }
