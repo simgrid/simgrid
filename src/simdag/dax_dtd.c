@@ -27,7 +27,7 @@
 #define FLEX_SCANNER
 #define YY_FLEX_MAJOR_VERSION 2
 #define YY_FLEX_MINOR_VERSION 5
-#define YY_FLEX_SUBMINOR_VERSION 35
+#define YY_FLEX_SUBMINOR_VERSION 39
 #if YY_FLEX_SUBMINOR_VERSION > 0
 #define FLEX_BETA
 #endif
@@ -180,7 +180,12 @@ typedef unsigned int flex_uint32_t;
 typedef struct yy_buffer_state *YY_BUFFER_STATE;
 #endif
 
-extern int dax_leng;
+#ifndef YY_TYPEDEF_YY_SIZE_T
+#define YY_TYPEDEF_YY_SIZE_T
+typedef size_t yy_size_t;
+#endif
+
+extern yy_size_t dax_leng;
 
 extern FILE *dax_in, *dax_out;
 
@@ -202,6 +207,13 @@ extern FILE *dax_in, *dax_out;
                     if ( dax_text[yyl] == '\n' )\
                         --dax_lineno;\
             }while(0)
+    #define YY_LINENO_REWIND_TO(dst) \
+            do {\
+                const char *p;\
+                for ( p = yy_cp-1; p >= (dst); --p)\
+                    if ( *p == '\n' )\
+                        --dax_lineno;\
+            }while(0)
     
 /* Return all but the first "n" matched characters back to the input stream. */
 #define yyless(n) \
@@ -218,11 +230,6 @@ extern FILE *dax_in, *dax_out;
 	while ( 0 )
 
 #define unput(c) yyunput( c, (yytext_ptr)  )
-
-#ifndef YY_TYPEDEF_YY_SIZE_T
-#define YY_TYPEDEF_YY_SIZE_T
-typedef size_t yy_size_t;
-#endif
 
 #ifndef YY_STRUCT_YY_BUFFER_STATE
 #define YY_STRUCT_YY_BUFFER_STATE
@@ -241,7 +248,7 @@ struct yy_buffer_state
 	/* Number of characters read into yy_ch_buf, not including EOB
 	 * characters.
 	 */
-	int yy_n_chars;
+	yy_size_t yy_n_chars;
 
 	/* Whether we "own" the buffer - i.e., we know we created it,
 	 * and can realloc() it to grow it, and should free() it to
@@ -311,8 +318,8 @@ static YY_BUFFER_STATE * yy_buffer_stack = 0; /**< Stack as an array. */
 
 /* yy_hold_char holds the character lost when dax_text is formed. */
 static char yy_hold_char;
-static int yy_n_chars;		/* number of characters read into yy_ch_buf */
-int dax_leng;
+static yy_size_t yy_n_chars;		/* number of characters read into yy_ch_buf */
+yy_size_t dax_leng;
 
 /* Points to current character in buffer. */
 static char *yy_c_buf_p = (char *) 0;
@@ -340,7 +347,7 @@ static void dax__init_buffer (YY_BUFFER_STATE b,FILE *file  );
 
 YY_BUFFER_STATE dax__scan_buffer (char *base,yy_size_t size  );
 YY_BUFFER_STATE dax__scan_string (yyconst char *yy_str  );
-YY_BUFFER_STATE dax__scan_bytes (yyconst char *bytes,int len  );
+YY_BUFFER_STATE dax__scan_bytes (yyconst char *bytes,yy_size_t len  );
 
 void *dax_alloc (yy_size_t  );
 void *dax_realloc (void *,yy_size_t  );
@@ -372,7 +379,7 @@ void dax_free (void *  );
 
 /* Begin user sect3 */
 
-#define dax_wrap(n) 1
+#define dax_wrap() 1
 #define YY_SKIP_YYWRAP
 
 typedef unsigned char YY_CHAR;
@@ -1337,81 +1344,81 @@ const char dax__flexml_version[] = "1.9.6";
 int dax__pcdata_ix;
 extern char *dax__bufferstack;
 #define dax__pcdata (dax__bufferstack + dax__pcdata_ix)
-AT_dax__adag_version AX_dax__adag_version;
-#define A_dax__adag_version (dax__bufferstack + AX_dax__adag_version)
-short int dax__adag_version_isset;
-AT_dax__uses_type AX_dax__uses_type;
-#define A_dax__uses_type (dax__bufferstack + AX_dax__uses_type)
-short int dax__uses_type_isset;
 AT_dax__uses_optional AX_dax__uses_optional;
 #define A_dax__uses_optional AX_dax__uses_optional
 short int dax__uses_optional_isset;
-AT_dax__adag_name AX_dax__adag_name;
-#define A_dax__adag_name (dax__bufferstack + AX_dax__adag_name)
-short int dax__adag_name_isset;
-AT_dax__child_ref AX_dax__child_ref;
-#define A_dax__child_ref (dax__bufferstack + AX_dax__child_ref)
-short int dax__child_ref_isset;
-AT_dax__adag_xmlns AX_dax__adag_xmlns;
-#define A_dax__adag_xmlns (dax__bufferstack + AX_dax__adag_xmlns)
-short int dax__adag_xmlns_isset;
-AT_dax__uses_transfer AX_dax__uses_transfer;
-#define A_dax__uses_transfer AX_dax__uses_transfer
-short int dax__uses_transfer_isset;
-AT_dax__job_id AX_dax__job_id;
-#define A_dax__job_id (dax__bufferstack + AX_dax__job_id)
-short int dax__job_id_isset;
-AT_dax__uses_file AX_dax__uses_file;
-#define A_dax__uses_file (dax__bufferstack + AX_dax__uses_file)
-short int dax__uses_file_isset;
+AT_dax__job_name AX_dax__job_name;
+#define A_dax__job_name (dax__bufferstack + AX_dax__job_name)
+short int dax__job_name_isset;
+AT_dax__job_namespace AX_dax__job_namespace;
+#define A_dax__job_namespace (dax__bufferstack + AX_dax__job_namespace)
+short int dax__job_namespace_isset;
+AT_dax__adag_fileCount AX_dax__adag_fileCount;
+#define A_dax__adag_fileCount (dax__bufferstack + AX_dax__adag_fileCount)
+short int dax__adag_fileCount_isset;
 AT_dax__parent_ref AX_dax__parent_ref;
 #define A_dax__parent_ref (dax__bufferstack + AX_dax__parent_ref)
 short int dax__parent_ref_isset;
-AT_dax__adag_count AX_dax__adag_count;
-#define A_dax__adag_count (dax__bufferstack + AX_dax__adag_count)
-short int dax__adag_count_isset;
-AT_dax__adag_xmlns_c_xsi AX_dax__adag_xmlns_c_xsi;
-#define A_dax__adag_xmlns_c_xsi (dax__bufferstack + AX_dax__adag_xmlns_c_xsi)
-short int dax__adag_xmlns_c_xsi_isset;
-AT_dax__adag_index AX_dax__adag_index;
-#define A_dax__adag_index (dax__bufferstack + AX_dax__adag_index)
-short int dax__adag_index_isset;
-AT_dax__uses_size AX_dax__uses_size;
-#define A_dax__uses_size (dax__bufferstack + AX_dax__uses_size)
-short int dax__uses_size_isset;
+AT_dax__uses_transfer AX_dax__uses_transfer;
+#define A_dax__uses_transfer AX_dax__uses_transfer
+short int dax__uses_transfer_isset;
 AT_dax__adag_childCount AX_dax__adag_childCount;
 #define A_dax__adag_childCount (dax__bufferstack + AX_dax__adag_childCount)
 short int dax__adag_childCount_isset;
 AT_dax__uses_link AX_dax__uses_link;
 #define A_dax__uses_link AX_dax__uses_link
 short int dax__uses_link_isset;
-AT_dax__job_runtime AX_dax__job_runtime;
-#define A_dax__job_runtime (dax__bufferstack + AX_dax__job_runtime)
-short int dax__job_runtime_isset;
+AT_dax__adag_xmlns_c_xsi AX_dax__adag_xmlns_c_xsi;
+#define A_dax__adag_xmlns_c_xsi (dax__bufferstack + AX_dax__adag_xmlns_c_xsi)
+short int dax__adag_xmlns_c_xsi_isset;
+AT_dax__job_id AX_dax__job_id;
+#define A_dax__job_id (dax__bufferstack + AX_dax__job_id)
+short int dax__job_id_isset;
 AT_dax__job_level AX_dax__job_level;
 #define A_dax__job_level (dax__bufferstack + AX_dax__job_level)
 short int dax__job_level_isset;
-AT_dax__job_namespace AX_dax__job_namespace;
-#define A_dax__job_namespace (dax__bufferstack + AX_dax__job_namespace)
-short int dax__job_namespace_isset;
-AT_dax__job_name AX_dax__job_name;
-#define A_dax__job_name (dax__bufferstack + AX_dax__job_name)
-short int dax__job_name_isset;
-AT_dax__adag_jobCount AX_dax__adag_jobCount;
-#define A_dax__adag_jobCount (dax__bufferstack + AX_dax__adag_jobCount)
-short int dax__adag_jobCount_isset;
-AT_dax__job_version AX_dax__job_version;
-#define A_dax__job_version (dax__bufferstack + AX_dax__job_version)
-short int dax__job_version_isset;
-AT_dax__adag_xsi_c_schemaLocation AX_dax__adag_xsi_c_schemaLocation;
-#define A_dax__adag_xsi_c_schemaLocation (dax__bufferstack + AX_dax__adag_xsi_c_schemaLocation)
-short int dax__adag_xsi_c_schemaLocation_isset;
+AT_dax__job_runtime AX_dax__job_runtime;
+#define A_dax__job_runtime (dax__bufferstack + AX_dax__job_runtime)
+short int dax__job_runtime_isset;
+AT_dax__uses_size AX_dax__uses_size;
+#define A_dax__uses_size (dax__bufferstack + AX_dax__uses_size)
+short int dax__uses_size_isset;
+AT_dax__child_ref AX_dax__child_ref;
+#define A_dax__child_ref (dax__bufferstack + AX_dax__child_ref)
+short int dax__child_ref_isset;
+AT_dax__adag_index AX_dax__adag_index;
+#define A_dax__adag_index (dax__bufferstack + AX_dax__adag_index)
+short int dax__adag_index_isset;
+AT_dax__adag_count AX_dax__adag_count;
+#define A_dax__adag_count (dax__bufferstack + AX_dax__adag_count)
+short int dax__adag_count_isset;
 AT_dax__uses_register AX_dax__uses_register;
 #define A_dax__uses_register AX_dax__uses_register
 short int dax__uses_register_isset;
-AT_dax__adag_fileCount AX_dax__adag_fileCount;
-#define A_dax__adag_fileCount (dax__bufferstack + AX_dax__adag_fileCount)
-short int dax__adag_fileCount_isset;
+AT_dax__adag_jobCount AX_dax__adag_jobCount;
+#define A_dax__adag_jobCount (dax__bufferstack + AX_dax__adag_jobCount)
+short int dax__adag_jobCount_isset;
+AT_dax__uses_file AX_dax__uses_file;
+#define A_dax__uses_file (dax__bufferstack + AX_dax__uses_file)
+short int dax__uses_file_isset;
+AT_dax__job_version AX_dax__job_version;
+#define A_dax__job_version (dax__bufferstack + AX_dax__job_version)
+short int dax__job_version_isset;
+AT_dax__adag_xmlns AX_dax__adag_xmlns;
+#define A_dax__adag_xmlns (dax__bufferstack + AX_dax__adag_xmlns)
+short int dax__adag_xmlns_isset;
+AT_dax__adag_xsi_c_schemaLocation AX_dax__adag_xsi_c_schemaLocation;
+#define A_dax__adag_xsi_c_schemaLocation (dax__bufferstack + AX_dax__adag_xsi_c_schemaLocation)
+short int dax__adag_xsi_c_schemaLocation_isset;
+AT_dax__adag_name AX_dax__adag_name;
+#define A_dax__adag_name (dax__bufferstack + AX_dax__adag_name)
+short int dax__adag_name_isset;
+AT_dax__uses_type AX_dax__uses_type;
+#define A_dax__uses_type (dax__bufferstack + AX_dax__uses_type)
+short int dax__uses_type_isset;
+AT_dax__adag_version AX_dax__adag_version;
+#define A_dax__adag_version (dax__bufferstack + AX_dax__adag_version)
+short int dax__adag_version_isset;
 
 /* XML state. */
 #ifdef FLEX_DEBUG
@@ -1637,7 +1644,7 @@ FILE *dax_get_out (void );
 
 void dax_set_out  (FILE * out_str  );
 
-int dax_get_leng (void );
+yy_size_t dax_get_leng (void );
 
 char *dax_get_text (void );
 
@@ -1791,6 +1798,34 @@ YY_DECL
 	register char *yy_cp, *yy_bp;
 	register int yy_act;
     
+	if ( !(yy_init) )
+		{
+		(yy_init) = 1;
+
+#ifdef YY_USER_INIT
+		YY_USER_INIT;
+#endif
+
+		if ( ! (yy_start) )
+			(yy_start) = 1;	/* first start state */
+
+		if ( ! dax_in )
+			dax_in = stdin;
+
+		if ( ! dax_out )
+			dax_out = stdout;
+
+		if ( ! YY_CURRENT_BUFFER ) {
+			dax_ensure_buffer_stack ();
+			YY_CURRENT_BUFFER_LVALUE =
+				dax__create_buffer(dax_in,YY_BUF_SIZE );
+		}
+
+		dax__load_buffer_state( );
+		}
+
+	{
+
  /* Bypass Flex's default INITIAL state and begin by parsing the XML prolog. */
  SET(PROLOG);
  reset_dax__parse_err_msg();
@@ -1853,32 +1888,6 @@ YY_DECL
 
  /* COMMENTS and PIs: handled uniformly for efficiency. */
 
-	if ( !(yy_init) )
-		{
-		(yy_init) = 1;
-
-#ifdef YY_USER_INIT
-		YY_USER_INIT;
-#endif
-
-		if ( ! (yy_start) )
-			(yy_start) = 1;	/* first start state */
-
-		if ( ! dax_in )
-			dax_in = stdin;
-
-		if ( ! dax_out )
-			dax_out = stdout;
-
-		if ( ! YY_CURRENT_BUFFER ) {
-			dax_ensure_buffer_stack ();
-			YY_CURRENT_BUFFER_LVALUE =
-				dax__create_buffer(dax_in,YY_BUF_SIZE );
-		}
-
-		dax__load_buffer_state( );
-		}
-
 	while ( 1 )		/* loops until end-of-file is reached */
 		{
 		yy_cp = (yy_c_buf_p);
@@ -1895,7 +1904,7 @@ YY_DECL
 yy_match:
 		do
 			{
-			register YY_CHAR yy_c = yy_ec[YY_SC_TO_UI(*yy_cp)];
+			register YY_CHAR yy_c = yy_ec[YY_SC_TO_UI(*yy_cp)] ;
 			if ( yy_accept[yy_current_state] )
 				{
 				(yy_last_accepting_state) = yy_current_state;
@@ -1925,7 +1934,7 @@ yy_find_action:
 
 		if ( yy_act != YY_END_OF_BUFFER && yy_rule_can_match_eol[yy_act] )
 			{
-			int yyl;
+			yy_size_t yyl;
 			for ( yyl = 0; yyl < dax_leng; ++yyl )
 				if ( dax_text[yyl] == '\n' )
 					   
@@ -2203,11 +2212,11 @@ case 44:
 YY_RULE_SETUP
 FAIL("Unexpected character `%c': `</adag>' expected.",dax_text[0]);
 	YY_BREAK
-case YY_STATE_EOF(S_dax__adag_1):
 case YY_STATE_EOF(S_dax__adag_5):
-case YY_STATE_EOF(E_dax__adag):
-case YY_STATE_EOF(S_dax__adag_3):
 case YY_STATE_EOF(S_dax__adag):
+case YY_STATE_EOF(S_dax__adag_3):
+case YY_STATE_EOF(E_dax__adag):
+case YY_STATE_EOF(S_dax__adag_1):
 FAIL("Premature EOF: `</adag>' expected.");
 	YY_BREAK
 
@@ -2350,9 +2359,9 @@ case 65:
 YY_RULE_SETUP
 FAIL("Unexpected character `%c': `</job>' expected.",dax_text[0]);
 	YY_BREAK
-case YY_STATE_EOF(S_dax__job):
-case YY_STATE_EOF(E_dax__job):
 case YY_STATE_EOF(S_dax__job_2):
+case YY_STATE_EOF(E_dax__job):
+case YY_STATE_EOF(S_dax__job):
 FAIL("Premature EOF: `</job>' expected.");
 	YY_BREAK
 
@@ -2486,7 +2495,7 @@ YY_RULE_SETUP
   if (!AX_dax__uses_size) FAIL("Required attribute `size' not set for `uses' element.");
   LEAVE; STag_dax__uses(); dax__pcdata_ix = 0; ETag_dax__uses(); popbuffer(); /* attribute */
   switch (YY_START) {
-   case S_dax__job: case S_dax__job_2: case S_dax__job_1: SET(S_dax__job_2); break;
+   case S_dax__job_1: case S_dax__job: case S_dax__job_2: SET(S_dax__job_2); break;
   }
  }
 	YY_BREAK
@@ -2510,7 +2519,7 @@ YY_RULE_SETUP
   ETag_dax__uses();
   popbuffer(); /* attribute */
   switch (YY_START) {
-   case S_dax__job: case S_dax__job_2: case S_dax__job_1: SET(S_dax__job_2); break;
+   case S_dax__job_1: case S_dax__job: case S_dax__job_2: SET(S_dax__job_2); break;
   }
  }
 	YY_BREAK
@@ -2565,7 +2574,7 @@ YY_RULE_SETUP
   if (!AX_dax__child_ref) FAIL("Required attribute `ref' not set for `child' element.");
   LEAVE; STag_dax__child(); dax__pcdata_ix = 0; ETag_dax__child(); popbuffer(); /* attribute */
   switch (YY_START) {
-   case S_dax__adag_1: case S_dax__adag_4: case S_dax__adag_5: case S_dax__adag_3: case S_dax__adag: SET(S_dax__adag_5); break;
+   case S_dax__adag: case S_dax__adag_5: case S_dax__adag_4: case S_dax__adag_1: case S_dax__adag_3: SET(S_dax__adag_5); break;
   }
  }
 	YY_BREAK
@@ -2589,7 +2598,7 @@ YY_RULE_SETUP
   ETag_dax__child();
   popbuffer(); /* attribute */
   switch (YY_START) {
-   case S_dax__adag_1: case S_dax__adag_4: case S_dax__adag_5: case S_dax__adag_3: case S_dax__adag: SET(S_dax__adag_5); break;
+   case S_dax__adag: case S_dax__adag_5: case S_dax__adag_4: case S_dax__adag_1: case S_dax__adag_3: SET(S_dax__adag_5); break;
   }
  }
 	YY_BREAK
@@ -2602,8 +2611,8 @@ case 107:
 YY_RULE_SETUP
 FAIL("Unexpected character `%c': `</child>' expected.",dax_text[0]);
 	YY_BREAK
-case YY_STATE_EOF(S_dax__child_2):
 case YY_STATE_EOF(E_dax__child):
+case YY_STATE_EOF(S_dax__child_2):
 case YY_STATE_EOF(S_dax__child):
 FAIL("Premature EOF: `</child>' expected.");
 	YY_BREAK
@@ -2646,7 +2655,7 @@ YY_RULE_SETUP
   if (!AX_dax__parent_ref) FAIL("Required attribute `ref' not set for `parent' element.");
   LEAVE; STag_dax__parent(); dax__pcdata_ix = 0; ETag_dax__parent(); popbuffer(); /* attribute */
   switch (YY_START) {
-   case S_dax__child_2: case S_dax__child: case S_dax__child_1: SET(S_dax__child_2); break;
+   case S_dax__child: case S_dax__child_2: case S_dax__child_1: SET(S_dax__child_2); break;
   }
  }
 	YY_BREAK
@@ -2670,7 +2679,7 @@ YY_RULE_SETUP
   ETag_dax__parent();
   popbuffer(); /* attribute */
   switch (YY_START) {
-   case S_dax__child_2: case S_dax__child: case S_dax__child_1: SET(S_dax__child_2); break;
+   case S_dax__child: case S_dax__child_2: case S_dax__child_1: SET(S_dax__child_2); break;
   }
  }
 	YY_BREAK
@@ -2940,6 +2949,7 @@ case YY_STATE_EOF(IMPOSSIBLE):
 			"fatal flex scanner internal error--no action found" );
 	} /* end of action switch */
 		} /* end of scanning one token */
+	} /* end of user's declarations */
 } /* end of dax_lex */
 
 /* yy_get_next_buffer - try to read in a new buffer
@@ -2995,21 +3005,21 @@ static int yy_get_next_buffer (void)
 
 	else
 		{
-			int num_to_read =
+			yy_size_t num_to_read =
 			YY_CURRENT_BUFFER_LVALUE->yy_buf_size - number_to_move - 1;
 
 		while ( num_to_read <= 0 )
 			{ /* Not enough room in the buffer - grow it. */
 
 			/* just a shorter name for the current buffer */
-			YY_BUFFER_STATE b = YY_CURRENT_BUFFER;
+			YY_BUFFER_STATE b = YY_CURRENT_BUFFER_LVALUE;
 
 			int yy_c_buf_p_offset =
 				(int) ((yy_c_buf_p) - b->yy_ch_buf);
 
 			if ( b->yy_is_our_buffer )
 				{
-				int new_size = b->yy_buf_size * 2;
+				yy_size_t new_size = b->yy_buf_size * 2;
 
 				if ( new_size <= 0 )
 					b->yy_buf_size += b->yy_buf_size / 8;
@@ -3040,7 +3050,7 @@ static int yy_get_next_buffer (void)
 
 		/* Read in more data. */
 		YY_INPUT( (&YY_CURRENT_BUFFER_LVALUE->yy_ch_buf[number_to_move]),
-			(yy_n_chars), (size_t) num_to_read );
+			(yy_n_chars), num_to_read );
 
 		YY_CURRENT_BUFFER_LVALUE->yy_n_chars = (yy_n_chars);
 		}
@@ -3135,7 +3145,7 @@ static int yy_get_next_buffer (void)
 	yy_current_state = yy_nxt[yy_base[yy_current_state] + (unsigned int) yy_c];
 	yy_is_jam = (yy_current_state == 774);
 
-	return yy_is_jam ? 0 : yy_current_state;
+		return yy_is_jam ? 0 : yy_current_state;
 }
 
 #ifndef YY_NO_INPUT
@@ -3162,7 +3172,7 @@ static int yy_get_next_buffer (void)
 
 		else
 			{ /* need more input */
-			int offset = (yy_c_buf_p) - (yytext_ptr);
+			yy_size_t offset = (yy_c_buf_p) - (yytext_ptr);
 			++(yy_c_buf_p);
 
 			switch ( yy_get_next_buffer(  ) )
@@ -3327,10 +3337,6 @@ static void dax__load_buffer_state  (void)
 	dax_free((void *) b  );
 }
 
-#ifndef __cplusplus
-extern int isatty (int );
-#endif /* __cplusplus */
-    
 /* Initializes or reinitializes a buffer.
  * This function is sometimes called more than once on the same buffer,
  * such as during a dax_restart() or at EOF.
@@ -3443,7 +3449,7 @@ void dax_pop_buffer_state (void)
  */
 static void dax_ensure_buffer_stack (void)
 {
-	int num_to_alloc;
+	yy_size_t num_to_alloc;
     
 	if (!(yy_buffer_stack)) {
 
@@ -3540,12 +3546,12 @@ YY_BUFFER_STATE dax__scan_string (yyconst char * yystr )
  * 
  * @return the newly allocated buffer state object.
  */
-YY_BUFFER_STATE dax__scan_bytes  (yyconst char * yybytes, int  _yybytes_len )
+YY_BUFFER_STATE dax__scan_bytes  (yyconst char * yybytes, yy_size_t  _yybytes_len )
 {
 	YY_BUFFER_STATE b;
 	char *buf;
 	yy_size_t n;
-	int i;
+	yy_size_t i;
     
 	/* Get memory for full buffer, including space for trailing EOB's. */
 	n = _yybytes_len + 2;
@@ -3659,7 +3665,7 @@ FILE *dax_get_out  (void)
 /** Get the length of the current token.
  * 
  */
-int dax_get_leng  (void)
+yy_size_t dax_get_leng  (void)
 {
         return dax_leng;
 }

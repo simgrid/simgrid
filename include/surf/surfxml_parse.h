@@ -13,6 +13,12 @@
 #include "xbt/dict.h"
 #include "surf/simgrid_dtd.h"
 
+
+#ifndef YY_TYPEDEF_YY_SIZE_T
+#define YY_TYPEDEF_YY_SIZE_T
+typedef size_t yy_size_t;
+#endif
+
 SG_BEGIN_DECL()
 
 XBT_PUBLIC(void) surf_parse_open(const char *file);
@@ -34,7 +40,7 @@ XBT_PUBLIC(int) surf_parse_lex(void);
 XBT_PUBLIC(int) surf_parse_get_lineno(void);
 XBT_PUBLIC(FILE *) surf_parse_get_in(void);
 XBT_PUBLIC(FILE *) surf_parse_get_out(void);
-XBT_PUBLIC(int) surf_parse_get_leng(void);
+XBT_PUBLIC(yy_size_t) surf_parse_get_leng(void);
 XBT_PUBLIC(char *) surf_parse_get_text(void);
 XBT_PUBLIC(void) surf_parse_set_lineno(int line_number);
 XBT_PUBLIC(void) surf_parse_set_in(FILE * in_str);
