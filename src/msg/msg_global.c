@@ -74,10 +74,6 @@ void MSG_init_nocheck(int *argc, char **argv) {
     MC_ignore_heap(&(msg_global->sent_msg), sizeof(msg_global->sent_msg));
   }
 
-#ifdef HAVE_TRACING
-  TRACE_start();
-#endif
-
   XBT_DEBUG("ADD MSG LEVELS");
   MSG_HOST_LEVEL = xbt_lib_add_level(host_lib, (void_f_pvoid_t) __MSG_host_priv_free);
   MSG_STORAGE_LEVEL = xbt_lib_add_level(storage_lib, (void_f_pvoid_t) __MSG_storage_destroy);

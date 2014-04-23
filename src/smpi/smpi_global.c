@@ -367,7 +367,7 @@ static void smpi_comm_copy_buffer_callback(smx_action_t comm,
     //It seems that the request is used after the call there this should
     //be free somewhereelse  but where???
     //xbt_free(comm->comm.src_data);// inside SMPI the request is keep
-    //inside the user data and should be free 
+    //inside the user data and should be free
     comm->comm.src_buff = NULL;
   }
 
@@ -517,10 +517,6 @@ int smpi_main(int (*realmain) (int argc, char *argv[]), int argc, char *argv[])
 #endif
 
   SIMIX_global_init(&argc, argv);
-
-#ifdef HAVE_TRACING
-  TRACE_start();
-#endif
 
   // parse the platform file: get the host list
   SIMIX_create_environment(argv[1]);

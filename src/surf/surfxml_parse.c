@@ -298,6 +298,7 @@ static xbt_dynar_t surf_parsed_filename_stack = NULL;
 
 void STag_surfxml_include(void)
 {
+  parse_after_config();
   XBT_DEBUG("STag_surfxml_include '%s'",A_surfxml_include_file);
   xbt_dynar_push(surf_parsed_filename_stack,&surf_parsed_filename); // save old file name
   surf_parsed_filename = xbt_strdup(A_surfxml_include_file);
@@ -568,15 +569,17 @@ void ETag_surfxml_cluster(void){
   cluster.availability_trace = A_surfxml_cluster_availability___file;
   cluster.state_trace = A_surfxml_cluster_state___file;
   sg_platf_new_cluster(&cluster);
-  
+
   current_property_set = NULL;
 }
 
-void STag_surfxml_cluster(void){ 
+void STag_surfxml_cluster(void){
+  parse_after_config();
   xbt_assert(current_property_set == NULL, "Someone forgot to reset the property set to NULL in its closing tag (or XML malformed)");
 }
 
 void STag_surfxml_cabinet(void){
+  parse_after_config();
   s_sg_platf_cabinet_cbarg_t cabinet;
   memset(&cabinet,0,sizeof(cabinet));
   cabinet.id = A_surfxml_cabinet_id;
@@ -591,6 +594,7 @@ void STag_surfxml_cabinet(void){
 }
 
 void STag_surfxml_peer(void){
+  parse_after_config();
   s_sg_platf_peer_cbarg_t peer;
   memset(&peer,0,sizeof(peer));
   peer.id = A_surfxml_peer_id;
@@ -832,6 +836,7 @@ void ETag_surfxml_trace(void){
 }
 
 void STag_surfxml_trace___connect(void){
+  parse_after_config();
   s_sg_platf_trace_connect_cbarg_t trace_connect;
   memset(&trace_connect,0,sizeof(trace_connect));
 
@@ -860,6 +865,7 @@ void STag_surfxml_trace___connect(void){
 }
 
 void STag_surfxml_AS(void){
+  parse_after_config();
   AS_TAG = 1;
   s_sg_platf_AS_cbarg_t AS = SG_PLATF_AS_INITIALIZER;
   AS.id = A_surfxml_AS_id;
@@ -906,6 +912,7 @@ void ETag_surfxml_config(void){
     free(cfg);
   }
   XBT_DEBUG("End configuration name = %s",A_surfxml_config_id);
+
   xbt_dict_free(&current_property_set);
   current_property_set = NULL;
 }
@@ -982,7 +989,7 @@ void ETag_surfxml_prop(void){}
 void STag_surfxml_random(void){}
 void ETag_surfxml_random(void){}
 void ETag_surfxml_trace___connect(void){}
-void STag_surfxml_trace(void){}
+void STag_surfxml_trace(void){parse_after_config();}
 void ETag_surfxml_router(void){}
 void ETag_surfxml_host___link(void){}
 void ETag_surfxml_cabinet(void){}

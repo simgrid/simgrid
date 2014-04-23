@@ -39,7 +39,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_config, instr, "Configuration");
 #define OPT_TRACING_DISABLE_LINK        "tracing/disable_link"
 #define OPT_TRACING_DISABLE_POWER       "tracing/disable_power"
 
-static int trace_enabled;
+static int trace_enabled = 0;
 static int trace_platform;
 static int trace_platform_topology;
 static int trace_smpi_enabled;
@@ -95,12 +95,14 @@ void TRACE_add_start_function(void (*func) ())
 
 int TRACE_start()
 {
-  TRACE_getopts();
+  if (TRACE_is_configured())
+    TRACE_getopts();
 
   // tracing system must be:
   //    - enabled (with --cfg=tracing:yes)
   //    - already configured (TRACE_global_init already called)
-  if (TRACE_is_enabled() && TRACE_is_configured()) {
+  if (TRACE_is_enabled()) {
+
     XBT_DEBUG("Tracing starts");
 
     /* init the tracing module to generate the right output */
