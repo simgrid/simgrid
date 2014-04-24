@@ -1,0 +1,17 @@
+<?xml version='1.0'?>
+<!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">
+<platform version="3">
+
+  <config id="example config">
+    <prop id="tracing/uncategorized" value="yes"/>
+    <prop id="tracing/buffer" value="yes"/>
+    <prop id="tracing" value="yes"/>
+    <prop id="viva/categorized" value="tracing/ms.cat.plist"/>
+    <prop id="tracing/filename" value="tracing/ms.trace"/>
+    <prop id="viva/uncategorized" value="tracing/ms.uncat.plist"/>
+    <prop id="tracing/categorized" value="yes"/>
+  </config>
+
+  <include file="tracing/platform-as.xml"/>
+
+</platform>
