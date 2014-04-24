@@ -89,7 +89,6 @@ static mc_mem_region_t MC_region_new(int type, void *start_addr, size_t size)
   new_reg->size = size;
   new_reg->data = mmap(NULL, size, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0);
   memcpy(new_reg->data, start_addr, size);
-  mprotect(new_reg->data, size, PROT_READ);
   madvise(new_reg->data, size, MADV_MERGEABLE);
 
   XBT_DEBUG("New region : type : %d, data : %p (real addr %p), size : %zu", type, new_reg->data, start_addr, size);
@@ -496,6 +495,13 @@ mc_snapshot_t MC_take_snapshot(int num_state){
 
   if(num_state > 0)
     MC_dump_checkpoint_ignore(snapshot);
+
+  // mprotect the region after zero-ing ignored parts:
+  size_t i;
+  for(i=0; i!=NB_REGIONS; ++i) {
+    mc_mem_region_t region = snapshot->regions[i];
+    mprotect(region->data, region->size, PROT_READ);
+  }
 
   return snapshot;
 
