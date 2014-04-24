@@ -88,6 +88,8 @@ static mc_mem_region_t MC_region_new(int type, void *start_addr, size_t size)
   new_reg->start_addr = start_addr;
   new_reg->size = size;
   new_reg->data = mmap(NULL, size, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0);
+  if(new_reg->data==MAP_FAILED)
+    xbt_die("Could not mmap new memory for snapshot.");
   memcpy(new_reg->data, start_addr, size);
   madvise(new_reg->data, size, MADV_MERGEABLE);
 
