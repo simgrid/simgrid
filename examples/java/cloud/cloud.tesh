@@ -31,7 +31,7 @@ $ java -classpath ${classpath:=.} cloud/Cloud ${srcdir:=.}/platform.xml "--log=r
 > [1000.000000] (1:Master@Jacquelin) Migrate VM00fromIntelto Fernand
 > [1000.000000] (5:__pr_mig_tx:VM00(Intel-Provost)@Intel) mig-stage1: remaining_size 1073741824.000000
 > [1147.021183] (5:__pr_mig_tx:VM00(Intel-Provost)@Intel) actual banwdidth 6.964983 (MB/s), threshold 219099.412193
-> [1147.021183] (5:__pr_mig_tx:VM00(Intel-Provost)@Intel) mig-stage 2:0 updated_size 0.000000 computed_during_stage1 0.000000 dp_rate 0.000000 dp_cap 1193046471.111111
+> [1147.021183] (5:__pr_mig_tx:VM00(Intel-Provost)@Intel) mig-stage 2:0 updated_size 0.000000 computed_during_stage1 0.000000 dp_rate 0.000000 dp_cap 966367641.600000
 > [1147.021183] (5:__pr_mig_tx:VM00(Intel-Provost)@Intel) mig-stage2.0: remaining_size 0.000000 (< threshold 219099.412193)
 > [1147.021183] (5:__pr_mig_tx:VM00(Intel-Provost)@Intel) mig-stage3: remaining_size 0.000000
 > [1149.029299] (0:@) migrate VM(VM00): set bound (137333000.000000) at Provost
@@ -39,7 +39,7 @@ $ java -classpath ${classpath:=.} cloud/Cloud ${srcdir:=.}/platform.xml "--log=r
 > [1150.908953] (1:Master@Jacquelin) Migrate VM01fromProvostto Fernand
 > [1150.908953] (9:__pr_mig_tx:VM01(Provost-Provost)@Provost) mig-stage1: remaining_size 1073741824.000000
 > [1153.065257] (9:__pr_mig_tx:VM01(Provost-Provost)@Provost) actual banwdidth 474.886827 (MB/s), threshold 14938647.898422
-> [1153.065257] (9:__pr_mig_tx:VM01(Provost-Provost)@Provost) mig-stage 2:0 updated_size 0.000000 computed_during_stage1 0.000000 dp_rate 0.000000 dp_cap 1193046471.111111
+> [1153.065257] (9:__pr_mig_tx:VM01(Provost-Provost)@Provost) mig-stage 2:0 updated_size 0.000000 computed_during_stage1 0.000000 dp_rate 0.000000 dp_cap 966367641.600000
 > [1153.065257] (9:__pr_mig_tx:VM01(Provost-Provost)@Provost) mig-stage2.0: remaining_size 0.000000 (< threshold 14938647.898422)
 > [1153.065257] (9:__pr_mig_tx:VM01(Provost-Provost)@Provost) mig-stage3: remaining_size 0.000000
 > [1153.065452] (0:@) migrate VM(VM01): set bound (137333000.000000) at Provost
