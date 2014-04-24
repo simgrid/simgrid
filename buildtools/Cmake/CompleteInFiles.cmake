@@ -910,9 +910,6 @@ set(generated_files_to_clean
 
 if("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_HOME_DIRECTORY}")
 else()
-  configure_file(${CMAKE_HOME_DIRECTORY}/examples/smpi/hostfile ${CMAKE_BINARY_DIR}/examples/smpi/hostfile COPYONLY)
-  configure_file(${CMAKE_HOME_DIRECTORY}/examples/msg/small_platform.xml ${CMAKE_BINARY_DIR}/examples/msg/small_platform.xml COPYONLY)
-  configure_file(${CMAKE_HOME_DIRECTORY}/examples/msg/small_platform_with_routers.xml ${CMAKE_BINARY_DIR}/examples/msg/small_platform_with_routers.xml COPYONLY)
   configure_file(${CMAKE_HOME_DIRECTORY}/examples/smpi/replay/actions0.txt ${CMAKE_BINARY_DIR}/examples/smpi/replay/actions0.txt COPYONLY)
   configure_file(${CMAKE_HOME_DIRECTORY}/examples/smpi/replay/actions1.txt ${CMAKE_BINARY_DIR}/examples/smpi/replay/actions1.txt COPYONLY)
   configure_file(${CMAKE_HOME_DIRECTORY}/examples/smpi/replay/actions_allReduce.txt ${CMAKE_BINARY_DIR}/examples/smpi/replay/actions_allReduce.txt COPYONLY)
@@ -929,9 +926,6 @@ else()
 
   set(generated_files_to_clean
     ${generated_files_to_clean}
-    ${CMAKE_BINARY_DIR}/examples/smpi/hostfile
-    ${CMAKE_BINARY_DIR}/examples/msg/small_platform.xml
-    ${CMAKE_BINARY_DIR}/examples/msg/small_platform_with_routers.xml
     ${CMAKE_BINARY_DIR}/examples/smpi/replay/actions0.txt
     ${CMAKE_BINARY_DIR}/examples/smpi/replay/actions1.txt
     ${CMAKE_BINARY_DIR}/examples/smpi/replay/actions_allReduce.txt
