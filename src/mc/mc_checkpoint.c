@@ -268,9 +268,9 @@ void MC_find_object_address(memory_map_t maps, mc_object_info_t result) {
  *  \param ip    Instruction pointer
  *  \return      true if the variable is valid
  * */
-static bool mc_valid_variable(dw_variable_t var, dw_frame_t frame, const void* ip) {
+static bool mc_valid_variable(dw_variable_t var, dw_frame_t scope, const void* ip) {
   // The variable is not yet valid:
-  if((const void*)((const char*) frame->low_pc + var->start_scope) > ip)
+  if((const void*)((const char*) scope->low_pc + var->start_scope) > ip)
     return false;
   else
     return true;
@@ -285,7 +285,7 @@ static void mc_fill_local_variables_values(mc_stack_frame_t stack_frame, dw_fram
   dw_variable_t current_variable;
   xbt_dynar_foreach(scope->variables, cursor, current_variable){
 
-    if(!mc_valid_variable(current_variable, stack_frame->frame, (void*) stack_frame->ip))
+    if(!mc_valid_variable(current_variable, scope, (void*) stack_frame->ip))
       continue;
 
     int region_type;
@@ -301,13 +301,15 @@ static void mc_fill_local_variables_values(mc_stack_frame_t stack_frame, dw_fram
     new_var->type = current_variable->type;
     new_var->region= region_type;
 
-    /* if(current_variable->address!=NULL) {
+    if(current_variable->address!=NULL) {
       new_var->address = current_variable->address;
-    } else */
+    } else
     if(current_variable->locations.size != 0){
       new_var->address = (void*) mc_dwarf_resolve_locations(&current_variable->locations,
         current_variable->object_info,
         &(stack_frame->unw_cursor), (void*)stack_frame->frame_base, NULL);
+    } else {
+      xbt_die("No address");
     }
 
     xbt_dynar_push(result, &new_var);

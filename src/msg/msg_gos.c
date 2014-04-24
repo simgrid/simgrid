@@ -630,10 +630,9 @@ int MSG_comm_test(msg_comm_t comm)
 
     if (finished && comm->task_received != NULL) {
       /* I am the receiver */
-      simdata_task_t simdata = (*comm->task_received)->simdata;
-      if (msg_global->debug_multiple_use && simdata->isused!=0)
-        xbt_ex_free(*(xbt_ex_t*)simdata->isused);
-      simdata->isused = 0;
+      if (msg_global->debug_multiple_use && (*comm->task_received)->simdata->isused!=0)
+        xbt_ex_free(*(xbt_ex_t*)(*comm->task_received)->simdata->isused);
+      (*comm->task_received)->simdata->isused = 0;
     }
   }
   CATCH(e) {
@@ -707,10 +706,9 @@ int MSG_comm_testany(xbt_dynar_t comms)
 
     if (status == MSG_OK && comm->task_received != NULL) {
       /* I am the receiver */
-      simdata_task_t simdata = (*comm->task_received)->simdata;
-      if (msg_global->debug_multiple_use && simdata->isused!=0)
-        xbt_ex_free(*(xbt_ex_t*)simdata->isused);
-      simdata->isused = 0;
+      if (msg_global->debug_multiple_use && (*comm->task_received)->simdata->isused!=0)
+        xbt_ex_free(*(xbt_ex_t*)(*comm->task_received)->simdata->isused);
+      (*comm->task_received)->simdata->isused = 0;
     }
   }
 
@@ -743,10 +741,9 @@ msg_error_t MSG_comm_wait(msg_comm_t comm, double timeout)
 
     if (comm->task_received != NULL) {
       /* I am the receiver */
-      simdata_task_t simdata = (*comm->task_received)->simdata;
-      if (msg_global->debug_multiple_use && simdata->isused!=0)
-        xbt_ex_free(*(xbt_ex_t*)simdata->isused);
-      simdata->isused = 0;
+      if (msg_global->debug_multiple_use && (*comm->task_received)->simdata->isused!=0)
+        xbt_ex_free(*(xbt_ex_t*)(*comm->task_received)->simdata->isused);
+      (*comm->task_received)->simdata->isused = 0;
     }
 
     /* FIXME: these functions are not traceable */
@@ -833,10 +830,9 @@ int MSG_comm_waitany(xbt_dynar_t comms)
 
   if (comm->task_received != NULL) {
     /* I am the receiver */
-    simdata_task_t simdata = (*comm->task_received)->simdata;
-    if (msg_global->debug_multiple_use && simdata->isused!=0)
-      xbt_ex_free(*(xbt_ex_t*)simdata->isused);
-    simdata->isused = 0;
+    if (msg_global->debug_multiple_use && (*comm->task_received)->simdata->isused!=0)
+      xbt_ex_free(*(xbt_ex_t*)(*comm->task_received)->simdata->isused);
+    (*comm->task_received)->simdata->isused = 0;
   }
 
   return finished_index;
