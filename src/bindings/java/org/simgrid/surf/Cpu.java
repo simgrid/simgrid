@@ -60,7 +60,7 @@ public class Cpu extends Resource {
     * A cpu constructor (using LMM)
     * @param model
     * @param name
-    * @param properties
+    * @param props
     * @param constraint
     * @param core
     * @param powerPeak
@@ -76,7 +76,7 @@ public class Cpu extends Resource {
     * A cpu constructor
     * @param model
     * @param name
-    * @param properties
+    * @param props
     * @param core
     * @param powerPeak
     * @param powerScale
@@ -160,7 +160,7 @@ public class Cpu extends Resource {
 
   
   /**
-    * @param  index of power peak to set
+    * @param pstate_index index of power peak to set
     */
   public void setPowerPeakAt(int pstate_index) {
     SurfJNI.Cpu_setPowerPeakAt(swigCPtr, this, pstate_index);
@@ -168,7 +168,7 @@ public class Cpu extends Resource {
 
   
   /**
-    * @param The new state of the cpu
+    * @param state The new state of the cpu
     */
   public void setState(ResourceState state) {
     SurfJNI.Cpu_setState(swigCPtr, this, state.swigValue());

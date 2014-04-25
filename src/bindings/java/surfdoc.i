@@ -159,7 +159,7 @@
     * A cpu constructor (using LMM)
     * @param model
     * @param name
-    * @param properties
+    * @param props
     * @param constraint
     * @param core
     * @param powerPeak
@@ -173,7 +173,7 @@
     * A cpu constructor
     * @param model
     * @param name
-    * @param properties
+    * @param props
     * @param core
     * @param powerPeak
     * @param powerScale
@@ -236,13 +236,13 @@
 
 %javamethodmodifiers Cpu::setPowerPeakAt(int pstate_index) "
   /**
-    * @param  index of power peak to set
+    * @param pstate_index index of power peak to set
     */
   public";
 
 %javamethodmodifiers Cpu::setState(e_surf_resource_state_t state) "
   /**
-    * @param The new state of the cpu
+    * @param state The new state of the cpu
     */
   public";
 
@@ -327,7 +327,7 @@
 
 %javamethodmodifiers Action::setBound(double bound) "
   /**
-    * @param TODO
+    * @param bound TODO
     */
   public";
 
@@ -346,13 +346,13 @@
 
 %javamethodmodifiers Action::setPriority(double priority) "
   /**
-    * @param The new priority of the action
+    * @param priority The new priority of the action
     */
   public";
 
 %javamethodmodifiers Action::setState(e_surf_action_state_t state) "
   /**
-    * @param The new state
+    * @param state The new state
     */
   public";
 
