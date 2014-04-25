@@ -995,6 +995,7 @@ set(EXAMPLES_CMAKEFILES_TXT
   examples/simdag/properties/CMakeLists.txt
   examples/simdag/scheduling/CMakeLists.txt
   examples/smpi/CMakeLists.txt
+  examples/smpi/smpi_msg_masterslave/CMakeLists.txt
   examples/smpi/MM/CMakeLists.txt
   examples/smpi/energy/CMakeLists.txt
   examples/smpi/energy/f77/CMakeLists.txt
