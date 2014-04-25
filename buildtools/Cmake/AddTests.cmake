@@ -586,17 +586,7 @@ if(NOT enable_memcheck)
     ADD_TEST(smpi-mpich3-coll-ompi-thread       ${CMAKE_COMMAND} -E chdir ${CMAKE_BINARY_DIR}/teshsuite/smpi/mpich3-test/coll perl ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich3-test/runtests -mpiexec=${CMAKE_BINARY_DIR}/smpi_script/bin/smpirun -srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich3-test/coll -tests=testlist -execarg=--cfg=contexts/factory:thread -execarg=--cfg=smpi/coll_selector:ompi -execarg=--cfg=smpi/send_is_detached_thres:0 -execarg=--cfg=smpi/privatize_global_variables:yes)
     ADD_TEST(smpi-mpich3-coll-mpich-thread      ${CMAKE_COMMAND} -E chdir ${CMAKE_BINARY_DIR}/teshsuite/smpi/mpich3-test/coll perl ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich3-test/runtests -mpiexec=${CMAKE_BINARY_DIR}/smpi_script/bin/smpirun -srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich3-test/coll -tests=testlist -execarg=--cfg=contexts/factory:thread -execarg=--cfg=smpi/coll_selector:mpich -execarg=--cfg=smpi/privatize_global_variables:yes)
     set_tests_properties(smpi-mpich3-coll-thread smpi-mpich3-coll-ompi-thread smpi-mpich3-coll-mpich-thread PROPERTIES PASS_REGULAR_EXPRESSION "tests passed!")
-<<<<<<< HEAD
 
-||||||| merged common ancestors
-
-    ADD_TEST(smpi-mpich3-topo-raw            ${CMAKE_COMMAND} -E chdir ${CMAKE_BINARY_DIR}/teshsuite/smpi/mpich3-test/topo perl ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich3-test/runtests -mpiexec=${CMAKE_BINARY_DIR}/smpi_script/bin/smpirun -srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich3-test/topo -tests=testlist -execarg=--cfg=contexts/factory:raw)
-      set_tests_properties(smpi-mpich3-topo-raw PROPERTIES PASS_REGULAR_EXPRESSION "tests passed!")
-=======
-
-    ADD_TEST(smpi-mpich3-topo-raw            ${CMAKE_COMMAND} -E chdir ${CMAKE_BINARY_DIR}/teshsuite/smpi/mpich3-test/topo perl ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich3-test/runtests -mpiexec=${CMAKE_BINARY_DIR}/smpi_script/bin/smpirun -srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich3-test/topo -tests=testlist -execarg=--cfg=contexts/factory:raw)
-      set_tests_properties(smpi-mpich3-topo-raw PROPERTIES PASS_REGULAR_EXPRESSION "tests passed!")
->>>>>>> Add MSG_process_join [#13601]
     if(CONTEXT_UCONTEXT)
       ADD_TEST(smpi-mpich3-coll-ompi-ucontext   ${CMAKE_COMMAND} -E chdir ${CMAKE_BINARY_DIR}/teshsuite/smpi/mpich3-test/coll perl ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich3-test/runtests -mpiexec=${CMAKE_BINARY_DIR}/smpi_script/bin/smpirun -srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich3-test/coll -tests=testlist -execarg=--cfg=contexts/factory:ucontext -execarg=--cfg=smpi/coll_selector:ompi -execarg=--cfg=smpi/send_is_detached_thres:0 -execarg=--cfg=smpi/privatize_global_variables:yes)
       set_tests_properties(smpi-mpich3-coll-ompi-ucontext PROPERTIES PASS_REGULAR_EXPRESSION "tests passed!")
