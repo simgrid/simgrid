@@ -1005,8 +1005,13 @@ set(EXAMPLES_CMAKEFILES_TXT
 
 set(TESHSUITE_CMAKEFILES_TXT
   teshsuite/msg/CMakeLists.txt
+  teshsuite/msg/get_sender/CMakeLists.txt
+  teshsuite/msg/host_on_off/CMakeLists.txt
+  teshsuite/msg/pid/CMakeLists.txt
+  teshsuite/msg/process/CMakeLists.txt
   teshsuite/msg/process_join/CMakeLists.txt
   teshsuite/msg/storage/CMakeLists.txt
+  teshsuite/msg/task_destroy_cancel/CMakeLists.txt
   teshsuite/msg/trace/CMakeLists.txt
   teshsuite/bug-17132/CMakeLists.txt
   teshsuite/simdag/CMakeLists.txt

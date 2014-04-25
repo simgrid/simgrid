@@ -81,8 +81,13 @@ add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/smpi/energy/f90)
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/xbt)
 
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/teshsuite/msg)
+add_subdirectory(${CMAKE_HOME_DIRECTORY}/teshsuite/msg/get_sender)
+add_subdirectory(${CMAKE_HOME_DIRECTORY}/teshsuite/msg/host_on_off)
+add_subdirectory(${CMAKE_HOME_DIRECTORY}/teshsuite/msg/pid)
+add_subdirectory(${CMAKE_HOME_DIRECTORY}/teshsuite/msg/process)
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/teshsuite/msg/process_join)
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/teshsuite/msg/storage)
+add_subdirectory(${CMAKE_HOME_DIRECTORY}/teshsuite/msg/task_destroy_cancel)
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/teshsuite/msg/trace)
 
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/teshsuite/simdag)
