@@ -356,6 +356,7 @@ do
 	host="$(echo $hostnames|cut -d' ' -f$j)"
   fi
   echo "  <process host=\"${host}\" function=\"$i\"> <!-- function name used only for logging -->" >> ${APPLICATIONTMP}
+  echo "    <argument value=\"1\"/> <!-- instance -->" >> ${APPLICATIONTMP}
   echo "    <argument value=\"$i\"/> <!-- rank -->" >> ${APPLICATIONTMP}
   if [ "${EXTOPT}" = "smpi_replay" ]; then
     if  [ ${NUMTRACES} -gt 1 ]; then

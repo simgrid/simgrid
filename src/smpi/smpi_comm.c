@@ -59,6 +59,8 @@ MPI_Comm smpi_comm_new(MPI_Group group, MPI_Topology topo)
 
 void smpi_comm_destroy(MPI_Comm comm)
 {
+  if (comm == MPI_COMM_UNINITIALIZED)
+    comm = smpi_process_comm_world();
   smpi_group_unuse(comm->group);
   smpi_topo_destroy(comm->topo); // there's no use count on topos
   smpi_comm_unuse(comm);
@@ -66,6 +68,9 @@ void smpi_comm_destroy(MPI_Comm comm)
 
 MPI_Group smpi_comm_group(MPI_Comm comm)
 {
+  if (comm == MPI_COMM_UNINITIALIZED)
+    comm = smpi_process_comm_world();
+
   return comm->group;
 }
 
@@ -77,16 +82,23 @@ MPI_Topology smpi_comm_topo(MPI_Comm comm) {
 
 int smpi_comm_size(MPI_Comm comm)
 {
+  if (comm == MPI_COMM_UNINITIALIZED)
+    comm = smpi_process_comm_world();
+
   return smpi_group_size(smpi_comm_group(comm));
 }
 
 int smpi_comm_rank(MPI_Comm comm)
 {
+  if (comm == MPI_COMM_UNINITIALIZED)
+    comm = smpi_process_comm_world();
   return smpi_group_rank(smpi_comm_group(comm), smpi_process_index());
 }
 
 void smpi_comm_get_name (MPI_Comm comm, char* name, int* len)
 {
+  if (comm == MPI_COMM_UNINITIALIZED)
+    comm = smpi_process_comm_world();
   if(comm == MPI_COMM_WORLD) {
     strcpy(name, "WORLD");
     *len = 5;
@@ -97,6 +109,8 @@ void smpi_comm_get_name (MPI_Comm comm, char* name, int* len)
 
 MPI_Comm smpi_comm_split(MPI_Comm comm, int color, int key)
 {
+  if (comm == MPI_COMM_UNINITIALIZED)
+    comm = smpi_process_comm_world();
   int system_tag = 123;
   int index, rank, size, i, j, count, reqs;
   int* sendbuf;
@@ -177,10 +191,14 @@ MPI_Comm smpi_comm_split(MPI_Comm comm, int color, int key)
 }
 
 void smpi_comm_use(MPI_Comm comm){
+  if (comm == MPI_COMM_UNINITIALIZED)
+    comm = smpi_process_comm_world();
   comm->refcount++;
 }
 
 void smpi_comm_unuse(MPI_Comm comm){
+  if (comm == MPI_COMM_UNINITIALIZED)
+    comm = smpi_process_comm_world();
   comm->refcount--;
   if(comm->refcount==0)
     xbt_free(comm);
