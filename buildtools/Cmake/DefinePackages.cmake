@@ -859,6 +859,8 @@ set(DOC_SOURCES
   doc/msg-tuto-src/platforms/peers.xml
   doc/msg-tuto-src/platforms/platform.xml
 
+  doc/manpage/smpicc.1
+  doc/manpage/smpirun.1
   CITATION.bib
   )
 
