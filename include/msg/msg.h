@@ -180,7 +180,6 @@ XBT_PUBLIC(msg_process_t) MSG_process_create_with_environment(const char
                                                             properties);
 XBT_PUBLIC(void) MSG_process_kill(msg_process_t process);
 XBT_PUBLIC(int) MSG_process_killall(int reset_PIDs);
-
 XBT_PUBLIC(msg_error_t) MSG_process_migrate(msg_process_t process, msg_host_t host);
 
 XBT_PUBLIC(void *) MSG_process_get_data(msg_process_t process);
@@ -209,7 +208,7 @@ XBT_PUBLIC(const char *) MSG_process_get_property_value(msg_process_t
 XBT_PUBLIC(msg_error_t) MSG_process_suspend(msg_process_t process);
 XBT_PUBLIC(msg_error_t) MSG_process_resume(msg_process_t process);
 XBT_PUBLIC(int) MSG_process_is_suspended(msg_process_t process);
-XBT_PUBLIC(void) MSG_process_on_exit(int_f_pvoid_t fun, void *data);
+XBT_PUBLIC(void) MSG_process_on_exit(int_f_pvoid_pvoid_t fun, void *data);
 XBT_PUBLIC(void) MSG_process_auto_restart_set(msg_process_t process, int auto_restart);
 
 XBT_PUBLIC(msg_process_t) MSG_process_restart(msg_process_t process);
@@ -250,6 +249,7 @@ XBT_PUBLIC(void) MSG_task_set_priority(msg_task_t task, double priority);
 XBT_PUBLIC(void) MSG_task_set_bound(msg_task_t task, double bound);
 XBT_PUBLIC(void) MSG_task_set_affinity(msg_task_t task, msg_host_t host, unsigned long mask);
 
+XBT_PUBLIC(msg_error_t) MSG_process_join(msg_process_t process, double timeout);
 XBT_PUBLIC(msg_error_t) MSG_process_sleep(double nb_sec);
 
 XBT_PUBLIC(double) MSG_task_get_compute_duration(msg_task_t task);

@@ -558,6 +558,18 @@ static inline smx_process_t simcall_process_get_properties__get__process(smx_sim
 static inline void simcall_process_get_properties__set__process(smx_simcall_t simcall, void* arg){
     simcall->args[0].dp = arg;
 }
+static inline smx_process_t simcall_process_join__get__process(smx_simcall_t simcall){
+  return (smx_process_t) simcall->args[0].dp;
+}
+static inline void simcall_process_join__set__process(smx_simcall_t simcall, void* arg){
+    simcall->args[0].dp = arg;
+}
+static inline double simcall_process_join__get__timeout(smx_simcall_t simcall){
+  return  simcall->args[1].d;
+}
+static inline void simcall_process_join__set__timeout(smx_simcall_t simcall, double arg){
+    simcall->args[1].d = arg;
+}
 static inline double simcall_process_sleep__get__duration(smx_simcall_t simcall){
   return  simcall->args[0].d;
 }
@@ -570,8 +582,8 @@ static inline smx_process_t simcall_process_on_exit__get__process(smx_simcall_t 
 static inline void simcall_process_on_exit__set__process(smx_simcall_t simcall, void* arg){
     simcall->args[0].dp = arg;
 }
-static inline int_f_pvoid_t simcall_process_on_exit__get__fun(smx_simcall_t simcall){
-  return (int_f_pvoid_t) simcall->args[1].fp;
+static inline int_f_pvoid_pvoid_t simcall_process_on_exit__get__fun(smx_simcall_t simcall){
+  return (int_f_pvoid_pvoid_t) simcall->args[1].fp;
 }
 static inline void simcall_process_on_exit__set__fun(smx_simcall_t simcall, FPtr arg){
     simcall->args[1].fp = arg;

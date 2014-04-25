@@ -270,6 +270,14 @@ if(NOT enable_memcheck)
     ADD_TEST(msg-energy-concurrent-tasks-raw    ${TESH_COMMAND} ${TESH_OPTION} --cfg contexts/factory:raw --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg --cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/energy/e3/concurrent_tasks.tesh)
   endif()
 
+  ADD_TEST(msg-process-join-thread              ${TESH_COMMAND} ${TESH_OPTION} --cfg contexts/factory:thread --setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/msg/process_join --cd ${CMAKE_BINARY_DIR}/teshsuite/msg/process_join ${CMAKE_HOME_DIRECTORY}/teshsuite/msg/process_join/process_join.tesh)
+  if(CONTEXT_UCONTEXT)
+    ADD_TEST(msg-process-join-ucontext          ${TESH_COMMAND} ${TESH_OPTION} --cfg contexts/factory:ucontext --setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/msg/process_join --cd ${CMAKE_BINARY_DIR}/teshsuite/msg/process_join ${CMAKE_HOME_DIRECTORY}/teshsuite/msg/process_join/process_join.tesh)
+  endif()
+  if(HAVE_RAWCTX)
+    ADD_TEST(msg-process-join-raw               ${TESH_COMMAND} ${TESH_OPTION} --cfg contexts/factory:raw --setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/msg/process_join --cd ${CMAKE_BINARY_DIR}/teshsuite/msg/process_join ${CMAKE_HOME_DIRECTORY}/teshsuite/msg/process_join/process_join.tesh)
+  endif()
+
   ADD_TEST(msg-storage-basic-thread                   ${TESH_COMMAND} ${TESH_OPTION} --cfg contexts/factory:thread --setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite --cd ${CMAKE_BINARY_DIR}/teshsuite ${CMAKE_HOME_DIRECTORY}/teshsuite/msg/storage/storage_basic.tesh)
   if(CONTEXT_UCONTEXT)
     ADD_TEST(msg-storage-basic-ucontext               ${TESH_COMMAND} ${TESH_OPTION} --cfg contexts/factory:ucontext --setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite --cd ${CMAKE_BINARY_DIR}/teshsuite ${CMAKE_HOME_DIRECTORY}/teshsuite/msg/storage/storage_basic.tesh)
@@ -318,7 +326,6 @@ if(NOT enable_memcheck)
     ADD_TEST(msg-bittorrent-ucontext-parallel   ${TESH_COMMAND} ${TESH_OPTION} --cfg contexts/nthreads:4 ${CONTEXTS_SYNCHRO} --cfg contexts/factory:ucontext --setenv bindir=${CMAKE_BINARY_DIR}/examples/msg/bittorrent --cd ${CMAKE_HOME_DIRECTORY}/examples/msg/bittorrent bittorrent.tesh)
     ADD_TEST(msg-kademlia-ucontext              ${TESH_COMMAND} ${TESH_OPTION} --cfg contexts/factory:ucontext --setenv bindir=${CMAKE_BINARY_DIR}/examples/msg/kademlia --cd ${CMAKE_HOME_DIRECTORY}/examples/msg/kademlia kademlia.tesh)
     ADD_TEST(msg-kademlia-ucontext-parallel     ${TESH_COMMAND} ${TESH_OPTION} --cfg contexts/nthreads:4 ${CONTEXTS_SYNCHRO} --cfg contexts/factory:ucontext --setenv bindir=${CMAKE_BINARY_DIR}/examples/msg/kademlia --cd ${CMAKE_HOME_DIRECTORY}/examples/msg/kademlia kademlia.tesh)
-
   endif()
   if(HAVE_RAWCTX)
     ADD_TEST(msg-migration-raw                  ${TESH_COMMAND} ${TESH_OPTION} --cfg contexts/factory:raw --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg --cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/migration/migration.tesh)
@@ -444,11 +451,11 @@ if(NOT enable_memcheck)
     ADD_TEST(smpi-struct-thread                 ${TESH_COMMAND} ${TESH_OPTION} --cfg contexts/factory:thread --setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/smpi --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/struct.tesh)
     ADD_TEST(smpi-pt2pt-thread                  ${TESH_COMMAND} ${TESH_OPTION} --cfg contexts/factory:thread --setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/smpi --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/pt2pt.tesh)
     ADD_TEST(smpi-compute-thread                ${TESH_COMMAND} ${TESH_OPTION} --cfg contexts/factory:thread --setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/smpi --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/compute.tesh)
-    
+
     # https://gforge.inria.fr/tracker/index.php?func=detail&aid=17132&group_id=12&atid=165
     ADD_TEST(smpi-bug-17132                     ${TESH_COMMAND} ${TESH_OPTION} --cfg contexts/factory:thread --setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/bug-17132 --cd ${CMAKE_BINARY_DIR}/teshsuite/bug-17132 ${CMAKE_HOME_DIRECTORY}/teshsuite/bug-17132/bug-17132.tesh)
     ADD_TEST(smpi-bug-17132-surf-debug          ${TESH_COMMAND} ${TESH_OPTION} --cfg contexts/factory:thread --setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/bug-17132 --cd ${CMAKE_BINARY_DIR}/teshsuite/bug-17132 ${CMAKE_HOME_DIRECTORY}/teshsuite/bug-17132/bug-17132-surf-debug.tesh)
-    
+
     if (NOT WIN32)
       ADD_TEST(smpi-shared-thread               ${TESH_COMMAND} ${TESH_OPTION} --cfg contexts/factory:thread --setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/smpi --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/shared.tesh)
     endif()
@@ -579,7 +586,17 @@ if(NOT enable_memcheck)
     ADD_TEST(smpi-mpich3-coll-ompi-thread       ${CMAKE_COMMAND} -E chdir ${CMAKE_BINARY_DIR}/teshsuite/smpi/mpich3-test/coll perl ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich3-test/runtests -mpiexec=${CMAKE_BINARY_DIR}/smpi_script/bin/smpirun -srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich3-test/coll -tests=testlist -execarg=--cfg=contexts/factory:thread -execarg=--cfg=smpi/coll_selector:ompi -execarg=--cfg=smpi/send_is_detached_thres:0 -execarg=--cfg=smpi/privatize_global_variables:yes)
     ADD_TEST(smpi-mpich3-coll-mpich-thread      ${CMAKE_COMMAND} -E chdir ${CMAKE_BINARY_DIR}/teshsuite/smpi/mpich3-test/coll perl ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich3-test/runtests -mpiexec=${CMAKE_BINARY_DIR}/smpi_script/bin/smpirun -srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich3-test/coll -tests=testlist -execarg=--cfg=contexts/factory:thread -execarg=--cfg=smpi/coll_selector:mpich -execarg=--cfg=smpi/privatize_global_variables:yes)
     set_tests_properties(smpi-mpich3-coll-thread smpi-mpich3-coll-ompi-thread smpi-mpich3-coll-mpich-thread PROPERTIES PASS_REGULAR_EXPRESSION "tests passed!")
-    
+<<<<<<< HEAD
+
+||||||| merged common ancestors
+
+    ADD_TEST(smpi-mpich3-topo-raw            ${CMAKE_COMMAND} -E chdir ${CMAKE_BINARY_DIR}/teshsuite/smpi/mpich3-test/topo perl ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich3-test/runtests -mpiexec=${CMAKE_BINARY_DIR}/smpi_script/bin/smpirun -srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich3-test/topo -tests=testlist -execarg=--cfg=contexts/factory:raw)
+      set_tests_properties(smpi-mpich3-topo-raw PROPERTIES PASS_REGULAR_EXPRESSION "tests passed!")
+=======
+
+    ADD_TEST(smpi-mpich3-topo-raw            ${CMAKE_COMMAND} -E chdir ${CMAKE_BINARY_DIR}/teshsuite/smpi/mpich3-test/topo perl ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich3-test/runtests -mpiexec=${CMAKE_BINARY_DIR}/smpi_script/bin/smpirun -srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich3-test/topo -tests=testlist -execarg=--cfg=contexts/factory:raw)
+      set_tests_properties(smpi-mpich3-topo-raw PROPERTIES PASS_REGULAR_EXPRESSION "tests passed!")
+>>>>>>> Add MSG_process_join [#13601]
     if(CONTEXT_UCONTEXT)
       ADD_TEST(smpi-mpich3-coll-ompi-ucontext   ${CMAKE_COMMAND} -E chdir ${CMAKE_BINARY_DIR}/teshsuite/smpi/mpich3-test/coll perl ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich3-test/runtests -mpiexec=${CMAKE_BINARY_DIR}/smpi_script/bin/smpirun -srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich3-test/coll -tests=testlist -execarg=--cfg=contexts/factory:ucontext -execarg=--cfg=smpi/coll_selector:ompi -execarg=--cfg=smpi/send_is_detached_thres:0 -execarg=--cfg=smpi/privatize_global_variables:yes)
       set_tests_properties(smpi-mpich3-coll-ompi-ucontext PROPERTIES PASS_REGULAR_EXPRESSION "tests passed!")

@@ -1,0 +1,74 @@
+[0.000000] /home/bedaride/Boulot/simgrid/src/simix/smx_context_raw.c:227: [simix_context/VERBOSE] Using raw contexts. Because the glibc is just not good enough for us.
+[0.000000] /home/bedaride/Boulot/simgrid/src/simix/smx_environment.c:41: [simix_environment/DEBUG] PARSE TIME: 0.00112009
+[0.000000] /home/bedaride/Boulot/simgrid/src/simix/smx_deployment.c:71: [simix_deployment/DEBUG] Starting Process master(Tremblay) right now
+[0.000000] /home/bedaride/Boulot/simgrid/src/simix/smx_smurf.c:58: [simix_smurf/DEBUG] Handling simcall 0x1d06478: SIMCALL_PROCESS_CREATE
+[0.000000] /home/bedaride/Boulot/simgrid/src/simix/smx_process.c:237: [simix_process/DEBUG] Start process master on host 'Tremblay'
+[0.000000] /home/bedaride/Boulot/simgrid/src/simix/smx_process.c:273: [simix_process/VERBOSE] Create context master
+[0.000000] /home/bedaride/Boulot/simgrid/src/simix/smx_process.c:290: [simix_process/DEBUG] Start context 'master'
+[0.000000] /home/bedaride/Boulot/simgrid/src/simix/smx_process.c:294: [simix_process/DEBUG] Inserting master(Tremblay) in the to_run list
+[0.000000] /home/bedaride/Boulot/simgrid/src/simix/smx_smurf.c:58: [simix_smurf/DEBUG] Handling simcall 0x1d06478: SIMCALL_PROCESS_GET_PID
+[0.000000] /home/bedaride/Boulot/simgrid/src/simix/smx_smurf.c:58: [simix_smurf/DEBUG] Handling simcall 0x1d06478: SIMCALL_PROCESS_ON_EXIT
+[0.000000] /home/bedaride/Boulot/simgrid/src/simix/smx_smurf.c:58: [simix_smurf/DEBUG] Handling simcall 0x1d06478: SIMCALL_PROCESS_AUTO_RESTART_SET
+[0.000000] /home/bedaride/Boulot/simgrid/src/simix/smx_global.c:294: [simix_kernel/DEBUG] New Schedule Round; size(queue)=1
+[0.000000] /home/bedaride/Boulot/simgrid/src/simix/smx_global.c:300: [simix_kernel/DEBUG] New Sub-Schedule Round; size(queue)=1
+[Tremblay:master:(1) 0.000000] [msg_test/INFO] Start slave
+[Tremblay:master:(1) 0.000000] /home/bedaride/Boulot/simgrid/src/simix/simcalls_generated_body.c:679: [simix/DEBUG] Yield process 'master' on simcall SIMCALL_PROCESS_CREATE (43)
+[Tremblay:master:(1) 0.000000] /home/bedaride/Boulot/simgrid/src/simix/smx_process.c:813: [simix_process/DEBUG] Yield process 'master'
+[Tremblay:master:(1) 0.000000] /home/bedaride/Boulot/simgrid/src/simix/smx_context_raw.c:387: [simix_context/DEBUG] No more process to run
+[0.000000] /home/bedaride/Boulot/simgrid/src/simix/smx_smurf.c:58: [simix_smurf/DEBUG] Handling simcall 0x1d079c8: SIMCALL_PROCESS_CREATE
+[0.000000] /home/bedaride/Boulot/simgrid/src/simix/smx_process.c:237: [simix_process/DEBUG] Start process slave from master on host 'Tremblay'
+[0.000000] /home/bedaride/Boulot/simgrid/src/simix/smx_process.c:273: [simix_process/VERBOSE] Create context slave from master
+[0.000000] /home/bedaride/Boulot/simgrid/src/simix/smx_process.c:290: [simix_process/DEBUG] Start context 'slave from master'
+[0.000000] /home/bedaride/Boulot/simgrid/src/simix/smx_process.c:294: [simix_process/DEBUG] Inserting slave from master(Tremblay) in the to_run list
+[0.000000] /home/bedaride/Boulot/simgrid/src/simix/smx_smurf.c:45: [simix_smurf/DEBUG] Answer simcall SIMCALL_PROCESS_CREATE (43) issued by master (0x1d07930)
+[0.000000] /home/bedaride/Boulot/simgrid/src/simix/smx_global.c:300: [simix_kernel/DEBUG] New Sub-Schedule Round; size(queue)=2
+[Tremblay:slave from master:(2) 0.000000] [msg_test/INFO] Slave started
+[Tremblay:slave from master:(2) 0.000000] /home/bedaride/Boulot/simgrid/src/simix/simcalls_generated_body.c:937: [simix/DEBUG] Yield process 'slave from master' on simcall SIMCALL_PROCESS_SLEEP (60)
+[Tremblay:slave from master:(2) 0.000000] /home/bedaride/Boulot/simgrid/src/simix/smx_process.c:813: [simix_process/DEBUG] Yield process 'slave from master'
+[Tremblay:slave from master:(2) 0.000000] /home/bedaride/Boulot/simgrid/src/simix/smx_context_raw.c:381: [simix_context/DEBUG] Run next process
+[Tremblay:master:(1) 0.000000] /home/bedaride/Boulot/simgrid/src/simix/smx_process.c:819: [simix_process/DEBUG] Control returned to me: 'master'
+[Tremblay:master:(1) 0.000000] /home/bedaride/Boulot/simgrid/src/simix/simcalls_generated_body.c:800: [simix/DEBUG] Yield process 'master' on simcall SIMCALL_PROCESS_GET_PID (51)
+[Tremblay:master:(1) 0.000000] /home/bedaride/Boulot/simgrid/src/simix/smx_process.c:813: [simix_process/DEBUG] Yield process 'master'
+[Tremblay:master:(1) 0.000000] /home/bedaride/Boulot/simgrid/src/simix/smx_context_raw.c:387: [simix_context/DEBUG] No more process to run
+[0.000000] /home/bedaride/Boulot/simgrid/src/simix/smx_smurf.c:58: [simix_smurf/DEBUG] Handling simcall 0x1d07c98: SIMCALL_PROCESS_SLEEP
+[0.000000] /home/bedaride/Boulot/simgrid/src/simix/smx_process.c:735: [simix_process/DEBUG] Create sleep action 0x1dc32d0
+[0.000000] /home/bedaride/Boulot/simgrid/src/simix/smx_smurf.c:58: [simix_smurf/DEBUG] Handling simcall 0x1d079c8: SIMCALL_PROCESS_GET_PID
+[0.000000] /home/bedaride/Boulot/simgrid/src/simix/smx_smurf.c:45: [simix_smurf/DEBUG] Answer simcall SIMCALL_PROCESS_GET_PID (51) issued by master (0x1d07930)
+[0.000000] /home/bedaride/Boulot/simgrid/src/simix/smx_global.c:300: [simix_kernel/DEBUG] New Sub-Schedule Round; size(queue)=1
+[Tremblay:master:(1) 0.000000] /home/bedaride/Boulot/simgrid/src/simix/smx_process.c:819: [simix_process/DEBUG] Control returned to me: 'master'
+[Tremblay:master:(1) 0.000000] /home/bedaride/Boulot/simgrid/src/simix/simcalls_generated_body.c:954: [simix/DEBUG] Yield process 'master' on simcall SIMCALL_PROCESS_ON_EXIT (61)
+[Tremblay:master:(1) 0.000000] /home/bedaride/Boulot/simgrid/src/simix/smx_process.c:813: [simix_process/DEBUG] Yield process 'master'
+[Tremblay:master:(1) 0.000000] /home/bedaride/Boulot/simgrid/src/simix/smx_context_raw.c:387: [simix_context/DEBUG] No more process to run
+[0.000000] /home/bedaride/Boulot/simgrid/src/simix/smx_smurf.c:58: [simix_smurf/DEBUG] Handling simcall 0x1d079c8: SIMCALL_PROCESS_ON_EXIT
+[0.000000] /home/bedaride/Boulot/simgrid/src/simix/smx_smurf.c:45: [simix_smurf/DEBUG] Answer simcall SIMCALL_PROCESS_ON_EXIT (61) issued by master (0x1d07930)
+[0.000000] /home/bedaride/Boulot/simgrid/src/simix/smx_global.c:300: [simix_kernel/DEBUG] New Sub-Schedule Round; size(queue)=1
+[Tremblay:master:(1) 0.000000] /home/bedaride/Boulot/simgrid/src/simix/smx_process.c:819: [simix_process/DEBUG] Control returned to me: 'master'
+[Tremblay:master:(1) 0.000000] [msg_test/INFO] Wait for slave
+[Tremblay:master:(1) 0.000000] /home/bedaride/Boulot/simgrid/src/simix/simcalls_generated_body.c:922: [simix/DEBUG] Yield process 'master' on simcall SIMCALL_PROCESS_WAIT (59)
+[Tremblay:master:(1) 0.000000] /home/bedaride/Boulot/simgrid/src/simix/smx_process.c:813: [simix_process/DEBUG] Yield process 'master'
+[Tremblay:master:(1) 0.000000] /home/bedaride/Boulot/simgrid/src/simix/smx_context_raw.c:387: [simix_context/DEBUG] No more process to run
+[0.000000] /home/bedaride/Boulot/simgrid/src/simix/smx_smurf.c:58: [simix_smurf/DEBUG] Handling simcall 0x1d079c8: SIMCALL_PROCESS_WAIT
+[0.000000] /home/bedaride/Boulot/simgrid/src/simix/smx_process.c:735: [simix_process/DEBUG] Create sleep action 0x1dc31f0
+[2.000000] /home/bedaride/Boulot/simgrid/src/simix/smx_smurf.c:45: [simix_smurf/DEBUG] Answer simcall SIMCALL_PROCESS_SLEEP (60) issued by slave from master (0x1d07c00)
+[2.000000] /home/bedaride/Boulot/simgrid/src/simix/smx_process.c:782: [simix_process/DEBUG] Destroy action 0x1dc32d0
+[2.000000] /home/bedaride/Boulot/simgrid/src/simix/smx_global.c:422: [simix_kernel/DEBUG] ### time 2.000000, empty 0
+[2.000000] /home/bedaride/Boulot/simgrid/src/simix/smx_global.c:294: [simix_kernel/DEBUG] New Schedule Round; size(queue)=1
+[2.000000] /home/bedaride/Boulot/simgrid/src/simix/smx_global.c:300: [simix_kernel/DEBUG] New Sub-Schedule Round; size(queue)=1
+[Tremblay:slave from master:(2) 2.000000] /home/bedaride/Boulot/simgrid/src/simix/smx_process.c:819: [simix_process/DEBUG] Control returned to me: 'slave from master'
+[Tremblay:slave from master:(2) 2.000000] [msg_test/INFO] I'm done. See you!
+[Tremblay:slave from master:(2) 2.000000] /home/bedaride/Boulot/simgrid/src/simix/simcalls_generated_body.c:724: [simix/DEBUG] Yield process 'slave from master' on simcall SIMCALL_PROCESS_CLEANUP (46)
+[Tremblay:slave from master:(2) 2.000000] /home/bedaride/Boulot/simgrid/src/simix/smx_process.c:813: [simix_process/DEBUG] Yield process 'slave from master'
+[Tremblay:slave from master:(2) 2.000000] /home/bedaride/Boulot/simgrid/src/simix/smx_context_raw.c:387: [simix_context/DEBUG] No more process to run
+[2.000000] /home/bedaride/Boulot/simgrid/src/simix/smx_smurf.c:58: [simix_smurf/DEBUG] Handling simcall 0x1d07c98: SIMCALL_PROCESS_CLEANUP
+[2.000000] /home/bedaride/Boulot/simgrid/src/simix/smx_process.c:50: [simix_process/DEBUG] Cleanup process slave from master (0x1d07c00), waiting action (nil)
+[2.000000] [simix_process/INFO] FINISHING
+[2.000000] /home/bedaride/Boulot/simgrid/src/simix/smx_process.c:782: [simix_process/DEBUG] Destroy action 0x1dc31f0
+[2.000000] /home/bedaride/Boulot/simgrid/src/simix/smx_smurf.c:45: [simix_smurf/DEBUG] Answer simcall SIMCALL_PROCESS_CLEANUP (46) issued by slave from master (0x1d07c00)
+[2.000000] /home/bedaride/Boulot/simgrid/src/simix/smx_global.c:300: [simix_kernel/DEBUG] New Sub-Schedule Round; size(queue)=1
+[Tremblay:slave from master:(2) 2.000000] /home/bedaride/Boulot/simgrid/src/simix/smx_process.c:819: [simix_process/DEBUG] Control returned to me: 'slave from master'
+[Tremblay:slave from master:(2) 2.000000] /home/bedaride/Boulot/simgrid/src/simix/smx_context_raw.c:387: [simix_context/DEBUG] No more process to run
+[2.000000] /home/bedaride/Boulot/simgrid/src/simix/smx_global.c:422: [simix_kernel/DEBUG] ### time -1.000000, empty 1
+[2.000000] /home/bedaride/Boulot/simgrid/src/simix/smx_global.c:434: [simix_kernel/CRITICAL] Oops ! Deadlock or code not perfectly clean.
+[2.000000] [simix_kernel/INFO] 1 processes are still running, waiting for something.
+[2.000000] [simix_kernel/INFO] Legend of the following listing: "Process <pid> (<name>@<host>): <status>"
+[2.000000] [simix_kernel/INFO] Process 1 (master@Tremblay): waiting for sleeping action 0x1dc31f0 ((null)) in state 0 to finish

@@ -239,7 +239,7 @@ smx_action_t simcall_host_execute(const char *name, smx_host_t host,
   /* checking for infinite values */
   xbt_assert(isfinite(computation_amount), "computation_amount is not finite!");
   xbt_assert(isfinite(priority), "priority is not finite!");
-  
+
   return simcall_BODY_host_execute(name, host, computation_amount, priority, bound, affinity_mask);
 }
 
@@ -271,14 +271,14 @@ smx_action_t simcall_host_parallel_execute(const char *name,
   for (i = 0 ; i < host_nb ; ++i) {
      xbt_assert(isfinite(computation_amount[i]), "computation_amount[%d] is not finite!", i);
      for (j = 0 ; j < host_nb ; ++j) {
-        xbt_assert(isfinite(communication_amount[i + host_nb * j]), 
+        xbt_assert(isfinite(communication_amount[i + host_nb * j]),
              "communication_amount[%d+%d*%d] is not finite!", i, host_nb, j);
-     }   
-  }   
- 
+     }
+  }
+
   xbt_assert(isfinite(amount), "amount is not finite!");
   xbt_assert(isfinite(rate), "rate is not finite!");
-  
+
   return simcall_BODY_host_parallel_execute(name, host_nb, host_list,
                                             computation_amount,
                                             communication_amount,
@@ -346,7 +346,7 @@ void simcall_host_execution_set_priority(smx_action_t execution, double priority
 {
   /* checking for infinite values */
   xbt_assert(isfinite(priority), "priority is not finite!");
-  
+
   simcall_BODY_host_execution_set_priority(execution, priority);
 }
 
@@ -629,6 +629,11 @@ void simcall_process_change_host(smx_process_t process, smx_host_t dest)
   simcall_BODY_process_change_host(process, dest);
 }
 
+void simcall_process_join(smx_process_t process, double timeout)
+{
+  simcall_BODY_process_join(process, timeout);
+}
+
 /**
  * \ingroup simix_process_management
  * \brief Suspends a process.
@@ -814,7 +819,7 @@ xbt_dict_t simcall_process_get_properties(smx_process_t process)
  * \brief Add an on_exit function
  * Add an on_exit function which will be executed when the process exits/is killed.
  */
-XBT_PUBLIC(void) simcall_process_on_exit(smx_process_t process, int_f_pvoid_t fun, void *data)
+XBT_PUBLIC(void) simcall_process_on_exit(smx_process_t process, int_f_pvoid_pvoid_t fun, void *data)
 {
   simcall_BODY_process_on_exit(process, fun, data);
 }
@@ -937,7 +942,7 @@ void simcall_comm_send(smx_rdv_t rdv, double task_size, double rate,
   xbt_assert(isfinite(task_size), "task_size is not finite!");
   xbt_assert(isfinite(rate), "rate is not finite!");
   xbt_assert(isfinite(timeout), "timeout is not finite!");
-  
+
   xbt_assert(rdv, "No rendez-vous point defined for send");
 
   if (MC_is_active()) {
@@ -967,7 +972,7 @@ smx_action_t simcall_comm_isend(smx_rdv_t rdv, double task_size, double rate,
   /* checking for infinite values */
   xbt_assert(isfinite(task_size), "task_size is not finite!");
   xbt_assert(isfinite(rate), "rate is not finite!");
-  
+
   xbt_assert(rdv, "No rendez-vous point defined for isend");
 
   return simcall_BODY_comm_isend(rdv, task_size, rate, src_buff,
@@ -1134,7 +1139,7 @@ smx_process_t simcall_comm_get_src_proc(smx_action_t comm)
  */
 smx_process_t simcall_comm_get_dst_proc(smx_action_t comm)
 {
-  return simcall_BODY_comm_get_dst_proc(comm);  
+  return simcall_BODY_comm_get_dst_proc(comm);
 }
 
 #ifdef HAVE_LATENCY_BOUND_TRACKING
@@ -1172,7 +1177,7 @@ void simcall_mutex_destroy(smx_mutex_t mutex)
  */
 void simcall_mutex_lock(smx_mutex_t mutex)
 {
-  simcall_BODY_mutex_lock(mutex);  
+  simcall_BODY_mutex_lock(mutex);
 }
 
 /**
@@ -1181,7 +1186,7 @@ void simcall_mutex_lock(smx_mutex_t mutex)
  */
 int simcall_mutex_trylock(smx_mutex_t mutex)
 {
-  return simcall_BODY_mutex_trylock(mutex);  
+  return simcall_BODY_mutex_trylock(mutex);
 }
 
 /**
@@ -1190,7 +1195,7 @@ int simcall_mutex_trylock(smx_mutex_t mutex)
  */
 void simcall_mutex_unlock(smx_mutex_t mutex)
 {
-  simcall_BODY_mutex_unlock(mutex); 
+  simcall_BODY_mutex_unlock(mutex);
 }
 
 /**
@@ -1256,7 +1261,7 @@ void simcall_cond_broadcast(smx_cond_t cond)
  */
 smx_sem_t simcall_sem_init(int capacity)
 {
-  return simcall_BODY_sem_init(capacity);  
+  return simcall_BODY_sem_init(capacity);
 }
 
 /**
@@ -1274,7 +1279,7 @@ void simcall_sem_destroy(smx_sem_t sem)
  */
 void simcall_sem_release(smx_sem_t sem)
 {
-  simcall_BODY_sem_release(sem);  
+  simcall_BODY_sem_release(sem);
 }
 
 /**
@@ -1475,7 +1480,7 @@ void *simcall_mc_snapshot(void)
   return simcall_BODY_mc_snapshot();
 }
 
-int simcall_mc_compare_snapshots(void *s1, void *s2){ 
+int simcall_mc_compare_snapshots(void *s1, void *s2){
   return simcall_BODY_mc_compare_snapshots(s1, s2);
 }
 
