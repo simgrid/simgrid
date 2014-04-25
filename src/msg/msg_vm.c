@@ -190,7 +190,7 @@ msg_vm_t MSG_vm_create(msg_host_t ind_pm, const char *name,
   params.skip_stage2 = 0;
   params.max_downtime = 0.03;
   params.dp_rate = (update_speed * 1024 * 1024) / host_speed;
-  params.dp_cap = params.ramsize / 0.9; // working set memory is 90%
+  params.dp_cap = params.ramsize * 0.9; // assume working set memory is 90% of ramsize
   params.mig_speed = (double)mig_netspeed * 1024 * 1024; // mig_speed
 
   //XBT_INFO("dp rate %f migspeed : %f intensity mem : %d, updatespeed %f, hostspeed %f",params.dp_rate, params.mig_speed, dp_intensity, update_speed, host_speed);

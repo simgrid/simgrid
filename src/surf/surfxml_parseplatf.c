@@ -69,6 +69,25 @@ XBT_PUBLIC(void) gpu_register_callbacks(void){
 }
 /* ***************************************** */
 
+static int after_config_done;
+void parse_after_config() {
+  if (!after_config_done) {
+    //
+    #ifdef HAVE_TRACING
+      TRACE_start();
+    #endif
+
+    /* Register classical callbacks */
+    storage_register_callbacks();
+    routing_register_callbacks();
+
+    /* ***************************************** */
+    /* TUTORIAL: New TAG                         */
+    gpu_register_callbacks();
+    /* ***************************************** */
+    after_config_done = 1;
+  }
+}
 
 /* This function acts as a main in the parsing area. */
 void parse_platform_file(const char *file)
@@ -77,19 +96,10 @@ void parse_platform_file(const char *file)
 
   surf_parse_init_callbacks();
 
-  /* Register classical callbacks */
-  storage_register_callbacks();
-  routing_register_callbacks();
-
-  /* ***************************************** */
-  /* TUTORIAL: New TAG                         */
-  gpu_register_callbacks();
-  /* ***************************************** */
-
   /* init the flex parser */
   surfxml_buffer_stack_stack_ptr = 1;
   surfxml_buffer_stack_stack[0] = 0;
-
+  after_config_done = 0;
   surf_parse_open(file);
 
   /* Init my data */

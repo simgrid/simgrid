@@ -46,6 +46,8 @@ set(xml_files
   ${xml_files}
   ${CMAKE_CURRENT_SOURCE_DIR}/deployment.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/platform.xml
+  ${CMAKE_CURRENT_SOURCE_DIR}/platform-as.xml
+  ${CMAKE_CURRENT_SOURCE_DIR}/platform-config.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/procmig-deploy.xml
   PARENT_SCOPE
   )

@@ -40,9 +40,9 @@ void mmalloc_set_current_heap(xbt_mheap_t new_heap)
 #define _GNU_SOURCE 1
 #include <dlfcn.h>
 
-static void * (*real_malloc) (size_t);
-static void * (*real_realloc) (void*,size_t);
-static void * (*real_free) (void*);
+static void * (*real_malloc) (size_t) = NULL;
+static void * (*real_realloc) (void*,size_t) = NULL;
+static void * (*real_free) (void*) = NULL;
 
 static void mm_gnuld_legacy_init(void) { /* This function is called from mmalloc_preinit(); it works even if it's static because all mm is in mm.c */
   real_malloc = (void * (*) (size_t)) dlsym(RTLD_NEXT, "malloc");
@@ -55,8 +55,10 @@ static void mm_gnuld_legacy_init(void) { /* This function is called from mmalloc
  * DL needs some memory while resolving the malloc symbol, that is somehow problematic
  * To that extend, we have a little area here living in .BSS that we return if asked for memory before the malloc is resolved.
  */
-int allocated_junk=0; /* keep track of whether our little area was already given to someone */
-char junkarea[4096];
+static int allocated_junk = 0; /* keep track of many blocks of our little area was already given to someone */
+#define JUNK_SIZE 8
+#define MAX_JUNK_AREAS (3*4096/JUNK_SIZE)
+static char junkareas[MAX_JUNK_AREAS][JUNK_SIZE];
 
 /* This version use mmalloc if there is a current heap, or the legacy implem if not */
 void *malloc(size_t n) {
@@ -79,19 +81,16 @@ void *malloc(size_t n) {
 #endif
   } else {
     if (!real_malloc) {
-      if (allocated_junk) {
+      size_t needed_areas = n / JUNK_SIZE;
+      if(needed_areas * JUNK_SIZE != n) needed_areas++;
+      if (allocated_junk+needed_areas>=MAX_JUNK_AREAS) {
         fprintf(stderr,
-            "Panic: real malloc symbol not resolved yet, and I already gave my little private memory chunk away. "
-            "Damn LD, we must extend our code to have several such areas.\n");
-        exit(1);
-      } else if (n > sizeof junkarea) {
-        fprintf(stderr,
-            "Panic: real malloc symbol not resolved yet, and I need %zu bytes while my little private memory chunk is only %zu bytes wide. "
-            "Damn LD, we must fix our code to extend this area.\n", n, sizeof junkarea);
+          "Panic: real malloc symbol not resolved yet, and I already gave my little private memory chunk away.\n");
         exit(1);
       } else {
-        allocated_junk = 1;
-        return junkarea;
+        size_t i = allocated_junk;
+        allocated_junk += needed_areas;
+        return junkareas[i];
       }
     }
 #ifdef MM_LEGACY_VERBOSE
@@ -133,7 +132,7 @@ void free(void *p)
 {
   if (p==NULL)
     return;
-  if (p!=junkarea) {
+  if (p<=(void*)junkareas || p>(void*)(junkareas[MAX_JUNK_AREAS]) ) {
     xbt_mheap_t mdp = __mmalloc_current_heap;
 
     if (mdp) {
@@ -143,8 +142,10 @@ void free(void *p)
     } else {
       real_free(p);
     }
+  } else if(allocated_junk && p==junkareas[allocated_junk-1]) {
+    allocated_junk--;
   } else {
-    allocated_junk=0;
+    // Leaked memory.
   }
 }
 

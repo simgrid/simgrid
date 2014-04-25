@@ -63,6 +63,13 @@ static dw_variable_t find_local_variable(dw_frame_t frame, const char* argument_
       return variable;
   }
 
+  dw_frame_t scope = NULL;
+  xbt_dynar_foreach(frame->scopes, cursor, scope) {
+    variable = find_local_variable(scope, argument_name);
+    if(variable)
+      return variable;
+  }
+
   return NULL;
 }
 
@@ -140,6 +147,11 @@ int main(int argc, char** argv) {
   unw_init_local(&cursor, &context);
 
   test_local_variable(mc_binary_info, "main", "argc", &argc, &cursor);
+
+  {
+    int lexical_block_variable = 50;
+    test_local_variable(mc_binary_info, "main", "lexical_block_variable", &lexical_block_variable, &cursor);
+  }
 
   s_foo my_foo;
   test_type_by_name(my_foo);
