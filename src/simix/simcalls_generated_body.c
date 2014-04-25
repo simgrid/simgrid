@@ -910,6 +910,22 @@
     }    
     return self->simcall.result.dp;
   }
+  inline static int simcall_BODY_process_join(smx_process_t process, double timeout) {
+    smx_process_t self = SIMIX_process_self();
+    self->simcall.call = SIMCALL_PROCESS_JOIN;
+    memset(&self->simcall.result, 0, sizeof(self->simcall.result));
+    memset(self->simcall.args, 0, sizeof(self->simcall.args));
+    self->simcall.args[0].dp = (void*) process;
+    self->simcall.args[1].d = (double) timeout;
+    if (self != simix_global->maestro_process) {
+      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name,
+                SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
+      SIMIX_process_yield(self);
+    } else {
+      SIMIX_simcall_pre(&self->simcall, 0);
+    }    
+    return self->simcall.result.i;
+  }
   inline static int simcall_BODY_process_sleep(double duration) {
     smx_process_t self = SIMIX_process_self();
     self->simcall.call = SIMCALL_PROCESS_SLEEP;
@@ -925,7 +941,7 @@
     }    
     return self->simcall.result.i;
   }
-  inline static void simcall_BODY_process_on_exit(smx_process_t process, int_f_pvoid_t fun, void* data) {
+  inline static void simcall_BODY_process_on_exit(smx_process_t process, int_f_pvoid_pvoid_t fun, void* data) {
     smx_process_t self = SIMIX_process_self();
     self->simcall.call = SIMCALL_PROCESS_ON_EXIT;
     memset(&self->simcall.result, 0, sizeof(self->simcall.result));

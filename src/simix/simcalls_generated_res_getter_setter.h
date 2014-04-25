@@ -241,6 +241,12 @@ static inline xbt_dict_t simcall_process_get_properties__get__result(smx_simcall
 static inline void simcall_process_get_properties__set__result(smx_simcall_t simcall, void* result){
     simcall->result.dp = result;
 }
+static inline int simcall_process_join__get__result(smx_simcall_t simcall){
+  return  simcall->result.i;
+}
+static inline void simcall_process_join__set__result(smx_simcall_t simcall, int result){
+    simcall->result.i = result;
+}
 static inline int simcall_process_sleep__get__result(smx_simcall_t simcall){
   return  simcall->result.i;
 }

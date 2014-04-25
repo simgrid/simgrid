@@ -1003,6 +1003,7 @@ set(EXAMPLES_CMAKEFILES_TXT
 
 set(TESHSUITE_CMAKEFILES_TXT
   teshsuite/msg/CMakeLists.txt
+  teshsuite/msg/process_join/CMakeLists.txt
   teshsuite/msg/storage/CMakeLists.txt
   teshsuite/msg/trace/CMakeLists.txt
   teshsuite/bug-17132/CMakeLists.txt

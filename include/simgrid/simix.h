@@ -87,6 +87,10 @@ typedef struct s_smx_action *smx_action_t; /* FIXME: replace by specialized acti
     \see m_process_management
   @{ */
 typedef struct s_smx_process *smx_process_t;
+typedef enum {
+  SMX_EXIT_SUCCESS = 0,
+  SMX_EXIT_FAILURE = 1
+} smx_process_exit_status_t;
 /** @} */
 
 
@@ -227,7 +231,7 @@ XBT_PUBLIC(void) SIMIX_function_register_process_create(smx_creation_func_t func
 XBT_PUBLIC(void) SIMIX_function_register_process_kill(void_pfn_smxprocess_t_smxprocess_t function);
 
 /* Simulation execution */
-XBT_PUBLIC(void) SIMIX_run(void);    
+XBT_PUBLIC(void) SIMIX_run(void);
 XBT_PUBLIC(double) SIMIX_get_clock(void);
 
 /* Timer functions FIXME: should these be public? */
@@ -274,7 +278,7 @@ XBT_PUBLIC(smx_context_t) SIMIX_process_get_context(smx_process_t);
 XBT_PUBLIC(void) SIMIX_process_set_context(smx_process_t p,smx_context_t c);
 XBT_PUBLIC(int) SIMIX_process_has_pending_comms(smx_process_t process);
 XBT_PUBLIC(void) SIMIX_process_on_exit_runall(smx_process_t process);
-XBT_PUBLIC(void) SIMIX_process_on_exit(smx_process_t process, int_f_pvoid_t fun, void *data);
+XBT_PUBLIC(void) SIMIX_process_on_exit(smx_process_t process, int_f_pvoid_pvoid_t fun, void *data);
 
 /****************************** Communication *********************************/
 XBT_PUBLIC(void) SIMIX_comm_set_copy_data_callback(void (*callback) (smx_action_t, void*, size_t));
@@ -388,9 +392,10 @@ XBT_PUBLIC(int) simcall_process_get_PPID(smx_process_t process);
 XBT_PUBLIC(int) simcall_process_is_suspended(smx_process_t process);
 XBT_PUBLIC(xbt_dict_t) simcall_process_get_properties(smx_process_t host);
 XBT_PUBLIC(void) simcall_process_set_kill_time(smx_process_t process, double kill_time);
-XBT_PUBLIC(void) simcall_process_on_exit(smx_process_t process, int_f_pvoid_t fun, void *data);
+XBT_PUBLIC(void) simcall_process_on_exit(smx_process_t process, int_f_pvoid_pvoid_t fun, void *data);
 XBT_PUBLIC(void) simcall_process_auto_restart_set(smx_process_t process, int auto_restart);
 XBT_PUBLIC(smx_process_t) simcall_process_restart(smx_process_t process);
+XBT_PUBLIC(void) simcall_process_join(smx_process_t process, double timeout);
 /* Sleep control */
 XBT_PUBLIC(e_smx_state_t) simcall_process_sleep(double duration);
 

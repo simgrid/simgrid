@@ -293,12 +293,16 @@ case SIMCALL_PROCESS_GET_PROPERTIES:
       SIMIX_simcall_answer(simcall);
       break;  
 
+case SIMCALL_PROCESS_JOIN:
+       SIMIX_pre_process_join(simcall , (smx_process_t) simcall->args[0].dp,  simcall->args[1].d);
+       break;  
+
 case SIMCALL_PROCESS_SLEEP:
        SIMIX_pre_process_sleep(simcall ,  simcall->args[0].d);
        break;  
 
 case SIMCALL_PROCESS_ON_EXIT:
-       SIMIX_pre_process_on_exit(simcall , (smx_process_t) simcall->args[0].dp, (int_f_pvoid_t) simcall->args[1].fp,  simcall->args[2].dp);
+       SIMIX_pre_process_on_exit(simcall , (smx_process_t) simcall->args[0].dp, (int_f_pvoid_pvoid_t) simcall->args[1].fp,  simcall->args[2].dp);
       SIMIX_simcall_answer(simcall);
       break;  
 

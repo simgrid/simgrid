@@ -200,7 +200,7 @@ void TRACE_msg_process_change_host(msg_process_t process, msg_host_t old_host,
                                    msg_host_t new_host);
 void TRACE_msg_process_create (const char *process_name, int process_pid, msg_host_t host);
 void TRACE_msg_process_destroy (const char *process_name, int process_pid, msg_host_t host);
-void TRACE_msg_process_kill(msg_process_t process);
+void TRACE_msg_process_kill(smx_process_exit_status_t status, msg_process_t process);
 void TRACE_msg_process_suspend(msg_process_t process);
 void TRACE_msg_process_resume(msg_process_t process);
 void TRACE_msg_process_sleep_in(msg_process_t process);   //called from msg/gos.c

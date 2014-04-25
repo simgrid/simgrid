@@ -77,11 +77,11 @@ void TRACE_msg_process_destroy (const char *process_name, int process_pid, msg_h
   PJ_container_free (process);
 }
 
-void TRACE_msg_process_kill(msg_process_t process)
+void TRACE_msg_process_kill(smx_process_exit_status_t status, msg_process_t process)
 {
-  if (TRACE_msg_process_is_enabled()){
+  if (TRACE_msg_process_is_enabled() && status==SMX_EXIT_FAILURE){
     //kill means that this process no longer exists, let's destroy it
-    TRACE_msg_process_destroy (MSG_process_get_name (process), MSG_process_get_PID (process), MSG_process_get_host (process));
+    TRACE_msg_process_destroy(MSG_process_get_name (process), MSG_process_get_PID (process), MSG_process_get_host (process));
   }
 }
 

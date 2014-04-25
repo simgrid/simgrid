@@ -535,6 +535,10 @@ void SIMIX_display_process_status(void)
         action_description = "sleeping";
         break;
 
+      case SIMIX_ACTION_JOIN:
+        action_description = "joining";
+        break;
+
       case SIMIX_ACTION_SYNCHRO:
         action_description = "synchronization";
         break;
