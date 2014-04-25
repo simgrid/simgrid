@@ -28,12 +28,12 @@ set(EXTRA_DIST
   src/simdag/private.h
   src/simix/simcalls.in
   src/simix/simcalls.py
-  src/simix/simcalls_generated_enum.h
-  src/simix/simcalls_generated_string.c
-  src/simix/simcalls_generated_res_getter_setter.h
   src/simix/simcalls_generated_args_getter_setter.h
-  src/simix/simcalls_generated_case.c
   src/simix/simcalls_generated_body.c
+  src/simix/simcalls_generated_case.c
+  src/simix/simcalls_generated_enum.h
+  src/simix/simcalls_generated_res_getter_setter.h
+  src/simix/simcalls_generated_string.c
   src/simix/smx_host_private.h
   src/simix/smx_io_private.h
   src/simix/smx_network_private.h
@@ -42,52 +42,53 @@ set(EXTRA_DIST
   src/simix/smx_smurf_private.h
   src/simix/smx_synchro_private.h
   src/smpi/README
+  src/smpi/colls/coll_tuned_topo.h
   src/smpi/colls/colls.h
   src/smpi/colls/colls_private.h
-  src/smpi/colls/coll_tuned_topo.h
   src/smpi/private.h
   src/smpi/smpi_mpi_dt_private.h
-  src/surf/plugins/energy.hpp
+  src/surf/cpu_cas01.hpp
   src/surf/cpu_interface.hpp
   src/surf/cpu_ti.hpp
-  src/surf/cpu_cas01.hpp
   src/surf/gtnets/gtnets_interface.h
   src/surf/gtnets/gtnets_simulator.h
   src/surf/gtnets/gtnets_topology.h
   src/surf/maxmin_private.hpp
-  src/surf/network_interface.hpp
-  src/surf/network_gtnets.hpp
-  src/surf/network_ns3.hpp
   src/surf/network_cm02.hpp
-  src/surf/network_smpi.hpp
   src/surf/network_constant.hpp
+  src/surf/network_gtnets.hpp
+  src/surf/network_interface.hpp
+  src/surf/network_ns3.hpp
+  src/surf/network_smpi.hpp
   src/surf/ns3/my-point-to-point-helper.h
   src/surf/ns3/ns3_interface.h
   src/surf/ns3/ns3_simulator.h
   src/surf/ns3/red-queue.h
   src/surf/platf_generator_private.h
+  src/surf/plugins/energy.hpp
   src/surf/simgrid.dtd
   src/surf/simgrid_dtd.c
   src/surf/storage_interface.hpp
   src/surf/storage_n11.hpp
   src/surf/surf_interface.hpp
   src/surf/surf_private.h
-  src/surf/surf_routing_private.hpp
   src/surf/surf_routing.hpp
   src/surf/surf_routing_cluster.hpp
+  src/surf/surf_routing_cluster_fat_tree.hpp
   src/surf/surf_routing_cluster_torus.hpp
   src/surf/surf_routing_dijkstra.hpp
   src/surf/surf_routing_floyd.hpp
   src/surf/surf_routing_full.hpp
   src/surf/surf_routing_generic.hpp
   src/surf/surf_routing_none.hpp
+  src/surf/surf_routing_private.hpp
   src/surf/surf_routing_vivaldi.hpp
   src/surf/surfxml_parse.c
   src/surf/trace_mgr_private.h
-  src/surf/vm_workstation_interface.hpp
   src/surf/vm_workstation_hl13.hpp
-  src/surf/workstation_interface.hpp
+  src/surf/vm_workstation_interface.hpp
   src/surf/workstation_clm03.hpp
+  src/surf/workstation_interface.hpp
   src/surf/workstation_ptask_L07.hpp
   src/win32/config.h
   src/xbt/automaton/automaton_lexer.yy.c
@@ -124,17 +125,105 @@ set(EXTRA_DIST
   src/xbt/win32_ucontext.c
   tools/tesh/run_context.h
   tools/tesh/tesh.h
-  src/surf/surf_routing_cluster_fat_tree.hpp
   )
 
 set(SMPI_SRC
-  src/surf/surf_routing_cluster_fat_tree.cpp
+  src/smpi/colls/allgather-2dmesh.c
+  src/smpi/colls/allgather-3dmesh.c
+  src/smpi/colls/allgather-GB.c
+  src/smpi/colls/allgather-NTSLR-NB.c
+  src/smpi/colls/allgather-NTSLR.c
+  src/smpi/colls/allgather-SMP-NTS.c
+  src/smpi/colls/allgather-bruck.c
+  src/smpi/colls/allgather-loosely-lr.c
+  src/smpi/colls/allgather-ompi-neighborexchange.c
+  src/smpi/colls/allgather-pair.c
+  src/smpi/colls/allgather-rdb.c
+  src/smpi/colls/allgather-rhv.c
+  src/smpi/colls/allgather-ring.c
+  src/smpi/colls/allgather-smp-simple.c
+  src/smpi/colls/allgather-spreading-simple.c
+  src/smpi/colls/allgatherv-GB.c
+  src/smpi/colls/allgatherv-mpich-rdb.c
+  src/smpi/colls/allgatherv-mpich-ring.c
+  src/smpi/colls/allgatherv-ompi-bruck.c
+  src/smpi/colls/allgatherv-ompi-neighborexchange.c
+  src/smpi/colls/allgatherv-pair.c
+  src/smpi/colls/allgatherv-ring.c
+  src/smpi/colls/allreduce-lr.c
+  src/smpi/colls/allreduce-ompi-ring-segmented.c
+  src/smpi/colls/allreduce-rab-rdb.c
+  src/smpi/colls/allreduce-rab1.c
+  src/smpi/colls/allreduce-rab2.c
+  src/smpi/colls/allreduce-rdb.c
+  src/smpi/colls/allreduce-redbcast.c
+  src/smpi/colls/allreduce-smp-binomial-pipeline.c
+  src/smpi/colls/allreduce-smp-binomial.c
+  src/smpi/colls/allreduce-smp-rdb.c
+  src/smpi/colls/allreduce-smp-rsag-lr.c
+  src/smpi/colls/allreduce-smp-rsag-rab.c
+  src/smpi/colls/allreduce-smp-rsag.c
+  src/smpi/colls/alltoall-2dmesh.c
+  src/smpi/colls/alltoall-3dmesh.c
+#  src/smpi/colls/alltoall-bruck.c
+  src/smpi/colls/alltoall-pair-light-barrier.c
+  src/smpi/colls/alltoall-pair-mpi-barrier.c
+  src/smpi/colls/alltoall-pair-one-barrier.c
+  src/smpi/colls/alltoall-pair.c
+  src/smpi/colls/alltoall-rdb.c
+  src/smpi/colls/alltoall-ring-light-barrier.c
+  src/smpi/colls/alltoall-ring-mpi-barrier.c
+  src/smpi/colls/alltoall-ring-one-barrier.c
+  src/smpi/colls/alltoall-ring.c
+  src/smpi/colls/alltoallv-bruck.c
+  src/smpi/colls/alltoallv-ompi-basic-linear.c
+  src/smpi/colls/alltoallv-pair-light-barrier.c
+  src/smpi/colls/alltoallv-pair-mpi-barrier.c
+  src/smpi/colls/alltoallv-pair-one-barrier.c
+  src/smpi/colls/alltoallv-pair.c
+  src/smpi/colls/alltoallv-ring-light-barrier.c
+  src/smpi/colls/alltoallv-ring-mpi-barrier.c
+  src/smpi/colls/alltoallv-ring-one-barrier.c
+  src/smpi/colls/alltoallv-ring.c
+  src/smpi/colls/barrier-ompi.c
+  src/smpi/colls/bcast-NTSB.c
+  src/smpi/colls/bcast-NTSL-Isend.c
+  src/smpi/colls/bcast-NTSL.c
+  src/smpi/colls/bcast-SMP-binary.c
+  src/smpi/colls/bcast-SMP-binomial.c
+  src/smpi/colls/bcast-SMP-linear.c
+  src/smpi/colls/bcast-arrival-pattern-aware-wait.c
+  src/smpi/colls/bcast-arrival-pattern-aware.c
+  src/smpi/colls/bcast-arrival-scatter.c
+  src/smpi/colls/bcast-binomial-tree.c
+  src/smpi/colls/bcast-flattree-pipeline.c
+  src/smpi/colls/bcast-flattree.c
+  src/smpi/colls/bcast-ompi-pipeline.c
+  src/smpi/colls/bcast-ompi-split-bintree.c
+  src/smpi/colls/bcast-scatter-LR-allgather.c
+  src/smpi/colls/bcast-scatter-rdb-allgather.c
+  src/smpi/colls/coll_tuned_topo.c
+  src/smpi/colls/colls_global.c
+  src/smpi/colls/gather-ompi.c
+  src/smpi/colls/reduce-NTSL.c
+  src/smpi/colls/reduce-arrival-pattern-aware.c
+  src/smpi/colls/reduce-binomial.c
+  src/smpi/colls/reduce-flat-tree.c
+  src/smpi/colls/reduce-ompi.c
+  src/smpi/colls/reduce-scatter-gather.c
+  src/smpi/colls/reduce_scatter-mpich.c
+  src/smpi/colls/reduce_scatter-ompi.c
+  src/smpi/colls/scatter-ompi.c
+  src/smpi/colls/smpi_automatic_selector.c
+  src/smpi/colls/smpi_mpich_selector.c
+  src/smpi/colls/smpi_openmpi_selector.c
   src/smpi/instr_smpi.c
   src/smpi/smpi_base.c
   src/smpi/smpi_bench.c
   src/smpi/smpi_c99.c
   src/smpi/smpi_coll.c
   src/smpi/smpi_comm.c
+  src/smpi/smpi_deployment.c
   src/smpi/smpi_dvfs.c
   src/smpi/smpi_global.c
   src/smpi/smpi_group.c
@@ -143,96 +232,7 @@ set(SMPI_SRC
   src/smpi/smpi_pmpi.c
   src/smpi/smpi_replay.c
   src/smpi/smpi_topo.c
-  src/smpi/smpi_deployment.c
-  src/smpi/colls/smpi_openmpi_selector.c
-  src/smpi/colls/smpi_mpich_selector.c
-  src/smpi/colls/colls_global.c
-  src/smpi/colls/allgather-2dmesh.c
-  src/smpi/colls/allgather-3dmesh.c
-  src/smpi/colls/allgather-bruck.c
-  src/smpi/colls/allgather-GB.c
-  src/smpi/colls/allgather-loosely-lr.c
-  src/smpi/colls/allgather-NTSLR.c
-  src/smpi/colls/allgather-NTSLR-NB.c
-  src/smpi/colls/allgather-pair.c
-  src/smpi/colls/allgather-rdb.c
-  src/smpi/colls/allgather-rhv.c
-  src/smpi/colls/allgather-ring.c
-  src/smpi/colls/allgather-SMP-NTS.c
-  src/smpi/colls/allgather-smp-simple.c
-  src/smpi/colls/allgather-spreading-simple.c
-  src/smpi/colls/allgather-ompi-neighborexchange.c
-  src/smpi/colls/allgatherv-GB.c
-  src/smpi/colls/allgatherv-pair.c
-  src/smpi/colls/allgatherv-ring.c
-  src/smpi/colls/allgatherv-ompi-neighborexchange.c
-  src/smpi/colls/allgatherv-ompi-bruck.c
-  src/smpi/colls/allgatherv-mpich-rdb.c
-  src/smpi/colls/allgatherv-mpich-ring.c
-  src/smpi/colls/allreduce-lr.c
-  src/smpi/colls/allreduce-rab1.c
-  src/smpi/colls/allreduce-rab2.c
-  src/smpi/colls/allreduce-rab-rdb.c
-  src/smpi/colls/allreduce-rdb.c
-  src/smpi/colls/allreduce-redbcast.c
-  src/smpi/colls/allreduce-smp-binomial.c
-  src/smpi/colls/allreduce-smp-binomial-pipeline.c
-  src/smpi/colls/allreduce-smp-rdb.c
-  src/smpi/colls/allreduce-smp-rsag.c
-  src/smpi/colls/allreduce-smp-rsag-lr.c
-  src/smpi/colls/allreduce-smp-rsag-rab.c
-  src/smpi/colls/allreduce-ompi-ring-segmented.c
-  src/smpi/colls/alltoall-2dmesh.c
-  src/smpi/colls/alltoall-3dmesh.c
-#  src/smpi/colls/alltoall-bruck.c
-  src/smpi/colls/alltoall-pair.c
-  src/smpi/colls/alltoall-pair-light-barrier.c
-  src/smpi/colls/alltoall-pair-mpi-barrier.c
-  src/smpi/colls/alltoall-pair-one-barrier.c
-  src/smpi/colls/alltoall-rdb.c
-  src/smpi/colls/alltoall-ring.c
-  src/smpi/colls/alltoall-ring-light-barrier.c
-  src/smpi/colls/alltoall-ring-mpi-barrier.c
-  src/smpi/colls/alltoall-ring-one-barrier.c
-  src/smpi/colls/alltoallv-pair.c
-  src/smpi/colls/alltoallv-pair-light-barrier.c
-  src/smpi/colls/alltoallv-pair-mpi-barrier.c
-  src/smpi/colls/alltoallv-pair-one-barrier.c
-  src/smpi/colls/alltoallv-ring.c
-  src/smpi/colls/alltoallv-ring-light-barrier.c
-  src/smpi/colls/alltoallv-ring-mpi-barrier.c
-  src/smpi/colls/alltoallv-ring-one-barrier.c
-  src/smpi/colls/alltoallv-bruck.c
-  src/smpi/colls/alltoallv-ompi-basic-linear.c
-  src/smpi/colls/bcast-arrival-pattern-aware.c
-  src/smpi/colls/bcast-arrival-pattern-aware-wait.c
-  src/smpi/colls/bcast-arrival-scatter.c
-  src/smpi/colls/bcast-binomial-tree.c
-  src/smpi/colls/bcast-flattree.c
-  src/smpi/colls/bcast-flattree-pipeline.c
-  src/smpi/colls/bcast-NTSB.c
-  src/smpi/colls/bcast-NTSL.c
-  src/smpi/colls/bcast-NTSL-Isend.c
-  src/smpi/colls/bcast-scatter-LR-allgather.c
-  src/smpi/colls/bcast-scatter-rdb-allgather.c
-  src/smpi/colls/bcast-SMP-binary.c
-  src/smpi/colls/bcast-SMP-binomial.c
-  src/smpi/colls/bcast-SMP-linear.c
-  src/smpi/colls/coll_tuned_topo.c
-  src/smpi/colls/bcast-ompi-split-bintree.c
-  src/smpi/colls/bcast-ompi-pipeline.c
-  src/smpi/colls/reduce-arrival-pattern-aware.c
-  src/smpi/colls/reduce-binomial.c
-  src/smpi/colls/reduce-flat-tree.c
-  src/smpi/colls/reduce-NTSL.c
-  src/smpi/colls/reduce-scatter-gather.c
-  src/smpi/colls/reduce-ompi.c
-  src/smpi/colls/gather-ompi.c
-  src/smpi/colls/reduce_scatter-ompi.c
-  src/smpi/colls/reduce_scatter-mpich.c
-  src/smpi/colls/smpi_automatic_selector.c
-  src/smpi/colls/scatter-ompi.c
-  src/smpi/colls/barrier-ompi.c
+  src/surf/surf_routing_cluster_fat_tree.cpp
   )
 
 if(SMPI_F2C)
@@ -312,26 +312,26 @@ set(NS3_SRC
   )
 
 set(SURF_SRC
-  src/surf/plugins/energy.cpp
+  src/surf/cpu_cas01.cpp
   src/surf/cpu_interface.cpp
   src/surf/cpu_ti.cpp
-  src/surf/cpu_cas01.cpp
   src/surf/fair_bottleneck.cpp
   src/surf/instr_routing.c
   src/surf/instr_surf.c
   src/surf/lagrange.cpp
   src/surf/maxmin.cpp
-  src/surf/network_interface.cpp
   src/surf/network_cm02.cpp
-  src/surf/network_smpi.cpp
   src/surf/network_constant.cpp
+  src/surf/network_interface.cpp
+  src/surf/network_smpi.cpp
   src/surf/platf_generator.c
+  src/surf/plugins/energy.cpp
   src/surf/random_mgr.c
   src/surf/sg_platf.c
   src/surf/storage_interface.cpp
   src/surf/storage_n11.cpp
-  src/surf/surf_interface.cpp
   src/surf/surf_c_bindings.cpp
+  src/surf/surf_interface.cpp
   src/surf/surf_routing.cpp
   src/surf/surf_routing_cluster.cpp
   src/surf/surf_routing_cluster_torus.cpp
@@ -344,11 +344,11 @@ set(SURF_SRC
   src/surf/surfxml_parse.c
   src/surf/surfxml_parseplatf.c
   src/surf/trace_mgr.c
-  src/surf/workstation_interface.cpp
-  src/surf/workstation_clm03.cpp
-  src/surf/workstation_ptask_L07.cpp
-  src/surf/vm_workstation_interface.cpp
   src/surf/vm_workstation_hl13.cpp
+  src/surf/vm_workstation_interface.cpp
+  src/surf/workstation_clm03.cpp
+  src/surf/workstation_interface.cpp
+  src/surf/workstation_ptask_L07.cpp
   src/xbt/xbt_sg_stubs.c
   )
 
@@ -448,30 +448,25 @@ set(JSURF_JAVA_C_SRC
 )
 
 set(JSURF_JAVA_GENERATED_SRC
-  src/bindings/java/org/simgrid/surf/Surf.java
-  src/bindings/java/org/simgrid/surf/SurfJNI.java
-  src/bindings/java/org/simgrid/surf/Plugin.java
-  src/bindings/java/org/simgrid/surf/Model.java
-  src/bindings/java/org/simgrid/surf/CpuModel.java
-  src/bindings/java/org/simgrid/surf/Resource.java
   src/bindings/java/org/simgrid/surf/Action.java
+  src/bindings/java/org/simgrid/surf/ActionList.java
+  src/bindings/java/org/simgrid/surf/ActionState.java
   src/bindings/java/org/simgrid/surf/Cpu.java
   src/bindings/java/org/simgrid/surf/CpuAction.java
-  src/bindings/java/org/simgrid/surf/NetworkLink.java
-  src/bindings/java/org/simgrid/surf/NetworkAction.java
-
-  src/bindings/java/org/simgrid/surf/RoutingEdge.java
-  src/bindings/java/org/simgrid/surf/TmgrTraceEvent.java
-  src/bindings/java/org/simgrid/surf/TmgrTrace.java
-
-  src/bindings/java/org/simgrid/surf/ActionList.java
-
-  #enums
-  src/bindings/java/org/simgrid/surf/ActionState.java
-  src/bindings/java/org/simgrid/surf/ResourceState.java
-
+  src/bindings/java/org/simgrid/surf/CpuModel.java
   src/bindings/java/org/simgrid/surf/LmmConstraint.java
   src/bindings/java/org/simgrid/surf/LmmVariable.java
+  src/bindings/java/org/simgrid/surf/Model.java
+  src/bindings/java/org/simgrid/surf/NetworkAction.java
+  src/bindings/java/org/simgrid/surf/NetworkLink.java
+  src/bindings/java/org/simgrid/surf/Plugin.java
+  src/bindings/java/org/simgrid/surf/Resource.java
+  src/bindings/java/org/simgrid/surf/ResourceState.java
+  src/bindings/java/org/simgrid/surf/RoutingEdge.java
+  src/bindings/java/org/simgrid/surf/Surf.java
+  src/bindings/java/org/simgrid/surf/SurfJNI.java
+  src/bindings/java/org/simgrid/surf/TmgrTrace.java
+  src/bindings/java/org/simgrid/surf/TmgrTraceEvent.java
   src/bindings/java/org/simgrid/surf/XbtDict.java
 )
 
@@ -512,7 +507,6 @@ set(JSURF_C_SRC
 
 set(JMSG_JAVA_SRC
   src/bindings/java/org/simgrid/NativeLib.java
-
   src/bindings/java/org/simgrid/msg/As.java
   src/bindings/java/org/simgrid/msg/Comm.java
   src/bindings/java/org/simgrid/msg/File.java
@@ -566,17 +560,17 @@ set(LUA_SRC
   )
 
 set(TRACING_SRC
+  src/instr/instr_TI_trace.c
   src/instr/instr_config.c
   src/instr/instr_interface.c
   src/instr/instr_paje_containers.c
-  src/instr/instr_TI_trace.c
-  src/instr/instr_paje_trace.c
-  src/instr/instr_trace.c
   src/instr/instr_paje_header.c
+  src/instr/instr_paje_trace.c
   src/instr/instr_paje_types.c
   src/instr/instr_paje_values.c
   src/instr/instr_private.h
   src/instr/instr_resource_utilization.c
+  src/instr/instr_trace.c
   )
 
 set(JEDULE_SRC
@@ -594,30 +588,30 @@ set(MC_SRC
   src/mc/mc_checkpoint.c
   src/mc/mc_compare.c
   src/mc/mc_dpor.c
-  src/mc/mc_global.c
   src/mc/mc_dwarf.c
-  src/mc/mc_member.c
   src/mc/mc_dwarf_attrnames.h
   src/mc/mc_dwarf_expression.c
   src/mc/mc_dwarf_tagnames.h
+  src/mc/mc_global.c
+  src/mc/mc_hash.c
   src/mc/mc_liveness.c
+  src/mc/mc_member.c
   src/mc/mc_memory.c
+  src/mc/mc_pair.c
   src/mc/mc_private.h
   src/mc/mc_request.c
+  src/mc/mc_set.cpp
   src/mc/mc_state.c
   src/mc/memory_map.c
-  src/mc/mc_pair.c
-  src/mc/mc_hash.c
-  src/mc/mc_set.cpp
   )
 
 set(headers_to_install
-  include/simgrid.h
   include/instr/instr.h
   include/msg/datatypes.h
   include/msg/msg.h
   include/simdag/datatypes.h
   include/simdag/simdag.h
+  include/simgrid.h
   include/simgrid/datatypes.h
   include/simgrid/modelchecker.h
   include/simgrid/platf.h
@@ -832,8 +826,8 @@ set(DOC_SOURCES
   doc/doxygen/module-msg.doc
   doc/doxygen/module-sd.doc
   doc/doxygen/module-simix.doc
-  doc/doxygen/module-surf.doc
   doc/doxygen/module-smpi.doc
+  doc/doxygen/module-surf.doc
   doc/doxygen/module-trace.doc
   doc/doxygen/module-xbt.doc
   doc/doxygen/modules.doc
@@ -843,6 +837,9 @@ set(DOC_SOURCES
   doc/doxygen/stylesheet.css
   doc/doxygen/tracing.doc
   doc/doxygen/use.doc
+
+  doc/manpage/smpicc.1
+  doc/manpage/smpirun.1
 
   doc/msg-tuto-src/deployment0.xml
   doc/msg-tuto-src/deployment1.xml
@@ -860,8 +857,6 @@ set(DOC_SOURCES
   doc/msg-tuto-src/platforms/peers.xml
   doc/msg-tuto-src/platforms/platform.xml
 
-  doc/manpage/smpicc.1
-  doc/manpage/smpirun.1
   CITATION.bib
   )
 
@@ -1004,6 +999,7 @@ set(EXAMPLES_CMAKEFILES_TXT
   )
 
 set(TESHSUITE_CMAKEFILES_TXT
+  teshsuite/bug-17132/CMakeLists.txt
   teshsuite/msg/CMakeLists.txt
   teshsuite/msg/get_sender/CMakeLists.txt
   teshsuite/msg/host_on_off/CMakeLists.txt
@@ -1013,7 +1009,6 @@ set(TESHSUITE_CMAKEFILES_TXT
   teshsuite/msg/storage/CMakeLists.txt
   teshsuite/msg/task_destroy_cancel/CMakeLists.txt
   teshsuite/msg/trace/CMakeLists.txt
-  teshsuite/bug-17132/CMakeLists.txt
   teshsuite/simdag/CMakeLists.txt
   teshsuite/simdag/availability/CMakeLists.txt
   teshsuite/simdag/network/CMakeLists.txt
@@ -1025,14 +1020,9 @@ set(TESHSUITE_CMAKEFILES_TXT
   teshsuite/smpi/CMakeLists.txt
   teshsuite/smpi/mpich3-test/CMakeLists.txt
   teshsuite/smpi/mpich3-test/attr/CMakeLists.txt
-  teshsuite/smpi/mpich3-test/comm/CMakeLists.txt
   teshsuite/smpi/mpich3-test/coll/CMakeLists.txt
+  teshsuite/smpi/mpich3-test/comm/CMakeLists.txt
   teshsuite/smpi/mpich3-test/datatype/CMakeLists.txt
-  teshsuite/smpi/mpich3-test/group/CMakeLists.txt
-  teshsuite/smpi/mpich3-test/topo/CMakeLists.txt
-  teshsuite/smpi/mpich3-test/init/CMakeLists.txt
-  teshsuite/smpi/mpich3-test/pt2pt/CMakeLists.txt
-  teshsuite/smpi/mpich3-test/f77/util/CMakeLists.txt
 #  teshsuite/smpi/mpich3-test/f77/attr/CMakeLists.txt
   teshsuite/smpi/mpich3-test/f77/coll/CMakeLists.txt
   teshsuite/smpi/mpich3-test/f77/comm/CMakeLists.txt
@@ -1040,11 +1030,16 @@ set(TESHSUITE_CMAKEFILES_TXT
   teshsuite/smpi/mpich3-test/f77/ext/CMakeLists.txt
   teshsuite/smpi/mpich3-test/f77/init/CMakeLists.txt
   teshsuite/smpi/mpich3-test/f77/pt2pt/CMakeLists.txt
-  teshsuite/smpi/mpich3-test/f90/util/CMakeLists.txt
+  teshsuite/smpi/mpich3-test/f77/util/CMakeLists.txt
   teshsuite/smpi/mpich3-test/f90/coll/CMakeLists.txt
   teshsuite/smpi/mpich3-test/f90/datatype/CMakeLists.txt
   teshsuite/smpi/mpich3-test/f90/init/CMakeLists.txt
   teshsuite/smpi/mpich3-test/f90/pt2pt/CMakeLists.txt
+  teshsuite/smpi/mpich3-test/f90/util/CMakeLists.txt
+  teshsuite/smpi/mpich3-test/group/CMakeLists.txt
+  teshsuite/smpi/mpich3-test/init/CMakeLists.txt
+  teshsuite/smpi/mpich3-test/pt2pt/CMakeLists.txt
+  teshsuite/smpi/mpich3-test/topo/CMakeLists.txt
   teshsuite/xbt/CMakeLists.txt
   )
 
@@ -1055,9 +1050,9 @@ set(TOOLS_CMAKEFILES_TXT
   )
 
 set(TESTSUITE_CMAKEFILES_TXT
+  testsuite/mc/CMakeLists.txt
   testsuite/surf/CMakeLists.txt
   testsuite/xbt/CMakeLists.txt
-  testsuite/mc/CMakeLists.txt
   )
 
 set(CMAKE_SOURCE_FILES
@@ -1081,8 +1076,8 @@ set(CMAKE_SOURCE_FILES
   buildtools/Cmake/Modules/FindGTnets.cmake
   buildtools/Cmake/Modules/FindGraphviz.cmake
   buildtools/Cmake/Modules/FindLibSigc++.cmake
-  buildtools/Cmake/Modules/FindLibunwind.cmake
   buildtools/Cmake/Modules/FindLibdw.cmake
+  buildtools/Cmake/Modules/FindLibunwind.cmake
   buildtools/Cmake/Modules/FindLua51Simgrid.cmake
   buildtools/Cmake/Modules/FindNS3.cmake
   buildtools/Cmake/Modules/FindRngStream.cmake
@@ -1146,7 +1141,6 @@ set(PLATFORMS_EXAMPLES
   examples/platforms/generation_scripts/generate_g5k_platform.pl
   examples/platforms/generation_scripts/generate_g5k_platform_cabinets.pl
   examples/platforms/griffon.xml
-  examples/platforms/torus_cluster.xml
   examples/platforms/meta_cluster.xml
   examples/platforms/multicore_machine.xml
   examples/platforms/prop.xml
@@ -1159,6 +1153,7 @@ set(PLATFORMS_EXAMPLES
   examples/platforms/syscoord/median_meridian.xml
   examples/platforms/syscoord/median_p2psim.syscoord
   examples/platforms/syscoord/median_p2psim.xml
+  examples/platforms/torus_cluster.xml
   examples/platforms/two_peers.xml
   examples/platforms/vivaldi.xml
   )
