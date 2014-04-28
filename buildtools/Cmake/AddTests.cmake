@@ -503,11 +503,10 @@ add_test(test-xbt-log                           ${CMAKE_BINARY_DIR}/testsuite/xb
 add_test(test-xbt-graphxml                      ${CMAKE_BINARY_DIR}/testsuite/xbt/graphxml_usage ${CMAKE_HOME_DIRECTORY}/testsuite/xbt/graph.xml)
 add_test(test-xbt-heap                          ${CMAKE_BINARY_DIR}/testsuite/xbt/heap_bench)
 
-add_test(test-surf-lmm                          ${CMAKE_BINARY_DIR}/testsuite/surf/lmm_usage)
-add_test(test-surf-maxmin                       ${CMAKE_BINARY_DIR}/testsuite/surf/maxmin_bench)
-add_test(test-surf-usage                        ${CMAKE_BINARY_DIR}/testsuite/surf/surf_usage --cfg=path:${CMAKE_HOME_DIRECTORY}/testsuite/surf/ platform.xml)
-add_test(test-surf-usage2                       ${CMAKE_BINARY_DIR}/testsuite/surf/surf_usage2 --cfg=path:${CMAKE_HOME_DIRECTORY}/testsuite/surf/ platform.xml)
-add_test(test-surf-trace                        ${CMAKE_BINARY_DIR}/testsuite/surf/trace_usage --cfg=path:${CMAKE_HOME_DIRECTORY}/testsuite/surf/)
+ADD_TESH(test-surf-lmm                           --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/surf/lmm_usage --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/surf/lmm_usage lmm_usage.tesh)
+ADD_TESH(test-surf-maxmin                        --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/surf/maxmin_bench --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/surf/maxmin_bench maxmin_bench.tesh)
+ADD_TESH(test-surf-usage                         --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/surf/surf_usage --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/surf/ surf_usage/surf_usage.tesh)
+ADD_TESH(test-surf-trace                         --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/surf/trace_usage --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/surf/ trace_usage/trace_usage.tesh)
 
 if(HAVE_MC)
   add_test(mc-dwarf                             ${CMAKE_BINARY_DIR}/testsuite/mc/dwarf)

@@ -127,10 +127,15 @@ add_subdirectory(${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich3-test/f90/datatype
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich3-test/f90/init)
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich3-test/f90/pt2pt)
 
+add_subdirectory(${CMAKE_HOME_DIRECTORY}/teshsuite/surf/)
+add_subdirectory(${CMAKE_HOME_DIRECTORY}/teshsuite/surf/lmm_usage)
+add_subdirectory(${CMAKE_HOME_DIRECTORY}/teshsuite/surf/maxmin_bench)
+add_subdirectory(${CMAKE_HOME_DIRECTORY}/teshsuite/surf/surf_usage)
+add_subdirectory(${CMAKE_HOME_DIRECTORY}/teshsuite/surf/trace_usage)
+
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/teshsuite/xbt)
 
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/testsuite/mc)
-add_subdirectory(${CMAKE_HOME_DIRECTORY}/testsuite/surf)
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/testsuite/xbt)
 
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/tools)
