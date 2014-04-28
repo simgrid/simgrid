@@ -479,6 +479,10 @@ void smpi_global_destroy(void)
   }
   xbt_free(process_data);
   process_data = NULL;
+
+  if(index_to_process_data){
+      xbt_free(index_to_process_data);
+  }
   if(smpi_privatize_global_variables)
     smpi_destroy_global_memory_segments();
   smpi_free_static();
