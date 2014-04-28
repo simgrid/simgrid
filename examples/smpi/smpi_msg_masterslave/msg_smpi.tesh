@@ -1,5 +1,5 @@
 p Test the use of SMPI+MSG in the same file, as well as several different SMPI instances at the same time
-$ ./masterslave_mailbox_smpi ${srcdir:=.}/../../msg/small_platform_with_routers.xml ./deployment_masterslave_mailbox_smpi.xml --log=smpi.:info
+$ ./masterslave_mailbox_smpi ${srcdir:=.}/../../msg/small_platform_with_routers.xml ${srcdir:=.}/deployment_masterslave_mailbox_smpi.xml --log=smpi.:info
 > [0.000000] [smpi_kernel/INFO] You did not set the power of the host running the simulation.  The timings will certainly not be accurate.  Use the option "--cfg=smpi/running_power:<flops>" to set its value.Check http://simgrid.org/simgrid/latest/doc/options.html#options_smpi_bench for more information. 
 > [Tremblay:master:(1) 0.000000] [msg_test/INFO] Got 1 slaves and 20 tasks to process
 > [Tremblay:master:(1) 0.000000] [msg_test/INFO] Sending "Task_0" (of 20) to mailbox "slave-0"
