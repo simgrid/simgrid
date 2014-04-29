@@ -1000,6 +1000,8 @@ set(EXAMPLES_CMAKEFILES_TXT
 
 set(TESHSUITE_CMAKEFILES_TXT
   teshsuite/bug-17132/CMakeLists.txt
+  teshsuite/mc/dwarf
+  teshsuite/mc/dwarf_expression
   teshsuite/msg/CMakeLists.txt
   teshsuite/msg/get_sender/CMakeLists.txt
   teshsuite/msg/host_on_off/CMakeLists.txt

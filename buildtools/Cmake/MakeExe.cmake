@@ -80,6 +80,9 @@ add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/smpi/energy/f90)
 
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/xbt)
 
+add_subdirectory(${CMAKE_HOME_DIRECTORY}/teshsuite/mc/dwarf)
+add_subdirectory(${CMAKE_HOME_DIRECTORY}/teshsuite/mc/dwarf_expression)
+
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/teshsuite/msg)
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/teshsuite/msg/get_sender)
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/teshsuite/msg/host_on_off)
@@ -138,8 +141,6 @@ add_subdirectory(${CMAKE_HOME_DIRECTORY}/teshsuite/xbt/graphxml_usage)
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/teshsuite/xbt/heap_bench)
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/teshsuite/xbt/log_usage)
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/teshsuite/xbt/parmap_bench)
-
-add_subdirectory(${CMAKE_HOME_DIRECTORY}/testsuite/mc)
 
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/tools)
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/tools/graphicator)

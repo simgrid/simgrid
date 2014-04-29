@@ -510,8 +510,8 @@ ADD_TESH(test-surf-usage                         --setenv bindir=${CMAKE_BINARY_
 ADD_TESH(test-surf-trace                         --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/surf/trace_usage --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/surf/ trace_usage/trace_usage.tesh)
 
 if(HAVE_MC)
-  add_test(mc-dwarf                             ${CMAKE_BINARY_DIR}/testsuite/mc/dwarf)
-  add_test(mc-dwarf-expression                  ${CMAKE_BINARY_DIR}/testsuite/mc/dwarf-expression)
+  ADD_TESH(mc-dwarf                              --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/mc/dwarf --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/mc/dwarf dwarf.tesh)
+  ADD_TESH(mc-dwarf-expression                   --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/mc/dwarf_expression --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/mc/dwarf_expression dwarf_expression.tesh)
 endif()
 
 add_test(testall                                ${CMAKE_BINARY_DIR}/src/testall)
