@@ -499,9 +499,10 @@ ADD_TEST(tesh-simdag-one-link-g5k               ${CMAKE_BINARY_DIR}/teshsuite/si
 ADD_TEST(msg-icomms-waitany                     ${CMAKE_BINARY_DIR}/examples/msg/icomms/peer3 ${CMAKE_HOME_DIRECTORY}/examples/msg/icomms/small_platform.xml ${CMAKE_HOME_DIRECTORY}/examples/msg/icomms/deployment_peer05.xml)
 
 # testsuite directory
-add_test(test-xbt-log                           ${CMAKE_BINARY_DIR}/testsuite/xbt/log_usage)
-add_test(test-xbt-graphxml                      ${CMAKE_BINARY_DIR}/testsuite/xbt/graphxml_usage ${CMAKE_HOME_DIRECTORY}/testsuite/xbt/graph.xml)
-add_test(test-xbt-heap                          ${CMAKE_BINARY_DIR}/testsuite/xbt/heap_bench)
+ADD_TESH(test-xbt-log                            --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/xbt/log_usage --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/xbt/log_usage log_usage.tesh)
+ADD_TESH(test-xbt-graphxml                       --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/xbt/graphxml_usage --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/xbt/graphxml_usage graphxml_usage.tesh)
+ADD_TESH(test-xbt-heap                           --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/xbt/heap_bench --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/xbt/heap_bench heap_bench.tesh)
+#ADD_TESH(test-xbt-parmap                         --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/xbt/parmap_bench --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/xbt/parmap_bench parmap_bench.tesh)
 
 ADD_TESH(test-surf-lmm                           --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/surf/lmm_usage --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/surf/lmm_usage lmm_usage.tesh)
 ADD_TESH(test-surf-maxmin                        --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/surf/maxmin_bench --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/surf/maxmin_bench maxmin_bench.tesh)

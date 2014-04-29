@@ -1,0 +1,21 @@
+#! ./tesh
+
+$ $SG_TEST_EXENV ${bindir:=.}/log_usage
+> [0.000000] [test/INFO] Test with the settings ''
+> [0.000000] /home/bedaride/Boulot/simgrid/teshsuite/xbt/log_usage/log_usage.c:28: [test/WARNING] val=2
+> [0.000000] /home/bedaride/Boulot/simgrid/teshsuite/xbt/log_usage/log_usage.c:30: [test/CRITICAL] false alarm!
+> [0.000000] [test/INFO] Test with the settings ' '
+> [0.000000] /home/bedaride/Boulot/simgrid/teshsuite/xbt/log_usage/log_usage.c:28: [test/WARNING] val=2
+> [0.000000] /home/bedaride/Boulot/simgrid/teshsuite/xbt/log_usage/log_usage.c:30: [test/CRITICAL] false alarm!
+> [0.000000] [test/INFO] Test with the settings ' test.thres:info root.thres:info  '
+> [0.000000] /home/bedaride/Boulot/simgrid/teshsuite/xbt/log_usage/log_usage.c:28: [test/WARNING] val=2
+> [0.000000] /home/bedaride/Boulot/simgrid/teshsuite/xbt/log_usage/log_usage.c:30: [test/CRITICAL] false alarm!
+> [0.000000] [test/INFO] Test with the settings ' test.thres:debug '
+> [0.000000] /home/bedaride/Boulot/simgrid/teshsuite/xbt/log_usage/log_usage.c:27: [test/DEBUG] val=1
+> [0.000000] /home/bedaride/Boulot/simgrid/teshsuite/xbt/log_usage/log_usage.c:28: [test/WARNING] val=2
+> [0.000000] /home/bedaride/Boulot/simgrid/teshsuite/xbt/log_usage/log_usage.c:30: [test/CRITICAL] false alarm!
+> [0.000000] [test/INFO] Test with the settings ' test.thres:verbose root.thres:error '
+> [0.000000] /home/bedaride/Boulot/simgrid/teshsuite/xbt/log_usage/log_usage.c:28: [test/WARNING] val=2
+> [0.000000] /home/bedaride/Boulot/simgrid/teshsuite/xbt/log_usage/log_usage.c:30: [test/CRITICAL] false alarm!
+> [0.000000] [test/INFO] Test with the settings ' test.thres:critical '
+> [0.000000] /home/bedaride/Boulot/simgrid/teshsuite/xbt/log_usage/log_usage.c:30: [test/CRITICAL] false alarm!

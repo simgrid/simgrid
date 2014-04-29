@@ -134,9 +134,12 @@ add_subdirectory(${CMAKE_HOME_DIRECTORY}/teshsuite/surf/surf_usage)
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/teshsuite/surf/trace_usage)
 
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/teshsuite/xbt)
+add_subdirectory(${CMAKE_HOME_DIRECTORY}/teshsuite/xbt/graphxml_usage)
+add_subdirectory(${CMAKE_HOME_DIRECTORY}/teshsuite/xbt/heap_bench)
+add_subdirectory(${CMAKE_HOME_DIRECTORY}/teshsuite/xbt/log_usage)
+add_subdirectory(${CMAKE_HOME_DIRECTORY}/teshsuite/xbt/parmap_bench)
 
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/testsuite/mc)
-add_subdirectory(${CMAKE_HOME_DIRECTORY}/testsuite/xbt)
 
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/tools)
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/tools/graphicator)

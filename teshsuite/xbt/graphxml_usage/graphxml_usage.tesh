@@ -1,0 +1,32 @@
+#! ./tesh
+
+$ $SG_TEST_EXENV ${bindir:=.}/graphxml_usage graph.xml
+> [0.000000] [test/INFO] ---- Testing XML export. Exporting to testgraph.xml ----
+> [0.000000] [test/INFO] ---- Testing GraphViz export. Exporting to testgraph.dot ----
+> [0.000000] [test/INFO] ---- Dumping Edge lengths ----
+> [0.000000] [test/INFO] 0.000000e+00	4.100000e-01	-1.000000e+00	-1.000000e+00	-1.000000e+00	-1.000000e+00	-1.000000e+00	-1.000000e+00	
+> [0.000000] [test/INFO] -1.000000e+00	0.000000e+00	5.100000e-01	-1.000000e+00	-1.000000e+00	-1.000000e+00	-1.000000e+00	-1.000000e+00	
+> [0.000000] [test/INFO] -1.000000e+00	-1.000000e+00	0.000000e+00	5.000000e-01	-1.000000e+00	-1.000000e+00	-1.000000e+00	-1.000000e+00	
+> [0.000000] [test/INFO] -1.000000e+00	-1.000000e+00	-1.000000e+00	0.000000e+00	-1.000000e+00	3.800000e-01	-1.000000e+00	-1.000000e+00	
+> [0.000000] [test/INFO] -1.000000e+00	-1.000000e+00	-1.000000e+00	3.600000e-01	0.000000e+00	-1.000000e+00	-1.000000e+00	-1.000000e+00	
+> [0.000000] [test/INFO] -1.000000e+00	-1.000000e+00	-1.000000e+00	-1.000000e+00	-1.000000e+00	0.000000e+00	-1.000000e+00	-1.000000e+00	
+> [0.000000] [test/INFO] -1.000000e+00	-1.000000e+00	-1.000000e+00	-1.000000e+00	3.800000e-01	-1.000000e+00	0.000000e+00	-1.000000e+00	
+> [0.000000] [test/INFO] -1.000000e+00	-1.000000e+00	-1.000000e+00	-1.000000e+00	-1.000000e+00	-1.000000e+00	-1.000000e+00	0.000000e+00	
+> [0.000000] [test/INFO] ---- Testing Shortest Paths ----
+> [0.000000] [test/INFO] A	B	B	B	B	
+> [0.000000] [test/INFO] B	C	C	C	
+> [0.000000] [test/INFO] C	D	D	
+> [0.000000] [test/INFO] D	F	
+> [0.000000] [test/INFO] D	E	D	
+> [0.000000] [test/INFO] F	
+> [0.000000] [test/INFO] E	E	E	M	
+> [0.000000] [test/INFO] P	
+> [0.000000] [test/INFO] ---- Testing Topological Sort ----
+> [0.000000] [test/INFO] sorted[0] = P
+> [0.000000] [test/INFO] sorted[1] = M
+> [0.000000] [test/INFO] sorted[2] = E
+> [0.000000] [test/INFO] sorted[3] = A
+> [0.000000] [test/INFO] sorted[4] = B
+> [0.000000] [test/INFO] sorted[5] = C
+> [0.000000] [test/INFO] sorted[6] = D
+> [0.000000] [test/INFO] sorted[7] = F

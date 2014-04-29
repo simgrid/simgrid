@@ -1035,38 +1035,27 @@ set(TESHSUITE_CMAKEFILES_TXT
   teshsuite/smpi/mpich3-test/f90/datatype/CMakeLists.txt
   teshsuite/smpi/mpich3-test/f90/init/CMakeLists.txt
   teshsuite/smpi/mpich3-test/f90/pt2pt/CMakeLists.txt
-<<<<<<< HEAD
   teshsuite/smpi/mpich3-test/f90/util/CMakeLists.txt
   teshsuite/smpi/mpich3-test/group/CMakeLists.txt
   teshsuite/smpi/mpich3-test/init/CMakeLists.txt
   teshsuite/smpi/mpich3-test/pt2pt/CMakeLists.txt
   teshsuite/smpi/mpich3-test/topo/CMakeLists.txt
-||||||| merged common ancestors
-=======
   teshsuite/surf/CMakeLists.txt
   teshsuite/surf/lmm_usage/CMakeLists.txt
   teshsuite/surf/maxmin_bench/CMakeLists.txt
   teshsuite/surf/surf_usage/CMakeLists.txt
   teshsuite/surf/trace_usage/CMakeLists.txt
->>>>>>> Move surf testsuite to teshsuite
   teshsuite/xbt/CMakeLists.txt
+  teshsuite/xbt/graphxml_usage/CMakeLists.txt
+  teshsuite/xbt/heap_bench/CMakeLists.txt
+  teshsuite/xbt/log_usage/CMakeLists.txt
+  teshsuite/xbt/parmap_bench/CMakeLists.txt
   )
 
 set(TOOLS_CMAKEFILES_TXT
   tools/CMakeLists.txt
   tools/graphicator/CMakeLists.txt
   tools/tesh/CMakeLists.txt
-  )
-
-set(TESTSUITE_CMAKEFILES_TXT
-<<<<<<< HEAD
-  testsuite/mc/CMakeLists.txt
-  testsuite/surf/CMakeLists.txt
-||||||| merged common ancestors
-  testsuite/surf/CMakeLists.txt
-=======
->>>>>>> Move surf testsuite to teshsuite
-  testsuite/xbt/CMakeLists.txt
   )
 
 set(CMAKE_SOURCE_FILES

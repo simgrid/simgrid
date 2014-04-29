@@ -116,7 +116,7 @@ void test(char *graph_file)
     sorted = xbt_graph_topo_sort(graph);
     for (i = 0; i < n; i++) {
       if (sorted[i]) {
-        XBT_INFO("sorted[%lu] = %s (%p)", i, node_name(sorted[i]), sorted[i]);
+        XBT_INFO("sorted[%lu] = %s", i, node_name(sorted[i]));
       }
     }
     free(sorted);
