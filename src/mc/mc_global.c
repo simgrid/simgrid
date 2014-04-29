@@ -1144,11 +1144,13 @@ void MC_replay(xbt_fifo_t stack, int start)
     state = (mc_state_t) xbt_fifo_get_item_content(item);
     saved_req = MC_state_get_executed_request(state, &value);
    
-    MC_SET_RAW_MEM;
-    char *key = bprintf("%lu", saved_req->issuer->pid);
-    xbt_dict_remove(first_enabled_state, key); 
-    xbt_free(key);
-    MC_UNSET_RAW_MEM;
+    if(mc_reduce_kind ==  e_mc_reduce_dpor){
+      MC_SET_RAW_MEM;
+      char *key = bprintf("%lu", saved_req->issuer->pid);
+      xbt_dict_remove(first_enabled_state, key); 
+      xbt_free(key);
+      MC_UNSET_RAW_MEM;
+    }
    
     if(saved_req){
       /* because we got a copy of the executed request, we have to fetch the  
@@ -1185,19 +1187,21 @@ void MC_replay(xbt_fifo_t stack, int start)
 
     count++;
 
-    MC_SET_RAW_MEM;
-    /* Insert in dict all enabled processes */
-    xbt_swag_foreach(process, simix_global->process_list){
-      if(MC_process_is_enabled(process) /*&& !MC_state_process_is_done(state, process)*/){
-        char *key = bprintf("%lu", process->pid);
-        if(xbt_dict_get_or_null(first_enabled_state, key) == NULL){
-          char *data = bprintf("%d", count);
-          xbt_dict_set(first_enabled_state, key, data, NULL);
+    if(mc_reduce_kind ==  e_mc_reduce_dpor){
+      MC_SET_RAW_MEM;
+      /* Insert in dict all enabled processes */
+      xbt_swag_foreach(process, simix_global->process_list){
+        if(MC_process_is_enabled(process) /*&& !MC_state_process_is_done(state, process)*/){
+          char *key = bprintf("%lu", process->pid);
+          if(xbt_dict_get_or_null(first_enabled_state, key) == NULL){
+            char *data = bprintf("%d", count);
+            xbt_dict_set(first_enabled_state, key, data, NULL);
+          }
+          xbt_free(key);
         }
-        xbt_free(key);
       }
+      MC_UNSET_RAW_MEM;
     }
-    MC_UNSET_RAW_MEM;
          
     /* Update statistics */
     mc_stats->visited_states++;

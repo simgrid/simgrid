@@ -423,12 +423,15 @@ void MC_dpor_init()
   if(_sg_mc_visited > 0)
     visited_states = xbt_dynar_new(sizeof(mc_visited_state_t), visited_state_free_voidp);
 
-  first_enabled_state = xbt_dict_new_homogeneous(&xbt_free_f);
+  if(mc_reduce_kind == e_mc_reduce_dpor)
+    first_enabled_state = xbt_dict_new_homogeneous(&xbt_free_f);
 
-  initial_communications_pattern = xbt_dynar_new(sizeof(mc_comm_pattern_t), comm_pattern_free_voidp);
-  communications_pattern = xbt_dynar_new(sizeof(mc_comm_pattern_t), comm_pattern_free_voidp);
-  incomplete_communications_pattern = xbt_dynar_new(sizeof(int), NULL);
-  nb_comm_pattern = 0;
+  if(_sg_mc_comms_determinism || _sg_mc_send_determinism){
+    initial_communications_pattern = xbt_dynar_new(sizeof(mc_comm_pattern_t), comm_pattern_free_voidp);
+    communications_pattern = xbt_dynar_new(sizeof(mc_comm_pattern_t), comm_pattern_free_voidp);
+    incomplete_communications_pattern = xbt_dynar_new(sizeof(int), NULL);
+    nb_comm_pattern = 0;
+  }
 
   initial_state = MC_state_new();
 
@@ -456,16 +459,18 @@ void MC_dpor_init()
 
   xbt_fifo_unshift(mc_stack_safety, initial_state);
 
-  /* To ensure the soundness of DPOR, we have to keep a list of 
-     processes which are still enabled at each step of the exploration. 
-     If max depth is reached, we interleave them in the state in which they have 
-     been enabled for the first time. */
-  xbt_swag_foreach(process, simix_global->process_list){
-    if(MC_process_is_enabled(process)){
-      char *key = bprintf("%lu", process->pid);
-      char *data = bprintf("%d", xbt_fifo_size(mc_stack_safety));
-      xbt_dict_set(first_enabled_state, key, data, NULL);
-      xbt_free(key);
+  if(mc_reduce_kind == e_mc_reduce_dpor){
+    /* To ensure the soundness of DPOR, we have to keep a list of 
+       processes which are still enabled at each step of the exploration. 
+       If max depth is reached, we interleave them in the state in which they have 
+       been enabled for the first time. */
+    xbt_swag_foreach(process, simix_global->process_list){
+      if(MC_process_is_enabled(process)){
+        char *key = bprintf("%lu", process->pid);
+        char *data = bprintf("%d", xbt_fifo_size(mc_stack_safety));
+        xbt_dict_set(first_enabled_state, key, data, NULL);
+        xbt_free(key);
+      }
     }
   }
 
@@ -534,12 +539,14 @@ void MC_dpor(void)
       MC_state_set_executed_request(state, req, value);
       mc_stats->executed_transitions++;
 
-      MC_SET_RAW_MEM;
-      char *key = bprintf("%lu", req->issuer->pid);
-      xbt_dict_remove(first_enabled_state, key); 
-      xbt_free(key);
-      MC_UNSET_RAW_MEM;
-      
+      if(mc_reduce_kind ==  e_mc_reduce_dpor){
+        MC_SET_RAW_MEM;
+        char *key = bprintf("%lu", req->issuer->pid);
+        xbt_dict_remove(first_enabled_state, key); 
+        xbt_free(key);
+        MC_UNSET_RAW_MEM;
+      }
+
       if(_sg_mc_comms_determinism || _sg_mc_send_determinism){
         if(req->call == SIMCALL_COMM_ISEND)
           comm_pattern = 1;
@@ -597,15 +604,17 @@ void MC_dpor(void)
 
       xbt_fifo_unshift(mc_stack_safety, next_state);
 
-      /* Insert in dict all enabled processes, if not included yet */
-      xbt_swag_foreach(process, simix_global->process_list){
-        if(MC_process_is_enabled(process)){
-          char *key = bprintf("%lu", process->pid);
-          if(xbt_dict_get_or_null(first_enabled_state, key) == NULL){
-            char *data = bprintf("%d", xbt_fifo_size(mc_stack_safety));
-            xbt_dict_set(first_enabled_state, key, data, NULL); 
+      if(mc_reduce_kind ==  e_mc_reduce_dpor){
+        /* Insert in dict all enabled processes, if not included yet */
+        xbt_swag_foreach(process, simix_global->process_list){
+          if(MC_process_is_enabled(process)){
+            char *key = bprintf("%lu", process->pid);
+            if(xbt_dict_get_or_null(first_enabled_state, key) == NULL){
+              char *data = bprintf("%d", xbt_fifo_size(mc_stack_safety));
+              xbt_dict_set(first_enabled_state, key, data, NULL); 
+            }
+            xbt_free(key);
           }
-          xbt_free(key);
         }
       }
       
@@ -628,19 +637,21 @@ void MC_dpor(void)
 
         visited_state = -1;
 
-        /* Interleave enabled processes in the state in which they have been enabled for the first time */
-        xbt_swag_foreach(process, simix_global->process_list){
-          if(MC_process_is_enabled(process)){
-            char *key = bprintf("%lu", process->pid);
-            enabled = (int)strtoul(xbt_dict_get_or_null(first_enabled_state, key), 0, 10);
-            xbt_free(key);
-            int cursor = xbt_fifo_size(mc_stack_safety);
-            xbt_fifo_foreach(mc_stack_safety, item, state_test, mc_state_t){
-              if(cursor-- == enabled){ 
-                if(!MC_state_process_is_done(state_test, process) && state_test->num != state->num){ 
-                  XBT_DEBUG("Interleave process %lu in state %d", process->pid, state_test->num);
-                  MC_state_interleave_process(state_test, process);
-                  break;
+        if(mc_reduce_kind ==  e_mc_reduce_dpor){
+          /* Interleave enabled processes in the state in which they have been enabled for the first time */
+          xbt_swag_foreach(process, simix_global->process_list){
+            if(MC_process_is_enabled(process)){
+              char *key = bprintf("%lu", process->pid);
+              enabled = (int)strtoul(xbt_dict_get_or_null(first_enabled_state, key), 0, 10);
+              xbt_free(key);
+              int cursor = xbt_fifo_size(mc_stack_safety);
+              xbt_fifo_foreach(mc_stack_safety, item, state_test, mc_state_t){
+                if(cursor-- == enabled){ 
+                  if(!MC_state_process_is_done(state_test, process) && state_test->num != state->num){ 
+                    XBT_DEBUG("Interleave process %lu in state %d", process->pid, state_test->num);
+                    MC_state_interleave_process(state_test, process);
+                    break;
+                  }
                 }
               }
             }
