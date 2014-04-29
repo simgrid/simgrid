@@ -1115,17 +1115,24 @@ void MC_replay(xbt_fifo_t stack, int start)
   }
 
   MC_SET_RAW_MEM;
-  xbt_dict_reset(first_enabled_state);
-  xbt_swag_foreach(process, simix_global->process_list){
-    if(MC_process_is_enabled(process)){
+
+  if(mc_reduce_kind ==  e_mc_reduce_dpor){
+    xbt_dict_reset(first_enabled_state);
+    xbt_swag_foreach(process, simix_global->process_list){
+      if(MC_process_is_enabled(process)){
       char *key = bprintf("%lu", process->pid);
       char *data = bprintf("%d", count);
       xbt_dict_set(first_enabled_state, key, data, NULL);
       xbt_free(key);
+      }
     }
   }
-  if(_sg_mc_comms_determinism || _sg_mc_send_determinism)
+
+  if(_sg_mc_comms_determinism || _sg_mc_send_determinism){
     xbt_dynar_reset(communications_pattern);
+    xbt_dynar_reset(incomplete_communications_pattern);
+  }
+
   MC_UNSET_RAW_MEM;
   
 
@@ -1160,7 +1167,7 @@ void MC_replay(xbt_fifo_t stack, int start)
       if(req->call == SIMCALL_COMM_ISEND)
         comm_pattern = 1;
       else if(req->call == SIMCALL_COMM_IRECV)
-      comm_pattern = 2;
+        comm_pattern = 2;
     }
 
     SIMIX_simcall_pre(req, value);

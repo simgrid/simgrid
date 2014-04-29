@@ -14,6 +14,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_dpor, mc,
 xbt_dynar_t visited_states;
 xbt_dict_t first_enabled_state;
 xbt_dynar_t initial_communications_pattern;
+xbt_dynar_t incomplete_communications_pattern;
 xbt_dynar_t communications_pattern;
 int nb_comm_pattern;
 
@@ -82,6 +83,8 @@ static void deterministic_pattern(xbt_dynar_t initial_pattern, xbt_dynar_t patte
         comm_comparison = compare_comm_pattern(comm1, comm2);
         if(comm_comparison == 1){
           initial_state_safety->comm_deterministic = 0;
+          if(!_sg_mc_send_determinism)
+            return;
         }
         recv_index++;
       }
@@ -97,20 +100,23 @@ static void deterministic_pattern(xbt_dynar_t initial_pattern, xbt_dynar_t patte
 static int complete_comm_pattern(xbt_dynar_t list, mc_comm_pattern_t pattern){
   mc_comm_pattern_t current_pattern;
   unsigned int cursor = 0;
-  xbt_dynar_foreach(list, cursor, current_pattern){
+  int index;
+  xbt_dynar_foreach(incomplete_communications_pattern, cursor, index){
+    current_pattern = (mc_comm_pattern_t)xbt_dynar_get_as(list, index, mc_comm_pattern_t);
     if(current_pattern->comm == pattern->comm){
-      if(!current_pattern->completed){
-        current_pattern->src_proc = pattern->comm->comm.src_proc->pid;
-        current_pattern->src_host = simcall_host_get_name(pattern->comm->comm.src_proc->smx_host);
-        current_pattern->dst_proc = pattern->comm->comm.dst_proc->pid;
-        current_pattern->dst_host = simcall_host_get_name(pattern->comm->comm.dst_proc->smx_host);
+      current_pattern->src_proc = pattern->comm->comm.src_proc->pid;
+      current_pattern->dst_proc = pattern->comm->comm.dst_proc->pid;
+      current_pattern->src_host = simcall_host_get_name(pattern->comm->comm.src_proc->smx_host);
+      current_pattern->dst_host = simcall_host_get_name(pattern->comm->comm.dst_proc->smx_host);
+      if(current_pattern->data_size == -1){
         current_pattern->data_size = pattern->comm->comm.src_buff_size;
         current_pattern->data = xbt_malloc0(current_pattern->data_size);
-        current_pattern->matched_comm = pattern->num;
         memcpy(current_pattern->data, current_pattern->comm->comm.src_buff, current_pattern->data_size);
-        current_pattern->completed = 1;
-        return current_pattern->num;
       }
+      current_pattern->matched_comm = pattern->num;
+      current_pattern->completed = 1;
+      xbt_dynar_remove_at(incomplete_communications_pattern, cursor, NULL);
+      return current_pattern->num;
     }
   }
   return -1;
@@ -121,14 +127,15 @@ void get_comm_pattern(xbt_dynar_t list, smx_simcall_t request, int call){
   pattern = xbt_new0(s_mc_comm_pattern_t, 1);
   pattern->num = ++nb_comm_pattern;
   pattern->completed = 0;
+  pattern->data_size = -1;
   if(call == 1){ // ISEND
     pattern->comm = simcall_comm_isend__get__result(request);
     pattern->type = SIMIX_COMM_SEND;
     if(pattern->comm->comm.dst_proc != NULL){ 
       pattern->matched_comm = complete_comm_pattern(list, pattern);
       pattern->dst_proc = pattern->comm->comm.dst_proc->pid;
-      pattern->completed = 1;
       pattern->dst_host = simcall_host_get_name(pattern->comm->comm.dst_proc->smx_host);
+      pattern->completed = 1;
     }
     pattern->src_proc = pattern->comm->comm.src_proc->pid;
     pattern->src_host = simcall_host_get_name(request->issuer->smx_host);
@@ -141,20 +148,26 @@ void get_comm_pattern(xbt_dynar_t list, smx_simcall_t request, int call){
     if(pattern->comm->comm.src_proc != NULL){
       pattern->matched_comm = complete_comm_pattern(list, pattern);
       pattern->src_proc = pattern->comm->comm.src_proc->pid;
-      pattern->src_host = simcall_host_get_name(pattern->comm->comm.src_proc->smx_host);
+      pattern->src_host = simcall_host_get_name(request->issuer->smx_host);
       pattern->completed = 1;
       pattern->data_size = pattern->comm->comm.src_buff_size;
       pattern->data=xbt_malloc0(pattern->data_size);
       memcpy(pattern->data, pattern->comm->comm.src_buff, pattern->data_size);
     }
     pattern->dst_proc = pattern->comm->comm.dst_proc->pid;
-    pattern->dst_host = simcall_host_get_name(request->issuer->smx_host);
+    pattern->dst_host = simcall_host_get_name(pattern->comm->comm.dst_proc->smx_host);
   }
+  
   if(pattern->comm->comm.rdv != NULL)
     pattern->rdv = strdup(pattern->comm->comm.rdv->name);
   else
     pattern->rdv = strdup(pattern->comm->comm.rdv_cpy->name);
+  
   xbt_dynar_push(list, &pattern);
+
+  if(!pattern->completed)
+    xbt_dynar_push_as(incomplete_communications_pattern, int, xbt_dynar_length(list) - 1);
+
 }
 
 static void print_communications_pattern(xbt_dynar_t comms_pattern){
@@ -414,6 +427,7 @@ void MC_dpor_init()
 
   initial_communications_pattern = xbt_dynar_new(sizeof(mc_comm_pattern_t), comm_pattern_free_voidp);
   communications_pattern = xbt_dynar_new(sizeof(mc_comm_pattern_t), comm_pattern_free_voidp);
+  incomplete_communications_pattern = xbt_dynar_new(sizeof(int), NULL);
   nb_comm_pattern = 0;
 
   initial_state = MC_state_new();
@@ -764,13 +778,13 @@ void MC_dpor(void)
           XBT_DEBUG("Back-tracking to state %d at depth %d done", state->num, xbt_fifo_size(mc_stack_safety));
           break;
         } else {
-          req = MC_state_get_internal_request(state);
-          if(_sg_mc_comms_determinism){
+          /*req = MC_state_get_internal_request(state);
+          if(_sg_mc_comms_determinism || _sg_mc_send_determinism){
             if(req->call == SIMCALL_COMM_ISEND || req->call == SIMCALL_COMM_IRECV){
               if(!xbt_dynar_is_empty(communications_pattern))
                 xbt_dynar_remove_at(communications_pattern, xbt_dynar_length(communications_pattern) - 1, NULL);
             }
-          }
+            }*/
           XBT_DEBUG("Delete state %d at depth %d", state->num, xbt_fifo_size(mc_stack_safety) + 1); 
           MC_state_delete(state);
         }
