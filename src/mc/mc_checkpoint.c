@@ -501,11 +501,11 @@ mc_snapshot_t MC_take_snapshot(int num_state){
     MC_dump_checkpoint_ignore(snapshot);
 
   // mprotect the region after zero-ing ignored parts:
-  size_t i;
+  /*size_t i;
   for(i=0; i!=NB_REGIONS; ++i) {
     mc_mem_region_t region = snapshot->regions[i];
     mprotect(region->data, region->size, PROT_READ);
-  }
+    }*/
 
   return snapshot;
 
