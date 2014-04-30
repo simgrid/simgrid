@@ -1011,8 +1011,9 @@ set(TESHSUITE_CMAKEFILES_TXT
   teshsuite/msg/storage/CMakeLists.txt
   teshsuite/msg/task_destroy_cancel/CMakeLists.txt
   teshsuite/msg/trace/CMakeLists.txt
-  teshsuite/simdag/CMakeLists.txt
   teshsuite/simdag/availability/CMakeLists.txt
+  teshsuite/simdag/basic/CMakeLists.txt
+  teshsuite/simdag/incomplete/CMakeLists.txt
   teshsuite/simdag/network/CMakeLists.txt
   teshsuite/simdag/network/mxn/CMakeLists.txt
   teshsuite/simdag/network/p2p/CMakeLists.txt
