@@ -103,7 +103,8 @@ add_subdirectory(${CMAKE_HOME_DIRECTORY}/teshsuite/simdag/platforms)
 
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/teshsuite/bug-17132)
 
-add_subdirectory(${CMAKE_HOME_DIRECTORY}/teshsuite/simix)
+add_subdirectory(${CMAKE_HOME_DIRECTORY}/teshsuite/simix/check_defaults)
+add_subdirectory(${CMAKE_HOME_DIRECTORY}/teshsuite/simix/stack_overflow)
 
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/teshsuite/smpi)
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich3-test)

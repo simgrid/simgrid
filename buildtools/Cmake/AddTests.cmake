@@ -102,18 +102,18 @@ if(NOT enable_memcheck)
 
   # BEGIN CONTEXTS FACTORY
   if(HAVE_RAWCTX)
-    ADD_TEST(simix-factory-default              ${TESH_COMMAND} ${TESH_OPTION} --cd ${CMAKE_BINARY_DIR}/teshsuite ${CMAKE_HOME_DIRECTORY}/teshsuite/simix/factory_raw.tesh)
+    ADD_TESH(simix-factory-default              --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/simix/check_defaults --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/simix/check_defaults factory_raw.tesh)
   elseif(CONTEXT_UCONTEXT)
-    ADD_TEST(simix-factory-default              ${TESH_COMMAND} ${TESH_OPTION} --cd ${CMAKE_BINARY_DIR}/teshsuite ${CMAKE_HOME_DIRECTORY}/teshsuite/simix/factory_ucontext.tesh)
+    ADD_TESH(simix-factory-default              --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/simix/check_defaults --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/simix/check_defaults factory_ucontext.tesh)
   else()
-    ADD_TEST(simix-factory-default              ${TESH_COMMAND} ${TESH_OPTION} --cd ${CMAKE_BINARY_DIR}/teshsuite ${CMAKE_HOME_DIRECTORY}/teshsuite/simix/factory_thread.tesh)
+    ADD_TESH(simix-factory-default              --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/simix/check_defaults --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/simix/check_defaults factory_thread.tesh)
   endif()
-  ADD_TEST(simix-factory-thread                 ${TESH_COMMAND} ${TESH_OPTION} --cfg contexts/factory:thread --cd ${CMAKE_BINARY_DIR}/teshsuite ${CMAKE_HOME_DIRECTORY}/teshsuite/simix/factory_thread.tesh)
+  ADD_TESH(simix-factory-thread                 --cfg contexts/factory:thread --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/simix/check_defaults --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/simix/check_defaults factory_thread.tesh)
   if(HAVE_RAWCTX)
-    ADD_TEST(simix-factory-raw                  ${TESH_COMMAND} ${TESH_OPTION} --cfg contexts/factory:raw --cd ${CMAKE_BINARY_DIR}/teshsuite ${CMAKE_HOME_DIRECTORY}/teshsuite/simix/factory_raw.tesh)
+    ADD_TESH(simix-factory-raw                  --cfg contexts/factory:raw --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/simix/check_defaults --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/simix/check_defaults factory_raw.tesh)
   endif()
   if(CONTEXT_UCONTEXT)
-    ADD_TEST(simix-factory-ucontext             ${TESH_COMMAND} ${TESH_OPTION} --cfg contexts/factory:ucontext --cd ${CMAKE_BINARY_DIR}/teshsuite ${CMAKE_HOME_DIRECTORY}/teshsuite/simix/factory_ucontext.tesh)
+    ADD_TESH(simix-factory-ucontext             --cfg contexts/factory:ucontext --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/simix/check_defaults --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/simix/check_defaults factory_ucontext.tesh)
   endif()
 
   # these tests need the assertion mechanism
@@ -461,7 +461,7 @@ if(NOT enable_memcheck)
     ADD_TESH(scala-masterslave                   --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/scala --setenv classpath=${TESH_CLASSPATH} --cd ${CMAKE_BINARY_DIR}/examples/scala ${CMAKE_HOME_DIRECTORY}/examples/scala/masterslave/masterslave.tesh)
   endif()
 
-  ADD_TESH_FACTORIES(stack-overflow              "thread;ucontext;raw" --setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite --cd ${CMAKE_BINARY_DIR}/teshsuite ${CMAKE_HOME_DIRECTORY}/teshsuite/simix/stack_overflow.tesh)
+  ADD_TESH_FACTORIES(stack-overflow              "thread;ucontext;raw" --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/simix/stack_overflow --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/simix/stack_overflow stack_overflow.tesh)
 
   # examples/msg/mc
   if(HAVE_MC)
