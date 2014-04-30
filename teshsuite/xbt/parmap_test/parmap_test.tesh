@@ -1,5 +1,5 @@
 ! timeout 120
-$ ./xbt/parmap_test --log=root.fmt:%m%n
+$ ${bindir:=.}/parmap_test --log=root.fmt:%m%n
 > Basic testing posix
 > Basic testing futex
 > Basic testing busy wait

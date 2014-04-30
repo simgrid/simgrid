@@ -1047,11 +1047,14 @@ set(TESHSUITE_CMAKEFILES_TXT
   teshsuite/surf/maxmin_bench/CMakeLists.txt
   teshsuite/surf/surf_usage/CMakeLists.txt
   teshsuite/surf/trace_usage/CMakeLists.txt
-  teshsuite/xbt/CMakeLists.txt
   teshsuite/xbt/graphxml_usage/CMakeLists.txt
   teshsuite/xbt/heap_bench/CMakeLists.txt
+  teshsuite/xbt/log_large/CMakeLists.txt
   teshsuite/xbt/log_usage/CMakeLists.txt
+  teshsuite/xbt/mmalloc/CMakeLists.txt
+  teshsuite/xbt/parallel_log/CMakeLists.txt
   teshsuite/xbt/parmap_bench/CMakeLists.txt
+  teshsuite/xbt/parmap_test/CMakeLists.txt
   )
 
 set(TOOLS_CMAKEFILES_TXT
