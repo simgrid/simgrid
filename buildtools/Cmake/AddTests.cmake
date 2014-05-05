@@ -108,7 +108,6 @@ if(NOT enable_memcheck)
   ADD_TESH(test-surf-usage                       --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/surf/surf_usage --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/surf/ surf_usage/surf_usage.tesh)
   ADD_TESH(test-surf-trace                       --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/surf/trace_usage --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/surf/ trace_usage/trace_usage.tesh)
 
-  # BEGIN CONTEXTS FACTORY
   if(HAVE_RAWCTX)
     ADD_TESH(simix-factory-default              --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/simix/check_defaults --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/simix/check_defaults factory_raw.tesh)
   elseif(CONTEXT_UCONTEXT)
