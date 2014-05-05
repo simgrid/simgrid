@@ -55,7 +55,7 @@ void MSG_sem_get_capacity(msg_sem_t sem) {
 void MSG_sem_destroy(msg_sem_t sem) {
   simcall_sem_destroy(sem);
 }
-/** @brief returns a boolean indicating it this semaphore would block at this very specific time
+/** @brief returns a boolean indicating if this semaphore would block at this very specific time
  *
  * Note that the returned value may be wrong right after the function call, when you try to use it...
  * But that's a classical semaphore issue, and SimGrid's semaphore are not different to usual ones here.
