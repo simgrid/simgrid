@@ -25,19 +25,78 @@ void AsClusterFatTree::getRouteAndLatency(RoutingEdgePtr src,
 /* This function makes the assumption that parse_specific_arguments() and
  * addNodes() have already been called
  */
-void AsClusterFatTree::create_links(sg_platf_cluster_cbarg_t cluster) {
-
+void AsClusterFatTree::create_links(sg_platf_cluster_cbarg_t cluster){
   if(this->levels == 0) {
     return;
   }
+  this->generateSwitches();
+  this->generateLabels();
+  unsigned int k = 0;
+  // Nodes are totally ordered, by level and then by position, in this->nodes
+  for (unsigned int i = 0 ; i < this->levels ; i++) {
+    for (unsigned int j = 0 ; j < this->nodesByLevel[i] ; j++) {
+      if(i != this->levels - 1) {
+        for(unsigned int l = 0 ; l < this->nodesByLevel[i+1] ; l++) {
+          this->connectNodeToParents(cluster, this->nodes[k]);
+        }
+      }
+      k++;
+    }
+  }
+}
+
+int AsClusterFatTree::connectNodeToParents(sg_platf_cluster_cbarg_t cluster,
+                                           FatTreeNode *node) {
+  FatTreeNode* currentParentNode;
+  int connectionsNumber = 0;
+  const int level = node->level;
+  currentParentNode = this->nodes[this->getLevelPosition(level + 1)];
+  for (unsigned int i = 0 ; i < this->nodesByLevel[level] ; i++ ) {
+    if(this->areRelated(currentParentNode, node)) {
+      this->addLink(cluster, currentParentNode, node->label[level + 1], node,
+                    currentParentNode->label[level + 1]);
+      connectionsNumber++;
+    }
+  }
+  return connectionsNumber;
+}
+
+
+bool AsClusterFatTree::areRelated(FatTreeNode *parent, FatTreeNode *child) {
+  if (parent->level != child->level + 1) {
+    return false;
+  }
+  
+  for (unsigned int i = 0 ; i < this->levels; i++) {
+    if (parent->label[i] != child->label[i] && i != parent->level) {
+      return false;
+    }
+  }
+  return true;
+}
+
+void AsClusterFatTree::generateSwitches() {
   this->nodesByLevel.resize(this->levels, 0);
   unsigned int nodesRequired = 0;
 
+  // We take care of the number of nodes by level
+  this->nodesByLevel[0] = 1;
+  for (unsigned int i = 0 ; i < this->levels ; i++) {
+    this->nodesByLevel[0] *= this->lowerLevelNodesNumber[i];
+  }
 
+     
+  if(this->nodesByLevel[0] < this->nodes.size()) {
+    surf_parse_error("There is not enough nodes to fit to the described topology."
+                     " Please check your platform description (We need %d nodes, we only got %zu)",
+                     this->nodesByLevel[0], this->nodes.size());
+    return;
+  }
+  
   for (unsigned int i = 0 ; i < this->levels ; i++) {
     int nodesInThisLevel = 1;
       
-    for (unsigned int j = 0 ;  j < i ; j++) {
+    for (unsigned int j = 0 ;  j <= i ; j++) {
       nodesInThisLevel *= this->upperLevelNodesNumber[j];
     }
       
@@ -45,79 +104,93 @@ void AsClusterFatTree::create_links(sg_platf_cluster_cbarg_t cluster) {
       nodesInThisLevel *= this->lowerLevelNodesNumber[j];
     }
 
-    this->nodesByLevel[i] = nodesInThisLevel;
+    this->nodesByLevel[i+1] = nodesInThisLevel;
     nodesRequired += nodesInThisLevel;
   }
-   
-  if(nodesRequired > this->nodes.size()) {
-    surf_parse_error("There is not enough nodes to fit to the described topology."
-                     " Please check your platform description (We need %d nodes, we only got %zu)",
-                     nodesRequired, this->nodes.size());
-    return;
+
+
+  // If we have to many compute nodes, we ditch them
+  if (this->nodesByLevel[0] > this->nodes.size()) {
+    for (unsigned int i = this->nodesByLevel[0] ; i < this->nodes.size() ; i++) {
+      delete this->nodes[i];
+    }
+    this->nodes.resize(this->nodesByLevel[0]);
   }
 
-  // Nodes are totally ordered, by level and then by position, in this->nodes
+  // We create the switches
   int k = 0;
-  for (unsigned int i = 0 ; i < this->levels ; i++) {
+  for (unsigned int i = 1 ; i < this->levels ; i++) {
     for (unsigned int j = 0 ; j < this->nodesByLevel[i] ; j++) {
-      this->nodes[k]->level = i;
-      this->nodes[k]->position = j;
-      if(i != 0) {
-        int position, size;
-        this->getLevelPosition(i - 1, &position, &size); // TODO : check position and size ?
-        /* We create the connexions between this nodes and all its parents
-         */
-        for (unsigned int l = this->upperLevelNodesNumber[i] * j ;
-             l < this->upperLevelNodesNumber[i] * (j + 1) ; l++)
-          this->addLink(cluster, this->nodes[position + l], this->nodes[k]);
-      }
-      k++;
+      FatTreeNode* newNode;
+      newNode = new FatTreeNode(--k, i, j);
+      newNode->children.resize(this->lowerLevelNodesNumber[i]);
+      newNode->parents.resize(this->upperLevelNodesNumber[i]);
+      this->nodes.push_back(newNode);
     }
   }
 }
 
-void AsClusterFatTree::getLevelPosition(const unsigned  int level, int *position, int *size) {
+void AsClusterFatTree::generateLabels() {
+  // TODO : check if nodesByLevel and nodes are filled
+  for (unsigned int i = 0 ; i < this->levels ; i++) {
+    std::vector<int> maxLabel(this->nodesByLevel[i]);
+    std::vector<int> currentLabel(this->nodesByLevel[i], 0);
+    unsigned int k = 0;
+    for (unsigned int j = 0 ; j < this->nodesByLevel[i] ; j++) {
+      maxLabel[j] = j > i ?
+        this->lowerLevelNodesNumber[i] : this->upperLevelNodesNumber[i];
+    }
+    
+    for (unsigned int j = 0 ; j < this->nodesByLevel[i] ; j++) {
+      this->nodes[k]->label.assign(currentLabel.begin(), currentLabel.end());
+
+      int remainder = 0;
+      
+      do {
+        int pos = currentLabel.size() - 1;
+        remainder = ++currentLabel[pos] / maxLabel[pos];
+        currentLabel[pos] = currentLabel[pos] % maxLabel[pos];
+        --pos;
+      }
+      while(remainder != 0);
+        k++;
+    }
+  }
+}
+
+
+int AsClusterFatTree::getLevelPosition(const unsigned  int level) {
   if (level > this->levels - 1) {
-    *position = -1;
-    *size =  -1;
-    return;
+    // Well, that should never happen. Maybe should we throw instead.
+    return -1;
   }
   int tempPosition = 0;
 
   for (unsigned int i = 0 ; i < level ; i++) {
     tempPosition += this->nodesByLevel[i];
   }
-  *position = tempPosition;
-  *size = this->nodesByLevel[level];
+ return tempPosition;
 }
 
-void AsClusterFatTree::addNodes(std::vector<int> const& id) {
+void AsClusterFatTree::addComputeNodes(std::vector<int> const& id) {
   for (size_t  i = 0 ; i < id.size() ; i++) {
     this->nodes.push_back(new FatTreeNode(id[i]));
   }
 }
 
-void AsClusterFatTree::addLink(sg_platf_cluster_cbarg_t cluster, FatTreeNode *parent,
-                               FatTreeNode *child) {
+void AsClusterFatTree::addLink(sg_platf_cluster_cbarg_t cluster, 
+                               FatTreeNode *parent, unsigned int parentPort,
+                               FatTreeNode *child, unsigned int childPort) {
   using std::make_pair;
-  if (parent->children.size() == this->nodesByLevel[parent->level] ||
-      child->parents.size()   == this->nodesByLevel[child->level]) {
-    /* NB : This case should never happen, if this private function is not misused,
-     * so should we keep this test, keep it only for debug, throw an exception
-     * or get rid of it ? In all cases, anytime we get in there, code should be
-     * fixed
-     */
-    xbt_die("I've been asked to create a link that could not possibly exist");
-    return;
-  }
 
-  parent->children.push_back(child);
-  child->parents.push_back(parent);
 
   FatTreeLink *newLink;
+  newLink = new FatTreeLink(cluster, parent, child);
 
-  newLink = new FatTreeLink(cluster, parent, child, this->lowerLevelPortsNumber[parent->level]);
-   this->links.insert(make_pair(make_pair(parent->id, child->id), newLink));
+  parent->children[parentPort] = newLink;
+  child->parents[childPort] = newLink;
+
+  this->links.insert(make_pair(make_pair(parent->id, child->id), newLink));
 
   
 
@@ -185,12 +258,10 @@ void AsClusterFatTree::generateDotFile(const string& filename) const {
     std::map<std::pair<int,int>,FatTreeLink*>::const_iterator iter;
     file << "graph AsClusterFatTree {\n";
     for (iter = this->links.begin() ; iter != this->links.end() ; iter++ ) {
-      for (unsigned int j = 0 ; j < iter->second->ports ; j++) {
         file << iter->second->source->id
              << " -- "
              << iter->second->destination->id
              << ";\n";
-      }
     }
     file << "}";
     file.close();
@@ -206,24 +277,26 @@ FatTreeNode::FatTreeNode(int id, int level, int position) : id(id),
                                                             position(position){}
 
 FatTreeLink::FatTreeLink(sg_platf_cluster_cbarg_t cluster, FatTreeNode *source,
-                         FatTreeNode *destination,
-                         unsigned int ports) : ports(ports), source(source),
-                                               destination(destination) {
+                         FatTreeNode *destination) : source(source),
+                                                     destination(destination) {
+  static int uniqueId = 0;
   s_sg_platf_link_cbarg_t linkTemplate;
   linkTemplate.bandwidth = cluster->bw;
   linkTemplate.latency = cluster->lat;
   linkTemplate.state = SURF_RESOURCE_ON;
   linkTemplate.policy = cluster->sharing_policy; // Maybe should we do sthg with that ?
 
-  for(unsigned int i = 0 ; i < ports ; i++) {
-    NetworkLink* link;
-    linkTemplate.id = bprintf("link_from_%d_to_%d_%d_UP", source->id, destination->id, i);
-    sg_platf_new_link(&linkTemplate);
-    link = (NetworkLink*) xbt_lib_get_or_null(link_lib, linkTemplate.id, SURF_LINK_LEVEL);
-    this->linksUp.push_back(link); // check link?
-    linkTemplate.id = bprintf("link_from_%d_to_%d_%d_DOWN", source->id, destination->id, i);
-    sg_platf_new_link(&linkTemplate);
-    link = (NetworkLink*) xbt_lib_get_or_null(link_lib, linkTemplate.id, SURF_LINK_LEVEL);
-    this->linksDown.push_back(link); // check link ?
-  }
+
+  NetworkLink* link;
+  linkTemplate.id = bprintf("link_from_%d_to_%d_%d_UP", source->id, destination->id, uniqueId);
+  sg_platf_new_link(&linkTemplate);
+  link = (NetworkLink*) xbt_lib_get_or_null(link_lib, linkTemplate.id, SURF_LINK_LEVEL);
+  this->linkUp = link; // check link?
+  linkTemplate.id = bprintf("link_from_%d_to_%d_%d_DOWN", source->id, destination->id, uniqueId);
+  sg_platf_new_link(&linkTemplate);
+  link = (NetworkLink*) xbt_lib_get_or_null(link_lib, linkTemplate.id, SURF_LINK_LEVEL);
+  this->linkDown = link; // check link ?
+
+  uniqueId++;
+
 }

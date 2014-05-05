@@ -20,33 +20,35 @@
 /* TODO : limiter link ? Loopback?
  *
  */
+class FatTreeNode;
+class FatTreeLink;
 
 class FatTreeNode {
 public:
-  int id; // ID as given by the user, should be unique
-  int level; // The 0th level represents the leafs of the PGFT
-  int position; // Position in the level
-  
+  int id;
+  unsigned int level; // The 0th level represents the leafs of the PGFT
+  unsigned int position; // Position in the level
+  std::vector<int> label;
   /* We can see the sizes sum of the two following vectors as the device 
    * ports number. If we use the notations used in Zahavi's paper, 
    * children.size() = m_level and parents.size() = w_(level+1)
    * 
    */
-  std::vector<FatTreeNode*> children;  // m, apply from lvl 0 to levels - 1 
-  std::vector<FatTreeNode*> parents; // w, apply from lvl 1 to levels
+  std::vector<FatTreeLink*> children;  // m, apply from lvl 0 to levels - 1 
+  std::vector<FatTreeLink*> parents; // w, apply from lvl 1 to levels
   FatTreeNode(int id, int level=-1, int position=-1);
 };
 
 class FatTreeLink {
 public:
   FatTreeLink(sg_platf_cluster_cbarg_t cluster, FatTreeNode *source,
-              FatTreeNode *destination, unsigned int ports = 0);
-  unsigned int ports;
+              FatTreeNode *destination);
+  //  unsigned int ports;
   /* Links are dependant of the chosen network model, but must implement 
    * NetworkLink
    */
-   std::vector<NetworkLink*> linksUp; // From source to destination
-  std::vector<NetworkLink*> linksDown; // From destination to source
+  NetworkLink* linkUp; // From source to destination
+  NetworkLink* linkDown; // From destination to source
   /* As it is symetric, it might as well be first / second instead
    * of source / destination
    */
@@ -66,7 +68,7 @@ public:
   //                                 double *latency) const;
   virtual void create_links(sg_platf_cluster_cbarg_t cluster);
   void parse_specific_arguments(sg_platf_cluster_cbarg_t cluster);
-  void addNodes(std::vector<int> const& id);
+  void addComputeNodes(std::vector<int> const& id);
   void generateDotFile(const string& filename = "fatTree.dot") const;
 
 protected:
@@ -80,8 +82,13 @@ protected:
   std::map<std::pair<int,int>, FatTreeLink*> links;
   std::vector<unsigned int> nodesByLevel;
 
-  void addLink(sg_platf_cluster_cbarg_t cluster, FatTreeNode *parent,
-               FatTreeNode *child);
-  void getLevelPosition(const unsigned int level, int *position, int *size);
+  void addLink(sg_platf_cluster_cbarg_t cluster, 
+               FatTreeNode *parent, unsigned int parentPort,
+               FatTreeNode *child, unsigned int childPort);
+  int getLevelPosition(const unsigned int level);
+  void generateLabels();
+  void generateSwitches();
+  int connectNodeToParents(sg_platf_cluster_cbarg_t cluster, FatTreeNode *node);
+  bool areRelated(FatTreeNode *parent, FatTreeNode *child);
 };
 #endif
