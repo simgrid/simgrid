@@ -139,10 +139,10 @@ while ( defined( $line = <MAKETEST> ) ) {
                     if ( $command =~ /^mkfile\s+(\S+)/) {
                         my $file = $1;
                         # don't ask me to explain why so many backslashes...
-                        $input =~ s/\\/\\\\\\\\\\\\\\\\/g;
-                        $input =~ s/\n/\\\\\\\\n/g;
-                        $input =~ s/"/\\\\\\\\042/g;
-                        $input =~ s/'/\\\\\\\\047/g;
+                        $input =~ s/\\/\\\\\\\\/g;
+                        $input =~ s/\n/\\\\n/g;
+                        $input =~ s/"/\\\\042/g;
+                        $input =~ s/'/\\\\047/g;
                         $input =~ s/%/%%/g;
                         $command = "sh -c \"printf '$input' > $file\"";
                     }
