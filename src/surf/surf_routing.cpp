@@ -401,7 +401,7 @@ void routing_AS_begin(sg_platf_AS_cbarg_t AS)
     /* add to the father element list */
     info->setId(current_routing->parseAS(info));
   } else {
-    THROWF(arg_error, 0, "All defined components must be belong to a AS");
+    THROWF(arg_error, 0, "All defined components must belong to a AS");
   }
 
   xbt_lib_set(as_router_lib, info->getName(), ROUTING_ASR_LEVEL,
