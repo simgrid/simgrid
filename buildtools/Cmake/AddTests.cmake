@@ -287,16 +287,16 @@ if(NOT enable_memcheck)
 
   if(enable_smpi)
     # smpi examples
-    ADD_TESH_FACTORIES(smpi-bcast                "thread;ucontext;raw" --setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/smpi --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/bcast.tesh)
-    ADD_TESH_FACTORIES(smpi-reduce               "thread;ucontext;raw" --setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/smpi --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/reduce.tesh)
-    ADD_TESH_FACTORIES(smpi-vector               "thread;ucontext;raw" --setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/smpi --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/vector.tesh)
-    ADD_TESH_FACTORIES(smpi-hvector              "thread;ucontext;raw" --setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/smpi --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/hvector.tesh)
-    ADD_TESH_FACTORIES(smpi-indexed              "thread;ucontext;raw" --setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/smpi --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/indexed.tesh)
-    ADD_TESH_FACTORIES(smpi-struct               "thread;ucontext;raw" --setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/smpi --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/struct.tesh)
-    ADD_TESH_FACTORIES(smpi-pt2pt                "thread;ucontext;raw" --setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/smpi --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/pt2pt.tesh)
-    ADD_TESH_FACTORIES(smpi-compute              "thread;ucontext;raw" --setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/smpi --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/compute.tesh)
+    ADD_TESH_FACTORIES(smpi-bcast                "thread;ucontext;raw" --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/bcast --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/bcast bcast.tesh)
+    ADD_TESH_FACTORIES(smpi-reduce               "thread;ucontext;raw" --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/reduce --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/reduce reduce.tesh)
+    ADD_TESH_FACTORIES(smpi-vector               "thread;ucontext;raw" --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/vector --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/vector vector.tesh)
+    ADD_TESH_FACTORIES(smpi-hvector              "thread;ucontext;raw" --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/hvector --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/hvector hvector.tesh)
+    ADD_TESH_FACTORIES(smpi-indexed              "thread;ucontext;raw" --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/indexed --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/indexed indexed.tesh)
+    ADD_TESH_FACTORIES(smpi-struct               "thread;ucontext;raw" --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/struct --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/struct struct.tesh)
+    ADD_TESH_FACTORIES(smpi-pt2pt                "thread;ucontext;raw" --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/pingpong --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/pingpong pt2pt.tesh)
+    ADD_TESH_FACTORIES(smpi-compute              "thread;ucontext;raw" --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/compute --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/compute compute.tesh)
     if (NOT WIN32)
-      ADD_TESH_FACTORIES(smpi-shared             "thread;ucontext;raw" --setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/smpi --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/shared.tesh)
+      ADD_TESH_FACTORIES(smpi-shared             "thread;ucontext;raw" --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/shared --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/shared shared.tesh)
     endif()
 
     # https://gforge.inria.fr/tracker/index.php?func=detail&aid=17132&group_id=12&atid=165
@@ -316,66 +316,66 @@ if(NOT enable_memcheck)
     if(HAVE_TRACING)
       ADD_TESH(smpi-tracing-ptp                  --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/smpi --cd ${CMAKE_BINARY_DIR}/examples/smpi ${CMAKE_HOME_DIRECTORY}/examples/smpi/tracing/smpi_traced.tesh)
       ADD_TESH(smpi-replay                       --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/smpi --cd ${CMAKE_BINARY_DIR}/examples/smpi ${CMAKE_HOME_DIRECTORY}/examples/smpi/replay/smpi_replay.tesh)
-      ADD_TESH(smpi-replay-ti-tracing            --setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/smpi --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/TI_output.tesh)
+      ADD_TESH(smpi-replay-ti-tracing            --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/pingpong --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/pingpong TI_output.tesh)
     endif()
 
     FOREACH (GATHER_COLL default ompi mpich ompi_basic_linear ompi_linear_sync ompi_binomial)
-      ADD_TESH(smpi-gather-coll-${GATHER_COLL}    --cfg smpi/gather:${GATHER_COLL} --setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/smpi --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/gather_coll.tesh)
+      ADD_TESH(smpi-gather-coll-${GATHER_COLL}    --cfg smpi/gather:${GATHER_COLL} --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/gather --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/gather gather_coll.tesh)
     ENDFOREACH()
 
     FOREACH (ALLGATHER_COLL default  2dmesh 3dmesh bruck GB loosely_lr
                             NTSLR NTSLR_NB pair rdb  rhv ring SMP_NTS
                             smp_simple spreading_simple ompi mpich ompi_neighborexchange)
-      ADD_TESH(smpi-allgather-coll-${ALLGATHER_COLL} --cfg smpi/allgather:${ALLGATHER_COLL} --setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/smpi --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/allgather_coll.tesh)
+      ADD_TESH(smpi-allgather-coll-${ALLGATHER_COLL} --cfg smpi/allgather:${ALLGATHER_COLL} --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/allgather --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/allgather allgather_coll.tesh)
     ENDFOREACH()
 
     FOREACH (ALLGATHERV_COLL default GB pair ring ompi mpich ompi_neighborexchange ompi_bruck mpich_rdb mpich_ring)
-      ADD_TESH(smpi-allgatherv-coll-${ALLGATHERV_COLL} --cfg smpi/allgatherv:${ALLGATHERV_COLL} --setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/smpi --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/allgatherv_coll.tesh)
+      ADD_TESH(smpi-allgatherv-coll-${ALLGATHERV_COLL} --cfg smpi/allgatherv:${ALLGATHERV_COLL} --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/allgatherv --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/allgatherv allgatherv_coll.tesh)
     ENDFOREACH()
 
     FOREACH (ALLREDUCE_COLL default lr rab1 rab2 rab_rdb
                             rdb smp_binomial smp_binomial_pipeline
                             smp_rdb smp_rsag smp_rsag_lr smp_rsag_rab redbcast ompi mpich ompi_ring_segmented)
-      ADD_TESH(smpi-allreduce-coll-${ALLREDUCE_COLL} --cfg smpi/allreduce:${ALLREDUCE_COLL} --setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/smpi --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/allreduce_coll.tesh)
+      ADD_TESH(smpi-allreduce-coll-${ALLREDUCE_COLL} --cfg smpi/allreduce:${ALLREDUCE_COLL} --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/allreduce --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/allreduce allreduce_coll.tesh)
     ENDFOREACH()
 
     FOREACH (ALLREDUCE_COLL_LARGE ompi_ring_segmented)
-      ADD_TESH(smpi-allreduce-coll-large-${ALLREDUCE_COLL_LARGE} --cfg smpi/allreduce:${ALLREDUCE_COLL_LARGE} --setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/smpi --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/allreduce_coll_large.tesh)
+      ADD_TESH(smpi-allreduce-coll-large-${ALLREDUCE_COLL_LARGE} --cfg smpi/allreduce:${ALLREDUCE_COLL_LARGE} --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/allreduce --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/allreduce allreduce_coll_large.tesh)
     ENDFOREACH()
 
     FOREACH (ALLTOALL_COLL 2dmesh 3dmesh pair pair_one_barrier pair_light_barrier
                            pair_mpi_barrier rdb ring ring_light_barrier
                            ring_mpi_barrier ring_one_barrier
                            bruck basic_linear ompi mpich)
-      ADD_TESH(smpi-alltoall-coll-${ALLTOALL_COLL} --cfg smpi/alltoall:${ALLTOALL_COLL} --setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/smpi --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/alltoall_coll.tesh)
+      ADD_TESH(smpi-alltoall-coll-${ALLTOALL_COLL} --cfg smpi/alltoall:${ALLTOALL_COLL} --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/alltoall --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/alltoall alltoall_coll.tesh)
     ENDFOREACH()
 
     FOREACH (ALLTOALLV_COLL default pair pair_light_barrier pair_mpi_barrier
                             pair_one_barrier  ring ring_light_barrier
                             ring_mpi_barrier ring_one_barrier bruck ompi mpich ompi_basic_linear)
-      ADD_TESH(smpi-alltoallv-coll-${ALLTOALLV_COLL} --cfg smpi/alltoallv:${ALLTOALLV_COLL} --setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/smpi --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/alltoallv_coll.tesh)
+      ADD_TESH(smpi-alltoallv-coll-${ALLTOALLV_COLL} --cfg smpi/alltoallv:${ALLTOALLV_COLL} --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/alltoallv --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/alltoallv alltoallv_coll.tesh)
     ENDFOREACH()
 
     FOREACH (BCAST_COLL default arrival_pattern_aware arrival_pattern_aware_wait arrival_scatter
                         binomial_tree flattree flattree_pipeline NTSB NTSL NTSL_Isend scatter_LR_allgather
                         scatter_rdb_allgather SMP_binary SMP_binomial SMP_linear ompi mpich ompi_split_bintree ompi_pipeline)
-      ADD_TESH(smpi-bcast-coll-${BCAST_COLL}     --cfg smpi/bcast:${BCAST_COLL} --setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/smpi --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/bcast_coll.tesh)
+      ADD_TESH(smpi-bcast-coll-${BCAST_COLL}     --cfg smpi/bcast:${BCAST_COLL} --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/bcast --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/bcast bcast_coll.tesh)
     ENDFOREACH()
 
     FOREACH (REDUCE_COLL default arrival_pattern_aware binomial flat_tree NTSL scatter_gather ompi mpich ompi_chain ompi_binary ompi_basic_linear ompi_binomial ompi_in_order_binary)
-      ADD_TESH(smpi-reduce-coll-${REDUCE_COLL}   --cfg smpi/reduce:${REDUCE_COLL} --setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/smpi --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/reduce_coll.tesh)
+      ADD_TESH(smpi-reduce-coll-${REDUCE_COLL}   --cfg smpi/reduce:${REDUCE_COLL} --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/reduce --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/reduce reduce_coll.tesh)
     ENDFOREACH()
 
     FOREACH (REDUCE_SCATTER_COLL default  ompi mpich ompi_basic_recursivehalving ompi_ring mpich_noncomm mpich_pair mpich_rdb)
-      ADD_TESH(smpi-reduce-scatter-coll-${REDUCE_SCATTER_COLL} --cfg smpi/reduce_scatter:${REDUCE_SCATTER_COLL} --setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/smpi --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/reduce_scatter_coll.tesh)
+      ADD_TESH(smpi-reduce-scatter-coll-${REDUCE_SCATTER_COLL} --cfg smpi/reduce_scatter:${REDUCE_SCATTER_COLL} --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/reduce --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/reduce reduce_scatter_coll.tesh)
     ENDFOREACH()
 
     FOREACH (SCATTER_COLL default  ompi mpich ompi_basic_linear ompi_binomial)
-      ADD_TESH(smpi-scatter-coll-${SCATTER_COLL} --cfg smpi/scatter:${SCATTER_COLL} --setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/smpi --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/scatter_coll.tesh)
+      ADD_TESH(smpi-scatter-coll-${SCATTER_COLL} --cfg smpi/scatter:${SCATTER_COLL} --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/scatter --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/scatter scatter_coll.tesh)
     ENDFOREACH()
 
     FOREACH (BARRIER_COLL default  ompi mpich ompi_basic_linear ompi_tree ompi_bruck ompi_recursivedoubling ompi_doublering)
-      ADD_TESH(smpi-barrier-coll-${BARRIER_COLL} --cfg smpi/barrier:${BARRIER_COLL} --setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/smpi --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/barrier_coll.tesh)
+      ADD_TESH(smpi-barrier-coll-${BARRIER_COLL} --cfg smpi/barrier:${BARRIER_COLL} --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/barrier --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/barrier barrier_coll.tesh)
     ENDFOREACH()
   endif()
 

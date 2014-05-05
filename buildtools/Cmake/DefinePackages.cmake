@@ -1022,6 +1022,23 @@ set(TESHSUITE_CMAKEFILES_TXT
   teshsuite/simix/check_defaults/CMakeLists.txt
   teshsuite/simix/stack_overflow/CMakeLists.txt
   teshsuite/smpi/CMakeLists.txt
+  teshsuite/smpi/allgather/CMakeLists.txt
+  teshsuite/smpi/allgatherv/CMakeLists.txt
+  teshsuite/smpi/allreduce/CMakeLists.txt
+  teshsuite/smpi/alltoall/CMakeLists.txt
+  teshsuite/smpi/alltoallv/CMakeLists.txt
+  teshsuite/smpi/barrier/CMakeLists.txt
+  teshsuite/smpi/bcast/CMakeLists.txt
+  teshsuite/smpi/compute/CMakeLists.txt
+  teshsuite/smpi/gather/CMakeLists.txt
+  teshsuite/smpi/hvector/CMakeLists.txt
+  teshsuite/smpi/indexed/CMakeLists.txt
+  teshsuite/smpi/pingpong/CMakeLists.txt
+  teshsuite/smpi/reduce/CMakeLists.txt
+  teshsuite/smpi/scatter/CMakeLists.txt
+  teshsuite/smpi/shared/CMakeLists.txt
+  teshsuite/smpi/struct/CMakeLists.txt
+  teshsuite/smpi/vector/CMakeLists.txt
   teshsuite/smpi/mpich3-test/CMakeLists.txt
   teshsuite/smpi/mpich3-test/attr/CMakeLists.txt
   teshsuite/smpi/mpich3-test/coll/CMakeLists.txt

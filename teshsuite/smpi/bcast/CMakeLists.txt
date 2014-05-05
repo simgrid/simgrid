@@ -6,12 +6,21 @@ if(enable_smpi)
   else()
     set(CMAKE_C_COMPILER "${CMAKE_BINARY_DIR}/smpi_script/bin/smpicc")
   endif()
+
   set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}")
+
+  include_directories("${CMAKE_HOME_DIRECTORY}/include/smpi")
+  add_executable(bcast bcast.c)
+  add_executable(bcast_coll bcast_coll.c)
+  target_link_libraries(bcast simgrid)
+  target_link_libraries(bcast_coll simgrid)
 endif()
 
 
 set(tesh_files
   ${tesh_files}
+  ${CMAKE_CURRENT_SOURCE_DIR}/bcast.tesh
+  ${CMAKE_CURRENT_SOURCE_DIR}/bcast_coll.tesh
   PARENT_SCOPE
   )
 set(xml_files
@@ -20,11 +29,12 @@ set(xml_files
   )
 set(examples_src
   ${examples_src}
+  ${CMAKE_CURRENT_SOURCE_DIR}/bcast.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/bcast_coll.c
   PARENT_SCOPE
   )
 set(bin_files
   ${bin_files}
-  ${CMAKE_CURRENT_SOURCE_DIR}/hostfile
   PARENT_SCOPE
   )
 set(txt_files
