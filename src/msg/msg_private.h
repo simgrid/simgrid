@@ -169,9 +169,6 @@ void MSG_process_create_from_SIMIX(smx_process_t *process, const char *name,
                                    smx_process_t parent_process);
 void MSG_comm_copy_data_from_SIMIX(smx_action_t comm, void* buff, size_t buff_size);
 
-void _MSG_action_init(void);
-void _MSG_action_exit(void);
-
 void MSG_post_create_environment(void);
 
 static inline void *msg_host_resource_priv(const void *host) {

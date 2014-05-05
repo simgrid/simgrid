@@ -52,8 +52,8 @@ xbt_replay_reader_t xbt_replay_reader_new(const char *filename)
 {
   xbt_replay_reader_t res = xbt_new0(s_xbt_replay_reader_t,1);
   res->fp = fopen(filename, "r");
-  xbt_assert(res->fp != NULL, "Cannot open %s: %s", filename,
-      strerror(errno));
+  if (res->fp == NULL)
+    xbt_die("Cannot open %s: %s", filename, strerror(errno));
   res->filename = xbt_strdup(filename);
   return res;
 }

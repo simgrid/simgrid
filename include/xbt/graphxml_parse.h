@@ -12,6 +12,11 @@
 #include "xbt/graphxml.h"
 #include "simgrid_config.h"
 
+#ifndef YY_TYPEDEF_YY_SIZE_T
+#define YY_TYPEDEF_YY_SIZE_T
+typedef size_t yy_size_t;
+#endif
+
 /* Entry-point of the graphxml parser. */
 extern int_f_void_t xbt_graph_parse;
 
@@ -34,7 +39,7 @@ XBT_PUBLIC(int) xbt_graph_parse_lex(void);
 XBT_PUBLIC(int) xbt_graph_parse_get_lineno(void);
 XBT_PUBLIC(FILE *) xbt_graph_parse_get_in(void);
 XBT_PUBLIC(FILE *) xbt_graph_parse_get_out(void);
-XBT_PUBLIC(int) xbt_graph_parse_get_leng(void);
+XBT_PUBLIC(yy_size_t) xbt_graph_parse_get_leng(void);
 XBT_PUBLIC(char *) xbt_graph_parse_get_text(void);
 XBT_PUBLIC(void) xbt_graph_parse_set_lineno(int line_number);
 XBT_PUBLIC(void) xbt_graph_parse_set_in(FILE * in_str);

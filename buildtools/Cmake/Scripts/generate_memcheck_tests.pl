@@ -38,6 +38,7 @@ my ($path);
 my ($dump) = 0;
 my (%environ);
 my ($tesh_file);
+my ($factories);
 my ($config_var);
 my ($name_test);
 my ($indent);
@@ -54,18 +55,23 @@ while ( defined( $line = <MAKETEST> ) ) {
     }
     if ($dump) {
         $line =~ s/^  //;
-        if ( $line =~ /^\s*ADD_TEST\(\S+\s+\S*TESH\_COMMAND\}\s/ ) {
+        if ( $line =~ /^\s*(?:ADD_TEST\(\S+\s+\S*TESH\_COMMAND\}\s|ADD_TESH\(|ADD_TESH_FACTORIES)/ ) {
             undef %environ;
             $config_var = "";
+            $factories  = "";
             $path       = "";
             $nb_test++;
             $tesh_file = "";
             $name_test = "";
             $indent = "";
-
-            if ( $line =~ /^(\s*)ADD_TEST\((\S+)/ ) {
+            if ( $line =~ /^(\s*)ADD_(?:TEST|TESH)\((\S+)/ ) {
                 $indent = ($1);
                 $name_test = ($2);
+            }
+            if ( $line =~ /^(\s*)ADD_TESH_FACTORIES\((\S+)\s+\"(\S+)\"/ ) {
+                $indent = ($1);
+                $name_test = ($2);
+                $factories = ($3);
             }
             while ( $line =~ /--cfg\s+(\S+)/g ) {
                 $config_var = "--cfg=$1 $config_var";
@@ -101,8 +107,6 @@ while ( defined( $line = <MAKETEST> ) ) {
             }
 
             my ($count)        = 0;
-            my ($count_first)  = 0;
-            my ($count_second) = 0;
             open TESH_FILE, $tesh_file or die "Unable to open tesh file: \"$tesh_file\". $!\n";
             my ($input) = "";
             my ($l);
@@ -135,14 +139,32 @@ while ( defined( $line = <MAKETEST> ) ) {
                     if ( $command =~ /^mkfile\s+(\S+)/) {
                         my $file = $1;
                         # don't ask me to explain why so many backslashes...
-                        $input =~ s/\\/\\\\\\\\\\\\\\\\/g;
-                        $input =~ s/\n/\\\\\\\\n/g;
-                        $input =~ s/"/\\\\\\\\042/g;
-                        $input =~ s/'/\\\\\\\\047/g;
+                        $input =~ s/\\/\\\\\\\\/g;
+                        $input =~ s/\n/\\\\n/g;
+                        $input =~ s/"/\\\\042/g;
+                        $input =~ s/'/\\\\047/g;
                         $input =~ s/%/%%/g;
                         $command = "sh -c \"printf '$input' > $file\"";
                     }
-                    print "${indent}ADD_TEST(memcheck-$name_test-$count $command --cd $path\/)\n";
+                    if ($factories) {
+                      foreach my $factory (split(';', $factories)) {
+                        print "${indent}ADD_TEST(NAME memcheck-$name_test-$factory-$count\n";
+                        print "${indent}         WORKING_DIRECTORY $path\/\n";
+                        print "${indent}         COMMAND $command --cfg=contexts/factory:$factory)\n";
+                        if ($count > 0) {
+                            print "${indent}set_tests_properties(memcheck-$name_test-$factory-$count\n";
+                            print "${indent}                     PROPERTIES DEPENDS memcheck-$name_test-$factory-" . ($count - 1) . ")\n";
+                        }
+                      }
+                    } else {
+                      print "${indent}ADD_TEST(NAME memcheck-$name_test-$count\n";
+                      print "${indent}         WORKING_DIRECTORY $path\/\n";
+                      print "${indent}         COMMAND $command)\n";
+                      if ($count > 0) {
+                          print "${indent}set_tests_properties(memcheck-$name_test-$count\n";
+                          print "${indent}                     PROPERTIES DEPENDS memcheck-$name_test-" . ($count - 1) . ")\n";
+                      }
+                    }
                     $input = "";
                     #push @test_list, "memcheck-$name_test-$count";
                     $count++;

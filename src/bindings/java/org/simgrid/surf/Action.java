@@ -109,7 +109,7 @@ public class Action {
 
   
   /**
-    * @param TODO
+    * @param bound TODO
     */
   public void setBound(double bound) {
     SurfJNI.Action_setBound(swigCPtr, this, bound);
@@ -134,7 +134,7 @@ public class Action {
 
   
   /**
-    * @param The new priority of the action
+    * @param priority The new priority of the action
     */
   public void setPriority(double priority) {
     SurfJNI.Action_setPriority(swigCPtr, this, priority);
@@ -142,7 +142,7 @@ public class Action {
 
   
   /**
-    * @param The new state
+    * @param state The new state
     */
   public void setState(ActionState state) {
     SurfJNI.Action_setState(swigCPtr, this, state.swigValue());

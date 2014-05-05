@@ -155,6 +155,7 @@ typedef struct s_smx_action {
       int (*match_fun)(void*,void*,smx_action_t);  /* Filter function used by the other side. It is used when
                                          looking if a given communication matches my needs. For that, myself must match the
                                          expectations of the other side, too. See  */
+      void (*copy_data_fun) (smx_action_t, void*, size_t);
 
       /* Surf action data */
       surf_action_t surf_comm;        /* The Surf communication action encapsulated */

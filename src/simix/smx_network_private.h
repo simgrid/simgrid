@@ -39,11 +39,13 @@ smx_action_t SIMIX_comm_isend(smx_process_t src_proc, smx_rdv_t rdv,
                               void *src_buff, size_t src_buff_size,
                               int (*match_fun)(void *, void *, smx_action_t),
                               void (*clean_fun)(void *), // used to free the action in case of problem after a detached send
+                              void (*copy_data_fun)(smx_action_t, void*, size_t),
                               void *data,
                               int detached);
 smx_action_t SIMIX_comm_irecv(smx_process_t dst_proc, smx_rdv_t rdv,
                               void *dst_buff, size_t *dst_buff_size,
                               int (*)(void *, void *, smx_action_t),
+                              void (*copy_data_fun)(smx_action_t, void*, size_t),
                               void *data, double rate);
 void SIMIX_comm_destroy(smx_action_t action);
 void SIMIX_comm_destroy_internal_actions(smx_action_t action);
@@ -79,20 +81,24 @@ void SIMIX_pre_comm_send(smx_simcall_t simcall, smx_rdv_t rdv,
                                   double task_size, double rate,
                                   void *src_buff, size_t src_buff_size,
                                   int (*match_fun)(void *, void *,smx_action_t),
+                                  void (*copy_data_fun)(smx_action_t, void*, size_t),
 				  void *data, double timeout);
 smx_action_t SIMIX_pre_comm_isend(smx_simcall_t simcall, smx_rdv_t rdv,
                                   double task_size, double rate,
                                   void *src_buff, size_t src_buff_size,
                                   int (*match_fun)(void *, void *,smx_action_t),
                                   void (*clean_fun)(void *), 
+                                  void (*copy_data_fun)(smx_action_t, void*, size_t),
 				  void *data, int detached);
 void SIMIX_pre_comm_recv(smx_simcall_t simcall, smx_rdv_t rdv,
                          void *dst_buff, size_t *dst_buff_size,
                          int (*match_fun)(void *, void *, smx_action_t),
+                         void (*copy_data_fun)(smx_action_t, void*, size_t),
                          void *data, double timeout, double rate);
 smx_action_t SIMIX_pre_comm_irecv(smx_simcall_t simcall, smx_rdv_t rdv,
                                   void *dst_buff, size_t *dst_buff_size,
                                   int (*match_fun)(void *, void *, smx_action_t),
+                                  void (*copy_data_fun)(smx_action_t, void*, size_t),
 				  void *data, double rate);
 void SIMIX_pre_comm_cancel(smx_simcall_t simcall, smx_action_t action);
 double SIMIX_pre_comm_get_remains(smx_simcall_t simcall, smx_action_t action);

@@ -479,6 +479,9 @@ int main(int argc, char *argv[])
 
   /* Check the given arguments */
   MSG_init(&argc, argv);
+  /* Explicit initialization of the action module is required now*/
+  MSG_action_init();
+
   if (argc < 3) {
     printf("Usage: %s platform_file deployment_file [action_files]\n", argv[0]);
     printf
@@ -521,6 +524,9 @@ int main(int argc, char *argv[])
   res = MSG_action_trace_run(argv[3]);  // it's ok to pass a NULL argument here
 
   XBT_INFO("Simulation time %g", MSG_get_clock());
+
+  /* Explicit finalization of the action module is required now*/
+  MSG_action_exit();
 
   if (res == MSG_OK)
     return 0;

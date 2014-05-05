@@ -1,0 +1,10 @@
+#! ./tesh
+
+! output display
+$ $SG_TEST_EXENV ${bindir:=.}/heap_bench
+> Validity test complete!
+> Creation time  100 size heap : 6
+> Mean access time for a 100 size heap : 0.14687
+> Validity test complete!
+> Creation time  1000 size heap : 38
+> Mean access time for a 1000 size heap : 0.179765

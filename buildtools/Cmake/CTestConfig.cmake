@@ -51,7 +51,6 @@ if(enable_coverage)
       "/tools/"
       "/buildtools/"
       "/include/"
-      "/testsuite/"
       "/teshsuite/"
       "/src/bindings/"
     )

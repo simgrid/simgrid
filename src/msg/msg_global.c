@@ -60,9 +60,6 @@ void MSG_init_nocheck(int *argc, char **argv) {
     msg_global->task_copy_callback = NULL;
     msg_global->process_data_cleanup = NULL;
 
-    /* initialization of the action module */
-    _MSG_action_init();
-
     SIMIX_function_register_process_create(MSG_process_create_from_SIMIX);
     SIMIX_function_register_process_cleanup(MSG_process_cleanup_from_SIMIX);
 
@@ -172,12 +169,6 @@ static void MSG_exit(void) {
 
 #ifdef HAVE_TRACING
   TRACE_surf_resource_utilization_release();
-#endif
-
-  /* initialization of the action module */
-  _MSG_action_exit();
-
-#ifdef HAVE_TRACING
   TRACE_end();
 #endif
 

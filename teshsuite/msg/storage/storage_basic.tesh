@@ -1,4 +1,4 @@
-$ msg/storage/storage_basic --cfg=path:${srcdir:=.} ${srcdir:=.}/msg/storage/platform.xml ${srcdir:=.}/msg/storage/deployment.xml 0 "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+$ storage_basic --cfg=path:${srcdir:=.} ${srcdir:=.}/platform.xml ${srcdir:=.}/deployment.xml 0 "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (1:server@server) *** Storage info on server ***
 > [  0.000000] (1:server@server) 	Storage name: sdisk1, mount name: /sd1
 > [  0.000000] (1:server@server) 		Free size: 322122547160 bytes

@@ -30,7 +30,7 @@ MPI_Group smpi_group_new(int size)
   MPI_Group group;
   int i, count;
 
-  count = smpi_process_count();
+  count = SIMIX_process_count();
   group = xbt_new(s_smpi_mpi_group_t, 1);
   group->size = size;
   group->rank_to_index_map = xbt_new(int, size);
@@ -84,7 +84,7 @@ void smpi_group_destroy(MPI_Group group)
 
 void smpi_group_set_mapping(MPI_Group group, int index, int rank)
 {
-  if (rank < group->size && index < smpi_process_count()) {
+  if (rank < group->size && index < SIMIX_process_count()) {
     group->rank_to_index_map[rank] = index;
     if(index!=MPI_UNDEFINED)group->index_to_rank_map[index] = rank;
   }
@@ -103,10 +103,7 @@ int smpi_group_index(MPI_Group group, int rank)
 int smpi_group_rank(MPI_Group group, int index)
 {
   int rank = MPI_UNDEFINED;
-
-  if (index < smpi_process_count()) {
-    rank = group->index_to_rank_map[index];
-  }
+  rank = group->index_to_rank_map[index];
   return rank;
 }
 

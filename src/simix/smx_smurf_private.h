@@ -29,6 +29,7 @@ NUM_SIMCALLS
 } e_smx_simcall_t;
 
 typedef int (*simix_match_func_t)(void *, void *, smx_action_t);
+typedef void (*simix_copy_data_func_t)(smx_action_t, void*, size_t);
 typedef void (*simix_clean_func_t)(void *);
 typedef void (*FPtr)(void); // Hide the ugliness
 

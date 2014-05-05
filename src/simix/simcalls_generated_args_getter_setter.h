@@ -726,17 +726,23 @@ static inline simix_match_func_t simcall_comm_send__get__match_fun(smx_simcall_t
 static inline void simcall_comm_send__set__match_fun(smx_simcall_t simcall, FPtr arg){
     simcall->args[5].fp = arg;
 }
+static inline simix_copy_data_func_t simcall_comm_send__get__copy_data_fun(smx_simcall_t simcall){
+  return (simix_copy_data_func_t) simcall->args[6].fp;
+}
+static inline void simcall_comm_send__set__copy_data_fun(smx_simcall_t simcall, FPtr arg){
+    simcall->args[6].fp = arg;
+}
 static inline void* simcall_comm_send__get__data(smx_simcall_t simcall){
-  return  simcall->args[6].dp;
+  return  simcall->args[7].dp;
 }
 static inline void simcall_comm_send__set__data(smx_simcall_t simcall, void* arg){
-    simcall->args[6].dp = arg;
+    simcall->args[7].dp = arg;
 }
 static inline double simcall_comm_send__get__timeout(smx_simcall_t simcall){
-  return  simcall->args[7].d;
+  return  simcall->args[8].d;
 }
 static inline void simcall_comm_send__set__timeout(smx_simcall_t simcall, double arg){
-    simcall->args[7].d = arg;
+    simcall->args[8].d = arg;
 }
 static inline smx_rdv_t simcall_comm_isend__get__rdv(smx_simcall_t simcall){
   return (smx_rdv_t) simcall->args[0].dp;
@@ -780,17 +786,23 @@ static inline simix_clean_func_t simcall_comm_isend__get__clean_fun(smx_simcall_
 static inline void simcall_comm_isend__set__clean_fun(smx_simcall_t simcall, FPtr arg){
     simcall->args[6].fp = arg;
 }
+static inline simix_copy_data_func_t simcall_comm_isend__get__copy_data_fun(smx_simcall_t simcall){
+  return (simix_copy_data_func_t) simcall->args[7].fp;
+}
+static inline void simcall_comm_isend__set__copy_data_fun(smx_simcall_t simcall, FPtr arg){
+    simcall->args[7].fp = arg;
+}
 static inline void* simcall_comm_isend__get__data(smx_simcall_t simcall){
-  return  simcall->args[7].dp;
+  return  simcall->args[8].dp;
 }
 static inline void simcall_comm_isend__set__data(smx_simcall_t simcall, void* arg){
-    simcall->args[7].dp = arg;
+    simcall->args[8].dp = arg;
 }
 static inline int simcall_comm_isend__get__detached(smx_simcall_t simcall){
-  return  simcall->args[8].i;
+  return  simcall->args[9].i;
 }
 static inline void simcall_comm_isend__set__detached(smx_simcall_t simcall, int arg){
-    simcall->args[8].i = arg;
+    simcall->args[9].i = arg;
 }
 static inline smx_rdv_t simcall_comm_recv__get__rdv(smx_simcall_t simcall){
   return (smx_rdv_t) simcall->args[0].dp;
@@ -816,23 +828,29 @@ static inline simix_match_func_t simcall_comm_recv__get__match_fun(smx_simcall_t
 static inline void simcall_comm_recv__set__match_fun(smx_simcall_t simcall, FPtr arg){
     simcall->args[3].fp = arg;
 }
+static inline simix_copy_data_func_t simcall_comm_recv__get__copy_data_fun(smx_simcall_t simcall){
+  return (simix_copy_data_func_t) simcall->args[4].fp;
+}
+static inline void simcall_comm_recv__set__copy_data_fun(smx_simcall_t simcall, FPtr arg){
+    simcall->args[4].fp = arg;
+}
 static inline void* simcall_comm_recv__get__data(smx_simcall_t simcall){
-  return  simcall->args[4].dp;
+  return  simcall->args[5].dp;
 }
 static inline void simcall_comm_recv__set__data(smx_simcall_t simcall, void* arg){
-    simcall->args[4].dp = arg;
+    simcall->args[5].dp = arg;
 }
 static inline double simcall_comm_recv__get__timeout(smx_simcall_t simcall){
-  return  simcall->args[5].d;
-}
-static inline void simcall_comm_recv__set__timeout(smx_simcall_t simcall, double arg){
-    simcall->args[5].d = arg;
-}
-static inline double simcall_comm_recv__get__rate(smx_simcall_t simcall){
   return  simcall->args[6].d;
 }
-static inline void simcall_comm_recv__set__rate(smx_simcall_t simcall, double arg){
+static inline void simcall_comm_recv__set__timeout(smx_simcall_t simcall, double arg){
     simcall->args[6].d = arg;
+}
+static inline double simcall_comm_recv__get__rate(smx_simcall_t simcall){
+  return  simcall->args[7].d;
+}
+static inline void simcall_comm_recv__set__rate(smx_simcall_t simcall, double arg){
+    simcall->args[7].d = arg;
 }
 static inline smx_rdv_t simcall_comm_irecv__get__rdv(smx_simcall_t simcall){
   return (smx_rdv_t) simcall->args[0].dp;
@@ -858,17 +876,23 @@ static inline simix_match_func_t simcall_comm_irecv__get__match_fun(smx_simcall_
 static inline void simcall_comm_irecv__set__match_fun(smx_simcall_t simcall, FPtr arg){
     simcall->args[3].fp = arg;
 }
+static inline simix_copy_data_func_t simcall_comm_irecv__get__copy_data_fun(smx_simcall_t simcall){
+  return (simix_copy_data_func_t) simcall->args[4].fp;
+}
+static inline void simcall_comm_irecv__set__copy_data_fun(smx_simcall_t simcall, FPtr arg){
+    simcall->args[4].fp = arg;
+}
 static inline void* simcall_comm_irecv__get__data(smx_simcall_t simcall){
-  return  simcall->args[4].dp;
+  return  simcall->args[5].dp;
 }
 static inline void simcall_comm_irecv__set__data(smx_simcall_t simcall, void* arg){
-    simcall->args[4].dp = arg;
+    simcall->args[5].dp = arg;
 }
 static inline double simcall_comm_irecv__get__rate(smx_simcall_t simcall){
-  return  simcall->args[5].d;
+  return  simcall->args[6].d;
 }
 static inline void simcall_comm_irecv__set__rate(smx_simcall_t simcall, double arg){
-    simcall->args[5].d = arg;
+    simcall->args[6].d = arg;
 }
 static inline smx_action_t simcall_comm_cancel__get__comm(smx_simcall_t simcall){
   return (smx_action_t) simcall->args[0].dp;

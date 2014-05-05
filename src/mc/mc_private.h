@@ -562,12 +562,13 @@ typedef struct s_mc_comm_pattern{
   const char *src_host;
   const char *dst_host;
   char *rdv;
-  size_t data_size;
+  ssize_t data_size;
   void *data;
   int matched_comm;
 }s_mc_comm_pattern_t, *mc_comm_pattern_t;
 
 extern xbt_dynar_t communications_pattern;
+extern xbt_dynar_t incomplete_communications_pattern;
 
 void get_comm_pattern(xbt_dynar_t communications_pattern, smx_simcall_t request, int call);
 

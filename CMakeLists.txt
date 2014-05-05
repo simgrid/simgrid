@@ -231,6 +231,10 @@ endif()
 include(${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/MakeExe.cmake)
 
 ### Make tests
+if(enable_memcheck_xml)
+  set(enable_memcheck true)
+endif()
+
 include(${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/AddTests.cmake)
 include(${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/CTestConfig.cmake)
 

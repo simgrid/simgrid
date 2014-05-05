@@ -418,6 +418,7 @@ XBT_PUBLIC(void) simcall_comm_send(smx_rdv_t rdv, double task_size,
                                      double rate, void *src_buff,
                                      size_t src_buff_size,
                                      int (*match_fun)(void *, void *, smx_action_t),
+                                     void (*copy_data_fun)(smx_action_t, void*, size_t),
                                      void *data, double timeout);
 
 XBT_PUBLIC(smx_action_t) simcall_comm_isend(smx_rdv_t rdv, double task_size,
@@ -425,16 +426,19 @@ XBT_PUBLIC(smx_action_t) simcall_comm_isend(smx_rdv_t rdv, double task_size,
                                               size_t src_buff_size,
                                               int (*match_fun)(void *, void *, smx_action_t),
                                               void (*clean_fun)(void *),
+                                              void (*copy_data_fun)(smx_action_t, void*, size_t),
                                               void *data, int detached);
 
 XBT_PUBLIC(void) simcall_comm_recv(smx_rdv_t rdv, void *dst_buff,
                                    size_t * dst_buff_size,
                                    int (*match_fun)(void *, void *, smx_action_t),
+                                   void (*copy_data_fun)(smx_action_t, void*, size_t),
                                    void *data, double timeout, double rate);
 
 XBT_PUBLIC(smx_action_t) simcall_comm_irecv(smx_rdv_t rdv, void *dst_buff,
                                             size_t * dst_buff_size,
                                             int (*match_fun)(void *, void *, smx_action_t),
+                                            void (*copy_data_fun)(smx_action_t, void*, size_t),
                                             void *data, double rate);
 
 XBT_PUBLIC(smx_action_t) simcall_comm_iprobe(smx_rdv_t rdv, int src, int tag,

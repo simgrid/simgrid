@@ -353,6 +353,8 @@ XBT_PUBLIC(void) MSG_mailbox_set_async(const char *alias);
 
 /************************** Action handling **********************************/
 XBT_PUBLIC(msg_error_t) MSG_action_trace_run(char *path);
+XBT_PUBLIC(void) MSG_action_init(void);
+XBT_PUBLIC(void) MSG_action_exit(void);
 
 #ifdef MSG_USE_DEPRECATED
 

@@ -72,6 +72,9 @@ typedef struct s_smpi_mpi_datatype{
 #define COLL_TAG_GATHERV -2223
 #define COLL_TAG_BCAST -3334
 #define COLL_TAG_ALLREDUCE -4445
+
+#define MPI_COMM_UNINITIALIZED ((MPI_Comm)-1)
+
 //*****************************************************************************************
 
 typedef struct s_smpi_mpi_request {
@@ -129,6 +132,7 @@ smpi_process_data_t smpi_process_remote_data(int index);
 void smpi_process_set_user_data(void *);
 void* smpi_process_get_user_data(void);
 int smpi_process_count(void);
+MPI_Comm smpi_process_comm_world(void);
 smx_rdv_t smpi_process_mailbox(void);
 smx_rdv_t smpi_process_remote_mailbox(int index);
 smx_rdv_t smpi_process_mailbox_small(void);
@@ -138,6 +142,11 @@ void smpi_process_simulated_start(void);
 double smpi_process_simulated_elapsed(void);
 void smpi_process_set_sampling(int s);
 int smpi_process_get_sampling(void);
+
+MPI_Comm* smpi_deployment_register_process(const char* instance_id, int rank, int index);
+
+void smpi_comm_copy_buffer_callback(smx_action_t comm,
+                                           void *buff, size_t buff_size);
 
 void print_request(const char *message, MPI_Request request);
 
