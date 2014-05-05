@@ -107,8 +107,6 @@ while ( defined( $line = <MAKETEST> ) ) {
             }
 
             my ($count)        = 0;
-            my ($count_first)  = 0;
-            my ($count_second) = 0;
             open TESH_FILE, $tesh_file or die "Unable to open tesh file: \"$tesh_file\". $!\n";
             my ($input) = "";
             my ($l);
@@ -153,11 +151,19 @@ while ( defined( $line = <MAKETEST> ) ) {
                         print "${indent}ADD_TEST(NAME memcheck-$name_test-$factory-$count\n";
                         print "${indent}         WORKING_DIRECTORY $path\/\n";
                         print "${indent}         COMMAND $command --cfg=contexts/factory:$factory)\n";
+                        if ($count > 0) {
+                            print "${indent}set_tests_properties(memcheck-$name_test-$factory-$count\n";
+                            print "${indent}                     PROPERTIES DEPENDS memcheck-$name_test-$factory-" . ($count - 1) . ")\n";
+                        }
                       }
                     } else {
                       print "${indent}ADD_TEST(NAME memcheck-$name_test-$count\n";
                       print "${indent}         WORKING_DIRECTORY $path\/\n";
                       print "${indent}         COMMAND $command)\n";
+                      if ($count > 0) {
+                          print "${indent}set_tests_properties(memcheck-$name_test-$count\n";
+                          print "${indent}                     PROPERTIES DEPENDS memcheck-$name_test-" . ($count - 1) . ")\n";
+                      }
                     }
                     $input = "";
                     #push @test_list, "memcheck-$name_test-$count";
