@@ -98,7 +98,15 @@ if(NOT enable_memcheck)
       ADD_TESH(xbt-mmalloc-64                    --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/xbt/mmalloc --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/xbt/mmalloc mmalloc_64.tesh)
     ENDIF()
   ENDIF()
+  ADD_TESH(test-xbt-log                          --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/xbt/log_usage --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/xbt/log_usage log_usage.tesh)
+  ADD_TESH(test-xbt-graphxml                     --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/xbt/graphxml_usage --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/xbt/graphxml_usage graphxml_usage.tesh)
+  ADD_TESH(test-xbt-heap                         --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/xbt/heap_bench --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/xbt/heap_bench heap_bench.tesh)
   ADD_TESH(xbt-parmap                            --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/xbt/parmap_test --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/xbt/parmap_test parmap_test.tesh)
+
+  ADD_TESH(test-surf-lmm                         --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/surf/lmm_usage --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/surf/lmm_usage lmm_usage.tesh)
+  ADD_TESH(test-surf-maxmin                      --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/surf/maxmin_bench --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/surf/maxmin_bench maxmin_bench.tesh)
+  ADD_TESH(test-surf-usage                       --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/surf/surf_usage --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/surf/ surf_usage/surf_usage.tesh)
+  ADD_TESH(test-surf-trace                       --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/surf/trace_usage --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/surf/ trace_usage/trace_usage.tesh)
 
   # BEGIN CONTEXTS FACTORY
   if(HAVE_RAWCTX)
@@ -472,6 +480,9 @@ if(NOT enable_memcheck)
       ADD_TESH(mc-bugged1-liveness-ucontext      --cfg contexts/factory:ucontext --setenv bindir=${CMAKE_BINARY_DIR}/examples/msg/mc --cd ${CMAKE_HOME_DIRECTORY}/examples/msg/mc bugged1_liveness.tesh)
       ADD_TESH(mc-bugged1-liveness-visited-ucontext --cfg contexts/factory:ucontext --setenv bindir=${CMAKE_BINARY_DIR}/examples/msg/mc --cd ${CMAKE_HOME_DIRECTORY}/examples/msg/mc bugged1_liveness_visited.tesh)
     endif()
+
+    ADD_TESH(mc-dwarf                            --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/mc/dwarf --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/mc/dwarf dwarf.tesh)
+    ADD_TESH(mc-dwarf-expression                 --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/mc/dwarf_expression --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/mc/dwarf_expression dwarf_expression.tesh)
   endif()
 
   ###
@@ -497,21 +508,6 @@ ADD_TEST(tesh-simdag-full-links01               ${CMAKE_BINARY_DIR}/teshsuite/si
 ADD_TEST(tesh-simdag-full-links02               ${CMAKE_BINARY_DIR}/teshsuite/simdag/platforms/basic_parsing_test ${CMAKE_HOME_DIRECTORY}/teshsuite/simdag/platforms/two_clusters_one_name.xml FULL_LINK)
 ADD_TEST(tesh-simdag-one-link-g5k               ${CMAKE_BINARY_DIR}/teshsuite/simdag/platforms/basic_parsing_test ${CMAKE_HOME_DIRECTORY}/examples/platforms/g5k.xml ONE_LINK)
 ADD_TEST(msg-icomms-waitany                     ${CMAKE_BINARY_DIR}/examples/msg/icomms/peer3 ${CMAKE_HOME_DIRECTORY}/examples/msg/icomms/small_platform.xml ${CMAKE_HOME_DIRECTORY}/examples/msg/icomms/deployment_peer05.xml)
-
-ADD_TESH(test-xbt-log                            --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/xbt/log_usage --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/xbt/log_usage log_usage.tesh)
-ADD_TESH(test-xbt-graphxml                       --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/xbt/graphxml_usage --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/xbt/graphxml_usage graphxml_usage.tesh)
-ADD_TESH(test-xbt-heap                           --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/xbt/heap_bench --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/xbt/heap_bench heap_bench.tesh)
-#ADD_TESH(test-xbt-parmap                         --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/xbt/parmap_bench --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/xbt/parmap_bench parmap_bench.tesh)
-
-ADD_TESH(test-surf-lmm                           --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/surf/lmm_usage --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/surf/lmm_usage lmm_usage.tesh)
-ADD_TESH(test-surf-maxmin                        --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/surf/maxmin_bench --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/surf/maxmin_bench maxmin_bench.tesh)
-ADD_TESH(test-surf-usage                         --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/surf/surf_usage --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/surf/ surf_usage/surf_usage.tesh)
-ADD_TESH(test-surf-trace                         --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/surf/trace_usage --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/surf/ trace_usage/trace_usage.tesh)
-
-if(HAVE_MC)
-  ADD_TESH(mc-dwarf                              --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/mc/dwarf --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/mc/dwarf dwarf.tesh)
-  ADD_TESH(mc-dwarf-expression                   --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/mc/dwarf_expression --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/mc/dwarf_expression dwarf_expression.tesh)
-endif()
 
 add_test(testall                                ${CMAKE_BINARY_DIR}/src/testall)
 
