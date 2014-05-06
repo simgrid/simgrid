@@ -12,8 +12,8 @@ $ ./masterslave_mailbox_smpi ${srcdir:=.}/../../msg/small_platform_with_routers.
 > [Ginette:master_mpi:(3) 0.000000] [msg_test/INFO] After comm 0
 > [Tremblay:master:(1) 0.002265] [msg_test/INFO] Sending "Task_1" (of 20) to mailbox "slave-0"
 > [Bourassa:master_mpi:(4) 0.016868] [msg_test/INFO] After comm 1
-> [Ginette:master_mpi:(3) 0.049112] [msg_test/INFO] After finalize 0 0
-> [Bourassa:master_mpi:(4) 0.049112] [msg_test/INFO] After finalize 1 0
+> [Bourassa:master_mpi:(4) 0.016868] [msg_test/INFO] After finalize 1 0
+> [Ginette:master_mpi:(3) 0.016868] [msg_test/INFO] After finalize 0 0
 > [Ginette:alltoall_mpi:(5) 0.098642] [msg_test/INFO] after alltoall 0
 > [Fafard:alltoall_mpi:(8) 0.099069] [msg_test/INFO] after alltoall 3
 > [Bourassa:alltoall_mpi:(6) 0.127526] [msg_test/INFO] after alltoall 1
