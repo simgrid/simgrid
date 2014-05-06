@@ -301,7 +301,8 @@ CpuPtr CpuL07Model::createResource(const char *name,  xbt_dynar_t powerPeak,
               name);
 
   CpuL07Ptr cpu = new CpuL07(this, name, cpu_properties,
-		                     power_initial, power_scale, power_trace,state_initial, state_trace);
+		                     power_initial, power_scale, power_trace,
+                         core, state_initial, state_trace);
 
   xbt_lib_set(host_lib, name, SURF_CPU_LEVEL, static_cast<ResourcePtr>(cpu));
 
@@ -427,11 +428,10 @@ double WorkstationL07::getConsumedEnergy()
 }
 
 CpuL07::CpuL07(CpuL07ModelPtr model, const char* name, xbt_dict_t props,
-	           double power_initial,
-		       double power_scale, tmgr_trace_t power_trace,
-		       e_surf_resource_state_t state_initial, tmgr_trace_t state_trace)
+	             double power_initial, double power_scale, tmgr_trace_t power_trace,
+		           int core, e_surf_resource_state_t state_initial, tmgr_trace_t state_trace)
  : Cpu(model, name, props, lmm_constraint_new(ptask_maxmin_system, this, power_initial * power_scale),
-	   1, power_initial, power_scale)
+	   core, power_initial, power_scale)
 {
   xbt_assert(m_powerScale > 0, "Power has to be >0");
 

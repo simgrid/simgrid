@@ -109,7 +109,6 @@ IF(NOT enable_memcheck)
 
   ### SIMIX ###
   # BEGIN TESH TESTS
-  # BEGIN CONTEXTS FACTORY
   IF(HAVE_RAWCTX)
     ADD_TESH(tesh-simix-factory-default          --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/simix/check_defaults --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/simix/check_defaults factory_raw.tesh)
   ELSEIF(CONTEXT_UCONTEXT)

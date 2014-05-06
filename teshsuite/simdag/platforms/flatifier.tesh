@@ -143,11 +143,11 @@ $ ${bindir:=.}/flatifier$EXEEXT one_cluster_multicore.xml "--log=root.fmt:[%10.6
 > <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">
 > <platform version="3">
 > <AS id="AS0" routing="Full">
->   <host id="bob0.hamburger.edu" power="1000000000 core="6"/>
->   <host id="bob2.hamburger.edu" power="1000000000 core="6""/>
->   <host id="bob3.hamburger.edu" power="1000000000 core="6""/>
->   <host id="bob4.hamburger.edu" power="1000000000 core="6""/>
->   <host id="bob6.hamburger.edu" power="1000000000 core="6""/>
+>   <host id="bob0.hamburger.edu" power="1000000000" core="6"/>
+>   <host id="bob2.hamburger.edu" power="1000000000" core="6"/>
+>   <host id="bob3.hamburger.edu" power="1000000000" core="6"/>
+>   <host id="bob4.hamburger.edu" power="1000000000" core="6"/>
+>   <host id="bob6.hamburger.edu" power="1000000000" core="6"/>
 >   <router id="bobbob_cluster_router.hamburger.edu"/>
 >   <link id="__loopback__" bandwidth="498000000" latency="0.000015000" sharing_policy="FATPIPE"/>
 >   <link id="bob_cluster_link_0_DOWN" bandwidth="125000000" latency="0.000050000"/>
