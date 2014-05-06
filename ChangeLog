@@ -25,11 +25,31 @@ SimGrid (3.11) NOT RELEASED; urgency=low
    - examples/msg/cloud/simple_vm.tesh
    - examples/java/cloud/cloud.tesh
    - examples/java/cloud/migration/migration.tesh
+ * Add java surf examples:
+   - examples/java/surfPlugin/surf_plugin.tesh
+   - examples/java/reservationSurfPlugin/reservation_surf_plugin.tes
+   - examples/java/surfCpuModel/surf_cpu_model.tesh
+
+ TeshSuite:
+ * Add tests:
+   - msg process test
+   - msg task destroy cancel test
+   - msg_host on/off test
+ * Move all tests in testsuite to teshsuite (adding tesh files)
+ * Restructure teshsuites
+   - one folder for each kind of test
+ * Restructure AddTests.cmake
+   - unify tests names
+   - structure the order of tests (with sections)
 
  MSG:
  * Add virtual machine
    - creation of a VM on a PM
    - migration of a VM from a PM to another PM
+ * New function
+   - MSG_process_join(msg_process_t process, double timeout)
+ * New option "msg/debug_multiple_use" to help debuging when a task is used
+   several times
 
  SIMIX:
  * Protect context stacks against stack overflow. The number of protected memory
@@ -41,6 +61,8 @@ SimGrid (3.11) NOT RELEASED; urgency=low
  * Clean simcalls
    - remove sem_destroy, file_set_data, comm_destroy, vm_set_state,
      host_set_data, host_get_data
+ * New simcalls
+   - simcall_process_join(smx_process_t process, double timeout)
 
  SURF:
  * Translate surf models from C to C++
@@ -63,11 +85,17 @@ SimGrid (3.11) NOT RELEASED; urgency=low
  * Collective communication algorithms should not crash if used with
    improper number of nodes and report the error.
 
+ TRACING:
+ * options defined in xml work
+
  Java:
  * New cmake option, enable_lib_in_jar, to control whether native libraries are
    copied into simgrid.jar or not (ON by default).  Use this option if you want
    to reduce the size of the installed simgrid.jar, *and* the native libraries
    are kept installed elsewhere.
+ * Surf binding with SWIG (code generated in maintainer mode only):
+   - plugin to handle callbacks
+   - cpu model only for the moment
 
  Build System:
  * Supernovae build mode is definitively removed. It was used to improve
@@ -75,6 +103,9 @@ SimGrid (3.11) NOT RELEASED; urgency=low
    link-time optimizations commonly available in compilers.
  * Update ns-3 find lib. Bindings for ns-3 should work again now.
  * Add boost dependency for surf++
+ * Add new macro for tests
+   - ADD_TESH(name <tesh_args>)
+   - ADD_TESH_FACTORIES(name "thread;ucontext;raw" <tesh_args>)
 
  -- $date Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
 
