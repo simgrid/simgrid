@@ -161,6 +161,15 @@ typedef enum MPIR_Topo_type {
 typedef ptrdiff_t MPI_Aint;
 typedef long long MPI_Offset;
 
+// To compile code that declare MPI_File variables
+struct s_empty {
+#if !defined(__GNUC__) || defined(__STRICT_ANSI__)
+  char empty;
+#endif
+};
+typedef struct s_empty *MPI_File;
+
+
 struct s_smpi_mpi_datatype;
 typedef struct s_smpi_mpi_datatype *MPI_Datatype;
 
