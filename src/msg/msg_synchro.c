@@ -6,6 +6,7 @@
 
 #include "msg_private.h"
 #include "xbt/sysdep.h"
+#include "xbt/synchro_core.h"
 #include "xbt/log.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_synchro, msg,
@@ -62,6 +63,21 @@ void MSG_sem_destroy(msg_sem_t sem) {
  */
 int MSG_sem_would_block(msg_sem_t sem) {
   return simcall_sem_would_block(sem);
+}
+
+/** @brief Initializes a barrier, with count elements */
+msg_bar_t MSG_barrier_init(unsigned int count) {
+   return (msg_bar_t)xbt_barrier_init(count);
+}
+
+/** @brief Initializes a barrier, with count elements */
+void MSG_barrier_destroy(msg_bar_t bar) {
+  xbt_barrier_destroy((xbt_bar_t)bar);
+}
+
+/** @brief Performs a barrier already initialized */
+void MSG_barrier_wait(msg_bar_t bar) {
+  xbt_barrier_wait((xbt_bar_t)bar);
 }
 
 /**@}*/
