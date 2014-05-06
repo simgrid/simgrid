@@ -48,8 +48,8 @@ SimGrid (3.11) NOT RELEASED; urgency=low
    - migration of a VM from a PM to another PM
  * New function
    - MSG_process_join(msg_process_t process, double timeout)
- * New option "msg/debug_multiple_use" to help debuging when a task is used
-   several times
+ * New option "msg/debug_multiple_use" to help debugging when a task is used
+   several times.
 
  SIMIX:
  * Protect context stacks against stack overflow. The number of protected memory
@@ -63,12 +63,13 @@ SimGrid (3.11) NOT RELEASED; urgency=low
      host_set_data, host_get_data
  * New simcalls
    - simcall_process_join(smx_process_t process, double timeout)
+ * Fix bug where sleeping processing could not be suspended.
 
  SURF:
  * Translate surf models from C to C++
    - Generic classes for all models: Model, Resource, Action
-   - A generic interface for each kind of model (cpu, network, storage
-     workstation, workstationvm)
+   - A generic interface for each kind of model (CPU, Network, Storage
+     Workstation, WorkstationVM)
    - C bindings
  * Translate surf routings from C to C++
  * Add callbacks using sigc++ or boost::signals2
@@ -80,13 +81,13 @@ SimGrid (3.11) NOT RELEASED; urgency=low
  * More documentation
 
  SMPI:
- * hostfiles support host:nb_processes construct to deploy several processes on
-   one node
+ * Hostfiles support host:nb_processes construct to deploy several processes on
+   one node.
  * Collective communication algorithms should not crash if used with
    improper number of nodes and report the error.
 
- TRACING:
- * options defined in xml work
+ Tracing:
+ * Options defined in XML work correctly now.
 
  Java:
  * New cmake option, enable_lib_in_jar, to control whether native libraries are
@@ -95,7 +96,7 @@ SimGrid (3.11) NOT RELEASED; urgency=low
    are kept installed elsewhere.
  * Surf binding with SWIG (code generated in maintainer mode only):
    - plugin to handle callbacks
-   - cpu model only for the moment
+   - CPU model only for the moment
 
  Build System:
  * Supernovae build mode is definitively removed. It was used to improve
