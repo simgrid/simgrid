@@ -10,6 +10,7 @@
 #include "internal_config.h"
 #include "xbt.h"
 #include "xbt/xbt_os_time.h"
+#include "xbt/synchro_core.h"
 #include "simgrid/simix.h"
 #include "smpi/smpi_interface.h"
 #include "smpi/smpi.h"
@@ -143,7 +144,8 @@ double smpi_process_simulated_elapsed(void);
 void smpi_process_set_sampling(int s);
 int smpi_process_get_sampling(void);
 
-MPI_Comm* smpi_deployment_register_process(const char* instance_id, int rank, int index);
+void smpi_deployment_register_process(const char* instance_id, int rank, int index, MPI_Comm**, xbt_bar_t*);
+void smpi_deployment_cleanup_instances(void);
 
 void smpi_comm_copy_buffer_callback(smx_action_t comm,
                                            void *buff, size_t buff_size);
