@@ -19,7 +19,7 @@ void AsClusterFatTree::getRouteAndLatency(RoutingEdgePtr src,
                                           RoutingEdgePtr dst,
                                           sg_platf_route_cbarg_t into,
                                           double *latency) {
-  // TODO
+  
 }
 
 /* This function makes the assumption that parse_specific_arguments() and
@@ -53,8 +53,12 @@ int AsClusterFatTree::connectNodeToParents(sg_platf_cluster_cbarg_t cluster,
   currentParentNode = this->nodes[this->getLevelPosition(level + 1)];
   for (unsigned int i = 0 ; i < this->nodesByLevel[level] ; i++ ) {
     if(this->areRelated(currentParentNode, node)) {
-      this->addLink(cluster, currentParentNode, node->label[level + 1], node,
-                    currentParentNode->label[level + 1]);
+      for (unsigned int j = 0 ; j < this->lowerLevelPortsNumber[level + 1] ; j++) {
+      this->addLink(cluster, currentParentNode, node->label[level + 1] +
+                    j * this->lowerLevelNodesNumber[level + 1], node,
+                    currentParentNode->label[level + 1] +
+                    j * this->upperLevelNodesNumber[level + 1]);
+      }
       connectionsNumber++;
     }
   }
@@ -119,12 +123,15 @@ void AsClusterFatTree::generateSwitches() {
 
   // We create the switches
   int k = 0;
-  for (unsigned int i = 1 ; i < this->levels ; i++) {
+  for (unsigned int i = 0 ; i < this->levels ; i++) {
     for (unsigned int j = 0 ; j < this->nodesByLevel[i] ; j++) {
       FatTreeNode* newNode;
-      newNode = new FatTreeNode(--k, i, j);
-      newNode->children.resize(this->lowerLevelNodesNumber[i]);
-      newNode->parents.resize(this->upperLevelNodesNumber[i]);
+      newNode = new FatTreeNode(--k, i + 1, j);
+      newNode->children.resize(this->lowerLevelNodesNumber[i] *
+                               this->lowerLevelPortsNumber[i]);
+      if (i != this->levels - 1) {
+        newNode->parents.resize(this->upperLevelNodesNumber[i + 1]);
+      }
       this->nodes.push_back(newNode);
     }
   }
@@ -173,8 +180,11 @@ int AsClusterFatTree::getLevelPosition(const unsigned  int level) {
 }
 
 void AsClusterFatTree::addComputeNodes(std::vector<int> const& id) {
+  FatTreeNode* newNode;
   for (size_t  i = 0 ; i < id.size() ; i++) {
-    this->nodes.push_back(new FatTreeNode(id[i]));
+    newNode = new FatTreeNode(id[i], 0, i);
+    newNode->parents.resize(this->upperLevelNodesNumber[0] * this->lowerLevelPortsNumber[i]);
+    this->nodes.push_back(newNode);
   }
 }
 
