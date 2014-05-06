@@ -204,16 +204,21 @@ xbt_bar_t xbt_barrier_init(unsigned int count)
 }
 
 
-void xbt_barrier_wait(xbt_bar_t bar)
+int xbt_barrier_wait(xbt_bar_t bar)
 {
+   int ret=0;
    xbt_mutex_acquire(bar->mutex);
    if (++bar->arrived_processes == bar->expected_processes) {
      xbt_cond_broadcast(bar->cond);
      xbt_mutex_release(bar->mutex);
+     ret=XBT_BARRIER_SERIAL_PROCESS;
+     bar->arrived_processes = 0;
    } else {
      xbt_cond_wait(bar->cond, bar->mutex);
      xbt_mutex_release(bar->mutex);
    }
+
+   return ret;
 }
 
 void xbt_barrier_destroy(xbt_bar_t bar)

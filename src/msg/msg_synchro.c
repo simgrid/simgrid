@@ -76,8 +76,11 @@ void MSG_barrier_destroy(msg_bar_t bar) {
 }
 
 /** @brief Performs a barrier already initialized */
-void MSG_barrier_wait(msg_bar_t bar) {
-  xbt_barrier_wait((xbt_bar_t)bar);
+int MSG_barrier_wait(msg_bar_t bar) {
+  if(xbt_barrier_wait((xbt_bar_t)bar) == XBT_BARRIER_SERIAL_PROCESS)
+    return MSG_BARRIER_SERIAL_PROCESS;
+  else
+    return 0;
 }
 
 /**@}*/

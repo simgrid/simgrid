@@ -421,10 +421,12 @@ XBT_PUBLIC(int) MSG_sem_would_block(msg_sem_t sem);
  *  @ingroup msg_synchro
  *  @hideinitializer
  */
+
+#define MSG_BARRIER_SERIAL_PROCESS -1
 typedef struct s_xbt_bar *msg_bar_t;
 XBT_PUBLIC(msg_bar_t) MSG_barrier_init( unsigned int count);
 XBT_PUBLIC(void) MSG_barrier_destroy(msg_bar_t bar);
-XBT_PUBLIC(void) MSG_barrier_wait(msg_bar_t bar);
+XBT_PUBLIC(int) MSG_barrier_wait(msg_bar_t bar);
 
 /** @brief Opaque type describing a Virtual Machine.
  *  @ingroup msg_VMs
