@@ -702,9 +702,10 @@ static int SIMIX_process_join_finish(smx_process_exit_status_t status, smx_actio
         SIMIX_simcall_answer(simcall);
       }
     }
-
-    SIMIX_process_sleep_destroy(action);
+    surf_action_unref(action->sleep.surf_sleep);
+    action->sleep.surf_sleep = NULL;
   }
+  xbt_mallocator_release(simix_global->action_mallocator, action);
   return 0;
 }
 

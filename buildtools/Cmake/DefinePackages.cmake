@@ -902,6 +902,7 @@ set(DOC_IMG
 set(bin_files
   ${bin_files}
   src/smpi/smpicc.in
+  src/smpi/smpicxx.in
   src/smpi/smpif2c.in
   src/smpi/smpiff.in
   src/smpi/smpif90.in

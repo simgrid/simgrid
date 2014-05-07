@@ -29,6 +29,7 @@ endif()
 if(enable_smpi)
   install(PROGRAMS
     ${CMAKE_BINARY_DIR}/bin/smpicc
+    ${CMAKE_BINARY_DIR}/bin/smpicxx
     ${CMAKE_BINARY_DIR}/bin/smpirun
     DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/)
   if(SMPI_F2C)
@@ -138,6 +139,7 @@ add_custom_target(uninstall
   COMMAND ${CMAKE_COMMAND} -E   remove -f ${CMAKE_INSTALL_PREFIX}/lib/lua/5.1/simgrid*
   COMMAND ${CMAKE_COMMAND} -E	echo "uninstall lib ok"
   COMMAND ${CMAKE_COMMAND} -E	remove -f ${CMAKE_INSTALL_PREFIX}/bin/smpicc
+  COMMAND ${CMAKE_COMMAND} -E	remove -f ${CMAKE_INSTALL_PREFIX}/bin/smpicxx
   COMMAND ${CMAKE_COMMAND} -E	remove -f ${CMAKE_INSTALL_PREFIX}/bin/smpif2c
   COMMAND ${CMAKE_COMMAND} -E	remove -f ${CMAKE_INSTALL_PREFIX}/bin/smpiff
   COMMAND ${CMAKE_COMMAND} -E	remove -f ${CMAKE_INSTALL_PREFIX}/bin/smpif90

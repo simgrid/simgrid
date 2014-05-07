@@ -401,7 +401,7 @@ void routing_AS_begin(sg_platf_AS_cbarg_t AS)
     /* add to the father element list */
     info->setId(current_routing->parseAS(info));
   } else {
-    THROWF(arg_error, 0, "All defined components must be belong to a AS");
+    THROWF(arg_error, 0, "All defined components must belong to a AS");
   }
 
   xbt_lib_set(as_router_lib, info->getName(), ROUTING_ASR_LEVEL,
@@ -1323,6 +1323,32 @@ AS_t surf_AS_get_routing_root() {
 
 const char *surf_AS_get_name(AsPtr as) {
   return as->p_name;
+}
+
+static AsPtr surf_AS_recursive_get_by_name(AsPtr current, const char * name) {
+  xbt_dict_cursor_t cursor = NULL;
+  char *key;
+  AS_t elem;
+  AsPtr tmp = NULL;
+
+  if(!strcmp(current->p_name, name))
+    return current;
+
+  xbt_dict_foreach(current->p_routingSons, cursor, key, elem) {
+    tmp = surf_AS_recursive_get_by_name(elem, name);
+    if(tmp != NULL ) {
+        break;
+    }
+  }
+  return tmp;
+}
+
+
+AsPtr surf_AS_get_by_name(const char * name) {
+  AsPtr as = surf_AS_recursive_get_by_name(routing_platf->p_root, name);
+  if(as == NULL)
+    XBT_WARN("Impossible to find an AS with name %s, please check your input", name);
+  return as;
 }
 
 xbt_dict_t surf_AS_get_routing_sons(AsPtr as) {

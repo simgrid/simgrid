@@ -184,3 +184,47 @@ void xbt_cond_destroy(xbt_cond_t cond)
 {
   simcall_cond_destroy((smx_cond_t) cond);
 }
+
+/***** barrier related functions *****/
+typedef struct s_xbt_bar_ {
+  xbt_mutex_t mutex;
+  xbt_cond_t cond;
+  unsigned int arrived_processes;
+  unsigned int expected_processes;
+} s_xbt_bar_;
+
+xbt_bar_t xbt_barrier_init(unsigned int count)
+{
+  xbt_bar_t bar = xbt_new0(s_xbt_bar_, 1);
+  bar->expected_processes = count;
+  bar->arrived_processes = 0;
+  bar->mutex = xbt_mutex_init();
+  bar->cond = xbt_cond_init();
+  return bar;
+}
+
+
+int xbt_barrier_wait(xbt_bar_t bar)
+{
+   int ret=0;
+   xbt_mutex_acquire(bar->mutex);
+   if (++bar->arrived_processes == bar->expected_processes) {
+     xbt_cond_broadcast(bar->cond);
+     xbt_mutex_release(bar->mutex);
+     ret=XBT_BARRIER_SERIAL_PROCESS;
+     bar->arrived_processes = 0;
+   } else {
+     xbt_cond_wait(bar->cond, bar->mutex);
+     xbt_mutex_release(bar->mutex);
+   }
+
+   return ret;
+}
+
+void xbt_barrier_destroy(xbt_bar_t bar)
+{
+   xbt_mutex_destroy(bar->mutex);
+   xbt_cond_destroy(bar->cond);
+   xbt_free(bar);
+}
+

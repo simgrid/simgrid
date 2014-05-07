@@ -51,7 +51,7 @@ while ( defined( $line = <MAKETEST> ) ) {
     }
     if ( $line =~ /END TESH TESTS/ ) {
         $dump = 0;
-        last;
+        next;
     }
     if ($dump) {
         $line =~ s/^  //;
@@ -175,14 +175,15 @@ while ( defined( $line = <MAKETEST> ) ) {
             }
             close(TESH_FILE);
         }
-        elsif ( $line =~ /^\s*set_tests_properties/ ) {
-            if ( $line =~ /set_tests_properties\(([\S]+)/ ) {
+        elsif ( $line =~ /^\s*SET_TESTS_PROPERTIES/ ) {
+            if ( $line =~ /SET_TESTS_PROPERTIES\(([\S]+)/ ) {
                 my ($name_temp) = ($1);
                 $line =~ s/$name_temp/memcheck-$name_temp-0/g;
                 print $line. "\n";
             }
-        }
-        else {
+        } elsif ( $line =~ /^(\s*)ADD_TEST\((.*)\)/ ) {
+          print "$1ADD_TEST(memcheck-$2)\n";
+        } else {
             print $line. "\n";
         }
     }
