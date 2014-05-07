@@ -7,6 +7,7 @@
 #include <fstream>
 
 
+
 AsClusterFatTree::AsClusterFatTree() : levels(0) {}
 
 AsClusterFatTree::~AsClusterFatTree() {
@@ -16,8 +17,18 @@ AsClusterFatTree::~AsClusterFatTree() {
 }
 
 bool AsClusterFatTree::isInSubTree(FatTreeNode *root, FatTreeNode *node) {
-  // stub
-  return false;
+  for (unsigned int i = 0 ; i < node->level ; i++) {
+    if(root->label[i] != node->label[i]) {
+      return false;
+    }
+  }
+  
+  for (unsigned int i = root->level + 1 ; i < this->levels ; i++) {
+    if(root->label[i] != node->label[i]) {
+      return false;
+    }
+  }
+  return true;
 }
 void AsClusterFatTree::getRouteAndLatency(RoutingEdgePtr src,
                                           RoutingEdgePtr dst,
@@ -43,6 +54,9 @@ void AsClusterFatTree::getRouteAndLatency(RoutingEdgePtr src,
       this->lowerLevelNodesNumber[currentNode->level];
      d = d % k;
      route.push_back(currentNode->parents[d]->upLink);
+     if(latency) {
+       *latency += currentNode->parents[d]->upLink->getLatency();
+     }
      currentNode = currentNode->parents[d]->upNode;
   }
   
@@ -52,10 +66,18 @@ void AsClusterFatTree::getRouteAndLatency(RoutingEdgePtr src,
       if(i % this->lowerLevelNodesNumber[currentNode->level] ==
          destination->label[currentNode->level]) {
         route.push_back(currentNode->children[i]->downLink);
+        if(latency) {
+          *latency += currentNode->children[d]->downLink->getLatency();
+        }
         currentNode = currentNode->children[i]->downNode;
       }
     }
   }
+  
+  for (unsigned int i = 0 ; i < route.size() ; i++) {
+    xbt_dynar_push_as(into->link_list, void*, route[i]);
+  }
+
 }
 
 /* This function makes the assumption that parse_specific_arguments() and
@@ -343,4 +365,3 @@ FatTreeLink::FatTreeLink(sg_platf_cluster_cbarg_t cluster, FatTreeNode *downNode
   uniqueId++;
 
 }
-
