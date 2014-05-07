@@ -30,6 +30,7 @@ bool AsClusterFatTree::isInSubTree(FatTreeNode *root, FatTreeNode *node) {
   }
   return true;
 }
+
 void AsClusterFatTree::getRouteAndLatency(RoutingEdgePtr src,
                                           RoutingEdgePtr dst,
                                           sg_platf_route_cbarg_t into,
@@ -39,7 +40,7 @@ void AsClusterFatTree::getRouteAndLatency(RoutingEdgePtr src,
   source = this->nodes.find(src->getId())->second;
   destination = this->nodes.find(dst->getId())->second;
 
-  int d, k; // as in d-mod-k
+  int d = 0, k = 0; // as in d-mod-k
 
   currentNode = source;
 
