@@ -281,6 +281,32 @@ void TRACE_smpi_computing_out(int rank)
   new_pajePopState (SIMIX_get_clock(), container, type);
 }
 
+void TRACE_smpi_testing_in(int rank, instr_extra_data extra)
+{
+  //do not forget to set the color first, otherwise this will explode
+  if (!TRACE_smpi_is_enabled()) {
+      cleanup_extra_data(extra);
+      return;
+  }
+
+  char str[INSTR_DEFAULT_STR_SIZE];
+  smpi_container(rank, str, INSTR_DEFAULT_STR_SIZE);
+  container_t container = PJ_container_get (str);
+  type_t type = PJ_type_get ("MPI_STATE", container->type);
+  val_t value = PJ_value_get_or_new ("test", NULL, type);
+  new_pajePushStateWithExtra  (SIMIX_get_clock(), container, type, value, (void*)extra);
+}
+
+void TRACE_smpi_testing_out(int rank)
+{
+  if (!TRACE_smpi_is_enabled()) return;
+  char str[INSTR_DEFAULT_STR_SIZE];
+  smpi_container(rank, str, INSTR_DEFAULT_STR_SIZE);
+  container_t container = PJ_container_get (str);
+  type_t type = PJ_type_get ("MPI_STATE", container->type);
+  new_pajePopState (SIMIX_get_clock(), container, type);
+}
+
 void TRACE_smpi_ptp_in(int rank, int src, int dst, const char *operation, instr_extra_data extra)
 {
   if (!TRACE_smpi_is_enabled()) {

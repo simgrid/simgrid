@@ -602,6 +602,8 @@ void TRACE_smpi_collective_out(int rank, int root, const char *operation);
 void TRACE_smpi_computing_init(int rank);
 void TRACE_smpi_computing_out(int rank);
 void TRACE_smpi_computing_in(int rank, instr_extra_data extra);
+void TRACE_smpi_testing_out(int rank);
+void TRACE_smpi_testing_in(int rank, instr_extra_data extra);
 void TRACE_smpi_alloc(void);
 void TRACE_smpi_release(void);
 void TRACE_smpi_ptp_in(int rank, int src, int dst, const char *operation,  instr_extra_data extra);

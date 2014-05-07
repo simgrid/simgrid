@@ -149,6 +149,9 @@ void print_TIPushState(paje_event_t event)
     fprintf(trace_file, "%s irecv %d %d %s\n", process_id, extra->src,
             extra->send_size, extra->datatype1);
     break;
+  case TRACING_TEST:
+    fprintf(trace_file, "%s test\n", process_id);
+    break;
   case TRACING_WAIT:
     fprintf(trace_file, "%s wait\n", process_id);
     break;
