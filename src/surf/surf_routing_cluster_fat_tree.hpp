@@ -23,12 +23,13 @@
 class FatTreeNode;
 class FatTreeLink;
 
+
 class FatTreeNode {
 public:
   int id;
   unsigned int level; // The 0th level represents the leafs of the PGFT
   unsigned int position; // Position in the level
-  std::vector<int> label;
+  std::vector<unsigned int> label;
   /* We can see the sizes sum of the two following vectors as the device 
    * ports number. If we use the notations used in Zahavi's paper, 
    * children.size() = m_level and parents.size() = w_(level+1)
@@ -47,13 +48,11 @@ public:
   /* Links are dependant of the chosen network model, but must implement 
    * NetworkLink
    */
-  NetworkLink* linkUp; // From source to destination
-  NetworkLink* linkDown; // From destination to source
-  /* As it is symetric, it might as well be first / second instead
-   * of source / destination
-   */
-  FatTreeNode *source; 
-  FatTreeNode *destination;
+  NetworkLink *upLink; 
+  NetworkLink *downLink;
+  FatTreeNode *upNode;
+  FatTreeNode *downNode;
+  
 };
 
 class AsClusterFatTree : public AsCluster {
@@ -74,12 +73,12 @@ public:
 protected:
   //description of a PGFT (TODO : better doc)
   unsigned int levels;
-  std::vector<int> lowerLevelNodesNumber; // number of children by node
-  std::vector<int> upperLevelNodesNumber; // number of parents by node
-  std::vector<int> lowerLevelPortsNumber; // ports between each level l and l-1
+  std::vector<unsigned int> lowerLevelNodesNumber; // number of children by node
+  std::vector<unsigned int> upperLevelNodesNumber; // number of parents by node
+  std::vector<unsigned int> lowerLevelPortsNumber; // ports between each level l and l-1
   
-  std::vector<FatTreeNode*> nodes;
-  std::map<std::pair<int,int>, FatTreeLink*> links;
+  std::map<int, FatTreeNode*> nodes;
+  std::vector<FatTreeLink*> links;
   std::vector<unsigned int> nodesByLevel;
 
   void addLink(sg_platf_cluster_cbarg_t cluster, 
@@ -90,5 +89,6 @@ protected:
   void generateSwitches();
   int connectNodeToParents(sg_platf_cluster_cbarg_t cluster, FatTreeNode *node);
   bool areRelated(FatTreeNode *parent, FatTreeNode *child);
+  bool isInSubTree(FatTreeNode *root, FatTreeNode *node);
 };
 #endif
