@@ -29,6 +29,8 @@ SimGrid (3.11) NOT RELEASED; urgency=low
    - examples/java/surfPlugin/surf_plugin.tesh
    - examples/java/reservationSurfPlugin/reservation_surf_plugin.tes
    - examples/java/surfCpuModel/surf_cpu_model.tesh
+ * Add SMPI+MSG example:
+   - examples/smpi/smpi_msg_masterslave/
 
  TeshSuite:
  * Add tests:
@@ -46,10 +48,14 @@ SimGrid (3.11) NOT RELEASED; urgency=low
  * Add virtual machine
    - creation of a VM on a PM
    - migration of a VM from a PM to another PM
- * New function
+ * New functions
    - MSG_process_join(msg_process_t process, double timeout)
+   - msg_bar_t MSG_barrier_init(unsigned int count)
+   - int MSG_barrier_wait(msg_bar_t barrier)
+   - void MSG_barrier_destroy(msg_bar_t barrier)
+   - msg_as_t MSG_environment_as_get_by_name(const char * name)
  * New option "msg/debug_multiple_use" to help debugging when a task is used
-   several times.
+   several times
 
  SIMIX:
  * Protect context stacks against stack overflow. The number of protected memory
@@ -77,7 +83,10 @@ SimGrid (3.11) NOT RELEASED; urgency=low
    - Add callback functions for action state change
    - Handle Energy as a plugin
  * Replace swag by boost::intrusive
- * Add new routing model for torus clusters
+ * Add new routing model for torus clusters 
+   - topology="TORUS" and topo_parameters="ndim1,ndim2,...,ndimn" parameters
+     for cluster tag
+   - see examples/platforms/torus_cluster.xml
  * More documentation
 
  SMPI:
@@ -85,6 +94,20 @@ SimGrid (3.11) NOT RELEASED; urgency=low
    one node.
  * Collective communication algorithms should not crash if used with
    improper number of nodes and report the error.
+ * SMPI now partially supports MPI_Topologies : MPI_Cart_create, MPI_Cart_shift,
+   MPI_Cart_rank, MPI_Cart_get, MPI_Cart_coords, MPI_Cartdim_get, 
+   MPI_Dims_create, MPI_Cart_sub are supported.
+ * New interface to use SMPI programmatically (still depends on MSG for
+   some parts, see examples/smpi/smpi_msg_masterslave) :
+   - SMPI_app_instance_register(const char *name, xbt_main_func_t code, 
+        int num_processes)
+   - SMPI_init()
+   - SMPI_finalize();
+ * Global variables privatization in MPI executables is now performed at runtime
+   with the option smpi/privatize_global_variables (default:no). 
+   Limitations : Linux/BSD only, with mmap enabled. Global variables inside 
+   dynamic libraries loaded by the application are not privatized (static 
+   linking with these libraries is advised in this case)
 
  Tracing:
  * Options defined in XML work correctly now.
@@ -107,6 +130,12 @@ SimGrid (3.11) NOT RELEASED; urgency=low
  * Add new macro for tests
    - ADD_TESH(name <tesh_args>)
    - ADD_TESH_FACTORIES(name "thread;ucontext;raw" <tesh_args>)
+
+ XBT:
+ * New functions
+   - xbt_bar_t XBT_barrier_init(unsigned int count)
+   - int XBT_barrier_wait(xbt_bar_t barrier)
+   - void XBT_barrier_destroy(xbt_bar_t barrier)
 
  -- $date Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
 
