@@ -75,6 +75,7 @@ XBT_PUBLIC(unsigned long int) MSG_get_sent_msg(void);
 /************************** Environment ***********************************/
 XBT_PUBLIC(msg_as_t) MSG_environment_get_routing_root(void);
 XBT_PUBLIC(const char *) MSG_environment_as_get_name(msg_as_t as);
+XBT_PUBLIC(msg_as_t) MSG_environment_as_get_by_name(const char * name);
 XBT_PUBLIC(xbt_dict_t) MSG_environment_as_get_routing_sons(msg_as_t as);
 XBT_PUBLIC(const char *) MSG_environment_as_get_property_value(msg_as_t as, const char *name);
 XBT_PUBLIC(const char *) MSG_environment_as_get_model(msg_as_t as);
@@ -101,8 +102,8 @@ XBT_PUBLIC(msg_error_t) MSG_file_rmove(msg_file_t fd, msg_host_t host, const cha
 /************************** Storage handling ***********************************/
 XBT_PUBLIC(msg_host_t) MSG_get_storage_by_name(const char *name);
 XBT_PUBLIC(const char *) MSG_storage_get_name(msg_storage_t storage);
-XBT_PUBLIC(sg_size_t) MSG_storage_get_free_size(const char* name);
-XBT_PUBLIC(sg_size_t) MSG_storage_get_used_size(const char* name);
+XBT_PUBLIC(sg_size_t) MSG_storage_get_free_size(msg_storage_t storage);
+XBT_PUBLIC(sg_size_t) MSG_storage_get_used_size(msg_storage_t storage);
 XBT_PUBLIC(msg_storage_t) MSG_storage_get_by_name(const char *name);
 XBT_PUBLIC(xbt_dict_t) MSG_storage_get_properties(msg_storage_t storage);
 XBT_PUBLIC(void) MSG_storage_set_property_value(msg_storage_t storage, const char *name, char *value,void_f_pvoid_t free_ctn);
@@ -180,7 +181,6 @@ XBT_PUBLIC(msg_process_t) MSG_process_create_with_environment(const char
                                                             properties);
 XBT_PUBLIC(void) MSG_process_kill(msg_process_t process);
 XBT_PUBLIC(int) MSG_process_killall(int reset_PIDs);
-
 XBT_PUBLIC(msg_error_t) MSG_process_migrate(msg_process_t process, msg_host_t host);
 
 XBT_PUBLIC(void *) MSG_process_get_data(msg_process_t process);
@@ -209,7 +209,7 @@ XBT_PUBLIC(const char *) MSG_process_get_property_value(msg_process_t
 XBT_PUBLIC(msg_error_t) MSG_process_suspend(msg_process_t process);
 XBT_PUBLIC(msg_error_t) MSG_process_resume(msg_process_t process);
 XBT_PUBLIC(int) MSG_process_is_suspended(msg_process_t process);
-XBT_PUBLIC(void) MSG_process_on_exit(int_f_pvoid_t fun, void *data);
+XBT_PUBLIC(void) MSG_process_on_exit(int_f_pvoid_pvoid_t fun, void *data);
 XBT_PUBLIC(void) MSG_process_auto_restart_set(msg_process_t process, int auto_restart);
 
 XBT_PUBLIC(msg_process_t) MSG_process_restart(msg_process_t process);
@@ -250,6 +250,7 @@ XBT_PUBLIC(void) MSG_task_set_priority(msg_task_t task, double priority);
 XBT_PUBLIC(void) MSG_task_set_bound(msg_task_t task, double bound);
 XBT_PUBLIC(void) MSG_task_set_affinity(msg_task_t task, msg_host_t host, unsigned long mask);
 
+XBT_PUBLIC(msg_error_t) MSG_process_join(msg_process_t process, double timeout);
 XBT_PUBLIC(msg_error_t) MSG_process_sleep(double nb_sec);
 
 XBT_PUBLIC(double) MSG_task_get_compute_duration(msg_task_t task);
@@ -353,6 +354,8 @@ XBT_PUBLIC(void) MSG_mailbox_set_async(const char *alias);
 
 /************************** Action handling **********************************/
 XBT_PUBLIC(msg_error_t) MSG_action_trace_run(char *path);
+XBT_PUBLIC(void) MSG_action_init(void);
+XBT_PUBLIC(void) MSG_action_exit(void);
 
 #ifdef MSG_USE_DEPRECATED
 
@@ -413,6 +416,17 @@ XBT_PUBLIC(void) MSG_sem_release(msg_sem_t sem);
 XBT_PUBLIC(void) MSG_sem_get_capacity(msg_sem_t sem);
 XBT_PUBLIC(void) MSG_sem_destroy(msg_sem_t sem);
 XBT_PUBLIC(int) MSG_sem_would_block(msg_sem_t sem);
+
+/** @brief Opaque type representing a barrier identifier
+ *  @ingroup msg_synchro
+ *  @hideinitializer
+ */
+
+#define MSG_BARRIER_SERIAL_PROCESS -1
+typedef struct s_xbt_bar *msg_bar_t;
+XBT_PUBLIC(msg_bar_t) MSG_barrier_init( unsigned int count);
+XBT_PUBLIC(void) MSG_barrier_destroy(msg_bar_t bar);
+XBT_PUBLIC(int) MSG_barrier_wait(msg_bar_t bar);
 
 /** @brief Opaque type describing a Virtual Machine.
  *  @ingroup msg_VMs

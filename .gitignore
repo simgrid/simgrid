@@ -12,6 +12,7 @@
 *.plist
 *.trace
 *.class
+\#*
 
 ################################################
 ### Maintainer mode
@@ -762,22 +763,8 @@ teshsuite/simdag/partask/test_comp_only_par
 teshsuite/simdag/partask/test_comp_only_seq
 teshsuite/xbt/log_large_test
 teshsuite/xbt/parallel_log_crashtest
-testsuite/xbt/parmap_bench
 teshsuite/xbt/mmalloc_test
 teshsuite/xbt/parmap_test
-testsuite/run_tests
-testsuite/simdag/sd_test
-testsuite/surf/lmm_usage
-testsuite/surf/maxmin_bench
-testsuite/surf/surf_usage
-testsuite/surf/surf_usage2
-testsuite/surf/trace_usage
-testsuite/testgraph.dot
-testsuite/testgraph.xml
-testsuite/xbt/context_usage
-testsuite/xbt/graphxml_usage
-testsuite/xbt/heap_bench
-testsuite/xbt/log_usage
 tools/tesh/tesh
 examples/msg/tracing/categories
 examples/msg/tracing/ms

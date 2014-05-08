@@ -34,30 +34,67 @@ int host(int argc, char *argv[])
 {
   msg_file_t file = NULL;
   sg_size_t read,write;
+  msg_storage_t st;
+  const char* st_name;
 
   if(!strcmp(MSG_process_get_name(MSG_process_self()),"0")){
     file = MSG_file_open(FILENAME1, NULL);
     MSG_file_dump(file);
+    st_name = "Disk4";
   } else if(!strcmp(MSG_process_get_name(MSG_process_self()),"1")) {
     file = MSG_file_open(FILENAME2, NULL);
+    st_name = "Disk2";
   } else if(!strcmp(MSG_process_get_name(MSG_process_self()),"2")){
     file = MSG_file_open(FILENAME3, NULL);
-  } else if(!strcmp(MSG_process_get_name(MSG_process_self()),"3"))
+    st_name = "Disk3";
+  } else if(!strcmp(MSG_process_get_name(MSG_process_self()),"3")){
     file = MSG_file_open(FILENAME4, NULL);
+    st_name = "Disk1";
+  }
   else xbt_die("FILENAME NOT DEFINED %s",MSG_process_get_name(MSG_process_self()));
 
   const char* filename = MSG_file_get_name(file);
   XBT_INFO("\tOpen file '%s'",filename);
+  st = MSG_storage_get_by_name(st_name);
 
-  read = MSG_file_read(file, 10000000);     // Read for 10MB
-  XBT_INFO("\tHave read    %llu on %s",read,filename);
+  XBT_INFO("\tCapacity of the storage element '%s' is stored on: %llu / %llu",
+            filename, MSG_storage_get_used_size(st), MSG_storage_get_size(st));
 
-  write = MSG_file_write(file, 100000);  // Write for 100KB
-  XBT_INFO("\tHave written %llu on %s",write,filename);
+  /* Try to read for 10MB */
+  read = MSG_file_read(file, 10000000);
+  XBT_INFO("\tHave read %llu from '%s'",read,filename);
 
-  read = MSG_file_read(file, 110000);     // Read for 110KB
-  XBT_INFO("\tHave read    %llu on %s (of size %llu)",read,filename,
+  /* Write 100KB in file from the current position, i.e, end of file or 10MB */
+  write = MSG_file_write(file, 100000);
+  XBT_INFO("\tHave written %llu in '%s'. Size now is: %llu",write,filename,
+           MSG_file_get_size(file));
+
+
+  XBT_INFO("\tCapacity of the storage element '%s' is stored on: %llu / %llu",
+            filename, MSG_storage_get_used_size(st), MSG_storage_get_size(st));
+
+  /* rewind to the beginning of the file */
+  XBT_INFO("\tComing back to the beginning of the stream for file '%s'",
+           filename);
+  MSG_file_seek(file, 0, SEEK_SET);
+
+  /* Try to read 110KB */
+  read = MSG_file_read(file, 110000);
+  XBT_INFO("\tHave read %llu from '%s' (of size %llu)",read,filename,
       MSG_file_get_size(file));
+
+  /* rewind once again to the beginning of the file */
+  XBT_INFO("\tComing back to the beginning of the stream for file '%s'",
+           filename);
+  MSG_file_seek(file, 0, SEEK_SET);
+
+  /* Write 110KB in file from the current position, i.e, end of file or 10MB */
+  write = MSG_file_write(file, 110000);
+  XBT_INFO("\tHave written %llu in '%s'. Size now is: %llu", write,filename,
+      MSG_file_get_size(file));
+
+  XBT_INFO("\tCapacity of the storage element '%s' is stored on: %llu / %llu",
+            filename, MSG_storage_get_used_size(st), MSG_storage_get_size(st));
 
   XBT_INFO("\tClose file '%s'",filename);
   MSG_file_close(file);

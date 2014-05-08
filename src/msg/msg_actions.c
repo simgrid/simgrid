@@ -15,13 +15,13 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_action, msg,
                                 "MSG actions for trace driven simulation");
 
 
-void _MSG_action_init()
+void MSG_action_init()
 {
   _xbt_replay_action_init();
   MSG_function_register_default(xbt_replay_action_runner);
 }
 
-void _MSG_action_exit()
+void MSG_action_exit()
 {
   _xbt_replay_action_exit();
 }
@@ -44,8 +44,8 @@ msg_error_t MSG_action_trace_run(char *path)
   action_fp=NULL;  
   if (path) {
     action_fp = fopen(path, "r");
-    xbt_assert(action_fp != NULL, "Cannot open %s: %s", path,
-                strerror(errno));
+    if (action_fp == NULL)
+      xbt_die("Cannot open %s: %s", path, strerror(errno));
   }
   res = MSG_main();
 

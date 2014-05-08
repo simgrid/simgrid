@@ -49,6 +49,8 @@ void SIMIX_process_cleanup(smx_process_t process)
   XBT_DEBUG("Cleanup process %s (%p), waiting action %p",
       process->name, process, process->waiting_action);
 
+  SIMIX_process_on_exit_runall(process);
+
   /* cancel non-blocking communications */
   smx_action_t action;
   while ((action = xbt_fifo_pop(process->comms))) {
@@ -101,7 +103,7 @@ void SIMIX_process_cleanup(smx_process_t process)
   process->context->iwannadie = 0;
 }
 
-/** 
+/**
  * Garbage collection
  *
  * Should be called some time to time to free the memory allocated for processes
@@ -253,7 +255,7 @@ void SIMIX_process_create(smx_process_t *process,
     (*process)->data = data;
     (*process)->comms = xbt_fifo_new();
     (*process)->simcall.issuer = *process;
-    
+
      if (parent_process) {
        (*process)->ppid = SIMIX_process_get_PID(parent_process);
      } else {
@@ -359,6 +361,10 @@ void SIMIX_process_kill(smx_process_t process, smx_process_t issuer) {
       break;
 
     case SIMIX_ACTION_SLEEP:
+      SIMIX_process_sleep_destroy(process->waiting_action);
+      break;
+
+    case SIMIX_ACTION_JOIN:
       SIMIX_process_sleep_destroy(process->waiting_action);
       break;
 
@@ -518,7 +524,7 @@ void SIMIX_process_resume(smx_process_t process, smx_process_t issuer)
 
       switch (process->waiting_action->type) {
 
-        case SIMIX_ACTION_EXECUTE:          
+        case SIMIX_ACTION_EXECUTE:
         case SIMIX_ACTION_PARALLEL_EXECUTE:
           SIMIX_host_execution_resume(process->waiting_action);
           break;
@@ -581,7 +587,7 @@ int SIMIX_process_get_PPID(smx_process_t self){
 }
 
 void* SIMIX_pre_process_self_get_data(smx_simcall_t simcall, smx_process_t self){
-  return SIMIX_process_self_get_data(self);	
+  return SIMIX_process_self_get_data(self);
 }
 
 void* SIMIX_process_self_get_data(smx_process_t self)
@@ -673,6 +679,44 @@ xbt_dict_t SIMIX_process_get_properties(smx_process_t process)
   return process->properties;
 }
 
+void SIMIX_pre_process_join(smx_simcall_t simcall, smx_process_t process, double timeout)
+{
+  smx_action_t action = SIMIX_process_join(simcall->issuer, process, timeout);
+  xbt_fifo_push(action->simcalls, simcall);
+  simcall->issuer->waiting_action = action;
+}
+
+static int SIMIX_process_join_finish(smx_process_exit_status_t status, smx_action_t action){
+  if (action->sleep.surf_sleep) {
+    surf_action_cancel(action->sleep.surf_sleep);
+
+    smx_simcall_t simcall;
+    while ((simcall = xbt_fifo_shift(action->simcalls))) {
+      simcall_process_sleep__set__result(simcall, SIMIX_DONE);
+      simcall->issuer->waiting_action = NULL;
+      if (simcall->issuer->suspended) {
+        XBT_DEBUG("Wait! This process is suspended and can't wake up now.");
+        simcall->issuer->suspended = 0;
+        SIMIX_pre_process_suspend(simcall, simcall->issuer);
+      } else {
+        SIMIX_simcall_answer(simcall);
+      }
+    }
+    surf_action_unref(action->sleep.surf_sleep);
+    action->sleep.surf_sleep = NULL;
+  }
+  xbt_mallocator_release(simix_global->action_mallocator, action);
+  return 0;
+}
+
+smx_action_t SIMIX_process_join(smx_process_t issuer, smx_process_t process, double timeout)
+{
+  smx_action_t res = SIMIX_process_sleep(issuer, timeout);
+  res->type = SIMIX_ACTION_JOIN;
+  SIMIX_process_on_exit(process, (int_f_pvoid_pvoid_t)SIMIX_process_join_finish, res);
+  return res;
+}
+
 void SIMIX_pre_process_sleep(smx_simcall_t simcall, double duration)
 {
   if (MC_is_active()) {
@@ -718,7 +762,7 @@ void SIMIX_post_process_sleep(smx_action_t action)
 {
   smx_simcall_t simcall;
   e_smx_state_t state;
-  xbt_assert(action->type == SIMIX_ACTION_SLEEP);
+  xbt_assert(action->type == SIMIX_ACTION_SLEEP || action->type == SIMIX_ACTION_JOIN);
 
   while ((simcall = xbt_fifo_shift(action->simcalls))) {
 
@@ -757,11 +801,14 @@ void SIMIX_post_process_sleep(smx_action_t action)
 void SIMIX_process_sleep_destroy(smx_action_t action)
 {
   XBT_DEBUG("Destroy action %p", action);
-  xbt_assert(action->type == SIMIX_ACTION_SLEEP);
+  xbt_assert(action->type == SIMIX_ACTION_SLEEP || action->type == SIMIX_ACTION_JOIN);
 
-  if (action->sleep.surf_sleep)
+  if (action->sleep.surf_sleep) {
     surf_action_unref(action->sleep.surf_sleep);
-  xbt_mallocator_release(simix_global->action_mallocator, action);
+    action->sleep.surf_sleep = NULL;
+  }
+  if (action->type == SIMIX_ACTION_SLEEP)
+    xbt_mallocator_release(simix_global->action_mallocator, action);
 }
 
 void SIMIX_process_sleep_suspend(smx_action_t action)
@@ -777,7 +824,7 @@ void SIMIX_process_sleep_resume(smx_action_t action)
   surf_action_resume(action->sleep.surf_sleep);
 }
 
-/** 
+/**
  * \brief Calling this function makes the process to yield.
  *
  * Only the current process can call this function, giving back the control to
@@ -876,19 +923,20 @@ xbt_dynar_t SIMIX_processes_as_dynar(void) {
 
 void SIMIX_process_on_exit_runall(smx_process_t process) {
   s_smx_process_exit_fun_t exit_fun;
-
+  smx_process_exit_status_t exit_status = (process->context->iwannadie) ?
+                                         SMX_EXIT_FAILURE : SMX_EXIT_SUCCESS;
   while (!xbt_dynar_is_empty(process->on_exit)) {
     exit_fun = xbt_dynar_pop_as(process->on_exit,s_smx_process_exit_fun_t);
-    (exit_fun.fun)(exit_fun.arg);
+    (exit_fun.fun)((void*)exit_status, exit_fun.arg);
   }
 }
 
 void SIMIX_pre_process_on_exit(smx_simcall_t simcall, smx_process_t process,
-	                       int_f_pvoid_t fun, void *data) {
+	                       int_f_pvoid_pvoid_t fun, void *data) {
   SIMIX_process_on_exit(process, fun, data);
 }
 
-void SIMIX_process_on_exit(smx_process_t process, int_f_pvoid_t fun, void *data) {
+void SIMIX_process_on_exit(smx_process_t process, int_f_pvoid_pvoid_t fun, void *data) {
   xbt_assert(process, "current process not found: are you in maestro context ?");
 
   if (!process->on_exit) {
@@ -902,7 +950,7 @@ void SIMIX_process_on_exit(smx_process_t process, int_f_pvoid_t fun, void *data)
 
 void SIMIX_pre_process_auto_restart_set(smx_simcall_t simcall, smx_process_t process,
 		                        int auto_restart) {
-  SIMIX_process_auto_restart_set(process, auto_restart);	
+  SIMIX_process_auto_restart_set(process, auto_restart);
 }
 /**
  * \brief Sets the auto-restart status of the process.
@@ -914,7 +962,7 @@ void SIMIX_process_auto_restart_set(smx_process_t process, int auto_restart) {
 }
 
 smx_process_t SIMIX_pre_process_restart(smx_simcall_t simcall, smx_process_t process) {
-  return SIMIX_process_restart(process, simcall->issuer);	
+  return SIMIX_process_restart(process, simcall->issuer);
 }
 /**
  * \brief Restart a process.

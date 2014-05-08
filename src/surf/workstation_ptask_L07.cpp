@@ -287,19 +287,22 @@ xbt_dynar_t WorkstationL07Model::getRoute(WorkstationPtr src, WorkstationPtr dst
   return route;
 }
 
-ResourcePtr CpuL07Model::createResource(const char *name, double power_scale,
-                               double power_initial,
-                               tmgr_trace_t power_trace,
-                               e_surf_resource_state_t state_initial,
-                               tmgr_trace_t state_trace,
-                               xbt_dict_t cpu_properties)
+CpuPtr CpuL07Model::createResource(const char *name,  xbt_dynar_t powerPeak,
+                          int pstate, double power_scale,
+                          tmgr_trace_t power_trace, int core,
+                          e_surf_resource_state_t state_initial,
+                          tmgr_trace_t state_trace,
+                          xbt_dict_t cpu_properties)
 {
+  double power_initial = xbt_dynar_get_as(powerPeak, pstate, double);
+
   xbt_assert(!surf_workstation_resource_priv(surf_workstation_resource_by_name(name)),
               "Host '%s' declared several times in the platform file.",
               name);
 
   CpuL07Ptr cpu = new CpuL07(this, name, cpu_properties,
-		                     power_scale, power_initial, power_trace,state_initial, state_trace);
+		                     power_initial, power_scale, power_trace,
+                         core, state_initial, state_trace);
 
   xbt_lib_set(host_lib, name, SURF_CPU_LEVEL, static_cast<ResourcePtr>(cpu));
 
@@ -357,7 +360,7 @@ void WorkstationL07Model::addTraces()
     xbt_assert(host, "Host %s undefined", elm);
     xbt_assert(trace, "Trace %s undefined", trace_name);
 
-    host->p_power.event = tmgr_history_add_trace(history, trace, 0.0, 0, static_cast<ResourcePtr>(host));
+    host->p_powerEvent = tmgr_history_add_trace(history, trace, 0.0, 0, static_cast<ResourcePtr>(host));
   }
 
   /* Connect traces relative to network */
@@ -425,21 +428,18 @@ double WorkstationL07::getConsumedEnergy()
 }
 
 CpuL07::CpuL07(CpuL07ModelPtr model, const char* name, xbt_dict_t props,
-	           double power_scale,
-		       double power_initial, tmgr_trace_t power_trace,
-		       e_surf_resource_state_t state_initial, tmgr_trace_t state_trace)
+	             double power_initial, double power_scale, tmgr_trace_t power_trace,
+		           int core, e_surf_resource_state_t state_initial, tmgr_trace_t state_trace)
  : Cpu(model, name, props, lmm_constraint_new(ptask_maxmin_system, this, power_initial * power_scale),
-	   1, 0, 0)
+	   core, power_initial, power_scale)
 {
-  p_power.scale = power_scale;
-  xbt_assert(p_power.scale > 0, "Power has to be >0");
+  xbt_assert(m_powerScale > 0, "Power has to be >0");
 
-  m_powerCurrent = power_initial;
   if (power_trace)
-    p_power.event = tmgr_history_add_trace(history, power_trace, 0.0, 0,
+    p_powerEvent = tmgr_history_add_trace(history, power_trace, 0.0, 0,
                                            static_cast<ResourcePtr>(this));
   else
-    p_power.event = NULL;
+    p_powerEvent = NULL;
 
   setState(state_initial);
   if (state_trace)
@@ -480,11 +480,11 @@ bool LinkL07::isUsed(){
 
 void CpuL07::updateState(tmgr_trace_event_t event_type, double value, double /*date*/){
   XBT_DEBUG("Updating cpu %s (%p) with value %g", getName(), this, value);
-  if (event_type == p_power.event) {
-	m_powerCurrent = value;
-    lmm_update_constraint_bound(ptask_maxmin_system, getConstraint(), m_powerCurrent * p_power.scale);
+  if (event_type == p_powerEvent) {
+	  m_powerScale = value;
+    lmm_update_constraint_bound(ptask_maxmin_system, getConstraint(), m_powerPeak * m_powerScale);
     if (tmgr_trace_event_free(event_type))
-      p_power.event = NULL;
+      p_powerEvent = NULL;
   } else if (event_type == p_stateEvent) {
     if (value > 0)
       setState(SURF_RESOURCE_ON);
@@ -526,16 +526,6 @@ void LinkL07::updateState(tmgr_trace_event_t event_type, double value, double da
 e_surf_resource_state_t WorkstationL07::getState()
 {
   return p_cpu->getState();
-}
-
-double CpuL07::getSpeed(double load)
-{
-  return load * p_power.scale;
-}
-
-double CpuL07::getAvailableSpeed()
-{
-  return m_powerCurrent;
 }
 
 ActionPtr WorkstationL07::execute(double size)
@@ -749,21 +739,6 @@ static void ptask_parse_workstation_init(sg_platf_host_cbarg_t host)
       host->properties);
 }
 
-static void ptask_parse_cpu_init(sg_platf_host_cbarg_t host)
-{
-  double power_peak = xbt_dynar_get_as(host->power_peak, host->pstate, double);
-  static_cast<CpuL07ModelPtr>(surf_cpu_model_pm)->createResource(
-      host->id,
-      power_peak,
-      host->power_scale,
-      host->power_trace,
-      host->initial_state,
-      host->state_trace,
-      host->properties);
-}
-
-
-
 static void ptask_parse_link_init(sg_platf_link_cbarg_t link)
 {
   if (link->policy == SURF_LINK_FULLDUPLEX) {
@@ -813,7 +788,7 @@ static void ptask_add_traces(){
 
 static void ptask_define_callbacks()
 {
-  sg_platf_host_add_cb(ptask_parse_cpu_init);
+  sg_platf_host_add_cb(parse_cpu_init);
   sg_platf_host_add_cb(ptask_parse_workstation_init);
   sg_platf_link_add_cb(ptask_parse_link_init);
   sg_platf_postparse_add_cb(ptask_add_traces);

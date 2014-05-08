@@ -116,7 +116,7 @@ int main(int argc, char **argv)
   if (parse_cmdline(&timings, &downgrade, &platformFile, argc, argv) || !platformFile) {
     xbt_die("Invalid command line arguments: expected [--timings|--downgrade] platformFile");
   }
- 
+
   XBT_DEBUG("%d,%d,%s", timings, downgrade, platformFile);
 
   if (downgrade) {
@@ -148,7 +148,7 @@ int main(int argc, char **argv)
           SD_workstation_get_power(hosts[i]));
       props = SD_workstation_get_properties(hosts[i]);
       if (SD_workstation_get_cores(hosts[i])>1) {
-        printf(" cores=\"%d\"", SD_workstation_get_cores(hosts[i]));
+        printf(" core=\"%d\"", SD_workstation_get_cores(hosts[i]));
       }
       if (props && !xbt_dict_is_empty(props)) {
         printf(">\n");

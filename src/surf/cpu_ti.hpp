@@ -50,7 +50,7 @@ private:
 };
 
 enum trace_type {
-  
+
   TRACE_FIXED,                /*< Trace fixed, no availability file */
   TRACE_DYNAMIC               /*< Dynamic, availability file disponible */
 };
@@ -86,7 +86,7 @@ public:
   ~CpuTiModel();
 
   void parseInit(sg_platf_host_cbarg_t host);
-  CpuTiPtr createResource(const char *name,  xbt_dynar_t powerPeak,
+  CpuPtr createResource(const char *name,  xbt_dynar_t powerPeak,
                           int pstate, double power_scale,
                           tmgr_trace_t power_trace, int core,
                           e_surf_resource_state_t state_initial,
@@ -121,7 +121,7 @@ public:
 	xbt_dict_t properties) ;
   ~CpuTi();
 
-  void updateState(tmgr_trace_event_t event_type, double value, double date);  
+  void updateState(tmgr_trace_event_t event_type, double value, double date);
   void updateActionsFinishTime(double now);
   bool isUsed();
   void printCpuTiModel();

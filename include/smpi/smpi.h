@@ -7,6 +7,7 @@
 #ifndef SMPI_H
 #define SMPI_H
 
+#include <unistd.h>
 #include <stddef.h>
 #include <sys/time.h>
 #include <xbt/misc.h>
@@ -64,6 +65,9 @@ SG_BEGIN_DECL()
 #define MPI_ERR_PENDING   14
 #define MPI_ERR_BUFFER    15
 #define MPI_ERR_NAME      16
+#define MPI_ERR_DIMS      17
+#define MPI_ERR_TOPOLOGY  18
+#define MPI_ERR_NO_MEM    19
 #define MPI_ERRCODES_IGNORE (int *)0
 #define MPI_IDENT     0
 #define MPI_SIMILAR   1
@@ -99,6 +103,11 @@ SG_BEGIN_DECL()
 #define MPI_INTEGER8 MPI_DATATYPE_NULL
 #define MPI_COMPLEX MPI_DATATYPE_NULL
 #define MPI_DOUBLE_COMPLEX MPI_DATATYPE_NULL
+#define MPI_2DOUBLE_PRECISION MPI_DATATYPE_NULL
+#define MPI_REAL MPI_DATATYPE_NULL
+#define MPI_LOGICAL MPI_DATATYPE_NULL
+#define MPI_DOUBLE_PRECISION MPI_DATATYPE_NULL
+#define MPI_INTEGER MPI_DATATYPE_NULL
 
 #define MPI_DISTRIBUTE_BLOCK 0
 #define MPI_DISTRIBUTE_NONE 1
@@ -152,6 +161,15 @@ typedef enum MPIR_Topo_type {
 
 typedef ptrdiff_t MPI_Aint;
 typedef long long MPI_Offset;
+
+// To compile code that declare MPI_File variables
+struct s_empty {
+#if !defined(__GNUC__) || defined(__STRICT_ANSI__)
+  char empty;
+#endif
+};
+typedef struct s_empty *MPI_File;
+
 
 struct s_smpi_mpi_datatype;
 typedef struct s_smpi_mpi_datatype *MPI_Datatype;
@@ -233,6 +251,9 @@ XBT_PUBLIC_DATA( MPI_Op ) MPI_BAND;
 XBT_PUBLIC_DATA( MPI_Op ) MPI_BOR;
 XBT_PUBLIC_DATA( MPI_Op ) MPI_BXOR;
 
+struct s_smpi_mpi_topology;
+typedef struct s_smpi_mpi_topology *MPI_Topology;
+                          
 struct s_smpi_mpi_group;
 typedef struct s_smpi_mpi_group *MPI_Group;
 
@@ -688,8 +709,9 @@ XBT_PUBLIC(int) smpi_get_host_nb_pstates(void);
 XBT_PUBLIC(void) smpi_set_host_power_peak_at(int pstate_index);
 XBT_PUBLIC(double) smpi_get_host_consumed_energy(void);
 
+XBT_PUBLIC(int) smpi_usleep(useconds_t usecs);
 XBT_PUBLIC(unsigned int) smpi_sleep(unsigned int secs);
-XBT_PUBLIC(int) smpi_gettimeofday(struct timeval *tv);
+XBT_PUBLIC(int) smpi_gettimeofday(struct timeval *tv, void* tz);
 XBT_PUBLIC(unsigned long long) smpi_rastro_resolution (void);
 XBT_PUBLIC(unsigned long long) smpi_rastro_timestamp (void);
 XBT_PUBLIC(void) smpi_sample_1(int global, const char *file, int line,
@@ -735,6 +757,13 @@ XBT_PUBLIC(void) smpi_process_init(int *argc, char ***argv);
 XBT_PUBLIC(void) smpi_replay_init(int *argc, char***argv);
 XBT_PUBLIC(void) smpi_action_trace_run(char *);
 XBT_PUBLIC(int) smpi_replay_finalize(void);
+
+XBT_PUBLIC(void) SMPI_app_instance_register(const char *name, xbt_main_func_t code, int num_processes);
+XBT_PUBLIC(void) SMPI_init(void);
+XBT_PUBLIC(void) SMPI_finalize(void);
+
+
+
 
 SG_END_DECL()
 #endif

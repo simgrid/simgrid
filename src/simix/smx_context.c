@@ -124,7 +124,21 @@ void *SIMIX_context_stack_new(void)
 {
   void *stack;
 
+  /* FIXME: current code for stack overflow protection assumes that stacks are
+   * growing downward (PTH_STACKGROWTH == -1).  Protected pages need to be put
+   * after the stack when PTH_STACKGROWTH == 1. */
+
   if (smx_context_guard_size > 0 && !MC_is_active()) {
+
+#if defined(_XBT_WIN32) || (PTH_STACKGROWTH != -1)
+    static int warned_once = 0;
+    if (!warned_once) {
+      XBT_WARN("Stack overflow protection is known to be broken on your system.  Either you're on Windows or PTH_STACKGROWTH != -1 (current value is %d).",
+               PTH_STACKGROWTH);
+      warned_once = 1;
+    }
+#endif
+
     size_t size = smx_context_stack_size + smx_context_guard_size;
 #ifdef HAVE_MC
     /* Cannot use posix_memalign when HAVE_MC. Align stack by hand, and save the
@@ -132,14 +146,14 @@ void *SIMIX_context_stack_new(void)
     char *alloc = xbt_malloc0(size + xbt_pagesize);
     stack = alloc - ((uintptr_t)alloc & (xbt_pagesize - 1)) + xbt_pagesize;
     *((void **)stack - 1) = alloc;
-#elif !defined(WIN32)
+#elif !defined(_XBT_WIN32)
     if (posix_memalign(&stack, xbt_pagesize, size) != 0)
       xbt_die("Failed to allocate stack.");
 #else
-	stack = _aligned_malloc(size, xbt_pagesize);
+    stack = _aligned_malloc(size, xbt_pagesize);
 #endif
 
-#ifndef WIN32
+#ifndef _XBT_WIN32
     if (mprotect(stack, smx_context_guard_size, PROT_NONE) == -1) {
       XBT_WARN("Failed to protect stack: %s", strerror(errno));
       /* That's not fatal, pursue anyway. */

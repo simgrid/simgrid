@@ -33,7 +33,7 @@ if(WIN32)
   exec_program("java -d32 -version"
                 OUTPUT_VARIABLE IS_32_BITS_JVM)
   STRING( FIND ${IS_32_BITS_JVM} "Error" POSITION )
-  if(${POSITION} GREATER -1) 
+  if(${POSITION} GREATER -1)
     message(FATAL_ERROR "Java JVM needs to be 32 bits to be able to run with Simgrid on Windows for now")
   endif()
 
@@ -113,15 +113,39 @@ add_custom_command(
   )
 add_custom_target(simgrid-java_jar ALL DEPENDS ${SIMGRID_JAR}_finalized)
 
-set(CMAKE_SWIG_FLAGS "-package" "org.simgrid.surf")
-set(CMAKE_SWIG_OUTDIR "${CMAKE_HOME_DIRECTORY}/src/bindings/java/org/simgrid/surf")
-set(CMAKE_SWIG_OUTDIR "${CMAKE_BINARY_DIR}/src/bindings/java/org/simgrid/surf")
 
-set_source_files_properties(${JSURF_SWIG_SRC} PROPERTIES CPLUSPLUS 1)
-#set_source_files_properties(${SURF_SWIG_FILE} PROPERTIES SWIG_FLAGS "-includeall")
-include_directories(${JNI_INCLUDE_DIRS})
-swig_add_module(surf-java java ${JSURF_SWIG_SRC} ${JSURF_JAVA_C_SRC})
-swig_link_libraries(surf-java simgrid)
+if(enable_maintainer_mode)
+  set(CMAKE_SWIG_FLAGS "-package" "org.simgrid.surf")
+  set(CMAKE_SWIG_OUTDIR "${CMAKE_HOME_DIRECTORY}/src/bindings/java/org/simgrid/surf")
+
+  set_source_files_properties(${JSURF_SWIG_SRC} PROPERTIES CPLUSPLUS 1)
+  include_directories(${JNI_INCLUDE_DIRS})
+  swig_add_module(surf-java java ${JSURF_SWIG_SRC} ${JSURF_JAVA_C_SRC})
+
+  add_custom_command(TARGET surf-java POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_BINARY_DIR}/src/bindings/java/surfJAVA_wrap.cxx" "${CMAKE_HOME_DIRECTORY}/src/bindings/java/surfJAVA_wrap.cxx"
+    COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_BINARY_DIR}/src/bindings/java/surfJAVA_wrap.h" "${CMAKE_HOME_DIRECTORY}/src/bindings/java/surfJAVA_wrap.h"
+  )
+
+  swig_link_libraries(surf-java simgrid)
+else()
+  add_library(surf-java SHARED
+    ${JSURF_C_SRC})
+  target_link_libraries(surf-java simgrid)
+  set_source_files_properties("${CMAKE_HOME_DIRECTORY}/src/bindings/java/surfJAVA_wrap.cxx"
+    PROPERTIES COMPILE_FLAGS "-fPIC -I\"${JAVA_INCLUDE_PATH}\" -I\"${JAVA_INCLUDE_PATH2}\""
+  )
+endif()
 
 add_dependencies(simgrid-java surf-java)
 add_dependencies(simgrid-java_pre_jar surf-java)
+
+if(WIN32)
+  set_target_properties(surf-java PROPERTIES
+    LINK_FLAGS "-Wl,--subsystem,windows,--kill-at"
+    PREFIX "")
+  if(PEXPORTS_PATH)
+    add_custom_command(TARGET surf-java POST_BUILD
+      COMMAND ${PEXPORTS_PATH}/pexports.exe ${CMAKE_BINARY_DIR}/lib/surf-java.dll > ${CMAKE_BINARY_DIR}/lib/surf-java.def)
+  endif(PEXPORTS_PATH)
+endif()

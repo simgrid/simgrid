@@ -58,13 +58,13 @@ msg_mailbox_t MSG_mailbox_get_by_alias(const char *alias)
 /** \ingroup msg_mailbox_management
  * \brief Set the mailbox to receive in asynchronous mode
  *
- * All messages sent to this mailbox will be transferred to 
- * the receiver without waiting for the receive call. 
+ * All messages sent to this mailbox will be transferred to
+ * the receiver without waiting for the receive call.
  * The receive call will still be necessary to use the received data.
- * If there is a need to receive some messages asynchronously, and some not, 
+ * If there is a need to receive some messages asynchronously, and some not,
  * two different mailboxes should be used.
  *
- * \param alias The name of the mailbox 
+ * \param alias The name of the mailbox
  */
 void MSG_mailbox_set_async(const char *alias){
   msg_mailbox_t mailbox = MSG_mailbox_get_by_alias(alias);
@@ -130,9 +130,11 @@ MSG_mailbox_get_task_ext_bounded(msg_mailbox_t mailbox, msg_task_t * task,
 
   /* Try to receive it by calling SIMIX network layer */
   TRY {
-    simcall_comm_recv(mailbox, task, NULL, NULL, NULL, timeout, rate);
+    simcall_comm_recv(mailbox, task, NULL, NULL, NULL, NULL, timeout, rate);
     XBT_DEBUG("Got task %s from %p",(*task)->name,mailbox);
-    (*task)->simdata->isused=0;
+    if (msg_global->debug_multiple_use && (*task)->simdata->isused!=0)
+      xbt_ex_free(*(xbt_ex_t*)(*task)->simdata->isused);
+    (*task)->simdata->isused = 0;
   }
   CATCH(e) {
     switch (e.category) {
@@ -180,10 +182,22 @@ MSG_mailbox_put_with_timeout(msg_mailbox_t mailbox, msg_task_t task,
   t_simdata->sender = process;
   t_simdata->source = ((simdata_process_t) SIMIX_process_self_get_data(process))->m_host;
 
-  xbt_assert(t_simdata->isused == 0,
-              "This task is still being used somewhere else. You cannot send it now. Go fix your code!");
+  if (t_simdata->isused != 0) {
+    if (msg_global->debug_multiple_use){
+      XBT_ERROR("This task is already used in there:");
+      xbt_backtrace_display(t_simdata->isused);
+      XBT_ERROR("And you try to reuse it from here:");
+      xbt_backtrace_display_current();
+    } else {
+      xbt_assert(t_simdata->isused == 0,
+                 "This task is still being used somewhere else. You cannot send it now. Go fix your code! (use --cfg=msg/debug_multiple_use:on to get the backtrace of the other process)");
+    }
+  }
 
-  t_simdata->isused=1;
+  if (msg_global->debug_multiple_use)
+    MSG_BT(t_simdata->isused, "Using Backtrace");
+  else
+    t_simdata->isused = (void*)1;
   t_simdata->comm = NULL;
   msg_global->sent_msg++;
 
@@ -195,7 +209,7 @@ MSG_mailbox_put_with_timeout(msg_mailbox_t mailbox, msg_task_t task,
     smx_action_t comm = NULL; /* MC needs the comm to be set to NULL during the simix call  */
     comm = simcall_comm_isend(mailbox, t_simdata->message_size,
                                   t_simdata->rate, task, sizeof(void *),
-                                  NULL, NULL, task, 0);
+                                  NULL, NULL, NULL, task, 0);
 #ifdef HAVE_TRACING
     if (TRACE_is_enabled()) {
       simcall_set_category(comm, task->category);
@@ -222,6 +236,8 @@ MSG_mailbox_put_with_timeout(msg_mailbox_t mailbox, msg_task_t task,
     xbt_ex_free(e);
 
     /* If the send failed, it is not used anymore */
+    if (msg_global->debug_multiple_use && t_simdata->isused!=0)
+      xbt_ex_free(*(xbt_ex_t*)t_simdata->isused);
     t_simdata->isused = 0;
   }
 

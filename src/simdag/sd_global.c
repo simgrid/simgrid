@@ -84,10 +84,6 @@ void SD_init(int *argc, char **argv)
   xbt_cfg_setdefault_string(_sg_cfg_set, "workstation/model",
                             "ptask_L07");
 
-#ifdef HAVE_TRACING
-  TRACE_start ();
-#endif
-
 #ifdef HAVE_JEDULE
   jedule_sd_init();
 #endif

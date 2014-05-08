@@ -54,6 +54,9 @@
         save myindex
         data myindex /0/
 
+        if (.false.) then
+           qsmaller = qsmaller
+        endif
         comm = MPI_COMM_NULL
         if (myindex .eq. 0) then
            comm = MPI_COMM_WORLD

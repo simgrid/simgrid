@@ -293,12 +293,16 @@ case SIMCALL_PROCESS_GET_PROPERTIES:
       SIMIX_simcall_answer(simcall);
       break;  
 
+case SIMCALL_PROCESS_JOIN:
+       SIMIX_pre_process_join(simcall , (smx_process_t) simcall->args[0].dp,  simcall->args[1].d);
+       break;  
+
 case SIMCALL_PROCESS_SLEEP:
        SIMIX_pre_process_sleep(simcall ,  simcall->args[0].d);
        break;  
 
 case SIMCALL_PROCESS_ON_EXIT:
-       SIMIX_pre_process_on_exit(simcall , (smx_process_t) simcall->args[0].dp, (int_f_pvoid_t) simcall->args[1].fp,  simcall->args[2].dp);
+       SIMIX_pre_process_on_exit(simcall , (smx_process_t) simcall->args[0].dp, (int_f_pvoid_pvoid_t) simcall->args[1].fp,  simcall->args[2].dp);
       SIMIX_simcall_answer(simcall);
       break;  
 
@@ -348,20 +352,20 @@ case SIMCALL_COMM_IPROBE:
       break;  
 
 case SIMCALL_COMM_SEND:
-       SIMIX_pre_comm_send(simcall , (smx_rdv_t) simcall->args[0].dp,  simcall->args[1].d,  simcall->args[2].d,  simcall->args[3].dp,  simcall->args[4].sz, (simix_match_func_t) simcall->args[5].fp,  simcall->args[6].dp,  simcall->args[7].d);
+       SIMIX_pre_comm_send(simcall , (smx_rdv_t) simcall->args[0].dp,  simcall->args[1].d,  simcall->args[2].d,  simcall->args[3].dp,  simcall->args[4].sz, (simix_match_func_t) simcall->args[5].fp, (simix_copy_data_func_t) simcall->args[6].fp,  simcall->args[7].dp,  simcall->args[8].d);
        break;  
 
 case SIMCALL_COMM_ISEND:
-      simcall->result.dp = SIMIX_pre_comm_isend(simcall , (smx_rdv_t) simcall->args[0].dp,  simcall->args[1].d,  simcall->args[2].d,  simcall->args[3].dp,  simcall->args[4].sz, (simix_match_func_t) simcall->args[5].fp, (simix_clean_func_t) simcall->args[6].fp,  simcall->args[7].dp,  simcall->args[8].i);
+      simcall->result.dp = SIMIX_pre_comm_isend(simcall , (smx_rdv_t) simcall->args[0].dp,  simcall->args[1].d,  simcall->args[2].d,  simcall->args[3].dp,  simcall->args[4].sz, (simix_match_func_t) simcall->args[5].fp, (simix_clean_func_t) simcall->args[6].fp, (simix_copy_data_func_t) simcall->args[7].fp,  simcall->args[8].dp,  simcall->args[9].i);
       SIMIX_simcall_answer(simcall);
       break;  
 
 case SIMCALL_COMM_RECV:
-       SIMIX_pre_comm_recv(simcall , (smx_rdv_t) simcall->args[0].dp,  simcall->args[1].dp, (size_t*) simcall->args[2].dp, (simix_match_func_t) simcall->args[3].fp,  simcall->args[4].dp,  simcall->args[5].d,  simcall->args[6].d);
+       SIMIX_pre_comm_recv(simcall , (smx_rdv_t) simcall->args[0].dp,  simcall->args[1].dp, (size_t*) simcall->args[2].dp, (simix_match_func_t) simcall->args[3].fp, (simix_copy_data_func_t) simcall->args[4].fp,  simcall->args[5].dp,  simcall->args[6].d,  simcall->args[7].d);
        break;  
 
 case SIMCALL_COMM_IRECV:
-      simcall->result.dp = SIMIX_pre_comm_irecv(simcall , (smx_rdv_t) simcall->args[0].dp,  simcall->args[1].dp, (size_t*) simcall->args[2].dp, (simix_match_func_t) simcall->args[3].fp,  simcall->args[4].dp,  simcall->args[5].d);
+      simcall->result.dp = SIMIX_pre_comm_irecv(simcall , (smx_rdv_t) simcall->args[0].dp,  simcall->args[1].dp, (size_t*) simcall->args[2].dp, (simix_match_func_t) simcall->args[3].fp, (simix_copy_data_func_t) simcall->args[4].fp,  simcall->args[5].dp,  simcall->args[6].d);
       SIMIX_simcall_answer(simcall);
       break;  
 
@@ -548,12 +552,12 @@ case SIMCALL_FILE_MOVE:
       break;  
 
 case SIMCALL_STORAGE_GET_FREE_SIZE:
-      simcall->result.sgsz = SIMIX_pre_storage_get_free_size(simcall ,  simcall->args[0].cc);
+      simcall->result.sgsz = SIMIX_pre_storage_get_free_size(simcall , (smx_storage_t) simcall->args[0].dp);
       SIMIX_simcall_answer(simcall);
       break;  
 
 case SIMCALL_STORAGE_GET_USED_SIZE:
-      simcall->result.sgsz = SIMIX_pre_storage_get_used_size(simcall ,  simcall->args[0].cc);
+      simcall->result.sgsz = SIMIX_pre_storage_get_used_size(simcall , (smx_storage_t) simcall->args[0].dp);
       SIMIX_simcall_answer(simcall);
       break;  
 

@@ -20,7 +20,7 @@ if(NOT WIN32)
     COMMAND pod2man ${CMAKE_HOME_DIRECTORY}/tools/simgrid_update_xml.pl > ${MANPAGE_DIR}/simgrid_update_xml.1
     COMMENT "Generating manpages"
     )
-  install(FILES ${MANPAGE_DIR}/simgrid_update_xml.1 ${CMAKE_HOME_DIRECTORY}/tools/tesh/tesh.1
+  install(FILES ${MANPAGE_DIR}/simgrid_update_xml.1 ${CMAKE_HOME_DIRECTORY}/tools/tesh/tesh.1 ${CMAKE_HOME_DIRECTORY}/doc/manpage/smpirun.1 ${CMAKE_HOME_DIRECTORY}/doc/manpage/smpicc.1
     DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/share/man/man1)
 
 endif()
@@ -29,6 +29,7 @@ endif()
 if(enable_smpi)
   install(PROGRAMS
     ${CMAKE_BINARY_DIR}/bin/smpicc
+    ${CMAKE_BINARY_DIR}/bin/smpicxx
     ${CMAKE_BINARY_DIR}/bin/smpirun
     DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/)
   if(SMPI_F2C)
@@ -69,7 +70,7 @@ add_custom_target(simgrid_update_xml ALL
   )
 
 # libraries
-install(TARGETS simgrid 
+install(TARGETS simgrid
   DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/)
 
 if(enable_lib_static AND NOT WIN32)
@@ -138,6 +139,7 @@ add_custom_target(uninstall
   COMMAND ${CMAKE_COMMAND} -E   remove -f ${CMAKE_INSTALL_PREFIX}/lib/lua/5.1/simgrid*
   COMMAND ${CMAKE_COMMAND} -E	echo "uninstall lib ok"
   COMMAND ${CMAKE_COMMAND} -E	remove -f ${CMAKE_INSTALL_PREFIX}/bin/smpicc
+  COMMAND ${CMAKE_COMMAND} -E	remove -f ${CMAKE_INSTALL_PREFIX}/bin/smpicxx
   COMMAND ${CMAKE_COMMAND} -E	remove -f ${CMAKE_INSTALL_PREFIX}/bin/smpif2c
   COMMAND ${CMAKE_COMMAND} -E	remove -f ${CMAKE_INSTALL_PREFIX}/bin/smpiff
   COMMAND ${CMAKE_COMMAND} -E	remove -f ${CMAKE_INSTALL_PREFIX}/bin/smpif90
@@ -190,7 +192,8 @@ set(source_to_pack
   ${JMSG_C_SRC}
   ${JMSG_JAVA_SRC}
   ${JSURF_SWIG_SRC}
-  ${JSURF_JAVA_C_SRC}
+  ${JSURF_SWIG_SRC_EXTRA}
+  ${JSURF_C_SRC}
   ${LUA_SRC}
   ${MC_SRC}
   ${MSG_SRC}
@@ -208,7 +211,6 @@ set(source_to_pack
   ${CMAKE_SOURCE_FILES}
   ${EXAMPLES_CMAKEFILES_TXT}
   ${TESHSUITE_CMAKEFILES_TXT}
-  ${TESTSUITE_CMAKEFILES_TXT}
   ${TOOLS_CMAKEFILES_TXT}
   ${DOC_FIGS}
   ${DOC_IMG}

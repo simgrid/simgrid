@@ -1,0 +1,13 @@
+
+$ ./host_on_off ${srcdir:=.}/host_on_off_p.xml ${srcdir:=.}/host_on_off_d.xml
+> [Tremblay:master:(1) 0.000000] [msg_test/INFO] Sending "task on"
+> [Jupiter:slave:(2) 0.682345] [msg_test/INFO] Task "task on" done
+> [Tremblay:master:(1) 1.027003] [msg_test/INFO] Sending "task off"
+> [Tremblay:master:(1) 2.027003] [msg_test/INFO] Sending "task on without proc"
+> [Tremblay:master:(1) 3.027003] [msg_test/INFO] Sending "task on with proc"
+> [Tremblay:master:(1) 3.054005] [msg_test/INFO] Sending "finalize"
+> [Jupiter:slave:(3) 3.709348] [msg_test/INFO] Task "task on with proc" done
+> [Tremblay:master:(1) 3.710127] [msg_test/INFO] Goodbye now!
+> [Jupiter:slave:(3) 3.710127] [msg_test/INFO] I'm done. See you!
+> [3.710127] [msg_test/INFO] Simulation time 3.71013
+

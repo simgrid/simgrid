@@ -27,7 +27,7 @@
 #define FLEX_SCANNER
 #define YY_FLEX_MAJOR_VERSION 2
 #define YY_FLEX_MINOR_VERSION 5
-#define YY_FLEX_SUBMINOR_VERSION 35
+#define YY_FLEX_SUBMINOR_VERSION 39
 #if YY_FLEX_SUBMINOR_VERSION > 0
 #define FLEX_BETA
 #endif
@@ -180,7 +180,12 @@ typedef unsigned int flex_uint32_t;
 typedef struct yy_buffer_state *YY_BUFFER_STATE;
 #endif
 
-extern int surf_parse_leng;
+#ifndef YY_TYPEDEF_YY_SIZE_T
+#define YY_TYPEDEF_YY_SIZE_T
+typedef size_t yy_size_t;
+#endif
+
+extern yy_size_t surf_parse_leng;
 
 extern FILE *surf_parse_in, *surf_parse_out;
 
@@ -202,6 +207,13 @@ extern FILE *surf_parse_in, *surf_parse_out;
                     if ( surf_parse_text[yyl] == '\n' )\
                         --surf_parse_lineno;\
             }while(0)
+    #define YY_LINENO_REWIND_TO(dst) \
+            do {\
+                const char *p;\
+                for ( p = yy_cp-1; p >= (dst); --p)\
+                    if ( *p == '\n' )\
+                        --surf_parse_lineno;\
+            }while(0)
     
 /* Return all but the first "n" matched characters back to the input stream. */
 #define yyless(n) \
@@ -218,11 +230,6 @@ extern FILE *surf_parse_in, *surf_parse_out;
 	while ( 0 )
 
 #define unput(c) yyunput( c, (yytext_ptr)  )
-
-#ifndef YY_TYPEDEF_YY_SIZE_T
-#define YY_TYPEDEF_YY_SIZE_T
-typedef size_t yy_size_t;
-#endif
 
 #ifndef YY_STRUCT_YY_BUFFER_STATE
 #define YY_STRUCT_YY_BUFFER_STATE
@@ -241,7 +248,7 @@ struct yy_buffer_state
 	/* Number of characters read into yy_ch_buf, not including EOB
 	 * characters.
 	 */
-	int yy_n_chars;
+	yy_size_t yy_n_chars;
 
 	/* Whether we "own" the buffer - i.e., we know we created it,
 	 * and can realloc() it to grow it, and should free() it to
@@ -311,8 +318,8 @@ static YY_BUFFER_STATE * yy_buffer_stack = 0; /**< Stack as an array. */
 
 /* yy_hold_char holds the character lost when surf_parse_text is formed. */
 static char yy_hold_char;
-static int yy_n_chars;		/* number of characters read into yy_ch_buf */
-int surf_parse_leng;
+static yy_size_t yy_n_chars;		/* number of characters read into yy_ch_buf */
+yy_size_t surf_parse_leng;
 
 /* Points to current character in buffer. */
 static char *yy_c_buf_p = (char *) 0;
@@ -340,7 +347,7 @@ static void surf_parse__init_buffer (YY_BUFFER_STATE b,FILE *file  );
 
 YY_BUFFER_STATE surf_parse__scan_buffer (char *base,yy_size_t size  );
 YY_BUFFER_STATE surf_parse__scan_string (yyconst char *yy_str  );
-YY_BUFFER_STATE surf_parse__scan_bytes (yyconst char *bytes,int len  );
+YY_BUFFER_STATE surf_parse__scan_bytes (yyconst char *bytes,yy_size_t len  );
 
 void *surf_parse_alloc (yy_size_t  );
 void *surf_parse_realloc (void *,yy_size_t  );
@@ -372,7 +379,7 @@ void surf_parse_free (void *  );
 
 /* Begin user sect3 */
 
-#define surf_parse_wrap(n) 1
+#define surf_parse_wrap() 1
 #define YY_SKIP_YYWRAP
 
 typedef unsigned char YY_CHAR;
@@ -4659,366 +4666,366 @@ const char surfxml_flexml_version[] = "1.9.6";
 int surfxml_pcdata_ix;
 extern char *surfxml_bufferstack;
 #define surfxml_pcdata (surfxml_bufferstack + surfxml_pcdata_ix)
-AT_surfxml_mount_name AX_surfxml_mount_name;
-#define A_surfxml_mount_name (surfxml_bufferstack + AX_surfxml_mount_name)
-short int surfxml_mount_name_isset;
-AT_surfxml_random_generator AX_surfxml_random_generator;
-#define A_surfxml_random_generator AX_surfxml_random_generator
-short int surfxml_random_generator_isset;
-AT_surfxml_ASroute_gw___dst AX_surfxml_ASroute_gw___dst;
-#define A_surfxml_ASroute_gw___dst (surfxml_bufferstack + AX_surfxml_ASroute_gw___dst)
-short int surfxml_ASroute_gw___dst_isset;
-AT_surfxml_trace___connect_element AX_surfxml_trace___connect_element;
-#define A_surfxml_trace___connect_element (surfxml_bufferstack + AX_surfxml_trace___connect_element)
-short int surfxml_trace___connect_element_isset;
-AT_surfxml_prop_id AX_surfxml_prop_id;
-#define A_surfxml_prop_id (surfxml_bufferstack + AX_surfxml_prop_id)
-short int surfxml_prop_id_isset;
-AT_surfxml_host___link_up AX_surfxml_host___link_up;
-#define A_surfxml_host___link_up (surfxml_bufferstack + AX_surfxml_host___link_up)
-short int surfxml_host___link_up_isset;
-AT_surfxml_host_id AX_surfxml_host_id;
-#define A_surfxml_host_id (surfxml_bufferstack + AX_surfxml_host_id)
-short int surfxml_host_id_isset;
-AT_surfxml_ASroute_symmetrical AX_surfxml_ASroute_symmetrical;
-#define A_surfxml_ASroute_symmetrical AX_surfxml_ASroute_symmetrical
-short int surfxml_ASroute_symmetrical_isset;
-AT_surfxml_peer_lat AX_surfxml_peer_lat;
-#define A_surfxml_peer_lat (surfxml_bufferstack + AX_surfxml_peer_lat)
-short int surfxml_peer_lat_isset;
-AT_surfxml_process_on___failure AX_surfxml_process_on___failure;
-#define A_surfxml_process_on___failure AX_surfxml_process_on___failure
-short int surfxml_process_on___failure_isset;
-AT_surfxml_link_latency___file AX_surfxml_link_latency___file;
-#define A_surfxml_link_latency___file (surfxml_bufferstack + AX_surfxml_link_latency___file)
-short int surfxml_link_latency___file_isset;
-AT_surfxml_peer_availability___file AX_surfxml_peer_availability___file;
-#define A_surfxml_peer_availability___file (surfxml_bufferstack + AX_surfxml_peer_availability___file)
-short int surfxml_peer_availability___file_isset;
-AT_surfxml_model___prop_value AX_surfxml_model___prop_value;
-#define A_surfxml_model___prop_value (surfxml_bufferstack + AX_surfxml_model___prop_value)
-short int surfxml_model___prop_value_isset;
-AT_surfxml_link___ctn_direction AX_surfxml_link___ctn_direction;
-#define A_surfxml_link___ctn_direction AX_surfxml_link___ctn_direction
-short int surfxml_link___ctn_direction_isset;
-AT_surfxml_host_state AX_surfxml_host_state;
-#define A_surfxml_host_state AX_surfxml_host_state
-short int surfxml_host_state_isset;
-AT_surfxml_AS_id AX_surfxml_AS_id;
-#define A_surfxml_AS_id (surfxml_bufferstack + AX_surfxml_AS_id)
-short int surfxml_AS_id_isset;
-AT_surfxml_host_power AX_surfxml_host_power;
-#define A_surfxml_host_power (surfxml_bufferstack + AX_surfxml_host_power)
-short int surfxml_host_power_isset;
-AT_surfxml_cabinet_suffix AX_surfxml_cabinet_suffix;
-#define A_surfxml_cabinet_suffix (surfxml_bufferstack + AX_surfxml_cabinet_suffix)
-short int surfxml_cabinet_suffix_isset;
-AT_surfxml_gpu_name AX_surfxml_gpu_name;
-#define A_surfxml_gpu_name (surfxml_bufferstack + AX_surfxml_gpu_name)
-short int surfxml_gpu_name_isset;
-AT_surfxml_router_id AX_surfxml_router_id;
-#define A_surfxml_router_id (surfxml_bufferstack + AX_surfxml_router_id)
-short int surfxml_router_id_isset;
-AT_surfxml_storage___type_id AX_surfxml_storage___type_id;
-#define A_surfxml_storage___type_id (surfxml_bufferstack + AX_surfxml_storage___type_id)
-short int surfxml_storage___type_id_isset;
-AT_surfxml_process_start___time AX_surfxml_process_start___time;
-#define A_surfxml_process_start___time (surfxml_bufferstack + AX_surfxml_process_start___time)
-short int surfxml_process_start___time_isset;
-AT_surfxml_cabinet_bw AX_surfxml_cabinet_bw;
-#define A_surfxml_cabinet_bw (surfxml_bufferstack + AX_surfxml_cabinet_bw)
-short int surfxml_cabinet_bw_isset;
-AT_surfxml_cluster_suffix AX_surfxml_cluster_suffix;
-#define A_surfxml_cluster_suffix (surfxml_bufferstack + AX_surfxml_cluster_suffix)
-short int surfxml_cluster_suffix_isset;
-AT_surfxml_bypassASroute_dst AX_surfxml_bypassASroute_dst;
-#define A_surfxml_bypassASroute_dst (surfxml_bufferstack + AX_surfxml_bypassASroute_dst)
-short int surfxml_bypassASroute_dst_isset;
-AT_surfxml_host___link_id AX_surfxml_host___link_id;
-#define A_surfxml_host___link_id (surfxml_bufferstack + AX_surfxml_host___link_id)
-short int surfxml_host___link_id_isset;
-AT_surfxml_model___prop_id AX_surfxml_model___prop_id;
-#define A_surfxml_model___prop_id (surfxml_bufferstack + AX_surfxml_model___prop_id)
-short int surfxml_model___prop_id_isset;
-AT_surfxml_ASroute_src AX_surfxml_ASroute_src;
-#define A_surfxml_ASroute_src (surfxml_bufferstack + AX_surfxml_ASroute_src)
-short int surfxml_ASroute_src_isset;
-AT_surfxml_cluster_prefix AX_surfxml_cluster_prefix;
-#define A_surfxml_cluster_prefix (surfxml_bufferstack + AX_surfxml_cluster_prefix)
-short int surfxml_cluster_prefix_isset;
-AT_surfxml_cabinet_prefix AX_surfxml_cabinet_prefix;
-#define A_surfxml_cabinet_prefix (surfxml_bufferstack + AX_surfxml_cabinet_prefix)
-short int surfxml_cabinet_prefix_isset;
-AT_surfxml_trace_file AX_surfxml_trace_file;
-#define A_surfxml_trace_file (surfxml_bufferstack + AX_surfxml_trace_file)
-short int surfxml_trace_file_isset;
-AT_surfxml_link_sharing___policy AX_surfxml_link_sharing___policy;
-#define A_surfxml_link_sharing___policy AX_surfxml_link_sharing___policy
-short int surfxml_link_sharing___policy_isset;
-AT_surfxml_storage_typeId AX_surfxml_storage_typeId;
-#define A_surfxml_storage_typeId (surfxml_bufferstack + AX_surfxml_storage_typeId)
-short int surfxml_storage_typeId_isset;
-AT_surfxml_random_min AX_surfxml_random_min;
-#define A_surfxml_random_min (surfxml_bufferstack + AX_surfxml_random_min)
-short int surfxml_random_min_isset;
-AT_surfxml_link___ctn_id AX_surfxml_link___ctn_id;
-#define A_surfxml_link___ctn_id (surfxml_bufferstack + AX_surfxml_link___ctn_id)
-short int surfxml_link___ctn_id_isset;
-AT_surfxml_peer_bw___out AX_surfxml_peer_bw___out;
-#define A_surfxml_peer_bw___out (surfxml_bufferstack + AX_surfxml_peer_bw___out)
-short int surfxml_peer_bw___out_isset;
-AT_surfxml_cluster_availability___file AX_surfxml_cluster_availability___file;
-#define A_surfxml_cluster_availability___file (surfxml_bufferstack + AX_surfxml_cluster_availability___file)
-short int surfxml_cluster_availability___file_isset;
-AT_surfxml_storage_content AX_surfxml_storage_content;
-#define A_surfxml_storage_content (surfxml_bufferstack + AX_surfxml_storage_content)
-short int surfxml_storage_content_isset;
-AT_surfxml_process_kill___time AX_surfxml_process_kill___time;
-#define A_surfxml_process_kill___time (surfxml_bufferstack + AX_surfxml_process_kill___time)
-short int surfxml_process_kill___time_isset;
-AT_surfxml_cluster_bb___bw AX_surfxml_cluster_bb___bw;
-#define A_surfxml_cluster_bb___bw (surfxml_bufferstack + AX_surfxml_cluster_bb___bw)
-short int surfxml_cluster_bb___bw_isset;
-AT_surfxml_host_pstate AX_surfxml_host_pstate;
-#define A_surfxml_host_pstate (surfxml_bufferstack + AX_surfxml_host_pstate)
-short int surfxml_host_pstate_isset;
-AT_surfxml_argument_value AX_surfxml_argument_value;
-#define A_surfxml_argument_value (surfxml_bufferstack + AX_surfxml_argument_value)
-short int surfxml_argument_value_isset;
-AT_surfxml_link_state AX_surfxml_link_state;
-#define A_surfxml_link_state AX_surfxml_link_state
-short int surfxml_link_state_isset;
-AT_surfxml_cluster_loopback___bw AX_surfxml_cluster_loopback___bw;
-#define A_surfxml_cluster_loopback___bw (surfxml_bufferstack + AX_surfxml_cluster_loopback___bw)
-short int surfxml_cluster_loopback___bw_isset;
-AT_surfxml_ASroute_gw___src AX_surfxml_ASroute_gw___src;
-#define A_surfxml_ASroute_gw___src (surfxml_bufferstack + AX_surfxml_ASroute_gw___src)
-short int surfxml_ASroute_gw___src_isset;
-AT_surfxml_AS_routing AX_surfxml_AS_routing;
-#define A_surfxml_AS_routing AX_surfxml_AS_routing
-short int surfxml_AS_routing_isset;
-AT_surfxml_link_bandwidth AX_surfxml_link_bandwidth;
-#define A_surfxml_link_bandwidth (surfxml_bufferstack + AX_surfxml_link_bandwidth)
-short int surfxml_link_bandwidth_isset;
-AT_surfxml_cluster_id AX_surfxml_cluster_id;
-#define A_surfxml_cluster_id (surfxml_bufferstack + AX_surfxml_cluster_id)
-short int surfxml_cluster_id_isset;
-AT_surfxml_peer_bw___in AX_surfxml_peer_bw___in;
-#define A_surfxml_peer_bw___in (surfxml_bufferstack + AX_surfxml_peer_bw___in)
-short int surfxml_peer_bw___in_isset;
-AT_surfxml_random_mean AX_surfxml_random_mean;
-#define A_surfxml_random_mean (surfxml_bufferstack + AX_surfxml_random_mean)
-short int surfxml_random_mean_isset;
-AT_surfxml_storage___type_size AX_surfxml_storage___type_size;
-#define A_surfxml_storage___type_size (surfxml_bufferstack + AX_surfxml_storage___type_size)
-short int surfxml_storage___type_size_isset;
-AT_surfxml_storage_attach AX_surfxml_storage_attach;
-#define A_surfxml_storage_attach (surfxml_bufferstack + AX_surfxml_storage_attach)
-short int surfxml_storage_attach_isset;
-AT_surfxml_cluster_bb___lat AX_surfxml_cluster_bb___lat;
-#define A_surfxml_cluster_bb___lat (surfxml_bufferstack + AX_surfxml_cluster_bb___lat)
-short int surfxml_cluster_bb___lat_isset;
-AT_surfxml_link_latency AX_surfxml_link_latency;
-#define A_surfxml_link_latency (surfxml_bufferstack + AX_surfxml_link_latency)
-short int surfxml_link_latency_isset;
 AT_surfxml_backbone_bandwidth AX_surfxml_backbone_bandwidth;
 #define A_surfxml_backbone_bandwidth (surfxml_bufferstack + AX_surfxml_backbone_bandwidth)
 short int surfxml_backbone_bandwidth_isset;
-AT_surfxml_backbone_id AX_surfxml_backbone_id;
-#define A_surfxml_backbone_id (surfxml_bufferstack + AX_surfxml_backbone_id)
-short int surfxml_backbone_id_isset;
-AT_surfxml_trace___connect_kind AX_surfxml_trace___connect_kind;
-#define A_surfxml_trace___connect_kind AX_surfxml_trace___connect_kind
-short int surfxml_trace___connect_kind_isset;
-AT_surfxml_cabinet_lat AX_surfxml_cabinet_lat;
-#define A_surfxml_cabinet_lat (surfxml_bufferstack + AX_surfxml_cabinet_lat)
-short int surfxml_cabinet_lat_isset;
-AT_surfxml_random_seed AX_surfxml_random_seed;
-#define A_surfxml_random_seed (surfxml_bufferstack + AX_surfxml_random_seed)
-short int surfxml_random_seed_isset;
-AT_surfxml_cluster_state___file AX_surfxml_cluster_state___file;
-#define A_surfxml_cluster_state___file (surfxml_bufferstack + AX_surfxml_cluster_state___file)
-short int surfxml_cluster_state___file_isset;
-AT_surfxml_link_bandwidth___file AX_surfxml_link_bandwidth___file;
-#define A_surfxml_link_bandwidth___file (surfxml_bufferstack + AX_surfxml_link_bandwidth___file)
-short int surfxml_link_bandwidth___file_isset;
-AT_surfxml_storage___type_content AX_surfxml_storage___type_content;
-#define A_surfxml_storage___type_content (surfxml_bufferstack + AX_surfxml_storage___type_content)
-short int surfxml_storage___type_content_isset;
-AT_surfxml_route_symmetrical AX_surfxml_route_symmetrical;
-#define A_surfxml_route_symmetrical AX_surfxml_route_symmetrical
-short int surfxml_route_symmetrical_isset;
-AT_surfxml_random_id AX_surfxml_random_id;
-#define A_surfxml_random_id (surfxml_bufferstack + AX_surfxml_random_id)
-short int surfxml_random_id_isset;
-AT_surfxml_mstorage_name AX_surfxml_mstorage_name;
-#define A_surfxml_mstorage_name (surfxml_bufferstack + AX_surfxml_mstorage_name)
-short int surfxml_mstorage_name_isset;
-AT_surfxml_random_max AX_surfxml_random_max;
-#define A_surfxml_random_max (surfxml_bufferstack + AX_surfxml_random_max)
-short int surfxml_random_max_isset;
-AT_surfxml_link_id AX_surfxml_link_id;
-#define A_surfxml_link_id (surfxml_bufferstack + AX_surfxml_link_id)
-short int surfxml_link_id_isset;
-AT_surfxml_cluster_topology AX_surfxml_cluster_topology;
-#define A_surfxml_cluster_topology AX_surfxml_cluster_topology
-short int surfxml_cluster_topology_isset;
-AT_surfxml_process_host AX_surfxml_process_host;
-#define A_surfxml_process_host (surfxml_bufferstack + AX_surfxml_process_host)
-short int surfxml_process_host_isset;
-AT_surfxml_cabinet_id AX_surfxml_cabinet_id;
-#define A_surfxml_cabinet_id (surfxml_bufferstack + AX_surfxml_cabinet_id)
-short int surfxml_cabinet_id_isset;
-AT_surfxml_host_availability___file AX_surfxml_host_availability___file;
-#define A_surfxml_host_availability___file (surfxml_bufferstack + AX_surfxml_host_availability___file)
-short int surfxml_host_availability___file_isset;
-AT_surfxml_cluster_lat AX_surfxml_cluster_lat;
-#define A_surfxml_cluster_lat (surfxml_bufferstack + AX_surfxml_cluster_lat)
-short int surfxml_cluster_lat_isset;
-AT_surfxml_router_coordinates AX_surfxml_router_coordinates;
-#define A_surfxml_router_coordinates (surfxml_bufferstack + AX_surfxml_router_coordinates)
-short int surfxml_router_coordinates_isset;
-AT_surfxml_trace_periodicity AX_surfxml_trace_periodicity;
-#define A_surfxml_trace_periodicity (surfxml_bufferstack + AX_surfxml_trace_periodicity)
-short int surfxml_trace_periodicity_isset;
-AT_surfxml_cluster_bb___sharing___policy AX_surfxml_cluster_bb___sharing___policy;
-#define A_surfxml_cluster_bb___sharing___policy AX_surfxml_cluster_bb___sharing___policy
-short int surfxml_cluster_bb___sharing___policy_isset;
-AT_surfxml_peer_state___file AX_surfxml_peer_state___file;
-#define A_surfxml_peer_state___file (surfxml_bufferstack + AX_surfxml_peer_state___file)
-short int surfxml_peer_state___file_isset;
-AT_surfxml_peer_coordinates AX_surfxml_peer_coordinates;
-#define A_surfxml_peer_coordinates (surfxml_bufferstack + AX_surfxml_peer_coordinates)
-short int surfxml_peer_coordinates_isset;
-AT_surfxml_bypassASroute_src AX_surfxml_bypassASroute_src;
-#define A_surfxml_bypassASroute_src (surfxml_bufferstack + AX_surfxml_bypassASroute_src)
-short int surfxml_bypassASroute_src_isset;
-AT_surfxml_prop_value AX_surfxml_prop_value;
-#define A_surfxml_prop_value (surfxml_bufferstack + AX_surfxml_prop_value)
-short int surfxml_prop_value_isset;
-AT_surfxml_mstorage_typeId AX_surfxml_mstorage_typeId;
-#define A_surfxml_mstorage_typeId (surfxml_bufferstack + AX_surfxml_mstorage_typeId)
-short int surfxml_mstorage_typeId_isset;
-AT_surfxml_ASroute_dst AX_surfxml_ASroute_dst;
-#define A_surfxml_ASroute_dst (surfxml_bufferstack + AX_surfxml_ASroute_dst)
-short int surfxml_ASroute_dst_isset;
-AT_surfxml_link_state___file AX_surfxml_link_state___file;
-#define A_surfxml_link_state___file (surfxml_bufferstack + AX_surfxml_link_state___file)
-short int surfxml_link_state___file_isset;
-AT_surfxml_random_radical AX_surfxml_random_radical;
-#define A_surfxml_random_radical (surfxml_bufferstack + AX_surfxml_random_radical)
-short int surfxml_random_radical_isset;
-AT_surfxml_mount_storageId AX_surfxml_mount_storageId;
-#define A_surfxml_mount_storageId (surfxml_bufferstack + AX_surfxml_mount_storageId)
-short int surfxml_mount_storageId_isset;
-AT_surfxml_bypassASroute_gw___src AX_surfxml_bypassASroute_gw___src;
-#define A_surfxml_bypassASroute_gw___src (surfxml_bufferstack + AX_surfxml_bypassASroute_gw___src)
-short int surfxml_bypassASroute_gw___src_isset;
-AT_surfxml_trace___connect_trace AX_surfxml_trace___connect_trace;
-#define A_surfxml_trace___connect_trace (surfxml_bufferstack + AX_surfxml_trace___connect_trace)
-short int surfxml_trace___connect_trace_isset;
-AT_surfxml_cluster_power AX_surfxml_cluster_power;
-#define A_surfxml_cluster_power (surfxml_bufferstack + AX_surfxml_cluster_power)
-short int surfxml_cluster_power_isset;
-AT_surfxml_cluster_topo___parameters AX_surfxml_cluster_topo___parameters;
-#define A_surfxml_cluster_topo___parameters (surfxml_bufferstack + AX_surfxml_cluster_topo___parameters)
-short int surfxml_cluster_topo___parameters_isset;
+AT_surfxml_storage_typeId AX_surfxml_storage_typeId;
+#define A_surfxml_storage_typeId (surfxml_bufferstack + AX_surfxml_storage_typeId)
+short int surfxml_storage_typeId_isset;
+AT_surfxml_config_id AX_surfxml_config_id;
+#define A_surfxml_config_id (surfxml_bufferstack + AX_surfxml_config_id)
+short int surfxml_config_id_isset;
+AT_surfxml_storage_content AX_surfxml_storage_content;
+#define A_surfxml_storage_content (surfxml_bufferstack + AX_surfxml_storage_content)
+short int surfxml_storage_content_isset;
 AT_surfxml_process_function AX_surfxml_process_function;
 #define A_surfxml_process_function (surfxml_bufferstack + AX_surfxml_process_function)
 short int surfxml_process_function_isset;
-AT_surfxml_peer_id AX_surfxml_peer_id;
-#define A_surfxml_peer_id (surfxml_bufferstack + AX_surfxml_peer_id)
-short int surfxml_peer_id_isset;
-AT_surfxml_cabinet_radical AX_surfxml_cabinet_radical;
-#define A_surfxml_cabinet_radical (surfxml_bufferstack + AX_surfxml_cabinet_radical)
-short int surfxml_cabinet_radical_isset;
-AT_surfxml_cluster_loopback___lat AX_surfxml_cluster_loopback___lat;
-#define A_surfxml_cluster_loopback___lat (surfxml_bufferstack + AX_surfxml_cluster_loopback___lat)
-short int surfxml_cluster_loopback___lat_isset;
-AT_surfxml_storage_content___type AX_surfxml_storage_content___type;
-#define A_surfxml_storage_content___type (surfxml_bufferstack + AX_surfxml_storage_content___type)
-short int surfxml_storage_content___type_isset;
-AT_surfxml_cluster_router___id AX_surfxml_cluster_router___id;
-#define A_surfxml_cluster_router___id (surfxml_bufferstack + AX_surfxml_cluster_router___id)
-short int surfxml_cluster_router___id_isset;
-AT_surfxml_cluster_sharing___policy AX_surfxml_cluster_sharing___policy;
-#define A_surfxml_cluster_sharing___policy AX_surfxml_cluster_sharing___policy
-short int surfxml_cluster_sharing___policy_isset;
-AT_surfxml_bypassRoute_dst AX_surfxml_bypassRoute_dst;
-#define A_surfxml_bypassRoute_dst (surfxml_bufferstack + AX_surfxml_bypassRoute_dst)
-short int surfxml_bypassRoute_dst_isset;
+AT_surfxml_host___link_up AX_surfxml_host___link_up;
+#define A_surfxml_host___link_up (surfxml_bufferstack + AX_surfxml_host___link_up)
+short int surfxml_host___link_up_isset;
+AT_surfxml_peer_lat AX_surfxml_peer_lat;
+#define A_surfxml_peer_lat (surfxml_bufferstack + AX_surfxml_peer_lat)
+short int surfxml_peer_lat_isset;
+AT_surfxml_bypassASroute_gw___dst AX_surfxml_bypassASroute_gw___dst;
+#define A_surfxml_bypassASroute_gw___dst (surfxml_bufferstack + AX_surfxml_bypassASroute_gw___dst)
+short int surfxml_bypassASroute_gw___dst_isset;
+AT_surfxml_ASroute_symmetrical AX_surfxml_ASroute_symmetrical;
+#define A_surfxml_ASroute_symmetrical AX_surfxml_ASroute_symmetrical
+short int surfxml_ASroute_symmetrical_isset;
+AT_surfxml_cabinet_id AX_surfxml_cabinet_id;
+#define A_surfxml_cabinet_id (surfxml_bufferstack + AX_surfxml_cabinet_id)
+short int surfxml_cabinet_id_isset;
+AT_surfxml_AS_id AX_surfxml_AS_id;
+#define A_surfxml_AS_id (surfxml_bufferstack + AX_surfxml_AS_id)
+short int surfxml_AS_id_isset;
+AT_surfxml_cluster_state___file AX_surfxml_cluster_state___file;
+#define A_surfxml_cluster_state___file (surfxml_bufferstack + AX_surfxml_cluster_state___file)
+short int surfxml_cluster_state___file_isset;
+AT_surfxml_process_host AX_surfxml_process_host;
+#define A_surfxml_process_host (surfxml_bufferstack + AX_surfxml_process_host)
+short int surfxml_process_host_isset;
 AT_surfxml_cabinet_power AX_surfxml_cabinet_power;
 #define A_surfxml_cabinet_power (surfxml_bufferstack + AX_surfxml_cabinet_power)
 short int surfxml_cabinet_power_isset;
+AT_surfxml_ASroute_dst AX_surfxml_ASroute_dst;
+#define A_surfxml_ASroute_dst (surfxml_bufferstack + AX_surfxml_ASroute_dst)
+short int surfxml_ASroute_dst_isset;
+AT_surfxml_link_bandwidth___file AX_surfxml_link_bandwidth___file;
+#define A_surfxml_link_bandwidth___file (surfxml_bufferstack + AX_surfxml_link_bandwidth___file)
+short int surfxml_link_bandwidth___file_isset;
+AT_surfxml_cluster_loopback___bw AX_surfxml_cluster_loopback___bw;
+#define A_surfxml_cluster_loopback___bw (surfxml_bufferstack + AX_surfxml_cluster_loopback___bw)
+short int surfxml_cluster_loopback___bw_isset;
+AT_surfxml_random_generator AX_surfxml_random_generator;
+#define A_surfxml_random_generator AX_surfxml_random_generator
+short int surfxml_random_generator_isset;
+AT_surfxml_cluster_bb___bw AX_surfxml_cluster_bb___bw;
+#define A_surfxml_cluster_bb___bw (surfxml_bufferstack + AX_surfxml_cluster_bb___bw)
+short int surfxml_cluster_bb___bw_isset;
+AT_surfxml_peer_coordinates AX_surfxml_peer_coordinates;
+#define A_surfxml_peer_coordinates (surfxml_bufferstack + AX_surfxml_peer_coordinates)
+short int surfxml_peer_coordinates_isset;
+AT_surfxml_cabinet_suffix AX_surfxml_cabinet_suffix;
+#define A_surfxml_cabinet_suffix (surfxml_bufferstack + AX_surfxml_cabinet_suffix)
+short int surfxml_cabinet_suffix_isset;
+AT_surfxml_ASroute_src AX_surfxml_ASroute_src;
+#define A_surfxml_ASroute_src (surfxml_bufferstack + AX_surfxml_ASroute_src)
+short int surfxml_ASroute_src_isset;
+AT_surfxml_cluster_limiter___link AX_surfxml_cluster_limiter___link;
+#define A_surfxml_cluster_limiter___link (surfxml_bufferstack + AX_surfxml_cluster_limiter___link)
+short int surfxml_cluster_limiter___link_isset;
 AT_surfxml_host_core AX_surfxml_host_core;
 #define A_surfxml_host_core (surfxml_bufferstack + AX_surfxml_host_core)
 short int surfxml_host_core_isset;
-AT_surfxml_host_availability AX_surfxml_host_availability;
-#define A_surfxml_host_availability (surfxml_bufferstack + AX_surfxml_host_availability)
-short int surfxml_host_availability_isset;
-AT_surfxml_storage___type_model AX_surfxml_storage___type_model;
-#define A_surfxml_storage___type_model (surfxml_bufferstack + AX_surfxml_storage___type_model)
-short int surfxml_storage___type_model_isset;
-AT_surfxml_bypassRoute_src AX_surfxml_bypassRoute_src;
-#define A_surfxml_bypassRoute_src (surfxml_bufferstack + AX_surfxml_bypassRoute_src)
-short int surfxml_bypassRoute_src_isset;
-AT_surfxml_backbone_latency AX_surfxml_backbone_latency;
-#define A_surfxml_backbone_latency (surfxml_bufferstack + AX_surfxml_backbone_latency)
-short int surfxml_backbone_latency_isset;
-AT_surfxml_route_src AX_surfxml_route_src;
-#define A_surfxml_route_src (surfxml_bufferstack + AX_surfxml_route_src)
-short int surfxml_route_src_isset;
-AT_surfxml_storage_id AX_surfxml_storage_id;
-#define A_surfxml_storage_id (surfxml_bufferstack + AX_surfxml_storage_id)
-short int surfxml_storage_id_isset;
+AT_surfxml_storage___type_id AX_surfxml_storage___type_id;
+#define A_surfxml_storage___type_id (surfxml_bufferstack + AX_surfxml_storage___type_id)
+short int surfxml_storage___type_id_isset;
 AT_surfxml_storage___type_content___type AX_surfxml_storage___type_content___type;
 #define A_surfxml_storage___type_content___type (surfxml_bufferstack + AX_surfxml_storage___type_content___type)
 short int surfxml_storage___type_content___type_isset;
+AT_surfxml_link_id AX_surfxml_link_id;
+#define A_surfxml_link_id (surfxml_bufferstack + AX_surfxml_link_id)
+short int surfxml_link_id_isset;
+AT_surfxml_trace_periodicity AX_surfxml_trace_periodicity;
+#define A_surfxml_trace_periodicity (surfxml_bufferstack + AX_surfxml_trace_periodicity)
+short int surfxml_trace_periodicity_isset;
+AT_surfxml_link___ctn_direction AX_surfxml_link___ctn_direction;
+#define A_surfxml_link___ctn_direction AX_surfxml_link___ctn_direction
+short int surfxml_link___ctn_direction_isset;
+AT_surfxml_storage_content___type AX_surfxml_storage_content___type;
+#define A_surfxml_storage_content___type (surfxml_bufferstack + AX_surfxml_storage_content___type)
+short int surfxml_storage_content___type_isset;
+AT_surfxml_host_power AX_surfxml_host_power;
+#define A_surfxml_host_power (surfxml_bufferstack + AX_surfxml_host_power)
+short int surfxml_host_power_isset;
+AT_surfxml_peer_id AX_surfxml_peer_id;
+#define A_surfxml_peer_id (surfxml_bufferstack + AX_surfxml_peer_id)
+short int surfxml_peer_id_isset;
+AT_surfxml_peer_state___file AX_surfxml_peer_state___file;
+#define A_surfxml_peer_state___file (surfxml_bufferstack + AX_surfxml_peer_state___file)
+short int surfxml_peer_state___file_isset;
+AT_surfxml_cluster_core AX_surfxml_cluster_core;
+#define A_surfxml_cluster_core (surfxml_bufferstack + AX_surfxml_cluster_core)
+short int surfxml_cluster_core_isset;
+AT_surfxml_cluster_radical AX_surfxml_cluster_radical;
+#define A_surfxml_cluster_radical (surfxml_bufferstack + AX_surfxml_cluster_radical)
+short int surfxml_cluster_radical_isset;
+AT_surfxml_mount_storageId AX_surfxml_mount_storageId;
+#define A_surfxml_mount_storageId (surfxml_bufferstack + AX_surfxml_mount_storageId)
+short int surfxml_mount_storageId_isset;
+AT_surfxml_link_sharing___policy AX_surfxml_link_sharing___policy;
+#define A_surfxml_link_sharing___policy AX_surfxml_link_sharing___policy
+short int surfxml_link_sharing___policy_isset;
+AT_surfxml_peer_bw___in AX_surfxml_peer_bw___in;
+#define A_surfxml_peer_bw___in (surfxml_bufferstack + AX_surfxml_peer_bw___in)
+short int surfxml_peer_bw___in_isset;
+AT_surfxml_include_file AX_surfxml_include_file;
+#define A_surfxml_include_file (surfxml_bufferstack + AX_surfxml_include_file)
+short int surfxml_include_file_isset;
+AT_surfxml_cluster_availability___file AX_surfxml_cluster_availability___file;
+#define A_surfxml_cluster_availability___file (surfxml_bufferstack + AX_surfxml_cluster_availability___file)
+short int surfxml_cluster_availability___file_isset;
+AT_surfxml_cluster_bb___lat AX_surfxml_cluster_bb___lat;
+#define A_surfxml_cluster_bb___lat (surfxml_bufferstack + AX_surfxml_cluster_bb___lat)
+short int surfxml_cluster_bb___lat_isset;
+AT_surfxml_AS_routing AX_surfxml_AS_routing;
+#define A_surfxml_AS_routing AX_surfxml_AS_routing
+short int surfxml_AS_routing_isset;
+AT_surfxml_random_min AX_surfxml_random_min;
+#define A_surfxml_random_min (surfxml_bufferstack + AX_surfxml_random_min)
+short int surfxml_random_min_isset;
+AT_surfxml_cluster_router___id AX_surfxml_cluster_router___id;
+#define A_surfxml_cluster_router___id (surfxml_bufferstack + AX_surfxml_cluster_router___id)
+short int surfxml_cluster_router___id_isset;
+AT_surfxml_host_pstate AX_surfxml_host_pstate;
+#define A_surfxml_host_pstate (surfxml_bufferstack + AX_surfxml_host_pstate)
+short int surfxml_host_pstate_isset;
+AT_surfxml_random_std___deviation AX_surfxml_random_std___deviation;
+#define A_surfxml_random_std___deviation (surfxml_bufferstack + AX_surfxml_random_std___deviation)
+short int surfxml_random_std___deviation_isset;
+AT_surfxml_ASroute_gw___dst AX_surfxml_ASroute_gw___dst;
+#define A_surfxml_ASroute_gw___dst (surfxml_bufferstack + AX_surfxml_ASroute_gw___dst)
+short int surfxml_ASroute_gw___dst_isset;
+AT_surfxml_backbone_id AX_surfxml_backbone_id;
+#define A_surfxml_backbone_id (surfxml_bufferstack + AX_surfxml_backbone_id)
+short int surfxml_backbone_id_isset;
+AT_surfxml_host___link_down AX_surfxml_host___link_down;
+#define A_surfxml_host___link_down (surfxml_bufferstack + AX_surfxml_host___link_down)
+short int surfxml_host___link_down_isset;
+AT_surfxml_cluster_sharing___policy AX_surfxml_cluster_sharing___policy;
+#define A_surfxml_cluster_sharing___policy AX_surfxml_cluster_sharing___policy
+short int surfxml_cluster_sharing___policy_isset;
+AT_surfxml_cluster_topo___parameters AX_surfxml_cluster_topo___parameters;
+#define A_surfxml_cluster_topo___parameters (surfxml_bufferstack + AX_surfxml_cluster_topo___parameters)
+short int surfxml_cluster_topo___parameters_isset;
+AT_surfxml_route_symmetrical AX_surfxml_route_symmetrical;
+#define A_surfxml_route_symmetrical AX_surfxml_route_symmetrical
+short int surfxml_route_symmetrical_isset;
+AT_surfxml_prop_id AX_surfxml_prop_id;
+#define A_surfxml_prop_id (surfxml_bufferstack + AX_surfxml_prop_id)
+short int surfxml_prop_id_isset;
+AT_surfxml_peer_bw___out AX_surfxml_peer_bw___out;
+#define A_surfxml_peer_bw___out (surfxml_bufferstack + AX_surfxml_peer_bw___out)
+short int surfxml_peer_bw___out_isset;
+AT_surfxml_cabinet_bw AX_surfxml_cabinet_bw;
+#define A_surfxml_cabinet_bw (surfxml_bufferstack + AX_surfxml_cabinet_bw)
+short int surfxml_cabinet_bw_isset;
+AT_surfxml_cabinet_radical AX_surfxml_cabinet_radical;
+#define A_surfxml_cabinet_radical (surfxml_bufferstack + AX_surfxml_cabinet_radical)
+short int surfxml_cabinet_radical_isset;
+AT_surfxml_router_id AX_surfxml_router_id;
+#define A_surfxml_router_id (surfxml_bufferstack + AX_surfxml_router_id)
+short int surfxml_router_id_isset;
+AT_surfxml_route_dst AX_surfxml_route_dst;
+#define A_surfxml_route_dst (surfxml_bufferstack + AX_surfxml_route_dst)
+short int surfxml_route_dst_isset;
+AT_surfxml_cluster_loopback___lat AX_surfxml_cluster_loopback___lat;
+#define A_surfxml_cluster_loopback___lat (surfxml_bufferstack + AX_surfxml_cluster_loopback___lat)
+short int surfxml_cluster_loopback___lat_isset;
+AT_surfxml_prop_value AX_surfxml_prop_value;
+#define A_surfxml_prop_value (surfxml_bufferstack + AX_surfxml_prop_value)
+short int surfxml_prop_value_isset;
+AT_surfxml_cabinet_lat AX_surfxml_cabinet_lat;
+#define A_surfxml_cabinet_lat (surfxml_bufferstack + AX_surfxml_cabinet_lat)
+short int surfxml_cabinet_lat_isset;
+AT_surfxml_storage_attach AX_surfxml_storage_attach;
+#define A_surfxml_storage_attach (surfxml_bufferstack + AX_surfxml_storage_attach)
+short int surfxml_storage_attach_isset;
+AT_surfxml_bypassASroute_gw___src AX_surfxml_bypassASroute_gw___src;
+#define A_surfxml_bypassASroute_gw___src (surfxml_bufferstack + AX_surfxml_bypassASroute_gw___src)
+short int surfxml_bypassASroute_gw___src_isset;
+AT_surfxml_host___link_id AX_surfxml_host___link_id;
+#define A_surfxml_host___link_id (surfxml_bufferstack + AX_surfxml_host___link_id)
+short int surfxml_host___link_id_isset;
+AT_surfxml_mstorage_typeId AX_surfxml_mstorage_typeId;
+#define A_surfxml_mstorage_typeId (surfxml_bufferstack + AX_surfxml_mstorage_typeId)
+short int surfxml_mstorage_typeId_isset;
+AT_surfxml_link___ctn_id AX_surfxml_link___ctn_id;
+#define A_surfxml_link___ctn_id (surfxml_bufferstack + AX_surfxml_link___ctn_id)
+short int surfxml_link___ctn_id_isset;
+AT_surfxml_cluster_prefix AX_surfxml_cluster_prefix;
+#define A_surfxml_cluster_prefix (surfxml_bufferstack + AX_surfxml_cluster_prefix)
+short int surfxml_cluster_prefix_isset;
+AT_surfxml_storage___type_model AX_surfxml_storage___type_model;
+#define A_surfxml_storage___type_model (surfxml_bufferstack + AX_surfxml_storage___type_model)
+short int surfxml_storage___type_model_isset;
+AT_surfxml_random_max AX_surfxml_random_max;
+#define A_surfxml_random_max (surfxml_bufferstack + AX_surfxml_random_max)
+short int surfxml_random_max_isset;
+AT_surfxml_storage___type_content AX_surfxml_storage___type_content;
+#define A_surfxml_storage___type_content (surfxml_bufferstack + AX_surfxml_storage___type_content)
+short int surfxml_storage___type_content_isset;
+AT_surfxml_cluster_bw AX_surfxml_cluster_bw;
+#define A_surfxml_cluster_bw (surfxml_bufferstack + AX_surfxml_cluster_bw)
+short int surfxml_cluster_bw_isset;
+AT_surfxml_trace_file AX_surfxml_trace_file;
+#define A_surfxml_trace_file (surfxml_bufferstack + AX_surfxml_trace_file)
+short int surfxml_trace_file_isset;
+AT_surfxml_cluster_bb___sharing___policy AX_surfxml_cluster_bb___sharing___policy;
+#define A_surfxml_cluster_bb___sharing___policy AX_surfxml_cluster_bb___sharing___policy
+short int surfxml_cluster_bb___sharing___policy_isset;
+AT_surfxml_cluster_lat AX_surfxml_cluster_lat;
+#define A_surfxml_cluster_lat (surfxml_bufferstack + AX_surfxml_cluster_lat)
+short int surfxml_cluster_lat_isset;
+AT_surfxml_cluster_id AX_surfxml_cluster_id;
+#define A_surfxml_cluster_id (surfxml_bufferstack + AX_surfxml_cluster_id)
+short int surfxml_cluster_id_isset;
+AT_surfxml_cluster_suffix AX_surfxml_cluster_suffix;
+#define A_surfxml_cluster_suffix (surfxml_bufferstack + AX_surfxml_cluster_suffix)
+short int surfxml_cluster_suffix_isset;
+AT_surfxml_bypassRoute_dst AX_surfxml_bypassRoute_dst;
+#define A_surfxml_bypassRoute_dst (surfxml_bufferstack + AX_surfxml_bypassRoute_dst)
+short int surfxml_bypassRoute_dst_isset;
+AT_surfxml_cluster_topology AX_surfxml_cluster_topology;
+#define A_surfxml_cluster_topology AX_surfxml_cluster_topology
+short int surfxml_cluster_topology_isset;
+AT_surfxml_bypassASroute_src AX_surfxml_bypassASroute_src;
+#define A_surfxml_bypassASroute_src (surfxml_bufferstack + AX_surfxml_bypassASroute_src)
+short int surfxml_bypassASroute_src_isset;
+AT_surfxml_bypassASroute_dst AX_surfxml_bypassASroute_dst;
+#define A_surfxml_bypassASroute_dst (surfxml_bufferstack + AX_surfxml_bypassASroute_dst)
+short int surfxml_bypassASroute_dst_isset;
+AT_surfxml_host_id AX_surfxml_host_id;
+#define A_surfxml_host_id (surfxml_bufferstack + AX_surfxml_host_id)
+short int surfxml_host_id_isset;
+AT_surfxml_random_id AX_surfxml_random_id;
+#define A_surfxml_random_id (surfxml_bufferstack + AX_surfxml_random_id)
+short int surfxml_random_id_isset;
+AT_surfxml_process_kill___time AX_surfxml_process_kill___time;
+#define A_surfxml_process_kill___time (surfxml_bufferstack + AX_surfxml_process_kill___time)
+short int surfxml_process_kill___time_isset;
+AT_surfxml_route_src AX_surfxml_route_src;
+#define A_surfxml_route_src (surfxml_bufferstack + AX_surfxml_route_src)
+short int surfxml_route_src_isset;
+AT_surfxml_link_latency___file AX_surfxml_link_latency___file;
+#define A_surfxml_link_latency___file (surfxml_bufferstack + AX_surfxml_link_latency___file)
+short int surfxml_link_latency___file_isset;
+AT_surfxml_peer_power AX_surfxml_peer_power;
+#define A_surfxml_peer_power (surfxml_bufferstack + AX_surfxml_peer_power)
+short int surfxml_peer_power_isset;
+AT_surfxml_random_seed AX_surfxml_random_seed;
+#define A_surfxml_random_seed (surfxml_bufferstack + AX_surfxml_random_seed)
+short int surfxml_random_seed_isset;
+AT_surfxml_cluster_power AX_surfxml_cluster_power;
+#define A_surfxml_cluster_power (surfxml_bufferstack + AX_surfxml_cluster_power)
+short int surfxml_cluster_power_isset;
+AT_surfxml_storage_id AX_surfxml_storage_id;
+#define A_surfxml_storage_id (surfxml_bufferstack + AX_surfxml_storage_id)
+short int surfxml_storage_id_isset;
+AT_surfxml_storage___type_size AX_surfxml_storage___type_size;
+#define A_surfxml_storage___type_size (surfxml_bufferstack + AX_surfxml_storage___type_size)
+short int surfxml_storage___type_size_isset;
+AT_surfxml_link_state___file AX_surfxml_link_state___file;
+#define A_surfxml_link_state___file (surfxml_bufferstack + AX_surfxml_link_state___file)
+short int surfxml_link_state___file_isset;
+AT_surfxml_argument_value AX_surfxml_argument_value;
+#define A_surfxml_argument_value (surfxml_bufferstack + AX_surfxml_argument_value)
+short int surfxml_argument_value_isset;
+AT_surfxml_bypassRoute_src AX_surfxml_bypassRoute_src;
+#define A_surfxml_bypassRoute_src (surfxml_bufferstack + AX_surfxml_bypassRoute_src)
+short int surfxml_bypassRoute_src_isset;
+AT_surfxml_platform_version AX_surfxml_platform_version;
+#define A_surfxml_platform_version (surfxml_bufferstack + AX_surfxml_platform_version)
+short int surfxml_platform_version_isset;
+AT_surfxml_model___prop_id AX_surfxml_model___prop_id;
+#define A_surfxml_model___prop_id (surfxml_bufferstack + AX_surfxml_model___prop_id)
+short int surfxml_model___prop_id_isset;
+AT_surfxml_cabinet_prefix AX_surfxml_cabinet_prefix;
+#define A_surfxml_cabinet_prefix (surfxml_bufferstack + AX_surfxml_cabinet_prefix)
+short int surfxml_cabinet_prefix_isset;
+AT_surfxml_router_coordinates AX_surfxml_router_coordinates;
+#define A_surfxml_router_coordinates (surfxml_bufferstack + AX_surfxml_router_coordinates)
+short int surfxml_router_coordinates_isset;
+AT_surfxml_host_state AX_surfxml_host_state;
+#define A_surfxml_host_state AX_surfxml_host_state
+short int surfxml_host_state_isset;
+AT_surfxml_random_radical AX_surfxml_random_radical;
+#define A_surfxml_random_radical (surfxml_bufferstack + AX_surfxml_random_radical)
+short int surfxml_random_radical_isset;
+AT_surfxml_ASroute_gw___src AX_surfxml_ASroute_gw___src;
+#define A_surfxml_ASroute_gw___src (surfxml_bufferstack + AX_surfxml_ASroute_gw___src)
+short int surfxml_ASroute_gw___src_isset;
+AT_surfxml_link_latency AX_surfxml_link_latency;
+#define A_surfxml_link_latency (surfxml_bufferstack + AX_surfxml_link_latency)
+short int surfxml_link_latency_isset;
+AT_surfxml_peer_availability___file AX_surfxml_peer_availability___file;
+#define A_surfxml_peer_availability___file (surfxml_bufferstack + AX_surfxml_peer_availability___file)
+short int surfxml_peer_availability___file_isset;
+AT_surfxml_mstorage_name AX_surfxml_mstorage_name;
+#define A_surfxml_mstorage_name (surfxml_bufferstack + AX_surfxml_mstorage_name)
+short int surfxml_mstorage_name_isset;
+AT_surfxml_process_on___failure AX_surfxml_process_on___failure;
+#define A_surfxml_process_on___failure AX_surfxml_process_on___failure
+short int surfxml_process_on___failure_isset;
+AT_surfxml_mount_name AX_surfxml_mount_name;
+#define A_surfxml_mount_name (surfxml_bufferstack + AX_surfxml_mount_name)
+short int surfxml_mount_name_isset;
+AT_surfxml_gpu_name AX_surfxml_gpu_name;
+#define A_surfxml_gpu_name (surfxml_bufferstack + AX_surfxml_gpu_name)
+short int surfxml_gpu_name_isset;
+AT_surfxml_trace___connect_element AX_surfxml_trace___connect_element;
+#define A_surfxml_trace___connect_element (surfxml_bufferstack + AX_surfxml_trace___connect_element)
+short int surfxml_trace___connect_element_isset;
+AT_surfxml_process_start___time AX_surfxml_process_start___time;
+#define A_surfxml_process_start___time (surfxml_bufferstack + AX_surfxml_process_start___time)
+short int surfxml_process_start___time_isset;
+AT_surfxml_host_state___file AX_surfxml_host_state___file;
+#define A_surfxml_host_state___file (surfxml_bufferstack + AX_surfxml_host_state___file)
+short int surfxml_host_state___file_isset;
+AT_surfxml_host_availability AX_surfxml_host_availability;
+#define A_surfxml_host_availability (surfxml_bufferstack + AX_surfxml_host_availability)
+short int surfxml_host_availability_isset;
+AT_surfxml_backbone_latency AX_surfxml_backbone_latency;
+#define A_surfxml_backbone_latency (surfxml_bufferstack + AX_surfxml_backbone_latency)
+short int surfxml_backbone_latency_isset;
+AT_surfxml_trace___connect_kind AX_surfxml_trace___connect_kind;
+#define A_surfxml_trace___connect_kind AX_surfxml_trace___connect_kind
+short int surfxml_trace___connect_kind_isset;
+AT_surfxml_link_bandwidth AX_surfxml_link_bandwidth;
+#define A_surfxml_link_bandwidth (surfxml_bufferstack + AX_surfxml_link_bandwidth)
+short int surfxml_link_bandwidth_isset;
 AT_surfxml_host_coordinates AX_surfxml_host_coordinates;
 #define A_surfxml_host_coordinates (surfxml_bufferstack + AX_surfxml_host_coordinates)
 short int surfxml_host_coordinates_isset;
 AT_surfxml_trace_id AX_surfxml_trace_id;
 #define A_surfxml_trace_id (surfxml_bufferstack + AX_surfxml_trace_id)
 short int surfxml_trace_id_isset;
-AT_surfxml_peer_power AX_surfxml_peer_power;
-#define A_surfxml_peer_power (surfxml_bufferstack + AX_surfxml_peer_power)
-short int surfxml_peer_power_isset;
-AT_surfxml_cluster_radical AX_surfxml_cluster_radical;
-#define A_surfxml_cluster_radical (surfxml_bufferstack + AX_surfxml_cluster_radical)
-short int surfxml_cluster_radical_isset;
-AT_surfxml_config_id AX_surfxml_config_id;
-#define A_surfxml_config_id (surfxml_bufferstack + AX_surfxml_config_id)
-short int surfxml_config_id_isset;
-AT_surfxml_bypassASroute_gw___dst AX_surfxml_bypassASroute_gw___dst;
-#define A_surfxml_bypassASroute_gw___dst (surfxml_bufferstack + AX_surfxml_bypassASroute_gw___dst)
-short int surfxml_bypassASroute_gw___dst_isset;
-AT_surfxml_host___link_down AX_surfxml_host___link_down;
-#define A_surfxml_host___link_down (surfxml_bufferstack + AX_surfxml_host___link_down)
-short int surfxml_host___link_down_isset;
-AT_surfxml_include_file AX_surfxml_include_file;
-#define A_surfxml_include_file (surfxml_bufferstack + AX_surfxml_include_file)
-short int surfxml_include_file_isset;
-AT_surfxml_random_std___deviation AX_surfxml_random_std___deviation;
-#define A_surfxml_random_std___deviation (surfxml_bufferstack + AX_surfxml_random_std___deviation)
-short int surfxml_random_std___deviation_isset;
-AT_surfxml_cluster_core AX_surfxml_cluster_core;
-#define A_surfxml_cluster_core (surfxml_bufferstack + AX_surfxml_cluster_core)
-short int surfxml_cluster_core_isset;
-AT_surfxml_cluster_limiter___link AX_surfxml_cluster_limiter___link;
-#define A_surfxml_cluster_limiter___link (surfxml_bufferstack + AX_surfxml_cluster_limiter___link)
-short int surfxml_cluster_limiter___link_isset;
-AT_surfxml_host_state___file AX_surfxml_host_state___file;
-#define A_surfxml_host_state___file (surfxml_bufferstack + AX_surfxml_host_state___file)
-short int surfxml_host_state___file_isset;
-AT_surfxml_route_dst AX_surfxml_route_dst;
-#define A_surfxml_route_dst (surfxml_bufferstack + AX_surfxml_route_dst)
-short int surfxml_route_dst_isset;
-AT_surfxml_cluster_bw AX_surfxml_cluster_bw;
-#define A_surfxml_cluster_bw (surfxml_bufferstack + AX_surfxml_cluster_bw)
-short int surfxml_cluster_bw_isset;
-AT_surfxml_platform_version AX_surfxml_platform_version;
-#define A_surfxml_platform_version (surfxml_bufferstack + AX_surfxml_platform_version)
-short int surfxml_platform_version_isset;
+AT_surfxml_host_availability___file AX_surfxml_host_availability___file;
+#define A_surfxml_host_availability___file (surfxml_bufferstack + AX_surfxml_host_availability___file)
+short int surfxml_host_availability___file_isset;
+AT_surfxml_link_state AX_surfxml_link_state;
+#define A_surfxml_link_state AX_surfxml_link_state
+short int surfxml_link_state_isset;
+AT_surfxml_trace___connect_trace AX_surfxml_trace___connect_trace;
+#define A_surfxml_trace___connect_trace (surfxml_bufferstack + AX_surfxml_trace___connect_trace)
+short int surfxml_trace___connect_trace_isset;
+AT_surfxml_random_mean AX_surfxml_random_mean;
+#define A_surfxml_random_mean (surfxml_bufferstack + AX_surfxml_random_mean)
+short int surfxml_random_mean_isset;
+AT_surfxml_model___prop_value AX_surfxml_model___prop_value;
+#define A_surfxml_model___prop_value (surfxml_bufferstack + AX_surfxml_model___prop_value)
+short int surfxml_model___prop_value_isset;
 
 /* XML state. */
 #ifdef FLEX_DEBUG
@@ -5342,7 +5349,7 @@ FILE *surf_parse_get_out (void );
 
 void surf_parse_set_out  (FILE * out_str  );
 
-int surf_parse_get_leng (void );
+yy_size_t surf_parse_get_leng (void );
 
 char *surf_parse_get_text (void );
 
@@ -5496,6 +5503,34 @@ YY_DECL
 	register char *yy_cp, *yy_bp;
 	register int yy_act;
     
+	if ( !(yy_init) )
+		{
+		(yy_init) = 1;
+
+#ifdef YY_USER_INIT
+		YY_USER_INIT;
+#endif
+
+		if ( ! (yy_start) )
+			(yy_start) = 1;	/* first start state */
+
+		if ( ! surf_parse_in )
+			surf_parse_in = stdin;
+
+		if ( ! surf_parse_out )
+			surf_parse_out = stdout;
+
+		if ( ! YY_CURRENT_BUFFER ) {
+			surf_parse_ensure_buffer_stack ();
+			YY_CURRENT_BUFFER_LVALUE =
+				surf_parse__create_buffer(surf_parse_in,YY_BUF_SIZE );
+		}
+
+		surf_parse__load_buffer_state( );
+		}
+
+	{
+
  /* Bypass Flex's default INITIAL state and begin by parsing the XML prolog. */
  SET(PROLOG);
  reset_surfxml_parse_err_msg();
@@ -5661,32 +5696,6 @@ YY_DECL
 
  /* COMMENTS and PIs: handled uniformly for efficiency. */
 
-	if ( !(yy_init) )
-		{
-		(yy_init) = 1;
-
-#ifdef YY_USER_INIT
-		YY_USER_INIT;
-#endif
-
-		if ( ! (yy_start) )
-			(yy_start) = 1;	/* first start state */
-
-		if ( ! surf_parse_in )
-			surf_parse_in = stdin;
-
-		if ( ! surf_parse_out )
-			surf_parse_out = stdout;
-
-		if ( ! YY_CURRENT_BUFFER ) {
-			surf_parse_ensure_buffer_stack ();
-			YY_CURRENT_BUFFER_LVALUE =
-				surf_parse__create_buffer(surf_parse_in,YY_BUF_SIZE );
-		}
-
-		surf_parse__load_buffer_state( );
-		}
-
 	while ( 1 )		/* loops until end-of-file is reached */
 		{
 		yy_cp = (yy_c_buf_p);
@@ -5703,7 +5712,7 @@ YY_DECL
 yy_match:
 		do
 			{
-			register YY_CHAR yy_c = yy_ec[YY_SC_TO_UI(*yy_cp)];
+			register YY_CHAR yy_c = yy_ec[YY_SC_TO_UI(*yy_cp)] ;
 			if ( yy_accept[yy_current_state] )
 				{
 				(yy_last_accepting_state) = yy_current_state;
@@ -5733,7 +5742,7 @@ yy_find_action:
 
 		if ( yy_act != YY_END_OF_BUFFER && yy_rule_can_match_eol[yy_act] )
 			{
-			int yyl;
+			yy_size_t yyl;
 			for ( yyl = 0; yyl < surf_parse_leng; ++yyl )
 				if ( surf_parse_text[yyl] == '\n' )
 					   
@@ -5903,13 +5912,13 @@ case 26:
 YY_RULE_SETUP
 FAIL("Unexpected character `%c': `</platform>' expected.",surf_parse_text[0]);
 	YY_BREAK
-case YY_STATE_EOF(S_surfxml_platform_8):
+case YY_STATE_EOF(S_surfxml_platform_4):
 case YY_STATE_EOF(S_surfxml_platform_1):
 case YY_STATE_EOF(S_surfxml_platform_3):
+case YY_STATE_EOF(S_surfxml_platform_8):
 case YY_STATE_EOF(S_surfxml_platform):
-case YY_STATE_EOF(S_surfxml_platform_4):
-case YY_STATE_EOF(S_surfxml_platform_6):
 case YY_STATE_EOF(E_surfxml_platform):
+case YY_STATE_EOF(S_surfxml_platform_6):
 if(!ETag_surfxml_include_state()) FAIL("Premature EOF: `</platform>' expected.");
 	YY_BREAK
 
@@ -5951,10 +5960,10 @@ YY_RULE_SETUP
   if (!AX_surfxml_include_file) FAIL("Required attribute `file' not set for `include' element.");
   LEAVE; STag_surfxml_include(); surfxml_pcdata_ix = 0; ETag_surfxml_include(); popbuffer(); /* attribute */
   switch (YY_START) {
-   case S_surfxml_AS_6: case S_surfxml_AS_5: SET(S_surfxml_AS_6); break;
-   case S_surfxml_platform_5: case S_surfxml_platform_1: case S_surfxml_platform: case S_surfxml_platform_6: case S_surfxml_platform_3: SET(S_surfxml_platform_6); break;
-   case S_surfxml_AS_1: case S_surfxml_AS_14: case S_surfxml_AS_3: case S_surfxml_AS_13: case S_surfxml_AS: SET(S_surfxml_AS_14); break;
+   case S_surfxml_AS_5: case S_surfxml_AS_6: SET(S_surfxml_AS_6); break;
    case S_surfxml_include: case S_surfxml_include_2: case S_surfxml_include_1: SET(S_surfxml_include_2); break;
+   case S_surfxml_AS_13: case S_surfxml_AS_14: case S_surfxml_AS_3: case S_surfxml_AS: case S_surfxml_AS_1: SET(S_surfxml_AS_14); break;
+   case S_surfxml_platform_1: case S_surfxml_platform: case S_surfxml_platform_3: case S_surfxml_platform_5: case S_surfxml_platform_6: SET(S_surfxml_platform_6); break;
   }
  }
 	YY_BREAK
@@ -5978,10 +5987,10 @@ YY_RULE_SETUP
   ETag_surfxml_include();
   popbuffer(); /* attribute */
   switch (YY_START) {
-   case S_surfxml_AS_6: case S_surfxml_AS_5: SET(S_surfxml_AS_6); break;
-   case S_surfxml_platform_5: case S_surfxml_platform_1: case S_surfxml_platform: case S_surfxml_platform_6: case S_surfxml_platform_3: SET(S_surfxml_platform_6); break;
-   case S_surfxml_AS_1: case S_surfxml_AS_14: case S_surfxml_AS_3: case S_surfxml_AS_13: case S_surfxml_AS: SET(S_surfxml_AS_14); break;
+   case S_surfxml_AS_5: case S_surfxml_AS_6: SET(S_surfxml_AS_6); break;
    case S_surfxml_include: case S_surfxml_include_2: case S_surfxml_include_1: SET(S_surfxml_include_2); break;
+   case S_surfxml_AS_13: case S_surfxml_AS_14: case S_surfxml_AS_3: case S_surfxml_AS: case S_surfxml_AS_1: SET(S_surfxml_AS_14); break;
+   case S_surfxml_platform_1: case S_surfxml_platform: case S_surfxml_platform_3: case S_surfxml_platform_5: case S_surfxml_platform_6: SET(S_surfxml_platform_6); break;
   }
  }
 	YY_BREAK
@@ -5995,8 +6004,8 @@ YY_RULE_SETUP
 FAIL("Unexpected character `%c': `</include>' expected.",surf_parse_text[0]);
 	YY_BREAK
 case YY_STATE_EOF(E_surfxml_include):
-case YY_STATE_EOF(S_surfxml_include):
 case YY_STATE_EOF(S_surfxml_include_2):
+case YY_STATE_EOF(S_surfxml_include):
 if(!ETag_surfxml_include_state()) FAIL("Premature EOF: `</include>' expected.");
 	YY_BREAK
 
@@ -6064,13 +6073,13 @@ YY_RULE_SETUP
   if (!AX_surfxml_trace_periodicity) FAIL("Required attribute `periodicity' not set for `trace' element.");
   LEAVE; STag_surfxml_trace(); surfxml_pcdata_ix = 0; ETag_surfxml_trace(); popbuffer(); /* attribute */
   switch (YY_START) {
-   case S_surfxml_AS_11: case S_surfxml_AS_10: case S_surfxml_AS_7: SET(S_surfxml_AS_11); break;
-   case S_surfxml_AS_12: case S_surfxml_AS_15: case S_surfxml_AS_16: SET(S_surfxml_AS_16); break;
-   case S_surfxml_AS_5: SET(S_surfxml_AS_6); break;
-   case S_surfxml_platform_6: case S_surfxml_platform_5: case S_surfxml_platform_1: case S_surfxml_platform: case S_surfxml_platform_3: SET(S_surfxml_platform_6); break;
+   case S_surfxml_platform: case S_surfxml_platform_5: case S_surfxml_platform_1: case S_surfxml_platform_3: case S_surfxml_platform_6: SET(S_surfxml_platform_6); break;
    case S_surfxml_AS_14: case S_surfxml_AS_13: SET(S_surfxml_AS_14); break;
-   case S_surfxml_AS_9: case S_surfxml_AS_1: case S_surfxml_AS: case S_surfxml_AS_8: case S_surfxml_AS_4: case S_surfxml_AS_6: case S_surfxml_AS_3: SET(S_surfxml_AS_9); break;
-   case S_surfxml_include: case S_surfxml_include_2: case S_surfxml_include_1: SET(S_surfxml_include_2); break;
+   case S_surfxml_AS_4: case S_surfxml_AS_11: case S_surfxml_AS: case S_surfxml_AS_9: case S_surfxml_AS_7: case S_surfxml_AS_10: SET(S_surfxml_AS_11); break;
+   case S_surfxml_include_1: case S_surfxml_include_2: case S_surfxml_include: SET(S_surfxml_include_2); break;
+   case S_surfxml_AS_12: case S_surfxml_AS_3: case S_surfxml_AS_16: case S_surfxml_AS_1: case S_surfxml_AS_15: SET(S_surfxml_AS_16); break;
+   case S_surfxml_AS_5: case S_surfxml_AS_6: SET(S_surfxml_AS_6); break;
+   case S_surfxml_AS_8: SET(S_surfxml_AS_9); break;
   }
  }
 	YY_BREAK
@@ -6096,13 +6105,13 @@ YY_RULE_SETUP
   surfxml_pcdata_ix = popbuffer();
   popbuffer(); /* attribute */
   switch (YY_START) {
-   case S_surfxml_AS_11: case S_surfxml_AS_10: case S_surfxml_AS_7: SET(S_surfxml_AS_11); break;
-   case S_surfxml_AS_12: case S_surfxml_AS_15: case S_surfxml_AS_16: SET(S_surfxml_AS_16); break;
-   case S_surfxml_AS_5: SET(S_surfxml_AS_6); break;
-   case S_surfxml_platform_6: case S_surfxml_platform_5: case S_surfxml_platform_1: case S_surfxml_platform: case S_surfxml_platform_3: SET(S_surfxml_platform_6); break;
+   case S_surfxml_platform: case S_surfxml_platform_5: case S_surfxml_platform_1: case S_surfxml_platform_3: case S_surfxml_platform_6: SET(S_surfxml_platform_6); break;
    case S_surfxml_AS_14: case S_surfxml_AS_13: SET(S_surfxml_AS_14); break;
-   case S_surfxml_AS_9: case S_surfxml_AS_1: case S_surfxml_AS: case S_surfxml_AS_8: case S_surfxml_AS_4: case S_surfxml_AS_6: case S_surfxml_AS_3: SET(S_surfxml_AS_9); break;
-   case S_surfxml_include: case S_surfxml_include_2: case S_surfxml_include_1: SET(S_surfxml_include_2); break;
+   case S_surfxml_AS_4: case S_surfxml_AS_11: case S_surfxml_AS: case S_surfxml_AS_9: case S_surfxml_AS_7: case S_surfxml_AS_10: SET(S_surfxml_AS_11); break;
+   case S_surfxml_include_1: case S_surfxml_include_2: case S_surfxml_include: SET(S_surfxml_include_2); break;
+   case S_surfxml_AS_12: case S_surfxml_AS_3: case S_surfxml_AS_16: case S_surfxml_AS_1: case S_surfxml_AS_15: SET(S_surfxml_AS_16); break;
+   case S_surfxml_AS_5: case S_surfxml_AS_6: SET(S_surfxml_AS_6); break;
+   case S_surfxml_AS_8: SET(S_surfxml_AS_9); break;
   }
  }
 	YY_BREAK
@@ -6393,12 +6402,12 @@ YY_RULE_SETUP
   if (!AX_surfxml_trace___connect_element) FAIL("Required attribute `element' not set for `trace_connect' element.");
   LEAVE; STag_surfxml_trace___connect(); surfxml_pcdata_ix = 0; ETag_surfxml_trace___connect(); popbuffer(); /* attribute */
   switch (YY_START) {
-   case S_surfxml_AS_11: case S_surfxml_AS_10: case S_surfxml_AS_7: SET(S_surfxml_AS_11); break;
-   case S_surfxml_AS_12: case S_surfxml_AS_15: case S_surfxml_AS_16: SET(S_surfxml_AS_16); break;
-   case S_surfxml_AS_5: SET(S_surfxml_AS_6); break;
-   case S_surfxml_platform_6: case S_surfxml_platform_5: case S_surfxml_platform_1: case S_surfxml_platform: case S_surfxml_platform_3: SET(S_surfxml_platform_6); break;
-   case S_surfxml_AS_14: case S_surfxml_AS_13: SET(S_surfxml_AS_14); break;
-   case S_surfxml_AS_9: case S_surfxml_AS_1: case S_surfxml_AS: case S_surfxml_AS_8: case S_surfxml_AS_4: case S_surfxml_AS_6: case S_surfxml_AS_3: SET(S_surfxml_AS_9); break;
+   case S_surfxml_platform_3: case S_surfxml_platform_6: case S_surfxml_platform_1: case S_surfxml_platform_5: case S_surfxml_platform: SET(S_surfxml_platform_6); break;
+   case S_surfxml_AS_13: case S_surfxml_AS_14: SET(S_surfxml_AS_14); break;
+   case S_surfxml_AS_15: case S_surfxml_AS_1: case S_surfxml_AS_3: case S_surfxml_AS_16: case S_surfxml_AS_12: SET(S_surfxml_AS_16); break;
+   case S_surfxml_AS_8: SET(S_surfxml_AS_9); break;
+   case S_surfxml_AS_6: case S_surfxml_AS_5: SET(S_surfxml_AS_6); break;
+   case S_surfxml_AS_10: case S_surfxml_AS_9: case S_surfxml_AS_7: case S_surfxml_AS: case S_surfxml_AS_11: case S_surfxml_AS_4: SET(S_surfxml_AS_11); break;
    case S_surfxml_include: case S_surfxml_include_2: case S_surfxml_include_1: SET(S_surfxml_include_2); break;
   }
  }
@@ -6423,12 +6432,12 @@ YY_RULE_SETUP
   ETag_surfxml_trace___connect();
   popbuffer(); /* attribute */
   switch (YY_START) {
-   case S_surfxml_AS_11: case S_surfxml_AS_10: case S_surfxml_AS_7: SET(S_surfxml_AS_11); break;
-   case S_surfxml_AS_12: case S_surfxml_AS_15: case S_surfxml_AS_16: SET(S_surfxml_AS_16); break;
-   case S_surfxml_AS_5: SET(S_surfxml_AS_6); break;
-   case S_surfxml_platform_6: case S_surfxml_platform_5: case S_surfxml_platform_1: case S_surfxml_platform: case S_surfxml_platform_3: SET(S_surfxml_platform_6); break;
-   case S_surfxml_AS_14: case S_surfxml_AS_13: SET(S_surfxml_AS_14); break;
-   case S_surfxml_AS_9: case S_surfxml_AS_1: case S_surfxml_AS: case S_surfxml_AS_8: case S_surfxml_AS_4: case S_surfxml_AS_6: case S_surfxml_AS_3: SET(S_surfxml_AS_9); break;
+   case S_surfxml_platform_3: case S_surfxml_platform_6: case S_surfxml_platform_1: case S_surfxml_platform_5: case S_surfxml_platform: SET(S_surfxml_platform_6); break;
+   case S_surfxml_AS_13: case S_surfxml_AS_14: SET(S_surfxml_AS_14); break;
+   case S_surfxml_AS_15: case S_surfxml_AS_1: case S_surfxml_AS_3: case S_surfxml_AS_16: case S_surfxml_AS_12: SET(S_surfxml_AS_16); break;
+   case S_surfxml_AS_8: SET(S_surfxml_AS_9); break;
+   case S_surfxml_AS_6: case S_surfxml_AS_5: SET(S_surfxml_AS_6); break;
+   case S_surfxml_AS_10: case S_surfxml_AS_9: case S_surfxml_AS_7: case S_surfxml_AS: case S_surfxml_AS_11: case S_surfxml_AS_4: SET(S_surfxml_AS_11); break;
    case S_surfxml_include: case S_surfxml_include_2: case S_surfxml_include_1: SET(S_surfxml_include_2); break;
   }
  }
@@ -6544,9 +6553,9 @@ YY_RULE_SETUP
   if (!AX_surfxml_AS_routing) FAIL("Required attribute `routing' not set for `AS' element.");
   LEAVE; STag_surfxml_AS(); surfxml_pcdata_ix = 0; ETag_surfxml_AS(); popbuffer(); /* attribute */
   switch (YY_START) {
-   case S_surfxml_AS_1: case S_surfxml_AS_5: case S_surfxml_AS: case S_surfxml_AS_6: case S_surfxml_AS_3: SET(S_surfxml_AS_6); break;
-   case S_surfxml_platform_6: case S_surfxml_platform_5: case S_surfxml_platform_1: case S_surfxml_platform: case S_surfxml_platform_3: SET(S_surfxml_platform_6); break;
+   case S_surfxml_AS_6: case S_surfxml_AS_5: case S_surfxml_AS_1: case S_surfxml_AS_3: case S_surfxml_AS: SET(S_surfxml_AS_6); break;
    case S_surfxml_include: case S_surfxml_include_2: case S_surfxml_include_1: SET(S_surfxml_include_2); break;
+   case S_surfxml_platform_1: case S_surfxml_platform_6: case S_surfxml_platform_3: case S_surfxml_platform: case S_surfxml_platform_5: SET(S_surfxml_platform_6); break;
   }
  }
 	YY_BREAK
@@ -6570,9 +6579,9 @@ YY_RULE_SETUP
   ETag_surfxml_AS();
   popbuffer(); /* attribute */
   switch (YY_START) {
-   case S_surfxml_AS_1: case S_surfxml_AS_5: case S_surfxml_AS: case S_surfxml_AS_6: case S_surfxml_AS_3: SET(S_surfxml_AS_6); break;
-   case S_surfxml_platform_6: case S_surfxml_platform_5: case S_surfxml_platform_1: case S_surfxml_platform: case S_surfxml_platform_3: SET(S_surfxml_platform_6); break;
+   case S_surfxml_AS_6: case S_surfxml_AS_5: case S_surfxml_AS_1: case S_surfxml_AS_3: case S_surfxml_AS: SET(S_surfxml_AS_6); break;
    case S_surfxml_include: case S_surfxml_include_2: case S_surfxml_include_1: SET(S_surfxml_include_2); break;
+   case S_surfxml_platform_1: case S_surfxml_platform_6: case S_surfxml_platform_3: case S_surfxml_platform: case S_surfxml_platform_5: SET(S_surfxml_platform_6); break;
   }
  }
 	YY_BREAK
@@ -6585,18 +6594,18 @@ case 132:
 YY_RULE_SETUP
 FAIL("Unexpected character `%c': `</AS>' expected.",surf_parse_text[0]);
 	YY_BREAK
-case YY_STATE_EOF(S_surfxml_AS_12):
-case YY_STATE_EOF(S_surfxml_AS_9):
-case YY_STATE_EOF(S_surfxml_AS_1):
-case YY_STATE_EOF(S_surfxml_AS_7):
 case YY_STATE_EOF(S_surfxml_AS_11):
+case YY_STATE_EOF(S_surfxml_AS_4):
 case YY_STATE_EOF(S_surfxml_AS_14):
 case YY_STATE_EOF(S_surfxml_AS_6):
-case YY_STATE_EOF(E_surfxml_AS):
-case YY_STATE_EOF(S_surfxml_AS_16):
+case YY_STATE_EOF(S_surfxml_AS_12):
 case YY_STATE_EOF(S_surfxml_AS_3):
 case YY_STATE_EOF(S_surfxml_AS):
-case YY_STATE_EOF(S_surfxml_AS_4):
+case YY_STATE_EOF(S_surfxml_AS_16):
+case YY_STATE_EOF(E_surfxml_AS):
+case YY_STATE_EOF(S_surfxml_AS_7):
+case YY_STATE_EOF(S_surfxml_AS_9):
+case YY_STATE_EOF(S_surfxml_AS_1):
 if(!ETag_surfxml_include_state()) FAIL("Premature EOF: `</AS>' expected.");
 	YY_BREAK
 
@@ -6690,8 +6699,8 @@ YY_RULE_SETUP
   if (!AX_surfxml_storage___type_size) FAIL("Required attribute `size' not set for `storage_type' element.");
   LEAVE; STag_surfxml_storage___type(); surfxml_pcdata_ix = 0; ETag_surfxml_storage___type(); popbuffer(); /* attribute */
   switch (YY_START) {
-   case S_surfxml_AS_5: case S_surfxml_AS_6: SET(S_surfxml_AS_6); break;
-   case S_surfxml_AS_1: case S_surfxml_AS_14: case S_surfxml_AS_13: case S_surfxml_AS: case S_surfxml_AS_3: SET(S_surfxml_AS_14); break;
+   case S_surfxml_AS_6: case S_surfxml_AS_5: SET(S_surfxml_AS_6); break;
+   case S_surfxml_AS_13: case S_surfxml_AS: case S_surfxml_AS_3: case S_surfxml_AS_1: case S_surfxml_AS_14: SET(S_surfxml_AS_14); break;
   }
  }
 	YY_BREAK
@@ -6715,8 +6724,8 @@ YY_RULE_SETUP
   ETag_surfxml_storage___type();
   popbuffer(); /* attribute */
   switch (YY_START) {
-   case S_surfxml_AS_5: case S_surfxml_AS_6: SET(S_surfxml_AS_6); break;
-   case S_surfxml_AS_1: case S_surfxml_AS_14: case S_surfxml_AS_13: case S_surfxml_AS: case S_surfxml_AS_3: SET(S_surfxml_AS_14); break;
+   case S_surfxml_AS_6: case S_surfxml_AS_5: SET(S_surfxml_AS_6); break;
+   case S_surfxml_AS_13: case S_surfxml_AS: case S_surfxml_AS_3: case S_surfxml_AS_1: case S_surfxml_AS_14: SET(S_surfxml_AS_14); break;
   }
  }
 	YY_BREAK
@@ -6729,9 +6738,9 @@ case 151:
 YY_RULE_SETUP
 FAIL("Unexpected character `%c': `</storage_type>' expected.",surf_parse_text[0]);
 	YY_BREAK
-case YY_STATE_EOF(E_surfxml_storage___type):
-case YY_STATE_EOF(S_surfxml_storage___type):
 case YY_STATE_EOF(S_surfxml_storage___type_2):
+case YY_STATE_EOF(S_surfxml_storage___type):
+case YY_STATE_EOF(E_surfxml_storage___type):
 if(!ETag_surfxml_include_state()) FAIL("Premature EOF: `</storage_type>' expected.");
 	YY_BREAK
 
@@ -6787,7 +6796,7 @@ YY_RULE_SETUP
   if (!AX_surfxml_mount_name) FAIL("Required attribute `name' not set for `mount' element.");
   LEAVE; STag_surfxml_mount(); surfxml_pcdata_ix = 0; ETag_surfxml_mount(); popbuffer(); /* attribute */
   switch (YY_START) {
-   case S_surfxml_host_1: case S_surfxml_host_2: case S_surfxml_host: SET(S_surfxml_host_2); break;
+   case S_surfxml_host_2: case S_surfxml_host_1: case S_surfxml_host: SET(S_surfxml_host_2); break;
   }
  }
 	YY_BREAK
@@ -6811,7 +6820,7 @@ YY_RULE_SETUP
   ETag_surfxml_mount();
   popbuffer(); /* attribute */
   switch (YY_START) {
-   case S_surfxml_host_1: case S_surfxml_host_2: case S_surfxml_host: SET(S_surfxml_host_2); break;
+   case S_surfxml_host_2: case S_surfxml_host_1: case S_surfxml_host: SET(S_surfxml_host_2); break;
   }
  }
 	YY_BREAK
@@ -6880,7 +6889,7 @@ YY_RULE_SETUP
   if (!AX_surfxml_mstorage_name) FAIL("Required attribute `name' not set for `mstorage' element.");
   LEAVE; STag_surfxml_mstorage(); surfxml_pcdata_ix = 0; ETag_surfxml_mstorage(); popbuffer(); /* attribute */
   switch (YY_START) {
-   case S_surfxml_host_1: case S_surfxml_host_2: case S_surfxml_host: SET(S_surfxml_host_2); break;
+   case S_surfxml_host: case S_surfxml_host_1: case S_surfxml_host_2: SET(S_surfxml_host_2); break;
   }
  }
 	YY_BREAK
@@ -6904,7 +6913,7 @@ YY_RULE_SETUP
   ETag_surfxml_mstorage();
   popbuffer(); /* attribute */
   switch (YY_START) {
-   case S_surfxml_host_1: case S_surfxml_host_2: case S_surfxml_host: SET(S_surfxml_host_2); break;
+   case S_surfxml_host: case S_surfxml_host_1: case S_surfxml_host_2: SET(S_surfxml_host_2); break;
   }
  }
 	YY_BREAK
@@ -7061,7 +7070,7 @@ YY_RULE_SETUP
   if (!AX_surfxml_host_power) FAIL("Required attribute `power' not set for `host' element.");
   LEAVE; STag_surfxml_host(); surfxml_pcdata_ix = 0; ETag_surfxml_host(); popbuffer(); /* attribute */
   switch (YY_START) {
-   case S_surfxml_AS_1: case S_surfxml_AS_14: case S_surfxml_AS_13: case S_surfxml_AS: case S_surfxml_AS_3: SET(S_surfxml_AS_14); break;
+   case S_surfxml_AS_13: case S_surfxml_AS: case S_surfxml_AS_3: case S_surfxml_AS_1: case S_surfxml_AS_14: SET(S_surfxml_AS_14); break;
   }
  }
 	YY_BREAK
@@ -7085,7 +7094,7 @@ YY_RULE_SETUP
   ETag_surfxml_host();
   popbuffer(); /* attribute */
   switch (YY_START) {
-   case S_surfxml_AS_1: case S_surfxml_AS_14: case S_surfxml_AS_13: case S_surfxml_AS: case S_surfxml_AS_3: SET(S_surfxml_AS_14); break;
+   case S_surfxml_AS_13: case S_surfxml_AS: case S_surfxml_AS_3: case S_surfxml_AS_1: case S_surfxml_AS_14: SET(S_surfxml_AS_14); break;
   }
  }
 	YY_BREAK
@@ -7099,8 +7108,8 @@ YY_RULE_SETUP
 FAIL("Unexpected character `%c': `</host>' expected.",surf_parse_text[0]);
 	YY_BREAK
 case YY_STATE_EOF(S_surfxml_host):
-case YY_STATE_EOF(E_surfxml_host):
 case YY_STATE_EOF(S_surfxml_host_2):
+case YY_STATE_EOF(E_surfxml_host):
 if(!ETag_surfxml_include_state()) FAIL("Premature EOF: `</host>' expected.");
 	YY_BREAK
 
@@ -7194,8 +7203,8 @@ YY_RULE_SETUP
   if (!AX_surfxml_storage_attach) FAIL("Required attribute `attach' not set for `storage' element.");
   LEAVE; STag_surfxml_storage(); surfxml_pcdata_ix = 0; ETag_surfxml_storage(); popbuffer(); /* attribute */
   switch (YY_START) {
-   case S_surfxml_AS_5: case S_surfxml_AS_6: SET(S_surfxml_AS_6); break;
-   case S_surfxml_AS_1: case S_surfxml_AS_14: case S_surfxml_AS_13: case S_surfxml_AS: case S_surfxml_AS_3: SET(S_surfxml_AS_14); break;
+   case S_surfxml_AS_13: case S_surfxml_AS: case S_surfxml_AS_3: case S_surfxml_AS_1: case S_surfxml_AS_14: SET(S_surfxml_AS_14); break;
+   case S_surfxml_AS_6: case S_surfxml_AS_5: SET(S_surfxml_AS_6); break;
   }
  }
 	YY_BREAK
@@ -7219,8 +7228,8 @@ YY_RULE_SETUP
   ETag_surfxml_storage();
   popbuffer(); /* attribute */
   switch (YY_START) {
-   case S_surfxml_AS_5: case S_surfxml_AS_6: SET(S_surfxml_AS_6); break;
-   case S_surfxml_AS_1: case S_surfxml_AS_14: case S_surfxml_AS_13: case S_surfxml_AS: case S_surfxml_AS_3: SET(S_surfxml_AS_14); break;
+   case S_surfxml_AS_13: case S_surfxml_AS: case S_surfxml_AS_3: case S_surfxml_AS_1: case S_surfxml_AS_14: SET(S_surfxml_AS_14); break;
+   case S_surfxml_AS_6: case S_surfxml_AS_5: SET(S_surfxml_AS_6); break;
   }
  }
 	YY_BREAK
@@ -7233,9 +7242,9 @@ case 225:
 YY_RULE_SETUP
 FAIL("Unexpected character `%c': `</storage>' expected.",surf_parse_text[0]);
 	YY_BREAK
-case YY_STATE_EOF(E_surfxml_storage):
-case YY_STATE_EOF(S_surfxml_storage):
 case YY_STATE_EOF(S_surfxml_storage_2):
+case YY_STATE_EOF(S_surfxml_storage):
+case YY_STATE_EOF(E_surfxml_storage):
 if(!ETag_surfxml_include_state()) FAIL("Premature EOF: `</storage>' expected.");
 	YY_BREAK
 
@@ -7277,7 +7286,7 @@ YY_RULE_SETUP
   if (!AX_surfxml_gpu_name) FAIL("Required attribute `name' not set for `gpu' element.");
   LEAVE; STag_surfxml_gpu(); surfxml_pcdata_ix = 0; ETag_surfxml_gpu(); popbuffer(); /* attribute */
   switch (YY_START) {
-   case S_surfxml_AS_1: case S_surfxml_AS_14: case S_surfxml_AS_13: case S_surfxml_AS: case S_surfxml_AS_3: SET(S_surfxml_AS_14); break;
+   case S_surfxml_AS_1: case S_surfxml_AS: case S_surfxml_AS_3: case S_surfxml_AS_14: case S_surfxml_AS_13: SET(S_surfxml_AS_14); break;
   }
  }
 	YY_BREAK
@@ -7301,7 +7310,7 @@ YY_RULE_SETUP
   ETag_surfxml_gpu();
   popbuffer(); /* attribute */
   switch (YY_START) {
-   case S_surfxml_AS_1: case S_surfxml_AS_14: case S_surfxml_AS_13: case S_surfxml_AS: case S_surfxml_AS_3: SET(S_surfxml_AS_14); break;
+   case S_surfxml_AS_1: case S_surfxml_AS: case S_surfxml_AS_3: case S_surfxml_AS_14: case S_surfxml_AS_13: SET(S_surfxml_AS_14); break;
   }
  }
 	YY_BREAK
@@ -7384,7 +7393,7 @@ YY_RULE_SETUP
   if (!AX_surfxml_host___link_down) FAIL("Required attribute `down' not set for `host_link' element.");
   LEAVE; STag_surfxml_host___link(); surfxml_pcdata_ix = 0; ETag_surfxml_host___link(); popbuffer(); /* attribute */
   switch (YY_START) {
-   case S_surfxml_AS_1: case S_surfxml_AS_14: case S_surfxml_AS_13: case S_surfxml_AS: case S_surfxml_AS_3: SET(S_surfxml_AS_14); break;
+   case S_surfxml_AS_14: case S_surfxml_AS_1: case S_surfxml_AS_3: case S_surfxml_AS: case S_surfxml_AS_13: SET(S_surfxml_AS_14); break;
   }
  }
 	YY_BREAK
@@ -7408,7 +7417,7 @@ YY_RULE_SETUP
   ETag_surfxml_host___link();
   popbuffer(); /* attribute */
   switch (YY_START) {
-   case S_surfxml_AS_1: case S_surfxml_AS_14: case S_surfxml_AS_13: case S_surfxml_AS: case S_surfxml_AS_3: SET(S_surfxml_AS_14); break;
+   case S_surfxml_AS_14: case S_surfxml_AS_1: case S_surfxml_AS_3: case S_surfxml_AS: case S_surfxml_AS_13: SET(S_surfxml_AS_14); break;
   }
  }
 	YY_BREAK
@@ -7722,9 +7731,9 @@ YY_RULE_SETUP
   if (!AX_surfxml_cluster_lat) FAIL("Required attribute `lat' not set for `cluster' element.");
   LEAVE; STag_surfxml_cluster(); surfxml_pcdata_ix = 0; ETag_surfxml_cluster(); popbuffer(); /* attribute */
   switch (YY_START) {
-   case S_surfxml_AS_1: case S_surfxml_AS_5: case S_surfxml_AS: case S_surfxml_AS_6: case S_surfxml_AS_3: SET(S_surfxml_AS_6); break;
-   case S_surfxml_platform_6: case S_surfxml_platform_5: case S_surfxml_platform_1: case S_surfxml_platform: case S_surfxml_platform_3: SET(S_surfxml_platform_6); break;
    case S_surfxml_include: case S_surfxml_include_2: case S_surfxml_include_1: SET(S_surfxml_include_2); break;
+   case S_surfxml_AS_6: case S_surfxml_AS_5: case S_surfxml_AS_3: case S_surfxml_AS: case S_surfxml_AS_1: SET(S_surfxml_AS_6); break;
+   case S_surfxml_platform_1: case S_surfxml_platform_3: case S_surfxml_platform_6: case S_surfxml_platform: case S_surfxml_platform_5: SET(S_surfxml_platform_6); break;
   }
  }
 	YY_BREAK
@@ -7748,9 +7757,9 @@ YY_RULE_SETUP
   ETag_surfxml_cluster();
   popbuffer(); /* attribute */
   switch (YY_START) {
-   case S_surfxml_AS_1: case S_surfxml_AS_5: case S_surfxml_AS: case S_surfxml_AS_6: case S_surfxml_AS_3: SET(S_surfxml_AS_6); break;
-   case S_surfxml_platform_6: case S_surfxml_platform_5: case S_surfxml_platform_1: case S_surfxml_platform: case S_surfxml_platform_3: SET(S_surfxml_platform_6); break;
    case S_surfxml_include: case S_surfxml_include_2: case S_surfxml_include_1: SET(S_surfxml_include_2); break;
+   case S_surfxml_AS_6: case S_surfxml_AS_5: case S_surfxml_AS_3: case S_surfxml_AS: case S_surfxml_AS_1: SET(S_surfxml_AS_6); break;
+   case S_surfxml_platform_1: case S_surfxml_platform_3: case S_surfxml_platform_6: case S_surfxml_platform: case S_surfxml_platform_5: SET(S_surfxml_platform_6); break;
   }
  }
 	YY_BREAK
@@ -7763,8 +7772,8 @@ case 308:
 YY_RULE_SETUP
 FAIL("Unexpected character `%c': `</cluster>' expected.",surf_parse_text[0]);
 	YY_BREAK
-case YY_STATE_EOF(S_surfxml_cluster_2):
 case YY_STATE_EOF(S_surfxml_cluster):
+case YY_STATE_EOF(S_surfxml_cluster_2):
 case YY_STATE_EOF(E_surfxml_cluster):
 if(!ETag_surfxml_include_state()) FAIL("Premature EOF: `</cluster>' expected.");
 	YY_BREAK
@@ -7891,10 +7900,10 @@ YY_RULE_SETUP
   if (!AX_surfxml_cabinet_lat) FAIL("Required attribute `lat' not set for `cabinet' element.");
   LEAVE; STag_surfxml_cabinet(); surfxml_pcdata_ix = 0; ETag_surfxml_cabinet(); popbuffer(); /* attribute */
   switch (YY_START) {
-   case S_surfxml_AS_5: case S_surfxml_AS_6: SET(S_surfxml_AS_6); break;
-   case S_surfxml_platform_6: case S_surfxml_platform_5: case S_surfxml_platform_1: case S_surfxml_platform: case S_surfxml_platform_3: SET(S_surfxml_platform_6); break;
-   case S_surfxml_AS_1: case S_surfxml_AS_14: case S_surfxml_AS_13: case S_surfxml_AS: case S_surfxml_AS_3: SET(S_surfxml_AS_14); break;
-   case S_surfxml_include: case S_surfxml_include_2: case S_surfxml_include_1: SET(S_surfxml_include_2); break;
+   case S_surfxml_AS_13: case S_surfxml_AS_14: case S_surfxml_AS: case S_surfxml_AS_3: case S_surfxml_AS_1: SET(S_surfxml_AS_14); break;
+   case S_surfxml_platform_1: case S_surfxml_platform_3: case S_surfxml_platform_6: case S_surfxml_platform: case S_surfxml_platform_5: SET(S_surfxml_platform_6); break;
+   case S_surfxml_AS_6: case S_surfxml_AS_5: SET(S_surfxml_AS_6); break;
+   case S_surfxml_include: case S_surfxml_include_1: case S_surfxml_include_2: SET(S_surfxml_include_2); break;
   }
  }
 	YY_BREAK
@@ -7918,10 +7927,10 @@ YY_RULE_SETUP
   ETag_surfxml_cabinet();
   popbuffer(); /* attribute */
   switch (YY_START) {
-   case S_surfxml_AS_5: case S_surfxml_AS_6: SET(S_surfxml_AS_6); break;
-   case S_surfxml_platform_6: case S_surfxml_platform_5: case S_surfxml_platform_1: case S_surfxml_platform: case S_surfxml_platform_3: SET(S_surfxml_platform_6); break;
-   case S_surfxml_AS_1: case S_surfxml_AS_14: case S_surfxml_AS_13: case S_surfxml_AS: case S_surfxml_AS_3: SET(S_surfxml_AS_14); break;
-   case S_surfxml_include: case S_surfxml_include_2: case S_surfxml_include_1: SET(S_surfxml_include_2); break;
+   case S_surfxml_AS_13: case S_surfxml_AS_14: case S_surfxml_AS: case S_surfxml_AS_3: case S_surfxml_AS_1: SET(S_surfxml_AS_14); break;
+   case S_surfxml_platform_1: case S_surfxml_platform_3: case S_surfxml_platform_6: case S_surfxml_platform: case S_surfxml_platform_5: SET(S_surfxml_platform_6); break;
+   case S_surfxml_AS_6: case S_surfxml_AS_5: SET(S_surfxml_AS_6); break;
+   case S_surfxml_include: case S_surfxml_include_1: case S_surfxml_include_2: SET(S_surfxml_include_2); break;
   }
  }
 	YY_BREAK
@@ -8068,9 +8077,9 @@ YY_RULE_SETUP
   if (!AX_surfxml_peer_lat) FAIL("Required attribute `lat' not set for `peer' element.");
   LEAVE; STag_surfxml_peer(); surfxml_pcdata_ix = 0; ETag_surfxml_peer(); popbuffer(); /* attribute */
   switch (YY_START) {
-   case S_surfxml_AS_1: case S_surfxml_AS_5: case S_surfxml_AS: case S_surfxml_AS_6: case S_surfxml_AS_3: SET(S_surfxml_AS_6); break;
-   case S_surfxml_platform_6: case S_surfxml_platform_5: case S_surfxml_platform_1: case S_surfxml_platform: case S_surfxml_platform_3: SET(S_surfxml_platform_6); break;
-   case S_surfxml_include: case S_surfxml_include_2: case S_surfxml_include_1: SET(S_surfxml_include_2); break;
+   case S_surfxml_platform: case S_surfxml_platform_5: case S_surfxml_platform_1: case S_surfxml_platform_3: case S_surfxml_platform_6: SET(S_surfxml_platform_6); break;
+   case S_surfxml_include_2: case S_surfxml_include_1: case S_surfxml_include: SET(S_surfxml_include_2); break;
+   case S_surfxml_AS_5: case S_surfxml_AS_1: case S_surfxml_AS_3: case S_surfxml_AS: case S_surfxml_AS_6: SET(S_surfxml_AS_6); break;
   }
  }
 	YY_BREAK
@@ -8094,9 +8103,9 @@ YY_RULE_SETUP
   ETag_surfxml_peer();
   popbuffer(); /* attribute */
   switch (YY_START) {
-   case S_surfxml_AS_1: case S_surfxml_AS_5: case S_surfxml_AS: case S_surfxml_AS_6: case S_surfxml_AS_3: SET(S_surfxml_AS_6); break;
-   case S_surfxml_platform_6: case S_surfxml_platform_5: case S_surfxml_platform_1: case S_surfxml_platform: case S_surfxml_platform_3: SET(S_surfxml_platform_6); break;
-   case S_surfxml_include: case S_surfxml_include_2: case S_surfxml_include_1: SET(S_surfxml_include_2); break;
+   case S_surfxml_platform: case S_surfxml_platform_5: case S_surfxml_platform_1: case S_surfxml_platform_3: case S_surfxml_platform_6: SET(S_surfxml_platform_6); break;
+   case S_surfxml_include_2: case S_surfxml_include_1: case S_surfxml_include: SET(S_surfxml_include_2); break;
+   case S_surfxml_AS_5: case S_surfxml_AS_1: case S_surfxml_AS_3: case S_surfxml_AS: case S_surfxml_AS_6: SET(S_surfxml_AS_6); break;
   }
  }
 	YY_BREAK
@@ -8163,7 +8172,7 @@ YY_RULE_SETUP
   if (!AX_surfxml_router_id) FAIL("Required attribute `id' not set for `router' element.");
   LEAVE; STag_surfxml_router(); surfxml_pcdata_ix = 0; ETag_surfxml_router(); popbuffer(); /* attribute */
   switch (YY_START) {
-   case S_surfxml_AS_1: case S_surfxml_AS_14: case S_surfxml_AS_13: case S_surfxml_AS: case S_surfxml_AS_3: SET(S_surfxml_AS_14); break;
+   case S_surfxml_AS_14: case S_surfxml_AS: case S_surfxml_AS_3: case S_surfxml_AS_1: case S_surfxml_AS_13: SET(S_surfxml_AS_14); break;
   }
  }
 	YY_BREAK
@@ -8187,7 +8196,7 @@ YY_RULE_SETUP
   ETag_surfxml_router();
   popbuffer(); /* attribute */
   switch (YY_START) {
-   case S_surfxml_AS_1: case S_surfxml_AS_14: case S_surfxml_AS_13: case S_surfxml_AS: case S_surfxml_AS_3: SET(S_surfxml_AS_14); break;
+   case S_surfxml_AS_14: case S_surfxml_AS: case S_surfxml_AS_3: case S_surfxml_AS_1: case S_surfxml_AS_13: SET(S_surfxml_AS_14); break;
   }
  }
 	YY_BREAK
@@ -8271,7 +8280,7 @@ YY_RULE_SETUP
   LEAVE; STag_surfxml_backbone(); surfxml_pcdata_ix = 0; ETag_surfxml_backbone(); popbuffer(); /* attribute */
   switch (YY_START) {
    case S_surfxml_AS_5: case S_surfxml_AS_6: SET(S_surfxml_AS_6); break;
-   case S_surfxml_AS_1: case S_surfxml_AS_14: case S_surfxml_AS_13: case S_surfxml_AS: case S_surfxml_AS_3: SET(S_surfxml_AS_14); break;
+   case S_surfxml_AS_1: case S_surfxml_AS: case S_surfxml_AS_3: case S_surfxml_AS_14: case S_surfxml_AS_13: SET(S_surfxml_AS_14); break;
   }
  }
 	YY_BREAK
@@ -8296,7 +8305,7 @@ YY_RULE_SETUP
   popbuffer(); /* attribute */
   switch (YY_START) {
    case S_surfxml_AS_5: case S_surfxml_AS_6: SET(S_surfxml_AS_6); break;
-   case S_surfxml_AS_1: case S_surfxml_AS_14: case S_surfxml_AS_13: case S_surfxml_AS: case S_surfxml_AS_3: SET(S_surfxml_AS_14); break;
+   case S_surfxml_AS_1: case S_surfxml_AS: case S_surfxml_AS_3: case S_surfxml_AS_14: case S_surfxml_AS_13: SET(S_surfxml_AS_14); break;
   }
  }
 	YY_BREAK
@@ -8452,8 +8461,8 @@ YY_RULE_SETUP
   if (!AX_surfxml_link_bandwidth) FAIL("Required attribute `bandwidth' not set for `link' element.");
   LEAVE; STag_surfxml_link(); surfxml_pcdata_ix = 0; ETag_surfxml_link(); popbuffer(); /* attribute */
   switch (YY_START) {
+   case S_surfxml_AS_3: case S_surfxml_AS: case S_surfxml_AS_1: case S_surfxml_AS_14: case S_surfxml_AS_13: SET(S_surfxml_AS_14); break;
    case S_surfxml_AS_5: case S_surfxml_AS_6: SET(S_surfxml_AS_6); break;
-   case S_surfxml_AS_1: case S_surfxml_AS_14: case S_surfxml_AS_13: case S_surfxml_AS: case S_surfxml_AS_3: SET(S_surfxml_AS_14); break;
   }
  }
 	YY_BREAK
@@ -8477,8 +8486,8 @@ YY_RULE_SETUP
   ETag_surfxml_link();
   popbuffer(); /* attribute */
   switch (YY_START) {
+   case S_surfxml_AS_3: case S_surfxml_AS: case S_surfxml_AS_1: case S_surfxml_AS_14: case S_surfxml_AS_13: SET(S_surfxml_AS_14); break;
    case S_surfxml_AS_5: case S_surfxml_AS_6: SET(S_surfxml_AS_6); break;
-   case S_surfxml_AS_1: case S_surfxml_AS_14: case S_surfxml_AS_13: case S_surfxml_AS: case S_surfxml_AS_3: SET(S_surfxml_AS_14); break;
   }
  }
 	YY_BREAK
@@ -8491,9 +8500,9 @@ case 415:
 YY_RULE_SETUP
 FAIL("Unexpected character `%c': `</link>' expected.",surf_parse_text[0]);
 	YY_BREAK
-case YY_STATE_EOF(E_surfxml_link):
 case YY_STATE_EOF(S_surfxml_link_2):
 case YY_STATE_EOF(S_surfxml_link):
+case YY_STATE_EOF(E_surfxml_link):
 if(!ETag_surfxml_include_state()) FAIL("Premature EOF: `</link>' expected.");
 	YY_BREAK
 
@@ -8565,7 +8574,7 @@ YY_RULE_SETUP
   if (!AX_surfxml_route_dst) FAIL("Required attribute `dst' not set for `route' element.");
   LEAVE; STag_surfxml_route(); surfxml_pcdata_ix = 0; ETag_surfxml_route(); popbuffer(); /* attribute */
   switch (YY_START) {
-   case S_surfxml_AS_12: case S_surfxml_AS_1: case S_surfxml_AS_14: case S_surfxml_AS: case S_surfxml_AS_15: case S_surfxml_AS_3: case S_surfxml_AS_16: SET(S_surfxml_AS_16); break;
+   case S_surfxml_AS_16: case S_surfxml_AS_3: case S_surfxml_AS: case S_surfxml_AS_1: case S_surfxml_AS_12: case S_surfxml_AS_14: case S_surfxml_AS_15: SET(S_surfxml_AS_16); break;
   }
  }
 	YY_BREAK
@@ -8589,7 +8598,7 @@ YY_RULE_SETUP
   ETag_surfxml_route();
   popbuffer(); /* attribute */
   switch (YY_START) {
-   case S_surfxml_AS_12: case S_surfxml_AS_1: case S_surfxml_AS_14: case S_surfxml_AS: case S_surfxml_AS_15: case S_surfxml_AS_3: case S_surfxml_AS_16: SET(S_surfxml_AS_16); break;
+   case S_surfxml_AS_16: case S_surfxml_AS_3: case S_surfxml_AS: case S_surfxml_AS_1: case S_surfxml_AS_12: case S_surfxml_AS_14: case S_surfxml_AS_15: SET(S_surfxml_AS_16); break;
   }
  }
 	YY_BREAK
@@ -8603,8 +8612,8 @@ YY_RULE_SETUP
 FAIL("Unexpected character `%c': `</route>' expected.",surf_parse_text[0]);
 	YY_BREAK
 case YY_STATE_EOF(S_surfxml_route):
-case YY_STATE_EOF(S_surfxml_route_2):
 case YY_STATE_EOF(E_surfxml_route):
+case YY_STATE_EOF(S_surfxml_route_2):
 if(!ETag_surfxml_include_state()) FAIL("Premature EOF: `</route>' expected.");
 	YY_BREAK
 
@@ -8704,7 +8713,7 @@ YY_RULE_SETUP
   if (!AX_surfxml_ASroute_gw___dst) FAIL("Required attribute `gw_dst' not set for `ASroute' element.");
   LEAVE; STag_surfxml_ASroute(); surfxml_pcdata_ix = 0; ETag_surfxml_ASroute(); popbuffer(); /* attribute */
   switch (YY_START) {
-   case S_surfxml_AS_9: case S_surfxml_AS_1: case S_surfxml_AS: case S_surfxml_AS_8: case S_surfxml_AS_4: case S_surfxml_AS_6: case S_surfxml_AS_3: SET(S_surfxml_AS_9); break;
+   case S_surfxml_AS_8: case S_surfxml_AS_6: case S_surfxml_AS: case S_surfxml_AS_3: case S_surfxml_AS_9: case S_surfxml_AS_1: case S_surfxml_AS_4: SET(S_surfxml_AS_9); break;
   }
  }
 	YY_BREAK
@@ -8728,7 +8737,7 @@ YY_RULE_SETUP
   ETag_surfxml_ASroute();
   popbuffer(); /* attribute */
   switch (YY_START) {
-   case S_surfxml_AS_9: case S_surfxml_AS_1: case S_surfxml_AS: case S_surfxml_AS_8: case S_surfxml_AS_4: case S_surfxml_AS_6: case S_surfxml_AS_3: SET(S_surfxml_AS_9); break;
+   case S_surfxml_AS_8: case S_surfxml_AS_6: case S_surfxml_AS: case S_surfxml_AS_3: case S_surfxml_AS_9: case S_surfxml_AS_1: case S_surfxml_AS_4: SET(S_surfxml_AS_9); break;
   }
  }
 	YY_BREAK
@@ -8741,9 +8750,9 @@ case 453:
 YY_RULE_SETUP
 FAIL("Unexpected character `%c': `</ASroute>' expected.",surf_parse_text[0]);
 	YY_BREAK
-case YY_STATE_EOF(E_surfxml_ASroute):
 case YY_STATE_EOF(S_surfxml_ASroute):
 case YY_STATE_EOF(S_surfxml_ASroute_2):
+case YY_STATE_EOF(E_surfxml_ASroute):
 if(!ETag_surfxml_include_state()) FAIL("Premature EOF: `</ASroute>' expected.");
 	YY_BREAK
 
@@ -8808,10 +8817,10 @@ YY_RULE_SETUP
   if (!AX_surfxml_link___ctn_id) FAIL("Required attribute `id' not set for `link_ctn' element.");
   LEAVE; STag_surfxml_link___ctn(); surfxml_pcdata_ix = 0; ETag_surfxml_link___ctn(); popbuffer(); /* attribute */
   switch (YY_START) {
-   case S_surfxml_bypassRoute: case S_surfxml_bypassRoute_2: case S_surfxml_bypassRoute_1: SET(S_surfxml_bypassRoute_2); break;
-   case S_surfxml_route_1: case S_surfxml_route: case S_surfxml_route_2: SET(S_surfxml_route_2); break;
-   case S_surfxml_bypassASroute_2: case S_surfxml_bypassASroute_1: case S_surfxml_bypassASroute: SET(S_surfxml_bypassASroute_2); break;
-   case S_surfxml_ASroute: case S_surfxml_ASroute_1: case S_surfxml_ASroute_2: SET(S_surfxml_ASroute_2); break;
+   case S_surfxml_route_1: case S_surfxml_route_2: case S_surfxml_route: SET(S_surfxml_route_2); break;
+   case S_surfxml_bypassRoute_2: case S_surfxml_bypassRoute: case S_surfxml_bypassRoute_1: SET(S_surfxml_bypassRoute_2); break;
+   case S_surfxml_bypassASroute: case S_surfxml_bypassASroute_2: case S_surfxml_bypassASroute_1: SET(S_surfxml_bypassASroute_2); break;
+   case S_surfxml_ASroute_2: case S_surfxml_ASroute: case S_surfxml_ASroute_1: SET(S_surfxml_ASroute_2); break;
   }
  }
 	YY_BREAK
@@ -8835,10 +8844,10 @@ YY_RULE_SETUP
   ETag_surfxml_link___ctn();
   popbuffer(); /* attribute */
   switch (YY_START) {
-   case S_surfxml_bypassRoute: case S_surfxml_bypassRoute_2: case S_surfxml_bypassRoute_1: SET(S_surfxml_bypassRoute_2); break;
-   case S_surfxml_route_1: case S_surfxml_route: case S_surfxml_route_2: SET(S_surfxml_route_2); break;
-   case S_surfxml_bypassASroute_2: case S_surfxml_bypassASroute_1: case S_surfxml_bypassASroute: SET(S_surfxml_bypassASroute_2); break;
-   case S_surfxml_ASroute: case S_surfxml_ASroute_1: case S_surfxml_ASroute_2: SET(S_surfxml_ASroute_2); break;
+   case S_surfxml_route_1: case S_surfxml_route_2: case S_surfxml_route: SET(S_surfxml_route_2); break;
+   case S_surfxml_bypassRoute_2: case S_surfxml_bypassRoute: case S_surfxml_bypassRoute_1: SET(S_surfxml_bypassRoute_2); break;
+   case S_surfxml_bypassASroute: case S_surfxml_bypassASroute_2: case S_surfxml_bypassASroute_1: SET(S_surfxml_bypassASroute_2); break;
+   case S_surfxml_ASroute_2: case S_surfxml_ASroute: case S_surfxml_ASroute_1: SET(S_surfxml_ASroute_2); break;
   }
  }
 	YY_BREAK
@@ -8907,7 +8916,7 @@ YY_RULE_SETUP
   if (!AX_surfxml_bypassRoute_dst) FAIL("Required attribute `dst' not set for `bypassRoute' element.");
   LEAVE; STag_surfxml_bypassRoute(); surfxml_pcdata_ix = 0; ETag_surfxml_bypassRoute(); popbuffer(); /* attribute */
   switch (YY_START) {
-   case S_surfxml_AS_12: case S_surfxml_AS_1: case S_surfxml_AS_14: case S_surfxml_AS: case S_surfxml_AS_15: case S_surfxml_AS_3: case S_surfxml_AS_16: SET(S_surfxml_AS_16); break;
+   case S_surfxml_AS_15: case S_surfxml_AS_12: case S_surfxml_AS_14: case S_surfxml_AS_1: case S_surfxml_AS_16: case S_surfxml_AS_3: case S_surfxml_AS: SET(S_surfxml_AS_16); break;
   }
  }
 	YY_BREAK
@@ -8931,7 +8940,7 @@ YY_RULE_SETUP
   ETag_surfxml_bypassRoute();
   popbuffer(); /* attribute */
   switch (YY_START) {
-   case S_surfxml_AS_12: case S_surfxml_AS_1: case S_surfxml_AS_14: case S_surfxml_AS: case S_surfxml_AS_15: case S_surfxml_AS_3: case S_surfxml_AS_16: SET(S_surfxml_AS_16); break;
+   case S_surfxml_AS_15: case S_surfxml_AS_12: case S_surfxml_AS_14: case S_surfxml_AS_1: case S_surfxml_AS_16: case S_surfxml_AS_3: case S_surfxml_AS: SET(S_surfxml_AS_16); break;
   }
  }
 	YY_BREAK
@@ -8944,9 +8953,9 @@ case 483:
 YY_RULE_SETUP
 FAIL("Unexpected character `%c': `</bypassRoute>' expected.",surf_parse_text[0]);
 	YY_BREAK
-case YY_STATE_EOF(S_surfxml_bypassRoute):
 case YY_STATE_EOF(S_surfxml_bypassRoute_2):
 case YY_STATE_EOF(E_surfxml_bypassRoute):
+case YY_STATE_EOF(S_surfxml_bypassRoute):
 if(!ETag_surfxml_include_state()) FAIL("Premature EOF: `</bypassRoute>' expected.");
 	YY_BREAK
 
@@ -9030,7 +9039,7 @@ YY_RULE_SETUP
   if (!AX_surfxml_bypassASroute_gw___dst) FAIL("Required attribute `gw_dst' not set for `bypassASroute' element.");
   LEAVE; STag_surfxml_bypassASroute(); surfxml_pcdata_ix = 0; ETag_surfxml_bypassASroute(); popbuffer(); /* attribute */
   switch (YY_START) {
-   case S_surfxml_AS_9: case S_surfxml_AS_1: case S_surfxml_AS: case S_surfxml_AS_8: case S_surfxml_AS_4: case S_surfxml_AS_6: case S_surfxml_AS_3: SET(S_surfxml_AS_9); break;
+   case S_surfxml_AS_4: case S_surfxml_AS: case S_surfxml_AS_3: case S_surfxml_AS_1: case S_surfxml_AS_9: case S_surfxml_AS_6: case S_surfxml_AS_8: SET(S_surfxml_AS_9); break;
   }
  }
 	YY_BREAK
@@ -9054,7 +9063,7 @@ YY_RULE_SETUP
   ETag_surfxml_bypassASroute();
   popbuffer(); /* attribute */
   switch (YY_START) {
-   case S_surfxml_AS_9: case S_surfxml_AS_1: case S_surfxml_AS: case S_surfxml_AS_8: case S_surfxml_AS_4: case S_surfxml_AS_6: case S_surfxml_AS_3: SET(S_surfxml_AS_9); break;
+   case S_surfxml_AS_4: case S_surfxml_AS: case S_surfxml_AS_3: case S_surfxml_AS_1: case S_surfxml_AS_9: case S_surfxml_AS_6: case S_surfxml_AS_8: SET(S_surfxml_AS_9); break;
   }
  }
 	YY_BREAK
@@ -9068,8 +9077,8 @@ YY_RULE_SETUP
 FAIL("Unexpected character `%c': `</bypassASroute>' expected.",surf_parse_text[0]);
 	YY_BREAK
 case YY_STATE_EOF(S_surfxml_bypassASroute_2):
-case YY_STATE_EOF(E_surfxml_bypassASroute):
 case YY_STATE_EOF(S_surfxml_bypassASroute):
+case YY_STATE_EOF(E_surfxml_bypassASroute):
 if(!ETag_surfxml_include_state()) FAIL("Premature EOF: `</bypassASroute>' expected.");
 	YY_BREAK
 
@@ -9165,7 +9174,7 @@ YY_RULE_SETUP
   if (!AX_surfxml_process_function) FAIL("Required attribute `function' not set for `process' element.");
   LEAVE; STag_surfxml_process(); surfxml_pcdata_ix = 0; ETag_surfxml_process(); popbuffer(); /* attribute */
   switch (YY_START) {
-   case S_surfxml_platform_6: case S_surfxml_platform_4: case S_surfxml_platform_1: case S_surfxml_platform: case S_surfxml_platform_8: case S_surfxml_platform_7: case S_surfxml_platform_3: SET(S_surfxml_platform_8); break;
+   case S_surfxml_platform_7: case S_surfxml_platform_1: case S_surfxml_platform_3: case S_surfxml_platform_6: case S_surfxml_platform: case S_surfxml_platform_8: case S_surfxml_platform_4: SET(S_surfxml_platform_8); break;
   }
  }
 	YY_BREAK
@@ -9189,7 +9198,7 @@ YY_RULE_SETUP
   ETag_surfxml_process();
   popbuffer(); /* attribute */
   switch (YY_START) {
-   case S_surfxml_platform_6: case S_surfxml_platform_4: case S_surfxml_platform_1: case S_surfxml_platform: case S_surfxml_platform_8: case S_surfxml_platform_7: case S_surfxml_platform_3: SET(S_surfxml_platform_8); break;
+   case S_surfxml_platform_7: case S_surfxml_platform_1: case S_surfxml_platform_3: case S_surfxml_platform_6: case S_surfxml_platform: case S_surfxml_platform_8: case S_surfxml_platform_4: SET(S_surfxml_platform_8); break;
   }
  }
 	YY_BREAK
@@ -9202,9 +9211,9 @@ case 521:
 YY_RULE_SETUP
 FAIL("Unexpected character `%c': `</process>' expected.",surf_parse_text[0]);
 	YY_BREAK
+case YY_STATE_EOF(S_surfxml_process_2):
 case YY_STATE_EOF(E_surfxml_process):
 case YY_STATE_EOF(S_surfxml_process):
-case YY_STATE_EOF(S_surfxml_process_2):
 if(!ETag_surfxml_include_state()) FAIL("Premature EOF: `</process>' expected.");
 	YY_BREAK
 
@@ -9323,7 +9332,7 @@ YY_RULE_SETUP
 {
   LEAVE; STag_surfxml_config(); surfxml_pcdata_ix = 0; ETag_surfxml_config(); popbuffer(); /* attribute */
   switch (YY_START) {
-   case S_surfxml_platform_2: case S_surfxml_platform: case S_surfxml_platform_3: SET(S_surfxml_platform_3); break;
+   case S_surfxml_platform: case S_surfxml_platform_2: case S_surfxml_platform_3: SET(S_surfxml_platform_3); break;
   }
  }
 	YY_BREAK
@@ -9347,7 +9356,7 @@ YY_RULE_SETUP
   ETag_surfxml_config();
   popbuffer(); /* attribute */
   switch (YY_START) {
-   case S_surfxml_platform_2: case S_surfxml_platform: case S_surfxml_platform_3: SET(S_surfxml_platform_3); break;
+   case S_surfxml_platform: case S_surfxml_platform_2: case S_surfxml_platform_3: SET(S_surfxml_platform_3); break;
   }
  }
 	YY_BREAK
@@ -9361,8 +9370,8 @@ YY_RULE_SETUP
 FAIL("Unexpected character `%c': `</config>' expected.",surf_parse_text[0]);
 	YY_BREAK
 case YY_STATE_EOF(S_surfxml_config):
-case YY_STATE_EOF(S_surfxml_config_2):
 case YY_STATE_EOF(E_surfxml_config):
+case YY_STATE_EOF(S_surfxml_config_2):
 if(!ETag_surfxml_include_state()) FAIL("Premature EOF: `</config>' expected.");
 	YY_BREAK
 
@@ -9420,14 +9429,14 @@ YY_RULE_SETUP
   if (!AX_surfxml_prop_value) FAIL("Required attribute `value' not set for `prop' element.");
   LEAVE; STag_surfxml_prop(); surfxml_pcdata_ix = 0; ETag_surfxml_prop(); popbuffer(); /* attribute */
   switch (YY_START) {
-   case S_surfxml_AS_2: case S_surfxml_AS: case S_surfxml_AS_3: SET(S_surfxml_AS_3); break;
-   case S_surfxml_storage_1: case S_surfxml_storage_2: case S_surfxml_storage: SET(S_surfxml_storage_2); break;
-   case S_surfxml_cluster_2: case S_surfxml_cluster: case S_surfxml_cluster_1: SET(S_surfxml_cluster_2); break;
-   case S_surfxml_host_1: case S_surfxml_host_2: case S_surfxml_host: SET(S_surfxml_host_2); break;
-   case S_surfxml_link_1: case S_surfxml_link_2: case S_surfxml_link: SET(S_surfxml_link_2); break;
-   case S_surfxml_config_1: case S_surfxml_config: case S_surfxml_config_2: SET(S_surfxml_config_2); break;
-   case S_surfxml_process_1: case S_surfxml_process: case S_surfxml_process_2: SET(S_surfxml_process_2); break;
-   case S_surfxml_storage___type_1: case S_surfxml_storage___type: case S_surfxml_storage___type_2: SET(S_surfxml_storage___type_2); break;
+   case S_surfxml_host: case S_surfxml_host_2: case S_surfxml_host_1: SET(S_surfxml_host_2); break;
+   case S_surfxml_storage_1: case S_surfxml_storage: case S_surfxml_storage_2: SET(S_surfxml_storage_2); break;
+   case S_surfxml_storage___type_1: case S_surfxml_storage___type_2: case S_surfxml_storage___type: SET(S_surfxml_storage___type_2); break;
+   case S_surfxml_process: case S_surfxml_process_1: case S_surfxml_process_2: SET(S_surfxml_process_2); break;
+   case S_surfxml_config_1: case S_surfxml_config_2: case S_surfxml_config: SET(S_surfxml_config_2); break;
+   case S_surfxml_link: case S_surfxml_link_1: case S_surfxml_link_2: SET(S_surfxml_link_2); break;
+   case S_surfxml_cluster_2: case S_surfxml_cluster_1: case S_surfxml_cluster: SET(S_surfxml_cluster_2); break;
+   case S_surfxml_AS_2: case S_surfxml_AS_3: case S_surfxml_AS: SET(S_surfxml_AS_3); break;
   }
  }
 	YY_BREAK
@@ -9451,14 +9460,14 @@ YY_RULE_SETUP
   ETag_surfxml_prop();
   popbuffer(); /* attribute */
   switch (YY_START) {
-   case S_surfxml_AS_2: case S_surfxml_AS: case S_surfxml_AS_3: SET(S_surfxml_AS_3); break;
-   case S_surfxml_storage_1: case S_surfxml_storage_2: case S_surfxml_storage: SET(S_surfxml_storage_2); break;
-   case S_surfxml_cluster_2: case S_surfxml_cluster: case S_surfxml_cluster_1: SET(S_surfxml_cluster_2); break;
-   case S_surfxml_host_1: case S_surfxml_host_2: case S_surfxml_host: SET(S_surfxml_host_2); break;
-   case S_surfxml_link_1: case S_surfxml_link_2: case S_surfxml_link: SET(S_surfxml_link_2); break;
-   case S_surfxml_config_1: case S_surfxml_config: case S_surfxml_config_2: SET(S_surfxml_config_2); break;
-   case S_surfxml_process_1: case S_surfxml_process: case S_surfxml_process_2: SET(S_surfxml_process_2); break;
-   case S_surfxml_storage___type_1: case S_surfxml_storage___type: case S_surfxml_storage___type_2: SET(S_surfxml_storage___type_2); break;
+   case S_surfxml_host: case S_surfxml_host_2: case S_surfxml_host_1: SET(S_surfxml_host_2); break;
+   case S_surfxml_storage_1: case S_surfxml_storage: case S_surfxml_storage_2: SET(S_surfxml_storage_2); break;
+   case S_surfxml_storage___type_1: case S_surfxml_storage___type_2: case S_surfxml_storage___type: SET(S_surfxml_storage___type_2); break;
+   case S_surfxml_process: case S_surfxml_process_1: case S_surfxml_process_2: SET(S_surfxml_process_2); break;
+   case S_surfxml_config_1: case S_surfxml_config_2: case S_surfxml_config: SET(S_surfxml_config_2); break;
+   case S_surfxml_link: case S_surfxml_link_1: case S_surfxml_link_2: SET(S_surfxml_link_2); break;
+   case S_surfxml_cluster_2: case S_surfxml_cluster_1: case S_surfxml_cluster: SET(S_surfxml_cluster_2); break;
+   case S_surfxml_AS_2: case S_surfxml_AS_3: case S_surfxml_AS: SET(S_surfxml_AS_3); break;
   }
  }
 	YY_BREAK
@@ -9529,7 +9538,7 @@ YY_RULE_SETUP
   if (!AX_surfxml_model___prop_value) FAIL("Required attribute `value' not set for `model_prop' element.");
   LEAVE; STag_surfxml_model___prop(); surfxml_pcdata_ix = 0; ETag_surfxml_model___prop(); popbuffer(); /* attribute */
   switch (YY_START) {
-   case S_surfxml_storage___type_1: case S_surfxml_storage___type: case S_surfxml_storage___type_2: SET(S_surfxml_storage___type_2); break;
+   case S_surfxml_storage___type_1: case S_surfxml_storage___type_2: case S_surfxml_storage___type: SET(S_surfxml_storage___type_2); break;
   }
  }
 	YY_BREAK
@@ -9553,7 +9562,7 @@ YY_RULE_SETUP
   ETag_surfxml_model___prop();
   popbuffer(); /* attribute */
   switch (YY_START) {
-   case S_surfxml_storage___type_1: case S_surfxml_storage___type: case S_surfxml_storage___type_2: SET(S_surfxml_storage___type_2); break;
+   case S_surfxml_storage___type_1: case S_surfxml_storage___type_2: case S_surfxml_storage___type: SET(S_surfxml_storage___type_2); break;
   }
  }
 	YY_BREAK
@@ -9840,6 +9849,7 @@ case YY_STATE_EOF(IMPOSSIBLE):
 			"fatal flex scanner internal error--no action found" );
 	} /* end of action switch */
 		} /* end of scanning one token */
+	} /* end of user's declarations */
 } /* end of surf_parse_lex */
 
 /* yy_get_next_buffer - try to read in a new buffer
@@ -9895,21 +9905,21 @@ static int yy_get_next_buffer (void)
 
 	else
 		{
-			int num_to_read =
+			yy_size_t num_to_read =
 			YY_CURRENT_BUFFER_LVALUE->yy_buf_size - number_to_move - 1;
 
 		while ( num_to_read <= 0 )
 			{ /* Not enough room in the buffer - grow it. */
 
 			/* just a shorter name for the current buffer */
-			YY_BUFFER_STATE b = YY_CURRENT_BUFFER;
+			YY_BUFFER_STATE b = YY_CURRENT_BUFFER_LVALUE;
 
 			int yy_c_buf_p_offset =
 				(int) ((yy_c_buf_p) - b->yy_ch_buf);
 
 			if ( b->yy_is_our_buffer )
 				{
-				int new_size = b->yy_buf_size * 2;
+				yy_size_t new_size = b->yy_buf_size * 2;
 
 				if ( new_size <= 0 )
 					b->yy_buf_size += b->yy_buf_size / 8;
@@ -9940,7 +9950,7 @@ static int yy_get_next_buffer (void)
 
 		/* Read in more data. */
 		YY_INPUT( (&YY_CURRENT_BUFFER_LVALUE->yy_ch_buf[number_to_move]),
-			(yy_n_chars), (size_t) num_to_read );
+			(yy_n_chars), num_to_read );
 
 		YY_CURRENT_BUFFER_LVALUE->yy_n_chars = (yy_n_chars);
 		}
@@ -10035,7 +10045,7 @@ static int yy_get_next_buffer (void)
 	yy_current_state = yy_nxt[yy_base[yy_current_state] + (unsigned int) yy_c];
 	yy_is_jam = (yy_current_state == 3468);
 
-	return yy_is_jam ? 0 : yy_current_state;
+		return yy_is_jam ? 0 : yy_current_state;
 }
 
 #ifndef YY_NO_INPUT
@@ -10062,7 +10072,7 @@ static int yy_get_next_buffer (void)
 
 		else
 			{ /* need more input */
-			int offset = (yy_c_buf_p) - (yytext_ptr);
+			yy_size_t offset = (yy_c_buf_p) - (yytext_ptr);
 			++(yy_c_buf_p);
 
 			switch ( yy_get_next_buffer(  ) )
@@ -10227,10 +10237,6 @@ static void surf_parse__load_buffer_state  (void)
 	surf_parse_free((void *) b  );
 }
 
-#ifndef __cplusplus
-extern int isatty (int );
-#endif /* __cplusplus */
-    
 /* Initializes or reinitializes a buffer.
  * This function is sometimes called more than once on the same buffer,
  * such as during a surf_parse_restart() or at EOF.
@@ -10343,7 +10349,7 @@ void surf_parse_pop_buffer_state (void)
  */
 static void surf_parse_ensure_buffer_stack (void)
 {
-	int num_to_alloc;
+	yy_size_t num_to_alloc;
     
 	if (!(yy_buffer_stack)) {
 
@@ -10440,12 +10446,12 @@ YY_BUFFER_STATE surf_parse__scan_string (yyconst char * yystr )
  * 
  * @return the newly allocated buffer state object.
  */
-YY_BUFFER_STATE surf_parse__scan_bytes  (yyconst char * yybytes, int  _yybytes_len )
+YY_BUFFER_STATE surf_parse__scan_bytes  (yyconst char * yybytes, yy_size_t  _yybytes_len )
 {
 	YY_BUFFER_STATE b;
 	char *buf;
 	yy_size_t n;
-	int i;
+	yy_size_t i;
     
 	/* Get memory for full buffer, including space for trailing EOB's. */
 	n = _yybytes_len + 2;
@@ -10559,7 +10565,7 @@ FILE *surf_parse_get_out  (void)
 /** Get the length of the current token.
  * 
  */
-int surf_parse_get_leng  (void)
+yy_size_t surf_parse_get_leng  (void)
 {
         return surf_parse_leng;
 }

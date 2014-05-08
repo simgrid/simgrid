@@ -224,10 +224,29 @@ unsigned int smpi_sleep(unsigned int secs)
   simcall_host_execution_wait(action);
 
   smpi_bench_begin();
-  return secs;
+  return 0;
 }
 
-int smpi_gettimeofday(struct timeval *tv)
+int smpi_usleep(useconds_t usecs)
+{
+  smx_action_t action;
+
+  smpi_bench_end();
+
+  double flops = (double) (usecs/1000000.0)*simcall_host_get_speed(SIMIX_host_self());
+  XBT_DEBUG("Sleep for: %f flops", flops);
+  action = simcall_host_execute("computation", SIMIX_host_self(), flops, 1, 0, 0);
+  #ifdef HAVE_TRACING
+    simcall_set_category (action, TRACE_internal_smpi_get_category());
+  #endif
+  simcall_host_execution_wait(action);
+
+  smpi_bench_begin();
+  return 0;
+}
+
+
+int smpi_gettimeofday(struct timeval *tv, void* tz)
 {
   double now;
   smpi_bench_end();

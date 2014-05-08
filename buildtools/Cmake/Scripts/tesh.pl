@@ -33,6 +33,7 @@ my $tesh_name;
 my $error=0;
 my $exitcode=0;
 my @bg_cmds;
+my (%environ);
 
 $path =~ s|[^/]*$||;
 push @INC,$path;
@@ -40,6 +41,7 @@ push @INC,$path;
 use Getopt::Long qw(GetOptions);
 use strict;
 use Term::ANSIColor;
+use Text::ParseWords;
 use IPC::Open3;
 use IO::File;
 
@@ -51,12 +53,23 @@ else{
     $ENV{"PRINTF_EXPONENT_DIGITS"} = "2"; 
 }
 
-#Add current directory to path
-$ENV{PATH} = "$ENV{PATH}:.";
-
 ##
 ## Command line option handling
 ##
+
+sub var_subst {
+    my ($text, $name, $value) = @_;
+    if ($value) {
+        $text =~ s/\${$name(?::[=-][^}]*)?}/$value/g;
+        $text =~ s/\$$name(\W|$)/$value$1/g;
+    }
+    else {
+        $text =~ s/\${$name:=([^}]*)}/$1/g;
+        $text =~ s/\${$name}//g;
+        $text =~ s/\$$name(\W|$)/$1/g;
+    }
+    return $text;
+}
 
 # option handling helper subs
 sub cd_cmd {
@@ -89,20 +102,8 @@ sub setenv_cmd {
       die "[Tesh/CRITICAL] Malformed argument to setenv: expected 'name=value' but got '$_[1]'\n";
   }
     
-    if($var =~ /bindir/){
-        print "[Tesh/INFO] setenv $var=$ctn\n";
-        $bindir = $ctn;
-    }
-    else
-    {
-        if($var =~ /srcdir/){
-            $srcdir = $ctn;
-        }
-        else{
-            $ENV{$var} = $ctn;
-            print "[Tesh/INFO] setenv $var=$ctn\n";
-        }
-    }    
+  print "[Tesh/INFO] setenv $var=$ctn\n";
+  $environ{$var} = $ctn;
 }
 
 # Main option parsing sub
@@ -220,24 +221,30 @@ sub exec_cmd {
   }
 
   # cleanup the command line
-  if($OS eq "WIN"){
-        $cmd{'cmd'} =~ s/\${EXEEXT:=}/.exe/g;
-        $cmd{'cmd'} =~ s/\${EXEEXT}/.exe/g;
-        $cmd{'cmd'} =~ s/\$EXEEXT/.exe/g;
-    }
-    else{
-        $cmd{'cmd'} =~ s/\${EXEEXT:=}//g;
-    }
-  $cmd{'cmd'} =~ s/\${bindir:=}/$bindir/g;
-  $cmd{'cmd'} =~ s/\${srcdir:=}/$srcdir/g;
-  $cmd{'cmd'} =~ s/\${bindir:=.}/$bindir/g;
-  $cmd{'cmd'} =~ s/\${srcdir:=.}/$srcdir/g;
-  $cmd{'cmd'} =~ s/\${bindir}/$bindir/g;
-  $cmd{'cmd'} =~ s/\${srcdir}/$srcdir/g;
-# $cmd{'cmd'} =~ s|^\./||g;
-#  $cmd{'cmd'} =~ s|tesh|tesh.pl|g;
-  $cmd{'cmd'} =~ s/\(%i:%P@%h\)/\\\(%i:%P@%h\\\)/g;
+  if($OS eq "WIN") {
+      var_subst($cmd{'cmd'}, "EXEEXT", ".exe");
+  } else {
+      var_subst($cmd{'cmd'}, "EXEEXT", "");
+  }
+
+  # substitute environ variables
+  foreach my $key (keys %environ) {
+      $cmd{'cmd'} = var_subst($cmd{'cmd'}, $key, $environ{$key});
+  }
+  # substitute remaining variables, if any
+  while ($cmd{'cmd'} =~ /\${(\w+)(?::[=-][^}]*)?}/) {
+      $cmd{'cmd'} = var_subst($cmd{'cmd'}, $1, "");
+  }
+  while ($cmd{'cmd'} =~ /\$(\w+)/) {
+      $cmd{'cmd'} = var_subst($cmd{'cmd'}, $1, "");
+  }
+
+  # add cfg options
   $cmd{'cmd'} .= " $opts{'cfg'}" if (defined($opts{'cfg'}) && length($opts{'cfg'}));
+
+  # final cleanup
+  $cmd{'cmd'} =~ s/^\s+//;
+  $cmd{'cmd'} =~ s/\s+$//;
 
   print "[$tesh_name:$cmd{'line'}] $cmd{'cmd'}\n" ;
 
@@ -248,7 +255,8 @@ sub exec_cmd {
   $cmd{'got'} = IO::File->new_tmpfile;
   $cmd{'got'}->autoflush(1);
   local *E = $cmd{'got'}; 
-  $cmd{'pid'} = open3(\*CHILD_IN,  ">&E",  ">&E", $cmd{'cmd'} );
+  $cmd{'pid'} = open3(\*CHILD_IN,  ">&E",  ">&E",
+                      quotewords('\s+', 0, $cmd{'cmd'}));
 
   # push all provided input to executing child
   map { print CHILD_IN "$_\n"; }  @{$cmd{'in'}};

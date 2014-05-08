@@ -54,7 +54,7 @@ static void local_variable_free_voidp(void *v){
 
 static void MC_region_destroy(mc_mem_region_t reg)
 {
-  xbt_free(reg->data);
+  munmap(reg->data, reg->size);
   xbt_free(reg);
 }
 
@@ -67,8 +67,8 @@ void MC_free_snapshot(mc_snapshot_t snapshot){
   xbt_dynar_free(&(snapshot->stacks));
   xbt_dynar_free(&(snapshot->to_ignore));
 
-  size_t n = snapshot->nb_processes;
-  if(snapshot->privatization_regions) {
+  if(snapshot->privatization_regions){
+    size_t n = snapshot->nb_processes;
     for(i=0; i!=n; ++i) {
       MC_region_destroy(snapshot->privatization_regions[i]);
     }
@@ -87,8 +87,11 @@ static mc_mem_region_t MC_region_new(int type, void *start_addr, size_t size)
   mc_mem_region_t new_reg = xbt_new(s_mc_mem_region_t, 1);
   new_reg->start_addr = start_addr;
   new_reg->size = size;
-  new_reg->data = xbt_malloc(size);
+  new_reg->data = mmap(NULL, size, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0);
+  if(new_reg->data==MAP_FAILED)
+    xbt_die("Could not mmap new memory for snapshot.");
   memcpy(new_reg->data, start_addr, size);
+  madvise(new_reg->data, size, MADV_MERGEABLE);
 
   XBT_DEBUG("New region : type : %d, data : %p (real addr %p), size : %zu", type, new_reg->data, start_addr, size);
   
@@ -266,9 +269,9 @@ void MC_find_object_address(memory_map_t maps, mc_object_info_t result) {
  *  \param ip    Instruction pointer
  *  \return      true if the variable is valid
  * */
-static bool mc_valid_variable(dw_variable_t var, dw_frame_t frame, const void* ip) {
+static bool mc_valid_variable(dw_variable_t var, dw_frame_t scope, const void* ip) {
   // The variable is not yet valid:
-  if((const void*)((const char*) frame->low_pc + var->start_scope) > ip)
+  if((const void*)((const char*) scope->low_pc + var->start_scope) > ip)
     return false;
   else
     return true;
@@ -283,7 +286,7 @@ static void mc_fill_local_variables_values(mc_stack_frame_t stack_frame, dw_fram
   dw_variable_t current_variable;
   xbt_dynar_foreach(scope->variables, cursor, current_variable){
 
-    if(!mc_valid_variable(current_variable, stack_frame->frame, (void*) stack_frame->ip))
+    if(!mc_valid_variable(current_variable, scope, (void*) stack_frame->ip))
       continue;
 
     int region_type;
@@ -299,13 +302,15 @@ static void mc_fill_local_variables_values(mc_stack_frame_t stack_frame, dw_fram
     new_var->type = current_variable->type;
     new_var->region= region_type;
 
-    /* if(current_variable->address!=NULL) {
+    if(current_variable->address!=NULL) {
       new_var->address = current_variable->address;
-    } else */
+    } else
     if(current_variable->locations.size != 0){
       new_var->address = (void*) mc_dwarf_resolve_locations(&current_variable->locations,
         current_variable->object_info,
         &(stack_frame->unw_cursor), (void*)stack_frame->frame_base, NULL);
+    } else {
+      xbt_die("No address");
     }
 
     xbt_dynar_push(result, &new_var);
@@ -492,6 +497,13 @@ mc_snapshot_t MC_take_snapshot(int num_state){
 
   if(num_state > 0)
     MC_dump_checkpoint_ignore(snapshot);
+
+  // mprotect the region after zero-ing ignored parts:
+  size_t i;
+  for(i=0; i!=NB_REGIONS; ++i) {
+    mc_mem_region_t region = snapshot->regions[i];
+    mprotect(region->data, region->size, PROT_READ);
+  }
 
   return snapshot;
 

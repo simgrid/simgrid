@@ -43,11 +43,11 @@ xbt_dynar_t SIMIX_file_get_info(smx_process_t process, smx_file_t fd);
 int SIMIX_file_seek(smx_process_t process, smx_file_t fd, sg_size_t offset, int origin);
 int SIMIX_file_move(smx_process_t process, smx_file_t fd, const char* fullpath);
 
-sg_size_t SIMIX_pre_storage_get_free_size(smx_simcall_t simcall,const char* name);
-sg_size_t SIMIX_storage_get_free_size(smx_process_t process,const char* name);
+sg_size_t SIMIX_pre_storage_get_free_size(smx_simcall_t simcall,smx_storage_t storage);
+sg_size_t SIMIX_storage_get_free_size(smx_process_t process,smx_storage_t storage);
 
-sg_size_t SIMIX_pre_storage_get_used_size(smx_simcall_t simcall,const char* name);
-sg_size_t SIMIX_storage_get_used_size(smx_process_t process,const char* name);
+sg_size_t SIMIX_pre_storage_get_used_size(smx_simcall_t simcall,smx_storage_t storage);
+sg_size_t SIMIX_storage_get_used_size(smx_process_t process,smx_storage_t storage);
 
 xbt_dict_t SIMIX_storage_get_properties(smx_storage_t storage);
 xbt_dict_t SIMIX_pre_storage_get_properties(smx_simcall_t, smx_storage_t);

@@ -11,7 +11,7 @@
 #include "smx_smurf_private.h"
 
 typedef struct s_smx_process_exit_fun {
-  int_f_pvoid_t fun;
+  int_f_pvoid_pvoid_t fun;
   void *arg;
 } s_smx_process_exit_fun_t, *smx_process_exit_fun_t;
 
@@ -26,7 +26,6 @@ typedef struct s_smx_process_arg {
   xbt_dict_t properties;
   unsigned auto_restart:1;
 } s_smx_process_arg_t, *smx_process_arg_t;
-
 
 /** @brief Process datatype */
 typedef struct s_smx_process {
@@ -99,6 +98,8 @@ const char* SIMIX_process_get_name(smx_process_t process);
 smx_process_t SIMIX_process_get_by_name(const char* name);
 int SIMIX_process_is_suspended(smx_process_t process);
 xbt_dict_t SIMIX_process_get_properties(smx_process_t process);
+void SIMIX_pre_process_join(smx_simcall_t simcall, smx_process_t process, double timeout);
+smx_action_t SIMIX_process_join(smx_process_t issuer, smx_process_t process, double timeout);
 void SIMIX_pre_process_sleep(smx_simcall_t simcall, double duration);
 smx_action_t SIMIX_process_sleep(smx_process_t process, double duration);
 void SIMIX_post_process_sleep(smx_action_t action);
@@ -130,7 +131,7 @@ const char* SIMIX_pre_process_get_name(smx_simcall_t simcall, smx_process_t proc
 int SIMIX_pre_process_is_suspended(smx_simcall_t simcall, smx_process_t process);
 xbt_dict_t SIMIX_pre_process_get_properties(smx_simcall_t simcall, smx_process_t process);
 void SIMIX_pre_process_on_exit(smx_simcall_t simcall, smx_process_t process,
-	                       int_f_pvoid_t fun, void *data);
+	                       int_f_pvoid_pvoid_t fun, void *data);
 void SIMIX_pre_process_auto_restart_set(smx_simcall_t simcall, smx_process_t process,
 		                        int auto_restart);
 smx_process_t SIMIX_pre_process_restart(smx_simcall_t simcall, smx_process_t process);

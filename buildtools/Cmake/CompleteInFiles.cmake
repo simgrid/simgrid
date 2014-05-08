@@ -84,9 +84,11 @@ if(enable_java)
   find_package(JNI REQUIRED)
   message("-- [Java] JNI found: ${JNI_FOUND}")
   message("-- [Java] JNI include dirs: ${JNI_INCLUDE_DIRS}")
-  find_package(SWIG REQUIRED)
-  include(UseSWIG)
-  message("-- [Java] Swig found: ${SWIG_FOUND}")
+  if(enable_maintainer_mode)
+    find_package(SWIG REQUIRED)
+    include(UseSWIG)
+    message("-- [Java] Swig found: ${SWIG_FOUND} (version ${SWIG_VERSION})")
+  endif()
   set(HAVE_Java 1)
 endif()
 if(enable_scala)
@@ -425,14 +427,14 @@ endif()
 # AC_CHECK_MCSC(mcsc=yes, mcsc=no)
 set(mcsc_flags "")
 if(CMAKE_SYSTEM_NAME MATCHES "Darwin")
-  set(mcsc_flags "-D_XOPEN_SOURCE")
+  set(mcsc_flags -D_XOPEN_SOURCE)
 endif()
 
 if(WIN32)
   if(ARCH_32_BITS)
-    set(mcsc_flags "-D_XBT_WIN32 -D_I_X86_ -I${CMAKE_HOME_DIRECTORY}/src/include/xbt -I${CMAKE_HOME_DIRECTORY}/src/xbt")
+    set(mcsc_flags -D_XBT_WIN32 -D_I_X86_ -I${CMAKE_HOME_DIRECTORY}/src/include -I${CMAKE_HOME_DIRECTORY}/src/xbt)
   else()
-    set(mcsc_flags "-D_XBT_WIN32 -D_AMD64_ -I${CMAKE_HOME_DIRECTORY}/src/include/xbt -I${CMAKE_HOME_DIRECTORY}/src/xbt")
+    set(mcsc_flags -D_XBT_WIN32 -D_AMD64_ -I${CMAKE_HOME_DIRECTORY}/src/include -I${CMAKE_HOME_DIRECTORY}/src/xbt)
   endif()
 endif()
 
@@ -446,7 +448,7 @@ ELSE()
   file(REMOVE ${CMAKE_BINARY_DIR}/conftestval)
   execute_process(COMMAND ${CMAKE_C_COMPILER} ${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/test_prog/prog_AC_CHECK_MCSC.c ${mcsc_flags} -o testprog
   WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/
-  OUTPUT_VARIABLE COMPILE_mcsc_VAR)
+  OUTPUT_VARIABLE COMPILE_mcsc_VAR ERROR_VARIABLE COMPILE_mcsc_VAR)
 
   if(NOT COMPILE_mcsc_VAR)
     message(STATUS "prog_AC_CHECK_MCSC.c is compilable")
@@ -454,7 +456,7 @@ ELSE()
     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/
     OUTPUT_VARIABLE var_compil)
   else()
-    message(STATUS "prog_AC_CHECK_MCSC.c is not compilable")
+    message(STATUS "prog_AC_CHECK_MCSC.c is not compilable:\n${COMPILE_mcsc_VAR}")
   endif()
   file(REMOVE "${CMAKE_BINARY_DIR}/testprog*")
 
@@ -571,7 +573,7 @@ if(HAVE_MAKECONTEXT OR WIN32)
     else()
       set(makecontext_CPPFLAGS "-DTEST_makecontext -D_AMD64_")
     endif()
-    set(makecontext_CPPFLAGS_2 "-D_XBT_WIN32 -I${CMAKE_HOME_DIRECTORY}/src/include/xbt -I${CMAKE_HOME_DIRECTORY}/src/xbt")
+    set(makecontext_CPPFLAGS_2 "-D_XBT_WIN32 -I${CMAKE_HOME_DIRECTORY}/src/include -I${CMAKE_HOME_DIRECTORY}/src/xbt")
   endif()
 
   file(REMOVE ${CMAKE_BINARY_DIR}/conftestval)
@@ -681,7 +683,7 @@ int main(void)
     )
 
   execute_process(
-  COMMAND ${CMAKE_C_COMPILER} "${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/test_prog/prog_va_copy.c" 
+  COMMAND ${CMAKE_C_COMPILER} "${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/test_prog/prog_va_copy.c"
   WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
   RESULT_VARIABLE COMPILE_VA_NULL_VAR
   OUTPUT_QUIET
@@ -841,6 +843,7 @@ file(READ ${CMAKE_HOME_DIRECTORY}/src/smpi/smpitools.sh SMPITOOLS_SH)
 configure_file(${CMAKE_HOME_DIRECTORY}/include/smpi/mpif.h.in ${CMAKE_BINARY_DIR}/include/smpi/mpif.h @ONLY)
 configure_file(${CMAKE_HOME_DIRECTORY}/include/smpi/smpif.h.in ${CMAKE_BINARY_DIR}/include/smpi/smpif.h @ONLY)
 configure_file(${CMAKE_HOME_DIRECTORY}/src/smpi/smpicc.in ${CMAKE_BINARY_DIR}/bin/smpicc @ONLY)
+configure_file(${CMAKE_HOME_DIRECTORY}/src/smpi/smpicxx.in ${CMAKE_BINARY_DIR}/bin/smpicxx @ONLY)
 configure_file(${CMAKE_HOME_DIRECTORY}/src/smpi/smpif2c.in ${CMAKE_BINARY_DIR}/bin/smpif2c @ONLY)
 configure_file(${CMAKE_HOME_DIRECTORY}/src/smpi/smpiff.in ${CMAKE_BINARY_DIR}/bin/smpiff @ONLY)
 configure_file(${CMAKE_HOME_DIRECTORY}/src/smpi/smpif90.in ${CMAKE_BINARY_DIR}/bin/smpif90 @ONLY)
@@ -862,6 +865,7 @@ set(CMAKE_SMPI_COMMAND "${CMAKE_SMPI_COMMAND}:\${LD_LIBRARY_PATH:+:$LD_LIBRARY_P
 set(libdir "${CMAKE_BINARY_DIR}/lib")
 
 configure_file(${CMAKE_HOME_DIRECTORY}/src/smpi/smpicc.in ${CMAKE_BINARY_DIR}/smpi_script/bin/smpicc @ONLY)
+configure_file(${CMAKE_HOME_DIRECTORY}/src/smpi/smpicxx.in ${CMAKE_BINARY_DIR}/smpi_script/bin/smpicxx @ONLY)
 configure_file(${CMAKE_HOME_DIRECTORY}/src/smpi/smpif2c.in ${CMAKE_BINARY_DIR}/smpi_script/bin/smpif2c @ONLY)
 configure_file(${CMAKE_HOME_DIRECTORY}/src/smpi/smpiff.in ${CMAKE_BINARY_DIR}/smpi_script/bin/smpiff @ONLY)
 configure_file(${CMAKE_HOME_DIRECTORY}/src/smpi/smpif90.in ${CMAKE_BINARY_DIR}/smpi_script/bin/smpif90 @ONLY)
@@ -871,11 +875,13 @@ set(top_builddir ${CMAKE_HOME_DIRECTORY})
 
 if(NOT WIN32)
   execute_process(COMMAND chmod a=rwx ${CMAKE_BINARY_DIR}/bin/smpicc)
+  execute_process(COMMAND chmod a=rwx ${CMAKE_BINARY_DIR}/bin/smpicxx)
   execute_process(COMMAND chmod a=rwx ${CMAKE_BINARY_DIR}/bin/smpif2c)
   execute_process(COMMAND chmod a=rwx ${CMAKE_BINARY_DIR}/bin/smpiff)
   execute_process(COMMAND chmod a=rwx ${CMAKE_BINARY_DIR}/bin/smpif90)
   execute_process(COMMAND chmod a=rwx ${CMAKE_BINARY_DIR}/bin/smpirun)
   execute_process(COMMAND chmod a=rwx ${CMAKE_BINARY_DIR}/smpi_script/bin/smpicc)
+  execute_process(COMMAND chmod a=rwx ${CMAKE_BINARY_DIR}/smpi_script/bin/smpicxx)
   execute_process(COMMAND chmod a=rwx ${CMAKE_BINARY_DIR}/smpi_script/bin/smpif2c)
   execute_process(COMMAND chmod a=rwx ${CMAKE_BINARY_DIR}/smpi_script/bin/smpiff)
   execute_process(COMMAND chmod a=rwx ${CMAKE_BINARY_DIR}/smpi_script/bin/smpif90)
@@ -897,6 +903,7 @@ set(generated_files_to_clean
   ${generated_headers}
   ${generated_headers_to_install}
   ${CMAKE_BINARY_DIR}/bin/smpicc
+  ${CMAKE_BINARY_DIR}/bin/smpicxx
   ${CMAKE_BINARY_DIR}/bin/smpif2c
   ${CMAKE_BINARY_DIR}/bin/smpiff
   ${CMAKE_BINARY_DIR}/bin/smpif90
@@ -908,10 +915,6 @@ set(generated_files_to_clean
 
 if("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_HOME_DIRECTORY}")
 else()
-  configure_file(${CMAKE_HOME_DIRECTORY}/examples/smpi/hostfile ${CMAKE_BINARY_DIR}/examples/smpi/hostfile COPYONLY)
-  configure_file(${CMAKE_HOME_DIRECTORY}/examples/msg/small_platform.xml ${CMAKE_BINARY_DIR}/examples/msg/small_platform.xml COPYONLY)
-  configure_file(${CMAKE_HOME_DIRECTORY}/examples/msg/small_platform_with_routers.xml ${CMAKE_BINARY_DIR}/examples/msg/small_platform_with_routers.xml COPYONLY)
-  configure_file(${CMAKE_HOME_DIRECTORY}/examples/msg/tracing/platform.xml ${CMAKE_BINARY_DIR}/examples/msg/tracing/platform.xml COPYONLY)
   configure_file(${CMAKE_HOME_DIRECTORY}/examples/smpi/replay/actions0.txt ${CMAKE_BINARY_DIR}/examples/smpi/replay/actions0.txt COPYONLY)
   configure_file(${CMAKE_HOME_DIRECTORY}/examples/smpi/replay/actions1.txt ${CMAKE_BINARY_DIR}/examples/smpi/replay/actions1.txt COPYONLY)
   configure_file(${CMAKE_HOME_DIRECTORY}/examples/smpi/replay/actions_allReduce.txt ${CMAKE_BINARY_DIR}/examples/smpi/replay/actions_allReduce.txt COPYONLY)
@@ -928,10 +931,6 @@ else()
 
   set(generated_files_to_clean
     ${generated_files_to_clean}
-    ${CMAKE_BINARY_DIR}/examples/smpi/hostfile
-    ${CMAKE_BINARY_DIR}/examples/msg/small_platform.xml
-    ${CMAKE_BINARY_DIR}/examples/msg/small_platform_with_routers.xml
-    ${CMAKE_BINARY_DIR}/examples/msg/tracing/platform.xml
     ${CMAKE_BINARY_DIR}/examples/smpi/replay/actions0.txt
     ${CMAKE_BINARY_DIR}/examples/smpi/replay/actions1.txt
     ${CMAKE_BINARY_DIR}/examples/smpi/replay/actions_allReduce.txt

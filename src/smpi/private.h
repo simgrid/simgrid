@@ -10,6 +10,7 @@
 #include "internal_config.h"
 #include "xbt.h"
 #include "xbt/xbt_os_time.h"
+#include "xbt/synchro_core.h"
 #include "simgrid/simix.h"
 #include "smpi/smpi_interface.h"
 #include "smpi/smpi.h"
@@ -72,6 +73,9 @@ typedef struct s_smpi_mpi_datatype{
 #define COLL_TAG_GATHERV -2223
 #define COLL_TAG_BCAST -3334
 #define COLL_TAG_ALLREDUCE -4445
+
+#define MPI_COMM_UNINITIALIZED ((MPI_Comm)-1)
+
 //*****************************************************************************************
 
 typedef struct s_smpi_mpi_request {
@@ -110,12 +114,26 @@ int smpi_process_finalized(void);
 int smpi_process_initialized(void);
 void smpi_process_mark_as_initialized(void);
 
+void smpi_topo_destroy(MPI_Topology topo);
+MPI_Topology smpi_topo_create(int ndims);
+int smpi_mpi_cart_create(MPI_Comm comm_old, int ndims, int dims[],
+                         int periodic[], int reorder, MPI_Comm *comm_cart);
+int smpi_mpi_cart_shift(MPI_Comm comm, int direction, int disp,
+                        int *rank_source, int *rank_dest);
+int smpi_mpi_cart_rank(MPI_Comm comm, int* coords, int* rank);
+int smpi_mpi_cart_get(MPI_Comm comm, int maxdims, int* dims, int* periods, int* coords);
+int smpi_mpi_cart_coords(MPI_Comm comm, int rank, int maxdims,
+                         int coords[]);
+int smpi_mpi_cartdim_get(MPI_Comm comm, int *ndims);
+int smpi_mpi_dims_create(int nnodes, int ndims, int dims[]);
+int smpi_mpi_cart_sub(MPI_Comm comm, const int remain_dims[], MPI_Comm *newcomm);
 
 smpi_process_data_t smpi_process_data(void);
 smpi_process_data_t smpi_process_remote_data(int index);
 void smpi_process_set_user_data(void *);
 void* smpi_process_get_user_data(void);
 int smpi_process_count(void);
+MPI_Comm smpi_process_comm_world(void);
 smx_rdv_t smpi_process_mailbox(void);
 smx_rdv_t smpi_process_remote_mailbox(int index);
 smx_rdv_t smpi_process_mailbox_small(void);
@@ -125,6 +143,12 @@ void smpi_process_simulated_start(void);
 double smpi_process_simulated_elapsed(void);
 void smpi_process_set_sampling(int s);
 int smpi_process_get_sampling(void);
+
+void smpi_deployment_register_process(const char* instance_id, int rank, int index, MPI_Comm**, xbt_bar_t*);
+void smpi_deployment_cleanup_instances(void);
+
+void smpi_comm_copy_buffer_callback(smx_action_t comm,
+                                           void *buff, size_t buff_size);
 
 void print_request(const char *message, MPI_Request request);
 
@@ -181,7 +205,8 @@ int smpi_group_unuse(MPI_Group group);
 int smpi_group_size(MPI_Group group);
 int smpi_group_compare(MPI_Group group1, MPI_Group group2);
 
-MPI_Comm smpi_comm_new(MPI_Group group);
+MPI_Topology smpi_comm_topo(MPI_Comm comm);
+MPI_Comm smpi_comm_new(MPI_Group group, MPI_Topology topo);
 void smpi_comm_destroy(MPI_Comm comm);
 MPI_Group smpi_comm_group(MPI_Comm comm);
 int smpi_comm_size(MPI_Comm comm);
@@ -577,6 +602,8 @@ void TRACE_smpi_collective_out(int rank, int root, const char *operation);
 void TRACE_smpi_computing_init(int rank);
 void TRACE_smpi_computing_out(int rank);
 void TRACE_smpi_computing_in(int rank, instr_extra_data extra);
+void TRACE_smpi_testing_out(int rank);
+void TRACE_smpi_testing_in(int rank, instr_extra_data extra);
 void TRACE_smpi_alloc(void);
 void TRACE_smpi_release(void);
 void TRACE_smpi_ptp_in(int rank, int src, int dst, const char *operation,  instr_extra_data extra);

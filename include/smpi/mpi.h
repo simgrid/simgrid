@@ -10,13 +10,14 @@
 #define SEED 221238
 
 #define sleep(x) smpi_sleep(x)
-#define gettimeofday(x, y) smpi_gettimeofday(x)
 
 #include <smpi/smpi.h>
 #include <xbt/sysdep.h>
 #include <xbt/log.h>
 #include <xbt/asserts.h>
 #include <simgrid/modelchecker.h>
+
+#define gettimeofday(x, y) smpi_gettimeofday(x, NULL)
 
 #ifdef HAVE_MC
 #undef assert

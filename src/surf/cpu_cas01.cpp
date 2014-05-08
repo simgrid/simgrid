@@ -17,18 +17,10 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_cpu_cas, surf_cpu,
  * CallBacks *
  *************/
 
-static void parse_cpu_init(sg_platf_host_cbarg_t host){
-  ((CpuCas01ModelPtr)surf_cpu_model_pm)->parseInit(host);
-}
-
-static void cpu_add_traces_cpu(){
-  surf_cpu_model_pm->addTraces();
-}
-
 static void cpu_define_callbacks()
 {
   sg_platf_host_add_cb(parse_cpu_init);
-  sg_platf_postparse_add_cb(cpu_add_traces_cpu);
+  sg_platf_postparse_add_cb(add_traces_cpu);
 }
 
 /*********

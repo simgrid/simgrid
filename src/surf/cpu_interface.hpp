@@ -54,6 +54,10 @@ XBT_PUBLIC_DATA( surf_callback(void, CpuPtr, e_surf_resource_state_t, e_surf_res
  */
 XBT_PUBLIC_DATA( surf_callback(void, CpuActionPtr, e_surf_action_state_t, e_surf_action_state_t)) cpuActionStateChangedCallbacks;
 
+XBT_PUBLIC(void) parse_cpu_init(sg_platf_host_cbarg_t host);
+
+XBT_PUBLIC(void) add_traces_cpu();
+
 /*********
  * Model *
  *********/
@@ -62,7 +66,7 @@ XBT_PUBLIC_DATA( surf_callback(void, CpuActionPtr, e_surf_action_state_t, e_surf
  * @brief SURF cpu model interface class
  * @details A model is an object which handle the interactions between its Resources and its Actions
  */
-class CpuModel : public Model {
+XBT_PUBLIC_CLASS CpuModel : public Model {
 public:
   /**
    * @brief CpuModel constructor
@@ -74,13 +78,16 @@ public:
   /**
    * @brief Create a Cpu
    *
-   * @param name The name of the Cpu
-   *
-   * @return The created Cpu
+   * @param host [TODO]
    */
-  CpuPtr createResource(string name);
+  void parseInit(sg_platf_host_cbarg_t host);
 
-  void setState(e_surf_resource_state_t state);
+  virtual CpuPtr createResource(const char *name, xbt_dynar_t power_peak,
+                      int pstate, double power_scale,
+                          tmgr_trace_t power_trace, int core,
+                          e_surf_resource_state_t state_initial,
+                          tmgr_trace_t state_trace,
+                          xbt_dict_t cpu_properties)=0;
 
   void updateActionsStateLazy(double now, double delta);
   void updateActionsStateFull(double now, double delta);
@@ -96,7 +103,7 @@ public:
 * @brief SURF cpu resource interface class
 * @details A Cpu represent a cpu associated to a workstation
 */
-class Cpu : public Resource {
+XBT_PUBLIC_CLASS Cpu : public Resource {
 public:
   /**
    * @brief Cpu constructor
@@ -181,7 +188,7 @@ public:
    *
    * @return The current Cpu power peak
    */
-  virtual double getCurrentPowerPeak()=0;
+  virtual double getCurrentPowerPeak();
 
 
   virtual double getPowerPeakAt(int pstate_index)=0;
@@ -210,7 +217,7 @@ public:
  * @brief SURF Cpu action interface class
  * @details A CpuAction represent the execution of code on a Cpu
  */
-class CpuAction : public Action {
+XBT_PUBLIC_CLASS CpuAction : public Action {
 friend CpuPtr getActionCpu(CpuActionPtr action);
 public:
   /**

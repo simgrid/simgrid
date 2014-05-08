@@ -33,7 +33,7 @@ static int host(int argc, char *argv[]){
   xbt_dict_cursor_t cursor = NULL;
   char* mount_name;
   char* storage_name;
-  msg_storage_t storage;
+  msg_storage_t storage = NULL;
 
   // Retrieve all mount points of current host
   xbt_dict_t storage_list = MSG_host_get_mounted_storage_list(MSG_host_self());
@@ -44,8 +44,8 @@ static int host(int argc, char *argv[]){
     storage = MSG_storage_get_by_name(storage_name);
 
     // Retrieve disk's information
-    sg_size_t free_size = MSG_storage_get_free_size(mount_name);
-    sg_size_t used_size = MSG_storage_get_used_size(mount_name);
+    sg_size_t free_size = MSG_storage_get_free_size(storage);
+    sg_size_t used_size = MSG_storage_get_used_size(storage);
     sg_size_t size = MSG_storage_get_size(storage);
 
     XBT_INFO("Total size: %llu bytes", size);
@@ -67,12 +67,13 @@ static int host(int argc, char *argv[]){
   MSG_file_dump(file);
 
   // check that sizes have changed
-  XBT_INFO("Free size: %llu bytes", MSG_storage_get_free_size("/home"));
-  XBT_INFO("Used size: %llu bytes", MSG_storage_get_used_size("/home"));
+  XBT_INFO("Free size: %llu bytes", MSG_storage_get_free_size(storage));
+  XBT_INFO("Used size: %llu bytes", MSG_storage_get_used_size(storage));
 
 
   // Now retrieve the size of created file and read it completely
   file_size = MSG_file_get_size(file);
+  MSG_file_seek(file, 0, SEEK_SET);
   read = MSG_file_read(file, file_size);
   XBT_INFO("Read %llu bytes on %s", read, file_name);
 

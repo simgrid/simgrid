@@ -313,6 +313,35 @@ static void action_Irecv(const char *const *action)
   log_timed_action (action, clock);
 }
 
+static void action_test(const char *const *action){
+  double clock = smpi_process_simulated_elapsed();
+  MPI_Request request;
+  MPI_Status status;
+  int flag = TRUE;
+
+  request = xbt_dynar_pop_as(reqq[smpi_comm_rank(MPI_COMM_WORLD)],MPI_Request);
+  xbt_assert(request != NULL, "found null request in reqq");
+
+#ifdef HAVE_TRACING
+  int rank = smpi_comm_rank(MPI_COMM_WORLD);
+  instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
+  extra->type=TRACING_TEST;
+  TRACE_smpi_testing_in(rank, extra);
+#endif
+  flag = smpi_mpi_test(&request, &status);
+  XBT_DEBUG("MPI_Test result: %d", flag);
+  /* push back request in dynar to be caught by a subsequent wait. if the test
+   * did succeed, the request is now NULL.
+   */
+  xbt_dynar_push_as(reqq[smpi_comm_rank(MPI_COMM_WORLD)],MPI_Request, request);
+
+#ifdef HAVE_TRACING
+  TRACE_smpi_testing_out(rank);
+#endif
+
+  log_timed_action (action, clock);
+}
+
 static void action_wait(const char *const *action){
   double clock = smpi_process_simulated_elapsed();
   MPI_Request request;
@@ -322,7 +351,14 @@ static void action_wait(const char *const *action){
       "action wait not preceded by any irecv or isend: %s",
       xbt_str_join_array(action," "));
   request = xbt_dynar_pop_as(reqq[smpi_comm_rank(MPI_COMM_WORLD)],MPI_Request);
-  xbt_assert(request != NULL, "found null request in reqq");
+
+  if (!request){
+    /* Assuming that the trace is well formed, this mean the comm might have
+     * been caught by a MPI_test. Then just return.
+     */
+    return;
+  }
+
 #ifdef HAVE_TRACING
   int rank = request->comm != MPI_COMM_NULL
       ? smpi_comm_rank(request->comm)
@@ -955,6 +991,7 @@ void smpi_replay_init(int *argc, char***argv){
     xbt_replay_action_register("Isend",      action_Isend);
     xbt_replay_action_register("recv",       action_recv);
     xbt_replay_action_register("Irecv",      action_Irecv);
+    xbt_replay_action_register("test",       action_test);
     xbt_replay_action_register("wait",       action_wait);
     xbt_replay_action_register("waitAll",    action_waitall);
     xbt_replay_action_register("barrier",    action_barrier);

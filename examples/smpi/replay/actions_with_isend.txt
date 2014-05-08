@@ -2,17 +2,23 @@
 1 init
 2 init
 
+0 compute 1e9
 0 send 1 1e6
 0 compute 1e9
 0 recv 2 1e6
 
 1 Irecv 0 1e6
-1 compute 1e9
+1 compute 5e8
+1 test
+1 compute 5e8
 1 wait
 1 send 2 1e6
 
+2 compute 2e9
 2 Irecv 1 1e6
-2 compute 5e8
+2 compute 2.5e8
+2 test
+2 compute 2.5e8
 2 wait
 2 Isend 0 1e6
 2 compute 5e8

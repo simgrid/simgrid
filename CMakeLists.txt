@@ -66,7 +66,7 @@ else()
 endif()
 
 set(SIMGRID_VERSION_STRING
-  "SimGrid version ${release_version}${SIMGRID_VERSION_EXTRA}\\nCopyright (c) ${SIMGRID_VERSION_DATE}. The Simgrid Team.")
+  "SimGrid version ${release_version}${SIMGRID_VERSION_EXTRA}\\nCopyright (c) 2004-${SIMGRID_VERSION_DATE}. The Simgrid Team.")
 
 set(libsimgrid_version "${release_version}")
 set(libsimgrid-java_version "${release_version}")
@@ -98,6 +98,9 @@ if(${CMAKE_C_COMPILER_ID} STREQUAL "GNU")
     message(FATAL_ERROR "Gcc must be to version ${GCC_NEED_VERSION} current version ${COMPILER_C_VERSION_MAJOR_MINOR}")
   endif()
 endif()
+
+exec_program("${CMAKE_LINKER} --version" OUTPUT_VARIABLE "LINKER_VERSION")
+string(REGEX MATCH "[0-9].[0-9]*" LINKER_VERSION "${LINKER_VERSION}")
 
 string(REGEX MATCH "cl.exe" VBC "${CMAKE_C_COMPILER}")
 if(VBC)
@@ -228,6 +231,10 @@ endif()
 include(${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/MakeExe.cmake)
 
 ### Make tests
+if(enable_memcheck_xml)
+  set(enable_memcheck true)
+endif()
+
 include(${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/AddTests.cmake)
 include(${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/CTestConfig.cmake)
 

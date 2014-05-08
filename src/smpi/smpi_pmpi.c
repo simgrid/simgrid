@@ -74,7 +74,7 @@ int PMPI_Get_version (int *version,int *subversion){
 int PMPI_Get_library_version (char *version,int *len){
   int retval = MPI_SUCCESS;
   smpi_bench_end();
-  snprintf(version,MPI_MAX_LIBRARY_VERSION_STRING,"SMPI Version %d.%d. Copyright The Simgrid Team 2007-2013",SIMGRID_VERSION_MAJOR,
+  snprintf(version,MPI_MAX_LIBRARY_VERSION_STRING,"SMPI Version %d.%d. Copyright The Simgrid Team 2007-2014",SIMGRID_VERSION_MAJOR,
           SIMGRID_VERSION_MINOR);
   *len = strlen(version) > MPI_MAX_LIBRARY_VERSION_STRING ? MPI_MAX_LIBRARY_VERSION_STRING : strlen(version);
   smpi_bench_begin();
@@ -773,7 +773,7 @@ int PMPI_Comm_dup(MPI_Comm comm, MPI_Comm * newcomm)
   } else if (newcomm == NULL) {
     retval = MPI_ERR_ARG;
   } else {
-    *newcomm = smpi_comm_new(smpi_comm_group(comm));
+    *newcomm = smpi_comm_new(smpi_comm_group(comm), smpi_comm_topo(comm));
     retval = MPI_SUCCESS;
   }
   return retval;
@@ -794,7 +794,7 @@ int PMPI_Comm_create(MPI_Comm comm, MPI_Group group, MPI_Comm * newcomm)
     retval = MPI_SUCCESS;
   }else{
 
-    *newcomm = smpi_comm_new(group);
+    *newcomm = smpi_comm_new(group, NULL);
     retval = MPI_SUCCESS;
   }
   return retval;
@@ -1362,7 +1362,6 @@ int PMPI_Sendrecv_replace(void *buf, int count, MPI_Datatype datatype,
 int PMPI_Test(MPI_Request * request, int *flag, MPI_Status * status)
 {
   int retval = 0;
-
   smpi_bench_end();
   if (request == NULL || flag == NULL) {
     retval = MPI_ERR_ARG;
@@ -1371,7 +1370,19 @@ int PMPI_Test(MPI_Request * request, int *flag, MPI_Status * status)
     smpi_empty_status(status);
     retval = MPI_ERR_REQUEST;
   } else {
+#ifdef HAVE_TRACING
+    int rank = request && (*request)->comm != MPI_COMM_NULL
+      ? smpi_process_index()
+      : -1;
+
+    instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
+    extra->type = TRACING_TEST;
+    TRACE_smpi_testing_in(rank, extra);
+#endif
     *flag = smpi_mpi_test(request, status);
+#ifdef HAVE_TRACING
+    TRACE_smpi_testing_out(rank);
+#endif
     retval = MPI_SUCCESS;
   }
   smpi_bench_begin();
@@ -2554,13 +2565,115 @@ int PMPI_Initialized(int* flag) {
    return MPI_SUCCESS;
 }
 
+/* The topo part of MPI_COMM_WORLD should always be NULL. When other topologies
+ * will be implemented, not only should we check if the topology is NULL, but
+ * we should check if it is the good topology type (so we have to add a
+ *  MPIR_Topo_Type field, and replace the MPI_Topology field by an union)*/
+
+int PMPI_Cart_create(MPI_Comm comm_old, int ndims, int* dims, int* periodic, int reorder, MPI_Comm* comm_cart) {
+  int retval = 0;
+  smpi_bench_end();
+  if (comm_old == MPI_COMM_NULL){
+    return  MPI_ERR_COMM;
+  }
+  else if (ndims < 0 ||
+           (ndims > 0 && (dims == NULL || 
+                          periodic == NULL)) ||
+           comm_cart == NULL) {
+    return MPI_ERR_ARG;
+  }
+  retval = smpi_mpi_cart_create(comm_old, ndims, dims, periodic, reorder, comm_cart);
+
+  smpi_bench_begin();
+
+  return retval;
+}
+
+int PMPI_Cart_rank(MPI_Comm comm, int* coords, int* rank) {
+  if(comm == MPI_COMM_NULL || smpi_comm_topo(comm) == NULL) {
+    return MPI_ERR_TOPOLOGY;
+  }
+  if (coords == NULL) {
+    return MPI_ERR_ARG;
+  }
+  return smpi_mpi_cart_rank(comm, coords, rank);
+}
+
+int PMPI_Cart_shift(MPI_Comm comm, int direction, int displ, int* source, int* dest) {
+  if(comm == MPI_COMM_NULL || smpi_comm_topo(comm) == NULL) {
+    return MPI_ERR_TOPOLOGY;
+  }
+  if (source == NULL || dest == NULL || direction < 0 ) {
+    return MPI_ERR_ARG;
+  }
+  return smpi_mpi_cart_shift(comm, direction, displ, source, dest);
+}
+
+int PMPI_Cart_coords(MPI_Comm comm, int rank, int maxdims, int* coords) {
+  if(comm == MPI_COMM_NULL || smpi_comm_topo(comm) == NULL) {
+    return MPI_ERR_TOPOLOGY;
+  }
+  if (rank < 0 || rank >= smpi_comm_size(comm)) {
+    return MPI_ERR_RANK;
+  }
+  if (maxdims <= 0) {
+    return MPI_ERR_ARG;
+  }
+  if(coords == NULL) {
+    return MPI_ERR_ARG;
+  }
+  return smpi_mpi_cart_coords(comm, rank, maxdims, coords);
+}
+
+int PMPI_Cart_get(MPI_Comm comm, int maxdims, int* dims, int* periods, int* coords) {
+  if(comm == NULL || smpi_comm_topo(comm) == NULL) {
+    return MPI_ERR_TOPOLOGY;
+  }
+  if(maxdims <= 0 || dims == NULL || periods == NULL || coords == NULL) {
+    return MPI_ERR_ARG;
+  }
+  return smpi_mpi_cart_get(comm, maxdims, dims, periods, coords);
+}
+
+int PMPI_Cartdim_get(MPI_Comm comm, int* ndims) {
+  if (comm == MPI_COMM_NULL || smpi_comm_topo(comm) == NULL) {
+    return MPI_ERR_TOPOLOGY;
+  }
+  if (ndims == NULL) {
+    return MPI_ERR_ARG;
+  }
+  return smpi_mpi_cartdim_get(comm, ndims);
+}
+
+int PMPI_Dims_create(int nnodes, int ndims, int* dims) {
+  if(dims == NULL) {
+    return MPI_ERR_ARG;
+  }
+  if (ndims < 1 || nnodes < 1) {
+    return MPI_ERR_DIMS;
+  }
+
+  return smpi_mpi_dims_create(nnodes, ndims, dims);
+}
+
+int PMPI_Cart_sub(MPI_Comm comm, int* remain_dims, MPI_Comm* comm_new) {
+  if(comm == MPI_COMM_NULL || smpi_comm_topo(comm) == NULL) {
+    return MPI_ERR_TOPOLOGY;
+  }
+  if (comm_new == NULL) {
+    return MPI_ERR_ARG;
+  }
+  return smpi_mpi_cart_sub(comm, remain_dims, comm_new);
+}
+
+
 /* The following calls are not yet implemented and will fail at runtime. */
 /* Once implemented, please move them above this notice. */
 
-#define NOT_YET_IMPLEMENTED {\
-	XBT_WARN("Not yet implemented : %s. Please contact the Simgrid team if support is needed", __FUNCTION__);\
-	return MPI_SUCCESS;\
-        }
+#define NOT_YET_IMPLEMENTED {                                           \
+    XBT_WARN("Not yet implemented : %s. Please contact the Simgrid team if support is needed", __FUNCTION__); \
+    return MPI_SUCCESS;                                                 \
+  }
 
 
 int PMPI_Type_dup(MPI_Datatype datatype, MPI_Datatype *newtype){
@@ -2578,144 +2691,118 @@ int PMPI_Type_get_name(MPI_Datatype  datatype, char * name, int* len)
 }
 
 int PMPI_Pack_size(int incount, MPI_Datatype datatype, MPI_Comm comm, int* size) {
-   NOT_YET_IMPLEMENTED
+  NOT_YET_IMPLEMENTED
 }
 
-int PMPI_Cart_coords(MPI_Comm comm, int rank, int maxdims, int* coords) {
-   NOT_YET_IMPLEMENTED
-}
-
-int PMPI_Cart_create(MPI_Comm comm_old, int ndims, int* dims, int* periods, int reorder, MPI_Comm* comm_cart) {
-   NOT_YET_IMPLEMENTED
-}
-
-int PMPI_Cart_get(MPI_Comm comm, int maxdims, int* dims, int* periods, int* coords) {
-   NOT_YET_IMPLEMENTED
-}
 
 int PMPI_Cart_map(MPI_Comm comm_old, int ndims, int* dims, int* periods, int* newrank) {
-   NOT_YET_IMPLEMENTED
+  NOT_YET_IMPLEMENTED
 }
 
-int PMPI_Cart_rank(MPI_Comm comm, int* coords, int* rank) {
-   NOT_YET_IMPLEMENTED
-}
-
-int PMPI_Cart_shift(MPI_Comm comm, int direction, int displ, int* source, int* dest) {
-   NOT_YET_IMPLEMENTED
-}
-
-int PMPI_Cart_sub(MPI_Comm comm, int* remain_dims, MPI_Comm* comm_new) {
-   NOT_YET_IMPLEMENTED
-}
-
-int PMPI_Cartdim_get(MPI_Comm comm, int* ndims) {
-   NOT_YET_IMPLEMENTED
-}
 
 int PMPI_Graph_create(MPI_Comm comm_old, int nnodes, int* index, int* edges, int reorder, MPI_Comm* comm_graph) {
-   NOT_YET_IMPLEMENTED
+  NOT_YET_IMPLEMENTED
 }
 
 int PMPI_Graph_get(MPI_Comm comm, int maxindex, int maxedges, int* index, int* edges) {
-   NOT_YET_IMPLEMENTED
+  NOT_YET_IMPLEMENTED
 }
 
 int PMPI_Graph_map(MPI_Comm comm_old, int nnodes, int* index, int* edges, int* newrank) {
-   NOT_YET_IMPLEMENTED
+  NOT_YET_IMPLEMENTED
 }
 
 int PMPI_Graph_neighbors(MPI_Comm comm, int rank, int maxneighbors, int* neighbors) {
-   NOT_YET_IMPLEMENTED
+  NOT_YET_IMPLEMENTED
 }
 
 int PMPI_Graph_neighbors_count(MPI_Comm comm, int rank, int* nneighbors) {
-   NOT_YET_IMPLEMENTED
+  NOT_YET_IMPLEMENTED
 }
 
 int PMPI_Graphdims_get(MPI_Comm comm, int* nnodes, int* nedges) {
-   NOT_YET_IMPLEMENTED
+  NOT_YET_IMPLEMENTED
 }
 
 int PMPI_Topo_test(MPI_Comm comm, int* top_type) {
-   NOT_YET_IMPLEMENTED
+  NOT_YET_IMPLEMENTED
 }
 
 int PMPI_Errhandler_create(MPI_Handler_function* function, MPI_Errhandler* errhandler) {
-   NOT_YET_IMPLEMENTED
+  NOT_YET_IMPLEMENTED
 }
 
 int PMPI_Errhandler_free(MPI_Errhandler* errhandler) {
-   NOT_YET_IMPLEMENTED
+  NOT_YET_IMPLEMENTED
 }
 
 int PMPI_Errhandler_get(MPI_Comm comm, MPI_Errhandler* errhandler) {
-   NOT_YET_IMPLEMENTED
+  NOT_YET_IMPLEMENTED
 }
 
 int PMPI_Error_string(int errorcode, char* string, int* resultlen) {
-   NOT_YET_IMPLEMENTED
+  NOT_YET_IMPLEMENTED
 }
 
 int PMPI_Errhandler_set(MPI_Comm comm, MPI_Errhandler errhandler) {
-   NOT_YET_IMPLEMENTED
+  NOT_YET_IMPLEMENTED
 }
 
 int PMPI_Comm_set_errhandler(MPI_Comm comm, MPI_Errhandler errhandler) {
-   NOT_YET_IMPLEMENTED
+  NOT_YET_IMPLEMENTED
 }
 
 int PMPI_Comm_get_errhandler(MPI_Comm comm, MPI_Errhandler* errhandler) {
-   NOT_YET_IMPLEMENTED
+  NOT_YET_IMPLEMENTED
 }
 
 int PMPI_Cancel(MPI_Request* request) {
-   NOT_YET_IMPLEMENTED
+  NOT_YET_IMPLEMENTED
 }
 
 int PMPI_Buffer_attach(void* buffer, int size) {
-   NOT_YET_IMPLEMENTED
+  NOT_YET_IMPLEMENTED
 }
 
 int PMPI_Buffer_detach(void* buffer, int* size) {
-   NOT_YET_IMPLEMENTED
+  NOT_YET_IMPLEMENTED
 }
 
 int PMPI_Comm_test_inter(MPI_Comm comm, int* flag) {
-   NOT_YET_IMPLEMENTED
+  NOT_YET_IMPLEMENTED
 }
 
 int PMPI_Comm_get_attr (MPI_Comm comm, int comm_keyval, void *attribute_val, int *flag)
 {
-   NOT_YET_IMPLEMENTED
+  NOT_YET_IMPLEMENTED
 }
 
 int PMPI_Comm_set_attr (MPI_Comm comm, int comm_keyval, void *attribute_val)
 {
-   NOT_YET_IMPLEMENTED
+  NOT_YET_IMPLEMENTED
 }
 
 int PMPI_Comm_delete_attr (MPI_Comm comm, int comm_keyval)
 {
-   NOT_YET_IMPLEMENTED
+  NOT_YET_IMPLEMENTED
 }
 
 int PMPI_Comm_create_keyval(MPI_Comm_copy_attr_function* copy_fn, MPI_Comm_delete_attr_function* delete_fn, int* keyval, void* extra_state)
 {
-   NOT_YET_IMPLEMENTED
+  NOT_YET_IMPLEMENTED
 }
 
 int PMPI_Comm_free_keyval(int* keyval) {
-   NOT_YET_IMPLEMENTED
+  NOT_YET_IMPLEMENTED
 }
 
 int PMPI_Pcontrol(const int level )
 {
-   NOT_YET_IMPLEMENTED
+  NOT_YET_IMPLEMENTED
 }
 
 int PMPI_Unpack(void* inbuf, int insize, int* position, void* outbuf, int outcount, MPI_Datatype type, MPI_Comm comm) {
-   NOT_YET_IMPLEMENTED
+  NOT_YET_IMPLEMENTED
 }
 
 int PMPI_Type_get_attr (MPI_Datatype type, int type_keyval, void *attribute_val, int* flag)
@@ -2743,71 +2830,71 @@ int PMPI_Type_free_keyval(int* keyval) {
 }
 
 int PMPI_Intercomm_create(MPI_Comm local_comm, int local_leader, MPI_Comm peer_comm, int remote_leader, int tag, MPI_Comm* comm_out) {
-   NOT_YET_IMPLEMENTED
+  NOT_YET_IMPLEMENTED
 }
 
 int PMPI_Intercomm_merge(MPI_Comm comm, int high, MPI_Comm* comm_out) {
-   NOT_YET_IMPLEMENTED
+  NOT_YET_IMPLEMENTED
 }
 
 int PMPI_Bsend(void* buf, int count, MPI_Datatype datatype, int dest, int tag, MPI_Comm comm) {
-   NOT_YET_IMPLEMENTED
+  NOT_YET_IMPLEMENTED
 }
 
 int PMPI_Bsend_init(void* buf, int count, MPI_Datatype datatype, int dest, int tag, MPI_Comm comm, MPI_Request* request) {
-   NOT_YET_IMPLEMENTED
+  NOT_YET_IMPLEMENTED
 }
 
 int PMPI_Ibsend(void* buf, int count, MPI_Datatype datatype, int dest, int tag, MPI_Comm comm, MPI_Request* request) {
-   NOT_YET_IMPLEMENTED
+  NOT_YET_IMPLEMENTED
 }
 
 int PMPI_Comm_remote_group(MPI_Comm comm, MPI_Group* group) {
-   NOT_YET_IMPLEMENTED
+  NOT_YET_IMPLEMENTED
 }
 
 int PMPI_Comm_remote_size(MPI_Comm comm, int* size) {
-   NOT_YET_IMPLEMENTED
+  NOT_YET_IMPLEMENTED
 }
 
 int PMPI_Attr_delete(MPI_Comm comm, int keyval) {
-   NOT_YET_IMPLEMENTED
+  NOT_YET_IMPLEMENTED
 }
 
 int PMPI_Attr_get(MPI_Comm comm, int keyval, void* attr_value, int* flag) {
-   NOT_YET_IMPLEMENTED
+  NOT_YET_IMPLEMENTED
 }
 
 int PMPI_Attr_put(MPI_Comm comm, int keyval, void* attr_value) {
-   NOT_YET_IMPLEMENTED
+  NOT_YET_IMPLEMENTED
 }
 
 int PMPI_Rsend(void* buf, int count, MPI_Datatype datatype, int dest, int tag, MPI_Comm comm) {
-   NOT_YET_IMPLEMENTED
+  NOT_YET_IMPLEMENTED
 }
 
 int PMPI_Rsend_init(void* buf, int count, MPI_Datatype datatype, int dest, int tag, MPI_Comm comm, MPI_Request* request) {
-   NOT_YET_IMPLEMENTED
+  NOT_YET_IMPLEMENTED
 }
 
 int PMPI_Irsend(void* buf, int count, MPI_Datatype datatype, int dest, int tag, MPI_Comm comm, MPI_Request* request) {
-   NOT_YET_IMPLEMENTED
+  NOT_YET_IMPLEMENTED
 }
 
 int PMPI_Keyval_create(MPI_Copy_function* copy_fn, MPI_Delete_function* delete_fn, int* keyval, void* extra_state) {
-   NOT_YET_IMPLEMENTED
+  NOT_YET_IMPLEMENTED
 }
 
 int PMPI_Keyval_free(int* keyval) {
-   NOT_YET_IMPLEMENTED
+  NOT_YET_IMPLEMENTED
 }
 
 int PMPI_Test_cancelled(MPI_Status* status, int* flag) {
-   NOT_YET_IMPLEMENTED
+  NOT_YET_IMPLEMENTED
 }
 
 int PMPI_Pack(void* inbuf, int incount, MPI_Datatype type, void* outbuf, int outcount, int* position, MPI_Comm comm) {
-   NOT_YET_IMPLEMENTED
+  NOT_YET_IMPLEMENTED
 }
 
 int PMPI_Pack_external_size(char *datarep, int incount, MPI_Datatype datatype, MPI_Aint *size){
@@ -2823,19 +2910,15 @@ int PMPI_Unpack_external( char *datarep, void *inbuf, MPI_Aint insize, MPI_Aint 
 }
 
 int PMPI_Get_elements(MPI_Status* status, MPI_Datatype datatype, int* elements) {
-   NOT_YET_IMPLEMENTED
-}
-
-int PMPI_Dims_create(int nnodes, int ndims, int* dims) {
-   NOT_YET_IMPLEMENTED
+  NOT_YET_IMPLEMENTED
 }
 
 int PMPI_Win_fence( int assert,  MPI_Win win){
-   NOT_YET_IMPLEMENTED
+  NOT_YET_IMPLEMENTED
 }
 
 int PMPI_Win_free( MPI_Win* win){
-   NOT_YET_IMPLEMENTED
+  NOT_YET_IMPLEMENTED
 }
 
 int PMPI_Win_create( void *base, MPI_Aint size, int disp_unit, MPI_Info info, MPI_Comm comm, MPI_Win *win){
@@ -2855,18 +2938,18 @@ int PMPI_Info_free( MPI_Info *info){
 }
 
 int PMPI_Get( void *origin_addr, int origin_count, MPI_Datatype origin_datatype, int target_rank,
-    MPI_Aint target_disp, int target_count, MPI_Datatype target_datatype, MPI_Win win){
+              MPI_Aint target_disp, int target_count, MPI_Datatype target_datatype, MPI_Win win){
   NOT_YET_IMPLEMENTED
 }
 
 int PMPI_Type_get_envelope( MPI_Datatype datatype, int *num_integers,
-                          int *num_addresses, int *num_datatypes, int *combiner){
+                            int *num_addresses, int *num_datatypes, int *combiner){
   NOT_YET_IMPLEMENTED
 }
 
 int PMPI_Type_get_contents(MPI_Datatype datatype, int max_integers, int max_addresses,
-                          int max_datatypes, int* array_of_integers, MPI_Aint* array_of_addresses,
-                          MPI_Datatype* array_of_datatypes){
+                           int max_datatypes, int* array_of_integers, MPI_Aint* array_of_addresses,
+                           MPI_Datatype* array_of_datatypes){
   NOT_YET_IMPLEMENTED
 }
 
@@ -2889,8 +2972,8 @@ int PMPI_Type_match_size(int typeclass,int size,MPI_Datatype *datatype){
 }
 
 int PMPI_Alltoallw( void *sendbuf, int *sendcnts, int *sdispls, MPI_Datatype *sendtypes,
-                   void *recvbuf, int *recvcnts, int *rdispls, MPI_Datatype *recvtypes,
-                   MPI_Comm comm){
+                    void *recvbuf, int *recvcnts, int *rdispls, MPI_Datatype *recvtypes,
+                    MPI_Comm comm){
   NOT_YET_IMPLEMENTED
 }
 
@@ -3015,8 +3098,8 @@ int PMPI_Comm_spawn( char *command, char **argv, int maxprocs, MPI_Info info, in
 }
 
 int PMPI_Comm_spawn_multiple( int count, char **array_of_commands, char*** array_of_argv,
-                             int* array_of_maxprocs, MPI_Info* array_of_info, int root,
-                             MPI_Comm comm, MPI_Comm *intercomm, int* array_of_errcodes){
+                              int* array_of_maxprocs, MPI_Info* array_of_info, int root,
+                              MPI_Comm comm, MPI_Comm *intercomm, int* array_of_errcodes){
   NOT_YET_IMPLEMENTED
 }
 

@@ -21,7 +21,7 @@ NETWORK_BANDWIDTH="${DEFAULT_NETWORK_BANDWIDTH}"
 NETWORK_LATENCY="${DEFAULT_NETWORK_LATENCY}"
 POWER="${DEFAULT_POWER}"
 
-SIMOPTS="--cfg=maxmin/precision:1e-9 --cfg=surf/precision:1e-9 --cfg=network/model:SMPI --cfg=network/TCP_gamma:4194304"
+SIMOPTS="--cfg=maxmin/precision:1e-3 --cfg=surf/precision:1e-9 --cfg=network/model:SMPI --cfg=network/TCP_gamma:4194304"
 
 #usage to print the way this script should be called
 usage () {
@@ -356,6 +356,7 @@ do
 	host="$(echo $hostnames|cut -d' ' -f$j)"
   fi
   echo "  <process host=\"${host}\" function=\"$i\"> <!-- function name used only for logging -->" >> ${APPLICATIONTMP}
+  echo "    <argument value=\"1\"/> <!-- instance -->" >> ${APPLICATIONTMP}
   echo "    <argument value=\"$i\"/> <!-- rank -->" >> ${APPLICATIONTMP}
   if [ "${EXTOPT}" = "smpi_replay" ]; then
     if  [ ${NUMTRACES} -gt 1 ]; then

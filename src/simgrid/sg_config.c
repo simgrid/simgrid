@@ -696,7 +696,11 @@ void sg_config_init(int *argc, char **argv)
     xbt_cfg_register(&_sg_cfg_set, "contexts/guard_size",
                      "Guard size for contexts stacks in memory pages",
                      xbt_cfgelm_int, 1, 1, _sg_cfg_cb_context_guard_size, NULL);
+#if defined(_XBT_WIN32) || (PTH_STACKGROWTH != -1)
+    xbt_cfg_setdefault_int(_sg_cfg_set, "contexts/guard_size", 0);
+#else
     xbt_cfg_setdefault_int(_sg_cfg_set, "contexts/guard_size", 1);
+#endif
     /* No, it was not set yet (the above setdefault() changed this to 1). */
     smx_context_guard_size_was_set = 0;
 
@@ -952,13 +956,17 @@ void surf_config_models_setup()
     xbt_assert(network_model_name,
                 "Set a network model to use with the 'compound' workstation model");
 
+    if(surf_cpu_model_init_preparse){
+      surf_cpu_model_init_preparse();
+    } else {
+      cpu_id =
+          find_model_description(surf_cpu_model_description, cpu_model_name);
+      surf_cpu_model_description[cpu_id].model_init_preparse();
+    }
+
     network_id =
         find_model_description(surf_network_model_description,
                                network_model_name);
-    cpu_id =
-        find_model_description(surf_cpu_model_description, cpu_model_name);
-
-    surf_cpu_model_description[cpu_id].model_init_preparse();
     surf_network_model_description[network_id].model_init_preparse();
   }
 

@@ -182,7 +182,7 @@ msg_process_t MSG_process_create_with_environment(const char *name,
   }
   else {
     #ifdef HAVE_TRACING
-    simcall_process_on_exit(process,(int_f_pvoid_t)TRACE_msg_process_kill,MSG_process_self());
+    simcall_process_on_exit(process,(int_f_pvoid_pvoid_t)TRACE_msg_process_kill,process);
     #endif
   }
   return process;
@@ -200,10 +200,21 @@ void MSG_process_kill(msg_process_t process)
 //  if (p_simdata->waiting_task && p_simdata->waiting_task->simdata->comm) {
 //    simcall_comm_cancel(p_simdata->waiting_task->simdata->comm);
 //  }
- 
+
   simcall_process_kill(process);
 
   return;
+}
+
+/**
+* \brief Wait for the completion of a #msg_process_t.
+*
+* \param process the process to wait for
+* \param timeout wait until the process is over, or the timeout occurs
+*/
+msg_error_t MSG_process_join(msg_process_t process, double timeout){
+  simcall_process_join(process, timeout);
+  return MSG_OK;
 }
 
 /** \ingroup m_process_management
@@ -477,7 +488,7 @@ smx_context_t MSG_process_get_smx_ctx(msg_process_t process) {
  * The on_exit functions are the functions executed when your process is killed.
  * You should use them to free the data used by your process.
  */
-void MSG_process_on_exit(int_f_pvoid_t fun, void *data) {
+void MSG_process_on_exit(int_f_pvoid_pvoid_t fun, void *data) {
   simcall_process_on_exit(MSG_process_self(),fun,data);
 }
 /**

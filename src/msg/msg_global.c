@@ -25,6 +25,11 @@ static void MSG_exit(void);
 
 /********************************* MSG **************************************/
 
+static void _sg_cfg_cb_msg_debug_multiple_use(const char *name, int pos)
+{
+  msg_global->debug_multiple_use = xbt_cfg_get_boolean(_sg_cfg_set, name);
+}
+
 /**
  * \ingroup msg_simulation
  * \brief Initialize MSG with less verifications
@@ -39,9 +44,14 @@ void MSG_init_nocheck(int *argc, char **argv) {
   xbt_getpid = MSG_process_self_PID;
   if (!msg_global) {
 
-    SIMIX_global_init(argc, argv);
-    
     msg_global = xbt_new0(s_MSG_Global_t, 1);
+
+    xbt_cfg_register(&_sg_cfg_set, "msg/debug_multiple_use",
+                     "Print backtraces of both processes when there is a conflict of multiple use of a task",
+                     xbt_cfgelm_boolean, 1, 1, _sg_cfg_cb_msg_debug_multiple_use, NULL);
+    xbt_cfg_setdefault_boolean(_sg_cfg_set, "msg/debug_multiple_use", "no");
+
+    SIMIX_global_init(argc, argv);
 
 #ifdef MSG_USE_DEPRECATED
     msg_global->max_channel = 0;
@@ -50,23 +60,16 @@ void MSG_init_nocheck(int *argc, char **argv) {
     msg_global->task_copy_callback = NULL;
     msg_global->process_data_cleanup = NULL;
 
-    /* initialization of the action module */
-    _MSG_action_init();
-
     SIMIX_function_register_process_create(MSG_process_create_from_SIMIX);
     SIMIX_function_register_process_cleanup(MSG_process_cleanup_from_SIMIX);
 
     sg_platf_postparse_add_cb(MSG_post_create_environment);
   }
-  
+
   if(MC_is_active()){
     /* Ignore total amount of messages sent during the simulation for heap comparison */
     MC_ignore_heap(&(msg_global->sent_msg), sizeof(msg_global->sent_msg));
   }
-
-#ifdef HAVE_TRACING
-  TRACE_start();
-#endif
 
   XBT_DEBUG("ADD MSG LEVELS");
   MSG_HOST_LEVEL = xbt_lib_add_level(host_lib, (void_f_pvoid_t) __MSG_host_priv_free);
@@ -166,12 +169,6 @@ static void MSG_exit(void) {
 
 #ifdef HAVE_TRACING
   TRACE_surf_resource_utilization_release();
-#endif
-
-  /* initialization of the action module */
-  _MSG_action_exit();
-
-#ifdef HAVE_TRACING
   TRACE_end();
 #endif
 

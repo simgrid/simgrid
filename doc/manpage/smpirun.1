@@ -1,0 +1,64 @@
+.TH smpirun 1
+.SH NAME
+smpirun \- Allow the configuration and the execution of MPI programs with simgrid and SMPI
+.SH SYNOPSIS
+smpirun [\fIOPTIONS\fR]… \fB\-platform\fR <platform.xml> \fB\-hostfile\fR <hostfile> program [\fIPROGRAM-OPTIONS\fR]…
+.SH DESCRIPTION
+smpirun provides an easy way to run programs linked to simgrid and using SMPI. It sets some default values, and generate a deployment file using the mandatory arguments \fB-platform\fR and \fB-hostfile\fR.
+.TP
+\fB\-platform\fR <platform.xml>
+XML file describing the platform on which we want to deploy the program 
+.TP
+\fB\-hostfile\fR, \fB\-machinefile\fR <hostfile>
+Hostfile listing all the machines in use
+.SH OPTIONS
+.SS Configuration options
+The configuration of the simulation can be tweaked using \fB--cfg\fR=\fIparameter\fR:\fIvalue\fR. Refer to http://simgrid.gforge.inria.fr/simgrid/latest/doc/options.html to know what are the different possibilities.
+.SS Other options
+.TP
+\fB\-help\fR
+Print the usage and a résumé of the available options
+.TP
+\fB\-keep-temps\fR
+Do not remove the generated files after execution.
+.TP
+\fB\-wrapper\fR <command>
+Use command to run the program (e.g. "valgrind").
+.TP
+\fB\-map\fR
+Display the machine on which each process rank is mapped.
+.TP
+\fB\-np\fR <numprocs>
+Use that amount of processes. By default, there is the same number of processes as there are of hosts in the hostfile.
+.TP
+\fB\-trace\fR
+Equivalent to \fB–cfg\fR=\fItracing\fR:\fIyes\fR \fB–cfg\fR=\fItracing/smpi\fR:\fIyes\fR, activate the trace mecanism if available.
+.TP
+\fB\-trace-ti\fR
+Activate time independant tracing.
+.TP
+\fB\-trace-comment\fR <comment>
+Put a comment on the top of the trace file.
+.TP
+\fB\-trace-comment-file\fR <file>
+Insert the content of the file at the head of the trace file as a comment.
+.TP
+\fB\-trace-grouped\fR
+Group MPI processes by location.
+.TP
+\fB\-trace-resource\fR
+Trace resource utilization.
+.TP
+\fB\-trace-viva\fR
+Generate configuration for Viva's GraphView.
+.TP
+\fB\-trace-file\fR <tracefile>
+Name of the tracefile
+.SH AUTHORS
+The SimGrid team (simgrid-devel@lists.gforge.inria.fr)
+.SH COPYRIGHT AND LICENCE
+Copyright (c) 2014. The SimGrid Team. All rights reserved.
+
+This program is free software; you may redistribute it and/or modify it under the terms of GNU LGPL (v2.1) license.
+.SH SEE ALSO
+.B smpicc\fR(1)

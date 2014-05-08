@@ -191,9 +191,9 @@ void SIMIX_global_init(int *argc, char **argv)
  *
  * This functions remove the memory used by SIMIX
  */
-int cleaned = 0;
 void SIMIX_clean(void)
 {
+  static int cleaned = 0;
 #ifdef TIME_BENCH_PER_SR
   smx_ctx_raw_new_sr();
 #endif
@@ -533,6 +533,10 @@ void SIMIX_display_process_status(void)
 
       case SIMIX_ACTION_SLEEP:
         action_description = "sleeping";
+        break;
+
+      case SIMIX_ACTION_JOIN:
+        action_description = "joining";
         break;
 
       case SIMIX_ACTION_SYNCHRO:

@@ -6,7 +6,7 @@
 
 #include "storage_n11.hpp"
 #include "surf_private.h"
-
+#include <math.h> /*ceil*/
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_storage);
 
 static int storage_selective_update = 0;
@@ -305,17 +305,34 @@ void StorageN11Model::updateActionsState(double /*now*/, double delta)
      ; it != itend ; it=itNext) {
     ++itNext;
     action = static_cast<StorageActionPtr>(&*it);
+
     if(action->m_type == WRITE)
     {
       // Update the disk usage
-     // Update the file size
-     // For each action of type write
-      double rate = lmm_variable_getvalue(action->getVariable());
-      /* Hack to avoid rounding differences between x86 and x86_64
-       * (note that the next sizes are of type sg_size_t). */
-      long incr = delta * rate + 0.00001; // Use legacy value. I don't know what this hack can be... FIXME: Pierre, please check.
+      // Update the file size
+      // For each action of type write
+      double current_progress =
+          delta * lmm_variable_getvalue(action->getVariable());
+      long int incr = current_progress;
+
+      XBT_DEBUG("%s:\n\t progress =  %.2f, current_progress = %.2f, "
+                "incr = %ld, lrint(1) = %ld, lrint(2) = %ld",
+                action->p_file->name,
+                action->progress,  current_progress, incr,
+                lrint(action->progress + current_progress),
+                lrint(action->progress)+ incr);
+
+      /* Take care of rounding error accumulation */
+      if (lrint(action->progress + current_progress) >
+          lrint(action->progress)+ incr)
+        incr++;
+
+      action->progress +=current_progress;
+
       action->p_storage->m_usedSize += incr; // disk usage
-      action->p_file->size += incr; // file size
+      action->p_file->current_position+= incr; // current_position
+      //  which becomes the new file size
+      action->p_file->size = action->p_file->current_position ;
 
       sg_size_t *psize = xbt_new(sg_size_t,1);
       *psize = action->p_file->size;
@@ -361,51 +378,6 @@ StorageN11::StorageN11(StorageModelPtr model, const char* name, xbt_dict_t prope
   XBT_DEBUG("Create resource with Bconnection '%f' Bread '%f' Bwrite '%f' and Size '%llu'", bconnection, bread, bwrite, size);
 }
 
-StorageActionPtr StorageN11::ls(const char* path)
-{
-  StorageActionPtr action = new StorageN11Action(getModel(), 0, getState() != SURF_RESOURCE_ON, this, LS);
-
-  action->p_lsDict = NULL;
-  xbt_dict_t ls_dict = xbt_dict_new_homogeneous(xbt_free);
-
-  char* key;
-  sg_size_t size = 0;
-  xbt_dict_cursor_t cursor = NULL;
-
-  xbt_dynar_t dyn = NULL;
-  char* file = NULL;
-
-  // for each file in the storage content
-  xbt_dict_foreach(p_content,cursor,key,size){
-    // Search if file start with the prefix 'path'
-    if(xbt_str_start_with(key,path)){
-      file = &key[strlen(path)];
-
-      // Split file with '/'
-      dyn = xbt_str_split(file,"/");
-      file = xbt_dynar_get_as(dyn,0,char*);
-
-      // file
-      if(xbt_dynar_length(dyn) == 1){
-        sg_size_t *psize = xbt_new(sg_size_t, 1);
-        *psize=size;
-        xbt_dict_set(ls_dict, file, psize, NULL);
-      }
-      // Directory
-      else
-      {
-        // if directory does not exist yet in the dictionary
-        if(!xbt_dict_get_or_null(ls_dict,file))
-          xbt_dict_set(ls_dict,file,NULL,NULL);
-      }
-      xbt_dynar_free(&dyn);
-    }
-  }
-
-  action->p_lsDict = ls_dict;
-  return action;
-}
-
 StorageActionPtr StorageN11::open(const char* mount, const char* path)
 {
   XBT_DEBUG("\tOpen file '%s'",path);
@@ -416,7 +388,7 @@ StorageActionPtr StorageN11::open(const char* mount, const char* path)
   if(psize)
     size = *psize;
   else {
-	psize = xbt_new(sg_size_t,1);
+    psize = xbt_new(sg_size_t,1);
     size = 0;
     *psize = size;
     xbt_dict_set(p_content, path, psize, NULL);
@@ -458,12 +430,12 @@ StorageActionPtr StorageN11::close(surf_file_t fd)
 
 StorageActionPtr StorageN11::read(surf_file_t fd, sg_size_t size)
 {
-  if(size > fd->size){
-    size = fd->size;
+  if(fd->current_position + size > fd->size){
+    size = fd->size - fd->current_position;
     fd->current_position = fd->size;
   }
   else
-	fd->current_position += size;
+    fd->current_position += size;
 
   StorageActionPtr action = new StorageN11Action(getModel(), size, getState() != SURF_RESOURCE_ON, this, READ);
   return action;
@@ -476,8 +448,10 @@ StorageActionPtr StorageN11::write(surf_file_t fd, sg_size_t size)
 
   StorageActionPtr action = new StorageN11Action(getModel(), size, getState() != SURF_RESOURCE_ON, this, WRITE);
   action->p_file = fd;
-  fd->current_position += size;
-  // If the storage is full
+  /* Substract the part of the file that might disappear from the used sized on
+   * the storage element */
+  m_usedSize -= (fd->size - fd->current_position);
+  // If the storage is full before even starting to write
   if(m_usedSize==m_size) {
     action->setState(SURF_ACTION_FAILED);
   }
@@ -500,15 +474,14 @@ StorageN11Action::StorageN11Action(ModelPtr model, double cost, bool failed, Sto
   case OPEN:
   case CLOSE:
   case STAT:
-  case LS:
     break;
   case READ:
     lmm_expand(model->getMaxminSystem(), storage->p_constraintRead,
-    		   getVariable(), 1.0);
+               getVariable(), 1.0);
     break;
   case WRITE:
     lmm_expand(model->getMaxminSystem(), storage->p_constraintWrite,
-    		   getVariable(), 1.0);
+               getVariable(), 1.0);
     ActionPtr action = this;
     xbt_dynar_push(storage->p_writeActions, &action);
     ref();

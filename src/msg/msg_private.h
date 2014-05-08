@@ -22,6 +22,22 @@ SG_BEGIN_DECL()
 
 /********************************* Task **************************************/
 
+
+#define MSG_BT(ptr, m)                              \
+  do {xbt_ex_t *_xbt_ex_t = xbt_new0(xbt_ex_t, 1); \
+  /* build the exception */                                             \
+  _xbt_ex_t->msg      = (bprintf(m));                                 \
+  _xbt_ex_t->category = (xbt_errcat_t)(0);                   \
+  _xbt_ex_t->value    = (0);                                 \
+  _xbt_ex_t->procname = (char*)xbt_procname();               \
+  _xbt_ex_t->pid      = xbt_getpid();                        \
+  _xbt_ex_t->file     = (char*)__FILE__;                     \
+  _xbt_ex_t->line     = __LINE__;                            \
+  _xbt_ex_t->func     = (char*)_XBT_FUNCTION;                \
+  _xbt_ex_t->bt_strings = NULL;                              \
+  xbt_backtrace_current(_xbt_ex_t); \
+  ptr = _xbt_ex_t; } while(0)
+
 typedef struct simdata_task {
   smx_action_t compute;         /* SIMIX modeling of computation */
   smx_action_t comm;            /* SIMIX modeling of communication */
@@ -37,7 +53,7 @@ typedef struct simdata_task {
   /* CPU affinity database of this task */
   xbt_dict_t affinity_mask_db; /* smx_host_t host => unsigned long mask */
 
-  int isused;  /* Indicates whether the task is used in SIMIX currently */
+  void *isused;  /* Indicates whether the task is used in SIMIX currently */
   int host_nb;                  /* ==0 if sequential task; parallel task if not */
   /*******  Parallel Tasks Only !!!! *******/
   smx_host_t *host_list;
@@ -114,6 +130,7 @@ typedef struct MSG_Global {
   int max_channel;
 #endif
   int session;
+  int debug_multiple_use;
   unsigned long int sent_msg;   /* Total amount of messages sent during the simulation */
   void (*task_copy_callback) (msg_task_t task, msg_process_t src, msg_process_t dst);
   void_f_pvoid_t process_data_cleanup;
@@ -152,9 +169,6 @@ void MSG_process_create_from_SIMIX(smx_process_t *process, const char *name,
                                    smx_process_t parent_process);
 void MSG_comm_copy_data_from_SIMIX(smx_action_t comm, void* buff, size_t buff_size);
 
-void _MSG_action_init(void);
-void _MSG_action_exit(void);
-
 void MSG_post_create_environment(void);
 
 static inline void *msg_host_resource_priv(const void *host) {
@@ -183,7 +197,7 @@ void TRACE_msg_process_change_host(msg_process_t process, msg_host_t old_host,
                                    msg_host_t new_host);
 void TRACE_msg_process_create (const char *process_name, int process_pid, msg_host_t host);
 void TRACE_msg_process_destroy (const char *process_name, int process_pid, msg_host_t host);
-void TRACE_msg_process_kill(msg_process_t process);
+void TRACE_msg_process_kill(smx_process_exit_status_t status, msg_process_t process);
 void TRACE_msg_process_suspend(msg_process_t process);
 void TRACE_msg_process_resume(msg_process_t process);
 void TRACE_msg_process_sleep_in(msg_process_t process);   //called from msg/gos.c

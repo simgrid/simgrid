@@ -1,0 +1,33 @@
+#! tesh
+
+$ java -classpath ${classpath:=.} surfCpuModel/TestCpuModel ${srcdir:=.}/surfCpuModel/surfCpuModelPlatform.xml ${srcdir:=.}/surfCpuModel/surfCpuModelDeployment.xml --cfg=workstation/model:compound
+> [0.000000] [jmsg/INFO] Initialize Cpu Constant Model
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'workstation/model' to 'compound'
+> [0.000000] [jmsg/INFO] Using regular java threads. Coroutines could speed your simulation up.
+> [0.000000] [jmsg/INFO] New Cpu(Jacquelin, 1.37333E8, 1.0)
+> [0.000000] [jmsg/INFO] New Cpu(Boivin, 9.8095E7, 1.0)
+> [0.000000] [jmsg/INFO] New Cpu(TeX, 6.8667E7, 1.0)
+> [0.000000] [jmsg/INFO] UpdateActionState of 0 actions
+> [0.000000] [jmsg/INFO] Cpu Loaded: Cpu Constant
+> [Jacquelin:surfCpuModel.Sender:(1) 0.000000] [jmsg/INFO] helloo!
+> [Boivin:surfCpuModel.Receiver:(2) 0.000000] [jmsg/INFO] helloo!
+> [0.000000] [jmsg/INFO] Sleep action of duration -1.0 sleeping true
+> [0.000000] [jmsg/INFO] Sleep action of duration -1.0 sleeping true
+> [0.000000] [jmsg/INFO] ShareResources at time -1.0
+> [0.000000] [jmsg/INFO] ShareResources at time -1.0
+> [0.026020] [jmsg/INFO] UpdateActionState of 2 actions
+> [0.026020] [jmsg/INFO] ShareResources at time -1.0
+> [0.026020] [jmsg/INFO] ShareResources at time -1.0
+> [0.026021] [jmsg/INFO] UpdateActionState of 2 actions
+> [Jacquelin:surfCpuModel.Sender:(1) 0.026021] [jmsg/INFO] Send duration: 0.026021030927835052
+> [Jacquelin:surfCpuModel.Sender:(1) 0.026021] [jmsg/INFO] goodbye!
+> [0.026021] [jmsg/INFO] Execute action of size 1.0E9 sleeping false
+> [0.026021] [jmsg/INFO] Share action with new time 10.194199500484224
+> [0.026021] [jmsg/INFO] ShareResources at time 10.194199500484224
+> [0.026021] [jmsg/INFO] Share action with new time 10.194199500484224
+> [0.026021] [jmsg/INFO] ShareResources at time 10.194199500484224
+> [10.220221] [jmsg/INFO] UpdateActionState of 1 actions
+> [10.220221] [jmsg/INFO] action remains 0.0 after delta of 10.194199500484224
+> [10.220221] [jmsg/INFO] action DONE
+> [Boivin:surfCpuModel.Receiver:(2) 10.220221] [jmsg/INFO] goodbye!
+> [10.220221] [jmsg/INFO] MSG_main finished; Cleaning up the simulation...

@@ -339,8 +339,9 @@ tmgr_trace_t tmgr_trace_new_from_file(const char *filename)
   }
 
   f = surf_fopen(filename, "r");
-  xbt_assert(f != NULL, "Cannot open file '%s' (path=%s)", filename,
-              xbt_str_join(surf_path, ":"));
+  if (f == NULL)
+    xbt_die("Cannot open file '%s' (path=%s)", filename,
+            xbt_str_join(surf_path, ":"));
 
   tstr = xbt_str_from_file(f);
   fclose(f);

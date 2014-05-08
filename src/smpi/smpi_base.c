@@ -260,8 +260,8 @@ void smpi_action_trace_run(char *path)
   action_fp=NULL;
   if (path) {
     action_fp = fopen(path, "r");
-    xbt_assert(action_fp != NULL, "Cannot open %s: %s", path,
-               strerror(errno));
+    if (action_fp == NULL)
+      xbt_die("Cannot open %s: %s", path, strerror(errno));
   }
 
   if (!xbt_dict_is_empty(action_queues)) {
@@ -335,7 +335,7 @@ void smpi_mpi_start(MPI_Request request)
     smpi_datatype_use(request->old_type);
     smpi_comm_use(request->comm);
     request->action = simcall_comm_irecv(mailbox, request->buf,
-                                         &request->real_size, &match_recv,
+                                         &request->real_size, &match_recv, &smpi_comm_copy_buffer_callback,
                                          request, -1.0);
 
     //integrate pseudo-timing for buffering of small messages, do not bother to execute the simcall if 0
@@ -411,6 +411,7 @@ void smpi_mpi_start(MPI_Request request)
                          buf, request->real_size,
                          &match_send,
                          &xbt_free, // how to free the userdata if a detached send fails
+                         &smpi_comm_copy_buffer_callback,
                          request,
                          // detach if msg size < eager/rdv switch limit
                          request->detached);

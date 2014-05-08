@@ -11,10 +11,16 @@
 #include "src/surf/maxmin_private.hpp"
 
 typedef xbt_dynar_t NetworkLinkDynar;
+typedef ActionList *ActionArrayPtr;
 
 double getClock();
 
 void clean();
+
+CpuModel *getCpuModel();
+void setCpuModel(CpuModel *cpuModel);
+
+void setCpu(char *name, Cpu *cpu);
 
 NetworkLinkDynar getRoute(char *srcName, char *dstName);
 

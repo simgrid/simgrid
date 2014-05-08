@@ -239,7 +239,7 @@ smx_action_t simcall_host_execute(const char *name, smx_host_t host,
   /* checking for infinite values */
   xbt_assert(isfinite(computation_amount), "computation_amount is not finite!");
   xbt_assert(isfinite(priority), "priority is not finite!");
-  
+
   return simcall_BODY_host_execute(name, host, computation_amount, priority, bound, affinity_mask);
 }
 
@@ -271,14 +271,14 @@ smx_action_t simcall_host_parallel_execute(const char *name,
   for (i = 0 ; i < host_nb ; ++i) {
      xbt_assert(isfinite(computation_amount[i]), "computation_amount[%d] is not finite!", i);
      for (j = 0 ; j < host_nb ; ++j) {
-        xbt_assert(isfinite(communication_amount[i + host_nb * j]), 
+        xbt_assert(isfinite(communication_amount[i + host_nb * j]),
              "communication_amount[%d+%d*%d] is not finite!", i, host_nb, j);
-     }   
-  }   
- 
+     }
+  }
+
   xbt_assert(isfinite(amount), "amount is not finite!");
   xbt_assert(isfinite(rate), "rate is not finite!");
-  
+
   return simcall_BODY_host_parallel_execute(name, host_nb, host_list,
                                             computation_amount,
                                             communication_amount,
@@ -346,7 +346,7 @@ void simcall_host_execution_set_priority(smx_action_t execution, double priority
 {
   /* checking for infinite values */
   xbt_assert(isfinite(priority), "priority is not finite!");
-  
+
   simcall_BODY_host_execution_set_priority(execution, priority);
 }
 
@@ -629,6 +629,11 @@ void simcall_process_change_host(smx_process_t process, smx_host_t dest)
   simcall_BODY_process_change_host(process, dest);
 }
 
+void simcall_process_join(smx_process_t process, double timeout)
+{
+  simcall_BODY_process_join(process, timeout);
+}
+
 /**
  * \ingroup simix_process_management
  * \brief Suspends a process.
@@ -814,7 +819,7 @@ xbt_dict_t simcall_process_get_properties(smx_process_t process)
  * \brief Add an on_exit function
  * Add an on_exit function which will be executed when the process exits/is killed.
  */
-XBT_PUBLIC(void) simcall_process_on_exit(smx_process_t process, int_f_pvoid_t fun, void *data)
+XBT_PUBLIC(void) simcall_process_on_exit(smx_process_t process, int_f_pvoid_pvoid_t fun, void *data)
 {
   simcall_BODY_process_on_exit(process, fun, data);
 }
@@ -930,27 +935,28 @@ smx_process_t simcall_rdv_get_receiver(smx_rdv_t rdv)
  */
 void simcall_comm_send(smx_rdv_t rdv, double task_size, double rate,
                          void *src_buff, size_t src_buff_size,
-                         int (*match_fun)(void *, void *, smx_action_t), void *data,
+                         int (*match_fun)(void *, void *, smx_action_t),
+                         void (*copy_data_fun)(smx_action_t, void*, size_t), void *data,
                          double timeout)
 {
   /* checking for infinite values */
   xbt_assert(isfinite(task_size), "task_size is not finite!");
   xbt_assert(isfinite(rate), "rate is not finite!");
   xbt_assert(isfinite(timeout), "timeout is not finite!");
-  
+
   xbt_assert(rdv, "No rendez-vous point defined for send");
 
   if (MC_is_active()) {
     /* the model-checker wants two separate simcalls */
     smx_action_t comm = NULL; /* MC needs the comm to be set to NULL during the simcall */
     comm = simcall_comm_isend(rdv, task_size, rate,
-        src_buff, src_buff_size, match_fun, NULL, data, 0);
+        src_buff, src_buff_size, match_fun, NULL, copy_data_fun, data, 0);
     simcall_comm_wait(comm, timeout);
     comm = NULL;
   }
   else {
     simcall_BODY_comm_send(rdv, task_size, rate, src_buff, src_buff_size,
-                         match_fun, data, timeout);
+                         match_fun, copy_data_fun, data, timeout);
   }
 }
 
@@ -961,18 +967,19 @@ smx_action_t simcall_comm_isend(smx_rdv_t rdv, double task_size, double rate,
                               void *src_buff, size_t src_buff_size,
                               int (*match_fun)(void *, void *, smx_action_t),
                               void (*clean_fun)(void *),
+                              void (*copy_data_fun)(smx_action_t, void*, size_t),
                               void *data,
                               int detached)
 {
   /* checking for infinite values */
   xbt_assert(isfinite(task_size), "task_size is not finite!");
   xbt_assert(isfinite(rate), "rate is not finite!");
-  
+
   xbt_assert(rdv, "No rendez-vous point defined for isend");
 
   return simcall_BODY_comm_isend(rdv, task_size, rate, src_buff,
                                  src_buff_size, match_fun,
-                                 clean_fun, data, detached);
+                                 clean_fun, copy_data_fun, data, detached);
 }
 
 /**
@@ -980,6 +987,7 @@ smx_action_t simcall_comm_isend(smx_rdv_t rdv, double task_size, double rate,
  */
 void simcall_comm_recv(smx_rdv_t rdv, void *dst_buff, size_t * dst_buff_size,
                        int (*match_fun)(void *, void *, smx_action_t),
+                       void (*copy_data_fun)(smx_action_t, void*, size_t),
                        void *data, double timeout, double rate)
 {
   xbt_assert(isfinite(timeout), "timeout is not finite!");
@@ -989,13 +997,13 @@ void simcall_comm_recv(smx_rdv_t rdv, void *dst_buff, size_t * dst_buff_size,
     /* the model-checker wants two separate simcalls */
     smx_action_t comm = NULL; /* MC needs the comm to be set to NULL during the simcall */
     comm = simcall_comm_irecv(rdv, dst_buff, dst_buff_size,
-                              match_fun, data, rate);
+                              match_fun, copy_data_fun, data, rate);
     simcall_comm_wait(comm, timeout);
     comm = NULL;
   }
   else {
     simcall_BODY_comm_recv(rdv, dst_buff, dst_buff_size,
-                           match_fun, data, timeout, rate);
+                           match_fun, copy_data_fun, data, timeout, rate);
   }
 }
 /**
@@ -1003,12 +1011,13 @@ void simcall_comm_recv(smx_rdv_t rdv, void *dst_buff, size_t * dst_buff_size,
  */
 smx_action_t simcall_comm_irecv(smx_rdv_t rdv, void *dst_buff, size_t *dst_buff_size,
                                 int (*match_fun)(void *, void *, smx_action_t),
+                                void (*copy_data_fun)(smx_action_t, void*, size_t),
                                 void *data, double rate)
 {
   xbt_assert(rdv, "No rendez-vous point defined for irecv");
 
   return simcall_BODY_comm_irecv(rdv, dst_buff, dst_buff_size,
-                                 match_fun, data, rate);
+                                 match_fun, copy_data_fun, data, rate);
 }
 
 /**
@@ -1134,7 +1143,7 @@ smx_process_t simcall_comm_get_src_proc(smx_action_t comm)
  */
 smx_process_t simcall_comm_get_dst_proc(smx_action_t comm)
 {
-  return simcall_BODY_comm_get_dst_proc(comm);  
+  return simcall_BODY_comm_get_dst_proc(comm);
 }
 
 #ifdef HAVE_LATENCY_BOUND_TRACKING
@@ -1172,7 +1181,7 @@ void simcall_mutex_destroy(smx_mutex_t mutex)
  */
 void simcall_mutex_lock(smx_mutex_t mutex)
 {
-  simcall_BODY_mutex_lock(mutex);  
+  simcall_BODY_mutex_lock(mutex);
 }
 
 /**
@@ -1181,7 +1190,7 @@ void simcall_mutex_lock(smx_mutex_t mutex)
  */
 int simcall_mutex_trylock(smx_mutex_t mutex)
 {
-  return simcall_BODY_mutex_trylock(mutex);  
+  return simcall_BODY_mutex_trylock(mutex);
 }
 
 /**
@@ -1190,7 +1199,7 @@ int simcall_mutex_trylock(smx_mutex_t mutex)
  */
 void simcall_mutex_unlock(smx_mutex_t mutex)
 {
-  simcall_BODY_mutex_unlock(mutex); 
+  simcall_BODY_mutex_unlock(mutex);
 }
 
 /**
@@ -1256,7 +1265,7 @@ void simcall_cond_broadcast(smx_cond_t cond)
  */
 smx_sem_t simcall_sem_init(int capacity)
 {
-  return simcall_BODY_sem_init(capacity);  
+  return simcall_BODY_sem_init(capacity);
 }
 
 /**
@@ -1274,7 +1283,7 @@ void simcall_sem_destroy(smx_sem_t sem)
  */
 void simcall_sem_release(smx_sem_t sem)
 {
-  simcall_BODY_sem_release(sem);  
+  simcall_BODY_sem_release(sem);
 }
 
 /**
@@ -1405,21 +1414,21 @@ int simcall_file_move(smx_file_t fd, const char* fullpath)
 /**
  * \ingroup simix_storage_management
  * \brief Returns the free space size on a given storage element.
- * \param storage name
+ * \param storage a storage
  * \return Return the free space size on a given storage element (as sg_size_t)
  */
-sg_size_t simcall_storage_get_free_size (const char* name){
-  return simcall_BODY_storage_get_free_size(name);
+sg_size_t simcall_storage_get_free_size (smx_storage_t storage){
+  return simcall_BODY_storage_get_free_size(storage);
 }
 
 /**
  * \ingroup simix_storage_management
  * \brief Returns the used space size on a given storage element.
- * \param storage name
+ * \param storage a storage
  * \return Return the used space size on a given storage element (as sg_size_t)
  */
-sg_size_t simcall_storage_get_used_size (const char* name){
-  return simcall_BODY_storage_get_used_size(name);
+sg_size_t simcall_storage_get_used_size (smx_storage_t storage){
+  return simcall_BODY_storage_get_used_size(storage);
 }
 
 /**
@@ -1475,7 +1484,7 @@ void *simcall_mc_snapshot(void)
   return simcall_BODY_mc_snapshot();
 }
 
-int simcall_mc_compare_snapshots(void *s1, void *s2){ 
+int simcall_mc_compare_snapshots(void *s1, void *s2){
   return simcall_BODY_mc_compare_snapshots(s1, s2);
 }
 

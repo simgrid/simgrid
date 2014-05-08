@@ -106,6 +106,13 @@ XBT_PUBLIC(void) xbt_cond_broadcast(xbt_cond_t cond);
 /** @brief Destroys the given mutex variable */
 XBT_PUBLIC(void) xbt_cond_destroy(xbt_cond_t cond);
 
+
+#define XBT_BARRIER_SERIAL_PROCESS -1
+typedef struct s_xbt_bar_ *xbt_bar_t;
+XBT_PUBLIC(xbt_bar_t) xbt_barrier_init( unsigned int count);
+XBT_PUBLIC(void) xbt_barrier_destroy(xbt_bar_t bar);
+XBT_PUBLIC(int) xbt_barrier_wait(xbt_bar_t bar);
+
 /** @} */
 
 SG_END_DECL()

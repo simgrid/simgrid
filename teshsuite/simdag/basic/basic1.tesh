@@ -1,0 +1,3 @@
+$ ${bindir:=.}/basic1 basic_platform.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+> [  0.000000] (0:@) surf_workstation_model_init_ptask_L07
+> [ 16.000100] (0:@) Simulation time: 16.000100

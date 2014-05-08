@@ -96,6 +96,10 @@ void SIMIX_simcall_post(smx_action_t action)
       SIMIX_post_process_sleep(action);
       break;
 
+    case SIMIX_ACTION_JOIN:
+      SIMIX_post_process_sleep(action);
+      break;
+
     case SIMIX_ACTION_SYNCHRO:
       SIMIX_post_synchro(action);
       break;
@@ -120,7 +124,7 @@ void SIMIX_simcall_post(smx_action_t action)
 /* FIXME find a way to make this work
 simcall_handler_t simcall_table[NUM_SIMCALLS] = {
 #undef SIMCALL_ENUM_ELEMENT
-#define SIMCALL_ENUM_ELEMENT(x,y) &y // generate strings from the enumeration values 
+#define SIMCALL_ENUM_ELEMENT(x,y) &y // generate strings from the enumeration values
 SIMCALL_LIST
 #undef SIMCALL_ENUM_ELEMENT
 };*/

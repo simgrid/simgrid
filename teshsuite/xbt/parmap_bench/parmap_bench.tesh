@@ -1,0 +1,4 @@
+#! ./tesh
+
+$ $SG_TEST_EXENV ${bindir:=.}/parmap_bench
+>
