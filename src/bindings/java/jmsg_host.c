@@ -69,11 +69,11 @@ Java_org_simgrid_msg_Host_getByName(JNIEnv * env, jclass cls,
   jobject jhost;                /* global reference to the java host instance returned  */
 
   /* get the C string from the java string */
-  const char *name = (*env)->GetStringUTFChars(env, jname, 0);
-  if (name == NULL) {
+  if (jname == NULL) {
   	jxbt_throw_null(env,bprintf("No host can have a null name"));
   	return NULL;
   }
+  const char *name = (*env)->GetStringUTFChars(env, jname, 0);
   /* get the host by name       (the hosts are created during the grid resolution) */
   host = MSG_get_host_by_name(name);
 
