@@ -26,7 +26,7 @@ static const char *smpi_colors[] ={
     "wait",     "1 1 0",
     "waitall",  "0.78 0.78 0",
     "waitany",  "0.78 0.78 0.58",
-    "test",     "0.52 0.52 0"
+    "test",     "0.52 0.52 0",
 
     "allgather",     "1 0 0",
     "allgatherv",    "1 0.52 0.52",
