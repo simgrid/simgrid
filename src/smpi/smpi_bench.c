@@ -224,7 +224,7 @@ unsigned int smpi_sleep(unsigned int secs)
   simcall_host_execution_wait(action);
 
   smpi_bench_begin();
-  return secs;
+  return 0;
 }
 
 int smpi_usleep(useconds_t usecs)
