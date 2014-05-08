@@ -209,40 +209,36 @@ void smpi_bench_end(void)
   smpi_execute(xbt_os_timer_elapsed(timer));
 }
 
-unsigned int smpi_sleep(unsigned int secs)
+/* Private sleep function used by smpi_sleep() and smpi_usleep() */
+static unsigned int private_sleep(double secs)
 {
-  smx_action_t action;
-
   smpi_bench_end();
 
-  double flops = (double) secs*simcall_host_get_speed(SIMIX_host_self());
-  XBT_DEBUG("Sleep for: %f flops", flops);
-  action = simcall_host_execute("computation", SIMIX_host_self(), flops, 1, 0, 0);
+  XBT_DEBUG("Sleep for: %lf secs", secs);
   #ifdef HAVE_TRACING
-    simcall_set_category (action, TRACE_internal_smpi_get_category());
-  #endif
-  simcall_host_execution_wait(action);
+  int rank = smpi_comm_rank(MPI_COMM_WORLD);
+  instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
+  extra->type=TRACING_SLEEPING;
+  extra->sleep_duration=secs;
+  TRACE_smpi_sleeping_in(rank, extra);
+#endif
+  simcall_process_sleep(secs);
+#ifdef HAVE_TRACING
+  TRACE_smpi_sleeping_out(rank);
+#endif
 
   smpi_bench_begin();
   return 0;
 }
 
+unsigned int smpi_sleep(unsigned int secs)
+{
+  return private_sleep((double)secs);
+}
+
 int smpi_usleep(useconds_t usecs)
 {
-  smx_action_t action;
-
-  smpi_bench_end();
-
-  double flops = (double) (usecs/1000000.0)*simcall_host_get_speed(SIMIX_host_self());
-  XBT_DEBUG("Sleep for: %f flops", flops);
-  action = simcall_host_execute("computation", SIMIX_host_self(), flops, 1, 0, 0);
-  #ifdef HAVE_TRACING
-    simcall_set_category (action, TRACE_internal_smpi_get_category());
-  #endif
-  simcall_host_execution_wait(action);
-
-  smpi_bench_begin();
-  return 0;
+  return (int)private_sleep((double)usecs / 1000000.0);
 }
 
 

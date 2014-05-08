@@ -212,6 +212,9 @@ void print_TIPushState(paje_event_t event)
   case TRACING_COMPUTING:
     fprintf(trace_file, "%s compute %f\n", process_id, extra->comp_size);
     break;
+  case TRACING_SLEEPING:
+    fprintf(trace_file, "%s sleep %f\n", process_id, extra->sleep_duration);
+    break;
   case TRACING_GATHERV: // rank gatherv send_size [recvcounts] root (sendtype) (recvtype)
     fprintf(trace_file, "%s gatherv %d ", process_id, extra->send_size);
     for (i = 0; i < extra->num_processes; i++)
