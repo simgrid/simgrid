@@ -206,7 +206,10 @@ void smpi_bench_end(void)
     xbt_backtrace_display_current();
     xbt_die("Aborting.");
   }
-  smpi_execute(xbt_os_timer_elapsed(timer));
+  // Simulate the benchmarked computation unless disabled via command-line argument
+  if (sg_cfg_get_boolean("smpi/simulate_computation")) {
+    smpi_execute(xbt_os_timer_elapsed(timer));
+  }
 }
 
 /* Private sleep function used by smpi_sleep() and smpi_usleep() */
