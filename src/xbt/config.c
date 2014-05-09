@@ -741,6 +741,7 @@ void *xbt_cfg_set_as_string(xbt_cfg_t cfg, const char *key, const char *value) {
 
   case xbt_cfgelm_boolean:
     xbt_cfg_set_boolean(cfg, key, value);  /* throws */
+    ret = (char *)value + strlen(value);
     break;
 
   case xbt_cfgelm_peer:
