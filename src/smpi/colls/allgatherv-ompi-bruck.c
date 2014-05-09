@@ -123,9 +123,6 @@ int smpi_coll_tuned_allgatherv_ompi_bruck(void *sbuf, int scount,
       - blockcount doubles until the last step when only the remaining data is 
       exchanged.
    */
-   blockcount = 1;
-   tmpsend = (char*) rbuf;
-
    new_rcounts = (int*) calloc(4*size, sizeof(int));
    new_rdispls = new_rcounts + size;
    new_scounts = new_rdispls + size;

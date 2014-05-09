@@ -23,8 +23,8 @@ int main(int argc, char **argv)
     exit(1);
   }
 
-  err = MPI_Comm_size(MPI_COMM_WORLD, &size);   /* Get nr of tasks */
-  err = MPI_Comm_rank(MPI_COMM_WORLD, &rank);   /* Get id of this process */
+  MPI_Comm_size(MPI_COMM_WORLD, &size);   /* Get nr of tasks */
+  MPI_Comm_rank(MPI_COMM_WORLD, &rank);   /* Get id of this process */
   if (size % 3 != 0) {
     printf("run this program with exactly 3*N processes \n");
     MPI_Finalize();

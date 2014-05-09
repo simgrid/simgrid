@@ -90,7 +90,7 @@ int smpi_coll_tuned_alltoall_3dmesh(void *send_buff, int send_count,
 
   req_ptr = reqs;
 
-  send_offset = recv_offset = (rank % two_dsize) * block_size * num_procs;
+  recv_offset = (rank % two_dsize) * block_size * num_procs;
 
   smpi_mpi_sendrecv(send_buff, send_count * num_procs, send_type, rank, tag,
                tmp_buff1 + recv_offset, num_procs * recv_count,

@@ -92,8 +92,6 @@ int smpi_coll_tuned_alltoall_2dmesh(void *send_buff, int send_count,
 
   req_ptr = reqs;
 
-  send_offset = recv_offset = (rank % Y) * block_size * num_procs;
-
   count = send_count * num_procs;
 
   for (i = 0; i < Y; i++) {

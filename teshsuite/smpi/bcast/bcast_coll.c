@@ -23,7 +23,7 @@ int main(int argc, char **argv)
   for (i = 0; i < count; i++)
     values[i] = (0 == rank) ? 17 : 3;
 
-  status = MPI_Bcast(values, count, MPI_INT, 0, MPI_COMM_WORLD);
+  MPI_Bcast(values, count, MPI_INT, 0, MPI_COMM_WORLD);
 
   int good = 0;
   for (i = 0; i < count; i++)

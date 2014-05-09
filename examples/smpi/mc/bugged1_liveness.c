@@ -53,9 +53,9 @@ int main(int argc, char **argv){
   MC_ignore(&(status.count), sizeof(status.count));
 
   /* Get number of processes */
-  err = MPI_Comm_size(MPI_COMM_WORLD, &size);
+  MPI_Comm_size(MPI_COMM_WORLD, &size);
   /* Get id of this process */
-  err = MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+  MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
   if(rank == 0){ /* Coordinator */
     while(1){

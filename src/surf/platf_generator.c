@@ -399,7 +399,6 @@ int platf_graph_is_connected(void) {
   do {
     //Get the next node
     xbt_dynar_get_cpy(connected_nodes, iterator, &graph_node);
-    node_data = xbt_graph_node_get_data(graph_node);
 
     //add all the linked nodes to the connected node array
     outgoing_edges = xbt_graph_node_get_outedges(graph_node);

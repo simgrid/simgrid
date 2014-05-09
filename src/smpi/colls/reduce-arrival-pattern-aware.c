@@ -179,8 +179,7 @@ int smpi_coll_tuned_reduce_arrival_pattern_aware(void *buf, void *rbuf,
           to = header_buf[myordering + 1];
         }
         from = header_buf[myordering - 1];
-        smpi_mpi_recv(tmp_buf, count, datatype, header_buf[myordering - 1], tag,
-                 comm, &status);
+        smpi_mpi_recv(tmp_buf, count, datatype, from, tag, comm, &status);
         smpi_op_apply(op, tmp_buf, rbuf, &count, &datatype);
         smpi_mpi_send(rbuf, count, datatype, to, tag, comm);
       }

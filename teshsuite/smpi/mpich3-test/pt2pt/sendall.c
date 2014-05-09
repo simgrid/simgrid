@@ -28,7 +28,6 @@ int main ( int argc, char *argv[] )
   int i;
   int count, size;
   int self, npes;
-  double secs;
   MPI_Request request[MAXPES];
   MPI_Status status;
 
@@ -44,7 +43,6 @@ int main ( int argc, char *argv[] )
   }
 
   for (size = 1; size  <= MYBUFSIZE ; size += size) {
-      secs = -MPI_Wtime ();
       for (count = 0; count < NUM_RUNS; count++) {
 	  MPI_Barrier (MPI_COMM_WORLD);
 
@@ -66,10 +64,8 @@ int main ( int argc, char *argv[] )
 
 	}
       MPI_Barrier (MPI_COMM_WORLD);
-      secs += MPI_Wtime ();
 
       if (self == 0) {
-	  secs = secs / (double) NUM_RUNS;
 	  MTestPrintfMsg( 1, "length = %d ints\n", size );
 	}
     }

@@ -280,7 +280,6 @@ smpi_coll_tuned_gather_ompi_linear_sync(void *sbuf, int scount,
         COLL_TUNED_COMPUTED_SEGCOUNT( (size_t)first_segment_size, typelng, 
                                       first_segment_count );
 
-        ptmp = (char *) rbuf;
         for (i = 0; i < size; ++i) {
             if (i == rank) {  
                 /* skip myself */

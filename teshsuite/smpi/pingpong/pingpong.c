@@ -24,8 +24,8 @@ int main(int argc, char *argv[])
     printf("MPI initialization failed!\n");
     exit(1);
   }
-  err = MPI_Comm_size(MPI_COMM_WORLD, &size);   /* Get nr of tasks */
-  err = MPI_Comm_rank(MPI_COMM_WORLD, &rank);   /* Get id of this process */
+  MPI_Comm_size(MPI_COMM_WORLD, &size);   /* Get nr of tasks */
+  MPI_Comm_rank(MPI_COMM_WORLD, &rank);   /* Get id of this process */
   if (size < 2) {
     printf("run this program with exactly 2 processes (-np 2)\n");
     MPI_Finalize();
@@ -45,25 +45,25 @@ int main(int argc, char *argv[])
       int dst = rank + 1;
       printf("[%d] About to send 1st message '%d' to process [%d]\n",
              rank, msg, dst);
-      err = MPI_Send(&msg, 1, MPI_INT, dst, tag1, MPI_COMM_WORLD);
+      MPI_Send(&msg, 1, MPI_INT, dst, tag1, MPI_COMM_WORLD);
 
-      err = MPI_Recv(&msg, 1, MPI_INT, dst, tag2, MPI_COMM_WORLD, &status);     /* Receive a message */
+      MPI_Recv(&msg, 1, MPI_INT, dst, tag2, MPI_COMM_WORLD, &status);     /* Receive a message */
       printf("[%d] Received reply message '%d' from process [%d]\n", rank,
              msg, dst);
 
     }
     if ((pivot + 1) == rank) {
       int src = rank - 1;
-      err = MPI_Recv(&msg, 1, MPI_INT, src, tag1, MPI_COMM_WORLD, &status);     /* Receive a message */
+      MPI_Recv(&msg, 1, MPI_INT, src, tag1, MPI_COMM_WORLD, &status);     /* Receive a message */
       printf("[%d] Received 1st message '%d' from process [%d]\n", rank,
              msg, src);
       msg++;
       printf("[%d] increment message's value to  '%d'\n", rank, msg);
       printf("[%d] About to send back message '%d' to process [%d]\n",
              rank, msg, src);
-      err = MPI_Send(&msg, 1, MPI_INT, src, tag2, MPI_COMM_WORLD);
+      MPI_Send(&msg, 1, MPI_INT, src, tag2, MPI_COMM_WORLD);
     }
   }
-  err = MPI_Finalize();         /* Terminate MPI */
+  MPI_Finalize();         /* Terminate MPI */
   return 0;
 }

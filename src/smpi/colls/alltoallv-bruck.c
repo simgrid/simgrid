@@ -30,8 +30,8 @@ int smpi_coll_tuned_alltoallv_bruck(void *sendbuf, int *sendcounts, int *senddis
   size = smpi_comm_size(comm);
   XBT_DEBUG("<%d> algorithm alltoall_bruck() called.", rank);
 
-  err = smpi_datatype_extent(sendtype, &lb, &sendext);
-  err = smpi_datatype_extent(recvtype, &lb, &recvext);
+  smpi_datatype_extent(sendtype, &lb, &sendext);
+  smpi_datatype_extent(recvtype, &lb, &recvext);
   /* Local copy from self */
   err =
       smpi_datatype_copy((char *)sendbuf + senddisps[rank] * sendext,
