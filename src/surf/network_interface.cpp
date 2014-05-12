@@ -97,7 +97,7 @@ NetworkLink::NetworkLink(NetworkModelPtr model, const char *name, xbt_dict_t pro
 {
   surf_callback_emit(networkLinkCreatedCallbacks, this);
   if (state_trace)
-    p_stateEvent = tmgr_history_add_trace(history, state_trace, 0.0, 0, static_cast<ResourcePtr>(this));
+    p_stateEvent = tmgr_history_add_trace(history, state_trace, 0.0, 0, this);
 }
 
 NetworkLink::~NetworkLink()

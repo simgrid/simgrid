@@ -52,11 +52,11 @@ WorkstationL07Model::WorkstationL07Model() : WorkstationModel("Workstation ptask
   surf_workstation_model = NULL;
   surf_network_model = new NetworkL07Model();
   surf_cpu_model_pm = new CpuL07Model();
-  routing_model_create(static_cast<ResourcePtr>(surf_network_model->createNetworkLink("__loopback__",
+  routing_model_create(surf_network_model->createNetworkLink("__loopback__",
 	                                                  498000000, NULL,
 	                                                  0.000015, NULL,
 	                                                  SURF_RESOURCE_ON, NULL,
-	                                                  SURF_LINK_FATPIPE, NULL)));
+	                                                  SURF_LINK_FATPIPE, NULL));
   p_cpuModel = surf_cpu_model_pm;
 }
 
@@ -239,7 +239,7 @@ ActionPtr WorkstationL07Model::executeParallelTask(int workstation_nb,
 
   for (i = 0; i < workstation_nb; i++)
     lmm_expand(ptask_maxmin_system,
-    	       static_cast<CpuPtr>(static_cast<WorkstationL07Ptr>(workstation_list[i])->p_cpu)->getConstraint(),
+    	         static_cast<WorkstationL07Ptr>(workstation_list[i])->p_cpu->getConstraint(),
                action->getVariable(), computation_amount[i]);
 
   for (i = 0; i < workstation_nb; i++) {
@@ -269,7 +269,7 @@ ActionPtr WorkstationL07Model::executeParallelTask(int workstation_nb,
     action->setRemains(0.0);
   }
 
-  return static_cast<ActionPtr>(action);
+  return action;
 }
 
 WorkstationPtr WorkstationL07Model::createWorkstation(const char *name)
@@ -283,7 +283,7 @@ WorkstationPtr WorkstationL07Model::createWorkstation(const char *name)
 		                  static_cast<RoutingEdgePtr>(xbt_lib_get_or_null(host_lib, name, ROUTING_HOST_LEVEL)),
 		                  static_cast<CpuPtr>(xbt_lib_get_or_null(host_lib, name, SURF_CPU_LEVEL)));
 
-  xbt_lib_set(host_lib, name, SURF_WKS_LEVEL, static_cast<ResourcePtr>(wk));
+  xbt_lib_set(host_lib, name, SURF_WKS_LEVEL, wk);
 
   return wk;//FIXME:xbt_lib_get_elm_or_null(host_lib, name);
 }
@@ -296,8 +296,8 @@ ActionPtr WorkstationL07Model::communicate(WorkstationPtr src, WorkstationPtr ds
   double *communication_amount = xbt_new0(double, 4);
   ActionPtr res = NULL;
 
-  workstation_list[0] = static_cast<ResourcePtr>(src);
-  workstation_list[1] = static_cast<ResourcePtr>(dst);
+  workstation_list[0] = src;
+  workstation_list[1] = dst;
   communication_amount[1] = size;
 
   res = executeParallelTask(2, workstation_list,
@@ -331,9 +331,9 @@ CpuPtr CpuL07Model::createCpu(const char *name,  xbt_dynar_t powerPeak,
 		                     power_initial, power_scale, power_trace,
                          core, state_initial, state_trace);
 
-  xbt_lib_set(host_lib, name, SURF_CPU_LEVEL, static_cast<ResourcePtr>(cpu));
+  xbt_lib_set(host_lib, name, SURF_CPU_LEVEL, cpu);
 
-  return cpu;//FIXME:xbt_lib_get_elm_or_null(host_lib, name);
+  return cpu;
 }
 
 NetworkLinkPtr NetworkL07Model::createNetworkLink(const char *name,
@@ -357,7 +357,7 @@ NetworkLinkPtr NetworkL07Model::createNetworkLink(const char *name,
 	                               state_initial, state_trace,
 	                               policy);
 
-  xbt_lib_set(link_lib, name, SURF_LINK_LEVEL, static_cast<ResourcePtr>(nw_link));
+  xbt_lib_set(link_lib, name, SURF_LINK_LEVEL, nw_link);
   return nw_link;
 }
 
@@ -377,7 +377,7 @@ void WorkstationL07Model::addTraces()
     xbt_assert(host, "Host %s undefined", elm);
     xbt_assert(trace, "Trace %s undefined", trace_name);
 
-    host->p_stateEvent = tmgr_history_add_trace(history, trace, 0.0, 0, static_cast<ResourcePtr>(host));
+    host->p_stateEvent = tmgr_history_add_trace(history, trace, 0.0, 0, host);
   }
 
   xbt_dict_foreach(trace_connect_list_power, cursor, trace_name, elm) {
@@ -387,7 +387,7 @@ void WorkstationL07Model::addTraces()
     xbt_assert(host, "Host %s undefined", elm);
     xbt_assert(trace, "Trace %s undefined", trace_name);
 
-    host->p_powerEvent = tmgr_history_add_trace(history, trace, 0.0, 0, static_cast<ResourcePtr>(host));
+    host->p_powerEvent = tmgr_history_add_trace(history, trace, 0.0, 0, host);
   }
 
   /* Connect traces relative to network */
@@ -398,7 +398,7 @@ void WorkstationL07Model::addTraces()
     xbt_assert(link, "Link %s undefined", elm);
     xbt_assert(trace, "Trace %s undefined", trace_name);
 
-    link->p_stateEvent = tmgr_history_add_trace(history, trace, 0.0, 0, static_cast<ResourcePtr>(link));
+    link->p_stateEvent = tmgr_history_add_trace(history, trace, 0.0, 0, link);
   }
 
   xbt_dict_foreach(trace_connect_list_bandwidth, cursor, trace_name, elm) {
@@ -408,7 +408,7 @@ void WorkstationL07Model::addTraces()
     xbt_assert(link, "Link %s undefined", elm);
     xbt_assert(trace, "Trace %s undefined", trace_name);
 
-    link->p_bwEvent = tmgr_history_add_trace(history, trace, 0.0, 0, static_cast<ResourcePtr>(link));
+    link->p_bwEvent = tmgr_history_add_trace(history, trace, 0.0, 0, link);
   }
 
   xbt_dict_foreach(trace_connect_list_latency, cursor, trace_name, elm) {
@@ -418,7 +418,7 @@ void WorkstationL07Model::addTraces()
     xbt_assert(link, "Link %s undefined", elm);
     xbt_assert(trace, "Trace %s undefined", trace_name);
 
-    link->p_latEvent = tmgr_history_add_trace(history, trace, 0.0, 0, static_cast<ResourcePtr>(link));
+    link->p_latEvent = tmgr_history_add_trace(history, trace, 0.0, 0, link);
   }
 }
 
@@ -463,14 +463,13 @@ CpuL07::CpuL07(CpuL07ModelPtr model, const char* name, xbt_dict_t props,
   xbt_assert(m_powerScale > 0, "Power has to be >0");
 
   if (power_trace)
-    p_powerEvent = tmgr_history_add_trace(history, power_trace, 0.0, 0,
-                                           static_cast<ResourcePtr>(this));
+    p_powerEvent = tmgr_history_add_trace(history, power_trace, 0.0, 0, this);
   else
     p_powerEvent = NULL;
 
   setState(state_initial);
   if (state_trace)
-	p_stateEvent = tmgr_history_add_trace(history, state_trace, 0.0, 0, static_cast<ResourcePtr>(this));
+	p_stateEvent = tmgr_history_add_trace(history, state_trace, 0.0, 0, this);
 }
 
 LinkL07::LinkL07(NetworkL07ModelPtr model, const char* name, xbt_dict_t props,
@@ -485,13 +484,13 @@ LinkL07::LinkL07(NetworkL07ModelPtr model, const char* name, xbt_dict_t props,
 {
   m_bwCurrent = bw_initial;
   if (bw_trace)
-    p_bwEvent = tmgr_history_add_trace(history, bw_trace, 0.0, 0, static_cast<ResourcePtr>(this));
+    p_bwEvent = tmgr_history_add_trace(history, bw_trace, 0.0, 0, this);
 
   setState(state_initial);
   m_latCurrent = lat_initial;
 
   if (lat_trace)
-	p_latEvent = tmgr_history_add_trace(history, lat_trace, 0.0, 0, static_cast<ResourcePtr>(this));
+	p_latEvent = tmgr_history_add_trace(history, lat_trace, 0.0, 0, this);
 
   if (policy == SURF_LINK_FATPIPE)
 	lmm_constraint_shared(getConstraint());
@@ -561,7 +560,7 @@ ActionPtr WorkstationL07::execute(double size)
   double *computation_amount = xbt_new0(double, 1);
   double *communication_amount = xbt_new0(double, 1);
 
-  workstation_list[0] = static_cast<ResourcePtr>(this);
+  workstation_list[0] = this;
   communication_amount[0] = 0.0;
   computation_amount[0] = size;
 

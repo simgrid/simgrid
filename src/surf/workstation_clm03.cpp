@@ -27,7 +27,7 @@ void surf_workstation_model_init_current_default(void)
   surf_network_model_init_LegrandVelho();
   surf_workstation_model->p_cpuModel = surf_cpu_model_pm;
 
-  ModelPtr model = static_cast<ModelPtr>(surf_workstation_model);
+  ModelPtr model = surf_workstation_model;
   xbt_dynar_push(model_list, &model);
   xbt_dynar_push(model_list_invoke, &model);
   sg_platf_host_add_cb(workstation_parse_init);
@@ -40,7 +40,7 @@ void surf_workstation_model_init_compound()
   xbt_assert(surf_network_model, "No network model defined yet!");
   surf_workstation_model = new WorkstationCLM03Model();
 
-  ModelPtr model = static_cast<ModelPtr>(surf_workstation_model);
+  ModelPtr model = surf_workstation_model;
   xbt_dynar_push(model_list, &model);
   xbt_dynar_push(model_list_invoke, &model);
   sg_platf_host_add_cb(workstation_parse_init);
@@ -60,7 +60,7 @@ WorkstationPtr WorkstationCLM03Model::createWorkstation(const char *name){
 		  (RoutingEdgePtr)xbt_lib_get_or_null(host_lib, name, ROUTING_HOST_LEVEL),
 		  static_cast<CpuPtr>(xbt_lib_get_or_null(host_lib, name, SURF_CPU_LEVEL)));
   XBT_DEBUG("Create workstation %s with %ld mounted disks", name, xbt_dynar_length(workstation->p_storage));
-  xbt_lib_set(host_lib, name, SURF_WKS_LEVEL, static_cast<ResourcePtr>(workstation));
+  xbt_lib_set(host_lib, name, SURF_WKS_LEVEL, workstation);
   return workstation;
 }
 

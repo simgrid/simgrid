@@ -12,7 +12,7 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_vm_workstation);
 void surf_vm_workstation_model_init_HL13(void){
   if (surf_cpu_model_vm) {
     surf_vm_workstation_model = new WorkstationVMHL13Model();
-    ModelPtr model = static_cast<ModelPtr>(surf_vm_workstation_model);
+    ModelPtr model = surf_vm_workstation_model;
 
     xbt_dynar_push(model_list, &model);
     xbt_dynar_push(model_list_invoke, &model);
@@ -42,7 +42,7 @@ WorkstationVMPtr WorkstationVMHL13Model::createWorkstationVM(const char *name, s
 {
   WorkstationVMHL13Ptr ws = new WorkstationVMHL13(this, name, NULL, ind_phys_workstation);
 
-  xbt_lib_set(host_lib, name, SURF_WKS_LEVEL, static_cast<ResourcePtr>(ws));
+  xbt_lib_set(host_lib, name, SURF_WKS_LEVEL, ws);
 
   /* TODO:
    * - check how network requests are scheduled between distinct processes competing for the same card.
@@ -70,8 +70,8 @@ double WorkstationVMHL13Model::shareResources(double now)
   /* 0. Make sure that we already calculated the resource share at the physical
    * machine layer. */
   {
-	ModelPtr ws_model = static_cast<ModelPtr>(surf_workstation_model);
-	ModelPtr vm_ws_model = static_cast<ModelPtr>(surf_vm_workstation_model);
+	ModelPtr ws_model = surf_workstation_model;
+	ModelPtr vm_ws_model = surf_vm_workstation_model;
     unsigned int index_of_pm_ws_model = xbt_dynar_search(model_list_invoke, &ws_model);
     unsigned int index_of_vm_ws_model = xbt_dynar_search(model_list_invoke, &vm_ws_model);
     xbt_assert((index_of_pm_ws_model < index_of_vm_ws_model), "Cannot assume surf_workstation_model comes before");
@@ -112,16 +112,16 @@ double WorkstationVMHL13Model::shareResources(double now)
        iter !=  WorkstationVMModel::ws_vms.end(); ++iter) {
 
     WorkstationVMPtr ws_vm = &*iter;
-    CpuPtr cpu = static_cast<CpuPtr>(ws_vm->p_cpu);
+    CpuPtr cpu = ws_vm->p_cpu;
     xbt_assert(cpu, "cpu-less workstation");
 
-    double solved_value = get_solved_value(static_cast<CpuActionPtr>(ws_vm->p_action));
+    double solved_value = get_solved_value(ws_vm->p_action);
     XBT_DEBUG("assign %f to vm %s @ pm %s", solved_value,
         ws_vm->getName(), ws_vm->p_subWs->getName());
 
     // TODO: check lmm_update_constraint_bound() works fine instead of the below manual substitution.
     // cpu_cas01->constraint->bound = solved_value;
-    xbt_assert(cpu->getModel() == static_cast<ModelPtr>(surf_cpu_model_vm));
+    xbt_assert(cpu->getModel() == surf_cpu_model_vm);
     lmm_system_t vcpu_system = cpu->getModel()->getMaxminSystem();
     lmm_update_constraint_bound(vcpu_system, cpu->getConstraint(), virt_overhead * solved_value);
   }
@@ -246,7 +246,7 @@ WorkstationVMHL13::WorkstationVMHL13(WorkstationVMModelPtr model, const char* na
   /* We can assume one core and cas01 cpu for the first step.
    * Do xbt_lib_set(host_lib, name, SURF_CPU_LEVEL, cpu) if you get the resource. */
 
-  p_cpu = static_cast<CpuCas01ModelPtr>(surf_cpu_model_vm)->createCpu(name, // name
+  p_cpu = surf_cpu_model_vm->createCpu(name, // name
       sub_cpu->getPowerPeakList(),        // host->power_peak,
       sub_cpu->getPState(),
       1,                          // host->power_scale,
@@ -259,7 +259,7 @@ WorkstationVMHL13::WorkstationVMHL13(WorkstationVMModelPtr model, const char* na
   /* We create cpu_action corresponding to a VM process on the host operating system. */
   /* FIXME: TODO: we have to peridocally input GUESTOS_NOISE to the system? how ? */
   // vm_ws->cpu_action = surf_cpu_model_pm->extension.cpu.execute(ind_phys_workstation, GUESTOS_NOISE);
-  p_action = static_cast<CpuActionPtr>(sub_cpu->execute(0));
+  p_action = sub_cpu->execute(0);
 
   /* The SURF_WKS_LEVEL at host_lib saves workstation_CLM03 objects. Please
    * note workstation_VM2013 objects, inheriting the workstation_CLM03

@@ -24,7 +24,7 @@ void surf_network_model_init_Constant()
 
   sg_platf_host_add_cb(netcste_count_hosts);
 
-  ModelPtr model = static_cast<ModelPtr>(surf_network_model);
+  ModelPtr model = surf_network_model;
   xbt_dynar_push(model_list, &model);
 }
 

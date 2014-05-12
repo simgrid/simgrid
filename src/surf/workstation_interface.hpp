@@ -33,30 +33,30 @@ typedef WorkstationAction *WorkstationActionPtr;
  * @brief Callbacks handler which emit the callbacks after Workstation creation *
  * @details Callback functions have the following signature: `void(WorkstationPtr)`
  */
-extern surf_callback(void, WorkstationPtr) workstationCreatedCallbacks;
+XBT_PUBLIC_DATA(surf_callback(void, WorkstationPtr)) workstationCreatedCallbacks;
 
 /** @ingroup SURF_callbacks
  * @brief Callbacks handler which emit the callbacks after Workstation destruction *
  * @details Callback functions have the following signature: `void(WorkstationPtr)`
  */
-extern surf_callback(void, WorkstationPtr) workstationDestructedCallbacks;
+XBT_PUBLIC_DATA(surf_callback(void, WorkstationPtr)) workstationDestructedCallbacks;
 
 /** @ingroup SURF_callbacks
  * @brief Callbacks handler which emit the callbacks after Workstation State changed *
  * @details Callback functions have the following signature: `void(WorkstationActionPtr action, e_surf_resource_state_t old, e_surf_resource_state_t current)`
  */
-extern surf_callback(void, WorkstationPtr, e_surf_resource_state_t, e_surf_resource_state_t) workstationStateChangedCallbacks;
+XBT_PUBLIC_DATA(surf_callback(void, WorkstationPtr, e_surf_resource_state_t, e_surf_resource_state_t)) workstationStateChangedCallbacks;
 
 /** @ingroup SURF_callbacks
  * @brief Callbacks handler which emit the callbacks after WorkstationAction State changed *
  * @details Callback functions have the following signature: `void(WorkstationActionPtr action, e_surf_resource_state_t old, e_surf_resource_state_t current)`
  */
-extern surf_callback(void, WorkstationActionPtr, e_surf_action_state_t, e_surf_action_state_t) workstationActionStateChangedCallbacks;
+XBT_PUBLIC_DATA(surf_callback(void, WorkstationActionPtr, e_surf_action_state_t, e_surf_action_state_t)) workstationActionStateChangedCallbacks;
 
 /*********
  * Tools *
  *********/
-extern WorkstationModelPtr surf_workstation_model;
+XBT_PUBLIC_DATA(WorkstationModelPtr) surf_workstation_model;
 XBT_PUBLIC(void) workstation_parse_init(sg_platf_host_cbarg_t host);
 XBT_PUBLIC(void) workstation_add_traces();
 

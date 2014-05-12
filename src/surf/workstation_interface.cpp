@@ -206,7 +206,7 @@ xbt_dynar_t Workstation::getAttachedStorageList()
     if(xbt_lib_get_level(xbt_lib_get_elm_or_null(storage_lib, key), SURF_STORAGE_LEVEL) != NULL) {
 	  StoragePtr storage = static_cast<StoragePtr>(xbt_lib_get_level(xbt_lib_get_elm_or_null(storage_lib, key), SURF_STORAGE_LEVEL));
 	  if(!strcmp((const char*)storage->p_attach,this->getName())){
-	    xbt_dynar_push_as(result, void *,(void *)static_cast<ResourcePtr>(storage)->getName());
+	    xbt_dynar_push_as(result, void *, (void*)storage->getName());
 	  }
 	}
   }

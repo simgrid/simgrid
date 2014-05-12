@@ -252,7 +252,7 @@ StoragePtr StorageN11Model::createStorage(const char* id, const char* type_id,
 		  Bread, Bwrite, Bconnection,
 		  type_id, (char *)content_name, xbt_strdup(content_type), storage_type->size, (char *) attach);
 
-  xbt_lib_set(storage_lib, id, SURF_STORAGE_LEVEL, static_cast<ResourcePtr>(storage));
+  xbt_lib_set(storage_lib, id, SURF_STORAGE_LEVEL, storage);
 
   XBT_DEBUG("SURF storage create resource\n\t\tid '%s'\n\t\ttype '%s'\n\t\tproperties '%p'\n\t\tBread '%f'\n",
       id,
@@ -415,7 +415,7 @@ StorageActionPtr StorageN11::close(surf_file_t fd)
   StorageActionPtr write_action;
   unsigned int i;
   xbt_dynar_foreach(p_writeActions, i, _write_action) {
-	write_action = static_cast<StorageActionPtr>(static_cast<ActionPtr>(_write_action));
+	write_action = static_cast<StorageActionPtr>(_write_action);
     if ((write_action->p_file) == fd) {
       xbt_dynar_cursor_rm(p_writeActions, &i);
       write_action->unref();
