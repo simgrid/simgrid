@@ -40,12 +40,13 @@ void AsClusterFatTree::getRouteAndLatency(RoutingEdgePtr src,
   source = this->nodes.find(src->getId())->second;
   destination = this->nodes.find(dst->getId())->second;
 
-  int d = 0, k = 0; // as in d-mod-k
+ 
 
   currentNode = source;
 
   // up part
   while (!isInSubTree(currentNode, destination)) {
+    int d, k; // as in d-mod-k
     d = destination->position;
 
     for (unsigned int i = 0 ; i < currentNode->level ; i++) {
@@ -68,7 +69,7 @@ void AsClusterFatTree::getRouteAndLatency(RoutingEdgePtr src,
          destination->label[currentNode->level]) {
         route.push_back(currentNode->children[i]->downLink);
         if(latency) {
-          *latency += currentNode->children[d]->downLink->getLatency();
+          *latency += currentNode->children[i]->downLink->getLatency();
         }
         currentNode = currentNode->children[i]->downNode;
       }
