@@ -397,7 +397,6 @@ static double dichotomy(double init, double diff(double, void *),
     min = max = 0.5;
   }
 
-  min_diff = max_diff = middle_diff = 0.0;
   overall_error = 1;
 
   if ((diff_0 = diff(1e-16, var_cnst)) >= 0) {

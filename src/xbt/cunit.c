@@ -444,7 +444,6 @@ static int xbt_test_suite_run(xbt_test_suite_t suite, int verbosity)
     if (suite->unit_disabled) {
       fprintf(stderr, "%s%d disabled", (first ? "" : ", "),
               suite->unit_disabled);
-      first = 0;
     }
     fprintf(stderr, ")\n          Tests: %.0f%% ok (%d tests: ",
             suite->nb_tests
@@ -471,7 +470,6 @@ static int xbt_test_suite_run(xbt_test_suite_t suite, int verbosity)
     if (suite->test_expect) {
       fprintf(stderr, "%s%d expected to fail", (first ? "" : "; "),
               suite->test_expect);
-      first = 0;
     }
     fprintf(stderr, ")\n");
   }
@@ -647,7 +645,6 @@ int xbt_test_run(char *selection, int verbosity)
     if (_xbt_test_suite_ignore) {
       fprintf(stderr, "%s%d ignored", (first ? "" : ", "),
               _xbt_test_suite_ignore);
-      first = 0;
     }
     fprintf(stderr, ")\n        Units:  %.0f%% ok (%d units: ",
             _xbt_test_nb_units
@@ -669,7 +666,6 @@ int xbt_test_run(char *selection, int verbosity)
     if (_xbt_test_unit_ignore) {
       fprintf(stderr, "%s%d ignored", (first ? "" : ", "),
               _xbt_test_unit_ignore);
-      first = 0;
     }
     fprintf(stderr, ")\n        Tests:  %.0f%% ok (%d tests: ",
             _xbt_test_nb_tests

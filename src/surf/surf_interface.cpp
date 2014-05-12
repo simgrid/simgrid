@@ -520,7 +520,7 @@ double Model::shareResourcesLazy(double now)
 {
   ActionPtr action = NULL;
   double min = -1;
-  double share, time_to_completion;
+  double share;
 
   XBT_DEBUG
       ("Before share resources, the size of modified actions set is %zd",
@@ -547,10 +547,10 @@ double Model::shareResourcesLazy(double now)
     action->updateRemainingLazy(now);
 
     min = -1;
-    time_to_completion = -1;
     share = lmm_variable_getvalue(action->getVariable());
 
     if (share > 0) {
+      double time_to_completion;
       if (action->getRemains() > 0) {
         time_to_completion = action->getRemainsNoUpdate() / share;
       } else {

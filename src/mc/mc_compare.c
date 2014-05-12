@@ -453,7 +453,9 @@ int snapshot_compare(void *state1, void *state2){
   /* Stacks comparison */
   unsigned int  cursor = 0;
   int diff_local = 0;
+#ifdef MC_DEBUG
   is_diff = 0;
+#endif
   mc_snapshot_stack_t stack1, stack2;
     
   while(cursor < xbt_dynar_length(s1->stacks)){

@@ -280,7 +280,6 @@ smpi_coll_tuned_gather_ompi_linear_sync(void *sbuf, int scount,
         COLL_TUNED_COMPUTED_SEGCOUNT( (size_t)first_segment_size, typelng, 
                                       first_segment_count );
 
-        ptmp = (char *) rbuf;
         for (i = 0; i < size; ++i) {
             if (i == rank) {  
                 /* skip myself */
@@ -319,6 +318,7 @@ smpi_coll_tuned_gather_ompi_linear_sync(void *sbuf, int scount,
         
         /* wait all second segments to complete */
         ret = smpi_mpi_waitall(size, reqs, MPI_STATUSES_IGNORE);
+        if (ret != MPI_SUCCESS) { line = __LINE__; goto error_hndl; }
 
         free(reqs);
     }
