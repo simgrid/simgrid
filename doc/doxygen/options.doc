@@ -529,9 +529,38 @@ to 1, \c smpirun will display this information when the simulation ends. \verbat
 Simulation time: 1e3 seconds.
 \endverbatim
 
-\subsection options_model_smpi_detached Simulating MPI detached send
+\subsection options_smpi_global Automatic privatization of global variables
 
-(this configuration item is experimental and may change or disapear)
+MPI executables are meant to be executed in separated processes, but SMPI is 
+executed in only one process. Global variables from executables will be placed 
+in the same memory zone and shared between processes, causing hard to find bugs.
+To avoid this, several options are possible :
+  - Manual edition of the code, for example to add __thread keyword before data
+  declaration, which allows the resulting code to work with SMPI, but only 
+  if the thread factory (see \ref options_virt_factory) is used, as global 
+  variables are then placed in the TLS (thread local storage) segment. 
+  - Source-to-source transformation, to add a level of indirection 
+  to the global variables. SMPI does this for F77 codes compiled with smpiff, 
+  and used to provide coccinelle scripts for C codes, which are not functional anymore.
+  - Compilation pass, to have the compiler automatically put the data in 
+  an adapted zone. 
+  - Runtime automatic switching of the data segments. SMPI stores a copy of 
+  each global data segment for each process, and at each context switch replaces 
+  the actual data with its copy from the right process. This mechanism uses mmap,
+  and is for now limited to systems supporting this functionnality (all Linux 
+  and some BSD should be compatible).
+  Another limitation is that SMPI only accounts for global variables defined in
+  the executable. If the processes use external global variables from dynamic 
+  libraries, they won't be switched correctly. To avoid this, using static 
+  linking is advised (but not with the simgrid library, to avoid replicating 
+  its own global variables). 
+
+  To use this runtime automatic switching, the variable \b smpi/privatize_global_variables 
+  should be set to yes
+
+
+
+\subsection options_model_smpi_detached Simulating MPI detached send
 
 This threshold specifies the size in bytes under which the send will return 
 immediately. This is different from the threshold detailed in  \ref options_model_network_asyncsend

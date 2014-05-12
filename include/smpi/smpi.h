@@ -7,6 +7,7 @@
 #ifndef SMPI_H
 #define SMPI_H
 
+#include <unistd.h>
 #include <stddef.h>
 #include <sys/time.h>
 #include <xbt/misc.h>
@@ -708,6 +709,7 @@ XBT_PUBLIC(int) smpi_get_host_nb_pstates(void);
 XBT_PUBLIC(void) smpi_set_host_power_peak_at(int pstate_index);
 XBT_PUBLIC(double) smpi_get_host_consumed_energy(void);
 
+XBT_PUBLIC(int) smpi_usleep(useconds_t usecs);
 XBT_PUBLIC(unsigned int) smpi_sleep(unsigned int secs);
 XBT_PUBLIC(int) smpi_gettimeofday(struct timeval *tv, void* tz);
 XBT_PUBLIC(unsigned long long) smpi_rastro_resolution (void);

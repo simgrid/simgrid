@@ -26,6 +26,7 @@ static const char *smpi_colors[] ={
     "wait",     "1 1 0",
     "waitall",  "0.78 0.78 0",
     "waitany",  "0.78 0.78 0.58",
+    "test",     "0.52 0.52 0",
 
     "allgather",     "1 0 0",
     "allgatherv",    "1 0.52 0.52",
@@ -42,7 +43,10 @@ static const char *smpi_colors[] ={
     "exscan",          "1 0.54 0.25",
     "scatterv",      "0.52 0 0.52",
     "scatter",       "1 0.74 0.54",
+
     "computing",     "0 1 1",
+    "sleeping",      "0 0.5 0.5",
+
     "init",       "0 1 0",
     "finalize",     "0 1 0",
     NULL, NULL,
@@ -274,6 +278,75 @@ void TRACE_smpi_computing_in(int rank, instr_extra_data extra)
 void TRACE_smpi_computing_out(int rank)
 {
   if (!TRACE_smpi_is_enabled()|| !TRACE_smpi_is_computing()) return;
+  char str[INSTR_DEFAULT_STR_SIZE];
+  smpi_container(rank, str, INSTR_DEFAULT_STR_SIZE);
+  container_t container = PJ_container_get (str);
+  type_t type = PJ_type_get ("MPI_STATE", container->type);
+  new_pajePopState (SIMIX_get_clock(), container, type);
+}
+
+void TRACE_smpi_sleeping_init(int rank)
+{
+ //first use, initialize the color in the trace
+ //TODO : check with lucas and Pierre how to generalize this approach
+  //to avoid unnecessary access to the color array
+  if (!TRACE_smpi_is_enabled() || !TRACE_smpi_is_sleeping()) return;
+
+  char str[INSTR_DEFAULT_STR_SIZE];
+  smpi_container(rank, str, INSTR_DEFAULT_STR_SIZE);
+  container_t container = PJ_container_get (str);
+  type_t type = PJ_type_get ("MPI_STATE", container->type);
+  const char *color = instr_find_color ("sleeping");
+  val_t value = PJ_value_get_or_new ("sleeping", color, type);
+  new_pajePushState (SIMIX_get_clock(), container, type, value);
+}
+
+void TRACE_smpi_sleeping_in(int rank, instr_extra_data extra)
+{
+  //do not forget to set the color first, otherwise this will explode
+  if (!TRACE_smpi_is_enabled()|| !TRACE_smpi_is_sleeping()) {
+      cleanup_extra_data(extra);
+      return;
+  }
+
+  char str[INSTR_DEFAULT_STR_SIZE];
+  smpi_container(rank, str, INSTR_DEFAULT_STR_SIZE);
+  container_t container = PJ_container_get (str);
+  type_t type = PJ_type_get ("MPI_STATE", container->type);
+  val_t value = PJ_value_get_or_new ("sleeping", NULL, type);
+  new_pajePushStateWithExtra  (SIMIX_get_clock(), container, type, value, (void*)extra);
+}
+
+void TRACE_smpi_sleeping_out(int rank)
+{
+  if (!TRACE_smpi_is_enabled()|| !TRACE_smpi_is_sleeping()) return;
+  char str[INSTR_DEFAULT_STR_SIZE];
+  smpi_container(rank, str, INSTR_DEFAULT_STR_SIZE);
+  container_t container = PJ_container_get (str);
+  type_t type = PJ_type_get ("MPI_STATE", container->type);
+  new_pajePopState (SIMIX_get_clock(), container, type);
+}
+
+
+void TRACE_smpi_testing_in(int rank, instr_extra_data extra)
+{
+  //do not forget to set the color first, otherwise this will explode
+  if (!TRACE_smpi_is_enabled()) {
+      cleanup_extra_data(extra);
+      return;
+  }
+
+  char str[INSTR_DEFAULT_STR_SIZE];
+  smpi_container(rank, str, INSTR_DEFAULT_STR_SIZE);
+  container_t container = PJ_container_get (str);
+  type_t type = PJ_type_get ("MPI_STATE", container->type);
+  val_t value = PJ_value_get_or_new ("test", NULL, type);
+  new_pajePushStateWithExtra  (SIMIX_get_clock(), container, type, value, (void*)extra);
+}
+
+void TRACE_smpi_testing_out(int rank)
+{
+  if (!TRACE_smpi_is_enabled()) return;
   char str[INSTR_DEFAULT_STR_SIZE];
   smpi_container(rank, str, INSTR_DEFAULT_STR_SIZE);
   container_t container = PJ_container_get (str);

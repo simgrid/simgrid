@@ -19,6 +19,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_config, instr, "Configuration");
 #define OPT_TRACING_SMPI          "tracing/smpi"
 #define OPT_TRACING_SMPI_GROUP    "tracing/smpi/group"
 #define OPT_TRACING_SMPI_COMPUTING "tracing/smpi/computing"
+#define OPT_TRACING_SMPI_SLEEPING "tracing/smpi/sleeping"
 #define OPT_TRACING_SMPI_INTERNALS "tracing/smpi/internals"
 #define OPT_TRACING_DISPLAY_SIZES  "tracing/smpi/display_sizes"
 #define OPT_TRACING_FORMAT        "tracing/smpi/format"
@@ -45,6 +46,7 @@ static int trace_platform_topology;
 static int trace_smpi_enabled;
 static int trace_smpi_grouped;
 static int trace_smpi_computing;
+static int trace_smpi_sleeping;
 static int trace_view_internals;
 static int trace_categorized;
 static int trace_uncategorized;
@@ -71,6 +73,7 @@ static void TRACE_getopts(void)
   trace_smpi_enabled = xbt_cfg_get_boolean(_sg_cfg_set, OPT_TRACING_SMPI);
   trace_smpi_grouped = xbt_cfg_get_boolean(_sg_cfg_set, OPT_TRACING_SMPI_GROUP);
   trace_smpi_computing = xbt_cfg_get_boolean(_sg_cfg_set, OPT_TRACING_SMPI_COMPUTING);
+  trace_smpi_sleeping = xbt_cfg_get_boolean(_sg_cfg_set, OPT_TRACING_SMPI_SLEEPING);
   trace_view_internals = xbt_cfg_get_boolean(_sg_cfg_set, OPT_TRACING_SMPI_INTERNALS);
   trace_categorized = xbt_cfg_get_boolean(_sg_cfg_set, OPT_TRACING_CATEGORIZED);
   trace_uncategorized = xbt_cfg_get_boolean(_sg_cfg_set, OPT_TRACING_UNCATEGORIZED);
@@ -259,6 +262,11 @@ int TRACE_smpi_is_computing(void)
   return trace_smpi_computing;
 }
 
+int TRACE_smpi_is_sleeping(void)
+{
+  return trace_smpi_sleeping;
+}
+
 int TRACE_smpi_view_internals(void)
 {
   return trace_view_internals;
@@ -387,6 +395,13 @@ void TRACE_global_init(int *argc, char **argv)
                    "Generate states for timing out of SMPI parts of the application",
                    xbt_cfgelm_boolean, 1, 1, NULL, NULL);
   xbt_cfg_setdefault_boolean(_sg_cfg_set, OPT_TRACING_SMPI_COMPUTING, "no");
+
+/* smpi sleeping */
+  xbt_cfg_register(&_sg_cfg_set, OPT_TRACING_SMPI_SLEEPING,
+                   "Generate states for timing out of SMPI parts of the application",
+                   xbt_cfgelm_boolean, 1, 1, NULL, NULL);
+  xbt_cfg_setdefault_boolean(_sg_cfg_set, OPT_TRACING_SMPI_SLEEPING, "no");
+
 
   /* smpi internals */
   xbt_cfg_register(&_sg_cfg_set, OPT_TRACING_SMPI_INTERNALS,
@@ -552,6 +567,10 @@ void TRACE_help (int detailed)
   print_line (OPT_TRACING_SMPI_COMPUTING, "Generates a \" Computing \" State",
       "  This option aims at tracing computations in the application, outside SMPI\n"
       "  to allow further study of simulated or real computation time",
+      detailed);
+   print_line (OPT_TRACING_SMPI_SLEEPING, "Generates a \" Sleeping \" State",
+      "  This option aims at tracing sleeps in the application, outside SMPI\n"
+      "  to allow further study of simulated or real sleep time",
       detailed);
   print_line (OPT_TRACING_SMPI_INTERNALS, "Generates tracing events corresponding",
       "  to point-to-point messages sent by collective communications",

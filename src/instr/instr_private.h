@@ -297,6 +297,7 @@ void instr_resume_tracing (void);
 XBT_PUBLIC(int) TRACE_smpi_is_enabled(void);
 XBT_PUBLIC(int) TRACE_smpi_is_grouped(void);
 XBT_PUBLIC(int) TRACE_smpi_is_computing(void);
+XBT_PUBLIC(int) TRACE_smpi_is_sleeping(void);
 XBT_PUBLIC(int) TRACE_smpi_view_internals(void);
 
 /* from resource_utilization.c */
@@ -421,6 +422,7 @@ typedef enum{
   TRACING_RECV,
   TRACING_IRECV,
   TRACING_SENDRECV,
+  TRACING_TEST,
   TRACING_WAIT,
   TRACING_WAITALL,
   TRACING_WAITANY,
@@ -438,6 +440,7 @@ typedef enum{
   TRACING_ALLGATHERV,
   TRACING_REDUCE_SCATTER,
   TRACING_COMPUTING,
+  TRACING_SLEEPING,
   TRACING_SCAN,
   TRACING_EXSCAN
 } e_caller_type ;
@@ -449,6 +452,7 @@ typedef struct s_instr_extra_data {
   int send_size;
   int recv_size;
   double comp_size;
+  double sleep_duration;
   int src;
   int dst;
   int root;
