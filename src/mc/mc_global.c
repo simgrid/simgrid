@@ -1163,44 +1163,49 @@ void MC_replay(xbt_fifo_t stack, int start)
         XBT_DEBUG("Replay: %s (%p)", req_str, state);
         xbt_free(req_str);
       }
-    }
 
-    if(_sg_mc_comms_determinism || _sg_mc_send_determinism){
-      if(req->call == SIMCALL_COMM_ISEND)
-        comm_pattern = 1;
-      else if(req->call == SIMCALL_COMM_IRECV)
-        comm_pattern = 2;
-    }
-
-    SIMIX_simcall_pre(req, value);
-
-    if(_sg_mc_comms_determinism || _sg_mc_send_determinism){
-      MC_SET_RAW_MEM;
-      if(comm_pattern != 0){
-        get_comm_pattern(communications_pattern, req, comm_pattern);
+      if(_sg_mc_comms_determinism || _sg_mc_send_determinism){
+        if(req->call == SIMCALL_COMM_ISEND)
+          comm_pattern = 1;
+        else if(req->call == SIMCALL_COMM_IRECV)
+          comm_pattern = 2;
+        else if(req->call == SIMCALL_COMM_WAIT)
+          comm_pattern = 3;
       }
-      MC_UNSET_RAW_MEM;
-      comm_pattern = 0;
-    }
-    
-    MC_wait_for_requests();
 
-    count++;
+      SIMIX_simcall_pre(req, value);
 
-    if(mc_reduce_kind ==  e_mc_reduce_dpor){
-      MC_SET_RAW_MEM;
-      /* Insert in dict all enabled processes */
-      xbt_swag_foreach(process, simix_global->process_list){
-        if(MC_process_is_enabled(process) /*&& !MC_state_process_is_done(state, process)*/){
-          char *key = bprintf("%lu", process->pid);
-          if(xbt_dict_get_or_null(first_enabled_state, key) == NULL){
-            char *data = bprintf("%d", count);
-            xbt_dict_set(first_enabled_state, key, data, NULL);
-          }
-          xbt_free(key);
+      if(_sg_mc_comms_determinism || _sg_mc_send_determinism){
+        MC_SET_RAW_MEM;
+        if(comm_pattern == 1 || comm_pattern == 2){
+          get_comm_pattern(communications_pattern, req, comm_pattern);
+        }else if (comm_pattern == 3){
+          complete_comm_pattern(communications_pattern, simcall_comm_wait__get__comm(req));
         }
+        MC_UNSET_RAW_MEM;
+        comm_pattern = 0;
       }
-      MC_UNSET_RAW_MEM;
+    
+    
+      MC_wait_for_requests();
+
+      count++;
+
+      if(mc_reduce_kind ==  e_mc_reduce_dpor){
+        MC_SET_RAW_MEM;
+        /* Insert in dict all enabled processes */
+        xbt_swag_foreach(process, simix_global->process_list){
+          if(MC_process_is_enabled(process) /*&& !MC_state_process_is_done(state, process)*/){
+            char *key = bprintf("%lu", process->pid);
+            if(xbt_dict_get_or_null(first_enabled_state, key) == NULL){
+              char *data = bprintf("%d", count);
+              xbt_dict_set(first_enabled_state, key, data, NULL);
+            }
+            xbt_free(key);
+          }
+        }
+        MC_UNSET_RAW_MEM;
+      }
     }
          
     /* Update statistics */
