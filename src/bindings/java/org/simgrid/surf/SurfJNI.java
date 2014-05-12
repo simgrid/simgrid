@@ -71,7 +71,6 @@ public class SurfJNI {
   public final static native void delete_TmgrTrace(long jarg1);
   public final static native long TmgrTraceEvent_getIdx(long jarg1, TmgrTraceEvent jarg1_);
   public final static native void delete_TmgrTraceEvent(long jarg1);
-  public final static native long new_Model(String jarg1);
   public final static native String Model_getName(long jarg1, Model jarg1_);
   public final static native double Model_shareResources(long jarg1, Model jarg1_, double jarg2);
   public final static native double Model_shareResourcesLazy(long jarg1, Model jarg1_, double jarg2);
@@ -80,11 +79,11 @@ public class SurfJNI {
   public final static native void Model_updateActionsStateLazy(long jarg1, Model jarg1_, double jarg2, double jarg3);
   public final static native void Model_updateActionsStateFull(long jarg1, Model jarg1_, double jarg2, double jarg3);
   public final static native long Model_getRunningActionSet(long jarg1, Model jarg1_);
+  public final static native void Model_addTraces(long jarg1, Model jarg1_);
   public final static native void delete_Model(long jarg1);
   public final static native long new_CpuModel(String jarg1);
   public final static native void delete_CpuModel(long jarg1);
-  public final static native long CpuModel_createResource(long jarg1, CpuModel jarg1_, String jarg2, double[] jarg3, int jarg4, double jarg5, long jarg6, TmgrTrace jarg6_, int jarg7, int jarg8, long jarg9, TmgrTrace jarg9_, long jarg10, XbtDict jarg10_);
-  public final static native void CpuModel_addTraces(long jarg1, CpuModel jarg1_);
+  public final static native long CpuModel_createCpu(long jarg1, CpuModel jarg1_, String jarg2, double[] jarg3, int jarg4, double jarg5, long jarg6, TmgrTrace jarg6_, int jarg7, int jarg8, long jarg9, TmgrTrace jarg9_, long jarg10, XbtDict jarg10_);
   public final static native void CpuModel_director_connect(CpuModel obj, long cptr, boolean mem_own, boolean weak_global);
   public final static native void CpuModel_change_ownership(CpuModel obj, long cptr, boolean take_or_release);
   public final static native String Resource_getName(long jarg1, Resource jarg1_);
@@ -208,11 +207,11 @@ public class SurfJNI {
   public static long SwigDirector_CpuModel_getRunningActionSet(CpuModel self) {
     return ActionList.getCPtr(self.getRunningActionSet());
   }
-  public static long SwigDirector_CpuModel_createResource(CpuModel self, String name, double[] power_peak, int pstate, double power_scale, long power_trace, int core, int state_initial, long state_trace, long cpu_properties) {
-    return Cpu.getCPtr(self.createResource(name, power_peak, pstate, power_scale, (power_trace == 0) ? null : new TmgrTrace(power_trace, false), core, ResourceState.swigToEnum(state_initial), (state_trace == 0) ? null : new TmgrTrace(state_trace, false), (cpu_properties == 0) ? null : new XbtDict(cpu_properties, false)));
-  }
   public static void SwigDirector_CpuModel_addTraces(CpuModel self) {
     self.addTraces();
+  }
+  public static long SwigDirector_CpuModel_createCpu(CpuModel self, String name, double[] power_peak, int pstate, double power_scale, long power_trace, int core, int state_initial, long state_trace, long cpu_properties) {
+    return Cpu.getCPtr(self.createCpu(name, power_peak, pstate, power_scale, (power_trace == 0) ? null : new TmgrTrace(power_trace, false), core, ResourceState.swigToEnum(state_initial), (state_trace == 0) ? null : new TmgrTrace(state_trace, false), (cpu_properties == 0) ? null : new XbtDict(cpu_properties, false)));
   }
   public static boolean SwigDirector_Cpu_isUsed(Cpu self) {
     return self.isUsed();

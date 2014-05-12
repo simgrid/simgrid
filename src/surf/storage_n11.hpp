@@ -37,8 +37,9 @@ class StorageN11Model : public StorageModel {
 public:
   StorageN11Model();
   ~StorageN11Model();
-  StoragePtr createResource(const char* id, const char* type_id,
+  StoragePtr createStorage(const char* id, const char* type_id,
 		   const char* content_name, const char* content_type, xbt_dict_t properties, const char* attach);
+  void addTraces(){DIE_IMPOSSIBLE;}
   double shareResources(double now);
   void updateActionsState(double now, double delta);
 };

@@ -68,7 +68,7 @@ static void parse_storage_init(sg_platf_storage_cbarg_t storage)
       storage->content_type,
       storage->properties);
 
-  surf_storage_model->createResource(storage->id,
+  surf_storage_model->createStorage(storage->id,
                                      ((storage_type_t) stype)->type_id,
                                      storage->content,
                                      storage->content_type,
@@ -234,7 +234,7 @@ StorageN11Model::~StorageN11Model(){
   storage_running_action_set_that_does_not_need_being_checked = NULL;
 }
 
-StoragePtr StorageN11Model::createResource(const char* id, const char* type_id,
+StoragePtr StorageN11Model::createStorage(const char* id, const char* type_id,
 		const char* content_name, const char* content_type, xbt_dict_t properties, const char* attach)
 {
 

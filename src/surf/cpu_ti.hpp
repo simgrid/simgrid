@@ -84,9 +84,7 @@ class CpuTiModel : public CpuModel {
 public:
   CpuTiModel();
   ~CpuTiModel();
-
-  void parseInit(sg_platf_host_cbarg_t host);
-  CpuPtr createResource(const char *name,  xbt_dynar_t powerPeak,
+  CpuPtr createCpu(const char *name,  xbt_dynar_t powerPeak,
                           int pstate, double power_scale,
                           tmgr_trace_t power_trace, int core,
                           e_surf_resource_state_t state_initial,

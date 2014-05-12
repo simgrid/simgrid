@@ -9,7 +9,7 @@
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_vm_workstation);
 
-void surf_vm_workstation_model_init_current_default(void){
+void surf_vm_workstation_model_init_HL13(void){
   if (surf_cpu_model_vm) {
     surf_vm_workstation_model = new WorkstationVMHL13Model();
     ModelPtr model = static_cast<ModelPtr>(surf_vm_workstation_model);
@@ -38,15 +38,16 @@ ActionPtr WorkstationVMHL13Model::communicate(WorkstationPtr src, WorkstationPtr
 /* ind means ''indirect'' that this is a reference on the whole dict_elm
  * structure (i.e not on the surf_resource_private infos) */
 
-void WorkstationVMHL13Model::createResource(const char *name, void *ind_phys_workstation)
+WorkstationVMPtr WorkstationVMHL13Model::createWorkstationVM(const char *name, surf_resource_t ind_phys_workstation)
 {
-  WorkstationVMHL13Ptr ws = new WorkstationVMHL13(this, name, NULL, static_cast<surf_resource_t>(ind_phys_workstation));
+  WorkstationVMHL13Ptr ws = new WorkstationVMHL13(this, name, NULL, ind_phys_workstation);
 
   xbt_lib_set(host_lib, name, SURF_WKS_LEVEL, static_cast<ResourcePtr>(ws));
 
   /* TODO:
    * - check how network requests are scheduled between distinct processes competing for the same card.
    */
+  return ws;
 }
 
 static inline double get_solved_value(CpuActionPtr cpu_action)
@@ -245,7 +246,7 @@ WorkstationVMHL13::WorkstationVMHL13(WorkstationVMModelPtr model, const char* na
   /* We can assume one core and cas01 cpu for the first step.
    * Do xbt_lib_set(host_lib, name, SURF_CPU_LEVEL, cpu) if you get the resource. */
 
-  p_cpu = static_cast<CpuCas01ModelPtr>(surf_cpu_model_vm)->createResource(name, // name
+  p_cpu = static_cast<CpuCas01ModelPtr>(surf_cpu_model_vm)->createCpu(name, // name
       sub_cpu->getPowerPeakList(),        // host->power_peak,
       sub_cpu->getPState(),
       1,                          // host->power_scale,

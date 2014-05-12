@@ -14,13 +14,45 @@ static int ptask_host_count = 0;
 static xbt_dict_t ptask_parallel_task_link_set = NULL;
 lmm_system_t ptask_maxmin_system = NULL;
 
+
+/**************************************/
+/*** Resource Creation & Destruction **/
+/**************************************/
+
+static void ptask_netlink_parse_init(sg_platf_link_cbarg_t link)
+{
+  netlink_parse_init(link);
+  current_property_set = NULL;
+}
+
+static void ptask_define_callbacks()
+{
+  sg_platf_host_add_cb(cpu_parse_init);
+  sg_platf_host_add_cb(workstation_parse_init);
+  sg_platf_link_add_cb(ptask_netlink_parse_init);
+  sg_platf_postparse_add_cb(workstation_add_traces);
+}
+
+void surf_workstation_model_init_ptask_L07(void)
+{
+  XBT_INFO("surf_workstation_model_init_ptask_L07");
+  xbt_assert(!surf_cpu_model_pm, "CPU model type already defined");
+  xbt_assert(!surf_network_model, "network model type already defined");
+  ptask_define_callbacks();
+  surf_workstation_model = new WorkstationL07Model();
+  ModelPtr model = surf_workstation_model;
+  xbt_dynar_push(model_list, &model);
+  xbt_dynar_push(model_list_invoke, &model);
+}
+
+
 WorkstationL07Model::WorkstationL07Model() : WorkstationModel("Workstation ptask_L07") {
   if (!ptask_maxmin_system)
 	ptask_maxmin_system = lmm_system_new(1);
   surf_workstation_model = NULL;
   surf_network_model = new NetworkL07Model();
   surf_cpu_model_pm = new CpuL07Model();
-  routing_model_create(static_cast<ResourcePtr>(surf_network_model->createResource("__loopback__",
+  routing_model_create(static_cast<ResourcePtr>(surf_network_model->createNetworkLink("__loopback__",
 	                                                  498000000, NULL,
 	                                                  0.000015, NULL,
 	                                                  SURF_RESOURCE_ON, NULL,
@@ -240,12 +272,7 @@ ActionPtr WorkstationL07Model::executeParallelTask(int workstation_nb,
   return static_cast<ActionPtr>(action);
 }
 
-ResourcePtr WorkstationL07Model::createResource(const char *name, double /*power_scale*/,
-                                                double /*power_initial*/,
-                                                tmgr_trace_t /*power_trace*/,
-                                                e_surf_resource_state_t /*state_initial*/,
-                                                tmgr_trace_t /*state_trace*/,
-                                                xbt_dict_t /*cpu_properties*/)
+WorkstationPtr WorkstationL07Model::createWorkstation(const char *name)
 {
   WorkstationL07Ptr wk = NULL;
   xbt_assert(!surf_workstation_resource_priv(surf_workstation_resource_by_name(name)),
@@ -287,7 +314,7 @@ xbt_dynar_t WorkstationL07Model::getRoute(WorkstationPtr src, WorkstationPtr dst
   return route;
 }
 
-CpuPtr CpuL07Model::createResource(const char *name,  xbt_dynar_t powerPeak,
+CpuPtr CpuL07Model::createCpu(const char *name,  xbt_dynar_t powerPeak,
                           int pstate, double power_scale,
                           tmgr_trace_t power_trace, int core,
                           e_surf_resource_state_t state_initial,
@@ -309,7 +336,7 @@ CpuPtr CpuL07Model::createResource(const char *name,  xbt_dynar_t powerPeak,
   return cpu;//FIXME:xbt_lib_get_elm_or_null(host_lib, name);
 }
 
-NetworkLinkPtr NetworkL07Model::createResource(const char *name,
+NetworkLinkPtr NetworkL07Model::createNetworkLink(const char *name,
                                  double bw_initial,
                                  tmgr_trace_t bw_trace,
                                  double lat_initial,
@@ -697,114 +724,4 @@ double WorkstationL07Action::getRemains()
   XBT_IN("(%p)", this);
   XBT_OUT();
   return m_remains;
-}
-
-/*FIXME:remove static void ptask_finalize(void)
-{
-  xbt_dict_free(&ptask_parallel_task_link_set);
-
-  delete surf_workstation_model;
-  surf_workstation_model = NULL;
-  delete surf_network_model;
-  surf_network_model = NULL;
-
-  ptask_host_count = 0;
-
-  if (ptask_maxmin_system) {
-    lmm_system_free(ptask_maxmin_system);
-    ptask_maxmin_system = NULL;
-  }
-  }*/
-
-/**************************************/
-/******* Resource Private    **********/
-/**************************************/
-
-/**************************************/
-/*** Resource Creation & Destruction **/
-/**************************************/
-
-static void ptask_parse_workstation_init(sg_platf_host_cbarg_t host)
-{
-  double power_peak = xbt_dynar_get_as(host->power_peak, host->pstate, double);
-  //cpu->power_peak = power_peak;
-  xbt_dynar_free(&(host->power_peak));  /* kill memory leak */
-  static_cast<WorkstationL07ModelPtr>(surf_workstation_model)->createResource(
-      host->id,
-      power_peak,
-      host->power_scale,
-      host->power_trace,
-      host->initial_state,
-      host->state_trace,
-      host->properties);
-}
-
-static void ptask_parse_link_init(sg_platf_link_cbarg_t link)
-{
-  if (link->policy == SURF_LINK_FULLDUPLEX) {
-    char *link_id;
-    link_id = bprintf("%s_UP", link->id);
-    static_cast<NetworkL07ModelPtr>(surf_network_model)->createResource(link_id,
-                               link->bandwidth,
-                               link->bandwidth_trace,
-                               link->latency,
-                               link->latency_trace,
-                               link->state,
-                               link->state_trace,
-                               link->policy,
-                               link->properties);
-    xbt_free(link_id);
-    link_id = bprintf("%s_DOWN", link->id);
-    static_cast<NetworkL07ModelPtr>(surf_network_model)->createResource(link_id,
-                               link->bandwidth,
-                               link->bandwidth_trace,
-                               link->latency,
-                               link->latency_trace,
-                               link->state,
-                               link->state_trace,
-                               link->policy,
-                               NULL); /* FIXME: We need to deep copy the
-                                       * properties or we won't be able to free
-                                       * it */
-    xbt_free(link_id);
-  } else {
-	  static_cast<NetworkL07ModelPtr>(surf_network_model)->createResource(link->id,
-                               link->bandwidth,
-                               link->bandwidth_trace,
-                               link->latency,
-                               link->latency_trace,
-                               link->state,
-                               link->state_trace,
-                               link->policy,
-                               link->properties);
-  }
-
-  current_property_set = NULL;
-}
-
-static void ptask_add_traces(){
-  static_cast<WorkstationL07ModelPtr>(surf_workstation_model)->addTraces();
-}
-
-static void ptask_define_callbacks()
-{
-  sg_platf_host_add_cb(parse_cpu_init);
-  sg_platf_host_add_cb(ptask_parse_workstation_init);
-  sg_platf_link_add_cb(ptask_parse_link_init);
-  sg_platf_postparse_add_cb(ptask_add_traces);
-}
-
-/**************************************/
-/*************** Generic **************/
-/**************************************/
-void surf_workstation_model_init_ptask_L07(void)
-{
-  XBT_INFO("surf_workstation_model_init_ptask_L07");
-  xbt_assert(!surf_cpu_model_pm, "CPU model type already defined");
-  xbt_assert(!surf_network_model, "network model type already defined");
-  ptask_define_callbacks();
-  surf_workstation_model = new WorkstationL07Model();
-  ModelPtr model = static_cast<ModelPtr>(surf_workstation_model);
-  xbt_dynar_push(model_list, &model);
-  xbt_dynar_push(model_list_invoke, &model);
 }

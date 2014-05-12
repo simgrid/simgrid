@@ -57,6 +57,8 @@ extern surf_callback(void, WorkstationActionPtr, e_surf_action_state_t, e_surf_a
  * Tools *
  *********/
 extern WorkstationModelPtr surf_workstation_model;
+XBT_PUBLIC(void) workstation_parse_init(sg_platf_host_cbarg_t host);
+XBT_PUBLIC(void) workstation_add_traces();
 
 /*********
  * Model *
@@ -83,6 +85,9 @@ public:
    * @brief WorkstationModel destructor
    */
   ~WorkstationModel();
+
+  virtual WorkstationPtr createWorkstation(const char *name)=0;
+  void addTraces(){DIE_IMPOSSIBLE;}
 
   /**
    * @brief [brief description]

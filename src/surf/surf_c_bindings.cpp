@@ -287,7 +287,7 @@ xbt_dynar_t surf_workstation_model_get_route(surf_workstation_model_t /*model*/,
 }
 
 void surf_vm_workstation_model_create(const char *name, surf_resource_t ind_phys_host){
-  surf_vm_workstation_model->createResource(name, ind_phys_host);
+  surf_vm_workstation_model->createWorkstationVM(name, ind_phys_host);
 }
 
 surf_action_t surf_network_model_communicate(surf_network_model_t model, sg_routing_edge_t src, sg_routing_edge_t dst, double size, double rate){

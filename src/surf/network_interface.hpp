@@ -10,6 +10,7 @@
 #ifndef SURF_NETWORK_INTERFACE_HPP_
 #define SURF_NETWORK_INTERFACE_HPP_
 
+
 /***********
  * Classes *
  ***********/
@@ -59,8 +60,9 @@ XBT_PUBLIC_DATA( surf_callback(void, NetworkActionPtr, RoutingEdgePtr src, Routi
 /*********
  * Tools *
  *********/
+XBT_PUBLIC(void) netlink_parse_init(sg_platf_link_cbarg_t link);
 
-void net_define_callbacks(void);
+XBT_PUBLIC(void) net_add_traces();
 
 /*********
  * Model *
@@ -113,7 +115,7 @@ public:
    * @param properties Dictionary of properties associated to this Resource
    * @return The created NetworkLink
    */
-  virtual NetworkLinkPtr createResource(const char *name,
+  virtual NetworkLinkPtr createNetworkLink(const char *name,
                                    double bw_initial,
                                    tmgr_trace_t bw_trace,
                                    double lat_initial,
@@ -122,7 +124,6 @@ public:
                                    tmgr_trace_t state_trace,
                                    e_surf_link_sharing_policy_t policy,
                                    xbt_dict_t properties)=0;
-
 
   virtual void gapAppend(double /*size*/, const NetworkLinkPtr /*link*/, NetworkActionPtr /*action*/) {};
 

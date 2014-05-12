@@ -14,7 +14,7 @@ public class CpuConstantModel extends CpuModel {
     Msg.info("Initialize Cpu Constant Model");
   }
 
-  public Cpu createResource(String name, double[] power_peak, int pstate, double power_scale, TmgrTrace power_trace, int core, ResourceState state_initial, TmgrTrace state_trace, XbtDict cpu_properties) {
+  public Cpu createCpu(String name, double[] power_peak, int pstate, double power_scale, TmgrTrace power_trace, int core, ResourceState state_initial, TmgrTrace state_trace, XbtDict cpu_properties) {
     Msg.info("New Cpu("+name+", "+power_peak[pstate]+", "+power_scale+")");
 
     CpuConstant res = new CpuConstant(this, name, cpu_properties, core, power_peak[pstate], power_scale);

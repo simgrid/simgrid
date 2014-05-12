@@ -25,6 +25,15 @@ surf_callback(void, WorkstationPtr) workstationDestructedCallbacks;
 surf_callback(void, WorkstationPtr, e_surf_resource_state_t, e_surf_resource_state_t) workstationStateChangedCallbacks;
 surf_callback(void, WorkstationActionPtr, e_surf_action_state_t, e_surf_action_state_t) workstationActionStateChangedCallbacks;
 
+void workstation_parse_init(sg_platf_host_cbarg_t host)
+{
+  surf_workstation_model->createWorkstation(host->id);
+}
+
+void workstation_add_traces(){
+  surf_workstation_model->addTraces();
+}
+
 /*********
  * Model *
  *********/

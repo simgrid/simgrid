@@ -246,6 +246,8 @@ public:
   virtual void updateActionsStateFull(double now, double delta);
 
   virtual ActionList *getRunningActionSet();
+
+  virtual void addTraces()=0;
 };
 
 %feature("director") CpuModel;
@@ -253,13 +255,12 @@ class CpuModel : public Model {
 public:
   CpuModel(const char *name);
   virtual ~CpuModel();
-  virtual Cpu *createResource(const char *name, DoubleDynar power_peak,
+  virtual Cpu *createCpu(const char *name, DoubleDynar power_peak,
                               int pstate, double power_scale,
                               tmgr_trace *power_trace, int core,
                               e_surf_resource_state_t state_initial,
                               tmgr_trace *state_trace,
                               s_xbt_dict *cpu_properties)=0;
-  virtual void addTraces()=0;
 };
 
 class Resource {

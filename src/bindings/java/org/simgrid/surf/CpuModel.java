@@ -81,13 +81,9 @@ public class CpuModel extends Model {
     * @return The new Cpu
     * @see Cpu
     */
-  public Cpu createResource(String name, double[] power_peak, int pstate, double power_scale, TmgrTrace power_trace, int core, ResourceState state_initial, TmgrTrace state_trace, XbtDict cpu_properties) {
-  long cPtr = SurfJNI.CpuModel_createResource(swigCPtr, this, name, power_peak, pstate, power_scale, TmgrTrace.getCPtr(power_trace), power_trace, core, state_initial.swigValue(), TmgrTrace.getCPtr(state_trace), state_trace, XbtDict.getCPtr(cpu_properties), cpu_properties);
+  public Cpu createCpu(String name, double[] power_peak, int pstate, double power_scale, TmgrTrace power_trace, int core, ResourceState state_initial, TmgrTrace state_trace, XbtDict cpu_properties) {
+  long cPtr = SurfJNI.CpuModel_createCpu(swigCPtr, this, name, power_peak, pstate, power_scale, TmgrTrace.getCPtr(power_trace), power_trace, core, state_initial.swigValue(), TmgrTrace.getCPtr(state_trace), state_trace, XbtDict.getCPtr(cpu_properties), cpu_properties);
   return (Cpu)Surf.getCpuDirector(cPtr);
 }
-
-  public void addTraces() {
-    SurfJNI.CpuModel_addTraces(swigCPtr, this);
-  }
 
 }

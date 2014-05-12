@@ -19,8 +19,8 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_cpu_cas, surf_cpu,
 
 static void cpu_define_callbacks()
 {
-  sg_platf_host_add_cb(parse_cpu_init);
-  sg_platf_postparse_add_cb(add_traces_cpu);
+  sg_platf_host_add_cb(cpu_parse_init);
+  sg_platf_postparse_add_cb(cpu_add_traces);
 }
 
 /*********
@@ -106,20 +106,7 @@ CpuCas01Model::~CpuCas01Model()
   delete p_cpuRunningActionSetThatDoesNotNeedBeingChecked;
 }
 
-void CpuCas01Model::parseInit(sg_platf_host_cbarg_t host)
-{
-  createResource(host->id,
-        host->power_peak,
-        host->pstate,
-        host->power_scale,
-        host->power_trace,
-        host->core_amount,
-        host->initial_state,
-        host->state_trace,
-        host->properties);
-}
-
-CpuPtr CpuCas01Model::createResource(const char *name, xbt_dynar_t power_peak,
+CpuPtr CpuCas01Model::createCpu(const char *name, xbt_dynar_t power_peak,
 		                  int pstate, double power_scale,
                           tmgr_trace_t power_trace, int core,
                           e_surf_resource_state_t state_initial,

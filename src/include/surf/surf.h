@@ -1198,7 +1198,7 @@ XBT_PUBLIC_DATA(s_surf_model_description_t)
  *  Such model is subject to modification with warning in the ChangeLog so monitor it!
  *
  */
-XBT_PUBLIC(void) surf_vm_workstation_model_init_current_default(void);
+XBT_PUBLIC(void) surf_vm_workstation_model_init_HL13(void);
 
 /** \ingroup SURF_models
  *  \brief The list of all available vm workstation model models

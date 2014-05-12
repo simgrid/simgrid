@@ -15,10 +15,6 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_workstation);
  * CallBacks *
  *************/
 
-static void workstation_new(sg_platf_host_cbarg_t host){
-  reinterpret_cast<WorkstationCLM03ModelPtr>(surf_workstation_model)->createResource(host->id);
-}
-
 /*********
  * Model *
  *********/
@@ -34,7 +30,7 @@ void surf_workstation_model_init_current_default(void)
   ModelPtr model = static_cast<ModelPtr>(surf_workstation_model);
   xbt_dynar_push(model_list, &model);
   xbt_dynar_push(model_list_invoke, &model);
-  sg_platf_host_add_cb(workstation_new);
+  sg_platf_host_add_cb(workstation_parse_init);
 }
 
 void surf_workstation_model_init_compound()
@@ -47,7 +43,7 @@ void surf_workstation_model_init_compound()
   ModelPtr model = static_cast<ModelPtr>(surf_workstation_model);
   xbt_dynar_push(model_list, &model);
   xbt_dynar_push(model_list_invoke, &model);
-  sg_platf_host_add_cb(workstation_new);
+  sg_platf_host_add_cb(workstation_parse_init);
 }
 
 WorkstationCLM03Model::WorkstationCLM03Model()
@@ -58,12 +54,7 @@ WorkstationCLM03Model::WorkstationCLM03Model()
 WorkstationCLM03Model::~WorkstationCLM03Model()
 {}
 
-void WorkstationCLM03Model::parseInit(sg_platf_host_cbarg_t host){
-  createResource(host->id);
-}
-
-WorkstationPtr WorkstationCLM03Model::createResource(const char *name){
-
+WorkstationPtr WorkstationCLM03Model::createWorkstation(const char *name){
   WorkstationPtr workstation = new WorkstationCLM03(surf_workstation_model, name, NULL,
 		  (xbt_dynar_t)xbt_lib_get_or_null(storage_lib, name, ROUTING_STORAGE_HOST_LEVEL),
 		  (RoutingEdgePtr)xbt_lib_get_or_null(host_lib, name, ROUTING_HOST_LEVEL),

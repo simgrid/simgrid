@@ -12,8 +12,6 @@
 #define GUESTOS_NOISE 100 // This value corresponds to the cost of the global action associated to the VM
                           // It corresponds to the cost of a VM running no tasks.
 
-void surf_vm_workstation_model_init(void);
-
 /***********
  * Classes *
  ***********/
@@ -68,15 +66,16 @@ public:
    */
   ~WorkstationVMModel(){};
 
+  WorkstationPtr createWorkstation(const char *name){DIE_IMPOSSIBLE;}
+
   /**
    * @brief Create a new WorkstationVM
-   * 
+   *
    * @param name The name of the new WorkstationVM
    * @param ind_phys_workstation The workstation hosting the VM
-   * 
+   *
    */
-  virtual void createResource(const char *name, void *ind_phys_workstation)=0;
-
+  virtual WorkstationVMPtr createWorkstationVM(const char *name, surf_resource_t ind_phys_workstation)=0;
   void adjustWeightOfDummyCpuActions() {};
 
   typedef boost::intrusive::list<WorkstationVM,
@@ -98,7 +97,7 @@ class WorkstationVM : public Workstation,
 public:
   /**
    * @brief WorkstationVM consrtructor
-   * 
+   *
    * @param model WorkstationModel associated to this Workstation
    * @param name The name of the Workstation
    * @param props Dictionary of properties associated to this Workstation
@@ -137,7 +136,7 @@ public:
 
   /**
    * @brief Migrate the VM to the destination host
-   * 
+   *
    * @param ind_vm_ws_dest The destination host
    */
   virtual void migrate(surf_resource_t ind_vm_ws_dest)=0;

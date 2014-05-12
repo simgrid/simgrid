@@ -22,95 +22,10 @@ int sg_network_crosstraffic = 0;
  * CallBacks *
  *************/
 
-static void net_parse_link_init(sg_platf_link_cbarg_t link){
-  if (link->policy == SURF_LINK_FULLDUPLEX) {
-    char *link_id;
-    link_id = bprintf("%s_UP", link->id);
-    surf_network_model->createResource(link_id,
-                      link->bandwidth,
-                      link->bandwidth_trace,
-                      link->latency,
-                      link->latency_trace,
-                      link->state,
-                      link->state_trace, link->policy, link->properties);
-    xbt_free(link_id);
-    link_id = bprintf("%s_DOWN", link->id);
-    surf_network_model->createResource(link_id,
-                      link->bandwidth,
-                      link->bandwidth_trace,
-                      link->latency,
-                      link->latency_trace,
-                      link->state,
-                      link->state_trace, link->policy, link->properties);
-    xbt_free(link_id);
-  } else {
-	surf_network_model->createResource(link->id,
-                      link->bandwidth,
-                      link->bandwidth_trace,
-                      link->latency,
-                      link->latency_trace,
-                      link->state,
-                      link->state_trace, link->policy, link->properties);
-  }
-}
-
-static void net_add_traces(void){
-  xbt_dict_cursor_t cursor = NULL;
-  char *trace_name, *elm;
-
-  static int called = 0;
-  if (called)
-    return;
-  called = 1;
-
-  /* connect all traces relative to network */
-  xbt_dict_foreach(trace_connect_list_link_avail, cursor, trace_name, elm) {
-    tmgr_trace_t trace = (tmgr_trace_t) xbt_dict_get_or_null(traces_set_list, trace_name);
-    NetworkCm02LinkPtr link = static_cast<NetworkCm02LinkPtr>(
-    		                    xbt_lib_get_or_null(link_lib, elm, SURF_LINK_LEVEL));
-
-    xbt_assert(link, "Cannot connect trace %s to link %s: link undefined",
-               trace_name, elm);
-    xbt_assert(trace,
-               "Cannot connect trace %s to link %s: trace undefined",
-               trace_name, elm);
-
-    link->p_stateEvent = tmgr_history_add_trace(history, trace, 0.0, 0, static_cast<ResourcePtr>(link));
-  }
-
-  xbt_dict_foreach(trace_connect_list_bandwidth, cursor, trace_name, elm) {
-    tmgr_trace_t trace = (tmgr_trace_t) xbt_dict_get_or_null(traces_set_list, trace_name);
-    NetworkCm02LinkPtr link = static_cast<NetworkCm02LinkPtr>(
-                                xbt_lib_get_or_null(link_lib, elm, SURF_LINK_LEVEL));
-
-    xbt_assert(link, "Cannot connect trace %s to link %s: link undefined",
-               trace_name, elm);
-    xbt_assert(trace,
-               "Cannot connect trace %s to link %s: trace undefined",
-               trace_name, elm);
-
-    link->p_power.event = tmgr_history_add_trace(history, trace, 0.0, 0, static_cast<ResourcePtr>(link));
-  }
-
-  xbt_dict_foreach(trace_connect_list_latency, cursor, trace_name, elm) {
-    tmgr_trace_t trace = (tmgr_trace_t) xbt_dict_get_or_null(traces_set_list, trace_name);
-    NetworkCm02LinkPtr link = static_cast<NetworkCm02LinkPtr>(
-    		                    xbt_lib_get_or_null(link_lib, elm, SURF_LINK_LEVEL));
-
-    xbt_assert(link, "Cannot connect trace %s to link %s: link undefined",
-               trace_name, elm);
-    xbt_assert(trace,
-               "Cannot connect trace %s to link %s: trace undefined",
-               trace_name, elm);
-
-    link->p_latEvent = tmgr_history_add_trace(history, trace, 0.0, 0, static_cast<ResourcePtr>(link));
-  }
-}
-
 void net_define_callbacks(void)
 {
   /* Figuring out the network links */
-  sg_platf_link_add_cb(net_parse_link_init);
+  sg_platf_link_add_cb(netlink_parse_init);
   sg_platf_postparse_add_cb(net_add_traces);
 }
 
@@ -271,7 +186,7 @@ void NetworkCm02Model::initialize()
 	p_maxminSystem = lmm_system_new(m_selectiveUpdate);
 
   const char* lb_name = "__loopback__";
-  routing_model_create(static_cast<ResourcePtr>(createResource(lb_name,
+  routing_model_create(static_cast<ResourcePtr>(createNetworkLink(lb_name,
 	                                           498000000, NULL, 0.000015, NULL,
 	                                           SURF_RESOURCE_ON, NULL,
 	                                           SURF_LINK_FATPIPE, NULL)));
@@ -286,7 +201,7 @@ void NetworkCm02Model::initialize()
   m_haveGap = false;
 }
 
-NetworkLinkPtr NetworkCm02Model::createResource(const char *name,
+NetworkLinkPtr NetworkCm02Model::createNetworkLink(const char *name,
                                  double bw_initial,
                                  tmgr_trace_t bw_trace,
                                  double lat_initial,
@@ -486,7 +401,58 @@ ActionPtr NetworkCm02Model::communicate(RoutingEdgePtr src, RoutingEdgePtr dst,
   return action;
 }
 
+void NetworkCm02Model::addTraces(){
+  xbt_dict_cursor_t cursor = NULL;
+  char *trace_name, *elm;
 
+  static int called = 0;
+  if (called)
+    return;
+  called = 1;
+
+  /* connect all traces relative to network */
+  xbt_dict_foreach(trace_connect_list_link_avail, cursor, trace_name, elm) {
+    tmgr_trace_t trace = (tmgr_trace_t) xbt_dict_get_or_null(traces_set_list, trace_name);
+    NetworkCm02LinkPtr link = static_cast<NetworkCm02LinkPtr>(
+                            xbt_lib_get_or_null(link_lib, elm, SURF_LINK_LEVEL));
+
+    xbt_assert(link, "Cannot connect trace %s to link %s: link undefined",
+               trace_name, elm);
+    xbt_assert(trace,
+               "Cannot connect trace %s to link %s: trace undefined",
+               trace_name, elm);
+
+    link->p_stateEvent = tmgr_history_add_trace(history, trace, 0.0, 0, static_cast<ResourcePtr>(link));
+  }
+
+  xbt_dict_foreach(trace_connect_list_bandwidth, cursor, trace_name, elm) {
+    tmgr_trace_t trace = (tmgr_trace_t) xbt_dict_get_or_null(traces_set_list, trace_name);
+    NetworkCm02LinkPtr link = static_cast<NetworkCm02LinkPtr>(
+                                xbt_lib_get_or_null(link_lib, elm, SURF_LINK_LEVEL));
+
+    xbt_assert(link, "Cannot connect trace %s to link %s: link undefined",
+               trace_name, elm);
+    xbt_assert(trace,
+               "Cannot connect trace %s to link %s: trace undefined",
+               trace_name, elm);
+
+    link->p_power.event = tmgr_history_add_trace(history, trace, 0.0, 0, static_cast<ResourcePtr>(link));
+  }
+
+  xbt_dict_foreach(trace_connect_list_latency, cursor, trace_name, elm) {
+    tmgr_trace_t trace = (tmgr_trace_t) xbt_dict_get_or_null(traces_set_list, trace_name);
+    NetworkCm02LinkPtr link = static_cast<NetworkCm02LinkPtr>(
+                            xbt_lib_get_or_null(link_lib, elm, SURF_LINK_LEVEL));
+
+    xbt_assert(link, "Cannot connect trace %s to link %s: link undefined",
+               trace_name, elm);
+    xbt_assert(trace,
+               "Cannot connect trace %s to link %s: trace undefined",
+               trace_name, elm);
+
+    link->p_latEvent = tmgr_history_add_trace(history, trace, 0.0, 0, static_cast<ResourcePtr>(link));
+  }
+}
 
 /************
  * Resource *

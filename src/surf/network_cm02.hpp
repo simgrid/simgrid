@@ -48,7 +48,7 @@ public:
   }
   ~NetworkCm02Model() {
   }
-  NetworkLinkPtr createResource(const char *name,
+  NetworkLinkPtr createNetworkLink(const char *name,
                                    double bw_initial,
                                    tmgr_trace_t bw_trace,
                                    double lat_initial,
@@ -57,6 +57,7 @@ public:
                                    tmgr_trace_t state_trace,
                                    e_surf_link_sharing_policy_t policy,
                                    xbt_dict_t properties);
+  void addTraces();
   void updateActionsStateLazy(double now, double delta);
   ActionPtr communicate(RoutingEdgePtr src, RoutingEdgePtr dst,
 		                           double size, double rate);

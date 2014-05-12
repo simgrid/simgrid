@@ -88,7 +88,7 @@ public:
    * @param attach [description]
    * @return The created Storage
    */
-  virtual StoragePtr createResource(const char* id,
+  virtual StoragePtr createStorage(const char* id,
                                     const char* type_id,
                                     const char* content_name,
                                     const char* content_type,

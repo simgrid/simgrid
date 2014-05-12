@@ -381,8 +381,8 @@ int CpuTiTrace::binarySearch(double *array, double a, int low, int high)
 
 static void cpu_ti_define_callbacks()
 {
-  sg_platf_host_add_cb(parse_cpu_init);
-  sg_platf_postparse_add_cb(add_traces_cpu);
+  sg_platf_host_add_cb(cpu_parse_init);
+  sg_platf_postparse_add_cb(cpu_add_traces);
 }
 
 /*********
@@ -427,7 +427,7 @@ CpuTiModel::~CpuTiModel()
   xbt_heap_free(p_tiActionHeap);
 }
 
-CpuPtr CpuTiModel::createResource(const char *name,
+CpuPtr CpuTiModel::createCpu(const char *name,
 	                       xbt_dynar_t powerPeak,
 	                       int pstate,
                            double powerScale,
