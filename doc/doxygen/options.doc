@@ -518,15 +518,20 @@ second) under which the execution chunks are not reported to the
 simulation kernel (default value: 1e-6). Please note that in some
 circonstances, this optimization can hinder the simulation accuracy.
 
-If the "application" is in fact doing a "live replay" of another MPI
-app (e.g., ScalaTrace's replay tool, various on-line simulators that
-run an app at scale), the computation due to the replay logic should
-not be simulated by SMPI. In that case the \b
-smpi/simulation_computation item can be set to 'no' causing all the
-compute bursts between MPI calls to be ignored by SMPI. Then only the
-communications are simulated. This implies to add explicit calls to \c
-smpi_execute() in the "application" to simulate computations.
+ In some cases, however, one may wish to disable simulation of
+application computation. This is the case when SMPI is used not to
+simulate an MPI applications, but instead an MPI code that performs
+"live replay" of another MPI app (e.g., ScalaTrace's replay tool,
+various on-line simulators that run an app at scale). In this case the
+computation of the replay/simulation logic should not be simulated by
+SMPI. Instead, the replay tool or on-line simulator will issue
+"computation events", which correspond to the actual MPI simulation
+being replayed/simulated. At the moment, these computation events can
+be simulated using SMPI by calling internal smpi_execute*() functions.
 
+To disable the benchmarking/simulation of computation in the simulated
+application via this runtime automatic switching, the variable \b
+smpi/privatize_global_variables should be set to no
 
 \subsection options_smpi_timing Reporting simulation time
 
@@ -586,20 +591,6 @@ simulate the behavior of most of the existing MPI libraries. The \b smpi/coll_se
 uses naive version of collective operations). Each collective operation can be manually selected with a 
 \b smpi/collective_name:algo_name. Available algorithms are listed in \ref SMPI_collective_algorithms .
 
-\subsection options_model_smpi_computation_simulation Benchmarking/simulating application computation
-
-By default, SMPI benchmarks computational phases of the simulated application (i.e., CPU bursts in 
-between MPI calls) so that these phases can be simulated. In some cases, however, one may wish to
-disable simulation of application computation. This is the case when SMPI is used not to simulate
-an MPI applications, but instead an MPI code that performs "live replay" of another MPI app (e.g., 
-ScalaTrace's replay tool, various on-line simulators that run an app at scale). In this case the 
-computation of the replay/simulation logic should not be simulated by SMPI. Instead, the replay 
-tool or on-line simulator will issue "computation events", which correspond to the actual MPI simulation 
-being replayed/simulated. At the moment, these computation events can be simulated using SMPI by 
-calling internal smpi_execute*() functions. 
-
-To disable the benchmarking/simulation of computation in the simulated application via this runtime automatic 
-switching, the variable \b smpi/privatize_global_variables should be set to no
 
 \section options_generic Configuring other aspects of SimGrid
 
