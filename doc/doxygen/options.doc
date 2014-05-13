@@ -530,8 +530,8 @@ being replayed/simulated. At the moment, these computation events can
 be simulated using SMPI by calling internal smpi_execute*() functions.
 
 To disable the benchmarking/simulation of computation in the simulated
-application via this runtime automatic switching, the variable \b
-smpi/privatize_global_variables should be set to no
+application, the variable \b
+smpi/simulation_computation should be set to no
 
 \subsection options_smpi_timing Reporting simulation time
 
