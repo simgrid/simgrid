@@ -6,6 +6,8 @@
 
 #include "mc_private.h"
 
+#include "xbt/mmalloc/mmprivate.h"
+
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_dpor, mc,
                                 "Logging specific to MC DPOR exploration");
 
@@ -62,6 +64,10 @@ static int compare_comm_pattern(mc_comm_pattern_t comm1, mc_comm_pattern_t comm2
 }
 
 static void deterministic_pattern(xbt_dynar_t initial_pattern, xbt_dynar_t pattern){
+
+  if(!xbt_dynar_is_empty(incomplete_communications_pattern))
+    xbt_die("Oh oh ...");
+
   unsigned int cursor = 0, send_index = 0, recv_index = 0;
   mc_comm_pattern_t comm1, comm2;
   int comm_comparison = 0;
@@ -102,6 +108,7 @@ void complete_comm_pattern(xbt_dynar_t list, smx_action_t comm){
   unsigned int cursor = 0;
   int index;
   int completed = 0;
+  void *addr_pointed;
   xbt_dynar_foreach(incomplete_communications_pattern, cursor, index){
     current_pattern = (mc_comm_pattern_t)xbt_dynar_get_as(list, index, mc_comm_pattern_t);
     if(current_pattern->comm == comm){
@@ -112,7 +119,11 @@ void complete_comm_pattern(xbt_dynar_t list, smx_action_t comm){
       if(current_pattern->data_size == -1){
         current_pattern->data_size = *(comm->comm.dst_buff_size);
         current_pattern->data = xbt_malloc0(current_pattern->data_size);
-        memcpy(current_pattern->data, current_pattern->comm->comm.dst_buff, current_pattern->data_size);
+        addr_pointed = *(void **)comm->comm.src_buff;
+        if(addr_pointed > std_heap && addr_pointed < ((xbt_mheap_t)std_heap)->breakval)
+          memcpy(current_pattern->data, addr_pointed, current_pattern->data_size);
+        else
+          memcpy(current_pattern->data, comm->comm.src_buff, current_pattern->data_size);
       }
       xbt_dynar_remove_at(incomplete_communications_pattern, cursor, NULL);
       completed++;
@@ -128,14 +139,19 @@ void get_comm_pattern(xbt_dynar_t list, smx_simcall_t request, int call){
   pattern = xbt_new0(s_mc_comm_pattern_t, 1);
   pattern->num = ++nb_comm_pattern;
   pattern->data_size = -1;
+  void * addr_pointed;
   if(call == 1){ // ISEND
     pattern->comm = simcall_comm_isend__get__result(request);
     pattern->type = SIMIX_COMM_SEND;
     pattern->src_proc = pattern->comm->comm.src_proc->pid;
     pattern->src_host = simcall_host_get_name(request->issuer->smx_host);
     pattern->data_size = pattern->comm->comm.src_buff_size;
-    pattern->data=xbt_malloc0(pattern->data_size);
-    memcpy(pattern->data, pattern->comm->comm.src_buff, pattern->data_size);
+    pattern->data = xbt_malloc0(pattern->data_size);
+    addr_pointed = *(void **)pattern->comm->comm.src_buff;
+    if(addr_pointed > std_heap && addr_pointed < ((xbt_mheap_t)std_heap)->breakval)
+      memcpy(pattern->data, addr_pointed, pattern->data_size);
+    else
+      memcpy(pattern->data, pattern->comm->comm.src_buff, pattern->data_size);
   }else{ // IRECV
     pattern->comm = simcall_comm_irecv__get__result(request);
     pattern->type = SIMIX_COMM_RECEIVE;
@@ -486,6 +502,7 @@ void MC_dpor(void)
   int enabled = 0;
   int interleave_size = 0;
   int comm_pattern = 0;
+  smx_action_t current_comm;
 
   while (xbt_fifo_size(mc_stack_safety) > 0) {
 
@@ -531,6 +548,7 @@ void MC_dpor(void)
         MC_UNSET_RAW_MEM;
       }
 
+      /* TODO : handle test and testany simcalls */
       if(_sg_mc_comms_determinism || _sg_mc_send_determinism){
         if(req->call == SIMCALL_COMM_ISEND)
           comm_pattern = 1;
@@ -538,6 +556,8 @@ void MC_dpor(void)
           comm_pattern = 2;
         else if(req->call == SIMCALL_COMM_WAIT)
           comm_pattern = 3;
+        else if(req->call == SIMCALL_COMM_WAITANY)
+          comm_pattern = 4;
       }
 
       /* Answer the request */
@@ -551,10 +571,21 @@ void MC_dpor(void)
           else
             get_comm_pattern(communications_pattern, req, comm_pattern);
         }else if(comm_pattern == 3){
-           if(!initial_state_safety->initial_communications_pattern_done)
-             complete_comm_pattern(initial_communications_pattern, simcall_comm_wait__get__comm(req));
-          else
-            complete_comm_pattern(communications_pattern, simcall_comm_wait__get__comm(req));
+          current_comm = simcall_comm_wait__get__comm(req);
+          if(current_comm->comm.refcount == 1){ /* First wait only must be considered */
+            if(!initial_state_safety->initial_communications_pattern_done)
+              complete_comm_pattern(initial_communications_pattern, current_comm);
+            else
+              complete_comm_pattern(communications_pattern, current_comm);
+          }
+        }else if(comm_pattern == 4){
+          current_comm = xbt_dynar_get_as(simcall_comm_waitany__get__comms(req), value, smx_action_t);
+          if(current_comm->comm.refcount == 1){ /* First wait only must be considered */
+            if(!initial_state_safety->initial_communications_pattern_done)
+              complete_comm_pattern(initial_communications_pattern, current_comm);
+            else
+              complete_comm_pattern(communications_pattern, current_comm);
+          }
         }
         MC_UNSET_RAW_MEM; 
         comm_pattern = 0;

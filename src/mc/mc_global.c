@@ -1095,6 +1095,7 @@ void MC_replay(xbt_fifo_t stack, int start)
   mc_state_t state;
   smx_process_t process = NULL;
   int comm_pattern = 0;
+  smx_action_t current_comm;
 
   XBT_DEBUG("**** Begin Replay ****");
 
@@ -1164,6 +1165,7 @@ void MC_replay(xbt_fifo_t stack, int start)
         xbt_free(req_str);
       }
 
+      /* TODO : handle test and testany simcalls */
       if(_sg_mc_comms_determinism || _sg_mc_send_determinism){
         if(req->call == SIMCALL_COMM_ISEND)
           comm_pattern = 1;
@@ -1171,6 +1173,8 @@ void MC_replay(xbt_fifo_t stack, int start)
           comm_pattern = 2;
         else if(req->call == SIMCALL_COMM_WAIT)
           comm_pattern = 3;
+        else if(req->call == SIMCALL_COMM_WAITANY)
+          comm_pattern = 4;
       }
 
       SIMIX_simcall_pre(req, value);
@@ -1179,8 +1183,16 @@ void MC_replay(xbt_fifo_t stack, int start)
         MC_SET_RAW_MEM;
         if(comm_pattern == 1 || comm_pattern == 2){
           get_comm_pattern(communications_pattern, req, comm_pattern);
-        }else if (comm_pattern == 3){
-          complete_comm_pattern(communications_pattern, simcall_comm_wait__get__comm(req));
+        }else if (comm_pattern == 3/* || comm_pattern == 4*/){
+          current_comm = simcall_comm_wait__get__comm(req);
+          if(current_comm->comm.refcount == 1){ /* First wait only must be considered */
+            complete_comm_pattern(communications_pattern, current_comm);
+          }
+        }else if (comm_pattern == 4/* || comm_pattern == 4*/){
+          current_comm = xbt_dynar_get_as(simcall_comm_waitany__get__comms(req), value, smx_action_t);
+          if(current_comm->comm.refcount == 1){ /* First wait only must be considered */
+            complete_comm_pattern(communications_pattern, current_comm);
+          }
         }
         MC_UNSET_RAW_MEM;
         comm_pattern = 0;
