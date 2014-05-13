@@ -836,7 +836,15 @@ static void routing_parse_cluster(sg_platf_cluster_cbarg_t cluster)
     AS.routing = A_surfxml_AS_routing_Cluster___torus;
     sg_platf_new_AS_begin(&AS);
     ((AsClusterTorusPtr)current_routing)->parse_specific_arguments(cluster);
-  }else{
+  }
+  else if (cluster->topology == SURF_CLUSTER_FAT_TREE) {
+    XBT_DEBUG("<AS id=\"%s\"\trouting=\"Fat_Tree_Cluster\">", cluster->id);
+    AS.routing = A_surfxml_AS_routing_Cluster___fat___tree;
+    sg_platf_new_AS_begin(&AS);
+    ((AsClusterFatTree*)current_routing)->parse_specific_arguments(cluster);
+  }
+  
+  else{
     XBT_DEBUG("<AS id=\"%s\"\trouting=\"Cluster\">", cluster->id);
     AS.routing = A_surfxml_AS_routing_Cluster;
     sg_platf_new_AS_begin(&AS);
