@@ -8,6 +8,10 @@
 
 
 
+AS_t model_fatTree_cluster_create(void) {
+  return new AsClusterFatTree();
+}
+
 AsClusterFatTree::AsClusterFatTree() : levels(0) {}
 
 AsClusterFatTree::~AsClusterFatTree() {

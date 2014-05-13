@@ -10,6 +10,8 @@
 #define SURF_ROUTING_CLUSTER_FAT_TREE_HPP_
 
 
+AS_t model_fatTree_cluster_create(void);
+
 /* The class AsClusterFatTree describes PGFT, as introduced by Eitan Zahavi
  * in "D-Mod-K Routing Providing Non-Blocking Traffic for Shift Permutations
  * on Real Life Fat Trees" (2010). RLFT are PGFT with some restrictions to 
