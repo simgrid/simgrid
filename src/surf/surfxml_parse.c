@@ -530,6 +530,9 @@ void ETag_surfxml_cluster(void){
   case A_surfxml_cluster_topology_TORUS:
     cluster.topology= SURF_CLUSTER_TORUS ;
     break;
+  case A_surfxml_cluster_topology_FAT___TREE:
+    cluster.topology = SURF_CLUSTER_FAT_TREE;
+    break;
   default:
     surf_parse_error("Invalid cluster topology for cluster %s",
                      cluster.id);

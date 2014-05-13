@@ -80,7 +80,7 @@
 <!ATTLIST cluster bw CDATA #REQUIRED>
 <!ATTLIST cluster lat CDATA #REQUIRED>
 <!ATTLIST cluster sharing_policy (SHARED|FULLDUPLEX|FATPIPE) "FULLDUPLEX">
-<!ATTLIST cluster topology (FLAT|TORUS) "FLAT">
+<!ATTLIST cluster topology (FLAT|TORUS|FAT_TREE) "FLAT">
 <!ATTLIST cluster topo_parameters CDATA "">
 <!ATTLIST cluster bb_bw CDATA "">
 <!ATTLIST cluster bb_lat CDATA "">
