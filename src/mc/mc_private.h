@@ -221,7 +221,7 @@ void MC_print_statistics(mc_stats_t);
 /* you must wrap the code between MC_SET_RAW_MODE and MC_UNSET_RAW_MODE */
 
 extern void *std_heap;
-extern void *raw_heap;
+extern void *mc_heap;
 
 
 /* FIXME: Horrible hack! because the mmalloc library doesn't provide yet of */
@@ -236,8 +236,8 @@ extern void *raw_heap;
 /*   size_t bytes_free;            /\* Byte total of chunks in the free list. *\/ */
 /* }; */
 
-#define MC_SET_RAW_MEM    mmalloc_set_current_heap(raw_heap)
-#define MC_UNSET_RAW_MEM  mmalloc_set_current_heap(std_heap)
+#define MC_SET_MC_HEAP    mmalloc_set_current_heap(mc_heap)
+#define MC_SET_STD_HEAP  mmalloc_set_current_heap(std_heap)
 
 
 /******************************* MEMORY MAPPINGS ***************************/

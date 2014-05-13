@@ -472,9 +472,9 @@ static void checkpoint_ignore_region_free_voidp(void *r){
 
 void MC_ignore_heap(void *address, size_t size){
 
-  int raw_mem_set = (mmalloc_get_current_heap() == raw_heap);
+  int raw_mem_set = (mmalloc_get_current_heap() == mc_heap);
 
-  MC_SET_RAW_MEM;
+  MC_SET_MC_HEAP;
 
   mc_heap_ignore_region_t region = NULL;
   region = xbt_new0(s_mc_heap_ignore_region_t, 1);
@@ -495,7 +495,7 @@ void MC_ignore_heap(void *address, size_t size){
     mc_heap_comparison_ignore = xbt_dynar_new(sizeof(mc_heap_ignore_region_t), heap_ignore_region_free_voidp);
     xbt_dynar_push(mc_heap_comparison_ignore, &region);
     if(!raw_mem_set)
-      MC_UNSET_RAW_MEM;
+      MC_SET_STD_HEAP;
     return;
   }
 
@@ -510,7 +510,7 @@ void MC_ignore_heap(void *address, size_t size){
     if(current_region->address == address){
       heap_ignore_region_free(region);
       if(!raw_mem_set)
-        MC_UNSET_RAW_MEM;
+        MC_SET_STD_HEAP;
       return;
     }else if(current_region->address < address){
       start = cursor + 1;
@@ -525,14 +525,14 @@ void MC_ignore_heap(void *address, size_t size){
     xbt_dynar_insert_at(mc_heap_comparison_ignore, cursor, &region);
 
   if(!raw_mem_set)
-    MC_UNSET_RAW_MEM;
+    MC_SET_STD_HEAP;
 }
 
 void MC_remove_ignore_heap(void *address, size_t size){
 
-  int raw_mem_set = (mmalloc_get_current_heap() == raw_heap);
+  int raw_mem_set = (mmalloc_get_current_heap() == mc_heap);
 
-  MC_SET_RAW_MEM;
+  MC_SET_MC_HEAP;
 
   unsigned int cursor = 0;
   int start = 0;
@@ -564,15 +564,15 @@ void MC_remove_ignore_heap(void *address, size_t size){
   }
 
   if(!raw_mem_set)
-    MC_UNSET_RAW_MEM;
+    MC_SET_STD_HEAP;
 
 }
 
 void MC_ignore_global_variable(const char *name){
 
-  int raw_mem_set = (mmalloc_get_current_heap() == raw_heap);
+  int raw_mem_set = (mmalloc_get_current_heap() == mc_heap);
 
-  MC_SET_RAW_MEM;
+  MC_SET_MC_HEAP;
 
   xbt_assert(mc_libsimgrid_info, "MC subsystem not initialized");
 
@@ -596,7 +596,7 @@ void MC_ignore_global_variable(const char *name){
     }
 
   if(!raw_mem_set)
-    MC_UNSET_RAW_MEM;
+    MC_SET_STD_HEAP;
 }
 
 /** \brief Ignore a local variable in a scope
@@ -667,27 +667,27 @@ static void MC_ignore_local_variable_in_object(const char *var_name, const char 
 
 void MC_ignore_local_variable(const char *var_name, const char *frame_name){
   
-  int raw_mem_set = (mmalloc_get_current_heap() == raw_heap);
+  int raw_mem_set = (mmalloc_get_current_heap() == mc_heap);
 
   if(strcmp(frame_name, "*") == 0)
     frame_name = NULL;
 
-  MC_SET_RAW_MEM;
+  MC_SET_MC_HEAP;
 
   MC_ignore_local_variable_in_object(var_name, frame_name, mc_libsimgrid_info);
   if(frame_name!=NULL)
     MC_ignore_local_variable_in_object(var_name, frame_name, mc_binary_info);
 
   if(!raw_mem_set)
-    MC_UNSET_RAW_MEM;
+    MC_SET_STD_HEAP;
 
 }
 
 void MC_new_stack_area(void *stack, char *name, void* context, size_t size){
 
-  int raw_mem_set = (mmalloc_get_current_heap() == raw_heap);
+  int raw_mem_set = (mmalloc_get_current_heap() == mc_heap);
 
-  MC_SET_RAW_MEM;
+  MC_SET_MC_HEAP;
 
   if(stacks_areas == NULL)
     stacks_areas = xbt_dynar_new(sizeof(stack_region_t), NULL);
@@ -702,14 +702,14 @@ void MC_new_stack_area(void *stack, char *name, void* context, size_t size){
   xbt_dynar_push(stacks_areas, &region);
 
   if(!raw_mem_set)
-    MC_UNSET_RAW_MEM;
+    MC_SET_STD_HEAP;
 }
 
 void MC_ignore(void *addr, size_t size){
 
-  int raw_mem_set= (mmalloc_get_current_heap() == raw_heap);
+  int raw_mem_set= (mmalloc_get_current_heap() == mc_heap);
 
-  MC_SET_RAW_MEM;
+  MC_SET_MC_HEAP;
 
   if(mc_checkpoint_ignore == NULL)
     mc_checkpoint_ignore = xbt_dynar_new(sizeof(mc_checkpoint_ignore_region_t), checkpoint_ignore_region_free_voidp);
@@ -734,7 +734,7 @@ void MC_ignore(void *addr, size_t size){
         if(current_region->size == size){
           checkpoint_ignore_region_free(region);
           if(!raw_mem_set)
-            MC_UNSET_RAW_MEM;
+            MC_SET_STD_HEAP;
           return;
         }else if(current_region->size < size){
           start = cursor + 1;
@@ -762,7 +762,7 @@ void MC_ignore(void *addr, size_t size){
   }
 
   if(!raw_mem_set)
-    MC_UNSET_RAW_MEM;
+    MC_SET_STD_HEAP;
 }
 
 /*******************************  Initialisation of MC *******************************/
@@ -810,14 +810,14 @@ static void MC_init_debug_info(void) {
 
 void MC_init(){
 
-  int raw_mem_set = (mmalloc_get_current_heap() == raw_heap);
+  int raw_mem_set = (mmalloc_get_current_heap() == mc_heap);
 
   compare = 0;
 
   /* Initialize the data structures that must be persistent across every
      iteration of the model-checker (in RAW memory) */
 
-  MC_SET_RAW_MEM;
+  MC_SET_MC_HEAP;
 
   MC_init_memory_map_info();
   MC_init_debug_info();
@@ -825,7 +825,7 @@ void MC_init(){
    /* Init parmap */
   parmap = xbt_parmap_mc_new(xbt_os_get_numcores(), XBT_PARMAP_DEFAULT);
 
-  MC_UNSET_RAW_MEM;
+  MC_SET_STD_HEAP;
 
    /* Ignore some variables from xbt/ex.h used by exception e for stacks comparison */
   MC_ignore_local_variable("e", "*");
@@ -865,7 +865,7 @@ void MC_init(){
   }
 
   if(raw_mem_set)
-    MC_SET_RAW_MEM;
+    MC_SET_MC_HEAP;
 
 }
 
@@ -901,9 +901,9 @@ static void MC_init_dot_output(){ /* FIXME : more colors */
 
 void MC_do_the_modelcheck_for_real() {
 
-  MC_SET_RAW_MEM;
+  MC_SET_MC_HEAP;
   mc_comp_times = xbt_new0(s_mc_comparison_times_t, 1);
-  MC_UNSET_RAW_MEM;
+  MC_SET_STD_HEAP;
   
   if (!_sg_mc_property_file || _sg_mc_property_file[0]=='\0') {
     if (mc_reduce_kind==e_mc_reduce_unset)
@@ -925,7 +925,7 @@ void MC_do_the_modelcheck_for_real() {
 
 void MC_modelcheck_safety(void)
 {
-  int raw_mem_set = (mmalloc_get_current_heap() == raw_heap);
+  int raw_mem_set = (mmalloc_get_current_heap() == mc_heap);
 
   /* Check if MC is already initialized */
   if (initial_state_safety)
@@ -939,7 +939,7 @@ void MC_modelcheck_safety(void)
   /* Initialize the data structures that must be persistent across every
      iteration of the model-checker (in RAW memory) */
   
-  MC_SET_RAW_MEM;
+  MC_SET_MC_HEAP;
 
   /* Initialize statistics */
   mc_stats = xbt_new0(s_mc_stats_t, 1);
@@ -951,32 +951,32 @@ void MC_modelcheck_safety(void)
   if((_sg_mc_dot_output_file != NULL) && (_sg_mc_dot_output_file[0]!='\0'))
     MC_init_dot_output();
 
-  MC_UNSET_RAW_MEM;
+  MC_SET_STD_HEAP;
 
   if(_sg_mc_visited > 0){
     MC_init();
   }else{
-    MC_SET_RAW_MEM;
+    MC_SET_MC_HEAP;
     MC_init_memory_map_info();
     MC_init_debug_info();
-    MC_UNSET_RAW_MEM;
+    MC_SET_STD_HEAP;
   }
 
   MC_dpor_init();
 
-  MC_SET_RAW_MEM;
+  MC_SET_MC_HEAP;
   /* Save the initial state */
   initial_state_safety = xbt_new0(s_mc_global_t, 1);
   initial_state_safety->snapshot = MC_take_snapshot(0);
   initial_state_safety->initial_communications_pattern_done = 0;
   initial_state_safety->comm_deterministic = 1;
   initial_state_safety->send_deterministic = 1;
-  MC_UNSET_RAW_MEM;
+  MC_SET_STD_HEAP;
 
   MC_dpor();
 
   if(raw_mem_set)
-    MC_SET_RAW_MEM;
+    MC_SET_MC_HEAP;
 
   xbt_abort();
   //MC_exit();
@@ -984,7 +984,7 @@ void MC_modelcheck_safety(void)
 
 void MC_modelcheck_liveness(){
 
-  int raw_mem_set = (mmalloc_get_current_heap() == raw_heap);
+  int raw_mem_set = (mmalloc_get_current_heap() == mc_heap);
 
   MC_init();
 
@@ -993,7 +993,7 @@ void MC_modelcheck_liveness(){
   /* mc_time refers to clock for each process -> ignore it for heap comparison */  
   MC_ignore_heap(mc_time, simix_process_maxpid * sizeof(double));
  
-  MC_SET_RAW_MEM;
+  MC_SET_MC_HEAP;
  
   /* Initialize statistics */
   mc_stats = xbt_new0(s_mc_stats_t, 1);
@@ -1008,7 +1008,7 @@ void MC_modelcheck_liveness(){
   if((_sg_mc_dot_output_file != NULL) && (_sg_mc_dot_output_file[0]!='\0'))
     MC_init_dot_output();
   
-  MC_UNSET_RAW_MEM;
+  MC_SET_STD_HEAP;
 
   MC_ddfs_init();
 
@@ -1017,7 +1017,7 @@ void MC_modelcheck_liveness(){
   xbt_free(mc_time);
 
   if(raw_mem_set)
-    MC_SET_RAW_MEM;
+    MC_SET_MC_HEAP;
 
 }
 
@@ -1086,7 +1086,7 @@ int MC_deadlock_check()
  */
 void MC_replay(xbt_fifo_t stack, int start)
 {
-  int raw_mem = (mmalloc_get_current_heap() == raw_heap);
+  int raw_mem = (mmalloc_get_current_heap() == mc_heap);
 
   int value, i = 1, count = 1;
   char *req_str;
@@ -1103,7 +1103,7 @@ void MC_replay(xbt_fifo_t stack, int start)
     MC_restore_snapshot(initial_state_safety->snapshot);
     /* At the moment of taking the snapshot the raw heap was set, so restoring
      * it will set it back again, we have to unset it to continue  */
-    MC_UNSET_RAW_MEM;
+    MC_SET_STD_HEAP;
   }
 
   start_item = xbt_fifo_get_last_item(stack);
@@ -1114,7 +1114,7 @@ void MC_replay(xbt_fifo_t stack, int start)
     }
   }
 
-  MC_SET_RAW_MEM;
+  MC_SET_MC_HEAP;
 
   if(mc_reduce_kind ==  e_mc_reduce_dpor){
     xbt_dict_reset(first_enabled_state);
@@ -1133,7 +1133,7 @@ void MC_replay(xbt_fifo_t stack, int start)
     xbt_dynar_reset(incomplete_communications_pattern);
   }
 
-  MC_UNSET_RAW_MEM;
+  MC_SET_STD_HEAP;
   
 
   /* Traverse the stack from the state at position start and re-execute the transitions */
@@ -1145,11 +1145,11 @@ void MC_replay(xbt_fifo_t stack, int start)
     saved_req = MC_state_get_executed_request(state, &value);
    
     if(mc_reduce_kind ==  e_mc_reduce_dpor){
-      MC_SET_RAW_MEM;
+      MC_SET_MC_HEAP;
       char *key = bprintf("%lu", saved_req->issuer->pid);
       xbt_dict_remove(first_enabled_state, key); 
       xbt_free(key);
-      MC_UNSET_RAW_MEM;
+      MC_SET_STD_HEAP;
     }
    
     if(saved_req){
@@ -1175,11 +1175,11 @@ void MC_replay(xbt_fifo_t stack, int start)
     SIMIX_simcall_pre(req, value);
 
     if(_sg_mc_comms_determinism || _sg_mc_send_determinism){
-      MC_SET_RAW_MEM;
+      MC_SET_MC_HEAP;
       if(comm_pattern != 0){
         get_comm_pattern(communications_pattern, req, comm_pattern);
       }
-      MC_UNSET_RAW_MEM;
+      MC_SET_STD_HEAP;
       comm_pattern = 0;
     }
     
@@ -1188,7 +1188,7 @@ void MC_replay(xbt_fifo_t stack, int start)
     count++;
 
     if(mc_reduce_kind ==  e_mc_reduce_dpor){
-      MC_SET_RAW_MEM;
+      MC_SET_MC_HEAP;
       /* Insert in dict all enabled processes */
       xbt_swag_foreach(process, simix_global->process_list){
         if(MC_process_is_enabled(process) /*&& !MC_state_process_is_done(state, process)*/){
@@ -1200,7 +1200,7 @@ void MC_replay(xbt_fifo_t stack, int start)
           xbt_free(key);
         }
       }
-      MC_UNSET_RAW_MEM;
+      MC_SET_STD_HEAP;
     }
          
     /* Update statistics */
@@ -1212,9 +1212,9 @@ void MC_replay(xbt_fifo_t stack, int start)
   XBT_DEBUG("**** End Replay ****");
 
   if(raw_mem)
-    MC_SET_RAW_MEM;
+    MC_SET_MC_HEAP;
   else
-    MC_UNSET_RAW_MEM;
+    MC_SET_STD_HEAP;
   
 
 }
@@ -1222,7 +1222,7 @@ void MC_replay(xbt_fifo_t stack, int start)
 void MC_replay_liveness(xbt_fifo_t stack, int all_stack)
 {
 
-  initial_state_liveness->raw_mem_set = (mmalloc_get_current_heap() == raw_heap);
+  initial_state_liveness->raw_mem_set = (mmalloc_get_current_heap() == mc_heap);
 
   int value;
   char *req_str;
@@ -1240,7 +1240,7 @@ void MC_replay_liveness(xbt_fifo_t stack, int all_stack)
   /* At the moment of taking the snapshot the raw heap was set, so restoring
    * it will set it back again, we have to unset it to continue  */
   if(!initial_state_liveness->raw_mem_set)
-    MC_UNSET_RAW_MEM;
+    MC_SET_STD_HEAP;
 
   if(all_stack){
 
@@ -1329,9 +1329,9 @@ void MC_replay_liveness(xbt_fifo_t stack, int all_stack)
   XBT_DEBUG("**** End Replay ****");
 
   if(initial_state_liveness->raw_mem_set)
-    MC_SET_RAW_MEM;
+    MC_SET_MC_HEAP;
   else
-    MC_UNSET_RAW_MEM;
+    MC_SET_STD_HEAP;
   
 }
 
@@ -1343,7 +1343,7 @@ void MC_replay_liveness(xbt_fifo_t stack, int all_stack)
 void MC_dump_stack_safety(xbt_fifo_t stack)
 {
   
-  int raw_mem_set = (mmalloc_get_current_heap() == raw_heap);
+  int raw_mem_set = (mmalloc_get_current_heap() == mc_heap);
 
   MC_show_stack_safety(stack);
 
@@ -1351,17 +1351,17 @@ void MC_dump_stack_safety(xbt_fifo_t stack)
 
     mc_state_t state;
 
-    MC_SET_RAW_MEM;
+    MC_SET_MC_HEAP;
     while ((state = (mc_state_t) xbt_fifo_pop(stack)) != NULL)
       MC_state_delete(state);
-    MC_UNSET_RAW_MEM;
+    MC_SET_STD_HEAP;
 
   }
 
   if(raw_mem_set)
-    MC_SET_RAW_MEM;
+    MC_SET_MC_HEAP;
   else
-    MC_UNSET_RAW_MEM;
+    MC_SET_STD_HEAP;
   
 }
 
@@ -1369,9 +1369,9 @@ void MC_dump_stack_safety(xbt_fifo_t stack)
 void MC_show_stack_safety(xbt_fifo_t stack)
 {
 
-  int raw_mem_set = (mmalloc_get_current_heap() == raw_heap);
+  int raw_mem_set = (mmalloc_get_current_heap() == mc_heap);
 
-  MC_SET_RAW_MEM;
+  MC_SET_MC_HEAP;
 
   int value;
   mc_state_t state;
@@ -1391,7 +1391,7 @@ void MC_show_stack_safety(xbt_fifo_t stack)
   }
 
   if(!raw_mem_set)
-    MC_UNSET_RAW_MEM;
+    MC_SET_STD_HEAP;
 }
 
 void MC_show_deadlock(smx_simcall_t req)
@@ -1435,17 +1435,17 @@ void MC_show_stack_liveness(xbt_fifo_t stack){
 
 void MC_dump_stack_liveness(xbt_fifo_t stack){
 
-  int raw_mem_set = (mmalloc_get_current_heap() == raw_heap);
+  int raw_mem_set = (mmalloc_get_current_heap() == mc_heap);
 
   mc_pair_t pair;
 
-  MC_SET_RAW_MEM;
+  MC_SET_MC_HEAP;
   while ((pair = (mc_pair_t) xbt_fifo_pop(stack)) != NULL)
     MC_pair_delete(pair);
-  MC_UNSET_RAW_MEM;
+  MC_SET_STD_HEAP;
 
   if(raw_mem_set)
-    MC_SET_RAW_MEM;
+    MC_SET_MC_HEAP;
 
 }
 
@@ -1460,7 +1460,7 @@ void MC_print_statistics(mc_stats_t stats)
     XBT_INFO("Visited pairs = %lu", stats->visited_pairs);
   }
   XBT_INFO("Executed transitions = %lu", stats->executed_transitions);
-  MC_SET_RAW_MEM;
+  MC_SET_MC_HEAP;
   if((_sg_mc_dot_output_file != NULL) && (_sg_mc_dot_output_file[0]!='\0')){
     fprintf(dot_output, "}\n");
     fclose(dot_output);
@@ -1471,7 +1471,7 @@ void MC_print_statistics(mc_stats_t stats)
     if (_sg_mc_send_determinism)
       XBT_INFO("Send-deterministic : %s", !initial_state_safety->send_deterministic ? "No" : "Yes");
   }
-  MC_UNSET_RAW_MEM;
+  MC_SET_STD_HEAP;
 }
 
 void MC_assert(int prop)
@@ -1510,37 +1510,37 @@ double MC_process_clock_get(smx_process_t process)
 
 void MC_automaton_load(const char *file){
 
-  int raw_mem_set = (mmalloc_get_current_heap() == raw_heap);
+  int raw_mem_set = (mmalloc_get_current_heap() == mc_heap);
 
-  MC_SET_RAW_MEM;
+  MC_SET_MC_HEAP;
 
   if (_mc_property_automaton == NULL)
     _mc_property_automaton = xbt_automaton_new();
   
   xbt_automaton_load(_mc_property_automaton,file);
 
-  MC_UNSET_RAW_MEM;
+  MC_SET_STD_HEAP;
 
   if(raw_mem_set)
-    MC_SET_RAW_MEM;
+    MC_SET_MC_HEAP;
 
 }
 
 void MC_automaton_new_propositional_symbol(const char* id, void* fct) {
 
-  int raw_mem_set = (mmalloc_get_current_heap() == raw_heap);
+  int raw_mem_set = (mmalloc_get_current_heap() == mc_heap);
 
-  MC_SET_RAW_MEM;
+  MC_SET_MC_HEAP;
 
   if (_mc_property_automaton == NULL)
     _mc_property_automaton = xbt_automaton_new();
 
   xbt_automaton_propositional_symbol_new(_mc_property_automaton,id,fct);
 
-  MC_UNSET_RAW_MEM;
+  MC_SET_STD_HEAP;
 
   if(raw_mem_set)
-    MC_SET_RAW_MEM;
+    MC_SET_MC_HEAP;
   
 }
 
