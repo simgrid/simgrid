@@ -8,7 +8,7 @@
 #include "surf_routing_private.hpp"
 #include "surf_routing_cluster.hpp"
 #include "surf_routing_cluster_torus.hpp"
-
+#include "surf_routing_cluster_fat_tree.hpp"
 
 #include "simgrid/platf_interface.h"    // platform creation API internal interface
 #include "simgrid/sg_config.h"
@@ -89,7 +89,7 @@ typedef enum {
   SURF_MODEL_VIVALDI,
   SURF_MODEL_CLUSTER,
   SURF_MODEL_TORUS_CLUSTER,
-
+  SURF_MODEL_FAT_TREE_CLUSTER,
 } e_routing_types;
 
 struct s_model_type routing_models[] = {
@@ -111,8 +111,10 @@ struct s_model_type routing_models[] = {
    model_vivaldi_create, NULL},
   {"Cluster", "Cluster routing",
    model_cluster_create, NULL},
-   {"Torus_Cluster", "Torus Cluster routing",
-    model_torus_cluster_create, NULL},
+  {"Torus_Cluster", "Torus Cluster routing",
+   model_torus_cluster_create, NULL},
+  {"Fat_Tree_Cluster", "Fat Tree Cluster routing",
+   model_fat_tree_cluster_create, NULL},
   {NULL, NULL, NULL, NULL}
 };
 
@@ -356,14 +358,15 @@ void routing_AS_begin(sg_platf_AS_cbarg_t AS)
 
   /* search the routing model */
   switch(AS->routing){
-    case A_surfxml_AS_routing_Cluster:         model = &routing_models[SURF_MODEL_CLUSTER];break;
-    case A_surfxml_AS_routing_Cluster___torus: model = &routing_models[SURF_MODEL_TORUS_CLUSTER];break;
-    case A_surfxml_AS_routing_Dijkstra:        model = &routing_models[SURF_MODEL_DIJKSTRA];break;
-    case A_surfxml_AS_routing_DijkstraCache:   model = &routing_models[SURF_MODEL_DIJKSTRACACHE];break;
-    case A_surfxml_AS_routing_Floyd:           model = &routing_models[SURF_MODEL_FLOYD];break;
-    case A_surfxml_AS_routing_Full:            model = &routing_models[SURF_MODEL_FULL];break;
-    case A_surfxml_AS_routing_None:            model = &routing_models[SURF_MODEL_NONE];break;
-    case A_surfxml_AS_routing_Vivaldi:         model = &routing_models[SURF_MODEL_VIVALDI];break;
+    case A_surfxml_AS_routing_Cluster:               model = &routing_models[SURF_MODEL_CLUSTER];break;
+    case A_surfxml_AS_routing_Cluster___torus:       model = &routing_models[SURF_MODEL_TORUS_CLUSTER];break;
+    case A_surfxml_AS_routing_Cluster___fat___tree:  model = &routing_models[SURF_MODEL_FAT_TREE_CLUSTER]; break;
+    case A_surfxml_AS_routing_Dijkstra:              model = &routing_models[SURF_MODEL_DIJKSTRA];break;
+    case A_surfxml_AS_routing_DijkstraCache:         model = &routing_models[SURF_MODEL_DIJKSTRACACHE];break;
+    case A_surfxml_AS_routing_Floyd:                 model = &routing_models[SURF_MODEL_FLOYD];break;
+    case A_surfxml_AS_routing_Full:                  model = &routing_models[SURF_MODEL_FULL];break;
+    case A_surfxml_AS_routing_None:                  model = &routing_models[SURF_MODEL_NONE];break;
+    case A_surfxml_AS_routing_Vivaldi:               model = &routing_models[SURF_MODEL_VIVALDI];break;
     default: xbt_die("Not a valid model!!!");
     break;
   }
@@ -910,7 +913,7 @@ static void routing_parse_cluster(sg_platf_cluster_cbarg_t cluster)
       } else {
         XBT_DEBUG("\tstate_file=\"\"");
       }
-
+      
       xbt_dynar_t power_state_list = xbt_dynar_new(sizeof(double), NULL);
       xbt_dynar_push(power_state_list,&cluster->power);
       host.power_peak = power_state_list;
@@ -983,12 +986,15 @@ static void routing_parse_cluster(sg_platf_cluster_cbarg_t cluster)
 
 
       //call the cluster function that adds the others links
-
+      if (cluster->topology == SURF_CLUSTER_FAT_TREE) {
+        ((AsClusterFatTree*) current_routing)->addComputeNode(i);
+      }
+      else {
       ((AsClusterPtr)current_routing)->create_links_for_node(cluster, i, rankId, rankId*
           ((AsClusterPtr)current_routing)->p_nb_links_per_node
           + ((AsClusterPtr)current_routing)->p_has_loopback
           + ((AsClusterPtr)current_routing)->p_has_limiter );
-
+      }
       xbt_free(link_id);
       xbt_free(host_id);
       rankId++;
@@ -997,7 +1003,11 @@ static void routing_parse_cluster(sg_platf_cluster_cbarg_t cluster)
     xbt_dynar_free(&radical_ends);
   }
   xbt_dynar_free(&radical_elements);
-
+  
+  // For fat trees, the links must be created once all nodes have been added
+  if(cluster->topology == SURF_CLUSTER_FAT_TREE) {
+    ((AsClusterFatTree*)current_routing)->create_links(cluster);
+  }
   // Add a router. It is magically used thanks to the way in which surf_routing_cluster is written,
   // and it's very useful to connect clusters together
   XBT_DEBUG(" ");

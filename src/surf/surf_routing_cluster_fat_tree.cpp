@@ -8,7 +8,8 @@
 
 
 
-AS_t model_fatTree_cluster_create(void) {
+AS_t model_fat_tree_cluster_create(void)
+{
   return new AsClusterFatTree();
 }
 
@@ -154,7 +155,7 @@ void AsClusterFatTree::generateSwitches() {
   }
 
      
-  if(this->nodesByLevel[0] < this->nodes.size()) {
+  if(this->nodesByLevel[0] > this->nodes.size()) {
     surf_parse_error("There is not enough nodes to fit to the described topology."
                      " Please check your platform description (We need %d nodes, we only got %zu)",
                      this->nodesByLevel[0], this->nodes.size());
@@ -242,14 +243,13 @@ int AsClusterFatTree::getLevelPosition(const unsigned  int level) {
  return tempPosition;
 }
 
-void AsClusterFatTree::addComputeNodes(std::vector<int> const& id) {
+void AsClusterFatTree::addComputeNode(int id) {
   using std::make_pair;
+  static int position = 0;
   FatTreeNode* newNode;
-  for (size_t  i = 0 ; i < id.size() ; i++) {
-    newNode = new FatTreeNode(id[i], 0, i);
-    newNode->parents.resize(this->upperLevelNodesNumber[0] * this->lowerLevelPortsNumber[i]);
-    this->nodes.insert(make_pair(id[i],newNode));
-  }
+  newNode = new FatTreeNode(id, 0, position);
+  newNode->parents.resize(this->upperLevelNodesNumber[0] * this->lowerLevelPortsNumber[0]);
+  this->nodes.insert(make_pair(id,newNode));
 }
 
 void AsClusterFatTree::addLink(sg_platf_cluster_cbarg_t cluster, 
@@ -282,7 +282,7 @@ void AsClusterFatTree::parse_specific_arguments(sg_platf_cluster_cbarg_t
   }
 
   // The first parts of topo_parameters should be the levels number
-  this->levels = std::atoi(tmp[0].c_str()); // stoi() only in C++11...
+  this->levels = std::atoi(parameters[0].c_str()); // stoi() only in C++11...
   
   // Then, a l-sized vector standing for the childs number by level
   boost::split(tmp, parameters[1], boost::is_any_of(","));

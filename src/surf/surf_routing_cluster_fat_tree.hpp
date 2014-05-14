@@ -10,7 +10,7 @@
 #define SURF_ROUTING_CLUSTER_FAT_TREE_HPP_
 
 
-AS_t model_fatTree_cluster_create(void);
+AS_t model_fat_tree_cluster_create(void);
 
 /* The class AsClusterFatTree describes PGFT, as introduced by Eitan Zahavi
  * in "D-Mod-K Routing Providing Non-Blocking Traffic for Shift Permutations
@@ -69,7 +69,7 @@ public:
   //                                 double *latency) const;
   virtual void create_links(sg_platf_cluster_cbarg_t cluster);
   void parse_specific_arguments(sg_platf_cluster_cbarg_t cluster);
-  void addComputeNodes(std::vector<int> const& id);
+  void addComputeNode(int id);
   void generateDotFile(const string& filename = "fatTree.dot") const;
 
 protected:
