@@ -852,7 +852,8 @@ static int compare_heap_area_with_type(struct s_mc_diff *state, void *real_area1
         for(i=0; i<(area_size/sizeof(void *)); i++){ 
           addr_pointed1 = *((void **)((char *)area1 + (i*sizeof(void *)))); 
           addr_pointed2 = *((void **)((char *)area2 + (i*sizeof(void *)))); 
-          if(addr_pointed1 > state->s_heap && (char *)addr_pointed1 < (char*) state->s_heap + STD_HEAP_SIZE && addr_pointed2 > state->s_heap && (char *)addr_pointed2 < (char*) state->s_heap + STD_HEAP_SIZE)
+          if(addr_pointed1 > state->s_heap && addr_pointed1 < mc_snapshot_get_heap_end(snapshot1)
+            && addr_pointed2 > state->s_heap && addr_pointed2 < mc_snapshot_get_heap_end(snapshot2))
             res =  compare_heap_area(addr_pointed1, addr_pointed2, snapshot1, snapshot2, previous, type->subtype, pointer_level);
           else
             res =  (addr_pointed1 != addr_pointed2);
@@ -862,7 +863,8 @@ static int compare_heap_area_with_type(struct s_mc_diff *state, void *real_area1
       }else{
         addr_pointed1 = *((void **)(area1)); 
         addr_pointed2 = *((void **)(area2));
-        if(addr_pointed1 > state->s_heap && (char *)addr_pointed1 < (char*) state->s_heap + STD_HEAP_SIZE && addr_pointed2 > state->s_heap && (char *)addr_pointed2 < (char*) state->s_heap + STD_HEAP_SIZE)
+        if(addr_pointed1 > state->s_heap && addr_pointed1 < mc_snapshot_get_heap_end(snapshot1)
+          && addr_pointed2 > state->s_heap && addr_pointed2 < mc_snapshot_get_heap_end(snapshot2))
           return compare_heap_area(addr_pointed1, addr_pointed2, snapshot1, snapshot2, previous, type->subtype, pointer_level);
         else
           return  (addr_pointed1 != addr_pointed2);
