@@ -100,13 +100,6 @@ static int add_compared_pointers(void *p1, void *p2){
   return 1;
 }
 
-inline static void* get_heap_end(mc_snapshot_t snapshot) {
-  if(snapshot==NULL)
-    xbt_die("snapshot is NULL");
-  xbt_mheap_t heap = (xbt_mheap_t)snapshot->regions[0]->data;
-  return heap->breakval;
-}
-
 static int compare_areas_with_type(void *area1, void *area2, mc_snapshot_t snapshot1, mc_snapshot_t snapshot2, dw_type_t type, int region_size, int region_type, void *start_data, int pointer_level){
 
   unsigned int cursor = 0;
@@ -187,8 +180,8 @@ static int compare_areas_with_type(void *area1, void *area2, mc_snapshot_t snaps
       // * a pointer leads to the read-only segment of the current object;
       // * a pointer lead to a different ELF object.
 
-      if(addr_pointed1 > std_heap && addr_pointed1 < get_heap_end(snapshot1)){
-        if(!(addr_pointed2 > std_heap && addr_pointed2 < get_heap_end(snapshot2)))
+      if(addr_pointed1 > std_heap && addr_pointed1 < mc_snapshot_get_heap_end(snapshot1)){
+        if(!(addr_pointed2 > std_heap && addr_pointed2 < mc_snapshot_get_heap_end(snapshot2)))
           return 1;
         // The pointers are both in the heap:
         return compare_heap_area(addr_pointed1, addr_pointed2, snapshot1, snapshot2, NULL, type->subtype, pointer_level);

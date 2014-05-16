@@ -715,8 +715,9 @@ static int compare_heap_area_without_type(struct s_mm_diff *state, void *real_ar
       if(addr_pointed1 > maestro_stack_start && addr_pointed1 < maestro_stack_end && addr_pointed2 > maestro_stack_start && addr_pointed2 < maestro_stack_end){
         i = pointer_align + sizeof(void *);
         continue;
-      }else if((addr_pointed1 > state->s_heap) && ((char *)addr_pointed1 < (char *)state->s_heap + STD_HEAP_SIZE)
-               && (addr_pointed2 > state->s_heap) && ((char *)addr_pointed2 < (char *)state->s_heap + STD_HEAP_SIZE)){
+      }else if(addr_pointed1 > state->s_heap && addr_pointed1 < mc_snapshot_get_heap_end(snapshot1)
+               && addr_pointed2 > state->s_heap && addr_pointed2 < mc_snapshot_get_heap_end(snapshot2)){
+        // Both addreses are in the heap:
         res_compare = compare_heap_area(addr_pointed1, addr_pointed2, snapshot1, snapshot2, previous, NULL, 0);
         if(res_compare == 1){
           return res_compare;

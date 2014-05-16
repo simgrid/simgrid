@@ -21,6 +21,7 @@
 #include "xbt/function_types.h"
 #include "xbt/mmalloc.h"
 #include "../simix/smx_private.h"
+#include "../xbt/mmalloc/mmprivate.h"
 #include "xbt/automaton.h"
 #include "xbt/hash.h"
 #include "msg/msg.h"
@@ -91,6 +92,13 @@ typedef struct s_mc_checkpoint_ignore_region{
   void *addr;
   size_t size;
 }s_mc_checkpoint_ignore_region_t, *mc_checkpoint_ignore_region_t;
+
+inline static void* mc_snapshot_get_heap_end(mc_snapshot_t snapshot) {
+  if(snapshot==NULL)
+    xbt_die("snapshot is NULL");
+  xbt_mheap_t heap = (xbt_mheap_t)snapshot->regions[0]->data;
+  return heap->breakval;
+}
 
 mc_snapshot_t SIMIX_pre_mc_snapshot(smx_simcall_t simcall);
 mc_snapshot_t MC_take_snapshot(int num_state);
