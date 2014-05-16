@@ -4,6 +4,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "simix/smx_private.h"
 #include "workstation_interface.hpp"
 #include "vm_workstation_interface.hpp"
 #include "cpu_cas01.hpp"
