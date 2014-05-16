@@ -1,4 +1,4 @@
-/* mm_diff - Memory snapshooting and comparison                             */
+/* mc_diff - Memory snapshooting and comparison                             */
 
 /* Copyright (c) 2008-2014. The SimGrid Team.
  * All rights reserved.                                                     */
@@ -13,8 +13,8 @@
 #include "mc/datatypes.h"
 #include "mc/mc_private.h"
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mm_diff, xbt,
-                                "Logging specific to mm_diff in mmalloc");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_diff, xbt,
+                                "Logging specific to mc_diff in mc");
 
 xbt_dynar_t mc_heap_comparison_ignore;
 xbt_dynar_t stacks_areas;
@@ -133,7 +133,7 @@ static int compare_backtrace(int b1, int f1, int b2, int f2){
 
 typedef char* type_name;
 
-struct s_mm_diff {
+struct s_mc_diff {
   /** \brief Base address of the real heap */
   void *s_heap;
   /** \brief Base address of the first heap snapshot */
@@ -155,7 +155,7 @@ struct s_mm_diff {
 #define types1_(i,j) types1[ MAX_FRAGMENT_PER_BLOCK*(i) + (j)]
 #define types2_(i,j) types2[ MAX_FRAGMENT_PER_BLOCK*(i) + (j)]
 
-__thread struct s_mm_diff* mm_diff_info = NULL;
+__thread struct s_mc_diff* mc_diff_info = NULL;
 
 /*********************************** Free functions ************************************/
 
@@ -260,7 +260,7 @@ static int is_block_stack(int block){
   return 0;
 }
 
-static void match_equals(struct s_mm_diff *state, xbt_dynar_t list){
+static void match_equals(struct s_mc_diff *state, xbt_dynar_t list){
 
   unsigned int cursor = 0;
   heap_area_pair_t current_pair;
@@ -289,7 +289,7 @@ static void match_equals(struct s_mm_diff *state, xbt_dynar_t list){
  *  @param b2     Block of state 2
  *  @return       if the blocks are known to be matching
  */
-static int equal_blocks(struct s_mm_diff *state, int b1, int b2){
+static int equal_blocks(struct s_mc_diff *state, int b1, int b2){
   
   if(state->equals_to1_(b1,0).block == b2 && state->equals_to2_(b2,0).block == b1)
     return 1;
@@ -306,7 +306,7 @@ static int equal_blocks(struct s_mm_diff *state, int b1, int b2){
  *  @param f2     Fragment of state 2
  *  @return       if the fragments are known to be matching
  */
-static int equal_fragments(struct s_mm_diff *state, int b1, int f1, int b2, int f2){
+static int equal_fragments(struct s_mc_diff *state, int b1, int f1, int b2, int f2){
   
   if(state->equals_to1_(b1,f1).block == b2
     && state->equals_to1_(b1,f1).fragment == f2
@@ -318,14 +318,14 @@ static int equal_fragments(struct s_mm_diff *state, int b1, int f1, int b2, int 
 }
 
 int init_heap_information(xbt_mheap_t heap1, xbt_mheap_t heap2, xbt_dynar_t i1, xbt_dynar_t i2){
-  if(mm_diff_info==NULL) {
-    mm_diff_info = xbt_new0(struct s_mm_diff, 1);
-    mm_diff_info->equals_to1 = NULL;
-    mm_diff_info->equals_to2 = NULL;
-    mm_diff_info->types1 = NULL;
-    mm_diff_info->types2 = NULL;
+  if(mc_diff_info==NULL) {
+    mc_diff_info = xbt_new0(struct s_mc_diff, 1);
+    mc_diff_info->equals_to1 = NULL;
+    mc_diff_info->equals_to2 = NULL;
+    mc_diff_info->types1 = NULL;
+    mc_diff_info->types2 = NULL;
   }
-  struct s_mm_diff *state = mm_diff_info;
+  struct s_mc_diff *state = mc_diff_info;
 
   if((((struct mdesc *)heap1)->heaplimit != ((struct mdesc *)heap2)->heaplimit)
     || ((((struct mdesc *)heap1)->heapsize != ((struct mdesc *)heap2)->heapsize) ))
@@ -334,8 +334,6 @@ int init_heap_information(xbt_mheap_t heap1, xbt_mheap_t heap2, xbt_dynar_t i1, 
   state->heaplimit = ((struct mdesc *)heap1)->heaplimit;
 
   // Mamailloute in order to find the base address of the main heap:
-  // This heavily depends on the structure of MC: we need to move this code into MC.
-  // (STD_HEAP_SIZE comes from mc.h anyway)
   state->s_heap = (char *)mmalloc_get_current_heap() - STD_HEAP_SIZE - xbt_pagesize;
 
   state->heapbase1 = (char *)heap1 + BLOCKSIZE;
@@ -364,7 +362,7 @@ int init_heap_information(xbt_mheap_t heap1, xbt_mheap_t heap2, xbt_dynar_t i1, 
   memset(state->types2, 0, state->heaplimit * MAX_FRAGMENT_PER_BLOCK * sizeof(type_name *));
 
   if(MC_is_active()){
-    MC_ignore_global_variable("mm_diff_info");
+    MC_ignore_global_variable("mc_diff_info");
   }
 
   return 0;
@@ -377,7 +375,7 @@ void reset_heap_information(){
 
 int mmalloc_compare_heap(mc_snapshot_t snapshot1, mc_snapshot_t snapshot2, xbt_mheap_t heap1, xbt_mheap_t heap2){
 
-  struct s_mm_diff *state = mm_diff_info;
+  struct s_mc_diff *state = mc_diff_info;
 
   if(heap1 == NULL && heap2 == NULL){
     XBT_DEBUG("Malloc descriptors null");
@@ -586,7 +584,7 @@ int mmalloc_compare_heap(mc_snapshot_t snapshot1, mc_snapshot_t snapshot2, xbt_m
       if(i1 == state->heaplimit){
         if(state->heapinfo1[i].busy_block.busy_size > 0){
           if(state->equals_to1_(i,0).valid == 0){
-            if(XBT_LOG_ISENABLED(mm_diff, xbt_log_priority_debug)){
+            if(XBT_LOG_ISENABLED(mc_diff, xbt_log_priority_debug)){
               addr_block1 = ((void*) (((ADDR2UINT(i)) - 1) * BLOCKSIZE + (char*)state->heapbase1));
               XBT_DEBUG("Block %zu (%p) not found (size used = %zu)", i, addr_block1, state->heapinfo1[i].busy_block.busy_size);
               //mmalloc_backtrace_block_display((void*)heapinfo1, i);
@@ -603,7 +601,7 @@ int mmalloc_compare_heap(mc_snapshot_t snapshot1, mc_snapshot_t snapshot2, xbt_m
         if(i1== state->heaplimit){
           if(state->heapinfo1[i].busy_frag.frag_size[j] > 0){
             if(state->equals_to1_(i,j).valid == 0){
-              if(XBT_LOG_ISENABLED(mm_diff, xbt_log_priority_debug)){
+              if(XBT_LOG_ISENABLED(mc_diff, xbt_log_priority_debug)){
                 addr_frag1 = (void*) ((char *)addr_block1 + (j << state->heapinfo1[i].type));
                 real_addr_frag1 = (void*) ((char *)real_addr_block1 + (j << ((struct mdesc *)state->s_heap)->heapinfo[i].type));
                 XBT_DEBUG("Block %zu, Fragment %zu (%p - %p) not found (size used = %zd)", i, j, addr_frag1, real_addr_frag1, state->heapinfo1[i].busy_frag.frag_size[j]);
@@ -628,7 +626,7 @@ int mmalloc_compare_heap(mc_snapshot_t snapshot1, mc_snapshot_t snapshot2, xbt_m
       if(i1 == state->heaplimit){
         if(state->heapinfo2[i].busy_block.busy_size > 0){
           if(state->equals_to2_(i,0).valid == 0){
-            if(XBT_LOG_ISENABLED(mm_diff, xbt_log_priority_debug)){
+            if(XBT_LOG_ISENABLED(mc_diff, xbt_log_priority_debug)){
               addr_block2 = ((void*) (((ADDR2UINT(i)) - 1) * BLOCKSIZE + (char*)state->heapbase2));
               XBT_DEBUG("Block %zu (%p) not found (size used = %zu)", i, addr_block2, state->heapinfo2[i].busy_block.busy_size);
               //mmalloc_backtrace_block_display((void*)heapinfo2, i);
@@ -645,7 +643,7 @@ int mmalloc_compare_heap(mc_snapshot_t snapshot1, mc_snapshot_t snapshot2, xbt_m
         if(i1 == state->heaplimit){
           if(state->heapinfo2[i].busy_frag.frag_size[j] > 0){
             if(state->equals_to2_(i,j).valid == 0){
-              if(XBT_LOG_ISENABLED(mm_diff, xbt_log_priority_debug)){
+              if(XBT_LOG_ISENABLED(mc_diff, xbt_log_priority_debug)){
                 addr_frag2 = (void*) ((char *)addr_block2 + (j << state->heapinfo2[i].type));
                 real_addr_frag2 = (void*) ((char *)real_addr_block2 + (j << ((struct mdesc *)state->s_heap)->heapinfo[i].type));
                 XBT_DEBUG( "Block %zu, Fragment %zu (%p - %p) not found (size used = %zd)", i, j, addr_frag2, real_addr_frag2, state->heapinfo2[i].busy_frag.frag_size[j]);
@@ -682,7 +680,7 @@ int mmalloc_compare_heap(mc_snapshot_t snapshot1, mc_snapshot_t snapshot2, xbt_m
  * @param size
  * @param check_ignore
  */
-static int compare_heap_area_without_type(struct s_mm_diff *state, void *real_area1, void *real_area2, void *area1, void *area2, mc_snapshot_t snapshot1, mc_snapshot_t snapshot2, xbt_dynar_t previous, int size, int check_ignore){
+static int compare_heap_area_without_type(struct s_mc_diff *state, void *real_area1, void *real_area2, void *area1, void *area2, mc_snapshot_t snapshot1, mc_snapshot_t snapshot2, xbt_dynar_t previous, int size, int check_ignore){
 
   int i = 0;
   void *addr_pointed1, *addr_pointed2;
@@ -754,7 +752,7 @@ static int compare_heap_area_without_type(struct s_mm_diff *state, void *real_ar
  * @param pointer_level
  * @return               0 (same), 1 (different), -1 (unknown)
  */
-static int compare_heap_area_with_type(struct s_mm_diff *state, void *real_area1, void *real_area2, void *area1, void *area2,
+static int compare_heap_area_with_type(struct s_mc_diff *state, void *real_area1, void *real_area2, void *area1, void *area2,
                                        mc_snapshot_t snapshot1, mc_snapshot_t snapshot2,
                                        xbt_dynar_t previous, dw_type_t type,
                                        int area_size, int check_ignore, int pointer_level){
@@ -977,7 +975,7 @@ static dw_type_t get_offset_type(void* real_base_address, dw_type_t type, int of
  */
 int compare_heap_area(void *area1, void* area2, mc_snapshot_t snapshot1, mc_snapshot_t snapshot2, xbt_dynar_t previous, dw_type_t type, int pointer_level){
 
-  struct s_mm_diff* state = mm_diff_info;
+  struct s_mc_diff* state = mc_diff_info;
 
   int res_compare;
   ssize_t block1, frag1, block2, frag2;
@@ -1316,7 +1314,7 @@ int compare_heap_area(void *area1, void* area2, mc_snapshot_t snapshot1, mc_snap
 // Not used:
 static int get_pointed_area_size(void *area, int heap){
 
-  struct s_mm_diff *state = mm_diff_info;
+  struct s_mc_diff *state = mc_diff_info;
 
   int block, frag;
   malloc_info *heapinfo;
@@ -1368,7 +1366,7 @@ char *get_type_description(mc_object_info_t info, char *type_name){
 // Not used:
 int mmalloc_linear_compare_heap(xbt_mheap_t heap1, xbt_mheap_t heap2){
 
-  struct s_mm_diff *state = mm_diff_info;
+  struct s_mc_diff *state = mc_diff_info;
 
   if(heap1 == NULL && heap1 == NULL){
     XBT_DEBUG("Malloc descriptors null");
@@ -1383,6 +1381,8 @@ int mmalloc_linear_compare_heap(xbt_mheap_t heap1, xbt_mheap_t heap2){
   /* Heap information */
   state->heaplimit = ((struct mdesc *)heap1)->heaplimit;
 
+
+  // Mamailloute in order to find the base address of the main heap:
   state->s_heap = (char *)mmalloc_get_current_heap() - STD_HEAP_SIZE - xbt_pagesize;
 
   state->heapbase1 = (char *)heap1 + BLOCKSIZE;

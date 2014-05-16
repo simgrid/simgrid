@@ -111,7 +111,6 @@ set(EXTRA_DIST
   src/xbt/mallocator_private.h
   src/xbt/mmalloc/mfree.c
   src/xbt/mmalloc/mm.c
-  src/xbt/mmalloc/mm_diff.c
   src/xbt/mmalloc/mm_legacy.c
   src/xbt/mmalloc/mm_module.c
   src/xbt/mmalloc/mmalloc.c
@@ -586,6 +585,7 @@ set(JEDULE_SRC
 
 set(MC_SRC
   src/mc/mc_checkpoint.c
+  src/mc/mc_diff.c
   src/mc/mc_compare.c
   src/mc/mc_dpor.c
   src/mc/mc_dwarf.c
