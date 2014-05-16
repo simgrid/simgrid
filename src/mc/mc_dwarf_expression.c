@@ -366,9 +366,6 @@ void mc_dwarf_location_list_clear(mc_location_list_t list) {
 }
 
 void mc_dwarf_expression_init(mc_expression_t expression, size_t len, Dwarf_Op* ops) {
-  if(expression->ops) {
-    free(expression->ops);
-  }
   expression->lowpc = NULL;
   expression->highpc = NULL;
   expression->size = len;
@@ -377,9 +374,6 @@ void mc_dwarf_expression_init(mc_expression_t expression, size_t len, Dwarf_Op* 
 }
 
 void mc_dwarf_location_list_init_from_expression(mc_location_list_t target, size_t len, Dwarf_Op* ops) {
-  if(target->locations) {
-    mc_dwarf_location_list_clear(target);
-  }
   target->size = 1;
   target->locations = (mc_expression_t) xbt_malloc(sizeof(s_mc_expression_t));
   mc_dwarf_expression_init(target->locations, len, ops);

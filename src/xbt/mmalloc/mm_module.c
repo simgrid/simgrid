@@ -73,6 +73,11 @@
 
 xbt_mheap_t xbt_mheap_new(int fd, void *baseaddr)
 {
+  return xbt_mheap_new_options(fd, baseaddr, 0);
+}
+
+xbt_mheap_t xbt_mheap_new_options(int fd, void *baseaddr, int options)
+{
   struct mdesc mtemp;
   xbt_mheap_t mdp;
   void *mbase;
@@ -169,6 +174,7 @@ xbt_mheap_t xbt_mheap_new(int fd, void *baseaddr)
   mdp->base = mdp->breakval = mdp->top = baseaddr;
   mdp->next_mdesc = NULL;
   mdp->refcount = 1;
+  mdp->options = options;
   
   /* If we have not been passed a valid open file descriptor for the file
      to map to, then we go for an anonymous map */
@@ -326,7 +332,7 @@ void *mmalloc_preinit(void)
   if (__mmalloc_default_mdp == NULL) {
     unsigned long mask = ~((unsigned long)xbt_pagesize - 1);
     void *addr = (void*)(((unsigned long)sbrk(0) + HEAP_OFFSET) & mask);
-    __mmalloc_default_mdp = xbt_mheap_new(-1, addr);
+    __mmalloc_default_mdp = xbt_mheap_new_options(-1, addr, XBT_MHEAP_OPTION_MEMSET);
     /* Fixme? only the default mdp in protected against forks */
     // This is mandated to protect the mmalloced areas through forks. Think of tesh.
     // Nah, removing the mutex isn't a good idea either for tesh

@@ -48,6 +48,10 @@ XBT_PUBLIC( void ) mfree(xbt_mheap_t md, void *ptr);
 
 XBT_PUBLIC( xbt_mheap_t ) xbt_mheap_new(int fd, void *baseaddr);
 
+#define XBT_MHEAP_OPTION_MEMSET 1
+
+XBT_PUBLIC( xbt_mheap_t ) xbt_mheap_new_options(int fd, void *baseaddr, int options);
+
 XBT_PUBLIC( void ) xbt_mheap_destroy_no_free(xbt_mheap_t md);
 
 XBT_PUBLIC( void ) *xbt_mheap_destroy(xbt_mheap_t md);
