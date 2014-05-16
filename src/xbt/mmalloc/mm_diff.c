@@ -134,7 +134,12 @@ static int compare_backtrace(int b1, int f1, int b2, int f2){
 typedef char* type_name;
 
 struct s_mm_diff {
-  void *s_heap, *heapbase1, *heapbase2;
+  /** \brief Base address of the real heap */
+  void *s_heap;
+  /** \brief Base address of the first heap snapshot */
+  void *heapbase1;
+  /** \brief Base address of the second heap snapshot */
+  void *heapbase2;
   malloc_info *heapinfo1, *heapinfo2;
   size_t heaplimit;
   // Number of blocks in the heaps:
@@ -328,6 +333,9 @@ int init_heap_information(xbt_mheap_t heap1, xbt_mheap_t heap2, xbt_dynar_t i1, 
 
   state->heaplimit = ((struct mdesc *)heap1)->heaplimit;
 
+  // Mamailloute in order to find the base address of the main heap:
+  // This heavily depends on the structure of MC: we need to move this code into MC.
+  // (STD_HEAP_SIZE comes from mc.h anyway)
   state->s_heap = (char *)mmalloc_get_current_heap() - STD_HEAP_SIZE - xbt_pagesize;
 
   state->heapbase1 = (char *)heap1 + BLOCKSIZE;

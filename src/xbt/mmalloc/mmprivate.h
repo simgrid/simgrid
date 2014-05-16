@@ -240,7 +240,9 @@ struct mdesc {
   void *breakval;
 
   /* The end of the current memory region for this malloc heap.  This is
-     the first location past the end of mapped memory. */
+     the first location past the end of mapped memory.
+     Compared to breakval, this value is rounded to the next memory page.
+      */
 
   void *top;
 
