@@ -96,7 +96,7 @@ public:
 	if (p_maxminSystem)
 	  lmm_system_free(p_maxminSystem);
 	if (p_actionHeap)
-	  xbt_heap_free(p_actionHeap);
+	  delete p_actionHeap;
 	if (p_modifiedSet)
 	  delete p_modifiedSet;
   }

@@ -192,8 +192,7 @@ void NetworkCm02Model::initialize()
 	                                           SURF_LINK_FATPIPE, NULL));
 
   if (p_updateMechanism == UM_LAZY) {
-	p_actionHeap = xbt_heap_new(8, NULL);
-	xbt_heap_set_update_callback(p_actionHeap, surf_action_lmm_update_index_heap);
+	p_actionHeap = new ActionHeap();
 	p_modifiedSet = new ActionLmmList();
 	p_maxminSystem->keep_track = p_modifiedSet;
   }
@@ -229,9 +228,10 @@ NetworkLinkPtr NetworkCm02Model::createNetworkLink(const char *name,
 void NetworkCm02Model::updateActionsStateLazy(double now, double /*delta*/)
 {
   NetworkCm02ActionPtr action;
-  while ((xbt_heap_size(p_actionHeap) > 0)
-         && (double_equals(xbt_heap_maxkey(p_actionHeap), now, sg_surf_precision))) {
-    action = (NetworkCm02ActionPtr) xbt_heap_pop(p_actionHeap);
+  while ((!p_actionHeap->empty())
+         && (double_equals(p_actionHeap->topKey(), now, sg_surf_precision))) {
+    action = (NetworkCm02ActionPtr) p_actionHeap->topValue();
+    p_actionHeap->pop();
     XBT_DEBUG("Something happened to action %p", action);
 #ifdef HAVE_TRACING
     if (TRACE_is_enabled()) {
@@ -255,22 +255,22 @@ void NetworkCm02Model::updateActionsStateLazy(double now, double /*delta*/)
 #endif
 
     // if I am wearing a latency hat
-    if (action->getHat() == LATENCY) {
+    if (action->getHeapActionType() == LATENCY) {
       XBT_DEBUG("Latency paid for action %p. Activating", action);
       lmm_update_variable_weight(p_maxminSystem, action->getVariable(), action->m_weight);
-      action->heapRemove(p_actionHeap);
+      action->heapRemove();
       action->refreshLastUpdate();
 
         // if I am wearing a max_duration or normal hat
-    } else if (action->getHat() == MAX_DURATION ||
-        action->getHat() == NORMAL) {
+    } else if (action->getHeapActionType() == MAX_DURATION ||
+        action->getHeapActionType() == NORMAL) {
         // no need to communicate anymore
         // assume that flows that reached max_duration have remaining of 0
       XBT_DEBUG("Action %p finished", action);
       action->setRemains(0);
       action->finish();
       action->setState(SURF_ACTION_DONE);
-      action->heapRemove(p_actionHeap);
+      action->heapRemove();
 
       action->gapRemove();
     }
@@ -327,7 +327,6 @@ ActionPtr NetworkCm02Model::communicate(RoutingEdgePtr src, RoutingEdgePtr dst,
 
   action->m_rate = rate;
   if (p_updateMechanism == UM_LAZY) {
-    action->m_indexHeap = -1;
     action->m_lastUpdate = surf_get_clock();
   }
 
@@ -370,7 +369,8 @@ ActionPtr NetworkCm02Model::communicate(RoutingEdgePtr src, RoutingEdgePtr dst,
       // add to the heap the event when the latency is payed
       XBT_DEBUG("Added action (%p) one latency event at date %f", action,
                 action->m_latency + action->m_lastUpdate);
-      action->heapInsert(p_actionHeap, action->m_latency + action->m_lastUpdate, xbt_dynar_is_empty(route) ? NORMAL : LATENCY);
+
+      action->heapInsert(action->m_latency + action->m_lastUpdate, xbt_dynar_is_empty(route) ? NORMAL : LATENCY);
     }
   } else
     action->p_variable = lmm_variable_new(p_maxminSystem, action, 1.0, -1.0, constraints_per_variable);
@@ -617,12 +617,12 @@ void NetworkCm02Action::updateRemainingLazy(double now)
     finish();
     setState(SURF_ACTION_DONE);
 
-    heapRemove(getModel()->getActionHeap());
+    heapRemove();
   } else if (((m_maxDuration != NO_MAX_DURATION)
       && (m_maxDuration <= 0))) {
     finish();
     setState(SURF_ACTION_DONE);
-    heapRemove(getModel()->getActionHeap());
+    heapRemove();
   }
 
   m_lastUpdate = now;

@@ -541,7 +541,7 @@ double Model::shareResourcesLazy(double now)
       continue;
 
     /* bogus priority, skip it */
-    if (action->getPriority() <= 0 || action->getHat()==LATENCY)
+    if (action->getPriority() <= 0 || action->getHeapActionType()==LATENCY)
       continue;
 
     action->updateRemainingLazy(now);
@@ -576,17 +576,17 @@ double Model::shareResourcesLazy(double now)
         action->getMaxDuration());
 
     if (min != -1) {
-      action->heapRemove(p_actionHeap);
-      action->heapInsert(p_actionHeap, min, max_dur_flag ? MAX_DURATION : NORMAL);
+      action->heapRemove();
+      action->heapInsert(min, max_dur_flag ? MAX_DURATION : NORMAL);
       XBT_DEBUG("Insert at heap action(%p) min %f now %f", action, min,
                 now);
     } else DIE_IMPOSSIBLE;
   }
 
   //hereafter must have already the min value for this resource model
-  if (xbt_heap_size(p_actionHeap) > 0)
-    min = xbt_heap_maxkey(p_actionHeap) - now;
-  else
+  if (!p_actionHeap->empty()) {
+    min = p_actionHeap->topKey() - now;
+  } else
     min = -1;
 
   XBT_DEBUG("The minimum with the HEAP %f", min);
@@ -867,7 +867,7 @@ void Action::setBound(double bound)
     lmm_update_variable_bound(getModel()->getMaxminSystem(), getVariable(), bound);
 
   if (getModel()->getUpdateMechanism() == UM_LAZY && getLastUpdate()!=surf_get_clock())
-	  heapRemove(getModel()->getActionHeap());
+	  heapRemove();
   XBT_OUT();
 }
 
@@ -905,7 +905,7 @@ void Action::setMaxDuration(double duration)
   XBT_IN("(%p,%g)", this, duration);
   m_maxDuration = duration;
   if (getModel()->getUpdateMechanism() == UM_LAZY)      // remove action from the heap
-    heapRemove(getModel()->getActionHeap());
+    heapRemove();
   XBT_OUT();
 }
 
@@ -918,7 +918,7 @@ void Action::setPriority(double priority)
   lmm_update_variable_weight(getModel()->getMaxminSystem(), getVariable(), priority);
 
   if (getModel()->getUpdateMechanism() == UM_LAZY)
-	heapRemove(getModel()->getActionHeap());
+	heapRemove();
   XBT_OUT();
 }
 
@@ -927,25 +927,25 @@ void Action::cancel(){
   if (getModel()->getUpdateMechanism() == UM_LAZY) {
 	if (actionLmmHook::is_linked())
 	  getModel()->getModifiedSet()->erase(getModel()->getModifiedSet()->iterator_to(*this));
-    heapRemove(getModel()->getActionHeap());
+    heapRemove();
   }
 }
 
 int Action::unref(){
   m_refcount--;
   if (!m_refcount) {
-	if (actionHook::is_linked())
-	  p_stateSet->erase(p_stateSet->iterator_to(*this));
-	if (getVariable())
-	  lmm_variable_free(getModel()->getMaxminSystem(), getVariable());
-	if (getModel()->getUpdateMechanism() == UM_LAZY) {
-	  /* remove from heap */
-	  heapRemove(getModel()->getActionHeap());
+	  if (actionHook::is_linked())
+	    p_stateSet->erase(p_stateSet->iterator_to(*this));
+	  if (getVariable())
+	    lmm_variable_free(getModel()->getMaxminSystem(), getVariable());
+	  if (getModel()->getUpdateMechanism() == UM_LAZY) {
+	    /* remove from heap */
+	    heapRemove();
       if (actionLmmHook::is_linked())
-	    getModel()->getModifiedSet()->erase(getModel()->getModifiedSet()->iterator_to(*this));
+	      getModel()->getModifiedSet()->erase(getModel()->getModifiedSet()->iterator_to(*this));
     }
-	delete this;
-	return 1;
+	  delete this;
+	  return 1;
   }
   return 0;
 }
@@ -957,7 +957,7 @@ void Action::suspend()
     lmm_update_variable_weight(getModel()->getMaxminSystem(), getVariable(), 0.0);
     m_suspended = 1;
     if (getModel()->getUpdateMechanism() == UM_LAZY)
-      heapRemove(getModel()->getActionHeap());
+      heapRemove();
   }
   XBT_OUT();
 }
@@ -969,7 +969,7 @@ void Action::resume()
     lmm_update_variable_weight(getModel()->getMaxminSystem(), getVariable(), m_priority);
     m_suspended = 0;
     if (getModel()->getUpdateMechanism() == UM_LAZY)
-      heapRemove(getModel()->getActionHeap());
+      heapRemove();
   }
   XBT_OUT();
 }
@@ -985,27 +985,19 @@ bool Action::isSuspended()
  * LATENCY = this is a heap entry to warn us when the latency is payed
  * MAX_DURATION =this is a heap entry to warn us when the max_duration limit is reached
  */
-void Action::heapInsert(xbt_heap_t heap, double key, enum heap_action_type hat)
+void Action::heapInsert(double key, enum heap_action_type hat)
 {
   m_hat = hat;
-  xbt_heap_push(heap, this, key);
+  sp_heapHandle = getModel()->getActionHeap()->push(key, this);
 }
 
-void Action::heapRemove(xbt_heap_t heap)
+void Action::heapRemove()
 {
   m_hat = NOTSET;
-  if (m_indexHeap >= 0) {
-    xbt_heap_remove(heap, m_indexHeap);
+  if (sp_heapHandle) {
+    getModel()->getActionHeap()->erase(sp_heapHandle);
+    sp_heapHandle.reset();
   }
-}
-
-/* added to manage the communication action's heap */
-void surf_action_lmm_update_index_heap(void *action, int i) {
-  ((ActionPtr)action)->updateIndexHeap(i);
-}
-
-void Action::updateIndexHeap(int i) {
-  m_indexHeap = i;
 }
 
 double Action::getRemains()
@@ -1068,12 +1060,12 @@ void Action::updateRemainingLazy(double now)
         (lmm_get_variable_weight(getVariable()) > 0)) {
       finish();
       setState(SURF_ACTION_DONE);
-      heapRemove(getModel()->getActionHeap());
+      heapRemove();
     } else if (((m_maxDuration != NO_MAX_DURATION)
         && (m_maxDuration <= 0))) {
       finish();
       setState(SURF_ACTION_DONE);
-      heapRemove(getModel()->getActionHeap());
+      heapRemove();
     }
   }
 

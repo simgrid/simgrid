@@ -85,8 +85,7 @@ CpuCas01Model::CpuCas01Model() : CpuModel("cpu")
   }
 
   if (getUpdateMechanism() == UM_LAZY) {
-    p_actionHeap = xbt_heap_new(8, NULL);
-    xbt_heap_set_update_callback(p_actionHeap,  surf_action_lmm_update_index_heap);
+    p_actionHeap = new ActionHeap();
     p_modifiedSet = new ActionLmmList();
     p_maxminSystem->keep_track = p_modifiedSet;
   }
@@ -98,7 +97,7 @@ CpuCas01Model::~CpuCas01Model()
   p_maxminSystem = NULL;
 
   if (p_actionHeap)
-    xbt_heap_free(p_actionHeap);
+    delete p_actionHeap;
   delete p_modifiedSet;
 
   surf_cpu_model_pm = NULL;
@@ -315,7 +314,7 @@ CpuActionPtr CpuCas01::sleep(double duration)
   lmm_update_variable_weight(getModel()->getMaxminSystem(),
                              action->getVariable(), 0.0);
   if (getModel()->getUpdateMechanism() == UM_LAZY) {     // remove action from the heap
-    action->heapRemove(getModel()->getActionHeap());
+    action->heapRemove();
     // this is necessary for a variable with weight 0 since such
     // variables are ignored in lmm and we need to set its max_duration
     // correctly at the next call to share_resources
@@ -365,7 +364,6 @@ CpuCas01Action::CpuCas01Action(ModelPtr model, double cost, bool failed, double 
 {
   m_suspended = 0;
   if (model->getUpdateMechanism() == UM_LAZY) {
-    m_indexHeap = -1;
     m_lastUpdate = surf_get_clock();
     m_lastValue = 0.0;
   }
