@@ -474,7 +474,6 @@ static void MC_dump_checkpoint_ignore(mc_snapshot_t snapshot){
 
 }
 
-
 mc_snapshot_t MC_take_snapshot(int num_state){
 
   mc_snapshot_t snapshot = xbt_new0(s_mc_snapshot_t, 1);

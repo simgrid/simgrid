@@ -30,7 +30,7 @@ void MC_memory_init()
   mc_heap = NULL;
 #else
   /* Create the second region a page after the first one ends + safety gap */
-  mc_heap = xbt_mheap_new(-1, (char*)(std_heap) + STD_HEAP_SIZE + xbt_pagesize);
+  mc_heap = xbt_mheap_new_options(-1, (char*)(std_heap) + STD_HEAP_SIZE + xbt_pagesize, 0);
   xbt_assert(mc_heap != NULL);
 #endif
 }

@@ -202,6 +202,8 @@ struct mdesc {
   /* The version number of the mmalloc package that created this file. */
   unsigned char version;
 
+  unsigned int options;
+
   /* Some flag bits to keep track of various internal things. */
   unsigned int flags;
 

@@ -1095,6 +1095,7 @@ void MC_replay(xbt_fifo_t stack, int start)
   mc_state_t state;
   smx_process_t process = NULL;
   int comm_pattern = 0;
+  smx_action_t current_comm;
 
   XBT_DEBUG("**** Begin Replay ****");
 
@@ -1163,44 +1164,60 @@ void MC_replay(xbt_fifo_t stack, int start)
         XBT_DEBUG("Replay: %s (%p)", req_str, state);
         xbt_free(req_str);
       }
-    }
 
-    if(_sg_mc_comms_determinism || _sg_mc_send_determinism){
-      if(req->call == SIMCALL_COMM_ISEND)
-        comm_pattern = 1;
-      else if(req->call == SIMCALL_COMM_IRECV)
-        comm_pattern = 2;
-    }
-
-    SIMIX_simcall_pre(req, value);
-
-    if(_sg_mc_comms_determinism || _sg_mc_send_determinism){
-      MC_SET_MC_HEAP;
-      if(comm_pattern != 0){
-        get_comm_pattern(communications_pattern, req, comm_pattern);
+      /* TODO : handle test and testany simcalls */
+      if(_sg_mc_comms_determinism || _sg_mc_send_determinism){
+        if(req->call == SIMCALL_COMM_ISEND)
+          comm_pattern = 1;
+        else if(req->call == SIMCALL_COMM_IRECV)
+          comm_pattern = 2;
+        else if(req->call == SIMCALL_COMM_WAIT)
+          comm_pattern = 3;
+        else if(req->call == SIMCALL_COMM_WAITANY)
+          comm_pattern = 4;
       }
-      MC_SET_STD_HEAP;
-      comm_pattern = 0;
-    }
-    
-    MC_wait_for_requests();
 
-    count++;
+      SIMIX_simcall_pre(req, value);
 
-    if(mc_reduce_kind ==  e_mc_reduce_dpor){
-      MC_SET_MC_HEAP;
-      /* Insert in dict all enabled processes */
-      xbt_swag_foreach(process, simix_global->process_list){
-        if(MC_process_is_enabled(process) /*&& !MC_state_process_is_done(state, process)*/){
-          char *key = bprintf("%lu", process->pid);
-          if(xbt_dict_get_or_null(first_enabled_state, key) == NULL){
-            char *data = bprintf("%d", count);
-            xbt_dict_set(first_enabled_state, key, data, NULL);
+      if(_sg_mc_comms_determinism || _sg_mc_send_determinism){
+        MC_SET_MC_HEAP;
+        if(comm_pattern == 1 || comm_pattern == 2){
+          get_comm_pattern(communications_pattern, req, comm_pattern);
+        }else if (comm_pattern == 3/* || comm_pattern == 4*/){
+          current_comm = simcall_comm_wait__get__comm(req);
+          if(current_comm->comm.refcount == 1){ /* First wait only must be considered */
+            complete_comm_pattern(communications_pattern, current_comm);
           }
-          xbt_free(key);
+        }else if (comm_pattern == 4/* || comm_pattern == 4*/){
+          current_comm = xbt_dynar_get_as(simcall_comm_waitany__get__comms(req), value, smx_action_t);
+          if(current_comm->comm.refcount == 1){ /* First wait only must be considered */
+            complete_comm_pattern(communications_pattern, current_comm);
+          }
         }
+        MC_SET_STD_HEAP;
+        comm_pattern = 0;
       }
-      MC_SET_STD_HEAP;
+    
+    
+      MC_wait_for_requests();
+
+      count++;
+
+      if(mc_reduce_kind ==  e_mc_reduce_dpor){
+        MC_SET_MC_HEAP;
+        /* Insert in dict all enabled processes */
+        xbt_swag_foreach(process, simix_global->process_list){
+          if(MC_process_is_enabled(process) /*&& !MC_state_process_is_done(state, process)*/){
+            char *key = bprintf("%lu", process->pid);
+            if(xbt_dict_get_or_null(first_enabled_state, key) == NULL){
+              char *data = bprintf("%d", count);
+              xbt_dict_set(first_enabled_state, key, data, NULL);
+            }
+            xbt_free(key);
+          }
+        }
+        MC_SET_STD_HEAP;
+      }
     }
          
     /* Update statistics */

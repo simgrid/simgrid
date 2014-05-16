@@ -61,7 +61,7 @@ static int allocated_junk = 0; /* keep track of many blocks of our little area w
 static char junkareas[MAX_JUNK_AREAS][JUNK_SIZE];
 
 /* This version use mmalloc if there is a current heap, or the legacy implem if not */
-void *malloc(size_t n) {
+static void *malloc_or_calloc(size_t n, int setzero) {
   xbt_mheap_t mdp = __mmalloc_current_heap;
   void *ret;
 #ifdef MM_LEGACY_VERBOSE
@@ -73,14 +73,17 @@ void *malloc(size_t n) {
     LOCK(mdp);
     ret = mmalloc(mdp, n);
     UNLOCK(mdp);
+    // This was already done by mmalloc:
+    if (mdp->options & XBT_MHEAP_OPTION_MEMSET) {
+      setzero = 0;
+    }
 #ifdef MM_LEGACY_VERBOSE
     if (!warned_mmalloc) {
       fprintf(stderr,"Using mmalloc; enabling the model-checker in cmake may have a bad impact on your simulation performance\n");
       warned_mmalloc = 1;
     }
 #endif
-  } else {
-    if (!real_malloc) {
+  } else if (!real_malloc) {
       size_t needed_areas = n / JUNK_SIZE;
       if(needed_areas * JUNK_SIZE != n) needed_areas++;
       if (allocated_junk+needed_areas>=MAX_JUNK_AREAS) {
@@ -90,9 +93,10 @@ void *malloc(size_t n) {
       } else {
         size_t i = allocated_junk;
         allocated_junk += needed_areas;
-        return junkareas[i];
+        ret = junkareas[i];
       }
     }
+  else {
 #ifdef MM_LEGACY_VERBOSE
     if (!warned_raw) {
       fprintf(stderr,"Using system malloc after interception; you seem to be currently model-checking\n");
@@ -101,15 +105,20 @@ void *malloc(size_t n) {
 #endif
     ret = real_malloc(n);
   }
+  if (ret && setzero) {
+    memset(ret, 0, n);
+  }
   return ret;
 }
 
+void *malloc(size_t n)
+{
+  return malloc_or_calloc(n, 0);
+}
 
 void *calloc(size_t nmemb, size_t size)
 {
-  void *ret = malloc(nmemb*size);
-  memset(ret, 0, nmemb * size);
-  return ret;
+  return malloc_or_calloc(nmemb*size, 1);
 }
 
 void *realloc(void *p, size_t s)
