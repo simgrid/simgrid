@@ -345,9 +345,9 @@ $ ../../smpi_script/bin/smpirun -ext smpi_replay --log=replay.thresh:critical --
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'smpi/cpu_threshold' to '-1'
 > [0.000000] [surf_config/INFO] Switching workstation model to compound since you changed the network and/or cpu model(s)
 > [Tremblay:0:(0) 0.004041] [smpi_replay/VERBOSE] 0 allToAll 500 500 0.004041
-> [Fafard:2:(0) 0.006920] [smpi_replay/VERBOSE] 2 allToAll 500 500 0.006920
 > [Jupiter:1:(0) 0.006920] [smpi_replay/VERBOSE] 1 allToAll 500 500 0.006920
-> [Jupiter:1:(0) 0.006920] [smpi_replay/INFO] Simulation time 0.006920
+> [Fafard:2:(0) 0.006920] [smpi_replay/VERBOSE] 2 allToAll 500 500 0.006920
+> [Fafard:2:(0) 0.006920] [smpi_replay/INFO] Simulation time 0.006920
 
 $ rm -f replay/one_trace
 

@@ -889,7 +889,7 @@ int CpuTiAction::unref()
 void CpuTiAction::cancel()
 {
   this->setState(SURF_ACTION_FAILED);
-  heapRemove();
+  xbt_heap_remove(getModel()->getActionHeap(), this->m_indexHeap);
   xbt_swag_insert(p_cpu, static_cast<CpuTiModelPtr>(getModel())->p_modifiedCpu);
   return;
 }
@@ -904,7 +904,7 @@ void CpuTiAction::suspend()
   XBT_IN("(%p)", this);
   if (m_suspended != 2) {
     m_suspended = 1;
-    heapRemove();
+    xbt_heap_remove(getModel()->getActionHeap(), m_indexHeap);
     xbt_swag_insert(p_cpu, static_cast<CpuTiModelPtr>(getModel())->p_modifiedCpu);
   }
   XBT_OUT();
@@ -940,8 +940,14 @@ void CpuTiAction::setMaxDuration(double duration)
     min_finish = getFinishTime();
 
 /* add in action heap */
-  heapRemove();
-  heapInsert(min_finish, NOTSET);
+  if (m_indexHeap >= 0) {
+    CpuTiActionPtr heap_act = (CpuTiActionPtr)
+        xbt_heap_remove(getModel()->getActionHeap(), m_indexHeap);
+    if (heap_act != this)
+      DIE_IMPOSSIBLE;
+  }
+  xbt_heap_push(getModel()->getActionHeap(), this, min_finish);
+
   XBT_OUT();
 }
 

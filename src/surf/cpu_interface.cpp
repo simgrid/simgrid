@@ -53,11 +53,9 @@ void cpu_add_traces(){
 void CpuModel::updateActionsStateLazy(double now, double /*delta*/)
 {
   CpuActionPtr action;
-  while ((!getActionHeap()->empty())
-         && (double_equals(getActionHeap()->topKey(), now, sg_surf_precision))) {
-
-    action = static_cast<CpuActionPtr>(getActionHeap()->topValue());
-    getActionHeap()->pop();
+  while ((xbt_heap_size(getActionHeap()) > 0)
+         && (double_equals(xbt_heap_maxkey(getActionHeap()), now, sg_surf_precision))) {
+    action = static_cast<CpuActionPtr>(xbt_heap_pop(getActionHeap()));
     XBT_CDEBUG(surf_kernel, "Something happened to action %p", action);
 #ifdef HAVE_TRACING
     if (TRACE_is_enabled()) {
@@ -75,6 +73,7 @@ void CpuModel::updateActionsStateLazy(double now, double /*delta*/)
     /* set the remains to 0 due to precision problems when updating the remaining amount */
     action->setRemains(0);
     action->setState(SURF_ACTION_DONE);
+    action->heapRemove(getActionHeap()); //FIXME: strange call since action was already popped
   }
 #ifdef HAVE_TRACING
   if (TRACE_is_enabled()) {

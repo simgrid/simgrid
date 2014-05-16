@@ -13,8 +13,6 @@
 #include <memory>
 #include <boost/function.hpp>
 #include <boost/intrusive/list.hpp>
-#include <boost/heap/fibonacci_heap.hpp>
-#include <boost/smart_ptr.hpp>
 #include "surf/trace_mgr.h"
 #include "xbt/lib.h"
 #include "surf/surf_routing.h"
@@ -89,56 +87,6 @@ typedef boost::intrusive::list<Action, boost::intrusive::base_hook<boost::intrus
 typedef ActionLmmList* ActionLmmListPtr;
 typedef boost::intrusive::list_base_hook<boost::intrusive::tag<lmmTag> > actionLmmHook;
 
-
-template <typename K, typename V>
-class Heap {
-  class HeapItem;
-  struct compare_PI : binary_function <boost::shared_ptr<HeapItem>, boost::shared_ptr<HeapItem>, bool> {
-    bool operator() (boost::shared_ptr<HeapItem> x, boost::shared_ptr<HeapItem> y) const {
-      return (x->p_key==y->p_key) ? x->m_i<y->m_i : x->p_key>y->p_key;}
-  };
-public:
-  typedef typename boost::heap::fibonacci_heap<boost::shared_ptr<HeapItem>, boost::heap::compare<compare_PI > >::handle_type HeapHandle;
-  typedef boost::shared_ptr<HeapHandle> HeapHandleSPtr;
-private:
-  class HeapItem {
-  public:
-    HeapItem(K key, V value, int i)
-     : p_key(key), p_value(value), m_i(i) {
-    }
-    K p_key;
-    V p_value;
-    int m_i;
-    HeapHandleSPtr sp_handle;
-  };
-  boost::heap::fibonacci_heap<boost::shared_ptr<HeapItem>, boost::heap::compare<compare_PI > > m_heap;
-public:
-  int m_i;
-  Heap() : m_i(0) {}
-  HeapHandleSPtr push(K key, V value) {
-    boost::shared_ptr<HeapItem> hi(new HeapItem(key, value, m_i++));
-    hi->sp_handle = boost::shared_ptr<HeapHandle>(new HeapHandle(m_heap.push(hi)));
-    return hi->sp_handle;
-  }
-  void pop() {
-    HeapHandleSPtr hl = m_heap.top()->sp_handle;
-    m_heap.pop();
-    hl->node_ = NULL;
-  }
-  void erase(HeapHandleSPtr handle) {
-    if (used(handle)) {
-      m_heap.erase(*handle);
-      handle->node_ = NULL;
-    }
-  }
-  K topKey() {return m_heap.top()->p_key;}
-  V topValue() {return m_heap.top()->p_value;}
-  int size() {return m_heap.size();}
-  bool empty() {return m_heap.empty();}
-  bool used(HeapHandleSPtr handle) {return handle && handle->node_!=NULL;}
-};
-
-typedef Heap<double, ActionPtr> ActionHeap;
 
 enum heap_action_type{
   LATENCY = 100,
@@ -246,7 +194,7 @@ public:
    *
    * @return The Action heap
    */
-  ActionHeap *getActionHeap() {return p_actionHeap;}
+  xbt_heap_t getActionHeap() {return p_actionHeap;}
 
   /**
    * @brief share the resources
@@ -278,7 +226,7 @@ protected:
   lmm_system_t p_maxminSystem;
   e_UM_t p_updateMechanism;
   int m_selectiveUpdate;
-  ActionHeap *p_actionHeap;
+  xbt_heap_t p_actionHeap;
 
 private:
   const char *p_name;
@@ -437,6 +385,7 @@ private:
 /**********
  * Action *
  **********/
+void surf_action_lmm_update_index_heap(void *action, int i);
 
 /** @ingroup SURF_interface
  * @brief SURF action interface class
@@ -730,6 +679,7 @@ private:
                                  double value, double time);
 
   ActionLmmListPtr p_modifiedSet;
+  xbt_heap_t p_actionHeap;
   int m_selectiveUpdate;
   bool m_failed;
   double m_start; /**< start time  */
@@ -744,13 +694,14 @@ private:
 
   /* LMM */
 public:
-  void heapInsert(double key, enum heap_action_type hat);
-  void heapRemove();
-  enum heap_action_type getHeapActionType() {return m_hat;}
   virtual void updateRemainingLazy(double now);
+  void heapInsert(xbt_heap_t heap, double key, enum heap_action_type hat);
+  void heapRemove(xbt_heap_t heap);
+  void updateIndexHeap(int i);
   lmm_variable_t getVariable() {return p_variable;}
   double getLastUpdate() {return m_lastUpdate;}
   void refreshLastUpdate() {m_lastUpdate = surf_get_clock();}
+  enum heap_action_type getHat() {return m_hat;}
   bool is_linked() {return actionLmmHook::is_linked();}
   void gapRemove();
 
@@ -759,7 +710,7 @@ protected:
   double m_lastValue;
   double m_lastUpdate;
   int m_suspended;
-  ActionHeap::HeapHandleSPtr sp_heapHandle;
+  int m_indexHeap;
   enum heap_action_type m_hat;
 };
 

@@ -7,11 +7,11 @@ $ $SG_TEST_EXENV ${bindir:=.}/simple_vm$EXEEXT --log=no_loc ${srcdir:=.}/simple_
 > [PM0:master_:(1) 0.000000] [msg_test/INFO] ### Put a task on a PM
 > [PM0:compute:(2) 0.010000] [msg_test/INFO] PM0:compute task executed 0.01
 > [PM0:master_:(1) 2.000000] [msg_test/INFO] ### Put two tasks on a PM
-> [PM0:compute:(3) 2.020000] [msg_test/INFO] PM0:compute task executed 0.02
 > [PM0:compute:(4) 2.020000] [msg_test/INFO] PM0:compute task executed 0.02
+> [PM0:compute:(3) 2.020000] [msg_test/INFO] PM0:compute task executed 0.02
 > [PM0:master_:(1) 4.000000] [msg_test/INFO] ### Put a task on each PM
-> [PM1:compute:(6) 4.010000] [msg_test/INFO] PM1:compute task executed 0.01
 > [PM0:compute:(5) 4.010000] [msg_test/INFO] PM0:compute task executed 0.01
+> [PM1:compute:(6) 4.010000] [msg_test/INFO] PM1:compute task executed 0.01
 > [PM0:master_:(1) 6.000000] [msg_test/INFO] ## Test 1 (ended)
 > [PM0:master_:(1) 6.000000] [msg_test/INFO] ## Test 2 (started): check impact of running a task inside a VM (there is no degradation for the moment)
 > [PM0:master_:(1) 6.000000] [msg_test/INFO] ### Put a VM on a PM, and put a task to the VM
@@ -27,13 +27,13 @@ $ $SG_TEST_EXENV ${bindir:=.}/simple_vm$EXEEXT --log=no_loc ${srcdir:=.}/simple_
 > [PM0:master_:(1) 10.000000] [msg_test/INFO] ### Put two VMs on a PM, and put a task to each VM
 > [10.000000] [surf_vm_workstation/INFO] Create VM(VM0)@PM(PM0) with 0 mounted disks
 > [10.000000] [surf_vm_workstation/INFO] Create VM(VM1)@PM(PM0) with 0 mounted disks
-> [VM1:compute:(10) 10.020000] [msg_test/INFO] VM1:compute task executed 0.02
 > [VM0:compute:(9) 10.020000] [msg_test/INFO] VM0:compute task executed 0.02
+> [VM1:compute:(10) 10.020000] [msg_test/INFO] VM1:compute task executed 0.02
 > [PM0:master_:(1) 12.000000] [msg_test/INFO] ### Put a VM on each PM, and put a task to each VM
 > [12.000000] [surf_vm_workstation/INFO] Create VM(VM0)@PM(PM0) with 0 mounted disks
 > [12.000000] [surf_vm_workstation/INFO] Create VM(VM1)@PM(PM1) with 0 mounted disks
-> [VM1:compute:(12) 12.010000] [msg_test/INFO] VM1:compute task executed 0.01
 > [VM0:compute:(11) 12.010000] [msg_test/INFO] VM0:compute task executed 0.01
+> [VM1:compute:(12) 12.010000] [msg_test/INFO] VM1:compute task executed 0.01
 > [PM0:master_:(1) 14.000000] [msg_test/INFO] ## Test 4 (ended)
 > [PM0:master_:(1) 14.000000] [msg_test/INFO] ## Test 5  (started): Analyse network impact
 > [PM0:master_:(1) 14.000000] [msg_test/INFO] ### Make a connection between PM0 and PM1

@@ -18,8 +18,8 @@ $ ../../../smpi_script/bin/smpirun -np 2 -hostfile ${srcdir:=.}/hostfile  -platf
 >  [  0.] [rank  0] Power:   20000000.
 >  [  0.] [rank  1] Current pstate:  0; Current power:   100000000.
 >  [  0.] [rank  0] Current pstate:  0; Current power:   100000000.
->  [  10.] [rank  0] Energy consumed (Joules):   2000.
 >  [  10.] [rank  1] Energy consumed (Joules):   2000.
+>  [  10.] [rank  0] Energy consumed (Joules):   2000.
 >  [  10.] [rank  0] Current pstate:  1; Current power:   50000000.
 >  [  30.] [rank  0] Energy consumed (Joules):   5400.
 >  [  30.] [rank  0] Current pstate:  2; Current power:   20000000.
