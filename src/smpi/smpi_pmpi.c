@@ -934,12 +934,13 @@ int PMPI_Start(MPI_Request * request)
 
 int PMPI_Startall(int count, MPI_Request * requests)
 {
-  int retval = 0;
+  int retval;
   int i = 0;
   smpi_bench_end();
   if (requests == NULL) {
     retval = MPI_ERR_ARG;
   } else {
+    retval = MPI_SUCCESS;
     for (i = 0 ;  i < count ; i++) {
       if(requests[i] == MPI_REQUEST_NULL) {
         retval = MPI_ERR_REQUEST;
@@ -947,7 +948,6 @@ int PMPI_Startall(int count, MPI_Request * requests)
     }
     if(retval != MPI_ERR_REQUEST) {
       smpi_mpi_startall(count, requests);
-      retval = MPI_SUCCESS;
     }
   }
   smpi_bench_begin();
