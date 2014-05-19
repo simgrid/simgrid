@@ -1,24 +1,26 @@
 cmake_minimum_required(VERSION 2.6)
 
-set(example java_tracing)
-set(sources
-  ${CMAKE_CURRENT_SOURCE_DIR}/PingPongTask.java
-  ${CMAKE_CURRENT_SOURCE_DIR}/Receiver.java
-  ${CMAKE_CURRENT_SOURCE_DIR}/Sender.java
-  ${CMAKE_CURRENT_SOURCE_DIR}/TracingTest.java
-  )
+if(HAVE_TRACING)
+  set(example java_tracing)
+  set(sources
+    ${CMAKE_CURRENT_SOURCE_DIR}/PingPongTask.java
+    ${CMAKE_CURRENT_SOURCE_DIR}/Receiver.java
+    ${CMAKE_CURRENT_SOURCE_DIR}/Sender.java
+    ${CMAKE_CURRENT_SOURCE_DIR}/TracingTest.java
+    )
 
-if(enable_java)
-  add_custom_command(
-    COMMENT "Building ${example}..."
-    OUTPUT ${example}_compiled
-    DEPENDS ${sources} simgrid-java_jar ${SIMGRID_JAR}
-    COMMAND ${JAVA_COMPILE} -classpath ${SIMGRID_JAR}
-                             -d ${CMAKE_CURRENT_BINARY_DIR}/.. ${sources}
-    COMMAND ${CMAKE_COMMAND} -E remove ${example}_compiled
-    COMMAND ${CMAKE_COMMAND} -E touch ${example}_compiled
-  )
-  add_custom_target(${example} ALL DEPENDS ${example}_compiled)
+  if(enable_java)
+    add_custom_command(
+      COMMENT "Building ${example}..."
+      OUTPUT ${example}_compiled
+      DEPENDS ${sources} simgrid-java_jar ${SIMGRID_JAR}
+      COMMAND ${JAVA_COMPILE} -classpath ${SIMGRID_JAR}
+                              -d ${CMAKE_CURRENT_BINARY_DIR}/.. ${sources}
+      COMMAND ${CMAKE_COMMAND} -E remove ${example}_compiled
+      COMMAND ${CMAKE_COMMAND} -E touch ${example}_compiled
+      )
+    add_custom_target(${example} ALL DEPENDS ${example}_compiled)
+  endif()
 endif()
 
 set(tesh_files
