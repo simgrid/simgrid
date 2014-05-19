@@ -29,6 +29,15 @@ typedef CpuTi *CpuTiPtr;
 class CpuTiAction;
 typedef CpuTiAction *CpuTiActionPtr;
 
+typedef boost::intrusive::list<CpuTi> CpuTiList;
+typedef CpuTiList* CpuTiListPtr;
+typedef boost::intrusive::list_base_hook<> cpuTiHook;
+
+struct tiTag;
+typedef boost::intrusive::list<CpuTiAction, boost::intrusive::base_hook<boost::intrusive::list_base_hook<boost::intrusive::tag<tiTag> > > > ActionTiList;
+typedef ActionTiList* ActionTiListPtr;
+typedef boost::intrusive::list_base_hook<boost::intrusive::tag<tiTag> > actionTiHook;
+
 /*********
  * Trace *
  *********/
@@ -95,7 +104,7 @@ public:
   void addTraces();
 
   ActionListPtr p_runningActionSetThatDoesNotNeedBeingChecked;
-  xbt_swag_t p_modifiedCpu;
+  CpuTiListPtr p_modifiedCpu;
   xbt_heap_t p_tiActionHeap;
 
 protected:
@@ -110,7 +119,7 @@ protected:
 /************
  * Resource *
  ************/
-class CpuTi : public Cpu {
+class CpuTi : public cpuTiHook, public Cpu {
 public:
   CpuTi() {};
   CpuTi(CpuTiModelPtr model, const char *name, xbt_dynar_t powerPeak,
@@ -131,16 +140,15 @@ public:
   double getPowerPeakAt(int /*pstate_index*/) {THROW_UNIMPLEMENTED;};
   int getNbPstates() {THROW_UNIMPLEMENTED;};
   void setPowerPeakAt(int /*pstate_index*/) {THROW_UNIMPLEMENTED;};
+  void modified(bool modified);
 
   CpuTiTgmrPtr p_availTrace;       /*< Structure with data needed to integrate trace file */
   tmgr_trace_event_t p_stateEvent;       /*< trace file with states events (ON or OFF) */
   tmgr_trace_event_t p_powerEvent;       /*< trace file with availability events */
-  xbt_swag_t p_actionSet;        /*< set with all actions running on cpu */
-  s_xbt_swag_hookup_t p_modifiedCpuHookup;      /*< hookup to swag that indicates whether share resources must be recalculated or not */
+  ActionTiListPtr p_actionSet;        /*< set with all actions running on cpu */
   double m_sumPriority;          /*< the sum of actions' priority that are running on cpu */
   double m_lastUpdate;           /*< last update of actions' remaining amount done */
 
-  int m_pstate;								/*< Current pstate (index in the power_peak_list)*/
   double current_frequency;
 
   void updateRemainingAmount(double now);
@@ -150,7 +158,7 @@ public:
  * Action *
  **********/
 
-class CpuTiAction: public CpuAction {
+class CpuTiAction: public actionTiHook, public CpuAction {
   friend CpuActionPtr CpuTi::execute(double size);
   friend CpuActionPtr CpuTi::sleep(double duration);
   friend void CpuTi::updateActionsFinishTime(double now);//FIXME
@@ -175,7 +183,6 @@ public:
 
   CpuTiPtr p_cpu;
   int m_indexHeap;
-  s_xbt_swag_hookup_t p_cpuListHookup;
   int m_suspended;
 private:
 };
