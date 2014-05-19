@@ -503,7 +503,7 @@ void MSG_host_add_task(msg_host_t host, msg_task_t task)
 {
   msg_host_priv_t priv = msg_host_resource_priv(host);
   double remaining = MSG_task_get_remaining_computation(task);
-  char *key = bprintf("%s-%lld", task->name, task->counter);
+  char *key = bprintf("%s-%p", task->name, task);
 
   dirty_page_t dp = xbt_new0(s_dirty_page, 1);
   dp->task = task;
@@ -525,7 +525,7 @@ void MSG_host_del_task(msg_host_t host, msg_task_t task)
 {
   msg_host_priv_t priv = msg_host_resource_priv(host);
 
-  char *key = bprintf("%s-%lld", task->name, task->counter);
+  char *key = bprintf("%s-%p", task->name, task);
 
   dirty_page_t dp = xbt_dict_get_or_null(priv->dp_objs, key);
   xbt_assert(dp->task == task);
