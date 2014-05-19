@@ -232,7 +232,6 @@ set(SMPI_SRC
   src/smpi/smpi_pmpi.c
   src/smpi/smpi_replay.c
   src/smpi/smpi_topo.c
-  src/surf/surf_routing_cluster_fat_tree.cpp
   )
 
 if(SMPI_F2C)
@@ -335,6 +334,7 @@ set(SURF_SRC
   src/surf/surf_routing.cpp
   src/surf/surf_routing_cluster.cpp
   src/surf/surf_routing_cluster_torus.cpp
+  src/surf/surf_routing_cluster_fat_tree.cpp
   src/surf/surf_routing_dijkstra.cpp
   src/surf/surf_routing_floyd.cpp
   src/surf/surf_routing_full.cpp
