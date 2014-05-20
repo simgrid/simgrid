@@ -93,6 +93,7 @@ void smpi_process_init(int *argc, char ***argv)
     if(temp_bar != NULL) data->finalization_barrier = temp_bar;
     data->index = index;
     data->instance_id = instance_id;
+    xbt_free(simcall_process_get_data(proc));
     simcall_process_set_data(proc, data);
     if (*argc > 3) {
       free((*argv)[1]);
