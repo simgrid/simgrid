@@ -309,8 +309,8 @@ msg_error_t MSG_task_cancel(msg_task_t task)
     simcall_host_execution_cancel(task->simdata->compute);
   }
   else if (task->simdata->comm) {
-    simcall_comm_cancel(task->simdata->comm);
     simdata_task_t simdata = task->simdata;
+    simcall_comm_cancel(simdata->comm);
     if (msg_global->debug_multiple_use && simdata->isused!=0)
       xbt_ex_free(*(xbt_ex_t*)simdata->isused);
     simdata->isused = 0;
