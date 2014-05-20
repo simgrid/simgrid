@@ -87,10 +87,10 @@ void smpi_deployment_cleanup_instances(){
   xbt_dict_cursor_t cursor = NULL;
   s_smpi_mpi_instance_t* instance = NULL;
   char *name = NULL;
-  xbt_dict_foreach((xbt_dict_t) smpi_instances, cursor, name, instance) {
+  xbt_dict_foreach(smpi_instances, cursor, name, instance) {
     while (smpi_group_unuse(smpi_comm_group(instance->comm_world)) > 0);
     xbt_free(instance->comm_world);
     xbt_barrier_destroy(instance->finalization_barrier);
   }
+  xbt_dict_free(&smpi_instances);
 }
-
