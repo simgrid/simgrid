@@ -322,6 +322,7 @@ CpuPtr CpuL07Model::createCpu(const char *name,  xbt_dynar_t powerPeak,
                           xbt_dict_t cpu_properties)
 {
   double power_initial = xbt_dynar_get_as(powerPeak, pstate, double);
+  xbt_dynar_free(&powerPeak);   // kill memory leak
 
   xbt_assert(!surf_workstation_resource_priv(surf_workstation_resource_by_name(name)),
               "Host '%s' declared several times in the platform file.",
