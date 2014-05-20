@@ -7,6 +7,7 @@
 #include "msg_private.h"
 #include "xbt/sysdep.h"
 #include "xbt/log.h"
+#include "simix/smx_process_private.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_process, msg,
                                 "Logging specific to MSG (process)");
@@ -172,7 +173,7 @@ msg_process_t MSG_process_create_with_environment(const char *name,
                            argc, argv, properties,0);
 
 #ifdef HAVE_TRACING
-  TRACE_msg_process_create(name, simcall_process_get_PID(process), host);
+  TRACE_msg_process_create(name, SIMIX_process_get_PID(process), host);
 #endif
 
   if (!process) {
