@@ -9,10 +9,10 @@ $ ./task_destroy_cancel ${srcdir:=.}/task_destroy_cancel_p.xml ${srcdir:=.}/task
 > [Jupiter:slave:(2) 0.682345] [msg_test/INFO] Task "normal" done in 0.655342 (amount 0.000000)
 > [Jupiter:slave:(2) 0.709348] [msg_test/INFO] Handling task "cancel"
 > [Jupiter:worker1:(3) 0.709348] [msg_test/INFO] Start cancel
-> [Jupiter:slave:(2) 0.709348] [msg_test/INFO] Canceling task "cancel"
-> [Jupiter:worker1:(3) 0.710127] [msg_test/INFO] Task failed
-> [Tremblay:master:(1) 0.736350] [msg_test/INFO] Goodbye now!
-> [Jupiter:slave:(2) 0.736350] [msg_test/INFO] Handling task "finalize"
-> [Jupiter:slave:(2) 0.736350] [msg_test/INFO] Destroying task "finalize"
-> [Jupiter:slave:(2) 0.736350] [msg_test/INFO] I'm done. See you!
-> [0.736350] [msg_test/INFO] Simulation time 0.73635
+> [Jupiter:slave:(2) 0.809348] [msg_test/INFO] Canceling task "cancel"
+> [Jupiter:worker1:(3) 0.810127] [msg_test/INFO] Task failed
+> [Tremblay:master:(1) 0.836350] [msg_test/INFO] Goodbye now!
+> [Jupiter:slave:(2) 0.836350] [msg_test/INFO] Handling task "finalize"
+> [Jupiter:slave:(2) 0.836350] [msg_test/INFO] Destroying task "finalize"
+> [Jupiter:slave:(2) 0.836350] [msg_test/INFO] I'm done. See you!
+> [0.836350] [msg_test/INFO] Simulation time 0.83635
