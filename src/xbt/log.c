@@ -1071,7 +1071,7 @@ void xbt_log_threshold_set(xbt_log_category_t cat,
 
 static xbt_log_setting_t _xbt_log_parse_setting(const char *control_string)
 {
-
+  const char *orig_control_string = control_string;
   xbt_log_setting_t set = xbt_new(s_xbt_log_setting_t, 1);
   const char *name, *dot, *eq;
 
@@ -1094,7 +1094,7 @@ static xbt_log_setting_t _xbt_log_parse_setting(const char *control_string)
   control_string += strcspn(control_string, " ");
 
   xbt_assert(*dot == '.' && (*eq == '=' || *eq == ':'),
-              "Invalid control string '%s'", control_string);
+              "Invalid control string '%s'", orig_control_string);
 
   if (!strncmp(dot + 1, "threshold", (size_t) (eq - dot - 1))) {
     int i;
