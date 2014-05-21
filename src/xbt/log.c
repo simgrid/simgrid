@@ -420,6 +420,13 @@ The following example resets the additivity of the xbt category to true (which i
     option and specify the max file size. This would be a nice default for
     non-kernel applications.
   - Careful, category names are global variables.
+  - When writting a log format, you often want to use spaces. If you don't protect these spaces, they are used as configuration elements separators. 
+    For example, if you want to remove the date from the logs, you want to pass the following 
+    argument on the command line. The outer quotes are here to protect the string from the shell 
+    interpretation while the inner ones are there to prevent simgrid from splitting the string 
+    in several log parameters (that would be invalid).
+ 
+\verbatim --log="'root.fmt:%l: [%p/%c]: %m%n'"\endverbatim
 
 \section log_internals 4. Internal considerations
 
