@@ -360,7 +360,7 @@ void routing_AS_begin(sg_platf_AS_cbarg_t AS)
   switch(AS->routing){
     case A_surfxml_AS_routing_Cluster:               model = &routing_models[SURF_MODEL_CLUSTER];break;
     case A_surfxml_AS_routing_Cluster___torus:       model = &routing_models[SURF_MODEL_TORUS_CLUSTER];break;
-    case A_surfxml_AS_routing_Cluster___fat___tree:  model = &routing_models[SURF_MODEL_FAT_TREE_CLUSTER]; break;
+    case A_surfxml_AS_routing_Cluster___fat___tree:  model = &routing_models[SURF_MODEL_FAT_TREE_CLUSTER];break;
     case A_surfxml_AS_routing_Dijkstra:              model = &routing_models[SURF_MODEL_DIJKSTRA];break;
     case A_surfxml_AS_routing_DijkstraCache:         model = &routing_models[SURF_MODEL_DIJKSTRACACHE];break;
     case A_surfxml_AS_routing_Floyd:                 model = &routing_models[SURF_MODEL_FLOYD];break;
@@ -987,7 +987,7 @@ static void routing_parse_cluster(sg_platf_cluster_cbarg_t cluster)
 
       //call the cluster function that adds the others links
       if (cluster->topology == SURF_CLUSTER_FAT_TREE) {
-        ((AsClusterFatTree*) current_routing)->addComputeNode(i);
+        ((AsClusterFatTree*) current_routing)->addProcessingNode(i);
       }
       else {
       ((AsClusterPtr)current_routing)->create_links_for_node(cluster, i, rankId, rankId*
@@ -1044,7 +1044,7 @@ static void routing_parse_cluster(sg_platf_cluster_cbarg_t cluster)
 
     free(link_backbone);
   }
-
+  ((AsClusterFatTree*)current_routing)->generateDotFile();
   XBT_DEBUG("</AS>");
   sg_platf_new_AS_end();
   XBT_DEBUG(" ");

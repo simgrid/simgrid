@@ -67,7 +67,7 @@ public:
   //                                 double *latency) const;
   virtual void create_links(sg_platf_cluster_cbarg_t cluster);
   void parse_specific_arguments(sg_platf_cluster_cbarg_t cluster);
-  void addComputeNode(int id);
+  void addProcessingNode(int id);
   void generateDotFile(const string& filename = "fatTree.dot") const;
 
 protected:
@@ -77,7 +77,8 @@ protected:
   std::vector<unsigned int> upperLevelNodesNumber; // number of parents by node
   std::vector<unsigned int> lowerLevelPortsNumber; // ports between each level l and l-1
   
-  std::map<int, FatTreeNode*> nodes;
+  std::map<int, FatTreeNode*> computeNodes;
+  std::vector<FatTreeNode*> nodes;
   std::vector<FatTreeLink*> links;
   std::vector<unsigned int> nodesByLevel;
 
