@@ -350,6 +350,20 @@ Of course, specifying a reduction technique enables the model-checking
 so that you don't have to give <tt>--cfg=model-check:1</tt> in
 addition.
 
+\subsection options_mc_perf Performance considerations for the model checker
+
+The size of the stacks can have a huge impact on the memory
+consumption when using model-checking. Currently each snapshot, will
+save a copy of the whole stack and not only of the part which is
+really meaningful: you should expect the contribution of the memory
+consumption of the snapshots to be \f$ \mbox{number of processes}
+\times \mbox{stack size} \times \mbox{number of states} \f$.
+
+However, when compiled against the model checker, the stacks are not
+protected with guards: if the stack size is too small for your
+application, the stack will silently overflow on other parts of the
+memory.
+
 \section options_virt Configuring the User Process Virtualization
 
 \subsection options_virt_factory Selecting the virtualization factory
@@ -389,12 +403,25 @@ the error messages that you get when the stack size is too small are
 rather disturbing: this leads to stack overflow (overwriting other
 stacks), leading to segfaults with corrupted stack traces.
 
-If you want to push the scalability limits of your code, you really
+If you want to push the scalability limits of your code, you might
 want to reduce the \b contexts/stack_size item. Its default value
 is 8192 (in KiB), while our Chord simulation works with stacks as small
 as 16 KiB, for example. For the thread factory, the default value 
 is the one of the system, if it is too large/small, it has to be set 
 with this parameter.
+
+The operating system should only allocate memory for the pages of the
+stack which are actually used and you might not need to use this in
+most cases. However, this setting is very important when using the
+model checker (see \ref options_mc_perf).
+
+In some cases, no stack guard page is used and the stack will silently
+overflow on other parts of the memory if the stack size is too small
+for your application. This happens :
+
+- on Windows systems;
+- when the model checker is enabled;
+- when stack guard pages are explicitely disabled (see \ref  options_perf_guard_size).
 
 \subsection options_virt_parallel Running user code in parallel
 
@@ -616,6 +643,23 @@ when \b verbose-exit is set to 0 (it is to 1 by default).
 
 It can be done by using XBT. Go to \ref XBT_log for more details.
 
+\section options_perf Performance optimizations
+
+\subsection options_perf_context Context factory
+
+In order to achieve higher performance, you might want to use the raw
+context factory which avoids any system call when switching between
+tasks. If it is not possible you might use ucontext instead.
+
+\subsection options_perf_guard_size Disabling stack guard pages
+
+A stack guard page is usually used which prevents the stack from
+overflowing on other parts of the memory. However this might have a
+performance impact if a huge number of processes is created.  The
+option \b contexts:guard_size is the number of stack guard pages
+used. By setting it to 0, no guard pages will be used: in this case,
+you should avoid using small stacks (\b stack_size) as the stack will
+silently overflow on other parts of the memory.
 
 \section options_index Index of all existing configuration items
 
@@ -624,6 +668,7 @@ It can be done by using XBT. Go to \ref XBT_log for more details.
 - \c contexts/parallel_threshold: \ref options_virt_parallel
 - \c contexts/stack_size: \ref options_virt_stacksize
 - \c contexts/synchro: \ref options_virt_parallel
+- \c contexts/guard_size: \ref options_virt_parallel
 
 - \c cpu/maxmin_selective_update: \ref options_model_optim
 - \c cpu/model: \ref options_model_select
