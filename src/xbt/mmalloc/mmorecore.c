@@ -109,14 +109,9 @@ void *mmorecore(struct mdesc *mdp, ssize_t size)
 
       /* Let's call mmap. Note that it is possible that mdp->top
          is 0. In this case mmap will choose the address for us */
-      if(mdp->base==mdp->top)
-        mapto = mmap(mdp->top, mapbytes, PROT_READ | PROT_WRITE,
+      mapto = mmap(mdp->top, mapbytes, PROT_READ | PROT_WRITE,
                    MAP_PRIVATE_OR_SHARED(mdp) | MAP_IS_ANONYMOUS(mdp) |
                    MAP_FIXED, MAP_ANON_OR_FD(mdp), foffset);
-      else {
-        size_t old_size = (char*)mdp->top - (char*)mdp->base;
-        mapto = mremap(mdp->base, old_size, old_size+size, 0);
-      }
 
       if (mapto == (void *) -1/* That's MAP_FAILED */) {
         char buff[1024];
@@ -128,6 +123,9 @@ void *mmorecore(struct mdesc *mdp, ssize_t size)
         sleep(1);
         abort();
       }
+
+      if (mdp->top == 0)
+        mdp->base = mdp->breakval = mapto;
 
       mdp->top = PAGE_ALIGN((char *) mdp->breakval + size);
       result = (void *) mdp->breakval;
