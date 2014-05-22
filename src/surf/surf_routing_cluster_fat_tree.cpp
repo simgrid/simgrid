@@ -424,13 +424,21 @@ void AsClusterFatTree::generateDotFile(const string& filename) const {
   file.open(filename.c_str(), ios::out | ios::trunc); 
   
   if(file.is_open()) {
-    // That could also be greatly clarified with C++11
-    std::vector<FatTreeLink*>::const_iterator iter;
     file << "graph AsClusterFatTree {\n";
-    for (iter = this->links.begin() ; iter != this->links.end() ; iter++ ) {
-      file << (*iter)->downNode->id
+    for (unsigned int i = 0 ; i < this->nodes.size() ; i++) {
+      file << this->nodes[i]->id;
+      if(this->nodes[i]->id < 0) {
+        file << " [shape=circle];\n";
+      }
+      else {
+        file << " [shape=hexagon];\n";
+      }
+    }
+
+    for (unsigned int i = 0 ; i < this->links.size() ; i++ ) {
+      file << this->links[i]->downNode->id
              << " -- "
-           << (*iter)->upNode->id
+           << this->links[i]->upNode->id
              << ";\n";
     }
     file << "}";
