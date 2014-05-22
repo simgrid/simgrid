@@ -333,8 +333,8 @@ set(SURF_SRC
   src/surf/surf_interface.cpp
   src/surf/surf_routing.cpp
   src/surf/surf_routing_cluster.cpp
-  src/surf/surf_routing_cluster_torus.cpp
   src/surf/surf_routing_cluster_fat_tree.cpp
+  src/surf/surf_routing_cluster_torus.cpp
   src/surf/surf_routing_dijkstra.cpp
   src/surf/surf_routing_floyd.cpp
   src/surf/surf_routing_full.cpp
