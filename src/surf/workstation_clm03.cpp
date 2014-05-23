@@ -103,7 +103,8 @@ ActionPtr WorkstationCLM03Model::executeParallelTask(int workstation_nb,
     return ((WorkstationCLM03Ptr)workstation_list[0])->execute(computation_amount[0]);
   else if ((workstation_nb == 1)
            && (cost_or_zero(computation_amount, 0) == 0.0))
-    return communicate((WorkstationCLM03Ptr)workstation_list[0], (WorkstationCLM03Ptr)workstation_list[0],communication_amount[0], rate);
+    return communicate((WorkstationCLM03Ptr)workstation_list[0],
+        (WorkstationCLM03Ptr)workstation_list[0],communication_amount[0], rate);
   else if ((workstation_nb == 2)
              && (cost_or_zero(computation_amount, 0) == 0.0)
              && (cost_or_zero(computation_amount, 1) == 0.0)) {
@@ -117,11 +118,12 @@ ActionPtr WorkstationCLM03Model::executeParallelTask(int workstation_nb,
       }
     }
     if (nb == 1)
-      return communicate((WorkstationCLM03Ptr)workstation_list[0], (WorkstationCLM03Ptr)workstation_list[1],value, rate);
-  }
+      return communicate((WorkstationCLM03Ptr)workstation_list[0],
+          (WorkstationCLM03Ptr)workstation_list[1],value, rate);
+  } else
+    THROW_UNIMPLEMENTED;      /* This model does not implement parallel tasks */
 #undef cost_or_zero
 
-  THROW_UNIMPLEMENTED;          /* This model does not implement parallel tasks */
   return NULL;
 }
 
