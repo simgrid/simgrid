@@ -1,0 +1,4 @@
+#! ./tesh
+
+$ ${bindir:=.}/io/remote_io ${srcdir:=.}/examples/platforms/remote_io.xml \
+${srcdir:=.}/examples/platforms/deployment_remote_io.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
