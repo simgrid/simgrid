@@ -122,6 +122,7 @@ SimGrid (3.11) NOT RELEASED; urgency=low
    - xbt_bar_t XBT_barrier_init(unsigned int count)
    - int XBT_barrier_wait(xbt_bar_t barrier)
    - void XBT_barrier_destroy(xbt_bar_t barrier)
+ * Make the xbt_os_time module public
 
  -- $date Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
 

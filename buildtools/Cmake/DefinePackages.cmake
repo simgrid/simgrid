@@ -18,7 +18,6 @@ set(EXTRA_DIST
   src/include/surf/trace_mgr.h
   src/include/xbt/win32_ucontext.h
   src/include/xbt/wine_dbghelp.h
-  src/include/xbt/xbt_os_time.h
   src/msg/msg_mailbox.h
   src/msg/msg_private.h
   src/portable.h
@@ -661,6 +660,7 @@ set(headers_to_install
   include/xbt/sysdep.h
   include/xbt/virtu.h
   include/xbt/xbt_os_thread.h
+  include/xbt/xbt_os_time.h
   )
 set(source_of_generated_headers
   include/simgrid_config.h.in
