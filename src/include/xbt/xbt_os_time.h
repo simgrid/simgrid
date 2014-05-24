@@ -1,5 +1,4 @@
-/*  xbt/xbt_portability.h -- all system dependency                          */
-/* Private portability layer                                                */
+/*  xbt/xbt_os_timer.h -- system dependency on time functions               */
 
 /* Copyright (c) 2007, 2009-2010, 2012-2014. The SimGrid Team.
  * All rights reserved.                                                     */
@@ -7,8 +6,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#ifndef _XBT_PORTABILITY_H
-#define _XBT_PORTABILITY_H
+#ifndef _XBT_OS_TIMER_H
+#define _XBT_OS_TIMER_H
 
 #include <xbt/misc.h>           /* XBT_PUBLIC */
 
