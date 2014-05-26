@@ -64,7 +64,6 @@ void AsClusterFatTree::getRouteAndLatency(RoutingEdgePtr src,
 
 
   destination = tempIter->second;
-  XBT_DEBUG("%d %d", src->getId(), source->id);
   XBT_DEBUG("Get route and latency from '%s' [%d] to '%s' [%d] in a fat tree",
             src->getName(), src->getId(), dst->getName(), dst->getId());
 
@@ -127,7 +126,7 @@ void AsClusterFatTree::create_links(sg_platf_cluster_cbarg_t cluster){
     for (unsigned int i = 1 ; i <= this->levels ; i++) {
       msgBuffer << ", " << this->nodesByLevel[i] << " switches at level " << i;
     }
-    XBT_DEBUG(msgBuffer.str().c_str());
+    XBT_DEBUG("%s", msgBuffer.str().c_str());
     msgBuffer.str("");
     msgBuffer << "Nodes are : ";
 
@@ -135,7 +134,7 @@ void AsClusterFatTree::create_links(sg_platf_cluster_cbarg_t cluster){
       msgBuffer << this->nodes[i]->id << "(" << this->nodes[i]->level << ","
                 << this->nodes[i]->position << ") ";
     }
-    XBT_DEBUG(msgBuffer.str().c_str());
+    XBT_DEBUG("%s", msgBuffer.str().c_str());
   }
 
 
@@ -157,7 +156,7 @@ void AsClusterFatTree::create_links(sg_platf_cluster_cbarg_t cluster){
       msgBuffer << "(" << this->links[i]->upNode->id << ","
                 << this->links[i]->downNode->id << ") ";
     }
-    XBT_DEBUG(msgBuffer.str().c_str());
+    XBT_DEBUG("%s", msgBuffer.str().c_str());
   }
 
 
@@ -210,7 +209,7 @@ bool AsClusterFatTree::areRelated(FatTreeNode *parent, FatTreeNode *child) {
     }
     msgBuffer << ">";
     msgBuffer << " related ? ";
-    XBT_DEBUG(msgBuffer.str().c_str());
+    XBT_DEBUG("%s", msgBuffer.str().c_str());
     
   }
   if (parent->level != child->level + 1) {
@@ -306,7 +305,7 @@ void AsClusterFatTree::generateLabels() {
         }
         msgBuffer << "> to " << k << " (" << i << "," << j <<")";
         
-        XBT_DEBUG(bprintf(msgBuffer.str().c_str()));
+        XBT_DEBUG("%s", msgBuffer.str().c_str());
       }
       this->nodes[k]->label.assign(currentLabel.begin(), currentLabel.end());
 
