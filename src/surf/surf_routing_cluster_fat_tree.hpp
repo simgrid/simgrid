@@ -70,7 +70,7 @@ public:
   void addProcessingNode(int id);
   void generateDotFile(const string& filename = "fatTree.dot") const;
 
-protected:
+private:
   //description of a PGFT (TODO : better doc)
   unsigned int levels;
   std::vector<unsigned int> lowerLevelNodesNumber; // number of children by node

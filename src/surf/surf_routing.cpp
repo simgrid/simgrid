@@ -1044,7 +1044,7 @@ static void routing_parse_cluster(sg_platf_cluster_cbarg_t cluster)
 
     free(link_backbone);
   }
-  ((AsClusterFatTree*)current_routing)->generateDotFile();
+
   XBT_DEBUG("</AS>");
   sg_platf_new_AS_end();
   XBT_DEBUG(" ");

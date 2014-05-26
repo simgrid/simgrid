@@ -25,13 +25,17 @@ AsClusterFatTree::~AsClusterFatTree() {
 }
 
 bool AsClusterFatTree::isInSubTree(FatTreeNode *root, FatTreeNode *node) {
+  XBT_DEBUG("Is %d(%u,%u) in the sub tree of %d(%u,%u) ?", node->id, node->level, node->position, root->id, root->level, root->position);
+  if (root->level <= node->level) {
+    return false;
+  }
   for (unsigned int i = 0 ; i < node->level ; i++) {
     if(root->label[i] != node->label[i]) {
       return false;
     }
   }
   
-  for (unsigned int i = root->level + 1 ; i < this->levels ; i++) {
+  for (unsigned int i = root->level ; i < this->levels ; i++) {
     if(root->label[i] != node->label[i]) {
       return false;
     }
@@ -45,9 +49,22 @@ void AsClusterFatTree::getRouteAndLatency(RoutingEdgePtr src,
                                           double *latency) {
   FatTreeNode *source, *destination, *currentNode;
   std::vector<NetworkLink*> route;
-  source = this->computeNodes.find(src->getId())->second;
-  destination = this->computeNodes.find(dst->getId())->second;
+  std::map<int, FatTreeNode*>::const_iterator tempIter;
+  tempIter = this->computeNodes.find(src->getId());
 
+  // xbt_die -> assert
+  if (tempIter == this->computeNodes.end()) {
+    xbt_die("Could not find the source %s [%d] in the fat tree", src->getName(), src->getId());
+  }
+  source = tempIter->second;
+  tempIter = this->computeNodes.find(dst->getId());
+  if (tempIter == this->computeNodes.end()) {
+    xbt_die("Could not find the destination %s [%d] in the fat tree", src->getName(), src->getId());
+  }
+
+
+  destination = tempIter->second;
+  XBT_DEBUG("%d %d", src->getId(), source->id);
   XBT_DEBUG("Get route and latency from '%s' [%d] to '%s' [%d] in a fat tree",
             src->getName(), src->getId(), dst->getName(), dst->getId());
 
@@ -61,26 +78,27 @@ void AsClusterFatTree::getRouteAndLatency(RoutingEdgePtr src,
     for (unsigned int i = 0 ; i < currentNode->level ; i++) {
       d /= this->upperLevelNodesNumber[i];
     }
-     k = this->upperLevelNodesNumber[currentNode->level] *
-      this->lowerLevelNodesNumber[currentNode->level];
-     d = d % k;
-     route.push_back(currentNode->parents[d]->upLink);
-     if(latency) {
-       *latency += currentNode->parents[d]->upLink->getLatency();
-     }
-     currentNode = currentNode->parents[d]->upNode;
+    k = this->upperLevelNodesNumber[currentNode->level];
+    d = d % k;
+    route.push_back(currentNode->parents[d]->upLink);
+
+    if(latency) {
+      *latency += currentNode->parents[d]->upLink->getLatency();
+    }
+    currentNode = currentNode->parents[d]->upNode;
   }
-  
+  XBT_DEBUG("%d(%u,%u) is in the sub tree of %d(%u,%u).", destination->id, destination->level, destination->position, currentNode->id, currentNode->level, currentNode->position);
   // Down part
   while(currentNode != destination) {
     for(unsigned int i = 0 ; i < currentNode->children.size() ; i++) {
-      if(i % this->lowerLevelNodesNumber[currentNode->level] ==
-         destination->label[currentNode->level]) {
+      if(i % this->lowerLevelNodesNumber[currentNode->level - 1] ==
+         destination->label[currentNode->level - 1]) {
         route.push_back(currentNode->children[i]->downLink);
         if(latency) {
           *latency += currentNode->children[i]->downLink->getLatency();
         }
         currentNode = currentNode->children[i]->downNode;
+        XBT_DEBUG("%d(%u,%u) is accessible through %d(%u,%u)", destination->id, destination->level, destination->position, currentNode->id, currentNode->level, currentNode->position);
       }
     }
   }
@@ -160,9 +178,9 @@ int AsClusterFatTree::connectNodeToParents(sg_platf_cluster_cbarg_t cluster,
                 node->level, node->position, (*currentParentNode)->id,
                 (*currentParentNode)->level, (*currentParentNode)->position, this->lowerLevelPortsNumber[level]);
       for (unsigned int j = 0 ; j < this->lowerLevelPortsNumber[level] ; j++) {
-      this->addLink(cluster, *currentParentNode, node->label[level + 1] +
+      this->addLink(cluster, *currentParentNode, node->label[level] +
                     j * this->lowerLevelNodesNumber[level], node,
-                    (*currentParentNode)->label[level + 1] +
+                    (*currentParentNode)->label[level] +
                     j * this->upperLevelNodesNumber[level]);
       }
       connectionsNumber++;
@@ -199,8 +217,8 @@ bool AsClusterFatTree::areRelated(FatTreeNode *parent, FatTreeNode *child) {
     return false;
   }
   
-  for (unsigned int i = 1 ; i <= this->levels; i++) {
-    if (parent->label[this->levels - i] != child->label[this->levels - i] && i != parent->level) {
+  for (unsigned int i = 0 ; i < this->levels; i++) {
+    if (parent->label[i] != child->label[i] && i + 1 != parent->level) {
       return false;
     }
   }
@@ -219,12 +237,13 @@ void AsClusterFatTree::generateSwitches() {
   }
 
      
-  if(this->nodesByLevel[0] > this->nodes.size()) {
-    surf_parse_error("There is not enough nodes to fit to the described topology."
-                     " Please check your platform description (We need %d nodes, we only got %zu)",
+  if(this->nodesByLevel[0] != this->nodes.size()) {
+    surf_parse_error("The number of provided nodes does not fit with the wanted topology."
+                     " Please check your platform description (We need %d nodes, we got %zu)",
                      this->nodesByLevel[0], this->nodes.size());
     return;
   }
+
   
   for (unsigned int i = 0 ; i < this->levels ; i++) {
     int nodesInThisLevel = 1;
@@ -243,13 +262,7 @@ void AsClusterFatTree::generateSwitches() {
 
 
   // If we have to many compute nodes, we ditch them
-  if (this->nodesByLevel[0] < this->nodes.size()) {
-    for (unsigned int i = this->nodesByLevel[0] ; i < this->nodes.size() ; i++) {
-      this->computeNodes.erase(this->nodes[i]->id);
-      delete this->nodes[i];
-    }
-    this->nodes.resize(this->nodesByLevel[0]);
-  }
+  
 
   // We create the switches
   int k = 0;
@@ -261,7 +274,7 @@ void AsClusterFatTree::generateSwitches() {
       newNode->children.resize(this->lowerLevelNodesNumber[i] *
                                this->lowerLevelPortsNumber[i]);
       if (i != this->levels - 1) {
-        newNode->parents.resize(this->upperLevelNodesNumber[i + 1]);
+        newNode->parents.resize(this->upperLevelNodesNumber[i + 1] * this->lowerLevelPortsNumber[i + 1]);
       }
       newNode->label.resize(this->levels);
       this->nodes.push_back(newNode);
@@ -277,9 +290,9 @@ void AsClusterFatTree::generateLabels() {
   unsigned int k = 0;
   for (unsigned int i = 0 ; i <= this->levels ; i++) {
     currentLabel.assign(this->levels, 0);
-    for (unsigned int j = 1 ; j <= this->levels ; j++) {
-      maxLabel[maxLabel.size() - j] = j > i ?
-        this->lowerLevelNodesNumber[j - 1] : this->upperLevelNodesNumber[j - 1];
+    for (unsigned int j = 0 ; j < this->levels ; j++) {
+      maxLabel[j] = j + 1 > i ?
+        this->lowerLevelNodesNumber[j] : this->upperLevelNodesNumber[j];
     }
     
     for (unsigned int j = 0 ; j < this->nodesByLevel[i] ; j++) {
@@ -299,12 +312,12 @@ void AsClusterFatTree::generateLabels() {
 
       bool remainder = true;
       
-      int pos = currentLabel.size() - 1;
+      unsigned int pos = 0;
       do {
         std::stringstream msgBuffer;
 
         ++currentLabel[pos];
-        if (currentLabel[pos] >= maxLabel[pos] && pos > 0) {
+        if (currentLabel[pos] >= maxLabel[pos]) {
           currentLabel[pos] = 0;
           remainder = true;
         }
@@ -312,13 +325,13 @@ void AsClusterFatTree::generateLabels() {
           remainder = false;
         }
         if (!remainder) {
-          pos = currentLabel.size() - 1;
+          pos = 0;
         }
         else {
-          --pos;
+          ++pos;
         }
       }
-      while(remainder);
+      while(remainder && pos < this->levels);
       k++;
     }
   }
@@ -353,7 +366,7 @@ void AsClusterFatTree::addLink(sg_platf_cluster_cbarg_t cluster,
                                FatTreeNode *parent, unsigned int parentPort,
                                FatTreeNode *child, unsigned int childPort) {
   FatTreeLink *newLink;
-  newLink = new FatTreeLink(cluster, parent, child);
+  newLink = new FatTreeLink(cluster, child, parent);
   XBT_DEBUG("Creating a link between the parent (%d,%d,%u)"
             " and the child (%d,%d,%u)", parent->level, parent->position,
             parentPort, child->level, child->position, childPort);
