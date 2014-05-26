@@ -64,6 +64,10 @@ const char *MSG_environment_as_get_name(msg_as_t as) {
   return surf_AS_get_name(as);
 }
 
+msg_as_t MSG_environment_as_get_by_name(const char * name) {
+  return surf_AS_get_by_name(name);
+}
+
 xbt_dict_t MSG_environment_as_get_routing_sons(msg_as_t as) {
   xbt_dict_t res = surf_AS_get_routing_sons(as);
   return res;

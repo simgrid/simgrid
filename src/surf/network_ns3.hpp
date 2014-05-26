@@ -37,7 +37,7 @@ public:
   NetworkNS3Model();
 
   ~NetworkNS3Model();
-  NetworkLinkPtr createResource(const char *name,
+  NetworkLinkPtr createNetworkLink(const char *name,
   	                                 double bw_initial,
   	                                 tmgr_trace_t bw_trace,
   	                                 double lat_initial,
@@ -51,6 +51,7 @@ public:
 		                           double size, double rate);
   double shareResources(double now);
   void updateActionsState(double now, double delta);
+  void addTraces(){DIE_IMPOSSIBLE;}
 };
 
 /************

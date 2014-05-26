@@ -272,14 +272,14 @@ static void xbt_parmap_set_mode(xbt_parmap_t parmap, e_xbt_parmap_mode_t mode)
  */
 void xbt_parmap_apply(xbt_parmap_t parmap, void_f_pvoid_t fun, xbt_dynar_t data)
 {
-  /* Assign resources to worker threads */
+  /* Assign resources to worker threads (we are maestro here)*/
   parmap->fun = fun;
   parmap->data = data;
   parmap->index = 0;
-  parmap->master_signal_f(parmap);
-  xbt_parmap_work(parmap);
-  parmap->master_wait_f(parmap);
-  XBT_DEBUG("Job done");
+  parmap->master_signal_f(parmap); // maestro runs futex_wait to wake all the minions (the working threads)
+  xbt_parmap_work(parmap);         // maestro works with its minions
+  parmap->master_wait_f(parmap);   // When there is no more work to do, then maestro waits for the last minion to stop
+  XBT_DEBUG("Job done");           //   ... and proceeds
 }
 
 /**

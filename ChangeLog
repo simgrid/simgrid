@@ -1,19 +1,5 @@
 SimGrid (3.11) NOT RELEASED; urgency=low
 
- TENTATIVE RELEASE GOALS for 3.11:
- * Switch to tesh.pl, and kill the now unused parts of xbt that seem fragile
- * Clean up CMake files (may need a full rewrite).
-   Non exhaustive list of subgoals:
-   - Use genuine cmake mechanisms and variables when available,
-     instead of reinventing the wheel.
-   - Correctly determine system and architecture (e.g. x32).
-   - Correctly determine compiler type and version (e.g. clang).
-   - Correctly set compiler flags according to compiler type and version.
-   - Correctly set compiler flags for C++, Java, and Fortran compilers too.
-   - Use git to generate the dist archive.  Either use git-archive to
-     generate the tarball, or keep using cmake -E tar, but use git-ls-files
-     to get the list of files to pack.
-
  The Class Release.
 
  Tools:
@@ -25,11 +11,37 @@ SimGrid (3.11) NOT RELEASED; urgency=low
    - examples/msg/cloud/simple_vm.tesh
    - examples/java/cloud/cloud.tesh
    - examples/java/cloud/migration/migration.tesh
+ * Add java surf examples:
+   - examples/java/surfPlugin/surf_plugin.tesh
+   - examples/java/reservationSurfPlugin/reservation_surf_plugin.tes
+   - examples/java/surfCpuModel/surf_cpu_model.tesh
+ * Add SMPI+MSG example:
+   - examples/smpi/smpi_msg_masterslave/
+
+ TeshSuite:
+ * Add tests:
+   - msg process test
+   - msg task destroy cancel test
+   - msg_host on/off test
+ * Move all tests in testsuite to teshsuite (adding tesh files)
+ * Restructure teshsuites
+   - one folder for each kind of test
+ * Restructure AddTests.cmake
+   - unify tests names
+   - structure the order of tests (with sections)
 
  MSG:
  * Add virtual machine
    - creation of a VM on a PM
    - migration of a VM from a PM to another PM
+ * New functions
+   - MSG_process_join(msg_process_t process, double timeout)
+   - msg_bar_t MSG_barrier_init(unsigned int count)
+   - int MSG_barrier_wait(msg_bar_t barrier)
+   - void MSG_barrier_destroy(msg_bar_t barrier)
+   - msg_as_t MSG_environment_as_get_by_name(const char * name)
+ * New option "msg/debug_multiple_use" to help debugging when a task is used
+   several times
 
  SIMIX:
  * Protect context stacks against stack overflow. The number of protected memory
@@ -41,12 +53,15 @@ SimGrid (3.11) NOT RELEASED; urgency=low
  * Clean simcalls
    - remove sem_destroy, file_set_data, comm_destroy, vm_set_state,
      host_set_data, host_get_data
+ * New simcalls
+   - simcall_process_join(smx_process_t process, double timeout)
+ * Fix bug where sleeping processing could not be suspended.
 
  SURF:
  * Translate surf models from C to C++
    - Generic classes for all models: Model, Resource, Action
-   - A generic interface for each kind of model (cpu, network, storage
-     workstation, workstationvm)
+   - A generic interface for each kind of model (CPU, Network, Storage
+     Workstation, WorkstationVM)
    - C bindings
  * Translate surf routings from C to C++
  * Add callbacks using sigc++ or boost::signals2
@@ -54,20 +69,43 @@ SimGrid (3.11) NOT RELEASED; urgency=low
    - Add callback functions for action state change
    - Handle Energy as a plugin
  * Replace swag by boost::intrusive
- * Add new routing model for torus clusters
+ * Add new routing model for torus clusters 
+   - topology="TORUS" and topo_parameters="ndim1,ndim2,...,ndimn" parameters
+     for cluster tag
+   - see examples/platforms/torus_cluster.xml
  * More documentation
 
  SMPI:
- * hostfiles support host:nb_processes construct to deploy several processes on
-   one node
+ * Hostfiles support host:nb_processes construct to deploy several processes on
+   one node.
  * Collective communication algorithms should not crash if used with
    improper number of nodes and report the error.
+ * SMPI now partially supports MPI_Topologies : MPI_Cart_create, MPI_Cart_shift,
+   MPI_Cart_rank, MPI_Cart_get, MPI_Cart_coords, MPI_Cartdim_get, 
+   MPI_Dims_create, MPI_Cart_sub are supported.
+ * New interface to use SMPI programmatically (still depends on MSG for
+   some parts, see examples/smpi/smpi_msg_masterslave) :
+   - SMPI_app_instance_register(const char *name, xbt_main_func_t code, 
+        int num_processes)
+   - SMPI_init()
+   - SMPI_finalize();
+ * Global variables privatization in MPI executables is now performed at runtime
+   with the option smpi/privatize_global_variables (default:no). 
+   Limitations : Linux/BSD only, with mmap enabled. Global variables inside 
+   dynamic libraries loaded by the application are not privatized (static 
+   linking with these libraries is advised in this case)
+
+ Tracing:
+ * Options defined in XML work correctly now.
 
  Java:
  * New cmake option, enable_lib_in_jar, to control whether native libraries are
    copied into simgrid.jar or not (ON by default).  Use this option if you want
    to reduce the size of the installed simgrid.jar, *and* the native libraries
    are kept installed elsewhere.
+ * Surf binding with SWIG (code generated in maintainer mode only):
+   - plugin to handle callbacks
+   - CPU model only for the moment
 
  Build System:
  * Supernovae build mode is definitively removed. It was used to improve
@@ -75,6 +113,16 @@ SimGrid (3.11) NOT RELEASED; urgency=low
    link-time optimizations commonly available in compilers.
  * Update ns-3 find lib. Bindings for ns-3 should work again now.
  * Add boost dependency for surf++
+ * Add new macro for tests
+   - ADD_TESH(name <tesh_args>)
+   - ADD_TESH_FACTORIES(name "thread;ucontext;raw" <tesh_args>)
+
+ XBT:
+ * New functions
+   - xbt_bar_t XBT_barrier_init(unsigned int count)
+   - int XBT_barrier_wait(xbt_bar_t barrier)
+   - void XBT_barrier_destroy(xbt_bar_t barrier)
+ * Make the xbt_os_time module public
 
  -- $date Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
 

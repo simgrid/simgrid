@@ -38,25 +38,25 @@ typedef StorageAction *StorageActionPtr;
  * @brief Callbacks handler which emit the callbacks after Storage creation *
  * @details Callback functions have the following signature: `void(StoragePtr)`
  */
-extern surf_callback(void, StoragePtr) storageCreatedCallbacks;
+XBT_PUBLIC_DATA(surf_callback(void, StoragePtr)) storageCreatedCallbacks;
 
 /** @ingroup SURF_callbacks
  * @brief Callbacks handler which emit the callbacks after Storage destruction *
  * @details Callback functions have the following signature: `void(StoragePtr)`
  */
-extern surf_callback(void, StoragePtr) storageDestructedCallbacks;
+XBT_PUBLIC_DATA(surf_callback(void, StoragePtr)) storageDestructedCallbacks;
 
 /** @ingroup SURF_callbacks
  * @brief Callbacks handler which emit the callbacks after Storage State changed *
  * @details Callback functions have the following signature: `void(StorageActionPtr action, e_surf_resource_state_t old, e_surf_resource_state_t current)`
  */
-extern surf_callback(void, StoragePtr, e_surf_resource_state_t, e_surf_resource_state_t) storageStateChangedCallbacks;
+XBT_PUBLIC_DATA(surf_callback(void, StoragePtr, e_surf_resource_state_t, e_surf_resource_state_t)) storageStateChangedCallbacks;
 
 /** @ingroup SURF_callbacks
  * @brief Callbacks handler which emit the callbacks after StorageAction State changed *
  * @details Callback functions have the following signature: `void(StorageActionPtr action, e_surf_action_state_t old, e_surf_action_state_t current)`
  */
-extern surf_callback(void, StorageActionPtr, e_surf_action_state_t, e_surf_action_state_t) storageActionStateChangedCallbacks;
+XBT_PUBLIC_DATA(surf_callback(void, StorageActionPtr, e_surf_action_state_t, e_surf_action_state_t)) storageActionStateChangedCallbacks;
 
 /*********
  * Model *
@@ -88,7 +88,7 @@ public:
    * @param attach [description]
    * @return The created Storage
    */
-  virtual StoragePtr createResource(const char* id,
+  virtual StoragePtr createStorage(const char* id,
                                     const char* type_id,
                                     const char* content_name,
                                     const char* content_type,

@@ -127,8 +127,7 @@ smpi_coll_tuned_scatter_ompi_binomial(void *sbuf, int scount,
 	    smpi_mpi_recv(ptmp, rcount*size, rdtype, bmtree->tree_prev,
 				    COLL_TAG_SCATTER, comm, &status);
 	    /* local copy to rbuf */
-	    err = smpi_datatype_copy(ptmp, scount, sdtype,
-				  rbuf, rcount, rdtype);
+	    smpi_datatype_copy(ptmp, scount, sdtype, rbuf, rcount, rdtype);
 	}
 	/* send to children on all non-leaf */
 	for (i = 0; i < bmtree->tree_nextsize; i++) {

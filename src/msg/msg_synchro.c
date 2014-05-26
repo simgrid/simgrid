@@ -6,6 +6,7 @@
 
 #include "msg_private.h"
 #include "xbt/sysdep.h"
+#include "xbt/synchro_core.h"
 #include "xbt/log.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_synchro, msg,
@@ -55,13 +56,31 @@ void MSG_sem_get_capacity(msg_sem_t sem) {
 void MSG_sem_destroy(msg_sem_t sem) {
   simcall_sem_destroy(sem);
 }
-/** @brief returns a boolean indicating it this semaphore would block at this very specific time
+/** @brief returns a boolean indicating if this semaphore would block at this very specific time
  *
  * Note that the returned value may be wrong right after the function call, when you try to use it...
  * But that's a classical semaphore issue, and SimGrid's semaphore are not different to usual ones here.
  */
 int MSG_sem_would_block(msg_sem_t sem) {
   return simcall_sem_would_block(sem);
+}
+
+/** @brief Initializes a barrier, with count elements */
+msg_bar_t MSG_barrier_init(unsigned int count) {
+   return (msg_bar_t)xbt_barrier_init(count);
+}
+
+/** @brief Initializes a barrier, with count elements */
+void MSG_barrier_destroy(msg_bar_t bar) {
+  xbt_barrier_destroy((xbt_bar_t)bar);
+}
+
+/** @brief Performs a barrier already initialized */
+int MSG_barrier_wait(msg_bar_t bar) {
+  if(xbt_barrier_wait((xbt_bar_t)bar) == XBT_BARRIER_SERIAL_PROCESS)
+    return MSG_BARRIER_SERIAL_PROCESS;
+  else
+    return 0;
 }
 
 /**@}*/

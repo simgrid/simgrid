@@ -27,7 +27,7 @@
 #define FLEX_SCANNER
 #define YY_FLEX_MAJOR_VERSION 2
 #define YY_FLEX_MINOR_VERSION 5
-#define YY_FLEX_SUBMINOR_VERSION 39
+#define YY_FLEX_SUBMINOR_VERSION 37
 #if YY_FLEX_SUBMINOR_VERSION > 0
 #define FLEX_BETA
 #endif
@@ -160,15 +160,7 @@ typedef unsigned int flex_uint32_t;
 
 /* Size of default input buffer. */
 #ifndef YY_BUF_SIZE
-#ifdef __ia64__
-/* On IA-64, the buffer size is 16k, not 8k.
- * Moreover, YY_BUF_SIZE is 2*YY_READ_BUF_SIZE in the general case.
- * Ditto for the __ia64__ case accordingly.
- */
-#define YY_BUF_SIZE 32768
-#else
 #define YY_BUF_SIZE 16384
-#endif /* __ia64__ */
 #endif
 
 /* The state buf must be large enough to hold one state per character in the main buffer.
@@ -205,13 +197,6 @@ extern FILE *xbt_graph_parse_in, *xbt_graph_parse_out;
                 int yyl;\
                 for ( yyl = n; yyl < xbt_graph_parse_leng; ++yyl )\
                     if ( xbt_graph_parse_text[yyl] == '\n' )\
-                        --xbt_graph_parse_lineno;\
-            }while(0)
-    #define YY_LINENO_REWIND_TO(dst) \
-            do {\
-                const char *p;\
-                for ( p = yy_cp-1; p >= (dst); --p)\
-                    if ( *p == '\n' )\
                         --xbt_graph_parse_lineno;\
             }while(0)
     
@@ -481,7 +466,7 @@ static yyconst flex_int16_t yy_accept[564] =
         0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
         0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
         0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
-        0,    0,    0,    0,    0,    0,   15,    0,    0,   13,
+        0,    0,    0,    0,    0,    0,   13,    0,    0,   15,
         0,   14,    0
     } ;
 
@@ -1142,42 +1127,42 @@ const char graphxml_flexml_version[] = "1.9.6";
 int graphxml_pcdata_ix;
 extern char *graphxml_bufferstack;
 #define graphxml_pcdata (graphxml_bufferstack + graphxml_pcdata_ix)
-AT_graphxml_node_label AX_graphxml_node_label;
-#define A_graphxml_node_label (graphxml_bufferstack + AX_graphxml_node_label)
-short int graphxml_node_label_isset;
-AT_graphxml_edge_length AX_graphxml_edge_length;
-#define A_graphxml_edge_length (graphxml_bufferstack + AX_graphxml_edge_length)
-short int graphxml_edge_length_isset;
-AT_graphxml_edge_source AX_graphxml_edge_source;
-#define A_graphxml_edge_source (graphxml_bufferstack + AX_graphxml_edge_source)
-short int graphxml_edge_source_isset;
-AT_graphxml_node_position___y AX_graphxml_node_position___y;
-#define A_graphxml_node_position___y (graphxml_bufferstack + AX_graphxml_node_position___y)
-short int graphxml_node_position___y_isset;
-AT_graphxml_edge_target AX_graphxml_edge_target;
-#define A_graphxml_edge_target (graphxml_bufferstack + AX_graphxml_edge_target)
-short int graphxml_edge_target_isset;
-AT_graphxml_node_data AX_graphxml_node_data;
-#define A_graphxml_node_data (graphxml_bufferstack + AX_graphxml_node_data)
-short int graphxml_node_data_isset;
 AT_graphxml_node_name AX_graphxml_node_name;
 #define A_graphxml_node_name (graphxml_bufferstack + AX_graphxml_node_name)
 short int graphxml_node_name_isset;
-AT_graphxml_edge_data AX_graphxml_edge_data;
-#define A_graphxml_edge_data (graphxml_bufferstack + AX_graphxml_edge_data)
-short int graphxml_edge_data_isset;
+AT_graphxml_node_data AX_graphxml_node_data;
+#define A_graphxml_node_data (graphxml_bufferstack + AX_graphxml_node_data)
+short int graphxml_node_data_isset;
 AT_graphxml_node_position___x AX_graphxml_node_position___x;
 #define A_graphxml_node_position___x (graphxml_bufferstack + AX_graphxml_node_position___x)
 short int graphxml_node_position___x_isset;
-AT_graphxml_edge_label AX_graphxml_edge_label;
-#define A_graphxml_edge_label (graphxml_bufferstack + AX_graphxml_edge_label)
-short int graphxml_edge_label_isset;
+AT_graphxml_edge_source AX_graphxml_edge_source;
+#define A_graphxml_edge_source (graphxml_bufferstack + AX_graphxml_edge_source)
+short int graphxml_edge_source_isset;
+AT_graphxml_edge_data AX_graphxml_edge_data;
+#define A_graphxml_edge_data (graphxml_bufferstack + AX_graphxml_edge_data)
+short int graphxml_edge_data_isset;
 AT_graphxml_graph_isDirected AX_graphxml_graph_isDirected;
 #define A_graphxml_graph_isDirected AX_graphxml_graph_isDirected
 short int graphxml_graph_isDirected_isset;
 AT_graphxml_edge_name AX_graphxml_edge_name;
 #define A_graphxml_edge_name (graphxml_bufferstack + AX_graphxml_edge_name)
 short int graphxml_edge_name_isset;
+AT_graphxml_node_position___y AX_graphxml_node_position___y;
+#define A_graphxml_node_position___y (graphxml_bufferstack + AX_graphxml_node_position___y)
+short int graphxml_node_position___y_isset;
+AT_graphxml_edge_length AX_graphxml_edge_length;
+#define A_graphxml_edge_length (graphxml_bufferstack + AX_graphxml_edge_length)
+short int graphxml_edge_length_isset;
+AT_graphxml_edge_target AX_graphxml_edge_target;
+#define A_graphxml_edge_target (graphxml_bufferstack + AX_graphxml_edge_target)
+short int graphxml_edge_target_isset;
+AT_graphxml_edge_label AX_graphxml_edge_label;
+#define A_graphxml_edge_label (graphxml_bufferstack + AX_graphxml_edge_label)
+short int graphxml_edge_label_isset;
+AT_graphxml_node_label AX_graphxml_node_label;
+#define A_graphxml_node_label (graphxml_bufferstack + AX_graphxml_node_label)
+short int graphxml_node_label_isset;
 
 /* XML state. */
 #ifdef FLEX_DEBUG
@@ -1443,12 +1428,7 @@ static int input (void );
     
 /* Amount of stuff to slurp up with each read. */
 #ifndef YY_READ_BUF_SIZE
-#ifdef __ia64__
-/* On IA-64, the buffer size is 16k, not 8k */
-#define YY_READ_BUF_SIZE 16384
-#else
 #define YY_READ_BUF_SIZE 8192
-#endif /* __ia64__ */
 #endif
 
 /* Copy whatever the last rule matched to the standard output. */
@@ -1549,34 +1529,6 @@ YY_DECL
 	register char *yy_cp, *yy_bp;
 	register int yy_act;
     
-	if ( !(yy_init) )
-		{
-		(yy_init) = 1;
-
-#ifdef YY_USER_INIT
-		YY_USER_INIT;
-#endif
-
-		if ( ! (yy_start) )
-			(yy_start) = 1;	/* first start state */
-
-		if ( ! xbt_graph_parse_in )
-			xbt_graph_parse_in = stdin;
-
-		if ( ! xbt_graph_parse_out )
-			xbt_graph_parse_out = stdout;
-
-		if ( ! YY_CURRENT_BUFFER ) {
-			xbt_graph_parse_ensure_buffer_stack ();
-			YY_CURRENT_BUFFER_LVALUE =
-				xbt_graph_parse__create_buffer(xbt_graph_parse_in,YY_BUF_SIZE );
-		}
-
-		xbt_graph_parse__load_buffer_state( );
-		}
-
-	{
-
  /* Bypass Flex's default INITIAL state and begin by parsing the XML prolog. */
  SET(PROLOG);
  reset_graphxml_parse_err_msg();
@@ -1628,6 +1580,32 @@ YY_DECL
 
  /* COMMENTS and PIs: handled uniformly for efficiency. */
 
+	if ( !(yy_init) )
+		{
+		(yy_init) = 1;
+
+#ifdef YY_USER_INIT
+		YY_USER_INIT;
+#endif
+
+		if ( ! (yy_start) )
+			(yy_start) = 1;	/* first start state */
+
+		if ( ! xbt_graph_parse_in )
+			xbt_graph_parse_in = stdin;
+
+		if ( ! xbt_graph_parse_out )
+			xbt_graph_parse_out = stdout;
+
+		if ( ! YY_CURRENT_BUFFER ) {
+			xbt_graph_parse_ensure_buffer_stack ();
+			YY_CURRENT_BUFFER_LVALUE =
+				xbt_graph_parse__create_buffer(xbt_graph_parse_in,YY_BUF_SIZE );
+		}
+
+		xbt_graph_parse__load_buffer_state( );
+		}
+
 	while ( 1 )		/* loops until end-of-file is reached */
 		{
 		yy_cp = (yy_c_buf_p);
@@ -1644,7 +1622,7 @@ YY_DECL
 yy_match:
 		do
 			{
-			register YY_CHAR yy_c = yy_ec[YY_SC_TO_UI(*yy_cp)] ;
+			register YY_CHAR yy_c = yy_ec[YY_SC_TO_UI(*yy_cp)];
 			if ( yy_accept[yy_current_state] )
 				{
 				(yy_last_accepting_state) = yy_current_state;
@@ -1753,7 +1731,7 @@ FAIL("Bad declaration %s.",xbt_graph_parse_text);
 case 13:
 /* rule 13 can match eol */
 YY_RULE_SETUP
-SET(ROOT_graphxml_node);
+SET(ROOT_graphxml_edge);
 	YY_BREAK
 case 14:
 /* rule 14 can match eol */
@@ -1763,7 +1741,7 @@ SET(ROOT_graphxml_graph);
 case 15:
 /* rule 15 can match eol */
 YY_RULE_SETUP
-SET(ROOT_graphxml_edge);
+SET(ROOT_graphxml_node);
 	YY_BREAK
 case 16:
 /* rule 16 can match eol */
@@ -1862,9 +1840,9 @@ FAIL("Unexpected character `%c': `</graph>' expected.",xbt_graph_parse_text[0]);
 	YY_BREAK
 case YY_STATE_EOF(S_graphxml_graph_3):
 case YY_STATE_EOF(S_graphxml_graph):
-case YY_STATE_EOF(S_graphxml_graph_1):
-case YY_STATE_EOF(E_graphxml_graph):
 case YY_STATE_EOF(S_graphxml_graph_5):
+case YY_STATE_EOF(E_graphxml_graph):
+case YY_STATE_EOF(S_graphxml_graph_1):
 FAIL("Premature EOF: `</graph>' expected.");
 	YY_BREAK
 
@@ -1960,8 +1938,8 @@ YY_RULE_SETUP
   if (!AX_graphxml_node_name) FAIL("Required attribute `name' not set for `node' element.");
   LEAVE; STag_graphxml_node(); graphxml_pcdata_ix = 0; ETag_graphxml_node(); popbuffer(); /* attribute */
   switch (YY_START) {
-   case S_graphxml_graph_3: case S_graphxml_graph: case S_graphxml_graph_2: SET(S_graphxml_graph_3); break;
    case ROOT_graphxml_node: SET(EPILOG); break;
+   case S_graphxml_graph: case S_graphxml_graph_2: case S_graphxml_graph_3: SET(S_graphxml_graph_3); break;
   }
  }
 	YY_BREAK
@@ -1985,8 +1963,8 @@ YY_RULE_SETUP
   ETag_graphxml_node();
   popbuffer(); /* attribute */
   switch (YY_START) {
-   case S_graphxml_graph_3: case S_graphxml_graph: case S_graphxml_graph_2: SET(S_graphxml_graph_3); break;
    case ROOT_graphxml_node: SET(EPILOG); break;
+   case S_graphxml_graph: case S_graphxml_graph_2: case S_graphxml_graph_3: SET(S_graphxml_graph_3); break;
   }
  }
 	YY_BREAK
@@ -2110,8 +2088,8 @@ YY_RULE_SETUP
   if (!AX_graphxml_edge_target) FAIL("Required attribute `target' not set for `edge' element.");
   LEAVE; STag_graphxml_edge(); graphxml_pcdata_ix = 0; ETag_graphxml_edge(); popbuffer(); /* attribute */
   switch (YY_START) {
-   case S_graphxml_graph: case S_graphxml_graph_3: case S_graphxml_graph_1: case S_graphxml_graph_4: case S_graphxml_graph_5: SET(S_graphxml_graph_5); break;
    case ROOT_graphxml_edge: SET(EPILOG); break;
+   case S_graphxml_graph_5: case S_graphxml_graph: case S_graphxml_graph_1: case S_graphxml_graph_3: case S_graphxml_graph_4: SET(S_graphxml_graph_5); break;
   }
  }
 	YY_BREAK
@@ -2135,8 +2113,8 @@ YY_RULE_SETUP
   ETag_graphxml_edge();
   popbuffer(); /* attribute */
   switch (YY_START) {
-   case S_graphxml_graph: case S_graphxml_graph_3: case S_graphxml_graph_1: case S_graphxml_graph_4: case S_graphxml_graph_5: SET(S_graphxml_graph_5); break;
    case ROOT_graphxml_edge: SET(EPILOG); break;
+   case S_graphxml_graph_5: case S_graphxml_graph: case S_graphxml_graph_1: case S_graphxml_graph_3: case S_graphxml_graph_4: SET(S_graphxml_graph_5); break;
   }
  }
 	YY_BREAK
@@ -2406,7 +2384,6 @@ case YY_STATE_EOF(IMPOSSIBLE):
 			"fatal flex scanner internal error--no action found" );
 	} /* end of action switch */
 		} /* end of scanning one token */
-	} /* end of user's declarations */
 } /* end of xbt_graph_parse_lex */
 
 /* yy_get_next_buffer - try to read in a new buffer

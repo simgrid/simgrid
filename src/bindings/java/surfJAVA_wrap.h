@@ -46,9 +46,9 @@ public:
     virtual void updateActionsStateLazy(double now, double delta);
     virtual void updateActionsStateFull(double now, double delta);
     virtual ActionList *getRunningActionSet();
-    virtual ~SwigDirector_CpuModel();
-    virtual Cpu *createResource(char const *name, DoubleDynar power_peak, int pstate, double power_scale, tmgr_trace *power_trace, int core, e_surf_resource_state_t state_initial, tmgr_trace *state_trace, s_xbt_dict *cpu_properties);
     virtual void addTraces();
+    virtual ~SwigDirector_CpuModel();
+    virtual Cpu *createCpu(char const *name, DoubleDynar power_peak, int pstate, double power_scale, tmgr_trace *power_trace, int core, e_surf_resource_state_t state_initial, tmgr_trace *state_trace, s_xbt_dict *cpu_properties);
 public:
     bool swig_overrides(int n) {
       return (n < 9 ? swig_override[n] : false);

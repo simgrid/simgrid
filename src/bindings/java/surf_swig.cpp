@@ -26,7 +26,7 @@ static void java_cpu_model_init_preparse() {
   surf_cpu_model_pm = java_cpu_model;
   xbt_dynar_push(model_list, &java_cpu_model);
   xbt_dynar_push(model_list_invoke, &java_cpu_model);
-  sg_platf_host_add_cb(parse_cpu_init);
+  sg_platf_host_add_cb(cpu_parse_init);
 }
 
 void setCpuModel(CpuModel *cpuModel){

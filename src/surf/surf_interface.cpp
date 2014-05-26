@@ -157,7 +157,7 @@ s_surf_model_description_t surf_workstation_model_description[] = {
 s_surf_model_description_t surf_vm_workstation_model_description[] = {
   {"default",
    "Default vm workstation model.",
-   surf_vm_workstation_model_init_current_default},
+   surf_vm_workstation_model_init_HL13},
   {NULL, NULL, NULL}      /* this array must be NULL terminated */
 };
 
@@ -520,7 +520,7 @@ double Model::shareResourcesLazy(double now)
 {
   ActionPtr action = NULL;
   double min = -1;
-  double share, time_to_completion;
+  double share;
 
   XBT_DEBUG
       ("Before share resources, the size of modified actions set is %zd",
@@ -547,10 +547,10 @@ double Model::shareResourcesLazy(double now)
     action->updateRemainingLazy(now);
 
     min = -1;
-    time_to_completion = -1;
     share = lmm_variable_getvalue(action->getVariable());
 
     if (share > 0) {
+      double time_to_completion;
       if (action->getRemains() > 0) {
         time_to_completion = action->getRemainsNoUpdate() / share;
       } else {
@@ -1028,7 +1028,7 @@ void Action::updateRemainingLazy(double now)
 {
   double delta = 0.0;
 
-  if(getModel() == static_cast<ModelPtr>(surf_network_model))
+  if(getModel() == surf_network_model)
   {
     if (m_suspended != 0)
       return;
@@ -1050,7 +1050,7 @@ void Action::updateRemainingLazy(double now)
     double_update(&m_remains, m_lastValue * delta, sg_surf_precision*sg_maxmin_precision);
 
 #ifdef HAVE_TRACING
-    if (getModel() == static_cast<ModelPtr>(surf_cpu_model_pm) && TRACE_is_enabled()) {
+    if (getModel() == surf_cpu_model_pm && TRACE_is_enabled()) {
       ResourcePtr cpu = static_cast<ResourcePtr>(lmm_constraint_id(lmm_get_cnst_from_var(getModel()->getMaxminSystem(), getVariable(), 0)));
       TRACE_surf_host_set_utilization(cpu->getName(), getCategory(), m_lastValue, m_lastUpdate, now - m_lastUpdate);
     }
@@ -1058,7 +1058,7 @@ void Action::updateRemainingLazy(double now)
     XBT_DEBUG("Updating action(%p): remains is now %f", this, m_remains);
   }
 
-  if(getModel() == static_cast<ModelPtr>(surf_network_model))
+  if(getModel() == surf_network_model)
   {
     if (m_maxDuration != NO_MAX_DURATION)
       double_update(&m_maxDuration, delta, sg_surf_precision);

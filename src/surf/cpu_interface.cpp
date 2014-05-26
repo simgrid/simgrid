@@ -30,20 +30,9 @@ surf_callback(void, CpuPtr) cpuDestructedCallbacks;
 surf_callback(void, CpuPtr, e_surf_resource_state_t, e_surf_resource_state_t) cpuStateChangedCallbacks;
 surf_callback(void, CpuActionPtr, e_surf_action_state_t, e_surf_action_state_t) cpuActionStateChangedCallbacks;
 
-void parse_cpu_init(sg_platf_host_cbarg_t host){
-  surf_cpu_model_pm->parseInit(host);
-}
-
-void add_traces_cpu(){
-  surf_cpu_model_pm->addTraces();
-}
-
-/*********
- * Model *
- *********/
-void CpuModel::parseInit(sg_platf_host_cbarg_t host)
-{
-  createResource(host->id,
+void cpu_parse_init(sg_platf_host_cbarg_t host){
+  surf_cpu_model_pm->createCpu(
+        host->id,
         host->power_peak,
         host->pstate,
         host->power_scale,
@@ -54,12 +43,19 @@ void CpuModel::parseInit(sg_platf_host_cbarg_t host)
         host->properties);
 }
 
+void cpu_add_traces(){
+  surf_cpu_model_pm->addTraces();
+}
+
+/*********
+ * Model *
+ *********/
 void CpuModel::updateActionsStateLazy(double now, double /*delta*/)
 {
   CpuActionPtr action;
   while ((xbt_heap_size(getActionHeap()) > 0)
          && (double_equals(xbt_heap_maxkey(getActionHeap()), now, sg_surf_precision))) {
-    action = static_cast<CpuActionPtr>(static_cast<ActionPtr>(xbt_heap_pop(getActionHeap())));
+    action = static_cast<CpuActionPtr>(xbt_heap_pop(getActionHeap()));
     XBT_CDEBUG(surf_kernel, "Something happened to action %p", action);
 #ifdef HAVE_TRACING
     if (TRACE_is_enabled()) {

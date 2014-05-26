@@ -1,5 +1,5 @@
-/*! 
-\page inside_extending Extending SimGrid 
+/*!
+\page inside_extending Extending SimGrid
 
 We start to put TAGS in simgrid source code for having tutorials to see where is the important parts ans steps to create:
 \li \ref simgrid_dev_guide_api
@@ -26,20 +26,117 @@ user@caraja:~/workspace/simgrid/src$ cg "TUTORIAL: New API"
 \endverbatim
 
 \section simgrid_dev_guide_model How to add a new model in surf?
+The figure below show the architecture of the SURF layer. This layer is composed
+of different kind of models representing the differents systems we want to
+modelize (i.e.cpu, network, storage, workstation, virtual machine).
+
 A model in simgrid is composed of three classes: Model, Resource and Action
-(surf_interface.hpp). 
+(surf_interface.hpp).
+
+\image html surf++.png
+\image latex surf++.pdf "surf++" width=\textwidth
 
 Actually there are five kind of models: CpuModel, NetworkModel, WorkstationModel,
 WorkstationVMModel and StorageModel. For each kind of model, there is an
 interface (e.g.: cpu_interface.hpp) and some implementations (e.g.: cpu_cas01.hpp,
-cpu_ti.hpp). 
+cpu_ti.hpp).
+
+init function:
+void surf_cpu_model_init_Cas01()
+s_surf_model_description_t surf_network_model_description[] = {
+
+\subsection simgrid_dev_guide_model_implem How to add a new model implementation in surf?
 
 If you want to create a new implementation of a kind of model you must extend
-the classes of the corresponding interface.
+the classes of the corresponding interfaces.
+
+For instance, if you want to add a new cup model called `Plop`, create two files
+cpu_plop.hpp and cpu_plop_cpp which contains classes CpuPlopModel, CpuPlop and
+CpuPlopAction implementating respectively the interfaces CpuModel, Cpu and
+CpuAction. You also need to define a initializing function like this:
+
+~~~~
+void surf_cpu_model_init_plop()
+{
+  xbt_assert(!surf_cpu_model_pm);
+
+  surf_cpu_model_pm = new CpuPlopModel();
+
+  sg_platf_host_add_cb(cpu_parse_init);
+  sg_platf_postparse_add_cb(cpu_add_traces);
+
+  xbt_dynar_push(model_list, &surf_cpu_model_pm);
+}
+~~~~
+
+and add an entry in the corresponding array in surf_interface.cpp
+
+~~~~
+s_surf_model_description_t surf_cpu_model_description[] = {
+  {"Cas01",
+   "Simplistic CPU model (time=size/power).",
+   surf_cpu_model_init_Cas01},
+  {"Plop",
+   "The new plop CPU model.",
+   surf_cpu_model_init_plop},
+  {NULL, NULL,  NULL}      /* this array must be NULL terminated */
+};
+~~~~
+
+\subsection simgrid_dev_guide_model_kind How to add a new kind of model in surf?
 
 If you want to create a new kind of model, you must create a new interface
- where you extend the classes Model, Resource and Action, and then create an
- implementation of this interface.
+where you extend the classes Model, Resource and Action, and then create an
+implementation of this interface.
+
+
+\section simgrid_dev_guide_surf_callbacks How to use surf callbacks?
+
+Adding features to surf could also be handle by using surf callbacks (instead
+of adding new implementation model). The list of available callbacks is
+accessible there \ref SURF_callbacks. An example of using surf callbacks is the
+energy plugin. If you want to add a plugin you need to define callback function
+and to connect them to callbacks handler in an initialization function.
+
+~~~~
+static void MyNetworkLinkCreatedCallback(NetworkLinkPtr cpu){
+  // your code
+}
+
+static void MyNetworkLinkDestructedCallback(NetworkLinkPtr cpu){
+  // your code
+}
+
+static void MyNetworkCommunicationCallback(NetworkActionPtr cpu,
+                                           RoutingEdgePtr src,
+                                           RoutingEdgePtr dst){
+  // your code
+}
+
+void sg_my_network_plugin_init() {
+  surf_callback_connect(networkLinkCreatedCallbacks,
+                        MyNetworkLinkCreatedCallback);
+  surf_callback_connect(networkLinkDestructedCallbacks,
+                        MyNetworkLinkDestructedCallback);
+  surf_callback_connect(networkCommunicationCallbacks,
+                        MyNetworkCommunicationCallback);
+}
+~~~~
+
+Then you need to add an entry in surf_interface.cpp refering to your
+initialization function.
+
+~~~~
+s_surf_model_description_t surf_plugin_description[] = {
+                  {"Energy",
+                   "Cpu energy consumption.",
+                   sg_energy_plugin_init},
+                  {"MyNetworkPlugin",
+                   "My network plugin.",
+                   sg_my_network_plugin_init},
+                  {NULL, NULL,  NULL}      /* this array must be NULL terminated */
+};
+~~~~
 
 \section simgrid_dev_guide_simcall How to add a new simcall?
 A simcall is used to go from user mode to kernel mode. The workflow of

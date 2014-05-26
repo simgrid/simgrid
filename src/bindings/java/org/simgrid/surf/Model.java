@@ -47,15 +47,6 @@ public class Model {
 
   
   /**
-    * Model constructor
-    * @param name The name of the model
-    */
-  public Model(String name) {
-    this(SurfJNI.new_Model(name), true);
-  }
-
-  
-  /**
     * @return The name of the model
     */
   public String getName() {
@@ -105,6 +96,10 @@ public class Model {
   public ActionList getRunningActionSet() {
     long cPtr = SurfJNI.Model_getRunningActionSet(swigCPtr, this);
     return (cPtr == 0) ? null : new ActionList(cPtr, false);
+  }
+
+  public void addTraces() {
+    SurfJNI.Model_addTraces(swigCPtr, this);
   }
 
 }

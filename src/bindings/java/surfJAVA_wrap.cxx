@@ -1514,12 +1514,31 @@ ActionList *SwigDirector_CpuModel::getRunningActionSet() {
   return c_result;
 }
 
+void SwigDirector_CpuModel::addTraces() {
+  JNIEnvWrapper swigjnienv(this) ;
+  JNIEnv * jenv = swigjnienv.getJNIEnv() ;
+  jobject swigjobj = (jobject) NULL ;
+  
+  if (!swig_override[7]) {
+    SWIG_JavaThrowException(JNIEnvWrapper(this).getJNIEnv(), SWIG_JavaDirectorPureVirtual, "Attempted to invoke pure virtual method CpuModel::addTraces.");
+    return;
+  }
+  swigjobj = swig_get_self(jenv);
+  if (swigjobj && jenv->IsSameObject(swigjobj, NULL) == JNI_FALSE) {
+    jenv->CallStaticVoidMethod(Swig::jclass_SurfJNI, Swig::director_methids[16], swigjobj);
+    if (jenv->ExceptionCheck() == JNI_TRUE) return ;
+  } else {
+    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null upcall object");
+  }
+  if (swigjobj) jenv->DeleteLocalRef(swigjobj);
+}
+
 SwigDirector_CpuModel::~SwigDirector_CpuModel() {
   swig_disconnect_director_self("swigDirectorDisconnect");
 }
 
 
-Cpu *SwigDirector_CpuModel::createResource(char const *name, DoubleDynar power_peak, int pstate, double power_scale, tmgr_trace *power_trace, int core, e_surf_resource_state_t state_initial, tmgr_trace *state_trace, s_xbt_dict *cpu_properties) {
+Cpu *SwigDirector_CpuModel::createCpu(char const *name, DoubleDynar power_peak, int pstate, double power_scale, tmgr_trace *power_trace, int core, e_surf_resource_state_t state_initial, tmgr_trace *state_trace, s_xbt_dict *cpu_properties) {
   Cpu *c_result = 0 ;
   jlong jresult = 0 ;
   JNIEnvWrapper swigjnienv(this) ;
@@ -1535,8 +1554,8 @@ Cpu *SwigDirector_CpuModel::createResource(char const *name, DoubleDynar power_p
   jlong jstate_trace = 0 ;
   jlong jcpu_properties = 0 ;
   
-  if (!swig_override[7]) {
-    SWIG_JavaThrowException(JNIEnvWrapper(this).getJNIEnv(), SWIG_JavaDirectorPureVirtual, "Attempted to invoke pure virtual method CpuModel::createResource.");
+  if (!swig_override[8]) {
+    SWIG_JavaThrowException(JNIEnvWrapper(this).getJNIEnv(), SWIG_JavaDirectorPureVirtual, "Attempted to invoke pure virtual method CpuModel::createCpu.");
     return c_result;
   }
   swigjobj = swig_get_self(jenv);
@@ -1560,7 +1579,7 @@ Cpu *SwigDirector_CpuModel::createResource(char const *name, DoubleDynar power_p
     jstate_initial = (jint) state_initial;
     *((tmgr_trace **)&jstate_trace) = (tmgr_trace *) state_trace; 
     *((s_xbt_dict **)&jcpu_properties) = (s_xbt_dict *) cpu_properties; 
-    jresult = (jlong) jenv->CallStaticLongMethod(Swig::jclass_SurfJNI, Swig::director_methids[16], swigjobj, jname, jpower_peak, jpstate, jpower_scale, jpower_trace, jcore, jstate_initial, jstate_trace, jcpu_properties);
+    jresult = (jlong) jenv->CallStaticLongMethod(Swig::jclass_SurfJNI, Swig::director_methids[17], swigjobj, jname, jpower_peak, jpstate, jpower_scale, jpower_trace, jcore, jstate_initial, jstate_trace, jcpu_properties);
     if (jenv->ExceptionCheck() == JNI_TRUE) return c_result;
     c_result = *(Cpu **)&jresult; 
   } else {
@@ -1568,25 +1587,6 @@ Cpu *SwigDirector_CpuModel::createResource(char const *name, DoubleDynar power_p
   }
   if (swigjobj) jenv->DeleteLocalRef(swigjobj);
   return c_result;
-}
-
-void SwigDirector_CpuModel::addTraces() {
-  JNIEnvWrapper swigjnienv(this) ;
-  JNIEnv * jenv = swigjnienv.getJNIEnv() ;
-  jobject swigjobj = (jobject) NULL ;
-  
-  if (!swig_override[8]) {
-    SWIG_JavaThrowException(JNIEnvWrapper(this).getJNIEnv(), SWIG_JavaDirectorPureVirtual, "Attempted to invoke pure virtual method CpuModel::addTraces.");
-    return;
-  }
-  swigjobj = swig_get_self(jenv);
-  if (swigjobj && jenv->IsSameObject(swigjobj, NULL) == JNI_FALSE) {
-    jenv->CallStaticVoidMethod(Swig::jclass_SurfJNI, Swig::director_methids[17], swigjobj);
-    if (jenv->ExceptionCheck() == JNI_TRUE) return ;
-  } else {
-    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null upcall object");
-  }
-  if (swigjobj) jenv->DeleteLocalRef(swigjobj);
 }
 
 void SwigDirector_CpuModel::swig_connect_director(JNIEnv *jenv, jobject jself, jclass jcls, bool swig_mem_own, bool weak_global) {
@@ -1617,10 +1617,10 @@ void SwigDirector_CpuModel::swig_connect_director(JNIEnv *jenv, jobject jself, j
       "getRunningActionSet", "()Lorg/simgrid/surf/ActionList;", NULL 
     },
     {
-      "createResource", "(Ljava/lang/String;[DIDLorg/simgrid/surf/TmgrTrace;ILorg/simgrid/surf/ResourceState;Lorg/simgrid/surf/TmgrTrace;Lorg/simgrid/surf/XbtDict;)Lorg/simgrid/surf/Cpu;", NULL 
+      "addTraces", "()V", NULL 
     },
     {
-      "addTraces", "()V", NULL 
+      "createCpu", "(Ljava/lang/String;[DIDLorg/simgrid/surf/TmgrTrace;ILorg/simgrid/surf/ResourceState;Lorg/simgrid/surf/TmgrTrace;Lorg/simgrid/surf/XbtDict;)Lorg/simgrid/surf/Cpu;", NULL 
     }
   };
   
@@ -2809,27 +2809,6 @@ SWIGEXPORT void JNICALL Java_org_simgrid_surf_SurfJNI_delete_1TmgrTraceEvent(JNI
 }
 
 
-SWIGEXPORT jlong JNICALL Java_org_simgrid_surf_SurfJNI_new_1Model(JNIEnv *jenv, jclass jcls, jstring jarg1) {
-  jlong jresult = 0 ;
-  char *arg1 = (char *) 0 ;
-  Model *result = 0 ;
-  
-  (void)jenv;
-  (void)jcls;
-  arg1 = 0;
-  if (jarg1) {
-    arg1 = (char *)jenv->GetStringUTFChars(jarg1, 0);
-    if (!arg1) return 0;
-  }
-  result = (Model *)new Model((char const *)arg1);
-  *(Model **)&jresult = result; 
-  {
-    
-  }
-  return jresult;
-}
-
-
 SWIGEXPORT jstring JNICALL Java_org_simgrid_surf_SurfJNI_Model_1getName(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
   jstring jresult = 0 ;
   Model *arg1 = (Model *) 0 ;
@@ -2956,6 +2935,17 @@ SWIGEXPORT jlong JNICALL Java_org_simgrid_surf_SurfJNI_Model_1getRunningActionSe
 }
 
 
+SWIGEXPORT void JNICALL Java_org_simgrid_surf_SurfJNI_Model_1addTraces(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  Model *arg1 = (Model *) 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(Model **)&jarg1; 
+  (arg1)->addTraces();
+}
+
+
 SWIGEXPORT void JNICALL Java_org_simgrid_surf_SurfJNI_delete_1Model(JNIEnv *jenv, jclass jcls, jlong jarg1) {
   Model *arg1 = (Model *) 0 ;
   
@@ -2997,7 +2987,7 @@ SWIGEXPORT void JNICALL Java_org_simgrid_surf_SurfJNI_delete_1CpuModel(JNIEnv *j
 }
 
 
-SWIGEXPORT jlong JNICALL Java_org_simgrid_surf_SurfJNI_CpuModel_1createResource(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jstring jarg2, jdoubleArray jarg3, jint jarg4, jdouble jarg5, jlong jarg6, jobject jarg6_, jint jarg7, jint jarg8, jlong jarg9, jobject jarg9_, jlong jarg10, jobject jarg10_) {
+SWIGEXPORT jlong JNICALL Java_org_simgrid_surf_SurfJNI_CpuModel_1createCpu(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jstring jarg2, jdoubleArray jarg3, jint jarg4, jdouble jarg5, jlong jarg6, jobject jarg6_, jint jarg7, jint jarg8, jlong jarg9, jobject jarg9_, jlong jarg10, jobject jarg10_) {
   jlong jresult = 0 ;
   CpuModel *arg1 = (CpuModel *) 0 ;
   char *arg2 = (char *) 0 ;
@@ -3037,23 +3027,12 @@ SWIGEXPORT jlong JNICALL Java_org_simgrid_surf_SurfJNI_CpuModel_1createResource(
   arg8 = (e_surf_resource_state_t)jarg8; 
   arg9 = *(tmgr_trace **)&jarg9; 
   arg10 = *(s_xbt_dict **)&jarg10; 
-  result = (Cpu *)(arg1)->createResource((char const *)arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9,arg10);
+  result = (Cpu *)(arg1)->createCpu((char const *)arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9,arg10);
   *(Cpu **)&jresult = result; 
   {
     
   }
   return jresult;
-}
-
-
-SWIGEXPORT void JNICALL Java_org_simgrid_surf_SurfJNI_CpuModel_1addTraces(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
-  CpuModel *arg1 = (CpuModel *) 0 ;
-  
-  (void)jenv;
-  (void)jcls;
-  (void)jarg1_;
-  arg1 = *(CpuModel **)&jarg1; 
-  (arg1)->addTraces();
 }
 
 
@@ -4141,10 +4120,10 @@ SWIGEXPORT void JNICALL Java_org_simgrid_surf_SurfJNI_swig_1module_1init(JNIEnv 
       "SwigDirector_CpuModel_getRunningActionSet", "(Lorg/simgrid/surf/CpuModel;)J" 
     },
     {
-      "SwigDirector_CpuModel_createResource", "(Lorg/simgrid/surf/CpuModel;Ljava/lang/String;[DIDJIIJJ)J" 
+      "SwigDirector_CpuModel_addTraces", "(Lorg/simgrid/surf/CpuModel;)V" 
     },
     {
-      "SwigDirector_CpuModel_addTraces", "(Lorg/simgrid/surf/CpuModel;)V" 
+      "SwigDirector_CpuModel_createCpu", "(Lorg/simgrid/surf/CpuModel;Ljava/lang/String;[DIDJIIJJ)J" 
     },
     {
       "SwigDirector_Cpu_isUsed", "(Lorg/simgrid/surf/Cpu;)Z" 

@@ -46,7 +46,7 @@ void TRACE_msg_vm_change_host(msg_vm_t vm, msg_host_t old_host, msg_host_t new_h
     PJ_container_free(existing_container);
 
     //create new container on the new_host location
-    msg = PJ_container_new(instr_vm_id(vm, str, len), INSTR_MSG_VM, PJ_container_get(SIMIX_host_get_name(new_host)));
+    PJ_container_new(instr_vm_id(vm, str, len), INSTR_MSG_VM, PJ_container_get(SIMIX_host_get_name(new_host)));
 
     //end link
     msg = PJ_container_get(instr_vm_id(vm, str, len));

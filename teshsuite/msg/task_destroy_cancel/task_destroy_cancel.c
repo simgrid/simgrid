@@ -114,6 +114,7 @@ int slave(int argc, char *argv[])
 
     if (!strcmp(MSG_task_get_name(task), "cancel")) {
       MSG_process_create("worker1", worker_main, task, MSG_host_self());
+      MSG_process_sleep(0.1);
       XBT_INFO("Canceling task \"%s\"", task->name);
       MSG_task_cancel(task);
       continue;

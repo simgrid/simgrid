@@ -23,6 +23,42 @@ surf_callback(void, NetworkLinkPtr, e_surf_resource_state_t, e_surf_resource_sta
 surf_callback(void, NetworkActionPtr, e_surf_action_state_t, e_surf_action_state_t) networkActionStateChangedCallbacks;
 surf_callback(void, NetworkActionPtr, RoutingEdgePtr src, RoutingEdgePtr dst, double size, double rate) networkCommunicateCallbacks;
 
+void netlink_parse_init(sg_platf_link_cbarg_t link){
+  if (link->policy == SURF_LINK_FULLDUPLEX) {
+    char *link_id;
+    link_id = bprintf("%s_UP", link->id);
+    surf_network_model->createNetworkLink(link_id,
+                      link->bandwidth,
+                      link->bandwidth_trace,
+                      link->latency,
+                      link->latency_trace,
+                      link->state,
+                      link->state_trace, link->policy, link->properties);
+    xbt_free(link_id);
+    link_id = bprintf("%s_DOWN", link->id);
+    surf_network_model->createNetworkLink(link_id,
+                      link->bandwidth,
+                      link->bandwidth_trace,
+                      link->latency,
+                      link->latency_trace,
+                      link->state,
+                      link->state_trace, link->policy, link->properties);
+    xbt_free(link_id);
+  } else {
+  surf_network_model->createNetworkLink(link->id,
+                      link->bandwidth,
+                      link->bandwidth_trace,
+                      link->latency,
+                      link->latency_trace,
+                      link->state,
+                      link->state_trace, link->policy, link->properties);
+  }
+}
+
+void net_add_traces(){
+  surf_network_model->addTraces();
+}
+
 /*********
  * Model *
  *********/
@@ -61,7 +97,7 @@ NetworkLink::NetworkLink(NetworkModelPtr model, const char *name, xbt_dict_t pro
 {
   surf_callback_emit(networkLinkCreatedCallbacks, this);
   if (state_trace)
-    p_stateEvent = tmgr_history_add_trace(history, state_trace, 0.0, 0, static_cast<ResourcePtr>(this));
+    p_stateEvent = tmgr_history_add_trace(history, state_trace, 0.0, 0, this);
 }
 
 NetworkLink::~NetworkLink()

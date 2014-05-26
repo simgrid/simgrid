@@ -4,6 +4,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "simix/smx_private.h"
 #include "workstation_interface.hpp"
 #include "vm_workstation_interface.hpp"
 #include "cpu_cas01.hpp"
@@ -24,6 +25,15 @@ surf_callback(void, WorkstationPtr) workstationCreatedCallbacks;
 surf_callback(void, WorkstationPtr) workstationDestructedCallbacks;
 surf_callback(void, WorkstationPtr, e_surf_resource_state_t, e_surf_resource_state_t) workstationStateChangedCallbacks;
 surf_callback(void, WorkstationActionPtr, e_surf_action_state_t, e_surf_action_state_t) workstationActionStateChangedCallbacks;
+
+void workstation_parse_init(sg_platf_host_cbarg_t host)
+{
+  surf_workstation_model->createWorkstation(host->id);
+}
+
+void workstation_add_traces(){
+  surf_workstation_model->addTraces();
+}
 
 /*********
  * Model *
@@ -197,7 +207,7 @@ xbt_dynar_t Workstation::getAttachedStorageList()
     if(xbt_lib_get_level(xbt_lib_get_elm_or_null(storage_lib, key), SURF_STORAGE_LEVEL) != NULL) {
 	  StoragePtr storage = static_cast<StoragePtr>(xbt_lib_get_level(xbt_lib_get_elm_or_null(storage_lib, key), SURF_STORAGE_LEVEL));
 	  if(!strcmp((const char*)storage->p_attach,this->getName())){
-	    xbt_dynar_push_as(result, void *,(void *)static_cast<ResourcePtr>(storage)->getName());
+	    xbt_dynar_push_as(result, void *, (void*)storage->getName());
 	  }
 	}
   }

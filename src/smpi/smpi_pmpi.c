@@ -923,7 +923,7 @@ int PMPI_Start(MPI_Request * request)
 
   smpi_bench_end();
   if (request == NULL || *request == MPI_REQUEST_NULL) {
-    retval = MPI_ERR_ARG;
+    retval = MPI_ERR_REQUEST;
   } else {
     smpi_mpi_start(*request);
     retval = MPI_SUCCESS;
@@ -934,14 +934,21 @@ int PMPI_Start(MPI_Request * request)
 
 int PMPI_Startall(int count, MPI_Request * requests)
 {
-  int retval = 0;
-
+  int retval;
+  int i = 0;
   smpi_bench_end();
   if (requests == NULL) {
     retval = MPI_ERR_ARG;
   } else {
-    smpi_mpi_startall(count, requests);
     retval = MPI_SUCCESS;
+    for (i = 0 ;  i < count ; i++) {
+      if(requests[i] == MPI_REQUEST_NULL) {
+        retval = MPI_ERR_REQUEST;
+      }
+    }
+    if(retval != MPI_ERR_REQUEST) {
+      smpi_mpi_startall(count, requests);
+    }
   }
   smpi_bench_begin();
   return retval;
@@ -1362,7 +1369,6 @@ int PMPI_Sendrecv_replace(void *buf, int count, MPI_Datatype datatype,
 int PMPI_Test(MPI_Request * request, int *flag, MPI_Status * status)
 {
   int retval = 0;
-
   smpi_bench_end();
   if (request == NULL || flag == NULL) {
     retval = MPI_ERR_ARG;
@@ -1371,7 +1377,19 @@ int PMPI_Test(MPI_Request * request, int *flag, MPI_Status * status)
     smpi_empty_status(status);
     retval = MPI_ERR_REQUEST;
   } else {
+#ifdef HAVE_TRACING
+    int rank = request && (*request)->comm != MPI_COMM_NULL
+      ? smpi_process_index()
+      : -1;
+
+    instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
+    extra->type = TRACING_TEST;
+    TRACE_smpi_testing_in(rank, extra);
+#endif
     *flag = smpi_mpi_test(request, status);
+#ifdef HAVE_TRACING
+    TRACE_smpi_testing_out(rank);
+#endif
     retval = MPI_SUCCESS;
   }
   smpi_bench_begin();

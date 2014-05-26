@@ -68,7 +68,7 @@
   public";
 
 
-%javamethodmodifiers CpuModel::createResource(const char *name, DoubleDynar power_peak,
+%javamethodmodifiers CpuModel::createCpu(const char *name, DoubleDynar power_peak,
                               int pstate, double power_scale,
                               tmgr_trace *power_trace, int core,
                               e_surf_resource_state_t state_initial,

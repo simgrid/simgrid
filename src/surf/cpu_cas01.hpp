@@ -29,14 +29,13 @@ public:
   double (CpuCas01Model::*shareResources)(double now);
   void (CpuCas01Model::*updateActionsState)(double now, double delta);
 
-  void parseInit(sg_platf_host_cbarg_t host);  
-  CpuPtr createResource(const char *name, xbt_dynar_t power_peak, int pstate,
+  CpuPtr createCpu(const char *name, xbt_dynar_t power_peak, int pstate,
 		                  double power_scale,
                           tmgr_trace_t power_trace, int core,
                           e_surf_resource_state_t state_initial,
                           tmgr_trace_t state_trace,
                           xbt_dict_t cpu_properties);
-  double shareResourcesFull(double now);  
+  double shareResourcesFull(double now);
   void addTraces();
   ActionListPtr p_cpuRunningActionSetThatDoesNotNeedBeingChecked;
 };

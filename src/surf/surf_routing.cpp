@@ -8,7 +8,7 @@
 #include "surf_routing_private.hpp"
 #include "surf_routing_cluster.hpp"
 #include "surf_routing_cluster_torus.hpp"
-
+#include "surf_routing_cluster_fat_tree.hpp"
 
 #include "simgrid/platf_interface.h"    // platform creation API internal interface
 #include "simgrid/sg_config.h"
@@ -89,7 +89,7 @@ typedef enum {
   SURF_MODEL_VIVALDI,
   SURF_MODEL_CLUSTER,
   SURF_MODEL_TORUS_CLUSTER,
-
+  SURF_MODEL_FAT_TREE_CLUSTER,
 } e_routing_types;
 
 struct s_model_type routing_models[] = {
@@ -111,8 +111,10 @@ struct s_model_type routing_models[] = {
    model_vivaldi_create, NULL},
   {"Cluster", "Cluster routing",
    model_cluster_create, NULL},
-   {"Torus_Cluster", "Torus Cluster routing",
-    model_torus_cluster_create, NULL},
+  {"Torus_Cluster", "Torus Cluster routing",
+   model_torus_cluster_create, NULL},
+  {"Fat_Tree_Cluster", "Fat Tree Cluster routing",
+   model_fat_tree_cluster_create, NULL},
   {NULL, NULL, NULL, NULL}
 };
 
@@ -356,14 +358,15 @@ void routing_AS_begin(sg_platf_AS_cbarg_t AS)
 
   /* search the routing model */
   switch(AS->routing){
-    case A_surfxml_AS_routing_Cluster:         model = &routing_models[SURF_MODEL_CLUSTER];break;
-    case A_surfxml_AS_routing_Cluster___torus: model = &routing_models[SURF_MODEL_TORUS_CLUSTER];break;
-    case A_surfxml_AS_routing_Dijkstra:        model = &routing_models[SURF_MODEL_DIJKSTRA];break;
-    case A_surfxml_AS_routing_DijkstraCache:   model = &routing_models[SURF_MODEL_DIJKSTRACACHE];break;
-    case A_surfxml_AS_routing_Floyd:           model = &routing_models[SURF_MODEL_FLOYD];break;
-    case A_surfxml_AS_routing_Full:            model = &routing_models[SURF_MODEL_FULL];break;
-    case A_surfxml_AS_routing_None:            model = &routing_models[SURF_MODEL_NONE];break;
-    case A_surfxml_AS_routing_Vivaldi:         model = &routing_models[SURF_MODEL_VIVALDI];break;
+    case A_surfxml_AS_routing_Cluster:               model = &routing_models[SURF_MODEL_CLUSTER];break;
+    case A_surfxml_AS_routing_Cluster___torus:       model = &routing_models[SURF_MODEL_TORUS_CLUSTER];break;
+    case A_surfxml_AS_routing_Cluster___fat___tree:  model = &routing_models[SURF_MODEL_FAT_TREE_CLUSTER];break;
+    case A_surfxml_AS_routing_Dijkstra:              model = &routing_models[SURF_MODEL_DIJKSTRA];break;
+    case A_surfxml_AS_routing_DijkstraCache:         model = &routing_models[SURF_MODEL_DIJKSTRACACHE];break;
+    case A_surfxml_AS_routing_Floyd:                 model = &routing_models[SURF_MODEL_FLOYD];break;
+    case A_surfxml_AS_routing_Full:                  model = &routing_models[SURF_MODEL_FULL];break;
+    case A_surfxml_AS_routing_None:                  model = &routing_models[SURF_MODEL_NONE];break;
+    case A_surfxml_AS_routing_Vivaldi:               model = &routing_models[SURF_MODEL_VIVALDI];break;
     default: xbt_die("Not a valid model!!!");
     break;
   }
@@ -401,7 +404,7 @@ void routing_AS_begin(sg_platf_AS_cbarg_t AS)
     /* add to the father element list */
     info->setId(current_routing->parseAS(info));
   } else {
-    THROWF(arg_error, 0, "All defined components must be belong to a AS");
+    THROWF(arg_error, 0, "All defined components must belong to a AS");
   }
 
   xbt_lib_set(as_router_lib, info->getName(), ROUTING_ASR_LEVEL,
@@ -836,7 +839,15 @@ static void routing_parse_cluster(sg_platf_cluster_cbarg_t cluster)
     AS.routing = A_surfxml_AS_routing_Cluster___torus;
     sg_platf_new_AS_begin(&AS);
     ((AsClusterTorusPtr)current_routing)->parse_specific_arguments(cluster);
-  }else{
+  }
+  else if (cluster->topology == SURF_CLUSTER_FAT_TREE) {
+    XBT_DEBUG("<AS id=\"%s\"\trouting=\"Fat_Tree_Cluster\">", cluster->id);
+    AS.routing = A_surfxml_AS_routing_Cluster___fat___tree;
+    sg_platf_new_AS_begin(&AS);
+    ((AsClusterFatTree*)current_routing)->parse_specific_arguments(cluster);
+  }
+  
+  else{
     XBT_DEBUG("<AS id=\"%s\"\trouting=\"Cluster\">", cluster->id);
     AS.routing = A_surfxml_AS_routing_Cluster;
     sg_platf_new_AS_begin(&AS);
@@ -902,7 +913,7 @@ static void routing_parse_cluster(sg_platf_cluster_cbarg_t cluster)
       } else {
         XBT_DEBUG("\tstate_file=\"\"");
       }
-
+      
       xbt_dynar_t power_state_list = xbt_dynar_new(sizeof(double), NULL);
       xbt_dynar_push(power_state_list,&cluster->power);
       host.power_peak = power_state_list;
@@ -975,12 +986,15 @@ static void routing_parse_cluster(sg_platf_cluster_cbarg_t cluster)
 
 
       //call the cluster function that adds the others links
-
+      if (cluster->topology == SURF_CLUSTER_FAT_TREE) {
+        ((AsClusterFatTree*) current_routing)->addProcessingNode(i);
+      }
+      else {
       ((AsClusterPtr)current_routing)->create_links_for_node(cluster, i, rankId, rankId*
           ((AsClusterPtr)current_routing)->p_nb_links_per_node
           + ((AsClusterPtr)current_routing)->p_has_loopback
           + ((AsClusterPtr)current_routing)->p_has_limiter );
-
+      }
       xbt_free(link_id);
       xbt_free(host_id);
       rankId++;
@@ -989,7 +1003,11 @@ static void routing_parse_cluster(sg_platf_cluster_cbarg_t cluster)
     xbt_dynar_free(&radical_ends);
   }
   xbt_dynar_free(&radical_elements);
-
+  
+  // For fat trees, the links must be created once all nodes have been added
+  if(cluster->topology == SURF_CLUSTER_FAT_TREE) {
+    ((AsClusterFatTree*)current_routing)->create_links(cluster);
+  }
   // Add a router. It is magically used thanks to the way in which surf_routing_cluster is written,
   // and it's very useful to connect clusters together
   XBT_DEBUG(" ");
@@ -1323,6 +1341,32 @@ AS_t surf_AS_get_routing_root() {
 
 const char *surf_AS_get_name(AsPtr as) {
   return as->p_name;
+}
+
+static AsPtr surf_AS_recursive_get_by_name(AsPtr current, const char * name) {
+  xbt_dict_cursor_t cursor = NULL;
+  char *key;
+  AS_t elem;
+  AsPtr tmp = NULL;
+
+  if(!strcmp(current->p_name, name))
+    return current;
+
+  xbt_dict_foreach(current->p_routingSons, cursor, key, elem) {
+    tmp = surf_AS_recursive_get_by_name(elem, name);
+    if(tmp != NULL ) {
+        break;
+    }
+  }
+  return tmp;
+}
+
+
+AsPtr surf_AS_get_by_name(const char * name) {
+  AsPtr as = surf_AS_recursive_get_by_name(routing_platf->p_root, name);
+  if(as == NULL)
+    XBT_WARN("Impossible to find an AS with name %s, please check your input", name);
+  return as;
 }
 
 xbt_dict_t surf_AS_get_routing_sons(AsPtr as) {

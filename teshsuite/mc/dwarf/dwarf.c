@@ -129,7 +129,7 @@ int main(int argc, char** argv) {
   dw_variable_t var;
   dw_type_t type;
 
-  var = test_global_variable(mc_binary_info, "some_local_variable", &some_local_variable, sizeof(int));
+  test_global_variable(mc_binary_info, "some_local_variable", &some_local_variable, sizeof(int));
 
   var = test_global_variable(mc_binary_info, "test_some_array", &test_some_array, sizeof(test_some_array));
   type = xbt_dict_get_or_null(mc_binary_info->types, var->type_origin);

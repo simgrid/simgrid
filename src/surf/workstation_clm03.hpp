@@ -33,8 +33,7 @@ class WorkstationCLM03Model : public WorkstationModel {
 public:
   WorkstationCLM03Model();
   ~WorkstationCLM03Model();
-  void parseInit(sg_platf_host_cbarg_t host);
-  WorkstationPtr createResource(const char *name);
+  WorkstationPtr createWorkstation(const char *name);
   double shareResources(double now);
 
   void updateActionsState(double now, double delta);

@@ -403,8 +403,8 @@ int smpi_coll_tuned_alltoall_bruck(void *sendbuf, int sendcount,
   rank = smpi_comm_rank(comm);
   size = smpi_comm_size(comm);
   XBT_DEBUG("<%d> algorithm alltoall_bruck() called.", rank);
-  err = smpi_datatype_extent(sendtype, &lb, &sendext);
-  err = smpi_datatype_extent(recvtype, &lb, &recvext);
+  smpi_datatype_extent(sendtype, &lb, &sendext);
+  smpi_datatype_extent(recvtype, &lb, &recvext);
   /* Local copy from self */
   err =
       smpi_datatype_copy((char *)sendbuf + rank * sendcount * sendext, 
@@ -469,8 +469,8 @@ int smpi_coll_tuned_alltoall_basic_linear(void *sendbuf, int sendcount,
   rank = smpi_comm_rank(comm);
   size = smpi_comm_size(comm);
   XBT_DEBUG("<%d> algorithm alltoall_basic_linear() called.", rank);
-  err = smpi_datatype_extent(sendtype, &lb, &sendext);
-  err = smpi_datatype_extent(recvtype, &lb, &recvext);
+  smpi_datatype_extent(sendtype, &lb, &sendext);
+  smpi_datatype_extent(recvtype, &lb, &recvext);
   /* simple optimization */
   err = smpi_datatype_copy((char *)sendbuf + rank * sendcount * sendext, 
                            sendcount, sendtype, 
@@ -525,8 +525,8 @@ int smpi_coll_basic_alltoallv(void *sendbuf, int *sendcounts,
   rank = smpi_comm_rank(comm);
   size = smpi_comm_size(comm);
   XBT_DEBUG("<%d> algorithm basic_alltoallv() called.", rank);
-  err = smpi_datatype_extent(sendtype, &lb, &sendext);
-  err = smpi_datatype_extent(recvtype, &lb, &recvext);
+  smpi_datatype_extent(sendtype, &lb, &sendext);
+  smpi_datatype_extent(recvtype, &lb, &recvext);
   /* Local copy from self */
   err =
       smpi_datatype_copy((char *)sendbuf + senddisps[rank] * sendext, 

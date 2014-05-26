@@ -18,7 +18,6 @@ set(EXTRA_DIST
   src/include/surf/trace_mgr.h
   src/include/xbt/win32_ucontext.h
   src/include/xbt/wine_dbghelp.h
-  src/include/xbt/xbt_os_time.h
   src/msg/msg_mailbox.h
   src/msg/msg_private.h
   src/portable.h
@@ -231,7 +230,6 @@ set(SMPI_SRC
   src/smpi/smpi_pmpi.c
   src/smpi/smpi_replay.c
   src/smpi/smpi_topo.c
-  src/surf/surf_routing_cluster_fat_tree.cpp
   )
 
 if(SMPI_F2C)
@@ -333,6 +331,7 @@ set(SURF_SRC
   src/surf/surf_interface.cpp
   src/surf/surf_routing.cpp
   src/surf/surf_routing_cluster.cpp
+  src/surf/surf_routing_cluster_fat_tree.cpp
   src/surf/surf_routing_cluster_torus.cpp
   src/surf/surf_routing_dijkstra.cpp
   src/surf/surf_routing_floyd.cpp
@@ -661,6 +660,7 @@ set(headers_to_install
   include/xbt/sysdep.h
   include/xbt/virtu.h
   include/xbt/xbt_os_thread.h
+  include/xbt/xbt_os_time.h
   )
 set(source_of_generated_headers
   include/simgrid_config.h.in
@@ -902,6 +902,7 @@ set(DOC_IMG
 set(bin_files
   ${bin_files}
   src/smpi/smpicc.in
+  src/smpi/smpicxx.in
   src/smpi/smpif2c.in
   src/smpi/smpiff.in
   src/smpi/smpif90.in
@@ -1011,15 +1012,34 @@ set(TESHSUITE_CMAKEFILES_TXT
   teshsuite/msg/storage/CMakeLists.txt
   teshsuite/msg/task_destroy_cancel/CMakeLists.txt
   teshsuite/msg/trace/CMakeLists.txt
-  teshsuite/simdag/CMakeLists.txt
   teshsuite/simdag/availability/CMakeLists.txt
+  teshsuite/simdag/basic/CMakeLists.txt
+  teshsuite/simdag/incomplete/CMakeLists.txt
   teshsuite/simdag/network/CMakeLists.txt
   teshsuite/simdag/network/mxn/CMakeLists.txt
   teshsuite/simdag/network/p2p/CMakeLists.txt
   teshsuite/simdag/partask/CMakeLists.txt
   teshsuite/simdag/platforms/CMakeLists.txt
-  teshsuite/simix/CMakeLists.txt
+  teshsuite/simix/check_defaults/CMakeLists.txt
+  teshsuite/simix/stack_overflow/CMakeLists.txt
   teshsuite/smpi/CMakeLists.txt
+  teshsuite/smpi/allgather/CMakeLists.txt
+  teshsuite/smpi/allgatherv/CMakeLists.txt
+  teshsuite/smpi/allreduce/CMakeLists.txt
+  teshsuite/smpi/alltoall/CMakeLists.txt
+  teshsuite/smpi/alltoallv/CMakeLists.txt
+  teshsuite/smpi/barrier/CMakeLists.txt
+  teshsuite/smpi/bcast/CMakeLists.txt
+  teshsuite/smpi/compute/CMakeLists.txt
+  teshsuite/smpi/gather/CMakeLists.txt
+  teshsuite/smpi/hvector/CMakeLists.txt
+  teshsuite/smpi/indexed/CMakeLists.txt
+  teshsuite/smpi/pingpong/CMakeLists.txt
+  teshsuite/smpi/reduce/CMakeLists.txt
+  teshsuite/smpi/scatter/CMakeLists.txt
+  teshsuite/smpi/shared/CMakeLists.txt
+  teshsuite/smpi/struct/CMakeLists.txt
+  teshsuite/smpi/vector/CMakeLists.txt
   teshsuite/smpi/mpich3-test/CMakeLists.txt
   teshsuite/smpi/mpich3-test/attr/CMakeLists.txt
   teshsuite/smpi/mpich3-test/coll/CMakeLists.txt
@@ -1047,11 +1067,14 @@ set(TESHSUITE_CMAKEFILES_TXT
   teshsuite/surf/maxmin_bench/CMakeLists.txt
   teshsuite/surf/surf_usage/CMakeLists.txt
   teshsuite/surf/trace_usage/CMakeLists.txt
-  teshsuite/xbt/CMakeLists.txt
   teshsuite/xbt/graphxml_usage/CMakeLists.txt
   teshsuite/xbt/heap_bench/CMakeLists.txt
+  teshsuite/xbt/log_large/CMakeLists.txt
   teshsuite/xbt/log_usage/CMakeLists.txt
+  teshsuite/xbt/mmalloc/CMakeLists.txt
+  teshsuite/xbt/parallel_log/CMakeLists.txt
   teshsuite/xbt/parmap_bench/CMakeLists.txt
+  teshsuite/xbt/parmap_test/CMakeLists.txt
   )
 
 set(TOOLS_CMAKEFILES_TXT
@@ -1097,7 +1120,6 @@ set(CMAKE_SOURCE_FILES
   buildtools/Cmake/Scripts/Makefile.default
   buildtools/Cmake/Scripts/SimGrid.packproj
   buildtools/Cmake/Scripts/generate_memcheck_tests.pl
-  buildtools/Cmake/Scripts/generate_new_tests.pl
   buildtools/Cmake/Scripts/java_bundle.sh
   buildtools/Cmake/Scripts/my_valgrind.pl
   buildtools/Cmake/Scripts/postinstall.sh
@@ -1140,6 +1162,7 @@ set(PLATFORMS_EXAMPLES
   examples/platforms/content/storage_content.txt
   examples/platforms/content/win_storage_content.txt
   examples/platforms/data_center.xml
+  examples/platforms/deployment_remote_io.xml
   examples/platforms/g5k.xml
   examples/platforms/generation_scripts/create_hierarchical_clusters.pl
   examples/platforms/generation_scripts/enhancedDTDwithHierarchicalCluster.pl
@@ -1149,6 +1172,7 @@ set(PLATFORMS_EXAMPLES
   examples/platforms/meta_cluster.xml
   examples/platforms/multicore_machine.xml
   examples/platforms/prop.xml
+  examples/platforms/remote_io.xml
   examples/platforms/routing_cluster.xml
   examples/platforms/storage.xml
   examples/platforms/syscoord/generate_peer_platform.pl

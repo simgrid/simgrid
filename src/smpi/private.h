@@ -10,6 +10,7 @@
 #include "internal_config.h"
 #include "xbt.h"
 #include "xbt/xbt_os_time.h"
+#include "xbt/synchro_core.h"
 #include "simgrid/simix.h"
 #include "smpi/smpi_interface.h"
 #include "smpi/smpi.h"
@@ -143,7 +144,8 @@ double smpi_process_simulated_elapsed(void);
 void smpi_process_set_sampling(int s);
 int smpi_process_get_sampling(void);
 
-MPI_Comm* smpi_deployment_register_process(const char* instance_id, int rank, int index);
+void smpi_deployment_register_process(const char* instance_id, int rank, int index, MPI_Comm**, xbt_bar_t*);
+void smpi_deployment_cleanup_instances(void);
 
 void smpi_comm_copy_buffer_callback(smx_action_t comm,
                                            void *buff, size_t buff_size);
@@ -591,6 +593,8 @@ void mpi_comm_spawn_multiple_ ( int* count, char *array_of_commands, char** arra
  int* comm, int*intercomm, int* array_of_errcodes, int* ierr);
 void mpi_comm_get_parent_ ( int*parent, int* ierr);
 
+
+#ifdef HAVE_TRACING
 /********** Tracing **********/
 /* from smpi_instr.c */
 void TRACE_internal_smpi_set_category (const char *category);
@@ -600,6 +604,11 @@ void TRACE_smpi_collective_out(int rank, int root, const char *operation);
 void TRACE_smpi_computing_init(int rank);
 void TRACE_smpi_computing_out(int rank);
 void TRACE_smpi_computing_in(int rank, instr_extra_data extra);
+void TRACE_smpi_sleeping_init(int rank);
+void TRACE_smpi_sleeping_out(int rank);
+void TRACE_smpi_sleeping_in(int rank, instr_extra_data extra);
+void TRACE_smpi_testing_out(int rank);
+void TRACE_smpi_testing_in(int rank, instr_extra_data extra);
 void TRACE_smpi_alloc(void);
 void TRACE_smpi_release(void);
 void TRACE_smpi_ptp_in(int rank, int src, int dst, const char *operation,  instr_extra_data extra);
@@ -608,7 +617,7 @@ void TRACE_smpi_send(int rank, int src, int dst, int size);
 void TRACE_smpi_recv(int rank, int src, int dst);
 void TRACE_smpi_init(int rank);
 void TRACE_smpi_finalize(int rank);
-
+#endif
 
 const char* encode_datatype(MPI_Datatype datatype);
 

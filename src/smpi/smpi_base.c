@@ -260,8 +260,8 @@ void smpi_action_trace_run(char *path)
   action_fp=NULL;
   if (path) {
     action_fp = fopen(path, "r");
-    xbt_assert(action_fp != NULL, "Cannot open %s: %s", path,
-               strerror(errno));
+    if (action_fp == NULL)
+      xbt_die("Cannot open %s: %s", path, strerror(errno));
   }
 
   if (!xbt_dict_is_empty(action_queues)) {

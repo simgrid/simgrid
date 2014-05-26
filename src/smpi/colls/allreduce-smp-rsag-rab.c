@@ -91,19 +91,14 @@ int smpi_coll_tuned_allreduce_smp_rsag_rab(void *sbuf, void *rbuf, int count,
     recv_chunk = extent * count / (comm_size / num_core);
 
     mask = 1;
-    i = 0;
     curr_count = count / 2;
     int phase = 0;
     base_offset = 0;
-    send_base_offset = 0;
-    recv_base_offset = 0;
 
     while (mask < (comm_size / num_core)) {
       dst = inter_rank ^ mask;
 
       // compute offsets
-      send_base_offset = base_offset;
-
       // right-handside
       if (inter_rank & mask) {
         recv_base_offset = base_offset + curr_count;

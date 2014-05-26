@@ -36,7 +36,6 @@ public:
   ActionPtr communicate(RoutingEdgePtr src, RoutingEdgePtr dst,
 		                           double size, double rate);
   void gapRemove(ActionPtr action);
-  //FIXME:virtual void addTraces() =0;
 };
 
 /************

@@ -245,7 +245,7 @@ static void instr_routing_parse_start_link (sg_platf_link_cbarg_t link)
     if (TRACE_uncategorized()){
       type_t bandwidth_used = PJ_type_get_or_null ("bandwidth_used", new->type);
       if (bandwidth_used == NULL){
-        bandwidth_used = PJ_type_variable_new ("bandwidth_used", "0.5 0.5 0.5", new->type);
+        PJ_type_variable_new ("bandwidth_used", "0.5 0.5 0.5", new->type);
       }
     }
   }
@@ -271,7 +271,7 @@ static void instr_routing_parse_start_host (sg_platf_host_cbarg_t host)
   if (TRACE_uncategorized()){
     type_t power_used = PJ_type_get_or_null ("power_used", new->type);
     if (power_used == NULL){
-      power_used = PJ_type_variable_new ("power_used", "0.5 0.5 0.5", new->type);
+      PJ_type_variable_new ("power_used", "0.5 0.5 0.5", new->type);
     }
   }
 

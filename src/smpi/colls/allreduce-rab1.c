@@ -32,7 +32,6 @@ int smpi_coll_tuned_allreduce_rab1(void *sbuff, void *rbuff,
     pof2 <<= 1;
   pof2 >>= 1;
 
-  mask = 1;
   send_idx = recv_idx = 0;
 
   // uneven count

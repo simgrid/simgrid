@@ -34,6 +34,7 @@ typedef struct s_smpi_process_data {
   char state;
   int sampling;                 /* inside an SMPI_SAMPLE_ block? */
   char* instance_id;
+  xbt_bar_t finalization_barrier;
 } s_smpi_process_data_t;
 
 static smpi_process_data_t *process_data = NULL;
@@ -84,11 +85,15 @@ void smpi_process_init(int *argc, char ***argv)
     if(!index_to_process_data){
         index_to_process_data=(int*)xbt_malloc(SIMIX_process_count()*sizeof(int));
     }
-    MPI_Comm* temp_comm_world = smpi_deployment_register_process(instance_id, rank, index);
+    MPI_Comm* temp_comm_world;
+    xbt_bar_t temp_bar;
+    smpi_deployment_register_process(instance_id, rank, index, &temp_comm_world ,&temp_bar);
     data = smpi_process_remote_data(index);
     data->comm_world = temp_comm_world;
+    if(temp_bar != NULL) data->finalization_barrier = temp_bar;
     data->index = index;
     data->instance_id = instance_id;
+    xbt_free(simcall_process_get_data(proc));
     simcall_process_set_data(proc, data);
     if (*argc > 3) {
       free((*argv)[1]);
@@ -128,44 +133,10 @@ void smpi_process_destroy(void)
  */
 void smpi_process_finalize(void)
 {
-  if(MC_is_active()){
+    int index = smpi_process_index();
     // wait for all pending asynchronous comms to finish
-    while (SIMIX_process_has_pending_comms(SIMIX_process_self())) {
-      simcall_process_sleep(0.01);
-    }
-  }else{
-    int i;
-    int size = smpi_comm_size(MPI_COMM_WORLD);
-    int rank = smpi_comm_rank(MPI_COMM_WORLD);
-    /* All non-root send & receive zero-length message. */
-    if (rank > 0) {
-      smpi_mpi_ssend (NULL, 0, MPI_BYTE, 0,
-                      COLL_TAG_BARRIER,
-                      MPI_COMM_WORLD);
-      smpi_mpi_recv (NULL, 0, MPI_BYTE, 0,
-                     COLL_TAG_BARRIER,
-                     MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-    }
-    /* The root collects and broadcasts the messages. */
-    else {
-      MPI_Request* requests;
-      requests = (MPI_Request*)malloc( size * sizeof(MPI_Request) );
-      for (i = 1; i < size; ++i) {
-        requests[i] = smpi_mpi_irecv(NULL, 0, MPI_BYTE, MPI_ANY_SOURCE,
-                                     COLL_TAG_BARRIER, MPI_COMM_WORLD
-                                     );
-      }
-      smpi_mpi_waitall( size-1, requests+1, MPI_STATUSES_IGNORE );
-      for (i = 1; i < size; ++i) {
-        requests[i] = smpi_mpi_issend(NULL, 0, MPI_BYTE, i,
-                                      COLL_TAG_BARRIER,
-                                      MPI_COMM_WORLD
-                                      );
-      }
-      smpi_mpi_waitall( size-1, requests+1, MPI_STATUSES_IGNORE );
-      free( requests );
-    }
-  }
+    xbt_barrier_wait(process_data[index_to_process_data[index]]->finalization_barrier);
+
 }
 
 /**
@@ -441,6 +412,7 @@ void smpi_global_init(void)
     process_data[i]->comm_world = NULL;
     process_data[i]->state = SMPI_UNINITIALIZED;
     process_data[i]->sampling = 0;
+    process_data[i]->finalization_barrier = NULL;
   }
   //if the process was launched through smpirun script
   //we generate a global mpi_comm_world
@@ -449,9 +421,12 @@ void smpi_global_init(void)
   if(smpirun){
     group = smpi_group_new(process_count);
     MPI_COMM_WORLD = smpi_comm_new(group, NULL);
+    xbt_bar_t bar=xbt_barrier_init(process_count);
+
     MPI_UNIVERSE_SIZE = smpi_comm_size(MPI_COMM_WORLD);
     for (i = 0; i < process_count; i++) {
       smpi_group_set_mapping(group, i, i);
+      process_data[i]->finalization_barrier = bar;
     }
   }
 }
@@ -465,6 +440,9 @@ void smpi_global_destroy(void)
   if (MPI_COMM_WORLD != MPI_COMM_UNINITIALIZED){
       while (smpi_group_unuse(smpi_comm_group(MPI_COMM_WORLD)) > 0);
       xbt_free(MPI_COMM_WORLD);
+      xbt_barrier_destroy(process_data[0]->finalization_barrier);
+  }else{
+      smpi_deployment_cleanup_instances();
   }
   MPI_COMM_WORLD = MPI_COMM_NULL;
   for (i = 0; i < count; i++) {

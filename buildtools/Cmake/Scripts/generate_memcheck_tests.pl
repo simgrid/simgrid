@@ -51,7 +51,7 @@ while ( defined( $line = <MAKETEST> ) ) {
     }
     if ( $line =~ /END TESH TESTS/ ) {
         $dump = 0;
-        last;
+        next;
     }
     if ($dump) {
         $line =~ s/^  //;
@@ -107,8 +107,6 @@ while ( defined( $line = <MAKETEST> ) ) {
             }
 
             my ($count)        = 0;
-            my ($count_first)  = 0;
-            my ($count_second) = 0;
             open TESH_FILE, $tesh_file or die "Unable to open tesh file: \"$tesh_file\". $!\n";
             my ($input) = "";
             my ($l);
@@ -141,10 +139,10 @@ while ( defined( $line = <MAKETEST> ) ) {
                     if ( $command =~ /^mkfile\s+(\S+)/) {
                         my $file = $1;
                         # don't ask me to explain why so many backslashes...
-                        $input =~ s/\\/\\\\\\\\\\\\\\\\/g;
-                        $input =~ s/\n/\\\\\\\\n/g;
-                        $input =~ s/"/\\\\\\\\042/g;
-                        $input =~ s/'/\\\\\\\\047/g;
+                        $input =~ s/\\/\\\\\\\\/g;
+                        $input =~ s/\n/\\\\n/g;
+                        $input =~ s/"/\\\\042/g;
+                        $input =~ s/'/\\\\047/g;
                         $input =~ s/%/%%/g;
                         $command = "sh -c \"printf '$input' > $file\"";
                     }
@@ -153,11 +151,19 @@ while ( defined( $line = <MAKETEST> ) ) {
                         print "${indent}ADD_TEST(NAME memcheck-$name_test-$factory-$count\n";
                         print "${indent}         WORKING_DIRECTORY $path\/\n";
                         print "${indent}         COMMAND $command --cfg=contexts/factory:$factory)\n";
+                        if ($count > 0) {
+                            print "${indent}set_tests_properties(memcheck-$name_test-$factory-$count\n";
+                            print "${indent}                     PROPERTIES DEPENDS memcheck-$name_test-$factory-" . ($count - 1) . ")\n";
+                        }
                       }
                     } else {
                       print "${indent}ADD_TEST(NAME memcheck-$name_test-$count\n";
                       print "${indent}         WORKING_DIRECTORY $path\/\n";
                       print "${indent}         COMMAND $command)\n";
+                      if ($count > 0) {
+                          print "${indent}set_tests_properties(memcheck-$name_test-$count\n";
+                          print "${indent}                     PROPERTIES DEPENDS memcheck-$name_test-" . ($count - 1) . ")\n";
+                      }
                     }
                     $input = "";
                     #push @test_list, "memcheck-$name_test-$count";
@@ -169,14 +175,15 @@ while ( defined( $line = <MAKETEST> ) ) {
             }
             close(TESH_FILE);
         }
-        elsif ( $line =~ /^\s*set_tests_properties/ ) {
-            if ( $line =~ /set_tests_properties\(([\S]+)/ ) {
+        elsif ( $line =~ /^\s*SET_TESTS_PROPERTIES/ ) {
+            if ( $line =~ /SET_TESTS_PROPERTIES\(([\S]+)/ ) {
                 my ($name_temp) = ($1);
                 $line =~ s/$name_temp/memcheck-$name_temp-0/g;
                 print $line. "\n";
             }
-        }
-        else {
+        } elsif ( $line =~ /^(\s*)ADD_TEST\((.*)\)/ ) {
+          print "$1ADD_TEST(memcheck-$2)\n";
+        } else {
             print $line. "\n";
         }
     }

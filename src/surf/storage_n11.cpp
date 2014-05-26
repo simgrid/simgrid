@@ -68,7 +68,7 @@ static void parse_storage_init(sg_platf_storage_cbarg_t storage)
       storage->content_type,
       storage->properties);
 
-  surf_storage_model->createResource(storage->id,
+  surf_storage_model->createStorage(storage->id,
                                      ((storage_type_t) stype)->type_id,
                                      storage->content,
                                      storage->content_type,
@@ -234,7 +234,7 @@ StorageN11Model::~StorageN11Model(){
   storage_running_action_set_that_does_not_need_being_checked = NULL;
 }
 
-StoragePtr StorageN11Model::createResource(const char* id, const char* type_id,
+StoragePtr StorageN11Model::createStorage(const char* id, const char* type_id,
 		const char* content_name, const char* content_type, xbt_dict_t properties, const char* attach)
 {
 
@@ -252,7 +252,7 @@ StoragePtr StorageN11Model::createResource(const char* id, const char* type_id,
 		  Bread, Bwrite, Bconnection,
 		  type_id, (char *)content_name, xbt_strdup(content_type), storage_type->size, (char *) attach);
 
-  xbt_lib_set(storage_lib, id, SURF_STORAGE_LEVEL, static_cast<ResourcePtr>(storage));
+  xbt_lib_set(storage_lib, id, SURF_STORAGE_LEVEL, storage);
 
   XBT_DEBUG("SURF storage create resource\n\t\tid '%s'\n\t\ttype '%s'\n\t\tproperties '%p'\n\t\tBread '%f'\n",
       id,
@@ -415,7 +415,7 @@ StorageActionPtr StorageN11::close(surf_file_t fd)
   StorageActionPtr write_action;
   unsigned int i;
   xbt_dynar_foreach(p_writeActions, i, _write_action) {
-	write_action = static_cast<StorageActionPtr>(static_cast<ActionPtr>(_write_action));
+	write_action = static_cast<StorageActionPtr>(_write_action);
     if ((write_action->p_file) == fd) {
       xbt_dynar_cursor_rm(p_writeActions, &i);
       write_action->unref();

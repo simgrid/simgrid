@@ -57,7 +57,7 @@ static void parse_ns3_add_link(sg_platf_link_cbarg_t link)
 
   if(!IPV4addr) IPV4addr = xbt_dynar_new(sizeof(char*),free);
 
-  NetworkLinkPtr net_link = surf_network_model->createResource(link->id,
+  NetworkLinkPtr net_link = surf_network_model->createNetworkLink(link->id,
                                      link->bandwidth,
                                      link->bandwidth_trace,
                                      link->latency,
@@ -294,7 +294,7 @@ NetworkNS3Model::~NetworkNS3Model() {
   xbt_dict_free(&dict_socket);
 }
 
-NetworkLinkPtr NetworkNS3Model::createResource(const char *name,
+NetworkLinkPtr NetworkNS3Model::createNetworkLink(const char *name,
 	                                 double bw_initial,
 	                                 tmgr_trace_t bw_trace,
 	                                 double lat_initial,

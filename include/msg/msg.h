@@ -75,6 +75,7 @@ XBT_PUBLIC(unsigned long int) MSG_get_sent_msg(void);
 /************************** Environment ***********************************/
 XBT_PUBLIC(msg_as_t) MSG_environment_get_routing_root(void);
 XBT_PUBLIC(const char *) MSG_environment_as_get_name(msg_as_t as);
+XBT_PUBLIC(msg_as_t) MSG_environment_as_get_by_name(const char * name);
 XBT_PUBLIC(xbt_dict_t) MSG_environment_as_get_routing_sons(msg_as_t as);
 XBT_PUBLIC(const char *) MSG_environment_as_get_property_value(msg_as_t as, const char *name);
 XBT_PUBLIC(const char *) MSG_environment_as_get_model(msg_as_t as);
@@ -415,6 +416,17 @@ XBT_PUBLIC(void) MSG_sem_release(msg_sem_t sem);
 XBT_PUBLIC(void) MSG_sem_get_capacity(msg_sem_t sem);
 XBT_PUBLIC(void) MSG_sem_destroy(msg_sem_t sem);
 XBT_PUBLIC(int) MSG_sem_would_block(msg_sem_t sem);
+
+/** @brief Opaque type representing a barrier identifier
+ *  @ingroup msg_synchro
+ *  @hideinitializer
+ */
+
+#define MSG_BARRIER_SERIAL_PROCESS -1
+typedef struct s_xbt_bar *msg_bar_t;
+XBT_PUBLIC(msg_bar_t) MSG_barrier_init( unsigned int count);
+XBT_PUBLIC(void) MSG_barrier_destroy(msg_bar_t bar);
+XBT_PUBLIC(int) MSG_barrier_wait(msg_bar_t bar);
 
 /** @brief Opaque type describing a Virtual Machine.
  *  @ingroup msg_VMs

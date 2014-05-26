@@ -33,5 +33,6 @@
 #include <xbt/cunit.h>
 
 #include <xbt/xbt_os_thread.h>
+#include <xbt/xbt_os_time.h>
 
 #endif                          /* xbt_H */

@@ -23,12 +23,6 @@ The tree is not split on projects, but on file finality:
  src/include -> another location for protected headers. Used by SURF, and
                 other should be converted, since this is the Right Thing.
 
- testsuite/ -> The more test the better.
-               Same organization than src/ and include/
-               Tests are allowed to load some headers of the module they test.
-               All tests should be listed in run_test.in so that they get
-               run on 'make check'.
-
  examples/ -> Supposed to be copy/pastable by the user, so keep it clear and
                 avoid any kind of trick. In particular, do only include the
                 public headers here.
@@ -38,9 +32,6 @@ The tree is not split on projects, but on file finality:
                just to see if our framework is robust to incorrect and
                unusual behaviors. All tests written in this section
                should leverage our tesh(1) utility.
-
- testsuite/ -> Old test suite, that should be converted to tesh and
-               moved to teshsuite at some point.
 
 **
 ** Indentation standard

@@ -7,6 +7,7 @@
 #ifndef SMPI_H
 #define SMPI_H
 
+#include <unistd.h>
 #include <stddef.h>
 #include <sys/time.h>
 #include <xbt/misc.h>
@@ -160,6 +161,15 @@ typedef enum MPIR_Topo_type {
 
 typedef ptrdiff_t MPI_Aint;
 typedef long long MPI_Offset;
+
+// To compile code that declare MPI_File variables
+struct s_empty {
+#if !defined(__GNUC__) || defined(__STRICT_ANSI__)
+  char empty;
+#endif
+};
+typedef struct s_empty *MPI_File;
+
 
 struct s_smpi_mpi_datatype;
 typedef struct s_smpi_mpi_datatype *MPI_Datatype;
@@ -699,8 +709,9 @@ XBT_PUBLIC(int) smpi_get_host_nb_pstates(void);
 XBT_PUBLIC(void) smpi_set_host_power_peak_at(int pstate_index);
 XBT_PUBLIC(double) smpi_get_host_consumed_energy(void);
 
+XBT_PUBLIC(int) smpi_usleep(useconds_t usecs);
 XBT_PUBLIC(unsigned int) smpi_sleep(unsigned int secs);
-XBT_PUBLIC(int) smpi_gettimeofday(struct timeval *tv);
+XBT_PUBLIC(int) smpi_gettimeofday(struct timeval *tv, void* tz);
 XBT_PUBLIC(unsigned long long) smpi_rastro_resolution (void);
 XBT_PUBLIC(unsigned long long) smpi_rastro_timestamp (void);
 XBT_PUBLIC(void) smpi_sample_1(int global, const char *file, int line,

@@ -14,18 +14,13 @@
 *.class
 \#*
 
-################################################
 ### Maintainer mode
 src/simdag/dax_dtd.l
 src/surf/simgrid_dtd.l
 src/xbt/graphxml.l
-
-################################################
 ### Jedule
 examples/simdag/scheduling/simgrid.jed
 teshsuite/simdag/platforms/simgrid.jed
-
-################################################
 ### Libraries links 
 src/bindings/ruby/simgrid.so
 examples/ruby/simgrid.so
@@ -35,13 +30,9 @@ examples/msg/masterslave/simgrid.so
 examples/simdag/simgrid.so
 examples/lua/console/simgrid.so
 simgrid.jar
-
-################################################
 ### Unit files
 src/simgrid_units_main.c
 src/*_unit.c
-
-################################################
 ### Generated files
 _*.c
 include/simgrid_config.h
@@ -54,8 +45,6 @@ src/smpi/smpicc
 src/smpi/smpirun
 simgrid-*.tar.gz
 testprog
-
-################################################
 ### Cmake files
 CPackConfig.cmake
 CPackSourceConfig.cmake
@@ -65,7 +54,6 @@ cmake_install.cmake
 CMakeFiles
 install_manifest.txt
 _CPack_Packages/
-CMakeFiles
 CMakeCache.txt
 DartConfiguration.tcl
 simgrid.nsi
@@ -79,14 +67,9 @@ build_*/
 build/
 buildtools/Cmake/memcheck_tests.cmake
 buildtools/Cmake/test_prog/prog_va_copy.c
-
-
-################################################
 ### windows borland
 *.bpr
 *.bpf
-
-################################################
 ### Documentation
 doc/all_bib.html
 doc/logcategories.sh
@@ -103,8 +86,6 @@ doc/simgrid.tag
 doc/doxygen/logcategories.doc
 doc/index-API.doc
 doc/simgrid_modules.map
-
-################################################
 ### Specific of project 
 .settings/
 .csettings/
@@ -116,8 +97,6 @@ Debug/
 .emacs.desktop
 tags
 callgrind.out.*
-
-################################################
 ### Examples and traces
 *.exe
 testgraph.dot
@@ -241,7 +220,6 @@ examples/smpi/sendrecv
 examples/smpi/mc_bugged1
 examples/smpi/mc_bugged2
 examples/smpi/smpi_traced_simple
-
 examples/msg/mc/bugged1_liveness
 examples/msg/mc/bugged1_stateful
 examples/msg/mc/bugged2_liveness
@@ -251,41 +229,39 @@ examples/msg/mc/electric_fence
 examples/smpi/mc/bugged1
 examples/smpi/mc/bugged1_liveness
 examples/smpi/mc/bugged2
-
-
 src/replay/replay
 src/testall
 teshsuite/bug-17132/bug-17132
-teshsuite/smpi/allgather_coll
-teshsuite/smpi/allgatherv_coll
-teshsuite/smpi/allreduce_coll
-teshsuite/smpi/alltoall_coll
-teshsuite/smpi/alltoallv_coll
-teshsuite/smpi/barrier_coll
+teshsuite/smpi/allgather/allgather_coll
+teshsuite/smpi/allgatherv/allgatherv_coll
+teshsuite/smpi/allreduce/allreduce_coll
+teshsuite/smpi/alltoall/alltoall_coll
+teshsuite/smpi/alltoallv/alltoallv_coll
+teshsuite/smpi/barrier/barrier_coll
 teshsuite/smpi/bcast_coll
-teshsuite/smpi/gather_coll
+teshsuite/smpi/gather/gather_coll
 teshsuite/smpi/reduce_coll
 teshsuite/smpi/reduce_scatter_coll
-teshsuite/smpi/allreduce
-teshsuite/smpi/alltoall2
-teshsuite/smpi/alltoall_basic
-teshsuite/smpi/alltoallv
-teshsuite/smpi/bcast
-teshsuite/smpi/compute
+teshsuite/smpi/allreduce/allreduce
+teshsuite/smpi/alltoall/alltoall2
+teshsuite/smpi/alltoall/alltoall_basic
+teshsuite/smpi/alltoallv/alltoallv
+teshsuite/smpi/bcast/bcast
+teshsuite/smpi/compute/compute
 teshsuite/smpi/compute2
 teshsuite/smpi/compute3
 teshsuite/smpi/dsend
-teshsuite/smpi/hvector_test
-teshsuite/smpi/indexed_test
-teshsuite/smpi/pingpong
-teshsuite/smpi/reduce
-teshsuite/smpi/scatter
-teshsuite/smpi/shared
+teshsuite/smpi/hvector/hvector_test
+teshsuite/smpi/indexed/indexed_test
+teshsuite/smpi/pingpong/pingpong
+teshsuite/smpi/reduce/reduce
+teshsuite/smpi/scatter/scatter
+teshsuite/smpi/shared/shared
 teshsuite/smpi/smpi_sendrecv
 teshsuite/smpi/split
-teshsuite/smpi/struct_test
+teshsuite/smpi/struct/struct_test
 teshsuite/smpi/ttest01
-teshsuite/smpi/vector_test
+teshsuite/smpi/vector/vector_test
 teshsuite/smpi/mpich-test/*/*.out
 teshsuite/smpi/mpich-test/*/*.stdo
 teshsuite/smpi/mpich-test/coll/allgatherf
@@ -726,25 +702,29 @@ teshsuite/smpi/mpich3-test/pt2pt/sendrecv3
 teshsuite/smpi/mpich3-test/pt2pt/sendself
 teshsuite/smpi/mpich3-test/pt2pt/waitany-null
 teshsuite/smpi/mpich3-test/pt2pt/waittestnull
-
-teshsuite/msg/host_on_off
-teshsuite/msg/process
+teshsuite/smpi/mpich3-test/topo/cartcreates
+teshsuite/smpi/mpich3-test/topo/cartshift1
+teshsuite/smpi/mpich3-test/topo/cartsuball
+teshsuite/smpi/mpich3-test/topo/cartzero
+teshsuite/msg/host_on_off/host_on_off
+teshsuite/msg/process/process
+teshsuite/msg/process_join/process_join
 teshsuite/msg/storage/storage_basic
-teshsuite/msg/task_destroy_cancel
-teshsuite/msg/pid
-teshsuite/msg/get_sender
+teshsuite/msg/task_destroy_cancel/task_destroy_cancel
+teshsuite/msg/pid/pid
+teshsuite/msg/get_sender/get_sender
 teshsuite/msg/trace/test_trace_integration
-teshsuite/simix/check_defaults
-teshsuite/simix/stack_overflow
+teshsuite/simix/check_defaults/check_defaults
+teshsuite/simix/stack_overflow/stack_overflow
 teshsuite/simdag/availability/availability_test
-teshsuite/simdag/basic0
-teshsuite/simdag/basic1
-teshsuite/simdag/basic2
-teshsuite/simdag/basic3
-teshsuite/simdag/basic4
-teshsuite/simdag/basic5
-teshsuite/simdag/basic6
-teshsuite/simdag/incomplete
+teshsuite/simdag/basic/basic0
+teshsuite/simdag/basic/basic1
+teshsuite/simdag/basic/basic2
+teshsuite/simdag/basic/basic3
+teshsuite/simdag/basic/basic4
+teshsuite/simdag/basic/basic5
+teshsuite/simdag/basic/basic6
+teshsuite/simdag/incomplete/incomplete
 teshsuite/simdag/network/mxn/test_intra_all2all
 teshsuite/simdag/network/mxn/test_intra_independent_comm
 teshsuite/simdag/network/mxn/test_intra_scatter
@@ -759,26 +739,22 @@ teshsuite/simdag/platforms/basic_tracing
 teshsuite/simdag/platforms/basic_link_test
 teshsuite/simdag/platforms/evaluate_get_route_time
 teshsuite/simdag/platforms/evaluate_parse_time
+teshsuite/simdag/platforms/graphicator
 teshsuite/simdag/partask/test_comp_only_par
 teshsuite/simdag/partask/test_comp_only_seq
-teshsuite/xbt/log_large_test
-teshsuite/xbt/parallel_log_crashtest
-testsuite/xbt/parmap_bench
+teshsuite/surf/lmm_usage/lmm_usage
+teshsuite/surf/maxmin_bench/maxmin_bench
+teshsuite/surf/surf_usage/surf_usage
+teshsuite/surf/surf_usage/surf_usage2
+teshsuite/surf/trace_usage/trace_usage
+teshsuite/xbt/log_large/log_large_test
 teshsuite/xbt/mmalloc_test
-teshsuite/xbt/parmap_test
-testsuite/run_tests
-testsuite/simdag/sd_test
-testsuite/surf/lmm_usage
-testsuite/surf/maxmin_bench
-testsuite/surf/surf_usage
-testsuite/surf/surf_usage2
-testsuite/surf/trace_usage
-testsuite/testgraph.dot
-testsuite/testgraph.xml
-testsuite/xbt/context_usage
-testsuite/xbt/graphxml_usage
-testsuite/xbt/heap_bench
-testsuite/xbt/log_usage
+teshsuite/xbt/graphxml_usage/graphxml_usage
+teshsuite/xbt/heap_bench/heap_bench
+teshsuite/xbt/log_usage/log_usage
+teshsuite/xbt/parallel_log/parallel_log_crashtest
+teshsuite/xbt/parmap_bench/parmap_bench
+teshsuite/xbt/parmap_test/parmap_test
 tools/tesh/tesh
 examples/msg/tracing/categories
 examples/msg/tracing/ms
@@ -792,8 +768,6 @@ test_rl
 test_sg
 examples/smpi/smpi_traced.trace
 examples/simdag/dot/simulate_dot
-teshsuite/simdag/platforms/graphicator
-
 #########################################
 ## touched files to track the dependencies of java examples
 examples/java/async/java_async_compiled
@@ -816,3 +790,4 @@ examples/java/suspend/java_suspend_compiled
 examples/java/tracing/java_tracing_compiled
 examples/java/reservationSurfPlugin/java_reservation_surf_plugin_compiled
 examples/java/surfPlugin/java_surf_plugin_compiled
+/CMakeCache.txt

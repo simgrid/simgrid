@@ -48,12 +48,7 @@ public:
 
   double shareResources(double now);
   void updateActionsState(double now, double delta);
-  ResourcePtr createResource(const char *name, double power_scale,
-                                 double power_initial,
-                                 tmgr_trace_t power_trace,
-                                 e_surf_resource_state_t state_initial,
-                                 tmgr_trace_t state_trace,
-                                 xbt_dict_t cpu_properties);
+  WorkstationPtr createWorkstation(const char *name);
   ActionPtr executeParallelTask(int workstation_nb,
                                         void **workstation_list,
                                         double *computation_amount,
@@ -69,13 +64,7 @@ class CpuL07Model : public CpuModel {
 public:
   CpuL07Model() : CpuModel("cpuL07") {};
   ~CpuL07Model() {surf_cpu_model_pm = NULL;};
-  ResourcePtr createResource(const char *name, double power_scale,
-                                 double power_initial,
-                                 tmgr_trace_t power_trace,
-                                 e_surf_resource_state_t state_initial,
-                                 tmgr_trace_t state_trace,
-                                 xbt_dict_t cpu_properties);
-  CpuPtr createResource(const char *name,  xbt_dynar_t powerPeak,
+  CpuPtr createCpu(const char *name,  xbt_dynar_t powerPeak,
                           int pstate, double power_scale,
                           tmgr_trace_t power_trace, int core,
                           e_surf_resource_state_t state_initial,
@@ -90,7 +79,7 @@ class NetworkL07Model : public NetworkModel {
 public:
   NetworkL07Model() : NetworkModel() {};
   ~NetworkL07Model() {surf_network_model = NULL;};
-  NetworkLinkPtr createResource(const char *name,
+  NetworkLinkPtr createNetworkLink(const char *name,
 		                                   double bw_initial,
 		                                   tmgr_trace_t bw_trace,
 		                                   double lat_initial,
@@ -131,9 +120,8 @@ class CpuL07 : public Cpu {
   tmgr_trace_event_t p_powerEvent;
 public:
   CpuL07(CpuL07ModelPtr model, const char* name, xbt_dict_t properties,
-		 double power_scale,
-		 double power_initial, tmgr_trace_t power_trace,
-		 e_surf_resource_state_t state_initial, tmgr_trace_t state_trace);
+		 double power_scale, double power_initial, tmgr_trace_t power_trace,
+     int core, e_surf_resource_state_t state_initial, tmgr_trace_t state_trace);
   bool isUsed();
   //bool isUsed() {DIE_IMPOSSIBLE;};
   void updateState(tmgr_trace_event_t event_type, double value, double date);

@@ -129,6 +129,8 @@ public:
    */
   virtual ~Model();
 
+  virtual void addTraces() =0;
+
   /**
    * @brief Get the name of the current Model
    *

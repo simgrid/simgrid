@@ -765,6 +765,11 @@ void sg_config_init(int *argc, char **argv)
                      xbt_cfgelm_boolean, 1, 1, NULL, NULL);
     xbt_cfg_setdefault_boolean(_sg_cfg_set, "smpi/display_timing", "no");
 
+    xbt_cfg_register(&_sg_cfg_set, "smpi/simulate_computation",
+                     "Boolean indicating whether the computational part of the simulated application should be simulated.",
+                     xbt_cfgelm_boolean, 1, 1, NULL, NULL);
+    xbt_cfg_setdefault_boolean(_sg_cfg_set, "smpi/simulate_computation", "yes");
+
     xbt_cfg_register(&_sg_cfg_set, "smpi/use_shared_malloc",
                      "Boolean indicating whether we should use shared memory when using SMPI_SHARED_MALLOC. Allows user to disable it for debug purposes.",
                      xbt_cfgelm_boolean, 1, 1, NULL, NULL);
@@ -819,10 +824,12 @@ void sg_config_init(int *argc, char **argv)
                      "Small messages timings (MPI_Recv minimum time for small messages)",
                      xbt_cfgelm_string, 1, 1, NULL, NULL);
     xbt_cfg_setdefault_string(_sg_cfg_set, "smpi/or", "1:0:0:0:0");
+
     xbt_cfg_register(&_sg_cfg_set, "smpi/iprobe",
                      "Minimum time to inject inside a call to MPI_Iprobe",
                      xbt_cfgelm_double, 1, 1, NULL, NULL);
     xbt_cfg_setdefault_double(_sg_cfg_set, "smpi/iprobe", 1e-4);
+
     xbt_cfg_register(&_sg_cfg_set, "smpi/coll_selector",
                      "Which collective selector to use",
                      xbt_cfgelm_string, 1, 1, NULL, NULL);

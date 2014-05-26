@@ -13,8 +13,6 @@
 #define GUESTOS_NOISE 100 // This value corresponds to the cost of the global action associated to the VM
                           // It corresponds to the cost of a VM running no tasks.
 
-void surf_vm_workstation_model_init(void);
-
 /***********
  * Classes *
  ***********/
@@ -26,17 +24,14 @@ class WorkstationVMHL13;
 typedef WorkstationVMHL13 *WorkstationVMHL13Ptr;
 
 /*********
- * Tools *
- *********/
-
-/*********
  * Model *
  *********/
 class WorkstationVMHL13Model : public WorkstationVMModel {
 public:
   WorkstationVMHL13Model();
   ~WorkstationVMHL13Model(){};
-  void createResource(const char *name, void *ind_phys_workstation);
+
+  WorkstationVMPtr createWorkstationVM(const char *name, surf_resource_t ind_phys_workstation);
   double shareResources(double now);
   void adjustWeightOfDummyCpuActions() {};
   ActionPtr communicate(WorkstationPtr src, WorkstationPtr dst, double size, double rate);

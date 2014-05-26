@@ -15,10 +15,6 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_workstation);
  * CallBacks *
  *************/
 
-static void workstation_new(sg_platf_host_cbarg_t host){
-  reinterpret_cast<WorkstationCLM03ModelPtr>(surf_workstation_model)->createResource(host->id);
-}
-
 /*********
  * Model *
  *********/
@@ -31,10 +27,10 @@ void surf_workstation_model_init_current_default(void)
   surf_network_model_init_LegrandVelho();
   surf_workstation_model->p_cpuModel = surf_cpu_model_pm;
 
-  ModelPtr model = static_cast<ModelPtr>(surf_workstation_model);
+  ModelPtr model = surf_workstation_model;
   xbt_dynar_push(model_list, &model);
   xbt_dynar_push(model_list_invoke, &model);
-  sg_platf_host_add_cb(workstation_new);
+  sg_platf_host_add_cb(workstation_parse_init);
 }
 
 void surf_workstation_model_init_compound()
@@ -44,10 +40,10 @@ void surf_workstation_model_init_compound()
   xbt_assert(surf_network_model, "No network model defined yet!");
   surf_workstation_model = new WorkstationCLM03Model();
 
-  ModelPtr model = static_cast<ModelPtr>(surf_workstation_model);
+  ModelPtr model = surf_workstation_model;
   xbt_dynar_push(model_list, &model);
   xbt_dynar_push(model_list_invoke, &model);
-  sg_platf_host_add_cb(workstation_new);
+  sg_platf_host_add_cb(workstation_parse_init);
 }
 
 WorkstationCLM03Model::WorkstationCLM03Model()
@@ -58,18 +54,13 @@ WorkstationCLM03Model::WorkstationCLM03Model()
 WorkstationCLM03Model::~WorkstationCLM03Model()
 {}
 
-void WorkstationCLM03Model::parseInit(sg_platf_host_cbarg_t host){
-  createResource(host->id);
-}
-
-WorkstationPtr WorkstationCLM03Model::createResource(const char *name){
-
+WorkstationPtr WorkstationCLM03Model::createWorkstation(const char *name){
   WorkstationPtr workstation = new WorkstationCLM03(surf_workstation_model, name, NULL,
 		  (xbt_dynar_t)xbt_lib_get_or_null(storage_lib, name, ROUTING_STORAGE_HOST_LEVEL),
 		  (RoutingEdgePtr)xbt_lib_get_or_null(host_lib, name, ROUTING_HOST_LEVEL),
 		  static_cast<CpuPtr>(xbt_lib_get_or_null(host_lib, name, SURF_CPU_LEVEL)));
   XBT_DEBUG("Create workstation %s with %ld mounted disks", name, xbt_dynar_length(workstation->p_storage));
-  xbt_lib_set(host_lib, name, SURF_WKS_LEVEL, static_cast<ResourcePtr>(workstation));
+  xbt_lib_set(host_lib, name, SURF_WKS_LEVEL, workstation);
   return workstation;
 }
 
@@ -107,13 +98,15 @@ ActionPtr WorkstationCLM03Model::executeParallelTask(int workstation_nb,
                                         double *communication_amount,
                                         double rate){
 #define cost_or_zero(array,pos) ((array)?(array)[pos]:0.0)
+  ActionPtr action =NULL;
   if ((workstation_nb == 1)
-      && (cost_or_zero(communication_amount, 0) == 0.0))
-    return ((WorkstationCLM03Ptr)workstation_list[0])->execute(computation_amount[0]);
-  else if ((workstation_nb == 1)
-           && (cost_or_zero(computation_amount, 0) == 0.0))
-    return communicate((WorkstationCLM03Ptr)workstation_list[0], (WorkstationCLM03Ptr)workstation_list[0],communication_amount[0], rate);
-  else if ((workstation_nb == 2)
+      && (cost_or_zero(communication_amount, 0) == 0.0)){
+    action = ((WorkstationCLM03Ptr)workstation_list[0])->execute(computation_amount[0]);
+  } else if ((workstation_nb == 1)
+           && (cost_or_zero(computation_amount, 0) == 0.0)) {
+    action = communicate((WorkstationCLM03Ptr)workstation_list[0],
+        (WorkstationCLM03Ptr)workstation_list[0],communication_amount[0], rate);
+  } else if ((workstation_nb == 2)
              && (cost_or_zero(computation_amount, 0) == 0.0)
              && (cost_or_zero(computation_amount, 1) == 0.0)) {
     int i,nb = 0;
@@ -125,13 +118,15 @@ ActionPtr WorkstationCLM03Model::executeParallelTask(int workstation_nb,
         value = cost_or_zero(communication_amount, i);
       }
     }
-    if (nb == 1)
-      return communicate((WorkstationCLM03Ptr)workstation_list[0], (WorkstationCLM03Ptr)workstation_list[1],value, rate);
-  }
+    if (nb == 1){
+      action = communicate((WorkstationCLM03Ptr)workstation_list[0],
+          (WorkstationCLM03Ptr)workstation_list[1],value, rate);
+    }
+  } else
+    THROW_UNIMPLEMENTED;      /* This model does not implement parallel tasks */
 #undef cost_or_zero
-
-  THROW_UNIMPLEMENTED;          /* This model does not implement parallel tasks */
-  return NULL;
+  xbt_free((WorkstationCLM03Ptr)workstation_list);
+  return action;
 }
 
 ActionPtr WorkstationCLM03Model::communicate(WorkstationPtr src, WorkstationPtr dst, double size, double rate){

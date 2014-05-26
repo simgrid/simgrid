@@ -19,8 +19,8 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_cpu_cas, surf_cpu,
 
 static void cpu_define_callbacks()
 {
-  sg_platf_host_add_cb(parse_cpu_init);
-  sg_platf_postparse_add_cb(add_traces_cpu);
+  sg_platf_host_add_cb(cpu_parse_init);
+  sg_platf_postparse_add_cb(cpu_add_traces);
 }
 
 /*********
@@ -42,8 +42,8 @@ void surf_cpu_model_init_Cas01()
   surf_cpu_model_vm  = new CpuCas01Model();
 
   cpu_define_callbacks();
-  ModelPtr model_pm = static_cast<ModelPtr>(surf_cpu_model_pm);
-  ModelPtr model_vm = static_cast<ModelPtr>(surf_cpu_model_vm);
+  ModelPtr model_pm = surf_cpu_model_pm;
+  ModelPtr model_vm = surf_cpu_model_vm;
   xbt_dynar_push(model_list, &model_pm);
   xbt_dynar_push(model_list, &model_vm);
 }
@@ -106,20 +106,7 @@ CpuCas01Model::~CpuCas01Model()
   delete p_cpuRunningActionSetThatDoesNotNeedBeingChecked;
 }
 
-void CpuCas01Model::parseInit(sg_platf_host_cbarg_t host)
-{
-  createResource(host->id,
-        host->power_peak,
-        host->pstate,
-        host->power_scale,
-        host->power_trace,
-        host->core_amount,
-        host->initial_state,
-        host->state_trace,
-        host->properties);
-}
-
-CpuPtr CpuCas01Model::createResource(const char *name, xbt_dynar_t power_peak,
+CpuPtr CpuCas01Model::createCpu(const char *name, xbt_dynar_t power_peak,
 		                  int pstate, double power_scale,
                           tmgr_trace_t power_trace, int core,
                           e_surf_resource_state_t state_initial,
@@ -135,7 +122,7 @@ CpuPtr CpuCas01Model::createResource(const char *name, xbt_dynar_t power_peak,
   xbt_assert(core > 0, "Invalid number of cores %d", core);
 
   cpu = new CpuCas01(this, name, power_peak, pstate, power_scale, power_trace, core, state_initial, state_trace, cpu_properties);
-  xbt_lib_set(host_lib, name, SURF_CPU_LEVEL, static_cast<ResourcePtr>(cpu));
+  xbt_lib_set(host_lib, name, SURF_CPU_LEVEL, cpu);
 
   return cpu;
 }
@@ -163,7 +150,7 @@ void CpuCas01Model::addTraces()
     xbt_assert(host, "Host %s undefined", elm);
     xbt_assert(trace, "Trace %s undefined", trace_name);
 
-    host->setStateEvent(tmgr_history_add_trace(history, trace, 0.0, 0, static_cast<ResourcePtr>(host)));
+    host->setStateEvent(tmgr_history_add_trace(history, trace, 0.0, 0, host));
   }
 
   xbt_dict_foreach(trace_connect_list_power, cursor, trace_name, elm) {
@@ -173,7 +160,7 @@ void CpuCas01Model::addTraces()
     xbt_assert(host, "Host %s undefined", elm);
     xbt_assert(trace, "Trace %s undefined", trace_name);
 
-    host->setPowerEvent(tmgr_history_add_trace(history, trace, 0.0, 0, static_cast<ResourcePtr>(host)));
+    host->setPowerEvent(tmgr_history_add_trace(history, trace, 0.0, 0, host));
   }
 }
 
@@ -196,10 +183,10 @@ CpuCas01::CpuCas01(CpuCas01ModelPtr model, const char *name, xbt_dynar_t powerPe
   m_core = core;
   setState(stateInitial);
   if (powerTrace)
-    p_powerEvent = tmgr_history_add_trace(history, powerTrace, 0.0, 0, static_cast<ResourcePtr>(this));
+    p_powerEvent = tmgr_history_add_trace(history, powerTrace, 0.0, 0, this);
 
   if (stateTrace)
-    p_stateEvent = tmgr_history_add_trace(history, stateTrace, 0.0, 0, static_cast<ResourcePtr>(this));
+    p_stateEvent = tmgr_history_add_trace(history, stateTrace, 0.0, 0, this);
 }
 
 CpuCas01::~CpuCas01(){
@@ -251,7 +238,7 @@ void CpuCas01::updateState(tmgr_trace_event_t event_type, double value, double d
 #endif
     while ((var = lmm_get_var_from_cnst
             (getModel()->getMaxminSystem(), getConstraint(), &elem))) {
-      CpuCas01ActionPtr action = static_cast<CpuCas01ActionPtr>(static_cast<ActionPtr>(lmm_variable_id(var)));
+      CpuCas01ActionPtr action = static_cast<CpuCas01ActionPtr>(lmm_variable_id(var));
 
       lmm_update_variable_bound(getModel()->getMaxminSystem(),
                                 action->getVariable(),
@@ -373,7 +360,7 @@ void CpuCas01::setPowerPeakAt(int pstate_index)
 
 CpuCas01Action::CpuCas01Action(ModelPtr model, double cost, bool failed, double power, lmm_constraint_t constraint)
  : CpuAction(model, cost, failed,
-		     lmm_variable_new(model->getMaxminSystem(), static_cast<ActionPtr>(this),
+		     lmm_variable_new(model->getMaxminSystem(), this,
 		     1.0, power, 1))
 {
   m_suspended = 0;

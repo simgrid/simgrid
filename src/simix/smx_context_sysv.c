@@ -240,54 +240,70 @@ static void smx_ctx_sysv_stop_parallel(smx_context_t context)
   smx_ctx_sysv_suspend_parallel(context);
 }
 
-static void smx_ctx_sysv_suspend_parallel(smx_context_t context)
-{
+/* This function is called by maestro at the beginning of a scheduling round to get all working threads executing some stuff
+ * It is much easier to understand what happens if you see the working threads as bodies that swap their soul for the
+ *    ones of the simulated processes that must run.
+ */
+static void smx_ctx_sysv_runall_parallel(void) {
+#ifdef CONTEXT_THREADS
+  sysv_threads_working = 0;
+  // parmap_apply ensures that every working thread get an index in the process_to_run array (through an atomic fetch_and_add),
+  //  and runs the smx_ctx_sysv_resume_parallel function on that index
+  xbt_parmap_apply(sysv_parmap, (void_f_pvoid_t) smx_ctx_sysv_resume_parallel,
+      simix_global->process_to_run);
+#else
+  xbt_die("You asked for a parallel execution, but you don't have any threads.");
+#endif
+}
+
+/* This function is in charge of running one particular simulated process on the current thread */
+static void smx_ctx_sysv_resume_parallel(smx_process_t simulated_process_to_run) {
+#ifdef CONTEXT_THREADS
+  unsigned long worker_id = __sync_fetch_and_add(&sysv_threads_working, 1); // what is my containing body?
+  xbt_os_thread_set_specific(sysv_worker_id_key, (void*) worker_id);        // Store the number of my containing body in os-thread-specific area
+  smx_ctx_sysv_t worker_context = (smx_ctx_sysv_t)SIMIX_context_self();     // get my current soul
+  sysv_workers_context[worker_id] = worker_context;                         // write down that this soul is hosted in that body (for now)
+  ucontext_t* worker_stack = &worker_context->uc;                           // retrieves the system-level info that fuels this soul
+
+  smx_context_t context = simulated_process_to_run->context;                // That's the first soul that I should become
+  SIMIX_context_set_current(context);                                       // write in simix that I switched my soul
+  swapcontext(worker_stack, &((smx_ctx_sysv_t) context)->uc);               // actually do that using the relevant syscall
+  // No body runs that soul anymore at this point. Instead the current body took the soul of simulated process
+  // The simulated process wakes back after the call to "SIMIX_context_suspend(self->context);" within smx_process.c::SIMIX_process_yield()
+
+  // From now on, the simulated processes will change their soul with the next soul to execute (in suspend_parallel, below).
+  // When nobody is to be executed in this scheduling round, the last simulated process will take back the initial soul of the current working thread
+#endif
+}
+
+/* This function is called when a simulated process wants to yield back to the maestro in a blocking simcall.
+ *    This naturally occurs within SIMIX_context_suspend(self->context), called from SIMIX_process_yield()
+ * Actually, it does not really yield back to maestro, but into the next process that must be executed.
+ * If no one is to be executed, then it yields to the initial soul that was in this working thread (that was saved in resume_parallel).
+ */
+static void smx_ctx_sysv_suspend_parallel(smx_context_t context) {
 #ifdef CONTEXT_THREADS
   /* determine the next context */
-  smx_process_t next_work = xbt_parmap_next(sysv_parmap);
+  smx_process_t next_work = xbt_parmap_next(sysv_parmap);  // get the next soul to embody now
   smx_context_t next_context;
-  ucontext_t* next_stack;
+  ucontext_t* next_stack;                                  // will contain the next soul to run, either simulated or initial minion's one
 
-  if (next_work != NULL) {
-    /* there is a next process to resume */
+  if (next_work != NULL) {                                 // there is a next soul to embody (ie, a next process to resume)
     XBT_DEBUG("Run next process");
     next_context = next_work->context;
-    next_stack = &((smx_ctx_sysv_t) next_context)->uc;
   }
   else {
     /* all processes were run, go to the barrier */
     XBT_DEBUG("No more processes to run");
-    unsigned long worker_id =
+    unsigned long worker_id =                             // Get back the identity of my body that was stored when starting the scheduling round
         (unsigned long) xbt_os_thread_get_specific(sysv_worker_id_key);
-    next_context = (smx_context_t)sysv_workers_context[worker_id];
-    next_stack = &((smx_ctx_sysv_t)next_context)->uc;
+    next_context = (smx_context_t)sysv_workers_context[worker_id];  // deduce the initial soul of that body
+                                                                    // When given that soul, the body will wait for the next scheduling round
   }
 
+  next_stack = &((smx_ctx_sysv_t)next_context)->uc;
+
   SIMIX_context_set_current(next_context);
-  swapcontext(&((smx_ctx_sysv_t) context)->uc, next_stack);
-#endif
-}
-
-static void smx_ctx_sysv_resume_parallel(smx_process_t first_process)
-{
-#ifdef CONTEXT_THREADS
-  unsigned long worker_id = __sync_fetch_and_add(&sysv_threads_working, 1);
-  xbt_os_thread_set_specific(sysv_worker_id_key, (void*) worker_id);
-  smx_ctx_sysv_t worker_context = (smx_ctx_sysv_t)SIMIX_context_self();
-  sysv_workers_context[worker_id] = worker_context;
-  ucontext_t* worker_stack = &worker_context->uc;
-
-  smx_context_t context = first_process->context;
-  SIMIX_context_set_current(context);
-  swapcontext(worker_stack, &((smx_ctx_sysv_t) context)->uc);
-#endif
-}
-
-static void smx_ctx_sysv_runall_parallel(void)
-{
-#ifdef CONTEXT_THREADS
-  sysv_threads_working = 0;
-  xbt_parmap_apply(sysv_parmap, (void_f_pvoid_t) smx_ctx_sysv_resume_parallel,
-      simix_global->process_to_run);
+  swapcontext(&((smx_ctx_sysv_t) context)->uc, next_stack);  // get that next soul
 #endif
 }
