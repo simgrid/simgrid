@@ -251,6 +251,7 @@ ActionPtr Workstation::open(const char* fullpath) {
   else
     xbt_die("Can't find mount point for '%s' on '%s'", fullpath, getName());
 
+  XBT_DEBUG("OPEN %s on disk '%s'",fd->name, st->getName());
   ActionPtr action = st->open((const char*)mount_name, (const char*)path);
   free((char*)path);
   free((char*)mount_name);
@@ -259,19 +260,19 @@ ActionPtr Workstation::open(const char* fullpath) {
 
 ActionPtr Workstation::close(surf_file_t fd) {
   StoragePtr st = findStorageOnMountList(fd->mount);
-  XBT_DEBUG("CLOSE on disk '%s'",st->getName());
+  XBT_DEBUG("CLOSE %s on disk '%s'",fd->name, st->getName());
   return st->close(fd);
 }
 
 ActionPtr Workstation::read(surf_file_t fd, sg_size_t size) {
   StoragePtr st = findStorageOnMountList(fd->mount);
-  XBT_DEBUG("READ on disk '%s'",st->getName());
+  XBT_DEBUG("READ %s on disk '%s'",fd->name, st->getName());
   return st->read(fd, size);
 }
 
 ActionPtr Workstation::write(surf_file_t fd, sg_size_t size) {
   StoragePtr st = findStorageOnMountList(fd->mount);
-  XBT_DEBUG("WRITE on disk '%s'",st->getName());
+  XBT_DEBUG("WRITE %s on disk '%s'",fd->name, st->getName());
   return st->write(fd, size);
 }
 
@@ -288,7 +289,7 @@ int Workstation::unlink(surf_file_t fd) {
           st->getName());
       return -1;
     } else {
-      XBT_DEBUG("UNLINK on disk '%s'",st->getName());
+      XBT_DEBUG("UNLINK %s on disk '%s'",fd->name, st->getName());
       st->m_usedSize -= fd->size;
 
       // Remove the file from storage
@@ -353,7 +354,7 @@ int Workstation::fileMove(surf_file_t fd, const char* fullpath){
     *new_psize = *psize;
     if (psize){// src file exists
       xbt_dict_remove(findStorageOnMountList(fd->mount)->p_content, fd->name);
-      char *path = (char *) xbt_malloc ((strlen(fullpath)-strlen(fd->mount)+1));;
+      char *path = (char *) xbt_malloc ((strlen(fullpath)-strlen(fd->mount)+1));
       strncpy(path, fullpath+strlen(fd->mount),
               strlen(fullpath)-strlen(fd->mount)+1);
       xbt_dict_set(findStorageOnMountList(fd->mount)->p_content, path,
