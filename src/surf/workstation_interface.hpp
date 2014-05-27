@@ -346,7 +346,7 @@ public:
    *  - SEEK_END: end of the file
    * @return MSG_OK if successful, otherwise MSG_TASK_CANCELED
    */
-  virtual int fileSeek(surf_file_t fd, sg_size_t offset, int origin);
+  virtual int fileSeek(surf_file_t fd, sg_offset_t offset, int origin);
 
   /**
    * @brief Move a file to another location on the *same mount point*.

@@ -240,12 +240,12 @@ xbt_dynar_t SIMIX_file_get_info(smx_process_t process, smx_file_t fd)
   return  surf_workstation_get_info(host, fd->surf_file);
 }
 
-int SIMIX_pre_file_seek(smx_simcall_t simcall, smx_file_t fd, sg_size_t offset, int origin)
+int SIMIX_pre_file_seek(smx_simcall_t simcall, smx_file_t fd, sg_offset_t offset, int origin)
 {
   return SIMIX_file_seek(simcall->issuer, fd, offset, origin);
 }
 
-int SIMIX_file_seek(smx_process_t process, smx_file_t fd, sg_size_t offset, int origin)
+int SIMIX_file_seek(smx_process_t process, smx_file_t fd, sg_offset_t offset, int origin)
 {
   smx_host_t host = process->smx_host;
   return  surf_workstation_file_seek(host, fd->surf_file, offset, origin);

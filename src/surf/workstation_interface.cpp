@@ -325,7 +325,7 @@ sg_size_t Workstation::fileTell(surf_file_t fd){
   return fd->current_position;
 }
 
-int Workstation::fileSeek(surf_file_t fd, sg_size_t offset, int origin){
+int Workstation::fileSeek(surf_file_t fd, sg_offset_t offset, int origin){
 
   switch (origin) {
   case SEEK_SET:

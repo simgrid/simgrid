@@ -24,6 +24,7 @@ types = [('TCHAR', 'char', 'c')
         ,('TCPTR', 'const void*', 'cp')
         ,('TSIZE', 'size_t', 'sz')
         ,('TSGSIZE', 'sg_size_t', 'sgsz')
+        ,('TSGOFF', 'sg_offset_t', 'sgoff')
         ,('TVOID', 'void', '')
         ,('TDSPEC', 'void*', 'dp')
         ,('TFSPEC', 'FPtr', 'fp')]

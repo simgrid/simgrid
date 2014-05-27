@@ -266,7 +266,7 @@ sg_size_t MSG_file_get_size(msg_file_t fd){
  * MSG_TASK_CANCELED (=8).
  *
  */
-msg_error_t MSG_file_seek(msg_file_t fd, sg_size_t offset, int origin)
+msg_error_t MSG_file_seek(msg_file_t fd, sg_offset_t offset, int origin)
 {
   msg_file_priv_t priv = MSG_file_priv(fd);
   return simcall_file_seek(priv->simdata->smx_file, offset, origin);

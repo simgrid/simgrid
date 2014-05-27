@@ -708,7 +708,9 @@ XBT_PUBLIC(int) surf_workstation_file_move(surf_resource_t workstation, surf_fil
  *  - SEEK_END: end of the file
  * @return MSG_OK if successful, otherwise MSG_TASK_CANCELED
  */
-XBT_PUBLIC(int) surf_workstation_file_seek(surf_resource_t workstation, surf_file_t fd, sg_size_t offset, int origin);
+XBT_PUBLIC(int) surf_workstation_file_seek(surf_resource_t workstation,
+                                           surf_file_t fd, sg_offset_t offset,
+                                           int origin);
 
 /**
  * @brief [brief description]
