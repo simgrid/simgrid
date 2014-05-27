@@ -1163,6 +1163,7 @@ set(PLATFORMS_EXAMPLES
   examples/platforms/content/win_storage_content.txt
   examples/platforms/data_center.xml
   examples/platforms/deployment_remote_io.xml
+  examples/platforms/fat_tree_cluster.xml
   examples/platforms/g5k.xml
   examples/platforms/generation_scripts/create_hierarchical_clusters.pl
   examples/platforms/generation_scripts/enhancedDTDwithHierarchicalCluster.pl
