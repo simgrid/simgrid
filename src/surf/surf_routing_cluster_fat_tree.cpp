@@ -59,7 +59,7 @@ void AsClusterFatTree::getRouteAndLatency(RoutingEdgePtr src,
   source = tempIter->second;
   tempIter = this->computeNodes.find(dst->getId());
   if (tempIter == this->computeNodes.end()) {
-    xbt_die("Could not find the destination %s [%d] in the fat tree", src->getName(), src->getId());
+    xbt_die("Could not find the destination %s [%d] in the fat tree", dst->getName(), dst->getId());
   }
 
 
