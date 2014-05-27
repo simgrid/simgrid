@@ -1006,7 +1006,7 @@ static void routing_parse_cluster(sg_platf_cluster_cbarg_t cluster)
   
   // For fat trees, the links must be created once all nodes have been added
   if(cluster->topology == SURF_CLUSTER_FAT_TREE) {
-    ((AsClusterFatTree*)current_routing)->create_links(cluster);
+    ((AsClusterFatTree*)current_routing)->create_links();
   }
   // Add a router. It is magically used thanks to the way in which surf_routing_cluster is written,
   // and it's very useful to connect clusters together

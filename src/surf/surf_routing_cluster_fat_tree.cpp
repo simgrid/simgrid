@@ -25,7 +25,8 @@ AsClusterFatTree::~AsClusterFatTree() {
 }
 
 bool AsClusterFatTree::isInSubTree(FatTreeNode *root, FatTreeNode *node) {
-  XBT_DEBUG("Is %d(%u,%u) in the sub tree of %d(%u,%u) ?", node->id, node->level, node->position, root->id, root->level, root->position);
+  XBT_DEBUG("Is %d(%u,%u) in the sub tree of %d(%u,%u) ?", node->id,
+            node->level, node->position, root->id, root->level, root->position);
   if (root->level <= node->level) {
     return false;
   }
@@ -50,21 +51,24 @@ void AsClusterFatTree::getRouteAndLatency(RoutingEdgePtr src,
   FatTreeNode *source, *destination, *currentNode;
   std::vector<NetworkLink*> route;
   std::map<int, FatTreeNode*>::const_iterator tempIter;
+
   tempIter = this->computeNodes.find(src->getId());
 
   // xbt_die -> assert
   if (tempIter == this->computeNodes.end()) {
-    xbt_die("Could not find the source %s [%d] in the fat tree", src->getName(), src->getId());
+    xbt_die("Could not find the source %s [%d] in the fat tree", src->getName(),
+            src->getId());
   }
   source = tempIter->second;
   tempIter = this->computeNodes.find(dst->getId());
   if (tempIter == this->computeNodes.end()) {
-    xbt_die("Could not find the destination %s [%d] in the fat tree", src->getName(), src->getId());
+    xbt_die("Could not find the destination %s [%d] in the fat tree",
+            src->getName(), src->getId());
   }
 
 
   destination = tempIter->second;
-  XBT_DEBUG("Get route and latency from '%s' [%d] to '%s' [%d] in a fat tree",
+  XBT_VERB("Get route and latency from '%s' [%d] to '%s' [%d] in a fat tree",
             src->getName(), src->getId(), dst->getName(), dst->getId());
 
   currentNode = source;
@@ -84,9 +88,15 @@ void AsClusterFatTree::getRouteAndLatency(RoutingEdgePtr src,
     if(latency) {
       *latency += currentNode->parents[d]->upLink->getLatency();
     }
+
+    if (this->p_has_limiter) {
+      route.push_back(currentNode->limiterLink);
+    }
     currentNode = currentNode->parents[d]->upNode;
   }
-  XBT_DEBUG("%d(%u,%u) is in the sub tree of %d(%u,%u).", destination->id, destination->level, destination->position, currentNode->id, currentNode->level, currentNode->position);
+  XBT_DEBUG("%d(%u,%u) is in the sub tree of %d(%u,%u).", destination->id,
+            destination->level, destination->position, currentNode->id,
+            currentNode->level, currentNode->position);
   // Down part
   while(currentNode != destination) {
     for(unsigned int i = 0 ; i < currentNode->children.size() ; i++) {
@@ -97,7 +107,9 @@ void AsClusterFatTree::getRouteAndLatency(RoutingEdgePtr src,
           *latency += currentNode->children[i]->downLink->getLatency();
         }
         currentNode = currentNode->children[i]->downNode;
-        XBT_DEBUG("%d(%u,%u) is accessible through %d(%u,%u)", destination->id, destination->level, destination->position, currentNode->id, currentNode->level, currentNode->position);
+        XBT_DEBUG("%d(%u,%u) is accessible through %d(%u,%u)", destination->id,
+                  destination->level, destination->position, currentNode->id,
+                  currentNode->level, currentNode->position);
       }
     }
   }
@@ -111,7 +123,7 @@ void AsClusterFatTree::getRouteAndLatency(RoutingEdgePtr src,
 /* This function makes the assumption that parse_specific_arguments() and
  * addNodes() have already been called
  */
-void AsClusterFatTree::create_links(sg_platf_cluster_cbarg_t cluster){
+void AsClusterFatTree::create_links(){
   if(this->levels == 0) {
     return;
   }
@@ -144,7 +156,7 @@ void AsClusterFatTree::create_links(sg_platf_cluster_cbarg_t cluster){
   // Nodes are totally ordered, by level and then by position, in this->nodes
   for (unsigned int i = 0 ; i < this->levels ; i++) {
     for (unsigned int j = 0 ; j < this->nodesByLevel[i] ; j++) {
-        this->connectNodeToParents(cluster, this->nodes[k]);
+        this->connectNodeToParents(this->nodes[k]);
         k++;
     }
   }
@@ -162,8 +174,7 @@ void AsClusterFatTree::create_links(sg_platf_cluster_cbarg_t cluster){
 
 }
 
-int AsClusterFatTree::connectNodeToParents(sg_platf_cluster_cbarg_t cluster,
-                                           FatTreeNode *node) {
+int AsClusterFatTree::connectNodeToParents(FatTreeNode *node) {
   std::vector<FatTreeNode*>::iterator currentParentNode = this->nodes.begin();
   int connectionsNumber = 0;
   const int level = node->level;
@@ -177,7 +188,7 @@ int AsClusterFatTree::connectNodeToParents(sg_platf_cluster_cbarg_t cluster,
                 node->level, node->position, (*currentParentNode)->id,
                 (*currentParentNode)->level, (*currentParentNode)->position, this->lowerLevelPortsNumber[level]);
       for (unsigned int j = 0 ; j < this->lowerLevelPortsNumber[level] ; j++) {
-      this->addLink(cluster, *currentParentNode, node->label[level] +
+      this->addLink(*currentParentNode, node->label[level] +
                     j * this->lowerLevelNodesNumber[level], node,
                     (*currentParentNode)->label[level] +
                     j * this->upperLevelNodesNumber[level]);
@@ -268,12 +279,14 @@ void AsClusterFatTree::generateSwitches() {
   for (unsigned int i = 0 ; i < this->levels ; i++) {
     for (unsigned int j = 0 ; j < this->nodesByLevel[i + 1] ; j++) {
       FatTreeNode* newNode;
-      newNode = new FatTreeNode(--k, i + 1, j);
-      XBT_DEBUG("We create the switch %d(%d,%d)", newNode->id, newNode->level, newNode->position);
+      newNode = new FatTreeNode(this->cluster, --k, i + 1, j);
+      XBT_DEBUG("We create the switch %d(%d,%d)", newNode->id, newNode->level,
+                newNode->position);
       newNode->children.resize(this->lowerLevelNodesNumber[i] *
                                this->lowerLevelPortsNumber[i]);
       if (i != this->levels - 1) {
-        newNode->parents.resize(this->upperLevelNodesNumber[i + 1] * this->lowerLevelPortsNumber[i + 1]);
+        newNode->parents.resize(this->upperLevelNodesNumber[i + 1] *
+                                this->lowerLevelPortsNumber[i + 1]);
       }
       newNode->label.resize(this->levels);
       this->nodes.push_back(newNode);
@@ -354,18 +367,18 @@ void AsClusterFatTree::addProcessingNode(int id) {
   using std::make_pair;
   static int position = 0;
   FatTreeNode* newNode;
-  newNode = new FatTreeNode(id, 0, position++);
-  newNode->parents.resize(this->upperLevelNodesNumber[0] * this->lowerLevelPortsNumber[0]);
+  newNode = new FatTreeNode(this->cluster, id, 0, position++);
+  newNode->parents.resize(this->upperLevelNodesNumber[0] *
+                          this->lowerLevelPortsNumber[0]);
   newNode->label.resize(this->levels);
   this->computeNodes.insert(make_pair(id,newNode));
   this->nodes.push_back(newNode);
 }
 
-void AsClusterFatTree::addLink(sg_platf_cluster_cbarg_t cluster, 
-                               FatTreeNode *parent, unsigned int parentPort,
+void AsClusterFatTree::addLink(FatTreeNode *parent, unsigned int parentPort,
                                FatTreeNode *child, unsigned int childPort) {
   FatTreeLink *newLink;
-  newLink = new FatTreeLink(cluster, child, parent);
+  newLink = new FatTreeLink(this->cluster, child, parent);
   XBT_DEBUG("Creating a link between the parent (%d,%d,%u)"
             " and the child (%d,%d,%u)", parent->level, parent->position,
             parentPort, child->level, child->position, childPort);
@@ -373,9 +386,6 @@ void AsClusterFatTree::addLink(sg_platf_cluster_cbarg_t cluster,
   child->parents[childPort] = newLink;
 
   this->links.push_back(newLink);
-
-  
-
 }
 
 void AsClusterFatTree::parse_specific_arguments(sg_platf_cluster_cbarg_t 
@@ -425,6 +435,7 @@ void AsClusterFatTree::parse_specific_arguments(sg_platf_cluster_cbarg_t
   for(size_t i = 0 ; i < tmp.size() ; i++){
     this->lowerLevelPortsNumber.push_back(std::atoi(tmp[i].c_str())); 
   }
+  this->cluster = cluster;
 }
 
 
@@ -457,16 +468,45 @@ void AsClusterFatTree::generateDotFile(const string& filename) const {
     file.close();
   }
   else {
-    std::cerr << "Unable to open file " << filename << std::endl;
+    XBT_DEBUG("Unable to open file %s", filename.c_str());
     return;
   }
 }
 
-FatTreeNode::FatTreeNode(int id, int level, int position) : id(id),
-                                                            level(level),
-                                                            position(position){}
+FatTreeNode::FatTreeNode(sg_platf_cluster_cbarg_t cluster, int id, int level,
+                         int position) : id(id), level(level),
+                                         position(position) {
+  s_sg_platf_link_cbarg_t linkTemplate;
+  if(cluster->limiter_link) {
+    memset(&linkTemplate, 0, sizeof(linkTemplate));
+    linkTemplate.bandwidth = cluster->limiter_link;
+    linkTemplate.latency = 0;
+    linkTemplate.state = SURF_RESOURCE_ON;
+    linkTemplate.policy = SURF_LINK_SHARED;
+    linkTemplate.id = bprintf("limiter_%d", id);
+    sg_platf_new_link(&linkTemplate);
+    this->limiterLink = (NetworkLink*) xbt_lib_get_or_null(link_lib,
+                                                           linkTemplate.id,
+                                                           SURF_LINK_LEVEL);
+    free((void*)linkTemplate.id);
+  }
+  if(cluster->loopback_bw || cluster->loopback_lat) {
+    memset(&linkTemplate, 0, sizeof(linkTemplate));
+    linkTemplate.bandwidth = cluster->loopback_bw;
+    linkTemplate.latency = cluster->loopback_lat;
+    linkTemplate.state = SURF_RESOURCE_ON;
+    linkTemplate.policy = SURF_LINK_FATPIPE;
+    linkTemplate.id = bprintf("loopback_%d", id);
+    sg_platf_new_link(&linkTemplate);
+    this->loopback = (NetworkLink*) xbt_lib_get_or_null(link_lib,
+                                                        linkTemplate.id,
+                                                        SURF_LINK_LEVEL);
+    free((void*)linkTemplate.id);
+  }  
+}
 
-FatTreeLink::FatTreeLink(sg_platf_cluster_cbarg_t cluster, FatTreeNode *downNode,
+FatTreeLink::FatTreeLink(sg_platf_cluster_cbarg_t cluster,
+                         FatTreeNode *downNode,
                          FatTreeNode *upNode) : upNode(upNode),
                                                 downNode(downNode) {
   static int uniqueId = 0;
@@ -475,24 +515,28 @@ FatTreeLink::FatTreeLink(sg_platf_cluster_cbarg_t cluster, FatTreeNode *downNode
   linkTemplate.bandwidth = cluster->bw;
   linkTemplate.latency = cluster->lat;
   linkTemplate.state = SURF_RESOURCE_ON;
-  linkTemplate.policy = cluster->sharing_policy; // Maybe should we do sthg with that ?
-  linkTemplate.id = bprintf("link_from_%d_to_%d_%d", downNode->id, upNode->id, uniqueId);
+  linkTemplate.policy = cluster->sharing_policy; // sthg to do with that ?
+  linkTemplate.id = bprintf("link_from_%d_to_%d_%d", downNode->id, upNode->id,
+                            uniqueId);
   sg_platf_new_link(&linkTemplate);
   NetworkLink* link;
+  std::string tmpID;
   if (cluster->sharing_policy == SURF_LINK_FULLDUPLEX) {
-    std::string tmpID;
     tmpID = std::string(linkTemplate.id) + "_UP";
-    link = (NetworkLink*) xbt_lib_get_or_null(link_lib, tmpID.c_str(), SURF_LINK_LEVEL);
+    link = (NetworkLink*) xbt_lib_get_or_null(link_lib, tmpID.c_str(),
+                                              SURF_LINK_LEVEL);
     this->upLink = link; // check link?
     tmpID = std::string(linkTemplate.id) + "_DOWN";
-    link = (NetworkLink*) xbt_lib_get_or_null(link_lib, tmpID.c_str(), SURF_LINK_LEVEL);
+    link = (NetworkLink*) xbt_lib_get_or_null(link_lib, tmpID.c_str(),
+                                              SURF_LINK_LEVEL);
     this->downLink = link; // check link ?
   }
   else {
-    link = (NetworkLink*) xbt_lib_get_or_null(link_lib, linkTemplate.id, SURF_LINK_LEVEL);
+    link = (NetworkLink*) xbt_lib_get_or_null(link_lib, linkTemplate.id,
+                                              SURF_LINK_LEVEL);
     this->upLink = link;
     this->downLink = link;
   }
   uniqueId++;
-  
+  free((void*)linkTemplate.id);
 }
