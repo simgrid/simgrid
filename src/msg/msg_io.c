@@ -554,6 +554,12 @@ xbt_dict_t MSG_storage_get_content(msg_storage_t storage)
   return SIMIX_storage_get_content(storage);
 }
 
+/** \ingroup msg_storage_management
+ *
+ * \brief Returns the size of a #msg_storage_t.
+ * \param storage a storage
+ * \return The size of the storage
+ */
 sg_size_t MSG_storage_get_size(msg_storage_t storage)
 {
   return SIMIX_storage_get_size(storage);
