@@ -146,7 +146,7 @@ void _xbt_replay_action_exit(void)
 
 /**
  * \ingroup XBT_replay
- * \brief TODO
+ * \brief function used internally to actually run the replay
 
  * \param argc argc .
  * \param argv argv
