@@ -1,4 +1,61 @@
 #! ./tesh
 
-$ ${bindir:=.}/io/remote_io ${srcdir:=.}/examples/platforms/remote_io.xml \
-${srcdir:=.}/examples/platforms/deployment_remote_io.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+$ ${bindir:=.}/io/remote_io$EXEEX ${srcdir:=.}/examples/platforms/remote_io.xml \
+${srcdir:=.}/examples/platforms/deployment_remote_io.xml "--log=root.fmt:[%10.6r]%e(%i@%5h)%e%m%n"
+> [  0.000000] (1@alice) Opened file 'c:\Windows\setupact.log'
+> [  0.000000] (2@  bob) Opened file '/scratch/lib/libsimgrid.so.3.6.2'
+> [  0.000000] (3@ carl) Opened file '/scratch/lib/libsimgrid.so.3.6.2'
+> [  0.000000] (4@ dave) Opened file 'c:\Windows\bootstat.dat'
+> [  0.000000] (1@alice) File Descriptor information:
+> 		Full path: 'c:\Windows\setupact.log'
+> 		Size: 101663
+> 		Mount point: 'c:'
+> 		Storage Id: 'Disk2'
+> 		Storage Type: 'SATA-II_HDD'
+> 		Content Type: 'txt_windows'
+> [  0.000000] (2@  bob) File Descriptor information:
+> 		Full path: '/scratch/lib/libsimgrid.so.3.6.2'
+> 		Size: 12710497
+> 		Mount point: '/scratch'
+> 		Storage Id: 'Disk1'
+> 		Storage Type: 'SATA-II_HDD'
+> 		Content Type: 'txt_unix'
+> [  0.000000] (3@ carl) File Descriptor information:
+> 		Full path: '/scratch/lib/libsimgrid.so.3.6.2'
+> 		Size: 12710497
+> 		Mount point: '/scratch'
+> 		Storage Id: 'Disk1'
+> 		Storage Type: 'SATA-II_HDD'
+> 		Content Type: 'txt_unix'
+> [  0.000000] (4@ dave) File Descriptor information:
+> 		Full path: 'c:\Windows\bootstat.dat'
+> 		Size: 67584
+> 		Mount point: 'c:'
+> 		Storage Id: 'Disk2'
+> 		Storage Type: 'SATA-II_HDD'
+> 		Content Type: 'txt_windows'
+> [  0.000000] (1@alice) Try to read 101663 from 'c:\Windows\setupact.log'
+> [  0.000000] (2@  bob) Try to read 12710497 from '/scratch/lib/libsimgrid.so.3.6.2'
+> [  0.000000] (3@ carl) Try to read 12710497 from '/scratch/lib/libsimgrid.so.3.6.2'
+> [  0.000000] (4@ dave) Try to read 67584 from 'c:\Windows\bootstat.dat'
+> [  0.001469] (4@ dave) Have read 67584 from 'c:\Windows\bootstat.dat'. Offset is now at: 67584
+> [  0.001469] (4@ dave) Seek back to the begining of the stream...
+> [  0.001469] (4@ dave) Offset is now at: 0
+> [  0.001469] (4@ dave) Opened file 'c:\Windows\Professional.xml'
+> [  0.001469] (4@ dave) Try to write 100KiB to 'c:\Windows\Professional.xml'
+> [  0.003130] (4@ dave) Have written 102400 bytes to 'c:\Windows\Professional.xml'. Offset is now at: 102400
+> [  0.003130] (4@ dave) Move 'c:\Windows\Professional.xml' (of size 102400) from 'dave' to 'carl'
+> [  0.003559] (1@alice) Have read 101663 from 'c:\Windows\setupact.log'. Offset is now at: 101663
+> [  0.003559] (1@alice) Seek back to the begining of the stream...
+> [  0.003559] (1@alice) Offset is now at: 0
+> [  0.276607] (3@ carl) Have read 12710497 from '/scratch/lib/libsimgrid.so.3.6.2'. Offset is now at: 12710497
+> [  0.276607] (3@ carl) Seek back to the begining of the stream...
+> [  0.276607] (3@ carl) Offset is now at: 0
+> [  0.387328] (2@  bob) Have read 12710497 from '/scratch/lib/libsimgrid.so.3.6.2'. Offset is now at: 12710497
+> [  0.387328] (2@  bob) Seek back to the begining of the stream...
+> [  0.387328] (2@  bob) Offset is now at: 0
+> [  0.387328] (2@  bob) Opened file '/scratch/doc/simgrid/examples/platforms/g5k.xml'
+> [  0.387328] (2@  bob) Try to write 100KiB to '/scratch/doc/simgrid/examples/platforms/g5k.xml'
+> [  0.390517] (2@  bob) Have written 102400 bytes to '/scratch/doc/simgrid/examples/platforms/g5k.xml'. Offset is now at: 102400
+> [  0.390517] (2@  bob) Move '/scratch/doc/simgrid/examples/platforms/g5k.xml' (of size 102400) from 'bob' to 'alice'
+> [  0.394819] (0@     ) Simulation time 0.394819
