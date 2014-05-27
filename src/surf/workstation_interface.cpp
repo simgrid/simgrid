@@ -251,7 +251,7 @@ ActionPtr Workstation::open(const char* fullpath) {
   else
     xbt_die("Can't find mount point for '%s' on '%s'", fullpath, getName());
 
-  XBT_DEBUG("OPEN %s on disk '%s'",fd->name, st->getName());
+  XBT_DEBUG("OPEN %s on disk '%s'",fullpath, st->getName());
   ActionPtr action = st->open((const char*)mount_name, (const char*)path);
   free((char*)path);
   free((char*)mount_name);
