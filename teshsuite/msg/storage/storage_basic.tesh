@@ -57,4 +57,7 @@ $ storage_basic --cfg=path:${srcdir:=.} ${srcdir:=.}/platform.xml ${srcdir:=.}/d
 > [  3.208145] (1:server@server) 	/doc/simgrid/examples/cxx/basic/Main.cxx size: 10 bytes
 > [  3.208145] (1:server@server) 	/scratch/toto.cxx size: 500001 bytes
 > [  3.208145] (1:server@server) 	/doc/simgrid/examples/cxx/basic/Slave.cxx size: 10 bytes
+> [  3.208145] (1:server@server) Storage cdisk is attached to client
+> [  3.208145] (1:server@server) Storage sdisk1 is attached to server
+> [  3.208145] (1:server@server) Storage sdisk2 is attached to server
 > [  3.208145] (0:@) Simulated time: 3.20814

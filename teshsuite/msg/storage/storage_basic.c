@@ -17,6 +17,7 @@ sg_size_t read_local_file(const char *src);
 void dump_storage_by_name(char *name);
 void display_storage_content(msg_storage_t storage);
 void get_set_storage_data(const char *storage_name);
+void dump_platform_storages(void);
 int client(int argc, char *argv[]);
 int server(int argc, char *argv[]);
 
@@ -139,6 +140,16 @@ void get_set_storage_data(const char *storage_name){
   xbt_free(data);
 }
 
+void dump_platform_storages(void){
+	unsigned int cursor;
+	xbt_dynar_t storages = MSG_storages_as_dynar();
+	msg_storage_t storage;
+	xbt_dynar_foreach(storages, cursor, storage){
+		XBT_INFO("Storage %s is attached to %s", MSG_storage_get_name(storage), MSG_storage_get_host(storage));
+		MSG_storage_set_property_value(storage, "usage", xbt_strdup("gpfs"), NULL);
+	}
+}
+
 int client(int argc, char *argv[])
 {
   hsm_put("server","/sd1/doc/simgrid/examples/cxx/autoDestination/FinalizeTask.cxx","/sd2/scratch/toto.cxx");
@@ -184,6 +195,7 @@ int server(int argc, char *argv[])
   }
 
   storage_info(MSG_host_self());
+  dump_platform_storages();
   return 1;
 }
 
