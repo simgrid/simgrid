@@ -43,6 +43,8 @@ typedef struct s_mc_mem_region{
   void *data;
   // Size of the data region:
   size_t size;
+  // For per-page snapshots, this is an array to the number of
+  size_t* page_numbers;
 } s_mc_mem_region_t, *mc_mem_region_t;
 
 /** Ignored data
@@ -105,6 +107,8 @@ typedef struct s_mc_checkpoint_ignore_region{
   size_t size;
 }s_mc_checkpoint_ignore_region_t, *mc_checkpoint_ignore_region_t;
 
+SG_BEGIN_DECL()
+
 inline static void* mc_snapshot_get_heap_end(mc_snapshot_t snapshot) {
   if(snapshot==NULL)
     xbt_die("snapshot is NULL");
@@ -116,6 +120,36 @@ mc_snapshot_t SIMIX_pre_mc_snapshot(smx_simcall_t simcall);
 mc_snapshot_t MC_take_snapshot(int num_state);
 void MC_restore_snapshot(mc_snapshot_t);
 void MC_free_snapshot(mc_snapshot_t);
+
+int mc_important_snapshot(mc_snapshot_t snapshot);
+
+size_t* mc_take_page_snapshot_region(void* data, size_t page_count, uint64_t* pagemap, size_t* reference_pages);
+void mc_free_page_snapshot_region(size_t* pagenos, size_t page_count);
+void mc_restore_page_snapshot_region(mc_mem_region_t region, size_t page_count, uint64_t* pagemap, mc_mem_region_t reference_region);
+
+mc_mem_region_t mc_region_new_sparse(int type, void *start_addr, size_t size, mc_mem_region_t ref_reg);
+void mc_region_restore_sparse(mc_mem_region_t reg, mc_mem_region_t ref_reg);
+void mc_softdirty_reset();
+
+typedef struct s_mc_pages_store s_mc_pages_store_t, * mc_pages_store_t;
+mc_pages_store_t mc_pages_store_new();
+
+/** @brief State of the model-checker (global variables for the model checker)
+ *
+ *  Each part of the state of the model chercker represented as a global
+ *  variable prevents some sharing between snapshots and must be ignored.
+ *  By moving as much state as possible in this structure allocated
+ *  on the model-chercker heap, we avoid those issues.
+ */
+typedef struct s_mc_model_checker {
+  // This is the parent snapshot of the current state:
+  mc_snapshot_t parent_snapshot;
+  mc_pages_store_t pages;
+  int fd_clear_refs;
+  int fd_pagemap;
+} s_mc_model_checker_t, *mc_model_checker_t;
+
+extern mc_model_checker_t mc_model_checker;
 
 /** \brief Translate a pointer from process address space to snapshot address space
  *
@@ -617,6 +651,8 @@ bool mc_address_test(mc_address_set_t p, const void* value);
  *  \result resulting hash
  * */
 uint64_t mc_hash_processes_state(int num_state, xbt_dynar_t stacks);
+
+SG_END_DECL()
 
 #endif
 

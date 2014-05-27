@@ -13,6 +13,7 @@
 #include "xbt/module.h"
 #include <xbt/mmalloc.h>
 #include "../smpi/private.h"
+#include <alloca.h>
 
 #include "xbt/mmalloc/mmprivate.h"
 
@@ -22,6 +23,9 @@
 #include <libelf.h>
 
 #include "mc_private.h"
+#include <mc/mc.h>
+
+#include "mc_mmu.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_checkpoint, mc,
                                 "Logging specific to mc_checkpoint");
@@ -85,41 +89,57 @@ void MC_free_snapshot(mc_snapshot_t snapshot)
   xbt_free(snapshot);
 }
 
-
 /*******************************  Snapshot regions ********************************/
 /*********************************************************************************/
 
-static mc_mem_region_t MC_region_new(int type, void *start_addr, size_t size)
+static mc_mem_region_t MC_region_new(int type, void *start_addr, size_t size, mc_mem_region_t ref_reg)
 {
+  if (_sg_mc_sparse_checkpoint) {
+    return mc_region_new_sparse(type, start_addr, size, ref_reg);
+  }
+
   mc_mem_region_t new_reg = xbt_new(s_mc_mem_region_t, 1);
   new_reg->start_addr = start_addr;
+  new_reg->data = NULL;
   new_reg->size = size;
-  //new_reg->data = mmap(NULL, size, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0);
-  //if(new_reg->data==MAP_FAILED)
-  //xbt_die("Could not mmap new memory for snapshot.");
+  new_reg->page_numbers = NULL;
   new_reg->data = xbt_malloc(size);
   memcpy(new_reg->data, start_addr, size);
-  //madvise(new_reg->data, size, MADV_MERGEABLE);
-
   XBT_DEBUG("New region : type : %d, data : %p (real addr %p), size : %zu",
             type, new_reg->data, start_addr, size);
-
   return new_reg;
+
 }
 
-static void MC_region_restore(mc_mem_region_t reg)
+/** @brief Restore a region from a snapshot
+ *
+ *  If we are using per page snapshots, it is possible to use the reference
+ *  region in order to do an incremental restoration of the region: the
+ *  softclean pages which are shared between the two snapshots do not need
+ *  to be restored.
+ *
+ *  @param reg     Target region
+ *  @param reg_reg Current region (if not NULL), used for lazy per page restoration
+ */
+static void MC_region_restore(mc_mem_region_t reg, mc_mem_region_t ref_reg)
 {
   /*FIXME: check if start_addr is still mapped, if it is not, then map it
-     before copying the data */
-
-  memcpy(reg->start_addr, reg->data, reg->size);
+    before copying the data */
+  if (!reg->page_numbers) {
+    memcpy(reg->start_addr, reg->data, reg->size);
+  } else {
+    mc_region_restore_sparse(reg, ref_reg);
+  }
   return;
 }
 
 static void MC_snapshot_add_region(mc_snapshot_t snapshot, int type,
                                    void *start_addr, size_t size)
+
 {
-  mc_mem_region_t new_reg = MC_region_new(type, start_addr, size);
+  mc_mem_region_t ref_reg =
+    mc_model_checker->parent_snapshot ? mc_model_checker->parent_snapshot->regions[type] : NULL;
+  mc_mem_region_t new_reg = MC_region_new(type, start_addr, size, ref_reg);
   snapshot->regions[type] = new_reg;
   return;
 }
@@ -146,8 +166,9 @@ static void MC_get_memory_regions(mc_snapshot_t snapshot)
     snapshot->privatization_regions =
         xbt_new(mc_mem_region_t, SIMIX_process_count());
     for (i = 0; i < SIMIX_process_count(); i++) {
+      // TODO, add support for sparse snapshot
       snapshot->privatization_regions[i] =
-          MC_region_new(-1, mappings[i], size_data_exe);
+        MC_region_new(-1, mappings[i], size_data_exe, NULL);
     }
     snapshot->privatization_index = loaded_page;
   }
@@ -539,6 +560,23 @@ static void MC_snapshot_ignore_restore(mc_snapshot_t snapshot)
   }
 }
 
+/** @brief Can we remove this snapshot?
+ *
+ * Some snapshots cannot be removed (yet) because we need them
+ * at this point.
+ *
+ * @param snapshot
+ */
+int mc_important_snapshot(mc_snapshot_t snapshot)
+{
+  // We need this snapshot in order to know which
+  // pages needs to be stored in the next snapshot:
+  if (_sg_mc_sparse_checkpoint && snapshot == mc_model_checker->parent_snapshot)
+    return true;
+
+  return false;
+}
+
 mc_snapshot_t MC_take_snapshot(int num_state)
 {
 
@@ -553,6 +591,9 @@ mc_snapshot_t MC_take_snapshot(int num_state)
 
   /* Save the std heap and the writable mapped pages of libsimgrid and binary */
   MC_get_memory_regions(snapshot);
+  if (_sg_mc_sparse_checkpoint) {
+    mc_softdirty_reset();
+  }
 
   snapshot->to_ignore = MC_take_snapshot_ignore();
 
@@ -568,38 +609,38 @@ mc_snapshot_t MC_take_snapshot(int num_state)
     snapshot->hash = 0;
   }
 
-  // mprotect the region after zero-ing ignored parts:
-  /*size_t i;
-     for(i=0; i!=NB_REGIONS; ++i) {
-     mc_mem_region_t region = snapshot->regions[i];
-     mprotect(region->data, region->size, PROT_READ);
-     } */
-
   MC_snapshot_ignore_restore(snapshot);
-
+  mc_model_checker->parent_snapshot = snapshot;
   return snapshot;
-
 }
 
 void MC_restore_snapshot(mc_snapshot_t snapshot)
 {
+  mc_snapshot_t parent_snapshot = mc_model_checker->parent_snapshot;
+
   unsigned int i;
   for (i = 0; i < NB_REGIONS; i++) {
     // For privatized, variables we decided it was not necessary to take the snapshot:
     if (snapshot->regions[i])
-      MC_region_restore(snapshot->regions[i]);
+      MC_region_restore(snapshot->regions[i],
+        parent_snapshot ? parent_snapshot->regions[i] : NULL);
   }
 
   if (snapshot->privatization_regions) {
     for (i = 0; i < SIMIX_process_count(); i++) {
       if (snapshot->privatization_regions[i]) {
-        MC_region_restore(snapshot->privatization_regions[i]);
+        MC_region_restore(snapshot->privatization_regions[i],
+          parent_snapshot ? parent_snapshot->privatization_regions[i] : NULL);
       }
     }
     switch_data_segment(snapshot->privatization_index);
   }
 
   MC_snapshot_ignore_restore(snapshot);
+  if (_sg_mc_sparse_checkpoint) {
+    mc_softdirty_reset();
+  }
+  mc_model_checker->parent_snapshot = snapshot;
 }
 
 void *mc_translate_address(uintptr_t addr, mc_snapshot_t snapshot)

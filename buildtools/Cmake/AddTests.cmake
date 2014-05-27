@@ -96,6 +96,7 @@ IF(NOT enable_memcheck)
 
   ### MC ###
   IF(HAVE_MC)
+    ADD_TESH(page_store                          --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/mc --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/mc page_store.tesh)
     ADD_TESH(tesh-mc-dwarf                       --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/mc/dwarf --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/mc/dwarf dwarf.tesh)
     ADD_TESH(tesh-mc-dwarf-expression            --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/mc/dwarf_expression --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/mc/dwarf_expression dwarf_expression.tesh)
 
