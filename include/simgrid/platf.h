@@ -95,6 +95,11 @@ static inline char* sg_storage_name(sg_storage_t storage) {
  */
 typedef unsigned long long sg_size_t;
 
+/** @ingroup m_datatypes_management_details
+ * @brief Type for any simgrid offset
+ */
+typedef long long sg_offset_t;
+
 /*
  * Platform creation functions. Instead of passing 123 arguments to the creation functions
  * (one for each possible XML attribute), we pass structures containing them all. It removes the

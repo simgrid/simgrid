@@ -48,6 +48,7 @@ union u_smx_scalar {
   double          d;
   size_t          sz;
   sg_size_t       sgsz;
+  sg_offset_t     sgoff;
   void*           dp;
   FPtr            fp;
   const void*     cp;

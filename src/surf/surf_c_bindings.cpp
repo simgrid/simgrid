@@ -392,7 +392,8 @@ size_t surf_workstation_file_tell(surf_resource_t workstation, surf_file_t fd){
   return get_casted_workstation(workstation)->fileTell(fd);
 }
 
-int surf_workstation_file_seek(surf_resource_t workstation, surf_file_t fd, sg_size_t offset, int origin){
+int surf_workstation_file_seek(surf_resource_t workstation, surf_file_t fd,
+                               sg_offset_t offset, int origin){
   return get_casted_workstation(workstation)->fileSeek(fd, offset, origin);
 }
 

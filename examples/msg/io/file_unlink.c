@@ -48,6 +48,10 @@ int host(int argc, char *argv[])
   write = MSG_file_write(file,100000);  // Write for 100Ko
   XBT_INFO("\tHave written %llu on %s",write,MSG_file_get_name(file));
 
+  // Write into the new file
+  write = MSG_file_write(file,100000);  // Write for 100Ko
+  XBT_INFO("\tHave written %llu on %s",write,MSG_file_get_name(file));
+
   // Close the file
   XBT_INFO("\tClose file '%s'",MSG_file_get_name(file));
   MSG_file_close(file);

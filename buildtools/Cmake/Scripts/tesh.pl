@@ -373,10 +373,14 @@ sub parse_out {
   # Check the result of execution 
   ###
   my $diff;
-  if (!defined($cmd{'output ignore'})){
+  if (defined($cmd{'output display'})){
+    print "[Tesh/INFO] Here is the (ignored) command output:\n";
+    map { print "||$_\n" } \@got;
+  }
+  elsif (!defined($cmd{'output ignore'})){
     $diff = build_diff(\@{$cmd{'out'}}, \@got);
   }else{
-  print "(ignoring the output of <$cmd{'file'}:$cmd{'line'}> as requested)\n"
+    print "(ignoring the output of <$cmd{'file'}:$cmd{'line'}> as requested)\n"
   }
   if (length $diff) {
     print "Output of <$cmd{'file'}:$cmd{'line'}> mismatch:\n";
@@ -521,6 +525,13 @@ LINE: while (not $finished and not $error) {
       %cmd = ();
     }
     $cmd{'output ignore'} = 1;
+  }
+  elsif($line =~ /^!\s*output display/){    #output display
+    if (defined($cmd{'cmd'})) {
+      exec_cmd(\%cmd);
+      %cmd = ();
+    }
+    $cmd{'output display'} = 1;
   }
   elsif($line =~ /^!\s*expect signal (\w*)/) {#expect signal SIGABRT
     if (defined($cmd{'cmd'})) {

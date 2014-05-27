@@ -714,6 +714,7 @@ static void xbt_log_connect_categories(void)
   XBT_LOG_CONNECT(surf_route_cluster);
   XBT_LOG_CONNECT(surf_route_cluster_torus);
   XBT_LOG_CONNECT(surf_route_dijkstra);
+  XBT_LOG_CONNECT(surf_route_fat_tree);
   XBT_LOG_CONNECT(surf_route_floyd);
   XBT_LOG_CONNECT(surf_route_full);
   XBT_LOG_CONNECT(surf_route_none);

@@ -187,14 +187,13 @@ smx_action_t SIMIX_file_close(smx_process_t process, smx_file_t fd, smx_host_t h
 
 
 //SIMIX FILE UNLINK
-int SIMIX_pre_file_unlink(smx_simcall_t simcall, smx_file_t fd)
+int SIMIX_pre_file_unlink(smx_simcall_t simcall, smx_file_t fd, smx_host_t host)
 {
-  return SIMIX_file_unlink(simcall->issuer, fd);
+  return SIMIX_file_unlink(simcall->issuer, fd, host);
 }
 
-int SIMIX_file_unlink(smx_process_t process, smx_file_t fd)
+int SIMIX_file_unlink(smx_process_t process, smx_file_t fd, smx_host_t host)
 {
-  smx_host_t host = process->smx_host;
   /* check if the host is active */
   if (surf_resource_get_state(surf_workstation_resource_priv(host)) != SURF_RESOURCE_ON) {
     THROWF(host_error, 0, "Host %s failed, you cannot call this function",
@@ -240,12 +239,12 @@ xbt_dynar_t SIMIX_file_get_info(smx_process_t process, smx_file_t fd)
   return  surf_workstation_get_info(host, fd->surf_file);
 }
 
-int SIMIX_pre_file_seek(smx_simcall_t simcall, smx_file_t fd, sg_size_t offset, int origin)
+int SIMIX_pre_file_seek(smx_simcall_t simcall, smx_file_t fd, sg_offset_t offset, int origin)
 {
   return SIMIX_file_seek(simcall->issuer, fd, offset, origin);
 }
 
-int SIMIX_file_seek(smx_process_t process, smx_file_t fd, sg_size_t offset, int origin)
+int SIMIX_file_seek(smx_process_t process, smx_file_t fd, sg_offset_t offset, int origin)
 {
   smx_host_t host = process->smx_host;
   return  surf_workstation_file_seek(host, fd->surf_file, offset, origin);
