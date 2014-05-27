@@ -1172,11 +1172,11 @@ static inline smx_file_t simcall_file_seek__get__fd(smx_simcall_t simcall){
 static inline void simcall_file_seek__set__fd(smx_simcall_t simcall, void* arg){
     simcall->args[0].dp = arg;
 }
-static inline sg_size_t simcall_file_seek__get__offset(smx_simcall_t simcall){
-  return  simcall->args[1].sgsz;
+static inline sg_offset_t simcall_file_seek__get__offset(smx_simcall_t simcall){
+  return  simcall->args[1].sgoff;
 }
-static inline void simcall_file_seek__set__offset(smx_simcall_t simcall, sg_size_t arg){
-    simcall->args[1].sgsz = arg;
+static inline void simcall_file_seek__set__offset(smx_simcall_t simcall, sg_offset_t arg){
+    simcall->args[1].sgoff = arg;
 }
 static inline int simcall_file_seek__get__origin(smx_simcall_t simcall){
   return  simcall->args[2].i;

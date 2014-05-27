@@ -537,7 +537,7 @@ case SIMCALL_FILE_TELL:
       break;  
 
 case SIMCALL_FILE_SEEK:
-      simcall->result.i = SIMIX_pre_file_seek(simcall , (smx_file_t) simcall->args[0].dp,  simcall->args[1].sgsz,  simcall->args[2].i);
+      simcall->result.i = SIMIX_pre_file_seek(simcall , (smx_file_t) simcall->args[0].dp,  simcall->args[1].sgoff,  simcall->args[2].i);
       SIMIX_simcall_answer(simcall);
       break;  
 
