@@ -140,7 +140,7 @@ sg_size_t MSG_file_read(msg_file_t fd, sg_size_t size)
 sg_size_t MSG_file_write(msg_file_t fd, sg_size_t size)
 {
   msg_file_priv_t file_priv = MSG_file_priv(fd);
-  sg_size_t write_size;
+  sg_size_t write_size, offset;
 
   /* Find the host where the file is physically located (remote or local)*/
   msg_storage_t storage_src =(msg_storage_t) xbt_lib_get_elm_or_null(storage_lib, file_priv->storageId);
@@ -172,7 +172,9 @@ sg_size_t MSG_file_write(msg_file_t fd, sg_size_t size)
     }
   }
   /* Write file on local or remote host */
+  offset = simcall_file_tell(file_priv->simdata->smx_file);
   write_size = simcall_file_write(file_priv->simdata->smx_file, size, attached_host);
+  file_priv->size = offset+write_size;
 
   return write_size;
 }
