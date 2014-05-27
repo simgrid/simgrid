@@ -482,9 +482,11 @@ StorageN11Action::StorageN11Action(ModelPtr model, double cost, bool failed, Sto
   case WRITE:
     lmm_expand(model->getMaxminSystem(), storage->p_constraintWrite,
                getVariable(), 1.0);
-    ActionPtr action = this;
-    xbt_dynar_push(storage->p_writeActions, &action);
-    ref();
+
+//TODO there is something annoying with what's below. Have to sort it out...
+//    ActionPtr action = this;
+//    xbt_dynar_push(storage->p_writeActions, &action);
+//    ref();
     break;
   }
   XBT_OUT();
