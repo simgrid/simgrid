@@ -49,10 +49,14 @@ void AsClusterFatTree::getRouteAndLatency(RoutingEdgePtr src,
                                           sg_platf_route_cbarg_t into,
                                           double *latency) {
   FatTreeNode *source, *destination, *currentNode;
+
   std::map<int, FatTreeNode*>::const_iterator tempIter;
+  
+if (dst->getRcType() == SURF_NETWORK_ELEMENT_ROUTER || src->getRcType() == SURF_NETWORK_ELEMENT_ROUTER) return;
 
   /* Let's find the source and the destination in our internal structure */
   tempIter = this->computeNodes.find(src->getId());
+
   // xbt_die -> assert
   if (tempIter == this->computeNodes.end()) {
     xbt_die("Could not find the source %s [%d] in the fat tree", src->getName(),
@@ -62,8 +66,10 @@ void AsClusterFatTree::getRouteAndLatency(RoutingEdgePtr src,
   tempIter = this->computeNodes.find(dst->getId());
   if (tempIter == this->computeNodes.end()) {
     xbt_die("Could not find the destination %s [%d] in the fat tree",
-            src->getName(), src->getId());
+            dst->getName(), dst->getId());
   }
+
+
   destination = tempIter->second;
   
   XBT_VERB("Get route and latency from '%s' [%d] to '%s' [%d] in a fat tree",
@@ -79,6 +85,7 @@ void AsClusterFatTree::getRouteAndLatency(RoutingEdgePtr src,
   }
 
   currentNode = source;
+
   // up part
   while (!isInSubTree(currentNode, destination)) {
     int d, k; // as in d-mod-k
@@ -392,6 +399,9 @@ void AsClusterFatTree::addLink(FatTreeNode *parent, unsigned int parentPort,
   child->parents[childPort] = newLink;
 
   this->links.push_back(newLink);
+
+  
+
 }
 
 void AsClusterFatTree::parse_specific_arguments(sg_platf_cluster_cbarg_t 
