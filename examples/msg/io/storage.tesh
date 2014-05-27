@@ -30,8 +30,9 @@ $ ${bindir:=.}/io/storage ${srcdir:=.}/examples/platforms/storage.xml "--log=roo
 > 		Storage Type: 'single_SSD'
 > 		Content Type: 'txt_unix'
 > [  0.007917] (1:(null)@denise) *** Move '/tmp/data.txt' into '/tmp/simgrid.readme'
+> [  0.007917] (1:(null)@denise) User data attached to the file: 777
 > [  0.007917] (1:(null)@denise) *** Get/set data for storage element: Disk4 ***
-> [  0.007917] (1:(null)@denise) Get data: '(null)'
+> [  0.007917] (1:(null)@denise) Get storage data: '(null)'
 > [  0.007917] (1:(null)@denise) Set and get data: 'Some user data'
 > [  0.007917] (1:(null)@denise) *** Dump content of denise ***
 > [  0.007917] (1:(null)@denise) Print the content of mount point: c:

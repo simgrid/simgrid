@@ -89,15 +89,21 @@ static int host(int argc, char *argv[]){
   XBT_INFO("*** Move '/tmp/data.txt' into '/tmp/simgrid.readme'");
   MSG_file_move(file, "/home/tmp/simgrid.readme");
 
+  // Attach some user data to the file
+  MSG_file_set_data(file, xbt_strdup("777"));
+  // Retrieve these data
+  char *data = MSG_file_get_data(file);
+  XBT_INFO("User data attached to the file: %s", data);
+
   MSG_file_close(file);
   free(file_name);
 
   // Now attach some user data to disk1
   XBT_INFO("*** Get/set data for storage element: %s ***",storage_name);
 
-  char *data = MSG_storage_get_data(storage);
+  data = MSG_storage_get_data(storage);
 
-  XBT_INFO("Get data: '%s'", data);
+  XBT_INFO("Get storage data: '%s'", data);
 
   MSG_storage_set_data(storage, xbt_strdup("Some user data"));
   data = MSG_storage_get_data(storage);
