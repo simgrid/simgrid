@@ -50,6 +50,9 @@ void AsClusterFatTree::getRouteAndLatency(RoutingEdgePtr src,
   FatTreeNode *source, *destination, *currentNode;
   std::vector<NetworkLink*> route;
   std::map<int, FatTreeNode*>::const_iterator tempIter;
+
+  if (dst->getRcType() == SURF_NETWORK_ELEMENT_ROUTER || src->getRcType() == SURF_NETWORK_ELEMENT_ROUTER) return;
+
   tempIter = this->computeNodes.find(src->getId());
 
   // xbt_die -> assert
