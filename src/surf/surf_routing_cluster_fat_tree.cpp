@@ -49,11 +49,10 @@ void AsClusterFatTree::getRouteAndLatency(RoutingEdgePtr src,
                                           sg_platf_route_cbarg_t into,
                                           double *latency) {
   FatTreeNode *source, *destination, *currentNode;
-  std::vector<NetworkLink*> route;
   std::map<int, FatTreeNode*>::const_iterator tempIter;
 
+  /* Let's find the source and the destination in our internal structure */
   tempIter = this->computeNodes.find(src->getId());
-
   // xbt_die -> assert
   if (tempIter == this->computeNodes.end()) {
     xbt_die("Could not find the source %s [%d] in the fat tree", src->getName(),
@@ -65,14 +64,21 @@ void AsClusterFatTree::getRouteAndLatency(RoutingEdgePtr src,
     xbt_die("Could not find the destination %s [%d] in the fat tree",
             src->getName(), src->getId());
   }
-
-
   destination = tempIter->second;
+  
   XBT_VERB("Get route and latency from '%s' [%d] to '%s' [%d] in a fat tree",
             src->getName(), src->getId(), dst->getName(), dst->getId());
 
-  currentNode = source;
+  /* In case destination is the source, and there is a loopback, let's get
+     through it instead of going up to a switch*/
+  if(source->id == destination->id && this->p_has_loopback) {
+    xbt_dynar_push_as(into->link_list, void*, source->loopback);
+    if(latency) {
+      *latency += source->loopback->getLatency();
+    }
+  }
 
+  currentNode = source;
   // up part
   while (!isInSubTree(currentNode, destination)) {
     int d, k; // as in d-mod-k
@@ -83,41 +89,41 @@ void AsClusterFatTree::getRouteAndLatency(RoutingEdgePtr src,
     }
     k = this->upperLevelNodesNumber[currentNode->level];
     d = d % k;
-    route.push_back(currentNode->parents[d]->upLink);
+    xbt_dynar_push_as(into->link_list, void*,currentNode->parents[d]->upLink);
 
     if(latency) {
       *latency += currentNode->parents[d]->upLink->getLatency();
     }
 
     if (this->p_has_limiter) {
-      route.push_back(currentNode->limiterLink);
+      xbt_dynar_push_as(into->link_list, void*,currentNode->limiterLink);
     }
     currentNode = currentNode->parents[d]->upNode;
   }
+
   XBT_DEBUG("%d(%u,%u) is in the sub tree of %d(%u,%u).", destination->id,
             destination->level, destination->position, currentNode->id,
             currentNode->level, currentNode->position);
+
   // Down part
   while(currentNode != destination) {
     for(unsigned int i = 0 ; i < currentNode->children.size() ; i++) {
       if(i % this->lowerLevelNodesNumber[currentNode->level - 1] ==
          destination->label[currentNode->level - 1]) {
-        route.push_back(currentNode->children[i]->downLink);
+        xbt_dynar_push_as(into->link_list, void*,currentNode->children[i]->downLink);
         if(latency) {
           *latency += currentNode->children[i]->downLink->getLatency();
         }
         currentNode = currentNode->children[i]->downNode;
+        if (this->p_has_limiter) {
+          xbt_dynar_push_as(into->link_list, void*,currentNode->limiterLink);
+        }
         XBT_DEBUG("%d(%u,%u) is accessible through %d(%u,%u)", destination->id,
                   destination->level, destination->position, currentNode->id,
                   currentNode->level, currentNode->position);
       }
     }
   }
-  
-  for (unsigned int i = 0 ; i < route.size() ; i++) {
-    xbt_dynar_push_as(into->link_list, void*, route[i]);
-  }
-
 }
 
 /* This function makes the assumption that parse_specific_arguments() and
