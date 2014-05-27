@@ -321,6 +321,7 @@ msg_error_t MSG_file_rcopy (msg_file_t file, msg_host_t host, const char* fullpa
   msg_storage_t storage_src =(msg_storage_t) xbt_lib_get_elm_or_null(storage_lib, file_priv->storageId);
   msg_storage_priv_t storage_priv_src = MSG_storage_priv(storage_src);
   msg_host_t attached_host = MSG_get_host_by_name(storage_priv_src->hostname);
+  MSG_file_seek(file, 0, SEEK_SET);
   read_size = simcall_file_read(file_priv->simdata->smx_file, file_priv->size, attached_host);
 
   /* Find the real host destination where the file will be physically stored */
