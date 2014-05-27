@@ -29,96 +29,45 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(remote_io,
 int host(int argc, char *argv[]){
   msg_file_t file = NULL;
   const char* filename;
-//  msg_storage_t st;
-  sg_size_t read;//,write;
+  sg_size_t read, write;
 
   file = MSG_file_open(argv[1], NULL);
   filename = MSG_file_get_name(file);
   XBT_INFO("Opened file '%s'",filename);
   MSG_file_dump(file);
 
- // st = MSG_storage_get_by_name(st_name);
-
   XBT_INFO("Try to read %llu from '%s'",MSG_file_get_size(file),filename);
   read = MSG_file_read(file, MSG_file_get_size(file));
-  XBT_INFO("Have read %llu from '%s'",read,filename);
+  XBT_INFO("Have read %llu from '%s'. Offset is now at: %llu",read,filename,
+      MSG_file_tell(file));
+  XBT_INFO("Seek back to the begining of the stream...");
+  MSG_file_seek(file, 0, SEEK_SET);
+  XBT_INFO("Offset is now at: %llu", MSG_file_tell(file));
 
   MSG_file_close(file);
+
+  if (argc > 2){
+    file = MSG_file_open(argv[2], NULL);
+    filename = MSG_file_get_name(file);
+    XBT_INFO("Opened file '%s'",filename);
+    XBT_INFO("Try to write 100KiB to '%s'",filename);
+    write = MSG_file_write(file, 100*1024);
+    XBT_INFO("Have written %llu bytes to '%s'. Offset is now at: %llu",write,filename,
+        MSG_file_tell(file));
+
+    msg_host_t src, dest;
+    src= MSG_host_self();
+    dest = MSG_get_host_by_name(argv[3]);
+    XBT_INFO("Move '%s' (of size %llu) from '%s' to '%s'", filename,
+           MSG_file_get_size(file), MSG_host_get_name(src),
+           argv[3]);
+    MSG_file_rmove(file, dest, argv[4]);
+  }
+
   return 0;
 }
 
-//int host(int argc, char *argv[])
-//{
-//  msg_file_t file = NULL;
-//  sg_size_t read,write;
-//  msg_storage_t st;
-//  const char* st_name;
-//
-//  if(!strcmp(MSG_process_get_name(MSG_process_self()),"0")){
-//    file = MSG_file_open(FILENAME1, NULL);
-//    MSG_file_dump(file);
-//    st_name = "Disk4";
-//  } else if(!strcmp(MSG_process_get_name(MSG_process_self()),"1")) {
-//    file = MSG_file_open(FILENAME2, NULL);
-//    st_name = "Disk2";
-//  } else if(!strcmp(MSG_process_get_name(MSG_process_self()),"2")){
-//    file = MSG_file_open(FILENAME3, NULL);
-//    st_name = "Disk3";
-//  } else if(!strcmp(MSG_process_get_name(MSG_process_self()),"3")){
-//    file = MSG_file_open(FILENAME4, NULL);
-//    st_name = "Disk1";
-//  }
-//  else xbt_die("FILENAME NOT DEFINED %s",MSG_process_get_name(MSG_process_self()));
-//
-//  const char* filename = MSG_file_get_name(file);
-//  XBT_INFO("\tOpen file '%s'",filename);
-//  st = MSG_storage_get_by_name(st_name);
-//
-//  XBT_INFO("\tCapacity of the storage element '%s' is stored on: %llu / %llu",
-//            filename, MSG_storage_get_used_size(st), MSG_storage_get_size(st));
-//
-//  /* Try to read for 10MB */
-//  read = MSG_file_read(file, 10000000);
-//  XBT_INFO("\tHave read %llu from '%s'",read,filename);
-//
-//  /* Write 100KB in file from the current position, i.e, end of file or 10MB */
-//  write = MSG_file_write(file, 100000);
-//  XBT_INFO("\tHave written %llu in '%s'. Size now is: %llu",write,filename,
-//           MSG_file_get_size(file));
-//
-//
-//  XBT_INFO("\tCapacity of the storage element '%s' is stored on: %llu / %llu",
-//            filename, MSG_storage_get_used_size(st), MSG_storage_get_size(st));
-//
-//  /* rewind to the beginning of the file */
-//  XBT_INFO("\tComing back to the beginning of the stream for file '%s'",
-//           filename);
-//  MSG_file_seek(file, 0, SEEK_SET);
-//
-//  /* Try to read 110KB */
-//  read = MSG_file_read(file, 110000);
-//  XBT_INFO("\tHave read %llu from '%s' (of size %llu)",read,filename,
-//      MSG_file_get_size(file));
-//
-//  /* rewind once again to the beginning of the file */
-//  XBT_INFO("\tComing back to the beginning of the stream for file '%s'",
-//           filename);
-//  MSG_file_seek(file, 0, SEEK_SET);
-//
-//  /* Write 110KB in file from the current position, i.e, end of file or 10MB */
-//  write = MSG_file_write(file, 110000);
-//  XBT_INFO("\tHave written %llu in '%s'. Size now is: %llu", write,filename,
-//      MSG_file_get_size(file));
-//
-//  XBT_INFO("\tCapacity of the storage element '%s' is stored on: %llu / %llu",
-//            filename, MSG_storage_get_used_size(st), MSG_storage_get_size(st));
-//
-//  XBT_INFO("\tClose file '%s'",filename);
-//  MSG_file_close(file);
-//
-//
-//  return 0;
-//}
+
 
 int main(int argc, char **argv)
 {
