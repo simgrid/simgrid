@@ -522,7 +522,7 @@ case SIMCALL_FILE_CLOSE:
        break;  
 
 case SIMCALL_FILE_UNLINK:
-      simcall->result.i = SIMIX_pre_file_unlink(simcall , (smx_file_t) simcall->args[0].dp);
+      simcall->result.i = SIMIX_pre_file_unlink(simcall , (smx_file_t) simcall->args[0].dp, (smx_host_t) simcall->args[1].dp);
       SIMIX_simcall_answer(simcall);
       break;  
 

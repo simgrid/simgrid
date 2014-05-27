@@ -1354,7 +1354,7 @@ smx_file_t simcall_file_open(const char* fullpath, smx_host_t host)
  * \ingroup simix_file_management
  *
  */
-int simcall_file_close(smx_file_t fd,  smx_host_t host)
+int simcall_file_close(smx_file_t fd, smx_host_t host)
 {
   return simcall_BODY_file_close(fd, host);
 }
@@ -1363,9 +1363,9 @@ int simcall_file_close(smx_file_t fd,  smx_host_t host)
  * \ingroup simix_file_management
  *
  */
-int simcall_file_unlink(smx_file_t fd)
+int simcall_file_unlink(smx_file_t fd, smx_host_t host)
 {
-  return simcall_BODY_file_unlink(fd);
+  return simcall_BODY_file_unlink(fd, host);
 }
 
 /**

@@ -501,7 +501,7 @@ XBT_PUBLIC(sg_size_t) simcall_file_read(smx_file_t fd, sg_size_t size, smx_host_
 XBT_PUBLIC(sg_size_t) simcall_file_write(smx_file_t fd, sg_size_t size, smx_host_t host);
 XBT_PUBLIC(smx_file_t) simcall_file_open(const char* fullpath, smx_host_t host);
 XBT_PUBLIC(int) simcall_file_close(smx_file_t fd, smx_host_t host);
-XBT_PUBLIC(int) simcall_file_unlink(smx_file_t fd);
+XBT_PUBLIC(int) simcall_file_unlink(smx_file_t fd, smx_host_t host);
 XBT_PUBLIC(sg_size_t) simcall_file_get_size(smx_file_t fd);
 XBT_PUBLIC(xbt_dynar_t) simcall_file_get_info(smx_file_t fd);
 XBT_PUBLIC(sg_size_t) simcall_file_tell(smx_file_t fd);

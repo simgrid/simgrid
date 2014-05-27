@@ -236,8 +236,14 @@ int MSG_file_close(msg_file_t fd)
  */
 msg_error_t MSG_file_unlink(msg_file_t fd)
 {
-  msg_file_priv_t priv = MSG_file_priv(fd);
-  int res = simcall_file_unlink(priv->simdata->smx_file);
+  msg_file_priv_t file_priv = MSG_file_priv(fd);
+  /* Find the host where the file is physically located (remote or local)*/
+  msg_storage_t storage_src =
+      (msg_storage_t) xbt_lib_get_elm_or_null(storage_lib,
+                                              file_priv->storageId);
+  msg_storage_priv_t storage_priv_src = MSG_storage_priv(storage_src);
+  msg_host_t attached_host = MSG_get_host_by_name(storage_priv_src->hostname);
+  int res = simcall_file_unlink(file_priv->simdata->smx_file, attached_host);
   return res;
 }
 
@@ -346,6 +352,8 @@ msg_error_t MSG_file_rcopy (msg_file_t file, msg_host_t host, const char* fullpa
     }
     free(file_mount_name);
   }
+  xbt_dict_free(&storage_list);
+
   if(longest_prefix_length>0){
     /* Mount point found, retrieve the host the storage is attached to */
     msg_storage_priv_t storage_dest_priv = MSG_storage_priv(storage_dest);

@@ -1154,6 +1154,12 @@ static inline smx_file_t simcall_file_unlink__get__fd(smx_simcall_t simcall){
 static inline void simcall_file_unlink__set__fd(smx_simcall_t simcall, void* arg){
     simcall->args[0].dp = arg;
 }
+static inline smx_host_t simcall_file_unlink__get__host(smx_simcall_t simcall){
+  return (smx_host_t) simcall->args[1].dp;
+}
+static inline void simcall_file_unlink__set__host(smx_simcall_t simcall, void* arg){
+    simcall->args[1].dp = arg;
+}
 static inline smx_file_t simcall_file_get_size__get__fd(smx_simcall_t simcall){
   return (smx_file_t) simcall->args[0].dp;
 }
