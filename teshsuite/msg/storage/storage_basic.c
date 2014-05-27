@@ -148,6 +148,7 @@ void dump_platform_storages(void){
 		XBT_INFO("Storage %s is attached to %s", MSG_storage_get_name(storage), MSG_storage_get_host(storage));
 		MSG_storage_set_property_value(storage, "usage", xbt_strdup("gpfs"), NULL);
 	}
+	xbt_dynar_free(&storages);
 }
 
 int client(int argc, char *argv[])
