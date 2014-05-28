@@ -42,7 +42,11 @@ SimGrid (3.11) NOT RELEASED; urgency=low
    - msg_as_t MSG_environment_as_get_by_name(const char * name)
  * New option "msg/debug_multiple_use" to help debugging when a task is used
    several times
-
+ * MSG IO
+   - Improvements and finalization of MSG_storage, MSG_file APIs and their documentation
+   - Increase code coverage in test suites
+   - Bug fixes
+   
  SIMIX:
  * Protect context stacks against stack overflow. The number of protected memory
    pages allocated on the top of each stack (1 by default) can be configured
