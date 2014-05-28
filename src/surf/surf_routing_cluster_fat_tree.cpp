@@ -22,6 +22,9 @@ AsClusterFatTree::~AsClusterFatTree() {
   for (unsigned int i = 0 ; i < this->nodes.size() ; i++) {
     delete this->nodes[i];
   }
+  for (unsigned int i = 0 ; i < this->links.size() ; i++) {
+    delete this->links[i];
+  }
 }
 
 bool AsClusterFatTree::isInSubTree(FatTreeNode *root, FatTreeNode *node) {
