@@ -311,7 +311,7 @@ void StorageN11Model::updateActionsState(double /*now*/, double delta)
       // Update the disk usage
       // Update the file size
       // For each action of type write
-      double current_progress =
+      volatile double current_progress =
           delta * lmm_variable_getvalue(action->getVariable());
       long int incr = current_progress;
 
@@ -322,7 +322,7 @@ void StorageN11Model::updateActionsState(double /*now*/, double delta)
                 lrint(action->progress + current_progress),
                 lrint(action->progress)+ incr);
 
-      /* Take care of rounding error accumulation */
+      /* take care of rounding error accumulation */
       if (lrint(action->progress + current_progress) >
           lrint(action->progress)+ incr)
         incr++;
