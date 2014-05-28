@@ -100,7 +100,8 @@ Apple is ways to ancient to suffice. See also @ref install_cmake_mac.
 
 On Windows, it is strongly advised to use the 
 <a href="http://sourceforge.net/projects/mingw/files/MinGW/">MinGW
-environment</a> to build SimGrid. Any other compilers are not tests
+environment</a> to build SimGrid, with <a href="http://www.mingw.org/wiki/MSYS">
+MSYS tools</a> installed. Any other compilers are not tested 
 (and thus probably broken). We usually use the 
 <a href="http://www.activestate.com/activeperl/downloads">activestate</a>
 version of Perl, and the 
@@ -265,14 +266,14 @@ cmake [options] ..
 make
 @endverbatim
 
-\subsubsection install_cmake_win Cmake on Windows (with MinGW)
+\subsubsection install_cmake_win Cmake on Windows (with MinGW + MSYS)
 
 Cmake can produce several kind of of makefiles. Under Windows, it has
 no way of determining what kind you want to use, so you have to hint it:
 
 @verbatim
-cmake -G"MinGW Makefiles" (other options) .
-mingw32-make
+cmake -G "MSYS Makefiles" (other options) .
+make
 @endverbatim
 
 \subsubsection install_cmake_mac Cmake on Mac OSX
