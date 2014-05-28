@@ -10,6 +10,7 @@
 #define _XBT_OS_TIMER_H
 
 #include <xbt/misc.h>           /* XBT_PUBLIC */
+#include <stddef.h>             /* size_t */
 
 /** @brief get time in seconds 
 

@@ -10,68 +10,103 @@
 #define SURF_ROUTING_CLUSTER_FAT_TREE_HPP_
 
 
-/* The class AsClusterFatTree describes PGFT, as introduced by Eitan Zahavi
+/** \file surf_routing_cluster_fat_tree.cpp
+ *  The class AsClusterFatTree describes PGFT, as introduced by Eitan Zahavi
  * in "D-Mod-K Routing Providing Non-Blocking Traffic for Shift Permutations
  * on Real Life Fat Trees" (2010). RLFT are PGFT with some restrictions to 
- * address real world constraints, which are not currently enforced (but it 
- * should certainly be checked for)
+ * address real world constraints, which are not currently enforced. 
  */
 
-/* TODO : limiter link ? Loopback?
- *
- */
 class FatTreeNode;
 class FatTreeLink;
 
-/* \class FatTreeNode
- * \brief A node in a fat tree
+/** \brief A node in a fat tree.
+ * A FatTreeNode can either be a switch or a processing node. Switches are
+ * identified by a negative ID. This class is closely related to fat
  */
 class FatTreeNode {
 public:
-  /* \brief Unique ID which identifies every node
-   */
+  /** Unique ID which identifies every node. */
   int id;
-  /* \brief Level into the tree, with 0 being the leafs
+  /* Level into the tree, with 0 being the leafs.
    */
   unsigned int level; 
-  /* \brief Position into the level, starting from 0
+  /* \brief Position into the level, starting from 0.
    */
   unsigned int position; 
-  /* In order to link nodes between them, each one must be assigned a label,
+  /** In order to link nodes between them, each one must be assigned a label,
    * consisting of l integers, l being the levels number of the tree. Each label
    * is unique in the level, and the way it is generated allows the construction
-   * of a fat tree which fits the desired topology
+   * of a fat tree which fits the desired topology.
    */
   std::vector<unsigned int> label;
 
-  /* Links to the lower level, where the position in the vector corresponds to
+  /** Links to the lower level, where the position in the vector corresponds to
    * a port number. 
    */
   std::vector<FatTreeLink*> children;
-  /* Links to the upper level, where the position in the vector corresponds to
+  /** Links to the upper level, where the position in the vector corresponds to
    * a port number. 
    */ 
   std::vector<FatTreeLink*> parents;
 
+  /** Virtual link standing for the node global capacity.
+   */
   NetworkLink* limiterLink;
+  /** If present, communications from this node to this node will pass through it
+   * instead of passing by an upper level switch.
+   */
   NetworkLink* loopback;
   FatTreeNode(sg_platf_cluster_cbarg_t cluster, int id, int level,
               int position);
 };
 
+
+
+/** \brief Link in a fat tree.
+ *
+ * Represents a single, duplex link in a fat tree. This is necessary to have a tree.
+ * It is equivalent to a physical link.
+ */
 class FatTreeLink {
 public:
   FatTreeLink(sg_platf_cluster_cbarg_t cluster, FatTreeNode *source,
               FatTreeNode *destination);
-  /* Links are dependant of the chosen network model, but must implement 
-   * NetworkLink
+  /** Link going up in the tree
    */
   NetworkLink *upLink; 
+  /** Link going down in the tree
+   */
   NetworkLink *downLink;
+  /** Upper end of the link
+   */
   FatTreeNode *upNode;
+  /** Lower end of the link
+   */
   FatTreeNode *downNode;
 };
 
+
+/** \brief Fat tree representation and routing.
+ *
+ * Generate fat trees according to the topology asked for. Almost everything
+ * is based on the work of Eitan Zahavi in "D-Mod-K Routing Providing
+ * Non-Blocking Traffic for Shift Permutations on Real Life Fat Trees" (2010).
+ *
+ * The exact topology is described in the mandatory topo_parameters
+ * field, and follow the "h ; m_h, ..., m_1 ; w_h, ..., w_1 ; p_h, ..., p_1" format.
+ * h stands for the switches levels number, i.e. the fat tree is of height h,
+ * without the processing nodes. m_i stands for the number of lower level nodes
+ * connected to a node in level i. w_i stands for the number of upper levels
+ * nodes connected to a node in level i-1. p_i stands for the number of 
+ * parallel links connecting two nodes between level i and i - 1. Level h is
+ * the topmost switch level, level 1 is the lowest switch level, and level 0
+ * represents the processing nodes. The number of provided nodes must be exactly
+ * the number of processing nodes required to fit the topology, which is the
+ * product of the m_i's.
+ *
+ * Routing is made using a destination-mod-k scheme.
+ */
 class AsClusterFatTree : public AsCluster {
 public:
   AsClusterFatTree();
@@ -79,11 +114,21 @@ public:
   virtual void getRouteAndLatency(RoutingEdgePtr src, RoutingEdgePtr dst,
                                   sg_platf_route_cbarg_t into,
                                   double *latency);
-  // virtual void getRouteAndLatency(const int src, const int dst,
-  //                                 std::vector<NetworkLink> *route,
-  //                                 double *latency) const;
+
+  /** \brief Generate the fat tree
+   * 
+   * Once all processing nodes have been added, this will make sure the fat
+   * tree is generated by calling generateLabels(), generateSwitches() and 
+   * then connection all nodes between them, using their label.
+   */
   virtual void create_links();
+  /** \brief Read the parameters in topo_parameters field.
+   *
+   * It will also store the cluster for future use.
+   */
   void parse_specific_arguments(sg_platf_cluster_cbarg_t cluster);
+  /** \brief Add a processing node.
+   */
   void addProcessingNode(int id);
   void generateDotFile(const string& filename = "fatTree.dot") const;
 

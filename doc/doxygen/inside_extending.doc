@@ -79,7 +79,7 @@ s_surf_model_description_t surf_cpu_model_description[] = {
   {"Plop",
    "The new plop CPU model.",
    surf_cpu_model_init_plop},
-  {NULL, NULL,  NULL}      /* this array must be NULL terminated */
+  {NULL, NULL, NULL}      // this array must be NULL terminated
 };
 ~~~~
 
@@ -134,7 +134,7 @@ s_surf_model_description_t surf_plugin_description[] = {
                   {"MyNetworkPlugin",
                    "My network plugin.",
                    sg_my_network_plugin_init},
-                  {NULL, NULL,  NULL}      /* this array must be NULL terminated */
+                  {NULL, NULL, NULL}      // this array must be NULL terminated
 };
 ~~~~
 

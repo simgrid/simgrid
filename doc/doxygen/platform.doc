@@ -368,12 +368,13 @@ unset.
 \li <b>loopback_lat </b>: latency for loopback (if any). See <b>link</b>
     section for syntax/details. See loopback_bw for more info.
 \li <b>topology </b>: network topology to use. For now SimGrid supports FLAT 
-     (default, with or without backbone, as described before) or 
+     (default, with or without backbone, as described before), 
      <a href="http://en.wikipedia.org/wiki/Torus_interconnect">TORUS
-     </a> attributes for this tag.
+     </a> and FAT_TREE attributes for this tag.
 \li <b>topo_parameters </b>: specific parameters to pass for the topology 
      defined in the topology tag. For torus networks, comma-separated list of 
-    the number of nodes in each dimension of the torus.
+    the number of nodes in each dimension of the torus. For fat trees, refer to
+    \ref AsClusterFatTree "AsClusterFatTree documentation".
 
 
 the router name is defined as the resulting String in the following

@@ -80,7 +80,7 @@ void test(char *graph_file)
     buf = xbt_new0(char, n * 20);
     for (i = 0; i < n; i++) {
       for (j = 0; j < n; j++) {
-        sprintf(buf + strlen(buf), "%e\t", adj[i * n + j]);
+        sprintf(buf + strlen(buf), "%6.3f\t", adj[i * n + j]);
       }
       XBT_INFO("%s", buf);
       buf[0] = '\000';
