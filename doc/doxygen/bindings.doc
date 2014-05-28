@@ -5,7 +5,7 @@ Check online for our specific [Simgrid-Ruby documentation](http://simgrid.gforge
 
 \section MSG_Java Java Binding
 Simgrid-java is a java API that let you use [Simgrid](http://simgrid.gforge.inria.fr/)
-MSG API in your favorite language (java). Without it, you would be forced to
+MSG and SURF API in your favorite language (java). Without it, you would be forced to
 use C or one of the other bindings provided.
 
 MSG was the first distributed programming environment provided within SimGrid.
@@ -16,19 +16,20 @@ The javadoc is accessible [here](javadoc/index.html)
 
 \subsection bindings_binding_Java_jMSG_who Who should use this (and who shouldn't)
 You should use MSG if you want to study some heuristics for a given problem you
-don't really want to implement. SimGrid-java let you use MSG while coding in
-Java. So if your need is MSG + Java, you're in the right section!
+don't really want to implement. SimGrid-java let you use MSG and SURF while coding in
+Java. So if your need is MSG + Java (+ SURF), you're in the right section!
 
-\subsection SimGrid-java Usage overview 
+\subsection SimGrid-java Usage overview
 
-To make a long story short, it's a JNI binding, so it implies that:
-- Most of the MSG and SimGrid documentation about behavioral aspects applies
-  directly to what you are programming. 
-- MSG data structures are mapped to Java objects. So it means that from the
+To make a long story short, it's a JNI binding for MSG and a SWIG binding for SURF,
+so it implies that:
+- Most of the MSG/SURF and SimGrid documentation about behavioral aspects applies
+  directly to what you are programming.
+- MSG/SURF data structures are mapped to Java objects. So it means that from the
   syntax point of view, you have to know how those objects are. Fortunately,
   we have generated the Javadoc for those objects. So take a look at it
 
-Finally, it implies also that your program can crash for 3 main reasons: 
+Finally, it implies also that your program can crash for 3 main reasons:
 - Your Java part is not good: you'll have a good old java exception thrown,
   and hence you should be able to correct it by yourself.
 - Our java part is not good: you'll also have a java exception thrown, but
@@ -38,7 +39,7 @@ Finally, it implies also that your program can crash for 3 main reasons:
   you should read carefully MSG samples and/or documentation.
 - Something has crashed in the C part. Okay, here comes the tricky thing.
 
-C crashes mainly for 2 reasons: 
+C crashes mainly for 2 reasons:
 - When something goes wrong in your simulation, sometimes the C part stops
   because you used SimGrid incorrectly, and JNI bindings are not fond of that.
   It means that you'll have something that looks ugly, but you should be able
@@ -54,12 +55,12 @@ To use java with Simgrid you have to install some dependencies:
 - Java JDK packages, such as `openjdk7` or `sun-java6-jdk` (with `libgcj10-dev` or another
   version of gcj). For maximal performance and scalability, use a coroutine-enabled JVM (see
   \ref bindings_binding_java_coroutines).
- 
+
 Then build Simgrid with the Java bindings enabled:
 ~~~~{.sh}
 cmake -Denable_java=ON .
 ~~~~
- 
+
 If cmake complains that **jni could not be found**, you need to tell it where
 JNI header files are located. the following command should tell you:
 
@@ -111,7 +112,7 @@ context factory itself remains a bit experimental so far.
 \subsubsection  bindings_java_coro_install Getting a mlvm JVM
 
 You need to get a patched JVM from [here](http://ssw.jku.at/General/Staff/LS/coro/)
-(many thanks to Lukas Stadler for this work!). 
+(many thanks to Lukas Stadler for this work!).
 
 You can either get a prebuilt binary, or recompile your own JVM. Make
 sure to get a coro-simple version, as we don't need to serialize nor
@@ -123,7 +124,7 @@ Finally, if you're really stuck, you can get the version compiled by
 Jonathan Rouzaud-Cornabas from his web page. This version is known to
 work with SimGrid for sure!
 http://graal.ens-lyon.fr/~jrouzaud/files/corosimple-linux-amd64-20120914.tgz
- 
+
  -# Install mercurial and some dependencies
 ~~~~{.sh}
 sudo apt-get install mercurial ksh libfreetype6-dev libcups2-dev libasound2-dev gawk openjdk-7-jdk libxext-dev libxrender-dev libxtst-dev
@@ -132,8 +133,8 @@ hg clone https://bitbucket.org/gxti/hgforest hgforest
 ~~~~
  -# Configure the mercurial extensions: Edit ~/.hgrc and paste the
     following lines. Don't forget to change the /path/to/forest.py to
-    point to where you just downloaded the source. 
-    
+    point to where you just downloaded the source.
+
     Forest extension is needed to download the openjdk source code and
     patches while the mq line is needed to apply the patches. The
     username is needed at the step "preparing the sources", not sure why.
@@ -160,10 +161,10 @@ bash patches/make/link-patch-dirs.sh sources patches
 ls -i patches/hotspot/series sources/hotspot/.hg/patches/series
 # It should display something like the following.
 # (note that both file share the same inode number)
-#  9707849 patches/hotspot/series  
+#  9707849 patches/hotspot/series
 #  9707849 sources/hotspot/.hg/patches/series
 
-# Specify what to compile. 
+# Specify what to compile.
 export davinci=${pwd} guards="buildable testable coro-simple"
 # Apply the patches
 sh patches/make/each-patch-repo.sh hg qselect --reapply $guards `sh $davinci/patches/make/current-release.sh`
@@ -172,7 +173,7 @@ grep -r GLOBAL_GUARDS patches/make/
 # this should display something like the following (maybe amonst other unrelated lines)
 # GLOBAL_GUARDS=buildable testable coro-simple
 # If this does not work, edit patches/make/Makefile,
-#   manually coro-simple to GLOBAL_GUARDS and then 
+#   manually coro-simple to GLOBAL_GUARDS and then
 #   rerun the patches/make/each-patch-repo.sh script as earlier
 
 
@@ -228,7 +229,7 @@ process can manage (by default, this limit is often at 65535). Since
 the JVM needs a few dozen of such maps on its own (three maps per
 dynamic library -- check `/proc/the_pid/maps` if you don't believe it),
 this is enough to create over 30,000 simulated processes. But to go
-futher, that limit must be modified. 
+futher, that limit must be modified.
 
 If you want to make this change permanent on your machine, edit your
 `/etc/sysctl.conf` file. Otherwise, you have to redo it by calling
@@ -380,7 +381,7 @@ the full example is distributed in the file examples/lua/master_slave_bypass.lua
 
 \subsection MSG_ex_master_slave_lua Master/slave Lua application
 
-Simulation of a master-slave application using lua bindings    
+Simulation of a master-slave application using lua bindings
 - \ref MSG_ext_ms_master_lua
 - \ref MSG_ext_ms_slave_lua
 - \ref MSG_ext_ms_core_lua
@@ -389,7 +390,7 @@ Simulation of a master-slave application using lua bindings
 - \ref MSG_ext_ms_platform
 
 
-     
+
 \subsubsection MSG_ext_ms_master_lua Master code
 
 as described in the C native master/Slave example, this function has to be assigned to a msg_process_t that will behave as the master.
@@ -439,7 +440,7 @@ Simulation of a master-slave application using lua bindings, Bypassing the XML p
 - \ref MSG_ext_ms_bp_slave_lua
 - \ref MSG_ext_ms_bp_core_lua
 
-      
+
 
 \subsubsection MSG_ext_ms_bp_master_lua Master code
 

@@ -1,0 +1,105 @@
+@startuml
+
+left to right direction
+
+package "Surf Interface" {
+abstract class Model
+abstract class Resource
+abstract class Action
+}
+
+package "Surf Cpu" {
+abstract class CpuModel <|-- Model
+abstract class Cpu <|-- Resource
+abstract class CpuAction <|-- Action
+}
+
+package "Surf Cpu TI" {
+class CpuTiModel <|-- CpuModel
+class CpuTi <|-- Cpu
+class CpuTiAction <|-- CpuAction
+}
+
+package "Surf Cpu Cas01" {
+class CpuCas01Model <|-- CpuModel
+class CpuCas01 <|-- Cpu
+class CpuCas01Action <|-- CpuAction
+}
+
+
+package "Surf Network" {
+abstract class NetworkModel <|-- Model
+abstract class NetworkLink <|-- Resource
+abstract class NetworkAction <|-- Action
+}
+
+package "Surf Network Cm02" {
+abstract class NetworkCm02Model <|-- NetworkModel
+abstract class NetworkCm02Link <|-- NetworkLink
+abstract class NetworkCm02Action <|-- NetworkAction
+}
+
+package "Surf Network Constant" {
+abstract class NetworkConstantModel <|-- NetworkModel
+abstract class NetworkConstantLink <|-- NetworkLink
+abstract class NetworkConstantAction <|-- NetworkAction
+}
+
+package "Surf Network Smpi" {
+abstract class NetworkSmpiModel <|-- NetworkModel
+abstract class NetworkSmpiLink <|-- NetworkLink
+abstract class NetworkSmpiAction <|-- NetworkAction
+}
+
+package "Surf Network Ns3" {
+abstract class NetworkNs3Model <|-- NetworkModel
+abstract class NetworkNs3Link <|-- NetworkLink
+abstract class NetworkNs3Action <|-- NetworkAction
+}
+
+
+package "Surf Storage" {
+abstract class StorageModel <|-- Model
+abstract class Storage <|-- Resource
+abstract class StorageAction <|-- Action
+}
+
+package "Surf Storage N11" {
+abstract class StorageN11Model <|-- StorageModel
+abstract class StorageN11 <|-- Storage
+abstract class StorageN11Action <|-- StorageAction
+}
+
+
+package "Surf Workstation" {
+abstract class WorkstationModel <|-- Model
+abstract class Workstation <|-- Resource
+abstract class WorkstationAction <|-- Action
+}
+
+package "Surf Workstation Clm03" {
+abstract class WorkstationClm03Model <|-- WorkstationModel
+abstract class WorkstationClm03 <|-- Workstation
+abstract class WorkstationClm03Action <|-- WorkstationAction
+}
+
+package "Surf Workstation ptask L07" {
+abstract class WorkstationL07Model <|-- WorkstationModel
+abstract class WorkstationL07 <|-- Workstation
+abstract class WorkstationL07Action <|-- WorkstationAction
+}
+
+
+package "Surf WorkstationVM" {
+abstract class WorkstationVMModel <|-- WorkstationModel
+abstract class WorkstationVM <|-- Workstation
+abstract class WorkstationVMAction <|-- WorkstationAction
+}
+
+package "Surf WorkstationVM HL13" {
+abstract class WorkstationVMHL13Model <|-- WorkstationModel
+abstract class WorkstationVMHL13 <|-- Workstation
+abstract class WorkstationVMHL13Action <|-- WorkstationAction
+}
+
+@enduml

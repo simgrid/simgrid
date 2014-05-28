@@ -794,6 +794,10 @@ set(DOC_SOURCES
   doc/sg_thread_model.fig
   doc/simix.fig
   doc/surf_nutshell.fig
+  doc/surf++.png
+  doc/surf++.pdf
+  doc/surf++.graphml
+  doc/surf++.uml
   doc/triva-graph_configuration.png
   doc/triva-graph_configuration.svg
   doc/triva-graph_visualization.png
