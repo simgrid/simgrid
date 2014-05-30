@@ -325,10 +325,6 @@ void SIMIX_post_io(smx_action_t action)
 {
   xbt_fifo_item_t i;
   smx_simcall_t simcall;
-//  char* key;
-//  xbt_dict_cursor_t cursor = NULL;
-//  s_file_stat_t *dst = NULL;
-//  s_file_stat_t *src = NULL;
 
   xbt_fifo_foreach(action->simcalls,i,simcall,smx_simcall_t) {
     switch (simcall->call) {
