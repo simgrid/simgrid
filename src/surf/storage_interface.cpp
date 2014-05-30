@@ -50,7 +50,8 @@ StorageModel::~StorageModel(){
  ************/
 
 Storage::Storage(ModelPtr model, const char *name, xbt_dict_t props,
-		         const char* type_id, char *content_name, char *content_type, sg_size_t size)
+                 const char* type_id, char *content_name, char *content_type,
+                 sg_size_t size)
  : Resource(model, name, props)
  , p_contentType(content_type)
  , m_size(size), m_usedSize(0)
@@ -63,8 +64,9 @@ Storage::Storage(ModelPtr model, const char *name, xbt_dict_t props,
 }
 
 Storage::Storage(ModelPtr model, const char *name, xbt_dict_t props,
-		         lmm_system_t maxminSystem, double bread, double bwrite, double bconnection,
-	             const char* type_id, char *content_name, char *content_type, sg_size_t size, char *attach)
+                 lmm_system_t maxminSystem, double bread, double bwrite,
+                 double bconnection, const char* type_id, char *content_name,
+                 char *content_type, sg_size_t size, char *attach)
  :  Resource(model, name, props, lmm_constraint_new(maxminSystem, this, bconnection))
  , p_contentType(content_type)
  , m_size(size), m_usedSize(0)

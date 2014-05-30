@@ -235,7 +235,8 @@ StorageN11Model::~StorageN11Model(){
 }
 
 StoragePtr StorageN11Model::createStorage(const char* id, const char* type_id,
-		const char* content_name, const char* content_type, xbt_dict_t properties, const char* attach)
+    const char* content_name, const char* content_type, xbt_dict_t properties,
+    const char* attach)
 {
 
   xbt_assert(!surf_storage_resource_priv(surf_storage_resource_by_name(id)),
@@ -249,8 +250,8 @@ StoragePtr StorageN11Model::createStorage(const char* id, const char* type_id,
   double Bconnection   = surf_parse_get_bandwidth((char*)xbt_dict_get(storage_type->model_properties, "Bconnection"));
 
   StoragePtr storage = new StorageN11(this, id, properties, p_maxminSystem,
-		  Bread, Bwrite, Bconnection,
-		  type_id, (char *)content_name, xbt_strdup(content_type), storage_type->size, (char *) attach);
+      Bread, Bwrite, Bconnection, type_id, (char *)content_name,
+      xbt_strdup(content_type), storage_type->size, (char *) attach);
 
   xbt_lib_set(storage_lib, id, SURF_STORAGE_LEVEL, storage);
 
@@ -261,7 +262,7 @@ StoragePtr StorageN11Model::createStorage(const char* id, const char* type_id,
       Bread);
 
   if(!p_storageList)
-	p_storageList = xbt_dynar_new(sizeof(char *),NULL);
+    p_storageList = xbt_dynar_new(sizeof(char *),NULL);
   xbt_dynar_push(p_storageList, &storage);
 
   return storage;
@@ -370,9 +371,10 @@ void StorageN11Model::updateActionsState(double /*now*/, double delta)
  * Resource *
  ************/
 
-StorageN11::StorageN11(StorageModelPtr model, const char* name, xbt_dict_t properties,
-	     lmm_system_t maxminSystem, double bread, double bwrite, double bconnection,
-	     const char* type_id, char *content_name, char *content_type, sg_size_t size, char *attach)
+StorageN11::StorageN11(StorageModelPtr model, const char* name,
+    xbt_dict_t properties, lmm_system_t maxminSystem, double bread,
+    double bwrite, double bconnection, const char* type_id, char *content_name,
+    char *content_type, sg_size_t size, char *attach)
  : Storage(model, name, properties,
     	   maxminSystem, bread, bwrite, bconnection, type_id, content_name, content_type, size, attach) {
   XBT_DEBUG("Create resource with Bconnection '%f' Bread '%f' Bwrite '%f' and Size '%llu'", bconnection, bread, bwrite, size);

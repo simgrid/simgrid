@@ -165,8 +165,9 @@ public:
    * @param netElm The RoutingEdge associated to this Workstation
    * @param cpu The Cpu associated to this Workstation
    */
-  Workstation(ModelPtr model, const char *name, xbt_dict_t props, lmm_constraint_t constraint,
-		      xbt_dynar_t storage, RoutingEdgePtr netElm, CpuPtr cpu);
+  Workstation(ModelPtr model, const char *name, xbt_dict_t props,
+      lmm_constraint_t constraint, xbt_dynar_t storage, RoutingEdgePtr netElm,
+      CpuPtr cpu);
 
   /**
    * @brief Workstation destructor

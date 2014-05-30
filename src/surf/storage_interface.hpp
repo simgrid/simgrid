@@ -276,8 +276,8 @@ public:
    * @param storage The Storage associated to this StorageAction
    * @param type [description]
    */
-  StorageAction(ModelPtr model, double cost, bool failed,
-		            StoragePtr storage, e_surf_action_storage_type_t type);
+  StorageAction(ModelPtr model, double cost, bool failed, StoragePtr storage,
+      e_surf_action_storage_type_t type);
 
     /**
    * @brief StorageAction constructor
@@ -290,7 +290,7 @@ public:
    * @param type [description]
    */
   StorageAction(ModelPtr model, double cost, bool failed, lmm_variable_t var,
-		            StoragePtr storage, e_surf_action_storage_type_t type);
+      StoragePtr storage, e_surf_action_storage_type_t type);
 
   void setState(e_surf_action_state_t state);
 

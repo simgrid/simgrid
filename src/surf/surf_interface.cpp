@@ -93,10 +93,10 @@ xbt_dict_t watched_hosts_lib;
 surf_callback(void, void) surfExitCallbacks;
 
 s_surf_model_description_t surf_plugin_description[] = {
-		  {"Energy",
-		   "Cpu energy consumption.",
-		   sg_energy_plugin_init},
-		  {NULL, NULL,  NULL}      /* this array must be NULL terminated */
+    {"Energy",
+     "Cpu energy consumption.",
+     sg_energy_plugin_init},
+     {NULL, NULL,  NULL}      /* this array must be NULL terminated */
 };
 
 /* Don't forget to update the option description in smx_config when you change this */
@@ -509,11 +509,11 @@ double Model::shareResources(double now)
 {
   //FIXME: set the good function once and for all
   if (p_updateMechanism == UM_LAZY)
-	return shareResourcesLazy(now);
+    return shareResourcesLazy(now);
   else if (p_updateMechanism == UM_FULL)
-	return shareResourcesFull(now);
+    return shareResourcesFull(now);
   else
-	xbt_die("Invalid cpu update mechanism!");
+    xbt_die("Invalid cpu update mechanism!");
 }
 
 double Model::shareResourcesLazy(double now)
@@ -610,7 +610,7 @@ double Model::shareResourcesMaxMin(ActionListPtr running_actions,
 
   ActionList::iterator it(running_actions->begin()), itend(running_actions->end());
   for(; it != itend ; ++it) {
-	  action = &*it;
+    action = &*it;
     value = lmm_variable_getvalue(action->getVariable());
     if ((value > 0) || (action->getMaxDuration() >= 0))
       break;
@@ -738,7 +738,7 @@ const char *Resource::getName() {
 
 xbt_dict_t Resource::getProperties() {
   if (p_properties==NULL)
-	p_properties = xbt_dict_new();
+    p_properties = xbt_dict_new();
   return p_properties;
 }
 
@@ -851,7 +851,7 @@ void Action::setState(e_surf_action_state_t state)
     p_stateSet = NULL;
 
   if (p_stateSet)
-	p_stateSet->push_back(*this);
+    p_stateSet->push_back(*this);
   XBT_OUT();
 }
 
@@ -867,7 +867,7 @@ void Action::setBound(double bound)
     lmm_update_variable_bound(getModel()->getMaxminSystem(), getVariable(), bound);
 
   if (getModel()->getUpdateMechanism() == UM_LAZY && getLastUpdate()!=surf_get_clock())
-	  heapRemove(getModel()->getActionHeap());
+    heapRemove(getModel()->getActionHeap());
   XBT_OUT();
 }
 
@@ -925,8 +925,8 @@ void Action::setPriority(double priority)
 void Action::cancel(){
   setState(SURF_ACTION_FAILED);
   if (getModel()->getUpdateMechanism() == UM_LAZY) {
-	if (actionLmmHook::is_linked())
-	  getModel()->getModifiedSet()->erase(getModel()->getModifiedSet()->iterator_to(*this));
+    if (actionLmmHook::is_linked())
+      getModel()->getModifiedSet()->erase(getModel()->getModifiedSet()->iterator_to(*this));
     heapRemove(getModel()->getActionHeap());
   }
 }
@@ -934,18 +934,18 @@ void Action::cancel(){
 int Action::unref(){
   m_refcount--;
   if (!m_refcount) {
-	if (actionHook::is_linked())
-	  p_stateSet->erase(p_stateSet->iterator_to(*this));
-	if (getVariable())
-	  lmm_variable_free(getModel()->getMaxminSystem(), getVariable());
-	if (getModel()->getUpdateMechanism() == UM_LAZY) {
-	  /* remove from heap */
-	  heapRemove(getModel()->getActionHeap());
+    if (actionHook::is_linked())
+      p_stateSet->erase(p_stateSet->iterator_to(*this));
+    if (getVariable())
+      lmm_variable_free(getModel()->getMaxminSystem(), getVariable());
+    if (getModel()->getUpdateMechanism() == UM_LAZY) {
+      /* remove from heap */
+      heapRemove(getModel()->getActionHeap());
       if (actionLmmHook::is_linked())
-	    getModel()->getModifiedSet()->erase(getModel()->getModifiedSet()->iterator_to(*this));
+        getModel()->getModifiedSet()->erase(getModel()->getModifiedSet()->iterator_to(*this));
     }
-	delete this;
-	return 1;
+    delete this;
+    return 1;
   }
   return 0;
 }
