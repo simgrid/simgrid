@@ -71,6 +71,7 @@ int host(int argc, char *argv[]){
            MSG_file_get_size(file), MSG_host_get_name(src),
            argv[3]);
       MSG_file_rcopy(file, dest, argv[4]);
+      MSG_file_close(file);
     }
   }
 
