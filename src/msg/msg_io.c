@@ -195,7 +195,7 @@ msg_file_t MSG_file_open(const char* fullpath, void* data)
   priv->fullpath = xbt_strdup(fullpath);
   priv->simdata = xbt_new0(s_simdata_file_t,1);
   priv->simdata->smx_file = simcall_file_open(fullpath, MSG_host_self());
-  sprintf(name, "%s:%s",MSG_host_get_name(MSG_host_self()),fullpath);
+  sprintf(name, "%s:%i:%s",MSG_host_get_name(MSG_host_self()),MSG_process_self_PID(),fullpath);
   xbt_lib_set(file_lib, name, MSG_FILE_LEVEL, priv);
   msg_file_t fd = (msg_file_t) xbt_lib_get_elm_or_null(file_lib, name);
   __MSG_file_get_info(fd);
@@ -213,8 +213,9 @@ int MSG_file_close(msg_file_t fd)
 {
   char name[2048];
   msg_file_priv_t priv = MSG_file_priv(fd);
+
   int res = simcall_file_close(priv->simdata->smx_file, MSG_host_self());
-  sprintf(name, "%s:%s",MSG_host_get_name(MSG_host_self()),priv->fullpath);
+  sprintf(name, "%s:%i:%s",MSG_host_get_name(MSG_host_self()),MSG_process_self_PID(),priv->fullpath);
   xbt_lib_unset(file_lib, name, MSG_FILE_LEVEL, 1);
   return res;
 }
