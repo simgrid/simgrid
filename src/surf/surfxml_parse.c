@@ -420,8 +420,8 @@ void STag_surfxml_prop(void)
   }
   else{
     if (!current_property_set)
-      current_property_set = xbt_dict_new_homogeneous(xbt_free_f); // Maybe, it should raise an error
-    xbt_dict_set(current_property_set, A_surfxml_prop_id, xbt_strdup(A_surfxml_prop_value), NULL);
+       current_property_set = xbt_dict_new(); // Maybe, it should raise an error
+    xbt_dict_set(current_property_set, A_surfxml_prop_id, xbt_strdup(A_surfxml_prop_value), xbt_free);
   }
 }
 
