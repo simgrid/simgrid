@@ -203,15 +203,6 @@ msg_file_t MSG_file_open(const char* fullpath, void* data)
   return fd;
 }
 
-/**
- * \brief Frees private data of a file (internal call only)
- */
-void __MSG_file_priv_free(msg_file_priv_t priv)
-{
-  xbt_free(&priv->simdata->smx_file);
-  free(priv);
-}
-
 /** \ingroup msg_file_management
  * \brief Close the file
  *
