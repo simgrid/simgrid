@@ -66,7 +66,7 @@ static int compare_comm_pattern(mc_comm_pattern_t comm1, mc_comm_pattern_t comm2
 static void deterministic_pattern(xbt_dynar_t initial_pattern, xbt_dynar_t pattern){
 
   if(!xbt_dynar_is_empty(incomplete_communications_pattern))
-    xbt_die("Oh oh ...");
+    xbt_die("Damn ! Some communications are incomplete that means one or several simcalls are not handle ... ");
 
   unsigned int cursor = 0, send_index = 0, recv_index = 0;
   mc_comm_pattern_t comm1, comm2;
