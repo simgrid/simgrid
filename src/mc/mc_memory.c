@@ -15,7 +15,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_memory, mc,
 
 /* Pointers to each of the heap regions to use */
 void *std_heap = NULL;          /* memory erased each time the MC stuff rollbacks to the beginning. Almost everything goes here */
-void *mc_heap = NULL;          /* memory persistent over the MC rollbacks. Only MC stuff should go there */
+void *mc_heap = NULL;           /* memory persistent over the MC rollbacks. Only MC stuff should go there */
 
 /* Initialize the model-checker memory subsystem */
 /* It creates the two heap regions: std_heap and mc_heap */
@@ -25,12 +25,15 @@ void MC_memory_init()
   std_heap = mmalloc_get_default_md();
   xbt_assert(std_heap != NULL);
 
-#if defined HAVE_GNU_LD && !defined MMALLOC_WANT_OVERRIDE_LEGACY 
+#if defined HAVE_GNU_LD && !defined MMALLOC_WANT_OVERRIDE_LEGACY
   /* use the system malloc for the model-checker data */
   mc_heap = NULL;
 #else
   /* Create the second region a page after the first one ends + safety gap */
-  mc_heap = xbt_mheap_new_options(-1, (char*)(std_heap) + STD_HEAP_SIZE + xbt_pagesize, 0);
+  mc_heap =
+      xbt_mheap_new_options(-1,
+                            (char *) (std_heap) + STD_HEAP_SIZE + xbt_pagesize,
+                            0);
   xbt_assert(mc_heap != NULL);
 #endif
 }

@@ -584,23 +584,26 @@ set(JEDULE_SRC
 
 set(MC_SRC
   src/mc/mc_checkpoint.c
-  src/mc/mc_diff.c
+  src/mc/mc_comm_determinism.c
   src/mc/mc_compare.c
-  src/mc/mc_dpor.c
+  src/mc/mc_diff.c
   src/mc/mc_dwarf.c
   src/mc/mc_dwarf_attrnames.h
   src/mc/mc_dwarf_expression.c
   src/mc/mc_dwarf_tagnames.h
   src/mc/mc_global.c
   src/mc/mc_hash.c
+  src/mc/mc_ignore.c
   src/mc/mc_liveness.c
   src/mc/mc_member.c
   src/mc/mc_memory.c
   src/mc/mc_pair.c
   src/mc/mc_private.h
   src/mc/mc_request.c
+  src/mc/mc_safety.c
   src/mc/mc_set.cpp
   src/mc/mc_state.c
+  src/mc/mc_visited.c
   src/mc/memory_map.c
   )
 

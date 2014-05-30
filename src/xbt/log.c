@@ -628,16 +628,19 @@ static void xbt_log_connect_categories(void)
 #ifdef HAVE_MC
   XBT_LOG_CONNECT(mc);
   XBT_LOG_CONNECT(mc_checkpoint);
+  XBT_LOG_CONNECT(mc_comm_determinism);
   XBT_LOG_CONNECT(mc_compare);
-  XBT_LOG_CONNECT(mc_dpor);
+  XBT_LOG_CONNECT(mc_diff);
   XBT_LOG_CONNECT(mc_dwarf);
   XBT_LOG_CONNECT(mc_global);
   XBT_LOG_CONNECT(mc_hash);
+  XBT_LOG_CONNECT(mc_ignore);
   XBT_LOG_CONNECT(mc_liveness);
   XBT_LOG_CONNECT(mc_memory);
   XBT_LOG_CONNECT(mc_memory_map);
   XBT_LOG_CONNECT(mc_request);
-  XBT_LOG_CONNECT(mc_diff);
+  XBT_LOG_CONNECT(mc_safety);
+  XBT_LOG_CONNECT(mc_visited);
 #endif
 
   /* msg */

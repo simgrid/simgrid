@@ -15,180 +15,20 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_dpor, mc,
 
 xbt_dynar_t visited_states;
 xbt_dict_t first_enabled_state;
-xbt_dynar_t initial_communications_pattern;
-xbt_dynar_t incomplete_communications_pattern;
-xbt_dynar_t communications_pattern;
-int nb_comm_pattern;
 
 /********** Static functions ***********/
 
-static void comm_pattern_free(mc_comm_pattern_t p){
-  xbt_free(p->rdv);
-  xbt_free(p->data);
-  xbt_free(p);
-  p = NULL;
-}
 
-static void comm_pattern_free_voidp( void *p){
-  comm_pattern_free((mc_comm_pattern_t) * (void **)p);
-}
-
-static mc_comm_pattern_t get_comm_pattern_from_idx(xbt_dynar_t pattern, unsigned int *idx, e_smx_comm_type_t type, unsigned long proc){
-  mc_comm_pattern_t current_comm;
-  while(*idx < xbt_dynar_length(pattern)){
-    current_comm = (mc_comm_pattern_t)xbt_dynar_get_as(pattern, *idx, mc_comm_pattern_t);
-    if(current_comm->type == type && type == SIMIX_COMM_SEND){
-      if(current_comm->src_proc == proc)
-        return current_comm;
-    }else if(current_comm->type == type && type == SIMIX_COMM_RECEIVE){
-      if(current_comm->dst_proc == proc)
-        return current_comm;
-    }
-    (*idx)++;
-  }
-  return NULL;
-}
-
-static int compare_comm_pattern(mc_comm_pattern_t comm1, mc_comm_pattern_t comm2){
-  if(strcmp(comm1->rdv, comm2->rdv) != 0)
-    return 1;
-  if(comm1->src_proc != comm2->src_proc)
-    return 1;
-  if(comm1->dst_proc != comm2->dst_proc)
-    return 1;
-  if(comm1->data_size != comm2->data_size)
-    return 1;
-  if(memcmp(comm1->data, comm2->data, comm1->data_size) != 0)
-    return 1;
-  return 0;
-}
-
-static void deterministic_pattern(xbt_dynar_t initial_pattern, xbt_dynar_t pattern){
-
-  if(!xbt_dynar_is_empty(incomplete_communications_pattern))
-    xbt_die("Damn ! Some communications are incomplete that means one or several simcalls are not handle ... ");
-
-  unsigned int cursor = 0, send_index = 0, recv_index = 0;
-  mc_comm_pattern_t comm1, comm2;
-  int comm_comparison = 0;
-  int current_process = 0;
-  while(current_process < simix_process_maxpid){
-    while(cursor < xbt_dynar_length(initial_pattern)){
-      comm1 = (mc_comm_pattern_t)xbt_dynar_get_as(initial_pattern, cursor, mc_comm_pattern_t);
-      if(comm1->type == SIMIX_COMM_SEND && comm1->src_proc == current_process){
-        comm2 = get_comm_pattern_from_idx(pattern, &send_index, comm1->type, current_process);
-        comm_comparison = compare_comm_pattern(comm1, comm2);
-        if(comm_comparison == 1){
-          initial_state_safety->send_deterministic = 0;
-          initial_state_safety->comm_deterministic = 0;
-          return;
-        }
-        send_index++;
-      }else if(comm1->type == SIMIX_COMM_RECEIVE && comm1->dst_proc == current_process){
-        comm2 = get_comm_pattern_from_idx(pattern, &recv_index, comm1->type, current_process);
-        comm_comparison = compare_comm_pattern(comm1, comm2);
-        if(comm_comparison == 1){
-          initial_state_safety->comm_deterministic = 0;
-          if(!_sg_mc_send_determinism)
-            return;
-        }
-        recv_index++;
-      }
-      cursor++;
-    }
-    cursor = 0;
-    send_index = 0;
-    recv_index = 0;
-    current_process++;
-  }
-}
-
-void complete_comm_pattern(xbt_dynar_t list, smx_action_t comm){
-  mc_comm_pattern_t current_pattern;
-  unsigned int cursor = 0;
-  int index;
-  int completed = 0;
-  void *addr_pointed;
-  xbt_dynar_foreach(incomplete_communications_pattern, cursor, index){
-    current_pattern = (mc_comm_pattern_t)xbt_dynar_get_as(list, index, mc_comm_pattern_t);
-    if(current_pattern->comm == comm){
-      current_pattern->src_proc = comm->comm.src_proc->pid;
-      current_pattern->dst_proc = comm->comm.dst_proc->pid;
-      current_pattern->src_host = simcall_host_get_name(comm->comm.src_proc->smx_host);
-      current_pattern->dst_host = simcall_host_get_name(comm->comm.dst_proc->smx_host);
-      if(current_pattern->data_size == -1){
-        current_pattern->data_size = *(comm->comm.dst_buff_size);
-        current_pattern->data = xbt_malloc0(current_pattern->data_size);
-        addr_pointed = *(void **)comm->comm.src_buff;
-        if(addr_pointed > std_heap && addr_pointed < ((xbt_mheap_t)std_heap)->breakval)
-          memcpy(current_pattern->data, addr_pointed, current_pattern->data_size);
-        else
-          memcpy(current_pattern->data, comm->comm.src_buff, current_pattern->data_size);
-      }
-      xbt_dynar_remove_at(incomplete_communications_pattern, cursor, NULL);
-      completed++;
-      if(completed == 2)
-        return;
-      cursor--;
-    }
-  }
-}
-
-void get_comm_pattern(xbt_dynar_t list, smx_simcall_t request, int call){
-  mc_comm_pattern_t pattern = NULL;
-  pattern = xbt_new0(s_mc_comm_pattern_t, 1);
-  pattern->num = ++nb_comm_pattern;
-  pattern->data_size = -1;
-  void * addr_pointed;
-  if(call == 1){ // ISEND
-    pattern->comm = simcall_comm_isend__get__result(request);
-    pattern->type = SIMIX_COMM_SEND;
-    pattern->src_proc = pattern->comm->comm.src_proc->pid;
-    pattern->src_host = simcall_host_get_name(request->issuer->smx_host);
-    pattern->data_size = pattern->comm->comm.src_buff_size;
-    pattern->data = xbt_malloc0(pattern->data_size);
-    addr_pointed = *(void **)pattern->comm->comm.src_buff;
-    if(addr_pointed > std_heap && addr_pointed < ((xbt_mheap_t)std_heap)->breakval)
-      memcpy(pattern->data, addr_pointed, pattern->data_size);
-    else
-      memcpy(pattern->data, pattern->comm->comm.src_buff, pattern->data_size);
-  }else{ // IRECV
-    pattern->comm = simcall_comm_irecv__get__result(request);
-    pattern->type = SIMIX_COMM_RECEIVE;
-    pattern->dst_proc = pattern->comm->comm.dst_proc->pid;
-    pattern->dst_host = simcall_host_get_name(pattern->comm->comm.dst_proc->smx_host);
-  }
-  
-  if(pattern->comm->comm.rdv != NULL)
-    pattern->rdv = strdup(pattern->comm->comm.rdv->name);
-  else
-    pattern->rdv = strdup(pattern->comm->comm.rdv_cpy->name);
-  
-  xbt_dynar_push(list, &pattern);
-
-  xbt_dynar_push_as(incomplete_communications_pattern, int, xbt_dynar_length(list) - 1);
-
-}
-
-static void print_communications_pattern(xbt_dynar_t comms_pattern){
-  unsigned int cursor = 0;
-  mc_comm_pattern_t current_comm;
-  xbt_dynar_foreach(comms_pattern, cursor, current_comm){
-    if(current_comm->type == SIMIX_COMM_SEND)
-      XBT_INFO("[(%lu) %s -> (%lu) %s] %s ", current_comm->src_proc, current_comm->src_host, current_comm->dst_proc, current_comm->dst_host, "iSend");
-    else
-      XBT_INFO("[(%lu) %s <- (%lu) %s] %s ", current_comm->dst_proc, current_comm->dst_host, current_comm->src_proc, current_comm->src_host, "iRecv");
-  }
-}
-
-static void visited_state_free(mc_visited_state_t state){
-  if(state){
+static void visited_state_free(mc_visited_state_t state)
+{
+  if (state) {
     MC_free_snapshot(state->system_state);
     xbt_free(state);
   }
 }
 
-static void visited_state_free_voidp(void *s){
+static void visited_state_free_voidp(void *s)
+{
   visited_state_free((mc_visited_state_t) * (void **) s);
 }
 
@@ -196,7 +36,8 @@ static void visited_state_free_voidp(void *s){
  *
  *  \return Snapshot of the current state.
  */
-static mc_visited_state_t visited_state_new(){
+static mc_visited_state_t visited_state_new()
+{
 
   mc_visited_state_t new_state = NULL;
   new_state = xbt_new0(s_mc_visited_state_t, 1);
@@ -207,7 +48,7 @@ static mc_visited_state_t visited_state_new(){
   new_state->other_num = -1;
 
   return new_state;
-  
+
 }
 
 /** \brief Find a suitable subrange of candidate duplicates for a given state
@@ -226,9 +67,13 @@ static mc_visited_state_t visited_state_new(){
  *  (based on nb_processes and heap_bytes_used).
  *  The subrange is the subrange of "equivalence" of the given state.
  */
-static int get_search_interval(xbt_dynar_t all_states, mc_visited_state_t state, int *min, int *max){
-  XBT_VERB("Searching interval for state %i: nd_processes=%zu heap_bytes_used=%zu",
-    state->num, (size_t)state->nb_processes, (size_t)state->heap_bytes_used);
+static int get_search_interval(xbt_dynar_t all_states, mc_visited_state_t state,
+                               int *min, int *max)
+{
+  XBT_VERB
+      ("Searching interval for state %i: nd_processes=%zu heap_bytes_used=%zu",
+       state->num, (size_t) state->nb_processes,
+       (size_t) state->heap_bytes_used);
 
   int raw_mem_set = (mmalloc_get_current_heap() == mc_heap);
 
@@ -238,45 +83,53 @@ static int get_search_interval(xbt_dynar_t all_states, mc_visited_state_t state,
   mc_visited_state_t state_test;
   int start = 0;
   int end = xbt_dynar_length(all_states) - 1;
-  
-  while(start <= end){
+
+  while (start <= end) {
     cursor = (start + end) / 2;
-    state_test = (mc_visited_state_t)xbt_dynar_get_as(all_states, cursor, mc_visited_state_t);
-    if(state_test->nb_processes < state->nb_processes){
+    state_test =
+        (mc_visited_state_t) xbt_dynar_get_as(all_states, cursor,
+                                              mc_visited_state_t);
+    if (state_test->nb_processes < state->nb_processes) {
       start = cursor + 1;
-    }else if(state_test->nb_processes > state->nb_processes){
+    } else if (state_test->nb_processes > state->nb_processes) {
       end = cursor - 1;
-    }else{
-      if(state_test->heap_bytes_used < state->heap_bytes_used){
-        start = cursor +1;
-      }else if(state_test->heap_bytes_used > state->heap_bytes_used){
+    } else {
+      if (state_test->heap_bytes_used < state->heap_bytes_used) {
+        start = cursor + 1;
+      } else if (state_test->heap_bytes_used > state->heap_bytes_used) {
         end = cursor - 1;
-      }else{
+      } else {
         *min = *max = cursor;
         previous_cursor = cursor - 1;
-        while(previous_cursor >= 0){
-          state_test = (mc_visited_state_t)xbt_dynar_get_as(all_states, previous_cursor, mc_visited_state_t);
-          if(state_test->nb_processes != state->nb_processes || state_test->heap_bytes_used != state->heap_bytes_used)
+        while (previous_cursor >= 0) {
+          state_test =
+              (mc_visited_state_t) xbt_dynar_get_as(all_states, previous_cursor,
+                                                    mc_visited_state_t);
+          if (state_test->nb_processes != state->nb_processes
+              || state_test->heap_bytes_used != state->heap_bytes_used)
             break;
           *min = previous_cursor;
           previous_cursor--;
         }
         next_cursor = cursor + 1;
-        while(next_cursor < xbt_dynar_length(all_states)){
-          state_test = (mc_visited_state_t)xbt_dynar_get_as(all_states, next_cursor, mc_visited_state_t);
-          if(state_test->nb_processes != state->nb_processes || state_test->heap_bytes_used != state->heap_bytes_used)
+        while (next_cursor < xbt_dynar_length(all_states)) {
+          state_test =
+              (mc_visited_state_t) xbt_dynar_get_as(all_states, next_cursor,
+                                                    mc_visited_state_t);
+          if (state_test->nb_processes != state->nb_processes
+              || state_test->heap_bytes_used != state->heap_bytes_used)
             break;
           *max = next_cursor;
           next_cursor++;
         }
-        if(!raw_mem_set)
+        if (!raw_mem_set)
           MC_SET_STD_HEAP;
         return -1;
       }
-     }
+    }
   }
 
-  if(!raw_mem_set)
+  if (!raw_mem_set)
     MC_SET_STD_HEAP;
 
   return cursor;
@@ -286,9 +139,15 @@ static int get_search_interval(xbt_dynar_t all_states, mc_visited_state_t state,
  *
  *  \return number of the duplicate state or -1 (not visited)
  */
-static int is_visited_state(){
+static int is_visited_state()
+{
 
-  if(_sg_mc_visited == 0)
+  /* Reduction on visited states disabled for the first execution
+     path if the detection of the communication determinism is
+     enabled (we need to a complete initial communication pattern) */
+  if ((_sg_mc_visited == 0) ||
+      ((_sg_mc_comms_determinism || _sg_mc_send_determinism)
+       && !initial_state_safety->initial_communications_pattern_done))
     return -1;
 
   int raw_mem_set = (mmalloc_get_current_heap() == mc_heap);
@@ -296,17 +155,17 @@ static int is_visited_state(){
   MC_SET_MC_HEAP;
 
   mc_visited_state_t new_state = visited_state_new();
-  
-  if(xbt_dynar_is_empty(visited_states)){
 
-    xbt_dynar_push(visited_states, &new_state); 
+  if (xbt_dynar_is_empty(visited_states)) {
 
-    if(!raw_mem_set)
+    xbt_dynar_push(visited_states, &new_state);
+
+    if (!raw_mem_set)
       MC_SET_STD_HEAP;
 
     return -1;
 
-  }else{
+  } else {
 
     int min = -1, max = -1, index;
     //int res;
@@ -315,47 +174,52 @@ static int is_visited_state(){
 
     index = get_search_interval(visited_states, new_state, &min, &max);
 
-    if(min != -1 && max != -1){
+    if (min != -1 && max != -1) {
 
       // Parallell implementation
       /*res = xbt_parmap_mc_apply(parmap, snapshot_compare, xbt_dynar_get_ptr(visited_states, min), (max-min)+1, new_state);
-      if(res != -1){
-        state_test = (mc_visited_state_t)xbt_dynar_get_as(visited_states, (min+res)-1, mc_visited_state_t);
-        if(state_test->other_num == -1)
-          new_state->other_num = state_test->num;
-        else
-          new_state->other_num = state_test->other_num;
-        if(dot_output == NULL)
-          XBT_DEBUG("State %d already visited ! (equal to state %d)", new_state->num, state_test->num);
-        else
-          XBT_DEBUG("State %d already visited ! (equal to state %d (state %d in dot_output))", new_state->num, state_test->num, new_state->other_num);
-        xbt_dynar_remove_at(visited_states, (min + res) - 1, NULL);
-        xbt_dynar_insert_at(visited_states, (min+res) - 1, &new_state);
-        if(!raw_mem_set)
-          MC_SET_STD_HEAP;
-        return new_state->other_num;
-        }*/
+         if(res != -1){
+         state_test = (mc_visited_state_t)xbt_dynar_get_as(visited_states, (min+res)-1, mc_visited_state_t);
+         if(state_test->other_num == -1)
+         new_state->other_num = state_test->num;
+         else
+         new_state->other_num = state_test->other_num;
+         if(dot_output == NULL)
+         XBT_DEBUG("State %d already visited ! (equal to state %d)", new_state->num, state_test->num);
+         else
+         XBT_DEBUG("State %d already visited ! (equal to state %d (state %d in dot_output))", new_state->num, state_test->num, new_state->other_num);
+         xbt_dynar_remove_at(visited_states, (min + res) - 1, NULL);
+         xbt_dynar_insert_at(visited_states, (min+res) - 1, &new_state);
+         if(!raw_mem_set)
+         MC_SET_STD_HEAP;
+         return new_state->other_num;
+         } */
 
       cursor = min;
-      while(cursor <= max){
-        state_test = (mc_visited_state_t)xbt_dynar_get_as(visited_states, cursor, mc_visited_state_t);
-        if(snapshot_compare(state_test, new_state) == 0){
+      while (cursor <= max) {
+        state_test =
+            (mc_visited_state_t) xbt_dynar_get_as(visited_states, cursor,
+                                                  mc_visited_state_t);
+        if (snapshot_compare(state_test, new_state) == 0) {
           // The state has been visited:
 
-          if(state_test->other_num == -1)
+          if (state_test->other_num == -1)
             new_state->other_num = state_test->num;
           else
             new_state->other_num = state_test->other_num;
-          if(dot_output == NULL)
-            XBT_DEBUG("State %d already visited ! (equal to state %d)", new_state->num, state_test->num);
+          if (dot_output == NULL)
+            XBT_DEBUG("State %d already visited ! (equal to state %d)",
+                      new_state->num, state_test->num);
           else
-            XBT_DEBUG("State %d already visited ! (equal to state %d (state %d in dot_output))", new_state->num, state_test->num, new_state->other_num);
+            XBT_DEBUG
+                ("State %d already visited ! (equal to state %d (state %d in dot_output))",
+                 new_state->num, state_test->num, new_state->other_num);
 
           // Replace the old state with the new one (why?):
           xbt_dynar_remove_at(visited_states, cursor, NULL);
           xbt_dynar_insert_at(visited_states, cursor, &new_state);
 
-          if(!raw_mem_set)
+          if (!raw_mem_set)
             MC_SET_STD_HEAP;
           return new_state->other_num;
         }
@@ -365,14 +229,16 @@ static int is_visited_state(){
       // The state has not been visited, add it to the list:
       xbt_dynar_insert_at(visited_states, min, &new_state);
 
-    }else{
+    } else {
 
       // The state has not been visited: insert the state in the dynamic array.
-      state_test = (mc_visited_state_t)xbt_dynar_get_as(visited_states, index, mc_visited_state_t);
-      if(state_test->nb_processes < new_state->nb_processes){
-        xbt_dynar_insert_at(visited_states, index+1, &new_state);
-      }else{
-        if(state_test->heap_bytes_used < new_state->heap_bytes_used)
+      state_test =
+          (mc_visited_state_t) xbt_dynar_get_as(visited_states, index,
+                                                mc_visited_state_t);
+      if (state_test->nb_processes < new_state->nb_processes) {
+        xbt_dynar_insert_at(visited_states, index + 1, &new_state);
+      } else {
+        if (state_test->heap_bytes_used < new_state->heap_bytes_used)
           xbt_dynar_insert_at(visited_states, index + 1, &new_state);
         else
           xbt_dynar_insert_at(visited_states, index, &new_state);
@@ -381,14 +247,14 @@ static int is_visited_state(){
     }
 
     // We have reached the maximum number of stored states;
-    if(xbt_dynar_length(visited_states) > _sg_mc_visited){
+    if (xbt_dynar_length(visited_states) > _sg_mc_visited) {
 
       // Find the (index of the) older state:
       int min2 = mc_stats->expanded_states;
       unsigned int cursor2 = 0;
       unsigned int index2 = 0;
-      xbt_dynar_foreach(visited_states, cursor2, state_test){
-        if(state_test->num < min2){
+      xbt_dynar_foreach(visited_states, cursor2, state_test) {
+        if (state_test->num < min2) {
           index2 = cursor2;
           min2 = state_test->num;
         }
@@ -398,11 +264,11 @@ static int is_visited_state(){
       xbt_dynar_remove_at(visited_states, index2, NULL);
     }
 
-    if(!raw_mem_set)
+    if (!raw_mem_set)
       MC_SET_STD_HEAP;
-    
+
     return -1;
-    
+
   }
 }
 
@@ -411,24 +277,27 @@ static int is_visited_state(){
  */
 void MC_dpor_init()
 {
-  
+
   int raw_mem_set = (mmalloc_get_current_heap() == mc_heap);
 
   mc_state_t initial_state = NULL;
   smx_process_t process;
-  
+
   /* Create the initial state and push it into the exploration stack */
   MC_SET_MC_HEAP;
 
-  if(_sg_mc_visited > 0)
-    visited_states = xbt_dynar_new(sizeof(mc_visited_state_t), visited_state_free_voidp);
+  if (_sg_mc_visited > 0)
+    visited_states =
+        xbt_dynar_new(sizeof(mc_visited_state_t), visited_state_free_voidp);
 
-  if(mc_reduce_kind == e_mc_reduce_dpor)
+  if (mc_reduce_kind == e_mc_reduce_dpor)
     first_enabled_state = xbt_dict_new_homogeneous(&xbt_free_f);
 
-  if(_sg_mc_comms_determinism || _sg_mc_send_determinism){
-    initial_communications_pattern = xbt_dynar_new(sizeof(mc_comm_pattern_t), comm_pattern_free_voidp);
-    communications_pattern = xbt_dynar_new(sizeof(mc_comm_pattern_t), comm_pattern_free_voidp);
+  if (_sg_mc_comms_determinism || _sg_mc_send_determinism) {
+    initial_communications_pattern =
+        xbt_dynar_new(sizeof(mc_comm_pattern_t), comm_pattern_free_voidp);
+    communications_pattern =
+        xbt_dynar_new(sizeof(mc_comm_pattern_t), comm_pattern_free_voidp);
     incomplete_communications_pattern = xbt_dynar_new(sizeof(int), NULL);
     nb_comm_pattern = 0;
   }
@@ -447,25 +316,25 @@ void MC_dpor_init()
   MC_ignore_heap(simix_global->process_that_ran->data, 0);
 
   MC_SET_MC_HEAP;
- 
+
   /* Get an enabled process and insert it in the interleave set of the initial state */
-  xbt_swag_foreach(process, simix_global->process_list){
-    if(MC_process_is_enabled(process)){
+  xbt_swag_foreach(process, simix_global->process_list) {
+    if (MC_process_is_enabled(process)) {
       MC_state_interleave_process(initial_state, process);
-      if(mc_reduce_kind != e_mc_reduce_none)
+      if (mc_reduce_kind != e_mc_reduce_none)
         break;
     }
   }
 
   xbt_fifo_unshift(mc_stack_safety, initial_state);
 
-  if(mc_reduce_kind == e_mc_reduce_dpor){
+  if (mc_reduce_kind == e_mc_reduce_dpor) {
     /* To ensure the soundness of DPOR, we have to keep a list of 
        processes which are still enabled at each step of the exploration. 
        If max depth is reached, we interleave them in the state in which they have 
        been enabled for the first time. */
-    xbt_swag_foreach(process, simix_global->process_list){
-      if(MC_process_is_enabled(process)){
+    xbt_swag_foreach(process, simix_global->process_list) {
+      if (MC_process_is_enabled(process)) {
         char *key = bprintf("%lu", process->pid);
         char *data = bprintf("%d", xbt_fifo_size(mc_stack_safety));
         xbt_dict_set(first_enabled_state, key, data, NULL);
@@ -476,11 +345,11 @@ void MC_dpor_init()
 
   MC_SET_STD_HEAP;
 
-  if(raw_mem_set)
+  if (raw_mem_set)
     MC_SET_MC_HEAP;
   else
     MC_SET_STD_HEAP;
-  
+
 }
 
 
@@ -493,96 +362,101 @@ void MC_dpor(void)
   char *req_str = NULL;
   int value;
   smx_simcall_t req = NULL, prev_req = NULL;
-  mc_state_t state = NULL, prev_state = NULL, next_state = NULL, restored_state=NULL;
+  mc_state_t state = NULL, prev_state = NULL, next_state =
+      NULL, restored_state = NULL;
   smx_process_t process = NULL;
   xbt_fifo_item_t item = NULL;
   mc_state_t state_test = NULL;
   int pos;
   int visited_state = -1;
   int enabled = 0;
-  int interleave_size = 0;
   int comm_pattern = 0;
   smx_action_t current_comm;
 
   while (xbt_fifo_size(mc_stack_safety) > 0) {
 
     /* Get current state */
-    state = (mc_state_t) 
-      xbt_fifo_get_item_content(xbt_fifo_get_first_item(mc_stack_safety));
+    state = (mc_state_t)
+        xbt_fifo_get_item_content(xbt_fifo_get_first_item(mc_stack_safety));
 
     XBT_DEBUG("**************************************************");
-    XBT_DEBUG("Exploration depth=%d (state=%p, num %d)(%u interleave, user_max_depth %d, first_enabled_state size : %d)",
-              xbt_fifo_size(mc_stack_safety), state, state->num,
-              MC_state_interleave_size(state), user_max_depth_reached, xbt_dict_size(first_enabled_state));
-      
-    interleave_size = MC_state_interleave_size(state);
+    XBT_DEBUG
+        ("Exploration depth=%d (state=%p, num %d)(%u interleave, user_max_depth %d, first_enabled_state size : %d)",
+         xbt_fifo_size(mc_stack_safety), state, state->num,
+         MC_state_interleave_size(state), user_max_depth_reached,
+         xbt_dict_size(first_enabled_state));
 
     /* Update statistics */
     mc_stats->visited_states++;
 
     /* If there are processes to interleave and the maximum depth has not been reached
        then perform one step of the exploration algorithm */
-    if (xbt_fifo_size(mc_stack_safety) <= _sg_mc_max_depth && !user_max_depth_reached &&
-        (req = MC_state_get_request(state, &value)) && visited_state == -1) {
+    if (xbt_fifo_size(mc_stack_safety) <= _sg_mc_max_depth
+        && !user_max_depth_reached
+        && (req = MC_state_get_request(state, &value)) && visited_state == -1) {
 
       /* Debug information */
-      if(XBT_LOG_ISENABLED(mc_dpor, xbt_log_priority_debug)){
+      if (XBT_LOG_ISENABLED(mc_dpor, xbt_log_priority_debug)) {
         req_str = MC_request_to_string(req, value);
         XBT_DEBUG("Execute: %s", req_str);
         xbt_free(req_str);
       }
-      
+
       MC_SET_MC_HEAP;
-      if(dot_output != NULL)
+      if (dot_output != NULL)
         req_str = MC_request_get_dot_output(req, value);
       MC_SET_STD_HEAP;
 
       MC_state_set_executed_request(state, req, value);
       mc_stats->executed_transitions++;
 
-      if(mc_reduce_kind ==  e_mc_reduce_dpor){
+      if (mc_reduce_kind == e_mc_reduce_dpor) {
         MC_SET_MC_HEAP;
         char *key = bprintf("%lu", req->issuer->pid);
-        xbt_dict_remove(first_enabled_state, key); 
+        xbt_dict_remove(first_enabled_state, key);
         xbt_free(key);
         MC_SET_STD_HEAP;
       }
 
       /* TODO : handle test and testany simcalls */
-      if(_sg_mc_comms_determinism || _sg_mc_send_determinism){
-        if(req->call == SIMCALL_COMM_ISEND)
+      if (_sg_mc_comms_determinism || _sg_mc_send_determinism) {
+        if (req->call == SIMCALL_COMM_ISEND)
           comm_pattern = 1;
-        else if(req->call == SIMCALL_COMM_IRECV)
+        else if (req->call == SIMCALL_COMM_IRECV)
           comm_pattern = 2;
-        else if(req->call == SIMCALL_COMM_WAIT)
+        else if (req->call == SIMCALL_COMM_WAIT)
           comm_pattern = 3;
-        else if(req->call == SIMCALL_COMM_WAITANY)
+        else if (req->call == SIMCALL_COMM_WAITANY)
           comm_pattern = 4;
       }
 
       /* Answer the request */
-      SIMIX_simcall_pre(req, value); /* After this call req is no longer usefull */
+      SIMIX_simcall_pre(req, value);    /* After this call req is no longer usefull */
 
-      if(_sg_mc_comms_determinism || _sg_mc_send_determinism){
+      if (_sg_mc_comms_determinism || _sg_mc_send_determinism) {
         MC_SET_MC_HEAP;
-        if(comm_pattern == 1 || comm_pattern == 2){
-          if(!initial_state_safety->initial_communications_pattern_done)
+        if (comm_pattern == 1 || comm_pattern == 2) {
+          if (!initial_state_safety->initial_communications_pattern_done)
             get_comm_pattern(initial_communications_pattern, req, comm_pattern);
           else
             get_comm_pattern(communications_pattern, req, comm_pattern);
-        }else if(comm_pattern == 3){
+        } else if (comm_pattern == 3) {
           current_comm = simcall_comm_wait__get__comm(req);
-          if(current_comm->comm.refcount == 1){ /* First wait only must be considered */
-            if(!initial_state_safety->initial_communications_pattern_done)
-              complete_comm_pattern(initial_communications_pattern, current_comm);
+          if (current_comm->comm.refcount == 1) {       /* First wait only must be considered */
+            if (!initial_state_safety->initial_communications_pattern_done)
+              complete_comm_pattern(initial_communications_pattern,
+                                    current_comm);
             else
               complete_comm_pattern(communications_pattern, current_comm);
           }
-        }else if(comm_pattern == 4){
-          current_comm = xbt_dynar_get_as(simcall_comm_waitany__get__comms(req), value, smx_action_t);
-          if(current_comm->comm.refcount == 1){ /* First wait only must be considered */
-            if(!initial_state_safety->initial_communications_pattern_done)
-              complete_comm_pattern(initial_communications_pattern, current_comm);
+        } else if (comm_pattern == 4) {
+          current_comm =
+              xbt_dynar_get_as(simcall_comm_waitany__get__comms(req), value,
+                               smx_action_t);
+          if (current_comm->comm.refcount == 1) {       /* First wait only must be considered */
+            if (!initial_state_safety->initial_communications_pattern_done)
+              complete_comm_pattern(initial_communications_pattern,
+                                    current_comm);
             else
               complete_comm_pattern(communications_pattern, current_comm);
           }
@@ -599,48 +473,52 @@ void MC_dpor(void)
 
       next_state = MC_state_new();
 
-      if((visited_state = is_visited_state()) == -1){
-     
+      if ((visited_state = is_visited_state()) == -1) {
+
         /* Get an enabled process and insert it in the interleave set of the next state */
-        xbt_swag_foreach(process, simix_global->process_list){
-          if(MC_process_is_enabled(process)){
+        xbt_swag_foreach(process, simix_global->process_list) {
+          if (MC_process_is_enabled(process)) {
             MC_state_interleave_process(next_state, process);
-            if(mc_reduce_kind != e_mc_reduce_none)
+            if (mc_reduce_kind != e_mc_reduce_none)
               break;
           }
         }
 
-        if(_sg_mc_checkpoint && ((xbt_fifo_size(mc_stack_safety) + 1) % _sg_mc_checkpoint == 0)){
+        if (_sg_mc_checkpoint
+            && ((xbt_fifo_size(mc_stack_safety) + 1) % _sg_mc_checkpoint ==
+                0)) {
           next_state->system_state = MC_take_snapshot(next_state->num);
         }
 
-        if(dot_output != NULL)
-          fprintf(dot_output, "\"%d\" -> \"%d\" [%s];\n", state->num, next_state->num, req_str);
+        if (dot_output != NULL)
+          fprintf(dot_output, "\"%d\" -> \"%d\" [%s];\n", state->num,
+                  next_state->num, req_str);
 
-      }else{
+      } else {
 
-        if(dot_output != NULL)
-          fprintf(dot_output, "\"%d\" -> \"%d\" [%s];\n", state->num, visited_state, req_str);
+        if (dot_output != NULL)
+          fprintf(dot_output, "\"%d\" -> \"%d\" [%s];\n", state->num,
+                  visited_state, req_str);
 
       }
 
       xbt_fifo_unshift(mc_stack_safety, next_state);
 
-      if(mc_reduce_kind ==  e_mc_reduce_dpor){
+      if (mc_reduce_kind == e_mc_reduce_dpor) {
         /* Insert in dict all enabled processes, if not included yet */
-        xbt_swag_foreach(process, simix_global->process_list){
-          if(MC_process_is_enabled(process)){
+        xbt_swag_foreach(process, simix_global->process_list) {
+          if (MC_process_is_enabled(process)) {
             char *key = bprintf("%lu", process->pid);
-            if(xbt_dict_get_or_null(first_enabled_state, key) == NULL){
+            if (xbt_dict_get_or_null(first_enabled_state, key) == NULL) {
               char *data = bprintf("%d", xbt_fifo_size(mc_stack_safety));
-              xbt_dict_set(first_enabled_state, key, data, NULL); 
+              xbt_dict_set(first_enabled_state, key, data, NULL);
             }
             xbt_free(key);
           }
         }
       }
-      
-      if(dot_output != NULL)
+
+      if (dot_output != NULL)
         xbt_free(req_str);
 
       MC_SET_STD_HEAP;
@@ -650,27 +528,30 @@ void MC_dpor(void)
       /* The interleave set is empty or the maximum depth is reached, let's back-track */
     } else {
 
-      if((xbt_fifo_size(mc_stack_safety) > _sg_mc_max_depth) || user_max_depth_reached || visited_state != -1){  
+      if ((xbt_fifo_size(mc_stack_safety) > _sg_mc_max_depth)
+          || user_max_depth_reached || visited_state != -1) {
 
-        if(user_max_depth_reached && visited_state == -1)
+        if (user_max_depth_reached && visited_state == -1)
           XBT_DEBUG("User max depth reached !");
-        else if(visited_state == -1)
+        else if (visited_state == -1)
           XBT_WARN("/!\\ Max depth reached ! /!\\ ");
 
-        visited_state = -1;
-
-        if(mc_reduce_kind ==  e_mc_reduce_dpor){
+        if (mc_reduce_kind == e_mc_reduce_dpor) {
           /* Interleave enabled processes in the state in which they have been enabled for the first time */
-          xbt_swag_foreach(process, simix_global->process_list){
-            if(MC_process_is_enabled(process)){
+          xbt_swag_foreach(process, simix_global->process_list) {
+            if (MC_process_is_enabled(process)) {
               char *key = bprintf("%lu", process->pid);
-              enabled = (int)strtoul(xbt_dict_get_or_null(first_enabled_state, key), 0, 10);
+              enabled =
+                  (int) strtoul(xbt_dict_get_or_null(first_enabled_state, key),
+                                0, 10);
               xbt_free(key);
               int cursor = xbt_fifo_size(mc_stack_safety);
-              xbt_fifo_foreach(mc_stack_safety, item, state_test, mc_state_t){
-                if(cursor-- == enabled){ 
-                  if(!MC_state_process_is_done(state_test, process) && state_test->num != state->num){ 
-                    XBT_DEBUG("Interleave process %lu in state %d", process->pid, state_test->num);
+              xbt_fifo_foreach(mc_stack_safety, item, state_test, mc_state_t) {
+                if (cursor-- == enabled) {
+                  if (!MC_state_process_is_done(state_test, process)
+                      && state_test->num != state->num) {
+                    XBT_DEBUG("Interleave process %lu in state %d",
+                              process->pid, state_test->num);
                     MC_state_interleave_process(state_test, process);
                     break;
                   }
@@ -680,19 +561,22 @@ void MC_dpor(void)
           }
         }
 
-      }else{
+      } else {
 
-        XBT_DEBUG("There are no more processes to interleave. (depth %d)", xbt_fifo_size(mc_stack_safety) + 1);
+        XBT_DEBUG("There are no more processes to interleave. (depth %d)",
+                  xbt_fifo_size(mc_stack_safety) + 1);
 
       }
 
       MC_SET_MC_HEAP;
 
-      if(_sg_mc_comms_determinism || _sg_mc_send_determinism){
-        if(initial_state_safety->initial_communications_pattern_done){
-          if(interleave_size == 0){ /* if (interleave_size > 0), process interleaved but not enabled => "incorrect" path, determinism not evaluated */
-            deterministic_pattern(initial_communications_pattern, communications_pattern);
-            if(initial_state_safety->comm_deterministic == 0 && _sg_mc_comms_determinism){
+      if (_sg_mc_comms_determinism || _sg_mc_send_determinism) {
+        if (initial_state_safety->initial_communications_pattern_done) {
+          if (visited_state == -1) {
+            deterministic_pattern(initial_communications_pattern,
+                                  communications_pattern);
+            if (initial_state_safety->comm_deterministic == 0
+                && _sg_mc_comms_determinism) {
               XBT_INFO("****************************************************");
               XBT_INFO("***** Non-deterministic communications pattern *****");
               XBT_INFO("****************************************************");
@@ -702,10 +586,14 @@ void MC_dpor(void)
               print_communications_pattern(communications_pattern);
               MC_print_statistics(mc_stats);
               return;
-            }else if(initial_state_safety->send_deterministic == 0 && _sg_mc_send_determinism){
-              XBT_INFO("*********************************************************");
-              XBT_INFO("***** Non-send-deterministic communications pattern *****");
-              XBT_INFO("*********************************************************");
+            } else if (initial_state_safety->send_deterministic == 0
+                       && _sg_mc_send_determinism) {
+              XBT_INFO
+                  ("*********************************************************");
+              XBT_INFO
+                  ("***** Non-send-deterministic communications pattern *****");
+              XBT_INFO
+                  ("*********************************************************");
               XBT_INFO("Initial communications pattern:");
               print_communications_pattern(initial_communications_pattern);
               XBT_INFO("Communications pattern counter-example:");
@@ -713,8 +601,10 @@ void MC_dpor(void)
               MC_print_statistics(mc_stats);
               return;
             }
+          } else {
+
           }
-        }else{
+        } else {
           initial_state_safety->initial_communications_pattern_done = 1;
         }
       }
@@ -722,12 +612,15 @@ void MC_dpor(void)
       /* Trash the current state, no longer needed */
       xbt_fifo_shift(mc_stack_safety);
       MC_state_delete(state);
-      XBT_DEBUG("Delete state %d at depth %d", state->num, xbt_fifo_size(mc_stack_safety) + 1);
+      XBT_DEBUG("Delete state %d at depth %d", state->num,
+                xbt_fifo_size(mc_stack_safety) + 1);
 
       MC_SET_STD_HEAP;
-      
+
+      visited_state = -1;
+
       /* Check for deadlocks */
-      if(MC_deadlock_check()){
+      if (MC_deadlock_check()) {
         MC_show_deadlock(NULL);
         return;
       }
@@ -739,13 +632,14 @@ void MC_dpor(void)
          (from it's predecesor state), depends on any other previous request 
          executed before it. If it does then add it to the interleave set of the
          state that executed that previous request. */
-      
+
       while ((state = xbt_fifo_shift(mc_stack_safety)) != NULL) {
-        if(mc_reduce_kind == e_mc_reduce_dpor){
+        if (mc_reduce_kind == e_mc_reduce_dpor) {
           req = MC_state_get_internal_request(state);
           xbt_fifo_foreach(mc_stack_safety, item, prev_state, mc_state_t) {
-            if(MC_request_depend(req, MC_state_get_internal_request(prev_state))){
-              if(XBT_LOG_ISENABLED(mc_dpor, xbt_log_priority_debug)){
+            if (MC_request_depend
+                (req, MC_state_get_internal_request(prev_state))) {
+              if (XBT_LOG_ISENABLED(mc_dpor, xbt_log_priority_debug)) {
                 XBT_DEBUG("Dependent Transitions:");
                 prev_req = MC_state_get_executed_request(prev_state, &value);
                 req_str = MC_request_to_string(prev_req, value);
@@ -754,45 +648,54 @@ void MC_dpor(void)
                 prev_req = MC_state_get_executed_request(state, &value);
                 req_str = MC_request_to_string(prev_req, value);
                 XBT_DEBUG("%s (state=%d)", req_str, state->num);
-                xbt_free(req_str);              
+                xbt_free(req_str);
               }
 
-              if(!MC_state_process_is_done(prev_state, req->issuer))
+              if (!MC_state_process_is_done(prev_state, req->issuer))
                 MC_state_interleave_process(prev_state, req->issuer);
               else
                 XBT_DEBUG("Process %p is in done set", req->issuer);
 
               break;
 
-            }else if(req->issuer == MC_state_get_internal_request(prev_state)->issuer){
+            } else if (req->issuer ==
+                       MC_state_get_internal_request(prev_state)->issuer) {
 
-              XBT_DEBUG("Simcall %d and %d with same issuer", req->call, MC_state_get_internal_request(prev_state)->call);
+              XBT_DEBUG("Simcall %d and %d with same issuer", req->call,
+                        MC_state_get_internal_request(prev_state)->call);
               break;
 
-            }else{
+            } else {
 
-              XBT_DEBUG("Simcall %d, process %lu (state %d) and simcall %d, process %lu (state %d) are independant", req->call, req->issuer->pid, state->num, MC_state_get_internal_request(prev_state)->call, MC_state_get_internal_request(prev_state)->issuer->pid, prev_state->num);
+              XBT_DEBUG
+                  ("Simcall %d, process %lu (state %d) and simcall %d, process %lu (state %d) are independant",
+                   req->call, req->issuer->pid, state->num,
+                   MC_state_get_internal_request(prev_state)->call,
+                   MC_state_get_internal_request(prev_state)->issuer->pid,
+                   prev_state->num);
 
             }
           }
         }
-             
-        if (MC_state_interleave_size(state) && xbt_fifo_size(mc_stack_safety) < _sg_mc_max_depth) {
+
+        if (MC_state_interleave_size(state)
+            && xbt_fifo_size(mc_stack_safety) < _sg_mc_max_depth) {
           /* We found a back-tracking point, let's loop */
-          XBT_DEBUG("Back-tracking to state %d at depth %d", state->num, xbt_fifo_size(mc_stack_safety) + 1);
-          if(_sg_mc_checkpoint){
-            if(state->system_state != NULL){
+          XBT_DEBUG("Back-tracking to state %d at depth %d", state->num,
+                    xbt_fifo_size(mc_stack_safety) + 1);
+          if (_sg_mc_checkpoint) {
+            if (state->system_state != NULL) {
               MC_restore_snapshot(state->system_state);
               xbt_fifo_unshift(mc_stack_safety, state);
               MC_SET_STD_HEAP;
-            }else{
+            } else {
               pos = xbt_fifo_size(mc_stack_safety);
               item = xbt_fifo_get_first_item(mc_stack_safety);
-              while(pos>0){
+              while (pos > 0) {
                 restored_state = (mc_state_t) xbt_fifo_get_item_content(item);
-                if(restored_state->system_state != NULL){
+                if (restored_state->system_state != NULL) {
                   break;
-                }else{
+                } else {
                   item = xbt_fifo_get_next_item(item);
                   pos--;
                 }
@@ -802,22 +705,24 @@ void MC_dpor(void)
               MC_SET_STD_HEAP;
               MC_replay(mc_stack_safety, pos);
             }
-          }else{
+          } else {
             xbt_fifo_unshift(mc_stack_safety, state);
             MC_SET_STD_HEAP;
             MC_replay(mc_stack_safety, -1);
           }
-          XBT_DEBUG("Back-tracking to state %d at depth %d done", state->num, xbt_fifo_size(mc_stack_safety));
+          XBT_DEBUG("Back-tracking to state %d at depth %d done", state->num,
+                    xbt_fifo_size(mc_stack_safety));
           break;
         } else {
           /*req = MC_state_get_internal_request(state);
-          if(_sg_mc_comms_determinism || _sg_mc_send_determinism){
-            if(req->call == SIMCALL_COMM_ISEND || req->call == SIMCALL_COMM_IRECV){
-              if(!xbt_dynar_is_empty(communications_pattern))
-                xbt_dynar_remove_at(communications_pattern, xbt_dynar_length(communications_pattern) - 1, NULL);
-            }
-            }*/
-          XBT_DEBUG("Delete state %d at depth %d", state->num, xbt_fifo_size(mc_stack_safety) + 1); 
+             if(_sg_mc_comms_determinism || _sg_mc_send_determinism){
+             if(req->call == SIMCALL_COMM_ISEND || req->call == SIMCALL_COMM_IRECV){
+             if(!xbt_dynar_is_empty(communications_pattern))
+             xbt_dynar_remove_at(communications_pattern, xbt_dynar_length(communications_pattern) - 1, NULL);
+             }
+             } */
+          XBT_DEBUG("Delete state %d at depth %d", state->num,
+                    xbt_fifo_size(mc_stack_safety) + 1);
           MC_state_delete(state);
         }
       }
@@ -829,7 +734,3 @@ void MC_dpor(void)
 
   return;
 }
-
-
-
-
