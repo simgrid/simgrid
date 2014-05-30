@@ -16,6 +16,7 @@ if(DOXYGEN_PATH)
     )
 
   execute_process(COMMAND ${DOXYGEN_PATH}/doxygen --version OUTPUT_VARIABLE DOXYGEN_VERSION )
+  message(STATUS "Doxygen version: ${DOXYGEN_VERSION}")
 
   if(DOXYGEN_VERSION VERSION_LESS "1.8")
     ADD_CUSTOM_TARGET(error_doxygen
