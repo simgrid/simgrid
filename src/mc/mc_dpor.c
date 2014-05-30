@@ -691,7 +691,6 @@ void MC_dpor(void)
       if(_sg_mc_comms_determinism || _sg_mc_send_determinism){
         if(initial_state_safety->initial_communications_pattern_done){
           if(interleave_size == 0){ /* if (interleave_size > 0), process interleaved but not enabled => "incorrect" path, determinism not evaluated */
-            //print_communications_pattern(communications_pattern);
             deterministic_pattern(initial_communications_pattern, communications_pattern);
             if(initial_state_safety->comm_deterministic == 0 && _sg_mc_comms_determinism){
               XBT_INFO("****************************************************");
@@ -704,9 +703,9 @@ void MC_dpor(void)
               MC_print_statistics(mc_stats);
               return;
             }else if(initial_state_safety->send_deterministic == 0 && _sg_mc_send_determinism){
-              XBT_INFO("****************************************************");
+              XBT_INFO("*********************************************************");
               XBT_INFO("***** Non-send-deterministic communications pattern *****");
-              XBT_INFO("****************************************************");
+              XBT_INFO("*********************************************************");
               XBT_INFO("Initial communications pattern:");
               print_communications_pattern(initial_communications_pattern);
               XBT_INFO("Communications pattern counter-example:");
