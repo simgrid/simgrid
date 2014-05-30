@@ -73,10 +73,13 @@ SimGrid (3.11) NOT RELEASED; urgency=low
    - Add callback functions for action state change
    - Handle Energy as a plugin
  * Replace swag by boost::intrusive
- * Add new routing model for torus clusters 
-   - topology="TORUS" and topo_parameters="ndim1,ndim2,...,ndimn" parameters
-     for cluster tag
-   - see examples/platforms/torus_cluster.xml
+ * Add new routing model for clusters 
+   - tori, with topology="TORUS" and topo_parameters="ndim1,ndim2,...,ndimn"
+     parameters for cluster tag
+   - Fat trees, with topology="FAT_TREE" and 
+     topo_parameters="h;m1,...,mh;w1,...,wh;p1,...,ph" parameters for cluster tag
+   - see examples/platforms/torus_cluster.xml and 
+     example/platforms/fat_tree_cluster.xml
  * More documentation
 
  SMPI:
