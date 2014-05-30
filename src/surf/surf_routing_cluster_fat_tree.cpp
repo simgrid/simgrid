@@ -287,9 +287,6 @@ void AsClusterFatTree::generateSwitches() {
   }
 
 
-  // If we have to many compute nodes, we ditch them
-  
-
   // We create the switches
   int k = 0;
   for (unsigned int i = 0 ; i < this->levels ; i++) {
@@ -418,7 +415,6 @@ void AsClusterFatTree::parse_specific_arguments(sg_platf_cluster_cbarg_t
   if (parameters.size() != 4){
     surf_parse_error("Fat trees are defined by the levels number and 3 vectors" 
                      ", see the documentation for more informations");
-    // Well, there's no doc, yet
   }
 
   // The first parts of topo_parameters should be the levels number
