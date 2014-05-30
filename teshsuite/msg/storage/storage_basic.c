@@ -141,14 +141,14 @@ void get_set_storage_data(const char *storage_name){
 }
 
 void dump_platform_storages(void){
-	unsigned int cursor;
-	xbt_dynar_t storages = MSG_storages_as_dynar();
-	msg_storage_t storage;
-	xbt_dynar_foreach(storages, cursor, storage){
-		XBT_INFO("Storage %s is attached to %s", MSG_storage_get_name(storage), MSG_storage_get_host(storage));
-		MSG_storage_set_property_value(storage, "usage", xbt_strdup("gpfs"), NULL);
-	}
-	xbt_dynar_free(&storages);
+  unsigned int cursor;
+  xbt_dynar_t storages = MSG_storages_as_dynar();
+  msg_storage_t storage;
+  xbt_dynar_foreach(storages, cursor, storage){
+    XBT_INFO("Storage %s is attached to %s", MSG_storage_get_name(storage), MSG_storage_get_host(storage));
+    MSG_storage_set_property_value(storage, "other usage", xbt_strdup("gpfs"), xbt_free);
+  }
+  xbt_dynar_free(&storages);
 }
 
 int client(int argc, char *argv[])
@@ -189,7 +189,7 @@ int server(int argc, char *argv[])
       char *dest = MSG_task_get_data(to_execute);
       sg_size_t size_to_write = (sg_size_t)MSG_task_get_data_size(to_execute);
       write_local_file(dest, size_to_write);
-	}
+    }
 
     MSG_task_destroy(to_execute);
     to_execute = NULL;
