@@ -213,6 +213,8 @@ int MSG_file_close(msg_file_t fd)
 {
   char *name;
   msg_file_priv_t priv = MSG_file_priv(fd);
+  if (priv->data)
+    xbt_free(priv->data);
 
   int res = simcall_file_close(priv->simdata->smx_file, MSG_host_self());
   name = bprintf("%s:%i:%s",MSG_host_get_name(MSG_host_self()),MSG_process_self_PID(),priv->fullpath);
