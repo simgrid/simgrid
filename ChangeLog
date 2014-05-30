@@ -43,10 +43,11 @@ SimGrid (3.11) NOT RELEASED; urgency=low
  * New option "msg/debug_multiple_use" to help debugging when a task is used
    several times
  * MSG IO
-   - Improvements and finalization of MSG_storage, MSG_file APIs and their documentation
+   - Improvements and finalization of MSG_storage, MSG_file APIs and their
+     documentation
    - Increase code coverage in test suites
    - Bug fixes
-   
+
  SIMIX:
  * Protect context stacks against stack overflow. The number of protected memory
    pages allocated on the top of each stack (1 by default) can be configured
@@ -73,12 +74,12 @@ SimGrid (3.11) NOT RELEASED; urgency=low
    - Add callback functions for action state change
    - Handle Energy as a plugin
  * Replace swag by boost::intrusive
- * Add new routing models for clusters 
+ * Add new routing models for clusters
    - tori, with topology="TORUS" and topo_parameters="ndim1,ndim2,...,ndimn"
      parameters for cluster tag
-   - Fat trees, with topology="FAT_TREE" and 
+   - Fat trees, with topology="FAT_TREE" and
      topo_parameters="h;m1,...,mh;w1,...,wh;p1,...,ph" parameters for cluster tag
-   - see examples/platforms/torus_cluster.xml and 
+   - see examples/platforms/torus_cluster.xml and
      examples/platforms/fat_tree_cluster.xml
  * More documentation
 
@@ -88,18 +89,18 @@ SimGrid (3.11) NOT RELEASED; urgency=low
  * Collective communication algorithms should not crash if used with
    improper number of nodes and report the error.
  * SMPI now partially supports MPI_Topologies : MPI_Cart_create, MPI_Cart_shift,
-   MPI_Cart_rank, MPI_Cart_get, MPI_Cart_coords, MPI_Cartdim_get, 
+   MPI_Cart_rank, MPI_Cart_get, MPI_Cart_coords, MPI_Cartdim_get,
    MPI_Dims_create, MPI_Cart_sub are supported.
  * New interface to use SMPI programmatically (still depends on MSG for
    some parts, see examples/smpi/smpi_msg_masterslave) :
-   - SMPI_app_instance_register(const char *name, xbt_main_func_t code, 
+   - SMPI_app_instance_register(const char *name, xbt_main_func_t code,
         int num_processes)
    - SMPI_init()
    - SMPI_finalize();
  * Global variables privatization in MPI executables is now performed at runtime
-   with the option smpi/privatize_global_variables (default:no). 
-   Limitations : Linux/BSD only, with mmap enabled. Global variables inside 
-   dynamic libraries loaded by the application are not privatized (static 
+   with the option smpi/privatize_global_variables (default:no).
+   Limitations : Linux/BSD only, with mmap enabled. Global variables inside
+   dynamic libraries loaded by the application are not privatized (static
    linking with these libraries is advised in this case)
 
  Tracing:
@@ -178,7 +179,8 @@ SimGrid (3.10) stable; urgency=low
  * Add a --cfg:tracing/smpi/internals option, to trace internal communications
    happening inside a collective SMPI call.
  * Fix the behavior of complex data types handling.
- * Make MPI_Wtime another synchronization point to take computations into account.
+ * Make MPI_Wtime another synchronization point to take computations into
+   account.
  * Replace MPICH-1 test suite by the one from MPICH 3.0.4. Can be built using
    enable_smpi_MPICH3_testsuite flag in cmake. Run with ctest.
  * Add all missing Fortran bindings, SMPI should work with Fortran 90
