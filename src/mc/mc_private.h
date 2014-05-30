@@ -148,8 +148,10 @@ void MC_wait_for_requests(void);
 void MC_show_deadlock(smx_simcall_t req);
 void MC_show_stack_safety(xbt_fifo_t stack);
 void MC_dump_stack_safety(xbt_fifo_t stack);
-void MC_init(void);
 int SIMIX_pre_mc_random(smx_simcall_t simcall, int min, int max);
+
+extern xbt_fifo_t mc_stack;
+int get_search_interval(xbt_dynar_t list, void *ref, int *min, int *max);
 
 
 /********************************* Requests ***********************************/
@@ -166,6 +168,8 @@ char *MC_request_get_dot_output(smx_simcall_t req, int value);
 
 
 /******************************** States **************************************/
+
+extern mc_global_t initial_global_state;
 
 /* Possible exploration status of a process in a state */
 typedef enum {
@@ -303,7 +307,7 @@ void print_comparison_times(void);
 //#define MC_DEBUG 1
 #define MC_VERBOSE 1
 
-/********************************** DPOR for safety property **************************************/
+/********************************** Safety verification **************************************/
 
 typedef enum {
   e_mc_reduce_unset,
@@ -312,12 +316,10 @@ typedef enum {
 } e_mc_reduce_t;
 
 extern e_mc_reduce_t mc_reduce_kind;
-extern mc_global_t initial_state_safety;
-extern xbt_fifo_t mc_stack_safety;
 extern xbt_dict_t first_enabled_state;
 
-void MC_dpor_init(void);
-void MC_dpor(void);
+void MC_pre_modelcheck_safety(void);
+void MC_modelcheck_safety(void);
 
 typedef struct s_mc_visited_state{
   mc_snapshot_t system_state;
@@ -327,13 +329,14 @@ typedef struct s_mc_visited_state{
   int other_num; // dot_output for
 }s_mc_visited_state_t, *mc_visited_state_t;
 
+extern xbt_dynar_t visited_states;
+int is_visited_state(void);
+void visited_state_free(mc_visited_state_t state);
+void visited_state_free_voidp(void *s);
 
-/********************************** Double-DFS for liveness property **************************************/
+/********************************** Liveness verification **************************************/
 
-extern xbt_fifo_t mc_stack_liveness;
-extern mc_global_t initial_state_liveness;
 extern xbt_automaton_t _mc_property_automaton;
-extern int compare;
 
 typedef struct s_mc_pair{
   int num;
@@ -363,10 +366,13 @@ void mc_pair_free_voidp(void *p);
 mc_visited_pair_t MC_visited_pair_new(int pair_num, xbt_automaton_state_t automaton_state, xbt_dynar_t atomic_propositions);
 void MC_visited_pair_delete(mc_visited_pair_t p);
 
-void MC_ddfs_init(void);
-void MC_ddfs(void);
+void MC_pre_modelcheck_liveness(void);
+void MC_modelcheck_liveness(void);
 void MC_show_stack_liveness(xbt_fifo_t stack);
 void MC_dump_stack_liveness(xbt_fifo_t stack);
+
+extern xbt_dynar_t visited_pairs;
+int is_visited_pair(mc_visited_pair_t pair, int pair_num, xbt_automaton_state_t automaton_state, xbt_dynar_t atomic_propositions);
 
 
 /********************************** Variables with DWARF **********************************/
@@ -409,6 +415,7 @@ extern size_t mc_object_infos_size;
 
 void MC_find_object_address(memory_map_t maps, mc_object_info_t result);
 void MC_post_process_types(mc_object_info_t info);
+void MC_post_process_object_info(mc_object_info_t info);
 
 // ***** Expressions
 
@@ -578,6 +585,7 @@ extern xbt_dynar_t incomplete_communications_pattern;
 
 void get_comm_pattern(xbt_dynar_t communications_pattern, smx_simcall_t request, int call);
 void complete_comm_pattern(xbt_dynar_t list, smx_action_t comm);
+void MC_pre_modelcheck_comm_determinism(void);
 
 /* *********** Sets *********** */
 
