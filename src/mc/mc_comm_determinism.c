@@ -217,7 +217,58 @@ void complete_comm_pattern(xbt_dynar_t list, smx_action_t comm)
 
 /************************ Main algorithm ************************/
 
-static void MC_modelcheck_comm_determinism(void)
+void MC_pre_modelcheck_comm_determinism(void)
+{
+
+  int mc_mem_set = (mmalloc_get_current_heap() == mc_heap);
+
+  mc_state_t initial_state = NULL;
+  smx_process_t process;
+
+  if (!mc_mem_set)
+    MC_SET_MC_HEAP;
+
+  if (_sg_mc_visited > 0)
+    visited_states =
+        xbt_dynar_new(sizeof(mc_visited_state_t), visited_state_free_voidp);
+
+  initial_communications_pattern =
+      xbt_dynar_new(sizeof(mc_comm_pattern_t), comm_pattern_free_voidp);
+  communications_pattern =
+      xbt_dynar_new(sizeof(mc_comm_pattern_t), comm_pattern_free_voidp);
+  incomplete_communications_pattern = xbt_dynar_new(sizeof(int), NULL);
+  nb_comm_pattern = 0;
+
+  initial_state = MC_state_new();
+
+  MC_SET_STD_HEAP;
+
+  XBT_DEBUG("********* Start communication determinism verification *********");
+
+  /* Wait for requests (schedules processes) */
+  MC_wait_for_requests();
+
+  if (_sg_mc_visited > 0) {
+    MC_ignore_heap(simix_global->process_to_run->data, 0);
+    MC_ignore_heap(simix_global->process_that_ran->data, 0);
+  }
+
+  MC_SET_MC_HEAP;
+
+  /* Get an enabled process and insert it in the interleave set of the initial state */
+  xbt_swag_foreach(process, simix_global->process_list) {
+    if (MC_process_is_enabled(process)) {
+      MC_state_interleave_process(initial_state, process);
+    }
+  }
+
+  xbt_fifo_unshift(mc_stack, initial_state);
+
+  MC_SET_STD_HEAP;
+
+}
+
+void MC_modelcheck_comm_determinism(void)
 {
 
   char *req_str = NULL;
@@ -408,6 +459,8 @@ static void MC_modelcheck_comm_determinism(void)
         return;
       }
 
+      MC_SET_MC_HEAP;
+
       while ((state = xbt_fifo_shift(mc_stack)) != NULL) {
         if (MC_state_interleave_size(state)
             && xbt_fifo_size(mc_stack) < _sg_mc_max_depth) {
@@ -437,57 +490,4 @@ static void MC_modelcheck_comm_determinism(void)
   MC_SET_STD_HEAP;
 
   return;
-}
-
-void MC_pre_modelcheck_comm_determinism(void)
-{
-
-  int mc_mem_set = (mmalloc_get_current_heap() == mc_heap);
-
-  mc_state_t initial_state = NULL;
-  smx_process_t process;
-
-  if (!mc_mem_set)
-    MC_SET_MC_HEAP;
-
-  if (_sg_mc_visited > 0)
-    visited_states =
-        xbt_dynar_new(sizeof(mc_visited_state_t), visited_state_free_voidp);
-
-  initial_communications_pattern =
-      xbt_dynar_new(sizeof(mc_comm_pattern_t), comm_pattern_free_voidp);
-  communications_pattern =
-      xbt_dynar_new(sizeof(mc_comm_pattern_t), comm_pattern_free_voidp);
-  incomplete_communications_pattern = xbt_dynar_new(sizeof(int), NULL);
-  nb_comm_pattern = 0;
-
-  initial_state = MC_state_new();
-
-  MC_SET_STD_HEAP;
-
-  XBT_DEBUG("********* Start communication determinism verification *********");
-
-  /* Wait for requests (schedules processes) */
-  MC_wait_for_requests();
-
-  if (_sg_mc_visited > 0) {
-    MC_ignore_heap(simix_global->process_to_run->data, 0);
-    MC_ignore_heap(simix_global->process_that_ran->data, 0);
-  }
-
-  MC_SET_MC_HEAP;
-
-  /* Get an enabled process and insert it in the interleave set of the initial state */
-  xbt_swag_foreach(process, simix_global->process_list) {
-    if (MC_process_is_enabled(process)) {
-      MC_state_interleave_process(initial_state, process);
-    }
-  }
-
-  xbt_fifo_unshift(mc_stack, initial_state);
-
-  MC_SET_STD_HEAP;
-
-  MC_modelcheck_comm_determinism();
-
 }

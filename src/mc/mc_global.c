@@ -316,16 +316,22 @@ static void MC_modelcheck_comm_determinism_init(void)
   /* Create exploration stack */
   mc_stack = xbt_fifo_new();
 
+  MC_SET_STD_HEAP;
+
+  MC_pre_modelcheck_comm_determinism();
+
+  MC_SET_MC_HEAP;
   initial_global_state = xbt_new0(s_mc_global_t, 1);
   initial_global_state->snapshot = MC_take_snapshot(0);
   initial_global_state->initial_communications_pattern_done = 0;
   initial_global_state->comm_deterministic = 1;
   initial_global_state->send_deterministic = 1;
+  MC_SET_STD_HEAP;
 
-  if (!mc_mem_set)
-    MC_SET_STD_HEAP;
+  MC_modelcheck_comm_determinism();
 
-  MC_pre_modelcheck_comm_determinism();
+  if(mc_mem_set)
+    MC_SET_MC_HEAP;
 
 }
 

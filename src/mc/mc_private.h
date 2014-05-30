@@ -586,6 +586,7 @@ extern xbt_dynar_t incomplete_communications_pattern;
 void get_comm_pattern(xbt_dynar_t communications_pattern, smx_simcall_t request, int call);
 void complete_comm_pattern(xbt_dynar_t list, smx_action_t comm);
 void MC_pre_modelcheck_comm_determinism(void);
+void MC_modelcheck_comm_determinism(void);
 
 /* *********** Sets *********** */
 
