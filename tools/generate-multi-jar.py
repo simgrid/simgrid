@@ -36,16 +36,16 @@ class SimJar(object):
       	if len(path)==3 and path[0] == 'NATIVE':
       	  platform, arch = path[1:3]
       	elif z.filename=='META-INF/MANIFEST.MF':
-          zf.read('META-INF/MANIFEST.MF')      
+          zf.read('META-INF/MANIFEST.MF')
           git_version = re.findall(r"Implementation-Version: \"(.*?)\"", zf.read('META-INF/MANIFEST.MF'))
-      
-      assert platform is not None and git_version is not None, "Jar file not valid"
+
+      assert platform is not None and git_version is not None, "Jar file not valid (%s, %s)"%(platform, git_version)
       print "Adding: %s %s"%(platform, arch)
       if self.git_version is None:
       	self.git_version = git_version
       elif self.git_version != git_version:
       	print "WARNING: Assembling jar of various commits (%s vs %s)"%(self.git_version, git_version)
-      
+
       for info in zf.infolist():
         if info.filename not in self.done:
           self.done.add(info.filename)
