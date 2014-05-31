@@ -51,6 +51,7 @@ set(CMAKE_Fortran_LINK_FLAGS "" CACHE TYPE INTERNAL FORCE)
 # 3.9.90 -> release 3.10pre1
 # 3.10.0 -> release 3.10
 # 3.11.0 -> release 3.11
+# 3.12.0 -> release 3.12
 
 set(SIMGRID_VERSION_MAJOR "3")
 set(SIMGRID_VERSION_MINOR "12")
