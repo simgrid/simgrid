@@ -132,7 +132,7 @@ SimGrid (3.11) stable; urgency=low
    - void XBT_barrier_destroy(xbt_bar_t barrier)
  * Make the xbt_os_time module public
 
- -- $date Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
+ -- Sat May 31 22:39:38 CEST 2014 Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
 
 SimGrid (3.10) stable; urgency=low
 
