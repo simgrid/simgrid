@@ -156,7 +156,7 @@ static void recursiveGraphExtraction (AS_t rc, container_t container, xbt_dict_t
     }
     xbt_dict_free (&nodes);
     xbt_dict_free (&edges);
-    xbt_graph_free_graph(graph,xbt_free, xbt_free, NULL);
+    xbt_graph_free_graph(graph, xbt_free_f, xbt_free_f, NULL);
   }
 }
 
@@ -326,7 +326,7 @@ static void instr_routing_parse_end_platform ()
 {
   xbt_dynar_free(&currentContainer);
   currentContainer = NULL;
-  xbt_dict_t filter = xbt_dict_new_homogeneous(xbt_free);
+  xbt_dict_t filter = xbt_dict_new_homogeneous(xbt_free_f);
   XBT_DEBUG ("Starting graph extraction.");
   recursiveGraphExtraction (surf_platf_get_root(routing_platf), PJ_container_get_root(), filter);
   XBT_DEBUG ("Graph extraction finished.");

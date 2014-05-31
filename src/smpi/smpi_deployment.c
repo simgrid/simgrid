@@ -49,7 +49,7 @@ void SMPI_app_instance_register(const char *name, xbt_main_func_t code, int num_
   process_count+=num_processes;
 
   if(!smpi_instances){
-      smpi_instances=xbt_dict_new_homogeneous(xbt_free);
+    smpi_instances = xbt_dict_new_homogeneous(xbt_free_f);
   }
 
   xbt_dict_set(smpi_instances, name, (void*)instance, NULL);

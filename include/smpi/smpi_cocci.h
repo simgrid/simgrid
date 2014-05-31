@@ -56,7 +56,7 @@ XBT_PUBLIC(void) smpi_free_static(void);
 static type *name = NULL;                                   \
 if(!name) {                                                 \
    name = (type*)calloc(smpi_global_size(), sizeof(type));  \
-   smpi_register_static(name, xbt_free);                    \
+   smpi_register_static(name, xbt_free_f);                  \
 }
 
 #define SMPI_VARINIT_STATIC_AND_SET(name,type,expr) \
@@ -69,7 +69,7 @@ if(!name) {                                         \
    for(i = 0; i < size; i++) {                      \
       name[i] = value;                              \
    }                                                \
-   smpi_register_static(name, xbt_free);            \
+   smpi_register_static(name, xbt_free_f);          \
 }
 
 #define SMPI_VARGET_STATIC(name) name[smpi_process_index()]

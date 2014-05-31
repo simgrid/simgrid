@@ -141,7 +141,7 @@ void *xbt_realloc(void *p, size_t s)
 
 /** @brief like free
     @hideinitializer */
-#define xbt_free free           /*nothing specific to do here. A poor valgrind replacement? */
+#define xbt_free(p) free(p) /*nothing specific to do here. A poor valgrind replacement? */
 
 /** @brief like free, but you can be sure that it is a function  */
 XBT_PUBLIC(void) xbt_free_f(void *p);

@@ -27,8 +27,8 @@ long long int instr_new_paje_id (void)
 void PJ_container_alloc (void)
 {
   allContainers = xbt_dict_new_homogeneous(NULL);
-  trivaNodeTypes = xbt_dict_new_homogeneous(xbt_free);
-  trivaEdgeTypes = xbt_dict_new_homogeneous(xbt_free);
+  trivaNodeTypes = xbt_dict_new_homogeneous(xbt_free_f);
+  trivaEdgeTypes = xbt_dict_new_homogeneous(xbt_free_f);
 }
 
 void PJ_container_release (void)

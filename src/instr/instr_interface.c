@@ -398,7 +398,7 @@ int TRACE_platform_graph_export_graphviz (const char *filename)
   xbt_graph_t g = instr_routing_platform_graph();
   if (g == NULL) return 0;
   instr_routing_platform_graph_export_graphviz (g, filename);
-  xbt_graph_free_graph (g, xbt_free, xbt_free, NULL);
+  xbt_graph_free_graph(g, xbt_free_f, xbt_free_f, NULL);
   return 1;
 }
 

@@ -245,7 +245,7 @@ Java_org_simgrid_msg_Host_setProperty(JNIEnv *env, jobject jhost, jobject jname,
   const char *value_java = (*env)->GetStringUTFChars(env, jvalue, 0);
   char *value = strdup(value_java);
 
-  MSG_host_set_property_value(host,name,value,xbt_free);
+  MSG_host_set_property_value(host, name, value, xbt_free_f);
 
   (*env)->ReleaseStringUTFChars(env, jvalue, value);
   (*env)->ReleaseStringUTFChars(env, jname, name);

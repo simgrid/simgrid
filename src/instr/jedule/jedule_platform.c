@@ -93,7 +93,7 @@ void jed_simgrid_add_resources(jed_simgrid_container_t parent,
   parent->is_lowest = 1;
   xbt_dynar_free(&parent->container_children);
   parent->container_children = NULL;
-  parent->name2id = xbt_dict_new_homogeneous(xbt_free);
+  parent->name2id = xbt_dict_new_homogeneous(xbt_free_f);
   parent->last_id = 0;
   parent->resource_list = xbt_dynar_new(sizeof(char *), NULL);
 

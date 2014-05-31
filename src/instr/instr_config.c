@@ -133,11 +133,11 @@ int TRACE_start()
     XBT_DEBUG("Tracing is on");
 
     /* other trace initialization */
-    created_categories = xbt_dict_new_homogeneous(xbt_free);
-    declared_marks = xbt_dict_new_homogeneous(xbt_free);
-    user_host_variables = xbt_dict_new_homogeneous(xbt_free);
-    user_vm_variables = xbt_dict_new_homogeneous (xbt_free);
-    user_link_variables = xbt_dict_new_homogeneous(xbt_free);
+    created_categories = xbt_dict_new_homogeneous(xbt_free_f);
+    declared_marks = xbt_dict_new_homogeneous(xbt_free_f);
+    user_host_variables = xbt_dict_new_homogeneous(xbt_free_f);
+    user_vm_variables = xbt_dict_new_homogeneous(xbt_free_f);
+    user_link_variables = xbt_dict_new_homogeneous(xbt_free_f);
 
     if (TRACE_start_functions != NULL) {
       void (*func) ();

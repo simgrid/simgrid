@@ -176,7 +176,7 @@ void AsDijkstra::addLoopback() {
 
 xbt_dynar_t AsDijkstra::getOnelinkRoutes()
 {
-  xbt_dynar_t ret = xbt_dynar_new(sizeof(OnelinkPtr), xbt_free);
+  xbt_dynar_t ret = xbt_dynar_new(sizeof(OnelinkPtr), xbt_free_f);
   sg_platf_route_cbarg_t route = xbt_new0(s_sg_platf_route_cbarg_t,1);
   route->link_list = xbt_dynar_new(sizeof(sg_routing_link_t),NULL);
 
@@ -278,7 +278,7 @@ void AsDijkstra::getRouteAndLatency(RoutingEdgePtr src, RoutingEdgePtr dst, sg_p
     int nr_nodes = xbt_dynar_length(nodes);
     cost_arr = xbt_new0(double, nr_nodes);      /* link cost from src to other hosts */
     pred_arr = xbt_new0(int, nr_nodes); /* predecessors in path from src */
-    pqueue = xbt_heap_new(nr_nodes, xbt_free);
+    pqueue = xbt_heap_new(nr_nodes, xbt_free_f);
 
     /* initialize */
     cost_arr[src_node_id] = 0.0;
@@ -398,8 +398,8 @@ void AsDijkstra::getRouteAndLatency(RoutingEdgePtr src, RoutingEdgePtr dst, sg_p
 
 AsDijkstra::~AsDijkstra()
 {
-  xbt_graph_free_graph(p_routeGraph, &xbt_free,
-      &graph_edge_data_free, &xbt_free);
+  xbt_graph_free_graph(p_routeGraph, &xbt_free_f,
+      &graph_edge_data_free, &xbt_free_f);
   xbt_dict_free(&p_graphNodeMap);
   if (m_cached)
     xbt_dict_free(&p_routeCache);

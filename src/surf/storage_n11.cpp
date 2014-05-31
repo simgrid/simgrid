@@ -195,7 +195,7 @@ static void storage_define_callbacks()
 
 void storage_register_callbacks() {
 
-  ROUTING_STORAGE_LEVEL = xbt_lib_add_level(storage_lib,xbt_free);
+  ROUTING_STORAGE_LEVEL = xbt_lib_add_level(storage_lib, xbt_free_f);
   ROUTING_STORAGE_HOST_LEVEL = xbt_lib_add_level(storage_lib, routing_storage_host_free);
   ROUTING_STORAGE_TYPE_LEVEL = xbt_lib_add_level(storage_type_lib, routing_storage_type_free);
   SURF_STORAGE_LEVEL = xbt_lib_add_level(storage_lib, surf_storage_resource_free);

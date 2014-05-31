@@ -17,7 +17,7 @@ xbt_lib_t xbt_lib_new(void)
 {
   xbt_lib_t lib;
   lib = xbt_new(s_xbt_lib_t, 1);
-  lib->dict = xbt_dict_new_homogeneous(xbt_free);
+  lib->dict = xbt_dict_new_homogeneous(xbt_free_f);
   lib->levels = 0;
   lib->free_f = NULL;
   return lib;

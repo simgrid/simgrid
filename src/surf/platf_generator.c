@@ -447,7 +447,7 @@ void platf_graph_clear_links(void) {
   }
   //Delete edges from the graph
   xbt_dynar_foreach(dynar_edges_cpy, i, graph_edge) {
-    xbt_graph_free_edge(platform_graph, graph_edge, xbt_free);
+    xbt_graph_free_edge(platform_graph, graph_edge, xbt_free_f);
   }
   //remove the dynar copy
   xbt_dynar_free(&dynar_edges_cpy);

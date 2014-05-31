@@ -96,7 +96,7 @@ xbt_dict_t Storage::parseContent(char *filename)
   if ((!filename) || (strcmp(filename, "") == 0))
     return NULL;
 
-  xbt_dict_t parse_content = xbt_dict_new_homogeneous(xbt_free);
+  xbt_dict_t parse_content = xbt_dict_new_homogeneous(xbt_free_f);
   FILE *file = NULL;
 
   file = surf_fopen(filename, "r");

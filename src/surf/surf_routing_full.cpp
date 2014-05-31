@@ -71,7 +71,7 @@ AsFull::~AsFull(){
 
 xbt_dynar_t AsFull::getOneLinkRoutes()
 {
-  xbt_dynar_t ret = xbt_dynar_new(sizeof(OnelinkPtr), xbt_free);
+  xbt_dynar_t ret = xbt_dynar_new(sizeof(OnelinkPtr), xbt_free_f);
 
   int src, dst;
   int table_size = xbt_dynar_length(p_indexNetworkElm);

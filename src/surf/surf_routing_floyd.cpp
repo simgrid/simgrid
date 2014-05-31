@@ -48,7 +48,7 @@ AsFloyd::~AsFloyd(){
 /* Business methods */
 xbt_dynar_t AsFloyd::getOneLinkRoutes()
 {
-  xbt_dynar_t ret = xbt_dynar_new(sizeof(OnelinkPtr), xbt_free);
+  xbt_dynar_t ret = xbt_dynar_new(sizeof(OnelinkPtr), xbt_free_f);
   sg_platf_route_cbarg_t route =   xbt_new0(s_sg_platf_route_cbarg_t, 1);
   route->link_list = xbt_dynar_new(sizeof(sg_routing_link_t), NULL);
 

@@ -634,7 +634,7 @@ xbt_dynar_t RoutingPlatf::getOneLinkRoutes(){
 
 xbt_dynar_t RoutingPlatf::recursiveGetOneLinkRoutes(AsPtr rc)
 {
-  xbt_dynar_t ret = xbt_dynar_new(sizeof(OnelinkPtr), xbt_free);
+  xbt_dynar_t ret = xbt_dynar_new(sizeof(OnelinkPtr), xbt_free_f);
 
   //adding my one link routes
   xbt_dynar_t onelink_mine = rc->getOneLinkRoutes();

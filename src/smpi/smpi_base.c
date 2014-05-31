@@ -410,7 +410,7 @@ void smpi_mpi_start(MPI_Request request)
       simcall_comm_isend(mailbox, request->size, -1.0,
                          buf, request->real_size,
                          &match_send,
-                         &xbt_free, // how to free the userdata if a detached send fails
+                         &xbt_free_f, // how to free the userdata if a detached send fails
                          &smpi_comm_copy_buffer_callback,
                          request,
                          // detach if msg size < eager/rdv switch limit
