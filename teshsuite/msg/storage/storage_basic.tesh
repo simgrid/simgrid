@@ -61,3 +61,6 @@ $ ./storage_basic$EXEEXT --cfg=path:${srcdir:=.} ${srcdir:=.}/platform.xml ${src
 > [  3.208145] (1:server@server) Storage sdisk1 is attached to server
 > [  3.208145] (1:server@server) Storage sdisk2 is attached to server
 > [  3.208145] (0:@) Simulated time: 3.20814
+
+$ ./concurrent_rw$EXEEXT --cfg=path:${srcdir:=.} ${srcdir:=.}/one_host_platform.xml 0 "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+
