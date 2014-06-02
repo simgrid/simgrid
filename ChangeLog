@@ -74,7 +74,8 @@ SimGrid (3.11) stable; urgency=low
    - Add callback functions for action state change
    - Handle Energy as a plugin
  * Replace swag by boost::intrusive
- * Add new routing models for clusters
+ * Add new routing models for clusters. For documentation, see
+   http://simgrid.gforge.inria.fr/simgrid/latest/doc/platform.html#pf_cluster
    - tori, with topology="TORUS" and topo_parameters="ndim1,ndim2,...,ndimn"
      parameters for cluster tag
    - Fat trees, with topology="FAT_TREE" and
