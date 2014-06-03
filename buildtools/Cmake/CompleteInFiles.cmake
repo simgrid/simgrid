@@ -104,7 +104,12 @@ if(enable_ns3)
   include(FindNS3)
 endif()
 
-find_package(Boost REQUIRED)
+# algorithm 1.50.0
+# function 1.23.0
+# intrusive 1.35.0
+# lambda 1.28.0
+# signals2 1.39.0
+find_package(Boost 1.50 REQUIRED)
 if(Boost_FOUND)
   include_directories(${Boost_INCLUDE_DIRS})
 else()
