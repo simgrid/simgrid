@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 2.8.6)
 
 include(UseJava)
+find_path(JAVADOC_PATH  NAMES javadoc   PATHS NO_DEFAULT_PATHS)
 
 # Rules to build libsimgrid-java
 #
