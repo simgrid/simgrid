@@ -29,7 +29,7 @@ int receiver(int argc, char *argv[]);
 msg_error_t test_all(const char *platform_file,
                      const char *application_file);
 
-double task_comm_size_lat = 1;
+double task_comm_size_lat = 10;
 double task_comm_size_bw = 10e8;
 
 /** Emitter function  */
