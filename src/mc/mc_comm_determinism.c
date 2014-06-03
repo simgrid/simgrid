@@ -393,7 +393,7 @@ void MC_modelcheck_comm_determinism(void)
       if (xbt_fifo_size(mc_stack) > _sg_mc_max_depth) {
         XBT_WARN("/!\\ Max depth reached ! /!\\ ");
       } else if (visited_state != -1) {
-        XBT_DEBUG("State already visited, stop the exploration");
+        XBT_DEBUG("State already visited, exploration stopped on this path.");
       } else {
         XBT_DEBUG("There are no more processes to interleave. (depth %d)",
                   xbt_fifo_size(mc_stack) + 1);
