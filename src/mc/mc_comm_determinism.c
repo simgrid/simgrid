@@ -415,6 +415,7 @@ void MC_modelcheck_comm_determinism(void)
             XBT_INFO("Communications pattern counter-example:");
             print_communications_pattern(communications_pattern);
             MC_print_statistics(mc_stats);
+            MC_SET_STD_HEAP;
             return;
           } else if (initial_global_state->send_deterministic == 0
                      && _sg_mc_send_determinism) {
@@ -429,6 +430,7 @@ void MC_modelcheck_comm_determinism(void)
             XBT_INFO("Communications pattern counter-example:");
             print_communications_pattern(communications_pattern);
             MC_print_statistics(mc_stats);
+            MC_SET_STD_HEAP;
             return;
           }
         } else {
