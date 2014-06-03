@@ -216,9 +216,6 @@ void MC_pre_modelcheck_liveness(void)
 
   MC_wait_for_requests();
 
-  MC_ignore_heap(simix_global->process_to_run->data, 0);
-  MC_ignore_heap(simix_global->process_that_ran->data, 0);
-
   MC_SET_MC_HEAP;
 
   acceptance_pairs = xbt_dynar_new(sizeof(mc_visited_pair_t), NULL);

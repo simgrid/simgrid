@@ -248,11 +248,6 @@ void MC_pre_modelcheck_comm_determinism(void)
   /* Wait for requests (schedules processes) */
   MC_wait_for_requests();
 
-  if (_sg_mc_visited > 0) {
-    MC_ignore_heap(simix_global->process_to_run->data, 0);
-    MC_ignore_heap(simix_global->process_that_ran->data, 0);
-  }
-
   MC_SET_MC_HEAP;
 
   /* Get an enabled process and insert it in the interleave set of the initial state */

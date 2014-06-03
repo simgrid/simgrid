@@ -278,14 +278,6 @@ void MC_init()
     MC_ignore_global_variable("maestro_stack_end");
     MC_ignore_global_variable("smx_total_comms");
 
-    MC_ignore_heap(&(simix_global->process_to_run),
-                   sizeof(simix_global->process_to_run));
-    MC_ignore_heap(&(simix_global->process_that_ran),
-                   sizeof(simix_global->process_that_ran));
-    MC_ignore_heap(simix_global->process_to_run,
-                   sizeof(*(simix_global->process_to_run)));
-    MC_ignore_heap(simix_global->process_that_ran,
-                   sizeof(*(simix_global->process_that_ran)));
     MC_ignore_heap(mc_time, simix_process_maxpid * sizeof(double));
 
     smx_process_t process;
