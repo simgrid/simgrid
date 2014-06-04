@@ -320,7 +320,7 @@ make install 			Install the project (doc/ bin/ lib/ include/)
 make uninstall			Uninstall the project (doc/ bin/ lib/ include/)
 make dist			Cuild a distribution archive (tgz)
 make distcheck			Check the dist (make + make dist + tests on the distribution)
-make simgrid_documentation	Create simgrid documentation
+make doc			Create simgrid documentation
 @endverbatim
 
 If you want to see what is really happening, try adding VERBOSE=1 to

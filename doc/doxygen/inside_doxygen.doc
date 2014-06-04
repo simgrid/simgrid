@@ -181,7 +181,7 @@ complete your day.
 
 If you need to run a command (like fig2dev) to generate your image,
 edit buildtools/Cmake/GenerateDoc.cmake and add your command to the
-simgrid_documentation target (grep for fig2dev in the file to see
+doc target (grep for fig2dev in the file to see
 where exactly). Don't forget to add the source of your image to the
 archive somehow. You can add it to the list DOC_FIG of
 buildtools/Cmake/DefinePackage.cmake.
@@ -210,7 +210,7 @@ Once you've changed the doc, you want to run doxygen to regenerate the
 html output (and maybe the pdf too). Here is how to do this:
 
 @verbatim
-make simgrid_documentation # html documentation
+make doc # html documentation
 make pdf # the result is in doc/latex/simgrid_documentation.pdf
 @endverbatim
 
