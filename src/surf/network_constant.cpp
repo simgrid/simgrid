@@ -37,12 +37,8 @@ double NetworkConstantModel::shareResources(double /*now*/)
   for(ActionList::iterator it(actionSet->begin()), itend(actionSet->end())
 	 ; it != itend ; ++it) {
 	action = static_cast<NetworkConstantActionPtr>(&*it);
-    if (action->m_latency > 0) {
-      if (min < 0)
-        min = action->m_latency;
-      else if (action->m_latency < min)
-        min = action->m_latency;
-    }
+        if (action->m_latency > 0 && (min < 0 || action->m_latency < min))
+            min = action->m_latency;
   }
 
   return min;
