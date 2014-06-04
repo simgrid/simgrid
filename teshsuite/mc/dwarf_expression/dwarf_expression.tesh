@@ -1,4 +1,3 @@
 #! ./tesh
 
 $ $SG_TEST_EXENV ${bindir:=.}/dwarf-expression
->
