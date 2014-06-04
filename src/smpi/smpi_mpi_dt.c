@@ -157,7 +157,9 @@ int smpi_datatype_copy(void *sendbuf, int sendcount, MPI_Datatype sendtype,
                        void *recvbuf, int recvcount, MPI_Datatype recvtype)
 {
   int count;
-
+  if(smpi_privatize_global_variables){
+    switch_data_segment(smpi_process_index());
+  }
   /* First check if we really have something to do */
   if (recvcount > 0 && recvbuf != sendbuf) {
     /* FIXME: treat packed cases */
