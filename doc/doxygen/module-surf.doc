@@ -23,7 +23,7 @@
     \ingroup SURF_API
     \brief Functions for creating the environment and launching the simulation
 
-    This section describes the functions for initialising SURF, performing
+    This section describes the functions for initializing SURF, performing
     the simulation and exiting SURF.
 */
 
@@ -31,14 +31,14 @@
     \ingroup SURF_API
     \brief How to build a new API on top of SURF
 
-    SURF provides the functionnalities to simulate the platform. There are two main datatypes in SURF:
+    SURF provides the functionalities to simulate the platform. There are two main data types in SURF:
     the actions and the resources. Several types of resources exist:
 	- the workstation resource,
 	- the network resource,
 	- the CPU resource,
 	- the timer resource.
 
-    The implentation of these resources depends on the platform model you choose. There are several
+    The implementation of these resources depends on the platform model you choose. There are several
     platform models. You can select your model by calling surf_workstation_resource_init_CLM03()
     or surf_workstation_resource_init_KCCFLN05(). See the documentation of these functions to have
     more details about the models. Remember that the model KCCFLN05 is an implementation of both the
@@ -77,7 +77,7 @@
 
     Have a look at the implementation of \ref MSG_API "MSG" and \ref SD_API "Simdag" to see how these module
     interact with SURF. But if you want to create a new API on top of SURF,
-    we strongly recommand you to contact us before anyway.
+    we strongly recommend you to contact us before anyway.
 
 */
 

@@ -106,11 +106,11 @@ public:
    *
    * @param name The name of the NetworkLink
    * @param bw_initial The initial bandwidth of the NetworkLink in bytes per second
-   * @param bw_trace The trace associated to the NetworkLink bandwidth [TODO]
+   * @param bw_trace The trace associated to the NetworkLink bandwidth
    * @param lat_initial The initial latency of the NetworkLink in seconds
-   * @param lat_trace The trace associated to the NetworkLink latency [TODO]
+   * @param lat_trace The trace associated to the NetworkLink latency
    * @param state_initial The initial NetworkLink (state)[e_surf_resource_state_t]
-   * @param state_trace The trace associated to the NetworkLink (state)[e_surf_resource_state_t] [TODO]
+   * @param state_trace The trace associated to the NetworkLink (state)[e_surf_resource_state_t]
    * @param policy The sharing policy of the NetworkLink
    * @param properties Dictionary of properties associated to this Resource
    * @return The created NetworkLink
@@ -128,13 +128,15 @@ public:
   virtual void gapAppend(double /*size*/, const NetworkLinkPtr /*link*/, NetworkActionPtr /*action*/) {};
 
   /**
-   * @brief Create a communication between two [TODO]
-   * @details [TODO]
+   * @brief Create a communication between two workstations.
+   * @details It makes calls to the routing part, and execute the communication
+   * between the two end points.
    *
-   * @param src The source [TODO]
-   * @param dst The destination [TODO]
+   * @param src The source of the communication
+   * @param dst The destination of the communication
    * @param size The size of the communication in bytes
-   * @param rate The
+   * @param rate Allows to limit the transfer rate. Negative value means
+   * unlimited.
    * @return The action representing the communication
    */
   virtual ActionPtr communicate(RoutingEdgePtr src, RoutingEdgePtr dst,
@@ -148,31 +150,35 @@ public:
   void (*f_networkSolve)(lmm_system_t);
 
   /**
-   * @brief [brief description]
-   * @details [long description]
+   * @brief Gets the right multiplicative factor for the latency.
+   * @details According to the model, the effective latency when sending
+   * a message might be different from the theoretical latency in function
+   * of its size. In order to account for this, this function get this factor.
    *
-   * @param size [description]
-   * @return [description]
+   * @param size The size of the message.
+   * @return The latency factor.
    */
   virtual double latencyFactor(double size);
 
   /**
-   * @brief [brief description]
-   * @details [long description]
+   * @brief Gets the right multiplicative factor for the bandwidth.
+   * @details According to the model, the effective bandwidth when sending
+   * a message might be different from the theoretical bandwidth in function
+   * of its size. In order to account for this, this function get this factor.
    *
-   * @param size [description]
-   * @return [description]
+   * @param size The size of the message.
+   * @return The bandwidth factor.
    */
   virtual double bandwidthFactor(double size);
 
   /**
-   * @brief [brief description]
-   * @details [long description]
-   *
-   * @param rate [description]
-   * @param bound [description]
-   * @param size [description]
-   * @return [description]
+   * @brief Gets definitive bandwidth.
+   * @details It gives the minimum bandwidth between the one that would
+   * occur if no limitation was enforced, and the maximum wanted bandwidth
+   * @param rate The desired maximum bandwidth.
+   * @param bound The bandwidth with only the network taken into account.
+   * @param size The size of the message.
+   * @return The new bandwidth.
    */
   virtual double bandwidthConstraint(double rate, double bound, double size);
   bool m_haveGap;
