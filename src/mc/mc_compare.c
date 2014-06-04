@@ -461,10 +461,17 @@ int snapshot_compare(void *state1, void *state2)
     }
   }
 
+  /* Compare enabled processes */
+  unsigned int cursor;
+  int pid;
+  xbt_dynar_foreach(s1->enabled_processes, cursor, pid){
+    if(!xbt_dynar_member(s2->enabled_processes, &pid))
+      XBT_VERB("(%d - %d) Different enabled processes", num1, num2);
+  }
+
   int i = 0;
   size_t size_used1, size_used2;
   int is_diff = 0;
-
 
   /* Compare size of stacks */
   while (i < xbt_dynar_length(s1->stacks)) {
@@ -531,7 +538,7 @@ int snapshot_compare(void *state1, void *state2)
 #endif
 
   /* Stacks comparison */
-  unsigned int cursor = 0;
+  cursor = 0;
   int diff_local = 0;
 #ifdef MC_DEBUG
   is_diff = 0;

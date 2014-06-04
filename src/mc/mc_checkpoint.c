@@ -74,7 +74,7 @@ void MC_free_snapshot(mc_snapshot_t snapshot)
   xbt_dynar_free(&(snapshot->to_ignore));
 
   if (snapshot->privatization_regions) {
-    size_t n = snapshot->nb_processes;
+    size_t n = xbt_dynar_length(snapshot->enabled_processes);
     for (i = 0; i != n; ++i) {
       MC_region_destroy(snapshot->privatization_regions[i]);
     }
@@ -538,7 +538,11 @@ mc_snapshot_t MC_take_snapshot(int num_state)
 {
 
   mc_snapshot_t snapshot = xbt_new0(s_mc_snapshot_t, 1);
-  snapshot->nb_processes = xbt_swag_size(simix_global->process_list);
+  snapshot->enabled_processes = xbt_dynar_new(sizeof(int), NULL);
+  smx_process_t process;
+  xbt_swag_foreach(process, simix_global->process_list) {
+    xbt_dynar_push_as(snapshot->enabled_processes, int, (int)process->pid); 
+  }
 
   /* Save the std heap and the writable mapped pages of libsimgrid and binary */
   MC_get_memory_regions(snapshot);

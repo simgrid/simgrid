@@ -48,7 +48,7 @@ typedef struct s_mc_mem_region{
 typedef struct s_mc_snapshot{
   size_t heap_bytes_used;
   mc_mem_region_t regions[NB_REGIONS];
-  int nb_processes;
+  xbt_dynar_t enabled_processes;
   mc_mem_region_t* privatization_regions;
   int privatization_index;
   size_t *stack_sizes;
