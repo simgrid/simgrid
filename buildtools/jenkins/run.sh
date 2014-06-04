@@ -22,11 +22,11 @@ cd $WORKSPACE/build
 export PATH=./lib/:../../lib:$PATH
 
 if test "$(uname -o)" = "Msys"
-then 
+then
     #$NUMBER_OF_PROCESSORS should be already set on win
     if [ -z "$NUMBER_OF_PROCESSORS" ]; then
         NUMBER_OF_PROCESSORS=1
-    fi  
+    fi
 
     cmake -G "MSYS Makefiles" $WORKSPACE || die 1 "Failed to do the first cmake - Halting"
 
@@ -57,17 +57,17 @@ else
 
     if [ "$build_mode" = "Debug" ]
     then
-    cmake -Denable_coverage=OFF -Denable_java=ON -Denable_model-checking=OFF -Denable_lua=ON -Denable_compile_optimizations=ON  -Denable_smpi=ON -Denable_smpi_MPICH3_testsuite=ON -Denable_compile_warnings=ON .
+    cmake -Denable_documentation=OFF -Denable_coverage=OFF -Denable_java=ON -Denable_model-checking=OFF -Denable_lua=ON -Denable_compile_optimizations=ON  -Denable_smpi=ON -Denable_smpi_MPICH3_testsuite=ON -Denable_compile_warnings=ON .
     fi
 
     if [ "$build_mode" = "ModelChecker" ]
     then
-    cmake -Denable_coverage=OFF -Denable_java=ON -Denable_smpi=ON -Denable_model-checking=ON -Denable_lua=ON -Denable_compile_optimizations=OFF -Denable_compile_warnings=ON .
+    cmake -Denable_documentation=OFF -Denable_coverage=OFF -Denable_java=ON -Denable_smpi=ON -Denable_model-checking=ON -Denable_lua=ON -Denable_compile_optimizations=OFF -Denable_compile_warnings=ON .
     fi
 
     if [ "$build_mode" = "DynamicAnalysis" ]
     then
-    cmake -Denable_lua=OFF -Denable_java=ON -Denable_tracing=ON -Denable_smpi=ON -Denable_compile_optimizations=OFF -Denable_compile_warnings=ON -Denable_lib_static=OFF -Denable_model-checking=OFF -Denable_latency_bound_tracking=OFF -Denable_gtnets=OFF -Denable_jedule=OFF -Denable_mallocators=OFF -Denable_memcheck=ON .
+    cmake -Denable_documentation=OFF -Denable_lua=OFF -Denable_java=ON -Denable_tracing=ON -Denable_smpi=ON -Denable_compile_optimizations=OFF -Denable_compile_warnings=ON -Denable_lib_static=OFF -Denable_model-checking=OFF -Denable_latency_bound_tracking=OFF -Denable_gtnets=OFF -Denable_jedule=OFF -Denable_mallocators=OFF -Denable_memcheck=ON .
     fi
 
     [ $? -eq 0 ] || die 5 "Failed to perform the Cmake for $build_mode - Halting"

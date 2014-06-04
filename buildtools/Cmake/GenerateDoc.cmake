@@ -1,13 +1,19 @@
 #### Generate the whole html documentation
 
-find_path(DOXYGEN_PATH  NAMES doxygen  PATHS NO_DEFAULT_PATHS)
+if (enable_documentation)
+  find_package(Doxygen REQUIRED)
+  set(DocAll "ALL")
+else()
+  find_package(Doxygen)
+endif()
+
 find_path(JAVADOC_PATH  NAMES javadoc   PATHS NO_DEFAULT_PATHS)
 find_path(FIG2DEV_PATH  NAMES fig2dev  PATHS NO_DEFAULT_PATHS)
 mark_as_advanced(JAVADOC_PATH)
 
-if(DOXYGEN_PATH)
+if(DOXYGEN_FOUND)
 
-  ADD_CUSTOM_TARGET(doc
+  ADD_CUSTOM_TARGET(doc ${DocAll}
     COMMENT "Generating the SimGrid documentation..."
     DEPENDS ${DOC_SOURCES} ${DOC_FIGS} ${source_doxygen}
     COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_HOME_DIRECTORY}/doc/html
@@ -15,7 +21,6 @@ if(DOXYGEN_PATH)
     WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY}/doc
     )
 
-  execute_process(COMMAND ${DOXYGEN_PATH}/doxygen --version OUTPUT_VARIABLE DOXYGEN_VERSION )
   message(STATUS "Doxygen version: ${DOXYGEN_VERSION}")
 
   if(DOXYGEN_VERSION VERSION_LESS "1.8")
@@ -49,13 +54,13 @@ if(DOXYGEN_PATH)
     COMMAND pwd
     COMMAND ${CMAKE_COMMAND} -E tar czf html/msg-tuto-src.tgz msg-tuto-src/
     COMMAND ${CMAKE_COMMAND} -E echo "XX Run doxygen"
-    COMMAND ${DOXYGEN_PATH}/doxygen Doxyfile
+    COMMAND ${DOXYGEN_EXECUTABLE} Doxyfile
     COMMAND ${CMAKE_COMMAND} -E echo "XX Generate the index files"
-    COMMAND ${CMAKE_HOME_DIRECTORY}/tools/doxygen/index_create.pl simgrid.tag index-API.doc     
+    COMMAND ${CMAKE_HOME_DIRECTORY}/tools/doxygen/index_create.pl simgrid.tag index-API.doc
     COMMAND ${CMAKE_COMMAND} -E remove ${CMAKE_HOME_DIRECTORY}/doc/doxygen/logcategories.doc
     COMMAND ${CMAKE_HOME_DIRECTORY}/tools/doxygen/xbt_log_extract_hierarchy.pl > ${CMAKE_HOME_DIRECTORY}/doc/doxygen/logcategories.doc
     COMMAND ${CMAKE_COMMAND} -E echo "XX Run doxygen again"
-    COMMAND ${DOXYGEN_PATH}/doxygen Doxyfile
+    COMMAND ${DOXYGEN_EXECUTABLE} Doxyfile
     COMMAND ${CMAKE_COMMAND} -E remove ${CMAKE_HOME_DIRECTORY}/doc/simgrid_modules.map
     COMMAND ${CMAKE_COMMAND} -E echo "XX Javadoc pass"
     COMMAND ${JAVADOC_PATH}/javadoc -quiet -d ${CMAKE_HOME_DIRECTORY}/doc/html/javadoc/ ${CMAKE_HOME_DIRECTORY}/src/bindings/java/org/simgrid/*.java ${CMAKE_HOME_DIRECTORY}/src/bindings/java/org/simgrid/*/*.java
