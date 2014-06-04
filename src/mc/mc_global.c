@@ -249,8 +249,7 @@ void MC_init()
 
   MC_SET_STD_HEAP;
 
-  if (_sg_mc_visited > 0
-      || (_sg_mc_property_file && _sg_mc_property_file[0] != '\0')) {
+  if (_sg_mc_visited > 0 || _sg_mc_liveness) {
     /* Ignore some variables from xbt/ex.h used by exception e for stacks comparison */
     MC_ignore_local_variable("e", "*");
     MC_ignore_local_variable("__ex_cleanup", "*");
