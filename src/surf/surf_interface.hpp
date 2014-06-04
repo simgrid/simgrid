@@ -627,7 +627,6 @@ public:
 
   /**
    * @brief Get the state set in which the action is
-   * @details [TODO]
    *
    * @return The state set in which the action is
    */
@@ -650,10 +649,9 @@ private:
 
   /**
    * @brief Share the resources to the actions
-   * @details [TODO]
    *
    * @param now [TODO]
-   * @return in how much time the next action may terminatedescription]
+   * @return In how much time the next action may terminate
    */
   double shareResources(double now);
 

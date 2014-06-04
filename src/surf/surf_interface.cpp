@@ -25,29 +25,35 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_kernel, surf,
 
 /* This function is a pimple that we ought to fix. But it won't be easy.
  *
- * The surf_solve() function does properly return the set of actions that changed.
- * Instead, each model change a global data, and then the caller of surf_solve must
- * pick into these sets of action_failed and action_done.
+ * The surf_solve() function does properly return the set of actions that
+ * changed. Instead, each model change a global data, and then the caller of
+ * surf_solve must pick into these sets of action_failed and action_done.
  *
- * This was not clean but ok as long as we didn't had to restart the processes when the resource comes back up.
- * We worked by putting sentinel actions on every resources we are interested in,
- * so that surf informs us if/when the corresponding resource fails.
+ * This was not clean but ok as long as we didn't had to restart the processes
+ * when the resource comes back up.
+ * We worked by putting sentinel actions on every resources we are interested
+ * in, so that surf informs us if/when the corresponding resource fails.
  *
- * But this does not work to get Simix informed of when a resource comes back up, and this is where this pimple comes.
- * We have a set of resources that are currently down and for which simix needs to know when it comes back up.
- * And the current function is called *at every simulation step* to sweep over that set, searching for a resource
- * that was turned back up in the meanwhile. This is UGLY and slow.
+ * But this does not work to get Simix informed of when a resource comes back
+ * up, and this is where this pimple comes. We have a set of resources that are
+ * currently down and for which simix needs to know when it comes back up.
+ * And the current function is called *at every simulation step* to sweep over
+ * that set, searching for a resource that was turned back up in the meanwhile.
+ * This is UGLY and slow.
  *
- * The proper solution would be to not rely on globals for the action_failed and action_done swags.
- * They must be passed as parameter by the caller (the handling of these actions in simix may let you
- * think that these two sets can be merged, but their handling in SimDag induce the contrary unless this
- * simdag code can check by itself whether the action is done of failed -- seems very doable, but yet more
- * cleanup to do).
+ * The proper solution would be to not rely on globals for the action_failed and
+ * action_done swags. They must be passed as parameter by the caller (the
+ * handling of these actions in simix may let you think that these two sets can
+ * be merged, but their handling in SimDag induce the contrary unless this
+ * simdag code can check by itself whether the action is done of failed -- seems
+ * very doable, but yet more cleanup to do).
  *
- * Once surf_solve() is passed the set of actions that changed, you want to add a new set of resources back up
- * as parameter to this function. You also want to add a boolean field "restart_watched" to each resource, and
- * make sure that whenever a resource with this field enabled comes back up, it's added to that set so that Simix
- * sees it and react accordingly. This would kill that need for surf to call simix.
+ * Once surf_solve() is passed the set of actions that changed, you want to add
+ * a new set of resources back up as parameter to this function. You also want
+ * to add a boolean field "restart_watched" to each resource, and make sure that
+ * whenever a resource with this field enabled comes back up, it's added to that
+ * set so that Simix sees it and react accordingly. This would kill that need
+ * for surf to call simix.
  *
  */
 
@@ -99,7 +105,8 @@ s_surf_model_description_t surf_plugin_description[] = {
      {NULL, NULL,  NULL}      /* this array must be NULL terminated */
 };
 
-/* Don't forget to update the option description in smx_config when you change this */
+/* Don't forget to update the option description in smx_config when you change
+   this */
 s_surf_model_description_t surf_network_model_description[] = {
   {"LV08",
    "Realistic network analytic model (slow-start modeled by multiplying latency by 10.4, bandwidth by .92; bottleneck sharing uses a payload of S=8775 for evaluating RTT). ",
