@@ -1,13 +1,12 @@
 #! ./tesh
 
 ! timeout 60
-$ ../../../smpi_script/bin/smpirun -hostfile ${srcdir:=.}/hostfile_send_deterministic  -platform ${srcdir:=.}/../../platforms/cluster.xml --cfg=model-check:1 --cfg=model-check/reduction:none --cfg=model-check/send_determinism:1 --cfg=smpi/send_is_detached_thres:0 --cfg=smpi/running_power:1e9 ./send_deterministic
+$ ../../../smpi_script/bin/smpirun -hostfile ${srcdir:=.}/hostfile_send_deterministic  -platform ${srcdir:=.}/../../platforms/cluster.xml --cfg=model-check:1 --cfg=model-check/send_determinism:1 --cfg=smpi/send_is_detached_thres:0 --cfg=smpi/running_power:1e9 ./send_deterministic
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'maxmin/precision' to '1e-3'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'surf/precision' to '1e-9'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'SMPI'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/TCP_gamma' to '4194304'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'model-check' to '1'
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'model-check/reduction' to 'none'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'model-check/send_determinism' to '1'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'smpi/send_is_detached_thres' to '0'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'smpi/running_power' to '1e9'

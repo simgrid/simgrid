@@ -508,7 +508,7 @@ void MC_replay(xbt_fifo_t stack, int start)
 
   MC_SET_MC_HEAP;
 
-  if (mc_reduce_kind == e_mc_reduce_dpor) {
+  if ((mc_reduce_kind == e_mc_reduce_dpor) && !_sg_mc_comms_determinism && !_sg_mc_send_determinism) {
     xbt_dict_reset(first_enabled_state);
     xbt_swag_foreach(process, simix_global->process_list) {
       if (MC_process_is_enabled(process)) {
@@ -536,7 +536,7 @@ void MC_replay(xbt_fifo_t stack, int start)
     state = (mc_state_t) xbt_fifo_get_item_content(item);
     saved_req = MC_state_get_executed_request(state, &value);
 
-    if (mc_reduce_kind == e_mc_reduce_dpor) {
+    if ((mc_reduce_kind == e_mc_reduce_dpor) && !_sg_mc_comms_determinism && !_sg_mc_send_determinism) {
       MC_SET_MC_HEAP;
       char *key = bprintf("%lu", saved_req->issuer->pid);
       xbt_dict_remove(first_enabled_state, key);
@@ -596,12 +596,11 @@ void MC_replay(xbt_fifo_t stack, int start)
 
       count++;
 
-      if (mc_reduce_kind == e_mc_reduce_dpor) {
+      if ((mc_reduce_kind == e_mc_reduce_dpor) && !_sg_mc_comms_determinism && !_sg_mc_send_determinism) {
         MC_SET_MC_HEAP;
         /* Insert in dict all enabled processes */
         xbt_swag_foreach(process, simix_global->process_list) {
-          if (MC_process_is_enabled(process)
-              /*&& !MC_state_process_is_done(state, process) */ ) {
+          if (MC_process_is_enabled(process) ) {
             char *key = bprintf("%lu", process->pid);
             if (xbt_dict_get_or_null(first_enabled_state, key) == NULL) {
               char *data = bprintf("%d", count);
