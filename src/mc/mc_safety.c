@@ -212,6 +212,8 @@ void MC_modelcheck_safety(void)
           XBT_DEBUG("User max depth reached !");
         else if (visited_state == -1)
           XBT_WARN("/!\\ Max depth reached ! /!\\ ");
+        else
+          XBT_DEBUG("State already visited, exploration stopped on this path.");
 
         if (mc_reduce_kind == e_mc_reduce_dpor) {
           /* Interleave enabled processes in the state in which they have been enabled for the first time */

@@ -237,7 +237,6 @@ static int compare_areas_with_type(void *area1, void *area2,
   case DW_TAG_structure_type:
   case DW_TAG_class_type:
     xbt_dynar_foreach(type->members, cursor, member) {
-      XBT_DEBUG("Compare member %s", member->name);
       void *member1 =
           mc_member_snapshot_resolve(area1, type, member, snapshot1);
       void *member2 =
@@ -375,9 +374,6 @@ static int compare_local_variables(mc_snapshot_t snapshot1,
       offset1 = (char *) current_var1->address - (char *) std_heap;
       offset2 = (char *) current_var2->address - (char *) std_heap;
       // TODO, fix current_varX->subprogram->name to include name if DW_TAG_inlined_subprogram
-      XBT_DEBUG("Compare local variable %s of frame %s",
-                current_var1->subprogram->name, current_var1->subprogram->name);
-
 
       if (current_var1->region == 1) {
         dw_type_t subtype = current_var1->type;
