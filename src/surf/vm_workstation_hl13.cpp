@@ -228,7 +228,7 @@ WorkstationVMHL13::WorkstationVMHL13(WorkstationVMModelPtr model, const char* na
   p_storage = NULL;
 
   /* Currently, a VM uses the network resource of its physical host. In
-   * host_lib, this network resource object is refered from two different keys.
+   * host_lib, this network resource object is referred from two different keys.
    * When deregistering the reference that points the network resource object
    * from the VM name, we have to make sure that the system does not call the
    * free callback for the network resource object. The network resource object
@@ -272,8 +272,8 @@ WorkstationVMHL13::WorkstationVMHL13(WorkstationVMModelPtr model, const char* na
 }
 
 /*
- * A physical host does not disapper in the current SimGrid code, but a VM may
- * disapper during a simulation.
+ * A physical host does not disappear in the current SimGrid code, but a VM may
+ * disappear during a simulation.
  */
 WorkstationVMHL13::~WorkstationVMHL13()
 {
@@ -293,7 +293,7 @@ WorkstationVMHL13::~WorkstationVMHL13()
   xbt_lib_unset(host_lib, getName(), ROUTING_HOST_LEVEL, 0);
   xbt_lib_unset(host_lib, getName(), SURF_WKS_LEVEL, 0);
 
-  /* TODO: comment out when VM stroage is implemented. */
+  /* TODO: comment out when VM storage is implemented. */
   // xbt_lib_unset(host_lib, name, SURF_STORAGE_LEVEL, 0);
 
 
@@ -439,7 +439,7 @@ void WorkstationVMHL13::setAffinity(CpuPtr cpu, unsigned long mask){
 }
 
 /*
- * A surf level object will be useless in the upper layer. Returing the
+ * A surf level object will be useless in the upper layer. Returning the
  * dict_elm of the host.
  **/
 surf_resource_t WorkstationVMHL13::getPm()

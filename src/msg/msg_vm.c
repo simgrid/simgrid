@@ -103,7 +103,7 @@ static inline int __MSG_vm_is_state(msg_vm_t vm, e_surf_vm_state_t state)
   return simcall_vm_get_state(vm) == state;
 }
 
-/** @brief Returns whether the given VM has just reated, not running.
+/** @brief Returns whether the given VM has just created, not running.
  *  @ingroup msg_VMs
  */
 int MSG_vm_is_created(msg_vm_t vm)
@@ -180,7 +180,7 @@ msg_vm_t MSG_vm_create(msg_host_t ind_pm, const char *name,
    * bandwidth */
   double host_speed = MSG_get_host_speed(ind_pm);
   double update_speed = ((double)dp_intensity/100) * mig_netspeed;
-	
+
   msg_vm_t vm = MSG_vm_create_core(ind_pm, name);
   s_ws_params_t params;
   memset(&params, 0, sizeof(params));
@@ -294,7 +294,7 @@ void MSG_vm_shutdown(msg_vm_t vm)
 
 
 /* We have two mailboxes. mbox is used to transfer migration data between
- * source and destiantion PMs. mbox_ctl is used to detect the completion of a
+ * source and destination PMs. mbox_ctl is used to detect the completion of a
  * migration. The names of these mailboxes must not conflict with others. */
 static inline char *get_mig_mbox_src_dst(const char *vm_name, const char *src_pm_name, const char *dst_pm_name)
 {
@@ -456,7 +456,7 @@ static double get_computed(char *key, msg_vm_t vm, dirty_page_t dp, double remai
   double computed = dp->prev_remaining - remaining;
   double duration = clock - dp->prev_clock;
 
-  XBT_DEBUG("%s@%s: computated %f ops (remaining %f -> %f) in %f secs (%f -> %f)",
+  XBT_DEBUG("%s@%s: computed %f ops (remaining %f -> %f) in %f secs (%f -> %f)",
       key, sg_host_name(vm), computed, dp->prev_remaining, remaining, duration, dp->prev_clock, clock);
 
   return computed;
@@ -472,7 +472,7 @@ static double lookup_computed_flop_counts(msg_vm_t vm, int stage_for_fancy_debug
   dirty_page_t dp = NULL;
   xbt_dict_foreach(priv->dp_objs, cursor, key, dp) {
     double remaining = MSG_task_get_remaining_computation(dp->task);
-   
+
 	 double clock = MSG_get_clock();
 
     // total += calc_updated_pages(key, vm, dp, remaining, clock);
@@ -531,7 +531,7 @@ void MSG_host_del_task(msg_host_t host, msg_task_t task)
   xbt_assert(dp->task == task);
 
   /* If we are in the middle of dirty page tracking, we record how much
-   * computaion has been done until now, and keep the information for the
+   * computation has been done until now, and keep the information for the
    * lookup_() function that will called soon. */
   if (priv->dp_enabled) {
     double remaining = MSG_task_get_remaining_computation(task);
@@ -560,7 +560,7 @@ static int deferred_exec_fun(int argc, char *argv[])
   double prio = atof(prio_str);
 
   msg_task_t task = MSG_task_create("__task_deferred", computaion, 0, NULL);
-  // XBT_INFO("exec deferred %f", computaion);
+  // XBT_INFO("exec deferred %f", computation);
 
   /* dpt is the results of the VM activity */
   MSG_task_set_priority(task, prio);
@@ -971,7 +971,7 @@ static int migration_tx_fun(int argc, char *argv[])
     double clock_post_send = MSG_get_clock();
     double bandwidth = ramsize / (clock_post_send - clock_prev_send);
     threshold = get_threshold_value(bandwidth, max_downtime);
-    XBT_INFO("actual banwdidth %f (MB/s), threshold %f", bandwidth / 1024 / 1024, threshold);
+    XBT_INFO("actual bandwidth %f (MB/s), threshold %f", bandwidth / 1024 / 1024, threshold);
   }
 
 
@@ -1153,8 +1153,8 @@ void MSG_vm_migrate(msg_vm_t vm, msg_host_t new_pm)
 /** @brief Immediately suspend the execution of all processes within the given VM.
  *  @ingroup msg_VMs
  *
- * This function stops the exection of the VM. All the processes on this VM
- * will pause. The state of the VM is perserved. We can later resume it again.
+ * This function stops the execution of the VM. All the processes on this VM
+ * will pause. The state of the VM is preserved. We can later resume it again.
  *
  * No suspension cost occurs.
  */
@@ -1188,8 +1188,8 @@ void MSG_vm_resume(msg_vm_t vm)
 /** @brief Immediately save the execution of all processes within the given VM.
  *  @ingroup msg_VMs
  *
- * This function stops the exection of the VM. All the processes on this VM
- * will pause. The state of the VM is perserved. We can later resume it again.
+ * This function stops the execution of the VM. All the processes on this VM
+ * will pause. The state of the VM is preserved. We can later resume it again.
  *
  * FIXME: No suspension cost occurs. If you want to simulate this too, you want to
  * use a \ref MSG_file_write() before or after, depending on the exact semantic
@@ -1250,7 +1250,7 @@ msg_host_t MSG_vm_get_pm(msg_vm_t vm)
  *
  * There are some solutions for this problem. One option is to update the bound
  * of the dummy CPU action automatically. It should be the sum of all tasks on
- * the VM. But, this solution might be costy, because we have to scan all tasks
+ * the VM. But, this solution might be costly, because we have to scan all tasks
  * on the VM in share_resource() or we have to trap both the start and end of
  * task execution.
  *

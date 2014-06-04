@@ -67,7 +67,7 @@ $ $SG_TEST_EXENV ${bindir:=.}/simple_vm$EXEEXT --log=no_loc ${srcdir:=.}/simple_
 > [PM0:__pr_mig_tx:VM0(PM0-PM1):(38) 49.010000] [msg_vm/WARNING] use the default max_downtime value 30ms
 > [PM0:__pr_mig_tx:VM0(PM0-PM1):(38) 49.010000] [msg_vm/INFO] mig-stage1: remaining_size 1073741824.000000
 > [PM2:comm_rx:(36) 49.293296] [msg_test/INFO] VM0:comm_tx to PM2:comm_rx => 0.293296 sec
-> [PM0:__pr_mig_tx:VM0(PM0-PM1):(38) 142.200526] [msg_vm/INFO] actual banwdidth 10.988241 (MB/s), threshold 345660.187833
+> [PM0:__pr_mig_tx:VM0(PM0-PM1):(38) 142.200526] [msg_vm/INFO] actual bandwidth 10.988241 (MB/s), threshold 345660.187833
 > [PM0:__pr_mig_tx:VM0(PM0-PM1):(38) 142.200526] [msg_vm/INFO] mig-stage 2:0 updated_size 0.000000 computed_during_stage1 0.000000 dp_rate 0.000000 dp_cap 0.000000
 > [PM0:__pr_mig_tx:VM0(PM0-PM1):(38) 142.200526] [msg_vm/INFO] mig-stage2.0: remaining_size 0.000000 (< threshold 345660.187833)
 > [PM0:__pr_mig_tx:VM0(PM0-PM1):(38) 142.200526] [msg_vm/INFO] mig-stage3: remaining_size 0.000000
@@ -75,7 +75,7 @@ $ $SG_TEST_EXENV ${bindir:=.}/simple_vm$EXEEXT --log=no_loc ${srcdir:=.}/simple_
 > [PM1:__pr_mig_rx:VM0(PM0-PM1):(37) 142.330626] [msg_vm/INFO] set affinity(0x0000@PM1) for VM0
 > [PM1:__pr_mig_tx:VM0(PM1-PM0):(42) 142.470726] [msg_vm/WARNING] use the default max_downtime value 30ms
 > [PM1:__pr_mig_tx:VM0(PM1-PM0):(42) 142.470726] [msg_vm/INFO] mig-stage1: remaining_size 1073741824.000000
-> [PM1:__pr_mig_tx:VM0(PM1-PM0):(42) 235.584654] [msg_vm/INFO] actual banwdidth 10.997281 (MB/s), threshold 345944.536891
+> [PM1:__pr_mig_tx:VM0(PM1-PM0):(42) 235.584654] [msg_vm/INFO] actual bandwidth 10.997281 (MB/s), threshold 345944.536891
 > [PM1:__pr_mig_tx:VM0(PM1-PM0):(42) 235.584654] [msg_vm/INFO] mig-stage 2:0 updated_size 0.000000 computed_during_stage1 0.000000 dp_rate 0.000000 dp_cap 0.000000
 > [PM1:__pr_mig_tx:VM0(PM1-PM0):(42) 235.584654] [msg_vm/INFO] mig-stage2.0: remaining_size 0.000000 (< threshold 345944.536891)
 > [PM1:__pr_mig_tx:VM0(PM1-PM0):(42) 235.584654] [msg_vm/INFO] mig-stage3: remaining_size 0.000000
