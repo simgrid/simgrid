@@ -6,6 +6,8 @@
 # This program is free software; you can redistribute it and/or modify it
 # under the terms of the license (GNU LGPL) which comes with this package.
 
+SIMGRID_VERSION="@SIMGRID_VERSION_STRING@"
+
 CC=@CMAKE_C_COMPILER@
 
 INCLUDEARGS="@includeflag@"
@@ -40,10 +42,15 @@ while [ $# -gt 0 ]; do
             fi
             list_add CMDARGS "${SRCFILE}"
             ;;
+        '-version' | '--version' | '-v')
+            # -e is not recognised by MS-DOS...
+            echo -e $SIMGRID_VERSION
+            exit 0
+            ;;           
         *)
             list_add CMDARGS "${ARG}"
-      ;;
-  esac
+            ;;
+    esac
 done
 
 list_set CMDLINE "${CC}"

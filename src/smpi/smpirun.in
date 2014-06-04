@@ -8,6 +8,8 @@
 
 @CMAKE_SMPI_COMMAND@
 
+SIMGRID_VERSION="@SIMGRID_VERSION_STRING@"
+
 DEFAULT_LOOPBACK_BANDWIDTH="498000000"
 DEFAULT_LOOPBACK_LATENCY="0.000004"
 DEFAULT_NETWORK_BANDWIDTH="$((26 * 1024 * 1024))"
@@ -163,7 +165,12 @@ while true; do
 
         "-help" | "--help" | "-h")
             usage
-            exit
+            exit 0
+            ;;
+
+        "-version" | "--version" | "-v")
+            echo -e $SIMGRID_VERSION
+            exit 0
             ;;
 
         "--cfg="*|"--log="*)

@@ -6,20 +6,22 @@
 # This program is free software; you can redistribute it and/or modify it
 # under the terms of the license (GNU LGPL) which comes with this package.
 
-CC=@CMAKE_CXX_COMPILER@
+SIMGRID_VERSION="@SIMGRID_VERSION_STRING@"
+
+CXX=@CMAKE_CXX_COMPILER@
 
 INCLUDEARGS="@includeflag@"
 CMAKE_LINKARGS="-L@libdir@"
 
 @SMPITOOLS_SH@
 
-list_set CFLAGS
+list_set CXXFLAGS
 list_set LINKARGS
 if [ "@WIN32@" != "1" ]; then
-    list_add CFLAGS "-Dmain=smpi_simulated_main_"
+    list_add CXXFLAGS "-Dmain=smpi_simulated_main_"
     list_add LINKARGS "-lsimgrid"
 else
-    list_add CFLAGS "-include" "@includedir@/smpi/smpi_main.h"
+    list_add CXXFLAGS "-include" "@includedir@/smpi/smpi_main.h"
     list_add LINKARGS "@libdir@\libsimgrid.dll"
 fi
 
@@ -40,14 +42,18 @@ while [ $# -gt 0 ]; do
             fi
             list_add CMDARGS "${SRCFILE}"
             ;;
+        "-version" | "--version" | "-v")
+            echo -e $SIMGRID_VERSION
+            exit 0
+            ;;
         *)
             list_add CMDARGS "${ARG}"
       ;;
   esac
 done
 
-list_set CMDLINE "${CC}"
-list_add_not_empty CMDLINE "${CFLAGS}"
+list_set CMDLINE "${CXX}"
+list_add_not_empty CMDLINE "${CXXFLAGS}"
 list_add_not_empty CMDLINE ${INCLUDEARGS}
 list_add_not_empty CMDLINE ${CMAKE_LINKARGS}
 list_add_not_empty CMDLINE "${CMDARGS}"

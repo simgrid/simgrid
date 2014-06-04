@@ -6,6 +6,8 @@
 # This program is free software; you can redistribute it and/or modify it
 # under the terms of the license (GNU LGPL) which comes with this package.
 
+SIMGRID_VERSION="@SIMGRID_VERSION_STRING@"
+
 prefix="@exec_prefix@"
 smpicc="$prefix/bin/smpicc"
 smpif2c="$prefix/bin/smpif2c"
@@ -27,6 +29,11 @@ while [ $# -gt 0 ]; do
             fi
             list_add SRCFILES "${SRCFILE}"
             ;;
+        '-version' | '--version' | '-v')
+            # -e is not recognised by MS-DOS...
+            echo -e $SIMGRID_VERSION
+            exit 0
+            ;;           
         *)
             if [ "${ARG}" = "-c" ]; then
                 LINKARGS=""
