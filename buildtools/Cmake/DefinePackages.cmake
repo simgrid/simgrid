@@ -233,7 +233,7 @@ set(SMPI_SRC
   src/smpi/smpi_topo.c
   )
 
-if(SMPI_F2C)
+if(SMPI_FORTRAN)
   set(SMPI_SRC
     ${SMPI_SRC}
     src/smpi/smpi_f77.c
@@ -665,7 +665,6 @@ set(headers_to_install
 set(source_of_generated_headers
   include/simgrid_config.h.in
   include/smpi/mpif.h.in
-  include/smpi/smpif.h.in
   src/context_sysv_config.h.in)
 
 ### depend of some variables setted upper
@@ -907,7 +906,6 @@ set(bin_files
   ${bin_files}
   src/smpi/smpicc.in
   src/smpi/smpicxx.in
-  src/smpi/smpif2c.in
   src/smpi/smpiff.in
   src/smpi/smpif90.in
   src/smpi/smpirun.in
@@ -1103,7 +1101,6 @@ set(CMAKE_SOURCE_FILES
   buildtools/Cmake/MakeJava.cmake
   buildtools/Cmake/MakeLib.cmake
   buildtools/Cmake/MakeLibWin.cmake
-  buildtools/Cmake/Modules/FindF2c.cmake
   buildtools/Cmake/Modules/FindGFortran.cmake
   buildtools/Cmake/Modules/FindGTnets.cmake
   buildtools/Cmake/Modules/FindGraphviz.cmake

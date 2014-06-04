@@ -32,15 +32,10 @@ if(enable_smpi)
     ${CMAKE_BINARY_DIR}/bin/smpicxx
     ${CMAKE_BINARY_DIR}/bin/smpirun
     DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/)
-  if(SMPI_F2C)
-    install(PROGRAMS
-      ${CMAKE_BINARY_DIR}/bin/smpif2c
-      ${CMAKE_BINARY_DIR}/bin/smpiff
-      DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/)
-  endif()
-  if(SMPI_F90)
+  if(SMPI_FORTRAN)
     install(PROGRAMS
       ${CMAKE_BINARY_DIR}/bin/smpif90
+      ${CMAKE_BINARY_DIR}/bin/smpiff
       DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/)
   endif()
 endif()
@@ -140,7 +135,6 @@ add_custom_target(uninstall
   COMMAND ${CMAKE_COMMAND} -E	echo "uninstall lib ok"
   COMMAND ${CMAKE_COMMAND} -E	remove -f ${CMAKE_INSTALL_PREFIX}/bin/smpicc
   COMMAND ${CMAKE_COMMAND} -E	remove -f ${CMAKE_INSTALL_PREFIX}/bin/smpicxx
-  COMMAND ${CMAKE_COMMAND} -E	remove -f ${CMAKE_INSTALL_PREFIX}/bin/smpif2c
   COMMAND ${CMAKE_COMMAND} -E	remove -f ${CMAKE_INSTALL_PREFIX}/bin/smpiff
   COMMAND ${CMAKE_COMMAND} -E	remove -f ${CMAKE_INSTALL_PREFIX}/bin/smpif90
   COMMAND ${CMAKE_COMMAND} -E	remove -f ${CMAKE_INSTALL_PREFIX}/bin/smpirun

@@ -7,6 +7,7 @@
 #include "xbt/log.h"
 #include "simgrid/simix.h"
 #include "smpi/smpi.h"
+#include "internal_config.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_dvfs, smpi,
                                 "Logging specific to SMPI (experimental DVFS support)");
@@ -60,9 +61,22 @@ double smpi_get_host_consumed_energy(void)
   return simcall_host_get_consumed_energy(SIMIX_host_self());
 }
 
-#include "smpi/smpif.h"
 
-#ifdef SMPI_F2C
+#ifdef SMPI_FORTRAN
+
+#if defined(__alpha__) || defined(__sparc64__) || defined(__x86_64__) || defined(__ia64__)
+typedef int integer;
+typedef unsigned int uinteger;
+#else
+typedef long int integer;
+typedef unsigned long int uinteger;
+#endif
+typedef char *address;
+typedef short int shortint;
+typedef float real;
+typedef double doublereal;
+typedef struct { real r, i; } complex;
+typedef struct { doublereal r, i; } doublecomplex;
 
 XBT_PUBLIC(doublereal) smpi_get_host_power_peak_at_(integer *pstate_index);
 doublereal smpi_get_host_power_peak_at_(integer *pstate_index)

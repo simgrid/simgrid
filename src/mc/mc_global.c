@@ -848,7 +848,6 @@ void MC_init(){
   MC_ignore_global_variable("mc_comp_times");
   MC_ignore_global_variable("mc_snapshot_comparison_time"); 
   MC_ignore_global_variable("mc_time");
-  MC_ignore_global_variable("smpi_current_rank");
   MC_ignore_global_variable("counter"); /* Static variable used for tracing */
   MC_ignore_global_variable("maestro_stack_start");
   MC_ignore_global_variable("maestro_stack_end");

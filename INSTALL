@@ -53,7 +53,8 @@ the jni.h header file (available from the JDK).
 If you want to compile the lua bindings, you have to have lua5.1 executable and
 liblua5.1-dev.
 
-If you want to compile smpi, you should install f2c to use Fortran code.
+If you want to compile smpi, you should install a fortran compiler to use
+ Fortran code. Only gfortran has been tested for now.
 
 If you want to compile the GTNetS backend, you have to have a patched version of
 GTNetS installed. The patch lives in the contrib section of the Git.

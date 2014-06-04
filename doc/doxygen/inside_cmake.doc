@@ -50,8 +50,8 @@ done by adding the files to the EXTRA_DIST list, as in the following
 example:
 
 \verbatim
-### If f2c is installed compiled source other-whise source is only copy in the dist 
-if(SMPI_F2C)
+### If fortran is installed compile source other-whise source is only copied in the dist 
+if(SMPI_FORTRAN)
   set(SMPI_SRC
     ${SMPI_SRC}
     src/smpi/smpi_f77.c
