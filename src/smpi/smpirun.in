@@ -25,7 +25,7 @@ SIMOPTS="--cfg=maxmin/precision:1e-3 --cfg=surf/precision:1e-9 --cfg=network/mod
 
 #usage to print the way this script should be called
 usage () {
-cat <<EOF
+    cat <<EOF
 Usage: $0 [OPTIONS] -platform <xmldesc> -hostfile <hostfile> program [program-options]
 Options:
   -keep-temps                # don't remove the generated files after execution
@@ -61,122 +61,122 @@ WRAPPER=""
 HOSTFILE=""
 
 while true; do
-  case "$1" in
-   "-np" | "-n")
-      NUMPROCS="$2"
-      shift 2
-    ;;
-   "-bandwidth")
-      NETWORK_BANDWIDTH="$2"
-      shift 2
-    ;;
-   "-latency")
-      NETWORK_LATENCY="$2"
-      shift 2
-    ;;
-   "-platform")
-	PLATFORM="$2"
-      if [ ! -f "${PLATFORM}" ]; then
+    case "$1" in
+        "-np" | "-n")
+            NUMPROCS="$2"
+            shift 2
+            ;;
+        "-bandwidth")
+            NETWORK_BANDWIDTH="$2"
+            shift 2
+            ;;
+        "-latency")
+            NETWORK_LATENCY="$2"
+            shift 2
+            ;;
+        "-platform")
+	    PLATFORM="$2"
+            if [ ! -f "${PLATFORM}" ]; then
 		echo "[$0] ** error: the file '${PLATFORM}' does not exist. Aborting."
 		exit 1
-      fi
-	shift 2
-    ;;
-   "-hostfile")
-	HOSTFILE="$2"
-      if [ ! -f "${HOSTFILE}" ]; then
+            fi
+	    shift 2
+            ;;
+        "-hostfile")
+	    HOSTFILE="$2"
+            if [ ! -f "${HOSTFILE}" ]; then
 		echo "[$0] ** error: the file '${HOSTFILE}' does not exist. Aborting."
 		exit 1
-      fi
-	shift 2
-    ;;
+            fi
+	    shift 2
+            ;;
 
-   "-machinefile")
-	HOSTFILE="$2"
-      if [ ! -f "${HOSTFILE}" ]; then
+        "-machinefile")
+	    HOSTFILE="$2"
+            if [ ! -f "${HOSTFILE}" ]; then
 		echo "[$0] ** error: the file '${HOSTFILE}' does not exist. Aborting."
 		exit 1
-      fi
-	shift 2
-    ;;
+            fi
+	    shift 2
+            ;;
 
-   "-ext")
-      EXTOPT="$2"
-      shift 2
-   ;;
+        "-ext")
+            EXTOPT="$2"
+            shift 2
+            ;;
 
-   "-map")
-	MAPOPT="true"
-      shift 1
-   ;;
+        "-map")
+	    MAPOPT="true"
+            shift 1
+            ;;
 
-   "-trace")
-      TRACE_ACTIVE="true"
-      shift 1
-   ;;
+        "-trace")
+            TRACE_ACTIVE="true"
+            shift 1
+            ;;
 
-   "-trace-ti")
-      TRACE_ACTIVE="true"
-      TRACE_TI_ACTIVE="true"
-      shift 1
-   ;;
+        "-trace-ti")
+            TRACE_ACTIVE="true"
+            TRACE_TI_ACTIVE="true"
+            shift 1
+            ;;
 
-   "-trace-comment")
-      TRACE_COMMENT="$2"
-      shift 2
-   ;;
+        "-trace-comment")
+            TRACE_COMMENT="$2"
+            shift 2
+            ;;
 
-   "-trace-comment-file")
-      TRACE_COMMENT_FILE="$2"
-      shift 2
-   ;;
+        "-trace-comment-file")
+            TRACE_COMMENT_FILE="$2"
+            shift 2
+            ;;
 
-   "-trace-file")
-      TRACE_FILENAME="$2"
-      shift 2
-   ;;
+        "-trace-file")
+            TRACE_FILENAME="$2"
+            shift 2
+            ;;
 
-   "-trace-grouped")
-      TRACE_GROUPED="true"
-      shift 1
-   ;;
+        "-trace-grouped")
+            TRACE_GROUPED="true"
+            shift 1
+            ;;
 
-   "-trace-resource")
-      TRACE_RESOURCE="true"
-      shift 1
-   ;;
+        "-trace-resource")
+            TRACE_RESOURCE="true"
+            shift 1
+            ;;
 
-   "-trace-viva")
-   	TRACE_VIVA="true"
-   	  shift 1
-   ;;
+        "-trace-viva")
+   	    TRACE_VIVA="true"
+   	    shift 1
+            ;;
 
-   "-keep-temps")
-	KEEP="true"
-      shift 1
-   ;;
+        "-keep-temps")
+	    KEEP="true"
+            shift 1
+            ;;
 
-   "-wrapper")
-      WRAPPER="$2"
-      shift 2
-      ;;
+        "-wrapper")
+            WRAPPER="$2"
+            shift 2
+            ;;
 
-   "-help" | "--help" | "-h")
-      usage
-      exit
-   ;;
+        "-help" | "--help" | "-h")
+            usage
+            exit
+            ;;
 
-   "--cfg="*|"--log="*)
-     for OPT in ${1#*=}
-     do
-       SIMOPTS="$SIMOPTS ${1%%=*}=$OPT"
-     done
-     shift 1
-   ;;
-    *)
-      break
-    ;;
-  esac
+        "--cfg="*|"--log="*)
+            for OPT in ${1#*=}
+            do
+                SIMOPTS="$SIMOPTS ${1%%=*}=$OPT"
+            done
+            shift 1
+            ;;
+        *)
+            break
+            ;;
+    esac
 done
 
 if [ -n "$WRAPPER" ]; then
@@ -188,19 +188,19 @@ shift
 
 # steel --cfg and --logs options
 while [ $# -gt 0 ]; do
-  case "$1" in
-   "--cfg="*|"--log="*)
-     for OPT in ${1#*=}
-     do
-       SIMOPTS="$SIMOPTS ${1%%=*}=$OPT"
-     done
-     shift 1
-   ;;
-    *)
-      PROC_ARGS="${PROC_ARGS:+$PROC_ARGS }$1"
-      shift      
-    ;;
-  esac
+    case "$1" in
+        "--cfg="*|"--log="*)
+            for OPT in ${1#*=}
+            do
+                SIMOPTS="$SIMOPTS ${1%%=*}=$OPT"
+            done
+            shift 1
+            ;;
+        *)
+            PROC_ARGS="${PROC_ARGS:+$PROC_ARGS }$1"
+            shift      
+            ;;
+    esac
 done
 
 
@@ -250,44 +250,44 @@ fi
 
 ##-------------------------------- DEFAULT or SPECIFIED PLATFORM --------------------------------------
 if [ -z "${PLATFORM}" ]; then
-	PLATFORMTMP="$(mktemp tmpXXXXXX)"
+    PLATFORMTMP="$(mktemp tmpXXXXXX)"
 
-	cat > ${PLATFORMTMP} <<PLATFORMHEAD
+    cat > ${PLATFORMTMP} <<PLATFORMHEAD
 <?xml version='1.0'?>
 <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">
 <platform version="3">
 <AS id="AS0" routing="Full">
 PLATFORMHEAD
 
-i=${NUMPROCS}
-while [ $i -gt 0 ]; do
-  echo "  <host id=\"host$i\" power=\"${POWER}\"/>" >> ${PLATFORMTMP}
-  echo "  <link id=\"loop$i\" bandwidth=\"${LOOPBACK_BANDWIDTH}\" latency=\"${LOOPBACK_LATENCY}\"/>" >> ${PLATFORMTMP}
-  echo "  <link id=\"link$i\" bandwidth=\"${NETWORK_BANDWIDTH}\" latency=\"${NETWORK_LATENCY}\"/>" >> ${PLATFORMTMP}
-  i=$((i - 1))
-done
+    i=${NUMPROCS}
+    while [ $i -gt 0 ]; do
+        echo "  <host id=\"host$i\" power=\"${POWER}\"/>" >> ${PLATFORMTMP}
+        echo "  <link id=\"loop$i\" bandwidth=\"${LOOPBACK_BANDWIDTH}\" latency=\"${LOOPBACK_LATENCY}\"/>" >> ${PLATFORMTMP}
+        echo "  <link id=\"link$i\" bandwidth=\"${NETWORK_BANDWIDTH}\" latency=\"${NETWORK_LATENCY}\"/>" >> ${PLATFORMTMP}
+        i=$((i - 1))
+    done
 
-i=${NUMPROCS}
-while [ $i -gt 0 ]; do
-  j=${NUMPROCS}
-  while [ $j -gt 0 ]; do
-    if [ $i -eq $j ]; then
-      echo "  <route src=\"host$i\" dst=\"host$j\"><link_ctn id=\"loop$i\"/></route>" >> ${PLATFORMTMP}
-    else
-      echo "  <route src=\"host$i\" dst=\"host$j\"><link_ctn id=\"link$i\"/><link_ctn id=\"link$j\"/></route>" >> ${PLATFORMTMP}
-    fi
-    j=$((j - 1))
-  done
-  i=$((i - 1))
-done
+    i=${NUMPROCS}
+    while [ $i -gt 0 ]; do
+        j=${NUMPROCS}
+        while [ $j -gt 0 ]; do
+            if [ $i -eq $j ]; then
+                echo "  <route src=\"host$i\" dst=\"host$j\"><link_ctn id=\"loop$i\"/></route>" >> ${PLATFORMTMP}
+            else
+                echo "  <route src=\"host$i\" dst=\"host$j\"><link_ctn id=\"link$i\"/><link_ctn id=\"link$j\"/></route>" >> ${PLATFORMTMP}
+            fi
+            j=$((j - 1))
+        done
+        i=$((i - 1))
+    done
 
-cat >> ${PLATFORMTMP} <<PLATFORMFOOT
+    cat >> ${PLATFORMTMP} <<PLATFORMFOOT
 </AS>
 </platform>
 PLATFORMFOOT
 
 else
-	PLATFORMTMP=${PLATFORM}
+    PLATFORMTMP=${PLATFORM}
 fi
 ##-------------------------------- end DEFAULT or SPECIFIED PLATFORM --------------------------------------
 
@@ -304,19 +304,19 @@ APPLICATIONHEAD
 
 ##---- cache hostnames of hostfile---------------
 if [ -n "${HOSTFILE}" ] && [ -f ${HOSTFILE} ]; then
-  hostnames=$(cat ${HOSTFILE} | tr '\n\r' '  ')
-  NUMHOSTS=$(cat ${HOSTFILE} | wc -l)
+    hostnames=$(cat ${HOSTFILE} | tr '\n\r' '  ')
+    NUMHOSTS=$(cat ${HOSTFILE} | wc -l)
 fi
 
 if [ "${EXTOPT}" = "smpi_replay" ]; then
-  APP_TRACES=$PROC_ARGS
-  if [ -n "${APP_TRACES}" ] && [ -f "${APP_TRACES}" ]; then
-     hosttraces=$(cat ${APP_TRACES} | tr '\n\r' '  ' )
-     NUMTRACES=$(cat ${APP_TRACES} | wc -l)
-  else
-     printf "File not found: %s\n", "${APP_TRACES:-\${APP_TRACES\}}" >&2
-     exit 1
-  fi
+    APP_TRACES=$PROC_ARGS
+    if [ -n "${APP_TRACES}" ] && [ -f "${APP_TRACES}" ]; then
+        hosttraces=$(cat ${APP_TRACES} | tr '\n\r' '  ' )
+        NUMTRACES=$(cat ${APP_TRACES} | wc -l)
+    else
+        printf "File not found: %s\n", "${APP_TRACES:-\${APP_TRACES\}}" >&2
+        exit 1
+    fi
 fi
 
 ##----------------------------------------------------------
@@ -329,47 +329,47 @@ fi
 HAVE_SEQ="`which seq 2>/dev/null`"
 
 if [ -n "${HAVE_SEQ}" ]; then
-	SEQ=`${HAVE_SEQ} 0 $((${NUMPROCS}-1))`
+    SEQ=`${HAVE_SEQ} 0 $((${NUMPROCS}-1))`
 else
-      cnt=0
-	while (( $cnt < ${NUMPROCS} )) ; do
-	    SEQ="$SEQ $cnt"
-	    cnt=$((cnt + 1));
-	done
+    cnt=0
+    while (( $cnt < ${NUMPROCS} )) ; do
+	SEQ="$SEQ $cnt"
+	cnt=$((cnt + 1));
+    done
 fi
 
 ##---- generate <process> tags------------------------------
 
 for i in ${SEQ}
 do
-  if [ -n "${HOSTFILE}" ]; then
+    if [ -n "${HOSTFILE}" ]; then
 	j=$(( $i % ${NUMHOSTS} + 1 ))
-  fi
-  ##---- optional display of ranks to process mapping
-  if [ -n "${MAPOPT}" ]; then
-	echo "[rank $i] -> $(echo $hostnames|cut -d' ' -f$j)"
-  fi
-
-  if [ -z "$(echo $hostnames|cut -d' ' -f$j)" ]; then
-	host="host"$($j)
-  else
-	host="$(echo $hostnames|cut -d' ' -f$j)"
-  fi
-  echo "  <process host=\"${host}\" function=\"$i\"> <!-- function name used only for logging -->" >> ${APPLICATIONTMP}
-  echo "    <argument value=\"1\"/> <!-- instance -->" >> ${APPLICATIONTMP}
-  echo "    <argument value=\"$i\"/> <!-- rank -->" >> ${APPLICATIONTMP}
-  if [ "${EXTOPT}" = "smpi_replay" ]; then
-    if  [ ${NUMTRACES} -gt 1 ]; then
-      echo "    <argument value=\"$(echo $hosttraces|cut -d' ' -f$j)\"/>" >> ${APPLICATIONTMP}
-    else
-      echo "    <argument value=\"$(echo $hosttraces|cut -d' ' -f1)\"/>" >> ${APPLICATIONTMP}
     fi
-  else 
-    for ARG in $PROC_ARGS; do
-       echo "    <argument value=\"${ARG}\"/>" >> ${APPLICATIONTMP}
-    done
-  fi
-  echo "  </process>" >> ${APPLICATIONTMP}
+    ##---- optional display of ranks to process mapping
+    if [ -n "${MAPOPT}" ]; then
+	echo "[rank $i] -> $(echo $hostnames|cut -d' ' -f$j)"
+    fi
+
+    if [ -z "$(echo $hostnames|cut -d' ' -f$j)" ]; then
+	host="host"$($j)
+    else
+	host="$(echo $hostnames|cut -d' ' -f$j)"
+    fi
+    echo "  <process host=\"${host}\" function=\"$i\"> <!-- function name used only for logging -->" >> ${APPLICATIONTMP}
+    echo "    <argument value=\"1\"/> <!-- instance -->" >> ${APPLICATIONTMP}
+    echo "    <argument value=\"$i\"/> <!-- rank -->" >> ${APPLICATIONTMP}
+    if [ "${EXTOPT}" = "smpi_replay" ]; then
+        if  [ ${NUMTRACES} -gt 1 ]; then
+            echo "    <argument value=\"$(echo $hosttraces|cut -d' ' -f$j)\"/>" >> ${APPLICATIONTMP}
+        else
+            echo "    <argument value=\"$(echo $hosttraces|cut -d' ' -f1)\"/>" >> ${APPLICATIONTMP}
+        fi
+    else 
+        for ARG in $PROC_ARGS; do
+            echo "    <argument value=\"${ARG}\"/>" >> ${APPLICATIONTMP}
+        done
+    fi
+    echo "  </process>" >> ${APPLICATIONTMP}
 done
 
 cat >> ${APPLICATIONTMP} <<APPLICATIONFOOT
@@ -379,65 +379,65 @@ APPLICATIONFOOT
 
 ##---------------------- SMPI TRACING OPTIONS ---------------------------------
 if [ -n "${TRACE_ACTIVE}" ]; then
-  #define trace filename
-  if [ -n "${TRACE_TI_ACTIVE}" ]; then
-    if [ -z "${TRACE_FILENAME}" ]; then
-      TRACE_FILENAME="smpi_simgrid.txt"
+    #define trace filename
+    if [ -n "${TRACE_TI_ACTIVE}" ]; then
+        if [ -z "${TRACE_FILENAME}" ]; then
+            TRACE_FILENAME="smpi_simgrid.txt"
+        fi
+        TRACEOPTIONS="--cfg=tracing:yes --cfg=tracing/filename:${TRACE_FILENAME} --cfg=tracing/smpi:yes --cfg=tracing/smpi/format:TI --cfg=tracing/smpi/computing:yes"
+    else
+        if [ -z "${TRACE_FILENAME}" ]; then
+            TRACE_FILENAME="smpi_simgrid.trace"
+        fi
+        TRACEOPTIONS="--cfg=tracing:yes --cfg=tracing/filename:${TRACE_FILENAME} --cfg=tracing/smpi:yes"
     fi
-    TRACEOPTIONS="--cfg=tracing:yes --cfg=tracing/filename:${TRACE_FILENAME} --cfg=tracing/smpi:yes --cfg=tracing/smpi/format:TI --cfg=tracing/smpi/computing:yes"
-  else
-    if [ -z "${TRACE_FILENAME}" ]; then
-      TRACE_FILENAME="smpi_simgrid.trace"
+
+    if [ -n "${TRACE_COMMENT}" ]; then
+        TRACEOPTIONS="${TRACEOPTIONS} --cfg=tracing/comment:${TRACE_COMMENT}"
     fi
-    TRACEOPTIONS="--cfg=tracing:yes --cfg=tracing/filename:${TRACE_FILENAME} --cfg=tracing/smpi:yes"
-  fi
 
-  if [ -n "${TRACE_COMMENT}" ]; then
-    TRACEOPTIONS="${TRACEOPTIONS} --cfg=tracing/comment:${TRACE_COMMENT}"
-  fi
+    if [ -n "${TRACE_COMMENT_FILE}" ]; then
+        TRACEOPTIONS="${TRACEOPTIONS} --cfg=tracing/comment_file:${TRACE_COMMENT_FILE}"
+    fi
 
-  if [ -n "${TRACE_COMMENT_FILE}" ]; then
-    TRACEOPTIONS="${TRACEOPTIONS} --cfg=tracing/comment_file:${TRACE_COMMENT_FILE}"
-  fi
+    if [ -n "${TRACE_GROUPED}" ]; then
+        TRACEOPTIONS="${TRACEOPTIONS} --cfg=tracing/smpi/group:yes"
+    fi
 
-  if [ -n "${TRACE_GROUPED}" ]; then
-    TRACEOPTIONS="${TRACEOPTIONS} --cfg=tracing/smpi/group:yes"
-  fi
+    if [ -n "${TRACE_RESOURCE}" ]; then
+        TRACEOPTIONS="${TRACEOPTIONS} --cfg=tracing/categorized:yes --cfg=tracing/uncategorized:yes"
+    fi
 
-  if [ -n "${TRACE_RESOURCE}" ]; then
-    TRACEOPTIONS="${TRACEOPTIONS} --cfg=tracing/categorized:yes --cfg=tracing/uncategorized:yes"
-  fi
-
-  if [ -n "${TRACE_VIVA}" ]; then
-    TRACEOPTIONS="${TRACEOPTIONS} --cfg=viva/categorized:smpi_cat.plist --cfg=viva/uncategorized:smpi_uncat.plist"
-  fi
+    if [ -n "${TRACE_VIVA}" ]; then
+        TRACEOPTIONS="${TRACEOPTIONS} --cfg=viva/categorized:smpi_cat.plist --cfg=viva/uncategorized:smpi_uncat.plist"
+    fi
 fi
 ##---------------------- end SMPI TRACING OPTIONS ---------------------------------
 
 export SMPI_GLOBAL_SIZE=${NUMPROCS}
 if [ -n "${KEEP}" ] ; then
-  echo ${EXEC} ${TRACEOPTIONS} ${SIMOPTS} ${PLATFORMTMP} ${APPLICATIONTMP}
-  if [ ${HOSTFILETMP} = 1 ] ; then
-    echo "Generated hostfile ${HOSTFILE} keeped."
-  fi
-  if [ ${UNROLLEDHOSTFILETMP} = 1 ] ; then
-    echo "Generated unrolled hostfile ${UNROLLEDHOSTFILE} keeped." 
-  fi
+    echo ${EXEC} ${TRACEOPTIONS} ${SIMOPTS} ${PLATFORMTMP} ${APPLICATIONTMP}
+    if [ ${HOSTFILETMP} = 1 ] ; then
+        echo "Generated hostfile ${HOSTFILE} keeped."
+    fi
+    if [ ${UNROLLEDHOSTFILETMP} = 1 ] ; then
+        echo "Generated unrolled hostfile ${UNROLLEDHOSTFILE} keeped." 
+    fi
 fi
 ${EXEC} ${TRACEOPTIONS} ${SIMOPTS} ${PLATFORMTMP} ${APPLICATIONTMP}
 status=$?
 
 if [ -z "${KEEP}" ] ; then
-   if [ -z "${PLATFORM}" ]; then
+    if [ -z "${PLATFORM}" ]; then
 	rm ${PLATFORMTMP}
-   fi
-   if [ ${HOSTFILETMP} = 1 ] ; then
+    fi
+    if [ ${HOSTFILETMP} = 1 ] ; then
         rm ${HOSTFILE}
-   fi
-   if [ ${UNROLLEDHOSTFILETMP} = 1 ] ; then
+    fi
+    if [ ${UNROLLEDHOSTFILETMP} = 1 ] ; then
         rm ${UNROLLEDHOSTFILE}
-   fi
-   rm ${APPLICATIONTMP}
+    fi
+    rm ${APPLICATIONTMP}
 fi
 
 exit $status
