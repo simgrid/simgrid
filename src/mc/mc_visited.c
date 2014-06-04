@@ -274,7 +274,9 @@ int is_visited_state()
                 ("State %d already visited ! (equal to state %d (state %d in dot_output))",
                  new_state->num, state_test->num, new_state->other_num);
 
-          // Replace the old state with the new one (why?):
+          /* Replace the old state with the new one (with a bigger num) 
+             (when the max number of visited states is reached,  the oldest 
+             one is removed according to its number (= with the min number) */
           xbt_dynar_remove_at(visited_states, cursor, NULL);
           xbt_dynar_insert_at(visited_states, cursor, &new_state);
 
@@ -285,7 +287,7 @@ int is_visited_state()
         cursor++;
       }
 
-      // The state has not been visited, add it to the list:
+      // The state has not been visited: insert the state in the dynamic array.
       xbt_dynar_insert_at(visited_states, min, &new_state);
 
     } else {
@@ -308,7 +310,7 @@ int is_visited_state()
     // We have reached the maximum number of stored states;
     if (xbt_dynar_length(visited_states) > _sg_mc_visited) {
 
-      // Find the (index of the) older state:
+      // Find the (index of the) older state (with the smallest num):
       int min2 = mc_stats->expanded_states;
       unsigned int cursor2 = 0;
       unsigned int index2 = 0;
@@ -401,7 +403,6 @@ int is_visited_pair(mc_visited_pair_t pair, int pair_num,
         pair_test =
             (mc_visited_pair_t) xbt_dynar_get_as(visited_pairs, cursor,
                                                  mc_visited_pair_t);
-        //if(pair_test->acceptance_pair == 0){ /* Acceptance pair have been already checked before */
         if (xbt_automaton_state_compare
             (pair_test->automaton_state, new_pair->automaton_state) == 0) {
           if (xbt_automaton_propositional_symbols_compare_value
@@ -433,7 +434,6 @@ int is_visited_pair(mc_visited_pair_t pair, int pair_num,
               return new_pair->other_num;
             }
           }
-          //}
         }
         cursor++;
       }
