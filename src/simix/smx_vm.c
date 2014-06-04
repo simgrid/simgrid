@@ -121,7 +121,7 @@ int SIMIX_pre_vm_get_state(smx_simcall_t simcall, smx_host_t ind_vm)
 
 
 /**
- * \brief Function to migrate a SIMIX VM host. 
+ * \brief Function to migrate a SIMIX VM host.
  *
  * \param host the vm host to migrate (a smx_host_t)
  */
@@ -199,7 +199,7 @@ void SIMIX_pre_vm_set_affinity(smx_simcall_t simcall, smx_host_t ind_vm, smx_hos
 
 
 /**
- * \brief Function to suspend a SIMIX VM host. This function stops the exection of the
+ * \brief Function to suspend a SIMIX VM host. This function stops the execution of the
  * VM. All the processes on this VM will pause. The state of the VM is
  * preserved on memory. We can later resume it again.
  *
@@ -241,7 +241,7 @@ void SIMIX_pre_vm_suspend(smx_simcall_t simcall, smx_host_t ind_vm)
 
 /**
  * \brief Function to resume a SIMIX VM host. This function restart the execution of the
- * VM. All the processes on this VM will run again. 
+ * VM. All the processes on this VM will run again.
  *
  * \param host the vm host to resume (a smx_host_t)
  */
@@ -305,7 +305,7 @@ void SIMIX_pre_vm_save(smx_simcall_t simcall, smx_host_t ind_vm)
 
 /**
  * \brief Function to restore a SIMIX VM host. This function restart the execution of the
- * VM. All the processes on this VM will run again. 
+ * VM. All the processes on this VM will run again.
  *
  * \param host the vm host to restore (a smx_host_t)
  */

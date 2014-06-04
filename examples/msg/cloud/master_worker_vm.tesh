@@ -1,0 +1,90 @@
+#! ./tesh
+
+p Testing the Cloud API with a simple masterslave
+
+$ $SG_TEST_EXENV ${bindir:=.}/master_worker_vm$EXEEXT --log=no_loc ${srcdir:=.}/../msg_platform.xml
+> [Jacquelin:master:(1) 0.000000] [msg_test/INFO] # Launch 2 VMs
+> [Jacquelin:master:(1) 0.000000] [msg_test/INFO] create VM00 on PM(Intel)
+> [0.000000] [surf_vm_workstation/INFO] Create VM(VM00)@PM(Intel) with 0 mounted disks
+> [Jacquelin:master:(1) 0.000000] [msg_test/INFO] put a process (WRK00) on VM00
+> [VM00:WRK00:(2) 0.000000] [msg_test/INFO] WRK00 is listenning on mailbox(MBOX:WRK00)
+> [Jacquelin:master:(1) 0.000000] [msg_test/INFO] create VM01 on PM(Provost)
+> [0.000000] [surf_vm_workstation/INFO] Create VM(VM01)@PM(Provost) with 0 mounted disks
+> [Jacquelin:master:(1) 0.000000] [msg_test/INFO] put a process (WRK01) on VM01
+> [VM01:WRK01:(3) 0.000000] [msg_test/INFO] WRK01 is listenning on mailbox(MBOX:WRK01)
+> [Jacquelin:master:(1) 0.000000] [msg_test/INFO] # Send a task to 2 worker process
+> [Jacquelin:master:(1) 0.000000] [msg_test/INFO] Send task(Task00) to mailbox(MBOX:WRK00)
+> [VM00:WRK00:(2) 23.846402] [msg_test/INFO] WRK00 received task(Task00) from mailbox(MBOX:WRK00)
+> [Jacquelin:master:(1) 23.846402] [msg_test/INFO] Send task(Task01) to mailbox(MBOX:WRK01)
+> [VM00:WRK00:(2) 23.919218] [msg_test/INFO] WRK00 executed task(Task00)
+> [VM01:WRK01:(3) 48.653760] [msg_test/INFO] WRK01 received task(Task01) from mailbox(MBOX:WRK01)
+> [Jacquelin:master:(1) 48.653760] [msg_test/INFO] # Suspend all VMs
+> [Jacquelin:master:(1) 48.653760] [msg_test/INFO] suspend VM00
+> [Jacquelin:master:(1) 48.653760] [msg_test/INFO] suspend VM01
+> [Jacquelin:master:(1) 48.653760] [msg_test/INFO] # Wait a while
+> [Jacquelin:master:(1) 50.653760] [msg_test/INFO] # Resume all VMs
+> [Jacquelin:master:(1) 50.653760] [msg_test/INFO] # Sleep long enough for everyone to be done with previous batch of work
+> [VM01:WRK01:(3) 50.726576] [msg_test/INFO] WRK01 executed task(Task01)
+> [Jacquelin:master:(1) 1000.000000] [msg_test/INFO] # Add one more process on each VM
+> [Jacquelin:master:(1) 1000.000000] [msg_test/INFO] put a process (WRK02) on VM00
+> [VM00:WRK02:(4) 1000.000000] [msg_test/INFO] WRK02 is listenning on mailbox(MBOX:WRK02)
+> [Jacquelin:master:(1) 1000.000000] [msg_test/INFO] put a process (WRK03) on VM01
+> [VM01:WRK03:(5) 1000.000000] [msg_test/INFO] WRK03 is listenning on mailbox(MBOX:WRK03)
+> [Jacquelin:master:(1) 1000.000000] [msg_test/INFO] # Send a task to 4 worker process
+> [Jacquelin:master:(1) 1000.000000] [msg_test/INFO] Send task(Task00) to mailbox(MBOX:WRK00)
+> [VM00:WRK00:(2) 1023.846402] [msg_test/INFO] WRK00 received task(Task00) from mailbox(MBOX:WRK00)
+> [Jacquelin:master:(1) 1023.846402] [msg_test/INFO] Send task(Task01) to mailbox(MBOX:WRK01)
+> [VM00:WRK00:(2) 1023.919218] [msg_test/INFO] WRK00 executed task(Task00)
+> [VM01:WRK01:(3) 1048.653760] [msg_test/INFO] WRK01 received task(Task01) from mailbox(MBOX:WRK01)
+> [Jacquelin:master:(1) 1048.653760] [msg_test/INFO] Send task(Task02) to mailbox(MBOX:WRK02)
+> [VM01:WRK01:(3) 1048.726576] [msg_test/INFO] WRK01 executed task(Task01)
+> [VM00:WRK02:(4) 1072.500163] [msg_test/INFO] WRK02 received task(Task02) from mailbox(MBOX:WRK02)
+> [Jacquelin:master:(1) 1072.500163] [msg_test/INFO] Send task(Task03) to mailbox(MBOX:WRK03)
+> [VM00:WRK02:(4) 1072.572978] [msg_test/INFO] WRK02 executed task(Task02)
+> [VM01:WRK03:(5) 1097.307521] [msg_test/INFO] WRK03 received task(Task03) from mailbox(MBOX:WRK03)
+> [Jacquelin:master:(1) 1097.307521] [msg_test/INFO] # Migrate all VMs to PM(Intel)
+> [Intel:__pr_mig_tx:VM00(Intel-Intel):(7) 1097.307521] [msg_vm/WARNING] use the default max_downtime value 30ms
+> [Intel:__pr_mig_tx:VM00(Intel-Intel):(7) 1097.307521] [msg_vm/INFO] mig-stage1: remaining_size 1073741824.000000
+> [VM01:WRK03:(5) 1097.380336] [msg_test/INFO] WRK03 executed task(Task03)
+> [Intel:__pr_mig_tx:VM00(Intel-Intel):(7) 1099.463824] [msg_vm/INFO] actual bandwidth 474.886827 (MB/s), threshold 14938647.898422
+> [Intel:__pr_mig_tx:VM00(Intel-Intel):(7) 1099.463824] [msg_vm/INFO] mig-stage 2:0 updated_size 0.000000 computed_during_stage1 0.000000 dp_rate 0.000000 dp_cap 0.000000
+> [Intel:__pr_mig_tx:VM00(Intel-Intel):(7) 1099.463824] [msg_vm/INFO] mig-stage2.0: remaining_size 0.000000 (< threshold 14938647.898422)
+> [Intel:__pr_mig_tx:VM00(Intel-Intel):(7) 1099.463824] [msg_vm/INFO] mig-stage3: remaining_size 0.000000
+> [1099.464019] [surf_vm_workstation/INFO] migrate VM(VM00): set bound (137333000.000000) at Intel
+> [Intel:__pr_mig_rx:VM00(Intel-Intel):(6) 1099.464019] [msg_vm/INFO] set affinity(0x0000@Intel) for VM00
+> [Provost:__pr_mig_tx:VM01(Provost-Intel):(11) 1100.382717] [msg_vm/WARNING] use the default max_downtime value 30ms
+> [Provost:__pr_mig_tx:VM01(Provost-Intel):(11) 1100.382717] [msg_vm/INFO] mig-stage1: remaining_size 1073741824.000000
+> [Provost:__pr_mig_tx:VM01(Provost-Intel):(11) 3564.234309] [msg_vm/INFO] actual bandwidth 0.415609 (MB/s), threshold 13073.942775
+> [Provost:__pr_mig_tx:VM01(Provost-Intel):(11) 3564.234309] [msg_vm/INFO] mig-stage 2:0 updated_size 0.000000 computed_during_stage1 0.000000 dp_rate 0.000000 dp_cap 0.000000
+> [Provost:__pr_mig_tx:VM01(Provost-Intel):(11) 3564.234309] [msg_vm/INFO] mig-stage2.0: remaining_size 0.000000 (< threshold 13073.942775)
+> [Provost:__pr_mig_tx:VM01(Provost-Intel):(11) 3564.234309] [msg_vm/INFO] mig-stage3: remaining_size 0.000000
+> [3566.242426] [surf_vm_workstation/INFO] migrate VM(VM01): set bound (137333000.000000) at Intel
+> [Intel:__pr_mig_rx:VM01(Provost-Intel):(10) 3566.242426] [msg_vm/INFO] set affinity(0x0000@Intel) for VM01
+> [Jacquelin:master:(1) 3567.161124] [msg_test/INFO] # Migrate all VMs to PM(Provost)
+> [Intel:__pr_mig_tx:VM00(Intel-Provost):(15) 3567.161124] [msg_vm/WARNING] use the default max_downtime value 30ms
+> [Intel:__pr_mig_tx:VM00(Intel-Provost):(15) 3567.161124] [msg_vm/INFO] mig-stage1: remaining_size 1073741824.000000
+> [Intel:__pr_mig_tx:VM00(Intel-Provost):(15) 6031.012716] [msg_vm/INFO] actual bandwidth 0.415609 (MB/s), threshold 13073.942775
+> [Intel:__pr_mig_tx:VM00(Intel-Provost):(15) 6031.012716] [msg_vm/INFO] mig-stage 2:0 updated_size 0.000000 computed_during_stage1 0.000000 dp_rate 0.000000 dp_cap 0.000000
+> [Intel:__pr_mig_tx:VM00(Intel-Provost):(15) 6031.012716] [msg_vm/INFO] mig-stage2.0: remaining_size 0.000000 (< threshold 13073.942775)
+> [Intel:__pr_mig_tx:VM00(Intel-Provost):(15) 6031.012716] [msg_vm/INFO] mig-stage3: remaining_size 0.000000
+> [6033.020833] [surf_vm_workstation/INFO] migrate VM(VM00): set bound (137333000.000000) at Provost
+> [Provost:__pr_mig_rx:VM00(Intel-Provost):(14) 6033.020833] [msg_vm/INFO] set affinity(0x0000@Provost) for VM00
+> [Intel:__pr_mig_tx:VM01(Intel-Provost):(19) 6034.900487] [msg_vm/WARNING] use the default max_downtime value 30ms
+> [Intel:__pr_mig_tx:VM01(Intel-Provost):(19) 6034.900487] [msg_vm/INFO] mig-stage1: remaining_size 1073741824.000000
+> [Intel:__pr_mig_tx:VM01(Intel-Provost):(19) 8498.752079] [msg_vm/INFO] actual bandwidth 0.415609 (MB/s), threshold 13073.942775
+> [Intel:__pr_mig_tx:VM01(Intel-Provost):(19) 8498.752079] [msg_vm/INFO] mig-stage 2:0 updated_size 0.000000 computed_during_stage1 0.000000 dp_rate 0.000000 dp_cap 0.000000
+> [Intel:__pr_mig_tx:VM01(Intel-Provost):(19) 8498.752079] [msg_vm/INFO] mig-stage2.0: remaining_size 0.000000 (< threshold 13073.942775)
+> [Intel:__pr_mig_tx:VM01(Intel-Provost):(19) 8498.752079] [msg_vm/INFO] mig-stage3: remaining_size 0.000000
+> [8500.760196] [surf_vm_workstation/INFO] migrate VM(VM01): set bound (137333000.000000) at Provost
+> [Provost:__pr_mig_rx:VM01(Intel-Provost):(18) 8500.760196] [msg_vm/INFO] set affinity(0x0000@Provost) for VM01
+> [Jacquelin:master:(1) 8502.639850] [msg_test/INFO] # Shutdown the half of worker processes gracefuly. The remaining half will be forcibly killed.
+> [VM00:WRK00:(2) 8504.519504] [msg_test/INFO] WRK00 received task(finalize) from mailbox(MBOX:WRK00)
+> [VM01:WRK01:(3) 8506.399157] [msg_test/INFO] WRK01 received task(finalize) from mailbox(MBOX:WRK01)
+> [Jacquelin:master:(1) 8506.399157] [msg_test/INFO] # Wait a while before effective shutdown.
+> [Jacquelin:master:(1) 8508.399157] [msg_test/INFO] # Shutdown and destroy all the VMs. The remaining worker processes will be forcibly killed.
+> [Jacquelin:master:(1) 8508.399157] [msg_test/INFO] shutdown VM00
+> [Jacquelin:master:(1) 8508.399157] [msg_test/INFO] destroy VM00
+> [Jacquelin:master:(1) 8508.399157] [msg_test/INFO] shutdown VM01
+> [Jacquelin:master:(1) 8508.399157] [msg_test/INFO] destroy VM01
+> [Jacquelin:master:(1) 8508.399157] [msg_test/INFO] # Goodbye now!
+> [8508.399157] [msg_test/INFO] Bye (simulation time 8508.4)

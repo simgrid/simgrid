@@ -188,7 +188,6 @@ SectionEnd
 Section "SMPI Library" SMPISection
 	setOutPath $INSTDIR\bin
 	file bin\smpicc
-	file bin\smpif2c
 	file bin\smpiff
 	file bin\smpirun
 	file bin\smpif90
@@ -202,7 +201,6 @@ Section "SMPI Library" SMPISection
 	file @CMAKE_HOME_DIRECTORY@\include\smpi\smpi_cocci.h
 	file @CMAKE_HOME_DIRECTORY@\include\smpi\smpi_main.h
 	file include\smpi\mpif.h
-	file include\smpi\smpif.h
 	
 	CreateDirectory $INSTDIR\examples\smpi
 	file /r @CMAKE_HOME_DIRECTORY@\examples\smpi\tracing
@@ -285,7 +283,6 @@ section "Uninstall"
 	delete $INSTDIR\bin\graphicator@BIN_EXE@
 	delete $INSTDIR\bin\simgrid_update_xml
 	delete $INSTDIR\bin\smpicc
-	delete $INSTDIR\bin\smpif2c
 	delete $INSTDIR\bin\smpiff
 	delete $INSTDIR\bin\smpirun
 	delete $INSTDIR\bin\tesh
@@ -343,7 +340,6 @@ section "Uninstall"
 	delete $INSTDIR\include\smpi\mpif.h
 	delete $INSTDIR\include\smpi\smpi_cocci.h
 	delete $INSTDIR\include\smpi\smpi_main.h
-	delete $INSTDIR\include\smpi\smpif.h
 	delete $INSTDIR\include\surf\surfxml_parse.h
 	delete $INSTDIR\include\surf\simgrid_dtd.h
 	delete $INSTDIR\include\surf\surf_routing.h

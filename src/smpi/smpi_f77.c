@@ -10,9 +10,6 @@
 #include "private.h"
 #include "xbt.h"
 
-extern int xargc;
-extern char** xargv;
-
 static xbt_dict_t comm_lookup = NULL;
 static xbt_dict_t group_lookup = NULL;
 static xbt_dict_t request_lookup = NULL;
@@ -20,27 +17,33 @@ static xbt_dict_t datatype_lookup = NULL;
 static xbt_dict_t op_lookup = NULL;
 static int running_processes = 0;
 
+#if defined(__alpha__) || defined(__sparc64__) || defined(__x86_64__) || defined(__ia64__)
+typedef int integer;
+typedef unsigned int uinteger;
+#else
+typedef long int integer;
+typedef unsigned long int uinteger;
+#endif
+
 /* Bindings for MPI special values */
-union u_smpi_common {
+
   struct s_smpi_common {
     integer _MPI_IN_PLACE;
     integer _MPI_BOTTOM;
     integer _MPI_STATUS_IGNORE;
     integer _MPI_STATUSES_IGNORE;
-  } *f77;                       /* with f2c, remains NULL with gfortran */
-  struct s_smpi_common f90;     /* with gfortran */
-} smpi_ = { NULL };
+  } smpi_f90;                       
+
+
 
 /* Convert between Fortran and C */
-#define F2C_ADDR(addr, val)                                             \
-  (((void *)(addr) == (void *)(smpi_.f77                                \
-                               ? &smpi_.f77[smpi_current_rank]._ ## val \
-                               : &smpi_.f90._ ## val))                  \
+#define FORT_ADDR(addr, val)                                         \
+  (((void *)(addr) == (void*) &(smpi_f90._ ## val))                  \
    ? (val) : (void *)(addr))
-#define F2C_BOTTOM(addr)          F2C_ADDR(addr, MPI_BOTTOM)
-#define F2C_IN_PLACE(addr)        F2C_ADDR(addr, MPI_IN_PLACE)
-#define F2C_STATUS_IGNORE(addr)   F2C_ADDR(addr, MPI_STATUS_IGNORE)
-#define F2C_STATUSES_IGNORE(addr) F2C_ADDR(addr, MPI_STATUSES_IGNORE)
+#define FORT_BOTTOM(addr)          FORT_ADDR(addr, MPI_BOTTOM)
+#define FORT_IN_PLACE(addr)        FORT_ADDR(addr, MPI_IN_PLACE)
+#define FORT_STATUS_IGNORE(addr)   FORT_ADDR(addr, MPI_STATUS_IGNORE)
+#define FORT_STATUSES_IGNORE(addr) FORT_ADDR(addr, MPI_STATUSES_IGNORE)
 
 #define KEY_SIZE (sizeof(int) * 2 + 1)
 
@@ -217,7 +220,6 @@ void mpi_init_(int* ierr) {
      new_op(MPI_BOR);
      new_op(MPI_BXOR);
    }
-   /* smpif2c is responsible for generating a call with the final arguments */
    *ierr = MPI_Init(NULL, NULL);
    running_processes++;
 }
@@ -329,7 +331,7 @@ void mpi_send_init_(void *buf, int* count, int* datatype, int* dst, int* tag,
 void mpi_isend_(void *buf, int* count, int* datatype, int* dst,
                  int* tag, int* comm, int* request, int* ierr) {
   MPI_Request req;
-  buf = (char *) F2C_BOTTOM(buf);
+  buf = (char *) FORT_BOTTOM(buf);
   *ierr = MPI_Isend(buf, *count, get_datatype(*datatype), *dst, *tag,
                     get_comm(*comm), &req);
   if(*ierr == MPI_SUCCESS) {
@@ -340,7 +342,7 @@ void mpi_isend_(void *buf, int* count, int* datatype, int* dst,
 void mpi_irsend_(void *buf, int* count, int* datatype, int* dst,
                  int* tag, int* comm, int* request, int* ierr) {
   MPI_Request req;
-  buf = (char *) F2C_BOTTOM(buf);
+  buf = (char *) FORT_BOTTOM(buf);
   *ierr = MPI_Irsend(buf, *count, get_datatype(*datatype), *dst, *tag,
                     get_comm(*comm), &req);
   if(*ierr == MPI_SUCCESS) {
@@ -366,7 +368,7 @@ void mpi_sendrecv_(void* sendbuf, int* sendcount, int* sendtype, int* dst,
                 int* comm, MPI_Status* status, int* ierr) {
    *ierr = MPI_Sendrecv(sendbuf, *sendcount, get_datatype(*sendtype), *dst,
        *sendtag, recvbuf, *recvcount,get_datatype(*recvtype), *src, *recvtag,
-       get_comm(*comm), F2C_STATUS_IGNORE(status));
+       get_comm(*comm), FORT_STATUS_IGNORE(status));
 }
 
 void mpi_recv_init_(void *buf, int* count, int* datatype, int* src, int* tag,
@@ -383,7 +385,7 @@ void mpi_recv_init_(void *buf, int* count, int* datatype, int* src, int* tag,
 void mpi_irecv_(void *buf, int* count, int* datatype, int* src, int* tag,
                  int* comm, int* request, int* ierr) {
   MPI_Request req;
-  buf = (char *) F2C_BOTTOM(buf);
+  buf = (char *) FORT_BOTTOM(buf);
   *ierr = MPI_Irecv(buf, *count, get_datatype(*datatype), *src, *tag,
                     get_comm(*comm), &req);
   if(*ierr == MPI_SUCCESS) {
@@ -418,7 +420,7 @@ void mpi_startall_(int* count, int* requests, int* ierr) {
 void mpi_wait_(int* request, MPI_Status* status, int* ierr) {
    MPI_Request req = find_request(*request);
    
-   *ierr = MPI_Wait(&req, F2C_STATUS_IGNORE(status));
+   *ierr = MPI_Wait(&req, FORT_STATUS_IGNORE(status));
    if(req==MPI_REQUEST_NULL){
      free_request(*request);
      *request=MPI_FORTRAN_REQUEST_NULL;
@@ -449,7 +451,7 @@ void mpi_waitall_(int* count, int* requests, MPI_Status* status, int* ierr) {
   for(i = 0; i < *count; i++) {
     reqs[i] = find_request(requests[i]);
   }
-  *ierr = MPI_Waitall(*count, reqs, F2C_STATUSES_IGNORE(status));
+  *ierr = MPI_Waitall(*count, reqs, FORT_STATUSES_IGNORE(status));
   for(i = 0; i < *count; i++) {
       if(reqs[i]==MPI_REQUEST_NULL){
           free_request(requests[i]);
@@ -470,23 +472,23 @@ void mpi_bcast_(void *buf, int* count, int* datatype, int* root, int* comm, int*
 
 void mpi_reduce_(void* sendbuf, void* recvbuf, int* count,
                   int* datatype, int* op, int* root, int* comm, int* ierr) {
-  sendbuf = (char *) F2C_IN_PLACE(sendbuf);
-  sendbuf = (char *) F2C_BOTTOM(sendbuf);
-  recvbuf = (char *) F2C_BOTTOM(recvbuf);
+  sendbuf = (char *) FORT_IN_PLACE(sendbuf);
+  sendbuf = (char *) FORT_BOTTOM(sendbuf);
+  recvbuf = (char *) FORT_BOTTOM(recvbuf);
   *ierr = MPI_Reduce(sendbuf, recvbuf, *count,
                      get_datatype(*datatype), get_op(*op), *root, get_comm(*comm));
 }
 
 void mpi_allreduce_(void* sendbuf, void* recvbuf, int* count, int* datatype,
                      int* op, int* comm, int* ierr) {
-  sendbuf = (char *) F2C_IN_PLACE(sendbuf);
+  sendbuf = (char *) FORT_IN_PLACE(sendbuf);
   *ierr = MPI_Allreduce(sendbuf, recvbuf, *count, get_datatype(*datatype),
                         get_op(*op), get_comm(*comm));
 }
 
 void mpi_reduce_scatter_(void* sendbuf, void* recvbuf, int* recvcounts, int* datatype,
                      int* op, int* comm, int* ierr) {
-  sendbuf = (char *) F2C_IN_PLACE(sendbuf);
+  sendbuf = (char *) FORT_IN_PLACE(sendbuf);
   *ierr = MPI_Reduce_scatter(sendbuf, recvbuf, recvcounts, get_datatype(*datatype),
                         get_op(*op), get_comm(*comm));
 }
@@ -494,7 +496,7 @@ void mpi_reduce_scatter_(void* sendbuf, void* recvbuf, int* recvcounts, int* dat
 void mpi_scatter_(void* sendbuf, int* sendcount, int* sendtype,
                    void* recvbuf, int* recvcount, int* recvtype, 
                    int* root, int* comm, int* ierr) {
-  recvbuf = (char *) F2C_IN_PLACE(recvbuf);
+  recvbuf = (char *) FORT_IN_PLACE(recvbuf);
   *ierr = MPI_Scatter(sendbuf, *sendcount, get_datatype(*sendtype),
                       recvbuf, *recvcount, get_datatype(*recvtype), *root, get_comm(*comm));
 }
@@ -503,7 +505,7 @@ void mpi_scatter_(void* sendbuf, int* sendcount, int* sendtype,
 void mpi_scatterv_(void* sendbuf, int* sendcounts, int* displs, int* sendtype,
                    void* recvbuf, int* recvcount, int* recvtype,
                    int* root, int* comm, int* ierr) {
-  recvbuf = (char *) F2C_IN_PLACE(recvbuf);
+  recvbuf = (char *) FORT_IN_PLACE(recvbuf);
   *ierr = MPI_Scatterv(sendbuf, sendcounts, displs, get_datatype(*sendtype),
                       recvbuf, *recvcount, get_datatype(*recvtype), *root, get_comm(*comm));
 }
@@ -511,9 +513,9 @@ void mpi_scatterv_(void* sendbuf, int* sendcounts, int* displs, int* sendtype,
 void mpi_gather_(void* sendbuf, int* sendcount, int* sendtype,
                   void* recvbuf, int* recvcount, int* recvtype,
                   int* root, int* comm, int* ierr) {
-  sendbuf = (char *) F2C_IN_PLACE(sendbuf);
-  sendbuf = (char *) F2C_BOTTOM(sendbuf);
-  recvbuf = (char *) F2C_BOTTOM(recvbuf);
+  sendbuf = (char *) FORT_IN_PLACE(sendbuf);
+  sendbuf = (char *) FORT_BOTTOM(sendbuf);
+  recvbuf = (char *) FORT_BOTTOM(recvbuf);
   *ierr = MPI_Gather(sendbuf, *sendcount, get_datatype(*sendtype),
                      recvbuf, *recvcount, get_datatype(*recvtype), *root, get_comm(*comm));
 }
@@ -521,9 +523,9 @@ void mpi_gather_(void* sendbuf, int* sendcount, int* sendtype,
 void mpi_gatherv_(void* sendbuf, int* sendcount, int* sendtype,
                   void* recvbuf, int* recvcounts, int* displs, int* recvtype,
                   int* root, int* comm, int* ierr) {
-  sendbuf = (char *) F2C_IN_PLACE(sendbuf);
-  sendbuf = (char *) F2C_BOTTOM(sendbuf);
-  recvbuf = (char *) F2C_BOTTOM(recvbuf);
+  sendbuf = (char *) FORT_IN_PLACE(sendbuf);
+  sendbuf = (char *) FORT_BOTTOM(sendbuf);
+  recvbuf = (char *) FORT_BOTTOM(recvbuf);
   *ierr = MPI_Gatherv(sendbuf, *sendcount, get_datatype(*sendtype),
                      recvbuf, recvcounts, displs, get_datatype(*recvtype), *root, get_comm(*comm));
 }
@@ -531,7 +533,7 @@ void mpi_gatherv_(void* sendbuf, int* sendcount, int* sendtype,
 void mpi_allgather_(void* sendbuf, int* sendcount, int* sendtype,
                      void* recvbuf, int* recvcount, int* recvtype,
                      int* comm, int* ierr) {
-  sendbuf = (char *) F2C_IN_PLACE(sendbuf);
+  sendbuf = (char *) FORT_IN_PLACE(sendbuf);
   *ierr = MPI_Allgather(sendbuf, *sendcount, get_datatype(*sendtype),
                         recvbuf, *recvcount, get_datatype(*recvtype), get_comm(*comm));
 }
@@ -539,7 +541,7 @@ void mpi_allgather_(void* sendbuf, int* sendcount, int* sendtype,
 void mpi_allgatherv_(void* sendbuf, int* sendcount, int* sendtype,
                      void* recvbuf, int* recvcounts,int* displs, int* recvtype,
                      int* comm, int* ierr) {
-  sendbuf = (char *) F2C_IN_PLACE(sendbuf);
+  sendbuf = (char *) FORT_IN_PLACE(sendbuf);
   *ierr = MPI_Allgatherv(sendbuf, *sendcount, get_datatype(*sendtype),
                         recvbuf, recvcounts, displs, get_datatype(*recvtype), get_comm(*comm));
 }
@@ -564,7 +566,7 @@ void mpi_alltoallv_(void* sendbuf, int* sendcounts, int* senddisps, int* sendtyp
 
 void mpi_test_ (int * request, int *flag, MPI_Status * status, int* ierr){
   MPI_Request req = find_request(*request);
-  *ierr= MPI_Test(&req, flag, F2C_STATUS_IGNORE(status));
+  *ierr= MPI_Test(&req, flag, FORT_STATUS_IGNORE(status));
   if(req==MPI_REQUEST_NULL){
       free_request(*request);
       *request=MPI_FORTRAN_REQUEST_NULL;
@@ -579,7 +581,7 @@ void mpi_testall_ (int* count, int * requests,  int *flag, MPI_Status * statuses
   for(i = 0; i < *count; i++) {
     reqs[i] = find_request(requests[i]);
   }
-  *ierr= MPI_Testall(*count, reqs, flag, F2C_STATUSES_IGNORE(statuses));
+  *ierr= MPI_Testall(*count, reqs, flag, FORT_STATUSES_IGNORE(statuses));
   for(i = 0; i < *count; i++) {
     if(reqs[i]==MPI_REQUEST_NULL){
         free_request(requests[i]);
@@ -594,7 +596,7 @@ void mpi_get_processor_name_(char *name, int *resultlen, int* ierr){
 }
 
 void mpi_get_count_(MPI_Status * status, int* datatype, int *count, int* ierr){
-  *ierr = MPI_Get_count(F2C_STATUS_IGNORE(status), get_datatype(*datatype), count);
+  *ierr = MPI_Get_count(FORT_STATUS_IGNORE(status), get_datatype(*datatype), count);
 }
 
 void mpi_attr_get_(int* comm, int* keyval, void* attr_value, int* flag, int* ierr ){
@@ -749,7 +751,7 @@ void mpi_init_thread_ (int* required, int *provided, int* ierr){
     new_op(MPI_BOR);
     new_op(MPI_BXOR);
   }
-  /* smpif2c is responsible for generating a call with the final arguments */
+
  *ierr = MPI_Init_thread(NULL, NULL,*required, provided);
 }
 
@@ -979,7 +981,7 @@ void mpi_sendrecv_replace_ (void *buf, int* count, int* datatype, int* dst, int*
 {
 
  *ierr = MPI_Sendrecv_replace(buf, *count, get_datatype(*datatype), *dst, *sendtag, *src,
- *recvtag, get_comm(*comm), F2C_STATUS_IGNORE(status));
+ *recvtag, get_comm(*comm), FORT_STATUS_IGNORE(status));
 }
 
 void mpi_testany_ (int* count, int* requests, int *index, int *flag, MPI_Status* status, int* ierr)
@@ -991,7 +993,7 @@ void mpi_testany_ (int* count, int* requests, int *index, int *flag, MPI_Status*
   for(i = 0; i < *count; i++) {
     reqs[i] = find_request(requests[i]);
   }
-  *ierr = MPI_Testany(*count, reqs, index, flag, F2C_STATUS_IGNORE(status));
+  *ierr = MPI_Testany(*count, reqs, index, flag, FORT_STATUS_IGNORE(status));
   if(*index!=MPI_UNDEFINED)
   if(reqs[*index]==MPI_REQUEST_NULL){
     free_request(requests[*index]);
@@ -1026,7 +1028,7 @@ void mpi_reduce_local_ (void *inbuf, void *inoutbuf, int* count, int* datatype, 
 
 void mpi_reduce_scatter_block_ (void *sendbuf, void *recvbuf, int* recvcount, int* datatype, int* op, int* comm, int* ierr)
 {
-  sendbuf = (char *) F2C_IN_PLACE(sendbuf);
+  sendbuf = (char *) FORT_IN_PLACE(sendbuf);
  *ierr = MPI_Reduce_scatter_block(sendbuf, recvbuf, *recvcount, get_datatype(*datatype), get_op(*op), get_comm(*comm));
 }
 
@@ -1167,7 +1169,7 @@ void mpi_testsome_ (int* incount, int*  requests, int* outcount, int* indices, M
     reqs[i] = find_request(requests[i]);
     indices[i]=0;
   }
-  *ierr = MPI_Testsome(*incount, reqs, outcount, indices, F2C_STATUSES_IGNORE(statuses));
+  *ierr = MPI_Testsome(*incount, reqs, outcount, indices, FORT_STATUSES_IGNORE(statuses));
   for(i=0;i<*incount;i++){
     if(indices[i]){
       if(reqs[indices[i]]==MPI_REQUEST_NULL){
@@ -1324,7 +1326,7 @@ void mpi_issend_ (void* buf, int* count, int* datatype, int *dest, int* tag, int
 }
 
 void mpi_probe_ (int* source, int* tag, int* comm, MPI_Status*  status, int* ierr) {
- *ierr = MPI_Probe(*source, *tag, get_comm(*comm), F2C_STATUS_IGNORE(status));
+ *ierr = MPI_Probe(*source, *tag, get_comm(*comm), FORT_STATUS_IGNORE(status));
 }
 
 void mpi_attr_delete_ (int* comm, int* keyval, int* ierr) {

@@ -79,9 +79,6 @@ void smpi_process_init(int *argc, char ***argv)
     int rank = atoi((*argv)[2]);
     index =  SIMIX_process_get_PID(proc) -1;
 
-#ifdef SMPI_F2C
-    smpi_current_rank = index;
-#endif
     if(!index_to_process_data){
         index_to_process_data=(int*)xbt_malloc(SIMIX_process_count()*sizeof(int));
     }
@@ -171,33 +168,6 @@ void smpi_process_mark_as_initialized(void)
     process_data[index_to_process_data[index]]->state = SMPI_INITIALIZED;
 }
 
-
-#ifdef SMPI_F2C
-int smpi_process_argc(void)
-{
-  smpi_process_data_t data = smpi_process_data();
-  return data->argc ? *(data->argc) - 1 : 0;
-}
-
-int smpi_process_getarg(integer * index, char *dst, ftnlen len)
-{
-  smpi_process_data_t data = smpi_process_data();
-  char *arg;
-  ftnlen i;
-
-  if (!data->argc || !data->argv || *index < 1 || *index >= *(data->argc)) {
-    return -1;
-  }
-  arg = (*data->argv)[*index];
-  for (i = 0; i < len && arg[i] != '\0'; i++) {
-    dst[i] = arg[i];
-  }
-  for (; i < len; i++) {
-    dst[i] = ' ';
-  }
-  return 0;
-}
-#endif
 
 int smpi_global_size(void)
 {
@@ -464,12 +434,6 @@ void smpi_global_destroy(void)
   smpi_free_static();
 }
 
-/* Fortran specific stuff */
-/* With smpicc, the following weak symbols are used */
-/* With smpiff, the following weak symbols are replaced by those in libf2c */
-int __attribute__ ((weak)) xargc;
-char ** __attribute__ ((weak)) xargv;
-
 #ifndef WIN32
 void __attribute__ ((weak)) user_main_()
 {
@@ -489,10 +453,6 @@ int __attribute__ ((weak)) main(int argc, char **argv)
   return smpi_main(smpi_simulated_main_, argc, argv);
 }
 
-int __attribute__ ((weak)) MAIN__()
-{
-  return smpi_main(smpi_simulated_main_, xargc, xargv);
-};
 #endif
 
 static void smpi_init_logs(){

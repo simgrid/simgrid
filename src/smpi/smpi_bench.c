@@ -69,7 +69,6 @@ xbt_dict_t allocs = NULL;          /* Allocated on first use */
 xbt_dict_t allocs_metadata = NULL; /* Allocated on first use */
 xbt_dict_t samples = NULL;         /* Allocated on first use */
 xbt_dict_t calls = NULL;           /* Allocated on first use */
-__thread int smpi_current_rank = 0;      /* Updated after each MPI call */
 
 double smpi_cpu_threshold;
 double smpi_running_power;
@@ -192,7 +191,6 @@ void smpi_bench_begin(void)
 {
   switch_data_segment(smpi_process_index());
   xbt_os_threadtimer_start(smpi_process_timer());
-  smpi_current_rank = smpi_process_index();
 }
 
 void smpi_bench_end(void)
