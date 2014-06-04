@@ -1,7 +1,6 @@
 cmake_minimum_required(VERSION 2.8.6)
 
 include(UseJava)
-find_path(JAVADOC_PATH  NAMES javadoc   PATHS NO_DEFAULT_PATHS)
 
 # Rules to build libsimgrid-java
 #
@@ -111,7 +110,7 @@ add_custom_command(
   COMMAND ${JAVA_ARCHIVE} -uvf ${SIMGRID_FULL_JAR} "NATIVE"
   COMMAND ${CMAKE_COMMAND} -E remove ${SIMGRID_JAR}_finalized
   COMMAND ${CMAKE_COMMAND} -E touch ${SIMGRID_JAR}_finalized
-  COMMAND ${JAVADOC_PATH}/javadoc -quiet -d doc ${CMAKE_HOME_DIRECTORY}/src/bindings/java/org/simgrid/*.java ${CMAKE_HOME_DIRECTORY}/src/bindings/java/org/simgrid/*/*.java
+  COMMAND ${Java_JAVADOC_EXECUTABLE} -quiet -d doc ${CMAKE_HOME_DIRECTORY}/src/bindings/java/org/simgrid/*.java ${CMAKE_HOME_DIRECTORY}/src/bindings/java/org/simgrid/*/*.java
   COMMAND ${JAVA_ARCHIVE} -uvf ${SIMGRID_FULL_JAR} doc
   )
 add_custom_target(simgrid-java_jar ALL DEPENDS ${SIMGRID_JAR}_finalized)
