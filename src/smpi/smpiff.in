@@ -22,7 +22,7 @@ main_name=main
 
 cleanup () {
     eval $(list_get TMPFILES)
-   # rm -f "$@"
+    rm -f "$@"
 }
 trap 'cleanup' EXIT
 
