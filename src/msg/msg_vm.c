@@ -1027,7 +1027,7 @@ static int migration_tx_fun(int argc, char *argv[])
 
     double bandwidth = updated_size / (clock_post_send - clock_prev_send);
     threshold = get_threshold_value(bandwidth, max_downtime);
-    XBT_INFO("actual banwdidth %f, threshold %f", bandwidth / 1024 / 1024, threshold);
+    XBT_INFO("actual bandwidth %f, threshold %f", bandwidth / 1024 / 1024, threshold);
 
 
 
