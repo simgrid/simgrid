@@ -14,6 +14,8 @@
 XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test,
                              "Messages specific for this msg example");
 
+#define MAXMBOXLEN 64
+
 /** @addtogroup MSG_examples
  *
  *  - <b>cloud/masterslave_virtual_machines.c: Master/workers
@@ -139,8 +141,8 @@ int master_fun(int argc, char *argv[])
 
   XBT_INFO("# Shutdown the half of worker processes gracefuly. The remaining half will be forcibly killed.");
   for (i = 0; i < nb_workers; i++) {
-    char mbox[64];
-    sprintf(mbox, "MBOX:WRK%02d", i);
+    char mbox[MAXMBOXLEN];
+    snprintf(mbox, MAXMBOXLEN, "MBOX:WRK%02d", i);
     msg_task_t finalize = MSG_task_create("finalize", 0, 0, 0);
     MSG_task_send(finalize, mbox);
   }
@@ -167,7 +169,8 @@ int master_fun(int argc, char *argv[])
 int worker_fun(int argc, char *argv[])
 {
   const char *pr_name = MSG_process_get_name(MSG_process_self());
-  char *mbox = bprintf("MBOX:%s", pr_name);
+  char mbox[MAXMBOXLEN];
+  snprintf(mbox, MAXMBOXLEN, "MBOX:%s", pr_name);
 
   XBT_INFO("%s is listenning on mailbox(%s)", pr_name, mbox);
 
@@ -192,8 +195,6 @@ int worker_fun(int argc, char *argv[])
     XBT_INFO("%s executed task(%s)", pr_name, MSG_task_get_name(task));
     MSG_task_destroy(task);
   }
-
-  free(mbox);
 
   return 0;
 }
