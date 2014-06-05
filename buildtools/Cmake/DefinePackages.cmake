@@ -842,6 +842,9 @@ set(DOC_SOURCES
   doc/doxygen/use.doc
 
   doc/manpage/smpicc.1
+  doc/manpage/smpicxx.1
+  doc/manpage/smpif90.1
+  doc/manpage/smpiff.1
   doc/manpage/smpirun.1
 
   doc/msg-tuto-src/deployment0.xml
