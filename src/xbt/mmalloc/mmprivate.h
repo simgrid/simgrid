@@ -220,8 +220,7 @@ struct mdesc {
   /* Limit of valid info table indices.  */
   size_t heaplimit;
 
-  /* Block information table.
-     Allocated with malign/mfree (not mmalloc/mfree).  */
+  /* Block information table. */
   /* Table indexed by block number giving per-block information.  */
   malloc_info *heapinfo;
 
