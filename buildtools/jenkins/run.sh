@@ -28,11 +28,11 @@ then
         NUMBER_OF_PROCESSORS=1
     fi
 
-    cmake -G "MSYS Makefiles" $WORKSPACE || die 1 "Failed to do the first cmake - Halting"
+    cmake -G "MSYS Makefiles" -Denable_documentation=OFF $WORKSPACE || die 1 "Failed to do the first cmake - Halting"
 
     make dist || die 2 "Failed to build dist - Halting"
 
-    cmake -G "MSYS Makefiles" -Denable_java=ON -Denable_model-checking=OFF -Denable_lua=OFF -Denable_compile_optimizations=ON  -Denable_smpi=ON -Denable_smpi_MPICH3_testsuite=ON -Denable_compile_warnings=OFF . \
+    cmake -G "MSYS Makefiles" -Denable_java=ON -Denable_model-checking=OFF -Denable_lua=OFF -Denable_compile_optimizations=ON  -Denable_smpi=ON -Denable_smpi_MPICH3_testsuite=ON -Denable_compile_warnings=OFF -Denable_documentation=OFF . \
     || die 5 "Failed to perform the Cmake for $build_mode - Halting"
 
     make -j$NUMBER_OF_PROCESSORS || die 5 "Build failure - Halting"
@@ -46,7 +46,7 @@ else
     NUMBER_OF_PROCESSORS=$(grep -c "^processor[[:space:]]*:" ${cpuinfo_file} 2>/dev/null)
     [ "0$NUMBER_OF_PROCESSORS" -gt 0 ] || NUMBER_OF_PROCESSORS=1
 
-    cmake $WORKSPACE || die 1 "Failed to do the first cmake - Halting"
+    cmake -Denable_documentation=OFF $WORKSPACE || die 1 "Failed to do the first cmake - Halting"
 
     rm Simgrid*.tar.gz
     make dist || die 2 "Failed to build dist - Halting"
