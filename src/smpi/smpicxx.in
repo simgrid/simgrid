@@ -43,7 +43,7 @@ while [ $# -gt 0 ]; do
             list_add CMDARGS "${SRCFILE}"
             ;;
         "-version" | "--version" | "-v")
-            echo -e $SIMGRID_VERSION
+            printf '%b\n' "$SIMGRID_VERSION"
             exit 0
             ;;
         *)

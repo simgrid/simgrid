@@ -46,8 +46,7 @@ while [ $# -gt 0 ]; do
             list_add CMDLINE "${SRCFILE}"
             ;;
         '-version' | '--version' | '-v')
-            # -e is not recognised by MS-DOS...
-            echo -e $SIMGRID_VERSION
+            printf '%b\n' "$SIMGRID_VERSION"
             exit 0
             ;;           
         *)
