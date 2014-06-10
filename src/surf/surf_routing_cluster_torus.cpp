@@ -218,11 +218,17 @@ void AsClusterTorus::getRouteAndLatency(RoutingEdgePtr src, RoutingEdgePtr dst, 
 
        info = xbt_dynar_get_as(p_linkUpDownList,linkOffset, s_surf_parsing_link_up_down_t);
 
-       if (use_lnk_up == false)
+       if (use_lnk_up == false){
            xbt_dynar_push_as(route->link_list,void*,info.link_down);
-       else
+
+       if (lat)
+         *lat += static_cast<NetworkLinkPtr>(info.link_down)->getLatency();
+       }else{
            xbt_dynar_push_as(route->link_list,void*,info.link_up);
 
+       if (lat)
+         *lat += static_cast<NetworkLinkPtr>(info.link_up)->getLatency();
+       }
        current_node = next_node;
        next_node = 0;
      }
