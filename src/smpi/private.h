@@ -154,6 +154,8 @@ void print_request(const char *message, MPI_Request request);
 void smpi_global_init(void);
 void smpi_global_destroy(void);
 
+int is_datatype_valid(MPI_Datatype datatype);
+
 size_t smpi_datatype_size(MPI_Datatype datatype);
 MPI_Aint smpi_datatype_lb(MPI_Datatype datatype);
 MPI_Aint smpi_datatype_ub(MPI_Datatype datatype);
