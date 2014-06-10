@@ -123,13 +123,17 @@ CREATE_MPI_DATATYPE_NULL(MPI_PACKED);
 // Internal use only
 CREATE_MPI_DATATYPE(MPI_PTR, void*);
 
+/** Check if the datatype is usable for communications
+ */
+int is_datatype_valid(MPI_Datatype datatype) {
+    return datatype != MPI_DATATYPE_NULL
+        && (datatype->flags & DT_FLAG_COMMITED);
+}
 
 size_t smpi_datatype_size(MPI_Datatype datatype)
 {
   return datatype->size;
 }
-
-
 
 MPI_Aint smpi_datatype_lb(MPI_Datatype datatype)
 {
@@ -326,7 +330,7 @@ void smpi_datatype_free(MPI_Datatype* type){
     xbt_free((*type)->substruct);
   }
   xbt_free(*type);
-
+  *type = MPI_DATATYPE_NULL;
 }
 
 void smpi_datatype_use(MPI_Datatype type){

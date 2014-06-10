@@ -164,8 +164,9 @@ int PMPI_Get_address(void *location, MPI_Aint * address)
 int PMPI_Type_free(MPI_Datatype * datatype)
 {
   int retval = 0;
-
-  if (!datatype) {
+  /* Free a predefined datatype is an error according to the standard, and
+     should be checked for */
+  if (*datatype == MPI_DATATYPE_NULL) {
     retval = MPI_ERR_ARG;
   } else {
     smpi_datatype_free(datatype);
@@ -858,14 +859,16 @@ int PMPI_Send_init(void *buf, int count, MPI_Datatype datatype, int dst,
 
   smpi_bench_end();
   if (request == NULL) {
-    retval = MPI_ERR_ARG;
+      retval = MPI_ERR_ARG;
   } else if (comm == MPI_COMM_NULL) {
-    retval = MPI_ERR_COMM;
+      retval = MPI_ERR_COMM;
+  } else if (!is_datatype_valid(datatype)) {
+      retval = MPI_ERR_TYPE;
   } else if (dst == MPI_PROC_NULL) {
-    retval = MPI_SUCCESS;
+      retval = MPI_SUCCESS;
   } else {
-    *request = smpi_mpi_send_init(buf, count, datatype, dst, tag, comm);
-    retval = MPI_SUCCESS;
+      *request = smpi_mpi_send_init(buf, count, datatype, dst, tag, comm);
+      retval = MPI_SUCCESS;
   }
   smpi_bench_begin();
   if (retval != MPI_SUCCESS && request)
@@ -883,6 +886,8 @@ int PMPI_Recv_init(void *buf, int count, MPI_Datatype datatype, int src,
     retval = MPI_ERR_ARG;
   } else if (comm == MPI_COMM_NULL) {
     retval = MPI_ERR_COMM;
+  } else if (!is_datatype_valid(datatype)) {
+      retval = MPI_ERR_TYPE;
   } else if (src == MPI_PROC_NULL) {
     retval = MPI_SUCCESS;
   } else {
@@ -905,6 +910,8 @@ int PMPI_Ssend_init(void* buf, int count, MPI_Datatype datatype,
     retval = MPI_ERR_ARG;
   } else if (comm == MPI_COMM_NULL) {
     retval = MPI_ERR_COMM;
+  } else if (!is_datatype_valid(datatype)) {
+      retval = MPI_ERR_TYPE;
   } else if (dst == MPI_PROC_NULL) {
     retval = MPI_SUCCESS;
   } else {
@@ -989,8 +996,8 @@ int PMPI_Irecv(void *buf, int count, MPI_Datatype datatype, int src,
     retval = MPI_ERR_COUNT;
   } else if (buf==NULL && count > 0) {
     retval = MPI_ERR_COUNT;
-  } else if (datatype == MPI_DATATYPE_NULL){
-    retval = MPI_ERR_TYPE;
+  } else if (!is_datatype_valid(datatype)) {
+      retval = MPI_ERR_TYPE;
   } else if(tag<0 && tag !=  MPI_ANY_TAG){
     retval = MPI_ERR_TAG;
   } else {
@@ -1043,8 +1050,8 @@ int PMPI_Isend(void *buf, int count, MPI_Datatype datatype, int dst,
     retval = MPI_ERR_COUNT;
   } else if (buf==NULL && count > 0) {
     retval = MPI_ERR_COUNT;
-  } else if (datatype == MPI_DATATYPE_NULL){
-    retval = MPI_ERR_TYPE;
+  } else if (!is_datatype_valid(datatype)) {
+      retval = MPI_ERR_TYPE;
   } else if(tag<0 && tag !=  MPI_ANY_TAG){
     retval = MPI_ERR_TAG;
   } else {
@@ -1097,8 +1104,8 @@ int PMPI_Issend(void* buf, int count, MPI_Datatype datatype,
     retval = MPI_ERR_COUNT;
   } else if (buf==NULL && count > 0) {
     retval = MPI_ERR_COUNT;
-  } else if (datatype == MPI_DATATYPE_NULL){
-    retval = MPI_ERR_TYPE;
+  } else if (!is_datatype_valid(datatype)) {
+      retval = MPI_ERR_TYPE;
   } else if(tag<0 && tag !=  MPI_ANY_TAG){
     retval = MPI_ERR_TAG;
   } else {
@@ -1149,8 +1156,8 @@ int PMPI_Recv(void *buf, int count, MPI_Datatype datatype, int src, int tag,
     retval = MPI_ERR_COUNT;
   } else if (buf==NULL && count > 0) {
     retval = MPI_ERR_COUNT;
-  } else if (datatype == MPI_DATATYPE_NULL){
-    retval = MPI_ERR_TYPE;
+  } else if (!is_datatype_valid(datatype)) {
+      retval = MPI_ERR_TYPE;
   } else if(tag<0 && tag !=  MPI_ANY_TAG){
     retval = MPI_ERR_TAG;
   } else {
@@ -1200,8 +1207,8 @@ int PMPI_Send(void *buf, int count, MPI_Datatype datatype, int dst, int tag,
     retval = MPI_ERR_COUNT;
   } else if (buf==NULL && count > 0) {
     retval = MPI_ERR_COUNT;
-  } else if (datatype == MPI_DATATYPE_NULL){
-    retval = MPI_ERR_TYPE;
+  } else if (!is_datatype_valid(datatype)) {
+      retval = MPI_ERR_TYPE;
   } else if(tag<0 && tag !=  MPI_ANY_TAG){
     retval = MPI_ERR_TAG;
   } else {
@@ -1248,7 +1255,7 @@ int PMPI_Ssend(void* buf, int count, MPI_Datatype datatype, int dst, int tag, MP
      retval = MPI_ERR_COUNT;
    } else if (buf==NULL && count > 0) {
      retval = MPI_ERR_COUNT;
-   } else if (datatype == MPI_DATATYPE_NULL){
+   } else if (!is_datatype_valid(datatype)){
      retval = MPI_ERR_TYPE;
    } else if(tag<0 && tag !=  MPI_ANY_TAG){
      retval = MPI_ERR_TAG;
@@ -1289,8 +1296,8 @@ int PMPI_Sendrecv(void *sendbuf, int sendcount, MPI_Datatype sendtype,
 
   if (comm == MPI_COMM_NULL) {
     retval = MPI_ERR_COMM;
-  } else if (sendtype == MPI_DATATYPE_NULL
-             || recvtype == MPI_DATATYPE_NULL) {
+  } else if (!is_datatype_valid(sendtype)
+             || !is_datatype_valid(recvtype)) {
     retval = MPI_ERR_TYPE;
   } else if (src == MPI_PROC_NULL || dst == MPI_PROC_NULL) {
       smpi_empty_status(status);
@@ -1347,7 +1354,7 @@ int PMPI_Sendrecv_replace(void *buf, int count, MPI_Datatype datatype,
   //TODO: suboptimal implementation
   void *recvbuf;
   int retval = 0;
-  if (datatype == MPI_DATATYPE_NULL) {
+  if (!is_datatype_valid(datatype)) {
       retval = MPI_ERR_TYPE;
   } else if (count < 0) {
       retval = MPI_ERR_COUNT;
@@ -2038,7 +2045,7 @@ int PMPI_Reduce(void *sendbuf, void *recvbuf, int count,
 
   if (comm == MPI_COMM_NULL) {
     retval = MPI_ERR_COMM;
-  } else if (datatype == MPI_DATATYPE_NULL || op == MPI_OP_NULL) {
+  } else if (!is_datatype_valid(datatype) || op == MPI_OP_NULL) {
     retval = MPI_ERR_ARG;
   } else {
 #ifdef HAVE_TRACING
@@ -2069,7 +2076,7 @@ int PMPI_Reduce_local(void *inbuf, void *inoutbuf, int count,
   int retval = 0;
 
     smpi_bench_end();
-    if (datatype == MPI_DATATYPE_NULL || op == MPI_OP_NULL) {
+    if (!is_datatype_valid(datatype) || op == MPI_OP_NULL) {
       retval = MPI_ERR_ARG;
     } else {
       smpi_op_apply(op, inbuf, inoutbuf, &count, &datatype);
@@ -2088,7 +2095,7 @@ int PMPI_Allreduce(void *sendbuf, void *recvbuf, int count,
 
   if (comm == MPI_COMM_NULL) {
     retval = MPI_ERR_COMM;
-  } else if (datatype == MPI_DATATYPE_NULL) {
+  } else if (!is_datatype_valid(datatype)) {
     retval = MPI_ERR_TYPE;
   } else if (op == MPI_OP_NULL) {
     retval = MPI_ERR_OP;
@@ -2133,7 +2140,7 @@ int PMPI_Scan(void *sendbuf, void *recvbuf, int count,
 
   if (comm == MPI_COMM_NULL) {
     retval = MPI_ERR_COMM;
-  } else if (datatype == MPI_DATATYPE_NULL) {
+  } else if (!is_datatype_valid(datatype)) {
     retval = MPI_ERR_TYPE;
   } else if (op == MPI_OP_NULL) {
     retval = MPI_ERR_OP;
@@ -2166,7 +2173,7 @@ int PMPI_Exscan(void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype,
 
   if (comm == MPI_COMM_NULL) {
     retval = MPI_ERR_COMM;
-  } else if (datatype == MPI_DATATYPE_NULL) {
+  } else if (!is_datatype_valid(datatype)) {
     retval = MPI_ERR_TYPE;
   } else if (op == MPI_OP_NULL) {
     retval = MPI_ERR_OP;
@@ -2199,7 +2206,7 @@ int PMPI_Reduce_scatter(void *sendbuf, void *recvbuf, int *recvcounts,
 
   if (comm == MPI_COMM_NULL) {
     retval = MPI_ERR_COMM;
-  } else if (datatype == MPI_DATATYPE_NULL) {
+  } else if (!is_datatype_valid(datatype)) {
     retval = MPI_ERR_TYPE;
   } else if (op == MPI_OP_NULL) {
     retval = MPI_ERR_OP;
@@ -2246,7 +2253,7 @@ int PMPI_Reduce_scatter_block(void *sendbuf, void *recvbuf, int recvcount,
 
   if (comm == MPI_COMM_NULL) {
     retval = MPI_ERR_COMM;
-  } else if (datatype == MPI_DATATYPE_NULL) {
+  } else if (!is_datatype_valid(datatype)) {
     retval = MPI_ERR_TYPE;
   } else if (op == MPI_OP_NULL) {
     retval = MPI_ERR_OP;
@@ -2396,7 +2403,7 @@ int PMPI_Get_count(MPI_Status * status, MPI_Datatype datatype, int *count)
 
   if (status == NULL || count == NULL) {
     retval = MPI_ERR_ARG;
-  } else if (datatype == MPI_DATATYPE_NULL) {
+  } else if (!is_datatype_valid(datatype)) {
     retval = MPI_ERR_TYPE;
   } else {
     size = smpi_datatype_size(datatype);
@@ -2682,6 +2689,9 @@ int PMPI_Cart_sub(MPI_Comm comm, int* remain_dims, MPI_Comm* comm_new) {
     return MPI_SUCCESS;                                                 \
   }
 
+int PMPI_Type_create_resized(MPI_Datatype oldtype,MPI_Aint lb, MPI_Aint extent, MPI_Datatype *newtype){
+  NOT_YET_IMPLEMENTED
+}
 
 int PMPI_Type_dup(MPI_Datatype datatype, MPI_Datatype *newtype){
   NOT_YET_IMPLEMENTED
@@ -2963,10 +2973,6 @@ int PMPI_Type_get_contents(MPI_Datatype datatype, int max_integers, int max_addr
 int PMPI_Type_create_darray(int size, int rank, int ndims, int* array_of_gsizes,
                             int* array_of_distribs, int* array_of_dargs, int* array_of_psizes,
                             int order, MPI_Datatype oldtype, MPI_Datatype *newtype) {
-  NOT_YET_IMPLEMENTED
-}
-
-int PMPI_Type_create_resized(MPI_Datatype oldtype,MPI_Aint lb, MPI_Aint extent, MPI_Datatype *newtype){
   NOT_YET_IMPLEMENTED
 }
 
