@@ -18,7 +18,7 @@ typecommit 1
 zeroparms 1
 #getpartelm 2
 #needs  MPI_Type_create_resized
-#tresized 2
+tresized 2
 #tresized2 2
 #needs MPI_Type_match_size
 #tmatchsize 1
@@ -49,7 +49,7 @@ simple-size-extent 1
 #struct-empty-el 1
 contig-zero-count 1
 #needs MPI_Type_create_resized
-#simple-resized 1
+simple-resized 1
 #needs MPI_Pack
 #unusual-noncontigs 1
 #buggy, and needs MPI_Get_elements
