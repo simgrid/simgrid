@@ -80,7 +80,6 @@ void surf_network_model_init_SMPI(void)
   surf_network_model = new NetworkSmpiModel();
   net_define_callbacks();
   xbt_dynar_push(model_list, &surf_network_model);
-  //network_solve = lmm_solve;
 
   xbt_cfg_setdefault_double(_sg_cfg_set, "network/sender_gap", 10e-6);
   xbt_cfg_setdefault_double(_sg_cfg_set, "network/weight_S", 8775);

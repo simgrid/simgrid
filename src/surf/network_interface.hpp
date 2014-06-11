@@ -10,7 +10,6 @@
 #ifndef SURF_NETWORK_INTERFACE_HPP_
 #define SURF_NETWORK_INTERFACE_HPP_
 
-
 /***********
  * Classes *
  ***********/
@@ -77,6 +76,7 @@ public:
    * @brief NetworkModel constructor
    */
   NetworkModel() : Model("network") {
+    f_networkSolve = lmm_solve;
   };
 
   /**
@@ -181,6 +181,7 @@ public:
    * @return The new bandwidth.
    */
   virtual double bandwidthConstraint(double rate, double bound, double size);
+  double shareResourcesFull(double now);
   bool m_haveGap;
 };
 

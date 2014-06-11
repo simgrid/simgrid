@@ -77,6 +77,34 @@ double NetworkModel::bandwidthConstraint(double rate, double /*bound*/, double /
   return rate;
 }
 
+double NetworkModel::shareResourcesFull(double now)
+{
+  NetworkActionPtr action = NULL;
+  ActionListPtr runningActions = surf_network_model->getRunningActionSet();
+  double minRes;
+
+  minRes = shareResourcesMaxMin(runningActions, surf_network_model->p_maxminSystem, surf_network_model->f_networkSolve);
+
+  for(ActionList::iterator it(runningActions->begin()), itend(runningActions->end())
+       ; it != itend ; ++it) {
+      action = static_cast<NetworkActionPtr>(&*it);
+#ifdef HAVE_LATENCY_BOUND_TRACKING
+    if (lmm_is_variable_limited_by_latency(action->getVariable())) {
+      action->m_latencyLimited = 1;
+    } else {
+      action->m_latencyLimited = 0;
+    }
+#endif
+    if (action->m_latency > 0) {
+      minRes = (minRes < 0) ? action->m_latency : min(minRes, action->m_latency);
+    }
+  }
+
+  XBT_DEBUG("Min of share resources %f", minRes);
+
+  return minRes;
+}
+
 /************
  * Resource *
  ************/
