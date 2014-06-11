@@ -1,3 +1,4 @@
+
 /* Copyright (c) 2007-2014. The SimGrid Team.
  * All rights reserved.                                                     */
 
@@ -2680,6 +2681,16 @@ int PMPI_Cart_sub(MPI_Comm comm, int* remain_dims, MPI_Comm* comm_new) {
   return smpi_mpi_cart_sub(comm, remain_dims, comm_new);
 }
 
+int PMPI_Type_create_resized(MPI_Datatype oldtype,MPI_Aint lb, MPI_Aint extent, MPI_Datatype *newtype){
+    if(oldtype == MPI_DATATYPE_NULL) {
+        return MPI_ERR_TYPE;
+    }
+    smpi_datatype_create(newtype,oldtype->size, lb, lb + extent, oldtype->has_subtype,oldtype->substruct, oldtype->flags);
+
+    (*newtype)->flags &= ~DT_FLAG_COMMITED;
+    return MPI_SUCCESS;
+}
+
 
 /* The following calls are not yet implemented and will fail at runtime. */
 /* Once implemented, please move them above this notice. */
@@ -2688,10 +2699,6 @@ int PMPI_Cart_sub(MPI_Comm comm, int* remain_dims, MPI_Comm* comm_new) {
     XBT_WARN("Not yet implemented : %s. Please contact the Simgrid team if support is needed", __FUNCTION__); \
     return MPI_SUCCESS;                                                 \
   }
-
-int PMPI_Type_create_resized(MPI_Datatype oldtype,MPI_Aint lb, MPI_Aint extent, MPI_Datatype *newtype){
-  NOT_YET_IMPLEMENTED
-}
 
 int PMPI_Type_dup(MPI_Datatype datatype, MPI_Datatype *newtype){
   NOT_YET_IMPLEMENTED
