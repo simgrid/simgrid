@@ -16,6 +16,7 @@ import org.simgrid.NativeLib;
 %}
 %pragma(java) jniclasscode=%{
   static {
+    NativeLib.nativeInit("simgrid");
     NativeLib.nativeInit("surf-java");
     Runtime.getRuntime().addShutdownHook(
       new Thread() {

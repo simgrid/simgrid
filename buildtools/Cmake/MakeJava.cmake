@@ -138,6 +138,8 @@ else()
     PROPERTIES COMPILE_FLAGS "-fPIC -I\"${JAVA_INCLUDE_PATH}\" -I\"${JAVA_INCLUDE_PATH2}\""
   )
 endif()
+set_target_properties(surf-java PROPERTIES SKIP_BUILD_RPATH ON)
+set_target_properties(simgrid-java PROPERTIES SKIP_BUILD_RPATH ON)
 
 add_dependencies(simgrid-java surf-java)
 add_dependencies(simgrid-java_pre_jar surf-java)
