@@ -1,4 +1,4 @@
-/*! 
+/*!
 @page install Installing Simgrid
 
 @tableofcontents
@@ -8,7 +8,7 @@ Under Debian or Ubuntu, this is very easy as SimGrid is directly
 integrated to the official repositories. Under Windows, SimGrid can be
 installed in a few clicks once you downloaded the installer from
 gforge. If you just want to use Java, simply copy the jar file on your
-disk and you're set. 
+disk and you're set.
 
 Recompiling an official archive is not much more complex, actually.
 SimGrid has very few dependencies and rely only on very standard
@@ -29,7 +29,7 @@ git version, and recompile it as you would do for an official archive.
 Depending on the files you change in the source tree, some extra
 tools may be needed.
 
-@section install_binary Installing a binary package 
+@section install_binary Installing a binary package
 
 @subsection install_binary_linux Binary packages for linux
 
@@ -67,14 +67,14 @@ execute it and follow instructions.
 @subsection install_binary_java Using the binary jar file
 
 The easiest way to install the Java bindings of SimGrid is to grab the
-jar file from the 
+jar file from the
 <a href="https://gforge.inria.fr/frs/?group_id=12">Download page</a>,
 and copy it in your classpath (typically, in the same directory than
 your source code). If you go for that version, there is no need to
 install the C library as it is bundled within the jar file. Actually,
 only a bunch of architectures are supported this way to keep the
 jarfile size under control and because we don't have access to every
-exotic architectures ourselves. 
+exotic architectures ourselves.
 
 If the jarfile fails on you, complaining that your architecture is not
 supported, drop us an email: we may extend the jarfile for you, if we
@@ -84,13 +84,16 @@ have access to your architecture to build SimGrid on it.
 
 @subsection install_src_deps Resolving the dependencies
 
-SimGrid only uses very standard tools: 
-  @li C compiler, C++ compiler, make and friends.
-  @li perl (but you may try to go without it)
-  @li We use cmake to configure our compilation 
+SimGrid only uses very standard tools:
+  - C compiler, C++ compiler, make and friends.
+  - perl (but you may try to go without it)
+  - We use cmake to configure our compilation
       (<a href="http://www.cmake.org/cmake/resources/software.html">download page</a>).
       You need cmake version 2.8 or higher. You may want to use ccmake
-      for a graphical interface over cmake. 
+      for a graphical interface over cmake.
+  - LibBoost:
+    - osX: with <a href="http://www.finkproject.org/">fink</a>: `sudo fink install boost1.53.nopython`
+    - debian: `apt-get install libboost-dev`
 
 On MacOSX, it is advised to use the clang compiler (version 3.0 or
 higher), from either MacPort or XCode. If you insist on using gcc on
@@ -98,20 +101,20 @@ this system, you still need a recent version of this compiler, so you
 need an unofficial gcc47 from MacPort because the version provided by
 Apple is ways to ancient to suffice. See also @ref install_cmake_mac.
 
-On Windows, it is strongly advised to use the 
+On Windows, it is strongly advised to use the
 <a href="http://sourceforge.net/projects/mingw/files/MinGW/">MinGW
 environment</a> to build SimGrid, with <a href="http://www.mingw.org/wiki/MSYS">
-MSYS tools</a> installed. Any other compilers are not tested 
-(and thus probably broken). We usually use the 
+MSYS tools</a> installed. Any other compilers are not tested
+(and thus probably broken). We usually use the
 <a href="http://www.activestate.com/activeperl/downloads">activestate</a>
-version of Perl, and the 
+version of Perl, and the
 <a href="http://msysgit.googlecode.com/files/Git-1.7.4-preview20110204.exe">msys</a>
 version of git on this architecture, but YMMV. See also @ref install_cmake_win.
 
 @subsection install_src_fetch Retrieving the source
 
 If you just want to use SimGrid, you should probably grab the latest
-stable version available from the 
+stable version available from the
 <a href="https://gforge.inria.fr/frs/?group_id=12">download page</a>.
 We do our best to release soon and release often, but sometimes you
 need to install the developer version of SimGrid, directly from the
@@ -135,7 +138,7 @@ can use environment variables. For example, you can change the used
 compilers by issuing these commands before launching cmake:
 
 @verbatim
-export CC=gcc-4.4 
+export CC=gcc-4.4
 export CXX=g++-4.4
 @endverbatim
 
@@ -163,7 +166,7 @@ ccmake .
 In addition to the classical cmake configuration variables, SimGrid
 accepts several options, as listed below.
 
-  @li <b>CMAKE_INSTALL_PREFIX</b> (path): Where to install SimGrid 
+  @li <b>CMAKE_INSTALL_PREFIX</b> (path): Where to install SimGrid
       (e.g. /usr/local or /opt).
 
   @li <b>enable_compile_optimizations</b> (ON/OFF): request the
@@ -197,16 +200,16 @@ accepts several options, as listed below.
       clean. If you develop SimGrid itself, you must activate it to
       ensure the code quality, but as a user, that option will only
       bring you issues.
-      
+
   @li <b>enable_lib_static</b> (ON/OFF): enable this if you want to
       compile the static library (but you should consider enjoying
       this new century instead).
-      
+
   @li <b>enable_maintainer_mode</b> (ON/OFF): you only need to set
       this option if you modify very specific parts of SimGrid itself
       (the XML parsers and other related elements). Adds an extra
       dependency on flex and flexml.
-     
+
   @li <b>enable_tracing</b> (ON/OFF): disable this if you have issues
       with the tracing module. But this module is now very stable and
       you really should try to enjoy this beauty.
@@ -215,7 +218,7 @@ accepts several options, as listed below.
       with the module allowing to run MPI code on top of SimGrid. This
       module very stable, but if you really don't need it, you can
       disable it.
-      
+
   @li <b>enable_mallocators</b> (ON/OFF): disable this when tracking
       memory issues within SimGrid, or the caching mechanism used
       internally will fool the debugers.
@@ -231,14 +234,14 @@ accepts several options, as listed below.
 
   @li <b>enable_gtnets</b> (ON/OFF): whether you want to use gtnets.
       See section @ref pls_simgrid_configuration_gtnets.
-  @li <b>gtnets_path</b> (path): GTNetS installation directory 
+  @li <b>gtnets_path</b> (path): GTNetS installation directory
       (eg /usr or /opt).
   @li <b>enable_ns3</b> (ON/OFF): whether you want to use ns3.
       See section @ref pls_simgrid_configuration_ns3.
   @li <b>ns3_path</b> (path): NS3 installation directory (eg /usr or /opt).
   @li <b>enable_latency_bound_tracking</b> (ON/OFF): enable it if you
       want to be warned when communications are limited by round trip
-      time while doing packet-level simulation. 
+      time while doing packet-level simulation.
 
 \subsubsection install_cmake_reset Resetting the compilation configuration
 
@@ -327,10 +330,10 @@ If you want to see what is really happening, try adding VERBOSE=1 to
 your compilation requests:
 
 @verbatim
-make VERBOSE=1	
+make VERBOSE=1
 @endverbatim
 
-@subsection install_src_test Testing SimGrid 
+@subsection install_src_test Testing SimGrid
 
 Once everything is built, you may want to test the result. SimGrid
 comes with an extensive set of regression tests (see @ref

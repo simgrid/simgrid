@@ -113,7 +113,11 @@ find_package(Boost 1.42 REQUIRED)
 if(Boost_FOUND)
   include_directories(${Boost_INCLUDE_DIRS})
 else()
-  message(FATAL_ERROR, "Failed to find Boost libraries")
+  if(APPLE) #MAC
+    message(FATAL_ERROR, "Failed to find Boost libraries (Try to install them with 'sudo fink install boost1.53.nopython')")
+  else()
+    message(FATAL_ERROR, "Failed to find Boost libraries")
+  endif()
 endif()
 
 # Checks for header libraries functions.
