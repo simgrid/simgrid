@@ -10,6 +10,11 @@ endif()
 
 enable_language(CXX)
 
+if (APPLE) #MAC
+  set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
+  set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
+endif()
+
 if (NOT DEFINED enable_smpi OR enable_smpi) # smpi is enabled by default
   # Call enable_language(Fortran) in order to load the build rules for
   # this language, needed by teshsuite/smpi/mpich-test/.  Use
