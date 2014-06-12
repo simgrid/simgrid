@@ -375,7 +375,7 @@ sub parse_out {
   my $diff;
   if (defined($cmd{'output display'})){
     print "[Tesh/INFO] Here is the (ignored) command output:\n";
-    map { print "||$_\n" } \@got;
+    map { print "||$_\n" } @got;
   }
   elsif (!defined($cmd{'output ignore'})){
     $diff = build_diff(\@{$cmd{'out'}}, \@got);
