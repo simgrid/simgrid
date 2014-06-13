@@ -8,6 +8,7 @@
 #define MC_MMU_H
 
 #include <stdint.h>
+#include <stdbool.h>
 
 #include "mc_private.h"
 
@@ -30,9 +31,9 @@ static inline size_t mc_page_count(size_t size)
  *  @param address Address
  *  @return Virtual memory page number of the given address
  */
-static inline size_t mc_page_number(void* address)
+static inline size_t mc_page_number(void* base, void* address)
 {
-  return ((uintptr_t) address) >> xbt_pagebits;
+  return ((uintptr_t) address - (uintptr_t) base) >> xbt_pagebits;
 }
 
 /** @brief Get the offset of an address within a memory page
@@ -53,6 +54,11 @@ static inline size_t mc_page_offset(void* address)
 static inline void* mc_page_from_number(void* base, size_t page)
 {
   return (void*) ((char*)base + (page << xbt_pagebits));
+}
+
+static inline bool mc_same_page(void* a, void* b)
+{
+  return mc_page_number(NULL, a) == mc_page_number(NULL, b);
 }
 
 #endif

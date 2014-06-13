@@ -637,49 +637,6 @@ void MC_restore_snapshot(mc_snapshot_t snapshot)
   mc_model_checker->parent_snapshot = snapshot;
 }
 
-void *mc_translate_address(uintptr_t addr, mc_snapshot_t snapshot)
-{
-
-  // If not in a process state/clone:
-  if (!snapshot) {
-    return (uintptr_t *) addr;
-  }
-  // If it is in a snapshot:
-  for (size_t i = 0; i != NB_REGIONS; ++i) {
-    mc_mem_region_t region = snapshot->regions[i];
-    uintptr_t start = (uintptr_t) region->start_addr;
-    uintptr_t end = start + region->size;
-
-    // The address is in this region:
-    if (addr >= start && addr < end) {
-      uintptr_t offset = addr - start;
-      return (void *) ((uintptr_t) region->data + offset);
-    }
-
-  }
-
-  // It is not in a snapshot:
-  return (void *) addr;
-}
-
-uintptr_t mc_untranslate_address(void *addr, mc_snapshot_t snapshot)
-{
-  if (!snapshot) {
-    return (uintptr_t) addr;
-  }
-
-  for (size_t i = 0; i != NB_REGIONS; ++i) {
-    mc_mem_region_t region = snapshot->regions[i];
-    if (addr >= region->data
-        && addr <= (void *) (((char *) region->data) + region->size)) {
-      size_t offset = (size_t) ((char *) addr - (char *) region->data);
-      return ((uintptr_t) region->start_addr) + offset;
-    }
-  }
-
-  return (uintptr_t) addr;
-}
-
 mc_snapshot_t SIMIX_pre_mc_snapshot(smx_simcall_t simcall)
 {
   return MC_take_snapshot(1);

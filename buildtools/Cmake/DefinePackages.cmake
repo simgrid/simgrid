@@ -584,6 +584,7 @@ set(JEDULE_SRC
 
 set(MC_SRC
   src/mc/mc_checkpoint.c
+  src/mc/mc_snapshot.c
   src/mc/mc_page_store.cpp
   src/mc/mc_page_snapshot.cpp
   src/mc/mc_comm_determinism.c

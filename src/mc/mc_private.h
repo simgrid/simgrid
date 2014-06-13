@@ -132,6 +132,9 @@ void mc_softdirty_reset();
 typedef struct s_mc_pages_store s_mc_pages_store_t, * mc_pages_store_t;
 mc_pages_store_t mc_pages_store_new();
 
+void* mc_snapshot_read_region(void* addr, mc_mem_region_t region, void* target, size_t size);
+void* mc_snapshot_read(void* addr, mc_snapshot_t snapshot, void* target, size_t size);
+
 /** @brief State of the model-checker (global variables for the model checker)
  *
  *  Each part of the state of the model chercker represented as a global
@@ -148,6 +151,8 @@ typedef struct s_mc_model_checker {
 } s_mc_model_checker_t, *mc_model_checker_t;
 
 extern mc_model_checker_t mc_model_checker;
+
+void* mc_translate_address_region(uintptr_t addr, mc_mem_region_t region);
 
 /** \brief Translate a pointer from process address space to snapshot address space
  *
@@ -167,6 +172,8 @@ void* mc_translate_address(uintptr_t addr, mc_snapshot_t snapshot);
 /** \brief Translate a pointer from the snapshot address space to the application address space
  *
  *  This is the inverse of mc_translate_address.
+ *
+ *  Does not work for per-page snapshot, we change the logic to handle this.
  *
  * \param addr    Address in the snapshot address space
  * \param snapsot Snapshot of interest (if NULL no translation is done)
