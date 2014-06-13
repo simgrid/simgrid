@@ -128,19 +128,27 @@ size_t s_mc_pages_store::store_page(void* page)
   xbt_assert(mc_page_offset(page)==0, "Not at the beginning of a page");
   xbt_assert(top_index_ <= this->capacity_, "top_index is not consistent");
 
-  // Search the page in the snapshot pages:
+  // First, we check if a page with the same content is already in the page
+  // store:
+  //  1. compute the hash of the page;
+  //  2. find pages with the same hash using `hash_index_`;
+  //  3. find a page with the same content.
   uint64_t hash = mc_hash_page(page);
   page_set_type& page_set = this->hash_index_[hash];
   BOOST_FOREACH (size_t pageno, page_set) {
     const void* snapshot_page = this->get_page(pageno);
     if (memcmp(page, snapshot_page, xbt_pagesize) == 0) {
-      // Page found, reuse it:
+
+      // If a page with the same content is already in the page store it is
+      // reused and its reference count is incremented.
       page_counts_[pageno]++;
       return pageno;
+
     }
   }
 
-  // Allocate a new page for this page:
+  // Otherwise, a new page is allocated in the page store and the content
+  // of the page is `memcpy()`-ed to this new page.
   size_t pageno = alloc_page();
   void* snapshot_page = (void*) this->get_page(pageno);
   memcpy(snapshot_page, page, xbt_pagesize);
