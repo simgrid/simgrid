@@ -27,7 +27,7 @@ all_ids = [42]
 sys.stdout.write("<?xml version='1.0'?>\n"
 "<!DOCTYPE platform SYSTEM \"http://simgrid.gforge.inria.fr/simgrid.dtd\">\n"
 "<platform version=\"3\">\n"
-"  <process host=\"c-0.me\" function=\"node\"><argument value=\"42\"/><argument value=\"%d\"/></process>\n" % end_date)
+"  <process host=\"node-0.acme.org\" function=\"node\"><argument value=\"42\"/><argument value=\"%d\"/></process>\n" % end_date)
 
 for i in range(1, nb_nodes):
 
@@ -38,7 +38,7 @@ for i in range(1, nb_nodes):
 
 	known_id = all_ids[random.randint(0, len(all_ids) - 1)]
 	start_date = i * 10
-	line = "  <process host=\"c-%d.me\" function=\"node\"><argument value=\"%d\" /><argument value=\"%d\" /><argument value=\"%d\" /><argument value=\"%d\" /></process>\n" % (i, my_id, known_id, start_date, end_date)
+	line = "  <process host=\"node-%d.acme.org\" function=\"node\"><argument value=\"%d\" /><argument value=\"%d\" /><argument value=\"%d\" /><argument value=\"%d\" /></process>\n" % (i, my_id, known_id, start_date, end_date)
 	sys.stdout.write(line)
 	all_ids.append(my_id)
 
