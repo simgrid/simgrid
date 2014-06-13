@@ -113,19 +113,34 @@ int smpi_process_finalized(void);
 int smpi_process_initialized(void);
 void smpi_process_mark_as_initialized(void);
 
+struct s_smpi_mpi_cart_topology;
+typedef struct s_smpi_mpi_cart_topology *MPIR_Cart_Topology;
+
+struct s_smpi_mpi_graph_topology;
+typedef struct s_smpi_mpi_graph_topology *MPIR_Graph_Topology;
+
+struct s_smpi_dist_graph_topology;
+typedef struct s_smpi_dist_graph_topology *MPIR_Dist_Graph_Topology;
+
+// MPI_Topology defined in smpi.h, as it is public
+
 void smpi_topo_destroy(MPI_Topology topo);
-MPI_Topology smpi_topo_create(int ndims);
+MPI_Topology smpi_topo_create(MPIR_Topo_type kind);
+void smpi_cart_topo_destroy(MPIR_Cart_Topology cart);
+MPI_Topology smpi_cart_topo_create(int ndims);
 int smpi_mpi_cart_create(MPI_Comm comm_old, int ndims, int dims[],
-                         int periodic[], int reorder, MPI_Comm *comm_cart);
-int smpi_mpi_cart_shift(MPI_Comm comm, int direction, int disp,
-                        int *rank_source, int *rank_dest);
-int smpi_mpi_cart_rank(MPI_Comm comm, int* coords, int* rank);
-int smpi_mpi_cart_get(MPI_Comm comm, int maxdims, int* dims, int* periods, int* coords);
+                         int periods[], int reorder, MPI_Comm *comm_cart);
+int smpi_mpi_cart_sub(MPI_Comm comm, const int remain_dims[], MPI_Comm *newcomm);
 int smpi_mpi_cart_coords(MPI_Comm comm, int rank, int maxdims,
                          int coords[]);
+int smpi_mpi_cart_get(MPI_Comm comm, int maxdims, int* dims, int* periods,
+                      int* coords);
+int smpi_mpi_cart_rank(MPI_Comm comm, int* coords, int* rank);
+int smpi_mpi_cart_shift(MPI_Comm comm, int direction, int disp,
+                        int *rank_source, int *rank_dest);
 int smpi_mpi_cartdim_get(MPI_Comm comm, int *ndims);
 int smpi_mpi_dims_create(int nnodes, int ndims, int dims[]);
-int smpi_mpi_cart_sub(MPI_Comm comm, const int remain_dims[], MPI_Comm *newcomm);
+
 
 smpi_process_data_t smpi_process_data(void);
 smpi_process_data_t smpi_process_remote_data(int index);

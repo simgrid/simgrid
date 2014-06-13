@@ -131,6 +131,7 @@ SG_BEGIN_DECL()
 #define MPI_LOCK_EXCLUSIVE           1
 #define MPI_LOCK_SHARED              2
 
+// FIXME : used nowhere...
 typedef enum MPIR_Combiner_enum{
   MPI_COMBINER_NAMED,
   MPI_COMBINER_DUP,
@@ -253,7 +254,7 @@ XBT_PUBLIC_DATA( MPI_Op ) MPI_BXOR;
 
 struct s_smpi_mpi_topology;
 typedef struct s_smpi_mpi_topology *MPI_Topology;
-                          
+                                   
 struct s_smpi_mpi_group;
 typedef struct s_smpi_mpi_group *MPI_Group;
 
