@@ -45,6 +45,17 @@ typedef struct s_mc_mem_region{
   size_t size;
 } s_mc_mem_region_t, *mc_mem_region_t;
 
+/** Ignored data
+ *
+ *  Some parts of the snapshot are ignored by zeroing them out: the real
+ *  values is stored here.
+ * */
+typedef struct s_mc_snapshot_ignored_data {
+  void* start;
+  size_t size;
+  void* data;
+} s_mc_snapshot_ignored_data_t, *mc_snapshot_ignored_data_t;
+
 typedef struct s_mc_snapshot{
   size_t heap_bytes_used;
   mc_mem_region_t regions[NB_REGIONS];
@@ -55,6 +66,7 @@ typedef struct s_mc_snapshot{
   xbt_dynar_t stacks;
   xbt_dynar_t to_ignore;
   uint64_t hash;
+  xbt_dynar_t ignored_data;
 } s_mc_snapshot_t, *mc_snapshot_t;
 
 /** Information about a given stack frame

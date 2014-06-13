@@ -72,6 +72,7 @@ void MC_free_snapshot(mc_snapshot_t snapshot)
   xbt_free(snapshot->stack_sizes);
   xbt_dynar_free(&(snapshot->stacks));
   xbt_dynar_free(&(snapshot->to_ignore));
+  xbt_dynar_free(&snapshot->ignored_data);
 
   if (snapshot->privatization_regions) {
     size_t n = xbt_dynar_length(snapshot->enabled_processes);
@@ -501,37 +502,41 @@ static xbt_dynar_t MC_take_snapshot_ignore()
 
 }
 
-static void MC_dump_checkpoint_ignore(mc_snapshot_t snapshot)
-{
+static void mc_free_snapshot_ignored_data_pvoid(void* data) {
+  mc_snapshot_ignored_data_t ignored_data = (mc_snapshot_ignored_data_t) data;
+  free(ignored_data->data);
+}
 
+static void MC_snapshot_handle_ignore(mc_snapshot_t snapshot)
+{
+  snapshot->ignored_data = xbt_dynar_new(sizeof(s_mc_snapshot_ignored_data_t), mc_free_snapshot_ignored_data_pvoid);
+
+  // Copy the memory:
   unsigned int cursor = 0;
   mc_checkpoint_ignore_region_t region;
-  size_t offset;
-
-  xbt_dynar_foreach(mc_checkpoint_ignore, cursor, region) {
-    if (region->addr > snapshot->regions[0]->start_addr
-        && (char *) (region->addr) <
-        (char *) snapshot->regions[0]->start_addr + STD_HEAP_SIZE) {
-      offset =
-          (char *) region->addr - (char *) snapshot->regions[0]->start_addr;
-      memset((char *) snapshot->regions[0]->data + offset, 0, region->size);
-    } else if (region->addr > snapshot->regions[2]->start_addr
-               && (char *) (region->addr) <
-               (char *) snapshot->regions[2]->start_addr +
-               snapshot->regions[2]->size) {
-      offset =
-          (char *) region->addr - (char *) snapshot->regions[2]->start_addr;
-      memset((char *) snapshot->regions[2]->data + offset, 0, region->size);
-    } else if (region->addr > snapshot->regions[1]->start_addr
-               && (char *) (region->addr) <
-               (char *) snapshot->regions[1]->start_addr +
-               snapshot->regions[1]->size) {
-      offset =
-          (char *) region->addr - (char *) snapshot->regions[1]->start_addr;
-      memset((char *) snapshot->regions[1]->data + offset, 0, region->size);
-    }
+  xbt_dynar_foreach (mc_checkpoint_ignore, cursor, region) {
+    s_mc_snapshot_ignored_data_t ignored_data;
+    ignored_data.start = region->addr;
+    ignored_data.size = region->size;
+    ignored_data.data = malloc(region->size);
+    memcpy(ignored_data.data, region->addr, region->size);
+    xbt_dynar_push(snapshot->ignored_data, &ignored_data);
   }
 
+  // Zero the memory:
+  xbt_dynar_foreach (mc_checkpoint_ignore, cursor, region) {
+    memset(region->addr, 0, region->size);
+  }
+
+}
+
+static void MC_snapshot_ignore_restore(mc_snapshot_t snapshot)
+{
+  unsigned int cursor = 0;
+  s_mc_snapshot_ignored_data_t ignored_data;
+  xbt_dynar_foreach (snapshot->ignored_data, cursor, ignored_data) {
+    memcpy(ignored_data.start, ignored_data.data, ignored_data.size);
+  }
 }
 
 mc_snapshot_t MC_take_snapshot(int num_state)
@@ -541,8 +546,10 @@ mc_snapshot_t MC_take_snapshot(int num_state)
   snapshot->enabled_processes = xbt_dynar_new(sizeof(int), NULL);
   smx_process_t process;
   xbt_swag_foreach(process, simix_global->process_list) {
-    xbt_dynar_push_as(snapshot->enabled_processes, int, (int)process->pid); 
+    xbt_dynar_push_as(snapshot->enabled_processes, int, (int)process->pid);
   }
+
+  MC_snapshot_handle_ignore(snapshot);
 
   /* Save the std heap and the writable mapped pages of libsimgrid and binary */
   MC_get_memory_regions(snapshot);
@@ -561,15 +568,14 @@ mc_snapshot_t MC_take_snapshot(int num_state)
     snapshot->hash = 0;
   }
 
-  if (num_state > 0)
-    MC_dump_checkpoint_ignore(snapshot);
-
   // mprotect the region after zero-ing ignored parts:
   /*size_t i;
      for(i=0; i!=NB_REGIONS; ++i) {
      mc_mem_region_t region = snapshot->regions[i];
      mprotect(region->data, region->size, PROT_READ);
      } */
+
+  MC_snapshot_ignore_restore(snapshot);
 
   return snapshot;
 
@@ -592,6 +598,8 @@ void MC_restore_snapshot(mc_snapshot_t snapshot)
     }
     switch_data_segment(snapshot->privatization_index);
   }
+
+  MC_snapshot_ignore_restore(snapshot);
 }
 
 void *mc_translate_address(uintptr_t addr, mc_snapshot_t snapshot)
