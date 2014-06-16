@@ -295,6 +295,9 @@ void MC_init()
     MC_ignore_global_variable("maestro_stack_end");
     MC_ignore_global_variable("smx_total_comms");
 
+    if (MC_is_active()) {
+      MC_ignore_global_variable("mc_diff_info");
+    }
 
     MC_ignore_heap(mc_time, simix_process_maxpid * sizeof(double));
 

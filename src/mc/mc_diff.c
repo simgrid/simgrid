@@ -421,10 +421,6 @@ int init_heap_information(xbt_mheap_t heap1, xbt_mheap_t heap2, xbt_dynar_t i1,
   memset(state->types2, 0,
          state->heaplimit * MAX_FRAGMENT_PER_BLOCK * sizeof(type_name *));
 
-  if (MC_is_active()) {
-    MC_ignore_global_variable("mc_diff_info");
-  }
-
   return 0;
 
 }
