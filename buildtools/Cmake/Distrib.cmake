@@ -248,7 +248,6 @@ add_custom_target(dist-dir
   COMMAND ${CMAKE_COMMAND} -E make_directory ${PROJECT_NAME}-${release_version}/doc/html/
   COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_HOME_DIRECTORY}/doc/html/ ${PROJECT_NAME}-${release_version}/doc/html/
   )
-add_dependencies(dist-dir simgrid_documentation)
 add_dependencies(dist-dir maintainer_files)
 
 set(dirs_in_tarball "")
@@ -347,9 +346,6 @@ add_custom_target(distcheck
   COMMAND ${CMAKE_COMMAND} -E create_symlink
   ${CMAKE_BINARY_TEST_DIR}/${PROJECT_NAME}-${release_version}/_inst/lib/libsimgrid.so
   ${CMAKE_BINARY_TEST_DIR}/${PROJECT_NAME}-${release_version}/_inst/lib/libsimgridtest.so
-
-  COMMAND ${CMAKE_COMMAND} -E echo "XXX Build documentation"
-  COMMAND ${CMAKE_COMMAND} -E chdir ${CMAKE_BINARY_TEST_DIR}/${PROJECT_NAME}-${release_version}/_build ${CMAKE_MAKE_PROGRAM} simgrid_documentation
 
   COMMAND ${CMAKE_COMMAND} -E echo "XXX Install with documentation"
   COMMAND ${CMAKE_COMMAND} -E chdir ${CMAKE_BINARY_TEST_DIR}/${PROJECT_NAME}-${release_version}/_build ${CMAKE_MAKE_PROGRAM} install
