@@ -106,18 +106,15 @@ static int add_compared_pointers(void *p1, void *p2)
   return 1;
 }
 
-static int compare_areas_with_type(void *area1, void *area2,
-                                   mc_snapshot_t snapshot1,
-                                   mc_snapshot_t snapshot2, dw_type_t type,
-                                   int region_size, int region_type,
-                                   void *start_data, int pointer_level)
+static int compare_areas_with_type(void* real_area1, mc_snapshot_t snapshot1, mc_mem_region_t region1,
+                                   void* real_area2, mc_snapshot_t snapshot2, mc_mem_region_t region2,
+                                   dw_type_t type, int pointer_level)
 {
-
   unsigned int cursor = 0;
   dw_type_t member, subtype, subsubtype;
   int elm_size, i, res;
-  void *addr_pointed1, *addr_pointed2;
 
+  top:
   switch (type->type) {
   case DW_TAG_unspecified_type:
     return 1;
@@ -125,15 +122,20 @@ static int compare_areas_with_type(void *area1, void *area2,
   case DW_TAG_base_type:
   case DW_TAG_enumeration_type:
   case DW_TAG_union_type:
-    return (memcmp(area1, area2, type->byte_size) != 0);
+  {
+    void* data1 =
+      mc_snapshot_read_region(real_area1, region1, alloca(type->byte_size), type->byte_size);
+    void* data2 =
+      mc_snapshot_read_region(real_area2, region1, alloca(type->byte_size), type->byte_size);
+    return (memcmp(data1, data2, type->byte_size) != 0);
     break;
+  }
   case DW_TAG_typedef:
   case DW_TAG_volatile_type:
   case DW_TAG_const_type:
-    return compare_areas_with_type(area1, area2, snapshot1, snapshot2,
-                                   type->subtype, region_size, region_type,
-                                   start_data, pointer_level);
-    break;
+    // Poor man's TCO:
+    type = type->subtype;
+    goto top;
   case DW_TAG_array_type:
     subtype = type->subtype;
     switch (subtype->type) {
@@ -165,11 +167,11 @@ static int compare_areas_with_type(void *area1, void *area2,
       break;
     }
     for (i = 0; i < type->element_count; i++) {
-      res =
-          compare_areas_with_type((char *) area1 + (i * elm_size),
-                                  (char *) area2 + (i * elm_size), snapshot1,
-                                  snapshot2, type->subtype, region_size,
-                                  region_type, start_data, pointer_level);
+      size_t off = i * elm_size;
+      res = compare_areas_with_type(
+            (char*) real_area1 + off, snapshot1, region1,
+            (char*) real_area2 + off, snapshot2, region2,
+            type->subtype, pointer_level);
       if (res == 1)
         return res;
     }
@@ -177,9 +179,10 @@ static int compare_areas_with_type(void *area1, void *area2,
   case DW_TAG_pointer_type:
   case DW_TAG_reference_type:
   case DW_TAG_rvalue_reference_type:
-
-    addr_pointed1 = *((void **) (area1));
-    addr_pointed2 = *((void **) (area2));
+  {
+    void* temp;
+    void* addr_pointed1 = *(void**) mc_snapshot_read_region(real_area1, region1, &temp, sizeof(void**));
+    void* addr_pointed2 = *(void**) mc_snapshot_read_region(real_area2, region2, &temp, sizeof(void**));
 
     if (type->subtype && type->subtype->type == DW_TAG_subroutine_type) {
       return (addr_pointed1 != addr_pointed2);
@@ -208,24 +211,18 @@ static int compare_areas_with_type(void *area1, void *area2,
                                  snapshot2, NULL, type->subtype, pointer_level);
       }
       // The pointers are both in the current object R/W segment:
-      else if (addr_pointed1 > start_data
-               && (char *) addr_pointed1 <= (char *) start_data + region_size) {
+      else if (addr_pointed1 > region1->start_addr
+               && (char *) addr_pointed1 <= (char *) region1->start_addr + region1->size) {
         if (!
-            (addr_pointed2 > start_data
-             && (char *) addr_pointed2 <= (char *) start_data + region_size))
+            (addr_pointed2 > region2->start_addr
+             && (char *) addr_pointed2 <= (char *) region2->start_addr + region2->size))
           return 1;
         if (type->dw_type_id == NULL)
           return (addr_pointed1 != addr_pointed2);
         else {
-          void *translated_addr_pointer1 =
-              mc_translate_address((uintptr_t) addr_pointed1, snapshot1);
-          void *translated_addr_pointer2 =
-              mc_translate_address((uintptr_t) addr_pointed2, snapshot2);
-          return compare_areas_with_type(translated_addr_pointer1,
-                                         translated_addr_pointer2, snapshot1,
-                                         snapshot2, type->subtype, region_size,
-                                         region_type, start_data,
-                                         pointer_level);
+          return compare_areas_with_type(addr_pointed1, snapshot1, region1,
+                                         addr_pointed2, snapshot2, region2,
+                                         type->subtype, pointer_level);
         }
       }
 
@@ -234,17 +231,20 @@ static int compare_areas_with_type(void *area1, void *area2,
       }
     }
     break;
+  }
   case DW_TAG_structure_type:
   case DW_TAG_class_type:
     xbt_dynar_foreach(type->members, cursor, member) {
       void *member1 =
-          mc_member_snapshot_resolve(area1, type, member, snapshot1);
+        mc_member_resolve(real_area1, type, member, snapshot1);
       void *member2 =
-          mc_member_snapshot_resolve(area2, type, member, snapshot2);
+        mc_member_resolve(real_area2, type, member, snapshot2);
+      mc_mem_region_t subregion1 = mc_get_region_hinted(member1, snapshot1, region1);
+      mc_mem_region_t subregion2 = mc_get_region_hinted(member2, snapshot2, region2);
       res =
-          compare_areas_with_type(member1, member2, snapshot1, snapshot2,
-                                  member->subtype, region_size, region_type,
-                                  start_data, pointer_level);
+          compare_areas_with_type(member1, snapshot1, subregion1,
+                                  member2, snapshot2, subregion2,
+                                  member->subtype, pointer_level);
       if (res == 1)
         return res;
     }
@@ -276,18 +276,12 @@ static int compare_global_variables(int region_type, mc_mem_region_t r1,
   int res;
   unsigned int cursor = 0;
   dw_variable_t current_var;
-  size_t offset;
-  void *start_data;
-  void *start_data_binary = mc_binary_info->start_rw;
-  void *start_data_libsimgrid = mc_libsimgrid_info->start_rw;
 
   mc_object_info_t object_info = NULL;
   if (region_type == 2) {
     object_info = mc_binary_info;
-    start_data = start_data_binary;
   } else {
     object_info = mc_libsimgrid_info;
-    start_data = start_data_libsimgrid;
   }
   variables = object_info->global_variables;
 
@@ -300,18 +294,14 @@ static int compare_global_variables(int region_type, mc_mem_region_t r1,
         || (char *) current_var->address > (char *) object_info->end_rw)
       continue;
 
-    offset = (char *) current_var->address - (char *) object_info->start_rw;
-
     dw_type_t bvariable_type = current_var->type;
     res =
-        compare_areas_with_type((char *) r1->data + offset,
-                                (char *) r2->data + offset, snapshot1,
-                                snapshot2, bvariable_type, r1->size,
-                                region_type, start_data, 0);
+        compare_areas_with_type((char *) current_var->address, snapshot1, r1,
+                                (char *) current_var->address, snapshot2, r2,
+                                bvariable_type, 0);
     if (res == 1) {
-      XBT_VERB("Global variable %s (%p - %p) is different between snapshots",
-               current_var->name, (char *) r1->data + offset,
-               (char *) r2->data + offset);
+      XBT_VERB("Global variable %s (%p) is different between snapshots",
+               current_var->name, (char *) current_var->address);
       xbt_dynar_free(&compared_pointers);
       compared_pointers = NULL;
       return 1;
@@ -332,9 +322,6 @@ static int compare_local_variables(mc_snapshot_t snapshot1,
                                    mc_snapshot_stack_t stack2, void *heap1,
                                    void *heap2)
 {
-  void *start_data_binary = mc_binary_info->start_rw;
-  void *start_data_libsimgrid = mc_libsimgrid_info->start_rw;
-
   if (!compared_pointers) {
     compared_pointers =
         xbt_dynar_new(sizeof(pointers_pair_t), pointers_pair_free_voidp);
@@ -375,21 +362,13 @@ static int compare_local_variables(mc_snapshot_t snapshot1,
       offset2 = (char *) current_var2->address - (char *) std_heap;
       // TODO, fix current_varX->subprogram->name to include name if DW_TAG_inlined_subprogram
 
-      if (current_var1->region == 1) {
+
         dw_type_t subtype = current_var1->type;
         res =
-            compare_areas_with_type((char *) heap1 + offset1,
-                                    (char *) heap2 + offset2, snapshot1,
-                                    snapshot2, subtype, 0, 1,
-                                    start_data_libsimgrid, 0);
-      } else {
-        dw_type_t subtype = current_var2->type;
-        res =
-            compare_areas_with_type((char *) heap1 + offset1,
-                                    (char *) heap2 + offset2, snapshot1,
-                                    snapshot2, subtype, 0, 2, start_data_binary,
-                                    0);
-      }
+            compare_areas_with_type(current_var1->address, snapshot1, mc_get_snapshot_region(current_var1->address, snapshot1),
+                                    current_var2->address, snapshot2, mc_get_snapshot_region(current_var2->address, snapshot2),
+                                    subtype, 0);
+
       if (res == 1) {
         // TODO, fix current_varX->subprogram->name to include name if DW_TAG_inlined_subprogram
         XBT_VERB

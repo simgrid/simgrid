@@ -7,7 +7,7 @@
 #include "mc_private.h"
 #include "mc_mmu.h"
 
-static mc_mem_region_t mc_get_snapshot_region(void* addr, mc_snapshot_t snapshot)
+mc_mem_region_t mc_get_snapshot_region(void* addr, mc_snapshot_t snapshot)
 {
   for (size_t i = 0; i != NB_REGIONS; ++i) {
     mc_mem_region_t region = snapshot->regions[i];
@@ -121,7 +121,7 @@ void* mc_snapshot_read_region(void* addr, mc_mem_region_t region, void* target, 
 {
   uintptr_t offset = (uintptr_t) addr - (uintptr_t) region->start_addr;
 
-  if (addr < region->start_addr || offset+size > region->size) {
+  if (addr < region->start_addr || (char*) addr+size >= (char*)region->start_addr+region->size) {
     xbt_die("Trying to read out of the region boundary.");
   }
 

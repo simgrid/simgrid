@@ -9,6 +9,7 @@
 
 #include "simgrid_config.h"
 #include <stdio.h>
+#include <stdbool.h>
 #ifndef WIN32
 #include <sys/mman.h>
 #endif
@@ -28,6 +29,7 @@
 #include "msg/datatypes.h"
 #include "xbt/strbuff.h"
 #include "xbt/parmap.h"
+#include "mc_mmu.h"
 
 typedef struct s_dw_frame s_dw_frame_t, *dw_frame_t;
 typedef struct s_mc_function_index_item s_mc_function_index_item_t, *mc_function_index_item_t;
@@ -46,6 +48,12 @@ typedef struct s_mc_mem_region{
   // For per-page snapshots, this is an array to the number of
   size_t* page_numbers;
 } s_mc_mem_region_t, *mc_mem_region_t;
+
+static inline bool mc_region_contain(mc_mem_region_t region, void* p)
+{
+  return p >= region->start_addr &&
+    p < (void*)((char*) region->start_addr + region->size);
+}
 
 /** Ignored data
  *
@@ -70,6 +78,16 @@ typedef struct s_mc_snapshot{
   uint64_t hash;
   xbt_dynar_t ignored_data;
 } s_mc_snapshot_t, *mc_snapshot_t;
+
+mc_mem_region_t mc_get_snapshot_region(void* addr, mc_snapshot_t snapshot);
+
+static inline mc_mem_region_t mc_get_region_hinted(void* addr, mc_snapshot_t snapshot, mc_mem_region_t region)
+{
+  if (mc_region_contain(region, addr))
+    return region;
+  else
+    return mc_get_snapshot_region(addr, snapshot);
+}
 
 /** Information about a given stack frame
  *
@@ -131,6 +149,10 @@ void mc_softdirty_reset();
 
 typedef struct s_mc_pages_store s_mc_pages_store_t, * mc_pages_store_t;
 mc_pages_store_t mc_pages_store_new();
+
+static inline bool mc_snapshot_region_linear(mc_mem_region_t region) {
+  return !region || !region->data;
+}
 
 void* mc_snapshot_read_region(void* addr, mc_mem_region_t region, void* target, size_t size);
 void* mc_snapshot_read(void* addr, mc_snapshot_t snapshot, void* target, size_t size);
