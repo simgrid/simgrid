@@ -319,8 +319,7 @@ static int compare_global_variables(int region_type, mc_mem_region_t r1,
 static int compare_local_variables(mc_snapshot_t snapshot1,
                                    mc_snapshot_t snapshot2,
                                    mc_snapshot_stack_t stack1,
-                                   mc_snapshot_stack_t stack2, void *heap1,
-                                   void *heap2)
+                                   mc_snapshot_stack_t stack2)
 {
   if (!compared_pointers) {
     compared_pointers =
@@ -373,8 +372,8 @@ static int compare_local_variables(mc_snapshot_t snapshot1,
         // TODO, fix current_varX->subprogram->name to include name if DW_TAG_inlined_subprogram
         XBT_VERB
             ("Local variable %s (%p - %p) in frame %s  is different between snapshots",
-             current_var1->name, (char *) heap1 + offset1,
-             (char *) heap2 + offset2, current_var1->subprogram->name);
+             current_var1->name, current_var1->address, current_var2->address,
+             current_var1->subprogram->name);
         xbt_dynar_free(&compared_pointers);
         compared_pointers = NULL;
         return res;
@@ -523,8 +522,7 @@ int snapshot_compare(void *state1, void *state2)
         (mc_snapshot_stack_t) xbt_dynar_get_as(s2->stacks, cursor,
                                                mc_snapshot_stack_t);
     diff_local =
-        compare_local_variables(s1, s2, stack1, stack2, s1->regions[0]->data,
-                                s2->regions[0]->data);
+        compare_local_variables(s1, s2, stack1, stack2);
     if (diff_local > 0) {
 #ifdef MC_DEBUG
       if (is_diff == 0) {
