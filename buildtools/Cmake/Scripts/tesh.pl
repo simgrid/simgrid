@@ -34,7 +34,7 @@ my $error=0;
 my $exitcode=0;
 my @bg_cmds;
 my (%environ);
-
+$SIG{'PIPE'} = 'IGNORE';
 $path =~ s|[^/]*$||;
 push @INC,$path;
 
