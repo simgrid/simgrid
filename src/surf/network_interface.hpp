@@ -27,31 +27,31 @@ typedef NetworkAction *NetworkActionPtr;
  *************/
 
 /** @ingroup SURF_callbacks
- * @brief Callbacks handler which emit the callbacks after NetworkLink creation
+ * @brief Callbacks handler which emits the callbacks after NetworkLink creation
  * @details Callback functions have the following signature: `void(NetworkLinkPtr)`
  */
 XBT_PUBLIC_DATA( surf_callback(void, NetworkLinkPtr)) networkLinkCreatedCallbacks;
 
 /** @ingroup SURF_callbacks
- * @brief Callbacks handler which emit the callbacks after NetworkLink destruction
+ * @brief Callbacks handler which emits the callbacks after NetworkLink destruction
  * @details Callback functions have the following signature: `void(NetworkLinkPtr)`
  */
 XBT_PUBLIC_DATA( surf_callback(void, NetworkLinkPtr)) networkLinkDestructedCallbacks;
 
 /** @ingroup SURF_callbacks
- * @brief Callbacks handler which emit the callbacks after NetworkLink State changed
+ * @brief Callbacks handler which emits the callbacks after NetworkLink State changed
  * @details Callback functions have the following signature: `void(NetworkLinkActionPtr action, e_surf_resource_state_t old, e_surf_resource_state_t current)`
  */
 XBT_PUBLIC_DATA( surf_callback(void, NetworkLinkPtr, e_surf_resource_state_t, e_surf_resource_state_t)) networkLinkStateChangedCallbacks;
 
 /** @ingroup SURF_callbacks
- * @brief Callbacks handler which emit the callbacks after NetworkAction State changed
+ * @brief Callbacks handler which emits the callbacks after NetworkAction State changed
  * @details Callback functions have the following signature: `void(NetworkActionPtr action, e_surf_action_state_t old, e_surf_action_state_t current)`
  */
 XBT_PUBLIC_DATA( surf_callback(void, NetworkActionPtr, e_surf_action_state_t, e_surf_action_state_t)) networkActionStateChangedCallbacks;
 
 /** @ingroup SURF_callbacks
- * @brief Callbacks handler which emit the callbacks after communication created
+ * @brief Callbacks handler which emits the callbacks after communication created
  * @details Callback functions have the following signature: `void(NetworkActionPtr action, RoutingEdgePtr src, RoutingEdgePtr dst, double size, double rate)`
  */
 XBT_PUBLIC_DATA( surf_callback(void, NetworkActionPtr, RoutingEdgePtr src, RoutingEdgePtr dst, double size, double rate)) networkCommunicateCallbacks;
@@ -68,7 +68,7 @@ XBT_PUBLIC(void) net_add_traces();
  *********/
 /** @ingroup SURF_network_interface
  * @brief SURF network model interface class
- * @details A model is an object which handle the interactions between its Resources and its Actions
+ * @details A model is an object which handles the interactions between its Resources and its Actions
  */
 class NetworkModel : public Model {
 public:
@@ -150,10 +150,11 @@ public:
   void (*f_networkSolve)(lmm_system_t);
 
   /**
-   * @brief Gets the right multiplicative factor for the latency.
-   * @details According to the model, the effective latency when sending
-   * a message might be different from the theoretical latency in function
-   * of its size. In order to account for this, this function get this factor.
+   * @brief Get the right multiplicative factor for the latency.
+   * @details Depending on the model, the effective latency when sending
+   * a message might be different from the theoretical latency of the link,
+   * in function of the message size. In order to account for this, this
+   * function gets this factor.
    *
    * @param size The size of the message.
    * @return The latency factor.
@@ -161,10 +162,11 @@ public:
   virtual double latencyFactor(double size);
 
   /**
-   * @brief Gets the right multiplicative factor for the bandwidth.
-   * @details According to the model, the effective bandwidth when sending
-   * a message might be different from the theoretical bandwidth in function
-   * of its size. In order to account for this, this function get this factor.
+   * @brief Get the right multiplicative factor for the bandwidth.
+   * @details Depending on the model, the effective bandwidth when sending
+   * a message might be different from the theoretical bandwidth of the link,
+   * in function of the message size. In order to account for this, this
+   * function gets this factor.
    *
    * @param size The size of the message.
    * @return The bandwidth factor.
@@ -172,9 +174,9 @@ public:
   virtual double bandwidthFactor(double size);
 
   /**
-   * @brief Gets definitive bandwidth.
+   * @brief Get definitive bandwidth.
    * @details It gives the minimum bandwidth between the one that would
-   * occur if no limitation was enforced, and the maximum wanted bandwidth
+   * occur if no limitation was enforced, and the one arbitrary limited.
    * @param rate The desired maximum bandwidth.
    * @param bound The bandwidth with only the network taken into account.
    * @param size The size of the message.
@@ -190,14 +192,14 @@ public:
  ************/
  /** @ingroup SURF_network_interface
   * @brief SURF network link interface class
-  * @details A NetworkLink represent the link between two [Workstations](\ref Workstation)
+  * @details A NetworkLink represents the link between two [Workstations](\ref Workstation)
   */
 class NetworkLink : public Resource {
 public:
   /**
    * @brief NetworkLink constructor
    *
-   * @param model The CpuModel associated to this NetworkLink
+   * @param model The NetworkModel associated to this NetworkLink
    * @param name The name of the NetworkLink
    * @param props Dictionary of properties associated to this NetworkLink
    */
@@ -206,7 +208,7 @@ public:
   /**
    * @brief NetworkLink constructor
    *
-   * @param model The CpuModel associated to this NetworkLink
+   * @param model The NetworkModel associated to this NetworkLink
    * @param name The name of the NetworkLink
    * @param props Dictionary of properties associated to this NetworkLink
    * @param constraint The lmm constraint associated to this Cpu if it is part of a LMM component
@@ -214,9 +216,9 @@ public:
    * @param state_trace [TODO]
    */
   NetworkLink(NetworkModelPtr model, const char *name, xbt_dict_t props,
-  		      lmm_constraint_t constraint,
-  	          tmgr_history_t history,
-  	          tmgr_trace_t state_trace);
+              lmm_constraint_t constraint,
+              tmgr_history_t history,
+              tmgr_trace_t state_trace);
 
   /**
    * @brief NetworkLink destructor
@@ -249,7 +251,6 @@ public:
 
   /**
    * @brief Check if the NetworkLink is shared
-   * @details [long description]
    *
    * @return true if the current NetwokrLink is shared, false otherwise
    */
@@ -279,7 +280,8 @@ public:
  **********/
 /** @ingroup SURF_network_interface
  * @brief SURF network action interface class
- * @details A NetworkAction represent a communication bettween two [Workstations](\ref Workstation)
+ * @details A NetworkAction represents a communication between two
+ * [Workstations](\ref Workstation)
  */
 class NetworkAction : public Action {
 public:
@@ -299,7 +301,8 @@ public:
    * @param model The NetworkModel associated to this NetworkAction
    * @param cost The cost of this  NetworkAction in [TODO]
    * @param failed [description]
-   * @param var The lmm variable associated to this Action if it is part of a LMM component
+   * @param var The lmm variable associated to this Action if it is part of a
+   * LMM component
    */
   NetworkAction(ModelPtr model, double cost, bool failed, lmm_variable_t var)
   : Action(model, cost, failed, var) {};

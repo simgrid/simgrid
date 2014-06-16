@@ -164,7 +164,14 @@ add_custom_target(uninstall
   COMMAND ${CMAKE_COMMAND} -E	remove -f ${CMAKE_INSTALL_PREFIX}/include/xbt.h
   COMMAND ${CMAKE_COMMAND} -E	echo "uninstall include ok"
   COMMAND ${CMAKE_COMMAND} -E	remove -f ${CMAKE_INSTALL_PREFIX}/share/man/man1/simgrid_update_xml.1
-    COMMAND ${CMAKE_COMMAND} -E remove -f ${CMAKE_INSTALL_PREFIX}/share/man/man1/tesh.1
+  COMMAND ${CMAKE_COMMAND} -E   remove -f ${CMAKE_INSTALL_PREFIX}/share/man/man1/tesh.1
+  COMMAND ${CMAKE_COMMAND} -E   remove -f ${CMAKE_INSTALL_PREFIX}/share/man/man1/smpicc.1
+  COMMAND ${CMAKE_COMMAND} -E   remove -f ${CMAKE_INSTALL_PREFIX}/share/man/man1/smpicxx.1
+  COMMAND ${CMAKE_COMMAND} -E   remove -f ${CMAKE_INSTALL_PREFIX}/share/man/man1/smpirun.1
+  COMMAND ${CMAKE_COMMAND} -E   remove -f ${CMAKE_INSTALL_PREFIX}/share/man/man1/smpiff.1
+  COMMAND ${CMAKE_COMMAND} -E   remove -f ${CMAKE_INSTALL_PREFIX}/share/man/man1/smpif90.1
+  
+    
   COMMAND ${CMAKE_COMMAND} -E	echo "uninstall man ok"
   WORKING_DIRECTORY "${CMAKE_INSTALL_PREFIX}"
   )
