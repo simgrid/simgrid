@@ -462,7 +462,7 @@ static xbt_dynar_t MC_unwind_stack_frames(void *stack_context)
   return result;
 };
 
-static xbt_dynar_t MC_take_snapshot_stacks(mc_snapshot_t * snapshot, void *heap)
+static xbt_dynar_t MC_take_snapshot_stacks(mc_snapshot_t * snapshot)
 {
 
   xbt_dynar_t res =
@@ -593,7 +593,7 @@ mc_snapshot_t MC_take_snapshot(int num_state)
 
   if (_sg_mc_visited > 0 || strcmp(_sg_mc_property_file, "")) {
     snapshot->stacks =
-        MC_take_snapshot_stacks(&snapshot, snapshot->regions[0]->data);
+        MC_take_snapshot_stacks(&snapshot);
     if (_sg_mc_hash && snapshot->stacks != NULL) {
       snapshot->hash = mc_hash_processes_state(num_state, snapshot->stacks);
     } else {

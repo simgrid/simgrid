@@ -607,8 +607,7 @@ int snapshot_compare(void *state1, void *state2)
 #endif
 
   /* Compare heap */
-  if (mmalloc_compare_heap(s1, s2, (xbt_mheap_t) s1->regions[0]->data,
-                           (xbt_mheap_t) s2->regions[0]->data) > 0) {
+  if (mmalloc_compare_heap(s1, s2) > 0) {
 
 #ifdef MC_DEBUG
     xbt_os_walltimer_stop(timer);

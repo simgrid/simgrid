@@ -434,16 +434,10 @@ void reset_heap_information()
 
 }
 
-int mmalloc_compare_heap(mc_snapshot_t snapshot1, mc_snapshot_t snapshot2,
-                         xbt_mheap_t heap1, xbt_mheap_t heap2)
+int mmalloc_compare_heap(mc_snapshot_t snapshot1, mc_snapshot_t snapshot2)
 {
 
   struct s_mc_diff *state = mc_diff_info;
-
-  if (heap1 == NULL && heap2 == NULL) {
-    XBT_DEBUG("Malloc descriptors null");
-    return 0;
-  }
 
   /* Start comparison */
   size_t i1, i2, j1, j2, k;
