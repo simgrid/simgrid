@@ -32,13 +32,13 @@ typedef unsigned long int uinteger;
     integer _MPI_BOTTOM;
     integer _MPI_STATUS_IGNORE;
     integer _MPI_STATUSES_IGNORE;
-  } smpi_f90;                       
+  } smpi_;
 
 
 
 /* Convert between Fortran and C */
 #define FORT_ADDR(addr, val)                                         \
-  (((void *)(addr) == (void*) &(smpi_f90._ ## val))                  \
+  (((void *)(addr) == (void*) &(smpi_._ ## val))                  \
    ? (val) : (void *)(addr))
 #define FORT_BOTTOM(addr)          FORT_ADDR(addr, MPI_BOTTOM)
 #define FORT_IN_PLACE(addr)        FORT_ADDR(addr, MPI_IN_PLACE)
