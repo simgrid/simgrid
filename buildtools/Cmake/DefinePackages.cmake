@@ -59,6 +59,7 @@ set(EXTRA_DIST
   src/surf/network_interface.hpp
   src/surf/network_ns3.hpp
   src/surf/network_smpi.hpp
+  src/surf/network_ib.hpp
   src/surf/ns3/my-point-to-point-helper.h
   src/surf/ns3/ns3_interface.h
   src/surf/ns3/ns3_simulator.h
@@ -322,6 +323,7 @@ set(SURF_SRC
   src/surf/network_constant.cpp
   src/surf/network_interface.cpp
   src/surf/network_smpi.cpp
+  src/surf/network_ib.cpp
   src/surf/platf_generator.c
   src/surf/plugins/energy.cpp
   src/surf/random_mgr.c
