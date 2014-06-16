@@ -478,18 +478,12 @@ static xbt_dynar_t MC_take_snapshot_stacks(mc_snapshot_t * snapshot, void *heap)
     st->local_variables = MC_get_local_variables_values(st->stack_frames);
 
     unw_word_t sp = xbt_dynar_get_as(st->stack_frames, 0, mc_stack_frame_t)->sp;
-    st->stack_pointer =
-        ((char *) heap + (size_t) (((char *) ((long) sp) - (char *) std_heap)));
 
-    st->real_address = current_stack->address;
     xbt_dynar_push(res, &st);
     (*snapshot)->stack_sizes =
         xbt_realloc((*snapshot)->stack_sizes, (cursor + 1) * sizeof(size_t));
     (*snapshot)->stack_sizes[cursor] =
-        current_stack->size - ((char *) st->stack_pointer -
-                               (char *) ((char *) heap +
-                                         ((char *) current_stack->address -
-                                          (char *) std_heap)));
+      (char*) current_stack->address + current_stack->size - (char*) sp;
   }
 
   return res;
