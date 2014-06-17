@@ -5,7 +5,6 @@
 
 # This program is free software; you can redistribute it and/or modify it
 # under the terms of the license (GNU LGPL) which comes with this package.
-
 eval 'exec perl -S $0 ${1+"$@"}'
   if $running_under_some_shell;
 
@@ -27,6 +26,9 @@ my($time_to_wait)=0;
 my $path = $0;
 my $OS;
 my $enable_coverage=0;
+my $diff_tool=0;
+my $diff_tool_tmp_fh=0;
+my $diff_tool_tmp_filename=0;
 my $sort_prefix = 19;
 my $tesh_file;
 my $tesh_name;
@@ -50,7 +52,7 @@ if($^O eq "linux"){
 }
 else{
     $OS = "WIN";
-    $ENV{"PRINTF_EXPONENT_DIGITS"} = "2"; 
+    $ENV{"PRINTF_EXPONENT_DIGITS"} = "2";
 }
 
 ##
@@ -98,10 +100,10 @@ sub setenv_cmd {
     ($var,$ctn)=($1,$2);
   }elsif ($_[1] =~ /^(.*)=(.*)$/) {
     ($var,$ctn)=($1,$2);
-  } else { 
+  } else {
       die "[Tesh/CRITICAL] Malformed argument to setenv: expected 'name=value' but got '$_[1]'\n";
   }
-    
+
   print "[Tesh/INFO] setenv $var=$ctn\n";
   $environ{$var} = $ctn;
 }
@@ -126,23 +128,31 @@ sub get_options {
     );
 
   Getopt::Long::config('bundling', 'no_getopt_compat', 'no_auto_abbrev');
-  
+
   GetOptions(
     'help|h'   => \$opt{'help'},
 
     'verbose|v'  => \@verbose,
     'debug|d'  => \$opt{"debug"},
 
+    'difftool=s' => \$diff_tool,
+
     'cd=s'     => \&cd_cmd,
-    'timeout=s'  => \$opt{'timeout'},    
+    'timeout=s'  => \$opt{'timeout'},
     'setenv=s'   => \&setenv_cmd,
     'cfg=s'    => \@cfg,
     'log=s'    => \$log,
-    'enable-coverage+'  => \$enable_coverage,    
+    'enable-coverage+'  => \$enable_coverage,
     );
 
   if($enable_coverage){
     print "Enable coverage\n";
+  }
+
+  if($diff_tool){
+    use File::Temp qw/ tempfile /;
+    ($diff_tool_tmp_fh, $diff_tool_tmp_filename) = tempfile();
+    print "New tesh: $diff_tool_tmp_filename\n";
   }
 
   unless($tesh_file=~/(.*)\.tesh/){
@@ -208,7 +218,7 @@ my(@buffer_tesh)=();
 #  }
 #}
 
-sub exec_cmd { 
+sub exec_cmd {
   my %cmd = %{$_[0]};
   if ($opts{'debug'}) {
     print "IN BEGIN\n";
@@ -254,7 +264,7 @@ sub exec_cmd {
 
   $cmd{'got'} = IO::File->new_tmpfile;
   $cmd{'got'}->autoflush(1);
-  local *E = $cmd{'got'}; 
+  local *E = $cmd{'got'};
   $cmd{'pid'} = open3(\*CHILD_IN,  ">&E",  ">&E",
                       quotewords('\s+', 0, $cmd{'cmd'}));
 
@@ -275,7 +285,7 @@ sub exec_cmd {
     }
   }
 
-  
+
   # Cleanup the executing child, and kill the timeouter brother on need
   $cmd{'return'} = 0 unless defined($cmd{'return'});
   if($cmd{'background'} != 1){
@@ -295,7 +305,7 @@ sub exec_cmd {
 }
 
 
-sub parse_out { 
+sub parse_out {
   my %cmd = %{$_[0]};
   my $gotret=$cmd{'gotret'};
 
@@ -314,12 +324,14 @@ sub parse_out {
   while(defined(my $got=<got>)) {
     $got =~ s/\r//g;
     chomp $got;
+    print $diff_tool_tmp_fh "> $got\n" if ($diff_tool);
+
     if (!($enable_coverage and $got=~ /^profiling:/)){
       push @got, $got;
     }
-  }    
+  }
 
-  if ($cmd{'sort'}){   
+  if ($cmd{'sort'}){
     sub mysort{
         substr($a, 0, $sort_prefix) cmp substr($b, 0, $sort_prefix)
     }
@@ -348,13 +360,13 @@ sub parse_out {
     $exitcode=3;
     print STDERR "<$cmd{'file'}:$cmd{'line'}> timeouted. Kill the process.\n";
   }else{
-    $timeout=0;  
+    $timeout=0;
   }
   if($gotret ne $wantret) {
     $error=1;
     my $msg = "Test suite `$cmd{'file'}': NOK (<$cmd{'file'}:$cmd{'line'}> $gotret)\n";
     if ($timeout!=1) {
-        $msg=$msg."Output of <$cmd{'file'}:$cmd{'line'}> so far:\n";    
+        $msg=$msg."Output of <$cmd{'file'}:$cmd{'line'}> so far:\n";
     }
     map {$msg .=  "|| $_\n"} @got;
     if(!@got) {
@@ -368,9 +380,9 @@ sub parse_out {
     print STDERR "$msg";
   }
 
-      
+
   ###
-  # Check the result of execution 
+  # Check the result of execution
   ###
   my $diff;
   if (defined($cmd{'output display'})){
@@ -427,10 +439,10 @@ LINE: while (not $finished and not $error) {
     next LINE;
   }
 
-
   $line_num++;
   chomp $line;
   $line =~ s/\r//g;
+  #print $diff_tool_tmp_fh "$line\n";
   print "[TESH/debug] $line_num: $line\n" if $opts{'debug'};
   my $next;
   # deal with line continuations
@@ -450,10 +462,12 @@ LINE: while (not $finished and not $error) {
       exec_cmd(\%cmd);
       %cmd = ();
     }
+    print $diff_tool_tmp_fh "$line\n" if ($diff_tool);
     next LINE;
-  }     
- 
+  }
+
   my ($cmd,$arg) = ($1,$2);
+  print $diff_tool_tmp_fh "$line\n" if ($diff_tool and $cmd ne '>');
   $arg =~ s/^ //g;
   $arg =~ s/\r//g;
   $arg =~ s/\\\\/\\/g;
@@ -508,7 +522,7 @@ LINE: while (not $finished and not $error) {
     $cmd{'cmd'} = $arg;
     $cmd{'file'} = $tesh_file;
     $cmd{'line'} = $line_num;
-  }    
+  }
   elsif($line =~ /^!\s*output sort/){    #output sort
     if (defined($cmd{'cmd'})) {
       exec_cmd(\%cmd);
@@ -609,6 +623,9 @@ foreach(@bg_cmds){
 
 @bg_cmds=();
 
+close $diff_tool_tmp_fh;
+system("$diff_tool $diff_tool_tmp_filename $tesh_file");
+unlink $diff_tool_tmp_filename;
 
 if($error !=0){
     exit $exitcode;
@@ -647,7 +664,7 @@ use Diff qw(diff); # postpone a bit to have time to change INC
 sub build_diff {
   my $res;
   my $diff = Diff->new(@_);
-  
+
   $diff->Base( 1 );   # Return line numbers, not indices
   my $chunk_count = $diff->Next(-1); # Compute the amount of chuncks
   return ""   if ($chunk_count == 1 && $diff->Same());
@@ -658,14 +675,14 @@ sub build_diff {
       if ($diff->Next(0) > 1) { # not first chunk: print 2 first lines
         $res .= '  '.$same[0]."\n" ;
         $res .= '  '.$same[1]."\n" if (scalar @same>1);
-      }     
+      }
       $res .= "...\n"  if (scalar @same>2);
 #    $res .= $diff->Next(0)."/$chunk_count\n";
       if ($diff->Next(0) < $chunk_count) { # not last chunk: print 2 last lines
         $res .= '  '.$same[scalar @same -2]."\n" if (scalar @same>1);
         $res .= '  '.$same[scalar @same -1]."\n";
-      } 
-    } 
+      }
+    }
     next if  $diff->Same();
     map { $res .= "- $_\n" } $diff->Items(1);
     map { $res .= "+ $_\n" } $diff->Items(2);
