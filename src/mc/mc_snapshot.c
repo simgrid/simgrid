@@ -36,8 +36,10 @@ void* mc_translate_address_region(uintptr_t addr, mc_mem_region_t region)
 
   // Per-page snapshot:
   else if (region->page_numbers) {
-    size_t pageno = mc_page_number(region->data, (void*) addr);
-    return (char*) region->page_numbers[pageno] + mc_page_offset((void*) addr);
+    size_t pageno = mc_page_number(region->start_addr, (void*) addr);
+    size_t snapshot_pageno = region->page_numbers[pageno];
+    const void* snapshot_page = mc_page_store_get_page(mc_model_checker->pages, snapshot_pageno);
+    return (char*) snapshot_page + mc_page_offset((void*) addr);
   }
 
   else {
@@ -55,7 +57,6 @@ void* mc_translate_address(uintptr_t addr, mc_snapshot_t snapshot)
 
   mc_mem_region_t region = mc_get_snapshot_region((void*) addr, snapshot);
   return mc_translate_address_region(addr, region);
-
 }
 
 /** @brief Read memory from a snapshot region broken across fragmented pages
