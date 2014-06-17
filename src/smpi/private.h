@@ -166,6 +166,7 @@ void smpi_comm_copy_buffer_callback(smx_action_t comm,
 
 void print_request(const char *message, MPI_Request request);
 
+int smpi_enabled(void);
 void smpi_global_init(void);
 void smpi_global_destroy(void);
 

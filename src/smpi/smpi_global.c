@@ -354,6 +354,10 @@ static void smpi_check_options(){
    }
 }
 
+int smpi_enabled(void) {
+  return process_data != NULL;
+}
+
 void smpi_global_init(void)
 {
   int i;
