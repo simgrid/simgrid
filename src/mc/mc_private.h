@@ -125,12 +125,7 @@ typedef struct s_mc_checkpoint_ignore_region{
 
 SG_BEGIN_DECL()
 
-inline static void* mc_snapshot_get_heap_end(mc_snapshot_t snapshot) {
-  if(snapshot==NULL)
-    xbt_die("snapshot is NULL");
-  xbt_mheap_t heap = (xbt_mheap_t)snapshot->regions[0]->data;
-  return heap->breakval;
-}
+static void* mc_snapshot_get_heap_end(mc_snapshot_t snapshot);
 
 mc_snapshot_t SIMIX_pre_mc_snapshot(smx_simcall_t simcall);
 mc_snapshot_t MC_take_snapshot(int num_state);
@@ -161,11 +156,7 @@ int mc_snapshot_memcp(
   void* addr1, mc_snapshot_t snapshot1,
   void* addr2, mc_snapshot_t snapshot2, size_t size);
 
-static inline void* mc_snapshot_read_pointer(void* addr, mc_snapshot_t snapshot)
-{
-  void* res;
-  return *(void**) mc_snapshot_read(addr, snapshot, &res, sizeof(void*));
-}
+static void* mc_snapshot_read_pointer(void* addr, mc_snapshot_t snapshot);
 
 /** @brief State of the model-checker (global variables for the model checker)
  *
@@ -675,6 +666,21 @@ bool mc_address_test(mc_address_set_t p, const void* value);
  *  \result resulting hash
  * */
 uint64_t mc_hash_processes_state(int num_state, xbt_dynar_t stacks);
+
+//
+
+inline static void* mc_snapshot_get_heap_end(mc_snapshot_t snapshot) {
+  if(snapshot==NULL)
+      xbt_die("snapshot is NULL");
+  char* addr = (char*) std_heap + offsetof(struct mdesc, breakval);
+  return mc_snapshot_read_pointer(addr, snapshot);
+}
+
+static inline void* mc_snapshot_read_pointer(void* addr, mc_snapshot_t snapshot)
+{
+  void* res;
+  return *(void**) mc_snapshot_read(addr, snapshot, &res, sizeof(void*));
+}
 
 SG_END_DECL()
 
