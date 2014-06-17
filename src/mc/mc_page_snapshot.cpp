@@ -57,7 +57,7 @@ void mc_restore_page_snapshot_region(mc_mem_region_t region, size_t page_count, 
 
 /** @brief Like pread() but without partial reads */
 static size_t pread_whole(int fd, void* buf, size_t count, off_t offset) {
-  size_t res;
+  size_t res = 0;
 
   char* data = (char*) buf;
   while(count) {
@@ -122,7 +122,7 @@ static void mc_read_pagemap(uint64_t* pagemap, size_t page_start, size_t page_co
   size_t bytesize = sizeof(uint64_t) * page_count;
   off_t offset = sizeof(uint64_t) * page_start;
   if (pread_whole(mc_model_checker->fd_pagemap, pagemap, bytesize, offset) != bytesize) {
-    xbt_die("Coult not read pagemap");
+    xbt_die("Could not read pagemap");
   }
 }
 
@@ -148,7 +148,8 @@ mc_mem_region_t mc_region_new_sparse(int type, void *start_addr, size_t size, mc
   }
 
   // Take incremental snapshot:
-  new_reg->page_numbers = mc_take_page_snapshot_region(start_addr, page_count, pagemap, ref_reg->page_numbers);
+  new_reg->page_numbers = mc_take_page_snapshot_region(start_addr, page_count, pagemap,
+    ref_reg==NULL ? NULL : ref_reg->page_numbers);
 
   return new_reg;
 }
