@@ -161,6 +161,6 @@ void* mc_snapshot_read(void* addr, mc_snapshot_t snapshot, void* target, size_t 
     mc_mem_region_t region = mc_get_snapshot_region(addr, snapshot);
     return mc_snapshot_read_region(addr, region, target, size);
   } else {
-    return target;
+    return addr;
   }
 }
