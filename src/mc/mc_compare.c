@@ -479,10 +479,11 @@ int snapshot_compare(void *state1, void *state2)
 #endif
 
   /* Init heap information used in heap comparison algorithm */
-  res_init =
-      init_heap_information((xbt_mheap_t) s1->regions[0]->data,
-                            (xbt_mheap_t) s2->regions[0]->data, s1->to_ignore,
-                            s2->to_ignore);
+  xbt_mheap_t heap1 = (xbt_mheap_t) mc_snapshot_read(std_heap, s1,
+    alloca(sizeof(struct mdesc)), sizeof(struct mdesc));
+  xbt_mheap_t heap2 = (xbt_mheap_t) mc_snapshot_read(std_heap, s2,
+    alloca(sizeof(struct mdesc)), sizeof(struct mdesc));
+  res_init = init_heap_information(heap1, heap2, s1->to_ignore, s2->to_ignore);
   if (res_init == -1) {
 #ifdef MC_DEBUG
     XBT_DEBUG("(%d - %d) Different heap information", num1, num2);
