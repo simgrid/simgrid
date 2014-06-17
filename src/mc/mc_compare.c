@@ -337,7 +337,7 @@ static int compare_local_variables(mc_snapshot_t snapshot1,
   } else {
     unsigned int cursor = 0;
     local_variable_t current_var1, current_var2;
-    int offset1, offset2, res;
+    int res;
     while (cursor < xbt_dynar_length(stack1->local_variables)) {
       current_var1 =
           (local_variable_t) xbt_dynar_get_as(stack1->local_variables, cursor,
@@ -357,10 +357,7 @@ static int compare_local_variables(mc_snapshot_t snapshot1,
              current_var1->ip, current_var2->ip);
         return 1;
       }
-      offset1 = (char *) current_var1->address - (char *) std_heap;
-      offset2 = (char *) current_var2->address - (char *) std_heap;
       // TODO, fix current_varX->subprogram->name to include name if DW_TAG_inlined_subprogram
-
 
         dw_type_t subtype = current_var1->type;
         res =
