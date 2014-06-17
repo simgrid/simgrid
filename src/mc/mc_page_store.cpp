@@ -55,7 +55,7 @@ s_mc_pages_store::s_mc_pages_store(size_t size) :
   // Using mmap in order to be able to expand the region
   // by relocating it somewhere else in the virtual memory
   // space:
-  void * memory = ::mmap(NULL, size << xbt_pagebits, PROT_READ|PROT_WRITE, MAP_SHARED|MAP_ANONYMOUS|MAP_POPULATE, -1, 0);
+  void * memory = ::mmap(NULL, size << xbt_pagebits, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS|MAP_POPULATE, -1, 0);
   if (memory==MAP_FAILED) {
     xbt_die("Could not mmap initial snapshot pages.");
   }
@@ -73,18 +73,19 @@ s_mc_pages_store::~s_mc_pages_store()
 
 void s_mc_pages_store::resize(size_t size)
 {
+  size_t old_bytesize = this->capacity_ << xbt_pagebits;
   size_t new_bytesize = size << xbt_pagebits;
 
   // Expand the memory region by moving it into another
   // virtual memory address if necessary:
-  void* new_memory = mremap(this->memory_, this->capacity_ << xbt_pagesize, new_bytesize, MREMAP_MAYMOVE);
+  void* new_memory = mremap(this->memory_, old_bytesize, new_bytesize, MREMAP_MAYMOVE);
   if (new_memory == MAP_FAILED) {
     xbt_die("Could not mremap snapshot pages.");
   }
 
   this->capacity_ = size;
   this->memory_ = new_memory;
-  this->page_counts_.resize(size);
+  this->page_counts_.resize(size, 0);
 }
 
 /** Allocate a free page
@@ -96,7 +97,7 @@ size_t s_mc_pages_store::alloc_page()
   if (this->free_pages_.empty()) {
 
     // Expand the region:
-    if (top_index_ == this->capacity_) {
+    if (this->top_index_ == this->capacity_) {
       // All the pages are allocated, we need add more pages:
       this->resize(2 * this->capacity_);
     }
