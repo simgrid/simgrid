@@ -672,7 +672,7 @@ uint64_t mc_hash_processes_state(int num_state, xbt_dynar_t stacks);
 inline static void* mc_snapshot_get_heap_end(mc_snapshot_t snapshot) {
   if(snapshot==NULL)
       xbt_die("snapshot is NULL");
-  char* addr = (char*) std_heap + offsetof(struct mdesc, breakval);
+  void** addr = &((xbt_mheap_t)std_heap)->breakval;
   return mc_snapshot_read_pointer(addr, snapshot);
 }
 
