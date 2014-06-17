@@ -156,6 +156,15 @@ static inline bool mc_snapshot_region_linear(mc_mem_region_t region) {
 
 void* mc_snapshot_read_region(void* addr, mc_mem_region_t region, void* target, size_t size);
 void* mc_snapshot_read(void* addr, mc_snapshot_t snapshot, void* target, size_t size);
+int mc_snapshot_memcp(
+  void* addr1, mc_snapshot_t snapshot1,
+  void* addr2, mc_snapshot_t snapshot2, size_t size);
+
+static inline void* mc_snapshot_read_pointer(void* addr, mc_snapshot_t snapshot)
+{
+  void* res;
+  return *(void**) mc_snapshot_read(addr, snapshot, &res, sizeof(void*));
+}
 
 /** @brief State of the model-checker (global variables for the model checker)
  *
