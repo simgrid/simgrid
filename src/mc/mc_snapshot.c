@@ -58,27 +58,6 @@ void* mc_translate_address(uintptr_t addr, mc_snapshot_t snapshot)
 
 }
 
-uintptr_t mc_untranslate_address(void *addr, mc_snapshot_t snapshot)
-{
-  if (!snapshot) {
-    return (uintptr_t) addr;
-  }
-
-  for (size_t i = 0; i != NB_REGIONS; ++i) {
-    mc_mem_region_t region = snapshot->regions[i];
-    if (region->page_numbers) {
-      xbt_die("Does not work for per-page snapshot.");
-    }
-    if (addr >= region->data
-        && addr <= (void *) (((char *) region->data) + region->size)) {
-      size_t offset = (size_t) ((char *) addr - (char *) region->data);
-      return ((uintptr_t) region->start_addr) + offset;
-    }
-  }
-
-  return (uintptr_t) addr;
-}
-
 /** @brief Read memory from a snapshot region broken across fragmented pages
  *
  *  @param addr    Process (non-snapshot) address of the data

@@ -38,26 +38,3 @@ void *mc_member_resolve(const void *base, dw_type_t type, dw_type_t member,
     return (void *) state.stack[state.stack_size - 1];
 }
 
-/** Resolve snapshot in the snapshot address space
- *
- * @param  object Snapshot address of the struct/class
- * @param  type Type of the struct/class
- * @param  member Member description
- * @param  snapshot Snapshot (or NULL)
- * @return Snapshot address of the given member of the 'object' struct/class
- */
-void *mc_member_snapshot_resolve(const void *object, dw_type_t type,
-                                 dw_type_t member, mc_snapshot_t snapshot)
-{
-  if (!member->location.size) {
-    return (char *) object + member->offset;
-  } else {
-    // Translate the problem in the process address space:
-    void *real_area =
-        (void *) mc_untranslate_address((void *) object, snapshot);
-    // Resolve the member in the process address space:
-    void *real_member = mc_member_resolve(real_area, type, member, snapshot);
-    // Translate back in the snapshot address space:
-    return mc_translate_address((uintptr_t) real_member, snapshot);
-  }
-}

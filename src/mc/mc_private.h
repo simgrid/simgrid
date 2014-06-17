@@ -200,18 +200,6 @@ void* mc_translate_address_region(uintptr_t addr, mc_mem_region_t region);
  * */
 void* mc_translate_address(uintptr_t addr, mc_snapshot_t snapshot);
 
-/** \brief Translate a pointer from the snapshot address space to the application address space
- *
- *  This is the inverse of mc_translate_address.
- *
- *  Does not work for per-page snapshot, we change the logic to handle this.
- *
- * \param addr    Address in the snapshot address space
- * \param snapsot Snapshot of interest (if NULL no translation is done)
- * \return        Translated address in the application address space
- */
-uintptr_t mc_untranslate_address(void* addr, mc_snapshot_t snapshot);
-
 extern xbt_dynar_t mc_checkpoint_ignore;
 
 /********************************* MC Global **********************************/
@@ -547,7 +535,6 @@ struct s_dw_type{
 };
 
 void* mc_member_resolve(const void* base, dw_type_t type, dw_type_t member, mc_snapshot_t snapshot);
-void* mc_member_snapshot_resolve(const void* base, dw_type_t type, dw_type_t member, mc_snapshot_t snapshot);
 
 typedef struct s_dw_variable{
   Dwarf_Off dwarf_offset; /* Global offset of the field. */
