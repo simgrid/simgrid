@@ -633,7 +633,7 @@ item several times, as in \verbatim
 \subsection options_generic_exit Behavior on Ctrl-C
 
 By default, when Ctrl-C is pressed, the status of all existing
-simulated processes is displayed. This is very useful to debug your
+simulated processes is displayed before exiting the simulation. This is very useful to debug your
 code, but it can reveal troublesome in some cases (such as when the
 amount of processes becomes really big). This behavior is disabled
 when \b verbose-exit is set to 0 (it is to 1 by default).
