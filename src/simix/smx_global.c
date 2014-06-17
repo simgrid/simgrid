@@ -31,11 +31,11 @@ int _sg_do_verbose_exit = 1;
 static void _XBT_CALL inthandler(int ignored)
 {
   if ( _sg_do_verbose_exit ) {
-     XBT_INFO("CTRL-C pressed. Displaying status and bailing out");
+     XBT_INFO("CTRL-C pressed. The current status will be displayed before exit (disable that behavior with option 'verbose-exit').");
      SIMIX_display_process_status();
   }
   else {
-     XBT_INFO("CTRL-C pressed. bailing out without displaying because verbose-exit is disabled");
+     XBT_INFO("CTRL-C pressed, exiting. Hiding the current process status since 'verbose-exit' is set to false.");
   }
   exit(1);
 }
