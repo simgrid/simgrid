@@ -2,13 +2,13 @@
 <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">
 <platform version="3">
 
-  <process host="c-2.me" function="master">
+  <process host="node-2.acme.org" function="master">
       <argument value="100"/>
-      <argument value="c-6.me"/>
+      <argument value="node-6.acme.org"/>
       <argument value="1"/>
   </process>
 
-  <process host="c-6.me" function="slave">
+  <process host="node-6.acme.org" function="slave">
     <argument value="1"/>
   </process>
      

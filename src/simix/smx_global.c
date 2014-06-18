@@ -13,6 +13,14 @@
 #include "mc/mc.h"
 #include "simgrid/sg_config.h"
 
+#ifdef HAVE_MC
+#include "mc/mc_private.h"
+#endif
+
+#ifdef HAVE_SMPI
+#include "smpi/private.h"
+#endif
+
 XBT_LOG_NEW_CATEGORY(simix, "All SIMIX categories");
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_kernel, simix,
                                 "Logging specific to SIMIX (kernel)");
@@ -58,7 +66,23 @@ static void _XBT_CALL segvhandler(int signum, siginfo_t *siginfo, void *context)
               "siginfo = {si_signo = %d, si_errno = %d, si_code = %d, si_addr = %p}\n",
               siginfo->si_signo, siginfo->si_errno, siginfo->si_code, siginfo->si_addr);
     }
+  } else  if (siginfo->si_signo == SIGSEGV) {
+    fprintf(stderr, "Segmentation fault.\n");
+#ifdef HAVE_SMPI
+    if (smpi_enabled() && !smpi_privatize_global_variables) {
+      fprintf(stderr,
+        "Try to enable SMPI variable privatization with --cfg:smpi/privatize_global_variable:yes.\n");
+    }
+#endif
   }
+#ifdef HAVE_MC
+  if (MC_is_active()) {
+    if (mc_stack_safety) {
+      MC_dump_stack_safety(mc_stack_safety);
+    }
+    MC_print_statistics(mc_stats);
+  }
+#endif
   raise(signum);
 }
 

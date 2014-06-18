@@ -103,6 +103,12 @@ if(${CMAKE_C_COMPILER_ID} STREQUAL "GNU")
   if(${GCC_NEED_VERSION} GREATER  COMPILER_C_VERSION_MAJOR_MINOR)
     message(FATAL_ERROR "Gcc must be to version ${GCC_NEED_VERSION} current version ${COMPILER_C_VERSION_MAJOR_MINOR}")
   endif()
+  
+  if(COMPILER_C_VERSION_MAJOR_MINOR STRGREATER "4.8")
+    set (CMAKE_AR gcc-ar)
+    set (CMAKE_RANLIB gcc-ranlib)
+  endif()
+  
 endif()
 
 exec_program("${CMAKE_LINKER} --version" OUTPUT_VARIABLE "LINKER_VERSION")

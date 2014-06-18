@@ -1451,6 +1451,8 @@ void MC_dump_stack_liveness(xbt_fifo_t stack){
 
 void MC_print_statistics(mc_stats_t stats)
 {
+  xbt_mheap_t previous_heap = mmalloc_get_current_heap();
+
   if(stats->expanded_pairs == 0){
     XBT_INFO("Expanded states = %lu", stats->expanded_states);
     XBT_INFO("Visited states = %lu", stats->visited_states);
@@ -1459,6 +1461,7 @@ void MC_print_statistics(mc_stats_t stats)
     XBT_INFO("Visited pairs = %lu", stats->visited_pairs);
   }
   XBT_INFO("Executed transitions = %lu", stats->executed_transitions);
+
   MC_SET_RAW_MEM;
   if((_sg_mc_dot_output_file != NULL) && (_sg_mc_dot_output_file[0]!='\0')){
     fprintf(dot_output, "}\n");
@@ -1470,7 +1473,7 @@ void MC_print_statistics(mc_stats_t stats)
     if (_sg_mc_send_determinism)
       XBT_INFO("Send-deterministic : %s", !initial_state_safety->send_deterministic ? "No" : "Yes");
   }
-  MC_UNSET_RAW_MEM;
+  mmalloc_set_current_heap(previous_heap);
 }
 
 void MC_assert(int prop)
