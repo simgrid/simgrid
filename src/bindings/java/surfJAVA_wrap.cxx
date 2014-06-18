@@ -1569,7 +1569,7 @@ Cpu *SwigDirector_CpuModel::createCpu(char const *name, DoubleDynar power_peak, 
     long l = xbt_dynar_length(power_peak);
     jpower_peak = jenv->NewDoubleArray(l);
     double *lout = (double *)xbt_dynar_to_array(power_peak);
-    jenv->SetDoubleArrayRegion(jpower_peak, 0, l, (const jdouble*)lout);
+    jenv->SetDoubleArrayRegion(jpower_peak, 0, l, (jdouble*)lout);
     free(lout);
     
     jpstate = (jint) pstate;

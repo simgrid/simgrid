@@ -158,20 +158,36 @@ cd ns-allinone-3.12.1/ns-3.12.1/
 
 After install ns-3 you should have directories into your "ns-3_install_directory":
 	\li include/ns3/
-	\li lib/
-	\li bin/ (with 3.12)
+  \li lib/
+  \li bin/ (with 3.12)
 
+In some cases, include/ns3 does not exist, but there is an /include/ns3.XX . Then, a simple symbolic link is enough. From the /path/to/ns3/installation/include directory, run:
+\verbatim
+ln -s -T ns3.XX/ns3 ns3
+\endverbatim
+
+Make sure to replace 3.XX with your version of NS3, e.g., 3.17, or 3.18.
+Check the correct presence of the symbolic link using
+\verbatim
+ls -al
+\endverbatim
+
+and you should see an ns3 link pointing to ns3.XX. E.g., ns3 -> ns3.17/ns3
 You also need to add to the LD_LIBRARY_PATH : "ns-3_install_directory/lib".
 
 - <b>Enable ns-3 support on SimGrid</b>
 
-In order to enable ns-3 with simgrid you have to give where is ns-3 to the simgrid configuration command. (path to \<ns3_path\>/lib and \<ns3_path\>/include)
+Enabling ns-3 integration with Simgrid requires several intermediate steps.
+-# Modify "simgrid_path/buildtools/CMake/MakeLib.cmake".\n
+The "-lns3.${NS3_VERSION_MINOR}-[module]" should match the library names in your "ns-3_install_directory/lib". The "module" can be one of the following: core, csma, point-to-oint, internet, applications, bridge, mpi, config-store, stats, network. For this, in the "MakeLib.cmake" file find the "else" branch of "if(HAVE_NS3)" statement. Replace the se of "-lns3.${NS3_VERSION_MINOR}-[module]" with "-lns3[version]-[module]-debug" in "SET(SIMGRID_DEP)". On the same branch, add "-I/path/to/ns-3_install_directory/include" to MAKE_C_FLAGS and "CMAKE_CXX_FLAGS".
+-# There might be a need for creating symbolic links of each ns3 library from "ns-3_install_directory/lib" to "/usr/lib".
+-# In order to enable ns-3 with simgrid you have to give where is ns-3 to the simgrid configuration command. (path to \<ns3_path\>/lib and \<ns3_path\>/include)
 
 \verbatim
 cmake . -Denable_ns3=ON -Dns3_path=<ns3_path>
 \endverbatim
 
-With the output of the configuration you can see if ns-3 is detected by included the directory to flags.
+With the output of the configuration you can see if ns-3 is detected (see CFlags: ; CPPFlags: ; Compile NS-3: , NS-3 path:).
 
 \verbatim
 Configuration of package `simgrid' on arch (=4):
@@ -231,6 +247,25 @@ You should see
 2/3 Test #183: msg-ns3-ucontext .................   Passed    0.22 sec
     Start 184: msg-ns3-raw
 3/3 Test #184: msg-ns3-raw ......................   Passed    0.23 sec
+\endverbatim
+
+- <b>Use case</b>
+
+An example of using Simgrid with NS3 can be found in:
+
+\verbatim
+path/to/simgrid/examples/src/surf/ns3/
+\endverbatim
+
+From the example folder above, the command line sintax is
+
+\verbatim
+<simgrid_executable> <platform description file> <deployment file> --cfg=network/model:NS3 --log=surf.threshold:info
+\endverbatim
+
+This example should work:
+\verbatim
+./ns3 ./3hosts_2links_p.xml 3hosts_2links_d.xml --cfg=network/model:NS3 --log=root.threshold:info
 \endverbatim
 
 More about ns-3 simulator <a href="http://www.nsnam.org/">(Official website)</a>
