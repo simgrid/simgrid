@@ -13,7 +13,8 @@ size_t* mc_take_page_snapshot_region(void* data, size_t page_count, uint64_t* pa
   size_t* pagenos = (size_t*) malloc(page_count * sizeof(size_t));
 
   for (size_t i=0; i!=page_count; ++i) {
-    if (pagemap && (pagemap[i] & SOFT_DIRTY)) {
+    bool softclean = pagemap && !(pagemap[i] & SOFT_DIRTY);
+    if (softclean) {
       // The page is softclean, it is the same page as the reference page:
       pagenos[i] = reference_pages[i];
       mc_model_checker->pages->ref_page(reference_pages[i]);
