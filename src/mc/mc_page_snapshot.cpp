@@ -67,9 +67,9 @@ static size_t pread_whole(int fd, void* buf, size_t count, off_t offset) {
     if (n==0)
       return res;
 
-    // Error (or EAGAIN):
+    // Error (or EINTR):
     if (n==-1) {
-      if (errno == EAGAIN)
+      if (errno == EINTR)
         continue;
       else
         return -1;
