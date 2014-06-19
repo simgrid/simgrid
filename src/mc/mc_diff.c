@@ -141,11 +141,6 @@ typedef char *type_name;
 struct s_mc_diff {
   /** \brief Base address of the real heap */
   void *s_heap;
-  /** \brief Base address of the first heap snapshot */
-  void *heapbase1;
-  /** \brief Base address of the second heap snapshot */
-  void *heapbase2;
-  malloc_info *heapinfo1, *heapinfo2;
   size_t heaplimit;
   // Number of blocks in the heaps:
   size_t heapsize1, heapsize2;
@@ -268,6 +263,7 @@ static int is_stack(void *address)
   return 0;
 }
 
+// TODO, this should depend on the snapshot?
 static int is_block_stack(int block)
 {
   unsigned int cursor = 0;
@@ -372,20 +368,6 @@ int init_heap_information(xbt_mheap_t heap1, xbt_mheap_t heap2, xbt_dynar_t i1,
   state->s_heap =
       (char *) mmalloc_get_current_heap() - STD_HEAP_SIZE - xbt_pagesize;
 
-  state->heapbase1 = (char *) heap1 + BLOCKSIZE;
-  state->heapbase2 = (char *) heap2 + BLOCKSIZE;
-
-  state->heapinfo1 =
-      (malloc_info *) ((char *) heap1 +
-                       ((uintptr_t)
-                        ((char *) ((struct mdesc *) heap1)->heapinfo -
-                         (char *) state->s_heap)));
-  state->heapinfo2 =
-      (malloc_info *) ((char *) heap2 +
-                       ((uintptr_t)
-                        ((char *) ((struct mdesc *) heap2)->heapinfo -
-                         (char *) state->s_heap)));
-
   state->heapsize1 = heap1->heapsize;
   state->heapsize2 = heap2->heapsize;
 
@@ -449,9 +431,20 @@ int mmalloc_compare_heap(mc_snapshot_t snapshot1, mc_snapshot_t snapshot2)
 
   i1 = 1;
 
+  malloc_info heapinfo_temp1, heapinfo_temp2;
+  malloc_info heapinfo_temp2b;
+
+  // This is in snapshot do not use them directly:
+  malloc_info* heapinfos1 = mc_snapshot_read_pointer(&((xbt_mheap_t)std_heap)->heapinfo, snapshot1);
+  malloc_info* heapinfos2 = mc_snapshot_read_pointer(&((xbt_mheap_t)std_heap)->heapinfo, snapshot2);
+
   while (i1 <= state->heaplimit) {
 
-    if (state->heapinfo1[i1].type == -1) {      /* Free block */
+    // TODO, lookup in the correct region in order to speed it up:
+    malloc_info* heapinfo1 = mc_snapshot_read(&heapinfos1[i1], snapshot1, &heapinfo_temp1, sizeof(malloc_info));
+    malloc_info* heapinfo2 = mc_snapshot_read(&heapinfos2[i1], snapshot2, &heapinfo_temp2, sizeof(malloc_info));
+
+    if (heapinfo1->type == -1) {      /* Free block */
       i1++;
       continue;
     }
@@ -460,14 +453,14 @@ int mmalloc_compare_heap(mc_snapshot_t snapshot1, mc_snapshot_t snapshot2)
         ((void *) (((ADDR2UINT(i1)) - 1) * BLOCKSIZE +
                    (char *) ((xbt_mheap_t) state->s_heap)->heapbase));
 
-    if (state->heapinfo1[i1].type == 0) {       /* Large block */
+    if (heapinfo1->type == 0) {       /* Large block */
 
       if (is_stack(addr_block1)) {
-        for (k = 0; k < state->heapinfo1[i1].busy_block.size; k++)
+        for (k = 0; k < heapinfo1->busy_block.size; k++)
           state->equals_to1_(i1 + k, 0) = make_heap_area(i1, -1);
-        for (k = 0; k < state->heapinfo2[i1].busy_block.size; k++)
+        for (k = 0; k < heapinfo2->busy_block.size; k++)
           state->equals_to2_(i1 + k, 0) = make_heap_area(i1, -1);
-        i1 += state->heapinfo1[i1].busy_block.size;
+        i1 += heapinfo1->busy_block.size;
         continue;
       }
 
@@ -481,7 +474,7 @@ int mmalloc_compare_heap(mc_snapshot_t snapshot1, mc_snapshot_t snapshot2)
       res_compare = 0;
 
       /* Try first to associate to same block in the other heap */
-      if (state->heapinfo2[i1].type == state->heapinfo1[i1].type) {
+      if (heapinfo2->type == heapinfo1->type) {
 
         if (state->equals_to2_(i1, 0).valid == 0) {
 
@@ -494,12 +487,12 @@ int mmalloc_compare_heap(mc_snapshot_t snapshot1, mc_snapshot_t snapshot2)
                                 NULL, NULL, 0);
 
           if (res_compare != 1) {
-            for (k = 1; k < state->heapinfo2[i1].busy_block.size; k++)
+            for (k = 1; k < heapinfo2->busy_block.size; k++)
               state->equals_to2_(i1 + k, 0) = make_heap_area(i1, -1);
-            for (k = 1; k < state->heapinfo1[i1].busy_block.size; k++)
+            for (k = 1; k < heapinfo1->busy_block.size; k++)
               state->equals_to1_(i1 + k, 0) = make_heap_area(i1, -1);
             equal = 1;
-            i1 += state->heapinfo1[i1].busy_block.size;
+            i1 += heapinfo1->busy_block.size;
           }
 
           xbt_dynar_reset(previous);
@@ -519,7 +512,9 @@ int mmalloc_compare_heap(mc_snapshot_t snapshot1, mc_snapshot_t snapshot2)
           continue;
         }
 
-        if (state->heapinfo2[i2].type != 0) {
+        malloc_info* heapinfo2b = mc_snapshot_read(&heapinfos2[i2], snapshot2, &heapinfo_temp2b, sizeof(malloc_info));
+
+        if (heapinfo2b->type != 0) {
           i2++;
           continue;
         }
@@ -534,12 +529,12 @@ int mmalloc_compare_heap(mc_snapshot_t snapshot1, mc_snapshot_t snapshot2)
                               NULL, NULL, 0);
 
         if (res_compare != 1) {
-          for (k = 1; k < state->heapinfo2[i2].busy_block.size; k++)
+          for (k = 1; k < heapinfo2b->busy_block.size; k++)
             state->equals_to2_(i2 + k, 0) = make_heap_area(i1, -1);
-          for (k = 1; k < state->heapinfo1[i1].busy_block.size; k++)
+          for (k = 1; k < heapinfo1->busy_block.size; k++)
             state->equals_to1_(i1 + k, 0) = make_heap_area(i2, -1);
           equal = 1;
-          i1 += state->heapinfo1[i1].busy_block.size;
+          i1 += heapinfo1->busy_block.size;
         }
 
         xbt_dynar_reset(previous);
@@ -550,7 +545,7 @@ int mmalloc_compare_heap(mc_snapshot_t snapshot1, mc_snapshot_t snapshot2)
 
       if (!equal) {
         XBT_DEBUG("Block %zu not found (size_used = %zu, addr = %p)", i1,
-                  state->heapinfo1[i1].busy_block.busy_size, addr_block1);
+                  heapinfo1->busy_block.busy_size, addr_block1);
         i1 = state->heaplimit + 1;
         nb_diff1++;
         //i1++;
@@ -558,22 +553,22 @@ int mmalloc_compare_heap(mc_snapshot_t snapshot1, mc_snapshot_t snapshot2)
 
     } else {                    /* Fragmented block */
 
-      for (j1 = 0; j1 < (size_t) (BLOCKSIZE >> state->heapinfo1[i1].type); j1++) {
+      for (j1 = 0; j1 < (size_t) (BLOCKSIZE >> heapinfo1->type); j1++) {
 
-        if (state->heapinfo1[i1].busy_frag.frag_size[j1] == -1) /* Free fragment */
+        if (heapinfo1->busy_frag.frag_size[j1] == -1) /* Free fragment */
           continue;
 
         if (state->equals_to1_(i1, j1).valid)
           continue;
 
         addr_frag1 =
-            (void *) ((char *) addr_block1 + (j1 << state->heapinfo1[i1].type));
+            (void *) ((char *) addr_block1 + (j1 << heapinfo1->type));
 
         i2 = 1;
         equal = 0;
 
         /* Try first to associate to same fragment in the other heap */
-        if (state->heapinfo2[i1].type == state->heapinfo1[i1].type) {
+        if (heapinfo2->type == heapinfo1->type) {
 
           if (state->equals_to2_(i1, j1).valid == 0) {
 
@@ -600,12 +595,13 @@ int mmalloc_compare_heap(mc_snapshot_t snapshot1, mc_snapshot_t snapshot2)
 
         while (i2 <= state->heaplimit && !equal) {
 
-          if (state->heapinfo2[i2].type <= 0) {
+          malloc_info* heapinfo2b = mc_snapshot_read(&heapinfos2[i2], snapshot2, &heapinfo_temp2b, sizeof(malloc_info));
+          if (heapinfo2b->type <= 0) {
             i2++;
             continue;
           }
 
-          for (j2 = 0; j2 < (size_t) (BLOCKSIZE >> state->heapinfo2[i2].type);
+          for (j2 = 0; j2 < (size_t) (BLOCKSIZE >> heapinfo2b->type);
                j2++) {
 
             if (i2 == i1 && j2 == j1)
@@ -643,7 +639,7 @@ int mmalloc_compare_heap(mc_snapshot_t snapshot1, mc_snapshot_t snapshot2)
         if (!equal) {
           XBT_DEBUG
               ("Block %zu, fragment %zu not found (size_used = %zd, address = %p)\n",
-               i1, j1, state->heapinfo1[i1].busy_frag.frag_size[j1],
+               i1, j1, heapinfo1->busy_frag.frag_size[j1],
                addr_frag1);
           i2 = state->heaplimit + 1;
           i1 = state->heaplimit + 1;
@@ -661,20 +657,17 @@ int mmalloc_compare_heap(mc_snapshot_t snapshot1, mc_snapshot_t snapshot2)
 
   /* All blocks/fragments are equal to another block/fragment ? */
   size_t i = 1, j = 0;
-  void *real_addr_frag1 = NULL, *real_addr_block1 = NULL, *real_addr_block2 =
-      NULL, *real_addr_frag2 = NULL;
 
-  while (i <= state->heaplimit) {
-    if (state->heapinfo1[i].type == 0) {
+  for(i = 1; i <= state->heaplimit; i++) {
+    malloc_info* heapinfo1 = mc_snapshot_read(&heapinfos1[i], snapshot1, &heapinfo_temp1, sizeof(malloc_info));
+    if (heapinfo1->type == 0) {
       if (i1 == state->heaplimit) {
-        if (state->heapinfo1[i].busy_block.busy_size > 0) {
+        if (heapinfo1->busy_block.busy_size > 0) {
           if (state->equals_to1_(i, 0).valid == 0) {
             if (XBT_LOG_ISENABLED(mc_diff, xbt_log_priority_debug)) {
-              addr_block1 =
-                  ((void *) (((ADDR2UINT(i)) - 1) * BLOCKSIZE +
-                             (char *) state->heapbase1));
-              XBT_DEBUG("Block %zu (%p) not found (size used = %zu)", i,
-                        addr_block1, state->heapinfo1[i].busy_block.busy_size);
+              // TODO, add address
+              XBT_DEBUG("Block %zu not found (size used = %zu)", i,
+                        heapinfo1->busy_block.busy_size);
               //mmalloc_backtrace_block_display((void*)heapinfo1, i);
             }
             nb_diff1++;
@@ -682,29 +675,17 @@ int mmalloc_compare_heap(mc_snapshot_t snapshot1, mc_snapshot_t snapshot2)
         }
       }
     }
-    if (state->heapinfo1[i].type > 0) {
-      addr_block1 =
-          ((void *) (((ADDR2UINT(i)) - 1) * BLOCKSIZE +
-                     (char *) state->heapbase1));
-      real_addr_block1 =
-          ((void *) (((ADDR2UINT(i)) - 1) * BLOCKSIZE +
-                     (char *) ((struct mdesc *) state->s_heap)->heapbase));
-      for (j = 0; j < (size_t) (BLOCKSIZE >> state->heapinfo1[i].type); j++) {
+    if (heapinfo1->type > 0) {
+      for (j = 0; j < (size_t) (BLOCKSIZE >> heapinfo1->type); j++) {
         if (i1 == state->heaplimit) {
-          if (state->heapinfo1[i].busy_frag.frag_size[j] > 0) {
+          if (heapinfo1->busy_frag.frag_size[j] > 0) {
             if (state->equals_to1_(i, j).valid == 0) {
               if (XBT_LOG_ISENABLED(mc_diff, xbt_log_priority_debug)) {
-                addr_frag1 =
-                    (void *) ((char *) addr_block1 +
-                              (j << state->heapinfo1[i].type));
-                real_addr_frag1 =
-                    (void *) ((char *) real_addr_block1 +
-                              (j << ((struct mdesc *) state->s_heap)->
-                               heapinfo[i].type));
+                // TODO, print fragment address
                 XBT_DEBUG
-                    ("Block %zu, Fragment %zu (%p - %p) not found (size used = %zd)",
-                     i, j, addr_frag1, real_addr_frag1,
-                     state->heapinfo1[i].busy_frag.frag_size[j]);
+                    ("Block %zu, Fragment %zu not found (size used = %zd)",
+                     i, j,
+                     heapinfo1->busy_frag.frag_size[j]);
                 //mmalloc_backtrace_fragment_display((void*)heapinfo1, i, j);
               }
               nb_diff1++;
@@ -713,25 +694,21 @@ int mmalloc_compare_heap(mc_snapshot_t snapshot1, mc_snapshot_t snapshot2)
         }
       }
     }
-    i++;
   }
 
   if (i1 == state->heaplimit)
     XBT_DEBUG("Number of blocks/fragments not found in heap1 : %d", nb_diff1);
 
-  i = 1;
-
-  while (i <= state->heaplimit) {
-    if (state->heapinfo2[i].type == 0) {
+  for (i=1; i <= state->heaplimit; i++) {
+    malloc_info* heapinfo2 = mc_snapshot_read(&heapinfos2[i], snapshot2, &heapinfo_temp2, sizeof(malloc_info));
+    if (heapinfo2->type == 0) {
       if (i1 == state->heaplimit) {
-        if (state->heapinfo2[i].busy_block.busy_size > 0) {
+        if (heapinfo2->busy_block.busy_size > 0) {
           if (state->equals_to2_(i, 0).valid == 0) {
             if (XBT_LOG_ISENABLED(mc_diff, xbt_log_priority_debug)) {
-              addr_block2 =
-                  ((void *) (((ADDR2UINT(i)) - 1) * BLOCKSIZE +
-                             (char *) state->heapbase2));
-              XBT_DEBUG("Block %zu (%p) not found (size used = %zu)", i,
-                        addr_block2, state->heapinfo2[i].busy_block.busy_size);
+              // TODO, print address of the block
+              XBT_DEBUG("Block %zu not found (size used = %zu)", i,
+                        heapinfo2->busy_block.busy_size);
               //mmalloc_backtrace_block_display((void*)heapinfo2, i);
             }
             nb_diff2++;
@@ -739,29 +716,17 @@ int mmalloc_compare_heap(mc_snapshot_t snapshot1, mc_snapshot_t snapshot2)
         }
       }
     }
-    if (state->heapinfo2[i].type > 0) {
-      addr_block2 =
-          ((void *) (((ADDR2UINT(i)) - 1) * BLOCKSIZE +
-                     (char *) state->heapbase2));
-      real_addr_block2 =
-          ((void *) (((ADDR2UINT(i)) - 1) * BLOCKSIZE +
-                     (char *) ((struct mdesc *) state->s_heap)->heapbase));
-      for (j = 0; j < (size_t) (BLOCKSIZE >> state->heapinfo2[i].type); j++) {
+    if (heapinfo2->type > 0) {
+      for (j = 0; j < (size_t) (BLOCKSIZE >> heapinfo2->type); j++) {
         if (i1 == state->heaplimit) {
-          if (state->heapinfo2[i].busy_frag.frag_size[j] > 0) {
+          if (heapinfo2->busy_frag.frag_size[j] > 0) {
             if (state->equals_to2_(i, j).valid == 0) {
               if (XBT_LOG_ISENABLED(mc_diff, xbt_log_priority_debug)) {
-                addr_frag2 =
-                    (void *) ((char *) addr_block2 +
-                              (j << state->heapinfo2[i].type));
-                real_addr_frag2 =
-                    (void *) ((char *) real_addr_block2 +
-                              (j << ((struct mdesc *) state->s_heap)->
-                               heapinfo[i].type));
+                // TODO, print address of the block
                 XBT_DEBUG
-                    ("Block %zu, Fragment %zu (%p - %p) not found (size used = %zd)",
-                     i, j, addr_frag2, real_addr_frag2,
-                     state->heapinfo2[i].busy_frag.frag_size[j]);
+                    ("Block %zu, Fragment %zu not found (size used = %zd)",
+                     i, j,
+                     heapinfo2->busy_frag.frag_size[j]);
                 //mmalloc_backtrace_fragment_display((void*)heapinfo2, i, j);
               }
               nb_diff2++;
@@ -770,16 +735,12 @@ int mmalloc_compare_heap(mc_snapshot_t snapshot1, mc_snapshot_t snapshot2)
         }
       }
     }
-    i++;
   }
 
   if (i1 == state->heaplimit)
     XBT_DEBUG("Number of blocks/fragments not found in heap2 : %d", nb_diff2);
 
   xbt_dynar_free(&previous);
-  real_addr_frag1 = NULL, real_addr_block1 = NULL, real_addr_block2 =
-      NULL, real_addr_frag2 = NULL;
-
   return ((nb_diff1 > 0) || (nb_diff2 > 0));
 }
 
@@ -1157,14 +1118,19 @@ int compare_heap_area(void *area1, void *area2, mc_snapshot_t snapshot1,
   ssize_t size;
   int check_ignore = 0;
 
-  void *real_addr_block1,
-      *real_addr_block2, *real_addr_frag1, *real_addr_frag2;
+  void *real_addr_block1, *real_addr_block2, *real_addr_frag1, *real_addr_frag2;
+
   int type_size = -1;
   int offset1 = 0, offset2 = 0;
   int new_size1 = -1, new_size2 = -1;
   dw_type_t new_type1 = NULL, new_type2 = NULL;
 
   int match_pairs = 0;
+
+  malloc_info* heapinfos1 = mc_snapshot_read_pointer(&((xbt_mheap_t)std_heap)->heapinfo, snapshot1);
+  malloc_info* heapinfos2 = mc_snapshot_read_pointer(&((xbt_mheap_t)std_heap)->heapinfo, snapshot2);
+
+  malloc_info heapinfo_temp1, heapinfo_temp2;
 
   if (previous == NULL) {
     previous =
@@ -1226,7 +1192,10 @@ int compare_heap_area(void *area1, void *area2, mc_snapshot_t snapshot1,
 
   }
 
-  if ((state->heapinfo1[block1].type == -1) && (state->heapinfo2[block2].type == -1)) { /* Free block */
+  malloc_info* heapinfo1 = mc_snapshot_read(&heapinfos1[block1], snapshot1, &heapinfo_temp1, sizeof(malloc_info));
+  malloc_info* heapinfo2 = mc_snapshot_read(&heapinfos2[block2], snapshot2, &heapinfo_temp2, sizeof(malloc_info));
+
+  if ((heapinfo1->type == -1) && (heapinfo2->type == -1)) { /* Free block */
 
     if (match_pairs) {
       match_equals(state, previous);
@@ -1234,7 +1203,7 @@ int compare_heap_area(void *area1, void *area2, mc_snapshot_t snapshot1,
     }
     return 0;
 
-  } else if ((state->heapinfo1[block1].type == 0) && (state->heapinfo2[block2].type == 0)) {    /* Complete block */
+  } else if ((heapinfo1->type == 0) && (heapinfo2->type == 0)) {    /* Complete block */
 
     // TODO, lookup variable type from block type as done for fragmented blocks
 
@@ -1250,8 +1219,8 @@ int compare_heap_area(void *area1, void *area2, mc_snapshot_t snapshot1,
     }
 
     if (type_size != -1) {
-      if (type_size != state->heapinfo1[block1].busy_block.busy_size
-          && type_size != state->heapinfo2[block2].busy_block.busy_size
+      if (type_size != heapinfo1->busy_block.busy_size
+          && type_size != heapinfo2->busy_block.busy_size
           && type->name != NULL && !strcmp(type->name, "s_smx_context")) {
         if (match_pairs) {
           match_equals(state, previous);
@@ -1261,16 +1230,16 @@ int compare_heap_area(void *area1, void *area2, mc_snapshot_t snapshot1,
       }
     }
 
-    if (state->heapinfo1[block1].busy_block.size !=
-        state->heapinfo2[block2].busy_block.size) {
+    if (heapinfo1->busy_block.size !=
+        heapinfo2->busy_block.size) {
       if (match_pairs) {
         xbt_dynar_free(&previous);
       }
       return 1;
     }
 
-    if (state->heapinfo1[block1].busy_block.busy_size !=
-        state->heapinfo2[block2].busy_block.busy_size) {
+    if (heapinfo1->busy_block.busy_size !=
+        heapinfo2->busy_block.busy_size) {
       if (match_pairs) {
         xbt_dynar_free(&previous);
       }
@@ -1285,7 +1254,7 @@ int compare_heap_area(void *area1, void *area2, mc_snapshot_t snapshot1,
       return 0;
     }
 
-    size = state->heapinfo1[block1].busy_block.busy_size;
+    size = heapinfo1->busy_block.busy_size;
 
     // Remember (basic) type inference.
     // The current data structure only allows us to do this for the whole block.
@@ -1307,20 +1276,18 @@ int compare_heap_area(void *area1, void *area2, mc_snapshot_t snapshot1,
     frag1 = -1;
     frag2 = -1;
 
-    if ((state->heapinfo1[block1].busy_block.ignore > 0)
-        && (state->heapinfo2[block2].busy_block.ignore ==
-            state->heapinfo1[block1].busy_block.ignore))
-      check_ignore = state->heapinfo1[block1].busy_block.ignore;
+    if ((heapinfo1->busy_block.ignore > 0)
+        && (heapinfo2->busy_block.ignore ==
+            heapinfo1->busy_block.ignore))
+      check_ignore = heapinfo1->busy_block.ignore;
 
-  } else if ((state->heapinfo1[block1].type > 0) && (state->heapinfo2[block2].type > 0)) {      /* Fragmented block */
+  } else if ((heapinfo1->type > 0) && (heapinfo2->type > 0)) {      /* Fragmented block */
 
     // Fragment number:
     frag1 =
-        ((uintptr_t) (ADDR2UINT(area1) % (BLOCKSIZE))) >> state->
-        heapinfo1[block1].type;
+        ((uintptr_t) (ADDR2UINT(area1) % (BLOCKSIZE))) >> heapinfo1->type;
     frag2 =
-        ((uintptr_t) (ADDR2UINT(area2) % (BLOCKSIZE))) >> state->
-        heapinfo2[block2].type;
+        ((uintptr_t) (ADDR2UINT(area2) % (BLOCKSIZE))) >> heapinfo2->type;
 
     // Process address of the fragment:
     real_addr_frag1 =
@@ -1334,16 +1301,16 @@ int compare_heap_area(void *area1, void *area2, mc_snapshot_t snapshot1,
 
     // Check the size of the fragments against the size of the type:
     if (type_size != -1) {
-      if (state->heapinfo1[block1].busy_frag.frag_size[frag1] == -1
-          || state->heapinfo2[block2].busy_frag.frag_size[frag2] == -1) {
+      if (heapinfo1->busy_frag.frag_size[frag1] == -1
+          || heapinfo2->busy_frag.frag_size[frag2] == -1) {
         if (match_pairs) {
           match_equals(state, previous);
           xbt_dynar_free(&previous);
         }
         return -1;
       }
-      if (type_size != state->heapinfo1[block1].busy_frag.frag_size[frag1]
-          || type_size != state->heapinfo2[block2].busy_frag.frag_size[frag2]) {
+      if (type_size != heapinfo1->busy_frag.frag_size[frag1]
+          || type_size != heapinfo2->busy_frag.frag_size[frag2]) {
         if (match_pairs) {
           match_equals(state, previous);
           xbt_dynar_free(&previous);
@@ -1363,8 +1330,8 @@ int compare_heap_area(void *area1, void *area2, mc_snapshot_t snapshot1,
       }
     }
     // Compare the size of both fragments:
-    if (state->heapinfo1[block1].busy_frag.frag_size[frag1] !=
-        state->heapinfo2[block2].busy_frag.frag_size[frag2]) {
+    if (heapinfo1->busy_frag.frag_size[frag1] !=
+        heapinfo2->busy_frag.frag_size[frag2]) {
       if (type_size == -1) {
         if (match_pairs) {
           match_equals(state, previous);
@@ -1379,7 +1346,7 @@ int compare_heap_area(void *area1, void *area2, mc_snapshot_t snapshot1,
       }
     }
     // Size of the fragment:
-    size = state->heapinfo1[block1].busy_frag.frag_size[frag1];
+    size = heapinfo1->busy_frag.frag_size[frag1];
 
     // Remember (basic) type inference.
     // The current data structure only allows us to do this for the whole block.
@@ -1475,10 +1442,10 @@ int compare_heap_area(void *area1, void *area2, mc_snapshot_t snapshot1,
       return 0;
     }
 
-    if ((state->heapinfo1[block1].busy_frag.ignore[frag1] > 0)
-        && (state->heapinfo2[block2].busy_frag.ignore[frag2] ==
-            state->heapinfo1[block1].busy_frag.ignore[frag1]))
-      check_ignore = state->heapinfo1[block1].busy_frag.ignore[frag1];
+    if ((heapinfo1->busy_frag.ignore[frag1] > 0)
+        && (heapinfo2->busy_frag.ignore[frag2] ==
+            heapinfo1->busy_frag.ignore[frag1]))
+      check_ignore = heapinfo1->busy_frag.ignore[frag1];
 
   } else {
 
@@ -1518,6 +1485,9 @@ int compare_heap_area(void *area1, void *area2, mc_snapshot_t snapshot1,
 /*********************************************** Miscellaneous ***************************************************/
 /****************************************************************************************************************/
 
+// Not used and broken code:
+# if 0
+
 // Not used:
 static int get_pointed_area_size(void *area, int heap)
 {
@@ -1549,7 +1519,6 @@ static int get_pointed_area_size(void *area, int heap)
         ((uintptr_t) (ADDR2UINT(area) % (BLOCKSIZE))) >> heapinfo[block].type;
     return (int) heapinfo[block].busy_frag.frag_size[frag];
   }
-
 }
 
 // Not used:
@@ -1730,3 +1699,4 @@ int mmalloc_linear_compare_heap(xbt_mheap_t heap1, xbt_mheap_t heap2)
   return distance;
 
 }
+#endif
