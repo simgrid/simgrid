@@ -78,6 +78,7 @@ static void* mc_snapshot_read_fragmented(void* addr, mc_mem_region_t region, voi
     void* next_page = mc_page_from_number(NULL, mc_page_number(NULL, addr) + 1);
     size_t readable = (char*) next_page - (char*) addr;
     memcpy(target, snapshot_addr, readable);
+    addr = (char*) addr + readable;
     target = (char*) target + readable;
     size -= readable;
   }
