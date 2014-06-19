@@ -75,6 +75,7 @@ static size_t pread_whole(int fd, void* buf, size_t count, off_t offset) {
         return -1;
     }
 
+    // It might be a partial read:
     count -= n;
     data += n;
     offset += n;
@@ -93,11 +94,13 @@ static inline void mc_ensure_fd(int* fd, const char* path, int flags) {
   }
 }
 
-/** @brief Reset the softdirty bits
+/** @brief Reset the soft-dirty bits
  *
  *  This is done after checkpointing and after checkpoint restoration
  *  (if per page checkpoiting is used) in order to know which pages were
  *  modified.
+ *
+ *  See https://www.kernel.org/doc/Documentation/vm/soft-dirty.txt
  * */
 void mc_softdirty_reset() {
   mc_ensure_fd(&mc_model_checker->fd_clear_refs, "/proc/self/clear_refs", O_WRONLY|O_CLOEXEC);
@@ -106,12 +109,15 @@ void mc_softdirty_reset() {
   }
 }
 
-/** @brief Read /proc/self/pagemap informations in order to find properties on the pages
+/** @brief Read memory page informations
  *
- *  For each virtual memory page, this file provides informations.
+ *  For each virtual memory page of the process,
+ *  /proc/self/pagemap provides a 64 bit field of information.
  *  We are interested in the soft-dirty bit: with this we can track which
  *  pages were modified between snapshots/restorations and avoid
  *  copying data which was not modified.
+ *
+ *  See https://www.kernel.org/doc/Documentation/vm/pagemap.txt
  *
  *  @param pagemap    Output buffer for pagemap informations
  *  @param start_addr Address of the first page
