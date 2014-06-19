@@ -24,6 +24,8 @@ mc_mem_region_t mc_get_snapshot_region(void* addr, mc_snapshot_t snapshot)
 
 void* mc_translate_address_region(uintptr_t addr, mc_mem_region_t region)
 {
+  xbt_assert(mc_region_contain(region, (void*) addr), "Trying to read out of the region boundary.");
+
   if (!region) {
     return (void *) addr;
   }
@@ -71,21 +73,22 @@ static void* mc_snapshot_read_fragmented(void* addr, mc_mem_region_t region, voi
 {
   void* end = (char*) addr + size - 1;
   size_t page_end = mc_page_number(NULL, end);
+  void* dest = target;
 
   // Read each page:
   while (mc_page_number(NULL, addr) != page_end) {
     void* snapshot_addr = mc_translate_address_region((uintptr_t) addr, region);
     void* next_page = mc_page_from_number(NULL, mc_page_number(NULL, addr) + 1);
     size_t readable = (char*) next_page - (char*) addr;
-    memcpy(target, snapshot_addr, readable);
+    memcpy(dest, snapshot_addr, readable);
     addr = (char*) addr + readable;
-    target = (char*) target + readable;
+    dest = (char*) dest + readable;
     size -= readable;
   }
 
   // Read the end:
   void* snapshot_addr = mc_translate_address_region((uintptr_t)addr, region);
-  memcpy(target, snapshot_addr, size);
+  memcpy(dest, snapshot_addr, size);
 
   return target;
 }

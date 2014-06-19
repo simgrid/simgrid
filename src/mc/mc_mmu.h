@@ -33,6 +33,7 @@ static inline size_t mc_page_count(size_t size)
  */
 static inline size_t mc_page_number(void* base, void* address)
 {
+  xbt_assert(address>=base, "The address is not in the range");
   return ((uintptr_t) address - (uintptr_t) base) >> xbt_pagebits;
 }
 
