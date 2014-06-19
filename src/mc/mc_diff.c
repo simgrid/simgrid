@@ -856,7 +856,7 @@ static int compare_heap_area_with_type(struct s_mc_diff *state,
                                        int area_size, int check_ignore,
                                        int pointer_level)
 {
-
+top:
   if (is_stack(real_area1) && is_stack(real_area2))
     return 0;
 
@@ -906,10 +906,9 @@ static int compare_heap_area_with_type(struct s_mc_diff *state,
   case DW_TAG_typedef:
   case DW_TAG_const_type:
   case DW_TAG_volatile_type:
-    return compare_heap_area_with_type(state, real_area1, real_area2,
-                                       snapshot1, snapshot2, previous,
-                                       type->subtype, area_size, check_ignore,
-                                       pointer_level);
+    // Poor man's TCO:
+    type = type->subtype;
+    goto top;
     break;
   case DW_TAG_array_type:
     subtype = type->subtype;
