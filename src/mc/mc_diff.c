@@ -771,6 +771,9 @@ static int compare_heap_area_without_type(struct s_mc_diff *state,
   int pointer_align, res_compare;
   ssize_t ignore1, ignore2;
 
+  mc_mem_region_t heap_region1 = snapshot1->regions[0];
+  mc_mem_region_t heap_region2 = snapshot2->regions[0];
+
   while (i < size) {
 
     if (check_ignore > 0) {
@@ -792,7 +795,7 @@ static int compare_heap_area_without_type(struct s_mc_diff *state,
       }
     }
 
-    if (mc_snapshot_memcp(((char *) real_area1) + i, snapshot1, ((char *) real_area2) + i, snapshot2, 1) != 0) {
+    if (mc_snapshot_region_memcp(((char *) real_area1) + i, heap_region1, ((char *) real_area2) + i, heap_region2, 1) != 0) {
 
       pointer_align = (i / sizeof(void *)) * sizeof(void *);
       addr_pointed1 = mc_snapshot_read_pointer((char *) real_area1 + pointer_align, snapshot1);
@@ -873,6 +876,9 @@ static int compare_heap_area_with_type(struct s_mc_diff *state,
   dw_type_t member;
   void *addr_pointed1, *addr_pointed2;;
 
+  mc_mem_region_t heap_region1 = snapshot1->regions[0];
+  mc_mem_region_t heap_region2 = snapshot2->regions[0];
+
   switch (type->type) {
   case DW_TAG_unspecified_type:
     return 1;
@@ -882,12 +888,12 @@ static int compare_heap_area_with_type(struct s_mc_diff *state,
       if (real_area1 == real_area2)
         return -1;
       else
-        return (mc_snapshot_memcp(real_area1, snapshot1, real_area2, snapshot2, area_size) != 0);
+        return (mc_snapshot_region_memcp(real_area1, heap_region1, real_area2, heap_region2, area_size) != 0);
     } else {
       if (area_size != -1 && type->byte_size != area_size)
         return -1;
       else {
-        return (mc_snapshot_memcp(real_area1, snapshot1, real_area2, snapshot2, type->byte_size) != 0);
+        return (mc_snapshot_region_memcp(real_area1, heap_region1, real_area2, heap_region2, type->byte_size) != 0);
       }
     }
     break;
@@ -895,7 +901,7 @@ static int compare_heap_area_with_type(struct s_mc_diff *state,
     if (area_size != -1 && type->byte_size != area_size)
       return -1;
     else
-      return (mc_snapshot_memcp(real_area1, snapshot1, real_area2, snapshot2, type->byte_size) != 0);
+      return (mc_snapshot_region_memcp(real_area1, heap_region1, real_area2, heap_region2, type->byte_size) != 0);
     break;
   case DW_TAG_typedef:
   case DW_TAG_const_type:

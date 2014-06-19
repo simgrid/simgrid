@@ -148,6 +148,18 @@ void* mc_snapshot_read(void* addr, mc_snapshot_t snapshot, void* target, size_t 
   }
 }
 
+int mc_snapshot_region_memcp(
+  void* addr1, mc_mem_region_t region1,
+  void* addr2, mc_mem_region_t region2, size_t size)
+{
+  void* buffer1 = mc_snapshot_read_region(addr1, region1, alloca(size), size);
+  void* buffer2 = mc_snapshot_read_region(addr2, region2, alloca(size), size);
+  if (buffer1 == buffer2) {
+    return 0;
+  }
+  return memcmp(buffer1, buffer2, size);
+}
+
 int mc_snapshot_memcp(
   void* addr1, mc_snapshot_t snapshot1,
   void* addr2, mc_snapshot_t snapshot2, size_t size)
