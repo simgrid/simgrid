@@ -417,7 +417,7 @@ model checker (see \ref options_mc_perf).
 
 In some cases, no stack guard page is used and the stack will silently
 overflow on other parts of the memory if the stack size is too small
-for your application. This happens :
+for your application. This happens :
 
 - on Windows systems;
 - when the model checker is enabled;

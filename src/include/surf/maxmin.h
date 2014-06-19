@@ -342,7 +342,7 @@ XBT_PUBLIC(void) lmm_update_variable_bound(lmm_system_t sys, lmm_variable_t var,
  * @brief Update the weight of a variable
  * 
  * @param sys A system
- * @param var A variable
+ * @param var A variable
  * @param weight The new weight of the variable
  */
 XBT_PUBLIC(void) lmm_update_variable_weight(lmm_system_t sys,
