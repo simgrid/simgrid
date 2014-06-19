@@ -4,6 +4,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include <stdbool.h>
+
 #include "mc_private.h"
 #include "mc_mmu.h"
 
@@ -160,13 +162,23 @@ int mc_snapshot_region_memcp(
   void* addr1, mc_mem_region_t region1,
   void* addr2, mc_mem_region_t region2, size_t size)
 {
-  // TODO, optimize this, avoid alloca
-  void* buffer1 = mc_snapshot_read_region(addr1, region1, alloca(size), size);
-  void* buffer2 = mc_snapshot_read_region(addr2, region2, alloca(size), size);
+  // Using alloca() for large allocations may trigger stack overflow:
+  // use malloc if the buffer is too big.
+
+  bool stack_alloc = size < 64;
+  void* buffer = stack_alloc ? alloca(2*size) : malloc(2*size);
+  void* buffer1 = mc_snapshot_read_region(addr1, region1, buffer, size);
+  void* buffer2 = mc_snapshot_read_region(addr2, region2, (char*) buffer + size, size);
+  int res;
   if (buffer1 == buffer2) {
-    return 0;
+    res =  0;
+  } else {
+    res = memcmp(buffer1, buffer2, size);
   }
-  return memcmp(buffer1, buffer2, size);
+  if (!stack_alloc) {
+    free(buffer);
+  }
+  return res;
 }
 
 /** Compare memory between snapshots
@@ -181,11 +193,7 @@ int mc_snapshot_memcp(
   void* addr1, mc_snapshot_t snapshot1,
   void* addr2, mc_snapshot_t snapshot2, size_t size)
 {
-  // TODO, optimize this, avoid alloca
-  void* buffer1 = mc_snapshot_read(addr1, snapshot1, alloca(size), size);
-  void* buffer2 = mc_snapshot_read(addr2, snapshot2, alloca(size), size);
-  if (buffer1 == buffer2) {
-    return 0;
-  }
-  return memcmp(buffer1, buffer2, size);
+  mc_mem_region_t region1 = mc_get_snapshot_region(addr1, snapshot1);
+  mc_mem_region_t region2 = mc_get_snapshot_region(addr2, snapshot2);
+  return mc_snapshot_region_memcp(addr1, region1, addr2, region2, size);
 }
