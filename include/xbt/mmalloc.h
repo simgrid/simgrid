@@ -23,6 +23,8 @@
 #include "xbt/dynar.h"
 #include "xbt/dict.h"
 
+SG_BEGIN_DECL()
+
 /* Datatype representing a separate heap. The whole point of the mmalloc module
  * is to allow several such heaps in the process. It thus works by redefining
  * all the classical memory management functions (malloc and friends) with an
@@ -74,6 +76,8 @@ void reset_heap_information(void);
 
 size_t mmalloc_get_bytes_used(xbt_mheap_t);
 ssize_t mmalloc_get_busy_size(xbt_mheap_t, void *ptr);
+
+SG_END_DECL()
 
 #endif
 #endif                          /* MMALLOC_H */

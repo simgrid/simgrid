@@ -1,6 +1,8 @@
 #include "mc_page_store.h"
 #include "mc_mmu.h"
 
+#include <xbt/mmalloc.h>
+
 #define SOFT_DIRTY_BIT_NUMBER 55
 #define SOFT_DIRTY (((uint64_t)1) << SOFT_DIRTY_BIT_NUMBER)
 
@@ -150,7 +152,7 @@ mc_mem_region_t mc_region_new_sparse(int type, void *start_addr, size_t size, mc
 
   uint64_t* pagemap = NULL;
   if (mc_model_checker->parent_snapshot) {
-      pagemap = (uint64_t*) alloca(sizeof(uint64_t) * page_count);
+      pagemap = (uint64_t*) mmalloc_no_memset((xbt_mheap_t) mc_heap, sizeof(uint64_t) * page_count);
       mc_read_pagemap(pagemap, mc_page_number(NULL, start_addr), page_count);
   }
 
@@ -158,6 +160,9 @@ mc_mem_region_t mc_region_new_sparse(int type, void *start_addr, size_t size, mc
   new_reg->page_numbers = mc_take_page_snapshot_region(start_addr, page_count, pagemap,
     ref_reg==NULL ? NULL : ref_reg->page_numbers);
 
+  if(pagemap) {
+    mfree((xbt_mheap_t) mc_heap, pagemap);
+  }
   return new_reg;
 }
 
@@ -171,12 +176,18 @@ void mc_region_restore_sparse(mc_mem_region_t reg, mc_mem_region_t ref_reg)
 
   // Read soft-dirty bits if necessary in order to know which pages have changed:
   if (mc_model_checker->parent_snapshot) {
-    pagemap = (uint64_t*) alloca(sizeof(uint64_t) * page_count);
+    pagemap = (uint64_t*) mmalloc_no_memset((xbt_mheap_t) mc_heap, sizeof(uint64_t) * page_count);
     mc_read_pagemap(pagemap, mc_page_number(NULL, reg->start_addr), page_count);
   }
 
   // Incremental per-page snapshot restoration:
   mc_restore_page_snapshot_region(reg, page_count, pagemap, ref_reg);
+
+  // This is funny, the restoration can restore the state of the current heap,
+  // if this happen free(pagemap) would free from the wrong heap:
+  if(pagemap) {
+    mfree((xbt_mheap_t) mc_heap, pagemap);
+  }
 }
 
 }
