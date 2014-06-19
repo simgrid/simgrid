@@ -585,7 +585,7 @@ mc_snapshot_t MC_take_snapshot(int num_state)
 
   /* Save the std heap and the writable mapped pages of libsimgrid and binary */
   MC_get_memory_regions(snapshot);
-  if (_sg_mc_sparse_checkpoint) {
+  if (_sg_mc_sparse_checkpoint && _sg_mc_soft_dirty) {
     mc_softdirty_reset();
   }
 
@@ -631,7 +631,7 @@ void MC_restore_snapshot(mc_snapshot_t snapshot)
   }
 
   MC_snapshot_ignore_restore(snapshot);
-  if (_sg_mc_sparse_checkpoint) {
+  if (_sg_mc_sparse_checkpoint && _sg_mc_soft_dirty) {
     mc_softdirty_reset();
   }
   mc_model_checker->parent_snapshot = snapshot;
