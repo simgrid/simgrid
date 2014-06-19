@@ -148,10 +148,19 @@ void* mc_snapshot_read(void* addr, mc_snapshot_t snapshot, void* target, size_t 
   }
 }
 
+/** Compare memory between snapshots (with known regions)
+ *
+ * @param addr1 Address in the first snapshot
+ * @param snapshot2 Region of the address in the first snapshot
+ * @param addr2 Address in the second snapshot
+ * @param snapshot2 Region of the address in the second snapshot
+ * @return same as memcmp
+ * */
 int mc_snapshot_region_memcp(
   void* addr1, mc_mem_region_t region1,
   void* addr2, mc_mem_region_t region2, size_t size)
 {
+  // TODO, optimize this, avoid alloca
   void* buffer1 = mc_snapshot_read_region(addr1, region1, alloca(size), size);
   void* buffer2 = mc_snapshot_read_region(addr2, region2, alloca(size), size);
   if (buffer1 == buffer2) {
@@ -160,10 +169,19 @@ int mc_snapshot_region_memcp(
   return memcmp(buffer1, buffer2, size);
 }
 
+/** Compare memory between snapshots
+ *
+ * @param addr1 Address in the first snapshot
+ * @param snapshot1 First snapshot
+ * @param addr2 Address in the second snapshot
+ * @param snapshot2 Second snapshot
+ * @return same as memcmp
+ * */
 int mc_snapshot_memcp(
   void* addr1, mc_snapshot_t snapshot1,
   void* addr2, mc_snapshot_t snapshot2, size_t size)
 {
+  // TODO, optimize this, avoid alloca
   void* buffer1 = mc_snapshot_read(addr1, snapshot1, alloca(size), size);
   void* buffer2 = mc_snapshot_read(addr2, snapshot2, alloca(size), size);
   if (buffer1 == buffer2) {
