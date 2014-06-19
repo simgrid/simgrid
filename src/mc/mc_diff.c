@@ -434,6 +434,9 @@ int mmalloc_compare_heap(mc_snapshot_t snapshot1, mc_snapshot_t snapshot2)
   malloc_info heapinfo_temp1, heapinfo_temp2;
   malloc_info heapinfo_temp2b;
 
+  mc_mem_region_t heap_region1 = snapshot1->regions[0];
+  mc_mem_region_t heap_region2 = snapshot2->regions[0];
+
   // This is in snapshot do not use them directly:
   malloc_info* heapinfos1 = mc_snapshot_read_pointer(&((xbt_mheap_t)std_heap)->heapinfo, snapshot1);
   malloc_info* heapinfos2 = mc_snapshot_read_pointer(&((xbt_mheap_t)std_heap)->heapinfo, snapshot2);
@@ -441,8 +444,8 @@ int mmalloc_compare_heap(mc_snapshot_t snapshot1, mc_snapshot_t snapshot2)
   while (i1 <= state->heaplimit) {
 
     // TODO, lookup in the correct region in order to speed it up:
-    malloc_info* heapinfo1 = mc_snapshot_read(&heapinfos1[i1], snapshot1, &heapinfo_temp1, sizeof(malloc_info));
-    malloc_info* heapinfo2 = mc_snapshot_read(&heapinfos2[i1], snapshot2, &heapinfo_temp2, sizeof(malloc_info));
+    malloc_info* heapinfo1 = mc_snapshot_read_region(&heapinfos1[i1], heap_region1, &heapinfo_temp1, sizeof(malloc_info));
+    malloc_info* heapinfo2 = mc_snapshot_read_region(&heapinfos2[i1], heap_region2, &heapinfo_temp2, sizeof(malloc_info));
 
     if (heapinfo1->type == -1) {      /* Free block */
       i1++;
@@ -512,7 +515,7 @@ int mmalloc_compare_heap(mc_snapshot_t snapshot1, mc_snapshot_t snapshot2)
           continue;
         }
 
-        malloc_info* heapinfo2b = mc_snapshot_read(&heapinfos2[i2], snapshot2, &heapinfo_temp2b, sizeof(malloc_info));
+        malloc_info* heapinfo2b = mc_snapshot_read_region(&heapinfos2[i2], heap_region2, &heapinfo_temp2b, sizeof(malloc_info));
 
         if (heapinfo2b->type != 0) {
           i2++;
@@ -595,7 +598,7 @@ int mmalloc_compare_heap(mc_snapshot_t snapshot1, mc_snapshot_t snapshot2)
 
         while (i2 <= state->heaplimit && !equal) {
 
-          malloc_info* heapinfo2b = mc_snapshot_read(&heapinfos2[i2], snapshot2, &heapinfo_temp2b, sizeof(malloc_info));
+          malloc_info* heapinfo2b = mc_snapshot_read_region(&heapinfos2[i2], heap_region2, &heapinfo_temp2b, sizeof(malloc_info));
           if (heapinfo2b->type <= 0) {
             i2++;
             continue;
@@ -659,7 +662,7 @@ int mmalloc_compare_heap(mc_snapshot_t snapshot1, mc_snapshot_t snapshot2)
   size_t i = 1, j = 0;
 
   for(i = 1; i <= state->heaplimit; i++) {
-    malloc_info* heapinfo1 = mc_snapshot_read(&heapinfos1[i], snapshot1, &heapinfo_temp1, sizeof(malloc_info));
+    malloc_info* heapinfo1 = mc_snapshot_read_region(&heapinfos1[i], heap_region1, &heapinfo_temp1, sizeof(malloc_info));
     if (heapinfo1->type == 0) {
       if (i1 == state->heaplimit) {
         if (heapinfo1->busy_block.busy_size > 0) {
@@ -700,7 +703,7 @@ int mmalloc_compare_heap(mc_snapshot_t snapshot1, mc_snapshot_t snapshot2)
     XBT_DEBUG("Number of blocks/fragments not found in heap1 : %d", nb_diff1);
 
   for (i=1; i <= state->heaplimit; i++) {
-    malloc_info* heapinfo2 = mc_snapshot_read(&heapinfos2[i], snapshot2, &heapinfo_temp2, sizeof(malloc_info));
+    malloc_info* heapinfo2 = mc_snapshot_read_region(&heapinfos2[i], heap_region2, &heapinfo_temp2, sizeof(malloc_info));
     if (heapinfo2->type == 0) {
       if (i1 == state->heaplimit) {
         if (heapinfo2->busy_block.busy_size > 0) {
@@ -1192,8 +1195,11 @@ int compare_heap_area(void *area1, void *area2, mc_snapshot_t snapshot1,
 
   }
 
-  malloc_info* heapinfo1 = mc_snapshot_read(&heapinfos1[block1], snapshot1, &heapinfo_temp1, sizeof(malloc_info));
-  malloc_info* heapinfo2 = mc_snapshot_read(&heapinfos2[block2], snapshot2, &heapinfo_temp2, sizeof(malloc_info));
+  mc_mem_region_t heap_region1 = snapshot1->regions[0];
+  mc_mem_region_t heap_region2 = snapshot2->regions[0];
+
+  malloc_info* heapinfo1 = mc_snapshot_read_region(&heapinfos1[block1], heap_region1, &heapinfo_temp1, sizeof(malloc_info));
+  malloc_info* heapinfo2 = mc_snapshot_read_region(&heapinfos2[block2], heap_region2, &heapinfo_temp2, sizeof(malloc_info));
 
   if ((heapinfo1->type == -1) && (heapinfo2->type == -1)) { /* Free block */
 
