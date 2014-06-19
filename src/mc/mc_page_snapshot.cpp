@@ -10,13 +10,21 @@ extern "C" {
 
 // ***** Region management:
 
+/** @brief Take a per-page snapshot of a region
+ *
+ *  @param data            The start of the region (must be at the beginning of a page)
+ *  @param pag_count       Number of pages of the region
+ *  @param pagemap         Linux kernel pagemap values fot this region (or NULL)
+ *  @param reference_pages Snapshot page numbers of the previous soft_dirty_reset (or NULL)
+ *  @return                Snapshot page numbers of this new snapshot
+ */
 size_t* mc_take_page_snapshot_region(void* data, size_t page_count, uint64_t* pagemap, size_t* reference_pages)
 {
   size_t* pagenos = (size_t*) malloc(page_count * sizeof(size_t));
 
   for (size_t i=0; i!=page_count; ++i) {
     bool softclean = pagemap && !(pagemap[i] & SOFT_DIRTY);
-    if (softclean) {
+    if (softclean && reference_pages) {
       // The page is softclean, it is the same page as the reference page:
       pagenos[i] = reference_pages[i];
       mc_model_checker->pages->ref_page(reference_pages[i]);
@@ -38,6 +46,16 @@ void mc_free_page_snapshot_region(size_t* pagenos, size_t page_count)
   }
 }
 
+/** @brief Restore a snapshot of a region
+ *
+ *  If possible, the restoration will be incremental
+ *  (the modified pages will not be touched).
+ *
+ *  @param data            The start of the region (must be at the beginning of a page)
+ *  @param pag_count       Number of pages of the region
+ *  @param pagemap         Linux kernel pagemap values fot this region (or NULL)
+ *  @param reference_pages Snapshot page numbers of the previous soft_dirty_reset (or NULL)
+ */
 void mc_restore_page_snapshot_region(mc_mem_region_t region, size_t page_count, uint64_t* pagemap, mc_mem_region_t reference_region)
 {
   for (size_t i=0; i!=page_count; ++i) {
