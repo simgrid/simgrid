@@ -110,6 +110,8 @@ int get_search_interval(xbt_dynar_t list, void *ref, int *min, int *max)
   } else if (_sg_mc_liveness) {
     nb_processes = ((mc_visited_pair_t) ref)->nb_processes;
     heap_bytes_used = ((mc_visited_pair_t) ref)->heap_bytes_used;
+  } else {
+    xbt_die("Both liveness and safety are disabled.");
   }
 
   int start = 0;
@@ -128,6 +130,10 @@ int get_search_interval(xbt_dynar_t list, void *ref, int *min, int *max)
           (mc_visited_pair_t) xbt_dynar_get_as(list, cursor, mc_visited_pair_t);
       nb_processes_test = ((mc_visited_pair_t) ref_test)->nb_processes;
       heap_bytes_used_test = ((mc_visited_pair_t) ref_test)->heap_bytes_used;
+    } else {
+      nb_processes_test = 0;
+      heap_bytes_used_test = 0;
+      xbt_die("Both liveness and safety are disabled.");
     }
     if (nb_processes_test < nb_processes) {
       start = cursor + 1;
