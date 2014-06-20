@@ -27,7 +27,6 @@ set(tesh_files
   )
 set(xml_files
   ${xml_files}
-  ${CMAKE_CURRENT_SOURCE_DIR}/storage.xml
   PARENT_SCOPE
   )
 set(examples_src
