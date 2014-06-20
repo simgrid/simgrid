@@ -2587,20 +2587,16 @@ int PMPI_Initialized(int* flag) {
 
 int PMPI_Cart_create(MPI_Comm comm_old, int ndims, int* dims, int* periodic, int reorder, MPI_Comm* comm_cart) {
   int retval = 0;
-  smpi_bench_end();
   if (comm_old == MPI_COMM_NULL){
-    return  MPI_ERR_COMM;
+      retval =  MPI_ERR_COMM;
   }
   else if (ndims < 0 ||
            (ndims > 0 && (dims == NULL || 
                           periodic == NULL)) ||
            comm_cart == NULL) {
-    return MPI_ERR_ARG;
+      retval = MPI_ERR_ARG;
   }
   retval = smpi_mpi_cart_create(comm_old, ndims, dims, periodic, reorder, comm_cart);
-
-  smpi_bench_begin();
-
   return retval;
 }
 
