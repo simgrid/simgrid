@@ -166,8 +166,10 @@ typedef enum {
   xbt_cfgelm_boolean,  /**< int */
   xbt_cfgelm_peer,     /**< both a char* (representing the peername) and an integer (representing the port) */
 
+  //! @cond
   xbt_cfgelm_any,               /* not shown to users to prevent errors */
   xbt_cfgelm_type_count
+  //! @endcond
 } e_xbt_cfgelm_type_t;
 
 /** Boolean possible values **/
