@@ -630,10 +630,11 @@ void MC_restore_snapshot(mc_snapshot_t snapshot)
     switch_data_segment(snapshot->privatization_index);
   }
 
-  MC_snapshot_ignore_restore(snapshot);
   if (_sg_mc_sparse_checkpoint && _sg_mc_soft_dirty) {
     mc_softdirty_reset();
   }
+
+  MC_snapshot_ignore_restore(snapshot);
   mc_model_checker->parent_snapshot = snapshot;
 }
 
