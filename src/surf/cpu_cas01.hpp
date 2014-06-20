@@ -30,7 +30,7 @@ public:
   void (CpuCas01Model::*updateActionsState)(double now, double delta);
 
   CpuPtr createCpu(const char *name, xbt_dynar_t power_peak, int pstate,
-		                  double power_scale,
+                   double power_scale,
                           tmgr_trace_t power_trace, int core,
                           e_surf_resource_state_t state_initial,
                           tmgr_trace_t state_trace,
@@ -69,8 +69,8 @@ public:
 private:
   tmgr_trace_event_t p_stateEvent;
   tmgr_trace_event_t p_powerEvent;
-  xbt_dynar_t p_powerPeakList;				/*< List of supported CPU capacities */
-  int m_pstate;								/*< Current pstate (index in the power_peak_list)*/
+  xbt_dynar_t p_powerPeakList;       /*< List of supported CPU capacities */
+  int m_pstate;                      /*< Current pstate (index in the power_peak_list)*/
 };
 
 /**********
@@ -80,7 +80,8 @@ class CpuCas01Action: public CpuAction {
   friend CpuActionPtr CpuCas01::execute(double size);
   friend CpuActionPtr CpuCas01::sleep(double duration);
 public:
-  CpuCas01Action(ModelPtr model, double cost, bool failed, double power, lmm_constraint_t constraint);
+  CpuCas01Action(ModelPtr model, double cost, bool failed, double power,
+                 lmm_constraint_t constraint);
 
   ~CpuCas01Action() {};
 };
