@@ -34,7 +34,8 @@ static void mc_read_pagemap(uint64_t* pagemap, size_t page_start, size_t page_co
  *  @param data Memory page
  *  @return hash off the page
  */
-static inline uint64_t mc_hash_page(const void* data)
+static inline  __attribute__ ((always_inline))
+uint64_t mc_hash_page(const void* data)
 {
   const uint64_t* values = (const uint64_t*) data;
   size_t n = xbt_pagesize / sizeof(uint64_t);

@@ -49,7 +49,8 @@ typedef struct s_mc_mem_region{
   size_t* page_numbers;
 } s_mc_mem_region_t, *mc_mem_region_t;
 
-static inline bool mc_region_contain(mc_mem_region_t region, void* p)
+static inline  __attribute__ ((always_inline))
+bool mc_region_contain(mc_mem_region_t region, void* p)
 {
   return p >= region->start_addr &&
     p < (void*)((char*) region->start_addr + region->size);
@@ -81,7 +82,8 @@ typedef struct s_mc_snapshot{
 
 mc_mem_region_t mc_get_snapshot_region(void* addr, mc_snapshot_t snapshot);
 
-static inline mc_mem_region_t mc_get_region_hinted(void* addr, mc_snapshot_t snapshot, mc_mem_region_t region)
+static inline __attribute__ ((always_inline))
+mc_mem_region_t mc_get_region_hinted(void* addr, mc_snapshot_t snapshot, mc_mem_region_t region)
 {
   if (mc_region_contain(region, addr))
     return region;
@@ -672,14 +674,16 @@ uint64_t mc_hash_processes_state(int num_state, xbt_dynar_t stacks);
 
 //
 
-inline static void* mc_snapshot_get_heap_end(mc_snapshot_t snapshot) {
+static inline __attribute__ ((always_inline))
+  void* mc_snapshot_get_heap_end(mc_snapshot_t snapshot) {
   if(snapshot==NULL)
       xbt_die("snapshot is NULL");
   void** addr = &((xbt_mheap_t)std_heap)->breakval;
   return mc_snapshot_read_pointer(addr, snapshot);
 }
 
-static inline void* mc_snapshot_read_pointer(void* addr, mc_snapshot_t snapshot)
+static inline __attribute__ ((always_inline))
+void* mc_snapshot_read_pointer(void* addr, mc_snapshot_t snapshot)
 {
   void* res;
   return *(void**) mc_snapshot_read(addr, snapshot, &res, sizeof(void*));

@@ -105,7 +105,8 @@ static size_t pread_whole(int fd, void* buf, size_t count, off_t offset) {
   return res;
 }
 
-static inline void mc_ensure_fd(int* fd, const char* path, int flags) {
+static inline  __attribute__ ((always_inline))
+void mc_ensure_fd(int* fd, const char* path, int flags) {
   if (*fd != -1)
     return;
   *fd = open(path, flags);
