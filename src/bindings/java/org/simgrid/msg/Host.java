@@ -8,6 +8,8 @@
 
 package org.simgrid.msg;
 
+import org.simgrid.msg.Storage;
+
 /**
  * A host object represents a location (any possible place) where a process may run. 
  * Thus it is represented as a physical resource with computing capabilities, some 
@@ -201,6 +203,17 @@ public class Host {
      * @return True if the host is available.
      */
 	public native boolean isAvail();
+
+	/** This methods returns the list of mount point names on an host
+     * @return An array containing all mounted storages on the host
+     */
+	public native Storage[] getMountedStorage();
+
+	/** This methods returns the list of storages attached to an host
+     * @return An array containing all storages (name) attached to the host
+     */
+	public native String[] getAttachedStorage();
+	
 	
 	/**
 	 * Class initializer, to initialize various JNI stuff

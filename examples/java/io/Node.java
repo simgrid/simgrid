@@ -26,26 +26,26 @@ public class Node extends Process {
 		this.number = number;
 	}	
 	public void main(String[] args) throws MsgException {
-		String mount = "C:";
+		String mount = "c:";
 		String filename;
 		switch (number) {
 			case 0:
-				filename = FILENAME1;
+				filename = mount + FILENAME1;
 			break;
 			case 1:
-				filename = FILENAME2;
+				filename = mount + FILENAME2;
 			break;
 			case 2:
-				filename = FILENAME3;
+				filename = mount + FILENAME3;
 			break;
 			case 3:
-				filename = FILENAME4;
+				filename = mount + FILENAME4;
 			break;
 			default:
-				filename = FILENAME1;
+				filename = mount + FILENAME1;
 		}
 		Msg.info("Open file " + filename);
-		File file = new File(mount,filename);
+		File file = new File(filename);
 
 		long read = file.read(10000000,1);
 		Msg.info("Having read " + read + " on " + filename);

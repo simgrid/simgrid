@@ -93,5 +93,6 @@ void jxbt_throw_host_failure(JNIEnv * env, char *details);
 void jxbt_throw_time_out_failure(JNIEnv * env, char *details);
 /**Thrown when a task is canceled */
 void jxbt_throw_task_cancelled(JNIEnv * env, char *details);
-
+/** Thrown when looking for a storage from name does not lead to anything */
+void jxbt_throw_storage_not_found(JNIEnv * env, const char *invalid_name);
 #endif                          /* ! JXBT_UTILITY_H */

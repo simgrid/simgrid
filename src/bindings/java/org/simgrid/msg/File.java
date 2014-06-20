@@ -7,7 +7,6 @@
 package org.simgrid.msg;
 
 public class File {
-	protected String storage;
 	/**
 	 * Represents the bind between the java comm and the
 	 * native C comm. You must never access it, since it is 
@@ -19,19 +18,17 @@ public class File {
 	 * @param storage is the name where you can find the file descriptor 
 	 * @param path is the file location on the storage 
 	 */
-	public File(String storage, String path) {
-		this.storage = storage;
-		open(storage, path);
+	public File(String path) {
+		open(path);
 	}
 	protected void finalize() {
 
 	}
 	/**
-	 * Opens the file whose name is the string pointed to by path. 
-	 * @param storage is the name where you can find the file descriptor 
+	 * Opens the file whose name is the string pointed to by path.  
 	 * @param path is the file location on the storage
 	 */
-	protected native void open(String storage, String path);
+	protected native void open(String path);
 	/**
 	 * Read elements of a file. 
 	 * @param size of each element

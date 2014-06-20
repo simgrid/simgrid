@@ -11,6 +11,8 @@
 #include "jmsg.h"
 #include "jmsg_host.h"
 #include "jxbt_utilities.h"
+#include "jmsg_storage.h"
+
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(jmsg);
 
@@ -262,6 +264,82 @@ Java_org_simgrid_msg_Host_isAvail(JNIEnv * env, jobject jhost) {
 
   return (jboolean) MSG_host_is_avail(host);
 }
+
+JNIEXPORT jobjectArray JNICALL
+Java_org_simgrid_msg_Host_getMountedStorage(JNIEnv * env, jobject jhost){
+
+  msg_host_t host = jhost_get_native(env, jhost);
+  jobject jstorage;
+  jstring jname;
+
+  if (!host) {
+    jxbt_throw_notbound(env, "host", jhost);
+    return 0;
+  }
+
+  int index = 0;
+	jobjectArray jtable;
+	xbt_dict_t dict =  MSG_host_get_mounted_storage_list(host);
+	int count = xbt_dict_length(dict);
+	jclass cls = (*env)->FindClass(env, "org/simgrid/msg/Storage");
+
+	jtable = (*env)->NewObjectArray(env, (jsize) count, cls, NULL);
+
+	if (!jtable) {
+	 jxbt_throw_jni(env, "Storages table allocation failed");
+	 return NULL;
+	}
+
+	xbt_dict_cursor_t cursor=NULL;
+	const char *mount_name, *storage_name;
+
+	xbt_dict_foreach(dict,cursor,mount_name,storage_name) {
+		jname = (*env)->NewStringUTF(env, storage_name);
+	  jstorage = Java_org_simgrid_msg_Storage_getByName(env,cls,jname);
+	  (*env)->SetObjectArrayElement(env, jtable, index, jstorage);
+    index++;
+	}
+	xbt_dict_free(&dict);
+	return jtable;
+}
+
+JNIEXPORT jobjectArray JNICALL
+Java_org_simgrid_msg_Host_getAttachedStorage(JNIEnv * env, jobject jhost){
+  msg_host_t host = jhost_get_native(env, jhost);
+
+  if (!host) {
+    jxbt_throw_notbound(env, "host", jhost);
+    return 0;
+  }
+  jobjectArray jtable;
+
+  xbt_dynar_t dyn = MSG_host_get_attached_storage_list(host);
+  int count = xbt_dynar_length(dyn);
+  jclass cls = jxbt_get_class(env, "java/lang/String");
+  jtable = (*env)->NewObjectArray(env, (jsize) count, cls, NULL);
+  int index;
+  char *storage_name;
+  jstring jstorage_name;
+  for (index = 0; index < count; index++) {
+  	storage_name = xbt_dynar_get_as(dyn,index,char*);
+  	jstorage_name = (*env)->NewStringUTF(env,storage_name);
+  	(*env)->SetObjectArrayElement(env, jtable, index, jstorage_name);
+  }
+
+  return jtable;
+}
+
+JNIEXPORT jobjectArray JNICALL
+Java_org_simgrid_msg_Host_getStorageContent(JNIEnv * env, jobject jhost){
+  msg_host_t host = jhost_get_native(env, jhost);
+
+  if (!host) {
+    jxbt_throw_notbound(env, "host", jhost);
+    return 0;
+  }
+  return (jobjectArray)MSG_host_get_storage_content(host);
+}
+
 
 JNIEXPORT jobjectArray JNICALL
 Java_org_simgrid_msg_Host_all(JNIEnv * env, jclass cls_arg)

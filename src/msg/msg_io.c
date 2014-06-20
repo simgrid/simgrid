@@ -492,6 +492,19 @@ void MSG_storage_set_property_value(msg_storage_t storage, const char *name, cha
   xbt_dict_set(MSG_storage_get_properties(storage), name, value,free_ctn);
 }
 
+/** \ingroup m_storage_management
+ * \brief Returns the value of a given storage property
+ *
+ * \param storage a storage
+ * \param name a property name
+ * \return value of a property (or NULL if property not set)
+ */
+const char *MSG_storage_get_property_value(msg_storage_t storage, const char *name)
+{
+  return xbt_dict_get_or_null(MSG_storage_get_properties(storage), name);
+}
+
+
 /** \ingroup msg_storage_management
  * \brief Finds a msg_storage_t using its name.
  * \param name the name of a storage

@@ -498,6 +498,8 @@ set(JMSG_C_SRC
   src/bindings/java/smx_context_cojava.h
   src/bindings/java/smx_context_java.c
   src/bindings/java/smx_context_java.h
+  src/bindings/java/jmsg_storage.c
+  src/bindings/java/jmsg_storage.h
 )
 
 set(JSURF_C_SRC
@@ -524,6 +526,8 @@ set(JMSG_JAVA_SRC
   src/bindings/java/org/simgrid/msg/ProcessNotFoundException.java
   src/bindings/java/org/simgrid/msg/RngStream.java
   src/bindings/java/org/simgrid/msg/Semaphore.java
+  src/bindings/java/org/simgrid/msg/Storage.java
+  src/bindings/java/org/simgrid/msg/StorageNotFoundException.java
   src/bindings/java/org/simgrid/msg/Task.java
   src/bindings/java/org/simgrid/msg/TaskCancelledException.java
   src/bindings/java/org/simgrid/msg/TimeoutException.java
