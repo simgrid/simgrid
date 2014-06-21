@@ -180,11 +180,12 @@ JNIEXPORT void JNICALL
 
   /* Cleanup java storages */
   storages = MSG_storages_as_dynar();
-  for (index = 0; index < xbt_dynar_length(storages) - 1; index++) {
-    jstorage = (jobject) xbt_lib_get_level(xbt_dynar_get_as(storages,index,msg_storage_t), JAVA_STORAGE_LEVEL);
-    if (jstorage)
-      jstorage_unref(env, jstorage);
-
+  if(!xbt_dynar_is_empty(storages)){
+    for (index = 0; index < xbt_dynar_length(storages) - 1; index++) {
+      jstorage = (jobject) xbt_lib_get_level(xbt_dynar_get_as(storages,index,msg_storage_t), JAVA_STORAGE_LEVEL);
+      if (jstorage)
+        jstorage_unref(env, jstorage);
+    }
   }
   xbt_dynar_free(&storages);
 
