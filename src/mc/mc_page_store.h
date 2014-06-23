@@ -112,11 +112,7 @@ public: // Methods
    * it is added to the `free_pages_` list and removed from the `hash_index_`.
    *
    * */
-  void unref_page(size_t pageno) {
-    if ((--this->page_counts_[pageno]) == 0) {
-      this->remove_page(pageno);
-    }
-  }
+  void unref_page(size_t pageno);
 
   /** @brief Increment the refcount for a given page
    *
@@ -128,9 +124,7 @@ public: // Methods
    * changed since the previous cnapshot/restoration and we can avoid
    * hashing the page, comparing byte-per-byte to candidates.
    * */
-  void ref_page(size_t pageno) {
-    ++this->page_counts_[pageno];
-  }
+  void ref_page(size_t pageno);
 
   /** @brief Store a page in the page store */
   size_t store_page(void* page);
@@ -140,31 +134,55 @@ public: // Methods
    *  @param Number of the memory page in the store
    *  @return Start of the page
    */
-  const void* get_page(size_t pageno) const {
-    return mc_page_from_number(this->memory_, pageno);
-  }
+  const void* get_page(size_t pageno) const;
 
 public: // Debug/test methods
 
   /** @brief Get the number of references for a page */
-  size_t get_ref(size_t pageno) {
-    return this->page_counts_[pageno];
-  }
+  size_t get_ref(size_t pageno);
 
   /** @brief Get the number of used pages */
-  size_t size() {
-    return this->top_index_ - this->free_pages_.size();
-  }
+  size_t size();
 
   /** @brief Get the capacity of the page store
    *
    *  The capacity is expanded by a system call (mremap).
    * */
-  size_t capacity() {
-    return this->capacity_;
-  }
+  size_t capacity();
 
 };
+
+inline __attribute__((always_inline))
+void s_mc_pages_store::unref_page(size_t pageno) {
+  if ((--this->page_counts_[pageno]) == 0) {
+    this->remove_page(pageno);
+  }
+}
+
+inline __attribute__((always_inline))
+void s_mc_pages_store::ref_page(size_t pageno) {
+  ++this->page_counts_[pageno];
+}
+
+inline __attribute__((always_inline))
+const void* s_mc_pages_store::get_page(size_t pageno) const {
+  return mc_page_from_number(this->memory_, pageno);
+}
+
+inline __attribute__((always_inline))
+size_t s_mc_pages_store::get_ref(size_t pageno)  {
+  return this->page_counts_[pageno];
+}
+
+inline __attribute__((always_inline))
+size_t s_mc_pages_store::size() {
+  return this->top_index_ - this->free_pages_.size();
+}
+
+inline __attribute__((always_inline))
+size_t s_mc_pages_store::capacity() {
+  return this->capacity_;
+}
 
 #endif
 
