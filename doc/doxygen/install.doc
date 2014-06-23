@@ -35,7 +35,7 @@ tools may be needed.
 
 Most of the developers use a Debian or Ubuntu system, and some of us
 happen to be Debian Maintainers, so the packages for these systems are
-well integrated with these systems and very uptodate. To install them,
+well integrated with these systems and very up-to-date. To install them,
 simply type:
 
 @verbatim
@@ -44,7 +44,7 @@ apt-get install simgrid
 
 On other Linux variants, you probably want to go for a source install.
 Please contact us if you want to contribute the build scripts for your
-prefered distribution.
+preferred distribution.
 
 @subsection install_binary_win Installation wizard for Windows
 
@@ -73,7 +73,7 @@ and copy it in your classpath (typically, in the same directory than
 your source code). If you go for that version, there is no need to
 install the C library as it is bundled within the jar file. Actually,
 only a bunch of architectures are supported this way to keep the
-jarfile size under control and because we don't have access to every
+jar file size under control and because we don't have access to every
 exotic architectures ourselves.
 
 If the jarfile fails on you, complaining that your architecture is not
@@ -172,7 +172,7 @@ accepts several options, as listed below.
   @li <b>enable_compile_optimizations</b> (ON/OFF): request the
       compiler to produce efficient code. You want to activate it,
       unless you want to debug SimGrid itself (as efficient code may
-      be appear mangled to the debugers).
+      be appear mangled to the debuggers).
 
   @li <b>enable_debug</b> (ON/OFF): disable this if simulation speed
       really matters to you. All log messages of gravity debug or
@@ -183,7 +183,7 @@ accepts several options, as listed below.
       SimGrid if something goes wrong.
 
   @li <b>enable_msg_deprecated</b> (ON/OFF): enable this option if
-      your code used a feature of Simgrid that was droped or modified
+      your code used a feature of Simgrid that was dropped or modified
       in recent releases of SimGrid. You should update your code if
       possible, but with this option, SimGrid will try to emulate its
       old behavior.
@@ -221,15 +221,15 @@ accepts several options, as listed below.
 
   @li <b>enable_mallocators</b> (ON/OFF): disable this when tracking
       memory issues within SimGrid, or the caching mechanism used
-      internally will fool the debugers.
+      internally will fool the debuggers.
 
   @li <b>enable_jedule</b> (ON/OFF): enable this to get SimDag
-      producing traces that can then be vizualized with the Jedule
+      producing traces that can then be visualized with the Jedule
       external tool.
 
   @li <b>enable_lua</b> (ON/OFF): enable this if you want to enjoy the
       lua bindings of SimGrid. Adds an extra dependency on lua library
-      and developper header files.
+      and developer header files.
 
 
   @li <b>enable_gtnets</b> (ON/OFF): whether you want to use gtnets.
@@ -261,7 +261,7 @@ is advised to to put them all in a separate directory. It is then
 easier to cleanup, and this allows to compile several configurations
 out of the same source tree. For that, simply enter the directory
 where you want the produced files to land, and invoke cmake (or
-ccmake) with the full path to the simgrid source as last argument.
+ccmake) with the full path to the SimGrid source as last argument.
 This approach is called "compilation out of source tree".
 
 @verbatim
@@ -281,9 +281,9 @@ cmake -G "MSYS Makefiles" (other options) .
 make
 @endverbatim
 
-\subsubsection install_cmake_mac Cmake on Mac OSX
+\subsubsection install_cmake_mac Cmake on Mac OS X
 
-SimGrid compiles like a charm with clang on Mac OSX:
+SimGrid compiles like a charm with clang on Mac OS X:
 
 @verbatim
 cmake -DCMAKE_C_COMPILER=/path/to/clang -DCMAKE_CXX_COMPILER=/path/to/clang++ .
@@ -304,7 +304,7 @@ CMAKE_OSX_SYSROOT:PATH=/Applications/XCode.app/Contents/Developer/Platforms/MacO
 
 \subsection install_src_compil Compiling SimGrid
 
-In most cases, compiling and installing simgrid is enough:
+In most cases, compiling and installing SimGrid is enough:
 
 @verbatim
 make
@@ -314,18 +314,18 @@ make install # try "sudo make install" if you don't have the permission to write
 In addition, several compilation targets are provided in SimGrid. If
 your system is well configured, the full list of targets is available
 for completion when using the Tab key. Note that some of the existing
-targets are not really for publc consumption so don't worry if some
+targets are not really for public consumption so don't worry if some
 stuff don't work for you.
 
 @verbatim
-make simgrid			Build only the simgrid library and not any example
+make simgrid			Build only the SimGrid library and not any example
 make masterslave		Build only this example (and its dependencies)
 make clean			Clean the results of a previous compilation
 make install 			Install the project (doc/ bin/ lib/ include/)
 make uninstall			Uninstall the project (doc/ bin/ lib/ include/)
 make dist			Build a distribution archive (tgz)
 make distcheck			Check the dist (make + make dist + tests on the distribution)
-make doc			Create simgrid documentation
+make doc			Create SimGrid documentation
 @endverbatim
 
 If you want to see what is really happening, try adding VERBOSE=1 to
@@ -443,7 +443,7 @@ compiling a source file. There are:
 \verbatim
 - HelloWorld.c		The example source file.
 - CMakeLists.txt	It allows to configure the project.
-- README 		This explaination.
+- README 		This explanation.
 \endverbatim
 
 Now let's compile this example:
