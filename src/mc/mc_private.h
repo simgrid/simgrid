@@ -146,7 +146,6 @@ void mc_softdirty_reset();
 
 typedef struct s_mc_pages_store s_mc_pages_store_t, * mc_pages_store_t;
 mc_pages_store_t mc_pages_store_new();
-const void* mc_page_store_get_page(mc_pages_store_t page_store, size_t pageno);
 
 static inline __attribute__((always_inline))
 bool mc_snapshot_region_linear(mc_mem_region_t region) {

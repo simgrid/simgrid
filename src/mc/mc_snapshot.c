@@ -8,6 +8,7 @@
 
 #include "mc_private.h"
 #include "mc_mmu.h"
+#include "mc_page_store.h"
 
 mc_mem_region_t mc_get_snapshot_region(void* addr, mc_snapshot_t snapshot)
 {

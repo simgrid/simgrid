@@ -163,11 +163,6 @@ size_t s_mc_pages_store::store_page(void* page)
 
 extern "C" {
 
-const void* mc_page_store_get_page(mc_pages_store_t page_store, size_t pageno)
-{
-  return page_store->get_page(pageno);
-}
-
 mc_pages_store_t mc_pages_store_new()
 {
   return new s_mc_pages_store_t(500);

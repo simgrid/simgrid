@@ -6,11 +6,13 @@
 
 #include <stdint.h>
 
+#ifdef __cplusplus
 #include <vector>
 
 #include <boost/utility.hpp>
 #include <boost/unordered_map.hpp>
 #include <boost/unordered_set.hpp>
+#endif
 
 #include <xbt.h>
 
@@ -19,6 +21,10 @@
 
 #ifndef MC_PAGE_SNAPSHOT_H
 #define MC_PAGE_SNAPSHOT_H
+
+struct s_mc_pages_store;
+
+#ifdef __cplusplus
 
 /** @brief Storage for snapshot memory pages
  *
@@ -79,7 +85,10 @@ private: // Types
   typedef boost::unordered_map<hash_type, page_set_type> pages_map_type;
 
 private: // Fields:
-  /** First page */
+  /** First page
+   *
+   *  mc_page_store_get_page expects that this is the first field.
+   * */
   void* memory_;
   /** Number of available pages in virtual memory */
   size_t capacity_;
@@ -186,3 +195,14 @@ size_t s_mc_pages_store::capacity() {
 
 #endif
 
+/**
+ */
+static inline __attribute__((always_inline))
+const void* mc_page_store_get_page(mc_pages_store_t page_store, size_t pageno)
+{
+  // This is page_store->memory_:
+  void* memory = *(void**)page_store;
+  return mc_page_from_number(memory, pageno);
+}
+
+#endif
