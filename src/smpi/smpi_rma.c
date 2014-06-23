@@ -11,10 +11,6 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_rma, smpi, "Logging specific to SMPI (RMA o
 
 #define RMA_TAG -1234
 
-/* FIXME:using a global array of MPI_Win simplifies the way to exchange pointers and info,
- * but it breaks distributed simulation
- */
-
 xbt_bar_t creation_bar = NULL;
 
 typedef struct s_smpi_mpi_win{
@@ -143,9 +139,6 @@ int smpi_mpi_put( void *origin_addr, int origin_count, MPI_Datatype origin_datat
     //push request to sender's win
     xbt_dynar_push_as(win->requests, MPI_Request, sreq);
   }
-  //perform actual copy
-  /*smpi_datatype_copy(origin_addr, origin_count, origin_datatype,
-                    recv_addr, target_count, target_datatype);*/
 
   return MPI_SUCCESS;
 }
@@ -179,10 +172,6 @@ int smpi_mpi_get( void *origin_addr, int origin_count, MPI_Datatype origin_datat
     //push request to sender's win
     xbt_dynar_push_as(win->requests, MPI_Request, rreq);
   }
-  //perform actual copy
-  /*smpi_datatype_copy(send_addr, target_count, target_datatype,
-                     origin_addr, origin_count, origin_datatype);*/
-
 
   return MPI_SUCCESS;
 }
