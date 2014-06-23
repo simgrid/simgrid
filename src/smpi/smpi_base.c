@@ -326,7 +326,7 @@ void smpi_mpi_start(MPI_Request request)
   if (request->flags & RECV) {
     print_request("New recv", request);
     //FIXME: if receive is posted with a large size, but send is smaller, mailboxes may not match !
-    if (request->size < sg_cfg_get_int("smpi/async_small_thres"))
+    if (request->flags & RMA || request->size < sg_cfg_get_int("smpi/async_small_thres"))
       mailbox = smpi_process_mailbox_small();
     else
       mailbox = smpi_process_mailbox();
@@ -335,7 +335,8 @@ void smpi_mpi_start(MPI_Request request)
     smpi_datatype_use(request->old_type);
     smpi_comm_use(request->comm);
     request->action = simcall_comm_irecv(mailbox, request->buf,
-                                         &request->real_size, &match_recv, &smpi_comm_copy_buffer_callback,
+                                         &request->real_size, &match_recv,
+                                         (request->flags & ACCUMULATE)? NULL : &smpi_comm_copy_buffer_callback,
                                          request, -1.0);
 
     //integrate pseudo-timing for buffering of small messages, do not bother to execute the simcall if 0
@@ -361,7 +362,7 @@ void smpi_mpi_start(MPI_Request request)
 /*      return;*/
 /*    }*/
     print_request("New send", request);
-    if (request->size < sg_cfg_get_int("smpi/async_small_thres")) { // eager mode
+    if (request->flags & RMA || request->size < sg_cfg_get_int("smpi/async_small_thres")) { // eager mode
       mailbox = smpi_process_remote_mailbox_small(receiver);
     }else{
       XBT_DEBUG("Send request %p is not in the permanent receive mailbox (buf: %p)",request,request->buf);
@@ -411,7 +412,7 @@ void smpi_mpi_start(MPI_Request request)
                          buf, request->real_size,
                          &match_send,
                          &xbt_free_f, // how to free the userdata if a detached send fails
-                         &smpi_comm_copy_buffer_callback,
+                         (request->flags & ACCUMULATE)? NULL : &smpi_comm_copy_buffer_callback,
                          request,
                          // detach if msg size < eager/rdv switch limit
                          request->detached);
@@ -455,6 +456,26 @@ void smpi_mpi_request_free(MPI_Request * request)
   }
 }
 
+
+MPI_Request smpi_rma_send_init(void *buf, int count, MPI_Datatype datatype,
+                            int src, int dst, int tag, MPI_Comm comm)
+{
+  MPI_Request request = NULL; /* MC needs the comm to be set to NULL during the call */
+  request = build_request(buf==MPI_BOTTOM ? (void*)0 : buf , count, datatype, src, dst, tag,
+                          comm, RMA | NON_PERSISTENT | ISEND | SEND | PREPARED);
+  return request;
+}
+
+MPI_Request smpi_rma_recv_init(void *buf, int count, MPI_Datatype datatype,
+                            int src, int dst, int tag, MPI_Comm comm)
+{
+  MPI_Request request = NULL; /* MC needs the comm to be set to NULL during the call */
+  request = build_request(buf==MPI_BOTTOM ? (void*)0 : buf, count, datatype,  src, dst, tag,
+                          comm, RMA | NON_PERSISTENT | RECV | PREPARED);
+  return request;
+}
+
+
 MPI_Request smpi_isend_init(void *buf, int count, MPI_Datatype datatype,
                             int dst, int tag, MPI_Comm comm)
 {
@@ -483,8 +504,6 @@ MPI_Request smpi_mpi_issend(void *buf, int count, MPI_Datatype datatype,
   smpi_mpi_start(request);
   return request;
 }
-
-
 
 MPI_Request smpi_irecv_init(void *buf, int count, MPI_Datatype datatype,
                             int src, int tag, MPI_Comm comm)

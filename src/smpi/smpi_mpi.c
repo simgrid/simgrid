@@ -512,6 +512,13 @@ int MPI_Alltoallv(void *sendbuf, int *sendcounts, int *senddisps,
                         comm);
 }
 
+int MPI_Alloc_mem(MPI_Aint size, MPI_Info info, void *baseptr){
+  return PMPI_Alloc_mem(size, info, baseptr);
+}
+
+int MPI_Free_mem(void *baseptr){
+  return PMPI_Free_mem(baseptr);
+}
 
 int MPI_Get_processor_name(char *name, int *resultlen)
 {
@@ -612,11 +619,15 @@ int MPI_Errhandler_set(MPI_Comm comm, MPI_Errhandler errhandler) {
 }
 
 int MPI_Comm_set_errhandler(MPI_Comm comm, MPI_Errhandler errhandler) {
-  return PMPI_Errhandler_set(comm, errhandler);
+  return PMPI_Comm_set_errhandler(comm, errhandler);
 }
 
 int MPI_Comm_get_errhandler(MPI_Comm comm, MPI_Errhandler* errhandler) {
   return PMPI_Errhandler_set(comm, errhandler);
+}
+
+int MPI_Win_set_errhandler(MPI_Win win, MPI_Errhandler errhandler) {
+  return PMPI_Win_set_errhandler(win, errhandler);
 }
 
 int MPI_Type_contiguous(int count, MPI_Datatype old_type, MPI_Datatype* newtype) {
@@ -835,6 +846,18 @@ int MPI_Get( void *origin_addr, int origin_count, MPI_Datatype origin_datatype, 
     MPI_Aint target_disp, int target_count, MPI_Datatype target_datatype, MPI_Win win){
   return PMPI_Get( origin_addr,origin_count, origin_datatype,target_rank,
       target_disp, target_count,target_datatype, win);
+}
+
+int MPI_Put( void *origin_addr, int origin_count, MPI_Datatype origin_datatype, int target_rank,
+    MPI_Aint target_disp, int target_count, MPI_Datatype target_datatype, MPI_Win win){
+  return PMPI_Put( origin_addr,origin_count, origin_datatype,target_rank,
+      target_disp, target_count,target_datatype, win);
+}
+
+int MPI_Accumulate( void *origin_addr, int origin_count, MPI_Datatype origin_datatype, int target_rank,
+    MPI_Aint target_disp, int target_count, MPI_Datatype target_datatype, MPI_Op op, MPI_Win win){
+  return PMPI_Accumulate( origin_addr,origin_count, origin_datatype,target_rank,
+      target_disp, target_count,target_datatype,op, win);
 }
 
 int MPI_Type_get_envelope( MPI_Datatype datatype, int *num_integers,

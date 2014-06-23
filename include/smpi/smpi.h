@@ -68,6 +68,7 @@ SG_BEGIN_DECL()
 #define MPI_ERR_DIMS      17
 #define MPI_ERR_TOPOLOGY  18
 #define MPI_ERR_NO_MEM    19
+#define MPI_ERR_WIN       20
 #define MPI_ERRCODES_IGNORE (int *)0
 #define MPI_IDENT     0
 #define MPI_SIMILAR   1
@@ -78,6 +79,14 @@ SG_BEGIN_DECL()
 #define MPI_HOST             0
 #define MPI_IO               0
 #define MPI_BSEND_OVERHEAD   0
+
+
+#define MPI_MODE_NOSTORE 0x1
+#define MPI_MODE_NOPUT 0x2
+#define MPI_MODE_NOPRECEDE 0x4
+#define MPI_MODE_NOSUCCEED 0x8
+#define MPI_MODE_NOCHECK 0x10
+
 
 #define MPI_KEYVAL_INVALID 0
 #define MPI_NULL_COPY_FN NULL
@@ -122,6 +131,7 @@ SG_BEGIN_DECL()
 #define MPI_ROOT 0
 #define MPI_INFO_NULL -1
 #define MPI_COMM_TYPE_SHARED    1
+#define MPI_WIN_NULL NULL
 
 #define MPI_VERSION 1
 #define MPI_SUBVERSION 1
@@ -181,6 +191,10 @@ typedef struct {
   int MPI_ERROR;
   int count;
 } MPI_Status;
+
+struct s_smpi_mpi_win;
+typedef struct s_smpi_mpi_win* MPI_Win;
+typedef int MPI_Info;
 
 #define MPI_STATUS_IGNORE ((MPI_Status*)NULL)
 #define MPI_STATUSES_IGNORE ((MPI_Status*)NULL)
@@ -251,6 +265,8 @@ XBT_PUBLIC_DATA( MPI_Op ) MPI_LXOR;
 XBT_PUBLIC_DATA( MPI_Op ) MPI_BAND;
 XBT_PUBLIC_DATA( MPI_Op ) MPI_BOR;
 XBT_PUBLIC_DATA( MPI_Op ) MPI_BXOR;
+//For accumulate
+XBT_PUBLIC_DATA( MPI_Op ) MPI_REPLACE;
 
 struct s_smpi_mpi_topology;
 typedef struct s_smpi_mpi_topology *MPI_Topology;
@@ -531,11 +547,26 @@ MPI_CALL(XBT_PUBLIC(int), MPI_Get_library_version,
 MPI_CALL(XBT_PUBLIC(int), MPI_Reduce_local,(void *inbuf, void *inoutbuf, int count,
     MPI_Datatype datatype, MPI_Op op));
 
+MPI_CALL(XBT_PUBLIC(int), MPI_Win_free,( MPI_Win* win));
+
+MPI_CALL(XBT_PUBLIC(int), MPI_Win_create,( void *base, MPI_Aint size, int disp_unit, MPI_Info info, MPI_Comm comm, MPI_Win *win));
+
+MPI_CALL(XBT_PUBLIC(int), MPI_Win_fence,( int assert,  MPI_Win win));
+
+MPI_CALL(XBT_PUBLIC(int), MPI_Get,( void *origin_addr, int origin_count, MPI_Datatype origin_datatype, int target_rank,
+    MPI_Aint target_disp, int target_count, MPI_Datatype target_datatype, MPI_Win win));
+MPI_CALL(XBT_PUBLIC(int), MPI_Put,( void *origin_addr, int origin_count, MPI_Datatype origin_datatype, int target_rank,
+    MPI_Aint target_disp, int target_count, MPI_Datatype target_datatype, MPI_Win win));
+MPI_CALL(XBT_PUBLIC(int), MPI_Accumulate,( void *origin_addr, int origin_count, MPI_Datatype origin_datatype, int target_rank,
+    MPI_Aint target_disp, int target_count, MPI_Datatype target_datatype, MPI_Op op, MPI_Win win));
+MPI_CALL(XBT_PUBLIC(int), MPI_Alloc_mem, (MPI_Aint size, MPI_Info info, void *baseptr));
+MPI_CALL(XBT_PUBLIC(int), MPI_Free_mem, (void *base));
+
+
 //FIXME: these are not yet implemented
 
 typedef void MPI_Handler_function(MPI_Comm*, int*, ...);
-typedef int MPI_Win;
-typedef int MPI_Info;
+
 typedef void* MPI_Errhandler;
 
 typedef int MPI_Copy_function(MPI_Comm oldcomm, int keyval, void* extra_state, void* attribute_val_in,
@@ -638,9 +669,7 @@ MPI_CALL(XBT_PUBLIC(int), MPI_Get_elements, (MPI_Status* status, MPI_Datatype da
 MPI_CALL(XBT_PUBLIC(int), MPI_Dims_create, (int nnodes, int ndims, int* dims));
 MPI_CALL(XBT_PUBLIC(int), MPI_Initialized, (int* flag));
 MPI_CALL(XBT_PUBLIC(int), MPI_Pcontrol, (const int level ));
-MPI_CALL(XBT_PUBLIC(int), MPI_Win_fence,( int assert,  MPI_Win win));
-MPI_CALL(XBT_PUBLIC(int), MPI_Win_free,( MPI_Win* win));
-MPI_CALL(XBT_PUBLIC(int), MPI_Win_create,( void *base, MPI_Aint size, int disp_unit, MPI_Info info, MPI_Comm comm, MPI_Win *win));
+
 MPI_CALL(XBT_PUBLIC(int), MPI_Info_create,( MPI_Info *info));
 MPI_CALL(XBT_PUBLIC(int), MPI_Info_set,( MPI_Info info, char *key, char *value));
 MPI_CALL(XBT_PUBLIC(int), MPI_Info_get,(MPI_Info info,char *key,int valuelen, char *value, int *flag));
@@ -651,8 +680,8 @@ MPI_CALL(XBT_PUBLIC(int), MPI_Info_get_nkeys,( MPI_Info info, int *nkeys));
 MPI_CALL(XBT_PUBLIC(int), MPI_Info_get_nthkey,( MPI_Info info, int n, char *key));
 MPI_CALL(XBT_PUBLIC(int), MPI_Info_get_valuelen,( MPI_Info info, char *key, int *valuelen, int *flag));
 
-MPI_CALL(XBT_PUBLIC(int), MPI_Get,( void *origin_addr, int origin_count, MPI_Datatype origin_datatype, int target_rank,
-    MPI_Aint target_disp, int target_count, MPI_Datatype target_datatype, MPI_Win win));
+
+MPI_CALL(XBT_PUBLIC(int), MPI_Win_set_errhandler, (MPI_Win win, MPI_Errhandler errhandler));
 MPI_CALL(XBT_PUBLIC(int), MPI_Type_get_envelope,(MPI_Datatype datatype,int *num_integers,int *num_addresses,int *num_datatypes, int *combiner));
 MPI_CALL(XBT_PUBLIC(int), MPI_Type_get_contents,(MPI_Datatype datatype, int max_integers, int max_addresses,
                             int max_datatypes, int* array_of_integers, MPI_Aint* array_of_addresses, 

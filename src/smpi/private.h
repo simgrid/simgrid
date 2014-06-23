@@ -29,6 +29,8 @@ typedef struct s_smpi_process_data *smpi_process_data_t;
 #define SSEND          0x40
 #define PREPARED       0x80
 #define FINISHED       0x100
+#define RMA            0x200
+#define ACCUMULATE     0x400
 
 
 enum smpi_process_state{
@@ -107,6 +109,7 @@ typedef struct s_smpi_mpi_request {
 #endif
 } s_smpi_mpi_request_t;
 
+
 void smpi_process_destroy(void);
 void smpi_process_finalize(void);
 int smpi_process_finalized(void);
@@ -146,6 +149,8 @@ smpi_process_data_t smpi_process_data(void);
 smpi_process_data_t smpi_process_remote_data(int index);
 void smpi_process_set_user_data(void *);
 void* smpi_process_get_user_data(void);
+int smpi_process_get_win_id();
+void smpi_process_set_win_id(int);
 int smpi_process_count(void);
 MPI_Comm smpi_process_comm_world(void);
 smx_rdv_t smpi_process_mailbox(void);
@@ -175,6 +180,7 @@ int is_datatype_valid(MPI_Datatype datatype);
 size_t smpi_datatype_size(MPI_Datatype datatype);
 MPI_Aint smpi_datatype_lb(MPI_Datatype datatype);
 MPI_Aint smpi_datatype_ub(MPI_Datatype datatype);
+MPI_Datatype smpi_datatype_dup(MPI_Datatype datatype);
 int smpi_datatype_extent(MPI_Datatype datatype, MPI_Aint * lb,
                          MPI_Aint * extent);
 MPI_Aint smpi_datatype_get_extent(MPI_Datatype datatype);
@@ -254,6 +260,10 @@ MPI_Request smpi_irecv_init(void *buf, int count, MPI_Datatype datatype,
                             int src, int tag, MPI_Comm comm);
 MPI_Request smpi_mpi_irecv(void *buf, int count, MPI_Datatype datatype,
                            int src, int tag, MPI_Comm comm);
+MPI_Request smpi_rma_send_init(void *buf, int count, MPI_Datatype datatype,
+                            int src, int dst, int tag, MPI_Comm comm);
+MPI_Request smpi_rma_recv_init(void *buf, int count, MPI_Datatype datatype,
+                            int src, int dst, int tag, MPI_Comm comm);
 void smpi_mpi_recv(void *buf, int count, MPI_Datatype datatype, int src,
                    int tag, MPI_Comm comm, MPI_Status * status);
 void smpi_mpi_send(void *buf, int count, MPI_Datatype datatype, int dst,
@@ -316,6 +326,19 @@ void smpi_mpi_scan(void *sendbuf, void *recvbuf, int count,
                    MPI_Datatype datatype, MPI_Op op, MPI_Comm comm);
 void smpi_mpi_exscan(void *sendbuf, void *recvbuf, int count,
                    MPI_Datatype datatype, MPI_Op op, MPI_Comm comm);
+
+int smpi_mpi_win_free( MPI_Win* win);
+
+MPI_Win smpi_mpi_win_create( void *base, MPI_Aint size, int disp_unit, MPI_Info info, MPI_Comm comm);
+
+int smpi_mpi_win_fence( int assert,  MPI_Win win);
+
+int smpi_mpi_get( void *origin_addr, int origin_count, MPI_Datatype origin_datatype, int target_rank,
+              MPI_Aint target_disp, int target_count, MPI_Datatype target_datatype, MPI_Win win);
+int smpi_mpi_put( void *origin_addr, int origin_count, MPI_Datatype origin_datatype, int target_rank,
+              MPI_Aint target_disp, int target_count, MPI_Datatype target_datatype, MPI_Win win);
+int smpi_mpi_accumulate( void *origin_addr, int origin_count, MPI_Datatype origin_datatype, int target_rank,
+              MPI_Aint target_disp, int target_count, MPI_Datatype target_datatype, MPI_Op op, MPI_Win win);
 
 void nary_tree_bcast(void *buf, int count, MPI_Datatype datatype, int root,
                      MPI_Comm comm, int arity);

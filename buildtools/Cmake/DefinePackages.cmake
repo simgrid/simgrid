@@ -231,6 +231,7 @@ set(SMPI_SRC
   src/smpi/smpi_mpi_dt.c
   src/smpi/smpi_pmpi.c
   src/smpi/smpi_replay.c
+  src/smpi/smpi_rma.c
   src/smpi/smpi_topo.c
   )
 

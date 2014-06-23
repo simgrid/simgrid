@@ -145,6 +145,15 @@ MPI_Aint smpi_datatype_ub(MPI_Datatype datatype)
   return datatype->ub;
 }
 
+MPI_Datatype smpi_datatype_dup(MPI_Datatype datatype)
+{
+  MPI_Datatype new_t= xbt_new(s_smpi_mpi_datatype_t,1);
+  memcpy(new_t, datatype, sizeof(s_smpi_mpi_datatype_t));
+  if (datatype->has_subtype)
+    memcpy(new_t->substruct, datatype->substruct, sizeof(s_smpi_subtype_t));
+  return new_t;
+}
+
 int smpi_datatype_extent(MPI_Datatype datatype, MPI_Aint * lb,
                          MPI_Aint * extent)
 {
@@ -292,6 +301,7 @@ s_smpi_mpi_vector_t* smpi_datatype_vector_create( int block_stride,
   new_t->block_stride = block_stride;
   new_t->block_length = block_length;
   new_t->block_count = block_count;
+  smpi_datatype_use(old_type);
   new_t->old_type = old_type;
   new_t->size_oldtype = size_oldtype;
   return new_t;
@@ -346,7 +356,7 @@ void smpi_datatype_use(MPI_Datatype type){
 void smpi_datatype_unuse(MPI_Datatype type){
   if(type && type->in_use-- == 0 && (type->flags & DT_FLAG_DESTROYED))
     smpi_datatype_free(&type);
-  
+
 #ifdef HAVE_MC
   if(MC_is_active())
     MC_ignore(&(type->in_use), sizeof(type->in_use));
@@ -404,6 +414,7 @@ void unserialize_contiguous( const void *contiguous_vector,
 }
 
 void free_contiguous(MPI_Datatype* d){
+  smpi_datatype_unuse(((s_smpi_mpi_indexed_t *)(*d)->substruct)->old_type);
 }
 
 /*
@@ -424,6 +435,7 @@ s_smpi_mpi_contiguous_t* smpi_datatype_contiguous_create( MPI_Aint lb,
   new_t->block_count = block_count;
   new_t->old_type = old_type;
   new_t->size_oldtype = size_oldtype;
+  smpi_datatype_use(old_type);
   return new_t;
 }
 
@@ -491,6 +503,7 @@ int smpi_datatype_vector(int count, int blocklen, int stride, MPI_Datatype old_t
 }
 
 void free_vector(MPI_Datatype* d){
+  smpi_datatype_unuse(((s_smpi_mpi_indexed_t *)(*d)->substruct)->old_type);
 }
 
 /*
@@ -591,11 +604,13 @@ s_smpi_mpi_hvector_t* smpi_datatype_hvector_create( MPI_Aint block_stride,
   new_t->block_count = block_count;
   new_t->old_type = old_type;
   new_t->size_oldtype = size_oldtype;
+  smpi_datatype_use(old_type);
   return new_t;
 }
 
 //do nothing for vector types
 void free_hvector(MPI_Datatype* d){
+  smpi_datatype_unuse(((s_smpi_mpi_indexed_t *)(*d)->substruct)->old_type);
 }
 
 int smpi_datatype_hvector(int count, int blocklen, MPI_Aint stride, MPI_Datatype old_type, MPI_Datatype* new_type)
@@ -717,6 +732,7 @@ void unserialize_indexed( const void *contiguous_indexed,
 void free_indexed(MPI_Datatype* type){
   xbt_free(((s_smpi_mpi_indexed_t *)(*type)->substruct)->block_lengths);
   xbt_free(((s_smpi_mpi_indexed_t *)(*type)->substruct)->block_indices);
+  smpi_datatype_unuse(((s_smpi_mpi_indexed_t *)(*type)->substruct)->old_type);
 }
 
 /*
@@ -742,6 +758,7 @@ s_smpi_mpi_indexed_t* smpi_datatype_indexed_create( int* block_lengths,
     new_t->block_indices[i]=block_indices[i];
   }
   new_t->block_count = block_count;
+  smpi_datatype_use(old_type);
   new_t->old_type = old_type;
   new_t->size_oldtype = size_oldtype;
   return new_t;
@@ -878,6 +895,7 @@ void unserialize_hindexed( const void *contiguous_hindexed,
 void free_hindexed(MPI_Datatype* type){
   xbt_free(((s_smpi_mpi_hindexed_t *)(*type)->substruct)->block_lengths);
   xbt_free(((s_smpi_mpi_hindexed_t *)(*type)->substruct)->block_indices);
+  smpi_datatype_unuse(((s_smpi_mpi_indexed_t *)(*type)->substruct)->old_type);
 }
 
 /*
@@ -1041,6 +1059,9 @@ void unserialize_struct( const void *contiguous_struct,
 void free_struct(MPI_Datatype* type){
   xbt_free(((s_smpi_mpi_struct_t *)(*type)->substruct)->block_lengths);
   xbt_free(((s_smpi_mpi_struct_t *)(*type)->substruct)->block_indices);
+  int i=0;
+  for (i = 0; i < ((s_smpi_mpi_struct_t *)(*type)->substruct)->block_count; i++)
+    smpi_datatype_unuse(((s_smpi_mpi_struct_t *)(*type)->substruct)->old_types[i]);
   xbt_free(((s_smpi_mpi_struct_t *)(*type)->substruct)->old_types);
 }
 
@@ -1066,6 +1087,7 @@ s_smpi_mpi_struct_t* smpi_datatype_struct_create( int* block_lengths,
     new_t->block_lengths[i]=block_lengths[i];
     new_t->block_indices[i]=block_indices[i];
     new_t->old_types[i]=old_types[i];
+    smpi_datatype_use(new_t->old_types[i]);
   }
   //new_t->block_lengths = block_lengths;
   //new_t->block_indices = block_indices;
@@ -1150,7 +1172,7 @@ typedef struct s_smpi_mpi_op {
 #define BXOR_OP(a, b) (b) ^= (a)
 #define MAXLOC_OP(a, b)  (b) = (a.value) < (b.value) ? (b) : (a)
 #define MINLOC_OP(a, b)  (b) = (a.value) < (b.value) ? (a) : (b)
-//TODO : MINLOC & MAXLOC
+#define REPLACE_OP(a,b) (b) = (a)
 
 #define APPLY_FUNC(a, b, length, type, func) \
 {                                          \
@@ -1455,6 +1477,27 @@ static void maxloc_func(void *a, void *b, int *length,
   }
 }
 
+static void replace_func(void *a, void *b, int *length,
+                        MPI_Datatype * datatype)
+{
+  if (*datatype == MPI_CHAR) {
+    APPLY_FUNC(a, b, length, char, REPLACE_OP);
+  } else if (*datatype == MPI_SHORT) {
+    APPLY_FUNC(a, b, length, short, REPLACE_OP);
+  } else if (*datatype == MPI_INT) {
+    APPLY_FUNC(a, b, length, int, REPLACE_OP);
+  } else if (*datatype == MPI_LONG) {
+    APPLY_FUNC(a, b, length, long, REPLACE_OP);
+  } else if (*datatype == MPI_UNSIGNED_SHORT) {
+    APPLY_FUNC(a, b, length, unsigned short, REPLACE_OP);
+  } else if (*datatype == MPI_UNSIGNED) {
+    APPLY_FUNC(a, b, length, unsigned int, REPLACE_OP);
+  } else if (*datatype == MPI_UNSIGNED_LONG) {
+    APPLY_FUNC(a, b, length, unsigned long, REPLACE_OP);
+  } else if (*datatype == MPI_BYTE) {
+    APPLY_FUNC(a, b, length, uint8_t, REPLACE_OP);
+  }
+}
 
 #define CREATE_MPI_OP(name, func)                             \
   static s_smpi_mpi_op_t mpi_##name = { &(func) /* func */, TRUE }; \
@@ -1472,6 +1515,8 @@ CREATE_MPI_OP(MPI_BOR, bor_func);
 CREATE_MPI_OP(MPI_BXOR, bxor_func);
 CREATE_MPI_OP(MPI_MAXLOC, maxloc_func);
 CREATE_MPI_OP(MPI_MINLOC, minloc_func);
+CREATE_MPI_OP(MPI_REPLACE, replace_func);
+
 
 MPI_Op smpi_op_new(MPI_User_function * function, int commute)
 {
