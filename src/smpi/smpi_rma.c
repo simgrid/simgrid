@@ -116,7 +116,7 @@ int smpi_mpi_put( void *origin_addr, int origin_count, MPI_Datatype origin_datat
   //get receiver pointer
   MPI_Win recv_win = win->connected_wins[target_rank];
 
-  void* recv_addr = recv_win->base + target_disp * smpi_datatype_size(target_datatype)/* recv_win->disp_unit*/;
+  void* recv_addr = (void*) ( ((char*)recv_win->base) + target_disp * smpi_datatype_size(target_datatype));
   smpi_datatype_use(origin_datatype);
   smpi_datatype_use(target_datatype);
   XBT_DEBUG("Entering MPI_Put to %d", target_rank);
@@ -149,7 +149,7 @@ int smpi_mpi_get( void *origin_addr, int origin_count, MPI_Datatype origin_datat
   //get sender pointer
   MPI_Win send_win = win->connected_wins[target_rank];
 
-  void* send_addr = send_win->base + target_disp * smpi_datatype_size(target_datatype)/** send_win->disp_unit*/;
+  void* send_addr = (void*)( ((char*)send_win->base) + target_disp * smpi_datatype_size(target_datatype));
   smpi_datatype_use(origin_datatype);
   smpi_datatype_use(target_datatype);
   XBT_DEBUG("Entering MPI_Get from %d", target_rank);
@@ -183,7 +183,7 @@ int smpi_mpi_accumulate( void *origin_addr, int origin_count, MPI_Datatype origi
   //get receiver pointer
   MPI_Win recv_win = win->connected_wins[target_rank];
 
-  void* recv_addr = recv_win->base + target_disp * smpi_datatype_size(target_datatype) /** recv_win->disp_unit*/;
+  void* recv_addr = (void*)( ((char*)recv_win->base) + target_disp * smpi_datatype_size(target_datatype) );
   XBT_DEBUG("Entering MPI_Accumulate to %d", target_rank);
 
   smpi_datatype_use(origin_datatype);
