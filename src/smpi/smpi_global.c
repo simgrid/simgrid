@@ -34,7 +34,6 @@ typedef struct s_smpi_process_data {
   char state;
   int sampling;                 /* inside an SMPI_SAMPLE_ block? */
   char* instance_id;
-  int nb_wins;
   xbt_bar_t finalization_barrier;
 } s_smpi_process_data_t;
 
@@ -103,7 +102,6 @@ void smpi_process_init(int *argc, char ***argv)
     (*argc)-=2;
     data->argc = argc;
     data->argv = argv;
-    data->nb_wins=0;
     // set the process attached to the mailbox
     simcall_rdv_set_receiver(data->mailbox_small, proc);
     XBT_DEBUG("<%d> New process in the game: %p", index, proc);
@@ -204,20 +202,6 @@ void *smpi_process_get_user_data()
   smpi_process_data_t process_data = smpi_process_data();
   return process_data->data;
 }
-
-
-int smpi_process_get_win_id()
-{
-  smpi_process_data_t process_data = smpi_process_data();
-  return process_data->nb_wins;
-}
-
-void smpi_process_set_win_id(int id)
-{
-  smpi_process_data_t process_data = smpi_process_data();
-  process_data->nb_wins = id;
-}
-
 
 int smpi_process_count(void)
 {

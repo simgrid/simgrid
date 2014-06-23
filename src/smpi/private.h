@@ -149,8 +149,6 @@ smpi_process_data_t smpi_process_data(void);
 smpi_process_data_t smpi_process_remote_data(int index);
 void smpi_process_set_user_data(void *);
 void* smpi_process_get_user_data(void);
-int smpi_process_get_win_id();
-void smpi_process_set_win_id(int);
 int smpi_process_count(void);
 MPI_Comm smpi_process_comm_world(void);
 smx_rdv_t smpi_process_mailbox(void);
