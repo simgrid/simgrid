@@ -1,0 +1,125 @@
+#Needs Win set name, win_get_name needed
+#winname 2
+allocmem 2
+putfence1 4
+putfidx 4
+getfence1 4
+#Accumulate + datatypes=Bug
+#accfence1 4
+#Needs lock, unlock
+#adlb_mimic1 3
+accfence2 4
+#Needs post
+#putpscw1 4
+#accpscw1 4
+#Needs get_group
+#getgroup 4
+transpose1 2
+transpose2 2
+#Needs post/start
+#transpose3 2
+#Needs lock/unlock
+#transpose5 2
+#accum on complex datatypes
+#transpose6 1
+transpose7 2
+test1 2
+#Needs post/start
+#test2 2
+#test3 2
+#Needs lock, unlock
+#test4 2
+test5 2
+#Needs lock, unlock
+#lockcontention 3
+#lockcontention2 4
+#lockcontention2 8
+#lockcontention3 8
+#lockopts 2
+#transpose4 2
+#fetchandadd 7
+#fetchandadd_tree 7
+#Needs start, complete
+#wintest 2
+#Needs lock, unlock
+#contig_displ 1
+test1_am 2
+#test2_am 2
+#test3_am 2
+#test4_am 2
+test5_am 2
+#fetchandadd_am 7
+#fetchandadd_tree_am 7
+accfence2_am 4
+#Accumulate + datatypes=Bug
+#test1_dt 2 timeLimit=30
+#Needs post/start
+#nullpscw 7
+#Needs win_attr
+#attrorderwin 1
+#Needs MPI_Win_call_errhandler
+#wincall 2
+#Needs win_attr
+#baseattrwin 1
+#Needs MPI_Win_create_keyval
+#fkeyvalwin 1
+#Needs lock, unlock
+#selfrma 1
+#mixedsync 4
+epochtest 4
+#Needs lock, unlock
+#locknull 2
+#Needs MPI_Rput, rget, racumulate,  MPI_Fetch_and_op, MPI_Compare_and_swap
+#rmanull 2
+#rmazero 2
+#Needs lock, unlock
+#strided_acc_indexed 2
+#strided_acc_onelock 2
+#strided_acc_subarray 2
+#strided_get_indexed 2
+#strided_putget_indexed 4
+#strided_putget_indexed_shared 4 mpiversion=3.0
+#strided_getacc_indexed 4 mpiversion=3.0
+#strided_getacc_indexed_shared 4 mpiversion=3.0
+window_creation 2
+#Needs lock, unlock
+#contention_put 4
+#contention_putget 4
+#put_base 2
+#put_bottom 2
+#win_flavors 4 mpiversion=3.0
+#manyrma2 2 timeLimit=500
+#win_shared 4 mpiversion=3.0
+#win_shared_noncontig 4 mpiversion=3.0
+#win_shared_noncontig_put 4 mpiversion=3.0
+#win_dynamic_acc 4 mpiversion=3.0
+#get_acc_local 1 mpiversion=3.0
+#linked_list 4 mpiversion=3.0
+#linked_list_fop 4 mpiversion=3.0
+#compare_and_swap 4 mpiversion=3.0
+#fetch_and_op_char 4 mpiversion=3.0
+#fetch_and_op_short 4 mpiversion=3.0
+#fetch_and_op_int 4 mpiversion=3.0
+#fetch_and_op_long 4 mpiversion=3.0
+#fetch_and_op_double 4 mpiversion=3.0
+#fetch_and_op_long_double 4 mpiversion=3.0
+#get_accumulate_double 4 mpiversion=3.0
+#get_accumulate_double_derived 4 mpiversion=3.0
+#get_accumulate_int 4 mpiversion=3.0
+#get_accumulate_int_derived 4 mpiversion=3.0
+#get_accumulate_long 4 mpiversion=3.0
+#get_accumulate_long_derived 4 mpiversion=3.0
+#get_accumulate_short 4 mpiversion=3.0
+#get_accumulate_short_derived 4 mpiversion=3.0
+#flush 4 mpiversion=3.0
+#reqops 4 mpiversion=3.0
+#req_example 4 mpiversion=3.0
+#win_info 4 mpiversion=3.0
+#linked_list_lockall 4 mpiversion=3.0
+#pscw_ordering 4 mpiversion=3.0
+#linked_list_bench_lock_all 4 mpiversion=3.0
+#linked_list_bench_lock_excl 4 mpiversion=3.0
+#linked_list_bench_lock_shr 4 mpiversion=3.0
+#linked_list_bench_lock_shr_nocheck 4 mpiversion=3.0
+#mutex_bench 4 mpiversion=3.0
+#mutex_bench_shared 4 mpiversion=3.0

@@ -1074,6 +1074,7 @@ set(TESHSUITE_CMAKEFILES_TXT
   teshsuite/smpi/mpich3-test/init/CMakeLists.txt
   teshsuite/smpi/mpich3-test/pt2pt/CMakeLists.txt
   teshsuite/smpi/mpich3-test/topo/CMakeLists.txt
+  teshsuite/smpi/mpich3-test/rma/CMakeLists.txt
   teshsuite/surf/CMakeLists.txt
   teshsuite/surf/lmm_usage/CMakeLists.txt
   teshsuite/surf/maxmin_bench/CMakeLists.txt
