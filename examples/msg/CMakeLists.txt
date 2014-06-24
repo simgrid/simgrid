@@ -6,10 +6,8 @@ set(tesh_files
   )
 set(xml_files
   ${xml_files}
-  ${CMAKE_CURRENT_SOURCE_DIR}/msg_platform.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/small_platform_with_failures.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/small_platform_with_routers.xml
-  ${CMAKE_CURRENT_SOURCE_DIR}/small_platform.xml
   PARENT_SCOPE
   )
 set(examples_src

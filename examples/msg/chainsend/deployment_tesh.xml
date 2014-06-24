@@ -3,34 +3,34 @@
 <platform version="3"><!-- For using with chainsend -->
 
   <!-- Broadcaster -->
-  <process host="host0" function="broadcaster">
+  <process host="Jacquelin" function="broadcaster">
 	<argument value="8"/> <!-- number of peers -->
 	<argument value="256"/> <!-- number of pieces -->
   </process>
 
   <!-- Peers -->
-  <process host="host1" function="peer">
+  <process host="Boivin" function="peer">
   	<argument value="1"/>
   </process>
-  <process host="host2" function="peer">
+  <process host="Jean_Yves" function="peer">
   	<argument value="2"/>
   </process>
-  <process host="host3" function="peer">
+  <process host="TeX" function="peer">
   	<argument value="3"/>
   </process>
-  <process host="host4" function="peer">
+  <process host="Geoff" function="peer">
   	<argument value="4"/>
   </process>
-  <process host="host5" function="peer">
+  <process host="Disney" function="peer">
   	<argument value="5"/>
   </process>
-  <process host="host6" function="peer">
+  <process host="iRMX" function="peer">
   	<argument value="6"/>
   </process>
-  <process host="host7" function="peer">
+  <process host="McGee" function="peer">
   	<argument value="7"/>
   </process>
-  <process host="host8" function="peer">
+  <process host="Gatien" function="peer">
   	<argument value="8"/>
   </process>
 </platform>

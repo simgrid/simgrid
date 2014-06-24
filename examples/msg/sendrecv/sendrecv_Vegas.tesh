@@ -3,20 +3,20 @@
 p Testing the surf network Vegas fairness model using lagrangian approach
 
 ! output sort
-$ $SG_TEST_EXENV sendrecv/sendrecv$EXEEXT ${srcdir:=.}/sendrecv/platform_sendrecv.xml ${srcdir:=.}/sendrecv/deployment_sendrecv.xml "--cfg=workstation/model:compound cpu/model:Cas01 network/model:Vegas" "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+$ $SG_TEST_EXENV sendrecv/sendrecv$EXEEXT ${srcdir:=.}/../platforms/small_platform.xml ${srcdir:=.}/sendrecv/deployment_sendrecv.xml "--cfg=workstation/model:compound cpu/model:Cas01 network/model:Vegas" "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (0:@) Configuration change: Set 'workstation/model' to 'compound'
 > [  0.000000] (0:@) Configuration change: Set 'cpu/model' to 'Cas01'
 > [  0.000000] (0:@) Configuration change: Set 'network/model' to 'Vegas'
 > [  0.000000] (0:@) test_all
-> [  0.000000] (1:sender@Inmos) sender
-> [  0.000000] (1:sender@Inmos) host = Bellevue
-> [  0.000000] (1:sender@Inmos) task_la->data = 0.000000e+00
-> [  0.000000] (2:receiver@Bellevue) receiver
-> [  1.040001] (1:sender@Inmos) task_bw->data = 1.040001e+00
-> [  1.040001] (2:receiver@Bellevue) Task received : latency task
-> [  1.040001] (2:receiver@Bellevue) Communic. time 1.040001e+00
-> [  1.040001] (2:receiver@Bellevue) --- la 1.040001 ----
-> [1089.036523] (0:@) Total simulation time: 1.089037e+03
-> [1089.036523] (2:receiver@Bellevue) Task received : bandwidth task
-> [1089.036523] (2:receiver@Bellevue) Communic. time 1.087997e+03
-> [1089.036523] (2:receiver@Bellevue) --- bw 919120.585424 ----
+> [  0.000000] (1:sender@Tremblay) sender
+> [  0.000000] (1:sender@Tremblay) host = Jupiter
+> [  0.000000] (1:sender@Tremblay) task_la->data = 0.000000e+00
+> [  0.000000] (2:receiver@Jupiter) receiver
+> [  0.015200] (2:receiver@Jupiter) Task received : latency task
+> [  0.015200] (2:receiver@Jupiter) Communic. time 1.519993e-02
+> [  0.015200] (2:receiver@Jupiter) --- la 0.015200 ----
+> [  0.015200] (1:sender@Tremblay) task_bw->data = 1.519993e-02
+> [150.792426] (2:receiver@Jupiter) Task received : bandwidth task
+> [150.792426] (2:receiver@Jupiter) Communic. time 1.507772e+02
+> [150.792426] (2:receiver@Jupiter) --- bw 6632301.333611 ----
+> [150.792426] (0:@) Total simulation time: 1.507924e+02

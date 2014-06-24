@@ -1186,6 +1186,7 @@ set(PLATFORMS_EXAMPLES
   examples/platforms/content/win_storage_content.txt
   examples/platforms/data_center.xml
   examples/platforms/deployment_remote_io.xml
+  examples/platforms/energy_platform.xml
   examples/platforms/fat_tree_cluster.xml
   examples/platforms/g5k.xml
   examples/platforms/generation_scripts/create_hierarchical_clusters.pl
@@ -1195,10 +1196,12 @@ set(PLATFORMS_EXAMPLES
   examples/platforms/griffon.xml
   examples/platforms/meta_cluster.xml
   examples/platforms/multicore_machine.xml
+  examples/platforms/platform.xml
   examples/platforms/prop.xml
   examples/platforms/remote_io.xml
   examples/platforms/routing_cluster.xml
   examples/platforms/storage.xml
+  examples/platforms/small_platform.xml
   examples/platforms/syscoord/generate_peer_platform.pl
   examples/platforms/syscoord/median_harvard.syscoord
   examples/platforms/syscoord/median_harvard.xml
@@ -1207,6 +1210,7 @@ set(PLATFORMS_EXAMPLES
   examples/platforms/syscoord/median_p2psim.syscoord
   examples/platforms/syscoord/median_p2psim.xml
   examples/platforms/torus_cluster.xml
+  examples/platforms/two_hosts_platform.xml
   examples/platforms/two_peers.xml
   examples/platforms/vivaldi.xml
   )

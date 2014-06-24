@@ -3,7 +3,7 @@
 ! output sort
 
 p Test all to all
-$ ${bindir:=.}/../../../bin/smpirun -map -hostfile ../hostfile -platform ../../../examples/msg/small_platform.xml -np 16 --log=xbt_cfg.thres:critical ${bindir:=.}/alltoallv_coll --log=smpi_kernel.thres:warning
+$ ${bindir:=.}/../../../bin/smpirun -map -hostfile ../hostfile -platform ../../../examples/platforms/small_platform.xml -np 16 --log=xbt_cfg.thres:critical ${bindir:=.}/alltoallv_coll --log=smpi_kernel.thres:warning
 > You requested to use 16 processes, but there is only 5 processes in your hostfile...
 > [rank 0] -> Tremblay
 > [rank 1] -> Jupiter

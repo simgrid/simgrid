@@ -2,7 +2,7 @@
 
 p Tracing multiple categories master/slave application
 
-$ $SG_TEST_EXENV ${bindir:=.}/tracing/categories$EXEEXT --cfg=tracing:yes --cfg=tracing/buffer:yes --cfg=tracing/filename:tracing/categories.trace --cfg=tracing/categorized:yes --cfg=tracing/uncategorized:yes --cfg=viva/categorized:tracing/categories.cat.plist --cfg=viva/uncategorized:tracing/categories.uncat.plist ${srcdir:=.}/tracing/platform.xml ${srcdir:=.}/tracing/deployment.xml
+$ $SG_TEST_EXENV ${bindir:=.}/tracing/categories$EXEEXT --cfg=tracing:yes --cfg=tracing/buffer:yes --cfg=tracing/filename:tracing/categories.trace --cfg=tracing/categorized:yes --cfg=tracing/uncategorized:yes --cfg=viva/categorized:tracing/categories.cat.plist --cfg=viva/uncategorized:tracing/categories.uncat.plist ${srcdir:=.}/../platforms/small_platform.xml ${srcdir:=.}/tracing/deployment.xml
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing' to 'yes'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/buffer' to 'yes'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/filename' to 'tracing/categories.trace'
@@ -14,7 +14,7 @@ $ $SG_TEST_EXENV ${bindir:=.}/tracing/categories$EXEEXT --cfg=tracing:yes --cfg=
 $ $SG_TEST_EXENV cat tracing/categories.cat.plist
 >   node = ("HOST","LINK");
 >   edge = ("0-LINK4-LINK4","0-HOST1-LINK4","0-LINK4-HOST1");
-> 
+>
 >   host = {
 >     type = "square";
 >     size = "power";
@@ -29,7 +29,7 @@ $ $SG_TEST_EXENV cat tracing/categories.cat.plist
 $ $SG_TEST_EXENV cat tracing/categories.uncat.plist
 >   node = ("HOST","LINK");
 >   edge = ("0-LINK4-LINK4","0-HOST1-LINK4","0-LINK4-HOST1");
-> 
+>
 >   host = {
 >     type = "square";
 >     size = "power";

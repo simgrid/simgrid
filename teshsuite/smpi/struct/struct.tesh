@@ -1,13 +1,13 @@
 p Test struct
 ! setenv LD_LIBRARY_PATH=../../lib
 ! output sort
-$ ${bindir:=.}/../../../bin/smpirun -map -hostfile ../hostfile -platform ../../../examples/msg/small_platform.xml -np 2 ${bindir:=.}/struct_test -q --log=smpi_kernel.thres:warning
-> Process 0 got -2 (-2?) and 8.000000 (8.0?), tab (should be all 0): 0 0 0 0 0 0 
-> Process 1 got -2 (-2?) and 8.000000 (8.0?), tab (should be all 0): 0 0 0 0 0 0 
-> [0.000000] [surf_config/INFO] Switching workstation model to compound since you changed the network and/or cpu model(s)
+$ ${bindir:=.}/../../../bin/smpirun -map -hostfile ../hostfile -platform ../../../examples/platforms/small_platform.xml -np 2 ${bindir:=.}/struct_test -q --log=smpi_kernel.thres:warning
+> [rank 0] -> Tremblay
+> [rank 1] -> Jupiter
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'maxmin/precision' to '1e-3'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'surf/precision' to '1e-9'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'SMPI'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/TCP_gamma' to '4194304'
-> [rank 0] -> Tremblay
-> [rank 1] -> Jupiter
+> [0.000000] [surf_config/INFO] Switching workstation model to compound since you changed the network and/or cpu model(s)
+> Process 0 got -2 (-2?) and 8.000000 (8.0?), tab (should be all 0): 0 0 0 0 0 0 
+> Process 1 got -2 (-2?) and 8.000000 (8.0?), tab (should be all 0): 0 0 0 0 0 0 

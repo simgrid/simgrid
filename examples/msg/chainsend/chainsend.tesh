@@ -4,13 +4,13 @@ p Testing the chainsend MSG implementation
 
 ! timeout 60
 ! output sort
-$ $SG_TEST_EXENV ${bindir:=.}/chainsend ${srcdir:=.}/platform_chainsend.xml ${srcdir:=.}/deployment_tesh.xml "--log=root.fmt:[%12.6r]%e(%i:%P@%h)%e%m%n"
-> [    0.125671] (2:peer@host1) ### 0.125671 16777216 bytes (Avg 127.316430 MB/s); copy finished (simulated).
-> [    0.157894] (3:peer@host2) ### 0.157894 16777216 bytes (Avg 101.333796 MB/s); copy finished (simulated).
-> [    0.158420] (4:peer@host3) ### 0.158420 16777216 bytes (Avg 100.997152 MB/s); copy finished (simulated).
-> [    0.159139] (5:peer@host4) ### 0.159139 16777216 bytes (Avg 100.541154 MB/s); copy finished (simulated).
-> [    0.191593] (6:peer@host5) ### 0.191593 16777216 bytes (Avg 83.510414 MB/s); copy finished (simulated).
-> [    0.191989] (7:peer@host6) ### 0.191989 16777216 bytes (Avg 83.338080 MB/s); copy finished (simulated).
-> [    0.229841] (0:@) Total simulation time: 2.298413e-01
-> [    0.229841] (8:peer@host7) ### 0.229841 16777216 bytes (Avg 69.613244 MB/s); copy finished (simulated).
-> [    0.229841] (9:peer@host8) ### 0.229841 16777216 bytes (Avg 69.613244 MB/s); copy finished (simulated).
+$ $SG_TEST_EXENV ${bindir:=.}/chainsend ${srcdir:=.}/../../platforms/platform.xml ${srcdir:=.}/deployment_tesh.xml "--log=root.fmt:[%12.6r]%e(%i:%P@%h)%e%m%n"
+> [  587.704210] (2:peer@Boivin) ### 587.704224 16777216 bytes (Avg 0.027225 MB/s); copy finished (simulated).
+> [  786.931829] (3:peer@Jean_Yves) ### 786.931824 16777216 bytes (Avg 0.020332 MB/s); copy finished (simulated).
+> [  788.837385] (4:peer@TeX) ### 788.837402 16777216 bytes (Avg 0.020283 MB/s); copy finished (simulated).
+> [  790.677240] (5:peer@Geoff) ### 790.677246 16777216 bytes (Avg 0.020236 MB/s); copy finished (simulated).
+> [  870.974270] (6:peer@Disney) ### 870.974243 16777216 bytes (Avg 0.018370 MB/s); copy finished (simulated).
+> [  873.276724] (7:peer@iRMX) ### 873.276733 16777216 bytes (Avg 0.018322 MB/s); copy finished (simulated).
+> [  873.752754] (9:peer@Gatien) ### 873.752747 16777216 bytes (Avg 0.018312 MB/s); copy finished (simulated).
+> [  873.752754] (8:peer@McGee) ### 873.752747 16777216 bytes (Avg 0.018312 MB/s); copy finished (simulated).
+> [  873.752754] (0:@) Total simulation time: 8.737528e+02

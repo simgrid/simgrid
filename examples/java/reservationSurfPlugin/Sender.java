@@ -34,14 +34,14 @@ public class Sender extends Process {
        curTime = Msg.getClock();
        Msg.info("Send duration: " + (curTime - oldTime));
 
-       TestPlugin.tp.updateBandwidthRoute("Jacquelin", "Boivin", 10E2);
+       TestPlugin.tp.updateBandwidthRoute("Tremblay", "Ginette", 10E2);
        oldTime = curTime;
        task = new Task("no name",computeDuration,commSizeLat);
        task.send(receiverName);
        curTime = Msg.getClock();
        Msg.info("Send duration with update bandwidth: " + (curTime - oldTime));
 
-       TestPlugin.tp.limitBandwidthActions("Jacquelin", "Boivin", 10E1);
+       TestPlugin.tp.limitBandwidthActions("Tremblay", "Ginette", 10E1);
        oldTime = curTime;
        task = new Task("no name",computeDuration,commSizeLat);
        task.send(receiverName);

@@ -1,9 +1,9 @@
 #! ./tesh
 
-p Testing the mechanism for computing host energy consumption 
+p Testing the mechanism for computing host energy consumption
 
 ! output sort
-$ $SG_TEST_EXENV energy/e2/e2$EXEEXT ${srcdir:=.}/energy/e2/platform_e2.xml ${srcdir:=.}/energy/e2/deployment_e2.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+$ $SG_TEST_EXENV energy/e2/e2$EXEEXT ${srcdir:=.}/../platforms/energy_platform.xml ${srcdir:=.}/energy/e2/deployment_e2.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (1:dvfs_test@MyHost1) Current power peak=100000000.000000
 > [  0.000000] (1:dvfs_test@MyHost1) Total energy (Joules): 0.000000
 > [  1.000000] (1:dvfs_test@MyHost1) Task1 simulation time: 1.000000e+00
@@ -15,3 +15,4 @@ $ $SG_TEST_EXENV energy/e2/e2$EXEEXT ${srcdir:=.}/energy/e2/platform_e2.xml ${sr
 > [  9.000000] (1:dvfs_test@MyHost1) Total energy (Joules): 1220.000000
 > [  9.000000] (0:@) Total simulation time: 9.000000e+00
 > [  9.000000] (0:@) Total energy (Joules) of host MyHost1: 1220.000000
+> [  9.000000] (0:@) Total energy (Joules) of host MyHost2: 0.000000

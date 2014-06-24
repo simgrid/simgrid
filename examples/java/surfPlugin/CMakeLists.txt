@@ -28,8 +28,7 @@ set(tesh_files
   )
 set(xml_files
   ${xml_files}
-  ${CMAKE_CURRENT_SOURCE_DIR}/surfPluginPlatform.xml
-  ${CMAKE_CURRENT_SOURCE_DIR}/surfPluginDeployment.xml  
+  ${CMAKE_CURRENT_SOURCE_DIR}/surfPluginDeployment.xml
   PARENT_SCOPE
   )
 set(examples_src

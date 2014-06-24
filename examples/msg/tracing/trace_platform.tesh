@@ -2,7 +2,7 @@
 
 
 p Tracing master/slave application
-$ $SG_TEST_EXENV ${bindir:=.}/tracing/trace_platform$EXEEXT --cfg=tracing:yes --cfg=tracing/filename:tracing/trace_platform.trace --cfg=tracing/categorized:yes ${srcdir:=.}/tracing/platform.xml
+$ $SG_TEST_EXENV ${bindir:=.}/tracing/trace_platform$EXEEXT --cfg=tracing:yes --cfg=tracing/filename:tracing/trace_platform.trace --cfg=tracing/categorized:yes ${srcdir:=.}/../platforms/small_platform.xml
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing' to 'yes'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/filename' to 'tracing/trace_platform.trace'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/categorized' to 'yes'
@@ -136,6 +136,7 @@ $ tail -n +3 tracing/trace_platform.trace
 > 6 0 13 3 0 "4"
 > 6 0 14 3 0 "0"
 > 6 0 15 3 0 "5"
+> 6 0 16 3 0 "loopback"
 > 4 6 0 3 3 0-LINK3-LINK3
 > 4 7 0 1 3 0-HOST1-LINK3
 > 4 8 0 3 1 0-LINK3-HOST1
@@ -164,6 +165,8 @@ $ tail -n +3 tracing/trace_platform.trace
 > 8 0 5 14 0.000060
 > 8 0 4 15 27946250.000000
 > 8 0 5 15 0.000278
+> 8 0 4 16 498000000.000000
+> 8 0 5 16 0.000015
 > 15 0 6 0 topology 13 0
 > 16 0 6 0 topology 7 0
 > 15 0 6 0 topology 6 1
@@ -200,6 +203,7 @@ $ tail -n +3 tracing/trace_platform.trace
 > 16 0 6 0 topology 6 16
 > 7 0 1 3
 > 7 0 1 1
+> 7 0 3 16
 > 7 0 3 14
 > 7 0 3 12
 > 7 0 3 10

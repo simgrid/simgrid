@@ -39,10 +39,10 @@ public class Test extends Process{
         int dpRate = 70;
         int load1 = 90;
         int load2 = 80;
-		
+
 
 		  Msg.info("This example evaluates the migration time of a VM in presence of collocated VMs on the source and the dest nodes");
-		  Msg.info("The migrated VM has a memory intensity rate of 70% of the network BW and a cpu load of 90% \"(see cloudcom 2013 paper \"Adding a Live Migration Model Into SimGrid\" for further information) "); 
+		  Msg.info("The migrated VM has a memory intensity rate of 70% of the network BW and a cpu load of 90% \"(see cloudcom 2013 paper \"Adding a Live Migration Model Into SimGrid\" for further information) ");
 
 		  Msg.info("Load of collocated VMs fluctuate between 0 and 90% in order to create a starvation issue and see whether it impacts or not the migration time");
         XVM vm1 = null;

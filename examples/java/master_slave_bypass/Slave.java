@@ -22,6 +22,6 @@ public class Slave extends Process {
 	Msg.info("Slave Hello!");
 	FinalizeTask task = new FinalizeTask();
 	Msg.info("Send finalize!");
-	task.send("alice");
+	task.send("Jacquelin");
 	}
 }

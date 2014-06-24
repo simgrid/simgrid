@@ -2,8 +2,8 @@
 <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">
 <platform version="3"><!-- For using with ping_pong, platform_sendrecv.xml -->
 
-  <process host="Inmos" function="sender">
-	<argument value="Bellevue"/>
+  <process host="Tremblay" function="sender">
+	<argument value="Jupiter"/>
   </process>
-  <process host="Bellevue" function="receiver"/>
+  <process host="Jupiter" function="receiver"/>
 </platform>

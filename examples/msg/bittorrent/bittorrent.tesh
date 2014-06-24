@@ -4,7 +4,7 @@ p Testing the Bittorrent implementation with MSG
 
 ! timeout 10
 ! output sort
-$ $SG_TEST_EXENV ${bindir:=.}/bittorrent ${srcdir:=.}/../msg_platform.xml ${srcdir:=.}/bittorrent.xml "--log=root.fmt:[%12.6r]%e(%i:%P@%h)%e%m%n"
+$ $SG_TEST_EXENV ${bindir:=.}/bittorrent ${srcdir:=.}/../../platforms/platform.xml ${srcdir:=.}/bittorrent.xml "--log=root.fmt:[%12.6r]%e(%i:%P@%h)%e%m%n"
 > [    0.000000] (1:tracker@Jacquelin) Tracker launched.
 > [    0.000000] (2:peer@Boivin) Hi, I'm joining the network with id 2
 > [    0.000000] (3:peer@Jean_Yves) Hi, I'm joining the network with id 3

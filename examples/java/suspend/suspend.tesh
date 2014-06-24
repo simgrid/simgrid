@@ -1,7 +1,7 @@
 #! tesh
 
 ! output sort
-$ java -classpath ${classpath:=.} suspend/Suspend ${srcdir:=.}/platform.xml ${srcdir:=.}/suspend/suspendDeployment.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+$ java -classpath ${classpath:=.} suspend/Suspend ${srcdir:=.}/../platforms/platform.xml ${srcdir:=.}/suspend/suspendDeployment.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (0:@) Using regular java threads. Coroutines could speed your simulation up.
 > [  0.000000] (1:suspend.DreamMaster@Jacquelin) Let's create a lazy guy.
 > [  0.000000] (1:suspend.DreamMaster@Jacquelin) Let's wait a little bit...

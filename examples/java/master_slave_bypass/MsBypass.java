@@ -11,27 +11,27 @@ import org.simgrid.msg.MsgException;
 import org.simgrid.msg.NativeException;
 
 public class MsBypass {
-   
-   /* This only contains the launcher. If you do nothing more than than you can run 
+
+   /* This only contains the launcher. If you do nothing more than than you can run
     *   java simgrid.msg.Msg
     * which also contains such a launcher
     */
-   
+
     public static void main(String[] args) throws NativeException {
-       
+
     /* initialize the MSG simulation. Must be done before anything else (even logging). */
     Msg.init(args);
     Msg.createEnvironment(args[0]);
 
     /* bypass deployment */
     try {
-    	new Master("bob","process1").start();
+    	new Master("Boivin","process1").start();
     }
     catch (MsgException e){
     	System.out.println("Create processes failed!");
     }
-    
+
 	/*  execute the simulation. */
     Msg.run();
-    }   
+    }
 }

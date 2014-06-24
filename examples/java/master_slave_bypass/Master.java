@@ -21,23 +21,23 @@ public class Master extends Process {
 	}
 	public void main(String[] args) throws MsgException {
 	Msg.info("Master Hello!");
-	
+
 	//Create a slave on host "alice"
 	try {
-			Msg.info("Create process on host 'alice'");
-	        new Slave("alice","process2").start();
+			Msg.info("Create process on host 'Jacquelin'");
+	        new Slave("Jacquelin","process2").start();
 	    }
 	catch (MsgException e){
 	        	System.out.println("Process2!");
 	    }
-	
+
 	//Wait for slave "alice"
 	while(true)
-	{  
-			Task task = Task.receive("alice");
+	{
+			Task task = Task.receive("Jacquelin");
 			if (task instanceof FinalizeTask) {
 				Msg.info("Received Finalize. I'm done. See you!");
-				break;	
+				break;
 			}
 	}
 	}

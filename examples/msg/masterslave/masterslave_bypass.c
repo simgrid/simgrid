@@ -194,7 +194,7 @@ int master(int argc, char *argv[])
     for (i = 4; i < argc; i++) {
       slaves[i - 4] = MSG_get_host_by_name(argv[i]);
       if (slaves[i - 4] == NULL) {
-        XBT_INFO("Unknown host %s. Stopping Now! ", argv[i]);
+        XBT_INFO("Unknown host %s. Stopping Now!", argv[i]);
         abort();
       }
     }
@@ -240,17 +240,17 @@ int slave(int argc, char *argv[])
     int a;
     a = MSG_task_receive(&task, MSG_host_get_name(MSG_host_self()));
     if (a == MSG_OK) {
-      XBT_INFO("Received \"%s\" ", MSG_task_get_name(task));
+      XBT_INFO("Received \"%s\"" , MSG_task_get_name(task));
       if (MSG_task_get_data(task) == FINALIZE) {
         MSG_task_destroy(task);
         break;
       }
-      XBT_INFO("Processing \"%s\" ", MSG_task_get_name(task));
+      XBT_INFO("Processing \"%s\"", MSG_task_get_name(task));
       MSG_task_execute(task);
-      XBT_INFO("\"%s\" done ", MSG_task_get_name(task));
+      XBT_INFO("\"%s\" done", MSG_task_get_name(task));
       MSG_task_destroy(task);
     } else {
-      XBT_INFO("Hey ?! What's up ? ");
+      XBT_INFO("Hey ?! What's up ?");
       xbt_die( "Unexpected behavior");
     }
   }

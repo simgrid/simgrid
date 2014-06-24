@@ -1,27 +1,66 @@
 #! tesh
 
-$ java -classpath ${classpath:=.} surfPlugin/TestPlugin ${srcdir:=.}/surfPlugin/surfPluginPlatform.xml ${srcdir:=.}/surfPlugin/surfPluginDeployment.xml
+$ java -classpath ${classpath:=.} surfPlugin/TestPlugin ${srcdir:=.}/../platforms/small_platform.xml ${srcdir:=.}/surfPlugin/surfPluginDeployment.xml
 > [0.000000] [jmsg/INFO] Using regular java threads. Coroutines could speed your simulation up.
 > [0.000000] [jmsg/INFO] Trace: NetworkLink created __loopback__
 > [0.000000] [jmsg/INFO] Trace: NetworkLink state changed __loopback__
-> [0.000000] [jmsg/INFO] Trace: Cpu created Jacquelin
-> [0.000000] [jmsg/INFO] Trace: Cpu state changed Jacquelin
-> [0.000000] [jmsg/INFO] Trace: Cpu created Boivin
-> [0.000000] [jmsg/INFO] Trace: Cpu state changed Boivin
-> [0.000000] [jmsg/INFO] Trace: NetworkLink created link
-> [0.000000] [jmsg/INFO] Trace: NetworkLink state changed link
-> [Jacquelin:surfPlugin.Sender:(1) 0.000000] [jmsg/INFO] helloo!
-> [Jacquelin:surfPlugin.Sender:(1) 0.000000] [jmsg/INFO] host count: 1
-> [Jacquelin:surfPlugin.Sender:(1) 0.000000] [jmsg/INFO] sender time: 0.0
-> [Boivin:surfPlugin.Receiver:(2) 0.000000] [jmsg/INFO] helloo!
-> [Boivin:surfPlugin.Receiver:(2) 0.000000] [jmsg/INFO] try to get a task
-> [1.301001] [jmsg/INFO] Trace: NetworkAction state changed network
-> [Boivin:surfPlugin.Receiver:(2) 1.301001] [jmsg/INFO] Got at time 1.3010010824742269
-> [Jacquelin:surfPlugin.Sender:(1) 1.301001] [jmsg/INFO] goodbye!
-> [1.301103] [jmsg/INFO] Trace: CpuAction state changed cpu
-> [Boivin:surfPlugin.Receiver:(2) 1.301103] [jmsg/INFO] goodbye!
-> [1.301103] [jmsg/INFO] MSG_main finished; Cleaning up the simulation...
-> [1.301103] [jmsg/INFO] Trace: Cpu destructed Jacquelin
-> [1.301103] [jmsg/INFO] Trace: Cpu destructed Boivin
-> [1.301103] [jmsg/INFO] Trace: NetworkLink destructed link
-> [1.301103] [jmsg/INFO] Trace: NetworkLink destructed __loopback__
+> [0.000000] [jmsg/INFO] Trace: Cpu created Tremblay
+> [0.000000] [jmsg/INFO] Trace: Cpu state changed Tremblay
+> [0.000000] [jmsg/INFO] Trace: Cpu created Jupiter
+> [0.000000] [jmsg/INFO] Trace: Cpu state changed Jupiter
+> [0.000000] [jmsg/INFO] Trace: Cpu created Fafard
+> [0.000000] [jmsg/INFO] Trace: Cpu state changed Fafard
+> [0.000000] [jmsg/INFO] Trace: Cpu created Ginette
+> [0.000000] [jmsg/INFO] Trace: Cpu state changed Ginette
+> [0.000000] [jmsg/INFO] Trace: Cpu created Bourassa
+> [0.000000] [jmsg/INFO] Trace: Cpu state changed Bourassa
+> [0.000000] [jmsg/INFO] Trace: NetworkLink created 6
+> [0.000000] [jmsg/INFO] Trace: NetworkLink state changed 6
+> [0.000000] [jmsg/INFO] Trace: NetworkLink created 3
+> [0.000000] [jmsg/INFO] Trace: NetworkLink state changed 3
+> [0.000000] [jmsg/INFO] Trace: NetworkLink created 7
+> [0.000000] [jmsg/INFO] Trace: NetworkLink state changed 7
+> [0.000000] [jmsg/INFO] Trace: NetworkLink created 9
+> [0.000000] [jmsg/INFO] Trace: NetworkLink state changed 9
+> [0.000000] [jmsg/INFO] Trace: NetworkLink created 2
+> [0.000000] [jmsg/INFO] Trace: NetworkLink state changed 2
+> [0.000000] [jmsg/INFO] Trace: NetworkLink created 8
+> [0.000000] [jmsg/INFO] Trace: NetworkLink state changed 8
+> [0.000000] [jmsg/INFO] Trace: NetworkLink created 1
+> [0.000000] [jmsg/INFO] Trace: NetworkLink state changed 1
+> [0.000000] [jmsg/INFO] Trace: NetworkLink created 4
+> [0.000000] [jmsg/INFO] Trace: NetworkLink state changed 4
+> [0.000000] [jmsg/INFO] Trace: NetworkLink created 0
+> [0.000000] [jmsg/INFO] Trace: NetworkLink state changed 0
+> [0.000000] [jmsg/INFO] Trace: NetworkLink created 5
+> [0.000000] [jmsg/INFO] Trace: NetworkLink state changed 5
+> [0.000000] [jmsg/INFO] Trace: NetworkLink created loopback
+> [0.000000] [jmsg/INFO] Trace: NetworkLink state changed loopback
+> [Tremblay:surfPlugin.Sender:(1) 0.000000] [jmsg/INFO] helloo!
+> [Tremblay:surfPlugin.Sender:(1) 0.000000] [jmsg/INFO] host count: 1
+> [Tremblay:surfPlugin.Sender:(1) 0.000000] [jmsg/INFO] sender time: 0.0
+> [Jupiter:surfPlugin.Receiver:(2) 0.000000] [jmsg/INFO] helloo!
+> [Jupiter:surfPlugin.Receiver:(2) 0.000000] [jmsg/INFO] try to get a task
+> [0.019014] [jmsg/INFO] Trace: NetworkAction state changed network
+> [Jupiter:surfPlugin.Receiver:(2) 0.019014] [jmsg/INFO] Got at time 0.019014486310327584
+> [Tremblay:surfPlugin.Sender:(1) 0.019014] [jmsg/INFO] goodbye!
+> [0.019146] [jmsg/INFO] Trace: CpuAction state changed cpu
+> [Jupiter:surfPlugin.Receiver:(2) 0.019146] [jmsg/INFO] goodbye!
+> [0.019146] [jmsg/INFO] MSG_main finished; Cleaning up the simulation...
+> [0.019146] [jmsg/INFO] Trace: Cpu destructed Fafard
+> [0.019146] [jmsg/INFO] Trace: Cpu destructed Tremblay
+> [0.019146] [jmsg/INFO] Trace: Cpu destructed Bourassa
+> [0.019146] [jmsg/INFO] Trace: Cpu destructed Jupiter
+> [0.019146] [jmsg/INFO] Trace: Cpu destructed Ginette
+> [0.019146] [jmsg/INFO] Trace: NetworkLink destructed __loopback__
+> [0.019146] [jmsg/INFO] Trace: NetworkLink destructed loopback
+> [0.019146] [jmsg/INFO] Trace: NetworkLink destructed 0
+> [0.019146] [jmsg/INFO] Trace: NetworkLink destructed 1
+> [0.019146] [jmsg/INFO] Trace: NetworkLink destructed 2
+> [0.019146] [jmsg/INFO] Trace: NetworkLink destructed 3
+> [0.019146] [jmsg/INFO] Trace: NetworkLink destructed 4
+> [0.019146] [jmsg/INFO] Trace: NetworkLink destructed 5
+> [0.019146] [jmsg/INFO] Trace: NetworkLink destructed 6
+> [0.019146] [jmsg/INFO] Trace: NetworkLink destructed 7
+> [0.019146] [jmsg/INFO] Trace: NetworkLink destructed 8
+> [0.019146] [jmsg/INFO] Trace: NetworkLink destructed 9

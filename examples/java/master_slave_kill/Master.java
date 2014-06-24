@@ -24,20 +24,20 @@ public class Master extends Process {
 		Process process2 = null;
 		//Create a slave on host "alice"
 		try {
-			Msg.info("Create process on host 'alice'");
-		    process2 = new Slave("alice","slave");
+			Msg.info("Create process on host 'Boivin'");
+		    process2 = new Slave("Boivin","slave");
 		    process2.start();
 		} catch (MsgException e){
 		    System.out.println("Process2!");
 		}
-		
+
 		//Wait for slave "alice"
 		while(true)
-		{  
+		{
 				Task task = Task.receive("mail1");
 				if (task instanceof FinalizeTask) {
 					Msg.info("Received mail1!");
-					break;	
+					break;
 				}
 		}
 		process2.kill();

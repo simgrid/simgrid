@@ -29,7 +29,7 @@ static int master(int argc, char *argv[])
   msg_process_t bob = NULL;
 
   XBT_INFO("Hello!");
-  bob = MSG_process_create("slave", slave, NULL, MSG_get_host_by_name("bob"));
+  bob = MSG_process_create("slave", slave, NULL, MSG_get_host_by_name("Fafard"));
   MSG_process_sleep(10.0);
 
   XBT_INFO("Resume process");

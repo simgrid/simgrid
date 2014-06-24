@@ -16,11 +16,11 @@
  *  - <b>chord/chord.c: Classical Chord P2P protocol</b>
  *    This example implements the well known Chord P2P protocol. Its
  *    main advantage is that it constitute a fully working non-trivial
- *    example. In addition, its implementation is rather efficient, as 
+ *    example. In addition, its implementation is rather efficient, as
  *    demonstrated in http://hal.inria.fr/inria-00602216/
  */
 
- 
+
 XBT_LOG_NEW_DEFAULT_CATEGORY(msg_chord,
                              "Messages specific for this msg example");
 
@@ -76,7 +76,7 @@ typedef enum {
   TASK_SUCCESSOR_LEAVING,
   TASK_PREDECESSOR_LEAVING,
   TASK_PREDECESSOR_ALIVE,
-  TASK_PREDECESSOR_ALIVE_ANSWER  
+  TASK_PREDECESSOR_ALIVE_ANSWER
 } e_task_type_t;
 
 /*
@@ -243,9 +243,9 @@ static void print_finger_table(node_t node)
   if (XBT_LOG_ISENABLED(msg_chord, xbt_log_priority_verbose)) {
     int i;
     XBT_VERB("My finger table:");
-    XBT_VERB("Start | Succ ");
+    XBT_VERB("Start | Succ");
     for (i = 0; i < nb_bits; i++) {
-      XBT_VERB(" %3d  | %3d ", (node->id + powers2[i]) % nb_keys, node->fingers[i].id);
+      XBT_VERB(" %3d  | %3d", (node->id + powers2[i]) % nb_keys, node->fingers[i].id);
     }
     XBT_VERB("Predecessor: %d", node->pred_id);
   }
@@ -295,7 +295,7 @@ static void set_predecessor(node_t node, int predecessor_id)
  */
 int node(int argc, char *argv[])
 {
-  
+
   /* Reduce the run size for the MC */
   if(MC_is_active()){
     periodic_stabilize_delay = 8;
@@ -714,7 +714,7 @@ static int remote_find_successor(node_t node, int ask_to, int id)
         task_data_t ans_data = MSG_task_get_data(task_received);
 
 	// Once upon a time, our code assumed that here, task_received != task_sent all the time
-	// 
+	//
 	// This assumption is wrong (as messages from differing round can interleave), leading to a bug in our code.
 	// We failed to find this bug directly, as it only occured on large platforms, leading to hardly usable traces.
 	// Instead, we used the model-checker to track down the issue by adding the following test here in the code:
@@ -722,9 +722,9 @@ static int remote_find_successor(node_t node, int ask_to, int id)
 	//      MC_assert(task_received == task_sent);
         //   }
 	// That explained the bug in a snap, with a very cool example and everything.
-	// 
+	//
 	// This MC_assert is now desactivated as the case is now properly handled in our code and we don't want the
-	//   MC to fail any further under that condition, but this comment is here to as a memorial for this first 
+	//   MC to fail any further under that condition, but this comment is here to as a memorial for this first
 	//   brillant victory of the model-checking in the SimGrid community :)
 
         if (task_received != task_sent ||
@@ -960,9 +960,9 @@ static void check_predecessor(node_t node)
 
   msg_task_t task_sent = MSG_task_create(NULL, COMP_SIZE, COMM_SIZE, req_data);
   XBT_DEBUG("Sending a 'Predecessor Alive' request to my predecessor %d", node->pred_id);
-  
+
   msg_error_t res = MSG_task_send_with_timeout(task_sent, mailbox, timeout);
-  
+
   if (res != MSG_OK) {
     XBT_DEBUG("Failed to send the 'Predecessor Alive' request (task %p) to %d", task_sent, node->pred_id);
     task_free(task_sent);

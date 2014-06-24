@@ -442,7 +442,6 @@ LINE: while (not $finished and not $error) {
   $line_num++;
   chomp $line;
   $line =~ s/\r//g;
-  #print $diff_tool_tmp_fh "$line\n";
   print "[TESH/debug] $line_num: $line\n" if $opts{'debug'};
   my $next;
   # deal with line continuations
@@ -623,9 +622,11 @@ foreach(@bg_cmds){
 
 @bg_cmds=();
 
-close $diff_tool_tmp_fh;
-system("$diff_tool $diff_tool_tmp_filename $tesh_file");
-unlink $diff_tool_tmp_filename;
+if ($diff_tool) {
+  close $diff_tool_tmp_fh;
+  system("$diff_tool $diff_tool_tmp_filename $tesh_file");
+  unlink $diff_tool_tmp_filename;
+}
 
 if($error !=0){
     exit $exitcode;

@@ -18,7 +18,7 @@ if(enable_smpi)
   add_executable(smpi_traced tracing/smpi_traced.c)
   add_executable(smpi_traced_simple tracing/smpi_traced_simple.c)
   add_executable(smpi_replay replay/replay.c)
-  
+
   if(HAVE_MC)
     add_executable(mc/bugged1 mc/bugged1.c)
     add_executable(mc/bugged2 mc/bugged2.c)
@@ -26,7 +26,7 @@ if(enable_smpi)
     add_executable(mc/send_deterministic mc/send_deterministic.c)
     add_executable(mc/non_deterministic mc/non_deterministic.c)
     add_executable(mc/mutual_exclusion mc/mutual_exclusion.c)
-  
+
     target_link_libraries(mc/bugged1 simgrid)
     target_link_libraries(mc/bugged2 simgrid)
     target_link_libraries(mc/bugged1_liveness simgrid)
@@ -34,7 +34,7 @@ if(enable_smpi)
     target_link_libraries(mc/non_deterministic simgrid)
     target_link_libraries(mc/mutual_exclusion simgrid)
   endif()
-  
+
   target_link_libraries(bcbench simgrid)
   target_link_libraries(mvmul simgrid)
   target_link_libraries(smpi_traced simgrid)
@@ -51,7 +51,6 @@ set(tesh_files
   )
 set(xml_files
   ${xml_files}
-  ${CMAKE_CURRENT_SOURCE_DIR}/replay/replay_platform.xml
   PARENT_SCOPE
   )
 set(examples_src
@@ -78,7 +77,7 @@ set(bin_files
   ${CMAKE_CURRENT_SOURCE_DIR}/mc/hostfile_bugged2
   ${CMAKE_CURRENT_SOURCE_DIR}/mc/hostfile_send_deterministic
   ${CMAKE_CURRENT_SOURCE_DIR}/mc/hostfile_non_deterministic
-  ${CMAKE_CURRENT_SOURCE_DIR}/mc/hostfile_mutual_exclusion	
+  ${CMAKE_CURRENT_SOURCE_DIR}/mc/hostfile_mutual_exclusion
   PARENT_SCOPE
   )
 set(txt_files
@@ -98,4 +97,4 @@ set(txt_files
   ${CMAKE_CURRENT_SOURCE_DIR}/replay/actions_with_isend.txt
   ${CMAKE_CURRENT_SOURCE_DIR}/replay/split_traces
   PARENT_SCOPE
-  )  
+  )

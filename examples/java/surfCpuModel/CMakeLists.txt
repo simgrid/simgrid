@@ -28,7 +28,6 @@ set(tesh_files
   )
 set(xml_files
   ${xml_files}
-  ${CMAKE_CURRENT_SOURCE_DIR}/surfCpuModelPlatform.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/surfCpuModelDeployment.xml
   PARENT_SCOPE
   )
