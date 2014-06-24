@@ -31,6 +31,8 @@
 #include "xbt/parmap.h"
 #include "mc_mmu.h"
 
+SG_BEGIN_DECL()
+
 typedef struct s_dw_frame s_dw_frame_t, *dw_frame_t;
 typedef struct s_mc_function_index_item s_mc_function_index_item_t, *mc_function_index_item_t;
 
@@ -124,8 +126,6 @@ typedef struct s_mc_checkpoint_ignore_region{
   void *addr;
   size_t size;
 }s_mc_checkpoint_ignore_region_t, *mc_checkpoint_ignore_region_t;
-
-SG_BEGIN_DECL()
 
 static void* mc_snapshot_get_heap_end(mc_snapshot_t snapshot);
 

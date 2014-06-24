@@ -588,7 +588,7 @@ set(MC_SRC
   src/mc/mc_page_store.cpp
   src/mc/mc_page_snapshot.cpp
   src/mc/mc_comm_determinism.c
-  src/mc/mc_compare.c
+  src/mc/mc_compare.cpp
   src/mc/mc_diff.c
   src/mc/mc_dwarf.c
   src/mc/mc_dwarf_attrnames.h

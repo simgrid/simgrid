@@ -5,6 +5,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include <inttypes.h>
+#include <boost/unordered_set.hpp>
 
 #include "mc_private.h"
 
@@ -17,9 +18,29 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_compare, mc,
 typedef struct s_pointers_pair {
   void *p1;
   void *p2;
+  bool operator==(s_pointers_pair const& x) const {
+    return this->p1 == x.p1 && this->p2 == x.p2;
+  }
+  bool operator<(s_pointers_pair const& x) const {
+    return this->p1 < x.p1 || (this->p1 == x.p1 && this->p2 < x.p2);
+  }
 } s_pointers_pair_t, *pointers_pair_t;
 
-__thread xbt_dynar_t compared_pointers;
+namespace boost {
+  template<>
+  struct hash<s_pointers_pair> {
+    typedef uint64_t result_type;
+    result_type operator()(s_pointers_pair const& x) const {
+      return (result_type) x.p1 ^ (result_type) x.p2 << 8;
+    }
+  };
+}
+
+struct mc_compare_state {
+  boost::unordered_set<s_pointers_pair> compared_pointers;
+};
+
+extern "C" {
 
 /************************** Free functions ****************************/
 /********************************************************************/
@@ -55,58 +76,16 @@ static void pointers_pair_free_voidp(void *p)
  *  \result !=0 if the pointers were added (they were not in the set),
  *      0 otherwise (they were already in the set)
  */
-static int add_compared_pointers(void *p1, void *p2)
+static int add_compared_pointers(mc_compare_state& state, void *p1, void *p2)
 {
-
-  pointers_pair_t new_pair = xbt_new0(s_pointers_pair_t, 1);
-  new_pair->p1 = p1;
-  new_pair->p2 = p2;
-
-  if (xbt_dynar_is_empty(compared_pointers)) {
-    xbt_dynar_push(compared_pointers, &new_pair);
-    return 1;
-  }
-
-  unsigned int cursor = 0;
-  int start = 0;
-  int end = xbt_dynar_length(compared_pointers) - 1;
-  pointers_pair_t pair = NULL;
-
-  pointers_pair_t *p =
-      (pointers_pair_t *) xbt_dynar_get_ptr(compared_pointers, 0);
-
-  while (start <= end) {
-    cursor = (start + end) / 2;
-    pair = p[cursor];
-    if (pair->p1 < p1) {
-      start = cursor + 1;
-    } else if (pair->p1 > p1) {
-      end = cursor - 1;
-    } else if (pair->p2 < p2) {
-      start = cursor + 1;
-    } else if (pair->p2 > p2) {
-      end = cursor - 1;
-    } else {
-      pointers_pair_free(new_pair);
-      return 0;
-    }
-  }
-
-  if (pair->p1 < p1)
-    xbt_dynar_insert_at(compared_pointers, cursor + 1, &new_pair);
-  else if (pair->p1 > p1)
-    xbt_dynar_insert_at(compared_pointers, cursor, &new_pair);
-  else if (pair->p2 < p2)
-    xbt_dynar_insert_at(compared_pointers, cursor + 1, &new_pair);
-  else if (pair->p2 > p2)
-    xbt_dynar_insert_at(compared_pointers, cursor, &new_pair);
-  else
-    xbt_die("Unrecheable");
-
-  return 1;
+  s_pointers_pair_t new_pair;
+  new_pair.p1 = p1;
+  new_pair.p2 = p2;
+  return state.compared_pointers.insert(new_pair).second ? 1 : 0;
 }
 
-static int compare_areas_with_type(void* real_area1, mc_snapshot_t snapshot1, mc_mem_region_t region1,
+static int compare_areas_with_type(struct mc_compare_state& state,
+                                   void* real_area1, mc_snapshot_t snapshot1, mc_mem_region_t region1,
                                    void* real_area2, mc_snapshot_t snapshot2, mc_mem_region_t region2,
                                    dw_type_t type, int pointer_level)
 {
@@ -168,7 +147,7 @@ static int compare_areas_with_type(void* real_area1, mc_snapshot_t snapshot1, mc
     }
     for (i = 0; i < type->element_count; i++) {
       size_t off = i * elm_size;
-      res = compare_areas_with_type(
+      res = compare_areas_with_type(state,
             (char*) real_area1 + off, snapshot1, region1,
             (char*) real_area2 + off, snapshot2, region2,
             type->subtype, pointer_level);
@@ -190,7 +169,7 @@ static int compare_areas_with_type(void* real_area1, mc_snapshot_t snapshot1, mc
 
       if (addr_pointed1 == NULL && addr_pointed2 == NULL)
         return 0;
-      if (!add_compared_pointers(addr_pointed1, addr_pointed2))
+      if (!add_compared_pointers(state, addr_pointed1, addr_pointed2))
         return 0;
 
       pointer_level++;
@@ -220,7 +199,8 @@ static int compare_areas_with_type(void* real_area1, mc_snapshot_t snapshot1, mc
         if (type->dw_type_id == NULL)
           return (addr_pointed1 != addr_pointed2);
         else {
-          return compare_areas_with_type(addr_pointed1, snapshot1, region1,
+          return compare_areas_with_type(state,
+                                         addr_pointed1, snapshot1, region1,
                                          addr_pointed2, snapshot2, region2,
                                          type->subtype, pointer_level);
         }
@@ -242,7 +222,8 @@ static int compare_areas_with_type(void* real_area1, mc_snapshot_t snapshot1, mc
       mc_mem_region_t subregion1 = mc_get_region_hinted(member1, snapshot1, region1);
       mc_mem_region_t subregion2 = mc_get_region_hinted(member2, snapshot2, region2);
       res =
-          compare_areas_with_type(member1, snapshot1, subregion1,
+          compare_areas_with_type(state,
+                                  member1, snapshot1, subregion1,
                                   member2, snapshot2, subregion2,
                                   member->subtype, pointer_level);
       if (res == 1)
@@ -264,13 +245,7 @@ static int compare_global_variables(int region_type, mc_mem_region_t r1,
                                     mc_mem_region_t r2, mc_snapshot_t snapshot1,
                                     mc_snapshot_t snapshot2)
 {
-
-  if (!compared_pointers) {
-    compared_pointers =
-        xbt_dynar_new(sizeof(pointers_pair_t), pointers_pair_free_voidp);
-  } else {
-    xbt_dynar_reset(compared_pointers);
-  }
+  struct mc_compare_state state;
 
   xbt_dynar_t variables;
   int res;
@@ -296,21 +271,17 @@ static int compare_global_variables(int region_type, mc_mem_region_t r1,
 
     dw_type_t bvariable_type = current_var->type;
     res =
-        compare_areas_with_type((char *) current_var->address, snapshot1, r1,
+        compare_areas_with_type(state,
+                                (char *) current_var->address, snapshot1, r1,
                                 (char *) current_var->address, snapshot2, r2,
                                 bvariable_type, 0);
     if (res == 1) {
       XBT_VERB("Global variable %s (%p) is different between snapshots",
                current_var->name, (char *) current_var->address);
-      xbt_dynar_free(&compared_pointers);
-      compared_pointers = NULL;
       return 1;
     }
 
   }
-
-  xbt_dynar_free(&compared_pointers);
-  compared_pointers = NULL;
 
   return 0;
 
@@ -321,18 +292,11 @@ static int compare_local_variables(mc_snapshot_t snapshot1,
                                    mc_snapshot_stack_t stack1,
                                    mc_snapshot_stack_t stack2)
 {
-  if (!compared_pointers) {
-    compared_pointers =
-        xbt_dynar_new(sizeof(pointers_pair_t), pointers_pair_free_voidp);
-  } else {
-    xbt_dynar_reset(compared_pointers);
-  }
+  struct mc_compare_state state;
 
   if (xbt_dynar_length(stack1->local_variables) !=
       xbt_dynar_length(stack2->local_variables)) {
     XBT_VERB("Different number of local variables");
-    xbt_dynar_free(&compared_pointers);
-    compared_pointers = NULL;
     return 1;
   } else {
     unsigned int cursor = 0;
@@ -348,7 +312,6 @@ static int compare_local_variables(mc_snapshot_t snapshot1,
       if (strcmp(current_var1->name, current_var2->name) != 0
           || current_var1->subprogram != current_var1->subprogram
           || current_var1->ip != current_var2->ip) {
-        xbt_dynar_free(&compared_pointers);
         // TODO, fix current_varX->subprogram->name to include name if DW_TAG_inlined_subprogram
         XBT_VERB
             ("Different name of variable (%s - %s) or frame (%s - %s) or ip (%lu - %lu)",
@@ -361,7 +324,8 @@ static int compare_local_variables(mc_snapshot_t snapshot1,
 
         dw_type_t subtype = current_var1->type;
         res =
-            compare_areas_with_type(current_var1->address, snapshot1, mc_get_snapshot_region(current_var1->address, snapshot1),
+            compare_areas_with_type(state,
+                                    current_var1->address, snapshot1, mc_get_snapshot_region(current_var1->address, snapshot1),
                                     current_var2->address, snapshot2, mc_get_snapshot_region(current_var2->address, snapshot2),
                                     subtype, 0);
 
@@ -371,14 +335,10 @@ static int compare_local_variables(mc_snapshot_t snapshot1,
             ("Local variable %s (%p - %p) in frame %s  is different between snapshots",
              current_var1->name, current_var1->address, current_var2->address,
              current_var1->subprogram->name);
-        xbt_dynar_free(&compared_pointers);
-        compared_pointers = NULL;
         return res;
       }
       cursor++;
     }
-    xbt_dynar_free(&compared_pointers);
-    compared_pointers = NULL;
     return 0;
   }
 }
@@ -435,7 +395,7 @@ int snapshot_compare(void *state1, void *state2)
       XBT_VERB("(%d - %d) Different enabled processes", num1, num2);
   }
 
-  int i = 0;
+  unsigned long i = 0;
   size_t size_used1, size_used2;
   int is_diff = 0;
 
@@ -699,5 +659,7 @@ int MC_compare_snapshots(void *s1, void *s2)
 {
 
   return simcall_mc_compare_snapshots(s1, s2);
+
+}
 
 }
