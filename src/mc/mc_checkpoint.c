@@ -166,9 +166,10 @@ static void MC_get_memory_regions(mc_snapshot_t snapshot)
     snapshot->privatization_regions =
         xbt_new(mc_mem_region_t, SIMIX_process_count());
     for (i = 0; i < SIMIX_process_count(); i++) {
-      // TODO, add support for sparse snapshot
+      mc_mem_region_t ref_reg =
+        mc_model_checker->parent_snapshot ? mc_model_checker->parent_snapshot->privatization_regions[i] : NULL;
       snapshot->privatization_regions[i] =
-        MC_region_new(-1, mappings[i], size_data_exe, NULL);
+        MC_region_new(-1, mappings[i], size_data_exe, ref_reg);
     }
     snapshot->privatization_index = loaded_page;
   }
