@@ -18,12 +18,6 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_page_snapshot, mc,
                                 "Logging specific to mc_page_snapshot");
 
-extern "C" {
-
-static void mc_read_pagemap(uint64_t* pagemap, size_t page_start, size_t page_count);
-
-}
-
 // ***** Utility:
 
 /** @brief Compte a hash for the given memory page
