@@ -43,8 +43,8 @@ enum smpi_process_state{
 // for each such structure these function should be implemented (vector
 // index hvector hindex struct)
 typedef struct s_smpi_subtype{
-  void (*serialize)(const void * input, void *output, size_t count, void* subtype);
-  void (*unserialize)(const void * input, void *output, size_t count, void* subtype);
+  void (*serialize)(const void * input, void *output, int count, void* subtype);
+  void (*unserialize)(const void * input, void *output, int count, void* subtype, MPI_Op op);
   void (*subtype_free)(MPI_Datatype* type);
 } s_smpi_subtype_t;
 
@@ -103,6 +103,7 @@ typedef struct s_smpi_mpi_request {
   int detached;
   MPI_Request detached_sender;
   int refcount;
+  MPI_Op op;
 #ifdef HAVE_TRACING
   int send;
   int recv;
@@ -259,9 +260,9 @@ MPI_Request smpi_irecv_init(void *buf, int count, MPI_Datatype datatype,
 MPI_Request smpi_mpi_irecv(void *buf, int count, MPI_Datatype datatype,
                            int src, int tag, MPI_Comm comm);
 MPI_Request smpi_rma_send_init(void *buf, int count, MPI_Datatype datatype,
-                            int src, int dst, int tag, MPI_Comm comm);
+                            int src, int dst, int tag, MPI_Comm comm, MPI_Op op);
 MPI_Request smpi_rma_recv_init(void *buf, int count, MPI_Datatype datatype,
-                            int src, int dst, int tag, MPI_Comm comm);
+                            int src, int dst, int tag, MPI_Comm comm, MPI_Op op);
 void smpi_mpi_recv(void *buf, int count, MPI_Datatype datatype, int src,
                    int tag, MPI_Comm comm, MPI_Status * status);
 void smpi_mpi_send(void *buf, int count, MPI_Datatype datatype, int dst,
