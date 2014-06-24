@@ -4,8 +4,7 @@ allocmem 2
 putfence1 4
 putfidx 4
 getfence1 4
-#Accumulate + datatypes=Bug
-#accfence1 4
+accfence1 4
 #Needs lock, unlock
 #adlb_mimic1 3
 accfence2 4
@@ -20,8 +19,7 @@ transpose2 2
 #transpose3 2
 #Needs lock/unlock
 #transpose5 2
-#accum on complex datatypes
-#transpose6 1
+transpose6 1
 transpose7 2
 test1 2
 #Needs post/start
@@ -51,8 +49,7 @@ test5_am 2
 #fetchandadd_am 7
 #fetchandadd_tree_am 7
 accfence2_am 4
-#Accumulate + datatypes=Bug
-#test1_dt 2 timeLimit=30
+test1_dt 2 timeLimit=30
 #Needs post/start
 #nullpscw 7
 #Needs win_attr
