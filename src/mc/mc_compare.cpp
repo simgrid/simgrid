@@ -29,9 +29,10 @@ typedef struct s_pointers_pair {
 namespace boost {
   template<>
   struct hash<s_pointers_pair> {
-    typedef uint64_t result_type;
+    typedef uintptr_t result_type;
     result_type operator()(s_pointers_pair const& x) const {
-      return (result_type) x.p1 ^ (result_type) x.p2 << 8;
+      return (result_type) x.p1 ^
+        ((result_type) x.p2 << 8 | (result_type) x.p2 >> (8*sizeof(uintptr_t) - 8));
     }
   };
 }
