@@ -2,7 +2,7 @@
 
 # Later modify the commande and specify the platform and deployment path
 
-$ lua master_slave.lua ../../msg/small_platform.xml ../deploy.xml
+$ lua master_slave.lua ../../platforms/small_platform.xml ../deploy.xml
 > [Tremblay:Master:(1) 0.000000] [lua/INFO] Hello from lua, I'm the master
 > [Tremblay:Master:(1) 0.000000] [lua/INFO] Sending  'Task 1' to 'slave 1'
 > [Bourassa:Slave:(2) 0.000000] [lua/INFO] Hello from lua, I'm a poor slave with mailbox: slave 0

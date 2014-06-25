@@ -1,4 +1,4 @@
-$ lua chord.lua ../../msg/msg_platform.xml ../../msg/chord/chord.xml
+$ lua chord.lua ../../platforms/platform.xml ../../msg/chord/chord.xml
 > [Gatien:node:(1) 0.000000] [lua/INFO] Joining the ring with id 48, knowing node 1
 > [Gatien:node:(1) 0.000000] [lua/INFO] Sending a 'find successor' request to 1 for id 48
 > [McGee:node:(2) 0.000000] [lua/INFO] Joining the ring with id 42, knowing node 1

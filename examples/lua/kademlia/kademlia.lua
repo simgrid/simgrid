@@ -23,7 +23,7 @@ common = {
 	JOIN_BUCKETS_QUERIES = 5
 }
 require("tools")
--- Routing table 
+-- Routing table
 require("routing_table")
 
 data = {
@@ -33,12 +33,12 @@ data = {
 	comm = nil,
 	find_node_succedded = 0,
 	find_node_failed = 0
-	
+
 }
 
-function node(...) 
+function node(...)
 	local args = {...}
-	
+
 	if #args ~= 2 and #args ~= 3 then
 		simgrid.info("Wrong argument count: " .. #args)
 		return
@@ -57,22 +57,22 @@ function node(...)
 	else
 		data.deadline = tonumber(args[2])
 		routing_table_update(data.id)
-		data.comm = simgrid.task.irecv(data.mailbox)		
+		data.comm = simgrid.task.irecv(data.mailbox)
 		main_loop()
 	end
 	simgrid.info(data.find_node_succedded .. "/" .. (data.find_node_succedded + data.find_node_failed) .. " FIND_NODE have succedded");
 	simgrid.process.sleep(10000)
-end	
+end
 function main_loop()
 	local next_lookup_time = simgrid.get_clock() + common.RANDOM_LOOKUP_INTERVAL
-	local now = simgrid.get_clock() 
+	local now = simgrid.get_clock()
 	while now < data.deadline do
 		task,err = data.comm:test()
 		if task then
 			handle_task(task)
-			data.comm = simgrid.task.irecv(data.mailbox)		
+			data.comm = simgrid.task.irecv(data.mailbox)
 		elseif err then
-			data.comm = simgrid.task.irecv(data.mailbox)				
+			data.comm = simgrid.task.irecv(data.mailbox)
 		else
 			if now >= next_lookup_time then
 				random_lookup()
@@ -91,20 +91,20 @@ end
 function join_network(id_known)
 	local answer_got = false
 	local time_begin = simgrid.get_clock()
-	
+
 	simgrid.debug("Joining the network knowing " .. id_known)
-	
+
 	routing_table_update(data.id)
 	routing_table_update(id_known)
-	
+
 	-- Send a FIND_NODE to the node we know
 	send_find_node(id_known,data.id)
 	-- Wait for the answer
 	local trials = 0
-	
+
 	data.comm = simgrid.task.irecv(data.mailbox)
-	
-	repeat 
+
+	repeat
 		task,err = data.comm:test()
 		if task then
 			if task.type == "FIND_NODE_ANSWER" then
@@ -115,10 +115,10 @@ function join_network(id_known)
 					routing_table_update(v.id)
 				end
 			else
-				handle_task(task)				
+				handle_task(task)
 			end
 			data.comm = simgrid.task.irecv(data.mailbox)
-		elseif err then	
+		elseif err then
 			data.comm = simgrid.task.irecv(data.mailbox)
 		else
 			simgrid.process.sleep(1)
@@ -152,7 +152,7 @@ function find_node(destination, counts)
 	local global_timeout = simgrid.get_clock() + common.FIND_NODE_GLOBAL_TIMEOUT
 	-- Build a list of the closest nodes we already know.
 	local node_list = find_closest(destination)
-	
+
 	simgrid.debug("Doing a FIND_NODE on " .. destination)
 	repeat
 		answers = 0
@@ -172,13 +172,13 @@ function find_node(destination, counts)
 				else
 					handle_task(task)
 				end
-				data.comm = simgrid.task.irecv(data.mailbox)			
+				data.comm = simgrid.task.irecv(data.mailbox)
 			elseif err then
 				data.comm = simgrid.task.irecv(data.mailbox)
 			else
 				simgrid.process.sleep(1)
 			end
-			
+
 		until answers >= queries or simgrid.get_clock() >= timeout
 		if (#node_list.nodes > 0) then
 			destination_found = (node_list.nodes[1].distance == 0)
@@ -203,14 +203,14 @@ end
 -- Sends a "FIND_NODE" request (task) to a node we know.
 function send_find_node(id, destination)
 	simgrid.debug("Sending a FIND_NODE to " .. id .. " to find " .. destination);
-	
+
 	local task = simgrid.task.new("",0, common.COMM_SIZE)
 	task.type = "FIND_NODE"
 	task.sender_id = data.id
 	task.destination = destination
-		
+
 	task:dsend(tostring(id))
-	
+
 end
 -- Sends a "FIND_NODE" request to the best "alpha" nodes in a node
 -- list
@@ -242,8 +242,8 @@ function handle_find_node(task)
 	task_answer.sender_id = data.id
 	task_answer.destination = task.destination
 	task_answer.answer = answer
-	task_answer:dsend(tostring(task.sender_id))	
-end	
+	task_answer:dsend(tostring(task.sender_id))
+end
 function handle_ping(task)
 	simgrid.info("Received a PING from " .. task.sender_id)
 	local task_answer = simgrid.task.new("",0, common.COMM_SIZE)
@@ -260,6 +260,6 @@ function merge_answer(m1, m2)
 	end
 	return nb_added
 end
-simgrid.platform(arg[1] or  "../../msg/msg_platform.xml")
+simgrid.platform(arg[1] or  "../../platforms/platform.xml")
 simgrid.application(arg[2] or "kademlia.xml")
 simgrid.run()

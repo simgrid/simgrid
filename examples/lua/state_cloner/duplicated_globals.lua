@@ -13,7 +13,7 @@ global_string = "A global string set by maestro"
 
 -- Assigns to the global string the first argument and prints it
 function set_global_string(...)
-  
+
   global_string = arg[1]
   simgrid.info("Changing the global string")
   print_global()
@@ -43,7 +43,7 @@ end
 
 print_global()
 
-simgrid.platform("../../msg/small_platform.xml")
+simgrid.platform("../../platforms/small_platform.xml")
 simgrid.application("deployment_duplicated_globals.xml")
 simgrid.run()
 
