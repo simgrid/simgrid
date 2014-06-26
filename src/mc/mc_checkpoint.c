@@ -64,6 +64,9 @@ static void MC_region_destroy(mc_mem_region_t reg)
 {
   //munmap(reg->data, reg->size);
   xbt_free(reg->data);
+  if (reg->page_numbers) {
+    mc_free_page_snapshot_region(reg->page_numbers, mc_page_count(reg->size));
+  }
   xbt_free(reg);
 }
 

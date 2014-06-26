@@ -113,7 +113,7 @@ size_t s_mc_pages_store::alloc_page()
 void s_mc_pages_store::remove_page(size_t pageno)
 {
   this->free_pages_.push_back(pageno);
-  void* page = mc_page_from_number(this->memory_, pageno);
+  const void* page = this->get_page(pageno);
   uint64_t hash = mc_hash_page(page);
   this->hash_index_[hash].erase(pageno);
 }
@@ -146,6 +146,7 @@ size_t s_mc_pages_store::store_page(void* page)
   // Otherwise, a new page is allocated in the page store and the content
   // of the page is `memcpy()`-ed to this new page.
   size_t pageno = alloc_page();
+  xbt_assert(this->page_counts_[pageno]==0, "Allocated page is already used");
   void* snapshot_page = (void*) this->get_page(pageno);
   memcpy(snapshot_page, page, xbt_pagesize);
   page_set.insert(pageno);
