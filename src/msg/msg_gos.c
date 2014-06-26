@@ -429,7 +429,7 @@ msg_comm_t MSG_task_isend_internal(msg_task_t task, const char *alias,
   msg_global->sent_msg++;
 
   /* Send it by calling SIMIX network layer */
-  smx_action_t act = simcall_comm_isend(mailbox, t_simdata->message_size,
+  smx_action_t act = simcall_comm_isend(SIMIX_process_self(), mailbox, t_simdata->message_size,
                                         t_simdata->rate, task, sizeof(void *),
                                         match_fun, cleanup, NULL, match_data,detached);
   t_simdata->comm = act; /* FIXME: is the field t_simdata->comm still useful? */

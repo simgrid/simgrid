@@ -406,9 +406,8 @@ void smpi_mpi_start(MPI_Request request)
         simcall_process_sleep(sleeptime);
         XBT_DEBUG("sending size of %zu : sleep %f ", request->size, smpi_os(request->size));
     }
-
     request->action =
-      simcall_comm_isend(mailbox, request->size, -1.0,
+      simcall_comm_isend(SIMIX_process_self(), mailbox, request->size, -1.0,
                          buf, request->real_size,
                          &match_send,
                          &xbt_free_f, // how to free the userdata if a detached send fails

@@ -414,14 +414,15 @@ XBT_PUBLIC(xbt_dict_t) SIMIX_get_rdv_points(void);
 
 /***** Communication simcalls *****/
 
-XBT_PUBLIC(void) simcall_comm_send(smx_rdv_t rdv, double task_size,
+XBT_PUBLIC(void) simcall_comm_send(smx_process_t src, smx_rdv_t rdv, double task_size,
                                      double rate, void *src_buff,
                                      size_t src_buff_size,
                                      int (*match_fun)(void *, void *, smx_action_t),
                                      void (*copy_data_fun)(smx_action_t, void*, size_t),
                                      void *data, double timeout);
 
-XBT_PUBLIC(smx_action_t) simcall_comm_isend(smx_rdv_t rdv, double task_size,
+XBT_PUBLIC(smx_action_t) simcall_comm_isend(smx_process_t src, smx_rdv_t rdv, 
+                                              double task_size,
                                               double rate, void *src_buff,
                                               size_t src_buff_size,
                                               int (*match_fun)(void *, void *, smx_action_t),
