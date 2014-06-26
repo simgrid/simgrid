@@ -165,7 +165,10 @@ int smpi_mpi_get( void *origin_addr, int origin_count, MPI_Datatype origin_datat
     //prepare receiver request
     MPI_Request rreq = smpi_rma_recv_init(origin_addr, origin_count, origin_datatype,
         smpi_group_index(smpi_comm_group(win->comm),target_rank), smpi_process_index(), RMA_TAG+2, win->comm, MPI_OP_NULL);
-
+        
+    //start the send, with another process than us as sender. 
+    smpi_mpi_start(sreq);
+    
     //push request to receiver's win
     xbt_dynar_push_as(send_win->requests, MPI_Request, sreq);
 
