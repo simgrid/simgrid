@@ -352,7 +352,7 @@ void smpi_mpi_start(MPI_Request request)
     int receiver = request->dst;//smpi_group_index(smpi_comm_group(request->comm), request->dst);
 
     #ifdef HAVE_TRACING
-      int rank = smpi_process_index();
+      int rank = request->src;
       if (TRACE_smpi_view_internals()) {
         TRACE_smpi_send(rank, rank, receiver,request->size);
       }
@@ -381,7 +381,7 @@ void smpi_mpi_start(MPI_Request request)
       	      && ((char*)request->buf >= start_data_exe)
 	      && ((char*)request->buf < start_data_exe + size_data_exe )){
             XBT_DEBUG("Privatization : We are sending from a zone inside global memory. Switch data segment ");
-       	    switch_data_segment(smpi_process_index());
+       	    switch_data_segment(request->src);
   	  }
           buf = xbt_malloc(request->size);
           memcpy(buf,oldbuf,request->size);
@@ -407,7 +407,7 @@ void smpi_mpi_start(MPI_Request request)
         XBT_DEBUG("sending size of %zu : sleep %f ", request->size, smpi_os(request->size));
     }
     request->action =
-      simcall_comm_isend(SIMIX_process_self(), mailbox, request->size, -1.0,
+      simcall_comm_isend(SIMIX_process_from_PID(request->src+1), mailbox, request->size, -1.0,
                          buf, request->real_size,
                          &match_send,
                          &xbt_free_f, // how to free the userdata if a detached send fails
