@@ -30,6 +30,7 @@
 #include "xbt/strbuff.h"
 #include "xbt/parmap.h"
 #include "mc_mmu.h"
+#include "mc_page_store.h"
 
 SG_BEGIN_DECL()
 
@@ -144,15 +145,13 @@ mc_mem_region_t mc_region_new_sparse(int type, void *start_addr, size_t size, mc
 void mc_region_restore_sparse(mc_mem_region_t reg, mc_mem_region_t ref_reg);
 void mc_softdirty_reset();
 
-typedef struct s_mc_pages_store s_mc_pages_store_t, * mc_pages_store_t;
-mc_pages_store_t mc_pages_store_new();
-
 static inline __attribute__((always_inline))
 bool mc_snapshot_region_linear(mc_mem_region_t region) {
   return !region || !region->data;
 }
 
-void* mc_snapshot_read_region(void* addr, mc_mem_region_t region, void* target, size_t size);
+void* mc_snapshot_read_fragmented(void* addr, mc_mem_region_t region, void* target, size_t size);
+
 void* mc_snapshot_read(void* addr, mc_snapshot_t snapshot, void* target, size_t size);
 int mc_snapshot_region_memcp(
   void* addr1, mc_mem_region_t region1,
@@ -655,7 +654,62 @@ bool mc_address_test(mc_address_set_t p, const void* value);
  * */
 uint64_t mc_hash_processes_state(int num_state, xbt_dynar_t stacks);
 
-//
+/* *********** Snapshot *********** */
+
+static inline __attribute__((always_inline))
+void* mc_translate_address_region(uintptr_t addr, mc_mem_region_t region)
+{
+    size_t pageno = mc_page_number(region->start_addr, (void*) addr);
+    size_t snapshot_pageno = region->page_numbers[pageno];
+    const void* snapshot_page = mc_page_store_get_page(mc_model_checker->pages, snapshot_pageno);
+    return (char*) snapshot_page + mc_page_offset((void*) addr);
+}
+
+/** \brief Translate a pointer from process address space to snapshot address space
+ *
+ *  The address space contains snapshot of the main/application memory:
+ *  this function finds the address in a given snaphot for a given
+ *  real/application address.
+ *
+ *  For read only memory regions and other regions which are not int the
+ *  snapshot, the address is not changed.
+ *
+ *  \param addr     Application address
+ *  \param snapshot The snapshot of interest (if NULL no translation is done)
+ *  \return         Translated address in the snapshot address space
+ * */
+static inline __attribute__((always_inline))
+void* mc_translate_address(uintptr_t addr, mc_snapshot_t snapshot)
+{
+
+  // If not in a process state/clone:
+  if (!snapshot) {
+    return (uintptr_t *) addr;
+  }
+
+  mc_mem_region_t region = mc_get_snapshot_region((void*) addr, snapshot);
+
+  xbt_assert(mc_region_contain(region, (void*) addr), "Trying to read out of the region boundary.");
+
+  if (!region) {
+    return (void *) addr;
+  }
+
+  // Flat snapshot:
+  else if (region->data) {
+    uintptr_t offset = addr - (uintptr_t) region->start_addr;
+    return (void *) ((uintptr_t) region->data + offset);
+  }
+
+  // Per-page snapshot:
+  else if (region->page_numbers) {
+    return mc_translate_address_region(addr, region);
+  }
+
+  else {
+    xbt_die("No data for this memory region");
+  }
+}
 
 static inline __attribute__ ((always_inline))
   void* mc_snapshot_get_heap_end(mc_snapshot_t snapshot) {
@@ -671,6 +725,45 @@ void* mc_snapshot_read_pointer(void* addr, mc_snapshot_t snapshot)
   void* res;
   return *(void**) mc_snapshot_read(addr, snapshot, &res, sizeof(void*));
 }
+
+/** @brief Read memory from a snapshot region
+ *
+ *  @param addr    Process (non-snapshot) address of the data
+ *  @param region  Snapshot memory region where the data is located
+ *  @param target  Buffer to store the value
+ *  @param size    Size of the data to read in bytes
+ *  @return Pointer where the data is located (target buffer of original location)
+ */
+static inline __attribute__((always_inline))
+void* mc_snapshot_read_region(void* addr, mc_mem_region_t region, void* target, size_t size)
+{
+  uintptr_t offset = (uintptr_t) addr - (uintptr_t) region->start_addr;
+
+  xbt_assert(addr >= region->start_addr && (char*) addr+size < (char*)region->start_addr+region->size,
+    "Trying to read out of the region boundary.");
+
+  // Linear memory region:
+  if (region->data) {
+    return (void*) ((uintptr_t) region->data + offset);
+  }
+
+  // Fragmented memory region:
+  else if (region->page_numbers) {
+    void* end = (char*) addr + size - 1;
+    if( mc_same_page(addr, end) ) {
+      // The memory is contained in a single page:
+      return mc_translate_address_region((uintptr_t) addr, region);
+    } else {
+      // The memory spans several pages:
+      return mc_snapshot_read_fragmented(addr, region, target, size);
+    }
+  }
+
+  else {
+    xbt_die("No data available for this region");
+  }
+}
+
 
 SG_END_DECL()
 

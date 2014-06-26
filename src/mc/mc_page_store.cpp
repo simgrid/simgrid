@@ -7,6 +7,8 @@
 #include <unistd.h>
 #include <string.h> // memcpy, memcp
 
+#include <sys/mman.h>
+
 #include <boost/foreach.hpp>
 
 #include <xbt.h>

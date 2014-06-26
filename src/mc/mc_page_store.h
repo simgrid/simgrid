@@ -16,11 +16,10 @@
 
 #include <xbt.h>
 
-#include "mc_private.h"
 #include "mc_mmu.h"
 
-#ifndef MC_PAGE_SNAPSHOT_H
-#define MC_PAGE_SNAPSHOT_H
+#ifndef MC_PAGE_STORE_H
+#define MC_PAGE_STORE_H
 
 struct s_mc_pages_store;
 
@@ -195,6 +194,11 @@ size_t s_mc_pages_store::capacity() {
 
 #endif
 
+SG_BEGIN_DECL()
+
+typedef struct s_mc_pages_store s_mc_pages_store_t, * mc_pages_store_t;
+mc_pages_store_t mc_pages_store_new();
+
 /**
  */
 static inline __attribute__((always_inline))
@@ -204,5 +208,7 @@ const void* mc_page_store_get_page(mc_pages_store_t page_store, size_t pageno)
   void* memory = *(void**)page_store;
   return mc_page_from_number(memory, pageno);
 }
+
+SG_END_DECL()
 
 #endif

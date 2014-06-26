@@ -10,7 +10,8 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-#include "mc_private.h"
+extern int xbt_pagesize;
+extern int xbt_pagebits;
 
 /** @brief How many memory pages are necessary to store size bytes?
  *
