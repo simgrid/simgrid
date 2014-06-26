@@ -180,23 +180,6 @@ typedef struct s_mc_model_checker {
 
 extern mc_model_checker_t mc_model_checker;
 
-void* mc_translate_address_region(uintptr_t addr, mc_mem_region_t region);
-
-/** \brief Translate a pointer from process address space to snapshot address space
- *
- *  The address space contains snapshot of the main/application memory:
- *  this function finds the address in a given snaphot for a given
- *  real/application address.
- *
- *  For read only memory regions and other regions which are not int the
- *  snapshot, the address is not changed.
- *
- *  \param addr     Application address
- *  \param snapshot The snapshot of interest (if NULL no translation is done)
- *  \return         Translated address in the snapshot address space
- * */
-void* mc_translate_address(uintptr_t addr, mc_snapshot_t snapshot);
-
 extern xbt_dynar_t mc_checkpoint_ignore;
 
 /********************************* MC Global **********************************/

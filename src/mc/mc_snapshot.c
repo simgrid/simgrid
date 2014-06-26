@@ -25,8 +25,39 @@ mc_mem_region_t mc_get_snapshot_region(void* addr, mc_snapshot_t snapshot)
   return NULL;
 }
 
+static inline __attribute__((always_inline))
 void* mc_translate_address_region(uintptr_t addr, mc_mem_region_t region)
 {
+    size_t pageno = mc_page_number(region->start_addr, (void*) addr);
+    size_t snapshot_pageno = region->page_numbers[pageno];
+    const void* snapshot_page = mc_page_store_get_page(mc_model_checker->pages, snapshot_pageno);
+    return (char*) snapshot_page + mc_page_offset((void*) addr);
+}
+
+/** \brief Translate a pointer from process address space to snapshot address space
+ *
+ *  The address space contains snapshot of the main/application memory:
+ *  this function finds the address in a given snaphot for a given
+ *  real/application address.
+ *
+ *  For read only memory regions and other regions which are not int the
+ *  snapshot, the address is not changed.
+ *
+ *  \param addr     Application address
+ *  \param snapshot The snapshot of interest (if NULL no translation is done)
+ *  \return         Translated address in the snapshot address space
+ * */
+static inline __attribute__((always_inline))
+void* mc_translate_address(uintptr_t addr, mc_snapshot_t snapshot)
+{
+
+  // If not in a process state/clone:
+  if (!snapshot) {
+    return (uintptr_t *) addr;
+  }
+
+  mc_mem_region_t region = mc_get_snapshot_region((void*) addr, snapshot);
+
   xbt_assert(mc_region_contain(region, (void*) addr), "Trying to read out of the region boundary.");
 
   if (!region) {
@@ -41,27 +72,12 @@ void* mc_translate_address_region(uintptr_t addr, mc_mem_region_t region)
 
   // Per-page snapshot:
   else if (region->page_numbers) {
-    size_t pageno = mc_page_number(region->start_addr, (void*) addr);
-    size_t snapshot_pageno = region->page_numbers[pageno];
-    const void* snapshot_page = mc_page_store_get_page(mc_model_checker->pages, snapshot_pageno);
-    return (char*) snapshot_page + mc_page_offset((void*) addr);
+    return mc_translate_address_region(addr, region);
   }
 
   else {
     xbt_die("No data for this memory region");
   }
-}
-
-void* mc_translate_address(uintptr_t addr, mc_snapshot_t snapshot)
-{
-
-  // If not in a process state/clone:
-  if (!snapshot) {
-    return (uintptr_t *) addr;
-  }
-
-  mc_mem_region_t region = mc_get_snapshot_region((void*) addr, snapshot);
-  return mc_translate_address_region(addr, region);
 }
 
 /** @brief Read memory from a snapshot region broken across fragmented pages
