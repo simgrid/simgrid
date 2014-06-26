@@ -342,7 +342,7 @@ typedef struct s_mc_visited_state{
 }s_mc_visited_state_t, *mc_visited_state_t;
 
 extern xbt_dynar_t visited_states;
-int is_visited_state(void);
+mc_visited_state_t is_visited_state(void);
 void visited_state_free(mc_visited_state_t state);
 void visited_state_free_voidp(void *s);
 
@@ -592,6 +592,7 @@ typedef struct s_mc_comm_pattern{
   void *data;
 }s_mc_comm_pattern_t, *mc_comm_pattern_t;
 
+extern xbt_dynar_t initial_communications_pattern;
 extern xbt_dynar_t communications_pattern;
 extern xbt_dynar_t incomplete_communications_pattern;
 

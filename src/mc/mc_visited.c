@@ -104,12 +104,12 @@ int get_search_interval(xbt_dynar_t list, void *ref, int *min, int *max)
   int nb_processes, heap_bytes_used, nb_processes_test, heap_bytes_used_test;
   void *ref_test;
 
-  if (_sg_mc_safety) {
-    nb_processes = ((mc_visited_state_t) ref)->nb_processes;
-    heap_bytes_used = ((mc_visited_state_t) ref)->heap_bytes_used;
-  } else if (_sg_mc_liveness) {
+  if (_sg_mc_liveness) {
     nb_processes = ((mc_visited_pair_t) ref)->nb_processes;
     heap_bytes_used = ((mc_visited_pair_t) ref)->heap_bytes_used;
+  } else {
+    nb_processes = ((mc_visited_state_t) ref)->nb_processes;
+    heap_bytes_used = ((mc_visited_state_t) ref)->heap_bytes_used;
   }
 
   int start = 0;
@@ -117,17 +117,17 @@ int get_search_interval(xbt_dynar_t list, void *ref, int *min, int *max)
 
   while (start <= end) {
     cursor = (start + end) / 2;
-    if (_sg_mc_safety) {
+    if (_sg_mc_liveness) {
       ref_test =
-          (mc_visited_state_t) xbt_dynar_get_as(list, cursor,
-                                                mc_visited_state_t);
-      nb_processes_test = ((mc_visited_state_t) ref_test)->nb_processes;
-      heap_bytes_used_test = ((mc_visited_state_t) ref_test)->heap_bytes_used;
-    } else if (_sg_mc_liveness) {
-      ref_test =
-          (mc_visited_pair_t) xbt_dynar_get_as(list, cursor, mc_visited_pair_t);
+        (mc_visited_pair_t) xbt_dynar_get_as(list, cursor, mc_visited_pair_t);
       nb_processes_test = ((mc_visited_pair_t) ref_test)->nb_processes;
       heap_bytes_used_test = ((mc_visited_pair_t) ref_test)->heap_bytes_used;
+    } else {
+      ref_test =
+        (mc_visited_state_t) xbt_dynar_get_as(list, cursor,
+                                              mc_visited_state_t);
+      nb_processes_test = ((mc_visited_state_t) ref_test)->nb_processes;
+      heap_bytes_used_test = ((mc_visited_state_t) ref_test)->heap_bytes_used;
     }
     if (nb_processes_test < nb_processes) {
       start = cursor + 1;
@@ -142,20 +142,20 @@ int get_search_interval(xbt_dynar_t list, void *ref, int *min, int *max)
         *min = *max = cursor;
         previous_cursor = cursor - 1;
         while (previous_cursor >= 0) {
-          if (_sg_mc_safety) {
+          if (_sg_mc_liveness) {
+            ref_test =
+              (mc_visited_pair_t) xbt_dynar_get_as(list, previous_cursor,
+                                                   mc_visited_pair_t);
+            nb_processes_test = ((mc_visited_pair_t) ref_test)->nb_processes;
+            heap_bytes_used_test =
+              ((mc_visited_pair_t) ref_test)->heap_bytes_used;
+          } else {
             ref_test =
                 (mc_visited_state_t) xbt_dynar_get_as(list, previous_cursor,
                                                       mc_visited_state_t);
             nb_processes_test = ((mc_visited_state_t) ref_test)->nb_processes;
             heap_bytes_used_test =
                 ((mc_visited_state_t) ref_test)->heap_bytes_used;
-          } else if (_sg_mc_liveness) {
-            ref_test =
-                (mc_visited_pair_t) xbt_dynar_get_as(list, previous_cursor,
-                                                     mc_visited_pair_t);
-            nb_processes_test = ((mc_visited_pair_t) ref_test)->nb_processes;
-            heap_bytes_used_test =
-                ((mc_visited_pair_t) ref_test)->heap_bytes_used;
           }
           if (nb_processes_test != nb_processes
               || heap_bytes_used_test != heap_bytes_used)
@@ -165,20 +165,20 @@ int get_search_interval(xbt_dynar_t list, void *ref, int *min, int *max)
         }
         next_cursor = cursor + 1;
         while (next_cursor < xbt_dynar_length(list)) {
-          if (_sg_mc_safety) {
-            ref_test =
-                (mc_visited_state_t) xbt_dynar_get_as(list, next_cursor,
-                                                      mc_visited_state_t);
-            nb_processes_test = ((mc_visited_state_t) ref_test)->nb_processes;
-            heap_bytes_used_test =
-                ((mc_visited_state_t) ref_test)->heap_bytes_used;
-          } else if (_sg_mc_liveness) {
+          if (_sg_mc_liveness) {
             ref_test =
                 (mc_visited_pair_t) xbt_dynar_get_as(list, next_cursor,
                                                      mc_visited_pair_t);
             nb_processes_test = ((mc_visited_pair_t) ref_test)->nb_processes;
             heap_bytes_used_test =
                 ((mc_visited_pair_t) ref_test)->heap_bytes_used;
+          } else {
+            ref_test =
+              (mc_visited_state_t) xbt_dynar_get_as(list, next_cursor,
+                                                    mc_visited_state_t);
+            nb_processes_test = ((mc_visited_state_t) ref_test)->nb_processes;
+            heap_bytes_used_test =
+              ((mc_visited_state_t) ref_test)->heap_bytes_used;
           }
           if (nb_processes_test != nb_processes
               || heap_bytes_used_test != heap_bytes_used)
@@ -203,11 +203,24 @@ int get_search_interval(xbt_dynar_t list, void *ref, int *min, int *max)
 /**
  * \brief Checks whether a given state has already been visited by the algorithm.
  */
-int is_visited_state()
+
+mc_visited_state_t is_visited_state()
 {
 
   if (_sg_mc_visited == 0)
-    return -1;
+    return NULL;
+
+  /* If comm determinism verification, we cannot stop the exploration if some 
+     communications are not finished (at least, data are transfered). These communications 
+     are incomplete and they cannot be analyzed and compared with the initial pattern */
+  if (_sg_mc_comms_determinism || _sg_mc_send_determinism) {
+    int current_process = 1;
+    while (current_process < simix_process_maxpid) {
+      if (!xbt_dynar_is_empty((xbt_dynar_t)xbt_dynar_get_as(incomplete_communications_pattern, current_process, xbt_dynar_t)))
+        return NULL;
+      current_process++;
+    }
+  }
 
   int mc_mem_set = (mmalloc_get_current_heap() == mc_heap);
 
@@ -222,7 +235,7 @@ int is_visited_state()
     if (!mc_mem_set)
       MC_SET_STD_HEAP;
 
-    return -1;
+    return NULL;
 
   } else {
 
@@ -282,7 +295,7 @@ int is_visited_state()
 
           if (!mc_mem_set)
             MC_SET_STD_HEAP;
-          return new_state->other_num;
+          return state_test;
         }
         cursor++;
       }
@@ -328,7 +341,7 @@ int is_visited_state()
     if (!mc_mem_set)
       MC_SET_STD_HEAP;
 
-    return -1;
+    return NULL;
 
   }
 }

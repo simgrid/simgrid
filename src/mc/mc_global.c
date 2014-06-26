@@ -129,6 +129,7 @@ void _mc_cfg_cb_comms_determinism(const char *name, int pos)
         ("You are specifying a value to enable/disable the detection of determinism in the communications schemes after the initialization (through MSG_config?), but model-checking was not activated at config time (through --cfg=model-check:1). This won't work, sorry.");
   }
   _sg_mc_comms_determinism = xbt_cfg_get_boolean(_sg_cfg_set, name);
+  mc_reduce_kind = e_mc_reduce_none;
 }
 
 void _mc_cfg_cb_send_determinism(const char *name, int pos)
@@ -138,6 +139,7 @@ void _mc_cfg_cb_send_determinism(const char *name, int pos)
         ("You are specifying a value to enable/disable the detection of send-determinism in the communications schemes after the initialization (through MSG_config?), but model-checking was not activated at config time (through --cfg=model-check:1). This won't work, sorry.");
   }
   _sg_mc_send_determinism = xbt_cfg_get_boolean(_sg_cfg_set, name);
+  mc_reduce_kind = e_mc_reduce_none;
 }
 
 /* MC global data structures */
@@ -276,6 +278,9 @@ void MC_init()
     MC_ignore_global_variable("maestro_stack_start");
     MC_ignore_global_variable("maestro_stack_end");
     MC_ignore_global_variable("smx_total_comms");
+    MC_ignore_global_variable("communications_pattern");
+    MC_ignore_global_variable("initial_communications_pattern");
+    MC_ignore_global_variable("incomplete_communications_pattern");
 
     MC_ignore_heap(mc_time, simix_process_maxpid * sizeof(double));
 
@@ -478,13 +483,12 @@ void MC_replay(xbt_fifo_t stack, int start)
 {
   int raw_mem = (mmalloc_get_current_heap() == mc_heap);
 
-  int value, i = 1, count = 1;
+  int value, i = 1, count = 1, call = 0, j;
   char *req_str;
   smx_simcall_t req = NULL, saved_req = NULL;
   xbt_fifo_item_t item, start_item;
   mc_state_t state;
   smx_process_t process = NULL;
-  int comm_pattern = 0;
   smx_action_t current_comm;
 
   XBT_DEBUG("**** Begin Replay ****");
@@ -507,7 +511,7 @@ void MC_replay(xbt_fifo_t stack, int start)
 
   MC_SET_MC_HEAP;
 
-  if ((mc_reduce_kind == e_mc_reduce_dpor) && !_sg_mc_comms_determinism && !_sg_mc_send_determinism) {
+  if (mc_reduce_kind == e_mc_reduce_dpor) {
     xbt_dict_reset(first_enabled_state);
     xbt_swag_foreach(process, simix_global->process_list) {
       if (MC_process_is_enabled(process)) {
@@ -520,8 +524,12 @@ void MC_replay(xbt_fifo_t stack, int start)
   }
 
   if (_sg_mc_comms_determinism || _sg_mc_send_determinism) {
-    xbt_dynar_reset(communications_pattern);
-    xbt_dynar_reset(incomplete_communications_pattern);
+    for (j=0; j<simix_process_maxpid; j++) {
+      xbt_dynar_reset((xbt_dynar_t)xbt_dynar_get_as(communications_pattern, j, xbt_dynar_t));
+    }
+    for (j=0; j<simix_process_maxpid; j++) {
+      xbt_dynar_reset((xbt_dynar_t)xbt_dynar_get_as(incomplete_communications_pattern, j, xbt_dynar_t));
+    }
   }
 
   MC_SET_STD_HEAP;
@@ -535,7 +543,7 @@ void MC_replay(xbt_fifo_t stack, int start)
     state = (mc_state_t) xbt_fifo_get_item_content(item);
     saved_req = MC_state_get_executed_request(state, &value);
 
-    if ((mc_reduce_kind == e_mc_reduce_dpor) && !_sg_mc_comms_determinism && !_sg_mc_send_determinism) {
+    if (mc_reduce_kind == e_mc_reduce_dpor) {
       MC_SET_MC_HEAP;
       char *key = bprintf("%lu", saved_req->issuer->pid);
       xbt_dict_remove(first_enabled_state, key);
@@ -558,36 +566,34 @@ void MC_replay(xbt_fifo_t stack, int start)
       /* TODO : handle test and testany simcalls */
       if (_sg_mc_comms_determinism || _sg_mc_send_determinism) {
         if (req->call == SIMCALL_COMM_ISEND)
-          comm_pattern = 1;
+          call = 1;
         else if (req->call == SIMCALL_COMM_IRECV)
-          comm_pattern = 2;
+          call = 2;
         else if (req->call == SIMCALL_COMM_WAIT)
-          comm_pattern = 3;
+          call = 3;
         else if (req->call == SIMCALL_COMM_WAITANY)
-          comm_pattern = 4;
+          call = 4;
       }
 
       SIMIX_simcall_pre(req, value);
 
       if (_sg_mc_comms_determinism || _sg_mc_send_determinism) {
         MC_SET_MC_HEAP;
-        if (comm_pattern == 1 || comm_pattern == 2) {
-          get_comm_pattern(communications_pattern, req, comm_pattern);
-        } else if (comm_pattern == 3 /* || comm_pattern == 4 */ ) {
+        if (call == 1) { /* Send */
+          get_comm_pattern(communications_pattern, req, call);
+        } else if (call == 2) { /* Recv */
+          get_comm_pattern(communications_pattern, req, call);
+        } else if (call == 3) { /* Wait */
           current_comm = simcall_comm_wait__get__comm(req);
-          if (current_comm->comm.refcount == 1) {       /* First wait only must be considered */
+          if (current_comm->comm.refcount == 1)  /* First wait only must be considered */
             complete_comm_pattern(communications_pattern, current_comm);
-          }
-        } else if (comm_pattern == 4 /* || comm_pattern == 4 */ ) {
-          current_comm =
-              xbt_dynar_get_as(simcall_comm_waitany__get__comms(req), value,
-                               smx_action_t);
-          if (current_comm->comm.refcount == 1) {       /* First wait only must be considered */
+        } else if (call == 4) { /* WaitAny */
+          current_comm = xbt_dynar_get_as(simcall_comm_waitany__get__comms(req), value, smx_action_t);
+          if (current_comm->comm.refcount == 1) /* First wait only must be considered */
             complete_comm_pattern(communications_pattern, current_comm);
-          }
         }
         MC_SET_STD_HEAP;
-        comm_pattern = 0;
+        call = 0;
       }
 
 
@@ -595,7 +601,7 @@ void MC_replay(xbt_fifo_t stack, int start)
 
       count++;
 
-      if ((mc_reduce_kind == e_mc_reduce_dpor) && !_sg_mc_comms_determinism && !_sg_mc_send_determinism) {
+      if (mc_reduce_kind == e_mc_reduce_dpor) {
         MC_SET_MC_HEAP;
         /* Insert in dict all enabled processes */
         xbt_swag_foreach(process, simix_global->process_list) {

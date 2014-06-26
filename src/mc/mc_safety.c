@@ -93,7 +93,7 @@ void MC_modelcheck_safety(void)
   xbt_fifo_item_t item = NULL;
   mc_state_t state_test = NULL;
   int pos;
-  int visited_state = -1;
+  mc_visited_state_t visited_state = NULL;
   int enabled = 0;
 
   while (xbt_fifo_size(mc_stack) > 0) {
@@ -115,7 +115,7 @@ void MC_modelcheck_safety(void)
     /* If there are processes to interleave and the maximum depth has not been reached
        then perform one step of the exploration algorithm */
     if (xbt_fifo_size(mc_stack) <= _sg_mc_max_depth && !user_max_depth_reached
-        && (req = MC_state_get_request(state, &value)) && visited_state == -1) {
+        && (req = MC_state_get_request(state, &value)) && visited_state == NULL) {
 
       /* Debug information */
       if (XBT_LOG_ISENABLED(mc_safety, xbt_log_priority_debug)) {
@@ -151,7 +151,7 @@ void MC_modelcheck_safety(void)
 
       next_state = MC_state_new();
 
-      if ((visited_state = is_visited_state()) == -1) {
+      if ((visited_state = is_visited_state()) == NULL) {
 
         /* Get an enabled process and insert it in the interleave set of the next state */
         xbt_swag_foreach(process, simix_global->process_list) {
@@ -175,7 +175,7 @@ void MC_modelcheck_safety(void)
 
         if (dot_output != NULL)
           fprintf(dot_output, "\"%d\" -> \"%d\" [%s];\n", state->num,
-                  visited_state, req_str);
+                  visited_state->other_num == -1 ? visited_state->num : visited_state->other_num, req_str);
 
       }
 
@@ -206,14 +206,14 @@ void MC_modelcheck_safety(void)
     } else {
 
       if ((xbt_fifo_size(mc_stack) > _sg_mc_max_depth) || user_max_depth_reached
-          || visited_state != -1) {
+          || visited_state != NULL) {
 
-        if (user_max_depth_reached && visited_state == -1)
+        if (user_max_depth_reached && visited_state == NULL)
           XBT_DEBUG("User max depth reached !");
-        else if (visited_state == -1)
+        else if (visited_state == NULL)
           XBT_WARN("/!\\ Max depth reached ! /!\\ ");
         else
-          XBT_DEBUG("State already visited, exploration stopped on this path.");
+          XBT_DEBUG("State already visited (equal to state %d), exploration stopped on this path.", visited_state->other_num == -1 ? visited_state->num : visited_state->other_num);
 
         if (mc_reduce_kind == e_mc_reduce_dpor) {
           /* Interleave enabled processes in the state in which they have been enabled for the first time */
@@ -257,7 +257,7 @@ void MC_modelcheck_safety(void)
 
       MC_SET_STD_HEAP;
 
-      visited_state = -1;
+      visited_state = NULL;
 
       /* Check for deadlocks */
       if (MC_deadlock_check()) {
