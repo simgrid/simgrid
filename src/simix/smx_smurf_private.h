@@ -63,7 +63,7 @@ typedef struct s_smx_simcall {
 #ifdef HAVE_MC
   int mc_value;
 #endif
-  union u_smx_scalar args[10];
+  union u_smx_scalar args[11];
   union u_smx_scalar result;
   //FIXME: union u_smx_scalar retval;
   union {
