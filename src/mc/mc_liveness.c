@@ -240,7 +240,7 @@ void MC_pre_modelcheck_liveness(void)
       initial_pair->graph_state = MC_state_new();
       initial_pair->atomic_propositions = get_atomic_propositions_values();
 
-      /* Get enabled process and insert it in the interleave set of the graph_state */
+      /* Get enabled processes and insert them in the interleave set of the graph_state */
       xbt_swag_foreach(process, simix_global->process_list) {
         if (MC_process_is_enabled(process)) {
           MC_state_interleave_process(initial_pair->graph_state, process);
@@ -423,7 +423,7 @@ void MC_modelcheck_liveness()
               next_pair->automaton_state = transition_succ->dst;
               next_pair->atomic_propositions = get_atomic_propositions_values();
 
-              /* Get enabled process and insert it in the interleave set of the next graph_state */
+              /* Get enabled processes and insert them in the interleave set of the next graph_state */
               xbt_swag_foreach(process, simix_global->process_list) {
                 if (MC_process_is_enabled(process)) {
                   MC_state_interleave_process(next_pair->graph_state, process);
