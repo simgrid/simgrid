@@ -350,7 +350,11 @@ fi
 for i in ${SEQ}
 do
     if [ -n "${HOSTFILE}" ]; then
-	j=$(( $i % ${NUMHOSTS} + 1 ))
+        if [ ${NUMHOSTS} = 0 ] ; then
+	   j= 0
+	else
+	   j=$(( $i % ${NUMHOSTS} + 1 ))
+	fi
     fi
     ##---- optional display of ranks to process mapping
     if [ -n "${MAPOPT}" ]; then
