@@ -52,8 +52,9 @@ if(enable_model-checking AND enable_compile_optimizations)
   foreach(s
       src/xbt/mmalloc/mm.c
       src/xbt/snprintf.c src/xbt/log.c
-      src/xbt/dynar.c src/xbt/set.c src/xbt/setset.c
-      src/xbt/backtrace_linux.c
+      # For some reason, this fails to work when optimizing dynar.c:
+      # src/xbt/dynar.c
+      src/xbt/set.c src/xbt/setset.c src/xbt/backtrace_linux.c
       src/mc/mc_dwarf_expression.c src/mc/mc_dwarf.c src/mc/mc_member.c
       src/mc/mc_snapshot.c src/mc/mc_page_store.cpp src/mc/mc_page_snapshot.cpp
       src/mc/mc_compare.cpp src/mc/mc_diff.c
