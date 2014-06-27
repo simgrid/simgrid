@@ -107,6 +107,7 @@ XBT_PUBLIC(sg_size_t) MSG_storage_get_used_size(msg_storage_t storage);
 XBT_PUBLIC(msg_storage_t) MSG_storage_get_by_name(const char *name);
 XBT_PUBLIC(xbt_dict_t) MSG_storage_get_properties(msg_storage_t storage);
 XBT_PUBLIC(void) MSG_storage_set_property_value(msg_storage_t storage, const char *name, char *value,void_f_pvoid_t free_ctn);
+XBT_PUBLIC(const char *)MSG_storage_get_property_value(msg_storage_t storage, const char *name);
 XBT_PUBLIC(xbt_dynar_t) MSG_storages_as_dynar(void);
 XBT_PUBLIC(msg_error_t) MSG_storage_set_data(msg_storage_t host, void *data);
 XBT_PUBLIC(void *) MSG_storage_get_data(msg_storage_t storage);

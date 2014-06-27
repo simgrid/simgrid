@@ -60,10 +60,11 @@ set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}")
 include_directories("${CMAKE_HOME_DIRECTORY}/include/smpi")
 include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include/")
 
+if(enable_smpi AND enable_smpi_MPICH3_testsuite)
 #C version - use automatic privatization if mmap is supported, manual through SMPI macros if not
-if(HAVE_MMAP)
-add_library(mtest_c STATIC util/mtest.c)
-else()
-add_library(mtest_c STATIC util/mtest_manual.c)
+  if(HAVE_MMAP)
+    add_library(mtest_c STATIC util/mtest.c)
+  else()
+    add_library(mtest_c STATIC util/mtest_manual.c)
+  endif()
 endif()
-

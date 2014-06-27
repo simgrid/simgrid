@@ -4,6 +4,8 @@ set(example java_io)
 set(sources
   ${CMAKE_CURRENT_SOURCE_DIR}/IO.java
   ${CMAKE_CURRENT_SOURCE_DIR}/Node.java
+  ${CMAKE_CURRENT_SOURCE_DIR}/Storage.java
+    ${CMAKE_CURRENT_SOURCE_DIR}/Client.java
   )
 
 if(enable_java)
@@ -25,7 +27,6 @@ set(tesh_files
   )
 set(xml_files
   ${xml_files}
-  ${CMAKE_CURRENT_SOURCE_DIR}/storage.xml
   PARENT_SCOPE
   )
 set(examples_src

@@ -933,7 +933,7 @@ smx_process_t simcall_rdv_get_receiver(smx_rdv_t rdv)
 /**
  * \ingroup simix_comm_management
  */
-void simcall_comm_send(smx_rdv_t rdv, double task_size, double rate,
+void simcall_comm_send(smx_process_t src, smx_rdv_t rdv, double task_size, double rate,
                          void *src_buff, size_t src_buff_size,
                          int (*match_fun)(void *, void *, smx_action_t),
                          void (*copy_data_fun)(smx_action_t, void*, size_t), void *data,
@@ -949,13 +949,13 @@ void simcall_comm_send(smx_rdv_t rdv, double task_size, double rate,
   if (MC_is_active()) {
     /* the model-checker wants two separate simcalls */
     smx_action_t comm = NULL; /* MC needs the comm to be set to NULL during the simcall */
-    comm = simcall_comm_isend(rdv, task_size, rate,
+    comm = simcall_comm_isend(src, rdv, task_size, rate,
         src_buff, src_buff_size, match_fun, NULL, copy_data_fun, data, 0);
     simcall_comm_wait(comm, timeout);
     comm = NULL;
   }
   else {
-    simcall_BODY_comm_send(rdv, task_size, rate, src_buff, src_buff_size,
+    simcall_BODY_comm_send(src, rdv, task_size, rate, src_buff, src_buff_size,
                          match_fun, copy_data_fun, data, timeout);
   }
 }
@@ -963,7 +963,7 @@ void simcall_comm_send(smx_rdv_t rdv, double task_size, double rate,
 /**
  * \ingroup simix_comm_management
  */
-smx_action_t simcall_comm_isend(smx_rdv_t rdv, double task_size, double rate,
+smx_action_t simcall_comm_isend(smx_process_t src, smx_rdv_t rdv, double task_size, double rate,
                               void *src_buff, size_t src_buff_size,
                               int (*match_fun)(void *, void *, smx_action_t),
                               void (*clean_fun)(void *),
@@ -977,7 +977,7 @@ smx_action_t simcall_comm_isend(smx_rdv_t rdv, double task_size, double rate,
 
   xbt_assert(rdv, "No rendez-vous point defined for isend");
 
-  return simcall_BODY_comm_isend(rdv, task_size, rate, src_buff,
+  return simcall_BODY_comm_isend(src, rdv, task_size, rate, src_buff,
                                  src_buff_size, match_fun,
                                  clean_fun, copy_data_fun, data, detached);
 }

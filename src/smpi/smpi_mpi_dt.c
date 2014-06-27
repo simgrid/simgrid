@@ -145,6 +145,15 @@ MPI_Aint smpi_datatype_ub(MPI_Datatype datatype)
   return datatype->ub;
 }
 
+MPI_Datatype smpi_datatype_dup(MPI_Datatype datatype)
+{
+  MPI_Datatype new_t= xbt_new(s_smpi_mpi_datatype_t,1);
+  memcpy(new_t, datatype, sizeof(s_smpi_mpi_datatype_t));
+  if (datatype->has_subtype)
+    memcpy(new_t->substruct, datatype->substruct, sizeof(s_smpi_subtype_t));
+  return new_t;
+}
+
 int smpi_datatype_extent(MPI_Datatype datatype, MPI_Aint * lb,
                          MPI_Aint * extent)
 {
@@ -177,7 +186,7 @@ int smpi_datatype_copy(void *sendbuf, int sendcount, MPI_Datatype sendtype,
     else if (sendtype->has_subtype == 0)
     {
       s_smpi_subtype_t *subtype =  recvtype->substruct;
-      subtype->unserialize( sendbuf, recvbuf,1, subtype);
+      subtype->unserialize( sendbuf, recvbuf,1, subtype, MPI_REPLACE);
     }
     else if (recvtype->has_subtype == 0)
     {
@@ -191,7 +200,7 @@ int smpi_datatype_copy(void *sendbuf, int sendcount, MPI_Datatype sendtype,
 
       subtype->serialize( sendbuf, buf_tmp,count/smpi_datatype_size(sendtype), subtype);
       subtype =  recvtype->substruct;
-      subtype->unserialize( buf_tmp, recvbuf,count/smpi_datatype_size(recvtype), subtype);
+      subtype->unserialize( buf_tmp, recvbuf,count/smpi_datatype_size(recvtype), subtype, MPI_REPLACE);
 
       free(buf_tmp);
     }
@@ -211,7 +220,7 @@ int smpi_datatype_copy(void *sendbuf, int sendcount, MPI_Datatype sendtype,
  */
 void serialize_vector( const void *noncontiguous_vector,
                        void *contiguous_vector,
-                       size_t count,
+                       int count,
                        void *type)
 {
   s_smpi_mpi_vector_t* type_c = (s_smpi_mpi_vector_t*)type;
@@ -248,8 +257,9 @@ void serialize_vector( const void *noncontiguous_vector,
  */
 void unserialize_vector( const void *contiguous_vector,
                          void *noncontiguous_vector,
-                         size_t count,
-                         void *type)
+                         int count,
+                         void *type,
+                         MPI_Op op)
 {
   s_smpi_mpi_vector_t* type_c = (s_smpi_mpi_vector_t*)type;
   int i;
@@ -259,13 +269,16 @@ void unserialize_vector( const void *contiguous_vector,
 
   for (i = 0; i < type_c->block_count * count; i++) {
     if (type_c->old_type->has_subtype == 0)
-      memcpy(noncontiguous_vector_char,
-             contiguous_vector_char, type_c->block_length * type_c->size_oldtype);
+      smpi_op_apply(op, contiguous_vector_char, noncontiguous_vector_char, &type_c->block_length,
+          &type_c->old_type);
+     /* memcpy(noncontiguous_vector_char,
+             contiguous_vector_char, type_c->block_length * type_c->size_oldtype);*/
     else
       ((s_smpi_subtype_t*)type_c->old_type->substruct)->unserialize( contiguous_vector_char,
                                                                      noncontiguous_vector_char,
                                                                      type_c->block_length,
-                                                                     type_c->old_type->substruct);
+                                                                     type_c->old_type->substruct,
+                                                                     op);
     contiguous_vector_char += type_c->block_length*type_c->size_oldtype;
     if((i+1)%type_c->block_count ==0)
     noncontiguous_vector_char += type_c->block_length*smpi_datatype_get_extent(type_c->old_type);
@@ -292,6 +305,7 @@ s_smpi_mpi_vector_t* smpi_datatype_vector_create( int block_stride,
   new_t->block_stride = block_stride;
   new_t->block_length = block_length;
   new_t->block_count = block_count;
+  smpi_datatype_use(old_type);
   new_t->old_type = old_type;
   new_t->size_oldtype = size_oldtype;
   return new_t;
@@ -346,7 +360,7 @@ void smpi_datatype_use(MPI_Datatype type){
 void smpi_datatype_unuse(MPI_Datatype type){
   if(type && type->in_use-- == 0 && (type->flags & DT_FLAG_DESTROYED))
     smpi_datatype_free(&type);
-  
+
 #ifdef HAVE_MC
   if(MC_is_active())
     MC_ignore(&(type->in_use), sizeof(type->in_use));
@@ -372,7 +386,7 @@ Contiguous Implementation
  */
 void serialize_contiguous( const void *noncontiguous_hvector,
                        void *contiguous_hvector,
-                       size_t count,
+                       int count,
                        void *type)
 {
   s_smpi_mpi_contiguous_t* type_c = (s_smpi_mpi_contiguous_t*)type;
@@ -392,18 +406,22 @@ void serialize_contiguous( const void *noncontiguous_hvector,
  */
 void unserialize_contiguous( const void *contiguous_vector,
                          void *noncontiguous_vector,
-                         size_t count,
-                         void *type)
+                         int count,
+                         void *type,
+                         MPI_Op op)
 {
   s_smpi_mpi_contiguous_t* type_c = (s_smpi_mpi_contiguous_t*)type;
   char* contiguous_vector_char = (char*)contiguous_vector;
   char* noncontiguous_vector_char = (char*)noncontiguous_vector+type_c->lb;
-
-  memcpy(noncontiguous_vector_char,
-           contiguous_vector_char, count*  type_c->block_count * type_c->size_oldtype);
+  int n= count* type_c->block_count;
+  smpi_op_apply(op, contiguous_vector_char, noncontiguous_vector_char, &n,
+            &type_c->old_type);
+       /*memcpy(noncontiguous_vector_char,
+           contiguous_vector_char, count*  type_c->block_count * type_c->size_oldtype);*/
 }
 
 void free_contiguous(MPI_Datatype* d){
+  smpi_datatype_unuse(((s_smpi_mpi_indexed_t *)(*d)->substruct)->old_type);
 }
 
 /*
@@ -424,6 +442,7 @@ s_smpi_mpi_contiguous_t* smpi_datatype_contiguous_create( MPI_Aint lb,
   new_t->block_count = block_count;
   new_t->old_type = old_type;
   new_t->size_oldtype = size_oldtype;
+  smpi_datatype_use(old_type);
   return new_t;
 }
 
@@ -491,6 +510,7 @@ int smpi_datatype_vector(int count, int blocklen, int stride, MPI_Datatype old_t
 }
 
 void free_vector(MPI_Datatype* d){
+  smpi_datatype_unuse(((s_smpi_mpi_indexed_t *)(*d)->substruct)->old_type);
 }
 
 /*
@@ -509,7 +529,7 @@ Hvector Implementation - Vector with stride in bytes
  */
 void serialize_hvector( const void *noncontiguous_hvector,
                        void *contiguous_hvector,
-                       size_t count,
+                       int count,
                        void *type)
 {
   s_smpi_mpi_hvector_t* type_c = (s_smpi_mpi_hvector_t*)type;
@@ -545,8 +565,9 @@ void serialize_hvector( const void *noncontiguous_hvector,
  */
 void unserialize_hvector( const void *contiguous_vector,
                          void *noncontiguous_vector,
-                         size_t count,
-                         void *type)
+                         int count,
+                         void *type,
+                         MPI_Op op)
 {
   s_smpi_mpi_hvector_t* type_c = (s_smpi_mpi_hvector_t*)type;
   int i;
@@ -556,13 +577,16 @@ void unserialize_hvector( const void *contiguous_vector,
 
   for (i = 0; i < type_c->block_count * count; i++) {
     if (type_c->old_type->has_subtype == 0)
-      memcpy(noncontiguous_vector_char,
-           contiguous_vector_char, type_c->block_length * type_c->size_oldtype);
+      smpi_op_apply(op, contiguous_vector_char, noncontiguous_vector_char, &type_c->block_length,
+                  &type_c->old_type);
+             /*memcpy(noncontiguous_vector_char,
+           contiguous_vector_char, type_c->block_length * type_c->size_oldtype);*/
     else
       ((s_smpi_subtype_t*)type_c->old_type->substruct)->unserialize( contiguous_vector_char,
                                                                      noncontiguous_vector_char,
                                                                      type_c->block_length,
-                                                                     type_c->old_type->substruct);
+                                                                     type_c->old_type->substruct,
+                                                                     op);
     contiguous_vector_char += type_c->block_length*type_c->size_oldtype;
     if((i+1)%type_c->block_count ==0)
     noncontiguous_vector_char += type_c->block_length*type_c->size_oldtype;
@@ -591,11 +615,13 @@ s_smpi_mpi_hvector_t* smpi_datatype_hvector_create( MPI_Aint block_stride,
   new_t->block_count = block_count;
   new_t->old_type = old_type;
   new_t->size_oldtype = size_oldtype;
+  smpi_datatype_use(old_type);
   return new_t;
 }
 
 //do nothing for vector types
 void free_hvector(MPI_Datatype* d){
+  smpi_datatype_unuse(((s_smpi_mpi_indexed_t *)(*d)->substruct)->old_type);
 }
 
 int smpi_datatype_hvector(int count, int blocklen, MPI_Aint stride, MPI_Datatype old_type, MPI_Datatype* new_type)
@@ -649,7 +675,7 @@ Indexed Implementation
  */
 void serialize_indexed( const void *noncontiguous_indexed,
                        void *contiguous_indexed,
-                       size_t count,
+                       int count,
                        void *type)
 {
   s_smpi_mpi_indexed_t* type_c = (s_smpi_mpi_indexed_t*)type;
@@ -686,8 +712,9 @@ void serialize_indexed( const void *noncontiguous_indexed,
  */
 void unserialize_indexed( const void *contiguous_indexed,
                          void *noncontiguous_indexed,
-                         size_t count,
-                         void *type)
+                         int count,
+                         void *type,
+                         MPI_Op op)
 {
 
   s_smpi_mpi_indexed_t* type_c = (s_smpi_mpi_indexed_t*)type;
@@ -697,13 +724,16 @@ void unserialize_indexed( const void *contiguous_indexed,
   for(j=0; j<count;j++){
     for (i = 0; i < type_c->block_count; i++) {
       if (type_c->old_type->has_subtype == 0)
-        memcpy(noncontiguous_indexed_char ,
-             contiguous_indexed_char, type_c->block_lengths[i] * type_c->size_oldtype);
+        smpi_op_apply(op, contiguous_indexed_char, noncontiguous_indexed_char, &type_c->block_lengths[i],
+                    &type_c->old_type);
+               /*memcpy(noncontiguous_indexed_char ,
+             contiguous_indexed_char, type_c->block_lengths[i] * type_c->size_oldtype);*/
       else
         ((s_smpi_subtype_t*)type_c->old_type->substruct)->unserialize( contiguous_indexed_char,
                                                                        noncontiguous_indexed_char,
                                                                        type_c->block_lengths[i],
-                                                                       type_c->old_type->substruct);
+                                                                       type_c->old_type->substruct,
+                                                                       op);
 
       contiguous_indexed_char += type_c->block_lengths[i]*type_c->size_oldtype;
       if (i<type_c->block_count-1)
@@ -717,6 +747,7 @@ void unserialize_indexed( const void *contiguous_indexed,
 void free_indexed(MPI_Datatype* type){
   xbt_free(((s_smpi_mpi_indexed_t *)(*type)->substruct)->block_lengths);
   xbt_free(((s_smpi_mpi_indexed_t *)(*type)->substruct)->block_indices);
+  smpi_datatype_unuse(((s_smpi_mpi_indexed_t *)(*type)->substruct)->old_type);
 }
 
 /*
@@ -742,6 +773,7 @@ s_smpi_mpi_indexed_t* smpi_datatype_indexed_create( int* block_lengths,
     new_t->block_indices[i]=block_indices[i];
   }
   new_t->block_count = block_count;
+  smpi_datatype_use(old_type);
   new_t->old_type = old_type;
   new_t->size_oldtype = size_oldtype;
   return new_t;
@@ -812,7 +844,7 @@ Hindexed Implementation - Indexed with indices in bytes
  */
 void serialize_hindexed( const void *noncontiguous_hindexed,
                        void *contiguous_hindexed,
-                       size_t count,
+                       int count,
                        void *type)
 {
   s_smpi_mpi_hindexed_t* type_c = (s_smpi_mpi_hindexed_t*)type;
@@ -848,8 +880,9 @@ void serialize_hindexed( const void *noncontiguous_hindexed,
  */
 void unserialize_hindexed( const void *contiguous_hindexed,
                          void *noncontiguous_hindexed,
-                         size_t count,
-                         void *type)
+                         int count,
+                         void *type,
+                         MPI_Op op)
 {
   s_smpi_mpi_hindexed_t* type_c = (s_smpi_mpi_hindexed_t*)type;
   int i,j;
@@ -859,13 +892,16 @@ void unserialize_hindexed( const void *contiguous_hindexed,
   for(j=0; j<count;j++){
     for (i = 0; i < type_c->block_count; i++) {
       if (type_c->old_type->has_subtype == 0)
-        memcpy(noncontiguous_hindexed_char,
-               contiguous_hindexed_char, type_c->block_lengths[i] * type_c->size_oldtype);
+        smpi_op_apply(op, contiguous_hindexed_char, noncontiguous_hindexed_char, &type_c->block_lengths[i],
+                            &type_c->old_type);
+                       /*memcpy(noncontiguous_hindexed_char,
+               contiguous_hindexed_char, type_c->block_lengths[i] * type_c->size_oldtype);*/
       else
         ((s_smpi_subtype_t*)type_c->old_type->substruct)->unserialize( contiguous_hindexed_char,
                                                                        noncontiguous_hindexed_char,
                                                                        type_c->block_lengths[i],
-                                                                       type_c->old_type->substruct);
+                                                                       type_c->old_type->substruct,
+                                                                       op);
 
       contiguous_hindexed_char += type_c->block_lengths[i]*type_c->size_oldtype;
       if (i<type_c->block_count-1)noncontiguous_hindexed_char = (char*)noncontiguous_hindexed + type_c->block_indices[i+1];
@@ -878,6 +914,7 @@ void unserialize_hindexed( const void *contiguous_hindexed,
 void free_hindexed(MPI_Datatype* type){
   xbt_free(((s_smpi_mpi_hindexed_t *)(*type)->substruct)->block_lengths);
   xbt_free(((s_smpi_mpi_hindexed_t *)(*type)->substruct)->block_indices);
+  smpi_datatype_unuse(((s_smpi_mpi_indexed_t *)(*type)->substruct)->old_type);
 }
 
 /*
@@ -973,7 +1010,7 @@ struct Implementation - Indexed with indices in bytes
  */
 void serialize_struct( const void *noncontiguous_struct,
                        void *contiguous_struct,
-                       size_t count,
+                       int count,
                        void *type)
 {
   s_smpi_mpi_struct_t* type_c = (s_smpi_mpi_struct_t*)type;
@@ -1010,8 +1047,9 @@ void serialize_struct( const void *noncontiguous_struct,
  */
 void unserialize_struct( const void *contiguous_struct,
                          void *noncontiguous_struct,
-                         size_t count,
-                         void *type)
+                         int count,
+                         void *type,
+                         MPI_Op op)
 {
   s_smpi_mpi_struct_t* type_c = (s_smpi_mpi_struct_t*)type;
   int i,j;
@@ -1021,13 +1059,16 @@ void unserialize_struct( const void *contiguous_struct,
   for(j=0; j<count;j++){
     for (i = 0; i < type_c->block_count; i++) {
       if (type_c->old_types[i]->has_subtype == 0)
-        memcpy(noncontiguous_struct_char,
-             contiguous_struct_char, type_c->block_lengths[i] * smpi_datatype_size(type_c->old_types[i]));
+        smpi_op_apply(op, contiguous_struct_char, noncontiguous_struct_char, &type_c->block_lengths[i],
+           & type_c->old_types[i]);
+                       /*memcpy(noncontiguous_struct_char,
+             contiguous_struct_char, type_c->block_lengths[i] * smpi_datatype_size(type_c->old_types[i]));*/
       else
         ((s_smpi_subtype_t*)type_c->old_types[i]->substruct)->unserialize( contiguous_struct_char,
                                                                            noncontiguous_struct_char,
                                                                            type_c->block_lengths[i],
-                                                                           type_c->old_types[i]->substruct);
+                                                                           type_c->old_types[i]->substruct,
+                                                                           op);
 
       contiguous_struct_char += type_c->block_lengths[i]*smpi_datatype_size(type_c->old_types[i]);
       if (i<type_c->block_count-1)noncontiguous_struct_char =  (char*)noncontiguous_struct + type_c->block_indices[i+1];
@@ -1041,6 +1082,9 @@ void unserialize_struct( const void *contiguous_struct,
 void free_struct(MPI_Datatype* type){
   xbt_free(((s_smpi_mpi_struct_t *)(*type)->substruct)->block_lengths);
   xbt_free(((s_smpi_mpi_struct_t *)(*type)->substruct)->block_indices);
+  int i=0;
+  for (i = 0; i < ((s_smpi_mpi_struct_t *)(*type)->substruct)->block_count; i++)
+    smpi_datatype_unuse(((s_smpi_mpi_struct_t *)(*type)->substruct)->old_types[i]);
   xbt_free(((s_smpi_mpi_struct_t *)(*type)->substruct)->old_types);
 }
 
@@ -1066,6 +1110,7 @@ s_smpi_mpi_struct_t* smpi_datatype_struct_create( int* block_lengths,
     new_t->block_lengths[i]=block_lengths[i];
     new_t->block_indices[i]=block_indices[i];
     new_t->old_types[i]=old_types[i];
+    smpi_datatype_use(new_t->old_types[i]);
   }
   //new_t->block_lengths = block_lengths;
   //new_t->block_indices = block_indices;
@@ -1150,7 +1195,6 @@ typedef struct s_smpi_mpi_op {
 #define BXOR_OP(a, b) (b) ^= (a)
 #define MAXLOC_OP(a, b)  (b) = (a.value) < (b.value) ? (b) : (a)
 #define MINLOC_OP(a, b)  (b) = (a.value) < (b.value) ? (a) : (b)
-//TODO : MINLOC & MAXLOC
 
 #define APPLY_FUNC(a, b, length, type, func) \
 {                                          \
@@ -1455,6 +1499,11 @@ static void maxloc_func(void *a, void *b, int *length,
   }
 }
 
+static void replace_func(void *a, void *b, int *length,
+                        MPI_Datatype * datatype)
+{
+  memcpy(b, a, *length * smpi_datatype_size(*datatype));
+}
 
 #define CREATE_MPI_OP(name, func)                             \
   static s_smpi_mpi_op_t mpi_##name = { &(func) /* func */, TRUE }; \
@@ -1472,6 +1521,8 @@ CREATE_MPI_OP(MPI_BOR, bor_func);
 CREATE_MPI_OP(MPI_BXOR, bxor_func);
 CREATE_MPI_OP(MPI_MAXLOC, maxloc_func);
 CREATE_MPI_OP(MPI_MINLOC, minloc_func);
+CREATE_MPI_OP(MPI_REPLACE, replace_func);
+
 
 MPI_Op smpi_op_new(MPI_User_function * function, int commute)
 {

@@ -78,7 +78,15 @@ public:
   /**
    * @brief Create a Cpu
    *
-   * @param host [TODO]
+   * @param name The name of the Cpu
+   * @param power_peak The power peak of this Cpu
+   * @param pstate [TODO]
+   * @param power_scale The power scale of this Cpu
+   * @param power_trace [TODO]
+   * @param core The number of core of this Cpu
+   * @param state_initial [TODO]
+   * @param state_trace [TODO]
+   * @param cpu_properties Dictionary of properties associated to this Cpu
    */
   virtual CpuPtr createCpu(const char *name, xbt_dynar_t power_peak,
                       int pstate, double power_scale,

@@ -19,6 +19,7 @@
 #include "jmsg_as.h"
 
 #include "jmsg_host.h"
+#include "jmsg_storage.h"
 #include "jmsg_task.h"
 #include "jxbt_utilities.h"
 
@@ -34,6 +35,7 @@
 /* end of eclipse-mandated pimple */
 
 int JAVA_HOST_LEVEL;
+int JAVA_STORAGE_LEVEL;
 
 static int create_jprocess(int argc, char *argv[]);
 
@@ -85,6 +87,10 @@ static void __JAVA_host_priv_free(void *host)
 {
 }
 
+static void __JAVA_storage_priv_free(void *storage)
+{
+}
+
 JNIEXPORT void JNICALL
 Java_org_simgrid_msg_Msg_init(JNIEnv * env, jclass cls, jobjectArray jargs)
 {
@@ -130,6 +136,7 @@ Java_org_simgrid_msg_Msg_init(JNIEnv * env, jclass cls, jobjectArray jargs)
   MSG_init(&argc, argv);
 
   JAVA_HOST_LEVEL = xbt_lib_add_level(host_lib, (void_f_pvoid_t) __JAVA_host_priv_free);
+  JAVA_STORAGE_LEVEL = xbt_lib_add_level(storage_lib, (void_f_pvoid_t) __JAVA_storage_priv_free);
 
   for (index = 0; index < argc; index++)
     free(argv[index]);
@@ -149,8 +156,9 @@ JNIEXPORT void JNICALL
 {
   msg_error_t rv;
   int index;
-  xbt_dynar_t hosts;
-  jobject jhost;
+  xbt_dynar_t hosts, storages;
+  jobject jhost, jstorage;
+
 
   /* Run everything */
   XBT_DEBUG("Ready to run MSG_MAIN");
@@ -169,6 +177,18 @@ JNIEXPORT void JNICALL
 
   }
   xbt_dynar_free(&hosts);
+
+  /* Cleanup java storages */
+  storages = MSG_storages_as_dynar();
+  if(!xbt_dynar_is_empty(storages)){
+    for (index = 0; index < xbt_dynar_length(storages) - 1; index++) {
+      jstorage = (jobject) xbt_lib_get_level(xbt_dynar_get_as(storages,index,msg_storage_t), JAVA_STORAGE_LEVEL);
+      if (jstorage)
+        jstorage_unref(env, jstorage);
+    }
+  }
+  xbt_dynar_free(&storages);
+
 }
 
 JNIEXPORT void JNICALL

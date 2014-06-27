@@ -254,6 +254,14 @@ void jxbt_throw_host_not_found(JNIEnv * env, const char *invalid_name)
                      bprintf("No such host: %s", invalid_name));
 }
 
+void jxbt_throw_storage_not_found(JNIEnv * env, const char *invalid_name)
+{
+  jxbt_throw_by_name(env,
+                     "org/simgrid/msg/StorageNotFoundException",
+                     bprintf("No such storage: %s", invalid_name));
+}
+
+
 void jxbt_throw_process_not_found(JNIEnv * env, const char *invalid_name)
 {
   jxbt_throw_by_name(env,

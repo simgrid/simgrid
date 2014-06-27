@@ -242,6 +242,8 @@ accepts several options, as listed below.
   @li <b>enable_latency_bound_tracking</b> (ON/OFF): enable it if you
       want to be warned when communications are limited by round trip
       time while doing packet-level simulation.
+  @li <b>enable_documentation</b> (ON/OFF) : whether the documentation should be
+       generated during the compilation. Default is ON.
 
 \subsubsection install_cmake_reset Resetting the compilation configuration
 
@@ -316,12 +318,12 @@ targets are not really for publc consumption so don't worry if some
 stuff don't work for you.
 
 @verbatim
-make simgrid			Builds only the simgrid library and not any example
-make masterslave		Builds only this example (and its dependencies)
+make simgrid			Build only the simgrid library and not any example
+make masterslave		Build only this example (and its dependencies)
 make clean			Clean the results of a previous compilation
 make install 			Install the project (doc/ bin/ lib/ include/)
 make uninstall			Uninstall the project (doc/ bin/ lib/ include/)
-make dist			Cuild a distribution archive (tgz)
+make dist			Build a distribution archive (tgz)
 make distcheck			Check the dist (make + make dist + tests on the distribution)
 make doc			Create simgrid documentation
 @endverbatim

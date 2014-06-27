@@ -43,7 +43,9 @@ SG_BEGIN_DECL()
  * The different existing priorities.
 */
 typedef enum {
-  xbt_log_priority_none = 0,    /* used internally (don't poke with) */
+  //! @cond
+  xbt_log_priority_none = 0,           /** used internally (don't poke with)*/
+  //! @endcond
   xbt_log_priority_trace = 1,          /**< enter and return of some functions */
   xbt_log_priority_debug = 2,          /**< crufty output  */
   xbt_log_priority_verbose = 3,        /**< verbose output for the user wanting more */
@@ -54,7 +56,9 @@ typedef enum {
 
   xbt_log_priority_infinite = 8,       /**< value for XBT_LOG_STATIC_THRESHOLD to not log */
 
-  xbt_log_priority_uninitialized = -1   /* used internally (don't poke with) */
+  //! @cond
+  xbt_log_priority_uninitialized = -1  /* used internally (don't poke with) */
+  //! @endcond
 } e_xbt_log_priority_t;
 
 

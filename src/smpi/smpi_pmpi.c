@@ -255,6 +255,18 @@ int PMPI_Type_ub(MPI_Datatype datatype, MPI_Aint * disp)
   return retval;
 }
 
+int PMPI_Type_dup(MPI_Datatype datatype, MPI_Datatype *newtype){
+  int retval = 0;
+
+  if (datatype == MPI_DATATYPE_NULL) {
+    retval = MPI_ERR_TYPE;
+  } else {
+    *newtype = smpi_datatype_dup(datatype);
+    retval = MPI_SUCCESS;
+  }
+  return retval;
+}
+
 int PMPI_Op_create(MPI_User_function * function, int commute, MPI_Op * op)
 {
   int retval = 0;
@@ -2587,20 +2599,16 @@ int PMPI_Initialized(int* flag) {
 
 int PMPI_Cart_create(MPI_Comm comm_old, int ndims, int* dims, int* periodic, int reorder, MPI_Comm* comm_cart) {
   int retval = 0;
-  smpi_bench_end();
   if (comm_old == MPI_COMM_NULL){
-    return  MPI_ERR_COMM;
-  }
-  else if (ndims < 0 ||
+    retval =  MPI_ERR_COMM;
+  } else if (ndims < 0 ||
            (ndims > 0 && (dims == NULL || 
                           periodic == NULL)) ||
            comm_cart == NULL) {
-    return MPI_ERR_ARG;
+    retval = MPI_ERR_ARG;
+  } else{
+    retval = smpi_mpi_cart_create(comm_old, ndims, dims, periodic, reorder, comm_cart);
   }
-  retval = smpi_mpi_cart_create(comm_old, ndims, dims, periodic, reorder, comm_cart);
-
-  smpi_bench_begin();
-
   return retval;
 }
 
@@ -2701,6 +2709,147 @@ int PMPI_Type_create_resized(MPI_Datatype oldtype,MPI_Aint lb, MPI_Aint extent, 
 }
 
 
+
+int PMPI_Win_create( void *base, MPI_Aint size, int disp_unit, MPI_Info info, MPI_Comm comm, MPI_Win *win){
+  int retval = 0;
+  smpi_bench_end();
+  if (comm == MPI_COMM_NULL) {
+    retval= MPI_ERR_COMM;
+  }else if ((base == NULL && size != 0)
+            || disp_unit <= 0 || size < 0 ){
+    retval= MPI_ERR_OTHER;
+  }else{
+    *win = smpi_mpi_win_create( base, size, disp_unit, info, comm);
+    retval = MPI_SUCCESS;
+  }
+  smpi_bench_begin();
+  return retval;
+}
+
+int PMPI_Win_free( MPI_Win* win){
+  int retval = 0;
+  smpi_bench_end();
+  if (win == NULL || *win == MPI_WIN_NULL) {
+    retval = MPI_ERR_WIN;
+  }else{
+    retval=smpi_mpi_win_free(win);
+  }
+  smpi_bench_begin();
+  return retval;
+}
+
+
+int PMPI_Win_fence( int assert,  MPI_Win win){
+  int retval = 0;
+  smpi_bench_end();
+  if (win == MPI_WIN_NULL) {
+    retval = MPI_ERR_WIN;
+  } else {
+    retval = smpi_mpi_win_fence(assert, win);
+  }
+  smpi_bench_begin();
+  return retval;
+}
+
+int PMPI_Get( void *origin_addr, int origin_count, MPI_Datatype origin_datatype, int target_rank,
+              MPI_Aint target_disp, int target_count, MPI_Datatype target_datatype, MPI_Win win){
+  int retval = 0;
+  smpi_bench_end();
+  if (win == MPI_WIN_NULL) {
+    retval = MPI_ERR_WIN;
+  } else if (target_rank == MPI_PROC_NULL) {
+    retval = MPI_SUCCESS;
+  } else if (target_rank <0){
+    retval = MPI_ERR_RANK;
+  } else if (target_disp <0){
+      retval = MPI_ERR_ARG;
+  } else if (origin_count < 0 || target_count < 0) {
+    retval = MPI_ERR_COUNT;
+  } else if (origin_addr==NULL && origin_count > 0){
+    retval = MPI_ERR_COUNT;
+  } else if ((!is_datatype_valid(origin_datatype)) ||
+            (!is_datatype_valid(target_datatype))) {
+    retval = MPI_ERR_TYPE;
+  } else {
+    retval = smpi_mpi_get( origin_addr, origin_count, origin_datatype, target_rank, target_disp, target_count, target_datatype, win);
+  }
+  smpi_bench_begin();
+  return retval;
+}
+
+int PMPI_Put( void *origin_addr, int origin_count, MPI_Datatype origin_datatype, int target_rank,
+              MPI_Aint target_disp, int target_count, MPI_Datatype target_datatype, MPI_Win win){
+  int retval = 0;
+  smpi_bench_end();
+  if (win == MPI_WIN_NULL) {
+    retval = MPI_ERR_WIN;
+  } else if (target_rank == MPI_PROC_NULL) {
+    retval = MPI_SUCCESS;
+  } else if (target_rank <0){
+    retval = MPI_ERR_RANK;
+  } else if (target_disp <0){
+    retval = MPI_ERR_ARG;
+  } else if (origin_count < 0 || target_count < 0) {
+    retval = MPI_ERR_COUNT;
+  } else if (origin_addr==NULL && origin_count > 0){
+    retval = MPI_ERR_COUNT;
+  } else if ((!is_datatype_valid(origin_datatype)) ||
+            (!is_datatype_valid(target_datatype))) {
+    retval = MPI_ERR_TYPE;
+  } else {
+    retval = smpi_mpi_put( origin_addr, origin_count, origin_datatype, target_rank, target_disp, target_count, target_datatype, win);
+  }
+  smpi_bench_begin();
+  return retval;
+}
+
+
+int PMPI_Accumulate( void *origin_addr, int origin_count, MPI_Datatype origin_datatype, int target_rank,
+              MPI_Aint target_disp, int target_count, MPI_Datatype target_datatype, MPI_Op op, MPI_Win win){
+  int retval = 0;
+  smpi_bench_end();
+  if (win == MPI_WIN_NULL) {
+    retval = MPI_ERR_WIN;
+  } else if (target_rank == MPI_PROC_NULL) {
+    retval = MPI_SUCCESS;
+  } else if (target_rank <0){
+    retval = MPI_ERR_RANK;
+  } else if (target_disp <0){
+    retval = MPI_ERR_ARG;
+  } else if (origin_count < 0 || target_count < 0) {
+    retval = MPI_ERR_COUNT;
+  } else if (origin_addr==NULL && origin_count > 0){
+    retval = MPI_ERR_COUNT;
+  } else if ((!is_datatype_valid(origin_datatype)) ||
+            (!is_datatype_valid(target_datatype))) {
+    retval = MPI_ERR_TYPE;
+  } else if (op == MPI_OP_NULL) {
+    retval = MPI_ERR_OP;
+  } else {
+    retval = smpi_mpi_accumulate( origin_addr, origin_count, origin_datatype, target_rank, target_disp, target_count, target_datatype, op, win);
+  }
+  smpi_bench_begin();
+  return retval;
+}
+
+
+int PMPI_Alloc_mem(MPI_Aint size, MPI_Info info, void *baseptr){
+  void *ptr = xbt_malloc(size);
+  if(!ptr)
+    return MPI_ERR_NO_MEM;
+  else {
+    *(void **)baseptr = ptr;
+    return MPI_SUCCESS;
+  }
+}
+
+int PMPI_Free_mem(void *baseptr){
+  xbt_free(baseptr);
+  return MPI_SUCCESS;
+}
+
+
+
 /* The following calls are not yet implemented and will fail at runtime. */
 /* Once implemented, please move them above this notice. */
 
@@ -2708,10 +2857,6 @@ int PMPI_Type_create_resized(MPI_Datatype oldtype,MPI_Aint lb, MPI_Aint extent, 
     XBT_WARN("Not yet implemented : %s. Please contact the Simgrid team if support is needed", __FUNCTION__); \
     return MPI_SUCCESS;                                                 \
   }
-
-int PMPI_Type_dup(MPI_Datatype datatype, MPI_Datatype *newtype){
-  NOT_YET_IMPLEMENTED
-}
 
 int PMPI_Type_set_name(MPI_Datatype  datatype, char * name)
 {
@@ -2782,6 +2927,10 @@ int PMPI_Errhandler_set(MPI_Comm comm, MPI_Errhandler errhandler) {
 }
 
 int PMPI_Comm_set_errhandler(MPI_Comm comm, MPI_Errhandler errhandler) {
+  NOT_YET_IMPLEMENTED
+}
+
+int PMPI_Win_set_errhandler(MPI_Win win, MPI_Errhandler errhandler) {
   NOT_YET_IMPLEMENTED
 }
 
@@ -2946,18 +3095,6 @@ int PMPI_Get_elements(MPI_Status* status, MPI_Datatype datatype, int* elements) 
   NOT_YET_IMPLEMENTED
 }
 
-int PMPI_Win_fence( int assert,  MPI_Win win){
-  NOT_YET_IMPLEMENTED
-}
-
-int PMPI_Win_free( MPI_Win* win){
-  NOT_YET_IMPLEMENTED
-}
-
-int PMPI_Win_create( void *base, MPI_Aint size, int disp_unit, MPI_Info info, MPI_Comm comm, MPI_Win *win){
-  NOT_YET_IMPLEMENTED
-}
-
 int PMPI_Info_create( MPI_Info *info){
   NOT_YET_IMPLEMENTED
 }
@@ -2967,11 +3104,6 @@ int PMPI_Info_set( MPI_Info info, char *key, char *value){
 }
 
 int PMPI_Info_free( MPI_Info *info){
-  NOT_YET_IMPLEMENTED
-}
-
-int PMPI_Get( void *origin_addr, int origin_count, MPI_Datatype origin_datatype, int target_rank,
-              MPI_Aint target_disp, int target_count, MPI_Datatype target_datatype, MPI_Win win){
   NOT_YET_IMPLEMENTED
 }
 

@@ -78,9 +78,9 @@ endif()
 ##
 if(CMAKE_VERSION VERSION_LESS "2.8.12")
   set(CMAKE_JAVA_TARGET_OUTPUT_NAME simgrid)
-  add_jar(simgrid-java_pre_jar ${JMSG_JAVA_SRC} ${JSURF_JAVA_GENERATED_SRC})
+  add_jar(simgrid-java_pre_jar ${JMSG_JAVA_SRC})
 else()
-  add_jar(simgrid-java_pre_jar ${JMSG_JAVA_SRC} ${JSURF_JAVA_GENERATED_SRC} OUTPUT_NAME simgrid)
+  add_jar(simgrid-java_pre_jar ${JMSG_JAVA_SRC} OUTPUT_NAME simgrid)
 endif()
 
 set(JAVA_BUNDLE "${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/Scripts/java_bundle.sh")

@@ -189,6 +189,27 @@ Java_org_simgrid_msg_Host_setProperty(JNIEnv *env, jobject jhost, jobject jname,
 JNIEXPORT jboolean JNICALL Java_org_simgrid_msg_Host_isAvail
     (JNIEnv *, jobject);
 
+
+/*
+ * Class		org_simgrid_msg_Host
+ * Method		getMountedStorage
+ * Signature: ()[Lorg/simgrid/msg/Storage;
+ */
+JNIEXPORT jobjectArray JNICALL Java_org_simgrid_msg_Host_getMountedStorage(JNIEnv * env, jobject jhost);
+
+/*
+ * Class		org_simgrid_msg_Host
+ * Method		getAttachedStorageList
+ */
+JNIEXPORT jobjectArray JNICALL Java_org_simgrid_msg_Host_getAttachedStorage(JNIEnv * env, jobject jhost);
+
+/*
+ * Class		org_simgrid_msg_Host
+ * Method		getStorageContent
+ */
+JNIEXPORT jobjectArray JNICALL Java_org_simgrid_msg_Host_getStorageContent(JNIEnv * env, jobject jhost);
+
+
 /**
  * Class org_simgrid_msg_Host
  * Method all

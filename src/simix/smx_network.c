@@ -8,6 +8,8 @@
 #include "xbt/log.h"
 #include "mc/mc.h"
 #include "xbt/dict.h"
+#include "smpi/private.h"
+
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_network, simix,
                                 "Logging specific to SIMIX (network)");
@@ -351,26 +353,26 @@ void SIMIX_comm_destroy_internal_actions(smx_action_t action)
   }
 }
 
-void SIMIX_pre_comm_send(smx_simcall_t simcall, smx_rdv_t rdv,
+void SIMIX_pre_comm_send(smx_simcall_t simcall, smx_process_t src, smx_rdv_t rdv,
                                   double task_size, double rate,
                                   void *src_buff, size_t src_buff_size,
                                   int (*match_fun)(void *, void *,smx_action_t),
                                   void (*copy_data_fun)(smx_action_t, void*, size_t),
 				  void *data, double timeout){
-  smx_action_t comm = SIMIX_comm_isend(simcall->issuer, rdv, task_size, rate,
+  smx_action_t comm = SIMIX_comm_isend(src, rdv, task_size, rate,
 		                       src_buff, src_buff_size, match_fun, NULL, copy_data_fun,
 				       data, 0);
   SIMCALL_SET_MC_VALUE(simcall, 0);
   SIMIX_pre_comm_wait(simcall, comm, timeout);
 }
-smx_action_t SIMIX_pre_comm_isend(smx_simcall_t simcall, smx_rdv_t rdv,
+smx_action_t SIMIX_pre_comm_isend(smx_simcall_t simcall, smx_process_t src, smx_rdv_t rdv,
                                   double task_size, double rate,
                                   void *src_buff, size_t src_buff_size,
                                   int (*match_fun)(void *, void *,smx_action_t),
                                   void (*clean_fun)(void *), 
                                   void (*copy_data_fun)(smx_action_t, void*, size_t),
 				  void *data, int detached){
-  return SIMIX_comm_isend(simcall->issuer, rdv, task_size, rate, src_buff,
+  return SIMIX_comm_isend(src, rdv, task_size, rate, src_buff,
 		          src_buff_size, match_fun, clean_fun, copy_data_fun, data, detached);
 
 }
