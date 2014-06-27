@@ -327,8 +327,8 @@ mc_visited_state_t is_visited_state()
       int min2 = mc_stats->expanded_states;
       unsigned int cursor2 = 0;
       unsigned int index2 = 0;
-      xbt_dynar_foreach(visited_states, cursor2, state_test) {
-        if (state_test->num < min2) {
+      xbt_dynar_foreach(visited_states, cursor2, state_test){
+        if (!mc_important_snapshot(state_test->system_state) && state_test->num < min2) {
           index2 = cursor2;
           min2 = state_test->num;
         }
@@ -470,7 +470,7 @@ int is_visited_pair(mc_visited_pair_t pair, int pair_num,
       unsigned int cursor2 = 0;
       unsigned int index2 = 0;
       xbt_dynar_foreach(visited_pairs, cursor2, pair_test) {
-        if (pair_test->num < min2) {
+        if (!mc_important_snapshot(pair_test->graph_state->system_state) && pair_test->num < min2) {
           index2 = cursor2;
           min2 = pair_test->num;
         }

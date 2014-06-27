@@ -29,6 +29,8 @@ e_mc_reduce_t mc_reduce_kind = e_mc_reduce_unset;
 
 int _sg_do_model_check = 0;
 int _sg_mc_checkpoint = 0;
+int _sg_mc_sparse_checkpoint = 0;
+int _sg_mc_soft_dirty = 1;
 char *_sg_mc_property_file = NULL;
 int _sg_mc_timeout = 0;
 int _sg_mc_hash = 0;
@@ -66,6 +68,20 @@ void _mc_cfg_cb_checkpoint(const char *name, int pos)
         ("You are specifying a checkpointing value after the initialization (through MSG_config?), but model-checking was not activated at config time (through --cfg=model-check:1). This won't work, sorry.");
   }
   _sg_mc_checkpoint = xbt_cfg_get_int(_sg_cfg_set, name);
+}
+
+void _mc_cfg_cb_sparse_checkpoint(const char *name, int pos) {
+  if (_sg_cfg_init_status && !_sg_do_model_check) {
+    xbt_die("You are specifying a checkpointing value after the initialization (through MSG_config?), but model-checking was not activated at config time (through --cfg=model-check:1). This won't work, sorry.");
+  }
+  _sg_mc_sparse_checkpoint = xbt_cfg_get_boolean(_sg_cfg_set, name);
+}
+
+void _mc_cfg_cb_soft_dirty(const char *name, int pos) {
+  if (_sg_cfg_init_status && !_sg_do_model_check) {
+    xbt_die("You are specifying a soft dirty value after the initialization (through MSG_config?), but model-checking was not activated at config time (through --cfg=model-check:1). This won't work, sorry.");
+  }
+  _sg_mc_soft_dirty = xbt_cfg_get_boolean(_sg_cfg_set, name);
 }
 
 void _mc_cfg_cb_property(const char *name, int pos)
@@ -222,9 +238,10 @@ static void MC_init_debug_info(void)
 }
 
 
+mc_model_checker_t mc_model_checker = NULL;
+
 void MC_init()
 {
-
   int raw_mem_set = (mmalloc_get_current_heap() == mc_heap);
 
   mc_time = xbt_new0(double, simix_process_maxpid);
@@ -233,6 +250,11 @@ void MC_init()
      iteration of the model-checker (in RAW memory) */
 
   MC_SET_MC_HEAP;
+
+  mc_model_checker = xbt_new0(s_mc_model_checker_t, 1);
+  mc_model_checker->pages = mc_pages_store_new();
+  mc_model_checker->fd_clear_refs = -1;
+  mc_model_checker->fd_pagemap = -1;
 
   mc_comp_times = xbt_new0(s_mc_comparison_times_t, 1);
 
@@ -263,12 +285,16 @@ void MC_init()
     MC_ignore_local_variable("ctx", "*");
 
     MC_ignore_local_variable("self", "simcall_BODY_mc_snapshot");
-    MC_ignore_local_variable("next_context", "smx_ctx_sysv_suspend_serial");
+    MC_ignore_local_variable("next_cont"
+      "ext", "smx_ctx_sysv_suspend_serial");
     MC_ignore_local_variable("i", "smx_ctx_sysv_suspend_serial");
 
     /* Ignore local variable about time used for tracing */
     MC_ignore_local_variable("start_time", "*");
 
+    MC_ignore_global_variable("mc_model_checker");
+
+    // Mot of those things could be moved into mc_model_checker:
     MC_ignore_global_variable("compared_pointers");
     MC_ignore_global_variable("mc_comp_times");
     MC_ignore_global_variable("mc_snapshot_comparison_time");
@@ -281,6 +307,10 @@ void MC_init()
     MC_ignore_global_variable("communications_pattern");
     MC_ignore_global_variable("initial_communications_pattern");
     MC_ignore_global_variable("incomplete_communications_pattern");
+
+    if (MC_is_active()) {
+      MC_ignore_global_variable("mc_diff_info");
+    }
 
     MC_ignore_heap(mc_time, simix_process_maxpid * sizeof(double));
 

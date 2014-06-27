@@ -39,6 +39,7 @@ int xbt_initialized = 0;
 int _sg_do_clean_atexit = 1;
 
 int xbt_pagesize;
+int xbt_pagebits = 0;
 
 /* Declare xbt_preinit and xbt_postexit as constructor/destructor of the library.
  * This is crude and rather compiler-specific, unfortunately.
@@ -95,6 +96,13 @@ static void xbt_preinit(void) {
   GetSystemInfo(&si);
   xbt_pagesize = si.dwPageSize;
 #endif
+
+  xbt_pagebits = 0;
+  int x = xbt_pagesize;
+  while(x >>= 1) {
+    ++xbt_pagebits;
+  }
+
 #ifdef MMALLOC_WANT_OVERRIDE_LEGACY
   mmalloc_preinit();
 #endif
@@ -112,7 +120,6 @@ static void xbt_preinit(void) {
 #ifndef _WIN32
   srand48(seed);
 #endif
-
   atexit(xbt_postexit);
 }
 

@@ -381,9 +381,9 @@ int mc_dwarf_execute_expression(size_t n, const Dwarf_Op * ops,
       {
         // Computed address:
         uintptr_t address = (uintptr_t) state->stack[state->stack_size - 1];
-        uintptr_t *p =
-            (uintptr_t *) mc_translate_address(address, state->snapshot);
-        state->stack[state->stack_size - 1] = *p;
+        uintptr_t temp;
+        uintptr_t* res = (uintptr_t*) mc_snapshot_read((void*) address, state->snapshot, &temp, sizeof(uintptr_t));
+        state->stack[state->stack_size - 1] = *res;
       }
       break;
 

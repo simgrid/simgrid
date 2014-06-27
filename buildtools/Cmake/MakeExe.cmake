@@ -80,6 +80,7 @@ add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/smpi/energy/f90)
 
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/xbt)
 
+add_subdirectory(${CMAKE_HOME_DIRECTORY}/teshsuite/mc)
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/teshsuite/mc/dwarf)
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/teshsuite/mc/dwarf_expression)
 
