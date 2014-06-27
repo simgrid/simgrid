@@ -244,6 +244,10 @@ fi
 
 # Don't use wc -l to compute it to avoid issues with trailing \n at EOF
 hostfile_procs=`grep -c "[a-zA-Z0-9]" $HOSTFILE`
+if [ ${hostfile_procs} = 0 ] ; then
+   echo "[$0] ** error: the hostfile '${HOSTFILE}' is empty. Aborting." >&2
+   exit 1
+fi
 
 if [ -z "${NUMPROCS}" ] ; then
     # Use the amount of processes in the hostfile as default value for the -np parameter
@@ -350,11 +354,7 @@ fi
 for i in ${SEQ}
 do
     if [ -n "${HOSTFILE}" ]; then
-        if [ ${NUMHOSTS} = 0 ] ; then
-	   j= 0
-	else
-	   j=$(( $i % ${NUMHOSTS} + 1 ))
-	fi
+	j=$(( $i % ${NUMHOSTS} + 1 ))
     fi
     ##---- optional display of ranks to process mapping
     if [ -n "${MAPOPT}" ]; then
