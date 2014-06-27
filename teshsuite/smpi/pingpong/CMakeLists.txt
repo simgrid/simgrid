@@ -21,6 +21,8 @@ set(tesh_files
   ${tesh_files}
   ${CMAKE_CURRENT_SOURCE_DIR}/pt2pt.tesh
   ${CMAKE_CURRENT_SOURCE_DIR}/TI_output.tesh
+  ${CMAKE_CURRENT_SOURCE_DIR}/broken_hostfiles.tesh
+
   PARENT_SCOPE
   )
 set(xml_files
@@ -39,6 +41,7 @@ set(bin_files
   )
 set(txt_files
   ${txt_files}
+  ${CMAKE_CURRENT_SOURCE_DIR}/empty-hostfile.txt
 
   PARENT_SCOPE
   )

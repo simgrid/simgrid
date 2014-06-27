@@ -235,9 +235,7 @@ teshsuite/bug-17132/bug-17132
 teshsuite/smpi/bcast/bcast_coll
 teshsuite/smpi/compute/compute2
 teshsuite/smpi/compute/compute3
-teshsuite/smpi/pingpong/broken_hostfiles.tesh
 teshsuite/smpi/pingpong/dsend
-teshsuite/smpi/pingpong/empty-hostfile.txt
 teshsuite/smpi/pingpong/tmpkkndqe
 teshsuite/smpi/reduce/reduce_coll
 teshsuite/smpi/reduce/reduce_scatter_coll

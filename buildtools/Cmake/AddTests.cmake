@@ -337,6 +337,8 @@ IF(NOT enable_memcheck)
   ### SMPI ###
   IF(enable_smpi)
     # BEGIN TESH TESTS
+    # smpi broken usage
+    ADD_TESH_FACTORIES(tesh-smpi-broken          "thread"              --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/pingpong --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/pingpong broken_hostfiles.tesh)
     # smpi examples
     ADD_TESH_FACTORIES(tesh-smpi-bcast           "thread;ucontext;raw" --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/bcast --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/bcast bcast.tesh)
     ADD_TESH_FACTORIES(tesh-smpi-reduce          "thread;ucontext;raw" --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/reduce --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/reduce reduce.tesh)
