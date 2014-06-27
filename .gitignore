@@ -232,6 +232,15 @@ examples/smpi/mc/bugged2
 src/replay/replay
 src/testall
 teshsuite/bug-17132/bug-17132
+teshsuite/smpi/bcast/bcast_coll
+teshsuite/smpi/compute/compute2
+teshsuite/smpi/compute/compute3
+teshsuite/smpi/pingpong/broken_hostfiles.tesh
+teshsuite/smpi/pingpong/dsend
+teshsuite/smpi/pingpong/empty-hostfile.txt
+teshsuite/smpi/pingpong/tmpkkndqe
+teshsuite/smpi/reduce/reduce_coll
+teshsuite/smpi/reduce/reduce_scatter_coll
 teshsuite/smpi/allgather/allgather_coll
 teshsuite/smpi/allgatherv/allgatherv_coll
 teshsuite/smpi/allreduce/allreduce_coll
@@ -706,6 +715,7 @@ teshsuite/smpi/mpich3-test/topo/cartcreates
 teshsuite/smpi/mpich3-test/topo/cartshift1
 teshsuite/smpi/mpich3-test/topo/cartsuball
 teshsuite/smpi/mpich3-test/topo/cartzero
+teshsuite/msg/storage/concurrent_rw
 teshsuite/msg/host_on_off/host_on_off
 teshsuite/msg/process/process
 teshsuite/msg/process_join/process_join
