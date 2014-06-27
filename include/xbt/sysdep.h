@@ -45,11 +45,12 @@ XBT_PUBLIC(void) xbt_abort(void) _XBT_GNUC_NORETURN;
  */
 #define xbt_die(...)                            \
   do {                                          \
-    XBT_LOG_EXTERNAL_CATEGORY(xbt);             \
     XBT_CCRITICAL(xbt, __VA_ARGS__);            \
     xbt_abort();                                \
   } while (0)
 /** @} */
+
+XBT_LOG_EXTERNAL_CATEGORY(xbt);
 
 /* these ones live in str.h, but redeclare them here so that we do
    not need to load the whole str.h and its heavy dependencies */

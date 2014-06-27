@@ -202,6 +202,8 @@ struct mdesc {
   /* The version number of the mmalloc package that created this file. */
   unsigned char version;
 
+  unsigned int options;
+
   /* Some flag bits to keep track of various internal things. */
   unsigned int flags;
 
@@ -218,8 +220,7 @@ struct mdesc {
   /* Limit of valid info table indices.  */
   size_t heaplimit;
 
-  /* Block information table.
-     Allocated with malign/mfree (not mmalloc/mfree).  */
+  /* Block information table. */
   /* Table indexed by block number giving per-block information.  */
   malloc_info *heapinfo;
 
@@ -240,7 +241,9 @@ struct mdesc {
   void *breakval;
 
   /* The end of the current memory region for this malloc heap.  This is
-     the first location past the end of mapped memory. */
+     the first location past the end of mapped memory.
+     Compared to breakval, this value is rounded to the next memory page.
+      */
 
   void *top;
 

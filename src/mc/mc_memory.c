@@ -15,23 +15,26 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_memory, mc,
 
 /* Pointers to each of the heap regions to use */
 void *std_heap = NULL;          /* memory erased each time the MC stuff rollbacks to the beginning. Almost everything goes here */
-void *raw_heap = NULL;          /* memory persistent over the MC rollbacks. Only MC stuff should go there */
+void *mc_heap = NULL;           /* memory persistent over the MC rollbacks. Only MC stuff should go there */
 
 /* Initialize the model-checker memory subsystem */
-/* It creates the two heap regions: std_heap and raw_heap */
+/* It creates the two heap regions: std_heap and mc_heap */
 void MC_memory_init()
 {
   /* Create the first region HEAP_OFFSET bytes after the heap break address */
   std_heap = mmalloc_get_default_md();
   xbt_assert(std_heap != NULL);
 
-#if defined HAVE_GNU_LD && !defined MMALLOC_WANT_OVERRIDE_LEGACY 
+#if defined HAVE_GNU_LD && !defined MMALLOC_WANT_OVERRIDE_LEGACY
   /* use the system malloc for the model-checker data */
-  raw_heap = NULL;
+  mc_heap = NULL;
 #else
   /* Create the second region a page after the first one ends + safety gap */
-  raw_heap = xbt_mheap_new(-1, (char*)(std_heap) + STD_HEAP_SIZE + xbt_pagesize);
-  xbt_assert(raw_heap != NULL);
+  mc_heap =
+      xbt_mheap_new_options(-1,
+                            (char *) (std_heap) + STD_HEAP_SIZE + xbt_pagesize,
+                            0);
+  xbt_assert(mc_heap != NULL);
 #endif
 }
 
@@ -42,6 +45,6 @@ void MC_memory_exit(void)
   MC_free_object_info(&mc_binary_info);
   MC_free_object_info(&mc_libsimgrid_info);
 
-  if (raw_heap)
-    xbt_mheap_destroy(raw_heap);
+  if (mc_heap)
+    xbt_mheap_destroy(mc_heap);
 }

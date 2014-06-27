@@ -77,8 +77,8 @@ static void _XBT_CALL segvhandler(int signum, siginfo_t *siginfo, void *context)
   }
 #ifdef HAVE_MC
   if (MC_is_active()) {
-    if (mc_stack_safety) {
-      MC_dump_stack_safety(mc_stack_safety);
+    if (mc_stack) {
+      MC_dump_stack_safety(mc_stack);
     }
     MC_print_statistics(mc_stats);
   }

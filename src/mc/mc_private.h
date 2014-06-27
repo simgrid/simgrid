@@ -9,6 +9,7 @@
 
 #include "simgrid_config.h"
 #include <stdio.h>
+#include <stdbool.h>
 #ifndef WIN32
 #include <sys/mman.h>
 #endif
@@ -21,12 +22,17 @@
 #include "xbt/function_types.h"
 #include "xbt/mmalloc.h"
 #include "../simix/smx_private.h"
+#include "../xbt/mmalloc/mmprivate.h"
 #include "xbt/automaton.h"
 #include "xbt/hash.h"
 #include "msg/msg.h"
 #include "msg/datatypes.h"
 #include "xbt/strbuff.h"
 #include "xbt/parmap.h"
+#include "mc_mmu.h"
+#include "mc_page_store.h"
+
+SG_BEGIN_DECL()
 
 typedef struct s_dw_frame s_dw_frame_t, *dw_frame_t;
 typedef struct s_mc_function_index_item s_mc_function_index_item_t, *mc_function_index_item_t;
@@ -42,19 +48,51 @@ typedef struct s_mc_mem_region{
   void *data;
   // Size of the data region:
   size_t size;
+  // For per-page snapshots, this is an array to the number of
+  size_t* page_numbers;
 } s_mc_mem_region_t, *mc_mem_region_t;
+
+static inline  __attribute__ ((always_inline))
+bool mc_region_contain(mc_mem_region_t region, void* p)
+{
+  return p >= region->start_addr &&
+    p < (void*)((char*) region->start_addr + region->size);
+}
+
+/** Ignored data
+ *
+ *  Some parts of the snapshot are ignored by zeroing them out: the real
+ *  values is stored here.
+ * */
+typedef struct s_mc_snapshot_ignored_data {
+  void* start;
+  size_t size;
+  void* data;
+} s_mc_snapshot_ignored_data_t, *mc_snapshot_ignored_data_t;
 
 typedef struct s_mc_snapshot{
   size_t heap_bytes_used;
   mc_mem_region_t regions[NB_REGIONS];
-  int nb_processes;
+  xbt_dynar_t enabled_processes;
   mc_mem_region_t* privatization_regions;
   int privatization_index;
   size_t *stack_sizes;
   xbt_dynar_t stacks;
   xbt_dynar_t to_ignore;
   uint64_t hash;
+  xbt_dynar_t ignored_data;
 } s_mc_snapshot_t, *mc_snapshot_t;
+
+mc_mem_region_t mc_get_snapshot_region(void* addr, mc_snapshot_t snapshot);
+
+static inline __attribute__ ((always_inline))
+mc_mem_region_t mc_get_region_hinted(void* addr, mc_snapshot_t snapshot, mc_mem_region_t region)
+{
+  if (mc_region_contain(region, addr))
+    return region;
+  else
+    return mc_get_snapshot_region(addr, snapshot);
+}
 
 /** Information about a given stack frame
  *
@@ -72,8 +110,6 @@ typedef struct s_mc_stack_frame {
 
 typedef struct s_mc_snapshot_stack{
   xbt_dynar_t local_variables;
-  void *stack_pointer;
-  void *real_address;
   xbt_dynar_t stack_frames; // mc_stack_frame_t
 }s_mc_snapshot_stack_t, *mc_snapshot_stack_t;
 
@@ -92,35 +128,56 @@ typedef struct s_mc_checkpoint_ignore_region{
   size_t size;
 }s_mc_checkpoint_ignore_region_t, *mc_checkpoint_ignore_region_t;
 
+static void* mc_snapshot_get_heap_end(mc_snapshot_t snapshot);
+
 mc_snapshot_t SIMIX_pre_mc_snapshot(smx_simcall_t simcall);
 mc_snapshot_t MC_take_snapshot(int num_state);
 void MC_restore_snapshot(mc_snapshot_t);
 void MC_free_snapshot(mc_snapshot_t);
 
-/** \brief Translate a pointer from process address space to snapshot address space
- *
- *  The address space contains snapshot of the main/application memory:
- *  this function finds the address in a given snaphot for a given
- *  real/application address.
- *
- *  For read only memory regions and other regions which are not int the
- *  snapshot, the address is not changed.
- *
- *  \param addr     Application address
- *  \param snapshot The snapshot of interest (if NULL no translation is done)
- *  \return         Translated address in the snapshot address space
- * */
-void* mc_translate_address(uintptr_t addr, mc_snapshot_t snapshot);
+int mc_important_snapshot(mc_snapshot_t snapshot);
 
-/** \brief Translate a pointer from the snapshot address space to the application address space
+size_t* mc_take_page_snapshot_region(void* data, size_t page_count, uint64_t* pagemap, size_t* reference_pages);
+void mc_free_page_snapshot_region(size_t* pagenos, size_t page_count);
+void mc_restore_page_snapshot_region(mc_mem_region_t region, size_t page_count, uint64_t* pagemap, mc_mem_region_t reference_region);
+
+mc_mem_region_t mc_region_new_sparse(int type, void *start_addr, size_t size, mc_mem_region_t ref_reg);
+void mc_region_restore_sparse(mc_mem_region_t reg, mc_mem_region_t ref_reg);
+void mc_softdirty_reset();
+
+static inline __attribute__((always_inline))
+bool mc_snapshot_region_linear(mc_mem_region_t region) {
+  return !region || !region->data;
+}
+
+void* mc_snapshot_read_fragmented(void* addr, mc_mem_region_t region, void* target, size_t size);
+
+void* mc_snapshot_read(void* addr, mc_snapshot_t snapshot, void* target, size_t size);
+int mc_snapshot_region_memcp(
+  void* addr1, mc_mem_region_t region1,
+  void* addr2, mc_mem_region_t region2, size_t size);
+int mc_snapshot_memcp(
+  void* addr1, mc_snapshot_t snapshot1,
+  void* addr2, mc_snapshot_t snapshot2, size_t size);
+
+static void* mc_snapshot_read_pointer(void* addr, mc_snapshot_t snapshot);
+
+/** @brief State of the model-checker (global variables for the model checker)
  *
- *  This is the inverse of mc_translate_address.
- *
- * \param addr    Address in the snapshot address space
- * \param snapsot Snapshot of interest (if NULL no translation is done)
- * \return        Translated address in the application address space
+ *  Each part of the state of the model chercker represented as a global
+ *  variable prevents some sharing between snapshots and must be ignored.
+ *  By moving as much state as possible in this structure allocated
+ *  on the model-chercker heap, we avoid those issues.
  */
-uintptr_t mc_untranslate_address(void* addr, mc_snapshot_t snapshot);
+typedef struct s_mc_model_checker {
+  // This is the parent snapshot of the current state:
+  mc_snapshot_t parent_snapshot;
+  mc_pages_store_t pages;
+  int fd_clear_refs;
+  int fd_pagemap;
+} s_mc_model_checker_t, *mc_model_checker_t;
+
+extern mc_model_checker_t mc_model_checker;
 
 extern xbt_dynar_t mc_checkpoint_ignore;
 
@@ -140,8 +197,10 @@ void MC_wait_for_requests(void);
 void MC_show_deadlock(smx_simcall_t req);
 void MC_show_stack_safety(xbt_fifo_t stack);
 void MC_dump_stack_safety(xbt_fifo_t stack);
-void MC_init(void);
 int SIMIX_pre_mc_random(smx_simcall_t simcall, int min, int max);
+
+extern xbt_fifo_t mc_stack;
+int get_search_interval(xbt_dynar_t list, void *ref, int *min, int *max);
 
 
 /********************************* Requests ***********************************/
@@ -158,6 +217,8 @@ char *MC_request_get_dot_output(smx_simcall_t req, int value);
 
 
 /******************************** States **************************************/
+
+extern mc_global_t initial_global_state;
 
 /* Possible exploration status of a process in a state */
 typedef enum {
@@ -221,7 +282,7 @@ void MC_print_statistics(mc_stats_t);
 /* you must wrap the code between MC_SET_RAW_MODE and MC_UNSET_RAW_MODE */
 
 extern void *std_heap;
-extern void *raw_heap;
+extern void *mc_heap;
 
 
 /* FIXME: Horrible hack! because the mmalloc library doesn't provide yet of */
@@ -236,8 +297,8 @@ extern void *raw_heap;
 /*   size_t bytes_free;            /\* Byte total of chunks in the free list. *\/ */
 /* }; */
 
-#define MC_SET_RAW_MEM    mmalloc_set_current_heap(raw_heap)
-#define MC_UNSET_RAW_MEM  mmalloc_set_current_heap(std_heap)
+#define MC_SET_MC_HEAP    mmalloc_set_current_heap(mc_heap)
+#define MC_SET_STD_HEAP  mmalloc_set_current_heap(std_heap)
 
 
 /******************************* MEMORY MAPPINGS ***************************/
@@ -295,7 +356,7 @@ void print_comparison_times(void);
 //#define MC_DEBUG 1
 #define MC_VERBOSE 1
 
-/********************************** DPOR for safety property **************************************/
+/********************************** Safety verification **************************************/
 
 typedef enum {
   e_mc_reduce_unset,
@@ -304,12 +365,10 @@ typedef enum {
 } e_mc_reduce_t;
 
 extern e_mc_reduce_t mc_reduce_kind;
-extern mc_global_t initial_state_safety;
-extern xbt_fifo_t mc_stack_safety;
 extern xbt_dict_t first_enabled_state;
 
-void MC_dpor_init(void);
-void MC_dpor(void);
+void MC_pre_modelcheck_safety(void);
+void MC_modelcheck_safety(void);
 
 typedef struct s_mc_visited_state{
   mc_snapshot_t system_state;
@@ -319,13 +378,14 @@ typedef struct s_mc_visited_state{
   int other_num; // dot_output for
 }s_mc_visited_state_t, *mc_visited_state_t;
 
+extern xbt_dynar_t visited_states;
+mc_visited_state_t is_visited_state(void);
+void visited_state_free(mc_visited_state_t state);
+void visited_state_free_voidp(void *s);
 
-/********************************** Double-DFS for liveness property **************************************/
+/********************************** Liveness verification **************************************/
 
-extern xbt_fifo_t mc_stack_liveness;
-extern mc_global_t initial_state_liveness;
 extern xbt_automaton_t _mc_property_automaton;
-extern int compare;
 
 typedef struct s_mc_pair{
   int num;
@@ -355,10 +415,13 @@ void mc_pair_free_voidp(void *p);
 mc_visited_pair_t MC_visited_pair_new(int pair_num, xbt_automaton_state_t automaton_state, xbt_dynar_t atomic_propositions);
 void MC_visited_pair_delete(mc_visited_pair_t p);
 
-void MC_ddfs_init(void);
-void MC_ddfs(void);
+void MC_pre_modelcheck_liveness(void);
+void MC_modelcheck_liveness(void);
 void MC_show_stack_liveness(xbt_fifo_t stack);
 void MC_dump_stack_liveness(xbt_fifo_t stack);
+
+extern xbt_dynar_t visited_pairs;
+int is_visited_pair(mc_visited_pair_t pair, int pair_num, xbt_automaton_state_t automaton_state, xbt_dynar_t atomic_propositions);
 
 
 /********************************** Variables with DWARF **********************************/
@@ -401,6 +464,7 @@ extern size_t mc_object_infos_size;
 
 void MC_find_object_address(memory_map_t maps, mc_object_info_t result);
 void MC_post_process_types(mc_object_info_t info);
+void MC_post_process_object_info(mc_object_info_t info);
 
 // ***** Expressions
 
@@ -450,7 +514,6 @@ struct s_dw_type{
 };
 
 void* mc_member_resolve(const void* base, dw_type_t type, dw_type_t member, mc_snapshot_t snapshot);
-void* mc_member_snapshot_resolve(const void* base, dw_type_t type, dw_type_t member, mc_snapshot_t snapshot);
 
 typedef struct s_dw_variable{
   Dwarf_Off dwarf_offset; /* Global offset of the field. */
@@ -556,7 +619,6 @@ typedef struct s_mc_comm_pattern{
   int num;
   smx_action_t comm;
   e_smx_comm_type_t type;
-  int completed;
   unsigned long src_proc;
   unsigned long dst_proc;
   const char *src_host;
@@ -564,13 +626,16 @@ typedef struct s_mc_comm_pattern{
   char *rdv;
   ssize_t data_size;
   void *data;
-  int matched_comm;
 }s_mc_comm_pattern_t, *mc_comm_pattern_t;
 
+extern xbt_dynar_t initial_communications_pattern;
 extern xbt_dynar_t communications_pattern;
 extern xbt_dynar_t incomplete_communications_pattern;
 
 void get_comm_pattern(xbt_dynar_t communications_pattern, smx_simcall_t request, int call);
+void complete_comm_pattern(xbt_dynar_t list, smx_action_t comm);
+void MC_pre_modelcheck_comm_determinism(void);
+void MC_modelcheck_comm_determinism(void);
 
 /* *********** Sets *********** */
 
@@ -589,6 +654,119 @@ bool mc_address_test(mc_address_set_t p, const void* value);
  *  \result resulting hash
  * */
 uint64_t mc_hash_processes_state(int num_state, xbt_dynar_t stacks);
+
+/* *********** Snapshot *********** */
+
+static inline __attribute__((always_inline))
+void* mc_translate_address_region(uintptr_t addr, mc_mem_region_t region)
+{
+    size_t pageno = mc_page_number(region->start_addr, (void*) addr);
+    size_t snapshot_pageno = region->page_numbers[pageno];
+    const void* snapshot_page = mc_page_store_get_page(mc_model_checker->pages, snapshot_pageno);
+    return (char*) snapshot_page + mc_page_offset((void*) addr);
+}
+
+/** \brief Translate a pointer from process address space to snapshot address space
+ *
+ *  The address space contains snapshot of the main/application memory:
+ *  this function finds the address in a given snaphot for a given
+ *  real/application address.
+ *
+ *  For read only memory regions and other regions which are not int the
+ *  snapshot, the address is not changed.
+ *
+ *  \param addr     Application address
+ *  \param snapshot The snapshot of interest (if NULL no translation is done)
+ *  \return         Translated address in the snapshot address space
+ * */
+static inline __attribute__((always_inline))
+void* mc_translate_address(uintptr_t addr, mc_snapshot_t snapshot)
+{
+
+  // If not in a process state/clone:
+  if (!snapshot) {
+    return (uintptr_t *) addr;
+  }
+
+  mc_mem_region_t region = mc_get_snapshot_region((void*) addr, snapshot);
+
+  xbt_assert(mc_region_contain(region, (void*) addr), "Trying to read out of the region boundary.");
+
+  if (!region) {
+    return (void *) addr;
+  }
+
+  // Flat snapshot:
+  else if (region->data) {
+    uintptr_t offset = addr - (uintptr_t) region->start_addr;
+    return (void *) ((uintptr_t) region->data + offset);
+  }
+
+  // Per-page snapshot:
+  else if (region->page_numbers) {
+    return mc_translate_address_region(addr, region);
+  }
+
+  else {
+    xbt_die("No data for this memory region");
+  }
+}
+
+static inline __attribute__ ((always_inline))
+  void* mc_snapshot_get_heap_end(mc_snapshot_t snapshot) {
+  if(snapshot==NULL)
+      xbt_die("snapshot is NULL");
+  void** addr = &((xbt_mheap_t)std_heap)->breakval;
+  return mc_snapshot_read_pointer(addr, snapshot);
+}
+
+static inline __attribute__ ((always_inline))
+void* mc_snapshot_read_pointer(void* addr, mc_snapshot_t snapshot)
+{
+  void* res;
+  return *(void**) mc_snapshot_read(addr, snapshot, &res, sizeof(void*));
+}
+
+/** @brief Read memory from a snapshot region
+ *
+ *  @param addr    Process (non-snapshot) address of the data
+ *  @param region  Snapshot memory region where the data is located
+ *  @param target  Buffer to store the value
+ *  @param size    Size of the data to read in bytes
+ *  @return Pointer where the data is located (target buffer of original location)
+ */
+static inline __attribute__((always_inline))
+void* mc_snapshot_read_region(void* addr, mc_mem_region_t region, void* target, size_t size)
+{
+  uintptr_t offset = (uintptr_t) addr - (uintptr_t) region->start_addr;
+
+  xbt_assert(addr >= region->start_addr && (char*) addr+size < (char*)region->start_addr+region->size,
+    "Trying to read out of the region boundary.");
+
+  // Linear memory region:
+  if (region->data) {
+    return (void*) ((uintptr_t) region->data + offset);
+  }
+
+  // Fragmented memory region:
+  else if (region->page_numbers) {
+    void* end = (char*) addr + size - 1;
+    if( mc_same_page(addr, end) ) {
+      // The memory is contained in a single page:
+      return mc_translate_address_region((uintptr_t) addr, region);
+    } else {
+      // The memory spans several pages:
+      return mc_snapshot_read_fragmented(addr, region, target, size);
+    }
+  }
+
+  else {
+    xbt_die("No data available for this region");
+  }
+}
+
+
+SG_END_DECL()
 
 #endif
 

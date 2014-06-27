@@ -28,7 +28,7 @@ endif()
 
 if(enable_compile_optimizations)
   set(optCFLAGS "-O3 -finline-functions -funroll-loops -fno-strict-aliasing ")
-  if(CMAKE_COMPILER_IS_GNUCC)
+  if(CMAKE_COMPILER_IS_GNUCC AND (NOT enable_model-checking))
     if(WIN32)
       if (COMPILER_C_VERSION_MAJOR_MINOR STRGREATER "4.7")
       # On windows, we need 4.8 or higher to enable lto because of http://gcc.gnu.org/bugzilla/show_bug.cgi?id=50293
@@ -43,6 +43,25 @@ if(enable_compile_optimizations)
   endif()
 else()
   set(optCFLAGS "-O0 ")
+endif()
+
+if(enable_model-checking AND enable_compile_optimizations)
+  # Forget it, do not optimize the code (because it confuses the MC):
+  set(optCFLAGS "-O0 ")
+  # But you can still optimize this:
+  foreach(s
+      src/xbt/mmalloc/mm.c
+      src/xbt/snprintf.c src/xbt/log.c
+      # For some reason, this fails to work when optimizing dynar.c:
+      # src/xbt/dynar.c
+      src/xbt/set.c src/xbt/setset.c src/xbt/backtrace_linux.c
+      src/mc/mc_dwarf_expression.c src/mc/mc_dwarf.c src/mc/mc_member.c
+      src/mc/mc_snapshot.c src/mc/mc_page_store.cpp src/mc/mc_page_snapshot.cpp
+      src/mc/mc_compare.cpp src/mc/mc_diff.c
+      src/mc/mc_dwarf.c src/mc/mc_dwarf_attrnames.h src/mc/mc_dwarf_expression.c src/mc/mc_dwarf_tagnames.h
+      src/mc/mc_set.cpp)
+    set_source_files_properties(${s} PROPERTIES COMPILE_FLAGS "-O3 -finline-functions -funroll-loops -fno-strict-aliasing")
+  endforeach()
 endif()
 
 if(APPLE AND COMPILER_C_VERSION_MAJOR_MINOR MATCHES "4.6")
@@ -95,8 +114,4 @@ endif()
 if(NOT $ENV{LDFLAGS} STREQUAL "")
   message(STATUS "Add LDFLAGS: \"$ENV{LDFLAGS}\" to CMAKE_C_LINK_FLAGS")
   set(CMAKE_C_LINK_FLAGS "${CMAKE_C_LINK_FLAGS} $ENV{LDFLAGS}")
-endif()
-
-if(enable_model-checking AND enable_compile_optimizations)
-  message(WARNING "Sorry for now GCC optimizations does not work with model checking.\nPlease turn off optimizations with command:\ncmake -Denable_compile_optimizations=off .")
 endif()

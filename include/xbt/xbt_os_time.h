@@ -12,6 +12,8 @@
 #include <xbt/misc.h>           /* XBT_PUBLIC */
 #include <stddef.h>             /* size_t */
 
+SG_BEGIN_DECL()
+
 /** @brief get time in seconds 
 
   * gives  the  number  of  seconds since the Epoch (00:00:00 UTC, January 1, 1970).
@@ -37,4 +39,7 @@ XBT_PUBLIC(void) xbt_os_cputimer_stop(xbt_os_timer_t timer);
 XBT_PUBLIC(void) xbt_os_threadtimer_start(xbt_os_timer_t timer);
 XBT_PUBLIC(void) xbt_os_threadtimer_resume(xbt_os_timer_t timer);
 XBT_PUBLIC(void) xbt_os_threadtimer_stop(xbt_os_timer_t timer);
+
+SG_END_DECL()
+
 #endif

@@ -44,6 +44,3 @@ $ ${bindir:=.}/bugged1_liveness ${srcdir:=.}/../msg_platform.xml ${srcdir:=.}/de
 > [  0.000000] (0:@) Visited pairs = 21
 > [  0.000000] (0:@) Executed transitions = 20
 > [  0.000000] (0:@) Counter-example depth : 20
-
-
-

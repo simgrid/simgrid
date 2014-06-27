@@ -130,10 +130,14 @@ void smpi_process_destroy(void)
  */
 void smpi_process_finalize(void)
 {
+    // This leads to an explosion of the search graph
+    // which cannot be reduced:
+    if(MC_is_active())
+      return;
+
     int index = smpi_process_index();
     // wait for all pending asynchronous comms to finish
     xbt_barrier_wait(process_data[index_to_process_data[index]]->finalization_barrier);
-
 }
 
 /**

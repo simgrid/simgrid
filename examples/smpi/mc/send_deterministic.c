@@ -32,16 +32,16 @@ int main(int argc, char **argv)
   }
 
   if (rank == 0) {
-    printf("MPI_ISend / MPI_IRecv Test \n");
+    //printf("MPI_ISend / MPI_IRecv Test \n");
 
     for(i=0; i < size - 1; i++){
       MPI_Recv(&recv_buff, 1, MPI_INT, MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
-      printf("Message received from %d\n", recv_buff);
+      //printf("Message received from %d\n", recv_buff);
     }
 
   }else{
     MPI_Send(&rank, 1, MPI_INT, 0, 42, MPI_COMM_WORLD);
-    printf("Sent %d to rank 0\n", rank);
+    //printf("Sent %d to rank 0\n", rank);
   }
 
   MPI_Finalize();

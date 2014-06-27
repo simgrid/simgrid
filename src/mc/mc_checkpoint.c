@@ -13,6 +13,7 @@
 #include "xbt/module.h"
 #include <xbt/mmalloc.h>
 #include "../smpi/private.h"
+#include <alloca.h>
 
 #include "xbt/mmalloc/mmprivate.h"
 
@@ -22,6 +23,9 @@
 #include <libelf.h>
 
 #include "mc_private.h"
+#include <mc/mc.h>
+
+#include "mc_mmu.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_checkpoint, mc,
                                 "Logging specific to mc_checkpoint");
@@ -31,45 +35,55 @@ char *libsimgrid_path;
 /************************************  Free functions **************************************/
 /*****************************************************************************************/
 
-static void MC_snapshot_stack_free(mc_snapshot_stack_t s){
-  if(s){
+static void MC_snapshot_stack_free(mc_snapshot_stack_t s)
+{
+  if (s) {
     xbt_dynar_free(&(s->local_variables));
     xbt_dynar_free(&(s->stack_frames));
     xbt_free(s);
   }
 }
 
-static void MC_snapshot_stack_free_voidp(void *s){
+static void MC_snapshot_stack_free_voidp(void *s)
+{
   MC_snapshot_stack_free((mc_snapshot_stack_t) * (void **) s);
 }
 
-static void local_variable_free(local_variable_t v){
+static void local_variable_free(local_variable_t v)
+{
   xbt_free(v->name);
   xbt_free(v);
 }
 
-static void local_variable_free_voidp(void *v){
+static void local_variable_free_voidp(void *v)
+{
   local_variable_free((local_variable_t) * (void **) v);
 }
 
 static void MC_region_destroy(mc_mem_region_t reg)
 {
-  munmap(reg->data, reg->size);
+  //munmap(reg->data, reg->size);
+  xbt_free(reg->data);
+  if (reg->page_numbers) {
+    mc_free_page_snapshot_region(reg->page_numbers, mc_page_count(reg->size));
+  }
   xbt_free(reg);
 }
 
-void MC_free_snapshot(mc_snapshot_t snapshot){
+void MC_free_snapshot(mc_snapshot_t snapshot)
+{
   unsigned int i;
-  for(i=0; i < NB_REGIONS; i++)
+  for (i = 0; i < NB_REGIONS; i++)
     MC_region_destroy(snapshot->regions[i]);
 
   xbt_free(snapshot->stack_sizes);
   xbt_dynar_free(&(snapshot->stacks));
   xbt_dynar_free(&(snapshot->to_ignore));
+  xbt_dynar_free(&snapshot->ignored_data);
 
-  if(snapshot->privatization_regions){
-    size_t n = snapshot->nb_processes;
-    for(i=0; i!=n; ++i) {
+  if (snapshot->privatization_regions) {
+    size_t n = xbt_dynar_length(snapshot->enabled_processes);
+    for (i = 0; i != n; ++i) {
       MC_region_destroy(snapshot->privatization_regions[i]);
     }
     xbt_free(snapshot->privatization_regions);
@@ -78,67 +92,96 @@ void MC_free_snapshot(mc_snapshot_t snapshot){
   xbt_free(snapshot);
 }
 
-
 /*******************************  Snapshot regions ********************************/
 /*********************************************************************************/
 
-static mc_mem_region_t MC_region_new(int type, void *start_addr, size_t size)
+static mc_mem_region_t MC_region_new(int type, void *start_addr, size_t size, mc_mem_region_t ref_reg)
 {
+  if (_sg_mc_sparse_checkpoint) {
+    return mc_region_new_sparse(type, start_addr, size, ref_reg);
+  }
+
   mc_mem_region_t new_reg = xbt_new(s_mc_mem_region_t, 1);
   new_reg->start_addr = start_addr;
+  new_reg->data = NULL;
   new_reg->size = size;
-  new_reg->data = mmap(NULL, size, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0);
-  if(new_reg->data==MAP_FAILED)
-    xbt_die("Could not mmap new memory for snapshot.");
+  new_reg->page_numbers = NULL;
+  new_reg->data = xbt_malloc(size);
   memcpy(new_reg->data, start_addr, size);
-  madvise(new_reg->data, size, MADV_MERGEABLE);
-
-  XBT_DEBUG("New region : type : %d, data : %p (real addr %p), size : %zu", type, new_reg->data, start_addr, size);
-  
+  XBT_DEBUG("New region : type : %d, data : %p (real addr %p), size : %zu",
+            type, new_reg->data, start_addr, size);
   return new_reg;
+
 }
 
-static void MC_region_restore(mc_mem_region_t reg)
+/** @brief Restore a region from a snapshot
+ *
+ *  If we are using per page snapshots, it is possible to use the reference
+ *  region in order to do an incremental restoration of the region: the
+ *  softclean pages which are shared between the two snapshots do not need
+ *  to be restored.
+ *
+ *  @param reg     Target region
+ *  @param reg_reg Current region (if not NULL), used for lazy per page restoration
+ */
+static void MC_region_restore(mc_mem_region_t reg, mc_mem_region_t ref_reg)
 {
   /*FIXME: check if start_addr is still mapped, if it is not, then map it
     before copying the data */
- 
-  memcpy(reg->start_addr, reg->data, reg->size);
+  if (!reg->page_numbers) {
+    memcpy(reg->start_addr, reg->data, reg->size);
+  } else {
+    mc_region_restore_sparse(reg, ref_reg);
+  }
   return;
 }
 
-static void MC_snapshot_add_region(mc_snapshot_t snapshot, int type, void *start_addr, size_t size)
+static void MC_snapshot_add_region(mc_snapshot_t snapshot, int type,
+                                   void *start_addr, size_t size)
+
 {
-  mc_mem_region_t new_reg = MC_region_new(type, start_addr, size);
+  mc_mem_region_t ref_reg =
+    mc_model_checker->parent_snapshot ? mc_model_checker->parent_snapshot->regions[type] : NULL;
+  mc_mem_region_t new_reg = MC_region_new(type, start_addr, size, ref_reg);
   snapshot->regions[type] = new_reg;
   return;
-} 
+}
 
-static void MC_get_memory_regions(mc_snapshot_t snapshot){
+static void MC_get_memory_regions(mc_snapshot_t snapshot)
+{
   size_t i;
 
-  void* start_heap = ((xbt_mheap_t)std_heap)->base;
-  void* end_heap   = ((xbt_mheap_t)std_heap)->breakval;
-  MC_snapshot_add_region(snapshot, 0, start_heap, (char*) end_heap - (char*) start_heap);
+  void *start_heap = ((xbt_mheap_t) std_heap)->base;
+  void *end_heap = ((xbt_mheap_t) std_heap)->breakval;
+  MC_snapshot_add_region(snapshot, 0, start_heap,
+                         (char *) end_heap - (char *) start_heap);
   snapshot->heap_bytes_used = mmalloc_get_bytes_used(std_heap);
 
-  MC_snapshot_add_region(snapshot, 1,  mc_libsimgrid_info->start_rw, mc_libsimgrid_info->end_rw - mc_libsimgrid_info->start_rw);
-  if(!smpi_privatize_global_variables) {
-    MC_snapshot_add_region(snapshot, 2,  mc_binary_info->start_rw, mc_binary_info->end_rw - mc_binary_info->start_rw);
+  MC_snapshot_add_region(snapshot, 1, mc_libsimgrid_info->start_rw,
+                         mc_libsimgrid_info->end_rw -
+                         mc_libsimgrid_info->start_rw);
+  if (!smpi_privatize_global_variables) {
+    MC_snapshot_add_region(snapshot, 2, mc_binary_info->start_rw,
+                           mc_binary_info->end_rw - mc_binary_info->start_rw);
     snapshot->privatization_regions = NULL;
     snapshot->privatization_index = -1;
   } else {
-    snapshot->privatization_regions = xbt_new(mc_mem_region_t, SIMIX_process_count());
-    for (i=0; i< SIMIX_process_count(); i++){
-      snapshot->privatization_regions[i] = MC_region_new(-1, mappings[i], size_data_exe);
+    snapshot->privatization_regions =
+        xbt_new(mc_mem_region_t, SIMIX_process_count());
+    for (i = 0; i < SIMIX_process_count(); i++) {
+      mc_mem_region_t ref_reg =
+        mc_model_checker->parent_snapshot ? mc_model_checker->parent_snapshot->privatization_regions[i] : NULL;
+      snapshot->privatization_regions[i] =
+        MC_region_new(-1, mappings[i], size_data_exe, ref_reg);
     }
     snapshot->privatization_index = loaded_page;
   }
 }
 
 /** @brief Finds the range of the different memory segments and binary paths */
-void MC_init_memory_map_info(){
- 
+void MC_init_memory_map_info()
+{
+
   unsigned int i = 0;
   s_map_region_t reg;
   memory_map_t maps = MC_get_memory_map();
@@ -151,13 +194,15 @@ void MC_init_memory_map_info(){
     reg = maps->regions[i];
     if (maps->regions[i].pathname == NULL) {
       // Nothing to do
-    }
-    else if ((reg.prot & PROT_WRITE) && !memcmp(maps->regions[i].pathname, "[stack]", 7)){
-          maestro_stack_start = reg.start_addr;
-          maestro_stack_end = reg.end_addr;
-    } else if ((reg.prot & PROT_READ) && (reg.prot & PROT_EXEC) && !memcmp(basename(maps->regions[i].pathname), "libsimgrid", 10)){
-      if(libsimgrid_path == NULL)
-          libsimgrid_path = strdup(maps->regions[i].pathname);
+    } else if ((reg.prot & PROT_WRITE)
+               && !memcmp(maps->regions[i].pathname, "[stack]", 7)) {
+      maestro_stack_start = reg.start_addr;
+      maestro_stack_end = reg.end_addr;
+    } else if ((reg.prot & PROT_READ) && (reg.prot & PROT_EXEC)
+               && !memcmp(basename(maps->regions[i].pathname), "libsimgrid",
+                          10)) {
+      if (libsimgrid_path == NULL)
+        libsimgrid_path = strdup(maps->regions[i].pathname);
     }
     i++;
   }
@@ -172,41 +217,45 @@ void MC_init_memory_map_info(){
 
 /** \brief Fill/lookup the "subtype" field.
  */
-static void MC_resolve_subtype(mc_object_info_t info, dw_type_t type) {
+static void MC_resolve_subtype(mc_object_info_t info, dw_type_t type)
+{
 
-  if(type->dw_type_id==NULL)
+  if (type->dw_type_id == NULL)
     return;
   type->subtype = xbt_dict_get_or_null(info->types, type->dw_type_id);
-  if(type->subtype==NULL)
+  if (type->subtype == NULL)
     return;
-  if(type->subtype->byte_size != 0)
+  if (type->subtype->byte_size != 0)
     return;
-  if(type->subtype->name==NULL)
+  if (type->subtype->name == NULL)
     return;
   // Try to find a more complete description of the type:
   // We need to fix in order to support C++.
 
-  dw_type_t subtype = xbt_dict_get_or_null(info->full_types_by_name, type->subtype->name);
-  if(subtype!=NULL) {
+  dw_type_t subtype =
+      xbt_dict_get_or_null(info->full_types_by_name, type->subtype->name);
+  if (subtype != NULL) {
     type->subtype = subtype;
   }
 
 }
 
-void MC_post_process_types(mc_object_info_t info) {
+void MC_post_process_types(mc_object_info_t info)
+{
   xbt_dict_cursor_t cursor = NULL;
   char *origin;
   dw_type_t type;
 
   // Lookup "subtype" field:
-  xbt_dict_foreach(info->types, cursor, origin, type){
+  xbt_dict_foreach(info->types, cursor, origin, type) {
     MC_resolve_subtype(info, type);
 
     dw_type_t member;
     unsigned int i = 0;
-    if(type->members!=NULL) xbt_dynar_foreach(type->members, i, member) {
+    if (type->members != NULL)
+      xbt_dynar_foreach(type->members, i, member) {
       MC_resolve_subtype(info, member);
-    }
+      }
   }
 }
 
@@ -214,40 +263,41 @@ void MC_post_process_types(mc_object_info_t info) {
  *
  * TODO, use dl_iterate_phdr to be more robust
  * */
-void MC_find_object_address(memory_map_t maps, mc_object_info_t result) {
+void MC_find_object_address(memory_map_t maps, mc_object_info_t result)
+{
 
   unsigned int i = 0;
   s_map_region_t reg;
-  const char* name = basename(result->file_name);
+  const char *name = basename(result->file_name);
   while (i < maps->mapsize) {
     reg = maps->regions[i];
-    if (maps->regions[i].pathname == NULL || strcmp(basename(maps->regions[i].pathname),  name)) {
+    if (maps->regions[i].pathname == NULL
+        || strcmp(basename(maps->regions[i].pathname), name)) {
       // Nothing to do
-    }
-    else if ((reg.prot & PROT_WRITE)){
-          xbt_assert(!result->start_rw,
-            "Multiple read-write segments for %s, not supported",
-            maps->regions[i].pathname);
-          result->start_rw = reg.start_addr;
-          result->end_rw   = reg.end_addr;
-          // .bss is usually after the .data:
-          s_map_region_t* next = &(maps->regions[i+1]);
-          if(next->pathname == NULL && (next->prot & PROT_WRITE) && next->start_addr == reg.end_addr) {
-            result->end_rw = maps->regions[i+1].end_addr;
-          }
-    } else if ((reg.prot & PROT_READ) && (reg.prot & PROT_EXEC)){
-          xbt_assert(!result->start_exec,
-            "Multiple executable segments for %s, not supported",
-            maps->regions[i].pathname);
-          result->start_exec = reg.start_addr;
-          result->end_exec   = reg.end_addr;
-    }
-    else if((reg.prot & PROT_READ) && !(reg.prot & PROT_EXEC)) {
-        xbt_assert(!result->start_ro,
-          "Multiple read only segments for %s, not supported",
-          maps->regions[i].pathname);
-        result->start_ro = reg.start_addr;
-        result->end_ro   = reg.end_addr;
+    } else if ((reg.prot & PROT_WRITE)) {
+      xbt_assert(!result->start_rw,
+                 "Multiple read-write segments for %s, not supported",
+                 maps->regions[i].pathname);
+      result->start_rw = reg.start_addr;
+      result->end_rw = reg.end_addr;
+      // .bss is usually after the .data:
+      s_map_region_t *next = &(maps->regions[i + 1]);
+      if (next->pathname == NULL && (next->prot & PROT_WRITE)
+          && next->start_addr == reg.end_addr) {
+        result->end_rw = maps->regions[i + 1].end_addr;
+      }
+    } else if ((reg.prot & PROT_READ) && (reg.prot & PROT_EXEC)) {
+      xbt_assert(!result->start_exec,
+                 "Multiple executable segments for %s, not supported",
+                 maps->regions[i].pathname);
+      result->start_exec = reg.start_addr;
+      result->end_exec = reg.end_addr;
+    } else if ((reg.prot & PROT_READ) && !(reg.prot & PROT_EXEC)) {
+      xbt_assert(!result->start_ro,
+                 "Multiple read only segments for %s, not supported",
+                 maps->regions[i].pathname);
+      result->start_ro = reg.start_addr;
+      result->end_ro = reg.end_addr;
     }
     i++;
   }
@@ -269,28 +319,32 @@ void MC_find_object_address(memory_map_t maps, mc_object_info_t result) {
  *  \param ip    Instruction pointer
  *  \return      true if the variable is valid
  * */
-static bool mc_valid_variable(dw_variable_t var, dw_frame_t scope, const void* ip) {
+static bool mc_valid_variable(dw_variable_t var, dw_frame_t scope,
+                              const void *ip)
+{
   // The variable is not yet valid:
-  if((const void*)((const char*) scope->low_pc + var->start_scope) > ip)
+  if ((const void *) ((const char *) scope->low_pc + var->start_scope) > ip)
     return false;
   else
     return true;
 }
 
-static void mc_fill_local_variables_values(mc_stack_frame_t stack_frame, dw_frame_t scope, xbt_dynar_t result) {
-  void* ip = (void*) stack_frame->ip;
-  if(ip < scope->low_pc || ip>= scope->high_pc)
+static void mc_fill_local_variables_values(mc_stack_frame_t stack_frame,
+                                           dw_frame_t scope, xbt_dynar_t result)
+{
+  void *ip = (void *) stack_frame->ip;
+  if (ip < scope->low_pc || ip >= scope->high_pc)
     return;
 
   unsigned cursor = 0;
   dw_variable_t current_variable;
-  xbt_dynar_foreach(scope->variables, cursor, current_variable){
+  xbt_dynar_foreach(scope->variables, cursor, current_variable) {
 
-    if(!mc_valid_variable(current_variable, scope, (void*) stack_frame->ip))
+    if (!mc_valid_variable(current_variable, scope, (void *) stack_frame->ip))
       continue;
 
     int region_type;
-    if((long)stack_frame->ip > (long)mc_libsimgrid_info->start_exec)
+    if ((long) stack_frame->ip > (long) mc_libsimgrid_info->start_exec)
       region_type = 1;
     else
       region_type = 2;
@@ -300,15 +354,17 @@ static void mc_fill_local_variables_values(mc_stack_frame_t stack_frame, dw_fram
     new_var->ip = stack_frame->ip;
     new_var->name = xbt_strdup(current_variable->name);
     new_var->type = current_variable->type;
-    new_var->region= region_type;
+    new_var->region = region_type;
 
-    if(current_variable->address!=NULL) {
+    if (current_variable->address != NULL) {
       new_var->address = current_variable->address;
-    } else
-    if(current_variable->locations.size != 0){
-      new_var->address = (void*) mc_dwarf_resolve_locations(&current_variable->locations,
-        current_variable->object_info,
-        &(stack_frame->unw_cursor), (void*)stack_frame->frame_base, NULL);
+    } else if (current_variable->locations.size != 0) {
+      new_var->address =
+          (void *) mc_dwarf_resolve_locations(&current_variable->locations,
+                                              current_variable->object_info,
+                                              &(stack_frame->unw_cursor),
+                                              (void *) stack_frame->frame_base,
+                                              NULL);
     } else {
       xbt_die("No address");
     }
@@ -323,78 +379,86 @@ static void mc_fill_local_variables_values(mc_stack_frame_t stack_frame, dw_fram
   }
 }
 
-static xbt_dynar_t MC_get_local_variables_values(xbt_dynar_t stack_frames){
+static xbt_dynar_t MC_get_local_variables_values(xbt_dynar_t stack_frames)
+{
 
   unsigned cursor1 = 0;
   mc_stack_frame_t stack_frame;
-  xbt_dynar_t variables = xbt_dynar_new(sizeof(local_variable_t), local_variable_free_voidp);
+  xbt_dynar_t variables =
+      xbt_dynar_new(sizeof(local_variable_t), local_variable_free_voidp);
 
-  xbt_dynar_foreach(stack_frames,cursor1,stack_frame) {
+  xbt_dynar_foreach(stack_frames, cursor1, stack_frame) {
     mc_fill_local_variables_values(stack_frame, stack_frame->frame, variables);
   }
 
   return variables;
 }
 
-static void MC_stack_frame_free_voipd(void *s){
-  mc_stack_frame_t stack_frame = *(mc_stack_frame_t*)s;
-  if(stack_frame) {
+static void MC_stack_frame_free_voipd(void *s)
+{
+  mc_stack_frame_t stack_frame = *(mc_stack_frame_t *) s;
+  if (stack_frame) {
     xbt_free(stack_frame->frame_name);
     xbt_free(stack_frame);
   }
 }
 
-static xbt_dynar_t MC_unwind_stack_frames(void *stack_context) {
-  xbt_dynar_t result = xbt_dynar_new(sizeof(mc_stack_frame_t), MC_stack_frame_free_voipd);
+static xbt_dynar_t MC_unwind_stack_frames(void *stack_context)
+{
+  xbt_dynar_t result =
+      xbt_dynar_new(sizeof(mc_stack_frame_t), MC_stack_frame_free_voipd);
 
   unw_cursor_t c;
 
   // TODO, check condition check (unw_init_local==0 means end of frame)
-  if(unw_init_local(&c, (unw_context_t *)stack_context)!=0) {
+  if (unw_init_local(&c, (unw_context_t *) stack_context) != 0) {
 
     xbt_die("Could not initialize stack unwinding");
 
-  } else while(1) {
+  } else
+    while (1) {
 
-    mc_stack_frame_t stack_frame = xbt_new(s_mc_stack_frame_t, 1);
-    xbt_dynar_push(result, &stack_frame);
+      mc_stack_frame_t stack_frame = xbt_new(s_mc_stack_frame_t, 1);
+      xbt_dynar_push(result, &stack_frame);
 
-    stack_frame->unw_cursor = c;
+      stack_frame->unw_cursor = c;
 
-    unw_word_t ip, sp;
+      unw_word_t ip, sp;
 
-    unw_get_reg(&c, UNW_REG_IP, &ip);
-    unw_get_reg(&c, UNW_REG_SP, &sp);
+      unw_get_reg(&c, UNW_REG_IP, &ip);
+      unw_get_reg(&c, UNW_REG_SP, &sp);
 
-    stack_frame->ip = ip;
-    stack_frame->sp = sp;
+      stack_frame->ip = ip;
+      stack_frame->sp = sp;
 
-    // TODO, use real addresses in frame_t instead of fixing it here
+      // TODO, use real addresses in frame_t instead of fixing it here
 
-    dw_frame_t frame = MC_find_function_by_ip((void*) ip);
-    stack_frame->frame = frame;
+      dw_frame_t frame = MC_find_function_by_ip((void *) ip);
+      stack_frame->frame = frame;
 
-    if(frame) {
-      stack_frame->frame_name = xbt_strdup(frame->name);
-      stack_frame->frame_base = (unw_word_t)mc_find_frame_base(frame, frame->object_info, &c);
-    } else {
-      stack_frame->frame_base = 0;
-      stack_frame->frame_name = NULL;
+      if (frame) {
+        stack_frame->frame_name = xbt_strdup(frame->name);
+        stack_frame->frame_base =
+            (unw_word_t) mc_find_frame_base(frame, frame->object_info, &c);
+      } else {
+        stack_frame->frame_base = 0;
+        stack_frame->frame_name = NULL;
+      }
+
+      /* Stop before context switch with maestro */
+      if (frame != NULL && frame->name != NULL
+          && !strcmp(frame->name, "smx_ctx_sysv_wrapper"))
+        break;
+
+      int ret = ret = unw_step(&c);
+      if (ret == 0) {
+        xbt_die("Unexpected end of stack.");
+      } else if (ret < 0) {
+        xbt_die("Error while unwinding stack.");
+      }
     }
 
-    /* Stop before context switch with maestro */
-    if(frame!=NULL && frame->name!=NULL && !strcmp(frame->name, "smx_ctx_sysv_wrapper"))
-      break;
-
-    int ret = ret = unw_step(&c);
-    if(ret==0) {
-      xbt_die("Unexpected end of stack.");
-    } else if(ret<0) {
-      xbt_die("Error while unwinding stack.");
-    }
-  }
-
-  if(xbt_dynar_length(result) == 0){
+  if (xbt_dynar_length(result) == 0) {
     XBT_INFO("unw_init_local failed");
     xbt_abort();
   }
@@ -402,42 +466,48 @@ static xbt_dynar_t MC_unwind_stack_frames(void *stack_context) {
   return result;
 };
 
-static xbt_dynar_t MC_take_snapshot_stacks(mc_snapshot_t *snapshot, void *heap){
+static xbt_dynar_t MC_take_snapshot_stacks(mc_snapshot_t * snapshot)
+{
 
-  xbt_dynar_t res = xbt_dynar_new(sizeof(s_mc_snapshot_stack_t), MC_snapshot_stack_free_voidp);
+  xbt_dynar_t res =
+      xbt_dynar_new(sizeof(s_mc_snapshot_stack_t),
+                    MC_snapshot_stack_free_voidp);
 
   unsigned int cursor = 0;
   stack_region_t current_stack;
-  
-  xbt_dynar_foreach(stacks_areas, cursor, current_stack){
+
+  xbt_dynar_foreach(stacks_areas, cursor, current_stack) {
     mc_snapshot_stack_t st = xbt_new(s_mc_snapshot_stack_t, 1);
     st->stack_frames = MC_unwind_stack_frames(current_stack->context);
     st->local_variables = MC_get_local_variables_values(st->stack_frames);
 
     unw_word_t sp = xbt_dynar_get_as(st->stack_frames, 0, mc_stack_frame_t)->sp;
-    st->stack_pointer = ((char *)heap + (size_t)(((char *)((long)sp) - (char*)std_heap)));
 
-    st->real_address = current_stack->address;
     xbt_dynar_push(res, &st);
-    (*snapshot)->stack_sizes = xbt_realloc((*snapshot)->stack_sizes, (cursor + 1) * sizeof(size_t));
-    (*snapshot)->stack_sizes[cursor] = current_stack->size - ((char *)st->stack_pointer - (char *)((char *)heap + ((char *)current_stack->address - (char *)std_heap)));
+    (*snapshot)->stack_sizes =
+        xbt_realloc((*snapshot)->stack_sizes, (cursor + 1) * sizeof(size_t));
+    (*snapshot)->stack_sizes[cursor] =
+      (char*) current_stack->address + current_stack->size - (char*) sp;
   }
 
   return res;
 
 }
 
-static xbt_dynar_t MC_take_snapshot_ignore(){
-  
-  if(mc_heap_comparison_ignore == NULL)
+static xbt_dynar_t MC_take_snapshot_ignore()
+{
+
+  if (mc_heap_comparison_ignore == NULL)
     return NULL;
 
-  xbt_dynar_t cpy = xbt_dynar_new(sizeof(mc_heap_ignore_region_t), heap_ignore_region_free_voidp);
+  xbt_dynar_t cpy =
+      xbt_dynar_new(sizeof(mc_heap_ignore_region_t),
+                    heap_ignore_region_free_voidp);
 
   unsigned int cursor = 0;
   mc_heap_ignore_region_t current_region;
 
-  xbt_dynar_foreach(mc_heap_comparison_ignore, cursor, current_region){
+  xbt_dynar_foreach(mc_heap_comparison_ignore, cursor, current_region) {
     mc_heap_ignore_region_t new_region = NULL;
     new_region = xbt_new0(s_mc_heap_ignore_region_t, 1);
     new_region->address = current_region->address;
@@ -451,127 +521,133 @@ static xbt_dynar_t MC_take_snapshot_ignore(){
 
 }
 
-static void MC_dump_checkpoint_ignore(mc_snapshot_t snapshot){
-  
+static void mc_free_snapshot_ignored_data_pvoid(void* data) {
+  mc_snapshot_ignored_data_t ignored_data = (mc_snapshot_ignored_data_t) data;
+  free(ignored_data->data);
+}
+
+static void MC_snapshot_handle_ignore(mc_snapshot_t snapshot)
+{
+  snapshot->ignored_data = xbt_dynar_new(sizeof(s_mc_snapshot_ignored_data_t), mc_free_snapshot_ignored_data_pvoid);
+
+  // Copy the memory:
   unsigned int cursor = 0;
   mc_checkpoint_ignore_region_t region;
-  size_t offset;
-  
-  xbt_dynar_foreach(mc_checkpoint_ignore, cursor, region){
-    if(region->addr > snapshot->regions[0]->start_addr && (char *)(region->addr) < (char *)snapshot->regions[0]->start_addr + STD_HEAP_SIZE){
-      offset = (char *)region->addr - (char *)snapshot->regions[0]->start_addr;
-      memset((char *)snapshot->regions[0]->data + offset, 0, region->size);
-    }else if(region->addr > snapshot->regions[2]->start_addr && (char *)(region->addr) < (char*)snapshot->regions[2]->start_addr + snapshot->regions[2]->size){
-      offset = (char *)region->addr - (char *)snapshot->regions[2]->start_addr;
-      memset((char *)snapshot->regions[2]->data + offset, 0, region->size);
-    }else if(region->addr > snapshot->regions[1]->start_addr && (char *)(region->addr) < (char*)snapshot->regions[1]->start_addr + snapshot->regions[1]->size){
-      offset = (char *)region->addr - (char *)snapshot->regions[1]->start_addr;
-      memset((char *)snapshot->regions[1]->data + offset, 0, region->size);
-    }
+  xbt_dynar_foreach (mc_checkpoint_ignore, cursor, region) {
+    s_mc_snapshot_ignored_data_t ignored_data;
+    ignored_data.start = region->addr;
+    ignored_data.size = region->size;
+    ignored_data.data = malloc(region->size);
+    memcpy(ignored_data.data, region->addr, region->size);
+    xbt_dynar_push(snapshot->ignored_data, &ignored_data);
+  }
+
+  // Zero the memory:
+  xbt_dynar_foreach (mc_checkpoint_ignore, cursor, region) {
+    memset(region->addr, 0, region->size);
   }
 
 }
 
+static void MC_snapshot_ignore_restore(mc_snapshot_t snapshot)
+{
+  unsigned int cursor = 0;
+  s_mc_snapshot_ignored_data_t ignored_data;
+  xbt_dynar_foreach (snapshot->ignored_data, cursor, ignored_data) {
+    memcpy(ignored_data.start, ignored_data.data, ignored_data.size);
+  }
+}
 
-mc_snapshot_t MC_take_snapshot(int num_state){
+/** @brief Can we remove this snapshot?
+ *
+ * Some snapshots cannot be removed (yet) because we need them
+ * at this point.
+ *
+ * @param snapshot
+ */
+int mc_important_snapshot(mc_snapshot_t snapshot)
+{
+  // We need this snapshot in order to know which
+  // pages needs to be stored in the next snapshot:
+  if (_sg_mc_sparse_checkpoint && snapshot == mc_model_checker->parent_snapshot)
+    return true;
+
+  return false;
+}
+
+mc_snapshot_t MC_take_snapshot(int num_state)
+{
 
   mc_snapshot_t snapshot = xbt_new0(s_mc_snapshot_t, 1);
-  snapshot->nb_processes = xbt_swag_size(simix_global->process_list);
+  snapshot->enabled_processes = xbt_dynar_new(sizeof(int), NULL);
+  smx_process_t process;
+  xbt_swag_foreach(process, simix_global->process_list) {
+    xbt_dynar_push_as(snapshot->enabled_processes, int, (int)process->pid);
+  }
+
+  MC_snapshot_handle_ignore(snapshot);
 
   /* Save the std heap and the writable mapped pages of libsimgrid and binary */
   MC_get_memory_regions(snapshot);
+  if (_sg_mc_sparse_checkpoint && _sg_mc_soft_dirty) {
+    mc_softdirty_reset();
+  }
 
   snapshot->to_ignore = MC_take_snapshot_ignore();
 
-  if(_sg_mc_visited > 0 || strcmp(_sg_mc_property_file,"")){
-    snapshot->stacks = MC_take_snapshot_stacks(&snapshot, snapshot->regions[0]->data);
-    if(_sg_mc_hash && snapshot->stacks!=NULL) {
+  if (_sg_mc_visited > 0 || strcmp(_sg_mc_property_file, "")) {
+    snapshot->stacks =
+        MC_take_snapshot_stacks(&snapshot);
+    if (_sg_mc_hash && snapshot->stacks != NULL) {
       snapshot->hash = mc_hash_processes_state(num_state, snapshot->stacks);
     } else {
       snapshot->hash = 0;
     }
-  }
-  else {
+  } else {
     snapshot->hash = 0;
   }
 
-  if(num_state > 0)
-    MC_dump_checkpoint_ignore(snapshot);
-
-  // mprotect the region after zero-ing ignored parts:
-  size_t i;
-  for(i=0; i!=NB_REGIONS; ++i) {
-    mc_mem_region_t region = snapshot->regions[i];
-    mprotect(region->data, region->size, PROT_READ);
-  }
-
+  MC_snapshot_ignore_restore(snapshot);
+  mc_model_checker->parent_snapshot = snapshot;
   return snapshot;
-
 }
 
-void MC_restore_snapshot(mc_snapshot_t snapshot){
+void MC_restore_snapshot(mc_snapshot_t snapshot)
+{
+  mc_snapshot_t parent_snapshot = mc_model_checker->parent_snapshot;
+
   unsigned int i;
-  for(i=0; i < NB_REGIONS; i++){
+  for (i = 0; i < NB_REGIONS; i++) {
     // For privatized, variables we decided it was not necessary to take the snapshot:
-    if(snapshot->regions[i])
-      MC_region_restore(snapshot->regions[i]);
+    if (snapshot->regions[i])
+      MC_region_restore(snapshot->regions[i],
+        parent_snapshot ? parent_snapshot->regions[i] : NULL);
   }
 
-  if(snapshot->privatization_regions) {
-    for (i=0; i< SIMIX_process_count(); i++){
-      if(snapshot->privatization_regions[i]) {
-        MC_region_restore(snapshot->privatization_regions[i]);
+  if (snapshot->privatization_regions) {
+    for (i = 0; i < SIMIX_process_count(); i++) {
+      if (snapshot->privatization_regions[i]) {
+        MC_region_restore(snapshot->privatization_regions[i],
+          parent_snapshot ? parent_snapshot->privatization_regions[i] : NULL);
       }
     }
     switch_data_segment(snapshot->privatization_index);
   }
+
+  if (_sg_mc_sparse_checkpoint && _sg_mc_soft_dirty) {
+    mc_softdirty_reset();
+  }
+
+  MC_snapshot_ignore_restore(snapshot);
+  mc_model_checker->parent_snapshot = snapshot;
 }
 
-void* mc_translate_address(uintptr_t addr, mc_snapshot_t snapshot) {
-
-  // If not in a process state/clone:
-  if(!snapshot) {
-    return (uintptr_t*) addr;
-  }
-
-  // If it is in a snapshot:
-  for(size_t i=0; i!=NB_REGIONS; ++i) {
-    mc_mem_region_t region = snapshot->regions[i];
-    uintptr_t start = (uintptr_t) region->start_addr;
-    uintptr_t end = start + region->size;
-
-    // The address is in this region:
-    if(addr >= start && addr < end) {
-      uintptr_t offset = addr - start;
-      return (void*) ((uintptr_t)region->data + offset);
-    }
-
-  }
-
-  // It is not in a snapshot:
-  return (void*) addr;
-}
-
-uintptr_t mc_untranslate_address(void* addr, mc_snapshot_t snapshot) {
-  if(!snapshot) {
-    return (uintptr_t) addr;
-  }
-
-  for(size_t i=0; i!=NB_REGIONS; ++i) {
-    mc_mem_region_t region = snapshot->regions[i];
-    if(addr>=region->data && addr<=(void*)(((char*)region->data)+region->size)) {
-      size_t offset = (size_t) ((char*) addr - (char*) region->data);
-      return ((uintptr_t) region->start_addr) + offset;
-    }
-  }
-
-  return (uintptr_t) addr;
-}
-
-mc_snapshot_t SIMIX_pre_mc_snapshot(smx_simcall_t simcall){
+mc_snapshot_t SIMIX_pre_mc_snapshot(smx_simcall_t simcall)
+{
   return MC_take_snapshot(1);
 }
 
-void *MC_snapshot(void){
+void *MC_snapshot(void)
+{
   return simcall_mc_snapshot();
 }

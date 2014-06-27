@@ -137,8 +137,9 @@ static void *register_morecore(struct mdesc *mdp, size_t size)
 /* Allocate memory from the heap.  */
 void *mmalloc(xbt_mheap_t mdp, size_t size) {
   void *res= mmalloc_no_memset(mdp,size);
-//  fprintf(stderr,"malloc(%zu)~>%p\n",size,res);
-  memset(res,0,size);
+  if (mdp->options & XBT_MHEAP_OPTION_MEMSET) {
+    memset(res,0,size);
+  }
   return res;
 }
 /* Spliting mmalloc this way is mandated by a trick in mrealloc, that gives
