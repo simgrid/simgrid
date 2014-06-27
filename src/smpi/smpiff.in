@@ -49,9 +49,12 @@ while [ $# -gt 0 ]; do
             SRCFILE="${TMPFILE}"
             list_add CMDLINE "${SRCFILE}"
             ;;
-        '-version' | '--version' | '-v')
+        '-version' | '--version')
             printf '%b\n' "$SIMGRID_VERSION"
             exit 0
+            ;;
+        '-compiler-version' | '--compiler-version')
+            ${F77} --version
             ;;
         -o)
             NEEDS_OUTPUT=0

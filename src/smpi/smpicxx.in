@@ -42,9 +42,12 @@ while [ $# -gt 0 ]; do
             fi
             list_add CMDARGS "${SRCFILE}"
             ;;
-        "-version" | "--version" | "-v")
+        '-version' | '--version')
             printf '%b\n' "$SIMGRID_VERSION"
             exit 0
+            ;;
+        '-compiler-version' | '--compiler-version')
+            ${CXX} --version
             ;;
         *)
             list_add CMDARGS "${ARG}"

@@ -1,10 +1,10 @@
 .TH smpiff 1
 .SH NAME
-smpiff \- SMPI fortran 77 wrapper compiler
+smpiff \- SMPI Fortran 77 wrapper compiler
 .SH SYNOPSIS
 smpiff …
 .SH DESCRIPTION
-smpiff is just a wrapper around the Fortran 77 compiler used when building simgrid, adding the right flags in order to use the simgrid library and SMPI, the MPI implementation within it. Any arguments filled to smpiff will be passed to the underlying compiler directly, of which the \fB\-\-version\fR argument should give the name and the version. Please refer to its documentation in case of trouble.
+smpiff is a wrapper around the Fortran 77 compiler defined when building SimGrid, adding the right flags in order to use the SimGrid library and SMPI, the MPI implementation within it.  Most of the arguments filled to smpiff will be passed to the underlying compiler directly, except for \fB\-\-version\fR which gives the SimGrid library version, and \fB\-\-compiler-version\fR which gives the F77 compiler version. Please refer to the latter documentation in case of trouble.
 .SH ENVIRONMENT VARIABLES
 All environment variables taken into account by the underlying compiler will be used, but note that the compiler can not be modified.
 .SH AUTHORS

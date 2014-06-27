@@ -4,9 +4,9 @@ smpicc \- SMPI C wrapper compiler
 .SH SYNOPSIS
 smpicc …
 .SH DESCRIPTION
-smpicc is just a wrapper around the C compiler used to build simgrid, adding the right flags in order to use the simgrid library and SMPI, the MPI implementation within it. Any arguments filled to smpicc will be passed to the underlying compiler directly, of which the \fB\-\-version\fR argument should give the name and the version. Please refer to its documentation in case of trouble.
+smpicc is a wrapper around the C compiler defined when building SimGrid, adding the right flags in order to use the SimGrid library and SMPI, the MPI implementation within it. Most of the arguments filled to smpicc will be passed to the underlying compiler directly, except for \fB\-\-version\fR which gives the SimGrid library version, and \fB\-\-compiler-version\fR which gives the C compiler version. Please refer to the latter documentation in case of trouble.
 .SH ENVIRONMENT VARIABLES
-All environment variables taken into account by the underlying compiler will be used, but note that the compiler can not be modified.
+All environment variables taken into account by the underlying compiler will be used by it, but note that the compiler can not be modified.
 .SH AUTHORS
 The SimGrid team (simgrid-devel@lists.gforge.inria.fr)
 .SH COPYRIGHT AND LICENCE
