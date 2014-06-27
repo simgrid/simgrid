@@ -84,7 +84,7 @@ static void deterministic_pattern(xbt_dynar_t pattern, int partial)
     nb_comms2 = xbt_dynar_length(process_comms_pattern2);
     if(!xbt_dynar_is_empty((xbt_dynar_t)xbt_dynar_get_as(incomplete_communications_pattern, current_process, xbt_dynar_t)))
       xbt_die("Damn ! Some communications from the process %u are incomplete (%lu)! That means one or several simcalls are not handle.", current_process, xbt_dynar_length((xbt_dynar_t)xbt_dynar_get_as(incomplete_communications_pattern, current_process, xbt_dynar_t)));
-    if (partial && (nb_comms1 != nb_comms2)) {
+    if (!partial && (nb_comms1 != nb_comms2)) {
       XBT_INFO("The total number of communications is different between the compared patterns for the process %u.\n Communication determinism verification for this process cannot be performed.", current_process);
       initial_global_state->send_deterministic = -1;
       initial_global_state->comm_deterministic = -1;
