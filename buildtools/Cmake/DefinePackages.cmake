@@ -5,6 +5,8 @@ set(EXTRA_DIST
   src/include/instr/instr_interface.h
   src/include/mc/datatypes.h
   src/include/mc/mc.h
+  src/mc/mc_mmu.h
+  src/mc/mc_page_store.h
   src/include/simgrid/platf_interface.h
   src/include/simgrid/sg_config.h
   src/include/smpi/smpi_interface.h
@@ -124,6 +126,8 @@ set(EXTRA_DIST
   src/xbt/win32_ucontext.c
   tools/tesh/run_context.h
   tools/tesh/tesh.h
+  examples/smpi/mc/non_deterministic.tesh
+  examples/smpi/mc/send_deterministic.tesh
   )
 
 set(SMPI_SRC
@@ -1019,6 +1023,7 @@ set(EXAMPLES_CMAKEFILES_TXT
 
 set(TESHSUITE_CMAKEFILES_TXT
   teshsuite/bug-17132/CMakeLists.txt
+  teshsuite/mc/CMakeLists.txt
   teshsuite/mc/dwarf/CMakeLists.txt
   teshsuite/mc/dwarf_expression/CMakeLists.txt
   teshsuite/msg/CMakeLists.txt
