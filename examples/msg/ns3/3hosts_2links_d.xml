@@ -2,14 +2,14 @@
 <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">
 <platform version="3">
 
-  <process host="a" function="master">
+  <process host="Tremblay" function="master">
       <argument value="100"/>
-      <argument value="c"/>
+      <argument value="Jupiter"/>
       <argument value="1"/>
   </process>
 
-  <process host="c" function="slave">
+  <process host="Jupiter" function="slave">
     <argument value="1"/>
   </process>
-     
+
 </platform>

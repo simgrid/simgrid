@@ -66,6 +66,7 @@ static void parse_ns3_add_link(sg_platf_link_cbarg_t link)
                                      link->state_trace,
                                      link->policy,
                                      link->properties);
+
   xbt_lib_set(link_lib, link->id, SURF_LINK_LEVEL, net_link);
 }
 
@@ -285,7 +286,6 @@ NetworkNS3Model::NetworkNS3Model() : NetworkModel("network NS3") {
 
   NS3_HOST_LEVEL = xbt_lib_add_level(host_lib,(void_f_pvoid_t)free_ns3_host);
   NS3_ASR_LEVEL  = xbt_lib_add_level(as_router_lib,(void_f_pvoid_t)free_ns3_host);
-  NS3_LINK_LEVEL = xbt_lib_add_level(link_lib,(void_f_pvoid_t)free_ns3_link);
 }
 
 NetworkNS3Model::~NetworkNS3Model() {

@@ -2,40 +2,30 @@
 <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">
 <platform version="3">
 
-  <process host="S1" function="master">
+  <process host="Tremblay" function="master">
       <argument value="100000"/>
-      <argument value="C1"/>
+      <argument value="Jupiter"/>
       <argument value="1"/>
   </process>
-
-  <process host="C1" function="slave">
+  <process host="Jupiter" function="slave">
     <argument value="1"/>
   </process>
 
-  <process host="S2" function="master">
+  <process host="Fafard" function="master">
       <argument value="1000000"/>
-      <argument value="C2"/>
+      <argument value="Ginette"/>
       <argument value="2"/>
   </process>
-  
-  <process host="C2" function="slave">
+  <process host="Ginette" function="slave">
     <argument value="2"/>
   </process>
 
-   
-  <process host="S3" function="master">
+  <process host="Bourassa" function="master">
       <argument value="2000000"/>
-      <argument value="C3"/>
+      <argument value="Lovelace"/>
       <argument value="3"/>
   </process>
-  
-  <process host="C3" function="slave">
+  <process host="Lovelace" function="slave">
     <argument value="3"/>
   </process>
-
-<!--  <process host="C3" function="timer">
-    <argument value="0"/>
-    <argument value=".1"/>
-  </process>
-    --> 
 </platform>

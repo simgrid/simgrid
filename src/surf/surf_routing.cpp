@@ -43,7 +43,6 @@ int NS3_HOST_LEVEL;             //host node for ns3
 xbt_lib_t link_lib;
 int SD_LINK_LEVEL;              //Simdag level
 int SURF_LINK_LEVEL;            //Surf level
-int NS3_LINK_LEVEL;             //link for ns3
 
 xbt_lib_t as_router_lib;
 int ROUTING_ASR_LEVEL;          //Routing level
@@ -846,7 +845,7 @@ static void routing_parse_cluster(sg_platf_cluster_cbarg_t cluster)
     sg_platf_new_AS_begin(&AS);
     ((AsClusterFatTree*)current_routing)->parse_specific_arguments(cluster);
   }
-  
+
   else{
     XBT_DEBUG("<AS id=\"%s\"\trouting=\"Cluster\">", cluster->id);
     AS.routing = A_surfxml_AS_routing_Cluster;
@@ -913,7 +912,7 @@ static void routing_parse_cluster(sg_platf_cluster_cbarg_t cluster)
       } else {
         XBT_DEBUG("\tstate_file=\"\"");
       }
-      
+
       xbt_dynar_t power_state_list = xbt_dynar_new(sizeof(double), NULL);
       xbt_dynar_push(power_state_list,&cluster->power);
       host.power_peak = power_state_list;
@@ -1003,7 +1002,7 @@ static void routing_parse_cluster(sg_platf_cluster_cbarg_t cluster)
     xbt_dynar_free(&radical_ends);
   }
   xbt_dynar_free(&radical_elements);
-  
+
   // For fat trees, the links must be created once all nodes have been added
   if(cluster->topology == SURF_CLUSTER_FAT_TREE) {
     ((AsClusterFatTree*)current_routing)->create_links();
