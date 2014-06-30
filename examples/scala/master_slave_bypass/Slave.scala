@@ -3,7 +3,7 @@
  * All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify it
- * under the terms of the license (GNU LGPL) which comes with this package. 
+ * under the terms of the license (GNU LGPL) which comes with this package.
  */
 package master_slave_bypass
 
@@ -19,6 +19,6 @@ class Slave(hostname:String, name:String) extends Process(hostname, name) {
     Msg.info("Slave Hello!")
     val task = new FinalizeTask()
     Msg.info("Send finalize!")
-    task.send("alice")
+    task.send("Tremblay")
   }
 }
