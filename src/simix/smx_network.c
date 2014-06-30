@@ -84,7 +84,7 @@ void SIMIX_rdv_free(void *data)
   xbt_fifo_free(rdv->comm_fifo);
   xbt_fifo_free(rdv->done_comm_fifo);
 
-  xbt_free(rdv);  
+  xbt_free(rdv);
 }
 
 xbt_dict_t SIMIX_get_rdv_points()
@@ -369,7 +369,7 @@ smx_action_t SIMIX_pre_comm_isend(smx_simcall_t simcall, smx_process_t src, smx_
                                   double task_size, double rate,
                                   void *src_buff, size_t src_buff_size,
                                   int (*match_fun)(void *, void *,smx_action_t),
-                                  void (*clean_fun)(void *), 
+                                  void (*clean_fun)(void *),
                                   void (*copy_data_fun)(smx_action_t, void*, size_t),
 				  void *data, int detached){
   return SIMIX_comm_isend(src, rdv, task_size, rate, src_buff,
@@ -897,33 +897,13 @@ void SIMIX_comm_finish(smx_action_t action)
     simcall->issuer->waiting_action = NULL;
     xbt_fifo_remove(simcall->issuer->comms, action);
     if(action->comm.detached){
-      smx_process_t proc;
-      int still_alive = 0;
-
       if(simcall->issuer == action->comm.src_proc){
-        if(action->comm.dst_proc){
-            xbt_swag_foreach(proc, simix_global->process_list)
-            {
-               if(proc==action->comm.dst_proc){
-                   still_alive=1;
-                   break;
-               }
-            }
-        }
-        if(still_alive) xbt_fifo_remove(action->comm.dst_proc->comms, action);
+        if(action->comm.dst_proc)
+          xbt_fifo_remove(action->comm.dst_proc->comms, action);
       }
       if(simcall->issuer == action->comm.dst_proc){
         if(action->comm.src_proc)
-          if(action->comm.dst_proc){
-            xbt_swag_foreach(proc, simix_global->process_list)
-            {
-              if(proc==action->comm.src_proc){
-                  still_alive=1;
-                  break;
-              }
-            }
-          }
-          if(still_alive) xbt_fifo_remove(action->comm.src_proc->comms, action);
+          xbt_fifo_remove(action->comm.src_proc->comms, action);
       }
     }
     SIMIX_simcall_answer(simcall);
