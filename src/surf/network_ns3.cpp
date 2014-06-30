@@ -349,7 +349,7 @@ double NetworkNS3Model::shareResources(double now)
     do {
       ns3_simulator(now);
       time_to_next_flow_completion = ns3_time() - surf_get_clock();//FIXME: use now instead ?
-    } while(double_equals(time_to_next_flow_completion, 0));
+    } while(double_equals(time_to_next_flow_completion, 0, sg_surf_precision));
 
   XBT_DEBUG("min       : %f", now);
   XBT_DEBUG("ns3  time : %f", ns3_time());
@@ -370,7 +370,7 @@ void NetworkNS3Model::updateActionsState(double now, double delta)
 
   /* If there are no running flows, just return */
   if (!getRunningActionSet()->size()) {
-    while(double_positive(now-ns3_time())) {
+    while(double_positive(now-ns3_time(), sg_surf_precision)) {
       ns3_simulator(now-ns3_time());
     }
     return;

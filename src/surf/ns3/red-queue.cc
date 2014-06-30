@@ -331,7 +331,7 @@ RedQueue::Rmask (uint32_t pLog)
 {
   ///> ~OUL creates a 32 bit mask
   ///> 2^Plog - 1
-  return pLog < 32 ? ((1 << pLog) - 1) : ~0UL;
+  return pLog < 32 ? ((1 << pLog) - 1) : (uint32_t) ~0UL;
 
 }
 
@@ -423,7 +423,7 @@ RedQueue::AvgFromIdleTime ()
 
   if (idleTime > m_scellMax)
     {
-      idleTime = m_scellMax; 
+      idleTime = m_scellMax;
     }
 
   NS_LOG_DEBUG ("\t idleTime=" << idleTime);
@@ -726,7 +726,7 @@ RedQueue::DropPacket (Ptr<Packet> p)
         {
 	  packetSize= p->GetSize ();
           m_packets.erase(iter);
-          m_bytesInQueue -= packetSize; 
+          m_bytesInQueue -= packetSize;
           return 1;
         }
     }

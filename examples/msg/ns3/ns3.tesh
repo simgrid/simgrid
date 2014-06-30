@@ -36,4 +36,4 @@ p Two clusters
 $ ns3/ns3 ${srcdir:=.}/examples/platforms/clusters_routing_full.xml ${srcdir:=.}/examples/msg/ns3/Two_clusters-d.xml --cfg=network/model:NS3
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'NS3'
 > [0.000000] [surf_config/INFO] Switching workstation model to compound since you changed the network and/or cpu model(s)
-> [node-16.acme.org:slave:(2) 0.012729] [msg_test/INFO] FLOW[1] : Receive 100 bytes from node-3.acme.org to c-16.me
+> [c-16.me:slave:(2) 0.012729] [msg_test/INFO] FLOW[1] : Receive 100 bytes from c-3.me to c-16.me
