@@ -17,6 +17,8 @@
 #include "smpi/smpi_cocci.h"
 #include "instr/instr_private.h"
 
+SG_BEGIN_DECL()
+
 struct s_smpi_process_data;
 typedef struct s_smpi_process_data *smpi_process_data_t;
 
@@ -676,5 +678,9 @@ const char* encode_datatype(MPI_Datatype datatype);
 // TODO, make this static and expose it more cleanly
 extern void** mappings;
 extern int loaded_page;
+
+int smpi_process_index_of_smx_process(smx_process_t process);
+
+SG_END_DECL()
 
 #endif

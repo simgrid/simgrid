@@ -4,7 +4,9 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "internal_config.h"
 #include "mc_private.h"
+#include "smpi/private.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_ignore, mc,
                                 "Logging specific to MC ignore mechanism");
@@ -299,7 +301,18 @@ void MC_ignore_local_variable(const char *var_name, const char *frame_name)
 
 }
 
-void MC_new_stack_area(void *stack, char *name, void *context, size_t size)
+/** @brief Register a stack in the model checker
+ *
+ *  The stacks are allocated in the heap. The MC handle them especially
+ *  when we analyse/compare the content of theap so it must be told where
+ *  they are with this function.
+ *
+ *  @param stack
+ *  @param process Process owning the stack
+ *  @param context
+ *  @param size    Size of the stack
+ */
+void MC_new_stack_area(void *stack, smx_process_t process, void *context, size_t size)
 {
 
   int raw_mem_set = (mmalloc_get_current_heap() == mc_heap);
@@ -312,12 +325,19 @@ void MC_new_stack_area(void *stack, char *name, void *context, size_t size)
   stack_region_t region = NULL;
   region = xbt_new0(s_stack_region_t, 1);
   region->address = stack;
-  region->process_name = strdup(name);
+  region->process_name = process && process->name ? strdup(process->name) : NULL;
   region->context = context;
   region->size = size;
   region->block =
       ((char *) stack -
        (char *) ((xbt_mheap_t) std_heap)->heapbase) / BLOCKSIZE + 1;
+#ifdef HAVE_SMPI
+  if (smpi_privatize_global_variables && process) {
+    region->process_index = smpi_process_index_of_smx_process(process);
+  } else
+#endif
+  region->process_index = -1;
+
   xbt_dynar_push(stacks_areas, &region);
 
   if (!raw_mem_set)

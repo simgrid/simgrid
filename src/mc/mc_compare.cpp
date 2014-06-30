@@ -8,7 +8,12 @@
 #include <inttypes.h>
 #include <boost/unordered_set.hpp>
 
+#include "internal_config.h"
 #include "mc_private.h"
+
+#ifdef HAVE_SMPI
+#include "smpi/private.h"
+#endif
 
 #include "xbt/mmalloc.h"
 #include "xbt/mmalloc/mmprivate.h"
@@ -87,6 +92,7 @@ static int add_compared_pointers(mc_compare_state& state, void *p1, void *p2)
 }
 
 static int compare_areas_with_type(struct mc_compare_state& state,
+                                   int process_index,
                                    void* real_area1, mc_snapshot_t snapshot1, mc_mem_region_t region1,
                                    void* real_area2, mc_snapshot_t snapshot2, mc_mem_region_t region2,
                                    dw_type_t type, int pointer_level)
@@ -146,7 +152,7 @@ static int compare_areas_with_type(struct mc_compare_state& state,
     }
     for (i = 0; i < type->element_count; i++) {
       size_t off = i * elm_size;
-      res = compare_areas_with_type(state,
+      res = compare_areas_with_type(state, process_index,
             (char*) real_area1 + off, snapshot1, region1,
             (char*) real_area2 + off, snapshot2, region2,
             type->subtype, pointer_level);
@@ -186,7 +192,7 @@ static int compare_areas_with_type(struct mc_compare_state& state,
              && addr_pointed2 < mc_snapshot_get_heap_end(snapshot2)))
           return 1;
         // The pointers are both in the heap:
-        return compare_heap_area(addr_pointed1, addr_pointed2, snapshot1,
+        return compare_heap_area(process_index, addr_pointed1, addr_pointed2, snapshot1,
                                  snapshot2, NULL, type->subtype, pointer_level);
       }
 
@@ -197,7 +203,7 @@ static int compare_areas_with_type(struct mc_compare_state& state,
         if (type->dw_type_id == NULL)
           return (addr_pointed1 != addr_pointed2);
         else {
-          return compare_areas_with_type(state,
+          return compare_areas_with_type(state, process_index,
                                          addr_pointed1, snapshot1, region1,
                                          addr_pointed2, snapshot2, region2,
                                          type->subtype, pointer_level);
@@ -217,13 +223,13 @@ static int compare_areas_with_type(struct mc_compare_state& state,
   case DW_TAG_class_type:
     xbt_dynar_foreach(type->members, cursor, member) {
       void *member1 =
-        mc_member_resolve(real_area1, type, member, snapshot1);
+        mc_member_resolve(real_area1, type, member, snapshot1, process_index);
       void *member2 =
-        mc_member_resolve(real_area2, type, member, snapshot2);
-      mc_mem_region_t subregion1 = mc_get_region_hinted(member1, snapshot1, region1);
-      mc_mem_region_t subregion2 = mc_get_region_hinted(member2, snapshot2, region2);
+        mc_member_resolve(real_area2, type, member, snapshot2, process_index);
+      mc_mem_region_t subregion1 = mc_get_region_hinted(member1, snapshot1, process_index, region1);
+      mc_mem_region_t subregion2 = mc_get_region_hinted(member2, snapshot2, process_index, region2);
       res =
-          compare_areas_with_type(state,
+          compare_areas_with_type(state, process_index,
                                   member1, snapshot1, subregion1,
                                   member2, snapshot2, subregion2,
                                   member->subtype, pointer_level);
@@ -242,7 +248,9 @@ static int compare_areas_with_type(struct mc_compare_state& state,
   return 0;
 }
 
-static int compare_global_variables(int region_type, mc_mem_region_t r1,
+static int compare_global_variables(mc_object_info_t object_info,
+                                    int process_index,
+                                    mc_mem_region_t r1,
                                     mc_mem_region_t r2, mc_snapshot_t snapshot1,
                                     mc_snapshot_t snapshot2)
 {
@@ -254,12 +262,6 @@ static int compare_global_variables(int region_type, mc_mem_region_t r1,
   unsigned int cursor = 0;
   dw_variable_t current_var;
 
-  mc_object_info_t object_info = NULL;
-  if (region_type == 2) {
-    object_info = mc_binary_info;
-  } else {
-    object_info = mc_libsimgrid_info;
-  }
   variables = object_info->global_variables;
 
   xbt_dynar_foreach(variables, cursor, current_var) {
@@ -273,7 +275,7 @@ static int compare_global_variables(int region_type, mc_mem_region_t r1,
 
     dw_type_t bvariable_type = current_var->type;
     res =
-        compare_areas_with_type(state,
+        compare_areas_with_type(state, process_index,
                                 (char *) current_var->address, snapshot1, r1,
                                 (char *) current_var->address, snapshot2, r2,
                                 bvariable_type, 0);
@@ -289,7 +291,8 @@ static int compare_global_variables(int region_type, mc_mem_region_t r1,
 
 }
 
-static int compare_local_variables(mc_snapshot_t snapshot1,
+static int compare_local_variables(int process_index,
+                                   mc_snapshot_t snapshot1,
                                    mc_snapshot_t snapshot2,
                                    mc_snapshot_stack_t stack1,
                                    mc_snapshot_stack_t stack2)
@@ -326,9 +329,9 @@ static int compare_local_variables(mc_snapshot_t snapshot1,
 
         dw_type_t subtype = current_var1->type;
         res =
-            compare_areas_with_type(state,
-                                    current_var1->address, snapshot1, mc_get_snapshot_region(current_var1->address, snapshot1),
-                                    current_var2->address, snapshot2, mc_get_snapshot_region(current_var2->address, snapshot2),
+            compare_areas_with_type(state, process_index,
+                                    current_var1->address, snapshot1, mc_get_snapshot_region(current_var1->address, snapshot1, process_index),
+                                    current_var2->address, snapshot2, mc_get_snapshot_region(current_var2->address, snapshot2, process_index),
                                     subtype, 0);
 
       if (res == 1) {
@@ -441,9 +444,9 @@ int snapshot_compare(void *state1, void *state2)
 #endif
 
   /* Init heap information used in heap comparison algorithm */
-  xbt_mheap_t heap1 = (xbt_mheap_t) mc_snapshot_read(std_heap, s1,
+  xbt_mheap_t heap1 = (xbt_mheap_t) mc_snapshot_read(std_heap, s1, MC_NO_PROCESS_INDEX,
     alloca(sizeof(struct mdesc)), sizeof(struct mdesc));
-  xbt_mheap_t heap2 = (xbt_mheap_t) mc_snapshot_read(std_heap, s2,
+  xbt_mheap_t heap2 = (xbt_mheap_t) mc_snapshot_read(std_heap, s2, MC_NO_PROCESS_INDEX,
     alloca(sizeof(struct mdesc)), sizeof(struct mdesc));
   res_init = init_heap_information(heap1, heap2, s1->to_ignore, s2->to_ignore);
   if (res_init == -1) {
@@ -473,7 +476,6 @@ int snapshot_compare(void *state1, void *state2)
   is_diff = 0;
 #endif
   mc_snapshot_stack_t stack1, stack2;
-
   while (cursor < xbt_dynar_length(s1->stacks)) {
     stack1 =
         (mc_snapshot_stack_t) xbt_dynar_get_as(s1->stacks, cursor,
@@ -481,8 +483,14 @@ int snapshot_compare(void *state1, void *state2)
     stack2 =
         (mc_snapshot_stack_t) xbt_dynar_get_as(s2->stacks, cursor,
                                                mc_snapshot_stack_t);
-    diff_local =
-        compare_local_variables(s1, s2, stack1, stack2);
+
+    if (stack1->process_index != stack2->process_index) {
+      diff_local = 1;
+      XBT_DEBUG("(%d - %d) Stacks with different process index (%i vs %i)", num1, num2,
+        stack1->process_index, stack2->process_index);
+    }
+    else diff_local =
+        compare_local_variables(stack1->process_index, s1, s2, stack1, stack2);
     if (diff_local > 0) {
 #ifdef MC_DEBUG
       if (is_diff == 0) {
@@ -524,6 +532,8 @@ int snapshot_compare(void *state1, void *state2)
   };
 #endif
 
+  mc_object_info_t object_infos[] = { NULL, mc_libsimgrid_info, mc_binary_info };
+
   int k = 0;
   for (k = 2; k != 0; --k) {
 #ifdef MC_DEBUG
@@ -533,8 +543,21 @@ int snapshot_compare(void *state1, void *state2)
 #endif
 
     /* Compare global variables */
-    is_diff =
-        compare_global_variables(k, s1->regions[k], s2->regions[k], s1, s2);
+#ifdef HAVE_SMPI
+    if (object_infos[k] == mc_binary_info && smpi_privatize_global_variables) {
+      // Compare the global variables separately for each simulates process:
+      for (int process_index = 0; process_index < smpi_process_count(); process_index++) {
+        is_diff =
+          compare_global_variables(object_infos[k], process_index,
+            s1->privatization_regions[process_index], s2->privatization_regions[process_index], s1, s2);
+        if (is_diff) break;
+      }
+    }
+    else
+#endif
+      is_diff =
+        compare_global_variables(object_infos[k], MC_NO_PROCESS_INDEX, s1->regions[k], s2->regions[k], s1, s2);
+
     if (is_diff != 0) {
 #ifdef MC_DEBUG
       xbt_os_walltimer_stop(timer);

@@ -41,15 +41,39 @@ typedef struct s_mc_function_index_item s_mc_function_index_item_t, *mc_function
 
 #define NB_REGIONS 3 /* binary data (data + BSS) (type = 2), libsimgrid data (data + BSS) (type = 1), std_heap (type = 0)*/ 
 
+/** @brief Copy/snapshot of a given memory region
+ *
+ *  Two types of region snapshots exist:
+ *  <ul>
+ *    <li>flat/dense snapshots are a simple copy of the region;</li>
+ *    <li>sparse/per-page snapshots are snaapshots which shared
+ *    identical pages.</li>
+ *  </ul>
+ */
 typedef struct s_mc_mem_region{
-  // Real address:
+  /** @brief  Virtual address of the region in the simulated process */
   void *start_addr;
-  // Copy of the datra:
+
+  /** @brief Permanent virtual address of the region
+   *
+   * This is usually the same address as the simuilated process address.
+   * However, when using SMPI privatization of global variables,
+   * each SMPI process has its own set of global variables stored
+   * at a different virtual address. The scheduler maps those region
+   * on the region of the global variables.
+   *
+   * */
+  void *permanent_addr;
+
+  /** @brief Copy of the snapshot for flat snapshots regions (NULL otherwise) */
   void *data;
-  // Size of the data region:
+
+  /** @brief Size of the data region in bytes */
   size_t size;
-  // For per-page snapshots, this is an array to the number of
+
+  /** @brief Pages indices in the page store for per-page snapshots (NULL otherwise) */
   size_t* page_numbers;
+
 } s_mc_mem_region_t, *mc_mem_region_t;
 
 static inline  __attribute__ ((always_inline))
@@ -83,15 +107,27 @@ typedef struct s_mc_snapshot{
   xbt_dynar_t ignored_data;
 } s_mc_snapshot_t, *mc_snapshot_t;
 
-mc_mem_region_t mc_get_snapshot_region(void* addr, mc_snapshot_t snapshot);
+/** @brief Process index used when no process is available
+ *
+ *  The expected behaviour is that if a process index is needed it will fail.
+ * */
+#define MC_NO_PROCESS_INDEX -1
+
+/** @brief Process index when any process is suitable
+ *
+ * We could use a special negative value in the future.
+ */
+#define MC_ANY_PROCESS_INDEX 0
+
+mc_mem_region_t mc_get_snapshot_region(void* addr, mc_snapshot_t snapshot, int process_index);
 
 static inline __attribute__ ((always_inline))
-mc_mem_region_t mc_get_region_hinted(void* addr, mc_snapshot_t snapshot, mc_mem_region_t region)
+mc_mem_region_t mc_get_region_hinted(void* addr, mc_snapshot_t snapshot, int process_index, mc_mem_region_t region)
 {
   if (mc_region_contain(region, addr))
     return region;
   else
-    return mc_get_snapshot_region(addr, snapshot);
+    return mc_get_snapshot_region(addr, snapshot, process_index);
 }
 
 /** Information about a given stack frame
@@ -111,6 +147,7 @@ typedef struct s_mc_stack_frame {
 typedef struct s_mc_snapshot_stack{
   xbt_dynar_t local_variables;
   xbt_dynar_t stack_frames; // mc_stack_frame_t
+  int process_index;
 }s_mc_snapshot_stack_t, *mc_snapshot_stack_t;
 
 typedef struct s_mc_global_t{
@@ -141,7 +178,7 @@ size_t* mc_take_page_snapshot_region(void* data, size_t page_count, uint64_t* pa
 void mc_free_page_snapshot_region(size_t* pagenos, size_t page_count);
 void mc_restore_page_snapshot_region(void* start_addr, size_t page_count, size_t* pagenos, uint64_t* pagemap, size_t* reference_pagenos);
 
-mc_mem_region_t mc_region_new_sparse(int type, void *start_addr, size_t size, mc_mem_region_t ref_reg);
+mc_mem_region_t mc_region_new_sparse(int type, void *start_addr, void* data_addr, size_t size, mc_mem_region_t ref_reg);
 void MC_region_destroy(mc_mem_region_t reg);
 void mc_region_restore_sparse(mc_mem_region_t reg, mc_mem_region_t ref_reg);
 void mc_softdirty_reset();
@@ -153,15 +190,15 @@ bool mc_snapshot_region_linear(mc_mem_region_t region) {
 
 void* mc_snapshot_read_fragmented(void* addr, mc_mem_region_t region, void* target, size_t size);
 
-void* mc_snapshot_read(void* addr, mc_snapshot_t snapshot, void* target, size_t size);
+void* mc_snapshot_read(void* addr, mc_snapshot_t snapshot, int process_index, void* target, size_t size);
 int mc_snapshot_region_memcmp(
   void* addr1, mc_mem_region_t region1,
   void* addr2, mc_mem_region_t region2, size_t size);
 int mc_snapshot_memcmp(
   void* addr1, mc_snapshot_t snapshot1,
-  void* addr2, mc_snapshot_t snapshot2, size_t size);
+  void* addr2, mc_snapshot_t snapshot2, int process_index, size_t size);
 
-static void* mc_snapshot_read_pointer(void* addr, mc_snapshot_t snapshot);
+static void* mc_snapshot_read_pointer(void* addr, mc_snapshot_t snapshot, int process_index);
 
 /** @brief State of the model-checker (global variables for the model checker)
  *
@@ -483,8 +520,8 @@ typedef struct s_mc_location_list {
   mc_expression_t locations;
 } s_mc_location_list_t, *mc_location_list_t;
 
-uintptr_t mc_dwarf_resolve_location(mc_expression_t expression, mc_object_info_t object_info, unw_cursor_t* c, void* frame_pointer_address, mc_snapshot_t snapshot);
-uintptr_t mc_dwarf_resolve_locations(mc_location_list_t locations, mc_object_info_t object_info, unw_cursor_t* c, void* frame_pointer_address, mc_snapshot_t snapshot);
+uintptr_t mc_dwarf_resolve_location(mc_expression_t expression, mc_object_info_t object_info, unw_cursor_t* c, void* frame_pointer_address, mc_snapshot_t snapshot, int process_index);
+uintptr_t mc_dwarf_resolve_locations(mc_location_list_t locations, mc_object_info_t object_info, unw_cursor_t* c, void* frame_pointer_address, mc_snapshot_t snapshot, int process_index);
 
 void mc_dwarf_expression_clear(mc_expression_t expression);
 void mc_dwarf_expression_init(mc_expression_t expression, size_t len, Dwarf_Op* ops);
@@ -514,7 +551,7 @@ struct s_dw_type{
   dw_type_t full_type; // The same (but more complete) type
 };
 
-void* mc_member_resolve(const void* base, dw_type_t type, dw_type_t member, mc_snapshot_t snapshot);
+void* mc_member_resolve(const void* base, dw_type_t type, dw_type_t member, mc_snapshot_t snapshot, int process_index);
 
 typedef struct s_dw_variable{
   Dwarf_Off dwarf_offset; /* Global offset of the field. */
@@ -597,6 +634,7 @@ typedef struct s_mc_expression_state {
   void* frame_base;
   mc_snapshot_t snapshot;
   mc_object_info_t object_info;
+  int process_index;
 } s_mc_expression_state_t, *mc_expression_state_t;
 
 int mc_dwarf_execute_expression(size_t n, const Dwarf_Op* ops, mc_expression_state_t state);
@@ -681,7 +719,7 @@ void* mc_translate_address_region(uintptr_t addr, mc_mem_region_t region)
  *  \return         Translated address in the snapshot address space
  * */
 static inline __attribute__((always_inline))
-void* mc_translate_address(uintptr_t addr, mc_snapshot_t snapshot)
+void* mc_translate_address(uintptr_t addr, mc_snapshot_t snapshot, int process_index)
 {
 
   // If not in a process state/clone:
@@ -689,7 +727,7 @@ void* mc_translate_address(uintptr_t addr, mc_snapshot_t snapshot)
     return (uintptr_t *) addr;
   }
 
-  mc_mem_region_t region = mc_get_snapshot_region((void*) addr, snapshot);
+  mc_mem_region_t region = mc_get_snapshot_region((void*) addr, snapshot, process_index);
 
   xbt_assert(mc_region_contain(region, (void*) addr), "Trying to read out of the region boundary.");
 
@@ -718,14 +756,14 @@ static inline __attribute__ ((always_inline))
   if(snapshot==NULL)
       xbt_die("snapshot is NULL");
   void** addr = &((xbt_mheap_t)std_heap)->breakval;
-  return mc_snapshot_read_pointer(addr, snapshot);
+  return mc_snapshot_read_pointer(addr, snapshot, MC_ANY_PROCESS_INDEX);
 }
 
 static inline __attribute__ ((always_inline))
-void* mc_snapshot_read_pointer(void* addr, mc_snapshot_t snapshot)
+void* mc_snapshot_read_pointer(void* addr, mc_snapshot_t snapshot, int process_index)
 {
   void* res;
-  return *(void**) mc_snapshot_read(addr, snapshot, &res, sizeof(void*));
+  return *(void**) mc_snapshot_read(addr, snapshot, process_index, &res, sizeof(void*));
 }
 
 /** @brief Read memory from a snapshot region

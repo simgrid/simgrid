@@ -158,27 +158,30 @@ static void mc_read_pagemap(uint64_t* pagemap, size_t page_start, size_t page_co
 
 // ***** High level API
 
-mc_mem_region_t mc_region_new_sparse(int type, void *start_addr, size_t size, mc_mem_region_t ref_reg)
+mc_mem_region_t mc_region_new_sparse(int type, void *start_addr, void* permanent_addr, size_t size, mc_mem_region_t ref_reg)
 {
   mc_mem_region_t new_reg = xbt_new(s_mc_mem_region_t, 1);
 
   new_reg->start_addr = start_addr;
+  new_reg->permanent_addr = permanent_addr;
   new_reg->data = NULL;
   new_reg->size = size;
   new_reg->page_numbers = NULL;
 
   xbt_assert((((uintptr_t)start_addr) & (xbt_pagesize-1)) == 0,
     "Not at the beginning of a page");
+  xbt_assert((((uintptr_t)permanent_addr) & (xbt_pagesize-1)) == 0,
+    "Not at the beginning of a page");
   size_t page_count = mc_page_count(size);
 
   uint64_t* pagemap = NULL;
   if (_sg_mc_soft_dirty && mc_model_checker->parent_snapshot) {
       pagemap = (uint64_t*) mmalloc_no_memset((xbt_mheap_t) mc_heap, sizeof(uint64_t) * page_count);
-      mc_read_pagemap(pagemap, mc_page_number(NULL, start_addr), page_count);
+      mc_read_pagemap(pagemap, mc_page_number(NULL, permanent_addr), page_count);
   }
 
   // Take incremental snapshot:
-  new_reg->page_numbers = mc_take_page_snapshot_region(start_addr, page_count, pagemap,
+  new_reg->page_numbers = mc_take_page_snapshot_region(permanent_addr, page_count, pagemap,
     ref_reg==NULL ? NULL : ref_reg->page_numbers);
 
   if(pagemap) {
@@ -189,7 +192,7 @@ mc_mem_region_t mc_region_new_sparse(int type, void *start_addr, size_t size, mc
 
 void mc_region_restore_sparse(mc_mem_region_t reg, mc_mem_region_t ref_reg)
 {
-  xbt_assert((((uintptr_t)reg->start_addr) & (xbt_pagesize-1)) == 0,
+  xbt_assert((((uintptr_t)reg->permanent_addr) & (xbt_pagesize-1)) == 0,
     "Not at the beginning of a page");
   size_t page_count = mc_page_count(reg->size);
 
@@ -198,11 +201,11 @@ void mc_region_restore_sparse(mc_mem_region_t reg, mc_mem_region_t ref_reg)
   // Read soft-dirty bits if necessary in order to know which pages have changed:
   if (_sg_mc_soft_dirty && mc_model_checker->parent_snapshot) {
     pagemap = (uint64_t*) mmalloc_no_memset((xbt_mheap_t) mc_heap, sizeof(uint64_t) * page_count);
-    mc_read_pagemap(pagemap, mc_page_number(NULL, reg->start_addr), page_count);
+    mc_read_pagemap(pagemap, mc_page_number(NULL, reg->permanent_addr), page_count);
   }
 
   // Incremental per-page snapshot restoration:
-  mc_restore_page_snapshot_region(reg->start_addr, page_count, reg->page_numbers,
+  mc_restore_page_snapshot_region(reg->permanent_addr, page_count, reg->page_numbers,
     pagemap, ref_reg ? ref_reg->page_numbers : NULL);
 
   // This is funny, the restoration can restore the state of the current heap,

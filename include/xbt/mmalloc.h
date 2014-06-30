@@ -71,7 +71,7 @@ struct s_dw_type;
 int mmalloc_compare_heap(struct s_mc_snapshot* snapshot1, struct s_mc_snapshot* snapshot2);
 int mmalloc_linear_compare_heap(xbt_mheap_t heap1, xbt_mheap_t heap2);
 int init_heap_information(xbt_mheap_t heap1, xbt_mheap_t heap2, xbt_dynar_t to_ignore1, xbt_dynar_t to_ignore2);
-int compare_heap_area(void *area1, void* area2, struct s_mc_snapshot* snapshot1, struct s_mc_snapshot* snapshot2, xbt_dynar_t previous, struct s_dw_type *type, int pointer_level);
+int compare_heap_area(int process_index, void *area1, void* area2, struct s_mc_snapshot* snapshot1, struct s_mc_snapshot* snapshot2, xbt_dynar_t previous, struct s_dw_type *type, int pointer_level);
 void reset_heap_information(void);
 
 size_t mmalloc_get_bytes_used(xbt_mheap_t);
