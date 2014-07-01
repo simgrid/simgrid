@@ -24,7 +24,6 @@ set(xml_files
   ${CMAKE_CURRENT_SOURCE_DIR}/deployment_peer03.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/deployment_peer04.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/deployment_peer05.xml
-  ${CMAKE_CURRENT_SOURCE_DIR}/small_platform.xml
   PARENT_SCOPE
   )
 set(examples_src

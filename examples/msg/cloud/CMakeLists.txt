@@ -29,7 +29,6 @@ set(tesh_files
   )
 set(xml_files
   ${xml_files}
-  ${CMAKE_CURRENT_SOURCE_DIR}/simple_plat.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/multicore_plat.xml
   PARENT_SCOPE
   )

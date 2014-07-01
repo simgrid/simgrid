@@ -17,12 +17,9 @@ set(tesh_files
 set(xml_files
   ${xml_files}
   ${CMAKE_CURRENT_SOURCE_DIR}/3hosts_2links_d.xml
-  ${CMAKE_CURRENT_SOURCE_DIR}/3hosts_2links_p.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/3links-d-timer.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/3links-d.xml
-  ${CMAKE_CURRENT_SOURCE_DIR}/3links-p.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/dogbone-d.xml
-  ${CMAKE_CURRENT_SOURCE_DIR}/dogbone-p.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/One_cluster-d.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/Two_clusters-d.xml
   PARENT_SCOPE

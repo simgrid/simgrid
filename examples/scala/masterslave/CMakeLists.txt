@@ -29,7 +29,6 @@ set(tesh_files
   )
 set(xml_files
   ${xml_files}
-  ${CMAKE_CURRENT_SOURCE_DIR}/deploy.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/masterslaveDeployment.xml
   PARENT_SCOPE
   )

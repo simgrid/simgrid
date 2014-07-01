@@ -58,11 +58,9 @@ set(xml_files
   ${CMAKE_CURRENT_SOURCE_DIR}/deployment_masterslave_forwarder.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/deployment_masterslave_mailbox_multicore.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/deployment_masterslave_vivaldi.xml
-  ${CMAKE_CURRENT_SOURCE_DIR}/platform_clusters.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/deployment_masterslave_kill.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/deployment_masterslave_mailbox.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/deployment_masterslave.xml
-  ${CMAKE_CURRENT_SOURCE_DIR}/platform_kill.xml
   PARENT_SCOPE
   )
 set(examples_src

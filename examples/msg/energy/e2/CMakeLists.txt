@@ -16,7 +16,6 @@ set(tesh_files
 set(xml_files
   ${xml_files}
   ${CMAKE_CURRENT_SOURCE_DIR}/deployment_e2.xml
-  ${CMAKE_CURRENT_SOURCE_DIR}/platform_e2.xml
   PARENT_SCOPE
   )
 

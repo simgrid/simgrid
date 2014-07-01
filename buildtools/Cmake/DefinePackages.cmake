@@ -1181,9 +1181,13 @@ set(PLATFORMS_EXAMPLES
   examples/platforms/conf/lcg_sept2004_grid.xml
   examples/platforms/conf/transform_optorsim_platform.pl
   examples/platforms/config.xml
+  examples/platforms/config_tracing.xml
   examples/platforms/content/small_content.txt
   examples/platforms/content/storage_content.txt
   examples/platforms/content/win_storage_content.txt
+  examples/platforms/trace/trace_A_failure.txt
+  examples/platforms/trace/trace_A.txt
+  examples/platforms/trace/trace_B.txt
   examples/platforms/data_center.xml
   examples/platforms/deployment_remote_io.xml
   examples/platforms/energy_platform.xml
@@ -1202,6 +1206,10 @@ set(PLATFORMS_EXAMPLES
   examples/platforms/routing_cluster.xml
   examples/platforms/storage.xml
   examples/platforms/small_platform.xml
+  examples/platforms/small_platform_fatpipe.xml
+  examples/platforms/small_platform_one_link_routes.xml
+  examples/platforms/small_platform_with_failures.xml
+  examples/platforms/small_platform_with_routers.xml
   examples/platforms/syscoord/generate_peer_platform.pl
   examples/platforms/syscoord/median_harvard.syscoord
   examples/platforms/syscoord/median_harvard.xml
@@ -1211,6 +1219,7 @@ set(PLATFORMS_EXAMPLES
   examples/platforms/syscoord/median_p2psim.xml
   examples/platforms/torus_cluster.xml
   examples/platforms/two_hosts_platform.xml
+  examples/platforms/two_hosts_platform_with_availability.xml
   examples/platforms/two_peers.xml
   examples/platforms/vivaldi.xml
   )

@@ -15,7 +15,6 @@ set(xml_files
   ${xml_files}
   ${CMAKE_CURRENT_SOURCE_DIR}/deployment_split.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/deployment.xml
-  ${CMAKE_CURRENT_SOURCE_DIR}/homogeneous_3_hosts.xml
   PARENT_SCOPE
   )
 set(examples_src

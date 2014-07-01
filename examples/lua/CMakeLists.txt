@@ -17,7 +17,6 @@ set(xml_files
   ${CMAKE_CURRENT_SOURCE_DIR}/bittorrent/bittorrent.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/kademlia/kademlia.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/multi_matrix/quicksort_deployment.xml
-  ${CMAKE_CURRENT_SOURCE_DIR}/multi_matrix/quicksort_platform.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/state_cloner/deployment_duplicated_globals.xml
   PARENT_SCOPE
   )

@@ -17,7 +17,6 @@ set(tesh_files
 set(xml_files
   ${xml_files}
   ${CMAKE_CURRENT_SOURCE_DIR}/test_ptask_deployment.xml
-  ${CMAKE_CURRENT_SOURCE_DIR}/test_ptask_platform.xml
   PARENT_SCOPE
   )
 set(examples_src

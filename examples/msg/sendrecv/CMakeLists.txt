@@ -18,7 +18,6 @@ set(tesh_files
 set(xml_files
   ${xml_files}
   ${CMAKE_CURRENT_SOURCE_DIR}/deployment_sendrecv.xml
-  ${CMAKE_CURRENT_SOURCE_DIR}/platform_sendrecv.xml
   PARENT_SCOPE
   )
 set(examples_src
