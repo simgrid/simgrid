@@ -247,8 +247,7 @@ static int compare_global_variables(int region_type, mc_mem_region_t r1,
                                     mc_mem_region_t r2, mc_snapshot_t snapshot1,
                                     mc_snapshot_t snapshot2)
 {
-  xbt_assert(r1 && r2,
-    "Missing region. Did you enable SMPI privatisation? It is not compatible with state comparison.");
+  xbt_assert(r1 && r2, "Missing region.");
   struct mc_compare_state state;
 
   xbt_dynar_t variables;
