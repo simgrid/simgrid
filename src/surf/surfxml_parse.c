@@ -7,6 +7,7 @@
 #include <errno.h>
 #include <math.h>
 #include <stdarg.h> /* va_arg */
+#include <libgen.h>
 
 #include "xbt/misc.h"
 #include "xbt/log.h"
@@ -1025,6 +1026,8 @@ void surf_parse_open(const char *file)
   if (!surf_parsed_filename_stack)
     surf_parsed_filename_stack = xbt_dynar_new(sizeof(char *), &xbt_free_ref);
   surf_parsed_filename = xbt_strdup(file);
+  char *dir = dirname(surf_parsed_filename);
+  xbt_dynar_push(surf_path, &dir);
 
   surf_file_to_parse = surf_fopen(file, "r");
   xbt_assert((surf_file_to_parse), "Unable to open \"%s\"\n", file);
@@ -1038,6 +1041,11 @@ void surf_parse_close(void)
   xbt_dynar_free(&surf_input_buffer_stack);
   xbt_dynar_free(&surf_file_to_parse_stack);
   xbt_dynar_free(&surf_parsed_filename_stack);
+  if (surf_parsed_filename) {
+    char *dir = NULL;
+    xbt_dynar_pop(surf_path, dir);
+    free(dir);
+  }
 
   free(surf_parsed_filename);
   surf_parsed_filename = NULL;
