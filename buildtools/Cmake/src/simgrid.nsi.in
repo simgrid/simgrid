@@ -160,7 +160,7 @@ Section "Examples" ExamplesSection
 	setOutPath $INSTDIR\examples\MasterSlave
 	file @CMAKE_HOME_DIRECTORY@\examples\msg\masterslave\masterslave_forwarder.c
 	file @CMAKE_HOME_DIRECTORY@\examples\msg\masterslave\deployment_masterslave_forwarder.xml
-	file @CMAKE_HOME_DIRECTORY@\examples\msg\msg_platform.xml
+	file @CMAKE_HOME_DIRECTORY@\examples\platforms\platform.xml
 	file @CMAKE_HOME_DIRECTORY@\doc\HelloWorld\CMakeLists.txt
 
 	# create shortcuts in the start menu programs directory
@@ -210,7 +210,7 @@ Section "SMPI Library" SMPISection
 	file @CMAKE_HOME_DIRECTORY@\examples\smpi\mvmul.c
 	file /r @CMAKE_HOME_DIRECTORY@\examples\smpi\mc
 	file @CMAKE_HOME_DIRECTORY@\examples\smpi\hostfile
-	file @CMAKE_HOME_DIRECTORY@\examples\msg\small_platform_with_routers.xml
+	file @CMAKE_HOME_DIRECTORY@\examples\platforms\small_platform_with_routers.xml
 	file @CMAKE_HOME_DIRECTORY@\examples\smpi\CMakeLists.txt
 SectionEnd
 
