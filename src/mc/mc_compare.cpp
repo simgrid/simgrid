@@ -107,7 +107,7 @@ static int compare_areas_with_type(struct mc_compare_state& state,
     void* data1 =
       mc_snapshot_read_region(real_area1, region1, alloca(type->byte_size), type->byte_size);
     void* data2 =
-      mc_snapshot_read_region(real_area2, region1, alloca(type->byte_size), type->byte_size);
+      mc_snapshot_read_region(real_area2, region2, alloca(type->byte_size), type->byte_size);
     return (memcmp(data1, data2, type->byte_size) != 0);
     break;
   }
