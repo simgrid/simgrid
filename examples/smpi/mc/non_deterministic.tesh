@@ -14,7 +14,7 @@ $ ../../../smpi_script/bin/smpirun -hostfile ${srcdir:=.}/hostfile_non_determini
 > [0.000000] [mc_global/INFO] Check communication determinism
 > [0.000000] [mc_global/INFO] Get debug information ...
 > [0.000000] [mc_global/INFO] Get debug information done !
-> [0.000000] [mc_comm_determinism/INFO] The communications pattern of the process 1 is different!
+> [0.000000] [mc_comm_determinism/INFO] The communications pattern of the process 1 is different! (Different communication : 1)
 > [0.000000] [mc_comm_determinism/INFO] ****************************************************
 > [0.000000] [mc_comm_determinism/INFO] ***** Non-deterministic communications pattern *****
 > [0.000000] [mc_comm_determinism/INFO] ****************************************************
