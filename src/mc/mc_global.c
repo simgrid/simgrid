@@ -576,7 +576,8 @@ void MC_replay(xbt_fifo_t stack, int start)
     if (mc_reduce_kind == e_mc_reduce_dpor) {
       MC_SET_MC_HEAP;
       char *key = bprintf("%lu", saved_req->issuer->pid);
-      xbt_dict_remove(first_enabled_state, key);
+      if(xbt_dict_get_or_null(first_enabled_state, key))
+         xbt_dict_remove(first_enabled_state, key);
       xbt_free(key);
       MC_SET_STD_HEAP;
     }
