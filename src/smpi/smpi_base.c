@@ -373,6 +373,7 @@ void smpi_mpi_start(MPI_Request request)
     if ( (! (request->flags & SSEND)) && (request->size < sg_cfg_get_int("smpi/send_is_detached_thres"))) {
       void *oldbuf = NULL;
       request->detached = 1;
+      XBT_DEBUG("Send request %p is detached", request);
       request->refcount++;
       if(request->old_type->has_subtype == 0){
         oldbuf = request->buf;
@@ -385,9 +386,9 @@ void smpi_mpi_start(MPI_Request request)
   	  }
           buf = xbt_malloc(request->size);
           memcpy(buf,oldbuf,request->size);
+          XBT_DEBUG("buf %p copied into %p",oldbuf,buf);
         }
       }
-      XBT_DEBUG("Send request %p is detached; buf %p copied into %p",request,oldbuf,request->buf);
     }
 
     // we make a copy here, as the size is modified by simix, and we may reuse the request in another receive later
