@@ -15,7 +15,7 @@ if(enable_smpi AND enable_smpi_MPICH3_testsuite AND SMPI_FORTRAN)
 
   add_executable(allpairf allpairf.f)
 #  add_executable(greqf greqf.f dummyf.f)
-  #add_executable(mprobef mprobef.f)
+#  add_executable(mprobef mprobef.f)
   add_executable(statusesf statusesf.f)
 
   target_link_libraries(allpairf simgrid mtest_f77)

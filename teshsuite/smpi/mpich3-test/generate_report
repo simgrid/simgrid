@@ -1,0 +1,30 @@
+#! /bin/bash
+
+explore_files() {
+
+  for cmake in `find -name CMakeLists.txt` ; do
+    d=`dirname $cmake`
+  
+    echo;echo "Directory $d"
+  
+    grep add_executable $cmake |\
+      sed -e 's/ #/#/' -e 's/ *add_executable(//' -e 's/ .*//'|\
+      sed -e 's/^\([^#].*\)/\1 PASS/' -e 's/^#\(.*\)/\1 todo/' |\
+      sed -e "s|^|$d/|" -e "s|^\\./||" | \
+      tee >(sed -e 's/[^ ]* //'|sort|uniq -c|sed -e "s|^ *|Summary: |") |\
+      cat
+
+  done
+}
+
+explore_files
+
+echo; echo "----------------------------"
+
+echo -n "Total amount of passed tests:  "
+(echo 0; explore_files | grep Summary: |grep PASS|\
+  sed 's/Summary: \([0-9]*\) .*/\1 +/';echo p)  | dc
+
+echo -n "Total amount of failed tests:  "
+(echo 0; explore_files | grep Summary: |grep todo|\
+  sed 's/Summary: \([0-9]*\) .*/\1 +/';echo p)  | dc
