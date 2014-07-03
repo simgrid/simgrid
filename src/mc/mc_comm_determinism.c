@@ -94,7 +94,7 @@ static void deterministic_pattern(xbt_dynar_t pattern, int partial)
         if (comm1->type == SIMIX_COMM_SEND) {
           comm2 = get_comm_pattern_from_idx(process_comms_pattern2, &send_index, comm1->type, current_process);
           if (compare_comm_pattern(comm1, comm2)) {
-            XBT_INFO("The communications pattern of the process %u is different! (Different communication : %u)", current_process, cursor);
+            XBT_INFO("The communications pattern of the process %u is different! (Different communication : %u)", current_process, cursor+1);
             initial_global_state->send_deterministic = 0;
             initial_global_state->comm_deterministic = 0;
             return;
@@ -105,7 +105,7 @@ static void deterministic_pattern(xbt_dynar_t pattern, int partial)
           if (compare_comm_pattern(comm1, comm2)) {
             initial_global_state->comm_deterministic = 0;
             if (!_sg_mc_send_determinism){
-              XBT_INFO("The communications pattern of the process %u is different! (Different communication : %u)", current_process, cursor);
+              XBT_INFO("The communications pattern of the process %u is different! (Different communication : %u)", current_process, cursor+1);
               return;
             }
           }
