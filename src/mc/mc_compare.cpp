@@ -171,6 +171,8 @@ static int compare_areas_with_type(struct mc_compare_state& state,
 
       if (addr_pointed1 == NULL && addr_pointed2 == NULL)
         return 0;
+      if (addr_pointed1 == NULL || addr_pointed2 == NULL)
+        return 1;
       if (!add_compared_pointers(state, addr_pointed1, addr_pointed2))
         return 0;
 
