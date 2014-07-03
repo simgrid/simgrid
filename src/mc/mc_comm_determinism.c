@@ -91,21 +91,21 @@ static void deterministic_pattern(xbt_dynar_t pattern, int partial)
     } else {
       while (cursor < nb_comms2) {
         comm1 = (mc_comm_pattern_t)xbt_dynar_get_as(process_comms_pattern1, cursor, mc_comm_pattern_t);
-        if (comm1->type == SIMIX_COMM_SEND && comm1->src_proc == current_process) {
+        if (comm1->type == SIMIX_COMM_SEND) {
           comm2 = get_comm_pattern_from_idx(process_comms_pattern2, &send_index, comm1->type, current_process);
           if (compare_comm_pattern(comm1, comm2)) {
-            XBT_INFO("The communications pattern of the process %u is different!", current_process);
+            XBT_INFO("The communications pattern of the process %u is different! (Different communication : %u)", current_process, cursor);
             initial_global_state->send_deterministic = 0;
             initial_global_state->comm_deterministic = 0;
             return;
           }
           send_index++;
-        } else if (comm1->type == SIMIX_COMM_RECEIVE && comm1->dst_proc == current_process) {
+        } else if (comm1->type == SIMIX_COMM_RECEIVE) {
           comm2 = get_comm_pattern_from_idx(process_comms_pattern2, &recv_index, comm1->type, current_process);
           if (compare_comm_pattern(comm1, comm2)) {
             initial_global_state->comm_deterministic = 0;
             if (!_sg_mc_send_determinism){
-              XBT_INFO("The communications pattern of the process %u is different!", current_process);
+              XBT_INFO("The communications pattern of the process %u is different! (Different communication : %u)", current_process, cursor);
               return;
             }
           }
@@ -183,8 +183,7 @@ void get_comm_pattern(xbt_dynar_t list, smx_simcall_t request, int call)
     pattern->data_size = pattern->comm->comm.src_buff_size;
     pattern->data = xbt_malloc0(pattern->data_size);
     addr_pointed = *(void **) pattern->comm->comm.src_buff;
-    if (addr_pointed > std_heap
-        && addr_pointed < ((xbt_mheap_t) std_heap)->breakval)
+    if (addr_pointed > std_heap && addr_pointed < ((xbt_mheap_t) std_heap)->breakval)
       memcpy(pattern->data, addr_pointed, pattern->data_size);
     else
       memcpy(pattern->data, pattern->comm->comm.src_buff, pattern->data_size);
