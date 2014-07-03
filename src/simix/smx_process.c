@@ -64,20 +64,12 @@ void SIMIX_process_cleanup(smx_process_t process)
           action, action->comm.detached, (int)action->state, action->comm.src_proc, action->comm.dst_proc);
       action->comm.src_proc = NULL;
 
-      if (action->comm.detached) {
-         if (action->comm.refcount == 0) {
-           XBT_DEBUG("Increase the refcount before destroying it since it's detached");
-           /* I'm not supposed to destroy a detached comm from the sender side,
-            * unless there is no receiver matching the rdv */
-           action->comm.refcount++;
-           SIMIX_comm_destroy(action);
-         }
-         else {
-           XBT_DEBUG("Don't destroy it since its refcount is %d", action->comm.refcount);
-         }
-      } else {
+      /* I'm not supposed to destroy a detached comm from the sender side, */
+      if (!action->comm.detached)
         SIMIX_comm_destroy(action);
-      }
+      else
+        XBT_DEBUG("Don't destroy it since it's a detached comm");
+      
     }
     else if (action->comm.dst_proc == process){
       XBT_DEBUG("Found an unfinished recv comm %p, state %d, src = %p, dst = %p",
