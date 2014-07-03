@@ -160,9 +160,8 @@ static int compare_areas_with_type(struct mc_compare_state& state,
   case DW_TAG_reference_type:
   case DW_TAG_rvalue_reference_type:
   {
-    void* temp;
-    void* addr_pointed1 = *(void**) mc_snapshot_read_region(real_area1, region1, &temp, sizeof(void**));
-    void* addr_pointed2 = *(void**) mc_snapshot_read_region(real_area2, region2, &temp, sizeof(void**));
+    void* addr_pointed1 = mc_snapshot_read_pointer_region(real_area1, region1);
+    void* addr_pointed2 = mc_snapshot_read_pointer_region(real_area2, region2);
 
     if (type->subtype && type->subtype->type == DW_TAG_subroutine_type) {
       return (addr_pointed1 != addr_pointed2);

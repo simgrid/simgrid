@@ -764,6 +764,12 @@ void* mc_snapshot_read_region(void* addr, mc_mem_region_t region, void* target, 
   }
 }
 
+static inline __attribute__ ((always_inline))
+void* mc_snapshot_read_pointer_region(void* addr, mc_mem_region_t region)
+{
+  void* res;
+  return *(void**) mc_snapshot_read_region(addr, region, &res, sizeof(void*));
+}
 
 SG_END_DECL()
 
