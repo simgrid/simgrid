@@ -1183,13 +1183,18 @@ int compare_heap_area(void *area1, void *area2, mc_snapshot_t snapshot1,
 
   void *addr_block1, *addr_block2, *addr_frag1, *addr_frag2, *real_addr_block1,
       *real_addr_block2, *real_addr_frag1, *real_addr_frag2;
-  void *area1_to_compare, *area2_to_compare;
+
   int type_size = -1;
   int offset1 = 0, offset2 = 0;
   int new_size1 = -1, new_size2 = -1;
   dw_type_t new_type1 = NULL, new_type2 = NULL;
 
   int match_pairs = 0;
+
+  void* real_area1_to_compare = area1;
+  void* real_area2_to_compare = area2;
+  void *area1_to_compare = (char *) state->heapbase1 + ((char *)area1 - (char*)((xbt_mheap_t) state->s_heap)->heapbase);
+  void *area2_to_compare = (char *) state->heapbase2 + ((char *)area2 - (char*)((xbt_mheap_t) state->s_heap)->heapbase);
 
   if (previous == NULL) {
     previous =
@@ -1270,6 +1275,9 @@ int compare_heap_area(void *area1, void *area2, mc_snapshot_t snapshot1,
 
     // TODO, lookup variable type from block type as done for fragmented blocks
 
+    offset1 = (char *) area1 - (char *) real_addr_block1;
+    offset2 = (char *) area2 - (char *) real_addr_block2;
+
     if (state->equals_to1_(block1, 0).valid
         && state->equals_to2_(block2, 0).valid) {
       if (equal_blocks(state, block1, block2)) {
@@ -1339,9 +1347,6 @@ int compare_heap_area(void *area1, void *area2, mc_snapshot_t snapshot1,
     frag1 = -1;
     frag2 = -1;
 
-    area1_to_compare = addr_block1;
-    area2_to_compare = addr_block2;
-
     if ((state->heapinfo1[block1].busy_block.ignore > 0)
         && (state->heapinfo2[block2].busy_block.ignore ==
             state->heapinfo1[block1].busy_block.ignore))
@@ -1383,6 +1388,8 @@ int compare_heap_area(void *area1, void *area2, mc_snapshot_t snapshot1,
         }
         return -1;
       }
+
+      // ?
       if (type_size != state->heapinfo1[block1].busy_frag.frag_size[frag1]
           || type_size != state->heapinfo2[block2].busy_frag.frag_size[frag2]) {
         if (match_pairs) {
@@ -1392,10 +1399,11 @@ int compare_heap_area(void *area1, void *area2, mc_snapshot_t snapshot1,
         return -1;
       }
     }
+
     // Check if the blocks are already matched together:
     if (state->equals_to1_(block1, frag1).valid
         && state->equals_to2_(block2, frag2).valid) {
-      if (equal_fragments(state, block1, frag1, block2, frag2)) {
+      if (offset1==offset2 && equal_fragments(state, block1, frag1, block2, frag2)) {
         if (match_pairs) {
           match_equals(state, previous);
           xbt_dynar_free(&previous);
@@ -1419,11 +1427,12 @@ int compare_heap_area(void *area1, void *area2, mc_snapshot_t snapshot1,
         return 1;
       }
     }
+
     // Size of the fragment:
     size = state->heapinfo1[block1].busy_frag.frag_size[frag1];
 
     // Remember (basic) type inference.
-    // The current data structure only allows us to do this for the whole block.
+    // The current data structure only allows us to do this for the whole fragment.
     if (type != NULL && area1 == real_addr_frag1) {
       state->types1_(block1, frag1) = type;
     }
@@ -1493,9 +1502,6 @@ int compare_heap_area(void *area1, void *area2, mc_snapshot_t snapshot1,
       }
     }
 
-    area1_to_compare = (char *) addr_frag1 + offset1;
-    area2_to_compare = (char *) addr_frag2 + offset2;
-
     if (new_size1 > 0 && new_size1 == new_size2) {
       type = new_type1;
       size = new_size1;
@@ -1537,14 +1543,16 @@ int compare_heap_area(void *area1, void *area2, mc_snapshot_t snapshot1,
   /* Start comparison */
   if (type) {
     res_compare =
-        compare_heap_area_with_type(state, area1, area2, area1_to_compare,
-                                    area2_to_compare, snapshot1, snapshot2,
+        compare_heap_area_with_type(state, real_area1_to_compare, real_area2_to_compare,
+                                    area1_to_compare, area2_to_compare,
+                                    snapshot1, snapshot2,
                                     previous, type, size, check_ignore,
                                     pointer_level);
   } else {
     res_compare =
-        compare_heap_area_without_type(state, area1, area2, area1_to_compare,
-                                       area2_to_compare, snapshot1, snapshot2,
+        compare_heap_area_without_type(state, real_area1_to_compare, real_area2_to_compare,
+                                       area1_to_compare, area2_to_compare,
+                                       snapshot1, snapshot2,
                                        previous, size, check_ignore);
   }
   if (res_compare == 1) {
