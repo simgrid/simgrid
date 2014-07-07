@@ -1,5 +1,4 @@
-#needs MPI_Type_dup, MPI_Type_set_name
-#sendrecv1 4
+sendrecv1 4
 sendrecv2 2
 sendrecv3 2
 sendflood 8 timeLimit=600
@@ -8,8 +7,7 @@ sendflood 8 timeLimit=600
 sendall 4
 anyall 2
 eagerdt 2
-#needs MPI_Type_get_name, MPI_Type_dup
-#pingping 2
+pingping 2
 bottom 2
 #needs MPI_Bsend
 #bsend1 1
