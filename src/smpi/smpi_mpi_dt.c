@@ -1471,6 +1471,8 @@ static void minloc_func(void *a, void *b, int *length,
     APPLY_FUNC(a, b, length, double_int, MINLOC_OP);
   } else if (*datatype == MPI_SHORT_INT) {
     APPLY_FUNC(a, b, length, short_int, MINLOC_OP);
+  } else if (*datatype == MPI_2LONG) {
+    APPLY_FUNC(a, b, length, long_long, MINLOC_OP);
   } else if (*datatype == MPI_2INT) {
     APPLY_FUNC(a, b, length, int_int, MINLOC_OP);
   } else if (*datatype == MPI_LONG_DOUBLE_INT) {
@@ -1493,6 +1495,8 @@ static void maxloc_func(void *a, void *b, int *length,
     APPLY_FUNC(a, b, length, double_int, MAXLOC_OP);
   } else if (*datatype == MPI_SHORT_INT) {
     APPLY_FUNC(a, b, length, short_int, MAXLOC_OP);
+  } else if (*datatype == MPI_2LONG) {
+    APPLY_FUNC(a, b, length, long_long, MAXLOC_OP);
   } else if (*datatype == MPI_2INT) {
     APPLY_FUNC(a, b, length, int_int, MAXLOC_OP);
   } else if (*datatype == MPI_LONG_DOUBLE_INT) {
