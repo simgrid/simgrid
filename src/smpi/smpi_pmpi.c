@@ -1004,7 +1004,7 @@ int PMPI_Irecv(void *buf, int count, MPI_Datatype datatype, int src,
     *request = MPI_REQUEST_NULL;
     retval = MPI_SUCCESS;
   } else if (src!=MPI_ANY_SOURCE && (src >= smpi_group_size(smpi_comm_group(comm)) || src <0)){
-    retval = MPI_ERR_COMM;
+    retval = MPI_ERR_RANK;
   } else if (count < 0) {
     retval = MPI_ERR_COUNT;
   } else if (buf==NULL && count > 0) {
