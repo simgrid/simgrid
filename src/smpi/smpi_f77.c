@@ -180,8 +180,13 @@ void mpi_init_(int* ierr) {
      datatype_lookup = xbt_dict_new_homogeneous(NULL);
      new_datatype(MPI_BYTE);
      new_datatype(MPI_CHAR);
+     #if defined(__alpha__) || defined(__sparc64__) || defined(__x86_64__) || defined(__ia64__)
      new_datatype(MPI_INT);
      new_datatype(MPI_INT);
+     #else
+     new_datatype(MPI_LONG);
+     new_datatype(MPI_LONG);
+     #endif
      new_datatype(MPI_INT8_T);
      new_datatype(MPI_INT16_T);
      new_datatype(MPI_INT32_T);
@@ -192,7 +197,11 @@ void mpi_init_(int* ierr) {
      new_datatype(MPI_DOUBLE);
      new_datatype(MPI_C_FLOAT_COMPLEX);
      new_datatype(MPI_C_DOUBLE_COMPLEX);
+     #if defined(__alpha__) || defined(__sparc64__) || defined(__x86_64__) || defined(__ia64__)
      new_datatype(MPI_2INT);
+     #else
+     new_datatype(MPI_2LONG);
+     #endif
      new_datatype(MPI_UINT8_T);
      new_datatype(MPI_UINT16_T);
      new_datatype(MPI_UINT32_T);
