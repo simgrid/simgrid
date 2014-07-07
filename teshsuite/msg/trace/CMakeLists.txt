@@ -14,19 +14,18 @@ set(tesh_files
   )
 set(xml_files
   ${xml_files}
-  ${CMAKE_CURRENT_SOURCE_DIR}/platform.xml
-  ${CMAKE_CURRENT_SOURCE_DIR}/platform_trace.xml
-  ${CMAKE_CURRENT_SOURCE_DIR}/test10.xml
-  ${CMAKE_CURRENT_SOURCE_DIR}/test11.xml
-  ${CMAKE_CURRENT_SOURCE_DIR}/test1.xml
-  ${CMAKE_CURRENT_SOURCE_DIR}/test2.xml
-  ${CMAKE_CURRENT_SOURCE_DIR}/test3.xml
-  ${CMAKE_CURRENT_SOURCE_DIR}/test4.xml
-  ${CMAKE_CURRENT_SOURCE_DIR}/test5.xml
-  ${CMAKE_CURRENT_SOURCE_DIR}/test6.xml
-  ${CMAKE_CURRENT_SOURCE_DIR}/test7.xml
-  ${CMAKE_CURRENT_SOURCE_DIR}/test8.xml
-  ${CMAKE_CURRENT_SOURCE_DIR}/test9.xml
+  ${CMAKE_CURRENT_SOURCE_DIR}/test-hbp1.0-hbp1.0-hbp1.0.xml
+  ${CMAKE_CURRENT_SOURCE_DIR}/test-hbp1.0-hbp3.0-hbp4.0.xml
+  ${CMAKE_CURRENT_SOURCE_DIR}/test-hbp1.5-hbp1.5.xml
+  ${CMAKE_CURRENT_SOURCE_DIR}/test-hbp1-c0s0-c0s1.xml
+  ${CMAKE_CURRENT_SOURCE_DIR}/test-hbp1-c0s0-c1s0.xml
+  ${CMAKE_CURRENT_SOURCE_DIR}/test-hbp1-c0s1-c0s2.xml
+  ${CMAKE_CURRENT_SOURCE_DIR}/test-hbp1-c0s1-c2s2.xml
+  ${CMAKE_CURRENT_SOURCE_DIR}/test-hbp1-c0s2-c1s0.xml
+  ${CMAKE_CURRENT_SOURCE_DIR}/test-hbp1-c0s2-c1s1.xml
+  ${CMAKE_CURRENT_SOURCE_DIR}/test-hbp1-c1s1-c1s2.xml
+  ${CMAKE_CURRENT_SOURCE_DIR}/test-hbp1-c1s1-c3s2.xml
+  ${CMAKE_CURRENT_SOURCE_DIR}/test-hbp2.5-hbp1.5.xml
   PARENT_SCOPE
   )
 set(teshsuite_src
@@ -40,6 +39,5 @@ set(bin_files
   )
 set(txt_files
   ${txt_files}
-  ${CMAKE_CURRENT_SOURCE_DIR}/file.trace
   PARENT_SCOPE
   )

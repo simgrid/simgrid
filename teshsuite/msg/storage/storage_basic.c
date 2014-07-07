@@ -153,14 +153,14 @@ void dump_platform_storages(void){
 
 int client(int argc, char *argv[])
 {
-  hsm_put("server","/sd1/doc/simgrid/examples/cxx/autoDestination/FinalizeTask.cxx","/sd2/scratch/toto.cxx");
-  hsm_put("server","/sd1/doc/simgrid/examples/cxx/autoDestination/autoDestination_deployment.xml","/sd2/scratch/titi.xml");
-  hsm_put("server","/sd1/doc/simgrid/examples/cxx/autoDestination/Slave.cxx","/sd2/scratch/tata.cxx");
+  hsm_put("alice","/home/doc/simgrid/examples/msg/icomms/small_platform.xml","c:\\Windows\\toto.cxx");
+  hsm_put("alice","/home/doc/simgrid/examples/msg/parallel_task/test_ptask_deployment.xml","c:\\Windows\\titi.xml");
+  hsm_put("alice","/home/doc/simgrid/examples/msg/alias/masterslave_forwarder_with_alias.c","c:\\Windows\\tata.c");
 
   msg_task_t finalize = MSG_task_create("finalize", 0, 0, NULL);
-  MSG_task_send(finalize, "server");
+  MSG_task_send(finalize, "alice");
 
-  get_set_storage_data("cdisk");
+  get_set_storage_data("Disk1");
 
   return 1;
 }

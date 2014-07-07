@@ -2,8 +2,8 @@
  <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">
  <platform version="3">
    <!-- Deployment -->
-   <process host="toto" function="sendpid"/>
-   <process host="toto" function="sendpid"/>
-   <process host="toto" function="sendpid"/>
-   <process host="toto" function="killall"/>
+   <process host="Tremblay" function="sendpid"/>
+   <process host="Tremblay" function="sendpid"/>
+   <process host="Tremblay" function="sendpid"/>
+   <process host="Tremblay" function="killall"/>
  </platform>

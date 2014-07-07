@@ -1,8 +1,8 @@
 <?xml version='1.0'?>
 <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">
 <platform version="3">
-  <process host="CPU1" function="test_trace" start_time="10">
-  	<argument value="850"/>
+  <process host="Cpu B" function="test_trace" start_time="20">
+  	<argument value="40"/>
   	<argument value="1.0"/>
   </process>
 </platform>

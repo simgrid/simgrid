@@ -6,8 +6,8 @@ if(enable_smpi)
   else()
       set(CMAKE_C_COMPILER "${CMAKE_BINARY_DIR}/smpi_script/bin/smpicc")
   endif()
-	
-	
+
+
   set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}")
 
   include_directories("${CMAKE_HOME_DIRECTORY}/include/smpi")
@@ -21,7 +21,6 @@ if(enable_smpi)
     PARENT_SCOPE)
   set(xml_files
     ${xml_files}
-    ${CMAKE_CURRENT_SOURCE_DIR}/small_platform.xml
     PARENT_SCOPE)
   set(teshsuite_src
     ${teshsuite_src}
@@ -35,5 +34,5 @@ if(enable_smpi)
     ${CMAKE_CURRENT_SOURCE_DIR}/hostfile.txt
     ${CMAKE_CURRENT_SOURCE_DIR}/README
     PARENT_SCOPE)
-    
+
 endif(enable_smpi)

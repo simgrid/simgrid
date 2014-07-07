@@ -21,9 +21,7 @@ set(tesh_files
   )
 set(xml_files
   ${xml_files}
-  ${CMAKE_CURRENT_SOURCE_DIR}/platform.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/deployment.xml
-  ${CMAKE_CURRENT_SOURCE_DIR}/one_host_platform.xml
   PARENT_SCOPE
   )
 set(teshsuite_src
@@ -38,8 +36,5 @@ set(bin_files
   )
 set(txt_files
   ${txt_files}
-  ${CMAKE_CURRENT_SOURCE_DIR}/storage_content_c.txt
-  ${CMAKE_CURRENT_SOURCE_DIR}/storage_content_s1.txt
-  ${CMAKE_CURRENT_SOURCE_DIR}/storage_content_s2.txt
   PARENT_SCOPE
   )

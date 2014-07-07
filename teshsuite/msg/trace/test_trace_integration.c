@@ -43,7 +43,6 @@ int test_trace(int argc, char *argv[])
 
   XBT_INFO("Test finished");
 
-
   return 0;
 }
 

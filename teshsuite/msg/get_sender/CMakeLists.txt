@@ -15,7 +15,6 @@ set(tesh_files
 set(xml_files
   ${xml_files}
   ${CMAKE_CURRENT_SOURCE_DIR}/get_sender_d.xml
-  ${CMAKE_CURRENT_SOURCE_DIR}/get_sender_p.xml
   PARENT_SCOPE
   )
 set(teshsuite_src

@@ -1,0 +1,16 @@
+<?xml version='1.0'?>
+<!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">
+<platform version="3">
+  <process host="Cpu B" function="test_trace" start_time="10">
+  	<argument value="25"/>
+  	<argument value="1.0"/>
+  </process>
+  <process host="Cpu B" function="test_trace" start_time="10">
+  	<argument value="75"/>
+  	<argument value="3.0"/>
+  </process>
+  <process host="Cpu B" function="test_trace" start_time="20">
+  	<argument value="120"/>
+  	<argument value="4.0"/>
+  </process>
+</platform>

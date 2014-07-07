@@ -437,7 +437,7 @@ int simcall_vm_get_state(smx_host_t vm)
  */
 void *simcall_vm_get_pm(smx_host_t vm)
 {
-  /* will jump to SIMIX_pre_vm_migrate in src/simix/smx_smurf_private.h */
+  /* will jump to SIMIX_pre_vm_get_pm in src/simix/smx_smurf_private.h */
   return simcall_BODY_vm_get_pm(vm);
 }
 

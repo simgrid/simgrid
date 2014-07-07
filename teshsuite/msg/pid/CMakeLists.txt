@@ -19,7 +19,6 @@ set(tesh_files
 set(xml_files
   ${xml_files}
   ${CMAKE_CURRENT_SOURCE_DIR}/pid_d.xml
-  ${CMAKE_CURRENT_SOURCE_DIR}/pid_p.xml
   PARENT_SCOPE
   )
 set(teshsuite_src

@@ -31,7 +31,7 @@ CpuTiTrace::CpuTiTrace(tmgr_trace_t power_trace)
                   (xbt_dynar_length(power_trace->s_list.event_list) + 1));
   p_integral = (double*) xbt_malloc0(sizeof(double) *
                   (xbt_dynar_length(power_trace->s_list.event_list) + 1));
-  m_nbPoints = xbt_dynar_length(power_trace->s_list.event_list);
+  m_nbPoints = xbt_dynar_length(power_trace->s_list.event_list) + 1;
   xbt_dynar_foreach(power_trace->s_list.event_list, cpt, val) {
     p_timePoints[i] = time;
     p_integral[i] = integral;

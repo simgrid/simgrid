@@ -1,165 +1,226 @@
 #! ./tesh
+p c=cycle s=step p=priority h=host
 
-p Testing trace integration using file.trace and test1.xml, a < max(time), b < max(time)
+p Testing trace integration using trace_B.txt and test-hbp1-c0s0-c0s1.xml, test_trace:start == trace_cycle_0_step_0, test_trace:end < trace_cycle_0_step_1
 
 ! output sort
-$ $SG_TEST_EXENV ${bindir:=.}/test_trace_integration$EXEEXT ./platform.xml ./test1.xml --cfg=workstation/model:compound --cfg=network/model:CM02 --cfg=cpu/optim:TI "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+$ $SG_TEST_EXENV ${bindir:=.}/test_trace_integration$EXEEXT ../../../examples/platforms/two_hosts_platform_with_availability.xml ./test-hbp1-c0s0-c0s1.xml --cfg=workstation/model:compound --cfg=network/model:CM02 --cfg=cpu/optim:TI --log=simix.thresh:warning "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (0:@) Configuration change: Set 'workstation/model' to 'compound'
 > [  0.000000] (0:@) Configuration change: Set 'network/model' to 'CM02'
 > [  0.000000] (0:@) Configuration change: Set 'cpu/optim' to 'TI'
-> [ 10.000000] (1:test_trace@CPU1) Testing the trace integration cpu model: CpuTI
-> [ 10.000000] (1:test_trace@CPU1) Task size: 400.000000
-> [ 10.000000] (1:test_trace@CPU1) Task prio: 1.000000
-> [ 40.000000] (1:test_trace@CPU1) Test finished
+> [  0.000000] (1:test_trace@Cpu B) Testing the trace integration cpu model: CpuTI
+> [  0.000000] (1:test_trace@Cpu B) Task size: 40.000000
+> [  0.000000] (1:test_trace@Cpu B) Task prio: 1.000000
+> [  4.000000] (1:test_trace@Cpu B) Test finished
 
-p Testing trace integration using file.trace and test2.xml, a < max(time), max(time) < b < 2 max(time)
+p Testing trace integration using trace_B.txt and test-hbp1-c0s1-c0s2.xml, test_trace:start == trace_cycle_0_step_1, test_trace:end < trace_cycle_0_step_2
 
 ! output sort
-$ $SG_TEST_EXENV ${bindir:=.}/test_trace_integration$EXEEXT ./platform.xml ./test2.xml --cfg=workstation/model:compound --cfg=network/model:CM02 --cfg=cpu/optim:TI "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+$ $SG_TEST_EXENV ${bindir:=.}/test_trace_integration$EXEEXT ../../../examples/platforms/two_hosts_platform_with_availability.xml ./test-hbp1-c0s1-c0s2.xml --cfg=workstation/model:compound --cfg=network/model:CM02 --cfg=cpu/optim:TI --log=simix.thresh:warning "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (0:@) Configuration change: Set 'workstation/model' to 'compound'
 > [  0.000000] (0:@) Configuration change: Set 'network/model' to 'CM02'
 > [  0.000000] (0:@) Configuration change: Set 'cpu/optim' to 'TI'
-> [ 10.000000] (1:test_trace@CPU1) Testing the trace integration cpu model: CpuTI
-> [ 10.000000] (1:test_trace@CPU1) Task size: 850.000000
-> [ 10.000000] (1:test_trace@CPU1) Task prio: 1.000000
-> [ 85.000000] (1:test_trace@CPU1) Test finished
+> [ 10.000000] (1:test_trace@Cpu B) Testing the trace integration cpu model: CpuTI
+> [ 10.000000] (1:test_trace@Cpu B) Task size: 40.000000
+> [ 10.000000] (1:test_trace@Cpu B) Task prio: 1.000000
+> [ 15.000000] (1:test_trace@Cpu B) Test finished
 
-p Testing trace integration using file.trace and test3.xml, a < max(time), b > 2 max(time)
+p Testing trace integration using trace_B.txt and test-hbp1-c0s2-c1s0.xml, test_trace:start == trace_cycle_0_step_2, test_trace:end < trace_cycle_1_step_0
 
 ! output sort
-$ $SG_TEST_EXENV ${bindir:=.}/test_trace_integration$EXEEXT ./platform.xml ./test3.xml --cfg=workstation/model:compound --cfg=network/model:CM02 --cfg=cpu/optim:TI "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+$ $SG_TEST_EXENV ${bindir:=.}/test_trace_integration$EXEEXT ../../../examples/platforms/two_hosts_platform_with_availability.xml ./test-hbp1-c0s2-c1s0.xml --cfg=workstation/model:compound --cfg=network/model:CM02 --cfg=cpu/optim:TI --log=simix.thresh:warning "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (0:@) Configuration change: Set 'workstation/model' to 'compound'
 > [  0.000000] (0:@) Configuration change: Set 'network/model' to 'CM02'
 > [  0.000000] (0:@) Configuration change: Set 'cpu/optim' to 'TI'
-> [ 10.000000] (1:test_trace@CPU1) Testing the trace integration cpu model: CpuTI
-> [ 10.000000] (1:test_trace@CPU1) Task size: 1980.000000
-> [ 10.000000] (1:test_trace@CPU1) Task prio: 1.000000
-> [178.000000] (1:test_trace@CPU1) Test finished
+> [ 20.000000] (1:test_trace@Cpu B) Testing the trace integration cpu model: CpuTI
+> [ 20.000000] (1:test_trace@Cpu B) Task size: 40.000000
+> [ 20.000000] (1:test_trace@Cpu B) Task prio: 1.000000
+> [ 30.000000] (1:test_trace@Cpu B) Test finished
 
-p Testing trace integration using file.trace and test4.xml, max(time) < a < 2max(time), max(time) < b < 2max(time)
+p Testing trace integration using trace_B.txt and test-hbp1-c0s0-c1s0.xml, test_trace:start == trace_cycle_0_step_0, test_trace:end < trace_cycle_1_step_0
 
 ! output sort
-$ $SG_TEST_EXENV ${bindir:=.}/test_trace_integration$EXEEXT ./platform.xml ./test4.xml --cfg=workstation/model:compound --cfg=network/model:CM02 --cfg=cpu/optim:TI "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+$ $SG_TEST_EXENV ${bindir:=.}/test_trace_integration$EXEEXT ../../../examples/platforms/two_hosts_platform_with_availability.xml ./test-hbp1-c0s0-c1s0.xml --cfg=workstation/model:compound --cfg=network/model:CM02 --cfg=cpu/optim:TI --log=simix.thresh:warning "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (0:@) Configuration change: Set 'workstation/model' to 'compound'
 > [  0.000000] (0:@) Configuration change: Set 'network/model' to 'CM02'
 > [  0.000000] (0:@) Configuration change: Set 'cpu/optim' to 'TI'
-> [ 80.000000] (1:test_trace@CPU1) Testing the trace integration cpu model: CpuTI
-> [ 80.000000] (1:test_trace@CPU1) Task size: 400.000000
-> [ 80.000000] (1:test_trace@CPU1) Task prio: 1.000000
-> [110.000000] (1:test_trace@CPU1) Test finished
+> [  0.000000] (1:test_trace@Cpu B) Testing the trace integration cpu model: CpuTI
+> [  0.000000] (1:test_trace@Cpu B) Task size: 220.000000
+> [  0.000000] (1:test_trace@Cpu B) Task prio: 1.000000
+> [ 30.000000] (1:test_trace@Cpu B) Test finished
 
-p Testing trace integration using file.trace and test5.xml, max(time) < a < 2max(time), 2max(time) < b < 3max(time)
+p Testing trace integration using trace_B.txt and test-hbp1-c0s2-c1s1.xml, test_trace:start == trace_cycle_0_step_2, test_trace:end < trace_cycle_1_step_1
 
 ! output sort
-$ $SG_TEST_EXENV ${bindir:=.}/test_trace_integration$EXEEXT ./platform.xml ./test5.xml --cfg=workstation/model:compound --cfg=network/model:CM02 --cfg=cpu/optim:TI "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+$ $SG_TEST_EXENV ${bindir:=.}/test_trace_integration$EXEEXT ../../../examples/platforms/two_hosts_platform_with_availability.xml ./test-hbp1-c0s2-c1s1.xml --cfg=workstation/model:compound --cfg=network/model:CM02 --cfg=cpu/optim:TI --log=simix.thresh:warning "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (0:@) Configuration change: Set 'workstation/model' to 'compound'
 > [  0.000000] (0:@) Configuration change: Set 'network/model' to 'CM02'
 > [  0.000000] (0:@) Configuration change: Set 'cpu/optim' to 'TI'
-> [ 90.000000] (1:test_trace@CPU1) Testing the trace integration cpu model: CpuTI
-> [ 90.000000] (1:test_trace@CPU1) Task size: 850.000000
-> [ 90.000000] (1:test_trace@CPU1) Task prio: 1.000000
-> [162.500000] (1:test_trace@CPU1) Test finished
+> [ 20.000000] (1:test_trace@Cpu B) Testing the trace integration cpu model: CpuTI
+> [ 20.000000] (1:test_trace@Cpu B) Task size: 140.000000
+> [ 20.000000] (1:test_trace@Cpu B) Task prio: 1.000000
+> [ 40.000000] (1:test_trace@Cpu B) Test finished
 
-p Testing trace integration using file.trace and test6.xml, max(time) < a < 2max(time), b > 3max(time)
+p Testing trace integration using trace_B.txt and test-hbp1-c0s1-c2s2.xml, test_trace:start == trace_cycle_0_step_1, test_trace:end < trace_cycle_2_step_2
 
 ! output sort
-$ $SG_TEST_EXENV ${bindir:=.}/test_trace_integration$EXEEXT ./platform.xml ./test6.xml --cfg=workstation/model:compound --cfg=network/model:CM02 --cfg=cpu/optim:TI "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+$ $SG_TEST_EXENV ${bindir:=.}/test_trace_integration$EXEEXT ../../../examples/platforms/two_hosts_platform_with_availability.xml ./test-hbp1-c0s1-c2s2.xml --cfg=workstation/model:compound --cfg=network/model:CM02 --cfg=cpu/optim:TI --log=simix.thresh:warning "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (0:@) Configuration change: Set 'workstation/model' to 'compound'
 > [  0.000000] (0:@) Configuration change: Set 'network/model' to 'CM02'
 > [  0.000000] (0:@) Configuration change: Set 'cpu/optim' to 'TI'
-> [ 80.000000] (1:test_trace@CPU1) Testing the trace integration cpu model: CpuTI
-> [ 80.000000] (1:test_trace@CPU1) Task size: 1980.000000
-> [ 80.000000] (1:test_trace@CPU1) Task prio: 1.000000
-> [248.000000] (1:test_trace@CPU1) Test finished
+> [ 10.000000] (1:test_trace@Cpu B) Testing the trace integration cpu model: CpuTI
+> [ 10.000000] (1:test_trace@Cpu B) Task size: 260.000000
+> [ 10.000000] (1:test_trace@Cpu B) Task prio: 1.000000
+> [ 45.000000] (1:test_trace@Cpu B) Test finished
 
-p Testing trace integration using file.trace and test7.xml, two process with same priority
+p Testing trace integration using trace_B.txt and test-hbp1-c1s1-c1s2.xml, test_trace:start == trace_cycle_1_step_1, test_trace:end < trace_cycle_1_step_2
 
 ! output sort
-$ $SG_TEST_EXENV ${bindir:=.}/test_trace_integration$EXEEXT ./platform.xml ./test7.xml --cfg=workstation/model:compound --cfg=network/model:CM02 --cfg=cpu/optim:TI "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+$ $SG_TEST_EXENV ${bindir:=.}/test_trace_integration$EXEEXT ../../../examples/platforms/two_hosts_platform_with_availability.xml ./test-hbp1-c1s1-c1s2.xml --cfg=workstation/model:compound --cfg=network/model:CM02 --cfg=cpu/optim:TI --log=simix.thresh:warning "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (0:@) Configuration change: Set 'workstation/model' to 'compound'
 > [  0.000000] (0:@) Configuration change: Set 'network/model' to 'CM02'
 > [  0.000000] (0:@) Configuration change: Set 'cpu/optim' to 'TI'
-> [ 10.000000] (1:test_trace@CPU1) Testing the trace integration cpu model: CpuTI
-> [ 10.000000] (1:test_trace@CPU1) Task size: 400.000000
-> [ 10.000000] (1:test_trace@CPU1) Task prio: 1.500000
-> [ 20.000000] (2:test_trace@CPU1) Testing the trace integration cpu model: CpuTI
-> [ 20.000000] (2:test_trace@CPU1) Task size: 300.000000
-> [ 20.000000] (2:test_trace@CPU1) Task prio: 1.500000
-> [ 70.000000] (1:test_trace@CPU1) Test finished
-> [ 70.000000] (2:test_trace@CPU1) Test finished
+> [ 40.000000] (1:test_trace@Cpu B) Testing the trace integration cpu model: CpuTI
+> [ 40.000000] (1:test_trace@Cpu B) Task size: 40.000000
+> [ 40.000000] (1:test_trace@Cpu B) Task prio: 1.000000
+> [ 45.000000] (1:test_trace@Cpu B) Test finished
 
-p Testing trace integration using file.trace and test8.xml, two process with different priority
+p Testing trace integration using trace_B.txt and test-hbp1-c1s1-c3s2.xml, test_trace:start == trace_cycle_1_step_1, test_trace:end < trace_cycle_3_step_2
 
 ! output sort
-$ $SG_TEST_EXENV ${bindir:=.}/test_trace_integration$EXEEXT ./platform.xml ./test8.xml --cfg=workstation/model:compound --cfg=network/model:CM02 --cfg=cpu/optim:TI "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+$ $SG_TEST_EXENV ${bindir:=.}/test_trace_integration$EXEEXT ../../../examples/platforms/two_hosts_platform_with_availability.xml ./test-hbp1-c1s1-c3s2.xml --cfg=workstation/model:compound --cfg=network/model:CM02 --cfg=cpu/optim:TI --log=simix.thresh:warning "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (0:@) Configuration change: Set 'workstation/model' to 'compound'
 > [  0.000000] (0:@) Configuration change: Set 'network/model' to 'CM02'
 > [  0.000000] (0:@) Configuration change: Set 'cpu/optim' to 'TI'
-> [ 10.000000] (1:test_trace@CPU1) Testing the trace integration cpu model: CpuTI
-> [ 10.000000] (1:test_trace@CPU1) Task size: 400.000000
-> [ 10.000000] (1:test_trace@CPU1) Task prio: 2.500000
-> [ 10.000000] (2:test_trace@CPU1) Testing the trace integration cpu model: CpuTI
-> [ 10.000000] (2:test_trace@CPU1) Task size: 400.000000
-> [ 10.000000] (2:test_trace@CPU1) Task prio: 1.000000
-> [ 56.000000] (1:test_trace@CPU1) Test finished
-> [ 80.000000] (2:test_trace@CPU1) Test finished
+> [ 40.000000] (1:test_trace@Cpu B) Testing the trace integration cpu model: CpuTI
+> [ 40.000000] (1:test_trace@Cpu B) Task size: 260.000000
+> [ 40.000000] (1:test_trace@Cpu B) Task prio: 1.000000
+> [ 75.000000] (1:test_trace@Cpu B) Test finished
 
-p Testing trace integration using file.trace and test9.xml, three process with same priority
+p Testing trace integration using trace_B.txt and test-hbp1.5-hbp1.5.xml, two process with same priority
 
 ! output sort
-$ $SG_TEST_EXENV ${bindir:=.}/test_trace_integration$EXEEXT ./platform.xml ./test9.xml --cfg=workstation/model:compound --cfg=network/model:CM02 --cfg=cpu/optim:TI "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+$ $SG_TEST_EXENV ${bindir:=.}/test_trace_integration$EXEEXT ../../../examples/platforms/two_hosts_platform_with_availability.xml ./test-hbp1.5-hbp1.5.xml --cfg=workstation/model:compound --cfg=network/model:CM02 --cfg=cpu/optim:TI --log=simix.thresh:warning "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (0:@) Configuration change: Set 'workstation/model' to 'compound'
 > [  0.000000] (0:@) Configuration change: Set 'network/model' to 'CM02'
 > [  0.000000] (0:@) Configuration change: Set 'cpu/optim' to 'TI'
-> [  0.000000] (1:test_trace@CPU1) Testing the trace integration cpu model: CpuTI
-> [  0.000000] (1:test_trace@CPU1) Task size: 400.000000
-> [  0.000000] (1:test_trace@CPU1) Task prio: 1.000000
-> [  0.000000] (2:test_trace@CPU1) Testing the trace integration cpu model: CpuTI
-> [  0.000000] (2:test_trace@CPU1) Task size: 400.000000
-> [  0.000000] (2:test_trace@CPU1) Task prio: 1.000000
-> [ 30.000000] (3:test_trace@CPU1) Testing the trace integration cpu model: CpuTI
-> [ 30.000000] (3:test_trace@CPU1) Task size: 2000.000000
-> [ 30.000000] (3:test_trace@CPU1) Task prio: 1.000000
-> [ 90.000000] (1:test_trace@CPU1) Test finished
-> [ 90.000000] (2:test_trace@CPU1) Test finished
-> [240.000000] (3:test_trace@CPU1) Test finished
+> [ 10.000000] (1:test_trace@Cpu B) Testing the trace integration cpu model: CpuTI
+> [ 10.000000] (1:test_trace@Cpu B) Task size: 150.000000
+> [ 10.000000] (1:test_trace@Cpu B) Task prio: 1.500000
+> [ 20.000000] (2:test_trace@Cpu B) Testing the trace integration cpu model: CpuTI
+> [ 20.000000] (2:test_trace@Cpu B) Task size: 70.000000
+> [ 20.000000] (2:test_trace@Cpu B) Task prio: 1.500000
+> [ 40.000000] (1:test_trace@Cpu B) Test finished
+> [ 40.000000] (2:test_trace@Cpu B) Test finished
 
-p Testing trace integration using file.trace and test10.xml, three process with different priority
+p Testing trace integration using trace_B.txt and test-hbp2.5-hbp1.5.xml, two process with different priority
 
 ! output sort
-$ $SG_TEST_EXENV ${bindir:=.}/test_trace_integration$EXEEXT ./platform.xml ./test10.xml --cfg=workstation/model:compound --cfg=network/model:CM02 --cfg=cpu/optim:TI "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+$ $SG_TEST_EXENV ${bindir:=.}/test_trace_integration$EXEEXT ../../../examples/platforms/two_hosts_platform_with_availability.xml ./test-hbp2.5-hbp1.5.xml --cfg=workstation/model:compound --cfg=network/model:CM02 --cfg=cpu/optim:TI --log=simix.thresh:warning "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (0:@) Configuration change: Set 'workstation/model' to 'compound'
 > [  0.000000] (0:@) Configuration change: Set 'network/model' to 'CM02'
 > [  0.000000] (0:@) Configuration change: Set 'cpu/optim' to 'TI'
-> [  0.000000] (1:test_trace@CPU1) Testing the trace integration cpu model: CpuTI
-> [  0.000000] (1:test_trace@CPU1) Task size: 420.000000
-> [  0.000000] (1:test_trace@CPU1) Task prio: 2.000000
-> [  0.000000] (2:test_trace@CPU1) Testing the trace integration cpu model: CpuTI
-> [  0.000000] (2:test_trace@CPU1) Task size: 310.000000
-> [  0.000000] (2:test_trace@CPU1) Task prio: 1.000000
-> [ 50.000000] (3:test_trace@CPU1) Testing the trace integration cpu model: CpuTI
-> [ 50.000000] (3:test_trace@CPU1) Task size: 990.000000
-> [ 50.000000] (3:test_trace@CPU1) Task prio: 9.000000
-> [ 62.000000] (1:test_trace@CPU1) Test finished
-> [152.000000] (2:test_trace@CPU1) Test finished
-> [152.000000] (3:test_trace@CPU1) Test finished
+> [ 10.000000] (1:test_trace@Cpu B) Testing the trace integration cpu model: CpuTI
+> [ 10.000000] (1:test_trace@Cpu B) Task size: 50.000000
+> [ 10.000000] (1:test_trace@Cpu B) Task prio: 2.500000
+> [ 10.000000] (2:test_trace@Cpu B) Testing the trace integration cpu model: CpuTI
+> [ 10.000000] (2:test_trace@Cpu B) Task size: 70.000000
+> [ 10.000000] (2:test_trace@Cpu B) Task prio: 1.500000
+> [ 20.000000] (1:test_trace@Cpu B) Test finished
+> [ 30.000000] (2:test_trace@Cpu B) Test finished
 
-p Testing trace integration using file.trace and test11.xml, three process with different priority. Changed timestep to 0.1.
+p Testing trace integration using trace_B.txt and test-hbp2.5-hbp1.5.xml, two process with different priority
 
 ! output sort
-$ $SG_TEST_EXENV ${bindir:=.}/test_trace_integration$EXEEXT ./platform_trace.xml ./test11.xml --cfg=workstation/model:compound --cfg=network/model:CM02 --cfg=cpu/optim:TI "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+$ $SG_TEST_EXENV ${bindir:=.}/test_trace_integration$EXEEXT ../../../examples/platforms/two_hosts_platform_with_availability.xml ./test-hbp2.5-hbp1.5.xml --cfg=workstation/model:compound --cfg=network/model:CM02 --cfg=cpu/optim:TI --log=simix.thresh:warning "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (0:@) Configuration change: Set 'workstation/model' to 'compound'
 > [  0.000000] (0:@) Configuration change: Set 'network/model' to 'CM02'
 > [  0.000000] (0:@) Configuration change: Set 'cpu/optim' to 'TI'
-> [  0.000000] (1:test_trace@CPU1) Testing the trace integration cpu model: CpuTI
-> [  0.000000] (1:test_trace@CPU1) Task size: 420.000000
-> [  0.000000] (1:test_trace@CPU1) Task prio: 2.000000
-> [  0.000000] (2:test_trace@CPU1) Testing the trace integration cpu model: CpuTI
-> [  0.000000] (2:test_trace@CPU1) Task size: 310.000000
-> [  0.000000] (2:test_trace@CPU1) Task prio: 1.000000
-> [ 50.000000] (3:test_trace@CPU1) Testing the trace integration cpu model: CpuTI
-> [ 50.000000] (3:test_trace@CPU1) Task size: 990.000000
-> [ 50.000000] (3:test_trace@CPU1) Task prio: 9.000000
-> [ 62.000000] (1:test_trace@CPU1) Test finished
-> [152.000000] (2:test_trace@CPU1) Test finished
-> [152.000000] (3:test_trace@CPU1) Test finished
+> [ 10.000000] (1:test_trace@Cpu B) Testing the trace integration cpu model: CpuTI
+> [ 10.000000] (1:test_trace@Cpu B) Task size: 50.000000
+> [ 10.000000] (1:test_trace@Cpu B) Task prio: 2.500000
+> [ 10.000000] (2:test_trace@Cpu B) Testing the trace integration cpu model: CpuTI
+> [ 10.000000] (2:test_trace@Cpu B) Task size: 70.000000
+> [ 10.000000] (2:test_trace@Cpu B) Task prio: 1.500000
+> [ 20.000000] (1:test_trace@Cpu B) Test finished
+> [ 30.000000] (2:test_trace@Cpu B) Test finished
+
+p Testing trace integration using trace_B.txt and test-hbp1.0-hbp1.0-hbp1.0.xml, three process with same priority
+
+! output sort
+$ $SG_TEST_EXENV ${bindir:=.}/test_trace_integration$EXEEXT ../../../examples/platforms/two_hosts_platform_with_availability.xml ./test-hbp1.0-hbp1.0-hbp1.0.xml --cfg=workstation/model:compound --cfg=network/model:CM02 --cfg=cpu/optim:TI --log=simix.thresh:warning "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+> [  0.000000] (0:@) Configuration change: Set 'workstation/model' to 'compound'
+> [  0.000000] (0:@) Configuration change: Set 'network/model' to 'CM02'
+> [  0.000000] (0:@) Configuration change: Set 'cpu/optim' to 'TI'
+> [  0.000000] (1:test_trace@Cpu B) Testing the trace integration cpu model: CpuTI
+> [  0.000000] (1:test_trace@Cpu B) Task size: 170.000000
+> [  0.000000] (1:test_trace@Cpu B) Task prio: 1.000000
+> [  0.000000] (2:test_trace@Cpu B) Testing the trace integration cpu model: CpuTI
+> [  0.000000] (2:test_trace@Cpu B) Task size: 170.000000
+> [  0.000000] (2:test_trace@Cpu B) Task prio: 1.000000
+> [ 30.000000] (3:test_trace@Cpu B) Testing the trace integration cpu model: CpuTI
+> [ 30.000000] (3:test_trace@Cpu B) Task size: 100.000000
+> [ 30.000000] (3:test_trace@Cpu B) Task prio: 1.000000
+> [ 50.000000] (1:test_trace@Cpu B) Test finished
+> [ 50.000000] (2:test_trace@Cpu B) Test finished
+> [ 60.000000] (3:test_trace@Cpu B) Test finished
+
+p Testing trace integration using trace_B.txt and test-hbp1.0-hbp3.0-hbp4.0.xml, three process with same priority
+
+! output sort
+$ $SG_TEST_EXENV ${bindir:=.}/test_trace_integration$EXEEXT ../../../examples/platforms/two_hosts_platform_with_availability.xml ./test-hbp1.0-hbp3.0-hbp4.0.xml --cfg=workstation/model:compound --cfg=network/model:CM02 --cfg=cpu/optim:TI --log=simix.thresh:warning "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+> [  0.000000] (0:@) Configuration change: Set 'workstation/model' to 'compound'
+> [  0.000000] (0:@) Configuration change: Set 'network/model' to 'CM02'
+> [  0.000000] (0:@) Configuration change: Set 'cpu/optim' to 'TI'
+> [ 10.000000] (1:test_trace@Cpu B) Testing the trace integration cpu model: CpuTI
+> [ 10.000000] (1:test_trace@Cpu B) Task size: 25.000000
+> [ 10.000000] (1:test_trace@Cpu B) Task prio: 1.000000
+> [ 10.000000] (2:test_trace@Cpu B) Testing the trace integration cpu model: CpuTI
+> [ 10.000000] (2:test_trace@Cpu B) Task size: 75.000000
+> [ 10.000000] (2:test_trace@Cpu B) Task prio: 3.000000
+> [ 20.000000] (3:test_trace@Cpu B) Testing the trace integration cpu model: CpuTI
+> [ 20.000000] (3:test_trace@Cpu B) Task size: 120.000000
+> [ 20.000000] (3:test_trace@Cpu B) Task prio: 4.000000
+> [ 30.000000] (1:test_trace@Cpu B) Test finished
+> [ 30.000000] (2:test_trace@Cpu B) Test finished
+> [ 40.000000] (3:test_trace@Cpu B) Test finished
+
+p Testing trace integration using trace_B.txt and test-hbp1.0-hbp3.0-hbp4.0.xml, three process with different priority
+
+! output sort
+$ $SG_TEST_EXENV ${bindir:=.}/test_trace_integration$EXEEXT ../../../examples/platforms/two_hosts_platform_with_availability.xml ./test-hbp1.0-hbp3.0-hbp4.0.xml --cfg=workstation/model:compound --cfg=network/model:CM02 --cfg=cpu/optim:TI --log=simix.thresh:warning "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+> [  0.000000] (0:@) Configuration change: Set 'workstation/model' to 'compound'
+> [  0.000000] (0:@) Configuration change: Set 'network/model' to 'CM02'
+> [  0.000000] (0:@) Configuration change: Set 'cpu/optim' to 'TI'
+> [ 10.000000] (1:test_trace@Cpu B) Testing the trace integration cpu model: CpuTI
+> [ 10.000000] (1:test_trace@Cpu B) Task size: 25.000000
+> [ 10.000000] (1:test_trace@Cpu B) Task prio: 1.000000
+> [ 10.000000] (2:test_trace@Cpu B) Testing the trace integration cpu model: CpuTI
+> [ 10.000000] (2:test_trace@Cpu B) Task size: 75.000000
+> [ 10.000000] (2:test_trace@Cpu B) Task prio: 3.000000
+> [ 20.000000] (3:test_trace@Cpu B) Testing the trace integration cpu model: CpuTI
+> [ 20.000000] (3:test_trace@Cpu B) Task size: 120.000000
+> [ 20.000000] (3:test_trace@Cpu B) Task prio: 4.000000
+> [ 30.000000] (1:test_trace@Cpu B) Test finished
+> [ 30.000000] (2:test_trace@Cpu B) Test finished
+> [ 40.000000] (3:test_trace@Cpu B) Test finished
+
+p Testing trace integration using trace_B.txt and test-hbp1.0-hbp3.0-hbp4.0.xml, three process with different priority (included)
+
+! output sort
+$ $SG_TEST_EXENV ${bindir:=.}/test_trace_integration$EXEEXT ../../../examples/platforms/two_hosts_platform_with_availability_included.xml ./test-hbp1.0-hbp3.0-hbp4.0.xml --cfg=workstation/model:compound --cfg=network/model:CM02 --cfg=cpu/optim:TI --log=simix.thresh:warning "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+> [  0.000000] (0:@) Configuration change: Set 'workstation/model' to 'compound'
+> [  0.000000] (0:@) Configuration change: Set 'network/model' to 'CM02'
+> [  0.000000] (0:@) Configuration change: Set 'cpu/optim' to 'TI'
+> [ 10.000000] (1:test_trace@Cpu B) Testing the trace integration cpu model: CpuTI
+> [ 10.000000] (1:test_trace@Cpu B) Task size: 25.000000
+> [ 10.000000] (1:test_trace@Cpu B) Task prio: 1.000000
+> [ 10.000000] (2:test_trace@Cpu B) Testing the trace integration cpu model: CpuTI
+> [ 10.000000] (2:test_trace@Cpu B) Task size: 75.000000
+> [ 10.000000] (2:test_trace@Cpu B) Task prio: 3.000000
+> [ 20.000000] (3:test_trace@Cpu B) Testing the trace integration cpu model: CpuTI
+> [ 20.000000] (3:test_trace@Cpu B) Task size: 120.000000
+> [ 20.000000] (3:test_trace@Cpu B) Task prio: 4.000000
+> [ 30.000000] (1:test_trace@Cpu B) Test finished
+> [ 30.000000] (2:test_trace@Cpu B) Test finished
+> [ 40.000000] (3:test_trace@Cpu B) Test finished

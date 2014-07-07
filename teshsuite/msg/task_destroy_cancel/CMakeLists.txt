@@ -15,7 +15,6 @@ set(tesh_files
 set(xml_files
   ${xml_files}
   ${CMAKE_CURRENT_SOURCE_DIR}/task_destroy_cancel_d.xml
-  ${CMAKE_CURRENT_SOURCE_DIR}/task_destroy_cancel_p.xml
   PARENT_SCOPE
   )
 set(teshsuite_src

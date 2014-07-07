@@ -17,6 +17,7 @@ set(teshsuite_src
   PARENT_SCOPE
   )
 set(bin_files
+
   ${bin_files}
   PARENT_SCOPE
   )
