@@ -592,8 +592,7 @@ int mmalloc_compare_heap(mc_snapshot_t snapshot1, mc_snapshot_t snapshot2,
                            (char *) ((xbt_mheap_t) state->s_heap)->heapbase));
             addr_frag2 =
                 (void *) ((char *) addr_block2 +
-                          (j1 << ((xbt_mheap_t) state->s_heap)->heapinfo[i1].
-                           type));
+                          (j1 << state->heapinfo2[i1].type));
 
             res_compare =
                 compare_heap_area(addr_frag1, addr_frag2, snapshot1, snapshot2,
@@ -629,8 +628,7 @@ int mmalloc_compare_heap(mc_snapshot_t snapshot1, mc_snapshot_t snapshot2,
                            (char *) ((xbt_mheap_t) state->s_heap)->heapbase));
             addr_frag2 =
                 (void *) ((char *) addr_block2 +
-                          (j2 << ((xbt_mheap_t) state->s_heap)->heapinfo[i2].
-                           type));
+                          (j2 << state->heapinfo2[i2].type));
 
             res_compare =
                 compare_heap_area(addr_frag1, addr_frag2, snapshot2, snapshot2,
@@ -709,8 +707,7 @@ int mmalloc_compare_heap(mc_snapshot_t snapshot1, mc_snapshot_t snapshot2,
                               (j << state->heapinfo1[i].type));
                 real_addr_frag1 =
                     (void *) ((char *) real_addr_block1 +
-                              (j << ((struct mdesc *) state->s_heap)->
-                               heapinfo[i].type));
+                              (j << state->heapinfo1[i].type));
                 XBT_DEBUG
                     ("Block %zu, Fragment %zu (%p - %p) not found (size used = %zd)",
                      i, j, addr_frag1, real_addr_frag1,
@@ -766,8 +763,7 @@ int mmalloc_compare_heap(mc_snapshot_t snapshot1, mc_snapshot_t snapshot2,
                               (j << state->heapinfo2[i].type));
                 real_addr_frag2 =
                     (void *) ((char *) real_addr_block2 +
-                              (j << ((struct mdesc *) state->s_heap)->
-                               heapinfo[i].type));
+                              (j << state->heapinfo2[i].type));
                 XBT_DEBUG
                     ("Block %zu, Fragment %zu (%p - %p) not found (size used = %zd)",
                      i, j, addr_frag2, real_addr_frag2,
@@ -1372,12 +1368,10 @@ int compare_heap_area(void *area1, void *area2, mc_snapshot_t snapshot1,
     // Process address of the fragment:
     real_addr_frag1 =
         (void *) ((char *) real_addr_block1 +
-                  (frag1 << ((xbt_mheap_t) state->s_heap)->heapinfo[block1].
-                   type));
+                  (frag1 << state->heapinfo1[block1].type));
     real_addr_frag2 =
         (void *) ((char *) real_addr_block2 +
-                  (frag2 << ((xbt_mheap_t) state->s_heap)->heapinfo[block2].
-                   type));
+                  (frag2 << state->heapinfo2[block2].type));
 
     // Check the size of the fragments against the size of the type:
     if (type_size != -1) {
