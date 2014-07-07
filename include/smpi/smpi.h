@@ -225,6 +225,7 @@ XBT_PUBLIC_DATA(MPI_Datatype) MPI_2INT;
 XBT_PUBLIC_DATA(MPI_Datatype) MPI_LONG_DOUBLE_INT;
 XBT_PUBLIC_DATA(MPI_Datatype) MPI_2FLOAT;
 XBT_PUBLIC_DATA(MPI_Datatype) MPI_2DOUBLE;
+XBT_PUBLIC_DATA(MPI_Datatype) MPI_2LONG;//only for compatibility with Fortran
 //for now we only send int values at max
 #define MPI_Count int
 #define MPI_COUNT MPI_INT

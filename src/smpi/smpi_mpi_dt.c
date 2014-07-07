@@ -52,6 +52,10 @@ typedef struct {
   float index;
 } float_float;
 typedef struct {
+  long value;
+  long index;
+} long_long;
+typedef struct {
   double value;
   double index;
 } double_double;
@@ -114,6 +118,7 @@ CREATE_MPI_DATATYPE(MPI_SHORT_INT, short_int);
 CREATE_MPI_DATATYPE(MPI_2INT, int_int);
 CREATE_MPI_DATATYPE(MPI_2FLOAT, float_float);
 CREATE_MPI_DATATYPE(MPI_2DOUBLE, double_double);
+CREATE_MPI_DATATYPE(MPI_2LONG, long_long);
 
 CREATE_MPI_DATATYPE(MPI_LONG_DOUBLE_INT, long_double_int);
 
