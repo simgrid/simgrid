@@ -793,7 +793,7 @@ static int compare_heap_area_without_type(struct s_mc_diff *state,
       }
     }
 
-    if (mc_snapshot_region_memcp(((char *) real_area1) + i, heap_region1, ((char *) real_area2) + i, heap_region2, 1) != 0) {
+    if (mc_snapshot_region_memcmp(((char *) real_area1) + i, heap_region1, ((char *) real_area2) + i, heap_region2, 1) != 0) {
 
       pointer_align = (i / sizeof(void *)) * sizeof(void *);
       addr_pointed1 = mc_snapshot_read_pointer((char *) real_area1 + pointer_align, snapshot1);
@@ -886,12 +886,12 @@ top:
       if (real_area1 == real_area2)
         return -1;
       else
-        return (mc_snapshot_region_memcp(real_area1, heap_region1, real_area2, heap_region2, area_size) != 0);
+        return (mc_snapshot_region_memcmp(real_area1, heap_region1, real_area2, heap_region2, area_size) != 0);
     } else {
       if (area_size != -1 && type->byte_size != area_size)
         return -1;
       else {
-        return (mc_snapshot_region_memcp(real_area1, heap_region1, real_area2, heap_region2, type->byte_size) != 0);
+        return (mc_snapshot_region_memcmp(real_area1, heap_region1, real_area2, heap_region2, type->byte_size) != 0);
       }
     }
     break;
@@ -899,7 +899,7 @@ top:
     if (area_size != -1 && type->byte_size != area_size)
       return -1;
     else
-      return (mc_snapshot_region_memcp(real_area1, heap_region1, real_area2, heap_region2, type->byte_size) != 0);
+      return (mc_snapshot_region_memcmp(real_area1, heap_region1, real_area2, heap_region2, type->byte_size) != 0);
     break;
   case DW_TAG_typedef:
   case DW_TAG_const_type:

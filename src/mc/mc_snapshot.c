@@ -83,7 +83,7 @@ void* mc_snapshot_read(void* addr, mc_snapshot_t snapshot, void* target, size_t 
  * @param snapshot2 Region of the address in the second snapshot
  * @return same as memcmp
  * */
-int mc_snapshot_region_memcp(
+int mc_snapshot_region_memcmp(
   void* addr1, mc_mem_region_t region1,
   void* addr2, mc_mem_region_t region2, size_t size)
 {
@@ -120,5 +120,5 @@ int mc_snapshot_memcp(
 {
   mc_mem_region_t region1 = mc_get_snapshot_region(addr1, snapshot1);
   mc_mem_region_t region2 = mc_get_snapshot_region(addr2, snapshot2);
-  return mc_snapshot_region_memcp(addr1, region1, addr2, region2, size);
+  return mc_snapshot_region_memcmp(addr1, region1, addr2, region2, size);
 }
