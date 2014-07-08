@@ -35,11 +35,11 @@ bcasttest 4
 bcasttest 8
 bcasttest 10
 #uses MPI_Comm_dup
-#bcast2 4
+bcast2 4
 # More that 8 processes are required to get bcast to switch to the long
 # msg algorithm (see coll definitions in mpiimpl.h)
-#bcast2 10 timeLimit=420
-#bcast3 10 timeLimit=420
+bcast2 10 timeLimit=420
+bcast3 10 timeLimit=420
 bcastzerotype 1
 bcastzerotype 4
 bcastzerotype 5
