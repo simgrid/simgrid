@@ -12,8 +12,8 @@
 static char MTEST_Descrip[] = "Send flood test";
 */
 
-#define MAX_MSG_SIZE 4000000
-#define MAX_COUNT    400
+#define MAX_MSG_SIZE 40000
+#define MAX_COUNT    20
 int main( int argc, char *argv[] )
 {
     int errs = 0, err;

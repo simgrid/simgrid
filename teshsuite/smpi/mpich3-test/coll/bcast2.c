@@ -39,7 +39,7 @@ int main( int argc, char *argv[] )
 
 	/* The max value of count must be very large to ensure that we 
 	   reach the long message algorithms */
-	for (count = 1; count < 280000; count = count * 4) {
+	for (count = 1; count < 2800; count = count * 4) {
 	    while (MTestGetDatatypes( &sendtype, &recvtype, count )) {
 		for (root=0; root<size; root++) {
 		    if (rank == root) {
