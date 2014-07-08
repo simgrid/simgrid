@@ -28,6 +28,13 @@ set(TEST_UNITS
   ${CMAKE_CURRENT_BINARY_DIR}/src/simgrid_units_main.c
   )
 
+if(HAVE_MC)
+  set(TEST_CFILES ${TEST_CFILES}
+      src/mc/mc_page_store.cpp)
+  set(TEST_UNITS ${TEST_UNITS}
+     ${CMAKE_CURRENT_BINARY_DIR}/src/mc_page_store_unit.cpp)
+endif()
+
 ADD_CUSTOM_COMMAND(
   OUTPUT	${TEST_UNITS}
 
