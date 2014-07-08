@@ -1292,7 +1292,7 @@ int compare_heap_area(void *area1, void *area2, mc_snapshot_t snapshot1,
     if (type_size != -1) {
       if (type_size != state->heapinfo1[block1].busy_block.busy_size
           && type_size != state->heapinfo2[block2].busy_block.busy_size
-          && type->name != NULL && !strcmp(type->name, "s_smx_context")) {
+          && type->name != NULL && !strcmp(type->name, "struct s_smx_context")) {
         if (match_pairs) {
           match_equals(state, previous);
           xbt_dynar_free(&previous);
