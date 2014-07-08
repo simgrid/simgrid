@@ -737,14 +737,14 @@ void* mc_snapshot_read_pointer(void* addr, mc_snapshot_t snapshot)
 static inline __attribute__((always_inline))
 void* mc_snapshot_read_region(void* addr, mc_mem_region_t region, void* target, size_t size)
 {
-  uintptr_t offset = (uintptr_t) addr - (uintptr_t) region->start_addr;
+  uintptr_t offset = (char*) addr - (char*) region->start_addr;
 
   xbt_assert(addr >= region->start_addr && (char*) addr+size <= (char*)region->start_addr+region->size,
     "Trying to read out of the region boundary.");
 
   // Linear memory region:
   if (region->data) {
-    return (void*) ((uintptr_t) region->data + offset);
+    return (char*) region->data + offset;
   }
 
   // Fragmented memory region:

@@ -39,6 +39,10 @@ void* mc_snapshot_read_fragmented(void* addr, mc_mem_region_t region, void* targ
   size_t page_end = mc_page_number(NULL, end);
   void* dest = target;
 
+  if (dest==NULL) {
+    xbt_die("Missing destination buffer for fragmented memory access");
+  }
+
   // Read each page:
   while (mc_page_number(NULL, addr) != page_end) {
     void* snapshot_addr = mc_translate_address_region((uintptr_t) addr, region);
@@ -89,19 +93,20 @@ int mc_snapshot_region_memcmp(
 {
   // Using alloca() for large allocations may trigger stack overflow:
   // use malloc if the buffer is too big.
-
   bool stack_alloc = size < 64;
-  void* buffer = stack_alloc ? alloca(2*size) : malloc(2*size);
-  void* buffer1 = mc_snapshot_read_region(addr1, region1, buffer, size);
-  void* buffer2 = mc_snapshot_read_region(addr2, region2, (char*) buffer + size, size);
+  void* buffer1a = region1->data ? NULL : stack_alloc ? alloca(size) : malloc(size);
+  void* buffer2a = region2->data ? NULL : stack_alloc ? alloca(size) : malloc(size);
+  void* buffer1 = mc_snapshot_read_region(addr1, region1, buffer1a, size);
+  void* buffer2 = mc_snapshot_read_region(addr2, region2, buffer2a, size);
   int res;
   if (buffer1 == buffer2) {
-    res =  0;
+    res = 0;
   } else {
     res = memcmp(buffer1, buffer2, size);
   }
   if (!stack_alloc) {
-    free(buffer);
+    free(buffer1a);
+    free(buffer2a);
   }
   return res;
 }
