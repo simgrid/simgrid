@@ -634,18 +634,17 @@ static void finish_wait(MPI_Request * request, MPI_Status * status)
             switch_data_segment(smpi_process_index());
         }
       }
-      if(req->flags & RECV) {
 
-        if(datatype->has_subtype == 1){
-          // This part handles the problem of non-contignous memory
-          // the unserialization at the reception
-          s_smpi_subtype_t *subtype = datatype->substruct;
-            subtype->unserialize(req->buf, req->old_buf, req->real_size/smpi_datatype_size(datatype) , datatype->substruct, req->op);
-          if(req->detached == 0) free(req->buf);
-        }else{//apply op on contiguous buffer for accumulate
-            int n =req->real_size/smpi_datatype_size(datatype);
-            smpi_op_apply(req->op, req->buf, req->old_buf, &n, &datatype);
-        }
+      if(datatype->has_subtype == 1){
+        // This part handles the problem of non-contignous memory
+        // the unserialization at the reception
+        s_smpi_subtype_t *subtype = datatype->substruct;
+        if(req->flags & RECV)
+          subtype->unserialize(req->buf, req->old_buf, req->real_size/smpi_datatype_size(datatype) , datatype->substruct, req->op);
+        if(req->detached == 0) free(req->buf);
+      }else if(req->flags & RECV){//apply op on contiguous buffer for accumulate
+          int n =req->real_size/smpi_datatype_size(datatype);
+          smpi_op_apply(req->op, req->buf, req->old_buf, &n, &datatype);
       }
     }
     smpi_comm_unuse(req->comm);
