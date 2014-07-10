@@ -157,7 +157,7 @@ void* mc_snapshot_read(void* addr, mc_snapshot_t snapshot, void* target, size_t 
 int mc_snapshot_region_memcmp(
   void* addr1, mc_mem_region_t region1,
   void* addr2, mc_mem_region_t region2, size_t size);
-int mc_snapshot_memcp(
+int mc_snapshot_memcmp(
   void* addr1, mc_snapshot_t snapshot1,
   void* addr2, mc_snapshot_t snapshot2, size_t size);
 

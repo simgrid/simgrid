@@ -119,7 +119,7 @@ int mc_snapshot_region_memcmp(
  * @param snapshot2 Second snapshot
  * @return same as memcmp
  * */
-int mc_snapshot_memcp(
+int mc_snapshot_memcmp(
   void* addr1, mc_snapshot_t snapshot1,
   void* addr2, mc_snapshot_t snapshot2, size_t size)
 {
