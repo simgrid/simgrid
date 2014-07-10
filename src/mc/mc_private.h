@@ -142,6 +142,7 @@ void mc_free_page_snapshot_region(size_t* pagenos, size_t page_count);
 void mc_restore_page_snapshot_region(mc_mem_region_t region, size_t page_count, uint64_t* pagemap, mc_mem_region_t reference_region);
 
 mc_mem_region_t mc_region_new_sparse(int type, void *start_addr, size_t size, mc_mem_region_t ref_reg);
+void MC_region_destroy(mc_mem_region_t reg);
 void mc_region_restore_sparse(mc_mem_region_t reg, mc_mem_region_t ref_reg);
 void mc_softdirty_reset();
 
@@ -737,6 +738,9 @@ void* mc_snapshot_read_pointer(void* addr, mc_snapshot_t snapshot)
 static inline __attribute__((always_inline))
 void* mc_snapshot_read_region(void* addr, mc_mem_region_t region, void* target, size_t size)
 {
+  if (region==NULL)
+    return addr;
+
   uintptr_t offset = (char*) addr - (char*) region->start_addr;
 
   xbt_assert(addr >= region->start_addr && (char*) addr+size <= (char*)region->start_addr+region->size,

@@ -94,8 +94,8 @@ int mc_snapshot_region_memcmp(
   // Using alloca() for large allocations may trigger stack overflow:
   // use malloc if the buffer is too big.
   bool stack_alloc = size < 64;
-  void* buffer1a = region1->data ? NULL : stack_alloc ? alloca(size) : malloc(size);
-  void* buffer2a = region2->data ? NULL : stack_alloc ? alloca(size) : malloc(size);
+  void* buffer1a = (region1==NULL || region1->data) ? NULL : stack_alloc ? alloca(size) : malloc(size);
+  void* buffer2a = (region2==NULL || region2->data) ? NULL : stack_alloc ? alloca(size) : malloc(size);
   void* buffer1 = mc_snapshot_read_region(addr1, region1, buffer1a, size);
   void* buffer2 = mc_snapshot_read_region(addr2, region2, buffer2a, size);
   int res;
@@ -127,3 +127,93 @@ int mc_snapshot_memcp(
   mc_mem_region_t region2 = mc_get_snapshot_region(addr2, snapshot2);
   return mc_snapshot_region_memcmp(addr1, region1, addr2, region2, size);
 }
+
+#ifdef SIMGRID_TEST
+
+#include <string.h>
+#include <stdlib.h>
+
+#include <sys/mman.h>
+
+#include "mc/mc_private.h"
+
+XBT_TEST_SUITE("mc_snapshot", "Snapshots");
+
+static inline void init_memory(void* mem, size_t size)
+{
+  size_t hash = 5381;
+  hash = ((hash << 5) + hash) + (uintptr_t) size;
+  hash = ((hash << 5) + hash) + size;
+  char* dest = (char*) mem;
+  for (int i=0; i!=size; ++i) {
+    hash = ((hash << 5) + hash) + size;
+    dest[i] = hash & 255;
+  }
+}
+
+XBT_TEST_UNIT("page_region", test_snapshot_page_read, "Test page snapshots")
+{
+  xbt_test_add("Initialisation");
+  _sg_mc_soft_dirty = 0;
+  xbt_assert(xbt_pagesize == getpagesize());
+  xbt_assert(1 << xbt_pagebits == xbt_pagesize);
+  mc_model_checker = xbt_new0(s_mc_model_checker_t, 1);
+  mc_model_checker->pages = mc_pages_store_new();
+
+  for(int n=1; n!=10; ++n) {
+
+    // Store region page(s):
+    size_t byte_size = n * xbt_pagesize;
+    void* source = mmap(NULL, byte_size, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0);
+    xbt_assert(source!=MAP_FAILED, "Could not allocate source memory");
+
+    // Init memory and take snapshots:
+    init_memory(source, byte_size);
+    mc_mem_region_t region0 = mc_region_new_sparse(0, source, byte_size, NULL);
+    for(int i=1; i<n; i+=2) {
+      init_memory((char*) source + i*xbt_pagesize, xbt_pagesize);
+    }
+    mc_mem_region_t region = mc_region_new_sparse(0, source, byte_size, NULL);
+
+    void* destination = mmap(NULL, byte_size, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0);
+    xbt_assert(source!=MAP_FAILED, "Could not allocate destination memory");
+
+    xbt_test_add("Reading region data for %i page(s)", n);
+    for(int j=0; j!=100; ++j) {
+      size_t offset = rand() % byte_size;
+      size_t size = rand() % (byte_size - offset);
+      void* read = mc_snapshot_read_region((char*) source+offset, region, destination, size);
+      xbt_test_assert(!memcmp((char*) source+offset, read, size), "Mismatch in mc_snapshot_read_region()");
+    }
+
+    xbt_test_add("Compare region data for %i page(s)", n);
+    for(int j=0; j!=100; ++j) {
+      size_t offset = rand() % byte_size;
+      size_t size = rand() % (byte_size - offset);
+      xbt_test_assert(!mc_snapshot_region_memcmp((char*) source+offset, NULL, (char*) source+offset, region, size),
+        "Mismatch in mc_snapshot_region_memcmp()");
+    }
+
+
+    if (n==1) {
+      xbt_test_add("Read pointer for %i page(s)", n);
+      memcpy(source, &mc_model_checker, sizeof(void*));
+      mc_mem_region_t region2 = mc_region_new_sparse(0, source, byte_size, NULL);
+      xbt_test_assert(mc_snapshot_read_pointer_region(source, region2) == mc_model_checker,
+        "Mismtach in mc_snapshot_read_pointer_region()");
+      MC_region_destroy(region2);
+    }
+
+    MC_region_destroy(region);
+    MC_region_destroy(region0);
+    munmap(destination, byte_size);
+    munmap(source, byte_size);
+  }
+
+  mc_pages_store_delete(mc_model_checker->pages);
+  xbt_free(mc_model_checker);
+  mc_model_checker = NULL;
+}
+
+#endif /* SIMGRID_TEST */
+

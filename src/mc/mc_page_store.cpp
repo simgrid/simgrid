@@ -165,6 +165,11 @@ mc_pages_store_t mc_pages_store_new()
   return new s_mc_pages_store_t(500);
 }
 
+void mc_pages_store_delete(mc_pages_store_t store)
+{
+  delete store;
+}
+
 }
 
 #ifdef SIMGRID_TEST

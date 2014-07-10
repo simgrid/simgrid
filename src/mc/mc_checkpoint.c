@@ -60,7 +60,7 @@ static void local_variable_free_voidp(void *v)
   local_variable_free((local_variable_t) * (void **) v);
 }
 
-static void MC_region_destroy(mc_mem_region_t reg)
+void MC_region_destroy(mc_mem_region_t reg)
 {
   //munmap(reg->data, reg->size);
   xbt_free(reg->data);
