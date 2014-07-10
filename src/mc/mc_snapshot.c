@@ -141,13 +141,9 @@ XBT_TEST_SUITE("mc_snapshot", "Snapshots");
 
 static inline void init_memory(void* mem, size_t size)
 {
-  size_t hash = 5381;
-  hash = ((hash << 5) + hash) + (uintptr_t) size;
-  hash = ((hash << 5) + hash) + size;
   char* dest = (char*) mem;
   for (int i=0; i!=size; ++i) {
-    hash = ((hash << 5) + hash) + size;
-    dest[i] = hash & 255;
+    dest[i] = rand() & 255;
   }
 }
 
@@ -185,7 +181,7 @@ static void test_snapshot(bool sparse_checkpoint) {
     // Init memory and take snapshots:
     init_memory(source, byte_size);
     mc_mem_region_t region0 = mc_region_new_sparse(0, source, byte_size, NULL);
-    for(int i=1; i<n; i+=2) {
+    for(int i=0; i<n; i+=2) {
       init_memory((char*) source + i*xbt_pagesize, xbt_pagesize);
     }
     mc_mem_region_t region = mc_region_new_sparse(0, source, byte_size, NULL);
@@ -193,22 +189,32 @@ static void test_snapshot(bool sparse_checkpoint) {
     void* destination = mmap(NULL, byte_size, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0);
     xbt_assert(source!=MAP_FAILED, "Could not allocate destination memory");
 
-    xbt_test_add("Reading region data for %i page(s)", n);
+    xbt_test_add("Reading whole region data for %i page(s)", n);
+    void* read = mc_snapshot_read_region(source, region, destination, byte_size);
+    xbt_test_assert(!memcmp(source, read, byte_size), "Mismatch in mc_snapshot_read_region()");
+
+    xbt_test_add("Reading parts of region data for %i page(s)", n);
     for(int j=0; j!=100; ++j) {
       size_t offset = rand() % byte_size;
       size_t size = rand() % (byte_size - offset);
       void* read = mc_snapshot_read_region((char*) source+offset, region, destination, size);
-      xbt_test_assert(!memcmp((char*) source+offset, read, size), "Mismatch in mc_snapshot_read_region()");
+      xbt_test_assert(!memcmp((char*) source+offset, read, size),
+        "Mismatch in mc_snapshot_read_region()");
     }
 
-    xbt_test_add("Compare region data for %i page(s)", n);
+    xbt_test_add("Compare whole region data for %i page(s)", n);
+    xbt_test_assert(!mc_snapshot_region_memcmp(source, NULL, source, region, byte_size),
+      "Mismatch in mc_snapshot_region_memcmp() for the whole region");
+    xbt_test_assert(mc_snapshot_region_memcmp(source, region0, source, region, byte_size),
+      "Unexpected match in mc_snapshot_region_memcmp() with previous snapshot");
+
+    xbt_test_add("Compare parts of region data for %i page(s)", n);
     for(int j=0; j!=100; ++j) {
       size_t offset = rand() % byte_size;
       size_t size = rand() % (byte_size - offset);
       xbt_test_assert(!mc_snapshot_region_memcmp((char*) source+offset, NULL, (char*) source+offset, region, size),
         "Mismatch in mc_snapshot_region_memcmp()");
     }
-
 
     if (n==1) {
       xbt_test_add("Read pointer for %i page(s)", n);
