@@ -48,6 +48,25 @@ static void *align(struct mdesc *mdp, size_t size)
   return (result);
 }
 
+/** Initialise heapinfo about the heapinfo pages :)
+ *
+ */
+static void initialize_heapinfo_heapinfo(xbt_mheap_t mdp)
+{
+  // Update heapinfo about the heapinfo pages (!):
+  xbt_assert((uintptr_t) mdp->heapinfo % BLOCKSIZE == 0);
+  int block = BLOCK(mdp->heapinfo);
+  size_t nblocks = mdp->heapsize * sizeof(malloc_info) / BLOCKSIZE;
+  // Mark them as free:
+  for (size_t j=0; j!=nblocks; ++j) {
+    mdp->heapinfo[block+j].type = MMALLOC_TYPE_FREE;
+    mdp->heapinfo[block+j].free_block.size = 0;
+    mdp->heapinfo[block+j].free_block.next = 0;
+    mdp->heapinfo[block+j].free_block.prev = 0;
+  }
+  mdp->heapinfo[block].free_block.size = nblocks;
+}
+
 /* Finish the initialization of the mheap. If we want to inline it
  * properly, we need to make the align function publicly visible, too  */
 static void initialize(xbt_mheap_t mdp)
@@ -55,17 +74,21 @@ static void initialize(xbt_mheap_t mdp)
   int i;
   malloc_info mi; /* to compute the offset of the swag hook */
 
+  // Update mdp meta-data:
   mdp->heapsize = HEAP / BLOCKSIZE;
   mdp->heapinfo = (malloc_info *)
     align(mdp, mdp->heapsize * sizeof(malloc_info));
+  mdp->heapbase = (void *) mdp->heapinfo;
+  mdp->flags |= MMALLOC_INITIALIZED;
 
+  // Update root heapinfo:
   memset((void *) mdp->heapinfo, 0, mdp->heapsize * sizeof(malloc_info));
-  mdp->heapinfo[0].type=-1;
+  mdp->heapinfo[0].type = MMALLOC_TYPE_FREE;
   mdp->heapinfo[0].free_block.size = 0;
   mdp->heapinfo[0].free_block.next = mdp->heapinfo[0].free_block.prev = 0;
   mdp->heapindex = 0;
-  mdp->heapbase = (void *) mdp->heapinfo;
-  mdp->flags |= MMALLOC_INITIALIZED;
+
+  initialize_heapinfo_heapinfo(mdp);
 
   for (i=0;i<BLOCKLOG;i++) {
       xbt_swag_init(&(mdp->fraghead[i]),
@@ -122,7 +145,7 @@ static void *register_morecore(struct mdesc *mdp, size_t size)
     /* mark the space previously occupied by the block info as free by first marking it
      * as occupied in the regular way, and then freing it */
     for (it=0; it<BLOCKIFY(mdp->heapsize * sizeof(malloc_info)); it++){
-      newinfo[BLOCK(oldinfo)+it].type = 0;
+      newinfo[BLOCK(oldinfo)+it].type = MMALLOC_TYPE_UNFRAGMENTED;
       newinfo[BLOCK(oldinfo)+it].busy_block.ignore = 0;
     }
 
@@ -130,6 +153,8 @@ static void *register_morecore(struct mdesc *mdp, size_t size)
     newinfo[BLOCK(oldinfo)].busy_block.busy_size = size;
     mfree(mdp, (void *) oldinfo);
     mdp->heapsize = newsize;
+
+    initialize_heapinfo_heapinfo(mdp);
   }
 
   mdp->heaplimit = BLOCK((char *) result + size);
@@ -283,9 +308,10 @@ void *mmalloc_no_memset(xbt_mheap_t mdp, size_t size)
 
         block = BLOCK(result);
         for (it=0;it<blocks;it++){
-          mdp->heapinfo[block+it].type = 0;
+          mdp->heapinfo[block+it].type = MMALLOC_TYPE_UNFRAGMENTED;
           mdp->heapinfo[block+it].busy_block.busy_size = 0;
           mdp->heapinfo[block+it].busy_block.ignore = 0;
+          mdp->heapinfo[block+it].busy_block.size = 0;
         }
         mdp->heapinfo[block].busy_block.size = blocks;
         mdp->heapinfo[block].busy_block.busy_size = requested_size;
@@ -324,7 +350,7 @@ void *mmalloc_no_memset(xbt_mheap_t mdp, size_t size)
     }
 
     for (it=0;it<blocks;it++){
-      mdp->heapinfo[block+it].type = 0;
+      mdp->heapinfo[block+it].type = MMALLOC_TYPE_UNFRAGMENTED;
       mdp->heapinfo[block+it].busy_block.busy_size = 0;
       mdp->heapinfo[block+it].busy_block.ignore = 0;
     }

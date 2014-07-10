@@ -42,12 +42,17 @@ void mfree(struct mdesc *mdp, void *ptr)
   type = mdp->heapinfo[block].type;
 
   switch (type) {
-  case -1: /* Already free */
+  case MMALLOC_TYPE_HEAPINFO:
     UNLOCK(mdp);
-    THROWF(system_error, 0, "Asked to free a fragment in a block that is already free. I'm puzzled\n");
+    THROWF(system_error, 0, "Asked to free a fragment in a heapinfo block. I'm confused.\n");
+    break;
+
+  case MMALLOC_TYPE_FREE: /* Already free */
+    UNLOCK(mdp);
+    THROWF(system_error, 0, "Asked to free a fragment in a block that is already free. I'm puzzled.\n");
     break;
     
-  case 0:
+  case MMALLOC_TYPE_UNFRAGMENTED:
     /* Get as many statistics as early as we can.  */
     mdp -> heapstats.chunks_used--;
     mdp -> heapstats.bytes_used -=
@@ -83,12 +88,12 @@ void mfree(struct mdesc *mdp, void *ptr)
       mdp->heapinfo[i].free_block.size += mdp->heapinfo[block].busy_block.size;
       /* Mark all my ex-blocks as free */
       for (it=0; it<mdp->heapinfo[block].busy_block.size; it++) {
-        if (mdp->heapinfo[block+it].type <0) {
+        if (mdp->heapinfo[block+it].type < 0) {
           fprintf(stderr,"Internal Error: Asked to free a block already marked as free (block=%lu it=%d type=%lu). Please report this bug.\n",
                   (unsigned long)block,it,(unsigned long)mdp->heapinfo[block].type);
           abort();
         }
-        mdp->heapinfo[block+it].type = -1;
+        mdp->heapinfo[block+it].type = MMALLOC_TYPE_FREE;
       }
 
       block = i;
@@ -108,7 +113,7 @@ void mfree(struct mdesc *mdp, void *ptr)
                   (unsigned long)block,it,(unsigned long)mdp->heapinfo[block].free_block.size,(unsigned long)mdp->heapinfo[block].type);
           abort();
         }
-        mdp->heapinfo[block+it].type = -1;
+        mdp->heapinfo[block+it].type = MMALLOC_TYPE_FREE;
       }
     }
 
@@ -149,6 +154,11 @@ void mfree(struct mdesc *mdp, void *ptr)
     break;
 
   default:
+    if (type < 0) {
+      fprintf(stderr, "Unkown mmalloc block type.\n");
+      abort();
+    }
+
     /* Do some of the statistics.  */
     mdp -> heapstats.chunks_used--;
     mdp -> heapstats.bytes_used -= 1 << type;
@@ -178,7 +188,7 @@ void mfree(struct mdesc *mdp, void *ptr)
       xbt_swag_remove(&mdp->heapinfo[block],&mdp->fraghead[type]);
 
       /* pretend that this block is used and free it so that it gets properly coalesced with adjacent free blocks */
-      mdp->heapinfo[block].type = 0;
+      mdp->heapinfo[block].type = MMALLOC_TYPE_UNFRAGMENTED;
       mdp->heapinfo[block].busy_block.size = 1;
       mdp->heapinfo[block].busy_block.busy_size = 0;
             

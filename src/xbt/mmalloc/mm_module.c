@@ -362,11 +362,11 @@ size_t mmalloc_get_bytes_used(xbt_mheap_t heap){
   int bytes = 0;
   
   while(i<=((struct mdesc *)heap)->heaplimit){
-    if(((struct mdesc *)heap)->heapinfo[i].type == 0){
+    if(((struct mdesc *)heap)->heapinfo[i].type == MMALLOC_TYPE_UNFRAGMENTED){
       if(((struct mdesc *)heap)->heapinfo[i].busy_block.busy_size > 0)
         bytes += ((struct mdesc *)heap)->heapinfo[i].busy_block.busy_size;
      
-    }else if(((struct mdesc *)heap)->heapinfo[i].type > 0){
+    } else if(((struct mdesc *)heap)->heapinfo[i].type > 0){
       for(j=0; j < (size_t) (BLOCKSIZE >> ((struct mdesc *)heap)->heapinfo[i].type); j++){
         if(((struct mdesc *)heap)->heapinfo[i].busy_frag.frag_size[j] > 0)
           bytes += ((struct mdesc *)heap)->heapinfo[i].busy_frag.frag_size[j];
@@ -381,9 +381,9 @@ size_t mmalloc_get_bytes_used(xbt_mheap_t heap){
 ssize_t mmalloc_get_busy_size(xbt_mheap_t heap, void *ptr){
 
   ssize_t block = ((char*)ptr - (char*)(heap->heapbase)) / BLOCKSIZE + 1;
-  if(heap->heapinfo[block].type == -1)
+  if(heap->heapinfo[block].type < 0)
     return -1;
-  else if(heap->heapinfo[block].type == 0)
+  else if(heap->heapinfo[block].type == MMALLOC_TYPE_UNFRAGMENTED)
     return heap->heapinfo[block].busy_block.busy_size;
   else{
     ssize_t frag = ((uintptr_t) (ADDR2UINT (ptr) % (BLOCKSIZE))) >> heap->heapinfo[block].type;

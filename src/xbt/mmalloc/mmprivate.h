@@ -122,6 +122,11 @@ typedef struct s_heap_area_pair{
   int fragment2;
 }s_heap_area_pair_t, *heap_area_pair_t;
 
+#define MMALLOC_TYPE_HEAPINFO (-2)
+#define MMALLOC_TYPE_FREE (-1)
+#define MMALLOC_TYPE_UNFRAGMENTED 0
+/* >0 values are fragmented blocks */
+
 /* Data structure giving per-block information.
  *
  * There is one such structure in the mdp->heapinfo array per block used in that heap,
