@@ -151,10 +151,25 @@ static inline void init_memory(void* mem, size_t size)
   }
 }
 
-XBT_TEST_UNIT("page_region", test_snapshot_page_read, "Test page snapshots")
+static void test_snapshot(bool sparse_checkpoint);
+
+XBT_TEST_UNIT("page_snapshots", test_per_snpashots, "Test per-page snapshots")
 {
+  test_snapshot(1);
+}
+
+
+XBT_TEST_UNIT("flat_snapshot", test_flat_snapshots, "Test flat snapshots")
+{
+  test_snapshot(0);
+}
+
+
+static void test_snapshot(bool sparse_checkpoint) {
+
   xbt_test_add("Initialisation");
   _sg_mc_soft_dirty = 0;
+  _sg_mc_sparse_checkpoint = sparse_checkpoint;
   xbt_assert(xbt_pagesize == getpagesize());
   xbt_assert(1 << xbt_pagebits == xbt_pagesize);
   mc_model_checker = xbt_new0(s_mc_model_checker_t, 1);
