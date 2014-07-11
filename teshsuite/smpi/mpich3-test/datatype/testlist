@@ -13,8 +13,7 @@ gaddress 1
 typecommit 1
 #needs MPI_Type_get_name
 #typename 1
-#needs MPI_Type_dup
-#typefree 1
+typefree 1
 zeroparms 1
 #getpartelm 2
 #needs  MPI_Type_create_resized
