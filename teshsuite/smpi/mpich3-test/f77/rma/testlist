@@ -1,0 +1,19 @@
+#Needs post,start, complete, wait
+#winscale1f 4
+winfencef 4
+wingetf   5
+#Needs post,start, complete, wait
+#winscale2f 4
+#Needs win error handling
+#winerrf 1
+#Needs win set/get name
+#winnamef 1
+#Needs win get group
+#wingroupf 4
+winaccf 4
+#Needs mpi_win_f2c
+#c2f2cwinf 1
+#Needs attr
+#baseattrwinf 1
+#winattrf 1
+#winattr2f 1

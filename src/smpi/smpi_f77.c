@@ -15,6 +15,7 @@ static xbt_dict_t group_lookup = NULL;
 static xbt_dict_t request_lookup = NULL;
 static xbt_dict_t datatype_lookup = NULL;
 static xbt_dict_t op_lookup = NULL;
+static xbt_dict_t win_lookup = NULL;
 static int running_processes = 0;
 
 #if defined(__alpha__) || defined(__sparc64__) || defined(__x86_64__) || defined(__ia64__)
@@ -169,15 +170,35 @@ static void free_op(int op) {
   xbt_dict_remove(op_lookup, get_key(key, op));
 }
 
+static int new_win(MPI_Win win) {
+  static int win_id = 0;
+  char key[KEY_SIZE];
+  xbt_dict_set(win_lookup, get_key(key, win_id), win, NULL);
+  win_id++;
+  return win_id-1;
+}
+
+static MPI_Win get_win(int win) {
+  char key[KEY_SIZE];
+   return win >= 0
+          ? (MPI_Win)xbt_dict_get_or_null(win_lookup,  get_key(key, win))
+          : MPI_WIN_NULL;
+}
+
+static void free_win(int win) {
+  char key[KEY_SIZE];
+  xbt_dict_remove(win_lookup, get_key(key, win));
+}
+
+
 void mpi_init_(int* ierr) {
    if(!comm_lookup){
      comm_lookup = xbt_dict_new_homogeneous(NULL);
      new_comm(MPI_COMM_WORLD);
      group_lookup = xbt_dict_new_homogeneous(NULL);
-
      request_lookup = xbt_dict_new_homogeneous(NULL);
-
      datatype_lookup = xbt_dict_new_homogeneous(NULL);
+     win_lookup = xbt_dict_new_homogeneous(NULL);
      new_datatype(MPI_BYTE);
      new_datatype(MPI_CHAR);
      #if defined(__alpha__) || defined(__sparc64__) || defined(__x86_64__) || defined(__ia64__)
@@ -679,15 +700,23 @@ void mpi_error_string_(int* errorcode, char* string, int* resultlen, int* ierr){
 }
 
 void mpi_win_fence_( int* assert,  int* win, int* ierr){
-  *ierr =  MPI_Win_fence(* assert, *(MPI_Win*)win);
+  *ierr =  MPI_Win_fence(* assert, get_win(*win));
 }
 
 void mpi_win_free_( int* win, int* ierr){
-  *ierr =  MPI_Win_free(  (MPI_Win*)win);
+  MPI_Win tmp = get_win(*win);
+  *ierr =  MPI_Win_free(&tmp);
+  if(*ierr == MPI_SUCCESS) {
+    free_win(*win);
+  }
 }
 
 void mpi_win_create_( int *base, MPI_Aint* size, int* disp_unit, int* info, int* comm, int *win, int* ierr){
-  *ierr =  MPI_Win_create( (void*)base, *size, *disp_unit, *(MPI_Info*)info, get_comm(*comm),(MPI_Win*)win);
+  MPI_Win tmp;
+  *ierr =  MPI_Win_create( (void*)base, *size, *disp_unit, *(MPI_Info*)info, get_comm(*comm),&tmp);
+ if(*ierr == MPI_SUCCESS) {
+   *win = new_win(tmp);
+ }
 }
 
 void mpi_info_create_( int *info, int* ierr){
@@ -705,7 +734,19 @@ void mpi_info_free_(int* info, int* ierr){
 void mpi_get_( int *origin_addr, int* origin_count, int* origin_datatype, int *target_rank,
     MPI_Aint* target_disp, int *target_count, int* target_datatype, int* win, int* ierr){
   *ierr =  MPI_Get( (void*)origin_addr,*origin_count, get_datatype(*origin_datatype),*target_rank,
-      *target_disp, *target_count,get_datatype(*target_datatype), *(MPI_Win *)win);
+      *target_disp, *target_count,get_datatype(*target_datatype), get_win(*win));
+}
+
+void mpi_accumulate_( int *origin_addr, int* origin_count, int* origin_datatype, int *target_rank,
+    MPI_Aint* target_disp, int *target_count, int* target_datatype, int* op, int* win, int* ierr){
+  *ierr =  MPI_Accumulate( (void*)origin_addr,*origin_count, get_datatype(*origin_datatype),*target_rank,
+      *target_disp, *target_count,get_datatype(*target_datatype), get_op(*op), get_win(*win));
+}
+
+void mpi_put_( int *origin_addr, int* origin_count, int* origin_datatype, int *target_rank,
+    MPI_Aint* target_disp, int *target_count, int* target_datatype, int* win, int* ierr){
+  *ierr =  MPI_Put( (void*)origin_addr,*origin_count, get_datatype(*origin_datatype),*target_rank,
+      *target_disp, *target_count,get_datatype(*target_datatype), get_win(*win));
 }
 
 

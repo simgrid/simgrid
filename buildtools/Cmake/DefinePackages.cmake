@@ -1077,6 +1077,7 @@ set(TESHSUITE_CMAKEFILES_TXT
   teshsuite/smpi/mpich3-test/f77/pt2pt/CMakeLists.txt
   teshsuite/smpi/mpich3-test/f77/util/CMakeLists.txt
   teshsuite/smpi/mpich3-test/f77/topo/CMakeLists.txt
+  teshsuite/smpi/mpich3-test/f77/rma/CMakeLists.txt
   teshsuite/smpi/mpich3-test/f90/coll/CMakeLists.txt
   teshsuite/smpi/mpich3-test/f90/datatype/CMakeLists.txt
   teshsuite/smpi/mpich3-test/f90/init/CMakeLists.txt
