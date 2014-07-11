@@ -422,9 +422,6 @@ int mmalloc_compare_heap(mc_snapshot_t snapshot1, mc_snapshot_t snapshot2)
   void *addr_block1, *addr_block2, *addr_frag1, *addr_frag2;
   int nb_diff1 = 0, nb_diff2 = 0;
 
-  xbt_dynar_t previous =
-      xbt_dynar_new(sizeof(heap_area_pair_t), heap_area_pair_free_voidp);
-
   int equal, res_compare = 0;
 
   /* Check busy blocks */
@@ -498,8 +495,6 @@ int mmalloc_compare_heap(mc_snapshot_t snapshot1, mc_snapshot_t snapshot2)
             i1 += heapinfo1->busy_block.size;
           }
 
-          xbt_dynar_reset(previous);
-
         }
 
       }
@@ -539,8 +534,6 @@ int mmalloc_compare_heap(mc_snapshot_t snapshot1, mc_snapshot_t snapshot2)
           equal = 1;
           i1 += heapinfo1->busy_block.size;
         }
-
-        xbt_dynar_reset(previous);
 
         i2++;
 
@@ -589,8 +582,6 @@ int mmalloc_compare_heap(mc_snapshot_t snapshot1, mc_snapshot_t snapshot2)
             if (res_compare != 1)
               equal = 1;
 
-            xbt_dynar_reset(previous);
-
           }
 
         }
@@ -625,11 +616,8 @@ int mmalloc_compare_heap(mc_snapshot_t snapshot1, mc_snapshot_t snapshot2)
 
             if (res_compare != 1) {
               equal = 1;
-              xbt_dynar_reset(previous);
               break;
             }
-
-            xbt_dynar_reset(previous);
 
           }
 
@@ -741,7 +729,6 @@ int mmalloc_compare_heap(mc_snapshot_t snapshot1, mc_snapshot_t snapshot2)
   if (i1 == state->heaplimit)
     XBT_DEBUG("Number of blocks/fragments not found in heap2 : %d", nb_diff2);
 
-  xbt_dynar_free(&previous);
   return ((nb_diff1 > 0) || (nb_diff2 > 0));
 }
 
