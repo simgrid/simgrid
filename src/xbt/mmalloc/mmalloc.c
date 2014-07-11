@@ -97,8 +97,11 @@ static void *register_morecore(struct mdesc *mdp, size_t size)
     /* Copy old info into new location */
     oldinfo = mdp->heapinfo;
     newinfo = (malloc_info *) align(mdp, newsize * sizeof(malloc_info));
-    memset(newinfo, 0, newsize * sizeof(malloc_info));
     memcpy(newinfo, oldinfo, mdp->heapsize * sizeof(malloc_info));
+
+    /* Initialise the new blockinfo : */
+    memset((char*) newinfo + mdp->heapsize * sizeof(malloc_info), 0,
+      (newsize - mdp->heapsize)* sizeof(malloc_info));
 
     /* Update the swag of busy blocks containing free fragments by applying the offset to all swag_hooks. Yeah. My hand is right in the fan and I still type */
     size_t offset=((char*)newinfo)-((char*)oldinfo);
