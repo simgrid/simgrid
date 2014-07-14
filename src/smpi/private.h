@@ -473,6 +473,10 @@ void mpi_info_set_( int *info, char *key, char *value, int* ierr);
 void mpi_info_free_(int* info, int* ierr);
 void mpi_get_( int *origin_addr, int* origin_count, int* origin_datatype, int* target_rank,
     MPI_Aint* target_disp, int* target_count, int* target_datatype, int* win, int* ierr);
+void mpi_put_( int *origin_addr, int* origin_count, int* origin_datatype, int* target_rank,
+    MPI_Aint* target_disp, int* target_count, int* target_datatype, int* win, int* ierr);
+void mpi_accumulate_( int *origin_addr, int* origin_count, int* origin_datatype, int* target_rank,
+    MPI_Aint* target_disp, int* target_count, int* target_datatype, int* op, int* win, int* ierr);
 void mpi_error_string_(int* errorcode, char* string, int* resultlen, int* ierr);
 void mpi_sendrecv_(void* sendbuf, int* sendcount, int* sendtype, int* dst,
                 int* sendtag, void *recvbuf, int* recvcount,
