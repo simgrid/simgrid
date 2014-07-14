@@ -55,7 +55,6 @@ set(examples_src
   ${CMAKE_CURRENT_SOURCE_DIR}/winerrf.f
   ${CMAKE_CURRENT_SOURCE_DIR}/winfencef.f
   ${CMAKE_CURRENT_SOURCE_DIR}/wingroupf.f
-  ${CMAKE_CURRENT_SOURCE_DIR}/addsize.h.in
   ${CMAKE_CURRENT_SOURCE_DIR}/baseattrwinf.f
   ${CMAKE_CURRENT_SOURCE_DIR}/c2f2cwin.c
   ${CMAKE_CURRENT_SOURCE_DIR}/c2f2cwinf.f
