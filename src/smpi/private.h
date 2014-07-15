@@ -49,6 +49,7 @@ typedef struct s_smpi_subtype{
 } s_smpi_subtype_t;
 
 typedef struct s_smpi_mpi_datatype{
+  char* name;
   size_t size;
   /* this let us know if a serialization is required*/
   size_t has_subtype;
@@ -183,6 +184,8 @@ MPI_Datatype smpi_datatype_dup(MPI_Datatype datatype);
 int smpi_datatype_extent(MPI_Datatype datatype, MPI_Aint * lb,
                          MPI_Aint * extent);
 MPI_Aint smpi_datatype_get_extent(MPI_Datatype datatype);
+void smpi_datatype_get_name(MPI_Datatype datatype, char* name, int* length);
+void smpi_datatype_set_name(MPI_Datatype datatype, char* name);
 int smpi_datatype_copy(void *sendbuf, int sendcount, MPI_Datatype sendtype,
                        void *recvbuf, int recvcount,
                        MPI_Datatype recvtype);

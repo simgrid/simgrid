@@ -11,8 +11,7 @@ gaddress 1
 #slice-pack 1
 #struct-pack 1
 typecommit 1
-#needs MPI_Type_get_name
-#typename 1
+typename 1
 typefree 1
 zeroparms 1
 #getpartelm 2

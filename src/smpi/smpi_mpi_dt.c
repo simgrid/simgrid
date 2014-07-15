@@ -22,6 +22,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_mpi_dt, smpi,
 
 #define CREATE_MPI_DATATYPE(name, type)       \
   static s_smpi_mpi_datatype_t mpi_##name = { \
+    (char*) # name,                                   \
     sizeof(type),  /* size */                 \
     0,             /*was 1 has_subtype*/             \
     0,             /* lb */                   \
@@ -33,6 +34,7 @@ MPI_Datatype name = &mpi_##name;
 
 #define CREATE_MPI_DATATYPE_NULL(name)       \
   static s_smpi_mpi_datatype_t mpi_##name = { \
+    (char*) # name,                                   \
     0,  /* size */                 \
     0,             /*was 1 has_subtype*/             \
     0,             /* lb */                   \
@@ -79,7 +81,10 @@ typedef struct {
   long double value;
   int index;
 } long_double_int;
-
+typedef struct {
+  int64_t value;
+  int64_t index;
+} integer128_t;
 // Predefined data types
 CREATE_MPI_DATATYPE(MPI_CHAR, char);
 CREATE_MPI_DATATYPE(MPI_SHORT, short);
@@ -97,6 +102,7 @@ CREATE_MPI_DATATYPE(MPI_DOUBLE, double);
 CREATE_MPI_DATATYPE(MPI_LONG_DOUBLE, long double);
 CREATE_MPI_DATATYPE(MPI_WCHAR, wchar_t);
 CREATE_MPI_DATATYPE(MPI_C_BOOL, _Bool);
+CREATE_MPI_DATATYPE(MPI_BYTE, int8_t);
 CREATE_MPI_DATATYPE(MPI_INT8_T, int8_t);
 CREATE_MPI_DATATYPE(MPI_INT16_T, int16_t);
 CREATE_MPI_DATATYPE(MPI_INT32_T, int32_t);
@@ -119,6 +125,18 @@ CREATE_MPI_DATATYPE(MPI_2INT, int_int);
 CREATE_MPI_DATATYPE(MPI_2FLOAT, float_float);
 CREATE_MPI_DATATYPE(MPI_2DOUBLE, double_double);
 CREATE_MPI_DATATYPE(MPI_2LONG, long_long);
+
+CREATE_MPI_DATATYPE(MPI_REAL4, float);
+CREATE_MPI_DATATYPE(MPI_REAL8, float);
+CREATE_MPI_DATATYPE(MPI_REAL16, double);
+CREATE_MPI_DATATYPE_NULL(MPI_COMPLEX8);
+CREATE_MPI_DATATYPE_NULL(MPI_COMPLEX16);
+CREATE_MPI_DATATYPE_NULL(MPI_COMPLEX32);
+CREATE_MPI_DATATYPE(MPI_INTEGER1, int);
+CREATE_MPI_DATATYPE(MPI_INTEGER2, int16_t);
+CREATE_MPI_DATATYPE(MPI_INTEGER4, int32_t);
+CREATE_MPI_DATATYPE(MPI_INTEGER8, int64_t);
+CREATE_MPI_DATATYPE(MPI_INTEGER16, integer128_t);
 
 CREATE_MPI_DATATYPE(MPI_LONG_DOUBLE_INT, long_double_int);
 
@@ -156,6 +174,8 @@ MPI_Datatype smpi_datatype_dup(MPI_Datatype datatype)
   memcpy(new_t, datatype, sizeof(s_smpi_mpi_datatype_t));
   if (datatype->has_subtype)
     memcpy(new_t->substruct, datatype->substruct, sizeof(s_smpi_subtype_t));
+  if(datatype->name)
+    new_t->name = strdup(datatype->name);
   return new_t;
 }
 
@@ -169,6 +189,15 @@ int smpi_datatype_extent(MPI_Datatype datatype, MPI_Aint * lb,
 
 MPI_Aint smpi_datatype_get_extent(MPI_Datatype datatype){
   return datatype->ub - datatype->lb;
+}
+
+void smpi_datatype_get_name(MPI_Datatype datatype, char* name, int* length){
+  *length = strlen(datatype->name);
+  strcpy(name, datatype->name);
+}
+
+void smpi_datatype_set_name(MPI_Datatype datatype, char* name){
+  datatype->name = strdup(name);;
 }
 
 int smpi_datatype_copy(void *sendbuf, int sendcount, MPI_Datatype sendtype,
@@ -319,6 +348,7 @@ s_smpi_mpi_vector_t* smpi_datatype_vector_create( int block_stride,
 void smpi_datatype_create(MPI_Datatype* new_type, int size,int lb, int ub, int has_subtype,
                           void *struct_type, int flags){
   MPI_Datatype new_t= xbt_new(s_smpi_mpi_datatype_t,1);
+  new_t->name = NULL;
   new_t->size = size;
   new_t->has_subtype = size>0? has_subtype:0;
   new_t->lb = lb;
@@ -347,6 +377,9 @@ void smpi_datatype_free(MPI_Datatype* type){
   if ((*type)->has_subtype == 1){
     ((s_smpi_subtype_t *)(*type)->substruct)->subtype_free(type);  
     xbt_free((*type)->substruct);
+  }
+  if ((*type)->name != NULL){
+    xbt_free((*type)->name);
   }
   xbt_free(*type);
   *type = MPI_DATATYPE_NULL;

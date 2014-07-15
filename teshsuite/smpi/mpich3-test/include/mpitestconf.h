@@ -94,7 +94,7 @@
 /* #undef HAVE_MPI_INIT_THREAD */
 
 /* Define if MPI_INTEGER16 is available */
-/* #undef HAVE_MPI_INTEGER16 */
+#define HAVE_MPI_INTEGER16 1
 
 /* Define if MPI-IO (really ROMIO) is included */
 //#define HAVE_MPI_IO 1

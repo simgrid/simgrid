@@ -2848,7 +2848,34 @@ int PMPI_Free_mem(void *baseptr){
   return MPI_SUCCESS;
 }
 
+int PMPI_Type_set_name(MPI_Datatype  datatype, char * name)
+{
+  int retval = 0;
+  if (datatype == MPI_DATATYPE_NULL)  {
+    retval = MPI_ERR_TYPE;
+  } else if (name == NULL)  {
+    retval = MPI_ERR_ARG;
+  } else {
+    smpi_datatype_set_name(datatype, name);
+    retval = MPI_SUCCESS;
+  }
+  return retval;
+}
 
+int PMPI_Type_get_name(MPI_Datatype  datatype, char * name, int* len)
+{
+  int retval = 0;
+
+  if (datatype == MPI_DATATYPE_NULL)  {
+    retval = MPI_ERR_TYPE;
+  } else if (name == NULL)  {
+    retval = MPI_ERR_ARG;
+  } else {
+    smpi_datatype_get_name(datatype, name, len);
+    retval = MPI_SUCCESS;
+  }
+  return retval;
+}
 
 /* The following calls are not yet implemented and will fail at runtime. */
 /* Once implemented, please move them above this notice. */
@@ -2858,15 +2885,7 @@ int PMPI_Free_mem(void *baseptr){
     return MPI_SUCCESS;                                                 \
   }
 
-int PMPI_Type_set_name(MPI_Datatype  datatype, char * name)
-{
-  NOT_YET_IMPLEMENTED
-}
 
-int PMPI_Type_get_name(MPI_Datatype  datatype, char * name, int* len)
-{
-  NOT_YET_IMPLEMENTED
-}
 
 int PMPI_Pack_size(int incount, MPI_Datatype datatype, MPI_Comm comm, int* size) {
   NOT_YET_IMPLEMENTED
