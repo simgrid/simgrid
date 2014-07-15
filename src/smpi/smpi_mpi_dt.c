@@ -1261,6 +1261,8 @@ static void max_func(void *a, void *b, int *length,
     APPLY_FUNC(a, b, length, unsigned int, MAX_OP);
   } else if (*datatype == MPI_UNSIGNED_LONG) {
     APPLY_FUNC(a, b, length, unsigned long, MAX_OP);
+  } else if (*datatype == MPI_UNSIGNED_CHAR) {
+    APPLY_FUNC(a, b, length, unsigned char, MAX_OP);
   } else if (*datatype == MPI_FLOAT) {
     APPLY_FUNC(a, b, length, float, MAX_OP);
   } else if (*datatype == MPI_DOUBLE) {
@@ -1287,6 +1289,8 @@ static void min_func(void *a, void *b, int *length,
     APPLY_FUNC(a, b, length, unsigned int, MIN_OP);
   } else if (*datatype == MPI_UNSIGNED_LONG) {
     APPLY_FUNC(a, b, length, unsigned long, MIN_OP);
+  } else if (*datatype == MPI_UNSIGNED_CHAR) {
+    APPLY_FUNC(a, b, length, unsigned char, MIN_OP);
   } else if (*datatype == MPI_FLOAT) {
     APPLY_FUNC(a, b, length, float, MIN_OP);
   } else if (*datatype == MPI_DOUBLE) {
@@ -1313,6 +1317,8 @@ static void sum_func(void *a, void *b, int *length,
     APPLY_FUNC(a, b, length, unsigned int, SUM_OP);
   } else if (*datatype == MPI_UNSIGNED_LONG) {
     APPLY_FUNC(a, b, length, unsigned long, SUM_OP);
+  } else if (*datatype == MPI_UNSIGNED_CHAR) {
+    APPLY_FUNC(a, b, length, unsigned char, SUM_OP);
   } else if (*datatype == MPI_FLOAT) {
     APPLY_FUNC(a, b, length, float, SUM_OP);
   } else if (*datatype == MPI_DOUBLE) {
@@ -1345,6 +1351,8 @@ static void prod_func(void *a, void *b, int *length,
     APPLY_FUNC(a, b, length, unsigned int, PROD_OP);
   } else if (*datatype == MPI_UNSIGNED_LONG) {
     APPLY_FUNC(a, b, length, unsigned long, PROD_OP);
+  } else if (*datatype == MPI_UNSIGNED_CHAR) {
+    APPLY_FUNC(a, b, length, unsigned char, PROD_OP);
   } else if (*datatype == MPI_FLOAT) {
     APPLY_FUNC(a, b, length, float, PROD_OP);
   } else if (*datatype == MPI_DOUBLE) {
@@ -1377,6 +1385,8 @@ static void land_func(void *a, void *b, int *length,
     APPLY_FUNC(a, b, length, unsigned int, LAND_OP);
   } else if (*datatype == MPI_UNSIGNED_LONG) {
     APPLY_FUNC(a, b, length, unsigned long, LAND_OP);
+  } else if (*datatype == MPI_UNSIGNED_CHAR) {
+    APPLY_FUNC(a, b, length, unsigned char, LAND_OP);
   } else if (*datatype == MPI_C_BOOL) {
     APPLY_FUNC(a, b, length, _Bool, LAND_OP);
   }
@@ -1399,6 +1409,8 @@ static void lor_func(void *a, void *b, int *length,
     APPLY_FUNC(a, b, length, unsigned int, LOR_OP);
   } else if (*datatype == MPI_UNSIGNED_LONG) {
     APPLY_FUNC(a, b, length, unsigned long, LOR_OP);
+  } else if (*datatype == MPI_UNSIGNED_CHAR) {
+    APPLY_FUNC(a, b, length, unsigned char, LOR_OP);
   } else if (*datatype == MPI_C_BOOL) {
     APPLY_FUNC(a, b, length, _Bool, LOR_OP);
   }
@@ -1421,6 +1433,8 @@ static void lxor_func(void *a, void *b, int *length,
     APPLY_FUNC(a, b, length, unsigned int, LXOR_OP);
   } else if (*datatype == MPI_UNSIGNED_LONG) {
     APPLY_FUNC(a, b, length, unsigned long, LXOR_OP);
+  } else if (*datatype == MPI_UNSIGNED_CHAR) {
+    APPLY_FUNC(a, b, length, unsigned char, LXOR_OP);
   } else if (*datatype == MPI_C_BOOL) {
     APPLY_FUNC(a, b, length, _Bool, LXOR_OP);
   }
@@ -1431,8 +1445,7 @@ static void band_func(void *a, void *b, int *length,
 {
   if (*datatype == MPI_CHAR) {
     APPLY_FUNC(a, b, length, char, BAND_OP);
-  }
-  if (*datatype == MPI_SHORT) {
+  }else if (*datatype == MPI_SHORT) {
     APPLY_FUNC(a, b, length, short, BAND_OP);
   } else if (*datatype == MPI_INT) {
     APPLY_FUNC(a, b, length, int, BAND_OP);
@@ -1444,6 +1457,8 @@ static void band_func(void *a, void *b, int *length,
     APPLY_FUNC(a, b, length, unsigned int, BAND_OP);
   } else if (*datatype == MPI_UNSIGNED_LONG) {
     APPLY_FUNC(a, b, length, unsigned long, BAND_OP);
+  } else if (*datatype == MPI_UNSIGNED_CHAR) {
+    APPLY_FUNC(a, b, length, unsigned char, BAND_OP);
   } else if (*datatype == MPI_BYTE) {
     APPLY_FUNC(a, b, length, uint8_t, BAND_OP);
   }
@@ -1466,6 +1481,8 @@ static void bor_func(void *a, void *b, int *length,
     APPLY_FUNC(a, b, length, unsigned int, BOR_OP);
   } else if (*datatype == MPI_UNSIGNED_LONG) {
     APPLY_FUNC(a, b, length, unsigned long, BOR_OP);
+  } else if (*datatype == MPI_UNSIGNED_CHAR) {
+    APPLY_FUNC(a, b, length, unsigned char, BOR_OP);
   } else if (*datatype == MPI_BYTE) {
     APPLY_FUNC(a, b, length, uint8_t, BOR_OP);
   }
@@ -1488,6 +1505,8 @@ static void bxor_func(void *a, void *b, int *length,
     APPLY_FUNC(a, b, length, unsigned int, BXOR_OP);
   } else if (*datatype == MPI_UNSIGNED_LONG) {
     APPLY_FUNC(a, b, length, unsigned long, BXOR_OP);
+  } else if (*datatype == MPI_UNSIGNED_CHAR) {
+    APPLY_FUNC(a, b, length, unsigned char, BXOR_OP);
   } else if (*datatype == MPI_BYTE) {
     APPLY_FUNC(a, b, length, uint8_t, BXOR_OP);
   }
