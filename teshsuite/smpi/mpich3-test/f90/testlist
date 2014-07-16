@@ -9,7 +9,7 @@ init
 pt2pt
 datatype
 #f90types
-#
+rma
 #spawn
 #timer
 #topo

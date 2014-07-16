@@ -342,6 +342,21 @@ static void _sg_cfg_cb__coll_scatter(const char *name, int pos){
 static void _sg_cfg_cb__coll_barrier(const char *name, int pos){
   _sg_cfg_cb__coll("barrier", mpi_coll_barrier_description, name, pos);
 }
+
+static void _sg_cfg_cb__wtime_sleep(const char *name, int pos){
+  smpi_wtime_sleep = xbt_cfg_get_double(_sg_cfg_set, name);
+}
+
+static void _sg_cfg_cb__iprobe_sleep(const char *name, int pos){
+  smpi_iprobe_sleep = xbt_cfg_get_double(_sg_cfg_set, name);
+}
+
+static void _sg_cfg_cb__test_sleep(const char *name, int pos){
+  smpi_test_sleep = xbt_cfg_get_double(_sg_cfg_set, name);
+}
+
+
+
 #endif
 
 /* callback of the inclusion path */
@@ -839,8 +854,18 @@ void sg_config_init(int *argc, char **argv)
 
     xbt_cfg_register(&_sg_cfg_set, "smpi/iprobe",
                      "Minimum time to inject inside a call to MPI_Iprobe",
-                     xbt_cfgelm_double, 1, 1, NULL, NULL);
+                     xbt_cfgelm_double, 1, 1, _sg_cfg_cb__iprobe_sleep, NULL);
     xbt_cfg_setdefault_double(_sg_cfg_set, "smpi/iprobe", 1e-4);
+
+    xbt_cfg_register(&_sg_cfg_set, "smpi/test",
+                     "Minimum time to inject inside a call to MPI_Test",
+                     xbt_cfgelm_double, 1, 1, _sg_cfg_cb__test_sleep, NULL);
+    xbt_cfg_setdefault_double(_sg_cfg_set, "smpi/test", 1e-4);
+
+    xbt_cfg_register(&_sg_cfg_set, "smpi/wtime",
+                     "Minimum time to inject inside a call to MPI_Wtime",
+                     xbt_cfgelm_double, 1, 1, _sg_cfg_cb__wtime_sleep, NULL);
+    xbt_cfg_setdefault_double(_sg_cfg_set, "smpi/wtime", 0.0);
 
     xbt_cfg_register(&_sg_cfg_set, "smpi/coll_selector",
                      "Which collective selector to use",
