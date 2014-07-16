@@ -124,7 +124,8 @@ int MSG_vm_is_running(msg_vm_t vm)
  */
 int MSG_vm_is_migrating(msg_vm_t vm)
 {
-  return __MSG_vm_is_state(vm, SURF_VM_STATE_MIGRATING);
+  msg_host_priv_t priv = msg_host_resource_priv(vm);
+  return priv->is_migrating;
 }
 
 /** @brief Returns whether the given VM is currently suspended, not running.
@@ -238,6 +239,9 @@ msg_vm_t MSG_vm_create_core(msg_host_t ind_pm, const char *name)
  */
 void MSG_vm_destroy(msg_vm_t vm)
 {
+  if (MSG_vm_is_migrating(vm))
+    THROWF(vm_error, 0, "VM(%s) is migrating", sg_host_name(vm));
+
   /* First, terminate all processes on the VM if necessary */
   if (MSG_vm_is_running(vm))
       simcall_vm_shutdown(vm);
@@ -1135,12 +1139,18 @@ void MSG_vm_migrate(msg_vm_t vm, msg_host_t new_pm)
 
   msg_host_t old_pm = simcall_vm_get_pm(vm);
 
-  if (simcall_vm_get_state(vm) != SURF_VM_STATE_RUNNING)
+  if (!MSG_vm_is_running(vm))
     THROWF(vm_error, 0, "VM(%s) is not running", sg_host_name(vm));
+
+  if (MSG_vm_is_migrating(vm))
+    THROWF(vm_error, 0, "VM(%s) is already migrating", sg_host_name(vm));
+
+  msg_host_priv_t priv = msg_host_resource_priv(vm);
+  priv->is_migrating = 1;
 
   do_migration(vm, old_pm, new_pm);
 
-
+  priv->is_migrating = 0;
 
   XBT_DEBUG("VM(%s) moved from PM(%s) to PM(%s)", vm->key, old_pm->key, new_pm->key);
 
@@ -1160,6 +1170,9 @@ void MSG_vm_migrate(msg_vm_t vm, msg_host_t new_pm)
  */
 void MSG_vm_suspend(msg_vm_t vm)
 {
+  if (MSG_vm_is_migrating(vm))
+    THROWF(vm_error, 0, "VM(%s) is migrating", sg_host_name(vm));
+
   simcall_vm_suspend(vm);
 
   XBT_DEBUG("vm_suspend done");
@@ -1197,6 +1210,9 @@ void MSG_vm_resume(msg_vm_t vm)
  */
 void MSG_vm_save(msg_vm_t vm)
 {
+  if (MSG_vm_is_migrating(vm))
+    THROWF(vm_error, 0, "VM(%s) is migrating", sg_host_name(vm));
+
   simcall_vm_save(vm);
   #ifdef HAVE_TRACING
   TRACE_msg_vm_save(vm);

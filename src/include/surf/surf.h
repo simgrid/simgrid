@@ -171,16 +171,12 @@ typedef enum {
 /* FIXME: Where should the VM state be defined? */
 typedef enum {
   SURF_VM_STATE_CREATED, /**< created, but not yet started */
-
   SURF_VM_STATE_RUNNING,
-  SURF_VM_STATE_MIGRATING,
-
   SURF_VM_STATE_SUSPENDED, /**< Suspend/resume does not involve disk I/O, so we assume there is no transition states. */
 
   SURF_VM_STATE_SAVING, /**< Save/restore involves disk I/O, so there should be transition states. */
   SURF_VM_STATE_SAVED,
   SURF_VM_STATE_RESTORING,
-
 } e_surf_vm_state_t;
 
 /***************************/

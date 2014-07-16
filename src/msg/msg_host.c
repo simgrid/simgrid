@@ -51,6 +51,7 @@ msg_host_t __MSG_host_create(smx_host_t workstation)
   priv->dp_objs = xbt_dict_new();
   priv->dp_enabled = 0;
   priv->dp_updated_by_deleted_tasks = 0;
+  priv->is_migrating = 0;
 
   priv->affinity_mask_db = xbt_dict_new_homogeneous(NULL);
 

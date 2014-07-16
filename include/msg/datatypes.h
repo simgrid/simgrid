@@ -51,6 +51,7 @@ typedef struct msg_host_priv {
   int        dp_enabled;
   xbt_dict_t dp_objs;
   double     dp_updated_by_deleted_tasks;
+  int        is_migrating;
 
   xbt_dict_t affinity_mask_db;
 
