@@ -4,19 +4,13 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-// QUESTIONS:
-// 1./ check how and where a new VM is added to the list of the hosts
-// 2./ Diff between SIMIX_Actions and SURF_Actions
-// => SIMIX_actions : point synchro entre processus de niveau (theoretically speaking I do not have to create such SIMIX_ACTION
-// =>  Surf_Actions
+/* TODO:
+ * 1. add the support of trace
+ * 2. use parallel tasks to simulate CPU overhead and remove the very
+ *    experimental code generating micro computation tasks
+ */
 
-// TODO
-//	MSG_TRACE can be revisited in order to use  the host
-//	To implement a mixed model between workstation and vm_workstation,
-//     please give a look at surf_model_private_t model_private at SURF Level and to the share resource functions
-//     double (*share_resources) (double now);
-//	For the action into the vm workstation model, we should be able to leverage the usual one (and if needed, look at
-// 		the workstation model.
+
 
 #include "msg_private.h"
 #include "xbt/sysdep.h"
@@ -300,65 +294,91 @@ void MSG_vm_shutdown(msg_vm_t vm)
 /* We have two mailboxes. mbox is used to transfer migration data between
  * source and destination PMs. mbox_ctl is used to detect the completion of a
  * migration. The names of these mailboxes must not conflict with others. */
-static inline char *get_mig_mbox_src_dst(const char *vm_name, const char *src_pm_name, const char *dst_pm_name)
+static inline char *get_mig_mbox_src_dst(msg_vm_t vm, msg_host_t src_pm, msg_host_t dst_pm)
 {
+  char *vm_name = sg_host_name(vm);
+  char *src_pm_name = sg_host_name(src_pm);
+  char *dst_pm_name = sg_host_name(dst_pm);
+
   return bprintf("__mbox_mig_src_dst:%s(%s-%s)", vm_name, src_pm_name, dst_pm_name);
 }
 
-static inline char *get_mig_mbox_ctl(const char *vm_name, const char *src_pm_name, const char *dst_pm_name)
+static inline char *get_mig_mbox_ctl(msg_vm_t vm, msg_host_t src_pm, msg_host_t dst_pm)
 {
+  char *vm_name = sg_host_name(vm);
+  char *src_pm_name = sg_host_name(src_pm);
+  char *dst_pm_name = sg_host_name(dst_pm);
+
   return bprintf("__mbox_mig_ctl:%s(%s-%s)", vm_name, src_pm_name, dst_pm_name);
 }
 
-static inline char *get_mig_process_tx_name(const char *vm_name, const char *src_pm_name, const char *dst_pm_name)
+static inline char *get_mig_process_tx_name(msg_vm_t vm, msg_host_t src_pm, msg_host_t dst_pm)
 {
+  char *vm_name = sg_host_name(vm);
+  char *src_pm_name = sg_host_name(src_pm);
+  char *dst_pm_name = sg_host_name(dst_pm);
+
   return bprintf("__pr_mig_tx:%s(%s-%s)", vm_name, src_pm_name, dst_pm_name);
 }
 
-static inline char *get_mig_process_rx_name(const char *vm_name, const char *src_pm_name, const char *dst_pm_name)
+static inline char *get_mig_process_rx_name(msg_vm_t vm, msg_host_t src_pm, msg_host_t dst_pm)
 {
+  char *vm_name = sg_host_name(vm);
+  char *src_pm_name = sg_host_name(src_pm);
+  char *dst_pm_name = sg_host_name(dst_pm);
+
   return bprintf("__pr_mig_rx:%s(%s-%s)", vm_name, src_pm_name, dst_pm_name);
 }
 
-static inline char *get_mig_task_name(const char *vm_name, const char *src_pm_name, const char *dst_pm_name, int stage)
+static inline char *get_mig_task_name(msg_vm_t vm, msg_host_t src_pm, msg_host_t dst_pm, int stage)
 {
+  char *vm_name = sg_host_name(vm);
+  char *src_pm_name = sg_host_name(src_pm);
+  char *dst_pm_name = sg_host_name(dst_pm);
+
   return bprintf("__task_mig_stage%d:%s(%s-%s)", stage, vm_name, src_pm_name, dst_pm_name);
 }
 
 static void launch_deferred_exec_process(msg_host_t host, double computation, double prio);
 
+
+struct migration_session {
+  msg_vm_t vm;
+  msg_host_t src_pm;
+  msg_host_t dst_pm;
+
+  /* The miration_rx process uses mbox_ctl to let the caller of do_migration()
+   * know the completion of the migration. */
+  char *mbox_ctl;
+  /* The migration_rx and migration_tx processes use mbox to transfer migration
+   * data. */
+  char *mbox;
+};
+
+
 static int migration_rx_fun(int argc, char *argv[])
 {
   XBT_DEBUG("mig: rx_start");
 
-  xbt_assert(argc == 4);
-  const char *vm_name = argv[1];
-  const char *src_pm_name  = argv[2];
-  const char *dst_pm_name  = argv[3];
-  msg_vm_t vm = MSG_get_host_by_name(vm_name);
-  msg_host_t src_pm = MSG_get_host_by_name(src_pm_name);
-  msg_host_t dst_pm = MSG_get_host_by_name(dst_pm_name);
+  struct migration_session *ms = MSG_process_get_data(MSG_process_self());
 
 
   s_ws_params_t params;
-  simcall_host_get_params(vm, &params);
+  simcall_host_get_params(ms->vm, &params);
   const double xfer_cpu_overhead = params.xfer_cpu_overhead;
-
 
   int need_exit = 0;
 
-  char *mbox = get_mig_mbox_src_dst(vm_name, src_pm_name, dst_pm_name);
-  char *mbox_ctl = get_mig_mbox_ctl(vm_name, src_pm_name, dst_pm_name);
-  char *finalize_task_name = get_mig_task_name(vm_name, src_pm_name, dst_pm_name, 3);
+  char *finalize_task_name = get_mig_task_name(ms->vm, ms->src_pm, ms->dst_pm, 3);
 
   for (;;) {
     msg_task_t task = NULL;
-    MSG_task_recv(&task, mbox);
+    MSG_task_recv(&task, ms->mbox);
     {
       double received = MSG_task_get_data_size(task);
       /* TODO: clean up */
       // const double alpha = 0.22L * 1.0E8 / (80L * 1024 * 1024);
-      launch_deferred_exec_process(vm, received * xfer_cpu_overhead, 1);
+      launch_deferred_exec_process(ms->vm, received * xfer_cpu_overhead, 1);
     }
 
     if (strcmp(task->name, finalize_task_name) == 0)
@@ -372,33 +392,31 @@ static int migration_rx_fun(int argc, char *argv[])
 
 
   /* deinstall the current affinity setting */
-  simcall_vm_set_affinity(vm, src_pm, 0);
+  simcall_vm_set_affinity(ms->vm, ms->src_pm, 0);
 
-  simcall_vm_migrate(vm, dst_pm);
-  simcall_vm_resume(vm);
+  simcall_vm_migrate(ms->vm, ms->dst_pm);
+  simcall_vm_resume(ms->vm);
 
   /* install the affinity setting of the VM on the destination pm */
   {
-    msg_host_priv_t priv = msg_host_resource_priv(vm);
+    msg_host_priv_t priv = msg_host_resource_priv(ms->vm);
 
-    unsigned long affinity_mask = (unsigned long) xbt_dict_get_or_null_ext(priv->affinity_mask_db, (char *) dst_pm, sizeof(msg_host_t));
-    simcall_vm_set_affinity(vm, dst_pm, affinity_mask);
-    XBT_INFO("set affinity(0x%04lx@%s) for %s", affinity_mask, MSG_host_get_name(dst_pm), MSG_host_get_name(vm));
+    unsigned long affinity_mask = (unsigned long) xbt_dict_get_or_null_ext(priv->affinity_mask_db, (char *) ms->dst_pm, sizeof(msg_host_t));
+    simcall_vm_set_affinity(ms->vm, ms->dst_pm, affinity_mask);
+    XBT_INFO("set affinity(0x%04lx@%s) for %s", affinity_mask, MSG_host_get_name(ms->dst_pm), MSG_host_get_name(ms->vm));
   }
 
   {
-    char *task_name = get_mig_task_name(vm_name, src_pm_name, dst_pm_name, 4);
+    char *task_name = get_mig_task_name(ms->vm, ms->src_pm, ms->dst_pm, 4);
 
     msg_task_t task = MSG_task_create(task_name, 0, 0, NULL);
-    msg_error_t ret = MSG_task_send(task, mbox_ctl);
+    msg_error_t ret = MSG_task_send(task, ms->mbox_ctl);
     xbt_assert(ret == MSG_OK);
 
     xbt_free(task_name);
   }
 
 
-  xbt_free(mbox);
-  xbt_free(mbox_ctl);
   xbt_free(finalize_task_name);
 
   XBT_DEBUG("mig: rx_done");
@@ -799,10 +817,10 @@ const double alpha = 0.22L * 1.0E8 / (80L * 1024 * 1024);
 #endif
 
 
-static void send_migration_data(const char *vm_name, const char *src_pm_name, const char *dst_pm_name,
+static void send_migration_data(msg_vm_t vm, msg_host_t src_pm, msg_host_t dst_pm,
     sg_size_t size, char *mbox, int stage, int stage2_round, double mig_speed, double xfer_cpu_overhead)
 {
-  char *task_name = get_mig_task_name(vm_name, src_pm_name, dst_pm_name, stage);
+  char *task_name = get_mig_task_name(vm, src_pm, dst_pm, stage);
   msg_task_t task = MSG_task_create(task_name, 0, size, NULL);
 
   /* TODO: clean up */
@@ -872,11 +890,9 @@ static double get_updated_size(double computed, double dp_rate, double dp_cap)
   return updated_size;
 }
 
-static double send_stage1(msg_host_t vm, const char *src_pm_name, const char *dst_pm_name,
+static double send_stage1(struct migration_session *ms,
     sg_size_t ramsize, double mig_speed, double xfer_cpu_overhead, double dp_rate, double dp_cap, double dpt_cpu_overhead)
 {
-  const char *vm_name = MSG_host_get_name(vm);
-  char *mbox = get_mig_mbox_src_dst(vm_name, src_pm_name, dst_pm_name);
 
   // const long chunksize = (sg_size_t)1024 * 1024 * 100;
   const sg_size_t chunksize = (sg_size_t)1024 * 1024 * 100000;
@@ -890,8 +906,8 @@ static double send_stage1(msg_host_t vm, const char *src_pm_name, const char *ds
 
     remaining -= datasize;
 
-    send_migration_data(vm_name, src_pm_name, dst_pm_name, datasize, mbox, 1, 0, mig_speed, xfer_cpu_overhead);
-    double computed = lookup_computed_flop_counts(vm, 1, 0);
+    send_migration_data(ms->vm, ms->src_pm, ms->dst_pm, datasize, ms->mbox, 1, 0, mig_speed, xfer_cpu_overhead);
+    double computed = lookup_computed_flop_counts(ms->vm, 1, 0);
     computed_total += computed;
 
     // {
@@ -901,7 +917,7 @@ static double send_stage1(msg_host_t vm, const char *src_pm_name, const char *ds
     //   launch_deferred_exec_process(vm, overhead, 10000);
     // }
   }
-  xbt_free(mbox);
+
   return computed_total;
 }
 
@@ -920,15 +936,10 @@ static int migration_tx_fun(int argc, char *argv[])
 {
   XBT_DEBUG("mig: tx_start");
 
-  xbt_assert(argc == 4);
-  const char *vm_name = argv[1];
-  const char *src_pm_name  = argv[2];
-  const char *dst_pm_name  = argv[3];
-  msg_vm_t vm = MSG_get_host_by_name(vm_name);
-
+  struct migration_session *ms = MSG_process_get_data(MSG_process_self());
 
   s_ws_params_t params;
-  simcall_host_get_params(vm, &params);
+  simcall_host_get_params(ms->vm, &params);
   const sg_size_t ramsize   = params.ramsize;
   const sg_size_t devsize   = params.devsize;
   const int skip_stage1     = params.skip_stage1;
@@ -955,12 +966,11 @@ static int migration_tx_fun(int argc, char *argv[])
   if (ramsize == 0)
     XBT_WARN("migrate a VM, but ramsize is zero");
 
-  char *mbox = get_mig_mbox_src_dst(vm_name, src_pm_name, dst_pm_name);
 
   XBT_INFO("mig-stage1: remaining_size %f", remaining_size);
 
   /* Stage1: send all memory pages to the destination. */
-  start_dirty_page_tracking(vm);
+  start_dirty_page_tracking(ms->vm);
 
   double computed_during_stage1 = 0;
   if (!skip_stage1) {
@@ -969,7 +979,7 @@ static int migration_tx_fun(int argc, char *argv[])
     /* send ramsize, but split it */
     double clock_prev_send = MSG_get_clock();
 
-    computed_during_stage1 = send_stage1(vm, src_pm_name, dst_pm_name, ramsize, mig_speed, xfer_cpu_overhead, dp_rate, dp_cap, dpt_cpu_overhead);
+    computed_during_stage1 = send_stage1(ms, ramsize, mig_speed, xfer_cpu_overhead, dp_rate, dp_cap, dpt_cpu_overhead);
     remaining_size -= ramsize;
 
     double clock_post_send = MSG_get_clock();
@@ -997,7 +1007,7 @@ static int migration_tx_fun(int argc, char *argv[])
       /* just after stage1, nothing has been updated. But, we have to send the data updated during stage1 */
       updated_size = get_updated_size(computed_during_stage1, dp_rate, dp_cap);
     } else {
-      double computed = lookup_computed_flop_counts(vm, 2, stage2_round);
+      double computed = lookup_computed_flop_counts(ms->vm, 2, stage2_round);
       updated_size = get_updated_size(computed, dp_rate, dp_cap);
     }
 
@@ -1025,18 +1035,13 @@ static int migration_tx_fun(int argc, char *argv[])
 
     double clock_prev_send = MSG_get_clock();
 
-    send_migration_data(vm_name, src_pm_name, dst_pm_name, updated_size, mbox, 2, stage2_round, mig_speed, xfer_cpu_overhead);
+    send_migration_data(ms->vm, ms->src_pm, ms->dst_pm, updated_size, ms->mbox, 2, stage2_round, mig_speed, xfer_cpu_overhead);
 
     double clock_post_send = MSG_get_clock();
 
     double bandwidth = updated_size / (clock_post_send - clock_prev_send);
     threshold = get_threshold_value(bandwidth, max_downtime);
     XBT_INFO("actual bandwidth %f, threshold %f", bandwidth / 1024 / 1024, threshold);
-
-
-
-
-
 
 
     remaining_size -= updated_size;
@@ -1047,12 +1052,11 @@ static int migration_tx_fun(int argc, char *argv[])
 stage3:
   /* Stage3: stop the VM and copy the rest of states. */
   XBT_INFO("mig-stage3: remaining_size %f", remaining_size);
-  simcall_vm_suspend(vm);
-  stop_dirty_page_tracking(vm);
+  simcall_vm_suspend(ms->vm);
+  stop_dirty_page_tracking(ms->vm);
 
-  send_migration_data(vm_name, src_pm_name, dst_pm_name, remaining_size, mbox, 3, 0, mig_speed, xfer_cpu_overhead);
+  send_migration_data(ms->vm, ms->src_pm, ms->dst_pm, remaining_size, ms->mbox, 3, 0, mig_speed, xfer_cpu_overhead);
 
-  xbt_free(mbox);
 
   XBT_DEBUG("mig: tx_done");
 
@@ -1063,47 +1067,35 @@ stage3:
 
 static void do_migration(msg_vm_t vm, msg_host_t src_pm, msg_host_t dst_pm)
 {
-  char *mbox_ctl = get_mig_mbox_ctl(sg_host_name(vm), sg_host_name(src_pm), sg_host_name(dst_pm));
+  struct migration_session *ms = xbt_new(struct migration_session, 1);
+  ms->vm = vm;
+  ms->src_pm = src_pm;
+  ms->dst_pm = dst_pm;
+  ms->mbox_ctl = get_mig_mbox_ctl(vm, src_pm, dst_pm);
+  ms->mbox = get_mig_mbox_src_dst(vm, src_pm, dst_pm);
 
-  {
-    char *pr_name = get_mig_process_rx_name(sg_host_name(vm), sg_host_name(src_pm), sg_host_name(dst_pm));
-    int nargvs = 5;
-    char **argv = xbt_new(char *, nargvs);
-    argv[0] = pr_name;
-    argv[1] = xbt_strdup(sg_host_name(vm));
-    argv[2] = xbt_strdup(sg_host_name(src_pm));
-    argv[3] = xbt_strdup(sg_host_name(dst_pm));
-    argv[4] = NULL;
+  char *pr_rx_name = get_mig_process_rx_name(vm, src_pm, dst_pm);
+  char *pr_tx_name = get_mig_process_tx_name(vm, src_pm, dst_pm);
 
-    MSG_process_create_with_arguments(pr_name, migration_rx_fun, NULL, dst_pm, nargvs - 1, argv);
-  }
-
-  {
-    char *pr_name = get_mig_process_tx_name(sg_host_name(vm), sg_host_name(src_pm), sg_host_name(dst_pm));
-    int nargvs = 5;
-    char **argv = xbt_new(char *, nargvs);
-    argv[0] = pr_name;
-    argv[1] = xbt_strdup(sg_host_name(vm));
-    argv[2] = xbt_strdup(sg_host_name(src_pm));
-    argv[3] = xbt_strdup(sg_host_name(dst_pm));
-    argv[4] = NULL;
-    MSG_process_create_with_arguments(pr_name, migration_tx_fun, NULL, src_pm, nargvs - 1, argv);
-  }
+  MSG_process_create(pr_rx_name, migration_rx_fun, ms, dst_pm);
+  MSG_process_create(pr_tx_name, migration_tx_fun, ms, src_pm);
 
   /* wait until the migration have finished */
   {
     msg_task_t task = NULL;
-    msg_error_t ret = MSG_task_recv(&task, mbox_ctl);
+    msg_error_t ret = MSG_task_recv(&task, ms->mbox_ctl);
 
     xbt_assert(ret == MSG_OK);
 
-    char *expected_task_name = get_mig_task_name(sg_host_name(vm), sg_host_name(src_pm), sg_host_name(dst_pm), 4);
+    char *expected_task_name = get_mig_task_name(vm, src_pm, dst_pm, 4);
     xbt_assert(strcmp(task->name, expected_task_name) == 0);
     xbt_free(expected_task_name);
     MSG_task_destroy(task);
   }
 
-  xbt_free(mbox_ctl);
+  xbt_free(ms->mbox_ctl);
+  xbt_free(ms->mbox);
+  xbt_free(ms);
 }
 
 
