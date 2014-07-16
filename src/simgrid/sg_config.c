@@ -842,6 +842,16 @@ void sg_config_init(int *argc, char **argv)
                      xbt_cfgelm_double, 1, 1, NULL, NULL);
     xbt_cfg_setdefault_double(_sg_cfg_set, "smpi/iprobe", 1e-4);
 
+    xbt_cfg_register(&_sg_cfg_set, "smpi/test",
+                     "Minimum time to inject inside a call to MPI_Test",
+                     xbt_cfgelm_double, 1, 1, NULL, NULL);
+    xbt_cfg_setdefault_double(_sg_cfg_set, "smpi/test", 1e-4);
+
+    xbt_cfg_register(&_sg_cfg_set, "smpi/wtime",
+                     "Minimum time to inject inside a call to MPI_Wtime",
+                     xbt_cfgelm_double, 1, 1, NULL, NULL);
+    xbt_cfg_setdefault_double(_sg_cfg_set, "smpi/wtime", 3e-8);
+
     xbt_cfg_register(&_sg_cfg_set, "smpi/coll_selector",
                      "Which collective selector to use",
                      xbt_cfgelm_string, 1, 1, NULL, NULL);

@@ -185,6 +185,21 @@ static double smpi_or(double size)
   return current;
 }
 
+double smpi_wtime(){
+  double time;
+  if (smpi_process_initialized() && !smpi_process_finalized() && !smpi_process_get_sampling()) {
+    smpi_bench_end();
+    time = SIMIX_get_clock();
+    //to avoid deadlocks if called too many times
+    double sleeptime= sg_cfg_get_double("smpi/wtime");
+    simcall_process_sleep(sleeptime);
+    smpi_bench_begin();
+  } else {
+    time = SIMIX_get_clock();
+  }
+  return time;
+}
+
 static MPI_Request build_request(void *buf, int count,
                                  MPI_Datatype datatype, int src, int dst,
                                  int tag, MPI_Comm comm, unsigned flags)
@@ -677,6 +692,13 @@ int smpi_mpi_test(MPI_Request * request, MPI_Status * status) {
   int flag;
 
   //assume that request is not MPI_REQUEST_NULL (filtered in PMPI_Test or smpi_mpi_testall before)
+
+  //to avoid deadlocks
+  double sleeptime= sg_cfg_get_double("smpi/test");
+  //multiplier to the sleeptime, to increase speed of execution, each failed test will increase it
+  static int nsleeps = 1;
+  simcall_process_sleep(nsleeps*sleeptime);
+
   smpi_empty_status(status);
   flag = 1;
   if (!((*request)->flags & PREPARED)) {
@@ -684,8 +706,11 @@ int smpi_mpi_test(MPI_Request * request, MPI_Status * status) {
       flag = simcall_comm_test((*request)->action);
     if (flag) {
       finish_wait(request, status);
+      nsleeps=1;//reset the number of sleeps we will do next time
       if (*request != MPI_REQUEST_NULL && !((*request)->flags & PERSISTENT))
       *request = MPI_REQUEST_NULL;
+    }else{
+      nsleeps++;
     }
   }
   return flag;
@@ -712,6 +737,12 @@ int smpi_mpi_testany(int count, MPI_Request requests[], int *index,
     }
   }
   if(size > 0) {
+    //to avoid deadlocks
+    double sleeptime= sg_cfg_get_double("smpi/test");
+    //multiplier to the sleeptime, to increase speed of execution, each failed testany will increase it
+    static int nsleeps = 1;
+    simcall_process_sleep(nsleeps*sleeptime);
+
     i = simcall_comm_testany(comms);
     // not MPI_UNDEFINED, as this is a simix return code
     if(i != -1) {
@@ -720,6 +751,9 @@ int smpi_mpi_testany(int count, MPI_Request requests[], int *index,
       if (requests[*index] != MPI_REQUEST_NULL && (requests[*index]->flags & NON_PERSISTENT))
       requests[*index] = MPI_REQUEST_NULL;
       flag = 1;
+      nsleeps=1;
+    }else{
+      nsleeps++;
     }
   }else{
       //all requests are null or inactive, return true
@@ -777,7 +811,7 @@ void smpi_mpi_iprobe(int source, int tag, MPI_Comm comm, int* flag, MPI_Status* 
   //multiplier to the sleeptime, to increase speed of execution, each failed iprobe will increase it
   static int nsleeps = 1;
 
-  simcall_process_sleep(sleeptime);
+  simcall_process_sleep(nsleeps*sleeptime);
 
   // behave like a receive, but don't do it
   smx_rdv_t mailbox;
