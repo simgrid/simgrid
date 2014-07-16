@@ -117,4 +117,10 @@ XBT_PUBLIC(void) coll_help(const char *category,
                            s_mpi_coll_description_t * table);
 XBT_PUBLIC(int) find_coll_description(s_mpi_coll_description_t * table,
                                       char *name);
+
+
+extern double smpi_wtime_sleep;
+extern double smpi_iprobe_sleep;
+extern double smpi_test_sleep;
+
 #endif                          /* _SMPI_INTERFAC_H */
