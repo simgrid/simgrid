@@ -155,6 +155,8 @@ public class VM extends Host{
 	 */	
 	public void migrate(Host destination){
 		this.internalmig(destination);
+		// TODO we should test whether the migration has been correctly finalized. 
+		// If and only if it is ok, then we should change the currentHost value. 
 		this.currentHost = destination; 
 	}
 	

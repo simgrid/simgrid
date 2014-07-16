@@ -73,7 +73,7 @@ public class Master extends Process {
 		Msg.info("Migrate everyone to "+hosts[3].getName());
 		for (int i = 0; i < vms.size(); i++) {
 			Msg.info("Migrate "+vms.get(i).getName()+"from"+hosts[i+1].getName()+"to "+hosts[3].getName());
-			vms.get(i).migrate(hosts[2]);
+			vms.get(i).migrate(hosts[3]);
 		}
 		
 		
