@@ -5,45 +5,45 @@
 $ java -classpath ${classpath:=.} cloud/Cloud ${srcdir:=.}/../platforms/platform.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (0:@) Using regular java threads. Coroutines could speed your simulation up.
 > [  0.000000] (0:@) Start2  hosts
-> [  0.000000] (1:Master@Jacquelin) create VM00
 > [  0.000000] (0:@) Create VM(VM00)@PM(Intel) with 0 mounted disks
-> [  0.000000] (1:Master@Jacquelin) Put Worker WRK00 on VM00
-> [  0.000000] (2:WRK00@VM00) WRK00 is listenning on MBOX:WRK00
-> [  0.000000] (1:Master@Jacquelin) create VM01
 > [  0.000000] (0:@) Create VM(VM01)@PM(Provost) with 0 mounted disks
+> [  0.000000] (1:Master@Jacquelin) create VM00
+> [  0.000000] (1:Master@Jacquelin) Put Worker WRK00 on VM00
+> [  0.000000] (1:Master@Jacquelin) create VM01
 > [  0.000000] (1:Master@Jacquelin) Put Worker WRK01 on VM01
-> [  0.000000] (3:WRK01@VM01) WRK01 is listenning on MBOX:WRK01
 > [  0.000000] (1:Master@Jacquelin) Launched 2 VMs
 > [  0.000000] (1:Master@Jacquelin) Send a first batch of work to everyone
 > [  0.000000] (1:Master@Jacquelin) Sending to WRK00
-> [  0.918721] (2:WRK00@VM00) Received "Task00". Processing it.
+> [  0.000000] (2:WRK00@VM00) WRK00 is listenning on MBOX:WRK00
+> [  0.000000] (3:WRK01@VM01) WRK01 is listenning on MBOX:WRK01
 > [  0.918721] (1:Master@Jacquelin) Sending to WRK01
+> [  0.918721] (2:WRK00@VM00) Received "Task00". Processing it.
 > [  0.918721] (2:WRK00@VM00) WRK00 executed task (Task00)
-> [  2.798398] (3:WRK01@VM01) Received "Task01". Processing it.
 > [  2.798398] (1:Master@Jacquelin) Suspend all VMs
 > [  2.798398] (1:Master@Jacquelin) Suspend VM00
 > [  2.798398] (1:Master@Jacquelin) Suspend VM01
 > [  2.798398] (1:Master@Jacquelin) Wait a while
+> [  2.798398] (3:WRK01@VM01) Received "Task01". Processing it.
 > [  4.798398] (1:Master@Jacquelin) Resume all VMs.
 > [  4.798398] (1:Master@Jacquelin) Sleep long enough for everyone to be done with previous batch of work
 > [  4.798398] (3:WRK01@VM01) WRK01 executed task (Task01)
 > [1000.000000] (1:Master@Jacquelin) Migrate everyone to Fernand
 > [1000.000000] (1:Master@Jacquelin) Migrate VM00fromIntelto Fernand
-> [1000.000000] (5:__pr_mig_tx:VM00(Intel-Provost)@Intel) mig-stage1: remaining_size 1073741824.000000
-> [3463.851592] (5:__pr_mig_tx:VM00(Intel-Provost)@Intel) actual bandwidth 0.415609 (MB/s), threshold 13073.942775
-> [3463.851592] (5:__pr_mig_tx:VM00(Intel-Provost)@Intel) mig-stage 2:0 updated_size 0.000000 computed_during_stage1 0.000000 dp_rate 0.000000 dp_cap 966367641.600000
-> [3463.851592] (5:__pr_mig_tx:VM00(Intel-Provost)@Intel) mig-stage2.0: remaining_size 0.000000 (< threshold 13073.942775)
-> [3463.851592] (5:__pr_mig_tx:VM00(Intel-Provost)@Intel) mig-stage3: remaining_size 0.000000
-> [3465.859709] (0:@) migrate VM(VM00): set bound (137333000.000000) at Provost
-> [3465.859709] (4:__pr_mig_rx:VM00(Intel-Provost)@Provost) set affinity(0x0000@Provost) for VM00
-> [3467.739363] (1:Master@Jacquelin) Migrate VM01fromProvostto Fernand
-> [3467.739363] (9:__pr_mig_tx:VM01(Provost-Provost)@Provost) mig-stage1: remaining_size 1073741824.000000
-> [3469.895666] (9:__pr_mig_tx:VM01(Provost-Provost)@Provost) actual bandwidth 474.886827 (MB/s), threshold 14938647.898423
-> [3469.895666] (9:__pr_mig_tx:VM01(Provost-Provost)@Provost) mig-stage 2:0 updated_size 0.000000 computed_during_stage1 0.000000 dp_rate 0.000000 dp_cap 966367641.600000
-> [3469.895666] (9:__pr_mig_tx:VM01(Provost-Provost)@Provost) mig-stage2.0: remaining_size 0.000000 (< threshold 14938647.898423)
-> [3469.895666] (9:__pr_mig_tx:VM01(Provost-Provost)@Provost) mig-stage3: remaining_size 0.000000
-> [3469.895861] (0:@) migrate VM(VM01): set bound (137333000.000000) at Provost
-> [3469.895861] (8:__pr_mig_rx:VM01(Provost-Provost)@Provost) set affinity(0x0000@Provost) for VM01
-> [3471.775515] (1:Master@Jacquelin) Let's shut down the simulation and kill everyone.
-> [3471.775515] (1:Master@Jacquelin) Master done.
-> [3471.775515] (0:@) MSG_main finished; Cleaning up the simulation...
+> [1000.000000] (5:__pr_mig_tx:VM00(Intel-Fernand)@Intel) mig-stage1: remaining_size 1073741824.000000
+> [3463.797594] (5:__pr_mig_tx:VM00(Intel-Fernand)@Intel) actual bandwidth 0.415619 (MB/s), threshold 13074.229313
+> [3463.797594] (5:__pr_mig_tx:VM00(Intel-Fernand)@Intel) mig-stage 2:0 updated_size 0.000000 computed_during_stage1 0.000000 dp_rate 0.000000 dp_cap 966367641.600000
+> [3463.797594] (5:__pr_mig_tx:VM00(Intel-Fernand)@Intel) mig-stage2.0: remaining_size 0.000000 (< threshold 13074.229313)
+> [3463.797594] (5:__pr_mig_tx:VM00(Intel-Fernand)@Intel) mig-stage3: remaining_size 0.000000
+> [3465.751712] (0:@) migrate VM(VM00): set bound (137333000.000000) at Fernand
+> [3465.751712] (4:__pr_mig_rx:VM00(Intel-Fernand)@Fernand) set affinity(0x0000@Fernand) for VM00
+> [3467.577368] (1:Master@Jacquelin) Migrate VM01fromProvostto Fernand
+> [3467.577368] (9:__pr_mig_tx:VM01(Provost-Fernand)@Provost) mig-stage1: remaining_size 1073741824.000000
+> [5929.514531] (9:__pr_mig_tx:VM01(Provost-Fernand)@Provost) actual bandwidth 0.415933 (MB/s), threshold 13084.109212
+> [5929.514531] (9:__pr_mig_tx:VM01(Provost-Fernand)@Provost) mig-stage 2:0 updated_size 0.000000 computed_during_stage1 0.000000 dp_rate 0.000000 dp_cap 966367641.600000
+> [5929.514531] (9:__pr_mig_tx:VM01(Provost-Fernand)@Provost) mig-stage2.0: remaining_size 0.000000 (< threshold 13084.109212)
+> [5929.514531] (9:__pr_mig_tx:VM01(Provost-Fernand)@Provost) mig-stage3: remaining_size 0.000000
+> [5929.608220] (0:@) migrate VM(VM01): set bound (137333000.000000) at Fernand
+> [5929.608220] (8:__pr_mig_rx:VM01(Provost-Fernand)@Fernand) set affinity(0x0000@Fernand) for VM01
+> [5931.433875] (0:@) MSG_main finished; Cleaning up the simulation...
+> [5931.433875] (1:Master@Jacquelin) Let's shut down the simulation and kill everyone.
+> [5931.433875] (1:Master@Jacquelin) Master done.

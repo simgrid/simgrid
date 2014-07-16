@@ -1077,8 +1077,25 @@ static void do_migration(msg_vm_t vm, msg_host_t src_pm, msg_host_t dst_pm)
   char *pr_rx_name = get_mig_process_rx_name(vm, src_pm, dst_pm);
   char *pr_tx_name = get_mig_process_tx_name(vm, src_pm, dst_pm);
 
-  MSG_process_create(pr_rx_name, migration_rx_fun, ms, dst_pm);
-  MSG_process_create(pr_tx_name, migration_tx_fun, ms, src_pm);
+//  MSG_process_create(pr_rx_name, migration_rx_fun, ms, dst_pm);
+//  MSG_process_create(pr_tx_name, migration_tx_fun, ms, src_pm);
+#if 1
+ {
+ char **argv = xbt_new(char *, 2);
+ argv[0] = pr_rx_name;
+ argv[1] = NULL;
+ MSG_process_create_with_arguments(pr_rx_name, migration_rx_fun, ms, dst_pm, 1, argv);
+ }
+ {
+ char **argv = xbt_new(char *, 2);
+ argv[0] = pr_tx_name;
+ argv[1] = NULL;
+ MSG_process_create_with_arguments(pr_tx_name, migration_tx_fun, ms, src_pm, 1, argv);
+ }
+#endif
+
+
+
 
   /* wait until the migration have finished */
   {
