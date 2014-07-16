@@ -56,7 +56,7 @@ set(examples_src
   ${CMAKE_CURRENT_SOURCE_DIR}/winfencef90.f90
   ${CMAKE_CURRENT_SOURCE_DIR}/wingroupf90.f90
   ${CMAKE_CURRENT_SOURCE_DIR}/baseattrwinf90.f90
-  ${CMAKE_CURRENT_SOURCE_DIR}/c2f2cwin.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/c2f902cwin.c
   ${CMAKE_CURRENT_SOURCE_DIR}/c2f2cwinf90.f90
   ${CMAKE_CURRENT_SOURCE_DIR}/testlist
   ${CMAKE_CURRENT_SOURCE_DIR}/winattr2f90.f90
@@ -65,7 +65,6 @@ set(examples_src
   ${CMAKE_CURRENT_SOURCE_DIR}/winnamef90.f90
   ${CMAKE_CURRENT_SOURCE_DIR}/winscale1f90.f90
   ${CMAKE_CURRENT_SOURCE_DIR}/winscale2f90.f90
-  ${CMAKE_CURRENT_SOURCE_DIR}/addsize.h
   PARENT_SCOPE
   )
 set(bin_files
