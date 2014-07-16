@@ -127,7 +127,7 @@ int PMPI_Abort(MPI_Comm comm, int errorcode)
 
 double PMPI_Wtime(void)
 {
-  return smpi_wtime();
+  return smpi_mpi_wtime();
 }
 
 extern double sg_maxmin_precision;

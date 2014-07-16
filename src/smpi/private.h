@@ -174,7 +174,7 @@ void print_request(const char *message, MPI_Request request);
 int smpi_enabled(void);
 void smpi_global_init(void);
 void smpi_global_destroy(void);
-double smpi_wtime(void);
+double smpi_mpi_wtime(void);
 
 int is_datatype_valid(MPI_Datatype datatype);
 

@@ -190,7 +190,7 @@ static double smpi_or(double size)
   return current;
 }
 
-double smpi_wtime(){
+double smpi_mpi_wtime(){
   double time;
   if (smpi_process_initialized() && !smpi_process_finalized() && !smpi_process_get_sampling()) {
     smpi_bench_end();
