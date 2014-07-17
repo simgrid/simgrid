@@ -1959,7 +1959,10 @@ int PMPI_Scatter(void *sendbuf, int sendcount, MPI_Datatype sendtype,
   } else if (((smpi_comm_rank(comm)==root) && (sendtype == MPI_DATATYPE_NULL))
              || ((recvbuf !=MPI_IN_PLACE) && (recvtype == MPI_DATATYPE_NULL))) {
     retval = MPI_ERR_TYPE;
-  } else {
+  } else if ((sendbuf == recvbuf) ||
+      ((smpi_comm_rank(comm)==root) && sendcount>0 && (sendbuf == NULL))){
+    retval = MPI_ERR_BUFFER;
+  }else {
 
     if (recvbuf == MPI_IN_PLACE) {
         recvtype=sendtype;
