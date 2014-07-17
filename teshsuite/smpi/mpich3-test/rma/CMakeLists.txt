@@ -18,15 +18,18 @@ if(enable_smpi AND enable_smpi_MPICH3_testsuite)
   add_executable(accfence2_am accfence2_am.c)
   add_executable(accfence2 accfence2.c)
 #  add_executable(accpscw1 accpscw1.c)
+#  add_executable(acc-loc acc-loc.c)
 #  add_executable(adlb_mimic1 adlb_mimic1.c)
   add_executable(allocmem allocmem.c)
 #  add_executable(attrorderwin attrorderwin.c)
+#  add_executable(badrma badrma.c)
 #  add_executable(baseattrwin baseattrwin.c)
 #  add_executable(compare_and_swap compare_and_swap.c)
 #  add_executable(contention_put contention_put.c)
 #  add_executable(contention_putget contention_putget.c)
 #  add_executable(contig_displ contig_displ.c)
   add_executable(epochtest epochtest.c)
+#  add_executable(fence_shm fence_shm.c)
 #  add_executable(fetchandadd_am fetchandadd_am.c)
 #  add_executable(fetchandadd fetchandadd.c)
 #  add_executable(fetchandadd_tree_am fetchandadd_tree_am.c)
@@ -51,6 +54,7 @@ if(enable_smpi AND enable_smpi_MPICH3_testsuite)
 #  add_executable(locknull locknull.c)
 #  add_executable(lockopts lockopts.c)
 #  add_executable(manyrma2 manyrma2.c)
+  add_executable(manyrma3 manyrma3.c)
 #  add_executable(mcs-mutex mcs-mutex.c)
 #  add_executable(mixedsync mixedsync.c)
 #  add_executable(mutex_bench mutex_bench.c)
@@ -65,6 +69,7 @@ if(enable_smpi AND enable_smpi_MPICH3_testsuite)
 #  add_executable(reqops reqops.c)
 #  add_executable(rmanull rmanull.c)
 #  add_executable(rmazero rmazero.c)
+#  add_executable(rma-contig rma-contig.c)
 #  add_executable(selfrma selfrma.c)
 #  add_executable(strided_acc_indexed strided_acc_indexed.c)
 #  add_executable(strided_acc_onelock strided_acc_onelock.c)
@@ -101,6 +106,8 @@ if(enable_smpi AND enable_smpi_MPICH3_testsuite)
 #  add_executable(win_shared win_shared.c)
 #  add_executable(win_shared_noncontig win_shared_noncontig.c)
 #  add_executable(win_shared_noncontig_put win_shared_noncontig_put.c)
+#  add_executable(win_large_shm win_large_shm.c)
+#  add_executable(win_zero win_zero.c)
 #  add_executable(wintest wintest.c)
 
 
@@ -109,15 +116,18 @@ if(enable_smpi AND enable_smpi_MPICH3_testsuite)
   target_link_libraries(accfence2_am simgrid mtest_c)
   target_link_libraries(accfence2 simgrid mtest_c)
 #  target_link_libraries(accpscw1 simgrid mtest_c)
+#  target_link_libraries(acc-loc simgrid mtest_c)
 #  target_link_libraries(adlb_mimic1 simgrid mtest_c)
   target_link_libraries(allocmem simgrid mtest_c)
 #  target_link_libraries(attrorderwin simgrid mtest_c)
+#  target_link_libraries(badrma simgrid mtest_c)
 #  target_link_libraries(baseattrwin simgrid mtest_c)
 #  target_link_libraries(compare_and_swap simgrid mtest_c)
 #  target_link_libraries(contention_put simgrid mtest_c)
 #  target_link_libraries(contention_putget simgrid mtest_c)
 #  target_link_libraries(contig_displ simgrid mtest_c)
   target_link_libraries(epochtest simgrid mtest_c)
+#  target_link_libraries(fence_shm simgrid mtest_c)
 #  target_link_libraries(fetchandadd_am simgrid mtest_c)
 #  target_link_libraries(fetchandadd simgrid mtest_c)
 #  target_link_libraries(fetchandadd_tree_am simgrid mtest_c)
@@ -142,6 +152,7 @@ if(enable_smpi AND enable_smpi_MPICH3_testsuite)
 #  target_link_libraries(locknull simgrid mtest_c)
 #  target_link_libraries(lockopts simgrid mtest_c)
 #  target_link_libraries(manyrma2 simgrid mtest_c)
+  target_link_libraries(manyrma3 simgrid mtest_c)
 #  target_link_libraries(mcs-mutex simgrid mtest_c)
 #  target_link_libraries(mixedsync simgrid mtest_c)
 #  target_link_libraries(mutex_bench simgrid mtest_c)
@@ -154,6 +165,7 @@ if(enable_smpi AND enable_smpi_MPICH3_testsuite)
 #  target_link_libraries(putpscw1 simgrid mtest_c)
 #  target_link_libraries(req_example simgrid mtest_c)
 #  target_link_libraries(reqops simgrid mtest_c)
+#  target_link_libraries(rma-contig simgrid mtest_c)
 #  target_link_libraries(rmanull simgrid mtest_c)
 #  target_link_libraries(rmazero simgrid mtest_c)
 #  target_link_libraries(selfrma simgrid mtest_c)
@@ -192,6 +204,8 @@ if(enable_smpi AND enable_smpi_MPICH3_testsuite)
 #  target_link_libraries(win_shared simgrid mtest_c)
 #  target_link_libraries(win_shared_noncontig simgrid mtest_c)
 #  target_link_libraries(win_shared_noncontig_put simgrid mtest_c)
+#  target_link_libraries(win_large_shm simgrid mtest_c)
+#  target_link_libraries(win_zero simgrid mtest_c)
 #  target_link_libraries(wintest simgrid mtest_c)
 
 
@@ -199,16 +213,19 @@ if(enable_smpi AND enable_smpi_MPICH3_testsuite)
  set_target_properties(accfence1 PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
  set_target_properties(accfence2_am PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
  set_target_properties(accfence2 PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
+# set_target_properties(acc-loc PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
 # set_target_properties(accpscw1 PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
 # set_target_properties(adlb_mimic1 PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
  set_target_properties(allocmem PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
 # set_target_properties(attrorderwin PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
+# set_target_properties(badrma PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
 # set_target_properties(baseattrwin PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
 # set_target_properties(compare_and_swap PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
 # set_target_properties(contention_put PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
 # set_target_properties(contention_putget PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
 # set_target_properties(contig_displ PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
  set_target_properties(epochtest PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
+# set_target_properties(fence_shm PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
 # set_target_properties(fetchandadd_am PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
 # set_target_properties(fetchandadd PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
 # set_target_properties(fetchandadd_tree_am PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
@@ -233,6 +250,7 @@ if(enable_smpi AND enable_smpi_MPICH3_testsuite)
 # set_target_properties(locknull PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
 # set_target_properties(lockopts PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
 # set_target_properties(manyrma2 PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
+ set_target_properties(manyrma3 PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
 # set_target_properties(mcs-mutex PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
 # set_target_properties(mixedsync PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
 # set_target_properties(mutex_bench PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
@@ -247,6 +265,7 @@ if(enable_smpi AND enable_smpi_MPICH3_testsuite)
 # set_target_properties(reqops PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
 # set_target_properties(rmanull PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
 # set_target_properties(rmazero PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
+# set_target_properties(rma-contig PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
 # set_target_properties(selfrma PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
 # set_target_properties(strided_acc_indexed PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
 # set_target_properties(strided_acc_onelock PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
@@ -283,6 +302,8 @@ if(enable_smpi AND enable_smpi_MPICH3_testsuite)
 # set_target_properties(win_shared PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
 # set_target_properties(win_shared_noncontig PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
 # set_target_properties(win_shared_noncontig_put PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
+# set_target_properties(win_large_shm PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
+# set_target_properties(win_zero PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
 # set_target_properties(wintest PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
 
 endif()
@@ -300,16 +321,19 @@ set(examples_src
  ${CMAKE_CURRENT_SOURCE_DIR}/accfence1.c 
  ${CMAKE_CURRENT_SOURCE_DIR}/accfence2_am.c 
  ${CMAKE_CURRENT_SOURCE_DIR}/accfence2.c 
+ ${CMAKE_CURRENT_SOURCE_DIR}/acc-loc.c 
  ${CMAKE_CURRENT_SOURCE_DIR}/accpscw1.c 
  ${CMAKE_CURRENT_SOURCE_DIR}/adlb_mimic1.c 
  ${CMAKE_CURRENT_SOURCE_DIR}/allocmem.c 
  ${CMAKE_CURRENT_SOURCE_DIR}/attrorderwin.c 
+ ${CMAKE_CURRENT_SOURCE_DIR}/badrma.c 
  ${CMAKE_CURRENT_SOURCE_DIR}/baseattrwin.c 
  ${CMAKE_CURRENT_SOURCE_DIR}/compare_and_swap.c 
  ${CMAKE_CURRENT_SOURCE_DIR}/contention_put.c 
  ${CMAKE_CURRENT_SOURCE_DIR}/contention_putget.c 
  ${CMAKE_CURRENT_SOURCE_DIR}/contig_displ.c 
  ${CMAKE_CURRENT_SOURCE_DIR}/epochtest.c 
+ ${CMAKE_CURRENT_SOURCE_DIR}/fence_shm.c 
  ${CMAKE_CURRENT_SOURCE_DIR}/fetchandadd_am.c 
  ${CMAKE_CURRENT_SOURCE_DIR}/fetchandadd.c 
  ${CMAKE_CURRENT_SOURCE_DIR}/fetchandadd_tree_am.c 
@@ -334,6 +358,7 @@ set(examples_src
  ${CMAKE_CURRENT_SOURCE_DIR}/locknull.c 
  ${CMAKE_CURRENT_SOURCE_DIR}/lockopts.c 
  ${CMAKE_CURRENT_SOURCE_DIR}/manyrma2.c 
+ ${CMAKE_CURRENT_SOURCE_DIR}/manyrma3.c 
  ${CMAKE_CURRENT_SOURCE_DIR}/mcs-mutex.c 
  ${CMAKE_CURRENT_SOURCE_DIR}/mixedsync.c 
  ${CMAKE_CURRENT_SOURCE_DIR}/mutex_bench.c 
@@ -348,6 +373,7 @@ set(examples_src
  ${CMAKE_CURRENT_SOURCE_DIR}/reqops.c 
  ${CMAKE_CURRENT_SOURCE_DIR}/rmanull.c 
  ${CMAKE_CURRENT_SOURCE_DIR}/rmazero.c 
+ ${CMAKE_CURRENT_SOURCE_DIR}/rma-contig.c 
  ${CMAKE_CURRENT_SOURCE_DIR}/selfrma.c 
  ${CMAKE_CURRENT_SOURCE_DIR}/strided_acc_indexed.c 
  ${CMAKE_CURRENT_SOURCE_DIR}/strided_acc_onelock.c 
@@ -380,6 +406,8 @@ set(examples_src
  ${CMAKE_CURRENT_SOURCE_DIR}/win_dynamic_acc.c 
  ${CMAKE_CURRENT_SOURCE_DIR}/win_flavors.c 
  ${CMAKE_CURRENT_SOURCE_DIR}/win_info.c 
+ ${CMAKE_CURRENT_SOURCE_DIR}/win_large_shm.c 
+ ${CMAKE_CURRENT_SOURCE_DIR}/win_zero.c 
  ${CMAKE_CURRENT_SOURCE_DIR}/winname.c 
  ${CMAKE_CURRENT_SOURCE_DIR}/win_shared.c 
  ${CMAKE_CURRENT_SOURCE_DIR}/win_shared_noncontig.c 

@@ -14,6 +14,7 @@ if(enable_smpi AND enable_smpi_MPICH3_testsuite)
 
   add_executable(anyall anyall.c)
   add_executable(bottom bottom.c)
+#  add_executable(big_count_status big_count_status.c)
 #  add_executable(bsend1 bsend1.c)
 #  add_executable(bsend2 bsend2.c)
 #  add_executable(bsend3 bsend3.c)
@@ -29,6 +30,7 @@ if(enable_smpi AND enable_smpi_MPICH3_testsuite)
   add_executable(inactivereq inactivereq.c)
   add_executable(isendself isendself.c)
   add_executable(isendselfprobe isendselfprobe.c)
+  add_executable(issendselfcancel issendselfcancel.c)
 #  add_executable(large_message large_message.c)
   add_executable(mprobe mprobe.c)
   add_executable(pingping pingping.c)
@@ -50,6 +52,7 @@ if(enable_smpi AND enable_smpi_MPICH3_testsuite)
   add_executable(waittestnull waittestnull.c)
 
   target_link_libraries(anyall simgrid mtest_c)
+#  target_link_libraries(big_count_status simgrid mtest_c)
   target_link_libraries(bottom simgrid mtest_c)
 #  target_link_libraries(bsend1 simgrid mtest_c)
 #  target_link_libraries(bsend2 simgrid mtest_c)
@@ -66,6 +69,7 @@ if(enable_smpi AND enable_smpi_MPICH3_testsuite)
   target_link_libraries(inactivereq simgrid mtest_c)
   target_link_libraries(isendself simgrid mtest_c)
   target_link_libraries(isendselfprobe simgrid mtest_c)
+  target_link_libraries(issendselfcancel simgrid mtest_c)
 #  target_link_libraries(large_message simgrid mtest_c)
   target_link_libraries(mprobe simgrid mtest_c)
   target_link_libraries(pingping simgrid mtest_c)
@@ -99,6 +103,7 @@ set(xml_files
 set(examples_src
   ${examples_src}
  ${CMAKE_CURRENT_SOURCE_DIR}/anyall.c 
+ ${CMAKE_CURRENT_SOURCE_DIR}/big_count_status.c 
  ${CMAKE_CURRENT_SOURCE_DIR}/bottom.c 
  ${CMAKE_CURRENT_SOURCE_DIR}/bsend1.c 
  ${CMAKE_CURRENT_SOURCE_DIR}/bsend2.c 
@@ -115,6 +120,7 @@ set(examples_src
  ${CMAKE_CURRENT_SOURCE_DIR}/inactivereq.c 
  ${CMAKE_CURRENT_SOURCE_DIR}/isendself.c 
  ${CMAKE_CURRENT_SOURCE_DIR}/isendselfprobe.c 
+ ${CMAKE_CURRENT_SOURCE_DIR}/issendselfcancel.c 
  ${CMAKE_CURRENT_SOURCE_DIR}/large_message.c 
  ${CMAKE_CURRENT_SOURCE_DIR}/mprobe.c 
  ${CMAKE_CURRENT_SOURCE_DIR}/pingping.c 
