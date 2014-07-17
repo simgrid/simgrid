@@ -83,21 +83,27 @@ int main( int argc, char **argv )
 	}
     }
 
+#if MTEST_HAVE_MIN_MPI_VERSION(2,2)
     MPI_Reduce_scatter( MPI_IN_PLACE, sendbuf, recvcounts, MPI_INT, MPI_SUM, 
 			comm );
 
     sumval = size * rank + ((size - 1) * size)/2;
     /* recv'ed values for my process should be size * (rank + i) */
     for (i=0; i<mycount; i++) {
-	if (sendbuf[i] != sumval) {
-	    err++;
-	    if (err < MAX_ERRORS) {
-		fprintf( stdout, "Did not get expected value for reduce scatter (in place)\n" );
-		fprintf( stdout, "[%d] Got buf[%d] = %d expected %d\n", 
-			 rank, i, sendbuf[rank*mycount+i], sumval );
-	    }
-	}
+        if (sendbuf[i] != sumval) {
+            err++;
+            if (err < MAX_ERRORS) {
+                fprintf( stdout, "Did not get expected value for reduce scatter (in place)\n" );
+                fprintf( stdout, "[%d] Got buf[%d] = %d expected %d\n",
+                    rank, i, sendbuf[i], sumval );
+            }
+        }
     }
+
+    MPI_Comm_set_errhandler(MPI_COMM_WORLD, MPI_ERRORS_RETURN);
+    if (MPI_SUCCESS == MPI_Reduce_scatter(sendbuf, sendbuf, recvcounts, MPI_INT, MPI_SUM, comm))
+        err++;
+#endif
 
     free(sendbuf);
     free(recvbuf);
