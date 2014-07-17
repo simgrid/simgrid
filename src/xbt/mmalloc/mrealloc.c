@@ -91,6 +91,8 @@ void *mrealloc(xbt_mheap_t mdp, void *ptr, size_t size)
       for (it= block+blocks; it< mdp->heapinfo[block].busy_block.size ; it++){
         mdp->heapinfo[it].type = MMALLOC_TYPE_UNFRAGMENTED; // FIXME that should be useless, type should already be 0 here
         mdp->heapinfo[it].busy_block.ignore = 0;
+        mdp->heapinfo[it].busy_block.size = 0;
+        mdp->heapinfo[it].busy_block.busy_size = 0;
       }
 
       mdp->heapinfo[block + blocks].busy_block.size
