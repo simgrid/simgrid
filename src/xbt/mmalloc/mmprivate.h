@@ -308,4 +308,16 @@ static XBT_INLINE void  mmalloc_paranoia(struct mdesc *mdp){
 
 }
 
+static inline int mmalloc_get_increment(malloc_info* heapinfo) {
+  if (heapinfo->type < 0) {
+    return heapinfo->free_block.size;
+  } else if (heapinfo->type == 0) {
+    return heapinfo->busy_block.size;
+  } else {
+    return 1;
+  }
+}
+
+void mmcheck(xbt_mheap_t heap);
+
 #endif                          /* __MMPRIVATE_H */

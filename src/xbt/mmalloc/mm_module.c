@@ -391,3 +391,32 @@ ssize_t mmalloc_get_busy_size(xbt_mheap_t heap, void *ptr){
   }
     
 }
+
+void mmcheck(xbt_mheap_t heap) {return;
+  if (!heap->heapinfo)
+    return;
+  malloc_info* heapinfo = NULL;
+  for (size_t i=1; i < heap->heaplimit; i += mmalloc_get_increment(heapinfo)) {
+    heapinfo = heap->heapinfo + i;
+    switch (heapinfo->type) {
+    case MMALLOC_TYPE_HEAPINFO:
+    case MMALLOC_TYPE_FREE:
+      if (heapinfo->free_block.size==0) {
+        xbt_die("Block size == 0");
+      }
+      break;
+    case MMALLOC_TYPE_UNFRAGMENTED:
+      if (heapinfo->busy_block.size==0) {
+        xbt_die("Block size == 0");
+      }
+      if (heapinfo->busy_block.busy_size==0 && heapinfo->busy_block.size!=0) {
+        xbt_die("Empty busy block");
+      }
+      break;
+    default:
+      if (heapinfo->type<0) {
+        xbt_die("Unkown mmalloc block type.");
+      }
+    }
+  }
+}
