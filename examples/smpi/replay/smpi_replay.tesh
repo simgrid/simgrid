@@ -9,7 +9,6 @@ $ mkfile replay/one_trace
 ! timeout 60
 
 $ ../../smpi_script/bin/smpirun -ext smpi_replay --log=replay.thresh:critical --log=smpi_replay.thresh:verbose --log=no_loc --cfg=smpi/cpu_threshold:-1 -np 3 -platform ${srcdir:=.}/../platforms/small_platform.xml -hostfile ${srcdir:=.}/hostfile ./smpi_replay replay/one_trace --log=smpi_kernel.thres:warning
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'maxmin/precision' to '1e-3'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'surf/precision' to '1e-9'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'SMPI'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/TCP_gamma' to '4194304'
@@ -40,7 +39,6 @@ p The same with tracing activated
 $ mkfile replay/one_trace
 
 $ ../../smpi_script/bin/smpirun -ext smpi_replay --log=replay.thresh:critical --log=no_loc  --cfg=tracing:yes --cfg=tracing/smpi:yes --cfg=tracing/smpi/computing:yes --cfg=smpi/cpu_threshold:-1 -np 3 -platform ${srcdir:=.}/../platforms/small_platform.xml -hostfile ${srcdir:=.}/hostfile ./smpi_replay replay/one_trace --log=smpi_kernel.thres:warning
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'maxmin/precision' to '1e-3'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'surf/precision' to '1e-9'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'SMPI'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/TCP_gamma' to '4194304'
@@ -234,7 +232,6 @@ p Another test of trace replay with SMPI (one trace per process)
 $ mkfile ./split_traces_tesh
 
 $ ../../smpi_script/bin/smpirun -ext smpi_replay --log=replay.thresh:critical --log=smpi_replay.thresh:verbose --log=no_loc --cfg=smpi/cpu_threshold:-1 -np 2 -platform ${srcdir:=.}/../platforms/small_platform.xml -hostfile ${srcdir:=.}/hostfile ./smpi_replay ./split_traces_tesh --log=smpi_kernel.thres:warning
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'maxmin/precision' to '1e-3'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'surf/precision' to '1e-9'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'SMPI'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/TCP_gamma' to '4194304'
@@ -258,7 +255,6 @@ p Test of barrier replay with SMPI (one trace for all processes)
 $ mkfile replay/one_trace
 
 $ ../../smpi_script/bin/smpirun -ext smpi_replay --log=replay.thresh:critical --log=smpi_replay.thresh:verbose --log=no_loc --cfg=smpi/cpu_threshold:-1 -np 3 -platform ${srcdir:=.}/../platforms/small_platform.xml -hostfile ${srcdir:=.}/hostfile ./smpi_replay replay/one_trace --log=smpi_kernel.thres:warning
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'maxmin/precision' to '1e-3'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'surf/precision' to '1e-9'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'SMPI'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/TCP_gamma' to '4194304'
@@ -282,7 +278,6 @@ p Test of Isend replay with SMPI (one trace for all processes)
 $ mkfile replay/one_trace
 
 $ ../../smpi_script/bin/smpirun -ext smpi_replay --log=replay.thresh:critical --log=smpi_replay.thresh:verbose --log=no_loc --cfg=smpi/cpu_threshold:-1 -np 3 -platform ${srcdir:=.}/../platforms/small_platform.xml -hostfile ${srcdir:=.}/hostfile ./smpi_replay replay/one_trace --log=smpi_kernel.thres:warning
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'maxmin/precision' to '1e-3'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'surf/precision' to '1e-9'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'SMPI'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/TCP_gamma' to '4194304'
@@ -316,7 +311,6 @@ p Test of Isend replay with SMPI (one trace for all processes)
 $ mkfile replay/one_trace
 
 $ ../../smpi_script/bin/smpirun -ext smpi_replay --log=replay.thresh:critical --log=smpi_replay.thresh:verbose --log=no_loc --cfg=smpi/cpu_threshold:-1 -np 3 -platform ${srcdir:=.}/../platforms/small_platform.xml -hostfile ${srcdir:=.}/hostfile ./smpi_replay replay/one_trace --log=smpi_kernel.thres:warning
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'maxmin/precision' to '1e-3'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'surf/precision' to '1e-9'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'SMPI'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/TCP_gamma' to '4194304'
@@ -338,7 +332,6 @@ p Test of AllToAll replay with SMPI (one trace for all processes)
 $ mkfile replay/one_trace
 
 $ ../../smpi_script/bin/smpirun -ext smpi_replay --log=replay.thresh:critical --log=smpi_replay.thresh:verbose --log=no_loc --cfg=smpi/cpu_threshold:-1 -np 3 -platform ${srcdir:=.}/../platforms/small_platform.xml -hostfile ${srcdir:=.}/hostfile ./smpi_replay replay/one_trace --log=smpi_kernel.thres:warning
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'maxmin/precision' to '1e-3'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'surf/precision' to '1e-9'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'SMPI'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/TCP_gamma' to '4194304'
@@ -357,7 +350,6 @@ p Test of AllToAllv replay with SMPI (one trace for all processes)
 $ mkfile replay/one_trace
 
 $ ../../smpi_script/bin/smpirun -ext smpi_replay --log=replay.thresh:critical --log=smpi_replay.thresh:verbose --log=no_loc --cfg=smpi/cpu_threshold:-1 -np 3 -platform ${srcdir:=.}/../platforms/small_platform.xml -hostfile ${srcdir:=.}/hostfile ./smpi_replay replay/one_trace --log=smpi_kernel.thres:warning
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'maxmin/precision' to '1e-3'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'surf/precision' to '1e-9'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'SMPI'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/TCP_gamma' to '4194304'
@@ -376,7 +368,6 @@ p Test of AllGatherv replay with SMPI (one trace for all processes)
 $ mkfile replay/one_trace
 
 $ ../../smpi_script/bin/smpirun -ext smpi_replay --log=replay.thresh:critical --log=smpi_replay.thresh:verbose --log=no_loc --cfg=smpi/cpu_threshold:-1 -np 3 -platform ${srcdir:=.}/../platforms/small_platform.xml -hostfile ${srcdir:=.}/hostfile ./smpi_replay replay/one_trace --log=smpi_kernel.thres:warning
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'maxmin/precision' to '1e-3'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'surf/precision' to '1e-9'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'SMPI'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/TCP_gamma' to '4194304'
@@ -395,7 +386,6 @@ p Test of waitall replay with SMPI (one trace for all processes)
 $ mkfile replay/one_trace
 
 $ ../../smpi_script/bin/smpirun -ext smpi_replay --log=replay.thresh:critical --log=smpi_replay.thresh:verbose --log=no_loc --cfg=smpi/cpu_threshold:-1 -np 3 -platform ${srcdir:=.}/../platforms/small_platform.xml -hostfile ${srcdir:=.}/hostfile ./smpi_replay replay/one_trace --log=smpi_kernel.thres:warning
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'maxmin/precision' to '1e-3'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'surf/precision' to '1e-9'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'SMPI'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/TCP_gamma' to '4194304'

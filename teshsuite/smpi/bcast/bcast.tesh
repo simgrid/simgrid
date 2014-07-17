@@ -6,7 +6,6 @@ $ ${bindir:=.}/../../../bin/smpirun -map -hostfile ../hostfile -platform ../../.
 > [rank 0] -> Tremblay
 > [rank 1] -> Jupiter
 > [rank 2] -> Fafard
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'maxmin/precision' to '1e-3'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'surf/precision' to '1e-9'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'SMPI'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/TCP_gamma' to '4194304'
@@ -21,7 +20,6 @@ $ ${bindir:=.}/../../../bin/smpirun -map -hostfile ../hostfile -platform ../../.
 > [rank 2] -> Fafard
 > [rank 3] -> Ginette
 > [rank 4] -> Bourassa
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'maxmin/precision' to '1e-3'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'surf/precision' to '1e-9'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'SMPI'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/TCP_gamma' to '4194304'
@@ -44,7 +42,6 @@ $ ${bindir:=.}/../../../bin/smpirun -map -hostfile ../hostfile -platform ../../.
 > [rank 9] -> Bourassa
 > [rank 10] -> Tremblay
 > [rank 11] -> Jupiter
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'maxmin/precision' to '1e-3'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'surf/precision' to '1e-9'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'SMPI'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/TCP_gamma' to '4194304'
