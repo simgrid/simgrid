@@ -21,6 +21,8 @@ if(enable_smpi AND enable_smpi_MPICH3_testsuite)
   add_executable(comm_group_half comm_group_half.c)
   add_executable(comm_group_rand comm_group_rand.c)
  # add_executable(comm_idup comm_idup.c)
+ # add_executable(comm_idup_mul comm_idup_mul.c)
+ # add_executable(comm_idup_overlap comm_idup_overlap.c)
   add_executable(comm_info comm_info.c)
 #  add_executable(commname commname.c)
   add_executable(ctxalloc ctxalloc.c)
@@ -81,6 +83,8 @@ set(examples_src
  ${CMAKE_CURRENT_SOURCE_DIR}/comm_group_half.c 
  ${CMAKE_CURRENT_SOURCE_DIR}/comm_group_rand.c 
  ${CMAKE_CURRENT_SOURCE_DIR}/comm_idup.c 
+ ${CMAKE_CURRENT_SOURCE_DIR}/comm_idup_overlap.c 
+ ${CMAKE_CURRENT_SOURCE_DIR}/comm_idup_mul.c 
  ${CMAKE_CURRENT_SOURCE_DIR}/comm_info.c 
  ${CMAKE_CURRENT_SOURCE_DIR}/commname.c 
  ${CMAKE_CURRENT_SOURCE_DIR}/ctxalloc.c 

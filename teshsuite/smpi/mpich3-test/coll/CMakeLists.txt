@@ -69,7 +69,7 @@ if(enable_smpi AND enable_smpi_MPICH3_testsuite)
   add_executable(longuser longuser.c)
 #  add_executable(nonblocking2 nonblocking2.c)
 #  add_executable(nonblocking3 nonblocking3.c)
-#  add_executable(nonblocking4 nonblocking3.c)
+#  add_executable(nonblocking4 nonblocking4.c)
 #  add_executable(nonblocking nonblocking.c)
 #  add_executable(opband opband.c)
 #  add_executable(opbor opbor.c)
@@ -264,6 +264,7 @@ set(examples_src
  ${CMAKE_CURRENT_SOURCE_DIR}/nonblocking2.c 
  ${CMAKE_CURRENT_SOURCE_DIR}/nonblocking3.c 
  ${CMAKE_CURRENT_SOURCE_DIR}/nonblocking.c 
+ ${CMAKE_CURRENT_SOURCE_DIR}/nonblocking4.c
  ${CMAKE_CURRENT_SOURCE_DIR}/opband.c 
  ${CMAKE_CURRENT_SOURCE_DIR}/opbor.c 
  ${CMAKE_CURRENT_SOURCE_DIR}/opbxor.c 
