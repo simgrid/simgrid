@@ -27,7 +27,7 @@ int main(int argc, char *argv[])
     /* a random non-zero sized buffer */
 #define NELEM (10)
     buf = malloc(NELEM*sizeof(int));
-    assert(buf);
+    assert(buf!=NULL);
 
     for (i = 0; i < NELEM; i++) {
         buf[i] = wrank * NELEM + i;
