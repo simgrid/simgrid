@@ -239,7 +239,7 @@ This initializes MSG, runs a simulation, and free all data-structures created by
 
 \paragraph MSG_ext_ms_platform Example of platform file
 
-\include msg/small_platform.xml
+\include platforms/small_platform.xml
 
 \section using_smpi Using SMPI
 You should check our online <a href="http://simgrid.gforge.inria.fr/tutorials.html"> tutorial section</a> that contains a dedicated tutorial. 
