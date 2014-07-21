@@ -1,4 +1,4 @@
-#Needs Win set name, win_get_name needed
+#Needs win_create_keyval win_set_attr, win_get_attr
 #winname 2
 allocmem 2
 putfence1 4

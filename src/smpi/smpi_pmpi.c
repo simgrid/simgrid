@@ -2733,6 +2733,35 @@ int PMPI_Win_free( MPI_Win* win){
   return retval;
 }
 
+int PMPI_Win_set_name(MPI_Win  win, char * name)
+{
+  int retval = 0;
+  if (win == MPI_WIN_NULL)  {
+    retval = MPI_ERR_TYPE;
+  } else if (name == NULL)  {
+    retval = MPI_ERR_ARG;
+  } else {
+    smpi_mpi_win_set_name(win, name);
+    retval = MPI_SUCCESS;
+  }
+  return retval;
+}
+
+int PMPI_Win_get_name(MPI_Win  win, char * name, int* len)
+{
+  int retval = 0;
+
+  if (win == MPI_WIN_NULL)  {
+    retval = MPI_ERR_TYPE;
+  } else if (name == NULL)  {
+    retval = MPI_ERR_ARG;
+  } else {
+    smpi_mpi_win_get_name(win, name, len);
+    retval = MPI_SUCCESS;
+  }
+  return retval;
+}
+
 
 int PMPI_Win_fence( int assert,  MPI_Win win){
   int retval = 0;

@@ -334,6 +334,9 @@ int smpi_mpi_win_free( MPI_Win* win);
 
 MPI_Win smpi_mpi_win_create( void *base, MPI_Aint size, int disp_unit, MPI_Info info, MPI_Comm comm);
 
+void smpi_mpi_win_get_name(MPI_Win win, char* name, int* length);
+void smpi_mpi_win_set_name(MPI_Win win, char* name);
+
 int smpi_mpi_win_fence( int assert,  MPI_Win win);
 
 int smpi_mpi_get( void *origin_addr, int origin_count, MPI_Datatype origin_datatype, int target_rank,
@@ -472,6 +475,8 @@ void mpi_type_ub_(int* datatype, MPI_Aint * extent, int* ierr);
 void mpi_win_fence_( int* assert,  int* win, int* ierr);
 void mpi_win_free_( int* win, int* ierr);
 void mpi_win_create_( int *base, MPI_Aint* size, int* disp_unit, int* info, int* comm, int *win, int* ierr);
+void mpi_win_set_name_ (int*  win, char * name, int* ierr);
+void mpi_win_get_name_ (int*  win, char * name, int* len, int* ierr);
 void mpi_info_create_( int *info, int* ierr);
 void mpi_info_set_( int *info, char *key, char *value, int* ierr);
 void mpi_info_free_(int* info, int* ierr);

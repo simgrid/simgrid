@@ -719,6 +719,16 @@ void mpi_win_create_( int *base, MPI_Aint* size, int* disp_unit, int* info, int*
  }
 }
 
+void mpi_win_set_name_ (int*  win, char * name, int* ierr){
+
+ *ierr = MPI_Win_set_name(get_win(*win), name);
+}
+
+void mpi_win_get_name_ (int*  win, char * name, int* len, int* ierr){
+
+ *ierr = MPI_Win_get_name(get_win(*win),name,len);
+}
+
 void mpi_info_create_( int *info, int* ierr){
   *ierr =  MPI_Info_create( (MPI_Info *)info);
 }

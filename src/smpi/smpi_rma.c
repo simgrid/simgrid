@@ -23,6 +23,7 @@ typedef struct s_smpi_mpi_win{
   xbt_dynar_t requests;
   xbt_bar_t bar;
   MPI_Win* connected_wins;
+  char* name;
 } s_smpi_mpi_win_t;
 
 
@@ -41,6 +42,7 @@ MPI_Win smpi_mpi_win_create( void *base, MPI_Aint size, int disp_unit, MPI_Info 
   win->assert = 0;
   //win->info = info;
   win->comm = comm;
+  win->name = NULL;
   win->requests = xbt_dynar_new(sizeof(MPI_Request), NULL);
   win->connected_wins = xbt_malloc0(comm_size*sizeof(MPI_Win));
   win->connected_wins[rank] = win;
@@ -74,9 +76,21 @@ int smpi_mpi_win_free( MPI_Win* win){
   xbt_barrier_wait((*win)->bar);
   xbt_dynar_free(&(*win)->requests);
   xbt_free((*win)->connected_wins);
+  if ((*win)->name != NULL){
+    xbt_free((*win)->name);
+  }
   xbt_free(*win);
   win = MPI_WIN_NULL;
   return MPI_SUCCESS;
+}
+
+void smpi_mpi_win_get_name(MPI_Win win, char* name, int* length){
+  *length = strlen(win->name);
+  strcpy(name, win->name);
+}
+
+void smpi_mpi_win_set_name(MPI_Win win, char* name){
+  win->name = strdup(name);;
 }
 
 
