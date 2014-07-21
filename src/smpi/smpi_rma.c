@@ -85,6 +85,11 @@ int smpi_mpi_win_free( MPI_Win* win){
 }
 
 void smpi_mpi_win_get_name(MPI_Win win, char* name, int* length){
+  if(win->name==NULL){
+    *length=0;
+    name=NULL;
+    return;
+  }
   *length = strlen(win->name);
   strcpy(name, win->name);
 }

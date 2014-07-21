@@ -719,14 +719,17 @@ void mpi_win_create_( int *base, MPI_Aint* size, int* disp_unit, int* info, int*
  }
 }
 
-void mpi_win_set_name_ (int*  win, char * name, int* ierr){
-
- *ierr = MPI_Win_set_name(get_win(*win), name);
+void mpi_win_set_name_ (int*  win, char * name, int* ierr, int size){
+ char* tname = xbt_malloc((size+1)*sizeof(char));
+ strncpy(tname, name, size);
+ tname[size]='\0';
+ *ierr = MPI_Win_set_name(get_win(*win), tname);
+ xbt_free(tname);
 }
 
 void mpi_win_get_name_ (int*  win, char * name, int* len, int* ierr){
-
  *ierr = MPI_Win_get_name(get_win(*win),name,len);
+ if(*len>0) name[*len]=' ';//blank padding, not \0
 }
 
 void mpi_info_create_( int *info, int* ierr){
@@ -843,14 +846,17 @@ void mpi_type_dup_ (int*  datatype, int* newdatatype, int* ierr){
  }
 }
 
-void mpi_type_set_name_ (int*  datatype, char * name, int* ierr){
-
- *ierr = MPI_Type_set_name(get_datatype(*datatype), name);
+void mpi_type_set_name_ (int*  datatype, char * name, int* ierr, int size){
+ char* tname = xbt_malloc((size+1)*sizeof(char));
+ strncpy(tname, name, size);
+ tname[size]='\0';
+ *ierr = MPI_Type_set_name(get_datatype(*datatype), tname);
+ xbt_free(tname);
 }
 
 void mpi_type_get_name_ (int*  datatype, char * name, int* len, int* ierr){
-
  *ierr = MPI_Type_get_name(get_datatype(*datatype),name,len);
+  if(*len>0) name[*len]=' ';
 }
 
 void mpi_type_get_attr_ (int* type, int* type_keyval, void *attribute_val, int* flag, int* ierr){
@@ -1011,8 +1017,8 @@ void mpi_comm_free_keyval_ (int* keyval, int* ierr) {
 }
 
 void mpi_comm_get_name_ (int* comm, char* name, int* len, int* ierr){
-
  *ierr = MPI_Comm_get_name(get_comm(*comm), name, len);
+  if(*len>0) name[*len]=' ';
 }
 
 void mpi_comm_compare_ (int* comm1, int* comm2, int *result, int* ierr){
@@ -1488,8 +1494,12 @@ void mpi_exscan_ (void *sendbuf, void *recvbuf, int* count, int* datatype, int* 
  *ierr = MPI_Exscan(sendbuf, recvbuf, *count, get_datatype(*datatype), get_op(*op), get_comm(*comm));
 }
 
-void mpi_comm_set_name_ (int* comm, char* name, int* ierr){
- *ierr = MPI_Comm_set_name (get_comm(*comm), name);
+void mpi_comm_set_name_ (int* comm, char* name, int* ierr, int size){
+ char* tname = xbt_malloc((size+1)*sizeof(char));
+ strncpy(tname, name, size);
+ tname[size]='\0';
+ *ierr = MPI_Comm_set_name (get_comm(*comm), tname);
+ xbt_free(tname);
 }
 
 void mpi_comm_dup_with_info_ (int* comm, int* info, int* newcomm, int* ierr){
