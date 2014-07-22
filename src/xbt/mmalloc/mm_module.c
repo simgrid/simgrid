@@ -1,4 +1,4 @@
-/* Initialization for access to a mmap'd malloc managed region. */
+/* Initialization for acces s to a mmap'd malloc managed region. */
 
 /* Copyright (c) 2012-2014. The SimGrid Team.
  * All rights reserved.                                                     */
