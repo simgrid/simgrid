@@ -190,6 +190,7 @@ set(SMPI_SRC
   src/smpi/colls/alltoallv-ring-one-barrier.c
   src/smpi/colls/alltoallv-ring.c
   src/smpi/colls/barrier-ompi.c
+  src/smpi/colls/barrier-mvapich2-pair.c
   src/smpi/colls/bcast-NTSB.c
   src/smpi/colls/bcast-NTSL-Isend.c
   src/smpi/colls/bcast-NTSL.c

@@ -703,8 +703,8 @@ int smpi_coll_tuned_gather_mvapich2(void *sendbuf,
                     MPI_Datatype recvtype,
                     int root, MPI_Comm  comm)
 {
-    if(mv2_alltoall_table_ppn_conf==NULL)
-        init_mv2_alltoall_tables_stampede();
+    if(mv2_gather_thresholds_table==NULL)
+        init_mv2_gather_tables_stampede();
         
     int mpi_errno = MPI_SUCCESS;
     int range = 0;
@@ -772,4 +772,423 @@ int smpi_coll_tuned_gather_mvapich2(void *sendbuf,
 
     return mpi_errno;
 }
+
+
+
+static void init_mv2_allgatherv_tables_stampede(){
+ mv2_size_allgatherv_tuning_table = 6;
+ mv2_allgatherv_thresholds_table = malloc(mv2_size_allgatherv_tuning_table *
+                                                  sizeof (mv2_allgatherv_tuning_table));
+        mv2_allgatherv_tuning_table mv2_tmp_allgatherv_thresholds_table[] = {
+            {
+                16,
+                2,
+                {
+                    {0, 512, &MPIR_Allgatherv_Rec_Doubling_MV2},
+                    {512, -1, &MPIR_Allgatherv_Ring_MV2},
+                },
+            },
+            {
+                32,
+                2,
+                {
+                    {0, 512, &MPIR_Allgatherv_Rec_Doubling_MV2},
+                    {512, -1, &MPIR_Allgatherv_Ring_MV2},
+                },
+            },
+            {
+                64,
+                2,
+                {
+                    {0, 256, &MPIR_Allgatherv_Rec_Doubling_MV2},
+                    {256, -1, &MPIR_Allgatherv_Ring_MV2},
+                },
+            },
+            {
+                128,
+                2,
+                {
+                    {0, 256, &MPIR_Allgatherv_Rec_Doubling_MV2},
+                    {256, -1, &MPIR_Allgatherv_Ring_MV2},
+                },
+            },
+            {
+                256,
+                2,
+                {
+                    {0, 256, &MPIR_Allgatherv_Rec_Doubling_MV2},
+                    {256, -1, &MPIR_Allgatherv_Ring_MV2},
+                },
+            },
+            {
+                512,
+                2,
+                {
+                    {0, 256, &MPIR_Allgatherv_Rec_Doubling_MV2},
+                    {256, -1, &MPIR_Allgatherv_Ring_MV2},
+                },
+            },
+
+        }; 
+        memcpy(mv2_allgatherv_thresholds_table, mv2_tmp_allgatherv_thresholds_table,
+                  mv2_size_allgatherv_tuning_table * sizeof (mv2_allgatherv_tuning_table));
+}
+
+
+
+
+
+
+
+int smpi_coll_tuned_allgatherv_mvapich2(void *sendbuf, int sendcount, MPI_Datatype sendtype,
+                        void *recvbuf, int *recvcounts, int *displs,
+                        MPI_Datatype recvtype, MPI_Comm  comm )
+{
+    int mpi_errno = MPI_SUCCESS;
+    int range = 0, comm_size, total_count, recvtype_size, i;
+    int range_threshold = 0;
+    int nbytes = 0;
+
+    if(mv2_allgatherv_thresholds_table==NULL)
+        init_mv2_allgatherv_tables_stampede();
+        
+    comm_size = smpi_comm_size(comm);
+    total_count = 0;
+    for (i = 0; i < comm_size; i++)
+        total_count += recvcounts[i];
+
+    recvtype_size=smpi_datatype_size(recvtype);
+    nbytes = total_count * recvtype_size;
+
+    /* Search for the corresponding system size inside the tuning table */
+    while ((range < (mv2_size_allgatherv_tuning_table - 1)) &&
+           (comm_size > mv2_allgatherv_thresholds_table[range].numproc)) {
+        range++;
+    }
+    /* Search for corresponding inter-leader function */
+    while ((range_threshold < (mv2_allgatherv_thresholds_table[range].size_inter_table - 1))
+           && (nbytes >
+               comm_size * mv2_allgatherv_thresholds_table[range].inter_leader[range_threshold].max)
+           && (mv2_allgatherv_thresholds_table[range].inter_leader[range_threshold].max !=
+               -1)) {
+        range_threshold++;
+    }
+    /* Set inter-leader pt */
+    MV2_Allgatherv_function =
+                          mv2_allgatherv_thresholds_table[range].inter_leader[range_threshold].
+                          MV2_pt_Allgatherv_function;
+
+    if (MV2_Allgatherv_function == &MPIR_Allgatherv_Rec_Doubling_MV2)
+    {
+        if(!(comm_size & (comm_size - 1)))
+        {
+            mpi_errno =
+                MPIR_Allgatherv_Rec_Doubling_MV2(sendbuf, sendcount,
+                                                 sendtype, recvbuf,
+                                                 recvcounts, displs,
+                                                 recvtype, comm);
+        } else {
+            mpi_errno =
+                MPIR_Allgatherv_Bruck_MV2(sendbuf, sendcount,
+                                          sendtype, recvbuf,
+                                          recvcounts, displs,
+                                          recvtype, comm);
+        }
+    } else {
+        mpi_errno =
+            MV2_Allgatherv_function(sendbuf, sendcount, sendtype,
+                                    recvbuf, recvcounts, displs,
+                                    recvtype, comm);
+    }
+
+    return mpi_errno;
+}
+
+
+static void init_mv2_allreduce_tables_stampede(){
+mv2_size_allreduce_tuning_table = 8;
+      mv2_allreduce_thresholds_table = malloc(mv2_size_allreduce_tuning_table *
+						   sizeof (mv2_allreduce_tuning_table));
+      mv2_allreduce_tuning_table mv2_tmp_allreduce_thresholds_table[] = {
+	{
+	  16,
+	  0,
+	  {1, 0},
+	  2,
+	  {
+	    {0, 1024, &MPIR_Allreduce_pt2pt_rd_MV2},
+	    {1024, -1, &MPIR_Allreduce_pt2pt_rs_MV2},
+	  },
+	  2,
+	  {
+	    {0, 1024, &MPIR_Allreduce_reduce_shmem_MV2},
+	    {1024, -1, &MPIR_Allreduce_reduce_p2p_MV2},
+	  },
+	},
+	{
+	  32,
+	  0,
+	  {1, 1, 0},
+	  3,
+	  {
+	    {0, 1024, &MPIR_Allreduce_pt2pt_rd_MV2},
+	    {1024, 16384, &MPIR_Allreduce_pt2pt_rd_MV2},
+	    {16384, -1, &MPIR_Allreduce_pt2pt_rs_MV2},
+	  },
+	  2,
+	  {
+	    {0, 1024, &MPIR_Allreduce_reduce_shmem_MV2},
+	    {1024, 16384, &MPIR_Allreduce_reduce_p2p_MV2},
+	  },
+	},
+	{
+	  64,
+	  0,
+	  {1, 1, 0},
+	  3,
+	  {
+	    {0, 512, &MPIR_Allreduce_pt2pt_rd_MV2},
+	    {512, 16384, &MPIR_Allreduce_pt2pt_rd_MV2},
+	    {16384, -1, &MPIR_Allreduce_pt2pt_rs_MV2},
+	  },
+	  2,
+	  {
+	    {0, 512, &MPIR_Allreduce_reduce_shmem_MV2},
+	    {512, 16384, &MPIR_Allreduce_reduce_p2p_MV2},
+	  },
+	},
+	{
+	  128,
+	  0,
+	  {1, 1, 0},
+	  3,
+	  {
+	    {0, 512, &MPIR_Allreduce_pt2pt_rd_MV2},
+	    {512, 16384, &MPIR_Allreduce_pt2pt_rd_MV2},
+	    {16384, -1, &MPIR_Allreduce_pt2pt_rs_MV2},
+	  },
+	  2,
+	  {
+	    {0, 512, &MPIR_Allreduce_reduce_shmem_MV2},
+	    {512, 16384, &MPIR_Allreduce_reduce_p2p_MV2},
+	  },
+	},
+	{
+	  256,
+	  0,
+	  {1, 1, 0},
+	  3,
+	  {
+	    {0, 512, &MPIR_Allreduce_pt2pt_rd_MV2},
+	    {512, 16384, &MPIR_Allreduce_pt2pt_rd_MV2},
+	    {16384, -1, &MPIR_Allreduce_pt2pt_rs_MV2},
+	  },
+	  2,
+	  {
+	    {0, 512, &MPIR_Allreduce_reduce_shmem_MV2},
+	    {512, -1, &MPIR_Allreduce_reduce_p2p_MV2},
+	  },
+	},
+	{
+	  512,
+	  0,
+	  {1, 1, 0},
+	  3,
+	  {
+	    {0, 512, &MPIR_Allreduce_pt2pt_rd_MV2},
+	    {512, 16384, &MPIR_Allreduce_pt2pt_rd_MV2},
+	    {16384, -1, &MPIR_Allreduce_pt2pt_rs_MV2},
+	  },
+	  2,
+	  {
+	    {0, 512, &MPIR_Allreduce_reduce_shmem_MV2},
+	    {512, 16384, &MPIR_Allreduce_reduce_p2p_MV2},
+	  },
+	},
+	{
+	  1024,
+	  0,
+	  {1, 1, 1, 0},
+	  4,
+	  {
+	    {0, 512, &MPIR_Allreduce_pt2pt_rd_MV2},
+	    {512, 8192, &MPIR_Allreduce_pt2pt_rd_MV2},
+	    {8192, 65536, &MPIR_Allreduce_pt2pt_rs_MV2},
+	    {65536, -1, &MPIR_Allreduce_pt2pt_rs_MV2},
+	  },
+	  2,
+	  {
+	    {0, 512, &MPIR_Allreduce_reduce_shmem_MV2},
+	    {512, -1, &MPIR_Allreduce_reduce_p2p_MV2},
+	  },
+	},
+	{
+	  2048,
+	  0,
+	  {1, 1, 1, 0},
+	  4,
+	  {
+	    {0, 64, &MPIR_Allreduce_pt2pt_rd_MV2},
+	    {64, 512, &MPIR_Allreduce_reduce_p2p_MV2},
+	    {512, 4096, &MPIR_Allreduce_mcst_reduce_two_level_helper_MV2},
+	    {4096, 16384, &MPIR_Allreduce_pt2pt_rs_MV2},
+	    {16384, -1, &MPIR_Allreduce_pt2pt_rs_MV2},
+	  },
+	  2,
+	  {
+	    {0, 512, &MPIR_Allreduce_reduce_shmem_MV2},
+	    {512, -1, &MPIR_Allreduce_reduce_p2p_MV2},
+	  },
+	},
+ 
+      }; 
+      memcpy(mv2_allreduce_thresholds_table, mv2_tmp_allreduce_thresholds_table,
+		  mv2_size_allreduce_tuning_table * sizeof (mv2_allreduce_tuning_table));
+}
+
+
+int smpi_coll_tuned_allreduce_mvapich2(void *sendbuf,
+                       void *recvbuf,
+                       int count,
+                       MPI_Datatype datatype,
+                       MPI_Op op, MPI_Comm comm)
+{
+
+    int mpi_errno = MPI_SUCCESS;
+    //int rank = 0, 
+    int comm_size = 0;
+   
+    comm_size = smpi_comm_size(comm);
+    //rank = smpi_comm_rank(comm);
+
+    if (count == 0) {
+        return MPI_SUCCESS;
+    }
+
+  if (mv2_allreduce_thresholds_table == NULL)
+    init_mv2_allreduce_tables_stampede();
+
+    /* check if multiple threads are calling this collective function */
+
+    MPI_Aint sendtype_size = 0;
+    int nbytes = 0;
+    int range = 0, range_threshold = 0, range_threshold_intra = 0;
+    int is_two_level = 0;
+    //int is_commutative = 0;
+    MPI_Aint true_lb, true_extent;
+
+    sendtype_size=smpi_datatype_size(datatype);
+    nbytes = count * sendtype_size;
+
+    smpi_datatype_extent(datatype, &true_lb, &true_extent);
+    //MPI_Op *op_ptr;
+    //is_commutative = smpi_op_is_commute(op);
+
+    {
+        /* Search for the corresponding system size inside the tuning table */
+        while ((range < (mv2_size_allreduce_tuning_table - 1)) &&
+               (comm_size > mv2_allreduce_thresholds_table[range].numproc)) {
+            range++;
+        }
+        /* Search for corresponding inter-leader function */
+        /* skip mcast poiters if mcast is not available */
+        if(mv2_allreduce_thresholds_table[range].mcast_enabled != 1){
+            while ((range_threshold < (mv2_allreduce_thresholds_table[range].size_inter_table - 1)) 
+                    && ((mv2_allreduce_thresholds_table[range].
+                    inter_leader[range_threshold].MV2_pt_Allreduce_function 
+                    == &MPIR_Allreduce_mcst_reduce_redscat_gather_MV2) ||
+                    (mv2_allreduce_thresholds_table[range].
+                    inter_leader[range_threshold].MV2_pt_Allreduce_function
+                    == &MPIR_Allreduce_mcst_reduce_two_level_helper_MV2)
+                    )) {
+                    range_threshold++;
+            }
+        }
+        while ((range_threshold < (mv2_allreduce_thresholds_table[range].size_inter_table - 1))
+               && (nbytes >
+               mv2_allreduce_thresholds_table[range].inter_leader[range_threshold].max)
+               && (mv2_allreduce_thresholds_table[range].inter_leader[range_threshold].max != -1)) {
+               range_threshold++;
+        }
+        if(mv2_allreduce_thresholds_table[range].is_two_level_allreduce[range_threshold] == 1){
+               is_two_level = 1;    
+        }
+        /* Search for corresponding intra-node function */
+        while ((range_threshold_intra <
+               (mv2_allreduce_thresholds_table[range].size_intra_table - 1))
+                && (nbytes >
+                mv2_allreduce_thresholds_table[range].intra_node[range_threshold_intra].max)
+                && (mv2_allreduce_thresholds_table[range].intra_node[range_threshold_intra].max !=
+                -1)) {
+                range_threshold_intra++;
+        }
+
+        MV2_Allreduce_function = mv2_allreduce_thresholds_table[range].inter_leader[range_threshold]
+                                .MV2_pt_Allreduce_function;
+
+        MV2_Allreduce_intra_function = mv2_allreduce_thresholds_table[range].intra_node[range_threshold_intra]
+                                .MV2_pt_Allreduce_function;
+
+        /* check if mcast is ready, otherwise replace mcast with other algorithm */
+        if((MV2_Allreduce_function == &MPIR_Allreduce_mcst_reduce_redscat_gather_MV2)||
+          (MV2_Allreduce_function == &MPIR_Allreduce_mcst_reduce_two_level_helper_MV2)){
+            {
+                MV2_Allreduce_function = &MPIR_Allreduce_pt2pt_rd_MV2;
+            }
+            if(is_two_level != 1) {
+                MV2_Allreduce_function = &MPIR_Allreduce_pt2pt_rd_MV2;
+            }
+        } 
+
+        if(is_two_level == 1){
+                // check if shm is ready, if not use other algorithm first 
+                /*if ((comm->ch.shmem_coll_ok == 1)
+                    && (mv2_enable_shmem_allreduce)
+                    && (is_commutative)
+                    && (mv2_enable_shmem_collectives)) {
+                    mpi_errno = MPIR_Allreduce_two_level_MV2(sendbuf, recvbuf, count,
+                                                     datatype, op, comm);
+                } else {*/
+                    mpi_errno = MPIR_Allreduce_pt2pt_rd_MV2(sendbuf, recvbuf, count,
+                                                     datatype, op, comm);
+               // }
+        } else { 
+            mpi_errno = MV2_Allreduce_function(sendbuf, recvbuf, count,
+                                           datatype, op, comm);
+        }
+    } 
+
+	//comm->ch.intra_node_done=0;
+	
+    return (mpi_errno);
+
+
+}
+
+
+int smpi_coll_tuned_alltoallv_mvapich2(void *sbuf, int *scounts, int *sdisps,
+                                              MPI_Datatype sdtype,
+                                              void *rbuf, int *rcounts, int *rdisps,
+                                              MPI_Datatype rdtype,
+                                              MPI_Comm  comm
+                                              )
+{
+
+if (sbuf == MPI_IN_PLACE) {
+    return smpi_coll_tuned_alltoallv_ompi_basic_linear(sbuf, scounts, sdisps, sdtype, 
+                                                        rbuf, rcounts, rdisps,rdtype,
+                                                        comm);
+ } else     /* For starters, just keep the original algorithm. */
+    return smpi_coll_tuned_alltoallv_pair(sbuf, scounts, sdisps, sdtype, 
+                                                        rbuf, rcounts, rdisps,rdtype,
+                                                        comm);
+}
+
+
+int smpi_coll_tuned_barrier_mvapich2(MPI_Comm  comm)
+{   
+    return smpi_coll_tuned_barrier_mvapich2_pair(comm);
+}
+
+
 

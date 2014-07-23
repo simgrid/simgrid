@@ -378,12 +378,12 @@ IF(NOT enable_memcheck)
                             smp_simple spreading_simple ompi mpich ompi_neighborexchange mvapich2)
       ADD_TESH(tesh-smpi-allgather-coll-${ALLGATHER_COLL} --cfg smpi/allgather:${ALLGATHER_COLL} --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/allgather --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/allgather allgather_coll.tesh)
     ENDFOREACH()
-    FOREACH (ALLGATHERV_COLL default GB pair ring ompi mpich ompi_neighborexchange ompi_bruck mpich_rdb mpich_ring)
+    FOREACH (ALLGATHERV_COLL default GB pair ring ompi mpich ompi_neighborexchange ompi_bruck mpich_rdb mpich_ring mvapich2)
       ADD_TESH(tesh-smpi-allgatherv-coll-${ALLGATHERV_COLL} --cfg smpi/allgatherv:${ALLGATHERV_COLL} --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/allgatherv --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/allgatherv allgatherv_coll.tesh)
     ENDFOREACH()
     FOREACH (ALLREDUCE_COLL default lr rab1 rab2 rab_rdb
                             rdb smp_binomial smp_binomial_pipeline
-                            smp_rdb smp_rsag smp_rsag_lr smp_rsag_rab redbcast ompi mpich ompi_ring_segmented)
+                            smp_rdb smp_rsag smp_rsag_lr smp_rsag_rab redbcast ompi mpich ompi_ring_segmented mvapich2)
       ADD_TESH(tesh-smpi-allreduce-coll-${ALLREDUCE_COLL} --cfg smpi/allreduce:${ALLREDUCE_COLL} --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/allreduce --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/allreduce allreduce_coll.tesh)
     ENDFOREACH()
     FOREACH (ALLREDUCE_COLL_LARGE ompi_ring_segmented)
@@ -397,7 +397,7 @@ IF(NOT enable_memcheck)
     ENDFOREACH()
     FOREACH (ALLTOALLV_COLL default pair pair_light_barrier pair_mpi_barrier
                             pair_one_barrier  ring ring_light_barrier
-                            ring_mpi_barrier ring_one_barrier bruck ompi mpich ompi_basic_linear)
+                            ring_mpi_barrier ring_one_barrier bruck ompi mpich mvapich2 ompi_basic_linear)
       ADD_TESH(tesh-smpi-alltoallv-coll-${ALLTOALLV_COLL} --cfg smpi/alltoallv:${ALLTOALLV_COLL} --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/alltoallv --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/alltoallv alltoallv_coll.tesh)
     ENDFOREACH()
     FOREACH (BCAST_COLL default arrival_pattern_aware arrival_pattern_aware_wait arrival_scatter
@@ -414,7 +414,7 @@ IF(NOT enable_memcheck)
     FOREACH (SCATTER_COLL default  ompi mpich ompi_basic_linear ompi_binomial)
       ADD_TESH(tesh-smpi-scatter-coll-${SCATTER_COLL} --cfg smpi/scatter:${SCATTER_COLL} --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/scatter --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/scatter scatter_coll.tesh)
     ENDFOREACH()
-    FOREACH (BARRIER_COLL default  ompi mpich ompi_basic_linear ompi_tree ompi_bruck ompi_recursivedoubling ompi_doublering)
+    FOREACH (BARRIER_COLL default  ompi mpich ompi_basic_linear ompi_tree ompi_bruck ompi_recursivedoubling ompi_doublering mvapich2_pair mvapich2)
       ADD_TESH(tesh-smpi-barrier-coll-${BARRIER_COLL} --cfg smpi/barrier:${BARRIER_COLL} --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/barrier --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/barrier barrier_coll.tesh)
     ENDFOREACH()
     # END TESH TESTS

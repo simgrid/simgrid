@@ -140,3 +140,131 @@ MV2_Gather_function_ptr MV2_Gather_intra_node_function = NULL;
 #define MPIR_Gather_MV2_Direct smpi_coll_tuned_gather_ompi_basic_linear
 #define MPIR_Gather_MV2_two_level_Direct smpi_coll_tuned_gather_ompi_basic_linear
 #define MPIR_Gather_intra smpi_coll_tuned_gather_mpich
+
+
+
+typedef struct {
+    int min;
+    int max;
+    int (*MV2_pt_Allgatherv_function)(void *sendbuf,
+                                      int sendcount,
+                                      MPI_Datatype sendtype,
+                                      void *recvbuf,
+                                      int *recvcounts,
+                                      int *displs,
+                                      MPI_Datatype recvtype,
+                                      MPI_Comm commg);
+} mv2_allgatherv_tuning_element;
+
+typedef struct {
+    int numproc; 
+    int size_inter_table;
+    mv2_allgatherv_tuning_element inter_leader[MV2_MAX_NB_THRESHOLDS];
+} mv2_allgatherv_tuning_table;
+
+extern int mv2_size_allgatherv_tuning_table;
+extern mv2_allgatherv_tuning_table *mv2_allgatherv_thresholds_table;
+
+int (*MV2_Allgatherv_function)(void *sendbuf,
+                               int sendcount,
+                               MPI_Datatype sendtype,
+                               void *recvbuf,
+                               int *recvcounts,
+                               int *displs,
+                               MPI_Datatype recvtype,
+                               MPI_Comm comm);
+                               
+int mv2_size_allgatherv_tuning_table = 0;
+mv2_allgatherv_tuning_table *mv2_allgatherv_thresholds_table = NULL;
+
+#define MPIR_Allgatherv_Rec_Doubling_MV2 smpi_coll_tuned_allgatherv_mpich_rdb
+#define MPIR_Allgatherv_Bruck_MV2 smpi_coll_tuned_allgatherv_ompi_bruck
+#define MPIR_Allgatherv_Ring_MV2 smpi_coll_tuned_allgatherv_mpich_ring
+
+
+typedef struct {
+    int min;
+    int max;
+    int (*MV2_pt_Allreduce_function)(void *sendbuf,
+                                   void *recvbuf,
+                                   int count,
+                                   MPI_Datatype datatype,
+                                   MPI_Op op, MPI_Comm comm);
+} mv2_allreduce_tuning_element;
+
+typedef struct {
+    int numproc; 
+    int mcast_enabled;  
+    int is_two_level_allreduce[MV2_MAX_NB_THRESHOLDS];   
+    int size_inter_table;
+    mv2_allreduce_tuning_element inter_leader[MV2_MAX_NB_THRESHOLDS];
+    int size_intra_table;
+    mv2_allreduce_tuning_element intra_node[MV2_MAX_NB_THRESHOLDS];
+} mv2_allreduce_tuning_table;
+
+extern int mv2_size_allreduce_tuning_table;
+extern mv2_allreduce_tuning_table *mv2_allreduce_thresholds_table;
+extern int mv2_use_old_allreduce;
+
+
+int (*MV2_Allreduce_function)(void *sendbuf,
+                             void *recvbuf,
+                             int count,
+                             MPI_Datatype datatype,
+                             MPI_Op op, MPI_Comm comm)=NULL;
+
+
+int (*MV2_Allreduce_intra_function)( void *sendbuf,
+                             void *recvbuf,
+                             int count,
+                             MPI_Datatype datatype,
+                             MPI_Op op, MPI_Comm comm)=NULL;
+
+int mv2_size_allreduce_tuning_table = 0;
+mv2_allreduce_tuning_table *mv2_allreduce_thresholds_table = NULL;
+
+
+
+
+
+static int MPIR_Allreduce_mcst_reduce_two_level_helper_MV2( void *sendbuf,
+                             void *recvbuf,
+                             int count,
+                             MPI_Datatype datatype,
+                             MPI_Op op, MPI_Comm comm)
+{ 
+    return 0;
+}
+
+static  int MPIR_Allreduce_mcst_reduce_redscat_gather_MV2( void *sendbuf,
+                             void *recvbuf,
+                             int count,
+                             MPI_Datatype datatype,
+                             MPI_Op op, MPI_Comm  comm)
+{
+    return 0;
+}
+
+static  int MPIR_Allreduce_reduce_p2p_MV2( void *sendbuf,
+                             void *recvbuf,
+                             int count,
+                             MPI_Datatype datatype,
+                             MPI_Op op, MPI_Comm  comm)
+{
+    mpi_coll_reduce_fun(sendbuf,recvbuf,count,datatype,op,0,comm);
+    return MPI_SUCCESS;
+}
+
+static  int MPIR_Allreduce_reduce_shmem_MV2( void *sendbuf,
+                             void *recvbuf,
+                             int count,
+                             MPI_Datatype datatype,
+                             MPI_Op op, MPI_Comm  comm)
+{
+    mpi_coll_reduce_fun(sendbuf,recvbuf,count,datatype,op,0,comm);
+    return MPI_SUCCESS;
+}
+
+#define MPIR_Allreduce_pt2pt_rd_MV2 smpi_coll_tuned_allreduce_rdb
+#define MPIR_Allreduce_pt2pt_rs_MV2 smpi_coll_tuned_allreduce_rab1
+
