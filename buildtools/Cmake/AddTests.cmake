@@ -370,12 +370,12 @@ IF(NOT enable_memcheck)
     IF(HAVE_TRACING)
       ADD_TESH(tesh-smpi-replay-ti-tracing       --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/pingpong --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/pingpong TI_output.tesh)
     ENDIF()
-    FOREACH (GATHER_COLL default ompi mpich ompi_basic_linear ompi_linear_sync ompi_binomial)
+    FOREACH (GATHER_COLL default ompi mpich ompi_basic_linear ompi_linear_sync ompi_binomial mvapich2)
       ADD_TESH(tesh-smpi-gather-coll-${GATHER_COLL} --cfg smpi/gather:${GATHER_COLL} --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/gather --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/gather gather_coll.tesh)
     ENDFOREACH()
     FOREACH (ALLGATHER_COLL default  2dmesh 3dmesh bruck GB loosely_lr
                             NTSLR NTSLR_NB pair rdb  rhv ring SMP_NTS
-                            smp_simple spreading_simple ompi mpich ompi_neighborexchange)
+                            smp_simple spreading_simple ompi mpich ompi_neighborexchange mvapich2)
       ADD_TESH(tesh-smpi-allgather-coll-${ALLGATHER_COLL} --cfg smpi/allgather:${ALLGATHER_COLL} --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/allgather --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/allgather allgather_coll.tesh)
     ENDFOREACH()
     FOREACH (ALLGATHERV_COLL default GB pair ring ompi mpich ompi_neighborexchange ompi_bruck mpich_rdb mpich_ring)
@@ -392,7 +392,7 @@ IF(NOT enable_memcheck)
     FOREACH (ALLTOALL_COLL 2dmesh 3dmesh pair pair_one_barrier pair_light_barrier
                            pair_mpi_barrier rdb ring ring_light_barrier
                            ring_mpi_barrier ring_one_barrier
-                           bruck basic_linear ompi mpich)
+                           bruck basic_linear ompi mpich mvapich2)
       ADD_TESH(tesh-smpi-alltoall-coll-${ALLTOALL_COLL} --cfg smpi/alltoall:${ALLTOALL_COLL} --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/alltoall --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/alltoall alltoall_coll.tesh)
     ENDFOREACH()
     FOREACH (ALLTOALLV_COLL default pair pair_light_barrier pair_mpi_barrier

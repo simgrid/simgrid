@@ -41,6 +41,7 @@ COLL_APPLY(action, COLL_GATHER_SIG, ompi_basic_linear) COLL_sep \
 COLL_APPLY(action, COLL_GATHER_SIG, ompi_binomial) COLL_sep \
 COLL_APPLY(action, COLL_GATHER_SIG, ompi_linear_sync) COLL_sep \
 COLL_APPLY(action, COLL_GATHER_SIG, mpich) COLL_sep \
+COLL_APPLY(action, COLL_GATHER_SIG, mvapich2) COLL_sep \
 COLL_APPLY(action, COLL_GATHER_SIG, automatic)
 
 
@@ -72,6 +73,7 @@ COLL_APPLY(action, COLL_ALLGATHER_SIG, smp_simple) COLL_sep \
 COLL_APPLY(action, COLL_ALLGATHER_SIG, spreading_simple) COLL_sep \
 COLL_APPLY(action, COLL_ALLGATHER_SIG, ompi) COLL_sep \
 COLL_APPLY(action, COLL_ALLGATHER_SIG, ompi_neighborexchange) COLL_sep \
+COLL_APPLY(action, COLL_ALLGATHER_SIG, mvapich2) COLL_sep \
 COLL_APPLY(action, COLL_ALLGATHER_SIG, mpich) COLL_sep \
 COLL_APPLY(action, COLL_ALLGATHER_SIG, automatic)
 
@@ -139,7 +141,7 @@ COLL_ALLREDUCES(COLL_PROTO, COLL_NOsep)
 #define COLL_ALLTOALLS(action, COLL_sep) \
 COLL_APPLY(action, COLL_ALLTOALL_SIG, 2dmesh) COLL_sep \
 COLL_APPLY(action, COLL_ALLTOALL_SIG, 3dmesh) COLL_sep \
-COLL_NOTHING(COLL_APPLY(action, COLL_ALLTOALL_SIG, bruck) COLL_sep) \
+COLL_APPLY(action, COLL_ALLTOALL_SIG, bruck) COLL_sep \
 COLL_APPLY(action, COLL_ALLTOALL_SIG, pair) COLL_sep \
 COLL_APPLY(action, COLL_ALLTOALL_SIG, pair_light_barrier) COLL_sep \
 COLL_APPLY(action, COLL_ALLTOALL_SIG, pair_mpi_barrier) COLL_sep \
@@ -149,6 +151,7 @@ COLL_APPLY(action, COLL_ALLTOALL_SIG, ring) COLL_sep \
 COLL_APPLY(action, COLL_ALLTOALL_SIG, ring_light_barrier) COLL_sep \
 COLL_APPLY(action, COLL_ALLTOALL_SIG, ring_mpi_barrier) COLL_sep \
 COLL_APPLY(action, COLL_ALLTOALL_SIG, ring_one_barrier) COLL_sep \
+COLL_APPLY(action, COLL_ALLTOALL_SIG, mvapich2) COLL_sep \
 COLL_APPLY(action, COLL_ALLTOALL_SIG, ompi) COLL_sep \
 COLL_APPLY(action, COLL_ALLTOALL_SIG, mpich) COLL_sep \
 COLL_APPLY(action, COLL_ALLTOALL_SIG, automatic)

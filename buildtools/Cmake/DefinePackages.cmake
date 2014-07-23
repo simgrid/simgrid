@@ -46,6 +46,7 @@ set(EXTRA_DIST
   src/smpi/colls/coll_tuned_topo.h
   src/smpi/colls/colls.h
   src/smpi/colls/colls_private.h
+  src/smpi/colls/smpi_mvapich2_selector.h
   src/smpi/private.h
   src/smpi/smpi_mpi_dt_private.h
   src/surf/cpu_cas01.hpp
@@ -220,6 +221,7 @@ set(SMPI_SRC
   src/smpi/colls/smpi_automatic_selector.c
   src/smpi/colls/smpi_mpich_selector.c
   src/smpi/colls/smpi_openmpi_selector.c
+  src/smpi/colls/smpi_mvapich2_selector.c
   src/smpi/instr_smpi.c
   src/smpi/smpi_base.c
   src/smpi/smpi_bench.c
