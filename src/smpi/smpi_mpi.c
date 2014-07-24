@@ -830,6 +830,16 @@ int MPI_Win_create( void *base, MPI_Aint size, int disp_unit, MPI_Info info, MPI
   return PMPI_Win_create( base, size, disp_unit, info, comm,win);
 }
 
+int MPI_Win_set_name(MPI_Win  win, char * name)
+{
+  return PMPI_Win_set_name(win, name);
+}
+
+int MPI_Win_get_name(MPI_Win  win, char * name, int* len)
+{
+  return PMPI_Win_get_name(win,name,len);
+}
+
 int MPI_Info_create( MPI_Info *info){
   return PMPI_Info_create( info);
 }

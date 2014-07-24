@@ -1959,7 +1959,10 @@ int PMPI_Scatter(void *sendbuf, int sendcount, MPI_Datatype sendtype,
   } else if (((smpi_comm_rank(comm)==root) && (sendtype == MPI_DATATYPE_NULL))
              || ((recvbuf !=MPI_IN_PLACE) && (recvtype == MPI_DATATYPE_NULL))) {
     retval = MPI_ERR_TYPE;
-  } else {
+  } else if ((sendbuf == recvbuf) ||
+      ((smpi_comm_rank(comm)==root) && sendcount>0 && (sendbuf == NULL))){
+    retval = MPI_ERR_BUFFER;
+  }else {
 
     if (recvbuf == MPI_IN_PLACE) {
         recvtype=sendtype;
@@ -2727,6 +2730,35 @@ int PMPI_Win_free( MPI_Win* win){
     retval=smpi_mpi_win_free(win);
   }
   smpi_bench_begin();
+  return retval;
+}
+
+int PMPI_Win_set_name(MPI_Win  win, char * name)
+{
+  int retval = 0;
+  if (win == MPI_WIN_NULL)  {
+    retval = MPI_ERR_TYPE;
+  } else if (name == NULL)  {
+    retval = MPI_ERR_ARG;
+  } else {
+    smpi_mpi_win_set_name(win, name);
+    retval = MPI_SUCCESS;
+  }
+  return retval;
+}
+
+int PMPI_Win_get_name(MPI_Win  win, char * name, int* len)
+{
+  int retval = 0;
+
+  if (win == MPI_WIN_NULL)  {
+    retval = MPI_ERR_TYPE;
+  } else if (name == NULL)  {
+    retval = MPI_ERR_ARG;
+  } else {
+    smpi_mpi_win_get_name(win, name, len);
+    retval = MPI_SUCCESS;
+  }
   return retval;
 }
 

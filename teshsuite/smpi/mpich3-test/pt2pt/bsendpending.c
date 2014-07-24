@@ -66,13 +66,13 @@ int main( int argc, char *argv[] )
 	    }
 
 	    /* Initiate the bsends */
-	    MPI_Bsend( msg1, msgsize, MPI_CHAR, dest, 0, comm );
-	    MPI_Bsend( msg2, msgsize, MPI_CHAR, dest, 0, comm );
-	    MPI_Bsend( msg3, msgsize, MPI_CHAR, dest, 0, comm );
+	    MPI_Bsend( msg1, msgsize, MPI_UNSIGNED_CHAR, dest, 0, comm );
+	    MPI_Bsend( msg2, msgsize, MPI_UNSIGNED_CHAR, dest, 0, comm );
+	    MPI_Bsend( msg3, msgsize, MPI_UNSIGNED_CHAR, dest, 0, comm );
 
 	    /* Synchronize with our partner */
-	    MPI_Sendrecv( 0, 0, MPI_CHAR, dest, 10, 
-			  0, 0, MPI_CHAR, dest, 10, comm, MPI_STATUS_IGNORE );
+	    MPI_Sendrecv( NULL, 0, MPI_UNSIGNED_CHAR, dest, 10,
+			  NULL, 0, MPI_UNSIGNED_CHAR, dest, 10, comm, MPI_STATUS_IGNORE );
 
 	    /* Detach the buffers.  There should be pending operations */
 	    MPI_Buffer_detach ( &bufp, &outsize );
@@ -96,17 +96,17 @@ int main( int argc, char *argv[] )
 	    }
 
 	    /* Wait for the synchronize */
-	    MPI_Sendrecv( 0, 0, MPI_CHAR, source, 10, 
-			  0, 0, MPI_CHAR, source, 10, comm, MPI_STATUS_IGNORE );
+	    MPI_Sendrecv( NULL, 0, MPI_UNSIGNED_CHAR, source, 10,
+			  NULL, 0, MPI_UNSIGNED_CHAR, source, 10, comm, MPI_STATUS_IGNORE );
 
 	    /* Wait 2 seconds */
 	    tstart = MPI_Wtime();
 	    while (MPI_Wtime() - tstart < 2.0) ;
 
 	    /* Now receive the messages */
-	    MPI_Recv( msg1, msgsize, MPI_CHAR, source, 0, comm, &status1 );
-	    MPI_Recv( msg2, msgsize, MPI_CHAR, source, 0, comm, &status2 );
-	    MPI_Recv( msg3, msgsize, MPI_CHAR, source, 0, comm, &status3 );
+	    MPI_Recv( msg1, msgsize, MPI_UNSIGNED_CHAR, source, 0, comm, &status1 );
+	    MPI_Recv( msg2, msgsize, MPI_UNSIGNED_CHAR, source, 0, comm, &status2 );
+	    MPI_Recv( msg3, msgsize, MPI_UNSIGNED_CHAR, source, 0, comm, &status3 );
 
 	    /* Check that we have the correct data */
 	    for (i=0; i<msgsize; i++) {

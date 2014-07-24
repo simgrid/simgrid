@@ -80,7 +80,7 @@ pairtypes[] =
     parse_args(argc, argv);
 
     for (i=0; pairtypes[i].atype != (MPI_Datatype) -1; i++) {
-	int atype_size, ptype_size, stype_size, handbuilt_extent=0;
+	int atype_size, ptype_size, stype_size, handbuilt_extent;
 	MPI_Aint ptype_extent, stype_extent, dummy_lb;
 
 	types[0] = pairtypes[i].atype;
@@ -113,8 +113,8 @@ pairtypes[] =
 
 	    if (verbose) fprintf(stderr,
 				 "extent of %s (%d) does not match extent of either hand-built MPI struct (%d) or equivalent C struct (%d)\n",
-				 pairtypes[i].name, (int) stype_extent,
-				 (int) ptype_extent,
+				 pairtypes[i].name, (int) ptype_extent,
+				 (int) stype_extent,
 				 handbuilt_extent);
 	}
 	MPI_Type_free( &stype );

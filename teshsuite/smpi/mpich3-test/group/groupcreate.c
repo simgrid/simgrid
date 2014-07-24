@@ -41,7 +41,7 @@ int main( int argc, char **argv )
 	else {
 	    /* Check that the group was created (and that any errors were
 	       caught) */
-	    MPI_Group_size( group_array[i], &group_size );
+	    rc = MPI_Group_size( group_array[i], &group_size );
 	    if (group_size != size) {
 		fprintf( stderr, "Group number %d not correct (size = %d)\n", 
 			 i, size );

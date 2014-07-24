@@ -10,6 +10,7 @@ gaddress 1
 #transpose-pack 1
 #slice-pack 1
 #struct-pack 1
+#structpack2 1
 typecommit 1
 typename 1
 typefree 1
@@ -18,6 +19,8 @@ zeroparms 1
 #needs  MPI_Type_create_resized
 tresized 2
 #tresized2 2
+sendrecvt2 2
+sendrecvt4 2
 #needs MPI_Type_match_size
 #tmatchsize 1
 tfree 2
@@ -64,5 +67,12 @@ struct-verydeep 1
 hindexed_block 1 mpiversion=3.0
 hindexed_block_contents 1 mpiversion=3.0
 longdouble 1
+#We still have some alignment issues
+#dataalign 2
+#Needs MPI_Win_create_dynamic MPI_Win_attach MPI_Win_flush
+#get-struct 2
 #large-count 1 mpiversion=3.0 xfail=ticket1767
+#large_type 1 mpiversion=3.0
+#large_type_sendrec 2 arg=31 mpiversion=3.0
+#large_type_sendrec 2 arg=32 mpiversion=3.0 timeLimit=360
 cxx-types 1 mpiversion=3.0

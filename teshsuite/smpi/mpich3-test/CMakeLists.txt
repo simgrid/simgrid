@@ -1,6 +1,6 @@
 set(tesh_files
   ${tesh_files}
-  
+
   PARENT_SCOPE
   )
 set(xml_files
@@ -13,9 +13,10 @@ set(examples_src
   )
 set(bin_files
   ${bin_files}
+  ${CMAKE_CURRENT_SOURCE_DIR}/generate_report
   PARENT_SCOPE
   )
-  
+
 #set(stdo_std_smpi
 #  ${CMAKE_CURRENT_SOURCE_DIR}/topol/cartmap.std
 #  ${CMAKE_CURRENT_SOURCE_DIR}/topol/graphtest.std
@@ -41,10 +42,12 @@ set(txt_files
   ${CMAKE_CURRENT_SOURCE_DIR}/checktests
   ${CMAKE_CURRENT_SOURCE_DIR}/generate_report
   ${CMAKE_CURRENT_SOURCE_DIR}/util/mtest.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/util/dtypes.c
   ${CMAKE_CURRENT_SOURCE_DIR}/util/mtest_manual.c
   ${CMAKE_CURRENT_SOURCE_DIR}/f77/testlist
   ${CMAKE_CURRENT_SOURCE_DIR}/f90/testlist
   ${CMAKE_CURRENT_SOURCE_DIR}/include/mpitestconf.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/include/dtypes.h
   ${CMAKE_CURRENT_SOURCE_DIR}/include/mpitest.h
   PARENT_SCOPE)
 

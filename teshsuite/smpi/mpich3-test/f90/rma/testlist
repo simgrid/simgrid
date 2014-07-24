@@ -5,7 +5,7 @@ winfencef90 4
 wingetf90 5
 #winscale2f90 4
 #winerrf90 1
-#winnamef90 1
+winnamef90 1
 #wingroupf90 4
 winaccf90 4
 #c2f2cwinf90 1

@@ -42,7 +42,14 @@ int MCS_Mutex_create(int tail_rank, MPI_Comm comm, MCS_Mutex * hdl_out)
     MPI_Win_allocate_shared(2*sizeof(int), sizeof(int), MPI_INFO_NULL,
                             hdl->comm, &hdl->base, &hdl->window);
 #else
-    MPI_Win_allocate(2*sizeof(int), sizeof(int), MPI_INFO_NULL, hdl->comm,
+#ifdef USE_WIN_ALLOC_SHM
+    MPI_Info_create(&hdl->win_info);
+    MPI_Info_set(hdl->win_info, "alloc_shm", "true");
+#else
+    MPI_Info_create(&hdl->win_info);
+    MPI_Info_set(hdl->win_info, "alloc_shm", "false");
+#endif
+    MPI_Win_allocate(2*sizeof(int), sizeof(int), hdl->win_info, hdl->comm,
                      &hdl->base, &hdl->window);
 #endif
 
@@ -73,6 +80,9 @@ int MCS_Mutex_free(MCS_Mutex * hdl_ptr)
 
     MPI_Win_free(&hdl->window);
     MPI_Comm_free(&hdl->comm);
+#ifndef USE_WIN_SHARED
+    MPI_Info_free(&hdl->win_info);
+#endif
 
     free(hdl);
     hdl_ptr = NULL;

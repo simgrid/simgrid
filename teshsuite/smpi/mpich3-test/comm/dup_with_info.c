@@ -28,6 +28,7 @@ int run_tests(MPI_Comm comm)
     MPI_Barrier(comm);
 
     /* Can we communicate with this new communicator? */
+    dest = MPI_PROC_NULL;
     if (rank == 0) {
         dest = size - 1;
         a = rank;

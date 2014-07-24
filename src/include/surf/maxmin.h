@@ -9,8 +9,10 @@
 
 #include "portable.h"
 #include "xbt/misc.h"
+#include "xbt/asserts.h"
 #include "surf/datatypes.h"
 #include <math.h>
+//#include <float.h>
 
 
 /** @addtogroup SURF_lmm 
@@ -87,9 +89,13 @@
 
 extern double sg_maxmin_precision;
 extern double sg_surf_precision;
-
+ 
 static XBT_INLINE void double_update(double *variable, double value, double precision)
 {
+  //printf("Updating %g -= %g +- %g\n",*variable,value,precision);
+  //xbt_assert(value==0  || value>precision);
+  //Check that precision is higher than the machine-dependent size of the mantissa. If not, brutal rounding  may happen, and the precision mechanism is not active... 
+  //xbt_assert(*variable< (2<<DBL_MANT_DIG)*precision && FLT_RADIX==2);
   *variable -= value;
   if (*variable < precision)
     *variable = 0.0;

@@ -1,7 +1,6 @@
-#needs MPI_Errhandler_set MPI_Type_get_name
-#allred 4
-#allred 7
-#allred 4 arg=100
+allred 4
+allred 7
+allred 4 arg=100
 allredmany 4
 allred2 4
 allred3 10
@@ -141,6 +140,7 @@ nonblocking3 1 mpiversion=3.0
 nonblocking3 4 mpiversion=3.0
 nonblocking3 5 mpiversion=3.0
 nonblocking3 10 timeLimit=600 mpiversion=3.0
+nonblocking4 4 mpiversion=3.0
 iallred 2 mpiversion=3.0
 # ibarrier will hang forever if it fails, but will complete quickly if it
 # succeeds

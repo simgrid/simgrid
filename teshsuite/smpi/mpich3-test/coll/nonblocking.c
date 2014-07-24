@@ -12,13 +12,6 @@
 #include "mpi.h"
 #include <stdio.h>
 #include <stdlib.h>
-#include "mpitest.h"
-/* USE_STRICT_MPI may be defined in mpitestconf.h */
-#include "mpitestconf.h"
-
-#if !defined(USE_STRICT_MPI) && defined(MPICH)
-#define TEST_NBC_ROUTINES 1
-#endif
 
 #define NUM_INTS (2)
 
@@ -34,6 +27,7 @@
 int main(int argc, char **argv)
 {
     int errs = 0;
+    int i;
     int rank, size;
     int *sbuf = NULL;
     int *rbuf = NULL;
@@ -41,12 +35,9 @@ int main(int argc, char **argv)
     int *rcounts = NULL;
     int *sdispls = NULL;
     int *rdispls = NULL;
-    MPI_Comm comm;
-#if defined(TEST_NBC_ROUTINES)
-    int i;
     int *types = NULL;
+    MPI_Comm comm;
     MPI_Request req;
-#endif
 
     /* intentionally not using MTest_Init/MTest_Finalize in order to make it
      * easy to take this test and use it as an NBC sanity test outside of the
@@ -58,7 +49,6 @@ int main(int argc, char **argv)
     MPI_Comm_size(comm, &size);
     MPI_Comm_rank(comm, &rank);
 
-#if defined(TEST_NBC_ROUTINES)
     /* enough space for every process to contribute at least NUM_INTS ints to any
      * collective operation */
     sbuf = malloc(NUM_INTS*size*sizeof(int));
@@ -138,8 +128,6 @@ int main(int argc, char **argv)
 
     MPI_Iexscan(sbuf, rbuf, NUM_INTS, MPI_INT, MPI_SUM, comm, &req);
     MPI_Wait(&req, MPI_STATUS_IGNORE);
-
-#endif
 
     if (sbuf) free(sbuf);
     if (rbuf) free(rbuf);

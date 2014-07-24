@@ -1,4 +1,4 @@
-#Needs Win set name, win_get_name needed
+#Needs win_create_keyval win_set_attr, win_get_attr
 #winname 2
 allocmem 2
 putfence1 4
@@ -86,6 +86,7 @@ window_creation 2
 #put_bottom 2
 #win_flavors 4 mpiversion=3.0
 #manyrma2 2 timeLimit=500
+manyrma3 2
 #win_shared 4 mpiversion=3.0
 #win_shared_noncontig 4 mpiversion=3.0
 #win_shared_noncontig_put 4 mpiversion=3.0
@@ -118,5 +119,16 @@ window_creation 2
 #linked_list_bench_lock_excl 4 mpiversion=3.0
 #linked_list_bench_lock_shr 4 mpiversion=3.0
 #linked_list_bench_lock_shr_nocheck 4 mpiversion=3.0
+#badrma 2 mpiversion=3.0
+#acc-loc 4
+#fence_shm 2 mpiversion=3.0
 #mutex_bench 4 mpiversion=3.0
 #mutex_bench_shared 4 mpiversion=3.0
+
+## This test is not strictly correct.  This was meant to test out the
+## case when MPI_Test is not nonblocking.  However, we ended up
+## assuming that MPI_Win_lock will be nonblocking.  That is not
+## specified by the standard and might not be true.  Commenting this
+## out till be find a better way to test the original problem with
+## MPI_Test.
+# nb_test 2 mpiversion=3.0 xfail=ticket1910

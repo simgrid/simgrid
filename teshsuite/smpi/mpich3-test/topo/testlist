@@ -7,6 +7,8 @@ cartcreates 4
 #need MPI_Dims_create
 #dims1 4
 #dims2 1
+#dims3 1
+#dims4 1
 #need MPI_Error_class, MPI_Comm_remote_size, MPI_Graph_map
 #graphmap1 4
 #need MPI_Topo_test, MPI_Cart_create

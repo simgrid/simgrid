@@ -46,6 +46,7 @@ set(EXTRA_DIST
   src/smpi/colls/coll_tuned_topo.h
   src/smpi/colls/colls.h
   src/smpi/colls/colls_private.h
+  src/smpi/colls/smpi_mvapich2_selector_stampede.h
   src/smpi/private.h
   src/smpi/smpi_mpi_dt_private.h
   src/surf/cpu_cas01.hpp
@@ -166,6 +167,7 @@ set(SMPI_SRC
   src/smpi/colls/allreduce-smp-rsag-lr.c
   src/smpi/colls/allreduce-smp-rsag-rab.c
   src/smpi/colls/allreduce-smp-rsag.c
+  src/smpi/colls/allreduce-mvapich-rs.c
   src/smpi/colls/alltoall-2dmesh.c
   src/smpi/colls/alltoall-3dmesh.c
 #  src/smpi/colls/alltoall-bruck.c
@@ -189,6 +191,7 @@ set(SMPI_SRC
   src/smpi/colls/alltoallv-ring-one-barrier.c
   src/smpi/colls/alltoallv-ring.c
   src/smpi/colls/barrier-ompi.c
+  src/smpi/colls/barrier-mvapich2-pair.c
   src/smpi/colls/bcast-NTSB.c
   src/smpi/colls/bcast-NTSL-Isend.c
   src/smpi/colls/bcast-NTSL.c
@@ -220,6 +223,7 @@ set(SMPI_SRC
   src/smpi/colls/smpi_automatic_selector.c
   src/smpi/colls/smpi_mpich_selector.c
   src/smpi/colls/smpi_openmpi_selector.c
+  src/smpi/colls/smpi_mvapich2_selector.c
   src/smpi/instr_smpi.c
   src/smpi/smpi_base.c
   src/smpi/smpi_bench.c
@@ -1029,6 +1033,7 @@ set(TESHSUITE_CMAKEFILES_TXT
   teshsuite/msg/CMakeLists.txt
   teshsuite/msg/get_sender/CMakeLists.txt
   teshsuite/msg/host_on_off/CMakeLists.txt
+  teshsuite/msg/host_on_off_processes/CMakeLists.txt
   teshsuite/msg/pid/CMakeLists.txt
   teshsuite/msg/process/CMakeLists.txt
   teshsuite/msg/process_join/CMakeLists.txt
@@ -1099,6 +1104,7 @@ set(TESHSUITE_CMAKEFILES_TXT
   teshsuite/xbt/heap_bench/CMakeLists.txt
   teshsuite/xbt/log_large/CMakeLists.txt
   teshsuite/xbt/log_usage/CMakeLists.txt
+  teshsuite/xbt/mallocator/CMakeLists.txt
   teshsuite/xbt/mmalloc/CMakeLists.txt
   teshsuite/xbt/parallel_log/CMakeLists.txt
   teshsuite/xbt/parmap_bench/CMakeLists.txt

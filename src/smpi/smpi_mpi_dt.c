@@ -182,12 +182,20 @@ MPI_Datatype smpi_datatype_dup(MPI_Datatype datatype)
 int smpi_datatype_extent(MPI_Datatype datatype, MPI_Aint * lb,
                          MPI_Aint * extent)
 {
+  if(datatype == MPI_DATATYPE_NULL){
+    *lb=0;
+    *extent=0;
+    return MPI_SUCCESS;
+  }
   *lb = datatype->lb;
   *extent = datatype->ub - datatype->lb;
   return MPI_SUCCESS;
 }
 
 MPI_Aint smpi_datatype_get_extent(MPI_Datatype datatype){
+  if(datatype == MPI_DATATYPE_NULL){
+    return 0;
+  }
   return datatype->ub - datatype->lb;
 }
 

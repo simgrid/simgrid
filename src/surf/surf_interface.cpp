@@ -672,10 +672,12 @@ void Model::updateActionsState(double now, double delta)
 
 void Model::updateActionsStateLazy(double /*now*/, double /*delta*/)
 {
+ THROW_UNIMPLEMENTED;
 }
 
 void Model::updateActionsStateFull(double /*now*/, double /*delta*/)
 {
+  THROW_UNIMPLEMENTED;
 }
 
 /************

@@ -125,6 +125,7 @@ void Workstation::setState(e_surf_resource_state_t state){
   e_surf_resource_state_t old = Resource::getState();
   Resource::setState(state);
   surf_callback_emit(workstationStateChangedCallbacks, this, old, state);
+  p_cpu->setState(state);
 }
 
 int Workstation::getCore(){

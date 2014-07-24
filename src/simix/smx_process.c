@@ -69,7 +69,7 @@ void SIMIX_process_cleanup(smx_process_t process)
         SIMIX_comm_destroy(action);
       else
         XBT_DEBUG("Don't destroy it since it's a detached comm");
-      
+
     }
     else if (action->comm.dst_proc == process){
       XBT_DEBUG("Found an unfinished recv comm %p, state %d, src = %p, dst = %p",

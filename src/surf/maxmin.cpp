@@ -468,6 +468,7 @@ static XBT_INLINE void saturated_variable_set_update(
     dyn_light_t saturated_constraint_set,
     lmm_system_t sys)
 {
+  /* Add active variables (i.e. variables that need to be set) from the set of constraints to saturate (cnst_light_tab)*/ 
   lmm_constraint_light_t cnst = NULL;
   void *_elem;
   lmm_element_t elem = NULL;
@@ -562,7 +563,7 @@ void lmm_print(lmm_system_t sys)
     }
     XBT_DEBUG("%s", trace_buf);
     trace_buf[0] = '\000';
-    xbt_assert(!double_positive(sum - cnst->bound, sg_maxmin_precision),
+    xbt_assert(!double_positive(sum - cnst->bound, cnst->bound*sg_maxmin_precision),
                 "Incorrect value (%f is not smaller than %f): %g",
                 sum, cnst->bound, sum - cnst->bound);
   }
@@ -574,7 +575,7 @@ void lmm_print(lmm_system_t sys)
     if (var->bound > 0) {
       XBT_DEBUG("'%d'(%f) : %f (<=%f)", var->id_int, var->weight, var->value,
              var->bound);
-      xbt_assert(!double_positive(var->value - var->bound, sg_maxmin_precision),
+      xbt_assert(!double_positive(var->value - var->bound, var->bound*sg_maxmin_precision),
                   "Incorrect value (%f is not smaller than %f",
                   var->value, var->bound);
     } else {
@@ -603,7 +604,7 @@ void lmm_solve(lmm_system_t sys)
   XBT_IN("(sys=%p)", sys);
 
   /*
-   * Compute Usage and store the variables that reach the maximum.
+   * Compute Usage and store the variables that reach the maximum. If selective_update_active is true, only constraints that changed are considered. Otherwise all constraints with active actions are considered.
    */
   cnst_list =
       sys->
@@ -611,7 +612,7 @@ void lmm_solve(lmm_system_t sys)
       &(sys->active_constraint_set);
 
   XBT_DEBUG("Active constraints : %d", xbt_swag_size(cnst_list));
-  /* Init: Only modified code portions */
+  /* Init: Only modified code portions: reset the value of active variables */
   xbt_swag_foreach(_cnst, cnst_list) {
 	cnst = (lmm_constraint_t)_cnst;
     elem_list = &(cnst->element_set);
@@ -632,9 +633,9 @@ void lmm_solve(lmm_system_t sys)
 
   xbt_swag_foreach_safe(_cnst, _cnst_next, cnst_list) {
 	cnst = (lmm_constraint_t)_cnst;
-    /* INIT */
+    /* INIT: Collect constraints that actually need to be saturated (i.e remaining  and usage are strictly positive) into cnst_light_tab. */
     cnst->remaining = cnst->bound;
-    if (cnst->remaining == 0)
+    if (!double_positive(cnst->remaining, cnst->bound*sg_maxmin_precision))
       continue;
     cnst->usage = 0;
     elem_list = &(cnst->element_set);
@@ -655,7 +656,7 @@ void lmm_solve(lmm_system_t sys)
           sys->keep_track->push_back(*action);
       }
     }
-    XBT_DEBUG("Constraint Usage '%d' : %f", cnst->id_int, cnst->usage);
+    XBT_DEBUG("Constraint '%d' usage: %f remaining: %f ", cnst->id_int, cnst->usage, cnst->remaining);
     /* Saturated constraints update */
 
     if(cnst->usage > 0) {
@@ -664,6 +665,7 @@ void lmm_solve(lmm_system_t sys)
       cnst_light_tab[cnst_light_num].remaining_over_usage = cnst->remaining / cnst->usage;
       saturated_constraint_set_update(cnst_light_tab[cnst_light_num].remaining_over_usage,
         cnst_light_num, saturated_constraint_set, &min_usage);
+      xbt_assert(cnst->active_element_set.count>0, "There is no sense adding a constraint that has no active element!" );
       cnst_light_num++;
     }
   }
@@ -682,8 +684,8 @@ void lmm_solve(lmm_system_t sys)
       var = (lmm_variable_t)_var;
       if (var->weight <= 0.0)
         DIE_IMPOSSIBLE;
-      /* First check if some of these variables have reach their upper
-         bound and update min_usage accordingly. */
+      /* First check if some of these variables could reach their upper
+         bound and update min_bound accordingly. */
       XBT_DEBUG
           ("var=%d, var->bound=%f, var->weight=%f, min_usage=%f, var->bound*var->weight=%f",
            var->id_int, var->bound, var->weight, min_usage,
@@ -702,15 +704,18 @@ void lmm_solve(lmm_system_t sys)
       int i;
 
       if (min_bound < 0) {
+	//If no variable could reach its bound, deal iteratively the constraints usage ( at worst one constraint is saturated at each cycle) 
         var->value = min_usage / var->weight;
         XBT_DEBUG("Setting %p (%d) value to %f\n", var, var->id_int, var->value);
       } else {
+	//If there exist a variable that can reach its bound, only update it (and other with the same bound) for now.
         if (min_bound == var->bound) {
           var->value = var->bound;
           XBT_DEBUG("Setting %p (%d) value to %f\n", var, var->id_int, var->value);
         }
         else {
-          XBT_DEBUG("Do not consider %p (%d)\n", var, var->id_int);
+	  // Variables which bound is different are not considered for this cycle, but they will be afterwards.  
+          XBT_DEBUG("Do not consider %p (%d) \n", var, var->id_int);
           xbt_swag_remove(var, var_list);
           continue;
         }
@@ -719,19 +724,20 @@ void lmm_solve(lmm_system_t sys)
              min_usage, var->id_int, var->weight, var->id_int, var->value);
 
 
-      /* Update usage */
-
+      /* Update the usage of contraints where this variable is involved */
       for (i = 0; i < var->cnsts_number; i++) {
         elem = &var->cnsts[i];
         cnst = elem->constraint;
         if (cnst->shared) {
-          double_update(&(cnst->remaining), elem->value * var->value, sg_maxmin_precision);
+	  //Remember: shared constraints require that sum(elem->value * var->value) < cnst->bound
+          double_update(&(cnst->remaining),  elem->value * var->value, cnst->bound*sg_maxmin_precision);
           double_update(&(cnst->usage), elem->value / var->weight, sg_maxmin_precision);
-          if(cnst->usage<=0 || cnst->remaining<=0) {
+	  //If the constraint is saturated, remove it from the set of active constraints (light_tab)
+          if(!double_positive(cnst->usage,sg_maxmin_precision) || !double_positive(cnst->remaining,cnst->bound*sg_maxmin_precision)) {
             if (cnst->cnst_light) {
               int index = (cnst->cnst_light-cnst_light_tab);
-              XBT_DEBUG("index: %d \t cnst_light_num: %d \t || \t cnst: %p \t cnst->cnst_light: %p \t cnst_light_tab: %p ",
-                  index,cnst_light_num, cnst, cnst->cnst_light, cnst_light_tab);
+              XBT_DEBUG("index: %d \t cnst_light_num: %d \t || \t cnst: %p \t cnst->cnst_light: %p \t cnst_light_tab: %p usage: %f remaining: %f bound: %f  ",
+			index,cnst_light_num, cnst, cnst->cnst_light, cnst_light_tab, cnst->usage, cnst->remaining, cnst->bound);
               cnst_light_tab[index]=cnst_light_tab[cnst_light_num-1];
               cnst_light_tab[index].cnst->cnst_light = &cnst_light_tab[index];
               cnst_light_num--;
@@ -742,21 +748,23 @@ void lmm_solve(lmm_system_t sys)
           }
           make_elem_inactive(elem);
         } else {
+	  //Remember: non-shared constraints only require that max(elem->value * var->value) < cnst->bound
           cnst->usage = 0.0;
           make_elem_inactive(elem);
           elem_list = &(cnst->element_set);
           xbt_swag_foreach(_elem, elem_list) {
         	elem = (lmm_element_t)_elem;
-            if (elem->variable->weight <= 0) break;
+		if (elem->variable->weight <= 0) break; //Found an inactive variable -> no more active variables
             if (elem->variable->value > 0) continue;
             if (elem->value > 0)
               cnst->usage = MAX(cnst->usage, elem->value / elem->variable->weight);
           }
-          if (cnst->usage<=0 || cnst->remaining<=0) {
+	  //If the constraint is saturated, remove it from the set of active constraints (light_tab)
+          if(!double_positive(cnst->usage,sg_maxmin_precision) || !double_positive(cnst->remaining,cnst->bound*sg_maxmin_precision)) {
             if(cnst->cnst_light) {
               int index = (cnst->cnst_light-cnst_light_tab);
-              XBT_DEBUG("index: %d \t cnst_light_num: %d \t || \t cnst: %p \t cnst->cnst_light: %p \t cnst_light_tab: %p ",
-                  index,cnst_light_num, cnst, cnst->cnst_light, cnst_light_tab);
+              XBT_DEBUG("index: %d \t cnst_light_num: %d \t || \t cnst: %p \t cnst->cnst_light: %p \t cnst_light_tab: %p usage: %f remaining: %f bound: %f  ",
+			index,cnst_light_num, cnst, cnst->cnst_light, cnst_light_tab, cnst->usage, cnst->remaining, cnst->bound);
               cnst_light_tab[index]=cnst_light_tab[cnst_light_num-1];
               cnst_light_tab[index].cnst->cnst_light = &cnst_light_tab[index];
               cnst_light_num--;
@@ -764,6 +772,7 @@ void lmm_solve(lmm_system_t sys)
             }
           } else {
             cnst->cnst_light->remaining_over_usage = cnst->remaining / cnst->usage;
+            xbt_assert(cnst->active_element_set.count>0, "Should not keep a maximum constraint that has no active element! You want to check the maxmin precision and possible rounding effects." );
           }
         }
       }
@@ -775,12 +784,14 @@ void lmm_solve(lmm_system_t sys)
     min_bound = -1;
     saturated_constraint_set->pos = 0;
     int pos;
-    for(pos=0; pos<cnst_light_num; pos++)
+    for(pos=0; pos<cnst_light_num; pos++){
+    	xbt_assert(cnst_light_tab[pos].cnst->active_element_set.count>0, "Cannot saturate more a constraint that has no active element! You want to check the maxmin precision and possible rounding effects." );
       saturated_constraint_set_update(
           cnst_light_tab[pos].remaining_over_usage,
           pos,
           saturated_constraint_set,
           &min_usage);
+	}
 
     saturated_variable_set_update(  cnst_light_tab,
                                     saturated_constraint_set,
@@ -911,7 +922,7 @@ XBT_INLINE lmm_constraint_t lmm_get_next_active_constraint(lmm_system_t
 #ifdef HAVE_LATENCY_BOUND_TRACKING
 XBT_INLINE int lmm_is_variable_limited_by_latency(lmm_variable_t var)
 {
-  return (double_equals(var->bound, var->value, sg_maxmin_precision));
+  return (double_equals(var->bound, var->value, var->bound*sg_maxmin_precision));
 }
 #endif
 

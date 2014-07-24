@@ -6,8 +6,7 @@ wingetf   5
 #winscale2f 4
 #Needs win error handling
 #winerrf 1
-#Needs win set/get name
-#winnamef 1
+winnamef 1
 #Needs win get group
 #wingroupf 4
 winaccf 4

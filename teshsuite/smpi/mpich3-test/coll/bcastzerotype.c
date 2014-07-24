@@ -1,3 +1,10 @@
+/* -*- Mode: C; c-basic-offset:4 ; indent-tabs-mode:nil ; -*- */
+/*
+ *
+ *  (C) 2012 by Argonne National Laboratory.
+ *      See COPYRIGHT in top-level directory.
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
@@ -10,7 +17,7 @@ int main(int argc, char *argv[])
 {
     int i, type_size;
     MPI_Datatype type = MPI_DATATYPE_NULL;
-    int *buf = NULL;
+    char *buf = NULL;
     int wrank, wsize;
 
     MPI_Init(&argc, &argv);

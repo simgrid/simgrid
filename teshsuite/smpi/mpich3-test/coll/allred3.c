@@ -202,11 +202,11 @@ int main( int argc, char *argv[] )
 	free( buf );
 	free( bufout );
 
-	//MPI_Type_free( &mattype );
+	MPI_Type_free( &mattype );
 	MTestFreeComm( &comm );
     }
 
-   // MPI_Op_free( &op );
+    MPI_Op_free( &op );
 
     MTest_Finalize( errs );
     MPI_Finalize();
