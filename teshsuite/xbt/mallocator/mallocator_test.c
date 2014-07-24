@@ -27,7 +27,7 @@ static void pprint_elems(xbt_dynar_t elems) {
   element_t elem;
   printf("Elems:");
   xbt_dynar_foreach(elems, iter, elem) {
-    printf(" (%d,%ld)", elem->value, base_mallocator-elem);
+    printf(" (%d,%d)", elem->value, (int)(base_mallocator-elem)/(int)sizeof(int));
   }
   printf("\n");
 }
