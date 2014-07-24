@@ -743,7 +743,7 @@ void* mc_snapshot_read_region(void* addr, mc_mem_region_t region, void* target, 
 
   uintptr_t offset = (char*) addr - (char*) region->start_addr;
 
-  xbt_assert(addr >= region->start_addr && (char*) addr+size <= (char*)region->start_addr+region->size,
+  xbt_assert(mc_region_contain(region, addr),
     "Trying to read out of the region boundary.");
 
   // Linear memory region:

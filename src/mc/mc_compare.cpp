@@ -186,12 +186,10 @@ static int compare_areas_with_type(struct mc_compare_state& state,
         return compare_heap_area(addr_pointed1, addr_pointed2, snapshot1,
                                  snapshot2, NULL, type->subtype, pointer_level);
       }
+
       // The pointers are both in the current object R/W segment:
-      else if (addr_pointed1 > region1->start_addr
-               && (char *) addr_pointed1 <= (char *) region1->start_addr + region1->size) {
-        if (!
-            (addr_pointed2 > region2->start_addr
-             && (char *) addr_pointed2 <= (char *) region2->start_addr + region2->size))
+      else if (mc_region_contain(region1, addr_pointed1)) {
+        if (!mc_region_contain(region2, addr_pointed2))
           return 1;
         if (type->dw_type_id == NULL)
           return (addr_pointed1 != addr_pointed2);
@@ -202,6 +200,9 @@ static int compare_areas_with_type(struct mc_compare_state& state,
                                          type->subtype, pointer_level);
         }
       }
+
+      // TODO, We do not handle very well the case where
+      // it belongs to a different (non-heap) region from the current one.
 
       else {
         return (addr_pointed1 != addr_pointed2);
