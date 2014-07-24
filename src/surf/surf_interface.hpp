@@ -279,7 +279,6 @@ public:
    * @param constraint The lmm constraint associated to this Resource if it is part of a LMM component
    */
   Resource(ModelPtr model, const char *name, xbt_dict_t props, lmm_constraint_t constraint);
-
   /**
    * @brief Resource constructor
    *
@@ -645,40 +644,6 @@ protected:
   double m_finish; /**< finish time : this is modified during the run and fluctuates until the task is completed */
 
 private:
-  int resourceUsed(void *resource_id);
-
-  /**
-   * @brief Share the resources to the actions
-   *
-   * @param now [TODO]
-   * @return In how much time the next action may terminate
-   */
-  double shareResources(double now);
-
-  /**
-   * @brief Update the current action state
-   * @details [TODO]
-   *
-   * @param now [TODO]
-   * @param delta [TODO]
-   */
-  void updateActionsState(double now, double delta);
-
-  /**
-   * @brief Update the [TODO]
-   * @details [TODO]
-   *
-   * @param id [TODO]
-   * @param event_type [TODO]
-   * @param value [TODO]
-   * @param time [TODO]
-   */
-  void updateResourceState(void *id, tmgr_trace_event_t event_type,
-                                 double value, double time);
-
-  ActionLmmListPtr p_modifiedSet;
-  xbt_heap_t p_actionHeap;
-  int m_selectiveUpdate;
   bool m_failed;
   double m_start; /**< start time  */
   char *p_category;               /**< tracing category for categorized resource utilization monitoring */

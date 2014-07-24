@@ -1029,6 +1029,7 @@ set(TESHSUITE_CMAKEFILES_TXT
   teshsuite/msg/CMakeLists.txt
   teshsuite/msg/get_sender/CMakeLists.txt
   teshsuite/msg/host_on_off/CMakeLists.txt
+  teshsuite/msg/host_on_off_processes/CMakeLists.txt
   teshsuite/msg/pid/CMakeLists.txt
   teshsuite/msg/process/CMakeLists.txt
   teshsuite/msg/process_join/CMakeLists.txt
@@ -1099,6 +1100,7 @@ set(TESHSUITE_CMAKEFILES_TXT
   teshsuite/xbt/heap_bench/CMakeLists.txt
   teshsuite/xbt/log_large/CMakeLists.txt
   teshsuite/xbt/log_usage/CMakeLists.txt
+  teshsuite/xbt/mallocator/CMakeLists.txt
   teshsuite/xbt/mmalloc/CMakeLists.txt
   teshsuite/xbt/parallel_log/CMakeLists.txt
   teshsuite/xbt/parmap_bench/CMakeLists.txt

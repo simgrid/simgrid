@@ -1,6 +1,6 @@
 set(tesh_files
   ${tesh_files}
-  
+
   PARENT_SCOPE
   )
 set(xml_files
@@ -13,9 +13,10 @@ set(examples_src
   )
 set(bin_files
   ${bin_files}
+  ${CMAKE_CURRENT_SOURCE_DIR}/generate_report
   PARENT_SCOPE
   )
-  
+
 #set(stdo_std_smpi
 #  ${CMAKE_CURRENT_SOURCE_DIR}/topol/cartmap.std
 #  ${CMAKE_CURRENT_SOURCE_DIR}/topol/graphtest.std
