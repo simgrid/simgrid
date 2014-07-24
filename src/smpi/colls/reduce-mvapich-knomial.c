@@ -126,7 +126,7 @@ int smpi_coll_tuned_reduce_mvapich2_knomial (
     int index=0;
     MPI_Aint true_lb, true_extent, extent;
     MPI_Status status; 
-    int recv_iter=0, dst, expected_send_count, expected_recv_count;
+    int recv_iter=0, dst=-1, expected_send_count, expected_recv_count;
     int *src_array=NULL;
     void **tmp_buf=NULL;
     MPI_Request *requests=NULL;
