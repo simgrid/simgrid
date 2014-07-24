@@ -155,6 +155,7 @@ COLL_APPLY(action, COLL_ALLTOALL_SIG, ring_light_barrier) COLL_sep \
 COLL_APPLY(action, COLL_ALLTOALL_SIG, ring_mpi_barrier) COLL_sep \
 COLL_APPLY(action, COLL_ALLTOALL_SIG, ring_one_barrier) COLL_sep \
 COLL_APPLY(action, COLL_ALLTOALL_SIG, mvapich2) COLL_sep \
+COLL_APPLY(action, COLL_ALLTOALL_SIG, mvapich2_scatter_dest) COLL_sep \
 COLL_APPLY(action, COLL_ALLTOALL_SIG, ompi) COLL_sep \
 COLL_APPLY(action, COLL_ALLTOALL_SIG, mpich) COLL_sep \
 COLL_APPLY(action, COLL_ALLTOALL_SIG, automatic)

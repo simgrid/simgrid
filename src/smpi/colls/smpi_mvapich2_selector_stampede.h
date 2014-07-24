@@ -37,7 +37,7 @@ mv2_alltoall_tuning_table **mv2_alltoall_thresholds_table = NULL;
 
 #define MPIR_Alltoall_bruck_MV2 smpi_coll_tuned_alltoall_bruck
 #define MPIR_Alltoall_RD_MV2 smpi_coll_tuned_alltoall_rdb
-#define MPIR_Alltoall_Scatter_dest_MV2 smpi_coll_tuned_alltoall_ring
+#define MPIR_Alltoall_Scatter_dest_MV2 smpi_coll_tuned_alltoall_mvapich2_scatter_dest
 #define MPIR_Alltoall_pairwise_MV2 smpi_coll_tuned_alltoall_pair
 #define MPIR_Alltoall_inplace_MV2 smpi_coll_tuned_alltoall_ring 
 

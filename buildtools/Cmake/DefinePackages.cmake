@@ -180,6 +180,7 @@ set(SMPI_SRC
   src/smpi/colls/alltoall-ring-mpi-barrier.c
   src/smpi/colls/alltoall-ring-one-barrier.c
   src/smpi/colls/alltoall-ring.c
+  src/smpi/colls/alltoall-mvapich-scatter-dest.c
   src/smpi/colls/alltoallv-bruck.c
   src/smpi/colls/alltoallv-ompi-basic-linear.c
   src/smpi/colls/alltoallv-pair-light-barrier.c
