@@ -212,6 +212,7 @@ COLL_APPLY(action, COLL_BCAST_SIG, ompi) COLL_sep \
 COLL_APPLY(action, COLL_BCAST_SIG, ompi_split_bintree) COLL_sep \
 COLL_APPLY(action, COLL_BCAST_SIG, ompi_pipeline) COLL_sep \
 COLL_APPLY(action, COLL_BCAST_SIG, mpich) COLL_sep \
+COLL_APPLY(action, COLL_BCAST_SIG, mvapich2)   COLL_sep \
 COLL_APPLY(action, COLL_BCAST_SIG, automatic)
 
 COLL_BCASTS(COLL_PROTO, COLL_NOsep)
@@ -238,6 +239,7 @@ COLL_APPLY(action, COLL_REDUCE_SIG, ompi_in_order_binary) COLL_sep \
 COLL_APPLY(action, COLL_REDUCE_SIG, ompi_binary) COLL_sep \
 COLL_APPLY(action, COLL_REDUCE_SIG, ompi_binomial) COLL_sep \
 COLL_APPLY(action, COLL_REDUCE_SIG, mpich) COLL_sep \
+COLL_APPLY(action, COLL_REDUCE_SIG, mvapich2) COLL_sep \
 COLL_APPLY(action, COLL_REDUCE_SIG, automatic)
 
 COLL_REDUCES(COLL_PROTO, COLL_NOsep)
@@ -257,6 +259,7 @@ COLL_APPLY(action, COLL_REDUCE_SCATTER_SIG, mpich) COLL_sep \
 COLL_APPLY(action, COLL_REDUCE_SCATTER_SIG, mpich_pair) COLL_sep \
 COLL_APPLY(action, COLL_REDUCE_SCATTER_SIG, mpich_rdb) COLL_sep \
 COLL_APPLY(action, COLL_REDUCE_SCATTER_SIG, mpich_noncomm) COLL_sep \
+COLL_APPLY(action, COLL_REDUCE_SCATTER_SIG, mvapich2) COLL_sep \
 COLL_APPLY(action, COLL_REDUCE_SCATTER_SIG, automatic)
 
 
@@ -277,6 +280,7 @@ COLL_APPLY(action, COLL_SCATTER_SIG, ompi) COLL_sep \
 COLL_APPLY(action, COLL_SCATTER_SIG, ompi_basic_linear) COLL_sep \
 COLL_APPLY(action, COLL_SCATTER_SIG, ompi_binomial)  COLL_sep \
 COLL_APPLY(action, COLL_SCATTER_SIG, mpich)   COLL_sep \
+COLL_APPLY(action, COLL_SCATTER_SIG, mvapich2)   COLL_sep \
 COLL_APPLY(action, COLL_SCATTER_SIG, automatic)
 
 COLL_SCATTERS(COLL_PROTO, COLL_NOsep)

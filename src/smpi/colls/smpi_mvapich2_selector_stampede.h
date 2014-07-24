@@ -268,3 +268,210 @@ static  int MPIR_Allreduce_reduce_shmem_MV2( void *sendbuf,
 #define MPIR_Allreduce_pt2pt_rd_MV2 smpi_coll_tuned_allreduce_rdb
 #define MPIR_Allreduce_pt2pt_rs_MV2 smpi_coll_tuned_allreduce_rab1
 
+
+
+/*
+Bcast deactivated for now, defaults to mpich one
+typedef struct {
+    int min;
+    int max;
+    int (*MV2_pt_Bcast_function) (void *buf, int count, MPI_Datatype datatype,
+                                  int root, MPI_Comm comm_ptr);
+    int zcpy_pipelined_knomial_factor;
+} mv2_bcast_tuning_element;
+
+typedef struct {
+    int numproc;
+    int bcast_segment_size;
+    int intra_node_knomial_factor;
+    int inter_node_knomial_factor;
+    int is_two_level_bcast[MV2_MAX_NB_THRESHOLDS];
+    int size_inter_table;
+    mv2_bcast_tuning_element inter_leader[MV2_MAX_NB_THRESHOLDS];
+    int size_intra_table;
+    mv2_bcast_tuning_element intra_node[MV2_MAX_NB_THRESHOLDS];
+} mv2_bcast_tuning_table;
+
+extern int mv2_use_pipelined_bcast;
+extern int mv2_pipelined_knomial_factor; 
+extern int mv2_pipelined_zcpy_knomial_factor; 
+extern int zcpy_knomial_factor;
+extern int bcast_segment_size;
+
+extern int mv2_size_bcast_tuning_table;
+extern mv2_bcast_tuning_table *mv2_bcast_thresholds_table;
+extern int mv2_use_old_bcast;
+
+int mv2_size_bcast_tuning_table = 0;
+mv2_bcast_tuning_table *mv2_bcast_thresholds_table = NULL;
+
+
+int (*MV2_Bcast_function) (void *buffer, int count, MPI_Datatype datatype,
+                           int root, MPI_Comm comm_ptr) = NULL;
+
+int (*MV2_Bcast_intra_node_function) (void *buffer, int count, MPI_Datatype datatype,
+                                      int root, MPI_Comm comm_ptr) = NULL;
+                                      
+                                      
+*/
+
+typedef struct {
+    int min;
+    int max;
+    int (*MV2_pt_Reduce_function)(void *sendbuf,
+                                 void *recvbuf,
+                                 int count,
+                                 MPI_Datatype datatype,
+                                 MPI_Op op,
+                                 int root,
+                                 MPI_Comm  comm_ptr);
+} mv2_reduce_tuning_element;
+
+typedef struct {
+    int numproc; 
+    int inter_k_degree;
+    int intra_k_degree;
+    int is_two_level_reduce[MV2_MAX_NB_THRESHOLDS];
+    int size_inter_table;
+    mv2_reduce_tuning_element inter_leader[MV2_MAX_NB_THRESHOLDS];
+    int size_intra_table;
+    mv2_reduce_tuning_element intra_node[MV2_MAX_NB_THRESHOLDS];
+} mv2_reduce_tuning_table;
+
+extern int mv2_size_reduce_tuning_table;
+extern mv2_reduce_tuning_table *mv2_reduce_thresholds_table;
+extern int mv2_use_old_reduce;
+
+int mv2_size_reduce_tuning_table = 0;
+mv2_reduce_tuning_table *mv2_reduce_thresholds_table = NULL;
+
+
+int mv2_reduce_intra_knomial_factor = -1;
+int mv2_reduce_inter_knomial_factor = -1;
+
+int (*MV2_Reduce_function)( void *sendbuf,
+                           void *recvbuf,
+                           int count,
+                           MPI_Datatype datatype,
+                           MPI_Op op,
+                           int root,
+                           MPI_Comm  comm_ptr)=NULL;
+
+int (*MV2_Reduce_intra_function)( void *sendbuf,
+                                 void *recvbuf,
+                                 int count,
+                                 MPI_Datatype datatype,
+                                 MPI_Op op,
+                                 int root,
+                                 MPI_Comm  comm_ptr)=NULL;
+                                 
+                                 
+#define MPIR_Reduce_inter_knomial_wrapper_MV2 smpi_coll_tuned_reduce_ompi_binomial
+#define MPIR_Reduce_intra_knomial_wrapper_MV2 smpi_coll_tuned_reduce_ompi_binomial
+#define MPIR_Reduce_binomial_MV2 smpi_coll_tuned_reduce_ompi_binomial
+#define MPIR_Reduce_redscat_gather_MV2 smpi_coll_tuned_reduce_scatter_gather
+#define MPIR_Reduce_shmem_MV2 smpi_coll_tuned_reduce_ompi_basic_linear
+
+typedef struct {
+    int min;
+    int max;
+    int (*MV2_pt_Red_scat_function)(void *sendbuf,
+                                    void *recvbuf,
+                                    int *recvcnts,
+                                    MPI_Datatype datatype,
+                                    MPI_Op op,
+                                    MPI_Comm comm_ptr);
+} mv2_red_scat_tuning_element;
+
+typedef struct {
+    int numproc; 
+    int size_inter_table;
+    mv2_red_scat_tuning_element inter_leader[MV2_MAX_NB_THRESHOLDS];
+} mv2_red_scat_tuning_table;
+
+extern int mv2_size_red_scat_tuning_table;
+extern mv2_red_scat_tuning_table *mv2_red_scat_thresholds_table;
+
+int mv2_size_red_scat_tuning_table = 0;
+mv2_red_scat_tuning_table *mv2_red_scat_thresholds_table = NULL;
+
+
+int (*MV2_Red_scat_function)(void *sendbuf,
+                             void *recvbuf,
+                             int *recvcnts,
+                             MPI_Datatype datatype,
+                             MPI_Op op,
+                             MPI_Comm comm_ptr);
+
+#define MPIR_Reduce_Scatter_Basic_MV2 smpi_coll_tuned_reduce_scatter_mpich_noncomm
+#define MPIR_Reduce_scatter_non_comm_MV2 smpi_coll_tuned_reduce_scatter_mpich_noncomm
+#define MPIR_Reduce_scatter_Rec_Halving_MV2 smpi_coll_tuned_reduce_scatter_ompi_basic_recursivehalving
+#define MPIR_Reduce_scatter_Pair_Wise_MV2 smpi_coll_tuned_reduce_scatter_mpich_pair
+
+
+
+/* Indicates number of processes per node */
+extern int *mv2_scatter_table_ppn_conf;
+/* Indicates total number of configurations */
+extern int mv2_scatter_num_ppn_conf;
+
+typedef struct {
+    int min;
+    int max;
+    int (*MV2_pt_Scatter_function)(void *sendbuf,
+                                   int sendcnt,
+                                   MPI_Datatype sendtype,
+                                   void *recvbuf,
+                                   int recvcnt,
+                                   MPI_Datatype recvtype,
+                                   int root, MPI_Comm comm);
+} mv2_scatter_tuning_element;
+
+typedef struct {
+    int numproc;
+    int size_inter_table;
+    mv2_scatter_tuning_element inter_leader[MV2_MAX_NB_THRESHOLDS];
+    int size_intra_table;
+    mv2_scatter_tuning_element intra_node[MV2_MAX_NB_THRESHOLDS];
+} mv2_scatter_tuning_table;
+
+extern int *mv2_size_scatter_tuning_table;
+extern mv2_scatter_tuning_table **mv2_scatter_thresholds_table;
+
+
+int *mv2_scatter_table_ppn_conf = NULL;
+int mv2_scatter_num_ppn_conf = 1;
+int *mv2_size_scatter_tuning_table = NULL;
+mv2_scatter_tuning_table **mv2_scatter_thresholds_table = NULL;
+
+int (*MV2_Scatter_function) (void *sendbuf, int sendcount, MPI_Datatype sendtype,
+                             void *recvbuf, int recvcount, MPI_Datatype recvtype,
+                             int root, MPI_Comm comm)=NULL;
+
+int (*MV2_Scatter_intra_function) (void *sendbuf, int sendcount, MPI_Datatype sendtype,
+                             void *recvbuf, int recvcount, MPI_Datatype recvtype,
+                             int root, MPI_Comm comm)=NULL;
+int MPIR_Scatter_mcst_wrap_MV2(void *sendbuf,
+                              int sendcnt,
+                              MPI_Datatype sendtype,
+                              void *recvbuf,
+                              int recvcnt,
+                              MPI_Datatype recvtype,
+                              int root, MPI_Comm comm_ptr);
+                              
+int MPIR_Scatter_mcst_wrap_MV2(void *sendbuf,
+                              int sendcnt,
+                              MPI_Datatype sendtype,
+                              void *recvbuf,
+                              int recvcnt,
+                              MPI_Datatype recvtype,
+                              int root, MPI_Comm comm_ptr)
+{
+    return 0;
+}
+
+#define MPIR_Scatter_MV2_Binomial smpi_coll_tuned_scatter_ompi_binomial
+#define MPIR_Scatter_MV2_Direct smpi_coll_tuned_scatter_ompi_basic_linear
+#define MPIR_Scatter_MV2_two_level_Binomial smpi_coll_tuned_scatter_ompi_binomial
+#define MPIR_Scatter_MV2_two_level_Direct smpi_coll_tuned_scatter_ompi_basic_linear
+
