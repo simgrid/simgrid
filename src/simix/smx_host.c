@@ -33,7 +33,7 @@ smx_host_t SIMIX_host_create(const char *name,
 
   /* Update global variables */
   xbt_lib_set(host_lib,name,SIMIX_HOST_LEVEL,smx_host);
-  
+
   return xbt_lib_get_elm_or_null(host_lib, name);
 }
 
@@ -54,21 +54,26 @@ void SIMIX_host_on(smx_host_t h)
 
   if (surf_resource_get_state(surf_workstation_resource_priv(h))==SURF_RESOURCE_OFF) {
     surf_resource_set_state(surf_workstation_resource_priv(h), SURF_RESOURCE_ON);
+
     unsigned int cpt;
     smx_process_arg_t arg;
     xbt_dynar_foreach(host->boot_processes,cpt,arg) {
       smx_process_t process;
 
+      char** argv = xbt_new(char*, arg->argc);
+      for (int i=0; i<arg->argc; i++)
+        argv[i] = xbt_strdup(arg->argv[i]);
+
       XBT_DEBUG("Booting Process %s(%s) right now", arg->argv[0], arg->hostname);
       if (simix_global->create_process_function) {
         simix_global->create_process_function(&process,
-                                              arg->argv[0],
+                                              argv[0],
                                               arg->code,
                                               NULL,
                                               arg->hostname,
                                               arg->kill_time,
                                               arg->argc,
-                                              arg->argv,
+                                              argv,
                                               arg->properties,
                                               arg->auto_restart,
                                               NULL);
@@ -80,7 +85,7 @@ void SIMIX_host_on(smx_host_t h)
                                arg->hostname,
                                arg->kill_time,
                                arg->argc,
-                               arg->argv,
+                               argv,
                                arg->properties,
                                arg->auto_restart);
       }
@@ -102,7 +107,7 @@ void SIMIX_host_off(smx_host_t h, smx_process_t issuer)
   smx_host_priv_t host = SIMIX_host_priv(h);
 
   xbt_assert((host != NULL), "Invalid parameters");
-  
+
   if (surf_resource_get_state(surf_workstation_resource_priv(h))==SURF_RESOURCE_ON) {
 	surf_resource_set_state(surf_workstation_resource_priv(h), SURF_RESOURCE_OFF);
 
@@ -147,7 +152,7 @@ void SIMIX_host_destroy(void *h)
   xbt_swag_free(host->process_list);
 
   /* Clean host structure */
-  free(host); 
+  free(host);
   return;
 }
 

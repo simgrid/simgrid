@@ -25,7 +25,7 @@ int master(int argc, char *argv[])
 
   char mailbox[256];
   msg_task_t task = NULL;
-
+  msg_host_t jupiter = MSG_get_host_by_name("Jupiter");
   sprintf(mailbox, "jupi");
 
   task = MSG_task_create("task on", task_comp_size, task_comm_size, NULL);
@@ -34,14 +34,19 @@ int master(int argc, char *argv[])
     MSG_task_destroy(task);
 
   MSG_process_sleep(1);
-  MSG_host_off(MSG_get_host_by_name("Jupiter"));
+  MSG_host_off(jupiter);
 
   task = MSG_task_create("task off", task_comp_size, task_comm_size, NULL);
   XBT_INFO("Sending \"%s\"", task->name);
   if (MSG_task_send_with_timeout(task, mailbox, 1) != MSG_OK)
     MSG_task_destroy(task);
 
-  MSG_host_on(MSG_get_host_by_name("Jupiter"));
+  MSG_host_on(jupiter);
+  xbt_swag_t jupi_processes = MSG_host_get_process_list(jupiter);
+  void *process;
+  xbt_swag_foreach(process, jupi_processes) {
+    MSG_process_kill(process);
+  }
 
   task = MSG_task_create("task on without proc", task_comp_size, task_comm_size, NULL);
   XBT_INFO("Sending \"%s\"", task->name);
