@@ -127,6 +127,7 @@ COLL_APPLY(action, COLL_ALLREDUCE_SIG, ompi) COLL_sep \
 COLL_APPLY(action, COLL_ALLREDUCE_SIG, ompi_ring_segmented) COLL_sep \
 COLL_APPLY(action, COLL_ALLREDUCE_SIG, mpich) COLL_sep \
 COLL_APPLY(action, COLL_ALLREDUCE_SIG, mvapich2) COLL_sep \
+COLL_APPLY(action, COLL_ALLREDUCE_SIG, mvapich2_rs) COLL_sep \
 COLL_APPLY(action, COLL_ALLREDUCE_SIG, automatic)
 
 COLL_ALLREDUCES(COLL_PROTO, COLL_NOsep)

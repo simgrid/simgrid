@@ -167,6 +167,7 @@ set(SMPI_SRC
   src/smpi/colls/allreduce-smp-rsag-lr.c
   src/smpi/colls/allreduce-smp-rsag-rab.c
   src/smpi/colls/allreduce-smp-rsag.c
+  src/smpi/colls/allreduce-mvapich-rs.c
   src/smpi/colls/alltoall-2dmesh.c
   src/smpi/colls/alltoall-3dmesh.c
 #  src/smpi/colls/alltoall-bruck.c
