@@ -153,8 +153,11 @@ void smx_ctx_java_stop(smx_context_t context)
   if (context->iwannadie) {
     context->iwannadie = 0;
     JNIEnv *env = get_current_thread_env();
+    XBT_DEBUG("Gonnal launch Killed Error");
     jxbt_throw_by_name(env, "org/simgrid/msg/ProcessKilledError", xbt_strdup("Process killed :)"));
-    THROWF(cancel_error, 0, "process cancelled");
+    // TODO emptty/adsein, comment the following line. This avoid to raise process cancelled exception at the Java level but 
+    // it impacts the shutdown of VMs :( see java-cloud example
+    //THROWF(cancel_error, 0, "process cancelled");
   } else {
     smx_ctx_base_stop(context);
     /* detach the thread and kills it */

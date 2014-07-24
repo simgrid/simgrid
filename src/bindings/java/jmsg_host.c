@@ -165,7 +165,7 @@ Java_org_simgrid_msg_Host_on(JNIEnv *env, jobject jhost) {
 JNIEXPORT void JNICALL
 Java_org_simgrid_msg_Host_off(JNIEnv *env, jobject jhost) {
   msg_host_t host = jhost_get_native(env, jhost);
-  MSG_host_off(host);
+  MSG_host_off(host); 
 }
 
 JNIEXPORT jint JNICALL

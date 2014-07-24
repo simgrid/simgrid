@@ -67,8 +67,11 @@ void jmsg_throw_status(JNIEnv *env, msg_error_t status) {
     case MSG_HOST_FAILURE:
         jxbt_throw_host_failure(env,NULL);
     break;
+    case MSG_TASK_CANCELED:
+        jxbt_throw_task_cancelled(env,NULL);
+    break;
     default:
-        jxbt_throw_native(env,xbt_strdup("communication failed"));
+        jxbt_throw_native(env,xbt_strdup("undefined message failed (please see jmsg_throw_status function in jmsg.c)"));
   }
 }
 

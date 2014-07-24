@@ -129,6 +129,7 @@ public class Test extends Process{
         endTime = Msg.getClock();
         Msg.info("     - End of Migration from host 1 to host 0 (duration:"+(endTime-startTime)+")");
 
+
         Msg.info("\n \n \nRound trip of VM1 (load "+load2+"%)");
         vm1.setLoad(load2);
         Msg.info("     - Launch migration from host 0 to host 1");

@@ -378,8 +378,7 @@ public abstract class Process implements Runnable {
 			System.exit(1);
 		}
 		 catch(ProcessKilledError pk) {
-			 
-		 }	
+		}	
 		exit();
 	}
 

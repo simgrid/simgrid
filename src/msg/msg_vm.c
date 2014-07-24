@@ -391,10 +391,13 @@ static int migration_rx_fun(int argc, char *argv[])
   }
 
 
-  /* deinstall the current affinity setting */
+  /* deinstall the current affinity setting for the CPU */
   simcall_vm_set_affinity(ms->vm, ms->src_pm, 0);
 
+  /* Update the vm location */
   simcall_vm_migrate(ms->vm, ms->dst_pm);
+  
+  /* Resume the VM */
   simcall_vm_resume(ms->vm);
 
   /* install the affinity setting of the VM on the destination pm */
