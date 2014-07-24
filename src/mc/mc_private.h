@@ -753,6 +753,7 @@ void* mc_snapshot_read_region(void* addr, mc_mem_region_t region, void* target, 
 
   // Fragmented memory region:
   else if (region->page_numbers) {
+    // Last byte of the region:
     void* end = (char*) addr + size - 1;
     if( mc_same_page(addr, end) ) {
       // The memory is contained in a single page:

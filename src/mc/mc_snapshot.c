@@ -10,6 +10,13 @@
 #include "mc_mmu.h"
 #include "mc_page_store.h"
 
+/** @brief Find the snapshoted region from a pointer
+ *
+ *  @param addr     Pointer
+ *  @param snapshot Snapshot
+ *  @param Snapshot region in the snapshot this pointer belongs to
+ *         (or NULL if it does not belong to any snapshot region)
+ * */
 mc_mem_region_t mc_get_snapshot_region(void* addr, mc_snapshot_t snapshot)
 {
   for (size_t i = 0; i != NB_REGIONS; ++i) {
@@ -35,8 +42,12 @@ mc_mem_region_t mc_get_snapshot_region(void* addr, mc_snapshot_t snapshot)
  */
 void* mc_snapshot_read_fragmented(void* addr, mc_mem_region_t region, void* target, size_t size)
 {
+  // Last byte of the memory area:
   void* end = (char*) addr + size - 1;
+
+  // Page of the last byte of the memory area:
   size_t page_end = mc_page_number(NULL, end);
+
   void* dest = target;
 
   if (dest==NULL) {
@@ -67,7 +78,7 @@ void* mc_snapshot_read_fragmented(void* addr, mc_mem_region_t region, void* targ
  *  @param snapshot Snapshot (or NULL is no snapshot)
  *  @param target   Buffer to store the value
  *  @param size     Size of the data to read in bytes
- *  @return Pointer where the data is located (target buffer of original location)
+ *  @return Pointer where the data is located (target buffer or original location)
  */
 void* mc_snapshot_read(void* addr, mc_snapshot_t snapshot, void* target, size_t size)
 {
