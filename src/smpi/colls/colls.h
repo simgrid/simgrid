@@ -242,6 +242,7 @@ COLL_APPLY(action, COLL_REDUCE_SIG, ompi_binary) COLL_sep \
 COLL_APPLY(action, COLL_REDUCE_SIG, ompi_binomial) COLL_sep \
 COLL_APPLY(action, COLL_REDUCE_SIG, mpich) COLL_sep \
 COLL_APPLY(action, COLL_REDUCE_SIG, mvapich2) COLL_sep \
+COLL_APPLY(action, COLL_REDUCE_SIG, mvapich2_knomial) COLL_sep \
 COLL_APPLY(action, COLL_REDUCE_SIG, automatic)
 
 COLL_REDUCES(COLL_PROTO, COLL_NOsep)
