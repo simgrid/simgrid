@@ -15,7 +15,7 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test,
                              "Messages specific for this msg example");
 
 int test(int argc, char *argv[]);
-int daemon(int argc, char *argv[]);
+int test_daemon(int argc, char *argv[]);
 int commRX(int argc, char *argv[]);
 int commTX(int argc, char *argv[]);
 
@@ -26,7 +26,7 @@ int test(int argc, char *argv[])
   int test = 0;
   char **argvF;
   argvF = xbt_new(char*, 2);
-  argvF[0] = xbt_strdup("daemon");
+  argvF[0] = xbt_strdup("test_daemon");
   msg_host_t jupiter = MSG_get_host_by_name("Jupiter");
 
   test = 1;
@@ -34,8 +34,8 @@ int test(int argc, char *argv[])
     XBT_INFO("Test 1:");
     XBT_INFO("  Create a process on Jupiter");
     argvF = xbt_new(char*, 2);
-    argvF[0] = xbt_strdup("daemon");
-    MSG_process_create_with_arguments("daemon", daemon, NULL, jupiter, 1, argvF);
+    argvF[0] = xbt_strdup("test_daemon");
+    MSG_process_create_with_arguments("test_daemon", test_daemon, NULL, jupiter, 1, argvF);
     XBT_INFO("  Turn off Jupiter");
     MSG_host_off(jupiter);
     MSG_process_sleep(10);
@@ -48,8 +48,8 @@ int test(int argc, char *argv[])
     XBT_INFO("  Turn off Jupiter");
     MSG_host_off(jupiter);
     argvF = xbt_new(char*, 2);
-    argvF[0] = xbt_strdup("daemon");
-    MSG_process_create_with_arguments("daemon", daemon, NULL, jupiter, 1, argvF);
+    argvF[0] = xbt_strdup("test_daemon");
+    MSG_process_create_with_arguments("test_daemon", test_daemon, NULL, jupiter, 1, argvF);
     MSG_process_sleep(10);
     XBT_INFO("  Test 2 does not crash, WTF ?!(number of Process : %d, it should be 1)", MSG_process_get_number());
     XBT_INFO("  Ok so let's turn on/off the node to see whether the process is correctly bound to Jupiter");
@@ -117,7 +117,7 @@ int test(int argc, char *argv[])
   return 0;
 }
 
-int daemon(int argc, char *argv[])
+int test_daemon(int argc, char *argv[])
 {
   msg_task_t task = NULL;
   task = MSG_task_create("deamon", 100*MSG_get_host_speed(MSG_host_self()), 0, NULL);
@@ -194,7 +194,7 @@ int main(int argc, char *argv[])
   }
   {                             /*   Application deployment */
     MSG_function_register("test", test);
-    MSG_function_register("daemon", daemon);
+    MSG_function_register("test_daemon", test_daemon);
 
     MSG_launch_application(application_file);
   }
