@@ -103,12 +103,9 @@ static int compare_areas_with_type(struct mc_compare_state& state,
   case DW_TAG_enumeration_type:
   case DW_TAG_union_type:
   {
-    void* data1 =
-      mc_snapshot_read_region(real_area1, region1, alloca(type->byte_size), type->byte_size);
-    void* data2 =
-      mc_snapshot_read_region(real_area2, region1, alloca(type->byte_size), type->byte_size);
-    return (memcmp(data1, data2, type->byte_size) != 0);
-    break;
+    return mc_snapshot_region_memcmp(
+      real_area1, region1, real_area2, region2,
+      type->byte_size) != 0;
   }
   case DW_TAG_typedef:
   case DW_TAG_volatile_type:
@@ -160,9 +157,8 @@ static int compare_areas_with_type(struct mc_compare_state& state,
   case DW_TAG_reference_type:
   case DW_TAG_rvalue_reference_type:
   {
-    void* temp;
-    void* addr_pointed1 = *(void**) mc_snapshot_read_region(real_area1, region1, &temp, sizeof(void**));
-    void* addr_pointed2 = *(void**) mc_snapshot_read_region(real_area2, region2, &temp, sizeof(void**));
+    void* addr_pointed1 = mc_snapshot_read_pointer_region(real_area1, region1);
+    void* addr_pointed2 = mc_snapshot_read_pointer_region(real_area2, region2);
 
     if (type->subtype && type->subtype->type == DW_TAG_subroutine_type) {
       return (addr_pointed1 != addr_pointed2);
@@ -190,12 +186,10 @@ static int compare_areas_with_type(struct mc_compare_state& state,
         return compare_heap_area(addr_pointed1, addr_pointed2, snapshot1,
                                  snapshot2, NULL, type->subtype, pointer_level);
       }
+
       // The pointers are both in the current object R/W segment:
-      else if (addr_pointed1 > region1->start_addr
-               && (char *) addr_pointed1 <= (char *) region1->start_addr + region1->size) {
-        if (!
-            (addr_pointed2 > region2->start_addr
-             && (char *) addr_pointed2 <= (char *) region2->start_addr + region2->size))
+      else if (mc_region_contain(region1, addr_pointed1)) {
+        if (!mc_region_contain(region2, addr_pointed2))
           return 1;
         if (type->dw_type_id == NULL)
           return (addr_pointed1 != addr_pointed2);
@@ -206,6 +200,9 @@ static int compare_areas_with_type(struct mc_compare_state& state,
                                          type->subtype, pointer_level);
         }
       }
+
+      // TODO, We do not handle very well the case where
+      // it belongs to a different (non-heap) region from the current one.
 
       else {
         return (addr_pointed1 != addr_pointed2);

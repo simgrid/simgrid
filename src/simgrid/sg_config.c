@@ -612,7 +612,7 @@ void sg_config_init(int *argc, char **argv)
     xbt_cfg_register(&_sg_cfg_set, "model-check/soft-dirty",
                      "Use sparse per-page snapshots.",
                      xbt_cfgelm_boolean, 1, 1, _mc_cfg_cb_soft_dirty, NULL);
-    xbt_cfg_setdefault_boolean(_sg_cfg_set, "model-check/soft-dirty", "yes");
+    xbt_cfg_setdefault_boolean(_sg_cfg_set, "model-check/soft-dirty", "no");
 
     /* do liveness model-checking */
     xbt_cfg_register(&_sg_cfg_set, "model-check/property",

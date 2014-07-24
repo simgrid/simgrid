@@ -43,12 +43,17 @@
                              ? -1                                 \
                              : (MDP) -> fd)
 
-/*  Get core for the memory region specified by MDP, using SIZE as the
-    amount to either add to or subtract from the existing region.  Works
-    like sbrk(), but using mmap().
-
-    It never returns NULL. Instead, it dies verbosely on errors. */
-
+/** @brief Add memoty to this heap
+ *
+ *  Get core for the memory region specified by MDP, using SIZE as the
+ *  amount to either add to or subtract from the existing region.  Works
+ *  like sbrk(), but using mmap().
+ *
+ *  It never returns NULL. Instead, it dies verbosely on errors.
+ *
+ *  @param mdp  The heap
+ *  @param size Bytes to allocate for this heap (or <0 to free memory from this heap)
+ */
 void *mmorecore(struct mdesc *mdp, ssize_t size)
 {
   ssize_t test = 0;
@@ -58,8 +63,6 @@ void *mmorecore(struct mdesc *mdp, ssize_t size)
   void *moveto;                 /* Address where we wish to move "break value" to */
   void *mapto;                  /* Address we actually mapped to */
   char buf = 0;                 /* Single byte to write to extend mapped file */
-
-//  fprintf(stderr,"increase %p by %u\n",mdp,size);
 
   if (size == 0) {
     /* Just return the current "break" value. */
@@ -108,12 +111,15 @@ void *mmorecore(struct mdesc *mdp, ssize_t size)
       }
 
       /* Let's call mmap. Note that it is possible that mdp->top
-         is 0. In this case mmap will choose the address for us */
+         is 0. In this case mmap will choose the address for us.
+         This call might very well overwrite an already existing memory mapping
+         (leading to weird bugs).
+       */
       mapto = mmap(mdp->top, mapbytes, PROT_READ | PROT_WRITE,
                    MAP_PRIVATE_OR_SHARED(mdp) | MAP_IS_ANONYMOUS(mdp) |
                    MAP_FIXED, MAP_ANON_OR_FD(mdp), foffset);
 
-      if (mapto == (void *) -1/* That's MAP_FAILED */) {
+      if (mapto == MAP_FAILED) {
         char buff[1024];
         fprintf(stderr,"Internal error: mmap returned MAP_FAILED! error: %s\n",strerror(errno));
         sprintf(buff,"cat /proc/%d/maps",getpid());
@@ -131,6 +137,7 @@ void *mmorecore(struct mdesc *mdp, ssize_t size)
       result = (void *) mdp->breakval;
       mdp->breakval = (char *) mdp->breakval + size;
     } else {
+      /* Memory is already mapped, we only need to increase the breakval: */
       result = (void *) mdp->breakval;
       mdp->breakval = (char *) mdp->breakval + size;
     }

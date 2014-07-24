@@ -60,7 +60,7 @@ static void local_variable_free_voidp(void *v)
   local_variable_free((local_variable_t) * (void **) v);
 }
 
-static void MC_region_destroy(mc_mem_region_t reg)
+void MC_region_destroy(mc_mem_region_t reg)
 {
   //munmap(reg->data, reg->size);
   xbt_free(reg->data);
@@ -569,7 +569,7 @@ int mc_important_snapshot(mc_snapshot_t snapshot)
 {
   // We need this snapshot in order to know which
   // pages needs to be stored in the next snapshot:
-  if (_sg_mc_sparse_checkpoint && snapshot == mc_model_checker->parent_snapshot)
+  if (snapshot == mc_model_checker->parent_snapshot)
     return true;
 
   return false;
@@ -608,7 +608,9 @@ mc_snapshot_t MC_take_snapshot(int num_state)
   }
 
   MC_snapshot_ignore_restore(snapshot);
-  mc_model_checker->parent_snapshot = snapshot;
+  if (_sg_mc_sparse_checkpoint && _sg_mc_soft_dirty) {
+    mc_model_checker->parent_snapshot = snapshot;
+  }
   return snapshot;
 }
 
@@ -639,7 +641,9 @@ void MC_restore_snapshot(mc_snapshot_t snapshot)
   }
 
   MC_snapshot_ignore_restore(snapshot);
-  mc_model_checker->parent_snapshot = snapshot;
+  if (_sg_mc_sparse_checkpoint && _sg_mc_soft_dirty) {
+    mc_model_checker->parent_snapshot = snapshot;
+  }
 }
 
 mc_snapshot_t SIMIX_pre_mc_snapshot(smx_simcall_t simcall)

@@ -30,7 +30,7 @@ size_t* mc_take_page_snapshot_region(void* data, size_t page_count, uint64_t* pa
       pagenos[i] = reference_pages[i];
       mc_model_checker->pages->ref_page(reference_pages[i]);
     } else {
-      // Otherwise, we need to store the page the hard hard
+      // Otherwise, we need to store the page the hard way
       // (by reading its content):
       void* page = (char*) data + (i << xbt_pagebits);
       pagenos[i] = mc_model_checker->pages->store_page(page);
