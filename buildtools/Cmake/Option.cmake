@@ -49,6 +49,7 @@ else()
   option(enable_smpi "Whether SMPI in included in library." on)
   option(enable_smpi_MPICH3_testsuite "Whether the test suite form MPICH 3 should be built" off)
 endif()
+option(enable_smpi_ISP_testsuite "Whether the test suite form ISP should be built" off)
 
 if(enable_scala AND NOT enable_java)
   message(WARNING "For using scala you must turn java on with command:\ncmake -Denable_java=on .")

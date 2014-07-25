@@ -1082,6 +1082,7 @@ set(TESHSUITE_CMAKEFILES_TXT
   teshsuite/smpi/shared/CMakeLists.txt
   teshsuite/smpi/struct/CMakeLists.txt
   teshsuite/smpi/vector/CMakeLists.txt
+  teshsuite/smpi/isp/umpire/CMakeLists.txt
   teshsuite/smpi/mpich3-test/CMakeLists.txt
   teshsuite/smpi/mpich3-test/attr/CMakeLists.txt
   teshsuite/smpi/mpich3-test/coll/CMakeLists.txt

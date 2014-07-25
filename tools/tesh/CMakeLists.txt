@@ -62,6 +62,7 @@ set(tools_src
 set(bin_files
   ${bin_files}
   ${CMAKE_CURRENT_SOURCE_DIR}/colorize.pl
+  ${CMAKE_CURRENT_SOURCE_DIR}/generate_tesh
   PARENT_SCOPE
   )
 set(txt_files

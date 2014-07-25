@@ -131,6 +131,9 @@ add_subdirectory(${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/scatter)
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/shared)
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/struct)
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/vector)
+
+add_subdirectory(${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/isp/umpire)
+
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich3-test)
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich3-test/attr)
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich3-test/coll)
