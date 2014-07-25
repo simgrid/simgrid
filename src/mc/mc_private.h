@@ -139,7 +139,7 @@ int mc_important_snapshot(mc_snapshot_t snapshot);
 
 size_t* mc_take_page_snapshot_region(void* data, size_t page_count, uint64_t* pagemap, size_t* reference_pages);
 void mc_free_page_snapshot_region(size_t* pagenos, size_t page_count);
-void mc_restore_page_snapshot_region(mc_mem_region_t region, size_t page_count, uint64_t* pagemap, mc_mem_region_t reference_region);
+void mc_restore_page_snapshot_region(void* start_addr, size_t page_count, size_t* pagenos, uint64_t* pagemap, size_t* reference_pagenos);
 
 mc_mem_region_t mc_region_new_sparse(int type, void *start_addr, size_t size, mc_mem_region_t ref_reg);
 void MC_region_destroy(mc_mem_region_t reg);

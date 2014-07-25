@@ -52,25 +52,26 @@ void mc_free_page_snapshot_region(size_t* pagenos, size_t page_count)
  *  If possible, the restoration will be incremental
  *  (the modified pages will not be touched).
  *
- *  @param data            The start of the region (must be at the beginning of a page)
- *  @param pag_count       Number of pages of the region
+ *  @param start_addr
+ *  @param page_count       Number of pages of the region
+ *  @param pagenos
  *  @param pagemap         Linux kernel pagemap values fot this region (or NULL)
  *  @param reference_pages Snapshot page numbers of the previous soft_dirty_reset (or NULL)
  */
-void mc_restore_page_snapshot_region(mc_mem_region_t region, size_t page_count, uint64_t* pagemap, mc_mem_region_t reference_region)
+void mc_restore_page_snapshot_region(void* start_addr, size_t page_count, size_t* pagenos, uint64_t* pagemap, size_t* reference_pagenos)
 {
   for (size_t i=0; i!=page_count; ++i) {
 
     bool softclean = pagemap && !(pagemap[i] & SOFT_DIRTY);
-    if (softclean && reference_region && reference_region->page_numbers[i] == region->page_numbers[i]) {
+    if (softclean && reference_pagenos && pagenos[i] == reference_pagenos[i]) {
       // The page is softclean and is the same as the reference one:
       // the page is already in the target state.
       continue;
     }
 
     // Otherwise, copy the page:
-    void* target_page = mc_page_from_number(region->start_addr, i);
-    const void* source_page = mc_model_checker->pages->get_page(region->page_numbers[i]);
+    void* target_page = mc_page_from_number(start_addr, i);
+    const void* source_page = mc_model_checker->pages->get_page(pagenos[i]);
     memcpy(target_page, source_page, xbt_pagesize);
   }
 }
@@ -201,7 +202,8 @@ void mc_region_restore_sparse(mc_mem_region_t reg, mc_mem_region_t ref_reg)
   }
 
   // Incremental per-page snapshot restoration:
-  mc_restore_page_snapshot_region(reg, page_count, pagemap, ref_reg);
+  mc_restore_page_snapshot_region(reg->start_addr, page_count, reg->page_numbers,
+    pagemap, ref_reg ? ref_reg->page_numbers : NULL);
 
   // This is funny, the restoration can restore the state of the current heap,
   // if this happen free(pagemap) would free from the wrong heap:
