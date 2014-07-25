@@ -182,7 +182,7 @@ static void test_snapshot(bool sparse_checkpoint) {
   mc_model_checker = xbt_new0(s_mc_model_checker_t, 1);
   mc_model_checker->pages = mc_pages_store_new();
 
-  for(int n=1; n!=10; ++n) {
+  for(int n=1; n!=256; ++n) {
 
     // Store region page(s):
     size_t byte_size = n * xbt_pagesize;
@@ -219,11 +219,19 @@ static void test_snapshot(bool sparse_checkpoint) {
     xbt_test_assert(mc_snapshot_region_memcmp(source, region0, source, region, byte_size),
       "Unexpected match in mc_snapshot_region_memcmp() with previous snapshot");
 
-    xbt_test_add("Compare parts of region data for %i page(s)", n);
+    xbt_test_add("Compare parts of region data for %i page(s) with current value", n);
     for(int j=0; j!=100; ++j) {
       size_t offset = rand() % byte_size;
       size_t size = rand() % (byte_size - offset);
       xbt_test_assert(!mc_snapshot_region_memcmp((char*) source+offset, NULL, (char*) source+offset, region, size),
+        "Mismatch in mc_snapshot_region_memcmp()");
+    }
+
+    xbt_test_add("Compare parts of region data for %i page(s) with itself", n);
+    for(int j=0; j!=100; ++j) {
+      size_t offset = rand() % byte_size;
+      size_t size = rand() % (byte_size - offset);
+      xbt_test_assert(!mc_snapshot_region_memcmp((char*) source+offset, region, (char*) source+offset, region, size),
         "Mismatch in mc_snapshot_region_memcmp()");
     }
 
