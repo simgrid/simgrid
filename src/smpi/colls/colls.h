@@ -128,6 +128,7 @@ COLL_APPLY(action, COLL_ALLREDUCE_SIG, ompi_ring_segmented) COLL_sep \
 COLL_APPLY(action, COLL_ALLREDUCE_SIG, mpich) COLL_sep \
 COLL_APPLY(action, COLL_ALLREDUCE_SIG, mvapich2) COLL_sep \
 COLL_APPLY(action, COLL_ALLREDUCE_SIG, mvapich2_rs) COLL_sep \
+COLL_APPLY(action, COLL_ALLREDUCE_SIG, rab) COLL_sep \
 COLL_APPLY(action, COLL_ALLREDUCE_SIG, automatic)
 
 COLL_ALLREDUCES(COLL_PROTO, COLL_NOsep)
@@ -243,6 +244,7 @@ COLL_APPLY(action, COLL_REDUCE_SIG, ompi_binomial) COLL_sep \
 COLL_APPLY(action, COLL_REDUCE_SIG, mpich) COLL_sep \
 COLL_APPLY(action, COLL_REDUCE_SIG, mvapich2) COLL_sep \
 COLL_APPLY(action, COLL_REDUCE_SIG, mvapich2_knomial) COLL_sep \
+COLL_APPLY(action, COLL_REDUCE_SIG, rab) COLL_sep \
 COLL_APPLY(action, COLL_REDUCE_SIG, automatic)
 
 COLL_REDUCES(COLL_PROTO, COLL_NOsep)
