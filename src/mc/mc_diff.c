@@ -90,7 +90,8 @@ static void mmalloc_backtrace_display(void *addr)
   /* type = heap->heapinfo[block].type; */
 
   /* switch(type){ */
-  /* case -1 : /\* Free block *\/ */
+  /* case MMALLOC_TYPE_HEAPINFO :  */
+  /* case MMALLOC_TYPE_FREE : /\* Free block *\/ */
   /*   fprintf(stderr, "Asked to display the backtrace of a block that is free. I'm puzzled\n"); */
   /*   xbt_abort(); */
   /*   break;  */
@@ -422,9 +423,6 @@ int mmalloc_compare_heap(mc_snapshot_t snapshot1, mc_snapshot_t snapshot2)
   void *addr_block1, *addr_block2, *addr_frag1, *addr_frag2;
   int nb_diff1 = 0, nb_diff2 = 0;
 
-  xbt_dynar_t previous =
-      xbt_dynar_new(sizeof(heap_area_pair_t), heap_area_pair_free_voidp);
-
   int equal, res_compare = 0;
 
   /* Check busy blocks */
@@ -443,20 +441,24 @@ int mmalloc_compare_heap(mc_snapshot_t snapshot1, mc_snapshot_t snapshot2)
 
   while (i1 <= state->heaplimit) {
 
-    // TODO, lookup in the correct region in order to speed it up:
     malloc_info* heapinfo1 = mc_snapshot_read_region(&heapinfos1[i1], heap_region1, &heapinfo_temp1, sizeof(malloc_info));
     malloc_info* heapinfo2 = mc_snapshot_read_region(&heapinfos2[i1], heap_region2, &heapinfo_temp2, sizeof(malloc_info));
 
-    if (heapinfo1->type == -1) {      /* Free block */
-      i1++;
+    if (heapinfo1->type == MMALLOC_TYPE_FREE || heapinfo1->type == MMALLOC_TYPE_HEAPINFO) {      /* Free block */
+      i1 += heapinfo1->free_block.size;
       continue;
+    }
+
+    if (heapinfo1->type < 0) {
+      fprintf(stderr, "Unkown mmalloc block type.\n");
+      abort();
     }
 
     addr_block1 =
         ((void *) (((ADDR2UINT(i1)) - 1) * BLOCKSIZE +
                    (char *) ((xbt_mheap_t) state->s_heap)->heapbase));
 
-    if (heapinfo1->type == 0) {       /* Large block */
+    if (heapinfo1->type == MMALLOC_TYPE_UNFRAGMENTED) {       /* Large block */
 
       if (is_stack(addr_block1)) {
         for (k = 0; k < heapinfo1->busy_block.size; k++)
@@ -498,8 +500,6 @@ int mmalloc_compare_heap(mc_snapshot_t snapshot1, mc_snapshot_t snapshot2)
             i1 += heapinfo1->busy_block.size;
           }
 
-          xbt_dynar_reset(previous);
-
         }
 
       }
@@ -517,7 +517,7 @@ int mmalloc_compare_heap(mc_snapshot_t snapshot1, mc_snapshot_t snapshot2)
 
         malloc_info* heapinfo2b = mc_snapshot_read_region(&heapinfos2[i2], heap_region2, &heapinfo_temp2b, sizeof(malloc_info));
 
-        if (heapinfo2b->type != 0) {
+        if (heapinfo2b->type != MMALLOC_TYPE_UNFRAGMENTED) {
           i2++;
           continue;
         }
@@ -539,8 +539,6 @@ int mmalloc_compare_heap(mc_snapshot_t snapshot1, mc_snapshot_t snapshot2)
           equal = 1;
           i1 += heapinfo1->busy_block.size;
         }
-
-        xbt_dynar_reset(previous);
 
         i2++;
 
@@ -580,8 +578,7 @@ int mmalloc_compare_heap(mc_snapshot_t snapshot1, mc_snapshot_t snapshot2)
                            (char *) ((xbt_mheap_t) state->s_heap)->heapbase));
             addr_frag2 =
                 (void *) ((char *) addr_block2 +
-                          (j1 << ((xbt_mheap_t) state->s_heap)->heapinfo[i1].
-                           type));
+                          (j1 << heapinfo2->type));
 
             res_compare =
                 compare_heap_area(addr_frag1, addr_frag2, snapshot1, snapshot2,
@@ -590,8 +587,6 @@ int mmalloc_compare_heap(mc_snapshot_t snapshot1, mc_snapshot_t snapshot2)
             if (res_compare != 1)
               equal = 1;
 
-            xbt_dynar_reset(previous);
-
           }
 
         }
@@ -599,9 +594,15 @@ int mmalloc_compare_heap(mc_snapshot_t snapshot1, mc_snapshot_t snapshot2)
         while (i2 <= state->heaplimit && !equal) {
 
           malloc_info* heapinfo2b = mc_snapshot_read_region(&heapinfos2[i2], heap_region2, &heapinfo_temp2b, sizeof(malloc_info));
-          if (heapinfo2b->type <= 0) {
-            i2++;
+
+          if (heapinfo2b->type == MMALLOC_TYPE_FREE || heapinfo2b->type == MMALLOC_TYPE_HEAPINFO) {
+            i2 += heapinfo2b->free_block.size;
             continue;
+          }
+
+          if (heapinfo2b->type < 0) {
+            fprintf(stderr, "Unkown mmalloc block type.\n");
+            abort();
           }
 
           for (j2 = 0; j2 < (size_t) (BLOCKSIZE >> heapinfo2b->type);
@@ -618,8 +619,7 @@ int mmalloc_compare_heap(mc_snapshot_t snapshot1, mc_snapshot_t snapshot2)
                            (char *) ((xbt_mheap_t) state->s_heap)->heapbase));
             addr_frag2 =
                 (void *) ((char *) addr_block2 +
-                          (j2 << ((xbt_mheap_t) state->s_heap)->heapinfo[i2].
-                           type));
+                          (j2 << heapinfo2b->type));
 
             res_compare =
                 compare_heap_area(addr_frag1, addr_frag2, snapshot2, snapshot2,
@@ -627,11 +627,8 @@ int mmalloc_compare_heap(mc_snapshot_t snapshot1, mc_snapshot_t snapshot2)
 
             if (res_compare != 1) {
               equal = 1;
-              xbt_dynar_reset(previous);
               break;
             }
-
-            xbt_dynar_reset(previous);
 
           }
 
@@ -663,7 +660,7 @@ int mmalloc_compare_heap(mc_snapshot_t snapshot1, mc_snapshot_t snapshot2)
 
   for(i = 1; i <= state->heaplimit; i++) {
     malloc_info* heapinfo1 = mc_snapshot_read_region(&heapinfos1[i], heap_region1, &heapinfo_temp1, sizeof(malloc_info));
-    if (heapinfo1->type == 0) {
+    if (heapinfo1->type == MMALLOC_TYPE_UNFRAGMENTED) {
       if (i1 == state->heaplimit) {
         if (heapinfo1->busy_block.busy_size > 0) {
           if (state->equals_to1_(i, 0).valid == 0) {
@@ -704,7 +701,7 @@ int mmalloc_compare_heap(mc_snapshot_t snapshot1, mc_snapshot_t snapshot2)
 
   for (i=1; i <= state->heaplimit; i++) {
     malloc_info* heapinfo2 = mc_snapshot_read_region(&heapinfos2[i], heap_region2, &heapinfo_temp2, sizeof(malloc_info));
-    if (heapinfo2->type == 0) {
+    if (heapinfo2->type == MMALLOC_TYPE_UNFRAGMENTED) {
       if (i1 == state->heaplimit) {
         if (heapinfo2->busy_block.busy_size > 0) {
           if (state->equals_to2_(i, 0).valid == 0) {
@@ -743,7 +740,6 @@ int mmalloc_compare_heap(mc_snapshot_t snapshot1, mc_snapshot_t snapshot2)
   if (i1 == state->heaplimit)
     XBT_DEBUG("Number of blocks/fragments not found in heap2 : %d", nb_diff2);
 
-  xbt_dynar_free(&previous);
   return ((nb_diff1 > 0) || (nb_diff2 > 0));
 }
 
@@ -795,7 +791,7 @@ static int compare_heap_area_without_type(struct s_mc_diff *state,
       }
     }
 
-    if (mc_snapshot_region_memcp(((char *) real_area1) + i, heap_region1, ((char *) real_area2) + i, heap_region2, 1) != 0) {
+    if (mc_snapshot_region_memcmp(((char *) real_area1) + i, heap_region1, ((char *) real_area2) + i, heap_region2, 1) != 0) {
 
       pointer_align = (i / sizeof(void *)) * sizeof(void *);
       addr_pointed1 = mc_snapshot_read_pointer((char *) real_area1 + pointer_align, snapshot1);
@@ -888,12 +884,12 @@ top:
       if (real_area1 == real_area2)
         return -1;
       else
-        return (mc_snapshot_region_memcp(real_area1, heap_region1, real_area2, heap_region2, area_size) != 0);
+        return (mc_snapshot_region_memcmp(real_area1, heap_region1, real_area2, heap_region2, area_size) != 0);
     } else {
       if (area_size != -1 && type->byte_size != area_size)
         return -1;
       else {
-        return (mc_snapshot_region_memcp(real_area1, heap_region1, real_area2, heap_region2, type->byte_size) != 0);
+        return (mc_snapshot_region_memcmp(real_area1, heap_region1, real_area2, heap_region2, type->byte_size) != 0);
       }
     }
     break;
@@ -901,7 +897,7 @@ top:
     if (area_size != -1 && type->byte_size != area_size)
       return -1;
     else
-      return (mc_snapshot_region_memcp(real_area1, heap_region1, real_area2, heap_region2, type->byte_size) != 0);
+      return (mc_snapshot_region_memcmp(real_area1, heap_region1, real_area2, heap_region2, type->byte_size) != 0);
     break;
   case DW_TAG_typedef:
   case DW_TAG_const_type:
@@ -1127,7 +1123,6 @@ int compare_heap_area(void *area1, void *area2, mc_snapshot_t snapshot1,
   int check_ignore = 0;
 
   void *real_addr_block1, *real_addr_block2, *real_addr_frag1, *real_addr_frag2;
-
   int type_size = -1;
   int offset1 = 0, offset2 = 0;
   int new_size1 = -1, new_size2 = -1;
@@ -1139,6 +1134,9 @@ int compare_heap_area(void *area1, void *area2, mc_snapshot_t snapshot1,
   malloc_info* heapinfos2 = mc_snapshot_read_pointer(&((xbt_mheap_t)std_heap)->heapinfo, snapshot2);
 
   malloc_info heapinfo_temp1, heapinfo_temp2;
+
+  void* real_area1_to_compare = area1;
+  void* real_area2_to_compare = area2;
 
   if (previous == NULL) {
     previous =
@@ -1206,17 +1204,24 @@ int compare_heap_area(void *area1, void *area2, mc_snapshot_t snapshot1,
   malloc_info* heapinfo1 = mc_snapshot_read_region(&heapinfos1[block1], heap_region1, &heapinfo_temp1, sizeof(malloc_info));
   malloc_info* heapinfo2 = mc_snapshot_read_region(&heapinfos2[block2], heap_region2, &heapinfo_temp2, sizeof(malloc_info));
 
-  if ((heapinfo1->type == -1) && (heapinfo2->type == -1)) { /* Free block */
+  if ((heapinfo1->type == MMALLOC_TYPE_FREE || heapinfo1->type==MMALLOC_TYPE_HEAPINFO)
+    && (heapinfo2->type == MMALLOC_TYPE_FREE || heapinfo2->type ==MMALLOC_TYPE_HEAPINFO)) {
 
+    /* Free block */
     if (match_pairs) {
       match_equals(state, previous);
       xbt_dynar_free(&previous);
     }
     return 0;
 
-  } else if ((heapinfo1->type == 0) && (heapinfo2->type == 0)) {    /* Complete block */
+  } else if (heapinfo1->type == MMALLOC_TYPE_UNFRAGMENTED
+    && heapinfo2->type == MMALLOC_TYPE_UNFRAGMENTED) {
+    /* Complete block */
 
     // TODO, lookup variable type from block type as done for fragmented blocks
+
+    offset1 = (char *) area1 - (char *) real_addr_block1;
+    offset2 = (char *) area2 - (char *) real_addr_block2;
 
     if (state->equals_to1_(block1, 0).valid
         && state->equals_to2_(block2, 0).valid) {
@@ -1232,7 +1237,7 @@ int compare_heap_area(void *area1, void *area2, mc_snapshot_t snapshot1,
     if (type_size != -1) {
       if (type_size != heapinfo1->busy_block.busy_size
           && type_size != heapinfo2->busy_block.busy_size
-          && type->name != NULL && !strcmp(type->name, "s_smx_context")) {
+          && (type->name == NULL || !strcmp(type->name, "struct s_smx_context"))) {
         if (match_pairs) {
           match_equals(state, previous);
           xbt_dynar_free(&previous);
@@ -1303,12 +1308,10 @@ int compare_heap_area(void *area1, void *area2, mc_snapshot_t snapshot1,
     // Process address of the fragment:
     real_addr_frag1 =
         (void *) ((char *) real_addr_block1 +
-                  (frag1 << ((xbt_mheap_t) state->s_heap)->heapinfo[block1].
-                   type));
+                  (frag1 << heapinfo1->type));
     real_addr_frag2 =
         (void *) ((char *) real_addr_block2 +
-                  (frag2 << ((xbt_mheap_t) state->s_heap)->heapinfo[block2].
-                   type));
+                  (frag2 << heapinfo2->type));
 
     // Check the size of the fragments against the size of the type:
     if (type_size != -1) {
@@ -1320,6 +1323,7 @@ int compare_heap_area(void *area1, void *area2, mc_snapshot_t snapshot1,
         }
         return -1;
       }
+      // ?
       if (type_size != heapinfo1->busy_frag.frag_size[frag1]
           || type_size != heapinfo2->busy_frag.frag_size[frag2]) {
         if (match_pairs) {
@@ -1329,10 +1333,11 @@ int compare_heap_area(void *area1, void *area2, mc_snapshot_t snapshot1,
         return -1;
       }
     }
+
     // Check if the blocks are already matched together:
     if (state->equals_to1_(block1, frag1).valid
         && state->equals_to2_(block2, frag2).valid) {
-      if (equal_fragments(state, block1, frag1, block2, frag2)) {
+      if (offset1==offset2 && equal_fragments(state, block1, frag1, block2, frag2)) {
         if (match_pairs) {
           match_equals(state, previous);
           xbt_dynar_free(&previous);
@@ -1356,11 +1361,12 @@ int compare_heap_area(void *area1, void *area2, mc_snapshot_t snapshot1,
         return 1;
       }
     }
+
     // Size of the fragment:
     size = heapinfo1->busy_frag.frag_size[frag1];
 
     // Remember (basic) type inference.
-    // The current data structure only allows us to do this for the whole block.
+    // The current data structure only allows us to do this for the whole fragment.
     if (type != NULL && area1 == real_addr_frag1) {
       state->types1_(block1, frag1) = type;
     }
@@ -1471,12 +1477,12 @@ int compare_heap_area(void *area1, void *area2, mc_snapshot_t snapshot1,
   /* Start comparison */
   if (type) {
     res_compare =
-        compare_heap_area_with_type(state, area1, area2, snapshot1, snapshot2,
+        compare_heap_area_with_type(state, real_area1_to_compare, real_area2_to_compare, snapshot1, snapshot2,
                                     previous, type, size, check_ignore,
                                     pointer_level);
   } else {
     res_compare =
-        compare_heap_area_without_type(state, area1, area2, snapshot1, snapshot2,
+        compare_heap_area_without_type(state, real_area1_to_compare, real_area2_to_compare, snapshot1, snapshot2,
                                        previous, size, check_ignore);
   }
   if (res_compare == 1) {
@@ -1521,9 +1527,9 @@ static int get_pointed_area_size(void *area, int heap)
       || (block > state->heapsize1) || (block < 1))
     return -1;
 
-  if (heapinfo[block].type == -1) {     /* Free block */
+  if (heapinfo[block].type == MMALLOC_TYPE_FREE || heapinfo[block].type == MMALLOC_TYPE_HEAPINFO) {     /* Free block */
     return -1;
-  } else if (heapinfo[block].type == 0) {       /* Complete block */
+  } else if (heapinfo[block].type == MMALLOC_TYPE_UNFRAGMENTED) {       /* Complete block */
     return (int) heapinfo[block].busy_block.busy_size;
   } else {
     frag =
@@ -1624,12 +1630,13 @@ int mmalloc_linear_compare_heap(xbt_mheap_t heap1, xbt_mheap_t heap2)
 
     } else {
 
-      if (state->heapinfo1[i].type == -1) {     /* Free block */
+      if (state->heapinfo1[i].type == MMALLOC_TYPE_FREE
+        || state->heapinfo1[i].type == MMALLOC_TYPE_HAPINFO) {     /* Free block */
         i++;
         continue;
       }
 
-      if (state->heapinfo1[i].type == 0) {      /* Large block */
+      if (state->heapinfo1[i].type == MMALLOC_TYPE_UNFRAGMENTED) {      /* Large block */
 
         if (state->heapinfo1[i].busy_block.size !=
             state->heapinfo2[i].busy_block.size) {

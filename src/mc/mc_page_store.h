@@ -198,6 +198,7 @@ SG_BEGIN_DECL()
 
 typedef struct s_mc_pages_store s_mc_pages_store_t, * mc_pages_store_t;
 mc_pages_store_t mc_pages_store_new();
+void mc_pages_store_delete(mc_pages_store_t store);
 
 /**
  */

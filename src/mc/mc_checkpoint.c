@@ -60,7 +60,7 @@ static void local_variable_free_voidp(void *v)
   local_variable_free((local_variable_t) * (void **) v);
 }
 
-static void MC_region_destroy(mc_mem_region_t reg)
+void MC_region_destroy(mc_mem_region_t reg)
 {
   //munmap(reg->data, reg->size);
   xbt_free(reg->data);
@@ -95,12 +95,8 @@ void MC_free_snapshot(mc_snapshot_t snapshot)
 /*******************************  Snapshot regions ********************************/
 /*********************************************************************************/
 
-static mc_mem_region_t MC_region_new(int type, void *start_addr, size_t size, mc_mem_region_t ref_reg)
+static mc_mem_region_t mc_region_new_dense(int type, void *start_addr, size_t size, mc_mem_region_t ref_reg)
 {
-  if (_sg_mc_sparse_checkpoint) {
-    return mc_region_new_sparse(type, start_addr, size, ref_reg);
-  }
-
   mc_mem_region_t new_reg = xbt_new(s_mc_mem_region_t, 1);
   new_reg->start_addr = start_addr;
   new_reg->data = NULL;
@@ -112,6 +108,15 @@ static mc_mem_region_t MC_region_new(int type, void *start_addr, size_t size, mc
             type, new_reg->data, start_addr, size);
   return new_reg;
 
+}
+
+static mc_mem_region_t MC_region_new(int type, void *start_addr, size_t size, mc_mem_region_t ref_reg)
+{
+  if (_sg_mc_sparse_checkpoint) {
+    return mc_region_new_sparse(type, start_addr, size, ref_reg);
+  } else  {
+    return mc_region_new_dense(type, start_addr, size, ref_reg);
+  }
 }
 
 /** @brief Restore a region from a snapshot
@@ -569,7 +574,7 @@ int mc_important_snapshot(mc_snapshot_t snapshot)
 {
   // We need this snapshot in order to know which
   // pages needs to be stored in the next snapshot:
-  if (_sg_mc_sparse_checkpoint && snapshot == mc_model_checker->parent_snapshot)
+  if (snapshot == mc_model_checker->parent_snapshot)
     return true;
 
   return false;
@@ -608,7 +613,9 @@ mc_snapshot_t MC_take_snapshot(int num_state)
   }
 
   MC_snapshot_ignore_restore(snapshot);
-  mc_model_checker->parent_snapshot = snapshot;
+  if (_sg_mc_sparse_checkpoint && _sg_mc_soft_dirty) {
+    mc_model_checker->parent_snapshot = snapshot;
+  }
   return snapshot;
 }
 
@@ -639,7 +646,9 @@ void MC_restore_snapshot(mc_snapshot_t snapshot)
   }
 
   MC_snapshot_ignore_restore(snapshot);
-  mc_model_checker->parent_snapshot = snapshot;
+  if (_sg_mc_sparse_checkpoint && _sg_mc_soft_dirty) {
+    mc_model_checker->parent_snapshot = snapshot;
+  }
 }
 
 mc_snapshot_t SIMIX_pre_mc_snapshot(smx_simcall_t simcall)

@@ -44,6 +44,7 @@ sub process_one($) {
     
     $outfile =  $infile;
     $outfile =~ s/\.c$/_unit.c/;
+    $outfile =~ s/\.cpp$/_unit.cpp/;
     $outfile =~ s|.*/([^/]*)$|$1| if $outfile =~ m|/|;
     $outfile = "$outdir$outfile";
     

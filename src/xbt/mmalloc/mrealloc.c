@@ -59,12 +59,17 @@ void *mrealloc(xbt_mheap_t mdp, void *ptr, size_t size)
   type = mdp->heapinfo[block].type;
 
   switch (type) {
-  case -1:
+  case MMALLOC_TYPE_HEAPINFO:
+    fprintf(stderr, "Asked realloc a fragment coming from a heapinfo block. I'm confused.\n");
+    abort();
+    break;
+
+  case MMALLOC_TYPE_FREE:
     fprintf(stderr, "Asked realloc a fragment coming from a *free* block. I'm puzzled.\n");
     abort();
     break;
 
-  case 0:
+  case MMALLOC_TYPE_UNFRAGMENTED:
     /* Maybe reallocate a large block to a small fragment.  */
 
     if (size <= BLOCKSIZE / 2) { // Full block -> Fragment; no need to optimize for time
@@ -84,8 +89,10 @@ void *mrealloc(xbt_mheap_t mdp, void *ptr, size_t size)
       /* The new size is smaller; return excess memory to the free list. */
       //printf("(%s) return excess memory...",xbt_thread_self_name());
       for (it= block+blocks; it< mdp->heapinfo[block].busy_block.size ; it++){
-        mdp->heapinfo[it].type = 0; // FIXME that should be useless, type should already be 0 here
+        mdp->heapinfo[it].type = MMALLOC_TYPE_UNFRAGMENTED; // FIXME that should be useless, type should already be 0 here
         mdp->heapinfo[it].busy_block.ignore = 0;
+        mdp->heapinfo[it].busy_block.size = 0;
+        mdp->heapinfo[it].busy_block.busy_size = 0;
       }
 
       mdp->heapinfo[block + blocks].busy_block.size
@@ -126,6 +133,11 @@ void *mrealloc(xbt_mheap_t mdp, void *ptr, size_t size)
     break;
 
   default: /* Fragment -> ??; type=logarithm to base two of the fragment size.  */
+
+    if (type < 0) {
+      fprintf(stderr, "Unkown mmalloc block type.\n");
+      abort();
+    }
 
     if (size > (size_t) (1 << (type - 1)) && size <= (size_t) (1 << type)) {
       /* The new size is the same kind of fragment.  */

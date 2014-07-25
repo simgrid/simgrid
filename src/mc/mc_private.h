@@ -139,9 +139,10 @@ int mc_important_snapshot(mc_snapshot_t snapshot);
 
 size_t* mc_take_page_snapshot_region(void* data, size_t page_count, uint64_t* pagemap, size_t* reference_pages);
 void mc_free_page_snapshot_region(size_t* pagenos, size_t page_count);
-void mc_restore_page_snapshot_region(mc_mem_region_t region, size_t page_count, uint64_t* pagemap, mc_mem_region_t reference_region);
+void mc_restore_page_snapshot_region(void* start_addr, size_t page_count, size_t* pagenos, uint64_t* pagemap, size_t* reference_pagenos);
 
 mc_mem_region_t mc_region_new_sparse(int type, void *start_addr, size_t size, mc_mem_region_t ref_reg);
+void MC_region_destroy(mc_mem_region_t reg);
 void mc_region_restore_sparse(mc_mem_region_t reg, mc_mem_region_t ref_reg);
 void mc_softdirty_reset();
 
@@ -153,10 +154,10 @@ bool mc_snapshot_region_linear(mc_mem_region_t region) {
 void* mc_snapshot_read_fragmented(void* addr, mc_mem_region_t region, void* target, size_t size);
 
 void* mc_snapshot_read(void* addr, mc_snapshot_t snapshot, void* target, size_t size);
-int mc_snapshot_region_memcp(
+int mc_snapshot_region_memcmp(
   void* addr1, mc_mem_region_t region1,
   void* addr2, mc_mem_region_t region2, size_t size);
-int mc_snapshot_memcp(
+int mc_snapshot_memcmp(
   void* addr1, mc_snapshot_t snapshot1,
   void* addr2, mc_snapshot_t snapshot2, size_t size);
 
@@ -738,18 +739,22 @@ void* mc_snapshot_read_pointer(void* addr, mc_snapshot_t snapshot)
 static inline __attribute__((always_inline))
 void* mc_snapshot_read_region(void* addr, mc_mem_region_t region, void* target, size_t size)
 {
-  uintptr_t offset = (uintptr_t) addr - (uintptr_t) region->start_addr;
+  if (region==NULL)
+    return addr;
 
-  xbt_assert(addr >= region->start_addr && (char*) addr+size < (char*)region->start_addr+region->size,
+  uintptr_t offset = (char*) addr - (char*) region->start_addr;
+
+  xbt_assert(mc_region_contain(region, addr),
     "Trying to read out of the region boundary.");
 
   // Linear memory region:
   if (region->data) {
-    return (void*) ((uintptr_t) region->data + offset);
+    return (char*) region->data + offset;
   }
 
   // Fragmented memory region:
   else if (region->page_numbers) {
+    // Last byte of the region:
     void* end = (char*) addr + size - 1;
     if( mc_same_page(addr, end) ) {
       // The memory is contained in a single page:
@@ -765,6 +770,12 @@ void* mc_snapshot_read_region(void* addr, mc_mem_region_t region, void* target, 
   }
 }
 
+static inline __attribute__ ((always_inline))
+void* mc_snapshot_read_pointer_region(void* addr, mc_mem_region_t region)
+{
+  void* res;
+  return *(void**) mc_snapshot_read_region(addr, region, &res, sizeof(void*));
+}
 
 SG_END_DECL()
 
