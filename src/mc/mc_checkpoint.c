@@ -95,12 +95,8 @@ void MC_free_snapshot(mc_snapshot_t snapshot)
 /*******************************  Snapshot regions ********************************/
 /*********************************************************************************/
 
-static mc_mem_region_t MC_region_new(int type, void *start_addr, size_t size, mc_mem_region_t ref_reg)
+static mc_mem_region_t mc_region_new_dense(int type, void *start_addr, size_t size, mc_mem_region_t ref_reg)
 {
-  if (_sg_mc_sparse_checkpoint) {
-    return mc_region_new_sparse(type, start_addr, size, ref_reg);
-  }
-
   mc_mem_region_t new_reg = xbt_new(s_mc_mem_region_t, 1);
   new_reg->start_addr = start_addr;
   new_reg->data = NULL;
@@ -112,6 +108,15 @@ static mc_mem_region_t MC_region_new(int type, void *start_addr, size_t size, mc
             type, new_reg->data, start_addr, size);
   return new_reg;
 
+}
+
+static mc_mem_region_t MC_region_new(int type, void *start_addr, size_t size, mc_mem_region_t ref_reg)
+{
+  if (_sg_mc_sparse_checkpoint) {
+    return mc_region_new_sparse(type, start_addr, size, ref_reg);
+  } else  {
+    return mc_region_new_dense(type, start_addr, size, ref_reg);
+  }
 }
 
 /** @brief Restore a region from a snapshot
