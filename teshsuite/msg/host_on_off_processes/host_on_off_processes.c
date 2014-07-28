@@ -14,28 +14,30 @@
 XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test,
                              "Messages specific for this msg example");
 
-int test(int argc, char *argv[]);
-int test_daemon(int argc, char *argv[]);
+int test_launcher(int argc, char *argv[]);
+int process_daemon(int argc, char *argv[]);
+int process_sleep(int argc, char *argv[]);
 int commRX(int argc, char *argv[]);
 int commTX(int argc, char *argv[]);
 
 xbt_dynar_t tests;
 
-int test(int argc, char *argv[])
+int test_launcher(int argc, char *argv[])
 {
   int test = 0;
   char **argvF;
   argvF = xbt_new(char*, 2);
-  argvF[0] = xbt_strdup("test_daemon");
+  argvF[0] = xbt_strdup("process_daemon");
   msg_host_t jupiter = MSG_get_host_by_name("Jupiter");
 
   test = 1;
+  // Create a process running a simple task on a host and turn the host off during the execution of the process.
   if (xbt_dynar_member(tests, &test)){
     XBT_INFO("Test 1:");
     XBT_INFO("  Create a process on Jupiter");
     argvF = xbt_new(char*, 2);
-    argvF[0] = xbt_strdup("test_daemon");
-    MSG_process_create_with_arguments("test_daemon", test_daemon, NULL, jupiter, 1, argvF);
+    argvF[0] = xbt_strdup("process_daemon");
+    MSG_process_create_with_arguments("process_daemon", process_daemon, NULL, jupiter, 1, argvF);
     XBT_INFO("  Turn off Jupiter");
     MSG_host_off(jupiter);
     MSG_process_sleep(10);
@@ -43,13 +45,16 @@ int test(int argc, char *argv[])
   }
 
   test = 2;
+  // Create a process that on a host that is turned off (this should not be possible)
   if (xbt_dynar_member(tests, &test)){
     XBT_INFO("Test 2:");
     XBT_INFO("  Turn off Jupiter");
+    // adsein: Jupiter is already, hence nothing should happen
+    // adsein: This can be one additional test, to check that you cannot shutdown twice a host
     MSG_host_off(jupiter);
     argvF = xbt_new(char*, 2);
-    argvF[0] = xbt_strdup("test_daemon");
-    MSG_process_create_with_arguments("test_daemon", test_daemon, NULL, jupiter, 1, argvF);
+    argvF[0] = xbt_strdup("process_daemon");
+    MSG_process_create_with_arguments("process_daemon", process_daemon, NULL, jupiter, 1, argvF);
     MSG_process_sleep(10);
     XBT_INFO("  Test 2 does not crash, WTF ?!(number of Process : %d, it should be 1)", MSG_process_get_number());
     XBT_INFO("  Ok so let's turn on/off the node to see whether the process is correctly bound to Jupiter");
@@ -61,9 +66,25 @@ int test(int argc, char *argv[])
     XBT_INFO("number of Process : %d it should be 1. The daemon that has been created for test2 has been correctly destroyed....ok at least it looks rigorous, cool ! You just have to disallow the possibility to create a new process on a node when the node is off.)", MSG_process_get_number());
   }
 
-  test = 3;
+   test = 3;
+  // Create a process running sucessive sleeps on a host and turn the host off during the execution of the process.
   if (xbt_dynar_member(tests, &test)){
-    XBT_INFO("Test 3 (turn off src during a communication) : Create a Process/task to make a communication between Jupiter and Tremblay and turn off Jupiter during the communication");
+    XBT_INFO("Test 3:");
+    MSG_host_on(jupiter);
+    argvF = xbt_new(char*, 2);
+    argvF[0] = xbt_strdup("process_sleep");
+    MSG_process_create_with_arguments("process_sleep", process_sleep, NULL, jupiter, 1, argvF);
+    MSG_process_sleep(100);
+    XBT_INFO("  Turn off");
+    MSG_host_off(jupiter);
+    XBT_INFO("  sleep for 10 seconds");
+    MSG_process_sleep(10000);
+    XBT_INFO("number of Process : %d it should be 1 (i.e. the Test one))", MSG_process_get_number());
+  }
+
+  test = 4;
+  if (xbt_dynar_member(tests, &test)){
+    XBT_INFO("Test 4 (turn off src during a communication) : Create a Process/task to make a communication between Jupiter and Tremblay and turn off Jupiter during the communication");
     MSG_host_on(jupiter);
     MSG_process_sleep(10);
     argvF = xbt_new(char*, 2);
@@ -79,9 +100,9 @@ int test(int argc, char *argv[])
     XBT_INFO("Test 3 seems ok  (number of Process : %d, it should be 1 or 2 if RX has not been satisfied) cool, you can now turn off a node that has a process paused by a sleep call", MSG_process_get_number());
   }
 
-  test = 4;
+  test = 5;
   if (xbt_dynar_member(tests, &test)){
-    XBT_INFO("Test 4 (turn off dest during a communication : Create a Process/task to make a communication between Tremblay and Jupiter and turn off Jupiter during the communication");
+    XBT_INFO("Test 5 (turn off dest during a communication : Create a Process/task to make a communication between Tremblay and Jupiter and turn off Jupiter during the communication");
     MSG_host_on(jupiter);
     MSG_process_sleep(10);
     argvF = xbt_new(char*, 2);
@@ -94,12 +115,7 @@ int test(int argc, char *argv[])
     XBT_INFO("Test 4 seems ok, cool !(number of Process : %d, it should be 1", MSG_process_get_number());
   }
 
-  test =5;
-  if (xbt_dynar_member(tests, &test)){
-
-  }
-
-  test = 6;
+  test =6;
   if (xbt_dynar_member(tests, &test)){
 
   }
@@ -114,15 +130,34 @@ int test(int argc, char *argv[])
 
   }
 
+  test = 9;
+  if (xbt_dynar_member(tests, &test)){
+
+  }
+
   return 0;
 }
 
-int test_daemon(int argc, char *argv[])
+// adsein: Is this really a daemon ? it ran only one task ? I just added a stupid loop 
+int process_daemon(int argc, char *argv[])
 {
   msg_task_t task = NULL;
-  task = MSG_task_create("deamon", 100*MSG_get_host_speed(MSG_host_self()), 0, NULL);
-  XBT_INFO("  Execute deamon");
+  for(;;){
+    task = MSG_task_create("deamon", 100*MSG_get_host_speed(MSG_host_self()), 0, NULL);
+    XBT_INFO("  Execute deamon");
+    MSG_task_destroy(task);
+  }
   MSG_task_execute(task);
+  XBT_INFO("  I'm done. See you!");
+  return 0;
+}
+
+int process_sleep(int argc, char *argv[])
+{
+  for(;;){
+    XBT_INFO("  I'm alive but I should sleep");
+    MSG_process_sleep(10);
+  }
   XBT_INFO("  I'm done. See you!");
   return 0;
 }
@@ -193,8 +228,9 @@ int main(int argc, char *argv[])
     MSG_create_environment(platform_file);
   }
   {                             /*   Application deployment */
-    MSG_function_register("test", test);
-    MSG_function_register("test_daemon", test_daemon);
+    MSG_function_register("test_launcher", test_launcher);
+    MSG_function_register("process_daemon", process_daemon);
+    MSG_function_register("process_sleep", process_sleep);
 
     MSG_launch_application(application_file);
   }

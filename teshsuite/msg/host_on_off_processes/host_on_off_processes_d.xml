@@ -2,6 +2,6 @@
 <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">
 <platform version="3">
   <!-- The master process (with some arguments) -->
-  <process host="Tremblay" function="test">
+  <process host="Tremblay" function="test_launcher">
   </process>
 </platform>
