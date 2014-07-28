@@ -32,10 +32,8 @@ int smpi_coll_tuned_bcast_SMP_linear(void *buf, int count,
   // if the number of cores is one, the platform may be simulated with 1 node = 1 core
   if (num_core == 1) num_core = NUM_CORE;
 
-  if(size%num_core)
-    THROWF(arg_error,0, "bcast SMP linear can't be used with non multiple of num_core=%d number of processes!",num_core);
-
   int segment = bcast_SMP_linear_segment_byte / extent;
+  segment =  segment == 0 ? 1 :segment; 
   int pipe_length = count / segment;
   int remainder = count % segment;
   int increment = segment * extent;

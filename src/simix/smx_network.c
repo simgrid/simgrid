@@ -805,6 +805,9 @@ void SIMIX_comm_finish(smx_action_t action)
        it from the other actions in the waitany list. Afterwards, get the
        position of the actual action in the waitany dynar and
        return it as the result of the simcall */
+
+    if (simcall->call == SIMCALL_NONE) //FIXME: maybe a better way to handle this case
+      continue; // if process handling comm is killed
     if (simcall->call == SIMCALL_COMM_WAITANY) {
       SIMIX_waitany_remove_simcall_from_actions(simcall);
       if (!MC_is_active())

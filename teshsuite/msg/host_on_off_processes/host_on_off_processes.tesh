@@ -5,6 +5,7 @@ $ ./host_on_off_processes ${srcdir:=.}/../../../examples/platforms/small_platfor
 > [Jupiter:process_daemon:(2) 0.000000] [msg_test/INFO]   Execute deamon
 > [Tremblay:test_launcher:(1) 0.000000] [msg_test/INFO]   Turn off Jupiter
 > [Tremblay:test_launcher:(1) 10.000000] [msg_test/INFO] Test 1 seems ok, cool !(number of Process : 1, it should be 1 (i.e. the Test one))
+> [Tremblay:test_launcher:(1) 10.000000] [msg_test/INFO]   Test done. See you!
 > [10.000000] [msg_test/INFO] Simulation time 10
 
 $ ./host_on_off_processes ${srcdir:=.}/../../../examples/platforms/small_platform.xml ${srcdir:=.}/host_on_off_processes_d.xml 2 --log=no_loc --log=msg.thresh:error --log=surf_maxmin.thresh:error
@@ -16,6 +17,7 @@ $ ./host_on_off_processes ${srcdir:=.}/../../../examples/platforms/small_platfor
 > [Tremblay:test_launcher:(1) 10.000000] [msg_test/INFO]   Turn off
 > [Tremblay:test_launcher:(1) 10.000000] [msg_test/INFO]   sleep
 > [Tremblay:test_launcher:(1) 20.000000] [msg_test/INFO] number of Process : 1 it should be 1. The daemon that has been created for test2 has been correctly destroyed....ok at least it looks rigorous, cool ! You just have to disallow the possibility to create a new process on a node when the node is off.)
+> [Tremblay:test_launcher:(1) 20.000000] [msg_test/INFO]   Test done. See you!
 > [20.000000] [msg_test/INFO] Simulation time 20
 
 $ ./host_on_off_processes ${srcdir:=.}/../../../examples/platforms/small_platform.xml ${srcdir:=.}/host_on_off_processes_d.xml 3 --log=no_loc --log=msg.thresh:error --log=surf_maxmin.thresh:error
@@ -34,15 +36,28 @@ $ ./host_on_off_processes ${srcdir:=.}/../../../examples/platforms/small_platfor
 > [Jupiter:process_sleep:(2) 100.000000] [msg_test/INFO]   I'm alive but I should sleep
 > [Tremblay:test_launcher:(1) 100.000000] [msg_test/INFO]   sleep for 10 seconds
 > [Tremblay:test_launcher:(1) 10100.000000] [msg_test/INFO] number of Process : 1 it should be 1 (i.e. the Test one))
+> [Tremblay:test_launcher:(1) 10100.000000] [msg_test/INFO]   Test done. See you!
 > [10100.000000] [msg_test/INFO] Simulation time 10100
 
 $ ./host_on_off_processes ${srcdir:=.}/../../../examples/platforms/small_platform.xml ${srcdir:=.}/host_on_off_processes_d.xml 4 --log=no_loc --log=msg.thresh:error --log=surf_maxmin.thresh:error
-> [Tremblay:test:(1) 0.000000] [msg_test/INFO] Test 4 (turn off src during a communication) : Create a Process/task to make a communication between Jupiter and Tremblay and turn off Jupiter during the communication
+> [Tremblay:test_launcher:(1) 0.000000] [msg_test/INFO] Test 4 (turn off src during a communication) : Create a Process/task to make a communication between Jupiter and Tremblay and turn off Jupiter during the communication
 > [Tremblay:commRX:(2) 10.000000] [msg_test/INFO]   Start RX
 > [Jupiter:commTX:(3) 10.000000] [msg_test/INFO]   Start TX
-> [Tremblay:test:(1) 10.000000] [msg_test/INFO]   number of processes: 3
-> [Tremblay:test:(1) 20.000000] [msg_test/INFO]   Turn Jupiter off
-> [Tremblay:test:(1) 20.000000] [msg_test/INFO] Test 4 seems ok  (number of Process : 2, it should be 1 or 2 if RX has not been satisfied) cool, you can now turn off a node that has a process paused by a sleep call
+> [Tremblay:test_launcher:(1) 10.000000] [msg_test/INFO]   number of processes: 3
+> [Tremblay:test_launcher:(1) 20.000000] [msg_test/INFO]   Turn Jupiter off
+> [Tremblay:test_launcher:(1) 20.000000] [msg_test/INFO] Test 4 seems ok  (number of Process : 2, it should be 1 or 2 if RX has not been satisfied) cool, you can now turn off a node that has a process paused by a sleep call
+> [Tremblay:test_launcher:(1) 20.000000] [msg_test/INFO]   Test done. See you!
 > [Tremblay:commRX:(2) 20.000000] [msg_test/INFO]   Receive message: TRANSFERT_FAILURE
 > [Tremblay:commRX:(2) 20.000000] [msg_test/INFO]   RX Done
 > [20.000000] [msg_test/INFO] Simulation time 20
+
+$ ./host_on_off_processes ${srcdir:=.}/../../../examples/platforms/small_platform.xml ${srcdir:=.}/host_on_off_processes_d.xml 5 --log=no_loc --log=msg.thresh:error --log=surf_maxmin.thresh:error
+> [Tremblay:test_launcher:(1) 0.000000] [msg_test/INFO] Test 5 (turn off dest during a communication : Create a Process/task to make a communication between Tremblay and Jupiter and turn off Jupiter during the communication
+> [Jupiter:commRX:(2) 10.000000] [msg_test/INFO]   Start RX
+> [Tremblay:commTX:(3) 10.000000] [msg_test/INFO]   Start TX
+> [Tremblay:test_launcher:(1) 10.000000] [msg_test/INFO]   number of processes: 3
+> [Tremblay:test_launcher:(1) 20.000000] [msg_test/INFO]   Turn Jupiter off
+> [Tremblay:test_launcher:(1) 20.000000] [msg_test/INFO] Test 4 seems ok, cool !(number of Process : 2, it should be 2
+> [Tremblay:test_launcher:(1) 20.000000] [msg_test/INFO]   Test done. See you!
+> [Tremblay:commTX:(3) 40.000000] [msg_test/INFO]   TX done
+> [40.000000] [msg_test/INFO] Simulation time 40

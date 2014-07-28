@@ -20,6 +20,7 @@ smpi_coll_tuned_bcast_flattree_pipeline(void *buff, int count,
   extent = smpi_datatype_get_extent(data_type);
 
   int segment = flattree_segment_in_byte / extent;
+  segment =  segment == 0 ? 1 :segment; 
   int pipe_length = count / segment;
   int increment = segment * extent;
   if (pipe_length==0) {
