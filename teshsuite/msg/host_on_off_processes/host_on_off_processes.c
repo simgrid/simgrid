@@ -97,7 +97,7 @@ int test_launcher(int argc, char *argv[])
     MSG_process_sleep(10);
     XBT_INFO("  Turn Jupiter off");
     MSG_host_off(jupiter);
-    XBT_INFO("Test 3 seems ok  (number of Process : %d, it should be 1 or 2 if RX has not been satisfied) cool, you can now turn off a node that has a process paused by a sleep call", MSG_process_get_number());
+    XBT_INFO("Test 4 seems ok  (number of Process : %d, it should be 1 or 2 if RX has not been satisfied) cool, you can now turn off a node that has a process paused by a sleep call", MSG_process_get_number());
   }
 
   test = 5;
