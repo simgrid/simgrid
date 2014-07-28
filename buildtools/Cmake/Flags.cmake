@@ -81,7 +81,7 @@ if(enable_msg_deprecated)
   set(CMAKE_C_FLAGS "-DMSG_USE_DEPRECATED ${CMAKE_C_FLAGS}")
 endif()
 
-set(CMAKE_C_FLAGS "${optCFLAGS}${warnCFLAGS}${CMAKE_C_FLAGS}")
+set(CMAKE_C_FLAGS "${optCFLAGS} ${warnCFLAGS} ${CMAKE_C_FLAGS}")
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${optCFLAGS}")
 
