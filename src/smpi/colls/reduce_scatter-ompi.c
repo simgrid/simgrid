@@ -61,6 +61,8 @@ smpi_coll_tuned_reduce_scatter_ompi_basic_recursivehalving(void *sbuf,
     size = smpi_comm_size(comm);
    
     XBT_DEBUG("coll:tuned:reduce_scatter_ompi_basic_recursivehalving, rank %d", rank);
+    if(!smpi_op_is_commute(op))
+      THROWF(arg_error,0, " reduce_scatter ompi_basic_recursivehalving can only be used for commutative operations! ");
 
     /* Find displacements and the like */
     disps = (int*) xbt_malloc(sizeof(int) * size);
