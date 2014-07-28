@@ -147,6 +147,7 @@ COLL_APPLY(action, COLL_ALLTOALL_SIG, 2dmesh) COLL_sep \
 COLL_APPLY(action, COLL_ALLTOALL_SIG, 3dmesh) COLL_sep \
 COLL_APPLY(action, COLL_ALLTOALL_SIG, bruck) COLL_sep \
 COLL_APPLY(action, COLL_ALLTOALL_SIG, pair) COLL_sep \
+COLL_APPLY(action, COLL_ALLTOALL_SIG, pair_rma) COLL_sep \
 COLL_APPLY(action, COLL_ALLTOALL_SIG, pair_light_barrier) COLL_sep \
 COLL_APPLY(action, COLL_ALLTOALL_SIG, pair_mpi_barrier) COLL_sep \
 COLL_APPLY(action, COLL_ALLTOALL_SIG, pair_one_barrier) COLL_sep \
