@@ -17,6 +17,10 @@ if(enable_compile_warnings)
     if(COMPILER_C_VERSION_MAJOR_MINOR STRGREATER "4.5")
       set(warnCFLAGS "${warnCFLAGS}-Wno-error=unused-but-set-variable ")
     endif()
+    if(COMPILER_C_VERSION_MAJOR_MINOR STREQUAL "4.6")
+    #some old compilers emit bogus warnings here, see https://gcc.gnu.org/bugzilla/show_bug.cgi?id=45978 . Avoid failing the build in this case
+      set(warnCFLAGS "${warnCFLAGS}-Wno-error=array-bounds")
+    endif()
   endif()
 
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra  -Wunused -Wpointer-arith -Wchar-subscripts -Wcomment -Wno-unknown-warning-option -Wformat -Wwrite-strings -Wno-unused-function -Wno-unused-parameter -Wno-strict-aliasing -Wclobbered -Wno-error=clobbered -Wno-format-nonliteral -Werror")
