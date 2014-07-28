@@ -157,7 +157,7 @@ void smx_ctx_java_stop(smx_context_t context)
     jxbt_throw_by_name(env, "org/simgrid/msg/ProcessKilledError", xbt_strdup("Process killed :)"));
     // TODO emptty/adsein, comment the following line. This avoid to raise process cancelled exception at the Java level but 
     // it impacts the shutdown of VMs :( see java-cloud example
-    //THROWF(cancel_error, 0, "process cancelled");
+	THROWF(cancel_error, 0, "process cancelled");
   } else {
     smx_ctx_base_stop(context);
     /* detach the thread and kills it */
