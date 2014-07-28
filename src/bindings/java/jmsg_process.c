@@ -340,7 +340,16 @@ Java_org_simgrid_msg_Process_sleep(JNIEnv *env, jclass cls, jlong jmillis, jint 
   msg_error_t rv;
   rv = MSG_process_sleep(time);
   if (rv != MSG_OK) {
-    jmsg_throw_status(env,rv);
+    XBT_DEBUG("Something during the MSG_process_sleep invocation was wrong, trigger a HostFailureException");
+
+    //jmsg_throw_status(env,rv);
+
+    // adsein, the code above as been replaced by the code below. Indeed, according to the documentation, a sleep can only 
+    // trigger a host_failure exception. When the sleep crashes due to a host shutdown, the exception thrown by smx_context_java.c
+    // is a cancelled_error, see bindings/java/smx_context_java.c, function void smx_ctx_java_stop(smx_context_t context) and src/msg/msg_gos.c
+    // function  msg_error_t MSG_process_sleep(double nb_sec)
+
+    jxbt_throw_host_failure(env,NULL);
   }
 }
 JNIEXPORT void JNICALL

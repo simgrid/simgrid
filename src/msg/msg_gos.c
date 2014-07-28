@@ -169,6 +169,13 @@ msg_error_t MSG_process_sleep(double nb_sec)
   CATCH(e) {
     switch (e.category) {
     case cancel_error:
+      XBT_DEBUG("According to the JAVA API, a sleep call should only deal with HostFailureException, WTF here ?"); 
+      // adsein: MSG_TASK_CANCELED is assigned when someone kills the process that made the sleep, this is not
+      // correct. For instance, when the node is turned off, the error should be MSG_HOST_FAILURE, which is by the way
+      // and according to the JAVA document, the only exception that can be triggered by MSG_Process_sleep call.
+      // To avoid possible impacts in the code, I just raised a host_failure execption for the moment in the JAVA code 
+      // and did not change anythings at the C level.
+      // See comment in the jmsg_process.c file, function JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_sleep(JNIEnv *env, jclass cls, jlong jmillis, jint jnanos) 
       status = MSG_TASK_CANCELED;
       break;
     default:

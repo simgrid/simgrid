@@ -759,7 +759,7 @@ void SIMIX_post_process_sleep(smx_action_t action)
     switch(surf_action_get_state(action->sleep.surf_sleep)){
       case SURF_ACTION_FAILED:
         simcall->issuer->context->iwannadie = 1;
-        //SMX_EXCEPTION(simcall->issuer, host_error, 0, "Host failed");
+	//SMX_EXCEPTION(simcall->issuer, host_error, 0, "Host failed");
         state = SIMIX_SRC_HOST_FAILURE;
         break;
 
@@ -840,6 +840,7 @@ void SIMIX_process_yield(smx_process_t self)
   if (self->context->iwannadie){
     XBT_DEBUG("I wanna die!");
     SIMIX_process_stop(self);
+    XBT_DEBUG("SIMIX Stop done");
   }
 
   if (self->suspended) {
