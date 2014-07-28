@@ -127,6 +127,7 @@ set(EXTRA_DIST
   src/xbt/win32_ucontext.c
   tools/tesh/run_context.h
   tools/tesh/tesh.h
+  tools/tesh/generate_tesh
   examples/smpi/mc/non_deterministic.tesh
   examples/smpi/mc/send_deterministic.tesh
   )

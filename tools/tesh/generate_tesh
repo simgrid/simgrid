@@ -1,0 +1,16 @@
+#!/bin/sh
+# Generate a tesh file from a given command (simple case).
+
+command="$1"
+output=$(sh -c "$command" 2>&1)
+return=$?
+
+tesh="#! ./tesh
+
+! expect return $return
+$ $command
+$(echo "$output" | sed 's/^/> /' )
+"
+
+echo "$tesh"
+echo "$tesh" | tesh 1>&2
