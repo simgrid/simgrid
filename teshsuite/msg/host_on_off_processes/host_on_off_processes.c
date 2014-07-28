@@ -92,7 +92,7 @@ int test_launcher(int argc, char *argv[])
     MSG_process_create_with_arguments("commRX", commRX, NULL, MSG_get_host_by_name("Tremblay"), 1, argvF);
     argvF = xbt_new(char*, 2);
     argvF[0] = xbt_strdup("commTX");
-    MSG_process_create_with_arguments("commTX", commTX, NULL, MSG_get_host_by_name("Jupiter"), 1, argvF);
+    MSG_process_create_with_arguments("commTX", commTX, NULL, jupiter, 1, argvF);
     XBT_INFO("  number of processes: %d", MSG_process_get_number());
     MSG_process_sleep(10);
     XBT_INFO("  Turn Jupiter off");
@@ -106,13 +106,16 @@ int test_launcher(int argc, char *argv[])
     MSG_host_on(jupiter);
     MSG_process_sleep(10);
     argvF = xbt_new(char*, 2);
+    argvF[0] = xbt_strdup("commRX");
+    MSG_process_create_with_arguments("commRX", commRX, NULL, jupiter, 1, argvF);
+    argvF = xbt_new(char*, 2);
     argvF[0] = xbt_strdup("commTX");
     MSG_process_create_with_arguments("commTX", commTX, NULL, MSG_get_host_by_name("Tremblay"), 1, argvF);
-    argvF = xbt_new(char*, 2);
-    argvF[0] = xbt_strdup("commRX");
-    MSG_process_create_with_arguments("commRX", commRX, NULL, MSG_get_host_by_name("Jupiter"), 1, argvF);
+    XBT_INFO("  number of processes: %d", MSG_process_get_number());
+    MSG_process_sleep(10);
+    XBT_INFO("  Turn Jupiter off");
     MSG_host_off(jupiter);
-    XBT_INFO("Test 4 seems ok, cool !(number of Process : %d, it should be 1", MSG_process_get_number());
+    XBT_INFO("Test 4 seems ok, cool !(number of Process : %d, it should be 2", MSG_process_get_number());
   }
 
   test =6;
@@ -134,7 +137,7 @@ int test_launcher(int argc, char *argv[])
   if (xbt_dynar_member(tests, &test)){
 
   }
-
+  XBT_INFO("  Test done. See you!");
   return 0;
 }
 
@@ -148,7 +151,7 @@ int process_daemon(int argc, char *argv[])
     MSG_task_destroy(task);
   }
   MSG_task_execute(task);
-  XBT_INFO("  I'm done. See you!");
+  XBT_INFO("  Deamon done. See you!");
   return 0;
 }
 
