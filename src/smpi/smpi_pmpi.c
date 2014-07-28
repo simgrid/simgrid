@@ -1691,6 +1691,8 @@ int PMPI_Bcast(void *buf, int count, MPI_Datatype datatype, int root, MPI_Comm c
 
   if (comm == MPI_COMM_NULL) {
     retval = MPI_ERR_COMM;
+  } else if (!is_datatype_valid(datatype)) {
+      retval = MPI_ERR_ARG;
   } else {
 #ifdef HAVE_TRACING
   int rank = comm != MPI_COMM_NULL ? smpi_process_index() : -1;
@@ -1956,8 +1958,8 @@ int PMPI_Scatter(void *sendbuf, int sendcount, MPI_Datatype sendtype,
 
   if (comm == MPI_COMM_NULL) {
     retval = MPI_ERR_COMM;
-  } else if (((smpi_comm_rank(comm)==root) && (sendtype == MPI_DATATYPE_NULL))
-             || ((recvbuf !=MPI_IN_PLACE) && (recvtype == MPI_DATATYPE_NULL))) {
+  } else if (((smpi_comm_rank(comm)==root) && (!is_datatype_valid(sendtype)))
+             || ((recvbuf !=MPI_IN_PLACE) && (!is_datatype_valid(recvtype)))){
     retval = MPI_ERR_TYPE;
   } else if ((sendbuf == recvbuf) ||
       ((smpi_comm_rank(comm)==root) && sendcount>0 && (sendbuf == NULL))){
