@@ -499,13 +499,13 @@ static int MPI_I_anyReduce(void* Sendbuf, void* Recvbuf, int count, MPI_Datatype
 {
   char *scr1buf, *scr2buf, *scr3buf, *xxx, *sendbuf, *recvbuf;
   int myrank, size, x_base, x_size, computed, idx;
-  int x_start, x_count, r, n, mynewrank, newroot, partner;
+  int x_start, x_count = 0, r, n, mynewrank, newroot, partner;
   int start_even[20], start_odd[20], count_even[20], count_odd[20];
   MPI_Aint typelng;
   MPI_Status status;
   size_t scrlng;
   int new_prot;
-  MPIM_Datatype datatype; MPIM_Op op; 
+  MPIM_Datatype datatype = MPIM_INT; MPIM_Op op = MPIM_MAX; 
   
   if     (mpi_datatype==MPI_SHORT         ) datatype=MPIM_SHORT;
   else if(mpi_datatype==MPI_INT           ) datatype=MPIM_INT;
