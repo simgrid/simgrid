@@ -226,6 +226,7 @@ set(SMPI_SRC
   src/smpi/colls/scatter-ompi.c
   src/smpi/colls/smpi_automatic_selector.c
   src/smpi/colls/smpi_mpich_selector.c
+  src/smpi/colls/smpi_intel_mpi_selector.c
   src/smpi/colls/smpi_openmpi_selector.c
   src/smpi/colls/smpi_mvapich2_selector.c
   src/smpi/instr_smpi.c
