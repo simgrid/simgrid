@@ -27,6 +27,8 @@ set(tesh_files
   ${CMAKE_CURRENT_SOURCE_DIR}/bugged2.tesh
   ${CMAKE_CURRENT_SOURCE_DIR}/bugged1_liveness.tesh
   ${CMAKE_CURRENT_SOURCE_DIR}/bugged1_liveness_visited.tesh
+  ${CMAKE_CURRENT_SOURCE_DIR}/bugged1_liveness_sparse.tesh
+  ${CMAKE_CURRENT_SOURCE_DIR}/bugged1_liveness_visited_sparse.tesh
   ${CMAKE_CURRENT_SOURCE_DIR}/centralized.tesh
   PARENT_SCOPE
   )
