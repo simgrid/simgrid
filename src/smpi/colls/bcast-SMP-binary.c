@@ -32,9 +32,6 @@ int smpi_coll_tuned_bcast_SMP_binary(void *buf, int count,
   // if the number of cores is one, the platform may be simulated with 1 node = 1 core
   if (host_num_core == 1) host_num_core = NUM_CORE;
 
-  if(size%host_num_core)
-    THROWF(arg_error,0, "bcast SMP binary can't be used with non multiple of NUM_CORE=%d number of processes ! ",host_num_core);
-
   int segment = bcast_SMP_binary_segment_byte / extent;
   int pipe_length = count / segment;
   int remainder = count % segment;
