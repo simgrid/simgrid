@@ -1135,9 +1135,6 @@ int compare_heap_area(int process_index, void *area1, void *area2, mc_snapshot_t
 
   malloc_info heapinfo_temp1, heapinfo_temp2;
 
-  void* real_area1_to_compare = area1;
-  void* real_area2_to_compare = area2;
-
   if (previous == NULL) {
     previous =
         xbt_dynar_new(sizeof(heap_area_pair_t), heap_area_pair_free_voidp);
