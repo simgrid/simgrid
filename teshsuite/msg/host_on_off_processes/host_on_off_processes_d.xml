@@ -3,6 +3,5 @@
 <platform version="3">
   <!-- The master process (with some arguments) -->
   <process host="Tremblay" function="test">
-    <argument value="4"/>
   </process>
 </platform>

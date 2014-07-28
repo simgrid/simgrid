@@ -219,6 +219,11 @@ int smpi_process_index(void)
   return data ? data->index : MPI_UNDEFINED;
 }
 
+int smpi_process_index_of_smx_process(smx_process_t process) {
+  smpi_process_data_t data = SIMIX_process_get_data(process);
+  return data ? data->index : MPI_UNDEFINED;
+}
+
 MPI_Comm smpi_process_comm_world(void)
 {
   smpi_process_data_t data = smpi_process_data();

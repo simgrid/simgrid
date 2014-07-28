@@ -152,9 +152,10 @@ smx_ctx_sysv_create_context(xbt_main_func_t code, int argc, char **argv,
       sysv_maestro_context = context;
   }
 
-  if(MC_is_active() && code)
-    MC_new_stack_area(context->stack, ((smx_context_t)context)->process->name,
+  if (MC_is_active() && code) {
+    MC_new_stack_area(context->stack, ((smx_context_t)context)->process,
                       &(context->uc), smx_context_usable_stack_size);
+  }
 
   return (smx_context_t) context;
 }

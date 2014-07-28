@@ -15,7 +15,7 @@
  * @return Process address of the given member of the 'object' struct/class
  */
 void *mc_member_resolve(const void *base, dw_type_t type, dw_type_t member,
-                        mc_snapshot_t snapshot)
+                        mc_snapshot_t snapshot, int process_index)
 {
   if (!member->location.size) {
     return ((char *) base) + member->offset;
@@ -28,6 +28,7 @@ void *mc_member_resolve(const void *base, dw_type_t type, dw_type_t member,
   state.snapshot = snapshot;
   state.stack_size = 1;
   state.stack[0] = (uintptr_t) base;
+  state.process_index = process_index;
 
   if (mc_dwarf_execute_expression
       (member->location.size, member->location.ops, &state))

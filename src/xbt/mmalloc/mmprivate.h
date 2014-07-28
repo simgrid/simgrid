@@ -122,6 +122,11 @@ typedef struct s_heap_area_pair{
   int fragment2;
 }s_heap_area_pair_t, *heap_area_pair_t;
 
+#define MMALLOC_TYPE_HEAPINFO (-2)
+#define MMALLOC_TYPE_FREE (-1)
+#define MMALLOC_TYPE_UNFRAGMENTED 0
+/* >0 values are fragmented blocks */
+
 /* Data structure giving per-block information.
  *
  * There is one such structure in the mdp->heapinfo array per block used in that heap,
@@ -176,86 +181,98 @@ typedef struct {
   };
 } malloc_info;
 
-/* Internal structure that defines the format of the malloc-descriptor.
-   This gets written to the base address of the region that mmalloc is
-   managing, and thus also becomes the file header for the mapped file,
-   if such a file exists. */
-
+/** @brief Descriptor of a mmalloc area
+ *
+ * Internal structure that defines the format of the malloc-descriptor.
+ * This gets written to the base address of the region that mmalloc is
+ * managing, and thus also becomes the file header for the mapped file,
+ * if such a file exists.
+ * */
 struct mdesc {
 
-  /* Semaphore locking the access to the heap */
+  /** @brief Semaphore locking the access to the heap */
   sem_t sem;
 
-  /* Number of processes that attached the heap */
+  /** @brief Number of processes that attached the heap */
   unsigned int refcount;
 
-  /* Chained lists of mdescs */
+  /** @brief Chained lists of mdescs */
   struct mdesc *next_mdesc;
 
-  /* The "magic number" for an mmalloc file. */
+  /** @brief The "magic number" for an mmalloc file. */
   char magic[MMALLOC_MAGIC_SIZE];
 
-  /* The size in bytes of this structure, used as a sanity check when reusing
-     a previously created mapped file. */
+  /** @brief The size in bytes of this structure
+   *
+   * Used as a sanity check when reusing a previously created mapped file.
+   * */
   unsigned int headersize;
 
-  /* The version number of the mmalloc package that created this file. */
+  /** @brief Version number of the mmalloc package that created this file. */
   unsigned char version;
 
   unsigned int options;
 
-  /* Some flag bits to keep track of various internal things. */
+  /** @brief Some flag bits to keep track of various internal things. */
   unsigned int flags;
 
-  /* Number of info entries.  */
+  /** @brief Number of info entries.  */
   size_t heapsize;
 
-  /* Pointer to first block of the heap (base of the first block).  */
+  /** @brief Pointer to first block of the heap (base of the first block).  */
   void *heapbase;
 
-  /* Current search index for the heap table.  */
-  /* Search index in the info table.  */
+  /** @brief Current search index for the heap table.
+   *
+   *  Search index in the info table.
+   */
   size_t heapindex;
 
-  /* Limit of valid info table indices.  */
+  /** @brief Limit of valid info table indices.  */
   size_t heaplimit;
 
-  /* Block information table. */
-  /* Table indexed by block number giving per-block information.  */
+  /** @brief Block information table.
+   *
+   * Table indexed by block number giving per-block information.
+   */
   malloc_info *heapinfo;
 
-  /* List of all blocks containing free fragments of this size.
+  /* @brief List of all blocks containing free fragments of a given size.
+   *
    * The array indice is the log2 of requested size.
    * Actually only the sizes 8->11 seem to be used, but who cares? */
   s_xbt_swag_t fraghead[BLOCKLOG];
 
-  /* The base address of the memory region for this malloc heap.  This
-     is the location where the bookkeeping data for mmap and for malloc
-     begins. */
-
+  /* @brief Base address of the memory region for this malloc heap
+   *
+   * This is the location where the bookkeeping data for mmap and
+   * for malloc begins.
+   */
   void *base;
 
-  /* The current location in the memory region for this malloc heap which
-     represents the end of memory in use. */
-
+  /** @brief End of memory in use
+   *
+   *  Some memory might be already mapped by the OS but not used
+   *  by the heap.
+   * */
   void *breakval;
 
-  /* The end of the current memory region for this malloc heap.  This is
-     the first location past the end of mapped memory.
-     Compared to breakval, this value is rounded to the next memory page.
-      */
-
+  /** @brief End of the current memory region for this malloc heap.
+   *
+   *  This is the first location past the end of mapped memory.
+   *
+   *  Compared to breakval, this value is rounded to the next memory page.
+   */
   void *top;
 
-  /* Open file descriptor for the file to which this malloc heap is mapped.
-     This will always be a valid file descriptor, since /dev/zero is used
-     by default if no open file is supplied by the client.  Also note that
-     it may change each time the region is mapped and unmapped. */
-
+  /** @brief Open file descriptor for the file to which this malloc heap is mapped
+   *
+   * If this value is negative, MAP_ANONYMOUS memory is used.
+   *
+   * Also note that it may change each time the region is mapped and unmapped. */
   int fd;
 
-  /* Instrumentation.  */
-
+  /* @brief Instrumentation */
   struct mstats heapstats;
 
 };
@@ -274,9 +291,6 @@ XBT_PUBLIC( struct mdesc ) *__mmalloc_default_mdp;
 
 XBT_PUBLIC( void *)__mmalloc_remap_core(xbt_mheap_t mdp);
 
-/*  Get core for the memory region specified by MDP, using SIZE as the
-    amount to either add to or subtract from the existing region.  Works
-    like sbrk(), but using mmap(). */
 XBT_PUBLIC( void *)mmorecore(struct mdesc *mdp, ssize_t size);
 
 /* Thread-safety (if the sem is already created)
@@ -293,5 +307,17 @@ static XBT_INLINE void  mmalloc_paranoia(struct mdesc *mdp){
   /* nothing to fear for no */
 
 }
+
+static inline int mmalloc_get_increment(malloc_info* heapinfo) {
+  if (heapinfo->type < 0) {
+    return heapinfo->free_block.size;
+  } else if (heapinfo->type == 0) {
+    return heapinfo->busy_block.size;
+  } else {
+    return 1;
+  }
+}
+
+void mmcheck(xbt_mheap_t heap);
 
 #endif                          /* __MMPRIVATE_H */

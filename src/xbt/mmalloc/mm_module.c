@@ -1,4 +1,4 @@
-/* Initialization for access to a mmap'd malloc managed region. */
+/* Initialization for acces s to a mmap'd malloc managed region. */
 
 /* Copyright (c) 2012-2014. The SimGrid Team.
  * All rights reserved.                                                     */
@@ -362,11 +362,11 @@ size_t mmalloc_get_bytes_used(xbt_mheap_t heap){
   int bytes = 0;
   
   while(i<=((struct mdesc *)heap)->heaplimit){
-    if(((struct mdesc *)heap)->heapinfo[i].type == 0){
+    if(((struct mdesc *)heap)->heapinfo[i].type == MMALLOC_TYPE_UNFRAGMENTED){
       if(((struct mdesc *)heap)->heapinfo[i].busy_block.busy_size > 0)
         bytes += ((struct mdesc *)heap)->heapinfo[i].busy_block.busy_size;
      
-    }else if(((struct mdesc *)heap)->heapinfo[i].type > 0){
+    } else if(((struct mdesc *)heap)->heapinfo[i].type > 0){
       for(j=0; j < (size_t) (BLOCKSIZE >> ((struct mdesc *)heap)->heapinfo[i].type); j++){
         if(((struct mdesc *)heap)->heapinfo[i].busy_frag.frag_size[j] > 0)
           bytes += ((struct mdesc *)heap)->heapinfo[i].busy_frag.frag_size[j];
@@ -381,13 +381,42 @@ size_t mmalloc_get_bytes_used(xbt_mheap_t heap){
 ssize_t mmalloc_get_busy_size(xbt_mheap_t heap, void *ptr){
 
   ssize_t block = ((char*)ptr - (char*)(heap->heapbase)) / BLOCKSIZE + 1;
-  if(heap->heapinfo[block].type == -1)
+  if(heap->heapinfo[block].type < 0)
     return -1;
-  else if(heap->heapinfo[block].type == 0)
+  else if(heap->heapinfo[block].type == MMALLOC_TYPE_UNFRAGMENTED)
     return heap->heapinfo[block].busy_block.busy_size;
   else{
     ssize_t frag = ((uintptr_t) (ADDR2UINT (ptr) % (BLOCKSIZE))) >> heap->heapinfo[block].type;
     return heap->heapinfo[block].busy_frag.frag_size[frag];
   }
     
+}
+
+void mmcheck(xbt_mheap_t heap) {return;
+  if (!heap->heapinfo)
+    return;
+  malloc_info* heapinfo = NULL;
+  for (size_t i=1; i < heap->heaplimit; i += mmalloc_get_increment(heapinfo)) {
+    heapinfo = heap->heapinfo + i;
+    switch (heapinfo->type) {
+    case MMALLOC_TYPE_HEAPINFO:
+    case MMALLOC_TYPE_FREE:
+      if (heapinfo->free_block.size==0) {
+        xbt_die("Block size == 0");
+      }
+      break;
+    case MMALLOC_TYPE_UNFRAGMENTED:
+      if (heapinfo->busy_block.size==0) {
+        xbt_die("Block size == 0");
+      }
+      if (heapinfo->busy_block.busy_size==0 && heapinfo->busy_block.size!=0) {
+        xbt_die("Empty busy block");
+      }
+      break;
+    default:
+      if (heapinfo->type<0) {
+        xbt_die("Unkown mmalloc block type.");
+      }
+    }
+  }
 }

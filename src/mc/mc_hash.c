@@ -69,6 +69,7 @@ static void mc_hash_binary(mc_hash_t * hash, const void *s, size_t len)
   }
 }
 
+#if 0
 /** \brief Compute a hash for a given value of a given type
  *
  *  We try to be very conservative (do not hash too ambiguous things).
@@ -199,7 +200,6 @@ top:
   }
 }
 
-
 static void mc_hash_object_globals(mc_hash_t * hash, mc_hashing_state * state,
                                    mc_object_info_t info)
 {
@@ -316,6 +316,7 @@ static void mc_hash_stacks(mc_hash_t * hash, mc_hashing_state * state,
     ++i;
   }
 }
+#endif
 
 uint64_t mc_hash_processes_state(int num_state, xbt_dynar_t stacks)
 {
@@ -327,9 +328,9 @@ uint64_t mc_hash_processes_state(int num_state, xbt_dynar_t stacks)
   mc_hash_t hash = MC_HASH_INIT;
 
   MC_HASH(hash, xbt_swag_size(simix_global->process_list));     // process count
-  mc_hash_object_globals(&hash, &state, mc_binary_info);
+  // mc_hash_object_globals(&hash, &state, mc_binary_info);
   // mc_hash_object_globals(&hash, &state, mc_libsimgrid_info);
-  mc_hash_stacks(&hash, &state, stacks);
+  // mc_hash_stacks(&hash, &state, stacks);
 
   mc_hash_state_destroy(&state);
 

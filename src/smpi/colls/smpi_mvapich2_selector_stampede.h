@@ -37,7 +37,7 @@ mv2_alltoall_tuning_table **mv2_alltoall_thresholds_table = NULL;
 
 #define MPIR_Alltoall_bruck_MV2 smpi_coll_tuned_alltoall_bruck
 #define MPIR_Alltoall_RD_MV2 smpi_coll_tuned_alltoall_rdb
-#define MPIR_Alltoall_Scatter_dest_MV2 smpi_coll_tuned_alltoall_ring
+#define MPIR_Alltoall_Scatter_dest_MV2 smpi_coll_tuned_alltoall_mvapich2_scatter_dest
 #define MPIR_Alltoall_pairwise_MV2 smpi_coll_tuned_alltoall_pair
 #define MPIR_Alltoall_inplace_MV2 smpi_coll_tuned_alltoall_ring 
 
@@ -318,9 +318,18 @@ int mv2_allgather_num_ppn_conf = 1;
 int *mv2_size_allgather_tuning_table = NULL;
 mv2_allgather_tuning_table **mv2_allgather_thresholds_table = NULL;
 
+static int MPIR_Allgather_RD_Allgather_Comm_MV2( void *sendbuf,
+                                 int sendcount,
+                                 MPI_Datatype sendtype,
+                                 void *recvbuf,
+                                 int recvcount,
+                                 MPI_Datatype recvtype, MPI_Comm comm_ptr)
+{
+    return 0;
+}
+
 #define MPIR_Allgather_Bruck_MV2 smpi_coll_tuned_allgather_bruck
 #define MPIR_Allgather_RD_MV2 smpi_coll_tuned_allgather_rdb
-#define MPIR_Allgather_RD_Allgather_Comm_MV2 smpi_coll_tuned_allgather_rdb
 #define MPIR_Allgather_Ring_MV2 smpi_coll_tuned_allgather_ring
 
 
@@ -1230,8 +1239,8 @@ int mv2_size_reduce_tuning_table = 0;
 mv2_reduce_tuning_table *mv2_reduce_thresholds_table = NULL;
 
 
-int mv2_reduce_intra_knomial_factor = -1;
-int mv2_reduce_inter_knomial_factor = -1;
+int mv2_reduce_intra_knomial_factor = 2;
+int mv2_reduce_inter_knomial_factor = 2;
 
 int (*MV2_Reduce_function)( void *sendbuf,
     void *recvbuf,
@@ -1250,8 +1259,8 @@ int (*MV2_Reduce_intra_function)( void *sendbuf,
     MPI_Comm  comm_ptr)=NULL;
 
 
-#define MPIR_Reduce_inter_knomial_wrapper_MV2 smpi_coll_tuned_reduce_binomial
-#define MPIR_Reduce_intra_knomial_wrapper_MV2 smpi_coll_tuned_reduce_binomial
+#define MPIR_Reduce_inter_knomial_wrapper_MV2 smpi_coll_tuned_reduce_mvapich2_knomial
+#define MPIR_Reduce_intra_knomial_wrapper_MV2 smpi_coll_tuned_reduce_mvapich2_knomial
 #define MPIR_Reduce_binomial_MV2 smpi_coll_tuned_reduce_binomial
 #define MPIR_Reduce_redscat_gather_MV2 smpi_coll_tuned_reduce_scatter_gather
 #define MPIR_Reduce_shmem_MV2 smpi_coll_tuned_reduce_ompi_basic_linear

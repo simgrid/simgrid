@@ -38,6 +38,7 @@ typedef struct s_stack_region{
   void *context;
   size_t size;
   int block;
+  int process_index;
 }s_stack_region_t, *stack_region_t;
 
 void heap_ignore_region_free(mc_heap_ignore_region_t r);

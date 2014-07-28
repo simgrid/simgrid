@@ -382,7 +382,7 @@ int mc_dwarf_execute_expression(size_t n, const Dwarf_Op * ops,
         // Computed address:
         uintptr_t address = (uintptr_t) state->stack[state->stack_size - 1];
         uintptr_t temp;
-        uintptr_t* res = (uintptr_t*) mc_snapshot_read((void*) address, state->snapshot, &temp, sizeof(uintptr_t));
+        uintptr_t* res = (uintptr_t*) mc_snapshot_read((void*) address, state->snapshot, state->process_index, &temp, sizeof(uintptr_t));
         state->stack[state->stack_size - 1] = *res;
       }
       break;
@@ -407,7 +407,7 @@ uintptr_t mc_dwarf_resolve_location(mc_expression_t expression,
                                     mc_object_info_t object_info,
                                     unw_cursor_t * c,
                                     void *frame_pointer_address,
-                                    mc_snapshot_t snapshot)
+                                    mc_snapshot_t snapshot, int process_index)
 {
   s_mc_expression_state_t state;
   memset(&state, 0, sizeof(s_mc_expression_state_t));
@@ -415,6 +415,7 @@ uintptr_t mc_dwarf_resolve_location(mc_expression_t expression,
   state.cursor = c;
   state.snapshot = snapshot;
   state.object_info = object_info;
+  state.process_index = process_index;
 
   if (mc_dwarf_execute_expression(expression->size, expression->ops, &state))
     xbt_die("Error evaluating DWARF expression");
@@ -428,7 +429,7 @@ uintptr_t mc_dwarf_resolve_locations(mc_location_list_t locations,
                                      mc_object_info_t object_info,
                                      unw_cursor_t * c,
                                      void *frame_pointer_address,
-                                     mc_snapshot_t snapshot)
+                                     mc_snapshot_t snapshot, int process_index)
 {
 
   unw_word_t ip;
@@ -443,7 +444,7 @@ uintptr_t mc_dwarf_resolve_locations(mc_location_list_t locations,
         || (c && ip >= (unw_word_t) expression->lowpc
             && ip < (unw_word_t) expression->highpc)) {
       return mc_dwarf_resolve_location(expression, object_info, c,
-                                       frame_pointer_address, snapshot);
+                                       frame_pointer_address, snapshot, process_index);
     }
   }
   xbt_die("Could not resolve location");
@@ -458,7 +459,7 @@ void *mc_find_frame_base(dw_frame_t frame, mc_object_info_t object_info,
                          unw_cursor_t * unw_cursor)
 {
   return (void *) mc_dwarf_resolve_locations(&frame->frame_base, object_info,
-                                             unw_cursor, NULL, NULL);
+                                             unw_cursor, NULL, NULL, -1);
 }
 
 void mc_dwarf_expression_clear(mc_expression_t expression)

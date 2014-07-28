@@ -74,6 +74,7 @@ double smpi_cpu_threshold;
 double smpi_running_power;
 
 int* fds;
+size_t mappings_count = 0;
 void** mappings;
 int loaded_page = -1;
 char* start_data_exe = NULL;
@@ -609,7 +610,6 @@ void switch_data_segment(int dest){
 
   if (loaded_page==dest)//no need to switch either
     return;
-
 
 #ifdef HAVE_MMAP
   int i;

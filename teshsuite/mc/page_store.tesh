@@ -1,3 +1,0 @@
-#! ./tesh
-
-$ $SG_TEST_EXENV ${bindir:=.}/page_store
