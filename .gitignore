@@ -14,6 +14,9 @@
 *.class
 \#*
 
+### cmake
+CTestCustom.cmake
+
 ### Maintainer mode
 src/simdag/dax_dtd.l
 src/surf/simgrid_dtd.l
@@ -236,7 +239,6 @@ teshsuite/smpi/bcast/bcast_coll
 teshsuite/smpi/compute/compute2
 teshsuite/smpi/compute/compute3
 teshsuite/smpi/pingpong/dsend
-teshsuite/smpi/pingpong/tmpkkndqe
 teshsuite/smpi/reduce/reduce_coll
 teshsuite/smpi/reduce/reduce_scatter_coll
 teshsuite/smpi/allgather/allgather_coll
@@ -713,6 +715,45 @@ teshsuite/smpi/mpich3-test/topo/cartcreates
 teshsuite/smpi/mpich3-test/topo/cartshift1
 teshsuite/smpi/mpich3-test/topo/cartsuball
 teshsuite/smpi/mpich3-test/topo/cartzero
+teshsuite/smpi/mpich3-test/rma/accfence1
+teshsuite/smpi/mpich3-test/rma/accfence2
+teshsuite/smpi/mpich3-test/rma/accfence2_am
+teshsuite/smpi/mpich3-test/rma/allocmem
+teshsuite/smpi/mpich3-test/rma/epochtest
+teshsuite/smpi/mpich3-test/rma/getfence1
+teshsuite/smpi/mpich3-test/rma/putfence1
+teshsuite/smpi/mpich3-test/rma/putfidx
+teshsuite/smpi/mpich3-test/rma/test1
+teshsuite/smpi/mpich3-test/rma/test1_am
+teshsuite/smpi/mpich3-test/rma/test1_dt
+teshsuite/smpi/mpich3-test/rma/test5
+teshsuite/smpi/mpich3-test/rma/test5_am
+teshsuite/smpi/mpich3-test/rma/transpose1
+teshsuite/smpi/mpich3-test/rma/transpose2
+teshsuite/smpi/mpich3-test/rma/transpose6
+teshsuite/smpi/mpich3-test/rma/transpose7
+teshsuite/smpi/mpich3-test/rma/window_creation
+teshsuite/smpi/struct_test
+teshsuite/smpi/vector_test
+teshsuite/smpi/allgather_coll
+teshsuite/smpi/allgatherv_coll
+teshsuite/smpi/allreduce_coll
+teshsuite/smpi/alltoall2
+teshsuite/smpi/alltoall_basic
+teshsuite/smpi/alltoall_coll
+teshsuite/smpi/alltoallv_coll
+teshsuite/smpi/barrier_coll
+teshsuite/smpi/gather_coll
+teshsuite/smpi/hvector_test
+teshsuite/smpi/indexed_test
+examples/smpi/mc/mutual_exclusion
+examples/smpi/mc/non_deterministic
+examples/smpi/mc/send_deterministic
+examples/smpi/smpi_msg_masterslave/masterslave_mailbox_smpi
+teshsuite/xbt/log_large_test
+teshsuite/xbt/mallocator/mallocator
+teshsuite/xbt/mmalloc/mmalloc_test
+teshsuite/xbt/parallel_log_crashtest
 teshsuite/msg/storage/concurrent_rw
 teshsuite/msg/host_on_off/host_on_off
 teshsuite/msg/process/process
