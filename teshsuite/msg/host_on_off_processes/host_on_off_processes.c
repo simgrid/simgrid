@@ -120,7 +120,34 @@ int test_launcher(int argc, char *argv[])
 
   test =6;
   if (xbt_dynar_member(tests, &test)){
+    /*XBT_INFO("Test 5: Turn on Jupiter, assign a VM on Jupiter, launch a process inside the VM, and turn off the node");
 
+    // Create VM0
+    int dpRate = 70;
+    msg_vm_t vm0;
+MSG_vm_create (msg_host_t ind_pm, const char *name, int ncpus, int ramsize, int net_cap, char *disk_path, int disksize, int mig_netspeed, int dp_intensity)
+  vm0 = MSG_vm_create_core(jupiter, "vm0");
+  params.ramsize = 1L * 1000 * 1000 * 1000; // 1Gbytes
+  MSG_host_set_params(vm0, &params);
+  MSG_vm_start(vm0);
+    XVM vm0 = null;
+        vm0 = new XVM(
+                host1,
+                "vm0",
+                1, // Nb of vcpu
+                2048, // Ramsize,
+                125, // Net Bandwidth
+                null, //VM disk image
+                -1,   //size of disk image,
+                125, // Net bandwidth,
+                dpRate // Memory intensity
+        );
+        vm0.start();
+        vm0.setLoad(90);
+
+        host1.off();
+        Msg.info("Test 5 is also weird: when the node host1 is turned off once again, the VM and its daemon are not killed." +
+                " However, the issue regarding the shutdown of hosted VMs can be seen a feature not a bug ;)\n");*/
   }
 
   test = 7;
@@ -141,7 +168,7 @@ int test_launcher(int argc, char *argv[])
   return 0;
 }
 
-// adsein: Is this really a daemon ? it ran only one task ? I just added a stupid loop 
+// adsein: Is this really a daemon ? it ran only one task ? I just added a stupid loop
 int process_daemon(int argc, char *argv[])
 {
   msg_task_t task = NULL;

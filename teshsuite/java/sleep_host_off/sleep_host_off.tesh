@@ -1,0 +1,2 @@
+$ java -classpath ${classpath:=.} sleep_host_off.Main ${srcdir:=.}/../../examples/platforms/small_platform.xml ${srcdir:=.}/sleep_host_off/sleep_host_off_d.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+>

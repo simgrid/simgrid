@@ -84,6 +84,15 @@ IF(NOT enable_memcheck)
     ADD_TESH(tesh-self-catch-signal              --cd "${CMAKE_BINARY_DIR}/bin" ${CMAKE_HOME_DIRECTORY}/tools/tesh/catch-signal.tesh)
   ENDIF()
 
+IF(enable_java)
+  IF(WIN32)
+    SET(TESH_CLASSPATH "${CMAKE_BINARY_DIR}/teshsuite/java/\;${SIMGRID_FULL_JAR}")
+    STRING(REPLACE "\;" "§" TESH_CLASSPATH "${TESH_CLASSPATH}")
+  ELSE()
+    SET(TESH_CLASSPATH "${CMAKE_BINARY_DIR}/teshsuite/java/:${SIMGRID_FULL_JAR}")
+  ENDIF()
+  ADD_TESH(tesh-java-sleep-host-off            --setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/java --setenv classpath=${TESH_CLASSPATH} --cd ${CMAKE_BINARY_DIR}/teshsuite/java ${CMAKE_HOME_DIRECTORY}/teshsuite/java/sleep_host_off/sleep_host_off.tesh)
+ENDIF()
 
   ### GENERIC  ###
   # BEGIN TESH TESTS
