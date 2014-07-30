@@ -5,9 +5,9 @@
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
-
 #include "smx_private.h"
 #include "xbt/parmap.h"
+#include "xbt/dynar.h"
 #include "mc/mc.h"
 
 typedef char * raw_stack_t;
@@ -211,7 +211,12 @@ static void smx_ctx_raw_wrapper(smx_ctx_raw_t context);
 static void smx_ctx_raw_stop(smx_context_t context);
 static void smx_ctx_raw_suspend_serial(smx_context_t context);
 static void smx_ctx_raw_resume_serial(smx_process_t first_process);
+#ifdef TIME_BENCH_PER_SR
+static void smx_ctx_raw_runall_serial(xbt_dynar_t processes);
+void smx_ctx_raw_new_sr(void);
+#else
 static void smx_ctx_raw_runall_serial(void);
+#endif
 static void smx_ctx_raw_suspend_parallel(smx_context_t context);
 static void smx_ctx_raw_resume_parallel(smx_process_t first_process);
 static void smx_ctx_raw_runall_parallel(void);
@@ -271,8 +276,8 @@ void SIMIX_ctx_raw_factory_init(smx_context_factory_t *factory)
 static int smx_ctx_raw_factory_finalize(smx_context_factory_t *factory)
 {
 #ifdef TIME_BENCH_PER_SR
-  XBT_CRITICAL("Total wasted time in %u SR: %f", sr_count, time_wasted_sr);
-  XBT_CRITICAL("Total wasted time in %u SSR: %f", ssr_count, time_wasted_ssr);
+  XBT_VERB("Total wasted time in %u SR: %f", sr_count, time_wasted_sr);
+  XBT_VERB("Total wasted time in %u SSR: %f", ssr_count, time_wasted_ssr);
 #endif
 
 #ifdef CONTEXT_THREADS
@@ -374,8 +379,12 @@ static void smx_ctx_raw_suspend_serial(smx_context_t context)
 {
   /* determine the next context */
   smx_context_t next_context;
-  unsigned long int i = raw_process_index++;
-
+  unsigned long int i; 
+#ifdef TIME_BENCH_PER_SR
+  i = ++raw_process_index;
+#else
+  i = raw_process_index++;
+#endif
   if (i < xbt_dynar_length(simix_global->process_to_run)) {
     /* execute the next process */
     XBT_DEBUG("Run next process");
@@ -409,35 +418,34 @@ static void smx_ctx_raw_runall_serial(xbt_dynar_t processes)
 {
   smx_process_t process;
   unsigned int cursor;
-
   double elapsed = 0;
   double tmax = 0;
-  unsigned long num_proc = xbt_dynar_length(processes);
+  unsigned long num_proc = xbt_dynar_length(simix_global->process_to_run);
   unsigned int t=0;
   unsigned int data_size = (num_proc / NUM_THREADS) + ((num_proc % NUM_THREADS) ? 1 : 0);
 
   ssr_count++;
   time_thread_ssr[0] = 0;
-  xbt_dynar_foreach(processes, cursor, process) {
-    XBT_DEBUG("Schedule item %u of %lu",cursor,xbt_dynar_length(processes));
-    if(cursor >= t * data_size + data_size){
-      if(time_thread_ssr[t] > tmax)
-        tmax = time_thread_ssr[t];
-      t++;
-      time_thread_ssr[t] = 0;
-    }
+  xbt_dynar_foreach(processes, cursor, process){ 
+        XBT_VERB("Schedule item %u of %lu",cursor,num_proc);
+        if(cursor >= t * data_size + data_size){
+          if(time_thread_ssr[t] > tmax)
+            tmax = time_thread_ssr[t];
+          t++;
+          time_thread_ssr[t] = 0;
+        }
 
-    if(new_sr){
-      ((smx_ctx_raw_t)process->context)->thread = t;
-      time_thread_sr[t] = 0;
-    }
+        if(new_sr){
+          ((smx_ctx_raw_t)process->context)->thread = t;
+          time_thread_sr[t] = 0;
+        }
 
-    xbt_os_cputimer_start(timer);
-    smx_ctx_raw_resume(process);
-    xbt_os_cputimer_stop(timer);
-    elapsed = xbt_os_timer_elapsed(timer);
-    time_thread_ssr[t] += elapsed;
-    time_thread_sr[((smx_ctx_raw_t)process->context)->thread] += elapsed;
+        xbt_os_cputimer_start(timer);
+        smx_ctx_raw_resume_serial(process);
+        xbt_os_cputimer_stop(timer);
+        elapsed = xbt_os_timer_elapsed(timer);
+        time_thread_ssr[t] += elapsed;
+        time_thread_sr[((smx_ctx_raw_t)process->context)->thread] += elapsed;
   }
 
   if(new_sr)
@@ -452,7 +460,6 @@ static void smx_ctx_raw_runall_serial(xbt_dynar_t processes)
   }
 }
 
-void smx_ctx_raw_new_sr(void);
 void smx_ctx_raw_new_sr(void)
 {
   int i;
@@ -469,10 +476,10 @@ void smx_ctx_raw_new_sr(void)
     time_wasted_sr += tmax - time_thread_sr[i];
   }
 
+  XBT_VERB("Total time SR %u = %f, %d", sr_count, tmax, xbt_dynar_length(simix_global->process_that_ran));
   XBT_VERB("New scheduling round");
 }
 #else
-
 /**
  * \brief Resumes sequentially all processes ready to run.
  */
@@ -573,6 +580,10 @@ static void smx_ctx_raw_runall(void)
   } else {
     XBT_DEBUG("Runall serial %lu", nb_processes);
     simix_global->context_factory->suspend = smx_ctx_raw_suspend_serial;
+  #ifdef TIME_BENCH_PER_SR
+    smx_ctx_raw_runall_serial(simix_global->process_to_run);
+  #else
     smx_ctx_raw_runall_serial();
+  #endif
   }
 }

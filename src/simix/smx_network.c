@@ -949,15 +949,6 @@ void SIMIX_post_comm(smx_action_t action)
   /* destroy the surf actions associated with the Simix communication */
   SIMIX_comm_destroy_internal_actions(action);
 
-  /* remove the communication action from the list of pending communications
-   * of both processes (if they still exist) */
-  if (action->comm.src_proc) {
-    xbt_fifo_remove(action->comm.src_proc->comms, action);
-  }
-  if (action->comm.dst_proc) {
-    xbt_fifo_remove(action->comm.dst_proc->comms, action);
-  }
-
   /* if there are simcalls associated with the action, then answer them */
   if (xbt_fifo_size(action->simcalls)) {
     SIMIX_comm_finish(action);
