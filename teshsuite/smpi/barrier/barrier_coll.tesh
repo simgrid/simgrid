@@ -3,23 +3,22 @@
 ! output sort
 
 p Test barrier
-$ ${bindir:=.}/../../../bin/smpirun -map -hostfile ../hostfile -platform ../../../examples/platforms/small_platform.xml -np 16 --log=xbt_cfg.thres:critical ${bindir:=.}/barrier_coll --log=smpi_kernel.thres:warning
+$ ${bindir:=.}/../../../bin/smpirun -map -hostfile ../hostfile_coll -platform ../../../examples/platforms/small_platform.xml -np 16 --log=xbt_cfg.thres:critical ${bindir:=.}/barrier_coll --log=smpi_kernel.thres:warning
 > ... Barrier ....
-> You requested to use 16 processes, but there is only 5 processes in your hostfile...
 > [0.000000] [surf_config/INFO] Switching workstation model to compound since you changed the network and/or cpu model(s)
 > [rank 0] -> Tremblay
-> [rank 10] -> Tremblay
-> [rank 11] -> Jupiter
-> [rank 12] -> Fafard
-> [rank 13] -> Ginette
-> [rank 14] -> Bourassa
-> [rank 15] -> Tremblay
-> [rank 1] -> Jupiter
-> [rank 2] -> Fafard
-> [rank 3] -> Ginette
-> [rank 4] -> Bourassa
-> [rank 5] -> Tremblay
+> [rank 1] -> Tremblay
+> [rank 2] -> Tremblay
+> [rank 3] -> Tremblay
+> [rank 4] -> Jupiter
+> [rank 5] -> Jupiter
 > [rank 6] -> Jupiter
-> [rank 7] -> Fafard
-> [rank 8] -> Ginette
-> [rank 9] -> Bourassa
+> [rank 7] -> Jupiter
+> [rank 8] -> Fafard
+> [rank 9] -> Fafard
+> [rank 10] -> Fafard
+> [rank 11] -> Fafard
+> [rank 12] -> Ginette
+> [rank 13] -> Ginette
+> [rank 14] -> Ginette
+> [rank 15] -> Ginette

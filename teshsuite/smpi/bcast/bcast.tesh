@@ -2,10 +2,10 @@
 # (since we want to pass it to the child, it has to be redefined before each command)
 # Go for the first test
 p Test Broadcast with less processes than hosts
-$ ${bindir:=.}/../../../bin/smpirun -map -hostfile ../hostfile -platform ../../../examples/platforms/small_platform.xml -np 3 ${bindir:=.}/bcast -q --log=smpi_kernel.thres:warning
+$ ${bindir:=.}/../../../bin/smpirun -map -hostfile ../hostfile_coll -platform ../../../examples/platforms/small_platform.xml -np 3 ${bindir:=.}/bcast -q --log=smpi_kernel.thres:warning
 > [rank 0] -> Tremblay
-> [rank 1] -> Jupiter
-> [rank 2] -> Fafard
+> [rank 1] -> Tremblay
+> [rank 2] -> Tremblay
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'surf/precision' to '1e-9'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'SMPI'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/TCP_gamma' to '4194304'
@@ -14,12 +14,12 @@ $ ${bindir:=.}/../../../bin/smpirun -map -hostfile ../hostfile -platform ../../.
 # second test
 p Test Broadcast with as much processes than hosts
 ! setenv LD_LIBRARY_PATH=../../lib
-$ ${bindir:=.}/../../../bin/smpirun -map -hostfile ../hostfile -platform ../../../examples/platforms/small_platform.xml -np 5 ${bindir:=.}/bcast -q --log=smpi_kernel.thres:warning
+$ ${bindir:=.}/../../../bin/smpirun -map -hostfile ../hostfile_coll -platform ../../../examples/platforms/small_platform.xml -np 5 ${bindir:=.}/bcast -q --log=smpi_kernel.thres:warning
 > [rank 0] -> Tremblay
-> [rank 1] -> Jupiter
-> [rank 2] -> Fafard
-> [rank 3] -> Ginette
-> [rank 4] -> Bourassa
+> [rank 1] -> Tremblay
+> [rank 2] -> Tremblay
+> [rank 3] -> Tremblay
+> [rank 4] -> Jupiter
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'surf/precision' to '1e-9'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'SMPI'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/TCP_gamma' to '4194304'
@@ -28,20 +28,19 @@ $ ${bindir:=.}/../../../bin/smpirun -map -hostfile ../hostfile -platform ../../.
 # Another test
 p Test Broadcast with more processes than hosts
 ! setenv LD_LIBRARY_PATH=../../lib
-$ ${bindir:=.}/../../../bin/smpirun -map -hostfile ../hostfile -platform ../../../examples/platforms/small_platform.xml -np 12 ${bindir:=.}/bcast -q --log=smpi_kernel.thres:warning
-> You requested to use 12 processes, but there is only 5 processes in your hostfile...
+$ ${bindir:=.}/../../../bin/smpirun -map -hostfile ../hostfile_coll -platform ../../../examples/platforms/small_platform.xml -np 12 ${bindir:=.}/bcast -q --log=smpi_kernel.thres:warning
 > [rank 0] -> Tremblay
-> [rank 1] -> Jupiter
-> [rank 2] -> Fafard
-> [rank 3] -> Ginette
-> [rank 4] -> Bourassa
-> [rank 5] -> Tremblay
+> [rank 1] -> Tremblay
+> [rank 2] -> Tremblay
+> [rank 3] -> Tremblay
+> [rank 4] -> Jupiter
+> [rank 5] -> Jupiter
 > [rank 6] -> Jupiter
-> [rank 7] -> Fafard
-> [rank 8] -> Ginette
-> [rank 9] -> Bourassa
-> [rank 10] -> Tremblay
-> [rank 11] -> Jupiter
+> [rank 7] -> Jupiter
+> [rank 8] -> Fafard
+> [rank 9] -> Fafard
+> [rank 10] -> Fafard
+> [rank 11] -> Fafard
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'surf/precision' to '1e-9'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'SMPI'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/TCP_gamma' to '4194304'
