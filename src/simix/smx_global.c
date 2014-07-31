@@ -71,7 +71,7 @@ static void _XBT_CALL segvhandler(int signum, siginfo_t *siginfo, void *context)
 #ifdef HAVE_SMPI
     if (smpi_enabled() && !smpi_privatize_global_variables) {
       fprintf(stderr,
-        "Try to enable SMPI variable privatization with --cfg:smpi/privatize_global_variable:yes.\n");
+        "Try to enable SMPI variable privatization with --cfg=smpi/privatize_global_variables:yes.\n");
     }
 #endif
   }
