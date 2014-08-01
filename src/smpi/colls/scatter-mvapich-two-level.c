@@ -53,7 +53,7 @@ int smpi_coll_tuned_scatter_mvapich2_two_level_direct(void *sendbuf,
 {
     int comm_size, rank;
     int local_rank, local_size;
-    int leader_comm_rank, leader_comm_size;
+    int leader_comm_rank = -1, leader_comm_size = -1;
     int mpi_errno = MPI_SUCCESS;
     int recvtype_size, sendtype_size, nbytes;
     void *tmp_buf = NULL;
@@ -235,7 +235,7 @@ int smpi_coll_tuned_scatter_mvapich2_two_level_binomial(void *sendbuf,
 {
     int comm_size, rank;
     int local_rank, local_size;
-    int leader_comm_rank, leader_comm_size;
+    int leader_comm_rank = -1, leader_comm_size = -1;
     int mpi_errno = MPI_SUCCESS;
     int recvtype_size, sendtype_size, nbytes;
     void *tmp_buf = NULL;
