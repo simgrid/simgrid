@@ -670,12 +670,7 @@ void MC_replay_liveness(xbt_fifo_t stack, int all_stack)
 
   initial_global_state->raw_mem_set = (mmalloc_get_current_heap() == mc_heap);
 
-  int value;
-  char *req_str;
-  smx_simcall_t req = NULL, saved_req = NULL;
   xbt_fifo_item_t item;
-  mc_state_t state;
-  mc_pair_t pair;
   int depth = 1;
 
   XBT_DEBUG("**** Begin Replay ****");
@@ -688,57 +683,17 @@ void MC_replay_liveness(xbt_fifo_t stack, int all_stack)
   if (!initial_global_state->raw_mem_set)
     MC_SET_STD_HEAP;
 
-  if (all_stack) {
-
-    item = xbt_fifo_get_last_item(stack);
-
-    while (depth <= xbt_fifo_size(stack)) {
-
-      pair = (mc_pair_t) xbt_fifo_get_item_content(item);
-      state = (mc_state_t) pair->graph_state;
-
-      if (pair->requests > 0) {
-
-        saved_req = MC_state_get_executed_request(state, &value);
-        //XBT_DEBUG("SavedReq->call %u", saved_req->call);
-
-        if (saved_req != NULL) {
-          /* because we got a copy of the executed request, we have to fetch the  
-             real one, pointed by the request field of the issuer process */
-          req = &saved_req->issuer->simcall;
-          //XBT_DEBUG("Req->call %u", req->call);
-
-          /* Debug information */
-          if (XBT_LOG_ISENABLED(mc_global, xbt_log_priority_debug)) {
-            req_str = MC_request_to_string(req, value);
-            XBT_DEBUG("Replay (depth = %d) : %s (%p)", depth, req_str, state);
-            xbt_free(req_str);
-          }
-
-        }
-
-        SIMIX_simcall_pre(req, value);
-        MC_wait_for_requests();
-      }
-
-      depth++;
-
-      /* Update statistics */
-      mc_stats->visited_pairs++;
-      mc_stats->executed_transitions++;
-
-      item = xbt_fifo_get_prev_item(item);
-    }
-
-  } else {
-
     /* Traverse the stack from the initial state and re-execute the transitions */
     for (item = xbt_fifo_get_last_item(stack);
-         item != xbt_fifo_get_first_item(stack);
+         all_stack ? depth <= xbt_fifo_size(stack) : item != xbt_fifo_get_first_item(stack);
          item = xbt_fifo_get_prev_item(item)) {
 
-      pair = (mc_pair_t) xbt_fifo_get_item_content(item);
-      state = (mc_state_t) pair->graph_state;
+      mc_pair_t pair = (mc_pair_t) xbt_fifo_get_item_content(item);
+
+      mc_state_t state = (mc_state_t) pair->graph_state;
+      smx_simcall_t req = NULL, saved_req = NULL;
+      int value;
+      char *req_str;
 
       if (pair->requests > 0) {
 
@@ -746,7 +701,7 @@ void MC_replay_liveness(xbt_fifo_t stack, int all_stack)
         //XBT_DEBUG("SavedReq->call %u", saved_req->call);
 
         if (saved_req != NULL) {
-          /* because we got a copy of the executed request, we have to fetch the  
+          /* because we got a copy of the executed request, we have to fetch the
              real one, pointed by the request field of the issuer process */
           req = &saved_req->issuer->simcall;
           //XBT_DEBUG("Req->call %u", req->call);
@@ -764,13 +719,13 @@ void MC_replay_liveness(xbt_fifo_t stack, int all_stack)
         MC_wait_for_requests();
       }
 
-      depth++;
-
       /* Update statistics */
       mc_stats->visited_pairs++;
       mc_stats->executed_transitions++;
+
+      depth++;
+
     }
-  }
 
   XBT_DEBUG("**** End Replay ****");
 
