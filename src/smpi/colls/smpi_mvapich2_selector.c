@@ -242,9 +242,8 @@ int smpi_coll_tuned_gather_mvapich2(void *sendbuf,
       -1)) {
       range_intra_threshold++;
   }
-  /*
-    if (comm->ch.is_global_block == 1 && mv2_use_direct_gather == 1 &&
-            mv2_use_two_level_gather == 1 && comm->ch.shmem_coll_ok == 1) {
+  
+    if (smpi_comm_is_blocked(comm) ) {
         // Set intra-node function pt for gather_two_level 
         MV2_Gather_intra_node_function = 
                               mv2_gather_thresholds_table[range].intra_node[range_intra_threshold].
@@ -258,12 +257,12 @@ int smpi_coll_tuned_gather_mvapich2(void *sendbuf,
             MV2_Gather_inter_leader_function(sendbuf, sendcnt, sendtype, recvbuf, recvcnt,
                                              recvtype, root, comm);
 
-    } else {*/
-  // Indded, direct (non SMP-aware)gather is MPICH one
+    } else {
+  // Indeed, direct (non SMP-aware)gather is MPICH one
   mpi_errno = smpi_coll_tuned_gather_mpich(sendbuf, sendcnt, sendtype,
       recvbuf, recvcnt, recvtype,
       root, comm);
-  //}
+  }
 
   return mpi_errno;
 }

@@ -213,6 +213,7 @@ set(SMPI_SRC
   src/smpi/colls/coll_tuned_topo.c
   src/smpi/colls/colls_global.c
   src/smpi/colls/gather-ompi.c
+  src/smpi/colls/gather-mvapich.c
   src/smpi/colls/reduce-NTSL.c
   src/smpi/colls/reduce-arrival-pattern-aware.c
   src/smpi/colls/reduce-binomial.c

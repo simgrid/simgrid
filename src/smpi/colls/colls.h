@@ -42,6 +42,7 @@ COLL_APPLY(action, COLL_GATHER_SIG, ompi_binomial) COLL_sep \
 COLL_APPLY(action, COLL_GATHER_SIG, ompi_linear_sync) COLL_sep \
 COLL_APPLY(action, COLL_GATHER_SIG, mpich) COLL_sep \
 COLL_APPLY(action, COLL_GATHER_SIG, mvapich2) COLL_sep \
+COLL_APPLY(action, COLL_GATHER_SIG, mvapich2_two_level) COLL_sep \
 COLL_APPLY(action, COLL_GATHER_SIG, impi) COLL_sep \
 COLL_APPLY(action, COLL_GATHER_SIG, automatic)
 

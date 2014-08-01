@@ -585,7 +585,7 @@ MV2_Gather_function_ptr MV2_Gather_intra_node_function = NULL;
 
 
 #define MPIR_Gather_MV2_Direct smpi_coll_tuned_gather_ompi_basic_linear
-#define MPIR_Gather_MV2_two_level_Direct smpi_coll_tuned_gather_ompi_basic_linear
+#define MPIR_Gather_MV2_two_level_Direct smpi_coll_tuned_gather_mvapich2_two_level
 #define MPIR_Gather_intra smpi_coll_tuned_gather_mpich
 
 
