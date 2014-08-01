@@ -208,10 +208,8 @@ void mc_region_restore_sparse(mc_mem_region_t reg, mc_mem_region_t ref_reg)
   mc_restore_page_snapshot_region(reg->permanent_addr, page_count, reg->page_numbers,
     pagemap, ref_reg ? ref_reg->page_numbers : NULL);
 
-  // This is funny, the restoration can restore the state of the current heap,
-  // if this happen free(pagemap) would free from the wrong heap:
   if(pagemap) {
-    mfree((xbt_mheap_t) mc_heap, pagemap);
+    free(pagemap);
   }
 }
 
