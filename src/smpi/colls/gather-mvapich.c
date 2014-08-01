@@ -142,7 +142,7 @@ int smpi_coll_tuned_gather_mvapich2_two_level(void *sendbuf,
     MPI_Aint sendtype_extent = 0, recvtype_extent = 0;  /* Datatype extent */
     MPI_Aint true_lb, sendtype_true_extent, recvtype_true_extent;
     MPI_Comm shmem_comm, leader_comm;
-    void* tmp_buf;
+    void* tmp_buf = NULL;
     
 
     //if not set (use of the algo directly, without mvapich2 selector)
