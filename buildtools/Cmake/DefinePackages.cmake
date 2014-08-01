@@ -228,6 +228,7 @@ set(SMPI_SRC
   src/smpi/colls/reduce-mvapich-two-level.c
   src/smpi/colls/reduce-rab.c
   src/smpi/colls/scatter-ompi.c
+  src/smpi/colls/scatter-mvapich-two-level.c
   src/smpi/colls/smpi_automatic_selector.c
   src/smpi/colls/smpi_mpich_selector.c
   src/smpi/colls/smpi_intel_mpi_selector.c

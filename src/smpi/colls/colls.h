@@ -300,6 +300,8 @@ COLL_APPLY(action, COLL_SCATTER_SIG, ompi_basic_linear) COLL_sep \
 COLL_APPLY(action, COLL_SCATTER_SIG, ompi_binomial)  COLL_sep \
 COLL_APPLY(action, COLL_SCATTER_SIG, mpich)   COLL_sep \
 COLL_APPLY(action, COLL_SCATTER_SIG, mvapich2)   COLL_sep \
+COLL_APPLY(action, COLL_SCATTER_SIG, mvapich2_two_level_binomial)   COLL_sep \
+COLL_APPLY(action, COLL_SCATTER_SIG, mvapich2_two_level_direct)   COLL_sep \
 COLL_APPLY(action, COLL_SCATTER_SIG, impi)   COLL_sep \
 COLL_APPLY(action, COLL_SCATTER_SIG, automatic)
 

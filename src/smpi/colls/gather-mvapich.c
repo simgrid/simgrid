@@ -265,8 +265,8 @@ int smpi_coll_tuned_gather_mvapich2_two_level(void *sendbuf,
     }
     leader_comm = smpi_comm_get_leaders_comm(comm);
     int* leaders_map = smpi_comm_get_leaders_map(comm);
-    leader_of_root = leaders_map[root];
-    leader_root = smpi_group_rank(smpi_comm_group(leader_comm),leader_of_root);
+    leader_of_root = smpi_group_rank(smpi_comm_group(comm),leaders_map[root]);
+    leader_root = smpi_group_rank(smpi_comm_group(leader_comm),leaders_map[root]);
     /* leader_root is the rank of the leader of the root in leader_comm. 
      * leader_root is to be used as the root of the inter-leader gather ops 
      */
