@@ -76,6 +76,7 @@ COLL_APPLY(action, COLL_ALLGATHER_SIG, spreading_simple) COLL_sep \
 COLL_APPLY(action, COLL_ALLGATHER_SIG, ompi) COLL_sep \
 COLL_APPLY(action, COLL_ALLGATHER_SIG, ompi_neighborexchange) COLL_sep \
 COLL_APPLY(action, COLL_ALLGATHER_SIG, mvapich2) COLL_sep \
+COLL_APPLY(action, COLL_ALLGATHER_SIG, mvapich2_smp) COLL_sep \
 COLL_APPLY(action, COLL_ALLGATHER_SIG, mpich) COLL_sep \
 COLL_APPLY(action, COLL_ALLGATHER_SIG, impi) COLL_sep \
 COLL_APPLY(action, COLL_ALLGATHER_SIG, automatic)

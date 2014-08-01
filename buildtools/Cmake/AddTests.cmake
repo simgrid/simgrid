@@ -376,7 +376,7 @@ IF(NOT enable_memcheck)
     ENDFOREACH()
     FOREACH (ALLGATHER_COLL default  2dmesh 3dmesh bruck GB loosely_lr
                             NTSLR NTSLR_NB pair rdb  rhv ring SMP_NTS
-                            smp_simple spreading_simple ompi mpich ompi_neighborexchange mvapich2 impi)
+                            smp_simple spreading_simple ompi mpich ompi_neighborexchange mvapich2 mvapich2_smp impi)
       ADD_TESH(tesh-smpi-allgather-coll-${ALLGATHER_COLL} --cfg smpi/allgather:${ALLGATHER_COLL} --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/allgather --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/allgather allgather_coll.tesh)
     ENDFOREACH()
     FOREACH (ALLGATHERV_COLL default GB pair ring ompi mpich ompi_neighborexchange ompi_bruck mpich_rdb mpich_ring mvapich2 impi)

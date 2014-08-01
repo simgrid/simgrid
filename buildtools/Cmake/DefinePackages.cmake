@@ -143,6 +143,7 @@ set(SMPI_SRC
   src/smpi/colls/allgather-loosely-lr.c
   src/smpi/colls/allgather-ompi-neighborexchange.c
   src/smpi/colls/allgather-pair.c
+  src/smpi/colls/allgather-mvapich-smp.c
   src/smpi/colls/allgather-rdb.c
   src/smpi/colls/allgather-rhv.c
   src/smpi/colls/allgather-ring.c

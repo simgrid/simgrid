@@ -331,7 +331,7 @@ static int MPIR_Allgather_RD_Allgather_Comm_MV2( void *sendbuf,
 #define MPIR_Allgather_Bruck_MV2 smpi_coll_tuned_allgather_bruck
 #define MPIR_Allgather_RD_MV2 smpi_coll_tuned_allgather_rdb
 #define MPIR_Allgather_Ring_MV2 smpi_coll_tuned_allgather_ring
-
+#define MPIR_2lvl_Allgather_MV2 smpi_coll_tuned_allgather_mvapich2_smp
 
 static void init_mv2_allgather_tables_stampede(){
   int i;
