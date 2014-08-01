@@ -359,7 +359,7 @@ int smpi_coll_tuned_allreduce_mvapich2(void *sendbuf,
   int nbytes = 0;
   int range = 0, range_threshold = 0, range_threshold_intra = 0;
   int is_two_level = 0;
-  //int is_commutative = 0;
+  int is_commutative = 0;
   MPI_Aint true_lb, true_extent;
 
   sendtype_size=smpi_datatype_size(datatype);
@@ -427,16 +427,16 @@ int smpi_coll_tuned_allreduce_mvapich2(void *sendbuf,
 
     if(is_two_level == 1){
         // check if shm is ready, if not use other algorithm first
-        /*if ((comm->ch.shmem_coll_ok == 1)
-                    && (mv2_enable_shmem_allreduce)
-                    && (is_commutative)
-                    && (mv2_enable_shmem_collectives)) {
-                    mpi_errno = MPIR_Allreduce_two_level_MV2(sendbuf, recvbuf, count,
+        if (is_commutative) {
+          if(smpi_comm_get_leaders_comm(comm)==MPI_COMM_NULL){
+            smpi_comm_init_smp(comm);
+          }
+          mpi_errno = MPIR_Allreduce_two_level_MV2(sendbuf, recvbuf, count,
                                                      datatype, op, comm);
-                } else {*/
+                } else {
         mpi_errno = MPIR_Allreduce_pt2pt_rd_MV2(sendbuf, recvbuf, count,
             datatype, op, comm);
-        // }
+        }
     } else {
         mpi_errno = MV2_Allreduce_function(sendbuf, recvbuf, count,
             datatype, op, comm);

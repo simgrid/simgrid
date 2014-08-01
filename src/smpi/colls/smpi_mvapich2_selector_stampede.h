@@ -818,7 +818,7 @@ static  int MPIR_Allreduce_reduce_shmem_MV2( void *sendbuf,
 
 #define MPIR_Allreduce_pt2pt_rd_MV2 smpi_coll_tuned_allreduce_rdb
 #define MPIR_Allreduce_pt2pt_rs_MV2 smpi_coll_tuned_allreduce_mvapich2_rs
-
+#define MPIR_Allreduce_two_level_MV2 smpi_coll_tuned_allreduce_mvapich2_two_level
 
 
 static void init_mv2_allreduce_tables_stampede(){
