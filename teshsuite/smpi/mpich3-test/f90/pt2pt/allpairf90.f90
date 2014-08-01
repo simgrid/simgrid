@@ -30,7 +30,7 @@
          call test_pair_issend( comm, errs )
          call test_pair_psend( comm, errs )
          !call test_pair_prsend( comm, errs )
-         call test_pair_pssend( comm, errs )
+         !call test_pair_pssend( comm, errs )
          call test_pair_sendrecv( comm, errs )
          call test_pair_sendrecvrepl( comm, errs )
          call mtestFreeComm( comm )
