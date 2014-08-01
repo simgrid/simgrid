@@ -232,6 +232,8 @@ int smpi_group_use(MPI_Group group);
 int smpi_group_unuse(MPI_Group group);
 int smpi_group_size(MPI_Group group);
 int smpi_group_compare(MPI_Group group1, MPI_Group group2);
+int smpi_group_incl(MPI_Group group, int n, int* ranks, MPI_Group* newgroup);
+
 
 MPI_Topology smpi_comm_topo(MPI_Comm comm);
 MPI_Comm smpi_comm_new(MPI_Group group, MPI_Topology topo);

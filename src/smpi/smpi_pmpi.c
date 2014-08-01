@@ -478,30 +478,14 @@ int PMPI_Group_difference(MPI_Group group1, MPI_Group group2, MPI_Group * newgro
 
 int PMPI_Group_incl(MPI_Group group, int n, int *ranks, MPI_Group * newgroup)
 {
-  int retval, i, index;
+  int retval;
 
   if (group == MPI_GROUP_NULL) {
     retval = MPI_ERR_GROUP;
   } else if (newgroup == NULL) {
     retval = MPI_ERR_ARG;
   } else {
-    if (n == 0) {
-      *newgroup = MPI_GROUP_EMPTY;
-    } else if (n == smpi_group_size(group)) {
-      *newgroup = group;
-      if(group!= smpi_comm_group(MPI_COMM_WORLD)
-                && group != MPI_GROUP_NULL
-                && group != smpi_comm_group(MPI_COMM_SELF)
-                && group != MPI_GROUP_EMPTY)
-      smpi_group_use(group);
-    } else {
-      *newgroup = smpi_group_new(n);
-      for (i = 0; i < n; i++) {
-        index = smpi_group_index(group, ranks[i]);
-        smpi_group_set_mapping(*newgroup, index, i);
-      }
-    }
-    retval = MPI_SUCCESS;
+    retval = smpi_group_incl(group, n, ranks, newgroup);
   }
   return retval;
 }
