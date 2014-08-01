@@ -28,6 +28,7 @@ typedef struct s_smpi_process_data {
   smx_rdv_t mailbox_small;
   xbt_os_timer_t timer;
   MPI_Comm comm_self;
+  MPI_Comm comm_intra;
   MPI_Comm* comm_world;
   void *data;                   /* user data */
   int index;
@@ -104,6 +105,7 @@ void smpi_process_init(int *argc, char ***argv)
     data->argv = argv;
     // set the process attached to the mailbox
     simcall_rdv_set_receiver(data->mailbox_small, proc);
+
     XBT_DEBUG("<%d> New process in the game: %p", index, proc);
 
     if(smpi_privatize_global_variables){
@@ -286,6 +288,18 @@ MPI_Comm smpi_process_comm_self(void)
   return data->comm_self;
 }
 
+MPI_Comm smpi_process_get_comm_intra(void)
+{
+  smpi_process_data_t data = smpi_process_data();
+  return data->comm_intra;
+}
+
+void smpi_process_set_comm_intra(MPI_Comm comm)
+{
+  smpi_process_data_t data = smpi_process_data();
+  data->comm_intra = comm;
+}
+
 void smpi_process_set_sampling(int s)
 {
   smpi_process_data_t data = smpi_process_data();
@@ -297,6 +311,7 @@ int smpi_process_get_sampling(void)
   smpi_process_data_t data = smpi_process_data();
   return data->sampling;
 }
+
 
 void print_request(const char *message, MPI_Request request)
 {
@@ -392,6 +407,7 @@ void smpi_global_init(void)
     if (MC_is_active())
       MC_ignore_heap(process_data[i]->timer, xbt_os_timer_size());
     process_data[i]->comm_self = MPI_COMM_NULL;
+    process_data[i]->comm_intra = MPI_COMM_NULL;
     process_data[i]->comm_world = NULL;
     process_data[i]->state = SMPI_UNINITIALIZED;
     process_data[i]->sampling = 0;
@@ -432,6 +448,10 @@ void smpi_global_destroy(void)
     if(process_data[i]->comm_self!=MPI_COMM_NULL){
       smpi_group_unuse(smpi_comm_group(process_data[i]->comm_self));
       smpi_comm_destroy(process_data[i]->comm_self);
+    }
+    if(process_data[i]->comm_intra!=MPI_COMM_NULL){
+      smpi_group_unuse(smpi_comm_group(process_data[i]->comm_intra));
+      smpi_comm_destroy(process_data[i]->comm_intra);
     }
     xbt_os_timer_free(process_data[i]->timer);
     simcall_rdv_destroy(process_data[i]->mailbox);

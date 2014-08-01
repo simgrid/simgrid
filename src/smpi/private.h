@@ -120,6 +120,7 @@ int smpi_process_finalized(void);
 int smpi_process_initialized(void);
 void smpi_process_mark_as_initialized(void);
 
+
 struct s_smpi_mpi_cart_topology;
 typedef struct s_smpi_mpi_cart_topology *MPIR_Cart_Topology;
 
@@ -155,6 +156,8 @@ void smpi_process_set_user_data(void *);
 void* smpi_process_get_user_data(void);
 int smpi_process_count(void);
 MPI_Comm smpi_process_comm_world(void);
+MPI_Comm smpi_process_get_comm_intra(void);
+void smpi_process_set_comm_intra(MPI_Comm comm);
 smx_rdv_t smpi_process_mailbox(void);
 smx_rdv_t smpi_process_remote_mailbox(int index);
 smx_rdv_t smpi_process_mailbox_small(void);
@@ -245,6 +248,15 @@ int smpi_comm_rank(MPI_Comm comm);
 MPI_Comm smpi_comm_split(MPI_Comm comm, int color, int key);
 void smpi_comm_use(MPI_Comm comm);
 void smpi_comm_unuse(MPI_Comm comm);
+void smpi_comm_set_leaders_comm(MPI_Comm comm, MPI_Comm leaders);
+void smpi_comm_set_intra_comm(MPI_Comm comm, MPI_Comm leaders);
+int* smpi_comm_get_non_uniform_map(MPI_Comm comm);
+int* smpi_comm_get_leaders_map(MPI_Comm comm);
+MPI_Comm smpi_comm_get_leaders_comm(MPI_Comm comm);
+MPI_Comm smpi_comm_get_intra_comm(MPI_Comm comm);
+int smpi_comm_is_uniform(MPI_Comm comm);
+int smpi_comm_is_blocked(MPI_Comm comm);
+void smpi_comm_init_smp(MPI_Comm comm);
 
 MPI_Request smpi_mpi_send_init(void *buf, int count, MPI_Datatype datatype,
                                int dst, int tag, MPI_Comm comm);

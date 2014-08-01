@@ -8,6 +8,9 @@
 
 #include "private.h"
 #include "smpi_mpi_dt_private.h"
+#include "limits.h"
+#include "simix/smx_private.h"
+#include "colls/colls.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_comm, smpi,
                                 "Logging specific to SMPI (comm)");
@@ -23,6 +26,13 @@ typedef struct s_smpi_mpi_communicator {
   MPIR_Topo_type topoType; 
   MPI_Topology topo; // to be replaced by an union
   int refcount;
+  MPI_Comm leaders_comm;//inter-node communicator
+  MPI_Comm intra_comm;//intra-node communicator . For MPI_COMM_WORLD this can't be used, as var is global.
+  //use an intracomm stored in the process data instead
+  int* leaders_map; //who is the leader of each process
+  int is_uniform;
+  int* non_uniform_map; //set if smp nodes have a different number of processes allocated
+  int is_blocked;// are ranks allocated on the same smp node contiguous ?
 } s_smpi_mpi_communicator_t;
 
 static int smpi_compare_rankmap(const void *a, const void *b)
@@ -53,7 +63,14 @@ MPI_Comm smpi_comm_new(MPI_Group group, MPI_Topology topo)
   comm->group = group;
   smpi_group_use(comm->group);
   comm->refcount=1;
+  comm->topoType = -1;
   comm->topo = topo;
+  comm->intra_comm = MPI_COMM_NULL;
+  comm->leaders_comm = MPI_COMM_NULL;
+  comm->is_uniform=1;
+  comm->non_uniform_map = NULL;
+  comm->leaders_map = NULL;
+  comm->is_blocked=0;
   return comm;
 }
 
@@ -105,6 +122,39 @@ void smpi_comm_get_name (MPI_Comm comm, char* name, int* len)
   } else {
     *len = snprintf(name, MPI_MAX_NAME_STRING, "%p", comm);
   }
+}
+
+void smpi_comm_set_leaders_comm(MPI_Comm comm, MPI_Comm leaders){
+  comm->leaders_comm=leaders;
+}
+
+void smpi_comm_set_intra_comm(MPI_Comm comm, MPI_Comm leaders){
+  comm->intra_comm=leaders;
+}
+
+int* smpi_comm_get_non_uniform_map(MPI_Comm comm){
+  return comm->non_uniform_map;
+}
+
+int* smpi_comm_get_leaders_map(MPI_Comm comm){
+  return comm->leaders_map;
+}
+
+MPI_Comm smpi_comm_get_leaders_comm(MPI_Comm comm){
+  return comm->leaders_comm;
+}
+
+MPI_Comm smpi_comm_get_intra_comm(MPI_Comm comm){
+  if(comm==MPI_COMM_WORLD) return smpi_process_get_comm_intra();
+  else return comm->intra_comm;
+}
+
+int smpi_comm_is_uniform(MPI_Comm comm){
+  return comm->is_uniform;
+}
+
+int smpi_comm_is_blocked(MPI_Comm comm){
+  return comm->is_blocked;
 }
 
 MPI_Comm smpi_comm_split(MPI_Comm comm, int color, int key)
@@ -200,7 +250,186 @@ void smpi_comm_unuse(MPI_Comm comm){
   if (comm == MPI_COMM_UNINITIALIZED)
     comm = smpi_process_comm_world();
   comm->refcount--;
-  if(comm->refcount==0)
+  if(comm->refcount==0){
+    if(comm->intra_comm != MPI_COMM_NULL)
+      smpi_comm_unuse(comm->intra_comm);
+    if(comm->leaders_comm != MPI_COMM_NULL)
+      smpi_comm_unuse(comm->leaders_comm);
+    if(comm->non_uniform_map !=NULL)
+      xbt_free(comm->non_uniform_map);
+    if(comm->leaders_map !=NULL)
+      xbt_free(comm->leaders_map);
     xbt_free(comm);
+  }
+}
+
+static int
+compare_ints (const void *a, const void *b)
+{
+  const int *da = (const int *) a;
+  const int *db = (const int *) b;
+
+  return (*da > *db) - (*da < *db);
+}
+
+void smpi_comm_init_smp(MPI_Comm comm){
+  int leader = -1;
+  int comm_size =smpi_comm_size(comm);
+
+  if(smpi_privatize_global_variables){ //we need to switch here, as the called function may silently touch global variables
+     XBT_VERB("Applying operation, switch to the right data frame ");
+     switch_data_segment(smpi_process_index());
+   }
+  //identify neighbours in comm
+  //get the indexes of all processes sharing the same simix host
+  xbt_swag_t process_list = simcall_host_get_process_list(SIMIX_host_self());
+  int intra_comm_size = 0;
+  //only one process/node, disable SMP support and return
+//  if(intra_comm_size==1){
+//      smpi_comm_set_intra_comm(comm, MPI_COMM_SELF);
+//      //smpi_comm_set_leaders_comm(comm, comm);
+//      smpi_process_set_comm_intra(MPI_COMM_SELF);
+//      return;
+//  }
+  XBT_DEBUG("number of processes deployed on my node : %d", intra_comm_size);
+
+  int i =0;
+  int min_index=INT_MAX;//the minimum index will be the leader
+  msg_process_t process = NULL;
+  xbt_swag_foreach(process, process_list) {
+    //is_in_comm=0;
+    int index = SIMIX_process_get_PID(process) -1;
+
+    if(smpi_group_rank(smpi_comm_group(comm),  index)!=MPI_UNDEFINED){
+        intra_comm_size++;
+      //the process is in the comm
+      if(index < min_index)
+        min_index=index;
+      i++;
+    }
+  }
+
+  MPI_Group group_intra = smpi_group_new(intra_comm_size);
+  i=0;
+  process = NULL;
+  xbt_swag_foreach(process, process_list) {
+    //is_in_comm=0;
+    int index = SIMIX_process_get_PID(process) -1;
+    if(smpi_group_rank(smpi_comm_group(comm),  index)!=MPI_UNDEFINED){
+      smpi_group_set_mapping(group_intra, index, i);
+      i++;
+    }
+  }
+
+
+  MPI_Comm comm_intra = smpi_comm_new(group_intra, NULL);
+  //MPI_Comm shmem_comm = smpi_process_comm_intra();
+  //int intra_rank = smpi_comm_rank(shmem_comm);
+
+
+  //if(smpi_process_index()==min_index)
+  leader=min_index;
+
+  int * leaders_map= (int*)xbt_malloc0(sizeof(int)*comm_size);
+  int * leader_list= (int*)xbt_malloc0(sizeof(int)*comm_size);
+  for(i=0; i<comm_size; i++){
+      leader_list[i]=-1;
+  }
+
+  smpi_coll_tuned_allgather_mpich(&leader, 1, MPI_INT , leaders_map, 1, MPI_INT, comm);
+
+  if(!comm->leaders_map){
+    comm->leaders_map= leaders_map;
+  }else{
+    xbt_free(leaders_map);
+  }
+  int j=0;
+  int leader_group_size = 0;
+  for(i=0; i<comm_size; i++){
+      int already_done=0;
+      for(j=0;j<leader_group_size; j++){
+        if(comm->leaders_map[i]==leader_list[j]){
+            already_done=1;
+        }
+      }
+      if(!already_done){
+        leader_list[leader_group_size]=comm->leaders_map[i];
+        leader_group_size++;
+      }
+  }
+  qsort(leader_list, leader_group_size, sizeof(int),compare_ints);
+
+  MPI_Group leaders_group = smpi_group_new(leader_group_size);
+
+
+  MPI_Comm leader_comm = MPI_COMM_NULL;
+  if(comm!=MPI_COMM_WORLD){
+    //create leader_communicator
+    for (i=0; i< leader_group_size;i++)
+      smpi_group_set_mapping(leaders_group, leader_list[i], i);
+    leader_comm = smpi_comm_new(leaders_group, NULL);
+    smpi_comm_set_leaders_comm(comm, leader_comm);
+    smpi_comm_set_intra_comm(comm, comm_intra);
+
+    //create intracommunicator
+   // smpi_comm_set_intra_comm(comm, smpi_comm_split(comm, *(int*)SIMIX_host_self(), comm_rank));
+  }else{
+    for (i=0; i< leader_group_size;i++)
+      smpi_group_set_mapping(leaders_group, leader_list[i], i);
+
+    leader_comm = smpi_comm_new(leaders_group, NULL);
+    if(smpi_comm_get_leaders_comm(comm)==MPI_COMM_NULL)
+      smpi_comm_set_leaders_comm(comm, leader_comm);
+    smpi_process_set_comm_intra(comm_intra);
+  }
+
+  int is_uniform = 1;
+
+  // Are the nodes uniform ? = same number of process/node
+  int my_local_size=smpi_comm_size(comm_intra);
+  if(smpi_comm_rank(comm_intra)==0) {
+    int* non_uniform_map = xbt_malloc(sizeof(int)*leader_group_size);
+    smpi_coll_tuned_allgather_mpich(&my_local_size, 1, MPI_INT,
+        non_uniform_map, 1, MPI_INT, leader_comm);
+    for(i=0; i < leader_group_size; i++) {
+      if(non_uniform_map[0] != non_uniform_map[i]) {
+        is_uniform = 0;
+        break;
+      }
+    }
+    if(!is_uniform && smpi_comm_is_uniform(comm)){
+        comm->non_uniform_map= non_uniform_map;
+    }else{
+        xbt_free(non_uniform_map);
+    }
+    comm->is_uniform=is_uniform;
+  }
+  mpi_coll_bcast_fun(&(comm->is_uniform),1, MPI_INT, 0, comm_intra );
+
+
+  // Are the ranks blocked ? = allocated contiguously on the SMP nodes
+  int is_blocked=1;
+  int prev=smpi_group_rank(smpi_comm_group(comm), smpi_group_index(smpi_comm_group(comm_intra), 0));
+    for (i=1; i<my_local_size; i++){
+      int this=smpi_group_rank(smpi_comm_group(comm),smpi_group_index(smpi_comm_group(comm_intra), i));
+      if(this!=prev+1){
+        is_blocked=0;
+        break;
+      }
+      prev = this;
+  }
+
+  int global_blocked;
+  mpi_coll_allreduce_fun(&is_blocked, &(global_blocked), 1,
+            MPI_INT, MPI_LAND, comm);
+
+  if(comm==MPI_COMM_WORLD){
+    if(smpi_comm_rank(comm)==0){
+        comm->is_blocked=global_blocked;
+    }
+  }else{
+    comm->is_blocked=global_blocked;
+  }
+  xbt_free(leader_list);
 }
 
