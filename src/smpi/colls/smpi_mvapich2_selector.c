@@ -570,14 +570,16 @@ int smpi_coll_tuned_reduce_mvapich2( void *sendbuf,
   /* We call Reduce function */
   if(is_two_level == 1)
     {
-      /* if (comm->ch.shmem_coll_ok == 1
-            && is_commutative == 1) {
-            mpi_errno = MPIR_Reduce_two_level_helper_MV2(sendbuf, recvbuf, count, 
-                                           datatype, op, root, comm, errflag);
-        } else {*/
+       if (is_commutative == 1) {
+         if(smpi_comm_get_leaders_comm(comm)==MPI_COMM_NULL){
+           smpi_comm_init_smp(comm);
+         }
+         mpi_errno = MPIR_Reduce_two_level_helper_MV2(sendbuf, recvbuf, count, 
+                                           datatype, op, root, comm);
+        } else {
       mpi_errno = MPIR_Reduce_binomial_MV2(sendbuf, recvbuf, count,
           datatype, op, root, comm);
-      //}
+      }
     } else if(MV2_Reduce_function == &MPIR_Reduce_inter_knomial_wrapper_MV2 ){
         if(is_commutative ==1)
           {

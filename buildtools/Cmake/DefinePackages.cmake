@@ -225,6 +225,7 @@ set(SMPI_SRC
   src/smpi/colls/reduce_scatter-mpich.c
   src/smpi/colls/reduce_scatter-ompi.c
   src/smpi/colls/reduce-mvapich-knomial.c
+  src/smpi/colls/reduce-mvapich-two-level.c
   src/smpi/colls/reduce-rab.c
   src/smpi/colls/scatter-ompi.c
   src/smpi/colls/smpi_automatic_selector.c

@@ -615,7 +615,7 @@ smpi_coll_tuned_reduce_ompi_basic_linear(void *sbuf, void *rbuf, int count,
         smpi_mpi_send(sbuf, count, dtype, root,
                                 COLL_TAG_REDUCE,
                                 comm);
-        return -1;
+        return MPI_SUCCESS;
     }
 
     /* see discussion in ompi_coll_basic_reduce_lin_intra about 

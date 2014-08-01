@@ -10,6 +10,8 @@
 /************ Alltoall variables and initializers                        */
 
 #define MV2_MAX_NB_THRESHOLDS  32
+
+
 typedef struct {
   int min;
   int max;
@@ -1264,7 +1266,7 @@ int (*MV2_Reduce_intra_function)( void *sendbuf,
 #define MPIR_Reduce_binomial_MV2 smpi_coll_tuned_reduce_binomial
 #define MPIR_Reduce_redscat_gather_MV2 smpi_coll_tuned_reduce_scatter_gather
 #define MPIR_Reduce_shmem_MV2 smpi_coll_tuned_reduce_ompi_basic_linear
-
+#define MPIR_Reduce_two_level_helper_MV2 smpi_coll_tuned_reduce_mvapich2_two_level
 
 
 static void init_mv2_reduce_tables_stampede(){

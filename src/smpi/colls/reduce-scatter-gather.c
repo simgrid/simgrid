@@ -33,9 +33,15 @@ int smpi_coll_tuned_reduce_scatter_gather(void *sendbuf, void *recvbuf,
     return 0;
   rank = smpi_comm_rank(comm);
   comm_size = smpi_comm_size(comm);
+  
+
 
   extent = smpi_datatype_get_extent(datatype);
-
+  /* If I'm not the root, then my recvbuf may not be valid, therefore
+  I have to allocate a temporary one */
+  if (rank != root && !recvbuf) {
+    recvbuf = (void *)xbt_malloc(count * extent);
+  }
   /* find nearest power-of-two less than or equal to comm_size */
   pof2 = 1;
   while (pof2 <= comm_size)
