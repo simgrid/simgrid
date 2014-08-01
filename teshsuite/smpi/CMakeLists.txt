@@ -25,6 +25,7 @@ set(examples_src
 set(bin_files
   ${bin_files}
   ${CMAKE_CURRENT_SOURCE_DIR}/hostfile
+  ${CMAKE_CURRENT_SOURCE_DIR}/hostfile_coll
   PARENT_SCOPE
   )
 set(txt_files
