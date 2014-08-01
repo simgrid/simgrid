@@ -965,8 +965,8 @@ static void init_mv2_allreduce_tables_stampede(){
 }
 
 
-/*
-Bcast deactivated for now, defaults to mpich one
+
+
 typedef struct {
     int min;
     int max;
@@ -997,11 +997,24 @@ int (*MV2_Bcast_function) (void *buffer, int count, MPI_Datatype datatype,
 int (*MV2_Bcast_intra_node_function) (void *buffer, int count, MPI_Datatype datatype,
                                       int root, MPI_Comm comm_ptr) = NULL;
 
+int zcpy_knomial_factor = 2;
+int mv2_pipelined_zcpy_knomial_factor = -1;
+int bcast_segment_size = 8192;
+int mv2_inter_node_knomial_factor = 4;
+int mv2_intra_node_knomial_factor = 4;
+#define INTRA_NODE_ROOT 0
 
- */
+#define MPIR_Pipelined_Bcast_Zcpy_MV2 smpi_coll_tuned_bcast_mpich
+#define MPIR_Pipelined_Bcast_MV2 smpi_coll_tuned_bcast_mpich
+#define MPIR_Bcast_binomial_MV2 smpi_coll_tuned_bcast_mpich
+#define MPIR_Bcast_scatter_ring_allgather_shm_MV2 smpi_coll_tuned_bcast_mpich
+#define MPIR_Bcast_scatter_doubling_allgather_MV2 smpi_coll_tuned_bcast_mpich
+#define MPIR_Bcast_scatter_ring_allgather_MV2 smpi_coll_tuned_bcast_mpich
+#define MPIR_Shmem_Bcast_MV2 smpi_coll_tuned_bcast_mpich
+#define MPIR_Bcast_tune_inter_node_helper_MV2 smpi_coll_tuned_bcast_mpich
+#define MPIR_Knomial_Bcast_intra_node_MV2 smpi_coll_tuned_bcast_mpich
+#define MPIR_Bcast_intra_MV2 smpi_coll_tuned_bcast_mpich
 
-
-/*
 static void init_mv2_bcast_tables_stampede(){
  //Stampede,
         mv2_size_bcast_tuning_table=8;
@@ -1209,7 +1222,7 @@ static void init_mv2_bcast_tables_stampede(){
 
         memcpy(mv2_bcast_thresholds_table, mv2_tmp_bcast_thresholds_table,
                     mv2_size_bcast_tuning_table * sizeof (mv2_bcast_tuning_table));
-}*/
+}
 
 
 /************ Reduce variables and initializers                        */

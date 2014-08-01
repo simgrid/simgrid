@@ -404,7 +404,7 @@ void smpi_comm_init_smp(MPI_Comm comm){
     }
     comm->is_uniform=is_uniform;
   }
-  mpi_coll_bcast_fun(&(comm->is_uniform),1, MPI_INT, 0, comm_intra );
+  smpi_coll_tuned_bcast_mpich(&(comm->is_uniform),1, MPI_INT, 0, comm_intra );
 
 
   // Are the ranks blocked ? = allocated contiguously on the SMP nodes
@@ -420,7 +420,7 @@ void smpi_comm_init_smp(MPI_Comm comm){
   }
 
   int global_blocked;
-  mpi_coll_allreduce_fun(&is_blocked, &(global_blocked), 1,
+  smpi_mpi_allreduce(&is_blocked, &(global_blocked), 1,
             MPI_INT, MPI_LAND, comm);
 
   if(comm==MPI_COMM_WORLD){

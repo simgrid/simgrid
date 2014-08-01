@@ -483,9 +483,198 @@ int smpi_coll_tuned_bcast_mvapich2(void *buffer,
     MPI_Datatype datatype,
     int root, MPI_Comm comm)
 {
+    int mpi_errno = MPI_SUCCESS;
+    int comm_size/*, rank*/;
+    int two_level_bcast = 1;
+    size_t nbytes = 0; 
+    int range = 0;
+    int range_threshold = 0;
+    int range_threshold_intra = 0;
+    int is_homogeneous, is_contig;
+    MPI_Aint type_size;
+    //, position;
+    void *tmp_buf = NULL;
+    MPI_Comm shmem_comm;
+    //MPID_Datatype *dtp;
 
-  //TODO : Bcast really needs intra/inter phases in mvapich. Default to mpich if not available
-  return smpi_coll_tuned_bcast_mpich(buffer, count, datatype, root, comm);
+    if (count == 0)
+        return MPI_SUCCESS;
+    if(smpi_comm_get_leaders_comm(comm)==MPI_COMM_NULL){
+      smpi_comm_init_smp(comm);
+    }
+    if(!mv2_bcast_thresholds_table)
+      init_mv2_bcast_tables_stampede();
+    comm_size = smpi_comm_size(comm);
+    //rank = smpi_comm_rank(comm);
+
+    is_contig=1;
+/*    if (HANDLE_GET_KIND(datatype) == HANDLE_KIND_BUILTIN)*/
+/*        is_contig = 1;*/
+/*    else {*/
+/*        MPID_Datatype_get_ptr(datatype, dtp);*/
+/*        is_contig = dtp->is_contig;*/
+/*    }*/
+
+    is_homogeneous = 1;
+
+    /* MPI_Type_size() might not give the accurate size of the packed
+     * datatype for heterogeneous systems (because of padding, encoding,
+     * etc). On the other hand, MPI_Pack_size() can become very
+     * expensive, depending on the implementation, especially for
+     * heterogeneous systems. We want to use MPI_Type_size() wherever
+     * possible, and MPI_Pack_size() in other places.
+     */
+    //if (is_homogeneous) {
+        type_size=smpi_datatype_size(datatype);
+
+   /* } else {
+        MPIR_Pack_size_impl(1, datatype, &type_size);
+    }*/
+    nbytes = (size_t) (count) * (type_size);
+
+    /* Search for the corresponding system size inside the tuning table */
+    while ((range < (mv2_size_bcast_tuning_table - 1)) &&
+           (comm_size > mv2_bcast_thresholds_table[range].numproc)) {
+        range++;
+    }
+    /* Search for corresponding inter-leader function */
+    while ((range_threshold < (mv2_bcast_thresholds_table[range].size_inter_table - 1))
+           && (nbytes >
+               mv2_bcast_thresholds_table[range].inter_leader[range_threshold].max)
+           && (mv2_bcast_thresholds_table[range].inter_leader[range_threshold].max != -1)) {
+        range_threshold++;
+    }
+
+    /* Search for corresponding intra-node function */
+    while ((range_threshold_intra <
+            (mv2_bcast_thresholds_table[range].size_intra_table - 1))
+           && (nbytes >
+               mv2_bcast_thresholds_table[range].intra_node[range_threshold_intra].max)
+           && (mv2_bcast_thresholds_table[range].intra_node[range_threshold_intra].max !=
+               -1)) {
+        range_threshold_intra++;
+    }
+
+    MV2_Bcast_function =
+        mv2_bcast_thresholds_table[range].inter_leader[range_threshold].
+        MV2_pt_Bcast_function;
+
+    MV2_Bcast_intra_node_function =
+        mv2_bcast_thresholds_table[range].
+        intra_node[range_threshold_intra].MV2_pt_Bcast_function;
+
+/*    if (mv2_user_bcast_intra == NULL && */
+/*            MV2_Bcast_intra_node_function == &MPIR_Knomial_Bcast_intra_node_MV2) {*/
+/*            MV2_Bcast_intra_node_function = &MPIR_Shmem_Bcast_MV2;*/
+/*    }*/
+
+    if (mv2_bcast_thresholds_table[range].inter_leader[range_threshold].
+        zcpy_pipelined_knomial_factor != -1) {
+        zcpy_knomial_factor = 
+            mv2_bcast_thresholds_table[range].inter_leader[range_threshold].
+            zcpy_pipelined_knomial_factor;
+    }
+
+    if (mv2_pipelined_zcpy_knomial_factor != -1) {
+        zcpy_knomial_factor = mv2_pipelined_zcpy_knomial_factor;
+    }
+
+    if(MV2_Bcast_intra_node_function == NULL) {
+        /* if tuning table do not have any intra selection, set func pointer to
+        ** default one for mcast intra node */
+        MV2_Bcast_intra_node_function = &MPIR_Shmem_Bcast_MV2;
+    }
+
+    /* Set value of pipeline segment size */
+    bcast_segment_size = mv2_bcast_thresholds_table[range].bcast_segment_size;
+    
+    /* Set value of inter node knomial factor */
+    mv2_inter_node_knomial_factor = mv2_bcast_thresholds_table[range].inter_node_knomial_factor;
+
+    /* Set value of intra node knomial factor */
+    mv2_intra_node_knomial_factor = mv2_bcast_thresholds_table[range].intra_node_knomial_factor;
+
+    /* Check if we will use a two level algorithm or not */
+    two_level_bcast =
+#if defined(_MCST_SUPPORT_)
+        mv2_bcast_thresholds_table[range].is_two_level_bcast[range_threshold] 
+        || comm->ch.is_mcast_ok;
+#else
+        mv2_bcast_thresholds_table[range].is_two_level_bcast[range_threshold];
+#endif
+     if (two_level_bcast == 1) {
+        if (!is_contig || !is_homogeneous) {
+            tmp_buf=(void *)xbt_malloc(nbytes);
+
+/*            position = 0;*/
+/*            if (rank == root) {*/
+/*                mpi_errno =*/
+/*                    MPIR_Pack_impl(buffer, count, datatype, tmp_buf, nbytes, &position);*/
+/*                if (mpi_errno)*/
+/*                    MPIU_ERR_POP(mpi_errno);*/
+/*            }*/
+        }
+#ifdef CHANNEL_MRAIL_GEN2
+        if ((mv2_enable_zcpy_bcast == 1) &&
+              (&MPIR_Pipelined_Bcast_Zcpy_MV2 == MV2_Bcast_function)) {  
+            if (!is_contig || !is_homogeneous) {
+                mpi_errno = MPIR_Pipelined_Bcast_Zcpy_MV2(tmp_buf, nbytes, MPI_BYTE,
+                                                 root, comm);
+            } else { 
+                mpi_errno = MPIR_Pipelined_Bcast_Zcpy_MV2(buffer, count, datatype,
+                                                 root, comm);
+            } 
+        } else 
+#endif /* defined(CHANNEL_MRAIL_GEN2) */
+        { 
+            shmem_comm = smpi_comm_get_intra_comm(comm);
+            if (!is_contig || !is_homogeneous) {
+                mpi_errno =
+                    MPIR_Bcast_tune_inter_node_helper_MV2(tmp_buf, nbytes, MPI_BYTE,
+                                                          root, comm);
+            } else {
+                mpi_errno =
+                    MPIR_Bcast_tune_inter_node_helper_MV2(buffer, count, datatype, root,
+                                                          comm);
+            }
+
+            /* We are now done with the inter-node phase */
+
+                if (MV2_Bcast_intra_node_function == &MPIR_Knomial_Bcast_intra_node_MV2) {
+                    root = INTRA_NODE_ROOT;
+                }
+
+                if (!is_contig || !is_homogeneous) {
+                    mpi_errno = MV2_Bcast_intra_node_function(tmp_buf, nbytes,
+                                                              MPI_BYTE, root, shmem_comm);
+                } else {
+                    mpi_errno = MV2_Bcast_intra_node_function(buffer, count,
+                                                              datatype, root, shmem_comm);
+
+                }
+        } 
+/*        if (!is_contig || !is_homogeneous) {*/
+/*            if (rank != root) {*/
+/*                position = 0;*/
+/*                mpi_errno = MPIR_Unpack_impl(tmp_buf, nbytes, &position, buffer,*/
+/*                                             count, datatype);*/
+/*            }*/
+/*        }*/
+    } else {
+        /* We use Knomial for intra node */
+        MV2_Bcast_intra_node_function = &MPIR_Knomial_Bcast_intra_node_MV2;
+/*        if (mv2_enable_shmem_bcast == 0) {*/
+            /* Fall back to non-tuned version */
+/*            MPIR_Bcast_intra_MV2(buffer, count, datatype, root, comm);*/
+/*        } else {*/
+            mpi_errno = MV2_Bcast_function(buffer, count, datatype, root,
+                                           comm);
+
+/*        }*/
+    }
+
+
+    return mpi_errno;
 
 }
 
