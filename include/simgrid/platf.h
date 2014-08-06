@@ -317,7 +317,7 @@ typedef struct s_sg_platf_process_cbarg {
   e_surf_process_on_failure_t on_failure;
 } s_sg_platf_process_cbarg_t;
 
-#define SG_PLATF_PROCESS_INITIALIZER {NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL}
+#define SG_PLATF_PROCESS_INITIALIZER {NULL,0,NULL,NULL,NULL,-1,-1,SURF_PROCESS_ON_FAILURE_DIE}
 
 typedef struct s_sg_platf_AS_cbarg *sg_platf_AS_cbarg_t;
 typedef struct s_sg_platf_AS_cbarg {
