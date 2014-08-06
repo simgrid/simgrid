@@ -471,6 +471,8 @@ XBT_PUBLIC( void )__xbt_ex_terminate_default(xbt_ex_t * e);
 
 /** @brief Exception destructor */
 XBT_PUBLIC(void) xbt_ex_free(xbt_ex_t e);
+/** @brief The display made by an exception that is not catched */
+XBT_PUBLIC(void) xbt_ex_display(xbt_ex_t * e);
 
 /** @brief Shows a backtrace of the current location */
 XBT_PUBLIC(void) xbt_backtrace_display_current(void);
