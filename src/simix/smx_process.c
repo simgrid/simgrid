@@ -494,8 +494,6 @@ void SIMIX_pre_process_resume(smx_simcall_t simcall, smx_process_t process){
 
 void SIMIX_process_resume(smx_process_t process, smx_process_t issuer)
 {
-  xbt_assert((process != NULL), "Invalid parameters");
-
   XBT_IN("process = %p, issuer = %p", process, issuer);
 
   if(process->context->iwannadie) {
@@ -844,7 +842,7 @@ void SIMIX_process_yield(smx_process_t self)
 
   if (self->suspended) {
     XBT_DEBUG("Hey! I'm suspended.");
-    xbt_assert(!self->doexception, "Gloups! This exception may be lost by subsequent calls.");
+    xbt_assert(!self->doexception, "Gasp! This exception may be lost by subsequent calls.");
     self->suspended = 0;
     SIMIX_process_suspend(self, self);
   }
