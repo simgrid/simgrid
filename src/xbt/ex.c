@@ -133,6 +133,8 @@ void xbt_backtrace_display_current(void)
 void xbt_ex_display(xbt_ex_t * e)
 {
   char *thrower = NULL;
+  if (e->pid != xbt_getpid())
+    thrower = bprintf(" on process %d",e->pid);
 
   fprintf(stderr,
           "** SimGrid: UNCAUGHT EXCEPTION received on %s(%d): category: %s; value: %d\n"
