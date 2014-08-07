@@ -29,7 +29,7 @@ static int victim(int argc, char *argv[]) {
     xbt_ex_free(e);
   }
 
-  msg_error_t res;
+  msg_error_t res = MSG_OK;
   int gotit = 0;
   XBT_INFO("Let's sleep for 10 seconds.");
   TRY {
