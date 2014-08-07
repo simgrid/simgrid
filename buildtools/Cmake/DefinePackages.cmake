@@ -1240,6 +1240,7 @@ set(PLATFORMS_EXAMPLES
   examples/platforms/syscoord/median_p2psim.xml
   examples/platforms/torus_cluster.xml
   examples/platforms/two_hosts_platform.xml
+  examples/platforms/two_hosts_platform_shared.xml
   examples/platforms/two_hosts_platform_with_availability.xml
   examples/platforms/two_hosts_platform_with_availability_included.xml
   examples/platforms/two_peers.xml

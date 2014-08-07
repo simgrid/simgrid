@@ -42,7 +42,6 @@ set(tesh_files
   )
 set(xml_files
   ${xml_files}
-  ${CMAKE_CURRENT_SOURCE_DIR}/basic_platform.xml
   PARENT_SCOPE
   )
 set(teshsuite_src
