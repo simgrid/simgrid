@@ -74,6 +74,21 @@ buildtools/Cmake/test_prog/prog_va_copy.c
 *.bpr
 *.bpf
 ### Documentation
+doc/allclasses-frame.html
+doc/allclasses-noframe.html
+doc/constant-values.html
+doc/deprecated-list.html
+doc/help-doc.html
+doc/index-all.html
+doc/index.html
+doc/org/
+doc/overview-frame.html
+doc/overview-summary.html
+doc/overview-tree.html
+doc/package-list
+doc/resources/
+doc/serialized-form.html
+doc/stylesheet.css
 doc/all_bib.html
 doc/logcategories.sh
 doc/realtoc.sh
@@ -116,6 +131,7 @@ examples/msg/toto.txt
 examples/msg/z_gtnets.trace
 examples/msg/gpu/test_MSG_gpu_task_create
 examples/msg/cloud/bound
+examples/msg/cloud/master_worker_vm
 examples/msg/cloud/migrate_vm
 examples/msg/cloud/multicore
 examples/msg/cloud/scale
@@ -136,6 +152,7 @@ examples/msg/tracing/tasks
 examples/msg/tracing/volume
 examples/msg/io/file
 examples/msg/io/file_unlink
+examples/msg/io/remote
 examples/msg/io/storage
 examples/msg/mc/bugged3
 examples/msg/mc/test/snapshot_comparison1
@@ -756,6 +773,7 @@ teshsuite/xbt/mmalloc/mmalloc_test
 teshsuite/xbt/parallel_log_crashtest
 teshsuite/msg/storage/concurrent_rw
 teshsuite/msg/host_on_off/host_on_off
+teshsuite/msg/host_on_off_processes/host_on_off_processes
 teshsuite/msg/process/process
 teshsuite/msg/process_join/process_join
 teshsuite/msg/storage/storage_basic
@@ -838,5 +856,6 @@ examples/java/startKillTime/java_startKillTime_compiled
 examples/java/suspend/java_suspend_compiled
 examples/java/tracing/java_tracing_compiled
 examples/java/reservationSurfPlugin/java_reservation_surf_plugin_compiled
+examples/java/surfCpuModel/java_surf_cpu_model_compiled
 examples/java/surfPlugin/java_surf_plugin_compiled
 /CMakeCache.txt

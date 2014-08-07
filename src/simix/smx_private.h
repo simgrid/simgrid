@@ -71,11 +71,11 @@ XBT_PUBLIC(void) SIMIX_clean(void);
 #endif
 
 /******************************** Exceptions *********************************/
-
-#define SMX_EXCEPTION(issuer, c, v, m)                                  \
+/** @brief Ask to the provided simix process to raise the provided exception */
+#define SMX_EXCEPTION(issuer, cat, val, msg)                            \
   if (1) {                                                              \
-    smx_process_t _smx_throw_issuer = (issuer);                         \
-    THROW_PREPARE(_smx_throw_issuer->running_ctx, (c), (v), xbt_strdup(m)); \
+    smx_process_t _smx_throw_issuer = (issuer); /* evaluate only once */\
+    THROW_PREPARE(_smx_throw_issuer->running_ctx, (cat), (val), xbt_strdup(msg)); \
     _smx_throw_issuer->doexception = 1;                                 \
   } else ((void)0)
 

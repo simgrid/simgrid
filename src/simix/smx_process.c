@@ -332,7 +332,7 @@ void SIMIX_process_kill(smx_process_t process, smx_process_t issuer) {
   process->context->iwannadie = 1;
   process->blocked = 0;
   process->suspended = 0;
-  /* FIXME: set doexception to 0 also? */
+  process->doexception = 0;
 
   /* destroy the blocking action if any */
   if (process->waiting_action) {
@@ -380,6 +380,64 @@ void SIMIX_process_kill(smx_process_t process, smx_process_t issuer) {
     xbt_dynar_push_as(simix_global->process_to_run, smx_process_t, process);
   }
 
+}
+
+/** @brief Ask another process to raise the given exception
+ *
+ * @param cat category of exception
+ * @param value value associated to the exception
+ * @param msg string information associated to the exception
+ */
+void SIMIX_process_throw(smx_process_t process, xbt_errcat_t cat, int value, const char *msg) {
+  SMX_EXCEPTION(process, cat, value, msg);
+
+  if (process->suspended)
+    SIMIX_process_resume(process,SIMIX_process_self());
+
+  /* cancel the blocking action if any */
+  if (process->waiting_action) {
+
+    switch (process->waiting_action->type) {
+
+    case SIMIX_ACTION_EXECUTE:
+    case SIMIX_ACTION_PARALLEL_EXECUTE:
+      SIMIX_host_execution_cancel(process->waiting_action);
+      break;
+
+    case SIMIX_ACTION_COMMUNICATE:
+      xbt_fifo_remove(process->comms, process->waiting_action);
+      SIMIX_comm_cancel(process->waiting_action);
+      break;
+
+    case SIMIX_ACTION_SLEEP:
+      SIMIX_process_sleep_destroy(process->waiting_action);
+      break;
+
+    case SIMIX_ACTION_JOIN:
+      SIMIX_process_sleep_destroy(process->waiting_action);
+      break;
+
+    case SIMIX_ACTION_SYNCHRO:
+      SIMIX_synchro_stop_waiting(process, &process->simcall);
+      break;
+
+    case SIMIX_ACTION_IO:
+      SIMIX_io_destroy(process->waiting_action);
+      break;
+
+      /* **************************************/
+      /* TUTORIAL: New API                    */
+    case SIMIX_ACTION_NEW_API:
+      SIMIX_new_api_destroy(process->waiting_action);
+      break;
+      /* **************************************/
+
+    }
+  }
+  process->waiting_action = NULL;
+
+  if (!xbt_dynar_member(simix_global->process_to_run, &(process)) && process != SIMIX_process_self())
+    xbt_dynar_push_as(simix_global->process_to_run, smx_process_t, process);
 }
 
 void SIMIX_pre_process_killall(smx_simcall_t simcall, int reset_pid) {
@@ -494,8 +552,6 @@ void SIMIX_pre_process_resume(smx_simcall_t simcall, smx_process_t process){
 
 void SIMIX_process_resume(smx_process_t process, smx_process_t issuer)
 {
-  xbt_assert((process != NULL), "Invalid parameters");
-
   XBT_IN("process = %p, issuer = %p", process, issuer);
 
   if(process->context->iwannadie) {
@@ -844,7 +900,7 @@ void SIMIX_process_yield(smx_process_t self)
 
   if (self->suspended) {
     XBT_DEBUG("Hey! I'm suspended.");
-    xbt_assert(!self->doexception, "Gloups! This exception may be lost by subsequent calls.");
+    xbt_assert(!self->doexception, "Gasp! This exception may be lost by subsequent calls.");
     self->suspended = 0;
     SIMIX_process_suspend(self, self);
   }

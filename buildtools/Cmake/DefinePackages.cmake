@@ -994,6 +994,7 @@ set(EXAMPLES_CMAKEFILES_TXT
   examples/msg/energy/e1/CMakeLists.txt
   examples/msg/energy/e2/CMakeLists.txt
   examples/msg/energy/e3/CMakeLists.txt
+  examples/msg/exception/CMakeLists.txt
   examples/msg/gpu/CMakeLists.txt
   examples/msg/gtnets/CMakeLists.txt
   examples/msg/icomms/CMakeLists.txt

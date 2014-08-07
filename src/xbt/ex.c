@@ -133,6 +133,8 @@ void xbt_backtrace_display_current(void)
 void xbt_ex_display(xbt_ex_t * e)
 {
   char *thrower = NULL;
+  if (e->pid != xbt_getpid())
+    thrower = bprintf(" on process %d",e->pid);
 
   fprintf(stderr,
           "** SimGrid: UNCAUGHT EXCEPTION received on %s(%d): category: %s; value: %d\n"
@@ -177,8 +179,7 @@ void __xbt_ex_terminate_default(xbt_ex_t * e)
 
 /* the externally visible API */
 XBT_EXPORT_NO_IMPORT(xbt_running_ctx_fetcher_t) __xbt_running_ctx_fetch = &__xbt_ex_ctx_default;
-XBT_EXPORT_NO_IMPORT(ex_term_cb_t) __xbt_ex_terminate =
-    &__xbt_ex_terminate_default;
+XBT_EXPORT_NO_IMPORT(ex_term_cb_t) __xbt_ex_terminate = &__xbt_ex_terminate_default;
 
 
 void xbt_ex_free(xbt_ex_t e)

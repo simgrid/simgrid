@@ -373,6 +373,8 @@ XBT_PUBLIC(void) simcall_process_create(smx_process_t *process,
 
 XBT_PUBLIC(void) simcall_process_kill(smx_process_t process);
 XBT_PUBLIC(void) simcall_process_killall(int reset_pid);
+XBT_PUBLIC(void) SIMIX_process_throw(smx_process_t process, xbt_errcat_t cat, int value, const char *msg);
+
 
 /* Process handling */
 XBT_PUBLIC(void) simcall_process_cleanup(smx_process_t process);
