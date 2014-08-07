@@ -125,7 +125,11 @@ JNIEXPORT void JNICALL
 Java_org_simgrid_msg_VM_internalmig(JNIEnv *env, jobject jvm, jobject jhost) {
   msg_vm_t vm = jvm_get_native(env,jvm);
   msg_host_t host = jhost_get_native(env, jhost);
+  TRY{
   MSG_vm_migrate(vm,host);
+  } CATCH_ANONYMOUS{
+      jxbt_throw_jni(env, "Host failure");
+  } 
 }
 
 JNIEXPORT void JNICALL

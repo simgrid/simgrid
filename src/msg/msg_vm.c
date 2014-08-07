@@ -375,7 +375,12 @@ static int migration_rx_fun(int argc, char *argv[])
     msg_task_t task = NULL;
     MSG_task_recv(&task, ms->mbox);
     {
-      double received = MSG_task_get_data_size(task);
+      	double received ;
+      // TODO Adrien Clean the code (destroy task, free memory etc..
+      if (task)
+      	received = MSG_task_get_data_size(task);
+      else
+        return 0;
       /* TODO: clean up */
       // const double alpha = 0.22L * 1.0E8 / (80L * 1024 * 1024);
       launch_deferred_exec_process(ms->vm, received * xfer_cpu_overhead, 1);
@@ -840,7 +845,11 @@ static void send_migration_data(msg_vm_t vm, msg_host_t src_pm, msg_host_t dst_p
     ret = MSG_task_send_bounded(task, mbox, mig_speed);
   else
     ret = MSG_task_send(task, mbox);
-  xbt_assert(ret == MSG_OK);
+//  xbt_assert(ret == MSG_OK);
+    xbt_free(task_name);
+    if(ret == MSG_HOST_FAILURE){
+	THROWF(host_error, 0, "host failed during migration of %s", sg_host_name(vm));
+	}
 #endif
 
   double clock_end = MSG_get_clock();
@@ -852,16 +861,13 @@ static void send_migration_data(msg_vm_t vm, msg_host_t src_pm, msg_host_t dst_p
   double cpu_utilization = 0;
 #endif
 
-
-
-
+// TODO - adsein, WTF with the following code ? 
   if (stage == 2){
     XBT_DEBUG("mig-stage%d.%d: sent %llu duration %f actual_speed %f (target %f) cpu %f", stage, stage2_round, size, duration, actual_speed, mig_speed, cpu_utilization);}
   else{
     XBT_DEBUG("mig-stage%d: sent %llu duration %f actual_speed %f (target %f) cpu %f", stage, size, duration, actual_speed, mig_speed, cpu_utilization);
   }
 
-  xbt_free(task_name);
 
 
 
@@ -874,11 +880,18 @@ static void send_migration_data(msg_vm_t vm, msg_host_t src_pm, msg_host_t dst_p
       char *task_name = get_mig_task_name(vm_name, src_pm_name, dst_pm_name, stage);
       msg_task_t task = MSG_task_create(task_name, 0, 0, NULL);
       msg_error_t ret = MSG_task_send(task, mbox);
-      xbt_assert(ret == MSG_OK);
+//      xbt_assert(ret == MSG_OK);
       xbt_free(task_name);
+      if(ret == MSG_HOST_FAILURE){
+	//THROWF(host_error, 0, "host failed", sg_host_name(vm));
+	XBT_INFO("host failed during migration of %s (stage 3)", sg_host_name(vm));
+ 	//MSG_task_destroy(task);
+	return; 
+      }
     }
   }
 #endif
+
 }
 
 static double get_updated_size(double computed, double dp_rate, double dp_cap)
@@ -939,6 +952,7 @@ static int migration_tx_fun(int argc, char *argv[])
 {
   XBT_DEBUG("mig: tx_start");
 
+  
   struct migration_session *ms = MSG_process_get_data(MSG_process_self());
 
   s_ws_params_t params;
@@ -982,7 +996,13 @@ static int migration_tx_fun(int argc, char *argv[])
     /* send ramsize, but split it */
     double clock_prev_send = MSG_get_clock();
 
-    computed_during_stage1 = send_stage1(ms, ramsize, mig_speed, xfer_cpu_overhead, dp_rate, dp_cap, dpt_cpu_overhead);
+    TRY{
+    	computed_during_stage1 = send_stage1(ms, ramsize, mig_speed, xfer_cpu_overhead, dp_rate, dp_cap, dpt_cpu_overhead);
+    } CATCH_ANONYMOUS{
+      //hostfailure
+      // TODO adsein, we should probably clean a bit the memory ? 
+      return 0; 
+    }
     remaining_size -= ramsize;
 
     double clock_post_send = MSG_get_clock();
@@ -1076,6 +1096,7 @@ static void do_migration(msg_vm_t vm, msg_host_t src_pm, msg_host_t dst_pm)
   ms->dst_pm = dst_pm;
   ms->mbox_ctl = get_mig_mbox_ctl(vm, src_pm, dst_pm);
   ms->mbox = get_mig_mbox_src_dst(vm, src_pm, dst_pm);
+  
 
   char *pr_rx_name = get_mig_process_rx_name(vm, src_pm, dst_pm);
   char *pr_tx_name = get_mig_process_tx_name(vm, src_pm, dst_pm);
@@ -1105,7 +1126,12 @@ static void do_migration(msg_vm_t vm, msg_host_t src_pm, msg_host_t dst_pm)
     msg_task_t task = NULL;
     msg_error_t ret = MSG_task_recv(&task, ms->mbox_ctl);
 
-    xbt_assert(ret == MSG_OK);
+    //xbt_assert(ret == MSG_OK);
+    if(ret == MSG_HOST_FAILURE){
+ 	//MSG_task_destroy(task);
+	THROWF(host_error, 0, "host failed during migration of %s", sg_host_name(vm));
+	} 
+	// TODO clean the code
 
     char *expected_task_name = get_mig_task_name(vm, src_pm, dst_pm, 4);
     xbt_assert(strcmp(task->name, expected_task_name) == 0);
@@ -1160,8 +1186,12 @@ void MSG_vm_migrate(msg_vm_t vm, msg_host_t new_pm)
   msg_host_priv_t priv = msg_host_resource_priv(vm);
   priv->is_migrating = 1;
 
-  do_migration(vm, old_pm, new_pm);
-
+  TRY{
+   do_migration(vm, old_pm, new_pm);
+  } CATCH_ANONYMOUS{
+   RETHROW; 
+   // TODO clean the code Adrien
+  }
   priv->is_migrating = 0;
 
   XBT_DEBUG("VM(%s) moved from PM(%s) to PM(%s)", vm->key, old_pm->key, new_pm->key);
