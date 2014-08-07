@@ -1,6 +1,9 @@
 SimGrid (3.12) NOT RELEASED; urgency=low
 
- (to complete)
+ SIMIX:
+ * New functions
+   - SIMIX_process_throw: raises an exception in a remote process
+ 
 
  -- $date Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
 
