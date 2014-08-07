@@ -1,4 +1,4 @@
-$ ${bindir:=.}/incomplete ../basic/basic_platform.xml "--log=root.fmt:[%10.6r]%e%m%n"
+$ ${bindir:=.}/incomplete ../../../examples/platforms/two_hosts_platform_shared.xml "--log=root.fmt:[%10.6r]%e%m%n"
 > [  0.000000] surf_workstation_model_init_ptask_L07
 > [  8.000100] Simulation is finished but 3 tasks are still not done
 > [  8.000100] Task C is in SD_NOT_SCHEDULED state
