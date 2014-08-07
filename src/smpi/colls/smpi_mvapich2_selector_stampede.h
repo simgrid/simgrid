@@ -1002,18 +1002,23 @@ int mv2_pipelined_zcpy_knomial_factor = -1;
 int bcast_segment_size = 8192;
 int mv2_inter_node_knomial_factor = 4;
 int mv2_intra_node_knomial_factor = 4;
+#define mv2_bcast_two_level_system_size  64
+#define mv2_bcast_short_msg             16384
+#define mv2_bcast_large_msg            512*1024
+
 #define INTRA_NODE_ROOT 0
 
 #define MPIR_Pipelined_Bcast_Zcpy_MV2 smpi_coll_tuned_bcast_mpich
 #define MPIR_Pipelined_Bcast_MV2 smpi_coll_tuned_bcast_mpich
-#define MPIR_Bcast_binomial_MV2 smpi_coll_tuned_bcast_mpich
-#define MPIR_Bcast_scatter_ring_allgather_shm_MV2 smpi_coll_tuned_bcast_mpich
-#define MPIR_Bcast_scatter_doubling_allgather_MV2 smpi_coll_tuned_bcast_mpich
-#define MPIR_Bcast_scatter_ring_allgather_MV2 smpi_coll_tuned_bcast_mpich
+#define MPIR_Bcast_binomial_MV2 smpi_coll_tuned_bcast_binomial_tree
+#define MPIR_Bcast_scatter_ring_allgather_shm_MV2 smpi_coll_tuned_bcast_scatter_LR_allgather
+#define MPIR_Bcast_scatter_doubling_allgather_MV2 smpi_coll_tuned_bcast_scatter_rdb_allgather
+#define MPIR_Bcast_scatter_ring_allgather_MV2 smpi_coll_tuned_bcast_scatter_LR_allgather
 #define MPIR_Shmem_Bcast_MV2 smpi_coll_tuned_bcast_mpich
-#define MPIR_Bcast_tune_inter_node_helper_MV2 smpi_coll_tuned_bcast_mpich
-#define MPIR_Knomial_Bcast_intra_node_MV2 smpi_coll_tuned_bcast_mpich
-#define MPIR_Bcast_intra_MV2 smpi_coll_tuned_bcast_mpich
+#define MPIR_Bcast_tune_inter_node_helper_MV2 smpi_coll_tuned_bcast_mvapich2_inter_node
+#define MPIR_Bcast_inter_node_helper_MV2 smpi_coll_tuned_bcast_mvapich2_inter_node
+#define MPIR_Knomial_Bcast_intra_node_MV2 smpi_coll_tuned_bcast_mvapich2_knomial_intra_node
+#define MPIR_Bcast_intra_MV2 smpi_coll_tuned_bcast_mvapich2_intra_node
 
 static void init_mv2_bcast_tables_stampede(){
  //Stampede,

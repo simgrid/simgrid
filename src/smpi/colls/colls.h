@@ -226,6 +226,9 @@ COLL_APPLY(action, COLL_BCAST_SIG, ompi_split_bintree) COLL_sep \
 COLL_APPLY(action, COLL_BCAST_SIG, ompi_pipeline) COLL_sep \
 COLL_APPLY(action, COLL_BCAST_SIG, mpich) COLL_sep \
 COLL_APPLY(action, COLL_BCAST_SIG, mvapich2)   COLL_sep \
+COLL_APPLY(action, COLL_BCAST_SIG, mvapich2_inter_node)   COLL_sep \
+COLL_APPLY(action, COLL_BCAST_SIG, mvapich2_intra_node)   COLL_sep \
+COLL_APPLY(action, COLL_BCAST_SIG, mvapich2_knomial_intra_node)   COLL_sep \
 COLL_APPLY(action, COLL_BCAST_SIG, impi)   COLL_sep \
 COLL_APPLY(action, COLL_BCAST_SIG, automatic)
 

@@ -403,7 +403,7 @@ IF(NOT enable_memcheck)
     ENDFOREACH()
     FOREACH (BCAST_COLL default arrival_pattern_aware arrival_pattern_aware_wait arrival_scatter
                         binomial_tree flattree flattree_pipeline NTSB NTSL NTSL_Isend scatter_LR_allgather
-                        scatter_rdb_allgather SMP_binary SMP_binomial SMP_linear ompi mpich ompi_split_bintree ompi_pipeline mvapich2 impi)
+                        scatter_rdb_allgather SMP_binary SMP_binomial SMP_linear ompi mpich ompi_split_bintree ompi_pipeline mvapich2 mvapich2_intra_node mvapich2_knomial_intra_node impi)
       ADD_TESH(tesh-smpi-bcast-coll-${BCAST_COLL} --cfg smpi/bcast:${BCAST_COLL} --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/bcast --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/bcast bcast_coll.tesh)
     ENDFOREACH()
     FOREACH (REDUCE_COLL default arrival_pattern_aware binomial flat_tree NTSL scatter_gather ompi mpich ompi_chain ompi_binary ompi_basic_linear ompi_binomial ompi_in_order_binary mvapich2 mvapich2_knomial mvapich2_two_level impi rab)

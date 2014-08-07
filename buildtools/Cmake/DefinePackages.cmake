@@ -210,6 +210,7 @@ set(SMPI_SRC
   src/smpi/colls/bcast-flattree.c
   src/smpi/colls/bcast-ompi-pipeline.c
   src/smpi/colls/bcast-ompi-split-bintree.c
+  src/smpi/colls/bcast-mvapich-smp.c
   src/smpi/colls/bcast-scatter-LR-allgather.c
   src/smpi/colls/bcast-scatter-rdb-allgather.c
   src/smpi/colls/coll_tuned_topo.c
