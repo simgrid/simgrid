@@ -161,7 +161,7 @@ IF(NOT enable_memcheck)
   # BEGIN TESH TESTS
   ADD_TESH(tesh-xbt-log-large                    --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/xbt/log_large --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/xbt/log_large log_large_test.tesh)
   ADD_TESH(tesh-xbt-log-parallel                 --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/xbt/parallel_log --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/xbt/parallel_log parallel_log_crashtest.tesh)
-  ADD_TESH(tesh-xbt-mallocator                  --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/xbt/mallocator --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/xbt/mallocator mallocator.tesh)
+#  ADD_TESH(tesh-xbt-mallocator                  --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/xbt/mallocator --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/xbt/mallocator mallocator.tesh)
   IF(HAVE_MMALLOC)
     IF(${ARCH_32_BITS})
       ADD_TESH(tesh-xbt-mmalloc-32               --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/xbt/mmalloc --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/xbt/mmalloc mmalloc_32.tesh)
