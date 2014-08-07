@@ -294,9 +294,9 @@ int smpi_coll_tuned_bcast_mvapich2_intra_node(void *buffer,
      * heterogeneous systems. We want to use MPI_Type_size() wherever
      * possible, and MPI_Pack_size() in other places.
      */
-    if (is_homogeneous) {
+    //if (is_homogeneous) {
         type_size=smpi_datatype_size(datatype);
-    } /*else {*/
+    //} /*else {*/
 /*        MPIR_Pack_size_impl(1, datatype, &type_size);*/
 /*    }*/
     nbytes = (size_t) (count) * (type_size);
@@ -308,11 +308,11 @@ int smpi_coll_tuned_bcast_mvapich2_intra_node(void *buffer,
         }
     }
 
-    if ((two_level_bcast == 1
+    if (two_level_bcast == 1
 #if defined(_MCST_SUPPORT_)
             || comm_ptr->ch.is_mcast_ok
 #endif
-        )) {
+        ) {
 
         if (!is_contig || !is_homogeneous) {
             tmp_buf=(void *)xbt_malloc(nbytes);
