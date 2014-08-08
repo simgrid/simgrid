@@ -251,6 +251,10 @@ void xbt_os_cputimer_start(xbt_os_timer_t timer)
   timer->elapse.tv_sec = 0;
   timer->elapse.tv_nsec = 0;
   clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &(timer->start));
+#elif defined(HAVE_GETTIMEOFDAY)//return time and not cputime in this case
+  timer->elapse.tv_sec = 0;
+  timer->elapse.tv_usec = 0;
+  gettimeofday(&(timer->start), NULL);
 #elif defined(_XBT_WIN32)
   timer->elapse.tv_sec = 0;
   timer->elapse.tv_usec = 0;
@@ -279,6 +283,10 @@ void xbt_os_cputimer_resume(xbt_os_timer_t timer)
   timer->elapse.tv_sec += timer->stop.tv_sec - timer->start.tv_sec;
   timer->elapse.tv_nsec += timer->stop.tv_nsec - timer->start.tv_nsec;
   clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &(timer->start));
+#elif defined(HAVE_GETTIMEOFDAY)
+  timer->elapse.tv_sec += timer->stop.tv_sec - timer->start.tv_sec;
+  timer->elapse.tv_usec += timer->stop.tv_usec - timer->start.tv_usec;
+  gettimeofday(&(timer->start), NULL);
 #elif defined(_XBT_WIN32)
   timer->elapse.tv_sec += timer->stop.tv_sec - timer->start.tv_sec;
   timer->elapse.tv_usec += timer->stop.tv_usec - timer->start.tv_usec;
@@ -306,6 +314,8 @@ void xbt_os_cputimer_stop(xbt_os_timer_t timer)
 {
 #ifdef HAVE_POSIX_GETTIME
   clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &(timer->stop));
+#elif defined(HAVE_GETTIMEOFDAY)
+  gettimeofday(&(timer->stop), NULL);
 #elif defined(_XBT_WIN32)
 #  if defined(WIN32_WCE) || (_WIN32_WINNT < 0x0400)
   THROW_UNIMPLEMENTED;
@@ -332,6 +342,10 @@ void xbt_os_threadtimer_start(xbt_os_timer_t timer)
   timer->elapse.tv_sec = 0;
   timer->elapse.tv_nsec = 0;
   clock_gettime(CLOCK_THREAD_CPUTIME_ID, &(timer->start));
+#elif defined(HAVE_GETTIMEOFDAY)//return time and not cputime in this case
+  timer->elapse.tv_sec = 0;
+  timer->elapse.tv_usec = 0;
+  gettimeofday(&(timer->start), NULL);
 #elif defined(_XBT_WIN32)
   struct timeval tv;
 #  if defined(WIN32_WCE) || (_WIN32_WINNT < 0x0400)
@@ -359,6 +373,10 @@ void xbt_os_threadtimer_resume(xbt_os_timer_t timer)
   timer->elapse.tv_sec += timer->stop.tv_sec - timer->start.tv_sec;
   timer->elapse.tv_nsec += timer->stop.tv_nsec - timer->start.tv_nsec;
   clock_gettime(CLOCK_THREAD_CPUTIME_ID, &(timer->start));
+#elif defined(HAVE_GETTIMEOFDAY)
+  timer->elapse.tv_sec += timer->stop.tv_sec - timer->start.tv_sec;
+  timer->elapse.tv_usec += timer->stop.tv_usec - timer->start.tv_usec;
+  gettimeofday(&(timer->start), NULL);
 #elif defined(_XBT_WIN32)
   timer->elapse.tv_sec += timer->stop.tv_sec - timer->start.tv_sec;
   timer->elapse.tv_usec += timer->stop.tv_usec - timer->start.tv_usec;
@@ -385,6 +403,8 @@ void xbt_os_threadtimer_stop(xbt_os_timer_t timer)
 {
 #ifdef HAVE_POSIX_GETTIME
   clock_gettime(CLOCK_THREAD_CPUTIME_ID, &(timer->stop));
+#elif defined(HAVE_GETTIMEOFDAY)//if nothing else is available, return just time
+  gettimeofday(&(timer->stop), NULL);
 #elif defined(_XBT_WIN32)
 #  if defined(WIN32_WCE) || (_WIN32_WINNT < 0x0400)
   THROW_UNIMPLEMENTED;
