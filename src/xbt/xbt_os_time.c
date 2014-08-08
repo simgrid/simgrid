@@ -22,6 +22,21 @@
 #define CLOCK_PROCESS_CPUTIME_ID CLOCK_PROF
 #endif
 
+#ifdef MACOS
+#include <sys/types.h>
+#include <sys/sysctl.h>
+#include <mach/mach_init.h>
+#include <mach/mach_host.h>
+#include <mach/mach_port.h>
+#include <mach/mach_traps.h>
+#include <mach/task_info.h>
+#include <mach/thread_info.h>
+#include <mach/thread_act.h>
+#include <mach/vm_region.h>
+#include <mach/vm_map.h>
+#include <mach/task.h>
+#endif
+
 double xbt_os_time(void)
 {
 #ifdef HAVE_GETTIMEOFDAY
@@ -342,6 +357,15 @@ void xbt_os_threadtimer_start(xbt_os_timer_t timer)
   timer->elapse.tv_sec = 0;
   timer->elapse.tv_nsec = 0;
   clock_gettime(CLOCK_THREAD_CPUTIME_ID, &(timer->start));
+#elif defined(HAVE_GETTIMEOFDAY) && defined(MACOS) //attempt for timing of the thread on OSX
+  timer->elapse.tv_sec = 0;
+  timer->elapse.tv_usec = 0;
+  int count = THREAD_BASIC_INFO_COUNT;
+  thread_basic_info_data_t thi_data;
+  thread_basic_info_t thi = &thi_data;
+  thread_info(mach_thread_self(), THREAD_BASIC_INFO, (thread_info_t)thi, &count);
+  timer->start.tv_usec =  thi->system_time.microseconds + thi->user_time.microseconds;
+  timer->start.tv_sec = thi->system_time.seconds + thi->user_time.seconds;
 #elif defined(HAVE_GETTIMEOFDAY)//return time and not cputime in this case
   timer->elapse.tv_sec = 0;
   timer->elapse.tv_usec = 0;
@@ -373,6 +397,15 @@ void xbt_os_threadtimer_resume(xbt_os_timer_t timer)
   timer->elapse.tv_sec += timer->stop.tv_sec - timer->start.tv_sec;
   timer->elapse.tv_nsec += timer->stop.tv_nsec - timer->start.tv_nsec;
   clock_gettime(CLOCK_THREAD_CPUTIME_ID, &(timer->start));
+#elif defined(HAVE_GETTIMEOFDAY) && defined(MACOS)
+  timer->elapse.tv_sec += timer->stop.tv_sec - timer->start.tv_sec;
+  timer->elapse.tv_usec += timer->stop.tv_usec - timer->start.tv_usec;
+  int count = THREAD_BASIC_INFO_COUNT;
+  thread_basic_info_data_t thi_data;
+  thread_basic_info_t thi = &thi_data;
+  thread_info(mach_thread_self(), THREAD_BASIC_INFO, (thread_info_t)thi, &count);
+  timer->start.tv_usec =  thi->system_time.microseconds + thi->user_time.microseconds;
+  timer->start.tv_sec = thi->system_time.seconds + thi->user_time.seconds;
 #elif defined(HAVE_GETTIMEOFDAY)
   timer->elapse.tv_sec += timer->stop.tv_sec - timer->start.tv_sec;
   timer->elapse.tv_usec += timer->stop.tv_usec - timer->start.tv_usec;
@@ -403,6 +436,13 @@ void xbt_os_threadtimer_stop(xbt_os_timer_t timer)
 {
 #ifdef HAVE_POSIX_GETTIME
   clock_gettime(CLOCK_THREAD_CPUTIME_ID, &(timer->stop));
+#elif defined(HAVE_GETTIMEOFDAY) && defined(MACOS)
+  int count = THREAD_BASIC_INFO_COUNT;
+  thread_basic_info_data_t thi_data;
+  thread_basic_info_t thi = &thi_data;
+  thread_info(mach_thread_self(), THREAD_BASIC_INFO, (thread_info_t)thi, &count);
+  timer->stop.tv_usec =  thi->system_time.microseconds + thi->user_time.microseconds;
+  timer->stop.tv_sec = thi->system_time.seconds + thi->user_time.seconds;
 #elif defined(HAVE_GETTIMEOFDAY)//if nothing else is available, return just time
   gettimeofday(&(timer->stop), NULL);
 #elif defined(_XBT_WIN32)
