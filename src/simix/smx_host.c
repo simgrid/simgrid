@@ -120,6 +120,14 @@ void SIMIX_host_off(smx_host_t h, smx_process_t issuer)
       }
     }
   }
+  /*xbt_dynar_t vms = surf_workstation_get_vms(h);
+  unsigned int cpt;
+  smx_host_t vm;
+  xbt_dynar_foreach(vms, cpt, vm) {
+    SIMIX_vm_shutdown(vm, issuer);
+    SIMIX_vm_destroy(vm);
+  }
+  xbt_dynar_free(&vms);*/
 }
 
 /**
