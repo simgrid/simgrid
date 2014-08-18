@@ -128,12 +128,23 @@ xbt_parmap_t xbt_parmap_new(unsigned int num_workers, e_xbt_parmap_mode_t mode)
   /* Create the pool of worker threads */
   xbt_parmap_thread_data_t data;
   parmap->workers[0] = NULL;
+#ifdef CORE_BINDING  
+  unsigned int core_bind = 0;
+#endif  
   for (i = 1; i < num_workers; i++) {
     data = xbt_new0(s_xbt_parmap_thread_data_t, 1);
     data->parmap = parmap;
     data->worker_id = i;
     parmap->workers[i] = xbt_os_thread_create(NULL, xbt_parmap_worker_main,
                                               data, NULL);
+#ifdef CORE_BINDING  
+    xbt_os_thread_bind(parmap->workers[i], core_bind); 
+    if(core_bind!=xbt_os_get_numcores()){
+      core_bind++;
+    } else {
+      core_bind = 0; 
+    }
+#endif    
   }
   return parmap;
 }

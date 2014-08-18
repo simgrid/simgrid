@@ -26,6 +26,11 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_sync_os, xbt,
 #include <limits.h>
 #include <semaphore.h>
 
+#ifdef CORE_BINDING
+#define _GNU_SOURCE
+#include <sched.h>
+#endif
+
 #ifdef HAVE_MUTEX_TIMEDLOCK
 /* redefine the function header since we fail to get this from system headers on amd (at least) */
 int pthread_mutex_timedlock(pthread_mutex_t * mutex,
@@ -192,6 +197,18 @@ xbt_os_thread_t xbt_os_thread_create(const char *name,
   return res_thread;
 }
 
+
+#ifdef CORE_BINDING
+int xbt_os_thread_bind(xbt_os_thread_t thread, int cpu){
+  pthread_t pthread = thread->t;
+  int errcode = 0;
+  cpu_set_t cpuset;
+  CPU_ZERO(&cpuset);
+  CPU_SET(cpu, &cpuset);
+  errcode = pthread_setaffinity_np(pthread, sizeof(cpu_set_t), &cpuset);
+  return errcode;
+}
+#endif
 
 void xbt_os_thread_setstacksize(int stack_size)
 {

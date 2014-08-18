@@ -53,7 +53,6 @@ void MSG_process_cleanup_from_SIMIX(smx_process_t smx_proc)
 
   // free the MSG process
   xbt_free(msg_proc);
-  SIMIX_process_cleanup(smx_proc);
 }
 
 /* This function creates a MSG process. It has the prototype enforced by SIMIX_function_register_process_create */
