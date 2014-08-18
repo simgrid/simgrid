@@ -85,6 +85,7 @@ if (dst->getRcType() == SURF_NETWORK_ELEMENT_ROUTER || src->getRcType() == SURF_
     if(latency) {
       *latency += source->loopback->getLatency();
     }
+    return;
   }
 
   currentNode = source;
