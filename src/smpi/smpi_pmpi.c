@@ -551,10 +551,12 @@ int PMPI_Group_range_incl(MPI_Group group, int n, int ranges[][3],
       size = 0;
       for (i = 0; i < n; i++) {
         for (rank = ranges[i][0];       /* First */
-             rank >= 0; /* Last */
+             rank >= 0 && rank < smpi_group_size(group); /* Last */
               ) {
           size++;
-
+          if(rank == ranges[i][1]){/*already last ?*/
+            break;
+          }
           rank += ranges[i][2]; /* Stride */
 	  if (ranges[i][0]<ranges[i][1]){
 	      if(rank > ranges[i][1])
@@ -570,11 +572,14 @@ int PMPI_Group_range_incl(MPI_Group group, int n, int ranges[][3],
       j = 0;
       for (i = 0; i < n; i++) {
         for (rank = ranges[i][0];     /* First */
-             rank >= 0; /* Last */
+             rank >= 0 && rank < smpi_group_size(group); /* Last */
              ) {
           index = smpi_group_index(group, rank);
           smpi_group_set_mapping(*newgroup, index, j);
           j++;
+          if(rank == ranges[i][1]){/*already last ?*/
+            break;
+          }
           rank += ranges[i][2]; /* Stride */
 	  if (ranges[i][0]<ranges[i][1]){
 	    if(rank > ranges[i][1])
@@ -612,10 +617,12 @@ int PMPI_Group_range_excl(MPI_Group group, int n, int ranges[][3],
       size = smpi_group_size(group);
       for (i = 0; i < n; i++) {
         for (rank = ranges[i][0];       /* First */
-             rank >= 0; /* Last */
+             rank >= 0 && rank < smpi_group_size(group); /* Last */
               ) {
           size--;
-
+          if(rank == ranges[i][1]){/*already last ?*/
+            break;
+          }
           rank += ranges[i][2]; /* Stride */
 	  if (ranges[i][0]<ranges[i][1]){
 	      if(rank > ranges[i][1])
@@ -635,14 +642,17 @@ int PMPI_Group_range_excl(MPI_Group group, int n, int ranges[][3],
         while (newrank < size) {
           add=1;
           for (i = 0; i < n; i++) {
-            for (rank = ranges[i][0];rank >= 0;){
+            for (rank = ranges[i][0];
+                rank >= 0 && rank < smpi_group_size(group);
+                ){
               if(rank==oldrank){
                   add=0;
                   break;
               }
-
+              if(rank == ranges[i][1]){/*already last ?*/
+                break;
+              }
               rank += ranges[i][2]; /* Stride */
-
               if (ranges[i][0]<ranges[i][1]){
                   if(rank > ranges[i][1])
                     break;
