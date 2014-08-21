@@ -2278,8 +2278,8 @@ ret smpi_coll_tuned_ ## cat ## _impi (COLL_UNPAREN args)\
     if (smpi_comm_is_uniform(comm)) {\
         local_size = smpi_comm_size(smpi_comm_get_intra_comm(comm));\
     }\
-    while(local_size!=intel_ ## cat ## _table[i].ppn\
-        && i < INTEL_MAX_NB_PPN)\
+    while(i < INTEL_MAX_NB_PPN &&\
+    local_size!=intel_ ## cat ## _table[i].ppn)\
       i++;\
     if(i==INTEL_MAX_NB_PPN) i=0;\
     while(comm_size>intel_ ## cat ## _table[i].elems[j].max_num_proc\
