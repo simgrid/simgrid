@@ -445,7 +445,7 @@ int mmalloc_compare_heap(mc_snapshot_t snapshot1, mc_snapshot_t snapshot2)
     malloc_info* heapinfo2 = mc_snapshot_read_region(&heapinfos2[i1], heap_region2, &heapinfo_temp2, sizeof(malloc_info));
 
     if (heapinfo1->type == MMALLOC_TYPE_FREE || heapinfo1->type == MMALLOC_TYPE_HEAPINFO) {      /* Free block */
-      i1 += heapinfo1->free_block.size;
+      i1 ++;
       continue;
     }
 
@@ -596,7 +596,7 @@ int mmalloc_compare_heap(mc_snapshot_t snapshot1, mc_snapshot_t snapshot2)
           malloc_info* heapinfo2b = mc_snapshot_read_region(&heapinfos2[i2], heap_region2, &heapinfo_temp2b, sizeof(malloc_info));
 
           if (heapinfo2b->type == MMALLOC_TYPE_FREE || heapinfo2b->type == MMALLOC_TYPE_HEAPINFO) {
-            i2 += heapinfo2b->free_block.size;
+            i2 ++;
             continue;
           }
 
