@@ -667,6 +667,8 @@ void MC_restore_snapshot(mc_snapshot_t snapshot)
           parent_snapshot ? parent_snapshot->privatization_regions[i] : NULL);
       }
     }
+  }
+  if(snapshot->privatization_index >= 0) {
     switch_data_segment(snapshot->privatization_index);
   }
 #endif
