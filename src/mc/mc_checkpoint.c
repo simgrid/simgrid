@@ -65,7 +65,7 @@ static void local_variable_free_voidp(void *v)
 
 void MC_region_destroy(mc_mem_region_t reg)
 {
-  if (reg)
+  if (!reg)
     return;
 
   //munmap(reg->data, reg->size);
