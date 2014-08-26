@@ -600,6 +600,12 @@ int mmalloc_compare_heap(mc_snapshot_t snapshot1, mc_snapshot_t snapshot2)
             continue;
           }
 
+          // We currently do not match fragments with unfragmented blocks (maybe we should).
+          if (heapinfo2b->type == MMALLOC_TYPE_UNFRAGMENTED) {
+            i2++;
+            continue;
+          }
+
           if (heapinfo2b->type < 0) {
             fprintf(stderr, "Unkown mmalloc block type.\n");
             abort();
