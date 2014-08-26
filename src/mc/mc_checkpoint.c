@@ -163,7 +163,7 @@ static void MC_snapshot_add_region(mc_snapshot_t snapshot, int type,
 {
   mc_mem_region_t ref_reg =
     mc_model_checker->parent_snapshot ? mc_model_checker->parent_snapshot->regions[type] : NULL;
-  mc_mem_region_t new_reg = MC_region_new(type, start_addr, start_addr, size, ref_reg);
+  mc_mem_region_t new_reg = MC_region_new(type, start_addr, permanent_addr, size, ref_reg);
   snapshot->regions[type] = new_reg;
   return;
 }
