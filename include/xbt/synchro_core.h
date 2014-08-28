@@ -79,6 +79,15 @@ XBT_PUBLIC(xbt_mutex_t) xbt_mutex_init(void);
 /** @brief Blocks onto the given mutex variable */
 XBT_PUBLIC(void) xbt_mutex_acquire(xbt_mutex_t mutex);
 
+/** @brief Tries to block onto the given mutex variable 
+ * Tries to lock a mutex, return 1 if the mutex is unlocked, else 0.
+ * This function does not block and wait for the mutex to be unlocked.
+ * \param mutex The mutex
+ * \param issuer The process that tries to acquire the mutex
+ * \return 1 - mutex free, 0 - mutex used
+ */
+XBT_PUBLIC(int) xbt_mutex_try_acquire(xbt_mutex_t mutex);
+
 /** @brief Releases the given mutex variable */
 XBT_PUBLIC(void) xbt_mutex_release(xbt_mutex_t mutex);
 

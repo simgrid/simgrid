@@ -140,6 +140,11 @@ void xbt_mutex_acquire(xbt_mutex_t mutex)
   simcall_mutex_lock((smx_mutex_t) mutex);
 }
 
+int xbt_mutex_try_acquire(xbt_mutex_t mutex)
+{
+  return simcall_mutex_trylock((smx_mutex_t) mutex);
+}
+
 void xbt_mutex_release(xbt_mutex_t mutex)
 {
   simcall_mutex_unlock((smx_mutex_t) mutex);
