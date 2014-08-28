@@ -392,7 +392,9 @@ to the most effient:
 
 The only reason to change this setting is when the debugging tools get
 fooled by the optimized context factories. Threads are the most
-debugging-friendly contextes.
+debugging-friendly contextes, as they allow to set breakpoints anywhere with gdb
+ and visualize backtraces for all processes, in order to debug concurrency issues.
+Valgrind is also more comfortable with threads, but it should be usable with all factories.
 
 \subsection options_virt_stacksize Adapting the used stack size
 
