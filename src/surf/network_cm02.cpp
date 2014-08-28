@@ -278,6 +278,79 @@ void NetworkCm02Model::updateActionsStateLazy(double now, double /*delta*/)
   return;
 }
 
+
+void NetworkCm02Model::updateActionsStateFull(double now, double delta)
+{
+  NetworkCm02ActionPtr action;
+  ActionListPtr running_actions = getRunningActionSet();
+
+  for(ActionList::iterator it(running_actions->begin()), itNext=it, itend(running_actions->end())
+     ; it != itend ; it=itNext) {
+	++itNext;
+
+    action = (NetworkCm02ActionPtr) &*it;
+    XBT_DEBUG("Something happened to action %p", action);
+      double deltap = delta;
+      if (action->m_latency > 0) {
+        if (action->m_latency > deltap) {
+          double_update(&(action->m_latency), deltap, sg_surf_precision);
+          deltap = 0.0;
+        } else {
+          double_update(&(deltap), action->m_latency, sg_surf_precision);
+          action->m_latency = 0.0;
+        }
+        if (action->m_latency == 0.0 && !(action->isSuspended()))
+          lmm_update_variable_weight(p_maxminSystem, action->getVariable(),
+              action->m_weight);
+      }
+  #ifdef HAVE_TRACING
+      if (TRACE_is_enabled()) {
+        int n = lmm_get_number_of_cnst_from_var(p_maxminSystem, action->getVariable());
+        int i;
+        for (i = 0; i < n; i++){
+          lmm_constraint_t constraint = lmm_get_cnst_from_var(p_maxminSystem,
+                                                            action->getVariable(),
+                                                            i);
+          NetworkCm02LinkPtr link = static_cast<NetworkCm02LinkPtr>(lmm_constraint_id(constraint));
+          TRACE_surf_link_set_utilization(link->getName(),
+                                        action->getCategory(),
+                                        (lmm_variable_getvalue(action->getVariable())*
+                                            lmm_get_cnst_weight_from_var(p_maxminSystem,
+                                                action->getVariable(),
+                                                i)),
+                                        action->getLastUpdate(),
+                                        now - action->getLastUpdate());
+        }
+      }
+  #endif
+      if (!lmm_get_number_of_cnst_from_var
+          (p_maxminSystem, action->getVariable())) {
+        /* There is actually no link used, hence an infinite bandwidth.
+         * This happens often when using models like vivaldi.
+         * In such case, just make sure that the action completes immediately.
+         */
+        action->updateRemains(action->getRemains());
+      }
+    action->updateRemains(lmm_variable_getvalue(action->getVariable()) * delta);
+                  
+    if (action->getMaxDuration() != NO_MAX_DURATION)
+      action->updateMaxDuration(delta);
+      
+    if ((action->getRemains() <= 0) &&
+        (lmm_get_variable_weight(action->getVariable()) > 0)) {
+      action->finish();
+      action->setState(SURF_ACTION_DONE);
+      action->gapRemove();
+    } else if (((action->getMaxDuration() != NO_MAX_DURATION)
+        && (action->getMaxDuration() <= 0))) {
+      action->finish();
+      action->setState(SURF_ACTION_DONE);
+      action->gapRemove();
+    }
+  }
+  return;
+}
+
 ActionPtr NetworkCm02Model::communicate(RoutingEdgePtr src, RoutingEdgePtr dst,
                                                 double size, double rate)
 {

@@ -59,6 +59,7 @@ public:
                                    xbt_dict_t properties);
   void addTraces();
   void updateActionsStateLazy(double now, double delta);
+  void updateActionsStateFull(double now, double delta);
   ActionPtr communicate(RoutingEdgePtr src, RoutingEdgePtr dst,
 		                           double size, double rate);
 };
