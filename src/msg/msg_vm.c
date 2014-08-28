@@ -360,8 +360,8 @@ static int migration_rx_fun(int argc, char *argv[])
 {
   XBT_DEBUG("mig: rx_start");
 
+  // The structure has been created in the do_migration function and should only be freed in the same place ;)
   struct migration_session *ms = MSG_process_get_data(MSG_process_self());
-
 
   s_ws_params_t params;
   simcall_host_get_params(ms->vm, &params);
@@ -375,12 +375,15 @@ static int migration_rx_fun(int argc, char *argv[])
     msg_task_t task = NULL;
     MSG_task_recv(&task, ms->mbox);
     {
-      	double received ;
-      // TODO Adrien Clean the code (destroy task, free memory etc..
+      double received ;
       if (task)
       	received = MSG_task_get_data_size(task);
-      else
-        return 0;
+      else{
+	// An error occured, clean the code and return
+        // The owner did not change, hence the task should be only destroyed on the other side
+        xbt_free(finalize_task_name);
+         return 0;
+      }
       /* TODO: clean up */
       // const double alpha = 0.22L * 1.0E8 / (80L * 1024 * 1024);
       launch_deferred_exec_process(ms->vm, received * xfer_cpu_overhead, 1);
@@ -395,7 +398,11 @@ static int migration_rx_fun(int argc, char *argv[])
       break;
   }
 
+  // Here Stage 1, 2  and 3 have been performed. 
+  // Hence complete the migration
 
+// TODO: we have an issue, if the DST node is turning off during the three next calls, then the VM is in an inconsistent state
+// I should check with Takahiro in order to make this portion of code atomic
   /* deinstall the current affinity setting for the CPU */
   simcall_vm_set_affinity(ms->vm, ms->src_pm, 0);
 
@@ -419,8 +426,11 @@ static int migration_rx_fun(int argc, char *argv[])
 
     msg_task_t task = MSG_task_create(task_name, 0, 0, NULL);
     msg_error_t ret = MSG_task_send(task, ms->mbox_ctl);
-    xbt_assert(ret == MSG_OK);
-
+    // xbt_assert(ret == MSG_OK);
+    if(ret == MSG_HOST_FAILURE){
+    // The SRC has crashed, this is not a problem has the VM has been correctly migrated on the DST node
+     MSG_task_destroy(task);
+    }
     xbt_free(task_name);
   }
 
@@ -848,8 +858,12 @@ static void send_migration_data(msg_vm_t vm, msg_host_t src_pm, msg_host_t dst_p
 //  xbt_assert(ret == MSG_OK);
     xbt_free(task_name);
     if(ret == MSG_HOST_FAILURE){
-	THROWF(host_error, 0, "host failed during migration of %s", sg_host_name(vm));
-	}
+	THROWF(host_error, 0, "host failed during migration of %s (stage %d)", sg_host_name(vm), stage);
+	//XBT_INFO("host failed during migration of %s (stage %d)", sg_host_name(vm), stage);
+ 	MSG_task_destroy(task);
+	return; 
+      
+     }
 #endif
 
   double clock_end = MSG_get_clock();
@@ -861,14 +875,11 @@ static void send_migration_data(msg_vm_t vm, msg_host_t src_pm, msg_host_t dst_p
   double cpu_utilization = 0;
 #endif
 
-// TODO - adsein, WTF with the following code ? 
   if (stage == 2){
     XBT_DEBUG("mig-stage%d.%d: sent %llu duration %f actual_speed %f (target %f) cpu %f", stage, stage2_round, size, duration, actual_speed, mig_speed, cpu_utilization);}
   else{
     XBT_DEBUG("mig-stage%d: sent %llu duration %f actual_speed %f (target %f) cpu %f", stage, size, duration, actual_speed, mig_speed, cpu_utilization);
   }
-
-
 
 
 #ifdef USE_MICRO_TASK
@@ -883,9 +894,10 @@ static void send_migration_data(msg_vm_t vm, msg_host_t src_pm, msg_host_t dst_p
 //      xbt_assert(ret == MSG_OK);
       xbt_free(task_name);
       if(ret == MSG_HOST_FAILURE){
-	//THROWF(host_error, 0, "host failed", sg_host_name(vm));
-	XBT_INFO("host failed during migration of %s (stage 3)", sg_host_name(vm));
- 	//MSG_task_destroy(task);
+	THROWF(host_error, 0, "host failed during migration of VM %s (stage 3)", sg_host_name(vm));
+	//XBT_INFO("host failed during migration of %s (stage 3)", sg_host_name(vm));
+        // The owner of the task did not change so destroy the task 
+ 	MSG_task_destroy(task);
 	return; 
       }
     }
@@ -952,7 +964,7 @@ static int migration_tx_fun(int argc, char *argv[])
 {
   XBT_DEBUG("mig: tx_start");
 
-  
+  // Note that the ms structure has been allocated in do_migration and hence should be freed in the same function ;) 
   struct migration_session *ms = MSG_process_get_data(MSG_process_self());
 
   s_ws_params_t params;
@@ -1000,7 +1012,8 @@ static int migration_tx_fun(int argc, char *argv[])
     	computed_during_stage1 = send_stage1(ms, ramsize, mig_speed, xfer_cpu_overhead, dp_rate, dp_cap, dpt_cpu_overhead);
     } CATCH_ANONYMOUS{
       //hostfailure
-      // TODO adsein, we should probably clean a bit the memory ? 
+     // Stop the dirty page tracking an return (there is no memory space to release) 
+      stop_dirty_page_tracking(ms->vm);
       return 0; 
     }
     remaining_size -= ramsize;
@@ -1057,9 +1070,14 @@ static int migration_tx_fun(int argc, char *argv[])
     }
 
     double clock_prev_send = MSG_get_clock();
-
-    send_migration_data(ms->vm, ms->src_pm, ms->dst_pm, updated_size, ms->mbox, 2, stage2_round, mig_speed, xfer_cpu_overhead);
-
+    TRY{
+      send_migration_data(ms->vm, ms->src_pm, ms->dst_pm, updated_size, ms->mbox, 2, stage2_round, mig_speed, xfer_cpu_overhead);
+    }CATCH_ANONYMOUS{
+      //hostfailure
+      // Stop the dirty page tracking an return (there is no memory space to release) 
+      stop_dirty_page_tracking(ms->vm);
+      return 0; 
+    }
     double clock_post_send = MSG_get_clock();
 
     double bandwidth = updated_size / (clock_post_send - clock_prev_send);
@@ -1077,9 +1095,17 @@ stage3:
   XBT_INFO("mig-stage3: remaining_size %f", remaining_size);
   simcall_vm_suspend(ms->vm);
   stop_dirty_page_tracking(ms->vm);
-
-  send_migration_data(ms->vm, ms->src_pm, ms->dst_pm, remaining_size, ms->mbox, 3, 0, mig_speed, xfer_cpu_overhead);
-
+ 
+ TRY{
+    send_migration_data(ms->vm, ms->src_pm, ms->dst_pm, remaining_size, ms->mbox, 3, 0, mig_speed, xfer_cpu_overhead);
+  }CATCH_ANONYMOUS{
+      //hostfailure
+      // Stop the dirty page tracking an return (there is no memory space to release) 
+      simcall_vm_resume(ms->vm);
+      return 0; 
+    }
+  
+ // At that point the Migration is considered valid for the SRC node but remind that the DST side should relocate effectively the VM on the DST node. 
 
   XBT_DEBUG("mig: tx_done");
 
@@ -1118,31 +1144,30 @@ static void do_migration(msg_vm_t vm, msg_host_t src_pm, msg_host_t dst_pm)
  }
 #endif
 
-
-
-
-  /* wait until the migration have finished */
+  /* wait until the migration have finished or on error has occured */
   {
     msg_task_t task = NULL;
     msg_error_t ret = MSG_task_recv(&task, ms->mbox_ctl);
 
+    xbt_free(ms->mbox_ctl);
+    xbt_free(ms->mbox);
+    xbt_free(ms);
+    
     //xbt_assert(ret == MSG_OK);
     if(ret == MSG_HOST_FAILURE){
- 	//MSG_task_destroy(task);
-	THROWF(host_error, 0, "host failed during migration of %s", sg_host_name(vm));
-	} 
-	// TODO clean the code
+        // Note that since the communication failed, the owner did not change and the task should be destroyed on the other side.
+        // Hence, just throw the execption
+	THROWF(host_error, 0, "DST host failed during the migration of %s", sg_host_name(vm));
+    } 
 
     char *expected_task_name = get_mig_task_name(vm, src_pm, dst_pm, 4);
     xbt_assert(strcmp(task->name, expected_task_name) == 0);
     xbt_free(expected_task_name);
     MSG_task_destroy(task);
   }
-
-  xbt_free(ms->mbox_ctl);
-  xbt_free(ms->mbox);
-  xbt_free(ms);
 }
+
+
 
 
 /** @brief Migrate the VM to the given host.
