@@ -51,6 +51,11 @@ XBT_PUBLIC(xbt_os_thread_t) xbt_os_thread_create(const char *name,
                                                  void *param,
                                                  void *data);
 
+//#define CORE_BINDING  //Uncomment this to enable binding of threads to physical cores. Only Linux.
+#ifdef CORE_BINDING
+XBT_PUBLIC(int) xbt_os_thread_bind(xbt_os_thread_t thread, int cpu);
+#endif
+
 XBT_PUBLIC(void) xbt_os_thread_exit(int *retcode);
 XBT_PUBLIC(void) xbt_os_thread_detach(xbt_os_thread_t thread);
 XBT_PUBLIC(xbt_os_thread_t) xbt_os_thread_self(void);

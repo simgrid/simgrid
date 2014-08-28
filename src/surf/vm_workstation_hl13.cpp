@@ -233,7 +233,7 @@ WorkstationVMHL13::WorkstationVMHL13(WorkstationVMModelPtr model, const char* na
    * from the VM name, we have to make sure that the system does not call the
    * free callback for the network resource object. The network resource object
    * is still used by the physical machine. */
-  p_netElm = static_cast<RoutingEdgePtr>(xbt_lib_get_or_null(host_lib, sub_ws->getName(), ROUTING_HOST_LEVEL));
+  p_netElm = new RoutingEdgeWrapper(static_cast<RoutingEdgePtr>(xbt_lib_get_or_null(host_lib, sub_ws->getName(), ROUTING_HOST_LEVEL)));
   xbt_lib_set(host_lib, name, ROUTING_HOST_LEVEL, p_netElm);
 
   p_subWs = sub_ws;
@@ -277,40 +277,9 @@ WorkstationVMHL13::WorkstationVMHL13(WorkstationVMModelPtr model, const char* na
  */
 WorkstationVMHL13::~WorkstationVMHL13()
 {
-  /* ind_phys_workstation equals to smx_host_t */
-  surf_resource_t ind_vm_workstation = xbt_lib_get_elm_or_null(host_lib, getName());
-
-  /* Before clearing the entries in host_lib, we have to pick up resources. */
-  CpuCas01Ptr cpu = static_cast<CpuCas01Ptr>(surf_cpu_resource_priv(ind_vm_workstation));
-
-  /* We deregister objects from host_lib, without invoking the freeing callback
-   * of each level.
-   *
-   * Do not call xbt_lib_remove() here. It deletes all levels of the key,
-   * including MSG_HOST_LEVEL and others. We should unregister only what we know.
-   */
-  xbt_lib_unset(host_lib, getName(), SURF_CPU_LEVEL, 0);
-  xbt_lib_unset(host_lib, getName(), ROUTING_HOST_LEVEL, 0);
-  xbt_lib_unset(host_lib, getName(), SURF_WKS_LEVEL, 0);
-
-  /* TODO: comment out when VM storage is implemented. */
-  // xbt_lib_unset(host_lib, name, SURF_STORAGE_LEVEL, 0);
-
-
   /* Free the cpu_action of the VM. */
   int ret = p_action->unref();
   xbt_assert(ret == 1, "Bug: some resource still remains");
-
-  /* Free the cpu resource of the VM. If using power_trace, we will have to */
-  delete cpu;
-
-  /* Free the network resource of the VM. */
-  // Nothing has to be done, because net_elmts is just a pointer on the physical one
-
-  /* Free the storage resource of the VM. */
-  // Not relevant yet
-
-  /* Free the workstation resource of the VM. */
 }
 
 void WorkstationVMHL13::updateState(tmgr_trace_event_t /*event_type*/, double /*value*/, double /*date*/) {
@@ -379,7 +348,7 @@ void WorkstationVMHL13::migrate(surf_resource_t ind_dst_pm)
 
    /* update net_elm with that of the destination physical host */
    RoutingEdgePtr old_net_elm = p_netElm;
-   RoutingEdgePtr new_net_elm = static_cast<RoutingEdgePtr>(xbt_lib_get_or_null(host_lib, pm_name_dst, ROUTING_HOST_LEVEL));
+   RoutingEdgePtr new_net_elm = new RoutingEdgeWrapper(static_cast<RoutingEdgePtr>(xbt_lib_get_or_null(host_lib, pm_name_dst, ROUTING_HOST_LEVEL)));
    xbt_assert(new_net_elm);
 
    /* Unregister the current net_elm from host_lib. Do not call the free callback. */
@@ -428,6 +397,7 @@ void WorkstationVMHL13::migrate(surf_resource_t ind_dst_pm)
 
    XBT_DEBUG("migrate VM(%s): change net_elm (%p to %p)", vm_name, old_net_elm, new_net_elm);
    XBT_DEBUG("migrate VM(%s): change PM (%s to %s)", vm_name, pm_name_src, pm_name_dst);
+   delete old_net_elm;
 }
 
 void WorkstationVMHL13::setBound(double bound){

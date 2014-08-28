@@ -26,6 +26,10 @@ static WorkstationPtr get_casted_workstation(surf_resource_t resource){
   return static_cast<WorkstationPtr>(surf_workstation_resource_priv(resource));
 }
 
+static RoutingEdgePtr get_casted_routing(surf_resource_t resource){
+  return static_cast<RoutingEdgePtr>(surf_routing_resource_priv(resource));
+}
+
 static WorkstationVMPtr get_casted_vm_workstation(surf_resource_t resource){
   return static_cast<WorkstationVMPtr>(surf_workstation_resource_priv(resource));
 }
@@ -402,7 +406,16 @@ int surf_workstation_file_move(surf_resource_t workstation, surf_file_t fd, cons
 }
 
 xbt_dynar_t surf_workstation_get_vms(surf_resource_t resource){
-  return get_casted_workstation(resource)->getVms();
+  xbt_dynar_t vms = get_casted_workstation(resource)->getVms();
+  xbt_dynar_t vms_ = xbt_dynar_new(sizeof(smx_host_t), NULL);
+  unsigned int cpt;
+  WorkstationVMPtr vm;
+  xbt_dynar_foreach(vms, cpt, vm) {
+    smx_host_t vm_ = xbt_lib_get_elm_or_null(host_lib, vm->getName());
+    xbt_dynar_push(vms_, &vm_);
+  }
+  xbt_dynar_free(&vms);
+  return vms_;
 }
 
 void surf_workstation_get_params(surf_resource_t resource, ws_params_t params){
@@ -414,7 +427,30 @@ void surf_workstation_set_params(surf_resource_t resource, ws_params_t params){
 }
 
 void surf_vm_workstation_destroy(surf_resource_t resource){
-  delete get_casted_vm_workstation(resource);
+  /* ind_phys_workstation equals to smx_host_t */
+  //surf_resource_t ind_vm_workstation = xbt_lib_get_elm_or_null(host_lib, getName());
+
+  /* Before clearing the entries in host_lib, we have to pick up resources. */
+  CpuPtr cpu = get_casted_cpu(resource);
+  WorkstationVMPtr vm = get_casted_vm_workstation(resource);
+  RoutingEdgePtr routing = get_casted_routing(resource);
+  char* name = xbt_dict_get_elm_key(resource);
+  /* We deregister objects from host_lib, without invoking the freeing callback
+   * of each level.
+   *
+   * Do not call xbt_lib_remove() here. It deletes all levels of the key,
+   * including MSG_HOST_LEVEL and others. We should unregister only what we know.
+   */
+  xbt_lib_unset(host_lib, name, SURF_CPU_LEVEL, 0);
+  xbt_lib_unset(host_lib, name, ROUTING_HOST_LEVEL, 0);
+  xbt_lib_unset(host_lib, name, SURF_WKS_LEVEL, 0);
+
+  /* TODO: comment out when VM storage is implemented. */
+  // xbt_lib_unset(host_lib, name, SURF_STORAGE_LEVEL, 0);
+
+  delete cpu;
+  delete vm;
+  delete routing;
 }
 
 void surf_vm_workstation_suspend(surf_resource_t resource){

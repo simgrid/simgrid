@@ -210,6 +210,7 @@ set(SMPI_SRC
   src/smpi/colls/bcast-flattree.c
   src/smpi/colls/bcast-ompi-pipeline.c
   src/smpi/colls/bcast-ompi-split-bintree.c
+  src/smpi/colls/bcast-mvapich-smp.c
   src/smpi/colls/bcast-scatter-LR-allgather.c
   src/smpi/colls/bcast-scatter-rdb-allgather.c
   src/smpi/colls/coll_tuned_topo.c
@@ -1038,6 +1039,8 @@ set(EXAMPLES_CMAKEFILES_TXT
 
 set(TESHSUITE_CMAKEFILES_TXT
   teshsuite/bug-17132/CMakeLists.txt
+  teshsuite/java/CMakeLists.txt
+  teshsuite/java/sleep_host_off/CMakeLists.txt
   teshsuite/mc/CMakeLists.txt
   teshsuite/mc/dwarf/CMakeLists.txt
   teshsuite/mc/dwarf_expression/CMakeLists.txt
@@ -1079,6 +1082,7 @@ set(TESHSUITE_CMAKEFILES_TXT
   teshsuite/smpi/shared/CMakeLists.txt
   teshsuite/smpi/struct/CMakeLists.txt
   teshsuite/smpi/vector/CMakeLists.txt
+  teshsuite/smpi/isp/umpire/CMakeLists.txt
   teshsuite/smpi/mpich3-test/CMakeLists.txt
   teshsuite/smpi/mpich3-test/attr/CMakeLists.txt
   teshsuite/smpi/mpich3-test/coll/CMakeLists.txt
@@ -1240,6 +1244,7 @@ set(PLATFORMS_EXAMPLES
   examples/platforms/syscoord/median_p2psim.xml
   examples/platforms/torus_cluster.xml
   examples/platforms/two_hosts_platform.xml
+  examples/platforms/two_hosts_platform_shared.xml
   examples/platforms/two_hosts_platform_with_availability.xml
   examples/platforms/two_hosts_platform_with_availability_included.xml
   examples/platforms/two_peers.xml

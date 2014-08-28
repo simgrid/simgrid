@@ -6,10 +6,6 @@
 
 #include "colls_private.h"
 
-#ifndef NUM_CORE
-#define NUM_CORE 4
-#endif
-
 int smpi_coll_tuned_allgather_loosely_lr(void *sbuf, int scount,
                                          MPI_Datatype stype, void *rbuf,
                                          int rcount, MPI_Datatype rtype,
@@ -23,10 +19,13 @@ int smpi_coll_tuned_allgather_loosely_lr(void *sbuf, int scount,
 
   comm_size = smpi_comm_size(comm);
 
-  int num_core = simcall_host_get_core(SIMIX_host_self());
-  // do we use the default one or the number of cores in the platform ?
-  // if the number of cores is one, the platform may be simulated with 1 node = 1 core
-  if (num_core == 1) num_core = NUM_CORE;
+if(smpi_comm_get_leaders_comm(comm)==MPI_COMM_NULL){
+    smpi_comm_init_smp(comm);
+  }
+  int num_core=1;
+  if (smpi_comm_is_uniform(comm)){
+    num_core = smpi_comm_size(smpi_comm_get_intra_comm(comm));
+  }
 
   if(comm_size%num_core)
     THROWF(arg_error,0, "allgather loosely lr algorithm can't be used with non multiple of NUM_CORE=%d number of processes ! ",num_core);

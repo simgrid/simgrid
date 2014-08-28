@@ -5,9 +5,6 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "colls_private.h"
-#ifndef NUM_CORE
-#define NUM_CORE 8
-#endif
 
 int smpi_coll_tuned_allgather_SMP_NTS(void *sbuf, int scount,
                                       MPI_Datatype stype, void *rbuf,
@@ -25,10 +22,13 @@ int smpi_coll_tuned_allgather_SMP_NTS(void *sbuf, int scount,
   int i, send_offset, recv_offset;
   int intra_rank, inter_rank;
 
-  int num_core = simcall_host_get_core(SIMIX_host_self());
-  // do we use the default one or the number of cores in the platform ?
-  // if the number of cores is one, the platform may be simulated with 1 node = 1 core
-  if (num_core == 1) num_core = NUM_CORE;
+  if(smpi_comm_get_leaders_comm(comm)==MPI_COMM_NULL){
+    smpi_comm_init_smp(comm);
+  }
+  int num_core=1;
+  if (smpi_comm_is_uniform(comm)){
+    num_core = smpi_comm_size(smpi_comm_get_intra_comm(comm));
+  }
 
 
   intra_rank = rank % num_core;

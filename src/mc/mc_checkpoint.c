@@ -65,7 +65,7 @@ static void local_variable_free_voidp(void *v)
 
 void MC_region_destroy(mc_mem_region_t reg)
 {
-  if (reg)
+  if (!reg)
     return;
 
   //munmap(reg->data, reg->size);
@@ -163,7 +163,7 @@ static void MC_snapshot_add_region(mc_snapshot_t snapshot, int type,
 {
   mc_mem_region_t ref_reg =
     mc_model_checker->parent_snapshot ? mc_model_checker->parent_snapshot->regions[type] : NULL;
-  mc_mem_region_t new_reg = MC_region_new(type, start_addr, start_addr, size, ref_reg);
+  mc_mem_region_t new_reg = MC_region_new(type, start_addr, permanent_addr, size, ref_reg);
   snapshot->regions[type] = new_reg;
   return;
 }
@@ -667,6 +667,8 @@ void MC_restore_snapshot(mc_snapshot_t snapshot)
           parent_snapshot ? parent_snapshot->privatization_regions[i] : NULL);
       }
     }
+  }
+  if(snapshot->privatization_index >= 0) {
     switch_data_segment(snapshot->privatization_index);
   }
 #endif

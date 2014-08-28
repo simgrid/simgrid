@@ -44,7 +44,7 @@ int smpi_coll_tuned_bcast_ompi_pipeline( void* buffer,
 
     size = smpi_comm_size(comm);
     rank = smpi_comm_rank(comm);
-    xbt_assert( size > 1 );
+    if(size==1)return MPI_SUCCESS;
 
 
     const double a_p16  = 3.2118e-6; /* [1 / byte] */

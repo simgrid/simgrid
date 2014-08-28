@@ -277,7 +277,6 @@ void smpi_comm_init_smp(MPI_Comm comm){
   int comm_size =smpi_comm_size(comm);
 
   if(smpi_privatize_global_variables){ //we need to switch here, as the called function may silently touch global variables
-     XBT_VERB("Applying operation, switch to the right data frame ");
      switch_data_segment(smpi_process_index());
    }
   //identify neighbours in comm

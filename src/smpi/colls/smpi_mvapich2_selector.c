@@ -640,9 +640,9 @@ int smpi_coll_tuned_bcast_mvapich2(void *buffer,
 
             /* We are now done with the inter-node phase */
 
-                if (MV2_Bcast_intra_node_function == &MPIR_Knomial_Bcast_intra_node_MV2) {
+
                     root = INTRA_NODE_ROOT;
-                }
+   
 
                 if (!is_contig || !is_homogeneous) {
                     mpi_errno = MV2_Bcast_intra_node_function(tmp_buf, nbytes,

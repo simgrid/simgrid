@@ -84,6 +84,15 @@ IF(NOT enable_memcheck)
     ADD_TESH(tesh-self-catch-signal              --cd "${CMAKE_BINARY_DIR}/bin" ${CMAKE_HOME_DIRECTORY}/tools/tesh/catch-signal.tesh)
   ENDIF()
 
+IF(enable_java)
+  IF(WIN32)
+    SET(TESH_CLASSPATH "${CMAKE_BINARY_DIR}/teshsuite/java/\;${SIMGRID_FULL_JAR}")
+    STRING(REPLACE "\;" "§" TESH_CLASSPATH "${TESH_CLASSPATH}")
+  ELSE()
+    SET(TESH_CLASSPATH "${CMAKE_BINARY_DIR}/teshsuite/java/:${SIMGRID_FULL_JAR}")
+  ENDIF()
+  ADD_TESH(tesh-java-sleep-host-off            --setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/java --setenv classpath=${TESH_CLASSPATH} --cd ${CMAKE_BINARY_DIR}/teshsuite/java ${CMAKE_HOME_DIRECTORY}/teshsuite/java/sleep_host_off/sleep_host_off.tesh)
+ENDIF()
 
   ### GENERIC  ###
   # BEGIN TESH TESTS
@@ -161,7 +170,7 @@ IF(NOT enable_memcheck)
   # BEGIN TESH TESTS
   ADD_TESH(tesh-xbt-log-large                    --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/xbt/log_large --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/xbt/log_large log_large_test.tesh)
   ADD_TESH(tesh-xbt-log-parallel                 --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/xbt/parallel_log --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/xbt/parallel_log parallel_log_crashtest.tesh)
-  ADD_TESH(tesh-xbt-mallocator                  --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/xbt/mallocator --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/xbt/mallocator mallocator.tesh)
+#  ADD_TESH(tesh-xbt-mallocator                  --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/xbt/mallocator --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/xbt/mallocator mallocator.tesh)
   IF(HAVE_MMALLOC)
     IF(${ARCH_32_BITS})
       ADD_TESH(tesh-xbt-mmalloc-32               --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/xbt/mmalloc --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/xbt/mmalloc mmalloc_32.tesh)
@@ -403,7 +412,7 @@ IF(NOT enable_memcheck)
     ENDFOREACH()
     FOREACH (BCAST_COLL default arrival_pattern_aware arrival_pattern_aware_wait arrival_scatter
                         binomial_tree flattree flattree_pipeline NTSB NTSL NTSL_Isend scatter_LR_allgather
-                        scatter_rdb_allgather SMP_binary SMP_binomial SMP_linear ompi mpich ompi_split_bintree ompi_pipeline mvapich2 impi)
+                        scatter_rdb_allgather SMP_binary SMP_binomial SMP_linear ompi mpich ompi_split_bintree ompi_pipeline mvapich2 mvapich2_intra_node mvapich2_knomial_intra_node impi)
       ADD_TESH(tesh-smpi-bcast-coll-${BCAST_COLL} --cfg smpi/bcast:${BCAST_COLL} --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/bcast --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/bcast bcast_coll.tesh)
     ENDFOREACH()
     FOREACH (REDUCE_COLL default arrival_pattern_aware binomial flat_tree NTSL scatter_gather ompi mpich ompi_chain ompi_binary ompi_basic_linear ompi_binomial ompi_in_order_binary mvapich2 mvapich2_knomial mvapich2_two_level impi rab)
@@ -542,6 +551,37 @@ IF(NOT enable_memcheck)
   ENDIF()
 
 ENDIF()
+
+if(enable_smpi AND enable_smpi_ISP_testsuite)
+FOREACH (tesh
+    any_src-can-deadlock10
+    any_src-can-deadlock4
+    any_src-can-deadlock5
+    any_src-can-deadlock6
+    any_src-waitall-deadlock2
+    any_src-waitall-deadlock3
+    any_src-waitany-deadlock2
+    any_src-waitany-deadlock
+    any_src-wait-deadlock
+    basic-deadlock-comm_create
+    basic-deadlock-comm_dup
+    basic-deadlock-comm_split
+    basic-deadlock
+    bcast-deadlock
+    collective-misorder-allreduce
+    collective-misorder
+    complex-deadlock
+    deadlock-config
+    finalize-deadlock
+    irecv-deadlock
+    no-error2
+    no-error3-any_src
+    no-error3
+    no-error
+    )
+  ADD_TESH(umpire_${tesh} --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/isp/umpire ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/isp/umpire/${tesh}.tesh)
+ENDFOREACH()
+endif()
 
   ## OTHER ##
 ADD_TEST(testall                                 ${CMAKE_BINARY_DIR}/src/testall)

@@ -305,6 +305,15 @@ char *xbt_dict_get_key(xbt_dict_t dict, const void *data)
 }
 
 /**
+ * @brief retrieve the key associated to that xbt_dictelm_t.
+ *
+ */
+char *xbt_dict_get_elm_key(xbt_dictelm_t elm)
+{
+  return elm->key;
+}
+
+/**
  * \brief Retrieve data from the dict (null-terminated key)
  *
  * \param dict the dealer of data
@@ -346,7 +355,7 @@ XBT_INLINE xbt_dictelm_t xbt_dict_get_elm(xbt_dict_t dict, const char *key)
 XBT_INLINE void *xbt_dict_get_or_null(xbt_dict_t dict, const char *key)
 {
   xbt_dictelm_t current = xbt_dict_get_elm_or_null(dict, key);
-  
+
   if (current == NULL)
     return NULL;
 

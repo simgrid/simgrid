@@ -376,7 +376,7 @@ int Workstation::fileMove(surf_file_t fd, const char* fullpath){
 
 xbt_dynar_t Workstation::getVms()
 {
-  xbt_dynar_t dyn = xbt_dynar_new(sizeof(smx_host_t), NULL);
+  xbt_dynar_t dyn = xbt_dynar_new(sizeof(WorkstationVMPtr), NULL);
 
   /* iterate for all virtual machines */
   for (WorkstationVMModel::vm_list_t::iterator iter =
@@ -384,8 +384,8 @@ xbt_dynar_t Workstation::getVms()
        iter !=  WorkstationVMModel::ws_vms.end(); ++iter) {
 
     WorkstationVMPtr ws_vm = &*iter;
-    if (this == ws_vm-> p_subWs)
-      xbt_dynar_push(dyn, &ws_vm->p_subWs);
+    if (this == ws_vm->p_subWs)
+      xbt_dynar_push(dyn, &ws_vm);
   }
 
   return dyn;

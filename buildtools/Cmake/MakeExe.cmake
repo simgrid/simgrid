@@ -81,6 +81,9 @@ add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/smpi/energy/f90)
 
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/xbt)
 
+add_subdirectory(${CMAKE_HOME_DIRECTORY}/teshsuite/java)
+add_subdirectory(${CMAKE_HOME_DIRECTORY}/teshsuite/java/sleep_host_off)
+
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/teshsuite/mc)
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/teshsuite/mc/dwarf)
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/teshsuite/mc/dwarf_expression)
@@ -128,6 +131,9 @@ add_subdirectory(${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/scatter)
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/shared)
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/struct)
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/vector)
+
+add_subdirectory(${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/isp/umpire)
+
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich3-test)
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich3-test/attr)
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich3-test/coll)
