@@ -306,76 +306,6 @@ give a try to \ref SD_API.
 
 \subsection faq_MIA_generic Generic features
 
-\subsubsection faq_more_processes Increasing the amount of simulated processes
-
-Here are a few tricks you can apply if you want to increase the amount
-of processes in your simulations.
-
- - <b>A few thousands of simulated processes</b> (soft tricks)\n
-   SimGrid can use either pthreads library or the UNIX98 contexts. On
-   most systems, the number of pthreads is limited and then your
-   simulation may be limited for a stupid reason. This is especially
-   true with the current linux pthreads, and I cannot get more than
-   2000 simulated processes with pthreads on my box. The UNIX98
-   contexts allow me to raise the limit to 25,000 simulated processes
-   on my laptop.\n\n
-   The <tt>--with-context</tt> option of the <tt>./configure</tt>
-   script allows you to choose between UNIX98 contexts
-   (<tt>--with-context=ucontext</tt>) and the pthread version
-   (<tt>--with-context=pthread</tt>). The default value is ucontext
-   when the script detect a working UNIX98 context implementation. On
-   Windows boxes, the provided value is discarded and an adapted
-   version is picked up.\n\n
-   We experienced some issues with contexts on some rare systems
-   (solaris 8 and lower or old alpha linuxes comes to mind). The main
-   problem is that the configure script detect the contexts as being
-   functional when it's not true. If you happen to use such a system,
-   switch manually to the pthread version, and provide us with a good
-   patch for the configure script so that it is done automatically ;)
-
- - <b>Hundred thousands of simulated processes</b> (hard-core tricks)\n
-   As explained above, SimGrid can use UNIX98 contexts to represent
-   and handle the simulated processes. Thanks to this, the main
-   limitation to the number of simulated processes becomes the
-   available memory.\n\n
-   Here are some tricks I had to use in order to run a token ring
-   between 25,000 processes on my laptop (1Gb memory, 1.5Gb swap).\n
-   - First of all, make sure your code runs for a few hundreds
-     processes before trying to push the limit. Make sure it's
-     valgrind-clean, i.e. that valgrind does not report neither memory
-     error nor memory leaks. Indeed, numerous simulated processes
-     result in *fat* simulation hindering debugging.
-   - It was really boring to write 25,000 entries in the deployment
-     file, so I wrote a little script
-     <tt>examples/gras/mutual_exclusion/simple_token/make_deployment.pl</tt>, which you may
-     want to adapt to your case. You could also think about hijacking
-     the SURFXML parser (have look at \ref pf_flexml_bypassing).
-   - The deployment file became quite big, so I had to do what is in
-     the FAQ entry \ref faq_flexml_limit
-   - Each UNIX98 context has its own stack entry. As debugging this is
-     quite hairy, the default value is a bit overestimated so that
-     user doesn't get into trouble about this. You want to tune this
-     size to increase the number of processes. This is the
-     <tt>STACK_SIZE</tt> define in
-     <tt>src/xbt/xbt_context_sysv.c</tt>, which is 128kb by default.
-     Reduce this as much as you can, but be warned that if this value
-     is too low, you'll get a segfault. The token ring example, which
-     is quite simple, runs with 40kb stacks.
-   - You may tweak the logs to reduce the stack size further.  When
-     logging something, we try to build the string to display in a
-     char array on the stack. The size of this array is constant (and
-     equal to XBT_LOG_BUFF_SIZE, defined in include/xbt/log/h). If the
-     string is too large to fit this buffer, we move to a dynamically
-     sized buffer. In which case, we have to traverse one time the log
-     event arguments to compute the size we need for the buffer,
-     malloc it, and traverse the argument list again to do the actual
-     job.\n
-     The idea here is to move XBT_LOG_BUFF_SIZE to 1, forcing the logs
-     to use a dynamic array each time. This allows us to lower further
-     the stack size at the price of some performance loss...\n
-     This allowed me to run the reduce the stack size to ... 4k. Ie,
-     on my 1Gb laptop, I can run more than 250,000 processes!
-
 \subsubsection faq_MIA_batch_scheduler Is there a native support for batch schedulers in SimGrid?
 
 No, there is no native support for batch schedulers and none is
@@ -767,6 +697,8 @@ you're absolutely convinced that it should not, you can ask on the
 list. Just be aware that you'll be severely punished if the mistake is
 on your side... We have plenty of FAQ entries to redact and new
 features to implement for the impenitents! ;)
+
+Using 
 
 \subsection faq_surf_network_latency I get weird timings when I play with the latencies.
 
