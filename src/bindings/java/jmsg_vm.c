@@ -128,7 +128,7 @@ Java_org_simgrid_msg_VM_internalmig(JNIEnv *env, jobject jvm, jobject jhost) {
   TRY{
   MSG_vm_migrate(vm,host);
   } CATCH_ANONYMOUS{
-      jxbt_throw_host_failure(env, "during migration");
+      jxbt_throw_host_failure(env, (char*)"during migration");
   } 
 }
 
