@@ -617,13 +617,13 @@ int smpi_main(int (*realmain) (int argc, char *argv[]), int argc, char *argv[])
 
   SIMIX_global_init(&argc, argv);
 
+  smpi_init_options();
+
   // parse the platform file: get the host list
   SIMIX_create_environment(argv[1]);
   SIMIX_comm_set_copy_data_callback(&smpi_comm_copy_buffer_callback);
   SIMIX_function_register_default(realmain);
   SIMIX_launch_application(argv[2]);
-
-  smpi_init_options();
 
   smpi_global_init();
 
