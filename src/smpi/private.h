@@ -693,7 +693,12 @@ const char* encode_datatype(MPI_Datatype datatype);
 extern void** mappings;
 extern int loaded_page;
 
-int smpi_process_index_of_smx_process(smx_process_t process);
+int SIMIX_process_get_PID(smx_process_t self);
+
+static inline __attribute__ ((always_inline))
+int smpi_process_index_of_smx_process(smx_process_t process) {
+  return SIMIX_process_get_PID(process) -1;
+}
 
 SG_END_DECL()
 

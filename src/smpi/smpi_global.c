@@ -78,7 +78,7 @@ void smpi_process_init(int *argc, char ***argv)
     proc->context->cleanup_func=SIMIX_process_cleanup;
     char* instance_id = (*argv)[1];
     int rank = atoi((*argv)[2]);
-    index =  SIMIX_process_get_PID(proc) -1;
+    index = smpi_process_index_of_smx_process(proc);
 
     if(!index_to_process_data){
         index_to_process_data=(int*)xbt_malloc(SIMIX_process_count()*sizeof(int));
@@ -218,11 +218,6 @@ int smpi_process_index(void)
 {
   smpi_process_data_t data = smpi_process_data();
   //return -1 if not initialized
-  return data ? data->index : MPI_UNDEFINED;
-}
-
-int smpi_process_index_of_smx_process(smx_process_t process) {
-  smpi_process_data_t data = SIMIX_process_get_data(process);
   return data ? data->index : MPI_UNDEFINED;
 }
 
@@ -617,13 +612,13 @@ int smpi_main(int (*realmain) (int argc, char *argv[]), int argc, char *argv[])
 
   SIMIX_global_init(&argc, argv);
 
+  smpi_init_options();
+
   // parse the platform file: get the host list
   SIMIX_create_environment(argv[1]);
   SIMIX_comm_set_copy_data_callback(&smpi_comm_copy_buffer_callback);
   SIMIX_function_register_default(realmain);
   SIMIX_launch_application(argv[2]);
-
-  smpi_init_options();
 
   smpi_global_init();
 

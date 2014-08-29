@@ -10,6 +10,8 @@
 #include "simgrid/simix.h"
 #include "smx_smurf_private.h"
 
+SG_BEGIN_DECL()
+
 typedef struct s_smx_process_exit_fun {
   int_f_pvoid_pvoid_t fun;
   void *arg;
@@ -135,4 +137,7 @@ void SIMIX_pre_process_on_exit(smx_simcall_t simcall, smx_process_t process,
 void SIMIX_pre_process_auto_restart_set(smx_simcall_t simcall, smx_process_t process,
 		                        int auto_restart);
 smx_process_t SIMIX_pre_process_restart(smx_simcall_t simcall, smx_process_t process);
+
+SG_END_DECL()
+
 #endif
