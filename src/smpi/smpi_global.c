@@ -222,7 +222,7 @@ int smpi_process_index(void)
 }
 
 int smpi_process_index_of_smx_process(smx_process_t process) {
-  smpi_process_data_t data = SIMIX_process_get_data(process);
+  smpi_process_data_t data = (smpi_process_data_t) SIMIX_process_get_data(process);
   return data ? data->index : MPI_UNDEFINED;
 }
 
