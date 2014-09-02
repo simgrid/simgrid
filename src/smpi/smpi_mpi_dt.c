@@ -151,7 +151,7 @@ CREATE_MPI_DATATYPE(MPI_PTR, void*);
 int is_datatype_valid(MPI_Datatype datatype) {
     return datatype != MPI_DATATYPE_NULL
         && (datatype->flags & DT_FLAG_COMMITED)
-        && (smpi_datatype_size(datatype)>0);
+        && (smpi_datatype_size(datatype)>=0);
 }
 
 size_t smpi_datatype_size(MPI_Datatype datatype)

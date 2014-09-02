@@ -34,7 +34,7 @@ int smpi_coll_tuned_bcast_NTSL(void *buf, int count, MPI_Datatype datatype,
   int from = (rank + size - 1) % size;
 
   /* segment is segment size in number of elements (not bytes) */
-  int segment = bcast_NTSL_segment_size_in_byte / extent;
+  int segment = extent == 0 ? 1 : (bcast_NTSL_segment_size_in_byte / extent);
   segment =  segment == 0 ? 1 :segment; 
   /* pipeline length */
   int pipe_length = count / segment;
