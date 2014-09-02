@@ -317,12 +317,12 @@ $ ../../smpi_script/bin/smpirun -ext smpi_replay --log=replay.thresh:critical --
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'smpi/cpu_threshold' to '-1'
 > [0.000000] [surf_config/INFO] Switching workstation model to compound since you changed the network and/or cpu model(s)
 > [Tremblay:0:(0) 5.112775] [smpi_replay/VERBOSE] 0 allReduce 5e4 5e8 5.112775
-> [Jupiter:1:(0) 6.568459] [smpi_replay/VERBOSE] 1 allReduce 5e4 5e8 6.568459
-> [Fafard:2:(0) 6.569099] [smpi_replay/VERBOSE] 2 allReduce 5e4 5e8 6.569099
+> [Jupiter:1:(0) 6.584135] [smpi_replay/VERBOSE] 1 allReduce 5e4 5e8 6.584135
+> [Fafard:2:(0) 6.584775] [smpi_replay/VERBOSE] 2 allReduce 5e4 5e8 6.584775
 > [Tremblay:0:(0) 10.209875] [smpi_replay/VERBOSE] 0 compute 5e8 5.097100
-> [Jupiter:1:(0) 13.121883] [smpi_replay/VERBOSE] 1 compute 5e8 6.553424
-> [Fafard:2:(0) 13.122523] [smpi_replay/VERBOSE] 2 compute 5e8 6.553424
-> [Fafard:2:(0) 13.122523] [smpi_replay/INFO] Simulation time 13.122523
+> [Jupiter:1:(0) 13.137559] [smpi_replay/VERBOSE] 1 compute 5e8 6.553424
+> [Fafard:2:(0) 13.138198] [smpi_replay/VERBOSE] 2 compute 5e8 6.553424
+> [Fafard:2:(0) 13.138198] [smpi_replay/INFO] Simulation time 13.138198
 
 $ rm -f replay/one_trace
 
