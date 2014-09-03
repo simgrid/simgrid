@@ -771,8 +771,7 @@ static void action_reducescatter(const char *const *action) {
   int comp_size = parse_double(action[2+comm_size]);
   int *recvcounts = xbt_new0(int, comm_size);  
   int *disps = xbt_new0(int, comm_size);  
-  int i=0,recv_sum=0;
-  int root=0;
+  int i=0;
   int rank = smpi_process_index();
 
   if(action[3+comm_size])
@@ -782,7 +781,6 @@ static void action_reducescatter(const char *const *action) {
 
   for(i=0;i<comm_size;i++) {
     recvcounts[i] = atoi(action[i+2]);
-    recv_sum=recv_sum+recvcounts[i];
     disps[i] = 0;
   }
 
@@ -800,7 +798,7 @@ static void action_reducescatter(const char *const *action) {
 
   TRACE_smpi_collective_in(rank, -1, __FUNCTION__,extra);
 #endif
-   mpi_coll_reduce_scatter_fun(NULL, NULL, recv_sum, MPI_CURRENT_TYPE, MPI_OP_NULL,
+   mpi_coll_reduce_scatter_fun(NULL, NULL, recvcounts, MPI_CURRENT_TYPE, MPI_OP_NULL,
        MPI_COMM_WORLD);
    smpi_execute_flops(comp_size);
 
