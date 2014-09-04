@@ -591,8 +591,8 @@ static void action_allToAll(const char *const *action) {
     MPI_CURRENT_TYPE=MPI_DEFAULT_TYPE;
     MPI_CURRENT_TYPE2=MPI_DEFAULT_TYPE;
   }
-  void *send = calloc(send_size*comm_size, smpi_datatype_size(MPI_CURRENT_TYPE));  
-  void *recv = calloc(recv_size*comm_size, smpi_datatype_size(MPI_CURRENT_TYPE2));  
+  void *send = xbt_malloc(send_size*comm_size* smpi_datatype_size(MPI_CURRENT_TYPE));  
+  void *recv = xbt_malloc(recv_size*comm_size* smpi_datatype_size(MPI_CURRENT_TYPE2));  
 
 #ifdef HAVE_TRACING
   int rank = smpi_process_index();
@@ -643,14 +643,14 @@ static void action_gather(const char *const *action) {
     MPI_CURRENT_TYPE=MPI_DEFAULT_TYPE;
     MPI_CURRENT_TYPE2=MPI_DEFAULT_TYPE;
   }
-  void *send = calloc(send_size, smpi_datatype_size(MPI_CURRENT_TYPE));
+  void *send = xbt_malloc(send_size* smpi_datatype_size(MPI_CURRENT_TYPE));
   void *recv = NULL;
 
   int root=atoi(action[4]);
   int rank = smpi_process_index();
 
   if(rank==root)
-    recv = calloc(recv_size*comm_size, smpi_datatype_size(MPI_CURRENT_TYPE2));
+    recv = xbt_malloc(recv_size*comm_size* smpi_datatype_size(MPI_CURRENT_TYPE2));
 
 #ifdef HAVE_TRACING
   instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
@@ -706,7 +706,7 @@ static void action_gatherv(const char *const *action) {
     MPI_CURRENT_TYPE=MPI_DEFAULT_TYPE;
     MPI_CURRENT_TYPE2=MPI_DEFAULT_TYPE;
   }
-  void *send = calloc(send_size, smpi_datatype_size(MPI_CURRENT_TYPE));
+  void *send = xbt_malloc(send_size* smpi_datatype_size(MPI_CURRENT_TYPE));
   void *recv = NULL;
   for(i=0;i<comm_size;i++) {
     recvcounts[i] = atoi(action[i+3]);
@@ -718,7 +718,7 @@ static void action_gatherv(const char *const *action) {
   int rank = smpi_process_index();
 
   if(rank==root)
-    recv = calloc(recv_sum, smpi_datatype_size(MPI_CURRENT_TYPE2));
+    recv = xbt_malloc(recv_sum* smpi_datatype_size(MPI_CURRENT_TYPE2));
 
 #ifdef HAVE_TRACING
   instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
@@ -844,13 +844,13 @@ static void action_allgatherv(const char *const *action) {
     MPI_CURRENT_TYPE = MPI_DEFAULT_TYPE;
     MPI_CURRENT_TYPE2 = MPI_DEFAULT_TYPE;    
   }
-  void *sendbuf = calloc(sendcount, smpi_datatype_size(MPI_CURRENT_TYPE));    
+  void *sendbuf = xbt_malloc(sendcount* smpi_datatype_size(MPI_CURRENT_TYPE));    
 
   for(i=0;i<comm_size;i++) {
     recvcounts[i] = atoi(action[i+3]);
     recv_sum=recv_sum+recvcounts[i];
   }
-  void *recvbuf = calloc(recv_sum, smpi_datatype_size(MPI_CURRENT_TYPE2));  
+  void *recvbuf = xbt_malloc(recv_sum* smpi_datatype_size(MPI_CURRENT_TYPE2));  
 
 #ifdef HAVE_TRACING
   int rank = smpi_process_index();
@@ -918,8 +918,8 @@ static void action_allToAllv(const char *const *action) {
       MPI_CURRENT_TYPE2=MPI_DEFAULT_TYPE;
   }
 
-  void *sendbuf = calloc(send_buf_size, smpi_datatype_size(MPI_CURRENT_TYPE));  
-  void *recvbuf = calloc(recv_buf_size, smpi_datatype_size(MPI_CURRENT_TYPE2));  
+  void *sendbuf = xbt_malloc(send_buf_size* smpi_datatype_size(MPI_CURRENT_TYPE));  
+  void *recvbuf = xbt_malloc(recv_buf_size* smpi_datatype_size(MPI_CURRENT_TYPE2));  
 
   for(i=0;i<comm_size;i++) {
     sendcounts[i] = atoi(action[i+3]);
