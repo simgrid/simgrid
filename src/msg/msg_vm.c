@@ -683,7 +683,8 @@ static void shutdown_overhead_process(msg_task_t comm_task)
 
   // XBT_INFO("micro shutdown: mbox %s", mbox);
   msg_error_t ret = MSG_task_send(task, mbox);
-  xbt_assert(ret == MSG_OK);
+  if(ret != MSG_OK)
+    xbt_die("shutdown error - task not sent");
 
   xbt_free(mbox);
   // XBT_INFO("shutdown done");
@@ -697,7 +698,8 @@ static void request_overhead(msg_task_t comm_task, double computation)
 
   // XBT_INFO("req overhead");
   msg_error_t ret = MSG_task_send(task, mbox);
-  xbt_assert(ret == MSG_OK);
+  if(ret != MSG_OK)
+    xbt_die("req overhead error - task not sent");
 
   xbt_free(mbox);
 }
@@ -738,7 +740,8 @@ static void task_send_bounded_with_cpu_overhead(msg_task_t comm_task, char *mbox
       request_overhead(comm_task, data_size * alpha);
 
       msg_error_t ret = MSG_task_send(mtask, mbox);
-      xbt_assert(ret == MSG_OK);
+      if(ret != MSG_OK)
+        xbt_die("migration error - task not sent");
 
       xbt_free(mtask_name);
     }

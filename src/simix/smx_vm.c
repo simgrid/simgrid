@@ -128,8 +128,7 @@ int SIMIX_pre_vm_get_state(smx_simcall_t simcall, smx_host_t ind_vm)
 void SIMIX_vm_migrate(smx_host_t ind_vm, smx_host_t ind_dst_pm)
 {
   /* precopy migration makes the VM temporally paused */
-  e_surf_vm_state_t state = SIMIX_vm_get_state(ind_vm);
-  xbt_assert(state == SURF_VM_STATE_SUSPENDED);
+  xbt_assert(SIMIX_vm_get_state(ind_vm) == SURF_VM_STATE_SUSPENDED);
 
   /* jump to vm_ws_xigrate(). this will update the vm location. */
   surf_vm_workstation_migrate(ind_vm, ind_dst_pm);

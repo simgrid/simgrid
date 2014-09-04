@@ -1098,8 +1098,8 @@ static xbt_log_setting_t _xbt_log_parse_setting(const char *control_string)
   eq = control_string;
   control_string += strcspn(control_string, " ");
 
-  xbt_assert(*dot == '.' && (*eq == '=' || *eq == ':'),
-              "Invalid control string '%s'", orig_control_string);
+  if(*dot != '.' && (*eq == '=' || *eq == ':'))
+    xbt_die ("Invalid control string '%s'", orig_control_string);
 
   if (!strncmp(dot + 1, "threshold", (size_t) (eq - dot - 1))) {
     int i;

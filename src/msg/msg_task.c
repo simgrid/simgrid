@@ -546,8 +546,7 @@ void MSG_task_set_affinity(msg_task_t task, msg_host_t host, unsigned long mask)
     /* task is being executed on this host. so change the affinity now */
     {
       /* check it works. remove me if it works. */
-      unsigned long affinity_mask = (unsigned long) xbt_dict_get_or_null_ext(task->simdata->affinity_mask_db, (char *) host, sizeof(msg_host_t));
-      xbt_assert(affinity_mask == mask);
+      xbt_assert((unsigned long) xbt_dict_get_or_null_ext(task->simdata->affinity_mask_db, (char *) host, sizeof(msg_host_t)) == mask);
     }
 
     XBT_INFO("set affinity(0x%04lx@%s) for %s", mask, MSG_host_get_name(host), MSG_task_get_name(task));
