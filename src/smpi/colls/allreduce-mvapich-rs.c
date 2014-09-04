@@ -34,7 +34,7 @@
     int mask, dst, is_commutative, pof2, newrank = 0, rem, newdst, i,
         send_idx, recv_idx, last_idx, send_cnt, recv_cnt, *cnts, *disps;
     MPI_Aint true_lb, true_extent, extent;
-    void *tmp_buf;
+    void *tmp_buf, *tmp_buf_free;
 
     if (count == 0) {
         return MPI_SUCCESS;
@@ -51,10 +51,10 @@
     smpi_datatype_extent(datatype, &true_lb, &true_extent);
     extent = smpi_datatype_get_extent(datatype);
 
-    tmp_buf= xbt_malloc(count * (MAX(extent, true_extent)));
+    tmp_buf_free= xbt_malloc(count * (MAX(extent, true_extent)));
 
     /* adjust for potential negative lower bound in datatype */
-    tmp_buf = (void *) ((char *) tmp_buf - true_lb);
+    tmp_buf = (void *) ((char *) tmp_buf_free - true_lb);
 
     /* copy local data into recvbuf */
     if (sendbuf != MPI_IN_PLACE) {
@@ -281,7 +281,7 @@
                                   MPI_STATUS_IGNORE);
         }
     }
-
+    xbt_free(tmp_buf_free);
     return (mpi_errno);
 
 }
