@@ -723,7 +723,7 @@ void smpi_initialize_global_memory_segments(){
 
   for (i=0; i< SIMIX_process_count(); i++){
       //create SIMIX_process_count() mappings of this size with the same data inside
-      void *address = NULL, *tmp = NULL;
+      void *address = NULL;
       char path[] = "/dev/shm/my-buffer-XXXXXX";
       int status;
       int file_descriptor= mkstemp (path);
@@ -738,15 +738,11 @@ void smpi_initialize_global_memory_segments(){
         xbt_die("Impossible to set the size of the temporary file for memory mapping");
 
       /* Ask for a free region */
-      address = mmap (NULL, size_data_exe, PROT_NONE, MAP_ANONYMOUS | MAP_PRIVATE, -1, 0);
+      address = mmap (NULL, size_data_exe, PROT_READ | PROT_WRITE, MAP_SHARED, file_descriptor, 0);
 
       if (address == MAP_FAILED)
         xbt_die("Couldn't find a free region for memory mapping");
 
-      tmp = mmap (address, size_data_exe, PROT_READ | PROT_WRITE, MAP_FIXED | MAP_SHARED, file_descriptor, 0);
-
-      if (tmp != address)
-        xbt_die("Couldn't obtain the right address");
       //initialize the values
       memcpy(address,TOPAGE(start_data_exe),size_data_exe);
 
