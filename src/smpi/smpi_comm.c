@@ -10,7 +10,10 @@
 #include "smpi_mpi_dt_private.h"
 #include "limits.h"
 #include "simix/smx_private.h"
+#include "xbt/replay.h"
 #include "colls/colls.h"
+
+extern int is_replay_active ;
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_comm, smpi,
                                 "Logging specific to SMPI (comm)");
@@ -275,6 +278,15 @@ compare_ints (const void *a, const void *b)
 void smpi_comm_init_smp(MPI_Comm comm){
   int leader = -1;
   int comm_size =smpi_comm_size(comm);
+  
+  // If we are in replay - perform an ugly hack  
+  // say to SimGrid that we are not in replay for a while, because we need 
+  // the buffers to be copied for the following calls
+  int replaying = 0; //cache data to set it back again after
+  if(_xbt_replay_is_active()){
+    replaying = 1;
+    is_replay_active = 0 ;
+  }
 
   if(smpi_privatize_global_variables){ //we need to switch here, as the called function may silently touch global variables
      smpi_switch_data_segment(smpi_process_index());
@@ -290,7 +302,7 @@ void smpi_comm_init_smp(MPI_Comm comm){
 //      smpi_process_set_comm_intra(MPI_COMM_SELF);
 //      return;
 //  }
-  XBT_DEBUG("number of processes deployed on my node : %d", intra_comm_size);
+
 
   int i =0;
   int min_index=INT_MAX;//the minimum index will be the leader
@@ -307,7 +319,7 @@ void smpi_comm_init_smp(MPI_Comm comm){
       i++;
     }
   }
-
+  XBT_DEBUG("number of processes deployed on my node : %d", intra_comm_size);
   MPI_Group group_intra = smpi_group_new(intra_comm_size);
   i=0;
   process = NULL;
@@ -337,6 +349,10 @@ void smpi_comm_init_smp(MPI_Comm comm){
 
   smpi_coll_tuned_allgather_mpich(&leader, 1, MPI_INT , leaders_map, 1, MPI_INT, comm);
 
+  if(smpi_privatize_global_variables){ //we need to switch here, as the called function may silently touch global variables
+     switch_data_segment(smpi_process_index());
+   }
+   
   if(!comm->leaders_map){
     comm->leaders_map= leaders_map;
   }else{
@@ -405,7 +421,9 @@ void smpi_comm_init_smp(MPI_Comm comm){
   }
   smpi_coll_tuned_bcast_mpich(&(comm->is_uniform),1, MPI_INT, 0, comm_intra );
 
-
+  if(smpi_privatize_global_variables){ //we need to switch here, as the called function may silently touch global variables
+     switch_data_segment(smpi_process_index());
+   }
   // Are the ranks blocked ? = allocated contiguously on the SMP nodes
   int is_blocked=1;
   int prev=smpi_group_rank(smpi_comm_group(comm), smpi_group_index(smpi_comm_group(comm_intra), 0));
@@ -430,5 +448,8 @@ void smpi_comm_init_smp(MPI_Comm comm){
     comm->is_blocked=global_blocked;
   }
   xbt_free(leader_list);
+  
+  if(replaying==1)
+    is_replay_active = 1; 
 }
 
