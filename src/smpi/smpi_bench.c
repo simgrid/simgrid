@@ -73,12 +73,12 @@ xbt_dict_t calls = NULL;           /* Allocated on first use */
 double smpi_cpu_threshold;
 double smpi_running_power;
 
-static int* fds;
-void** mappings;
 int smpi_loaded_page = -1;
 char* start_data_exe = NULL;
 int size_data_exe = 0;
 int smpi_privatize_global_variables;
+
+smpi_privatisation_region_t smpi_privatisation_regions;
 
 typedef struct {
   int fd;
@@ -614,10 +614,10 @@ void smpi_switch_data_segment(int dest){
   int i;
   if(smpi_loaded_page==-1){//initial switch, do the copy from the real page here
     for (i=0; i< SIMIX_process_count(); i++){
-      memcpy(mappings[i],TOPAGE(start_data_exe),size_data_exe);
+      memcpy(smpi_privatisation_regions[i].address,TOPAGE(start_data_exe),size_data_exe);
     }
   }
-  int current= fds[dest];
+  int current = smpi_privatisation_regions[dest].file_descriptor;
   XBT_VERB("Switching data frame to the one of process %d", dest);
   void* tmp = mmap (TOPAGE(start_data_exe), size_data_exe, PROT_READ | PROT_WRITE, MAP_FIXED | MAP_SHARED, current, 0);
   if (tmp != TOPAGE(start_data_exe))
@@ -717,18 +717,19 @@ void smpi_initialize_global_memory_segments(){
     return;
   }
 
-  fds= (int*)xbt_malloc((smpi_process_count())*sizeof(int));
-  mappings= (void**)xbt_malloc((smpi_process_count())*sizeof(void*));
-
+  smpi_privatisation_regions = (smpi_privatisation_region_t) malloc(
+    sizeof(struct s_smpi_privatisation_region) * sizeof(int));
 
   for (i=0; i< SIMIX_process_count(); i++){
       //create SIMIX_process_count() mappings of this size with the same data inside
       void *address = NULL;
       char path[] = "/dev/shm/my-buffer-XXXXXX";
       int status;
+
       int file_descriptor= mkstemp (path);
       if (file_descriptor < 0)
         xbt_die("Impossible to create temporary file for memory mapping");
+
       status = unlink (path);
       if (status)
         xbt_die("Impossible to unlink temporary file for memory mapping");
@@ -739,7 +740,6 @@ void smpi_initialize_global_memory_segments(){
 
       /* Ask for a free region */
       address = mmap (NULL, size_data_exe, PROT_READ | PROT_WRITE, MAP_SHARED, file_descriptor, 0);
-
       if (address == MAP_FAILED)
         xbt_die("Couldn't find a free region for memory mapping");
 
@@ -747,8 +747,8 @@ void smpi_initialize_global_memory_segments(){
       memcpy(address,TOPAGE(start_data_exe),size_data_exe);
 
       //store the address of the mapping for further switches
-      fds[i]=file_descriptor;
-      mappings[i]= address;
+      smpi_privatisation_regions[i].file_descriptor = file_descriptor;
+      smpi_privatisation_regions[i].address = address;
   }
 
 #endif
@@ -761,14 +761,13 @@ void smpi_destroy_global_memory_segments(){
 #ifdef HAVE_MMAP
   int i;
   for (i=0; i< smpi_process_count(); i++){
-    if(munmap(mappings[i],size_data_exe) < 0) {
-      XBT_WARN("Unmapping of fd %d failed: %s", fds[i], strerror(errno));
+    if(munmap(smpi_privatisation_regions[i].address,size_data_exe) < 0) {
+      XBT_WARN("Unmapping of fd %d failed: %s",
+        smpi_privatisation_regions[i].file_descriptor, strerror(errno));
     }
-    close(fds[i]);
+    close(smpi_privatisation_regions[i].file_descriptor);
   }
-  xbt_free(mappings);
-  xbt_free(fds);
-
+  xbt_free(smpi_privatisation_regions);
 #endif
 
 }

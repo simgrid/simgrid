@@ -193,7 +193,7 @@ static void MC_get_memory_regions(mc_snapshot_t snapshot)
       mc_mem_region_t ref_reg =
         mc_model_checker->parent_snapshot ? mc_model_checker->parent_snapshot->privatization_regions[i] : NULL;
       snapshot->privatization_regions[i] =
-        MC_region_new(-1, mc_binary_info->start_rw, mappings[i], size_data_exe, ref_reg);
+        MC_region_new(-1, mc_binary_info->start_rw, smpi_privatisation_regions[i].address, size_data_exe, ref_reg);
     }
     snapshot->privatization_index = smpi_loaded_page;
     snapshot->regions[2] = NULL;

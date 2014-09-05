@@ -690,7 +690,14 @@ void TRACE_smpi_finalize(int rank);
 const char* encode_datatype(MPI_Datatype datatype);
 
 // TODO, make this static and expose it more cleanly
-extern void** mappings;
+
+typedef struct s_smpi_privatisation_region {
+  void* address;
+  int file_descriptor;
+} *smpi_privatisation_region_t;
+
+extern smpi_privatisation_region_t smpi_privatisation_regions;
+
 extern int smpi_loaded_page;
 
 int SIMIX_process_get_PID(smx_process_t self);
