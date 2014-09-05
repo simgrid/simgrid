@@ -73,10 +73,9 @@ xbt_dict_t calls = NULL;           /* Allocated on first use */
 double smpi_cpu_threshold;
 double smpi_running_power;
 
-int* fds;
-size_t mappings_count = 0;
+static int* fds;
 void** mappings;
-int loaded_page = -1;
+int smpi_loaded_page = -1;
 char* start_data_exe = NULL;
 int size_data_exe = 0;
 int smpi_privatize_global_variables;
@@ -186,11 +185,11 @@ void smpi_execute(double duration)
   }
 }
 
-void switch_data_segment(int dest);
+void smpi_switch_data_segment(int dest);
 
 void smpi_bench_begin(void)
 {
-  switch_data_segment(smpi_process_index());
+  smpi_switch_data_segment(smpi_process_index());
   xbt_os_threadtimer_start(smpi_process_timer());
 }
 
@@ -198,7 +197,7 @@ void smpi_bench_end(void)
 {
   xbt_os_timer_t timer = smpi_process_timer();
   xbt_os_threadtimer_stop(timer);
-//  switch_data_segment(smpi_process_count());
+//  smpi_switch_data_segment(smpi_process_count());
   if (smpi_process_get_sampling()) {
     XBT_CRITICAL("Cannot do recursive benchmarks.");
     XBT_CRITICAL("Are you trying to make a call to MPI within a SMPI_SAMPLE_ block?");
@@ -505,7 +504,7 @@ void smpi_shared_free(void *ptr)
   shared_metadata_t* meta;
   shared_data_t* data;
   if (sg_cfg_get_boolean("smpi/use_shared_malloc")){
-  
+
     if (!allocs) {
       XBT_WARN("Cannot free: nothing was allocated");
       return;
@@ -603,17 +602,17 @@ void* smpi_shared_set_call(const char* func, const char* input, void* data) {
 
 
 
-void switch_data_segment(int dest){
+void smpi_switch_data_segment(int dest){
 
   if(size_data_exe == 0)//no need to switch
     return;
 
-  if (loaded_page==dest)//no need to switch either
+  if (smpi_loaded_page==dest)//no need to switch either
     return;
 
 #ifdef HAVE_MMAP
   int i;
-  if(loaded_page==-1){//initial switch, do the copy from the real page here
+  if(smpi_loaded_page==-1){//initial switch, do the copy from the real page here
     for (i=0; i< SIMIX_process_count(); i++){
       memcpy(mappings[i],TOPAGE(start_data_exe),size_data_exe);
     }
@@ -623,7 +622,7 @@ void switch_data_segment(int dest){
   void* tmp = mmap (TOPAGE(start_data_exe), size_data_exe, PROT_READ | PROT_WRITE, MAP_FIXED | MAP_SHARED, current, 0);
   if (tmp != TOPAGE(start_data_exe))
     xbt_die("Couldn't map the new region");
-  loaded_page=dest;
+  smpi_loaded_page=dest;
 #endif
 }
 
@@ -684,7 +683,7 @@ void smpi_get_executable_global_size(){
         found++;
       }else if(strcmp(lfields[1], ".bss") == 0){
         //the beginning of bss is not exactly the end of data if not aligned, grow bss reported size accordingly
-        //TODO : check if this is OK, as some segments may be inserted between them.. 
+        //TODO : check if this is OK, as some segments may be inserted between them..
         size_bss_binary = ((char*) strtoul(lfields[4], NULL, 16) - (start_data_exe + size_data_binary))
                           + strtoul(lfields[2], NULL, 16);
         found++;
@@ -777,4 +776,3 @@ void smpi_destroy_global_memory_segments(){
 #endif
 
 }
-

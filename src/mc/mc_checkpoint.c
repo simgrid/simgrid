@@ -195,7 +195,7 @@ static void MC_get_memory_regions(mc_snapshot_t snapshot)
       snapshot->privatization_regions[i] =
         MC_region_new(-1, mc_binary_info->start_rw, mappings[i], size_data_exe, ref_reg);
     }
-    snapshot->privatization_index = loaded_page;
+    snapshot->privatization_index = smpi_loaded_page;
     snapshot->regions[2] = NULL;
   } else
 #endif
@@ -669,7 +669,7 @@ void MC_restore_snapshot(mc_snapshot_t snapshot)
     }
   }
   if(snapshot->privatization_index >= 0) {
-    switch_data_segment(snapshot->privatization_index);
+    smpi_switch_data_segment(snapshot->privatization_index);
   }
 #endif
 

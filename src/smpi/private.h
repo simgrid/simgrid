@@ -393,7 +393,7 @@ extern char* start_data_exe; //start of the data+bss segment of the executable
 extern int size_data_exe; //size of the data+bss segment of the executable
 
 
-void switch_data_segment(int);
+void smpi_switch_data_segment(int);
 void smpi_get_executable_global_size(void);
 void smpi_initialize_global_memory_segments(void);
 void smpi_destroy_global_memory_segments(void);
@@ -691,7 +691,7 @@ const char* encode_datatype(MPI_Datatype datatype);
 
 // TODO, make this static and expose it more cleanly
 extern void** mappings;
-extern int loaded_page;
+extern int smpi_loaded_page;
 
 int SIMIX_process_get_PID(smx_process_t self);
 

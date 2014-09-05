@@ -109,7 +109,7 @@ void smpi_process_init(int *argc, char ***argv)
     XBT_DEBUG("<%d> New process in the game: %p", index, proc);
 
     if(smpi_privatize_global_variables){
-      switch_data_segment(index);
+      smpi_switch_data_segment(index);
     }
 
   }
@@ -121,7 +121,7 @@ void smpi_process_destroy(void)
 {
   int index = smpi_process_index();
   if(smpi_privatize_global_variables){
-    switch_data_segment(index);
+    smpi_switch_data_segment(index);
   }
   process_data[index_to_process_data[index]]->state = SMPI_FINALIZED;
   XBT_DEBUG("<%d> Process left the game", index);
@@ -328,7 +328,7 @@ void smpi_comm_copy_buffer_callback(smx_action_t comm,
       && ((char*)buff < start_data_exe + size_data_exe )
     ){
        XBT_DEBUG("Privatization : We are copying from a zone inside global memory... Saving data to temp buffer !");
-       switch_data_segment(((smpi_process_data_t)SIMIX_process_get_data(comm->comm.src_proc))->index);
+       smpi_switch_data_segment(((smpi_process_data_t)SIMIX_process_get_data(comm->comm.src_proc))->index);
        tmpbuff = (void*)xbt_malloc(buff_size);
        memcpy(tmpbuff, buff, buff_size);
   }
@@ -339,7 +339,7 @@ void smpi_comm_copy_buffer_callback(smx_action_t comm,
       && ((char*)comm->comm.dst_buff < start_data_exe + size_data_exe )
     ){
        XBT_DEBUG("Privatization : We are copying to a zone inside global memory - Switch data segment");
-       switch_data_segment(((smpi_process_data_t)SIMIX_process_get_data(comm->comm.dst_proc))->index);
+       smpi_switch_data_segment(((smpi_process_data_t)SIMIX_process_get_data(comm->comm.dst_proc))->index);
   }
 
 
