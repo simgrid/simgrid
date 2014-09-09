@@ -12,6 +12,7 @@
 #include "xbt/hash.h"
 #include "surf/surf.h"
 #include "simgrid/sg_config.h"
+#include "simgrid/modelchecker.h"
 
 #ifndef WIN32
 #include <sys/mman.h>
@@ -190,11 +191,19 @@ void smpi_switch_data_segment(int dest);
 void smpi_bench_begin(void)
 {
   smpi_switch_data_segment(smpi_process_index());
+
+  if(MC_is_active())
+    return;
+
   xbt_os_threadtimer_start(smpi_process_timer());
 }
 
 void smpi_bench_end(void)
 {
+
+  if(MC_is_active())
+    return;
+
   xbt_os_timer_t timer = smpi_process_timer();
   xbt_os_threadtimer_stop(timer);
 //  smpi_switch_data_segment(smpi_process_count());
