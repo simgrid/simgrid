@@ -336,7 +336,7 @@ MPI_Request smpi_mpi_recv_init(void *buf, int count, MPI_Datatype datatype,
 void smpi_mpi_start(MPI_Request request)
 {
   smx_rdv_t mailbox;
-
+  
   xbt_assert(!request->action, "Cannot (re)start a non-finished communication");
   request->flags &= ~PREPARED;
   request->flags &= ~FINISHED;
@@ -345,10 +345,22 @@ void smpi_mpi_start(MPI_Request request)
   if (request->flags & RECV) {
     print_request("New recv", request);
     //FIXME: if receive is posted with a large size, but send is smaller, mailboxes may not match !
+    
     if (request->flags & RMA || request->size < sg_cfg_get_int("smpi/async_small_thres"))
       mailbox = smpi_process_mailbox_small();
-    else
-      mailbox = smpi_process_mailbox();
+    else{
+      mailbox = smpi_process_mailbox_small();
+      XBT_VERB("Is there a corresponding send already posted the small mailbox?");
+    smx_action_t action = simcall_comm_iprobe(mailbox, 0, request->src,request->tag, &match_recv, (void*)request);
+    
+      if(action ==NULL){
+        XBT_VERB("No, nothing in the permanent receive mailbox");
+        mailbox = smpi_process_mailbox();
+      }else{
+        XBT_VERB("yes there was something for us in the other mailbox");
+      }
+    }
+
     // we make a copy here, as the size is modified by simix, and we may reuse the request in another receive later
     request->real_size=request->size;
     smpi_datatype_use(request->old_type);
@@ -368,7 +380,7 @@ void smpi_mpi_start(MPI_Request request)
   } else {
 
 
-    int receiver = request->dst;//smpi_group_index(smpi_comm_group(request->comm), request->dst);
+    int receiver = request->dst;
 
     #ifdef HAVE_TRACING
       int rank = request->src;
@@ -376,13 +388,17 @@ void smpi_mpi_start(MPI_Request request)
         TRACE_smpi_send(rank, rank, receiver,request->size);
       }
     #endif
-/*    if(receiver == MPI_UNDEFINED) {*/
-/*      XBT_WARN("Trying to send a message to a wrong rank");*/
-/*      return;*/
-/*    }*/
     print_request("New send", request);
     if (request->flags & RMA || request->size < sg_cfg_get_int("smpi/async_small_thres")) { // eager mode
-      mailbox = smpi_process_remote_mailbox_small(receiver);
+      mailbox = smpi_process_remote_mailbox(receiver);
+      XBT_VERB("Is there a corresponding recv already posted in the large mailbox?");
+      smx_action_t action = simcall_comm_iprobe(mailbox, 1,request->dst, request->tag, &match_send, (void*)request);
+      if(action ==NULL){
+        XBT_VERB("No, nothing in the large mailbox, message is to be sent on the small one");
+        mailbox = smpi_process_remote_mailbox_small(receiver);
+      }else{
+        XBT_VERB("yes there was something for us in the other mailbox");
+      }
     }else{
       XBT_DEBUG("Send request %p is not in the permanent receive mailbox (buf: %p)",request,request->buf);
       mailbox = smpi_process_remote_mailbox(receiver);
@@ -414,7 +430,15 @@ void smpi_mpi_start(MPI_Request request)
     request->real_size=request->size;
     smpi_datatype_use(request->old_type);
     smpi_comm_use(request->comm);
-
+    request->action =
+      simcall_comm_isend(SIMIX_process_from_PID(request->src+1), mailbox, request->size, -1.0,
+                         buf, request->real_size,
+                         &match_send,
+                         &xbt_free_f, // how to free the userdata if a detached send fails
+                         &smpi_comm_copy_buffer_callback,
+                         request,
+                         // detach if msg size < eager/rdv switch limit
+                         request->detached);
     //if we are giving back the control to the user without waiting for completion, we have to inject timings
     double sleeptime = 0.0;
     if(request->detached || (request->flags & (ISEND|SSEND))){// issend should be treated as isend
@@ -426,15 +450,7 @@ void smpi_mpi_start(MPI_Request request)
         simcall_process_sleep(sleeptime);
         XBT_DEBUG("sending size of %zu : sleep %f ", request->size, smpi_os(request->size));
     }
-    request->action =
-      simcall_comm_isend(SIMIX_process_from_PID(request->src+1), mailbox, request->size, -1.0,
-                         buf, request->real_size,
-                         &match_send,
-                         &xbt_free_f, // how to free the userdata if a detached send fails
-                         &smpi_comm_copy_buffer_callback,
-                         request,
-                         // detach if msg size < eager/rdv switch limit
-                         request->detached);
+
 
 #ifdef HAVE_TRACING
     /* FIXME: detached sends are not traceable (request->action == NULL) */
