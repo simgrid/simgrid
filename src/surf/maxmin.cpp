@@ -692,9 +692,9 @@ void lmm_solve(lmm_system_t sys)
            var->bound * var->weight);
       if ((var->bound > 0) && (var->bound * var->weight < min_usage)) {
         if (min_bound < 0)
-          min_bound = var->bound;
+          min_bound = var->bound*var->weight;
         else
-          min_bound = MIN(min_bound, var->bound);
+          min_bound = MIN(min_bound, (var->bound*var->weight));
         XBT_DEBUG("Updated min_bound=%f", min_bound);
       }
     }
@@ -709,7 +709,7 @@ void lmm_solve(lmm_system_t sys)
         XBT_DEBUG("Setting %p (%d) value to %f\n", var, var->id_int, var->value);
       } else {
 	//If there exist a variable that can reach its bound, only update it (and other with the same bound) for now.
-        if (min_bound == var->bound) {
+        if (min_bound == var->bound*var->weight) {
           var->value = var->bound;
           XBT_DEBUG("Setting %p (%d) value to %f\n", var, var->id_int, var->value);
         }
