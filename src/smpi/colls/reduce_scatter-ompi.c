@@ -23,6 +23,7 @@
 
 #include "colls_private.h"
 #include "coll_tuned_topo.h"
+#include "xbt/replay.h"
 
 /*
  * Recursive-halving function is (*mostly*) copied from the BASIC coll module.
@@ -91,7 +92,11 @@ smpi_coll_tuned_reduce_scatter_ompi_basic_recursivehalving(void *sbuf,
     }
 
     /* Allocate temporary receive buffer. */
-    recv_buf_free = (char*) xbt_malloc(buf_size);
+    if(_xbt_replay_is_active()){
+      recv_buf_free = (char*) SMPI_SHARED_MALLOC(buf_size);
+    }else{
+      recv_buf_free = (char*) xbt_malloc(buf_size);
+    }
     recv_buf = recv_buf_free - lb;
     if (NULL == recv_buf_free) {
         err = MPI_ERR_OTHER;
@@ -99,7 +104,11 @@ smpi_coll_tuned_reduce_scatter_ompi_basic_recursivehalving(void *sbuf,
     }
    
     /* allocate temporary buffer for results */
-    result_buf_free = (char*) xbt_malloc(buf_size);
+    if(_xbt_replay_is_active()){
+      result_buf_free = (char*) SMPI_SHARED_MALLOC(buf_size);
+    }else{
+      result_buf_free = (char*) xbt_malloc(buf_size);
+    }
     result_buf = result_buf_free - lb;
    
     /* copy local buffer into the temporary results */
@@ -289,9 +298,14 @@ smpi_coll_tuned_reduce_scatter_ompi_basic_recursivehalving(void *sbuf,
 
  cleanup:
     if (NULL != disps) xbt_free(disps);
-    if (NULL != recv_buf_free) xbt_free(recv_buf_free);
-    if (NULL != result_buf_free) xbt_free(result_buf_free);
-
+    
+    if (!_xbt_replay_is_active()){
+      if (NULL != recv_buf_free) xbt_free(recv_buf_free);
+      if (NULL != result_buf_free) xbt_free(result_buf_free);
+    }else{
+      if (NULL != recv_buf_free) SMPI_SHARED_FREE(recv_buf_free);
+      if (NULL != result_buf_free) SMPI_SHARED_FREE(result_buf_free);
+    }
     return err;
 }
 
