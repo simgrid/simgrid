@@ -310,7 +310,7 @@ int smpi_process_get_sampling(void)
 
 void print_request(const char *message, MPI_Request request)
 {
-  XBT_DEBUG
+  XBT_VERB
       ("%s  request %p  [buf = %p, size = %zu, src = %d, dst = %d, tag = %d, flags = %x]",
        message, request, request->buf, request->size, request->src,
        request->dst, request->tag, request->flags);
