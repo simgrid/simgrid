@@ -344,20 +344,34 @@ void smpi_mpi_start(MPI_Request request)
 
   if (request->flags & RECV) {
     print_request("New recv", request);
-    //FIXME: if receive is posted with a large size, but send is smaller, mailboxes may not match !
     
-    if (request->flags & RMA || request->size < sg_cfg_get_int("smpi/async_small_thres"))
+    if (request->flags & RMA || request->size < sg_cfg_get_int("smpi/async_small_thres")){
+    //We have to check both mailboxes (because SSEND messages are sent to the large mbox). begin with the more appropriate one : the small one.
       mailbox = smpi_process_mailbox_small();
-    else{
+      XBT_DEBUG("Is there a corresponding send already posted the small mailbox %p (in case of SSEND)?", mailbox);
+      smx_action_t action = simcall_comm_iprobe(mailbox, 0, request->src,request->tag, &match_recv, (void*)request);
+    
+      if(action ==NULL){
+        mailbox = smpi_process_mailbox();
+        XBT_DEBUG("No, nothing in the small mailbox test the other one : %p", mailbox);
+        action = simcall_comm_iprobe(mailbox, 0, request->src,request->tag, &match_recv, (void*)request);
+        if(action ==NULL){
+          XBT_DEBUG("Still notching, switch back to the small mailbox : %p", mailbox);
+          mailbox = smpi_process_mailbox_small();
+          }
+      }else{
+        XBT_DEBUG("yes there was something for us in the large mailbox");
+      }
+    }else{
       mailbox = smpi_process_mailbox_small();
-      XBT_VERB("Is there a corresponding send already posted the small mailbox?");
+      XBT_DEBUG("Is there a corresponding send already posted the small mailbox?");
     smx_action_t action = simcall_comm_iprobe(mailbox, 0, request->src,request->tag, &match_recv, (void*)request);
     
       if(action ==NULL){
-        XBT_VERB("No, nothing in the permanent receive mailbox");
+        XBT_DEBUG("No, nothing in the permanent receive mailbox");
         mailbox = smpi_process_mailbox();
       }else{
-        XBT_VERB("yes there was something for us in the other mailbox");
+        XBT_DEBUG("yes there was something for us in the small mailbox");
       }
     }
 
@@ -369,7 +383,7 @@ void smpi_mpi_start(MPI_Request request)
                                          &request->real_size, &match_recv,
                                          &smpi_comm_copy_buffer_callback,
                                          request, -1.0);
-
+        XBT_DEBUG("recv simcall posted");
     //integrate pseudo-timing for buffering of small messages, do not bother to execute the simcall if 0
     double sleeptime = request->detached ? smpi_or(request->size) : 0.0;
     if(sleeptime!=0.0){
@@ -391,17 +405,27 @@ void smpi_mpi_start(MPI_Request request)
     print_request("New send", request);
     if (request->flags & RMA || request->size < sg_cfg_get_int("smpi/async_small_thres")) { // eager mode
       mailbox = smpi_process_remote_mailbox(receiver);
-      XBT_VERB("Is there a corresponding recv already posted in the large mailbox?");
+      XBT_DEBUG("Is there a corresponding recv already posted in the large mailbox %p?", mailbox);
       smx_action_t action = simcall_comm_iprobe(mailbox, 1,request->dst, request->tag, &match_send, (void*)request);
       if(action ==NULL){
-        XBT_VERB("No, nothing in the large mailbox, message is to be sent on the small one");
-        mailbox = smpi_process_remote_mailbox_small(receiver);
+       if (! (request->flags & SSEND)){
+         mailbox = smpi_process_remote_mailbox_small(receiver);
+         XBT_DEBUG("No, nothing in the large mailbox, message is to be sent on the small one %p", mailbox);
+       } else{
+         mailbox = smpi_process_remote_mailbox_small(receiver);
+         XBT_DEBUG("SSEND : Is there a corresponding recv already posted in the small mailbox %p?", mailbox);
+         action = simcall_comm_iprobe(mailbox, 1,request->dst, request->tag, &match_send, (void*)request);
+         if(action ==NULL){
+           XBT_DEBUG("No, we are first, send to large mailbox");
+           mailbox = smpi_process_remote_mailbox(receiver);
+         }
+       }
       }else{
-        XBT_VERB("yes there was something for us in the other mailbox");
+        XBT_DEBUG("Yes there was something for us in the large mailbox");
       }
     }else{
-      XBT_DEBUG("Send request %p is not in the permanent receive mailbox (buf: %p)",request,request->buf);
       mailbox = smpi_process_remote_mailbox(receiver);
+      XBT_DEBUG("Send request %p is in the large mailbox %p (buf: %p)",mailbox, request,request->buf);
     }
 
     void* buf = request->buf;
@@ -439,6 +463,7 @@ void smpi_mpi_start(MPI_Request request)
                          request,
                          // detach if msg size < eager/rdv switch limit
                          request->detached);
+    XBT_DEBUG("send simcall posted");
     //if we are giving back the control to the user without waiting for completion, we have to inject timings
     double sleeptime = 0.0;
     if(request->detached || (request->flags & (ISEND|SSEND))){// issend should be treated as isend
