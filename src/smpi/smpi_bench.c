@@ -727,7 +727,7 @@ void smpi_initialize_global_memory_segments(){
   }
 
   smpi_privatisation_regions = (smpi_privatisation_region_t) malloc(
-    xbt_malloc((smpi_process_count()) * sizeof(struct s_smpi_privatisation_region));
+    smpi_process_count() * sizeof(struct s_smpi_privatisation_region));
 
   for (i=0; i< SIMIX_process_count(); i++){
       //create SIMIX_process_count() mappings of this size with the same data inside
