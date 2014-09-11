@@ -385,19 +385,20 @@ p Test of waitall replay with SMPI (one trace for all processes)
 < replay/actions_waitall.txt
 $ mkfile replay/one_trace
 
+! output sort
 $ ../../smpi_script/bin/smpirun -ext smpi_replay --log=replay.thresh:critical --log=smpi_replay.thresh:verbose --log=no_loc --cfg=smpi/cpu_threshold:-1 -np 3 -platform ${srcdir:=.}/../platforms/small_platform.xml -hostfile ${srcdir:=.}/hostfile ./smpi_replay replay/one_trace --log=smpi_kernel.thres:warning
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'surf/precision' to '1e-9'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'SMPI'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/TCP_gamma' to '4194304'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'smpi/cpu_threshold' to '-1'
 > [0.000000] [surf_config/INFO] Switching workstation model to compound since you changed the network and/or cpu model(s)
-> [Tremblay:0:(0) 0.000000] [smpi_replay/VERBOSE] 0 Irecv 1 2000 0.000000
-> [Jupiter:1:(0) 0.000000] [smpi_replay/VERBOSE] 1 Isend 0 2000 0.000000
 > [Fafard:2:(0) 0.000000] [smpi_replay/VERBOSE] 2 Irecv 1 3000 0.000000
-> [Tremblay:0:(0) 0.000000] [smpi_replay/VERBOSE] 0 Irecv 2 3000 0.000000
+> [Fafard:2:(0) 0.000000] [smpi_replay/VERBOSE] 2 Isend 0 3000 0.000000
+> [Jupiter:1:(0) 0.000000] [smpi_replay/VERBOSE] 1 Isend 0 2000 0.000000
 > [Jupiter:1:(0) 0.000000] [smpi_replay/VERBOSE] 1 Isend 2 3000 0.000000
 > [Jupiter:1:(0) 0.000000] [smpi_replay/VERBOSE] 1 waitAll 0.000000
-> [Fafard:2:(0) 0.000000] [smpi_replay/VERBOSE] 2 Isend 0 3000 0.000000
+> [Tremblay:0:(0) 0.000000] [smpi_replay/VERBOSE] 0 Irecv 1 2000 0.000000
+> [Tremblay:0:(0) 0.000000] [smpi_replay/VERBOSE] 0 Irecv 2 3000 0.000000
 > [Tremblay:0:(0) 0.003787] [smpi_replay/VERBOSE] 0 waitAll 0.003787
 > [Fafard:2:(0) 0.006220] [smpi_replay/VERBOSE] 2 waitAll 0.006220
 > [Fafard:2:(0) 0.006220] [smpi_replay/INFO] Simulation time 0.006220
