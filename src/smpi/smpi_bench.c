@@ -160,6 +160,7 @@ void smpi_execute_flops(double flops) {
   simcall_set_category (action, TRACE_internal_smpi_get_category());
 #endif
   simcall_host_execution_wait(action);
+  smpi_switch_data_segment(smpi_process_index());
 }
 
 void smpi_execute(double duration)
