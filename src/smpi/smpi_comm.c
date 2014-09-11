@@ -350,7 +350,7 @@ void smpi_comm_init_smp(MPI_Comm comm){
   smpi_coll_tuned_allgather_mpich(&leader, 1, MPI_INT , leaders_map, 1, MPI_INT, comm);
 
   if(smpi_privatize_global_variables){ //we need to switch here, as the called function may silently touch global variables
-     switch_data_segment(smpi_process_index());
+     smpi_switch_data_segment(smpi_process_index());
    }
    
   if(!comm->leaders_map){
@@ -422,7 +422,7 @@ void smpi_comm_init_smp(MPI_Comm comm){
   smpi_coll_tuned_bcast_mpich(&(comm->is_uniform),1, MPI_INT, 0, comm_intra );
 
   if(smpi_privatize_global_variables){ //we need to switch here, as the called function may silently touch global variables
-     switch_data_segment(smpi_process_index());
+     smpi_switch_data_segment(smpi_process_index());
    }
   // Are the ranks blocked ? = allocated contiguously on the SMP nodes
   int is_blocked=1;
