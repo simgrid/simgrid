@@ -506,10 +506,6 @@ smx_action_t SIMIX_comm_irecv(smx_process_t dst_proc, smx_rdv_t rdv,
         other_action->state = SIMIX_DONE;
         other_action->comm.type = SIMIX_COMM_DONE;
         other_action->comm.rdv = NULL;
-        //SIMIX_comm_destroy(this_action);
-        //--smx_total_comms; // this creation was a pure waste
-        //already_received=1;
-        //other_action->comm.refcount--;
       }/*else{
          XBT_DEBUG("Not yet finished, we have to wait %d\n", xbt_fifo_size(rdv->comm_fifo));
          }*/
@@ -569,29 +565,36 @@ smx_action_t SIMIX_comm_irecv(smx_process_t dst_proc, smx_rdv_t rdv,
 }
 
 smx_action_t SIMIX_pre_comm_iprobe(smx_simcall_t simcall, smx_rdv_t rdv,
-                                   int src, int tag,
+                                   int type, int src, int tag,
                                    int (*match_fun)(void *, void *, smx_action_t),
                                    void *data){
-  return SIMIX_comm_iprobe(simcall->issuer, rdv, src, tag, match_fun, data);
+  return SIMIX_comm_iprobe(simcall->issuer, rdv, type, src, tag, match_fun, data);
 }
 
-smx_action_t SIMIX_comm_iprobe(smx_process_t dst_proc, smx_rdv_t rdv, int src,
+smx_action_t SIMIX_comm_iprobe(smx_process_t dst_proc, smx_rdv_t rdv, int type, int src,
                               int tag, int (*match_fun)(void *, void *, smx_action_t), void *data)
 {
   XBT_DEBUG("iprobe from %p %p\n", rdv, rdv->comm_fifo);
-  smx_action_t this_action = SIMIX_comm_new(SIMIX_COMM_RECEIVE);
-
+  smx_action_t this_action;
+  int smx_type;
+  if(type == 1){
+    this_action=SIMIX_comm_new(SIMIX_COMM_SEND);
+    smx_type = SIMIX_COMM_RECEIVE;
+  } else{
+    this_action=SIMIX_comm_new(SIMIX_COMM_RECEIVE);
+    smx_type = SIMIX_COMM_SEND;
+  } 
   smx_action_t other_action=NULL;
   if(rdv->permanent_receiver && xbt_fifo_size(rdv->done_comm_fifo)!=0){
     //find a match in the already received fifo
       XBT_DEBUG("first try in the perm recv mailbox \n");
 
-    other_action = SIMIX_fifo_probe_comm(rdv->done_comm_fifo, SIMIX_COMM_SEND, match_fun, data, this_action);
+    other_action = SIMIX_fifo_probe_comm(rdv->done_comm_fifo, smx_type, match_fun, data, this_action);
   }
  // }else{
     if(!other_action){
         XBT_DEBUG("second try in the other mailbox");
-        other_action = SIMIX_fifo_probe_comm(rdv->comm_fifo, SIMIX_COMM_SEND, match_fun, data, this_action);
+        other_action = SIMIX_fifo_probe_comm(rdv->comm_fifo, smx_type, match_fun, data, this_action);
     }
 //  }
   if(other_action)other_action->comm.refcount--;

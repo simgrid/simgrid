@@ -347,7 +347,7 @@ case SIMCALL_RDV_GET_RECEIVER:
       break;  
 
 case SIMCALL_COMM_IPROBE:
-      simcall->result.dp = SIMIX_pre_comm_iprobe(simcall , (smx_rdv_t) simcall->args[0].dp,  simcall->args[1].i,  simcall->args[2].i, (simix_match_func_t) simcall->args[3].fp,  simcall->args[4].dp);
+      simcall->result.dp = SIMIX_pre_comm_iprobe(simcall , (smx_rdv_t) simcall->args[0].dp,  simcall->args[1].i,  simcall->args[2].i,  simcall->args[3].i, (simix_match_func_t) simcall->args[4].fp,  simcall->args[5].dp);
       SIMIX_simcall_answer(simcall);
       break;  
 

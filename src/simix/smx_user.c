@@ -1023,12 +1023,12 @@ smx_action_t simcall_comm_irecv(smx_rdv_t rdv, void *dst_buff, size_t *dst_buff_
 /**
  * \ingroup simix_comm_management
  */
-smx_action_t simcall_comm_iprobe(smx_rdv_t rdv, int src, int tag,
+smx_action_t simcall_comm_iprobe(smx_rdv_t rdv, int type, int src, int tag,
                                 int (*match_fun)(void *, void *, smx_action_t), void *data)
 {
   xbt_assert(rdv, "No rendez-vous point defined for iprobe");
 
-  return simcall_BODY_comm_iprobe(rdv, src, tag, match_fun, data);
+  return simcall_BODY_comm_iprobe(rdv, type, src, tag, match_fun, data);
 }
 
 /**

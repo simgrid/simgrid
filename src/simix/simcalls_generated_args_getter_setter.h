@@ -666,29 +666,35 @@ static inline smx_rdv_t simcall_comm_iprobe__get__rdv(smx_simcall_t simcall){
 static inline void simcall_comm_iprobe__set__rdv(smx_simcall_t simcall, void* arg){
     simcall->args[0].dp = arg;
 }
-static inline int simcall_comm_iprobe__get__src(smx_simcall_t simcall){
+static inline int simcall_comm_iprobe__get__type(smx_simcall_t simcall){
   return  simcall->args[1].i;
 }
-static inline void simcall_comm_iprobe__set__src(smx_simcall_t simcall, int arg){
+static inline void simcall_comm_iprobe__set__type(smx_simcall_t simcall, int arg){
     simcall->args[1].i = arg;
 }
-static inline int simcall_comm_iprobe__get__tag(smx_simcall_t simcall){
+static inline int simcall_comm_iprobe__get__src(smx_simcall_t simcall){
   return  simcall->args[2].i;
 }
-static inline void simcall_comm_iprobe__set__tag(smx_simcall_t simcall, int arg){
+static inline void simcall_comm_iprobe__set__src(smx_simcall_t simcall, int arg){
     simcall->args[2].i = arg;
 }
+static inline int simcall_comm_iprobe__get__tag(smx_simcall_t simcall){
+  return  simcall->args[3].i;
+}
+static inline void simcall_comm_iprobe__set__tag(smx_simcall_t simcall, int arg){
+    simcall->args[3].i = arg;
+}
 static inline simix_match_func_t simcall_comm_iprobe__get__match_fun(smx_simcall_t simcall){
-  return (simix_match_func_t) simcall->args[3].fp;
+  return (simix_match_func_t) simcall->args[4].fp;
 }
 static inline void simcall_comm_iprobe__set__match_fun(smx_simcall_t simcall, FPtr arg){
-    simcall->args[3].fp = arg;
+    simcall->args[4].fp = arg;
 }
 static inline void* simcall_comm_iprobe__get__data(smx_simcall_t simcall){
-  return  simcall->args[4].dp;
+  return  simcall->args[5].dp;
 }
 static inline void simcall_comm_iprobe__set__data(smx_simcall_t simcall, void* arg){
-    simcall->args[4].dp = arg;
+    simcall->args[5].dp = arg;
 }
 static inline smx_process_t simcall_comm_send__get__src(smx_simcall_t simcall){
   return (smx_process_t) simcall->args[0].dp;

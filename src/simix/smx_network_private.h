@@ -49,7 +49,7 @@ smx_action_t SIMIX_comm_irecv(smx_process_t dst_proc, smx_rdv_t rdv,
                               void *data, double rate);
 void SIMIX_comm_destroy(smx_action_t action);
 void SIMIX_comm_destroy_internal_actions(smx_action_t action);
-smx_action_t SIMIX_comm_iprobe(smx_process_t dst_proc, smx_rdv_t rdv, int src,
+smx_action_t SIMIX_comm_iprobe(smx_process_t dst_proc, smx_rdv_t rdv, int type, int src,
                               int tag, int (*match_fun)(void *, void *, smx_action_t), void *data);
 void SIMIX_pre_comm_wait(smx_simcall_t simcall, smx_action_t action, double timeout);
 void SIMIX_pre_comm_waitany(smx_simcall_t simcall, xbt_dynar_t actions);
@@ -65,8 +65,8 @@ smx_process_t SIMIX_comm_get_src_proc(smx_action_t action);
 smx_process_t SIMIX_comm_get_dst_proc(smx_action_t action);
 
 // pre prototypes
-smx_action_t SIMIX_pre_comm_iprobe(smx_simcall_t simcall, smx_rdv_t rdv,
-                                   int src, int tag,
+smx_action_t SIMIX_pre_comm_iprobe(smx_simcall_t simcall, smx_rdv_t rdv, 
+                                   int type,int src, int tag,
                                    int (*match_fun)(void *, void *, smx_action_t),
                                    void *data);
 smx_rdv_t SIMIX_pre_rdv_create(smx_simcall_t simcall, const char *name);

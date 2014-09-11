@@ -75,7 +75,7 @@ rdv_comm_count_by_host True (unsigned int) (rdv, void*, smx_rdv_t) (host, void*,
 rdv_get_head True (void*, smx_action_t) (rdv, void*, smx_rdv_t)
 rdv_set_receiver True (void) (rdv, void*, smx_rdv_t) (receiver, void*, smx_process_t)
 rdv_get_receiver True (void*, smx_process_t) (rdv, void*, smx_rdv_t)
-comm_iprobe True (void*, smx_action_t) (rdv, void*, smx_rdv_t) (src, int) (tag, int) (match_fun, FPtr, simix_match_func_t) (data, void*)
+comm_iprobe True (void*, smx_action_t) (rdv, void*, smx_rdv_t) (type, int) (src, int) (tag, int) (match_fun, FPtr, simix_match_func_t) (data, void*)
 comm_send False (void) (src, void*, smx_process_t) (rdv, void*, smx_rdv_t)  (task_size, double) (rate, double) (src_buff, void*) (src_buff_size, size_t) (match_fun, FPtr, simix_match_func_t) (copy_data_fun, FPtr, simix_copy_data_func_t) (data, void*) (timeout, double)
 comm_isend True (void*, smx_action_t) (src, void*, smx_process_t) (rdv, void*, smx_rdv_t) (task_size, double) (rate, double) (src_buff, void*) (src_buff_size, size_t) (match_fun, FPtr, simix_match_func_t) (clean_fun, FPtr, simix_clean_func_t) (copy_data_fun, FPtr, simix_copy_data_func_t) (data, void*) (detached, int)
 comm_recv False (void) (rdv, void*, smx_rdv_t) (dst_buff, void*) (dst_buff_size, void*, size_t*) (match_fun, FPtr, simix_match_func_t) (copy_data_fun, FPtr, simix_copy_data_func_t) (data, void*) (timeout, double) (rate, double)

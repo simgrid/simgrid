@@ -1081,16 +1081,17 @@
     }    
     return self->simcall.result.dp;
   }
-  inline static smx_action_t simcall_BODY_comm_iprobe(smx_rdv_t rdv, int src, int tag, simix_match_func_t match_fun, void* data) {
+  inline static smx_action_t simcall_BODY_comm_iprobe(smx_rdv_t rdv, int type, int src, int tag, simix_match_func_t match_fun, void* data) {
     smx_process_t self = SIMIX_process_self();
     self->simcall.call = SIMCALL_COMM_IPROBE;
     memset(&self->simcall.result, 0, sizeof(self->simcall.result));
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
     self->simcall.args[0].dp = (void*) rdv;
-    self->simcall.args[1].i = (int) src;
-    self->simcall.args[2].i = (int) tag;
-    self->simcall.args[3].fp = (FPtr) match_fun;
-    self->simcall.args[4].dp = (void*) data;
+    self->simcall.args[1].i = (int) type;
+    self->simcall.args[2].i = (int) src;
+    self->simcall.args[3].i = (int) tag;
+    self->simcall.args[4].fp = (FPtr) match_fun;
+    self->simcall.args[5].dp = (void*) data;
     if (self != simix_global->maestro_process) {
       XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name,
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);

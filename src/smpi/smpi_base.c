@@ -819,12 +819,12 @@ void smpi_mpi_iprobe(int source, int tag, MPI_Comm comm, int* flag, MPI_Status* 
     if (sg_cfg_get_int("smpi/async_small_thres")>0){
         mailbox = smpi_process_mailbox_small();
         XBT_DEBUG("trying to probe the perm recv mailbox");
-        request->action = simcall_comm_iprobe(mailbox, request->src, request->tag, &match_recv, (void*)request);
+        request->action = simcall_comm_iprobe(mailbox, 0, request->src, request->tag, &match_recv, (void*)request);
     }
     if (request->action==NULL){
 	mailbox = smpi_process_mailbox();
         XBT_DEBUG("trying to probe the other mailbox");
-        request->action = simcall_comm_iprobe(mailbox, request->src, request->tag, &match_recv, (void*)request);
+        request->action = simcall_comm_iprobe(mailbox, 0, request->src,request->tag, &match_recv, (void*)request);
     }
 
   if(request->action){
