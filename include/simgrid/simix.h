@@ -444,7 +444,7 @@ XBT_PUBLIC(smx_action_t) simcall_comm_irecv(smx_rdv_t rdv, void *dst_buff,
                                             void (*copy_data_fun)(smx_action_t, void*, size_t),
                                             void *data, double rate);
 
-XBT_PUBLIC(smx_action_t) simcall_comm_iprobe(smx_rdv_t rdv, int src, int tag,
+XBT_PUBLIC(smx_action_t) simcall_comm_iprobe(smx_rdv_t rdv, int type, int src, int tag,
                                 int (*match_fun)(void *, void *, smx_action_t), void *data);
 XBT_PUBLIC(void) simcall_comm_cancel(smx_action_t comm);
 
