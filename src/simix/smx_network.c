@@ -59,7 +59,7 @@ smx_rdv_t SIMIX_rdv_create(const char *name)
     rdv->done_comm_fifo = xbt_fifo_new();
     rdv->permanent_receiver=NULL;
 
-    XBT_DEBUG("Creating a mailbox at %p with name %s\n", rdv, name);
+    XBT_DEBUG("Creating a mailbox at %p with name %s", rdv, name);
 
     if (rdv->name)
       xbt_dict_set(rdv_points, rdv->name, rdv, NULL);
@@ -385,7 +385,7 @@ smx_action_t SIMIX_comm_isend(smx_process_t src_proc, smx_rdv_t rdv,
                               void *data,
                               int detached)
 {
-  XBT_DEBUG("send from %p\n", rdv);
+  XBT_DEBUG("send from %p", rdv);
 
   /* Prepare an action describing us, so that it gets passed to the user-provided filter of other side */
   smx_action_t this_action = SIMIX_comm_new(SIMIX_COMM_SEND);
@@ -406,13 +406,13 @@ smx_action_t SIMIX_comm_isend(smx_process_t src_proc, smx_rdv_t rdv,
       other_action->comm.refcount++;
       xbt_fifo_push(rdv->done_comm_fifo,other_action);
       other_action->comm.rdv=rdv;
-      XBT_DEBUG("pushing a message into the permanent receive fifo %p, comm %p \n", rdv, &(other_action->comm));
+      XBT_DEBUG("pushing a message into the permanent receive fifo %p, comm %p", rdv, &(other_action->comm));
 
     }else{
       SIMIX_rdv_push(rdv, this_action);
     }
   } else {
-    XBT_DEBUG("Receive already pushed\n");
+    XBT_DEBUG("Receive already pushed");
 
     SIMIX_comm_destroy(this_action);
     --smx_total_comms; // this creation was a pure waste
@@ -482,7 +482,7 @@ smx_action_t SIMIX_comm_irecv(smx_process_t dst_proc, smx_rdv_t rdv,
                               void (*copy_data_fun)(smx_action_t, void*, size_t), // used to copy data if not default one
                               void *data, double rate)
 {
-  XBT_DEBUG("recv from %p %p\n", rdv, rdv->comm_fifo);
+  XBT_DEBUG("recv from %p %p", rdv, rdv->comm_fifo);
   smx_action_t this_action = SIMIX_comm_new(SIMIX_COMM_RECEIVE);
 
   smx_action_t other_action;
@@ -491,23 +491,23 @@ smx_action_t SIMIX_comm_irecv(smx_process_t dst_proc, smx_rdv_t rdv,
   //int already_received=0;
   if(rdv->permanent_receiver && xbt_fifo_size(rdv->done_comm_fifo)!=0){
 
-    XBT_DEBUG("We have a comm that has probably already been received, trying to match it, to skip the communication\n");
+    XBT_DEBUG("We have a comm that has probably already been received, trying to match it, to skip the communication");
     //find a match in the already received fifo
     other_action = SIMIX_fifo_get_comm(rdv->done_comm_fifo, SIMIX_COMM_SEND, match_fun, data, this_action);
     //if not found, assume the receiver came first, register it to the mailbox in the classical way
     if (!other_action)  {
-      XBT_DEBUG("We have messages in the permanent receive list, but not the one we are looking for, pushing request into fifo\n");
+      XBT_DEBUG("We have messages in the permanent receive list, but not the one we are looking for, pushing request into fifo");
       other_action = this_action;
       SIMIX_rdv_push(rdv, this_action);
     }else{
       if(other_action->comm.surf_comm && 	SIMIX_comm_get_remains(other_action)==0.0)
       {
-        XBT_DEBUG("comm %p has been already sent, and is finished, destroy it\n",&(other_action->comm));
+        XBT_DEBUG("comm %p has been already sent, and is finished, destroy it",&(other_action->comm));
         other_action->state = SIMIX_DONE;
         other_action->comm.type = SIMIX_COMM_DONE;
         other_action->comm.rdv = NULL;
       }/*else{
-         XBT_DEBUG("Not yet finished, we have to wait %d\n", xbt_fifo_size(rdv->comm_fifo));
+         XBT_DEBUG("Not yet finished, we have to wait %d", xbt_fifo_size(rdv->comm_fifo));
          }*/
       other_action->comm.refcount--;
       SIMIX_comm_destroy(this_action);
@@ -523,7 +523,7 @@ smx_action_t SIMIX_comm_irecv(smx_process_t dst_proc, smx_rdv_t rdv,
     other_action = SIMIX_fifo_get_comm(rdv->comm_fifo, SIMIX_COMM_SEND, match_fun, data, this_action);
 
     if (!other_action) {
-      XBT_DEBUG("Receive pushed first %d\n", xbt_fifo_size(rdv->comm_fifo));
+      XBT_DEBUG("Receive pushed first %d", xbt_fifo_size(rdv->comm_fifo));
       other_action = this_action;
       SIMIX_rdv_push(rdv, this_action);
     } else {
@@ -574,7 +574,7 @@ smx_action_t SIMIX_pre_comm_iprobe(smx_simcall_t simcall, smx_rdv_t rdv,
 smx_action_t SIMIX_comm_iprobe(smx_process_t dst_proc, smx_rdv_t rdv, int type, int src,
                               int tag, int (*match_fun)(void *, void *, smx_action_t), void *data)
 {
-  XBT_DEBUG("iprobe from %p %p\n", rdv, rdv->comm_fifo);
+  XBT_DEBUG("iprobe from %p %p", rdv, rdv->comm_fifo);
   smx_action_t this_action;
   int smx_type;
   if(type == 1){
@@ -587,13 +587,13 @@ smx_action_t SIMIX_comm_iprobe(smx_process_t dst_proc, smx_rdv_t rdv, int type, 
   smx_action_t other_action=NULL;
   if(rdv->permanent_receiver && xbt_fifo_size(rdv->done_comm_fifo)!=0){
     //find a match in the already received fifo
-      XBT_DEBUG("first try in the perm recv mailbox \n");
+      XBT_DEBUG("first try in the perm recv mailbox");
 
     other_action = SIMIX_fifo_probe_comm(rdv->done_comm_fifo, smx_type, match_fun, data, this_action);
   }
  // }else{
     if(!other_action){
-        XBT_DEBUG("second try in the other mailbox");
+        XBT_DEBUG("try in the normal mailbox");
         other_action = SIMIX_fifo_probe_comm(rdv->comm_fifo, smx_type, match_fun, data, this_action);
     }
 //  }
