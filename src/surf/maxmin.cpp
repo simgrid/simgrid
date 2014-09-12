@@ -709,7 +709,7 @@ void lmm_solve(lmm_system_t sys)
         XBT_DEBUG("Setting %p (%d) value to %f\n", var, var->id_int, var->value);
       } else {
 	//If there exist a variable that can reach its bound, only update it (and other with the same bound) for now.
-        if (min_bound == var->bound*var->weight) {
+	    if (double_equals(min_bound, var->bound*var->weight, sg_maxmin_precision)){
           var->value = var->bound;
           XBT_DEBUG("Setting %p (%d) value to %f\n", var, var->id_int, var->value);
         }
