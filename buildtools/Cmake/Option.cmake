@@ -36,6 +36,7 @@ option(enable_mallocators "Enable mallocators (disable only for debugging purpos
 option(enable_print_message "Enable print message during config." off)
 mark_as_advanced(enable_print_message)
 option(enable_model-checking "Turn this on to experiment with our prototype of model-checker (hinders the simulation's performance even if turned of at runtime)" off)
+option(enable_mc_content_adressable_pages "Content addressable page storage (rely on the hash of the pages for page snapshot)" off)
 option(enable_lib_static "" off)
 option(enable_lib_in_jar "Whether the native libraries are bundled into the Java jar file" on)
 option(enable_jedule "Jedule output of SimDAG." off)

@@ -15,6 +15,10 @@
 
 #include "mc_page_store.h"
 
+#ifdef MC_PAGE_STORE_MD4
+#include <nettle/md4.h>
+#endif
+
 #include "mc_mmu.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_page_snapshot, mc,
@@ -25,14 +29,22 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_page_snapshot, mc,
 /** @brief Compte a hash for the given memory page
  *
  *  The page is used before inserting the page in the page store
- *  in order to find duplicate of this pae in the page store.
+ *  in order to find duplicate of this page in the page store.
  *
  *  @param data Memory page
  *  @return hash off the page
  */
 static inline  __attribute__ ((always_inline))
-uint64_t mc_hash_page(const void* data)
+s_mc_pages_store::hash_type mc_hash_page(const void* data)
 {
+#ifdef MC_PAGE_STORE_MD4
+   boost::array<uint64_t,2> result;
+   md4_ctx context;
+   md4_init(&context);
+   md4_update(&context, xbt_pagesize, (const uint8_t*) data);
+   md4_digest(&context, MD4_DIGEST_SIZE, (uint8_t*) &(result[0]));
+   return result;
+#else
   const uint64_t* values = (const uint64_t*) data;
   size_t n = xbt_pagesize / sizeof(uint64_t);
 
@@ -42,6 +54,7 @@ uint64_t mc_hash_page(const void* data)
     hash = ((hash << 5) + hash) + values[i];
   }
   return hash;
+#endif
 }
 
 // ***** snapshot_page_manager
@@ -116,8 +129,12 @@ void s_mc_pages_store::remove_page(size_t pageno)
 {
   this->free_pages_.push_back(pageno);
   const void* page = this->get_page(pageno);
-  uint64_t hash = mc_hash_page(page);
+  hash_type hash = mc_hash_page(page);
+#ifdef MC_PAGE_STORE_MD4
+  this->hash_index_.erase(hash);
+#else
   this->hash_index_[hash].erase(pageno);
+#endif
 }
 
 /** Store a page in memory */
@@ -131,7 +148,20 @@ size_t s_mc_pages_store::store_page(void* page)
   //  1. compute the hash of the page;
   //  2. find pages with the same hash using `hash_index_`;
   //  3. find a page with the same content.
-  uint64_t hash = mc_hash_page(page);
+  hash_type hash = mc_hash_page(page);
+#ifdef MC_PAGE_STORE_MD4
+  s_mc_pages_store::pages_map_type::const_iterator i =
+    this->hash_index_.find(hash);
+  if (i!=this->hash_index_.cend()) {
+    // If a page with the same content is already in the page store it is
+    // reused and its reference count is incremented.
+    size_t pageno = i->second;
+    page_counts_[pageno]++;
+    return pageno;
+  }
+#else
+
+  // Try to find a duplicate in set of pages with the same hash:
   page_set_type& page_set = this->hash_index_[hash];
   BOOST_FOREACH (size_t pageno, page_set) {
     const void* snapshot_page = this->get_page(pageno);
@@ -144,6 +174,7 @@ size_t s_mc_pages_store::store_page(void* page)
 
     }
   }
+#endif
 
   // Otherwise, a new page is allocated in the page store and the content
   // of the page is `memcpy()`-ed to this new page.
@@ -151,7 +182,11 @@ size_t s_mc_pages_store::store_page(void* page)
   xbt_assert(this->page_counts_[pageno]==0, "Allocated page is already used");
   void* snapshot_page = (void*) this->get_page(pageno);
   memcpy(snapshot_page, page, xbt_pagesize);
+#ifdef MC_PAGE_STORE_MD4
+  this->hash_index_[hash] = pageno;
+#else
   page_set.insert(pageno);
+#endif
   page_counts_[pageno]++;
   return pageno;
 }
