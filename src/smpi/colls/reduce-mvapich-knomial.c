@@ -40,6 +40,10 @@
  
 #include "colls_private.h"
 extern int mv2_reduce_intra_knomial_factor;
+extern int mv2_reduce_inter_knomial_factor;
+
+#define SMPI_DEFAULT_KNOMIAL_FACTOR 4
+
 //        int mv2_reduce_knomial_factor = 2;
         
         
@@ -153,6 +157,15 @@ int smpi_coll_tuned_reduce_mvapich2_knomial (
                 count, datatype);
     }
 
+
+    if(mv2_reduce_intra_knomial_factor<0)
+      {
+        mv2_reduce_intra_knomial_factor = SMPI_DEFAULT_KNOMIAL_FACTOR;
+      }
+    if(mv2_reduce_inter_knomial_factor<0)
+      {
+        mv2_reduce_inter_knomial_factor = SMPI_DEFAULT_KNOMIAL_FACTOR;
+      }
 
 
     MPIR_Reduce_knomial_trace(root, mv2_reduce_intra_knomial_factor, comm, 

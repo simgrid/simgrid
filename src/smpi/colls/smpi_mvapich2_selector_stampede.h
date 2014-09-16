@@ -1259,8 +1259,8 @@ int mv2_size_reduce_tuning_table = 0;
 mv2_reduce_tuning_table *mv2_reduce_thresholds_table = NULL;
 
 
-int mv2_reduce_intra_knomial_factor = 2;
-int mv2_reduce_inter_knomial_factor = 2;
+int mv2_reduce_intra_knomial_factor = -1;
+int mv2_reduce_inter_knomial_factor = -1;
 
 int (*MV2_Reduce_function)( void *sendbuf,
     void *recvbuf,
