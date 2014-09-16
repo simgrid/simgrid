@@ -152,6 +152,7 @@ COLL_ALLREDUCES(COLL_PROTO, COLL_NOsep)
 #define COLL_ALLTOALLS(action, COLL_sep) \
 COLL_APPLY(action, COLL_ALLTOALL_SIG, 2dmesh) COLL_sep \
 COLL_APPLY(action, COLL_ALLTOALL_SIG, 3dmesh) COLL_sep \
+COLL_APPLY(action, COLL_ALLTOALL_SIG, basic_linear) COLL_sep \
 COLL_APPLY(action, COLL_ALLTOALL_SIG, bruck) COLL_sep \
 COLL_APPLY(action, COLL_ALLTOALL_SIG, pair) COLL_sep \
 COLL_APPLY(action, COLL_ALLTOALL_SIG, pair_rma) COLL_sep \
