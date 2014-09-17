@@ -23,7 +23,6 @@
 
 #include "colls_private.h"
 #include "coll_tuned_topo.h"
-#include "smpi/smpi.h"
 #include "xbt/replay.h"
 
 /*
@@ -93,11 +92,13 @@ smpi_coll_tuned_reduce_scatter_ompi_basic_recursivehalving(void *sbuf,
     }
 
     /* Allocate temporary receive buffer. */
+#ifndef WIN32
     if(_xbt_replay_is_active()){
       recv_buf_free = (char*) SMPI_SHARED_MALLOC(buf_size);
-    }else{
+    }else
+#else
       recv_buf_free = (char*) xbt_malloc(buf_size);
-    }
+#endif
     recv_buf = recv_buf_free - lb;
     if (NULL == recv_buf_free) {
         err = MPI_ERR_OTHER;
@@ -105,11 +106,13 @@ smpi_coll_tuned_reduce_scatter_ompi_basic_recursivehalving(void *sbuf,
     }
    
     /* allocate temporary buffer for results */
+#ifndef WIN32
     if(_xbt_replay_is_active()){
       result_buf_free = (char*) SMPI_SHARED_MALLOC(buf_size);
-    }else{
+    }else
+#else
       result_buf_free = (char*) xbt_malloc(buf_size);
-    }
+#endif
     result_buf = result_buf_free - lb;
    
     /* copy local buffer into the temporary results */
@@ -299,14 +302,18 @@ smpi_coll_tuned_reduce_scatter_ompi_basic_recursivehalving(void *sbuf,
 
  cleanup:
     if (NULL != disps) xbt_free(disps);
-    
+#ifdef WIN32
     if (!_xbt_replay_is_active()){
       if (NULL != recv_buf_free) xbt_free(recv_buf_free);
       if (NULL != result_buf_free) xbt_free(result_buf_free);
     }else{
+#else
       if (NULL != recv_buf_free) SMPI_SHARED_FREE(recv_buf_free);
       if (NULL != result_buf_free) SMPI_SHARED_FREE(result_buf_free);
+#endif
+#ifdef WIN32
     }
+#endif
     return err;
 }
 
