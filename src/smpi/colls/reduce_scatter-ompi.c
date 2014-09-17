@@ -23,6 +23,7 @@
 
 #include "colls_private.h"
 #include "coll_tuned_topo.h"
+#include "smpi/smpi.h"
 #include "xbt/replay.h"
 
 /*
