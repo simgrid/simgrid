@@ -251,20 +251,8 @@ set(SMPI_SRC
   src/smpi/smpi_replay.c
   src/smpi/smpi_rma.c
   src/smpi/smpi_topo.c
+  src/smpi/smpi_f77.c
   )
-
-if(SMPI_FORTRAN)
-  set(SMPI_SRC
-    ${SMPI_SRC}
-    src/smpi/smpi_f77.c
-    )
-else()
-  set(EXTRA_DIST
-    ${EXTRA_DIST}
-    src/smpi/smpi_f77.c
-  )
-endif()
-
 
 set(XBT_SRC
   src/xbt/RngStream.c
