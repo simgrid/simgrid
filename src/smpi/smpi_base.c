@@ -375,6 +375,13 @@ void smpi_mpi_start(MPI_Request request)
       }
     }
 
+    //integrate pseudo-timing for buffering of small messages, do not bother to execute the simcall if 0
+    double sleeptime = request->detached ? smpi_or(request->size) : 0.0;
+    if(sleeptime!=0.0){
+        simcall_process_sleep(sleeptime);
+        XBT_DEBUG("receiving size of %zu : sleep %f ", request->size, smpi_or(request->size));
+    }
+    
     // we make a copy here, as the size is modified by simix, and we may reuse the request in another receive later
     request->real_size=request->size;
     smpi_datatype_use(request->old_type);
@@ -384,12 +391,7 @@ void smpi_mpi_start(MPI_Request request)
                                          &smpi_comm_copy_buffer_callback,
                                          request, -1.0);
         XBT_DEBUG("recv simcall posted");
-    //integrate pseudo-timing for buffering of small messages, do not bother to execute the simcall if 0
-    double sleeptime = request->detached ? smpi_or(request->size) : 0.0;
-    if(sleeptime!=0.0){
-        simcall_process_sleep(sleeptime);
-        XBT_DEBUG("receiving size of %zu : sleep %f ", request->size, smpi_or(request->size));
-    }
+
 
   } else {
 
@@ -403,6 +405,19 @@ void smpi_mpi_start(MPI_Request request)
       }
     #endif
     print_request("New send", request);
+    
+        //if we are giving back the control to the user without waiting for completion, we have to inject timings
+    double sleeptime = 0.0;
+    if(request->detached || (request->flags & (ISEND|SSEND))){// issend should be treated as isend
+      //isend and send timings may be different
+      sleeptime = (request->flags & ISEND)? smpi_ois(request->size) : smpi_os(request->size);
+    }
+
+    if(sleeptime != 0.0){
+        simcall_process_sleep(sleeptime);
+        XBT_DEBUG("sending size of %zu : sleep %f ", request->size, smpi_os(request->size));
+    }
+    
     if (request->flags & RMA || request->size < sg_cfg_get_int("smpi/async_small_thres")) { // eager mode
       mailbox = smpi_process_remote_mailbox(receiver);
       XBT_DEBUG("Is there a corresponding recv already posted in the large mailbox %p?", mailbox);
@@ -464,17 +479,7 @@ void smpi_mpi_start(MPI_Request request)
                          // detach if msg size < eager/rdv switch limit
                          request->detached);
     XBT_DEBUG("send simcall posted");
-    //if we are giving back the control to the user without waiting for completion, we have to inject timings
-    double sleeptime = 0.0;
-    if(request->detached || (request->flags & (ISEND|SSEND))){// issend should be treated as isend
-      //isend and send timings may be different
-      sleeptime = (request->flags & ISEND)? smpi_ois(request->size) : smpi_os(request->size);
-    }
 
-    if(sleeptime != 0.0){
-        simcall_process_sleep(sleeptime);
-        XBT_DEBUG("sending size of %zu : sleep %f ", request->size, smpi_os(request->size));
-    }
 
 
 #ifdef HAVE_TRACING
