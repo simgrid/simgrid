@@ -1060,3 +1060,59 @@ int MPI_Comm_get_parent( MPI_Comm *parent){
 int MPI_Type_create_hvector(int count, int blocklen, MPI_Aint stride, MPI_Datatype old_type, MPI_Datatype* new_type) {
   return PMPI_Type_create_hvector(count, blocklen, stride, old_type, new_type);
 }
+
+MPI_Datatype MPI_Type_f2c(MPI_Fint datatype){
+  return PMPI_Type_f2c(datatype);
+}
+
+MPI_Fint MPI_Type_c2f(MPI_Datatype datatype){
+  return PMPI_Type_c2f( datatype);
+}
+
+MPI_Group MPI_Group_f2c(MPI_Fint group){
+  return PMPI_Group_f2c( group);
+}
+
+MPI_Fint MPI_Group_c2f(MPI_Group group){
+  return PMPI_Group_c2f(group);
+}
+
+MPI_Request MPI_Request_f2c(MPI_Fint request){
+  return PMPI_Request_f2c(request);
+}
+
+MPI_Fint MPI_Request_c2f(MPI_Request request) {
+  return PMPI_Request_c2f(request);
+}
+
+MPI_Win MPI_Win_f2c(MPI_Fint win){
+  return PMPI_Win_f2c(win);
+}
+
+MPI_Fint MPI_Win_c2f(MPI_Win win){
+  return PMPI_Win_c2f(win);
+}
+
+MPI_Op MPI_Op_f2c(MPI_Fint op){
+  return PMPI_Op_f2c(op);
+}
+
+MPI_Fint MPI_Op_c2f(MPI_Op op){
+  return PMPI_Op_c2f(op);
+}
+
+MPI_Info MPI_Info_f2c(MPI_Fint info){
+  return PMPI_Info_f2c(info);
+}
+
+MPI_Fint MPI_Info_c2f(MPI_Info info){
+  return PMPI_Info_c2f(info);
+}
+
+MPI_Errhandler MPI_Errhandler_f2c(MPI_Fint errhandler){
+  return PMPI_Errhandler_f2c(errhandler);
+}
+
+MPI_Fint MPI_Errhandler_c2f(MPI_Errhandler errhandler){
+  return PMPI_Errhandler_c2f(errhandler);
+}

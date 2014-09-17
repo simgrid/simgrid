@@ -254,6 +254,8 @@ XBT_PUBLIC_DATA(MPI_Datatype) MPI_INTEGER16;
   #define MPI_LOGICAL MPI_LONG
 #endif
 
+#define MPI_Fint int
+
 #define MPI_COMPLEX MPI_C_FLOAT_COMPLEX
 #define MPI_DOUBLE_COMPLEX MPI_C_DOUBLE_COMPLEX
 #define MPI_LOGICAL1 MPI_UINT8_T
@@ -582,6 +584,17 @@ MPI_CALL(XBT_PUBLIC(int), MPI_Accumulate,( void *origin_addr, int origin_count, 
 MPI_CALL(XBT_PUBLIC(int), MPI_Alloc_mem, (MPI_Aint size, MPI_Info info, void *baseptr));
 MPI_CALL(XBT_PUBLIC(int), MPI_Free_mem, (void *base));
 
+MPI_CALL(XBT_PUBLIC(MPI_Datatype), MPI_Type_f2c,(MPI_Fint datatype));
+MPI_CALL(XBT_PUBLIC(MPI_Fint), MPI_Type_c2f,(MPI_Datatype datatype));
+MPI_CALL(XBT_PUBLIC(MPI_Group), MPI_Group_f2c,(MPI_Fint group));
+MPI_CALL(XBT_PUBLIC(MPI_Fint), MPI_Group_c2f,(MPI_Group group));
+MPI_CALL(XBT_PUBLIC(MPI_Request), MPI_Request_f2c,(MPI_Fint request));
+MPI_CALL(XBT_PUBLIC(MPI_Fint), MPI_Request_c2f,(MPI_Request request));
+MPI_CALL(XBT_PUBLIC(MPI_Win), MPI_Win_f2c,(MPI_Fint win));
+MPI_CALL(XBT_PUBLIC(MPI_Fint), MPI_Win_c2f,(MPI_Win win));
+MPI_CALL(XBT_PUBLIC(MPI_Op), MPI_Op_f2c,(MPI_Fint op));
+MPI_CALL(XBT_PUBLIC(MPI_Fint), MPI_Op_c2f,(MPI_Op op));
+
 
 //FIXME: these are not yet implemented
 
@@ -617,7 +630,10 @@ XBT_PUBLIC_DATA(MPI_Errhandler*)  MPI_ERRORS_RETURN;
 XBT_PUBLIC_DATA(MPI_Errhandler*)  MPI_ERRORS_ARE_FATAL;
 XBT_PUBLIC_DATA(MPI_Errhandler*)  MPI_ERRHANDLER_NULL;
 
-
+MPI_CALL(XBT_PUBLIC(MPI_Info), MPI_Info_f2c,(MPI_Fint info));
+MPI_CALL(XBT_PUBLIC(MPI_Fint), MPI_Info_c2f,(MPI_Info info));
+MPI_CALL(XBT_PUBLIC(MPI_Errhandler), MPI_Errhandler_f2c,(MPI_Fint errhandler));
+MPI_CALL(XBT_PUBLIC(MPI_Fint), MPI_Errhandler_c2f,(MPI_Errhandler errhandler));
 MPI_CALL(XBT_PUBLIC(int), MPI_Pack_size, (int incount, MPI_Datatype datatype, MPI_Comm comm, int* size));
 MPI_CALL(XBT_PUBLIC(int), MPI_Cart_coords, (MPI_Comm comm, int rank, int maxdims, int* coords));
 MPI_CALL(XBT_PUBLIC(int), MPI_Cart_create, (MPI_Comm comm_old, int ndims, int* dims, int* periods, int reorder, MPI_Comm* comm_cart));

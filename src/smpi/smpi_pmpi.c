@@ -2897,6 +2897,49 @@ int PMPI_Type_get_name(MPI_Datatype  datatype, char * name, int* len)
   return retval;
 }
 
+
+MPI_Datatype PMPI_Type_f2c(MPI_Fint datatype){
+  return smpi_type_f2c(datatype);
+}
+
+MPI_Fint PMPI_Type_c2f(MPI_Datatype datatype){
+  return smpi_type_c2f( datatype);
+}
+
+MPI_Group PMPI_Group_f2c(MPI_Fint group){
+  return smpi_group_f2c( group);
+}
+
+MPI_Fint PMPI_Group_c2f(MPI_Group group){
+  return smpi_group_c2f(group);
+}
+
+MPI_Request PMPI_Request_f2c(MPI_Fint request){
+  return smpi_request_f2c(request);
+}
+
+MPI_Fint PMPI_Request_c2f(MPI_Request request) {
+  return smpi_request_c2f(request);
+}
+
+MPI_Win PMPI_Win_f2c(MPI_Fint win){
+  return smpi_win_f2c(win);
+}
+
+MPI_Fint PMPI_Win_c2f(MPI_Win win){
+  return smpi_win_c2f(win);
+}
+
+MPI_Op PMPI_Op_f2c(MPI_Fint op){
+  return smpi_op_f2c(op);
+}
+
+MPI_Fint PMPI_Op_c2f(MPI_Op op){
+  return smpi_op_c2f(op);
+}
+
+
+
 /* The following calls are not yet implemented and will fail at runtime. */
 /* Once implemented, please move them above this notice. */
 
@@ -2906,6 +2949,21 @@ int PMPI_Type_get_name(MPI_Datatype  datatype, char * name, int* len)
   }
 
 
+MPI_Info PMPI_Info_f2c(MPI_Fint info){
+  NOT_YET_IMPLEMENTED
+}
+
+MPI_Fint PMPI_Info_c2f(MPI_Info info){
+  NOT_YET_IMPLEMENTED
+}
+
+MPI_Errhandler PMPI_Errhandler_f2c(MPI_Fint errhandler){
+  NOT_YET_IMPLEMENTED
+}
+
+MPI_Fint PMPI_Errhandler_c2f(MPI_Errhandler errhandler){
+  NOT_YET_IMPLEMENTED
+}
 
 int PMPI_Pack_size(int incount, MPI_Datatype datatype, MPI_Comm comm, int* size) {
   NOT_YET_IMPLEMENTED

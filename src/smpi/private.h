@@ -258,6 +258,19 @@ int smpi_comm_is_uniform(MPI_Comm comm);
 int smpi_comm_is_blocked(MPI_Comm comm);
 void smpi_comm_init_smp(MPI_Comm comm);
 
+int smpi_comm_c2f(MPI_Comm comm);
+MPI_Comm smpi_comm_f2c(int comm);
+int smpi_group_c2f(MPI_Group group);
+MPI_Group smpi_group_f2c(int group);
+int smpi_request_c2f(MPI_Request req);
+MPI_Request smpi_request_f2c(int req);
+int smpi_type_c2f(MPI_Datatype datatype);
+MPI_Datatype smpi_type_f2c(int datatype);
+int smpi_op_c2f(MPI_Op op);
+MPI_Op smpi_op_f2c(int op);
+int smpi_win_c2f(MPI_Win win);
+MPI_Win smpi_win_f2c(int win);
+
 MPI_Request smpi_mpi_send_init(void *buf, int count, MPI_Datatype datatype,
                                int dst, int tag, MPI_Comm comm);
 MPI_Request smpi_mpi_recv_init(void *buf, int count, MPI_Datatype datatype,
