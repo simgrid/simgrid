@@ -13,7 +13,7 @@
 #include <stdio.h>
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_heap, xbt, "Heap");
 
-static void xbt_heap_max_heapify(xbt_heap_t H);
+static void xbt_heap_max_heapify(xbt_heap_t H, int i);
 static void xbt_heap_increase_key(xbt_heap_t H, int i);
 
 /** @addtogroup XBT_heap
@@ -108,6 +108,7 @@ void xbt_heap_push(xbt_heap_t H, void *content, double key)
   return;
 }
 
+
 /**
  * @brief Extracts from the heap and returns the element with the smallest key.
  * \param H the heap we're working on
@@ -132,7 +133,7 @@ void *xbt_heap_pop(xbt_heap_t H)
 
   items[0] = items[(H->count) - 1];
   (H->count)--;
-  xbt_heap_max_heapify(H);
+  xbt_heap_max_heapify(H,0);
   if (H->count < size >> 2 && size > 16) {
     size = (size >> 1) + 1;
     H->items =
@@ -170,6 +171,30 @@ void *xbt_heap_remove(xbt_heap_t H, int i)
 }
 
 /**
+ * @brief Updates an element of the heap with a new value.
+ * \param H the heap we're working on
+ * \param i  element position
+ * \param key new value for the element
+ *
+ * Updates an element of the heap with a new value.
+ */
+void xbt_heap_update(xbt_heap_t H, int i, double key)
+{
+  XBT_DEBUG("Heap has %d elements: updating element %d : was %1.12f to %1.12f ",xbt_heap_size(H),i,KEY(H, i), key);
+
+  if ((i < 0) || (i > H->count - 1) || key == KEY(H, i))
+    return ;
+
+  if(key< KEY(H, i)){
+    KEY(H, i)=key;
+    xbt_heap_increase_key(H, i);
+  }else{
+    KEY(H, i)=key;
+    xbt_heap_max_heapify(H,i);
+  }
+}
+
+/**
  * @brief returns the smallest key in the heap (heap unchanged)
  * \param H the heap we're working on
  *
@@ -199,9 +224,9 @@ void *xbt_heap_maxcontent(xbt_heap_t H)
  *
  * Restores the heap property once an element has been deleted.
  */
-static void xbt_heap_max_heapify(xbt_heap_t H)
+static void xbt_heap_max_heapify(xbt_heap_t H, int index)
 {
-  int i = 0;
+  int i = index;
   int count = H->count;
   xbt_heap_item_t items = H->items;
 

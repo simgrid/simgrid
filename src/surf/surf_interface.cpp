@@ -583,8 +583,7 @@ double Model::shareResourcesLazy(double now)
         action->getMaxDuration());
 
     if (min != -1) {
-      action->heapRemove(p_actionHeap);
-      action->heapInsert(p_actionHeap, min, max_dur_flag ? MAX_DURATION : NORMAL);
+      action->heapUpdate(p_actionHeap, min, max_dur_flag ? MAX_DURATION : NORMAL);
       XBT_DEBUG("Insert at heap action(%p) min %f now %f", action, min,
                 now);
     } else DIE_IMPOSSIBLE;
@@ -1005,6 +1004,16 @@ void Action::heapRemove(xbt_heap_t heap)
   m_hat = NOTSET;
   if (m_indexHeap >= 0) {
     xbt_heap_remove(heap, m_indexHeap);
+  }
+}
+
+void Action::heapUpdate(xbt_heap_t heap, double key, enum heap_action_type hat)
+{
+  m_hat = hat;
+  if (m_indexHeap >= 0) {
+    xbt_heap_update(heap, m_indexHeap, key);
+  }else{
+    xbt_heap_push(heap, this, key);
   }
 }
 

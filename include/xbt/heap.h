@@ -35,6 +35,8 @@ XBT_PUBLIC(void) xbt_heap_set_update_callback(xbt_heap_t H,
                                                                        *,
                                                                        int));
 XBT_PUBLIC(void *) xbt_heap_remove(xbt_heap_t H, int i);
+XBT_PUBLIC(void ) xbt_heap_update(xbt_heap_t H, int i, double key);
+
 /* @} */
 SG_END_DECL()
 #endif                          /* _XBT_HEAP_H */
