@@ -14,6 +14,7 @@ endif()
 set(tesh_files
   ${tesh_files}
   ${CMAKE_CURRENT_SOURCE_DIR}/log_usage.tesh
+  ${CMAKE_CURRENT_SOURCE_DIR}/log_usage_ndebug.tesh
   PARENT_SCOPE
   )
 set(xml_files
