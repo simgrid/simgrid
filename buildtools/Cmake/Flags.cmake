@@ -80,6 +80,7 @@ endif()
 
 if(NOT enable_debug)
   set(CMAKE_C_FLAGS "-DNDEBUG ${CMAKE_C_FLAGS}")
+  set(CMAKE_CXX_FLAGS "-DNDEBUG ${CMAKE_CXX_FLAGS}")
 endif()
 
 if(enable_msg_deprecated)
