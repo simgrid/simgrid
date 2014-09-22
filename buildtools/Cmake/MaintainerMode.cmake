@@ -213,15 +213,6 @@ if(enable_maintainer_mode AND NOT WIN32)
       COMMENT "Generating files in maintainer mode..."
       )
 
-    add_custom_target(maintainer_files
-      DEPENDS ${CMAKE_HOME_DIRECTORY}/include/surf/simgrid_dtd.h
-      ${CMAKE_HOME_DIRECTORY}/include/xbt/graphxml.h
-      ${CMAKE_HOME_DIRECTORY}/src/simdag/dax_dtd.h
-      ${CMAKE_HOME_DIRECTORY}/src/surf/simgrid_dtd.c
-      ${CMAKE_HOME_DIRECTORY}/src/xbt/graphxml.c
-      ${CMAKE_HOME_DIRECTORY}/src/simdag/dax_dtd.c
-      )
-
   else()
     if(NOT HAVE_FLEXML)
       message(STATUS "Error : Install flexml before use maintainer mode.")
@@ -237,3 +228,12 @@ if(enable_maintainer_mode AND NOT WIN32)
   endif()
 
 endif()
+
+    add_custom_target(maintainer_files
+      DEPENDS ${CMAKE_HOME_DIRECTORY}/include/surf/simgrid_dtd.h
+      ${CMAKE_HOME_DIRECTORY}/include/xbt/graphxml.h
+      ${CMAKE_HOME_DIRECTORY}/src/simdag/dax_dtd.h
+      ${CMAKE_HOME_DIRECTORY}/src/surf/simgrid_dtd.c
+      ${CMAKE_HOME_DIRECTORY}/src/xbt/graphxml.c
+      ${CMAKE_HOME_DIRECTORY}/src/simdag/dax_dtd.c
+      )

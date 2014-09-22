@@ -69,5 +69,3 @@ if(NOT WIN32)
 else()
   target_link_libraries(testall simgrid)
 endif()
-
-add_dependencies(testall ${TEST_UNITS})
