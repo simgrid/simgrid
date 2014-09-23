@@ -1034,7 +1034,7 @@ int smpi_replay_finalize(){
     xbt_free(reqq);
     reqq = NULL;
   }
-  smpi_mpi_barrier(MPI_COMM_WORLD);
+  mpi_coll_barrier_fun(MPI_COMM_WORLD);
 #ifdef HAVE_TRACING
   int rank = smpi_process_index();
   instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
