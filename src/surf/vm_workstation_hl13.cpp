@@ -70,9 +70,11 @@ double WorkstationVMHL13Model::shareResources(double now)
   /* 0. Make sure that we already calculated the resource share at the physical
    * machine layer. */
   {
-    xbt_assert((xbt_dynar_search(model_list_invoke, &surf_workstation_model)< 
-    xbt_dynar_search(model_list_invoke, &surf_vm_workstation_model)), 
-    "Cannot assume surf_workstation_model comes before");
+	ModelPtr ws_model = surf_workstation_model;
+	ModelPtr vm_ws_model = surf_vm_workstation_model;
+    unsigned int index_of_pm_ws_model = xbt_dynar_search(model_list_invoke, &ws_model);
+    unsigned int index_of_vm_ws_model = xbt_dynar_search(model_list_invoke, &vm_ws_model);
+    xbt_assert((index_of_pm_ws_model < index_of_vm_ws_model), "Cannot assume surf_workstation_model comes before");
 
     /* Another option is that we call sub_ws->share_resource() here. The
      * share_resource() function has no side-effect. We can call it here to
@@ -276,7 +278,8 @@ WorkstationVMHL13::WorkstationVMHL13(WorkstationVMModelPtr model, const char* na
 WorkstationVMHL13::~WorkstationVMHL13()
 {
   /* Free the cpu_action of the VM. */
-  xbt_assert(p_action->unref() == 1, "Bug: some resource still remains");
+  int ret = p_action->unref();
+  xbt_assert(ret == 1, "Bug: some resource still remains");
 }
 
 void WorkstationVMHL13::updateState(tmgr_trace_event_t /*event_type*/, double /*value*/, double /*date*/) {
@@ -386,7 +389,8 @@ void WorkstationVMHL13::migrate(surf_resource_t ind_dst_pm)
        new_cpu_action->setBound(old_bound);
      }
 
-     xbt_assert( p_action->unref() == 1, "Bug: some resource still remains");
+     int ret = p_action->unref();
+     xbt_assert(ret == 1, "Bug: some resource still remains");
 
      p_action = new_cpu_action;
    }
