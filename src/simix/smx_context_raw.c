@@ -29,6 +29,14 @@ static unsigned long raw_threads_working;     /* number of threads that have sta
 static xbt_os_thread_key_t raw_worker_id_key; /* thread-specific storage for the thread id */
 #endif
 
+#ifdef ADAPTIVE_THRESHOLD
+#define SCHED_ROUND_LIMIT 5
+xbt_os_timer_t round_time;
+double par_time,seq_time;
+static unsigned int par_proc_that_ran = 0,seq_proc_that_ran = 0;  /* Counters of processes that have run in SCHED_ROUND_LIMIT scheduling rounds */
+static unsigned int seq_sched_round, par_sched_round; /* Amount of SR that ran serial/parallel*/
+#endif
+
 static unsigned long raw_process_index = 0;   /* index of the next process to run in the
                                                * list of runnable processes */
 static smx_ctx_raw_t raw_maestro_context;
@@ -472,12 +480,12 @@ void smx_ctx_raw_new_sr(void)
   }
 
   for(i=0; i < NUM_THREADS; i++){
-    XBT_VERB("Time SR thread %u = %f (max %f)", i, time_thread_sr[i], tmax);
+    XBT_CRITICAL("Time SR thread %u = %f (max %f)", i, time_thread_sr[i], tmax);
     time_wasted_sr += tmax - time_thread_sr[i];
   }
 
-  XBT_VERB("Total time SR %u = %f, %d", sr_count, tmax, xbt_dynar_length(simix_global->process_that_ran));
-  XBT_VERB("New scheduling round");
+  XBT_CRITICAL("Total time SR %u = %f, %d", sr_count, tmax, xbt_dynar_length(simix_global->process_that_ran));
+  XBT_CRITICAL("New scheduling round");
 }
 #else
 /**
@@ -570,6 +578,50 @@ static void smx_ctx_raw_runall_parallel(void)
 /**
  * \brief Resumes all processes ready to run.
  */
+#ifdef ADAPTIVE_THRESHOLD
+static void smx_ctx_raw_runall(void)
+{
+  unsigned long nb_processes = xbt_dynar_length(simix_global->process_to_run);
+
+  if(seq_sched_round % SCHED_ROUND_LIMIT == 0 && par_sched_round % SCHED_ROUND_LIMIT == 0){
+    seq_sched_round = 1;
+    par_sched_round = 1;
+    if((seq_time / (double)seq_proc_that_ran) > (par_time / (double)par_proc_that_ran)){
+        SIMIX_context_set_parallel_threshold(SIMIX_context_get_parallel_threshold() - 1);
+    } else {
+        SIMIX_context_set_parallel_threshold(SIMIX_context_get_parallel_threshold() + 1);
+    }
+    par_time = 0; par_proc_that_ran = 0;
+    seq_time = 0; seq_proc_that_ran = 0;
+  }
+  round_time = xbt_os_timer_new(); 
+  if (nb_processes >= SIMIX_context_get_parallel_threshold()) {
+    XBT_DEBUG("Runall // %lu", nb_processes);
+    simix_global->context_factory->suspend = smx_ctx_raw_suspend_parallel;
+    xbt_os_cputimer_start(round_time);
+    smx_ctx_raw_runall_parallel();
+    xbt_os_cputimer_stop(round_time);
+    par_time += xbt_os_timer_elapsed(round_time);
+    par_proc_that_ran += xbt_dynar_length(simix_global->process_that_ran);
+    par_sched_round += 1;
+  } else {
+    XBT_DEBUG("Runall serial %lu", nb_processes);
+    simix_global->context_factory->suspend = smx_ctx_raw_suspend_serial;
+    xbt_os_cputimer_start(round_time);
+#ifdef TIME_BENCH_PER_SR
+    smx_ctx_raw_runall_serial(simix_global->process_to_run);
+#else
+    smx_ctx_raw_runall_serial();
+#endif
+    xbt_os_cputimer_stop(round_time);
+    seq_time += xbt_os_timer_elapsed(round_time);
+    seq_proc_that_ran += xbt_dynar_length(simix_global->process_that_ran);
+    seq_sched_round += 1;
+  }
+}
+
+#else
+
 static void smx_ctx_raw_runall(void)
 {
   unsigned long nb_processes = xbt_dynar_length(simix_global->process_to_run);
@@ -587,3 +639,4 @@ static void smx_ctx_raw_runall(void)
   #endif
   }
 }
+#endif
