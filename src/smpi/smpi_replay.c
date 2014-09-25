@@ -1001,7 +1001,16 @@ void smpi_replay_init(int *argc, char***argv){
     xbt_replay_action_register("reduceScatter",  action_reducescatter);
     xbt_replay_action_register("compute",    action_compute);
   }
-
+  
+  //if we have a delayed start, sleep here.
+  if(*argc>2){
+    char *endptr;
+    double value = strtod((*argv)[2], &endptr);
+    if (*endptr != '\0')
+      THROWF(unknown_error, 0, "%s is not a double", (*argv)[2]);
+    XBT_VERB("Delayed start for instance - Sleeping for %f flops ",value );
+    smpi_execute_flops(value);
+  }
   xbt_replay_action_runner(*argc, *argv);
 }
 
