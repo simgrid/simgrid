@@ -151,7 +151,7 @@ static void action_compute(const char *const *action)
   double clock = smpi_process_simulated_elapsed();
   double flops= parse_double(action[2]);
 #ifdef HAVE_TRACING
-  int rank = smpi_comm_rank(MPI_COMM_WORLD);
+  int rank = smpi_process_index();
   instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
   extra->type=TRACING_COMPUTING;
   extra->comp_size=flops;
@@ -178,7 +178,7 @@ static void action_send(const char *const *action)
   }
 
 #ifdef HAVE_TRACING
-  int rank = smpi_comm_rank(MPI_COMM_WORLD);
+  int rank = smpi_process_index();
 
   int dst_traced = smpi_group_rank(smpi_comm_group(MPI_COMM_WORLD), to);
   instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
@@ -212,7 +212,7 @@ static void action_Isend(const char *const *action)
   else MPI_CURRENT_TYPE= MPI_DEFAULT_TYPE;
 
 #ifdef HAVE_TRACING
-  int rank = smpi_comm_rank(MPI_COMM_WORLD);
+  int rank = smpi_process_index();
   int dst_traced = smpi_group_rank(smpi_comm_group(MPI_COMM_WORLD), to);
   instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
   extra->type = TRACING_ISEND;
@@ -231,7 +231,7 @@ static void action_Isend(const char *const *action)
   request->send = 1;
 #endif
 
-  xbt_dynar_push(reqq[smpi_comm_rank(MPI_COMM_WORLD)],&request);
+  xbt_dynar_push(reqq[smpi_process_index()],&request);
 
   log_timed_action (action, clock);
 }
@@ -246,7 +246,7 @@ static void action_recv(const char *const *action) {
   else MPI_CURRENT_TYPE= MPI_DEFAULT_TYPE;
 
 #ifdef HAVE_TRACING
-  int rank = smpi_comm_rank(MPI_COMM_WORLD);
+  int rank = smpi_process_index();
   int src_traced = smpi_group_rank(smpi_comm_group(MPI_COMM_WORLD), from);
 
   instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
@@ -285,7 +285,7 @@ static void action_Irecv(const char *const *action)
   else MPI_CURRENT_TYPE= MPI_DEFAULT_TYPE;
 
 #ifdef HAVE_TRACING
-  int rank = smpi_comm_rank(MPI_COMM_WORLD);
+  int rank = smpi_process_index();
   int src_traced = smpi_group_rank(smpi_comm_group(MPI_COMM_WORLD), from);
   instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
   extra->type = TRACING_IRECV;
@@ -308,7 +308,7 @@ static void action_Irecv(const char *const *action)
   TRACE_smpi_ptp_out(rank, src_traced, rank, __FUNCTION__);
   request->recv = 1;
 #endif
-  xbt_dynar_push(reqq[smpi_comm_rank(MPI_COMM_WORLD)],&request);
+  xbt_dynar_push(reqq[smpi_process_index()],&request);
 
   log_timed_action (action, clock);
 }
@@ -319,11 +319,11 @@ static void action_test(const char *const *action){
   MPI_Status status;
   int flag = TRUE;
 
-  request = xbt_dynar_pop_as(reqq[smpi_comm_rank(MPI_COMM_WORLD)],MPI_Request);
+  request = xbt_dynar_pop_as(reqq[smpi_process_index()],MPI_Request);
   xbt_assert(request != NULL, "found null request in reqq");
 
 #ifdef HAVE_TRACING
-  int rank = smpi_comm_rank(MPI_COMM_WORLD);
+  int rank = smpi_process_index();
   instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
   extra->type=TRACING_TEST;
   TRACE_smpi_testing_in(rank, extra);
@@ -333,7 +333,7 @@ static void action_test(const char *const *action){
   /* push back request in dynar to be caught by a subsequent wait. if the test
    * did succeed, the request is now NULL.
    */
-  xbt_dynar_push_as(reqq[smpi_comm_rank(MPI_COMM_WORLD)],MPI_Request, request);
+  xbt_dynar_push_as(reqq[smpi_process_index()],MPI_Request, request);
 
 #ifdef HAVE_TRACING
   TRACE_smpi_testing_out(rank);
@@ -347,10 +347,10 @@ static void action_wait(const char *const *action){
   MPI_Request request;
   MPI_Status status;
 
-  xbt_assert(xbt_dynar_length(reqq[smpi_comm_rank(MPI_COMM_WORLD)]),
+  xbt_assert(xbt_dynar_length(reqq[smpi_process_index()]),
       "action wait not preceded by any irecv or isend: %s",
       xbt_str_join_array(action," "));
-  request = xbt_dynar_pop_as(reqq[smpi_comm_rank(MPI_COMM_WORLD)],MPI_Request);
+  request = xbt_dynar_pop_as(reqq[smpi_process_index()],MPI_Request);
 
   if (!request){
     /* Assuming that the trace is well formed, this mean the comm might have
@@ -388,7 +388,7 @@ static void action_waitall(const char *const *action){
   int count_requests=0;
   unsigned int i=0;
 
-  count_requests=xbt_dynar_length(reqq[smpi_comm_rank(MPI_COMM_WORLD)]);
+  count_requests=xbt_dynar_length(reqq[smpi_process_index()]);
 
   if (count_requests>0) {
     MPI_Request requests[count_requests];
@@ -396,7 +396,7 @@ static void action_waitall(const char *const *action){
 
     /*  The reqq is an array of dynars. Its index corresponds to the rank.
      Thus each rank saves its own requests to the array request. */
-    xbt_dynar_foreach(reqq[smpi_comm_rank(MPI_COMM_WORLD)],i,requests[i]); 
+    xbt_dynar_foreach(reqq[smpi_process_index()],i,requests[i]); 
 
   #ifdef HAVE_TRACING
    //save information from requests
@@ -452,7 +452,7 @@ static void action_waitall(const char *const *action){
    xbt_dynar_free(&recvs);
   #endif
 
-   xbt_dynar_free_container(&(reqq[smpi_comm_rank(MPI_COMM_WORLD)]));
+   xbt_dynar_free_container(&(reqq[smpi_process_index()]));
   }
   log_timed_action (action, clock);
 }
@@ -460,7 +460,7 @@ static void action_waitall(const char *const *action){
 static void action_barrier(const char *const *action){
   double clock = smpi_process_simulated_elapsed();
 #ifdef HAVE_TRACING
-  int rank = smpi_comm_rank(MPI_COMM_WORLD);
+  int rank = smpi_process_index();
   instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
   extra->type = TRACING_BARRIER;
   TRACE_smpi_collective_in(rank, -1, __FUNCTION__, extra);
@@ -493,7 +493,7 @@ static void action_bcast(const char *const *action)
   }
 
 #ifdef HAVE_TRACING
-  int rank = smpi_comm_rank(MPI_COMM_WORLD);
+  int rank = smpi_process_index();
   int root_traced = smpi_group_index(smpi_comm_group(MPI_COMM_WORLD), root);
 
   instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
@@ -529,7 +529,7 @@ static void action_reduce(const char *const *action)
   }
 
 #ifdef HAVE_TRACING
-  int rank = smpi_comm_rank(MPI_COMM_WORLD);
+  int rank = smpi_process_index();
   int root_traced = smpi_group_rank(smpi_comm_group(MPI_COMM_WORLD), root);
   instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
   extra->type = TRACING_REDUCE;
@@ -558,7 +558,7 @@ static void action_allReduce(const char *const *action) {
 
   double clock = smpi_process_simulated_elapsed();
 #ifdef HAVE_TRACING
-  int rank = smpi_comm_rank(MPI_COMM_WORLD);
+  int rank = smpi_process_index();
   instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
   extra->type = TRACING_ALLREDUCE;
   extra->send_size = comm_size;
@@ -1009,21 +1009,21 @@ int smpi_replay_finalize(){
   double sim_time= 1.;
   /* One active process will stop. Decrease the counter*/
   XBT_DEBUG("There are %lu elements in reqq[*]",
-            xbt_dynar_length(reqq[smpi_comm_rank(MPI_COMM_WORLD)]));
-  if (!xbt_dynar_is_empty(reqq[smpi_comm_rank(MPI_COMM_WORLD)])){
-    int count_requests=xbt_dynar_length(reqq[smpi_comm_rank(MPI_COMM_WORLD)]);
+            xbt_dynar_length(reqq[smpi_process_index()]));
+  if (!xbt_dynar_is_empty(reqq[smpi_process_index()])){
+    int count_requests=xbt_dynar_length(reqq[smpi_process_index()]);
     MPI_Request requests[count_requests];
     MPI_Status status[count_requests];
     unsigned int i;
 
-    xbt_dynar_foreach(reqq[smpi_comm_rank(MPI_COMM_WORLD)],i,requests[i]);
+    xbt_dynar_foreach(reqq[smpi_process_index()],i,requests[i]);
     smpi_mpi_waitall(count_requests, requests, status);
     active_processes--;
   } else {
     active_processes--;
   }
 
-  xbt_dynar_free_container(&(reqq[smpi_comm_rank(MPI_COMM_WORLD)]));
+  xbt_dynar_free_container(&(reqq[smpi_process_index()]));
 
   if(!active_processes){
     /* Last process alive speaking */

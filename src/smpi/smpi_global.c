@@ -95,8 +95,7 @@ void smpi_process_init(int *argc, char ***argv)
     simcall_process_set_data(proc, data);
     if (*argc > 3) {
       free((*argv)[1]);
-      free((*argv)[2]);
-      memmove(&(*argv)[1], &(*argv)[3], sizeof(char *) * (*argc - 3));
+      memmove(&(*argv)[0], &(*argv)[2], sizeof(char *) * (*argc - 2));
       (*argv)[(*argc) - 1] = NULL;
       (*argv)[(*argc) - 2] = NULL;
     }
