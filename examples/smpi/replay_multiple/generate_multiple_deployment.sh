@@ -113,10 +113,10 @@ if [ ${hostfile_procs} = 0 ] ; then
    exit 1
 fi
 
-APP_TRACES=($PROC_ARGS)
+
 ##-------------------------------- DEFAULT APPLICATION --------------------------------------
 
-APPLICATIONTMP=${APP_TRACES[1]}
+APPLICATIONTMP=$(echo ${PROC_ARGS}|cut -d' ' -f2)
 
 cat > ${APPLICATIONTMP} <<APPLICATIONHEAD
 <?xml version='1.0'?>
@@ -131,9 +131,11 @@ if [ -n "${HOSTFILE}" ] && [ -f ${HOSTFILE} ]; then
 fi
 
 
-    if [ -n "${APP_TRACES[0]}" ] && [ -f "${APP_TRACES[0]}" ]; then
-        NUMINSTANCES=$(cat ${APP_TRACES[0]} | wc -l)
-        replayinstances=$(cat ${APP_TRACES[0]})
+    DESCRIPTIONFILE=$(echo $PROC_ARGS|cut -d' ' -f1)
+
+    if [ -n "${DESCRIPTIONFILE}" ] && [ -f "${DESCRIPTIONFILE}" ]; then
+        NUMINSTANCES=$(cat ${DESCRIPTIONFILE} | wc -l)
+        replayinstances=$(cat ${DESCRIPTIONFILE})
         IFS_OLD=$IFS
         IFS=$'\n'
         NUMPROCS=0
@@ -141,19 +143,18 @@ fi
         # return IFS back if you need to split new line by spaces:
         IFS=$IFS_OLD
         IFS_OLD=
-        array=( $line )
         # generate three lists, one with instance id, ont with instance size, one with files
-        instance=${array[0]}
-        hosttraces="$hosttraces$(cat ${array[1]}| tr '\n\r' '  ' )"
-        NUMPROCSMINE=$(cat ${array[1]} | wc -l)
+        instance=$(echo $line|cut -d' ' -f1)
+        hosttrace=$(cat $(echo $line|cut -d' ' -f2)| tr '\n\r' '  ' )
+        NUMPROCSMINE=$(cat $(echo $line|cut -d' ' -f2) | wc -l)
         
-        if [ $NUMPROCSMINE != ${array[2]} ];
+        if [ $NUMPROCSMINE != $(echo $line|cut -d' ' -f3) ];
         then
           echo "declared num of processes for instance $instance : ${array[2]} is not the same as the one in the replay files : $NUMPROCSMINE. Please check consistency of these information"
           exit 1
         fi
         
-        sleeptime=${array[3]}
+        sleeptime=$(echo $line|cut -d' ' -f4)
         HAVE_SEQ="`which seq 2>/dev/null`"
 
         if [ -n "${HAVE_SEQ}" ]; then
@@ -165,26 +166,9 @@ fi
             cnt=$((cnt + 1));
             done
         fi
-        NUMPROCS=$((${NUMPROCS}+${NUMPROCSMINE}));
+        #NUMPROCS=$((${NUMPROCS}+${NUMPROCSMINE}));
         for i in $SEQ1
-        do
-          instances="$instances$instance "
-          ranks="$ranks$SEQ1 "
-          sleeptimes="$sleeptimes$sleeptime "
-        done
-        # return IFS back to newline for "for" loop
-        IFS_OLD=$IFS
-        IFS=$'\n'
-        done 
-
-        # return delimiter to previous value
-        IFS=$IFS_OLD
-        IFS_OLD=
-    else
-        printf "File not found: %s\n", "${APP_TRACES[0]:-\${APP_TRACES[0]\}}" >&2
-        exit 1
-    fi
-
+        
 
 ##----------------------------------------------------------
 ##  generate application.xml with hostnames from hostfile:
@@ -193,51 +177,42 @@ fi
 ##  hostfile has less than i lines.
 ##----------------------------------------------------------
 
-HAVE_SEQ="`which seq 2>/dev/null`"
-
-if [ -n "${HAVE_SEQ}" ]; then
-    SEQ=`${HAVE_SEQ} 0 $((${NUMPROCS}-1))`
-else
-    cnt=0
-    while (( $cnt < ${NUMPROCS} )) ; do
-	SEQ="$SEQ $cnt"
-	cnt=$((cnt + 1));
-    done
-fi
-
 ##---- generate <process> tags------------------------------
 
-hostnames=($hostnames)
-instances=($instances)
-hosttraces=($hosttraces)
-sleeptimes=($sleeptimes)
-ranks=($ranks)
-for i in ${SEQ}
-do
-    if [ -n "${HOSTFILE}" ]; then
-	j=$(( $i % ${NUMHOSTS} ))
-    fi
-    ##---- optional display of ranks to process mapping
-    if [ -n "${MAPOPT}" ]; then
-	echo "[rank $i] -> ${hostnames[j]}"
+        do
+          if [ -n "${HOSTFILE}" ]; then
+          j=$(( ${NUMPROCS} % ${NUMHOSTS} +1))
+          fi
+          hostname=$(echo $hostnames|cut -d' ' -f$j)
+          if [ -z "${hostname}" ]; then
+            host="host"$($j)
+          else
+            host="${hostname}"
+          fi
+        
+          echo "  <process host=\"${host}\" function=\"${instance}\"> <!-- function name used only for logging -->" >> ${APPLICATIONTMP}
+          echo "    <argument value=\"${instance}\"/> <!-- instance -->" >> ${APPLICATIONTMP}
+          echo "    <argument value=\"${i}\"/> <!-- rank -->" >> ${APPLICATIONTMP}
+          echo "    <argument value=\"$(echo $hosttrace|cut -d' ' -f$(($i+1)))\"/>" >> ${APPLICATIONTMP}
+       
+          echo "    <argument value=\"${sleeptime}\"/> <!-- delay -->" >> ${APPLICATIONTMP}
+          echo "  </process>" >> ${APPLICATIONTMP}
+          NUMPROCS=$(( ${NUMPROCS} +1))
+        done
+        # return IFS back to newline for "for" loop
+        IFS_OLD=$IFS
+        IFS=$'\n'
+      done 
+
+        # return delimiter to previous value
+      IFS=$IFS_OLD
+      IFS_OLD=
+      else
+        printf "File not found: %s\n", "${APP_TRACES[0]:-\${APP_TRACES[0]\}}" >&2
+        exit 1
     fi
 
-    if [ -z "${hostnames[j]}" ]; then
-	host="host"$($j)
-    else
-	host="${hostnames[j]}"
-    fi
-    echo "  <process host=\"${host}\" function=\"${instances[i]}\"> <!-- function name used only for logging -->" >> ${APPLICATIONTMP}
-        echo "    <argument value=\"${instances[i]}\"/> <!-- instance -->" >> ${APPLICATIONTMP}
-    echo "    <argument value=\"${ranks[i]}\"/> <!-- rank -->" >> ${APPLICATIONTMP}
-        if  [ ${NUMPROCS} -gt 1 ]; then
-            echo "    <argument value=\"${hosttraces[i]}\"/>" >> ${APPLICATIONTMP}
-        else
-            echo "    <argument value=\"${hosttraces[i]}\"/>" >> ${APPLICATIONTMP}
-        fi
-    echo "    <argument value=\"${sleeptimes[i]}\"/> <!-- delay -->" >> ${APPLICATIONTMP}
-    echo "  </process>" >> ${APPLICATIONTMP}
-done
+
 
 cat >> ${APPLICATIONTMP} <<APPLICATIONFOOT
 </platform>
