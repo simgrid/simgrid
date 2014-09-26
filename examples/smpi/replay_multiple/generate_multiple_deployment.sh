@@ -138,23 +138,25 @@ fi
         replayinstances=$(cat ${DESCRIPTIONFILE})
         IFS_OLD=$IFS
         IFS=$'\n'
+        set -f
         NUMPROCS=0
-        for line in $replayinstances; do
+        while IFS= read -r line; do
+        
         # return IFS back if you need to split new line by spaces:
         IFS=$IFS_OLD
         IFS_OLD=
         # generate three lists, one with instance id, ont with instance size, one with files
-        instance=$(echo $line|cut -d' ' -f1)
-        hosttrace=$(cat $(echo $line|cut -d' ' -f2)| tr '\n\r' '  ' )
-        NUMPROCSMINE=$(cat $(echo $line|cut -d' ' -f2) | wc -l)
+        instance=$(echo "$line"|cut -d' ' -f1)
+        hosttrace=$(cat $(echo "$line"|cut -d' ' -f2)| tr '\n\r' '  ' )
+        NUMPROCSMINE=$(cat $(echo "$line"|cut -d' ' -f2) | wc -l)
         
-        if [ $NUMPROCSMINE != $(echo $line|cut -d' ' -f3) ];
+        if [ $NUMPROCSMINE != $(echo "$line"|cut -d' ' -f3) ];
         then
           echo "declared num of processes for instance $instance : ${array[2]} is not the same as the one in the replay files : $NUMPROCSMINE. Please check consistency of these information"
           exit 1
         fi
         
-        sleeptime=$(echo $line|cut -d' ' -f4)
+        sleeptime=$(echo "$line"|cut -d' ' -f4)
         HAVE_SEQ="`which seq 2>/dev/null`"
 
         if [ -n "${HAVE_SEQ}" ]; then
@@ -202,7 +204,7 @@ fi
         # return IFS back to newline for "for" loop
         IFS_OLD=$IFS
         IFS=$'\n'
-      done 
+      done < ${DESCRIPTIONFILE}
 
         # return delimiter to previous value
       IFS=$IFS_OLD
