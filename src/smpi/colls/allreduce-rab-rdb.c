@@ -21,7 +21,7 @@ int smpi_coll_tuned_allreduce_rab_rdb(void *sbuff, void *rbuff, int count,
   rank = smpi_comm_rank(comm);
 
   extent = smpi_datatype_get_extent(dtype);
-  tmp_buf = (void *) xbt_malloc(count * extent);
+  tmp_buf = (void *) smpi_get_tmp_sendbuffer(count * extent);
 
   smpi_datatype_copy(sbuff, count, dtype, rbuff, count, dtype);
 
@@ -190,6 +190,6 @@ int smpi_coll_tuned_allreduce_rab_rdb(void *sbuff, void *rbuff, int count,
       smpi_mpi_recv(rbuff, count, dtype, rank + 1, tag, comm, &status);
   }
 
-  free(tmp_buf);
+  smpi_free_tmp_buffer(tmp_buf);
   return MPI_SUCCESS;
 }

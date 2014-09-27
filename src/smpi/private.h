@@ -414,6 +414,11 @@ void smpi_bench_destroy(void);
 void smpi_bench_begin(void);
 void smpi_bench_end(void);
 
+void* smpi_get_tmp_sendbuffer(int size);
+void* smpi_get_tmp_recvbuffer(int size);
+void  smpi_free_tmp_buffer(void* buf);
+
+
 
 // f77 wrappers
 void mpi_init_(int*);

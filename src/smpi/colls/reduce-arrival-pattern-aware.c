@@ -72,7 +72,7 @@ int smpi_coll_tuned_reduce_arrival_pattern_aware(void *buf, void *rbuf,
   }
 
   char *tmp_buf;
-  tmp_buf = (char *) xbt_malloc(count * extent);
+  tmp_buf = (char *) smpi_get_tmp_sendbuffer(count * extent);
 
   smpi_mpi_sendrecv(buf, count, datatype, rank, tag, rbuf, count, datatype, rank,
                tag, comm, &status);
@@ -349,7 +349,7 @@ int smpi_coll_tuned_reduce_arrival_pattern_aware(void *buf, void *rbuf,
                comm);
   }
 
-  free(tmp_buf);
+  smpi_free_tmp_buffer(tmp_buf);
 
   return MPI_SUCCESS;
 }

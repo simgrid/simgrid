@@ -63,7 +63,7 @@ int smpi_coll_tuned_reduce_NTSL(void *buf, void *rbuf, int count,
    */
 
   char *tmp_buf;
-  tmp_buf = (char *) xbt_malloc(count * extent);
+  tmp_buf = (char *) smpi_get_tmp_sendbuffer(count * extent);
 
   smpi_mpi_sendrecv(buf, count, datatype, rank, tag, rbuf, count, datatype, rank,
                tag, comm, &status);
@@ -80,7 +80,7 @@ int smpi_coll_tuned_reduce_NTSL(void *buf, void *rbuf, int count,
       smpi_op_apply(op, tmp_buf, rbuf, &count, &datatype);
       smpi_mpi_send(rbuf, count, datatype, to, tag, comm);
     }
-    free(tmp_buf);
+    smpi_free_tmp_buffer(tmp_buf);
     return MPI_SUCCESS;
   }
 

@@ -80,8 +80,8 @@ int smpi_coll_tuned_alltoall_2dmesh(void *send_buff, int send_count,
 
   block_size = extent * send_count;
 
-  tmp_buff1 = (char *) xbt_malloc(block_size * num_procs * Y);
-  tmp_buff2 = (char *) xbt_malloc(block_size * Y);
+  tmp_buff1 = (char *) smpi_get_tmp_sendbuffer(block_size * num_procs * Y);
+  tmp_buff2 = (char *) smpi_get_tmp_recvbuffer(block_size * Y);
 
   num_reqs = X;
   if (Y > X)
@@ -168,7 +168,7 @@ int smpi_coll_tuned_alltoall_2dmesh(void *send_buff, int send_count,
   smpi_mpi_waitall(X - 1, reqs, statuses);
   free(reqs);
   free(statuses);
-  free(tmp_buff1);
-  free(tmp_buff2);
+  smpi_free_tmp_buffer(tmp_buff1);
+  smpi_free_tmp_buffer(tmp_buff2);
   return MPI_SUCCESS;
 }

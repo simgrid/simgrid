@@ -95,7 +95,7 @@ int smpi_coll_tuned_allgather_bruck(void *send_buff, int send_count,
 
   count = recv_count;
 
-  tmp_buff = (char *) xbt_malloc(num_procs * recv_count * recv_extent);
+  tmp_buff = (char *) smpi_get_tmp_sendbuffer(num_procs * recv_count * recv_extent);
 
   // perform a local copy
   smpi_datatype_copy(send_ptr, send_count, send_type,
@@ -130,6 +130,6 @@ int smpi_coll_tuned_allgather_bruck(void *send_buff, int send_count,
     smpi_mpi_sendrecv(tmp_buff + (num_procs - rank) * recv_count * recv_extent,
                   rank * recv_count, recv_type, rank, tag, recv_ptr,
                   rank * recv_count, recv_type, rank, tag, comm, &status);
-  free(tmp_buff);
+  smpi_free_tmp_buffer(tmp_buff);
   return MPI_SUCCESS;
 }

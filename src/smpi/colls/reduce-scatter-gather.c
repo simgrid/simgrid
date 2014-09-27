@@ -40,7 +40,7 @@ int smpi_coll_tuned_reduce_scatter_gather(void *sendbuf, void *recvbuf,
   /* If I'm not the root, then my recvbuf may not be valid, therefore
   I have to allocate a temporary one */
   if (rank != root && !recvbuf) {
-    recvbuf = (void *)xbt_malloc(count * extent);
+    recvbuf = (void *)smpi_get_tmp_recvbuffer(count * extent);
   }
   /* find nearest power-of-two less than or equal to comm_size */
   pof2 = 1;
@@ -50,9 +50,9 @@ int smpi_coll_tuned_reduce_scatter_gather(void *sendbuf, void *recvbuf,
 
   if (count < comm_size) {
     new_count = comm_size;
-    send_ptr = (void *) xbt_malloc(new_count * extent);
-    recv_ptr = (void *) xbt_malloc(new_count * extent);
-    tmp_buf = (void *) xbt_malloc(new_count * extent);
+    send_ptr = (void *) smpi_get_tmp_sendbuffer(new_count * extent);
+    recv_ptr = (void *) smpi_get_tmp_recvbuffer(new_count * extent);
+    tmp_buf = (void *) smpi_get_tmp_sendbuffer(new_count * extent);
     memcpy(send_ptr, sendbuf, extent * count);
 
     //if ((rank != root))
@@ -223,13 +223,13 @@ int smpi_coll_tuned_reduce_scatter_gather(void *sendbuf, void *recvbuf,
       }
     }
     memcpy(recvbuf, recv_ptr, extent * count);
-    free(send_ptr);
-    free(recv_ptr);
+    smpi_free_tmp_buffer(send_ptr);
+    smpi_free_tmp_buffer(recv_ptr);
   }
 
 
   else /* (count >= comm_size) */ {
-    tmp_buf = (void *) xbt_malloc(count * extent);
+    tmp_buf = (void *) smpi_get_tmp_sendbuffer(count * extent);
 
     //if ((rank != root))
     smpi_mpi_sendrecv(sendbuf, count, datatype, rank, tag,
@@ -400,7 +400,7 @@ int smpi_coll_tuned_reduce_scatter_gather(void *sendbuf, void *recvbuf,
     }
   }
   if (tmp_buf)
-    free(tmp_buf);
+    smpi_free_tmp_buffer(tmp_buf);
   if (cnts)
     free(cnts);
   if (disps)

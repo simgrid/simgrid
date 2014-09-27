@@ -48,7 +48,7 @@ smpi_coll_tuned_alltoall_bruck(void *send_buff, int send_count,
 
   extent = smpi_datatype_get_extent(recv_type);
 
-  tmp_buff = (char *) xbt_malloc(num_procs * recv_count * extent);
+  tmp_buff = (char *) smpi_get_tmp_sendbuffer(num_procs * recv_count * extent);
   disps = (int *) xbt_malloc(sizeof(int) * num_procs);
   blocks_length = (int *) xbt_malloc(sizeof(int) * num_procs);
 
@@ -110,6 +110,6 @@ smpi_coll_tuned_alltoall_bruck(void *send_buff, int send_count,
                  recv_ptr + (num_procs - i - 1) * recv_count * extent,
                  recv_count, recv_type, rank, tag, comm, &status);
 
-  free(tmp_buff);
+  smpi_free_tmp_buffer(tmp_buff);
   return MPI_SUCCESS;
 }

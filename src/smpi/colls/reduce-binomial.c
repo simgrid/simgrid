@@ -27,7 +27,7 @@ int smpi_coll_tuned_reduce_binomial(void *sendbuf, void *recvbuf, int count,
 
   extent = smpi_datatype_get_extent(datatype);
 
-  tmp_buf = (void *) xbt_malloc(count * extent);
+  tmp_buf = (void *) smpi_get_tmp_sendbuffer(count * extent);
   int is_commutative = smpi_op_is_commute(op);
   mask = 1;
   
@@ -46,7 +46,7 @@ int smpi_coll_tuned_reduce_binomial(void *sendbuf, void *recvbuf, int count,
   /* If I'm not the root, then my recvbuf may not be valid, therefore
      I have to allocate a temporary one */
   if (rank != root) {
-      recvbuf = (void *) malloc(count*(max(extent,true_extent)));
+      recvbuf = (void *) smpi_get_tmp_recvbuffer(count*(max(extent,true_extent)));
       recvbuf = (void *)((char*)recvbuf - true_lb);
   }
    if ((rank != root) || (sendbuf != MPI_IN_PLACE)) {
@@ -85,9 +85,9 @@ int smpi_coll_tuned_reduce_binomial(void *sendbuf, void *recvbuf, int count,
   }
 
   if (rank != root) {
-        xbt_free(recvbuf);
+	  smpi_free_tmp_buffer(recvbuf);
   }
-  free(tmp_buf);
+  smpi_free_tmp_buffer(tmp_buf);
 
   return 0;
 }

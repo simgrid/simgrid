@@ -3,7 +3,7 @@
 /* Copyright (c) 2009-2010, 2013-2014. The SimGrid Team.
  * All rights reserved.                                                     */
 
-/* This program is xbt_free software; you can redistribute it and/or modify it
+/* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "colls_private.h"
@@ -61,7 +61,7 @@ int smpi_coll_tuned_alltoall_mvapich2( void *sendbuf, int sendcount,
           mv2_alltoall_thresholds_table[conf_index][range].in_place_algo_table[range_threshold].min
           ||nbytes > mv2_alltoall_thresholds_table[conf_index][range].in_place_algo_table[range_threshold].max
       ) {
-          tmp_buf = (char *)xbt_malloc( comm_size * recvcount * recvtype_size );
+          tmp_buf = (char *)smpi_get_tmp_sendbuffer( comm_size * recvcount * recvtype_size );
           mpi_errno = smpi_datatype_copy((char *)recvbuf,
               comm_size*recvcount, recvtype,
               (char *)tmp_buf,
@@ -70,7 +70,7 @@ int smpi_coll_tuned_alltoall_mvapich2( void *sendbuf, int sendcount,
           mpi_errno = MV2_Alltoall_function(tmp_buf, recvcount, recvtype,
               recvbuf, recvcount, recvtype,
               comm );
-          xbt_free(tmp_buf);
+          smpi_free_tmp_buffer(tmp_buf);
       } else {
           mpi_errno = MPIR_Alltoall_inplace_MV2(sendbuf, sendcount, sendtype,
               recvbuf, recvcount, recvtype,
@@ -604,7 +604,7 @@ int smpi_coll_tuned_bcast_mvapich2(void *buffer,
 #endif
      if (two_level_bcast == 1) {
         if (!is_contig || !is_homogeneous) {
-            tmp_buf=(void *)xbt_malloc(nbytes);
+            tmp_buf=(void *)smpi_get_tmp_sendbuffer(nbytes);
 
 /*            position = 0;*/
 /*            if (rank == root) {*/

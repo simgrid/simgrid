@@ -40,9 +40,9 @@ int smpi_coll_tuned_allreduce_rab2(void *sbuff, void *rbuff,
       send_size = (count + nprocs) / nprocs;
     nbytes = send_size * s_extent;
 
-    send = (void *) xbt_malloc(s_extent * send_size * nprocs);
-    recv = (void *) xbt_malloc(s_extent * send_size * nprocs);
-    tmp = (void *) xbt_malloc(nbytes);
+    send = (void *) smpi_get_tmp_sendbuffer(s_extent * send_size * nprocs);
+    recv = (void *) smpi_get_tmp_recvbuffer(s_extent * send_size * nprocs);
+    tmp = (void *) smpi_get_tmp_sendbuffer(nbytes);
 
     memcpy(send, sbuff, s_extent * count);
 
@@ -56,16 +56,16 @@ int smpi_coll_tuned_allreduce_rab2(void *sbuff, void *rbuff,
     mpi_coll_allgather_fun(tmp, send_size, dtype, recv, send_size, dtype, comm);
     memcpy(rbuff, recv, count * s_extent);
 
-    free(recv);
-    free(tmp);
-    free(send);
+    smpi_free_tmp_buffer(recv);
+    smpi_free_tmp_buffer(tmp);
+    smpi_free_tmp_buffer(send);
   } else {
     send = sbuff;
     send_size = count / nprocs;
     nbytes = send_size * s_extent;
     r_offset = rank * nbytes;
 
-    recv = (void *) xbt_malloc(s_extent * send_size * nprocs);
+    recv = (void *) smpi_get_tmp_recvbuffer(s_extent * send_size * nprocs);
 
     mpi_coll_alltoall_fun(send, send_size, dtype, recv, send_size, dtype, comm);
 
@@ -77,7 +77,7 @@ int smpi_coll_tuned_allreduce_rab2(void *sbuff, void *rbuff,
 
     mpi_coll_allgather_fun((char *) rbuff + r_offset, send_size, dtype, rbuff, send_size,
                   dtype, comm);
-    free(recv);
+    smpi_free_tmp_buffer(recv);
   }
 
   return MPI_SUCCESS;

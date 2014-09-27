@@ -132,8 +132,8 @@ int smpi_coll_tuned_allreduce_mvapich2_two_level(void *sendbuf,
         }
 
         if (local_size != total_size) {
-        void* sendtmpbuf = (char *)xbt_malloc(count*smpi_datatype_get_extent(datatype));
-      smpi_datatype_copy(recvbuf, count, datatype,sendtmpbuf, count, datatype);
+          void* sendtmpbuf = (char *)smpi_get_tmp_sendbuffer(count*smpi_datatype_get_extent(datatype));
+          smpi_datatype_copy(recvbuf, count, datatype,sendtmpbuf, count, datatype);
             /* inter-node allreduce */
             if(MV2_Allreduce_function == &MPIR_Allreduce_pt2pt_rd_MV2){
                 mpi_errno =
@@ -144,7 +144,7 @@ int smpi_coll_tuned_allreduce_mvapich2_two_level(void *sendbuf,
                     MPIR_Allreduce_pt2pt_rs_MV2(sendtmpbuf, recvbuf, count, datatype, op,
                                       leader_comm);
             }
-            xbt_free(sendtmpbuf);
+            smpi_free_tmp_buffer(sendtmpbuf);
         }
     } else {
         /* insert the first reduce here */
