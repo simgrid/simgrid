@@ -128,35 +128,51 @@ void smpi_comm_get_name (MPI_Comm comm, char* name, int* len)
 }
 
 void smpi_comm_set_leaders_comm(MPI_Comm comm, MPI_Comm leaders){
+  if (comm == MPI_COMM_UNINITIALIZED)
+    comm = smpi_process_comm_world();
   comm->leaders_comm=leaders;
 }
 
 void smpi_comm_set_intra_comm(MPI_Comm comm, MPI_Comm leaders){
+  if (comm == MPI_COMM_UNINITIALIZED)
+    comm = smpi_process_comm_world();
   comm->intra_comm=leaders;
 }
 
 int* smpi_comm_get_non_uniform_map(MPI_Comm comm){
+  if (comm == MPI_COMM_UNINITIALIZED)
+    comm = smpi_process_comm_world();
   return comm->non_uniform_map;
 }
 
 int* smpi_comm_get_leaders_map(MPI_Comm comm){
+  if (comm == MPI_COMM_UNINITIALIZED)
+    comm = smpi_process_comm_world();
   return comm->leaders_map;
 }
 
 MPI_Comm smpi_comm_get_leaders_comm(MPI_Comm comm){
+  if (comm == MPI_COMM_UNINITIALIZED)
+    comm = smpi_process_comm_world();
   return comm->leaders_comm;
 }
 
 MPI_Comm smpi_comm_get_intra_comm(MPI_Comm comm){
+  if (comm == MPI_COMM_UNINITIALIZED)
+    comm = smpi_process_comm_world();
   if(comm==MPI_COMM_WORLD) return smpi_process_get_comm_intra();
   else return comm->intra_comm;
 }
 
 int smpi_comm_is_uniform(MPI_Comm comm){
+  if (comm == MPI_COMM_UNINITIALIZED)
+    comm = smpi_process_comm_world();
   return comm->is_uniform;
 }
 
 int smpi_comm_is_blocked(MPI_Comm comm){
+  if (comm == MPI_COMM_UNINITIALIZED)
+    comm = smpi_process_comm_world();
   return comm->is_blocked;
 }
 
@@ -277,6 +293,10 @@ compare_ints (const void *a, const void *b)
 
 void smpi_comm_init_smp(MPI_Comm comm){
   int leader = -1;
+
+  if (comm == MPI_COMM_UNINITIALIZED)
+    comm = smpi_process_comm_world();
+
   int comm_size =smpi_comm_size(comm);
   
   // If we are in replay - perform an ugly hack  
