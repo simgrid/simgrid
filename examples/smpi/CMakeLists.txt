@@ -26,8 +26,6 @@ if(enable_smpi)
   target_link_libraries(smpi_replay simgrid)
 
   if(HAVE_MC)
-    SET(EXECUTABLE_OUTPUT_PATH "./mc/")
-
     add_executable(smpi_bugged1 mc/bugged1.c)
     add_executable(smpi_bugged2 mc/bugged2.c)
     add_executable(smpi_bugged1_liveness mc/bugged1_liveness.c)
@@ -41,6 +39,14 @@ if(enable_smpi)
     target_link_libraries(smpi_send_deterministic simgrid)
     target_link_libraries(smpi_non_deterministic simgrid)
     target_link_libraries(smpi_mutual_exclusion simgrid)
+    
+    set_target_properties(smpi_bugged1 PROPERTIES RUNTIME_OUTPUT_DIRECTORY "./mc")
+    set_target_properties(smpi_bugged2 PROPERTIES RUNTIME_OUTPUT_DIRECTORY "./mc")
+    set_target_properties(smpi_bugged1_liveness PROPERTIES RUNTIME_OUTPUT_DIRECTORY "./mc")
+    set_target_properties(smpi_send_deterministic PROPERTIES RUNTIME_OUTPUT_DIRECTORY "./mc")
+    set_target_properties(smpi_non_deterministic PROPERTIES RUNTIME_OUTPUT_DIRECTORY "./mc")
+    set_target_properties(smpi_mutual_exclusion PROPERTIES RUNTIME_OUTPUT_DIRECTORY "./mc")
+    
   endif()
   
 endif()
