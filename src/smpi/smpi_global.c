@@ -169,7 +169,7 @@ int smpi_process_initialized(void)
 void smpi_process_mark_as_initialized(void)
 {
   int index = smpi_process_index();
-  if ((index != MPI_UNDEFINED) && (!process_data[index_to_process_data[index]]->state != SMPI_FINALIZED))
+  if ((index != MPI_UNDEFINED) && (process_data[index_to_process_data[index]]->state != SMPI_FINALIZED))
     process_data[index_to_process_data[index]]->state = SMPI_INITIALIZED;
 }
 
