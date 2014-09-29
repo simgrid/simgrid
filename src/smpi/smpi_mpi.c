@@ -1101,6 +1101,14 @@ MPI_Fint MPI_Op_c2f(MPI_Op op){
   return PMPI_Op_c2f(op);
 }
 
+MPI_Comm MPI_Comm_f2c(MPI_Fint comm){
+  return PMPI_Comm_f2c(comm);
+}
+
+MPI_Fint MPI_Comm_c2f(MPI_Comm comm){
+  return PMPI_Comm_c2f(comm);
+}
+
 MPI_Info MPI_Info_f2c(MPI_Fint info){
   return PMPI_Info_f2c(info);
 }

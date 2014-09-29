@@ -2938,6 +2938,13 @@ MPI_Fint PMPI_Op_c2f(MPI_Op op){
   return smpi_op_c2f(op);
 }
 
+MPI_Comm PMPI_Comm_f2c(MPI_Fint comm){
+  return smpi_comm_f2c(comm);
+}
+
+MPI_Fint PMPI_Comm_c2f(MPI_Comm comm){
+  return smpi_comm_c2f(comm);
+}
 
 
 /* The following calls are not yet implemented and will fail at runtime. */
