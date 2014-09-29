@@ -31,8 +31,9 @@ if(enable_compile_warnings)
 endif()
 
 if(enable_compile_optimizations)
-  set(optCFLAGS "-O3 -finline-functions -funroll-loops -fno-strict-aliasing ")
+  set(optCFLAGS "-O3 -funroll-loops -fno-strict-aliasing ")
   if(CMAKE_COMPILER_IS_GNUCC AND (NOT enable_model-checking))
+    set(optCFLAGS "${optCFLAGS} -finline-functions ")
     if(WIN32)
       if (COMPILER_C_VERSION_MAJOR_MINOR STRGREATER "4.7")
       # On windows, we need 4.8 or higher to enable lto because of http://gcc.gnu.org/bugzilla/show_bug.cgi?id=50293
