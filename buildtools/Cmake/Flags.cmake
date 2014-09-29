@@ -65,7 +65,11 @@ if(enable_model-checking AND enable_compile_optimizations)
       src/mc/mc_compare.cpp src/mc/mc_diff.c
       src/mc/mc_dwarf.c src/mc/mc_dwarf_attrnames.h src/mc/mc_dwarf_expression.c src/mc/mc_dwarf_tagnames.h
       src/mc/mc_set.cpp)
-    set_source_files_properties(${s} PROPERTIES COMPILE_FLAGS "-O3 -finline-functions -funroll-loops -fno-strict-aliasing")
+      set (mcCFLAGS "-O3  -funroll-loops -fno-strict-aliasing")
+       if(CMAKE_COMPILER_IS_GNUCC)
+         set (mcCFLAGS "${mcCFLAGS} -finline-functions")
+      endif()
+      set_source_files_properties(${s} PROPERTIES COMPILE_FLAGS ${mcCFLAGS})
   endforeach()
 endif()
 
