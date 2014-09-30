@@ -172,7 +172,7 @@ int smpi_coll_tuned_reduce_mvapich2_knomial (
            &dst, &expected_send_count, &expected_recv_count, &src_array);
 
     if(expected_recv_count > 0 ) {
-        tmp_buf  = smpi_get_tmp_recvbuffer(sizeof(void *)*expected_recv_count);
+        tmp_buf  = xbt_malloc(sizeof(void *)*expected_recv_count);
         requests = xbt_malloc(sizeof(MPI_Request)*expected_recv_count);
         for(k=0; k < expected_recv_count; k++ ) {
             tmp_buf[k] = smpi_get_tmp_sendbuffer(count*(MAX(extent,true_extent)));
@@ -202,12 +202,12 @@ int smpi_coll_tuned_reduce_mvapich2_knomial (
         for(k=0; k < expected_recv_count; k++ ) {
             smpi_free_tmp_buffer(tmp_buf[k]);
         }
-        smpi_free_tmp_buffer(tmp_buf);
+        xbt_free(tmp_buf);
         xbt_free(requests);
     }
 
     if(src_array != NULL) { 
-        smpi_free_tmp_buffer(src_array);
+        xbt_free(src_array);
     } 
 
     if(rank != root) {
