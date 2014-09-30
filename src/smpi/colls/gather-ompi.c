@@ -173,14 +173,14 @@ smpi_coll_tuned_gather_ompi_binomial(void *sbuf, int scount,
 	}
     } else if (!(vrank % 2)) {
 	/* other non-leaf nodes */
-	free(tempbuf);
+	smpi_free_tmp_buffer(tempbuf);
     }
     xbt_free(bmtree);
     return MPI_SUCCESS;
 
  err_hndl:
     if (NULL != tempbuf)
-	free(tempbuf);
+	smpi_free_tmp_buffer(tempbuf);
 
     XBT_DEBUG(  "%s:%4d\tError occurred %d, rank %2d",
 		 __FILE__, line, err, rank);
