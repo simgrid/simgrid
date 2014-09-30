@@ -567,6 +567,7 @@ MPI_CALL(XBT_PUBLIC(int), MPI_Win_free,( MPI_Win* win));
 MPI_CALL(XBT_PUBLIC(int), MPI_Win_create,( void *base, MPI_Aint size, int disp_unit, MPI_Info info, MPI_Comm comm, MPI_Win *win));
 MPI_CALL(XBT_PUBLIC(int), MPI_Win_set_name,(MPI_Win  win, char * name));
 MPI_CALL(XBT_PUBLIC(int), MPI_Win_get_name,(MPI_Win  win, char * name, int* len));
+MPI_CALL(XBT_PUBLIC(int), MPI_Win_get_group,(MPI_Win  win, MPI_Group * group));
 MPI_CALL(XBT_PUBLIC(int), MPI_Win_fence,( int assert,  MPI_Win win));
 
 MPI_CALL(XBT_PUBLIC(int), MPI_Get,( void *origin_addr, int origin_count, MPI_Datatype origin_datatype, int target_rank,

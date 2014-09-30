@@ -364,6 +364,7 @@ int smpi_mpi_win_free( MPI_Win* win);
 MPI_Win smpi_mpi_win_create( void *base, MPI_Aint size, int disp_unit, MPI_Info info, MPI_Comm comm);
 
 void smpi_mpi_win_get_name(MPI_Win win, char* name, int* length);
+void smpi_mpi_win_get_group(MPI_Win win, MPI_Group* group);
 void smpi_mpi_win_set_name(MPI_Win win, char* name);
 
 int smpi_mpi_win_fence( int assert,  MPI_Win win);

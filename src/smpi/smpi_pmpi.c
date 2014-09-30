@@ -2745,15 +2745,24 @@ int PMPI_Win_set_name(MPI_Win  win, char * name)
 
 int PMPI_Win_get_name(MPI_Win  win, char * name, int* len)
 {
-  int retval = 0;
+  int retval = MPI_SUCCESS;
 
   if (win == MPI_WIN_NULL)  {
-    retval = MPI_ERR_TYPE;
+    retval = MPI_ERR_WIN;
   } else if (name == NULL)  {
     retval = MPI_ERR_ARG;
   } else {
     smpi_mpi_win_get_name(win, name, len);
-    retval = MPI_SUCCESS;
+  }
+  return retval;
+}
+
+int PMPI_Win_get_group(MPI_Win  win, MPI_Group * group){
+  int retval = MPI_SUCCESS;
+  if (win == MPI_WIN_NULL)  {
+    retval = MPI_ERR_WIN;
+  }else {
+    smpi_mpi_win_get_group(win, group);
   }
   return retval;
 }

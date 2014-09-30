@@ -626,6 +626,10 @@ int MPI_Comm_get_errhandler(MPI_Comm comm, MPI_Errhandler* errhandler) {
   return PMPI_Errhandler_set(comm, errhandler);
 }
 
+int MPI_Win_get_group(MPI_Win  win, MPI_Group * group){
+  return PMPI_Win_get_group(win, group);
+}
+
 int MPI_Win_set_errhandler(MPI_Win win, MPI_Errhandler errhandler) {
   return PMPI_Win_set_errhandler(win, errhandler);
 }
