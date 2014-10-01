@@ -77,7 +77,7 @@ smpi_coll_tuned_scatter_ompi_binomial(void *sbuf, int scount,
 	    }
 	} else {
 	    /* root is not on 0, allocate temp buffer for send */
-	    tempbuf = (char *) malloc(strue_extent + (scount*size - 1) * sextent);
+	    tempbuf = (char *) smpi_get_tmp_sendbuffer(strue_extent + (scount*size - 1) * sextent);
 	    if (NULL == tempbuf) {
 		err = MPI_ERR_OTHER; line = __LINE__; goto err_hndl;
 	    }
@@ -105,7 +105,7 @@ smpi_coll_tuned_scatter_ompi_binomial(void *sbuf, int scount,
     } else if (!(vrank % 2)) {
 	/* non-root, non-leaf nodes, allocate temp buffer for recv
 	 * the most we need is rcount*size/2 */
-	tempbuf = (char *) malloc(rtrue_extent + (rcount*size - 1) * rextent);
+	tempbuf = (char *) smpi_get_tmp_recvbuffer(rtrue_extent + (rcount*size - 1) * rextent);
 	if (NULL == tempbuf) {
 	    err= MPI_ERR_OTHER; line = __LINE__; goto err_hndl;
 	}
@@ -155,7 +155,7 @@ smpi_coll_tuned_scatter_ompi_binomial(void *sbuf, int scount,
     }
 
     if (NULL != tempbuf)
-      free(tempbuf);
+      smpi_free_tmp_buffer(tempbuf);
     //!FIXME : store the tree, as done in ompi, instead of calculating it each time ?
     xbt_free(bmtree);
 

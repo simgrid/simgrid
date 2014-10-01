@@ -1372,7 +1372,7 @@ void smpi_mpi_reduce(void *sendbuf, void *recvbuf, int count,
 
   char* sendtmpbuf = (char*) sendbuf;
   if( sendbuf == MPI_IN_PLACE ) {
-    sendtmpbuf = (char *)xbt_malloc(count*smpi_datatype_get_extent(datatype));
+    sendtmpbuf = (char *)smpi_get_tmp_sendbuffer(count*smpi_datatype_get_extent(datatype));
     smpi_datatype_copy(recvbuf, count, datatype,sendtmpbuf, count, datatype);
   }
 
@@ -1433,7 +1433,7 @@ void smpi_mpi_reduce(void *sendbuf, void *recvbuf, int count,
     xbt_free(requests);
 
     if( sendbuf == MPI_IN_PLACE ) {
-      xbt_free(sendtmpbuf);
+      smpi_free_tmp_buffer(sendtmpbuf);
     }
   }
 }
@@ -1470,7 +1470,7 @@ void smpi_mpi_scan(void *sendbuf, void *recvbuf, int count,
   for(other = 0; other < rank; other++) {
     // FIXME: possibly overkill we we have contiguous/noncontiguous data
     // mapping...
-    tmpbufs[index] = xbt_malloc(count * dataext);
+    tmpbufs[index] = smpi_get_tmp_sendbuffer(count * dataext);
     requests[index] =
       smpi_irecv_init(tmpbufs[index], count, datatype, other, system_tag,
                       comm);
@@ -1505,7 +1505,7 @@ void smpi_mpi_scan(void *sendbuf, void *recvbuf, int count,
     }
   }
   for(index = 0; index < rank; index++) {
-    xbt_free(tmpbufs[index]);
+    smpi_free_tmp_buffer(tmpbufs[index]);
   }
   for(index = 0; index < size-1; index++) {
     smpi_mpi_request_free(&requests[index]);
@@ -1536,7 +1536,7 @@ void smpi_mpi_exscan(void *sendbuf, void *recvbuf, int count,
   for(other = 0; other < rank; other++) {
     // FIXME: possibly overkill we we have contiguous/noncontiguous data
     // mapping...
-    tmpbufs[index] = xbt_malloc(count * dataext);
+    tmpbufs[index] = smpi_get_tmp_sendbuffer(count * dataext);
     requests[index] =
       smpi_irecv_init(tmpbufs[index], count, datatype, other, system_tag,
                       comm);
@@ -1577,7 +1577,7 @@ void smpi_mpi_exscan(void *sendbuf, void *recvbuf, int count,
     }
   }
   for(index = 0; index < rank; index++) {
-    xbt_free(tmpbufs[index]);
+    smpi_free_tmp_buffer(tmpbufs[index]);
   }
   for(index = 0; index < size-1; index++) {
     smpi_mpi_request_free(&requests[index]);

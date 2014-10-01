@@ -19,28 +19,36 @@ if(enable_smpi)
   add_executable(smpi_traced_simple tracing/smpi_traced_simple.c)
   add_executable(smpi_replay replay/replay.c)
 
-  if(HAVE_MC)
-    add_executable(mc/bugged1 mc/bugged1.c)
-    add_executable(mc/bugged2 mc/bugged2.c)
-    add_executable(mc/bugged1_liveness mc/bugged1_liveness.c)
-    add_executable(mc/send_deterministic mc/send_deterministic.c)
-    add_executable(mc/non_deterministic mc/non_deterministic.c)
-    add_executable(mc/mutual_exclusion mc/mutual_exclusion.c)
-
-    target_link_libraries(mc/bugged1 simgrid)
-    target_link_libraries(mc/bugged2 simgrid)
-    target_link_libraries(mc/bugged1_liveness simgrid)
-    target_link_libraries(mc/send_deterministic simgrid)
-    target_link_libraries(mc/non_deterministic simgrid)
-    target_link_libraries(mc/mutual_exclusion simgrid)
-  endif()
-
   target_link_libraries(bcbench simgrid)
   target_link_libraries(mvmul simgrid)
   target_link_libraries(smpi_traced simgrid)
   target_link_libraries(smpi_traced_simple simgrid)
   target_link_libraries(smpi_replay simgrid)
 
+  if(HAVE_MC)
+    add_executable(smpi_bugged1 mc/bugged1.c)
+    add_executable(smpi_bugged2 mc/bugged2.c)
+    add_executable(smpi_bugged1_liveness mc/bugged1_liveness.c)
+    add_executable(smpi_send_deterministic mc/send_deterministic.c)
+    add_executable(smpi_non_deterministic mc/non_deterministic.c)
+    add_executable(smpi_mutual_exclusion mc/mutual_exclusion.c)
+
+    target_link_libraries(smpi_bugged1 simgrid)
+    target_link_libraries(smpi_bugged2 simgrid)
+    target_link_libraries(smpi_bugged1_liveness simgrid)
+    target_link_libraries(smpi_send_deterministic simgrid)
+    target_link_libraries(smpi_non_deterministic simgrid)
+    target_link_libraries(smpi_mutual_exclusion simgrid)
+    
+    set_target_properties(smpi_bugged1 PROPERTIES RUNTIME_OUTPUT_DIRECTORY "./mc")
+    set_target_properties(smpi_bugged2 PROPERTIES RUNTIME_OUTPUT_DIRECTORY "./mc")
+    set_target_properties(smpi_bugged1_liveness PROPERTIES RUNTIME_OUTPUT_DIRECTORY "./mc")
+    set_target_properties(smpi_send_deterministic PROPERTIES RUNTIME_OUTPUT_DIRECTORY "./mc")
+    set_target_properties(smpi_non_deterministic PROPERTIES RUNTIME_OUTPUT_DIRECTORY "./mc")
+    set_target_properties(smpi_mutual_exclusion PROPERTIES RUNTIME_OUTPUT_DIRECTORY "./mc")
+    
+  endif()
+  
 endif()
 
 set(tesh_files
