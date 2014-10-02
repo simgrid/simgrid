@@ -535,12 +535,11 @@ static void action_bcast(const char *const *action)
   TRACE_smpi_collective_in(rank, root_traced, __FUNCTION__, extra);
 
 #endif
-
-  mpi_coll_bcast_fun(NULL, size, MPI_CURRENT_TYPE, root, MPI_COMM_WORLD);
+    void *sendbuf = smpi_get_tmp_sendbuffer(size* smpi_datatype_size(MPI_CURRENT_TYPE));
+  mpi_coll_bcast_fun(sendbuf, size, MPI_CURRENT_TYPE, root, MPI_COMM_WORLD);
 #ifdef HAVE_TRACING
   TRACE_smpi_collective_out(rank, root_traced, __FUNCTION__);
 #endif
-
   log_timed_action (action, clock);
 }
 
@@ -558,6 +557,8 @@ static void action_reduce(const char *const *action)
       MPI_CURRENT_TYPE=decode_datatype(action[5]);
     }
   }
+  
+  
 
 #ifdef HAVE_TRACING
   int rank = smpi_process_index();
@@ -571,12 +572,13 @@ static void action_reduce(const char *const *action)
 
   TRACE_smpi_collective_in(rank, root_traced, __FUNCTION__,extra);
 #endif
-   mpi_coll_reduce_fun(NULL, NULL, comm_size, MPI_CURRENT_TYPE, MPI_OP_NULL, root, MPI_COMM_WORLD);
+    void *recvbuf = smpi_get_tmp_sendbuffer(comm_size* smpi_datatype_size(MPI_CURRENT_TYPE));
+    void *sendbuf = smpi_get_tmp_sendbuffer(comm_size* smpi_datatype_size(MPI_CURRENT_TYPE));
+   mpi_coll_reduce_fun(sendbuf, recvbuf, comm_size, MPI_CURRENT_TYPE, MPI_OP_NULL, root, MPI_COMM_WORLD);
    smpi_execute_flops(comp_size);
 #ifdef HAVE_TRACING
   TRACE_smpi_collective_out(rank, root_traced, __FUNCTION__);
 #endif
-
   log_timed_action (action, clock);
 }
 
@@ -598,12 +600,13 @@ static void action_allReduce(const char *const *action) {
 
   TRACE_smpi_collective_in(rank, -1, __FUNCTION__,extra);
 #endif
-  mpi_coll_allreduce_fun(NULL, NULL, comm_size, MPI_CURRENT_TYPE, MPI_OP_NULL, MPI_COMM_WORLD);
+    void *recvbuf = smpi_get_tmp_sendbuffer(comm_size* smpi_datatype_size(MPI_CURRENT_TYPE));
+    void *sendbuf = smpi_get_tmp_sendbuffer(comm_size* smpi_datatype_size(MPI_CURRENT_TYPE));
+  mpi_coll_allreduce_fun(sendbuf, recvbuf, comm_size, MPI_CURRENT_TYPE, MPI_OP_NULL, MPI_COMM_WORLD);
   smpi_execute_flops(comp_size);
 #ifdef HAVE_TRACING
   TRACE_smpi_collective_out(rank, -1, __FUNCTION__);
 #endif
-
   log_timed_action (action, clock);
 }
 
@@ -642,7 +645,6 @@ static void action_allToAll(const char *const *action) {
 #ifdef HAVE_TRACING
   TRACE_smpi_collective_out(rank, -1, __FUNCTION__);
 #endif
-
   log_timed_action (action, clock);
 
 }
@@ -677,7 +679,7 @@ static void action_gather(const char *const *action) {
   void *recv = NULL;
 
   int root=atoi(action[4]);
-  int rank = smpi_process_index();
+  int rank = smpi_comm_rank(MPI_COMM_WORLD);
 
   if(rank==root)
     recv = smpi_get_tmp_recvbuffer(recv_size*comm_size* smpi_datatype_size(MPI_CURRENT_TYPE2));
@@ -691,16 +693,15 @@ static void action_gather(const char *const *action) {
   extra->datatype1 = encode_datatype(MPI_CURRENT_TYPE);
   extra->datatype2 = encode_datatype(MPI_CURRENT_TYPE2);
 
-  TRACE_smpi_collective_in(rank, root, __FUNCTION__, extra);
+  TRACE_smpi_collective_in(smpi_process_index(), root, __FUNCTION__, extra);
 #endif
   mpi_coll_gather_fun(send, send_size, MPI_CURRENT_TYPE,
                 recv, recv_size, MPI_CURRENT_TYPE2,
                 root, MPI_COMM_WORLD);
 
 #ifdef HAVE_TRACING
-  TRACE_smpi_collective_out(rank, -1, __FUNCTION__);
+  TRACE_smpi_collective_out(smpi_process_index(), -1, __FUNCTION__);
 #endif
-
   log_timed_action (action, clock);
 
 }
@@ -744,7 +745,7 @@ static void action_gatherv(const char *const *action) {
   }
 
   int root=atoi(action[3+comm_size]);
-  int rank = smpi_process_index();
+  int rank = smpi_comm_rank(MPI_COMM_WORLD);;
 
   if(rank==root)
     recv = smpi_get_tmp_recvbuffer(recv_sum* smpi_datatype_size(MPI_CURRENT_TYPE2));
@@ -761,20 +762,19 @@ static void action_gatherv(const char *const *action) {
   extra->datatype1 = encode_datatype(MPI_CURRENT_TYPE);
   extra->datatype2 = encode_datatype(MPI_CURRENT_TYPE2);
 
-  TRACE_smpi_collective_in(rank, root, __FUNCTION__, extra);
+  TRACE_smpi_collective_in(smpi_process_index(), root, __FUNCTION__, extra);
 #endif
 smpi_mpi_gatherv(send, send_size, MPI_CURRENT_TYPE,
                 recv, recvcounts, disps, MPI_CURRENT_TYPE2,
                 root, MPI_COMM_WORLD);
 
 #ifdef HAVE_TRACING
-  TRACE_smpi_collective_out(rank, -1, __FUNCTION__);
+  TRACE_smpi_collective_out(smpi_process_index(), -1, __FUNCTION__);
 #endif
 
   log_timed_action (action, clock);
   xbt_free(recvcounts);
   xbt_free(disps);
-
 }
 
 static void action_reducescatter(const char *const *action) {
@@ -800,7 +800,7 @@ static void action_reducescatter(const char *const *action) {
   int *disps = xbt_new0(int, comm_size);  
   int i=0;
   int rank = smpi_process_index();
-
+  int size = 0;
   if(action[3+comm_size])
     MPI_CURRENT_TYPE=decode_datatype(action[3+comm_size]);
   else
@@ -809,6 +809,7 @@ static void action_reducescatter(const char *const *action) {
   for(i=0;i<comm_size;i++) {
     recvcounts[i] = atoi(action[i+2]);
     disps[i] = 0;
+    size+=recvcounts[i];
   }
 
 #ifdef HAVE_TRACING
@@ -822,10 +823,12 @@ static void action_reducescatter(const char *const *action) {
   extra->comp_size = comp_size;
   extra->num_processes = comm_size;
 
-
   TRACE_smpi_collective_in(rank, -1, __FUNCTION__,extra);
 #endif
-   mpi_coll_reduce_scatter_fun(NULL, NULL, recvcounts, MPI_CURRENT_TYPE, MPI_OP_NULL,
+  void *sendbuf = smpi_get_tmp_sendbuffer(size* smpi_datatype_size(MPI_CURRENT_TYPE));
+   void *recvbuf = smpi_get_tmp_recvbuffer(size* smpi_datatype_size(MPI_CURRENT_TYPE));
+   
+   mpi_coll_reduce_scatter_fun(sendbuf, recvbuf, recvcounts, MPI_CURRENT_TYPE, MPI_OP_NULL,
        MPI_COMM_WORLD);
    smpi_execute_flops(comp_size);
 
