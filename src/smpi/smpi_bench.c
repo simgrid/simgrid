@@ -78,6 +78,8 @@ int smpi_loaded_page = -1;
 char* start_data_exe = NULL;
 int size_data_exe = 0;
 int smpi_privatize_global_variables;
+double smpi_total_benched_time = 0;
+
 
 smpi_privatisation_region_t smpi_privatisation_regions;
 
@@ -218,6 +220,8 @@ void smpi_bench_end(void)
   if (sg_cfg_get_boolean("smpi/simulate_computation")) {
     smpi_execute(xbt_os_timer_elapsed(timer));
   }
+
+  smpi_total_benched_time += xbt_os_timer_elapsed(timer);
 }
 
 /* Private sleep function used by smpi_sleep() and smpi_usleep() */

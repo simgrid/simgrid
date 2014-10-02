@@ -42,8 +42,8 @@ typedef struct s_smpi_process_data {
 static smpi_process_data_t *process_data = NULL;
 int process_count = 0;
 int* index_to_process_data = NULL;
-
-
+extern double smpi_total_benched_time;
+xbt_os_timer_t global_timer;
 MPI_Comm MPI_COMM_WORLD = MPI_COMM_UNINITIALIZED;
 int MPI_UNIVERSE_SIZE;
 
@@ -334,7 +334,6 @@ void smpi_comm_copy_buffer_callback(smx_action_t comm,
                                            void *buff, size_t buff_size)
 {
   XBT_DEBUG("Copy the data over");
-  if(_xbt_replay_is_active()) return;
   void* tmpbuff=buff;
 
   if((smpi_privatize_global_variables)
@@ -405,7 +404,8 @@ void smpi_global_init(void)
   char name[MAILBOX_NAME_MAXLEN];
   int smpirun=0;
 
-
+  global_timer = xbt_os_timer_new();
+  xbt_os_walltimer_start(global_timer);
   if (process_count == 0){
     process_count = SIMIX_process_count();
     smpirun=1;
@@ -656,9 +656,19 @@ int smpi_main(int (*realmain) (int argc, char *argv[]), int argc, char *argv[])
     MC_do_the_modelcheck_for_real();
   else
     SIMIX_run();
+  xbt_os_walltimer_stop(global_timer);
+  if (sg_cfg_get_boolean("smpi/display_timing")){
+    double global_time = xbt_os_timer_elapsed(global_timer);
+    XBT_INFO("Simulated time: %g seconds. \n "
+        "The simulation took %g seconds (after parsing and platform setup)\n"
+        "%g seconds were actual computation of the application"
+        , SIMIX_get_clock(), global_time , smpi_total_benched_time);
+        
+    if (smpi_total_benched_time/global_time>=0.75)
+    XBT_INFO("More than 75%% of the time was spent inside the application code.\n"
+    "You may want to use sampling functions or trace replay to reduce this.");
 
-  if (sg_cfg_get_boolean("smpi/display_timing"))
-    XBT_INFO("Simulation time: %g seconds.", SIMIX_get_clock());
+  }
 
   smpi_global_destroy();
 
