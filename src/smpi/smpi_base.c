@@ -388,7 +388,8 @@ void smpi_mpi_start(MPI_Request request)
     smpi_comm_use(request->comm);
     request->action = simcall_comm_irecv(mailbox, request->buf,
                                          &request->real_size, &match_recv,
-                                         &smpi_comm_copy_buffer_callback,
+                                         !smpi_process_get_replaying()? &smpi_comm_copy_buffer_callback
+                                         : &smpi_comm_null_copy_buffer_callback,
                                          request, -1.0);
         XBT_DEBUG("recv simcall posted");
 
@@ -451,7 +452,7 @@ void smpi_mpi_start(MPI_Request request)
       request->refcount++;
       if(request->old_type->has_subtype == 0){
         oldbuf = request->buf;
-        if (!_xbt_replay_is_active() && oldbuf && request->size!=0){
+        if (!smpi_process_get_replaying() && oldbuf && request->size!=0){
           if((smpi_privatize_global_variables)
       	      && ((char*)request->buf >= start_data_exe)
 	      && ((char*)request->buf < start_data_exe + size_data_exe )){
@@ -474,7 +475,8 @@ void smpi_mpi_start(MPI_Request request)
                          buf, request->real_size,
                          &match_send,
                          &xbt_free_f, // how to free the userdata if a detached send fails
-                         &smpi_comm_copy_buffer_callback,
+                         !smpi_process_get_replaying()? &smpi_comm_copy_buffer_callback
+                         : &smpi_comm_null_copy_buffer_callback,
                          request,
                          // detach if msg size < eager/rdv switch limit
                          request->detached);
@@ -690,7 +692,7 @@ static void finish_wait(MPI_Request * request, MPI_Status * status)
     MPI_Datatype datatype = req->old_type;
 
     if((req->flags & ACCUMULATE) || (datatype->has_subtype == 1)){
-      if (!_xbt_replay_is_active()){
+      if (!smpi_process_get_replaying()){
         if( smpi_privatize_global_variables
             && ((char*)req->old_buf >= start_data_exe)
             && ((char*)req->old_buf < start_data_exe + size_data_exe )
@@ -1403,7 +1405,7 @@ void smpi_mpi_reduce(void *sendbuf, void *recvbuf, int count,
       if(src != root) {
         // FIXME: possibly overkill we we have contiguous/noncontiguous data
         //  mapping...
-   	    if (!_xbt_replay_is_active())
+   	    if (!smpi_process_get_replaying())
           tmpbufs[index] = xbt_malloc(count * dataext);
    	    else
    	      tmpbufs[index] = smpi_get_tmp_sendbuffer(count * dataext);

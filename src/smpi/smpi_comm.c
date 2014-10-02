@@ -10,10 +10,8 @@
 #include "smpi_mpi_dt_private.h"
 #include "limits.h"
 #include "simix/smx_private.h"
-#include "xbt/replay.h"
 #include "colls/colls.h"
 
-extern int is_replay_active ;
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_comm, smpi,
                                 "Logging specific to SMPI (comm)");
@@ -134,8 +132,6 @@ void smpi_comm_set_leaders_comm(MPI_Comm comm, MPI_Comm leaders){
 }
 
 void smpi_comm_set_intra_comm(MPI_Comm comm, MPI_Comm leaders){
-  if (comm == MPI_COMM_UNINITIALIZED)
-    comm = smpi_process_comm_world();
   comm->intra_comm=leaders;
 }
 
@@ -158,9 +154,8 @@ MPI_Comm smpi_comm_get_leaders_comm(MPI_Comm comm){
 }
 
 MPI_Comm smpi_comm_get_intra_comm(MPI_Comm comm){
-  if (comm == MPI_COMM_UNINITIALIZED)
-    comm = smpi_process_comm_world();
-  if(comm==MPI_COMM_WORLD) return smpi_process_get_comm_intra();
+  if (comm == MPI_COMM_UNINITIALIZED || comm==MPI_COMM_WORLD) 
+    return smpi_process_get_comm_intra();
   else return comm->intra_comm;
 }
 
@@ -303,9 +298,9 @@ void smpi_comm_init_smp(MPI_Comm comm){
   // say to SimGrid that we are not in replay for a while, because we need 
   // the buffers to be copied for the following calls
   int replaying = 0; //cache data to set it back again after
-  if(_xbt_replay_is_active()){
-    replaying = 1;
-    is_replay_active = 0 ;
+  if(smpi_process_get_replaying()){
+   replaying=1;
+   smpi_process_set_replaying(0);
   }
 
   if(smpi_privatize_global_variables){ //we need to switch here, as the called function may silently touch global variables
@@ -398,7 +393,7 @@ void smpi_comm_init_smp(MPI_Comm comm){
 
 
   MPI_Comm leader_comm = MPI_COMM_NULL;
-  if(comm!=MPI_COMM_WORLD){
+  if(MPI_COMM_WORLD!=MPI_COMM_UNINITIALIZED && comm!=MPI_COMM_WORLD){
     //create leader_communicator
     for (i=0; i< leader_group_size;i++)
       smpi_group_set_mapping(leaders_group, leader_list[i], i);
@@ -423,7 +418,7 @@ void smpi_comm_init_smp(MPI_Comm comm){
   // Are the nodes uniform ? = same number of process/node
   int my_local_size=smpi_comm_size(comm_intra);
   if(smpi_comm_rank(comm_intra)==0) {
-    int* non_uniform_map = xbt_malloc(sizeof(int)*leader_group_size);
+    int* non_uniform_map = xbt_malloc0(sizeof(int)*leader_group_size);
     smpi_coll_tuned_allgather_mpich(&my_local_size, 1, MPI_INT,
         non_uniform_map, 1, MPI_INT, leader_comm);
     for(i=0; i < leader_group_size; i++) {
@@ -460,7 +455,7 @@ void smpi_comm_init_smp(MPI_Comm comm){
   smpi_mpi_allreduce(&is_blocked, &(global_blocked), 1,
             MPI_INT, MPI_LAND, comm);
 
-  if(comm==MPI_COMM_WORLD){
+  if(MPI_COMM_WORLD==SMPI_UNINITIALIZED || comm==MPI_COMM_WORLD){
     if(smpi_comm_rank(comm)==0){
         comm->is_blocked=global_blocked;
     }
@@ -470,6 +465,6 @@ void smpi_comm_init_smp(MPI_Comm comm){
   xbt_free(leader_list);
   
   if(replaying==1)
-    is_replay_active = 1; 
+    smpi_process_set_replaying(1); 
 }
 

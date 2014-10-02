@@ -223,7 +223,7 @@ int smpi_datatype_copy(void *sendbuf, int sendcount, MPI_Datatype sendtype,
     count = sendcount < recvcount ? sendcount : recvcount;
 
     if(sendtype->has_subtype == 0 && recvtype->has_subtype == 0) {
-      if(!_xbt_replay_is_active()) memcpy(recvbuf, sendbuf, count);
+      if(!smpi_process_get_replaying()) memcpy(recvbuf, sendbuf, count);
     }
     else if (sendtype->has_subtype == 0)
     {
@@ -1615,11 +1615,14 @@ void smpi_op_destroy(MPI_Op op)
 void smpi_op_apply(MPI_Op op, void *invec, void *inoutvec, int *len,
                    MPI_Datatype * datatype)
 {
+  if(op==MPI_OP_NULL)
+    return;
+
   if(smpi_privatize_global_variables){ //we need to switch here, as the called function may silently touch global variables
     XBT_DEBUG("Applying operation, switch to the right data frame ");
     smpi_switch_data_segment(smpi_process_index());
   }
 
-  if(!_xbt_replay_is_active())
+  if(!smpi_process_get_replaying())
   op->func(invec, inoutvec, len, datatype);
 }

@@ -167,11 +167,16 @@ void smpi_process_simulated_start(void);
 double smpi_process_simulated_elapsed(void);
 void smpi_process_set_sampling(int s);
 int smpi_process_get_sampling(void);
+void smpi_process_set_replaying(int s);
+int smpi_process_get_replaying(void);
 
 void smpi_deployment_register_process(const char* instance_id, int rank, int index, MPI_Comm**, xbt_bar_t*);
 void smpi_deployment_cleanup_instances(void);
 
 void smpi_comm_copy_buffer_callback(smx_action_t comm,
+                                           void *buff, size_t buff_size);
+
+void smpi_comm_null_copy_buffer_callback(smx_action_t comm,
                                            void *buff, size_t buff_size);
 
 void print_request(const char *message, MPI_Request request);

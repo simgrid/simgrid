@@ -35,6 +35,7 @@ typedef struct s_smpi_process_data {
   char state;
   int sampling;                 /* inside an SMPI_SAMPLE_ block? */
   char* instance_id;
+  int replaying;                /* is the process replaying a trace */
   xbt_bar_t finalization_barrier;
 } s_smpi_process_data_t;
 
@@ -91,6 +92,7 @@ void smpi_process_init(int *argc, char ***argv)
     if(temp_bar != NULL) data->finalization_barrier = temp_bar;
     data->index = index;
     data->instance_id = instance_id;
+    data->replaying = 0;
     xbt_free(simcall_process_get_data(proc));
     simcall_process_set_data(proc, data);
     if (*argc > 3) {
@@ -171,6 +173,19 @@ void smpi_process_mark_as_initialized(void)
   int index = smpi_process_index();
   if ((index != MPI_UNDEFINED) && (process_data[index_to_process_data[index]]->state != SMPI_FINALIZED))
     process_data[index_to_process_data[index]]->state = SMPI_INITIALIZED;
+}
+
+void smpi_process_set_replaying(int value){
+  int index = smpi_process_index();
+  if ((index != MPI_UNDEFINED) && (process_data[index_to_process_data[index]]->state != SMPI_FINALIZED))
+    process_data[index_to_process_data[index]]->replaying = value;
+}
+
+int smpi_process_get_replaying(){
+  int index = smpi_process_index();
+  if (index != MPI_UNDEFINED)
+    return process_data[index_to_process_data[index]]->replaying;
+  else return _xbt_replay_is_active();
 }
 
 
@@ -356,6 +371,13 @@ void smpi_comm_copy_buffer_callback(smx_action_t comm,
 
   if(tmpbuff!=buff)xbt_free(tmpbuff);
 
+}
+
+
+void smpi_comm_null_copy_buffer_callback(smx_action_t comm,
+                                           void *buff, size_t buff_size)
+{
+  return;
 }
 
 static void smpi_check_options(){

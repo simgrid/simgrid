@@ -33,7 +33,7 @@ static void log_timed_action (const char *const *action, double clock){
 
 //allocate a single buffer for all sends, growing it if needed
 void* smpi_get_tmp_sendbuffer(int size){
-  if (!_xbt_replay_is_active())
+  if (!smpi_process_get_replaying())
 	return xbt_malloc(size);
   if (sendbuffer_size<size){
     sendbuffer=xbt_realloc(sendbuffer,size);
@@ -43,7 +43,7 @@ void* smpi_get_tmp_sendbuffer(int size){
 }
 //allocate a single buffer for all recv
 void* smpi_get_tmp_recvbuffer(int size){
-  if (!_xbt_replay_is_active())
+  if (!smpi_process_get_replaying())
 	return xbt_malloc(size);
   if (recvbuffer_size<size){
     recvbuffer=xbt_realloc(recvbuffer,size);
@@ -53,7 +53,7 @@ void* smpi_get_tmp_recvbuffer(int size){
 }
 
 void smpi_free_tmp_buffer(void* buf){
-  if (!_xbt_replay_is_active())
+  if (!smpi_process_get_replaying())
     xbt_free(buf);
 }
 
@@ -988,6 +988,7 @@ static void action_allToAllv(const char *const *action) {
 void smpi_replay_init(int *argc, char***argv){
   smpi_process_init(argc, argv);
   smpi_process_mark_as_initialized();
+  smpi_process_set_replaying(1);
 #ifdef HAVE_TRACING
   int rank = smpi_process_index();
   TRACE_smpi_init(rank);
