@@ -306,13 +306,13 @@ void smpi_comm_unuse(MPI_Comm comm){
       xbt_free(comm->leaders_map);
     if(comm->attributes !=NULL){
       xbt_dict_cursor_t cursor = NULL;
-      char *key;
+      int* key;
       smpi_key_elem elem;
       void * value;
       int flag;
       xbt_dict_foreach(comm->attributes, cursor, key, elem){
-        if(smpi_attr_get(comm, (int)key, &value, &flag)==MPI_SUCCESS)
-          elem->delete_fn(comm, (int)key, &value, &flag);
+        if(smpi_attr_get(comm, *key, &value, &flag)==MPI_SUCCESS)
+          elem->delete_fn(comm, *key, &value, &flag);
       }
     }
     xbt_free(comm);
