@@ -3001,6 +3001,31 @@ int PMPI_Attr_put(MPI_Comm comm, int keyval, void* attr_value) {
   return smpi_attr_put(comm, keyval, attr_value);
 }
 
+
+int PMPI_Comm_get_attr (MPI_Comm comm, int comm_keyval, void *attribute_val, int *flag)
+{
+  return PMPI_Attr_get(comm, comm_keyval, attribute_val,flag);
+}
+
+int PMPI_Comm_set_attr (MPI_Comm comm, int comm_keyval, void *attribute_val)
+{
+  return PMPI_Attr_put(comm, comm_keyval, attribute_val);
+}
+
+int PMPI_Comm_delete_attr (MPI_Comm comm, int comm_keyval)
+{
+  return PMPI_Attr_delete(comm, comm_keyval);
+}
+
+int PMPI_Comm_create_keyval(MPI_Comm_copy_attr_function* copy_fn, MPI_Comm_delete_attr_function* delete_fn, int* keyval, void* extra_state)
+{
+  return PMPI_Keyval_create(copy_fn, delete_fn, keyval, extra_state);
+}
+
+int PMPI_Comm_free_keyval(int* keyval) {
+  return PMPI_Keyval_free(keyval);
+}
+
 /* The following calls are not yet implemented and will fail at runtime. */
 /* Once implemented, please move them above this notice. */
 
@@ -3109,30 +3134,6 @@ int PMPI_Buffer_detach(void* buffer, int* size) {
 }
 
 int PMPI_Comm_test_inter(MPI_Comm comm, int* flag) {
-  NOT_YET_IMPLEMENTED
-}
-
-int PMPI_Comm_get_attr (MPI_Comm comm, int comm_keyval, void *attribute_val, int *flag)
-{
-  NOT_YET_IMPLEMENTED
-}
-
-int PMPI_Comm_set_attr (MPI_Comm comm, int comm_keyval, void *attribute_val)
-{
-  NOT_YET_IMPLEMENTED
-}
-
-int PMPI_Comm_delete_attr (MPI_Comm comm, int comm_keyval)
-{
-  NOT_YET_IMPLEMENTED
-}
-
-int PMPI_Comm_create_keyval(MPI_Comm_copy_attr_function* copy_fn, MPI_Comm_delete_attr_function* delete_fn, int* keyval, void* extra_state)
-{
-  NOT_YET_IMPLEMENTED
-}
-
-int PMPI_Comm_free_keyval(int* keyval) {
   NOT_YET_IMPLEMENTED
 }
 
