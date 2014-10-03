@@ -113,6 +113,11 @@ typedef struct s_smpi_mpi_request {
 #endif
 } s_smpi_mpi_request_t;
 
+typedef struct s_smpi_mpi_key_elem {
+  MPI_Copy_function* copy_fn;
+  MPI_Delete_function* delete_fn;
+} s_smpi_mpi_key_elem_t; 
+typedef struct s_smpi_mpi_key_elem *smpi_key_elem;
 
 void smpi_process_destroy(void);
 void smpi_process_finalize(void);
@@ -251,6 +256,7 @@ int smpi_comm_size(MPI_Comm comm);
 void smpi_comm_get_name(MPI_Comm comm, char* name, int* len);
 int smpi_comm_rank(MPI_Comm comm);
 MPI_Comm smpi_comm_split(MPI_Comm comm, int color, int key);
+MPI_Comm smpi_comm_dup(MPI_Comm comm);
 void smpi_comm_use(MPI_Comm comm);
 void smpi_comm_unuse(MPI_Comm comm);
 void smpi_comm_set_leaders_comm(MPI_Comm comm, MPI_Comm leaders);
@@ -403,6 +409,13 @@ int smpi_coll_basic_alltoallv(void *sendbuf, int *sendcounts,
                               void *recvbuf, int *recvcounts,
                               int *recvdisps, MPI_Datatype recvtype,
                               MPI_Comm comm);
+                              
+int smpi_keyval_create(MPI_Copy_function* copy_fn, MPI_Delete_function* delete_fn, int* keyval, void* extra_state);
+int smpi_keyval_free(int* keyval);
+int smpi_attr_delete(MPI_Comm comm, int keyval);
+int smpi_attr_get(MPI_Comm comm, int keyval, void* attr_value, int* flag);
+int smpi_attr_put(MPI_Comm comm, int keyval, void* attr_value);
+
 
 // utilities
 extern double smpi_cpu_threshold;
@@ -423,6 +436,10 @@ void smpi_bench_end(void);
 void* smpi_get_tmp_sendbuffer(int size);
 void* smpi_get_tmp_recvbuffer(int size);
 void  smpi_free_tmp_buffer(void* buf);
+
+int smpi_comm_attr_delete(MPI_Comm comm, int keyval);
+int smpi_comm_attr_get(MPI_Comm comm, int keyval, void* attr_value, int* flag);
+int smpi_comm_attr_put(MPI_Comm comm, int keyval, void* attr_value);
 
 
 

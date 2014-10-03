@@ -7,12 +7,15 @@
 #include <stdlib.h>
 
 #include "private.h"
+#include "xbt/dict.h"
 #include "smpi_mpi_dt_private.h"
 #include "limits.h"
 #include "simix/smx_private.h"
 #include "colls/colls.h"
+#include "xbt/ex.h"
 
 
+extern xbt_dict_t smpi_keyvals;
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_comm, smpi,
                                 "Logging specific to SMPI (comm)");
 
@@ -34,6 +37,7 @@ typedef struct s_smpi_mpi_communicator {
   int is_uniform;
   int* non_uniform_map; //set if smp nodes have a different number of processes allocated
   int is_blocked;// are ranks allocated on the same smp node contiguous ?
+  xbt_dict_t attributes;
 } s_smpi_mpi_communicator_t;
 
 static int smpi_compare_rankmap(const void *a, const void *b)
@@ -72,6 +76,7 @@ MPI_Comm smpi_comm_new(MPI_Group group, MPI_Topology topo)
   comm->non_uniform_map = NULL;
   comm->leaders_map = NULL;
   comm->is_blocked=0;
+  comm->attributes=NULL;
   return comm;
 }
 
@@ -83,6 +88,32 @@ void smpi_comm_destroy(MPI_Comm comm)
   smpi_topo_destroy(comm->topo); // there's no use count on topos
   smpi_comm_unuse(comm);
 }
+
+MPI_Comm smpi_comm_dup(MPI_Comm comm){
+  if(smpi_privatize_global_variables){ //we need to switch here, as the called function may silently touch global variables
+     smpi_switch_data_segment(smpi_process_index());
+   }
+  MPI_Comm newcomm = smpi_comm_new(smpi_comm_group(comm), smpi_comm_topo(comm));
+
+  if(comm->attributes !=NULL){
+      newcomm->attributes=xbt_dict_new();
+      xbt_dict_cursor_t cursor = NULL;
+      int *key;
+      int flag;
+      void* value_in;
+      void* value_out;
+      xbt_dict_foreach(comm->attributes, cursor, key, value_in){
+        smpi_key_elem elem = xbt_dict_get_or_null(smpi_keyvals, (const char*)key);
+        if(elem && elem->copy_fn!=MPI_NULL_COPY_FN){
+          elem->copy_fn(comm, *key, NULL, value_in, &value_out, &flag );
+          if(flag)
+            xbt_dict_set(newcomm->attributes, (const char*)key,value_out, NULL);
+        }
+      }
+    }
+  return newcomm;
+}
+
 
 MPI_Group smpi_comm_group(MPI_Comm comm)
 {
@@ -273,6 +304,17 @@ void smpi_comm_unuse(MPI_Comm comm){
       xbt_free(comm->non_uniform_map);
     if(comm->leaders_map !=NULL)
       xbt_free(comm->leaders_map);
+    if(comm->attributes !=NULL){
+      xbt_dict_cursor_t cursor = NULL;
+      char *key;
+      smpi_key_elem elem;
+      void * value;
+      int flag;
+      xbt_dict_foreach(comm->attributes, cursor, key, elem){
+        if(smpi_attr_get(comm, (int)key, &value, &flag)==MPI_SUCCESS)
+          elem->delete_fn(comm, (int)key, &value, &flag);
+      }
+    }
     xbt_free(comm);
   }
 }
@@ -466,5 +508,39 @@ void smpi_comm_init_smp(MPI_Comm comm){
   
   if(replaying==1)
     smpi_process_set_replaying(1); 
+}
+
+
+int smpi_comm_attr_delete(MPI_Comm comm, int keyval){
+  if(comm->attributes==NULL)
+    return MPI_ERR_ARG;
+    
+  xbt_dict_remove(comm->attributes, (const char*)&keyval);
+  return MPI_SUCCESS;
+}
+int smpi_comm_attr_get(MPI_Comm comm, int keyval, void* attr_value, int* flag){
+  xbt_ex_t ex;
+  if(comm->attributes==NULL){
+    *flag=0;
+    return MPI_SUCCESS;
+  }
+  TRY {
+    *(void**)attr_value = xbt_dict_get(comm->attributes, (const char*)&keyval);
+    *flag=1;
+  }
+  CATCH(ex) {
+    *flag=0;
+    xbt_ex_free(ex);
+  }
+  
+  return MPI_SUCCESS;
+}
+
+int smpi_comm_attr_put(MPI_Comm comm, int keyval, void* attr_value){
+  if(comm->attributes==NULL)
+    comm->attributes=xbt_dict_new();
+
+  xbt_dict_set(comm->attributes, (const char*)&keyval, attr_value, NULL);
+  return MPI_SUCCESS;
 }
 

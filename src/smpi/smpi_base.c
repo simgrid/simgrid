@@ -75,6 +75,8 @@ double smpi_wtime_sleep = 0.0;
 double smpi_iprobe_sleep = 1e-4;
 double smpi_test_sleep = 1e-4;
 
+xbt_dict_t smpi_keyvals = NULL;
+int keyval_id=MPI_TAG_UB+1;//avoid collisions
 
 // Methods used to parse and store the values for timing injections in smpi
 // These are taken from surf/network.c and generalized to have more factors
@@ -1587,3 +1589,62 @@ void smpi_mpi_exscan(void *sendbuf, void *recvbuf, int count,
   xbt_free(tmpbufs);
   xbt_free(requests);
 }
+
+
+int smpi_keyval_create(MPI_Copy_function* copy_fn, MPI_Delete_function* delete_fn, int* keyval, void* extra_state){
+
+  if(!smpi_keyvals)
+  smpi_keyvals = xbt_dict_new();
+  
+  smpi_key_elem value = (smpi_key_elem) xbt_new0(s_smpi_mpi_key_elem_t,1);
+  
+  value->copy_fn=copy_fn;
+  value->delete_fn=delete_fn;
+  
+  *keyval = keyval_id;
+  
+  xbt_dict_set(smpi_keyvals,(const char*)keyval,(void*)value, NULL);
+  keyval_id++;
+  return MPI_SUCCESS;
+}
+
+int smpi_keyval_free(int* keyval){
+  smpi_key_elem elem = xbt_dict_get_or_null(smpi_keyvals, (const char*)keyval);
+  if(!elem)
+    return MPI_ERR_ARG;
+  xbt_dict_remove(smpi_keyvals, (const char*)keyval);
+  xbt_free(elem);
+  return MPI_SUCCESS;
+}
+
+int smpi_attr_delete(MPI_Comm comm, int keyval){
+  smpi_key_elem elem = xbt_dict_get_or_null(smpi_keyvals, (const char*)&keyval);
+  if(!elem)
+    return MPI_ERR_ARG;
+  if(elem->delete_fn!=MPI_NULL_DELETE_FN){
+    void * value;
+    int flag;
+    if(smpi_attr_get(comm, keyval, &value, &flag)==MPI_SUCCESS)
+      elem->delete_fn(comm, keyval, &value, &flag);
+  }  
+  return smpi_comm_attr_delete(comm, keyval);;
+}
+
+int smpi_attr_get(MPI_Comm comm, int keyval, void* attr_value, int* flag){
+  smpi_key_elem elem = xbt_dict_get_or_null(smpi_keyvals, (const char*)&keyval);
+  if(!elem)
+    return MPI_ERR_ARG;
+  return smpi_comm_attr_get(comm, keyval, attr_value, flag);;
+}
+
+int smpi_attr_put(MPI_Comm comm, int keyval, void* attr_value){
+
+  if(!smpi_keyvals)
+  smpi_keyvals = xbt_dict_new();
+  
+  smpi_key_elem elem = xbt_dict_get_or_null(smpi_keyvals, (const char*)&keyval);
+  if(!elem )
+    return MPI_ERR_ARG;
+  return smpi_comm_attr_put(comm, keyval, attr_value);;
+}
+

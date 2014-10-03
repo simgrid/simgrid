@@ -773,7 +773,7 @@ int PMPI_Comm_dup(MPI_Comm comm, MPI_Comm * newcomm)
   } else if (newcomm == NULL) {
     retval = MPI_ERR_ARG;
   } else {
-    *newcomm = smpi_comm_new(smpi_comm_group(comm), smpi_comm_topo(comm));
+    *newcomm = smpi_comm_dup(comm);
     retval = MPI_SUCCESS;
   }
   return retval;
@@ -2955,6 +2955,52 @@ MPI_Fint PMPI_Comm_c2f(MPI_Comm comm){
   return smpi_comm_c2f(comm);
 }
 
+int PMPI_Keyval_create(MPI_Copy_function* copy_fn, MPI_Delete_function* delete_fn, int* keyval, void* extra_state) {
+  return smpi_keyval_create(copy_fn, delete_fn, keyval, extra_state);
+}
+
+int PMPI_Keyval_free(int* keyval) {
+  return smpi_keyval_free(keyval);
+}
+
+int PMPI_Attr_delete(MPI_Comm comm, int keyval) {
+  if(keyval == MPI_TAG_UB||keyval == MPI_HOST||keyval == MPI_IO
+       ||keyval == MPI_WTIME_IS_GLOBAL||keyval == MPI_APPNUM
+       ||keyval == MPI_UNIVERSE_SIZE||keyval == MPI_LASTUSEDCODE)
+    return MPI_ERR_ARG;
+  else if (comm==MPI_COMM_NULL)
+    return MPI_ERR_COMM;
+  else
+    return smpi_attr_delete(comm, keyval);
+}
+
+int PMPI_Attr_get(MPI_Comm comm, int keyval, void* attr_value, int* flag) {
+  if (comm==MPI_COMM_NULL){
+    *flag=0;
+    return MPI_ERR_COMM;
+  } else if(keyval == MPI_TAG_UB||keyval == MPI_HOST||keyval == MPI_IO
+       ||keyval == MPI_WTIME_IS_GLOBAL||keyval == MPI_APPNUM
+       ||keyval == MPI_UNIVERSE_SIZE||keyval == MPI_LASTUSEDCODE){
+    *flag=1;
+    //FIXME : not ideal and leaky, but should not be called too much
+    int* res = xbt_new(int, 1);
+    *res=keyval;
+    attr_value=(void*)res;
+    return MPI_SUCCESS;
+  } else
+  return smpi_attr_get(comm, keyval, attr_value, flag);
+}
+
+int PMPI_Attr_put(MPI_Comm comm, int keyval, void* attr_value) {
+  if(keyval == MPI_TAG_UB||keyval == MPI_HOST||keyval == MPI_IO
+       ||keyval == MPI_WTIME_IS_GLOBAL||keyval == MPI_APPNUM
+       ||keyval == MPI_UNIVERSE_SIZE||keyval == MPI_LASTUSEDCODE)
+    return MPI_ERR_ARG;
+  else if (comm==MPI_COMM_NULL)
+    return MPI_ERR_COMM;
+  else
+  return smpi_attr_put(comm, keyval, attr_value);
+}
 
 /* The following calls are not yet implemented and will fail at runtime. */
 /* Once implemented, please move them above this notice. */
@@ -3152,18 +3198,6 @@ int PMPI_Comm_remote_size(MPI_Comm comm, int* size) {
   NOT_YET_IMPLEMENTED
 }
 
-int PMPI_Attr_delete(MPI_Comm comm, int keyval) {
-  NOT_YET_IMPLEMENTED
-}
-
-int PMPI_Attr_get(MPI_Comm comm, int keyval, void* attr_value, int* flag) {
-  NOT_YET_IMPLEMENTED
-}
-
-int PMPI_Attr_put(MPI_Comm comm, int keyval, void* attr_value) {
-  NOT_YET_IMPLEMENTED
-}
-
 int PMPI_Rsend(void* buf, int count, MPI_Datatype datatype, int dest, int tag, MPI_Comm comm) {
   NOT_YET_IMPLEMENTED
 }
@@ -3173,14 +3207,6 @@ int PMPI_Rsend_init(void* buf, int count, MPI_Datatype datatype, int dest, int t
 }
 
 int PMPI_Irsend(void* buf, int count, MPI_Datatype datatype, int dest, int tag, MPI_Comm comm, MPI_Request* request) {
-  NOT_YET_IMPLEMENTED
-}
-
-int PMPI_Keyval_create(MPI_Copy_function* copy_fn, MPI_Delete_function* delete_fn, int* keyval, void* extra_state) {
-  NOT_YET_IMPLEMENTED
-}
-
-int PMPI_Keyval_free(int* keyval) {
   NOT_YET_IMPLEMENTED
 }
 
