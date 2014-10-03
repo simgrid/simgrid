@@ -81,7 +81,7 @@ if(DOXYGEN_FOUND)
   add_dependencies(pdf doc)
 
 
-endif()
+
 
 #############################################
 ### Fill in the "make sync-gforge" target ###
@@ -106,4 +106,6 @@ add_custom_target(sync-gforge-dtd
   COMMAND ${RSYNC_CMD} src/surf/simgrid.dtd scm.gforge.inria.fr:/home/groups/simgrid/htdocs/simgrid.dtd
   WORKING_DIRECTORY "${CMAKE_HOME_DIRECTORY}"
   )
+  
+endif()
 
