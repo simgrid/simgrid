@@ -1,8 +1,7 @@
 attrt 2
 #needs MPI_Intercomm_create
 #attric 4
-#TODO
-#attrerr 1
+attrerr 1
 #      The MPI-2 specification makes it clear that delect attributes are 
 #      called on MPI_COMM_WORLD and MPI_COMM_SELF at the very beginning of
 #      MPI_Finalize.  This is useful for tools that want to perform the MPI 
@@ -23,12 +22,10 @@ attrorder 1
 #attrordercomm 1
 #needs MPI_Type_create_keyval, MPI_Type_delete_keyval, MPI_Type_set_attr, MPI_Type_delete_attr
 #attrordertype 1
-#TODO
-#baseattr2 1
+baseattr2 1
 #needs MPI_Comm_get_attr
 #baseattrcomm 1
 #MPI_Keyval_create, MPI_Keyval_free for type and comm also
-#TODO
 #fkeyval 1
 #fkeyvalcomm 1
 #fkeyvaltype 1

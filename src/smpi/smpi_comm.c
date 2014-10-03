@@ -89,14 +89,33 @@ void smpi_comm_destroy(MPI_Comm comm)
   smpi_comm_unuse(comm);
 }
 
-MPI_Comm smpi_comm_dup(MPI_Comm comm){
+int smpi_comm_dup(MPI_Comm comm, MPI_Comm* newcomm){
   if(smpi_privatize_global_variables){ //we need to switch here, as the called function may silently touch global variables
      smpi_switch_data_segment(smpi_process_index());
    }
-  MPI_Comm newcomm = smpi_comm_new(smpi_comm_group(comm), smpi_comm_topo(comm));
-
+  (*newcomm) = smpi_comm_new(smpi_comm_group(comm), smpi_comm_topo(comm));
+  int ret = MPI_SUCCESS;
+  //todo: faire en sorte que ça fonctionne avec un communicator dupliqué (refaire un init_smp ?)
+  
+ /* MPI_Comm tmp=smpi_comm_get_intra_comm(comm);
+  if( tmp != MPI_COMM_NULL)
+    smpi_comm_set_intra_comm((*newcomm), smpi_comm_dup(tmp));
+  tmp=smpi_comm_get_leaders_comm(comm);
+  if( tmp != MPI_COMM_NULL)
+    smpi_comm_set_leaders_comm((*newcomm), smpi_comm_dup(tmp));
+  if(comm->non_uniform_map !=NULL){
+    (*newcomm)->non_uniform_map= 
+      xbt_malloc(smpi_comm_size(comm->leaders_comm)*sizeof(int));
+    memcpy((*newcomm)->non_uniform_map,
+      comm->non_uniform_map,smpi_comm_size(comm->leaders_comm)*sizeof(int) );
+  }
+  if(comm->leaders_map !=NULL){
+    (*newcomm)->leaders_map=xbt_malloc(smpi_comm_size(comm)*sizeof(int));
+    memcpy((*newcomm)->leaders_map, 
+      comm->leaders_map,smpi_comm_size(comm)*sizeof(int) );
+  }*/
   if(comm->attributes !=NULL){
-      newcomm->attributes=xbt_dict_new();
+      (*newcomm)->attributes=xbt_dict_new();
       xbt_dict_cursor_t cursor = NULL;
       int *key;
       int flag;
@@ -105,13 +124,18 @@ MPI_Comm smpi_comm_dup(MPI_Comm comm){
       xbt_dict_foreach(comm->attributes, cursor, key, value_in){
         smpi_key_elem elem = xbt_dict_get_or_null(smpi_keyvals, (const char*)key);
         if(elem && elem->copy_fn!=MPI_NULL_COPY_FN){
-          elem->copy_fn(comm, *key, NULL, value_in, &value_out, &flag );
+          ret = elem->copy_fn(comm, *key, NULL, value_in, &value_out, &flag );
+          if(ret!=MPI_SUCCESS){
+            smpi_comm_destroy(*newcomm);
+            *newcomm=MPI_COMM_NULL;
+            return ret;
+          }
           if(flag)
-            xbt_dict_set(newcomm->attributes, (const char*)key,value_out, NULL);
+            xbt_dict_set((*newcomm)->attributes, (const char*)key,value_out, NULL);
         }
       }
     }
-  return newcomm;
+  return ret;
 }
 
 
@@ -307,11 +331,11 @@ void smpi_comm_unuse(MPI_Comm comm){
     if(comm->attributes !=NULL){
       xbt_dict_cursor_t cursor = NULL;
       int* key;
-      smpi_key_elem elem;
       void * value;
       int flag;
-      xbt_dict_foreach(comm->attributes, cursor, key, elem){
-        if(smpi_attr_get(comm, *key, &value, &flag)==MPI_SUCCESS)
+      xbt_dict_foreach(comm->attributes, cursor, key, value){
+        smpi_key_elem elem = xbt_dict_get_or_null(smpi_keyvals, (const char*)key);
+        if(elem)
           elem->delete_fn(comm, *key, &value, &flag);
       }
     }

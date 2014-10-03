@@ -773,8 +773,7 @@ int PMPI_Comm_dup(MPI_Comm comm, MPI_Comm * newcomm)
   } else if (newcomm == NULL) {
     retval = MPI_ERR_ARG;
   } else {
-    *newcomm = smpi_comm_dup(comm);
-    retval = MPI_SUCCESS;
+    retval = smpi_comm_dup(comm, newcomm);
   }
   return retval;
 }
@@ -2985,7 +2984,7 @@ int PMPI_Attr_get(MPI_Comm comm, int keyval, void* attr_value, int* flag) {
     //FIXME : not ideal and leaky, but should not be called too much
     int* res = xbt_new(int, 1);
     *res=keyval;
-    attr_value=(void*)res;
+    *(int**)attr_value=res;
     return MPI_SUCCESS;
   } else
   return smpi_attr_get(comm, keyval, attr_value, flag);

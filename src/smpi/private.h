@@ -256,7 +256,7 @@ int smpi_comm_size(MPI_Comm comm);
 void smpi_comm_get_name(MPI_Comm comm, char* name, int* len);
 int smpi_comm_rank(MPI_Comm comm);
 MPI_Comm smpi_comm_split(MPI_Comm comm, int color, int key);
-MPI_Comm smpi_comm_dup(MPI_Comm comm);
+int smpi_comm_dup(MPI_Comm comm, MPI_Comm* newcomm);
 void smpi_comm_use(MPI_Comm comm);
 void smpi_comm_unuse(MPI_Comm comm);
 void smpi_comm_set_leaders_comm(MPI_Comm comm, MPI_Comm leaders);
