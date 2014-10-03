@@ -752,6 +752,13 @@ MPI_CALL(XBT_PUBLIC(int), MPI_Comm_spawn,( char *command, char **argv, int maxpr
 MPI_CALL(XBT_PUBLIC(int), MPI_Comm_spawn_multiple,( int count, char **array_of_commands, char*** array_of_argv, int* array_of_maxprocs, MPI_Info* array_of_info, 
                                                     int root, MPI_Comm comm, MPI_Comm *intercomm, int* array_of_errcodes));
 MPI_CALL(XBT_PUBLIC(int), MPI_Comm_get_parent,( MPI_Comm *parent));
+MPI_CALL(XBT_PUBLIC(int),  MPI_Win_complete,(MPI_Win win));
+MPI_CALL(XBT_PUBLIC(int),  MPI_Win_lock,(int lock_type, int rank, int assert, MPI_Win win));
+MPI_CALL(XBT_PUBLIC(int),  MPI_Win_post,(MPI_Group group, int assert, MPI_Win win));
+MPI_CALL(XBT_PUBLIC(int),  MPI_Win_start,(MPI_Group group, int assert, MPI_Win win));
+MPI_CALL(XBT_PUBLIC(int),  MPI_Win_test,(MPI_Win win, int *flag));
+MPI_CALL(XBT_PUBLIC(int),  MPI_Win_unlock,(int rank, MPI_Win win));
+MPI_CALL(XBT_PUBLIC(int),  MPI_Win_wait,(MPI_Win win));
 
 //FIXME: End of all the not yet implemented stuff
 

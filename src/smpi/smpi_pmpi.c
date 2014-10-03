@@ -3380,3 +3380,31 @@ int PMPI_Comm_spawn_multiple( int count, char **array_of_commands, char*** array
 int PMPI_Comm_get_parent( MPI_Comm *parent){
   NOT_YET_IMPLEMENTED
 }
+
+int PMPI_Win_complete(MPI_Win win){
+  NOT_YET_IMPLEMENTED
+}
+
+int PMPI_Win_lock(int lock_type, int rank, int assert, MPI_Win win) {
+  NOT_YET_IMPLEMENTED
+}
+
+int PMPI_Win_post(MPI_Group group, int assert, MPI_Win win){
+  NOT_YET_IMPLEMENTED
+}
+
+int PMPI_Win_start(MPI_Group group, int assert, MPI_Win win){
+  NOT_YET_IMPLEMENTED
+}
+
+int PMPI_Win_test(MPI_Win win, int *flag){
+  NOT_YET_IMPLEMENTED
+}
+
+int PMPI_Win_unlock(int rank, MPI_Win win){
+  NOT_YET_IMPLEMENTED
+}
+
+int PMPI_Win_wait(MPI_Win win){
+  NOT_YET_IMPLEMENTED
+}
