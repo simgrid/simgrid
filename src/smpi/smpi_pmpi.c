@@ -2954,11 +2954,11 @@ MPI_Fint PMPI_Comm_c2f(MPI_Comm comm){
 }
 
 int PMPI_Keyval_create(MPI_Copy_function* copy_fn, MPI_Delete_function* delete_fn, int* keyval, void* extra_state) {
-  return smpi_keyval_create(copy_fn, delete_fn, keyval, extra_state);
+  return smpi_comm_keyval_create(copy_fn, delete_fn, keyval, extra_state);
 }
 
 int PMPI_Keyval_free(int* keyval) {
-  return smpi_keyval_free(keyval);
+  return smpi_comm_keyval_free(keyval);
 }
 
 int PMPI_Attr_delete(MPI_Comm comm, int keyval) {
@@ -2969,7 +2969,7 @@ int PMPI_Attr_delete(MPI_Comm comm, int keyval) {
   else if (comm==MPI_COMM_NULL)
     return MPI_ERR_COMM;
   else
-    return smpi_attr_delete(comm, keyval);
+    return smpi_comm_attr_delete(comm, keyval);
 }
 
 int PMPI_Attr_get(MPI_Comm comm, int keyval, void* attr_value, int* flag) {
@@ -2986,7 +2986,7 @@ int PMPI_Attr_get(MPI_Comm comm, int keyval, void* attr_value, int* flag) {
     *(int**)attr_value=res;
     return MPI_SUCCESS;
   } else
-  return smpi_attr_get(comm, keyval, attr_value, flag);
+  return smpi_comm_attr_get(comm, keyval, attr_value, flag);
 }
 
 int PMPI_Attr_put(MPI_Comm comm, int keyval, void* attr_value) {
@@ -2997,7 +2997,7 @@ int PMPI_Attr_put(MPI_Comm comm, int keyval, void* attr_value) {
   else if (comm==MPI_COMM_NULL)
     return MPI_ERR_COMM;
   else
-  return smpi_attr_put(comm, keyval, attr_value);
+  return smpi_comm_attr_put(comm, keyval, attr_value);
 }
 
 int PMPI_Comm_get_attr (MPI_Comm comm, int comm_keyval, void *attribute_val, int *flag)

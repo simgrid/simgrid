@@ -601,9 +601,8 @@ typedef void* MPI_Errhandler;
 typedef int MPI_Copy_function(MPI_Comm oldcomm, int keyval, void* extra_state, void* attribute_val_in,
                               void* attribute_val_out, int* flag);
 typedef int MPI_Delete_function(MPI_Comm comm, int keyval, void* attribute_val, void* extra_state);
-typedef int MPI_Comm_copy_attr_function(MPI_Comm oldcomm, int keyval, void* extra_state, void* attribute_val_in,
-                              void* attribute_val_out, int* flag);
-typedef int MPI_Comm_delete_attr_function(MPI_Comm comm, int keyval, void* attribute_val, void* extra_state);
+#define MPI_Comm_copy_attr_function MPI_Copy_function
+#define MPI_Comm_delete_attr_function MPI_Delete_function
 typedef int MPI_Type_copy_attr_function(MPI_Datatype type, int keyval, void* extra_state, void* attribute_val_in,
                               void* attribute_val_out, int* flag);
 typedef int MPI_Type_delete_attr_function(MPI_Datatype type, int keyval, void* attribute_val, void* extra_state);

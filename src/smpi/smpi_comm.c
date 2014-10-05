@@ -14,12 +14,13 @@
 #include "colls/colls.h"
 #include "xbt/ex.h"
 
-
-extern xbt_dict_t smpi_keyvals;
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_comm, smpi,
                                 "Logging specific to SMPI (comm)");
 
 
+
+xbt_dict_t smpi_comm_keyvals = NULL;
+int comm_keyval_id=MPI_TAG_UB+1;//avoid collisions
 
 /* Support for cartesian topology was added, but there are 2 other types of
  * topology, graph et dist graph. In order to support them, we have to add a
@@ -122,9 +123,9 @@ int smpi_comm_dup(MPI_Comm comm, MPI_Comm* newcomm){
       void* value_in;
       void* value_out;
       xbt_dict_foreach(comm->attributes, cursor, key, value_in){
-        smpi_key_elem elem = xbt_dict_get_or_null(smpi_keyvals, (const char*)key);
+        smpi_comm_key_elem elem = xbt_dict_get_or_null(smpi_comm_keyvals, (const char*)key);
         if(elem && elem->copy_fn!=MPI_NULL_COPY_FN){
-          ret = elem->copy_fn(comm, *key, NULL, value_in, &value_out, &flag );
+          ret = elem->copy_fn(comm, atoi((const char*)key), NULL, value_in, &value_out, &flag );
           if(ret!=MPI_SUCCESS){
             smpi_comm_destroy(*newcomm);
             *newcomm=MPI_COMM_NULL;
@@ -334,9 +335,9 @@ void smpi_comm_unuse(MPI_Comm comm){
       void * value;
       int flag;
       xbt_dict_foreach(comm->attributes, cursor, key, value){
-        smpi_key_elem elem = xbt_dict_get_or_null(smpi_keyvals, (const char*)key);
-        if(elem)
-          elem->delete_fn(comm, *key, &value, &flag);
+        smpi_comm_key_elem elem = xbt_dict_get_or_null(smpi_comm_keyvals, (const char*)key);
+        if(elem &&  elem->delete_fn)
+          elem->delete_fn(comm, atoi((const char*)key), value, &flag);
       }
     }
     xbt_free(comm);
@@ -534,36 +535,104 @@ void smpi_comm_init_smp(MPI_Comm comm){
     smpi_process_set_replaying(1); 
 }
 
-
 int smpi_comm_attr_delete(MPI_Comm comm, int keyval){
+  char* tmpkey=xbt_malloc(sizeof(int));
+  sprintf(tmpkey, "%d", keyval);
+  smpi_comm_key_elem elem = xbt_dict_get_or_null(smpi_comm_keyvals, (const char*)tmpkey);
+  if(!elem)
+    return MPI_ERR_ARG;
+  if(elem->delete_fn!=MPI_NULL_DELETE_FN){
+    void * value;
+    int flag;
+    if(smpi_comm_attr_get(comm, keyval, &value, &flag)==MPI_SUCCESS){
+      int ret = elem->delete_fn(comm, keyval, &value, &flag);
+      if(ret!=MPI_SUCCESS) return ret;
+    }
+  }  
   if(comm->attributes==NULL)
     return MPI_ERR_ARG;
-    
-  xbt_dict_remove(comm->attributes, (const char*)&keyval);
+
+  xbt_dict_remove(comm->attributes, (const char*)tmpkey);
+  xbt_free(tmpkey);
   return MPI_SUCCESS;
 }
+
 int smpi_comm_attr_get(MPI_Comm comm, int keyval, void* attr_value, int* flag){
+  char* tmpkey=xbt_malloc(sizeof(int));
+  sprintf(tmpkey, "%d", keyval);
+  smpi_comm_key_elem elem = xbt_dict_get_or_null(smpi_comm_keyvals, (const char*)tmpkey);
+  if(!elem)
+    return MPI_ERR_ARG;
   xbt_ex_t ex;
   if(comm->attributes==NULL){
     *flag=0;
     return MPI_SUCCESS;
   }
   TRY {
-    *(void**)attr_value = xbt_dict_get(comm->attributes, (const char*)&keyval);
+  char* tmpkey=xbt_malloc(sizeof(int));
+  sprintf(tmpkey, "%d", keyval);
+    *(void**)attr_value = xbt_dict_get(comm->attributes, (const char*)tmpkey);
     *flag=1;
   }
   CATCH(ex) {
     *flag=0;
     xbt_ex_free(ex);
   }
+  xbt_free(tmpkey);
   return MPI_SUCCESS;
 }
 
 int smpi_comm_attr_put(MPI_Comm comm, int keyval, void* attr_value){
+  if(!smpi_comm_keyvals)
+  smpi_comm_keyvals = xbt_dict_new();
+  char* tmpkey=xbt_malloc(sizeof(int));
+  sprintf(tmpkey, "%d", keyval);
+  smpi_comm_key_elem elem = xbt_dict_get_or_null(smpi_comm_keyvals, (const char*)tmpkey);
+  if(!elem )
+    return MPI_ERR_ARG;
+  int flag;
+  void* value;
+  smpi_comm_attr_get(comm, keyval, &value, &flag);
+  if(flag && elem->delete_fn!=MPI_NULL_DELETE_FN){
+    int ret = elem->delete_fn(comm, keyval, &value, &flag);
+    if(ret!=MPI_SUCCESS) return ret;
+  }
   if(comm->attributes==NULL)
     comm->attributes=xbt_dict_new();
 
-  xbt_dict_set(comm->attributes, (const char*)&keyval, attr_value, NULL);
+  xbt_dict_set(comm->attributes, (const char*)tmpkey, attr_value, NULL);
+  xbt_free(tmpkey);
+  return MPI_SUCCESS;
+}
+
+int smpi_comm_keyval_create(MPI_Comm_copy_attr_function* copy_fn, MPI_Comm_delete_attr_function* delete_fn, int* keyval, void* extra_state){
+
+  if(!smpi_comm_keyvals)
+  smpi_comm_keyvals = xbt_dict_new();
+  
+  smpi_comm_key_elem value = (smpi_comm_key_elem) xbt_new0(s_smpi_mpi_comm_key_elem_t,1);
+  
+  value->copy_fn=copy_fn;
+  value->delete_fn=delete_fn;
+  
+  *keyval = comm_keyval_id;
+  char* tmpkey=xbt_malloc(sizeof(int));
+  sprintf(tmpkey, "%d", *keyval);
+  xbt_dict_set(smpi_comm_keyvals,(const char*)tmpkey,(void*)value, NULL);
+  comm_keyval_id++;
+  xbt_free(tmpkey);
+  return MPI_SUCCESS;
+}
+
+int smpi_comm_keyval_free(int* keyval){
+  smpi_comm_key_elem elem = xbt_dict_get_or_null(smpi_comm_keyvals, (const char*)keyval);
+  if(!elem)
+    return MPI_ERR_ARG;
+  char* tmpkey=xbt_malloc(sizeof(int));
+  sprintf(tmpkey, "%d", *keyval);
+  xbt_dict_remove(smpi_comm_keyvals, (const char*)tmpkey);
+  xbt_free(elem);
+  xbt_free(tmpkey);
   return MPI_SUCCESS;
 }
 

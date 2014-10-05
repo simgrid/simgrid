@@ -114,11 +114,11 @@ typedef struct s_smpi_mpi_request {
 #endif
 } s_smpi_mpi_request_t;
 
-typedef struct s_smpi_mpi_key_elem {
-  MPI_Copy_function* copy_fn;
-  MPI_Delete_function* delete_fn;
-} s_smpi_mpi_key_elem_t; 
-typedef struct s_smpi_mpi_key_elem *smpi_key_elem;
+typedef struct s_smpi_mpi_comm_key_elem {
+  MPI_Comm_copy_attr_function* copy_fn;
+  MPI_Comm_delete_attr_function* delete_fn;
+} s_smpi_mpi_comm_key_elem_t; 
+typedef struct s_smpi_mpi_comm_key_elem *smpi_comm_key_elem;
 
 typedef struct s_smpi_mpi_type_key_elem {
   MPI_Type_copy_attr_function* copy_fn;
@@ -417,11 +417,11 @@ int smpi_coll_basic_alltoallv(void *sendbuf, int *sendcounts,
                               int *recvdisps, MPI_Datatype recvtype,
                               MPI_Comm comm);
                               
-int smpi_keyval_create(MPI_Copy_function* copy_fn, MPI_Delete_function* delete_fn, int* keyval, void* extra_state);
-int smpi_keyval_free(int* keyval);
-int smpi_attr_delete(MPI_Comm comm, int keyval);
-int smpi_attr_get(MPI_Comm comm, int keyval, void* attr_value, int* flag);
-int smpi_attr_put(MPI_Comm comm, int keyval, void* attr_value);
+int smpi_comm_keyval_create(MPI_Comm_copy_attr_function* copy_fn, MPI_Comm_delete_attr_function* delete_fn, int* keyval, void* extra_state);
+int smpi_comm_keyval_free(int* keyval);
+int smpi_comm_attr_delete(MPI_Comm comm, int keyval);
+int smpi_comm_attr_get(MPI_Comm comm, int keyval, void* attr_value, int* flag);
+int smpi_comm_attr_put(MPI_Comm comm, int keyval, void* attr_value);
 int smpi_type_attr_delete(MPI_Datatype type, int keyval);
 int smpi_type_attr_get(MPI_Datatype type, int keyval, void* attr_value, int* flag);
 int smpi_type_attr_put(MPI_Datatype type, int keyval, void* attr_value);

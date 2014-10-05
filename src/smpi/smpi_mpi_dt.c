@@ -410,7 +410,7 @@ void smpi_datatype_free(MPI_Datatype* type){
       int flag;
       xbt_dict_foreach((*type)->attributes, cursor, key, value){
         smpi_type_key_elem elem = xbt_dict_get_or_null(smpi_type_keyvals, (const char*)key);
-        if(elem)
+        if(elem &&  elem->delete_fn)
           elem->delete_fn(*type, atoi((const char*)key), &value, &flag);
       }
   }
@@ -1686,6 +1686,7 @@ int smpi_type_attr_delete(MPI_Datatype type, int keyval){
     return MPI_ERR_ARG;
 
   xbt_dict_remove(type->attributes, (const char*)tmpkey);
+  xbt_free(tmpkey);
   return MPI_SUCCESS;
 }
 
@@ -1710,6 +1711,7 @@ int smpi_type_attr_get(MPI_Datatype type, int keyval, void* attr_value, int* fla
     *flag=0;
     xbt_ex_free(ex);
   }
+  xbt_free(tmpkey);
   return MPI_SUCCESS;
 }
 
@@ -1732,6 +1734,7 @@ int smpi_type_attr_put(MPI_Datatype type, int keyval, void* attr_value){
     type->attributes=xbt_dict_new();
 
   xbt_dict_set(type->attributes, (const char*)tmpkey, attr_value, NULL);
+  xbt_free(tmpkey);
   return MPI_SUCCESS;
 }
 
@@ -1750,6 +1753,7 @@ int smpi_type_keyval_create(MPI_Type_copy_attr_function* copy_fn, MPI_Type_delet
   sprintf(tmpkey, "%d", *keyval);
   xbt_dict_set(smpi_type_keyvals,(const char*)tmpkey,(void*)value, NULL);
   type_keyval_id++;
+  xbt_free(tmpkey);
   return MPI_SUCCESS;
 }
 
@@ -1761,5 +1765,6 @@ int smpi_type_keyval_free(int* keyval){
   sprintf(tmpkey, "%d", *keyval);
   xbt_dict_remove(smpi_type_keyvals, (const char*)tmpkey);
   xbt_free(elem);
+  xbt_free(tmpkey);
   return MPI_SUCCESS;
 }
