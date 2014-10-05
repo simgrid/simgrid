@@ -253,8 +253,7 @@ int PMPI_Type_dup(MPI_Datatype datatype, MPI_Datatype *newtype){
   if (datatype == MPI_DATATYPE_NULL) {
     retval = MPI_ERR_TYPE;
   } else {
-    *newtype = smpi_datatype_dup(datatype);
-    retval = MPI_SUCCESS;
+    retval = smpi_datatype_dup(datatype, newtype);
   }
   return retval;
 }
@@ -3001,7 +3000,6 @@ int PMPI_Attr_put(MPI_Comm comm, int keyval, void* attr_value) {
   return smpi_attr_put(comm, keyval, attr_value);
 }
 
-
 int PMPI_Comm_get_attr (MPI_Comm comm, int comm_keyval, void *attribute_val, int *flag)
 {
   return PMPI_Attr_get(comm, comm_keyval, attribute_val,flag);
@@ -3024,6 +3022,40 @@ int PMPI_Comm_create_keyval(MPI_Comm_copy_attr_function* copy_fn, MPI_Comm_delet
 
 int PMPI_Comm_free_keyval(int* keyval) {
   return PMPI_Keyval_free(keyval);
+}
+
+
+int PMPI_Type_get_attr (MPI_Datatype type, int type_keyval, void *attribute_val, int* flag)
+{
+  if (type==MPI_DATATYPE_NULL)
+    return MPI_ERR_TYPE;
+  else
+    return smpi_type_attr_get(type, type_keyval, attribute_val, flag);
+}
+
+int PMPI_Type_set_attr (MPI_Datatype type, int type_keyval, void *attribute_val)
+{
+  if (type==MPI_DATATYPE_NULL)
+    return MPI_ERR_TYPE;
+  else
+    return smpi_type_attr_put(type, type_keyval, attribute_val);
+}
+
+int PMPI_Type_delete_attr (MPI_Datatype type, int type_keyval)
+{
+  if (type==MPI_DATATYPE_NULL)
+    return MPI_ERR_TYPE;
+  else
+    return smpi_type_attr_delete(type, type_keyval);
+}
+
+int PMPI_Type_create_keyval(MPI_Type_copy_attr_function* copy_fn, MPI_Type_delete_attr_function* delete_fn, int* keyval, void* extra_state)
+{
+  return smpi_type_keyval_create(copy_fn, delete_fn, keyval, extra_state);
+}
+
+int PMPI_Type_free_keyval(int* keyval) {
+  return smpi_type_keyval_free(keyval);
 }
 
 /* The following calls are not yet implemented and will fail at runtime. */
@@ -3143,30 +3175,6 @@ int PMPI_Pcontrol(const int level )
 }
 
 int PMPI_Unpack(void* inbuf, int insize, int* position, void* outbuf, int outcount, MPI_Datatype type, MPI_Comm comm) {
-  NOT_YET_IMPLEMENTED
-}
-
-int PMPI_Type_get_attr (MPI_Datatype type, int type_keyval, void *attribute_val, int* flag)
-{
-  NOT_YET_IMPLEMENTED
-}
-
-int PMPI_Type_set_attr (MPI_Datatype type, int type_keyval, void *attribute_val)
-{
-  NOT_YET_IMPLEMENTED
-}
-
-int PMPI_Type_delete_attr (MPI_Datatype type, int comm_keyval)
-{
-  NOT_YET_IMPLEMENTED
-}
-
-int PMPI_Type_create_keyval(MPI_Type_copy_attr_function* copy_fn, MPI_Type_delete_attr_function* delete_fn, int* keyval, void* extra_state)
-{
-  NOT_YET_IMPLEMENTED
-}
-
-int PMPI_Type_free_keyval(int* keyval) {
   NOT_YET_IMPLEMENTED
 }
 

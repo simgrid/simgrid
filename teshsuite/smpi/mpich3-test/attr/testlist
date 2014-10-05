@@ -12,17 +12,14 @@ attrerr 1
 attrend2 1
 attrend2 5
 attrerrcomm 1
-#needs MPI_Errhandler_set, MPI_Type_create_keyval, MPI_Type_dup, MPI_Type_set_attr, MPI_Type_delete_attr
-#attrerrtype 1
-#needs MPI_Type_create_keyval, MPI_Type_dup, MPI_Type_set_attr
-#attr2type 1
+attrerrtype 1
+attr2type 1
 attrorder 1
 attrordercomm 1
-#needs MPI_Type_create_keyval, MPI_Type_delete_keyval, MPI_Type_set_attr, MPI_Type_delete_attr
-#attrordertype 1
+attrordertype 1
 baseattr2 1
 baseattrcomm 1
-#MPI_Keyval_create, MPI_Keyval_free for type and comm also
+#would need a refcount in keyval and attr
 #fkeyval 1
 #fkeyvalcomm 1
 #fkeyvaltype 1

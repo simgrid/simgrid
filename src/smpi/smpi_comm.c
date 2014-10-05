@@ -556,7 +556,6 @@ int smpi_comm_attr_get(MPI_Comm comm, int keyval, void* attr_value, int* flag){
     *flag=0;
     xbt_ex_free(ex);
   }
-  
   return MPI_SUCCESS;
 }
 

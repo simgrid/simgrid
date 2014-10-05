@@ -58,6 +58,7 @@ typedef struct s_smpi_mpi_datatype{
   MPI_Aint lb;
   MPI_Aint ub;
   int flags;
+  xbt_dict_t attributes;
   /* this let us know how to serialize and unserialize*/
   void *substruct;
   int in_use;
@@ -118,6 +119,12 @@ typedef struct s_smpi_mpi_key_elem {
   MPI_Delete_function* delete_fn;
 } s_smpi_mpi_key_elem_t; 
 typedef struct s_smpi_mpi_key_elem *smpi_key_elem;
+
+typedef struct s_smpi_mpi_type_key_elem {
+  MPI_Type_copy_attr_function* copy_fn;
+  MPI_Type_delete_attr_function* delete_fn;
+} s_smpi_mpi_type_key_elem_t; 
+typedef struct s_smpi_mpi_type_key_elem *smpi_type_key_elem;
 
 void smpi_process_destroy(void);
 void smpi_process_finalize(void);
@@ -196,7 +203,7 @@ int is_datatype_valid(MPI_Datatype datatype);
 size_t smpi_datatype_size(MPI_Datatype datatype);
 MPI_Aint smpi_datatype_lb(MPI_Datatype datatype);
 MPI_Aint smpi_datatype_ub(MPI_Datatype datatype);
-MPI_Datatype smpi_datatype_dup(MPI_Datatype datatype);
+int smpi_datatype_dup(MPI_Datatype datatype, MPI_Datatype* new_t);
 int smpi_datatype_extent(MPI_Datatype datatype, MPI_Aint * lb,
                          MPI_Aint * extent);
 MPI_Aint smpi_datatype_get_extent(MPI_Datatype datatype);
@@ -415,8 +422,11 @@ int smpi_keyval_free(int* keyval);
 int smpi_attr_delete(MPI_Comm comm, int keyval);
 int smpi_attr_get(MPI_Comm comm, int keyval, void* attr_value, int* flag);
 int smpi_attr_put(MPI_Comm comm, int keyval, void* attr_value);
-
-
+int smpi_type_attr_delete(MPI_Datatype type, int keyval);
+int smpi_type_attr_get(MPI_Datatype type, int keyval, void* attr_value, int* flag);
+int smpi_type_attr_put(MPI_Datatype type, int keyval, void* attr_value);
+int smpi_type_keyval_create(MPI_Type_copy_attr_function* copy_fn, MPI_Type_delete_attr_function* delete_fn, int* keyval, void* extra_state);
+int smpi_type_keyval_free(int* keyval);
 // utilities
 extern double smpi_cpu_threshold;
 extern double smpi_running_power;
