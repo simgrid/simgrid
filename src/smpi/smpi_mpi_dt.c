@@ -1757,11 +1757,13 @@ int smpi_type_keyval_create(MPI_Type_copy_attr_function* copy_fn, MPI_Type_delet
 }
 
 int smpi_type_keyval_free(int* keyval){
-  smpi_type_key_elem elem = xbt_dict_get_or_null(smpi_type_keyvals, (const char*)keyval);
-  if(!elem)
-    return MPI_ERR_ARG;
   char* tmpkey=xbt_malloc(INTSIZEDCHAR);
   sprintf(tmpkey, "%d", *keyval);
+  smpi_type_key_elem elem = xbt_dict_get_or_null(smpi_type_keyvals, (const char*)tmpkey);
+  if(!elem){
+    xbt_free(tmpkey);
+    return MPI_ERR_ARG;
+  }
   xbt_dict_remove(smpi_type_keyvals, (const char*)tmpkey);
   xbt_free(elem);
   xbt_free(tmpkey);

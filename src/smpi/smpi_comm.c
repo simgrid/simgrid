@@ -623,11 +623,13 @@ int smpi_comm_keyval_create(MPI_Comm_copy_attr_function* copy_fn, MPI_Comm_delet
 }
 
 int smpi_comm_keyval_free(int* keyval){
-  smpi_comm_key_elem elem = xbt_dict_get_or_null(smpi_comm_keyvals, (const char*)keyval);
-  if(!elem)
-    return MPI_ERR_ARG;
   char* tmpkey=xbt_malloc(INTSIZEDCHAR);
   sprintf(tmpkey, "%d", *keyval);
+  smpi_comm_key_elem elem = xbt_dict_get_or_null(smpi_comm_keyvals, (const char*)tmpkey);
+  if(!elem){
+    xbt_free(tmpkey);
+    return MPI_ERR_ARG;
+  }
   xbt_dict_remove(smpi_comm_keyvals, (const char*)tmpkey);
   xbt_free(elem);
   xbt_free(tmpkey);
