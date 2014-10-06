@@ -17,8 +17,8 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_comm, smpi,
                                 "Logging specific to SMPI (comm)");
 
-
-
+//number of bytes to hold an int converted in char*
+#define INTSIZEDCHAR (sizeof(int)*CHAR_BIT-1)/3 + 3 
 xbt_dict_t smpi_comm_keyvals = NULL;
 int comm_keyval_id=MPI_TAG_UB+1;//avoid collisions
 
@@ -536,7 +536,7 @@ void smpi_comm_init_smp(MPI_Comm comm){
 }
 
 int smpi_comm_attr_delete(MPI_Comm comm, int keyval){
-  char* tmpkey=xbt_malloc(sizeof(int));
+  char* tmpkey=xbt_malloc(INTSIZEDCHAR);
   sprintf(tmpkey, "%d", keyval);
   smpi_comm_key_elem elem = xbt_dict_get_or_null(smpi_comm_keyvals, (const char*)tmpkey);
   if(!elem)
@@ -558,7 +558,7 @@ int smpi_comm_attr_delete(MPI_Comm comm, int keyval){
 }
 
 int smpi_comm_attr_get(MPI_Comm comm, int keyval, void* attr_value, int* flag){
-  char* tmpkey=xbt_malloc(sizeof(int));
+  char* tmpkey=xbt_malloc(INTSIZEDCHAR);
   sprintf(tmpkey, "%d", keyval);
   smpi_comm_key_elem elem = xbt_dict_get_or_null(smpi_comm_keyvals, (const char*)tmpkey);
   if(!elem)
@@ -569,7 +569,7 @@ int smpi_comm_attr_get(MPI_Comm comm, int keyval, void* attr_value, int* flag){
     return MPI_SUCCESS;
   }
   TRY {
-  char* tmpkey=xbt_malloc(sizeof(int));
+  char* tmpkey=xbt_malloc(INTSIZEDCHAR);
   sprintf(tmpkey, "%d", keyval);
     *(void**)attr_value = xbt_dict_get(comm->attributes, (const char*)tmpkey);
     *flag=1;
@@ -585,7 +585,7 @@ int smpi_comm_attr_get(MPI_Comm comm, int keyval, void* attr_value, int* flag){
 int smpi_comm_attr_put(MPI_Comm comm, int keyval, void* attr_value){
   if(!smpi_comm_keyvals)
   smpi_comm_keyvals = xbt_dict_new();
-  char* tmpkey=xbt_malloc(sizeof(int));
+  char* tmpkey=xbt_malloc(INTSIZEDCHAR);
   sprintf(tmpkey, "%d", keyval);
   smpi_comm_key_elem elem = xbt_dict_get_or_null(smpi_comm_keyvals, (const char*)tmpkey);
   if(!elem )
@@ -616,7 +616,7 @@ int smpi_comm_keyval_create(MPI_Comm_copy_attr_function* copy_fn, MPI_Comm_delet
   value->delete_fn=delete_fn;
   
   *keyval = comm_keyval_id;
-  char* tmpkey=xbt_malloc(sizeof(int));
+  char* tmpkey=xbt_malloc(INTSIZEDCHAR);
   sprintf(tmpkey, "%d", *keyval);
   xbt_dict_set(smpi_comm_keyvals,(const char*)tmpkey,(void*)value, NULL);
   comm_keyval_id++;
@@ -628,7 +628,7 @@ int smpi_comm_keyval_free(int* keyval){
   smpi_comm_key_elem elem = xbt_dict_get_or_null(smpi_comm_keyvals, (const char*)keyval);
   if(!elem)
     return MPI_ERR_ARG;
-  char* tmpkey=xbt_malloc(sizeof(int));
+  char* tmpkey=xbt_malloc(INTSIZEDCHAR);
   sprintf(tmpkey, "%d", *keyval);
   xbt_dict_remove(smpi_comm_keyvals, (const char*)tmpkey);
   xbt_free(elem);

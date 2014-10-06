@@ -10,7 +10,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
+#include <limits.h>
 #include "private.h"
 #include "smpi_mpi_dt_private.h"
 #include "mc/mc.h"
@@ -20,6 +20,7 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_mpi_dt, smpi,
                                 "Logging specific to SMPI (datatype)");
 
+#define INTSIZEDCHAR (sizeof(int)*CHAR_BIT-1)/3 + 3 
 xbt_dict_t smpi_type_keyvals = NULL;
 int type_keyval_id=0;//avoid collisions
 
@@ -1669,7 +1670,7 @@ void smpi_op_apply(MPI_Op op, void *invec, void *inoutvec, int *len,
 }
 
 int smpi_type_attr_delete(MPI_Datatype type, int keyval){
-  char* tmpkey=xbt_malloc(sizeof(int));
+  char* tmpkey=xbt_malloc(INTSIZEDCHAR);
   sprintf(tmpkey, "%d", keyval);
   smpi_type_key_elem elem = xbt_dict_get_or_null(smpi_type_keyvals, (const char*)tmpkey);
   if(!elem)
@@ -1691,7 +1692,7 @@ int smpi_type_attr_delete(MPI_Datatype type, int keyval){
 }
 
 int smpi_type_attr_get(MPI_Datatype type, int keyval, void* attr_value, int* flag){
-  char* tmpkey=xbt_malloc(sizeof(int));
+  char* tmpkey=xbt_malloc(INTSIZEDCHAR);
   sprintf(tmpkey, "%d", keyval);
   smpi_type_key_elem elem = xbt_dict_get_or_null(smpi_type_keyvals, (const char*)tmpkey);
   if(!elem)
@@ -1702,7 +1703,7 @@ int smpi_type_attr_get(MPI_Datatype type, int keyval, void* attr_value, int* fla
     return MPI_SUCCESS;
   }
   TRY {
-  char* tmpkey=xbt_malloc(sizeof(int));
+  char* tmpkey=xbt_malloc(INTSIZEDCHAR);
   sprintf(tmpkey, "%d", keyval);
     *(void**)attr_value = xbt_dict_get(type->attributes, (const char*)tmpkey);
     *flag=1;
@@ -1718,7 +1719,7 @@ int smpi_type_attr_get(MPI_Datatype type, int keyval, void* attr_value, int* fla
 int smpi_type_attr_put(MPI_Datatype type, int keyval, void* attr_value){
   if(!smpi_type_keyvals)
   smpi_type_keyvals = xbt_dict_new();
-  char* tmpkey=xbt_malloc(sizeof(int));
+  char* tmpkey=xbt_malloc(INTSIZEDCHAR);
   sprintf(tmpkey, "%d", keyval);
   smpi_type_key_elem elem = xbt_dict_get_or_null(smpi_type_keyvals, (const char*)tmpkey);
   if(!elem )
@@ -1749,7 +1750,7 @@ int smpi_type_keyval_create(MPI_Type_copy_attr_function* copy_fn, MPI_Type_delet
   value->delete_fn=delete_fn;
   
   *keyval = type_keyval_id;
-  char* tmpkey=xbt_malloc(sizeof(int));
+  char* tmpkey=xbt_malloc(INTSIZEDCHAR);
   sprintf(tmpkey, "%d", *keyval);
   xbt_dict_set(smpi_type_keyvals,(const char*)tmpkey,(void*)value, NULL);
   type_keyval_id++;
@@ -1761,7 +1762,7 @@ int smpi_type_keyval_free(int* keyval){
   smpi_type_key_elem elem = xbt_dict_get_or_null(smpi_type_keyvals, (const char*)keyval);
   if(!elem)
     return MPI_ERR_ARG;
-  char* tmpkey=xbt_malloc(sizeof(int));
+  char* tmpkey=xbt_malloc(INTSIZEDCHAR);
   sprintf(tmpkey, "%d", *keyval);
   xbt_dict_remove(smpi_type_keyvals, (const char*)tmpkey);
   xbt_free(elem);
