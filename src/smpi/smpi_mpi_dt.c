@@ -1703,8 +1703,6 @@ int smpi_type_attr_get(MPI_Datatype type, int keyval, void* attr_value, int* fla
     return MPI_SUCCESS;
   }
   TRY {
-  char* tmpkey=xbt_malloc(INTSIZEDCHAR);
-  sprintf(tmpkey, "%d", keyval);
     *(void**)attr_value = xbt_dict_get(type->attributes, (const char*)tmpkey);
     *flag=1;
   }

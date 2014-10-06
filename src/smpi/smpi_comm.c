@@ -569,8 +569,6 @@ int smpi_comm_attr_get(MPI_Comm comm, int keyval, void* attr_value, int* flag){
     return MPI_SUCCESS;
   }
   TRY {
-  char* tmpkey=xbt_malloc(INTSIZEDCHAR);
-  sprintf(tmpkey, "%d", keyval);
     *(void**)attr_value = xbt_dict_get(comm->attributes, (const char*)tmpkey);
     *flag=1;
   }
