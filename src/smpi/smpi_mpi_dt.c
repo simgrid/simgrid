@@ -412,7 +412,7 @@ void smpi_datatype_free(MPI_Datatype* type){
       xbt_dict_foreach((*type)->attributes, cursor, key, value){
         smpi_type_key_elem elem = xbt_dict_get_or_null(smpi_type_keyvals, (const char*)key);
         if(elem &&  elem->delete_fn)
-          elem->delete_fn(*type, atoi((const char*)key), &value, &flag);
+          elem->delete_fn(*type, atoi((const char*)key), value, &flag);
       }
   }
 
@@ -1679,7 +1679,7 @@ int smpi_type_attr_delete(MPI_Datatype type, int keyval){
     void * value;
     int flag;
     if(smpi_type_attr_get(type, keyval, &value, &flag)==MPI_SUCCESS){
-      int ret = elem->delete_fn(type, keyval, &value, &flag);
+      int ret = elem->delete_fn(type, keyval, value, &flag);
       if(ret!=MPI_SUCCESS) return ret;
     }
   }  
@@ -1726,7 +1726,7 @@ int smpi_type_attr_put(MPI_Datatype type, int keyval, void* attr_value){
   void* value;
   smpi_type_attr_get(type, keyval, &value, &flag);
   if(flag && elem->delete_fn!=MPI_NULL_DELETE_FN){
-    int ret = elem->delete_fn(type, keyval, &value, &flag);
+    int ret = elem->delete_fn(type, keyval, value, &flag);
     if(ret!=MPI_SUCCESS) return ret;
   }
   if(type->attributes==NULL)

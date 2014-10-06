@@ -545,7 +545,7 @@ int smpi_comm_attr_delete(MPI_Comm comm, int keyval){
     void * value;
     int flag;
     if(smpi_comm_attr_get(comm, keyval, &value, &flag)==MPI_SUCCESS){
-      int ret = elem->delete_fn(comm, keyval, &value, &flag);
+      int ret = elem->delete_fn(comm, keyval, value, &flag);
       if(ret!=MPI_SUCCESS) return ret;
     }
   }  
@@ -592,7 +592,7 @@ int smpi_comm_attr_put(MPI_Comm comm, int keyval, void* attr_value){
   void* value;
   smpi_comm_attr_get(comm, keyval, &value, &flag);
   if(flag && elem->delete_fn!=MPI_NULL_DELETE_FN){
-    int ret = elem->delete_fn(comm, keyval, &value, &flag);
+    int ret = elem->delete_fn(comm, keyval, value, &flag);
     if(ret!=MPI_SUCCESS) return ret;
   }
   if(comm->attributes==NULL)
