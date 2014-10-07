@@ -307,16 +307,24 @@ void MSG_host_set_property_value(msg_host_t host, const char *name, char *value,
 }
 
 
-/** \ingroup msg_gos_functions
- * \brief Determine if a host is available.
+/** @ingroup msg_gos_functions
+ * @brief Determine if a host is up and running.
  *
- * \param host host to test
- * \return Returns 1 if host is available, 0 otherwise
+ * @param host host to test
+ * @return Returns true if the host is up and running, and false if it's currently down
  */
-int MSG_host_is_avail(msg_host_t host)
+int MSG_host_is_on(msg_host_t host)
 {
   xbt_assert((host != NULL), "Invalid parameters (host is NULL)");
   return (simcall_host_get_state(host));
+}
+/** @ingroup msg_gos_functions
+ * @brief Determine if a host is currently off.
+ */
+int MSG_host_is_off(msg_host_t host)
+{
+  xbt_assert((host != NULL), "Invalid parameters (host is NULL)");
+  return !(simcall_host_get_state(host));
 }
 
 /** \ingroup m_host_management
