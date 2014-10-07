@@ -1,0 +1,21 @@
+Provides stack-cleaning compilers for x86_64:
+
+ * as
+ * cc
+ * c++
+
+Each of them modify the generated/given X86_64 assembly by prepending
+stack-cleanup code to each function:
+
+	movq $QSIZE, %r11
+.Lloop:
+        movq $0, OFFSET(%rsp,%r11,8)
+        subq $1, %r11
+        jne  .Lloop
+
+The modification of the assembly is done by the clean-stack-filter
+program.
+
+If the underlying compiler is clang, it might be necessary to add the
+-no-integrated-as flag in order to force the usage of an external
+assembler.
