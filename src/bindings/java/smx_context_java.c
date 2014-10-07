@@ -154,7 +154,7 @@ void smx_ctx_java_stop(smx_context_t context)
     context->iwannadie = 0;
     JNIEnv *env = get_current_thread_env();
     XBT_DEBUG("Gonnal launch Killed Error");
-    jxbt_throw_by_name(env, "org/simgrid/msg/ProcessKilledError", xbt_strdup("Process killed :)"));
+    jxbt_throw_by_name(env, "org/simgrid/msg/ProcessKilledError", bprintf("Process %s killed: ", MSG_process_get_name( (msg_process_t)context)));
     XBT_DEBUG("Trigger a cancel error at the C level");
     THROWF(cancel_error, 0, "process cancelled");
   } else {
