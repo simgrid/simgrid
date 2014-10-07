@@ -6,13 +6,7 @@
 
 /** @addtogroup MSG_examples
  * 
- * @subsection MSG_ex_resources Other resource kinds
- * 
- * This section contains some sparse examples of how to use the other
- * kind of resources, such as disk or GPU. These resources are quite
- * experimental for now, but here we go anyway.
- * 
- * - <b>io/file.c</b> Example with the disk resource
+ * - <b>io/file_unlink.c</b> TBA
  */
 
 #define FILENAME1 "/home/doc/simgrid/examples/platforms/g5k.xml"

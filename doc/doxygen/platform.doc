@@ -968,7 +968,7 @@ Note that when using route to give topological information, you have
 to give routes with one link only in it, as SimGrid needs to know
 which host are at the end of the link.
 
-\subsubsection pf_byro bypassASroute
+\subsubsection pf_byASro bypassASroute
 
 <b>Note : bypassASroute and bypassRoute are under rewriting to perform
 better ; so you may not use it yet</b> As said before, once you choose

@@ -4,6 +4,11 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+/** @addtogroup MSG_examples
+ * 
+ * - <b>io/storage.c</b> demo of all main storage and file functions
+ */
+
 /********************* Files and Storage handling ****************************
  * This example implements all main storage and file functions of the MSG API
  *
