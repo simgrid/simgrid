@@ -253,6 +253,7 @@ void MSG_vm_destroy(msg_vm_t vm)
   #ifdef HAVE_TRACING
   TRACE_msg_vm_end(vm);
   #endif
+  xbt_lib_remove(host_lib, sg_host_name(vm));
 }
 
 
