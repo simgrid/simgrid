@@ -108,7 +108,7 @@ int smpi_coll_tuned_scatter_mvapich2_two_level_direct(void *sendbuf,
 
         if (local_rank == 0) {
             /* Node leader, allocate tmp_buffer */
-            tmp_buf = xbt_malloc(nbytes * local_size);
+            tmp_buf = smpi_get_tmp_sendbuffer(nbytes * local_size);
         }
 
         leader_comm = smpi_comm_get_leaders_comm(comm);
@@ -123,7 +123,7 @@ int smpi_coll_tuned_scatter_mvapich2_two_level_direct(void *sendbuf,
             && (leader_of_root == rank)) {
             /* The root of the scatter operation is not the node leader. Recv
              * data from the node leader */
-            leader_scatter_buf = xbt_malloc(nbytes * comm_size);
+            leader_scatter_buf = smpi_get_tmp_sendbuffer(nbytes * comm_size);
             smpi_mpi_recv(leader_scatter_buf, nbytes * comm_size, MPI_BYTE,
                              root, COLL_TAG_SCATTER, comm, &status);
 
@@ -216,9 +216,9 @@ int smpi_coll_tuned_scatter_mvapich2_two_level_direct(void *sendbuf,
 
     /* check if multiple threads are calling this collective function */
     if (comm_size != local_size && local_rank == 0) {
-        xbt_free(tmp_buf);
+        smpi_free_tmp_buffer(tmp_buf);
         if (leader_of_root == rank && root != rank) {
-            xbt_free(leader_scatter_buf);
+            smpi_free_tmp_buffer(leader_scatter_buf);
         }
     }
     return (mpi_errno);
@@ -292,7 +292,7 @@ int smpi_coll_tuned_scatter_mvapich2_two_level_binomial(void *sendbuf,
 
         if (local_rank == 0) {
             /* Node leader, allocate tmp_buffer */
-            tmp_buf = xbt_malloc(nbytes * local_size);
+            tmp_buf = smpi_get_tmp_sendbuffer(nbytes * local_size);
         }
         leader_comm = smpi_comm_get_leaders_comm(comm);
         int* leaders_map = smpi_comm_get_leaders_map(comm);
@@ -306,7 +306,7 @@ int smpi_coll_tuned_scatter_mvapich2_two_level_binomial(void *sendbuf,
             && (leader_of_root == rank)) {
             /* The root of the scatter operation is not the node leader. Recv
              * data from the node leader */
-            leader_scatter_buf = xbt_malloc(nbytes * comm_size);
+            leader_scatter_buf = smpi_get_tmp_sendbuffer(nbytes * comm_size);
             smpi_mpi_recv(leader_scatter_buf, nbytes * comm_size, MPI_BYTE,
                              root, COLL_TAG_SCATTER, comm, &status);
         }
@@ -399,9 +399,9 @@ int smpi_coll_tuned_scatter_mvapich2_two_level_binomial(void *sendbuf,
 
     /* check if multiple threads are calling this collective function */
     if (comm_size != local_size && local_rank == 0) {
-        xbt_free(tmp_buf);
+        smpi_free_tmp_buffer(tmp_buf);
         if (leader_of_root == rank && root != rank) {
-            xbt_free(leader_scatter_buf);
+            smpi_free_tmp_buffer(leader_scatter_buf);
         }
     }
 

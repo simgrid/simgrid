@@ -82,8 +82,8 @@ int smpi_coll_tuned_alltoall_3dmesh(void *send_buff, int send_count,
 
   block_size = extent * send_count;
 
-  tmp_buff1 = (char *) xbt_malloc(block_size * num_procs * two_dsize);
-  tmp_buff2 = (char *) xbt_malloc(block_size * two_dsize);
+  tmp_buff1 = (char *) smpi_get_tmp_sendbuffer(block_size * num_procs * two_dsize);
+  tmp_buff2 = (char *) smpi_get_tmp_recvbuffer(block_size * two_dsize);
 
   statuses = (MPI_Status *) xbt_malloc(num_reqs * sizeof(MPI_Status));
   reqs = (MPI_Request *) xbt_malloc(num_reqs * sizeof(MPI_Request));
@@ -180,7 +180,7 @@ int smpi_coll_tuned_alltoall_3dmesh(void *send_buff, int send_count,
 
   free(reqs);
   free(statuses);
-  free(tmp_buff1);
-  free(tmp_buff2);
+  smpi_free_tmp_buffer(tmp_buff1);
+  smpi_free_tmp_buffer(tmp_buff2);
   return MPI_SUCCESS;
 }

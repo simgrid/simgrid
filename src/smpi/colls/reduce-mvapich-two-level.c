@@ -123,7 +123,7 @@ int smpi_coll_tuned_reduce_mvapich2_two_level( void *sendbuf,
         if (stride <= MV2_INTRA_SHMEM_REDUCE_MSG &&
             is_commutative == 1) {
             if (local_rank == 0 ) {
-                tmp_buf=(void *)xbt_malloc( count *
+                tmp_buf=(void *)smpi_get_tmp_sendbuffer( count *
                                     (MAX(extent, true_extent)));
                 tmp_buf = (void *) ((char *) tmp_buf - true_lb);
             }
@@ -191,7 +191,7 @@ int smpi_coll_tuned_reduce_mvapich2_two_level( void *sendbuf,
         }
         leader_comm_size = smpi_comm_size(leader_comm);
         leader_comm_rank = smpi_comm_rank(leader_comm);
-        tmp_buf=(void *)xbt_malloc(count *
+        tmp_buf=(void *)smpi_get_tmp_sendbuffer(count *
                             (MAX(extent, true_extent)));
         tmp_buf = (void *) ((char *) tmp_buf - true_lb);
     }
@@ -251,7 +251,7 @@ int smpi_coll_tuned_reduce_mvapich2_two_level( void *sendbuf,
                     out_buf = recvbuf;
                 } else { 
 
-                     in_buf = (char *)xbt_malloc(count*
+                     in_buf = (char *)smpi_get_tmp_sendbuffer(count*
                                        smpi_datatype_get_extent(datatype));
                      smpi_datatype_copy(tmp_buf, count, datatype,
                                         in_buf, count, datatype);
@@ -259,7 +259,7 @@ int smpi_coll_tuned_reduce_mvapich2_two_level( void *sendbuf,
                     out_buf = recvbuf; 
                 } 
             } else {
-                in_buf = (char *)xbt_malloc(count*
+                in_buf = (char *)smpi_get_tmp_sendbuffer(count*
                                        smpi_datatype_get_extent(datatype));
                 smpi_datatype_copy(tmp_buf, count, datatype,
                                         in_buf, count, datatype);

@@ -20,8 +20,6 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(ring,
 
 /** @addtogroup MSG_examples
  * 
- *  @section MSG_ex_apps Examples of full applications
- * 
  * - <b>token_ring/token_bypass.c</b>: Classical token ring with a bypass deployment.
  *   A token is exchanged along a ring to reach every participant.
  * 

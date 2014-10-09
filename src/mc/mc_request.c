@@ -328,12 +328,12 @@ char *MC_request_to_string(smx_simcall_t req, int value)
 
   case SIMCALL_MC_SNAPSHOT:
     type = xbt_strdup("MC_SNAPSHOT");
-    args = '\0';
+    args = NULL;
     break;
 
   case SIMCALL_MC_COMPARE_SNAPSHOTS:
     type = xbt_strdup("MC_COMPARE_SNAPSHOTS");
-    args = '\0';
+    args = NULL;
     break;
 
   case SIMCALL_MC_RANDOM:

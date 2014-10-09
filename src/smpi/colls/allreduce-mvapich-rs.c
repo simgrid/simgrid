@@ -51,7 +51,7 @@
     smpi_datatype_extent(datatype, &true_lb, &true_extent);
     extent = smpi_datatype_get_extent(datatype);
 
-    tmp_buf_free= xbt_malloc(count * (MAX(extent, true_extent)));
+    tmp_buf_free= smpi_get_tmp_recvbuffer(count * (MAX(extent, true_extent)));
 
     /* adjust for potential negative lower bound in datatype */
     tmp_buf = (void *) ((char *) tmp_buf_free - true_lb);
@@ -281,7 +281,7 @@
                                   MPI_STATUS_IGNORE);
         }
     }
-    xbt_free(tmp_buf_free);
+    smpi_free_tmp_buffer(tmp_buf_free);
     return (mpi_errno);
 
 }

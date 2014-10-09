@@ -199,10 +199,10 @@ public class Host {
 	 */
 	public native void setProperty(String name, String value);
     
-	/** This method tests if a host is available.
-     * @return True if the host is available.
-     */
-	public native boolean isAvail();
+	/** This method tests if a host is up and running.
+	 * @return True if the host is available.
+	 */
+	public native boolean isOn();
 
 	/** This methods returns the list of mount point names on an host
      * @return An array containing all mounted storages on the host

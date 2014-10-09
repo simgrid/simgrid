@@ -155,14 +155,8 @@ typedef enum MPIR_Topo_type {
 typedef ptrdiff_t MPI_Aint;
 typedef long long MPI_Offset;
 
-// To compile code that declare MPI_File variables
-struct s_empty {
-#if !defined(__GNUC__) || defined(__STRICT_ANSI__)
-  char empty;
-#endif
-};
-typedef struct s_empty *MPI_File;
-
+struct s_MPI_File;
+typedef struct s_MPI_File *MPI_File;
 
 struct s_smpi_mpi_datatype;
 typedef struct s_smpi_mpi_datatype *MPI_Datatype;
@@ -573,6 +567,7 @@ MPI_CALL(XBT_PUBLIC(int), MPI_Win_free,( MPI_Win* win));
 MPI_CALL(XBT_PUBLIC(int), MPI_Win_create,( void *base, MPI_Aint size, int disp_unit, MPI_Info info, MPI_Comm comm, MPI_Win *win));
 MPI_CALL(XBT_PUBLIC(int), MPI_Win_set_name,(MPI_Win  win, char * name));
 MPI_CALL(XBT_PUBLIC(int), MPI_Win_get_name,(MPI_Win  win, char * name, int* len));
+MPI_CALL(XBT_PUBLIC(int), MPI_Win_get_group,(MPI_Win  win, MPI_Group * group));
 MPI_CALL(XBT_PUBLIC(int), MPI_Win_fence,( int assert,  MPI_Win win));
 
 MPI_CALL(XBT_PUBLIC(int), MPI_Get,( void *origin_addr, int origin_count, MPI_Datatype origin_datatype, int target_rank,
@@ -594,7 +589,8 @@ MPI_CALL(XBT_PUBLIC(MPI_Win), MPI_Win_f2c,(MPI_Fint win));
 MPI_CALL(XBT_PUBLIC(MPI_Fint), MPI_Win_c2f,(MPI_Win win));
 MPI_CALL(XBT_PUBLIC(MPI_Op), MPI_Op_f2c,(MPI_Fint op));
 MPI_CALL(XBT_PUBLIC(MPI_Fint), MPI_Op_c2f,(MPI_Op op));
-
+MPI_CALL(XBT_PUBLIC(MPI_Comm), MPI_Comm_f2c,(MPI_Fint comm));
+MPI_CALL(XBT_PUBLIC(MPI_Fint), MPI_Comm_c2f,(MPI_Comm comm));
 
 //FIXME: these are not yet implemented
 
@@ -605,9 +601,8 @@ typedef void* MPI_Errhandler;
 typedef int MPI_Copy_function(MPI_Comm oldcomm, int keyval, void* extra_state, void* attribute_val_in,
                               void* attribute_val_out, int* flag);
 typedef int MPI_Delete_function(MPI_Comm comm, int keyval, void* attribute_val, void* extra_state);
-typedef int MPI_Comm_copy_attr_function(MPI_Comm oldcomm, int keyval, void* extra_state, void* attribute_val_in,
-                              void* attribute_val_out, int* flag);
-typedef int MPI_Comm_delete_attr_function(MPI_Comm comm, int keyval, void* attribute_val, void* extra_state);
+#define MPI_Comm_copy_attr_function MPI_Copy_function
+#define MPI_Comm_delete_attr_function MPI_Delete_function
 typedef int MPI_Type_copy_attr_function(MPI_Datatype type, int keyval, void* extra_state, void* attribute_val_in,
                               void* attribute_val_out, int* flag);
 typedef int MPI_Type_delete_attr_function(MPI_Datatype type, int keyval, void* attribute_val, void* extra_state);
@@ -756,6 +751,13 @@ MPI_CALL(XBT_PUBLIC(int), MPI_Comm_spawn,( char *command, char **argv, int maxpr
 MPI_CALL(XBT_PUBLIC(int), MPI_Comm_spawn_multiple,( int count, char **array_of_commands, char*** array_of_argv, int* array_of_maxprocs, MPI_Info* array_of_info, 
                                                     int root, MPI_Comm comm, MPI_Comm *intercomm, int* array_of_errcodes));
 MPI_CALL(XBT_PUBLIC(int), MPI_Comm_get_parent,( MPI_Comm *parent));
+MPI_CALL(XBT_PUBLIC(int),  MPI_Win_complete,(MPI_Win win));
+MPI_CALL(XBT_PUBLIC(int),  MPI_Win_lock,(int lock_type, int rank, int assert, MPI_Win win));
+MPI_CALL(XBT_PUBLIC(int),  MPI_Win_post,(MPI_Group group, int assert, MPI_Win win));
+MPI_CALL(XBT_PUBLIC(int),  MPI_Win_start,(MPI_Group group, int assert, MPI_Win win));
+MPI_CALL(XBT_PUBLIC(int),  MPI_Win_test,(MPI_Win win, int *flag));
+MPI_CALL(XBT_PUBLIC(int),  MPI_Win_unlock,(int rank, MPI_Win win));
+MPI_CALL(XBT_PUBLIC(int),  MPI_Win_wait,(MPI_Win win));
 
 //FIXME: End of all the not yet implemented stuff
 

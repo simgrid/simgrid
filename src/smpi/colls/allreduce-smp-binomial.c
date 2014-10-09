@@ -49,7 +49,7 @@ int smpi_coll_tuned_allreduce_smp_binomial(void *send_buf, void *recv_buf,
   rank=smpi_comm_rank(comm);
   MPI_Aint extent, lb;
   smpi_datatype_extent(dtype, &lb, &extent);
-  tmp_buf = (void *) xbt_malloc(count * extent);
+  tmp_buf = (void *) smpi_get_tmp_sendbuffer(count * extent);
 
   /* compute intra and inter ranking */
   int intra_rank, inter_rank;
@@ -150,6 +150,6 @@ int smpi_coll_tuned_allreduce_smp_binomial(void *send_buf, void *recv_buf,
     mask >>= 1;
   }
 
-  free(tmp_buf);
+  smpi_free_tmp_buffer(tmp_buf);
   return MPI_SUCCESS;
 }

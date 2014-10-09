@@ -63,7 +63,7 @@ int smpi_coll_tuned_reduce_scatter_mpich_pair(void *sendbuf, void *recvbuf, int 
         }
         
         /* allocate temporary buffer to store incoming data */
-        tmp_recvbuf = (void*)xbt_malloc(recvcounts[rank]*(max(true_extent,extent))+1);
+        tmp_recvbuf = (void*)smpi_get_tmp_recvbuffer(recvcounts[rank]*(max(true_extent,extent))+1);
         /* adjust for potential negative lower bound in datatype */
         tmp_recvbuf = (void *)((char*)tmp_recvbuf - true_lb);
         
@@ -142,7 +142,7 @@ int smpi_coll_tuned_reduce_scatter_mpich_pair(void *sendbuf, void *recvbuf, int 
         }
     
         xbt_free(disps);
-        xbt_free(tmp_recvbuf);
+        smpi_free_tmp_buffer(tmp_recvbuf);
 
         return MPI_SUCCESS;
 }
@@ -186,8 +186,8 @@ int smpi_coll_tuned_reduce_scatter_mpich_noncomm(void *sendbuf, void *recvbuf, i
     block_size = recvcounts[0];
     total_count = block_size * comm_size;
 
-    tmp_buf0=( void *)xbt_malloc( true_extent * total_count);
-    tmp_buf1=( void *)xbt_malloc( true_extent * total_count);
+    tmp_buf0=( void *)smpi_get_tmp_sendbuffer( true_extent * total_count);
+    tmp_buf1=( void *)smpi_get_tmp_recvbuffer( true_extent * total_count);
     void *tmp_buf0_save=tmp_buf0;
     void *tmp_buf1_save=tmp_buf1;
 
@@ -258,8 +258,8 @@ int smpi_coll_tuned_reduce_scatter_mpich_noncomm(void *sendbuf, void *recvbuf, i
     result_ptr = (char *)(buf0_was_inout ? tmp_buf0 : tmp_buf1) + recv_offset * true_extent;
     mpi_errno = smpi_datatype_copy(result_ptr, size, datatype,
                                recvbuf, size, datatype);
-    xbt_free(tmp_buf0_save);
-    xbt_free(tmp_buf1_save);
+    smpi_free_tmp_buffer(tmp_buf0_save);
+    smpi_free_tmp_buffer(tmp_buf1_save);
     if (mpi_errno) return(mpi_errno);
     return MPI_SUCCESS;
 }
@@ -300,13 +300,13 @@ int smpi_coll_tuned_reduce_scatter_mpich_rdb(void *sendbuf, void *recvbuf, int r
             /* noncommutative and (non-pof2 or block irregular), use recursive doubling. */
 
             /* need to allocate temporary buffer to receive incoming data*/
-            tmp_recvbuf= (void *) xbt_malloc( total_count*(max(true_extent,extent)));
+            tmp_recvbuf= (void *) smpi_get_tmp_recvbuffer( total_count*(max(true_extent,extent)));
             /* adjust for potential negative lower bound in datatype */
             tmp_recvbuf = (void *)((char*)tmp_recvbuf - true_lb);
 
             /* need to allocate another temporary buffer to accumulate
                results */
-            tmp_results = (void *)xbt_malloc( total_count*(max(true_extent,extent)));
+            tmp_results = (void *)smpi_get_tmp_sendbuffer( total_count*(max(true_extent,extent)));
             /* adjust for potential negative lower bound in datatype */
             tmp_results = (void *)((char*)tmp_results - true_lb);
 
@@ -494,8 +494,8 @@ int smpi_coll_tuned_reduce_scatter_mpich_rdb(void *sendbuf, void *recvbuf, int r
             if (mpi_errno) return(mpi_errno);
 
     xbt_free(disps);
-    xbt_free(tmp_recvbuf);
-    xbt_free(tmp_results);
+    smpi_free_tmp_buffer(tmp_recvbuf);
+    smpi_free_tmp_buffer(tmp_results);
     return MPI_SUCCESS;
         }
 

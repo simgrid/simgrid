@@ -58,6 +58,7 @@ typedef struct s_smpi_mpi_datatype{
   MPI_Aint lb;
   MPI_Aint ub;
   int flags;
+  xbt_dict_t attributes;
   /* this let us know how to serialize and unserialize*/
   void *substruct;
   int in_use;
@@ -113,6 +114,17 @@ typedef struct s_smpi_mpi_request {
 #endif
 } s_smpi_mpi_request_t;
 
+typedef struct s_smpi_mpi_comm_key_elem {
+  MPI_Comm_copy_attr_function* copy_fn;
+  MPI_Comm_delete_attr_function* delete_fn;
+} s_smpi_mpi_comm_key_elem_t; 
+typedef struct s_smpi_mpi_comm_key_elem *smpi_comm_key_elem;
+
+typedef struct s_smpi_mpi_type_key_elem {
+  MPI_Type_copy_attr_function* copy_fn;
+  MPI_Type_delete_attr_function* delete_fn;
+} s_smpi_mpi_type_key_elem_t; 
+typedef struct s_smpi_mpi_type_key_elem *smpi_type_key_elem;
 
 void smpi_process_destroy(void);
 void smpi_process_finalize(void);
@@ -167,11 +179,16 @@ void smpi_process_simulated_start(void);
 double smpi_process_simulated_elapsed(void);
 void smpi_process_set_sampling(int s);
 int smpi_process_get_sampling(void);
+void smpi_process_set_replaying(int s);
+int smpi_process_get_replaying(void);
 
 void smpi_deployment_register_process(const char* instance_id, int rank, int index, MPI_Comm**, xbt_bar_t*);
 void smpi_deployment_cleanup_instances(void);
 
 void smpi_comm_copy_buffer_callback(smx_action_t comm,
+                                           void *buff, size_t buff_size);
+
+void smpi_comm_null_copy_buffer_callback(smx_action_t comm,
                                            void *buff, size_t buff_size);
 
 void print_request(const char *message, MPI_Request request);
@@ -186,7 +203,7 @@ int is_datatype_valid(MPI_Datatype datatype);
 size_t smpi_datatype_size(MPI_Datatype datatype);
 MPI_Aint smpi_datatype_lb(MPI_Datatype datatype);
 MPI_Aint smpi_datatype_ub(MPI_Datatype datatype);
-MPI_Datatype smpi_datatype_dup(MPI_Datatype datatype);
+int smpi_datatype_dup(MPI_Datatype datatype, MPI_Datatype* new_t);
 int smpi_datatype_extent(MPI_Datatype datatype, MPI_Aint * lb,
                          MPI_Aint * extent);
 MPI_Aint smpi_datatype_get_extent(MPI_Datatype datatype);
@@ -246,6 +263,7 @@ int smpi_comm_size(MPI_Comm comm);
 void smpi_comm_get_name(MPI_Comm comm, char* name, int* len);
 int smpi_comm_rank(MPI_Comm comm);
 MPI_Comm smpi_comm_split(MPI_Comm comm, int color, int key);
+int smpi_comm_dup(MPI_Comm comm, MPI_Comm* newcomm);
 void smpi_comm_use(MPI_Comm comm);
 void smpi_comm_unuse(MPI_Comm comm);
 void smpi_comm_set_leaders_comm(MPI_Comm comm, MPI_Comm leaders);
@@ -364,6 +382,7 @@ int smpi_mpi_win_free( MPI_Win* win);
 MPI_Win smpi_mpi_win_create( void *base, MPI_Aint size, int disp_unit, MPI_Info info, MPI_Comm comm);
 
 void smpi_mpi_win_get_name(MPI_Win win, char* name, int* length);
+void smpi_mpi_win_get_group(MPI_Win win, MPI_Group* group);
 void smpi_mpi_win_set_name(MPI_Win win, char* name);
 
 int smpi_mpi_win_fence( int assert,  MPI_Win win);
@@ -397,7 +416,17 @@ int smpi_coll_basic_alltoallv(void *sendbuf, int *sendcounts,
                               void *recvbuf, int *recvcounts,
                               int *recvdisps, MPI_Datatype recvtype,
                               MPI_Comm comm);
-
+                              
+int smpi_comm_keyval_create(MPI_Comm_copy_attr_function* copy_fn, MPI_Comm_delete_attr_function* delete_fn, int* keyval, void* extra_state);
+int smpi_comm_keyval_free(int* keyval);
+int smpi_comm_attr_delete(MPI_Comm comm, int keyval);
+int smpi_comm_attr_get(MPI_Comm comm, int keyval, void* attr_value, int* flag);
+int smpi_comm_attr_put(MPI_Comm comm, int keyval, void* attr_value);
+int smpi_type_attr_delete(MPI_Datatype type, int keyval);
+int smpi_type_attr_get(MPI_Datatype type, int keyval, void* attr_value, int* flag);
+int smpi_type_attr_put(MPI_Datatype type, int keyval, void* attr_value);
+int smpi_type_keyval_create(MPI_Type_copy_attr_function* copy_fn, MPI_Type_delete_attr_function* delete_fn, int* keyval, void* extra_state);
+int smpi_type_keyval_free(int* keyval);
 // utilities
 extern double smpi_cpu_threshold;
 extern double smpi_running_power;
@@ -413,6 +442,15 @@ void smpi_destroy_global_memory_segments(void);
 void smpi_bench_destroy(void);
 void smpi_bench_begin(void);
 void smpi_bench_end(void);
+
+void* smpi_get_tmp_sendbuffer(int size);
+void* smpi_get_tmp_recvbuffer(int size);
+void  smpi_free_tmp_buffer(void* buf);
+
+int smpi_comm_attr_delete(MPI_Comm comm, int keyval);
+int smpi_comm_attr_get(MPI_Comm comm, int keyval, void* attr_value, int* flag);
+int smpi_comm_attr_put(MPI_Comm comm, int keyval, void* attr_value);
+
 
 
 // f77 wrappers

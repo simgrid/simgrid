@@ -56,7 +56,7 @@ int smpi_coll_tuned_allreduce_smp_rdb(void *send_buf, void *recv_buf, int count,
   rank = smpi_comm_rank(comm);
   MPI_Aint extent;
   extent = smpi_datatype_get_extent(dtype);
-  tmp_buf = (void *) xbt_malloc(count * extent);
+  tmp_buf = (void *) smpi_get_tmp_sendbuffer(count * extent);
 
   /* compute intra and inter ranking */
   int intra_rank, inter_rank;
@@ -182,6 +182,6 @@ int smpi_coll_tuned_allreduce_smp_rdb(void *send_buf, void *recv_buf, int count,
     mask >>= 1;
   }
 
-  free(tmp_buf);
+  smpi_free_tmp_buffer(tmp_buf);
   return MPI_SUCCESS;
 }

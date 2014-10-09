@@ -30,9 +30,10 @@
 #include "smx_new_api_private.h"
 
 /* Define only for SimGrid benchmarking purposes */
-//#define TIME_BENCH_PER_SR /* this aims at measuring the time spent in each scheduling round per each thread. The code is thus run in sequential to bench separately each SSR */
-//#define TIME_BENCH_AMDAHL /* this aims at measuring the porting of time that could be parallelized at maximum (to get the optimal speedup by applying the amdahl law). */
-//#define ADAPTIVE_THRESHOLD /* this is to enable the adaptive threshold algorithm in raw contexts*/
+//#define TIME_BENCH_PER_SR     /* this aims at measuring the time spent in each scheduling round per each thread. The code is thus run in sequential to bench separately each SSR */
+//#define TIME_BENCH_AMDAHL     /* this aims at measuring the porting of time that could be parallelized at maximum (to get the optimal speedup by applying the amdahl law). */
+//#define ADAPTIVE_THRESHOLD    /* this is to enable the adaptive threshold algorithm in raw contexts*/
+//#define TIME_BENCH_ENTIRE_SRS /* more general benchmark than TIME_BENCH_PER_SR. It aims to measure the total time spent in a whole scheduling round (including synchro costs)*/
 
 #ifdef TIME_BENCH_PER_SR
 void smx_ctx_raw_new_sr(void);

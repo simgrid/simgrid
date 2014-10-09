@@ -111,7 +111,7 @@ static void free_group(int group) {
 
 
 int smpi_request_c2f(MPI_Request req) {
-  static int request_id = INT_MIN;
+  static int request_id = 0;
   char key[KEY_SIZE];
   xbt_dict_set(request_lookup, get_key_id(key, request_id), req, NULL);
   request_id++;
@@ -1214,9 +1214,6 @@ void mpi_type_contiguous_ (int* count, int* old_type, int*  newtype, int* ierr) 
 void mpi_cancel_ (int* request, int* ierr) {
   MPI_Request tmp=smpi_request_f2c(*request);
  *ierr = MPI_Cancel(&tmp);
- if(*ierr == MPI_SUCCESS) {
-   free_request(*request);
- }
 }
 
 void mpi_buffer_attach_ (void* buffer, int* size, int* ierr) {

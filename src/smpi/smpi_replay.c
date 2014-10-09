@@ -18,12 +18,43 @@ xbt_dynar_t *reqq = NULL;
 MPI_Datatype MPI_DEFAULT_TYPE;
 MPI_Datatype MPI_CURRENT_TYPE;
 
+static int sendbuffer_size=0;
+char* sendbuffer=NULL;
+static int recvbuffer_size=0;
+char* recvbuffer=NULL;
+
 static void log_timed_action (const char *const *action, double clock){
   if (XBT_LOG_ISENABLED(smpi_replay, xbt_log_priority_verbose)){
     char *name = xbt_str_join_array(action, " ");
     XBT_VERB("%s %f", name, smpi_process_simulated_elapsed()-clock);
     free(name);
   }
+}
+
+//allocate a single buffer for all sends, growing it if needed
+void* smpi_get_tmp_sendbuffer(int size){
+  if (!smpi_process_get_replaying())
+	return xbt_malloc(size);
+  if (sendbuffer_size<size){
+    sendbuffer=xbt_realloc(sendbuffer,size);
+    sendbuffer_size=size;
+  }
+  return sendbuffer;
+}
+//allocate a single buffer for all recv
+void* smpi_get_tmp_recvbuffer(int size){
+  if (!smpi_process_get_replaying())
+	return xbt_malloc(size);
+  if (recvbuffer_size<size){
+    recvbuffer=xbt_realloc(recvbuffer,size);
+    recvbuffer_size=size;
+  }
+  return sendbuffer;
+}
+
+void smpi_free_tmp_buffer(void* buf){
+  if (!smpi_process_get_replaying())
+    xbt_free(buf);
 }
 
 /* Helper function */
@@ -151,7 +182,7 @@ static void action_compute(const char *const *action)
   double clock = smpi_process_simulated_elapsed();
   double flops= parse_double(action[2]);
 #ifdef HAVE_TRACING
-  int rank = smpi_comm_rank(MPI_COMM_WORLD);
+  int rank = smpi_process_index();
   instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
   extra->type=TRACING_COMPUTING;
   extra->comp_size=flops;
@@ -178,7 +209,7 @@ static void action_send(const char *const *action)
   }
 
 #ifdef HAVE_TRACING
-  int rank = smpi_comm_rank(MPI_COMM_WORLD);
+  int rank = smpi_process_index();
 
   int dst_traced = smpi_group_rank(smpi_comm_group(MPI_COMM_WORLD), to);
   instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
@@ -212,7 +243,7 @@ static void action_Isend(const char *const *action)
   else MPI_CURRENT_TYPE= MPI_DEFAULT_TYPE;
 
 #ifdef HAVE_TRACING
-  int rank = smpi_comm_rank(MPI_COMM_WORLD);
+  int rank = smpi_process_index();
   int dst_traced = smpi_group_rank(smpi_comm_group(MPI_COMM_WORLD), to);
   instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
   extra->type = TRACING_ISEND;
@@ -231,7 +262,7 @@ static void action_Isend(const char *const *action)
   request->send = 1;
 #endif
 
-  xbt_dynar_push(reqq[smpi_comm_rank(MPI_COMM_WORLD)],&request);
+  xbt_dynar_push(reqq[smpi_process_index()],&request);
 
   log_timed_action (action, clock);
 }
@@ -246,7 +277,7 @@ static void action_recv(const char *const *action) {
   else MPI_CURRENT_TYPE= MPI_DEFAULT_TYPE;
 
 #ifdef HAVE_TRACING
-  int rank = smpi_comm_rank(MPI_COMM_WORLD);
+  int rank = smpi_process_index();
   int src_traced = smpi_group_rank(smpi_comm_group(MPI_COMM_WORLD), from);
 
   instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
@@ -285,7 +316,7 @@ static void action_Irecv(const char *const *action)
   else MPI_CURRENT_TYPE= MPI_DEFAULT_TYPE;
 
 #ifdef HAVE_TRACING
-  int rank = smpi_comm_rank(MPI_COMM_WORLD);
+  int rank = smpi_process_index();
   int src_traced = smpi_group_rank(smpi_comm_group(MPI_COMM_WORLD), from);
   instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
   extra->type = TRACING_IRECV;
@@ -308,7 +339,7 @@ static void action_Irecv(const char *const *action)
   TRACE_smpi_ptp_out(rank, src_traced, rank, __FUNCTION__);
   request->recv = 1;
 #endif
-  xbt_dynar_push(reqq[smpi_comm_rank(MPI_COMM_WORLD)],&request);
+  xbt_dynar_push(reqq[smpi_process_index()],&request);
 
   log_timed_action (action, clock);
 }
@@ -319,11 +350,11 @@ static void action_test(const char *const *action){
   MPI_Status status;
   int flag = TRUE;
 
-  request = xbt_dynar_pop_as(reqq[smpi_comm_rank(MPI_COMM_WORLD)],MPI_Request);
+  request = xbt_dynar_pop_as(reqq[smpi_process_index()],MPI_Request);
   xbt_assert(request != NULL, "found null request in reqq");
 
 #ifdef HAVE_TRACING
-  int rank = smpi_comm_rank(MPI_COMM_WORLD);
+  int rank = smpi_process_index();
   instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
   extra->type=TRACING_TEST;
   TRACE_smpi_testing_in(rank, extra);
@@ -333,7 +364,7 @@ static void action_test(const char *const *action){
   /* push back request in dynar to be caught by a subsequent wait. if the test
    * did succeed, the request is now NULL.
    */
-  xbt_dynar_push_as(reqq[smpi_comm_rank(MPI_COMM_WORLD)],MPI_Request, request);
+  xbt_dynar_push_as(reqq[smpi_process_index()],MPI_Request, request);
 
 #ifdef HAVE_TRACING
   TRACE_smpi_testing_out(rank);
@@ -347,10 +378,10 @@ static void action_wait(const char *const *action){
   MPI_Request request;
   MPI_Status status;
 
-  xbt_assert(xbt_dynar_length(reqq[smpi_comm_rank(MPI_COMM_WORLD)]),
+  xbt_assert(xbt_dynar_length(reqq[smpi_process_index()]),
       "action wait not preceded by any irecv or isend: %s",
       xbt_str_join_array(action," "));
-  request = xbt_dynar_pop_as(reqq[smpi_comm_rank(MPI_COMM_WORLD)],MPI_Request);
+  request = xbt_dynar_pop_as(reqq[smpi_process_index()],MPI_Request);
 
   if (!request){
     /* Assuming that the trace is well formed, this mean the comm might have
@@ -388,7 +419,7 @@ static void action_waitall(const char *const *action){
   int count_requests=0;
   unsigned int i=0;
 
-  count_requests=xbt_dynar_length(reqq[smpi_comm_rank(MPI_COMM_WORLD)]);
+  count_requests=xbt_dynar_length(reqq[smpi_process_index()]);
 
   if (count_requests>0) {
     MPI_Request requests[count_requests];
@@ -396,7 +427,7 @@ static void action_waitall(const char *const *action){
 
     /*  The reqq is an array of dynars. Its index corresponds to the rank.
      Thus each rank saves its own requests to the array request. */
-    xbt_dynar_foreach(reqq[smpi_comm_rank(MPI_COMM_WORLD)],i,requests[i]); 
+    xbt_dynar_foreach(reqq[smpi_process_index()],i,requests[i]); 
 
   #ifdef HAVE_TRACING
    //save information from requests
@@ -452,7 +483,7 @@ static void action_waitall(const char *const *action){
    xbt_dynar_free(&recvs);
   #endif
 
-   xbt_dynar_free_container(&(reqq[smpi_comm_rank(MPI_COMM_WORLD)]));
+   xbt_dynar_free_container(&(reqq[smpi_process_index()]));
   }
   log_timed_action (action, clock);
 }
@@ -460,7 +491,7 @@ static void action_waitall(const char *const *action){
 static void action_barrier(const char *const *action){
   double clock = smpi_process_simulated_elapsed();
 #ifdef HAVE_TRACING
-  int rank = smpi_comm_rank(MPI_COMM_WORLD);
+  int rank = smpi_process_index();
   instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
   extra->type = TRACING_BARRIER;
   TRACE_smpi_collective_in(rank, -1, __FUNCTION__, extra);
@@ -493,7 +524,7 @@ static void action_bcast(const char *const *action)
   }
 
 #ifdef HAVE_TRACING
-  int rank = smpi_comm_rank(MPI_COMM_WORLD);
+  int rank = smpi_process_index();
   int root_traced = smpi_group_index(smpi_comm_group(MPI_COMM_WORLD), root);
 
   instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
@@ -504,12 +535,11 @@ static void action_bcast(const char *const *action)
   TRACE_smpi_collective_in(rank, root_traced, __FUNCTION__, extra);
 
 #endif
-
-  mpi_coll_bcast_fun(NULL, size, MPI_CURRENT_TYPE, root, MPI_COMM_WORLD);
+    void *sendbuf = smpi_get_tmp_sendbuffer(size* smpi_datatype_size(MPI_CURRENT_TYPE));
+  mpi_coll_bcast_fun(sendbuf, size, MPI_CURRENT_TYPE, root, MPI_COMM_WORLD);
 #ifdef HAVE_TRACING
   TRACE_smpi_collective_out(rank, root_traced, __FUNCTION__);
 #endif
-
   log_timed_action (action, clock);
 }
 
@@ -527,9 +557,11 @@ static void action_reduce(const char *const *action)
       MPI_CURRENT_TYPE=decode_datatype(action[5]);
     }
   }
+  
+  
 
 #ifdef HAVE_TRACING
-  int rank = smpi_comm_rank(MPI_COMM_WORLD);
+  int rank = smpi_process_index();
   int root_traced = smpi_group_rank(smpi_comm_group(MPI_COMM_WORLD), root);
   instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
   extra->type = TRACING_REDUCE;
@@ -540,12 +572,13 @@ static void action_reduce(const char *const *action)
 
   TRACE_smpi_collective_in(rank, root_traced, __FUNCTION__,extra);
 #endif
-   mpi_coll_reduce_fun(NULL, NULL, comm_size, MPI_CURRENT_TYPE, MPI_OP_NULL, root, MPI_COMM_WORLD);
+    void *recvbuf = smpi_get_tmp_sendbuffer(comm_size* smpi_datatype_size(MPI_CURRENT_TYPE));
+    void *sendbuf = smpi_get_tmp_sendbuffer(comm_size* smpi_datatype_size(MPI_CURRENT_TYPE));
+   mpi_coll_reduce_fun(sendbuf, recvbuf, comm_size, MPI_CURRENT_TYPE, MPI_OP_NULL, root, MPI_COMM_WORLD);
    smpi_execute_flops(comp_size);
 #ifdef HAVE_TRACING
   TRACE_smpi_collective_out(rank, root_traced, __FUNCTION__);
 #endif
-
   log_timed_action (action, clock);
 }
 
@@ -558,7 +591,7 @@ static void action_allReduce(const char *const *action) {
 
   double clock = smpi_process_simulated_elapsed();
 #ifdef HAVE_TRACING
-  int rank = smpi_comm_rank(MPI_COMM_WORLD);
+  int rank = smpi_process_index();
   instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
   extra->type = TRACING_ALLREDUCE;
   extra->send_size = comm_size;
@@ -567,12 +600,13 @@ static void action_allReduce(const char *const *action) {
 
   TRACE_smpi_collective_in(rank, -1, __FUNCTION__,extra);
 #endif
-  mpi_coll_allreduce_fun(NULL, NULL, comm_size, MPI_CURRENT_TYPE, MPI_OP_NULL, MPI_COMM_WORLD);
+    void *recvbuf = smpi_get_tmp_sendbuffer(comm_size* smpi_datatype_size(MPI_CURRENT_TYPE));
+    void *sendbuf = smpi_get_tmp_sendbuffer(comm_size* smpi_datatype_size(MPI_CURRENT_TYPE));
+  mpi_coll_allreduce_fun(sendbuf, recvbuf, comm_size, MPI_CURRENT_TYPE, MPI_OP_NULL, MPI_COMM_WORLD);
   smpi_execute_flops(comp_size);
 #ifdef HAVE_TRACING
   TRACE_smpi_collective_out(rank, -1, __FUNCTION__);
 #endif
-
   log_timed_action (action, clock);
 }
 
@@ -591,8 +625,8 @@ static void action_allToAll(const char *const *action) {
     MPI_CURRENT_TYPE=MPI_DEFAULT_TYPE;
     MPI_CURRENT_TYPE2=MPI_DEFAULT_TYPE;
   }
-  void *send = xbt_malloc(send_size*comm_size* smpi_datatype_size(MPI_CURRENT_TYPE));  
-  void *recv = xbt_malloc(recv_size*comm_size* smpi_datatype_size(MPI_CURRENT_TYPE2));  
+  void *send = smpi_get_tmp_sendbuffer(send_size*comm_size* smpi_datatype_size(MPI_CURRENT_TYPE));
+  void *recv = smpi_get_tmp_recvbuffer(recv_size*comm_size* smpi_datatype_size(MPI_CURRENT_TYPE2));
 
 #ifdef HAVE_TRACING
   int rank = smpi_process_index();
@@ -611,10 +645,8 @@ static void action_allToAll(const char *const *action) {
 #ifdef HAVE_TRACING
   TRACE_smpi_collective_out(rank, -1, __FUNCTION__);
 #endif
-
   log_timed_action (action, clock);
-  xbt_free(send);
-  xbt_free(recv);
+
 }
 
 
@@ -643,14 +675,14 @@ static void action_gather(const char *const *action) {
     MPI_CURRENT_TYPE=MPI_DEFAULT_TYPE;
     MPI_CURRENT_TYPE2=MPI_DEFAULT_TYPE;
   }
-  void *send = xbt_malloc(send_size* smpi_datatype_size(MPI_CURRENT_TYPE));
+  void *send = smpi_get_tmp_sendbuffer(send_size* smpi_datatype_size(MPI_CURRENT_TYPE));
   void *recv = NULL;
 
   int root=atoi(action[4]);
-  int rank = smpi_process_index();
+  int rank = smpi_comm_rank(MPI_COMM_WORLD);
 
   if(rank==root)
-    recv = xbt_malloc(recv_size*comm_size* smpi_datatype_size(MPI_CURRENT_TYPE2));
+    recv = smpi_get_tmp_recvbuffer(recv_size*comm_size* smpi_datatype_size(MPI_CURRENT_TYPE2));
 
 #ifdef HAVE_TRACING
   instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
@@ -661,19 +693,17 @@ static void action_gather(const char *const *action) {
   extra->datatype1 = encode_datatype(MPI_CURRENT_TYPE);
   extra->datatype2 = encode_datatype(MPI_CURRENT_TYPE2);
 
-  TRACE_smpi_collective_in(rank, root, __FUNCTION__, extra);
+  TRACE_smpi_collective_in(smpi_process_index(), root, __FUNCTION__, extra);
 #endif
   mpi_coll_gather_fun(send, send_size, MPI_CURRENT_TYPE,
                 recv, recv_size, MPI_CURRENT_TYPE2,
                 root, MPI_COMM_WORLD);
 
 #ifdef HAVE_TRACING
-  TRACE_smpi_collective_out(rank, -1, __FUNCTION__);
+  TRACE_smpi_collective_out(smpi_process_index(), -1, __FUNCTION__);
 #endif
-
   log_timed_action (action, clock);
-  xbt_free(send);
-  xbt_free(recv);
+
 }
 
 
@@ -706,7 +736,7 @@ static void action_gatherv(const char *const *action) {
     MPI_CURRENT_TYPE=MPI_DEFAULT_TYPE;
     MPI_CURRENT_TYPE2=MPI_DEFAULT_TYPE;
   }
-  void *send = xbt_malloc(send_size* smpi_datatype_size(MPI_CURRENT_TYPE));
+  void *send = smpi_get_tmp_sendbuffer(send_size* smpi_datatype_size(MPI_CURRENT_TYPE));
   void *recv = NULL;
   for(i=0;i<comm_size;i++) {
     recvcounts[i] = atoi(action[i+3]);
@@ -715,10 +745,10 @@ static void action_gatherv(const char *const *action) {
   }
 
   int root=atoi(action[3+comm_size]);
-  int rank = smpi_process_index();
+  int rank = smpi_comm_rank(MPI_COMM_WORLD);;
 
   if(rank==root)
-    recv = xbt_malloc(recv_sum* smpi_datatype_size(MPI_CURRENT_TYPE2));
+    recv = smpi_get_tmp_recvbuffer(recv_sum* smpi_datatype_size(MPI_CURRENT_TYPE2));
 
 #ifdef HAVE_TRACING
   instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
@@ -732,22 +762,19 @@ static void action_gatherv(const char *const *action) {
   extra->datatype1 = encode_datatype(MPI_CURRENT_TYPE);
   extra->datatype2 = encode_datatype(MPI_CURRENT_TYPE2);
 
-  TRACE_smpi_collective_in(rank, root, __FUNCTION__, extra);
+  TRACE_smpi_collective_in(smpi_process_index(), root, __FUNCTION__, extra);
 #endif
 smpi_mpi_gatherv(send, send_size, MPI_CURRENT_TYPE,
                 recv, recvcounts, disps, MPI_CURRENT_TYPE2,
                 root, MPI_COMM_WORLD);
 
 #ifdef HAVE_TRACING
-  TRACE_smpi_collective_out(rank, -1, __FUNCTION__);
+  TRACE_smpi_collective_out(smpi_process_index(), -1, __FUNCTION__);
 #endif
 
   log_timed_action (action, clock);
   xbt_free(recvcounts);
-  xbt_free(send);
-  xbt_free(recv);
   xbt_free(disps);
-
 }
 
 static void action_reducescatter(const char *const *action) {
@@ -773,7 +800,7 @@ static void action_reducescatter(const char *const *action) {
   int *disps = xbt_new0(int, comm_size);  
   int i=0;
   int rank = smpi_process_index();
-
+  int size = 0;
   if(action[3+comm_size])
     MPI_CURRENT_TYPE=decode_datatype(action[3+comm_size]);
   else
@@ -782,6 +809,7 @@ static void action_reducescatter(const char *const *action) {
   for(i=0;i<comm_size;i++) {
     recvcounts[i] = atoi(action[i+2]);
     disps[i] = 0;
+    size+=recvcounts[i];
   }
 
 #ifdef HAVE_TRACING
@@ -795,10 +823,12 @@ static void action_reducescatter(const char *const *action) {
   extra->comp_size = comp_size;
   extra->num_processes = comm_size;
 
-
   TRACE_smpi_collective_in(rank, -1, __FUNCTION__,extra);
 #endif
-   mpi_coll_reduce_scatter_fun(NULL, NULL, recvcounts, MPI_CURRENT_TYPE, MPI_OP_NULL,
+  void *sendbuf = smpi_get_tmp_sendbuffer(size* smpi_datatype_size(MPI_CURRENT_TYPE));
+   void *recvbuf = smpi_get_tmp_recvbuffer(size* smpi_datatype_size(MPI_CURRENT_TYPE));
+   
+   mpi_coll_reduce_scatter_fun(sendbuf, recvbuf, recvcounts, MPI_CURRENT_TYPE, MPI_OP_NULL,
        MPI_COMM_WORLD);
    smpi_execute_flops(comp_size);
 
@@ -844,13 +874,13 @@ static void action_allgatherv(const char *const *action) {
     MPI_CURRENT_TYPE = MPI_DEFAULT_TYPE;
     MPI_CURRENT_TYPE2 = MPI_DEFAULT_TYPE;    
   }
-  void *sendbuf = xbt_malloc(sendcount* smpi_datatype_size(MPI_CURRENT_TYPE));    
+  void *sendbuf = smpi_get_tmp_sendbuffer(sendcount* smpi_datatype_size(MPI_CURRENT_TYPE));
 
   for(i=0;i<comm_size;i++) {
     recvcounts[i] = atoi(action[i+3]);
     recv_sum=recv_sum+recvcounts[i];
   }
-  void *recvbuf = xbt_malloc(recv_sum* smpi_datatype_size(MPI_CURRENT_TYPE2));  
+  void *recvbuf = smpi_get_tmp_recvbuffer(recv_sum* smpi_datatype_size(MPI_CURRENT_TYPE2));
 
 #ifdef HAVE_TRACING
   int rank = smpi_process_index();
@@ -874,8 +904,6 @@ static void action_allgatherv(const char *const *action) {
 #endif
 
   log_timed_action (action, clock);
-  xbt_free(sendbuf);
-  xbt_free(recvbuf);
   xbt_free(recvcounts);
   xbt_free(disps);
 }
@@ -918,8 +946,8 @@ static void action_allToAllv(const char *const *action) {
       MPI_CURRENT_TYPE2=MPI_DEFAULT_TYPE;
   }
 
-  void *sendbuf = xbt_malloc(send_buf_size* smpi_datatype_size(MPI_CURRENT_TYPE));  
-  void *recvbuf = xbt_malloc(recv_buf_size* smpi_datatype_size(MPI_CURRENT_TYPE2));  
+  void *sendbuf = smpi_get_tmp_sendbuffer(send_buf_size* smpi_datatype_size(MPI_CURRENT_TYPE));
+  void *recvbuf  = smpi_get_tmp_recvbuffer(recv_buf_size* smpi_datatype_size(MPI_CURRENT_TYPE2));
 
   for(i=0;i<comm_size;i++) {
     sendcounts[i] = atoi(action[i+3]);
@@ -954,8 +982,6 @@ static void action_allToAllv(const char *const *action) {
 #endif
 
   log_timed_action (action, clock);
-  xbt_free(sendbuf);
-  xbt_free(recvbuf);
   xbt_free(sendcounts);
   xbt_free(recvcounts);
   xbt_free(senddisps);
@@ -965,6 +991,7 @@ static void action_allToAllv(const char *const *action) {
 void smpi_replay_init(int *argc, char***argv){
   smpi_process_init(argc, argv);
   smpi_process_mark_as_initialized();
+  smpi_process_set_replaying(1);
 #ifdef HAVE_TRACING
   int rank = smpi_process_index();
   TRACE_smpi_init(rank);
@@ -1001,7 +1028,16 @@ void smpi_replay_init(int *argc, char***argv){
     xbt_replay_action_register("reduceScatter",  action_reducescatter);
     xbt_replay_action_register("compute",    action_compute);
   }
-
+  
+  //if we have a delayed start, sleep here.
+  if(*argc>2){
+    char *endptr;
+    double value = strtod((*argv)[2], &endptr);
+    if (*endptr != '\0')
+      THROWF(unknown_error, 0, "%s is not a double", (*argv)[2]);
+    XBT_VERB("Delayed start for instance - Sleeping for %f flops ",value );
+    smpi_execute_flops(value);
+  }
   xbt_replay_action_runner(*argc, *argv);
 }
 
@@ -1009,21 +1045,21 @@ int smpi_replay_finalize(){
   double sim_time= 1.;
   /* One active process will stop. Decrease the counter*/
   XBT_DEBUG("There are %lu elements in reqq[*]",
-            xbt_dynar_length(reqq[smpi_comm_rank(MPI_COMM_WORLD)]));
-  if (!xbt_dynar_is_empty(reqq[smpi_comm_rank(MPI_COMM_WORLD)])){
-    int count_requests=xbt_dynar_length(reqq[smpi_comm_rank(MPI_COMM_WORLD)]);
+            xbt_dynar_length(reqq[smpi_process_index()]));
+  if (!xbt_dynar_is_empty(reqq[smpi_process_index()])){
+    int count_requests=xbt_dynar_length(reqq[smpi_process_index()]);
     MPI_Request requests[count_requests];
     MPI_Status status[count_requests];
     unsigned int i;
 
-    xbt_dynar_foreach(reqq[smpi_comm_rank(MPI_COMM_WORLD)],i,requests[i]);
+    xbt_dynar_foreach(reqq[smpi_process_index()],i,requests[i]);
     smpi_mpi_waitall(count_requests, requests, status);
     active_processes--;
   } else {
     active_processes--;
   }
 
-  xbt_dynar_free_container(&(reqq[smpi_comm_rank(MPI_COMM_WORLD)]));
+  xbt_dynar_free_container(&(reqq[smpi_process_index()]));
 
   if(!active_processes){
     /* Last process alive speaking */
@@ -1031,6 +1067,8 @@ int smpi_replay_finalize(){
     sim_time = smpi_process_simulated_elapsed();
     XBT_INFO("Simulation time %f", sim_time);
     _xbt_replay_action_exit();
+    xbt_free(sendbuffer);
+    xbt_free(recvbuffer);
     xbt_free(reqq);
     reqq = NULL;
   }

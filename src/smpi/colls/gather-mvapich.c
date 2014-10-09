@@ -219,10 +219,10 @@ int smpi_coll_tuned_gather_mvapich2_two_level(void *sendbuf,
         if (local_rank == 0) {
             /* Node leader, allocate tmp_buffer */
             if (rank == root) {
-                tmp_buf = xbt_malloc(recvcnt * MAX(recvtype_extent,
+                tmp_buf = smpi_get_tmp_recvbuffer(recvcnt * MAX(recvtype_extent,
                             recvtype_true_extent) * local_size);
             } else {
-                tmp_buf = xbt_malloc(sendcnt * MAX(sendtype_extent,
+                tmp_buf = smpi_get_tmp_sendbuffer(sendcnt * MAX(sendtype_extent,
                             sendtype_true_extent) *
                         local_size);
             }
@@ -286,12 +286,12 @@ int smpi_coll_tuned_gather_mvapich2_two_level(void *sendbuf,
                  * leader and this process's rank in the leader_comm 
                  * is the same as leader_root */
                 if(rank == root) { 
-                    leader_gather_buf = xbt_malloc(recvcnt *
+                    leader_gather_buf = smpi_get_tmp_recvbuffer(recvcnt *
                                                 MAX(recvtype_extent,
                                                 recvtype_true_extent) *
                                                 comm_size);
                 } else { 
-                    leader_gather_buf = xbt_malloc(sendcnt *
+                    leader_gather_buf = smpi_get_tmp_sendbuffer(sendcnt *
                                                 MAX(sendtype_extent,
                                                 sendtype_true_extent) *
                                                 comm_size);
@@ -361,7 +361,7 @@ int smpi_coll_tuned_gather_mvapich2_two_level(void *sendbuf,
             if (leader_comm_rank == leader_root && root != leader_of_root) {
                 /* The root of the Gather operation is not a node-level leader
                  */
-                leader_gather_buf = xbt_malloc(nbytes * comm_size);
+                leader_gather_buf = smpi_get_tmp_sendbuffer(nbytes * comm_size);
                 if (leader_gather_buf == NULL) {
                     mpi_errno = MPI_ERR_OTHER;
                     return mpi_errno;
@@ -402,10 +402,10 @@ int smpi_coll_tuned_gather_mvapich2_two_level(void *sendbuf,
     /* check if multiple threads are calling this collective function */
     if (local_rank == 0 ) {
         if (tmp_buf != NULL) {
-            xbt_free(tmp_buf);
+            smpi_free_tmp_buffer(tmp_buf);
         }
         if (leader_gather_buf != NULL) {
-            xbt_free(leader_gather_buf);
+            smpi_free_tmp_buffer(leader_gather_buf);
         }
     }
 

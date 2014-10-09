@@ -77,7 +77,7 @@ smpi_coll_tuned_gather_ompi_binomial(void *sbuf, int scount,
 	} else {
 	    /* root is not on 0, allocate temp buffer for recv,
 	     * rotate data at the end */
-	    tempbuf = (char *) malloc(rtrue_extent + (rcount*size - 1) * rextent);
+	    tempbuf = (char *) smpi_get_tmp_recvbuffer(rtrue_extent + (rcount*size - 1) * rextent);
 	    if (NULL == tempbuf) {
 		err= MPI_ERR_OTHER; line = __LINE__; goto err_hndl;
 	    }
@@ -99,7 +99,7 @@ smpi_coll_tuned_gather_ompi_binomial(void *sbuf, int scount,
 	/* other non-leaf nodes, allocate temp buffer for data received from
 	 * children, the most we need is half of the total data elements due
 	 * to the property of binimoal tree */
-	tempbuf = (char *) malloc(strue_extent + (scount*size - 1) * sextent);
+	tempbuf = (char *) smpi_get_tmp_sendbuffer(strue_extent + (scount*size - 1) * sextent);
 	if (NULL == tempbuf) {
 	    err= MPI_ERR_OTHER; line = __LINE__; goto err_hndl;
 	}
@@ -169,18 +169,18 @@ smpi_coll_tuned_gather_ompi_binomial(void *sbuf, int scount,
 						 (char *) rbuf,rcount*root,rdtype);
 	    if (MPI_SUCCESS != err) { line = __LINE__; goto err_hndl; }
 
-	    free(tempbuf);
+	    smpi_free_tmp_buffer(tempbuf);
 	}
     } else if (!(vrank % 2)) {
 	/* other non-leaf nodes */
-	free(tempbuf);
+	smpi_free_tmp_buffer(tempbuf);
     }
     xbt_free(bmtree);
     return MPI_SUCCESS;
 
  err_hndl:
     if (NULL != tempbuf)
-	free(tempbuf);
+	smpi_free_tmp_buffer(tempbuf);
 
     XBT_DEBUG(  "%s:%4d\tError occurred %d, rank %2d",
 		 __FILE__, line, err, rank);

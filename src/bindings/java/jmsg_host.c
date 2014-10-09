@@ -254,7 +254,7 @@ Java_org_simgrid_msg_Host_setProperty(JNIEnv *env, jobject jhost, jobject jname,
 
 }
 JNIEXPORT jboolean JNICALL
-Java_org_simgrid_msg_Host_isAvail(JNIEnv * env, jobject jhost) {
+Java_org_simgrid_msg_Host_isOn(JNIEnv * env, jobject jhost) {
   msg_host_t host = jhost_get_native(env, jhost);
 
   if (!host) {
@@ -262,7 +262,7 @@ Java_org_simgrid_msg_Host_isAvail(JNIEnv * env, jobject jhost) {
     return 0;
   }
 
-  return (jboolean) MSG_host_is_avail(host);
+  return (jboolean) MSG_host_is_on(host);
 }
 
 JNIEXPORT jobjectArray JNICALL

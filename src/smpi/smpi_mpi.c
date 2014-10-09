@@ -626,6 +626,10 @@ int MPI_Comm_get_errhandler(MPI_Comm comm, MPI_Errhandler* errhandler) {
   return PMPI_Errhandler_set(comm, errhandler);
 }
 
+int MPI_Win_get_group(MPI_Win  win, MPI_Group * group){
+  return PMPI_Win_get_group(win, group);
+}
+
 int MPI_Win_set_errhandler(MPI_Win win, MPI_Errhandler errhandler) {
   return PMPI_Win_set_errhandler(win, errhandler);
 }
@@ -838,6 +842,34 @@ int MPI_Win_set_name(MPI_Win  win, char * name)
 int MPI_Win_get_name(MPI_Win  win, char * name, int* len)
 {
   return PMPI_Win_get_name(win,name,len);
+}
+
+int MPI_Win_complete(MPI_Win win){
+  return PMPI_Win_complete(win);
+}
+
+int MPI_Win_lock(int lock_type, int rank, int assert, MPI_Win win) {
+  return PMPI_Win_lock(lock_type, rank, assert, win);
+}
+
+int MPI_Win_post(MPI_Group group, int assert, MPI_Win win){
+  return PMPI_Win_post(group, assert, win);
+}
+
+int MPI_Win_start(MPI_Group group, int assert, MPI_Win win){
+  return PMPI_Win_start(group, assert, win);
+}
+
+int MPI_Win_test(MPI_Win win, int *flag){
+  return PMPI_Win_test(win, flag);
+}
+
+int MPI_Win_unlock(int rank, MPI_Win win){
+  return PMPI_Win_unlock(rank, win);
+}
+
+int MPI_Win_wait(MPI_Win win){
+  return PMPI_Win_wait(win);
 }
 
 int MPI_Info_create( MPI_Info *info){
@@ -1099,6 +1131,14 @@ MPI_Op MPI_Op_f2c(MPI_Fint op){
 
 MPI_Fint MPI_Op_c2f(MPI_Op op){
   return PMPI_Op_c2f(op);
+}
+
+MPI_Comm MPI_Comm_f2c(MPI_Fint comm){
+  return PMPI_Comm_f2c(comm);
+}
+
+MPI_Fint MPI_Comm_c2f(MPI_Comm comm){
+  return PMPI_Comm_c2f(comm);
 }
 
 MPI_Info MPI_Info_f2c(MPI_Fint info){

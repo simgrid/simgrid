@@ -35,7 +35,7 @@ smpi_coll_tuned_reduce_flat_tree(void *sbuf, void *rbuf, int count,
      messages. */
 
   if (size > 1)
-    origin = (char *) xbt_malloc(count * extent);
+    origin = (char *) smpi_get_tmp_recvbuffer(count * extent);
 
 
   /* Initialize the receive buffer. */
@@ -61,7 +61,7 @@ smpi_coll_tuned_reduce_flat_tree(void *sbuf, void *rbuf, int count,
   }
 
   if (origin)
-    free(origin);
+    smpi_free_tmp_buffer(origin);
 
   /* All done */
   return 0;

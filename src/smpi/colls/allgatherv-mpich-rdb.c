@@ -42,7 +42,7 @@ int smpi_coll_tuned_allgatherv_mpich_rdb (
 
   smpi_datatype_extent(recvtype, &recvtype_true_lb, &recvtype_true_extent);
 
-  tmp_buf= (void*)xbt_malloc(total_count*(max(recvtype_true_extent,recvtype_extent)));
+  tmp_buf= (void*)smpi_get_tmp_sendbuffer(total_count*(max(recvtype_true_extent,recvtype_extent)));
 
   /* adjust for potential negative lower bound in datatype */
   tmp_buf = (void *)((char*)tmp_buf - recvtype_true_lb);
@@ -209,6 +209,6 @@ int smpi_coll_tuned_allgatherv_mpich_rdb (
     position += recvcounts[j];
   }
 
-  free(tmp_buf);
+  smpi_free_tmp_buffer(tmp_buf);
   return MPI_SUCCESS;
 }

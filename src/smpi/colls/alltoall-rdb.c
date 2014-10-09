@@ -56,7 +56,7 @@ int smpi_coll_tuned_alltoall_rdb(void *send_buff, int send_count,
 
   max_size = num_procs * recv_increment;
 
-  tmp_buff = (char *) xbt_malloc(max_size);
+  tmp_buff = (char *) smpi_get_tmp_sendbuffer(max_size);
 
   curr_size = send_count * num_procs;
 
@@ -149,6 +149,6 @@ int smpi_coll_tuned_alltoall_rdb(void *send_buff, int send_count,
                  send_count, send_type, rank, tag,
                  recv_ptr + (i * recv_count * extent),
                  recv_count, recv_type, rank, tag, comm, &status);
-  free(tmp_buff);
+  smpi_free_tmp_buffer(tmp_buff);
   return MPI_SUCCESS;
 }

@@ -171,8 +171,8 @@ static void MC_snapshot_add_region(mc_snapshot_t snapshot, int type,
 static void MC_get_memory_regions(mc_snapshot_t snapshot)
 {
 
-  void *start_heap = ((xbt_mheap_t) std_heap)->base;
-  void *end_heap = ((xbt_mheap_t) std_heap)->breakval;
+  void *start_heap = std_heap->base;
+  void *end_heap = std_heap->breakval;
   MC_snapshot_add_region(snapshot, 0, start_heap, start_heap,
                          (char *) end_heap - (char *) start_heap);
   snapshot->heap_bytes_used = mmalloc_get_bytes_used(std_heap);

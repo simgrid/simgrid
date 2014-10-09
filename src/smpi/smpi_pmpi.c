@@ -253,8 +253,7 @@ int PMPI_Type_dup(MPI_Datatype datatype, MPI_Datatype *newtype){
   if (datatype == MPI_DATATYPE_NULL) {
     retval = MPI_ERR_TYPE;
   } else {
-    *newtype = smpi_datatype_dup(datatype);
-    retval = MPI_SUCCESS;
+    retval = smpi_datatype_dup(datatype, newtype);
   }
   return retval;
 }
@@ -773,8 +772,7 @@ int PMPI_Comm_dup(MPI_Comm comm, MPI_Comm * newcomm)
   } else if (newcomm == NULL) {
     retval = MPI_ERR_ARG;
   } else {
-    *newcomm = smpi_comm_new(smpi_comm_group(comm), smpi_comm_topo(comm));
-    retval = MPI_SUCCESS;
+    retval = smpi_comm_dup(comm, newcomm);
   }
   return retval;
 }
@@ -2745,15 +2743,24 @@ int PMPI_Win_set_name(MPI_Win  win, char * name)
 
 int PMPI_Win_get_name(MPI_Win  win, char * name, int* len)
 {
-  int retval = 0;
+  int retval = MPI_SUCCESS;
 
   if (win == MPI_WIN_NULL)  {
-    retval = MPI_ERR_TYPE;
+    retval = MPI_ERR_WIN;
   } else if (name == NULL)  {
     retval = MPI_ERR_ARG;
   } else {
     smpi_mpi_win_get_name(win, name, len);
-    retval = MPI_SUCCESS;
+  }
+  return retval;
+}
+
+int PMPI_Win_get_group(MPI_Win  win, MPI_Group * group){
+  int retval = MPI_SUCCESS;
+  if (win == MPI_WIN_NULL)  {
+    retval = MPI_ERR_WIN;
+  }else {
+    smpi_mpi_win_get_group(win, group);
   }
   return retval;
 }
@@ -2938,7 +2945,118 @@ MPI_Fint PMPI_Op_c2f(MPI_Op op){
   return smpi_op_c2f(op);
 }
 
+MPI_Comm PMPI_Comm_f2c(MPI_Fint comm){
+  return smpi_comm_f2c(comm);
+}
 
+MPI_Fint PMPI_Comm_c2f(MPI_Comm comm){
+  return smpi_comm_c2f(comm);
+}
+
+int PMPI_Keyval_create(MPI_Copy_function* copy_fn, MPI_Delete_function* delete_fn, int* keyval, void* extra_state) {
+  return smpi_comm_keyval_create(copy_fn, delete_fn, keyval, extra_state);
+}
+
+int PMPI_Keyval_free(int* keyval) {
+  return smpi_comm_keyval_free(keyval);
+}
+
+int PMPI_Attr_delete(MPI_Comm comm, int keyval) {
+  if(keyval == MPI_TAG_UB||keyval == MPI_HOST||keyval == MPI_IO
+       ||keyval == MPI_WTIME_IS_GLOBAL||keyval == MPI_APPNUM
+       ||keyval == MPI_UNIVERSE_SIZE||keyval == MPI_LASTUSEDCODE)
+    return MPI_ERR_ARG;
+  else if (comm==MPI_COMM_NULL)
+    return MPI_ERR_COMM;
+  else
+    return smpi_comm_attr_delete(comm, keyval);
+}
+
+int PMPI_Attr_get(MPI_Comm comm, int keyval, void* attr_value, int* flag) {
+  if (comm==MPI_COMM_NULL){
+    *flag=0;
+    return MPI_ERR_COMM;
+  } else if(keyval == MPI_TAG_UB||keyval == MPI_HOST||keyval == MPI_IO
+       ||keyval == MPI_WTIME_IS_GLOBAL||keyval == MPI_APPNUM
+       ||keyval == MPI_UNIVERSE_SIZE||keyval == MPI_LASTUSEDCODE){
+    *flag=1;
+    //FIXME : not ideal and leaky, but should not be called too much
+    int* res = xbt_new(int, 1);
+    *res=keyval;
+    *(int**)attr_value=res;
+    return MPI_SUCCESS;
+  } else
+  return smpi_comm_attr_get(comm, keyval, attr_value, flag);
+}
+
+int PMPI_Attr_put(MPI_Comm comm, int keyval, void* attr_value) {
+  if(keyval == MPI_TAG_UB||keyval == MPI_HOST||keyval == MPI_IO
+       ||keyval == MPI_WTIME_IS_GLOBAL||keyval == MPI_APPNUM
+       ||keyval == MPI_UNIVERSE_SIZE||keyval == MPI_LASTUSEDCODE)
+    return MPI_ERR_ARG;
+  else if (comm==MPI_COMM_NULL)
+    return MPI_ERR_COMM;
+  else
+  return smpi_comm_attr_put(comm, keyval, attr_value);
+}
+
+int PMPI_Comm_get_attr (MPI_Comm comm, int comm_keyval, void *attribute_val, int *flag)
+{
+  return PMPI_Attr_get(comm, comm_keyval, attribute_val,flag);
+}
+
+int PMPI_Comm_set_attr (MPI_Comm comm, int comm_keyval, void *attribute_val)
+{
+  return PMPI_Attr_put(comm, comm_keyval, attribute_val);
+}
+
+int PMPI_Comm_delete_attr (MPI_Comm comm, int comm_keyval)
+{
+  return PMPI_Attr_delete(comm, comm_keyval);
+}
+
+int PMPI_Comm_create_keyval(MPI_Comm_copy_attr_function* copy_fn, MPI_Comm_delete_attr_function* delete_fn, int* keyval, void* extra_state)
+{
+  return PMPI_Keyval_create(copy_fn, delete_fn, keyval, extra_state);
+}
+
+int PMPI_Comm_free_keyval(int* keyval) {
+  return PMPI_Keyval_free(keyval);
+}
+
+
+int PMPI_Type_get_attr (MPI_Datatype type, int type_keyval, void *attribute_val, int* flag)
+{
+  if (type==MPI_DATATYPE_NULL)
+    return MPI_ERR_TYPE;
+  else
+    return smpi_type_attr_get(type, type_keyval, attribute_val, flag);
+}
+
+int PMPI_Type_set_attr (MPI_Datatype type, int type_keyval, void *attribute_val)
+{
+  if (type==MPI_DATATYPE_NULL)
+    return MPI_ERR_TYPE;
+  else
+    return smpi_type_attr_put(type, type_keyval, attribute_val);
+}
+
+int PMPI_Type_delete_attr (MPI_Datatype type, int type_keyval)
+{
+  if (type==MPI_DATATYPE_NULL)
+    return MPI_ERR_TYPE;
+  else
+    return smpi_type_attr_delete(type, type_keyval);
+}
+
+int PMPI_Type_create_keyval(MPI_Type_copy_attr_function* copy_fn, MPI_Type_delete_attr_function* delete_fn, int* keyval, void* extra_state)
+{
+  return smpi_type_keyval_create(copy_fn, delete_fn, keyval, extra_state);
+}
+
+int PMPI_Type_free_keyval(int* keyval) {
+  return smpi_type_keyval_free(keyval);
+}
 
 /* The following calls are not yet implemented and will fail at runtime. */
 /* Once implemented, please move them above this notice. */
@@ -3051,60 +3169,12 @@ int PMPI_Comm_test_inter(MPI_Comm comm, int* flag) {
   NOT_YET_IMPLEMENTED
 }
 
-int PMPI_Comm_get_attr (MPI_Comm comm, int comm_keyval, void *attribute_val, int *flag)
-{
-  NOT_YET_IMPLEMENTED
-}
-
-int PMPI_Comm_set_attr (MPI_Comm comm, int comm_keyval, void *attribute_val)
-{
-  NOT_YET_IMPLEMENTED
-}
-
-int PMPI_Comm_delete_attr (MPI_Comm comm, int comm_keyval)
-{
-  NOT_YET_IMPLEMENTED
-}
-
-int PMPI_Comm_create_keyval(MPI_Comm_copy_attr_function* copy_fn, MPI_Comm_delete_attr_function* delete_fn, int* keyval, void* extra_state)
-{
-  NOT_YET_IMPLEMENTED
-}
-
-int PMPI_Comm_free_keyval(int* keyval) {
-  NOT_YET_IMPLEMENTED
-}
-
 int PMPI_Pcontrol(const int level )
 {
   NOT_YET_IMPLEMENTED
 }
 
 int PMPI_Unpack(void* inbuf, int insize, int* position, void* outbuf, int outcount, MPI_Datatype type, MPI_Comm comm) {
-  NOT_YET_IMPLEMENTED
-}
-
-int PMPI_Type_get_attr (MPI_Datatype type, int type_keyval, void *attribute_val, int* flag)
-{
-  NOT_YET_IMPLEMENTED
-}
-
-int PMPI_Type_set_attr (MPI_Datatype type, int type_keyval, void *attribute_val)
-{
-  NOT_YET_IMPLEMENTED
-}
-
-int PMPI_Type_delete_attr (MPI_Datatype type, int comm_keyval)
-{
-  NOT_YET_IMPLEMENTED
-}
-
-int PMPI_Type_create_keyval(MPI_Type_copy_attr_function* copy_fn, MPI_Type_delete_attr_function* delete_fn, int* keyval, void* extra_state)
-{
-  NOT_YET_IMPLEMENTED
-}
-
-int PMPI_Type_free_keyval(int* keyval) {
   NOT_YET_IMPLEMENTED
 }
 
@@ -3136,18 +3206,6 @@ int PMPI_Comm_remote_size(MPI_Comm comm, int* size) {
   NOT_YET_IMPLEMENTED
 }
 
-int PMPI_Attr_delete(MPI_Comm comm, int keyval) {
-  NOT_YET_IMPLEMENTED
-}
-
-int PMPI_Attr_get(MPI_Comm comm, int keyval, void* attr_value, int* flag) {
-  NOT_YET_IMPLEMENTED
-}
-
-int PMPI_Attr_put(MPI_Comm comm, int keyval, void* attr_value) {
-  NOT_YET_IMPLEMENTED
-}
-
 int PMPI_Rsend(void* buf, int count, MPI_Datatype datatype, int dest, int tag, MPI_Comm comm) {
   NOT_YET_IMPLEMENTED
 }
@@ -3157,14 +3215,6 @@ int PMPI_Rsend_init(void* buf, int count, MPI_Datatype datatype, int dest, int t
 }
 
 int PMPI_Irsend(void* buf, int count, MPI_Datatype datatype, int dest, int tag, MPI_Comm comm, MPI_Request* request) {
-  NOT_YET_IMPLEMENTED
-}
-
-int PMPI_Keyval_create(MPI_Copy_function* copy_fn, MPI_Delete_function* delete_fn, int* keyval, void* extra_state) {
-  NOT_YET_IMPLEMENTED
-}
-
-int PMPI_Keyval_free(int* keyval) {
   NOT_YET_IMPLEMENTED
 }
 
@@ -3362,5 +3412,33 @@ int PMPI_Comm_spawn_multiple( int count, char **array_of_commands, char*** array
 }
 
 int PMPI_Comm_get_parent( MPI_Comm *parent){
+  NOT_YET_IMPLEMENTED
+}
+
+int PMPI_Win_complete(MPI_Win win){
+  NOT_YET_IMPLEMENTED
+}
+
+int PMPI_Win_lock(int lock_type, int rank, int assert, MPI_Win win) {
+  NOT_YET_IMPLEMENTED
+}
+
+int PMPI_Win_post(MPI_Group group, int assert, MPI_Win win){
+  NOT_YET_IMPLEMENTED
+}
+
+int PMPI_Win_start(MPI_Group group, int assert, MPI_Win win){
+  NOT_YET_IMPLEMENTED
+}
+
+int PMPI_Win_test(MPI_Win win, int *flag){
+  NOT_YET_IMPLEMENTED
+}
+
+int PMPI_Win_unlock(int rank, MPI_Win win){
+  NOT_YET_IMPLEMENTED
+}
+
+int PMPI_Win_wait(MPI_Win win){
   NOT_YET_IMPLEMENTED
 }

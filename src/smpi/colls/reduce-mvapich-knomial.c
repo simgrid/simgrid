@@ -90,7 +90,7 @@ static int MPIR_Reduce_knomial_trace(int root, int reduce_knomial_factor,
 
     /* Finally, fill up the src array */ 
     if(recv_iter > 0) { 
-        knomial_reduce_src_array = xbt_malloc(sizeof(int)*recv_iter); 
+        knomial_reduce_src_array = smpi_get_tmp_sendbuffer(sizeof(int)*recv_iter);
     } 
 
     mask = orig_mask; 
@@ -148,7 +148,7 @@ int smpi_coll_tuned_reduce_mvapich2_knomial (
     is_commutative = smpi_op_is_commute(op);
 
     if (rank != root) {
-        recvbuf=(void *)xbt_malloc(count*(MAX(extent,true_extent)));
+        recvbuf=(void *)smpi_get_tmp_recvbuffer(count*(MAX(extent,true_extent)));
         recvbuf = (void *)((char*)recvbuf - true_lb);
     }
 
@@ -175,7 +175,7 @@ int smpi_coll_tuned_reduce_mvapich2_knomial (
         tmp_buf  = xbt_malloc(sizeof(void *)*expected_recv_count);
         requests = xbt_malloc(sizeof(MPI_Request)*expected_recv_count);
         for(k=0; k < expected_recv_count; k++ ) {
-            tmp_buf[k] = xbt_malloc(count*(MAX(extent,true_extent)));
+            tmp_buf[k] = smpi_get_tmp_sendbuffer(count*(MAX(extent,true_extent)));
             tmp_buf[k] = (void *)((char*)tmp_buf[k] - true_lb);
         }
 
@@ -200,7 +200,7 @@ int smpi_coll_tuned_reduce_mvapich2_knomial (
         }
 
         for(k=0; k < expected_recv_count; k++ ) {
-            xbt_free(tmp_buf[k]);
+            smpi_free_tmp_buffer(tmp_buf[k]);
         }
         xbt_free(tmp_buf);
         xbt_free(requests);

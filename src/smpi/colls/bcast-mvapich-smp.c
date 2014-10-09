@@ -315,7 +315,7 @@ int smpi_coll_tuned_bcast_mvapich2_intra_node(void *buffer,
         ) {
 
         if (!is_contig || !is_homogeneous) {
-            tmp_buf=(void *)xbt_malloc(nbytes);
+            tmp_buf=(void *)smpi_get_tmp_sendbuffer(nbytes);
 
             /* TODO: Pipeline the packing and communication */
            // position = 0;

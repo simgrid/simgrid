@@ -14,8 +14,8 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_memory, mc,
                                 "Logging specific to MC (memory)");
 
 /* Pointers to each of the heap regions to use */
-void *std_heap = NULL;          /* memory erased each time the MC stuff rollbacks to the beginning. Almost everything goes here */
-void *mc_heap = NULL;           /* memory persistent over the MC rollbacks. Only MC stuff should go there */
+xbt_mheap_t std_heap = NULL;          /* memory erased each time the MC stuff rollbacks to the beginning. Almost everything goes here */
+xbt_mheap_t mc_heap = NULL;           /* memory persistent over the MC rollbacks. Only MC stuff should go there */
 
 /* Initialize the model-checker memory subsystem */
 /* It creates the two heap regions: std_heap and mc_heap */

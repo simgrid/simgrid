@@ -73,18 +73,16 @@ void MC_ignore_heap(void *address, size_t size)
 
   region->block =
       ((char *) address -
-       (char *) ((xbt_mheap_t) std_heap)->heapbase) / BLOCKSIZE + 1;
+       (char *) std_heap->heapbase) / BLOCKSIZE + 1;
 
-  if (((xbt_mheap_t) std_heap)->heapinfo[region->block].type == 0) {
+  if (std_heap->heapinfo[region->block].type == 0) {
     region->fragment = -1;
-    ((xbt_mheap_t) std_heap)->heapinfo[region->block].busy_block.ignore++;
+    std_heap->heapinfo[region->block].busy_block.ignore++;
   } else {
     region->fragment =
-        ((uintptr_t) (ADDR2UINT(address) % (BLOCKSIZE))) >> ((xbt_mheap_t)
-                                                             std_heap)->
+        ((uintptr_t) (ADDR2UINT(address) % (BLOCKSIZE))) >> std_heap->
         heapinfo[region->block].type;
-    ((xbt_mheap_t) std_heap)->heapinfo[region->block].busy_frag.ignore[region->
-                                                                       fragment]++;
+    std_heap->heapinfo[region->block].busy_frag.ignore[region->fragment]++;
   }
 
   if (mc_heap_comparison_ignore == NULL) {
@@ -226,7 +224,8 @@ static void mc_ignore_local_variable_in_scope(const char *var_name,
   // Processing of direct variables:
 
   // If the current subprogram matche the given name:
-  if (subprogram_name == NULL || strcmp(subprogram_name, subprogram->name) == 0) {
+  if (!subprogram_name ||
+      subprogram->name && strcmp(subprogram_name, subprogram->name) == 0) {
 
     // Try to find the variable and remove it:
     int start = 0;
@@ -330,7 +329,7 @@ void MC_new_stack_area(void *stack, smx_process_t process, void *context, size_t
   region->size = size;
   region->block =
       ((char *) stack -
-       (char *) ((xbt_mheap_t) std_heap)->heapbase) / BLOCKSIZE + 1;
+       (char *) std_heap->heapbase) / BLOCKSIZE + 1;
 #ifdef HAVE_SMPI
   if (smpi_privatize_global_variables && process) {
     region->process_index = smpi_process_index_of_smx_process(process);

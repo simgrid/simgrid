@@ -1,5 +1,11 @@
 SimGrid (3.12) NOT RELEASED; urgency=low
 
+ cMSG:
+ * Interface improvement:
+   - Rename MSG_host_is_avail(h) to MSG_host_is_on(h)
+ jMSG:
+ * Interface improvement:
+   - Rename Host.isAvail() to Host.isOn()
  SIMIX:
  * New functions
    - SIMIX_process_throw: raises an exception in a remote process

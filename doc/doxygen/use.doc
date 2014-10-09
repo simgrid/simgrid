@@ -28,7 +28,6 @@ You should also check our online <a href="http://simgrid.gforge.inria.fr/tutoria
 
 Here are some examples on how to use MSG, the most used API.
 
-tr
 MSG comes with an extensive set of examples. It is sometimes difficult
 to find the one you need. This list aims at helping you finding the
 example from which you can learn what you want to.

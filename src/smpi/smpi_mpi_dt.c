@@ -10,7 +10,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
+#include <limits.h>
 #include "private.h"
 #include "smpi_mpi_dt_private.h"
 #include "mc/mc.h"
@@ -20,6 +20,10 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_mpi_dt, smpi,
                                 "Logging specific to SMPI (datatype)");
 
+#define INTSIZEDCHAR (sizeof(int)*CHAR_BIT-1)/3 + 3 
+xbt_dict_t smpi_type_keyvals = NULL;
+int type_keyval_id=0;//avoid collisions
+
 #define CREATE_MPI_DATATYPE(name, type)       \
   static s_smpi_mpi_datatype_t mpi_##name = { \
     (char*) # name,                                   \
@@ -28,7 +32,8 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_mpi_dt, smpi,
     0,             /* lb */                   \
     sizeof(type),  /* ub = lb + size */       \
     DT_FLAG_BASIC,  /* flags */              \
-    NULL           /* pointer on extended struct*/ \
+    NULL,           /* attributes */         \
+    NULL,           /* pointer on extended struct*/ \
   };                                          \
 MPI_Datatype name = &mpi_##name;
 
@@ -40,6 +45,7 @@ MPI_Datatype name = &mpi_##name;
     0,             /* lb */                   \
     0,  /* ub = lb + size */       \
     DT_FLAG_BASIC,  /* flags */              \
+    NULL,           /* attributes */         \
     NULL           /* pointer on extended struct*/ \
   };                                          \
 MPI_Datatype name = &mpi_##name;
@@ -168,15 +174,39 @@ MPI_Aint smpi_datatype_ub(MPI_Datatype datatype)
   return datatype->ub;
 }
 
-MPI_Datatype smpi_datatype_dup(MPI_Datatype datatype)
+int smpi_datatype_dup(MPI_Datatype datatype, MPI_Datatype* new_t)
 {
-  MPI_Datatype new_t= xbt_new(s_smpi_mpi_datatype_t,1);
-  memcpy(new_t, datatype, sizeof(s_smpi_mpi_datatype_t));
-  if (datatype->has_subtype)
-    memcpy(new_t->substruct, datatype->substruct, sizeof(s_smpi_subtype_t));
+  int ret=MPI_SUCCESS;
+  *new_t= xbt_new(s_smpi_mpi_datatype_t,1);
+  memcpy(*new_t, datatype, sizeof(s_smpi_mpi_datatype_t));
+  if (datatype->has_subtype){
+    //FIXME: may copy too much information.
+    (*new_t)->substruct=xbt_malloc(sizeof(s_smpi_mpi_struct_t));
+    memcpy((*new_t)->substruct, datatype->substruct, sizeof(s_smpi_mpi_struct_t));
+  }
   if(datatype->name)
-    new_t->name = strdup(datatype->name);
-  return new_t;
+    (*new_t)->name = strdup(datatype->name);
+  if(datatype->attributes !=NULL){
+      (*new_t)->attributes=xbt_dict_new();
+      xbt_dict_cursor_t cursor = NULL;
+      int *key;
+      int flag;
+      void* value_in;
+      void* value_out;
+      xbt_dict_foreach(datatype->attributes, cursor, key, value_in){
+        smpi_type_key_elem elem = xbt_dict_get_or_null(smpi_type_keyvals, (const char*)key);
+        if(elem && elem->copy_fn!=MPI_NULL_COPY_FN){
+          ret = elem->copy_fn(datatype, atoi((const char*)key), NULL, value_in, &value_out, &flag );
+          if(ret!=MPI_SUCCESS){
+            *new_t=MPI_DATATYPE_NULL;
+            return ret;
+          }
+          if(flag)
+            xbt_dict_set((*new_t)->attributes, (const char*)key,value_out, NULL);
+        }
+      }
+    }
+  return ret;
 }
 
 int smpi_datatype_extent(MPI_Datatype datatype, MPI_Aint * lb,
@@ -223,7 +253,7 @@ int smpi_datatype_copy(void *sendbuf, int sendcount, MPI_Datatype sendtype,
     count = sendcount < recvcount ? sendcount : recvcount;
 
     if(sendtype->has_subtype == 0 && recvtype->has_subtype == 0) {
-      if(!_xbt_replay_is_active()) memcpy(recvbuf, sendbuf, count);
+      if(!smpi_process_get_replaying()) memcpy(recvbuf, sendbuf, count);
     }
     else if (sendtype->has_subtype == 0)
     {
@@ -364,6 +394,7 @@ void smpi_datatype_create(MPI_Datatype* new_type, int size,int lb, int ub, int h
   new_t->flags = flags;
   new_t->substruct = struct_type;
   new_t->in_use=0;
+  new_t->attributes=NULL;
   *new_type = new_t;
 
 #ifdef HAVE_MC
@@ -373,6 +404,17 @@ void smpi_datatype_create(MPI_Datatype* new_type, int size,int lb, int ub, int h
 }
 
 void smpi_datatype_free(MPI_Datatype* type){
+  if((*type)->attributes !=NULL){
+      xbt_dict_cursor_t cursor = NULL;
+      int* key;
+      void * value;
+      int flag;
+      xbt_dict_foreach((*type)->attributes, cursor, key, value){
+        smpi_type_key_elem elem = xbt_dict_get_or_null(smpi_type_keyvals, (const char*)key);
+        if(elem &&  elem->delete_fn)
+          elem->delete_fn(*type, atoi((const char*)key), value, &flag);
+      }
+  }
 
   if((*type)->flags & DT_FLAG_PREDEFINED)return;
 
@@ -1615,11 +1657,115 @@ void smpi_op_destroy(MPI_Op op)
 void smpi_op_apply(MPI_Op op, void *invec, void *inoutvec, int *len,
                    MPI_Datatype * datatype)
 {
+  if(op==MPI_OP_NULL)
+    return;
+
   if(smpi_privatize_global_variables){ //we need to switch here, as the called function may silently touch global variables
     XBT_DEBUG("Applying operation, switch to the right data frame ");
     smpi_switch_data_segment(smpi_process_index());
   }
 
-  if(!_xbt_replay_is_active())
+  if(!smpi_process_get_replaying())
   op->func(invec, inoutvec, len, datatype);
+}
+
+int smpi_type_attr_delete(MPI_Datatype type, int keyval){
+  char* tmpkey=xbt_malloc(INTSIZEDCHAR);
+  sprintf(tmpkey, "%d", keyval);
+  smpi_type_key_elem elem = xbt_dict_get_or_null(smpi_type_keyvals, (const char*)tmpkey);
+  if(!elem)
+    return MPI_ERR_ARG;
+  if(elem->delete_fn!=MPI_NULL_DELETE_FN){
+    void * value;
+    int flag;
+    if(smpi_type_attr_get(type, keyval, &value, &flag)==MPI_SUCCESS){
+      int ret = elem->delete_fn(type, keyval, value, &flag);
+      if(ret!=MPI_SUCCESS) return ret;
+    }
+  }  
+  if(type->attributes==NULL)
+    return MPI_ERR_ARG;
+
+  xbt_dict_remove(type->attributes, (const char*)tmpkey);
+  xbt_free(tmpkey);
+  return MPI_SUCCESS;
+}
+
+int smpi_type_attr_get(MPI_Datatype type, int keyval, void* attr_value, int* flag){
+  char* tmpkey=xbt_malloc(INTSIZEDCHAR);
+  sprintf(tmpkey, "%d", keyval);
+  smpi_type_key_elem elem = xbt_dict_get_or_null(smpi_type_keyvals, (const char*)tmpkey);
+  if(!elem)
+    return MPI_ERR_ARG;
+  xbt_ex_t ex;
+  if(type->attributes==NULL){
+    *flag=0;
+    return MPI_SUCCESS;
+  }
+  TRY {
+    *(void**)attr_value = xbt_dict_get(type->attributes, (const char*)tmpkey);
+    *flag=1;
+  }
+  CATCH(ex) {
+    *flag=0;
+    xbt_ex_free(ex);
+  }
+  xbt_free(tmpkey);
+  return MPI_SUCCESS;
+}
+
+int smpi_type_attr_put(MPI_Datatype type, int keyval, void* attr_value){
+  if(!smpi_type_keyvals)
+  smpi_type_keyvals = xbt_dict_new();
+  char* tmpkey=xbt_malloc(INTSIZEDCHAR);
+  sprintf(tmpkey, "%d", keyval);
+  smpi_type_key_elem elem = xbt_dict_get_or_null(smpi_type_keyvals, (const char*)tmpkey);
+  if(!elem )
+    return MPI_ERR_ARG;
+  int flag;
+  void* value;
+  smpi_type_attr_get(type, keyval, &value, &flag);
+  if(flag && elem->delete_fn!=MPI_NULL_DELETE_FN){
+    int ret = elem->delete_fn(type, keyval, value, &flag);
+    if(ret!=MPI_SUCCESS) return ret;
+  }
+  if(type->attributes==NULL)
+    type->attributes=xbt_dict_new();
+
+  xbt_dict_set(type->attributes, (const char*)tmpkey, attr_value, NULL);
+  xbt_free(tmpkey);
+  return MPI_SUCCESS;
+}
+
+int smpi_type_keyval_create(MPI_Type_copy_attr_function* copy_fn, MPI_Type_delete_attr_function* delete_fn, int* keyval, void* extra_state){
+
+  if(!smpi_type_keyvals)
+  smpi_type_keyvals = xbt_dict_new();
+  
+  smpi_type_key_elem value = (smpi_type_key_elem) xbt_new0(s_smpi_mpi_type_key_elem_t,1);
+  
+  value->copy_fn=copy_fn;
+  value->delete_fn=delete_fn;
+  
+  *keyval = type_keyval_id;
+  char* tmpkey=xbt_malloc(INTSIZEDCHAR);
+  sprintf(tmpkey, "%d", *keyval);
+  xbt_dict_set(smpi_type_keyvals,(const char*)tmpkey,(void*)value, NULL);
+  type_keyval_id++;
+  xbt_free(tmpkey);
+  return MPI_SUCCESS;
+}
+
+int smpi_type_keyval_free(int* keyval){
+  char* tmpkey=xbt_malloc(INTSIZEDCHAR);
+  sprintf(tmpkey, "%d", *keyval);
+  smpi_type_key_elem elem = xbt_dict_get_or_null(smpi_type_keyvals, (const char*)tmpkey);
+  if(!elem){
+    xbt_free(tmpkey);
+    return MPI_ERR_ARG;
+  }
+  xbt_dict_remove(smpi_type_keyvals, (const char*)tmpkey);
+  xbt_free(elem);
+  xbt_free(tmpkey);
+  return MPI_SUCCESS;
 }

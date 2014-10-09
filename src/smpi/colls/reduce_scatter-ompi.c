@@ -92,12 +92,7 @@ smpi_coll_tuned_reduce_scatter_ompi_basic_recursivehalving(void *sbuf,
     }
 
     /* Allocate temporary receive buffer. */
-#ifndef WIN32
-    if(_xbt_replay_is_active()){
-      recv_buf_free = (char*) SMPI_SHARED_MALLOC(buf_size);
-    }else
-#endif
-      recv_buf_free = (char*) xbt_malloc(buf_size);
+    recv_buf_free = (char*) smpi_get_tmp_recvbuffer(buf_size);
 
     recv_buf = recv_buf_free - lb;
     if (NULL == recv_buf_free) {
@@ -106,12 +101,7 @@ smpi_coll_tuned_reduce_scatter_ompi_basic_recursivehalving(void *sbuf,
     }
    
     /* allocate temporary buffer for results */
-#ifndef WIN32
-    if(_xbt_replay_is_active()){
-      result_buf_free = (char*) SMPI_SHARED_MALLOC(buf_size);
-    }else
-#endif
-      result_buf_free = (char*) xbt_malloc(buf_size);
+    result_buf_free = (char*) smpi_get_tmp_sendbuffer(buf_size);
 
     result_buf = result_buf_free - lb;
    
@@ -302,16 +292,9 @@ smpi_coll_tuned_reduce_scatter_ompi_basic_recursivehalving(void *sbuf,
 
  cleanup:
     if (NULL != disps) xbt_free(disps);
-    if (!_xbt_replay_is_active()){
-      if (NULL != recv_buf_free) xbt_free(recv_buf_free);
-      if (NULL != result_buf_free) xbt_free(result_buf_free);
-    }
-#ifndef WIN32
-    else{
-      if (NULL != recv_buf_free) SMPI_SHARED_FREE(recv_buf_free);
-      if (NULL != result_buf_free) SMPI_SHARED_FREE(result_buf_free);
-    }
-#endif
+    if (NULL != recv_buf_free) smpi_free_tmp_buffer(recv_buf_free);
+    if (NULL != result_buf_free) smpi_free_tmp_buffer(result_buf_free);
+
     return err;
 }
 
@@ -431,15 +414,15 @@ smpi_coll_tuned_reduce_scatter_ompi_ring(void *sbuf, void *rbuf, int *rcounts,
 
     max_real_segsize = true_extent + (ptrdiff_t)(max_block_count - 1) * extent;
 
-    accumbuf_free = (char*)xbt_malloc(true_extent + (ptrdiff_t)(total_count - 1) * extent);
+    accumbuf_free = (char*)smpi_get_tmp_recvbuffer(true_extent + (ptrdiff_t)(total_count - 1) * extent);
     if (NULL == accumbuf_free) { ret = -1; line = __LINE__; goto error_hndl; }
     accumbuf = accumbuf_free - lb;
 
-    inbuf_free[0] = (char*)xbt_malloc(max_real_segsize);
+    inbuf_free[0] = (char*)smpi_get_tmp_sendbuffer(max_real_segsize);
     if (NULL == inbuf_free[0]) { ret = -1; line = __LINE__; goto error_hndl; }
     inbuf[0] = inbuf_free[0] - lb;
     if (size > 2) {
-        inbuf_free[1] = (char*)xbt_malloc(max_real_segsize);
+        inbuf_free[1] = (char*)smpi_get_tmp_sendbuffer(max_real_segsize);
         if (NULL == inbuf_free[1]) { ret = -1; line = __LINE__; goto error_hndl; }
         inbuf[1] = inbuf_free[1] - lb;
     }
@@ -520,9 +503,9 @@ smpi_coll_tuned_reduce_scatter_ompi_ring(void *sbuf, void *rbuf, int *rcounts,
     if (ret < 0) { line = __LINE__; goto error_hndl; }
 
     if (NULL != displs) xbt_free(displs);
-    if (NULL != accumbuf_free) xbt_free(accumbuf_free);
-    if (NULL != inbuf_free[0]) xbt_free(inbuf_free[0]);
-    if (NULL != inbuf_free[1]) xbt_free(inbuf_free[1]);
+    if (NULL != accumbuf_free) smpi_free_tmp_buffer(accumbuf_free);
+    if (NULL != inbuf_free[0]) smpi_free_tmp_buffer(inbuf_free[0]);
+    if (NULL != inbuf_free[1]) smpi_free_tmp_buffer(inbuf_free[1]);
 
     return MPI_SUCCESS;
 
@@ -530,9 +513,9 @@ smpi_coll_tuned_reduce_scatter_ompi_ring(void *sbuf, void *rbuf, int *rcounts,
     XBT_DEBUG( "%s:%4d\tRank %d Error occurred %d\n",
                  __FILE__, line, rank, ret);
     if (NULL != displs) xbt_free(displs);
-    if (NULL != accumbuf_free) xbt_free(accumbuf_free);
-    if (NULL != inbuf_free[0]) xbt_free(inbuf_free[0]);
-    if (NULL != inbuf_free[1]) xbt_free(inbuf_free[1]);
+    if (NULL != accumbuf_free) smpi_free_tmp_buffer(accumbuf_free);
+    if (NULL != inbuf_free[0]) smpi_free_tmp_buffer(inbuf_free[0]);
+    if (NULL != inbuf_free[1]) smpi_free_tmp_buffer(inbuf_free[1]);
     return ret;
 }
 

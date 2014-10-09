@@ -35,14 +35,15 @@ typedef struct s_smpi_process_data {
   char state;
   int sampling;                 /* inside an SMPI_SAMPLE_ block? */
   char* instance_id;
+  int replaying;                /* is the process replaying a trace */
   xbt_bar_t finalization_barrier;
 } s_smpi_process_data_t;
 
 static smpi_process_data_t *process_data = NULL;
 int process_count = 0;
 int* index_to_process_data = NULL;
-
-
+extern double smpi_total_benched_time;
+xbt_os_timer_t global_timer;
 MPI_Comm MPI_COMM_WORLD = MPI_COMM_UNINITIALIZED;
 int MPI_UNIVERSE_SIZE;
 
@@ -91,12 +92,12 @@ void smpi_process_init(int *argc, char ***argv)
     if(temp_bar != NULL) data->finalization_barrier = temp_bar;
     data->index = index;
     data->instance_id = instance_id;
+    data->replaying = 0;
     xbt_free(simcall_process_get_data(proc));
     simcall_process_set_data(proc, data);
     if (*argc > 3) {
       free((*argv)[1]);
-      free((*argv)[2]);
-      memmove(&(*argv)[1], &(*argv)[3], sizeof(char *) * (*argc - 3));
+      memmove(&(*argv)[0], &(*argv)[2], sizeof(char *) * (*argc - 2));
       (*argv)[(*argc) - 1] = NULL;
       (*argv)[(*argc) - 2] = NULL;
     }
@@ -170,8 +171,21 @@ int smpi_process_initialized(void)
 void smpi_process_mark_as_initialized(void)
 {
   int index = smpi_process_index();
-  if ((index != MPI_UNDEFINED) && (!process_data[index_to_process_data[index]]->state != SMPI_FINALIZED))
+  if ((index != MPI_UNDEFINED) && (process_data[index_to_process_data[index]]->state != SMPI_FINALIZED))
     process_data[index_to_process_data[index]]->state = SMPI_INITIALIZED;
+}
+
+void smpi_process_set_replaying(int value){
+  int index = smpi_process_index();
+  if ((index != MPI_UNDEFINED) && (process_data[index_to_process_data[index]]->state != SMPI_FINALIZED))
+    process_data[index_to_process_data[index]]->replaying = value;
+}
+
+int smpi_process_get_replaying(){
+  int index = smpi_process_index();
+  if (index != MPI_UNDEFINED)
+    return process_data[index_to_process_data[index]]->replaying;
+  else return _xbt_replay_is_active();
 }
 
 
@@ -320,7 +334,6 @@ void smpi_comm_copy_buffer_callback(smx_action_t comm,
                                            void *buff, size_t buff_size)
 {
   XBT_DEBUG("Copy the data over");
-  if(_xbt_replay_is_active()) return;
   void* tmpbuff=buff;
 
   if((smpi_privatize_global_variables)
@@ -359,6 +372,13 @@ void smpi_comm_copy_buffer_callback(smx_action_t comm,
 
 }
 
+
+void smpi_comm_null_copy_buffer_callback(smx_action_t comm,
+                                           void *buff, size_t buff_size)
+{
+  return;
+}
+
 static void smpi_check_options(){
   //check correctness of MPI parameters
 
@@ -384,7 +404,8 @@ void smpi_global_init(void)
   char name[MAILBOX_NAME_MAXLEN];
   int smpirun=0;
 
-
+  global_timer = xbt_os_timer_new();
+  xbt_os_walltimer_start(global_timer);
   if (process_count == 0){
     process_count = SIMIX_process_count();
     smpirun=1;
@@ -635,9 +656,19 @@ int smpi_main(int (*realmain) (int argc, char *argv[]), int argc, char *argv[])
     MC_do_the_modelcheck_for_real();
   else
     SIMIX_run();
+  xbt_os_walltimer_stop(global_timer);
+  if (sg_cfg_get_boolean("smpi/display_timing")){
+    double global_time = xbt_os_timer_elapsed(global_timer);
+    XBT_INFO("Simulated time: %g seconds. \n "
+        "The simulation took %g seconds (after parsing and platform setup)\n"
+        "%g seconds were actual computation of the application"
+        , SIMIX_get_clock(), global_time , smpi_total_benched_time);
+        
+    if (smpi_total_benched_time/global_time>=0.75)
+    XBT_INFO("More than 75%% of the time was spent inside the application code.\n"
+    "You may want to use sampling functions or trace replay to reduce this.");
 
-  if (sg_cfg_get_boolean("smpi/display_timing"))
-    XBT_INFO("Simulation time: %g seconds.", SIMIX_get_clock());
+  }
 
   smpi_global_destroy();
 

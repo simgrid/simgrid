@@ -82,7 +82,7 @@ int smpi_coll_tuned_ompi_reduce_generic( void* sendbuf, void* recvbuf, int origi
         accumbuf = (char*)recvbuf;
         if( (NULL == accumbuf) || (root != rank) ) {
             /* Allocate temporary accumulator buffer. */
-            accumbuf_free = (char*)malloc(true_extent + 
+            accumbuf_free = (char*)smpi_get_tmp_sendbuffer(true_extent +
                                           (original_count - 1) * extent);
             if (accumbuf_free == NULL) { 
                 line = __LINE__; ret = -1; goto error_hndl; 
@@ -99,7 +99,7 @@ int smpi_coll_tuned_ompi_reduce_generic( void* sendbuf, void* recvbuf, int origi
         }
         /* Allocate two buffers for incoming segments */
         real_segment_size = true_extent + (count_by_segment - 1) * extent;
-        inbuf_free[0] = (char*) malloc(real_segment_size);
+        inbuf_free[0] = (char*) smpi_get_tmp_recvbuffer(real_segment_size);
         if( inbuf_free[0] == NULL ) { 
             line = __LINE__; ret = -1; goto error_hndl; 
         }
@@ -107,7 +107,7 @@ int smpi_coll_tuned_ompi_reduce_generic( void* sendbuf, void* recvbuf, int origi
         /* if there is chance to overlap communication -
            allocate second buffer */
         if( (num_segments > 1) || (tree->tree_nextsize > 1) ) {
-            inbuf_free[1] = (char*) malloc(real_segment_size);
+            inbuf_free[1] = (char*) smpi_get_tmp_recvbuffer(real_segment_size);
             if( inbuf_free[1] == NULL ) { 
                 line = __LINE__; ret = -1; goto error_hndl;
             }
@@ -212,9 +212,9 @@ int smpi_coll_tuned_ompi_reduce_generic( void* sendbuf, void* recvbuf, int origi
         } /* end of for each segment */
 
         /* clean up */
-        if( inbuf_free[0] != NULL) free(inbuf_free[0]);
-        if( inbuf_free[1] != NULL) free(inbuf_free[1]);
-        if( accumbuf_free != NULL ) free(accumbuf_free);
+        smpi_free_tmp_buffer(inbuf_free[0]);
+        smpi_free_tmp_buffer(inbuf_free[1]);
+        smpi_free_tmp_buffer(accumbuf_free);
     }
 
     /* leaf nodes 
@@ -519,7 +519,7 @@ int smpi_coll_tuned_reduce_ompi_in_order_binary( void *sendbuf, void *recvbuf,
         text=smpi_datatype_get_extent(datatype);
 
         if ((root == rank) && (MPI_IN_PLACE == sendbuf)) {
-            tmpbuf = (char *) malloc(text + (count - 1) * ext);
+            tmpbuf = (char *) smpi_get_tmp_sendbuffer(text + (count - 1) * ext);
             if (NULL == tmpbuf) {
                 return MPI_ERR_INTERN;
             }
@@ -528,7 +528,7 @@ int smpi_coll_tuned_reduce_ompi_in_order_binary( void *sendbuf, void *recvbuf,
                                                 (char*)tmpbuf, count, datatype);
             use_this_sendbuf = tmpbuf;
         } else if (io_root == rank) {
-            tmpbuf = (char *) malloc(text + (count - 1) * ext);
+            tmpbuf = (char *) smpi_get_tmp_recvbuffer(text + (count - 1) * ext);
             if (NULL == tmpbuf) {
                 return MPI_ERR_INTERN;
             }
@@ -551,7 +551,7 @@ int smpi_coll_tuned_reduce_ompi_in_order_binary( void *sendbuf, void *recvbuf,
                                     COLL_TAG_REDUCE, comm,
                                     MPI_STATUS_IGNORE);
             if (MPI_IN_PLACE == sendbuf) {
-                free(use_this_sendbuf);
+              smpi_free_tmp_buffer(use_this_sendbuf);
             }
           
         } else if (io_root == rank) {
@@ -559,7 +559,7 @@ int smpi_coll_tuned_reduce_ompi_in_order_binary( void *sendbuf, void *recvbuf,
             smpi_mpi_send(use_this_recvbuf, count, datatype, root,
                                     COLL_TAG_REDUCE,
                                     comm);
-            free(use_this_recvbuf);
+            smpi_free_tmp_buffer(use_this_recvbuf);
         }
     }
 
@@ -627,7 +627,7 @@ smpi_coll_tuned_reduce_ompi_basic_linear(void *sbuf, void *rbuf, int count,
 
     if (MPI_IN_PLACE == sbuf) {
         sbuf = rbuf;
-        inplace_temp = (char*)malloc(true_extent + (count - 1) * extent);
+        inplace_temp = (char*)smpi_get_tmp_recvbuffer(true_extent + (count - 1) * extent);
         if (NULL == inplace_temp) {
             return -1;
         }
@@ -635,7 +635,7 @@ smpi_coll_tuned_reduce_ompi_basic_linear(void *sbuf, void *rbuf, int count,
     }
 
     if (size > 1) {
-        free_buffer = (char*)malloc(true_extent + (count - 1) * extent);
+        free_buffer = (char*)smpi_get_tmp_recvbuffer(true_extent + (count - 1) * extent);
         pml_buffer = free_buffer - lb;
     }
 
@@ -668,10 +668,10 @@ smpi_coll_tuned_reduce_ompi_basic_linear(void *sbuf, void *rbuf, int count,
     if (NULL != inplace_temp) {
         smpi_datatype_copy(inplace_temp, count, dtype,(char*)sbuf
                                                   ,count , dtype);
-        free(inplace_temp);
+        smpi_free_tmp_buffer(inplace_temp);
     }
     if (NULL != free_buffer) {
-        free(free_buffer);
+        smpi_free_tmp_buffer(free_buffer);
     }
 
     /* All done */

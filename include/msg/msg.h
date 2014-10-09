@@ -131,7 +131,8 @@ XBT_PUBLIC(int) MSG_get_host_msgload(msg_host_t host);
 XBT_PUBLIC(double) MSG_get_host_speed(msg_host_t h);
 XBT_PUBLIC(int) MSG_host_get_core_number(msg_host_t h);
 XBT_PUBLIC(xbt_swag_t) MSG_host_get_process_list(msg_host_t h);
-XBT_PUBLIC(int) MSG_host_is_avail(msg_host_t h);
+XBT_PUBLIC(int) MSG_host_is_on(msg_host_t h);
+XBT_PUBLIC(int) MSG_host_is_off(msg_host_t h);
 XBT_PUBLIC(void) __MSG_host_priv_free(msg_host_priv_t priv);
 XBT_PUBLIC(void) __MSG_host_destroy(msg_host_t host);
 
@@ -367,6 +368,8 @@ typedef msg_error_t MSG_error_t;
 
 /* these are the functions which are deprecated. Do not use them, they may get removed in future releases */
 XBT_PUBLIC(msg_host_t *) MSG_get_host_table(void);
+
+#define MSG_host_is_avail(h) MSG_host_is_on(h)
 
 #define MSG_TIMEOUT_FAILURE MSG_TIMEOUT
 #define MSG_TASK_CANCELLED MSG_TASK_CANCELED

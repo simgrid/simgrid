@@ -39,8 +39,8 @@ int smpi_coll_tuned_allreduce_rab1(void *sbuff, void *rbuff,
     send_size = (count + nprocs) / nprocs;
     newcnt = send_size * nprocs;
 
-    recv = (void *) xbt_malloc(extent * newcnt);
-    tmp_buf = (void *) xbt_malloc(extent * newcnt);
+    recv = (void *) smpi_get_tmp_recvbuffer(extent * newcnt);
+    tmp_buf = (void *) smpi_get_tmp_sendbuffer(extent * newcnt);
     memcpy(recv, sbuff, extent * count);
 
 
@@ -70,13 +70,13 @@ int smpi_coll_tuned_allreduce_rab1(void *sbuff, void *rbuff,
     mpi_coll_allgather_fun(tmp_buf, recv_cnt, dtype, recv, recv_cnt, dtype, comm);
 
     memcpy(rbuff, recv, count * extent);
-    free(recv);
-    free(tmp_buf);
+    smpi_free_tmp_buffer(recv);
+    smpi_free_tmp_buffer(tmp_buf);
 
   }
 
   else {
-    tmp_buf = (void *) xbt_malloc(extent * count);
+    tmp_buf = (void *) smpi_get_tmp_sendbuffer(extent * count);
     memcpy(rbuff, sbuff, count * extent);
     mask = pof2 / 2;
     share = count / pof2;
@@ -102,7 +102,7 @@ int smpi_coll_tuned_allreduce_rab1(void *sbuff, void *rbuff,
 
     memcpy(tmp_buf, (char *) rbuff + recv_idx * extent, recv_cnt * extent);
     mpi_coll_allgather_fun(tmp_buf, recv_cnt, dtype, rbuff, recv_cnt, dtype, comm);
-    free(tmp_buf);
+    smpi_free_tmp_buffer(tmp_buf);
   }
 
   return MPI_SUCCESS;

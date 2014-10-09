@@ -228,10 +228,10 @@ smpi_coll_tuned_allreduce_ompi_ring_segmented(void *sbuf, void *rbuf, int count,
    max_real_segsize = true_extent + (max_segcount - 1) * extent;
 
    /* Allocate and initialize temporary buffers */
-   inbuf[0] = (char*)malloc(max_real_segsize);
+   inbuf[0] = (char*)smpi_get_tmp_sendbuffer(max_real_segsize);
    if (NULL == inbuf[0]) { ret = -1; line = __LINE__; goto error_hndl; }
    if (size > 2) {
-      inbuf[1] = (char*)malloc(max_real_segsize);
+      inbuf[1] = (char*)smpi_get_tmp_recvbuffer(max_real_segsize);
       if (NULL == inbuf[1]) { ret = -1; line = __LINE__; goto error_hndl; }
    }
 
@@ -374,15 +374,15 @@ smpi_coll_tuned_allreduce_ompi_ring_segmented(void *sbuf, void *rbuf, int count,
 
    }
 
-   if (NULL != inbuf[0]) free(inbuf[0]);
-   if (NULL != inbuf[1]) free(inbuf[1]);
+   if (NULL != inbuf[0]) smpi_free_tmp_buffer(inbuf[0]);
+   if (NULL != inbuf[1]) smpi_free_tmp_buffer(inbuf[1]);
 
    return MPI_SUCCESS;
 
  error_hndl:
    XBT_DEBUG("%s:%4d\tRank %d Error occurred %d\n",
                 __FILE__, line, rank, ret);
-   if (NULL != inbuf[0]) free(inbuf[0]);
-   if (NULL != inbuf[1]) free(inbuf[1]);
+   if (NULL != inbuf[0]) smpi_free_tmp_buffer(inbuf[0]);
+   if (NULL != inbuf[1]) smpi_free_tmp_buffer(inbuf[1]);
    return ret;
 }

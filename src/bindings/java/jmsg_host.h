@@ -183,10 +183,10 @@ JNIEXPORT void JNICALL
 Java_org_simgrid_msg_Host_setProperty(JNIEnv *env, jobject jhost, jobject jname, jobject jvalue);
 /*
  * Class		org_simgrid_msg_Host
- * Method		isAvail
+ * Method		isOn
  * Signature	()Z
  */
-JNIEXPORT jboolean JNICALL Java_org_simgrid_msg_Host_isAvail
+JNIEXPORT jboolean JNICALL Java_org_simgrid_msg_Host_isOn
     (JNIEnv *, jobject);
 
 
