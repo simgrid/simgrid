@@ -5,7 +5,13 @@
  * in src/simix/simcalls.in                  *
  *********************************************/
 
-SIMCALL_HOST_GET_BY_NAME,
+
+/**
+ * @brief All possible simcalls.
+ */
+typedef enum {
+SIMCALL_NONE,
+  SIMCALL_HOST_GET_BY_NAME,
 SIMCALL_HOST_GET_NAME,
 SIMCALL_HOST_ON,
 SIMCALL_HOST_OFF,
@@ -136,3 +142,8 @@ SIMCALL_MC_SNAPSHOT,
 SIMCALL_MC_COMPARE_SNAPSHOTS,
 SIMCALL_MC_RANDOM,
 #endif
+
+SIMCALL_NEW_API_INIT,
+NUM_SIMCALLS
+} e_smx_simcall_t;
+  

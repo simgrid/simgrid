@@ -18,15 +18,7 @@ SG_BEGIN_DECL()
  *
  * */
 
-/**
- * \brief All possible simcalls.
- */
-typedef enum {
-SIMCALL_NONE,
-#include "simcalls_generated_enum.h"
-SIMCALL_NEW_API_INIT,
-NUM_SIMCALLS
-} e_smx_simcall_t;
+#include "simcalls_generated_enum.h" /* All possible simcalls (generated) */
 
 typedef int (*simix_match_func_t)(void *, void *, smx_action_t);
 typedef void (*simix_copy_data_func_t)(smx_action_t, void*, size_t);
