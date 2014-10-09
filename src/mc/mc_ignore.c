@@ -225,7 +225,7 @@ static void mc_ignore_local_variable_in_scope(const char *var_name,
 
   // If the current subprogram matche the given name:
   if (!subprogram_name ||
-      subprogram->name && strcmp(subprogram_name, subprogram->name) == 0) {
+      (subprogram->name && strcmp(subprogram_name, subprogram->name) == 0)) {
 
     // Try to find the variable and remove it:
     int start = 0;
