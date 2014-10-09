@@ -8,6 +8,7 @@ package cloud.migration;
 
 import org.simgrid.msg.Host;
 import org.simgrid.msg.HostNotFoundException;
+import org.simgrid.msg.HostFailureException;
 import org.simgrid.msg.Msg;
 import org.simgrid.msg.VM;
 
@@ -65,10 +66,15 @@ public class XVM extends VM {
         return this.currentLoad;
     }
 
-    public void migrate(Host host){
+    public void migrate(Host host) throws HostFailureException {
         Msg.info("Start migration of VM " + this.getName() + " to " + host.getName());
         Msg.info("    currentLoad:" + this.currentLoad + "/ramSize:" + this.ramsize + "/dpIntensity:" + this.dpIntensity + "/remaining:" + this.daemon.getRemaining());
-        super.migrate(host);
+        try{
+        	super.migrate(host);
+	} catch (Exception e){
+		Msg.info("Something wrong during the live migration of VM "+this.getName());
+		throw new HostFailureException(); 
+        }
         this.setLoad(this.currentLoad); //Fixed the fact that setBound is not propagated to the new node.
         Msg.info("End of migration of VM " + this.getName() + " to node " + host.getName());
     }
