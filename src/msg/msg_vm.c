@@ -204,8 +204,8 @@ msg_vm_t MSG_vm_create_core(msg_host_t ind_pm, const char *name)
 {
   /* make sure the VM of the same name does not exit */
   {
-    void *ind_host_tmp = xbt_lib_get_elm_or_null(host_lib, name);
-    if (ind_host_tmp) {
+    xbt_dictelm_t ind_host_tmp = xbt_lib_get_elm_or_null(host_lib, name);
+    if (ind_host_tmp && xbt_lib_get_level(ind_host_tmp, SIMIX_HOST_LEVEL) != NULL) {
       XBT_ERROR("host %s already exits", name);
       return NULL;
     }
@@ -253,7 +253,6 @@ void MSG_vm_destroy(msg_vm_t vm)
   #ifdef HAVE_TRACING
   TRACE_msg_vm_end(vm);
   #endif
-  xbt_lib_remove(host_lib, sg_host_name(vm));
 }
 
 
