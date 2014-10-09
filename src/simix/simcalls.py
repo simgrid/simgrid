@@ -153,6 +153,11 @@ class Simcall(object):
   def body(self):
     return '''  inline static %s simcall_BODY_%s(%s) {
     smx_process_t self = SIMIX_process_self();
+
+    /* Go to that function to follow the code flow through the simcall barrier */
+    if (0) SIMIX_pre_%s(%s);
+    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
+
     self->simcall.call = SIMCALL_%s;
     memset(&self->simcall.result, 0, sizeof(self->simcall.result));
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
@@ -169,6 +174,8 @@ class Simcall(object):
        ,self.name
        ,', '.join('%s %s'%(arg.ret(), arg.name)
                   for arg in self.args)
+       ,self.name
+       ,', '.join(["&self->simcall"]+ [arg.name for arg in self.args])
        ,self.name.upper()
        ,'\n'.join('    self->simcall.args[%d].%s = (%s) %s;'%(i, arg.field(), arg.type, arg.name)
                   for i, arg in enumerate(self.args))

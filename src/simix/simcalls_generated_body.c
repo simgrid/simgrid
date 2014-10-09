@@ -7,6 +7,11 @@
 
   inline static smx_host_t simcall_BODY_host_get_by_name(const char* name) {
     smx_process_t self = SIMIX_process_self();
+
+    /* Go to that function to follow the code flow through the simcall barrier */
+    if (0) SIMIX_pre_host_get_by_name(&self->simcall, name);
+    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
+
     self->simcall.call = SIMCALL_HOST_GET_BY_NAME;
     memset(&self->simcall.result, 0, sizeof(self->simcall.result));
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
@@ -22,6 +27,11 @@
   }
   inline static const char* simcall_BODY_host_get_name(smx_host_t host) {
     smx_process_t self = SIMIX_process_self();
+
+    /* Go to that function to follow the code flow through the simcall barrier */
+    if (0) SIMIX_pre_host_get_name(&self->simcall, host);
+    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
+
     self->simcall.call = SIMCALL_HOST_GET_NAME;
     memset(&self->simcall.result, 0, sizeof(self->simcall.result));
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
@@ -37,6 +47,11 @@
   }
   inline static void simcall_BODY_host_on(smx_host_t host) {
     smx_process_t self = SIMIX_process_self();
+
+    /* Go to that function to follow the code flow through the simcall barrier */
+    if (0) SIMIX_pre_host_on(&self->simcall, host);
+    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
+
     self->simcall.call = SIMCALL_HOST_ON;
     memset(&self->simcall.result, 0, sizeof(self->simcall.result));
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
@@ -52,6 +67,11 @@
   }
   inline static void simcall_BODY_host_off(smx_host_t host) {
     smx_process_t self = SIMIX_process_self();
+
+    /* Go to that function to follow the code flow through the simcall barrier */
+    if (0) SIMIX_pre_host_off(&self->simcall, host);
+    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
+
     self->simcall.call = SIMCALL_HOST_OFF;
     memset(&self->simcall.result, 0, sizeof(self->simcall.result));
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
@@ -67,6 +87,11 @@
   }
   inline static xbt_dict_t simcall_BODY_host_get_properties(smx_host_t host) {
     smx_process_t self = SIMIX_process_self();
+
+    /* Go to that function to follow the code flow through the simcall barrier */
+    if (0) SIMIX_pre_host_get_properties(&self->simcall, host);
+    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
+
     self->simcall.call = SIMCALL_HOST_GET_PROPERTIES;
     memset(&self->simcall.result, 0, sizeof(self->simcall.result));
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
@@ -82,6 +107,11 @@
   }
   inline static int simcall_BODY_host_get_core(smx_host_t host) {
     smx_process_t self = SIMIX_process_self();
+
+    /* Go to that function to follow the code flow through the simcall barrier */
+    if (0) SIMIX_pre_host_get_core(&self->simcall, host);
+    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
+
     self->simcall.call = SIMCALL_HOST_GET_CORE;
     memset(&self->simcall.result, 0, sizeof(self->simcall.result));
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
@@ -97,6 +127,11 @@
   }
   inline static xbt_swag_t simcall_BODY_host_get_process_list(smx_host_t host) {
     smx_process_t self = SIMIX_process_self();
+
+    /* Go to that function to follow the code flow through the simcall barrier */
+    if (0) SIMIX_pre_host_get_process_list(&self->simcall, host);
+    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
+
     self->simcall.call = SIMCALL_HOST_GET_PROCESS_LIST;
     memset(&self->simcall.result, 0, sizeof(self->simcall.result));
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
@@ -112,6 +147,11 @@
   }
   inline static double simcall_BODY_host_get_speed(smx_host_t host) {
     smx_process_t self = SIMIX_process_self();
+
+    /* Go to that function to follow the code flow through the simcall barrier */
+    if (0) SIMIX_pre_host_get_speed(&self->simcall, host);
+    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
+
     self->simcall.call = SIMCALL_HOST_GET_SPEED;
     memset(&self->simcall.result, 0, sizeof(self->simcall.result));
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
@@ -127,6 +167,11 @@
   }
   inline static double simcall_BODY_host_get_available_speed(smx_host_t host) {
     smx_process_t self = SIMIX_process_self();
+
+    /* Go to that function to follow the code flow through the simcall barrier */
+    if (0) SIMIX_pre_host_get_available_speed(&self->simcall, host);
+    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
+
     self->simcall.call = SIMCALL_HOST_GET_AVAILABLE_SPEED;
     memset(&self->simcall.result, 0, sizeof(self->simcall.result));
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
@@ -142,6 +187,11 @@
   }
   inline static int simcall_BODY_host_get_state(smx_host_t host) {
     smx_process_t self = SIMIX_process_self();
+
+    /* Go to that function to follow the code flow through the simcall barrier */
+    if (0) SIMIX_pre_host_get_state(&self->simcall, host);
+    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
+
     self->simcall.call = SIMCALL_HOST_GET_STATE;
     memset(&self->simcall.result, 0, sizeof(self->simcall.result));
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
@@ -157,6 +207,11 @@
   }
   inline static double simcall_BODY_host_get_current_power_peak(smx_host_t host) {
     smx_process_t self = SIMIX_process_self();
+
+    /* Go to that function to follow the code flow through the simcall barrier */
+    if (0) SIMIX_pre_host_get_current_power_peak(&self->simcall, host);
+    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
+
     self->simcall.call = SIMCALL_HOST_GET_CURRENT_POWER_PEAK;
     memset(&self->simcall.result, 0, sizeof(self->simcall.result));
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
@@ -172,6 +227,11 @@
   }
   inline static double simcall_BODY_host_get_power_peak_at(smx_host_t host, int pstate_index) {
     smx_process_t self = SIMIX_process_self();
+
+    /* Go to that function to follow the code flow through the simcall barrier */
+    if (0) SIMIX_pre_host_get_power_peak_at(&self->simcall, host, pstate_index);
+    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
+
     self->simcall.call = SIMCALL_HOST_GET_POWER_PEAK_AT;
     memset(&self->simcall.result, 0, sizeof(self->simcall.result));
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
@@ -188,6 +248,11 @@
   }
   inline static int simcall_BODY_host_get_nb_pstates(smx_host_t host) {
     smx_process_t self = SIMIX_process_self();
+
+    /* Go to that function to follow the code flow through the simcall barrier */
+    if (0) SIMIX_pre_host_get_nb_pstates(&self->simcall, host);
+    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
+
     self->simcall.call = SIMCALL_HOST_GET_NB_PSTATES;
     memset(&self->simcall.result, 0, sizeof(self->simcall.result));
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
@@ -203,6 +268,11 @@
   }
   inline static void simcall_BODY_host_set_power_peak_at(smx_host_t host, int pstate_index) {
     smx_process_t self = SIMIX_process_self();
+
+    /* Go to that function to follow the code flow through the simcall barrier */
+    if (0) SIMIX_pre_host_set_power_peak_at(&self->simcall, host, pstate_index);
+    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
+
     self->simcall.call = SIMCALL_HOST_SET_POWER_PEAK_AT;
     memset(&self->simcall.result, 0, sizeof(self->simcall.result));
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
@@ -219,6 +289,11 @@
   }
   inline static double simcall_BODY_host_get_consumed_energy(smx_host_t host) {
     smx_process_t self = SIMIX_process_self();
+
+    /* Go to that function to follow the code flow through the simcall barrier */
+    if (0) SIMIX_pre_host_get_consumed_energy(&self->simcall, host);
+    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
+
     self->simcall.call = SIMCALL_HOST_GET_CONSUMED_ENERGY;
     memset(&self->simcall.result, 0, sizeof(self->simcall.result));
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
@@ -234,6 +309,11 @@
   }
   inline static smx_action_t simcall_BODY_host_execute(const char* name, smx_host_t host, double computation_amount, double priority, double bound, unsigned long affinity_mask) {
     smx_process_t self = SIMIX_process_self();
+
+    /* Go to that function to follow the code flow through the simcall barrier */
+    if (0) SIMIX_pre_host_execute(&self->simcall, name, host, computation_amount, priority, bound, affinity_mask);
+    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
+
     self->simcall.call = SIMCALL_HOST_EXECUTE;
     memset(&self->simcall.result, 0, sizeof(self->simcall.result));
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
@@ -254,6 +334,11 @@
   }
   inline static smx_action_t simcall_BODY_host_parallel_execute(const char* name, int host_nb, smx_host_t* host_list, double* computation_amount, double* communication_amount, double amount, double rate) {
     smx_process_t self = SIMIX_process_self();
+
+    /* Go to that function to follow the code flow through the simcall barrier */
+    if (0) SIMIX_pre_host_parallel_execute(&self->simcall, name, host_nb, host_list, computation_amount, communication_amount, amount, rate);
+    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
+
     self->simcall.call = SIMCALL_HOST_PARALLEL_EXECUTE;
     memset(&self->simcall.result, 0, sizeof(self->simcall.result));
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
@@ -275,6 +360,11 @@
   }
   inline static void simcall_BODY_host_execution_destroy(smx_action_t execution) {
     smx_process_t self = SIMIX_process_self();
+
+    /* Go to that function to follow the code flow through the simcall barrier */
+    if (0) SIMIX_pre_host_execution_destroy(&self->simcall, execution);
+    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
+
     self->simcall.call = SIMCALL_HOST_EXECUTION_DESTROY;
     memset(&self->simcall.result, 0, sizeof(self->simcall.result));
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
@@ -290,6 +380,11 @@
   }
   inline static void simcall_BODY_host_execution_cancel(smx_action_t execution) {
     smx_process_t self = SIMIX_process_self();
+
+    /* Go to that function to follow the code flow through the simcall barrier */
+    if (0) SIMIX_pre_host_execution_cancel(&self->simcall, execution);
+    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
+
     self->simcall.call = SIMCALL_HOST_EXECUTION_CANCEL;
     memset(&self->simcall.result, 0, sizeof(self->simcall.result));
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
@@ -305,6 +400,11 @@
   }
   inline static double simcall_BODY_host_execution_get_remains(smx_action_t execution) {
     smx_process_t self = SIMIX_process_self();
+
+    /* Go to that function to follow the code flow through the simcall barrier */
+    if (0) SIMIX_pre_host_execution_get_remains(&self->simcall, execution);
+    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
+
     self->simcall.call = SIMCALL_HOST_EXECUTION_GET_REMAINS;
     memset(&self->simcall.result, 0, sizeof(self->simcall.result));
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
@@ -320,6 +420,11 @@
   }
   inline static int simcall_BODY_host_execution_get_state(smx_action_t execution) {
     smx_process_t self = SIMIX_process_self();
+
+    /* Go to that function to follow the code flow through the simcall barrier */
+    if (0) SIMIX_pre_host_execution_get_state(&self->simcall, execution);
+    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
+
     self->simcall.call = SIMCALL_HOST_EXECUTION_GET_STATE;
     memset(&self->simcall.result, 0, sizeof(self->simcall.result));
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
@@ -335,6 +440,11 @@
   }
   inline static void simcall_BODY_host_execution_set_priority(smx_action_t execution, double priority) {
     smx_process_t self = SIMIX_process_self();
+
+    /* Go to that function to follow the code flow through the simcall barrier */
+    if (0) SIMIX_pre_host_execution_set_priority(&self->simcall, execution, priority);
+    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
+
     self->simcall.call = SIMCALL_HOST_EXECUTION_SET_PRIORITY;
     memset(&self->simcall.result, 0, sizeof(self->simcall.result));
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
@@ -351,6 +461,11 @@
   }
   inline static void simcall_BODY_host_execution_set_bound(smx_action_t execution, double bound) {
     smx_process_t self = SIMIX_process_self();
+
+    /* Go to that function to follow the code flow through the simcall barrier */
+    if (0) SIMIX_pre_host_execution_set_bound(&self->simcall, execution, bound);
+    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
+
     self->simcall.call = SIMCALL_HOST_EXECUTION_SET_BOUND;
     memset(&self->simcall.result, 0, sizeof(self->simcall.result));
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
@@ -367,6 +482,11 @@
   }
   inline static void simcall_BODY_host_execution_set_affinity(smx_action_t execution, smx_host_t ws, unsigned long mask) {
     smx_process_t self = SIMIX_process_self();
+
+    /* Go to that function to follow the code flow through the simcall barrier */
+    if (0) SIMIX_pre_host_execution_set_affinity(&self->simcall, execution, ws, mask);
+    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
+
     self->simcall.call = SIMCALL_HOST_EXECUTION_SET_AFFINITY;
     memset(&self->simcall.result, 0, sizeof(self->simcall.result));
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
@@ -384,6 +504,11 @@
   }
   inline static int simcall_BODY_host_execution_wait(smx_action_t execution) {
     smx_process_t self = SIMIX_process_self();
+
+    /* Go to that function to follow the code flow through the simcall barrier */
+    if (0) SIMIX_pre_host_execution_wait(&self->simcall, execution);
+    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
+
     self->simcall.call = SIMCALL_HOST_EXECUTION_WAIT;
     memset(&self->simcall.result, 0, sizeof(self->simcall.result));
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
@@ -399,6 +524,11 @@
   }
   inline static xbt_dict_t simcall_BODY_host_get_mounted_storage_list(smx_host_t host) {
     smx_process_t self = SIMIX_process_self();
+
+    /* Go to that function to follow the code flow through the simcall barrier */
+    if (0) SIMIX_pre_host_get_mounted_storage_list(&self->simcall, host);
+    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
+
     self->simcall.call = SIMCALL_HOST_GET_MOUNTED_STORAGE_LIST;
     memset(&self->simcall.result, 0, sizeof(self->simcall.result));
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
@@ -414,6 +544,11 @@
   }
   inline static xbt_dynar_t simcall_BODY_host_get_attached_storage_list(smx_host_t host) {
     smx_process_t self = SIMIX_process_self();
+
+    /* Go to that function to follow the code flow through the simcall barrier */
+    if (0) SIMIX_pre_host_get_attached_storage_list(&self->simcall, host);
+    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
+
     self->simcall.call = SIMCALL_HOST_GET_ATTACHED_STORAGE_LIST;
     memset(&self->simcall.result, 0, sizeof(self->simcall.result));
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
@@ -429,6 +564,11 @@
   }
   inline static void simcall_BODY_host_get_params(smx_host_t ind_vm, ws_params_t params) {
     smx_process_t self = SIMIX_process_self();
+
+    /* Go to that function to follow the code flow through the simcall barrier */
+    if (0) SIMIX_pre_host_get_params(&self->simcall, ind_vm, params);
+    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
+
     self->simcall.call = SIMCALL_HOST_GET_PARAMS;
     memset(&self->simcall.result, 0, sizeof(self->simcall.result));
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
@@ -445,6 +585,11 @@
   }
   inline static void simcall_BODY_host_set_params(smx_host_t ind_vm, ws_params_t params) {
     smx_process_t self = SIMIX_process_self();
+
+    /* Go to that function to follow the code flow through the simcall barrier */
+    if (0) SIMIX_pre_host_set_params(&self->simcall, ind_vm, params);
+    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
+
     self->simcall.call = SIMCALL_HOST_SET_PARAMS;
     memset(&self->simcall.result, 0, sizeof(self->simcall.result));
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
@@ -461,6 +606,11 @@
   }
   inline static void* simcall_BODY_vm_create(const char* name, smx_host_t ind_pm) {
     smx_process_t self = SIMIX_process_self();
+
+    /* Go to that function to follow the code flow through the simcall barrier */
+    if (0) SIMIX_pre_vm_create(&self->simcall, name, ind_pm);
+    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
+
     self->simcall.call = SIMCALL_VM_CREATE;
     memset(&self->simcall.result, 0, sizeof(self->simcall.result));
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
@@ -477,6 +627,11 @@
   }
   inline static void simcall_BODY_vm_start(smx_host_t ind_vm) {
     smx_process_t self = SIMIX_process_self();
+
+    /* Go to that function to follow the code flow through the simcall barrier */
+    if (0) SIMIX_pre_vm_start(&self->simcall, ind_vm);
+    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
+
     self->simcall.call = SIMCALL_VM_START;
     memset(&self->simcall.result, 0, sizeof(self->simcall.result));
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
@@ -492,6 +647,11 @@
   }
   inline static int simcall_BODY_vm_get_state(smx_host_t ind_vm) {
     smx_process_t self = SIMIX_process_self();
+
+    /* Go to that function to follow the code flow through the simcall barrier */
+    if (0) SIMIX_pre_vm_get_state(&self->simcall, ind_vm);
+    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
+
     self->simcall.call = SIMCALL_VM_GET_STATE;
     memset(&self->simcall.result, 0, sizeof(self->simcall.result));
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
@@ -507,6 +667,11 @@
   }
   inline static void simcall_BODY_vm_migrate(smx_host_t ind_vm, smx_host_t ind_dst_pm) {
     smx_process_t self = SIMIX_process_self();
+
+    /* Go to that function to follow the code flow through the simcall barrier */
+    if (0) SIMIX_pre_vm_migrate(&self->simcall, ind_vm, ind_dst_pm);
+    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
+
     self->simcall.call = SIMCALL_VM_MIGRATE;
     memset(&self->simcall.result, 0, sizeof(self->simcall.result));
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
@@ -523,6 +688,11 @@
   }
   inline static void* simcall_BODY_vm_get_pm(smx_host_t ind_vm) {
     smx_process_t self = SIMIX_process_self();
+
+    /* Go to that function to follow the code flow through the simcall barrier */
+    if (0) SIMIX_pre_vm_get_pm(&self->simcall, ind_vm);
+    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
+
     self->simcall.call = SIMCALL_VM_GET_PM;
     memset(&self->simcall.result, 0, sizeof(self->simcall.result));
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
@@ -538,6 +708,11 @@
   }
   inline static void simcall_BODY_vm_set_bound(smx_host_t ind_vm, double bound) {
     smx_process_t self = SIMIX_process_self();
+
+    /* Go to that function to follow the code flow through the simcall barrier */
+    if (0) SIMIX_pre_vm_set_bound(&self->simcall, ind_vm, bound);
+    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
+
     self->simcall.call = SIMCALL_VM_SET_BOUND;
     memset(&self->simcall.result, 0, sizeof(self->simcall.result));
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
@@ -554,6 +729,11 @@
   }
   inline static void simcall_BODY_vm_set_affinity(smx_host_t ind_vm, smx_host_t ind_pm, unsigned long mask) {
     smx_process_t self = SIMIX_process_self();
+
+    /* Go to that function to follow the code flow through the simcall barrier */
+    if (0) SIMIX_pre_vm_set_affinity(&self->simcall, ind_vm, ind_pm, mask);
+    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
+
     self->simcall.call = SIMCALL_VM_SET_AFFINITY;
     memset(&self->simcall.result, 0, sizeof(self->simcall.result));
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
@@ -571,6 +751,11 @@
   }
   inline static void simcall_BODY_vm_destroy(smx_host_t ind_vm) {
     smx_process_t self = SIMIX_process_self();
+
+    /* Go to that function to follow the code flow through the simcall barrier */
+    if (0) SIMIX_pre_vm_destroy(&self->simcall, ind_vm);
+    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
+
     self->simcall.call = SIMCALL_VM_DESTROY;
     memset(&self->simcall.result, 0, sizeof(self->simcall.result));
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
@@ -586,6 +771,11 @@
   }
   inline static void simcall_BODY_vm_suspend(smx_host_t ind_vm) {
     smx_process_t self = SIMIX_process_self();
+
+    /* Go to that function to follow the code flow through the simcall barrier */
+    if (0) SIMIX_pre_vm_suspend(&self->simcall, ind_vm);
+    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
+
     self->simcall.call = SIMCALL_VM_SUSPEND;
     memset(&self->simcall.result, 0, sizeof(self->simcall.result));
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
@@ -601,6 +791,11 @@
   }
   inline static void simcall_BODY_vm_resume(smx_host_t ind_vm) {
     smx_process_t self = SIMIX_process_self();
+
+    /* Go to that function to follow the code flow through the simcall barrier */
+    if (0) SIMIX_pre_vm_resume(&self->simcall, ind_vm);
+    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
+
     self->simcall.call = SIMCALL_VM_RESUME;
     memset(&self->simcall.result, 0, sizeof(self->simcall.result));
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
@@ -616,6 +811,11 @@
   }
   inline static void simcall_BODY_vm_shutdown(smx_host_t ind_vm) {
     smx_process_t self = SIMIX_process_self();
+
+    /* Go to that function to follow the code flow through the simcall barrier */
+    if (0) SIMIX_pre_vm_shutdown(&self->simcall, ind_vm);
+    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
+
     self->simcall.call = SIMCALL_VM_SHUTDOWN;
     memset(&self->simcall.result, 0, sizeof(self->simcall.result));
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
@@ -631,6 +831,11 @@
   }
   inline static void simcall_BODY_vm_save(smx_host_t ind_vm) {
     smx_process_t self = SIMIX_process_self();
+
+    /* Go to that function to follow the code flow through the simcall barrier */
+    if (0) SIMIX_pre_vm_save(&self->simcall, ind_vm);
+    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
+
     self->simcall.call = SIMCALL_VM_SAVE;
     memset(&self->simcall.result, 0, sizeof(self->simcall.result));
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
@@ -646,6 +851,11 @@
   }
   inline static void simcall_BODY_vm_restore(smx_host_t ind_vm) {
     smx_process_t self = SIMIX_process_self();
+
+    /* Go to that function to follow the code flow through the simcall barrier */
+    if (0) SIMIX_pre_vm_restore(&self->simcall, ind_vm);
+    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
+
     self->simcall.call = SIMCALL_VM_RESTORE;
     memset(&self->simcall.result, 0, sizeof(self->simcall.result));
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
@@ -661,6 +871,11 @@
   }
   inline static void simcall_BODY_process_create(smx_process_t* process, const char* name, xbt_main_func_t code, void* data, const char* hostname, double kill_time, int argc, char** argv, xbt_dict_t properties, int auto_restart) {
     smx_process_t self = SIMIX_process_self();
+
+    /* Go to that function to follow the code flow through the simcall barrier */
+    if (0) SIMIX_pre_process_create(&self->simcall, process, name, code, data, hostname, kill_time, argc, argv, properties, auto_restart);
+    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
+
     self->simcall.call = SIMCALL_PROCESS_CREATE;
     memset(&self->simcall.result, 0, sizeof(self->simcall.result));
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
@@ -685,6 +900,11 @@
   }
   inline static void simcall_BODY_process_kill(smx_process_t process) {
     smx_process_t self = SIMIX_process_self();
+
+    /* Go to that function to follow the code flow through the simcall barrier */
+    if (0) SIMIX_pre_process_kill(&self->simcall, process);
+    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
+
     self->simcall.call = SIMCALL_PROCESS_KILL;
     memset(&self->simcall.result, 0, sizeof(self->simcall.result));
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
@@ -700,6 +920,11 @@
   }
   inline static void simcall_BODY_process_killall(int reset_pid) {
     smx_process_t self = SIMIX_process_self();
+
+    /* Go to that function to follow the code flow through the simcall barrier */
+    if (0) SIMIX_pre_process_killall(&self->simcall, reset_pid);
+    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
+
     self->simcall.call = SIMCALL_PROCESS_KILLALL;
     memset(&self->simcall.result, 0, sizeof(self->simcall.result));
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
@@ -715,6 +940,11 @@
   }
   inline static void simcall_BODY_process_cleanup(smx_process_t process) {
     smx_process_t self = SIMIX_process_self();
+
+    /* Go to that function to follow the code flow through the simcall barrier */
+    if (0) SIMIX_pre_process_cleanup(&self->simcall, process);
+    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
+
     self->simcall.call = SIMCALL_PROCESS_CLEANUP;
     memset(&self->simcall.result, 0, sizeof(self->simcall.result));
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
@@ -730,6 +960,11 @@
   }
   inline static void simcall_BODY_process_change_host(smx_process_t process, smx_host_t dest) {
     smx_process_t self = SIMIX_process_self();
+
+    /* Go to that function to follow the code flow through the simcall barrier */
+    if (0) SIMIX_pre_process_change_host(&self->simcall, process, dest);
+    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
+
     self->simcall.call = SIMCALL_PROCESS_CHANGE_HOST;
     memset(&self->simcall.result, 0, sizeof(self->simcall.result));
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
@@ -746,6 +981,11 @@
   }
   inline static void simcall_BODY_process_suspend(smx_process_t process) {
     smx_process_t self = SIMIX_process_self();
+
+    /* Go to that function to follow the code flow through the simcall barrier */
+    if (0) SIMIX_pre_process_suspend(&self->simcall, process);
+    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
+
     self->simcall.call = SIMCALL_PROCESS_SUSPEND;
     memset(&self->simcall.result, 0, sizeof(self->simcall.result));
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
@@ -761,6 +1001,11 @@
   }
   inline static void simcall_BODY_process_resume(smx_process_t process) {
     smx_process_t self = SIMIX_process_self();
+
+    /* Go to that function to follow the code flow through the simcall barrier */
+    if (0) SIMIX_pre_process_resume(&self->simcall, process);
+    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
+
     self->simcall.call = SIMCALL_PROCESS_RESUME;
     memset(&self->simcall.result, 0, sizeof(self->simcall.result));
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
@@ -776,6 +1021,11 @@
   }
   inline static int simcall_BODY_process_count() {
     smx_process_t self = SIMIX_process_self();
+
+    /* Go to that function to follow the code flow through the simcall barrier */
+    if (0) SIMIX_pre_process_count(&self->simcall);
+    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
+
     self->simcall.call = SIMCALL_PROCESS_COUNT;
     memset(&self->simcall.result, 0, sizeof(self->simcall.result));
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
@@ -791,6 +1041,11 @@
   }
   inline static int simcall_BODY_process_get_PID(smx_process_t process) {
     smx_process_t self = SIMIX_process_self();
+
+    /* Go to that function to follow the code flow through the simcall barrier */
+    if (0) SIMIX_pre_process_get_PID(&self->simcall, process);
+    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
+
     self->simcall.call = SIMCALL_PROCESS_GET_PID;
     memset(&self->simcall.result, 0, sizeof(self->simcall.result));
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
@@ -806,6 +1061,11 @@
   }
   inline static int simcall_BODY_process_get_PPID(smx_process_t process) {
     smx_process_t self = SIMIX_process_self();
+
+    /* Go to that function to follow the code flow through the simcall barrier */
+    if (0) SIMIX_pre_process_get_PPID(&self->simcall, process);
+    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
+
     self->simcall.call = SIMCALL_PROCESS_GET_PPID;
     memset(&self->simcall.result, 0, sizeof(self->simcall.result));
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
@@ -821,6 +1081,11 @@
   }
   inline static void* simcall_BODY_process_get_data(smx_process_t process) {
     smx_process_t self = SIMIX_process_self();
+
+    /* Go to that function to follow the code flow through the simcall barrier */
+    if (0) SIMIX_pre_process_get_data(&self->simcall, process);
+    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
+
     self->simcall.call = SIMCALL_PROCESS_GET_DATA;
     memset(&self->simcall.result, 0, sizeof(self->simcall.result));
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
@@ -836,6 +1101,11 @@
   }
   inline static void simcall_BODY_process_set_data(smx_process_t process, void* data) {
     smx_process_t self = SIMIX_process_self();
+
+    /* Go to that function to follow the code flow through the simcall barrier */
+    if (0) SIMIX_pre_process_set_data(&self->simcall, process, data);
+    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
+
     self->simcall.call = SIMCALL_PROCESS_SET_DATA;
     memset(&self->simcall.result, 0, sizeof(self->simcall.result));
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
@@ -852,6 +1122,11 @@
   }
   inline static smx_host_t simcall_BODY_process_get_host(smx_process_t process) {
     smx_process_t self = SIMIX_process_self();
+
+    /* Go to that function to follow the code flow through the simcall barrier */
+    if (0) SIMIX_pre_process_get_host(&self->simcall, process);
+    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
+
     self->simcall.call = SIMCALL_PROCESS_GET_HOST;
     memset(&self->simcall.result, 0, sizeof(self->simcall.result));
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
@@ -867,6 +1142,11 @@
   }
   inline static const char* simcall_BODY_process_get_name(smx_process_t process) {
     smx_process_t self = SIMIX_process_self();
+
+    /* Go to that function to follow the code flow through the simcall barrier */
+    if (0) SIMIX_pre_process_get_name(&self->simcall, process);
+    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
+
     self->simcall.call = SIMCALL_PROCESS_GET_NAME;
     memset(&self->simcall.result, 0, sizeof(self->simcall.result));
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
@@ -882,6 +1162,11 @@
   }
   inline static int simcall_BODY_process_is_suspended(smx_process_t process) {
     smx_process_t self = SIMIX_process_self();
+
+    /* Go to that function to follow the code flow through the simcall barrier */
+    if (0) SIMIX_pre_process_is_suspended(&self->simcall, process);
+    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
+
     self->simcall.call = SIMCALL_PROCESS_IS_SUSPENDED;
     memset(&self->simcall.result, 0, sizeof(self->simcall.result));
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
@@ -897,6 +1182,11 @@
   }
   inline static xbt_dict_t simcall_BODY_process_get_properties(smx_process_t process) {
     smx_process_t self = SIMIX_process_self();
+
+    /* Go to that function to follow the code flow through the simcall barrier */
+    if (0) SIMIX_pre_process_get_properties(&self->simcall, process);
+    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
+
     self->simcall.call = SIMCALL_PROCESS_GET_PROPERTIES;
     memset(&self->simcall.result, 0, sizeof(self->simcall.result));
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
@@ -912,6 +1202,11 @@
   }
   inline static int simcall_BODY_process_join(smx_process_t process, double timeout) {
     smx_process_t self = SIMIX_process_self();
+
+    /* Go to that function to follow the code flow through the simcall barrier */
+    if (0) SIMIX_pre_process_join(&self->simcall, process, timeout);
+    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
+
     self->simcall.call = SIMCALL_PROCESS_JOIN;
     memset(&self->simcall.result, 0, sizeof(self->simcall.result));
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
@@ -928,6 +1223,11 @@
   }
   inline static int simcall_BODY_process_sleep(double duration) {
     smx_process_t self = SIMIX_process_self();
+
+    /* Go to that function to follow the code flow through the simcall barrier */
+    if (0) SIMIX_pre_process_sleep(&self->simcall, duration);
+    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
+
     self->simcall.call = SIMCALL_PROCESS_SLEEP;
     memset(&self->simcall.result, 0, sizeof(self->simcall.result));
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
@@ -943,6 +1243,11 @@
   }
   inline static void simcall_BODY_process_on_exit(smx_process_t process, int_f_pvoid_pvoid_t fun, void* data) {
     smx_process_t self = SIMIX_process_self();
+
+    /* Go to that function to follow the code flow through the simcall barrier */
+    if (0) SIMIX_pre_process_on_exit(&self->simcall, process, fun, data);
+    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
+
     self->simcall.call = SIMCALL_PROCESS_ON_EXIT;
     memset(&self->simcall.result, 0, sizeof(self->simcall.result));
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
@@ -960,6 +1265,11 @@
   }
   inline static void simcall_BODY_process_auto_restart_set(smx_process_t process, int auto_restart) {
     smx_process_t self = SIMIX_process_self();
+
+    /* Go to that function to follow the code flow through the simcall barrier */
+    if (0) SIMIX_pre_process_auto_restart_set(&self->simcall, process, auto_restart);
+    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
+
     self->simcall.call = SIMCALL_PROCESS_AUTO_RESTART_SET;
     memset(&self->simcall.result, 0, sizeof(self->simcall.result));
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
@@ -976,6 +1286,11 @@
   }
   inline static smx_process_t simcall_BODY_process_restart(smx_process_t process) {
     smx_process_t self = SIMIX_process_self();
+
+    /* Go to that function to follow the code flow through the simcall barrier */
+    if (0) SIMIX_pre_process_restart(&self->simcall, process);
+    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
+
     self->simcall.call = SIMCALL_PROCESS_RESTART;
     memset(&self->simcall.result, 0, sizeof(self->simcall.result));
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
@@ -991,6 +1306,11 @@
   }
   inline static smx_rdv_t simcall_BODY_rdv_create(const char* name) {
     smx_process_t self = SIMIX_process_self();
+
+    /* Go to that function to follow the code flow through the simcall barrier */
+    if (0) SIMIX_pre_rdv_create(&self->simcall, name);
+    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
+
     self->simcall.call = SIMCALL_RDV_CREATE;
     memset(&self->simcall.result, 0, sizeof(self->simcall.result));
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
@@ -1006,6 +1326,11 @@
   }
   inline static void simcall_BODY_rdv_destroy(smx_rdv_t rdv) {
     smx_process_t self = SIMIX_process_self();
+
+    /* Go to that function to follow the code flow through the simcall barrier */
+    if (0) SIMIX_pre_rdv_destroy(&self->simcall, rdv);
+    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
+
     self->simcall.call = SIMCALL_RDV_DESTROY;
     memset(&self->simcall.result, 0, sizeof(self->simcall.result));
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
@@ -1021,6 +1346,11 @@
   }
   inline static unsigned int simcall_BODY_rdv_comm_count_by_host(smx_rdv_t rdv, smx_host_t host) {
     smx_process_t self = SIMIX_process_self();
+
+    /* Go to that function to follow the code flow through the simcall barrier */
+    if (0) SIMIX_pre_rdv_comm_count_by_host(&self->simcall, rdv, host);
+    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
+
     self->simcall.call = SIMCALL_RDV_COMM_COUNT_BY_HOST;
     memset(&self->simcall.result, 0, sizeof(self->simcall.result));
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
@@ -1037,6 +1367,11 @@
   }
   inline static smx_action_t simcall_BODY_rdv_get_head(smx_rdv_t rdv) {
     smx_process_t self = SIMIX_process_self();
+
+    /* Go to that function to follow the code flow through the simcall barrier */
+    if (0) SIMIX_pre_rdv_get_head(&self->simcall, rdv);
+    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
+
     self->simcall.call = SIMCALL_RDV_GET_HEAD;
     memset(&self->simcall.result, 0, sizeof(self->simcall.result));
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
@@ -1052,6 +1387,11 @@
   }
   inline static void simcall_BODY_rdv_set_receiver(smx_rdv_t rdv, smx_process_t receiver) {
     smx_process_t self = SIMIX_process_self();
+
+    /* Go to that function to follow the code flow through the simcall barrier */
+    if (0) SIMIX_pre_rdv_set_receiver(&self->simcall, rdv, receiver);
+    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
+
     self->simcall.call = SIMCALL_RDV_SET_RECEIVER;
     memset(&self->simcall.result, 0, sizeof(self->simcall.result));
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
@@ -1068,6 +1408,11 @@
   }
   inline static smx_process_t simcall_BODY_rdv_get_receiver(smx_rdv_t rdv) {
     smx_process_t self = SIMIX_process_self();
+
+    /* Go to that function to follow the code flow through the simcall barrier */
+    if (0) SIMIX_pre_rdv_get_receiver(&self->simcall, rdv);
+    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
+
     self->simcall.call = SIMCALL_RDV_GET_RECEIVER;
     memset(&self->simcall.result, 0, sizeof(self->simcall.result));
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
@@ -1083,6 +1428,11 @@
   }
   inline static smx_action_t simcall_BODY_comm_iprobe(smx_rdv_t rdv, int type, int src, int tag, simix_match_func_t match_fun, void* data) {
     smx_process_t self = SIMIX_process_self();
+
+    /* Go to that function to follow the code flow through the simcall barrier */
+    if (0) SIMIX_pre_comm_iprobe(&self->simcall, rdv, type, src, tag, match_fun, data);
+    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
+
     self->simcall.call = SIMCALL_COMM_IPROBE;
     memset(&self->simcall.result, 0, sizeof(self->simcall.result));
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
@@ -1103,6 +1453,11 @@
   }
   inline static void simcall_BODY_comm_send(smx_process_t src, smx_rdv_t rdv, double task_size, double rate, void* src_buff, size_t src_buff_size, simix_match_func_t match_fun, simix_copy_data_func_t copy_data_fun, void* data, double timeout) {
     smx_process_t self = SIMIX_process_self();
+
+    /* Go to that function to follow the code flow through the simcall barrier */
+    if (0) SIMIX_pre_comm_send(&self->simcall, src, rdv, task_size, rate, src_buff, src_buff_size, match_fun, copy_data_fun, data, timeout);
+    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
+
     self->simcall.call = SIMCALL_COMM_SEND;
     memset(&self->simcall.result, 0, sizeof(self->simcall.result));
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
@@ -1127,6 +1482,11 @@
   }
   inline static smx_action_t simcall_BODY_comm_isend(smx_process_t src, smx_rdv_t rdv, double task_size, double rate, void* src_buff, size_t src_buff_size, simix_match_func_t match_fun, simix_clean_func_t clean_fun, simix_copy_data_func_t copy_data_fun, void* data, int detached) {
     smx_process_t self = SIMIX_process_self();
+
+    /* Go to that function to follow the code flow through the simcall barrier */
+    if (0) SIMIX_pre_comm_isend(&self->simcall, src, rdv, task_size, rate, src_buff, src_buff_size, match_fun, clean_fun, copy_data_fun, data, detached);
+    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
+
     self->simcall.call = SIMCALL_COMM_ISEND;
     memset(&self->simcall.result, 0, sizeof(self->simcall.result));
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
@@ -1152,6 +1512,11 @@
   }
   inline static void simcall_BODY_comm_recv(smx_rdv_t rdv, void* dst_buff, size_t* dst_buff_size, simix_match_func_t match_fun, simix_copy_data_func_t copy_data_fun, void* data, double timeout, double rate) {
     smx_process_t self = SIMIX_process_self();
+
+    /* Go to that function to follow the code flow through the simcall barrier */
+    if (0) SIMIX_pre_comm_recv(&self->simcall, rdv, dst_buff, dst_buff_size, match_fun, copy_data_fun, data, timeout, rate);
+    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
+
     self->simcall.call = SIMCALL_COMM_RECV;
     memset(&self->simcall.result, 0, sizeof(self->simcall.result));
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
@@ -1174,6 +1539,11 @@
   }
   inline static smx_action_t simcall_BODY_comm_irecv(smx_rdv_t rdv, void* dst_buff, size_t* dst_buff_size, simix_match_func_t match_fun, simix_copy_data_func_t copy_data_fun, void* data, double rate) {
     smx_process_t self = SIMIX_process_self();
+
+    /* Go to that function to follow the code flow through the simcall barrier */
+    if (0) SIMIX_pre_comm_irecv(&self->simcall, rdv, dst_buff, dst_buff_size, match_fun, copy_data_fun, data, rate);
+    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
+
     self->simcall.call = SIMCALL_COMM_IRECV;
     memset(&self->simcall.result, 0, sizeof(self->simcall.result));
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
@@ -1195,6 +1565,11 @@
   }
   inline static void simcall_BODY_comm_cancel(smx_action_t comm) {
     smx_process_t self = SIMIX_process_self();
+
+    /* Go to that function to follow the code flow through the simcall barrier */
+    if (0) SIMIX_pre_comm_cancel(&self->simcall, comm);
+    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
+
     self->simcall.call = SIMCALL_COMM_CANCEL;
     memset(&self->simcall.result, 0, sizeof(self->simcall.result));
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
@@ -1210,6 +1585,11 @@
   }
   inline static int simcall_BODY_comm_waitany(xbt_dynar_t comms) {
     smx_process_t self = SIMIX_process_self();
+
+    /* Go to that function to follow the code flow through the simcall barrier */
+    if (0) SIMIX_pre_comm_waitany(&self->simcall, comms);
+    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
+
     self->simcall.call = SIMCALL_COMM_WAITANY;
     memset(&self->simcall.result, 0, sizeof(self->simcall.result));
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
@@ -1225,6 +1605,11 @@
   }
   inline static void simcall_BODY_comm_wait(smx_action_t comm, double timeout) {
     smx_process_t self = SIMIX_process_self();
+
+    /* Go to that function to follow the code flow through the simcall barrier */
+    if (0) SIMIX_pre_comm_wait(&self->simcall, comm, timeout);
+    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
+
     self->simcall.call = SIMCALL_COMM_WAIT;
     memset(&self->simcall.result, 0, sizeof(self->simcall.result));
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
@@ -1241,6 +1626,11 @@
   }
   inline static int simcall_BODY_comm_test(smx_action_t comm) {
     smx_process_t self = SIMIX_process_self();
+
+    /* Go to that function to follow the code flow through the simcall barrier */
+    if (0) SIMIX_pre_comm_test(&self->simcall, comm);
+    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
+
     self->simcall.call = SIMCALL_COMM_TEST;
     memset(&self->simcall.result, 0, sizeof(self->simcall.result));
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
@@ -1256,6 +1646,11 @@
   }
   inline static int simcall_BODY_comm_testany(xbt_dynar_t comms) {
     smx_process_t self = SIMIX_process_self();
+
+    /* Go to that function to follow the code flow through the simcall barrier */
+    if (0) SIMIX_pre_comm_testany(&self->simcall, comms);
+    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
+
     self->simcall.call = SIMCALL_COMM_TESTANY;
     memset(&self->simcall.result, 0, sizeof(self->simcall.result));
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
@@ -1271,6 +1666,11 @@
   }
   inline static double simcall_BODY_comm_get_remains(smx_action_t comm) {
     smx_process_t self = SIMIX_process_self();
+
+    /* Go to that function to follow the code flow through the simcall barrier */
+    if (0) SIMIX_pre_comm_get_remains(&self->simcall, comm);
+    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
+
     self->simcall.call = SIMCALL_COMM_GET_REMAINS;
     memset(&self->simcall.result, 0, sizeof(self->simcall.result));
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
@@ -1286,6 +1686,11 @@
   }
   inline static int simcall_BODY_comm_get_state(smx_action_t comm) {
     smx_process_t self = SIMIX_process_self();
+
+    /* Go to that function to follow the code flow through the simcall barrier */
+    if (0) SIMIX_pre_comm_get_state(&self->simcall, comm);
+    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
+
     self->simcall.call = SIMCALL_COMM_GET_STATE;
     memset(&self->simcall.result, 0, sizeof(self->simcall.result));
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
@@ -1301,6 +1706,11 @@
   }
   inline static void* simcall_BODY_comm_get_src_data(smx_action_t comm) {
     smx_process_t self = SIMIX_process_self();
+
+    /* Go to that function to follow the code flow through the simcall barrier */
+    if (0) SIMIX_pre_comm_get_src_data(&self->simcall, comm);
+    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
+
     self->simcall.call = SIMCALL_COMM_GET_SRC_DATA;
     memset(&self->simcall.result, 0, sizeof(self->simcall.result));
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
@@ -1316,6 +1726,11 @@
   }
   inline static void* simcall_BODY_comm_get_dst_data(smx_action_t comm) {
     smx_process_t self = SIMIX_process_self();
+
+    /* Go to that function to follow the code flow through the simcall barrier */
+    if (0) SIMIX_pre_comm_get_dst_data(&self->simcall, comm);
+    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
+
     self->simcall.call = SIMCALL_COMM_GET_DST_DATA;
     memset(&self->simcall.result, 0, sizeof(self->simcall.result));
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
@@ -1331,6 +1746,11 @@
   }
   inline static smx_process_t simcall_BODY_comm_get_src_proc(smx_action_t comm) {
     smx_process_t self = SIMIX_process_self();
+
+    /* Go to that function to follow the code flow through the simcall barrier */
+    if (0) SIMIX_pre_comm_get_src_proc(&self->simcall, comm);
+    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
+
     self->simcall.call = SIMCALL_COMM_GET_SRC_PROC;
     memset(&self->simcall.result, 0, sizeof(self->simcall.result));
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
@@ -1346,6 +1766,11 @@
   }
   inline static smx_process_t simcall_BODY_comm_get_dst_proc(smx_action_t comm) {
     smx_process_t self = SIMIX_process_self();
+
+    /* Go to that function to follow the code flow through the simcall barrier */
+    if (0) SIMIX_pre_comm_get_dst_proc(&self->simcall, comm);
+    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
+
     self->simcall.call = SIMCALL_COMM_GET_DST_PROC;
     memset(&self->simcall.result, 0, sizeof(self->simcall.result));
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
@@ -1361,6 +1786,11 @@
   }
   inline static smx_mutex_t simcall_BODY_mutex_init() {
     smx_process_t self = SIMIX_process_self();
+
+    /* Go to that function to follow the code flow through the simcall barrier */
+    if (0) SIMIX_pre_mutex_init(&self->simcall);
+    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
+
     self->simcall.call = SIMCALL_MUTEX_INIT;
     memset(&self->simcall.result, 0, sizeof(self->simcall.result));
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
@@ -1376,6 +1806,11 @@
   }
   inline static void simcall_BODY_mutex_destroy(smx_mutex_t mutex) {
     smx_process_t self = SIMIX_process_self();
+
+    /* Go to that function to follow the code flow through the simcall barrier */
+    if (0) SIMIX_pre_mutex_destroy(&self->simcall, mutex);
+    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
+
     self->simcall.call = SIMCALL_MUTEX_DESTROY;
     memset(&self->simcall.result, 0, sizeof(self->simcall.result));
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
@@ -1391,6 +1826,11 @@
   }
   inline static void simcall_BODY_mutex_lock(smx_mutex_t mutex) {
     smx_process_t self = SIMIX_process_self();
+
+    /* Go to that function to follow the code flow through the simcall barrier */
+    if (0) SIMIX_pre_mutex_lock(&self->simcall, mutex);
+    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
+
     self->simcall.call = SIMCALL_MUTEX_LOCK;
     memset(&self->simcall.result, 0, sizeof(self->simcall.result));
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
@@ -1406,6 +1846,11 @@
   }
   inline static int simcall_BODY_mutex_trylock(smx_mutex_t mutex) {
     smx_process_t self = SIMIX_process_self();
+
+    /* Go to that function to follow the code flow through the simcall barrier */
+    if (0) SIMIX_pre_mutex_trylock(&self->simcall, mutex);
+    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
+
     self->simcall.call = SIMCALL_MUTEX_TRYLOCK;
     memset(&self->simcall.result, 0, sizeof(self->simcall.result));
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
@@ -1421,6 +1866,11 @@
   }
   inline static void simcall_BODY_mutex_unlock(smx_mutex_t mutex) {
     smx_process_t self = SIMIX_process_self();
+
+    /* Go to that function to follow the code flow through the simcall barrier */
+    if (0) SIMIX_pre_mutex_unlock(&self->simcall, mutex);
+    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
+
     self->simcall.call = SIMCALL_MUTEX_UNLOCK;
     memset(&self->simcall.result, 0, sizeof(self->simcall.result));
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
@@ -1436,6 +1886,11 @@
   }
   inline static smx_cond_t simcall_BODY_cond_init() {
     smx_process_t self = SIMIX_process_self();
+
+    /* Go to that function to follow the code flow through the simcall barrier */
+    if (0) SIMIX_pre_cond_init(&self->simcall);
+    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
+
     self->simcall.call = SIMCALL_COND_INIT;
     memset(&self->simcall.result, 0, sizeof(self->simcall.result));
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
@@ -1451,6 +1906,11 @@
   }
   inline static void simcall_BODY_cond_destroy(smx_cond_t cond) {
     smx_process_t self = SIMIX_process_self();
+
+    /* Go to that function to follow the code flow through the simcall barrier */
+    if (0) SIMIX_pre_cond_destroy(&self->simcall, cond);
+    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
+
     self->simcall.call = SIMCALL_COND_DESTROY;
     memset(&self->simcall.result, 0, sizeof(self->simcall.result));
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
@@ -1466,6 +1926,11 @@
   }
   inline static void simcall_BODY_cond_signal(smx_cond_t cond) {
     smx_process_t self = SIMIX_process_self();
+
+    /* Go to that function to follow the code flow through the simcall barrier */
+    if (0) SIMIX_pre_cond_signal(&self->simcall, cond);
+    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
+
     self->simcall.call = SIMCALL_COND_SIGNAL;
     memset(&self->simcall.result, 0, sizeof(self->simcall.result));
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
@@ -1481,6 +1946,11 @@
   }
   inline static void simcall_BODY_cond_wait(smx_cond_t cond, smx_mutex_t mutex) {
     smx_process_t self = SIMIX_process_self();
+
+    /* Go to that function to follow the code flow through the simcall barrier */
+    if (0) SIMIX_pre_cond_wait(&self->simcall, cond, mutex);
+    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
+
     self->simcall.call = SIMCALL_COND_WAIT;
     memset(&self->simcall.result, 0, sizeof(self->simcall.result));
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
@@ -1497,6 +1967,11 @@
   }
   inline static void simcall_BODY_cond_wait_timeout(smx_cond_t cond, smx_mutex_t mutex, double timeout) {
     smx_process_t self = SIMIX_process_self();
+
+    /* Go to that function to follow the code flow through the simcall barrier */
+    if (0) SIMIX_pre_cond_wait_timeout(&self->simcall, cond, mutex, timeout);
+    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
+
     self->simcall.call = SIMCALL_COND_WAIT_TIMEOUT;
     memset(&self->simcall.result, 0, sizeof(self->simcall.result));
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
@@ -1514,6 +1989,11 @@
   }
   inline static void simcall_BODY_cond_broadcast(smx_cond_t cond) {
     smx_process_t self = SIMIX_process_self();
+
+    /* Go to that function to follow the code flow through the simcall barrier */
+    if (0) SIMIX_pre_cond_broadcast(&self->simcall, cond);
+    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
+
     self->simcall.call = SIMCALL_COND_BROADCAST;
     memset(&self->simcall.result, 0, sizeof(self->simcall.result));
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
@@ -1529,6 +2009,11 @@
   }
   inline static smx_sem_t simcall_BODY_sem_init(int capacity) {
     smx_process_t self = SIMIX_process_self();
+
+    /* Go to that function to follow the code flow through the simcall barrier */
+    if (0) SIMIX_pre_sem_init(&self->simcall, capacity);
+    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
+
     self->simcall.call = SIMCALL_SEM_INIT;
     memset(&self->simcall.result, 0, sizeof(self->simcall.result));
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
@@ -1544,6 +2029,11 @@
   }
   inline static void simcall_BODY_sem_destroy(smx_sem_t sem) {
     smx_process_t self = SIMIX_process_self();
+
+    /* Go to that function to follow the code flow through the simcall barrier */
+    if (0) SIMIX_pre_sem_destroy(&self->simcall, sem);
+    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
+
     self->simcall.call = SIMCALL_SEM_DESTROY;
     memset(&self->simcall.result, 0, sizeof(self->simcall.result));
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
@@ -1559,6 +2049,11 @@
   }
   inline static void simcall_BODY_sem_release(smx_sem_t sem) {
     smx_process_t self = SIMIX_process_self();
+
+    /* Go to that function to follow the code flow through the simcall barrier */
+    if (0) SIMIX_pre_sem_release(&self->simcall, sem);
+    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
+
     self->simcall.call = SIMCALL_SEM_RELEASE;
     memset(&self->simcall.result, 0, sizeof(self->simcall.result));
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
@@ -1574,6 +2069,11 @@
   }
   inline static int simcall_BODY_sem_would_block(smx_sem_t sem) {
     smx_process_t self = SIMIX_process_self();
+
+    /* Go to that function to follow the code flow through the simcall barrier */
+    if (0) SIMIX_pre_sem_would_block(&self->simcall, sem);
+    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
+
     self->simcall.call = SIMCALL_SEM_WOULD_BLOCK;
     memset(&self->simcall.result, 0, sizeof(self->simcall.result));
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
@@ -1589,6 +2089,11 @@
   }
   inline static void simcall_BODY_sem_acquire(smx_sem_t sem) {
     smx_process_t self = SIMIX_process_self();
+
+    /* Go to that function to follow the code flow through the simcall barrier */
+    if (0) SIMIX_pre_sem_acquire(&self->simcall, sem);
+    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
+
     self->simcall.call = SIMCALL_SEM_ACQUIRE;
     memset(&self->simcall.result, 0, sizeof(self->simcall.result));
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
@@ -1604,6 +2109,11 @@
   }
   inline static void simcall_BODY_sem_acquire_timeout(smx_sem_t sem, double timeout) {
     smx_process_t self = SIMIX_process_self();
+
+    /* Go to that function to follow the code flow through the simcall barrier */
+    if (0) SIMIX_pre_sem_acquire_timeout(&self->simcall, sem, timeout);
+    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
+
     self->simcall.call = SIMCALL_SEM_ACQUIRE_TIMEOUT;
     memset(&self->simcall.result, 0, sizeof(self->simcall.result));
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
@@ -1620,6 +2130,11 @@
   }
   inline static int simcall_BODY_sem_get_capacity(smx_sem_t sem) {
     smx_process_t self = SIMIX_process_self();
+
+    /* Go to that function to follow the code flow through the simcall barrier */
+    if (0) SIMIX_pre_sem_get_capacity(&self->simcall, sem);
+    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
+
     self->simcall.call = SIMCALL_SEM_GET_CAPACITY;
     memset(&self->simcall.result, 0, sizeof(self->simcall.result));
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
@@ -1635,6 +2150,11 @@
   }
   inline static sg_size_t simcall_BODY_file_read(smx_file_t fd, sg_size_t size, smx_host_t host) {
     smx_process_t self = SIMIX_process_self();
+
+    /* Go to that function to follow the code flow through the simcall barrier */
+    if (0) SIMIX_pre_file_read(&self->simcall, fd, size, host);
+    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
+
     self->simcall.call = SIMCALL_FILE_READ;
     memset(&self->simcall.result, 0, sizeof(self->simcall.result));
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
@@ -1652,6 +2172,11 @@
   }
   inline static sg_size_t simcall_BODY_file_write(smx_file_t fd, sg_size_t size, smx_host_t host) {
     smx_process_t self = SIMIX_process_self();
+
+    /* Go to that function to follow the code flow through the simcall barrier */
+    if (0) SIMIX_pre_file_write(&self->simcall, fd, size, host);
+    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
+
     self->simcall.call = SIMCALL_FILE_WRITE;
     memset(&self->simcall.result, 0, sizeof(self->simcall.result));
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
@@ -1669,6 +2194,11 @@
   }
   inline static smx_file_t simcall_BODY_file_open(const char* fullpath, smx_host_t host) {
     smx_process_t self = SIMIX_process_self();
+
+    /* Go to that function to follow the code flow through the simcall barrier */
+    if (0) SIMIX_pre_file_open(&self->simcall, fullpath, host);
+    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
+
     self->simcall.call = SIMCALL_FILE_OPEN;
     memset(&self->simcall.result, 0, sizeof(self->simcall.result));
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
@@ -1685,6 +2215,11 @@
   }
   inline static int simcall_BODY_file_close(smx_file_t fd, smx_host_t host) {
     smx_process_t self = SIMIX_process_self();
+
+    /* Go to that function to follow the code flow through the simcall barrier */
+    if (0) SIMIX_pre_file_close(&self->simcall, fd, host);
+    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
+
     self->simcall.call = SIMCALL_FILE_CLOSE;
     memset(&self->simcall.result, 0, sizeof(self->simcall.result));
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
@@ -1701,6 +2236,11 @@
   }
   inline static int simcall_BODY_file_unlink(smx_file_t fd, smx_host_t host) {
     smx_process_t self = SIMIX_process_self();
+
+    /* Go to that function to follow the code flow through the simcall barrier */
+    if (0) SIMIX_pre_file_unlink(&self->simcall, fd, host);
+    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
+
     self->simcall.call = SIMCALL_FILE_UNLINK;
     memset(&self->simcall.result, 0, sizeof(self->simcall.result));
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
@@ -1717,6 +2257,11 @@
   }
   inline static sg_size_t simcall_BODY_file_get_size(smx_file_t fd) {
     smx_process_t self = SIMIX_process_self();
+
+    /* Go to that function to follow the code flow through the simcall barrier */
+    if (0) SIMIX_pre_file_get_size(&self->simcall, fd);
+    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
+
     self->simcall.call = SIMCALL_FILE_GET_SIZE;
     memset(&self->simcall.result, 0, sizeof(self->simcall.result));
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
@@ -1732,6 +2277,11 @@
   }
   inline static sg_size_t simcall_BODY_file_tell(smx_file_t fd) {
     smx_process_t self = SIMIX_process_self();
+
+    /* Go to that function to follow the code flow through the simcall barrier */
+    if (0) SIMIX_pre_file_tell(&self->simcall, fd);
+    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
+
     self->simcall.call = SIMCALL_FILE_TELL;
     memset(&self->simcall.result, 0, sizeof(self->simcall.result));
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
@@ -1747,6 +2297,11 @@
   }
   inline static int simcall_BODY_file_seek(smx_file_t fd, sg_offset_t offset, int origin) {
     smx_process_t self = SIMIX_process_self();
+
+    /* Go to that function to follow the code flow through the simcall barrier */
+    if (0) SIMIX_pre_file_seek(&self->simcall, fd, offset, origin);
+    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
+
     self->simcall.call = SIMCALL_FILE_SEEK;
     memset(&self->simcall.result, 0, sizeof(self->simcall.result));
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
@@ -1764,6 +2319,11 @@
   }
   inline static xbt_dynar_t simcall_BODY_file_get_info(smx_file_t fd) {
     smx_process_t self = SIMIX_process_self();
+
+    /* Go to that function to follow the code flow through the simcall barrier */
+    if (0) SIMIX_pre_file_get_info(&self->simcall, fd);
+    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
+
     self->simcall.call = SIMCALL_FILE_GET_INFO;
     memset(&self->simcall.result, 0, sizeof(self->simcall.result));
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
@@ -1779,6 +2339,11 @@
   }
   inline static int simcall_BODY_file_move(smx_file_t fd, const char* fullpath) {
     smx_process_t self = SIMIX_process_self();
+
+    /* Go to that function to follow the code flow through the simcall barrier */
+    if (0) SIMIX_pre_file_move(&self->simcall, fd, fullpath);
+    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
+
     self->simcall.call = SIMCALL_FILE_MOVE;
     memset(&self->simcall.result, 0, sizeof(self->simcall.result));
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
@@ -1795,6 +2360,11 @@
   }
   inline static sg_size_t simcall_BODY_storage_get_free_size(smx_storage_t storage) {
     smx_process_t self = SIMIX_process_self();
+
+    /* Go to that function to follow the code flow through the simcall barrier */
+    if (0) SIMIX_pre_storage_get_free_size(&self->simcall, storage);
+    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
+
     self->simcall.call = SIMCALL_STORAGE_GET_FREE_SIZE;
     memset(&self->simcall.result, 0, sizeof(self->simcall.result));
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
@@ -1810,6 +2380,11 @@
   }
   inline static sg_size_t simcall_BODY_storage_get_used_size(smx_storage_t name) {
     smx_process_t self = SIMIX_process_self();
+
+    /* Go to that function to follow the code flow through the simcall barrier */
+    if (0) SIMIX_pre_storage_get_used_size(&self->simcall, name);
+    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
+
     self->simcall.call = SIMCALL_STORAGE_GET_USED_SIZE;
     memset(&self->simcall.result, 0, sizeof(self->simcall.result));
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
@@ -1825,6 +2400,11 @@
   }
   inline static xbt_dict_t simcall_BODY_storage_get_properties(smx_storage_t storage) {
     smx_process_t self = SIMIX_process_self();
+
+    /* Go to that function to follow the code flow through the simcall barrier */
+    if (0) SIMIX_pre_storage_get_properties(&self->simcall, storage);
+    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
+
     self->simcall.call = SIMCALL_STORAGE_GET_PROPERTIES;
     memset(&self->simcall.result, 0, sizeof(self->simcall.result));
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
@@ -1840,6 +2420,11 @@
   }
   inline static xbt_dict_t simcall_BODY_storage_get_content(smx_storage_t storage) {
     smx_process_t self = SIMIX_process_self();
+
+    /* Go to that function to follow the code flow through the simcall barrier */
+    if (0) SIMIX_pre_storage_get_content(&self->simcall, storage);
+    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
+
     self->simcall.call = SIMCALL_STORAGE_GET_CONTENT;
     memset(&self->simcall.result, 0, sizeof(self->simcall.result));
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
@@ -1855,6 +2440,11 @@
   }
   inline static xbt_dict_t simcall_BODY_asr_get_properties(const char* name) {
     smx_process_t self = SIMIX_process_self();
+
+    /* Go to that function to follow the code flow through the simcall barrier */
+    if (0) SIMIX_pre_asr_get_properties(&self->simcall, name);
+    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
+
     self->simcall.call = SIMCALL_ASR_GET_PROPERTIES;
     memset(&self->simcall.result, 0, sizeof(self->simcall.result));
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
@@ -1871,6 +2461,11 @@
 #ifdef HAVE_LATENCY_BOUND_TRACKING
   inline static int simcall_BODY_comm_is_latency_bounded(smx_action_t comm) {
     smx_process_t self = SIMIX_process_self();
+
+    /* Go to that function to follow the code flow through the simcall barrier */
+    if (0) SIMIX_pre_comm_is_latency_bounded(&self->simcall, comm);
+    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
+
     self->simcall.call = SIMCALL_COMM_IS_LATENCY_BOUNDED;
     memset(&self->simcall.result, 0, sizeof(self->simcall.result));
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
@@ -1889,6 +2484,11 @@
 #ifdef HAVE_TRACING
   inline static void simcall_BODY_set_category(smx_action_t action, const char* category) {
     smx_process_t self = SIMIX_process_self();
+
+    /* Go to that function to follow the code flow through the simcall barrier */
+    if (0) SIMIX_pre_set_category(&self->simcall, action, category);
+    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
+
     self->simcall.call = SIMCALL_SET_CATEGORY;
     memset(&self->simcall.result, 0, sizeof(self->simcall.result));
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
@@ -1908,6 +2508,11 @@
 #ifdef HAVE_MC
   inline static void* simcall_BODY_mc_snapshot() {
     smx_process_t self = SIMIX_process_self();
+
+    /* Go to that function to follow the code flow through the simcall barrier */
+    if (0) SIMIX_pre_mc_snapshot(&self->simcall);
+    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
+
     self->simcall.call = SIMCALL_MC_SNAPSHOT;
     memset(&self->simcall.result, 0, sizeof(self->simcall.result));
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
@@ -1923,6 +2528,11 @@
   }
   inline static int simcall_BODY_mc_compare_snapshots(void* s1, void* s2) {
     smx_process_t self = SIMIX_process_self();
+
+    /* Go to that function to follow the code flow through the simcall barrier */
+    if (0) SIMIX_pre_mc_compare_snapshots(&self->simcall, s1, s2);
+    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
+
     self->simcall.call = SIMCALL_MC_COMPARE_SNAPSHOTS;
     memset(&self->simcall.result, 0, sizeof(self->simcall.result));
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
@@ -1939,6 +2549,11 @@
   }
   inline static int simcall_BODY_mc_random(int min, int max) {
     smx_process_t self = SIMIX_process_self();
+
+    /* Go to that function to follow the code flow through the simcall barrier */
+    if (0) SIMIX_pre_mc_random(&self->simcall, min, max);
+    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
+
     self->simcall.call = SIMCALL_MC_RANDOM;
     memset(&self->simcall.result, 0, sizeof(self->simcall.result));
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
