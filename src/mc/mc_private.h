@@ -319,8 +319,8 @@ void MC_print_statistics(mc_stats_t);
 /* Normally the system should operate in std, for switching to raw mode */
 /* you must wrap the code between MC_SET_RAW_MODE and MC_UNSET_RAW_MODE */
 
-extern void *std_heap;
-extern void *mc_heap;
+extern xbt_mheap_t std_heap;
+extern xbt_mheap_t mc_heap;
 
 
 /* FIXME: Horrible hack! because the mmalloc library doesn't provide yet of */
@@ -755,7 +755,7 @@ static inline __attribute__ ((always_inline))
   void* mc_snapshot_get_heap_end(mc_snapshot_t snapshot) {
   if(snapshot==NULL)
       xbt_die("snapshot is NULL");
-  void** addr = &((xbt_mheap_t)std_heap)->breakval;
+  void** addr = &(std_heap->breakval);
   return mc_snapshot_read_pointer(addr, snapshot, MC_ANY_PROCESS_INDEX);
 }
 
@@ -818,4 +818,3 @@ void* mc_snapshot_read_pointer_region(void* addr, mc_mem_region_t region)
 SG_END_DECL()
 
 #endif
-

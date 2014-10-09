@@ -159,7 +159,7 @@ static void update_comm_pattern(mc_comm_pattern_t comm_pattern, smx_action_t com
     comm_pattern->data_size = *(comm->comm.dst_buff_size);
     comm_pattern->data = xbt_malloc0(comm_pattern->data_size);
     addr_pointed = *(void **) comm->comm.src_buff;
-    if (addr_pointed > std_heap && addr_pointed < ((xbt_mheap_t) std_heap)->breakval)
+    if (addr_pointed > (void*) std_heap && addr_pointed < std_heap->breakval)
       memcpy(comm_pattern->data, addr_pointed, comm_pattern->data_size);
     else
       memcpy(comm_pattern->data, comm->comm.src_buff, comm_pattern->data_size);
@@ -183,7 +183,7 @@ void get_comm_pattern(xbt_dynar_t list, smx_simcall_t request, int call)
     pattern->data_size = pattern->comm->comm.src_buff_size;
     pattern->data = xbt_malloc0(pattern->data_size);
     addr_pointed = *(void **) pattern->comm->comm.src_buff;
-    if (addr_pointed > std_heap && addr_pointed < ((xbt_mheap_t) std_heap)->breakval)
+    if (addr_pointed > (void*) std_heap && addr_pointed < std_heap->breakval)
       memcpy(pattern->data, addr_pointed, pattern->data_size);
     else
       memcpy(pattern->data, pattern->comm->comm.src_buff, pattern->data_size);
