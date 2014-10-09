@@ -1187,7 +1187,7 @@ static int do_migration(msg_vm_t vm, msg_host_t src_pm, msg_host_t dst_pm)
     XBT_DEBUG("wait for reception of the final ACK (i.e. migration has been correctly performed");
     msg_task_t task = NULL;
     msg_error_t ret = MSG_TIMEOUT; 
-    while (ret == MSG_TIMEOUT && MSG_host_is_avail(dst_pm)) //Wait while you receive the message o
+    while (ret == MSG_TIMEOUT && MSG_host_is_on(dst_pm)) //Wait while you receive the message o
      ret = MSG_task_receive_with_timeout(&task, ms->mbox_ctl, 10);
 
     xbt_free(ms->mbox_ctl);
