@@ -5,6 +5,7 @@
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
+#include <math.h>
 #include "smx_private.h"
 #include "xbt/parmap.h"
 #include "xbt/dynar.h"
@@ -34,8 +35,16 @@ static xbt_os_thread_key_t raw_worker_id_key; /* thread-specific storage for the
 xbt_os_timer_t round_time;
 double par_time,seq_time;
 double par_ratio,seq_ratio;
+int reached_seq_limit, reached_par_limit;
 static unsigned int par_proc_that_ran = 0,seq_proc_that_ran = 0;  /* Counters of processes that have run in SCHED_ROUND_LIMIT scheduling rounds */
-static unsigned int seq_sched_round, par_sched_round; /* Amount of SR that ran serial/parallel*/
+static unsigned int seq_sched_round=0, par_sched_round=0; /* Amount of SR that ran serial/parallel*/
+/*Varables used to calculate running variance and mean*/
+double prev_avg_par_proc=0,prev_avg_seq_proc=0;
+double delta=0;
+double s_par_proc=0,s_seq_proc=0; /*Standard deviation of number of processes computed in par/seq during the current simulation*/
+double avg_par_proc=0,sd_par_proc=0;
+double avg_seq_proc=0,sd_seq_proc=0;
+double par_window=4294967296,seq_window=0; /*par_window is initially 1<<32*/
 #endif
 
 static unsigned long raw_process_index = 0;   /* index of the next process to run in the
@@ -214,10 +223,6 @@ static char new_sr = 0;
 #ifdef TIME_BENCH_ENTIRE_SRS
 static unsigned int sr_count = 0;
 static xbt_os_timer_t timer;
-#endif
-
-#ifdef ADAPTIVE_THRESHOLD
-int reached_seq_limit, reached_par_limit;
 #endif
 
 static void smx_ctx_raw_wrapper(smx_ctx_raw_t context);
@@ -604,52 +609,77 @@ static void smx_ctx_raw_runall_parallel(void)
 static void smx_ctx_raw_runall(void)
 {
   unsigned long nb_processes = xbt_dynar_length(simix_global->process_to_run);
+  unsigned long threshold = SIMIX_context_get_parallel_threshold();
   reached_seq_limit = (seq_sched_round % SCHED_ROUND_LIMIT == 0); 
   reached_par_limit = (par_sched_round % SCHED_ROUND_LIMIT == 0);
 
-  if(reached_par_limit){
-    par_sched_round = 0;
-    par_ratio = (par_proc_that_ran != 0) ? (par_time / (double)par_proc_that_ran) : 0;
-    par_time = 0; par_proc_that_ran = 0;
-  }
-
-  if(reached_seq_limit){
-    seq_sched_round = 0;
-    seq_ratio = (seq_proc_that_ran != 0) ? (seq_time / (double)seq_proc_that_ran) : 0; 
-    seq_time = 0; seq_proc_that_ran = 0;
-  }
-
   if(reached_seq_limit && reached_par_limit){
+    par_ratio = (par_proc_that_ran != 0) ? (par_time / (double)par_proc_that_ran) : 0;
+    seq_ratio = (seq_proc_that_ran != 0) ? (seq_time / (double)seq_proc_that_ran) : 0; 
     if(seq_ratio > par_ratio){
-        SIMIX_context_set_parallel_threshold(SIMIX_context_get_parallel_threshold() - 1);
+        if(nb_processes < avg_par_proc) {
+          threshold = (threshold>2) ? threshold - 1 : threshold ;
+          SIMIX_context_set_parallel_threshold(threshold);
+        }
     } else {
-        SIMIX_context_set_parallel_threshold(SIMIX_context_get_parallel_threshold() + 1);
+        if(nb_processes > avg_seq_proc){
+          SIMIX_context_set_parallel_threshold(threshold+1);
+        }
     }
   }
 
-  XBT_CRITICAL("Adaptive Algorithm. Parallel Threshold is: %d. Processes: %d", SIMIX_context_get_parallel_threshold(), nb_processes);
+  //XBT_CRITICAL("Thres: %d.", SIMIX_context_get_parallel_threshold());
+
   if (nb_processes >= SIMIX_context_get_parallel_threshold()) {
-    XBT_DEBUG("Runall // %lu", nb_processes);
     simix_global->context_factory->suspend = smx_ctx_raw_suspend_parallel;
-    xbt_os_cputimer_start(round_time);
-    smx_ctx_raw_runall_parallel();
-    xbt_os_cputimer_stop(round_time);
-    par_time += xbt_os_timer_elapsed(round_time);
-    par_proc_that_ran += nb_processes;
-    par_sched_round++;
+    if(nb_processes < par_window){ 
+      par_sched_round++;
+      xbt_os_cputimer_start(round_time);
+      smx_ctx_raw_runall_parallel();
+      xbt_os_cputimer_stop(round_time);
+      par_time += xbt_os_timer_elapsed(round_time);
+
+      prev_avg_par_proc = avg_par_proc;
+      delta = (nb_processes-avg_par_proc);
+      avg_par_proc = (par_sched_round==1) ? nb_processes : avg_par_proc + delta / (double) par_sched_round;
+
+      if(par_sched_round>=2){
+        s_par_proc = sd_par_proc + (nb_processes - prev_avg_par_proc)*delta; 
+        sd_par_proc = sqrt(s_par_proc/(par_sched_round-1));
+        par_window = avg_par_proc + sd_par_proc;
+      }else{
+        sd_par_proc = 0;
+      }
+
+      par_proc_that_ran += nb_processes;
+    } else{
+      smx_ctx_raw_runall_parallel();
+    }
   } else {
-    XBT_DEBUG("Runall serial %lu", nb_processes);
     simix_global->context_factory->suspend = smx_ctx_raw_suspend_serial;
-    xbt_os_cputimer_start(round_time);
-#ifdef TIME_BENCH_PER_SR
-    smx_ctx_raw_runall_serial(simix_global->process_to_run);
-#else
-    smx_ctx_raw_runall_serial();
-#endif
-    xbt_os_cputimer_stop(round_time);
-    seq_time += xbt_os_timer_elapsed(round_time);
-    seq_proc_that_ran += nb_processes;
-    seq_sched_round++;
+    if(nb_processes > seq_window){ 
+      seq_sched_round++;
+      xbt_os_cputimer_start(round_time);
+      smx_ctx_raw_runall_serial();
+      xbt_os_cputimer_stop(round_time);
+      seq_time += xbt_os_timer_elapsed(round_time);
+
+      prev_avg_seq_proc = avg_seq_proc;
+      delta = (nb_processes-avg_seq_proc);
+      avg_seq_proc = (seq_sched_round==1) ? nb_processes : avg_seq_proc + delta / (double) seq_sched_round;
+
+      if(seq_sched_round>=2){
+        s_seq_proc = sd_seq_proc + (nb_processes - prev_avg_seq_proc)*delta; 
+        sd_seq_proc = sqrt(s_seq_proc/(seq_sched_round-1));
+        seq_window = avg_seq_proc - sd_seq_proc;
+      } else {
+        sd_seq_proc = 0;
+      }
+
+      seq_proc_that_ran += nb_processes;
+    } else {
+      smx_ctx_raw_runall_serial();
+    }
   }
 }
 

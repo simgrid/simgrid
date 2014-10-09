@@ -154,7 +154,11 @@ void smx_ctx_java_stop(smx_context_t context)
     context->iwannadie = 0;
     JNIEnv *env = get_current_thread_env();
     XBT_DEBUG("Gonnal launch Killed Error");
-    jxbt_throw_by_name(env, "org/simgrid/msg/ProcessKilledError", bprintf("Process %s killed: ", MSG_process_get_name( (msg_process_t)context)));
+    // TODO Adrien, if the process has not been created at the java layer, why should we raise the exception/error at the java level (this happens
+    // for instance during the migration process that creates at the C level two processes: one on the SRC node and one on the DST node, if the DST process is killed. 
+    // it is not required to raise an exception at the JAVA level, the low level should be able to manage such an issue correctly but this is not the case right now unfortunately ...
+    // TODO it will be nice to have the name of the process to help the end-user to know which Process has been killed
+    jxbt_throw_by_name(env, "org/simgrid/msg/ProcessKilledError", bprintf("Process %s killed :) (file smx_context_java.c)", MSG_process_get_name( (msg_process_t)context) ));
     XBT_DEBUG("Trigger a cancel error at the C level");
     THROWF(cancel_error, 0, "process cancelled");
   } else {

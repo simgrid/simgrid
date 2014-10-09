@@ -147,16 +147,23 @@ public class VM extends Host{
 	/**  
 	 * Invoke native migration routine
 	*/
-	public native void internalmig(Host destination);
+	public native void internalmig(Host destination) throws Exception; // TODO add throws DoubleMigrationException (i.e. when you call migrate on a VM that is already migrating);
+
 
 	
 	/** Change the host on which all processes are running
 	 * (pre-copy is implemented)
 	 */	
-	public void migrate(Host destination){
-		this.internalmig(destination);
-		// TODO we should test whether the migration has been correctly finalized. 
-		// If and only if it is ok, then we should change the currentHost value. 
+	public void migrate(Host destination) throws HostFailureException{
+		try {
+			Msg.info("Migrate begins");
+			this.internalmig(destination);
+			Msg.info("Migrate ends");
+		} catch (Exception e){
+		  Msg.info("an exception occurs during the migration of VM "+this.getName());
+		  throw new HostFailureException();
+		}
+		// If the migration correcly returned, then we should change the currentHost value. 
 		this.currentHost = destination; 
 	}
 	

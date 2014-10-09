@@ -40,6 +40,7 @@ public class SleepHostOff extends Process{
           } catch (HostFailureException e) {
             Msg.info("catch HostException");
             e.printStackTrace();
+            break; //Break is needed to finalize the endless loop 
           }
         }
       }
