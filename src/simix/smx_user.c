@@ -7,7 +7,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "smx_private.h"
-#include "mc/mc.h"
+#include "mc/mc_interface.h"
 #include "xbt/ex.h"
 #include <math.h>         /* isfinite() */
 

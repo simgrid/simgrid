@@ -31,6 +31,7 @@
 #include "xbt/parmap.h"
 #include "mc_mmu.h"
 #include "mc_page_store.h"
+#include "mc_interface.h"
 
 SG_BEGIN_DECL()
 
@@ -39,7 +40,7 @@ typedef struct s_mc_function_index_item s_mc_function_index_item_t, *mc_function
 
 /****************************** Snapshots ***********************************/
 
-#define NB_REGIONS 3 /* binary data (data + BSS) (type = 2), libsimgrid data (data + BSS) (type = 1), std_heap (type = 0)*/ 
+#define NB_REGIONS 3 /* binary data (data + BSS) (type = 2), libsimgrid data (data + BSS) (type = 1), std_heap (type = 0)*/
 
 /** @brief Copy/snapshot of a given memory region
  *
@@ -105,7 +106,7 @@ typedef struct s_mc_snapshot{
   xbt_dynar_t to_ignore;
   uint64_t hash;
   xbt_dynar_t ignored_data;
-} s_mc_snapshot_t, *mc_snapshot_t;
+} s_mc_snapshot_t;
 
 /** @brief Process index used when no process is available
  *
@@ -167,7 +168,6 @@ typedef struct s_mc_checkpoint_ignore_region{
 
 static void* mc_snapshot_get_heap_end(mc_snapshot_t snapshot);
 
-mc_snapshot_t SIMIX_pre_mc_snapshot(smx_simcall_t simcall);
 mc_snapshot_t MC_take_snapshot(int num_state);
 void MC_restore_snapshot(mc_snapshot_t);
 void MC_free_snapshot(mc_snapshot_t);
@@ -235,7 +235,6 @@ void MC_wait_for_requests(void);
 void MC_show_deadlock(smx_simcall_t req);
 void MC_show_stack_safety(xbt_fifo_t stack);
 void MC_dump_stack_safety(xbt_fifo_t stack);
-int SIMIX_pre_mc_random(smx_simcall_t simcall, int min, int max);
 
 extern xbt_fifo_t mc_stack;
 int get_search_interval(xbt_dynar_t list, void *ref, int *min, int *max);
@@ -388,7 +387,6 @@ extern __thread mc_comparison_times_t mc_comp_times;
 extern __thread double mc_snapshot_comparison_time;
 
 int snapshot_compare(void *state1, void *state2);
-int SIMIX_pre_mc_compare_snapshots(smx_simcall_t simcall, mc_snapshot_t s1, mc_snapshot_t s2);
 void print_comparison_times(void);
 
 //#define MC_DEBUG 1
