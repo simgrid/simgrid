@@ -21,7 +21,7 @@
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_pre(&self->simcall, 0);
+      SIMIX_simcall_enter(&self->simcall, 0);
     }    
     return self->simcall.result.dp;
   }
@@ -41,7 +41,7 @@
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_pre(&self->simcall, 0);
+      SIMIX_simcall_enter(&self->simcall, 0);
     }    
     return self->simcall.result.cc;
   }
@@ -61,7 +61,7 @@
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_pre(&self->simcall, 0);
+      SIMIX_simcall_enter(&self->simcall, 0);
     }    
     
   }
@@ -81,7 +81,7 @@
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_pre(&self->simcall, 0);
+      SIMIX_simcall_enter(&self->simcall, 0);
     }    
     
   }
@@ -101,7 +101,7 @@
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_pre(&self->simcall, 0);
+      SIMIX_simcall_enter(&self->simcall, 0);
     }    
     return self->simcall.result.dp;
   }
@@ -121,7 +121,7 @@
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_pre(&self->simcall, 0);
+      SIMIX_simcall_enter(&self->simcall, 0);
     }    
     return self->simcall.result.i;
   }
@@ -141,7 +141,7 @@
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_pre(&self->simcall, 0);
+      SIMIX_simcall_enter(&self->simcall, 0);
     }    
     return self->simcall.result.dp;
   }
@@ -161,7 +161,7 @@
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_pre(&self->simcall, 0);
+      SIMIX_simcall_enter(&self->simcall, 0);
     }    
     return self->simcall.result.d;
   }
@@ -181,7 +181,7 @@
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_pre(&self->simcall, 0);
+      SIMIX_simcall_enter(&self->simcall, 0);
     }    
     return self->simcall.result.d;
   }
@@ -201,7 +201,7 @@
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_pre(&self->simcall, 0);
+      SIMIX_simcall_enter(&self->simcall, 0);
     }    
     return self->simcall.result.i;
   }
@@ -221,7 +221,7 @@
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_pre(&self->simcall, 0);
+      SIMIX_simcall_enter(&self->simcall, 0);
     }    
     return self->simcall.result.d;
   }
@@ -242,7 +242,7 @@
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_pre(&self->simcall, 0);
+      SIMIX_simcall_enter(&self->simcall, 0);
     }    
     return self->simcall.result.d;
   }
@@ -262,7 +262,7 @@
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_pre(&self->simcall, 0);
+      SIMIX_simcall_enter(&self->simcall, 0);
     }    
     return self->simcall.result.i;
   }
@@ -283,7 +283,7 @@
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_pre(&self->simcall, 0);
+      SIMIX_simcall_enter(&self->simcall, 0);
     }    
     
   }
@@ -303,7 +303,7 @@
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_pre(&self->simcall, 0);
+      SIMIX_simcall_enter(&self->simcall, 0);
     }    
     return self->simcall.result.d;
   }
@@ -328,7 +328,7 @@
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_pre(&self->simcall, 0);
+      SIMIX_simcall_enter(&self->simcall, 0);
     }    
     return self->simcall.result.dp;
   }
@@ -354,7 +354,7 @@
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_pre(&self->simcall, 0);
+      SIMIX_simcall_enter(&self->simcall, 0);
     }    
     return self->simcall.result.dp;
   }
@@ -374,7 +374,7 @@
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_pre(&self->simcall, 0);
+      SIMIX_simcall_enter(&self->simcall, 0);
     }    
     
   }
@@ -394,7 +394,7 @@
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_pre(&self->simcall, 0);
+      SIMIX_simcall_enter(&self->simcall, 0);
     }    
     
   }
@@ -414,7 +414,7 @@
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_pre(&self->simcall, 0);
+      SIMIX_simcall_enter(&self->simcall, 0);
     }    
     return self->simcall.result.d;
   }
@@ -434,7 +434,7 @@
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_pre(&self->simcall, 0);
+      SIMIX_simcall_enter(&self->simcall, 0);
     }    
     return self->simcall.result.i;
   }
@@ -455,7 +455,7 @@
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_pre(&self->simcall, 0);
+      SIMIX_simcall_enter(&self->simcall, 0);
     }    
     
   }
@@ -476,7 +476,7 @@
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_pre(&self->simcall, 0);
+      SIMIX_simcall_enter(&self->simcall, 0);
     }    
     
   }
@@ -498,7 +498,7 @@
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_pre(&self->simcall, 0);
+      SIMIX_simcall_enter(&self->simcall, 0);
     }    
     
   }
@@ -518,7 +518,7 @@
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_pre(&self->simcall, 0);
+      SIMIX_simcall_enter(&self->simcall, 0);
     }    
     return self->simcall.result.i;
   }
@@ -538,7 +538,7 @@
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_pre(&self->simcall, 0);
+      SIMIX_simcall_enter(&self->simcall, 0);
     }    
     return self->simcall.result.dp;
   }
@@ -558,7 +558,7 @@
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_pre(&self->simcall, 0);
+      SIMIX_simcall_enter(&self->simcall, 0);
     }    
     return self->simcall.result.dp;
   }
@@ -579,7 +579,7 @@
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_pre(&self->simcall, 0);
+      SIMIX_simcall_enter(&self->simcall, 0);
     }    
     
   }
@@ -600,7 +600,7 @@
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_pre(&self->simcall, 0);
+      SIMIX_simcall_enter(&self->simcall, 0);
     }    
     
   }
@@ -621,7 +621,7 @@
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_pre(&self->simcall, 0);
+      SIMIX_simcall_enter(&self->simcall, 0);
     }    
     return self->simcall.result.dp;
   }
@@ -641,7 +641,7 @@
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_pre(&self->simcall, 0);
+      SIMIX_simcall_enter(&self->simcall, 0);
     }    
     
   }
@@ -661,7 +661,7 @@
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_pre(&self->simcall, 0);
+      SIMIX_simcall_enter(&self->simcall, 0);
     }    
     return self->simcall.result.i;
   }
@@ -682,7 +682,7 @@
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_pre(&self->simcall, 0);
+      SIMIX_simcall_enter(&self->simcall, 0);
     }    
     
   }
@@ -702,7 +702,7 @@
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_pre(&self->simcall, 0);
+      SIMIX_simcall_enter(&self->simcall, 0);
     }    
     return self->simcall.result.dp;
   }
@@ -723,7 +723,7 @@
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_pre(&self->simcall, 0);
+      SIMIX_simcall_enter(&self->simcall, 0);
     }    
     
   }
@@ -745,7 +745,7 @@
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_pre(&self->simcall, 0);
+      SIMIX_simcall_enter(&self->simcall, 0);
     }    
     
   }
@@ -765,7 +765,7 @@
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_pre(&self->simcall, 0);
+      SIMIX_simcall_enter(&self->simcall, 0);
     }    
     
   }
@@ -785,7 +785,7 @@
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_pre(&self->simcall, 0);
+      SIMIX_simcall_enter(&self->simcall, 0);
     }    
     
   }
@@ -805,7 +805,7 @@
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_pre(&self->simcall, 0);
+      SIMIX_simcall_enter(&self->simcall, 0);
     }    
     
   }
@@ -825,7 +825,7 @@
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_pre(&self->simcall, 0);
+      SIMIX_simcall_enter(&self->simcall, 0);
     }    
     
   }
@@ -845,7 +845,7 @@
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_pre(&self->simcall, 0);
+      SIMIX_simcall_enter(&self->simcall, 0);
     }    
     
   }
@@ -865,7 +865,7 @@
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_pre(&self->simcall, 0);
+      SIMIX_simcall_enter(&self->simcall, 0);
     }    
     
   }
@@ -894,7 +894,7 @@
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_pre(&self->simcall, 0);
+      SIMIX_simcall_enter(&self->simcall, 0);
     }    
     
   }
@@ -914,7 +914,7 @@
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_pre(&self->simcall, 0);
+      SIMIX_simcall_enter(&self->simcall, 0);
     }    
     
   }
@@ -934,7 +934,7 @@
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_pre(&self->simcall, 0);
+      SIMIX_simcall_enter(&self->simcall, 0);
     }    
     
   }
@@ -954,7 +954,7 @@
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_pre(&self->simcall, 0);
+      SIMIX_simcall_enter(&self->simcall, 0);
     }    
     
   }
@@ -975,7 +975,7 @@
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_pre(&self->simcall, 0);
+      SIMIX_simcall_enter(&self->simcall, 0);
     }    
     
   }
@@ -995,7 +995,7 @@
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_pre(&self->simcall, 0);
+      SIMIX_simcall_enter(&self->simcall, 0);
     }    
     
   }
@@ -1015,7 +1015,7 @@
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_pre(&self->simcall, 0);
+      SIMIX_simcall_enter(&self->simcall, 0);
     }    
     
   }
@@ -1035,7 +1035,7 @@
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_pre(&self->simcall, 0);
+      SIMIX_simcall_enter(&self->simcall, 0);
     }    
     return self->simcall.result.i;
   }
@@ -1055,7 +1055,7 @@
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_pre(&self->simcall, 0);
+      SIMIX_simcall_enter(&self->simcall, 0);
     }    
     return self->simcall.result.i;
   }
@@ -1075,7 +1075,7 @@
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_pre(&self->simcall, 0);
+      SIMIX_simcall_enter(&self->simcall, 0);
     }    
     return self->simcall.result.i;
   }
@@ -1095,7 +1095,7 @@
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_pre(&self->simcall, 0);
+      SIMIX_simcall_enter(&self->simcall, 0);
     }    
     return self->simcall.result.dp;
   }
@@ -1116,7 +1116,7 @@
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_pre(&self->simcall, 0);
+      SIMIX_simcall_enter(&self->simcall, 0);
     }    
     
   }
@@ -1136,7 +1136,7 @@
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_pre(&self->simcall, 0);
+      SIMIX_simcall_enter(&self->simcall, 0);
     }    
     return self->simcall.result.dp;
   }
@@ -1156,7 +1156,7 @@
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_pre(&self->simcall, 0);
+      SIMIX_simcall_enter(&self->simcall, 0);
     }    
     return self->simcall.result.cc;
   }
@@ -1176,7 +1176,7 @@
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_pre(&self->simcall, 0);
+      SIMIX_simcall_enter(&self->simcall, 0);
     }    
     return self->simcall.result.i;
   }
@@ -1196,7 +1196,7 @@
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_pre(&self->simcall, 0);
+      SIMIX_simcall_enter(&self->simcall, 0);
     }    
     return self->simcall.result.dp;
   }
@@ -1217,7 +1217,7 @@
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_pre(&self->simcall, 0);
+      SIMIX_simcall_enter(&self->simcall, 0);
     }    
     return self->simcall.result.i;
   }
@@ -1237,7 +1237,7 @@
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_pre(&self->simcall, 0);
+      SIMIX_simcall_enter(&self->simcall, 0);
     }    
     return self->simcall.result.i;
   }
@@ -1259,7 +1259,7 @@
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_pre(&self->simcall, 0);
+      SIMIX_simcall_enter(&self->simcall, 0);
     }    
     
   }
@@ -1280,7 +1280,7 @@
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_pre(&self->simcall, 0);
+      SIMIX_simcall_enter(&self->simcall, 0);
     }    
     
   }
@@ -1300,7 +1300,7 @@
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_pre(&self->simcall, 0);
+      SIMIX_simcall_enter(&self->simcall, 0);
     }    
     return self->simcall.result.dp;
   }
@@ -1320,7 +1320,7 @@
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_pre(&self->simcall, 0);
+      SIMIX_simcall_enter(&self->simcall, 0);
     }    
     return self->simcall.result.dp;
   }
@@ -1340,7 +1340,7 @@
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_pre(&self->simcall, 0);
+      SIMIX_simcall_enter(&self->simcall, 0);
     }    
     
   }
@@ -1361,7 +1361,7 @@
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_pre(&self->simcall, 0);
+      SIMIX_simcall_enter(&self->simcall, 0);
     }    
     return self->simcall.result.ui;
   }
@@ -1381,7 +1381,7 @@
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_pre(&self->simcall, 0);
+      SIMIX_simcall_enter(&self->simcall, 0);
     }    
     return self->simcall.result.dp;
   }
@@ -1402,7 +1402,7 @@
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_pre(&self->simcall, 0);
+      SIMIX_simcall_enter(&self->simcall, 0);
     }    
     
   }
@@ -1422,7 +1422,7 @@
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_pre(&self->simcall, 0);
+      SIMIX_simcall_enter(&self->simcall, 0);
     }    
     return self->simcall.result.dp;
   }
@@ -1447,7 +1447,7 @@
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_pre(&self->simcall, 0);
+      SIMIX_simcall_enter(&self->simcall, 0);
     }    
     return self->simcall.result.dp;
   }
@@ -1476,7 +1476,7 @@
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_pre(&self->simcall, 0);
+      SIMIX_simcall_enter(&self->simcall, 0);
     }    
     
   }
@@ -1506,7 +1506,7 @@
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_pre(&self->simcall, 0);
+      SIMIX_simcall_enter(&self->simcall, 0);
     }    
     return self->simcall.result.dp;
   }
@@ -1533,7 +1533,7 @@
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_pre(&self->simcall, 0);
+      SIMIX_simcall_enter(&self->simcall, 0);
     }    
     
   }
@@ -1559,7 +1559,7 @@
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_pre(&self->simcall, 0);
+      SIMIX_simcall_enter(&self->simcall, 0);
     }    
     return self->simcall.result.dp;
   }
@@ -1579,7 +1579,7 @@
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_pre(&self->simcall, 0);
+      SIMIX_simcall_enter(&self->simcall, 0);
     }    
     
   }
@@ -1599,7 +1599,7 @@
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_pre(&self->simcall, 0);
+      SIMIX_simcall_enter(&self->simcall, 0);
     }    
     return self->simcall.result.i;
   }
@@ -1620,7 +1620,7 @@
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_pre(&self->simcall, 0);
+      SIMIX_simcall_enter(&self->simcall, 0);
     }    
     
   }
@@ -1640,7 +1640,7 @@
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_pre(&self->simcall, 0);
+      SIMIX_simcall_enter(&self->simcall, 0);
     }    
     return self->simcall.result.i;
   }
@@ -1660,7 +1660,7 @@
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_pre(&self->simcall, 0);
+      SIMIX_simcall_enter(&self->simcall, 0);
     }    
     return self->simcall.result.i;
   }
@@ -1680,7 +1680,7 @@
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_pre(&self->simcall, 0);
+      SIMIX_simcall_enter(&self->simcall, 0);
     }    
     return self->simcall.result.d;
   }
@@ -1700,7 +1700,7 @@
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_pre(&self->simcall, 0);
+      SIMIX_simcall_enter(&self->simcall, 0);
     }    
     return self->simcall.result.i;
   }
@@ -1720,7 +1720,7 @@
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_pre(&self->simcall, 0);
+      SIMIX_simcall_enter(&self->simcall, 0);
     }    
     return self->simcall.result.dp;
   }
@@ -1740,7 +1740,7 @@
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_pre(&self->simcall, 0);
+      SIMIX_simcall_enter(&self->simcall, 0);
     }    
     return self->simcall.result.dp;
   }
@@ -1760,7 +1760,7 @@
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_pre(&self->simcall, 0);
+      SIMIX_simcall_enter(&self->simcall, 0);
     }    
     return self->simcall.result.dp;
   }
@@ -1780,7 +1780,7 @@
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_pre(&self->simcall, 0);
+      SIMIX_simcall_enter(&self->simcall, 0);
     }    
     return self->simcall.result.dp;
   }
@@ -1800,7 +1800,7 @@
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_pre(&self->simcall, 0);
+      SIMIX_simcall_enter(&self->simcall, 0);
     }    
     return self->simcall.result.dp;
   }
@@ -1820,7 +1820,7 @@
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_pre(&self->simcall, 0);
+      SIMIX_simcall_enter(&self->simcall, 0);
     }    
     
   }
@@ -1840,7 +1840,7 @@
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_pre(&self->simcall, 0);
+      SIMIX_simcall_enter(&self->simcall, 0);
     }    
     
   }
@@ -1860,7 +1860,7 @@
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_pre(&self->simcall, 0);
+      SIMIX_simcall_enter(&self->simcall, 0);
     }    
     return self->simcall.result.i;
   }
@@ -1880,7 +1880,7 @@
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_pre(&self->simcall, 0);
+      SIMIX_simcall_enter(&self->simcall, 0);
     }    
     
   }
@@ -1900,7 +1900,7 @@
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_pre(&self->simcall, 0);
+      SIMIX_simcall_enter(&self->simcall, 0);
     }    
     return self->simcall.result.dp;
   }
@@ -1920,7 +1920,7 @@
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_pre(&self->simcall, 0);
+      SIMIX_simcall_enter(&self->simcall, 0);
     }    
     
   }
@@ -1940,7 +1940,7 @@
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_pre(&self->simcall, 0);
+      SIMIX_simcall_enter(&self->simcall, 0);
     }    
     
   }
@@ -1961,7 +1961,7 @@
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_pre(&self->simcall, 0);
+      SIMIX_simcall_enter(&self->simcall, 0);
     }    
     
   }
@@ -1983,7 +1983,7 @@
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_pre(&self->simcall, 0);
+      SIMIX_simcall_enter(&self->simcall, 0);
     }    
     
   }
@@ -2003,7 +2003,7 @@
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_pre(&self->simcall, 0);
+      SIMIX_simcall_enter(&self->simcall, 0);
     }    
     
   }
@@ -2023,7 +2023,7 @@
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_pre(&self->simcall, 0);
+      SIMIX_simcall_enter(&self->simcall, 0);
     }    
     return self->simcall.result.dp;
   }
@@ -2043,7 +2043,7 @@
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_pre(&self->simcall, 0);
+      SIMIX_simcall_enter(&self->simcall, 0);
     }    
     
   }
@@ -2063,7 +2063,7 @@
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_pre(&self->simcall, 0);
+      SIMIX_simcall_enter(&self->simcall, 0);
     }    
     
   }
@@ -2083,7 +2083,7 @@
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_pre(&self->simcall, 0);
+      SIMIX_simcall_enter(&self->simcall, 0);
     }    
     return self->simcall.result.i;
   }
@@ -2103,7 +2103,7 @@
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_pre(&self->simcall, 0);
+      SIMIX_simcall_enter(&self->simcall, 0);
     }    
     
   }
@@ -2124,7 +2124,7 @@
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_pre(&self->simcall, 0);
+      SIMIX_simcall_enter(&self->simcall, 0);
     }    
     
   }
@@ -2144,7 +2144,7 @@
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_pre(&self->simcall, 0);
+      SIMIX_simcall_enter(&self->simcall, 0);
     }    
     return self->simcall.result.i;
   }
@@ -2166,7 +2166,7 @@
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_pre(&self->simcall, 0);
+      SIMIX_simcall_enter(&self->simcall, 0);
     }    
     return self->simcall.result.sgsz;
   }
@@ -2188,7 +2188,7 @@
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_pre(&self->simcall, 0);
+      SIMIX_simcall_enter(&self->simcall, 0);
     }    
     return self->simcall.result.sgsz;
   }
@@ -2209,7 +2209,7 @@
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_pre(&self->simcall, 0);
+      SIMIX_simcall_enter(&self->simcall, 0);
     }    
     return self->simcall.result.dp;
   }
@@ -2230,7 +2230,7 @@
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_pre(&self->simcall, 0);
+      SIMIX_simcall_enter(&self->simcall, 0);
     }    
     return self->simcall.result.i;
   }
@@ -2251,7 +2251,7 @@
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_pre(&self->simcall, 0);
+      SIMIX_simcall_enter(&self->simcall, 0);
     }    
     return self->simcall.result.i;
   }
@@ -2271,7 +2271,7 @@
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_pre(&self->simcall, 0);
+      SIMIX_simcall_enter(&self->simcall, 0);
     }    
     return self->simcall.result.sgsz;
   }
@@ -2291,7 +2291,7 @@
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_pre(&self->simcall, 0);
+      SIMIX_simcall_enter(&self->simcall, 0);
     }    
     return self->simcall.result.sgsz;
   }
@@ -2313,7 +2313,7 @@
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_pre(&self->simcall, 0);
+      SIMIX_simcall_enter(&self->simcall, 0);
     }    
     return self->simcall.result.i;
   }
@@ -2333,7 +2333,7 @@
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_pre(&self->simcall, 0);
+      SIMIX_simcall_enter(&self->simcall, 0);
     }    
     return self->simcall.result.dp;
   }
@@ -2354,7 +2354,7 @@
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_pre(&self->simcall, 0);
+      SIMIX_simcall_enter(&self->simcall, 0);
     }    
     return self->simcall.result.i;
   }
@@ -2374,7 +2374,7 @@
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_pre(&self->simcall, 0);
+      SIMIX_simcall_enter(&self->simcall, 0);
     }    
     return self->simcall.result.sgsz;
   }
@@ -2394,7 +2394,7 @@
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_pre(&self->simcall, 0);
+      SIMIX_simcall_enter(&self->simcall, 0);
     }    
     return self->simcall.result.sgsz;
   }
@@ -2414,7 +2414,7 @@
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_pre(&self->simcall, 0);
+      SIMIX_simcall_enter(&self->simcall, 0);
     }    
     return self->simcall.result.dp;
   }
@@ -2434,7 +2434,7 @@
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_pre(&self->simcall, 0);
+      SIMIX_simcall_enter(&self->simcall, 0);
     }    
     return self->simcall.result.dp;
   }
@@ -2454,7 +2454,7 @@
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_pre(&self->simcall, 0);
+      SIMIX_simcall_enter(&self->simcall, 0);
     }    
     return self->simcall.result.dp;
   }
@@ -2475,7 +2475,7 @@
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_pre(&self->simcall, 0);
+      SIMIX_simcall_enter(&self->simcall, 0);
     }    
     return self->simcall.result.i;
   }
@@ -2499,7 +2499,7 @@
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_pre(&self->simcall, 0);
+      SIMIX_simcall_enter(&self->simcall, 0);
     }    
     
   }
@@ -2522,7 +2522,7 @@
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_pre(&self->simcall, 0);
+      SIMIX_simcall_enter(&self->simcall, 0);
     }    
     return self->simcall.result.dp;
   }
@@ -2543,7 +2543,7 @@
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_pre(&self->simcall, 0);
+      SIMIX_simcall_enter(&self->simcall, 0);
     }    
     return self->simcall.result.i;
   }
@@ -2564,7 +2564,7 @@
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_pre(&self->simcall, 0);
+      SIMIX_simcall_enter(&self->simcall, 0);
     }    
     return self->simcall.result.i;
   }

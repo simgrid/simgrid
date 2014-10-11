@@ -141,7 +141,7 @@ void MC_modelcheck_safety(void)
       }
 
       /* Answer the request */
-      SIMIX_simcall_pre(req, value);
+      SIMIX_simcall_enter(req, value);
 
       /* Wait for requests (schedules processes) */
       MC_wait_for_requests();

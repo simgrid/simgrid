@@ -31,7 +31,7 @@ set(EXTRA_DIST
   src/simix/simcalls.py
   src/simix/simcalls_generated_args_getter_setter.h
   src/simix/simcalls_generated_body.c
-  src/simix/simcalls_generated_case.c
+  src/simix/smx_simcall_enter.c
   src/simix/simcalls_generated_enum.h
   src/simix/simcalls_generated_res_getter_setter.h
   src/simix/simcalls_generated_string.c
@@ -361,7 +361,7 @@ set(SURF_SRC
   )
 
 set(SIMIX_GENERATED_SRC
-  src/simix/simcalls_generated_case.c
+  src/simix/smx_simcall_enter.c
   )
 set(SIMIX_SRC
   src/simix/smx_context.c

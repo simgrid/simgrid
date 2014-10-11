@@ -34,7 +34,7 @@ void SIMIX_simcall_push(smx_process_t self)
     SIMIX_process_yield(self);
   } else {
     XBT_DEBUG("I'm the maestro, execute the simcall directly");
-    SIMIX_simcall_pre(&self->simcall, 0);
+    SIMIX_simcall_enter(&self->simcall, 0);
   }
 }
 
@@ -53,7 +53,7 @@ void SIMIX_simcall_answer(smx_simcall_t simcall)
   }
 }
 
-void SIMIX_simcall_post(smx_action_t action)
+void SIMIX_simcall_exit(smx_action_t action)
 {
   switch (action->type) {
 

@@ -6,6 +6,7 @@
  *********************************************/
 
 
+
 #include "smx_private.h"
 #ifdef HAVE_MC
 #include "mc/mc_private.h"
@@ -13,7 +14,10 @@
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_smurf);
 
-void SIMIX_simcall_pre(smx_simcall_t simcall, int value)
+/**
+ * @brief unpack the simcall and activate the handler in kernel mode
+ */
+void SIMIX_simcall_enter(smx_simcall_t simcall, int value)
 {
   XBT_DEBUG("Handling simcall %p: %s", simcall, SIMIX_simcall_name(simcall->call));
   SIMCALL_SET_MC_VALUE(simcall, value);

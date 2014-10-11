@@ -167,7 +167,7 @@ class Simcall(object):
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_pre(&self->simcall, 0);
+      SIMIX_simcall_enter(&self->simcall, 0);
     }    
     %s
   }'''%(self.res.ret()
@@ -247,7 +247,8 @@ NUM_SIMCALLS
   write('simcalls_generated_args_getter_setter.h', Simcall.args_getter_setter, simcalls, simcalls_dict)
   
   
-  write('simcalls_generated_case.c', Simcall.case, simcalls, simcalls_dict,"""
+  write('smx_simcall_enter.c', Simcall.case, simcalls, simcalls_dict,"""
+
 #include "smx_private.h"
 #ifdef HAVE_MC
 #include "mc/mc_private.h"
@@ -255,7 +256,10 @@ NUM_SIMCALLS
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_smurf);
 
-void SIMIX_simcall_pre(smx_simcall_t simcall, int value)
+/**
+ * @brief unpack the simcall and activate the handler in kernel mode
+ */
+void SIMIX_simcall_enter(smx_simcall_t simcall, int value)
 {
   XBT_DEBUG("Handling simcall %p: %s", simcall, SIMIX_simcall_name(simcall->call));
   SIMCALL_SET_MC_VALUE(simcall, value);
