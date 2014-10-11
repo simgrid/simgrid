@@ -11,10 +11,9 @@ if(enable_maintainer_mode AND NOT WIN32)
     add_custom_command(
       OUTPUT
       ${CMAKE_HOME_DIRECTORY}/src/simix/simcalls_generated_enum.h
-      ${CMAKE_HOME_DIRECTORY}/src/simix/simcalls_generated_string.c
       ${CMAKE_HOME_DIRECTORY}/src/simix/simcalls_generated_res_getter_setter.h
       ${CMAKE_HOME_DIRECTORY}/src/simix/simcalls_generated_args_getter_setter.h
-      ${CMAKE_HOME_DIRECTORY}/src/simix/smx_simcall_enter.c
+      ${CMAKE_HOME_DIRECTORY}/src/simix/smx_popping_generated.c
       ${CMAKE_HOME_DIRECTORY}/src/simix/simcalls_generated_body.c
       
       DEPENDS
@@ -29,15 +28,14 @@ if(enable_maintainer_mode AND NOT WIN32)
     add_custom_target(simcalls_generated_src
       DEPENDS
       ${CMAKE_HOME_DIRECTORY}/src/simix/simcalls_generated_enum.h
-      ${CMAKE_HOME_DIRECTORY}/src/simix/simcalls_generated_string.c
       ${CMAKE_HOME_DIRECTORY}/src/simix/simcalls_generated_res_getter_setter.h
       ${CMAKE_HOME_DIRECTORY}/src/simix/simcalls_generated_args_getter_setter.h
-      ${CMAKE_HOME_DIRECTORY}/src/simix/smx_simcall_enter.c
+      ${CMAKE_HOME_DIRECTORY}/src/simix/smx_popping_generated.c
       ${CMAKE_HOME_DIRECTORY}/src/simix/simcalls_generated_body.c
       )
 
     SET_DIRECTORY_PROPERTIES(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES
-      "${CMAKE_HOME_DIRECTORY}/src/simix/simcalls_generated_enum.h;${CMAKE_HOME_DIRECTORY}/src/simix/simcalls_generated_string.c;${CMAKE_HOME_DIRECTORY}/src/simix/simcalls_generated_res_getter_setter.h;${CMAKE_HOME_DIRECTORY}/src/simix/simcalls_generated_args_getter_setter.h;${CMAKE_HOME_DIRECTORY}/src/simix/smx_simcall_enter.c;${CMAKE_HOME_DIRECTORY}/src/simix/simcalls_generated_body.c"
+      "${CMAKE_HOME_DIRECTORY}/src/simix/simcalls_generated_enum.h;${CMAKE_HOME_DIRECTORY}/src/simix/simcalls_generated_res_getter_setter.h;${CMAKE_HOME_DIRECTORY}/src/simix/simcalls_generated_args_getter_setter.h;${CMAKE_HOME_DIRECTORY}/src/simix/smx_popping_generated.c;${CMAKE_HOME_DIRECTORY}/src/simix/simcalls_generated_body.c"
       )
   endif()
 endif()

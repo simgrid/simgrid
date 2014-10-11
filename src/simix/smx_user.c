@@ -13,12 +13,6 @@
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix);
 
-/* generate strings from the enumeration values */
-static const char* simcall_names[] = {
-#include "simcalls_generated_string.c"
-[SIMCALL_NONE] = "NONE"
-};
-
 #include "simcalls_generated_body.c"
 
 /**
