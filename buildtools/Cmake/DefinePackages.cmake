@@ -360,6 +360,9 @@ set(SURF_SRC
   src/xbt/xbt_sg_stubs.c
   )
 
+set(SIMIX_GENERATED_SRC
+  src/simix/simcalls_generated_case.c
+  )
 set(SIMIX_SRC
   src/simix/smx_context.c
   src/simix/smx_context_base.c
@@ -375,6 +378,7 @@ set(SIMIX_SRC
   src/simix/smx_synchro.c
   src/simix/smx_user.c
   src/simix/smx_vm.c
+  ${SIMIX_GENERATED_SRC}
   )
 
 set(SIMGRID_SRC
