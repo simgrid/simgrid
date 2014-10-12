@@ -34,7 +34,7 @@ void SIMIX_simcall_push(smx_process_t self)
     SIMIX_process_yield(self);
   } else {
     XBT_DEBUG("I'm the maestro, execute the simcall directly");
-    SIMIX_simcall_pre(&self->simcall, 0);
+    SIMIX_simcall_enter(&self->simcall, 0);
   }
 }
 
@@ -53,33 +53,7 @@ void SIMIX_simcall_answer(smx_simcall_t simcall)
   }
 }
 
-void SIMIX_simcall_pre(smx_simcall_t simcall, int value)
-{
-  XBT_DEBUG("Handling simcall %p: %s", simcall, SIMIX_simcall_name(simcall->call));
-  SIMCALL_SET_MC_VALUE(simcall, value);
-  if (simcall->issuer->context->iwannadie && simcall->call != SIMCALL_PROCESS_CLEANUP)
-    return;
-  switch (simcall->call) {
-#include "simcalls_generated_case.c"
-    case NUM_SIMCALLS:
-      break;
-    case SIMCALL_NONE:
-      THROWF(arg_error,0,"Asked to do the noop syscall on %s@%s",
-          SIMIX_process_get_name(simcall->issuer),
-          SIMIX_host_get_name(SIMIX_process_get_host(simcall->issuer))
-          );
-      break;
-
-    /* ****************************************************************************************** */
-    /* TUTORIAL: New API                                                                        */
-    /* ****************************************************************************************** */
-    case SIMCALL_NEW_API_INIT:
-      SIMIX_pre_new_api_fct(simcall);
-      break;
-  }
-}
-
-void SIMIX_simcall_post(smx_action_t action)
+void SIMIX_simcall_exit(smx_action_t action)
 {
   switch (action->type) {
 

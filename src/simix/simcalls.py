@@ -167,7 +167,7 @@ class Simcall(object):
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_pre(&self->simcall, 0);
+      SIMIX_simcall_enter(&self->simcall, 0);
     }    
     %s
   }'''%(self.res.ret()
@@ -245,5 +245,46 @@ NUM_SIMCALLS
   write('simcalls_generated_string.c', Simcall.string, simcalls, simcalls_dict)
   write('simcalls_generated_res_getter_setter.h', Simcall.result_getter_setter, simcalls, simcalls_dict)
   write('simcalls_generated_args_getter_setter.h', Simcall.args_getter_setter, simcalls, simcalls_dict)
-  write('simcalls_generated_case.c', Simcall.case, simcalls, simcalls_dict)
+  
+  
+  write('smx_simcall_enter.c', Simcall.case, simcalls, simcalls_dict,"""
+
+#include "smx_private.h"
+#ifdef HAVE_MC
+#include "mc/mc_private.h"
+#endif
+
+XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_smurf);
+
+/**
+ * @brief unpack the simcall and activate the handler in kernel mode
+ */
+void SIMIX_simcall_enter(smx_simcall_t simcall, int value)
+{
+  XBT_DEBUG("Handling simcall %p: %s", simcall, SIMIX_simcall_name(simcall->call));
+  SIMCALL_SET_MC_VALUE(simcall, value);
+  if (simcall->issuer->context->iwannadie && simcall->call != SIMCALL_PROCESS_CLEANUP)
+    return;
+  switch (simcall->call) {
+  ""","""
+    case NUM_SIMCALLS:
+      break;
+    case SIMCALL_NONE:
+      THROWF(arg_error,0,"Asked to do the noop syscall on %s@%s",
+          SIMIX_process_get_name(simcall->issuer),
+          SIMIX_host_get_name(SIMIX_process_get_host(simcall->issuer))
+          );
+      break;
+
+    /* ****************************************************************************************** */
+    /* TUTORIAL: New API                                                                        */
+    /* ****************************************************************************************** */
+    case SIMCALL_NEW_API_INIT:
+      SIMIX_pre_new_api_fct(simcall);
+      break;
+  }
+}
+  """)
+  
+  
   write('simcalls_generated_body.c', Simcall.body, simcalls, simcalls_dict)

@@ -261,7 +261,6 @@
 %javamethodmodifiers NetworkLink::updateBandwidth(double value, double date=surf_get_clock()) "
   /**
     * @param value The new bandwidth
-    * @param date When to change the bandwidth
     */
   public";
 
@@ -274,7 +273,6 @@
 %javamethodmodifiers NetworkLink::updateLatency(double value, double date=surf_get_clock()) "
   /**
     * @param value The new latency
-    * @param date When to change the latency
     */
   public";
 
