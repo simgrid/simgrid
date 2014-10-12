@@ -1052,6 +1052,7 @@ static int migration_tx_fun(int argc, char *argv[])
       //hostfailure (if you want to know whether this is the SRC or the DST please check directly in send_migration_data code)
       // Stop the dirty page tracking an return (there is no memory space to release) 
       stop_dirty_page_tracking(vm);
+      XBT_INFO ("Process tx migration catches an expection and thus return");
       return 0; 
     }
     remaining_size -= ramsize;
@@ -1113,6 +1114,7 @@ static int migration_tx_fun(int argc, char *argv[])
     }CATCH_ANONYMOUS{
       //hostfailure (if you want to know whether this is the SRC or the DST please check directly in send_migration_data code)
       // Stop the dirty page tracking an return (there is no memory space to release) 
+      XBT_INFO ("Process tx migration catches an expection and thus return");
       stop_dirty_page_tracking(vm);
       return 0; 
     }
@@ -1139,13 +1141,14 @@ stage3:
   }CATCH_ANONYMOUS{
       //hostfailure (if you want to know whether this is the SRC or the DST please check directly in send_migration_data code)
       // Stop the dirty page tracking an return (there is no memory space to release) 
+      XBT_INFO ("Process tx migration catches an expection and thus return");
       simcall_vm_resume(vm);
       return 0; 
     }
   
  // At that point the Migration is considered valid for the SRC node but remind that the DST side should relocate effectively the VM on the DST node. 
 
-  XBT_DEBUG("mig: tx_done");
+  XBT_INFO("mig: tx_done");
 
   return 0;
 }
@@ -1165,6 +1168,7 @@ static int do_migration(msg_vm_t vm, msg_host_t src_pm, msg_host_t dst_pm)
   char *pr_rx_name = get_mig_process_rx_name(vm, src_pm, dst_pm);
   char *pr_tx_name = get_mig_process_tx_name(vm, src_pm, dst_pm);
 
+  msg_process_t tx_process, rx_process; 
 //  MSG_process_create(pr_rx_name, migration_rx_fun, ms, dst_pm);
 //  MSG_process_create(pr_tx_name, migration_tx_fun, ms, src_pm);
 #if 1
@@ -1172,13 +1176,13 @@ static int do_migration(msg_vm_t vm, msg_host_t src_pm, msg_host_t dst_pm)
  char **argv = xbt_new(char *, 2);
  argv[0] = pr_rx_name;
  argv[1] = NULL;
- MSG_process_create_with_arguments(pr_rx_name, migration_rx_fun, ms, dst_pm, 1, argv);
+ rx_process = MSG_process_create_with_arguments(pr_rx_name, migration_rx_fun, ms, dst_pm, 1, argv);
  }
  {
  char **argv = xbt_new(char *, 2);
  argv[0] = pr_tx_name;
  argv[1] = NULL;
- MSG_process_create_with_arguments(pr_tx_name, migration_tx_fun, ms, src_pm, 1, argv);
+ tx_process = MSG_process_create_with_arguments(pr_tx_name, migration_tx_fun, ms, src_pm, 1, argv);
  }
 #endif
 
@@ -1187,8 +1191,9 @@ static int do_migration(msg_vm_t vm, msg_host_t src_pm, msg_host_t dst_pm)
     XBT_DEBUG("wait for reception of the final ACK (i.e. migration has been correctly performed");
     msg_task_t task = NULL;
     msg_error_t ret = MSG_TIMEOUT; 
-    while (ret == MSG_TIMEOUT && MSG_host_is_on(dst_pm)) //Wait while you receive the message o
-     ret = MSG_task_receive_with_timeout(&task, ms->mbox_ctl, 10);
+    while (ret == MSG_TIMEOUT && MSG_host_is_on(dst_pm)) //Wait while you receive the message ok
+							// Active waiting, evaluation is performed every one second.
+     ret = MSG_task_receive_with_timeout(&task, ms->mbox_ctl, 1);
 
     xbt_free(ms->mbox_ctl);
     xbt_free(ms->mbox);
@@ -1198,11 +1203,12 @@ static int do_migration(msg_vm_t vm, msg_host_t src_pm, msg_host_t dst_pm)
     if(ret == MSG_HOST_FAILURE){
         // Note that since the communication failed, the owner did not change and the task should be destroyed on the other side.
         // Hence, just throw the execption
-        //XBT_INFO("SRC crashes, throw an exception (m-control)");
+        XBT_INFO("SRC crashes, throw an exception (m-control)");
+        MSG_process_kill(tx_process);
         return -1; 
     } 
     else if((ret == MSG_TRANSFER_FAILURE) || (ret == MSG_TIMEOUT)){ // MSG_TIMEOUT here means that MSG_host_is_avail() returned false.
-        //XBT_INFO("DST crashes, throw an exception (m-control)");
+        XBT_INFO("DST crashes, throw an exception (m-control)");
         return -2;  
     }
 
