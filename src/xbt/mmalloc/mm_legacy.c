@@ -57,7 +57,7 @@ static void mm_gnuld_legacy_init(void) { /* This function is called from mmalloc
  */
 static int allocated_junk = 0; /* keep track of many blocks of our little area was already given to someone */
 #define JUNK_SIZE 8
-#define MAX_JUNK_AREAS (32 * 1024 / JUNK_SIZE)
+#define MAX_JUNK_AREAS (64 * 1024 / JUNK_SIZE)
 static char junkareas[MAX_JUNK_AREAS][JUNK_SIZE];
 
 /* This version use mmalloc if there is a current heap, or the legacy implem if not */
