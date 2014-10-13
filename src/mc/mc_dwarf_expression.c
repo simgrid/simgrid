@@ -418,7 +418,16 @@ void mc_dwarf_resolve_location(mc_location_t location,
   state.object_info = object_info;
   state.process_index = process_index;
 
-  // TODO, handle register
+  if (expression->size >= 1
+    && expression->ops[0].atom >=DW_OP_reg0 && expression->ops[0].atom <= DW_OP_reg31) {
+    int dwarf_register = expression->ops[0].atom - DW_OP_reg0;
+    xbt_assert(c, "Missing frame context for register operation DW_OP_reg%i",
+      dwarf_register);
+    location->memory_location = NULL;
+    location->cursor = c;
+    location->register_id = mc_dwarf_register_to_libunwind(dwarf_register);
+    return;
+  }
 
   if (mc_dwarf_execute_expression(expression->size, expression->ops, &state))
     xbt_die("Error evaluating DWARF expression");
@@ -482,10 +491,21 @@ void *mc_find_frame_base(dw_frame_t frame, mc_object_info_t object_info,
   switch(mc_get_location_type(&location)) {
   case MC_LOCATION_TYPE_ADDRESS:
     return location.memory_location;
-    break;
-  case MC_LOCATION_TYPE_REGISTER:
+
+  case MC_LOCATION_TYPE_REGISTER: {
+      // This is a special case.
+      // The register if not the location of the frame base
+      // (a frame base cannot be located in a register)
+      // Instead, DWARF defines this to mean that the register
+      // contains the address of the frame base.
+      unw_word_t word;
+      unw_get_reg(location.cursor, location.register_id, &word);
+      return (void*) word;
+    }
+
   default:
     xbt_die("Cannot handle non-address frame base");
+    return NULL; // Unreachable
   }
 }
 
