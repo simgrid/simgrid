@@ -614,6 +614,9 @@ void NetworkCm02Link::updateBandwidth(double value, double date){
                  (p_power.peak * p_power.scale);
   lmm_variable_t var = NULL;
   lmm_element_t elem = NULL;
+  lmm_element_t nextelem = NULL;
+  int numelem = 0;
+
   NetworkCm02ActionPtr action = NULL;
 
   p_power.peak = value;
@@ -625,7 +628,7 @@ void NetworkCm02Link::updateBandwidth(double value, double date){
   TRACE_surf_link_set_bandwidth(date, getName(), sg_bandwidth_factor * p_power.peak * p_power.scale);
 #endif
   if (sg_weight_S_parameter > 0) {
-    while ((var = lmm_get_var_from_cnst(getModel()->getMaxminSystem(), getConstraint(), &elem))) {
+    while ((var = lmm_get_var_from_cnst_safe(getModel()->getMaxminSystem(), getConstraint(), &elem, &nextelem, &numelem))) {
       action = (NetworkCm02ActionPtr) lmm_variable_id(var);
       action->m_weight += delta;
       if (!action->isSuspended())
@@ -638,10 +641,12 @@ void NetworkCm02Link::updateLatency(double value, double date){
   double delta = value - m_latCurrent;
   lmm_variable_t var = NULL;
   lmm_element_t elem = NULL;
+  lmm_element_t nextelem = NULL;
+  int numelem = 0;
   NetworkCm02ActionPtr action = NULL;
 
   m_latCurrent = value;
-  while ((var = lmm_get_var_from_cnst(getModel()->getMaxminSystem(), getConstraint(), &elem))) {
+  while ((var = lmm_get_var_from_cnst_safe(getModel()->getMaxminSystem(), getConstraint(), &elem, &nextelem, &numelem))) {
     action = (NetworkCm02ActionPtr) lmm_variable_id(var);
     action->m_latCurrent += delta;
     action->m_weight += delta;
