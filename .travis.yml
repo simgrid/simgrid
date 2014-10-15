@@ -18,11 +18,11 @@ notifications:
   email:
     on_success: change
     on_failure: always
-#  irc:
-#    channels:
-#      - "chat.freenode.net#simgrid"
-#  template:
-#    - "%{repository}/%{branch} (%{commit} - %{author}): %{message}"
+  irc:
+    channels:
+      - "irc.debian.org#simgrid"
+  template:
+    - "%{repository}/%{branch} (%{commit} - %{author}): %{message}"
 os:
   - linux
   - osx
