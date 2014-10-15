@@ -266,6 +266,7 @@ NUM_SIMCALLS
   fd.write(' *\n')
   fd.write(' * That\'s not about http://en.wikipedia.org/wiki/Poop, despite the odor :)\n')
   fd.write(' */\n\n')
+  
   fd.write('#include "smx_private.h"\n');
   fd.write('#ifdef HAVE_MC\n');
   fd.write('#include "mc/mc_private.h"\n');
