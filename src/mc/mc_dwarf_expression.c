@@ -403,11 +403,12 @@ int mc_dwarf_execute_expression(size_t n, const Dwarf_Op * ops,
 /** \brief Resolve a location expression
  *  \deprecated Use mc_dwarf_resolve_expression
  */
-uintptr_t mc_dwarf_resolve_location(mc_expression_t expression,
-                                    mc_object_info_t object_info,
-                                    unw_cursor_t * c,
-                                    void *frame_pointer_address,
-                                    mc_snapshot_t snapshot, int process_index)
+void mc_dwarf_resolve_location(mc_location_t location,
+                               mc_expression_t expression,
+                               mc_object_info_t object_info,
+                               unw_cursor_t * c,
+                               void *frame_pointer_address,
+                               mc_snapshot_t snapshot, int process_index)
 {
   s_mc_expression_state_t state;
   memset(&state, 0, sizeof(s_mc_expression_state_t));
@@ -417,37 +418,62 @@ uintptr_t mc_dwarf_resolve_location(mc_expression_t expression,
   state.object_info = object_info;
   state.process_index = process_index;
 
+  if (expression->size >= 1
+    && expression->ops[0].atom >=DW_OP_reg0 && expression->ops[0].atom <= DW_OP_reg31) {
+    int dwarf_register = expression->ops[0].atom - DW_OP_reg0;
+    xbt_assert(c, "Missing frame context for register operation DW_OP_reg%i",
+      dwarf_register);
+    location->memory_location = NULL;
+    location->cursor = c;
+    location->register_id = mc_dwarf_register_to_libunwind(dwarf_register);
+    return;
+  }
+
   if (mc_dwarf_execute_expression(expression->size, expression->ops, &state))
     xbt_die("Error evaluating DWARF expression");
   if (state.stack_size == 0)
     xbt_die("No value on the stack");
-  else
-    return state.stack[state.stack_size - 1];
+  else {
+    location->memory_location = (void*) state.stack[state.stack_size - 1];
+    location->cursor = NULL;
+    location->register_id = 0;
+  }
 }
 
-uintptr_t mc_dwarf_resolve_locations(mc_location_list_t locations,
+static mc_expression_t mc_find_expression(mc_location_list_t locations, unw_word_t ip) {
+  for (size_t i = 0; i != locations->size; ++i) {
+    mc_expression_t expression = locations->locations + i;
+    if ((expression->lowpc == NULL && expression->highpc == NULL)
+        || (ip && ip >= (unw_word_t) expression->lowpc
+            && ip < (unw_word_t) expression->highpc)) {
+      return expression;
+    }
+  }
+  return NULL;
+}
+
+void mc_dwarf_resolve_locations(mc_location_t location,
+                                     mc_location_list_t locations,
                                      mc_object_info_t object_info,
                                      unw_cursor_t * c,
                                      void *frame_pointer_address,
                                      mc_snapshot_t snapshot, int process_index)
 {
 
-  unw_word_t ip;
+  unw_word_t ip = 0;
   if (c) {
     if (unw_get_reg(c, UNW_REG_IP, &ip))
       xbt_die("Could not resolve IP");
   }
 
-  for (size_t i = 0; i != locations->size; ++i) {
-    mc_expression_t expression = locations->locations + i;
-    if ((expression->lowpc == NULL && expression->highpc == NULL)
-        || (c && ip >= (unw_word_t) expression->lowpc
-            && ip < (unw_word_t) expression->highpc)) {
-      return mc_dwarf_resolve_location(expression, object_info, c,
-                                       frame_pointer_address, snapshot, process_index);
-    }
+  mc_expression_t expression = mc_find_expression(locations, ip);
+  if (expression) {
+    mc_dwarf_resolve_location(location,
+                              expression, object_info, c,
+                              frame_pointer_address, snapshot, process_index);
+  } else {
+    xbt_die("Could not resolve location");
   }
-  xbt_die("Could not resolve location");
 }
 
 /** \brief Find the frame base of a given frame
@@ -458,8 +484,29 @@ uintptr_t mc_dwarf_resolve_locations(mc_location_list_t locations,
 void *mc_find_frame_base(dw_frame_t frame, mc_object_info_t object_info,
                          unw_cursor_t * unw_cursor)
 {
-  return (void *) mc_dwarf_resolve_locations(&frame->frame_base, object_info,
-                                             unw_cursor, NULL, NULL, -1);
+  s_mc_location_t location;
+  mc_dwarf_resolve_locations(&location,
+                             &frame->frame_base, object_info,
+                             unw_cursor, NULL, NULL, -1);
+  switch(mc_get_location_type(&location)) {
+  case MC_LOCATION_TYPE_ADDRESS:
+    return location.memory_location;
+
+  case MC_LOCATION_TYPE_REGISTER: {
+      // This is a special case.
+      // The register if not the location of the frame base
+      // (a frame base cannot be located in a register)
+      // Instead, DWARF defines this to mean that the register
+      // contains the address of the frame base.
+      unw_word_t word;
+      unw_get_reg(location.cursor, location.register_id, &word);
+      return (void*) word;
+    }
+
+  default:
+    xbt_die("Cannot handle non-address frame base");
+    return NULL; // Unreachable
+  }
 }
 
 void mc_dwarf_expression_clear(mc_expression_t expression)

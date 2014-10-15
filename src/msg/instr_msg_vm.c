@@ -74,7 +74,7 @@ void TRACE_msg_vm_start(msg_vm_t vm)
 
     container_t vm_container = PJ_container_get (instr_vm_id(vm, str, len));
     type_t type = PJ_type_get ("MSG_VM_STATE", vm_container->type);
-    val_t value = PJ_value_get ("start", type);
+    val_t value = PJ_value_get_or_new ("start", "0 0 1", type); //start is blue
     new_pajePushState (MSG_get_clock(), vm_container, type, value);
   }
 
@@ -100,7 +100,7 @@ void TRACE_msg_vm_suspend(msg_vm_t vm)
 
     container_t vm_container = PJ_container_get (instr_vm_id(vm, str, len));
     type_t type = PJ_type_get ("MSG_VM_STATE", vm_container->type);
-    val_t value = PJ_value_get ("suspend", type);
+    val_t value = PJ_value_get_or_new ("suspend", "1 0 0", type); //suspend is red
     new_pajePushState (MSG_get_clock(), vm_container, type, value);
   }
 }
@@ -125,7 +125,7 @@ void TRACE_msg_vm_save(msg_vm_t vm)
 
     container_t vm_container = PJ_container_get (instr_vm_id(vm, str, len));
     type_t type = PJ_type_get ("MSG_VM_STATE", vm_container->type);
-    val_t value = PJ_value_get ("save", type);
+    val_t value = PJ_value_get_or_new ("save", "0 1 0", type); //save is green
     new_pajePushState (MSG_get_clock(), vm_container, type, value);
   }
 }

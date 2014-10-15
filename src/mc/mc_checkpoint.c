@@ -389,12 +389,22 @@ static void mc_fill_local_variables_values(mc_stack_frame_t stack_frame,
     if (current_variable->address != NULL) {
       new_var->address = current_variable->address;
     } else if (current_variable->locations.size != 0) {
-      new_var->address =
-          (void *) mc_dwarf_resolve_locations(&current_variable->locations,
+      s_mc_location_t location;
+      mc_dwarf_resolve_locations(&location, &current_variable->locations,
                                               current_variable->object_info,
                                               &(stack_frame->unw_cursor),
                                               (void *) stack_frame->frame_base,
                                               NULL, process_index);
+
+      switch(mc_get_location_type(&location)) {
+      case MC_LOCATION_TYPE_ADDRESS:
+        new_var->address = location.memory_location;
+        break;
+      case MC_LOCATION_TYPE_REGISTER:
+      default:
+        xbt_die("Cannot handle non-address variable");
+      }
+
     } else {
       xbt_die("No address");
     }

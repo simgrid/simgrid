@@ -57,7 +57,7 @@ static void mm_gnuld_legacy_init(void) { /* This function is called from mmalloc
  */
 static int allocated_junk = 0; /* keep track of many blocks of our little area was already given to someone */
 #define JUNK_SIZE 8
-#define MAX_JUNK_AREAS (32 * 1024 / JUNK_SIZE)
+#define MAX_JUNK_AREAS (64 * 1024 / JUNK_SIZE)
 static char junkareas[MAX_JUNK_AREAS][JUNK_SIZE];
 
 /* This version use mmalloc if there is a current heap, or the legacy implem if not */
@@ -141,7 +141,9 @@ void free(void *p)
 {
   if (p==NULL)
     return;
-  if (p<=(void*)junkareas || p>(void*)(junkareas[MAX_JUNK_AREAS]) ) {
+  if (p<(void*)junkareas || p>=(void*)(junkareas[MAX_JUNK_AREAS]) ) {
+    // main use case
+
     xbt_mheap_t mdp = __mmalloc_current_heap;
 
     if (mdp) {
@@ -151,10 +153,16 @@ void free(void *p)
     } else {
       real_free(p);
     }
-  } else if(allocated_junk && p==junkareas[allocated_junk-1]) {
-    allocated_junk--;
   } else {
-    // Leaked memory.
+    // We are in the junkarea.
+    // This area is used to allocate memory at initilization time.
+
+    if(allocated_junk && p==junkareas[allocated_junk-1]) {
+      // Last junkarea. We can reuse it.
+      allocated_junk--;
+    } else {
+      // We currently cannot reuse freed junkareas in the general case.
+    }
   }
 }
 

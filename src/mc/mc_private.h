@@ -518,8 +518,49 @@ typedef struct s_mc_location_list {
   mc_expression_t locations;
 } s_mc_location_list_t, *mc_location_list_t;
 
-uintptr_t mc_dwarf_resolve_location(mc_expression_t expression, mc_object_info_t object_info, unw_cursor_t* c, void* frame_pointer_address, mc_snapshot_t snapshot, int process_index);
-uintptr_t mc_dwarf_resolve_locations(mc_location_list_t locations, mc_object_info_t object_info, unw_cursor_t* c, void* frame_pointer_address, mc_snapshot_t snapshot, int process_index);
+/** A location is either a location in memory of a register location
+ *
+ *  Usage:
+ *
+ *    * mc_dwarf_resolve_locations or mc_dwarf_resolve_location is used
+ *      to find the location of a given location expression or location list;
+ *
+ *    * mc_get_location_type MUST be used to find the location type;
+ *
+ *    * for MC_LOCATION_TYPE_ADDRESS, memory_address is the resulting address
+ *
+ *    * for MC_LOCATION_TYPE_REGISTER, unw_get_reg(l.cursor, l.register_id, value)
+ *        and unw_get_reg(l.cursor, l.register_id, value) can be used to read/write
+ *        the value.
+ *  </ul>
+ */
+typedef struct s_mc_location {
+  void* memory_location;
+  unw_cursor_t* cursor;
+  int register_id;
+} s_mc_location_t, *mc_location_t;
+
+/** Type of a given location
+ *
+ *  Use `mc_get_location_type(location)` to find the type.
+ * */
+typedef enum mc_location_type {
+  MC_LOCATION_TYPE_ADDRESS,
+  MC_LOCATION_TYPE_REGISTER
+} mc_location_type;
+
+/** Find the type of a location */
+static inline __attribute__ ((always_inline))
+enum mc_location_type mc_get_location_type(mc_location_t location) {
+  if (location->cursor) {
+    return MC_LOCATION_TYPE_REGISTER;
+  } else {
+    return MC_LOCATION_TYPE_ADDRESS;
+  }
+}
+
+void mc_dwarf_resolve_location(mc_location_t location, mc_expression_t expression, mc_object_info_t object_info, unw_cursor_t* c, void* frame_pointer_address, mc_snapshot_t snapshot, int process_index);
+void mc_dwarf_resolve_locations(mc_location_t location, mc_location_list_t locations, mc_object_info_t object_info, unw_cursor_t* c, void* frame_pointer_address, mc_snapshot_t snapshot, int process_index);
 
 void mc_dwarf_expression_clear(mc_expression_t expression);
 void mc_dwarf_expression_init(mc_expression_t expression, size_t len, Dwarf_Op* ops);
