@@ -1,0 +1,26 @@
+language: cpp
+compiler:
+   - gcc
+   - clang
+before_install: 
+   - sudo apt-get update  -qq
+   - sudo apt-get install -qq valgrind default-jdk gfortran liblua5.1-dev lua5.1 libboost-dev transfig ghostscript texlive-font-utils
+script: cmake
+branches:
+  only:
+     - master
+notifications:
+  recipients:
+    - martin.quinson@loria.fr
+  email:
+    on_success: change
+    on_failure: always
+#  irc:
+#    channels:
+#      - "chat.freenode.net#simgrid"
+#  template:
+#    - "%{repository}/%{branch} (%{commit} - %{author}): %{message}"
+os:
+  - linux
+  - osx
+  - windows
