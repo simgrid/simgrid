@@ -42,7 +42,7 @@ set(bin_files
   PARENT_SCOPE
   )
 set(txt_files
-  README
+  ${CMAKE_CURRENT_SOURCE_DIR}/README
   ${txt_files}
   PARENT_SCOPE
   )
