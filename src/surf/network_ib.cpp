@@ -33,7 +33,7 @@ static void IB_action_state_changed_callback(NetworkActionPtr action, e_surf_act
  if(statein!=SURF_ACTION_RUNNING|| stateout!=SURF_ACTION_DONE)
     return;
   std::pair<IBNode*,IBNode*> pair = ((NetworkIBModel*)surf_network_model)->active_comms[action];
-  XBT_VERB("action %p finished", action);
+  XBT_DEBUG("IB callback - action %p finished", action);
  
  ((NetworkIBModel*)surf_network_model)->updateIBfactors(action, pair.first, pair.second, 1);
 
@@ -58,7 +58,7 @@ static void IB_action_init_callback(NetworkActionPtr action,RoutingEdgePtr src, 
   
   ((NetworkIBModel*)surf_network_model)->active_comms[action]=make_pair<IBNode*,IBNode*>(act_src, act_dst);
   //post the action in the second dist, to retrieve in the other callback
-  XBT_VERB("action %p init", action);
+  XBT_DEBUG("IB callback - action %p init", action);
 
   ((NetworkIBModel*)surf_network_model)->updateIBfactors(action, act_src, act_dst, 0);
   
@@ -149,19 +149,19 @@ void NetworkIBModel::computeIBfactors(IBNode *root) {
     penalized_bw= ! num_comm_out ? (*it)->init_rate : (*it)->init_rate /penalty;
     
     if (!double_equals(penalized_bw, rate_before_update, sg_surf_precision)){
-     // XBT_VERB("%d->%d action %p penalty updated : in %f, out %f, final %f, before %f , initial rate %f", root->id,(*it)->destination->id,(*it)->action,my_penalty_in,my_penalty_out,penalized_bw, (*it)->action->getBound(), (*it)->init_rate );
+      XBT_DEBUG("%d->%d action %p penalty updated : bw now %f, before %f , initial rate %f", root->id,(*it)->destination->id,(*it)->action,penalized_bw, (*it)->action->getBound(), (*it)->init_rate );
       lmm_update_variable_bound(p_maxminSystem, (*it)->action->getVariable(), penalized_bw);
-    }/*else{
-     // XBT_VERB("%d->%d action %p penalty not updated : in %f, out %f, final %f, initial rate %f", root->id,(*it)->destination->id,(*it)->action,my_penalty_in,my_penalty_out,penalized_bw, (*it)->init_rate );
-    }*/
+    }else{
+      XBT_DEBUG("%d->%d action %p penalty not updated : bw %f, initial rate %f", root->id,(*it)->destination->id,(*it)->action,penalized_bw, (*it)->init_rate );
+    }
 
   }
-  XBT_VERB("Finished computing");
+  XBT_DEBUG("Finished computing IB penalties");
 }
 
 void NetworkIBModel::updateIBfactors_rec(IBNode *root, bool* updatedlist) {
   if(updatedlist[root->id]==0){
-    XBT_VERB("Updating rec %d", root->id);
+    XBT_DEBUG("IB - Updating rec %d", root->id);
     computeIBfactors(root);
     updatedlist[root->id]=1;
     for (std::vector<ActiveComm*>::iterator it= root->ActiveCommsUp.begin(); it != root->ActiveCommsUp.end(); ++it) {
@@ -191,24 +191,16 @@ void NetworkIBModel::updateIBfactors(NetworkActionPtr action, IBNode *from, IBNo
     to->nbActiveCommsDown--;
     for (std::vector<ActiveComm*>::iterator it= from->ActiveCommsUp.begin(); 
 	 it != from->ActiveCommsUp.end(); ++it) {
-      XBT_VERB("inside vector");
       if((*it)->action==action){
 	comm=(*it);
 	from->ActiveCommsUp.erase(it);
-        XBT_VERB("action deleted");
 	break;
       }
     }
     action->unref();
-    /*from->ActiveCommsUp.erase(
-        std::remove(from->ActiveCommsUp.begin(),
-            from->ActiveCommsUp.end(), make_pair(to, action)),
-            from->ActiveCommsUp.end());*/
 
   }else{
-    //from->ActiveCommsUp.push_back(std::make_pair(to, action));
     action->ref();
-
     ActiveComm* comm=new ActiveComm();
     comm->action=action;
     comm->destination=to;
@@ -217,9 +209,10 @@ void NetworkIBModel::updateIBfactors(NetworkActionPtr action, IBNode *from, IBNo
     to->ActiveCommsDown[from]+=1;
     to->nbActiveCommsDown++;
   }
-  XBT_VERB("Updating %d", from->id);
+  XBT_DEBUG("IB - Updating %d", from->id);
   updateIBfactors_rec(from, updated);
-  XBT_VERB("Finished updating %d", from->id);
-  if(comm)delete comm;
+  XBT_DEBUG("IB - Finished updating %d", from->id);
+  if(comm)
+    delete comm;
   xbt_free(updated);
 }
