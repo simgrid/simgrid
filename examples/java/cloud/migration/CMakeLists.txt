@@ -5,6 +5,7 @@ set(sources
   ${CMAKE_CURRENT_SOURCE_DIR}/Daemon.java
   ${CMAKE_CURRENT_SOURCE_DIR}/Main.java
   ${CMAKE_CURRENT_SOURCE_DIR}/Test.java
+  ${CMAKE_CURRENT_SOURCE_DIR}/TestHostOnOff.java
   ${CMAKE_CURRENT_SOURCE_DIR}/XVM.java
   )
 
@@ -41,6 +42,7 @@ set(bin_files
   PARENT_SCOPE
   )
 set(txt_files
+  README
   ${txt_files}
   PARENT_SCOPE
   )
