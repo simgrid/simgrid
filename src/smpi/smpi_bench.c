@@ -607,21 +607,27 @@ void* smpi_shared_set_call(const char* func, const char* input, void* data) {
 #define TOPAGE(addr) (void *)(((unsigned long)(addr) / xbt_pagesize) * xbt_pagesize)
 
 
-/*
- * - read the executable data+bss section addresses and sizes
- * - for each process create a copy of these sections with mmap
- * - store them in a dynar
- *
+/** Map a given SMPI privatization segment (make a SMPI process active)
  */
-
-
-
 void smpi_switch_data_segment(int dest){
 
-  if(size_data_exe == 0)//no need to switch
-    return;
-
   if (smpi_loaded_page==dest)//no need to switch either
+   return;
+
+  // So the job:
+  smpi_really_switch_data_segment(dest);
+}
+
+/** Map a given SMPI privatization segment (make a SMPI process active)
+ *  even if SMPI thinks it is already active
+ *
+ *  When doing a state restoration, the state of the restored variables
+ *  might not be consistent with the state of the virtual memory.
+ *  In this case, we to change the data segment.
+ */
+void smpi_really_switch_data_segment(int dest) {
+
+  if(size_data_exe == 0)//no need to switch
     return;
 
 #ifdef HAVE_MMAP
