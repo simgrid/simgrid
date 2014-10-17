@@ -10,11 +10,6 @@
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_network);
 
-double Bs=0.925;
-double Be=0.965;
-double ys=1.35;
-
-
 static void IB_create_host_callback(sg_platf_host_cbarg_t t){
   
   static int id=0;
@@ -93,12 +88,23 @@ void surf_network_model_init_IB(void)
 
   sg_platf_host_add_cb(IB_create_host_callback);
   xbt_cfg_setdefault_double(_sg_cfg_set, "network/weight_S", 8775);
+  
 }
 
 NetworkIBModel::NetworkIBModel()
  : NetworkSmpiModel() {
   m_haveGap=false;
   active_nodes=NULL;
+    
+  const char* IB_factors_string=sg_cfg_get_string("smpi/IB_penalty_factors");
+  xbt_dynar_t radical_elements = xbt_str_split(IB_factors_string, ";");
+  
+  if(xbt_dynar_length(radical_elements)!=3)
+    surf_parse_error("smpi/IB_penalty_factors should be provided and contain 3 elements, semi-colon separated : for example 0.965;0.925;1.35");
+  
+  Be = atof(xbt_dynar_get_as(radical_elements, 0, char *));
+  Bs = atof(xbt_dynar_get_as(radical_elements, 1, char *));
+  ys = atof(xbt_dynar_get_as(radical_elements, 2, char *));
 }
 
 NetworkIBModel::~NetworkIBModel()

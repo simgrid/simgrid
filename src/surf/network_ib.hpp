@@ -46,6 +46,10 @@ public:
   
   xbt_dict_t active_nodes;
   std::map<NetworkActionPtr , std::pair<IBNode*,IBNode*> > active_comms;
+  
+  double Bs;
+  double Be;
+  double ys;
 
 };
 
