@@ -483,7 +483,9 @@ static void action_waitall(const char *const *action){
    xbt_dynar_free(&recvs);
   #endif
 
-   xbt_dynar_free_container(&(reqq[smpi_process_index()]));
+   int freedrank=smpi_process_index();
+   xbt_dynar_free_container(&(reqq[freedrank]));
+   reqq[freedrank]=xbt_dynar_new(sizeof(MPI_Request),&xbt_free_ref);
   }
   log_timed_action (action, clock);
 }
@@ -1059,12 +1061,16 @@ int smpi_replay_finalize(){
     active_processes--;
   }
 
-  xbt_dynar_free_container(&(reqq[smpi_process_index()]));
-
   if(!active_processes){
     /* Last process alive speaking */
     /* end the simulated timer */
     sim_time = smpi_process_simulated_elapsed();
+  }
+  
+
+  xbt_dynar_free_container(&(reqq[smpi_process_index()]));
+
+  if(!active_processes){
     XBT_INFO("Simulation time %f", sim_time);
     _xbt_replay_action_exit();
     xbt_free(sendbuffer);
@@ -1072,7 +1078,8 @@ int smpi_replay_finalize(){
     xbt_free(reqq);
     reqq = NULL;
   }
-  mpi_coll_barrier_fun(MPI_COMM_WORLD);
+  
+
 #ifdef HAVE_TRACING
   int rank = smpi_process_index();
   instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);

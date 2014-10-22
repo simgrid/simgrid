@@ -1937,7 +1937,7 @@ void xbt_automaton_parser_free (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 77 "parserPromela.lex"
+#line 76 "parserPromela.lex"
 
 
 

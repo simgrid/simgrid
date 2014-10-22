@@ -679,7 +679,13 @@ void MC_restore_snapshot(mc_snapshot_t snapshot)
     }
   }
   if(snapshot->privatization_index >= 0) {
-    smpi_switch_data_segment(snapshot->privatization_index);
+    // We just rewrote the global variables.
+    // The privatisation segment SMPI thinks
+    // is mapped might be inconsistent with the segment which
+    // is really mapped in memory (kernel state).
+    // We ask politely SMPI to map the segment anyway,
+    // even if it thinks it is the current one:
+    smpi_really_switch_data_segment(snapshot->privatization_index);
   }
 #endif
 

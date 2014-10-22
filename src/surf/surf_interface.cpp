@@ -117,6 +117,9 @@ s_surf_model_description_t surf_network_model_description[] = {
   {"SMPI",
    "Realistic network model specifically tailored for HPC settings (accurate modeling of slow start with correction factors on three intervals: < 1KiB, < 64 KiB, >= 64 KiB)",
    surf_network_model_init_SMPI},
+  {"IB",
+   "Realistic network model specifically tailored for HPC settings, with Infiniband contention model",
+   surf_network_model_init_IB},
   {"CM02",
    "Legacy network analytic model (Very similar to LV08, but without corrective factors. The timings of small messages are thus poorly modeled).",
    surf_network_model_init_CM02},
@@ -872,7 +875,7 @@ void Action::setBound(double bound)
 {
   XBT_IN("(%p,%g)", this, bound);
   if (p_variable)
-    lmm_update_variable_bound(getModel()->getMaxminSystem(), getVariable(), bound);
+    lmm_update_variable_bound(getModel()->getMaxminSystem(), p_variable, bound);
 
   if (getModel()->getUpdateMechanism() == UM_LAZY && getLastUpdate()!=surf_get_clock())
     heapRemove(getModel()->getActionHeap());

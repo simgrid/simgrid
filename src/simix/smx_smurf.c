@@ -90,30 +90,3 @@ void SIMIX_simcall_exit(smx_action_t action)
       break;
   }
 }
-
-/* New Simcal interface */
-
-/* FIXME: add types for every simcall */
-//const char *simcall_types[NUM_SIMCALLS] = { [SIMCALL_HOST_EXECUTE] = "%s%p%f%f%p" };
-/* FIXME find a way to make this work
-simcall_handler_t simcall_table[NUM_SIMCALLS] = {
-#undef SIMCALL_ENUM_ELEMENT
-#define SIMCALL_ENUM_ELEMENT(x,y) &y // generate strings from the enumeration values
-SIMCALL_LIST
-#undef SIMCALL_ENUM_ELEMENT
-};*/
-
-/* New Simcal interface */
-
-/* FIXME: add types for every simcall */
-//const char *simcall_types[NUM_SIMCALLS] = { [SIMCALL_HOST_EXECUTE] = "%s%p%f%f%p", [SIMCALL_HOST_EXECUTION_WAIT] = "%p%p" };
-
-
-/*TOFIX find a way to make this work
-simcall_handler_t simcall_table[NUM_SIMCALLS] = {
-#undef SIMCALL_ENUM_ELEMENT
-#define SIMCALL_ENUM_ELEMENT(x,y) &y // generate strings from the enumeration values
-SIMCALL_LIST
-#undef SIMCALL_ENUM_ELEMENT
-};*/
-

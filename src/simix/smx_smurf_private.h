@@ -10,13 +10,7 @@
 SG_BEGIN_DECL()
 
 /********************************* Simcalls *********************************/
-
-/* we want to build the e_smx_simcall_t enumeration, the table of the
- * corresponding simcalls string names, and the simcall handlers table
- * automatically, using macros.
- * To add a new simcall follow the following syntax:
- *
- * */
+XBT_PUBLIC(const char*) simcall_names[]; /* Name of each simcall */
 
 #include "simcalls_generated_enum.h" /* All possible simcalls (generated) */
 
@@ -57,7 +51,6 @@ typedef struct s_smx_simcall {
 #endif
   union u_smx_scalar args[11];
   union u_smx_scalar result;
-  //FIXME: union u_smx_scalar retval;
   union {
     struct {
       const char* param1;
@@ -87,7 +80,7 @@ void SIMIX_simcall_enter(smx_simcall_t, int);
 void SIMIX_simcall_exit(smx_action_t);
 smx_simcall_t SIMIX_simcall_mine(void);
 const char *SIMIX_simcall_name(e_smx_simcall_t kind);
-//TOFIX put it in a better place
+//FIXME put it in a better place
 xbt_dict_t SIMIX_pre_asr_get_properties(smx_simcall_t simcall, const char *name);
 
 /*************************** New simcall interface ****************************/

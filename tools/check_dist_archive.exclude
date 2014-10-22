@@ -13,6 +13,7 @@
 + \.cproject
 + \.gitignore
 + \.project
++ \.travis.yml
 + COPYRIGHT.template
 + README\.(coding|git)
 + mk_win-dist.sh
