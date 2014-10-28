@@ -710,7 +710,31 @@ extern xbt_dynar_t initial_communications_pattern;
 extern xbt_dynar_t communications_pattern;
 extern xbt_dynar_t incomplete_communications_pattern;
 
-void get_comm_pattern(xbt_dynar_t communications_pattern, smx_simcall_t request, int call);
+// Can we use the SIMIX syscall for this?
+typedef enum mc_call_type {
+  MC_CALL_TYPE_NONE,
+  MC_CALL_TYPE_SEND,
+  MC_CALL_TYPE_RECV,
+  MC_CALL_TYPE_WAIT,
+  MC_CALL_TYPE_WAITANY,
+} mc_call_type;
+
+static inline mc_call_type mc_get_call_type(smx_simcall_t req) {
+  switch(req->call) {
+  case SIMCALL_COMM_ISEND:
+    return MC_CALL_TYPE_SEND;
+  case SIMCALL_COMM_IRECV:
+    return MC_CALL_TYPE_RECV;
+  case SIMCALL_COMM_WAIT:
+    return MC_CALL_TYPE_WAIT;
+  case SIMCALL_COMM_WAITANY:
+    return MC_CALL_TYPE_WAITANY;
+  default:
+    return MC_CALL_TYPE_NONE;
+  }
+}
+
+void get_comm_pattern(xbt_dynar_t communications_pattern, smx_simcall_t request, mc_call_type call_type);
 void complete_comm_pattern(xbt_dynar_t list, smx_action_t comm);
 void MC_pre_modelcheck_comm_determinism(void);
 void MC_modelcheck_comm_determinism(void);

@@ -513,7 +513,7 @@ void MC_replay(xbt_fifo_t stack, int start)
 {
   int raw_mem = (mmalloc_get_current_heap() == mc_heap);
 
-  int value, i = 1, count = 1, call = 0, j;
+  int value, i = 1, count = 1, j;
   char *req_str;
   smx_simcall_t req = NULL, saved_req = NULL;
   xbt_fifo_item_t item, start_item;
@@ -595,38 +595,30 @@ void MC_replay(xbt_fifo_t stack, int start)
       }
 
       /* TODO : handle test and testany simcalls */
+      mc_call_type call = MC_CALL_TYPE_NONE;
       if (_sg_mc_comms_determinism || _sg_mc_send_determinism) {
-        if (req->call == SIMCALL_COMM_ISEND)
-          call = 1;
-        else if (req->call == SIMCALL_COMM_IRECV)
-          call = 2;
-        else if (req->call == SIMCALL_COMM_WAIT)
-          call = 3;
-        else if (req->call == SIMCALL_COMM_WAITANY)
-          call = 4;
+        call = mc_get_call_type(req);
       }
 
       SIMIX_simcall_enter(req, value);
 
       if (_sg_mc_comms_determinism || _sg_mc_send_determinism) {
         MC_SET_MC_HEAP;
-        if (call == 1) { /* Send */
+        if (call == MC_CALL_TYPE_SEND) { /* Send */
           get_comm_pattern(communications_pattern, req, call);
-        } else if (call == 2) { /* Recv */
+        } else if (call == MC_CALL_TYPE_RECV) { /* Recv */
           get_comm_pattern(communications_pattern, req, call);
-        } else if (call == 3) { /* Wait */
+        } else if (call == MC_CALL_TYPE_WAIT) { /* Wait */
           current_comm = simcall_comm_wait__get__comm(req);
           if (current_comm->comm.refcount == 1)  /* First wait only must be considered */
             complete_comm_pattern(communications_pattern, current_comm);
-        } else if (call == 4) { /* WaitAny */
+        } else if (call == MC_CALL_TYPE_WAITANY) { /* WaitAny */
           current_comm = xbt_dynar_get_as(simcall_comm_waitany__get__comms(req), value, smx_action_t);
           if (current_comm->comm.refcount == 1) /* First wait only must be considered */
             complete_comm_pattern(communications_pattern, current_comm);
         }
         MC_SET_STD_HEAP;
-        call = 0;
       }
-
 
       MC_wait_for_requests();
 
