@@ -854,6 +854,13 @@ void* mc_snapshot_read_pointer_region(void* addr, mc_mem_region_t region)
   return *(void**) mc_snapshot_read_region(addr, region, &res, sizeof(void*));
 }
 
+#define MC_LOG_REQUEST(log, req, value) \
+  if (XBT_LOG_ISENABLED(log, xbt_log_priority_debug)) { \
+    char* req_str = MC_request_to_string(req, value); \
+    XBT_DEBUG("Execute: %s", req_str); \
+    xbt_free(req_str); \
+  }
+
 SG_END_DECL()
 
 #endif

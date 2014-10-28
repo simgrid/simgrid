@@ -117,17 +117,13 @@ void MC_modelcheck_safety(void)
     if (xbt_fifo_size(mc_stack) <= _sg_mc_max_depth && !user_max_depth_reached
         && (req = MC_state_get_request(state, &value)) && visited_state == NULL) {
 
-      /* Debug information */
-      if (XBT_LOG_ISENABLED(mc_safety, xbt_log_priority_debug)) {
-        req_str = MC_request_to_string(req, value);
-        XBT_DEBUG("Execute: %s", req_str);
-        xbt_free(req_str);
-      }
+      MC_LOG_REQUEST(mc_safety, req, value);
 
-      MC_SET_MC_HEAP;
-      if (dot_output != NULL)
+      if (dot_output != NULL) {
+        MC_SET_MC_HEAP;
         req_str = MC_request_get_dot_output(req, value);
-      MC_SET_STD_HEAP;
+        MC_SET_STD_HEAP;
+      }
 
       MC_state_set_executed_request(state, req, value);
       mc_stats->executed_transitions++;
