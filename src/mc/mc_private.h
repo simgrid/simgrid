@@ -735,6 +735,7 @@ static inline mc_call_type mc_get_call_type(smx_simcall_t req) {
 }
 
 void get_comm_pattern(xbt_dynar_t communications_pattern, smx_simcall_t request, mc_call_type call_type);
+void mc_update_comm_pattern(mc_call_type call_type, smx_simcall_t request, int value, xbt_dynar_t current_pattern);
 void complete_comm_pattern(xbt_dynar_t list, smx_action_t comm);
 void MC_pre_modelcheck_comm_determinism(void);
 void MC_modelcheck_comm_determinism(void);

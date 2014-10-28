@@ -503,6 +503,22 @@ int MC_deadlock_check()
   return deadlock;
 }
 
+void mc_update_comm_pattern(mc_call_type call_type, smx_simcall_t req, int value, xbt_dynar_t pattern) {
+  if (call_type == MC_CALL_TYPE_SEND) { /* Send */
+    get_comm_pattern(pattern, req, call_type);
+  } else if (call_type == MC_CALL_TYPE_RECV) { /* Recv */
+    get_comm_pattern(pattern, req, call_type);
+  } else if (call_type == MC_CALL_TYPE_WAIT) { /* Wait */
+    smx_action_t current_comm = simcall_comm_wait__get__comm(req);
+    if (current_comm->comm.refcount == 1)  /* First wait only must be considered */
+      complete_comm_pattern(pattern, current_comm);
+  } else if (call_type == MC_CALL_TYPE_WAITANY) { /* WaitAny */
+    smx_action_t current_comm = xbt_dynar_get_as(simcall_comm_waitany__get__comms(req), value, smx_action_t);
+    if (current_comm->comm.refcount == 1) /* First wait only must be considered */
+      complete_comm_pattern(pattern, current_comm);
+  }
+}
+
 /**
  * \brief Re-executes from the state at position start all the transitions indicated by
  *        a given model-checker stack.
@@ -519,7 +535,6 @@ void MC_replay(xbt_fifo_t stack, int start)
   xbt_fifo_item_t item, start_item;
   mc_state_t state;
   smx_process_t process = NULL;
-  smx_action_t current_comm;
 
   XBT_DEBUG("**** Begin Replay ****");
 
@@ -604,19 +619,7 @@ void MC_replay(xbt_fifo_t stack, int start)
 
       if (_sg_mc_comms_determinism || _sg_mc_send_determinism) {
         MC_SET_MC_HEAP;
-        if (call == MC_CALL_TYPE_SEND) { /* Send */
-          get_comm_pattern(communications_pattern, req, call);
-        } else if (call == MC_CALL_TYPE_RECV) { /* Recv */
-          get_comm_pattern(communications_pattern, req, call);
-        } else if (call == MC_CALL_TYPE_WAIT) { /* Wait */
-          current_comm = simcall_comm_wait__get__comm(req);
-          if (current_comm->comm.refcount == 1)  /* First wait only must be considered */
-            complete_comm_pattern(communications_pattern, current_comm);
-        } else if (call == MC_CALL_TYPE_WAITANY) { /* WaitAny */
-          current_comm = xbt_dynar_get_as(simcall_comm_waitany__get__comms(req), value, smx_action_t);
-          if (current_comm->comm.refcount == 1) /* First wait only must be considered */
-            complete_comm_pattern(communications_pattern, current_comm);
-        }
+        mc_update_comm_pattern(call, req, value, communications_pattern);
         MC_SET_STD_HEAP;
       }
 

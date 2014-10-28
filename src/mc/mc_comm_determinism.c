@@ -317,7 +317,6 @@ void MC_modelcheck_comm_determinism(void)
   smx_simcall_t req = NULL;
   smx_process_t process = NULL;
   mc_state_t state = NULL, next_state = NULL;
-  smx_action_t current_comm;
   xbt_dynar_t current_pattern;
 
   while (xbt_fifo_size(mc_stack) > 0) {
@@ -361,19 +360,7 @@ void MC_modelcheck_comm_determinism(void)
 
       MC_SET_MC_HEAP;
       current_pattern = !initial_global_state->initial_communications_pattern_done ? initial_communications_pattern : communications_pattern; 
-      if (call == MC_CALL_TYPE_SEND) { /* Send */
-        get_comm_pattern(current_pattern, req, call);
-      } else if (call == MC_CALL_TYPE_RECV) { /* Recv */
-        get_comm_pattern(current_pattern, req, call);
-      } else if (call == MC_CALL_TYPE_WAIT) { /* Wait */
-        current_comm = simcall_comm_wait__get__comm(req);
-        if (current_comm->comm.refcount == 1)  /* First wait only must be considered */
-          complete_comm_pattern(current_pattern, current_comm);
-      } else if (call == MC_CALL_TYPE_WAITANY) { /* WaitAny */
-        current_comm = xbt_dynar_get_as(simcall_comm_waitany__get__comms(req), value, smx_action_t);
-        if (current_comm->comm.refcount == 1) /* First wait only must be considered */
-          complete_comm_pattern(current_pattern, current_comm);
-      }
+      mc_update_comm_pattern(call, req, value, current_pattern);
       MC_SET_STD_HEAP;
 
       /* Wait for requests (schedules processes) */
