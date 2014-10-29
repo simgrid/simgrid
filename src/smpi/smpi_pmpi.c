@@ -1379,7 +1379,7 @@ int PMPI_Test(MPI_Request * request, int *flag, MPI_Status * status)
   } else if (*request == MPI_REQUEST_NULL) {
     *flag= TRUE;
     smpi_empty_status(status);
-    retval = MPI_ERR_REQUEST;
+    retval = MPI_SUCCESS;
   } else {
 #ifdef HAVE_TRACING
     int rank = request && (*request)->comm != MPI_COMM_NULL
@@ -1486,7 +1486,7 @@ int PMPI_Wait(MPI_Request * request, MPI_Status * status)
   if (request == NULL) {
     retval = MPI_ERR_ARG;
   } else if (*request == MPI_REQUEST_NULL) {
-    retval = MPI_ERR_REQUEST;
+    retval = MPI_SUCCESS;
   } else {
 
 #ifdef HAVE_TRACING
