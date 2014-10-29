@@ -190,8 +190,7 @@ static void free_win(int win) {
   xbt_dict_remove(win_lookup, get_key(key, win));
 }
 
-
-void mpi_init_(int* ierr) {
+static void smpi_init_fortran_types(){
    if(!comm_lookup){
      comm_lookup = xbt_dict_new_homogeneous(NULL);
      smpi_comm_c2f(MPI_COMM_WORLD);
@@ -250,6 +249,11 @@ void mpi_init_(int* ierr) {
      smpi_op_c2f(MPI_BOR);
      smpi_op_c2f(MPI_BXOR);
    }
+}
+
+
+void mpi_init_(int* ierr) {
+    smpi_init_fortran_types();
    *ierr = MPI_Init(NULL, NULL);
    running_processes++;
 }
@@ -771,52 +775,9 @@ void mpi_finalized_ (int * flag, int* ierr){
 }
 
 void mpi_init_thread_ (int* required, int *provided, int* ierr){
-  if(!comm_lookup){
-    comm_lookup = xbt_dict_new_homogeneous(NULL);
-    smpi_comm_c2f(MPI_COMM_WORLD);
-    group_lookup = xbt_dict_new_homogeneous(NULL);
-
-    request_lookup = xbt_dict_new_homogeneous(NULL);
-
-    datatype_lookup = xbt_dict_new_homogeneous(NULL);
-    smpi_type_c2f(MPI_BYTE);
-    smpi_type_c2f(MPI_CHAR);
-    smpi_type_c2f(MPI_INT);
-    smpi_type_c2f(MPI_INT);
-    smpi_type_c2f(MPI_INT8_T);
-    smpi_type_c2f(MPI_INT16_T);
-    smpi_type_c2f(MPI_INT32_T);
-    smpi_type_c2f(MPI_INT64_T);
-    smpi_type_c2f(MPI_FLOAT);
-    smpi_type_c2f(MPI_FLOAT);
-    smpi_type_c2f(MPI_DOUBLE);
-    smpi_type_c2f(MPI_DOUBLE);
-    smpi_type_c2f(MPI_C_FLOAT_COMPLEX);
-    smpi_type_c2f(MPI_C_DOUBLE_COMPLEX);
-    smpi_type_c2f(MPI_2INT);
-    smpi_type_c2f(MPI_UINT8_T);
-    smpi_type_c2f(MPI_UINT16_T);
-    smpi_type_c2f(MPI_UINT32_T);
-    smpi_type_c2f(MPI_UINT64_T);
-    smpi_type_c2f(MPI_2FLOAT);
-    smpi_type_c2f(MPI_2DOUBLE);
-
-    op_lookup = xbt_dict_new_homogeneous( NULL);
-    smpi_op_c2f(MPI_MAX);
-    smpi_op_c2f(MPI_MIN);
-    smpi_op_c2f(MPI_MAXLOC);
-    smpi_op_c2f(MPI_MINLOC);
-    smpi_op_c2f(MPI_SUM);
-    smpi_op_c2f(MPI_PROD);
-    smpi_op_c2f(MPI_LAND);
-    smpi_op_c2f(MPI_LOR);
-    smpi_op_c2f(MPI_LXOR);
-    smpi_op_c2f(MPI_BAND);
-    smpi_op_c2f(MPI_BOR);
-    smpi_op_c2f(MPI_BXOR);
-  }
-
- *ierr = MPI_Init_thread(NULL, NULL,*required, provided);
+  smpi_init_fortran_types();
+  *ierr = MPI_Init_thread(NULL, NULL,*required, provided);
+  running_processes++;
 }
 
 void mpi_query_thread_ (int *provided, int* ierr){
