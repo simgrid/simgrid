@@ -848,6 +848,59 @@ static void action_reducescatter(const char *const *action) {
   log_timed_action (action, clock);
 }
 
+static void action_allgather(const char *const *action) {
+  /*
+ The structure of the allgather action for the rank 0 (total 4 processes) 
+ is the following:   
+  0 allGather 275427 275427
+
+  where: 
+  1) 275427 is the sendcount
+  2) 275427 is the recvcount
+  3) No more values mean that the datatype for sent and receive buffer
+  is the default one, see decode_datatype().
+
+   */
+
+  double clock = smpi_process_simulated_elapsed();
+
+  int comm_size = smpi_comm_size(MPI_COMM_WORLD);
+  int sendcount=atoi(action[2]); 
+  int recvcount=atoi(action[3]); 
+
+  MPI_Datatype MPI_CURRENT_TYPE2;
+
+  if(action[4]) {
+    MPI_CURRENT_TYPE = decode_datatype(action[3+comm_size]);
+    MPI_CURRENT_TYPE2 = decode_datatype(action[4+comm_size]);
+  } else {
+    MPI_CURRENT_TYPE = MPI_DEFAULT_TYPE;
+    MPI_CURRENT_TYPE2 = MPI_DEFAULT_TYPE;    
+  }
+  void *sendbuf = smpi_get_tmp_sendbuffer(sendcount* smpi_datatype_size(MPI_CURRENT_TYPE));
+  void *recvbuf = smpi_get_tmp_recvbuffer(recvcount* smpi_datatype_size(MPI_CURRENT_TYPE2));
+
+#ifdef HAVE_TRACING
+  int rank = smpi_process_index();
+  instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
+  extra->type = TRACING_ALLGATHER;
+  extra->send_size = sendcount;
+  extra->recv_size= recvcount;
+  extra->datatype1 = encode_datatype(MPI_CURRENT_TYPE);
+  extra->datatype2 = encode_datatype(MPI_CURRENT_TYPE2);
+  extra->num_processes = comm_size;
+
+  TRACE_smpi_collective_in(rank, -1, __FUNCTION__,extra);
+#endif
+
+  mpi_coll_allgather_fun(sendbuf, sendcount, MPI_CURRENT_TYPE, recvbuf, recvcount, MPI_CURRENT_TYPE2, MPI_COMM_WORLD);
+
+#ifdef HAVE_TRACING
+  TRACE_smpi_collective_out(rank, -1, __FUNCTION__);
+#endif
+
+  log_timed_action (action, clock);
+}
 
 static void action_allgatherv(const char *const *action) {
 
@@ -914,7 +967,6 @@ static void action_allgatherv(const char *const *action) {
   xbt_free(recvcounts);
   xbt_free(disps);
 }
-
 
 static void action_allToAllv(const char *const *action) {
   /*
@@ -1031,6 +1083,7 @@ void smpi_replay_init(int *argc, char***argv){
     xbt_replay_action_register("allToAllV",  action_allToAllv);
     xbt_replay_action_register("gather",  action_gather);
     xbt_replay_action_register("gatherV",  action_gatherv);
+    xbt_replay_action_register("allGather",  action_allgather);
     xbt_replay_action_register("allGatherV",  action_allgatherv);
     xbt_replay_action_register("reduceScatter",  action_reducescatter);
     xbt_replay_action_register("compute",    action_compute);
