@@ -351,26 +351,29 @@ static void action_test(const char *const *action){
   int flag = TRUE;
 
   request = xbt_dynar_pop_as(reqq[smpi_process_index()],MPI_Request);
-  xbt_assert(request != NULL, "found null request in reqq");
-
+  //if request is null here, this may mean that a previous test has succeeded 
+  //Different times in traced application and replayed version may lead to this 
+  //In this case, ignore the extra calls.
+  if(request){
 #ifdef HAVE_TRACING
   int rank = smpi_process_index();
   instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
   extra->type=TRACING_TEST;
   TRACE_smpi_testing_in(rank, extra);
 #endif
-  flag = smpi_mpi_test(&request, &status);
+
+    flag = smpi_mpi_test(&request, &status);
+
   XBT_DEBUG("MPI_Test result: %d", flag);
   /* push back request in dynar to be caught by a subsequent wait. if the test
    * did succeed, the request is now NULL.
    */
-   if(request)
   xbt_dynar_push_as(reqq[smpi_process_index()],MPI_Request, request);
 
 #ifdef HAVE_TRACING
   TRACE_smpi_testing_out(rank);
 #endif
-
+  }
   log_timed_action (action, clock);
 }
 
