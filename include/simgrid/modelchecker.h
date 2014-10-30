@@ -15,6 +15,8 @@
 
 SG_BEGIN_DECL()
 
+XBT_PUBLIC(int) MC_random(int min, int max);
+
 #ifdef HAVE_MC
 
 extern int _sg_do_model_check; /* please don't use directly: we inline MC_is_active, but that's what you should use */
@@ -24,7 +26,6 @@ extern int _sg_mc_visited;
 #define MC_visited_reduction()          _sg_mc_visited
 
 XBT_PUBLIC(void) MC_assert(int);
-XBT_PUBLIC(int) MC_random(int min, int max);
 XBT_PUBLIC(void) MC_automaton_new_propositional_symbol(const char* id, void* fct);
 XBT_PUBLIC(void *) MC_snapshot(void);
 XBT_PUBLIC(int) MC_compare_snapshots(void *s1, void *s2);
@@ -37,7 +38,6 @@ XBT_PUBLIC(void) MC_ignore(void *addr, size_t size);
 #define MC_visited_reduction()          0
 
 #define MC_assert(a)                    xbt_assert(a)
-#define MC_random(a, b)                 0
 #define MC_automaton_new_propositional_symbol(a, b) ((void)0)
 #define MC_snapshot()                   ((void*)0)
 #define MC_compare_snapshots(a, b)      0

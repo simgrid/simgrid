@@ -20,10 +20,10 @@
 #include "../xbt/mmalloc/mmprivate.h"
 #include "xbt/fifo.h"
 #include "mc_private.h"
+#include "mc_record.h"
 #include "xbt/automaton.h"
 #include "xbt/dict.h"
 
-XBT_LOG_NEW_CATEGORY(mc, "All MC categories");
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_global, mc,
                                 "Logging specific to MC (global)");
 
@@ -111,6 +111,21 @@ static void MC_init_debug_info(void)
 
 mc_model_checker_t mc_model_checker = NULL;
 
+mc_model_checker_t MC_model_checker_new()
+{
+  mc_model_checker_t mc = xbt_new0(s_mc_model_checker_t, 1);
+  mc->pages = mc_pages_store_new();
+  mc->fd_clear_refs = -1;
+  mc->fd_pagemap = -1;
+  return mc;
+}
+
+void MC_model_checker_delete(mc_model_checker_t mc) {
+  mc_pages_store_delete(mc->pages);
+  if(mc->record)
+    xbt_dynar_free(&mc->record);
+}
+
 void MC_init()
 {
   int raw_mem_set = (mmalloc_get_current_heap() == mc_heap);
@@ -122,10 +137,7 @@ void MC_init()
 
   MC_SET_MC_HEAP;
 
-  mc_model_checker = xbt_new0(s_mc_model_checker_t, 1);
-  mc_model_checker->pages = mc_pages_store_new();
-  mc_model_checker->fd_clear_refs = -1;
-  mc_model_checker->fd_pagemap = -1;
+  mc_model_checker = MC_model_checker_new();
 
   mc_comp_times = xbt_new0(s_mc_comparison_times_t, 1);
 
@@ -325,38 +337,6 @@ void MC_exit(void)
   //xbt_abort();
 }
 
-int simcall_HANDLER_mc_random(smx_simcall_t simcall, int min, int max)
-{
-
-  return simcall->mc_value;
-}
-
-
-int MC_random(int min, int max)
-{
-  /*FIXME: return mc_current_state->executed_transition->random.value; */
-  return simcall_mc_random(min, max);
-}
-
-/**
- * \brief Schedules all the process that are ready to run
- */
-void MC_wait_for_requests(void)
-{
-  smx_process_t process;
-  smx_simcall_t req;
-  unsigned int iter;
-
-  while (!xbt_dynar_is_empty(simix_global->process_to_run)) {
-    SIMIX_process_runall();
-      xbt_dynar_foreach(simix_global->process_that_ran, iter, process) {
-      req = &process->simcall;
-      if (req->call != SIMCALL_NONE && !MC_request_is_visible(req))
-        SIMIX_simcall_handle(req, 0);
-    }
-  }
-}
-
 int MC_deadlock_check()
 {
   int deadlock = FALSE;
@@ -403,6 +383,13 @@ void mc_update_comm_pattern(mc_call_type call_type, smx_simcall_t req, int value
  *        a given model-checker stack.
  * \param stack The stack with the transitions to execute.
  * \param start Start index to begin the re-execution.
+ *
+ *  If start==-1, restore the initial state and replay the actions the
+ *  the transitions in the stack.
+ *
+ *  Otherwise, we only replay a part of the transitions of the stacks
+ *  without restoring the state: it is assumed that the current state
+ *  match with the transitions to execute.
  */
 void MC_replay(xbt_fifo_t stack, int start)
 {
@@ -457,7 +444,6 @@ void MC_replay(xbt_fifo_t stack, int start)
   }
 
   MC_SET_STD_HEAP;
-
 
   /* Traverse the stack from the state at position start and re-execute the transitions */
   for (item = start_item;
@@ -762,6 +748,7 @@ void MC_assert(int prop)
     XBT_INFO("*** PROPERTY NOT VALID ***");
     XBT_INFO("**************************");
     XBT_INFO("Counter-example execution trace:");
+    MC_record_dump_path(mc_stack);
     MC_dump_stack_safety(mc_stack);
     MC_print_statistics(mc_stats);
     xbt_abort();

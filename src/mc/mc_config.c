@@ -13,20 +13,42 @@
 
 #include <simgrid/sg_config.h>
 
+#ifdef HAVE_MC
 #include "mc_private.h"
+#endif
+
+#include "mc_record.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_config, mc,
                                 "Configuration of MC");
 
+#ifdef HAVE_MC
 /* Configuration support */
 e_mc_reduce_t mc_reduce_kind = e_mc_reduce_unset;
+#endif
 
+#ifndef HAVE_MC
+#define _sg_do_model_check 0
+#endif
+
+int _sg_mc_timeout = 0;
+
+void _mc_cfg_cb_timeout(const char *name, int pos)
+{
+  if (_sg_cfg_init_status && !(_sg_do_model_check || MC_record_path)) {
+    xbt_die
+        ("You are specifying a value to enable/disable timeout for wait requests after the initialization (through MSG_config?), but model-checking was not activated at config time (through --cfg=model-check:1). This won't work, sorry.");
+  }
+  _sg_mc_timeout = xbt_cfg_get_boolean(_sg_cfg_set, name);
+}
+
+#ifdef HAVE_MC
 int _sg_do_model_check = 0;
+int _sg_do_model_check_record = 0;
 int _sg_mc_checkpoint = 0;
 int _sg_mc_sparse_checkpoint = 0;
 int _sg_mc_soft_dirty = 0;
 char *_sg_mc_property_file = NULL;
-int _sg_mc_timeout = 0;
 int _sg_mc_hash = 0;
 int _sg_mc_max_depth = 1000;
 int _sg_mc_visited = 0;
@@ -86,15 +108,6 @@ void _mc_cfg_cb_property(const char *name, int pos)
   _sg_mc_property_file = xbt_cfg_get_string(_sg_cfg_set, name);
 }
 
-void _mc_cfg_cb_timeout(const char *name, int pos)
-{
-  if (_sg_cfg_init_status && !_sg_do_model_check) {
-    xbt_die
-        ("You are specifying a value to enable/disable timeout for wait requests after the initialization (through MSG_config?), but model-checking was not activated at config time (through --cfg=model-check:1). This won't work, sorry.");
-  }
-  _sg_mc_timeout = xbt_cfg_get_boolean(_sg_cfg_set, name);
-}
-
 void _mc_cfg_cb_hash(const char *name, int pos)
 {
   if (_sg_cfg_init_status && !_sg_do_model_check) {
@@ -150,3 +163,5 @@ void _mc_cfg_cb_send_determinism(const char *name, int pos)
   _sg_mc_send_determinism = xbt_cfg_get_boolean(_sg_cfg_set, name);
   mc_reduce_kind = e_mc_reduce_none;
 }
+
+#endif

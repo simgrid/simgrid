@@ -16,6 +16,7 @@
 #include <elfutils/libdw.h>
 
 #include "mc/mc.h"
+#include "mc_base.h"
 #include "mc/datatypes.h"
 #include "xbt/fifo.h"
 #include "xbt/config.h"
@@ -223,8 +224,11 @@ typedef struct s_mc_model_checker {
   mc_pages_store_t pages;
   int fd_clear_refs;
   int fd_pagemap;
+  xbt_dynar_t record;
 } s_mc_model_checker_t, *mc_model_checker_t;
 
+mc_model_checker_t MC_model_checker_new(void);
+void MC_model_checker_delete(mc_model_checker_t mc);
 extern mc_model_checker_t mc_model_checker;
 
 extern xbt_dynar_t mc_checkpoint_ignore;
@@ -241,14 +245,18 @@ extern int user_max_depth_reached;
 int MC_deadlock_check(void);
 void MC_replay(xbt_fifo_t stack, int start);
 void MC_replay_liveness(xbt_fifo_t stack, int all_stack);
-void MC_wait_for_requests(void);
 void MC_show_deadlock(smx_simcall_t req);
 void MC_show_stack_safety(xbt_fifo_t stack);
 void MC_dump_stack_safety(xbt_fifo_t stack);
 
+/** Stack (of `mc_state_t`) representing the current position of the
+ *  the MC in the exploration graph
+ *
+ *  It is managed by its head (`xbt_fifo_shift` and `xbt_fifo_unshift`).
+ */
 extern xbt_fifo_t mc_stack;
-int get_search_interval(xbt_dynar_t list, void *ref, int *min, int *max);
 
+int get_search_interval(xbt_dynar_t list, void *ref, int *min, int *max);
 
 /********************************* Requests ***********************************/
 
@@ -296,7 +304,12 @@ typedef struct mc_procstate{
                                        interleaved */
 } s_mc_procstate_t, *mc_procstate_t;
 
-/* An exploration state is composed of: */
+/* An exploration state.
+ *
+ *  The `executed_state` is sometimes transformed into another `internal_req`.
+ *  For example WAITANY is transformes into a WAIT and TESTANY into TEST.
+ *  See `MC_state_set_executed_request()`.
+ */
 typedef struct mc_state {
   unsigned long max_pid;            /* Maximum pid at state's creation time */
   mc_procstate_t proc_status;       /* State's exploration status by process */

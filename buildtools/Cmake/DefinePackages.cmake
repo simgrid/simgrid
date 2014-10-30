@@ -7,6 +7,7 @@ set(EXTRA_DIST
   src/include/mc/mc.h
   src/mc/mc_mmu.h
   src/mc/mc_page_store.h
+  src/mc/mc_record.h
   src/include/simgrid/platf_interface.h
   src/include/simgrid/sg_config.h
   src/include/smpi/smpi_interface.h
@@ -583,6 +584,12 @@ set(JEDULE_SRC
   src/instr/jedule/jedule_sd_binding.c
   )
 
+set(MC_SRC_BASE
+  src/mc/mc_base.c
+  src/mc/mc_record.c
+  src/mc/mc_config.c
+  )
+
 set(MC_SRC
   src/mc/mc_checkpoint.c
   src/mc/mc_snapshot.c
@@ -590,7 +597,6 @@ set(MC_SRC
   src/mc/mc_page_snapshot.cpp
   src/mc/mc_comm_determinism.c
   src/mc/mc_compare.cpp
-  src/mc/mc_config.c
   src/mc/mc_diff.c
   src/mc/mc_dwarf.c
   src/mc/mc_dwarf_attrnames.h
@@ -601,6 +607,7 @@ set(MC_SRC
   src/mc/mc_ignore.c
   src/mc/mc_interface.h
   src/mc/mc_liveness.c
+  src/mc/mc_record.c
   src/mc/mc_member.c
   src/mc/mc_memory.c
   src/mc/mc_pair.c
@@ -759,6 +766,11 @@ else()
     ${TRACING_SRC}
     )
 endif()
+
+set(simgrid_sources
+  ${simgrid_sources}
+  ${MC_SRC_BASE}
+  )
 
 if(HAVE_MC)
   set(simgrid_sources
@@ -1022,6 +1034,7 @@ set(TESHSUITE_CMAKEFILES_TXT
   teshsuite/mc/CMakeLists.txt
   teshsuite/mc/dwarf/CMakeLists.txt
   teshsuite/mc/dwarf_expression/CMakeLists.txt
+  teshsuite/mc/replay/CMakeLists.txt
   teshsuite/msg/CMakeLists.txt
   teshsuite/msg/get_sender/CMakeLists.txt
   teshsuite/msg/host_on_off/CMakeLists.txt

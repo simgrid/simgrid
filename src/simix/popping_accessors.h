@@ -1799,6 +1799,25 @@ static inline xbt_dict_t simcall_asr_get_properties__get__result(smx_simcall_t s
 static inline void simcall_asr_get_properties__set__result(smx_simcall_t simcall, void* result){
     simcall->result.dp = result;
 }
+
+static inline int simcall_mc_random__get__min(smx_simcall_t simcall) {
+  return  simcall->args[0].i;
+}
+static inline void simcall_mc_random__set__min(smx_simcall_t simcall, int arg) {
+    simcall->args[0].i = arg;
+}
+static inline int simcall_mc_random__get__max(smx_simcall_t simcall) {
+  return  simcall->args[1].i;
+}
+static inline void simcall_mc_random__set__max(smx_simcall_t simcall, int arg) {
+    simcall->args[1].i = arg;
+}
+static inline int simcall_mc_random__get__result(smx_simcall_t simcall){
+    return  simcall->result.i;
+}
+static inline void simcall_mc_random__set__result(smx_simcall_t simcall, int result){
+    simcall->result.i = result;
+}
 #ifdef HAVE_LATENCY_BOUND_TRACKING
 
 static inline smx_synchro_t simcall_comm_is_latency_bounded__get__comm(smx_simcall_t simcall) {
@@ -1858,25 +1877,6 @@ static inline int simcall_mc_compare_snapshots__get__result(smx_simcall_t simcal
 static inline void simcall_mc_compare_snapshots__set__result(smx_simcall_t simcall, int result){
     simcall->result.i = result;
 }
-
-static inline int simcall_mc_random__get__min(smx_simcall_t simcall) {
-  return  simcall->args[0].i;
-}
-static inline void simcall_mc_random__set__min(smx_simcall_t simcall, int arg) {
-    simcall->args[0].i = arg;
-}
-static inline int simcall_mc_random__get__max(smx_simcall_t simcall) {
-  return  simcall->args[1].i;
-}
-static inline void simcall_mc_random__set__max(smx_simcall_t simcall, int arg) {
-    simcall->args[1].i = arg;
-}
-static inline int simcall_mc_random__get__result(smx_simcall_t simcall){
-    return  simcall->result.i;
-}
-static inline void simcall_mc_random__set__result(smx_simcall_t simcall, int result){
-    simcall->result.i = result;
-}
 #endif
 
 
@@ -1930,6 +1930,7 @@ int simcall_HANDLER_file_move(smx_simcall_t simcall, smx_file_t fd, const char* 
 sg_size_t simcall_HANDLER_storage_get_free_size(smx_simcall_t simcall, smx_storage_t storage);
 sg_size_t simcall_HANDLER_storage_get_used_size(smx_simcall_t simcall, smx_storage_t name);
 xbt_dict_t simcall_HANDLER_asr_get_properties(smx_simcall_t simcall, const char* name);
+int simcall_HANDLER_mc_random(smx_simcall_t simcall, int min, int max);
 #ifdef HAVE_LATENCY_BOUND_TRACKING
 
 #endif
@@ -1941,5 +1942,4 @@ xbt_dict_t simcall_HANDLER_asr_get_properties(smx_simcall_t simcall, const char*
 #ifdef HAVE_MC
 mc_snapshot_t simcall_HANDLER_mc_snapshot(smx_simcall_t simcall);
 int simcall_HANDLER_mc_compare_snapshots(smx_simcall_t simcall, mc_snapshot_t s1, mc_snapshot_t s2);
-int simcall_HANDLER_mc_random(smx_simcall_t simcall, int min, int max);
 #endif

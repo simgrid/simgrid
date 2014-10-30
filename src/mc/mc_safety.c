@@ -5,6 +5,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "mc_private.h"
+#include "mc_record.h"
 
 #include "xbt/mmalloc/mmprivate.h"
 

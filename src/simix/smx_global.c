@@ -16,6 +16,7 @@
 #ifdef HAVE_MC
 #include "mc/mc_private.h"
 #endif
+#include "mc/mc_record.h"
 
 #ifdef HAVE_SMPI
 #include "smpi/private.h"
@@ -306,6 +307,11 @@ static int process_syscall_color(void *p)
  */
 void SIMIX_run(void)
 {
+  if(MC_record_path) {
+    MC_record_replay_from_string(MC_record_path);
+    return;
+  }
+
   double time = 0;
   smx_process_t process;
   surf_action_t action;
@@ -607,4 +613,3 @@ xbt_dict_t SIMIX_asr_get_properties(const char *name)
 {
   return xbt_lib_get_or_null(as_router_lib, name, ROUTING_PROP_ASR_LEVEL);
 }
-
