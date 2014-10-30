@@ -504,18 +504,27 @@ int MC_deadlock_check()
 }
 
 void mc_update_comm_pattern(mc_call_type call_type, smx_simcall_t req, int value, xbt_dynar_t pattern) {
-  if (call_type == MC_CALL_TYPE_SEND) { /* Send */
+  switch(call_type) {
+  case MC_CALL_TYPE_NONE:
+    break;
+  case MC_CALL_TYPE_SEND:
+  case MC_CALL_TYPE_RECV:
     get_comm_pattern(pattern, req, call_type);
-  } else if (call_type == MC_CALL_TYPE_RECV) { /* Recv */
-    get_comm_pattern(pattern, req, call_type);
-  } else if (call_type == MC_CALL_TYPE_WAIT) { /* Wait */
-    smx_action_t current_comm = simcall_comm_wait__get__comm(req);
-    if (current_comm->comm.refcount == 1)  /* First wait only must be considered */
-      complete_comm_pattern(pattern, current_comm);
-  } else if (call_type == MC_CALL_TYPE_WAITANY) { /* WaitAny */
-    smx_action_t current_comm = xbt_dynar_get_as(simcall_comm_waitany__get__comms(req), value, smx_action_t);
-    if (current_comm->comm.refcount == 1) /* First wait only must be considered */
-      complete_comm_pattern(pattern, current_comm);
+    break;
+  case MC_CALL_TYPE_WAIT:
+    {
+      smx_action_t current_comm = NULL;
+      if (call_type == MC_CALL_TYPE_WAIT)
+        current_comm = simcall_comm_wait__get__comm(req);
+      else
+        current_comm = xbt_dynar_get_as(simcall_comm_waitany__get__comms(req), value, smx_action_t);
+      // First wait only must be considered:
+      if (current_comm->comm.refcount == 1)
+        complete_comm_pattern(pattern, current_comm);
+      break;
+    }
+  default:
+    xbt_die("Unexpected call type %i", (int)call_type);
   }
 }
 
