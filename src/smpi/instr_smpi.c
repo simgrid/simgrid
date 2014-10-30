@@ -49,6 +49,11 @@ static const char *smpi_colors[] ={
 
     "init",       "0 1 0",
     "finalize",     "0 1 0",
+
+    "put",       "0.3 1 0",
+    "get",       "0 1 0.3",
+    "accumulate",       "1 0.3 0",
+    "fence",       "1 0 0.3",
     NULL, NULL,
 };
 

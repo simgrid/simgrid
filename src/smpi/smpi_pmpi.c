@@ -2772,7 +2772,15 @@ int PMPI_Win_fence( int assert,  MPI_Win win){
   if (win == MPI_WIN_NULL) {
     retval = MPI_ERR_WIN;
   } else {
-    retval = smpi_mpi_win_fence(assert, win);
+#ifdef HAVE_TRACING
+  int rank = smpi_process_index();
+  TRACE_smpi_collective_in(rank, -1, __FUNCTION__, NULL);
+#endif
+  retval = smpi_mpi_win_fence(assert, win);
+#ifdef HAVE_TRACING
+  TRACE_smpi_collective_out(rank, -1, __FUNCTION__);
+#endif
+
   }
   smpi_bench_begin();
   return retval;
@@ -2798,7 +2806,19 @@ int PMPI_Get( void *origin_addr, int origin_count, MPI_Datatype origin_datatype,
             (!is_datatype_valid(target_datatype))) {
     retval = MPI_ERR_TYPE;
   } else {
+#ifdef HAVE_TRACING
+    int rank = smpi_process_index();
+    MPI_Group group;
+    smpi_mpi_win_get_group(win, &group);
+    int src_traced = smpi_group_index(group, target_rank);
+    TRACE_smpi_ptp_in(rank, src_traced, rank, __FUNCTION__, NULL);
+#endif
+
     retval = smpi_mpi_get( origin_addr, origin_count, origin_datatype, target_rank, target_disp, target_count, target_datatype, win);
+
+#ifdef HAVE_TRACING
+    TRACE_smpi_ptp_out(rank, src_traced, rank, __FUNCTION__);
+#endif
   }
   smpi_bench_begin();
   return retval;
@@ -2824,7 +2844,21 @@ int PMPI_Put( void *origin_addr, int origin_count, MPI_Datatype origin_datatype,
             (!is_datatype_valid(target_datatype))) {
     retval = MPI_ERR_TYPE;
   } else {
+#ifdef HAVE_TRACING
+    int rank = smpi_process_index();
+    MPI_Group group;
+    smpi_mpi_win_get_group(win, &group);
+    int dst_traced = smpi_group_index(group, target_rank);
+    TRACE_smpi_ptp_in(rank, rank, dst_traced, __FUNCTION__, NULL);
+    TRACE_smpi_send(rank, rank, dst_traced, origin_count*smpi_datatype_size(origin_datatype));
+#endif
+
     retval = smpi_mpi_put( origin_addr, origin_count, origin_datatype, target_rank, target_disp, target_count, target_datatype, win);
+
+#ifdef HAVE_TRACING
+    TRACE_smpi_ptp_out(rank, rank, dst_traced, __FUNCTION__);
+#endif
+
   }
   smpi_bench_begin();
   return retval;
@@ -2853,7 +2887,20 @@ int PMPI_Accumulate( void *origin_addr, int origin_count, MPI_Datatype origin_da
   } else if (op == MPI_OP_NULL) {
     retval = MPI_ERR_OP;
   } else {
+#ifdef HAVE_TRACING
+    int rank = smpi_process_index();
+    MPI_Group group;
+    smpi_mpi_win_get_group(win, &group);
+    int src_traced = smpi_group_index(group, target_rank);
+    TRACE_smpi_ptp_in(rank, src_traced, rank, __FUNCTION__, NULL);
+#endif
+
     retval = smpi_mpi_accumulate( origin_addr, origin_count, origin_datatype, target_rank, target_disp, target_count, target_datatype, op, win);
+
+#ifdef HAVE_TRACING
+    TRACE_smpi_ptp_out(rank, src_traced, rank, __FUNCTION__);
+#endif
+
   }
   smpi_bench_begin();
   return retval;
