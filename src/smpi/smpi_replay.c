@@ -364,6 +364,7 @@ static void action_test(const char *const *action){
   /* push back request in dynar to be caught by a subsequent wait. if the test
    * did succeed, the request is now NULL.
    */
+   if(request)
   xbt_dynar_push_as(reqq[smpi_process_index()],MPI_Request, request);
 
 #ifdef HAVE_TRACING
