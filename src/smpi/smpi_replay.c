@@ -683,8 +683,9 @@ static void action_gather(const char *const *action) {
   }
   void *send = smpi_get_tmp_sendbuffer(send_size* smpi_datatype_size(MPI_CURRENT_TYPE));
   void *recv = NULL;
-
-  int root=atoi(action[4]);
+  int root=0;
+  if(action[4])
+    root=atoi(action[4]);
   int rank = smpi_comm_rank(MPI_COMM_WORLD);
 
   if(rank==root)
