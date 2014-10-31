@@ -513,7 +513,6 @@ extern mc_object_info_t mc_object_infos[2];
 extern size_t mc_object_infos_size;
 
 void MC_find_object_address(memory_map_t maps, mc_object_info_t result);
-void MC_post_process_types(mc_object_info_t info);
 void MC_post_process_object_info(mc_object_info_t info);
 
 // ***** Expressions

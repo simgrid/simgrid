@@ -102,7 +102,7 @@ void MC_free_snapshot(mc_snapshot_t snapshot)
 /*******************************  Snapshot regions ********************************/
 /*********************************************************************************/
 
-  static mc_mem_region_t mc_region_new_dense(int type, void *start_addr, void* permanent_addr, size_t size, mc_mem_region_t ref_reg)
+static mc_mem_region_t mc_region_new_dense(int type, void *start_addr, void* permanent_addr, size_t size, mc_mem_region_t ref_reg)
 {
   mc_mem_region_t new_reg = xbt_new(s_mc_mem_region_t, 1);
   new_reg->start_addr = start_addr;
@@ -243,50 +243,6 @@ void MC_init_memory_map_info()
 
   MC_free_memory_map(maps);
 
-}
-
-/** \brief Fill/lookup the "subtype" field.
- */
-static void MC_resolve_subtype(mc_object_info_t info, dw_type_t type)
-{
-
-  if (type->dw_type_id == NULL)
-    return;
-  type->subtype = xbt_dict_get_or_null(info->types, type->dw_type_id);
-  if (type->subtype == NULL)
-    return;
-  if (type->subtype->byte_size != 0)
-    return;
-  if (type->subtype->name == NULL)
-    return;
-  // Try to find a more complete description of the type:
-  // We need to fix in order to support C++.
-
-  dw_type_t subtype =
-      xbt_dict_get_or_null(info->full_types_by_name, type->subtype->name);
-  if (subtype != NULL) {
-    type->subtype = subtype;
-  }
-
-}
-
-void MC_post_process_types(mc_object_info_t info)
-{
-  xbt_dict_cursor_t cursor = NULL;
-  char *origin;
-  dw_type_t type;
-
-  // Lookup "subtype" field:
-  xbt_dict_foreach(info->types, cursor, origin, type) {
-    MC_resolve_subtype(info, type);
-
-    dw_type_t member;
-    unsigned int i = 0;
-    if (type->members != NULL)
-      xbt_dynar_foreach(type->members, i, member) {
-      MC_resolve_subtype(info, member);
-      }
-  }
 }
 
 /** \brief Fills the position of the segments (executable, read-only, read/write).
@@ -609,7 +565,9 @@ static void MC_snapshot_ignore_restore(mc_snapshot_t snapshot)
 int mc_important_snapshot(mc_snapshot_t snapshot)
 {
   // We need this snapshot in order to know which
-  // pages needs to be stored in the next snapshot:
+  // pages needs to be stored in the next snapshot.
+  // This field is only non-NULL when using soft-dirty
+  // page tracking.
   if (snapshot == mc_model_checker->parent_snapshot)
     return true;
 
