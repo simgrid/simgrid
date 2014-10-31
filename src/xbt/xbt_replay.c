@@ -167,10 +167,9 @@ int xbt_replay_action_runner(int argc, char *argv[])
         function((const char **)evt);
       }
       CATCH(e) {
-        XBT_ERROR("Replay error :\n %s"
+        free(evt);
+        xbt_die("Replay error :\n %s"
                   , e.msg);
-        xbt_ex_free(e);
-        RETHROW;                
       }
       for (i=0;evt[i]!= NULL;i++)
         free(evt[i]);
