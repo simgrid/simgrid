@@ -20,7 +20,8 @@ typedef struct s_replay_reader {
   char *line;
   size_t line_len;
   char *position; /* stable storage */
-  char *filename; int linenum;
+  char *filename; 
+  int linenum;
 } s_xbt_replay_reader_t;
 
 FILE *action_fp;
@@ -154,6 +155,7 @@ void _xbt_replay_action_exit(void)
 int xbt_replay_action_runner(int argc, char *argv[])
 {
   int i;
+  xbt_ex_t e;
   if (action_fp) {              // A unique trace file
     char **evt;
     while ((evt = action_get_action(argv[0]))) {
@@ -161,7 +163,15 @@ int xbt_replay_action_runner(int argc, char *argv[])
       action_fun function =
         (action_fun)xbt_dict_get(action_funs, lowername);
       xbt_free(lowername);
-      function((const char **)evt);
+      TRY{
+        function((const char **)evt);
+      }
+      CATCH(e) {
+        XBT_ERROR("Replay error :\n %s"
+                  , e.msg);
+        xbt_ex_free(e);
+        RETHROW;                
+      }
       for (i=0;evt[i]!= NULL;i++)
         free(evt[i]);
       free(evt);
@@ -179,7 +189,14 @@ int xbt_replay_action_runner(int argc, char *argv[])
         char* lowername = str_tolower (evt[1]);
         action_fun function = (action_fun)xbt_dict_get(action_funs, lowername);
         xbt_free(lowername);
-        function(evt);
+        TRY{
+          function(evt);
+        }
+        CATCH(e) {
+          free(evt);
+          xbt_die("Replay error on line %d of file %s :\n %s"
+                     , reader->linenum,reader->filename, e.msg);               
+        }
       } else {
         XBT_WARN("%s: Ignore trace element not for me",
               xbt_replay_reader_position(reader));

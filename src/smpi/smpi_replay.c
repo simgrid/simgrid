@@ -129,11 +129,23 @@ const char* encode_datatype(MPI_Datatype datatype)
   return "-1";
 }
 
+#define CHECK_ACTION_PARAMS(action, mandatory, optional) {\
+    int i=0;\
+    while(action[i]!=NULL)\
+     i++;\
+    if(i<mandatory+2)                                           \
+    THROWF(arg_error, 0, "%s replay failed.\n" \
+          "%d items were given on the line. First two should be process_id and action.  " \
+          "This action needs after them %d mandatory arguments, and accepts %d optional ones. \n" \
+          "Please contact the Simgrid team if support is needed", __FUNCTION__, i, mandatory, optional);\
+  }
+
+
 static void action_init(const char *const *action)
 {
   int i;
   XBT_DEBUG("Initialize the counters");
-
+  CHECK_ACTION_PARAMS(action, 0, 1);
   if(action[2]) MPI_DEFAULT_TYPE= MPI_DOUBLE; // default MPE dataype 
   else MPI_DEFAULT_TYPE= MPI_BYTE; // default TAU datatype
 
@@ -179,6 +191,7 @@ static void action_comm_dup(const char *const *action)
 
 static void action_compute(const char *const *action)
 {
+  CHECK_ACTION_PARAMS(action, 1, 0);
   double clock = smpi_process_simulated_elapsed();
   double flops= parse_double(action[2]);
 #ifdef HAVE_TRACING
@@ -198,6 +211,7 @@ static void action_compute(const char *const *action)
 
 static void action_send(const char *const *action)
 {
+  CHECK_ACTION_PARAMS(action, 2, 1);
   int to = atoi(action[2]);
   double size=parse_double(action[3]);
   double clock = smpi_process_simulated_elapsed();
@@ -234,6 +248,7 @@ static void action_send(const char *const *action)
 
 static void action_Isend(const char *const *action)
 {
+  CHECK_ACTION_PARAMS(action, 2, 1);
   int to = atoi(action[2]);
   double size=parse_double(action[3]);
   double clock = smpi_process_simulated_elapsed();
@@ -268,6 +283,7 @@ static void action_Isend(const char *const *action)
 }
 
 static void action_recv(const char *const *action) {
+  CHECK_ACTION_PARAMS(action, 2, 1);
   int from = atoi(action[2]);
   double size=parse_double(action[3]);
   double clock = smpi_process_simulated_elapsed();
@@ -307,6 +323,7 @@ static void action_recv(const char *const *action) {
 
 static void action_Irecv(const char *const *action)
 {
+  CHECK_ACTION_PARAMS(action, 2, 1);
   int from = atoi(action[2]);
   double size=parse_double(action[3]);
   double clock = smpi_process_simulated_elapsed();
@@ -345,6 +362,7 @@ static void action_Irecv(const char *const *action)
 }
 
 static void action_test(const char *const *action){
+  CHECK_ACTION_PARAMS(action, 0, 0);
   double clock = smpi_process_simulated_elapsed();
   MPI_Request request;
   MPI_Status status;
@@ -378,6 +396,7 @@ static void action_test(const char *const *action){
 }
 
 static void action_wait(const char *const *action){
+  CHECK_ACTION_PARAMS(action, 0, 0);
   double clock = smpi_process_simulated_elapsed();
   MPI_Request request;
   MPI_Status status;
@@ -419,6 +438,7 @@ static void action_wait(const char *const *action){
 }
 
 static void action_waitall(const char *const *action){
+  CHECK_ACTION_PARAMS(action, 0, 0);
   double clock = smpi_process_simulated_elapsed();
   int count_requests=0;
   unsigned int i=0;
@@ -513,6 +533,7 @@ static void action_barrier(const char *const *action){
 
 static void action_bcast(const char *const *action)
 {
+  CHECK_ACTION_PARAMS(action, 1, 2);
   double size = parse_double(action[2]);
   double clock = smpi_process_simulated_elapsed();
   int root=0;
@@ -551,6 +572,7 @@ static void action_bcast(const char *const *action)
 
 static void action_reduce(const char *const *action)
 {
+  CHECK_ACTION_PARAMS(action, 2, 2);
   double comm_size = parse_double(action[2]);
   double comp_size = parse_double(action[3]);
   double clock = smpi_process_simulated_elapsed();
@@ -589,6 +611,7 @@ static void action_reduce(const char *const *action)
 }
 
 static void action_allReduce(const char *const *action) {
+  CHECK_ACTION_PARAMS(action, 2, 1);
   double comm_size = parse_double(action[2]);
   double comp_size = parse_double(action[3]);
 
@@ -669,6 +692,7 @@ static void action_gather(const char *const *action) {
   4) 0 is the send datatype id, see decode_datatype()
   5) 0 is the recv datatype id, see decode_datatype()
   */
+  CHECK_ACTION_PARAMS(action, 2, 3);
   double clock = smpi_process_simulated_elapsed();
   int comm_size = smpi_comm_size(MPI_COMM_WORLD);
   int send_size = parse_double(action[2]);
@@ -728,8 +752,10 @@ static void action_gatherv(const char *const *action) {
   4) 0 is the send datatype id, see decode_datatype()
   5) 0 is the recv datatype id, see decode_datatype()
   */
+
   double clock = smpi_process_simulated_elapsed();
   int comm_size = smpi_comm_size(MPI_COMM_WORLD);
+  CHECK_ACTION_PARAMS(action, comm_size+1, 2);
   int send_size = parse_double(action[2]);
   int *disps = xbt_new0(int, comm_size);
   int *recvcounts = xbt_new0(int, comm_size);
@@ -802,6 +828,7 @@ static void action_reducescatter(const char *const *action) {
 
   double clock = smpi_process_simulated_elapsed();
   int comm_size = smpi_comm_size(MPI_COMM_WORLD);
+  CHECK_ACTION_PARAMS(action, comm_size+1, 1);
   int comp_size = parse_double(action[2+comm_size]);
   int *recvcounts = xbt_new0(int, comm_size);  
   int *disps = xbt_new0(int, comm_size);  
@@ -864,15 +891,15 @@ static void action_allgather(const char *const *action) {
 
   double clock = smpi_process_simulated_elapsed();
 
-  int comm_size = smpi_comm_size(MPI_COMM_WORLD);
+  CHECK_ACTION_PARAMS(action, 2, 2);
   int sendcount=atoi(action[2]); 
   int recvcount=atoi(action[3]); 
 
   MPI_Datatype MPI_CURRENT_TYPE2;
 
   if(action[4]) {
-    MPI_CURRENT_TYPE = decode_datatype(action[3+comm_size]);
-    MPI_CURRENT_TYPE2 = decode_datatype(action[4+comm_size]);
+    MPI_CURRENT_TYPE = decode_datatype(action[3]);
+    MPI_CURRENT_TYPE2 = decode_datatype(action[4]);
   } else {
     MPI_CURRENT_TYPE = MPI_DEFAULT_TYPE;
     MPI_CURRENT_TYPE2 = MPI_DEFAULT_TYPE;    
@@ -888,7 +915,7 @@ static void action_allgather(const char *const *action) {
   extra->recv_size= recvcount;
   extra->datatype1 = encode_datatype(MPI_CURRENT_TYPE);
   extra->datatype2 = encode_datatype(MPI_CURRENT_TYPE2);
-  extra->num_processes = comm_size;
+  extra->num_processes = smpi_comm_size(MPI_COMM_WORLD);
 
   TRACE_smpi_collective_in(rank, -1, __FUNCTION__,extra);
 #endif
@@ -920,6 +947,7 @@ static void action_allgatherv(const char *const *action) {
   double clock = smpi_process_simulated_elapsed();
 
   int comm_size = smpi_comm_size(MPI_COMM_WORLD);
+  CHECK_ACTION_PARAMS(action, comm_size+1, 2);
   int i=0;
   int sendcount=atoi(action[2]);
   int *recvcounts = xbt_new0(int, comm_size);  
@@ -986,6 +1014,7 @@ static void action_allToAllv(const char *const *action) {
   double clock = smpi_process_simulated_elapsed();
 
   int comm_size = smpi_comm_size(MPI_COMM_WORLD);
+  CHECK_ACTION_PARAMS(action, 2*comm_size+2, 2);
   int send_buf_size=0,recv_buf_size=0,i=0;
   int *sendcounts = xbt_new0(int, comm_size);  
   int *recvcounts = xbt_new0(int, comm_size);  
