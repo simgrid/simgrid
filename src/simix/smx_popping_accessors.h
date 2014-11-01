@@ -6,6 +6,13 @@
 /* change simcalls specification in src/simix/simcalls.in             */
 /**********************************************************************/
 
+/*
+ * Note that the name comes from http://en.wikipedia.org/wiki/Popping
+ * Indeed, the control flow is doing a strange dance in there.
+ *
+ * That's not about http://en.wikipedia.org/wiki/Poop, despite the odor :)
+ */
+
 
 static inline const char* simcall_host_get_by_name__get__name(smx_simcall_t simcall){
   return  simcall->args[0].cc;

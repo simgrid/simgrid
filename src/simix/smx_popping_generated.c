@@ -7,7 +7,7 @@
 /**********************************************************************/
 
 /*
- * Note that the name comes from http://en.wikipedia.org/wiki/Popping 
+ * Note that the name comes from http://en.wikipedia.org/wiki/Popping
  * Indeed, the control flow is doing a strange dance in there.
  *
  * That's not about http://en.wikipedia.org/wiki/Poop, despite the odor :)
