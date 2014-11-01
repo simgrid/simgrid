@@ -444,8 +444,6 @@ void SIMIX_run(void)
 
 
     XBT_DEBUG("### time %f, empty %d", time, xbt_dynar_is_empty(simix_global->process_to_run));
-    // !(time == -1.0 && xbt_dynar_is_empty())
-
 
   } while (time != -1.0 || !xbt_dynar_is_empty(simix_global->process_to_run));
 
