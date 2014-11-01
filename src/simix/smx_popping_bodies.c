@@ -13,6 +13,9 @@
  * That's not about http://en.wikipedia.org/wiki/Poop, despite the odor :)
  */
 
+#include "smx_private.h"
+#include "mc/mc_interface.h"
+#include "xbt/ex.h"
   
 inline static smx_host_t simcall_BODY_host_get_by_name(const char* name) {
     smx_process_t self = SIMIX_process_self();
