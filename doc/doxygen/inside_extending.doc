@@ -125,28 +125,24 @@ a simcall is the following:
   - create the simcall
   - `SIMIX_process_yield` if not maestro
   - ========== KERNEL MODE ==========
-  - `SIMIX_simcall_pre`
+  - `SIMIX_simcall_enter`
    - `SIMIX_pre_<name>(simcall, <args>)`
    - `SIMIX_simcall_answer(simcall)`
 
 To simplify the simcall creation, we have made a python script that
 generate most of the code and give helpers for the remaining stuff.
-The script generating the simcalls (src/simix/simcalls.in) take in input
-the src/simix/simcalls.in file where the simcalls are defined and generate
-the following files:
+That script reads the simcall definitions from src/simix/simcalls.in 
+and generates the following files:
 
-- simcall_generated_args_getter_setter.h:
-  functions to get and set simcall arguments
-- simcall_generated_res_getter_setter.h:
-  functions to get and set simcall result
-- simcall_generated_body.c:
-  the BODY function of the simcall
-- simcall_generated_case.c:
-  the case of the SIMIX_simcall_pre function
-- simcall_generated_enum.h:
-  the enum of simcalls
-- simcall_generated_string.c:
-  string corresponding to the enum to debug
+- smx_popping_accessors.h:
+  Helper functions to get and set simcall arguments and results
+- smx_popping_bodies.c:
+  The BODY function of each simcall
+- smx_popping_enum.c:
+  Definition of type `enum e_smx_simcall_t` (one value per existing simcall)
+- smx_popping_generated.c:
+  Definitions of `simcall_names[]` (debug name of each simcall), and
+  SIMIX_simcall_enter() that deals with the simcall from within the kernel
 
 Furthermode if the simcall_<name> or the SIMIX_pre_<name> function are missing,
 a warning will show up with a prototype of the corresponding fonction to fill.

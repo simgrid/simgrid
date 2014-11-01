@@ -105,36 +105,32 @@ class Simcall(object):
 
   def string(self):
     return '[SIMCALL_%s] = "SIMCALL_%s",'%(self.name.upper(), self.name.upper())	
-  
-  def result_getter_setter(self):
-    return '%s\n%s'%(self.result_getter(), self.result_setter())
-  
-  def result_getter(self):
-    return '' if self.res.type == 'void' else '''static inline %s simcall_%s__get__result(smx_simcall_t simcall){
-  return %s simcall->result.%s;
-}'''%(self.res.ret(), self.name, self.res.cast(), self.res.field())
 
-  def result_setter(self):
-    return '' if self.res.type == 'void' else '''static inline void simcall_%s__set__result(smx_simcall_t simcall, %s result){
-    simcall->result.%s = result;
-}'''%(self.name, self.res.type, self.res.field())
-
-  def args_getter_setter(self):
+  def accessors(self):
     res = []
     for i in range(len(self.args)):
       res.append(self.arg_getter(i))
       res.append(self.arg_setter(i))
+    if self.res.type != 'void':
+        res.append('static inline %s simcall_%s__get__result(smx_simcall_t simcall){'%(self.res.ret(), self.name))
+        res.append('    return %s simcall->result.%s;'%(self.res.cast(), self.res.field()))
+        res.append('}')
+        res.append('static inline void simcall_%s__set__result(smx_simcall_t simcall, %s result){'%(self.name, self.res.type,))
+        res.append('    simcall->result.%s = result;'%(self.res.field()))
+        res.append('}')
     return '\n'.join(res)
 
   def arg_getter(self, i):
     arg = self.args[i]
-    return '''static inline %s simcall_%s__get__%s(smx_simcall_t simcall){
+    return '''
+static inline %s simcall_%s__get__%s(smx_simcall_t simcall){
   return %s simcall->args[%i].%s;
 }'''%(arg.ret(), self.name, arg.name, arg.cast(), i, arg.field())
 
   def arg_setter(self, i):
     arg = self.args[i]
-    return '''static inline void simcall_%s__set__%s(smx_simcall_t simcall, %s arg){
+    return '''
+static inline void simcall_%s__set__%s(smx_simcall_t simcall, %s arg){
     simcall->args[%i].%s = arg;
 }'''%(self.name, arg.name, arg.type, i, arg.field())
 
@@ -241,11 +237,10 @@ if __name__=='__main__':
   #  print ("Some checks fail!")
   #  sys.exit(1)
 
-  write('simcalls_generated_res_getter_setter.h', Simcall.result_getter_setter, simcalls, simcalls_dict)
-  write('simcalls_generated_args_getter_setter.h', Simcall.args_getter_setter, simcalls, simcalls_dict)
+  write('smx_popping_accessors.h', Simcall.accessors, simcalls, simcalls_dict)
   
   
-  fd = open("smx_popping_generated.h", 'w')
+  fd = open("smx_popping_enum.h", 'w')
   header(fd)
   fd.write("""
 /*
@@ -326,4 +321,4 @@ NUM_SIMCALLS
   
   fd.close()
   
-  write('simcalls_generated_body.c', Simcall.body, simcalls, simcalls_dict)
+  write('smx_popping_bodies.c', Simcall.body, simcalls, simcalls_dict)

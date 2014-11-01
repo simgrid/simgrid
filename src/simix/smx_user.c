@@ -13,7 +13,7 @@
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix);
 
-#include "simcalls_generated_body.c"
+#include "smx_popping_bodies.c"
 
 /**
  * \ingroup simix_host_management

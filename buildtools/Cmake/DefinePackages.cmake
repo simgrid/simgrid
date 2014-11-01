@@ -29,11 +29,10 @@ set(EXTRA_DIST
   src/simdag/private.h
   src/simix/simcalls.in
   src/simix/simcalls.py
-  src/simix/simcalls_generated_args_getter_setter.h
-  src/simix/simcalls_generated_body.c
+  src/simix/smx_popping_bodies.c
   src/simix/smx_popping_generated.c
-  src/simix/smx_popping_generated.h
-  src/simix/simcalls_generated_res_getter_setter.h
+  src/simix/smx_popping_enum.h
+  src/simix/smx_popping_accessors.h
   src/simix/smx_host_private.h
   src/simix/smx_io_private.h
   src/simix/smx_network_private.h
