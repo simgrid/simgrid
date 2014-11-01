@@ -32,7 +32,7 @@ set(EXTRA_DIST
   src/simix/simcalls_generated_args_getter_setter.h
   src/simix/simcalls_generated_body.c
   src/simix/smx_popping_generated.c
-  src/simix/simcalls_generated_enum.h
+  src/simix/smx_popping_generated.h
   src/simix/simcalls_generated_res_getter_setter.h
   src/simix/smx_host_private.h
   src/simix/smx_io_private.h
