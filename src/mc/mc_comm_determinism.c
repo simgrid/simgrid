@@ -356,7 +356,7 @@ void MC_modelcheck_comm_determinism(void)
       }
 
       /* Answer the request */
-      SIMIX_simcall_enter(req, value);    /* After this call req is no longer usefull */
+      SIMIX_simcall_enter(req, value);    /* After this call req is no longer useful */
 
       MC_SET_MC_HEAP;
       current_pattern = !initial_global_state->initial_communications_pattern_done ? initial_communications_pattern : communications_pattern; 
