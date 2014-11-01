@@ -14,30 +14,6 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_smurf, simix,
                                 "Logging specific to SIMIX (SMURF)");
 
-XBT_INLINE smx_simcall_t SIMIX_simcall_mine()
-{
-  smx_process_t issuer = SIMIX_process_self();
-  return &issuer->simcall;
-}
-
-/**
- * \brief Makes the current process do a simcall to the kernel and yields
- * until completion. If the current thread is maestro, we don't yield and
- * execute the simcall directly.
- * \param self the current process
- */
-void SIMIX_simcall_push(smx_process_t self)
-{
-  if (self != simix_global->maestro_process) {
-    XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name,
-              SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
-    SIMIX_process_yield(self);
-  } else {
-    XBT_DEBUG("I'm the maestro, execute the simcall directly");
-    SIMIX_simcall_enter(&self->simcall, 0);
-  }
-}
-
 void SIMIX_simcall_answer(smx_simcall_t simcall)
 {
   if (simcall->issuer != simix_global->maestro_process){

@@ -65,21 +65,12 @@ typedef struct s_smx_simcall {
 
 /******************************** General *************************************/
 
-void SIMIX_simcall_push(smx_process_t self);
 void SIMIX_simcall_answer(smx_simcall_t);
 void SIMIX_simcall_enter(smx_simcall_t, int);
 void SIMIX_simcall_exit(smx_action_t);
-smx_simcall_t SIMIX_simcall_mine(void);
 const char *SIMIX_simcall_name(e_smx_simcall_t kind);
 //FIXME put it in a better place
 xbt_dict_t SIMIX_pre_asr_get_properties(smx_simcall_t simcall, const char *name);
-
-/*************************** New simcall interface ****************************/
-
-typedef smx_action_t (*simcall_handler_t)(u_smx_scalar_t *);
-
-extern const char *simcall_types[];
-extern simcall_handler_t simcall_table[];
 
 SG_END_DECL()
 
