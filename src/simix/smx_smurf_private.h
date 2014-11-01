@@ -51,14 +51,6 @@ typedef struct s_smx_simcall {
 #endif
   union u_smx_scalar args[11];
   union u_smx_scalar result;
-  union {
-    struct {
-      const char* param1;
-      double param2;
-      int result;
-    } new_api;
-
-  };
 } s_smx_simcall_t, *smx_simcall_t;
 
 #if HAVE_MC

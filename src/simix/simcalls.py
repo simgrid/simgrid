@@ -265,7 +265,6 @@ SIMCALL_NONE,
   handle(fd, Simcall.enum, simcalls, simcalls_dict)
   
   fd.write("""
-SIMCALL_NEW_API_INIT,
 NUM_SIMCALLS
 } e_smx_simcall_t;
   """)
@@ -322,12 +321,6 @@ NUM_SIMCALLS
   fd.write('          );\n');
   fd.write('      break;\n');
   fd.write('\n');
-  fd.write('    /* ****************************************************************************************** */\n');
-  fd.write('    /* TUTORIAL: New API                                                                        */\n');
-  fd.write('    /* ****************************************************************************************** */\n');
-  fd.write('    case SIMCALL_NEW_API_INIT:\n');
-  fd.write('      SIMIX_pre_new_api_fct(simcall);\n');
-  fd.write('      break;\n');
   fd.write('  }\n');
   fd.write('}\n');
   

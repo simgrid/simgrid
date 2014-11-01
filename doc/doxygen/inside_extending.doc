@@ -3,25 +3,6 @@
 
 \tableofcontents
 
-\section simgrid_dev_guide_api How to add a new MSG function?
-Search for expression \"TUTORIAL: New API\".
-\verbatim
-user@caraja:~/workspace/simgrid/src$ cg "TUTORIAL: New API"
- 0 msg/msg_new_api.c             15 /* TUTORIAL: New API*/
- 1 simix/smx_smurf.c            582 /* TUTORIAL: New API*/
- 2 simix/smx_smurf.c            616 /* TUTORIAL: New API*/
- 3 simix/smx_smurf_private.h    102 /* TUTORIAL: New API*/
- 4 simix/smx_smurf_private.h    629 /* TUTORIAL: New API*/
- 5 simix/smx_private.h           28 /* TUTORIAL: New API*/
- 6 simix/smx_private.h          101 /* TUTORIAL: New API*/
- 7 simix/smx_private.h          182 /* TUTORIAL: New API*/
- 8 simix/smx_global.c           454 /* TUTORIAL: New API*/
- 9 simix/smx_new_api.c            8 /* TUTORIAL: New API*/
-10 simix/smx_user.c            1684 /* TUTORIAL: New API*/
-11 simix/smx_new_api_private.h    8 /* TUTORIAL: New API*/
-12 simix/smx_process.c          338 /* TUTORIAL: New API*/
-\endverbatim
-
 \section simgrid_dev_guide_model How to add a new model in surf?
 The figure below show the architecture of the SURF layer. This layer is composed
 of different kind of models representing the differents systems we want to

@@ -1470,38 +1470,23 @@ xbt_dict_t simcall_storage_get_content(smx_storage_t storage)
   return simcall_BODY_storage_get_content(storage);
 }
 
+
+
 #ifdef HAVE_MC
 
-void *simcall_mc_snapshot(void)
-{
+void *simcall_mc_snapshot(void) {
   return simcall_BODY_mc_snapshot();
 }
 
-int simcall_mc_compare_snapshots(void *s1, void *s2){
+int simcall_mc_compare_snapshots(void *s1, void *s2) {
   return simcall_BODY_mc_compare_snapshots(s1, s2);
 }
 
-int simcall_mc_random(int min, int max)
-{
+int simcall_mc_random(int min, int max) {
   return simcall_BODY_mc_random(min, max);
 }
 
-
 #endif /* HAVE_MC */
-
-/* ****************************************************************************************** */
-/* TUTORIAL: New API                                                                          */
-/* All functions for simcall                                                                  */
-/* ****************************************************************************************** */
-int simcall_new_api_fct(const char* param1, double param2){
-  smx_simcall_t simcall = SIMIX_simcall_mine();
-  simcall->call = SIMCALL_NEW_API_INIT;
-  simcall->new_api.param1 = param1;
-  simcall->new_api.param2 = param2;
-
-  SIMIX_simcall_push(simcall->issuer);
-  return simcall->new_api.result;
-}
 
 /* ************************************************************************** */
 

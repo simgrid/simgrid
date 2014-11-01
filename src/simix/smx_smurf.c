@@ -81,12 +81,5 @@ void SIMIX_simcall_exit(smx_action_t action)
     case SIMIX_ACTION_IO:
       SIMIX_post_io(action);
       break;
-
-    /* ****************************************************************************************** */
-    /* TUTORIAL: New API                                                                        */
-    /* ****************************************************************************************** */
-    case SIMIX_ACTION_NEW_API:
-      SIMIX_post_new_api(action);
-      break;
   }
 }

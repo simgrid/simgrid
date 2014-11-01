@@ -651,7 +651,6 @@ static void xbt_log_connect_categories(void)
   XBT_LOG_CONNECT(msg_io);
   XBT_LOG_CONNECT(msg_kernel);
   XBT_LOG_CONNECT(msg_mailbox);
-  XBT_LOG_CONNECT(msg_new_API);
   XBT_LOG_CONNECT(msg_process);
   XBT_LOG_CONNECT(msg_synchro);
   XBT_LOG_CONNECT(msg_task);
@@ -676,7 +675,6 @@ static void xbt_log_connect_categories(void)
   XBT_LOG_CONNECT(simix_io);
   XBT_LOG_CONNECT(simix_kernel);
   XBT_LOG_CONNECT(simix_network);
-  XBT_LOG_CONNECT(simix_new_api);
   XBT_LOG_CONNECT(simix_process);
   XBT_LOG_CONNECT(simix_smurf);
   XBT_LOG_CONNECT(simix_synchro);

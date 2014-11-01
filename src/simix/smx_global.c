@@ -568,13 +568,6 @@ void SIMIX_display_process_status(void)
       case SIMIX_ACTION_IO:
         action_description = "I/O";
         break;
-      /* **************************************/
-      /* TUTORIAL: New API                    */
-      case SIMIX_ACTION_NEW_API:
-        action_description = "NEW API";
-      /* **************************************/
-
-        break;
       }
       XBT_INFO("Process %lu (%s@%s): waiting for %s action %p (%s) in state %d to finish",
           process->pid, process->name, sg_host_name(process->smx_host),

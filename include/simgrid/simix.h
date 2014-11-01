@@ -531,10 +531,5 @@ XBT_PUBLIC(void *) simcall_mc_snapshot(void);
 XBT_PUBLIC(int) simcall_mc_compare_snapshots(void *s1, void *s2);
 XBT_PUBLIC(int) simcall_mc_random(int min, int max);
 
-/************************** New API simcalls **********************************/
-/* TUTORIAL: New API                                                          */
-/******************************************************************************/
-XBT_PUBLIC(int) simcall_new_api_fct(const char* param1, double param2);
-
 SG_END_DECL()
 #endif                          /* _SIMIX_SIMIX_H */

@@ -24,10 +24,6 @@
 #include "smx_network_private.h"
 #include "smx_smurf_private.h"
 #include "smx_synchro_private.h"
-/* ****************************************************************************************** */
-/* TUTORIAL: New API                                                                        */
-/* ****************************************************************************************** */
-#include "smx_new_api_private.h"
 
 /* Define only for SimGrid benchmarking purposes */
 //#define TIME_BENCH_PER_SR     /* this aims at measuring the time spent in each scheduling round per each thread. The code is thus run in sequential to bench separately each SSR */
@@ -108,10 +104,6 @@ typedef enum {
   SIMIX_ACTION_SLEEP,
   SIMIX_ACTION_SYNCHRO,
   SIMIX_ACTION_IO,
-  /* ****************************************************************************************** */
-  /* TUTORIAL: New API                                                                        */
-  /* ****************************************************************************************** */
-  SIMIX_ACTION_NEW_API
 } e_smx_action_type_t;
 
 typedef enum {
@@ -195,13 +187,6 @@ typedef struct s_smx_action {
       smx_host_t host;
       surf_action_t surf_io;
     } io;
-
-    /* ****************************************************************************************** */
-    /* TUTORIAL: New API                                                                        */
-    /* ****************************************************************************************** */
-    struct {
-      surf_action_t surf_new_api;
-    } new_api;
   };
 
 #ifdef HAVE_LATENCY_BOUND_TRACKING
