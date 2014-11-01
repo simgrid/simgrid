@@ -66,7 +66,7 @@ typedef struct s_smx_simcall {
 /******************************** General *************************************/
 
 void SIMIX_simcall_answer(smx_simcall_t);
-void SIMIX_simcall_enter(smx_simcall_t, int);
+void SIMIX_simcall_handle(smx_simcall_t, int);
 void SIMIX_simcall_exit(smx_action_t);
 const char *SIMIX_simcall_name(e_smx_simcall_t kind);
 //FIXME put it in a better place

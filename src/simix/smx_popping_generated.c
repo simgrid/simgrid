@@ -161,7 +161,7 @@ const char* simcall_names[] = {
  * 
  * This function is generated from src/simix/simcalls.in
  */
-void SIMIX_simcall_enter(smx_simcall_t simcall, int value) {
+void SIMIX_simcall_handle(smx_simcall_t simcall, int value) {
   XBT_DEBUG("Handling simcall %p: %s", simcall, SIMIX_simcall_name(simcall->call));
   SIMCALL_SET_MC_VALUE(simcall, value);
   if (simcall->issuer->context->iwannadie && simcall->call != SIMCALL_PROCESS_CLEANUP)

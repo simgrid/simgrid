@@ -349,7 +349,7 @@ void MC_wait_for_requests(void)
       xbt_dynar_foreach(simix_global->process_that_ran, iter, process) {
       req = &process->simcall;
       if (req->call != SIMCALL_NONE && !MC_request_is_visible(req))
-        SIMIX_simcall_enter(req, 0);
+        SIMIX_simcall_handle(req, 0);
     }
   }
 }
@@ -491,7 +491,7 @@ void MC_replay(xbt_fifo_t stack, int start)
         call = mc_get_call_type(req);
       }
 
-      SIMIX_simcall_enter(req, value);
+      SIMIX_simcall_handle(req, value);
 
       if (_sg_mc_comms_determinism || _sg_mc_send_determinism) {
         MC_SET_MC_HEAP;
@@ -586,7 +586,7 @@ void MC_replay_liveness(xbt_fifo_t stack, int all_stack)
 
         }
 
-        SIMIX_simcall_enter(req, value);
+        SIMIX_simcall_handle(req, value);
         MC_wait_for_requests();
       }
 

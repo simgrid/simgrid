@@ -163,7 +163,7 @@ inline static %s simcall_BODY_%s(%s) {
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_enter(&self->simcall, 0);
+      SIMIX_simcall_handle(&self->simcall, 0);
     }    
     %s
   }'''%(self.res.ret()
@@ -287,7 +287,7 @@ if __name__=='__main__':
   fd.write(' * \n')
   fd.write(' * This function is generated from src/simix/simcalls.in\n')
   fd.write(' */\n');
-  fd.write('void SIMIX_simcall_enter(smx_simcall_t simcall, int value) {\n');
+  fd.write('void SIMIX_simcall_handle(smx_simcall_t simcall, int value) {\n');
   fd.write('  XBT_DEBUG("Handling simcall %p: %s", simcall, SIMIX_simcall_name(simcall->call));\n');
   fd.write('  SIMCALL_SET_MC_VALUE(simcall, value);\n');
   fd.write('  if (simcall->issuer->context->iwannadie && simcall->call != SIMCALL_PROCESS_CLEANUP)\n');

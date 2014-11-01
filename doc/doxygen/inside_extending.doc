@@ -117,22 +117,27 @@ s_surf_model_description_t surf_plugin_description[] = {
 ~~~~
 
 \section simgrid_dev_guide_simcall How to add a new simcall?
-A simcall is used to go from user mode to kernel mode. The workflow of
-a simcall is the following:
+
+A simcall is used to go from user mode to kernel mode. There is some
+sort of popping dance involved, as we want to isolate the user
+contextes from their environment (so that they can run in parallel).
+
+The workflow of a simcall is the following:
 
 - `<ret> simcall_<name>(<args>)`
  - `simcall_BODY_<name>(<args>)`
-  - create the simcall
-  - `SIMIX_process_yield` if not maestro
+  - Initializes the simcall (store the arguments in position)
+  - If maestro, executes the simcall directly (and return)
+  - If not, call `SIMIX_process_yield` to give back the control to maestro
   - ========== KERNEL MODE ==========
-  - `SIMIX_simcall_enter`
+  - `SIMIX_simcall_handle` large switch (on simcall) doing for each:
    - `SIMIX_pre_<name>(simcall, <args>)`
    - `SIMIX_simcall_answer(simcall)`
 
-To simplify the simcall creation, we have made a python script that
-generate most of the code and give helpers for the remaining stuff.
-That script reads the simcall definitions from src/simix/simcalls.in 
-and generates the following files:
+To simplify the simcall creation, a python script generates most of
+the code and give helpers for the remaining stuff. That script reads
+the simcall definitions from src/simix/simcalls.in and generates the
+following files:
 
 - smx_popping_accessors.h:
   Helper functions to get and set simcall arguments and results

@@ -33,7 +33,7 @@ inline static smx_host_t simcall_BODY_host_get_by_name(const char* name) {
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_enter(&self->simcall, 0);
+      SIMIX_simcall_handle(&self->simcall, 0);
     }    
     return self->simcall.result.dp;
   }
@@ -54,7 +54,7 @@ inline static const char* simcall_BODY_host_get_name(smx_host_t host) {
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_enter(&self->simcall, 0);
+      SIMIX_simcall_handle(&self->simcall, 0);
     }    
     return self->simcall.result.cc;
   }
@@ -75,7 +75,7 @@ inline static void simcall_BODY_host_on(smx_host_t host) {
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_enter(&self->simcall, 0);
+      SIMIX_simcall_handle(&self->simcall, 0);
     }    
     
   }
@@ -96,7 +96,7 @@ inline static void simcall_BODY_host_off(smx_host_t host) {
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_enter(&self->simcall, 0);
+      SIMIX_simcall_handle(&self->simcall, 0);
     }    
     
   }
@@ -117,7 +117,7 @@ inline static xbt_dict_t simcall_BODY_host_get_properties(smx_host_t host) {
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_enter(&self->simcall, 0);
+      SIMIX_simcall_handle(&self->simcall, 0);
     }    
     return self->simcall.result.dp;
   }
@@ -138,7 +138,7 @@ inline static int simcall_BODY_host_get_core(smx_host_t host) {
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_enter(&self->simcall, 0);
+      SIMIX_simcall_handle(&self->simcall, 0);
     }    
     return self->simcall.result.i;
   }
@@ -159,7 +159,7 @@ inline static xbt_swag_t simcall_BODY_host_get_process_list(smx_host_t host) {
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_enter(&self->simcall, 0);
+      SIMIX_simcall_handle(&self->simcall, 0);
     }    
     return self->simcall.result.dp;
   }
@@ -180,7 +180,7 @@ inline static double simcall_BODY_host_get_speed(smx_host_t host) {
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_enter(&self->simcall, 0);
+      SIMIX_simcall_handle(&self->simcall, 0);
     }    
     return self->simcall.result.d;
   }
@@ -201,7 +201,7 @@ inline static double simcall_BODY_host_get_available_speed(smx_host_t host) {
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_enter(&self->simcall, 0);
+      SIMIX_simcall_handle(&self->simcall, 0);
     }    
     return self->simcall.result.d;
   }
@@ -222,7 +222,7 @@ inline static int simcall_BODY_host_get_state(smx_host_t host) {
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_enter(&self->simcall, 0);
+      SIMIX_simcall_handle(&self->simcall, 0);
     }    
     return self->simcall.result.i;
   }
@@ -243,7 +243,7 @@ inline static double simcall_BODY_host_get_current_power_peak(smx_host_t host) {
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_enter(&self->simcall, 0);
+      SIMIX_simcall_handle(&self->simcall, 0);
     }    
     return self->simcall.result.d;
   }
@@ -265,7 +265,7 @@ inline static double simcall_BODY_host_get_power_peak_at(smx_host_t host, int ps
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_enter(&self->simcall, 0);
+      SIMIX_simcall_handle(&self->simcall, 0);
     }    
     return self->simcall.result.d;
   }
@@ -286,7 +286,7 @@ inline static int simcall_BODY_host_get_nb_pstates(smx_host_t host) {
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_enter(&self->simcall, 0);
+      SIMIX_simcall_handle(&self->simcall, 0);
     }    
     return self->simcall.result.i;
   }
@@ -308,7 +308,7 @@ inline static void simcall_BODY_host_set_power_peak_at(smx_host_t host, int psta
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_enter(&self->simcall, 0);
+      SIMIX_simcall_handle(&self->simcall, 0);
     }    
     
   }
@@ -329,7 +329,7 @@ inline static double simcall_BODY_host_get_consumed_energy(smx_host_t host) {
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_enter(&self->simcall, 0);
+      SIMIX_simcall_handle(&self->simcall, 0);
     }    
     return self->simcall.result.d;
   }
@@ -355,7 +355,7 @@ inline static smx_action_t simcall_BODY_host_execute(const char* name, smx_host_
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_enter(&self->simcall, 0);
+      SIMIX_simcall_handle(&self->simcall, 0);
     }    
     return self->simcall.result.dp;
   }
@@ -382,7 +382,7 @@ inline static smx_action_t simcall_BODY_host_parallel_execute(const char* name, 
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_enter(&self->simcall, 0);
+      SIMIX_simcall_handle(&self->simcall, 0);
     }    
     return self->simcall.result.dp;
   }
@@ -403,7 +403,7 @@ inline static void simcall_BODY_host_execution_destroy(smx_action_t execution) {
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_enter(&self->simcall, 0);
+      SIMIX_simcall_handle(&self->simcall, 0);
     }    
     
   }
@@ -424,7 +424,7 @@ inline static void simcall_BODY_host_execution_cancel(smx_action_t execution) {
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_enter(&self->simcall, 0);
+      SIMIX_simcall_handle(&self->simcall, 0);
     }    
     
   }
@@ -445,7 +445,7 @@ inline static double simcall_BODY_host_execution_get_remains(smx_action_t execut
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_enter(&self->simcall, 0);
+      SIMIX_simcall_handle(&self->simcall, 0);
     }    
     return self->simcall.result.d;
   }
@@ -466,7 +466,7 @@ inline static int simcall_BODY_host_execution_get_state(smx_action_t execution) 
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_enter(&self->simcall, 0);
+      SIMIX_simcall_handle(&self->simcall, 0);
     }    
     return self->simcall.result.i;
   }
@@ -488,7 +488,7 @@ inline static void simcall_BODY_host_execution_set_priority(smx_action_t executi
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_enter(&self->simcall, 0);
+      SIMIX_simcall_handle(&self->simcall, 0);
     }    
     
   }
@@ -510,7 +510,7 @@ inline static void simcall_BODY_host_execution_set_bound(smx_action_t execution,
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_enter(&self->simcall, 0);
+      SIMIX_simcall_handle(&self->simcall, 0);
     }    
     
   }
@@ -533,7 +533,7 @@ inline static void simcall_BODY_host_execution_set_affinity(smx_action_t executi
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_enter(&self->simcall, 0);
+      SIMIX_simcall_handle(&self->simcall, 0);
     }    
     
   }
@@ -554,7 +554,7 @@ inline static int simcall_BODY_host_execution_wait(smx_action_t execution) {
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_enter(&self->simcall, 0);
+      SIMIX_simcall_handle(&self->simcall, 0);
     }    
     return self->simcall.result.i;
   }
@@ -575,7 +575,7 @@ inline static xbt_dict_t simcall_BODY_host_get_mounted_storage_list(smx_host_t h
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_enter(&self->simcall, 0);
+      SIMIX_simcall_handle(&self->simcall, 0);
     }    
     return self->simcall.result.dp;
   }
@@ -596,7 +596,7 @@ inline static xbt_dynar_t simcall_BODY_host_get_attached_storage_list(smx_host_t
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_enter(&self->simcall, 0);
+      SIMIX_simcall_handle(&self->simcall, 0);
     }    
     return self->simcall.result.dp;
   }
@@ -618,7 +618,7 @@ inline static void simcall_BODY_host_get_params(smx_host_t ind_vm, ws_params_t p
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_enter(&self->simcall, 0);
+      SIMIX_simcall_handle(&self->simcall, 0);
     }    
     
   }
@@ -640,7 +640,7 @@ inline static void simcall_BODY_host_set_params(smx_host_t ind_vm, ws_params_t p
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_enter(&self->simcall, 0);
+      SIMIX_simcall_handle(&self->simcall, 0);
     }    
     
   }
@@ -662,7 +662,7 @@ inline static void* simcall_BODY_vm_create(const char* name, smx_host_t ind_pm) 
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_enter(&self->simcall, 0);
+      SIMIX_simcall_handle(&self->simcall, 0);
     }    
     return self->simcall.result.dp;
   }
@@ -683,7 +683,7 @@ inline static void simcall_BODY_vm_start(smx_host_t ind_vm) {
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_enter(&self->simcall, 0);
+      SIMIX_simcall_handle(&self->simcall, 0);
     }    
     
   }
@@ -704,7 +704,7 @@ inline static int simcall_BODY_vm_get_state(smx_host_t ind_vm) {
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_enter(&self->simcall, 0);
+      SIMIX_simcall_handle(&self->simcall, 0);
     }    
     return self->simcall.result.i;
   }
@@ -726,7 +726,7 @@ inline static void simcall_BODY_vm_migrate(smx_host_t ind_vm, smx_host_t ind_dst
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_enter(&self->simcall, 0);
+      SIMIX_simcall_handle(&self->simcall, 0);
     }    
     
   }
@@ -747,7 +747,7 @@ inline static void* simcall_BODY_vm_get_pm(smx_host_t ind_vm) {
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_enter(&self->simcall, 0);
+      SIMIX_simcall_handle(&self->simcall, 0);
     }    
     return self->simcall.result.dp;
   }
@@ -769,7 +769,7 @@ inline static void simcall_BODY_vm_set_bound(smx_host_t ind_vm, double bound) {
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_enter(&self->simcall, 0);
+      SIMIX_simcall_handle(&self->simcall, 0);
     }    
     
   }
@@ -792,7 +792,7 @@ inline static void simcall_BODY_vm_set_affinity(smx_host_t ind_vm, smx_host_t in
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_enter(&self->simcall, 0);
+      SIMIX_simcall_handle(&self->simcall, 0);
     }    
     
   }
@@ -813,7 +813,7 @@ inline static void simcall_BODY_vm_destroy(smx_host_t ind_vm) {
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_enter(&self->simcall, 0);
+      SIMIX_simcall_handle(&self->simcall, 0);
     }    
     
   }
@@ -834,7 +834,7 @@ inline static void simcall_BODY_vm_suspend(smx_host_t ind_vm) {
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_enter(&self->simcall, 0);
+      SIMIX_simcall_handle(&self->simcall, 0);
     }    
     
   }
@@ -855,7 +855,7 @@ inline static void simcall_BODY_vm_resume(smx_host_t ind_vm) {
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_enter(&self->simcall, 0);
+      SIMIX_simcall_handle(&self->simcall, 0);
     }    
     
   }
@@ -876,7 +876,7 @@ inline static void simcall_BODY_vm_shutdown(smx_host_t ind_vm) {
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_enter(&self->simcall, 0);
+      SIMIX_simcall_handle(&self->simcall, 0);
     }    
     
   }
@@ -897,7 +897,7 @@ inline static void simcall_BODY_vm_save(smx_host_t ind_vm) {
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_enter(&self->simcall, 0);
+      SIMIX_simcall_handle(&self->simcall, 0);
     }    
     
   }
@@ -918,7 +918,7 @@ inline static void simcall_BODY_vm_restore(smx_host_t ind_vm) {
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_enter(&self->simcall, 0);
+      SIMIX_simcall_handle(&self->simcall, 0);
     }    
     
   }
@@ -948,7 +948,7 @@ inline static void simcall_BODY_process_create(smx_process_t* process, const cha
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_enter(&self->simcall, 0);
+      SIMIX_simcall_handle(&self->simcall, 0);
     }    
     
   }
@@ -969,7 +969,7 @@ inline static void simcall_BODY_process_kill(smx_process_t process) {
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_enter(&self->simcall, 0);
+      SIMIX_simcall_handle(&self->simcall, 0);
     }    
     
   }
@@ -990,7 +990,7 @@ inline static void simcall_BODY_process_killall(int reset_pid) {
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_enter(&self->simcall, 0);
+      SIMIX_simcall_handle(&self->simcall, 0);
     }    
     
   }
@@ -1011,7 +1011,7 @@ inline static void simcall_BODY_process_cleanup(smx_process_t process) {
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_enter(&self->simcall, 0);
+      SIMIX_simcall_handle(&self->simcall, 0);
     }    
     
   }
@@ -1033,7 +1033,7 @@ inline static void simcall_BODY_process_change_host(smx_process_t process, smx_h
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_enter(&self->simcall, 0);
+      SIMIX_simcall_handle(&self->simcall, 0);
     }    
     
   }
@@ -1054,7 +1054,7 @@ inline static void simcall_BODY_process_suspend(smx_process_t process) {
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_enter(&self->simcall, 0);
+      SIMIX_simcall_handle(&self->simcall, 0);
     }    
     
   }
@@ -1075,7 +1075,7 @@ inline static void simcall_BODY_process_resume(smx_process_t process) {
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_enter(&self->simcall, 0);
+      SIMIX_simcall_handle(&self->simcall, 0);
     }    
     
   }
@@ -1096,7 +1096,7 @@ inline static int simcall_BODY_process_count() {
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_enter(&self->simcall, 0);
+      SIMIX_simcall_handle(&self->simcall, 0);
     }    
     return self->simcall.result.i;
   }
@@ -1117,7 +1117,7 @@ inline static int simcall_BODY_process_get_PID(smx_process_t process) {
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_enter(&self->simcall, 0);
+      SIMIX_simcall_handle(&self->simcall, 0);
     }    
     return self->simcall.result.i;
   }
@@ -1138,7 +1138,7 @@ inline static int simcall_BODY_process_get_PPID(smx_process_t process) {
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_enter(&self->simcall, 0);
+      SIMIX_simcall_handle(&self->simcall, 0);
     }    
     return self->simcall.result.i;
   }
@@ -1159,7 +1159,7 @@ inline static void* simcall_BODY_process_get_data(smx_process_t process) {
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_enter(&self->simcall, 0);
+      SIMIX_simcall_handle(&self->simcall, 0);
     }    
     return self->simcall.result.dp;
   }
@@ -1181,7 +1181,7 @@ inline static void simcall_BODY_process_set_data(smx_process_t process, void* da
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_enter(&self->simcall, 0);
+      SIMIX_simcall_handle(&self->simcall, 0);
     }    
     
   }
@@ -1202,7 +1202,7 @@ inline static smx_host_t simcall_BODY_process_get_host(smx_process_t process) {
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_enter(&self->simcall, 0);
+      SIMIX_simcall_handle(&self->simcall, 0);
     }    
     return self->simcall.result.dp;
   }
@@ -1223,7 +1223,7 @@ inline static const char* simcall_BODY_process_get_name(smx_process_t process) {
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_enter(&self->simcall, 0);
+      SIMIX_simcall_handle(&self->simcall, 0);
     }    
     return self->simcall.result.cc;
   }
@@ -1244,7 +1244,7 @@ inline static int simcall_BODY_process_is_suspended(smx_process_t process) {
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_enter(&self->simcall, 0);
+      SIMIX_simcall_handle(&self->simcall, 0);
     }    
     return self->simcall.result.i;
   }
@@ -1265,7 +1265,7 @@ inline static xbt_dict_t simcall_BODY_process_get_properties(smx_process_t proce
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_enter(&self->simcall, 0);
+      SIMIX_simcall_handle(&self->simcall, 0);
     }    
     return self->simcall.result.dp;
   }
@@ -1287,7 +1287,7 @@ inline static int simcall_BODY_process_join(smx_process_t process, double timeou
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_enter(&self->simcall, 0);
+      SIMIX_simcall_handle(&self->simcall, 0);
     }    
     return self->simcall.result.i;
   }
@@ -1308,7 +1308,7 @@ inline static int simcall_BODY_process_sleep(double duration) {
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_enter(&self->simcall, 0);
+      SIMIX_simcall_handle(&self->simcall, 0);
     }    
     return self->simcall.result.i;
   }
@@ -1331,7 +1331,7 @@ inline static void simcall_BODY_process_on_exit(smx_process_t process, int_f_pvo
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_enter(&self->simcall, 0);
+      SIMIX_simcall_handle(&self->simcall, 0);
     }    
     
   }
@@ -1353,7 +1353,7 @@ inline static void simcall_BODY_process_auto_restart_set(smx_process_t process, 
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_enter(&self->simcall, 0);
+      SIMIX_simcall_handle(&self->simcall, 0);
     }    
     
   }
@@ -1374,7 +1374,7 @@ inline static smx_process_t simcall_BODY_process_restart(smx_process_t process) 
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_enter(&self->simcall, 0);
+      SIMIX_simcall_handle(&self->simcall, 0);
     }    
     return self->simcall.result.dp;
   }
@@ -1395,7 +1395,7 @@ inline static smx_rdv_t simcall_BODY_rdv_create(const char* name) {
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_enter(&self->simcall, 0);
+      SIMIX_simcall_handle(&self->simcall, 0);
     }    
     return self->simcall.result.dp;
   }
@@ -1416,7 +1416,7 @@ inline static void simcall_BODY_rdv_destroy(smx_rdv_t rdv) {
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_enter(&self->simcall, 0);
+      SIMIX_simcall_handle(&self->simcall, 0);
     }    
     
   }
@@ -1438,7 +1438,7 @@ inline static unsigned int simcall_BODY_rdv_comm_count_by_host(smx_rdv_t rdv, sm
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_enter(&self->simcall, 0);
+      SIMIX_simcall_handle(&self->simcall, 0);
     }    
     return self->simcall.result.ui;
   }
@@ -1459,7 +1459,7 @@ inline static smx_action_t simcall_BODY_rdv_get_head(smx_rdv_t rdv) {
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_enter(&self->simcall, 0);
+      SIMIX_simcall_handle(&self->simcall, 0);
     }    
     return self->simcall.result.dp;
   }
@@ -1481,7 +1481,7 @@ inline static void simcall_BODY_rdv_set_receiver(smx_rdv_t rdv, smx_process_t re
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_enter(&self->simcall, 0);
+      SIMIX_simcall_handle(&self->simcall, 0);
     }    
     
   }
@@ -1502,7 +1502,7 @@ inline static smx_process_t simcall_BODY_rdv_get_receiver(smx_rdv_t rdv) {
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_enter(&self->simcall, 0);
+      SIMIX_simcall_handle(&self->simcall, 0);
     }    
     return self->simcall.result.dp;
   }
@@ -1528,7 +1528,7 @@ inline static smx_action_t simcall_BODY_comm_iprobe(smx_rdv_t rdv, int type, int
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_enter(&self->simcall, 0);
+      SIMIX_simcall_handle(&self->simcall, 0);
     }    
     return self->simcall.result.dp;
   }
@@ -1558,7 +1558,7 @@ inline static void simcall_BODY_comm_send(smx_process_t src, smx_rdv_t rdv, doub
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_enter(&self->simcall, 0);
+      SIMIX_simcall_handle(&self->simcall, 0);
     }    
     
   }
@@ -1589,7 +1589,7 @@ inline static smx_action_t simcall_BODY_comm_isend(smx_process_t src, smx_rdv_t 
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_enter(&self->simcall, 0);
+      SIMIX_simcall_handle(&self->simcall, 0);
     }    
     return self->simcall.result.dp;
   }
@@ -1617,7 +1617,7 @@ inline static void simcall_BODY_comm_recv(smx_rdv_t rdv, void* dst_buff, size_t*
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_enter(&self->simcall, 0);
+      SIMIX_simcall_handle(&self->simcall, 0);
     }    
     
   }
@@ -1644,7 +1644,7 @@ inline static smx_action_t simcall_BODY_comm_irecv(smx_rdv_t rdv, void* dst_buff
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_enter(&self->simcall, 0);
+      SIMIX_simcall_handle(&self->simcall, 0);
     }    
     return self->simcall.result.dp;
   }
@@ -1665,7 +1665,7 @@ inline static void simcall_BODY_comm_cancel(smx_action_t comm) {
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_enter(&self->simcall, 0);
+      SIMIX_simcall_handle(&self->simcall, 0);
     }    
     
   }
@@ -1686,7 +1686,7 @@ inline static int simcall_BODY_comm_waitany(xbt_dynar_t comms) {
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_enter(&self->simcall, 0);
+      SIMIX_simcall_handle(&self->simcall, 0);
     }    
     return self->simcall.result.i;
   }
@@ -1708,7 +1708,7 @@ inline static void simcall_BODY_comm_wait(smx_action_t comm, double timeout) {
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_enter(&self->simcall, 0);
+      SIMIX_simcall_handle(&self->simcall, 0);
     }    
     
   }
@@ -1729,7 +1729,7 @@ inline static int simcall_BODY_comm_test(smx_action_t comm) {
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_enter(&self->simcall, 0);
+      SIMIX_simcall_handle(&self->simcall, 0);
     }    
     return self->simcall.result.i;
   }
@@ -1750,7 +1750,7 @@ inline static int simcall_BODY_comm_testany(xbt_dynar_t comms) {
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_enter(&self->simcall, 0);
+      SIMIX_simcall_handle(&self->simcall, 0);
     }    
     return self->simcall.result.i;
   }
@@ -1771,7 +1771,7 @@ inline static double simcall_BODY_comm_get_remains(smx_action_t comm) {
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_enter(&self->simcall, 0);
+      SIMIX_simcall_handle(&self->simcall, 0);
     }    
     return self->simcall.result.d;
   }
@@ -1792,7 +1792,7 @@ inline static int simcall_BODY_comm_get_state(smx_action_t comm) {
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_enter(&self->simcall, 0);
+      SIMIX_simcall_handle(&self->simcall, 0);
     }    
     return self->simcall.result.i;
   }
@@ -1813,7 +1813,7 @@ inline static void* simcall_BODY_comm_get_src_data(smx_action_t comm) {
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_enter(&self->simcall, 0);
+      SIMIX_simcall_handle(&self->simcall, 0);
     }    
     return self->simcall.result.dp;
   }
@@ -1834,7 +1834,7 @@ inline static void* simcall_BODY_comm_get_dst_data(smx_action_t comm) {
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_enter(&self->simcall, 0);
+      SIMIX_simcall_handle(&self->simcall, 0);
     }    
     return self->simcall.result.dp;
   }
@@ -1855,7 +1855,7 @@ inline static smx_process_t simcall_BODY_comm_get_src_proc(smx_action_t comm) {
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_enter(&self->simcall, 0);
+      SIMIX_simcall_handle(&self->simcall, 0);
     }    
     return self->simcall.result.dp;
   }
@@ -1876,7 +1876,7 @@ inline static smx_process_t simcall_BODY_comm_get_dst_proc(smx_action_t comm) {
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_enter(&self->simcall, 0);
+      SIMIX_simcall_handle(&self->simcall, 0);
     }    
     return self->simcall.result.dp;
   }
@@ -1897,7 +1897,7 @@ inline static smx_mutex_t simcall_BODY_mutex_init() {
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_enter(&self->simcall, 0);
+      SIMIX_simcall_handle(&self->simcall, 0);
     }    
     return self->simcall.result.dp;
   }
@@ -1918,7 +1918,7 @@ inline static void simcall_BODY_mutex_destroy(smx_mutex_t mutex) {
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_enter(&self->simcall, 0);
+      SIMIX_simcall_handle(&self->simcall, 0);
     }    
     
   }
@@ -1939,7 +1939,7 @@ inline static void simcall_BODY_mutex_lock(smx_mutex_t mutex) {
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_enter(&self->simcall, 0);
+      SIMIX_simcall_handle(&self->simcall, 0);
     }    
     
   }
@@ -1960,7 +1960,7 @@ inline static int simcall_BODY_mutex_trylock(smx_mutex_t mutex) {
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_enter(&self->simcall, 0);
+      SIMIX_simcall_handle(&self->simcall, 0);
     }    
     return self->simcall.result.i;
   }
@@ -1981,7 +1981,7 @@ inline static void simcall_BODY_mutex_unlock(smx_mutex_t mutex) {
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_enter(&self->simcall, 0);
+      SIMIX_simcall_handle(&self->simcall, 0);
     }    
     
   }
@@ -2002,7 +2002,7 @@ inline static smx_cond_t simcall_BODY_cond_init() {
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_enter(&self->simcall, 0);
+      SIMIX_simcall_handle(&self->simcall, 0);
     }    
     return self->simcall.result.dp;
   }
@@ -2023,7 +2023,7 @@ inline static void simcall_BODY_cond_destroy(smx_cond_t cond) {
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_enter(&self->simcall, 0);
+      SIMIX_simcall_handle(&self->simcall, 0);
     }    
     
   }
@@ -2044,7 +2044,7 @@ inline static void simcall_BODY_cond_signal(smx_cond_t cond) {
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_enter(&self->simcall, 0);
+      SIMIX_simcall_handle(&self->simcall, 0);
     }    
     
   }
@@ -2066,7 +2066,7 @@ inline static void simcall_BODY_cond_wait(smx_cond_t cond, smx_mutex_t mutex) {
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_enter(&self->simcall, 0);
+      SIMIX_simcall_handle(&self->simcall, 0);
     }    
     
   }
@@ -2089,7 +2089,7 @@ inline static void simcall_BODY_cond_wait_timeout(smx_cond_t cond, smx_mutex_t m
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_enter(&self->simcall, 0);
+      SIMIX_simcall_handle(&self->simcall, 0);
     }    
     
   }
@@ -2110,7 +2110,7 @@ inline static void simcall_BODY_cond_broadcast(smx_cond_t cond) {
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_enter(&self->simcall, 0);
+      SIMIX_simcall_handle(&self->simcall, 0);
     }    
     
   }
@@ -2131,7 +2131,7 @@ inline static smx_sem_t simcall_BODY_sem_init(int capacity) {
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_enter(&self->simcall, 0);
+      SIMIX_simcall_handle(&self->simcall, 0);
     }    
     return self->simcall.result.dp;
   }
@@ -2152,7 +2152,7 @@ inline static void simcall_BODY_sem_destroy(smx_sem_t sem) {
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_enter(&self->simcall, 0);
+      SIMIX_simcall_handle(&self->simcall, 0);
     }    
     
   }
@@ -2173,7 +2173,7 @@ inline static void simcall_BODY_sem_release(smx_sem_t sem) {
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_enter(&self->simcall, 0);
+      SIMIX_simcall_handle(&self->simcall, 0);
     }    
     
   }
@@ -2194,7 +2194,7 @@ inline static int simcall_BODY_sem_would_block(smx_sem_t sem) {
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_enter(&self->simcall, 0);
+      SIMIX_simcall_handle(&self->simcall, 0);
     }    
     return self->simcall.result.i;
   }
@@ -2215,7 +2215,7 @@ inline static void simcall_BODY_sem_acquire(smx_sem_t sem) {
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_enter(&self->simcall, 0);
+      SIMIX_simcall_handle(&self->simcall, 0);
     }    
     
   }
@@ -2237,7 +2237,7 @@ inline static void simcall_BODY_sem_acquire_timeout(smx_sem_t sem, double timeou
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_enter(&self->simcall, 0);
+      SIMIX_simcall_handle(&self->simcall, 0);
     }    
     
   }
@@ -2258,7 +2258,7 @@ inline static int simcall_BODY_sem_get_capacity(smx_sem_t sem) {
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_enter(&self->simcall, 0);
+      SIMIX_simcall_handle(&self->simcall, 0);
     }    
     return self->simcall.result.i;
   }
@@ -2281,7 +2281,7 @@ inline static sg_size_t simcall_BODY_file_read(smx_file_t fd, sg_size_t size, sm
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_enter(&self->simcall, 0);
+      SIMIX_simcall_handle(&self->simcall, 0);
     }    
     return self->simcall.result.sgsz;
   }
@@ -2304,7 +2304,7 @@ inline static sg_size_t simcall_BODY_file_write(smx_file_t fd, sg_size_t size, s
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_enter(&self->simcall, 0);
+      SIMIX_simcall_handle(&self->simcall, 0);
     }    
     return self->simcall.result.sgsz;
   }
@@ -2326,7 +2326,7 @@ inline static smx_file_t simcall_BODY_file_open(const char* fullpath, smx_host_t
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_enter(&self->simcall, 0);
+      SIMIX_simcall_handle(&self->simcall, 0);
     }    
     return self->simcall.result.dp;
   }
@@ -2348,7 +2348,7 @@ inline static int simcall_BODY_file_close(smx_file_t fd, smx_host_t host) {
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_enter(&self->simcall, 0);
+      SIMIX_simcall_handle(&self->simcall, 0);
     }    
     return self->simcall.result.i;
   }
@@ -2370,7 +2370,7 @@ inline static int simcall_BODY_file_unlink(smx_file_t fd, smx_host_t host) {
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_enter(&self->simcall, 0);
+      SIMIX_simcall_handle(&self->simcall, 0);
     }    
     return self->simcall.result.i;
   }
@@ -2391,7 +2391,7 @@ inline static sg_size_t simcall_BODY_file_get_size(smx_file_t fd) {
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_enter(&self->simcall, 0);
+      SIMIX_simcall_handle(&self->simcall, 0);
     }    
     return self->simcall.result.sgsz;
   }
@@ -2412,7 +2412,7 @@ inline static sg_size_t simcall_BODY_file_tell(smx_file_t fd) {
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_enter(&self->simcall, 0);
+      SIMIX_simcall_handle(&self->simcall, 0);
     }    
     return self->simcall.result.sgsz;
   }
@@ -2435,7 +2435,7 @@ inline static int simcall_BODY_file_seek(smx_file_t fd, sg_offset_t offset, int 
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_enter(&self->simcall, 0);
+      SIMIX_simcall_handle(&self->simcall, 0);
     }    
     return self->simcall.result.i;
   }
@@ -2456,7 +2456,7 @@ inline static xbt_dynar_t simcall_BODY_file_get_info(smx_file_t fd) {
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_enter(&self->simcall, 0);
+      SIMIX_simcall_handle(&self->simcall, 0);
     }    
     return self->simcall.result.dp;
   }
@@ -2478,7 +2478,7 @@ inline static int simcall_BODY_file_move(smx_file_t fd, const char* fullpath) {
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_enter(&self->simcall, 0);
+      SIMIX_simcall_handle(&self->simcall, 0);
     }    
     return self->simcall.result.i;
   }
@@ -2499,7 +2499,7 @@ inline static sg_size_t simcall_BODY_storage_get_free_size(smx_storage_t storage
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_enter(&self->simcall, 0);
+      SIMIX_simcall_handle(&self->simcall, 0);
     }    
     return self->simcall.result.sgsz;
   }
@@ -2520,7 +2520,7 @@ inline static sg_size_t simcall_BODY_storage_get_used_size(smx_storage_t name) {
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_enter(&self->simcall, 0);
+      SIMIX_simcall_handle(&self->simcall, 0);
     }    
     return self->simcall.result.sgsz;
   }
@@ -2541,7 +2541,7 @@ inline static xbt_dict_t simcall_BODY_storage_get_properties(smx_storage_t stora
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_enter(&self->simcall, 0);
+      SIMIX_simcall_handle(&self->simcall, 0);
     }    
     return self->simcall.result.dp;
   }
@@ -2562,7 +2562,7 @@ inline static xbt_dict_t simcall_BODY_storage_get_content(smx_storage_t storage)
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_enter(&self->simcall, 0);
+      SIMIX_simcall_handle(&self->simcall, 0);
     }    
     return self->simcall.result.dp;
   }
@@ -2583,7 +2583,7 @@ inline static xbt_dict_t simcall_BODY_asr_get_properties(const char* name) {
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_enter(&self->simcall, 0);
+      SIMIX_simcall_handle(&self->simcall, 0);
     }    
     return self->simcall.result.dp;
   }
@@ -2605,7 +2605,7 @@ inline static int simcall_BODY_comm_is_latency_bounded(smx_action_t comm) {
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_enter(&self->simcall, 0);
+      SIMIX_simcall_handle(&self->simcall, 0);
     }    
     return self->simcall.result.i;
   }
@@ -2630,7 +2630,7 @@ inline static void simcall_BODY_set_category(smx_action_t action, const char* ca
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_enter(&self->simcall, 0);
+      SIMIX_simcall_handle(&self->simcall, 0);
     }    
     
   }
@@ -2654,7 +2654,7 @@ inline static void* simcall_BODY_mc_snapshot() {
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_enter(&self->simcall, 0);
+      SIMIX_simcall_handle(&self->simcall, 0);
     }    
     return self->simcall.result.dp;
   }
@@ -2676,7 +2676,7 @@ inline static int simcall_BODY_mc_compare_snapshots(void* s1, void* s2) {
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_enter(&self->simcall, 0);
+      SIMIX_simcall_handle(&self->simcall, 0);
     }    
     return self->simcall.result.i;
   }
@@ -2698,7 +2698,7 @@ inline static int simcall_BODY_mc_random(int min, int max) {
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
-      SIMIX_simcall_enter(&self->simcall, 0);
+      SIMIX_simcall_handle(&self->simcall, 0);
     }    
     return self->simcall.result.i;
   }

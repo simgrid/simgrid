@@ -385,7 +385,7 @@ void MC_modelcheck_liveness()
           mc_stats->executed_transitions++;
 
           /* Answer the request */
-          SIMIX_simcall_enter(req, value);
+          SIMIX_simcall_handle(req, value);
 
           /* Wait for requests (schedules processes) */
           MC_wait_for_requests();

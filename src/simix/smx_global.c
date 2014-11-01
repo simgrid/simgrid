@@ -394,7 +394,7 @@ void SIMIX_run(void)
 
       xbt_dynar_foreach(simix_global->process_that_ran, iter, process) {
         if (process->simcall.call != SIMCALL_NONE) {
-          SIMIX_simcall_enter(&process->simcall, 0);
+          SIMIX_simcall_handle(&process->simcall, 0);
         }
       }
     }
