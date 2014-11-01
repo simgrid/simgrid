@@ -18,7 +18,7 @@
 #include "mc/mc_private.h"
 #endif
 
-XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_smurf);
+XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_popping);
 
 /** @brief Simcalls' names (generated from src/simix/simcalls.in) */
 const char* simcall_names[] = {

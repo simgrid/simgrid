@@ -240,14 +240,14 @@ if __name__=='__main__':
   ###
   ### smx_popping_accessors.c
   ###
-  fd = header('smx_popping_accessors.h')
+  fd = header('popping_accessors.h')
   handle(fd, Simcall.accessors, simcalls, simcalls_dict)
   fd.close()
 
   ###
   ### smx_popping_enum.c
   ###
-  fd = header("smx_popping_enum.h")
+  fd = header("popping_enum.h")
   fd.write('/**\n')
   fd.write(' * @brief All possible simcalls.\n')
   fd.write(' */\n')
@@ -264,14 +264,14 @@ if __name__=='__main__':
   ### smx_popping_generated.c
   ###
   
-  fd = header("smx_popping_generated.c")
+  fd = header("popping_generated.c")
   
   fd.write('#include "smx_private.h"\n');
   fd.write('#ifdef HAVE_MC\n');
   fd.write('#include "mc/mc_private.h"\n');
   fd.write('#endif\n');
   fd.write('\n');
-  fd.write('XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_smurf);\n\n');
+  fd.write('XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_popping);\n\n');
   
   fd.write('/** @brief Simcalls\' names (generated from src/simix/simcalls.in) */\n')
   fd.write('const char* simcall_names[] = {\n')
@@ -313,7 +313,7 @@ if __name__=='__main__':
   ###
   ### smx_popping_bodies.c
   ###
-  fd = header('smx_popping_bodies.c')
+  fd = header('popping_bodies.c')
   fd.write('#include "smx_private.h"\n')
   fd.write('#include "mc/mc_interface.h"\n')
   fd.write('#include "xbt/ex.h"\n')

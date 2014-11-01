@@ -8,7 +8,7 @@
 #define _SIMIX_PROCESS_PRIVATE_H
 
 #include "simgrid/simix.h"
-#include "smx_smurf_private.h"
+#include "popping_private.h"
 
 SG_BEGIN_DECL()
 

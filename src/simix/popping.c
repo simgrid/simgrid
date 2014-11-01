@@ -11,8 +11,8 @@
 #include "mc/mc_private.h"
 #endif
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_smurf, simix,
-                                "Logging specific to SIMIX (SMURF)");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_popping, simix,
+                                "Popping part of SIMIX (transmuting from user request into kernel handlers)");
 
 void SIMIX_simcall_answer(smx_simcall_t simcall)
 {

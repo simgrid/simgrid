@@ -4,15 +4,15 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#ifndef _SIMIX_SMURF_PRIVATE_H
-#define _SIMIX_SMURF_PRIVATE_H
+#ifndef _POPPING_PRIVATE_H
+#define _POPPING_PRIVATE_H
 
 SG_BEGIN_DECL()
 
 /********************************* Simcalls *********************************/
 XBT_PUBLIC(const char*) simcall_names[]; /* Name of each simcall */
 
-#include "smx_popping_enum.h" /* Definition of e_smx_simcall_t, with one value per simcall */
+#include "popping_enum.h" /* Definition of e_smx_simcall_t, with one value per simcall */
 
 typedef int (*simix_match_func_t)(void *, void *, smx_action_t);
 typedef void (*simix_copy_data_func_t)(smx_action_t, void*, size_t);
@@ -61,7 +61,7 @@ typedef struct s_smx_simcall {
 #define SIMCALL_GET_MC_VALUE(simcall) 0
 #endif
 
-#include "smx_popping_accessors.h"
+#include "popping_accessors.h"
 
 /******************************** General *************************************/
 

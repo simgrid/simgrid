@@ -13,7 +13,7 @@
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix);
 
-#include "smx_popping_bodies.c"
+#include "popping_bodies.c"
 
 /**
  * \ingroup simix_host_management
@@ -392,7 +392,6 @@ e_smx_state_t simcall_host_execution_wait(smx_action_t execution)
  * \return The host object of the VM
  */
 void* simcall_vm_create(const char *name, smx_host_t phys_host){
-  /* will jump to SIMIX_pre_vm_create() in src/simix/smx_smurf_private.h */
   return simcall_BODY_vm_create(name, phys_host);
 }
 
@@ -404,7 +403,6 @@ void* simcall_vm_create(const char *name, smx_host_t phys_host){
  */
 void simcall_vm_start(smx_host_t vm)
 {
-  /* will jump to SIMIX_pre_vm_start in src/simix/smx_smurf_private.h */
   simcall_BODY_vm_start(vm);
 }
 
@@ -417,7 +415,6 @@ void simcall_vm_start(smx_host_t vm)
  */
 int simcall_vm_get_state(smx_host_t vm)
 {
-  /* will jump to SIMIX_pre_vm_get_state in src/simix/smx_smurf_private.h */
   return simcall_BODY_vm_get_state(vm);
 }
 
@@ -430,31 +427,26 @@ int simcall_vm_get_state(smx_host_t vm)
  */
 void *simcall_vm_get_pm(smx_host_t vm)
 {
-  /* will jump to SIMIX_pre_vm_get_pm in src/simix/smx_smurf_private.h */
   return simcall_BODY_vm_get_pm(vm);
 }
 
 void simcall_vm_set_bound(smx_host_t vm, double bound)
 {
-  /* will jump to SIMIX_pre_vm_set_bound in src/simix/smx_smurf_private.h */
   simcall_BODY_vm_set_bound(vm, bound);
 }
 
 void simcall_vm_set_affinity(smx_host_t vm, smx_host_t pm, unsigned long mask)
 {
-  /* will jump to SIMIX_pre_vm_set_affinity in src/simix/smx_smurf_private.h */
   simcall_BODY_vm_set_affinity(vm, pm, mask);
 }
 
 void simcall_host_get_params(smx_host_t vm, ws_params_t params)
 {
-  /* will jump to SIMIX_pre_host_get_params in src/simix/smx_smurf_private.h */
   simcall_BODY_host_get_params(vm, params);
 }
 
 void simcall_host_set_params(smx_host_t vm, ws_params_t params)
 {
-  /* will jump to SIMIX_pre_host_set_params in src/simix/smx_smurf_private.h */
   simcall_BODY_host_set_params(vm, params);
 }
 
@@ -467,7 +459,6 @@ void simcall_host_set_params(smx_host_t vm, ws_params_t params)
  */
 void simcall_vm_migrate(smx_host_t vm, smx_host_t host)
 {
-  /* will jump to SIMIX_pre_vm_migrate in src/simix/smx_smurf_private.h */
   simcall_BODY_vm_migrate(vm, host);
 }
 
@@ -479,7 +470,6 @@ void simcall_vm_migrate(smx_host_t vm, smx_host_t host)
  */
 void simcall_vm_suspend(smx_host_t vm)
 {
-  /* will jump to SIMIX_pre_vm_suspend in src/simix/smx_smurf_private.h */
   simcall_BODY_vm_suspend(vm);
 }
 
@@ -491,7 +481,6 @@ void simcall_vm_suspend(smx_host_t vm)
  */
 void simcall_vm_resume(smx_host_t vm)
 {
-  /* will jump to SIMIX_pre_vm_resume in src/simix/smx_smurf_private.h */
   simcall_BODY_vm_resume(vm);
 }
 
@@ -503,7 +492,6 @@ void simcall_vm_resume(smx_host_t vm)
  */
 void simcall_vm_save(smx_host_t vm)
 {
-  /* will jump to SIMIX_pre_vm_save in src/simix/smx_smurf_private.h */
   simcall_BODY_vm_save(vm);
 }
 
@@ -515,7 +503,6 @@ void simcall_vm_save(smx_host_t vm)
  */
 void simcall_vm_restore(smx_host_t vm)
 {
-  /* will jump to SIMIX_pre_vm_restore in src/simix/smx_smurf_private.h */
   simcall_BODY_vm_restore(vm);
 }
 
@@ -527,7 +514,6 @@ void simcall_vm_restore(smx_host_t vm)
  */
 void simcall_vm_shutdown(smx_host_t vm)
 {
-  /* will jump to SIMIX_pre_vm_shutdown in src/simix/smx_smurf_private.h */
   simcall_BODY_vm_shutdown(vm);
 }
 
@@ -539,7 +525,6 @@ void simcall_vm_shutdown(smx_host_t vm)
  */
 void simcall_vm_destroy(smx_host_t vm)
 {
-   /* will jump to SIMIX_pre_vm_destroy in src/simix/smx_smurf_private.h */
   simcall_BODY_vm_destroy(vm);
 }
 

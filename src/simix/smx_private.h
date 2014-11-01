@@ -22,7 +22,7 @@
 #include "smx_host_private.h"
 #include "smx_io_private.h"
 #include "smx_network_private.h"
-#include "smx_smurf_private.h"
+#include "popping_private.h"
 #include "smx_synchro_private.h"
 
 /* Define only for SimGrid benchmarking purposes */

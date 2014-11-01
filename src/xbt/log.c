@@ -676,7 +676,7 @@ static void xbt_log_connect_categories(void)
   XBT_LOG_CONNECT(simix_kernel);
   XBT_LOG_CONNECT(simix_network);
   XBT_LOG_CONNECT(simix_process);
-  XBT_LOG_CONNECT(simix_smurf);
+  XBT_LOG_CONNECT(simix_popping);
   XBT_LOG_CONNECT(simix_synchro);
   XBT_LOG_CONNECT(simix_vm);
 

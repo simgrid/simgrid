@@ -8,7 +8,7 @@
 #define _SIMIX_IO_PRIVATE_H
 
 #include "simgrid/simix.h"
-#include "smx_smurf_private.h"
+#include "popping_private.h"
 
 /** @brief Storage datatype */
 typedef struct s_smx_storage_priv {

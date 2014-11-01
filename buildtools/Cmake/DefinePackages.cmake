@@ -29,16 +29,16 @@ set(EXTRA_DIST
   src/simdag/private.h
   src/simix/simcalls.in
   src/simix/simcalls.py
-  src/simix/smx_popping_bodies.c
-  src/simix/smx_popping_generated.c
-  src/simix/smx_popping_enum.h
-  src/simix/smx_popping_accessors.h
+  src/simix/popping_private.h
+  src/simix/popping_bodies.c
+  src/simix/popping_generated.c
+  src/simix/popping_enum.h
+  src/simix/popping_accessors.h
   src/simix/smx_host_private.h
   src/simix/smx_io_private.h
   src/simix/smx_network_private.h
   src/simix/smx_private.h
   src/simix/smx_process_private.h
-  src/simix/smx_smurf_private.h
   src/simix/smx_synchro_private.h
   src/smpi/README
   src/smpi/colls/coll_tuned_topo.h
@@ -359,7 +359,7 @@ set(SURF_SRC
   )
 
 set(SIMIX_GENERATED_SRC
-  src/simix/smx_popping_generated.c
+  src/simix/popping_generated.c
   )
 set(SIMIX_SRC
   src/simix/smx_context.c
@@ -372,10 +372,10 @@ set(SIMIX_SRC
   src/simix/smx_io.c
   src/simix/smx_network.c
   src/simix/smx_process.c
-  src/simix/smx_smurf.c
   src/simix/smx_synchro.c
   src/simix/smx_user.c
   src/simix/smx_vm.c
+  src/simix/popping.c
   ${SIMIX_GENERATED_SRC}
   )
 
