@@ -55,12 +55,7 @@ class Simcall(object):
     self.has_answer = has_answer
 
   def check(self):
-    # smx_user.c  simcall_BODY_
-    # smx_*.c void simcall_HANDLER_host_on(smx_simcall_t simcall, smx_host_t h)
-    self.check_body()
-    self.check_pre()
-
-  def check_body(self):
+      # libsmx.c  simcall_BODY_
       if self.simcalls_BODY is None:
           f = open('libsmx.c')
           self.simcalls_BODY = set(re.findall('simcall_BODY_(.*?)\(', f.read()))
@@ -68,37 +63,29 @@ class Simcall(object):
       if self.name not in self.simcalls_BODY:
           print '# ERROR: No function calling simcall_BODY_%s'%self.name
           print '# Add something like this to libsmx.c:'
-          print '''%s simcall_%s(%s)
-{
-  return simcall_BODY_%s(%s);
-}\n'''%(self.res.ret()
-     ,self.name
-     ,', '.join('%s %s'%(arg.ret(), arg.name)
-                  for arg in self.args)
-     ,self.name
-     ,', '.join(arg.name for arg in self.args))
+          print '%s simcall_%s(%s) {'%(self.res.ret() ,self.name ,', '.join('%s %s'%(arg.ret(), arg.name) for arg in self.args))
+          print '  return simcall_BODY_%s(%s);'%(self.name)
+          print '}'
+          return False
+      
+      # smx_*.c void simcall_HANDLER_host_on(smx_simcall_t simcall, smx_host_t h)
+      if self.simcalls_PRE is None:
+        self.simcalls_PRE = set()
+        for fn in glob.glob('smx_*') + glob.glob('../mc/*'):
+            f = open(fn)
+            self.simcalls_PRE |= set(re.findall('simcall_HANDLER_(.*?)\(', f.read()))
+            f.close()
+      if self.name not in self.simcalls_PRE:
+          print '# ERROR: No function called simcall_HANDLER_%s'%self.name
+          print '# Add something like this to the relevant C file (like smx_io.c if it\'s an IO call):'
+          print '%s simcall_HANDLER_%s(smx_simcall_t simcall%s) {'%(self.res.ret()
+                                                                    ,self.name                                               
+                                                                    ,''.join(', %s %s'%(arg.ret(), arg.name)
+                                                                             for arg in self.args))
+          print '  // Your code handling the simcall'
+          print '}'
           return False
       return True
-
-  def check_pre(self):
-    if self.simcalls_PRE is None:
-      self.simcalls_PRE = set()
-      for fn in glob.glob('smx_*') + glob.glob('../mc/*'):
-        f = open(fn)
-        self.simcalls_PRE |= set(re.findall('simcall_HANDLER_(.*?)\(', f.read()))
-        f.close()
-    if self.name not in self.simcalls_PRE:
-      print '# ERROR: No function called simcall_HANDLER_%s'%self.name
-      print '# Add something like this to smx_.*.c:'
-      print '''%s simcall_HANDLER_%s(smx_simcall_t simcall%s)
-{
-  // Your code handling the simcall
-}\n'''%(self.res.ret()
-       ,self.name
-       ,''.join(', %s %s'%(arg.ret(), arg.name)
-                  for arg in self.args))
-      return False
-    return True
 
   def enum(self):
     return '  SIMCALL_%s,'%(self.name.upper())

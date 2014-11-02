@@ -131,13 +131,14 @@ The workflow of a simcall is the following:
   - If not, call `SIMIX_process_yield` to give back the control to maestro
   - ========== KERNEL MODE ==========
   - `SIMIX_simcall_handle` large switch (on simcall) doing for each:
-   - `SIMIX_pre_<name>(simcall, <args>)`
+   - `simcall_HANDLER_<name>(simcall, <args>)`
    - `SIMIX_simcall_answer(simcall)`
 
 To simplify the simcall creation, a python script generates most of
 the code and give helpers for the remaining stuff. That script reads
-the simcall definitions from src/simix/simcalls.in and generates the
-following files:
+the simcall definitions from src/simix/simcalls.in, checks that both
+`simcall_<name>()` and `simcall_HANDLER()` are defined somewhere, and
+generates the following files:
 
 - smx_popping_accessors.h:
   Helper functions to get and set simcall arguments and results
@@ -148,9 +149,6 @@ following files:
 - smx_popping_generated.c:
   Definitions of `simcall_names[]` (debug name of each simcall), and
   SIMIX_simcall_enter() that deals with the simcall from within the kernel
-
-Furthermode if the simcall_<name> or the SIMIX_pre_<name> function are missing,
-a warning will show up with a prototype of the corresponding fonction to fill.
 
 The simcall.in file list all the simcalls in sections. A line starting by "##"
 define a new section which will be replace by a "ifdef" in the generated code.
