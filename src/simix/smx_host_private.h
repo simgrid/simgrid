@@ -65,95 +65,47 @@ e_smx_state_t SIMIX_host_execution_get_state(smx_action_t action);
 void SIMIX_host_execution_set_priority(smx_action_t action, double priority);
 void SIMIX_host_execution_set_bound(smx_action_t action, double bound);
 void SIMIX_host_execution_set_affinity(smx_action_t action, smx_host_t host, unsigned long mask);
-void simcall_HANDLER_host_execution_wait(smx_simcall_t simcall, smx_action_t action);
 xbt_dict_t SIMIX_host_get_mounted_storage_list(smx_host_t host);
 xbt_dynar_t SIMIX_host_get_attached_storage_list(smx_host_t host);
-// handlers' prototypes
-smx_host_t simcall_HANDLER_host_get_by_name(smx_simcall_t, const char*);
-const char* simcall_HANDLER_host_self_get_name(smx_simcall_t);
-const char* simcall_HANDLER_host_get_name(smx_simcall_t, smx_host_t);
-void simcall_HANDLER_host_on(smx_simcall_t, smx_host_t host);
-void simcall_HANDLER_host_off(smx_simcall_t, smx_host_t host);
-xbt_dict_t simcall_HANDLER_host_get_properties(smx_simcall_t, smx_host_t);
-int simcall_HANDLER_host_get_core(smx_simcall_t, smx_host_t);
-xbt_swag_t simcall_HANDLER_host_get_process_list(smx_simcall_t, smx_host_t host);
-double simcall_HANDLER_host_get_speed(smx_simcall_t, smx_host_t);
-double simcall_HANDLER_host_get_available_speed(smx_simcall_t, smx_host_t);
-int simcall_HANDLER_host_get_state(smx_simcall_t, smx_host_t);
-double simcall_HANDLER_host_get_current_power_peak(smx_simcall_t, smx_host_t);
-double simcall_HANDLER_host_get_power_peak_at(smx_simcall_t, smx_host_t host, int pstate_index);
-int simcall_HANDLER_host_get_nb_pstates(smx_simcall_t, smx_host_t host);
-void simcall_HANDLER_host_set_power_peak_at(smx_simcall_t, smx_host_t host, int pstate_index);
-double simcall_HANDLER_host_get_consumed_energy(smx_simcall_t, smx_host_t);
-void* simcall_HANDLER_host_self_get_data(smx_simcall_t);
-smx_action_t simcall_HANDLER_host_execute(smx_simcall_t, const char*, smx_host_t, double, double, double, unsigned long);
-smx_action_t simcall_HANDLER_host_parallel_execute(smx_simcall_t, const char*, int, smx_host_t*,
-                                             double*, double*, double, double);
-void simcall_HANDLER_host_execution_destroy(smx_simcall_t, smx_action_t);
-void simcall_HANDLER_host_execution_cancel(smx_simcall_t, smx_action_t);
-double simcall_HANDLER_host_execution_get_remains(smx_simcall_t, smx_action_t);
-e_smx_state_t simcall_HANDLER_host_execution_get_state(smx_simcall_t, smx_action_t);
-void simcall_HANDLER_host_execution_set_priority(smx_simcall_t, smx_action_t, double);
-void simcall_HANDLER_host_execution_set_bound(smx_simcall_t simcall, smx_action_t action, double bound);
-void simcall_HANDLER_host_execution_set_affinity(smx_simcall_t simcall, smx_action_t action, smx_host_t host, unsigned long mask);
 
 void SIMIX_host_execution_suspend(smx_action_t action);
 void SIMIX_host_execution_resume(smx_action_t action);
 
 void SIMIX_post_host_execute(smx_action_t action);
-xbt_dict_t simcall_HANDLER_host_get_mounted_storage_list(smx_simcall_t, smx_host_t);
-xbt_dynar_t simcall_HANDLER_host_get_attached_storage_list(smx_simcall_t, smx_host_t);
 #ifdef HAVE_TRACING
-void simcall_HANDLER_set_category(smx_simcall_t simcall, smx_action_t action,
-		            const char *category);
 void SIMIX_set_category(smx_action_t action, const char *category);
 #endif
 /* vm related stuff */
 smx_host_t SIMIX_vm_create(const char *name, smx_host_t ind_phys_host);
-smx_host_t simcall_HANDLER_vm_create(smx_simcall_t simcall, const char *name, smx_host_t ind_phys_host);
 
 void SIMIX_vm_destroy(smx_host_t ind_vm);
-void simcall_HANDLER_vm_destroy(smx_simcall_t simcall, smx_host_t ind_vm);
 // --
 void SIMIX_vm_resume(smx_host_t ind_vm, smx_process_t issuer);
-void simcall_HANDLER_vm_resume(smx_simcall_t simcall, smx_host_t ind_vm);
 
 void SIMIX_vm_suspend(smx_host_t ind_vm, smx_process_t issuer);
-void simcall_HANDLER_vm_suspend(smx_simcall_t simcall, smx_host_t ind_vm);
 // --
 void SIMIX_vm_save(smx_host_t ind_vm, smx_process_t issuer);
-void simcall_HANDLER_vm_save(smx_simcall_t simcall, smx_host_t ind_vm);
 
 void SIMIX_vm_restore(smx_host_t ind_vm, smx_process_t issuer);
-void simcall_HANDLER_vm_restore(smx_simcall_t simcall, smx_host_t ind_vm);
 // --
 void SIMIX_vm_start(smx_host_t ind_vm);
-void simcall_HANDLER_vm_start(smx_simcall_t simcall, smx_host_t ind_vm);
 
 void SIMIX_vm_shutdown(smx_host_t ind_vm, smx_process_t issuer);
-void simcall_HANDLER_vm_shutdown(smx_simcall_t simcall, smx_host_t ind_vm);
 // --
 
 int SIMIX_vm_get_state(smx_host_t ind_vm);
-int simcall_HANDLER_vm_get_state(smx_simcall_t simcall, smx_host_t ind_vm);
 // --
 void SIMIX_vm_migrate(smx_host_t ind_vm, smx_host_t ind_dst_pm);
-void simcall_HANDLER_vm_migrate(smx_simcall_t simcall, smx_host_t ind_vm, smx_host_t ind_dst_pm);
 
 void *SIMIX_vm_get_pm(smx_host_t ind_vm);
-void *simcall_HANDLER_vm_get_pm(smx_simcall_t simcall, smx_host_t ind_vm);
 
 void SIMIX_vm_set_bound(smx_host_t ind_vm, double bound);
-void simcall_HANDLER_vm_set_bound(smx_simcall_t simcall, smx_host_t ind_vm, double bound);
 
 void SIMIX_vm_set_affinity(smx_host_t ind_vm, smx_host_t ind_pm, unsigned long mask);
-void simcall_HANDLER_vm_set_affinity(smx_simcall_t simcall, smx_host_t ind_vm, smx_host_t ind_pm, unsigned long mask);
 
 void SIMIX_host_get_params(smx_host_t ind_vm, ws_params_t params);
-void simcall_HANDLER_host_get_params(smx_simcall_t simcall, smx_host_t ind_vm, ws_params_t params);
 
 void SIMIX_host_set_params(smx_host_t ind_vm, ws_params_t params);
-void simcall_HANDLER_host_set_params(smx_simcall_t simcall, smx_host_t ind_vm, ws_params_t params);
 
 SG_END_DECL()
 

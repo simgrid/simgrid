@@ -181,9 +181,6 @@ smx_host_t SIMIX_host_self(void)
   return (process == NULL) ? NULL : SIMIX_process_get_host(process);
 }
 
-const char* simcall_HANDLER_host_self_get_name(smx_simcall_t simcall){
-   return SIMIX_host_self_get_name();
-}
 /* needs to be public and without simcall because it is called
    by exceptions and logging events */
 const char* SIMIX_host_self_get_name(void)

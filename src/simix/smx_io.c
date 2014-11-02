@@ -294,10 +294,6 @@ xbt_dict_t SIMIX_storage_get_properties(smx_storage_t storage){
   return surf_resource_get_properties(surf_storage_resource_priv(storage));
 }
 
-const char* simcall_HANDLER_storage_get_name(smx_simcall_t simcall, smx_storage_t storage){
-   return SIMIX_storage_get_name(storage);
-}
-
 const char* SIMIX_storage_get_name(smx_storage_t storage){
   xbt_assert((storage != NULL), "Invalid parameters");
   return sg_storage_name(storage);
@@ -310,10 +306,6 @@ xbt_dict_t simcall_HANDLER_storage_get_content(smx_simcall_t simcall, smx_storag
 xbt_dict_t SIMIX_storage_get_content(smx_storage_t storage){
   xbt_assert((storage != NULL), "Invalid parameters (simix storage is NULL)");
   return surf_storage_get_content(storage);
-}
-
-const char* simcall_HANDLER_storage_get_host(smx_simcall_t simcall, smx_storage_t storage){
-   return SIMIX_storage_get_host(storage);
 }
 
 const char* SIMIX_storage_get_host(smx_storage_t storage){

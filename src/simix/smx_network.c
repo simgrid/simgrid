@@ -92,15 +92,12 @@ xbt_dict_t SIMIX_get_rdv_points()
   return rdv_points;
 }
 
-smx_rdv_t simcall_HANDLER_rdv_get_by_name(smx_simcall_t simcall, const char *name){
-  return SIMIX_rdv_get_by_name(name);
-}
 smx_rdv_t SIMIX_rdv_get_by_name(const char *name)
 {
   return xbt_dict_get_or_null(rdv_points, name);
 }
 
-int simcall_HANDLER_rdv_comm_count_by_host(smx_simcall_t simcall, smx_rdv_t rdv, smx_host_t host){
+unsigned int simcall_HANDLER_rdv_comm_count_by_host(smx_simcall_t simcall, smx_rdv_t rdv, smx_host_t host){
   return SIMIX_rdv_comm_count_by_host(rdv, host);
 }
 int SIMIX_rdv_comm_count_by_host(smx_rdv_t rdv, smx_host_t host)

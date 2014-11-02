@@ -13,6 +13,7 @@ SG_BEGIN_DECL()
 XBT_PUBLIC(const char*) simcall_names[]; /* Name of each simcall */
 
 #include "popping_enum.h" /* Definition of e_smx_simcall_t, with one value per simcall */
+#include "mc/mc_interface.h" /* Definition of mc_snapshot_t, used by one simcall */
 
 typedef int (*simix_match_func_t)(void *, void *, smx_action_t);
 typedef void (*simix_copy_data_func_t)(smx_action_t, void*, size_t);
@@ -69,8 +70,6 @@ void SIMIX_simcall_answer(smx_simcall_t);
 void SIMIX_simcall_handle(smx_simcall_t, int);
 void SIMIX_simcall_exit(smx_action_t);
 const char *SIMIX_simcall_name(e_smx_simcall_t kind);
-//FIXME put it in a better place
-xbt_dict_t simcall_HANDLER_asr_get_properties(smx_simcall_t simcall, const char *name);
 
 SG_END_DECL()
 

@@ -84,11 +84,8 @@ void SIMIX_process_empty_trash(void);
 void SIMIX_process_yield(smx_process_t self);
 xbt_running_ctx_t *SIMIX_process_get_running_context(void);
 void SIMIX_process_exception_terminate(xbt_ex_t * e);
-void simcall_HANDLER_process_change_host(smx_simcall_t, smx_process_t process,
-           smx_host_t dest);
 void SIMIX_process_change_host(smx_process_t process,
              smx_host_t dest);
-void simcall_HANDLER_process_suspend(smx_simcall_t simcall, smx_process_t process);
 smx_action_t SIMIX_process_suspend(smx_process_t process, smx_process_t issuer);
 void SIMIX_process_resume(smx_process_t process, smx_process_t issuer);
 int SIMIX_process_get_PID(smx_process_t self);
@@ -100,9 +97,7 @@ const char* SIMIX_process_get_name(smx_process_t process);
 smx_process_t SIMIX_process_get_by_name(const char* name);
 int SIMIX_process_is_suspended(smx_process_t process);
 xbt_dict_t SIMIX_process_get_properties(smx_process_t process);
-void simcall_HANDLER_process_join(smx_simcall_t simcall, smx_process_t process, double timeout);
 smx_action_t SIMIX_process_join(smx_process_t issuer, smx_process_t process, double timeout);
-void simcall_HANDLER_process_sleep(smx_simcall_t simcall, double duration);
 smx_action_t SIMIX_process_sleep(smx_process_t process, double duration);
 void SIMIX_post_process_sleep(smx_action_t action);
 
@@ -111,32 +106,6 @@ void SIMIX_process_sleep_resume(smx_action_t action);
 void SIMIX_process_sleep_destroy(smx_action_t action);
 void SIMIX_process_auto_restart_set(smx_process_t process, int auto_restart);
 smx_process_t SIMIX_process_restart(smx_process_t process, smx_process_t issuer);
-
-// handlers' prototypes
-void simcall_HANDLER_process_create(smx_simcall_t simcall, smx_process_t *process,
-		              const char *name, xbt_main_func_t code, void *data,
-			      const char *hostname, double kill_time, int argc,
-			      char **argv, xbt_dict_t properties, int auto_restart);
-void simcall_HANDLER_process_kill(smx_simcall_t simcall, smx_process_t process);
-void simcall_HANDLER_process_killall(smx_simcall_t simcall, int reset_pid);
-void simcall_HANDLER_process_cleanup(smx_simcall_t simcall, smx_process_t process);
-void simcall_HANDLER_process_resume(smx_simcall_t simcall, smx_process_t process);
-int simcall_HANDLER_process_count(smx_simcall_t simcall);
-void* simcall_HANDLER_process_self_get_data(smx_simcall_t simcall, smx_process_t process);
-int simcall_HANDLER_process_get_PID(smx_simcall_t simcall, smx_process_t self);
-int simcall_HANDLER_process_get_PPID(smx_simcall_t simcall, smx_process_t self);
-void* simcall_HANDLER_process_get_data(smx_simcall_t simcall, smx_process_t process);
-void simcall_HANDLER_process_set_data(smx_simcall_t simcall, smx_process_t process,
-                                void *data);
-smx_host_t simcall_HANDLER_process_get_host(smx_simcall_t simcall, smx_process_t process);
-const char* simcall_HANDLER_process_get_name(smx_simcall_t simcall, smx_process_t process);
-int simcall_HANDLER_process_is_suspended(smx_simcall_t simcall, smx_process_t process);
-xbt_dict_t simcall_HANDLER_process_get_properties(smx_simcall_t simcall, smx_process_t process);
-void simcall_HANDLER_process_on_exit(smx_simcall_t simcall, smx_process_t process,
-	                       int_f_pvoid_pvoid_t fun, void *data);
-void simcall_HANDLER_process_auto_restart_set(smx_simcall_t simcall, smx_process_t process,
-		                        int auto_restart);
-smx_process_t simcall_HANDLER_process_restart(smx_simcall_t simcall, smx_process_t process);
 
 SG_END_DECL()
 

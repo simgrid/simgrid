@@ -32,42 +32,18 @@ void SIMIX_synchro_destroy(smx_action_t action);
 
 smx_mutex_t SIMIX_mutex_init(void);
 void SIMIX_mutex_destroy(smx_mutex_t mutex);
-void simcall_HANDLER_mutex_lock(smx_simcall_t simcall, smx_mutex_t mutex);
 int SIMIX_mutex_trylock(smx_mutex_t mutex, smx_process_t issuer);
 void SIMIX_mutex_unlock(smx_mutex_t mutex, smx_process_t issuer);
 
 smx_cond_t SIMIX_cond_init(void);
 void SIMIX_cond_destroy(smx_cond_t cond);
 void SIMIX_cond_signal(smx_cond_t cond);
-void simcall_HANDLER_cond_wait(smx_simcall_t simcall, smx_cond_t cond, smx_mutex_t mutex);
-void simcall_HANDLER_cond_wait_timeout(smx_simcall_t simcall, smx_cond_t cond,
-		                 smx_mutex_t mutex, double timeout);
 void SIMIX_cond_broadcast(smx_cond_t cond);
 
 smx_sem_t SIMIX_sem_init(unsigned int value);
 void SIMIX_sem_destroy(smx_sem_t sem);
 void SIMIX_sem_release(smx_sem_t sem);
 int SIMIX_sem_would_block(smx_sem_t sem);
-void simcall_HANDLER_sem_acquire(smx_simcall_t simcall, smx_sem_t sem);
-void simcall_HANDLER_sem_acquire_timeout(smx_simcall_t simcall, smx_sem_t sem, double timeout);
 int SIMIX_sem_get_capacity(smx_sem_t sem);
 
-// handlers prototypes
-smx_mutex_t simcall_HANDLER_mutex_init(smx_simcall_t simcall);
-void simcall_HANDLER_mutex_destroy(smx_simcall_t simcall, smx_mutex_t mutex);
-int simcall_HANDLER_mutex_trylock(smx_simcall_t simcall, smx_mutex_t mutex);
-void simcall_HANDLER_mutex_unlock(smx_simcall_t simcall, smx_mutex_t mutex);
-smx_cond_t simcall_HANDLER_cond_init(smx_simcall_t simcall);
-void simcall_HANDLER_cond_destroy(smx_simcall_t simcall, smx_cond_t cond);
-void simcall_HANDLER_cond_signal(smx_simcall_t simcall, smx_cond_t cond);
-void simcall_HANDLER_cond_broadcast(smx_simcall_t simcall, smx_cond_t cond);
-smx_sem_t simcall_HANDLER_sem_init(smx_simcall_t simcall, unsigned int value);
-void simcall_HANDLER_sem_destroy(smx_simcall_t simcall, smx_sem_t sem);
-void simcall_HANDLER_sem_release(smx_simcall_t simcall, smx_sem_t sem);
-static XBT_INLINE int simcall_HANDLER_sem_would_block(smx_simcall_t simcall,
-                                                smx_sem_t sem)
-{
-  return SIMIX_sem_would_block(sem);
-}
-int simcall_HANDLER_sem_get_capacity(smx_simcall_t simcall, smx_sem_t sem);
 #endif

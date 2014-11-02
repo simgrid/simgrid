@@ -375,8 +375,8 @@ static inline smx_action_t simcall_host_execution_get_state__get__execution(smx_
 static inline void simcall_host_execution_get_state__set__execution(smx_simcall_t simcall, void* arg){
     simcall->args[0].dp = arg;
 }
-static inline int simcall_host_execution_get_state__get__result(smx_simcall_t simcall){
-    return  simcall->result.i;
+static inline e_smx_state_t simcall_host_execution_get_state__get__result(smx_simcall_t simcall){
+    return (e_smx_state_t) simcall->result.i;
 }
 static inline void simcall_host_execution_get_state__set__result(smx_simcall_t simcall, int result){
     simcall->result.i = result;
@@ -527,8 +527,8 @@ static inline smx_host_t simcall_vm_create__get__ind_pm(smx_simcall_t simcall){
 static inline void simcall_vm_create__set__ind_pm(smx_simcall_t simcall, void* arg){
     simcall->args[1].dp = arg;
 }
-static inline void* simcall_vm_create__get__result(smx_simcall_t simcall){
-    return  simcall->result.dp;
+static inline smx_host_t simcall_vm_create__get__result(smx_simcall_t simcall){
+    return (smx_host_t) simcall->result.dp;
 }
 static inline void simcall_vm_create__set__result(smx_simcall_t simcall, void* result){
     simcall->result.dp = result;
@@ -1549,8 +1549,8 @@ static inline smx_action_t simcall_comm_get_state__get__comm(smx_simcall_t simca
 static inline void simcall_comm_get_state__set__comm(smx_simcall_t simcall, void* arg){
     simcall->args[0].dp = arg;
 }
-static inline int simcall_comm_get_state__get__result(smx_simcall_t simcall){
-    return  simcall->result.i;
+static inline e_smx_state_t simcall_comm_get_state__get__result(smx_simcall_t simcall){
+    return (e_smx_state_t) simcall->result.i;
 }
 static inline void simcall_comm_get_state__set__result(smx_simcall_t simcall, int result){
     simcall->result.i = result;
@@ -1726,12 +1726,12 @@ static inline void simcall_cond_broadcast__set__cond(smx_simcall_t simcall, void
     simcall->args[0].dp = arg;
 }
 
-static inline int simcall_sem_init__get__capacity(smx_simcall_t simcall){
-  return  simcall->args[0].i;
+static inline unsigned int simcall_sem_init__get__capacity(smx_simcall_t simcall){
+  return  simcall->args[0].ui;
 }
 
-static inline void simcall_sem_init__set__capacity(smx_simcall_t simcall, int arg){
-    simcall->args[0].i = arg;
+static inline void simcall_sem_init__set__capacity(smx_simcall_t simcall, unsigned int arg){
+    simcall->args[0].ui = arg;
 }
 static inline smx_sem_t simcall_sem_init__get__result(smx_simcall_t simcall){
     return (smx_sem_t) simcall->result.dp;
@@ -2134,23 +2134,23 @@ static inline void simcall_set_category__set__category(smx_simcall_t simcall, co
 #endif
 
 #ifdef HAVE_MC
-static inline void* simcall_mc_snapshot__get__result(smx_simcall_t simcall){
-    return  simcall->result.dp;
+static inline mc_snapshot_t simcall_mc_snapshot__get__result(smx_simcall_t simcall){
+    return (mc_snapshot_t) simcall->result.dp;
 }
 static inline void simcall_mc_snapshot__set__result(smx_simcall_t simcall, void* result){
     simcall->result.dp = result;
 }
 
-static inline void* simcall_mc_compare_snapshots__get__s1(smx_simcall_t simcall){
-  return  simcall->args[0].dp;
+static inline mc_snapshot_t simcall_mc_compare_snapshots__get__s1(smx_simcall_t simcall){
+  return (mc_snapshot_t) simcall->args[0].dp;
 }
 
 static inline void simcall_mc_compare_snapshots__set__s1(smx_simcall_t simcall, void* arg){
     simcall->args[0].dp = arg;
 }
 
-static inline void* simcall_mc_compare_snapshots__get__s2(smx_simcall_t simcall){
-  return  simcall->args[1].dp;
+static inline mc_snapshot_t simcall_mc_compare_snapshots__get__s2(smx_simcall_t simcall){
+  return (mc_snapshot_t) simcall->args[1].dp;
 }
 
 static inline void simcall_mc_compare_snapshots__set__s2(smx_simcall_t simcall, void* arg){
@@ -2184,4 +2184,138 @@ static inline int simcall_mc_random__get__result(smx_simcall_t simcall){
 static inline void simcall_mc_random__set__result(smx_simcall_t simcall, int result){
     simcall->result.i = result;
 }
+#endif
+
+
+/* The prototype of all simcall handlers */
+smx_host_t simcall_HANDLER_host_get_by_name(smx_simcall_t simcall, const char* name);
+const char* simcall_HANDLER_host_get_name(smx_simcall_t simcall, smx_host_t host);
+void simcall_HANDLER_host_on(smx_simcall_t simcall, smx_host_t host);
+void simcall_HANDLER_host_off(smx_simcall_t simcall, smx_host_t host);
+xbt_dict_t simcall_HANDLER_host_get_properties(smx_simcall_t simcall, smx_host_t host);
+int simcall_HANDLER_host_get_core(smx_simcall_t simcall, smx_host_t host);
+xbt_swag_t simcall_HANDLER_host_get_process_list(smx_simcall_t simcall, smx_host_t host);
+double simcall_HANDLER_host_get_speed(smx_simcall_t simcall, smx_host_t host);
+double simcall_HANDLER_host_get_available_speed(smx_simcall_t simcall, smx_host_t host);
+int simcall_HANDLER_host_get_state(smx_simcall_t simcall, smx_host_t host);
+double simcall_HANDLER_host_get_current_power_peak(smx_simcall_t simcall, smx_host_t host);
+double simcall_HANDLER_host_get_power_peak_at(smx_simcall_t simcall, smx_host_t host, int pstate_index);
+int simcall_HANDLER_host_get_nb_pstates(smx_simcall_t simcall, smx_host_t host);
+void simcall_HANDLER_host_set_power_peak_at(smx_simcall_t simcall, smx_host_t host, int pstate_index);
+double simcall_HANDLER_host_get_consumed_energy(smx_simcall_t simcall, smx_host_t host);
+smx_action_t simcall_HANDLER_host_execute(smx_simcall_t simcall, const char* name, smx_host_t host, double computation_amount, double priority, double bound, unsigned long affinity_mask);
+smx_action_t simcall_HANDLER_host_parallel_execute(smx_simcall_t simcall, const char* name, int host_nb, smx_host_t* host_list, double* computation_amount, double* communication_amount, double amount, double rate);
+void simcall_HANDLER_host_execution_destroy(smx_simcall_t simcall, smx_action_t execution);
+void simcall_HANDLER_host_execution_cancel(smx_simcall_t simcall, smx_action_t execution);
+double simcall_HANDLER_host_execution_get_remains(smx_simcall_t simcall, smx_action_t execution);
+e_smx_state_t simcall_HANDLER_host_execution_get_state(smx_simcall_t simcall, smx_action_t execution);
+void simcall_HANDLER_host_execution_set_priority(smx_simcall_t simcall, smx_action_t execution, double priority);
+void simcall_HANDLER_host_execution_set_bound(smx_simcall_t simcall, smx_action_t execution, double bound);
+void simcall_HANDLER_host_execution_set_affinity(smx_simcall_t simcall, smx_action_t execution, smx_host_t ws, unsigned long mask);
+void simcall_HANDLER_host_execution_wait(smx_simcall_t simcall, smx_action_t execution);
+xbt_dict_t simcall_HANDLER_host_get_mounted_storage_list(smx_simcall_t simcall, smx_host_t host);
+xbt_dynar_t simcall_HANDLER_host_get_attached_storage_list(smx_simcall_t simcall, smx_host_t host);
+void simcall_HANDLER_host_get_params(smx_simcall_t simcall, smx_host_t ind_vm, ws_params_t params);
+void simcall_HANDLER_host_set_params(smx_simcall_t simcall, smx_host_t ind_vm, ws_params_t params);
+smx_host_t simcall_HANDLER_vm_create(smx_simcall_t simcall, const char* name, smx_host_t ind_pm);
+void simcall_HANDLER_vm_start(smx_simcall_t simcall, smx_host_t ind_vm);
+int simcall_HANDLER_vm_get_state(smx_simcall_t simcall, smx_host_t ind_vm);
+void simcall_HANDLER_vm_migrate(smx_simcall_t simcall, smx_host_t ind_vm, smx_host_t ind_dst_pm);
+void* simcall_HANDLER_vm_get_pm(smx_simcall_t simcall, smx_host_t ind_vm);
+void simcall_HANDLER_vm_set_bound(smx_simcall_t simcall, smx_host_t ind_vm, double bound);
+void simcall_HANDLER_vm_set_affinity(smx_simcall_t simcall, smx_host_t ind_vm, smx_host_t ind_pm, unsigned long mask);
+void simcall_HANDLER_vm_destroy(smx_simcall_t simcall, smx_host_t ind_vm);
+void simcall_HANDLER_vm_suspend(smx_simcall_t simcall, smx_host_t ind_vm);
+void simcall_HANDLER_vm_resume(smx_simcall_t simcall, smx_host_t ind_vm);
+void simcall_HANDLER_vm_shutdown(smx_simcall_t simcall, smx_host_t ind_vm);
+void simcall_HANDLER_vm_save(smx_simcall_t simcall, smx_host_t ind_vm);
+void simcall_HANDLER_vm_restore(smx_simcall_t simcall, smx_host_t ind_vm);
+void simcall_HANDLER_process_create(smx_simcall_t simcall, smx_process_t* process, const char* name, xbt_main_func_t code, void* data, const char* hostname, double kill_time, int argc, char** argv, xbt_dict_t properties, int auto_restart);
+void simcall_HANDLER_process_kill(smx_simcall_t simcall, smx_process_t process);
+void simcall_HANDLER_process_killall(smx_simcall_t simcall, int reset_pid);
+void simcall_HANDLER_process_cleanup(smx_simcall_t simcall, smx_process_t process);
+void simcall_HANDLER_process_change_host(smx_simcall_t simcall, smx_process_t process, smx_host_t dest);
+void simcall_HANDLER_process_suspend(smx_simcall_t simcall, smx_process_t process);
+void simcall_HANDLER_process_resume(smx_simcall_t simcall, smx_process_t process);
+int simcall_HANDLER_process_count(smx_simcall_t simcall);
+int simcall_HANDLER_process_get_PID(smx_simcall_t simcall, smx_process_t process);
+int simcall_HANDLER_process_get_PPID(smx_simcall_t simcall, smx_process_t process);
+void* simcall_HANDLER_process_get_data(smx_simcall_t simcall, smx_process_t process);
+void simcall_HANDLER_process_set_data(smx_simcall_t simcall, smx_process_t process, void* data);
+smx_host_t simcall_HANDLER_process_get_host(smx_simcall_t simcall, smx_process_t process);
+const char* simcall_HANDLER_process_get_name(smx_simcall_t simcall, smx_process_t process);
+int simcall_HANDLER_process_is_suspended(smx_simcall_t simcall, smx_process_t process);
+xbt_dict_t simcall_HANDLER_process_get_properties(smx_simcall_t simcall, smx_process_t process);
+void simcall_HANDLER_process_join(smx_simcall_t simcall, smx_process_t process, double timeout);
+void simcall_HANDLER_process_sleep(smx_simcall_t simcall, double duration);
+void simcall_HANDLER_process_on_exit(smx_simcall_t simcall, smx_process_t process, int_f_pvoid_pvoid_t fun, void* data);
+void simcall_HANDLER_process_auto_restart_set(smx_simcall_t simcall, smx_process_t process, int auto_restart);
+smx_process_t simcall_HANDLER_process_restart(smx_simcall_t simcall, smx_process_t process);
+smx_rdv_t simcall_HANDLER_rdv_create(smx_simcall_t simcall, const char* name);
+void simcall_HANDLER_rdv_destroy(smx_simcall_t simcall, smx_rdv_t rdv);
+unsigned int simcall_HANDLER_rdv_comm_count_by_host(smx_simcall_t simcall, smx_rdv_t rdv, smx_host_t host);
+smx_action_t simcall_HANDLER_rdv_get_head(smx_simcall_t simcall, smx_rdv_t rdv);
+void simcall_HANDLER_rdv_set_receiver(smx_simcall_t simcall, smx_rdv_t rdv, smx_process_t receiver);
+smx_process_t simcall_HANDLER_rdv_get_receiver(smx_simcall_t simcall, smx_rdv_t rdv);
+smx_action_t simcall_HANDLER_comm_iprobe(smx_simcall_t simcall, smx_rdv_t rdv, int type, int src, int tag, simix_match_func_t match_fun, void* data);
+void simcall_HANDLER_comm_send(smx_simcall_t simcall, smx_process_t src, smx_rdv_t rdv, double task_size, double rate, void* src_buff, size_t src_buff_size, simix_match_func_t match_fun, simix_copy_data_func_t copy_data_fun, void* data, double timeout);
+smx_action_t simcall_HANDLER_comm_isend(smx_simcall_t simcall, smx_process_t src, smx_rdv_t rdv, double task_size, double rate, void* src_buff, size_t src_buff_size, simix_match_func_t match_fun, simix_clean_func_t clean_fun, simix_copy_data_func_t copy_data_fun, void* data, int detached);
+void simcall_HANDLER_comm_recv(smx_simcall_t simcall, smx_rdv_t rdv, void* dst_buff, size_t* dst_buff_size, simix_match_func_t match_fun, simix_copy_data_func_t copy_data_fun, void* data, double timeout, double rate);
+smx_action_t simcall_HANDLER_comm_irecv(smx_simcall_t simcall, smx_rdv_t rdv, void* dst_buff, size_t* dst_buff_size, simix_match_func_t match_fun, simix_copy_data_func_t copy_data_fun, void* data, double rate);
+void simcall_HANDLER_comm_cancel(smx_simcall_t simcall, smx_action_t comm);
+void simcall_HANDLER_comm_waitany(smx_simcall_t simcall, xbt_dynar_t comms);
+void simcall_HANDLER_comm_wait(smx_simcall_t simcall, smx_action_t comm, double timeout);
+void simcall_HANDLER_comm_test(smx_simcall_t simcall, smx_action_t comm);
+void simcall_HANDLER_comm_testany(smx_simcall_t simcall, xbt_dynar_t comms);
+double simcall_HANDLER_comm_get_remains(smx_simcall_t simcall, smx_action_t comm);
+e_smx_state_t simcall_HANDLER_comm_get_state(smx_simcall_t simcall, smx_action_t comm);
+void* simcall_HANDLER_comm_get_src_data(smx_simcall_t simcall, smx_action_t comm);
+void* simcall_HANDLER_comm_get_dst_data(smx_simcall_t simcall, smx_action_t comm);
+smx_process_t simcall_HANDLER_comm_get_src_proc(smx_simcall_t simcall, smx_action_t comm);
+smx_process_t simcall_HANDLER_comm_get_dst_proc(smx_simcall_t simcall, smx_action_t comm);
+smx_mutex_t simcall_HANDLER_mutex_init(smx_simcall_t simcall);
+void simcall_HANDLER_mutex_destroy(smx_simcall_t simcall, smx_mutex_t mutex);
+void simcall_HANDLER_mutex_lock(smx_simcall_t simcall, smx_mutex_t mutex);
+int simcall_HANDLER_mutex_trylock(smx_simcall_t simcall, smx_mutex_t mutex);
+void simcall_HANDLER_mutex_unlock(smx_simcall_t simcall, smx_mutex_t mutex);
+smx_cond_t simcall_HANDLER_cond_init(smx_simcall_t simcall);
+void simcall_HANDLER_cond_destroy(smx_simcall_t simcall, smx_cond_t cond);
+void simcall_HANDLER_cond_signal(smx_simcall_t simcall, smx_cond_t cond);
+void simcall_HANDLER_cond_wait(smx_simcall_t simcall, smx_cond_t cond, smx_mutex_t mutex);
+void simcall_HANDLER_cond_wait_timeout(smx_simcall_t simcall, smx_cond_t cond, smx_mutex_t mutex, double timeout);
+void simcall_HANDLER_cond_broadcast(smx_simcall_t simcall, smx_cond_t cond);
+smx_sem_t simcall_HANDLER_sem_init(smx_simcall_t simcall, unsigned int capacity);
+void simcall_HANDLER_sem_destroy(smx_simcall_t simcall, smx_sem_t sem);
+void simcall_HANDLER_sem_release(smx_simcall_t simcall, smx_sem_t sem);
+int simcall_HANDLER_sem_would_block(smx_simcall_t simcall, smx_sem_t sem);
+void simcall_HANDLER_sem_acquire(smx_simcall_t simcall, smx_sem_t sem);
+void simcall_HANDLER_sem_acquire_timeout(smx_simcall_t simcall, smx_sem_t sem, double timeout);
+int simcall_HANDLER_sem_get_capacity(smx_simcall_t simcall, smx_sem_t sem);
+void simcall_HANDLER_file_read(smx_simcall_t simcall, smx_file_t fd, sg_size_t size, smx_host_t host);
+void simcall_HANDLER_file_write(smx_simcall_t simcall, smx_file_t fd, sg_size_t size, smx_host_t host);
+void simcall_HANDLER_file_open(smx_simcall_t simcall, const char* fullpath, smx_host_t host);
+void simcall_HANDLER_file_close(smx_simcall_t simcall, smx_file_t fd, smx_host_t host);
+int simcall_HANDLER_file_unlink(smx_simcall_t simcall, smx_file_t fd, smx_host_t host);
+sg_size_t simcall_HANDLER_file_get_size(smx_simcall_t simcall, smx_file_t fd);
+sg_size_t simcall_HANDLER_file_tell(smx_simcall_t simcall, smx_file_t fd);
+int simcall_HANDLER_file_seek(smx_simcall_t simcall, smx_file_t fd, sg_offset_t offset, int origin);
+xbt_dynar_t simcall_HANDLER_file_get_info(smx_simcall_t simcall, smx_file_t fd);
+int simcall_HANDLER_file_move(smx_simcall_t simcall, smx_file_t fd, const char* fullpath);
+sg_size_t simcall_HANDLER_storage_get_free_size(smx_simcall_t simcall, smx_storage_t storage);
+sg_size_t simcall_HANDLER_storage_get_used_size(smx_simcall_t simcall, smx_storage_t name);
+xbt_dict_t simcall_HANDLER_storage_get_properties(smx_simcall_t simcall, smx_storage_t storage);
+xbt_dict_t simcall_HANDLER_storage_get_content(smx_simcall_t simcall, smx_storage_t storage);
+xbt_dict_t simcall_HANDLER_asr_get_properties(smx_simcall_t simcall, const char* name);
+#ifdef HAVE_LATENCY_BOUND_TRACKING
+int simcall_HANDLER_comm_is_latency_bounded(smx_simcall_t simcall, smx_action_t comm);
+#endif
+
+#ifdef HAVE_TRACING
+void simcall_HANDLER_set_category(smx_simcall_t simcall, smx_action_t action, const char* category);
+#endif
+
+#ifdef HAVE_MC
+mc_snapshot_t simcall_HANDLER_mc_snapshot(smx_simcall_t simcall);
+int simcall_HANDLER_mc_compare_snapshots(smx_simcall_t simcall, mc_snapshot_t s1, mc_snapshot_t s2);
+int simcall_HANDLER_mc_random(smx_simcall_t simcall, int min, int max);
 #endif

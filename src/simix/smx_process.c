@@ -618,10 +618,6 @@ int SIMIX_process_get_PPID(smx_process_t self){
     return self->ppid;
 }
 
-void* simcall_HANDLER_process_self_get_data(smx_simcall_t simcall, smx_process_t self){
-  return SIMIX_process_self_get_data(self);
-}
-
 void* SIMIX_process_self_get_data(smx_process_t self)
 {
   xbt_assert(self == SIMIX_process_self(), "This is not the current process");

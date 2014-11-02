@@ -39,7 +39,7 @@ class Arg(object):
   def field(self):
     return self.simcall_types[self.type]
 
-  def ret(self):
+  def rettype(self):
     return '%s'%self.casted if self.casted else self.type
 
   def cast(self):
@@ -63,7 +63,7 @@ class Simcall(object):
       if self.name not in self.simcalls_BODY:
           print '# ERROR: No function calling simcall_BODY_%s'%self.name
           print '# Add something like this to libsmx.c:'
-          print '%s simcall_%s(%s) {'%(self.res.ret() ,self.name ,', '.join('%s %s'%(arg.ret(), arg.name) for arg in self.args))
+          print '%s simcall_%s(%s) {'%(self.res.rettype() ,self.name ,', '.join('%s %s'%(arg.rettype(), arg.name) for arg in self.args))
           print '  return simcall_BODY_%s(%s);'%(self.name)
           print '}'
           return False
@@ -78,9 +78,9 @@ class Simcall(object):
       if self.name not in self.simcalls_PRE:
           print '# ERROR: No function called simcall_HANDLER_%s'%self.name
           print '# Add something like this to the relevant C file (like smx_io.c if it\'s an IO call):'
-          print '%s simcall_HANDLER_%s(smx_simcall_t simcall%s) {'%(self.res.ret()
+          print '%s simcall_HANDLER_%s(smx_simcall_t simcall%s) {'%(self.res.rettype()
                                                                     ,self.name                                               
-                                                                    ,''.join(', %s %s'%(arg.ret(), arg.name)
+                                                                    ,''.join(', %s %s'%(arg.rettype(), arg.name)
                                                                              for arg in self.args))
           print '  // Your code handling the simcall'
           print '}'
@@ -95,31 +95,27 @@ class Simcall(object):
 
   def accessors(self):
     res = []
+    # Arguments getter/setters
     for i in range(len(self.args)):
-      res.append(self.arg_getter(i))
-      res.append(self.arg_setter(i))
+        arg = self.args[i]
+        res.append('')
+        res.append('static inline %s simcall_%s__get__%s(smx_simcall_t simcall){'%(arg.rettype(), self.name, arg.name))
+        res.append('  return %s simcall->args[%i].%s;'%(arg.cast(), i, arg.field()))
+        res.append('}')
+        res.append('')
+        res.append('static inline void simcall_%s__set__%s(smx_simcall_t simcall, %s arg){'%(self.name, arg.name, arg.type))
+        res.append('    simcall->args[%i].%s = arg;'%(i, arg.field()))
+        res.append('}')
+      
+    # Return value getter/setters
     if self.res.type != 'void':
-        res.append('static inline %s simcall_%s__get__result(smx_simcall_t simcall){'%(self.res.ret(), self.name))
+        res.append('static inline %s simcall_%s__get__result(smx_simcall_t simcall){'%(self.res.rettype(), self.name))
         res.append('    return %s simcall->result.%s;'%(self.res.cast(), self.res.field()))
         res.append('}')
         res.append('static inline void simcall_%s__set__result(smx_simcall_t simcall, %s result){'%(self.name, self.res.type,))
         res.append('    simcall->result.%s = result;'%(self.res.field()))
         res.append('}')
     return '\n'.join(res)
-
-  def arg_getter(self, i):
-    arg = self.args[i]
-    return '''
-static inline %s simcall_%s__get__%s(smx_simcall_t simcall){
-  return %s simcall->args[%i].%s;
-}'''%(arg.ret(), self.name, arg.name, arg.cast(), i, arg.field())
-
-  def arg_setter(self, i):
-    arg = self.args[i]
-    return '''
-static inline void simcall_%s__set__%s(smx_simcall_t simcall, %s arg){
-    simcall->args[%i].%s = arg;
-}'''%(self.name, arg.name, arg.type, i, arg.field())
 
   def case(self):
     return '''case SIMCALL_%s:
@@ -153,9 +149,9 @@ inline static %s simcall_BODY_%s(%s) {
       SIMIX_simcall_handle(&self->simcall, 0);
     }    
     %s
-  }'''%(self.res.ret()
+  }'''%(self.res.rettype()
        ,self.name
-       ,', '.join('%s %s'%(arg.ret(), arg.name)
+       ,', '.join('%s %s'%(arg.rettype(), arg.name)
                   for arg in self.args)
        ,self.name
        ,', '.join(["&self->simcall"]+ [arg.name for arg in self.args])
@@ -163,6 +159,10 @@ inline static %s simcall_BODY_%s(%s) {
        ,'\n'.join('    self->simcall.args[%d].%s = (%s) %s;'%(i, arg.field(), arg.type, arg.name)
                   for i, arg in enumerate(self.args))
        ,'' if self.res.type == 'void' else 'return self->simcall.result.%s;'%self.res.field())
+  
+  def handler_prototype(self):
+      return "%s simcall_HANDLER_%s(smx_simcall_t simcall%s);"%(self.res.rettype() if self.has_answer else 'void', self.name, ''.join(', %s %s'%(arg.rettype(), arg.name) 
+             for i, arg in enumerate(self.args)))
 
 def parse(fn):
   simcalls = []
@@ -229,6 +229,8 @@ if __name__=='__main__':
   ###
   fd = header('popping_accessors.h')
   handle(fd, Simcall.accessors, simcalls, simcalls_dict)
+  fd.write("\n\n/* The prototype of all simcall handlers, automatically generated for you */\n\n")
+  handle(fd, Simcall.handler_prototype, simcalls, simcalls_dict)
   fd.close()
 
   ###

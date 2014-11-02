@@ -450,7 +450,7 @@ inline static double simcall_BODY_host_execution_get_remains(smx_action_t execut
     return self->simcall.result.d;
   }
   
-inline static int simcall_BODY_host_execution_get_state(smx_action_t execution) {
+inline static e_smx_state_t simcall_BODY_host_execution_get_state(smx_action_t execution) {
     smx_process_t self = SIMIX_process_self();
 
     /* Go to that function to follow the code flow through the simcall barrier */
@@ -645,7 +645,7 @@ inline static void simcall_BODY_host_set_params(smx_host_t ind_vm, ws_params_t p
     
   }
   
-inline static void* simcall_BODY_vm_create(const char* name, smx_host_t ind_pm) {
+inline static smx_host_t simcall_BODY_vm_create(const char* name, smx_host_t ind_pm) {
     smx_process_t self = SIMIX_process_self();
 
     /* Go to that function to follow the code flow through the simcall barrier */
@@ -1776,7 +1776,7 @@ inline static double simcall_BODY_comm_get_remains(smx_action_t comm) {
     return self->simcall.result.d;
   }
   
-inline static int simcall_BODY_comm_get_state(smx_action_t comm) {
+inline static e_smx_state_t simcall_BODY_comm_get_state(smx_action_t comm) {
     smx_process_t self = SIMIX_process_self();
 
     /* Go to that function to follow the code flow through the simcall barrier */
@@ -2115,7 +2115,7 @@ inline static void simcall_BODY_cond_broadcast(smx_cond_t cond) {
     
   }
   
-inline static smx_sem_t simcall_BODY_sem_init(int capacity) {
+inline static smx_sem_t simcall_BODY_sem_init(unsigned int capacity) {
     smx_process_t self = SIMIX_process_self();
 
     /* Go to that function to follow the code flow through the simcall barrier */
@@ -2125,7 +2125,7 @@ inline static smx_sem_t simcall_BODY_sem_init(int capacity) {
     self->simcall.call = SIMCALL_SEM_INIT;
     memset(&self->simcall.result, 0, sizeof(self->simcall.result));
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
-    self->simcall.args[0].i = (int) capacity;
+    self->simcall.args[0].ui = (unsigned int) capacity;
     if (self != simix_global->maestro_process) {
       XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name,
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
@@ -2638,7 +2638,7 @@ inline static void simcall_BODY_set_category(smx_action_t action, const char* ca
 
 #ifdef HAVE_MC
   
-inline static void* simcall_BODY_mc_snapshot() {
+inline static mc_snapshot_t simcall_BODY_mc_snapshot() {
     smx_process_t self = SIMIX_process_self();
 
     /* Go to that function to follow the code flow through the simcall barrier */
@@ -2659,7 +2659,7 @@ inline static void* simcall_BODY_mc_snapshot() {
     return self->simcall.result.dp;
   }
   
-inline static int simcall_BODY_mc_compare_snapshots(void* s1, void* s2) {
+inline static int simcall_BODY_mc_compare_snapshots(mc_snapshot_t s1, mc_snapshot_t s2) {
     smx_process_t self = SIMIX_process_self();
 
     /* Go to that function to follow the code flow through the simcall barrier */

@@ -527,3 +527,6 @@ void simcall_HANDLER_sem_acquire_timeout(smx_simcall_t simcall, smx_sem_t sem, d
   _SIMIX_sem_wait(sem, timeout, simcall->issuer, simcall);  
   XBT_OUT();
 }
+int simcall_HANDLER_sem_would_block(smx_simcall_t simcall, smx_sem_t sem) {
+  return SIMIX_sem_would_block(sem);
+}
