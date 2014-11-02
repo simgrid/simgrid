@@ -28,9 +28,9 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_kernel, simix,
 smx_global_t simix_global = NULL;
 static xbt_heap_t simix_timers = NULL;
 
-static void* SIMIX_action_mallocator_new_f(void);
-static void SIMIX_action_mallocator_free_f(void* action);
-static void SIMIX_action_mallocator_reset_f(void* action);
+static void* SIMIX_synchro_mallocator_new_f(void);
+static void SIMIX_synchro_mallocator_free_f(void* synchro);
+static void SIMIX_synchro_mallocator_reset_f(void* synchro);
 
 /* FIXME: Yeah, I'll do it in a portable maner one day [Mt] */
 #include <signal.h>
@@ -168,9 +168,9 @@ void SIMIX_global_init(int *argc, char **argv)
     simix_global->create_process_function = SIMIX_process_create;
     simix_global->kill_process_function = SIMIX_process_kill;
     simix_global->cleanup_process_function = SIMIX_process_cleanup;
-    simix_global->action_mallocator = xbt_mallocator_new(65536,
-        SIMIX_action_mallocator_new_f, SIMIX_action_mallocator_free_f,
-        SIMIX_action_mallocator_reset_f);
+    simix_global->synchro_mallocator = xbt_mallocator_new(65536,
+        SIMIX_synchro_mallocator_new_f, SIMIX_synchro_mallocator_free_f,
+        SIMIX_synchro_mallocator_reset_f);
     simix_global->autorestart = SIMIX_host_restart_processes;
 
     surf_init(argc, argv);      /* Initialize SURF structures */
@@ -264,7 +264,7 @@ void SIMIX_clean(void)
   xbt_os_timer_free(simix_global->timer_par);
 #endif
 
-  xbt_mallocator_free(simix_global->action_mallocator);
+  xbt_mallocator_free(simix_global->synchro_mallocator);
   xbt_free(simix_global);
   simix_global = NULL;
 
@@ -367,16 +367,16 @@ void SIMIX_run(void)
        *            - because the communication failed or were canceled after startup. In this case, it's called from the function
        *              we are in, by the chunk:
        *                       set = model->states.failed_action_set;
-       *                       while ((action = xbt_swag_extract(set)))
-       *                          SIMIX_simcall_post((smx_action_t) action->data);
+       *                       while ((synchro = xbt_swag_extract(set)))
+       *                          SIMIX_simcall_post((smx_synchro_t) synchro->data);
        *              This order is also fixed because it depends of the order in which the surf actions were
        *              added to the system, and only maestro can add stuff this way, through simcalls.
-       *              We thus use the inductive hypothesis once again to conclude that the order in which actions are
+       *              We thus use the inductive hypothesis once again to conclude that the order in which synchros are
        *              poped out of the swag does not depend on the user code's execution order.
-       *            - because the communication terminated. In this case, actions are served in the order given by
+       *            - because the communication terminated. In this case, synchros are served in the order given by
        *                       set = model->states.done_action_set;
-       *                       while ((action = xbt_swag_extract(set)))
-       *                          SIMIX_simcall_post((smx_action_t) action->data);
+       *                       while ((synchro = xbt_swag_extract(set)))
+       *                          SIMIX_simcall_post((smx_synchro_t) synchro->data);
        *              and the argument is very similar to the previous one.
        *            So, in any case, the orders of calls to SIMIX_comm_finish() do not depend on the order in which user processes are executed.
        *          So, in any cases, the orders of processes within process_to_run do not depend on the order in which user processes were executed previously.
@@ -420,13 +420,13 @@ void SIMIX_run(void)
     /* Wake up all processes waiting for a Surf action to finish */
     xbt_dynar_foreach(model_list, iter, model) {
       while ((action = surf_model_extract_failed_action_set(model)))
-        SIMIX_simcall_exit((smx_action_t) surf_action_get_data(action));
+        SIMIX_simcall_exit((smx_synchro_t) surf_action_get_data(action));
 
       while ((action = surf_model_extract_done_action_set(model)))
         if (surf_action_get_data(action) == NULL)
           XBT_DEBUG("probably vcpu's action %p, skip", action);
         else
-          SIMIX_simcall_exit((smx_action_t) surf_action_get_data(action));
+          SIMIX_simcall_exit((smx_synchro_t) surf_action_get_data(action));
     }
 
     /* Autorestart all process */
@@ -536,43 +536,43 @@ void SIMIX_display_process_status(void)
     ("Legend of the following listing: \"Process <pid> (<name>@<host>): <status>\"");
   xbt_swag_foreach(process, simix_global->process_list) {
 
-    if (process->waiting_action) {
+    if (process->waiting_synchro) {
 
-      const char* action_description = "unknown";
-      switch (process->waiting_action->type) {
+      const char* synchro_description = "unknown";
+      switch (process->waiting_synchro->type) {
 
-      case SIMIX_ACTION_EXECUTE:
-        action_description = "execution";
+      case SIMIX_SYNC_EXECUTE:
+        synchro_description = "execution";
         break;
 
-      case SIMIX_ACTION_PARALLEL_EXECUTE:
-        action_description = "parallel execution";
+      case SIMIX_SYNC_PARALLEL_EXECUTE:
+        synchro_description = "parallel execution";
         break;
 
-      case SIMIX_ACTION_COMMUNICATE:
-        action_description = "communication";
+      case SIMIX_SYNC_COMMUNICATE:
+        synchro_description = "communication";
         break;
 
-      case SIMIX_ACTION_SLEEP:
-        action_description = "sleeping";
+      case SIMIX_SYNC_SLEEP:
+        synchro_description = "sleeping";
         break;
 
-      case SIMIX_ACTION_JOIN:
-        action_description = "joining";
+      case SIMIX_SYNC_JOIN:
+        synchro_description = "joining";
         break;
 
-      case SIMIX_ACTION_SYNCHRO:
-        action_description = "synchronization";
+      case SIMIX_SYNC_SYNCHRO:
+        synchro_description = "synchronization";
         break;
 
-      case SIMIX_ACTION_IO:
-        action_description = "I/O";
+      case SIMIX_SYNC_IO:
+        synchro_description = "I/O";
         break;
       }
-      XBT_INFO("Process %lu (%s@%s): waiting for %s action %p (%s) in state %d to finish",
+      XBT_INFO("Process %lu (%s@%s): waiting for %s synchro %p (%s) in state %d to finish",
           process->pid, process->name, sg_host_name(process->smx_host),
-          action_description, process->waiting_action,
-          process->waiting_action->name, (int)process->waiting_action->state);
+          synchro_description, process->waiting_synchro,
+          process->waiting_synchro->name, (int)process->waiting_synchro->state);
     }
     else {
       XBT_INFO("Process %lu (%s@%s)", process->pid, process->name, sg_host_name(process->smx_host));
@@ -580,24 +580,24 @@ void SIMIX_display_process_status(void)
   }
 }
 
-static void* SIMIX_action_mallocator_new_f(void) {
-  smx_action_t action = xbt_new(s_smx_action_t, 1);
-  action->simcalls = xbt_fifo_new();
-  return action;
+static void* SIMIX_synchro_mallocator_new_f(void) {
+  smx_synchro_t synchro = xbt_new(s_smx_synchro_t, 1);
+  synchro->simcalls = xbt_fifo_new();
+  return synchro;
 }
 
-static void SIMIX_action_mallocator_free_f(void* action) {
-  xbt_fifo_free(((smx_action_t) action)->simcalls);
-  xbt_free(action);
+static void SIMIX_synchro_mallocator_free_f(void* synchro) {
+  xbt_fifo_free(((smx_synchro_t) synchro)->simcalls);
+  xbt_free(synchro);
 }
 
-static void SIMIX_action_mallocator_reset_f(void* action) {
+static void SIMIX_synchro_mallocator_reset_f(void* synchro) {
 
   // we also recycle the simcall list
-  xbt_fifo_t fifo = ((smx_action_t) action)->simcalls;
+  xbt_fifo_t fifo = ((smx_synchro_t) synchro)->simcalls;
   xbt_fifo_reset(fifo);
-  memset(action, 0, sizeof(s_smx_action_t));
-  ((smx_action_t) action)->simcalls = fifo;
+  memset(synchro, 0, sizeof(s_smx_synchro_t));
+  ((smx_synchro_t) synchro)->simcalls = fifo;
 }
 
 xbt_dict_t simcall_HANDLER_asr_get_properties(smx_simcall_t simcall, const char *name){

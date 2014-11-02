@@ -228,7 +228,7 @@ static char *buff_size_to_string(size_t buff_size)
 char *MC_request_to_string(smx_simcall_t req, int value)
 {
   char *type = NULL, *args = NULL, *str = NULL, *p = NULL, *bs = NULL;
-  smx_action_t act = NULL;
+  smx_synchro_t act = NULL;
   size_t size = 0;
 
   switch (req->call) {
@@ -305,7 +305,7 @@ char *MC_request_to_string(smx_simcall_t req, int value)
     if (!xbt_dynar_is_empty(simcall_comm_waitany__get__comms(req))) {
       p = pointer_to_string(xbt_dynar_get_as
                             (simcall_comm_waitany__get__comms(req), value,
-                             smx_action_t));
+                             smx_synchro_t));
       args =
           bprintf("comm=%s (%d of %lu)", p, value + 1,
                   xbt_dynar_length(simcall_comm_waitany__get__comms(req)));
@@ -367,7 +367,7 @@ char *MC_request_to_string(smx_simcall_t req, int value)
 unsigned int MC_request_testany_fail(smx_simcall_t req)
 {
   unsigned int cursor;
-  smx_action_t action;
+  smx_synchro_t action;
 
   xbt_dynar_foreach(simcall_comm_testany__get__comms(req), cursor, action) {
     if (action->comm.src_proc && action->comm.dst_proc)
@@ -393,7 +393,7 @@ int MC_request_is_visible(smx_simcall_t req)
 int MC_request_is_enabled(smx_simcall_t req)
 {
   unsigned int index = 0;
-  smx_action_t act = 0;
+  smx_synchro_t act = 0;
 
   switch (req->call) {
   case SIMCALL_NONE:
@@ -430,7 +430,7 @@ int MC_request_is_enabled(smx_simcall_t req)
 
 int MC_request_is_enabled_by_idx(smx_simcall_t req, unsigned int idx)
 {
-  smx_action_t act;
+  smx_synchro_t act;
 
   switch (req->call) {
 
@@ -443,14 +443,14 @@ int MC_request_is_enabled_by_idx(smx_simcall_t req, unsigned int idx)
   case SIMCALL_COMM_WAITANY:
     act =
         xbt_dynar_get_as(simcall_comm_waitany__get__comms(req), idx,
-                         smx_action_t);
+                         smx_synchro_t);
     return (act->comm.src_proc && act->comm.dst_proc);
     break;
 
   case SIMCALL_COMM_TESTANY:
     act =
         xbt_dynar_get_as(simcall_comm_testany__get__comms(req), idx,
-                         smx_action_t);
+                         smx_synchro_t);
     return (act->comm.src_proc && act->comm.dst_proc);
     break;
 
@@ -468,7 +468,7 @@ char *MC_request_get_dot_output(smx_simcall_t req, int value)
 {
 
   char *str = NULL, *label = NULL;
-  smx_action_t act = NULL;
+  smx_synchro_t act = NULL;
 
   switch (req->call) {
   case SIMCALL_COMM_ISEND:

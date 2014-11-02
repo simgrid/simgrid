@@ -26,9 +26,9 @@ typedef struct s_smx_sem {
   xbt_swag_t sleeping;          /* list of sleeping process */
 } s_smx_sem_t;
 
-void SIMIX_post_synchro(smx_action_t action);
+void SIMIX_post_synchro(smx_synchro_t synchro);
 void SIMIX_synchro_stop_waiting(smx_process_t process, smx_simcall_t simcall);
-void SIMIX_synchro_destroy(smx_action_t action);
+void SIMIX_synchro_destroy(smx_synchro_t synchro);
 
 smx_mutex_t SIMIX_mutex_init(void);
 void SIMIX_mutex_destroy(smx_mutex_t mutex);

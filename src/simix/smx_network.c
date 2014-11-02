@@ -12,23 +12,23 @@
 
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_network, simix,
-                                "Logging specific to SIMIX (network)");
+                                "SIMIX network-related synchronization");
 
 static xbt_dict_t rdv_points = NULL;
 XBT_EXPORT_NO_IMPORT(unsigned long int) smx_total_comms = 0;
 
 static void SIMIX_waitany_remove_simcall_from_actions(smx_simcall_t simcall);
-static void SIMIX_comm_copy_data(smx_action_t comm);
-static smx_action_t SIMIX_comm_new(e_smx_comm_type_t type);
-static XBT_INLINE void SIMIX_rdv_push(smx_rdv_t rdv, smx_action_t comm);
-static smx_action_t SIMIX_fifo_probe_comm(xbt_fifo_t fifo, e_smx_comm_type_t type,
-                                        int (*match_fun)(void *, void *,smx_action_t),
-                                        void *user_data, smx_action_t my_action);
-static smx_action_t SIMIX_fifo_get_comm(xbt_fifo_t fifo, e_smx_comm_type_t type,
-                                        int (*match_fun)(void *, void *,smx_action_t),
-                                        void *user_data, smx_action_t my_action);
+static void SIMIX_comm_copy_data(smx_synchro_t comm);
+static smx_synchro_t SIMIX_comm_new(e_smx_comm_type_t type);
+static XBT_INLINE void SIMIX_rdv_push(smx_rdv_t rdv, smx_synchro_t comm);
+static smx_synchro_t SIMIX_fifo_probe_comm(xbt_fifo_t fifo, e_smx_comm_type_t type,
+                                        int (*match_fun)(void *, void *,smx_synchro_t),
+                                        void *user_data, smx_synchro_t my_synchro);
+static smx_synchro_t SIMIX_fifo_get_comm(xbt_fifo_t fifo, e_smx_comm_type_t type,
+                                        int (*match_fun)(void *, void *,smx_synchro_t),
+                                        void *user_data, smx_synchro_t my_synchro);
 static void SIMIX_rdv_free(void *data);
-static void SIMIX_comm_start(smx_action_t action);
+static void SIMIX_comm_start(smx_synchro_t synchro);
 
 void SIMIX_network_init(void)
 {
@@ -102,11 +102,11 @@ unsigned int simcall_HANDLER_rdv_comm_count_by_host(smx_simcall_t simcall, smx_r
 }
 int SIMIX_rdv_comm_count_by_host(smx_rdv_t rdv, smx_host_t host)
 {
-  smx_action_t comm = NULL;
+  smx_synchro_t comm = NULL;
   xbt_fifo_item_t item = NULL;
   int count = 0;
 
-  xbt_fifo_foreach(rdv->comm_fifo, item, comm, smx_action_t) {
+  xbt_fifo_foreach(rdv->comm_fifo, item, comm, smx_synchro_t) {
     if (comm->comm.src_proc->smx_host == host)
       count++;
   }
@@ -114,10 +114,10 @@ int SIMIX_rdv_comm_count_by_host(smx_rdv_t rdv, smx_host_t host)
   return count;
 }
 
-smx_action_t simcall_HANDLER_rdv_get_head(smx_simcall_t simcall, smx_rdv_t rdv){
+smx_synchro_t simcall_HANDLER_rdv_get_head(smx_simcall_t simcall, smx_rdv_t rdv){
   return SIMIX_rdv_get_head(rdv);
 }
-smx_action_t SIMIX_rdv_get_head(smx_rdv_t rdv)
+smx_synchro_t SIMIX_rdv_get_head(smx_rdv_t rdv)
 {
   return xbt_fifo_get_item_content(xbt_fifo_get_first_item(rdv->comm_fifo));
 }
@@ -150,339 +150,339 @@ void SIMIX_rdv_set_receiver(smx_rdv_t rdv, smx_process_t process)
 }
 
 /**
- *  \brief Pushes a communication action into a rendez-vous point
+ *  \brief Pushes a communication synchro into a rendez-vous point
  *  \param rdv The rendez-vous point
- *  \param comm The communication action
+ *  \param comm The communication synchro
  */
-static XBT_INLINE void SIMIX_rdv_push(smx_rdv_t rdv, smx_action_t comm)
+static XBT_INLINE void SIMIX_rdv_push(smx_rdv_t rdv, smx_synchro_t comm)
 {
   xbt_fifo_push(rdv->comm_fifo, comm);
   comm->comm.rdv = rdv;
 }
 
 /**
- *  \brief Removes a communication action from a rendez-vous point
+ *  \brief Removes a communication synchro from a rendez-vous point
  *  \param rdv The rendez-vous point
- *  \param comm The communication action
+ *  \param comm The communication synchro
  */
-XBT_INLINE void SIMIX_rdv_remove(smx_rdv_t rdv, smx_action_t comm)
+XBT_INLINE void SIMIX_rdv_remove(smx_rdv_t rdv, smx_synchro_t comm)
 {
   xbt_fifo_remove(rdv->comm_fifo, comm);
   comm->comm.rdv = NULL;
 }
 
 /**
- *  \brief Checks if there is a communication action queued in a fifo matching our needs
+ *  \brief Checks if there is a communication synchro queued in a fifo matching our needs
  *  \param type The type of communication we are looking for (comm_send, comm_recv)
- *  \return The communication action if found, NULL otherwise
+ *  \return The communication synchro if found, NULL otherwise
  */
-smx_action_t SIMIX_fifo_get_comm(xbt_fifo_t fifo, e_smx_comm_type_t type,
-                                 int (*match_fun)(void *, void *,smx_action_t),
-                                 void *this_user_data, smx_action_t my_action)
+smx_synchro_t SIMIX_fifo_get_comm(xbt_fifo_t fifo, e_smx_comm_type_t type,
+                                 int (*match_fun)(void *, void *,smx_synchro_t),
+                                 void *this_user_data, smx_synchro_t my_synchro)
 {
-  smx_action_t action;
+  smx_synchro_t synchro;
   xbt_fifo_item_t item;
   void* other_user_data = NULL;
 
-  xbt_fifo_foreach(fifo, item, action, smx_action_t) {
-    if (action->comm.type == SIMIX_COMM_SEND) {
-      other_user_data = action->comm.src_data;
-    } else if (action->comm.type == SIMIX_COMM_RECEIVE) {
-      other_user_data = action->comm.dst_data;
+  xbt_fifo_foreach(fifo, item, synchro, smx_synchro_t) {
+    if (synchro->comm.type == SIMIX_COMM_SEND) {
+      other_user_data = synchro->comm.src_data;
+    } else if (synchro->comm.type == SIMIX_COMM_RECEIVE) {
+      other_user_data = synchro->comm.dst_data;
     }
-    if (action->comm.type == type &&
-        (!match_fun              ||              match_fun(this_user_data,  other_user_data, action)) &&
-        (!action->comm.match_fun || action->comm.match_fun(other_user_data, this_user_data,  my_action))) {
-      XBT_DEBUG("Found a matching communication action %p", action);
+    if (synchro->comm.type == type &&
+        (!match_fun              ||              match_fun(this_user_data,  other_user_data, synchro)) &&
+        (!synchro->comm.match_fun || synchro->comm.match_fun(other_user_data, this_user_data,  my_synchro))) {
+      XBT_DEBUG("Found a matching communication synchro %p", synchro);
       xbt_fifo_remove_item(fifo, item);
       xbt_fifo_free_item(item);
-      action->comm.refcount++;
+      synchro->comm.refcount++;
 #ifdef HAVE_MC
-      action->comm.rdv_cpy = action->comm.rdv;
+      synchro->comm.rdv_cpy = synchro->comm.rdv;
 #endif
-      action->comm.rdv = NULL;
-      return action;
+      synchro->comm.rdv = NULL;
+      return synchro;
     }
-    XBT_DEBUG("Sorry, communication action %p does not match our needs:"
+    XBT_DEBUG("Sorry, communication synchro %p does not match our needs:"
               " its type is %d but we are looking for a comm of type %d (or maybe the filtering didn't match)",
-              action, (int)action->comm.type, (int)type);
+              synchro, (int)synchro->comm.type, (int)type);
   }
-  XBT_DEBUG("No matching communication action found");
+  XBT_DEBUG("No matching communication synchro found");
   return NULL;
 }
 
 
 /**
- *  \brief Checks if there is a communication action queued in a fifo matching our needs, but leave it there
+ *  \brief Checks if there is a communication synchro queued in a fifo matching our needs, but leave it there
  *  \param type The type of communication we are looking for (comm_send, comm_recv)
- *  \return The communication action if found, NULL otherwise
+ *  \return The communication synchro if found, NULL otherwise
  */
-smx_action_t SIMIX_fifo_probe_comm(xbt_fifo_t fifo, e_smx_comm_type_t type,
-                                 int (*match_fun)(void *, void *,smx_action_t),
-                                 void *this_user_data, smx_action_t my_action)
+smx_synchro_t SIMIX_fifo_probe_comm(xbt_fifo_t fifo, e_smx_comm_type_t type,
+                                 int (*match_fun)(void *, void *,smx_synchro_t),
+                                 void *this_user_data, smx_synchro_t my_synchro)
 {
-  smx_action_t action;
+  smx_synchro_t synchro;
   xbt_fifo_item_t item;
   void* other_user_data = NULL;
 
-  xbt_fifo_foreach(fifo, item, action, smx_action_t) {
-    if (action->comm.type == SIMIX_COMM_SEND) {
-      other_user_data = action->comm.src_data;
-    } else if (action->comm.type == SIMIX_COMM_RECEIVE) {
-      other_user_data = action->comm.dst_data;
+  xbt_fifo_foreach(fifo, item, synchro, smx_synchro_t) {
+    if (synchro->comm.type == SIMIX_COMM_SEND) {
+      other_user_data = synchro->comm.src_data;
+    } else if (synchro->comm.type == SIMIX_COMM_RECEIVE) {
+      other_user_data = synchro->comm.dst_data;
     }
-    if (action->comm.type == type &&
-        (!match_fun              ||              match_fun(this_user_data,  other_user_data, action)) &&
-        (!action->comm.match_fun || action->comm.match_fun(other_user_data, this_user_data,  my_action))) {
-      XBT_DEBUG("Found a matching communication action %p", action);
-      action->comm.refcount++;
+    if (synchro->comm.type == type &&
+        (!match_fun              ||              match_fun(this_user_data,  other_user_data, synchro)) &&
+        (!synchro->comm.match_fun || synchro->comm.match_fun(other_user_data, this_user_data,  my_synchro))) {
+      XBT_DEBUG("Found a matching communication synchro %p", synchro);
+      synchro->comm.refcount++;
 
-      return action;
+      return synchro;
     }
-    XBT_DEBUG("Sorry, communication action %p does not match our needs:"
+    XBT_DEBUG("Sorry, communication synchro %p does not match our needs:"
               " its type is %d but we are looking for a comm of type %d (or maybe the filtering didn't match)",
-              action, (int)action->comm.type, (int)type);
+              synchro, (int)synchro->comm.type, (int)type);
   }
-  XBT_DEBUG("No matching communication action found");
+  XBT_DEBUG("No matching communication synchro found");
   return NULL;
 }
 /******************************************************************************/
-/*                            Communication Actions                            */
+/*                          Communication synchros                            */
 /******************************************************************************/
 
 /**
- *  \brief Creates a new communicate action
+ *  \brief Creates a new communicate synchro
  *  \param type The direction of communication (comm_send, comm_recv)
- *  \return The new communicate action
+ *  \return The new communicate synchro
  */
-smx_action_t SIMIX_comm_new(e_smx_comm_type_t type)
+smx_synchro_t SIMIX_comm_new(e_smx_comm_type_t type)
 {
-  smx_action_t act;
+  smx_synchro_t synchro;
 
   /* alloc structures */
-  act = xbt_mallocator_get(simix_global->action_mallocator);
+  synchro = xbt_mallocator_get(simix_global->synchro_mallocator);
 
-  act->type = SIMIX_ACTION_COMMUNICATE;
-  act->state = SIMIX_WAITING;
+  synchro->type = SIMIX_SYNC_COMMUNICATE;
+  synchro->state = SIMIX_WAITING;
 
   /* set communication */
-  act->comm.type = type;
-  act->comm.refcount = 1;
-  act->comm.src_data=NULL;
-  act->comm.dst_data=NULL;
+  synchro->comm.type = type;
+  synchro->comm.refcount = 1;
+  synchro->comm.src_data=NULL;
+  synchro->comm.dst_data=NULL;
 
 
 #ifdef HAVE_LATENCY_BOUND_TRACKING
   //initialize with unknown value
-  act->latency_limited = -1;
+  synchro->latency_limited = -1;
 #endif
 
 #ifdef HAVE_TRACING
-  act->category = NULL;
+  synchro->category = NULL;
 #endif
 
-  XBT_DEBUG("Create communicate action %p", act);
+  XBT_DEBUG("Create communicate synchro %p", synchro);
   ++smx_total_comms;
 
-  return act;
+  return synchro;
 }
 
 /**
- *  \brief Destroy a communicate action
- *  \param action The communicate action to be destroyed
+ *  \brief Destroy a communicate synchro
+ *  \param synchro The communicate synchro to be destroyed
  */
-void SIMIX_comm_destroy(smx_action_t action)
+void SIMIX_comm_destroy(smx_synchro_t synchro)
 {
-  XBT_DEBUG("Destroy action %p (refcount: %d), state: %d",
-            action, action->comm.refcount, (int)action->state);
+  XBT_DEBUG("Destroy synchro %p (refcount: %d), state: %d",
+            synchro, synchro->comm.refcount, (int)synchro->state);
 
-  if (action->comm.refcount <= 0) {
+  if (synchro->comm.refcount <= 0) {
     xbt_backtrace_display_current();
     xbt_die("The refcount of comm %p is already 0 before decreasing it. "
-            "That's a bug! If you didn't test and/or wait the same communication twice in your code, then the bug is SimGrid's...", action);
+            "That's a bug! If you didn't test and/or wait the same communication twice in your code, then the bug is SimGrid's...", synchro);
   }
-  action->comm.refcount--;
-  if (action->comm.refcount > 0)
+  synchro->comm.refcount--;
+  if (synchro->comm.refcount > 0)
       return;
-  XBT_DEBUG("Really free communication %p; refcount is now %d", action,
-            action->comm.refcount);
+  XBT_DEBUG("Really free communication %p; refcount is now %d", synchro,
+      synchro->comm.refcount);
 
 #ifdef HAVE_LATENCY_BOUND_TRACKING
-  action->latency_limited = SIMIX_comm_is_latency_bounded( action ) ;
+  synchro->latency_limited = SIMIX_comm_is_latency_bounded( synchro ) ;
 #endif
 
-  xbt_free(action->name);
-  SIMIX_comm_destroy_internal_actions(action);
+  xbt_free(synchro->name);
+  SIMIX_comm_destroy_internal_actions(synchro);
 
-  if (action->comm.detached && action->state != SIMIX_DONE) {
+  if (synchro->comm.detached && synchro->state != SIMIX_DONE) {
     /* the communication has failed and was detached:
      * we have to free the buffer */
-    if (action->comm.clean_fun) {
-      action->comm.clean_fun(action->comm.src_buff);
+    if (synchro->comm.clean_fun) {
+      synchro->comm.clean_fun(synchro->comm.src_buff);
     }
-    action->comm.src_buff = NULL;
+    synchro->comm.src_buff = NULL;
   }
 
-  if(action->comm.rdv)
-    SIMIX_rdv_remove(action->comm.rdv, action);
+  if(synchro->comm.rdv)
+    SIMIX_rdv_remove(synchro->comm.rdv, synchro);
 
-  xbt_mallocator_release(simix_global->action_mallocator, action);
+  xbt_mallocator_release(simix_global->synchro_mallocator, synchro);
 }
 
-void SIMIX_comm_destroy_internal_actions(smx_action_t action)
+void SIMIX_comm_destroy_internal_actions(smx_synchro_t synchro)
 {
-  if (action->comm.surf_comm){
+  if (synchro->comm.surf_comm){
 #ifdef HAVE_LATENCY_BOUND_TRACKING
-    action->latency_limited = SIMIX_comm_is_latency_bounded(action);
+    synchro->latency_limited = SIMIX_comm_is_latency_bounded(synchro);
 #endif
-    surf_action_unref(action->comm.surf_comm);
-    action->comm.surf_comm = NULL;
+    surf_action_unref(synchro->comm.surf_comm);
+    synchro->comm.surf_comm = NULL;
   }
 
-  if (action->comm.src_timeout){
-    surf_action_unref(action->comm.src_timeout);
-    action->comm.src_timeout = NULL;
+  if (synchro->comm.src_timeout){
+    surf_action_unref(synchro->comm.src_timeout);
+    synchro->comm.src_timeout = NULL;
   }
 
-  if (action->comm.dst_timeout){
-    surf_action_unref(action->comm.dst_timeout);
-    action->comm.dst_timeout = NULL;
+  if (synchro->comm.dst_timeout){
+    surf_action_unref(synchro->comm.dst_timeout);
+    synchro->comm.dst_timeout = NULL;
   }
 }
 
 void simcall_HANDLER_comm_send(smx_simcall_t simcall, smx_process_t src, smx_rdv_t rdv,
                                   double task_size, double rate,
                                   void *src_buff, size_t src_buff_size,
-                                  int (*match_fun)(void *, void *,smx_action_t),
-                                  void (*copy_data_fun)(smx_action_t, void*, size_t),
+                                  int (*match_fun)(void *, void *,smx_synchro_t),
+                                  void (*copy_data_fun)(smx_synchro_t, void*, size_t),
 				  void *data, double timeout){
-  smx_action_t comm = SIMIX_comm_isend(src, rdv, task_size, rate,
+  smx_synchro_t comm = SIMIX_comm_isend(src, rdv, task_size, rate,
 		                       src_buff, src_buff_size, match_fun, NULL, copy_data_fun,
 				       data, 0);
   SIMCALL_SET_MC_VALUE(simcall, 0);
   simcall_HANDLER_comm_wait(simcall, comm, timeout);
 }
-smx_action_t simcall_HANDLER_comm_isend(smx_simcall_t simcall, smx_process_t src, smx_rdv_t rdv,
+smx_synchro_t simcall_HANDLER_comm_isend(smx_simcall_t simcall, smx_process_t src, smx_rdv_t rdv,
                                   double task_size, double rate,
                                   void *src_buff, size_t src_buff_size,
-                                  int (*match_fun)(void *, void *,smx_action_t),
+                                  int (*match_fun)(void *, void *,smx_synchro_t),
                                   void (*clean_fun)(void *),
-                                  void (*copy_data_fun)(smx_action_t, void*, size_t),
+                                  void (*copy_data_fun)(smx_synchro_t, void*, size_t),
 				  void *data, int detached){
   return SIMIX_comm_isend(src, rdv, task_size, rate, src_buff,
 		          src_buff_size, match_fun, clean_fun, copy_data_fun, data, detached);
 
 }
-smx_action_t SIMIX_comm_isend(smx_process_t src_proc, smx_rdv_t rdv,
+smx_synchro_t SIMIX_comm_isend(smx_process_t src_proc, smx_rdv_t rdv,
                               double task_size, double rate,
                               void *src_buff, size_t src_buff_size,
-                              int (*match_fun)(void *, void *,smx_action_t),
-                              void (*clean_fun)(void *), // used to free the action in case of problem after a detached send
-                              void (*copy_data_fun)(smx_action_t, void*, size_t), // used to copy data if not default one
+                              int (*match_fun)(void *, void *,smx_synchro_t),
+                              void (*clean_fun)(void *), // used to free the synchro in case of problem after a detached send
+                              void (*copy_data_fun)(smx_synchro_t, void*, size_t), // used to copy data if not default one
                               void *data,
                               int detached)
 {
   XBT_DEBUG("send from %p", rdv);
 
-  /* Prepare an action describing us, so that it gets passed to the user-provided filter of other side */
-  smx_action_t this_action = SIMIX_comm_new(SIMIX_COMM_SEND);
+  /* Prepare a synchro describing us, so that it gets passed to the user-provided filter of other side */
+  smx_synchro_t this_synchro = SIMIX_comm_new(SIMIX_COMM_SEND);
 
-  /* Look for communication action matching our needs. We also provide a description of
+  /* Look for communication synchro matching our needs. We also provide a description of
    * ourself so that the other side also gets a chance of choosing if it wants to match with us.
    *
    * If it is not found then push our communication into the rendez-vous point */
-  smx_action_t other_action = SIMIX_fifo_get_comm(rdv->comm_fifo, SIMIX_COMM_RECEIVE, match_fun, data, this_action);
+  smx_synchro_t other_synchro = SIMIX_fifo_get_comm(rdv->comm_fifo, SIMIX_COMM_RECEIVE, match_fun, data, this_synchro);
 
-  if (!other_action) {
-    other_action = this_action;
+  if (!other_synchro) {
+    other_synchro = this_synchro;
 
     if (rdv->permanent_receiver!=NULL){
       //this mailbox is for small messages, which have to be sent right now
-      other_action->state = SIMIX_READY;
-      other_action->comm.dst_proc=rdv->permanent_receiver;
-      other_action->comm.refcount++;
-      xbt_fifo_push(rdv->done_comm_fifo,other_action);
-      other_action->comm.rdv=rdv;
-      XBT_DEBUG("pushing a message into the permanent receive fifo %p, comm %p", rdv, &(other_action->comm));
+      other_synchro->state = SIMIX_READY;
+      other_synchro->comm.dst_proc=rdv->permanent_receiver;
+      other_synchro->comm.refcount++;
+      xbt_fifo_push(rdv->done_comm_fifo,other_synchro);
+      other_synchro->comm.rdv=rdv;
+      XBT_DEBUG("pushing a message into the permanent receive fifo %p, comm %p", rdv, &(other_synchro->comm));
 
     }else{
-      SIMIX_rdv_push(rdv, this_action);
+      SIMIX_rdv_push(rdv, this_synchro);
     }
   } else {
     XBT_DEBUG("Receive already pushed");
 
-    SIMIX_comm_destroy(this_action);
+    SIMIX_comm_destroy(this_synchro);
     --smx_total_comms; // this creation was a pure waste
 
-    other_action->state = SIMIX_READY;
-    other_action->comm.type = SIMIX_COMM_READY;
+    other_synchro->state = SIMIX_READY;
+    other_synchro->comm.type = SIMIX_COMM_READY;
 
   }
-  xbt_fifo_push(src_proc->comms, other_action);
+  xbt_fifo_push(src_proc->comms, other_synchro);
 
-  /* if the communication action is detached then decrease the refcount
+  /* if the communication synchro is detached then decrease the refcount
    * by one, so it will be eliminated by the receiver's destroy call */
   if (detached) {
-    other_action->comm.detached = 1;
-    other_action->comm.refcount--;
-    other_action->comm.clean_fun = clean_fun;
+    other_synchro->comm.detached = 1;
+    other_synchro->comm.refcount--;
+    other_synchro->comm.clean_fun = clean_fun;
   } else {
-    other_action->comm.clean_fun = NULL;
+    other_synchro->comm.clean_fun = NULL;
   }
 
-  /* Setup the communication action */
-  other_action->comm.src_proc = src_proc;
-  other_action->comm.task_size = task_size;
-  other_action->comm.rate = rate;
-  other_action->comm.src_buff = src_buff;
-  other_action->comm.src_buff_size = src_buff_size;
-  other_action->comm.src_data = data;
+  /* Setup the communication synchro */
+  other_synchro->comm.src_proc = src_proc;
+  other_synchro->comm.task_size = task_size;
+  other_synchro->comm.rate = rate;
+  other_synchro->comm.src_buff = src_buff;
+  other_synchro->comm.src_buff_size = src_buff_size;
+  other_synchro->comm.src_data = data;
 
-  other_action->comm.match_fun = match_fun;
-  other_action->comm.copy_data_fun = copy_data_fun;
+  other_synchro->comm.match_fun = match_fun;
+  other_synchro->comm.copy_data_fun = copy_data_fun;
 
 
   if (MC_is_active()) {
-    other_action->state = SIMIX_RUNNING;
-    return (detached ? NULL : other_action);
+    other_synchro->state = SIMIX_RUNNING;
+    return (detached ? NULL : other_synchro);
   }
 
-  SIMIX_comm_start(other_action);
-  return (detached ? NULL : other_action);
+  SIMIX_comm_start(other_synchro);
+  return (detached ? NULL : other_synchro);
 }
 
 void simcall_HANDLER_comm_recv(smx_simcall_t simcall, smx_rdv_t rdv,
                          void *dst_buff, size_t *dst_buff_size,
-                         int (*match_fun)(void *, void *, smx_action_t),
-                         void (*copy_data_fun)(smx_action_t, void*, size_t),
+                         int (*match_fun)(void *, void *, smx_synchro_t),
+                         void (*copy_data_fun)(smx_synchro_t, void*, size_t),
                          void *data, double timeout, double rate)
 {
-  smx_action_t comm = SIMIX_comm_irecv(simcall->issuer, rdv, dst_buff,
+  smx_synchro_t comm = SIMIX_comm_irecv(simcall->issuer, rdv, dst_buff,
 		                       dst_buff_size, match_fun, copy_data_fun, data, rate);
   SIMCALL_SET_MC_VALUE(simcall, 0);
   simcall_HANDLER_comm_wait(simcall, comm, timeout);
 }
 
-smx_action_t simcall_HANDLER_comm_irecv(smx_simcall_t simcall, smx_rdv_t rdv,
+smx_synchro_t simcall_HANDLER_comm_irecv(smx_simcall_t simcall, smx_rdv_t rdv,
                                   void *dst_buff, size_t *dst_buff_size,
-                                  int (*match_fun)(void *, void *, smx_action_t),
-                                  void (*copy_data_fun)(smx_action_t, void*, size_t),
+                                  int (*match_fun)(void *, void *, smx_synchro_t),
+                                  void (*copy_data_fun)(smx_synchro_t, void*, size_t),
 				  void *data, double rate)
 {
   return SIMIX_comm_irecv(simcall->issuer, rdv, dst_buff, dst_buff_size,
 		          match_fun, copy_data_fun, data, rate);
 }
 
-smx_action_t SIMIX_comm_irecv(smx_process_t dst_proc, smx_rdv_t rdv,
+smx_synchro_t SIMIX_comm_irecv(smx_process_t dst_proc, smx_rdv_t rdv,
                               void *dst_buff, size_t *dst_buff_size,
-                              int (*match_fun)(void *, void *, smx_action_t),
-                              void (*copy_data_fun)(smx_action_t, void*, size_t), // used to copy data if not default one
+                              int (*match_fun)(void *, void *, smx_synchro_t),
+                              void (*copy_data_fun)(smx_synchro_t, void*, size_t), // used to copy data if not default one
                               void *data, double rate)
 {
   XBT_DEBUG("recv from %p %p", rdv, rdv->comm_fifo);
-  smx_action_t this_action = SIMIX_comm_new(SIMIX_COMM_RECEIVE);
+  smx_synchro_t this_synchro = SIMIX_comm_new(SIMIX_COMM_RECEIVE);
 
-  smx_action_t other_action;
+  smx_synchro_t other_synchro;
   //communication already done, get it inside the fifo of completed comms
   //permanent receive v1
   //int already_received=0;
@@ -490,190 +490,190 @@ smx_action_t SIMIX_comm_irecv(smx_process_t dst_proc, smx_rdv_t rdv,
 
     XBT_DEBUG("We have a comm that has probably already been received, trying to match it, to skip the communication");
     //find a match in the already received fifo
-    other_action = SIMIX_fifo_get_comm(rdv->done_comm_fifo, SIMIX_COMM_SEND, match_fun, data, this_action);
+    other_synchro = SIMIX_fifo_get_comm(rdv->done_comm_fifo, SIMIX_COMM_SEND, match_fun, data, this_synchro);
     //if not found, assume the receiver came first, register it to the mailbox in the classical way
-    if (!other_action)  {
+    if (!other_synchro)  {
       XBT_DEBUG("We have messages in the permanent receive list, but not the one we are looking for, pushing request into fifo");
-      other_action = this_action;
-      SIMIX_rdv_push(rdv, this_action);
+      other_synchro = this_synchro;
+      SIMIX_rdv_push(rdv, this_synchro);
     }else{
-      if(other_action->comm.surf_comm && 	SIMIX_comm_get_remains(other_action)==0.0)
+      if(other_synchro->comm.surf_comm && 	SIMIX_comm_get_remains(other_synchro)==0.0)
       {
-        XBT_DEBUG("comm %p has been already sent, and is finished, destroy it",&(other_action->comm));
-        other_action->state = SIMIX_DONE;
-        other_action->comm.type = SIMIX_COMM_DONE;
-        other_action->comm.rdv = NULL;
+        XBT_DEBUG("comm %p has been already sent, and is finished, destroy it",&(other_synchro->comm));
+        other_synchro->state = SIMIX_DONE;
+        other_synchro->comm.type = SIMIX_COMM_DONE;
+        other_synchro->comm.rdv = NULL;
       }/*else{
          XBT_DEBUG("Not yet finished, we have to wait %d", xbt_fifo_size(rdv->comm_fifo));
          }*/
-      other_action->comm.refcount--;
-      SIMIX_comm_destroy(this_action);
+      other_synchro->comm.refcount--;
+      SIMIX_comm_destroy(this_synchro);
       --smx_total_comms; // this creation was a pure waste
     }
   }else{
-    /* Prepare an action describing us, so that it gets passed to the user-provided filter of other side */
+    /* Prepare a synchro describing us, so that it gets passed to the user-provided filter of other side */
 
-    /* Look for communication action matching our needs. We also provide a description of
+    /* Look for communication synchro matching our needs. We also provide a description of
      * ourself so that the other side also gets a chance of choosing if it wants to match with us.
      *
      * If it is not found then push our communication into the rendez-vous point */
-    other_action = SIMIX_fifo_get_comm(rdv->comm_fifo, SIMIX_COMM_SEND, match_fun, data, this_action);
+    other_synchro = SIMIX_fifo_get_comm(rdv->comm_fifo, SIMIX_COMM_SEND, match_fun, data, this_synchro);
 
-    if (!other_action) {
+    if (!other_synchro) {
       XBT_DEBUG("Receive pushed first %d", xbt_fifo_size(rdv->comm_fifo));
-      other_action = this_action;
-      SIMIX_rdv_push(rdv, this_action);
+      other_synchro = this_synchro;
+      SIMIX_rdv_push(rdv, this_synchro);
     } else {
-      SIMIX_comm_destroy(this_action);
+      SIMIX_comm_destroy(this_synchro);
       --smx_total_comms; // this creation was a pure waste
-      other_action->state = SIMIX_READY;
-      other_action->comm.type = SIMIX_COMM_READY;
-      //other_action->comm.refcount--;
+      other_synchro->state = SIMIX_READY;
+      other_synchro->comm.type = SIMIX_COMM_READY;
+      //other_synchro->comm.refcount--;
     }
-    xbt_fifo_push(dst_proc->comms, other_action);
+    xbt_fifo_push(dst_proc->comms, other_synchro);
   }
 
-  /* Setup communication action */
-  other_action->comm.dst_proc = dst_proc;
-  other_action->comm.dst_buff = dst_buff;
-  other_action->comm.dst_buff_size = dst_buff_size;
-  other_action->comm.dst_data = data;
+  /* Setup communication synchro */
+  other_synchro->comm.dst_proc = dst_proc;
+  other_synchro->comm.dst_buff = dst_buff;
+  other_synchro->comm.dst_buff_size = dst_buff_size;
+  other_synchro->comm.dst_data = data;
 
   if (rate != -1.0 &&
-      (other_action->comm.rate == -1.0 || rate < other_action->comm.rate))
-    other_action->comm.rate = rate;
+      (other_synchro->comm.rate == -1.0 || rate < other_synchro->comm.rate))
+    other_synchro->comm.rate = rate;
 
-  other_action->comm.match_fun = match_fun;
-  other_action->comm.copy_data_fun = copy_data_fun;
+  other_synchro->comm.match_fun = match_fun;
+  other_synchro->comm.copy_data_fun = copy_data_fun;
 
 
   /*if(already_received)//do the actual copy, because the first one after the comm didn't have all the info
-    SIMIX_comm_copy_data(other_action);*/
+    SIMIX_comm_copy_data(other_synchro);*/
 
 
   if (MC_is_active()) {
-    other_action->state = SIMIX_RUNNING;
-    return other_action;
+    other_synchro->state = SIMIX_RUNNING;
+    return other_synchro;
   }
 
-  SIMIX_comm_start(other_action);
+  SIMIX_comm_start(other_synchro);
   // }
-  return other_action;
+  return other_synchro;
 }
 
-smx_action_t simcall_HANDLER_comm_iprobe(smx_simcall_t simcall, smx_rdv_t rdv,
+smx_synchro_t simcall_HANDLER_comm_iprobe(smx_simcall_t simcall, smx_rdv_t rdv,
                                    int type, int src, int tag,
-                                   int (*match_fun)(void *, void *, smx_action_t),
+                                   int (*match_fun)(void *, void *, smx_synchro_t),
                                    void *data){
   return SIMIX_comm_iprobe(simcall->issuer, rdv, type, src, tag, match_fun, data);
 }
 
-smx_action_t SIMIX_comm_iprobe(smx_process_t dst_proc, smx_rdv_t rdv, int type, int src,
-                              int tag, int (*match_fun)(void *, void *, smx_action_t), void *data)
+smx_synchro_t SIMIX_comm_iprobe(smx_process_t dst_proc, smx_rdv_t rdv, int type, int src,
+                              int tag, int (*match_fun)(void *, void *, smx_synchro_t), void *data)
 {
   XBT_DEBUG("iprobe from %p %p", rdv, rdv->comm_fifo);
-  smx_action_t this_action;
+  smx_synchro_t this_synchro;
   int smx_type;
   if(type == 1){
-    this_action=SIMIX_comm_new(SIMIX_COMM_SEND);
+    this_synchro=SIMIX_comm_new(SIMIX_COMM_SEND);
     smx_type = SIMIX_COMM_RECEIVE;
   } else{
-    this_action=SIMIX_comm_new(SIMIX_COMM_RECEIVE);
+    this_synchro=SIMIX_comm_new(SIMIX_COMM_RECEIVE);
     smx_type = SIMIX_COMM_SEND;
   } 
-  smx_action_t other_action=NULL;
+  smx_synchro_t other_synchro=NULL;
   if(rdv->permanent_receiver && xbt_fifo_size(rdv->done_comm_fifo)!=0){
     //find a match in the already received fifo
       XBT_DEBUG("first try in the perm recv mailbox");
 
-    other_action = SIMIX_fifo_probe_comm(rdv->done_comm_fifo, smx_type, match_fun, data, this_action);
+    other_synchro = SIMIX_fifo_probe_comm(rdv->done_comm_fifo, smx_type, match_fun, data, this_synchro);
   }
  // }else{
-    if(!other_action){
+    if(!other_synchro){
         XBT_DEBUG("try in the normal mailbox");
-        other_action = SIMIX_fifo_probe_comm(rdv->comm_fifo, smx_type, match_fun, data, this_action);
+        other_synchro = SIMIX_fifo_probe_comm(rdv->comm_fifo, smx_type, match_fun, data, this_synchro);
     }
 //  }
-  if(other_action)other_action->comm.refcount--;
+  if(other_synchro)other_synchro->comm.refcount--;
 
-  SIMIX_comm_destroy(this_action);
+  SIMIX_comm_destroy(this_synchro);
   --smx_total_comms;
-  return other_action;
+  return other_synchro;
 }
 
-void simcall_HANDLER_comm_wait(smx_simcall_t simcall, smx_action_t action, double timeout)
+void simcall_HANDLER_comm_wait(smx_simcall_t simcall, smx_synchro_t synchro, double timeout)
 {
   /* the simcall may be a wait, a send or a recv */
   surf_action_t sleep;
 
-  /* Associate this simcall to the wait action */
-  XBT_DEBUG("simcall_HANDLER_comm_wait, %p", action);
+  /* Associate this simcall to the wait synchro */
+  XBT_DEBUG("simcall_HANDLER_comm_wait, %p", synchro);
 
-  xbt_fifo_push(action->simcalls, simcall);
-  simcall->issuer->waiting_action = action;
+  xbt_fifo_push(synchro->simcalls, simcall);
+  simcall->issuer->waiting_synchro = synchro;
 
   if (MC_is_active()) {
     int idx = SIMCALL_GET_MC_VALUE(simcall);
     if (idx == 0) {
-      action->state = SIMIX_DONE;
+      synchro->state = SIMIX_DONE;
     } else {
       /* If we reached this point, the wait simcall must have a timeout */
       /* Otherwise it shouldn't be enabled and executed by the MC */
       if (timeout == -1)
         THROW_IMPOSSIBLE;
 
-      if (action->comm.src_proc == simcall->issuer)
-        action->state = SIMIX_SRC_TIMEOUT;
+      if (synchro->comm.src_proc == simcall->issuer)
+        synchro->state = SIMIX_SRC_TIMEOUT;
       else
-        action->state = SIMIX_DST_TIMEOUT;
+        synchro->state = SIMIX_DST_TIMEOUT;
     }
 
-    SIMIX_comm_finish(action);
+    SIMIX_comm_finish(synchro);
     return;
   }
 
-  /* If the action has already finish perform the error handling, */
-  /* otherwise set up a waiting timeout on the right side         */
-  if (action->state != SIMIX_WAITING && action->state != SIMIX_RUNNING) {
-    SIMIX_comm_finish(action);
+  /* If the synchro has already finish perform the error handling, */
+  /* otherwise set up a waiting timeout on the right side          */
+  if (synchro->state != SIMIX_WAITING && synchro->state != SIMIX_RUNNING) {
+    SIMIX_comm_finish(synchro);
   } else { /* if (timeout >= 0) { we need a surf sleep action even when there is no timeout, otherwise surf won't tell us when the host fails */
     sleep = surf_workstation_sleep(simcall->issuer->smx_host, timeout);
-    surf_action_set_data(sleep, action);
+    surf_action_set_data(sleep, synchro);
 
-    if (simcall->issuer == action->comm.src_proc)
-      action->comm.src_timeout = sleep;
+    if (simcall->issuer == synchro->comm.src_proc)
+      synchro->comm.src_timeout = sleep;
     else
-      action->comm.dst_timeout = sleep;
+      synchro->comm.dst_timeout = sleep;
   }
 }
 
-void simcall_HANDLER_comm_test(smx_simcall_t simcall, smx_action_t action)
+void simcall_HANDLER_comm_test(smx_simcall_t simcall, smx_synchro_t synchro)
 {
   if(MC_is_active()){
-    simcall_comm_test__set__result(simcall, action->comm.src_proc && action->comm.dst_proc);
+    simcall_comm_test__set__result(simcall, synchro->comm.src_proc && synchro->comm.dst_proc);
     if(simcall_comm_test__get__result(simcall)){
-      action->state = SIMIX_DONE;
-      xbt_fifo_push(action->simcalls, simcall);
-      SIMIX_comm_finish(action);
+      synchro->state = SIMIX_DONE;
+      xbt_fifo_push(synchro->simcalls, simcall);
+      SIMIX_comm_finish(synchro);
     }else{
       SIMIX_simcall_answer(simcall);
     }
     return;
   }
 
-  simcall_comm_test__set__result(simcall, (action->state != SIMIX_WAITING && action->state != SIMIX_RUNNING));
+  simcall_comm_test__set__result(simcall, (synchro->state != SIMIX_WAITING && synchro->state != SIMIX_RUNNING));
   if (simcall_comm_test__get__result(simcall)) {
-    xbt_fifo_push(action->simcalls, simcall);
-    SIMIX_comm_finish(action);
+    xbt_fifo_push(synchro->simcalls, simcall);
+    SIMIX_comm_finish(synchro);
   } else {
     SIMIX_simcall_answer(simcall);
   }
 }
 
-void simcall_HANDLER_comm_testany(smx_simcall_t simcall, xbt_dynar_t actions)
+void simcall_HANDLER_comm_testany(smx_simcall_t simcall, xbt_dynar_t synchros)
 {
   unsigned int cursor;
-  smx_action_t action;
+  smx_synchro_t synchro;
   simcall_comm_testany__set__result(simcall, -1);
 
   if (MC_is_active()){
@@ -681,48 +681,48 @@ void simcall_HANDLER_comm_testany(smx_simcall_t simcall, xbt_dynar_t actions)
     if(idx == -1){
       SIMIX_simcall_answer(simcall);
     }else{
-      action = xbt_dynar_get_as(actions, idx, smx_action_t);
+      synchro = xbt_dynar_get_as(synchros, idx, smx_synchro_t);
       simcall_comm_testany__set__result(simcall, idx);
-      xbt_fifo_push(action->simcalls, simcall);
-      action->state = SIMIX_DONE;
-      SIMIX_comm_finish(action);
+      xbt_fifo_push(synchro->simcalls, simcall);
+      synchro->state = SIMIX_DONE;
+      SIMIX_comm_finish(synchro);
     }
     return;
   }
 
-  xbt_dynar_foreach(simcall_comm_testany__get__comms(simcall), cursor,action) {
-    if (action->state != SIMIX_WAITING && action->state != SIMIX_RUNNING) {
+  xbt_dynar_foreach(simcall_comm_testany__get__comms(simcall), cursor,synchro) {
+    if (synchro->state != SIMIX_WAITING && synchro->state != SIMIX_RUNNING) {
       simcall_comm_testany__set__result(simcall, cursor);
-      xbt_fifo_push(action->simcalls, simcall);
-      SIMIX_comm_finish(action);
+      xbt_fifo_push(synchro->simcalls, simcall);
+      SIMIX_comm_finish(synchro);
       return;
     }
   }
   SIMIX_simcall_answer(simcall);
 }
 
-void simcall_HANDLER_comm_waitany(smx_simcall_t simcall, xbt_dynar_t actions)
+void simcall_HANDLER_comm_waitany(smx_simcall_t simcall, xbt_dynar_t synchros)
 {
-  smx_action_t action;
+  smx_synchro_t synchro;
   unsigned int cursor = 0;
 
   if (MC_is_active()){
     int idx = SIMCALL_GET_MC_VALUE(simcall);
-    action = xbt_dynar_get_as(actions, idx, smx_action_t);
-    xbt_fifo_push(action->simcalls, simcall);
+    synchro = xbt_dynar_get_as(synchros, idx, smx_synchro_t);
+    xbt_fifo_push(synchro->simcalls, simcall);
     simcall_comm_waitany__set__result(simcall, idx);
-    action->state = SIMIX_DONE;
-    SIMIX_comm_finish(action);
+    synchro->state = SIMIX_DONE;
+    SIMIX_comm_finish(synchro);
     return;
   }
 
-  xbt_dynar_foreach(actions, cursor, action){
-    /* associate this simcall to the the action */
-    xbt_fifo_push(action->simcalls, simcall);
+  xbt_dynar_foreach(synchros, cursor, synchro){
+    /* associate this simcall to the the synchro */
+    xbt_fifo_push(synchro->simcalls, simcall);
 
-    /* see if the action is already finished */
-    if (action->state != SIMIX_WAITING && action->state != SIMIX_RUNNING){
-      SIMIX_comm_finish(action);
+    /* see if the synchro is already finished */
+    if (synchro->state != SIMIX_WAITING && synchro->state != SIMIX_RUNNING){
+      SIMIX_comm_finish(synchro);
       break;
     }
   }
@@ -730,80 +730,80 @@ void simcall_HANDLER_comm_waitany(smx_simcall_t simcall, xbt_dynar_t actions)
 
 void SIMIX_waitany_remove_simcall_from_actions(smx_simcall_t simcall)
 {
-  smx_action_t action;
+  smx_synchro_t synchro;
   unsigned int cursor = 0;
-  xbt_dynar_t actions = simcall_comm_waitany__get__comms(simcall);
+  xbt_dynar_t synchros = simcall_comm_waitany__get__comms(simcall);
 
-  xbt_dynar_foreach(actions, cursor, action) {
-    xbt_fifo_remove(action->simcalls, simcall);
+  xbt_dynar_foreach(synchros, cursor, synchro) {
+    xbt_fifo_remove(synchro->simcalls, simcall);
   }
 }
 
 /**
- *  \brief Starts the simulation of a communication action.
- *  \param action the communication action
+ *  \brief Starts the simulation of a communication synchro.
+ *  \param synchro the communication synchro
  */
-static XBT_INLINE void SIMIX_comm_start(smx_action_t action)
+static XBT_INLINE void SIMIX_comm_start(smx_synchro_t synchro)
 {
   /* If both the sender and the receiver are already there, start the communication */
-  if (action->state == SIMIX_READY) {
+  if (synchro->state == SIMIX_READY) {
 
-    smx_host_t sender = action->comm.src_proc->smx_host;
-    smx_host_t receiver = action->comm.dst_proc->smx_host;
+    smx_host_t sender = synchro->comm.src_proc->smx_host;
+    smx_host_t receiver = synchro->comm.dst_proc->smx_host;
 
-    XBT_DEBUG("Starting communication %p from '%s' to '%s'", action,
+    XBT_DEBUG("Starting communication %p from '%s' to '%s'", synchro,
               SIMIX_host_get_name(sender), SIMIX_host_get_name(receiver));
 
-    action->comm.surf_comm = surf_workstation_model_communicate(surf_workstation_model,
+    synchro->comm.surf_comm = surf_workstation_model_communicate(surf_workstation_model,
     		                                                    sender, receiver,
-    		                                                    action->comm.task_size, action->comm.rate);
+    		                                                    synchro->comm.task_size, synchro->comm.rate);
 
-    surf_action_set_data(action->comm.surf_comm, action);
+    surf_action_set_data(synchro->comm.surf_comm, synchro);
 
-    action->state = SIMIX_RUNNING;
+    synchro->state = SIMIX_RUNNING;
 
     /* If a link is failed, detect it immediately */
-    if (surf_action_get_state(action->comm.surf_comm) == SURF_ACTION_FAILED) {
+    if (surf_action_get_state(synchro->comm.surf_comm) == SURF_ACTION_FAILED) {
       XBT_DEBUG("Communication from '%s' to '%s' failed to start because of a link failure",
                 SIMIX_host_get_name(sender), SIMIX_host_get_name(receiver));
-      action->state = SIMIX_LINK_FAILURE;
-      SIMIX_comm_destroy_internal_actions(action);
+      synchro->state = SIMIX_LINK_FAILURE;
+      SIMIX_comm_destroy_internal_actions(synchro);
     }
 
-    /* If any of the process is suspend, create the action but stop its execution,
+    /* If any of the process is suspend, create the synchro but stop its execution,
        it will be restarted when the sender process resume */
-    if (SIMIX_process_is_suspended(action->comm.src_proc) ||
-        SIMIX_process_is_suspended(action->comm.dst_proc)) {
-      /* FIXME: check what should happen with the action state */
+    if (SIMIX_process_is_suspended(synchro->comm.src_proc) ||
+        SIMIX_process_is_suspended(synchro->comm.dst_proc)) {
+      /* FIXME: check what should happen with the synchro state */
 
-      if (SIMIX_process_is_suspended(action->comm.src_proc))
+      if (SIMIX_process_is_suspended(synchro->comm.src_proc))
         XBT_DEBUG("The communication is suspended on startup because src (%s:%s) were suspended since it initiated the communication",
-                  SIMIX_host_get_name(action->comm.src_proc->smx_host), action->comm.src_proc->name);
+                  SIMIX_host_get_name(synchro->comm.src_proc->smx_host), synchro->comm.src_proc->name);
       else
         XBT_DEBUG("The communication is suspended on startup because dst (%s:%s) were suspended since it initiated the communication",
-                  SIMIX_host_get_name(action->comm.dst_proc->smx_host), action->comm.dst_proc->name);
+                  SIMIX_host_get_name(synchro->comm.dst_proc->smx_host), synchro->comm.dst_proc->name);
 
-      surf_action_suspend(action->comm.surf_comm);
+      surf_action_suspend(synchro->comm.surf_comm);
 
     }
   }
 }
 
 /**
- * \brief Answers the SIMIX simcalls associated to a communication action.
- * \param action a finished communication action
+ * \brief Answers the SIMIX simcalls associated to a communication synchro.
+ * \param synchro a finished communication synchro
  */
-void SIMIX_comm_finish(smx_action_t action)
+void SIMIX_comm_finish(smx_synchro_t synchro)
 {
   unsigned int destroy_count = 0;
   smx_simcall_t simcall;
 
 
-  while ((simcall = xbt_fifo_shift(action->simcalls))) {
+  while ((simcall = xbt_fifo_shift(synchro->simcalls))) {
 
-    /* If a waitany simcall is waiting for this action to finish, then remove
-       it from the other actions in the waitany list. Afterwards, get the
-       position of the actual action in the waitany dynar and
+    /* If a waitany simcall is waiting for this synchro to finish, then remove
+       it from the other synchros in the waitany list. Afterwards, get the
+       position of the actual synchro in the waitany dynar and
        return it as the result of the simcall */
 
     if (simcall->call == SIMCALL_NONE) //FIXME: maybe a better way to handle this case
@@ -811,21 +811,21 @@ void SIMIX_comm_finish(smx_action_t action)
     if (simcall->call == SIMCALL_COMM_WAITANY) {
       SIMIX_waitany_remove_simcall_from_actions(simcall);
       if (!MC_is_active())
-        simcall_comm_waitany__set__result(simcall, xbt_dynar_search(simcall_comm_waitany__get__comms(simcall), &action));
+        simcall_comm_waitany__set__result(simcall, xbt_dynar_search(simcall_comm_waitany__get__comms(simcall), &synchro));
     }
 
-    /* If the action is still in a rendez-vous point then remove from it */
-    if (action->comm.rdv)
-      SIMIX_rdv_remove(action->comm.rdv, action);
+    /* If the synchro is still in a rendez-vous point then remove from it */
+    if (synchro->comm.rdv)
+      SIMIX_rdv_remove(synchro->comm.rdv, synchro);
 
-    XBT_DEBUG("SIMIX_comm_finish: action state = %d", (int)action->state);
+    XBT_DEBUG("SIMIX_comm_finish: synchro state = %d", (int)synchro->state);
 
     /* Check out for errors */
-    switch (action->state) {
+    switch (synchro->state) {
 
     case SIMIX_DONE:
-      XBT_DEBUG("Communication %p complete!", action);
-      SIMIX_comm_copy_data(action);
+      XBT_DEBUG("Communication %p complete!", synchro);
+      SIMIX_comm_copy_data(synchro);
       break;
 
     case SIMIX_SRC_TIMEOUT:
@@ -839,7 +839,7 @@ void SIMIX_comm_finish(smx_action_t action)
       break;
 
     case SIMIX_SRC_HOST_FAILURE:
-      if (simcall->issuer == action->comm.src_proc)
+      if (simcall->issuer == synchro->comm.src_proc)
         simcall->issuer->context->iwannadie = 1;
 //          SMX_EXCEPTION(simcall->issuer, host_error, 0, "Host failed");
       else
@@ -847,7 +847,7 @@ void SIMIX_comm_finish(smx_action_t action)
       break;
 
     case SIMIX_DST_HOST_FAILURE:
-      if (simcall->issuer == action->comm.dst_proc)
+      if (simcall->issuer == synchro->comm.dst_proc)
         simcall->issuer->context->iwannadie = 1;
 //          SMX_EXCEPTION(simcall->issuer, host_error, 0, "Host failed");
       else
@@ -855,14 +855,14 @@ void SIMIX_comm_finish(smx_action_t action)
       break;
 
     case SIMIX_LINK_FAILURE:
-      XBT_DEBUG("Link failure in action %p between '%s' and '%s': posting an exception to the issuer: %s (%p) detached:%d",
-                action,
-                action->comm.src_proc ? sg_host_name(action->comm.src_proc->smx_host) : NULL,
-                action->comm.dst_proc ? sg_host_name(action->comm.dst_proc->smx_host) : NULL,
-                simcall->issuer->name, simcall->issuer, action->comm.detached);
-      if (action->comm.src_proc == simcall->issuer) {
+      XBT_DEBUG("Link failure in synchro %p between '%s' and '%s': posting an exception to the issuer: %s (%p) detached:%d",
+                synchro,
+                synchro->comm.src_proc ? sg_host_name(synchro->comm.src_proc->smx_host) : NULL,
+                synchro->comm.dst_proc ? sg_host_name(synchro->comm.dst_proc->smx_host) : NULL,
+                simcall->issuer->name, simcall->issuer, synchro->comm.detached);
+      if (synchro->comm.src_proc == simcall->issuer) {
         XBT_DEBUG("I'm source");
-      } else if (action->comm.dst_proc == simcall->issuer) {
+      } else if (synchro->comm.dst_proc == simcall->issuer) {
         XBT_DEBUG("I'm dest");
       } else {
         XBT_DEBUG("I'm neither source nor dest");
@@ -871,7 +871,7 @@ void SIMIX_comm_finish(smx_action_t action)
       break;
 
     case SIMIX_CANCELED:
-      if (simcall->issuer == action->comm.dst_proc)
+      if (simcall->issuer == synchro->comm.dst_proc)
         SMX_EXCEPTION(simcall->issuer, cancel_error, 0,
                       "Communication canceled by the sender");
       else
@@ -880,16 +880,16 @@ void SIMIX_comm_finish(smx_action_t action)
       break;
 
     default:
-      xbt_die("Unexpected action state in SIMIX_comm_finish: %d", (int)action->state);
+      xbt_die("Unexpected synchro state in SIMIX_comm_finish: %d", (int)synchro->state);
     }
 
     /* if there is an exception during a waitany or a testany, indicate the position of the failed communication */
     if (simcall->issuer->doexception) {
       if (simcall->call == SIMCALL_COMM_WAITANY) {
-        simcall->issuer->running_ctx->exception.value = xbt_dynar_search(simcall_comm_waitany__get__comms(simcall), &action);
+        simcall->issuer->running_ctx->exception.value = xbt_dynar_search(simcall_comm_waitany__get__comms(simcall), &synchro);
       }
       else if (simcall->call == SIMCALL_COMM_TESTANY) {
-        simcall->issuer->running_ctx->exception.value = xbt_dynar_search(simcall_comm_testany__get__comms(simcall), &action);
+        simcall->issuer->running_ctx->exception.value = xbt_dynar_search(simcall_comm_testany__get__comms(simcall), &synchro);
       }
     }
 
@@ -897,16 +897,16 @@ void SIMIX_comm_finish(smx_action_t action)
       simcall->issuer->context->iwannadie = 1;
     }
 
-    simcall->issuer->waiting_action = NULL;
-    xbt_fifo_remove(simcall->issuer->comms, action);
-    if(action->comm.detached){
-      if(simcall->issuer == action->comm.src_proc){
-        if(action->comm.dst_proc)
-          xbt_fifo_remove(action->comm.dst_proc->comms, action);
+    simcall->issuer->waiting_synchro = NULL;
+    xbt_fifo_remove(simcall->issuer->comms, synchro);
+    if(synchro->comm.detached){
+      if(simcall->issuer == synchro->comm.src_proc){
+        if(synchro->comm.dst_proc)
+          xbt_fifo_remove(synchro->comm.dst_proc->comms, synchro);
       }
-      if(simcall->issuer == action->comm.dst_proc){
-        if(action->comm.src_proc)
-          xbt_fifo_remove(action->comm.src_proc->comms, action);
+      if(simcall->issuer == synchro->comm.dst_proc){
+        if(synchro->comm.src_proc)
+          xbt_fifo_remove(synchro->comm.src_proc->comms, synchro);
       }
     }
     SIMIX_simcall_answer(simcall);
@@ -914,103 +914,103 @@ void SIMIX_comm_finish(smx_action_t action)
   }
 
   while (destroy_count-- > 0)
-    SIMIX_comm_destroy(action);
+    SIMIX_comm_destroy(synchro);
 }
 
 /**
- * \brief This function is called when a Surf communication action is finished.
- * \param action the corresponding Simix communication
+ * \brief This function is called when a Surf communication synchro is finished.
+ * \param synchro the corresponding Simix communication
  */
-void SIMIX_post_comm(smx_action_t action)
+void SIMIX_post_comm(smx_synchro_t synchro)
 {
-  /* Update action state */
-  if (action->comm.src_timeout &&
-      surf_action_get_state(action->comm.src_timeout) == SURF_ACTION_DONE)
-    action->state = SIMIX_SRC_TIMEOUT;
-  else if (action->comm.dst_timeout &&
-	  surf_action_get_state(action->comm.dst_timeout) == SURF_ACTION_DONE)
-    action->state = SIMIX_DST_TIMEOUT;
-  else if (action->comm.src_timeout &&
-	  surf_action_get_state(action->comm.src_timeout) == SURF_ACTION_FAILED)
-    action->state = SIMIX_SRC_HOST_FAILURE;
-  else if (action->comm.dst_timeout &&
-      surf_action_get_state(action->comm.dst_timeout) == SURF_ACTION_FAILED)
-    action->state = SIMIX_DST_HOST_FAILURE;
-  else if (action->comm.surf_comm &&
-	  surf_action_get_state(action->comm.surf_comm) == SURF_ACTION_FAILED) {
+  /* Update synchro state */
+  if (synchro->comm.src_timeout &&
+      surf_action_get_state(synchro->comm.src_timeout) == SURF_ACTION_DONE)
+    synchro->state = SIMIX_SRC_TIMEOUT;
+  else if (synchro->comm.dst_timeout &&
+	  surf_action_get_state(synchro->comm.dst_timeout) == SURF_ACTION_DONE)
+    synchro->state = SIMIX_DST_TIMEOUT;
+  else if (synchro->comm.src_timeout &&
+	  surf_action_get_state(synchro->comm.src_timeout) == SURF_ACTION_FAILED)
+    synchro->state = SIMIX_SRC_HOST_FAILURE;
+  else if (synchro->comm.dst_timeout &&
+      surf_action_get_state(synchro->comm.dst_timeout) == SURF_ACTION_FAILED)
+    synchro->state = SIMIX_DST_HOST_FAILURE;
+  else if (synchro->comm.surf_comm &&
+	  surf_action_get_state(synchro->comm.surf_comm) == SURF_ACTION_FAILED) {
     XBT_DEBUG("Puta madre. Surf says that the link broke");
-    action->state = SIMIX_LINK_FAILURE;
+    synchro->state = SIMIX_LINK_FAILURE;
   } else
-    action->state = SIMIX_DONE;
+    synchro->state = SIMIX_DONE;
 
   XBT_DEBUG("SIMIX_post_comm: comm %p, state %d, src_proc %p, dst_proc %p, detached: %d",
-            action, (int)action->state, action->comm.src_proc, action->comm.dst_proc, action->comm.detached);
+            synchro, (int)synchro->state, synchro->comm.src_proc, synchro->comm.dst_proc, synchro->comm.detached);
 
   /* destroy the surf actions associated with the Simix communication */
-  SIMIX_comm_destroy_internal_actions(action);
+  SIMIX_comm_destroy_internal_actions(synchro);
 
-  /* if there are simcalls associated with the action, then answer them */
-  if (xbt_fifo_size(action->simcalls)) {
-    SIMIX_comm_finish(action);
+  /* if there are simcalls associated with the synchro, then answer them */
+  if (xbt_fifo_size(synchro->simcalls)) {
+    SIMIX_comm_finish(synchro);
   }
 }
 
-void simcall_HANDLER_comm_cancel(smx_simcall_t simcall, smx_action_t action){
-  SIMIX_comm_cancel(action);
+void simcall_HANDLER_comm_cancel(smx_simcall_t simcall, smx_synchro_t synchro){
+  SIMIX_comm_cancel(synchro);
 }
-void SIMIX_comm_cancel(smx_action_t action)
+void SIMIX_comm_cancel(smx_synchro_t synchro)
 {
-  /* if the action is a waiting state means that it is still in a rdv */
+  /* if the synchro is a waiting state means that it is still in a rdv */
   /* so remove from it and delete it */
-  if (action->state == SIMIX_WAITING) {
-    SIMIX_rdv_remove(action->comm.rdv, action);
-    action->state = SIMIX_CANCELED;
+  if (synchro->state == SIMIX_WAITING) {
+    SIMIX_rdv_remove(synchro->comm.rdv, synchro);
+    synchro->state = SIMIX_CANCELED;
   }
   else if (!MC_is_active() /* when running the MC there are no surf actions */
-           && (action->state == SIMIX_READY || action->state == SIMIX_RUNNING)) {
+           && (synchro->state == SIMIX_READY || synchro->state == SIMIX_RUNNING)) {
 
-    surf_action_cancel(action->comm.surf_comm);
+    surf_action_cancel(synchro->comm.surf_comm);
   }
 }
 
-void SIMIX_comm_suspend(smx_action_t action)
+void SIMIX_comm_suspend(smx_synchro_t synchro)
 {
-  /*FIXME: shall we suspend also the timeout actions? */
-  if (action->comm.surf_comm)
-    surf_action_suspend(action->comm.surf_comm);
+  /*FIXME: shall we suspend also the timeout synchro? */
+  if (synchro->comm.surf_comm)
+    surf_action_suspend(synchro->comm.surf_comm);
   /* in the other case, the action will be suspended on creation, in SIMIX_comm_start() */
 }
 
-void SIMIX_comm_resume(smx_action_t action)
+void SIMIX_comm_resume(smx_synchro_t synchro)
 {
   /*FIXME: check what happen with the timeouts */
-  if (action->comm.surf_comm)
-    surf_action_resume(action->comm.surf_comm);
-  /* in the other case, the action were not really suspended yet, see SIMIX_comm_suspend() and SIMIX_comm_start() */
+  if (synchro->comm.surf_comm)
+    surf_action_resume(synchro->comm.surf_comm);
+  /* in the other case, the synchro were not really suspended yet, see SIMIX_comm_suspend() and SIMIX_comm_start() */
 }
 
 
-/************* Action Getters **************/
+/************* synchro Getters **************/
 
-double simcall_HANDLER_comm_get_remains(smx_simcall_t simcall, smx_action_t action){
-  return SIMIX_comm_get_remains(action);
+double simcall_HANDLER_comm_get_remains(smx_simcall_t simcall, smx_synchro_t synchro){
+  return SIMIX_comm_get_remains(synchro);
 }
 /**
  *  \brief get the amount remaining from the communication
- *  \param action The communication
+ *  \param synchro The communication
  */
-double SIMIX_comm_get_remains(smx_action_t action)
+double SIMIX_comm_get_remains(smx_synchro_t synchro)
 {
   double remains;
 
-  if(!action){
+  if(!synchro){
     return 0;
   }
 
-  switch (action->state) {
+  switch (synchro->state) {
 
   case SIMIX_RUNNING:
-    remains = surf_action_get_remains(action->comm.surf_comm);
+    remains = surf_action_get_remains(synchro->comm.surf_comm);
     break;
 
   case SIMIX_WAITING:
@@ -1025,100 +1025,100 @@ double SIMIX_comm_get_remains(smx_action_t action)
   return remains;
 }
 
-e_smx_state_t simcall_HANDLER_comm_get_state(smx_simcall_t simcall, smx_action_t action){
-  return SIMIX_comm_get_state(action);
+e_smx_state_t simcall_HANDLER_comm_get_state(smx_simcall_t simcall, smx_synchro_t synchro){
+  return SIMIX_comm_get_state(synchro);
 }
-e_smx_state_t SIMIX_comm_get_state(smx_action_t action)
+e_smx_state_t SIMIX_comm_get_state(smx_synchro_t synchro)
 {
-  return action->state;
+  return synchro->state;
 }
 
-void* simcall_HANDLER_comm_get_src_data(smx_simcall_t simcall, smx_action_t action){
-  return SIMIX_comm_get_src_data(action);
+void* simcall_HANDLER_comm_get_src_data(smx_simcall_t simcall, smx_synchro_t synchro){
+  return SIMIX_comm_get_src_data(synchro);
 }
 /**
  *  \brief Return the user data associated to the sender of the communication
- *  \param action The communication
+ *  \param synchro The communication
  *  \return the user data
  */
-void* SIMIX_comm_get_src_data(smx_action_t action)
+void* SIMIX_comm_get_src_data(smx_synchro_t synchro)
 {
-  return action->comm.src_data;
+  return synchro->comm.src_data;
 }
 
-void* simcall_HANDLER_comm_get_dst_data(smx_simcall_t simcall, smx_action_t action){
-  return SIMIX_comm_get_dst_data(action);
+void* simcall_HANDLER_comm_get_dst_data(smx_simcall_t simcall, smx_synchro_t synchro){
+  return SIMIX_comm_get_dst_data(synchro);
 }
 /**
  *  \brief Return the user data associated to the receiver of the communication
- *  \param action The communication
+ *  \param synchro The communication
  *  \return the user data
  */
-void* SIMIX_comm_get_dst_data(smx_action_t action)
+void* SIMIX_comm_get_dst_data(smx_synchro_t synchro)
 {
-  return action->comm.dst_data;
+  return synchro->comm.dst_data;
 }
 
-smx_process_t simcall_HANDLER_comm_get_src_proc(smx_simcall_t simcall, smx_action_t action){
-  return SIMIX_comm_get_src_proc(action);
+smx_process_t simcall_HANDLER_comm_get_src_proc(smx_simcall_t simcall, smx_synchro_t synchro){
+  return SIMIX_comm_get_src_proc(synchro);
 }
-smx_process_t SIMIX_comm_get_src_proc(smx_action_t action)
+smx_process_t SIMIX_comm_get_src_proc(smx_synchro_t synchro)
 {
-  return action->comm.src_proc;
+  return synchro->comm.src_proc;
 }
 
-smx_process_t simcall_HANDLER_comm_get_dst_proc(smx_simcall_t simcall, smx_action_t action){
-  return SIMIX_comm_get_dst_proc(action);
+smx_process_t simcall_HANDLER_comm_get_dst_proc(smx_simcall_t simcall, smx_synchro_t synchro){
+  return SIMIX_comm_get_dst_proc(synchro);
 }
-smx_process_t SIMIX_comm_get_dst_proc(smx_action_t action)
+smx_process_t SIMIX_comm_get_dst_proc(smx_synchro_t synchro)
 {
-  return action->comm.dst_proc;
+  return synchro->comm.dst_proc;
 }
 
 #ifdef HAVE_LATENCY_BOUND_TRACKING
-int simcall_HANDLER_comm_is_latency_bounded(smx_simcall_t simcall, smx_action_t action)
+int simcall_HANDLER_comm_is_latency_bounded(smx_simcall_t simcall, smx_synchro_t synchro)
 {
-  return SIMIX_comm_is_latency_bounded(action);
+  return SIMIX_comm_is_latency_bounded(synchro);
 }
 
 /**
  *  \brief verify if communication is latency bounded
  *  \param comm The communication
  */
-int SIMIX_comm_is_latency_bounded(smx_action_t action)
+int SIMIX_comm_is_latency_bounded(smx_synchro_t synchro)
 {
-  if(!action){
+  if(!synchro){
     return 0;
   }
-  if (action->comm.surf_comm){
-    XBT_DEBUG("Getting latency limited for surf_action (%p)", action->comm.surf_comm);
-    action->latency_limited = surf_network_action_get_latency_limited(action->comm.surf_comm);
-    XBT_DEBUG("Action limited is %d", action->latency_limited);
+  if (synchro->comm.surf_comm){
+    XBT_DEBUG("Getting latency limited for surf_action (%p)", synchro->comm.surf_comm);
+    synchro->latency_limited = surf_network_action_get_latency_limited(synchro->comm.surf_comm);
+    XBT_DEBUG("synchro limited is %d", synchro->latency_limited);
   }
-  return action->latency_limited;
+  return synchro->latency_limited;
 }
 #endif
 
 /******************************************************************************/
 /*                    SIMIX_comm_copy_data callbacks                       */
 /******************************************************************************/
-static void (*SIMIX_comm_copy_data_callback) (smx_action_t, void*, size_t) =
+static void (*SIMIX_comm_copy_data_callback) (smx_synchro_t, void*, size_t) =
   &SIMIX_comm_copy_pointer_callback;
 
 void
-SIMIX_comm_set_copy_data_callback(void (*callback) (smx_action_t, void*, size_t))
+SIMIX_comm_set_copy_data_callback(void (*callback) (smx_synchro_t, void*, size_t))
 {
   SIMIX_comm_copy_data_callback = callback;
 }
 
-void SIMIX_comm_copy_pointer_callback(smx_action_t comm, void* buff, size_t buff_size)
+void SIMIX_comm_copy_pointer_callback(smx_synchro_t comm, void* buff, size_t buff_size)
 {
   xbt_assert((buff_size == sizeof(void *)),
              "Cannot copy %zu bytes: must be sizeof(void*)", buff_size);
   *(void **) (comm->comm.dst_buff) = buff;
 }
 
-void SIMIX_comm_copy_buffer_callback(smx_action_t comm, void* buff, size_t buff_size)
+void SIMIX_comm_copy_buffer_callback(smx_synchro_t comm, void* buff, size_t buff_size)
 {
   XBT_DEBUG("Copy the data over");
   memcpy(comm->comm.dst_buff, buff, buff_size);
@@ -1133,7 +1133,7 @@ void SIMIX_comm_copy_buffer_callback(smx_action_t comm, void* buff, size_t buff_
  *  \brief Copy the communication data from the sender's buffer to the receiver's one
  *  \param comm The communication
  */
-void SIMIX_comm_copy_data(smx_action_t comm)
+void SIMIX_comm_copy_data(smx_synchro_t comm)
 {
   size_t buff_size = comm->comm.src_buff_size;
   /* If there is no data to be copy then return */

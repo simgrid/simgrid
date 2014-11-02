@@ -380,11 +380,11 @@ void mc_update_comm_pattern(mc_call_type call_type, smx_simcall_t req, int value
     break;
   case MC_CALL_TYPE_WAIT:
     {
-      smx_action_t current_comm = NULL;
+      smx_synchro_t current_comm = NULL;
       if (call_type == MC_CALL_TYPE_WAIT)
         current_comm = simcall_comm_wait__get__comm(req);
       else
-        current_comm = xbt_dynar_get_as(simcall_comm_waitany__get__comms(req), value, smx_action_t);
+        current_comm = xbt_dynar_get_as(simcall_comm_waitany__get__comms(req), value, smx_synchro_t);
       // First wait only must be considered:
       if (current_comm->comm.refcount == 1)
         complete_comm_pattern(pattern, current_comm);

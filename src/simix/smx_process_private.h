@@ -48,8 +48,8 @@ typedef struct s_smx_process {
   unsigned auto_restart:1;
 
   smx_host_t new_host;          /* if not null, the host on which the process must migrate to */
-  smx_action_t waiting_action;  /* the current blocking action if any */
-  xbt_fifo_t comms;       /* the current non-blocking communication actions */
+  smx_synchro_t waiting_synchro;  /* the current blocking synchro if any */
+  xbt_fifo_t comms;       /* the current non-blocking communication synchros */
   xbt_dict_t properties;
   s_smx_simcall_t simcall;
   void *data;                   /* kept for compatibility, it should be replaced with moddata */
@@ -86,7 +86,7 @@ xbt_running_ctx_t *SIMIX_process_get_running_context(void);
 void SIMIX_process_exception_terminate(xbt_ex_t * e);
 void SIMIX_process_change_host(smx_process_t process,
              smx_host_t dest);
-smx_action_t SIMIX_process_suspend(smx_process_t process, smx_process_t issuer);
+smx_synchro_t SIMIX_process_suspend(smx_process_t process, smx_process_t issuer);
 void SIMIX_process_resume(smx_process_t process, smx_process_t issuer);
 int SIMIX_process_get_PID(smx_process_t self);
 int SIMIX_process_get_PPID(smx_process_t self);
@@ -97,13 +97,13 @@ const char* SIMIX_process_get_name(smx_process_t process);
 smx_process_t SIMIX_process_get_by_name(const char* name);
 int SIMIX_process_is_suspended(smx_process_t process);
 xbt_dict_t SIMIX_process_get_properties(smx_process_t process);
-smx_action_t SIMIX_process_join(smx_process_t issuer, smx_process_t process, double timeout);
-smx_action_t SIMIX_process_sleep(smx_process_t process, double duration);
-void SIMIX_post_process_sleep(smx_action_t action);
+smx_synchro_t SIMIX_process_join(smx_process_t issuer, smx_process_t process, double timeout);
+smx_synchro_t SIMIX_process_sleep(smx_process_t process, double duration);
+void SIMIX_post_process_sleep(smx_synchro_t synchro);
 
-void SIMIX_process_sleep_suspend(smx_action_t action);
-void SIMIX_process_sleep_resume(smx_action_t action);
-void SIMIX_process_sleep_destroy(smx_action_t action);
+void SIMIX_process_sleep_suspend(smx_synchro_t synchro);
+void SIMIX_process_sleep_resume(smx_synchro_t synchro);
+void SIMIX_process_sleep_destroy(smx_synchro_t synchro);
 void SIMIX_process_auto_restart_set(smx_process_t process, int auto_restart);
 smx_process_t SIMIX_process_restart(smx_process_t process, smx_process_t issuer);
 

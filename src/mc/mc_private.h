@@ -290,7 +290,7 @@ typedef struct mc_procstate{
 typedef struct mc_state {
   unsigned long max_pid;            /* Maximum pid at state's creation time */
   mc_procstate_t proc_status;       /* State's exploration status by process */
-  s_smx_action_t internal_comm;     /* To be referenced by the internal_req */
+  s_smx_synchro_t internal_comm;     /* To be referenced by the internal_req */
   s_smx_simcall_t internal_req;         /* Internal translation of request */
   s_smx_simcall_t executed_req;         /* The executed request of the state */
   int req_num;                      /* The request number (in the case of a
@@ -708,7 +708,7 @@ typedef struct s_local_variable{
 
 typedef struct s_mc_comm_pattern{
   int num;
-  smx_action_t comm;
+  smx_synchro_t comm;
   e_smx_comm_type_t type;
   unsigned long src_proc;
   unsigned long dst_proc;
@@ -749,7 +749,7 @@ static inline mc_call_type mc_get_call_type(smx_simcall_t req) {
 
 void get_comm_pattern(xbt_dynar_t communications_pattern, smx_simcall_t request, mc_call_type call_type);
 void mc_update_comm_pattern(mc_call_type call_type, smx_simcall_t request, int value, xbt_dynar_t current_pattern);
-void complete_comm_pattern(xbt_dynar_t list, smx_action_t comm);
+void complete_comm_pattern(xbt_dynar_t list, smx_synchro_t comm);
 void MC_pre_modelcheck_comm_determinism(void);
 void MC_modelcheck_comm_determinism(void);
 

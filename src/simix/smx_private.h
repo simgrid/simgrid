@@ -46,7 +46,7 @@ typedef struct s_smx_global {
   smx_creation_func_t create_process_function;
   void_pfn_smxprocess_t_smxprocess_t kill_process_function;
   void_pfn_smxprocess_t cleanup_process_function;
-  xbt_mallocator_t action_mallocator;
+  xbt_mallocator_t synchro_mallocator;
   void_pfn_smxhost_t autorestart;
 
 #ifdef TIME_BENCH_AMDAHL
@@ -94,17 +94,17 @@ typedef struct s_smx_timer {
   void* args;
 } s_smx_timer_t;
 
-/********************************* Action *************************************/
+/********************************* synchro *************************************/
 
 typedef enum {
-  SIMIX_ACTION_EXECUTE,
-  SIMIX_ACTION_PARALLEL_EXECUTE,
-  SIMIX_ACTION_COMMUNICATE,
-  SIMIX_ACTION_JOIN,
-  SIMIX_ACTION_SLEEP,
-  SIMIX_ACTION_SYNCHRO,
-  SIMIX_ACTION_IO,
-} e_smx_action_type_t;
+  SIMIX_SYNC_EXECUTE,
+  SIMIX_SYNC_PARALLEL_EXECUTE,
+  SIMIX_SYNC_COMMUNICATE,
+  SIMIX_SYNC_JOIN,
+  SIMIX_SYNC_SLEEP,
+  SIMIX_SYNC_SYNCHRO,
+  SIMIX_SYNC_IO,
+} e_smx_synchro_type_t;
 
 typedef enum {
   SIMIX_COMM_SEND,
@@ -120,15 +120,15 @@ typedef enum {
   SIMIX_IO_STAT
 } e_smx_io_type_t;
 
-/** @brief Action datatype */
-typedef struct s_smx_action {
+/** @brief synchro datatype */
+typedef struct s_smx_synchro {
 
-  e_smx_action_type_t type;          /* Type of SIMIX action*/
-  e_smx_state_t state;               /* State of the action */
-  char *name;                        /* Action name if any */
-  xbt_fifo_t simcalls;               /* List of simcalls waiting for this action */
+  e_smx_synchro_type_t type;          /* Type of SIMIX synchro */
+  e_smx_state_t state;               /* State of the synchro */
+  char *name;                        /* synchro name if any */
+  xbt_fifo_t simcalls;               /* List of simcalls waiting for this synchro */
 
-  /* Data specific to each action type */
+  /* Data specific to each synchro type */
   union {
 
     struct {
@@ -149,10 +149,10 @@ typedef struct s_smx_action {
       int detached;                   /* If detached or not */
 
       void (*clean_fun)(void*);       /* Function to clean the detached src_buf if something goes wrong */
-      int (*match_fun)(void*,void*,smx_action_t);  /* Filter function used by the other side. It is used when
+      int (*match_fun)(void*,void*,smx_synchro_t);  /* Filter function used by the other side. It is used when
                                          looking if a given communication matches my needs. For that, myself must match the
                                          expectations of the other side, too. See  */
-      void (*copy_data_fun) (smx_action_t, void*, size_t);
+      void (*copy_data_fun) (smx_synchro_t, void*, size_t);
 
       /* Surf action data */
       surf_action_t surf_comm;        /* The Surf communication action encapsulated */
@@ -196,7 +196,7 @@ typedef struct s_smx_action {
 #ifdef HAVE_TRACING
   char *category;                     /* simix action category for instrumentation */
 #endif
-} s_smx_action_t;
+} s_smx_synchro_t;
 
 void SIMIX_context_mod_init(void);
 void SIMIX_context_mod_exit(void);

@@ -146,7 +146,7 @@ static void print_communications_pattern(xbt_dynar_t comms_pattern)
   }
 }
 
-static void update_comm_pattern(mc_comm_pattern_t comm_pattern, smx_action_t comm)
+static void update_comm_pattern(mc_comm_pattern_t comm_pattern, smx_synchro_t comm)
 {
   void *addr_pointed;
   comm_pattern->src_proc = comm->comm.src_proc->pid;
@@ -207,7 +207,7 @@ void get_comm_pattern(xbt_dynar_t list, smx_simcall_t request, mc_call_type call
 
 }
 
-void complete_comm_pattern(xbt_dynar_t list, smx_action_t comm)
+void complete_comm_pattern(xbt_dynar_t list, smx_synchro_t comm)
 {
   mc_comm_pattern_t current_comm_pattern;
   unsigned int cursor = 0;

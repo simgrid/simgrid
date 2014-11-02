@@ -216,20 +216,20 @@ double simcall_host_get_consumed_energy(smx_host_t host)
 
 /**
  * \ingroup simix_host_management
- * \brief Creates an action that executes some computation of an host.
+ * \brief Creates a synchro that executes some computation of an host.
  *
  * This function creates a SURF action and allocates the data necessary
- * to create the SIMIX action. It can raise a host_error exception if the host crashed.
+ * to create the SIMIX synchro. It can raise a host_error exception if the host crashed.
  *
- * \param name Name of the execution action to create
- * \param host SIMIX host where the action will be executed
+ * \param name Name of the execution synchro to create
+ * \param host SIMIX host where the synchro will be executed
  * \param computation_amount amount Computation amount (in bytes)
  * \param priority computation priority
  * \param bound
  * \param affinity_mask
- * \return A new SIMIX execution action
+ * \return A new SIMIX execution synchronization
  */
-smx_action_t simcall_host_execute(const char *name, smx_host_t host,
+smx_synchro_t simcall_host_execute(const char *name, smx_host_t host,
                                     double computation_amount,
                                     double priority, double bound, unsigned long affinity_mask)
 {
@@ -242,20 +242,20 @@ smx_action_t simcall_host_execute(const char *name, smx_host_t host,
 
 /**
  * \ingroup simix_host_management
- * \brief Creates an action that may involve parallel computation on
+ * \brief Creates a synchro that may involve parallel computation on
  * several hosts and communication between them.
  *
- * \param name Name of the execution action to create
- * \param host_nb Number of hosts where the action will be executed
- * \param host_list Array (of size host_nb) of hosts where the action will be executed
+ * \param name Name of the execution synchro to create
+ * \param host_nb Number of hosts where the synchro will be executed
+ * \param host_list Array (of size host_nb) of hosts where the synchro will be executed
  * \param computation_amount Array (of size host_nb) of computation amount of hosts (in bytes)
  * \param communication_amount Array (of size host_nb * host_nb) representing the communication
  * amount between each pair of hosts
  * \param amount the SURF action amount
  * \param rate the SURF action rate
- * \return A new SIMIX execution action
+ * \return A new SIMIX execution synchronization
  */
-smx_action_t simcall_host_parallel_execute(const char *name,
+smx_synchro_t simcall_host_parallel_execute(const char *name,
                                          int host_nb,
                                          smx_host_t *host_list,
                                          double *computation_amount,
@@ -285,61 +285,61 @@ smx_action_t simcall_host_parallel_execute(const char *name,
 
 /**
  * \ingroup simix_host_management
- * \brief Destroys an execution action.
+ * \brief Destroys an execution synchro.
  *
- * Destroys an action, freing its memory. This function cannot be called if there are a conditional waiting for it.
- * \param execution The execution action to destroy
+ * Destroys a synchro, freeing its memory. This function cannot be called if there are a conditional waiting for it.
+ * \param execution The execution synchro to destroy
  */
-void simcall_host_execution_destroy(smx_action_t execution)
+void simcall_host_execution_destroy(smx_synchro_t execution)
 {
   simcall_BODY_host_execution_destroy(execution);
 }
 
 /**
  * \ingroup simix_host_management
- * \brief Cancels an execution action.
+ * \brief Cancels an execution synchro.
  *
  * This functions stops the execution. It calls a surf function.
- * \param execution The execution action to cancel
+ * \param execution The execution synchro to cancel
  */
-void simcall_host_execution_cancel(smx_action_t execution)
+void simcall_host_execution_cancel(smx_synchro_t execution)
 {
   simcall_BODY_host_execution_cancel(execution);
 }
 
 /**
  * \ingroup simix_host_management
- * \brief Returns how much of an execution action remains to be done.
+ * \brief Returns how much of an execution synchro remains to be done.
  *
- * \param execution The execution action
+ * \param execution The execution synchro
  * \return The remaining amount
  */
-double simcall_host_execution_get_remains(smx_action_t execution)
+double simcall_host_execution_get_remains(smx_synchro_t execution)
 {
   return simcall_BODY_host_execution_get_remains(execution);
 }
 
 /**
  * \ingroup simix_host_management
- * \brief Returns the state of an execution action.
+ * \brief Returns the state of an execution synchro.
  *
- * \param execution The execution action
+ * \param execution The execution synchro
  * \return The state
  */
-e_smx_state_t simcall_host_execution_get_state(smx_action_t execution)
+e_smx_state_t simcall_host_execution_get_state(smx_synchro_t execution)
 {
   return simcall_BODY_host_execution_get_state(execution);
 }
 
 /**
  * \ingroup simix_host_management
- * \brief Changes the priority of an execution action.
+ * \brief Changes the priority of an execution synchro.
  *
  * This functions changes the priority only. It calls a surf function.
- * \param execution The execution action
+ * \param execution The execution synchro
  * \param priority The new priority
  */
-void simcall_host_execution_set_priority(smx_action_t execution, double priority)
+void simcall_host_execution_set_priority(smx_synchro_t execution, double priority)
 {
   /* checking for infinite values */
   xbt_assert(isfinite(priority), "priority is not finite!");
@@ -349,38 +349,38 @@ void simcall_host_execution_set_priority(smx_action_t execution, double priority
 
 /**
  * \ingroup simix_host_management
- * \brief Changes the capping (the maximum CPU utilization) of an execution action.
+ * \brief Changes the capping (the maximum CPU utilization) of an execution synchro.
  *
  * This functions changes the capping only. It calls a surf function.
- * \param execution The execution action
+ * \param execution The execution synchro
  * \param bound The new bound
  */
-void simcall_host_execution_set_bound(smx_action_t execution, double bound)
+void simcall_host_execution_set_bound(smx_synchro_t execution, double bound)
 {
   simcall_BODY_host_execution_set_bound(execution, bound);
 }
 
 /**
  * \ingroup simix_host_management
- * \brief Changes the CPU affinity of an execution action.
+ * \brief Changes the CPU affinity of an execution synchro.
  *
- * This functions changes the CPU affinity of an execution action. See taskset(1) on Linux.
- * \param execution The execution action
+ * This functions changes the CPU affinity of an execution synchro. See taskset(1) on Linux.
+ * \param execution The execution synchro
  * \param host Host
  * \param mask Affinity mask
  */
-void simcall_host_execution_set_affinity(smx_action_t execution, smx_host_t host, unsigned long mask)
+void simcall_host_execution_set_affinity(smx_synchro_t execution, smx_host_t host, unsigned long mask)
 {
   simcall_BODY_host_execution_set_affinity(execution, host, mask);
 }
 
 /**
  * \ingroup simix_host_management
- * \brief Waits for the completion of an execution action and destroy it.
+ * \brief Waits for the completion of an execution synchro and destroy it.
  *
- * \param execution The execution action
+ * \param execution The execution synchro
  */
-e_smx_state_t simcall_host_execution_wait(smx_action_t execution)
+e_smx_state_t simcall_host_execution_wait(smx_synchro_t execution)
 {
   return simcall_BODY_host_execution_wait(execution);
 }
@@ -620,7 +620,7 @@ void simcall_process_join(smx_process_t process, double timeout)
  * \ingroup simix_process_management
  * \brief Suspends a process.
  *
- * This function suspends the process by suspending the action
+ * This function suspends the process by suspending the synchro
  * it was waiting for completion.
  *
  * \param process a SIMIX process
@@ -636,7 +636,7 @@ void simcall_process_suspend(smx_process_t process)
  * \ingroup simix_process_management
  * \brief Resumes a suspended process.
  *
- * This function resumes a suspended process by resuming the action
+ * This function resumes a suspended process by resuming the synchro
  * it was waiting for completion.
  *
  * \param process a SIMIX process
@@ -826,11 +826,11 @@ XBT_PUBLIC(smx_process_t) simcall_process_restart(smx_process_t process)
 }
 /**
  * \ingroup simix_process_management
- * \brief Creates a new sleep SIMIX action.
+ * \brief Creates a new sleep SIMIX synchro.
  *
  * This function creates a SURF action and allocates the data necessary
- * to create the SIMIX action. It can raise a host_error exception if the
- * host crashed. The default SIMIX name of the action is "sleep".
+ * to create the SIMIX synchro. It can raise a host_error exception if the
+ * host crashed. The default SIMIX name of the synchro is "sleep".
  *
  *   \param duration Time duration of the sleep.
  *   \return A result telling whether the sleep was successful
@@ -880,11 +880,11 @@ smx_rdv_t simcall_rdv_get_by_name(const char *name)
 
 /**
  *  \ingroup simix_rdv_management
- *  \brief Counts the number of communication actions of a given host pending
+ *  \brief Counts the number of communication synchros of a given host pending
  *         on a rendez-vous point.
  *  \param rdv The rendez-vous point
  *  \param host The host to be counted
- *  \return The number of comm actions pending in the rdv
+ *  \return The number of comm synchros pending in the rdv
  */
 int simcall_rdv_comm_count_by_host(smx_rdv_t rdv, smx_host_t host)
 {
@@ -897,7 +897,7 @@ int simcall_rdv_comm_count_by_host(smx_rdv_t rdv, smx_host_t host)
  *  \param rdv The rendez-vous point
  *  \return The communication or NULL if empty
  */
-smx_action_t simcall_rdv_get_head(smx_rdv_t rdv)
+smx_synchro_t simcall_rdv_get_head(smx_rdv_t rdv)
 {
   return simcall_BODY_rdv_get_head(rdv);
 }
@@ -917,8 +917,8 @@ smx_process_t simcall_rdv_get_receiver(smx_rdv_t rdv)
  */
 void simcall_comm_send(smx_process_t src, smx_rdv_t rdv, double task_size, double rate,
                          void *src_buff, size_t src_buff_size,
-                         int (*match_fun)(void *, void *, smx_action_t),
-                         void (*copy_data_fun)(smx_action_t, void*, size_t), void *data,
+                         int (*match_fun)(void *, void *, smx_synchro_t),
+                         void (*copy_data_fun)(smx_synchro_t, void*, size_t), void *data,
                          double timeout)
 {
   /* checking for infinite values */
@@ -930,7 +930,7 @@ void simcall_comm_send(smx_process_t src, smx_rdv_t rdv, double task_size, doubl
 
   if (MC_is_active()) {
     /* the model-checker wants two separate simcalls */
-    smx_action_t comm = NULL; /* MC needs the comm to be set to NULL during the simcall */
+    smx_synchro_t comm = NULL; /* MC needs the comm to be set to NULL during the simcall */
     comm = simcall_comm_isend(src, rdv, task_size, rate,
         src_buff, src_buff_size, match_fun, NULL, copy_data_fun, data, 0);
     simcall_comm_wait(comm, timeout);
@@ -945,11 +945,11 @@ void simcall_comm_send(smx_process_t src, smx_rdv_t rdv, double task_size, doubl
 /**
  * \ingroup simix_comm_management
  */
-smx_action_t simcall_comm_isend(smx_process_t src, smx_rdv_t rdv, double task_size, double rate,
+smx_synchro_t simcall_comm_isend(smx_process_t src, smx_rdv_t rdv, double task_size, double rate,
                               void *src_buff, size_t src_buff_size,
-                              int (*match_fun)(void *, void *, smx_action_t),
+                              int (*match_fun)(void *, void *, smx_synchro_t),
                               void (*clean_fun)(void *),
-                              void (*copy_data_fun)(smx_action_t, void*, size_t),
+                              void (*copy_data_fun)(smx_synchro_t, void*, size_t),
                               void *data,
                               int detached)
 {
@@ -968,8 +968,8 @@ smx_action_t simcall_comm_isend(smx_process_t src, smx_rdv_t rdv, double task_si
  * \ingroup simix_comm_management
  */
 void simcall_comm_recv(smx_rdv_t rdv, void *dst_buff, size_t * dst_buff_size,
-                       int (*match_fun)(void *, void *, smx_action_t),
-                       void (*copy_data_fun)(smx_action_t, void*, size_t),
+                       int (*match_fun)(void *, void *, smx_synchro_t),
+                       void (*copy_data_fun)(smx_synchro_t, void*, size_t),
                        void *data, double timeout, double rate)
 {
   xbt_assert(isfinite(timeout), "timeout is not finite!");
@@ -977,7 +977,7 @@ void simcall_comm_recv(smx_rdv_t rdv, void *dst_buff, size_t * dst_buff_size,
 
   if (MC_is_active()) {
     /* the model-checker wants two separate simcalls */
-    smx_action_t comm = NULL; /* MC needs the comm to be set to NULL during the simcall */
+    smx_synchro_t comm = NULL; /* MC needs the comm to be set to NULL during the simcall */
     comm = simcall_comm_irecv(rdv, dst_buff, dst_buff_size,
                               match_fun, copy_data_fun, data, rate);
     simcall_comm_wait(comm, timeout);
@@ -991,9 +991,9 @@ void simcall_comm_recv(smx_rdv_t rdv, void *dst_buff, size_t * dst_buff_size,
 /**
  * \ingroup simix_comm_management
  */
-smx_action_t simcall_comm_irecv(smx_rdv_t rdv, void *dst_buff, size_t *dst_buff_size,
-                                int (*match_fun)(void *, void *, smx_action_t),
-                                void (*copy_data_fun)(smx_action_t, void*, size_t),
+smx_synchro_t simcall_comm_irecv(smx_rdv_t rdv, void *dst_buff, size_t *dst_buff_size,
+                                int (*match_fun)(void *, void *, smx_synchro_t),
+                                void (*copy_data_fun)(smx_synchro_t, void*, size_t),
                                 void *data, double rate)
 {
   xbt_assert(rdv, "No rendez-vous point defined for irecv");
@@ -1005,8 +1005,8 @@ smx_action_t simcall_comm_irecv(smx_rdv_t rdv, void *dst_buff, size_t *dst_buff_
 /**
  * \ingroup simix_comm_management
  */
-smx_action_t simcall_comm_iprobe(smx_rdv_t rdv, int type, int src, int tag,
-                                int (*match_fun)(void *, void *, smx_action_t), void *data)
+smx_synchro_t simcall_comm_iprobe(smx_rdv_t rdv, int type, int src, int tag,
+                                int (*match_fun)(void *, void *, smx_synchro_t), void *data)
 {
   xbt_assert(rdv, "No rendez-vous point defined for iprobe");
 
@@ -1016,7 +1016,7 @@ smx_action_t simcall_comm_iprobe(smx_rdv_t rdv, int type, int src, int tag,
 /**
  * \ingroup simix_comm_management
  */
-void simcall_comm_cancel(smx_action_t comm)
+void simcall_comm_cancel(smx_synchro_t comm)
 {
   simcall_BODY_comm_cancel(comm);
 }
@@ -1042,7 +1042,7 @@ int simcall_comm_testany(xbt_dynar_t comms)
 /**
  * \ingroup simix_comm_management
  */
-void simcall_comm_wait(smx_action_t comm, double timeout)
+void simcall_comm_wait(smx_synchro_t comm, double timeout)
 {
   xbt_assert(isfinite(timeout), "timeout is not finite!");
   simcall_BODY_comm_wait(comm, timeout);
@@ -1050,18 +1050,18 @@ void simcall_comm_wait(smx_action_t comm, double timeout)
 
 #ifdef HAVE_TRACING
 /**
- * \brief Set the category of an action.
+ * \brief Set the category of an synchro.
  *
  * This functions changes the category only. It calls a surf function.
- * \param execution The execution action
+ * \param execution The execution synchro
  * \param category The tracing category
  */
-void simcall_set_category(smx_action_t action, const char *category)
+void simcall_set_category(smx_synchro_t synchro, const char *category)
 {
   if (category == NULL) {
     return;
   }
-  simcall_BODY_set_category(action, category);
+  simcall_BODY_set_category(synchro, category);
 }
 #endif
 
@@ -1069,7 +1069,7 @@ void simcall_set_category(smx_action_t action, const char *category)
  * \ingroup simix_comm_management
  *
  */
-int simcall_comm_test(smx_action_t comm)
+int simcall_comm_test(smx_synchro_t comm)
 {
   return simcall_BODY_comm_test(comm);
 }
@@ -1078,7 +1078,7 @@ int simcall_comm_test(smx_action_t comm)
  * \ingroup simix_comm_management
  *
  */
-double simcall_comm_get_remains(smx_action_t comm)
+double simcall_comm_get_remains(smx_synchro_t comm)
 {
   return simcall_BODY_comm_get_remains(comm);
 }
@@ -1087,7 +1087,7 @@ double simcall_comm_get_remains(smx_action_t comm)
  * \ingroup simix_comm_management
  *
  */
-e_smx_state_t simcall_comm_get_state(smx_action_t comm)
+e_smx_state_t simcall_comm_get_state(smx_synchro_t comm)
 {
   return simcall_BODY_comm_get_state(comm);
 }
@@ -1096,7 +1096,7 @@ e_smx_state_t simcall_comm_get_state(smx_action_t comm)
  * \ingroup simix_comm_management
  *
  */
-void *simcall_comm_get_src_data(smx_action_t comm)
+void *simcall_comm_get_src_data(smx_synchro_t comm)
 {
   return simcall_BODY_comm_get_src_data(comm);
 }
@@ -1105,7 +1105,7 @@ void *simcall_comm_get_src_data(smx_action_t comm)
  * \ingroup simix_comm_management
  *
  */
-void *simcall_comm_get_dst_data(smx_action_t comm)
+void *simcall_comm_get_dst_data(smx_synchro_t comm)
 {
   return simcall_BODY_comm_get_dst_data(comm);
 }
@@ -1114,7 +1114,7 @@ void *simcall_comm_get_dst_data(smx_action_t comm)
  * \ingroup simix_comm_management
  *
  */
-smx_process_t simcall_comm_get_src_proc(smx_action_t comm)
+smx_process_t simcall_comm_get_src_proc(smx_synchro_t comm)
 {
   return simcall_BODY_comm_get_src_proc(comm);
 }
@@ -1123,13 +1123,13 @@ smx_process_t simcall_comm_get_src_proc(smx_action_t comm)
  * \ingroup simix_comm_management
  *
  */
-smx_process_t simcall_comm_get_dst_proc(smx_action_t comm)
+smx_process_t simcall_comm_get_dst_proc(smx_synchro_t comm)
 {
   return simcall_BODY_comm_get_dst_proc(comm);
 }
 
 #ifdef HAVE_LATENCY_BOUND_TRACKING
-int simcall_comm_is_latency_bounded(smx_action_t comm)
+int simcall_comm_is_latency_bounded(smx_synchro_t comm)
 {
   return simcall_BODY_comm_is_latency_bounded(comm);
 }

@@ -11,9 +11,9 @@
 #include "mc/mc.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_host, simix,
-                                "Logging specific to SIMIX (hosts)");
+                                "SIMIX hosts");
 
-static void SIMIX_execution_finish(smx_action_t action);
+static void SIMIX_execution_finish(smx_synchro_t synchro);
 
 /**
  * \brief Internal function to create a SIMIX host.
@@ -415,59 +415,59 @@ void SIMIX_host_autorestart(smx_host_t host)
     xbt_die("No function for simix_global->autorestart");
 }
 
-smx_action_t simcall_HANDLER_host_execute(smx_simcall_t simcall,const char *name,
+smx_synchro_t simcall_HANDLER_host_execute(smx_simcall_t simcall,const char *name,
     smx_host_t host, double computation_amount, double priority, double bound, unsigned long affinity_mask){
   return SIMIX_host_execute(name, host, computation_amount, priority, bound, affinity_mask);
 }
-smx_action_t SIMIX_host_execute(const char *name,
+smx_synchro_t SIMIX_host_execute(const char *name,
     smx_host_t host, double computation_amount, double priority, double bound, unsigned long affinity_mask){
 
   /* alloc structures and initialize */
-  smx_action_t action = xbt_mallocator_get(simix_global->action_mallocator);
-  action->type = SIMIX_ACTION_EXECUTE;
-  action->name = xbt_strdup(name);
-  action->state = SIMIX_RUNNING;
-  action->execution.host = host;
+  smx_synchro_t synchro = xbt_mallocator_get(simix_global->synchro_mallocator);
+  synchro->type = SIMIX_SYNC_EXECUTE;
+  synchro->name = xbt_strdup(name);
+  synchro->state = SIMIX_RUNNING;
+  synchro->execution.host = host;
 
 #ifdef HAVE_TRACING
-  action->category = NULL;
+  synchro->category = NULL;
 #endif
 
   /* set surf's action */
   if (!MC_is_active()) {
 
-    action->execution.surf_exec = surf_workstation_execute(host, computation_amount);
-    surf_action_set_data(action->execution.surf_exec, action);
-    surf_action_set_priority(action->execution.surf_exec, priority);
+    synchro->execution.surf_exec = surf_workstation_execute(host, computation_amount);
+    surf_action_set_data(synchro->execution.surf_exec, synchro);
+    surf_action_set_priority(synchro->execution.surf_exec, priority);
 
     /* Note (hypervisor): for multicore, the bound value being passed to the
      * surf layer should not be zero (i.e., unlimited). It should be the
      * capacity of a CPU core. */
     if (bound == 0)
-      surf_cpu_action_set_bound(action->execution.surf_exec, SIMIX_host_get_speed(host));
+      surf_cpu_action_set_bound(synchro->execution.surf_exec, SIMIX_host_get_speed(host));
     else
-      surf_cpu_action_set_bound(action->execution.surf_exec, bound);
+      surf_cpu_action_set_bound(synchro->execution.surf_exec, bound);
 
     if (affinity_mask != 0) {
       /* just a double check to confirm that this host is the host where this task is running. */
-      xbt_assert(action->execution.host == host);
-      surf_cpu_action_set_affinity(action->execution.surf_exec, host, affinity_mask);
+      xbt_assert(synchro->execution.host == host);
+      surf_cpu_action_set_affinity(synchro->execution.surf_exec, host, affinity_mask);
     }
   }
 
-  XBT_DEBUG("Create execute action %p: %s", action, action->name);
+  XBT_DEBUG("Create execute synchro %p: %s", synchro, synchro->name);
 
-  return action;
+  return synchro;
 }
 
-smx_action_t simcall_HANDLER_host_parallel_execute(smx_simcall_t simcall, const char *name,
+smx_synchro_t simcall_HANDLER_host_parallel_execute(smx_simcall_t simcall, const char *name,
     int host_nb, smx_host_t *host_list,
     double *computation_amount, double *communication_amount,
     double amount, double rate){
   return SIMIX_host_parallel_execute(name, host_nb, host_list, computation_amount,
 		                     communication_amount, amount, rate);
 }
-smx_action_t SIMIX_host_parallel_execute(const char *name,
+smx_synchro_t SIMIX_host_parallel_execute(const char *name,
     int host_nb, smx_host_t *host_list,
     double *computation_amount, double *communication_amount,
     double amount, double rate){
@@ -476,17 +476,17 @@ smx_action_t SIMIX_host_parallel_execute(const char *name,
   int i;
 
   /* alloc structures and initialize */
-  smx_action_t action = xbt_mallocator_get(simix_global->action_mallocator);
-  action->type = SIMIX_ACTION_PARALLEL_EXECUTE;
-  action->name = xbt_strdup(name);
-  action->state = SIMIX_RUNNING;
-  action->execution.host = NULL; /* FIXME: do we need the list of hosts? */
+  smx_synchro_t synchro = xbt_mallocator_get(simix_global->synchro_mallocator);
+  synchro->type = SIMIX_SYNC_PARALLEL_EXECUTE;
+  synchro->name = xbt_strdup(name);
+  synchro->state = SIMIX_RUNNING;
+  synchro->execution.host = NULL; /* FIXME: do we need the list of hosts? */
 
 #ifdef HAVE_TRACING
-  action->category = NULL;
+  synchro->category = NULL;
 #endif
 
-  /* set surf's action */
+  /* set surf's synchro */
   workstation_list = xbt_new0(void *, host_nb);
   for (i = 0; i < host_nb; i++)
     workstation_list[i] = surf_workstation_resource_priv(host_list[i]);
@@ -504,140 +504,140 @@ smx_action_t SIMIX_host_parallel_execute(const char *name,
     }
   }
 
-  /* set surf's action */
+  /* set surf's synchro */
   if (!MC_is_active()) {
-    action->execution.surf_exec =
+    synchro->execution.surf_exec =
       surf_workstation_model_execute_parallel_task((surf_workstation_model_t)surf_workstation_model,
     		  host_nb, workstation_list, computation_amount, communication_amount, rate);
 
-    surf_action_set_data(action->execution.surf_exec, action);
+    surf_action_set_data(synchro->execution.surf_exec, synchro);
   }
-  XBT_DEBUG("Create parallel execute action %p", action);
+  XBT_DEBUG("Create parallel execute synchro %p", synchro);
 
-  return action;
+  return synchro;
 }
 
-void simcall_HANDLER_host_execution_destroy(smx_simcall_t simcall, smx_action_t action){
-  SIMIX_host_execution_destroy(action);
+void simcall_HANDLER_host_execution_destroy(smx_simcall_t simcall, smx_synchro_t synchro){
+  SIMIX_host_execution_destroy(synchro);
 }
-void SIMIX_host_execution_destroy(smx_action_t action){
-  XBT_DEBUG("Destroy action %p", action);
+void SIMIX_host_execution_destroy(smx_synchro_t synchro){
+  XBT_DEBUG("Destroy synchro %p", synchro);
 
-  if (action->execution.surf_exec) {
-    surf_action_unref(action->execution.surf_exec);
-    action->execution.surf_exec = NULL;
+  if (synchro->execution.surf_exec) {
+    surf_action_unref(synchro->execution.surf_exec);
+    synchro->execution.surf_exec = NULL;
   }
-  xbt_free(action->name);
-  xbt_mallocator_release(simix_global->action_mallocator, action);
+  xbt_free(synchro->name);
+  xbt_mallocator_release(simix_global->synchro_mallocator, synchro);
 }
 
-void simcall_HANDLER_host_execution_cancel(smx_simcall_t simcall, smx_action_t action){
-  SIMIX_host_execution_cancel(action);
+void simcall_HANDLER_host_execution_cancel(smx_simcall_t simcall, smx_synchro_t synchro){
+  SIMIX_host_execution_cancel(synchro);
 }
-void SIMIX_host_execution_cancel(smx_action_t action){
-  XBT_DEBUG("Cancel action %p", action);
+void SIMIX_host_execution_cancel(smx_synchro_t synchro){
+  XBT_DEBUG("Cancel synchro %p", synchro);
 
-  if (action->execution.surf_exec)
-    surf_action_cancel(action->execution.surf_exec);
+  if (synchro->execution.surf_exec)
+    surf_action_cancel(synchro->execution.surf_exec);
 }
 
-double simcall_HANDLER_host_execution_get_remains(smx_simcall_t simcall, smx_action_t action){
-  return SIMIX_host_execution_get_remains(action);
+double simcall_HANDLER_host_execution_get_remains(smx_simcall_t simcall, smx_synchro_t synchro){
+  return SIMIX_host_execution_get_remains(synchro);
 }
-double SIMIX_host_execution_get_remains(smx_action_t action){
+double SIMIX_host_execution_get_remains(smx_synchro_t synchro){
   double result = 0.0;
 
-  if (action->state == SIMIX_RUNNING)
-    result = surf_action_get_remains(action->execution.surf_exec);
+  if (synchro->state == SIMIX_RUNNING)
+    result = surf_action_get_remains(synchro->execution.surf_exec);
 
   return result;
 }
 
-e_smx_state_t simcall_HANDLER_host_execution_get_state(smx_simcall_t simcall, smx_action_t action){
-  return SIMIX_host_execution_get_state(action);
+e_smx_state_t simcall_HANDLER_host_execution_get_state(smx_simcall_t simcall, smx_synchro_t synchro){
+  return SIMIX_host_execution_get_state(synchro);
 }
-e_smx_state_t SIMIX_host_execution_get_state(smx_action_t action){
-  return action->state;
+e_smx_state_t SIMIX_host_execution_get_state(smx_synchro_t synchro){
+  return synchro->state;
 }
 
-void simcall_HANDLER_host_execution_set_priority(smx_simcall_t simcall, smx_action_t action,
+void simcall_HANDLER_host_execution_set_priority(smx_simcall_t simcall, smx_synchro_t synchro,
 		                        double priority){
-  SIMIX_host_execution_set_priority(action, priority);
+  SIMIX_host_execution_set_priority(synchro, priority);
 }
-void SIMIX_host_execution_set_priority(smx_action_t action, double priority){
+void SIMIX_host_execution_set_priority(smx_synchro_t synchro, double priority){
 
-  if(action->execution.surf_exec)
-	surf_action_set_priority(action->execution.surf_exec, priority);
+  if(synchro->execution.surf_exec)
+	surf_action_set_priority(synchro->execution.surf_exec, priority);
 }
 
-void simcall_HANDLER_host_execution_set_bound(smx_simcall_t simcall, smx_action_t action,
+void simcall_HANDLER_host_execution_set_bound(smx_simcall_t simcall, smx_synchro_t synchro,
 		                        double bound){
-  SIMIX_host_execution_set_bound(action, bound);
+  SIMIX_host_execution_set_bound(synchro, bound);
 }
-void SIMIX_host_execution_set_bound(smx_action_t action, double bound){
+void SIMIX_host_execution_set_bound(smx_synchro_t synchro, double bound){
 
-  if(action->execution.surf_exec)
-	surf_cpu_action_set_bound(action->execution.surf_exec, bound);
+  if(synchro->execution.surf_exec)
+	surf_cpu_action_set_bound(synchro->execution.surf_exec, bound);
 }
 
 void simcall_HANDLER_host_execution_set_affinity(smx_simcall_t simcall,
-    smx_action_t action, smx_host_t host, unsigned long mask){
-  SIMIX_host_execution_set_affinity(action, host, mask);
+    smx_synchro_t synchro, smx_host_t host, unsigned long mask){
+  SIMIX_host_execution_set_affinity(synchro, host, mask);
 }
-void SIMIX_host_execution_set_affinity(smx_action_t action, smx_host_t host, unsigned long mask){
-  xbt_assert(action->type == SIMIX_ACTION_EXECUTE);
+void SIMIX_host_execution_set_affinity(smx_synchro_t synchro, smx_host_t host, unsigned long mask){
+  xbt_assert(synchro->type == SIMIX_SYNC_EXECUTE);
 
-  if (action->execution.surf_exec) {
+  if (synchro->execution.surf_exec) {
     /* just a double check to confirm that this host is the host where this task is running. */
-    xbt_assert(action->execution.host == host);
-    surf_cpu_action_set_affinity(action->execution.surf_exec, host, mask);
+    xbt_assert(synchro->execution.host == host);
+    surf_cpu_action_set_affinity(synchro->execution.surf_exec, host, mask);
   }
 }
 
-void simcall_HANDLER_host_execution_wait(smx_simcall_t simcall, smx_action_t action){
+void simcall_HANDLER_host_execution_wait(smx_simcall_t simcall, smx_synchro_t synchro){
 
-  XBT_DEBUG("Wait for execution of action %p, state %d", action, (int)action->state);
+  XBT_DEBUG("Wait for execution of synchro %p, state %d", synchro, (int)synchro->state);
 
-  /* Associate this simcall to the action */
-  xbt_fifo_push(action->simcalls, simcall);
-  simcall->issuer->waiting_action = action;
+  /* Associate this simcall to the synchro */
+  xbt_fifo_push(synchro->simcalls, simcall);
+  simcall->issuer->waiting_synchro = synchro;
 
-  /* set surf's action */
+  /* set surf's synchro */
   if (MC_is_active()) {
-    action->state = SIMIX_DONE;
-    SIMIX_execution_finish(action);
+    synchro->state = SIMIX_DONE;
+    SIMIX_execution_finish(synchro);
     return;
   }
 
-  /* If the action is already finished then perform the error handling */
-  if (action->state != SIMIX_RUNNING)
-    SIMIX_execution_finish(action);
+  /* If the synchro is already finished then perform the error handling */
+  if (synchro->state != SIMIX_RUNNING)
+    SIMIX_execution_finish(synchro);
 }
 
-void SIMIX_host_execution_suspend(smx_action_t action)
+void SIMIX_host_execution_suspend(smx_synchro_t synchro)
 {
-  if(action->execution.surf_exec)
-    surf_action_suspend(action->execution.surf_exec);
+  if(synchro->execution.surf_exec)
+    surf_action_suspend(synchro->execution.surf_exec);
 }
 
-void SIMIX_host_execution_resume(smx_action_t action)
+void SIMIX_host_execution_resume(smx_synchro_t synchro)
 {
-  if(action->execution.surf_exec)
-    surf_action_resume(action->execution.surf_exec);
+  if(synchro->execution.surf_exec)
+    surf_action_resume(synchro->execution.surf_exec);
 }
 
-void SIMIX_execution_finish(smx_action_t action)
+void SIMIX_execution_finish(smx_synchro_t synchro)
 {
   xbt_fifo_item_t item;
   smx_simcall_t simcall;
 
-  xbt_fifo_foreach(action->simcalls, item, simcall, smx_simcall_t) {
+  xbt_fifo_foreach(synchro->simcalls, item, simcall, smx_simcall_t) {
 
-    switch (action->state) {
+    switch (synchro->state) {
 
       case SIMIX_DONE:
-        /* do nothing, action done */
-  XBT_DEBUG("SIMIX_execution_finished: execution successful");
+        /* do nothing, synchro done */
+        XBT_DEBUG("SIMIX_execution_finished: execution successful");
         break;
 
       case SIMIX_FAILED:
@@ -652,64 +652,64 @@ void SIMIX_execution_finish(smx_action_t action)
         break;
 
       default:
-        xbt_die("Internal error in SIMIX_execution_finish: unexpected action state %d",
-            (int)action->state);
+        xbt_die("Internal error in SIMIX_execution_finish: unexpected synchro state %d",
+            (int)synchro->state);
     }
     /* check if the host is down */
     if (surf_resource_get_state(surf_workstation_resource_priv(simcall->issuer->smx_host)) != SURF_RESOURCE_ON) {
       simcall->issuer->context->iwannadie = 1;
     }
 
-    simcall->issuer->waiting_action =    NULL;
-    simcall_host_execution_wait__set__result(simcall, action->state);
+    simcall->issuer->waiting_synchro =    NULL;
+    simcall_host_execution_wait__set__result(simcall, synchro->state);
     SIMIX_simcall_answer(simcall);
   }
 
   /* We no longer need it */
-  SIMIX_host_execution_destroy(action);
+  SIMIX_host_execution_destroy(synchro);
 }
 
 
-void SIMIX_post_host_execute(smx_action_t action)
+void SIMIX_post_host_execute(smx_synchro_t synchro)
 {
-  if (action->type == SIMIX_ACTION_EXECUTE && /* FIMXE: handle resource failure
+  if (synchro->type == SIMIX_SYNC_EXECUTE && /* FIMXE: handle resource failure
                                                * for parallel tasks too */
-      surf_resource_get_state(surf_workstation_resource_priv(action->execution.host)) == SURF_RESOURCE_OFF) {
-    /* If the host running the action failed, notice it so that the asking
+      surf_resource_get_state(surf_workstation_resource_priv(synchro->execution.host)) == SURF_RESOURCE_OFF) {
+    /* If the host running the synchro failed, notice it so that the asking
      * process can be killed if it runs on that host itself */
-    action->state = SIMIX_FAILED;
-  } else if (surf_action_get_state(action->execution.surf_exec) == SURF_ACTION_FAILED) {
-    /* If the host running the action didn't fail, then the action was
+    synchro->state = SIMIX_FAILED;
+  } else if (surf_action_get_state(synchro->execution.surf_exec) == SURF_ACTION_FAILED) {
+    /* If the host running the synchro didn't fail, then the synchro was
      * canceled */
-    action->state = SIMIX_CANCELED;
+    synchro->state = SIMIX_CANCELED;
   } else {
-    action->state = SIMIX_DONE;
+    synchro->state = SIMIX_DONE;
   }
 
-  if (action->execution.surf_exec) {
-    surf_action_unref(action->execution.surf_exec);
-    action->execution.surf_exec = NULL;
+  if (synchro->execution.surf_exec) {
+    surf_action_unref(synchro->execution.surf_exec);
+    synchro->execution.surf_exec = NULL;
   }
 
-  /* If there are simcalls associated with the action, then answer them */
-  if (xbt_fifo_size(action->simcalls)) {
-    SIMIX_execution_finish(action);
+  /* If there are simcalls associated with the synchro, then answer them */
+  if (xbt_fifo_size(synchro->simcalls)) {
+    SIMIX_execution_finish(synchro);
   }
 }
 
 
 #ifdef HAVE_TRACING
-void simcall_HANDLER_set_category(smx_simcall_t simcall, smx_action_t action,
+void simcall_HANDLER_set_category(smx_simcall_t simcall, smx_synchro_t synchro,
 		            const char *category){
-  SIMIX_set_category(action, category);
+  SIMIX_set_category(synchro, category);
 }
-void SIMIX_set_category(smx_action_t action, const char *category)
+void SIMIX_set_category(smx_synchro_t synchro, const char *category)
 {
-  if (action->state != SIMIX_RUNNING) return;
-  if (action->type == SIMIX_ACTION_EXECUTE){
-    surf_action_set_category(action->execution.surf_exec, category);
-  }else if (action->type == SIMIX_ACTION_COMMUNICATE){
-    surf_action_set_category(action->comm.surf_comm, category);
+  if (synchro->state != SIMIX_RUNNING) return;
+  if (synchro->type == SIMIX_SYNC_EXECUTE){
+    surf_action_set_category(synchro->execution.surf_exec, category);
+  }else if (synchro->type == SIMIX_SYNC_COMMUNICATE){
+    surf_action_set_category(synchro->comm.surf_comm, category);
   }
 }
 #endif

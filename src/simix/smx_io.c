@@ -52,14 +52,14 @@ void SIMIX_storage_destroy(void *s)
 //SIMIX FILE READ
 void simcall_HANDLER_file_read(smx_simcall_t simcall, smx_file_t fd, sg_size_t size, smx_host_t host)
 {
-  smx_action_t action = SIMIX_file_read(simcall->issuer, fd, size, host);
-  xbt_fifo_push(action->simcalls, simcall);
-  simcall->issuer->waiting_action = action;
+  smx_synchro_t synchro = SIMIX_file_read(simcall->issuer, fd, size, host);
+  xbt_fifo_push(synchro->simcalls, simcall);
+  simcall->issuer->waiting_synchro = synchro;
 }
 
-smx_action_t SIMIX_file_read(smx_process_t process, smx_file_t fd, sg_size_t size, smx_host_t host)
+smx_synchro_t SIMIX_file_read(smx_process_t process, smx_file_t fd, sg_size_t size, smx_host_t host)
 {
-  smx_action_t action;
+  smx_synchro_t synchro;
 
   /* check if the host is active */
   if (surf_resource_get_state(surf_workstation_resource_priv(host)) != SURF_RESOURCE_ON) {
@@ -67,33 +67,33 @@ smx_action_t SIMIX_file_read(smx_process_t process, smx_file_t fd, sg_size_t siz
            sg_host_name(host));
   }
 
-  action = xbt_mallocator_get(simix_global->action_mallocator);
-  action->type = SIMIX_ACTION_IO;
-  action->name = NULL;
+  synchro = xbt_mallocator_get(simix_global->synchro_mallocator);
+  synchro->type = SIMIX_SYNC_IO;
+  synchro->name = NULL;
 #ifdef HAVE_TRACING
-  action->category = NULL;
+  synchro->category = NULL;
 #endif
 
-  action->io.host = host;
-  action->io.surf_io = surf_workstation_read(host, fd->surf_file, size);
+  synchro->io.host = host;
+  synchro->io.surf_io = surf_workstation_read(host, fd->surf_file, size);
 
-  surf_action_set_data(action->io.surf_io, action);
-  XBT_DEBUG("Create io action %p", action);
+  surf_action_set_data(synchro->io.surf_io, synchro);
+  XBT_DEBUG("Create io synchro %p", synchro);
 
-  return action;
+  return synchro;
 }
 
 //SIMIX FILE WRITE
 void simcall_HANDLER_file_write(smx_simcall_t simcall, smx_file_t fd, sg_size_t size, smx_host_t host)
 {
-  smx_action_t action = SIMIX_file_write(simcall->issuer, fd,  size, host);
-  xbt_fifo_push(action->simcalls, simcall);
-  simcall->issuer->waiting_action = action;
+  smx_synchro_t synchro = SIMIX_file_write(simcall->issuer, fd,  size, host);
+  xbt_fifo_push(synchro->simcalls, simcall);
+  simcall->issuer->waiting_synchro = synchro;
 }
 
-smx_action_t SIMIX_file_write(smx_process_t process, smx_file_t fd, sg_size_t size, smx_host_t host)
+smx_synchro_t SIMIX_file_write(smx_process_t process, smx_file_t fd, sg_size_t size, smx_host_t host)
 {
-  smx_action_t action;
+  smx_synchro_t synchro;
 
   /* check if the host is active */
   if (surf_resource_get_state(surf_workstation_resource_priv(host)) != SURF_RESOURCE_ON) {
@@ -101,33 +101,33 @@ smx_action_t SIMIX_file_write(smx_process_t process, smx_file_t fd, sg_size_t si
            sg_host_name(host));
   }
 
-  action = xbt_mallocator_get(simix_global->action_mallocator);
-  action->type = SIMIX_ACTION_IO;
-  action->name = NULL;
+  synchro = xbt_mallocator_get(simix_global->synchro_mallocator);
+  synchro->type = SIMIX_SYNC_IO;
+  synchro->name = NULL;
 #ifdef HAVE_TRACING
-  action->category = NULL;
+  synchro->category = NULL;
 #endif
 
-  action->io.host = host;
-  action->io.surf_io = surf_workstation_write(host, fd->surf_file, size);
+  synchro->io.host = host;
+  synchro->io.surf_io = surf_workstation_write(host, fd->surf_file, size);
 
-  surf_action_set_data(action->io.surf_io, action);
-  XBT_DEBUG("Create io action %p", action);
+  surf_action_set_data(synchro->io.surf_io, synchro);
+  XBT_DEBUG("Create io synchro %p", synchro);
 
-  return action;
+  return synchro;
 }
 
 //SIMIX FILE OPEN
 void simcall_HANDLER_file_open(smx_simcall_t simcall, const char* fullpath, smx_host_t host)
 {
-  smx_action_t action = SIMIX_file_open(simcall->issuer, fullpath, host);
-  xbt_fifo_push(action->simcalls, simcall);
-  simcall->issuer->waiting_action = action;
+  smx_synchro_t synchro = SIMIX_file_open(simcall->issuer, fullpath, host);
+  xbt_fifo_push(synchro->simcalls, simcall);
+  simcall->issuer->waiting_synchro = synchro;
 }
 
-smx_action_t SIMIX_file_open(smx_process_t process, const char* fullpath, smx_host_t host)
+smx_synchro_t SIMIX_file_open(smx_process_t process, const char* fullpath, smx_host_t host)
 {
-  smx_action_t action;
+  smx_synchro_t synchro;
 
   /* check if the host is active */
   if (surf_resource_get_state(surf_workstation_resource_priv(host)) != SURF_RESOURCE_ON) {
@@ -135,33 +135,33 @@ smx_action_t SIMIX_file_open(smx_process_t process, const char* fullpath, smx_ho
            sg_host_name(host));
   }
 
-  action = xbt_mallocator_get(simix_global->action_mallocator);
-  action->type = SIMIX_ACTION_IO;
-  action->name = NULL;
+  synchro = xbt_mallocator_get(simix_global->synchro_mallocator);
+  synchro->type = SIMIX_SYNC_IO;
+  synchro->name = NULL;
 #ifdef HAVE_TRACING
-  action->category = NULL;
+  synchro->category = NULL;
 #endif
 
-  action->io.host = host;
-  action->io.surf_io = surf_workstation_open(host, fullpath);
+  synchro->io.host = host;
+  synchro->io.surf_io = surf_workstation_open(host, fullpath);
 
-  surf_action_set_data(action->io.surf_io, action);
-  XBT_DEBUG("Create io action %p", action);
+  surf_action_set_data(synchro->io.surf_io, synchro);
+  XBT_DEBUG("Create io synchro %p", synchro);
 
-  return action;
+  return synchro;
 }
 
 //SIMIX FILE CLOSE
 void simcall_HANDLER_file_close(smx_simcall_t simcall, smx_file_t fd, smx_host_t host)
 {
-  smx_action_t action = SIMIX_file_close(simcall->issuer, fd, host);
-  xbt_fifo_push(action->simcalls, simcall);
-  simcall->issuer->waiting_action = action;
+  smx_synchro_t synchro = SIMIX_file_close(simcall->issuer, fd, host);
+  xbt_fifo_push(synchro->simcalls, simcall);
+  simcall->issuer->waiting_synchro = synchro;
 }
 
-smx_action_t SIMIX_file_close(smx_process_t process, smx_file_t fd, smx_host_t host)
+smx_synchro_t SIMIX_file_close(smx_process_t process, smx_file_t fd, smx_host_t host)
 {
-  smx_action_t action;
+  smx_synchro_t synchro;
 
   /* check if the host is active */
   if (surf_resource_get_state(surf_workstation_resource_priv(host)) != SURF_RESOURCE_ON) {
@@ -169,20 +169,20 @@ smx_action_t SIMIX_file_close(smx_process_t process, smx_file_t fd, smx_host_t h
            sg_host_name(host));
   }
 
-  action = xbt_mallocator_get(simix_global->action_mallocator);
-  action->type = SIMIX_ACTION_IO;
-  action->name = NULL;
+  synchro = xbt_mallocator_get(simix_global->synchro_mallocator);
+  synchro->type = SIMIX_SYNC_IO;
+  synchro->name = NULL;
 #ifdef HAVE_TRACING
-  action->category = NULL;
+  synchro->category = NULL;
 #endif
 
-  action->io.host = host;
-  action->io.surf_io = surf_workstation_close(host, fd->surf_file);
+  synchro->io.host = host;
+  synchro->io.surf_io = surf_workstation_close(host, fd->surf_file);
 
-  surf_action_set_data(action->io.surf_io, action);
-  XBT_DEBUG("Create io action %p", action);
+  surf_action_set_data(synchro->io.surf_io, synchro);
+  XBT_DEBUG("Create io synchro %p", synchro);
 
-  return action;
+  return synchro;
 }
 
 
@@ -313,16 +313,16 @@ const char* SIMIX_storage_get_host(smx_storage_t storage){
   return surf_storage_get_host(storage);
 }
 
-void SIMIX_post_io(smx_action_t action)
+void SIMIX_post_io(smx_synchro_t synchro)
 {
   xbt_fifo_item_t i;
   smx_simcall_t simcall;
 
-  xbt_fifo_foreach(action->simcalls,i,simcall,smx_simcall_t) {
+  xbt_fifo_foreach(synchro->simcalls,i,simcall,smx_simcall_t) {
     switch (simcall->call) {
     case SIMCALL_FILE_OPEN: {
       smx_file_t tmp = xbt_new(s_smx_file_t,1);
-      tmp->surf_file = surf_storage_action_get_file(action->io.surf_io);
+      tmp->surf_file = surf_storage_action_get_file(synchro->io.surf_io);
       simcall_file_open__set__result(simcall, tmp);
       break;
     }
@@ -331,11 +331,11 @@ void SIMIX_post_io(smx_action_t action)
       simcall_file_close__set__result(simcall, 0);
       break;
     case SIMCALL_FILE_WRITE:
-      simcall_file_write__set__result(simcall, surf_action_get_cost(action->io.surf_io));
+      simcall_file_write__set__result(simcall, surf_action_get_cost(synchro->io.surf_io));
       break;
 
     case SIMCALL_FILE_READ:
-      simcall_file_read__set__result(simcall, surf_action_get_cost(action->io.surf_io));
+      simcall_file_read__set__result(simcall, surf_action_get_cost(synchro->io.surf_io));
       break;
 
     default:
@@ -343,14 +343,14 @@ void SIMIX_post_io(smx_action_t action)
     }
   }
 
-  switch (surf_action_get_state(action->io.surf_io)) {
+  switch (surf_action_get_state(synchro->io.surf_io)) {
 
     case SURF_ACTION_FAILED:
-      action->state = SIMIX_FAILED;
+      synchro->state = SIMIX_FAILED;
       break;
 
     case SURF_ACTION_DONE:
-      action->state = SIMIX_DONE;
+      synchro->state = SIMIX_DONE;
       break;
 
     default:
@@ -358,28 +358,28 @@ void SIMIX_post_io(smx_action_t action)
       break;
   }
 
-  SIMIX_io_finish(action);
+  SIMIX_io_finish(synchro);
 }
 
-void SIMIX_io_destroy(smx_action_t action)
+void SIMIX_io_destroy(smx_synchro_t synchro)
 {
-  XBT_DEBUG("Destroy action %p", action);
-  if (action->io.surf_io)
-    surf_action_unref(action->io.surf_io);
-  xbt_mallocator_release(simix_global->action_mallocator, action);
+  XBT_DEBUG("Destroy synchro %p", synchro);
+  if (synchro->io.surf_io)
+    surf_action_unref(synchro->io.surf_io);
+  xbt_mallocator_release(simix_global->synchro_mallocator, synchro);
 }
 
-void SIMIX_io_finish(smx_action_t action)
+void SIMIX_io_finish(smx_synchro_t synchro)
 {
   xbt_fifo_item_t item;
   smx_simcall_t simcall;
 
-  xbt_fifo_foreach(action->simcalls, item, simcall, smx_simcall_t) {
+  xbt_fifo_foreach(synchro->simcalls, item, simcall, smx_simcall_t) {
 
-    switch (action->state) {
+    switch (synchro->state) {
 
       case SIMIX_DONE:
-        /* do nothing, action done */
+        /* do nothing, synchro done */
         break;
 
       case SIMIX_FAILED:
@@ -391,18 +391,18 @@ void SIMIX_io_finish(smx_action_t action)
         break;
 
       default:
-        xbt_die("Internal error in SIMIX_io_finish: unexpected action state %d",
-            (int)action->state);
+        xbt_die("Internal error in SIMIX_io_finish: unexpected synchro state %d",
+            (int)synchro->state);
     }
 
     if (surf_resource_get_state(surf_workstation_resource_priv(simcall->issuer->smx_host)) != SURF_RESOURCE_ON) {
       simcall->issuer->context->iwannadie = 1;
     }
 
-    simcall->issuer->waiting_action = NULL;
+    simcall->issuer->waiting_synchro = NULL;
     SIMIX_simcall_answer(simcall);
   }
 
   /* We no longer need it */
-  SIMIX_io_destroy(action);
+  SIMIX_io_destroy(synchro);
 }

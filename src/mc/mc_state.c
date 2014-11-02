@@ -83,7 +83,7 @@ void MC_state_set_executed_request(mc_state_t state, smx_simcall_t req,
     state->internal_req.issuer = req->issuer;
     state->internal_comm =
         *xbt_dynar_get_as(simcall_comm_waitany__get__comms(req), value,
-                          smx_action_t);
+                          smx_synchro_t);
     simcall_comm_wait__set__comm(&state->internal_req, &state->internal_comm);
     simcall_comm_wait__set__timeout(&state->internal_req, 0);
     break;
@@ -95,7 +95,7 @@ void MC_state_set_executed_request(mc_state_t state, smx_simcall_t req,
     if (value > 0)
       state->internal_comm =
           *xbt_dynar_get_as(simcall_comm_testany__get__comms(req), value,
-                            smx_action_t);
+                            smx_synchro_t);
 
     simcall_comm_test__set__comm(&state->internal_req, &state->internal_comm);
     simcall_comm_test__set__result(&state->internal_req, value);
@@ -150,7 +150,7 @@ smx_simcall_t MC_state_get_request(mc_state_t state, int *value)
   smx_process_t process = NULL;
   mc_procstate_t procstate = NULL;
   unsigned int start_count;
-  smx_action_t act = NULL;
+  smx_synchro_t act = NULL;
 
   xbt_swag_foreach(process, simix_global->process_list) {
     procstate = &state->proc_status[process->pid];

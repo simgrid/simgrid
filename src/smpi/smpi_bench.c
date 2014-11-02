@@ -153,7 +153,7 @@ void smpi_execute_(double *duration)
 }
 
 void smpi_execute_flops(double flops) {
-  smx_action_t action;
+  smx_synchro_t action;
   smx_host_t host;
   host = SIMIX_host_self();
   XBT_DEBUG("Handle real computation time: %f flops", flops);

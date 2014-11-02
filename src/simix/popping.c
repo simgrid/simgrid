@@ -29,33 +29,33 @@ void SIMIX_simcall_answer(smx_simcall_t simcall)
   }
 }
 
-void SIMIX_simcall_exit(smx_action_t action)
+void SIMIX_simcall_exit(smx_synchro_t synchro)
 {
-  switch (action->type) {
+  switch (synchro->type) {
 
-    case SIMIX_ACTION_EXECUTE:
-    case SIMIX_ACTION_PARALLEL_EXECUTE:
-      SIMIX_post_host_execute(action);
+    case SIMIX_SYNC_EXECUTE:
+    case SIMIX_SYNC_PARALLEL_EXECUTE:
+      SIMIX_post_host_execute(synchro);
       break;
 
-    case SIMIX_ACTION_COMMUNICATE:
-      SIMIX_post_comm(action);
+    case SIMIX_SYNC_COMMUNICATE:
+      SIMIX_post_comm(synchro);
       break;
 
-    case SIMIX_ACTION_SLEEP:
-      SIMIX_post_process_sleep(action);
+    case SIMIX_SYNC_SLEEP:
+      SIMIX_post_process_sleep(synchro);
       break;
 
-    case SIMIX_ACTION_JOIN:
-      SIMIX_post_process_sleep(action);
+    case SIMIX_SYNC_JOIN:
+      SIMIX_post_process_sleep(synchro);
       break;
 
-    case SIMIX_ACTION_SYNCHRO:
-      SIMIX_post_synchro(action);
+    case SIMIX_SYNC_SYNCHRO:
+      SIMIX_post_synchro(synchro);
       break;
 
-    case SIMIX_ACTION_IO:
-      SIMIX_post_io(action);
+    case SIMIX_SYNC_IO:
+      SIMIX_post_io(synchro);
       break;
   }
 }
