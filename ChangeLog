@@ -6,9 +6,21 @@ SimGrid (3.12) NOT RELEASED; urgency=low
  jMSG:
  * Interface improvement:
    - Rename Host.isAvail() to Host.isOn()
+   
  SIMIX:
  * New functions
    - SIMIX_process_throw: raises an exception in a remote process
+ * Refactoring: Separate submodules
+   - libsmx: the public interface, as libc in a real system
+   - popping: the strange dance that converts a user request into a kernel handling
+   - smx_context_*: the virtualization mechanisms that embeed the user code
+   - smx_*: the handling of each simcalls
+ * Rename smx_action_t into smx_synchro_t, making explicit that these
+   things are used to synchronize processes with their environment.    
+   For example, a communication is a sort of synchronization involving
+   the communicating processes (that may block until the exchange) and
+   the platform. The same can be said from computations, etc.
+   
  SMPI: 
  * New functions
    - Onesided early support for : MPI_Win_(create, free, fence, get_name, set_name, get_group), MPI_Get, MPI_Put, MPI_Accumulate, MPI_Alloc_mem, MPI_Free_mem. 
