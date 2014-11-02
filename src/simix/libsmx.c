@@ -1,10 +1,14 @@
-/* smx_user.c - public interface to simix                                   */
+/* libsmx.c - public interface to simix                                       */
+/* --------                                                                   */
+/* These functions are the only ones that are visible from the higher levels  */
+/* (most of them simply add some documentation to the generated simcall body) */
+/*                                                                            */
+/* This is somehow the "libc" of SimGrid                                      */
 
-/* Copyright (c) 2010-2014. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2010-2014. The SimGrid Team. All rights reserved.            */
 
 /* This program is free software; you can redistribute it and/or modify it
- * under the terms of the license (GNU LGPL) which comes with this package. */
+ * under the terms of the license (GNU LGPL) which comes with this package.   */
 
 #include "smx_private.h"
 #include "mc/mc_interface.h"

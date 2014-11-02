@@ -362,6 +362,7 @@ set(SIMIX_GENERATED_SRC
   src/simix/popping_generated.c
   )
 set(SIMIX_SRC
+  src/simix/libsmx.c
   src/simix/smx_context.c
   src/simix/smx_context_base.c
   src/simix/smx_context_raw.c
@@ -373,7 +374,6 @@ set(SIMIX_SRC
   src/simix/smx_network.c
   src/simix/smx_process.c
   src/simix/smx_synchro.c
-  src/simix/smx_user.c
   src/simix/smx_vm.c
   src/simix/popping.c
   ${SIMIX_GENERATED_SRC}
