@@ -91,19 +91,18 @@ class Simcall(object):
     return '  SIMCALL_%s,'%(self.name.upper())
 
   def string(self):
-    return '[SIMCALL_%s] = "SIMCALL_%s",'%(self.name.upper(), self.name.upper())	
+    return '  [SIMCALL_%s] = "SIMCALL_%s",'%(self.name.upper(), self.name.upper())	
 
   def accessors(self):
     res = []
+    res.append('')
     # Arguments getter/setters
     for i in range(len(self.args)):
         arg = self.args[i]
-        res.append('')
-        res.append('static inline %s simcall_%s__get__%s(smx_simcall_t simcall){'%(arg.rettype(), self.name, arg.name))
+        res.append('static inline %s simcall_%s__get__%s(smx_simcall_t simcall) {'%(arg.rettype(), self.name, arg.name))
         res.append('  return %s simcall->args[%i].%s;'%(arg.cast(), i, arg.field()))
         res.append('}')
-        res.append('')
-        res.append('static inline void simcall_%s__set__%s(smx_simcall_t simcall, %s arg){'%(self.name, arg.name, arg.type))
+        res.append('static inline void simcall_%s__set__%s(smx_simcall_t simcall, %s arg) {'%(self.name, arg.name, arg.type))
         res.append('    simcall->args[%i].%s = arg;'%(i, arg.field()))
         res.append('}')
       
