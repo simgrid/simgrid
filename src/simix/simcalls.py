@@ -48,11 +48,11 @@ class Arg(object):
 class Simcall(object):
   simcalls_BODY = None
   simcalls_PRE = None
-  def __init__(self, name, res, args, has_answer=True):
+  def __init__(self, name, res, args, call_kind):
     self.name = name
     self.res = res
     self.args = args
-    self.has_answer = has_answer
+    self.call_kind = call_kind
 
   def check(self):
       # libsmx.c  simcall_BODY_
@@ -121,11 +121,11 @@ class Simcall(object):
       %ssimcall_HANDLER_%s(simcall %s);
       %sbreak;  
 '''%(self.name.upper(), 
-     'simcall->result.%s = '%self.res.field() if self.res.type != 'void' and self.has_answer else ' ',
+     'simcall->result.%s = '%self.res.field() if self.call_kind == 'Func' else ' ',
      self.name,
      ''.join(', %s simcall->args[%d].%s'%(arg.cast(), i, arg.field()) 
              for i, arg in enumerate(self.args)),
-     'SIMIX_simcall_answer(simcall);\n      ' if self.has_answer else ' ')
+     'SIMIX_simcall_answer(simcall);\n      ' if self.call_kind != 'Blck' else ' ')
 
   def body(self):
     return '''  
@@ -160,7 +160,7 @@ inline static %s simcall_BODY_%s(%s) {
        ,'' if self.res.type == 'void' else 'return self->simcall.result.%s;'%self.res.field())
   
   def handler_prototype(self):
-      return "%s simcall_HANDLER_%s(smx_simcall_t simcall%s);"%(self.res.rettype() if self.has_answer else 'void', self.name, ''.join(', %s %s'%(arg.rettype(), arg.name) 
+      return "%s simcall_HANDLER_%s(smx_simcall_t simcall%s);"%(self.res.rettype() if self.call_kind == 'Func' else 'void', self.name, ''.join(', %s %s'%(arg.rettype(), arg.name) 
              for i, arg in enumerate(self.args)))
 
 def parse(fn):
@@ -175,11 +175,12 @@ def parse(fn):
       continue
     match = re.match(r'(\S*?) *(\S*?) *\((.*?)(?:, *(.*?))?\) *(.*)', line)
     assert match, line
-    name, ans, rest, resc, args = match.groups()
+    ans, name, rest, resc, args = match.groups()
+    assert (ans == 'Proc' or ans == 'Func' or ans == 'Blck'),"Invalid call type: '%s'. Faulty line:\n%s\n"%(ans,line)
     sargs = []
     for n,t,c in re.findall(r'\((.*?), *(.*?)(?:, *(.*?))?\)', args):
       sargs.append(Arg(n,t,c))
-    sim = Simcall(name, Arg('result', rest, resc), sargs, ans == 'True')
+    sim = Simcall(name, Arg('result', rest, resc), sargs, ans)
     if resdi is None:
       simcalls.append(sim)
     else:

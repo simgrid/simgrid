@@ -131,8 +131,12 @@ The workflow of a simcall is the following:
   - If not, call `SIMIX_process_yield` to give back the control to maestro
   - ========== KERNEL MODE ==========
   - `SIMIX_simcall_handle` large switch (on simcall) doing for each:
-   - `simcall_HANDLER_<name>(simcall, <args>)`
-   - `SIMIX_simcall_answer(simcall)`
+   - `simcall_HANDLER_<name>(simcall, <args>)` (the manual code handling the simcall)
+   - If the simcall is not marked as "blocking" in its definition,
+     call `SIMIX_simcall_answer(simcall)` that adds back the issuer
+     process to the list of processes to run in the next scheduling round.
+     It is thus the responsability of the blocking simcalls to call
+     `SIMIX_simcall_answer(simcall)` themselves in their handler.
 
 To simplify the simcall creation, a python script generates most of
 the code and give helpers for the remaining stuff. That script reads
