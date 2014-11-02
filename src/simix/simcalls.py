@@ -48,10 +48,11 @@ class Arg(object):
 class Simcall(object):
   simcalls_BODY = None
   simcalls_PRE = None
-  def __init__(self, name, res, args, call_kind):
+  def __init__(self, name, handler, res, args, call_kind):
     self.name = name
     self.res = res
     self.args = args
+    self.need_handler = handler
     self.call_kind = call_kind
 
   def check(self):
@@ -75,16 +76,22 @@ class Simcall(object):
             f = open(fn)
             self.simcalls_PRE |= set(re.findall('simcall_HANDLER_(.*?)\(', f.read()))
             f.close()
-      if self.name not in self.simcalls_PRE:
-          print '# ERROR: No function called simcall_HANDLER_%s'%self.name
-          print '# Add something like this to the relevant C file (like smx_io.c if it\'s an IO call):'
-          print '%s simcall_HANDLER_%s(smx_simcall_t simcall%s) {'%(self.res.rettype()
-                                                                    ,self.name                                               
-                                                                    ,''.join(', %s %s'%(arg.rettype(), arg.name)
+      if self.need_handler:
+          if (self.name not in self.simcalls_PRE):
+              print '# ERROR: No function called simcall_HANDLER_%s'%self.name
+              print '# Add something like this to the relevant C file (like smx_io.c if it\'s an IO call):'
+              print '%s simcall_HANDLER_%s(smx_simcall_t simcall%s) {'%(self.res.rettype()
+                                                                        ,self.name                                               
+                                                                        ,''.join(', %s %s'%(arg.rettype(), arg.name)
                                                                              for arg in self.args))
-          print '  // Your code handling the simcall'
-          print '}'
-          return False
+              print '  // Your code handling the simcall'
+              print '}'
+              return False
+      else:
+          if (self.name in self.simcalls_PRE):
+              print '# ERROR: You have a function called simcall_HANDLER_%s, but that simcall is not using any handler'%self.name
+              print '# Either change your simcall definition, or kill that function'
+              return False
       return True
 
   def enum(self):
@@ -117,51 +124,65 @@ class Simcall(object):
     return '\n'.join(res)
 
   def case(self):
-    return '''case SIMCALL_%s:
-      %ssimcall_HANDLER_%s(simcall %s);
-      %sbreak;  
-'''%(self.name.upper(), 
-     'simcall->result.%s = '%self.res.field() if self.call_kind == 'Func' else ' ',
-     self.name,
-     ''.join(', %s simcall->args[%d].%s'%(arg.cast(), i, arg.field()) 
-             for i, arg in enumerate(self.args)),
-     'SIMIX_simcall_answer(simcall);\n      ' if self.call_kind != 'Blck' else ' ')
+      res = []
+      res.append('case SIMCALL_%s:'%(self.name.upper()))
+      if self.need_handler:
+          res.append('      %ssimcall_HANDLER_%s(simcall %s);'%('simcall->result.%s = '%self.res.field() if self.call_kind == 'Func' else ' ',
+                                                                self.name,
+                                                                ''.join(', %s simcall->args[%d].%s'%(arg.cast(), i, arg.field()) 
+                                                                        for i, arg in enumerate(self.args))))
+      else:
+          res.append('      %ssimcall_%s(%s);'%('simcall->result.%s = '%self.res.field() if self.call_kind == 'Func' else ' ',
+                                                self.name,  
+                                                ','.join('%s simcall->args[%d].%s'%(arg.cast(), i, arg.field()) 
+                                                         for i, arg in enumerate(self.args))))
+      res.append('      %sbreak;  \n'%('SIMIX_simcall_answer(simcall);\n      ' if self.call_kind != 'Blck' else ' '))  
+      return '\n'.join(res)
 
   def body(self):
-    return '''  
-inline static %s simcall_BODY_%s(%s) {
-    smx_process_t self = SIMIX_process_self();
+      res = ['  ']
+      res.append('inline static %s simcall_BODY_%s(%s) {'%(self.res.rettype(),
+                                                           self.name,
+                                                           ', '.join('%s %s'%(arg.rettype(), arg.name) for arg in self.args)))
+      res.append('    smx_process_t self = SIMIX_process_self();')
+      res.append('')
+      res.append('    /* Go to that function to follow the code flow through the simcall barrier */')
+      if self.need_handler:
+          res.append('    if (0) simcall_HANDLER_%s(%s);'%(self.name,
+                                                           ', '.join(["&self->simcall"]+ [arg.name for arg in self.args])))
+      else:
+          res.append('    if (0) simcall_%s(%s);'%(self.name,
+                                                   ', '.join(arg.name for arg in self.args)))
+      res.append('    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */')
+      res.append('')
+      res.append('    self->simcall.call = SIMCALL_%s;'%(self.name.upper()))
+      res.append('    memset(&self->simcall.result, 0, sizeof(self->simcall.result));')
+      res.append('    memset(self->simcall.args, 0, sizeof(self->simcall.args));')
+      res.append('\n'.join('    self->simcall.args[%d].%s = (%s) %s;'%(i, arg.field(), arg.type, arg.name)
+                  for i, arg in enumerate(self.args)))
+      res.append('    if (self != simix_global->maestro_process) {')
+      res.append('      XBT_DEBUG("Yield process \'%s\' on simcall %s (%d)", self->name,')
+      res.append('                SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);')
+      res.append('      SIMIX_process_yield(self);')
+      res.append('    } else {')
+      res.append('      SIMIX_simcall_handle(&self->simcall, 0);')
+      res.append('    }    ')   
+      if self.res.type != 'void':
+          res.append('    return self->simcall.result.%s;'%self.res.field())
+      else:
+          res.append('    ')
+      res.append('  }')
+      return '\n'.join(res)
 
-    /* Go to that function to follow the code flow through the simcall barrier */
-    if (0) simcall_HANDLER_%s(%s);
-    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
-
-    self->simcall.call = SIMCALL_%s;
-    memset(&self->simcall.result, 0, sizeof(self->simcall.result));
-    memset(self->simcall.args, 0, sizeof(self->simcall.args));
-%s
-    if (self != simix_global->maestro_process) {
-      XBT_DEBUG("Yield process '%%s' on simcall %%s (%%d)", self->name,
-                SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
-      SIMIX_process_yield(self);
-    } else {
-      SIMIX_simcall_handle(&self->simcall, 0);
-    }    
-    %s
-  }'''%(self.res.rettype()
-       ,self.name
-       ,', '.join('%s %s'%(arg.rettype(), arg.name)
-                  for arg in self.args)
-       ,self.name
-       ,', '.join(["&self->simcall"]+ [arg.name for arg in self.args])
-       ,self.name.upper()
-       ,'\n'.join('    self->simcall.args[%d].%s = (%s) %s;'%(i, arg.field(), arg.type, arg.name)
-                  for i, arg in enumerate(self.args))
-       ,'' if self.res.type == 'void' else 'return self->simcall.result.%s;'%self.res.field())
-  
+      
   def handler_prototype(self):
-      return "%s simcall_HANDLER_%s(smx_simcall_t simcall%s);"%(self.res.rettype() if self.call_kind == 'Func' else 'void', self.name, ''.join(', %s %s'%(arg.rettype(), arg.name) 
-             for i, arg in enumerate(self.args)))
+      if self.need_handler:
+          return "%s simcall_HANDLER_%s(smx_simcall_t simcall%s);"%(self.res.rettype() if self.call_kind == 'Func' else 'void', 
+                                                                    self.name, 
+                                                                    ''.join(', %s %s'%(arg.rettype(), arg.name) 
+                    for i, arg in enumerate(self.args)))
+      else:
+          return ""
 
 def parse(fn):
   simcalls = []
@@ -173,14 +194,15 @@ def parse(fn):
       simcalls_guarded[re.search(r'## *(.*)', line).group(1)] = resdi
     if line.startswith('#') or not line:
       continue
-    match = re.match(r'(\S*?) *(\S*?) *\((.*?)(?:, *(.*?))?\) *(.*)', line)
+    match = re.match(r'(\S*?) *(\S*?) *(\S*?) *\((.*?)(?:, *(.*?))?\) *(.*)', line)
     assert match, line
-    ans, name, rest, resc, args = match.groups()
+    ans, handler, name, rest, resc, args = match.groups()
     assert (ans == 'Proc' or ans == 'Func' or ans == 'Blck'),"Invalid call type: '%s'. Faulty line:\n%s\n"%(ans,line)
+    assert (handler == 'H' or handler == '-'),"Invalid need_handler indication: '%s'. Faulty line:\n%s\n"%(handler,line)
     sargs = []
     for n,t,c in re.findall(r'\((.*?), *(.*?)(?:, *(.*?))?\)', args):
       sargs.append(Arg(n,t,c))
-    sim = Simcall(name, Arg('result', rest, resc), sargs, ans)
+    sim = Simcall(name, handler=='H', Arg('result', rest, resc), sargs, ans)
     if resdi is None:
       simcalls.append(sim)
     else:

@@ -168,9 +168,6 @@ void simcall_HANDLER_mutex_lock(smx_simcall_t simcall, smx_mutex_t mutex)
   XBT_OUT();
 }
 
-int simcall_HANDLER_mutex_trylock(smx_simcall_t simcall, smx_mutex_t mutex){
-  return SIMIX_mutex_trylock(mutex, simcall->issuer);
-}	
 /**
  * \brief Tries to lock a mutex.
  *

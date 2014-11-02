@@ -1948,7 +1948,7 @@ inline static int simcall_BODY_mutex_trylock(smx_mutex_t mutex) {
     smx_process_t self = SIMIX_process_self();
 
     /* Go to that function to follow the code flow through the simcall barrier */
-    if (0) simcall_HANDLER_mutex_trylock(&self->simcall, mutex);
+    if (0) simcall_mutex_trylock(mutex);
     /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
 
     self->simcall.call = SIMCALL_MUTEX_TRYLOCK;

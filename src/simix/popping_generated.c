@@ -597,7 +597,7 @@ case SIMCALL_MUTEX_LOCK:
        break;  
 
 case SIMCALL_MUTEX_TRYLOCK:
-      simcall->result.i = simcall_HANDLER_mutex_trylock(simcall , (smx_mutex_t) simcall->args[0].dp);
+      simcall->result.i = simcall_mutex_trylock((smx_mutex_t) simcall->args[0].dp);
       SIMIX_simcall_answer(simcall);
       break;  
 

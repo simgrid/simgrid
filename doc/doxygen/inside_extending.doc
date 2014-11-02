@@ -138,6 +138,12 @@ The workflow of a simcall is the following:
      It is thus the responsability of the blocking simcalls to call
      `SIMIX_simcall_answer(simcall)` themselves in their handler.
 
+Note that empty HANDLERs can be omitted. These functions usually do
+some parameter checking, or retrieve some information about the
+simcall issuer, but when there no need for such things, the handler
+can be omited. In that case, we directly call the function
+`simcall_<name>(<args>)`.
+
 To simplify the simcall creation, a python script generates most of
 the code and give helpers for the remaining stuff. That script reads
 the simcall definitions from src/simix/simcalls.in, checks that both

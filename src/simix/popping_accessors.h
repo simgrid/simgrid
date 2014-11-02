@@ -1970,7 +1970,7 @@ smx_process_t simcall_HANDLER_comm_get_dst_proc(smx_simcall_t simcall, smx_synch
 smx_mutex_t simcall_HANDLER_mutex_init(smx_simcall_t simcall);
 void simcall_HANDLER_mutex_destroy(smx_simcall_t simcall, smx_mutex_t mutex);
 void simcall_HANDLER_mutex_lock(smx_simcall_t simcall, smx_mutex_t mutex);
-int simcall_HANDLER_mutex_trylock(smx_simcall_t simcall, smx_mutex_t mutex);
+
 void simcall_HANDLER_mutex_unlock(smx_simcall_t simcall, smx_mutex_t mutex);
 smx_cond_t simcall_HANDLER_cond_init(smx_simcall_t simcall);
 void simcall_HANDLER_cond_destroy(smx_simcall_t simcall, smx_cond_t cond);
