@@ -322,7 +322,7 @@ void MC_exit(void)
   //xbt_abort();
 }
 
-int SIMIX_pre_mc_random(smx_simcall_t simcall, int min, int max)
+int simcall_HANDLER_mc_random(smx_simcall_t simcall, int min, int max)
 {
 
   return simcall->mc_value;

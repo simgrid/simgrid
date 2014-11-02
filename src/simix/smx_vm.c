@@ -34,7 +34,7 @@ smx_host_t SIMIX_vm_create(const char *name, smx_host_t ind_phys_host)
 }
 
 
-smx_host_t SIMIX_pre_vm_create(smx_simcall_t simcall, const char *name, smx_host_t ind_phys_host)
+smx_host_t simcall_HANDLER_vm_create(smx_simcall_t simcall, const char *name, smx_host_t ind_phys_host)
 {
   return SIMIX_vm_create(name, ind_phys_host);
 }
@@ -104,7 +104,7 @@ void SIMIX_vm_start(smx_host_t ind_vm)
 
 
 
-void SIMIX_pre_vm_start(smx_simcall_t simcall, smx_host_t ind_vm)
+void simcall_HANDLER_vm_start(smx_simcall_t simcall, smx_host_t ind_vm)
 {
   SIMIX_vm_start(ind_vm);
 }
@@ -114,7 +114,7 @@ int SIMIX_vm_get_state(smx_host_t ind_vm)
   return surf_resource_get_state(surf_workstation_resource_priv(ind_vm));
 }
 
-int SIMIX_pre_vm_get_state(smx_simcall_t simcall, smx_host_t ind_vm)
+int simcall_HANDLER_vm_get_state(smx_simcall_t simcall, smx_host_t ind_vm)
 {
   return SIMIX_vm_get_state(ind_vm);
 }
@@ -134,7 +134,7 @@ void SIMIX_vm_migrate(smx_host_t ind_vm, smx_host_t ind_dst_pm)
   surf_vm_workstation_migrate(ind_vm, ind_dst_pm);
 }
 
-void SIMIX_pre_vm_migrate(smx_simcall_t simcall, smx_host_t ind_vm, smx_host_t ind_dst_pm)
+void simcall_HANDLER_vm_migrate(smx_simcall_t simcall, smx_host_t ind_vm, smx_host_t ind_dst_pm)
 {
   SIMIX_vm_migrate(ind_vm, ind_dst_pm);
 }
@@ -151,7 +151,7 @@ void *SIMIX_vm_get_pm(smx_host_t ind_vm)
   return surf_vm_workstation_get_pm(ind_vm);
 }
 
-void *SIMIX_pre_vm_get_pm(smx_simcall_t simcall, smx_host_t ind_vm)
+void *simcall_HANDLER_vm_get_pm(smx_simcall_t simcall, smx_host_t ind_vm)
 {
   return SIMIX_vm_get_pm(ind_vm);
 }
@@ -169,7 +169,7 @@ void SIMIX_vm_set_bound(smx_host_t ind_vm, double bound)
   surf_vm_workstation_set_bound(ind_vm, bound);
 }
 
-void SIMIX_pre_vm_set_bound(smx_simcall_t simcall, smx_host_t ind_vm, double bound)
+void simcall_HANDLER_vm_set_bound(smx_simcall_t simcall, smx_host_t ind_vm, double bound)
 {
   SIMIX_vm_set_bound(ind_vm, bound);
 }
@@ -191,7 +191,7 @@ void SIMIX_vm_set_affinity(smx_host_t ind_vm, smx_host_t ind_pm, unsigned long m
   surf_vm_workstation_set_affinity(ind_vm, ind_pm, mask);
 }
 
-void SIMIX_pre_vm_set_affinity(smx_simcall_t simcall, smx_host_t ind_vm, smx_host_t ind_pm, unsigned long mask)
+void simcall_HANDLER_vm_set_affinity(smx_simcall_t simcall, smx_host_t ind_vm, smx_host_t ind_pm, unsigned long mask)
 {
   SIMIX_vm_set_affinity(ind_vm, ind_pm, mask);
 }
@@ -225,7 +225,7 @@ void SIMIX_vm_suspend(smx_host_t ind_vm, smx_process_t issuer)
   XBT_DEBUG("suspend all processes on the VM done done");
 }
 
-void SIMIX_pre_vm_suspend(smx_simcall_t simcall, smx_host_t ind_vm)
+void simcall_HANDLER_vm_suspend(smx_simcall_t simcall, smx_host_t ind_vm)
 {
   if (simcall->issuer->smx_host == ind_vm) {
     XBT_ERROR("cannot suspend the VM where I run");
@@ -234,7 +234,7 @@ void SIMIX_pre_vm_suspend(smx_simcall_t simcall, smx_host_t ind_vm)
 
   SIMIX_vm_suspend(ind_vm, simcall->issuer);
 
-  XBT_DEBUG("SIMIX_pre_vm_suspend done");
+  XBT_DEBUG("simcall_HANDLER_vm_suspend done");
 }
 
 
@@ -263,7 +263,7 @@ void SIMIX_vm_resume(smx_host_t ind_vm, smx_process_t issuer)
   }
 }
 
-void SIMIX_pre_vm_resume(smx_simcall_t simcall, smx_host_t ind_vm)
+void simcall_HANDLER_vm_resume(smx_simcall_t simcall, smx_host_t ind_vm)
 {
   SIMIX_vm_resume(ind_vm, simcall->issuer);
 }
@@ -296,7 +296,7 @@ void SIMIX_vm_save(smx_host_t ind_vm, smx_process_t issuer)
   }
 }
 
-void SIMIX_pre_vm_save(smx_simcall_t simcall, smx_host_t ind_vm)
+void simcall_HANDLER_vm_save(smx_simcall_t simcall, smx_host_t ind_vm)
 {
   SIMIX_vm_save(ind_vm, simcall->issuer);
 }
@@ -327,7 +327,7 @@ void SIMIX_vm_restore(smx_host_t ind_vm, smx_process_t issuer)
   }
 }
 
-void SIMIX_pre_vm_restore(smx_simcall_t simcall, smx_host_t ind_vm)
+void simcall_HANDLER_vm_restore(smx_simcall_t simcall, smx_host_t ind_vm)
 {
   SIMIX_vm_restore(ind_vm, simcall->issuer);
 }
@@ -361,7 +361,7 @@ void SIMIX_vm_shutdown(smx_host_t ind_vm, smx_process_t issuer)
                           (int)SURF_VM_STATE_CREATED);
 }
 
-void SIMIX_pre_vm_shutdown(smx_simcall_t simcall, smx_host_t ind_vm)
+void simcall_HANDLER_vm_shutdown(smx_simcall_t simcall, smx_host_t ind_vm)
 {
   SIMIX_vm_shutdown(ind_vm, simcall->issuer);
 }
@@ -388,7 +388,7 @@ void SIMIX_vm_destroy(smx_host_t ind_vm)
   surf_vm_workstation_destroy(ind_vm);
 }
 
-void SIMIX_pre_vm_destroy(smx_simcall_t simcall, smx_host_t ind_vm)
+void simcall_HANDLER_vm_destroy(smx_simcall_t simcall, smx_host_t ind_vm)
 {
   SIMIX_vm_destroy(ind_vm);
 }

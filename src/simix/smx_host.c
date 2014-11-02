@@ -37,7 +37,7 @@ smx_host_t SIMIX_host_create(const char *name,
   return xbt_lib_get_elm_or_null(host_lib, name);
 }
 
-void SIMIX_pre_host_on(smx_simcall_t simcall, smx_host_t h)
+void simcall_HANDLER_host_on(smx_simcall_t simcall, smx_host_t h)
 {
   SIMIX_host_on(h);
 }
@@ -93,7 +93,7 @@ void SIMIX_host_on(smx_host_t h)
   }
 }
 
-void SIMIX_pre_host_off(smx_simcall_t simcall, smx_host_t h)
+void simcall_HANDLER_host_off(smx_simcall_t simcall, smx_host_t h)
 {
   SIMIX_host_off(h, simcall->issuer);
 }
@@ -182,7 +182,7 @@ void SIMIX_host_destroy(void *h)
 //  }
 //  return host_dict;
 //}
-smx_host_t SIMIX_pre_host_get_by_name(smx_simcall_t simcall, const char *name){
+smx_host_t simcall_HANDLER_host_get_by_name(smx_simcall_t simcall, const char *name){
    return SIMIX_host_get_by_name(name);
 }
 smx_host_t SIMIX_host_get_by_name(const char *name){
@@ -199,7 +199,7 @@ smx_host_t SIMIX_host_self(void)
   return (process == NULL) ? NULL : SIMIX_process_get_host(process);
 }
 
-const char* SIMIX_pre_host_self_get_name(smx_simcall_t simcall){
+const char* simcall_HANDLER_host_self_get_name(smx_simcall_t simcall){
    return SIMIX_host_self_get_name();
 }
 /* needs to be public and without simcall because it is called
@@ -213,7 +213,7 @@ const char* SIMIX_host_self_get_name(void)
   return SIMIX_host_get_name(host);
 }
 
-const char* SIMIX_pre_host_get_name(smx_simcall_t simcall, smx_host_t host){
+const char* simcall_HANDLER_host_get_name(smx_simcall_t simcall, smx_host_t host){
    return SIMIX_host_get_name(host);
 }
 const char* SIMIX_host_get_name(smx_host_t host){
@@ -222,7 +222,7 @@ const char* SIMIX_host_get_name(smx_host_t host){
   return sg_host_name(host);
 }
 
-xbt_dict_t SIMIX_pre_host_get_properties(smx_simcall_t simcall, smx_host_t host){
+xbt_dict_t simcall_HANDLER_host_get_properties(smx_simcall_t simcall, smx_host_t host){
   return SIMIX_host_get_properties(host);
 }
 xbt_dict_t SIMIX_host_get_properties(smx_host_t host){
@@ -231,7 +231,7 @@ xbt_dict_t SIMIX_host_get_properties(smx_host_t host){
   return surf_resource_get_properties(surf_workstation_resource_priv(host));
 }
 
-double SIMIX_pre_host_get_speed(smx_simcall_t simcall, smx_host_t host){
+double simcall_HANDLER_host_get_speed(smx_simcall_t simcall, smx_host_t host){
   return SIMIX_host_get_speed(host);
 }
 double SIMIX_host_get_speed(smx_host_t host){
@@ -239,7 +239,7 @@ double SIMIX_host_get_speed(smx_host_t host){
   return surf_workstation_get_speed(host, 1.0);
 }
 
-int SIMIX_pre_host_get_core(smx_simcall_t simcall, smx_host_t host){
+int simcall_HANDLER_host_get_core(smx_simcall_t simcall, smx_host_t host){
   return SIMIX_host_get_core(host);
 }
 int SIMIX_host_get_core(smx_host_t host){
@@ -248,7 +248,7 @@ int SIMIX_host_get_core(smx_host_t host){
   return surf_workstation_get_core(host);
 }
 
-xbt_swag_t SIMIX_pre_host_get_process_list(smx_simcall_t simcall, smx_host_t host){
+xbt_swag_t simcall_HANDLER_host_get_process_list(smx_simcall_t simcall, smx_host_t host){
   return SIMIX_host_get_process_list(host);
 }
 
@@ -260,7 +260,7 @@ xbt_swag_t SIMIX_host_get_process_list(smx_host_t host){
 }
 
 
-double SIMIX_pre_host_get_available_speed(smx_simcall_t simcall, smx_host_t host){
+double simcall_HANDLER_host_get_available_speed(smx_simcall_t simcall, smx_host_t host){
   return SIMIX_host_get_available_speed(host);
 }
 double SIMIX_host_get_available_speed(smx_host_t host){
@@ -269,7 +269,7 @@ double SIMIX_host_get_available_speed(smx_host_t host){
   return surf_workstation_get_available_speed(host);
 }
 
-double SIMIX_pre_host_get_current_power_peak(smx_simcall_t simcall, smx_host_t host){
+double simcall_HANDLER_host_get_current_power_peak(smx_simcall_t simcall, smx_host_t host){
   return SIMIX_host_get_current_power_peak(host);
 }
 double SIMIX_host_get_current_power_peak(smx_host_t host) {
@@ -277,7 +277,7 @@ double SIMIX_host_get_current_power_peak(smx_host_t host) {
 	  return surf_workstation_get_current_power_peak(host);
 }
 
-double SIMIX_pre_host_get_power_peak_at(smx_simcall_t simcall, smx_host_t host, int pstate_index){
+double simcall_HANDLER_host_get_power_peak_at(smx_simcall_t simcall, smx_host_t host, int pstate_index){
   return SIMIX_host_get_power_peak_at(host, pstate_index);
 }
 double SIMIX_host_get_power_peak_at(smx_host_t host, int pstate_index) {
@@ -286,7 +286,7 @@ double SIMIX_host_get_power_peak_at(smx_host_t host, int pstate_index) {
 	  return surf_workstation_get_power_peak_at(host, pstate_index);
 }
 
-int SIMIX_pre_host_get_nb_pstates(smx_simcall_t simcall, smx_host_t host){
+int simcall_HANDLER_host_get_nb_pstates(smx_simcall_t simcall, smx_host_t host){
   return SIMIX_host_get_nb_pstates(host);
 }
 int SIMIX_host_get_nb_pstates(smx_host_t host) {
@@ -296,7 +296,7 @@ int SIMIX_host_get_nb_pstates(smx_host_t host) {
 }
 
 
-void SIMIX_pre_host_set_power_peak_at(smx_simcall_t simcall, smx_host_t host, int pstate_index){
+void simcall_HANDLER_host_set_power_peak_at(smx_simcall_t simcall, smx_host_t host, int pstate_index){
   SIMIX_host_set_power_peak_at(host, pstate_index);
 }
 void SIMIX_host_set_power_peak_at(smx_host_t host, int pstate_index) {
@@ -305,7 +305,7 @@ void SIMIX_host_set_power_peak_at(smx_host_t host, int pstate_index) {
 	  surf_workstation_set_power_peak_at(host, pstate_index);
 }
 
-double SIMIX_pre_host_get_consumed_energy(smx_simcall_t simcall, smx_host_t host){
+double simcall_HANDLER_host_get_consumed_energy(smx_simcall_t simcall, smx_host_t host){
   return SIMIX_host_get_consumed_energy(host);
 }
 double SIMIX_host_get_consumed_energy(smx_host_t host) {
@@ -313,7 +313,7 @@ double SIMIX_host_get_consumed_energy(smx_host_t host) {
 	  return surf_workstation_get_consumed_energy(host);
 }
 
-int SIMIX_pre_host_get_state(smx_simcall_t simcall, smx_host_t host){
+int simcall_HANDLER_host_get_state(smx_simcall_t simcall, smx_host_t host){
   return SIMIX_host_get_state(host);
 }
 int SIMIX_host_get_state(smx_host_t host){
@@ -436,7 +436,7 @@ void SIMIX_host_autorestart(smx_host_t host)
     xbt_die("No function for simix_global->autorestart");
 }
 
-smx_action_t SIMIX_pre_host_execute(smx_simcall_t simcall,const char *name,
+smx_action_t simcall_HANDLER_host_execute(smx_simcall_t simcall,const char *name,
     smx_host_t host, double computation_amount, double priority, double bound, unsigned long affinity_mask){
   return SIMIX_host_execute(name, host, computation_amount, priority, bound, affinity_mask);
 }
@@ -481,7 +481,7 @@ smx_action_t SIMIX_host_execute(const char *name,
   return action;
 }
 
-smx_action_t SIMIX_pre_host_parallel_execute(smx_simcall_t simcall, const char *name,
+smx_action_t simcall_HANDLER_host_parallel_execute(smx_simcall_t simcall, const char *name,
     int host_nb, smx_host_t *host_list,
     double *computation_amount, double *communication_amount,
     double amount, double rate){
@@ -538,7 +538,7 @@ smx_action_t SIMIX_host_parallel_execute(const char *name,
   return action;
 }
 
-void SIMIX_pre_host_execution_destroy(smx_simcall_t simcall, smx_action_t action){
+void simcall_HANDLER_host_execution_destroy(smx_simcall_t simcall, smx_action_t action){
   SIMIX_host_execution_destroy(action);
 }
 void SIMIX_host_execution_destroy(smx_action_t action){
@@ -552,7 +552,7 @@ void SIMIX_host_execution_destroy(smx_action_t action){
   xbt_mallocator_release(simix_global->action_mallocator, action);
 }
 
-void SIMIX_pre_host_execution_cancel(smx_simcall_t simcall, smx_action_t action){
+void simcall_HANDLER_host_execution_cancel(smx_simcall_t simcall, smx_action_t action){
   SIMIX_host_execution_cancel(action);
 }
 void SIMIX_host_execution_cancel(smx_action_t action){
@@ -562,7 +562,7 @@ void SIMIX_host_execution_cancel(smx_action_t action){
     surf_action_cancel(action->execution.surf_exec);
 }
 
-double SIMIX_pre_host_execution_get_remains(smx_simcall_t simcall, smx_action_t action){
+double simcall_HANDLER_host_execution_get_remains(smx_simcall_t simcall, smx_action_t action){
   return SIMIX_host_execution_get_remains(action);
 }
 double SIMIX_host_execution_get_remains(smx_action_t action){
@@ -574,14 +574,14 @@ double SIMIX_host_execution_get_remains(smx_action_t action){
   return result;
 }
 
-e_smx_state_t SIMIX_pre_host_execution_get_state(smx_simcall_t simcall, smx_action_t action){
+e_smx_state_t simcall_HANDLER_host_execution_get_state(smx_simcall_t simcall, smx_action_t action){
   return SIMIX_host_execution_get_state(action);
 }
 e_smx_state_t SIMIX_host_execution_get_state(smx_action_t action){
   return action->state;
 }
 
-void SIMIX_pre_host_execution_set_priority(smx_simcall_t simcall, smx_action_t action,
+void simcall_HANDLER_host_execution_set_priority(smx_simcall_t simcall, smx_action_t action,
 		                        double priority){
   SIMIX_host_execution_set_priority(action, priority);
 }
@@ -591,7 +591,7 @@ void SIMIX_host_execution_set_priority(smx_action_t action, double priority){
 	surf_action_set_priority(action->execution.surf_exec, priority);
 }
 
-void SIMIX_pre_host_execution_set_bound(smx_simcall_t simcall, smx_action_t action,
+void simcall_HANDLER_host_execution_set_bound(smx_simcall_t simcall, smx_action_t action,
 		                        double bound){
   SIMIX_host_execution_set_bound(action, bound);
 }
@@ -601,7 +601,7 @@ void SIMIX_host_execution_set_bound(smx_action_t action, double bound){
 	surf_cpu_action_set_bound(action->execution.surf_exec, bound);
 }
 
-void SIMIX_pre_host_execution_set_affinity(smx_simcall_t simcall,
+void simcall_HANDLER_host_execution_set_affinity(smx_simcall_t simcall,
     smx_action_t action, smx_host_t host, unsigned long mask){
   SIMIX_host_execution_set_affinity(action, host, mask);
 }
@@ -615,7 +615,7 @@ void SIMIX_host_execution_set_affinity(smx_action_t action, smx_host_t host, uns
   }
 }
 
-void SIMIX_pre_host_execution_wait(smx_simcall_t simcall, smx_action_t action){
+void simcall_HANDLER_host_execution_wait(smx_simcall_t simcall, smx_action_t action){
 
   XBT_DEBUG("Wait for execution of action %p, state %d", action, (int)action->state);
 
@@ -720,7 +720,7 @@ void SIMIX_post_host_execute(smx_action_t action)
 
 
 #ifdef HAVE_TRACING
-void SIMIX_pre_set_category(smx_simcall_t simcall, smx_action_t action,
+void simcall_HANDLER_set_category(smx_simcall_t simcall, smx_action_t action,
 		            const char *category){
   SIMIX_set_category(action, category);
 }
@@ -747,7 +747,7 @@ void SIMIX_host_get_params(smx_host_t ind_vm, ws_params_t params)
   surf_workstation_get_params(ind_vm, params);
 }
 
-void SIMIX_pre_host_get_params(smx_simcall_t simcall, smx_host_t ind_vm, ws_params_t params)
+void simcall_HANDLER_host_get_params(smx_simcall_t simcall, smx_host_t ind_vm, ws_params_t params)
 {
   SIMIX_host_get_params(ind_vm, params);
 }
@@ -758,12 +758,12 @@ void SIMIX_host_set_params(smx_host_t ind_vm, ws_params_t params)
   surf_workstation_set_params(ind_vm, params);
 }
 
-void SIMIX_pre_host_set_params(smx_simcall_t simcall, smx_host_t ind_vm, ws_params_t params)
+void simcall_HANDLER_host_set_params(smx_simcall_t simcall, smx_host_t ind_vm, ws_params_t params)
 {
   SIMIX_host_set_params(ind_vm, params);
 }
 
-xbt_dict_t SIMIX_pre_host_get_mounted_storage_list(smx_simcall_t simcall, smx_host_t host){
+xbt_dict_t simcall_HANDLER_host_get_mounted_storage_list(smx_simcall_t simcall, smx_host_t host){
   return SIMIX_host_get_mounted_storage_list(host);
 }
 
@@ -773,7 +773,7 @@ xbt_dict_t SIMIX_host_get_mounted_storage_list(smx_host_t host){
   return surf_workstation_get_mounted_storage_list(host);
 }
 
-xbt_dynar_t SIMIX_pre_host_get_attached_storage_list(smx_simcall_t simcall, smx_host_t host){
+xbt_dynar_t simcall_HANDLER_host_get_attached_storage_list(smx_simcall_t simcall, smx_host_t host){
   return SIMIX_host_get_attached_storage_list(host);
 }
 

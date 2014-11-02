@@ -56,18 +56,18 @@ class Simcall(object):
 
   def check(self):
     # smx_user.c  simcall_BODY_
-    # smx_*.c void SIMIX_pre_host_on(smx_simcall_t simcall, smx_host_t h)
+    # smx_*.c void simcall_HANDLER_host_on(smx_simcall_t simcall, smx_host_t h)
     self.check_body()
     self.check_pre()
 
   def check_body(self):
       if self.simcalls_BODY is None:
-          f = open('smx_user.c')
+          f = open('libsmx.c')
           self.simcalls_BODY = set(re.findall('simcall_BODY_(.*?)\(', f.read()))
           f.close()
       if self.name not in self.simcalls_BODY:
           print '# ERROR: No function calling simcall_BODY_%s'%self.name
-          print '# Add something like this to smx_user.c:'
+          print '# Add something like this to libsmx.c:'
           print '''%s simcall_%s(%s)
 {
   return simcall_BODY_%s(%s);
@@ -85,12 +85,12 @@ class Simcall(object):
       self.simcalls_PRE = set()
       for fn in glob.glob('smx_*') + glob.glob('../mc/*'):
         f = open(fn)
-        self.simcalls_PRE |= set(re.findall('SIMIX_pre_(.*?)\(', f.read()))
+        self.simcalls_PRE |= set(re.findall('simcall_HANDLER_(.*?)\(', f.read()))
         f.close()
     if self.name not in self.simcalls_PRE:
-      print '# ERROR: No function called SIMIX_pre_%s'%self.name
+      print '# ERROR: No function called simcall_HANDLER_%s'%self.name
       print '# Add something like this to smx_.*.c:'
-      print '''%s SIMIX_pre_%s(smx_simcall_t simcall%s)
+      print '''%s simcall_HANDLER_%s(smx_simcall_t simcall%s)
 {
   // Your code handling the simcall
 }\n'''%(self.res.ret()
@@ -136,7 +136,7 @@ static inline void simcall_%s__set__%s(smx_simcall_t simcall, %s arg){
 
   def case(self):
     return '''case SIMCALL_%s:
-      %sSIMIX_pre_%s(simcall %s);
+      %ssimcall_HANDLER_%s(simcall %s);
       %sbreak;  
 '''%(self.name.upper(), 
      'simcall->result.%s = '%self.res.field() if self.res.type != 'void' and self.has_answer else ' ',
@@ -151,7 +151,7 @@ inline static %s simcall_BODY_%s(%s) {
     smx_process_t self = SIMIX_process_self();
 
     /* Go to that function to follow the code flow through the simcall barrier */
-    if (0) SIMIX_pre_%s(%s);
+    if (0) simcall_HANDLER_%s(%s);
     /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
 
     self->simcall.call = SIMCALL_%s;

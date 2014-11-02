@@ -70,7 +70,7 @@ void SIMIX_simcall_handle(smx_simcall_t, int);
 void SIMIX_simcall_exit(smx_action_t);
 const char *SIMIX_simcall_name(e_smx_simcall_t kind);
 //FIXME put it in a better place
-xbt_dict_t SIMIX_pre_asr_get_properties(smx_simcall_t simcall, const char *name);
+xbt_dict_t simcall_HANDLER_asr_get_properties(smx_simcall_t simcall, const char *name);
 
 SG_END_DECL()
 

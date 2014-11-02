@@ -44,7 +44,7 @@ void SIMIX_network_exit(void)
 /*                           Rendez-Vous Points                               */
 /******************************************************************************/
 
-smx_rdv_t SIMIX_pre_rdv_create(smx_simcall_t simcall, const char *name){
+smx_rdv_t simcall_HANDLER_rdv_create(smx_simcall_t simcall, const char *name){
   return SIMIX_rdv_create(name);
 }
 smx_rdv_t SIMIX_rdv_create(const char *name)
@@ -67,7 +67,7 @@ smx_rdv_t SIMIX_rdv_create(const char *name)
   return rdv;
 }
 
-void SIMIX_pre_rdv_destroy(smx_simcall_t simcall, smx_rdv_t rdv){
+void simcall_HANDLER_rdv_destroy(smx_simcall_t simcall, smx_rdv_t rdv){
   return SIMIX_rdv_destroy(rdv);
 }
 void SIMIX_rdv_destroy(smx_rdv_t rdv)
@@ -92,7 +92,7 @@ xbt_dict_t SIMIX_get_rdv_points()
   return rdv_points;
 }
 
-smx_rdv_t SIMIX_pre_rdv_get_by_name(smx_simcall_t simcall, const char *name){
+smx_rdv_t simcall_HANDLER_rdv_get_by_name(smx_simcall_t simcall, const char *name){
   return SIMIX_rdv_get_by_name(name);
 }
 smx_rdv_t SIMIX_rdv_get_by_name(const char *name)
@@ -100,7 +100,7 @@ smx_rdv_t SIMIX_rdv_get_by_name(const char *name)
   return xbt_dict_get_or_null(rdv_points, name);
 }
 
-int SIMIX_pre_rdv_comm_count_by_host(smx_simcall_t simcall, smx_rdv_t rdv, smx_host_t host){
+int simcall_HANDLER_rdv_comm_count_by_host(smx_simcall_t simcall, smx_rdv_t rdv, smx_host_t host){
   return SIMIX_rdv_comm_count_by_host(rdv, host);
 }
 int SIMIX_rdv_comm_count_by_host(smx_rdv_t rdv, smx_host_t host)
@@ -117,7 +117,7 @@ int SIMIX_rdv_comm_count_by_host(smx_rdv_t rdv, smx_host_t host)
   return count;
 }
 
-smx_action_t SIMIX_pre_rdv_get_head(smx_simcall_t simcall, smx_rdv_t rdv){
+smx_action_t simcall_HANDLER_rdv_get_head(smx_simcall_t simcall, smx_rdv_t rdv){
   return SIMIX_rdv_get_head(rdv);
 }
 smx_action_t SIMIX_rdv_get_head(smx_rdv_t rdv)
@@ -125,7 +125,7 @@ smx_action_t SIMIX_rdv_get_head(smx_rdv_t rdv)
   return xbt_fifo_get_item_content(xbt_fifo_get_first_item(rdv->comm_fifo));
 }
 
-smx_process_t SIMIX_pre_rdv_get_receiver(smx_simcall_t simcall, smx_rdv_t rdv){
+smx_process_t simcall_HANDLER_rdv_get_receiver(smx_simcall_t simcall, smx_rdv_t rdv){
   return SIMIX_rdv_get_receiver(rdv);
 }
 /**
@@ -138,7 +138,7 @@ smx_process_t SIMIX_rdv_get_receiver(smx_rdv_t rdv)
   return rdv->permanent_receiver;
 }
 
-void SIMIX_pre_rdv_set_receiver(smx_simcall_t simcall, smx_rdv_t rdv,
+void simcall_HANDLER_rdv_set_receiver(smx_simcall_t simcall, smx_rdv_t rdv,
 		            smx_process_t process){
   SIMIX_rdv_set_receiver(rdv, process);
 }
@@ -353,7 +353,7 @@ void SIMIX_comm_destroy_internal_actions(smx_action_t action)
   }
 }
 
-void SIMIX_pre_comm_send(smx_simcall_t simcall, smx_process_t src, smx_rdv_t rdv,
+void simcall_HANDLER_comm_send(smx_simcall_t simcall, smx_process_t src, smx_rdv_t rdv,
                                   double task_size, double rate,
                                   void *src_buff, size_t src_buff_size,
                                   int (*match_fun)(void *, void *,smx_action_t),
@@ -363,9 +363,9 @@ void SIMIX_pre_comm_send(smx_simcall_t simcall, smx_process_t src, smx_rdv_t rdv
 		                       src_buff, src_buff_size, match_fun, NULL, copy_data_fun,
 				       data, 0);
   SIMCALL_SET_MC_VALUE(simcall, 0);
-  SIMIX_pre_comm_wait(simcall, comm, timeout);
+  simcall_HANDLER_comm_wait(simcall, comm, timeout);
 }
-smx_action_t SIMIX_pre_comm_isend(smx_simcall_t simcall, smx_process_t src, smx_rdv_t rdv,
+smx_action_t simcall_HANDLER_comm_isend(smx_simcall_t simcall, smx_process_t src, smx_rdv_t rdv,
                                   double task_size, double rate,
                                   void *src_buff, size_t src_buff_size,
                                   int (*match_fun)(void *, void *,smx_action_t),
@@ -454,7 +454,7 @@ smx_action_t SIMIX_comm_isend(smx_process_t src_proc, smx_rdv_t rdv,
   return (detached ? NULL : other_action);
 }
 
-void SIMIX_pre_comm_recv(smx_simcall_t simcall, smx_rdv_t rdv,
+void simcall_HANDLER_comm_recv(smx_simcall_t simcall, smx_rdv_t rdv,
                          void *dst_buff, size_t *dst_buff_size,
                          int (*match_fun)(void *, void *, smx_action_t),
                          void (*copy_data_fun)(smx_action_t, void*, size_t),
@@ -463,10 +463,10 @@ void SIMIX_pre_comm_recv(smx_simcall_t simcall, smx_rdv_t rdv,
   smx_action_t comm = SIMIX_comm_irecv(simcall->issuer, rdv, dst_buff,
 		                       dst_buff_size, match_fun, copy_data_fun, data, rate);
   SIMCALL_SET_MC_VALUE(simcall, 0);
-  SIMIX_pre_comm_wait(simcall, comm, timeout);
+  simcall_HANDLER_comm_wait(simcall, comm, timeout);
 }
 
-smx_action_t SIMIX_pre_comm_irecv(smx_simcall_t simcall, smx_rdv_t rdv,
+smx_action_t simcall_HANDLER_comm_irecv(smx_simcall_t simcall, smx_rdv_t rdv,
                                   void *dst_buff, size_t *dst_buff_size,
                                   int (*match_fun)(void *, void *, smx_action_t),
                                   void (*copy_data_fun)(smx_action_t, void*, size_t),
@@ -564,7 +564,7 @@ smx_action_t SIMIX_comm_irecv(smx_process_t dst_proc, smx_rdv_t rdv,
   return other_action;
 }
 
-smx_action_t SIMIX_pre_comm_iprobe(smx_simcall_t simcall, smx_rdv_t rdv,
+smx_action_t simcall_HANDLER_comm_iprobe(smx_simcall_t simcall, smx_rdv_t rdv,
                                    int type, int src, int tag,
                                    int (*match_fun)(void *, void *, smx_action_t),
                                    void *data){
@@ -604,13 +604,13 @@ smx_action_t SIMIX_comm_iprobe(smx_process_t dst_proc, smx_rdv_t rdv, int type, 
   return other_action;
 }
 
-void SIMIX_pre_comm_wait(smx_simcall_t simcall, smx_action_t action, double timeout)
+void simcall_HANDLER_comm_wait(smx_simcall_t simcall, smx_action_t action, double timeout)
 {
   /* the simcall may be a wait, a send or a recv */
   surf_action_t sleep;
 
   /* Associate this simcall to the wait action */
-  XBT_DEBUG("SIMIX_pre_comm_wait, %p", action);
+  XBT_DEBUG("simcall_HANDLER_comm_wait, %p", action);
 
   xbt_fifo_push(action->simcalls, simcall);
   simcall->issuer->waiting_action = action;
@@ -650,7 +650,7 @@ void SIMIX_pre_comm_wait(smx_simcall_t simcall, smx_action_t action, double time
   }
 }
 
-void SIMIX_pre_comm_test(smx_simcall_t simcall, smx_action_t action)
+void simcall_HANDLER_comm_test(smx_simcall_t simcall, smx_action_t action)
 {
   if(MC_is_active()){
     simcall_comm_test__set__result(simcall, action->comm.src_proc && action->comm.dst_proc);
@@ -673,7 +673,7 @@ void SIMIX_pre_comm_test(smx_simcall_t simcall, smx_action_t action)
   }
 }
 
-void SIMIX_pre_comm_testany(smx_simcall_t simcall, xbt_dynar_t actions)
+void simcall_HANDLER_comm_testany(smx_simcall_t simcall, xbt_dynar_t actions)
 {
   unsigned int cursor;
   smx_action_t action;
@@ -704,7 +704,7 @@ void SIMIX_pre_comm_testany(smx_simcall_t simcall, xbt_dynar_t actions)
   SIMIX_simcall_answer(simcall);
 }
 
-void SIMIX_pre_comm_waitany(smx_simcall_t simcall, xbt_dynar_t actions)
+void simcall_HANDLER_comm_waitany(smx_simcall_t simcall, xbt_dynar_t actions)
 {
   smx_action_t action;
   unsigned int cursor = 0;
@@ -958,7 +958,7 @@ void SIMIX_post_comm(smx_action_t action)
   }
 }
 
-void SIMIX_pre_comm_cancel(smx_simcall_t simcall, smx_action_t action){
+void simcall_HANDLER_comm_cancel(smx_simcall_t simcall, smx_action_t action){
   SIMIX_comm_cancel(action);
 }
 void SIMIX_comm_cancel(smx_action_t action)
@@ -995,7 +995,7 @@ void SIMIX_comm_resume(smx_action_t action)
 
 /************* Action Getters **************/
 
-double SIMIX_pre_comm_get_remains(smx_simcall_t simcall, smx_action_t action){
+double simcall_HANDLER_comm_get_remains(smx_simcall_t simcall, smx_action_t action){
   return SIMIX_comm_get_remains(action);
 }
 /**
@@ -1028,7 +1028,7 @@ double SIMIX_comm_get_remains(smx_action_t action)
   return remains;
 }
 
-e_smx_state_t SIMIX_pre_comm_get_state(smx_simcall_t simcall, smx_action_t action){
+e_smx_state_t simcall_HANDLER_comm_get_state(smx_simcall_t simcall, smx_action_t action){
   return SIMIX_comm_get_state(action);
 }
 e_smx_state_t SIMIX_comm_get_state(smx_action_t action)
@@ -1036,7 +1036,7 @@ e_smx_state_t SIMIX_comm_get_state(smx_action_t action)
   return action->state;
 }
 
-void* SIMIX_pre_comm_get_src_data(smx_simcall_t simcall, smx_action_t action){
+void* simcall_HANDLER_comm_get_src_data(smx_simcall_t simcall, smx_action_t action){
   return SIMIX_comm_get_src_data(action);
 }
 /**
@@ -1049,7 +1049,7 @@ void* SIMIX_comm_get_src_data(smx_action_t action)
   return action->comm.src_data;
 }
 
-void* SIMIX_pre_comm_get_dst_data(smx_simcall_t simcall, smx_action_t action){
+void* simcall_HANDLER_comm_get_dst_data(smx_simcall_t simcall, smx_action_t action){
   return SIMIX_comm_get_dst_data(action);
 }
 /**
@@ -1062,7 +1062,7 @@ void* SIMIX_comm_get_dst_data(smx_action_t action)
   return action->comm.dst_data;
 }
 
-smx_process_t SIMIX_pre_comm_get_src_proc(smx_simcall_t simcall, smx_action_t action){
+smx_process_t simcall_HANDLER_comm_get_src_proc(smx_simcall_t simcall, smx_action_t action){
   return SIMIX_comm_get_src_proc(action);
 }
 smx_process_t SIMIX_comm_get_src_proc(smx_action_t action)
@@ -1070,7 +1070,7 @@ smx_process_t SIMIX_comm_get_src_proc(smx_action_t action)
   return action->comm.src_proc;
 }
 
-smx_process_t SIMIX_pre_comm_get_dst_proc(smx_simcall_t simcall, smx_action_t action){
+smx_process_t simcall_HANDLER_comm_get_dst_proc(smx_simcall_t simcall, smx_action_t action){
   return SIMIX_comm_get_dst_proc(action);
 }
 smx_process_t SIMIX_comm_get_dst_proc(smx_action_t action)
@@ -1079,7 +1079,7 @@ smx_process_t SIMIX_comm_get_dst_proc(smx_action_t action)
 }
 
 #ifdef HAVE_LATENCY_BOUND_TRACKING
-int SIMIX_pre_comm_is_latency_bounded(smx_simcall_t simcall, smx_action_t action)
+int simcall_HANDLER_comm_is_latency_bounded(smx_simcall_t simcall, smx_action_t action)
 {
   return SIMIX_comm_is_latency_bounded(action);
 }

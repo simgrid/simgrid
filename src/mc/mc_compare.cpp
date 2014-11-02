@@ -674,7 +674,7 @@ void print_comparison_times()
 /**************************** MC snapshot compare simcall **************************/
 /***********************************************************************************/
 
-int SIMIX_pre_mc_compare_snapshots(smx_simcall_t simcall,
+int simcall_HANDLER_mc_compare_snapshots(smx_simcall_t simcall,
                                    mc_snapshot_t s1, mc_snapshot_t s2)
 {
   return snapshot_compare(s1, s2);

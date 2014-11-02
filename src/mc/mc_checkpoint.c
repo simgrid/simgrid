@@ -657,7 +657,7 @@ void MC_restore_snapshot(mc_snapshot_t snapshot)
   }
 }
 
-mc_snapshot_t SIMIX_pre_mc_snapshot(smx_simcall_t simcall)
+mc_snapshot_t simcall_HANDLER_mc_snapshot(smx_simcall_t simcall)
 {
   return MC_take_snapshot(1);
 }
