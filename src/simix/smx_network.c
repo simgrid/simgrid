@@ -44,9 +44,6 @@ void SIMIX_network_exit(void)
 /*                           Rendez-Vous Points                               */
 /******************************************************************************/
 
-smx_rdv_t simcall_HANDLER_rdv_create(smx_simcall_t simcall, const char *name){
-  return SIMIX_rdv_create(name);
-}
 smx_rdv_t SIMIX_rdv_create(const char *name)
 {
   /* two processes may have pushed the same rdv_create simcall at the same time */
@@ -67,9 +64,6 @@ smx_rdv_t SIMIX_rdv_create(const char *name)
   return rdv;
 }
 
-void simcall_HANDLER_rdv_destroy(smx_simcall_t simcall, smx_rdv_t rdv){
-  return SIMIX_rdv_destroy(rdv);
-}
 void SIMIX_rdv_destroy(smx_rdv_t rdv)
 {
   if (rdv->name)
@@ -97,9 +91,6 @@ smx_rdv_t SIMIX_rdv_get_by_name(const char *name)
   return xbt_dict_get_or_null(rdv_points, name);
 }
 
-unsigned int simcall_HANDLER_rdv_comm_count_by_host(smx_simcall_t simcall, smx_rdv_t rdv, smx_host_t host){
-  return SIMIX_rdv_comm_count_by_host(rdv, host);
-}
 int SIMIX_rdv_comm_count_by_host(smx_rdv_t rdv, smx_host_t host)
 {
   smx_synchro_t comm = NULL;
@@ -114,17 +105,11 @@ int SIMIX_rdv_comm_count_by_host(smx_rdv_t rdv, smx_host_t host)
   return count;
 }
 
-smx_synchro_t simcall_HANDLER_rdv_get_head(smx_simcall_t simcall, smx_rdv_t rdv){
-  return SIMIX_rdv_get_head(rdv);
-}
 smx_synchro_t SIMIX_rdv_get_head(smx_rdv_t rdv)
 {
   return xbt_fifo_get_item_content(xbt_fifo_get_first_item(rdv->comm_fifo));
 }
 
-smx_process_t simcall_HANDLER_rdv_get_receiver(smx_simcall_t simcall, smx_rdv_t rdv){
-  return SIMIX_rdv_get_receiver(rdv);
-}
 /**
  *  \brief get the receiver (process associated to the mailbox)
  *  \param rdv The rendez-vous point
@@ -135,10 +120,6 @@ smx_process_t SIMIX_rdv_get_receiver(smx_rdv_t rdv)
   return rdv->permanent_receiver;
 }
 
-void simcall_HANDLER_rdv_set_receiver(smx_simcall_t simcall, smx_rdv_t rdv,
-		            smx_process_t process){
-  SIMIX_rdv_set_receiver(rdv, process);
-}
 /**
  *  \brief set the receiver of the rendez vous point to allow eager sends
  *  \param rdv The rendez-vous point
@@ -955,9 +936,6 @@ void SIMIX_post_comm(smx_synchro_t synchro)
   }
 }
 
-void simcall_HANDLER_comm_cancel(smx_simcall_t simcall, smx_synchro_t synchro){
-  SIMIX_comm_cancel(synchro);
-}
 void SIMIX_comm_cancel(smx_synchro_t synchro)
 {
   /* if the synchro is a waiting state means that it is still in a rdv */
@@ -992,9 +970,6 @@ void SIMIX_comm_resume(smx_synchro_t synchro)
 
 /************* synchro Getters **************/
 
-double simcall_HANDLER_comm_get_remains(smx_simcall_t simcall, smx_synchro_t synchro){
-  return SIMIX_comm_get_remains(synchro);
-}
 /**
  *  \brief get the amount remaining from the communication
  *  \param synchro The communication
@@ -1025,17 +1000,11 @@ double SIMIX_comm_get_remains(smx_synchro_t synchro)
   return remains;
 }
 
-e_smx_state_t simcall_HANDLER_comm_get_state(smx_simcall_t simcall, smx_synchro_t synchro){
-  return SIMIX_comm_get_state(synchro);
-}
 e_smx_state_t SIMIX_comm_get_state(smx_synchro_t synchro)
 {
   return synchro->state;
 }
 
-void* simcall_HANDLER_comm_get_src_data(smx_simcall_t simcall, smx_synchro_t synchro){
-  return SIMIX_comm_get_src_data(synchro);
-}
 /**
  *  \brief Return the user data associated to the sender of the communication
  *  \param synchro The communication
@@ -1046,9 +1015,6 @@ void* SIMIX_comm_get_src_data(smx_synchro_t synchro)
   return synchro->comm.src_data;
 }
 
-void* simcall_HANDLER_comm_get_dst_data(smx_simcall_t simcall, smx_synchro_t synchro){
-  return SIMIX_comm_get_dst_data(synchro);
-}
 /**
  *  \brief Return the user data associated to the receiver of the communication
  *  \param synchro The communication
@@ -1059,28 +1025,17 @@ void* SIMIX_comm_get_dst_data(smx_synchro_t synchro)
   return synchro->comm.dst_data;
 }
 
-smx_process_t simcall_HANDLER_comm_get_src_proc(smx_simcall_t simcall, smx_synchro_t synchro){
-  return SIMIX_comm_get_src_proc(synchro);
-}
 smx_process_t SIMIX_comm_get_src_proc(smx_synchro_t synchro)
 {
   return synchro->comm.src_proc;
 }
 
-smx_process_t simcall_HANDLER_comm_get_dst_proc(smx_simcall_t simcall, smx_synchro_t synchro){
-  return SIMIX_comm_get_dst_proc(synchro);
-}
 smx_process_t SIMIX_comm_get_dst_proc(smx_synchro_t synchro)
 {
   return synchro->comm.dst_proc;
 }
 
 #ifdef HAVE_LATENCY_BOUND_TRACKING
-int simcall_HANDLER_comm_is_latency_bounded(smx_simcall_t simcall, smx_synchro_t synchro)
-{
-  return SIMIX_comm_is_latency_bounded(synchro);
-}
-
 /**
  *  \brief verify if communication is latency bounded
  *  \param comm The communication

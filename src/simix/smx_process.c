@@ -38,9 +38,6 @@ int SIMIX_process_has_pending_comms(smx_process_t process) {
   return xbt_fifo_size(process->comms) > 0;
 }
 
-void simcall_HANDLER_process_cleanup(smx_simcall_t simcall, smx_process_t process) {
-  SIMIX_process_cleanup(process);
-}
 /**
  * \brief Moves a process to the list of processes to destroy.
  */
@@ -588,16 +585,9 @@ int SIMIX_process_get_maxpid(void) {
   return simix_process_maxpid;
 }
 
-int simcall_HANDLER_process_count(smx_simcall_t simcall){
-  return SIMIX_process_count();
-}
 int SIMIX_process_count(void)
 {
   return xbt_swag_size(simix_global->process_list);
-}
-
-int simcall_HANDLER_process_get_PID(smx_simcall_t simcall, smx_process_t self){
-   return SIMIX_process_get_PID(self);
 }
 
 int SIMIX_process_get_PID(smx_process_t self){
@@ -605,10 +595,6 @@ int SIMIX_process_get_PID(smx_process_t self){
     return 0;
   else
     return self->pid;
-}
-
-int simcall_HANDLER_process_get_PPID(smx_simcall_t simcall, smx_process_t self){
-  return SIMIX_process_get_PPID(self);
 }
 
 int SIMIX_process_get_PPID(smx_process_t self){
@@ -628,10 +614,6 @@ void* SIMIX_process_self_get_data(smx_process_t self)
   return SIMIX_process_get_data(self);
 }
 
-void simcall_HANDLER_process_set_data(smx_simcall_t simcall, smx_process_t process,
-                                void *data){
-  SIMIX_process_set_data(process, data);
-}
 void SIMIX_process_self_set_data(smx_process_t self, void *data)
 {
   xbt_assert(self == SIMIX_process_self(), "This is not the current process");
@@ -639,9 +621,6 @@ void SIMIX_process_self_set_data(smx_process_t self, void *data)
   SIMIX_process_set_data(self, data);
 }
 
-void* simcall_HANDLER_process_get_data(smx_simcall_t simcall, smx_process_t process){
-  return SIMIX_process_get_data(process);
-}
 void* SIMIX_process_get_data(smx_process_t process)
 {
   return process->data;
@@ -652,9 +631,6 @@ void SIMIX_process_set_data(smx_process_t process, void *data)
   process->data = data;
 }
 
-smx_host_t simcall_HANDLER_process_get_host(smx_simcall_t simcall, smx_process_t process){
-  return SIMIX_process_get_host(process);
-}
 smx_host_t SIMIX_process_get_host(smx_process_t process)
 {
   return process->smx_host;
@@ -671,9 +647,6 @@ const char* SIMIX_process_self_get_name(void) {
   return SIMIX_process_get_name(process);
 }
 
-const char* simcall_HANDLER_process_get_name(smx_simcall_t simcall, smx_process_t process) {
-  return SIMIX_process_get_name(process);
-}
 const char* SIMIX_process_get_name(smx_process_t process)
 {
   return process->name;
@@ -691,17 +664,11 @@ smx_process_t SIMIX_process_get_by_name(const char* name)
   return NULL;
 }
 
-int simcall_HANDLER_process_is_suspended(smx_simcall_t simcall, smx_process_t process){
-  return SIMIX_process_is_suspended(process);
-}
 int SIMIX_process_is_suspended(smx_process_t process)
 {
   return process->suspended;
 }
 
-xbt_dict_t simcall_HANDLER_process_get_properties(smx_simcall_t simcall, smx_process_t process){
-  return SIMIX_process_get_properties(process);
-}
 xbt_dict_t SIMIX_process_get_properties(smx_process_t process)
 {
   return process->properties;
@@ -959,11 +926,6 @@ void SIMIX_process_on_exit_runall(smx_process_t process) {
   }
 }
 
-void simcall_HANDLER_process_on_exit(smx_simcall_t simcall, smx_process_t process,
-	                       int_f_pvoid_pvoid_t fun, void *data) {
-  SIMIX_process_on_exit(process, fun, data);
-}
-
 void SIMIX_process_on_exit(smx_process_t process, int_f_pvoid_pvoid_t fun, void *data) {
   xbt_assert(process, "current process not found: are you in maestro context ?");
 
@@ -976,10 +938,6 @@ void SIMIX_process_on_exit(smx_process_t process, int_f_pvoid_pvoid_t fun, void 
   xbt_dynar_push_as(process->on_exit,s_smx_process_exit_fun_t,exit_fun);
 }
 
-void simcall_HANDLER_process_auto_restart_set(smx_simcall_t simcall, smx_process_t process,
-		                        int auto_restart) {
-  SIMIX_process_auto_restart_set(process, auto_restart);
-}
 /**
  * \brief Sets the auto-restart status of the process.
  * If set to 1, the process will be automatically restarted when its host

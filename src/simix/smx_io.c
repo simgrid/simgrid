@@ -52,12 +52,12 @@ void SIMIX_storage_destroy(void *s)
 //SIMIX FILE READ
 void simcall_HANDLER_file_read(smx_simcall_t simcall, smx_file_t fd, sg_size_t size, smx_host_t host)
 {
-  smx_synchro_t synchro = SIMIX_file_read(simcall->issuer, fd, size, host);
+  smx_synchro_t synchro = SIMIX_file_read(fd, size, host);
   xbt_fifo_push(synchro->simcalls, simcall);
   simcall->issuer->waiting_synchro = synchro;
 }
 
-smx_synchro_t SIMIX_file_read(smx_process_t process, smx_file_t fd, sg_size_t size, smx_host_t host)
+smx_synchro_t SIMIX_file_read(smx_file_t fd, sg_size_t size, smx_host_t host)
 {
   smx_synchro_t synchro;
 
@@ -86,12 +86,12 @@ smx_synchro_t SIMIX_file_read(smx_process_t process, smx_file_t fd, sg_size_t si
 //SIMIX FILE WRITE
 void simcall_HANDLER_file_write(smx_simcall_t simcall, smx_file_t fd, sg_size_t size, smx_host_t host)
 {
-  smx_synchro_t synchro = SIMIX_file_write(simcall->issuer, fd,  size, host);
+  smx_synchro_t synchro = SIMIX_file_write(fd,  size, host);
   xbt_fifo_push(synchro->simcalls, simcall);
   simcall->issuer->waiting_synchro = synchro;
 }
 
-smx_synchro_t SIMIX_file_write(smx_process_t process, smx_file_t fd, sg_size_t size, smx_host_t host)
+smx_synchro_t SIMIX_file_write(smx_file_t fd, sg_size_t size, smx_host_t host)
 {
   smx_synchro_t synchro;
 
@@ -120,12 +120,12 @@ smx_synchro_t SIMIX_file_write(smx_process_t process, smx_file_t fd, sg_size_t s
 //SIMIX FILE OPEN
 void simcall_HANDLER_file_open(smx_simcall_t simcall, const char* fullpath, smx_host_t host)
 {
-  smx_synchro_t synchro = SIMIX_file_open(simcall->issuer, fullpath, host);
+  smx_synchro_t synchro = SIMIX_file_open(fullpath, host);
   xbt_fifo_push(synchro->simcalls, simcall);
   simcall->issuer->waiting_synchro = synchro;
 }
 
-smx_synchro_t SIMIX_file_open(smx_process_t process, const char* fullpath, smx_host_t host)
+smx_synchro_t SIMIX_file_open(const char* fullpath, smx_host_t host)
 {
   smx_synchro_t synchro;
 
@@ -154,12 +154,12 @@ smx_synchro_t SIMIX_file_open(smx_process_t process, const char* fullpath, smx_h
 //SIMIX FILE CLOSE
 void simcall_HANDLER_file_close(smx_simcall_t simcall, smx_file_t fd, smx_host_t host)
 {
-  smx_synchro_t synchro = SIMIX_file_close(simcall->issuer, fd, host);
+  smx_synchro_t synchro = SIMIX_file_close(fd, host);
   xbt_fifo_push(synchro->simcalls, simcall);
   simcall->issuer->waiting_synchro = synchro;
 }
 
-smx_synchro_t SIMIX_file_close(smx_process_t process, smx_file_t fd, smx_host_t host)
+smx_synchro_t SIMIX_file_close(smx_file_t fd, smx_host_t host)
 {
   smx_synchro_t synchro;
 
@@ -187,12 +187,7 @@ smx_synchro_t SIMIX_file_close(smx_process_t process, smx_file_t fd, smx_host_t 
 
 
 //SIMIX FILE UNLINK
-int simcall_HANDLER_file_unlink(smx_simcall_t simcall, smx_file_t fd, smx_host_t host)
-{
-  return SIMIX_file_unlink(simcall->issuer, fd, host);
-}
-
-int SIMIX_file_unlink(smx_process_t process, smx_file_t fd, smx_host_t host)
+int SIMIX_file_unlink(smx_file_t fd, smx_host_t host)
 {
   /* check if the host is active */
   if (surf_resource_get_state(surf_workstation_resource_priv(host)) != SURF_RESOURCE_ON) {
@@ -286,9 +281,6 @@ sg_size_t SIMIX_storage_get_used_size(smx_process_t process, smx_storage_t stora
   return  surf_storage_get_used_size(storage);
 }
 
-xbt_dict_t simcall_HANDLER_storage_get_properties(smx_simcall_t simcall, smx_storage_t storage){
-  return SIMIX_storage_get_properties(storage);
-}
 xbt_dict_t SIMIX_storage_get_properties(smx_storage_t storage){
   xbt_assert((storage != NULL), "Invalid parameters (simix storage is NULL)");
   return surf_resource_get_properties(surf_storage_resource_priv(storage));
@@ -297,10 +289,6 @@ xbt_dict_t SIMIX_storage_get_properties(smx_storage_t storage){
 const char* SIMIX_storage_get_name(smx_storage_t storage){
   xbt_assert((storage != NULL), "Invalid parameters");
   return sg_storage_name(storage);
-}
-
-xbt_dict_t simcall_HANDLER_storage_get_content(smx_simcall_t simcall, smx_storage_t storage){
-  return SIMIX_storage_get_content(storage);
 }
 
 xbt_dict_t SIMIX_storage_get_content(smx_storage_t storage){

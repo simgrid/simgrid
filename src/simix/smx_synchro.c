@@ -168,6 +168,9 @@ void simcall_HANDLER_mutex_lock(smx_simcall_t simcall, smx_mutex_t mutex)
   XBT_OUT();
 }
 
+int simcall_HANDLER_mutex_trylock(smx_simcall_t simcall, smx_mutex_t mutex){
+  return SIMIX_mutex_trylock(mutex, simcall->issuer);
+}
 /**
  * \brief Tries to lock a mutex.
  *
@@ -228,9 +231,6 @@ void SIMIX_mutex_unlock(smx_mutex_t mutex, smx_process_t issuer)
   XBT_OUT();
 }
 
-void simcall_HANDLER_mutex_destroy(smx_simcall_t simcall, smx_mutex_t mutex){
-  SIMIX_mutex_destroy(mutex);
-}
 /**
  * \brief Destroys a mutex.
  *
@@ -249,9 +249,6 @@ void SIMIX_mutex_destroy(smx_mutex_t mutex)
 
 /********************************* Condition **********************************/
 
-smx_cond_t simcall_HANDLER_cond_init(smx_simcall_t simcall){
-  return SIMIX_cond_init();
-}
 /**
  * \brief Initialize a condition.
  *
@@ -320,9 +317,6 @@ static void _SIMIX_cond_wait(smx_cond_t cond, smx_mutex_t mutex, double timeout,
   XBT_OUT();
 }
 
-void simcall_HANDLER_cond_signal(smx_simcall_t simcall, smx_cond_t cond){
-  SIMIX_cond_signal(cond);
-}
 /**
  * \brief Signalizes a condition.
  *
@@ -360,9 +354,6 @@ void SIMIX_cond_signal(smx_cond_t cond)
   XBT_OUT();
 }
 
-void simcall_HANDLER_cond_broadcast(smx_simcall_t simcall, smx_cond_t cond){
-  SIMIX_cond_broadcast(cond);
-}
 /**
  * \brief Broadcasts a condition.
  *
@@ -382,11 +373,8 @@ void SIMIX_cond_broadcast(smx_cond_t cond)
   XBT_OUT();
 }
 
-void simcall_HANDLER_cond_destroy(smx_simcall_t simcall, smx_cond_t cond){
-  SIMIX_cond_destroy(cond);
-}
 /**
- * \brief Destroys a contidion.
+ * \brief Destroys a condition.
  *
  * Destroys and frees the condition's memory. 
  * \param cond A condition
@@ -408,9 +396,6 @@ void SIMIX_cond_destroy(smx_cond_t cond)
 
 /******************************** Semaphores **********************************/
 #define SMX_SEM_NOLIMIT 99999
-smx_sem_t simcall_HANDLER_sem_init(smx_simcall_t simcall, unsigned int value){
-  return SIMIX_sem_init(value);
-}
 /** @brief Initialize a semaphore */
 smx_sem_t SIMIX_sem_init(unsigned int value)
 {
@@ -424,9 +409,6 @@ smx_sem_t SIMIX_sem_init(unsigned int value)
   return sem;
 }
 
-void simcall_HANDLER_sem_destroy(smx_simcall_t simcall, smx_sem_t sem){
-  SIMIX_sem_destroy(sem);
-}
 /** @brief Destroys a semaphore */
 void SIMIX_sem_destroy(smx_sem_t sem)
 {

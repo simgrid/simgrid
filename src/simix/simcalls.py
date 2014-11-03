@@ -132,7 +132,7 @@ class Simcall(object):
                                                                 ''.join(', %s simcall->args[%d].%s'%(arg.cast(), i, arg.field()) 
                                                                         for i, arg in enumerate(self.args))))
       else:
-          res.append('      %ssimcall_%s(%s);'%('simcall->result.%s = '%self.res.field() if self.call_kind == 'Func' else ' ',
+          res.append('      %sSIMIX_%s(%s);'%('simcall->result.%s = '%self.res.field() if self.call_kind == 'Func' else ' ',
                                                 self.name,  
                                                 ','.join('%s simcall->args[%d].%s'%(arg.cast(), i, arg.field()) 
                                                          for i, arg in enumerate(self.args))))
@@ -151,7 +151,7 @@ class Simcall(object):
           res.append('    if (0) simcall_HANDLER_%s(%s);'%(self.name,
                                                            ', '.join(["&self->simcall"]+ [arg.name for arg in self.args])))
       else:
-          res.append('    if (0) simcall_%s(%s);'%(self.name,
+          res.append('    if (0) SIMIX_%s(%s);'%(self.name,
                                                    ', '.join(arg.name for arg in self.args)))
       res.append('    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */')
       res.append('')
@@ -227,7 +227,9 @@ def header(name):
     return fd
 
 def handle(fd,func, simcalls, guarded_simcalls):
-    fd.write('\n'.join(func(simcall) for simcall in simcalls))
+    def nonempty(e): return e != ''
+    fd.write('\n'.join( filter(nonempty, (func(simcall) for simcall in simcalls))))
+    
     for guard, list in guarded_simcalls.items():
         fd.write('\n#ifdef %s\n'%(guard))
         fd.write('\n'.join(func(simcall) for simcall in list))

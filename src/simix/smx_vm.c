@@ -34,12 +34,6 @@ smx_host_t SIMIX_vm_create(const char *name, smx_host_t ind_phys_host)
 }
 
 
-smx_host_t simcall_HANDLER_vm_create(smx_simcall_t simcall, const char *name, smx_host_t ind_phys_host)
-{
-  return SIMIX_vm_create(name, ind_phys_host);
-}
-
-
 /* works for VMs and PMs */
 static long host_get_ramsize(smx_host_t vm, int *overcommit)
 {
@@ -103,22 +97,10 @@ void SIMIX_vm_start(smx_host_t ind_vm)
 }
 
 
-
-void simcall_HANDLER_vm_start(smx_simcall_t simcall, smx_host_t ind_vm)
-{
-  SIMIX_vm_start(ind_vm);
-}
-
 int SIMIX_vm_get_state(smx_host_t ind_vm)
 {
   return surf_resource_get_state(surf_workstation_resource_priv(ind_vm));
 }
-
-int simcall_HANDLER_vm_get_state(smx_simcall_t simcall, smx_host_t ind_vm)
-{
-  return SIMIX_vm_get_state(ind_vm);
-}
-
 
 /**
  * \brief Function to migrate a SIMIX VM host.
@@ -134,12 +116,6 @@ void SIMIX_vm_migrate(smx_host_t ind_vm, smx_host_t ind_dst_pm)
   surf_vm_workstation_migrate(ind_vm, ind_dst_pm);
 }
 
-void simcall_HANDLER_vm_migrate(smx_simcall_t simcall, smx_host_t ind_vm, smx_host_t ind_dst_pm)
-{
-  SIMIX_vm_migrate(ind_vm, ind_dst_pm);
-}
-
-
 /**
  * \brief Function to get the physical host of the given SIMIX VM host.
  *
@@ -150,12 +126,6 @@ void *SIMIX_vm_get_pm(smx_host_t ind_vm)
   /* jump to vm_ws_get_pm(). this will return the vm name. */
   return surf_vm_workstation_get_pm(ind_vm);
 }
-
-void *simcall_HANDLER_vm_get_pm(smx_simcall_t simcall, smx_host_t ind_vm)
-{
-  return SIMIX_vm_get_pm(ind_vm);
-}
-
 
 /**
  * \brief Function to set the CPU bound of the given SIMIX VM host.
@@ -168,12 +138,6 @@ void SIMIX_vm_set_bound(smx_host_t ind_vm, double bound)
   /* jump to vm_ws_set_vm_bound(). */
   surf_vm_workstation_set_bound(ind_vm, bound);
 }
-
-void simcall_HANDLER_vm_set_bound(smx_simcall_t simcall, smx_host_t ind_vm, double bound)
-{
-  SIMIX_vm_set_bound(ind_vm, bound);
-}
-
 
 /**
  * \brief Function to set the CPU affinity of the given SIMIX VM host.
@@ -189,11 +153,6 @@ void SIMIX_vm_set_affinity(smx_host_t ind_vm, smx_host_t ind_pm, unsigned long m
 
   /* jump to vm_ws_set_vm_affinity(). */
   surf_vm_workstation_set_affinity(ind_vm, ind_pm, mask);
-}
-
-void simcall_HANDLER_vm_set_affinity(smx_simcall_t simcall, smx_host_t ind_vm, smx_host_t ind_pm, unsigned long mask)
-{
-  SIMIX_vm_set_affinity(ind_vm, ind_pm, mask);
 }
 
 
@@ -386,9 +345,4 @@ void SIMIX_vm_destroy(smx_host_t ind_vm)
 
   /* jump to vm_ws_destroy(). The surf level resource will be freed. */
   surf_vm_workstation_destroy(ind_vm);
-}
-
-void simcall_HANDLER_vm_destroy(smx_simcall_t simcall, smx_host_t ind_vm)
-{
-  SIMIX_vm_destroy(ind_vm);
 }
