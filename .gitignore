@@ -835,6 +835,13 @@ teshsuite/smpi/mpich3-test/group/grouptest
 teshsuite/smpi/mpich3-test/group/grouptest2
 teshsuite/smpi/mpich3-test/group/gtranks
 teshsuite/smpi/mpich3-test/group/gtranksperf
+teshsuite/smpi/mpich3-test/info/infodel
+teshsuite/smpi/mpich3-test/info/infodup
+teshsuite/smpi/mpich3-test/info/infomany
+teshsuite/smpi/mpich3-test/info/infomany2
+teshsuite/smpi/mpich3-test/info/infoorder
+teshsuite/smpi/mpich3-test/info/infotest
+teshsuite/smpi/mpich3-test/info/infovallen
 teshsuite/smpi/mpich3-test/init/attrself
 teshsuite/smpi/mpich3-test/init/exitst1
 teshsuite/smpi/mpich3-test/init/exitst2
