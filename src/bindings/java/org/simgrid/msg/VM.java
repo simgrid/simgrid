@@ -156,9 +156,7 @@ public class VM extends Host{
 	 */	
 	public void migrate(Host destination) throws HostFailureException{
 		try {
-			Msg.info("Migrate begins");
 			this.internalmig(destination);
-			Msg.info("Migrate ends");
 		} catch (Exception e){
 		  Msg.info("an exception occurs during the migration of VM "+this.getName());
 		  throw new HostFailureException();

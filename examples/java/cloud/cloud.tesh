@@ -29,21 +29,9 @@ $ java -classpath ${classpath:=.} cloud/Cloud ${srcdir:=.}/../platforms/platform
 > [  4.798398] (3:WRK01@VM01) WRK01 executed task (Task01)
 > [1000.000000] (1:Master@Jacquelin) Migrate everyone to Fernand
 > [1000.000000] (1:Master@Jacquelin) Migrate VM00fromIntelto Fernand
-> [1000.000000] (5:__pr_mig_tx:VM00(Intel-Fernand)@Intel) mig-stage1: remaining_size 1073741824.000000
-> [3463.797594] (5:__pr_mig_tx:VM00(Intel-Fernand)@Intel) actual bandwidth 0.415619 (MB/s), threshold 13074.229313
-> [3463.797594] (5:__pr_mig_tx:VM00(Intel-Fernand)@Intel) mig-stage 2:0 updated_size 0.000000 computed_during_stage1 0.000000 dp_rate 0.000000 dp_cap 966367641.600000
-> [3463.797594] (5:__pr_mig_tx:VM00(Intel-Fernand)@Intel) mig-stage2.0: remaining_size 0.000000 (< threshold 13074.229313)
-> [3463.797594] (5:__pr_mig_tx:VM00(Intel-Fernand)@Intel) mig-stage3: remaining_size 0.000000
 > [3465.751712] (0:@) migrate VM(VM00): set bound (137333000.000000) at Fernand
-> [3465.751712] (4:__pr_mig_rx:VM00(Intel-Fernand)@Fernand) set affinity(0x0000@Fernand) for VM00
 > [3467.577368] (1:Master@Jacquelin) Migrate VM01fromProvostto Fernand
-> [3467.577368] (9:__pr_mig_tx:VM01(Provost-Fernand)@Provost) mig-stage1: remaining_size 1073741824.000000
-> [5929.514531] (9:__pr_mig_tx:VM01(Provost-Fernand)@Provost) actual bandwidth 0.415933 (MB/s), threshold 13084.109212
-> [5929.514531] (9:__pr_mig_tx:VM01(Provost-Fernand)@Provost) mig-stage 2:0 updated_size 0.000000 computed_during_stage1 0.000000 dp_rate 0.000000 dp_cap 966367641.600000
-> [5929.514531] (9:__pr_mig_tx:VM01(Provost-Fernand)@Provost) mig-stage2.0: remaining_size 0.000000 (< threshold 13084.109212)
-> [5929.514531] (9:__pr_mig_tx:VM01(Provost-Fernand)@Provost) mig-stage3: remaining_size 0.000000
 > [5929.608220] (0:@) migrate VM(VM01): set bound (137333000.000000) at Fernand
-> [5929.608220] (8:__pr_mig_rx:VM01(Provost-Fernand)@Fernand) set affinity(0x0000@Fernand) for VM01
 > [5931.433875] (0:@) MSG_main finished; Cleaning up the simulation...
 > [5931.433875] (1:Master@Jacquelin) Let's shut down the simulation and kill everyone.
 > [5931.433875] (1:Master@Jacquelin) Master done.
