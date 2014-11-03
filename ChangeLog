@@ -28,6 +28,7 @@ SimGrid (3.12) NOT RELEASED; urgency=low
    - MPI_Type_set_name, MPI_Type_get_name
    - MPI_*_c2f and MPI_*_f2c functions
    - MPI_Info_* functions (beware, get_nthkey may not follow the insertion order)
+   - MPI_Pack, MPI_Unpack and MPI_Pack_size functions
    - Activate a lot of new tests from the mpich 3 testsuite
  * Features 
    - Constant times can be injected inside MPI_Wtime and MPI_Test through options smpi/wtime and smpi/test
