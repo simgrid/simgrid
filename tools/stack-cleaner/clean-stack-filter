@@ -28,7 +28,7 @@ sub emit_code {
       # the address space and the other stacks are in the hap (lower).
       print("\tmovq \$0x7ffff7ff8000, %r11\n");
       print("\tcmpq %r11, %rsp\n");
-      print("\tjle .Lstack_cleaner_done$id\n");
+      print("\tjbe .Lstack_cleaner_done$id\n");
 
       # Loop over the stack frame quadwords and zero it:
       print("\tmovabsq \$$qsize, %r11\n");

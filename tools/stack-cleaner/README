@@ -3,15 +3,20 @@ Provides stack-cleaning compilers for x86_64:
  * as
  * cc
  * c++
+ * fortran
 
 Each of them modify the generated/given X86_64 assembly by prepending
 stack-cleanup code to each function:
 
+	movq $0x7ffff7ff8000, %r11
+	cmpq %r11, %rsp
+	jbe .Lstack_cleaner_done0
 	movq $QSIZE, %r11
-.Lloop:
+.Lstack_cleaner_loop0:
         movq $0, OFFSET(%rsp,%r11,8)
         subq $1, %r11
-        jne  .Lloop
+        jne  .Lstack_cleaner_loop0:
+.Lstack_cleaner_done0:
 
 The modification of the assembly is done by the clean-stack-filter
 program.
