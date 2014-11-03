@@ -3105,6 +3105,110 @@ int PMPI_Type_free_keyval(int* keyval) {
   return smpi_type_keyval_free(keyval);
 }
 
+int PMPI_Info_create( MPI_Info *info){
+  if (info == NULL)
+    return MPI_ERR_ARG;
+  *info = xbt_new(s_smpi_mpi_info_t, 1);
+  (*info)->info_dict= xbt_dict_new_homogeneous(NULL);
+  return MPI_SUCCESS;
+}
+
+int PMPI_Info_set( MPI_Info info, char *key, char *value){
+  if (info == NULL || key == NULL || value == NULL)
+    return MPI_ERR_ARG;
+
+  xbt_dict_set(info->info_dict, key, (void*)value, NULL);
+  return MPI_SUCCESS;
+}
+
+int PMPI_Info_free( MPI_Info *info){
+  if (info == NULL || *info==NULL)
+    return MPI_ERR_ARG;
+  xbt_dict_free(&((*info)->info_dict));
+  xbt_free(*info);
+  *info=MPI_INFO_NULL;
+  return MPI_SUCCESS;
+}
+
+int PMPI_Info_get(MPI_Info info,char *key,int valuelen, char *value, int *flag){
+  if (info == NULL || key == NULL || valuelen <0)
+    return MPI_ERR_ARG;
+  if (value == NULL)
+    return MPI_ERR_INFO_VALUE;
+  *flag=FALSE;    
+  char* tmpvalue=(char*)xbt_dict_get_or_null(info->info_dict, key);
+  if(tmpvalue){
+    memcpy(value,tmpvalue, (strlen(tmpvalue) + 1 < valuelen) ? 
+                         strlen(tmpvalue) + 1 : valuelen);
+    *flag=TRUE;
+  }
+  return MPI_SUCCESS;
+}
+
+int PMPI_Info_dup(MPI_Info info, MPI_Info *newinfo){
+  if (info == NULL || newinfo==NULL)
+    return MPI_ERR_ARG;
+  *newinfo = xbt_new(s_smpi_mpi_info_t, 1);
+  (*newinfo)->info_dict= xbt_dict_new_homogeneous(NULL);
+  xbt_dict_cursor_t cursor = NULL;
+  int *key;
+  void* data;
+  xbt_dict_foreach(info->info_dict,cursor,key,data){
+    xbt_dict_set((*newinfo)->info_dict, (char*)key, data, NULL);
+  }
+  return MPI_SUCCESS;
+}
+
+int PMPI_Info_delete(MPI_Info info, char *key){
+  xbt_ex_t e;
+  if (info == NULL || key==NULL)
+    return MPI_ERR_ARG;
+  TRY {
+  xbt_dict_remove(info->info_dict, key);
+  }CATCH(e){
+    xbt_ex_free(e);
+    return MPI_ERR_INFO_NOKEY;
+  }
+  return MPI_SUCCESS;
+}
+
+int PMPI_Info_get_nkeys( MPI_Info info, int *nkeys){
+  if (info == NULL || nkeys==NULL)
+    return MPI_ERR_ARG;
+  *nkeys=xbt_dict_size(info->info_dict);
+  return MPI_SUCCESS;
+}
+
+int PMPI_Info_get_nthkey( MPI_Info info, int n, char *key){
+  if (info == NULL || key==NULL || n<0 || n> MPI_MAX_INFO_KEY)
+    return MPI_ERR_ARG;
+
+  xbt_dict_cursor_t cursor = NULL;
+  char *keyn;
+  void* data;
+  int num=0;
+  xbt_dict_foreach(info->info_dict,cursor,keyn,data){
+    if(num==n){
+     memcpy(key,keyn, strlen(keyn));
+      return MPI_SUCCESS;
+    }
+    num++;
+  }
+  return MPI_ERR_ARG;
+}
+
+int PMPI_Info_get_valuelen( MPI_Info info, char *key, int *valuelen, int *flag){
+  if (info == NULL || key == NULL || valuelen <0)
+    return MPI_ERR_ARG;
+  *flag=FALSE;    
+  char* tmpvalue=(char*)xbt_dict_get_or_null(info->info_dict, key);
+  if(tmpvalue){
+    *valuelen=strlen(tmpvalue);
+    *flag=TRUE;
+  }
+  return MPI_SUCCESS;
+}
+
 /* The following calls are not yet implemented and will fail at runtime. */
 /* Once implemented, please move them above this notice. */
 
@@ -3289,17 +3393,7 @@ int PMPI_Get_elements(MPI_Status* status, MPI_Datatype datatype, int* elements) 
   NOT_YET_IMPLEMENTED
 }
 
-int PMPI_Info_create( MPI_Info *info){
-  NOT_YET_IMPLEMENTED
-}
 
-int PMPI_Info_set( MPI_Info info, char *key, char *value){
-  NOT_YET_IMPLEMENTED
-}
-
-int PMPI_Info_free( MPI_Info *info){
-  NOT_YET_IMPLEMENTED
-}
 
 int PMPI_Type_get_envelope( MPI_Datatype datatype, int *num_integers,
                             int *num_addresses, int *num_datatypes, int *combiner){
@@ -3352,10 +3446,6 @@ int PMPI_Comm_get_info (MPI_Comm comm, MPI_Info* info){
   NOT_YET_IMPLEMENTED
 }
 
-int PMPI_Info_get(MPI_Info info,char *key,int valuelen, char *value, int *flag){
-  NOT_YET_IMPLEMENTED
-}
-
 int PMPI_Comm_create_errhandler( MPI_Comm_errhandler_fn *function, MPI_Errhandler *errhandler){
   NOT_YET_IMPLEMENTED
 }
@@ -3373,26 +3463,6 @@ int PMPI_Add_error_string( int errorcode, char *string){
 }
 
 int PMPI_Comm_call_errhandler(MPI_Comm comm,int errorcode){
-  NOT_YET_IMPLEMENTED
-}
-
-int PMPI_Info_dup(MPI_Info info, MPI_Info *newinfo){
-  NOT_YET_IMPLEMENTED
-}
-
-int PMPI_Info_delete(MPI_Info info, char *key){
-  NOT_YET_IMPLEMENTED
-}
-
-int PMPI_Info_get_nkeys( MPI_Info info, int *nkeys){
-  NOT_YET_IMPLEMENTED
-}
-
-int PMPI_Info_get_nthkey( MPI_Info info, int n, char *key){
-  NOT_YET_IMPLEMENTED
-}
-
-int PMPI_Info_get_valuelen( MPI_Info info, char *key, int *valuelen, int *flag){
   NOT_YET_IMPLEMENTED
 }
 

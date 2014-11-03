@@ -126,6 +126,11 @@ typedef struct s_smpi_mpi_type_key_elem {
 } s_smpi_mpi_type_key_elem_t; 
 typedef struct s_smpi_mpi_type_key_elem *smpi_type_key_elem;
 
+typedef struct s_smpi_mpi_info {
+  xbt_dict_t info_dict;
+} s_smpi_mpi_info_t; 
+
+
 void smpi_process_destroy(void);
 void smpi_process_finalize(void);
 int smpi_process_finalized(void);

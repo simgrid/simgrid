@@ -69,6 +69,9 @@ SG_BEGIN_DECL()
 #define MPI_ERR_TOPOLOGY  18
 #define MPI_ERR_NO_MEM    19
 #define MPI_ERR_WIN       20
+#define MPI_ERR_INFO_VALUE 21
+#define MPI_ERR_INFO_KEY   22
+#define MPI_ERR_INFO_NOKEY 23
 #define MPI_ERRCODES_IGNORE (int *)0
 #define MPI_IDENT     0
 #define MPI_SIMILAR   1
@@ -111,7 +114,7 @@ SG_BEGIN_DECL()
 #define MPI_TYPECLASS_INTEGER 1
 #define MPI_TYPECLASS_COMPLEX 2
 #define MPI_ROOT 0
-#define MPI_INFO_NULL -1
+#define MPI_INFO_NULL NULL
 #define MPI_COMM_TYPE_SHARED    1
 #define MPI_WIN_NULL NULL
 
@@ -170,7 +173,8 @@ typedef struct {
 
 struct s_smpi_mpi_win;
 typedef struct s_smpi_mpi_win* MPI_Win;
-typedef int MPI_Info;
+struct s_smpi_mpi_info;
+typedef struct s_smpi_mpi_info *MPI_Info;
 
 #define MPI_STATUS_IGNORE ((MPI_Status*)NULL)
 #define MPI_STATUSES_IGNORE ((MPI_Status*)NULL)
