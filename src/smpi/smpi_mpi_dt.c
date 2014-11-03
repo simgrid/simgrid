@@ -149,7 +149,7 @@ CREATE_MPI_DATATYPE(MPI_LONG_DOUBLE_INT, long_double_int);
 
 CREATE_MPI_DATATYPE_NULL(MPI_UB);
 CREATE_MPI_DATATYPE_NULL(MPI_LB);
-CREATE_MPI_DATATYPE_NULL(MPI_PACKED);
+CREATE_MPI_DATATYPE(MPI_PACKED, char);
 // Internal use only
 CREATE_MPI_DATATYPE(MPI_PTR, void*);
 
@@ -259,12 +259,12 @@ int smpi_datatype_copy(void *sendbuf, int sendcount, MPI_Datatype sendtype,
     else if (sendtype->has_subtype == 0)
     {
       s_smpi_subtype_t *subtype =  recvtype->substruct;
-      subtype->unserialize( sendbuf, recvbuf,1, subtype, MPI_REPLACE);
+      subtype->unserialize( sendbuf, recvbuf, recvcount/smpi_datatype_size(recvtype), subtype, MPI_REPLACE);
     }
     else if (recvtype->has_subtype == 0)
     {
       s_smpi_subtype_t *subtype =  sendtype->substruct;
-      subtype->serialize(sendbuf, recvbuf,1, subtype);
+      subtype->serialize(sendbuf, recvbuf, sendcount/smpi_datatype_size(sendtype), subtype);
     }else{
       s_smpi_subtype_t *subtype =  sendtype->substruct;
 
@@ -1770,3 +1770,24 @@ int smpi_type_keyval_free(int* keyval){
   xbt_free(tmpkey);
   return MPI_SUCCESS;
 }
+
+int smpi_mpi_pack(void* inbuf, int incount, MPI_Datatype type, void* outbuf, int outcount, int* position, MPI_Comm comm){
+  size_t size = smpi_datatype_size(type);
+  if (outcount - *position < incount*size)
+    return MPI_ERR_BUFFER;
+  smpi_datatype_copy(inbuf, incount, type,
+                   (char*)outbuf + *position, outcount, MPI_CHAR);
+  *position += incount * size;
+  return MPI_SUCCESS;
+}
+
+int smpi_mpi_unpack(void* inbuf, int insize, int* position, void* outbuf, int outcount, MPI_Datatype type, MPI_Comm comm){
+  size_t size = smpi_datatype_size(type);
+  if (outcount*size> insize)
+    return MPI_ERR_BUFFER;
+  smpi_datatype_copy((char*)inbuf + *position, insize, MPI_CHAR,
+                   outbuf, outcount, type);
+  *position += outcount * size;
+  return MPI_SUCCESS;
+}
+

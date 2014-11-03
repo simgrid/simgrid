@@ -240,6 +240,9 @@ void smpi_datatype_create(MPI_Datatype* new_type, int size,int lb, int ub, int h
 void smpi_datatype_free(MPI_Datatype* type);
 void smpi_datatype_commit(MPI_Datatype* datatype);
 
+int smpi_mpi_unpack(void* inbuf, int insize, int* position, void* outbuf, int outcount, MPI_Datatype type, MPI_Comm comm);
+int smpi_mpi_pack(void* inbuf, int incount, MPI_Datatype type, void* outbuf, int outcount, int* position, MPI_Comm comm);
+
 void smpi_empty_status(MPI_Status * status);
 MPI_Op smpi_op_new(MPI_User_function * function, int commute);
 int smpi_op_is_commute(MPI_Op op);

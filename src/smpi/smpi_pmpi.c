@@ -3209,6 +3209,40 @@ int PMPI_Info_get_valuelen( MPI_Info info, char *key, int *valuelen, int *flag){
   return MPI_SUCCESS;
 }
 
+int PMPI_Unpack(void* inbuf, int incount, int* position, void* outbuf, int outcount, MPI_Datatype type, MPI_Comm comm) {
+  if(incount<0 || outcount < 0 || inbuf==NULL || outbuf==NULL)
+    return MPI_ERR_ARG;
+  if(!is_datatype_valid(type))
+    return MPI_ERR_TYPE;
+  if(comm==MPI_COMM_NULL)
+    return MPI_ERR_COMM;
+  return smpi_mpi_unpack(inbuf, incount, position, outbuf,outcount,type, comm);
+}
+
+int PMPI_Pack(void* inbuf, int incount, MPI_Datatype type, void* outbuf, int outcount, int* position, MPI_Comm comm) {
+  if(incount<0 || outcount < 0|| inbuf==NULL || outbuf==NULL)
+    return MPI_ERR_ARG;
+  if(!is_datatype_valid(type))
+    return MPI_ERR_TYPE;
+  if(comm==MPI_COMM_NULL)
+    return MPI_ERR_COMM;
+  return smpi_mpi_pack(inbuf, incount, type, outbuf,outcount,position, comm);
+}
+
+int PMPI_Pack_size(int incount, MPI_Datatype datatype, MPI_Comm comm, int* size) {
+  if(incount<0)
+    return MPI_ERR_ARG;
+  if(!is_datatype_valid(datatype))
+    return MPI_ERR_TYPE;
+  if(comm==MPI_COMM_NULL)
+    return MPI_ERR_COMM;
+    
+  *size=incount*smpi_datatype_size(datatype);
+  
+  return MPI_SUCCESS;
+}
+
+
 /* The following calls are not yet implemented and will fail at runtime. */
 /* Once implemented, please move them above this notice. */
 
@@ -3234,15 +3268,9 @@ MPI_Fint PMPI_Errhandler_c2f(MPI_Errhandler errhandler){
   NOT_YET_IMPLEMENTED
 }
 
-int PMPI_Pack_size(int incount, MPI_Datatype datatype, MPI_Comm comm, int* size) {
-  NOT_YET_IMPLEMENTED
-}
-
-
 int PMPI_Cart_map(MPI_Comm comm_old, int ndims, int* dims, int* periods, int* newrank) {
   NOT_YET_IMPLEMENTED
 }
-
 
 int PMPI_Graph_create(MPI_Comm comm_old, int nnodes, int* index, int* edges, int reorder, MPI_Comm* comm_graph) {
   NOT_YET_IMPLEMENTED
@@ -3325,9 +3353,6 @@ int PMPI_Pcontrol(const int level )
   NOT_YET_IMPLEMENTED
 }
 
-int PMPI_Unpack(void* inbuf, int insize, int* position, void* outbuf, int outcount, MPI_Datatype type, MPI_Comm comm) {
-  NOT_YET_IMPLEMENTED
-}
 
 int PMPI_Intercomm_create(MPI_Comm local_comm, int local_leader, MPI_Comm peer_comm, int remote_leader, int tag, MPI_Comm* comm_out) {
   NOT_YET_IMPLEMENTED
@@ -3373,9 +3398,7 @@ int PMPI_Test_cancelled(MPI_Status* status, int* flag) {
   NOT_YET_IMPLEMENTED
 }
 
-int PMPI_Pack(void* inbuf, int incount, MPI_Datatype type, void* outbuf, int outcount, int* position, MPI_Comm comm) {
-  NOT_YET_IMPLEMENTED
-}
+
 
 int PMPI_Pack_external_size(char *datarep, int incount, MPI_Datatype datatype, MPI_Aint *size){
   NOT_YET_IMPLEMENTED

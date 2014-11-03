@@ -3,13 +3,12 @@
 gaddress 1
 #complex games with negative extents...
 #lbub 1
-#needs MPI_Pack, MPI_Unpack
-#localpack 1
-#simple-pack 1
+localpack 1
+simple-pack 1
 #simple-pack-external 1
-#transpose-pack 1
+transpose-pack 1
 #slice-pack 1
-#struct-pack 1
+struct-pack 1
 #structpack2 1
 typecommit 1
 typename 1
@@ -25,13 +24,11 @@ sendrecvt4 2
 #tmatchsize 1
 tfree 2
 typelb 1
-#needs MPI_Pack_size
-#contigstruct 1
+contigstruct 1
 struct-zero-count 1
 blockindexed-zero-count 1
-#needs MPI_Pack, MPI_unpack, MPI_Pack_size
+#needs better handling of lb/ub
 #blockindexed-misc 1
-#needs MPI_Pack, MPI_unpack, MPI_Pack_size
 #indexed-misc 1
 #needs MPI_Type_create_subarray
 #subarray-pack 1
@@ -57,10 +54,9 @@ simple-resized 1
 #hindexed-zeros 1
 #lots-of-types 1
 #get-elements-pairtype 1
-#unpack 1
+unpack 1
 struct-ezhov 1
-#needs MPI_Pack, MPI_Unpack
-#zeroblks 1
+zeroblks 1
 struct-derived-zeros 1
 struct-verydeep 1
 #get-elements 1
