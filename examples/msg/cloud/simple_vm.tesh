@@ -65,22 +65,10 @@ $ $SG_TEST_EXENV ${bindir:=.}/simple_vm$EXEEXT --log=no_loc ${srcdir:=.}/../../p
 > [Fafard:master_:(1) 49.000000] [msg_test/INFO] ### Relocate VM0 between PM0 and PM1
 > [49.000000] [surf_vm_workstation/INFO] Create VM(VM0)@PM(Fafard) with 0 mounted disks
 > [Fafard:__pr_mig_tx:VM0(Fafard-Tremblay):(38) 49.010000] [msg_vm/WARNING] use the default max_downtime value 30ms
-> [Fafard:__pr_mig_tx:VM0(Fafard-Tremblay):(38) 49.010000] [msg_vm/INFO] mig-stage1: remaining_size 1073741824.000000
 > [Bourassa:comm_rx:(36) 49.204993] [msg_test/INFO] VM0:comm_tx to Bourassa:comm_rx => 0.204993 sec
-> [Fafard:__pr_mig_tx:VM0(Fafard-Tremblay):(38) 191.612841] [msg_vm/INFO] actual bandwidth 7.180783 (MB/s), threshold 225887.888231
-> [Fafard:__pr_mig_tx:VM0(Fafard-Tremblay):(38) 191.612841] [msg_vm/INFO] mig-stage 2:0 updated_size 0.000000 computed_during_stage1 0.000000 dp_rate 0.000000 dp_cap 0.000000
-> [Fafard:__pr_mig_tx:VM0(Fafard-Tremblay):(38) 191.612841] [msg_vm/INFO] mig-stage2.0: remaining_size 0.000000 (< threshold 225887.888231)
-> [Fafard:__pr_mig_tx:VM0(Fafard-Tremblay):(38) 191.612841] [msg_vm/INFO] mig-stage3: remaining_size 0.000000
 > [191.638550] [surf_vm_workstation/INFO] migrate VM(VM0): set bound (76296000.000000) at Tremblay
-> [Tremblay:__pr_mig_rx:VM0(Fafard-Tremblay):(37) 191.638550] [msg_vm/INFO] set affinity(0x0000@Tremblay) for VM0
 > [Tremblay:__pr_mig_tx:VM0(Tremblay-Fafard):(42) 191.674258] [msg_vm/WARNING] use the default max_downtime value 30ms
-> [Tremblay:__pr_mig_tx:VM0(Tremblay-Fafard):(42) 191.674258] [msg_vm/INFO] mig-stage1: remaining_size 1073741824.000000
-> [Tremblay:__pr_mig_tx:VM0(Tremblay-Fafard):(42) 334.173348] [msg_vm/INFO] actual bandwidth 7.186011 (MB/s), threshold 226052.353672
-> [Tremblay:__pr_mig_tx:VM0(Tremblay-Fafard):(42) 334.173348] [msg_vm/INFO] mig-stage 2:0 updated_size 0.000000 computed_during_stage1 0.000000 dp_rate 0.000000 dp_cap 0.000000
-> [Tremblay:__pr_mig_tx:VM0(Tremblay-Fafard):(42) 334.173348] [msg_vm/INFO] mig-stage2.0: remaining_size 0.000000 (< threshold 226052.353672)
-> [Tremblay:__pr_mig_tx:VM0(Tremblay-Fafard):(42) 334.173348] [msg_vm/INFO] mig-stage3: remaining_size 0.000000
 > [334.199056] [surf_vm_workstation/CRITICAL] FIXME: may need a proper handling, 1
 > [334.199056] [surf_vm_workstation/INFO] migrate VM(VM0): set bound (76296000.000000) at Fafard
-> [Fafard:__pr_mig_rx:VM0(Tremblay-Fafard):(41) 334.199056] [msg_vm/INFO] set affinity(0x0000@Fafard) for VM0
 > [Fafard:master_:(1) 339.199251] [msg_test/INFO] ## Test 6 (ended)
 > [339.199251] [msg_test/INFO] Bye (simulation time 339.199)
