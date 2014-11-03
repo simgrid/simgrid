@@ -23,11 +23,20 @@ sub emit_code {
     my $offset = - $size - 8;
 
     if($size != 0) {
+      # This is a crude hack to disable the stack cleaning on the main
+      # stack.  It rellies on the fact that the main stack is high in
+      # the address space and the other stacks are in the hap (lower).
+      print("\tmovq \$0x7ffff7ff8000, %r11\n");
+      print("\tcmpq %r11, %rsp\n");
+      print("\tjle .Lstack_cleaner_done$id\n");
+
+      # Loop over the stack frame quadwords and zero it:
       print("\tmovabsq \$$qsize, %r11\n");
       print(".Lstack_cleaner_loop$id:\n");
       print("\tmovq    \$0, $offset(%rsp,%r11,8)\n");
       print("\tsubq    \$1, %r11\n");
       print("\tjne     .Lstack_cleaner_loop$id\n");
+      print(".Lstack_cleaner_done$id:\n");
     }
 
     print $lines;
