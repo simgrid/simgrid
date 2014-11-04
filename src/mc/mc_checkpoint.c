@@ -709,7 +709,7 @@ void MC_restore_snapshot(mc_snapshot_t snapshot)
     new_fd = open(snapshot->current_fd[i]->filename, snapshot->current_fd[i]->flags);
     if(new_fd != -1 && new_fd != snapshot->current_fd[i]->number){
       dup2(new_fd, snapshot->current_fd[i]->number);
-      fprintf(stderr, "%p\n", fdopen(snapshot->current_fd[i]->number, "rw"));
+      //fprintf(stderr, "%p\n", fdopen(snapshot->current_fd[i]->number, "rw"));
       lseek(snapshot->current_fd[i]->number, snapshot->current_fd[i]->current_position, SEEK_SET);
     };
   }
