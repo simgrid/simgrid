@@ -10,6 +10,7 @@
 
 #include <string.h>
 #include <link.h>
+#include <dirent.h>
 
 #include "internal_config.h"
 #include "mc_private.h"
@@ -574,6 +575,59 @@ int mc_important_snapshot(mc_snapshot_t snapshot)
   return false;
 }
 
+static void MC_get_current_fd(mc_snapshot_t snapshot){
+  
+ struct dirent *fd_number;
+ DIR *fd_dir;
+ char *command;
+ size_t n;
+ char *line = NULL;
+ FILE *fp;
+ int fd_value;
+
+ snapshot->total_fd = 0;
+
+ fd_dir = opendir ("/proc/self/fd");
+ if (fd_dir == NULL) {
+   printf ("Cannot open directory '/proc/self/fd'\n");
+   return;
+ }
+
+ while ((fd_number = readdir(fd_dir)) != NULL) {
+   
+   fd_value = atoi(fd_number->d_name);
+
+   if(fd_value < 3)
+     continue;
+  
+   command = bprintf("readlink /proc/self/fd/%s", fd_number->d_name);
+   fp = popen(command, "r");
+   if(fp == NULL){
+     perror("popen failed");
+     xbt_abort();
+   }
+   xbt_getline(&line, &n, fp); 
+   if(line && strncmp(line, "pipe:", 5) != 0 && strncmp(line, "socket:", 7) != 0){
+     fd_infos_t fd = xbt_new0(s_fd_infos_t, 1);
+     fd->filename = strdup(line);
+     fd->filename[strlen(line)-1] = '\0';
+     fd->number = fd_value;
+     fd->flags = fcntl(fd_value, F_GETFD);
+     fd->current_position = lseek(fd_value, 0, SEEK_CUR);
+     snapshot->current_fd = xbt_realloc(snapshot->current_fd, (snapshot->total_fd + 1) * sizeof(fd_infos_t));
+     snapshot->current_fd[snapshot->total_fd] = fd;
+     snapshot->total_fd++;
+   }
+   
+   xbt_free(command);
+   pclose(fp);
+ }
+
+ xbt_free(line);
+ closedir (fd_dir);
+
+}
+
 mc_snapshot_t MC_take_snapshot(int num_state)
 {
 
@@ -585,6 +639,8 @@ mc_snapshot_t MC_take_snapshot(int num_state)
   }
 
   MC_snapshot_handle_ignore(snapshot);
+
+  MC_get_current_fd(snapshot);
 
   /* Save the std heap and the writable mapped pages of libsimgrid and binary */
   MC_get_memory_regions(snapshot);
@@ -617,6 +673,7 @@ void MC_restore_snapshot(mc_snapshot_t snapshot)
 {
   mc_snapshot_t parent_snapshot = mc_model_checker->parent_snapshot;
 
+  int new_fd;
   unsigned int i;
   for (i = 0; i < NB_REGIONS; i++) {
     // For privatized, variables we decided it was not necessary to take the snapshot:
@@ -647,6 +704,16 @@ void MC_restore_snapshot(mc_snapshot_t snapshot)
   }
 #endif
 
+  for(i=0; i < snapshot->total_fd; i++){
+    
+    new_fd = open(snapshot->current_fd[i]->filename, snapshot->current_fd[i]->flags);
+    if(new_fd != -1 && new_fd != snapshot->current_fd[i]->number){
+      dup2(new_fd, snapshot->current_fd[i]->number);
+      fprintf(stderr, "%p\n", fdopen(snapshot->current_fd[i]->number, "rw"));
+      lseek(snapshot->current_fd[i]->number, snapshot->current_fd[i]->current_position, SEEK_SET);
+    };
+  }
+
   if (_sg_mc_sparse_checkpoint && _sg_mc_soft_dirty) {
     mc_softdirty_reset();
   }
@@ -655,6 +722,7 @@ void MC_restore_snapshot(mc_snapshot_t snapshot)
   if (_sg_mc_sparse_checkpoint && _sg_mc_soft_dirty) {
     mc_model_checker->parent_snapshot = snapshot;
   }
+
 }
 
 mc_snapshot_t simcall_HANDLER_mc_snapshot(smx_simcall_t simcall)

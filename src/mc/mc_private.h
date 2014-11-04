@@ -95,6 +95,13 @@ typedef struct s_mc_snapshot_ignored_data {
   void* data;
 } s_mc_snapshot_ignored_data_t, *mc_snapshot_ignored_data_t;
 
+typedef struct s_fd_infos{
+  char *filename;
+  int number;
+  off_t current_position;
+  int flags;
+}s_fd_infos_t, *fd_infos_t;
+
 typedef struct s_mc_snapshot{
   size_t heap_bytes_used;
   mc_mem_region_t regions[NB_REGIONS];
@@ -106,7 +113,10 @@ typedef struct s_mc_snapshot{
   xbt_dynar_t to_ignore;
   uint64_t hash;
   xbt_dynar_t ignored_data;
+  int total_fd;
+  fd_infos_t *current_fd;
 } s_mc_snapshot_t;
+
 
 /** @brief Process index used when no process is available
  *
