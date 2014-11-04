@@ -392,7 +392,6 @@ teshsuite/smpi/isp/umpire/remote_group-no-error
 teshsuite/smpi/isp/umpire/send-recv-ok
 teshsuite/smpi/isp/umpire/sendrecv-deadlock
 teshsuite/smpi/isp/umpire/temp.txt
-teshsuite/smpi/isp/umpire/tmpzLRJML
 teshsuite/smpi/isp/umpire/type-commit-twice
 teshsuite/smpi/isp/umpire/type-no-error
 teshsuite/smpi/isp/umpire/type-no-error-exhaustive
@@ -584,10 +583,6 @@ teshsuite/smpi/mpich-test/pt2pt/waitall3
 teshsuite/smpi/mpich-test/pt2pt/waitall4
 teshsuite/smpi/mpich-test/pt2pt/waitany
 teshsuite/smpi/mpich3-test/coll/allred
-teshsuite/smpi/mpich3-test/coll/tmp73Vx2L
-teshsuite/smpi/mpich3-test/coll/tmpE4hKX0
-teshsuite/smpi/mpich3-test/coll/tmphostCPGVnk
-teshsuite/smpi/mpich3-test/coll/tmphostepz3pY
 teshsuite/smpi/mpich3-test/datatype/dataalign
 teshsuite/smpi/mpich3-test/datatype/sendrecvt2
 teshsuite/smpi/mpich3-test/datatype/sendrecvt4
@@ -602,10 +597,6 @@ teshsuite/smpi/mpich3-test/f90/rma/winaccf90
 teshsuite/smpi/mpich3-test/f90/rma/winfencef90
 teshsuite/smpi/mpich3-test/f90/rma/wingetf90
 teshsuite/smpi/mpich3-test/f90/rma/winnamef90
-teshsuite/smpi/mpich3-test/init/tmp73CIfB
-teshsuite/smpi/mpich3-test/init/tmpZL3N2j
-teshsuite/smpi/mpich3-test/init/tmphostLLOBUj
-teshsuite/smpi/mpich3-test/init/tmphostl1QCPt
 teshsuite/smpi/mpich3-test/perf/commcreatep
 teshsuite/smpi/mpich3-test/perf/non_zero_root
 teshsuite/smpi/mpich3-test/perf/sendrecvl
@@ -613,8 +604,6 @@ teshsuite/smpi/mpich3-test/perf/timer
 teshsuite/smpi/mpich3-test/perf/transp-datatype
 teshsuite/smpi/mpich3-test/perf/twovec
 teshsuite/smpi/mpich3-test/pt2pt/issendselfcancel
-teshsuite/smpi/mpich3-test/pt2pt/tmpF7WuWe
-teshsuite/smpi/mpich3-test/pt2pt/tmphost4geNJj
 teshsuite/smpi/mpich3-test/rma/getgroup
 teshsuite/smpi/mpich3-test/rma/manyrma3
 teshsuite/smpi/mpich3-test/attr/attr2type
