@@ -612,7 +612,7 @@ static void MC_get_current_fd(mc_snapshot_t snapshot){
      fd->filename = strdup(line);
      fd->filename[strlen(line)-1] = '\0';
      fd->number = fd_value;
-     fd->flags = fcntl(fd_value, F_GETFD);
+     fd->flags = fcntl(fd_value, F_GETFL) | fcntl(fd_value, F_GETFD) ;
      fd->current_position = lseek(fd_value, 0, SEEK_CUR);
      snapshot->current_fd = xbt_realloc(snapshot->current_fd, (snapshot->total_fd + 1) * sizeof(fd_infos_t));
      snapshot->current_fd[snapshot->total_fd] = fd;
@@ -710,8 +710,9 @@ void MC_restore_snapshot(mc_snapshot_t snapshot)
     if(new_fd != -1 && new_fd != snapshot->current_fd[i]->number){
       dup2(new_fd, snapshot->current_fd[i]->number);
       //fprintf(stderr, "%p\n", fdopen(snapshot->current_fd[i]->number, "rw"));
-      lseek(snapshot->current_fd[i]->number, snapshot->current_fd[i]->current_position, SEEK_SET);
+      close(new_fd);
     };
+    lseek(snapshot->current_fd[i]->number, snapshot->current_fd[i]->current_position, SEEK_SET);
   }
 
   if (_sg_mc_sparse_checkpoint && _sg_mc_soft_dirty) {
