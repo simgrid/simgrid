@@ -16,7 +16,11 @@ if(enable_smpi AND enable_smpi_MPICH3_testsuite)
   add_executable(allgather3 allgather3.c)
   add_executable(allgatherv2 allgatherv2.c)
   add_executable(allgatherv3 allgatherv3.c)
-  add_executable(allgatherv4 allgatherv4.c)
+  if(HAVE_MMAP)
+    add_executable(allgatherv4 allgatherv4.c)
+  else()
+    add_executable(allgatherv4 allgatherv4_manual.c)
+  endif()
   add_executable(allred2 allred2.c)
   add_executable(allred3 allred3.c)
   add_executable(allred4 allred4.c)
@@ -212,6 +216,7 @@ set(examples_src
  ${CMAKE_CURRENT_SOURCE_DIR}/allgatherv2.c 
  ${CMAKE_CURRENT_SOURCE_DIR}/allgatherv3.c 
  ${CMAKE_CURRENT_SOURCE_DIR}/allgatherv4.c 
+ ${CMAKE_CURRENT_SOURCE_DIR}/allgatherv4_manual.c 
  ${CMAKE_CURRENT_SOURCE_DIR}/allred2.c 
  ${CMAKE_CURRENT_SOURCE_DIR}/allred3.c 
  ${CMAKE_CURRENT_SOURCE_DIR}/allred4.c 
