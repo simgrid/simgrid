@@ -112,8 +112,8 @@ int main(int argc, char ** argv)
     comm_tests(comm);
     MPI_Comm_free(&comm);
 
-    //free(SMPI_VARGET_GLOBAL(sbuf));
-    //free(SMPI_VARGET_GLOBAL(rbuf));
+    free(SMPI_VARGET_GLOBAL(sbuf));
+    free(SMPI_VARGET_GLOBAL(rbuf));
     free(SMPI_VARGET_GLOBAL(recvcounts));
     free(SMPI_VARGET_GLOBAL(displs));
 
