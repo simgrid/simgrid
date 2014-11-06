@@ -35,7 +35,9 @@ def wrapped_as(argv)
 
   # Generate temp file
   tempfile = Tempfile.new("as-filter")
-  unless system(File.dirname($0) + "/clean-stack-filter", 0 => input, 1 => tempfile)
+  tempfile.close
+  script = File.dirname($0) + "/clean-stack-filter"
+  unless system([script, script], 0 => input, 1 => tempfile.path)
     status=$?.exitstatus
     FileUtils.rm tempfile
     exit status
