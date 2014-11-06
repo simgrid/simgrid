@@ -128,6 +128,7 @@ typedef struct s_smpi_mpi_type_key_elem *smpi_type_key_elem;
 
 typedef struct s_smpi_mpi_info {
   xbt_dict_t info_dict;
+  int refcount;
 } s_smpi_mpi_info_t; 
 
 

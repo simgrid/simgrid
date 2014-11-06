@@ -3110,6 +3110,7 @@ int PMPI_Info_create( MPI_Info *info){
     return MPI_ERR_ARG;
   *info = xbt_new(s_smpi_mpi_info_t, 1);
   (*info)->info_dict= xbt_dict_new_homogeneous(NULL);
+  (*info)->refcount=1;
   return MPI_SUCCESS;
 }
 
@@ -3124,8 +3125,11 @@ int PMPI_Info_set( MPI_Info info, char *key, char *value){
 int PMPI_Info_free( MPI_Info *info){
   if (info == NULL || *info==NULL)
     return MPI_ERR_ARG;
-  xbt_dict_free(&((*info)->info_dict));
-  xbt_free(*info);
+  (*info)->refcount--;
+  if((*info)->refcount==0){
+    xbt_dict_free(&((*info)->info_dict));
+    xbt_free(*info);
+  }
   *info=MPI_INFO_NULL;
   return MPI_SUCCESS;
 }
