@@ -3000,6 +3000,14 @@ MPI_Fint PMPI_Comm_c2f(MPI_Comm comm){
   return smpi_comm_c2f(comm);
 }
 
+MPI_Info PMPI_Info_f2c(MPI_Fint info){
+  return smpi_info_f2c(info);
+}
+
+MPI_Fint PMPI_Info_c2f(MPI_Info info){
+  return smpi_info_c2f(info);
+}
+
 int PMPI_Keyval_create(MPI_Copy_function* copy_fn, MPI_Delete_function* delete_fn, int* keyval, void* extra_state) {
   return smpi_comm_keyval_create(copy_fn, delete_fn, keyval, extra_state);
 }
@@ -3193,7 +3201,7 @@ int PMPI_Info_get_nthkey( MPI_Info info, int n, char *key){
   int num=0;
   xbt_dict_foreach(info->info_dict,cursor,keyn,data){
     if(num==n){
-     memcpy(key,keyn, strlen(keyn));
+     strcpy(key,keyn);
       return MPI_SUCCESS;
     }
     num++;
@@ -3254,15 +3262,6 @@ int PMPI_Pack_size(int incount, MPI_Datatype datatype, MPI_Comm comm, int* size)
     XBT_WARN("Not yet implemented : %s. Please contact the Simgrid team if support is needed", __FUNCTION__); \
     return MPI_SUCCESS;                                                 \
   }
-
-
-MPI_Info PMPI_Info_f2c(MPI_Fint info){
-  NOT_YET_IMPLEMENTED
-}
-
-MPI_Fint PMPI_Info_c2f(MPI_Info info){
-  NOT_YET_IMPLEMENTED
-}
 
 MPI_Errhandler PMPI_Errhandler_f2c(MPI_Fint errhandler){
   NOT_YET_IMPLEMENTED

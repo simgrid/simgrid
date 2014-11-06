@@ -297,6 +297,8 @@ int smpi_op_c2f(MPI_Op op);
 MPI_Op smpi_op_f2c(int op);
 int smpi_win_c2f(MPI_Win win);
 MPI_Win smpi_win_f2c(int win);
+int smpi_info_c2f(MPI_Info info);
+MPI_Info smpi_info_f2c(int info);
 
 MPI_Request smpi_mpi_send_init(void *buf, int count, MPI_Datatype datatype,
                                int dst, int tag, MPI_Comm comm);
@@ -556,7 +558,7 @@ void mpi_win_create_( int *base, MPI_Aint* size, int* disp_unit, int* info, int*
 void mpi_win_set_name_ (int*  win, char * name, int* ierr, int size);
 void mpi_win_get_name_ (int*  win, char * name, int* len, int* ierr);
 void mpi_info_create_( int *info, int* ierr);
-void mpi_info_set_( int *info, char *key, char *value, int* ierr);
+void mpi_info_set_( int *info, char *key, char *value, int* ierr, unsigned int keylen, unsigned int valuelen);
 void mpi_info_free_(int* info, int* ierr);
 void mpi_get_( int *origin_addr, int* origin_count, int* origin_datatype, int* target_rank,
     MPI_Aint* target_disp, int* target_count, int* target_datatype, int* win, int* ierr);
@@ -692,17 +694,17 @@ void mpi_comm_dup_with_info_ (int* comm, int* info, int* newcomm, int* ierr);
 void mpi_comm_split_type_ (int* comm, int* split_type, int* key, int* info, int*newcomm, int* ierr);
 void mpi_comm_set_info_ (int* comm, int* info, int* ierr);
 void mpi_comm_get_info_ (int* comm, int* info, int* ierr);
-void mpi_info_get_ (int* info,char *key,int* valuelen, char *value, int *flag, int* ierr);
+void mpi_info_get_ (int* info,char *key,int* valuelen, char *value, int *flag, int* ierr, unsigned int keylen);
 void mpi_comm_create_errhandler_ ( void *function, void *errhandler, int* ierr);
 void mpi_add_error_class_ ( int *errorclass, int* ierr);
 void mpi_add_error_code_ (  int* errorclass, int *errorcode, int* ierr);
 void mpi_add_error_string_ ( int* errorcode, char *string, int* ierr);
 void mpi_comm_call_errhandler_ (int* comm,int* errorcode, int* ierr);
 void mpi_info_dup_ (int* info, int* newinfo, int* ierr);
-void mpi_info_get_valuelen_ ( int* info, char *key, int *valuelen, int *flag, int* ierr);
-void mpi_info_delete_ (int* info, char *key, int* ierr);
+void mpi_info_get_valuelen_ ( int* info, char *key, int *valuelen, int *flag, int* ierr, unsigned int keylen);
+void mpi_info_delete_ (int* info, char *key, int* ierr, unsigned int keylen);
 void mpi_info_get_nkeys_ ( int* info, int *nkeys, int* ierr);
-void mpi_info_get_nthkey_ ( int* info, int* n, char *key, int* ierr);
+void mpi_info_get_nthkey_ ( int* info, int* n, char *key, int* ierr, unsigned int keylen);
 void mpi_get_version_ (int *version,int *subversion, int* ierr);
 void mpi_get_library_version_ (char *version,int *len, int* ierr);
 void mpi_request_get_status_ ( int* request, int *flag, MPI_Status* status, int* ierr);

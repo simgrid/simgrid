@@ -91,7 +91,7 @@
       parameter(MPI_IO=0)
       integer MPI_ROOT, MPI_INFO_NULL,MPI_COMM_TYPE_SHARED
       parameter(MPI_ROOT=0)
-      parameter(MPI_INFO_NULL=-1)
+      parameter(MPI_INFO_NULL=0)
       parameter(MPI_COMM_TYPE_SHARED=1)
 
 ! These should be ordered as in smpi_f77.c
