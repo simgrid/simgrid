@@ -11,6 +11,9 @@
 #include <sys/mman.h>
 #include <libgen.h>
 
+#define UNW_LOCAL_ONLY
+#include <libunwind.h>
+
 #include "simgrid/sg_config.h"
 #include "../surf/surf_private.h"
 #include "../simix/smx_private.h"
@@ -823,4 +826,34 @@ void MC_automaton_new_propositional_symbol(const char *id, void *fct)
   if (raw_mem_set)
     MC_SET_MC_HEAP;
 
+}
+
+void MC_dump_stacks(FILE* file)
+{
+  int raw_mem_set = (mmalloc_get_current_heap() == mc_heap);
+  MC_SET_MC_HEAP;
+
+  int nstack = 0;
+  stack_region_t current_stack;
+  unsigned cursor;
+  xbt_dynar_foreach(stacks_areas, cursor, current_stack) {
+    unw_context_t * context = (unw_context_t *)current_stack->context;
+    fprintf(file, "Stack %i:\n", nstack);
+
+    int nframe = 0;
+    char buffer[100];
+    unw_cursor_t c;
+    unw_init_local (&c, context);
+    unw_word_t off;
+    do {
+      const char * name = !unw_get_proc_name(&c, buffer, 100, &off) ? buffer : "?";
+      fprintf(file, "  %i: %s\n", nframe, name);
+      ++nframe;
+    } while(unw_step(&c));
+
+    ++nstack;
+  }
+
+  if (raw_mem_set)
+    MC_SET_MC_HEAP;
 }

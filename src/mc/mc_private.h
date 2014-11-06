@@ -909,6 +909,15 @@ void* mc_snapshot_read_pointer_region(void* addr, mc_mem_region_t region)
     xbt_free(req_str); \
   }
 
+/** @brief Dump the stacks of the application processes
+ *
+ *   This functions is currently not used but it is quite convenient
+ *   to call from the debugger.
+ *
+ *   Does not work when an application thread is running.
+ */
+void MC_dump_stacks(FILE* file);
+
 SG_END_DECL()
 
 #endif
