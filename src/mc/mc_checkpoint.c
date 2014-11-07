@@ -593,7 +593,7 @@ static void MC_get_current_fd(mc_snapshot_t snapshot){
 
   size_t total_fd = 0;
   struct dirent* fd_number;
-  while (fd_number = readdir(fd_dir)) {
+  while ((fd_number = readdir(fd_dir))) {
 
     int fd_value = atoi(fd_number->d_name);
 
