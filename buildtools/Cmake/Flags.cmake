@@ -50,6 +50,14 @@ else()
   set(optCFLAGS "-O0 ")
 endif()
 
+if(enable_sdt)
+  add_definitions(-DUSE_SDT)
+endif()
+
+if(enable_ust)
+  add_definitions(-DUSE_UST)
+endif()
+
 if(enable_model-checking AND enable_compile_optimizations)
   # Forget it, do not optimize the code (because it confuses the MC):
   set(optCFLAGS "-O0 ")

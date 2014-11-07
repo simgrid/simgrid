@@ -629,6 +629,10 @@ static void MC_get_current_fd(mc_snapshot_t snapshot){
     if (strncmp(link, "pipe:", 5) == 0 || strncmp(link, "socket:", 7) == 0)
       continue;
 
+    // This is probably a shared memory used by lttng-ust:
+    if(strncmp("/dev/shm/ust-shm-tmp-", link, 21)==0)
+      continue;
+
     // Add an entry for this FD in the snapshot:
     fd_infos_t fd = xbt_new0(s_fd_infos_t, 1);
     fd->filename = strdup(link);
