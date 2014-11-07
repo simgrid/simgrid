@@ -1169,6 +1169,12 @@ set(CMAKE_SOURCE_FILES
   buildtools/Cmake/test_prog/prog_stacksetup.c
   buildtools/Cmake/test_prog/prog_thread_storage.c
   buildtools/Cmake/test_prog/prog_vsnprintf.c
+  tools/stack-cleaner/as
+  tools/stack-cleaner/cc
+  tools/stack-cleaner/c++
+  tools/stack-cleaner/fortran
+  tools/stack-cleaner/clean-stack-filter
+  tools/stack-cleaner/README
   )
 
 set(PLATFORMS_EXAMPLES
