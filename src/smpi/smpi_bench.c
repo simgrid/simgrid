@@ -647,6 +647,11 @@ void smpi_really_switch_data_segment(int dest) {
 #endif
 }
 
+int smpi_is_privatisation_file(char* file)
+{
+  return strncmp("/dev/shm/my-buffer-", file, 19) == 0;
+}
+
 void smpi_get_executable_global_size(){
   int size_bss_binary=0;
   int size_data_binary=0;

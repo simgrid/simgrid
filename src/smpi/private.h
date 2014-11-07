@@ -448,6 +448,7 @@ extern int size_data_exe; //size of the data+bss segment of the executable
 
 void smpi_switch_data_segment(int dest);
 void smpi_really_switch_data_segment(int dest);
+int smpi_is_privatisation_file(char* file);
 
 void smpi_get_executable_global_size(void);
 void smpi_initialize_global_memory_segments(void);

@@ -7,6 +7,7 @@
 #define _GNU_SOURCE
 #define UNW_LOCAL_ONLY
 
+#include <unistd.h>
 
 #include <string.h>
 #include <link.h>
@@ -577,56 +578,70 @@ int mc_important_snapshot(mc_snapshot_t snapshot)
 }
 
 static void MC_get_current_fd(mc_snapshot_t snapshot){
-  
- struct dirent *fd_number;
- DIR *fd_dir;
- char *command;
- size_t n;
- char *line = NULL;
- FILE *fp;
- int fd_value;
 
- snapshot->total_fd = 0;
+  snapshot->total_fd = 0;
 
- fd_dir = opendir ("/proc/self/fd");
- if (fd_dir == NULL) {
-   printf ("Cannot open directory '/proc/self/fd'\n");
-   return;
- }
+  const size_t fd_dir_path_size = 20;
+  char fd_dir_path[fd_dir_path_size];
+  if (snprintf(fd_dir_path, fd_dir_path_size,
+    "/proc/%lli/fd", (long long int) getpid()) > fd_dir_path_size)
+    xbt_die("Unexpected buffer is too small for fd_dir_path");
 
- while ((fd_number = readdir(fd_dir)) != NULL) {
-   
-   fd_value = atoi(fd_number->d_name);
+  DIR* fd_dir = opendir (fd_dir_path);
+  if (fd_dir == NULL)
+    xbt_die("Cannot open directory '/proc/self/fd'\n");
 
-   if(fd_value < 3)
-     continue;
-  
-   command = bprintf("readlink /proc/self/fd/%s", fd_number->d_name);
-   fp = popen(command, "r");
-   if(fp == NULL){
-     perror("popen failed");
-     xbt_abort();
-   }
-   xbt_getline(&line, &n, fp); 
-   if(line && strncmp(line, "pipe:", 5) != 0 && strncmp(line, "socket:", 7) != 0){
-     fd_infos_t fd = xbt_new0(s_fd_infos_t, 1);
-     fd->filename = strdup(line);
-     fd->filename[strlen(line)-1] = '\0';
-     fd->number = fd_value;
-     fd->flags = fcntl(fd_value, F_GETFL) | fcntl(fd_value, F_GETFD) ;
-     fd->current_position = lseek(fd_value, 0, SEEK_CUR);
-     snapshot->current_fd = xbt_realloc(snapshot->current_fd, (snapshot->total_fd + 1) * sizeof(fd_infos_t));
-     snapshot->current_fd[snapshot->total_fd] = fd;
-     snapshot->total_fd++;
-   }
-   
-   xbt_free(command);
-   pclose(fp);
- }
+  size_t total_fd = 0;
+  struct dirent* fd_number;
+  while (fd_number = readdir(fd_dir)) {
 
- xbt_free(line);
- closedir (fd_dir);
+    int fd_value = atoi(fd_number->d_name);
 
+    if(fd_value < 3)
+      continue;
+
+    const size_t source_size = 25;
+    char source[25];
+    if (snprintf(source, source_size, "/proc/self/fd/%s", fd_number->d_name) > source_size)
+      xbt_die("Unexpected buffer is too small for fd %s", fd_number->d_name);
+
+    const size_t link_size = 200;
+    char link[200];
+    size_t res = readlink(source, link, link_size);
+    if (res<0) {
+      xbt_die("Could not read link for %s", source);
+    }
+    if (res==200) {
+      xbt_die("Buffer to small for link of %s", source);
+    }
+    link[res] = '\0';
+
+    if(smpi_is_privatisation_file(link))
+      continue;
+
+    // This is (probably) the DIR* we are reading:
+    // TODO, read all the file entries at once and close the DIR.*
+    if(strcmp(fd_dir_path, link) == 0)
+      continue;
+
+    // We don't handle them.
+    // It does not mean we should silently ignore them however.
+    if (strncmp(link, "pipe:", 5) == 0 || strncmp(link, "socket:", 7) == 0)
+      continue;
+
+    // Add an entry for this FD in the snapshot:
+    fd_infos_t fd = xbt_new0(s_fd_infos_t, 1);
+    fd->filename = strdup(link);
+    fd->number = fd_value;
+    fd->flags = fcntl(fd_value, F_GETFL) | fcntl(fd_value, F_GETFD) ;
+    fd->current_position = lseek(fd_value, 0, SEEK_CUR);
+    snapshot->current_fd = xbt_realloc(snapshot->current_fd, (total_fd + 1) * sizeof(fd_infos_t));
+    snapshot->current_fd[total_fd] = fd;
+    total_fd++;
+  }
+
+  snapshot->total_fd = total_fd;
+  closedir (fd_dir);
 }
 
 mc_snapshot_t MC_take_snapshot(int num_state)
@@ -708,6 +723,10 @@ void MC_restore_snapshot(mc_snapshot_t snapshot)
   for(i=0; i < snapshot->total_fd; i++){
     
     new_fd = open(snapshot->current_fd[i]->filename, snapshot->current_fd[i]->flags);
+    if (new_fd <0) {
+      xbt_die("Could not reopen the file %s fo restoring the file descriptor",
+        snapshot->current_fd[i]->filename);
+    }
     if(new_fd != -1 && new_fd != snapshot->current_fd[i]->number){
       dup2(new_fd, snapshot->current_fd[i]->number);
       //fprintf(stderr, "%p\n", fdopen(snapshot->current_fd[i]->number, "rw"));
