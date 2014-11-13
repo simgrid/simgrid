@@ -33,7 +33,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_environment, simix,
  */
 void SIMIX_create_environment(const char *file)
 {
-  double start, end;
+  double start = 0, end = 0;
   if(XBT_LOG_ISENABLED(simix_environment, xbt_log_priority_debug))
     start = xbt_os_time();
   parse_platform_file(file);
