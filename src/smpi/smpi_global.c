@@ -404,8 +404,10 @@ void smpi_global_init(void)
   char name[MAILBOX_NAME_MAXLEN];
   int smpirun=0;
 
-  global_timer = xbt_os_timer_new();
-  xbt_os_walltimer_start(global_timer);
+  if (!MC_is_active()) {
+    global_timer = xbt_os_timer_new();
+    xbt_os_walltimer_start(global_timer);
+  }
   if (process_count == 0){
     process_count = SIMIX_process_count();
     smpirun=1;
@@ -652,22 +654,24 @@ int smpi_main(int (*realmain) (int argc, char *argv[]), int argc, char *argv[])
   fflush(stdout);
   fflush(stderr);
 
-  if (MC_is_active())
+  if (MC_is_active()) {
     MC_do_the_modelcheck_for_real();
-  else
+  } else {
+  
     SIMIX_run();
-  xbt_os_walltimer_stop(global_timer);
-  if (sg_cfg_get_boolean("smpi/display_timing")){
-    double global_time = xbt_os_timer_elapsed(global_timer);
-    XBT_INFO("Simulated time: %g seconds. \n "
-        "The simulation took %g seconds (after parsing and platform setup)\n"
-        "%g seconds were actual computation of the application"
-        , SIMIX_get_clock(), global_time , smpi_total_benched_time);
-        
-    if (smpi_total_benched_time/global_time>=0.75)
-    XBT_INFO("More than 75%% of the time was spent inside the application code.\n"
-    "You may want to use sampling functions or trace replay to reduce this.");
 
+    xbt_os_walltimer_stop(global_timer);
+    if (sg_cfg_get_boolean("smpi/display_timing")){
+      double global_time = xbt_os_timer_elapsed(global_timer);
+      XBT_INFO("Simulated time: %g seconds. \n "
+          "The simulation took %g seconds (after parsing and platform setup)\n"
+          "%g seconds were actual computation of the application"
+          , SIMIX_get_clock(), global_time , smpi_total_benched_time);
+          
+      if (smpi_total_benched_time/global_time>=0.75)
+      XBT_INFO("More than 75%% of the time was spent inside the application code.\n"
+      "You may want to use sampling functions or trace replay to reduce this.");
+    }
   }
 
   smpi_global_destroy();
