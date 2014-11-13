@@ -105,6 +105,8 @@ NetworkIBModel::NetworkIBModel()
   Be = atof(xbt_dynar_get_as(radical_elements, 0, char *));
   Bs = atof(xbt_dynar_get_as(radical_elements, 1, char *));
   ys = atof(xbt_dynar_get_as(radical_elements, 2, char *));
+
+  xbt_dynar_free(&radical_elements);
 }
 
 NetworkIBModel::~NetworkIBModel()
