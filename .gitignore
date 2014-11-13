@@ -403,7 +403,6 @@ teshsuite/smpi/isp/umpire/type-no-free3
 teshsuite/smpi/isp/umpire/wait-deadlock
 teshsuite/smpi/isp/umpire/waitall-deadlock
 teshsuite/smpi/isp/umpire/waitany-deadlock
-teshsuite/smpi/bcast/bcast_coll
 teshsuite/smpi/compute/compute2
 teshsuite/smpi/compute/compute3
 teshsuite/smpi/pingpong/dsend
@@ -582,6 +581,11 @@ teshsuite/smpi/mpich-test/pt2pt/waitall2
 teshsuite/smpi/mpich-test/pt2pt/waitall3
 teshsuite/smpi/mpich-test/pt2pt/waitall4
 teshsuite/smpi/mpich-test/pt2pt/waitany
+teshsuite/smpi/mpich3-test/f77/info/infotest2f
+teshsuite/smpi/mpich3-test/f77/info/infotestf
+teshsuite/smpi/mpich3-test/f90/info/infotest2f90
+teshsuite/smpi/mpich3-test/f90/info/infotestf90
+teshsuite/smpi/bcast/bcast_coll
 teshsuite/smpi/mpich3-test/coll/allred
 teshsuite/smpi/mpich3-test/datatype/dataalign
 teshsuite/smpi/mpich3-test/datatype/sendrecvt2
