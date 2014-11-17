@@ -8,8 +8,11 @@
 #include <stdio.h>
 #include <xbt.h>
 #include <xbt/replay.h>
+#include "surf/surf.h" //needed by the function hosts_as_dynar.
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_replay,smpi,"Trace Replay with SMPI");
+
+extern xbt_lib_t host_lib;
 
 int communicator_size = 0;
 static int active_processes = 0;
@@ -1076,6 +1079,83 @@ static void action_allToAllv(const char *const *action) {
   xbt_free(recvdisps);
 }
 
+/********************* Migration and load balancing code *********************/
+
+/* Function used by the load balancer, to get a list of hosts. */
+xbt_dynar_t hosts_as_dynar(void)
+{
+  xbt_lib_cursor_t cursor;
+  char *key;
+  char **data;
+  xbt_dictelm_t elm;
+  xbt_dynar_t hosts = xbt_dynar_new(sizeof(smx_host_t), NULL);
+
+  xbt_lib_foreach(host_lib, cursor, key, data){
+    if(routing_get_network_element_type(key) == SURF_NETWORK_ELEMENT_HOST){
+      elm = xbt_dict_cursor_get_elm(cursor);
+      /* host_lib contains all hosts listed in the hostfile. We only want the
+       * ones that have processes assigned to them. */
+      if(xbt_swag_size(simcall_host_get_process_list((smx_host_t) elm))){
+	xbt_dynar_push(hosts, &elm);
+      }
+    }
+  }
+  return hosts;
+}
+
+int load_balancer(smx_host_t *new_host)
+{
+  unsigned int cursor;
+  smx_host_t *host;
+  xbt_dynar_t hosts = hosts_as_dynar(); 
+  
+  xbt_dynar_foreach(hosts, cursor, host){
+    if(smpi_process_index() == 0){
+      printf("%d: Host %d: %s\n", smpi_process_index(), cursor,
+	      SIMIX_host_get_name((smx_host_t) host));
+    }
+  }
+  
+  return 0;
+}
+
+
+/* Based on MSG_process_migrate [src/msg/msg_process.c] */
+int process_migrate(smx_process_t process, smx_host_t new_host)
+{
+  /*This does not seem to be needed for smpi. It does not store the host in
+   * the process data
+  simdata_process_t simdata = simcall_process_get_data(process);
+  simdata->m_host = host;
+  */
+
+#ifdef HAVE_TRACING
+  smx_host_t host = SIMIX_host_self();
+  //TODO Tracing function.
+  //TRACE_msg_process_change_host(process, host, new_host);
+#endif
+  simcall_process_change_host(process, new_host);
+  return 1;
+}
+
+static void action_migrate(const char *const *action)
+{
+  long mem_size;
+  smx_host_t new_host;
+  int rank = smpi_process_index();
+
+  CHECK_ACTION_PARAMS(action, 1, 0);
+  sscanf(action[2], "%ld", &mem_size);
+  
+  if(load_balancer(&new_host)){
+    printf("Migrating task %d with size %ld.\n", rank, mem_size);
+    process_migrate(SIMIX_process_self(), new_host);
+  }
+}
+
+/**************** End of migration and load balancing code. ******************/ 
+
+
 void smpi_replay_init(int *argc, char***argv){
   smpi_process_init(argc, argv);
   smpi_process_mark_as_initialized();
@@ -1116,6 +1196,7 @@ void smpi_replay_init(int *argc, char***argv){
     xbt_replay_action_register("allGatherV",  action_allgatherv);
     xbt_replay_action_register("reduceScatter",  action_reducescatter);
     xbt_replay_action_register("compute",    action_compute);
+    xbt_replay_action_register("migrate",    action_migrate);
   }
   
   //if we have a delayed start, sleep here.
