@@ -1005,10 +1005,14 @@ int PMPI_Irecv(void *buf, int count, MPI_Datatype datatype, int src,
 
     instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
     extra->type = TRACING_IRECV;
-    extra->send_size = count;
     extra->src = src_traced;
     extra->dst = rank;
-    extra->datatype1 = encode_datatype(datatype);
+    int known=0;
+    extra->datatype1 = encode_datatype(datatype, &known);
+    int dt_size_send = 1;
+    if(!known)
+      dt_size_send = smpi_datatype_size(datatype);
+    extra->send_size = count*dt_size_send;
     TRACE_smpi_ptp_in(rank, src_traced, rank, __FUNCTION__, extra);
 #endif
 
@@ -1056,13 +1060,16 @@ int PMPI_Isend(void *buf, int count, MPI_Datatype datatype, int dst,
 #ifdef HAVE_TRACING
     int rank = comm != MPI_COMM_NULL ? smpi_process_index() : -1;
     int dst_traced = smpi_group_index(smpi_comm_group(comm), dst);
-
     instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
     extra->type = TRACING_ISEND;
-    extra->send_size = count;
     extra->src = rank;
     extra->dst = dst_traced;
-    extra->datatype1 = encode_datatype(datatype);
+    int known=0;
+    extra->datatype1 = encode_datatype(datatype, &known);
+    int dt_size_send = 1;
+    if(!known)
+      dt_size_send = smpi_datatype_size(datatype);
+    extra->send_size = count*dt_size_send;
     TRACE_smpi_ptp_in(rank, rank, dst_traced, __FUNCTION__, extra);
     TRACE_smpi_send(rank, rank, dst_traced, count*smpi_datatype_size(datatype));
 #endif
@@ -1112,10 +1119,14 @@ int PMPI_Issend(void* buf, int count, MPI_Datatype datatype,
     int dst_traced = smpi_group_index(smpi_comm_group(comm), dst);
     instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
     extra->type = TRACING_ISSEND;
-    extra->send_size = count;
     extra->src = rank;
     extra->dst = dst_traced;
-    extra->datatype1 = encode_datatype(datatype);
+    int known=0;
+    extra->datatype1 = encode_datatype(datatype, &known);
+    int dt_size_send = 1;
+    if(!known)
+      dt_size_send = smpi_datatype_size(datatype);
+    extra->send_size = count*dt_size_send;
     TRACE_smpi_ptp_in(rank, rank, dst_traced, __FUNCTION__, extra);
     TRACE_smpi_send(rank, rank, dst_traced, count*smpi_datatype_size(datatype));
 #endif
@@ -1163,10 +1174,14 @@ int PMPI_Recv(void *buf, int count, MPI_Datatype datatype, int src, int tag,
   int src_traced = smpi_group_index(smpi_comm_group(comm), src);
   instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
   extra->type = TRACING_RECV;
-  extra->send_size = count;
   extra->src = src_traced;
   extra->dst = rank;
-  extra->datatype1 = encode_datatype(datatype);
+  int known=0;
+  extra->datatype1 = encode_datatype(datatype, &known);
+  int dt_size_send = 1;
+  if(!known)
+    dt_size_send = smpi_datatype_size(datatype);
+  extra->send_size = count*dt_size_send;
   TRACE_smpi_ptp_in(rank, src_traced, rank, __FUNCTION__, extra);
 #endif
 
@@ -1215,10 +1230,14 @@ int PMPI_Send(void *buf, int count, MPI_Datatype datatype, int dst, int tag,
   int dst_traced = smpi_group_index(smpi_comm_group(comm), dst);
   instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
   extra->type = TRACING_SEND;
-  extra->send_size = count;
   extra->src = rank;
   extra->dst = dst_traced;
-  extra->datatype1 = encode_datatype(datatype);
+  int known=0;
+  extra->datatype1 = encode_datatype(datatype, &known);
+  int dt_size_send = 1;
+  if(!known)
+    dt_size_send = smpi_datatype_size(datatype);
+  extra->send_size = count*dt_size_send;
   TRACE_smpi_ptp_in(rank, rank, dst_traced, __FUNCTION__, extra);
   TRACE_smpi_send(rank, rank, dst_traced,count*smpi_datatype_size(datatype));
 #endif
@@ -1263,10 +1282,14 @@ int PMPI_Ssend(void* buf, int count, MPI_Datatype datatype, int dst, int tag, MP
    int dst_traced = smpi_group_index(smpi_comm_group(comm), dst);
    instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
    extra->type = TRACING_SSEND;
-   extra->send_size = count;
    extra->src = rank;
    extra->dst = dst_traced;
-   extra->datatype1 = encode_datatype(datatype);
+   int known=0;
+   extra->datatype1 = encode_datatype(datatype, &known);
+   int dt_size_send = 1;
+   if(!known)
+     dt_size_send = smpi_datatype_size(datatype);
+   extra->send_size = count*dt_size_send;
    TRACE_smpi_ptp_in(rank, rank, dst_traced, __FUNCTION__, extra);   TRACE_smpi_send(rank, rank, dst_traced,count*smpi_datatype_size(datatype));
  #endif
 
@@ -1317,12 +1340,19 @@ int PMPI_Sendrecv(void *sendbuf, int sendcount, MPI_Datatype sendtype,
   int src_traced = smpi_group_index(smpi_comm_group(comm), src);
   instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
   extra->type = TRACING_SENDRECV;
-  extra->send_size = sendcount;
-  extra->recv_size = recvcount;
   extra->src = src_traced;
   extra->dst = dst_traced;
-  extra->datatype1 = encode_datatype(sendtype);
-  extra->datatype2 = encode_datatype(recvtype);
+  int known=0;
+  extra->datatype1 = encode_datatype(sendtype, &known);
+  int dt_size_send = 1;
+  if(!known)
+    dt_size_send = smpi_datatype_size(sendtype);
+  extra->send_size = sendcount*dt_size_send;
+  extra->datatype2 = encode_datatype(recvtype, &known);
+  int dt_size_recv = 1;
+  if(!known)
+    dt_size_recv = smpi_datatype_size(recvtype);
+  extra->recv_size = recvcount*dt_size_recv;
 
   TRACE_smpi_ptp_in(rank, src_traced, dst_traced, __FUNCTION__, extra);
   TRACE_smpi_send(rank, rank, dst_traced,sendcount*smpi_datatype_size(sendtype));
@@ -1692,9 +1722,13 @@ int PMPI_Bcast(void *buf, int count, MPI_Datatype datatype, int root, MPI_Comm c
 
   instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
   extra->type = TRACING_BCAST;
-  extra->send_size = count;
   extra->root = root_traced;
-  extra->datatype1 = encode_datatype(datatype);
+  int known=0;
+  extra->datatype1 = encode_datatype(datatype, &known);
+  int dt_size_send = 1;
+  if(!known)
+    dt_size_send = smpi_datatype_size(datatype);
+  extra->send_size = count*dt_size_send;
   TRACE_smpi_collective_in(rank, root_traced, __FUNCTION__, extra);
 
 #endif
@@ -1765,11 +1799,18 @@ int PMPI_Gather(void *sendbuf, int sendcount, MPI_Datatype sendtype,
   int root_traced = smpi_group_index(smpi_comm_group(comm), root);
   instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
   extra->type = TRACING_GATHER;
-  extra->send_size = sendtmpcount;
-  extra->recv_size = recvcount;
   extra->root = root_traced;
-  extra->datatype1 = encode_datatype(sendtmptype);
-  extra->datatype2 = encode_datatype(recvtype);
+  int known=0;
+  extra->datatype1 = encode_datatype(sendtmptype, &known);
+  int dt_size_send = 1;
+  if(!known)
+    dt_size_send = smpi_datatype_size(sendtmptype);
+  extra->send_size = sendtmpcount*dt_size_send;
+  extra->datatype2 = encode_datatype(recvtype, &known);
+  int dt_size_recv = 1;
+  if(!known)
+    dt_size_recv = smpi_datatype_size(recvtype);
+  extra->recv_size = recvcount*dt_size_recv;
 
   TRACE_smpi_collective_in(rank, root_traced, __FUNCTION__, extra);
 #endif
@@ -1820,14 +1861,21 @@ int PMPI_Gatherv(void *sendbuf, int sendcount, MPI_Datatype sendtype,
   int size = smpi_comm_size(comm);
   instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
   extra->type = TRACING_GATHERV;
-  extra->send_size = sendtmpcount;
-  extra->recvcounts= xbt_malloc(size*sizeof(int));
-  for(i=0; i< size; i++)//copy data to avoid bad free
-    extra->recvcounts[i] = recvcounts[i];
   extra->num_processes = size;
   extra->root = root_traced;
-  extra->datatype1 = encode_datatype(sendtmptype);
-  extra->datatype2 = encode_datatype(recvtype);
+  int known=0;
+  extra->datatype1 = encode_datatype(sendtmptype, &known);
+  int dt_size_send = 1;
+  if(!known)
+    dt_size_send = smpi_datatype_size(sendtype);
+  extra->send_size = sendtmpcount*dt_size_send;
+  extra->datatype2 = encode_datatype(recvtype, &known);
+  int dt_size_recv = 1;
+  if(!known)
+    dt_size_recv = smpi_datatype_size(recvtype);
+  extra->recvcounts= xbt_malloc(size*sizeof(int));
+  for(i=0; i< size; i++)//copy data to avoid bad free
+    extra->recvcounts[i] = recvcounts[i]*dt_size_recv;
 
   TRACE_smpi_collective_in(rank, root_traced, __FUNCTION__,extra);
 #endif
@@ -1869,10 +1917,17 @@ int PMPI_Allgather(void *sendbuf, int sendcount, MPI_Datatype sendtype,
   int rank = comm != MPI_COMM_NULL ? smpi_process_index() : -1;
   instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
   extra->type = TRACING_ALLGATHER;
-  extra->send_size = sendcount;
-  extra->recv_size = recvcount;
-  extra->datatype1 = encode_datatype(sendtype);
-  extra->datatype2 = encode_datatype(recvtype);
+  int known=0;
+  extra->datatype1 = encode_datatype(sendtype, &known);
+  int dt_size_send = 1;
+  if(!known)
+    dt_size_send = smpi_datatype_size(sendtype);
+  extra->send_size = sendcount*dt_size_send;
+  extra->datatype2 = encode_datatype(recvtype, &known);
+  int dt_size_recv = 1;
+  if(!known)
+    dt_size_recv = smpi_datatype_size(recvtype);
+  extra->recv_size = recvcount*dt_size_recv;
 
   TRACE_smpi_collective_in(rank, -1, __FUNCTION__, extra);
 #endif
@@ -1918,13 +1973,20 @@ int PMPI_Allgatherv(void *sendbuf, int sendcount, MPI_Datatype sendtype,
   int size = smpi_comm_size(comm);
   instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
   extra->type = TRACING_ALLGATHERV;
-  extra->send_size = sendcount;
+  extra->num_processes = size;
+  int known=0;
+  extra->datatype1 = encode_datatype(sendtype, &known);
+  int dt_size_send = 1;
+  if(!known)
+    dt_size_send = smpi_datatype_size(sendtype);
+  extra->send_size = sendcount*dt_size_send;
+  extra->datatype2 = encode_datatype(recvtype, &known);
+  int dt_size_recv = 1;
+  if(!known)
+    dt_size_recv = smpi_datatype_size(recvtype);
   extra->recvcounts= xbt_malloc(size*sizeof(int));
   for(i=0; i< size; i++)//copy data to avoid bad free
-    extra->recvcounts[i] = recvcounts[i];
-  extra->num_processes = size;
-  extra->datatype1 = encode_datatype(sendtype);
-  extra->datatype2 = encode_datatype(recvtype);
+    extra->recvcounts[i] = recvcounts[i]*dt_size_recv;
 
   TRACE_smpi_collective_in(rank, -1, __FUNCTION__,extra);
 #endif
@@ -1967,12 +2029,18 @@ int PMPI_Scatter(void *sendbuf, int sendcount, MPI_Datatype sendtype,
   int root_traced = smpi_group_index(smpi_comm_group(comm), root);
   instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
   extra->type = TRACING_SCATTER;
-  extra->send_size = sendcount;
-  extra->recv_size= recvcount;
   extra->root = root_traced;
-  extra->datatype1 = encode_datatype(sendtype);
-  extra->datatype2 = encode_datatype(recvtype);
-
+  int known=0;
+  extra->datatype1 = encode_datatype(sendtype, &known);
+  int dt_size_send = 1;
+  if(!known)
+    dt_size_send = smpi_datatype_size(sendtype);
+  extra->send_size = sendcount*dt_size_send;
+  extra->datatype2 = encode_datatype(recvtype, &known);
+  int dt_size_recv = 1;
+  if(!known)
+    dt_size_recv = smpi_datatype_size(recvtype);
+  extra->recv_size = recvcount*dt_size_recv;
   TRACE_smpi_collective_in(rank, root_traced, __FUNCTION__,extra);
 #endif
     mpi_coll_scatter_fun(sendbuf, sendcount, sendtype, recvbuf, recvcount,
@@ -2014,15 +2082,21 @@ int PMPI_Scatterv(void *sendbuf, int *sendcounts, int *displs,
   int size = smpi_comm_size(comm);
   instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
   extra->type = TRACING_SCATTERV;
-  extra->recv_size = recvcount;
-  extra->sendcounts= xbt_malloc(size*sizeof(int));
-  for(i=0; i< size; i++)//copy data to avoid bad free
-    extra->sendcounts[i] = sendcounts[i];
   extra->num_processes = size;
   extra->root = root_traced;
-  extra->datatype1 = encode_datatype(sendtype);
-  extra->datatype2 = encode_datatype(recvtype);
-
+  int known=0;
+  extra->datatype1 = encode_datatype(sendtype, &known);
+  int dt_size_send = 1;
+  if(!known)
+    dt_size_send = smpi_datatype_size(sendtype);
+  extra->sendcounts= xbt_malloc(size*sizeof(int));
+  for(i=0; i< size; i++)//copy data to avoid bad free
+    extra->sendcounts[i] = sendcounts[i]*dt_size_send;
+  extra->datatype2 = encode_datatype(recvtype, &known);
+  int dt_size_recv = 1;
+  if(!known)
+    dt_size_recv = smpi_datatype_size(recvtype);
+  extra->recv_size = recvcount*dt_size_recv;
   TRACE_smpi_collective_in(rank, root_traced, __FUNCTION__,extra);
 
 #endif
@@ -2055,8 +2129,12 @@ int PMPI_Reduce(void *sendbuf, void *recvbuf, int count,
   int root_traced = smpi_group_index(smpi_comm_group(comm), root);
   instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
   extra->type = TRACING_REDUCE;
-  extra->send_size = count;
-  extra->datatype1 = encode_datatype(datatype);
+  int known=0;
+  extra->datatype1 = encode_datatype(datatype, &known);
+  int dt_size_send = 1;
+  if(!known)
+    dt_size_send = smpi_datatype_size(datatype);
+  extra->send_size = count*dt_size_send;
   extra->root = root_traced;
 
   TRACE_smpi_collective_in(rank, root_traced, __FUNCTION__,extra);
@@ -2112,8 +2190,12 @@ int PMPI_Allreduce(void *sendbuf, void *recvbuf, int count,
   int rank = comm != MPI_COMM_NULL ? smpi_process_index() : -1;
   instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
   extra->type = TRACING_ALLREDUCE;
-  extra->send_size = count;
-  extra->datatype1 = encode_datatype(datatype);
+  int known=0;
+  extra->datatype1 = encode_datatype(datatype, &known);
+  int dt_size_send = 1;
+  if(!known)
+    dt_size_send = smpi_datatype_size(datatype);
+  extra->send_size = count*dt_size_send;
 
   TRACE_smpi_collective_in(rank, -1, __FUNCTION__,extra);
 #endif
@@ -2151,8 +2233,12 @@ int PMPI_Scan(void *sendbuf, void *recvbuf, int count,
   int rank = comm != MPI_COMM_NULL ? smpi_process_index() : -1;
   instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
   extra->type = TRACING_SCAN;
-  extra->send_size = count;
-  extra->datatype1 = encode_datatype(datatype);
+  int known=0;
+  extra->datatype1 = encode_datatype(datatype, &known);
+  int dt_size_send = 1;
+  if(!known)
+    dt_size_send = smpi_datatype_size(datatype);
+  extra->send_size = count*dt_size_send;
 
   TRACE_smpi_collective_in(rank, -1, __FUNCTION__,extra);
 #endif
@@ -2184,9 +2270,12 @@ int PMPI_Exscan(void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype,
   int rank = comm != MPI_COMM_NULL ? smpi_process_index() : -1;
   instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
   extra->type = TRACING_EXSCAN;
-  extra->send_size = count;
-  extra->datatype1 = encode_datatype(datatype);
-
+  int known=0;
+  extra->datatype1 = encode_datatype(datatype, &known);
+  int dt_size_send = 1;
+  if(!known)
+    dt_size_send = smpi_datatype_size(datatype);
+  extra->send_size = count*dt_size_send;
   TRACE_smpi_collective_in(rank, -1, __FUNCTION__,extra);
 #endif
     smpi_mpi_exscan(sendbuf, recvbuf, count, datatype, op, comm);
@@ -2221,13 +2310,16 @@ int PMPI_Reduce_scatter(void *sendbuf, void *recvbuf, int *recvcounts,
   int size = smpi_comm_size(comm);
   instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
   extra->type = TRACING_REDUCE_SCATTER;
+  extra->num_processes = size;
+  int known=0;
+  extra->datatype1 = encode_datatype(datatype, &known);
+  int dt_size_send = 1;
+  if(!known)
+    dt_size_send = smpi_datatype_size(datatype);
   extra->send_size = 0;
   extra->recvcounts= xbt_malloc(size*sizeof(int));
   for(i=0; i< size; i++)//copy data to avoid bad free
-    extra->recvcounts[i] = recvcounts[i];
-  extra->num_processes = size;
-  extra->datatype1 = encode_datatype(datatype);
-
+    extra->recvcounts[i] = recvcounts[i]*dt_size_send;
   TRACE_smpi_collective_in(rank, -1, __FUNCTION__,extra);
 #endif
     void* sendtmpbuf=sendbuf;
@@ -2268,12 +2360,16 @@ int PMPI_Reduce_scatter_block(void *sendbuf, void *recvbuf, int recvcount,
   int rank = comm != MPI_COMM_NULL ? smpi_process_index() : -1;
   instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
   extra->type = TRACING_REDUCE_SCATTER;
+  extra->num_processes = count;
+  int known=0;
+  extra->datatype1 = encode_datatype(datatype, &known);
+  int dt_size_send = 1;
+  if(!known)
+    dt_size_send = smpi_datatype_size(datatype);
   extra->send_size = 0;
   extra->recvcounts= xbt_malloc(count*sizeof(int));
   for(i=0; i< count; i++)//copy data to avoid bad free
-    extra->recvcounts[i] = recvcount;
-  extra->num_processes = count;
-  extra->datatype1 = encode_datatype(datatype);
+    extra->recvcounts[i] = recvcount*dt_size_send;
 
   TRACE_smpi_collective_in(rank, -1, __FUNCTION__,extra);
 #endif
@@ -2310,11 +2406,17 @@ int PMPI_Alltoall(void *sendbuf, int sendcount, MPI_Datatype sendtype,
   int rank = comm != MPI_COMM_NULL ? smpi_process_index() : -1;
   instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
   extra->type = TRACING_ALLTOALL;
-  extra->send_size = sendcount;
-  extra->recv_size = recvcount;
-  extra->datatype1 = encode_datatype(sendtype);
-  extra->datatype2 = encode_datatype(recvtype);
-
+  int known=0;
+  extra->datatype1 = encode_datatype(sendtype, &known);
+  if(!known)
+    extra->send_size = sendcount*smpi_datatype_size(sendtype);
+  else
+    extra->send_size = sendcount;
+  extra->datatype2 = encode_datatype(recvtype, &known);
+  if(!known)
+    extra->recv_size = recvcount*smpi_datatype_size(recvtype);
+  else
+    extra->recv_size = recvcount;
   TRACE_smpi_collective_in(rank, -1, __FUNCTION__,extra);
 #endif
     retval = mpi_coll_alltoall_fun(sendbuf, sendcount, sendtype, recvbuf, recvcount, recvtype, comm);
@@ -2354,19 +2456,23 @@ int PMPI_Alltoallv(void *sendbuf, int *sendcounts, int *senddisps,
   extra->recv_size = 0;
   extra->recvcounts= xbt_malloc(size*sizeof(int));
   extra->sendcounts= xbt_malloc(size*sizeof(int));
-
+  int known=0;
+  extra->datatype1 = encode_datatype(sendtype, &known);
+  int dt_size_send = 1;
+  if(!known)
+    dt_size_send = smpi_datatype_size(sendtype);
+  int dt_size_recv = 1;
+  extra->datatype2 = encode_datatype(recvtype, &known);
+  if(!known)
+    dt_size_recv = smpi_datatype_size(recvtype);
   for(i=0; i< size; i++){//copy data to avoid bad free
-    extra->send_size += sendcounts[i];
-    extra->recv_size += recvcounts[i];
+    extra->send_size += sendcounts[i]*dt_size_send;
+    extra->recv_size += recvcounts[i]*dt_size_recv;
 
-    extra->sendcounts[i] = sendcounts[i];
-    extra->recvcounts[i] = recvcounts[i];
+    extra->sendcounts[i] = sendcounts[i]*dt_size_send;
+    extra->recvcounts[i] = recvcounts[i]*dt_size_recv;
   }
   extra->num_processes = size;
-
-  extra->datatype1 = encode_datatype(sendtype);
-  extra->datatype2 = encode_datatype(recvtype);
-
   TRACE_smpi_collective_in(rank, -1, __FUNCTION__,extra);
 #endif
     retval =

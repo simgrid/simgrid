@@ -752,7 +752,7 @@ void TRACE_smpi_init(int rank);
 void TRACE_smpi_finalize(int rank);
 #endif
 
-const char* encode_datatype(MPI_Datatype datatype);
+const char* encode_datatype(MPI_Datatype datatype, int* known);
 
 // TODO, make this static and expose it more cleanly
 

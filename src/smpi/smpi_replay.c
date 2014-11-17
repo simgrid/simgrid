@@ -103,11 +103,12 @@ static MPI_Datatype decode_datatype(const char *const action)
 }
 
 
-const char* encode_datatype(MPI_Datatype datatype)
+const char* encode_datatype(MPI_Datatype datatype, int* known)
 {
 
   //default type for output is set to MPI_BYTE
   // MPI_DEFAULT_TYPE is not set for output, use directly MPI_BYTE
+  if(known)*known=1;
   if (datatype==MPI_BYTE){
       return "";
   }
@@ -123,7 +124,8 @@ const char* encode_datatype(MPI_Datatype datatype)
     return "4";
   if(datatype==MPI_FLOAT)
       return "5";
-
+  //tell that the datatype is not handled by replay, and that its size should be measured and replayed as size*MPI_BYTE
+  if(known)*known=0;
   // default - not implemented.
   // do not warn here as we pass in this function even for other trace formats
   return "-1";
@@ -231,7 +233,7 @@ static void action_send(const char *const *action)
   extra->send_size = size;
   extra->src = rank;
   extra->dst = dst_traced;
-  extra->datatype1 = encode_datatype(MPI_CURRENT_TYPE);
+  extra->datatype1 = encode_datatype(MPI_CURRENT_TYPE, NULL);
   TRACE_smpi_ptp_in(rank, rank, dst_traced, __FUNCTION__, extra);
   TRACE_smpi_send(rank, rank, dst_traced, size*smpi_datatype_size(MPI_CURRENT_TYPE));
 #endif
@@ -265,7 +267,7 @@ static void action_Isend(const char *const *action)
   extra->send_size = size;
   extra->src = rank;
   extra->dst = dst_traced;
-  extra->datatype1 = encode_datatype(MPI_CURRENT_TYPE);
+  extra->datatype1 = encode_datatype(MPI_CURRENT_TYPE, NULL);
   TRACE_smpi_ptp_in(rank, rank, dst_traced, __FUNCTION__, extra);
   TRACE_smpi_send(rank, rank, dst_traced, size*smpi_datatype_size(MPI_CURRENT_TYPE));
 #endif
@@ -301,7 +303,7 @@ static void action_recv(const char *const *action) {
   extra->send_size = size;
   extra->src = src_traced;
   extra->dst = rank;
-  extra->datatype1 = encode_datatype(MPI_CURRENT_TYPE);
+  extra->datatype1 = encode_datatype(MPI_CURRENT_TYPE, NULL);
   TRACE_smpi_ptp_in(rank, src_traced, rank, __FUNCTION__, extra);
 #endif
 
@@ -340,7 +342,7 @@ static void action_Irecv(const char *const *action)
   extra->send_size = size;
   extra->src = src_traced;
   extra->dst = rank;
-  extra->datatype1 = encode_datatype(MPI_CURRENT_TYPE);
+  extra->datatype1 = encode_datatype(MPI_CURRENT_TYPE, NULL);
   TRACE_smpi_ptp_in(rank, src_traced, rank, __FUNCTION__, extra);
 #endif
   MPI_Status status;
@@ -558,7 +560,7 @@ static void action_bcast(const char *const *action)
   extra->type = TRACING_BCAST;
   extra->send_size = size;
   extra->root = root_traced;
-  extra->datatype1 = encode_datatype(MPI_CURRENT_TYPE);
+  extra->datatype1 = encode_datatype(MPI_CURRENT_TYPE, NULL);
   TRACE_smpi_collective_in(rank, root_traced, __FUNCTION__, extra);
 
 #endif
@@ -595,7 +597,7 @@ static void action_reduce(const char *const *action)
   extra->type = TRACING_REDUCE;
   extra->send_size = comm_size;
   extra->comp_size = comp_size;
-  extra->datatype1 = encode_datatype(MPI_CURRENT_TYPE);
+  extra->datatype1 = encode_datatype(MPI_CURRENT_TYPE, NULL);
   extra->root = root_traced;
 
   TRACE_smpi_collective_in(rank, root_traced, __FUNCTION__,extra);
@@ -625,7 +627,7 @@ static void action_allReduce(const char *const *action) {
   extra->type = TRACING_ALLREDUCE;
   extra->send_size = comm_size;
   extra->comp_size = comp_size;
-  extra->datatype1 = encode_datatype(MPI_CURRENT_TYPE);
+  extra->datatype1 = encode_datatype(MPI_CURRENT_TYPE, NULL);
 
   TRACE_smpi_collective_in(rank, -1, __FUNCTION__,extra);
 #endif
@@ -663,8 +665,8 @@ static void action_allToAll(const char *const *action) {
   extra->type = TRACING_ALLTOALL;
   extra->send_size = send_size;
   extra->recv_size = recv_size;
-  extra->datatype1 = encode_datatype(MPI_CURRENT_TYPE);
-  extra->datatype2 = encode_datatype(MPI_CURRENT_TYPE2);
+  extra->datatype1 = encode_datatype(MPI_CURRENT_TYPE, NULL);
+  extra->datatype2 = encode_datatype(MPI_CURRENT_TYPE2, NULL);
 
   TRACE_smpi_collective_in(rank, -1, __FUNCTION__,extra);
 #endif
@@ -721,8 +723,8 @@ static void action_gather(const char *const *action) {
   extra->send_size = send_size;
   extra->recv_size = recv_size;
   extra->root = root;
-  extra->datatype1 = encode_datatype(MPI_CURRENT_TYPE);
-  extra->datatype2 = encode_datatype(MPI_CURRENT_TYPE2);
+  extra->datatype1 = encode_datatype(MPI_CURRENT_TYPE, NULL);
+  extra->datatype2 = encode_datatype(MPI_CURRENT_TYPE2, NULL);
 
   TRACE_smpi_collective_in(smpi_process_index(), root, __FUNCTION__, extra);
 #endif
@@ -792,8 +794,8 @@ static void action_gatherv(const char *const *action) {
     extra->recvcounts[i] = recvcounts[i];
   extra->root = root;
   extra->num_processes = comm_size;
-  extra->datatype1 = encode_datatype(MPI_CURRENT_TYPE);
-  extra->datatype2 = encode_datatype(MPI_CURRENT_TYPE2);
+  extra->datatype1 = encode_datatype(MPI_CURRENT_TYPE, NULL);
+  extra->datatype2 = encode_datatype(MPI_CURRENT_TYPE2, NULL);
 
   TRACE_smpi_collective_in(smpi_process_index(), root, __FUNCTION__, extra);
 #endif
@@ -853,7 +855,7 @@ static void action_reducescatter(const char *const *action) {
   extra->recvcounts= xbt_malloc(comm_size*sizeof(int));
   for(i=0; i< comm_size; i++)//copy data to avoid bad free
     extra->recvcounts[i] = recvcounts[i];
-  extra->datatype1 = encode_datatype(MPI_CURRENT_TYPE);
+  extra->datatype1 = encode_datatype(MPI_CURRENT_TYPE, NULL);
   extra->comp_size = comp_size;
   extra->num_processes = comm_size;
 
@@ -913,8 +915,8 @@ static void action_allgather(const char *const *action) {
   extra->type = TRACING_ALLGATHER;
   extra->send_size = sendcount;
   extra->recv_size= recvcount;
-  extra->datatype1 = encode_datatype(MPI_CURRENT_TYPE);
-  extra->datatype2 = encode_datatype(MPI_CURRENT_TYPE2);
+  extra->datatype1 = encode_datatype(MPI_CURRENT_TYPE, NULL);
+  extra->datatype2 = encode_datatype(MPI_CURRENT_TYPE2, NULL);
   extra->num_processes = smpi_comm_size(MPI_COMM_WORLD);
 
   TRACE_smpi_collective_in(rank, -1, __FUNCTION__,extra);
@@ -978,8 +980,8 @@ static void action_allgatherv(const char *const *action) {
   extra->recvcounts= xbt_malloc(comm_size*sizeof(int));
   for(i=0; i< comm_size; i++)//copy data to avoid bad free
     extra->recvcounts[i] = recvcounts[i];
-  extra->datatype1 = encode_datatype(MPI_CURRENT_TYPE);
-  extra->datatype2 = encode_datatype(MPI_CURRENT_TYPE2);
+  extra->datatype1 = encode_datatype(MPI_CURRENT_TYPE, NULL);
+  extra->datatype2 = encode_datatype(MPI_CURRENT_TYPE2, NULL);
   extra->num_processes = comm_size;
 
   TRACE_smpi_collective_in(rank, -1, __FUNCTION__,extra);
@@ -1057,8 +1059,8 @@ static void action_allToAllv(const char *const *action) {
     extra->recv_size += recvcounts[i];
     extra->recvcounts[i] = recvcounts[i];
   }
-  extra->datatype1 = encode_datatype(MPI_CURRENT_TYPE);
-  extra->datatype2 = encode_datatype(MPI_CURRENT_TYPE2);
+  extra->datatype1 = encode_datatype(MPI_CURRENT_TYPE, NULL);
+  extra->datatype2 = encode_datatype(MPI_CURRENT_TYPE2, NULL);
 
   TRACE_smpi_collective_in(rank, -1, __FUNCTION__,extra);
 #endif
