@@ -34,7 +34,7 @@ void mmalloc_set_current_heap(xbt_mheap_t new_heap)
 
 
 #ifdef MMALLOC_WANT_OVERRIDE_LEGACY
-#ifdef HAVE_GNU_LD
+#if 0 && defined(HAVE_GNU_LD)
 
 #undef _GNU_SOURCE
 #define _GNU_SOURCE 1
@@ -49,7 +49,7 @@ static void mm_gnuld_legacy_init(void) { /* This function is called from mmalloc
   real_realloc = (void * (*) (void*,size_t)) dlsym(RTLD_NEXT, "realloc");
   real_free = (void * (*) (void*)) dlsym(RTLD_NEXT, "free");
   __mmalloc_current_heap = __mmalloc_default_mdp;
-}
+} 
 
 /* Hello pimple!
  * DL needs some memory while resolving the malloc symbol, that is somehow problematic
@@ -176,6 +176,7 @@ void *malloc(size_t n)
   void *ret = mmalloc(mdp, n);
   UNLOCK(mdp);
 
+
   return ret;
 }
 
@@ -186,8 +187,11 @@ void *calloc(size_t nmemb, size_t size)
   LOCK(mdp);
   void *ret = mmalloc(mdp, nmemb*size);
   UNLOCK(mdp);
-  memset(ret, 0, nmemb * size);
 
+  // This was already done in the callee:
+  if(!(mdp->options & XBT_MHEAP_OPTION_MEMSET)) {
+    memset(ret, 0, nmemb * size);
+  }
 
   return ret;
 }
@@ -216,5 +220,3 @@ void free(void *p)
 }
 #endif /* NO GNU_LD */
 #endif /* WANT_MALLOC_OVERRIDE */
-
-
