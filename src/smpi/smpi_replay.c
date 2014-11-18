@@ -1151,9 +1151,9 @@ void process_migrate(smx_process_t process, smx_host_t new_host)
   */
 
 #ifdef HAVE_TRACING
-  smx_host_t host = SIMIX_host_self();
-  //TODO Tracing function.
-  //TRACE_msg_process_change_host(process, host, new_host);
+  //smx_host_t host = SIMIX_host_self();
+  //TODO Finish tracing function.
+  //TRACE_smpi_process_change_host(smpi_process_index(), host, new_host);
 #endif
   simcall_process_change_host(process, new_host);
   return;
@@ -1175,12 +1175,12 @@ static void action_migrate(const char *const *action)
 /*  printf("%s, Task %d; new host: %s.\n", SIMIX_host_self_get_name(), rank,
 	  SIMIX_host_get_name(new_host));*/
   if(strcmp(SIMIX_host_self_get_name(), SIMIX_host_get_name(new_host)) != 0){
-    printf("%s: Migrating task %d with size %ld to %s.\n",
-	    SIMIX_host_self_get_name(), rank, mem_size,
-	    SIMIX_host_get_name(new_host));
+    //printf("%s: Migrating task %d with size %ld to %s.\n",
+    //        SIMIX_host_self_get_name(), rank, mem_size,
+    //        SIMIX_host_get_name(new_host));
     process_migrate(SIMIX_process_self(), new_host);
-    printf("%s: Received task %d.\n",
-	    SIMIX_host_self_get_name(), smpi_process_index());
+    //printf("%s: Received task %d.\n",
+    //        SIMIX_host_self_get_name(), smpi_process_index());
   }
 }
 

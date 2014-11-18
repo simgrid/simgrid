@@ -84,6 +84,7 @@ static const char *instr_find_color (const char *state)
 
 static char *smpi_container(int rank, char *container, int n)
 {
+//snprintf(container, n, "%s-rank-%d", SIMIX_host_self_get_name(), rank);
   snprintf(container, n, "rank-%d", rank);
   return container;
 }
@@ -416,4 +417,76 @@ void TRACE_smpi_recv(int rank, int src, int dst)
 
   new_pajeEndLink (SIMIX_get_clock(), PJ_container_get_root(), type, container, "PTP", key);
 }
+
+void TRACE_smpi_task_create (int rank, smx_host_t host)
+{
+  if (!TRACE_smpi_is_enabled()) return;
+  
+  char str[INSTR_DEFAULT_STR_SIZE];
+  snprintf(str, INSTR_DEFAULT_STR_SIZE, "%s-rank-%d", SIMIX_host_get_name(host), rank);
+  //smpi_container(rank, str, INSTR_DEFAULT_STR_SIZE);
+  
+  if(PJ_container_get_or_null(str)){
+    printf("The container \"%s\" already exists.\n", str);
+    return;
+  }else{
+    printf("Creating container \"%s\".\n", str);
+  }
+
+  container_t father;
+  if (TRACE_smpi_is_grouped()){
+    father = PJ_container_get(SIMIX_host_get_name(host));
+  }else{
+    father = PJ_container_get_root();
+  }
+  xbt_assert(father!=NULL,
+	      "Could not find a parent for mpi rank %s at function %s", str,
+	      __FUNCTION__);
+  PJ_container_new(str, INSTR_SMPI, father);
+}
+
+void TRACE_smpi_task_destroy (int rank)
+{
+  char str[INSTR_DEFAULT_STR_SIZE];
+  container_t container = PJ_container_get(smpi_container(rank, str, 
+				      INSTR_DEFAULT_STR_SIZE));
+  type_t type = PJ_type_get ("MPI_STATE", container->type);
+  new_pajePopState (SIMIX_get_clock(), container, type);
+//  PJ_container_remove_from_parent(container);
+//  PJ_container_free(container);
+}
+
+void TRACE_smpi_process_change_host(int rank, smx_host_t host,
+				    smx_host_t new_host)
+{
+  if (!TRACE_smpi_is_enabled()) return;
+  
+  static long long int counter = 0;
+
+  char key[INSTR_DEFAULT_STR_SIZE];
+  snprintf (key, INSTR_DEFAULT_STR_SIZE, "%lld", counter++);
+
+  int len = INSTR_DEFAULT_STR_SIZE;
+  char str[INSTR_DEFAULT_STR_SIZE];
+  
+  //start link
+  //container_t msg = PJ_container_get (instr_process_id(process, str, len));
+  //type_t type = PJ_type_get ("SMPI_PROCESS_LINK", PJ_type_get_root());
+  //new_pajeStartLink (smpi_process_simulated_elapsed(), PJ_container_get_root(),
+  //		      type, msg, "M", key);
+
+  //destroy existing container of this process
+  TRACE_smpi_task_destroy(rank);
+
+  //create new container on the new_host location
+  TRACE_smpi_task_create(rank, new_host);
+
+  //end link
+  //msg = PJ_container_get(instr_process_id(process, str, len));
+  //type = PJ_type_get ("SMPI_PROCESS_LINK", PJ_type_get_root());
+  //new_pajeEndLink (smpi_process_simulated_elapsed(), PJ_container_get_root(), type, msg,
+  //      	    "M", key);
+
+}
+
 #endif /* HAVE_TRACING */

@@ -750,6 +750,7 @@ void TRACE_smpi_send(int rank, int src, int dst, int size);
 void TRACE_smpi_recv(int rank, int src, int dst);
 void TRACE_smpi_init(int rank);
 void TRACE_smpi_finalize(int rank);
+void TRACE_smpi_process_change_host(int rank, smx_host_t host, smx_host_t new_host);
 #endif
 
 const char* encode_datatype(MPI_Datatype datatype);
