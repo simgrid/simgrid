@@ -159,7 +159,6 @@ static mc_tag_class MC_dwarf_tag_classify(int tag)
   case DW_TAG_restrict_type:
   case DW_TAG_interface_type:
   case DW_TAG_unspecified_type:
-  case DW_TAG_mutable_type:
   case DW_TAG_shared_type:
     return mc_tag_type;
 
