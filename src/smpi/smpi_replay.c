@@ -1093,6 +1093,7 @@ xbt_dynar_t hosts_as_dynar(void)
   xbt_lib_foreach(host_lib, cursor, key, data){
     if(routing_get_network_element_type(key) == SURF_NETWORK_ELEMENT_HOST){
       elm = xbt_dict_cursor_get_elm(cursor);
+      
       /* host_lib contains all hosts listed in the hostfile. We only want the
        * ones that have processes assigned to them. */
       if(xbt_swag_size(simcall_host_get_process_list((smx_host_t) elm))){
@@ -1103,25 +1104,45 @@ xbt_dynar_t hosts_as_dynar(void)
   return hosts;
 }
 
-int load_balancer(smx_host_t *new_host)
+smx_host_t load_balancer(void)
 {
   unsigned int cursor;
-  smx_host_t *host;
-  xbt_dynar_t hosts = hosts_as_dynar(); 
+  unsigned int host_index;
+  //smx_host_t *host;
+  smx_host_t new_host;
+  xbt_dynar_t hosts = hosts_as_dynar();
+  host_index = xbt_dynar_search_or_negative(hosts, SIMIX_host_self());
+  if(host_index < 0){
+    return SIMIX_host_self();
+  }
   
+/*    
   xbt_dynar_foreach(hosts, cursor, host){
     if(smpi_process_index() == 0){
       printf("%d: Host %d: %s\n", smpi_process_index(), cursor,
 	      SIMIX_host_get_name((smx_host_t) host));
     }
   }
-  
-  return 0;
+*/
+
+  static unsigned int seed = 0;
+  if(!seed){
+    //fprintf(stdout, "Seeding.\n");
+    seed = time(NULL) + smpi_process_index();
+    srand(seed);
+  }
+  while((cursor = rand() % xbt_dynar_length(hosts)) == host_index){}  
+  xbt_dynar_get_cpy(hosts, cursor, &new_host);
+  /*
+  printf("%d: LB chose host #%u from %lu hosts.\n", smpi_process_index(),
+        cursor, xbt_dynar_length(hosts));
+  */
+  return new_host;
 }
 
 
 /* Based on MSG_process_migrate [src/msg/msg_process.c] */
-int process_migrate(smx_process_t process, smx_host_t new_host)
+void process_migrate(smx_process_t process, smx_host_t new_host)
 {
   /*This does not seem to be needed for smpi. It does not store the host in
    * the process data
@@ -1135,7 +1156,7 @@ int process_migrate(smx_process_t process, smx_host_t new_host)
   //TRACE_msg_process_change_host(process, host, new_host);
 #endif
   simcall_process_change_host(process, new_host);
-  return 1;
+  return;
 }
 
 static void action_migrate(const char *const *action)
@@ -1146,10 +1167,20 @@ static void action_migrate(const char *const *action)
 
   CHECK_ACTION_PARAMS(action, 1, 0);
   sscanf(action[2], "%ld", &mem_size);
-  
-  if(load_balancer(&new_host)){
-    printf("Migrating task %d with size %ld.\n", rank, mem_size);
+  /*
+  printf("%s: Task %d will call the LB.\n",
+	  SIMIX_host_self_get_name(), smpi_process_index());
+  */
+  new_host = load_balancer();
+/*  printf("%s, Task %d; new host: %s.\n", SIMIX_host_self_get_name(), rank,
+	  SIMIX_host_get_name(new_host));*/
+  if(strcmp(SIMIX_host_self_get_name(), SIMIX_host_get_name(new_host)) != 0){
+    printf("%s: Migrating task %d with size %ld to %s.\n",
+	    SIMIX_host_self_get_name(), rank, mem_size,
+	    SIMIX_host_get_name(new_host));
     process_migrate(SIMIX_process_self(), new_host);
+    printf("%s: Received task %d.\n",
+	    SIMIX_host_self_get_name(), smpi_process_index());
   }
 }
 
