@@ -1808,7 +1808,7 @@ int PMPI_Gather(void *sendbuf, int sendcount, MPI_Datatype sendtype,
   extra->send_size = sendtmpcount*dt_size_send;
   extra->datatype2 = encode_datatype(recvtype, &known);
   int dt_size_recv = 1;
-  if(!known)
+  if((smpi_comm_rank(comm)==root) && !known)
     dt_size_recv = smpi_datatype_size(recvtype);
   extra->recv_size = recvcount*dt_size_recv;
 
@@ -2033,7 +2033,7 @@ int PMPI_Scatter(void *sendbuf, int sendcount, MPI_Datatype sendtype,
   int known=0;
   extra->datatype1 = encode_datatype(sendtype, &known);
   int dt_size_send = 1;
-  if(!known)
+  if((smpi_comm_rank(comm)==root) && !known)
     dt_size_send = smpi_datatype_size(sendtype);
   extra->send_size = sendcount*dt_size_send;
   extra->datatype2 = encode_datatype(recvtype, &known);
