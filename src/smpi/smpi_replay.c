@@ -6,6 +6,7 @@
 
 #include "private.h"
 #include <stdio.h>
+#include <math.h>
 #include <xbt.h>
 #include <xbt/replay.h>
 #include "surf/surf.h" //needed by the function hosts_as_dynar.
@@ -1129,14 +1130,18 @@ smx_host_t load_balancer(void)
   if(!seed){
     //fprintf(stdout, "Seeding.\n");
     seed = time(NULL) + smpi_process_index();
+    //seed=smpi_process_index();
     srand(seed);
   }
-  while((cursor = rand() % xbt_dynar_length(hosts)) == host_index){}  
+  do{
+    cursor = (unsigned int)round(((double)rand()) / RAND_MAX 
+	    * (xbt_dynar_length(hosts) - 1));
+  }while(cursor == host_index);
   xbt_dynar_get_cpy(hosts, cursor, &new_host);
-  /*
+  
   printf("%d: LB chose host #%u from %lu hosts.\n", smpi_process_index(),
         cursor, xbt_dynar_length(hosts));
-  */
+  
   return new_host;
 }
 
@@ -1151,9 +1156,9 @@ void process_migrate(smx_process_t process, smx_host_t new_host)
   */
 
 #ifdef HAVE_TRACING
-  //smx_host_t host = SIMIX_host_self();
+  smx_host_t host = SIMIX_host_self();
   //TODO Finish tracing function.
-  //TRACE_smpi_process_change_host(smpi_process_index(), host, new_host);
+  TRACE_smpi_process_change_host(smpi_process_index(), host, new_host);
 #endif
   simcall_process_change_host(process, new_host);
   return;
@@ -1167,6 +1172,13 @@ static void action_migrate(const char *const *action)
 
   CHECK_ACTION_PARAMS(action, 1, 0);
   sscanf(action[2], "%ld", &mem_size);
+
+  /* You should have at least one process per host. In the future, we may
+   * change this to one process per core. */
+  if(xbt_swag_size(simcall_host_get_process_list(SIMIX_host_self())) == 1){
+    return;
+  }
+
   /*
   printf("%s: Task %d will call the LB.\n",
 	  SIMIX_host_self_get_name(), smpi_process_index());
