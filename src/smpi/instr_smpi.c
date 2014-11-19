@@ -84,8 +84,10 @@ static const char *instr_find_color (const char *state)
 
 static char *smpi_container(int rank, char *container, int n)
 {
-//snprintf(container, n, "%s-rank-%d", SIMIX_host_self_get_name(), rank);
-  snprintf(container, n, "rank-%d", rank);
+  snprintf(container, n, "%s-rank-%d", SIMIX_host_self_get_name(), rank);
+  /*TODO We may need a configuration flag to enable or disable the tracing of
+   * the migration of processes/tasks.*/
+  //snprintf(container, n, "rank-%d", rank);
   return container;
 }
 
@@ -418,7 +420,9 @@ void TRACE_smpi_recv(int rank, int src, int dst)
   new_pajeEndLink (SIMIX_get_clock(), PJ_container_get_root(), type, container, "PTP", key);
 }
 
-void TRACE_smpi_task_create (int rank, smx_host_t host)
+/**************** Functions to trace the migration of tasks. *****************/
+
+void TRACE_smpi_task_create(int rank, smx_host_t host)
 {
   if (!TRACE_smpi_is_enabled()) return;
   
@@ -427,11 +431,11 @@ void TRACE_smpi_task_create (int rank, smx_host_t host)
   //smpi_container(rank, str, INSTR_DEFAULT_STR_SIZE);
   
   if(PJ_container_get_or_null(str)){
-    printf("The container \"%s\" already exists.\n", str);
+    //printf("The container \"%s\" already exists.\n", str);
     return;
-  }else{
-    printf("Creating container \"%s\".\n", str);
-  }
+  }//else{
+    //printf("Creating container \"%s\".\n", str);
+  //}
 
   container_t father;
   if (TRACE_smpi_is_grouped()){
@@ -469,16 +473,22 @@ void TRACE_smpi_process_change_host(int rank, smx_host_t host,
   int len = INSTR_DEFAULT_STR_SIZE;
   char str[INSTR_DEFAULT_STR_SIZE];
   
+  //TODO create link (arrow) betwen old and new host.
+  //TODO trace the sending of the process data to the destination. 
   //start link
   //container_t msg = PJ_container_get (instr_process_id(process, str, len));
-  //type_t type = PJ_type_get ("SMPI_PROCESS_LINK", PJ_type_get_root());
+  //type_t type = PJ_type_get ("SMPI_PROCESS_LINK", PJ_type_get_roott());
   //new_pajeStartLink (smpi_process_simulated_elapsed(), PJ_container_get_root(),
   //		      type, msg, "M", key);
 
-  //destroy existing container of this process
-  TRACE_smpi_task_destroy(rank);
-
-  //create new container on the new_host location
+  /* We don't actually destroy the container, we just cleans up its state. This
+   * is needed because otherwise, migrated tasks would be shown stay on the
+   * computing state on the original host.*/
+  if(TRACE_smpi_is_computing()){
+    TRACE_smpi_task_destroy(rank);
+  }
+  
+  //Create new container on the new_host location, if it doesn't already exist.
   TRACE_smpi_task_create(rank, new_host);
 
   //end link
