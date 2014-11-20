@@ -27,6 +27,7 @@ char* sendbuffer=NULL;
 static int recvbuffer_size=0;
 char* recvbuffer=NULL;
 
+
 static void log_timed_action (const char *const *action, double clock){
   if (XBT_LOG_ISENABLED(smpi_replay, xbt_log_priority_verbose)){
     char *name = xbt_str_join_array(action, " ");
@@ -143,6 +144,30 @@ const char* encode_datatype(MPI_Datatype datatype)
           "This action needs after them %d mandatory arguments, and accepts %d optional ones. \n" \
           "Please contact the Simgrid team if support is needed", __FUNCTION__, i, mandatory, optional);\
   }
+
+/* Function that returns a dynar containing all hosts that have processes 
+ * assigned to them. */
+xbt_dynar_t hosts_as_dynar(void)
+{
+  xbt_lib_cursor_t cursor;
+  char *key;
+  char **data;
+  xbt_dictelm_t elm;
+  xbt_dynar_t hosts = xbt_dynar_new(sizeof(smx_host_t), NULL);
+
+  xbt_lib_foreach(host_lib, cursor, key, data){
+    if(routing_get_network_element_type(key) == SURF_NETWORK_ELEMENT_HOST){
+      elm = xbt_dict_cursor_get_elm(cursor);
+      
+      /* host_lib contains all hosts listed in the hostfile. We only want the
+       * ones that have processes assigned to them. */
+      if(xbt_swag_size(simcall_host_get_process_list((smx_host_t) elm))){
+	xbt_dynar_push(hosts, &elm);
+      }
+    }
+  }
+  return hosts;
+}
 
 
 static void action_init(const char *const *action)
@@ -1082,29 +1107,6 @@ static void action_allToAllv(const char *const *action) {
 
 /********************* Migration and load balancing code *********************/
 
-/* Function used by the load balancer, to get a list of hosts. */
-xbt_dynar_t hosts_as_dynar(void)
-{
-  xbt_lib_cursor_t cursor;
-  char *key;
-  char **data;
-  xbt_dictelm_t elm;
-  xbt_dynar_t hosts = xbt_dynar_new(sizeof(smx_host_t), NULL);
-
-  xbt_lib_foreach(host_lib, cursor, key, data){
-    if(routing_get_network_element_type(key) == SURF_NETWORK_ELEMENT_HOST){
-      elm = xbt_dict_cursor_get_elm(cursor);
-      
-      /* host_lib contains all hosts listed in the hostfile. We only want the
-       * ones that have processes assigned to them. */
-      if(xbt_swag_size(simcall_host_get_process_list((smx_host_t) elm))){
-	xbt_dynar_push(hosts, &elm);
-      }
-    }
-  }
-  return hosts;
-}
-
 smx_host_t load_balancer(void)
 {
   unsigned int cursor;
@@ -1139,8 +1141,8 @@ smx_host_t load_balancer(void)
   }while(cursor == host_index);
   xbt_dynar_get_cpy(hosts, cursor, &new_host);
   
-  printf("%d: LB chose host #%u from %lu hosts.\n", smpi_process_index(),
-        cursor, xbt_dynar_length(hosts));
+  //printf("%d: LB chose host #%u from %lu hosts.\n", smpi_process_index(),
+  //      cursor, xbt_dynar_length(hosts));
   
   return new_host;
 }
@@ -1164,14 +1166,23 @@ void process_migrate(smx_process_t process, smx_host_t new_host)
   return;
 }
 
+static void send_process_data(unsigned long data_size, smx_host_t dest)
+{
+  xbt_swag_t proc_list = simcall_host_get_process_list(dest);
+  smx_process_t dest_proc = (smx_process_t) xbt_swag_extract(proc_list);
+  xbt_swag_insert(dest_proc, proc_list);
+  smx_rdv_t mailbox = smpi_process_remote_mailbox_migration(
+		      	smpi_process_index_of_smx_process(dest_proc));
+}
+
 static void action_migrate(const char *const *action)
 {
-  long mem_size;
+  unsigned long mem_size;
   smx_host_t new_host;
   int rank = smpi_process_index();
 
   CHECK_ACTION_PARAMS(action, 1, 0);
-  sscanf(action[2], "%ld", &mem_size);
+  sscanf(action[2], "%lu", &mem_size);
 
   /* You should have at least one process per host. In the future, we may
    * change this to one process per core. */
@@ -1187,7 +1198,8 @@ static void action_migrate(const char *const *action)
 /*  printf("%s, Task %d; new host: %s.\n", SIMIX_host_self_get_name(), rank,
 	  SIMIX_host_get_name(new_host));*/
   if(strcmp(SIMIX_host_self_get_name(), SIMIX_host_get_name(new_host)) != 0){
-    //printf("%s: Migrating task %d with size %ld to %s.\n",
+    send_process_data(mem_size, new_host);
+    //printf("%s: Migrating task %d with size %lu to %s.\n",
     //        SIMIX_host_self_get_name(), rank, mem_size,
     //        SIMIX_host_get_name(new_host));
     process_migrate(SIMIX_process_self(), new_host);

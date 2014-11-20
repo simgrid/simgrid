@@ -37,6 +37,7 @@ typedef struct s_smpi_process_data {
   char* instance_id;
   int replaying;                /* is the process replaying a trace */
   xbt_bar_t finalization_barrier;
+  smx_rdv_t mailbox_migration; //Mailbox to receive process data on migration.
 } s_smpi_process_data_t;
 
 static smpi_process_data_t *process_data = NULL;
@@ -63,6 +64,13 @@ static char *get_mailbox_name(char *str, int index)
 static char *get_mailbox_name_small(char *str, int index)
 {
   snprintf(str, MAILBOX_NAME_MAXLEN, "small%0*x", (int) (sizeof(int) * 2),
+           index);
+  return str;
+}
+
+static char *get_mailbox_name_migration(char *str, int index)
+{
+  snprintf(str, MAILBOX_NAME_MAXLEN, "migration%0*x", (int) (sizeof(int) * 2),
            index);
   return str;
 }
@@ -106,6 +114,8 @@ void smpi_process_init(int *argc, char ***argv)
     data->argv = argv;
     // set the process attached to the mailbox
     simcall_rdv_set_receiver(data->mailbox_small, proc);
+    //Set the receiver for migrated data.
+    simcall_rdv_set_receiver(data->mailbox_migration, proc);
 
     XBT_DEBUG("<%d> New process in the game: %p", index, proc);
 
@@ -254,6 +264,12 @@ smx_rdv_t smpi_process_mailbox_small(void)
   return data->mailbox_small;
 }
 
+smx_rdv_t smpi_process_mailbox_migration(void)
+{
+  smpi_process_data_t data = smpi_process_data();
+  return data->mailbox_migration;
+}
+
 smx_rdv_t smpi_process_remote_mailbox(int index)
 {
   smpi_process_data_t data = smpi_process_remote_data(index);
@@ -265,6 +281,12 @@ smx_rdv_t smpi_process_remote_mailbox_small(int index)
 {
   smpi_process_data_t data = smpi_process_remote_data(index);
   return data->mailbox_small;
+}
+
+smx_rdv_t smpi_process_remote_mailbox_migration(int index)
+{
+  smpi_process_data_t data = smpi_process_remote_data(index);
+  return data->mailbox_migration;
 }
 
 xbt_os_timer_t smpi_process_timer(void)
@@ -421,6 +443,9 @@ void smpi_global_init(void)
     process_data[i]->mailbox = simcall_rdv_create(get_mailbox_name(name, i));
     process_data[i]->mailbox_small =
         simcall_rdv_create(get_mailbox_name_small(name, i));
+    //Mailbox for receiming data from migrated processes.
+    process_data[i]->mailbox_migration =
+        simcall_rdv_create(get_mailbox_name_migration(name, i));
     process_data[i]->timer = xbt_os_timer_new();
     if (MC_is_active())
       MC_ignore_heap(process_data[i]->timer, xbt_os_timer_size());
