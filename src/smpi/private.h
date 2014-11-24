@@ -466,7 +466,8 @@ int smpi_comm_attr_delete(MPI_Comm comm, int keyval);
 int smpi_comm_attr_get(MPI_Comm comm, int keyval, void* attr_value, int* flag);
 int smpi_comm_attr_put(MPI_Comm comm, int keyval, void* attr_value);
 
-
+//Send process data to destination when a process is migrated.
+void smpi_send_process_data(unsigned long size, smx_host_t dest);
 
 // f77 wrappers
 void mpi_init_(int*);

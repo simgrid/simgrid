@@ -1588,3 +1588,42 @@ void smpi_mpi_exscan(void *sendbuf, void *recvbuf, int count,
   xbt_free(requests);
 }
 
+
+void smpi_send_process_data(unsigned long size, smx_host_t dest)
+{
+  smx_rdv_t mailbox;
+  MPI_Request request = NULL; /* MC needs the comm to be set to NULL during the call */
+  int dest_rank;
+  double sleep_time = 0;
+  xbt_swag_t proc_list = simcall_host_get_process_list(dest);
+  smx_process_t dest_proc = (smx_process_t) xbt_swag_extract(proc_list);
+  xbt_swag_insert(dest_proc, proc_list);
+  dest_rank = smpi_process_index_of_smx_process(dest_proc);
+  mailbox = smpi_process_remote_mailbox_migration(dest_rank);
+//MPI_Request request = smpi_mpi_isend(NULL, size * 1024, MPI_BYTE, dest_rank,
+//			0, MPI_COMM_WORLD);
+  
+  //This call is based on smpi_mpi_isend.
+  request =  build_request(NULL, size * 1024, MPI_BYTE, smpi_process_index(),
+      smpi_group_index(smpi_comm_group(MPI_COMM_WORLD), dest_rank), 0,
+      MPI_COMM_WORLD, NON_PERSISTENT | ISEND | SEND);
+  
+  //FIXME I'm not sure about this sleep time thing.
+  sleep_time = smpi_ois(request->size);
+  if(sleep_time > 0){
+    simcall_process_sleep(sleep_time);
+  }
+
+  //Not sure abou this block either.
+  request->detached = 1;
+  request->refcount++;
+  request->real_size=request->size;
+  smpi_datatype_use(request->old_type);
+  smpi_comm_use(request->comm);
+  
+  request->action = simcall_comm_isend(SIMIX_process_from_PID(request->src+1),
+      mailbox, request->size, -1.0, NULL, request->real_size, &match_send,
+      &xbt_free_f, &smpi_comm_null_copy_buffer_callback, request,
+      request->detached); 
+}
+

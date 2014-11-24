@@ -1166,15 +1166,6 @@ void process_migrate(smx_process_t process, smx_host_t new_host)
   return;
 }
 
-static void send_process_data(unsigned long data_size, smx_host_t dest)
-{
-  xbt_swag_t proc_list = simcall_host_get_process_list(dest);
-  smx_process_t dest_proc = (smx_process_t) xbt_swag_extract(proc_list);
-  xbt_swag_insert(dest_proc, proc_list);
-  smx_rdv_t mailbox = smpi_process_remote_mailbox_migration(
-		      	smpi_process_index_of_smx_process(dest_proc));
-}
-
 static void action_migrate(const char *const *action)
 {
   unsigned long mem_size;
@@ -1198,7 +1189,7 @@ static void action_migrate(const char *const *action)
 /*  printf("%s, Task %d; new host: %s.\n", SIMIX_host_self_get_name(), rank,
 	  SIMIX_host_get_name(new_host));*/
   if(strcmp(SIMIX_host_self_get_name(), SIMIX_host_get_name(new_host)) != 0){
-    send_process_data(mem_size, new_host);
+    smpi_send_process_data(mem_size, new_host);
     //printf("%s: Migrating task %d with size %lu to %s.\n",
     //        SIMIX_host_self_get_name(), rank, mem_size,
     //        SIMIX_host_get_name(new_host));
