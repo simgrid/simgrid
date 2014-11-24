@@ -117,6 +117,14 @@ ENDIF()
       ADD_TESH(mc-bugged1-liveness-ucontext-sparse  --setenv bindir=${CMAKE_BINARY_DIR}/examples/msg/mc --cd ${CMAKE_HOME_DIRECTORY}/examples/msg/mc bugged1_liveness_sparse.tesh)
       ADD_TESH(mc-bugged1-liveness-visited-ucontext --setenv bindir=${CMAKE_BINARY_DIR}/examples/msg/mc --cd ${CMAKE_HOME_DIRECTORY}/examples/msg/mc bugged1_liveness_visited.tesh)
       ADD_TESH(mc-bugged1-liveness-visited-ucontext-sparse --setenv bindir=${CMAKE_BINARY_DIR}/examples/msg/mc --cd ${CMAKE_HOME_DIRECTORY}/examples/msg/mc bugged1_liveness_visited_sparse.tesh)
+    if(HAVE_C_STACK_CLEANER)
+      # This test checks if the stack cleaner is makign a difference:
+      add_test(mc-bugged1-liveness-stack-cleaner
+        ${CMAKE_HOME_DIRECTORY}/examples/msg/mc/bugged1_liveness_stack_cleaner
+        ${CMAKE_HOME_DIRECTORY}/examples/msg/mc/
+        ${CMAKE_BINARY_DIR}/examples/msg/mc/
+        )
+    endif()
     ENDIF()
   ENDIF()
 
