@@ -1600,11 +1600,11 @@ void smpi_send_process_data(unsigned long size, smx_host_t dest)
   xbt_swag_insert(dest_proc, proc_list);
   dest_rank = smpi_process_index_of_smx_process(dest_proc);
   mailbox = smpi_process_remote_mailbox_migration(dest_rank);
-//MPI_Request request = smpi_mpi_isend(NULL, size * 1024, MPI_BYTE, dest_rank,
+//MPI_Request request = smpi_mpi_isend(NULL, size, MPI_BYTE, dest_rank,
 //			0, MPI_COMM_WORLD);
   
   //This call is based on smpi_mpi_isend.
-  request =  build_request(NULL, size * 1024, MPI_BYTE, smpi_process_index(),
+  request =  build_request(NULL, size, MPI_BYTE, smpi_process_index(),
       smpi_group_index(smpi_comm_group(MPI_COMM_WORLD), dest_rank), 0,
       MPI_COMM_WORLD, NON_PERSISTENT | ISEND | SEND);
   
@@ -1615,7 +1615,7 @@ void smpi_send_process_data(unsigned long size, smx_host_t dest)
   }
 
   //Not sure abou this block either.
-  request->detached = 1;
+  request->detached = 0;
   request->refcount++;
   request->real_size=request->size;
   smpi_datatype_use(request->old_type);
@@ -1625,5 +1625,6 @@ void smpi_send_process_data(unsigned long size, smx_host_t dest)
       mailbox, request->size, -1.0, NULL, request->real_size, &match_send,
       &xbt_free_f, &smpi_comm_null_copy_buffer_callback, request,
       request->detached); 
+  simcall_comm_wait(request->action, -1.0);
 }
 
