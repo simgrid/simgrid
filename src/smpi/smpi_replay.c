@@ -1166,6 +1166,22 @@ void process_migrate(smx_process_t process, smx_host_t new_host)
   return;
 }
 
+void send_process_data(double data_size, smx_host_t host){
+  smx_synchro_t synchro;
+  smx_host_t host_list[1];
+  double comp_amount[1];
+  double comm_amount[1];
+  
+  //host_list[0] = SIMIX_host_self();
+  host_list[0] = host;
+  comp_amount[0] = 0;
+  comm_amount[0] = data_size;
+  synchro = simcall_host_parallel_execute("data_migration", 1, host_list, 
+	    comp_amount, comm_amount, 1.0, -1.0);
+  simcall_host_execution_wait(synchro);
+
+}
+
 static void action_migrate(const char *const *action)
 {
   unsigned long mem_size;
@@ -1189,7 +1205,11 @@ static void action_migrate(const char *const *action)
 /*  printf("%s, Task %d; new host: %s.\n", SIMIX_host_self_get_name(), rank,
 	  SIMIX_host_get_name(new_host));*/
   if(strcmp(SIMIX_host_self_get_name(), SIMIX_host_get_name(new_host)) != 0){
-    smpi_send_process_data(mem_size, new_host);
+    double before = smpi_process_simulated_elapsed();
+    //smpi_send_process_data(mem_size, new_host);
+    send_process_data((double) mem_size, new_host);
+    printf("Data migration:%lu bytes in %lf seconds.\n", mem_size,
+	    smpi_process_simulated_elapsed() - before);
     //printf("%s: Migrating task %d with size %lu to %s.\n",
     //        SIMIX_host_self_get_name(), rank, mem_size,
     //        SIMIX_host_get_name(new_host));
