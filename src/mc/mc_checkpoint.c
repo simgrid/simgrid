@@ -607,7 +607,7 @@ static void MC_get_current_fd(mc_snapshot_t snapshot){
 
     const size_t link_size = 200;
     char link[200];
-    size_t res = readlink(source, link, link_size);
+    int res = readlink(source, link, link_size);
     if (res<0) {
       xbt_die("Could not read link for %s", source);
     }
