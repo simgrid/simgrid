@@ -774,12 +774,6 @@ static int migration_tx_fun(int argc, char *argv[])
         stage2_round, updated_size, computed_during_stage1, dp_rate, dp_cap);
 
 
-    // if (stage2_round != 0) {
-    //   /* during stage1, we have already created overhead tasks */
-    //   double overhead = dpt_cpu_overhead * updated_size;
-    //   XBT_DEBUG("updated %f overhead %f", updated_size, overhead);
-    //   launch_deferred_exec_process(vm, overhead, 10000);
-    // }
 
 
     {
