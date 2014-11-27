@@ -625,13 +625,13 @@ static void send_migration_data(msg_vm_t vm, msg_host_t src_pm, msg_host_t dst_p
 
   xbt_free(task_name);
   if(ret == MSG_HOST_FAILURE){
-	//XBT_INFO("SRC host failed during migration of %s (stage %d)", sg_host_name(vm), stage);
- 	MSG_task_destroy(task);
-	THROWF(host_error, 0, "SRC host failed during migration of %s (stage %d)", sg_host_name(vm), stage);
-   }else if(ret == MSG_TRANSFER_FAILURE){
-	//XBT_INFO("DST host failed during migration of %s (stage %d)", sg_host_name(vm), stage);
- 	MSG_task_destroy(task);
-	THROWF(host_error, 0, "DST host failed during migration of %s (stage %d)", sg_host_name(vm), stage);
+    //XBT_INFO("SRC host failed during migration of %s (stage %d)", sg_host_name(vm), stage);
+    MSG_task_destroy(task);
+    THROWF(host_error, 0, "SRC host failed during migration of %s (stage %d)", sg_host_name(vm), stage);
+  }else if(ret == MSG_TRANSFER_FAILURE){
+    //XBT_INFO("DST host failed during migration of %s (stage %d)", sg_host_name(vm), stage);
+    MSG_task_destroy(task);
+    THROWF(host_error, 0, "DST host failed during migration of %s (stage %d)", sg_host_name(vm), stage);
   }
 
   double clock_end = MSG_get_clock();
