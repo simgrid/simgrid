@@ -637,15 +637,11 @@ static void send_migration_data(msg_vm_t vm, msg_host_t src_pm, msg_host_t dst_p
   double clock_end = MSG_get_clock();
   double duration = clock_end - clock_sta;
   double actual_speed = size / duration;
-  double cpu_utilization = 0;
 
-  if (stage == 2){
-    XBT_DEBUG("mig-stage%d.%d: sent %llu duration %f actual_speed %f (target %f) cpu %f", stage, stage2_round, size, duration, actual_speed, mig_speed, cpu_utilization);}
-  else{
-    XBT_DEBUG("mig-stage%d: sent %llu duration %f actual_speed %f (target %f) cpu %f", stage, size, duration, actual_speed, mig_speed, cpu_utilization);
-  }
-
-
+  if (stage == 2)
+    XBT_DEBUG("mig-stage%d.%d: sent %llu duration %f actual_speed %f (target %f)", stage, stage2_round, size, duration, actual_speed, mig_speed);
+  else
+    XBT_DEBUG("mig-stage%d: sent %llu duration %f actual_speed %f (target %f)", stage, size, duration, actual_speed, mig_speed);
 
 }
 
@@ -679,13 +675,6 @@ static double send_stage1(struct migration_session *ms,
     send_migration_data(ms->vm, ms->src_pm, ms->dst_pm, datasize, ms->mbox, 1, 0, mig_speed);
     double computed = lookup_computed_flop_counts(ms->vm, 1, 0);
     computed_total += computed;
-
-    // {
-    //   double updated_size = get_updated_size(computed, dp_rate, dp_cap);
-
-    //   double overhead = dpt_cpu_overhead * updated_size;
-    //   launch_deferred_exec_process(vm, overhead, 10000);
-    // }
   }
 
   return computed_total;
@@ -695,11 +684,7 @@ static double send_stage1(struct migration_session *ms,
 
 static double get_threshold_value(double bandwidth, double max_downtime)
 {
-  /* This value assumes the network link is 1Gbps. */
-  // double threshold = max_downtime * 125 * 1024 * 1024;
-  double threshold = max_downtime * bandwidth;
-
-  return threshold;
+  return max_downtime * bandwidth;
 }
 
 static int migration_tx_fun(int argc, char *argv[])
@@ -745,9 +730,6 @@ static int migration_tx_fun(int argc, char *argv[])
 
   double computed_during_stage1 = 0;
   if (!skip_stage1) {
-    // send_migration_data(vm_name, src_pm_name, dst_pm_name, ramsize, mbox, 1, 0, mig_speed, xfer_cpu_overhead);
-
-    /* send ramsize, but split it */
     double clock_prev_send = MSG_get_clock();
 
     TRY {
