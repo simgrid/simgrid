@@ -339,8 +339,6 @@ static inline char *get_mig_task_name(msg_vm_t vm, msg_host_t src_pm, msg_host_t
   return bprintf("__task_mig_stage%d:%s(%s-%s)", stage, vm_name, src_pm_name, dst_pm_name);
 }
 
-static void launch_deferred_exec_process(msg_host_t host, double computation, double prio);
-
 
 struct migration_session {
   msg_vm_t vm;
@@ -365,7 +363,6 @@ static int migration_rx_fun(int argc, char *argv[])
 
   s_ws_params_t params;
   simcall_host_get_params(ms->vm, &params);
-  const double xfer_cpu_overhead = params.xfer_cpu_overhead;
 
   int need_exit = 0;
 
@@ -376,18 +373,12 @@ static int migration_rx_fun(int argc, char *argv[])
     msg_task_t task = NULL;
     ret = MSG_task_recv(&task, ms->mbox);
     {
-      double received ;
-      if (ret == MSG_OK)
-      	received = MSG_task_get_data_size(task);
-      else{
-	// An error occured, clean the code and return
+      if (ret != MSG_OK) {
+        // An error occured, clean the code and return
         // The owner did not change, hence the task should be only destroyed on the other side
         xbt_free(finalize_task_name);
-         return 0;
+        return 0;
       }
-      /* TODO: clean up */
-      // const double alpha = 0.22L * 1.0E8 / (80L * 1024 * 1024);
-      launch_deferred_exec_process(ms->vm, received * xfer_cpu_overhead, 1);
     }
 
     if (strcmp(task->name, finalize_task_name) == 0)
@@ -614,255 +605,10 @@ void MSG_host_del_task(msg_host_t host, msg_task_t task)
 }
 
 
-static int deferred_exec_fun(int argc, char *argv[])
-{
-  xbt_assert(argc == 3);
-  const char *comp_str = argv[1];
-  double computaion = atof(comp_str);
-  const char *prio_str = argv[2];
-  double prio = atof(prio_str);
-
-  msg_task_t task = MSG_task_create("__task_deferred", computaion, 0, NULL);
-  // XBT_INFO("exec deferred %f", computation);
-
-  /* dpt is the results of the VM activity */
-  MSG_task_set_priority(task, prio);
-  MSG_task_execute(task);
-
-
-
-  MSG_task_destroy(task);
-
-  return 0;
-}
-
-static void launch_deferred_exec_process(msg_host_t host, double computation, double prio)
-{
-  char *pr_name = bprintf("__pr_deferred_exec_%s", MSG_host_get_name(host));
-
-  int nargvs = 4;
-  char **argv = xbt_new(char *, nargvs);
-  argv[0] = pr_name;
-  argv[1] = bprintf("%f", computation);
-  argv[2] = bprintf("%f", prio);
-  argv[3] = NULL;
-
-  MSG_process_create_with_arguments(pr_name, deferred_exec_fun, NULL, host, nargvs - 1, argv);
-}
-
-
-static int task_tx_overhead_fun(int argc, char *argv[])
-{
-  xbt_assert(argc == 2);
-  const char *mbox = argv[1];
-
-  int need_exit = 0;
-
-  // XBT_INFO("start %s", mbox);
-
-  for (;;) {
-    msg_task_t task = NULL;
-    MSG_task_recv(&task, mbox);
-
-    // XBT_INFO("task->name %s", task->name);
-
-    if (strcmp(task->name, "finalize_making_overhead") == 0)
-      need_exit = 1;
-
-    // XBT_INFO("exec");
-    // MSG_task_set_priority(task, 1000000);
-    MSG_task_execute(task);
-    MSG_task_destroy(task);
-
-    if (need_exit)
-      break;
-  }
-
-  // XBT_INFO("bye");
-
-  return 0;
-}
-
-static void start_overhead_process(msg_task_t comm_task)
-{
-  char *pr_name = bprintf("__pr_task_tx_overhead_%s", MSG_task_get_name(comm_task));
-  char *mbox    = bprintf("__mb_task_tx_overhead_%s", MSG_task_get_name(comm_task));
-
-  int nargvs = 3;
-  char **argv = xbt_new(char *, nargvs);
-  argv[0] = pr_name;
-  argv[1] = mbox;
-  argv[2] = NULL;
-
-  // XBT_INFO("micro start: mbox %s", mbox);
-  MSG_process_create_with_arguments(pr_name, task_tx_overhead_fun, NULL, MSG_host_self(), nargvs - 1, argv);
-}
-
-static void shutdown_overhead_process(msg_task_t comm_task)
-{
-  char *mbox = bprintf("__mb_task_tx_overhead_%s", MSG_task_get_name(comm_task));
-
-  msg_task_t task = MSG_task_create("finalize_making_overhead", 0, 0, NULL);
-
-  // XBT_INFO("micro shutdown: mbox %s", mbox);
-  msg_error_t ret = MSG_task_send(task, mbox);
-  if(ret != MSG_OK)
-    xbt_die("shutdown error - task not sent");
-
-  xbt_free(mbox);
-  // XBT_INFO("shutdown done");
-}
-
-static void request_overhead(msg_task_t comm_task, double computation)
-{
-  char *mbox = bprintf("__mb_task_tx_overhead_%s", MSG_task_get_name(comm_task));
-
-  msg_task_t task = MSG_task_create("micro", computation, 0, NULL);
-
-  // XBT_INFO("req overhead");
-  msg_error_t ret = MSG_task_send(task, mbox);
-  if(ret != MSG_OK)
-    xbt_die("req overhead error - task not sent");
-
-  xbt_free(mbox);
-}
-
-/* alpha is (floating_operations / bytes).
- *
- * When actual migration traffic was 32 mbytes/s, we observed the CPU
- * utilization of the main thread of the Qemu process was 10 %. 
- *   alpha = 0.1 * C / (32 * 1024 * 1024)
- * where the CPU capacity of the PM is C flops/s.
- *
- * */
-static void task_send_bounded_with_cpu_overhead(msg_task_t comm_task, char *mbox, double mig_speed, double alpha)
-{
-  const double chunk_size = 1024 * 1024 * 10;
-  double remaining = MSG_task_get_data_size(comm_task);
-
-  start_overhead_process(comm_task);
-
-
-  while (remaining > 0) {
-    double data_size = chunk_size;
-    if (remaining < chunk_size)
-      data_size = remaining;
-
-    remaining -= data_size;
-
-    // XBT_INFO("remaining %f bytes", remaining);
-
-
-    double clock_sta = MSG_get_clock();
-
-    /* create a micro task */
-    {
-      char *mtask_name = bprintf("__micro_%s", MSG_task_get_name(comm_task));
-      msg_task_t mtask = MSG_task_create(mtask_name, 0, data_size, NULL);
-
-      request_overhead(comm_task, data_size * alpha);
-
-      msg_error_t ret = MSG_task_send(mtask, mbox);
-      if(ret != MSG_OK)
-        xbt_die("migration error - task not sent");
-
-      xbt_free(mtask_name);
-    }
-
-#if 0
-    {
-      /* In the real world, sending data involves small CPU computation. */
-      char *mtask_name = bprintf("__micro_%s", MSG_task_get_name(comm_task));
-      msg_task_t mtask = MSG_task_create(mtask_name, data_size * alpha, data_size, NULL);
-      MSG_task_execute(mtask);
-      MSG_task_destroy(mtask);
-      xbt_free(mtask_name);
-    }
-#endif
-   
-    /* TODO */
-
-    double clock_end = MSG_get_clock();
-
-
-    if (mig_speed > 0) {
-      /*
-       * (max bandwidth) > data_size / ((elapsed time) + time_to_sleep)
-       *
-       * Thus, we get
-       *   time_to_sleep > data_size / (max bandwidth) - (elapsed time)
-       *
-       * If time_to_sleep is smaller than zero, the elapsed time was too big. We
-       * do not need a micro sleep.
-       **/
-      double time_to_sleep = data_size / mig_speed - (clock_end - clock_sta);
-      if (time_to_sleep > 0)
-        MSG_process_sleep(time_to_sleep);
-
-
-      //XBT_INFO("duration %f", clock_end - clock_sta);
-      //XBT_INFO("time_to_sleep %f", time_to_sleep);
-    }
-  }
-
-  // XBT_INFO("%s", MSG_task_get_name(comm_task));
-  shutdown_overhead_process(comm_task);
-
-}
-
-
-#if 0
-static void make_cpu_overhead_of_data_transfer(msg_task_t comm_task, double init_comm_size)
-{
-  double prev_remaining = init_comm_size;
-
-  for (;;) {
-    double remaining = MSG_task_get_remaining_communication(comm_task);
-    if (remaining == 0)
-      need_exit = 1;
-
-    double sent = prev_remaining - remaining;
-    double comp_size = sent * overhead;
-
-
-    char *comp_task_name = bprintf("__sender_overhead%s", MSG_task_get_name(comm_task));
-    msg_task_t comp_task = MSG_task_create(comp_task_name, comp_size, 0, NULL);
-    MSG_task_execute(comp_task);
-    MSG_task_destroy(comp_task);
-
-    if (need_exit)
-      break;
-
-    prev_remaining = remaining;
-
-  }
-
-  xbt_free(comp_task_name);
-}
-#endif
-
-// #define USE_MICRO_TASK 1
-
-#if 0
-// const double alpha = 0.1L * 1.0E8 / (32L * 1024 * 1024);
-// const double alpha = 0.25L * 1.0E8 / (85L * 1024 * 1024);
-// const double alpha = 0.20L * 1.0E8 / (85L * 1024 * 1024);
-// const double alpha = 0.25L * 1.0E8 / (85L * 1024 * 1024);
-// const double alpha = 0.32L * 1.0E8 / (24L * 1024 * 1024);   // makes super good values for 32 mbytes/s
-//const double alpha = 0.32L * 1.0E8 / (32L * 1024 * 1024);
-// const double alpha = 0.56L * 1.0E8 / (80L * 1024 * 1024);
-////const double alpha = 0.20L * 1.0E8 / (80L * 1024 * 1024);
-// const double alpha = 0.56L * 1.0E8 / (90L * 1024 * 1024);
-// const double alpha = 0.66L * 1.0E8 / (90L * 1024 * 1024);
-// const double alpha = 0.20L * 1.0E8 / (80L * 1024 * 1024);
-
-/* CPU 22% when 80Mbyte/s */
-const double alpha = 0.22L * 1.0E8 / (80L * 1024 * 1024);
-#endif
 
 
 static void send_migration_data(msg_vm_t vm, msg_host_t src_pm, msg_host_t dst_pm,
-    sg_size_t size, char *mbox, int stage, int stage2_round, double mig_speed, double xfer_cpu_overhead)
+    sg_size_t size, char *mbox, int stage, int stage2_round, double mig_speed)
 {
   char *task_name = get_mig_task_name(vm, src_pm, dst_pm, stage);
   msg_task_t task = MSG_task_create(task_name, 0, size, NULL);
@@ -871,11 +617,6 @@ static void send_migration_data(msg_vm_t vm, msg_host_t src_pm, msg_host_t dst_p
 
   double clock_sta = MSG_get_clock();
 
-#ifdef USE_MICRO_TASK
-
-  task_send_bounded_with_cpu_overhead(task, mbox, mig_speed, xfer_cpu_overhead);
-
-#else
   msg_error_t ret;
   if (mig_speed > 0)
     ret = MSG_task_send_bounded(task, mbox, mig_speed);
@@ -895,16 +636,11 @@ static void send_migration_data(msg_vm_t vm, msg_host_t src_pm, msg_host_t dst_p
   }
 //else
 //   XBT_INFO("Ret != FAILURE !!!!"); 
-#endif
 
   double clock_end = MSG_get_clock();
   double duration = clock_end - clock_sta;
   double actual_speed = size / duration;
-#ifdef USE_MICRO_TASK
-  double cpu_utilization = size * xfer_cpu_overhead / duration / 1.0E8;
-#else
   double cpu_utilization = 0;
-#endif
 
   if (stage == 2){
     XBT_DEBUG("mig-stage%d.%d: sent %llu duration %f actual_speed %f (target %f) cpu %f", stage, stage2_round, size, duration, actual_speed, mig_speed, cpu_utilization);}
@@ -913,33 +649,6 @@ static void send_migration_data(msg_vm_t vm, msg_host_t src_pm, msg_host_t dst_p
   }
 
 
-#ifdef USE_MICRO_TASK
-  /* The name of a micro task starts with __micro, which does not match the
-   * special name that finalizes the receiver loop. Thus, we send the special task.
-   **/
-  {
-    if (stage == 3) {
-      char *task_name = get_mig_task_name(vm_name, src_pm_name, dst_pm_name, stage);
-      msg_task_t task = MSG_task_create(task_name, 0, 0, NULL);
-      msg_error_t ret = MSG_task_send(task, mbox);
-//      xbt_assert(ret == MSG_OK);
-      xbt_free(task_name);
-      if(ret == MSG_HOST_FAILURE){
-	//XBT_INFO("SRC host failed during migration of %s (stage 3)", sg_host_name(vm));
- 	MSG_task_destroy(task);
-	THROWF(host_error, 0, "SRC host failed during migration of VM %s (stage 3)", sg_host_name(vm));
-        // The owner of the task did not change so destroy the task 
-	return; 
-      }else if(ret == MSG_TRANSFER_FAILURE){
-	//XBT_INFO("DST host failed during migration of %s (stage %d)", sg_host_name(vm), stage);
- 	MSG_task_destroy(task);
-	THROWF(host_error, 0, "DST host failed during migration of %s (stage %d)", sg_host_name(vm), stage);
-	return; 
-     }
-
-    }
-  }
-#endif
 
 }
 
@@ -956,7 +665,7 @@ static double get_updated_size(double computed, double dp_rate, double dp_cap)
 }
 
 static double send_stage1(struct migration_session *ms,
-    sg_size_t ramsize, double mig_speed, double xfer_cpu_overhead, double dp_rate, double dp_cap, double dpt_cpu_overhead)
+    sg_size_t ramsize, double mig_speed, double dp_rate, double dp_cap)
 {
 
   // const long chunksize = (sg_size_t)1024 * 1024 * 100;
@@ -970,7 +679,7 @@ static double send_stage1(struct migration_session *ms,
       datasize = remaining;
 
     remaining -= datasize;
-    send_migration_data(ms->vm, ms->src_pm, ms->dst_pm, datasize, ms->mbox, 1, 0, mig_speed, xfer_cpu_overhead);
+    send_migration_data(ms->vm, ms->src_pm, ms->dst_pm, datasize, ms->mbox, 1, 0, mig_speed);
     double computed = lookup_computed_flop_counts(ms->vm, 1, 0);
     computed_total += computed;
 
@@ -1012,8 +721,6 @@ static int migration_tx_fun(int argc, char *argv[])
   const double dp_rate      = params.dp_rate;
   const double dp_cap       = params.dp_cap;
   const double mig_speed    = params.mig_speed;
-  const double xfer_cpu_overhead = params.xfer_cpu_overhead;
-  const double dpt_cpu_overhead = params.dpt_cpu_overhead;
 
   msg_vm_t vm=ms->vm; 
 
@@ -1047,7 +754,7 @@ static int migration_tx_fun(int argc, char *argv[])
     double clock_prev_send = MSG_get_clock();
 
     TRY{
-    	computed_during_stage1 = send_stage1(ms, ramsize, mig_speed, xfer_cpu_overhead, dp_rate, dp_cap, dpt_cpu_overhead);
+    	computed_during_stage1 = send_stage1(ms, ramsize, mig_speed, dp_rate, dp_cap);
     } CATCH_ANONYMOUS{
       //hostfailure (if you want to know whether this is the SRC or the DST please check directly in send_migration_data code)
       // Stop the dirty page tracking an return (there is no memory space to release) 
@@ -1109,7 +816,7 @@ static int migration_tx_fun(int argc, char *argv[])
 
     double clock_prev_send = MSG_get_clock();
     TRY{
-      send_migration_data(ms->vm, ms->src_pm, ms->dst_pm, updated_size, ms->mbox, 2, stage2_round, mig_speed, xfer_cpu_overhead);
+      send_migration_data(ms->vm, ms->src_pm, ms->dst_pm, updated_size, ms->mbox, 2, stage2_round, mig_speed);
     }CATCH_ANONYMOUS{
       //hostfailure (if you want to know whether this is the SRC or the DST please check directly in send_migration_data code)
       // Stop the dirty page tracking an return (there is no memory space to release) 
@@ -1135,7 +842,7 @@ stage3:
   stop_dirty_page_tracking(vm);
  
  TRY{
-    send_migration_data(ms->vm, ms->src_pm, ms->dst_pm, remaining_size, ms->mbox, 3, 0, mig_speed, xfer_cpu_overhead);
+    send_migration_data(ms->vm, ms->src_pm, ms->dst_pm, remaining_size, ms->mbox, 3, 0, mig_speed);
   }CATCH_ANONYMOUS{
       //hostfailure (if you want to know whether this is the SRC or the DST please check directly in send_migration_data code)
       // Stop the dirty page tracking an return (there is no memory space to release) 

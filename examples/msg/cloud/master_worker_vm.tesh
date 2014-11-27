@@ -46,12 +46,12 @@ $ $SG_TEST_EXENV ${bindir:=.}/master_worker_vm$EXEEXT --log=no_loc ${srcdir:=.}/
 > [Intel:__pr_mig_tx:VM00(Intel-Intel):(7) 1097.307521] [msg_vm/WARNING] use the default max_downtime value 30ms
 > [VM01:WRK03:(5) 1097.380336] [msg_test/INFO] WRK03 executed task(Task03)
 > [1099.464019] [surf_vm_workstation/INFO] migrate VM(VM00): set bound (137333000.000000) at Intel
-> [Provost:__pr_mig_tx:VM01(Provost-Intel):(11) 1100.382717] [msg_vm/WARNING] use the default max_downtime value 30ms
+> [Provost:__pr_mig_tx:VM01(Provost-Intel):(9) 1100.382717] [msg_vm/WARNING] use the default max_downtime value 30ms
 > [3566.242426] [surf_vm_workstation/INFO] migrate VM(VM01): set bound (137333000.000000) at Intel
 > [Jacquelin:master:(1) 3567.161124] [msg_test/INFO] # Migrate all VMs to PM(Provost)
-> [Intel:__pr_mig_tx:VM00(Intel-Provost):(15) 3567.161124] [msg_vm/WARNING] use the default max_downtime value 30ms
+> [Intel:__pr_mig_tx:VM00(Intel-Provost):(11) 3567.161124] [msg_vm/WARNING] use the default max_downtime value 30ms
 > [6033.020833] [surf_vm_workstation/INFO] migrate VM(VM00): set bound (137333000.000000) at Provost
-> [Intel:__pr_mig_tx:VM01(Intel-Provost):(19) 6034.900487] [msg_vm/WARNING] use the default max_downtime value 30ms
+> [Intel:__pr_mig_tx:VM01(Intel-Provost):(13) 6034.900487] [msg_vm/WARNING] use the default max_downtime value 30ms
 > [8500.760196] [surf_vm_workstation/INFO] migrate VM(VM01): set bound (137333000.000000) at Provost
 > [Jacquelin:master:(1) 8502.639850] [msg_test/INFO] # Shutdown the half of worker processes gracefuly. The remaining half will be forcibly killed.
 > [VM00:WRK00:(2) 8504.519504] [msg_test/INFO] WRK00 received task(finalize) from mailbox(MBOX:WRK00)
