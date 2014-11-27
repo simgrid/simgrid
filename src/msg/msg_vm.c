@@ -75,7 +75,7 @@ void MSG_vm_set_property_value(msg_vm_t vm, const char *name, void *value, void_
 
 msg_vm_t MSG_vm_get_by_name(const char *name)
 {
-	return MSG_get_host_by_name(name);
+  return MSG_get_host_by_name(name);
 }
 
 /** \ingroup m_vm_management
@@ -368,7 +368,7 @@ static int migration_rx_fun(int argc, char *argv[])
 
   char *finalize_task_name = get_mig_task_name(ms->vm, ms->src_pm, ms->dst_pm, 3);
 
-  int ret = 0; 
+  int ret = 0;
   for (;;) {
     msg_task_t task = NULL;
     ret = MSG_task_recv(&task, ms->mbox);
@@ -390,14 +390,14 @@ static int migration_rx_fun(int argc, char *argv[])
       break;
   }
 
-  // Here Stage 1, 2  and 3 have been performed. 
+  // Here Stage 1, 2  and 3 have been performed.
   // Hence complete the migration
 
   // Copy the reference to the vm (if SRC crashes now, do_migration will free ms)
   // This is clearly ugly but I (Adrien) need more time to do something cleaner (actually we should copy the whole ms structure at the begining and free it at the end of each function)
-   msg_vm_t vm = ms->vm; 
-   msg_host_t src_pm = ms->src_pm; 
-   msg_host_t dst_pm = ms-> dst_pm; 
+   msg_vm_t vm = ms->vm;
+   msg_host_t src_pm = ms->src_pm;
+   msg_host_t dst_pm = ms-> dst_pm;
    msg_host_priv_t priv = msg_host_resource_priv(vm);
 
 // TODO: we have an issue, if the DST node is turning off during the three next calls, then the VM is in an inconsistent state
@@ -407,7 +407,7 @@ static int migration_rx_fun(int argc, char *argv[])
 
   /* Update the vm location */
   simcall_vm_migrate(vm, dst_pm);
-  
+ 
   /* Resume the VM */
   simcall_vm_resume(vm);
 
@@ -428,7 +428,7 @@ static int migration_rx_fun(int argc, char *argv[])
    #ifdef HAVE_TRACING
     TRACE_msg_vm_change_host(ms->vm, ms->src_pm, ms->dst_pm);
    #endif
-  
+
   }
   // Inform the SRC that the migration has been correctly performed
   {
@@ -437,13 +437,13 @@ static int migration_rx_fun(int argc, char *argv[])
     msg_error_t ret = MSG_task_send(task, ms->mbox_ctl);
     // xbt_assert(ret == MSG_OK);
     if(ret == MSG_HOST_FAILURE){
-    // The DST has crashed, this is a problem has the VM since we are not sure whether SRC is considering that the VM has been correctly migrated on the DST node
-    // TODO What does it mean ? What should we do ? 
-     MSG_task_destroy(task);
+      // The DST has crashed, this is a problem has the VM since we are not sure whether SRC is considering that the VM has been correctly migrated on the DST node
+      // TODO What does it mean ? What should we do ?
+      MSG_task_destroy(task);
     } else if(ret == MSG_TRANSFER_FAILURE){
-    // The SRC has crashed, this is not a problem has the VM has been correctly migrated on the DST node
- 	MSG_task_destroy(task);
-     }
+      // The SRC has crashed, this is not a problem has the VM has been correctly migrated on the DST node
+      MSG_task_destroy(task);
+    }
 
     xbt_free(task_name);
   }
@@ -527,7 +527,7 @@ static double lookup_computed_flop_counts(msg_vm_t vm, int stage_for_fancy_debug
   xbt_dict_foreach(priv->dp_objs, cursor, key, dp) {
     double remaining = MSG_task_get_remaining_computation(dp->task);
 
-	 double clock = MSG_get_clock();
+    double clock = MSG_get_clock();
 
     // total += calc_updated_pages(key, vm, dp, remaining, clock);
     total += get_computed(key, vm, dp, remaining, clock);
@@ -623,7 +623,6 @@ static void send_migration_data(msg_vm_t vm, msg_host_t src_pm, msg_host_t dst_p
   else
     ret = MSG_task_send(task, mbox);
 
-//  xbt_assert(ret == MSG_OK);
   xbt_free(task_name);
   if(ret == MSG_HOST_FAILURE){
 	//XBT_INFO("SRC host failed during migration of %s (stage %d)", sg_host_name(vm), stage);
@@ -634,8 +633,6 @@ static void send_migration_data(msg_vm_t vm, msg_host_t src_pm, msg_host_t dst_p
  	MSG_task_destroy(task);
 	THROWF(host_error, 0, "DST host failed during migration of %s (stage %d)", sg_host_name(vm), stage);
   }
-//else
-//   XBT_INFO("Ret != FAILURE !!!!"); 
 
   double clock_end = MSG_get_clock();
   double duration = clock_end - clock_sta;
@@ -709,7 +706,7 @@ static int migration_tx_fun(int argc, char *argv[])
 {
   XBT_DEBUG("mig: tx_start");
 
-  // Note that the ms structure has been allocated in do_migration and hence should be freed in the same function ;) 
+  // Note that the ms structure has been allocated in do_migration and hence should be freed in the same function ;)
   struct migration_session *ms = MSG_process_get_data(MSG_process_self());
 
   s_ws_params_t params;
@@ -753,13 +750,13 @@ static int migration_tx_fun(int argc, char *argv[])
     /* send ramsize, but split it */
     double clock_prev_send = MSG_get_clock();
 
-    TRY{
-    	computed_during_stage1 = send_stage1(ms, ramsize, mig_speed, dp_rate, dp_cap);
+    TRY {
+      computed_during_stage1 = send_stage1(ms, ramsize, mig_speed, dp_rate, dp_cap);
     } CATCH_ANONYMOUS{
       //hostfailure (if you want to know whether this is the SRC or the DST please check directly in send_migration_data code)
-      // Stop the dirty page tracking an return (there is no memory space to release) 
+      // Stop the dirty page tracking an return (there is no memory space to release)
       stop_dirty_page_tracking(vm);
-      return 0; 
+      return 0;
     }
     remaining_size -= ramsize;
 
@@ -819,9 +816,9 @@ static int migration_tx_fun(int argc, char *argv[])
       send_migration_data(ms->vm, ms->src_pm, ms->dst_pm, updated_size, ms->mbox, 2, stage2_round, mig_speed);
     }CATCH_ANONYMOUS{
       //hostfailure (if you want to know whether this is the SRC or the DST please check directly in send_migration_data code)
-      // Stop the dirty page tracking an return (there is no memory space to release) 
+      // Stop the dirty page tracking an return (there is no memory space to release)
       stop_dirty_page_tracking(vm);
-      return 0; 
+      return 0;
     }
     double clock_post_send = MSG_get_clock();
 
@@ -840,17 +837,17 @@ stage3:
   XBT_DEBUG("mig-stage3: remaining_size %f", remaining_size);
   simcall_vm_suspend(vm);
   stop_dirty_page_tracking(vm);
- 
+
  TRY{
     send_migration_data(ms->vm, ms->src_pm, ms->dst_pm, remaining_size, ms->mbox, 3, 0, mig_speed);
   }CATCH_ANONYMOUS{
       //hostfailure (if you want to know whether this is the SRC or the DST please check directly in send_migration_data code)
-      // Stop the dirty page tracking an return (there is no memory space to release) 
+      // Stop the dirty page tracking an return (there is no memory space to release)
       simcall_vm_resume(vm);
-      return 0; 
+      return 0;
     }
-  
- // At that point the Migration is considered valid for the SRC node but remind that the DST side should relocate effectively the VM on the DST node. 
+ 
+ // At that point the Migration is considered valid for the SRC node but remind that the DST side should relocate effectively the VM on the DST node.
 
   XBT_DEBUG("mig: tx_done");
 
@@ -867,7 +864,7 @@ static int do_migration(msg_vm_t vm, msg_host_t src_pm, msg_host_t dst_pm)
   ms->dst_pm = dst_pm;
   ms->mbox_ctl = get_mig_mbox_ctl(vm, src_pm, dst_pm);
   ms->mbox = get_mig_mbox_src_dst(vm, src_pm, dst_pm);
-  
+ 
 
   char *pr_rx_name = get_mig_process_rx_name(vm, src_pm, dst_pm);
   char *pr_tx_name = get_mig_process_tx_name(vm, src_pm, dst_pm);
@@ -893,32 +890,32 @@ static int do_migration(msg_vm_t vm, msg_host_t src_pm, msg_host_t dst_pm)
   {
     XBT_DEBUG("wait for reception of the final ACK (i.e. migration has been correctly performed");
     msg_task_t task = NULL;
-    msg_error_t ret = MSG_TIMEOUT; 
+    msg_error_t ret = MSG_TIMEOUT;
     while (ret == MSG_TIMEOUT && MSG_host_is_on(dst_pm)) //Wait while you receive the message o
      ret = MSG_task_receive_with_timeout(&task, ms->mbox_ctl, 10);
 
     xbt_free(ms->mbox_ctl);
     xbt_free(ms->mbox);
     xbt_free(ms);
-    
+   
     //xbt_assert(ret == MSG_OK);
     if(ret == MSG_HOST_FAILURE){
         // Note that since the communication failed, the owner did not change and the task should be destroyed on the other side.
         // Hence, just throw the execption
         //XBT_INFO("SRC crashes, throw an exception (m-control)");
-        return -1; 
-    } 
+        return -1;
+    }
     else if((ret == MSG_TRANSFER_FAILURE) || (ret == MSG_TIMEOUT)){ // MSG_TIMEOUT here means that MSG_host_is_avail() returned false.
         //XBT_INFO("DST crashes, throw an exception (m-control)");
-        return -2;  
+        return -2; 
     }
 
-    
+   
     char *expected_task_name = get_mig_task_name(vm, src_pm, dst_pm, 4);
     xbt_assert(strcmp(task->name, expected_task_name) == 0);
     xbt_free(expected_task_name);
     MSG_task_destroy(task);
-    return 0; 
+    return 0;
   }
 }
 
@@ -952,7 +949,7 @@ void MSG_vm_migrate(msg_vm_t vm, msg_host_t new_pm)
    *   physical host.
    *
    * The second one would be easier.
-   *   
+   *  
    */
 
   msg_host_t old_pm = simcall_vm_get_pm(vm);
@@ -967,13 +964,13 @@ void MSG_vm_migrate(msg_vm_t vm, msg_host_t new_pm)
   priv->is_migrating = 1;
 
   {
-   
-    int ret = do_migration(vm, old_pm, new_pm); 
+  
+    int ret = do_migration(vm, old_pm, new_pm);
     if (ret == -1){
      priv->is_migrating = 0;
      THROWF(host_error, 0, "SRC host failed during migration");
     }
-    else if(ret == -2){ 
+    else if(ret == -2){
      priv->is_migrating = 0;
      THROWF(host_error, 0, "DST host failed during migration");
     }
@@ -1083,7 +1080,7 @@ msg_host_t MSG_vm_get_pm(msg_vm_t vm)
  *  On PM0, there are Task1 and VM0.
  *  On VM0, there is Task2.
  * Now we bound 75% to Task1\@PM0 and bound 25% to Task2\@VM0.
- * Then, 
+ * Then,
  *  Task1\@PM0 gets 50%.
  *  Task2\@VM0 gets 25%.
  * This is NOT 75% for Task1\@PM0 and 25% for Task2\@VM0, respectively.
@@ -1109,7 +1106,7 @@ msg_host_t MSG_vm_get_pm(msg_vm_t vm)
  */
 void MSG_vm_set_bound(msg_vm_t vm, double bound)
 {
-	return simcall_vm_set_bound(vm, bound);
+  return simcall_vm_set_bound(vm, bound);
 }
 
 
