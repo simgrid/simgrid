@@ -607,9 +607,10 @@ void MSG_host_del_task(msg_host_t host, msg_task_t task)
 
 
 
-static void send_migration_data(msg_vm_t vm, msg_host_t src_pm, msg_host_t dst_pm,
-    sg_size_t size, char *mbox, int stage, int stage2_round, double mig_speed)
+static sg_size_t send_migration_data(msg_vm_t vm, msg_host_t src_pm, msg_host_t dst_pm,
+    sg_size_t size, char *mbox, int stage, int stage2_round, double mig_speed, double timeout)
 {
+  sg_size_t sent = 0;
   char *task_name = get_mig_task_name(vm, src_pm, dst_pm, stage);
   msg_task_t task = MSG_task_create(task_name, 0, size, NULL);
 
@@ -619,11 +620,22 @@ static void send_migration_data(msg_vm_t vm, msg_host_t src_pm, msg_host_t dst_p
 
   msg_error_t ret;
   if (mig_speed > 0)
-    ret = MSG_task_send_bounded(task, mbox, mig_speed);
+    ret = MSG_task_send_with_timeout_bounded(task, mbox, timeout, mig_speed);
   else
     ret = MSG_task_send(task, mbox);
 
   xbt_free(task_name);
+
+  if (ret == MSG_OK) {
+    sent = size;
+  } else if (ret == MSG_TIMEOUT) {
+    sg_size_t remaining = MSG_task_get_remaining_communication(task);
+    sent = size - remaining;
+    XBT_INFO("timeout (%lf s) in sending_migration_data, remaining %llu bytes of %llu",
+        timeout, remaining, size);
+  }
+
+  /* FIXME: why try-and-catch is used here? */
   if(ret == MSG_HOST_FAILURE){
     //XBT_INFO("SRC host failed during migration of %s (stage %d)", sg_host_name(vm), stage);
     MSG_task_destroy(task);
@@ -643,9 +655,10 @@ static void send_migration_data(msg_vm_t vm, msg_host_t src_pm, msg_host_t dst_p
   else
     XBT_DEBUG("mig-stage%d: sent %llu duration %f actual_speed %f (target %f)", stage, size, duration, actual_speed, mig_speed);
 
+  return sent;
 }
 
-static double get_updated_size(double computed, double dp_rate, double dp_cap)
+static sg_size_t get_updated_size(double computed, double dp_rate, double dp_cap)
 {
   double updated_size = computed * dp_rate;
   XBT_DEBUG("updated_size %f dp_rate %f", updated_size, dp_rate);
@@ -654,7 +667,7 @@ static double get_updated_size(double computed, double dp_rate, double dp_cap)
     updated_size = dp_cap;
   }
 
-  return updated_size;
+  return (sg_size_t) updated_size;
 }
 
 static double send_stage1(struct migration_session *ms,
@@ -672,7 +685,7 @@ static double send_stage1(struct migration_session *ms,
       datasize = remaining;
 
     remaining -= datasize;
-    send_migration_data(ms->vm, ms->src_pm, ms->dst_pm, datasize, ms->mbox, 1, 0, mig_speed);
+    send_migration_data(ms->vm, ms->src_pm, ms->dst_pm, datasize, ms->mbox, 1, 0, mig_speed, -1);
     double computed = lookup_computed_flop_counts(ms->vm, 1, 0);
     computed_total += computed;
   }
@@ -699,32 +712,30 @@ static int migration_tx_fun(int argc, char *argv[])
   const sg_size_t ramsize   = params.ramsize;
   const sg_size_t devsize   = params.devsize;
   const int skip_stage1     = params.skip_stage1;
-  const int skip_stage2     = params.skip_stage2;
+  int skip_stage2           = params.skip_stage2;
   const double dp_rate      = params.dp_rate;
   const double dp_cap       = params.dp_cap;
   const double mig_speed    = params.mig_speed;
+  double max_downtime       = params.max_downtime;
 
+  /* hard code it temporally. Fix Me */
+#define MIGRATION_TIMEOUT_DO_NOT_HARDCODE_ME 10000000.0
+  double mig_timeout = MIGRATION_TIMEOUT_DO_NOT_HARDCODE_ME;
 
   double remaining_size = ramsize + devsize;
+  double threshold;
 
-  double max_downtime = params.max_downtime;
+  /* check parameters */
+  if (ramsize == 0)
+    XBT_WARN("migrate a VM, but ramsize is zero");
+
   if (max_downtime == 0) {
     XBT_WARN("use the default max_downtime value 30ms");
     max_downtime = 0.03;
   }
 
-  double threshold = 0.00001; /* TODO: cleanup */
-
-  /* setting up parameters has done */
-
-
-  if (ramsize == 0)
-    XBT_WARN("migrate a VM, but ramsize is zero");
-
-
-  XBT_DEBUG("mig-stage1: remaining_size %f", remaining_size);
-
   /* Stage1: send all memory pages to the destination. */
+  XBT_DEBUG("mig-stage1: remaining_size %f", remaining_size);
   start_dirty_page_tracking(ms->vm);
 
   double computed_during_stage1 = 0;
@@ -732,16 +743,35 @@ static int migration_tx_fun(int argc, char *argv[])
     double clock_prev_send = MSG_get_clock();
 
     TRY {
-      computed_during_stage1 = send_stage1(ms, ramsize, mig_speed, dp_rate, dp_cap);
-    } CATCH_ANONYMOUS{
+      /* At stage 1, we do not need timeout. We have to send all the memory
+       * pages even though the duration of this tranfer exceeds the timeout
+       * value. */
+      sg_size_t sent = send_migration_data(ms->vm, ms->src_pm, ms->dst_pm, ramsize, ms->mbox, 1, 0, mig_speed, -1);
+      remaining_size -= sent;
+      computed_during_stage1 = lookup_computed_flop_counts(ms->vm, 1, 0);
+
+      if (sent < ramsize) {
+        XBT_INFO("mig-stage1: timeout, force moving to stage 3");
+        skip_stage2 = 1;
+      } else if (sent > ramsize)
+        XBT_CRITICAL("bug");
+
+    } CATCH_ANONYMOUS {
       //hostfailure (if you want to know whether this is the SRC or the DST please check directly in send_migration_data code)
       // Stop the dirty page tracking an return (there is no memory space to release)
       stop_dirty_page_tracking(ms->vm);
       return 0;
     }
-    remaining_size -= ramsize;
 
     double clock_post_send = MSG_get_clock();
+    mig_timeout -= (clock_post_send - clock_prev_send);
+    if (mig_timeout < 0) {
+      XBT_INFO("The duration of stage 1 exceeds the timeout value (%lf > %lf), skip stage 2",
+          (clock_post_send - clock_prev_send), MIGRATION_TIMEOUT_DO_NOT_HARDCODE_ME);
+      skip_stage2 = 1;
+    }
+
+    /* estimate bandwidth */
     double bandwidth = ramsize / (clock_post_send - clock_prev_send);
     threshold = get_threshold_value(bandwidth, max_downtime);
     XBT_DEBUG("actual bandwidth %f (MB/s), threshold %f", bandwidth / 1024 / 1024, threshold);
@@ -752,44 +782,39 @@ static int migration_tx_fun(int argc, char *argv[])
    * becomes smaller than the threshold value. */
   if (skip_stage2)
     goto stage3;
-  if (max_downtime == 0) {
-    XBT_WARN("no max_downtime parameter, skip stage2");
-    goto stage3;
-  }
 
 
   int stage2_round = 0;
   for (;;) {
 
-    double updated_size = 0;
-    if (stage2_round == 0)  {
-      /* just after stage1, nothing has been updated. But, we have to send the data updated during stage1 */
+    sg_size_t updated_size = 0;
+    if (stage2_round == 0) {
+      /* just after stage1, nothing has been updated. But, we have to send the
+       * data updated during stage1 */
       updated_size = get_updated_size(computed_during_stage1, dp_rate, dp_cap);
     } else {
       double computed = lookup_computed_flop_counts(ms->vm, 2, stage2_round);
       updated_size = get_updated_size(computed, dp_rate, dp_cap);
     }
 
-    XBT_DEBUG("mig-stage 2:%d updated_size %f computed_during_stage1 %f dp_rate %f dp_cap %f",
+    XBT_DEBUG("mig-stage 2:%d updated_size %llu computed_during_stage1 %f dp_rate %f dp_cap %f",
         stage2_round, updated_size, computed_during_stage1, dp_rate, dp_cap);
 
 
+    /* Check whether the remaining size is below the threshold value. If so,
+     * move to stage 3. */
+    remaining_size += updated_size;
+    XBT_DEBUG("mig-stage2.%d: remaining_size %f (%s threshold %f)", stage2_round,
+        remaining_size, (remaining_size < threshold) ? "<" : ">", threshold);
+    if (remaining_size < threshold)
+      break;
 
 
-    {
-      remaining_size += updated_size;
-
-      XBT_DEBUG("mig-stage2.%d: remaining_size %f (%s threshold %f)", stage2_round,
-          remaining_size, (remaining_size < threshold) ? "<" : ">", threshold);
-
-      if (remaining_size < threshold)
-        break;
-    }
-
+    sg_size_t sent;
     double clock_prev_send = MSG_get_clock();
-    TRY{
-      send_migration_data(ms->vm, ms->src_pm, ms->dst_pm, updated_size, ms->mbox, 2, stage2_round, mig_speed);
-    }CATCH_ANONYMOUS{
+    TRY {
+      sent = send_migration_data(ms->vm, ms->src_pm, ms->dst_pm, updated_size, ms->mbox, 2, stage2_round, mig_speed, mig_timeout);
+    } CATCH_ANONYMOUS {
       //hostfailure (if you want to know whether this is the SRC or the DST please check directly in send_migration_data code)
       // Stop the dirty page tracking an return (there is no memory space to release)
       stop_dirty_page_tracking(ms->vm);
@@ -797,13 +822,30 @@ static int migration_tx_fun(int argc, char *argv[])
     }
     double clock_post_send = MSG_get_clock();
 
-    double bandwidth = updated_size / (clock_post_send - clock_prev_send);
-    threshold = get_threshold_value(bandwidth, max_downtime);
-    XBT_DEBUG("actual bandwidth %f, threshold %f", bandwidth / 1024 / 1024, threshold);
+    if (sent == updated_size) {
+      /* timeout did not happen */
+      double bandwidth = updated_size / (clock_post_send - clock_prev_send);
+      threshold = get_threshold_value(bandwidth, max_downtime);
+      XBT_DEBUG("actual bandwidth %f, threshold %f", bandwidth / 1024 / 1024, threshold);
+      remaining_size -= sent;
+      stage2_round += 1;
+      mig_timeout -= (clock_post_send - clock_prev_send);
+      xbt_assert(mig_timeout > 0);
 
+    } else if (sent < updated_size) {
+      /* When timeout happens, we move to stage 3. The size of memory pages
+       * updated before timeout must be added to the remaining size. */
+      XBT_INFO("mig-stage2.%d: timeout, force moving to stage 3. sent %llu / %llu, eta %lf",
+          stage2_round, sent, updated_size, (clock_post_send - clock_prev_send));
+      remaining_size -= sent;
 
-    remaining_size -= updated_size;
-    stage2_round += 1;
+      double computed = lookup_computed_flop_counts(ms->vm, 2, stage2_round);
+      updated_size = get_updated_size(computed, dp_rate, dp_cap);
+      remaining_size += updated_size;
+      break;
+
+    } else
+      XBT_CRITICAL("bug");
   }
 
 
