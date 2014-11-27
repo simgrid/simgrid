@@ -704,7 +704,6 @@ static int migration_tx_fun(int argc, char *argv[])
   const double dp_cap       = params.dp_cap;
   const double mig_speed    = params.mig_speed;
 
-  msg_vm_t vm=ms->vm; 
 
   double remaining_size = ramsize + devsize;
 
@@ -726,7 +725,7 @@ static int migration_tx_fun(int argc, char *argv[])
   XBT_DEBUG("mig-stage1: remaining_size %f", remaining_size);
 
   /* Stage1: send all memory pages to the destination. */
-  start_dirty_page_tracking(vm);
+  start_dirty_page_tracking(ms->vm);
 
   double computed_during_stage1 = 0;
   if (!skip_stage1) {
@@ -737,7 +736,7 @@ static int migration_tx_fun(int argc, char *argv[])
     } CATCH_ANONYMOUS{
       //hostfailure (if you want to know whether this is the SRC or the DST please check directly in send_migration_data code)
       // Stop the dirty page tracking an return (there is no memory space to release)
-      stop_dirty_page_tracking(vm);
+      stop_dirty_page_tracking(ms->vm);
       return 0;
     }
     remaining_size -= ramsize;
@@ -799,7 +798,7 @@ static int migration_tx_fun(int argc, char *argv[])
     }CATCH_ANONYMOUS{
       //hostfailure (if you want to know whether this is the SRC or the DST please check directly in send_migration_data code)
       // Stop the dirty page tracking an return (there is no memory space to release)
-      stop_dirty_page_tracking(vm);
+      stop_dirty_page_tracking(ms->vm);
       return 0;
     }
     double clock_post_send = MSG_get_clock();
@@ -817,19 +816,19 @@ static int migration_tx_fun(int argc, char *argv[])
 stage3:
   /* Stage3: stop the VM and copy the rest of states. */
   XBT_DEBUG("mig-stage3: remaining_size %f", remaining_size);
-  simcall_vm_suspend(vm);
-  stop_dirty_page_tracking(vm);
+  simcall_vm_suspend(ms->vm);
+  stop_dirty_page_tracking(ms->vm);
 
- TRY{
-    send_migration_data(ms->vm, ms->src_pm, ms->dst_pm, remaining_size, ms->mbox, 3, 0, mig_speed);
-  }CATCH_ANONYMOUS{
-      //hostfailure (if you want to know whether this is the SRC or the DST please check directly in send_migration_data code)
-      // Stop the dirty page tracking an return (there is no memory space to release)
-      simcall_vm_resume(vm);
-      return 0;
-    }
- 
- // At that point the Migration is considered valid for the SRC node but remind that the DST side should relocate effectively the VM on the DST node.
+  TRY {
+    send_migration_data(ms->vm, ms->src_pm, ms->dst_pm, remaining_size, ms->mbox, 3, 0, mig_speed, -1);
+  } CATCH_ANONYMOUS {
+    //hostfailure (if you want to know whether this is the SRC or the DST please check directly in send_migration_data code)
+    // Stop the dirty page tracking an return (there is no memory space to release)
+    simcall_vm_resume(ms->vm);
+    return 0;
+  }
+
+  // At that point the Migration is considered valid for the SRC node but remind that the DST side should relocate effectively the VM on the DST node.
 
   XBT_DEBUG("mig: tx_done");
 
