@@ -70,7 +70,7 @@ static char *get_mailbox_name_small(char *str, int index)
 
 static char *get_mailbox_name_migration(char *str, int index)
 {
-  snprintf(str, MAILBOX_NAME_MAXLEN, "migration%0*x", (int) (sizeof(int) * 2),
+  snprintf(str, MAILBOX_NAME_MAXLEN, "mig-%0*x", (int) (sizeof(int) * 2),
            index);
   return str;
 }
