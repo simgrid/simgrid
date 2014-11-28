@@ -28,8 +28,7 @@ static xbt_parmap_t raw_parmap;
 static smx_ctx_raw_t* raw_workers_context;    /* space to save the worker context in each thread */
 static unsigned long raw_threads_working;     /* number of threads that have started their work */
 static xbt_os_thread_key_t raw_worker_id_key; /* thread-specific storage for the thread id */
-#endif
-
+#endif 
 #ifdef ADAPTIVE_THRESHOLD
 #define SCHED_ROUND_LIMIT 5
 xbt_os_timer_t round_time;
@@ -44,13 +43,12 @@ double delta=0;
 double s_par_proc=0,s_seq_proc=0; /*Standard deviation of number of processes computed in par/seq during the current simulation*/
 double avg_par_proc=0,sd_par_proc=0;
 double avg_seq_proc=0,sd_seq_proc=0;
-double par_window=4294967296,seq_window=0; /*par_window is initially 1<<32*/
+long long par_window=(long long)HUGE_VAL,seq_window=0;
 #endif
 
 static unsigned long raw_process_index = 0;   /* index of the next process to run in the
                                                * list of runnable processes */
 static smx_ctx_raw_t raw_maestro_context;
-
 extern raw_stack_t raw_makecontext(char* malloced_stack, int stack_size,
                                    rawctx_entry_point_t entry_point, void* arg);
 extern void raw_swapcontext(raw_stack_t* old, raw_stack_t new);
@@ -617,7 +615,7 @@ static void smx_ctx_raw_runall(void)
     par_ratio = (par_proc_that_ran != 0) ? (par_time / (double)par_proc_that_ran) : 0;
     seq_ratio = (seq_proc_that_ran != 0) ? (seq_time / (double)seq_proc_that_ran) : 0; 
     if(seq_ratio > par_ratio){
-        if(nb_processes < avg_par_proc) {
+       if(nb_processes < avg_par_proc) {
           threshold = (threshold>2) ? threshold - 1 : threshold ;
           SIMIX_context_set_parallel_threshold(threshold);
         }
@@ -628,25 +626,24 @@ static void smx_ctx_raw_runall(void)
     }
   }
 
-  //XBT_CRITICAL("Thres: %d.", SIMIX_context_get_parallel_threshold());
-
+  //XBT_CRITICAL("Thresh: %d", SIMIX_context_get_parallel_threshold());
   if (nb_processes >= SIMIX_context_get_parallel_threshold()) {
     simix_global->context_factory->suspend = smx_ctx_raw_suspend_parallel;
     if(nb_processes < par_window){ 
       par_sched_round++;
-      xbt_os_cputimer_start(round_time);
+      xbt_os_walltimer_start(round_time);
       smx_ctx_raw_runall_parallel();
-      xbt_os_cputimer_stop(round_time);
+      xbt_os_walltimer_stop(round_time);
       par_time += xbt_os_timer_elapsed(round_time);
 
       prev_avg_par_proc = avg_par_proc;
-      delta = (nb_processes-avg_par_proc);
+      delta = nb_processes - avg_par_proc;
       avg_par_proc = (par_sched_round==1) ? nb_processes : avg_par_proc + delta / (double) par_sched_round;
 
       if(par_sched_round>=2){
-        s_par_proc = sd_par_proc + (nb_processes - prev_avg_par_proc)*delta; 
-        sd_par_proc = sqrt(s_par_proc/(par_sched_round-1));
-        par_window = avg_par_proc + sd_par_proc;
+        s_par_proc = s_par_proc + (nb_processes - prev_avg_par_proc) * delta; 
+        sd_par_proc = sqrt(s_par_proc / (par_sched_round-1));
+        par_window = (int) (avg_par_proc + sd_par_proc);
       }else{
         sd_par_proc = 0;
       }
@@ -659,9 +656,9 @@ static void smx_ctx_raw_runall(void)
     simix_global->context_factory->suspend = smx_ctx_raw_suspend_serial;
     if(nb_processes > seq_window){ 
       seq_sched_round++;
-      xbt_os_cputimer_start(round_time);
+      xbt_os_walltimer_start(round_time);
       smx_ctx_raw_runall_serial();
-      xbt_os_cputimer_stop(round_time);
+      xbt_os_walltimer_stop(round_time);
       seq_time += xbt_os_timer_elapsed(round_time);
 
       prev_avg_seq_proc = avg_seq_proc;
@@ -669,9 +666,9 @@ static void smx_ctx_raw_runall(void)
       avg_seq_proc = (seq_sched_round==1) ? nb_processes : avg_seq_proc + delta / (double) seq_sched_round;
 
       if(seq_sched_round>=2){
-        s_seq_proc = sd_seq_proc + (nb_processes - prev_avg_seq_proc)*delta; 
-        sd_seq_proc = sqrt(s_seq_proc/(seq_sched_round-1));
-        seq_window = avg_seq_proc - sd_seq_proc;
+        s_seq_proc = s_seq_proc + (nb_processes - prev_avg_seq_proc)*delta; 
+        sd_seq_proc = sqrt(s_seq_proc / (seq_sched_round-1));
+        seq_window = (int) (avg_seq_proc - sd_seq_proc);
       } else {
         sd_seq_proc = 0;
       }
@@ -698,13 +695,13 @@ static void smx_ctx_raw_runall(void)
         simix_global->context_factory->suspend = smx_ctx_raw_suspend_parallel;
 
      #ifdef TIME_BENCH_ENTIRE_SRS
-        xbt_os_cputimer_start(timer);
+        xbt_os_walltimer_start(timer);
      #endif
 
         smx_ctx_raw_runall_parallel();
 
      #ifdef TIME_BENCH_ENTIRE_SRS
-        xbt_os_cputimer_stop(timer);
+        xbt_os_walltimer_stop(timer);
         elapsed = xbt_os_timer_elapsed(timer);
      #endif
     } else {
@@ -716,13 +713,13 @@ static void smx_ctx_raw_runall(void)
       #else
 
         #ifdef TIME_BENCH_ENTIRE_SRS
-          xbt_os_cputimer_start(timer);
+          xbt_os_walltimer_start(timer);
         #endif
 
         smx_ctx_raw_runall_serial();
 
         #ifdef TIME_BENCH_ENTIRE_SRS
-          xbt_os_cputimer_stop(timer);
+          xbt_os_walltimer_stop(timer);
           elapsed = xbt_os_timer_elapsed(timer);
         #endif
       #endif

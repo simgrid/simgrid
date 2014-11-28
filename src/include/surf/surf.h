@@ -1009,6 +1009,16 @@ XBT_PUBLIC_DATA(surf_network_model_t) surf_network_model;
 XBT_PUBLIC(void) surf_network_model_init_SMPI(void);
 
 /** \ingroup SURF_models
+ *  \brief Same as network model 'LagrangeVelho', only with different correction factors.
+ *
+ * This model impelments a variant of the contention model on Infinband networks based on
+ * the works of Jérôme Vienne : http://mescal.imag.fr/membres/jean-marc.vincent/index.html/PhD/Vienne.pdf
+ *
+ *  \see surf_workstation_model_init_IB()
+ */
+XBT_PUBLIC(void) surf_network_model_init_IB(void);
+
+/** \ingroup SURF_models
  *  \brief Initializes the platform with the network model 'LegrandVelho'
  *
  * This model is proposed by Arnaud Legrand and Pedro Velho based on

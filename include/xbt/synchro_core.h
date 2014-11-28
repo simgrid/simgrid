@@ -83,7 +83,6 @@ XBT_PUBLIC(void) xbt_mutex_acquire(xbt_mutex_t mutex);
  * Tries to lock a mutex, return 1 if the mutex is unlocked, else 0.
  * This function does not block and wait for the mutex to be unlocked.
  * \param mutex The mutex
- * \param issuer The process that tries to acquire the mutex
  * \return 1 - mutex free, 0 - mutex used
  */
 XBT_PUBLIC(int) xbt_mutex_try_acquire(xbt_mutex_t mutex);

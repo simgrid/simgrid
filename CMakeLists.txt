@@ -10,6 +10,9 @@ endif()
 
 enable_language(CXX)
 
+INCLUDE(CheckCCompilerFlag)
+CHECK_C_COMPILER_FLAG(-fstack-cleaner HAVE_C_STACK_CLEANER)
+
 if (APPLE) #MAC
   set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
   set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)

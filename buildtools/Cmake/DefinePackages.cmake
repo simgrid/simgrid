@@ -23,24 +23,23 @@ set(EXTRA_DIST
   src/msg/msg_mailbox.h
   src/msg/msg_private.h
   src/portable.h
+  src/probes.tp
   src/simdag/dax.dtd
   src/simdag/dax_dtd.c
   src/simdag/dax_dtd.h
   src/simdag/private.h
   src/simix/simcalls.in
   src/simix/simcalls.py
-  src/simix/simcalls_generated_args_getter_setter.h
-  src/simix/simcalls_generated_body.c
-  src/simix/smx_simcall_enter.c
-  src/simix/simcalls_generated_enum.h
-  src/simix/simcalls_generated_res_getter_setter.h
-  src/simix/simcalls_generated_string.c
+  src/simix/popping_private.h
+  src/simix/popping_bodies.c
+  src/simix/popping_generated.c
+  src/simix/popping_enum.h
+  src/simix/popping_accessors.h
   src/simix/smx_host_private.h
   src/simix/smx_io_private.h
   src/simix/smx_network_private.h
   src/simix/smx_private.h
   src/simix/smx_process_private.h
-  src/simix/smx_smurf_private.h
   src/simix/smx_synchro_private.h
   src/smpi/README
   src/smpi/colls/coll_tuned_topo.h
@@ -123,6 +122,7 @@ set(EXTRA_DIST
   src/xbt/mmalloc/mmprivate.h
   src/xbt/mmalloc/mmtrace.awk
   src/xbt/mmalloc/mrealloc.c
+  src/xbt/probes.h
   src/xbt/setset_private.h
   src/xbt/win32_ucontext.c
   tools/tesh/run_context.h
@@ -361,9 +361,10 @@ set(SURF_SRC
   )
 
 set(SIMIX_GENERATED_SRC
-  src/simix/smx_simcall_enter.c
+  src/simix/popping_generated.c
   )
 set(SIMIX_SRC
+  src/simix/libsmx.c
   src/simix/smx_context.c
   src/simix/smx_context_base.c
   src/simix/smx_context_raw.c
@@ -374,10 +375,9 @@ set(SIMIX_SRC
   src/simix/smx_io.c
   src/simix/smx_network.c
   src/simix/smx_process.c
-  src/simix/smx_smurf.c
   src/simix/smx_synchro.c
-  src/simix/smx_user.c
   src/simix/smx_vm.c
+  src/simix/popping.c
   ${SIMIX_GENERATED_SRC}
   )
 
@@ -402,23 +402,6 @@ set(MSG_SRC
   src/msg/msg_task.c
   src/msg/msg_vm.c
   )
-
-#* ****************************************************************************************** *#
-#* TUTORIAL: New API                                                                          *#
-
-set(MSG_SRC
-  ${MSG_SRC}
-  src/msg/msg_new_api.c
-  )
-set(EXTRA_DIST
-  ${EXTRA_DIST}
-  src/simix/smx_new_api_private.h
-  )
-set(SIMIX_SRC
-  ${SIMIX_SRC}
-  src/simix/smx_new_api.c
-)
-#* ****************************************************************************************** *#
 
 set(SIMDAG_SRC
   src/simdag/instr_sd_task.c
@@ -607,6 +590,7 @@ set(MC_SRC
   src/mc/mc_page_snapshot.cpp
   src/mc/mc_comm_determinism.c
   src/mc/mc_compare.cpp
+  src/mc/mc_config.c
   src/mc/mc_diff.c
   src/mc/mc_dwarf.c
   src/mc/mc_dwarf_attrnames.h
@@ -1084,6 +1068,7 @@ set(TESHSUITE_CMAKEFILES_TXT
   teshsuite/smpi/mpich3-test/datatype/CMakeLists.txt
 #  teshsuite/smpi/mpich3-test/f77/attr/CMakeLists.txt
   teshsuite/smpi/mpich3-test/f77/coll/CMakeLists.txt
+  teshsuite/smpi/mpich3-test/f77/info/CMakeLists.txt
   teshsuite/smpi/mpich3-test/f77/comm/CMakeLists.txt
   teshsuite/smpi/mpich3-test/f77/datatype/CMakeLists.txt
   teshsuite/smpi/mpich3-test/f77/ext/CMakeLists.txt
@@ -1094,11 +1079,13 @@ set(TESHSUITE_CMAKEFILES_TXT
   teshsuite/smpi/mpich3-test/f77/rma/CMakeLists.txt
   teshsuite/smpi/mpich3-test/f90/coll/CMakeLists.txt
   teshsuite/smpi/mpich3-test/f90/datatype/CMakeLists.txt
+  teshsuite/smpi/mpich3-test/f90/info/CMakeLists.txt
   teshsuite/smpi/mpich3-test/f90/init/CMakeLists.txt
   teshsuite/smpi/mpich3-test/f90/pt2pt/CMakeLists.txt
   teshsuite/smpi/mpich3-test/f90/util/CMakeLists.txt
   teshsuite/smpi/mpich3-test/f90/rma/CMakeLists.txt
   teshsuite/smpi/mpich3-test/group/CMakeLists.txt
+  teshsuite/smpi/mpich3-test/info/CMakeLists.txt
   teshsuite/smpi/mpich3-test/init/CMakeLists.txt
   teshsuite/smpi/mpich3-test/pt2pt/CMakeLists.txt
   teshsuite/smpi/mpich3-test/topo/CMakeLists.txt
@@ -1184,6 +1171,13 @@ set(CMAKE_SOURCE_FILES
   buildtools/Cmake/test_prog/prog_stacksetup.c
   buildtools/Cmake/test_prog/prog_thread_storage.c
   buildtools/Cmake/test_prog/prog_vsnprintf.c
+  tools/stack-cleaner/as
+  tools/stack-cleaner/cc
+  tools/stack-cleaner/c++
+  tools/stack-cleaner/fortran
+  tools/stack-cleaner/clean-stack-filter
+  tools/stack-cleaner/compiler-wrapper
+  tools/stack-cleaner/README
   )
 
 set(PLATFORMS_EXAMPLES
@@ -1250,6 +1244,23 @@ set(generated_src_files
   src/xbt/automaton/parserPromela.tab.cacc
   src/xbt/automaton/parserPromela.tab.hacc
   )
+
+if(enable_ust)
+  set(simgrid_sources ${CMAKE_CURRENT_BINARY_DIR}/src/simgrid_ust.c ${simgrid_sources})
+  ADD_CUSTOM_COMMAND(
+    OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/src/simgrid_ust.c
+    OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/src/simgrid_ust.h
+    COMMAND lttng-gen-tp -o simgrid_ust.c -o simgrid_ust.h ${CMAKE_CURRENT_SOURCE_DIR}/src/probes.tp
+    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/src/
+    DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/src/probes.tp
+  )
+  ADD_CUSTOM_TARGET(simgrid_ust
+    DEPENDS
+      ${CMAKE_CURRENT_BINARY_DIR}/src/simgrid_ust.c
+      ${CMAKE_CURRENT_BINARY_DIR}/src/simgrid_ust.h
+    )
+  set(generated_src_files ${CMAKE_CURRENT_BINARY_DIR}/src/simgrid_ust.c ${generated_src_files})
+endif()
 
 foreach(file ${generated_src_files})
   set_source_files_properties(${file} PROPERTIES GENERATED true)

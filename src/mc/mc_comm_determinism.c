@@ -146,7 +146,7 @@ static void print_communications_pattern(xbt_dynar_t comms_pattern)
   }
 }
 
-static void update_comm_pattern(mc_comm_pattern_t comm_pattern, smx_action_t comm)
+static void update_comm_pattern(mc_comm_pattern_t comm_pattern, smx_synchro_t comm)
 {
   void *addr_pointed;
   comm_pattern->src_proc = comm->comm.src_proc->pid;
@@ -168,14 +168,14 @@ static void update_comm_pattern(mc_comm_pattern_t comm_pattern, smx_action_t com
 
 /********** Non Static functions ***********/
 
-void get_comm_pattern(xbt_dynar_t list, smx_simcall_t request, int call)
+void get_comm_pattern(xbt_dynar_t list, smx_simcall_t request, mc_call_type call_type)
 {
   mc_comm_pattern_t pattern = NULL;
   pattern = xbt_new0(s_mc_comm_pattern_t, 1);
   pattern->num = ++nb_comm_pattern;
   pattern->data_size = -1;
   void *addr_pointed;
-  if (call == 1) {              // ISEND
+  if (call_type == MC_CALL_TYPE_SEND) {              // ISEND
     pattern->type = SIMIX_COMM_SEND;
     pattern->comm = simcall_comm_isend__get__result(request);
     pattern->src_proc = pattern->comm->comm.src_proc->pid;
@@ -187,11 +187,13 @@ void get_comm_pattern(xbt_dynar_t list, smx_simcall_t request, int call)
       memcpy(pattern->data, addr_pointed, pattern->data_size);
     else
       memcpy(pattern->data, pattern->comm->comm.src_buff, pattern->data_size);
-  } else {                      // IRECV
+  } else if (call_type == MC_CALL_TYPE_RECV) {                      // IRECV
     pattern->type = SIMIX_COMM_RECEIVE;
     pattern->comm = simcall_comm_irecv__get__result(request);
     pattern->dst_proc = pattern->comm->comm.dst_proc->pid;
     pattern->dst_host = simcall_host_get_name(request->issuer->smx_host);
+  } else {
+    xbt_die("Unexpected call_type %i", (int) call_type);
   }
 
   if (pattern->comm->comm.rdv != NULL)
@@ -205,7 +207,7 @@ void get_comm_pattern(xbt_dynar_t list, smx_simcall_t request, int call)
 
 }
 
-void complete_comm_pattern(xbt_dynar_t list, smx_action_t comm)
+void complete_comm_pattern(xbt_dynar_t list, smx_synchro_t comm)
 {
   mc_comm_pattern_t current_comm_pattern;
   unsigned int cursor = 0;
@@ -310,12 +312,11 @@ void MC_modelcheck_comm_determinism(void)
 {
 
   char *req_str = NULL;
-  int value, call = 0;
+  int value;
   mc_visited_state_t visited_state = NULL;
   smx_simcall_t req = NULL;
   smx_process_t process = NULL;
   mc_state_t state = NULL, next_state = NULL;
-  smx_action_t current_comm;
   xbt_dynar_t current_pattern;
 
   while (xbt_fifo_size(mc_stack) > 0) {
@@ -337,54 +338,30 @@ void MC_modelcheck_comm_determinism(void)
         && (req = MC_state_get_request(state, &value))
         && (visited_state == NULL)) {
 
-      /* Debug information */
-      if (XBT_LOG_ISENABLED(mc_comm_determinism, xbt_log_priority_debug)) {
-        req_str = MC_request_to_string(req, value);
-        XBT_DEBUG("Execute: %s", req_str);
-        xbt_free(req_str);
-      }
+      MC_LOG_REQUEST(mc_comm_determinism, req, value);
 
-      MC_SET_MC_HEAP;
-      if (dot_output != NULL)
+      if (dot_output != NULL) {
+        MC_SET_MC_HEAP;
         req_str = MC_request_get_dot_output(req, value);
-      MC_SET_STD_HEAP;
+        MC_SET_STD_HEAP;
+      }
 
       MC_state_set_executed_request(state, req, value);
       mc_stats->executed_transitions++;
 
       /* TODO : handle test and testany simcalls */
+      mc_call_type call = MC_CALL_TYPE_NONE;
       if (_sg_mc_comms_determinism || _sg_mc_send_determinism) {
-        if (req->call == SIMCALL_COMM_ISEND)
-          call = 1;
-        else if (req->call == SIMCALL_COMM_IRECV)
-          call = 2;
-        else if (req->call == SIMCALL_COMM_WAIT)
-          call = 3;
-        else if (req->call == SIMCALL_COMM_WAITANY)
-          call = 4;
+        call = mc_get_call_type(req);
       }
 
       /* Answer the request */
-      SIMIX_simcall_enter(req, value);    /* After this call req is no longer usefull */
+      SIMIX_simcall_handle(req, value);    /* After this call req is no longer useful */
 
       MC_SET_MC_HEAP;
       current_pattern = !initial_global_state->initial_communications_pattern_done ? initial_communications_pattern : communications_pattern; 
-      if (call == 1) { /* Send */
-        get_comm_pattern(current_pattern, req, call);
-      } else if (call == 2) { /* Recv */
-        get_comm_pattern(current_pattern, req, call);
-      } else if (call == 3) { /* Wait */
-        current_comm = simcall_comm_wait__get__comm(req);
-        if (current_comm->comm.refcount == 1)  /* First wait only must be considered */
-          complete_comm_pattern(current_pattern, current_comm);
-      } else if (call == 4) { /* WaitAny */
-        current_comm = xbt_dynar_get_as(simcall_comm_waitany__get__comms(req), value, smx_action_t);
-        if (current_comm->comm.refcount == 1) /* First wait only must be considered */
-          complete_comm_pattern(current_pattern, current_comm);
-      }
+      mc_update_comm_pattern(call, req, value, current_pattern);
       MC_SET_STD_HEAP;
-
-      call = 0;
 
       /* Wait for requests (schedules processes) */
       MC_wait_for_requests();

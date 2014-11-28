@@ -29,7 +29,7 @@ int MSG_mailbox_is_empty(msg_mailbox_t mailbox)
 
 msg_task_t MSG_mailbox_get_head(msg_mailbox_t mailbox)
 {
-  smx_action_t comm = simcall_rdv_get_head(mailbox);
+  smx_synchro_t comm = simcall_rdv_get_head(mailbox);
 
   if (!comm)
     return NULL;
@@ -206,7 +206,7 @@ MSG_mailbox_put_with_timeout(msg_mailbox_t mailbox, msg_task_t task,
 
   /* Try to send it by calling SIMIX network layer */
   TRY {
-    smx_action_t comm = NULL; /* MC needs the comm to be set to NULL during the simix call  */
+    smx_synchro_t comm = NULL; /* MC needs the comm to be set to NULL during the simix call  */
     comm = simcall_comm_isend(SIMIX_process_self(), mailbox,t_simdata->message_size,
                                   t_simdata->rate, task, sizeof(void *),
                                   NULL, NULL, NULL, task, 0);

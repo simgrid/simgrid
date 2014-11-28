@@ -38,54 +38,51 @@ int SIMIX_process_has_pending_comms(smx_process_t process) {
   return xbt_fifo_size(process->comms) > 0;
 }
 
-void SIMIX_pre_process_cleanup(smx_simcall_t simcall, smx_process_t process) {
-  SIMIX_process_cleanup(process);
-}
 /**
  * \brief Moves a process to the list of processes to destroy.
  */
 void SIMIX_process_cleanup(smx_process_t process)
 {
-  XBT_DEBUG("Cleanup process %s (%p), waiting action %p",
-      process->name, process, process->waiting_action);
+  XBT_DEBUG("Cleanup process %s (%p), waiting synchro %p",
+      process->name, process, process->waiting_synchro);
 
   SIMIX_process_on_exit_runall(process);
 
   /* cancel non-blocking communications */
-  smx_action_t action;
-  while ((action = xbt_fifo_pop(process->comms))) {
+  smx_synchro_t synchro;
+  while ((synchro = xbt_fifo_pop(process->comms))) {
 
     /* make sure no one will finish the comm after this process is destroyed,
      * because src_proc or dst_proc would be an invalid pointer */
-    SIMIX_comm_cancel(action);
+    SIMIX_comm_cancel(synchro);
 
-    if (action->comm.src_proc == process) {
+    if (synchro->comm.src_proc == process) {
       XBT_DEBUG("Found an unfinished send comm %p (detached = %d), state %d, src = %p, dst = %p",
-          action, action->comm.detached, (int)action->state, action->comm.src_proc, action->comm.dst_proc);
-      action->comm.src_proc = NULL;
+          synchro, synchro->comm.detached, (int)synchro->state, synchro->comm.src_proc, synchro->comm.dst_proc);
+      synchro->comm.src_proc = NULL;
 
       /* I'm not supposed to destroy a detached comm from the sender side, */
-      if (!action->comm.detached)
-        SIMIX_comm_destroy(action);
+      if (!synchro->comm.detached)
+        SIMIX_comm_destroy(synchro);
       else
         XBT_DEBUG("Don't destroy it since it's a detached comm");
 
     }
-    else if (action->comm.dst_proc == process){
+    else if (synchro->comm.dst_proc == process){
       XBT_DEBUG("Found an unfinished recv comm %p, state %d, src = %p, dst = %p",
-          action, (int)action->state, action->comm.src_proc, action->comm.dst_proc);
-      action->comm.dst_proc = NULL;
+          synchro, (int)synchro->state, synchro->comm.src_proc, synchro->comm.dst_proc);
+      synchro->comm.dst_proc = NULL;
 
-      if (action->comm.detached && action->comm.refcount == 1
-          && action->comm.src_proc != NULL) {
+      if (synchro->comm.detached && synchro->comm.refcount == 1
+          && synchro->comm.src_proc != NULL) {
         /* the comm will be freed right now, remove it from the sender */
-        xbt_fifo_remove(action->comm.src_proc->comms, action);
+        xbt_fifo_remove(synchro->comm.src_proc->comms, synchro);
       }
-      SIMIX_comm_destroy(action);
+      SIMIX_comm_destroy(synchro);
     }
     else {
-      xbt_die("Communication action %p is in my list but I'm not the sender "
-          "or the receiver", action);
+      xbt_die("Communication synchro %p is in my list but I'm not the sender "
+          "or the receiver", synchro);
     }
   }
 
@@ -189,7 +186,7 @@ smx_process_t SIMIX_process_create_from_wrapper(smx_process_arg_t args) {
 }
 
 
-void SIMIX_pre_process_create(smx_simcall_t simcall,
+void simcall_HANDLER_process_create(smx_simcall_t simcall,
 		          smx_process_t *process,
                           const char *name,
                           xbt_main_func_t code,
@@ -313,7 +310,7 @@ void SIMIX_process_runall(void)
   xbt_dynar_reset(simix_global->process_to_run);
 }
 
-void SIMIX_pre_process_kill(smx_simcall_t simcall, smx_process_t process) {
+void simcall_HANDLER_process_kill(smx_simcall_t simcall, smx_process_t process) {
   SIMIX_process_kill(process, simcall->issuer);
 }
 /**
@@ -334,45 +331,38 @@ void SIMIX_process_kill(smx_process_t process, smx_process_t issuer) {
   process->suspended = 0;
   process->doexception = 0;
 
-  /* destroy the blocking action if any */
-  if (process->waiting_action) {
+  /* destroy the blocking synchro if any */
+  if (process->waiting_synchro) {
 
-    switch (process->waiting_action->type) {
+    switch (process->waiting_synchro->type) {
 
-    case SIMIX_ACTION_EXECUTE:
-    case SIMIX_ACTION_PARALLEL_EXECUTE:
-      SIMIX_host_execution_destroy(process->waiting_action);
+    case SIMIX_SYNC_EXECUTE:
+    case SIMIX_SYNC_PARALLEL_EXECUTE:
+      SIMIX_host_execution_destroy(process->waiting_synchro);
       break;
 
-    case SIMIX_ACTION_COMMUNICATE:
-      xbt_fifo_remove(process->comms, process->waiting_action);
-      SIMIX_comm_cancel(process->waiting_action);
-      SIMIX_comm_destroy(process->waiting_action);
+    case SIMIX_SYNC_COMMUNICATE:
+      xbt_fifo_remove(process->comms, process->waiting_synchro);
+      SIMIX_comm_cancel(process->waiting_synchro);
+      SIMIX_comm_destroy(process->waiting_synchro);
       break;
 
-    case SIMIX_ACTION_SLEEP:
-      SIMIX_process_sleep_destroy(process->waiting_action);
+    case SIMIX_SYNC_SLEEP:
+      SIMIX_process_sleep_destroy(process->waiting_synchro);
       break;
 
-    case SIMIX_ACTION_JOIN:
-      SIMIX_process_sleep_destroy(process->waiting_action);
+    case SIMIX_SYNC_JOIN:
+      SIMIX_process_sleep_destroy(process->waiting_synchro);
       break;
 
-    case SIMIX_ACTION_SYNCHRO:
+    case SIMIX_SYNC_SYNCHRO:
       SIMIX_synchro_stop_waiting(process, &process->simcall);
-      SIMIX_synchro_destroy(process->waiting_action);
+      SIMIX_synchro_destroy(process->waiting_synchro);
       break;
 
-    case SIMIX_ACTION_IO:
-      SIMIX_io_destroy(process->waiting_action);
+    case SIMIX_SYNC_IO:
+      SIMIX_io_destroy(process->waiting_synchro);
       break;
-
-      /* **************************************/
-      /* TUTORIAL: New API                    */
-    case SIMIX_ACTION_NEW_API:
-      SIMIX_new_api_destroy(process->waiting_action);
-      break;
-      /* **************************************/
 
     }
   }
@@ -394,53 +384,46 @@ void SIMIX_process_throw(smx_process_t process, xbt_errcat_t cat, int value, con
   if (process->suspended)
     SIMIX_process_resume(process,SIMIX_process_self());
 
-  /* cancel the blocking action if any */
-  if (process->waiting_action) {
+  /* cancel the blocking synchro if any */
+  if (process->waiting_synchro) {
 
-    switch (process->waiting_action->type) {
+    switch (process->waiting_synchro->type) {
 
-    case SIMIX_ACTION_EXECUTE:
-    case SIMIX_ACTION_PARALLEL_EXECUTE:
-      SIMIX_host_execution_cancel(process->waiting_action);
+    case SIMIX_SYNC_EXECUTE:
+    case SIMIX_SYNC_PARALLEL_EXECUTE:
+      SIMIX_host_execution_cancel(process->waiting_synchro);
       break;
 
-    case SIMIX_ACTION_COMMUNICATE:
-      xbt_fifo_remove(process->comms, process->waiting_action);
-      SIMIX_comm_cancel(process->waiting_action);
+    case SIMIX_SYNC_COMMUNICATE:
+      xbt_fifo_remove(process->comms, process->waiting_synchro);
+      SIMIX_comm_cancel(process->waiting_synchro);
       break;
 
-    case SIMIX_ACTION_SLEEP:
-      SIMIX_process_sleep_destroy(process->waiting_action);
+    case SIMIX_SYNC_SLEEP:
+      SIMIX_process_sleep_destroy(process->waiting_synchro);
       break;
 
-    case SIMIX_ACTION_JOIN:
-      SIMIX_process_sleep_destroy(process->waiting_action);
+    case SIMIX_SYNC_JOIN:
+      SIMIX_process_sleep_destroy(process->waiting_synchro);
       break;
 
-    case SIMIX_ACTION_SYNCHRO:
+    case SIMIX_SYNC_SYNCHRO:
       SIMIX_synchro_stop_waiting(process, &process->simcall);
       break;
 
-    case SIMIX_ACTION_IO:
-      SIMIX_io_destroy(process->waiting_action);
+    case SIMIX_SYNC_IO:
+      SIMIX_io_destroy(process->waiting_synchro);
       break;
-
-      /* **************************************/
-      /* TUTORIAL: New API                    */
-    case SIMIX_ACTION_NEW_API:
-      SIMIX_new_api_destroy(process->waiting_action);
-      break;
-      /* **************************************/
 
     }
   }
-  process->waiting_action = NULL;
+  process->waiting_synchro = NULL;
 
   if (!xbt_dynar_member(simix_global->process_to_run, &(process)) && process != SIMIX_process_self())
     xbt_dynar_push_as(simix_global->process_to_run, smx_process_t, process);
 }
 
-void SIMIX_pre_process_killall(smx_simcall_t simcall, int reset_pid) {
+void simcall_HANDLER_process_killall(smx_simcall_t simcall, int reset_pid) {
   SIMIX_process_killall(simcall->issuer, reset_pid);
 }
 /**
@@ -465,7 +448,7 @@ void SIMIX_process_killall(smx_process_t issuer, int reset_pid)
   SIMIX_process_empty_trash();
 }
 
-void SIMIX_pre_process_change_host(smx_simcall_t simcall, smx_process_t process,
+void simcall_HANDLER_process_change_host(smx_simcall_t simcall, smx_process_t process,
 		                   smx_host_t dest)
 {
   process->new_host = dest;
@@ -480,22 +463,22 @@ void SIMIX_process_change_host(smx_process_t process,
 }
 
 
-void SIMIX_pre_process_suspend(smx_simcall_t simcall, smx_process_t process)
+void simcall_HANDLER_process_suspend(smx_simcall_t simcall, smx_process_t process)
 {
-  smx_action_t action_suspend =
+  smx_synchro_t sync_suspend =
       SIMIX_process_suspend(process, simcall->issuer);
 
   if (process != simcall->issuer) {
     SIMIX_simcall_answer(simcall);
   } else {
-    xbt_fifo_push(action_suspend->simcalls, simcall);
-    process->waiting_action = action_suspend;
-    SIMIX_host_execution_suspend(process->waiting_action);
+    xbt_fifo_push(sync_suspend->simcalls, simcall);
+    process->waiting_synchro = sync_suspend;
+    SIMIX_host_execution_suspend(process->waiting_synchro);
   }
   /* If we are suspending ourselves, then just do not finish the simcall now */
 }
 
-smx_action_t SIMIX_process_suspend(smx_process_t process, smx_process_t issuer)
+smx_synchro_t SIMIX_process_suspend(smx_process_t process, smx_process_t issuer)
 {
   xbt_assert((process != NULL), "Invalid parameters");
 
@@ -506,34 +489,34 @@ smx_action_t SIMIX_process_suspend(smx_process_t process, smx_process_t issuer)
 
   process->suspended = 1;
 
-  /* If we are suspending another process, and it is waiting on an action,
-     suspend its action. */
+  /* If we are suspending another process, and it is waiting on a sync,
+     suspend its synchronization. */
   if (process != issuer) {
 
-    if (process->waiting_action) {
+    if (process->waiting_synchro) {
 
-      switch (process->waiting_action->type) {
+      switch (process->waiting_synchro->type) {
 
-        case SIMIX_ACTION_EXECUTE:
-        case SIMIX_ACTION_PARALLEL_EXECUTE:
-          SIMIX_host_execution_suspend(process->waiting_action);
+        case SIMIX_SYNC_EXECUTE:
+        case SIMIX_SYNC_PARALLEL_EXECUTE:
+          SIMIX_host_execution_suspend(process->waiting_synchro);
           break;
 
-        case SIMIX_ACTION_COMMUNICATE:
-          SIMIX_comm_suspend(process->waiting_action);
+        case SIMIX_SYNC_COMMUNICATE:
+          SIMIX_comm_suspend(process->waiting_synchro);
           break;
 
-        case SIMIX_ACTION_SLEEP:
-          SIMIX_process_sleep_suspend(process->waiting_action);
+        case SIMIX_SYNC_SLEEP:
+          SIMIX_process_sleep_suspend(process->waiting_synchro);
           break;
 
-        case SIMIX_ACTION_SYNCHRO:
+        case SIMIX_SYNC_SYNCHRO:
           /* Suspension is delayed to when the process is rescheduled. */
           break;
 
         default:
-          xbt_die("Internal error in SIMIX_process_suspend: unexpected action type %d",
-              (int)process->waiting_action->type);
+          xbt_die("Internal error in SIMIX_process_suspend: unexpected synchronization type %d",
+              (int)process->waiting_synchro->type);
       }
       return NULL;
     } else {
@@ -546,7 +529,7 @@ smx_action_t SIMIX_process_suspend(smx_process_t process, smx_process_t issuer)
   }
 }
 
-void SIMIX_pre_process_resume(smx_simcall_t simcall, smx_process_t process){
+void simcall_HANDLER_process_resume(smx_simcall_t simcall, smx_process_t process){
   SIMIX_process_resume(process, simcall->issuer);
 }
 
@@ -562,35 +545,35 @@ void SIMIX_process_resume(smx_process_t process, smx_process_t issuer)
   if(!process->suspended) return;
   process->suspended = 0;
 
-  /* If we are resuming another process, resume the action it was waiting for
+  /* If we are resuming another process, resume the synchronization it was waiting for
      if any. Otherwise add it to the list of process to run in the next round. */
   if (process != issuer) {
 
-    if (process->waiting_action) {
+    if (process->waiting_synchro) {
 
-      switch (process->waiting_action->type) {
+      switch (process->waiting_synchro->type) {
 
-        case SIMIX_ACTION_EXECUTE:
-        case SIMIX_ACTION_PARALLEL_EXECUTE:
-          SIMIX_host_execution_resume(process->waiting_action);
+        case SIMIX_SYNC_EXECUTE:
+        case SIMIX_SYNC_PARALLEL_EXECUTE:
+          SIMIX_host_execution_resume(process->waiting_synchro);
           break;
 
-        case SIMIX_ACTION_COMMUNICATE:
-          SIMIX_comm_resume(process->waiting_action);
+        case SIMIX_SYNC_COMMUNICATE:
+          SIMIX_comm_resume(process->waiting_synchro);
           break;
 
-        case SIMIX_ACTION_SLEEP:
-          SIMIX_process_sleep_resume(process->waiting_action);
+        case SIMIX_SYNC_SLEEP:
+          SIMIX_process_sleep_resume(process->waiting_synchro);
           break;
 
-        case SIMIX_ACTION_SYNCHRO:
+        case SIMIX_SYNC_SYNCHRO:
           /* I cannot resume it now. This is delayed to when the process is rescheduled at
            * the end of the synchro. */
           break;
 
         default:
-          xbt_die("Internal error in SIMIX_process_resume: unexpected action type %d",
-              (int)process->waiting_action->type);
+          xbt_die("Internal error in SIMIX_process_resume: unexpected synchronization type %d",
+              (int)process->waiting_synchro->type);
       }
     }
   } else XBT_WARN("Strange. Process %p is trying to resume himself.", issuer);
@@ -602,16 +585,9 @@ int SIMIX_process_get_maxpid(void) {
   return simix_process_maxpid;
 }
 
-int SIMIX_pre_process_count(smx_simcall_t simcall){
-  return SIMIX_process_count();
-}
 int SIMIX_process_count(void)
 {
   return xbt_swag_size(simix_global->process_list);
-}
-
-int SIMIX_pre_process_get_PID(smx_simcall_t simcall, smx_process_t self){
-   return SIMIX_process_get_PID(self);
 }
 
 int SIMIX_process_get_PID(smx_process_t self){
@@ -621,19 +597,11 @@ int SIMIX_process_get_PID(smx_process_t self){
     return self->pid;
 }
 
-int SIMIX_pre_process_get_PPID(smx_simcall_t simcall, smx_process_t self){
-  return SIMIX_process_get_PPID(self);
-}
-
 int SIMIX_process_get_PPID(smx_process_t self){
   if (self == NULL)
     return 0;
   else
     return self->ppid;
-}
-
-void* SIMIX_pre_process_self_get_data(smx_simcall_t simcall, smx_process_t self){
-  return SIMIX_process_self_get_data(self);
 }
 
 void* SIMIX_process_self_get_data(smx_process_t self)
@@ -646,10 +614,6 @@ void* SIMIX_process_self_get_data(smx_process_t self)
   return SIMIX_process_get_data(self);
 }
 
-void SIMIX_pre_process_set_data(smx_simcall_t simcall, smx_process_t process,
-                                void *data){
-  SIMIX_process_set_data(process, data);
-}
 void SIMIX_process_self_set_data(smx_process_t self, void *data)
 {
   xbt_assert(self == SIMIX_process_self(), "This is not the current process");
@@ -657,9 +621,6 @@ void SIMIX_process_self_set_data(smx_process_t self, void *data)
   SIMIX_process_set_data(self, data);
 }
 
-void* SIMIX_pre_process_get_data(smx_simcall_t simcall, smx_process_t process){
-  return SIMIX_process_get_data(process);
-}
 void* SIMIX_process_get_data(smx_process_t process)
 {
   return process->data;
@@ -670,9 +631,6 @@ void SIMIX_process_set_data(smx_process_t process, void *data)
   process->data = data;
 }
 
-smx_host_t SIMIX_pre_process_get_host(smx_simcall_t simcall, smx_process_t process){
-  return SIMIX_process_get_host(process);
-}
 smx_host_t SIMIX_process_get_host(smx_process_t process)
 {
   return process->smx_host;
@@ -689,9 +647,6 @@ const char* SIMIX_process_self_get_name(void) {
   return SIMIX_process_get_name(process);
 }
 
-const char* SIMIX_pre_process_get_name(smx_simcall_t simcall, smx_process_t process) {
-  return SIMIX_process_get_name(process);
-}
 const char* SIMIX_process_get_name(smx_process_t process)
 {
   return process->name;
@@ -709,61 +664,55 @@ smx_process_t SIMIX_process_get_by_name(const char* name)
   return NULL;
 }
 
-int SIMIX_pre_process_is_suspended(smx_simcall_t simcall, smx_process_t process){
-  return SIMIX_process_is_suspended(process);
-}
 int SIMIX_process_is_suspended(smx_process_t process)
 {
   return process->suspended;
 }
 
-xbt_dict_t SIMIX_pre_process_get_properties(smx_simcall_t simcall, smx_process_t process){
-  return SIMIX_process_get_properties(process);
-}
 xbt_dict_t SIMIX_process_get_properties(smx_process_t process)
 {
   return process->properties;
 }
 
-void SIMIX_pre_process_join(smx_simcall_t simcall, smx_process_t process, double timeout)
+void simcall_HANDLER_process_join(smx_simcall_t simcall, smx_process_t process, double timeout)
 {
-  smx_action_t action = SIMIX_process_join(simcall->issuer, process, timeout);
-  xbt_fifo_push(action->simcalls, simcall);
-  simcall->issuer->waiting_action = action;
+  smx_synchro_t sync = SIMIX_process_join(simcall->issuer, process, timeout);
+  xbt_fifo_push(sync->simcalls, simcall);
+  simcall->issuer->waiting_synchro = sync;
 }
 
-static int SIMIX_process_join_finish(smx_process_exit_status_t status, smx_action_t action){
-  if (action->sleep.surf_sleep) {
-    surf_action_cancel(action->sleep.surf_sleep);
+static int SIMIX_process_join_finish(smx_process_exit_status_t status, smx_synchro_t sync){
+  if (sync->sleep.surf_sleep) {
+    surf_action_cancel(sync->sleep.surf_sleep);
 
     smx_simcall_t simcall;
-    while ((simcall = xbt_fifo_shift(action->simcalls))) {
+    while ((simcall = xbt_fifo_shift(sync->simcalls))) {
       simcall_process_sleep__set__result(simcall, SIMIX_DONE);
-      simcall->issuer->waiting_action = NULL;
+      simcall->issuer->waiting_synchro = NULL;
       if (simcall->issuer->suspended) {
         XBT_DEBUG("Wait! This process is suspended and can't wake up now.");
         simcall->issuer->suspended = 0;
-        SIMIX_pre_process_suspend(simcall, simcall->issuer);
+        simcall_HANDLER_process_suspend(simcall, simcall->issuer);
       } else {
         SIMIX_simcall_answer(simcall);
       }
     }
-    surf_action_unref(action->sleep.surf_sleep);
-    action->sleep.surf_sleep = NULL;
+    surf_action_unref(sync->sleep.surf_sleep);
+    sync->sleep.surf_sleep = NULL;
   }
-  xbt_mallocator_release(simix_global->action_mallocator, action);
+  xbt_mallocator_release(simix_global->synchro_mallocator, sync);
   return 0;
 }
 
-smx_action_t SIMIX_process_join(smx_process_t issuer, smx_process_t process, double timeout)
+smx_synchro_t SIMIX_process_join(smx_process_t issuer, smx_process_t process, double timeout)
 {
-  smx_action_t res = SIMIX_process_sleep(issuer, timeout);
-  res->type = SIMIX_ACTION_JOIN;
+  smx_synchro_t res = SIMIX_process_sleep(issuer, timeout);
+  res->type = SIMIX_SYNC_JOIN;
   SIMIX_process_on_exit(process, (int_f_pvoid_pvoid_t)SIMIX_process_join_finish, res);
   return res;
 }
 
-void SIMIX_pre_process_sleep(smx_simcall_t simcall, double duration)
+void simcall_HANDLER_process_sleep(smx_simcall_t simcall, double duration)
 {
   if (MC_is_active()) {
     MC_process_clock_add(simcall->issuer, duration);
@@ -771,14 +720,14 @@ void SIMIX_pre_process_sleep(smx_simcall_t simcall, double duration)
     SIMIX_simcall_answer(simcall);
     return;
   }
-  smx_action_t action = SIMIX_process_sleep(simcall->issuer, duration);
-  xbt_fifo_push(action->simcalls, simcall);
-  simcall->issuer->waiting_action = action;
+  smx_synchro_t sync = SIMIX_process_sleep(simcall->issuer, duration);
+  xbt_fifo_push(sync->simcalls, simcall);
+  simcall->issuer->waiting_synchro = sync;
 }
 
-smx_action_t SIMIX_process_sleep(smx_process_t process, double duration)
+smx_synchro_t SIMIX_process_sleep(smx_process_t process, double duration)
 {
-  smx_action_t action;
+  smx_synchro_t synchro;
   smx_host_t host = process->smx_host;
 
   /* check if the host is active */
@@ -787,32 +736,32 @@ smx_action_t SIMIX_process_sleep(smx_process_t process, double duration)
            sg_host_name(host));
   }
 
-  action = xbt_mallocator_get(simix_global->action_mallocator);
-  action->type = SIMIX_ACTION_SLEEP;
-  action->name = NULL;
+  synchro = xbt_mallocator_get(simix_global->synchro_mallocator);
+  synchro->type = SIMIX_SYNC_SLEEP;
+  synchro->name = NULL;
 #ifdef HAVE_TRACING
-  action->category = NULL;
+  synchro->category = NULL;
 #endif
 
-  action->sleep.host = host;
-  action->sleep.surf_sleep =
+  synchro->sleep.host = host;
+  synchro->sleep.surf_sleep =
       surf_workstation_sleep(host, duration);
 
-  surf_action_set_data(action->sleep.surf_sleep, action);
-  XBT_DEBUG("Create sleep action %p", action);
+  surf_action_set_data(synchro->sleep.surf_sleep, synchro);
+  XBT_DEBUG("Create sleep synchronization %p", synchro);
 
-  return action;
+  return synchro;
 }
 
-void SIMIX_post_process_sleep(smx_action_t action)
+void SIMIX_post_process_sleep(smx_synchro_t synchro)
 {
   smx_simcall_t simcall;
   e_smx_state_t state;
-  xbt_assert(action->type == SIMIX_ACTION_SLEEP || action->type == SIMIX_ACTION_JOIN);
+  xbt_assert(synchro->type == SIMIX_SYNC_SLEEP || synchro->type == SIMIX_SYNC_JOIN);
 
-  while ((simcall = xbt_fifo_shift(action->simcalls))) {
+  while ((simcall = xbt_fifo_shift(synchro->simcalls))) {
 
-    switch(surf_action_get_state(action->sleep.surf_sleep)){
+    switch(surf_action_get_state(synchro->sleep.surf_sleep)){
       case SURF_ACTION_FAILED:
         simcall->issuer->context->iwannadie = 1;
         //SMX_EXCEPTION(simcall->issuer, host_error, 0, "Host failed");
@@ -831,43 +780,43 @@ void SIMIX_post_process_sleep(smx_action_t action)
       simcall->issuer->context->iwannadie = 1;
     }
     simcall_process_sleep__set__result(simcall, state);
-    simcall->issuer->waiting_action = NULL;
+    simcall->issuer->waiting_synchro = NULL;
     if (simcall->issuer->suspended) {
       XBT_DEBUG("Wait! This process is suspended and can't wake up now.");
       simcall->issuer->suspended = 0;
-      SIMIX_pre_process_suspend(simcall, simcall->issuer);
+      simcall_HANDLER_process_suspend(simcall, simcall->issuer);
     } else {
       SIMIX_simcall_answer(simcall);
     }
   }
 
-  SIMIX_process_sleep_destroy(action);
+  SIMIX_process_sleep_destroy(synchro);
 }
 
-void SIMIX_process_sleep_destroy(smx_action_t action)
+void SIMIX_process_sleep_destroy(smx_synchro_t synchro)
 {
-  XBT_DEBUG("Destroy action %p", action);
-  xbt_assert(action->type == SIMIX_ACTION_SLEEP || action->type == SIMIX_ACTION_JOIN);
+  XBT_DEBUG("Destroy synchro %p", synchro);
+  xbt_assert(synchro->type == SIMIX_SYNC_SLEEP || synchro->type == SIMIX_SYNC_JOIN);
 
-  if (action->sleep.surf_sleep) {
-    surf_action_unref(action->sleep.surf_sleep);
-    action->sleep.surf_sleep = NULL;
+  if (synchro->sleep.surf_sleep) {
+    surf_action_unref(synchro->sleep.surf_sleep);
+    synchro->sleep.surf_sleep = NULL;
   }
-  if (action->type == SIMIX_ACTION_SLEEP)
-    xbt_mallocator_release(simix_global->action_mallocator, action);
+  if (synchro->type == SIMIX_SYNC_SLEEP)
+    xbt_mallocator_release(simix_global->synchro_mallocator, synchro);
 }
 
-void SIMIX_process_sleep_suspend(smx_action_t action)
+void SIMIX_process_sleep_suspend(smx_synchro_t synchro)
 {
-  xbt_assert(action->type == SIMIX_ACTION_SLEEP);
-  surf_action_suspend(action->sleep.surf_sleep);
+  xbt_assert(synchro->type == SIMIX_SYNC_SLEEP);
+  surf_action_suspend(synchro->sleep.surf_sleep);
 }
 
-void SIMIX_process_sleep_resume(smx_action_t action)
+void SIMIX_process_sleep_resume(smx_synchro_t synchro)
 {
-  XBT_DEBUG("Action state is %d on process_sleep_resume.", action->state);
-  xbt_assert(action->type == SIMIX_ACTION_SLEEP);
-  surf_action_resume(action->sleep.surf_sleep);
+  XBT_DEBUG("Synchro state is %d on process_sleep_resume.", synchro->state);
+  xbt_assert(synchro->type == SIMIX_SYNC_SLEEP);
+  surf_action_resume(synchro->sleep.surf_sleep);
 }
 
 /**
@@ -977,11 +926,6 @@ void SIMIX_process_on_exit_runall(smx_process_t process) {
   }
 }
 
-void SIMIX_pre_process_on_exit(smx_simcall_t simcall, smx_process_t process,
-	                       int_f_pvoid_pvoid_t fun, void *data) {
-  SIMIX_process_on_exit(process, fun, data);
-}
-
 void SIMIX_process_on_exit(smx_process_t process, int_f_pvoid_pvoid_t fun, void *data) {
   xbt_assert(process, "current process not found: are you in maestro context ?");
 
@@ -994,10 +938,6 @@ void SIMIX_process_on_exit(smx_process_t process, int_f_pvoid_pvoid_t fun, void 
   xbt_dynar_push_as(process->on_exit,s_smx_process_exit_fun_t,exit_fun);
 }
 
-void SIMIX_pre_process_auto_restart_set(smx_simcall_t simcall, smx_process_t process,
-		                        int auto_restart) {
-  SIMIX_process_auto_restart_set(process, auto_restart);
-}
 /**
  * \brief Sets the auto-restart status of the process.
  * If set to 1, the process will be automatically restarted when its host
@@ -1007,7 +947,7 @@ void SIMIX_process_auto_restart_set(smx_process_t process, int auto_restart) {
   process->auto_restart = auto_restart;
 }
 
-smx_process_t SIMIX_pre_process_restart(smx_simcall_t simcall, smx_process_t process) {
+smx_process_t simcall_HANDLER_process_restart(smx_simcall_t simcall, smx_process_t process) {
   return SIMIX_process_restart(process, simcall->issuer);
 }
 /**

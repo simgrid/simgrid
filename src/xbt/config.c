@@ -275,7 +275,7 @@ xbt_cfg_register(xbt_cfg_t * cfg,
     break;
 
   default:
-    XBT_ERROR("%d is an invalide type code", (int)type);
+    XBT_ERROR("%d is an invalid type code", (int)type);
   }
 
   xbt_dict_set((xbt_dict_t) * cfg, name, res, NULL);
@@ -284,7 +284,7 @@ xbt_cfg_register(xbt_cfg_t * cfg,
 /** @brief Unregister an element from a config set.
  *
  *  @param cfg the config set
- *  @param name the name of the elem to be freed
+ *  @param name the name of the element to be freed
  *
  *  Note that it removes both the description and the actual content.
  *  Throws not_found when no such element exists.

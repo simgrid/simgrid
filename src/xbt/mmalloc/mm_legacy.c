@@ -34,7 +34,7 @@ void mmalloc_set_current_heap(xbt_mheap_t new_heap)
 
 
 #ifdef MMALLOC_WANT_OVERRIDE_LEGACY
-#ifdef HAVE_GNU_LD
+#if 0 && defined(HAVE_GNU_LD)
 
 #undef _GNU_SOURCE
 #define _GNU_SOURCE 1
@@ -49,7 +49,7 @@ static void mm_gnuld_legacy_init(void) { /* This function is called from mmalloc
   real_realloc = (void * (*) (void*,size_t)) dlsym(RTLD_NEXT, "realloc");
   real_free = (void * (*) (void*)) dlsym(RTLD_NEXT, "free");
   __mmalloc_current_heap = __mmalloc_default_mdp;
-}
+} 
 
 /* Hello pimple!
  * DL needs some memory while resolving the malloc symbol, that is somehow problematic
@@ -57,7 +57,7 @@ static void mm_gnuld_legacy_init(void) { /* This function is called from mmalloc
  */
 static int allocated_junk = 0; /* keep track of many blocks of our little area was already given to someone */
 #define JUNK_SIZE 8
-#define MAX_JUNK_AREAS (32 * 1024 / JUNK_SIZE)
+#define MAX_JUNK_AREAS (64 * 1024 / JUNK_SIZE)
 static char junkareas[MAX_JUNK_AREAS][JUNK_SIZE];
 
 /* This version use mmalloc if there is a current heap, or the legacy implem if not */
@@ -141,7 +141,9 @@ void free(void *p)
 {
   if (p==NULL)
     return;
-  if (p<=(void*)junkareas || p>(void*)(junkareas[MAX_JUNK_AREAS]) ) {
+  if (p<(void*)junkareas || p>=(void*)(junkareas[MAX_JUNK_AREAS]) ) {
+    // main use case
+
     xbt_mheap_t mdp = __mmalloc_current_heap;
 
     if (mdp) {
@@ -151,10 +153,16 @@ void free(void *p)
     } else {
       real_free(p);
     }
-  } else if(allocated_junk && p==junkareas[allocated_junk-1]) {
-    allocated_junk--;
   } else {
-    // Leaked memory.
+    // We are in the junkarea.
+    // This area is used to allocate memory at initilization time.
+
+    if(allocated_junk && p==junkareas[allocated_junk-1]) {
+      // Last junkarea. We can reuse it.
+      allocated_junk--;
+    } else {
+      // We currently cannot reuse freed junkareas in the general case.
+    }
   }
 }
 
@@ -168,6 +176,7 @@ void *malloc(size_t n)
   void *ret = mmalloc(mdp, n);
   UNLOCK(mdp);
 
+
   return ret;
 }
 
@@ -178,8 +187,11 @@ void *calloc(size_t nmemb, size_t size)
   LOCK(mdp);
   void *ret = mmalloc(mdp, nmemb*size);
   UNLOCK(mdp);
-  memset(ret, 0, nmemb * size);
 
+  // This was already done in the callee:
+  if(!(mdp->options & XBT_MHEAP_OPTION_MEMSET)) {
+    memset(ret, 0, nmemb * size);
+  }
 
   return ret;
 }
@@ -208,5 +220,3 @@ void free(void *p)
 }
 #endif /* NO GNU_LD */
 #endif /* WANT_MALLOC_OVERRIDE */
-
-

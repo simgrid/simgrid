@@ -18,7 +18,7 @@ typedef struct s_smpi_mpi_win{
   MPI_Aint size;
   int disp_unit;
   MPI_Comm comm;
-  //MPI_Info info
+  MPI_Info info;
   int assert;
   xbt_dynar_t requests;
   xbt_bar_t bar;
@@ -40,7 +40,9 @@ MPI_Win smpi_mpi_win_create( void *base, MPI_Aint size, int disp_unit, MPI_Info 
   win->size = size;
   win->disp_unit = disp_unit;
   win->assert = 0;
-  //win->info = info;
+  win->info = info;
+  if(info!=MPI_INFO_NULL)
+    info->refcount++;
   win->comm = comm;
   win->name = NULL;
   win->requests = xbt_dynar_new(sizeof(MPI_Request), NULL);
@@ -78,6 +80,9 @@ int smpi_mpi_win_free( MPI_Win* win){
   xbt_free((*win)->connected_wins);
   if ((*win)->name != NULL){
     xbt_free((*win)->name);
+  }
+  if((*win)->info!=MPI_INFO_NULL){
+    MPI_Info_free(&(*win)->info);
   }
   xbt_free(*win);
   win = MPI_WIN_NULL;

@@ -252,7 +252,7 @@ void MC_pre_modelcheck_liveness(void)
       initial_pair->search_cycle = 0;
 
       xbt_fifo_unshift(mc_stack, initial_pair);
-
+      
       MC_SET_STD_HEAP;
 
       MC_modelcheck_liveness();
@@ -298,7 +298,6 @@ void MC_modelcheck_liveness()
 
   int value;
   smx_simcall_t req = NULL;
-  char *req_str;
 
   xbt_automaton_transition_t transition_succ;
   unsigned int cursor = 0;
@@ -370,12 +369,7 @@ void MC_modelcheck_liveness()
           }
           MC_SET_STD_HEAP;
 
-          /* Debug information */
-          if (XBT_LOG_ISENABLED(mc_liveness, xbt_log_priority_debug)) {
-            req_str = MC_request_to_string(req, value);
-            XBT_DEBUG("Execute: %s", req_str);
-            xbt_free(req_str);
-          }
+          MC_LOG_REQUEST(mc_liveness, req, value);
 
           MC_SET_MC_HEAP;
           if (dot_output != NULL) {
@@ -391,7 +385,7 @@ void MC_modelcheck_liveness()
           mc_stats->executed_transitions++;
 
           /* Answer the request */
-          SIMIX_simcall_enter(req, value);
+          SIMIX_simcall_handle(req, value);
 
           /* Wait for requests (schedules processes) */
           MC_wait_for_requests();

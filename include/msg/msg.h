@@ -297,7 +297,7 @@ XBT_PUBLIC(msg_comm_t) MSG_task_isend(msg_task_t task, const char *alias);
 XBT_PUBLIC(msg_comm_t) MSG_task_isend_bounded(msg_task_t task, const char *alias, double maxrate);
 XBT_PUBLIC(msg_comm_t) MSG_task_isend_with_matching(msg_task_t task,
                                                     const char *alias,
-                                                    int (*match_fun)(void*,void*, smx_action_t),
+                                                    int (*match_fun)(void*,void*, smx_synchro_t),
                                                     void *match_data);
 
 XBT_PUBLIC(void) MSG_task_dsend(msg_task_t task, const char *alias, void_f_pvoid_t cleanup);
@@ -508,12 +508,6 @@ xbt_dynar_t<msg_vm_t> MSG_vm_get_list_from_hosts(msg_dynar_t<msg_host_t>)
 /* ****************************************************************************************** */
 /* Used only by the bindings -- unclean pimple, please ignore if you're not writing a binding */
 XBT_PUBLIC(smx_context_t) MSG_process_get_smx_ctx(msg_process_t process);
-
-/* ****************************************************************************************** */
-/* TUTORIAL: New API                                                                        */
-/* Declare all functions for the API                                                          */
-/* ****************************************************************************************** */
-XBT_PUBLIC(int) MSG_new_API_fct(const char* param1, double param2);
 
 SG_END_DECL()
 #endif

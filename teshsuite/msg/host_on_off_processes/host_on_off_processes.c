@@ -32,7 +32,7 @@ int test_launcher(int argc, char *argv[])
 
   test = 1;
   // Create a process running a simple task on a host and turn the host off during the execution of the process.
-  if (xbt_dynar_member(tests, &test)){
+  if (xbt_dynar_search_or_negative(tests, &test)!=-1){
     XBT_INFO("Test 1:");
     XBT_INFO("  Create a process on Jupiter");
     argvF = xbt_new(char*, 2);
@@ -47,7 +47,7 @@ int test_launcher(int argc, char *argv[])
 
   test = 2;
   // Create a process that on a host that is turned off (this should not be possible)
-  if (xbt_dynar_member(tests, &test)){
+  if (xbt_dynar_search_or_negative(tests, &test)!=-1){
     XBT_INFO("Test 2:");
     XBT_INFO("  Turn off Jupiter");
     // adsein: Jupiter is already, hence nothing should happen
@@ -69,7 +69,7 @@ int test_launcher(int argc, char *argv[])
 
    test = 3;
   // Create a process running sucessive sleeps on a host and turn the host off during the execution of the process.
-  if (xbt_dynar_member(tests, &test)){
+  if (xbt_dynar_search_or_negative(tests, &test)!=-1){
     XBT_INFO("Test 3:");
     MSG_host_on(jupiter);
     argvF = xbt_new(char*, 2);
@@ -84,7 +84,7 @@ int test_launcher(int argc, char *argv[])
   }
 
   test = 4;
-  if (xbt_dynar_member(tests, &test)){
+  if (xbt_dynar_search_or_negative(tests, &test)!=-1){
     XBT_INFO("Test 4 (turn off src during a communication) : Create a Process/task to make a communication between Jupiter and Tremblay and turn off Jupiter during the communication");
     MSG_host_on(jupiter);
     MSG_process_sleep(10);
@@ -102,7 +102,7 @@ int test_launcher(int argc, char *argv[])
   }
 
   test = 5;
-  if (xbt_dynar_member(tests, &test)){
+  if (xbt_dynar_search_or_negative(tests, &test)!=-1){
     XBT_INFO("Test 5 (turn off dest during a communication : Create a Process/task to make a communication between Tremblay and Jupiter and turn off Jupiter during the communication");
     MSG_host_on(jupiter);
     MSG_process_sleep(10);
@@ -120,7 +120,7 @@ int test_launcher(int argc, char *argv[])
   }
 
   test =6;
-  if (xbt_dynar_member(tests, &test)){
+  if (xbt_dynar_search_or_negative(tests, &test)!=-1){
     XBT_INFO("Test 6: Turn on Jupiter, assign a VM on Jupiter, launch a process inside the VM, and turn off the node");
 
     // Create VM0
@@ -155,17 +155,17 @@ int test_launcher(int argc, char *argv[])
   }
 
   test = 7;
-  if (xbt_dynar_member(tests, &test)){
+  if (xbt_dynar_search_or_negative(tests, &test)!=-1){
 
   }
 
   test = 8;
-  if (xbt_dynar_member(tests, &test)){
+  if (xbt_dynar_search_or_negative(tests, &test)!=-1){
 
   }
 
   test = 9;
-  if (xbt_dynar_member(tests, &test)){
+  if (xbt_dynar_search_or_negative(tests, &test)!=-1){
 
   }
   XBT_INFO("  Test done. See you!");

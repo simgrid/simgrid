@@ -13,11 +13,6 @@ SG_BEGIN_DECL()
 
 typedef struct s_mc_snapshot *mc_snapshot_t;
 
-/* These are the MC-specific simcalls, that smx_user needs to see */
-mc_snapshot_t SIMIX_pre_mc_snapshot(smx_simcall_t simcall);
-int SIMIX_pre_mc_compare_snapshots(smx_simcall_t simcall, mc_snapshot_t s1, mc_snapshot_t s2);
-int SIMIX_pre_mc_random(smx_simcall_t simcall, int min, int max);
-
 SG_END_DECL()
 
 #endif

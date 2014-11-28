@@ -11,6 +11,9 @@
 #include <sys/mman.h>
 #include <libgen.h>
 
+#define UNW_LOCAL_ONLY
+#include <libunwind.h>
+
 #include "simgrid/sg_config.h"
 #include "../surf/surf_private.h"
 #include "../simix/smx_private.h"
@@ -24,139 +27,7 @@ XBT_LOG_NEW_CATEGORY(mc, "All MC categories");
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_global, mc,
                                 "Logging specific to MC (global)");
 
-/* Configuration support */
-e_mc_reduce_t mc_reduce_kind = e_mc_reduce_unset;
-
-int _sg_do_model_check = 0;
-int _sg_mc_checkpoint = 0;
-int _sg_mc_sparse_checkpoint = 0;
-int _sg_mc_soft_dirty = 0;
-char *_sg_mc_property_file = NULL;
-int _sg_mc_timeout = 0;
-int _sg_mc_hash = 0;
-int _sg_mc_max_depth = 1000;
-int _sg_mc_visited = 0;
-char *_sg_mc_dot_output_file = NULL;
-int _sg_mc_comms_determinism = 0;
-int _sg_mc_send_determinism = 0;
-int _sg_mc_safety = 0;
-int _sg_mc_liveness = 0;
-
 int user_max_depth_reached = 0;
-
-void _mc_cfg_cb_reduce(const char *name, int pos)
-{
-  if (_sg_cfg_init_status && !_sg_do_model_check) {
-    xbt_die
-        ("You are specifying a reduction strategy after the initialization (through MSG_config?), but model-checking was not activated at config time (through --cfg=model-check:1). This won't work, sorry.");
-  }
-  char *val = xbt_cfg_get_string(_sg_cfg_set, name);
-  if (!strcasecmp(val, "none")) {
-    mc_reduce_kind = e_mc_reduce_none;
-  } else if (!strcasecmp(val, "dpor")) {
-    mc_reduce_kind = e_mc_reduce_dpor;
-  } else {
-    xbt_die("configuration option %s can only take 'none' or 'dpor' as a value",
-            name);
-  }
-}
-
-void _mc_cfg_cb_checkpoint(const char *name, int pos)
-{
-  if (_sg_cfg_init_status && !_sg_do_model_check) {
-    xbt_die
-        ("You are specifying a checkpointing value after the initialization (through MSG_config?), but model-checking was not activated at config time (through --cfg=model-check:1). This won't work, sorry.");
-  }
-  _sg_mc_checkpoint = xbt_cfg_get_int(_sg_cfg_set, name);
-}
-
-void _mc_cfg_cb_sparse_checkpoint(const char *name, int pos) {
-  if (_sg_cfg_init_status && !_sg_do_model_check) {
-    xbt_die("You are specifying a checkpointing value after the initialization (through MSG_config?), but model-checking was not activated at config time (through --cfg=model-check:1). This won't work, sorry.");
-  }
-  _sg_mc_sparse_checkpoint = xbt_cfg_get_boolean(_sg_cfg_set, name);
-}
-
-void _mc_cfg_cb_soft_dirty(const char *name, int pos) {
-  if (_sg_cfg_init_status && !_sg_do_model_check) {
-    xbt_die("You are specifying a soft dirty value after the initialization (through MSG_config?), but model-checking was not activated at config time (through --cfg=model-check:1). This won't work, sorry.");
-  }
-  _sg_mc_soft_dirty = xbt_cfg_get_boolean(_sg_cfg_set, name);
-}
-
-void _mc_cfg_cb_property(const char *name, int pos)
-{
-  if (_sg_cfg_init_status && !_sg_do_model_check) {
-    xbt_die
-        ("You are specifying a property after the initialization (through MSG_config?), but model-checking was not activated at config time (through --cfg=model-check:1). This won't work, sorry.");
-  }
-  _sg_mc_property_file = xbt_cfg_get_string(_sg_cfg_set, name);
-}
-
-void _mc_cfg_cb_timeout(const char *name, int pos)
-{
-  if (_sg_cfg_init_status && !_sg_do_model_check) {
-    xbt_die
-        ("You are specifying a value to enable/disable timeout for wait requests after the initialization (through MSG_config?), but model-checking was not activated at config time (through --cfg=model-check:1). This won't work, sorry.");
-  }
-  _sg_mc_timeout = xbt_cfg_get_boolean(_sg_cfg_set, name);
-}
-
-void _mc_cfg_cb_hash(const char *name, int pos)
-{
-  if (_sg_cfg_init_status && !_sg_do_model_check) {
-    xbt_die
-        ("You are specifying a value to enable/disable the use of global hash to speedup state comparaison, but model-checking was not activated at config time (through --cfg=model-check:1). This won't work, sorry.");
-  }
-  _sg_mc_hash = xbt_cfg_get_boolean(_sg_cfg_set, name);
-}
-
-void _mc_cfg_cb_max_depth(const char *name, int pos)
-{
-  if (_sg_cfg_init_status && !_sg_do_model_check) {
-    xbt_die
-        ("You are specifying a max depth value after the initialization (through MSG_config?), but model-checking was not activated at config time (through --cfg=model-check:1). This won't work, sorry.");
-  }
-  _sg_mc_max_depth = xbt_cfg_get_int(_sg_cfg_set, name);
-}
-
-void _mc_cfg_cb_visited(const char *name, int pos)
-{
-  if (_sg_cfg_init_status && !_sg_do_model_check) {
-    xbt_die
-        ("You are specifying a number of stored visited states after the initialization (through MSG_config?), but model-checking was not activated at config time (through --cfg=model-check:1). This won't work, sorry.");
-  }
-  _sg_mc_visited = xbt_cfg_get_int(_sg_cfg_set, name);
-}
-
-void _mc_cfg_cb_dot_output(const char *name, int pos)
-{
-  if (_sg_cfg_init_status && !_sg_do_model_check) {
-    xbt_die
-        ("You are specifying a file name for a dot output of graph state after the initialization (through MSG_config?), but model-checking was not activated at config time (through --cfg=model-check:1). This won't work, sorry.");
-  }
-  _sg_mc_dot_output_file = xbt_cfg_get_string(_sg_cfg_set, name);
-}
-
-void _mc_cfg_cb_comms_determinism(const char *name, int pos)
-{
-  if (_sg_cfg_init_status && !_sg_do_model_check) {
-    xbt_die
-        ("You are specifying a value to enable/disable the detection of determinism in the communications schemes after the initialization (through MSG_config?), but model-checking was not activated at config time (through --cfg=model-check:1). This won't work, sorry.");
-  }
-  _sg_mc_comms_determinism = xbt_cfg_get_boolean(_sg_cfg_set, name);
-  mc_reduce_kind = e_mc_reduce_none;
-}
-
-void _mc_cfg_cb_send_determinism(const char *name, int pos)
-{
-  if (_sg_cfg_init_status && !_sg_do_model_check) {
-    xbt_die
-        ("You are specifying a value to enable/disable the detection of send-determinism in the communications schemes after the initialization (through MSG_config?), but model-checking was not activated at config time (through --cfg=model-check:1). This won't work, sorry.");
-  }
-  _sg_mc_send_determinism = xbt_cfg_get_boolean(_sg_cfg_set, name);
-  mc_reduce_kind = e_mc_reduce_none;
-}
 
 /* MC global data structures */
 mc_state_t mc_current_state = NULL;
@@ -454,7 +325,7 @@ void MC_exit(void)
   //xbt_abort();
 }
 
-int SIMIX_pre_mc_random(smx_simcall_t simcall, int min, int max)
+int simcall_HANDLER_mc_random(smx_simcall_t simcall, int min, int max)
 {
 
   return simcall->mc_value;
@@ -478,10 +349,10 @@ void MC_wait_for_requests(void)
 
   while (!xbt_dynar_is_empty(simix_global->process_to_run)) {
     SIMIX_process_runall();
-    xbt_dynar_foreach(simix_global->process_that_ran, iter, process) {
+      xbt_dynar_foreach(simix_global->process_that_ran, iter, process) {
       req = &process->simcall;
       if (req->call != SIMCALL_NONE && !MC_request_is_visible(req))
-        SIMIX_simcall_enter(req, 0);
+        SIMIX_simcall_handle(req, 0);
     }
   }
 }
@@ -493,14 +364,38 @@ int MC_deadlock_check()
   if (xbt_swag_size(simix_global->process_list)) {
     deadlock = TRUE;
     xbt_swag_foreach(process, simix_global->process_list) {
-      if (process->simcall.call != SIMCALL_NONE
-          && MC_request_is_enabled(&process->simcall)) {
+      if (MC_request_is_enabled(&process->simcall)) {
         deadlock = FALSE;
         break;
       }
     }
   }
   return deadlock;
+}
+
+void mc_update_comm_pattern(mc_call_type call_type, smx_simcall_t req, int value, xbt_dynar_t pattern) {
+  switch(call_type) {
+  case MC_CALL_TYPE_NONE:
+    break;
+  case MC_CALL_TYPE_SEND:
+  case MC_CALL_TYPE_RECV:
+    get_comm_pattern(pattern, req, call_type);
+    break;
+  case MC_CALL_TYPE_WAIT:
+    {
+      smx_synchro_t current_comm = NULL;
+      if (call_type == MC_CALL_TYPE_WAIT)
+        current_comm = simcall_comm_wait__get__comm(req);
+      else
+        current_comm = xbt_dynar_get_as(simcall_comm_waitany__get__comms(req), value, smx_synchro_t);
+      // First wait only must be considered:
+      if (current_comm->comm.refcount == 1)
+        complete_comm_pattern(pattern, current_comm);
+      break;
+    }
+  default:
+    xbt_die("Unexpected call type %i", (int)call_type);
+  }
 }
 
 /**
@@ -513,13 +408,12 @@ void MC_replay(xbt_fifo_t stack, int start)
 {
   int raw_mem = (mmalloc_get_current_heap() == mc_heap);
 
-  int value, i = 1, count = 1, call = 0, j;
+  int value, i = 1, count = 1, j;
   char *req_str;
   smx_simcall_t req = NULL, saved_req = NULL;
   xbt_fifo_item_t item, start_item;
   mc_state_t state;
   smx_process_t process = NULL;
-  smx_action_t current_comm;
 
   XBT_DEBUG("**** Begin Replay ****");
 
@@ -595,38 +489,18 @@ void MC_replay(xbt_fifo_t stack, int start)
       }
 
       /* TODO : handle test and testany simcalls */
+      mc_call_type call = MC_CALL_TYPE_NONE;
       if (_sg_mc_comms_determinism || _sg_mc_send_determinism) {
-        if (req->call == SIMCALL_COMM_ISEND)
-          call = 1;
-        else if (req->call == SIMCALL_COMM_IRECV)
-          call = 2;
-        else if (req->call == SIMCALL_COMM_WAIT)
-          call = 3;
-        else if (req->call == SIMCALL_COMM_WAITANY)
-          call = 4;
+        call = mc_get_call_type(req);
       }
 
-      SIMIX_simcall_enter(req, value);
+      SIMIX_simcall_handle(req, value);
 
       if (_sg_mc_comms_determinism || _sg_mc_send_determinism) {
         MC_SET_MC_HEAP;
-        if (call == 1) { /* Send */
-          get_comm_pattern(communications_pattern, req, call);
-        } else if (call == 2) { /* Recv */
-          get_comm_pattern(communications_pattern, req, call);
-        } else if (call == 3) { /* Wait */
-          current_comm = simcall_comm_wait__get__comm(req);
-          if (current_comm->comm.refcount == 1)  /* First wait only must be considered */
-            complete_comm_pattern(communications_pattern, current_comm);
-        } else if (call == 4) { /* WaitAny */
-          current_comm = xbt_dynar_get_as(simcall_comm_waitany__get__comms(req), value, smx_action_t);
-          if (current_comm->comm.refcount == 1) /* First wait only must be considered */
-            complete_comm_pattern(communications_pattern, current_comm);
-        }
+        mc_update_comm_pattern(call, req, value, communications_pattern);
         MC_SET_STD_HEAP;
-        call = 0;
       }
-
 
       MC_wait_for_requests();
 
@@ -715,7 +589,7 @@ void MC_replay_liveness(xbt_fifo_t stack, int all_stack)
 
         }
 
-        SIMIX_simcall_enter(req, value);
+        SIMIX_simcall_handle(req, value);
         MC_wait_for_requests();
       }
 
@@ -952,4 +826,34 @@ void MC_automaton_new_propositional_symbol(const char *id, void *fct)
   if (raw_mem_set)
     MC_SET_MC_HEAP;
 
+}
+
+void MC_dump_stacks(FILE* file)
+{
+  int raw_mem_set = (mmalloc_get_current_heap() == mc_heap);
+  MC_SET_MC_HEAP;
+
+  int nstack = 0;
+  stack_region_t current_stack;
+  unsigned cursor;
+  xbt_dynar_foreach(stacks_areas, cursor, current_stack) {
+    unw_context_t * context = (unw_context_t *)current_stack->context;
+    fprintf(file, "Stack %i:\n", nstack);
+
+    int nframe = 0;
+    char buffer[100];
+    unw_cursor_t c;
+    unw_init_local (&c, context);
+    unw_word_t off;
+    do {
+      const char * name = !unw_get_proc_name(&c, buffer, 100, &off) ? buffer : "?";
+      fprintf(file, "  %i: %s\n", nframe, name);
+      ++nframe;
+    } while(unw_step(&c));
+
+    ++nstack;
+  }
+
+  if (raw_mem_set)
+    MC_SET_MC_HEAP;
 }

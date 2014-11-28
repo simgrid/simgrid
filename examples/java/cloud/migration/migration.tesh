@@ -21,71 +21,14 @@ $ java -classpath ${classpath:=.} cloud/migration/Main ${srcdir:=.}/../platforms
 > [host0:cloud/migration/Test:(1) 0.000000] [jmsg/INFO] Round trip of VM1 (load 90%)
 > [host0:cloud/migration/Test:(1) 0.000000] [jmsg/INFO]      - Launch migration from host 0 to host 1
 > [host0:cloud/migration/Test:(1) 0.000000] [jmsg/INFO] Start migration of VM vm0 to host1
-> [host0:cloud/migration/Test:(1) 0.000000] [jmsg/INFO]     currentLoad:90/ramSize:2048/dpIntensity:70/remaining:8.095E11
-> [host0:__pr_mig_tx:vm0(host0-host1):(16) 0.000000] [msg_vm/INFO] mig-stage1: remaining_size 2147483648.000000
-> [host0:__pr_mig_tx:vm0(host0-host1):(16) 18.598067] [msg_vm/INFO] actual bandwidth 110.118973 (MB/s), threshold 3464043.375348
-> [host0:__pr_mig_tx:vm0(host0-host1):(16) 18.598067] [msg_vm/INFO] mig-stage 2:0 updated_size 1009084906.862392 computed_during_stage1 99363890485.508911 dp_rate 0.010155 dp_cap 1932735283.200000
-> [host0:__pr_mig_tx:vm0(host0-host1):(16) 18.598067] [msg_vm/INFO] mig-stage2.0: remaining_size 1009084906.862392 (> threshold 3464043.375348)
-> [host0:__pr_mig_tx:vm0(host0-host1):(16) 27.337835] [msg_vm/INFO] actual bandwidth 110.110284, threshold 3463770.024427
-> [host0:__pr_mig_tx:vm0(host0-host1):(16) 27.337835] [msg_vm/INFO] mig-stage 2:1 updated_size 474198119.178924 computed_during_stage1 99363890485.508911 dp_rate 0.010155 dp_cap 1932735283.200000
-> [host0:__pr_mig_tx:vm0(host0-host1):(16) 27.337835] [msg_vm/INFO] mig-stage2.1: remaining_size 474198119.178924 (> threshold 3463770.024427)
-> [host0:__pr_mig_tx:vm0(host0-host1):(16) 31.445594] [msg_vm/INFO] actual bandwidth 110.091798, threshold 3463188.514958
-> [host0:__pr_mig_tx:vm0(host0-host1):(16) 31.445594] [msg_vm/INFO] mig-stage 2:2 updated_size 222876798.522755 computed_during_stage1 99363890485.508911 dp_rate 0.010155 dp_cap 1932735283.200000
-> [host0:__pr_mig_tx:vm0(host0-host1):(16) 31.445594] [msg_vm/INFO] mig-stage2.2: remaining_size 222876798.522755 (> threshold 3463188.514958)
-> [host0:__pr_mig_tx:vm0(host0-host1):(16) 33.376962] [msg_vm/INFO] actual bandwidth 110.052494, threshold 3461952.124955
-> [host0:__pr_mig_tx:vm0(host0-host1):(16) 33.376962] [msg_vm/INFO] mig-stage 2:3 updated_size 104791237.544459 computed_during_stage1 99363890485.508911 dp_rate 0.010155 dp_cap 1932735283.200000
-> [host0:__pr_mig_tx:vm0(host0-host1):(16) 33.376962] [msg_vm/INFO] mig-stage2.3: remaining_size 104791237.544459 (> threshold 3461952.124955)
-> [host0:__pr_mig_tx:vm0(host0-host1):(16) 34.285733] [msg_vm/INFO] actual bandwidth 109.969020, threshold 3459326.250492
-> [host0:__pr_mig_tx:vm0(host0-host1):(16) 34.285733] [msg_vm/INFO] mig-stage 2:4 updated_size 49307685.020391 computed_during_stage1 99363890485.508911 dp_rate 0.010155 dp_cap 1932735283.200000
-> [host0:__pr_mig_tx:vm0(host0-host1):(16) 34.285733] [msg_vm/INFO] mig-stage2.4: remaining_size 49307685.020391 (> threshold 3459326.250492)
-> [host0:__pr_mig_tx:vm0(host0-host1):(16) 34.714029] [msg_vm/INFO] actual bandwidth 109.792154, threshold 3453762.521054
-> [host0:__pr_mig_tx:vm0(host0-host1):(16) 34.714029] [msg_vm/INFO] mig-stage 2:5 updated_size 23238243.968121 computed_during_stage1 99363890485.508911 dp_rate 0.010155 dp_cap 1932735283.200000
-> [host0:__pr_mig_tx:vm0(host0-host1):(16) 34.714029] [msg_vm/INFO] mig-stage2.5: remaining_size 23238243.968121 (> threshold 3453762.521054)
-> [host0:__pr_mig_tx:vm0(host0-host1):(16) 34.916568] [msg_vm/INFO] actual bandwidth 109.419289, threshold 3442033.220071
-> [host0:__pr_mig_tx:vm0(host0-host1):(16) 34.916568] [msg_vm/INFO] mig-stage 2:6 updated_size 10989284.465950 computed_during_stage1 99363890485.508911 dp_rate 0.010155 dp_cap 1932735283.200000
-> [host0:__pr_mig_tx:vm0(host0-host1):(16) 34.916568] [msg_vm/INFO] mig-stage2.6: remaining_size 10989284.465950 (> threshold 3442033.220071)
-> [host0:__pr_mig_tx:vm0(host0-host1):(16) 35.013034] [msg_vm/INFO] actual bandwidth 108.641444, threshold 3417564.332268
-> [host0:__pr_mig_tx:vm0(host0-host1):(16) 35.013034] [msg_vm/INFO] mig-stage 2:7 updated_size 5234001.988682 computed_during_stage1 99363890485.508911 dp_rate 0.010155 dp_cap 1932735283.200000
-> [host0:__pr_mig_tx:vm0(host0-host1):(16) 35.013034] [msg_vm/INFO] mig-stage2.7: remaining_size 5234001.988682 (> threshold 3417564.332268)
-> [host0:__pr_mig_tx:vm0(host0-host1):(16) 35.059660] [msg_vm/INFO] actual bandwidth 107.053869, threshold 3367623.544281
-> [host0:__pr_mig_tx:vm0(host0-host1):(16) 35.059660] [msg_vm/INFO] mig-stage 2:8 updated_size 2529831.013694 computed_during_stage1 99363890485.508911 dp_rate 0.010155 dp_cap 1932735283.200000
-> [host0:__pr_mig_tx:vm0(host0-host1):(16) 35.059660] [msg_vm/INFO] mig-stage2.8: remaining_size 2529831.013694 (< threshold 3367623.544281)
-> [host0:__pr_mig_tx:vm0(host0-host1):(16) 35.059660] [msg_vm/INFO] mig-stage3: remaining_size 2529831.013694
+> [host0:cloud/migration/Test:(1) 0.000000] [jmsg/INFO]     currentLoad:90/ramSize:2048/dpIntensity:70/remaining:8.10E+11
 > [35.082869] [surf_vm_workstation/INFO] migrate VM(vm0): set bound (7285500000.000000) at host1
-> [host1:__pr_mig_rx:vm0(host0-host1):(15) 35.082869] [msg_vm/INFO] set affinity(0x0000@host1) for vm0
 > [host0:cloud/migration/Test:(1) 35.084170] [jmsg/INFO] End of migration of VM vm0 to node host1
 > [host0:cloud/migration/Test:(1) 35.084170] [jmsg/INFO]      - End of Migration from host 0 to host 1 (duration:35.0841702956701)
 > [host0:cloud/migration/Test:(1) 35.084170] [jmsg/INFO]      - Launch migration from host 1 to host 0
 > [host0:cloud/migration/Test:(1) 35.084170] [jmsg/INFO] Start migration of VM vm0 to host0
-> [host0:cloud/migration/Test:(1) 35.084170] [jmsg/INFO]     currentLoad:90/ramSize:2048/dpIntensity:70/remaining:6.220564352570236E11
-> [host1:__pr_mig_tx:vm0(host1-host0):(28) 35.084170] [msg_vm/INFO] mig-stage1: remaining_size 2147483648.000000
-> [host1:__pr_mig_tx:vm0(host1-host0):(28) 53.682237] [msg_vm/INFO] actual bandwidth 110.118973 (MB/s), threshold 3464043.375348
-> [host1:__pr_mig_tx:vm0(host1-host0):(28) 53.682237] [msg_vm/INFO] mig-stage 2:0 updated_size 917349915.329448 computed_during_stage1 90330809532.280823 dp_rate 0.010155 dp_cap 1932735283.200000
-> [host1:__pr_mig_tx:vm0(host1-host0):(28) 53.682237] [msg_vm/INFO] mig-stage2.0: remaining_size 917349915.329448 (> threshold 3464043.375348)
-> [host1:__pr_mig_tx:vm0(host1-host0):(28) 61.627599] [msg_vm/INFO] actual bandwidth 110.108645, threshold 3463718.461873
-> [host1:__pr_mig_tx:vm0(host1-host0):(28) 61.627599] [msg_vm/INFO] mig-stage 2:1 updated_size 391905106.046906 computed_during_stage1 90330809532.280823 dp_rate 0.010155 dp_cap 1932735283.200000
-> [host1:__pr_mig_tx:vm0(host1-host0):(28) 61.627599] [msg_vm/INFO] mig-stage2.1: remaining_size 391905106.046906 (> threshold 3463718.461873)
-> [host1:__pr_mig_tx:vm0(host1-host0):(28) 65.022717] [msg_vm/INFO] actual bandwidth 110.084477, threshold 3462958.209981
-> [host1:__pr_mig_tx:vm0(host1-host0):(28) 65.022717] [msg_vm/INFO] mig-stage 2:2 updated_size 167464266.773127 computed_during_stage1 90330809532.280823 dp_rate 0.010155 dp_cap 1932735283.200000
-> [host1:__pr_mig_tx:vm0(host1-host0):(28) 65.022717] [msg_vm/INFO] mig-stage2.2: remaining_size 167464266.773127 (> threshold 3462958.209981)
-> [host1:__pr_mig_tx:vm0(host1-host0):(28) 66.474224] [msg_vm/INFO] actual bandwidth 110.027970, threshold 3461180.656939
-> [host1:__pr_mig_tx:vm0(host1-host0):(28) 66.474224] [msg_vm/INFO] mig-stage 2:3 updated_size 71595605.337913 computed_during_stage1 90330809532.280823 dp_rate 0.010155 dp_cap 1932735283.200000
-> [host1:__pr_mig_tx:vm0(host1-host0):(28) 66.474224] [msg_vm/INFO] mig-stage2.3: remaining_size 71595605.337913 (> threshold 3461180.656939)
-> [host1:__pr_mig_tx:vm0(host1-host0):(28) 67.095529] [msg_vm/INFO] actual bandwidth 109.896074, threshold 3457031.577357
-> [host1:__pr_mig_tx:vm0(host1-host0):(28) 67.095529] [msg_vm/INFO] mig-stage 2:4 updated_size 30645837.890704 computed_during_stage1 90330809532.280823 dp_rate 0.010155 dp_cap 1932735283.200000
-> [host1:__pr_mig_tx:vm0(host1-host0):(28) 67.095529] [msg_vm/INFO] mig-stage2.4: remaining_size 30645837.890704 (> threshold 3457031.577357)
-> [host1:__pr_mig_tx:vm0(host1-host0):(28) 67.362216] [msg_vm/INFO] actual bandwidth 109.589442, threshold 3447385.759089
-> [host1:__pr_mig_tx:vm0(host1-host0):(28) 67.362216] [msg_vm/INFO] mig-stage 2:5 updated_size 13154371.345477 computed_during_stage1 90330809532.280823 dp_rate 0.010155 dp_cap 1932735283.200000
-> [host1:__pr_mig_tx:vm0(host1-host0):(28) 67.362216] [msg_vm/INFO] mig-stage2.5: remaining_size 13154371.345477 (> threshold 3447385.759089)
-> [host1:__pr_mig_tx:vm0(host1-host0):(28) 67.477431] [msg_vm/INFO] actual bandwidth 108.883138, threshold 3425167.371629
-> [host1:__pr_mig_tx:vm0(host1-host0):(28) 67.477431] [msg_vm/INFO] mig-stage 2:6 updated_size 5682988.543846 computed_during_stage1 90330809532.280823 dp_rate 0.010155 dp_cap 1932735283.200000
-> [host1:__pr_mig_tx:vm0(host1-host0):(28) 67.477431] [msg_vm/INFO] mig-stage2.6: remaining_size 5682988.543846 (> threshold 3425167.371629)
-> [host1:__pr_mig_tx:vm0(host1-host0):(28) 67.527946] [msg_vm/INFO] actual bandwidth 107.290377, threshold 3375063.431326
-> [host1:__pr_mig_tx:vm0(host1-host0):(28) 67.527946] [msg_vm/INFO] mig-stage 2:7 updated_size 2491628.685811 computed_during_stage1 90330809532.280823 dp_rate 0.010155 dp_cap 1932735283.200000
-> [host1:__pr_mig_tx:vm0(host1-host0):(28) 67.527946] [msg_vm/INFO] mig-stage2.7: remaining_size 2491628.685811 (< threshold 3375063.431326)
-> [host1:__pr_mig_tx:vm0(host1-host0):(28) 67.527946] [msg_vm/INFO] mig-stage3: remaining_size 2491628.685811
+> [host0:cloud/migration/Test:(1) 35.084170] [jmsg/INFO]     currentLoad:90/ramSize:2048/dpIntensity:70/remaining:6.22E+11
 > [67.550824] [surf_vm_workstation/INFO] migrate VM(vm0): set bound (7285500000.000000) at host0
-> [host0:__pr_mig_rx:vm0(host1-host0):(27) 67.550824] [msg_vm/INFO] set affinity(0x0000@host0) for vm0
 > [host0:cloud/migration/Test:(1) 67.551019] [jmsg/INFO] End of migration of VM vm0 to node host0
 > [host0:cloud/migration/Test:(1) 67.551019] [jmsg/INFO]      - End of Migration from host 1 to host 0 (duration:32.46684874546391)
 > [host0:cloud/migration/Test:(1) 67.551019] [jmsg/INFO] 
@@ -94,71 +37,14 @@ $ java -classpath ${classpath:=.} cloud/migration/Main ${srcdir:=.}/../platforms
 > Round trip of VM1 (load 80%)
 > [host0:cloud/migration/Test:(1) 67.551019] [jmsg/INFO]      - Launch migration from host 0 to host 1
 > [host0:cloud/migration/Test:(1) 67.551019] [jmsg/INFO] Start migration of VM vm0 to host1
-> [host0:cloud/migration/Test:(1) 67.551019] [jmsg/INFO]     currentLoad:80/ramSize:2048/dpIntensity:70/remaining:4.6436485611595026E11
-> [host0:__pr_mig_tx:vm0(host0-host1):(39) 67.551019] [msg_vm/INFO] mig-stage1: remaining_size 2147483648.000000
-> [host0:__pr_mig_tx:vm0(host0-host1):(39) 86.149086] [msg_vm/INFO] actual bandwidth 110.118973 (MB/s), threshold 3464043.375348
-> [host0:__pr_mig_tx:vm0(host0-host1):(39) 86.149086] [msg_vm/INFO] mig-stage 2:0 updated_size 1009084906.862392 computed_during_stage1 99363890485.508911 dp_rate 0.010155 dp_cap 1932735283.200000
-> [host0:__pr_mig_tx:vm0(host0-host1):(39) 86.149086] [msg_vm/INFO] mig-stage2.0: remaining_size 1009084906.862392 (> threshold 3464043.375348)
-> [host0:__pr_mig_tx:vm0(host0-host1):(39) 94.888854] [msg_vm/INFO] actual bandwidth 110.110284, threshold 3463770.024427
-> [host0:__pr_mig_tx:vm0(host0-host1):(39) 94.888854] [msg_vm/INFO] mig-stage 2:1 updated_size 474198119.178924 computed_during_stage1 99363890485.508911 dp_rate 0.010155 dp_cap 1932735283.200000
-> [host0:__pr_mig_tx:vm0(host0-host1):(39) 94.888854] [msg_vm/INFO] mig-stage2.1: remaining_size 474198119.178924 (> threshold 3463770.024427)
-> [host0:__pr_mig_tx:vm0(host0-host1):(39) 98.996613] [msg_vm/INFO] actual bandwidth 110.091798, threshold 3463188.514958
-> [host0:__pr_mig_tx:vm0(host0-host1):(39) 98.996613] [msg_vm/INFO] mig-stage 2:2 updated_size 222876798.522756 computed_during_stage1 99363890485.508911 dp_rate 0.010155 dp_cap 1932735283.200000
-> [host0:__pr_mig_tx:vm0(host0-host1):(39) 98.996613] [msg_vm/INFO] mig-stage2.2: remaining_size 222876798.522756 (> threshold 3463188.514958)
-> [host0:__pr_mig_tx:vm0(host0-host1):(39) 100.927981] [msg_vm/INFO] actual bandwidth 110.052494, threshold 3461952.124955
-> [host0:__pr_mig_tx:vm0(host0-host1):(39) 100.927981] [msg_vm/INFO] mig-stage 2:3 updated_size 104791237.544460 computed_during_stage1 99363890485.508911 dp_rate 0.010155 dp_cap 1932735283.200000
-> [host0:__pr_mig_tx:vm0(host0-host1):(39) 100.927981] [msg_vm/INFO] mig-stage2.3: remaining_size 104791237.544460 (> threshold 3461952.124955)
-> [host0:__pr_mig_tx:vm0(host0-host1):(39) 101.836752] [msg_vm/INFO] actual bandwidth 109.969020, threshold 3459326.250492
-> [host0:__pr_mig_tx:vm0(host0-host1):(39) 101.836752] [msg_vm/INFO] mig-stage 2:4 updated_size 49307685.020392 computed_during_stage1 99363890485.508911 dp_rate 0.010155 dp_cap 1932735283.200000
-> [host0:__pr_mig_tx:vm0(host0-host1):(39) 101.836752] [msg_vm/INFO] mig-stage2.4: remaining_size 49307685.020392 (> threshold 3459326.250492)
-> [host0:__pr_mig_tx:vm0(host0-host1):(39) 102.265048] [msg_vm/INFO] actual bandwidth 109.792154, threshold 3453762.521054
-> [host0:__pr_mig_tx:vm0(host0-host1):(39) 102.265048] [msg_vm/INFO] mig-stage 2:5 updated_size 23238243.968121 computed_during_stage1 99363890485.508911 dp_rate 0.010155 dp_cap 1932735283.200000
-> [host0:__pr_mig_tx:vm0(host0-host1):(39) 102.265048] [msg_vm/INFO] mig-stage2.5: remaining_size 23238243.968121 (> threshold 3453762.521054)
-> [host0:__pr_mig_tx:vm0(host0-host1):(39) 102.467587] [msg_vm/INFO] actual bandwidth 109.419289, threshold 3442033.220071
-> [host0:__pr_mig_tx:vm0(host0-host1):(39) 102.467587] [msg_vm/INFO] mig-stage 2:6 updated_size 10989284.465950 computed_during_stage1 99363890485.508911 dp_rate 0.010155 dp_cap 1932735283.200000
-> [host0:__pr_mig_tx:vm0(host0-host1):(39) 102.467587] [msg_vm/INFO] mig-stage2.6: remaining_size 10989284.465950 (> threshold 3442033.220071)
-> [host0:__pr_mig_tx:vm0(host0-host1):(39) 102.564053] [msg_vm/INFO] actual bandwidth 108.641444, threshold 3417564.332268
-> [host0:__pr_mig_tx:vm0(host0-host1):(39) 102.564053] [msg_vm/INFO] mig-stage 2:7 updated_size 5234001.988682 computed_during_stage1 99363890485.508911 dp_rate 0.010155 dp_cap 1932735283.200000
-> [host0:__pr_mig_tx:vm0(host0-host1):(39) 102.564053] [msg_vm/INFO] mig-stage2.7: remaining_size 5234001.988682 (> threshold 3417564.332268)
-> [host0:__pr_mig_tx:vm0(host0-host1):(39) 102.610680] [msg_vm/INFO] actual bandwidth 107.053869, threshold 3367623.544281
-> [host0:__pr_mig_tx:vm0(host0-host1):(39) 102.610680] [msg_vm/INFO] mig-stage 2:8 updated_size 2529831.013694 computed_during_stage1 99363890485.508911 dp_rate 0.010155 dp_cap 1932735283.200000
-> [host0:__pr_mig_tx:vm0(host0-host1):(39) 102.610680] [msg_vm/INFO] mig-stage2.8: remaining_size 2529831.013694 (< threshold 3367623.544281)
-> [host0:__pr_mig_tx:vm0(host0-host1):(39) 102.610680] [msg_vm/INFO] mig-stage3: remaining_size 2529831.013694
+> [host0:cloud/migration/Test:(1) 67.551019] [jmsg/INFO]     currentLoad:80/ramSize:2048/dpIntensity:70/remaining:4.64E+11
 > [102.633888] [surf_vm_workstation/INFO] migrate VM(vm0): set bound (6476000000.000000) at host1
-> [host1:__pr_mig_rx:vm0(host0-host1):(38) 102.633888] [msg_vm/INFO] set affinity(0x0000@host1) for vm0
 > [host0:cloud/migration/Test:(1) 102.635189] [jmsg/INFO] End of migration of VM vm0 to node host1
 > [host0:cloud/migration/Test:(1) 102.635189] [jmsg/INFO]      - End of Migration from host 0 to host 1 (duration:35.08417029567006)
 > [host0:cloud/migration/Test:(1) 102.635189] [jmsg/INFO]      - Launch migration from host 1 to host 0
 > [host0:cloud/migration/Test:(1) 102.635189] [jmsg/INFO] Start migration of VM vm0 to host0
-> [host0:cloud/migration/Test:(1) 102.635189] [jmsg/INFO]     currentLoad:80/ramSize:2048/dpIntensity:70/remaining:2.7692129137297363E11
-> [host1:__pr_mig_tx:vm0(host1-host0):(51) 102.635189] [msg_vm/INFO] mig-stage1: remaining_size 2147483648.000000
-> [host1:__pr_mig_tx:vm0(host1-host0):(51) 121.233256] [msg_vm/INFO] actual bandwidth 110.118973 (MB/s), threshold 3464043.375348
-> [host1:__pr_mig_tx:vm0(host1-host0):(51) 121.233256] [msg_vm/INFO] mig-stage 2:0 updated_size 917349915.329448 computed_during_stage1 90330809532.280823 dp_rate 0.010155 dp_cap 1932735283.200000
-> [host1:__pr_mig_tx:vm0(host1-host0):(51) 121.233256] [msg_vm/INFO] mig-stage2.0: remaining_size 917349915.329448 (> threshold 3464043.375348)
-> [host1:__pr_mig_tx:vm0(host1-host0):(51) 129.178618] [msg_vm/INFO] actual bandwidth 110.108645, threshold 3463718.461873
-> [host1:__pr_mig_tx:vm0(host1-host0):(51) 129.178618] [msg_vm/INFO] mig-stage 2:1 updated_size 391905106.046906 computed_during_stage1 90330809532.280823 dp_rate 0.010155 dp_cap 1932735283.200000
-> [host1:__pr_mig_tx:vm0(host1-host0):(51) 129.178618] [msg_vm/INFO] mig-stage2.1: remaining_size 391905106.046906 (> threshold 3463718.461873)
-> [host1:__pr_mig_tx:vm0(host1-host0):(51) 132.573736] [msg_vm/INFO] actual bandwidth 110.084477, threshold 3462958.209981
-> [host1:__pr_mig_tx:vm0(host1-host0):(51) 132.573736] [msg_vm/INFO] mig-stage 2:2 updated_size 167464266.773128 computed_during_stage1 90330809532.280823 dp_rate 0.010155 dp_cap 1932735283.200000
-> [host1:__pr_mig_tx:vm0(host1-host0):(51) 132.573736] [msg_vm/INFO] mig-stage2.2: remaining_size 167464266.773128 (> threshold 3462958.209981)
-> [host1:__pr_mig_tx:vm0(host1-host0):(51) 134.025243] [msg_vm/INFO] actual bandwidth 110.027970, threshold 3461180.656939
-> [host1:__pr_mig_tx:vm0(host1-host0):(51) 134.025243] [msg_vm/INFO] mig-stage 2:3 updated_size 71595605.337913 computed_during_stage1 90330809532.280823 dp_rate 0.010155 dp_cap 1932735283.200000
-> [host1:__pr_mig_tx:vm0(host1-host0):(51) 134.025243] [msg_vm/INFO] mig-stage2.3: remaining_size 71595605.337913 (> threshold 3461180.656939)
-> [host1:__pr_mig_tx:vm0(host1-host0):(51) 134.646548] [msg_vm/INFO] actual bandwidth 109.896074, threshold 3457031.577357
-> [host1:__pr_mig_tx:vm0(host1-host0):(51) 134.646548] [msg_vm/INFO] mig-stage 2:4 updated_size 30645837.890704 computed_during_stage1 90330809532.280823 dp_rate 0.010155 dp_cap 1932735283.200000
-> [host1:__pr_mig_tx:vm0(host1-host0):(51) 134.646548] [msg_vm/INFO] mig-stage2.4: remaining_size 30645837.890704 (> threshold 3457031.577357)
-> [host1:__pr_mig_tx:vm0(host1-host0):(51) 134.913235] [msg_vm/INFO] actual bandwidth 109.589442, threshold 3447385.759089
-> [host1:__pr_mig_tx:vm0(host1-host0):(51) 134.913235] [msg_vm/INFO] mig-stage 2:5 updated_size 13154371.345477 computed_during_stage1 90330809532.280823 dp_rate 0.010155 dp_cap 1932735283.200000
-> [host1:__pr_mig_tx:vm0(host1-host0):(51) 134.913235] [msg_vm/INFO] mig-stage2.5: remaining_size 13154371.345477 (> threshold 3447385.759089)
-> [host1:__pr_mig_tx:vm0(host1-host0):(51) 135.028450] [msg_vm/INFO] actual bandwidth 108.883138, threshold 3425167.371628
-> [host1:__pr_mig_tx:vm0(host1-host0):(51) 135.028450] [msg_vm/INFO] mig-stage 2:6 updated_size 5682988.543847 computed_during_stage1 90330809532.280823 dp_rate 0.010155 dp_cap 1932735283.200000
-> [host1:__pr_mig_tx:vm0(host1-host0):(51) 135.028450] [msg_vm/INFO] mig-stage2.6: remaining_size 5682988.543847 (> threshold 3425167.371628)
-> [host1:__pr_mig_tx:vm0(host1-host0):(51) 135.078965] [msg_vm/INFO] actual bandwidth 107.290377, threshold 3375063.431326
-> [host1:__pr_mig_tx:vm0(host1-host0):(51) 135.078965] [msg_vm/INFO] mig-stage 2:7 updated_size 2491628.685810 computed_during_stage1 90330809532.280823 dp_rate 0.010155 dp_cap 1932735283.200000
-> [host1:__pr_mig_tx:vm0(host1-host0):(51) 135.078965] [msg_vm/INFO] mig-stage2.7: remaining_size 2491628.685810 (< threshold 3375063.431326)
-> [host1:__pr_mig_tx:vm0(host1-host0):(51) 135.078965] [msg_vm/INFO] mig-stage3: remaining_size 2491628.685810
+> [host0:cloud/migration/Test:(1) 102.635189] [jmsg/INFO]     currentLoad:80/ramSize:2048/dpIntensity:70/remaining:2.77E+11
 > [135.101843] [surf_vm_workstation/INFO] migrate VM(vm0): set bound (6476000000.000000) at host0
-> [host0:__pr_mig_rx:vm0(host1-host0):(50) 135.101843] [msg_vm/INFO] set affinity(0x0000@host0) for vm0
 > [host0:cloud/migration/Test:(1) 135.102038] [jmsg/INFO] End of migration of VM vm0 to node host0
 > [host0:cloud/migration/Test:(1) 135.102038] [jmsg/INFO]      - End of Migration from host 1 to host 0 (duration:32.46684874546395)
 > [host0:cloud/migration/Test:(1) 135.102038] [jmsg/INFO] Destroy VMs

@@ -22,9 +22,6 @@ typedef struct ws_params {
   double dp_rate;
   double dp_cap; /* bytes per 1 flop execution */
 
-  double xfer_cpu_overhead;
-  double dpt_cpu_overhead;
-
   /* set migration speed */
   double mig_speed;
 } s_ws_params_t, *ws_params_t;

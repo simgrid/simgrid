@@ -266,7 +266,7 @@ void MSG_task_set_name(msg_task_t task, const char *name)
  */
 msg_error_t MSG_task_destroy(msg_task_t task)
 {
-  smx_action_t action = NULL;
+  smx_synchro_t action = NULL;
   xbt_assert((task != NULL), "Invalid parameter");
 
   if (task->simdata->isused) {
@@ -535,7 +535,7 @@ void MSG_task_set_affinity(msg_task_t task, msg_host_t host, unsigned long mask)
   }
 
   {
-    smx_action_t compute = task->simdata->compute;
+    smx_synchro_t compute = task->simdata->compute;
     msg_host_t host_now = compute->execution.host;  // simix_private.h is necessary
     if (host_now != host) {
       /* task is not yet executed on this host */

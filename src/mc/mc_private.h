@@ -95,6 +95,13 @@ typedef struct s_mc_snapshot_ignored_data {
   void* data;
 } s_mc_snapshot_ignored_data_t, *mc_snapshot_ignored_data_t;
 
+typedef struct s_fd_infos{
+  char *filename;
+  int number;
+  off_t current_position;
+  int flags;
+}s_fd_infos_t, *fd_infos_t;
+
 typedef struct s_mc_snapshot{
   size_t heap_bytes_used;
   mc_mem_region_t regions[NB_REGIONS];
@@ -106,7 +113,10 @@ typedef struct s_mc_snapshot{
   xbt_dynar_t to_ignore;
   uint64_t hash;
   xbt_dynar_t ignored_data;
+  int total_fd;
+  fd_infos_t *current_fd;
 } s_mc_snapshot_t;
+
 
 /** @brief Process index used when no process is available
  *
@@ -247,9 +257,23 @@ char* MC_request_to_string(smx_simcall_t req, int value);
 unsigned int MC_request_testany_fail(smx_simcall_t req);
 /*int MC_waitany_is_enabled_by_comm(smx_req_t req, unsigned int comm);*/
 int MC_request_is_visible(smx_simcall_t req);
+
+/** Can this requests can be executed.
+ *
+ *  Most requests are always enabled but WAIT and WAITANY
+ *  are not always enabled: a WAIT where the communication does not
+ *  have both a source and a destination yet is not enabled
+ *  (unless timeout is enabled in the wait and enabeld in SimGridMC).
+ */
 int MC_request_is_enabled(smx_simcall_t req);
 int MC_request_is_enabled_by_idx(smx_simcall_t req, unsigned int idx);
+
+/** Is the process ready to execute its simcall?
+ *
+ *  This is true if the request associated with the process is ready.
+ */
 int MC_process_is_enabled(smx_process_t process);
+
 char *MC_request_get_dot_output(smx_simcall_t req, int value);
 
 
@@ -276,7 +300,7 @@ typedef struct mc_procstate{
 typedef struct mc_state {
   unsigned long max_pid;            /* Maximum pid at state's creation time */
   mc_procstate_t proc_status;       /* State's exploration status by process */
-  s_smx_action_t internal_comm;     /* To be referenced by the internal_req */
+  s_smx_synchro_t internal_comm;     /* To be referenced by the internal_req */
   s_smx_simcall_t internal_req;         /* Internal translation of request */
   s_smx_simcall_t executed_req;         /* The executed request of the state */
   int req_num;                      /* The request number (in the case of a
@@ -499,7 +523,6 @@ extern mc_object_info_t mc_object_infos[2];
 extern size_t mc_object_infos_size;
 
 void MC_find_object_address(memory_map_t maps, mc_object_info_t result);
-void MC_post_process_types(mc_object_info_t info);
 void MC_post_process_object_info(mc_object_info_t info);
 
 // ***** Expressions
@@ -518,8 +541,49 @@ typedef struct s_mc_location_list {
   mc_expression_t locations;
 } s_mc_location_list_t, *mc_location_list_t;
 
-uintptr_t mc_dwarf_resolve_location(mc_expression_t expression, mc_object_info_t object_info, unw_cursor_t* c, void* frame_pointer_address, mc_snapshot_t snapshot, int process_index);
-uintptr_t mc_dwarf_resolve_locations(mc_location_list_t locations, mc_object_info_t object_info, unw_cursor_t* c, void* frame_pointer_address, mc_snapshot_t snapshot, int process_index);
+/** A location is either a location in memory of a register location
+ *
+ *  Usage:
+ *
+ *    * mc_dwarf_resolve_locations or mc_dwarf_resolve_location is used
+ *      to find the location of a given location expression or location list;
+ *
+ *    * mc_get_location_type MUST be used to find the location type;
+ *
+ *    * for MC_LOCATION_TYPE_ADDRESS, memory_address is the resulting address
+ *
+ *    * for MC_LOCATION_TYPE_REGISTER, unw_get_reg(l.cursor, l.register_id, value)
+ *        and unw_get_reg(l.cursor, l.register_id, value) can be used to read/write
+ *        the value.
+ *  </ul>
+ */
+typedef struct s_mc_location {
+  void* memory_location;
+  unw_cursor_t* cursor;
+  int register_id;
+} s_mc_location_t, *mc_location_t;
+
+/** Type of a given location
+ *
+ *  Use `mc_get_location_type(location)` to find the type.
+ * */
+typedef enum mc_location_type {
+  MC_LOCATION_TYPE_ADDRESS,
+  MC_LOCATION_TYPE_REGISTER
+} mc_location_type;
+
+/** Find the type of a location */
+static inline __attribute__ ((always_inline))
+enum mc_location_type mc_get_location_type(mc_location_t location) {
+  if (location->cursor) {
+    return MC_LOCATION_TYPE_REGISTER;
+  } else {
+    return MC_LOCATION_TYPE_ADDRESS;
+  }
+}
+
+void mc_dwarf_resolve_location(mc_location_t location, mc_expression_t expression, mc_object_info_t object_info, unw_cursor_t* c, void* frame_pointer_address, mc_snapshot_t snapshot, int process_index);
+void mc_dwarf_resolve_locations(mc_location_t location, mc_location_list_t locations, mc_object_info_t object_info, unw_cursor_t* c, void* frame_pointer_address, mc_snapshot_t snapshot, int process_index);
 
 void mc_dwarf_expression_clear(mc_expression_t expression);
 void mc_dwarf_expression_init(mc_expression_t expression, size_t len, Dwarf_Op* ops);
@@ -654,7 +718,7 @@ typedef struct s_local_variable{
 
 typedef struct s_mc_comm_pattern{
   int num;
-  smx_action_t comm;
+  smx_synchro_t comm;
   e_smx_comm_type_t type;
   unsigned long src_proc;
   unsigned long dst_proc;
@@ -669,8 +733,33 @@ extern xbt_dynar_t initial_communications_pattern;
 extern xbt_dynar_t communications_pattern;
 extern xbt_dynar_t incomplete_communications_pattern;
 
-void get_comm_pattern(xbt_dynar_t communications_pattern, smx_simcall_t request, int call);
-void complete_comm_pattern(xbt_dynar_t list, smx_action_t comm);
+// Can we use the SIMIX syscall for this?
+typedef enum mc_call_type {
+  MC_CALL_TYPE_NONE,
+  MC_CALL_TYPE_SEND,
+  MC_CALL_TYPE_RECV,
+  MC_CALL_TYPE_WAIT,
+  MC_CALL_TYPE_WAITANY,
+} mc_call_type;
+
+static inline mc_call_type mc_get_call_type(smx_simcall_t req) {
+  switch(req->call) {
+  case SIMCALL_COMM_ISEND:
+    return MC_CALL_TYPE_SEND;
+  case SIMCALL_COMM_IRECV:
+    return MC_CALL_TYPE_RECV;
+  case SIMCALL_COMM_WAIT:
+    return MC_CALL_TYPE_WAIT;
+  case SIMCALL_COMM_WAITANY:
+    return MC_CALL_TYPE_WAITANY;
+  default:
+    return MC_CALL_TYPE_NONE;
+  }
+}
+
+void get_comm_pattern(xbt_dynar_t communications_pattern, smx_simcall_t request, mc_call_type call_type);
+void mc_update_comm_pattern(mc_call_type call_type, smx_simcall_t request, int value, xbt_dynar_t current_pattern);
+void complete_comm_pattern(xbt_dynar_t list, smx_synchro_t comm);
 void MC_pre_modelcheck_comm_determinism(void);
 void MC_modelcheck_comm_determinism(void);
 
@@ -812,6 +901,22 @@ void* mc_snapshot_read_pointer_region(void* addr, mc_mem_region_t region)
   void* res;
   return *(void**) mc_snapshot_read_region(addr, region, &res, sizeof(void*));
 }
+
+#define MC_LOG_REQUEST(log, req, value) \
+  if (XBT_LOG_ISENABLED(log, xbt_log_priority_debug)) { \
+    char* req_str = MC_request_to_string(req, value); \
+    XBT_DEBUG("Execute: %s", req_str); \
+    xbt_free(req_str); \
+  }
+
+/** @brief Dump the stacks of the application processes
+ *
+ *   This functions is currently not used but it is quite convenient
+ *   to call from the debugger.
+ *
+ *   Does not work when an application thread is running.
+ */
+void MC_dump_stacks(FILE* file);
 
 SG_END_DECL()
 

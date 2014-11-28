@@ -10,6 +10,12 @@
 /* LTL property checked : G(r->F(cs)); (r=request of CS, cs=CS ok)            */
 /******************************************************************************/
 
+#ifdef GARBAGE_STACK
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <unistd.h>
+#endif
+
 #include "msg/msg.h"
 #include "mc/mc.h"
 #include "xbt/automaton.h"
@@ -28,6 +34,16 @@ int predCS(){
   return cs;
 }
 
+#ifdef GARBAGE_STACK
+/** Do not use a clean stack */
+static void garbage_stack(void) {
+  const size_t size = 256;
+  int fd = open("/dev/urandom", O_RDONLY);
+  char foo[size];
+  read(fd, foo, size);
+  close(fd);
+}
+#endif
 
 int coordinator(int argc, char *argv[])
 {
@@ -84,7 +100,7 @@ int client(int argc, char *argv[])
 
   char *my_mailbox = xbt_strdup(argv[1]);
   msg_task_t grant = NULL, release = NULL;
-    
+
   while(1){
     XBT_INFO("Ask the request");
     MSG_task_send(MSG_task_create("request", 0, 1000, my_mailbox), "coordinator");
@@ -130,6 +146,17 @@ int client(int argc, char *argv[])
   return 0;
 }
 
+static int raw_client(int argc, char *argv[])
+{
+#ifdef GARBAGE_STACK
+  // At this point the stack of the callee (client) is probably filled with
+  // zeros and unitialized variables will contain 0. This call will place
+  // random byes in the stack of the callee:
+  garbage_stack();
+#endif
+  return client(argc, argv);
+}
+
 int main(int argc, char *argv[])
 {
 
@@ -146,7 +173,7 @@ int main(int argc, char *argv[])
   
   MSG_create_environment(platform_file);
   MSG_function_register("coordinator", coordinator);
-  MSG_function_register("client", client);
+  MSG_function_register("client", raw_client);
   MSG_launch_application(application_file);
   MSG_main();
 

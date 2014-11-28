@@ -27,6 +27,8 @@ option(enable_maintainer_mode "Whether flex and flexml files should be rebuilt."
 option(enable_tracing "Tracing simulations for visualization." on)
 option(enable_latency_bound_tracking "" off)
 option(enable_coverage "Enable coverage." off)
+option(enable_ust "Enable userspace statuic tracepoint (lttng-ust)." off)
+option(enable_sdt "Enable statically defined tracepoint (strace/systemtap)." off)
 mark_as_advanced(enable_coverage)
 option(enable_memcheck "Enable memcheck." off)
 option(enable_memcheck_xml "Enable memcheck with xml output." off)

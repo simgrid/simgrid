@@ -12,6 +12,10 @@ if(enable_lib_static)
   add_library(simgrid_static STATIC ${simgrid_sources})
 endif()
 
+if(enable_ust)
+  ADD_DEPENDENCIES(simgrid simgrid_ust)
+endif()
+
 if(enable_java)
   include(${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/MakeJava.cmake)
 endif()
@@ -123,6 +127,12 @@ endif()
 if(HAVE_BACKTRACE_IN_LIBEXECINFO)
   SET(SIMGRID_DEP "${SIMGRID_DEP} -lexecinfo")
 endif(HAVE_BACKTRACE_IN_LIBEXECINFO)
+
+# Dependencies from USR
+###################################
+if(enable_ust)
+  set(SIMGRID_DEP "${SIMGRID_DEP} -llttng-ust")
+endif()
 
 # Compute the dependencies of SMPI
 ##################################
