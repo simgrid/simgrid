@@ -781,6 +781,22 @@ void sg_config_init(int *argc, char **argv)
     xbt_cfg_setdefault_string(_sg_cfg_set, "ns3/TcpModel", "default");
 #endif
 
+    //For smpi/bw_factor and smpi/lat_factor
+    //Default value have to be "threshold0:value0;threshold1:value1;...;thresholdN:valueN"
+    //test is if( size >= thresholdN ) return valueN;
+    //Values can be modified with command line --cfg=smpi/bw_factor:"threshold0:value0;threshold1:value1;...;thresholdN:valueN"
+    //  or with tag config put line <prop id="smpi/bw_factor" value="threshold0:value0;threshold1:value1;...;thresholdN:valueN"></prop>
+    // SMPI model can be used without enable_smpi, so keep this the ifdef.
+    xbt_cfg_register(&_sg_cfg_set, "smpi/bw_factor",
+                     "Bandwidth factors for smpi.",
+                     xbt_cfgelm_string, 1, 1, NULL, NULL);
+    xbt_cfg_setdefault_string(_sg_cfg_set, "smpi/bw_factor", "65472:0.940694;15424:0.697866;9376:0.58729;5776:1.08739;3484:0.77493;1426:0.608902;732:0.341987;257:0.338112;0:0.812084");
+
+    xbt_cfg_register(&_sg_cfg_set, "smpi/lat_factor",
+                     "Latency factors for smpi.",
+                     xbt_cfgelm_string, 1, 1, NULL, NULL);
+    xbt_cfg_setdefault_string(_sg_cfg_set, "smpi/lat_factor", "65472:11.6436;15424:3.48845;9376:2.59299;5776:2.18796;3484:1.88101;1426:1.61075;732:1.9503;257:1.95341;0:2.01467");
+    
 #ifdef HAVE_SMPI
     xbt_cfg_register(&_sg_cfg_set, "smpi/running_power",
                      "Power of the host running the simulation (in flop/s). Used to bench the operations.",
@@ -821,21 +837,6 @@ void sg_config_init(int *argc, char **argv)
                      "Boolean indicating whether we should privatize global variable at runtime.",
                      xbt_cfgelm_boolean, 1, 1, NULL, NULL);
     xbt_cfg_setdefault_boolean(_sg_cfg_set, "smpi/privatize_global_variables", "no");
-
-    //For smpi/bw_factor and smpi/lat_factor
-    //Default value have to be "threshold0:value0;threshold1:value1;...;thresholdN:valueN"
-    //test is if( size >= thresholdN ) return valueN;
-    //Values can be modified with command line --cfg=smpi/bw_factor:"threshold0:value0;threshold1:value1;...;thresholdN:valueN"
-    //  or with tag config put line <prop id="smpi/bw_factor" value="threshold0:value0;threshold1:value1;...;thresholdN:valueN"></prop>
-    xbt_cfg_register(&_sg_cfg_set, "smpi/bw_factor",
-                     "Bandwidth factors for smpi.",
-                     xbt_cfgelm_string, 1, 1, NULL, NULL);
-    xbt_cfg_setdefault_string(_sg_cfg_set, "smpi/bw_factor", "65472:0.940694;15424:0.697866;9376:0.58729;5776:1.08739;3484:0.77493;1426:0.608902;732:0.341987;257:0.338112;0:0.812084");
-
-    xbt_cfg_register(&_sg_cfg_set, "smpi/lat_factor",
-                     "Latency factors for smpi.",
-                     xbt_cfgelm_string, 1, 1, NULL, NULL);
-    xbt_cfg_setdefault_string(_sg_cfg_set, "smpi/lat_factor", "65472:11.6436;15424:3.48845;9376:2.59299;5776:2.18796;3484:1.88101;1426:1.61075;732:1.9503;257:1.95341;0:2.01467");
 
     xbt_cfg_register(&_sg_cfg_set, "smpi/IB_penalty_factors",
                      "Correction factor to communications using Infiniband model with contention (default value based on Stampede cluster profiling)",
