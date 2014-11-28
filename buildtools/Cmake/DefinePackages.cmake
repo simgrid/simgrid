@@ -1176,6 +1176,7 @@ set(CMAKE_SOURCE_FILES
   tools/stack-cleaner/c++
   tools/stack-cleaner/fortran
   tools/stack-cleaner/clean-stack-filter
+  tools/stack-cleaner/compiler-wrapper
   tools/stack-cleaner/README
   )
 

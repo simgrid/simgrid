@@ -75,6 +75,7 @@ set(bin_files
   ${bin_files}
   ${CMAKE_CURRENT_SOURCE_DIR}/promela_bugged1_liveness
   ${CMAKE_CURRENT_SOURCE_DIR}/promela_bugged2_liveness
+  ${CMAKE_CURRENT_SOURCE_DIR}/bugged1_liveness_stack_cleaner
   PARENT_SCOPE
   )
 set(txt_files
