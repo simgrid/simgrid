@@ -306,7 +306,7 @@ void MC_assert(int prop);
 
 If you want to specify liveness properties (beware, that's
 experimental), you have to pass them on the command line, specifying
-the name of the file containing the property, as formated by the
+the name of the file containing the property, as formatted by the
 ltl2ba program.
 
 \verbatim
