@@ -723,7 +723,7 @@ static int migration_tx_fun(int argc, char *argv[])
   double mig_timeout = MIGRATION_TIMEOUT_DO_NOT_HARDCODE_ME;
 
   double remaining_size = ramsize + devsize;
-  double threshold;
+  double threshold = 0.0;
 
   /* check parameters */
   if (ramsize == 0)
@@ -810,7 +810,7 @@ static int migration_tx_fun(int argc, char *argv[])
       break;
 
 
-    sg_size_t sent;
+    sg_size_t sent = 0;
     double clock_prev_send = MSG_get_clock();
     TRY {
       sent = send_migration_data(ms->vm, ms->src_pm, ms->dst_pm, updated_size, ms->mbox, 2, stage2_round, mig_speed, mig_timeout);
