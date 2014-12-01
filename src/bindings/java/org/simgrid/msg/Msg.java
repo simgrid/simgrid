@@ -18,22 +18,21 @@ import java.io.File;
 public final class Msg {
 	/* Statically load the library which contains all native functions used in here */
 	static private boolean isNativeInited = false;
-        public static void nativeInit() {
-                if (isNativeInited)
-                      return;
-                NativeLib.nativeInit("simgrid");
-                NativeLib.nativeInit("simgrid-java");      
+	public static void nativeInit() {
+		if (isNativeInited)
+			return;
+		NativeLib.nativeInit("simgrid");
+		NativeLib.nativeInit("simgrid-java");      
 		isNativeInited = true;
-
 	}
 
 	static {
-                nativeInit();
+		nativeInit();
 	}
-        
-    /** Retrieve the simulation time
-     * @return The simulation time.
-     */
+
+	/** Retrieve the simulation time
+	 * @return The simulation time.
+	 */
 	public final static native double getClock();
 	/**
 	 * Issue a debug logging message.
@@ -47,8 +46,8 @@ public final class Msg {
 	public final static native void verb(String s);
 
 	/** Issue an information logging message
-     * @param s
-     */
+	 * @param s
+	 */
 	public final static native void info(String s);
 	/**
 	 * Issue an warning logging message.
@@ -86,7 +85,7 @@ public final class Msg {
 	 * of a process or the current date is perfectly ok. 
 	 */
 	public final static native void run() ;
-	
+
 	/** This function is useless nowadays, just stop calling it. */
 	@Deprecated
 	public final static void clean(){}
@@ -104,15 +103,15 @@ public final class Msg {
 	/**
 	 * The method to deploy the simulation.
 	 *
-     *
-     * @param deploymentFile
-     */
+	 *
+	 * @param deploymentFile
+	 */
 	public final static native void deployApplication(String deploymentFile);
 
-    /** Example launcher. You can use it or provide your own launcher, as you wish
-     * @param args
-     * @throws MsgException
-     */
+	/** Example launcher. You can use it or provide your own launcher, as you wish
+	 * @param args
+	 * @throws MsgException
+	 */
 	static public void main(String[]args) throws MsgException {
 		/* initialize the MSG simulation. Must be done before anything else (even logging). */
 		Msg.init(args);

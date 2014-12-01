@@ -20,7 +20,7 @@ JAVA=$2
 STRIP=$3
 shift 3
 
-JSG_BUNDLE=$("$JAVA" -classpath "$SIMGRID_JAR" org.simgrid.NativeLib)
+JSG_BUNDLE=$("$JAVA" -classpath "$SIMGRID_JAR" org.simgrid.NativeLib --quiet)
 
 # sanity check
 case "$JSG_BUNDLE" in
