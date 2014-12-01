@@ -181,22 +181,25 @@ void MC_init()
     /* Ignore local variable about time used for tracing */
     MC_ignore_local_variable("start_time", "*");
 
+    /* Main MC state: */
     MC_ignore_global_variable("mc_model_checker");
-
-    // Mot of those things could be moved into mc_model_checker:
-    MC_ignore_global_variable("compared_pointers");
-    MC_ignore_global_variable("mc_comp_times");
-    MC_ignore_global_variable("mc_snapshot_comparison_time");
-    MC_ignore_global_variable("mc_time");
-    MC_ignore_global_variable("smpi_current_rank");
-    MC_ignore_global_variable("counter");       /* Static variable used for tracing */
-    MC_ignore_global_variable("maestro_stack_start");
-    MC_ignore_global_variable("maestro_stack_end");
-    MC_ignore_global_variable("smx_total_comms");
     MC_ignore_global_variable("communications_pattern");
     MC_ignore_global_variable("initial_communications_pattern");
     MC_ignore_global_variable("incomplete_communications_pattern");
+
+    /* MC __thread variables: */
     MC_ignore_global_variable("mc_diff_info");
+    MC_ignore_global_variable("mc_comp_times");
+    MC_ignore_global_variable("mc_snapshot_comparison_time");
+
+    /* This MC state is used in MC replay as well: */
+    MC_ignore_global_variable("mc_time");
+
+    /* Static variable used for tracing */
+    MC_ignore_global_variable("counter");
+
+    /* SIMIX */
+    MC_ignore_global_variable("smx_total_comms");
 
     MC_ignore_heap(mc_time, simix_process_maxpid * sizeof(double));
 
