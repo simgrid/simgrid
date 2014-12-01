@@ -190,10 +190,7 @@ void MC_init()
     MC_ignore_global_variable("communications_pattern");
     MC_ignore_global_variable("initial_communications_pattern");
     MC_ignore_global_variable("incomplete_communications_pattern");
-
-    if (MC_is_active()) {
-      MC_ignore_global_variable("mc_diff_info");
-    }
+    MC_ignore_global_variable("mc_diff_info");
 
     MC_ignore_heap(mc_time, simix_process_maxpid * sizeof(double));
 
