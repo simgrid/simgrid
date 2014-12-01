@@ -136,7 +136,7 @@ void smpi_process_finalize(void)
 {
     // This leads to an explosion of the search graph
     // which cannot be reduced:
-    if(MC_is_active())
+    if(MC_is_active() || MC_record_is_active())
       return;
 
     int index = smpi_process_index();

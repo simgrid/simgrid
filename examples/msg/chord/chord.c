@@ -297,7 +297,7 @@ int node(int argc, char *argv[])
 {
 
   /* Reduce the run size for the MC */
-  if(MC_is_active()){
+  if(MC_is_active() || MC_record_replay_is_active()){
     periodic_stabilize_delay = 8;
     periodic_fix_fingers_delay = 8;
     periodic_check_predecessor_delay = 8;
@@ -371,8 +371,8 @@ int node(int argc, char *argv[])
 
         // no task was received: make some periodic calls
 
-        if(MC_is_active()){
-          if(!MC_visited_reduction() && no_op){
+        if(MC_is_active() || MC_record_replay_is_active()){
+          if(MC_is_active() && !MC_visited_reduction() && no_op){
               MC_cut();
           }
           if(listen == 0 && (sub_protocol = MC_random(0, 4)) > 0){

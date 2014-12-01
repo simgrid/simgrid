@@ -27,12 +27,15 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_global, mc,
                                 "Logging specific to MC (global)");
 
+double *mc_time = NULL;
+
+#ifdef HAVE_MC
 int user_max_depth_reached = 0;
 
 /* MC global data structures */
 mc_state_t mc_current_state = NULL;
 char mc_replay_mode = FALSE;
-double *mc_time = NULL;
+
 __thread mc_comparison_times_t mc_comp_times = NULL;
 __thread double mc_snapshot_comparison_time;
 mc_stats_t mc_stats = NULL;
@@ -762,18 +765,6 @@ void MC_process_clock_add(smx_process_t process, double amount)
   mc_time[process->pid] += amount;
 }
 
-double MC_process_clock_get(smx_process_t process)
-{
-  if (mc_time) {
-    if (process != NULL)
-      return mc_time[process->pid];
-    else
-      return -1;
-  } else {
-    return 0;
-  }
-}
-
 void MC_automaton_load(const char *file)
 {
 
@@ -840,4 +831,17 @@ void MC_dump_stacks(FILE* file)
 
   if (raw_mem_set)
     MC_SET_MC_HEAP;
+}
+#endif
+
+double MC_process_clock_get(smx_process_t process)
+{
+  if (mc_time) {
+    if (process != NULL)
+      return mc_time[process->pid];
+    else
+      return -1;
+  } else {
+    return 0;
+  }
 }
