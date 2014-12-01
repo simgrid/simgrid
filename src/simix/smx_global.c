@@ -281,7 +281,7 @@ void SIMIX_clean(void)
  */
 XBT_INLINE double SIMIX_get_clock(void)
 {
-  if(MC_is_active() || MC_record_replay_is_active()){
+  if(MC_is_active()){
     return MC_process_clock_get(SIMIX_process_self());
   }else{
     return surf_get_clock();
@@ -308,7 +308,6 @@ static int process_syscall_color(void *p)
 void SIMIX_run(void)
 {
   if(MC_record_path) {
-    MC_record_replay_init();
     MC_record_replay_from_string(MC_record_path);
     return;
   }

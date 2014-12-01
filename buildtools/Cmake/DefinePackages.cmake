@@ -589,7 +589,6 @@ set(MC_SRC_BASE
   src/mc/mc_base.h
   src/mc/mc_record.c
   src/mc/mc_config.c
-  src/mc/mc_global.c
   )
 
 set(MC_SRC
@@ -604,6 +603,7 @@ set(MC_SRC
   src/mc/mc_dwarf_attrnames.h
   src/mc/mc_dwarf_expression.c
   src/mc/mc_dwarf_tagnames.h
+  src/mc/mc_global.c
   src/mc/mc_hash.c
   src/mc/mc_ignore.c
   src/mc/mc_interface.h

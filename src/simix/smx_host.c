@@ -377,7 +377,7 @@ smx_synchro_t SIMIX_host_execute(const char *name,
 #endif
 
   /* set surf's action */
-  if (!MC_is_active() && !MC_record_replay_is_active()) {
+  if (!MC_is_active()) {
 
     synchro->execution.surf_exec = surf_workstation_execute(host, computation_amount);
     surf_action_set_data(synchro->execution.surf_exec, synchro);
@@ -441,7 +441,7 @@ smx_synchro_t SIMIX_host_parallel_execute(const char *name,
   }
 
   /* set surf's synchro */
-  if (!MC_is_active() && !MC_record_replay_is_active()) {
+  if (!MC_is_active()) {
     synchro->execution.surf_exec =
       surf_workstation_model_execute_parallel_task((surf_workstation_model_t)surf_workstation_model,
     		  host_nb, workstation_list, computation_amount, communication_amount, rate);
@@ -515,7 +515,7 @@ void simcall_HANDLER_host_execution_wait(smx_simcall_t simcall, smx_synchro_t sy
   simcall->issuer->waiting_synchro = synchro;
 
   /* set surf's synchro */
-  if (MC_is_active() || MC_record_replay_is_active()) {
+  if (MC_is_active()) {
     synchro->state = SIMIX_DONE;
     SIMIX_execution_finish(synchro);
     return;

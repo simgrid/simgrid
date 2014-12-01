@@ -714,7 +714,7 @@ smx_synchro_t SIMIX_process_join(smx_process_t issuer, smx_process_t process, do
 
 void simcall_HANDLER_process_sleep(smx_simcall_t simcall, double duration)
 {
-  if (MC_is_active() || MC_record_replay_is_active()) {
+  if (MC_is_active()) {
     MC_process_clock_add(simcall->issuer, duration);
     simcall_process_sleep__set__result(simcall, SIMIX_DONE);
     SIMIX_simcall_answer(simcall);
