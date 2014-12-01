@@ -195,7 +195,7 @@ void smpi_bench_begin(void)
 {
   smpi_switch_data_segment(smpi_process_index());
 
-  if(MC_is_active())
+  if (MC_is_active() || MC_record_replay_is_active())
     return;
 
   xbt_os_threadtimer_start(smpi_process_timer());
@@ -204,7 +204,7 @@ void smpi_bench_begin(void)
 void smpi_bench_end(void)
 {
 
-  if(MC_is_active())
+  if (MC_is_active() || MC_record_replay_is_active())
     return;
 
   xbt_os_timer_t timer = smpi_process_timer();

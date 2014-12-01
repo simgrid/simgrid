@@ -137,3 +137,8 @@ void MC_record_replay_from_string(const char* path_string)
   MC_record_replay(start, xbt_dynar_length(path));
   xbt_dynar_free(&path);
 }
+
+void MC_record_replay_init()
+{
+  mc_time = xbt_new0(double, simix_process_maxpid);
+}

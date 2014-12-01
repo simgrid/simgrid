@@ -235,7 +235,6 @@ extern xbt_dynar_t mc_checkpoint_ignore;
 
 /********************************* MC Global **********************************/
 
-extern double *mc_time;
 extern FILE *dot_output;
 extern const char* colors[13];
 extern xbt_parmap_t parmap;

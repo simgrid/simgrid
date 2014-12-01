@@ -18,6 +18,8 @@ int MC_request_is_enabled(smx_simcall_t req);
 int MC_request_is_visible(smx_simcall_t req);
 void MC_wait_for_requests(void);
 
+extern double *mc_time;
+
 SG_END_DECL()
 
 #endif
