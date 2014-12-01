@@ -594,11 +594,13 @@ FOREACH (tesh
     no-error3
     no-error
     )
-  ADD_TESH(umpire_${tesh}
-    --setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/isp/umpire
-    --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/isp/umpire
-    --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/isp/umpire
-    ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/isp/umpire/${tesh}.tesh)
+  IF(HAVE_MC)
+    ADD_TESH(mc-umpire-${tesh}
+      --setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/isp/umpire
+      --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/isp/umpire
+      --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/isp/umpire
+      ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/isp/umpire/${tesh}.tesh)
+  ENDIF()
 ENDFOREACH()
 endif()
 
