@@ -586,6 +586,7 @@ set(JEDULE_SRC
 
 set(MC_SRC_BASE
   src/mc/mc_base.c
+  src/mc/mc_base.h
   src/mc/mc_record.c
   src/mc/mc_config.c
   )

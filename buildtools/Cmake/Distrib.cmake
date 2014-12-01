@@ -203,6 +203,7 @@ set(source_to_pack
   ${JSURF_SWIG_SRC_EXTRA}
   ${JSURF_C_SRC}
   ${LUA_SRC}
+  ${MC_SRC_BASE}
   ${MC_SRC}
   ${MSG_SRC}
   ${NS3_SRC}
