@@ -101,7 +101,11 @@ static int prng_random(int min, int max)
   // Use rejection in order to avoid skew
   long x;
   do {
+#ifndef _XBT_WIN32
     x = random();
+#else
+    x = rand();
+#endif
   } while( x >= accept_size );
   return min + (x % output_size);
 }

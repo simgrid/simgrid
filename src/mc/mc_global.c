@@ -4,6 +4,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+
+#ifndef _XBT_WIN32
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/wait.h>
@@ -13,6 +15,7 @@
 
 #define UNW_LOCAL_ONLY
 #include <libunwind.h>
+#endif
 
 #include "simgrid/sg_config.h"
 #include "../surf/surf_private.h"
