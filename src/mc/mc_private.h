@@ -498,10 +498,13 @@ int is_visited_pair(mc_visited_pair_t pair, int pair_num, xbt_automaton_state_t 
 
 /********************************** Variables with DWARF **********************************/
 
-#define MC_OBJECT_INFO_EXECUTABLE 1
+enum mc_object_info_flags {
+  MC_OBJECT_INFO_NONE = 0,
+  MC_OBJECT_INFO_EXECUTABLE = 1
+};
 
 struct s_mc_object_info {
-  size_t flags;
+  enum mc_object_info_flags flags;
   char* file_name;
   char *start_exec, *end_exec; // Executable segment
   char *start_rw, *end_rw; // Read-write segment
