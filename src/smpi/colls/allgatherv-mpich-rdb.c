@@ -21,7 +21,7 @@ int smpi_coll_tuned_allgatherv_mpich_rdb (
   MPI_Status status;
   MPI_Aint  recvtype_extent, recvtype_true_extent, recvtype_true_lb;
   int curr_cnt, dst, total_count;
-  void *tmp_buf;
+  void *tmp_buf, *tmp_buf_rl;
   int mask, dst_tree_root, my_tree_root, position,
     send_offset, recv_offset, last_recv_cnt=0, nprocs_completed, k,
     offset, tmp_mask, tree_root;
@@ -42,10 +42,10 @@ int smpi_coll_tuned_allgatherv_mpich_rdb (
 
   smpi_datatype_extent(recvtype, &recvtype_true_lb, &recvtype_true_extent);
 
-  tmp_buf= (void*)smpi_get_tmp_sendbuffer(total_count*(max(recvtype_true_extent,recvtype_extent)));
+  tmp_buf_rl= (void*)smpi_get_tmp_sendbuffer(total_count*(max(recvtype_true_extent,recvtype_extent)));
 
   /* adjust for potential negative lower bound in datatype */
-  tmp_buf = (void *)((char*)tmp_buf - recvtype_true_lb);
+  tmp_buf = (void *)((char*)tmp_buf_rl - recvtype_true_lb);
 
   /* copy local data into right location in tmp_buf */
   position = 0;
@@ -209,6 +209,6 @@ int smpi_coll_tuned_allgatherv_mpich_rdb (
     position += recvcounts[j];
   }
 
-  smpi_free_tmp_buffer(tmp_buf);
+  smpi_free_tmp_buffer(tmp_buf_rl);
   return MPI_SUCCESS;
 }
