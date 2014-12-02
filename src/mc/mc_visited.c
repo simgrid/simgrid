@@ -4,9 +4,13 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "mc_private.h"
 #include <unistd.h>
 #include <sys/wait.h>
+
+#include "mc_comm_pattern.h"
+#include "mc_safety.h"
+#include "mc_liveness.h"
+#include "mc_private.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_visited, mc,
                                 "Logging specific to state equaity detection mechanisms");

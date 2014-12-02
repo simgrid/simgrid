@@ -10,11 +10,13 @@
 #include <xbt.h>
 #include <simgrid/simix.h>
 
-#include "mc_base.h"
 #include "mc_record.h"
+#include "mc_base.h"
 
 #ifdef HAVE_MC
 #include "mc_private.h"
+#include "mc_model_checker.h"
+#include "mc_state.h"
 #endif
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_record, mc,

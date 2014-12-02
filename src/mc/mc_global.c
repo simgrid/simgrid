@@ -23,6 +23,13 @@
 
 #ifdef HAVE_MC
 #include "../xbt/mmalloc/mmprivate.h"
+#include "mc_object_info.h"
+#include "mc_comm_pattern.h"
+#include "mc_request.h"
+#include "mc_safety.h"
+#include "mc_memory_map.h"
+#include "mc_snapshot.h"
+#include "mc_liveness.h"
 #include "mc_private.h"
 #endif
 #include "mc_record.h"

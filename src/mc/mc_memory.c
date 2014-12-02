@@ -6,9 +6,12 @@
 
 #include <sys/stat.h>
 #include <fcntl.h>
-#include "mc/mc.h"
-#include "mc_private.h"
+
 #include "xbt/log.h"
+
+#include "mc/mc.h"
+#include "mc_object_info.h"
+#include "mc_private.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_memory, mc,
                                 "Logging specific to MC (memory)");

@@ -3,21 +3,22 @@
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
- 
-#include <sys/types.h> // off_t
-#include <stdint.h> // size_t
-
-#include <xbt/asserts.h>
-#include <xbt/dynar.h>
-#include <simgrid_config.h>
-
-#include "mc_forward.h"
-#include "mc_page_store.h"
-#include "mc_model_checker.h"
-#include "mc_mmalloc.h"
 
 #ifndef MC_SNAPSHOT_H
 #define MC_SNAPSHOT_H
+
+#include <sys/types.h> // off_t
+#include <stdint.h> // size_t
+
+#include <simgrid_config.h>
+#include "../xbt/mmalloc/mmprivate.h"
+#include <xbt/asserts.h>
+#include <xbt/dynar.h>
+
+#include "mc_forward.h"
+#include "mc_model_checker.h"
+#include "mc_page_store.h"
+#include "mc_mmalloc.h"
 
 SG_BEGIN_DECL()
 
@@ -150,7 +151,7 @@ typedef struct s_fd_infos{
   int flags;
 }s_fd_infos_t, *fd_infos_t;
 
-typedef struct s_mc_snapshot{
+struct s_mc_snapshot{
   size_t heap_bytes_used;
   mc_mem_region_t regions[NB_REGIONS];
   xbt_dynar_t enabled_processes;
@@ -163,7 +164,7 @@ typedef struct s_mc_snapshot{
   xbt_dynar_t ignored_data;
   int total_fd;
   fd_infos_t *current_fd;
-} s_mc_snapshot_t;
+};
 
 /** @brief Process index used when no process is available
  *

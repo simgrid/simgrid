@@ -9,6 +9,7 @@
 
 #include <simgrid_config.h>
 #include "../simix/smx_private.h"
+#include "mc_snapshot.h"
 
 SG_BEGIN_DECL()
 

@@ -8,6 +8,7 @@
 #define MC_MEMORY_MAP_H
 
 #include <simgrid_config.h>
+#include "mc_forward.h"
 
 SG_BEGIN_DECL()
 

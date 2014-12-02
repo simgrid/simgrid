@@ -9,6 +9,7 @@
 
 #include "simgrid_config.h"
 #include <stdio.h>
+#include <stdint.h>
 #include <stdbool.h>
 #ifndef WIN32
 #include <sys/mman.h>
@@ -32,20 +33,6 @@
 #include "xbt/parmap.h"
 
 #include "mc_forward.h"
-#include "mc_mmu.h"
-#include "mc_page_store.h"
-#include "mc_interface.h"
-#include "mc_mmalloc.h"
-#include "mc_model_checker.h"
-#include "mc_snapshot.h"
-#include "mc_object_info.h"
-#include "mc_location.h"
-#include "mc_state.h"
-#include "mc_comm_pattern.h"
-#include "mc_request.h"
-#include "mc_safety.h"
-#include "mc_liveness.h"
-#include "mc_memory_map.h"
 
 SG_BEGIN_DECL()
 

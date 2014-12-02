@@ -15,6 +15,8 @@
 #include <elfutils/libdw.h>
 
 #include <simgrid_config.h>
+#include "mc_interface.h"
+#include "mc_object_info.h"
 #include "mc_forward.h"
 
 SG_BEGIN_DECL()

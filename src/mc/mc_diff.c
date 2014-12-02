@@ -10,8 +10,10 @@
 #include "xbt/str.h"
 #include "mc/mc.h"
 #include "xbt/mmalloc.h"
+#include "mc_object_info.h"
 #include "mc/datatypes.h"
 #include "mc/mc_private.h"
+#include "mc/mc_snapshot.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_diff, xbt,
                                 "Logging specific to mc_diff in mc");

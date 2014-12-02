@@ -14,6 +14,7 @@
 #include <simgrid/sg_config.h>
 
 #ifdef HAVE_MC
+#include "mc_safety.h"
 #include "mc_private.h"
 #endif
 

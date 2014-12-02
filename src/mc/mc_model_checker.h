@@ -3,11 +3,13 @@
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
+ 
+#ifndef MC_MODEL_CHECKER_H
+#define MC_MODEL_CHECKER_H
 
 #include <simgrid_config.h>
 
-#ifndef MC_MODEL_CHECKER_H
-#define MC_MODEL_CHECKER_H
+#include "mc_forward.h"
 
 SG_BEGIN_DECL()
 
@@ -18,18 +20,17 @@ SG_BEGIN_DECL()
  *  By moving as much state as possible in this structure allocated
  *  on the model-chercker heap, we avoid those issues.
  */
-typedef struct s_mc_model_checker {
+struct s_mc_model_checker {
   // This is the parent snapshot of the current state:
   mc_snapshot_t parent_snapshot;
   mc_pages_store_t pages;
   int fd_clear_refs;
   int fd_pagemap;
   xbt_dynar_t record;
-} s_mc_model_checker_t, *mc_model_checker_t;
+};
 
 mc_model_checker_t MC_model_checker_new(void);
 void MC_model_checker_delete(mc_model_checker_t mc);
-extern mc_model_checker_t mc_model_checker;
 
 SG_END_DECL()
 
