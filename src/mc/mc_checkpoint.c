@@ -39,8 +39,6 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_checkpoint, mc,
                                 "Logging specific to mc_checkpoint");
 
-char *libsimgrid_path;
-
 /************************************  Free functions **************************************/
 /*****************************************************************************************/
 
@@ -176,6 +174,7 @@ static void MC_snapshot_add_region(mc_snapshot_t snapshot, int type,
 
 static void MC_get_memory_regions(mc_snapshot_t snapshot)
 {
+  mc_process_t process = &mc_model_checker->process;
 
   void *start_heap = std_heap->base;
   void *end_heap = std_heap->breakval;
@@ -185,8 +184,8 @@ static void MC_get_memory_regions(mc_snapshot_t snapshot)
   snapshot->privatization_regions = NULL;
 
   MC_snapshot_add_region(snapshot, 1,
-      mc_libsimgrid_info->start_rw, mc_libsimgrid_info->start_rw,
-      mc_libsimgrid_info->end_rw - mc_libsimgrid_info->start_rw);
+      process->libsimgrid_info->start_rw, process->libsimgrid_info->start_rw,
+      process->libsimgrid_info->end_rw - process->libsimgrid_info->start_rw);
 
 #ifdef HAVE_SMPI
   size_t i;
@@ -199,7 +198,7 @@ static void MC_get_memory_regions(mc_snapshot_t snapshot)
       mc_mem_region_t ref_reg =
         mc_model_checker->parent_snapshot ? mc_model_checker->parent_snapshot->privatization_regions[i] : NULL;
       snapshot->privatization_regions[i] =
-        MC_region_new(-1, mc_binary_info->start_rw, smpi_privatisation_regions[i].address, size_data_exe, ref_reg);
+        MC_region_new(-1, process->binary_info->start_rw, smpi_privatisation_regions[i].address, size_data_exe, ref_reg);
     }
     snapshot->privatization_index = smpi_loaded_page;
     snapshot->regions[2] = NULL;
@@ -207,48 +206,11 @@ static void MC_get_memory_regions(mc_snapshot_t snapshot)
 #endif
   {
     MC_snapshot_add_region(snapshot, 2,
-                           mc_binary_info->start_rw, mc_binary_info->start_rw,
-                           mc_binary_info->end_rw - mc_binary_info->start_rw);
+                           process->binary_info->start_rw, process->binary_info->start_rw,
+                           process->binary_info->end_rw - process->binary_info->start_rw);
     snapshot->privatization_regions = NULL;
     snapshot->privatization_index = -1;
   }
-}
-
-/** @brief Finds the range of the different memory segments and binary paths */
-void MC_init_memory_map_info()
-{
-
-  unsigned int i = 0;
-  s_map_region_t reg;
-  memory_map_t maps = MC_get_memory_map();
-
-  maestro_stack_start = NULL;
-  maestro_stack_end = NULL;
-  libsimgrid_path = NULL;
-
-  while (i < maps->mapsize) {
-    reg = maps->regions[i];
-    if (maps->regions[i].pathname == NULL) {
-      // Nothing to do
-    } else if ((reg.prot & PROT_WRITE)
-               && !memcmp(maps->regions[i].pathname, "[stack]", 7)) {
-      maestro_stack_start = reg.start_addr;
-      maestro_stack_end = reg.end_addr;
-    } else if ((reg.prot & PROT_READ) && (reg.prot & PROT_EXEC)
-               && !memcmp(basename(maps->regions[i].pathname), "libsimgrid",
-                          10)) {
-      if (libsimgrid_path == NULL)
-        libsimgrid_path = strdup(maps->regions[i].pathname);
-    }
-    i++;
-  }
-
-  xbt_assert(maestro_stack_start, "maestro_stack_start");
-  xbt_assert(maestro_stack_end, "maestro_stack_end");
-  xbt_assert(libsimgrid_path, "libsimgrid_path&");
-
-  MC_free_memory_map(maps);
-
 }
 
 /** \brief Fills the position of the segments (executable, read-only, read/write).
@@ -324,6 +286,8 @@ static bool mc_valid_variable(dw_variable_t var, dw_frame_t scope,
 static void mc_fill_local_variables_values(mc_stack_frame_t stack_frame,
                                            dw_frame_t scope, int process_index, xbt_dynar_t result)
 {
+  mc_process_t process = &mc_model_checker->process;
+
   void *ip = (void *) stack_frame->ip;
   if (ip < scope->low_pc || ip >= scope->high_pc)
     return;
@@ -336,7 +300,7 @@ static void mc_fill_local_variables_values(mc_stack_frame_t stack_frame,
       continue;
 
     int region_type;
-    if ((long) stack_frame->ip > (long) mc_libsimgrid_info->start_exec)
+    if ((long) stack_frame->ip > (long) process->libsimgrid_info->start_exec)
       region_type = 1;
     else
       region_type = 2;
@@ -407,6 +371,7 @@ static void MC_stack_frame_free_voipd(void *s)
 
 static xbt_dynar_t MC_unwind_stack_frames(void *stack_context)
 {
+  mc_process_t process = &mc_model_checker->process;
   xbt_dynar_t result =
       xbt_dynar_new(sizeof(mc_stack_frame_t), MC_stack_frame_free_voipd);
 
@@ -435,7 +400,7 @@ static xbt_dynar_t MC_unwind_stack_frames(void *stack_context)
 
       // TODO, use real addresses in frame_t instead of fixing it here
 
-      dw_frame_t frame = MC_find_function_by_ip((void *) ip);
+      dw_frame_t frame = MC_process_find_function(process, (void *) ip);
       stack_frame->frame = frame;
 
       if (frame) {

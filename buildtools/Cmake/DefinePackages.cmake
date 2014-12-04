@@ -595,9 +595,12 @@ set(MC_SRC_BASE
 
 set(MC_SRC
   src/mc/mc_forward.h
+  src/mc/mc_process.h
+  src/mc/mc_process.c
   src/mc/mc_mmalloc.h
   src/mc/mc_model_checker.h
   src/mc/mc_object_info.h
+  src/mc/mc_object_info.c
   src/mc/mc_checkpoint.c
   src/mc/mc_snapshot.h
   src/mc/mc_snapshot.c

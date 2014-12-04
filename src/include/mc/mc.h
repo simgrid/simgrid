@@ -54,8 +54,6 @@ extern int _sg_mc_liveness;
 
 extern xbt_dynar_t mc_heap_comparison_ignore;
 extern xbt_dynar_t stacks_areas;
-extern void *maestro_stack_start;
-extern void *maestro_stack_end;
 
 /********************************* Global *************************************/
 void _mc_cfg_cb_reduce(const char *name, int pos);

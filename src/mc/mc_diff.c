@@ -20,7 +20,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_diff, xbt,
 
 xbt_dynar_t mc_heap_comparison_ignore;
 xbt_dynar_t stacks_areas;
-void *maestro_stack_start, *maestro_stack_end;
+
 
 
 /********************************* Backtrace ***********************************/
@@ -769,6 +769,7 @@ static int compare_heap_area_without_type(struct s_mc_diff *state, int process_i
                                           xbt_dynar_t previous, int size,
                                           int check_ignore)
 {
+  mc_process_t process = &mc_model_checker->process;
 
   int i = 0;
   void *addr_pointed1, *addr_pointed2;
@@ -805,10 +806,10 @@ static int compare_heap_area_without_type(struct s_mc_diff *state, int process_i
       addr_pointed1 = mc_snapshot_read_pointer((char *) real_area1 + pointer_align, snapshot1, process_index);
       addr_pointed2 = mc_snapshot_read_pointer((char *) real_area2 + pointer_align, snapshot2, process_index);
 
-      if (addr_pointed1 > maestro_stack_start
-          && addr_pointed1 < maestro_stack_end
-          && addr_pointed2 > maestro_stack_start
-          && addr_pointed2 < maestro_stack_end) {
+      if (addr_pointed1 > process->maestro_stack_start
+          && addr_pointed1 < process->maestro_stack_end
+          && addr_pointed2 > process->maestro_stack_start
+          && addr_pointed2 < process->maestro_stack_end) {
         i = pointer_align + sizeof(void *);
         continue;
       } else if (addr_pointed1 > state->s_heap

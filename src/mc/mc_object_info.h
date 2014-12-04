@@ -1,4 +1,4 @@
-/* Copyright (c) 2007-2014. The SimGrid Team.
+  /* Copyright (c) 2007-2014. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -19,6 +19,7 @@
 
 #include "mc_forward.h"
 #include "mc_location.h"
+#include "mc_process.h"
 
 SG_BEGIN_DECL();
 
@@ -92,7 +93,9 @@ mc_object_info_t MC_new_object_info(void);
 mc_object_info_t MC_find_object_info(memory_map_t maps, char* name, int executable);
 void MC_free_object_info(mc_object_info_t* p);
 
-void MC_post_process_object_info(mc_object_info_t info);
+dw_frame_t MC_file_object_info_find_function(mc_object_info_t info, void *ip);
+
+void MC_post_process_object_info(mc_process_t process, mc_object_info_t info);
 
 void MC_dwarf_get_variables(mc_object_info_t info);
 void MC_dwarf_get_variables_libdw(mc_object_info_t info);
@@ -101,11 +104,6 @@ const char* MC_dwarf_tagname(int tag);
 
 // Not used:
 char* get_type_description(mc_object_info_t info, char *type_name);
-
-extern mc_object_info_t mc_libsimgrid_info;
-extern mc_object_info_t mc_binary_info;
-extern mc_object_info_t mc_object_infos[2];
-extern size_t mc_object_infos_size;
 
 void* mc_member_resolve(const void* base, dw_type_t type, dw_type_t member, mc_snapshot_t snapshot, int process_index);
 

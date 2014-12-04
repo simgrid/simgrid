@@ -4,41 +4,35 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include <stdlib.h>
+
+#include <sys/types.h>
+
 #include "mc_memory_map.h"
 #include "mc_private.h"
-#include <stdlib.h>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_memory_map, mc,
                                 "Logging specific to algorithms for memory_map");
 
-memory_map_t MC_get_memory_map(void)
+memory_map_t MC_get_memory_map(pid_t pid)
 {
-  FILE *fp;                     /* File pointer to process's proc maps file */
-  char *line = NULL;            /* Temporal storage for each line that is readed */
-  ssize_t read;                 /* Number of bytes readed */
-  size_t n = 0;                 /* Amount of bytes to read by xbt_getline */
-  memory_map_t ret = NULL;      /* The memory map to return */
-
-/* The following variables are used during the parsing of the file "maps" */
-  s_map_region_t memreg;          /* temporal map region used for creating the map */
-  char *lfields[6], *tok, *endptr;
-  int i;
-
-/* Open the actual process's proc maps file and create the memory_map_t */
-/* to be returned. */
-  fp = fopen("/proc/self/maps", "r");
-
+  /* Open the actual process's proc maps file and create the memory_map_t */
+  /* to be returned. */
+  char* path = bprintf("/proc/%i/maps", (int) pid);
+  FILE *fp = fopen(path, "r");
+  free(path);
   if(fp == NULL)
     perror("fopen failed");
-
   xbt_assert(fp,
-              "Cannot open /proc/self/maps to investigate the memory map of the process. Please report this bug.");
-
+    "Cannot open /proc/self/maps to investigate the memory map of the process. Please report this bug.");
   setbuf(fp, NULL);
 
-  ret = xbt_new0(s_memory_map_t, 1);
+  memory_map_t ret = xbt_new0(s_memory_map_t, 1);
 
   /* Read one line at the time, parse it and add it to the memory map to be returned */
+  ssize_t read; /* Number of bytes readed */
+  char* line = NULL;
+  size_t n = 0; /* Amount of bytes to read by xbt_getline */
   while ((read = xbt_getline(&line, &n, fp)) != -1) {
 
     //fprintf(stderr,"%s", line);
@@ -48,8 +42,10 @@ memory_map_t MC_get_memory_map(void)
 
     /* Tokenize the line using spaces as delimiters and store each token */
     /* in lfields array. We expect 5 tokens/fields */
+    char* lfields[6];
     lfields[0] = strtok(line, " ");
 
+    int i;
     for (i = 1; i < 6 && lfields[i - 1] != NULL; i++) {
       lfields[i] = strtok(NULL, " ");
     }
@@ -60,10 +56,12 @@ memory_map_t MC_get_memory_map(void)
 
     /* Ok we are good enough to try to get the info we need */
     /* First get the start and the end address of the map   */
-    tok = strtok(lfields[0], "-");
+    char *tok = strtok(lfields[0], "-");
     if (tok == NULL)
       xbt_abort();
 
+    s_map_region_t memreg;          /* temporal map region used for creating the map */
+    char *endptr;
     memreg.start_addr = (void *) strtoul(tok, &endptr, 16);
     /* Make sure that the entire string was an hex number */
     if (*endptr != '\0')
@@ -151,9 +149,7 @@ memory_map_t MC_get_memory_map(void)
   }
 
   free(line);
-
   fclose(fp);
-
   return ret;
 }
 

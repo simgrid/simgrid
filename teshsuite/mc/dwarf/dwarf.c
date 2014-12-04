@@ -17,6 +17,7 @@
 #include "../../src/include/mc/datatypes.h"
 #include "../../src/mc/mc_object_info.h"
 #include "../../src/mc/mc_private.h"
+#include "../../src/mc/mc_model_checker.h"
 
 int test_some_array[4][5][6];
 struct some_struct { int first; int second[4][5]; } test_some_struct;
@@ -97,6 +98,8 @@ static void test_local_variable(mc_object_info_t info, const char* function, con
 }
 
 static dw_variable_t test_global_variable(mc_object_info_t info, const char* name, void* address, long byte_size) {
+  mc_process_t process = &mc_model_checker->process;
+  
   dw_variable_t variable = find_global_variable_by_name(info, name);
   xbt_assert(variable, "Global variable %s was not found", name);
   xbt_assert(!strcmp(variable->name, name), "Name mismatch for %s", name);
@@ -104,7 +107,7 @@ static dw_variable_t test_global_variable(mc_object_info_t info, const char* nam
   xbt_assert(variable->address == address,
       "Address mismatch for %s : %p expected but %p found", name, address, variable->address);
 
-  dw_type_t type = xbt_dict_get_or_null(mc_binary_info->types, variable->type_origin);
+  dw_type_t type = xbt_dict_get_or_null(process->binary_info->types, variable->type_origin);
   xbt_assert(type!=NULL, "Missing type for %s", name);
   xbt_assert(type->byte_size = byte_size, "Byte size mismatch for %s", name);
   return variable;
@@ -125,7 +128,8 @@ int some_local_variable = 0;
 typedef struct foo {int i;} s_foo;
 
 static void test_type_by_name(s_foo my_foo) {
-  assert(xbt_dict_get_or_null(mc_binary_info->full_types_by_name, "struct foo"));
+  mc_process_t process = &mc_model_checker->process;
+  assert(xbt_dict_get_or_null(process->binary_info->full_types_by_name, "struct foo"));
 }
 
 int main(int argc, char** argv) {
@@ -137,17 +141,19 @@ int main(int argc, char** argv) {
 
   dw_variable_t var;
   dw_type_t type;
+  
+  mc_process_t process = &mc_model_checker->process;
 
-  test_global_variable(mc_binary_info, "some_local_variable", &some_local_variable, sizeof(int));
+  test_global_variable(process->binary_info, "some_local_variable", &some_local_variable, sizeof(int));
 
-  var = test_global_variable(mc_binary_info, "test_some_array", &test_some_array, sizeof(test_some_array));
-  type = xbt_dict_get_or_null(mc_binary_info->types, var->type_origin);
+  var = test_global_variable(process->binary_info, "test_some_array", &test_some_array, sizeof(test_some_array));
+  type = xbt_dict_get_or_null(process->binary_info->types, var->type_origin);
   xbt_assert(type->element_count == 6*5*4, "element_count mismatch in test_some_array : %i / %i", type->element_count, 6*5*4);
 
-  var = test_global_variable(mc_binary_info, "test_some_struct", &test_some_struct, sizeof(test_some_struct));
-  type = xbt_dict_get_or_null(mc_binary_info->types, var->type_origin);
-  assert(find_member(mc_binary_info, "first", type)->offset == 0);
-  assert(find_member(mc_binary_info, "second", type)->offset
+  var = test_global_variable(process->binary_info, "test_some_struct", &test_some_struct, sizeof(test_some_struct));
+  type = xbt_dict_get_or_null(process->binary_info->types, var->type_origin);
+  assert(find_member(process->binary_info, "first", type)->offset == 0);
+  assert(find_member(process->binary_info, "second", type)->offset
       == ((const char*)&test_some_struct.second) - (const char*)&test_some_struct);
 
   unw_context_t context;
@@ -155,11 +161,11 @@ int main(int argc, char** argv) {
   unw_getcontext(&context);
   unw_init_local(&cursor, &context);
 
-  test_local_variable(mc_binary_info, "main", "argc", &argc, &cursor);
+  test_local_variable(process->binary_info, "main", "argc", &argc, &cursor);
 
   {
     int lexical_block_variable = 50;
-    test_local_variable(mc_binary_info, "main", "lexical_block_variable", &lexical_block_variable, &cursor);
+    test_local_variable(process->binary_info, "main", "lexical_block_variable", &lexical_block_variable, &cursor);
   }
 
   s_foo my_foo;

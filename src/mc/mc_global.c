@@ -8,11 +8,8 @@
 
 #ifndef _XBT_WIN32
 #include <unistd.h>
-#include <sys/types.h>
 #include <sys/wait.h>
 #include <sys/time.h>
-#include <sys/mman.h>
-#include <libgen.h>
 #endif
 
 #include "simgrid/sg_config.h"
@@ -59,14 +56,6 @@ xbt_fifo_t mc_stack = NULL;
 /* Liveness */
 xbt_automaton_t _mc_property_automaton = NULL;
 
-/* Variables */
-mc_object_info_t mc_libsimgrid_info = NULL;
-mc_object_info_t mc_binary_info = NULL;
-
-mc_object_info_t mc_object_infos[2] = { NULL, NULL };
-
-size_t mc_object_infos_size = 2;
-
 /* Dot output */
 FILE *dot_output = NULL;
 const char *colors[13];
@@ -104,28 +93,6 @@ static void MC_init_dot_output()
 
 }
 
-static void MC_init_debug_info(void)
-{
-  XBT_INFO("Get debug information ...");
-
-  memory_map_t maps = MC_get_memory_map();
-
-  /* Get local variables for state equality detection */
-  mc_binary_info = MC_find_object_info(maps, xbt_binary_name, 1);
-  mc_object_infos[0] = mc_binary_info;
-
-  mc_libsimgrid_info = MC_find_object_info(maps, libsimgrid_path, 0);
-  mc_object_infos[1] = mc_libsimgrid_info;
-
-  // Use information of the other objects:
-  MC_post_process_object_info(mc_binary_info);
-  MC_post_process_object_info(mc_libsimgrid_info);
-
-  MC_free_memory_map(maps);
-  XBT_INFO("Get debug information done !");
-}
-
-
 mc_model_checker_t mc_model_checker = NULL;
 
 mc_model_checker_t MC_model_checker_new()
@@ -134,6 +101,7 @@ mc_model_checker_t MC_model_checker_new()
   mc->pages = mc_pages_store_new();
   mc->fd_clear_refs = -1;
   mc->fd_pagemap = -1;
+  MC_process_init(&mc->process, getpid());
   return mc;
 }
 
@@ -141,6 +109,7 @@ void MC_model_checker_delete(mc_model_checker_t mc) {
   mc_pages_store_delete(mc->pages);
   if(mc->record)
     xbt_dynar_free(&mc->record);
+  MC_process_clear(&mc->process);
 }
 
 void MC_init()
@@ -161,9 +130,6 @@ void MC_init()
   /* Initialize statistics */
   mc_stats = xbt_new0(s_mc_stats_t, 1);
   mc_stats->state_size = 1;
-
-  MC_init_memory_map_info();
-  MC_init_debug_info();         /* FIXME : get debug information only if liveness verification or visited state reduction */
 
   if ((_sg_mc_dot_output_file != NULL) && (_sg_mc_dot_output_file[0] != '\0'))
     MC_init_dot_output();

@@ -10,6 +10,7 @@
 #include <simgrid_config.h>
 
 #include "mc_forward.h"
+#include "mc_process.h"
 
 SG_BEGIN_DECL()
 
@@ -27,6 +28,7 @@ struct s_mc_model_checker {
   int fd_clear_refs;
   int fd_pagemap;
   xbt_dynar_t record;
+  s_mc_process_t process;
 };
 
 mc_model_checker_t MC_model_checker_new(void);

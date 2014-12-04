@@ -357,6 +357,7 @@ static int compare_local_variables(int process_index,
 
 int snapshot_compare(void *state1, void *state2)
 {
+  mc_process_t process = &mc_model_checker->process;
 
   mc_snapshot_t s1, s2;
   int num1, num2;
@@ -546,7 +547,7 @@ int snapshot_compare(void *state1, void *state2)
   };
 #endif
 
-  mc_object_info_t object_infos[] = { NULL, mc_libsimgrid_info, mc_binary_info };
+  mc_object_info_t object_infos[] = { NULL, process->libsimgrid_info, process->binary_info };
 
   int k = 0;
   for (k = 2; k != 0; --k) {
@@ -558,7 +559,7 @@ int snapshot_compare(void *state1, void *state2)
 
     /* Compare global variables */
 #ifdef HAVE_SMPI
-    if (object_infos[k] == mc_binary_info && smpi_privatize_global_variables) {
+    if (object_infos[k] == process->binary_info && smpi_privatize_global_variables) {
       // Compare the global variables separately for each simulates process:
       for (int process_index = 0; process_index < smpi_process_count(); process_index++) {
         is_diff =

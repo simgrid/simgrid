@@ -1172,48 +1172,6 @@ static void MC_make_functions_index(mc_object_info_t info)
   info->functions_index = index;
 }
 
-mc_object_info_t MC_ip_find_object_info(void *ip)
-{
-  size_t i;
-  for (i = 0; i != mc_object_infos_size; ++i) {
-    if (ip >= (void *) mc_object_infos[i]->start_exec
-        && ip <= (void *) mc_object_infos[i]->end_exec) {
-      return mc_object_infos[i];
-    }
-  }
-  return NULL;
-}
-
-static dw_frame_t MC_find_function_by_ip_and_object(void *ip,
-                                                    mc_object_info_t info)
-{
-  xbt_dynar_t dynar = info->functions_index;
-  mc_function_index_item_t base =
-      (mc_function_index_item_t) xbt_dynar_get_ptr(dynar, 0);
-  int i = 0;
-  int j = xbt_dynar_length(dynar) - 1;
-  while (j >= i) {
-    int k = i + ((j - i) / 2);
-    if (ip < base[k].low_pc) {
-      j = k - 1;
-    } else if (ip >= base[k].high_pc) {
-      i = k + 1;
-    } else {
-      return base[k].function;
-    }
-  }
-  return NULL;
-}
-
-dw_frame_t MC_find_function_by_ip(void *ip)
-{
-  mc_object_info_t info = MC_ip_find_object_info(ip);
-  if (info == NULL)
-    return NULL;
-  else
-    return MC_find_function_by_ip_and_object(ip, info);
-}
-
 static void MC_post_process_variables(mc_object_info_t info)
 {
   unsigned cursor = 0;
@@ -1408,7 +1366,7 @@ void MC_dwarf_register_variable(mc_object_info_t info, dw_frame_t frame,
     MC_dwarf_register_non_global_variable(info, frame, variable);
 }
 
-void MC_post_process_object_info(mc_object_info_t info)
+void MC_post_process_object_info(mc_process_t process, mc_object_info_t info)
 {
   xbt_dict_cursor_t cursor = NULL;
   char *key = NULL;
@@ -1417,9 +1375,9 @@ void MC_post_process_object_info(mc_object_info_t info)
 
     // Resolve full_type:
     if (type->name && type->byte_size == 0) {
-      for (size_t i = 0; i != mc_object_infos_size; ++i) {
+      for (size_t i = 0; i != process->object_infos_size; ++i) {
         dw_type_t same_type =
-            xbt_dict_get_or_null(mc_object_infos[i]->full_types_by_name,
+            xbt_dict_get_or_null(process->object_infos[i]->full_types_by_name,
                                  type->name);
         if (same_type && same_type->name && same_type->byte_size) {
           type->full_type = same_type;

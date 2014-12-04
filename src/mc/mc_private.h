@@ -82,8 +82,6 @@ extern mc_stats_t mc_stats;
 
 void MC_print_statistics(mc_stats_t stats);
 
-extern char *libsimgrid_path;
-
 /********************************** Snapshot comparison **********************************/
 
 typedef struct s_mc_comparison_times{
@@ -106,9 +104,6 @@ void print_comparison_times(void);
 #define MC_VERBOSE 1
 
 /********************************** Variables with DWARF **********************************/
-
-dw_frame_t MC_find_function_by_ip(void* ip);
-mc_object_info_t MC_ip_find_object_info(void* ip);
 
 void MC_find_object_address(memory_map_t maps, mc_object_info_t result);
 

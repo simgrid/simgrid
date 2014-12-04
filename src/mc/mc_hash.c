@@ -171,10 +171,10 @@ top:
       mc_address_add(state->handled_addresses, pointed);
 
       // Anything outside the R/W segments and the heap is not hashed:
-      bool valid_pointer = (pointed >= (void *) mc_binary_info->start_rw
-                            && pointed <= (void *) mc_binary_info->end_rw)
-          || (pointed >= (void *) mc_libsimgrid_info->start_rw
-              && pointed <= (void *) mc_libsimgrid_info->end_rw)
+      bool valid_pointer = (pointed >= (void *) binary_info->start_rw
+                            && pointed <= (void *) binary_info->end_rw)
+          || (pointed >= (void *) libsimgrid_info->start_rw
+              && pointed <= (void *) libsimgrid_info->end_rw)
           || (pointed >= std_heap
               && pointed < (void *) ((const char *) std_heap + STD_HEAP_SIZE));
       if (!valid_pointer) {
@@ -220,10 +220,10 @@ static void mc_hash_object_globals(mc_hash_t * hash, mc_hashing_state * state,
     }
 
     const char *address = variable->address;
-    bool valid_pointer = (address >= mc_binary_info->start_rw
-                          && address <= mc_binary_info->end_rw)
-        || (address >= mc_libsimgrid_info->start_rw
-            && address <= mc_libsimgrid_info->end_rw)
+    bool valid_pointer = (address >= binary_info->start_rw
+                          && address <= binary_info->end_rw)
+        || (address >= libsimgrid_info->start_rw
+            && address <= libsimgrid_info->end_rw)
         || (address >= (const char *) std_heap
             && address < (const char *) std_heap + STD_HEAP_SIZE);
     if (!valid_pointer)
@@ -285,12 +285,12 @@ static void mc_hash_stack(mc_hash_t * hash, mc_snapshot_stack_t stack,
     MC_HASH(*hash, stack_frame->ip);
 
     mc_object_info_t info;
-    if (stack_frame->ip >= (unw_word_t) mc_libsimgrid_info->start_exec
-        && stack_frame->ip < (unw_word_t) mc_libsimgrid_info->end_exec)
-      info = mc_libsimgrid_info;
-    else if (stack_frame->ip >= (unw_word_t) mc_binary_info->start_exec
-             && stack_frame->ip < (unw_word_t) mc_binary_info->end_exec)
-      info = mc_binary_info;
+    if (stack_frame->ip >= (unw_word_t) libsimgrid_info->start_exec
+        && stack_frame->ip < (unw_word_t) libsimgrid_info->end_exec)
+      info = libsimgrid_info;
+    else if (stack_frame->ip >= (unw_word_t) binary_info->start_exec
+             && stack_frame->ip < (unw_word_t) binary_info->end_exec)
+      info = binary_info;
     else
       continue;
 
@@ -328,8 +328,8 @@ uint64_t mc_hash_processes_state(int num_state, xbt_dynar_t stacks)
   mc_hash_t hash = MC_HASH_INIT;
 
   MC_HASH(hash, xbt_swag_size(simix_global->process_list));     // process count
-  // mc_hash_object_globals(&hash, &state, mc_binary_info);
-  // mc_hash_object_globals(&hash, &state, mc_libsimgrid_info);
+  // mc_hash_object_globals(&hash, &state, binary_info);
+  // mc_hash_object_globals(&hash, &state, libsimgrid_info);
   // mc_hash_stacks(&hash, &state, stacks);
 
   mc_hash_state_destroy(&state);

@@ -19,6 +19,7 @@ typedef struct s_dw_frame s_dw_frame_t, *dw_frame_t;
 typedef struct s_mc_pages_store s_mc_pages_store_t, *mc_pages_store_t;
 typedef struct s_mc_snapshot s_mc_snapshot_t, *mc_snapshot_t;
 
+typedef struct s_mc_process s_mc_process_t, * mc_process_t;
 typedef struct s_mc_model_checker s_mc_model_checker_t, *mc_model_checker_t;
 extern mc_model_checker_t mc_model_checker;
 
