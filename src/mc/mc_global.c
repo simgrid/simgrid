@@ -13,9 +13,6 @@
 #include <sys/time.h>
 #include <sys/mman.h>
 #include <libgen.h>
-
-#define UNW_LOCAL_ONLY
-#include <libunwind.h>
 #endif
 
 #include "simgrid/sg_config.h"
@@ -26,6 +23,9 @@
 #include "xbt/dict.h"
 
 #ifdef HAVE_MC
+#define UNW_LOCAL_ONLY
+#include <libunwind.h>
+
 #include "../xbt/mmalloc/mmprivate.h"
 #include "mc_object_info.h"
 #include "mc_comm_pattern.h"
