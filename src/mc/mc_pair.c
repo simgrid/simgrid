@@ -4,6 +4,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include <xbt.h>
+#include "mc_liveness.h"
 #include "mc_private.h"
 
 mc_pair_t MC_pair_new()

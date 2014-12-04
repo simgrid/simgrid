@@ -14,7 +14,13 @@
 #include <xbt/log.h>
 #include <xbt/sysdep.h>
 
+#include "mc_object_info.h"
 #include "mc_private.h"
+
+static void MC_dwarf_register_global_variable(mc_object_info_t info, dw_variable_t variable);
+static void MC_register_variable(mc_object_info_t info, dw_frame_t frame, dw_variable_t variable);
+static void MC_dwarf_register_non_global_variable(mc_object_info_t info, dw_frame_t frame, dw_variable_t variable);
+static void MC_dwarf_register_variable(mc_object_info_t info, dw_frame_t frame, dw_variable_t variable);
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_dwarf, mc, "DWARF processing");
 

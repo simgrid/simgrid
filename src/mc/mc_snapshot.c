@@ -9,6 +9,7 @@
 #include "internal_config.h"
 #include "smpi/private.h"
 
+#include "mc_snapshot.h"
 #include "mc_private.h"
 #include "mc_mmu.h"
 #include "mc_page_store.h"
@@ -172,6 +173,8 @@ int mc_snapshot_memcmp(
 #include <sys/mman.h>
 
 #include "mc/mc_private.h"
+#include "mc/mc_snapshot.h"
+#include "mc/mc_mmu.h"
 
 XBT_TEST_SUITE("mc_snapshot", "Snapshots");
 
@@ -281,4 +284,3 @@ static void test_snapshot(bool sparse_checkpoint) {
 }
 
 #endif /* SIMGRID_TEST */
-

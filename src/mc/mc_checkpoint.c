@@ -14,6 +14,7 @@
 #include <dirent.h>
 
 #include "internal_config.h"
+#include "mc_memory_map.h"
 #include "mc_private.h"
 #include "xbt/module.h"
 #include <xbt/mmalloc.h>
@@ -31,6 +32,8 @@
 #include "mc_private.h"
 #include <mc/mc.h>
 
+#include "mc_snapshot.h"
+#include "mc_object_info.h"
 #include "mc_mmu.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_checkpoint, mc,

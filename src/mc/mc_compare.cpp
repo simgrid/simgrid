@@ -9,6 +9,9 @@
 #include <boost/unordered_set.hpp>
 
 #include "internal_config.h"
+#include "mc_object_info.h"
+#include "mc_safety.h"
+#include "mc_liveness.h"
 #include "mc_private.h"
 
 #ifdef HAVE_SMPI

@@ -10,6 +10,8 @@
 #include <dwarf.h>
 #include <elfutils/libdw.h>
 
+#include "mc_object_info.h"
+#include "mc_snapshot.h"
 #include "mc_private.h"
 
 static int mc_dwarf_push_value(mc_expression_state_t state, Dwarf_Off value)
