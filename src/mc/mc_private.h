@@ -127,7 +127,7 @@ typedef struct s_local_variable{
 
 typedef struct s_mc_address_set *mc_address_set_t;
 
-mc_address_set_t mc_address_set_new();
+mc_address_set_t mc_address_set_new(void);
 void mc_address_set_free(mc_address_set_t* p);
 void mc_address_add(mc_address_set_t p, const void* value);
 bool mc_address_test(mc_address_set_t p, const void* value);

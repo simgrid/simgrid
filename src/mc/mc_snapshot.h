@@ -22,7 +22,7 @@
 
 SG_BEGIN_DECL()
 
-void mc_softdirty_reset();
+void mc_softdirty_reset(void);
 
 // ***** Snapshot region
 
