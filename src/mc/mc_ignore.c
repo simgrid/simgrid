@@ -180,26 +180,29 @@ void MC_ignore_global_variable(const char *name)
 
   MC_SET_MC_HEAP;
 
-  xbt_assert(process->libsimgrid_info, "MC subsystem not initialized");
+  xbt_assert(process->object_infos, "MC subsystem not initialized");
 
-  unsigned int cursor = 0;
-  dw_variable_t current_var;
-  int start = 0;
-  int end = xbt_dynar_length(process->libsimgrid_info->global_variables) - 1;
+  size_t n = process->object_infos_size;
+  for (size_t i=0; i!=n; ++i) {
+    mc_object_info_t info = process->object_infos[i];
 
-  while (start <= end) {
-    cursor = (start + end) / 2;
-    current_var =
-        (dw_variable_t) xbt_dynar_get_as(process->libsimgrid_info->global_variables,
-                                         cursor, dw_variable_t);
-    if (strcmp(current_var->name, name) == 0) {
-      xbt_dynar_remove_at(process->libsimgrid_info->global_variables, cursor, NULL);
-      start = 0;
-      end = xbt_dynar_length(process->libsimgrid_info->global_variables) - 1;
-    } else if (strcmp(current_var->name, name) < 0) {
-      start = cursor + 1;
-    } else {
-      end = cursor - 1;
+    // Binary search:
+    int start = 0;
+    int end = xbt_dynar_length(info->global_variables) - 1;
+    while (start <= end) {
+      unsigned int cursor = (start + end) / 2;
+      dw_variable_t current_var =
+          (dw_variable_t) xbt_dynar_get_as(info->global_variables,
+                                           cursor, dw_variable_t);
+      if (strcmp(current_var->name, name) == 0) {
+        xbt_dynar_remove_at(info->global_variables, cursor, NULL);
+        start = 0;
+        end = xbt_dynar_length(info->global_variables) - 1;
+      } else if (strcmp(current_var->name, name) < 0) {
+        start = cursor + 1;
+      } else {
+        end = cursor - 1;
+      }
     }
   }
 

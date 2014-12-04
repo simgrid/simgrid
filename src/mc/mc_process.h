@@ -28,10 +28,9 @@ struct s_mc_process {
   pid_t pid;
   memory_map_t memory_map;
   void *maestro_stack_start, *maestro_stack_end;
-  char *libsimgrid_path;
   mc_object_info_t libsimgrid_info;
   mc_object_info_t binary_info;
-  mc_object_info_t object_infos[2];
+  mc_object_info_t* object_infos;
   size_t object_infos_size;
 };
 

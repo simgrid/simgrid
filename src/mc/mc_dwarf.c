@@ -1024,7 +1024,7 @@ void MC_dwarf_get_variables(mc_object_info_t info)
   }
   Dwarf *dwarf = dwarf_begin(fd, DWARF_C_READ);
   if (dwarf == NULL) {
-    xbt_die("Your program must be compiled with -g");
+    xbt_die("Your program must be compiled with -g (%s)", info->file_name);
   }
   // For each compilation unit:
   Dwarf_Off offset = 0;
@@ -1268,7 +1268,7 @@ static void MC_post_process_types(mc_object_info_t info)
 }
 
 /** \brief Finds informations about a given shared object/executable */
-mc_object_info_t MC_find_object_info(memory_map_t maps, char *name,
+mc_object_info_t MC_find_object_info(memory_map_t maps, const char *name,
                                      int executable)
 {
   mc_object_info_t result = MC_new_object_info();

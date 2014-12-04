@@ -90,7 +90,7 @@ struct s_mc_object_info {
 void* MC_object_base_address(mc_object_info_t info);
 
 mc_object_info_t MC_new_object_info(void);
-mc_object_info_t MC_find_object_info(memory_map_t maps, char* name, int executable);
+mc_object_info_t MC_find_object_info(memory_map_t maps, const char* name, int executable);
 void MC_free_object_info(mc_object_info_t* p);
 
 dw_frame_t MC_file_object_info_find_function(mc_object_info_t info, void *ip);
