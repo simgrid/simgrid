@@ -22,7 +22,7 @@ if(enable_smpi AND enable_smpi_MPICH3_testsuite AND SMPI_FORTRAN)
   add_executable(c2f2cwinf90 c2f2cwinf90.f90 c2f902cwin.c)
   add_executable(wingetf90 wingetf90.f90)
   add_executable(winnamef90 winnamef90.f90)
-#  add_executable(winscale1f90 winscale1f90.f90)
+  add_executable(winscale1f90 winscale1f90.f90)
 #  add_executable(winscale2f90 winscale2f90.f90)
 
 target_link_libraries(winaccf90 simgrid mtest_f90)
@@ -35,7 +35,7 @@ target_link_libraries(c2f2cwinf90 simgrid mtest_f90)
 #target_link_libraries(winattrf90 simgrid mtest_f90)
 target_link_libraries(wingetf90 simgrid mtest_f90)
 target_link_libraries(winnamef90 simgrid mtest_f90)
-#target_link_libraries(winscale1f90 simgrid mtest_f90)
+target_link_libraries(winscale1f90 simgrid mtest_f90)
 #target_link_libraries(winscale2f90 simgrid mtest_f90)
 
 
