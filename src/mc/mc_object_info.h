@@ -73,6 +73,12 @@ struct s_mc_object_info {
   xbt_dynar_t functions_index;
 };
 
+static inline __attribute__ ((always_inline))
+bool MC_object_info_executable(mc_object_info_t info)
+{
+  return info->flags & MC_OBJECT_INFO_EXECUTABLE;
+}
+
 /** Find the DWARF offset for this ELF object
  *
  *  An offset is applied to address found in DWARF:

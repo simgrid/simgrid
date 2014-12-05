@@ -23,35 +23,29 @@
  * */
 mc_mem_region_t mc_get_snapshot_region(void* addr, mc_snapshot_t snapshot, int process_index)
 {
+  size_t n = snapshot->snapshot_regions_count;
+  for (size_t i = 0; i != n; ++i) {
+    mc_mem_region_t region = snapshot->snapshot_regions[i];
+    if (!(region && mc_region_contain(region, addr)))
+      continue;
+
+    if (region->storage_type == MC_REGION_STORAGE_TYPE_PRIVATIZED) {
 #ifdef HAVE_SMPI
-  if (snapshot->privatization_regions) {
-
-    if (process_index < 0) {
-
-      mc_mem_region_t region = snapshot->privatization_regions[0];
-      if( mc_region_contain(region, addr) ) {
+      if (process_index < 0) {
         xbt_die("Missing process index");
       }
-
-    } else {
-      if (process_index >= smpi_process_count()) {
+      if (process_index >= region->privatized.regions_count) {
         xbt_die("Invalid process index");
       }
-
-      mc_mem_region_t region = snapshot->privatization_regions[process_index];
-      if( mc_region_contain(region, addr) ) {
-        return region;
-      }
-
-    }
-  }
+      mc_mem_region_t priv_region = region->privatized.regions[process_index];
+      xbt_assert(mc_region_contain(priv_region, addr));
+      return priv_region;
+#else
+      xbt_die("Privatized region in a non SMPI build (this should not happen)");
 #endif
-
-  for (size_t i = 0; i != NB_REGIONS; ++i) {
-    mc_mem_region_t region = snapshot->regions[i];
-    if ( region && mc_region_contain(region, addr) ) {
-      return region;
     }
+
+    return region;
   }
 
   return NULL;
@@ -131,8 +125,10 @@ int mc_snapshot_region_memcmp(
   // Using alloca() for large allocations may trigger stack overflow:
   // use malloc if the buffer is too big.
   bool stack_alloc = size < 64;
-  void* buffer1a = (region1==NULL || region1->data) ? NULL : stack_alloc ? alloca(size) : malloc(size);
-  void* buffer2a = (region2==NULL || region2->data) ? NULL : stack_alloc ? alloca(size) : malloc(size);
+  const bool region1_need_buffer = region1==NULL || region1->storage_type==MC_REGION_STORAGE_TYPE_FLAT;
+  const bool region2_need_buffer = region2==NULL || region2->storage_type==MC_REGION_STORAGE_TYPE_FLAT;
+  void* buffer1a = region1_need_buffer ? NULL : stack_alloc ? alloca(size) : malloc(size);
+  void* buffer2a = region2_need_buffer ? NULL : stack_alloc ? alloca(size) : malloc(size);
   void* buffer1 = mc_snapshot_read_region(addr1, region1, buffer1a, size);
   void* buffer2 = mc_snapshot_read_region(addr2, region2, buffer2a, size);
   int res;
@@ -219,11 +215,11 @@ static void test_snapshot(bool sparse_checkpoint) {
 
     // Init memory and take snapshots:
     init_memory(source, byte_size);
-    mc_mem_region_t region0 = mc_region_new_sparse(0, source, source, byte_size, NULL);
+    mc_mem_region_t region0 = mc_region_new_sparse(MC_REGION_TYPE_UNKNOWN, source, source, byte_size, NULL);
     for(int i=0; i<n; i+=2) {
       init_memory((char*) source + i*xbt_pagesize, xbt_pagesize);
     }
-    mc_mem_region_t region = mc_region_new_sparse(0, source, source, byte_size, NULL);
+    mc_mem_region_t region = mc_region_new_sparse(MC_REGION_TYPE_UNKNOWN, source, source, byte_size, NULL);
 
     void* destination = mmap(NULL, byte_size, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0);
     xbt_assert(source!=MAP_FAILED, "Could not allocate destination memory");
@@ -266,7 +262,7 @@ static void test_snapshot(bool sparse_checkpoint) {
     if (n==1) {
       xbt_test_add("Read pointer for %i page(s)", n);
       memcpy(source, &mc_model_checker, sizeof(void*));
-      mc_mem_region_t region2 = mc_region_new_sparse(0, source, source, byte_size, NULL);
+      mc_mem_region_t region2 = mc_region_new_sparse(MC_REGION_TYPE_UNKNOWN, source, source, byte_size, NULL);
       xbt_test_assert(mc_snapshot_read_pointer_region(source, region2) == mc_model_checker,
         "Mismtach in mc_snapshot_read_pointer_region()");
       MC_region_destroy(region2);

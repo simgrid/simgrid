@@ -67,59 +67,64 @@ static void local_variable_free_voidp(void *v)
   local_variable_free((local_variable_t) * (void **) v);
 }
 
-void MC_region_destroy(mc_mem_region_t reg)
+void MC_region_destroy(mc_mem_region_t region)
 {
-  if (!reg)
+  if (!region)
     return;
-
-  //munmap(reg->data, reg->size);
-  xbt_free(reg->data);
-  if (reg->page_numbers) {
-    mc_free_page_snapshot_region(reg->page_numbers, mc_page_count(reg->size));
+  switch(region->storage_type) {
+    case MC_REGION_STORAGE_TYPE_NONE:
+      break;
+    case MC_REGION_STORAGE_TYPE_FLAT:
+      xbt_free(region->flat.data);
+      break;
+    case MC_REGION_STORAGE_TYPE_CHUNKED:
+      mc_free_page_snapshot_region(region->chunked.page_numbers, mc_page_count(region->size));
+      xbt_free(region->chunked.page_numbers);
+      break;
+    case MC_REGION_STORAGE_TYPE_PRIVATIZED:
+      {
+        size_t regions_count = region->privatized.regions_count;
+        for (size_t i=0; i!=regions_count; ++i) {
+          MC_region_destroy(region->privatized.regions[i]);
+        }
+        free(region->privatized.regions);
+        break;
+      }
   }
-  xbt_free(reg);
+  xbt_free(region);
 }
 
 void MC_free_snapshot(mc_snapshot_t snapshot)
 {
-  unsigned int i;
-  for (i = 0; i < NB_REGIONS; i++) {
-    MC_region_destroy(snapshot->regions[i]);
+  for (size_t i = 0; i < snapshot->snapshot_regions_count; i++) {
+    MC_region_destroy(snapshot->snapshot_regions[i]);
   }
-
+  xbt_free(snapshot->snapshot_regions);
   xbt_free(snapshot->stack_sizes);
   xbt_dynar_free(&(snapshot->stacks));
   xbt_dynar_free(&(snapshot->to_ignore));
   xbt_dynar_free(&snapshot->ignored_data);
-
-  if (snapshot->privatization_regions) {
-    size_t n = xbt_dynar_length(snapshot->enabled_processes);
-    for (i = 0; i != n; ++i) {
-      MC_region_destroy(snapshot->privatization_regions[i]);
-    }
-    xbt_free(snapshot->privatization_regions);
-  }
-
   xbt_free(snapshot);
 }
 
 /*******************************  Snapshot regions ********************************/
 /*********************************************************************************/
 
-static mc_mem_region_t mc_region_new_dense(int type, void *start_addr, void* permanent_addr, size_t size, mc_mem_region_t ref_reg)
+static mc_mem_region_t mc_region_new_dense(
+  mc_region_type_t region_type,
+  void *start_addr, void* permanent_addr, size_t size, mc_mem_region_t ref_reg)
 {
-  mc_mem_region_t new_reg = xbt_new(s_mc_mem_region_t, 1);
-  new_reg->start_addr = start_addr;
-  new_reg->permanent_addr = permanent_addr;
-  new_reg->data = NULL;
-  new_reg->size = size;
-  new_reg->page_numbers = NULL;
-  new_reg->data = xbt_malloc(size);
-  memcpy(new_reg->data, permanent_addr, size);
+  mc_mem_region_t region = xbt_new(s_mc_mem_region_t, 1);
+  region->region_type = region_type;
+  region->storage_type = MC_REGION_STORAGE_TYPE_FLAT;
+  region->start_addr = start_addr;
+  region->permanent_addr = permanent_addr;
+  region->size = size;
+  region->flat.data = xbt_malloc(size);
+  memcpy(region->flat.data, permanent_addr, size);
   XBT_DEBUG("New region : type : %d, data : %p (real addr %p), size : %zu",
-            type, new_reg->data, permanent_addr, size);
-  return new_reg;
-
+            region_type, region->flat.data, permanent_addr, size);
+  return region;
 }
 
 /** @brief Take a snapshot of a given region
@@ -130,7 +135,7 @@ static mc_mem_region_t mc_region_new_dense(int type, void *start_addr, void* per
  * @param size         Size of the data*
  * @param ref_reg      Reference corresponding region
  */
-static mc_mem_region_t MC_region_new(int type, void *start_addr, void* permanent_addr, size_t size, mc_mem_region_t ref_reg)
+static mc_mem_region_t MC_region_new(mc_region_type_t type, void *start_addr, void* permanent_addr, size_t size, mc_mem_region_t ref_reg)
 {
   if (_sg_mc_sparse_checkpoint) {
     return mc_region_new_sparse(type, start_addr, permanent_addr, size, ref_reg);
@@ -149,67 +154,124 @@ static mc_mem_region_t MC_region_new(int type, void *start_addr, void* permanent
  *  @param reg     Target region
  *  @param reg_reg Current region (if not NULL), used for lazy per page restoration
  */
-static void MC_region_restore(mc_mem_region_t reg, mc_mem_region_t ref_reg)
+static void MC_region_restore(mc_mem_region_t region, mc_mem_region_t ref_region)
 {
-  /*FIXME: check if start_addr is still mapped, if it is not, then map it
-    before copying the data */
-  if (!reg->page_numbers) {
-    memcpy(reg->permanent_addr, reg->data, reg->size);
-  } else {
-    mc_region_restore_sparse(reg, ref_reg);
+  switch(region->storage_type) {
+  case MC_REGION_STORAGE_TYPE_NONE:
+  default:
+    xbt_die("Storage type not supported");
+    break;
+
+  case MC_REGION_STORAGE_TYPE_FLAT:
+    memcpy(region->permanent_addr, region->flat.data, region->size);
+    break;
+
+  case MC_REGION_STORAGE_TYPE_CHUNKED:
+    mc_region_restore_sparse(region, ref_region);
+    break;
+
+  case MC_REGION_STORAGE_TYPE_PRIVATIZED:
+    {
+      bool has_ref_regions = ref_region &&
+        ref_region->storage_type == MC_REGION_STORAGE_TYPE_PRIVATIZED;
+      size_t process_count = region->privatized.regions_count;
+      for (size_t i = 0; i < process_count; i++) {
+        MC_region_restore(region->privatized.regions[i],
+          has_ref_regions ? ref_region->privatized.regions[i] : NULL);
+      }
+      break;
+    }
   }
-  return;
 }
 
-static void MC_snapshot_add_region(mc_snapshot_t snapshot, int type,
-                                   void *start_addr, void* permanent_addr, size_t size)
-
+static inline
+void* MC_privatization_address(mc_process_t process, int process_index)
 {
-  mc_mem_region_t ref_reg =
-    mc_model_checker->parent_snapshot ? mc_model_checker->parent_snapshot->regions[type] : NULL;
-  mc_mem_region_t new_reg = MC_region_new(type, start_addr, permanent_addr, size, ref_reg);
-  snapshot->regions[type] = new_reg;
+  xbt_assert(process_index >= 0);
+  return smpi_privatisation_regions[process_index].address;
+}
+
+static mc_mem_region_t MC_region_new_privatized(
+    mc_region_type_t region_type, void *start_addr, void* permanent_addr, size_t size,
+    mc_mem_region_t ref_reg)
+{
+  size_t process_count = smpi_process_count();
+  mc_mem_region_t region = xbt_new(s_mc_mem_region_t, 1);
+  region->region_type = region_type;
+  region->storage_type = MC_REGION_STORAGE_TYPE_PRIVATIZED;
+  region->start_addr = start_addr;
+  region->permanent_addr = permanent_addr;
+  region->size = size;
+  region->privatized.regions_count = process_count;
+  region->privatized.regions = xbt_new(mc_mem_region_t, process_count);
+
+  for (size_t i = 0; i < process_count; i++) {
+    mc_mem_region_t ref_subreg = NULL;
+    if (ref_reg && ref_reg->storage_type == MC_REGION_STORAGE_TYPE_PRIVATIZED)
+      ref_subreg = ref_reg->privatized.regions[i];
+    region->privatized.regions[i] =
+      MC_region_new(region_type, start_addr,
+        MC_privatization_address(&mc_model_checker->process, i), size,
+        ref_subreg);
+  }
+
+  return region;
+}
+
+static void MC_snapshot_add_region(int index, mc_snapshot_t snapshot, mc_region_type_t type,
+                                  mc_object_info_t object_info,
+                                  void *start_addr, void* permanent_addr, size_t size)
+{
+  if (type == MC_REGION_TYPE_DATA)
+    xbt_assert(object_info, "Missing object info for object.");
+  else if (type == MC_REGION_TYPE_HEAP)
+    xbt_assert(!object_info, "Unexpected object info for heap region.");
+
+  mc_mem_region_t ref_reg = NULL;
+  if (mc_model_checker->parent_snapshot)
+    ref_reg = mc_model_checker->parent_snapshot->snapshot_regions[index];
+
+  mc_mem_region_t region;
+  const bool privatization_aware = object_info && MC_object_info_executable(object_info);
+  if (privatization_aware && smpi_privatize_global_variables && smpi_process_count())
+    region = MC_region_new_privatized(type, start_addr, permanent_addr, size, ref_reg);
+  else
+    region = MC_region_new(type, start_addr, permanent_addr, size, ref_reg);
+
+  region->object_info = object_info;
+  snapshot->snapshot_regions[index] = region;
   return;
 }
 
 static void MC_get_memory_regions(mc_snapshot_t snapshot)
 {
-  mc_process_t process = &mc_model_checker->process;
+  const mc_process_t process = &mc_model_checker->process;
+  const size_t n = process->object_infos_size;
+
+  snapshot->snapshot_regions_count = n + 1;
+  snapshot->snapshot_regions = xbt_new0(mc_mem_region_t, n + 1);
+
+  for (size_t i = 0; i!=n; ++i) {
+    mc_object_info_t object_info = mc_model_checker->process.object_infos[i];
+    MC_snapshot_add_region(i, snapshot, MC_REGION_TYPE_DATA, object_info,
+      object_info->start_rw, object_info->start_rw,
+      object_info->end_rw - object_info->start_rw);
+  }
 
   void *start_heap = std_heap->base;
   void *end_heap = std_heap->breakval;
-  MC_snapshot_add_region(snapshot, 0, start_heap, start_heap,
-                         (char *) end_heap - (char *) start_heap);
+  MC_snapshot_add_region(n, snapshot, MC_REGION_TYPE_HEAP, NULL,
+                        start_heap, start_heap,
+                        (char *) end_heap - (char *) start_heap);
   snapshot->heap_bytes_used = mmalloc_get_bytes_used(std_heap);
-  snapshot->privatization_regions = NULL;
-
-  MC_snapshot_add_region(snapshot, 1,
-      process->libsimgrid_info->start_rw, process->libsimgrid_info->start_rw,
-      process->libsimgrid_info->end_rw - process->libsimgrid_info->start_rw);
 
 #ifdef HAVE_SMPI
-  size_t i;
   if (smpi_privatize_global_variables && smpi_process_count()) {
-    // Snapshot the global variable of the application separately for each
-    // simulated process:
-    snapshot->privatization_regions =
-      xbt_new(mc_mem_region_t, smpi_process_count());
-    for (i = 0; i < smpi_process_count(); i++) {
-      mc_mem_region_t ref_reg =
-        mc_model_checker->parent_snapshot ? mc_model_checker->parent_snapshot->privatization_regions[i] : NULL;
-      snapshot->privatization_regions[i] =
-        MC_region_new(-1, process->binary_info->start_rw, smpi_privatisation_regions[i].address, size_data_exe, ref_reg);
-    }
     snapshot->privatization_index = smpi_loaded_page;
-    snapshot->regions[2] = NULL;
   } else
 #endif
   {
-    MC_snapshot_add_region(snapshot, 2,
-                           process->binary_info->start_rw, process->binary_info->start_rw,
-                           process->binary_info->end_rw - process->binary_info->start_rw);
-    snapshot->privatization_regions = NULL;
-    snapshot->privatization_index = -1;
+    snapshot->privatization_index = MC_NO_PROCESS_INDEX;
   }
 }
 
@@ -219,7 +281,6 @@ static void MC_get_memory_regions(mc_snapshot_t snapshot)
  * */
 void MC_find_object_address(memory_map_t maps, mc_object_info_t result)
 {
-
   unsigned int i = 0;
   s_map_region_t reg;
   const char *name = basename(result->file_name);
@@ -618,8 +679,8 @@ static void MC_get_current_fd(mc_snapshot_t snapshot){
 
 mc_snapshot_t MC_take_snapshot(int num_state)
 {
-
   mc_snapshot_t snapshot = xbt_new0(s_mc_snapshot_t, 1);
+
   snapshot->enabled_processes = xbt_dynar_new(sizeof(int), NULL);
   smx_process_t process;
   xbt_swag_foreach(process, simix_global->process_list) {
@@ -657,30 +718,20 @@ mc_snapshot_t MC_take_snapshot(int num_state)
   return snapshot;
 }
 
-void MC_restore_snapshot(mc_snapshot_t snapshot)
+static inline
+void MC_restore_snapshot_regions(mc_snapshot_t snapshot)
 {
   mc_snapshot_t parent_snapshot = mc_model_checker->parent_snapshot;
 
-  int new_fd;
-  unsigned int i;
-  for (i = 0; i < NB_REGIONS; i++) {
+  const size_t n = snapshot->snapshot_regions_count;
+  for (size_t i = 0; i < n; i++) {
     // For privatized, variables we decided it was not necessary to take the snapshot:
-    if (snapshot->regions[i])
-      MC_region_restore(snapshot->regions[i],
-        parent_snapshot ? parent_snapshot->regions[i] : NULL);
+    if (snapshot->snapshot_regions[i])
+      MC_region_restore(snapshot->snapshot_regions[i],
+        parent_snapshot ? parent_snapshot->snapshot_regions[i] : NULL);
   }
 
 #ifdef HAVE_SMPI
-  if (snapshot->privatization_regions) {
-    // Restore the global variables of the application separately for each
-    // simulated process:
-    for (i = 0; i < smpi_process_count(); i++) {
-      if (snapshot->privatization_regions[i]) {
-        MC_region_restore(snapshot->privatization_regions[i],
-          parent_snapshot ? parent_snapshot->privatization_regions[i] : NULL);
-      }
-    }
-  }
   if(snapshot->privatization_index >= 0) {
     // We just rewrote the global variables.
     // The privatisation segment SMPI thinks
@@ -691,7 +742,13 @@ void MC_restore_snapshot(mc_snapshot_t snapshot)
     smpi_really_switch_data_segment(snapshot->privatization_index);
   }
 #endif
+}
 
+static inline
+void MC_restore_snapshot_fds(mc_snapshot_t snapshot)
+{
+  int new_fd;
+  size_t i;
   for(i=0; i < snapshot->total_fd; i++){
     
     new_fd = open(snapshot->current_fd[i]->filename, snapshot->current_fd[i]->flags);
@@ -706,16 +763,19 @@ void MC_restore_snapshot(mc_snapshot_t snapshot)
     };
     lseek(snapshot->current_fd[i]->number, snapshot->current_fd[i]->current_position, SEEK_SET);
   }
+}
 
+void MC_restore_snapshot(mc_snapshot_t snapshot)
+{
+  MC_restore_snapshot_regions(snapshot);
+  MC_restore_snapshot_fds(snapshot);
   if (_sg_mc_sparse_checkpoint && _sg_mc_soft_dirty) {
     mc_softdirty_reset();
   }
-
   MC_snapshot_ignore_restore(snapshot);
   if (_sg_mc_sparse_checkpoint && _sg_mc_soft_dirty) {
     mc_model_checker->parent_snapshot = snapshot;
   }
-
 }
 
 mc_snapshot_t simcall_HANDLER_mc_snapshot(smx_simcall_t simcall)

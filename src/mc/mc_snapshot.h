@@ -26,20 +26,48 @@ void mc_softdirty_reset(void);
 
 // ***** Snapshot region
 
-#define NB_REGIONS 3 /* binary data (data + BSS) (type = 2), libsimgrid data (data + BSS) (type = 1), std_heap (type = 0)*/
+typedef enum e_mc_region_type_t {
+  MC_REGION_TYPE_UNKNOWN = 0,
+  MC_REGION_TYPE_HEAP = 1,
+  MC_REGION_TYPE_DATA = 2
+} mc_region_type_t;
+
+// TODO, use OO instead of this
+typedef enum e_mc_region_storeage_type_t {
+  MC_REGION_STORAGE_TYPE_NONE = 0,
+  MC_REGION_STORAGE_TYPE_FLAT = 1,
+  MC_REGION_STORAGE_TYPE_CHUNKED = 2,
+  MC_REGION_STORAGE_TYPE_PRIVATIZED = 3
+} mc_region_storage_type_t;
 
 /** @brief Copy/snapshot of a given memory region
  *
- *  Two types of region snapshots exist:
+ *  Different types of region snapshot storage types exist:
  *  <ul>
  *    <li>flat/dense snapshots are a simple copy of the region;</li>
  *    <li>sparse/per-page snapshots are snaapshots which shared
  *    identical pages.</li>
+ *    <li>privatized (SMPI global variable privatisation).
  *  </ul>
+ *
+ *  This is handled with a variant based approch:
+ *
+ *    * `storage_type` identified the type of storage;
+ *    * an anonymous enum is used to distinguish the relevant types for
+ *      each type.
  */
-typedef struct s_mc_mem_region{
+typedef struct s_mc_mem_region s_mc_mem_region_t, *mc_mem_region_t;
+
+struct s_mc_mem_region {
+  mc_region_type_t region_type;
+  mc_region_storage_type_t storage_type;
+  mc_object_info_t object_info;
+
   /** @brief  Virtual address of the region in the simulated process */
   void *start_addr;
+
+  /** @brief Size of the data region in bytes */
+  size_t size;
 
   /** @brief Permanent virtual address of the region
    *
@@ -52,18 +80,24 @@ typedef struct s_mc_mem_region{
    * */
   void *permanent_addr;
 
-  /** @brief Copy of the snapshot for flat snapshots regions (NULL otherwise) */
-  void *data;
+  union {
+    struct {
+      /** @brief Copy of the snapshot for flat snapshots regions (NULL otherwise) */
+      void *data;
+    } flat;
+    struct {
+      /** @brief Pages indices in the page store for per-page snapshots (NULL otherwise) */
+      size_t* page_numbers;
+    } chunked;
+    struct {
+      size_t regions_count;
+      mc_mem_region_t* regions;
+    } privatized;
+  };
 
-  /** @brief Size of the data region in bytes */
-  size_t size;
+};
 
-  /** @brief Pages indices in the page store for per-page snapshots (NULL otherwise) */
-  size_t* page_numbers;
-
-} s_mc_mem_region_t, *mc_mem_region_t;
-
-mc_mem_region_t mc_region_new_sparse(int type, void *start_addr, void* data_addr, size_t size, mc_mem_region_t ref_reg);
+mc_mem_region_t mc_region_new_sparse(mc_region_type_t type, void *start_addr, void* data_addr, size_t size, mc_mem_region_t ref_reg);
 void MC_region_destroy(mc_mem_region_t reg);
 void mc_region_restore_sparse(mc_mem_region_t reg, mc_mem_region_t ref_reg);
 
@@ -78,7 +112,7 @@ static inline __attribute__((always_inline))
 void* mc_translate_address_region(uintptr_t addr, mc_mem_region_t region)
 {
     size_t pageno = mc_page_number(region->start_addr, (void*) addr);
-    size_t snapshot_pageno = region->page_numbers[pageno];
+    size_t snapshot_pageno = region->chunked.page_numbers[pageno];
     const void* snapshot_page = mc_page_store_get_page(mc_model_checker->pages, snapshot_pageno);
     return (char*) snapshot_page + mc_page_offset((void*) addr);
 }
@@ -115,19 +149,30 @@ void* mc_translate_address(uintptr_t addr, mc_snapshot_t snapshot, int process_i
     return (void *) addr;
   }
 
-  // Flat snapshot:
-  else if (region->data) {
-    uintptr_t offset = addr - (uintptr_t) region->start_addr;
-    return (void *) ((uintptr_t) region->data + offset);
-  }
+  switch (region->storage_type) {
+  case MC_REGION_STORAGE_TYPE_NONE:
+  default:
+    xbt_die("Storage type not supported");
 
-  // Per-page snapshot:
-  else if (region->page_numbers) {
+  case MC_REGION_STORAGE_TYPE_FLAT:
+    {
+      uintptr_t offset = addr - (uintptr_t) region->start_addr;
+      return (void *) ((uintptr_t) region->flat.data + offset);
+    }
+
+  case MC_REGION_STORAGE_TYPE_CHUNKED:
     return mc_translate_address_region(addr, region);
-  }
 
-  else {
-    xbt_die("No data for this memory region");
+  case MC_REGION_STORAGE_TYPE_PRIVATIZED:
+    {
+      xbt_assert(process_index >=0,
+        "Missing process index for privatized region");
+      xbt_assert((size_t) process_index < region->privatized.regions_count,
+        "Out of range process index");
+      mc_mem_region_t subregion = region->privatized.regions[process_index];
+      xbt_assert(subregion, "Missing memory region for process %i", process_index);
+      return mc_translate_address(addr, snapshot, process_index);
+    }
   }
 }
 
@@ -153,9 +198,9 @@ typedef struct s_fd_infos{
 
 struct s_mc_snapshot{
   size_t heap_bytes_used;
-  mc_mem_region_t regions[NB_REGIONS];
+  mc_mem_region_t* snapshot_regions;
+  size_t snapshot_regions_count;
   xbt_dynar_t enabled_processes;
-  mc_mem_region_t* privatization_regions;
   int privatization_index;
   size_t *stack_sizes;
   xbt_dynar_t stacks;
@@ -234,11 +279,6 @@ size_t* mc_take_page_snapshot_region(void* data, size_t page_count, uint64_t* pa
 void mc_free_page_snapshot_region(size_t* pagenos, size_t page_count);
 void mc_restore_page_snapshot_region(void* start_addr, size_t page_count, size_t* pagenos, uint64_t* pagemap, size_t* reference_pagenos);
 
-static inline __attribute__((always_inline))
-bool mc_snapshot_region_linear(mc_mem_region_t region) {
-  return !region || !region->data;
-}
-
 void* mc_snapshot_read_fragmented(void* addr, mc_mem_region_t region, void* target, size_t size);
 
 void* mc_snapshot_read(void* addr, mc_snapshot_t snapshot, int process_index, void* target, size_t size);
@@ -285,26 +325,31 @@ void* mc_snapshot_read_region(void* addr, mc_mem_region_t region, void* target, 
   xbt_assert(mc_region_contain(region, addr),
     "Trying to read out of the region boundary.");
 
-  // Linear memory region:
-  if (region->data) {
-    return (char*) region->data + offset;
-  }
+  switch (region->storage_type) {
+  case MC_REGION_STORAGE_TYPE_NONE:
+  default:
+    xbt_die("Storage type not supported");
 
-  // Fragmented memory region:
-  else if (region->page_numbers) {
-    // Last byte of the region:
-    void* end = (char*) addr + size - 1;
-    if( mc_same_page(addr, end) ) {
-      // The memory is contained in a single page:
-      return mc_translate_address_region((uintptr_t) addr, region);
-    } else {
-      // The memory spans several pages:
-      return mc_snapshot_read_fragmented(addr, region, target, size);
+  case MC_REGION_STORAGE_TYPE_FLAT:
+    return (char*) region->flat.data + offset;
+
+  case MC_REGION_STORAGE_TYPE_CHUNKED:
+    {
+      // Last byte of the region:
+      void* end = (char*) addr + size - 1;
+      if( mc_same_page(addr, end) ) {
+        // The memory is contained in a single page:
+        return mc_translate_address_region((uintptr_t) addr, region);
+      } else {
+        // The memory spans several pages:
+        return mc_snapshot_read_fragmented(addr, region, target, size);
+      }
     }
-  }
 
-  else {
-    xbt_die("No data available for this region");
+  // We currently do not pass the process_index to this function so we assume
+  // that the privatized region has been resolved in the callers:
+  case MC_REGION_STORAGE_TYPE_PRIVATIZED:
+    xbt_die("Storage type not supported");
   }
 }
 

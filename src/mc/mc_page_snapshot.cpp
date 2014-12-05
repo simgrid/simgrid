@@ -159,15 +159,16 @@ static void mc_read_pagemap(uint64_t* pagemap, size_t page_start, size_t page_co
 
 // ***** High level API
 
-mc_mem_region_t mc_region_new_sparse(int type, void *start_addr, void* permanent_addr, size_t size, mc_mem_region_t ref_reg)
+mc_mem_region_t mc_region_new_sparse(mc_region_type_t region_type,
+  void *start_addr, void* permanent_addr, size_t size,
+  mc_mem_region_t ref_reg)
 {
-  mc_mem_region_t new_reg = xbt_new(s_mc_mem_region_t, 1);
-
-  new_reg->start_addr = start_addr;
-  new_reg->permanent_addr = permanent_addr;
-  new_reg->data = NULL;
-  new_reg->size = size;
-  new_reg->page_numbers = NULL;
+  mc_mem_region_t region = xbt_new(s_mc_mem_region_t, 1);
+  region->region_type = region_type;
+  region->storage_type = MC_REGION_STORAGE_TYPE_CHUNKED;
+  region->start_addr = start_addr;
+  region->permanent_addr = permanent_addr;
+  region->size = size;
 
   xbt_assert((((uintptr_t)start_addr) & (xbt_pagesize-1)) == 0,
     "Not at the beginning of a page");
@@ -181,14 +182,18 @@ mc_mem_region_t mc_region_new_sparse(int type, void *start_addr, void* permanent
       mc_read_pagemap(pagemap, mc_page_number(NULL, permanent_addr), page_count);
   }
 
+  size_t* reg_page_numbers = NULL;
+  if (ref_reg!=NULL && ref_reg->storage_type == MC_REGION_STORAGE_TYPE_CHUNKED)
+    reg_page_numbers = ref_reg->chunked.page_numbers;
+
   // Take incremental snapshot:
-  new_reg->page_numbers = mc_take_page_snapshot_region(permanent_addr, page_count, pagemap,
-    ref_reg==NULL ? NULL : ref_reg->page_numbers);
+  region->chunked.page_numbers = mc_take_page_snapshot_region(
+    permanent_addr, page_count, pagemap, reg_page_numbers);
 
   if(pagemap) {
     mfree(mc_heap, pagemap);
   }
-  return new_reg;
+  return region;
 }
 
 void mc_region_restore_sparse(mc_mem_region_t reg, mc_mem_region_t ref_reg)
@@ -205,9 +210,13 @@ void mc_region_restore_sparse(mc_mem_region_t reg, mc_mem_region_t ref_reg)
     mc_read_pagemap(pagemap, mc_page_number(NULL, reg->permanent_addr), page_count);
   }
 
-  // Incremental per-page snapshot restoration:
-  mc_restore_page_snapshot_region(reg->permanent_addr, page_count, reg->page_numbers,
-    pagemap, ref_reg ? ref_reg->page_numbers : NULL);
+  // Incremental per-page snapshot restoration:s
+  size_t* reg_page_numbers = NULL;
+  if (ref_reg && ref_reg->storage_type == MC_REGION_STORAGE_TYPE_CHUNKED)
+    reg_page_numbers = ref_reg->chunked.page_numbers;
+
+  mc_restore_page_snapshot_region(reg->permanent_addr, page_count, reg->chunked.page_numbers,
+    pagemap, reg_page_numbers);
 
   if(pagemap) {
     free(pagemap);

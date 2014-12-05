@@ -415,9 +415,21 @@ void reset_heap_information()
 
 }
 
+// TODO, have a robust way to find it in O(1)
+static inline
+mc_mem_region_t MC_get_heap_region(mc_snapshot_t snapshot)
+{
+  size_t n = snapshot->snapshot_regions_count;
+  for (size_t i=0; i!=n; ++i) {
+    mc_mem_region_t region = snapshot->snapshot_regions[i];
+    if (region->region_type == MC_REGION_TYPE_HEAP)
+      return region;
+  }
+  xbt_die("No heap region");
+}
+
 int mmalloc_compare_heap(mc_snapshot_t snapshot1, mc_snapshot_t snapshot2)
 {
-
   struct s_mc_diff *state = mc_diff_info;
 
   /* Start comparison */
@@ -434,8 +446,8 @@ int mmalloc_compare_heap(mc_snapshot_t snapshot1, mc_snapshot_t snapshot2)
   malloc_info heapinfo_temp1, heapinfo_temp2;
   malloc_info heapinfo_temp2b;
 
-  mc_mem_region_t heap_region1 = snapshot1->regions[0];
-  mc_mem_region_t heap_region2 = snapshot2->regions[0];
+  mc_mem_region_t heap_region1 = MC_get_heap_region(snapshot1);
+  mc_mem_region_t heap_region2 = MC_get_heap_region(snapshot2);
 
   // This is in snapshot do not use them directly:
   malloc_info* heapinfos1 = mc_snapshot_read_pointer(&std_heap->heapinfo, snapshot1, MC_NO_PROCESS_INDEX);
@@ -776,8 +788,8 @@ static int compare_heap_area_without_type(struct s_mc_diff *state, int process_i
   int pointer_align, res_compare;
   ssize_t ignore1, ignore2;
 
-  mc_mem_region_t heap_region1 = snapshot1->regions[0];
-  mc_mem_region_t heap_region2 = snapshot2->regions[0];
+  mc_mem_region_t heap_region1 = MC_get_heap_region(snapshot1);
+  mc_mem_region_t heap_region2 = MC_get_heap_region(snapshot2);
 
   while (i < size) {
 
@@ -881,8 +893,8 @@ top:
   dw_type_t member;
   void *addr_pointed1, *addr_pointed2;;
 
-  mc_mem_region_t heap_region1 = snapshot1->regions[0];
-  mc_mem_region_t heap_region2 = snapshot2->regions[0];
+  mc_mem_region_t heap_region1 = MC_get_heap_region(snapshot1);
+  mc_mem_region_t heap_region2 = MC_get_heap_region(snapshot2);
 
   switch (type->type) {
   case DW_TAG_unspecified_type:
@@ -1204,8 +1216,8 @@ int compare_heap_area(int process_index, void *area1, void *area2, mc_snapshot_t
 
   }
 
-  mc_mem_region_t heap_region1 = snapshot1->regions[0];
-  mc_mem_region_t heap_region2 = snapshot2->regions[0];
+  mc_mem_region_t heap_region1 = MC_get_heap_region(snapshot1);
+  mc_mem_region_t heap_region2 = MC_get_heap_region(snapshot2);
 
   malloc_info* heapinfo1 = mc_snapshot_read_region(&heapinfos1[block1], heap_region1, &heapinfo_temp1, sizeof(malloc_info));
   malloc_info* heapinfo2 = mc_snapshot_read_region(&heapinfos2[block2], heap_region2, &heapinfo_temp2, sizeof(malloc_info));

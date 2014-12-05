@@ -260,6 +260,32 @@ static int compare_global_variables(mc_object_info_t object_info,
                                     mc_snapshot_t snapshot2)
 {
   xbt_assert(r1 && r2, "Missing region.");
+
+#ifdef HAVE_SMPI
+  if (r1->storage_type == MC_REGION_STORAGE_TYPE_PRIVATIZED) {
+    xbt_assert(process_index >= 0);
+    if (r2->storage_type != MC_REGION_STORAGE_TYPE_PRIVATIZED) {
+      return 1;
+    }
+
+    size_t process_count = smpi_process_count();
+    xbt_assert(process_count == r1->privatized.regions_count
+      && process_count == r2->privatized.regions_count);
+
+    // Compare the global variables separately for each simulates process:
+    for (size_t process_index = 0; process_index < process_count; process_index++) {
+      int is_diff = compare_global_variables(object_info, process_index,
+        r1->privatized.regions[process_index], r2->privatized.regions[process_index],
+        snapshot1, snapshot2);
+      if (is_diff) return 1;
+    }
+    return 0;
+  }
+#else
+  xbt_assert(r1->storage_type != MC_REGION_STORAGE_TYPE_PRIVATIZED);
+#endif
+  xbt_assert(r2->storage_type != MC_REGION_STORAGE_TYPE_PRIVATIZED);
+
   struct mc_compare_state state;
 
   xbt_dynar_t variables;
@@ -357,8 +383,6 @@ static int compare_local_variables(int process_index,
 
 int snapshot_compare(void *state1, void *state2)
 {
-  mc_process_t process = &mc_model_checker->process;
-
   mc_snapshot_t s1, s2;
   int num1, num2;
 
@@ -547,10 +571,22 @@ int snapshot_compare(void *state1, void *state2)
   };
 #endif
 
-  mc_object_info_t object_infos[] = { NULL, process->libsimgrid_info, process->binary_info };
+  size_t regions_count = s1->snapshot_regions_count;
+  // TODO, raise a difference instead?
+  xbt_assert(regions_count == s2->snapshot_regions_count);
 
-  int k = 0;
-  for (k = 2; k != 0; --k) {
+  for (size_t k = 0; k != regions_count; ++k) {
+    mc_mem_region_t region1 = s1->snapshot_regions[k];
+    mc_mem_region_t region2 = s2->snapshot_regions[k];
+
+    // Preconditions:
+    if (region1->region_type != MC_REGION_TYPE_DATA)
+      continue;
+
+    xbt_assert(region1->region_type == region2->region_type);
+    xbt_assert(region1->object_info == region2->object_info);
+
+    xbt_assert(region1->object_info);
 #ifdef MC_DEBUG
     if (is_diff == 0)
       xbt_os_walltimer_stop(timer);
@@ -558,20 +594,10 @@ int snapshot_compare(void *state1, void *state2)
 #endif
 
     /* Compare global variables */
-#ifdef HAVE_SMPI
-    if (object_infos[k] == process->binary_info && smpi_privatize_global_variables) {
-      // Compare the global variables separately for each simulates process:
-      for (int process_index = 0; process_index < smpi_process_count(); process_index++) {
-        is_diff =
-          compare_global_variables(object_infos[k], process_index,
-            s1->privatization_regions[process_index], s2->privatization_regions[process_index], s1, s2);
-        if (is_diff) break;
-      }
-    }
-    else
-#endif
-      is_diff =
-        compare_global_variables(object_infos[k], MC_NO_PROCESS_INDEX, s1->regions[k], s2->regions[k], s1, s2);
+    is_diff =
+      compare_global_variables(region1->object_info, MC_NO_PROCESS_INDEX,
+        region1, region2,
+        s1, s2);
 
     if (is_diff != 0) {
       XBT_TRACE3(mc, state_diff, num1, num2, "Different global variables");
