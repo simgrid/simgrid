@@ -298,9 +298,11 @@ void MC_ignore_local_variable(const char *var_name, const char *frame_name)
 
   MC_SET_MC_HEAP;
 
-  MC_ignore_local_variable_in_object(var_name, frame_name, process->libsimgrid_info);
-  if (frame_name != NULL)
-    MC_ignore_local_variable_in_object(var_name, frame_name, process->binary_info);
+  size_t n = process->object_infos_size;
+  size_t i;
+  for (i=0; i!=n; ++i) {
+    MC_ignore_local_variable_in_object(var_name, frame_name, process->object_infos[i]);
+  }
 
   if (!raw_mem_set)
     MC_SET_STD_HEAP;
