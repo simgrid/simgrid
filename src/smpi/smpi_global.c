@@ -27,6 +27,7 @@ typedef struct s_smpi_process_data {
   char ***argv;
   smx_rdv_t mailbox;
   smx_rdv_t mailbox_small;
+  xbt_mutex_t mailboxes_mutex;
   xbt_os_timer_t timer;
   MPI_Comm comm_self;
   MPI_Comm comm_intra;
@@ -107,7 +108,6 @@ void smpi_process_init(int *argc, char ***argv)
     data->argv = argv;
     // set the process attached to the mailbox
     simcall_rdv_set_receiver(data->mailbox_small, proc);
-
     XBT_DEBUG("<%d> New process in the game: %p", index, proc);
 
     if(smpi_privatize_global_variables){
@@ -255,6 +255,12 @@ smx_rdv_t smpi_process_mailbox_small(void)
   return data->mailbox_small;
 }
 
+xbt_mutex_t smpi_process_mailboxes_mutex(void)
+{
+  smpi_process_data_t data = smpi_process_data();
+  return data->mailboxes_mutex;
+}
+
 smx_rdv_t smpi_process_remote_mailbox(int index)
 {
   smpi_process_data_t data = smpi_process_remote_data(index);
@@ -266,6 +272,12 @@ smx_rdv_t smpi_process_remote_mailbox_small(int index)
 {
   smpi_process_data_t data = smpi_process_remote_data(index);
   return data->mailbox_small;
+}
+
+xbt_mutex_t smpi_process_remote_mailboxes_mutex(int index)
+{
+  smpi_process_data_t data = smpi_process_remote_data(index);
+  return data->mailboxes_mutex;
 }
 
 xbt_os_timer_t smpi_process_timer(void)
@@ -422,6 +434,7 @@ void smpi_global_init(void)
     process_data[i]->mailbox = simcall_rdv_create(get_mailbox_name(name, i));
     process_data[i]->mailbox_small =
         simcall_rdv_create(get_mailbox_name_small(name, i));
+    process_data[i]->mailboxes_mutex=xbt_mutex_init();
     process_data[i]->timer = xbt_os_timer_new();
     if (MC_is_active())
       MC_ignore_heap(process_data[i]->timer, xbt_os_timer_size());
@@ -475,6 +488,7 @@ void smpi_global_destroy(void)
     xbt_os_timer_free(process_data[i]->timer);
     simcall_rdv_destroy(process_data[i]->mailbox);
     simcall_rdv_destroy(process_data[i]->mailbox_small);
+    xbt_mutex_destroy(process_data[i]->mailboxes_mutex);
     xbt_free(process_data[i]);
   }
   xbt_free(process_data);

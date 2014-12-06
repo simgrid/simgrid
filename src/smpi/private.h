@@ -180,6 +180,8 @@ smx_rdv_t smpi_process_mailbox(void);
 smx_rdv_t smpi_process_remote_mailbox(int index);
 smx_rdv_t smpi_process_mailbox_small(void);
 smx_rdv_t smpi_process_remote_mailbox_small(int index);
+xbt_mutex_t smpi_process_mailboxes_mutex(void);
+xbt_mutex_t smpi_process_remote_mailboxes_mutex(int index);
 xbt_os_timer_t smpi_process_timer(void);
 void smpi_process_simulated_start(void);
 double smpi_process_simulated_elapsed(void);
