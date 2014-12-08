@@ -746,6 +746,7 @@ static int migration_tx_fun(int argc, char *argv[])
       /* At stage 1, we do not need timeout. We have to send all the memory
        * pages even though the duration of this tranfer exceeds the timeout
        * value. */
+      XBT_INFO("Stage 1: Gonna send %zd", ramsize);
       sg_size_t sent = send_migration_data(ms->vm, ms->src_pm, ms->dst_pm, ramsize, ms->mbox, 1, 0, mig_speed, -1);
       remaining_size -= sent;
       computed_during_stage1 = lookup_computed_flop_counts(ms->vm, 1, 0);
@@ -813,6 +814,7 @@ static int migration_tx_fun(int argc, char *argv[])
     sg_size_t sent = 0;
     double clock_prev_send = MSG_get_clock();
     TRY {
+      XBT_INFO("Stage 2, gonna send %d", updated_size);
       sent = send_migration_data(ms->vm, ms->src_pm, ms->dst_pm, updated_size, ms->mbox, 2, stage2_round, mig_speed, mig_timeout);
     } CATCH_ANONYMOUS {
       //hostfailure (if you want to know whether this is the SRC or the DST please check directly in send_migration_data code)
@@ -856,6 +858,7 @@ stage3:
   stop_dirty_page_tracking(ms->vm);
 
   TRY {
+    XBT_INFO("Stage 3: Gonna send %d", remaining_size);
     send_migration_data(ms->vm, ms->src_pm, ms->dst_pm, remaining_size, ms->mbox, 3, 0, mig_speed, -1);
   } CATCH_ANONYMOUS {
     //hostfailure (if you want to know whether this is the SRC or the DST please check directly in send_migration_data code)
@@ -920,7 +923,7 @@ static int do_migration(msg_vm_t vm, msg_host_t src_pm, msg_host_t dst_pm)
         // Note that since the communication failed, the owner did not change and the task should be destroyed on the other side.
         // Hence, just throw the execption
         XBT_INFO("SRC crashes, throw an exception (m-control)");
-        MSG_process_kill(tx_process); // Adrien, I made a merge on Nov 28th 2014, I'm not sure whether this line is required or not 
+        //MSG_process_kill(tx_process); // Adrien, I made a merge on Nov 28th 2014, I'm not sure whether this line is required or not 
         return -1; 
     } 
     else if((ret == MSG_TRANSFER_FAILURE) || (ret == MSG_TIMEOUT)){ // MSG_TIMEOUT here means that MSG_host_is_avail() returned false.
