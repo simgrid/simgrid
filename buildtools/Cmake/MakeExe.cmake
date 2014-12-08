@@ -88,6 +88,7 @@ add_subdirectory(${CMAKE_HOME_DIRECTORY}/teshsuite/java/sleep_host_off)
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/teshsuite/mc)
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/teshsuite/mc/dwarf)
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/teshsuite/mc/dwarf_expression)
+add_subdirectory(${CMAKE_HOME_DIRECTORY}/teshsuite/mc/replay)
 
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/teshsuite/msg)
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/teshsuite/msg/get_sender)

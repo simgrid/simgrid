@@ -16,6 +16,7 @@
 #ifdef HAVE_MC
 #include "mc/mc_private.h"
 #endif
+#include "mc/mc_record.h"
 
 #ifdef HAVE_SMPI
 #include "smpi/private.h"
@@ -280,7 +281,7 @@ void SIMIX_clean(void)
  */
 XBT_INLINE double SIMIX_get_clock(void)
 {
-  if(MC_is_active()){
+  if(MC_is_active() || MC_record_replay_is_active()){
     return MC_process_clock_get(SIMIX_process_self());
   }else{
     return surf_get_clock();
@@ -306,6 +307,12 @@ static int process_syscall_color(void *p)
  */
 void SIMIX_run(void)
 {
+  if(MC_record_path) {
+    MC_record_replay_init();
+    MC_record_replay_from_string(MC_record_path);
+    return;
+  }
+
   double time = 0;
   smx_process_t process;
   surf_action_t action;
@@ -607,4 +614,3 @@ xbt_dict_t SIMIX_asr_get_properties(const char *name)
 {
   return xbt_lib_get_or_null(as_router_lib, name, ROUTING_PROP_ASR_LEVEL);
 }
-

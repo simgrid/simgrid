@@ -15,6 +15,7 @@
 #include <mc/mc.h>
 
 #include "../../src/include/mc/datatypes.h"
+#include "../../src/mc/mc_object_info.h"
 #include "../../src/mc/mc_private.h"
 
 int test_some_array[4][5][6];

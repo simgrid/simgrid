@@ -1,8 +1,7 @@
-#Needs post,start, complete, wait
-#winscale1f 4
+winscale1f 4
 winfencef 4
 wingetf   5
-#Needs post,start, complete, wait
+#Needs win_test
 #winscale2f 4
 #Needs win error handling
 #winerrf 1

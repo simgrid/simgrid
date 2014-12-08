@@ -4,9 +4,16 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "mc_private.h"
 #include <unistd.h>
 #include <sys/wait.h>
+
+#include <xbt/dynar.h>
+#include <xbt/automaton.h>
+
+#include "mc_request.h"
+#include "mc_liveness.h"
+#include "mc_private.h"
+#include "mc_record.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_liveness, mc,
                                 "Logging specific to algorithms for liveness properties verification");

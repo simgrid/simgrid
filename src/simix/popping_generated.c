@@ -15,7 +15,6 @@
 
 #include "smx_private.h"
 #ifdef HAVE_MC
-#include "mc/mc_private.h"
 #endif
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_popping);
@@ -140,6 +139,7 @@ const char* simcall_names[] = {
   [SIMCALL_STORAGE_GET_PROPERTIES] = "SIMCALL_STORAGE_GET_PROPERTIES",
   [SIMCALL_STORAGE_GET_CONTENT] = "SIMCALL_STORAGE_GET_CONTENT",
   [SIMCALL_ASR_GET_PROPERTIES] = "SIMCALL_ASR_GET_PROPERTIES",
+  [SIMCALL_MC_RANDOM] = "SIMCALL_MC_RANDOM",
 #ifdef HAVE_LATENCY_BOUND_TRACKING
   [SIMCALL_COMM_IS_LATENCY_BOUNDED] = "SIMCALL_COMM_IS_LATENCY_BOUNDED",
 #endif
@@ -151,7 +151,6 @@ const char* simcall_names[] = {
 #ifdef HAVE_MC
   [SIMCALL_MC_SNAPSHOT] = "SIMCALL_MC_SNAPSHOT",
   [SIMCALL_MC_COMPARE_SNAPSHOTS] = "SIMCALL_MC_COMPARE_SNAPSHOTS",
-  [SIMCALL_MC_RANDOM] = "SIMCALL_MC_RANDOM",
 #endif
 [SIMCALL_NONE] = "NONE"
 };
@@ -738,6 +737,11 @@ case SIMCALL_ASR_GET_PROPERTIES:
       SIMIX_simcall_answer(simcall);
       break;  
 
+case SIMCALL_MC_RANDOM:
+      simcall->result.i = simcall_HANDLER_mc_random(simcall ,  simcall->args[0].i,  simcall->args[1].i);
+      SIMIX_simcall_answer(simcall);
+      break;  
+
 #ifdef HAVE_LATENCY_BOUND_TRACKING
 case SIMCALL_COMM_IS_LATENCY_BOUNDED:
       simcall->result.i = SIMIX_comm_is_latency_bounded((smx_synchro_t) simcall->args[0].dp);
@@ -762,11 +766,6 @@ case SIMCALL_MC_SNAPSHOT:
 
 case SIMCALL_MC_COMPARE_SNAPSHOTS:
       simcall->result.i = simcall_HANDLER_mc_compare_snapshots(simcall , (mc_snapshot_t) simcall->args[0].dp, (mc_snapshot_t) simcall->args[1].dp);
-      SIMIX_simcall_answer(simcall);
-      break;  
-
-case SIMCALL_MC_RANDOM:
-      simcall->result.i = simcall_HANDLER_mc_random(simcall ,  simcall->args[0].i,  simcall->args[1].i);
       SIMIX_simcall_answer(simcall);
       break;  
 

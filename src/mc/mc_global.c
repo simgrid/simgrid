@@ -4,35 +4,52 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "mc_base.h"
+
+#ifndef _XBT_WIN32
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <sys/time.h>
 #include <sys/mman.h>
 #include <libgen.h>
-
-#define UNW_LOCAL_ONLY
-#include <libunwind.h>
+#endif
 
 #include "simgrid/sg_config.h"
 #include "../surf/surf_private.h"
 #include "../simix/smx_private.h"
-#include "../xbt/mmalloc/mmprivate.h"
 #include "xbt/fifo.h"
-#include "mc_private.h"
 #include "xbt/automaton.h"
 #include "xbt/dict.h"
 
-XBT_LOG_NEW_CATEGORY(mc, "All MC categories");
+#ifdef HAVE_MC
+#define UNW_LOCAL_ONLY
+#include <libunwind.h>
+
+#include "../xbt/mmalloc/mmprivate.h"
+#include "mc_object_info.h"
+#include "mc_comm_pattern.h"
+#include "mc_request.h"
+#include "mc_safety.h"
+#include "mc_memory_map.h"
+#include "mc_snapshot.h"
+#include "mc_liveness.h"
+#include "mc_private.h"
+#endif
+#include "mc_record.h"
+
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_global, mc,
                                 "Logging specific to MC (global)");
 
+double *mc_time = NULL;
+
+#ifdef HAVE_MC
 int user_max_depth_reached = 0;
 
 /* MC global data structures */
 mc_state_t mc_current_state = NULL;
 char mc_replay_mode = FALSE;
-double *mc_time = NULL;
+
 __thread mc_comparison_times_t mc_comp_times = NULL;
 __thread double mc_snapshot_comparison_time;
 mc_stats_t mc_stats = NULL;
@@ -111,6 +128,21 @@ static void MC_init_debug_info(void)
 
 mc_model_checker_t mc_model_checker = NULL;
 
+mc_model_checker_t MC_model_checker_new()
+{
+  mc_model_checker_t mc = xbt_new0(s_mc_model_checker_t, 1);
+  mc->pages = mc_pages_store_new();
+  mc->fd_clear_refs = -1;
+  mc->fd_pagemap = -1;
+  return mc;
+}
+
+void MC_model_checker_delete(mc_model_checker_t mc) {
+  mc_pages_store_delete(mc->pages);
+  if(mc->record)
+    xbt_dynar_free(&mc->record);
+}
+
 void MC_init()
 {
   int raw_mem_set = (mmalloc_get_current_heap() == mc_heap);
@@ -122,10 +154,7 @@ void MC_init()
 
   MC_SET_MC_HEAP;
 
-  mc_model_checker = xbt_new0(s_mc_model_checker_t, 1);
-  mc_model_checker->pages = mc_pages_store_new();
-  mc_model_checker->fd_clear_refs = -1;
-  mc_model_checker->fd_pagemap = -1;
+  mc_model_checker = MC_model_checker_new();
 
   mc_comp_times = xbt_new0(s_mc_comparison_times_t, 1);
 
@@ -163,25 +192,25 @@ void MC_init()
     /* Ignore local variable about time used for tracing */
     MC_ignore_local_variable("start_time", "*");
 
+    /* Main MC state: */
     MC_ignore_global_variable("mc_model_checker");
-
-    // Mot of those things could be moved into mc_model_checker:
-    MC_ignore_global_variable("compared_pointers");
-    MC_ignore_global_variable("mc_comp_times");
-    MC_ignore_global_variable("mc_snapshot_comparison_time");
-    MC_ignore_global_variable("mc_time");
-    MC_ignore_global_variable("smpi_current_rank");
-    MC_ignore_global_variable("counter");       /* Static variable used for tracing */
-    MC_ignore_global_variable("maestro_stack_start");
-    MC_ignore_global_variable("maestro_stack_end");
-    MC_ignore_global_variable("smx_total_comms");
     MC_ignore_global_variable("communications_pattern");
     MC_ignore_global_variable("initial_communications_pattern");
     MC_ignore_global_variable("incomplete_communications_pattern");
 
-    if (MC_is_active()) {
-      MC_ignore_global_variable("mc_diff_info");
-    }
+    /* MC __thread variables: */
+    MC_ignore_global_variable("mc_diff_info");
+    MC_ignore_global_variable("mc_comp_times");
+    MC_ignore_global_variable("mc_snapshot_comparison_time");
+
+    /* This MC state is used in MC replay as well: */
+    MC_ignore_global_variable("mc_time");
+
+    /* Static variable used for tracing */
+    MC_ignore_global_variable("counter");
+
+    /* SIMIX */
+    MC_ignore_global_variable("smx_total_comms");
 
     MC_ignore_heap(mc_time, simix_process_maxpid * sizeof(double));
 
@@ -325,38 +354,6 @@ void MC_exit(void)
   //xbt_abort();
 }
 
-int simcall_HANDLER_mc_random(smx_simcall_t simcall, int min, int max)
-{
-
-  return simcall->mc_value;
-}
-
-
-int MC_random(int min, int max)
-{
-  /*FIXME: return mc_current_state->executed_transition->random.value; */
-  return simcall_mc_random(min, max);
-}
-
-/**
- * \brief Schedules all the process that are ready to run
- */
-void MC_wait_for_requests(void)
-{
-  smx_process_t process;
-  smx_simcall_t req;
-  unsigned int iter;
-
-  while (!xbt_dynar_is_empty(simix_global->process_to_run)) {
-    SIMIX_process_runall();
-      xbt_dynar_foreach(simix_global->process_that_ran, iter, process) {
-      req = &process->simcall;
-      if (req->call != SIMCALL_NONE && !MC_request_is_visible(req))
-        SIMIX_simcall_handle(req, 0);
-    }
-  }
-}
-
 int MC_deadlock_check()
 {
   int deadlock = FALSE;
@@ -403,6 +400,13 @@ void mc_update_comm_pattern(mc_call_type call_type, smx_simcall_t req, int value
  *        a given model-checker stack.
  * \param stack The stack with the transitions to execute.
  * \param start Start index to begin the re-execution.
+ *
+ *  If start==-1, restore the initial state and replay the actions the
+ *  the transitions in the stack.
+ *
+ *  Otherwise, we only replay a part of the transitions of the stacks
+ *  without restoring the state: it is assumed that the current state
+ *  match with the transitions to execute.
  */
 void MC_replay(xbt_fifo_t stack, int start)
 {
@@ -457,7 +461,6 @@ void MC_replay(xbt_fifo_t stack, int start)
   }
 
   MC_SET_STD_HEAP;
-
 
   /* Traverse the stack from the state at position start and re-execute the transitions */
   for (item = start_item;
@@ -762,6 +765,7 @@ void MC_assert(int prop)
     XBT_INFO("*** PROPERTY NOT VALID ***");
     XBT_INFO("**************************");
     XBT_INFO("Counter-example execution trace:");
+    MC_record_dump_path(mc_stack);
     MC_dump_stack_safety(mc_stack);
     MC_print_statistics(mc_stats);
     xbt_abort();
@@ -771,23 +775,6 @@ void MC_assert(int prop)
 void MC_cut(void)
 {
   user_max_depth_reached = 1;
-}
-
-void MC_process_clock_add(smx_process_t process, double amount)
-{
-  mc_time[process->pid] += amount;
-}
-
-double MC_process_clock_get(smx_process_t process)
-{
-  if (mc_time) {
-    if (process != NULL)
-      return mc_time[process->pid];
-    else
-      return -1;
-  } else {
-    return 0;
-  }
 }
 
 void MC_automaton_load(const char *file)
@@ -856,4 +843,22 @@ void MC_dump_stacks(FILE* file)
 
   if (raw_mem_set)
     MC_SET_MC_HEAP;
+}
+#endif
+
+double MC_process_clock_get(smx_process_t process)
+{
+  if (mc_time) {
+    if (process != NULL)
+      return mc_time[process->pid];
+    else
+      return -1;
+  } else {
+    return 0;
+  }
+}
+
+void MC_process_clock_add(smx_process_t process, double amount)
+{
+  mc_time[process->pid] += amount;
 }

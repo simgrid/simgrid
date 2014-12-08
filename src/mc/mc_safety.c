@@ -4,7 +4,11 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "mc_state.h"
+#include "mc_request.h"
+#include "mc_safety.h"
 #include "mc_private.h"
+#include "mc_record.h"
 
 #include "xbt/mmalloc/mmprivate.h"
 

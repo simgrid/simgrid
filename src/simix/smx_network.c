@@ -423,7 +423,7 @@ smx_synchro_t SIMIX_comm_isend(smx_process_t src_proc, smx_rdv_t rdv,
   other_synchro->comm.copy_data_fun = copy_data_fun;
 
 
-  if (MC_is_active()) {
+  if (MC_is_active() || MC_record_replay_is_active()) {
     other_synchro->state = SIMIX_RUNNING;
     return (detached ? NULL : other_synchro);
   }
@@ -532,7 +532,7 @@ smx_synchro_t SIMIX_comm_irecv(smx_process_t dst_proc, smx_rdv_t rdv,
     SIMIX_comm_copy_data(other_synchro);*/
 
 
-  if (MC_is_active()) {
+  if (MC_is_active() || MC_record_replay_is_active()) {
     other_synchro->state = SIMIX_RUNNING;
     return other_synchro;
   }
@@ -593,7 +593,7 @@ void simcall_HANDLER_comm_wait(smx_simcall_t simcall, smx_synchro_t synchro, dou
   xbt_fifo_push(synchro->simcalls, simcall);
   simcall->issuer->waiting_synchro = synchro;
 
-  if (MC_is_active()) {
+  if (MC_is_active() || MC_record_replay_is_active()) {
     int idx = SIMCALL_GET_MC_VALUE(simcall);
     if (idx == 0) {
       synchro->state = SIMIX_DONE;
@@ -630,7 +630,7 @@ void simcall_HANDLER_comm_wait(smx_simcall_t simcall, smx_synchro_t synchro, dou
 
 void simcall_HANDLER_comm_test(smx_simcall_t simcall, smx_synchro_t synchro)
 {
-  if(MC_is_active()){
+  if(MC_is_active() || MC_record_replay_is_active()){
     simcall_comm_test__set__result(simcall, synchro->comm.src_proc && synchro->comm.dst_proc);
     if(simcall_comm_test__get__result(simcall)){
       synchro->state = SIMIX_DONE;
@@ -657,7 +657,7 @@ void simcall_HANDLER_comm_testany(smx_simcall_t simcall, xbt_dynar_t synchros)
   smx_synchro_t synchro;
   simcall_comm_testany__set__result(simcall, -1);
 
-  if (MC_is_active()){
+  if (MC_is_active() || MC_record_replay_is_active()){
     int idx = SIMCALL_GET_MC_VALUE(simcall);
     if(idx == -1){
       SIMIX_simcall_answer(simcall);
@@ -687,7 +687,7 @@ void simcall_HANDLER_comm_waitany(smx_simcall_t simcall, xbt_dynar_t synchros)
   smx_synchro_t synchro;
   unsigned int cursor = 0;
 
-  if (MC_is_active()){
+  if (MC_is_active() || MC_record_replay_is_active()){
     int idx = SIMCALL_GET_MC_VALUE(simcall);
     synchro = xbt_dynar_get_as(synchros, idx, smx_synchro_t);
     xbt_fifo_push(synchro->simcalls, simcall);
@@ -791,7 +791,7 @@ void SIMIX_comm_finish(smx_synchro_t synchro)
       continue; // if process handling comm is killed
     if (simcall->call == SIMCALL_COMM_WAITANY) {
       SIMIX_waitany_remove_simcall_from_actions(simcall);
-      if (!MC_is_active())
+      if (!MC_is_active() && !MC_record_replay_is_active())
         simcall_comm_waitany__set__result(simcall, xbt_dynar_search(simcall_comm_waitany__get__comms(simcall), &synchro));
     }
 
@@ -945,6 +945,7 @@ void SIMIX_comm_cancel(smx_synchro_t synchro)
     synchro->state = SIMIX_CANCELED;
   }
   else if (!MC_is_active() /* when running the MC there are no surf actions */
+           && !MC_record_replay_is_active()
            && (synchro->state == SIMIX_READY || synchro->state == SIMIX_RUNNING)) {
 
     surf_action_cancel(synchro->comm.surf_comm);

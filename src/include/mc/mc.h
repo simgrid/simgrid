@@ -37,6 +37,7 @@ SG_BEGIN_DECL()
 
 /********************************** Configuration of MC **************************************/	
 extern int _sg_do_model_check;
+extern int _sg_do_model_check_record;
 extern int _sg_mc_checkpoint;
 extern int _sg_mc_sparse_checkpoint;
 extern int _sg_mc_soft_dirty;

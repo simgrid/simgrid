@@ -22,7 +22,6 @@ SG_BEGIN_DECL()
 
 typedef struct s_mc_transition *mc_transition_t;
 
-
 /*********** Structures for snapshot comparison **************************/
 
 typedef struct s_mc_heap_ignore_region{
@@ -44,17 +43,8 @@ typedef struct s_stack_region{
 void heap_ignore_region_free(mc_heap_ignore_region_t r);
 void heap_ignore_region_free_voidp(void *r);
 
-/************ Object info *************/
-
-typedef struct s_mc_object_info s_mc_object_info_t, *mc_object_info_t;
 
 /************ DWARF structures *************/
-
-typedef int e_dw_type_type;
-
-typedef struct s_dw_type s_dw_type_t, *dw_type_t;
-
-char* get_type_description(mc_object_info_t info, char *type_name);
 
 SG_END_DECL()
 #endif                          /* _MC_MC_H */

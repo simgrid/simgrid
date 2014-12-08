@@ -2587,6 +2587,28 @@ inline static xbt_dict_t simcall_BODY_asr_get_properties(const char* name) {
     }    
     return self->simcall.result.dp;
   }
+  
+inline static int simcall_BODY_mc_random(int min, int max) {
+    smx_process_t self = SIMIX_process_self();
+
+    /* Go to that function to follow the code flow through the simcall barrier */
+    if (0) simcall_HANDLER_mc_random(&self->simcall, min, max);
+    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
+
+    self->simcall.call = SIMCALL_MC_RANDOM;
+    memset(&self->simcall.result, 0, sizeof(self->simcall.result));
+    memset(self->simcall.args, 0, sizeof(self->simcall.args));
+    self->simcall.args[0].i = (int) min;
+    self->simcall.args[1].i = (int) max;
+    if (self != simix_global->maestro_process) {
+      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name,
+                SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
+      SIMIX_process_yield(self);
+    } else {
+      SIMIX_simcall_handle(&self->simcall, 0);
+    }    
+    return self->simcall.result.i;
+  }
 #ifdef HAVE_LATENCY_BOUND_TRACKING
   
 inline static int simcall_BODY_comm_is_latency_bounded(smx_synchro_t comm) {
@@ -2671,28 +2693,6 @@ inline static int simcall_BODY_mc_compare_snapshots(mc_snapshot_t s1, mc_snapsho
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
     self->simcall.args[0].dp = (void*) s1;
     self->simcall.args[1].dp = (void*) s2;
-    if (self != simix_global->maestro_process) {
-      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name,
-                SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
-      SIMIX_process_yield(self);
-    } else {
-      SIMIX_simcall_handle(&self->simcall, 0);
-    }    
-    return self->simcall.result.i;
-  }
-  
-inline static int simcall_BODY_mc_random(int min, int max) {
-    smx_process_t self = SIMIX_process_self();
-
-    /* Go to that function to follow the code flow through the simcall barrier */
-    if (0) simcall_HANDLER_mc_random(&self->simcall, min, max);
-    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
-
-    self->simcall.call = SIMCALL_MC_RANDOM;
-    memset(&self->simcall.result, 0, sizeof(self->simcall.result));
-    memset(self->simcall.args, 0, sizeof(self->simcall.args));
-    self->simcall.args[0].i = (int) min;
-    self->simcall.args[1].i = (int) max;
     if (self != simix_global->maestro_process) {
       XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name,
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);

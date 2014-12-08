@@ -748,6 +748,22 @@ void mpi_win_create_( int *base, MPI_Aint* size, int* disp_unit, int* info, int*
  }
 }
 
+void mpi_win_post_(int* group, int assert, int* win, int* ierr){
+  *ierr =  MPI_Win_post(smpi_group_f2c(*group), assert, smpi_win_f2c(*win));
+}
+
+void mpi_win_start_(int* group, int assert, int* win, int* ierr){
+  *ierr =  MPI_Win_start(smpi_group_f2c(*group), assert, smpi_win_f2c(*win));
+}
+
+void mpi_win_complete_(int* win, int* ierr){
+  *ierr =  MPI_Win_complete(smpi_win_f2c(*win));
+}
+
+void mpi_win_wait_(int* win, int* ierr){
+  *ierr =  MPI_Win_wait(smpi_win_f2c(*win));
+}
+
 void mpi_win_set_name_ (int*  win, char * name, int* ierr, int size){
  //handle trailing blanks
  while(name[size-1]==' ')size--;
@@ -1729,3 +1745,4 @@ void mpi_comm_get_parent_ ( int* parent, int* ierr){
     *parent = smpi_comm_c2f(tmp);
   }
 }
+

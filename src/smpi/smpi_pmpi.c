@@ -3013,6 +3013,85 @@ int PMPI_Accumulate( void *origin_addr, int origin_count, MPI_Datatype origin_da
 }
 
 
+int PMPI_Win_post(MPI_Group group, int assert, MPI_Win win){
+  int retval = 0;
+  smpi_bench_end();
+  if (win == MPI_WIN_NULL) {
+    retval = MPI_ERR_WIN;
+  } else if (group==MPI_GROUP_NULL){
+    retval = MPI_ERR_GROUP;
+  }
+#ifdef HAVE_TRACING
+  int rank = smpi_process_index();
+  TRACE_smpi_collective_in(rank, -1, __FUNCTION__, NULL);
+#endif
+  retval = smpi_mpi_win_post(group,assert,win);
+#ifdef HAVE_TRACING
+  TRACE_smpi_collective_out(rank, -1, __FUNCTION__);
+#endif
+  smpi_bench_begin();
+  return retval;
+}
+
+int PMPI_Win_start(MPI_Group group, int assert, MPI_Win win){
+  int retval = 0;
+  smpi_bench_end();
+  if (win == MPI_WIN_NULL) {
+    retval = MPI_ERR_WIN;
+  } else if (group==MPI_GROUP_NULL){
+    retval = MPI_ERR_GROUP;
+  }
+  
+#ifdef HAVE_TRACING
+  int rank = smpi_process_index();
+  TRACE_smpi_collective_in(rank, -1, __FUNCTION__, NULL);
+#endif
+  retval = smpi_mpi_win_start(group,assert,win);
+#ifdef HAVE_TRACING
+  TRACE_smpi_collective_out(rank, -1, __FUNCTION__);
+#endif
+  smpi_bench_begin();
+  return retval;
+}
+
+
+int PMPI_Win_complete(MPI_Win win){
+  int retval = 0;
+  smpi_bench_end();
+  if (win == MPI_WIN_NULL) {
+    retval = MPI_ERR_WIN;
+  }
+  
+#ifdef HAVE_TRACING
+  int rank = smpi_process_index();
+  TRACE_smpi_collective_in(rank, -1, __FUNCTION__, NULL);
+#endif
+  retval = smpi_mpi_win_complete(win);
+#ifdef HAVE_TRACING
+  TRACE_smpi_collective_out(rank, -1, __FUNCTION__);
+#endif
+  smpi_bench_begin();
+  return retval;
+}
+
+int PMPI_Win_wait(MPI_Win win){
+  int retval = 0;
+  smpi_bench_end();
+  if (win == MPI_WIN_NULL) {
+    retval = MPI_ERR_WIN;
+  }
+#ifdef HAVE_TRACING
+  int rank = smpi_process_index();
+  TRACE_smpi_collective_in(rank, -1, __FUNCTION__, NULL);
+#endif
+  retval = smpi_mpi_win_wait(win);
+#ifdef HAVE_TRACING
+  TRACE_smpi_collective_out(rank, -1, __FUNCTION__);
+#endif
+  smpi_bench_begin();
+  return retval;
+}
+
 int PMPI_Alloc_mem(MPI_Aint size, MPI_Info info, void *baseptr){
   void *ptr = xbt_malloc(size);
   if(!ptr)
@@ -3664,19 +3743,7 @@ int PMPI_Comm_get_parent( MPI_Comm *parent){
   NOT_YET_IMPLEMENTED
 }
 
-int PMPI_Win_complete(MPI_Win win){
-  NOT_YET_IMPLEMENTED
-}
-
 int PMPI_Win_lock(int lock_type, int rank, int assert, MPI_Win win) {
-  NOT_YET_IMPLEMENTED
-}
-
-int PMPI_Win_post(MPI_Group group, int assert, MPI_Win win){
-  NOT_YET_IMPLEMENTED
-}
-
-int PMPI_Win_start(MPI_Group group, int assert, MPI_Win win){
   NOT_YET_IMPLEMENTED
 }
 
@@ -3688,6 +3755,3 @@ int PMPI_Win_unlock(int rank, MPI_Win win){
   NOT_YET_IMPLEMENTED
 }
 
-int PMPI_Win_wait(MPI_Win win){
-  NOT_YET_IMPLEMENTED
-}

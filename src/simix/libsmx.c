@@ -928,7 +928,7 @@ void simcall_comm_send(smx_process_t src, smx_rdv_t rdv, double task_size, doubl
 
   xbt_assert(rdv, "No rendez-vous point defined for send");
 
-  if (MC_is_active()) {
+  if (MC_is_active() || MC_record_replay_is_active()) {
     /* the model-checker wants two separate simcalls */
     smx_synchro_t comm = NULL; /* MC needs the comm to be set to NULL during the simcall */
     comm = simcall_comm_isend(src, rdv, task_size, rate,
@@ -975,7 +975,7 @@ void simcall_comm_recv(smx_rdv_t rdv, void *dst_buff, size_t * dst_buff_size,
   xbt_assert(isfinite(timeout), "timeout is not finite!");
   xbt_assert(rdv, "No rendez-vous point defined for recv");
 
-  if (MC_is_active()) {
+  if (MC_is_active() || MC_record_replay_is_active()) {
     /* the model-checker wants two separate simcalls */
     smx_synchro_t comm = NULL; /* MC needs the comm to be set to NULL during the simcall */
     comm = simcall_comm_irecv(rdv, dst_buff, dst_buff_size,
@@ -1471,11 +1471,11 @@ int simcall_mc_compare_snapshots(void *s1, void *s2) {
   return simcall_BODY_mc_compare_snapshots(s1, s2);
 }
 
+#endif /* HAVE_MC */
+
 int simcall_mc_random(int min, int max) {
   return simcall_BODY_mc_random(min, max);
 }
-
-#endif /* HAVE_MC */
 
 /* ************************************************************************** */
 
