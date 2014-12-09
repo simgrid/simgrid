@@ -746,7 +746,7 @@ static int migration_tx_fun(int argc, char *argv[])
       /* At stage 1, we do not need timeout. We have to send all the memory
        * pages even though the duration of this tranfer exceeds the timeout
        * value. */
-      XBT_INFO("Stage 1: Gonna send %zd", ramsize);
+      XBT_INFO("Stage 1: Gonna send %llu", ramsize);
       sg_size_t sent = send_migration_data(ms->vm, ms->src_pm, ms->dst_pm, ramsize, ms->mbox, 1, 0, mig_speed, -1);
       remaining_size -= sent;
       computed_during_stage1 = lookup_computed_flop_counts(ms->vm, 1, 0);
@@ -814,7 +814,7 @@ static int migration_tx_fun(int argc, char *argv[])
     sg_size_t sent = 0;
     double clock_prev_send = MSG_get_clock();
     TRY {
-      XBT_INFO("Stage 2, gonna send %d", updated_size);
+      XBT_INFO("Stage 2, gonna send %llu", updated_size);
       sent = send_migration_data(ms->vm, ms->src_pm, ms->dst_pm, updated_size, ms->mbox, 2, stage2_round, mig_speed, mig_timeout);
     } CATCH_ANONYMOUS {
       //hostfailure (if you want to know whether this is the SRC or the DST please check directly in send_migration_data code)
@@ -858,7 +858,7 @@ stage3:
   stop_dirty_page_tracking(ms->vm);
 
   TRY {
-    XBT_INFO("Stage 3: Gonna send %d", remaining_size);
+    XBT_INFO("Stage 3: Gonna send %f", remaining_size);
     send_migration_data(ms->vm, ms->src_pm, ms->dst_pm, remaining_size, ms->mbox, 3, 0, mig_speed, -1);
   } CATCH_ANONYMOUS {
     //hostfailure (if you want to know whether this is the SRC or the DST please check directly in send_migration_data code)
@@ -888,7 +888,7 @@ static int do_migration(msg_vm_t vm, msg_host_t src_pm, msg_host_t dst_pm)
   char *pr_rx_name = get_mig_process_rx_name(vm, src_pm, dst_pm);
   char *pr_tx_name = get_mig_process_tx_name(vm, src_pm, dst_pm);
 
-  msg_process_t tx_process, rx_process; 
+//  msg_process_t tx_process, rx_process; 
 //  MSG_process_create(pr_rx_name, migration_rx_fun, ms, dst_pm);
 //  MSG_process_create(pr_tx_name, migration_tx_fun, ms, src_pm);
 #if 1
@@ -896,13 +896,13 @@ static int do_migration(msg_vm_t vm, msg_host_t src_pm, msg_host_t dst_pm)
  char **argv = xbt_new(char *, 2);
  argv[0] = pr_rx_name;
  argv[1] = NULL;
- rx_process = MSG_process_create_with_arguments(pr_rx_name, migration_rx_fun, ms, dst_pm, 1, argv);
+/*rx_process = */ MSG_process_create_with_arguments(pr_rx_name, migration_rx_fun, ms, dst_pm, 1, argv);
  }
  {
  char **argv = xbt_new(char *, 2);
  argv[0] = pr_tx_name;
  argv[1] = NULL;
- tx_process = MSG_process_create_with_arguments(pr_tx_name, migration_tx_fun, ms, src_pm, 1, argv);
+/* tx_process = */MSG_process_create_with_arguments(pr_tx_name, migration_tx_fun, ms, src_pm, 1, argv);
  }
 #endif
 
