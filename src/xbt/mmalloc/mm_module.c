@@ -343,10 +343,6 @@ void *mmalloc_preinit(void)
   }
   xbt_assert(__mmalloc_default_mdp != NULL);
 
-#if 0 && defined(HAVE_GNU_LD) && defined(MMALLOC_WANT_OVERRIDE_LEGACY)
-  mm_gnuld_legacy_init();
-#endif
-
   return __mmalloc_default_mdp;
 }
 

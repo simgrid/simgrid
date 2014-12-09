@@ -247,7 +247,6 @@ static void MC_get_memory_regions(mc_snapshot_t snapshot)
 {
   const mc_process_t process = &mc_model_checker->process;
   const size_t n = process->object_infos_size;
-
   snapshot->snapshot_regions_count = n + 1;
   snapshot->snapshot_regions = xbt_new0(mc_mem_region_t, n + 1);
 
