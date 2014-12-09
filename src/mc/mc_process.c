@@ -1,8 +1,10 @@
 #include <stddef.h>
 #include <stdbool.h>
 #include <stdint.h>
+#include <errno.h>
 
 #include <sys/types.h>
+#include <fcntl.h>
 #include <unistd.h>
 #include <regex.h>
 #include <sys/mman.h> // PROT_*
@@ -15,7 +17,9 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_process, mc,
                                 "MC process information");
 
-static void MC_init_memory_map_info(mc_process_t process);
+static void MC_process_init_memory_map_info(mc_process_t process);
+static void MC_process_open_memory_file(mc_process_t process);
+
 
 void MC_process_init(mc_process_t process, pid_t pid)
 {
@@ -24,7 +28,9 @@ void MC_process_init(mc_process_t process, pid_t pid)
   if (pid==getpid())
     process->process_flags |= MC_PROCESS_SELF_FLAG;
   process->memory_map = MC_get_memory_map(pid);
-  MC_init_memory_map_info(process);
+  process->memory_file = -1;
+  MC_process_init_memory_map_info(process);
+  MC_process_open_memory_file(process);
 }
 
 void MC_process_clear(mc_process_t process)
@@ -45,6 +51,9 @@ void MC_process_clear(mc_process_t process)
   free(process->object_infos);
   process->object_infos = NULL;
   process->object_infos_size = 0;
+  if (process->memory_file >= 0) {
+    close(process->memory_file);
+  }
 }
 
 #define SO_RE "\\.so[\\.0-9]*$"
@@ -111,7 +120,7 @@ static char* MC_get_lib_name(const char* pathname, struct s_mc_memory_map_re* re
 }
 
 /** @brief Finds the range of the different memory segments and binary paths */
-static void MC_init_memory_map_info(mc_process_t process)
+static void MC_process_init_memory_map_info(mc_process_t process)
 {
   XBT_INFO("Get debug information ...");
   process->maestro_stack_start = NULL;
@@ -215,4 +224,84 @@ dw_frame_t MC_process_find_function(mc_process_t process, void *ip)
     return NULL;
   else
     return MC_file_object_info_find_function(info, ip);
+}
+
+// ***** Memory access
+
+static void MC_process_open_memory_file(mc_process_t process)
+{
+  if (MC_process_is_self(process) || process->memory_file >= 0)
+    return;
+
+  const size_t buffer_size = 30;
+  char buffer[buffer_size];
+  int res = snprintf(buffer, buffer_size, "/proc/%lli/mem", (long long) process->pid);
+  if (res < 0 || res>= buffer_size) {
+    XBT_ERROR("Could not open memory file descriptor for process %lli",
+      (long long) process->pid);
+    return;
+  }
+
+  int fd = open(buffer, O_RDWR);
+  if (fd<0)
+    xbt_die("Could not initialise memory access for remote process");
+  process->memory_file = fd;
+}
+
+static ssize_t pread_whole(int fd, void *buf, size_t count, off_t offset)
+{
+  char* buffer = (char*) buf;
+  ssize_t real_count = count;
+  while (count) {
+    ssize_t res = pread(fd, buffer, count, offset);
+    if (res >= 0) {
+      count  -= res;
+      buffer += res;
+      offset += res;
+    } else if (res==0) {
+      return -1;
+    } else if (errno != EINTR) {
+      return -1;
+    }
+  }
+  return real_count;
+}
+
+static ssize_t pwrite_whole(int fd, const void *buf, size_t count, off_t offset)
+{
+  const char* buffer = (const char*) buf;
+  ssize_t real_count = count;
+  while (count) {
+    ssize_t res = pwrite(fd, buffer, count, offset);
+    if (res >= 0) {
+      count  -= res;
+      buffer += res;
+      offset += res;
+    } else if (res==0) {
+      return -1;
+    } else if (errno != EINTR) {
+      return -1;
+    }
+  }
+  return real_count;
+}
+
+void MC_process_read(mc_process_t process, void* local, const void* remote, size_t len)
+{
+  if (MC_process_is_self(process)) {
+    memcpy(local, remote, len);
+  } else {
+    if (pread_whole(process->memory_file, local, len, (off_t) remote) < 0)
+      xbt_die("Read from process %lli failed", (long long) process->pid);
+  }
+}
+
+void MC_process_write(mc_process_t process, const void* local, void* remote, size_t len)
+{
+  if (MC_process_is_self(process)) {
+    memcpy(remote, local, len);
+  } else {
+    if (pwrite_whole(process->memory_file, local, len, (off_t) remote) < 0)
+      xbt_die("Write to process %lli failed", (long long) process->pid);
+  }
 }

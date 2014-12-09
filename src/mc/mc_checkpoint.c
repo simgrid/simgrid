@@ -121,7 +121,7 @@ static mc_mem_region_t mc_region_new_dense(
   region->permanent_addr = permanent_addr;
   region->size = size;
   region->flat.data = xbt_malloc(size);
-  memcpy(region->flat.data, permanent_addr, size);
+  MC_process_read(&mc_model_checker->process, region->flat.data, permanent_addr, size);
   XBT_DEBUG("New region : type : %d, data : %p (real addr %p), size : %zu",
             region_type, region->flat.data, permanent_addr, size);
   return region;
@@ -163,11 +163,12 @@ static void MC_region_restore(mc_mem_region_t region, mc_mem_region_t ref_region
     break;
 
   case MC_REGION_STORAGE_TYPE_FLAT:
-    memcpy(region->permanent_addr, region->flat.data, region->size);
+    MC_process_write(&mc_model_checker->process, region->flat.data,
+      region->permanent_addr, region->size);
     break;
 
   case MC_REGION_STORAGE_TYPE_CHUNKED:
-    mc_region_restore_sparse(region, ref_region);
+    mc_region_restore_sparse(&mc_model_checker->process, region, ref_region);
     break;
 
   case MC_REGION_STORAGE_TYPE_PRIVATIZED:
@@ -690,11 +691,14 @@ mc_snapshot_t MC_take_snapshot(int num_state)
 
   MC_get_current_fd(snapshot);
 
+  const bool use_soft_dirty = _sg_mc_sparse_checkpoint
+    && _sg_mc_soft_dirty
+    && MC_process_is_self(&mc_model_checker->process);
+
   /* Save the std heap and the writable mapped pages of libsimgrid and binary */
   MC_get_memory_regions(snapshot);
-  if (_sg_mc_sparse_checkpoint && _sg_mc_soft_dirty) {
+  if (use_soft_dirty)
     mc_softdirty_reset();
-  }
 
   snapshot->to_ignore = MC_take_snapshot_ignore();
 
@@ -711,9 +715,8 @@ mc_snapshot_t MC_take_snapshot(int num_state)
   }
 
   MC_snapshot_ignore_restore(snapshot);
-  if (_sg_mc_sparse_checkpoint && _sg_mc_soft_dirty) {
+  if (use_soft_dirty)
     mc_model_checker->parent_snapshot = snapshot;
-  }
   return snapshot;
 }
 
@@ -766,13 +769,17 @@ void MC_restore_snapshot_fds(mc_snapshot_t snapshot)
 
 void MC_restore_snapshot(mc_snapshot_t snapshot)
 {
+  const bool use_soft_dirty = _sg_mc_sparse_checkpoint
+    && _sg_mc_soft_dirty
+    && MC_process_is_self(&mc_model_checker->process);
+
   MC_restore_snapshot_regions(snapshot);
   MC_restore_snapshot_fds(snapshot);
-  if (_sg_mc_sparse_checkpoint && _sg_mc_soft_dirty) {
+  if (use_soft_dirty) {
     mc_softdirty_reset();
   }
   MC_snapshot_ignore_restore(snapshot);
-  if (_sg_mc_sparse_checkpoint && _sg_mc_soft_dirty) {
+  if (use_soft_dirty) {
     mc_model_checker->parent_snapshot = snapshot;
   }
 }

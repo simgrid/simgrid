@@ -7,6 +7,8 @@
 #ifndef MC_PROCESS_H
 #define MC_PROCESS_H
 
+#include <stdbool.h>
+
 #include "simgrid_config.h"
 
 #include <sys/types.h>
@@ -32,10 +34,39 @@ struct s_mc_process {
   mc_object_info_t binary_info;
   mc_object_info_t* object_infos;
   size_t object_infos_size;
+  int memory_file;
 };
 
 void MC_process_init(mc_process_t process, pid_t pid);
 void MC_process_clear(mc_process_t process);
+
+static inline
+bool MC_process_is_self(mc_process_t process)
+{
+  return process->process_flags & MC_PROCESS_SELF_FLAG;
+}
+
+/* Process memory access: */
+
+/** Read data from a process memory
+ *
+ *  @param process the process
+ *  @param local   local memory address (destination)
+ *  @param remote  target process memory address (source)
+ *  @param len     data size
+ */
+void MC_process_read(mc_process_t process, void* local, const void* remote, size_t len);
+
+/** Write data to a process memory
+ *
+ *  @param process the process
+ *  @param local   local memory address (source)
+ *  @param remote  target process memory address (target)
+ *  @param len     data size
+ */
+void MC_process_write(mc_process_t process, const void* local, void* remote, size_t len);
+
+/* Functions, variables of the process: */
 
 mc_object_info_t MC_process_find_object_info(mc_process_t process, void* ip);
 dw_frame_t MC_process_find_function(mc_process_t process, void* ip);

@@ -140,7 +140,6 @@ void s_mc_pages_store::remove_page(size_t pageno)
 /** Store a page in memory */
 size_t s_mc_pages_store::store_page(void* page)
 {
-  xbt_assert(mc_page_offset(page)==0, "Not at the beginning of a page");
   xbt_assert(top_index_ <= this->capacity_, "top_index is not consistent");
 
   // First, we check if a page with the same content is already in the page

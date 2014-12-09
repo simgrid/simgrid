@@ -99,7 +99,7 @@ struct s_mc_mem_region {
 
 mc_mem_region_t mc_region_new_sparse(mc_region_type_t type, void *start_addr, void* data_addr, size_t size, mc_mem_region_t ref_reg);
 void MC_region_destroy(mc_mem_region_t reg);
-void mc_region_restore_sparse(mc_mem_region_t reg, mc_mem_region_t ref_reg);
+void mc_region_restore_sparse(mc_process_t process, mc_mem_region_t reg, mc_mem_region_t ref_reg);
 
 static inline  __attribute__ ((always_inline))
 bool mc_region_contain(mc_mem_region_t region, void* p)
@@ -275,9 +275,13 @@ void MC_free_snapshot(mc_snapshot_t);
 
 int mc_important_snapshot(mc_snapshot_t snapshot);
 
-size_t* mc_take_page_snapshot_region(void* data, size_t page_count, uint64_t* pagemap, size_t* reference_pages);
+size_t* mc_take_page_snapshot_region(mc_process_t process,
+  void* data, size_t page_count, uint64_t* pagemap, size_t* reference_pages);
 void mc_free_page_snapshot_region(size_t* pagenos, size_t page_count);
-void mc_restore_page_snapshot_region(void* start_addr, size_t page_count, size_t* pagenos, uint64_t* pagemap, size_t* reference_pagenos);
+void mc_restore_page_snapshot_region(
+  mc_process_t process,
+  void* start_addr, size_t page_count, size_t* pagenos,
+  uint64_t* pagemap, size_t* reference_pagenos);
 
 void* mc_snapshot_read_fragmented(void* addr, mc_mem_region_t region, void* target, size_t size);
 
