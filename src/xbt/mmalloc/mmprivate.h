@@ -321,4 +321,7 @@ static inline int mmalloc_get_increment(malloc_info* heapinfo) {
 
 void mmcheck(xbt_mheap_t heap);
 
+int mmalloc_exec_using_mm(int argc, const char** argv);
+void mmalloc_ensure_using_mm(int argc, const char** argv);
+
 #endif                          /* __MMPRIVATE_H */

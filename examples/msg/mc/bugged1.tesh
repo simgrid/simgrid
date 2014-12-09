@@ -2,8 +2,7 @@
 
 ! expect signal SIGABRT
 ! timeout 20
-$ ${bindir:=.}/bugged1 --cfg=model-check:1 "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n" --cfg=contexts/stack_size:256
-> [  0.000000] (0:@) Configuration change: Set 'model-check' to '1'
+$ ${bindir:=.}/bugged1 --cfg=model-check:1 "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n" --log=xbt_cfg.thresh:warning --cfg=contexts/stack_size:256
 > [  0.000000] (0:@) Check a safety property
 > [  0.000000] (0:@) Get debug information ...
 > [  0.000000] (0:@) Get debug information done !
@@ -37,4 +36,3 @@ $ ${bindir:=.}/bugged1 --cfg=model-check:1 "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%
 > [  0.000000] (1:server@HostA) Expanded states = 22
 > [  0.000000] (1:server@HostA) Visited states = 56
 > [  0.000000] (1:server@HostA) Executed transitions = 52
-

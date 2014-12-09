@@ -6,6 +6,9 @@
 
 /* Redefine the classical malloc/free/realloc functions so that they fit well in the mmalloc framework */
 #define _GNU_SOURCE
+
+#include <stdlib.h>
+
 #include <dlfcn.h>
 
 #include "mmprivate.h"
@@ -58,11 +61,34 @@ static mm_realloc_t mm_real_realloc = mm_fake_realloc;
 
 #define GET_HEAP() __mmalloc_current_heap
 
+static const char* env_name = "SIMGRID_MALLOC_USE_MM";
+
+int mmalloc_exec_using_mm(int argc, const char** argv)
+{
+  char** argv2 = (char**) malloc(sizeof(char*) * (argc+1));
+  memcpy(argv2, argv, sizeof(char*) * argc);
+  argv2[argc] = NULL;
+  if (setenv(env_name, "1", 1) >= 0) {
+    execv(argv[0], argv2);
+  }
+  unsetenv(env_name);
+  fprintf(stderr, "Could not restart with mm malloc\n");
+  free(argv2);
+  return -1;
+}
+
+void mmalloc_ensure_using_mm(int argc, const char** argv)
+{
+  if (!__mmalloc_default_mdp) {
+    mmalloc_exec_using_mm(argc, argv);
+  }
+}
+
 /** Constructor functions used to initialize the malloc implementation
  */
 static void __attribute__((constructor(101))) mm_legacy_constructor()
 {
-  bool use_mm = !getenv("SIMGRID_MALLOC_NO_USE_MM");
+  bool use_mm = getenv(env_name);
   if (use_mm) {
     __mmalloc_current_heap = mmalloc_preinit();
   } else {

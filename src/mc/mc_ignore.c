@@ -63,6 +63,8 @@ static void checkpoint_ignore_region_free_voidp(void *r)
 
 void MC_ignore_heap(void *address, size_t size)
 {
+  if(!std_heap)
+    return;
 
   int raw_mem_set = (mmalloc_get_current_heap() == mc_heap);
 

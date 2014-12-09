@@ -1,14 +1,7 @@
 #! ./tesh
 
 ! timeout 60
-$ ../../../smpi_script/bin/smpirun -hostfile ${srcdir:=.}/hostfile_non_deterministic  -platform ${srcdir:=.}/../../platforms/cluster.xml --cfg=model-check:1 --cfg=model-check/communications_determinism:1 --cfg=smpi/send_is_detached_thres:0 --cfg=smpi/running_power:1e9 ./smpi_non_deterministic
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'surf/precision' to '1e-9'
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'SMPI'
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/TCP_gamma' to '4194304'
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'model-check' to '1'
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'model-check/communications_determinism' to '1'
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'smpi/send_is_detached_thres' to '0'
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'smpi/running_power' to '1e9'
+$ ../../../smpi_script/bin/smpirun -hostfile ${srcdir:=.}/hostfile_non_deterministic  -platform ${srcdir:=.}/../../platforms/cluster.xml --log=xbt_cfg.thresh:warning --cfg=model-check:1 --cfg=model-check/communications_determinism:1 --cfg=smpi/send_is_detached_thres:0 --cfg=smpi/running_power:1e9 ./smpi_non_deterministic
 > [0.000000] [surf_config/INFO] Switching workstation model to compound since you changed the network and/or cpu model(s)
 > [0.000000] [mc_global/INFO] Check communication determinism
 > [0.000000] [mc_process/INFO] Get debug information ...
