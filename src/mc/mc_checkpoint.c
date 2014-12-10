@@ -632,6 +632,10 @@ static void MC_get_current_fd(mc_snapshot_t snapshot){
     if (strncmp(link, "pipe:", 5) == 0 || strncmp(link, "socket:", 7) == 0)
       continue;
 
+    // If dot_output enabled, do not handle the corresponding file
+    if (dot_output !=  NULL && strcmp(basename(link), _sg_mc_dot_output_file) == 0)
+      continue;
+
     // This is probably a shared memory used by lttng-ust:
     if(strncmp("/dev/shm/ust-shm-tmp-", link, 21)==0)
       continue;
