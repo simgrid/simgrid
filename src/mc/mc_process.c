@@ -254,7 +254,7 @@ static ssize_t pread_whole(int fd, void *buf, size_t count, off_t offset)
   ssize_t real_count = count;
   while (count) {
     ssize_t res = pread(fd, buffer, count, offset);
-    if (res >= 0) {
+    if (res > 0) {
       count  -= res;
       buffer += res;
       offset += res;
@@ -273,7 +273,7 @@ static ssize_t pwrite_whole(int fd, const void *buf, size_t count, off_t offset)
   ssize_t real_count = count;
   while (count) {
     ssize_t res = pwrite(fd, buffer, count, offset);
-    if (res >= 0) {
+    if (res > 0) {
       count  -= res;
       buffer += res;
       offset += res;
