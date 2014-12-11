@@ -244,26 +244,29 @@ static void MC_snapshot_add_region(int index, mc_snapshot_t snapshot, mc_region_
   return;
 }
 
-static void MC_get_memory_regions(mc_snapshot_t snapshot)
+static void MC_get_memory_regions(mc_process_t process, mc_snapshot_t snapshot)
 {
-  const mc_process_t process = &mc_model_checker->process;
   const size_t n = process->object_infos_size;
   snapshot->snapshot_regions_count = n + 1;
   snapshot->snapshot_regions = xbt_new0(mc_mem_region_t, n + 1);
 
   for (size_t i = 0; i!=n; ++i) {
-    mc_object_info_t object_info = mc_model_checker->process.object_infos[i];
+    mc_object_info_t object_info = process->object_infos[i];
     MC_snapshot_add_region(i, snapshot, MC_REGION_TYPE_DATA, object_info,
       object_info->start_rw, object_info->start_rw,
       object_info->end_rw - object_info->start_rw);
   }
 
-  void *start_heap = std_heap->base;
-  void *end_heap = std_heap->breakval;
+  xbt_mheap_t heap = MC_process_get_heap(process);
+  void *start_heap = heap->base;
+  void *end_heap = heap->breakval;
+
   MC_snapshot_add_region(n, snapshot, MC_REGION_TYPE_HEAP, NULL,
                         start_heap, start_heap,
                         (char *) end_heap - (char *) start_heap);
-  snapshot->heap_bytes_used = mmalloc_get_bytes_used(std_heap);
+  snapshot->heap_bytes_used = mmalloc_get_bytes_used_remote(
+    heap->heaplimit,
+    MC_process_get_malloc_info(process));
 
 #ifdef HAVE_SMPI
   if (smpi_privatize_global_variables && smpi_process_count()) {
@@ -679,6 +682,7 @@ static void MC_get_current_fd(mc_snapshot_t snapshot){
 
 mc_snapshot_t MC_take_snapshot(int num_state)
 {
+  mc_process_t mc_process = &mc_model_checker->process;
   mc_snapshot_t snapshot = xbt_new0(s_mc_snapshot_t, 1);
 
   snapshot->enabled_processes = xbt_dynar_new(sizeof(int), NULL);
@@ -693,10 +697,10 @@ mc_snapshot_t MC_take_snapshot(int num_state)
 
   const bool use_soft_dirty = _sg_mc_sparse_checkpoint
     && _sg_mc_soft_dirty
-    && MC_process_is_self(&mc_model_checker->process);
+    && MC_process_is_self(mc_process);
 
   /* Save the std heap and the writable mapped pages of libsimgrid and binary */
-  MC_get_memory_regions(snapshot);
+  MC_get_memory_regions(mc_process, snapshot);
   if (use_soft_dirty)
     mc_softdirty_reset();
 
@@ -782,6 +786,8 @@ void MC_restore_snapshot(mc_snapshot_t snapshot)
   if (use_soft_dirty) {
     mc_model_checker->parent_snapshot = snapshot;
   }
+
+  mc_model_checker->process.cache_flags = 0;
 }
 
 mc_snapshot_t simcall_HANDLER_mc_snapshot(smx_simcall_t simcall)

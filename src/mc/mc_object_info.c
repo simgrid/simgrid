@@ -24,3 +24,15 @@ dw_frame_t MC_file_object_info_find_function(mc_object_info_t info, void *ip)
   }
   return NULL;
 }
+
+dw_variable_t MC_file_object_info_find_variable_by_name(mc_object_info_t info, const char* name)
+{
+  unsigned int cursor = 0;
+  dw_variable_t variable;
+  xbt_dynar_foreach(info->global_variables, cursor, variable){
+    if(!strcmp(name, variable->name))
+      return variable;
+  }
+
+  return NULL;
+}

@@ -324,4 +324,6 @@ void mmcheck(xbt_mheap_t heap);
 int mmalloc_exec_using_mm(int argc, const char** argv);
 void mmalloc_ensure_using_mm(int argc, const char** argv);
 
+size_t mmalloc_get_bytes_used_remote(size_t heaplimit, const malloc_info* heapinfo);
+
 #endif                          /* __MMPRIVATE_H */

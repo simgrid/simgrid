@@ -31,7 +31,7 @@ size_t* mc_take_page_snapshot_region(mc_process_t process,
 
   void* temp = NULL;
   if (!is_self)
-    temp = malloc(xbt_pagebits);
+    temp = malloc(xbt_pagesize);
 
   for (size_t i=0; i!=page_count; ++i) {
     bool softclean = pagemap && !(pagemap[i] & SOFT_DIRTY);

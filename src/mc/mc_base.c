@@ -10,6 +10,11 @@
 #include "../simix/smx_private.h"
 #include "mc_record.h"
 
+#ifdef HAVE_MC
+#include "mc_process.h"
+#include "mc_model_checker.h"
+#endif
+
 XBT_LOG_NEW_CATEGORY(mc, "All MC categories");
 
 /**

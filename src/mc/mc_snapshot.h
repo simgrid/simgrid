@@ -303,10 +303,12 @@ void* mc_snapshot_read_pointer(void* addr, mc_snapshot_t snapshot, int process_i
 }
 
 static inline __attribute__ ((always_inline))
-  void* mc_snapshot_get_heap_end(mc_snapshot_t snapshot) {
+void* mc_snapshot_get_heap_end(mc_snapshot_t snapshot) {
   if(snapshot==NULL)
       xbt_die("snapshot is NULL");
-  void** addr = &(std_heap->breakval);
+  // This is &std_heap->breakval in the target process:
+  void** addr = &MC_process_get_heap(&mc_model_checker->process)->breakval;
+  // Read (std_heap->breakval) in the target process (*addr i.e. std_heap->breakval):
   return mc_snapshot_read_pointer(addr, snapshot, MC_ANY_PROCESS_INDEX);
 }
 

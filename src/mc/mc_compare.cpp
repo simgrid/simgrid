@@ -102,6 +102,8 @@ static int compare_areas_with_type(struct mc_compare_state& state,
                                    void* real_area2, mc_snapshot_t snapshot2, mc_mem_region_t region2,
                                    dw_type_t type, int pointer_level)
 {
+  mc_process_t process = &mc_model_checker->process;
+
   unsigned int cursor = 0;
   dw_type_t member, subtype, subsubtype;
   int elm_size, i, res;
@@ -190,10 +192,10 @@ static int compare_areas_with_type(struct mc_compare_state& state,
       // * a pointer leads to the read-only segment of the current object;
       // * a pointer lead to a different ELF object.
 
-      if (addr_pointed1 > std_heap
+      if (addr_pointed1 > process->heap_address
           && addr_pointed1 < mc_snapshot_get_heap_end(snapshot1)) {
         if (!
-            (addr_pointed2 > std_heap
+            (addr_pointed2 > process->heap_address
              && addr_pointed2 < mc_snapshot_get_heap_end(snapshot2)))
           return 1;
         // The pointers are both in the heap:
@@ -383,6 +385,8 @@ static int compare_local_variables(int process_index,
 
 int snapshot_compare(void *state1, void *state2)
 {
+  mc_process_t process = &mc_model_checker->process;
+
   mc_snapshot_t s1, s2;
   int num1, num2;
 
@@ -481,9 +485,9 @@ int snapshot_compare(void *state1, void *state2)
 #endif
 
   /* Init heap information used in heap comparison algorithm */
-  xbt_mheap_t heap1 = (xbt_mheap_t) mc_snapshot_read(std_heap, s1, MC_NO_PROCESS_INDEX,
+  xbt_mheap_t heap1 = (xbt_mheap_t) mc_snapshot_read(process->heap_address, s1, MC_NO_PROCESS_INDEX,
     alloca(sizeof(struct mdesc)), sizeof(struct mdesc));
-  xbt_mheap_t heap2 = (xbt_mheap_t) mc_snapshot_read(std_heap, s2, MC_NO_PROCESS_INDEX,
+  xbt_mheap_t heap2 = (xbt_mheap_t) mc_snapshot_read(process->heap_address, s2, MC_NO_PROCESS_INDEX,
     alloca(sizeof(struct mdesc)), sizeof(struct mdesc));
   res_init = init_heap_information(heap1, heap2, s1->to_ignore, s2->to_ignore);
   if (res_init == -1) {

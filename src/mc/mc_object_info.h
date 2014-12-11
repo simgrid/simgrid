@@ -100,6 +100,7 @@ mc_object_info_t MC_find_object_info(memory_map_t maps, const char* name, int ex
 void MC_free_object_info(mc_object_info_t* p);
 
 dw_frame_t MC_file_object_info_find_function(mc_object_info_t info, void *ip);
+dw_variable_t MC_file_object_info_find_variable_by_name(mc_object_info_t info, const char* name);
 
 void MC_post_process_object_info(mc_process_t process, mc_object_info_t info);
 

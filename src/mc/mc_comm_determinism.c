@@ -153,6 +153,7 @@ static void print_communications_pattern(xbt_dynar_t comms_pattern)
 
 static void update_comm_pattern(mc_comm_pattern_t comm_pattern, smx_synchro_t comm)
 {
+  mc_process_t process = &mc_model_checker->process;
   void *addr_pointed;
   comm_pattern->src_proc = comm->comm.src_proc->pid;
   comm_pattern->dst_proc = comm->comm.dst_proc->pid;
@@ -164,7 +165,8 @@ static void update_comm_pattern(mc_comm_pattern_t comm_pattern, smx_synchro_t co
     comm_pattern->data_size = *(comm->comm.dst_buff_size);
     comm_pattern->data = xbt_malloc0(comm_pattern->data_size);
     addr_pointed = *(void **) comm->comm.src_buff;
-    if (addr_pointed > (void*) std_heap && addr_pointed < std_heap->breakval)
+    if (addr_pointed > (void*) process->heap_address
+        && addr_pointed < MC_process_get_heap(process)->breakval)
       memcpy(comm_pattern->data, addr_pointed, comm_pattern->data_size);
     else
       memcpy(comm_pattern->data, comm->comm.src_buff, comm_pattern->data_size);
@@ -175,6 +177,7 @@ static void update_comm_pattern(mc_comm_pattern_t comm_pattern, smx_synchro_t co
 
 void get_comm_pattern(xbt_dynar_t list, smx_simcall_t request, mc_call_type call_type)
 {
+  mc_process_t process = &mc_model_checker->process;
   mc_comm_pattern_t pattern = NULL;
   pattern = xbt_new0(s_mc_comm_pattern_t, 1);
   pattern->num = ++nb_comm_pattern;
@@ -188,7 +191,8 @@ void get_comm_pattern(xbt_dynar_t list, smx_simcall_t request, mc_call_type call
     pattern->data_size = pattern->comm->comm.src_buff_size;
     pattern->data = xbt_malloc0(pattern->data_size);
     addr_pointed = *(void **) pattern->comm->comm.src_buff;
-    if (addr_pointed > (void*) std_heap && addr_pointed < std_heap->breakval)
+    if (addr_pointed > (void*) process->heap_address
+      && addr_pointed < MC_process_get_heap(process)->breakval)
       memcpy(pattern->data, addr_pointed, pattern->data_size);
     else
       memcpy(pattern->data, pattern->comm->comm.src_buff, pattern->data_size);

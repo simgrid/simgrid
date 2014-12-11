@@ -37,9 +37,12 @@ void visited_state_free_voidp(void *s)
  */
 static mc_visited_state_t visited_state_new()
 {
+  mc_process_t process = &(mc_model_checker->process);
   mc_visited_state_t new_state = NULL;
   new_state = xbt_new0(s_mc_visited_state_t, 1);
-  new_state->heap_bytes_used = mmalloc_get_bytes_used(std_heap);
+  new_state->heap_bytes_used = mmalloc_get_bytes_used_remote(
+    MC_process_get_heap(process)->heaplimit,
+    MC_process_get_malloc_info(process));
   new_state->nb_processes = xbt_swag_size(simix_global->process_list);
   new_state->system_state = MC_take_snapshot(mc_stats->expanded_states);
   new_state->num = mc_stats->expanded_states;
@@ -52,11 +55,14 @@ mc_visited_pair_t MC_visited_pair_new(int pair_num,
                                       xbt_automaton_state_t automaton_state,
                                       xbt_dynar_t atomic_propositions)
 {
+  mc_process_t process = &(mc_model_checker->process);
   mc_visited_pair_t pair = NULL;
   pair = xbt_new0(s_mc_visited_pair_t, 1);
   pair->graph_state = MC_state_new();
   pair->graph_state->system_state = MC_take_snapshot(pair_num);
-  pair->heap_bytes_used = mmalloc_get_bytes_used(std_heap);
+  pair->heap_bytes_used = mmalloc_get_bytes_used_remote(
+    MC_process_get_heap(process)->heaplimit,
+    MC_process_get_malloc_info(process));
   pair->nb_processes = xbt_swag_size(simix_global->process_list);
   pair->automaton_state = automaton_state;
   pair->num = pair_num;

@@ -353,25 +353,29 @@ void mmalloc_postexit(void)
   // xbt_mheap_destroy_no_free(__mmalloc_default_mdp);
 }
 
-size_t mmalloc_get_bytes_used(xbt_mheap_t heap){
-  int i = 0, j = 0;
+// This is the underlying implementation of mmalloc_get_bytes_used_remote.
+// Is it used directly in order to evaluate the bytes used from a different
+// process.
+size_t mmalloc_get_bytes_used_remote(size_t heaplimit, const malloc_info* heapinfo)
+{
   int bytes = 0;
-  
-  while(i<=((struct mdesc *)heap)->heaplimit){
-    if(((struct mdesc *)heap)->heapinfo[i].type == MMALLOC_TYPE_UNFRAGMENTED){
-      if(((struct mdesc *)heap)->heapinfo[i].busy_block.busy_size > 0)
-        bytes += ((struct mdesc *)heap)->heapinfo[i].busy_block.busy_size;
-     
-    } else if(((struct mdesc *)heap)->heapinfo[i].type > 0){
-      for(j=0; j < (size_t) (BLOCKSIZE >> ((struct mdesc *)heap)->heapinfo[i].type); j++){
-        if(((struct mdesc *)heap)->heapinfo[i].busy_frag.frag_size[j] > 0)
-          bytes += ((struct mdesc *)heap)->heapinfo[i].busy_frag.frag_size[j];
+  for (size_t i=0; i<=heaplimit; ++i){
+    if (heapinfo[i].type == MMALLOC_TYPE_UNFRAGMENTED){
+      if (heapinfo[i].busy_block.busy_size > 0)
+        bytes += heapinfo[i].busy_block.busy_size;
+    } else if (heapinfo[i].type > 0) {
+      for (size_t j=0; j < (size_t) (BLOCKSIZE >> heapinfo[i].type); j++){
+        if(heapinfo[i].busy_frag.frag_size[j] > 0)
+          bytes += heapinfo[i].busy_frag.frag_size[j];
       }
     }
-    i++; 
   }
-
   return bytes;
+}
+
+size_t mmalloc_get_bytes_used(const xbt_mheap_t heap){
+  const struct mdesc* heap_data = (const struct mdesc *) heap;
+  return mmalloc_get_bytes_used_remote(heap_data->heaplimit, heap_data->heapinfo);
 }
 
 ssize_t mmalloc_get_busy_size(xbt_mheap_t heap, void *ptr){

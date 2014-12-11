@@ -1,3 +1,4 @@
+#include <assert.h>
 #include <stddef.h>
 #include <stdbool.h>
 #include <stdint.h>
@@ -29,8 +30,20 @@ void MC_process_init(mc_process_t process, pid_t pid)
     process->process_flags |= MC_PROCESS_SELF_FLAG;
   process->memory_map = MC_get_memory_map(pid);
   process->memory_file = -1;
+  process->cache_flags = 0;
+  process->heap = NULL;
+  process->heap_info = NULL;
   MC_process_init_memory_map_info(process);
   MC_process_open_memory_file(process);
+
+  // Read std_heap (is a struct mdesc*):
+  dw_variable_t std_heap_var = MC_process_find_variable_by_name(process, "std_heap");
+  if (!std_heap_var)
+    xbt_die("No heap information in the target process");
+  if(!std_heap_var->address)
+    xbt_die("No constant address for this variable");
+  MC_process_read(process, &process->heap_address,
+    std_heap_var->address, sizeof(struct mdesc*));
 }
 
 void MC_process_clear(mc_process_t process)
@@ -54,6 +67,46 @@ void MC_process_clear(mc_process_t process)
   if (process->memory_file >= 0) {
     close(process->memory_file);
   }
+
+  process->cache_flags = 0;
+
+  free(process->heap);
+  process->heap = NULL;
+
+  free(process->heap_info);
+  process->heap_info = NULL;
+}
+
+void MC_process_refresh_heap(mc_process_t process)
+{
+  assert(!MC_process_is_self(process));
+  // Read/dereference/refresh the std_heap pointer:
+  if (!process->heap) {
+    xbt_mheap_t oldheap  = mmalloc_get_current_heap();
+    MC_SET_MC_HEAP;
+    process->heap = malloc(sizeof(struct mdesc));
+    mmalloc_set_current_heap(oldheap);
+  }
+  MC_process_read(process, process->heap,
+    process->heap_address, sizeof(struct mdesc));
+}
+
+void MC_process_refresh_malloc_info(mc_process_t process)
+{
+  assert(!MC_process_is_self(process));
+  if (!process->cache_flags & MC_PROCESS_CACHE_FLAG_HEAP)
+    MC_process_refresh_heap(process);
+  // Refresh process->heapinfo:
+  size_t malloc_info_bytesize = process->heap->heaplimit * sizeof(malloc_info);
+
+  xbt_mheap_t oldheap  = mmalloc_get_current_heap();
+  MC_SET_MC_HEAP;
+  process->heap_info = (malloc_info*) realloc(process->heap_info,
+    malloc_info_bytesize);
+  mmalloc_set_current_heap(oldheap);
+
+  MC_process_read(process, process->heap_info,
+    process->heap->heapinfo, malloc_info_bytesize);
 }
 
 #define SO_RE "\\.so[\\.0-9]*$"
@@ -217,6 +270,8 @@ mc_object_info_t MC_process_find_object_info(mc_process_t process, void *ip)
   return NULL;
 }
 
+// Functions, variables…
+
 dw_frame_t MC_process_find_function(mc_process_t process, void *ip)
 {
   mc_object_info_t info = MC_process_find_object_info(process, ip);
@@ -224,6 +279,19 @@ dw_frame_t MC_process_find_function(mc_process_t process, void *ip)
     return NULL;
   else
     return MC_file_object_info_find_function(info, ip);
+}
+
+dw_variable_t MC_process_find_variable_by_name(mc_process_t process, const char* name)
+{
+  const size_t n = process->object_infos_size;
+  size_t i;
+  for (i=0; i!=n; ++i) {
+    mc_object_info_t info =process->object_infos[i];
+    dw_variable_t var = MC_file_object_info_find_variable_by_name(info, name);
+    if (var)
+      return var;
+  }
+  return NULL;
 }
 
 // ***** Memory access

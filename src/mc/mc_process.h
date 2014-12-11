@@ -13,7 +13,13 @@
 
 #include <sys/types.h>
 
+#include <xbt/mmalloc.h>
+#include "xbt/mmalloc/mmprivate.h"
+
+#include "simix/popping_private.h"
+
 #include "mc_forward.h"
+#include "mc_mmalloc.h" // std_heap
 #include "mc_memory_map.h"
 
 SG_BEGIN_DECL()
@@ -22,6 +28,13 @@ typedef enum {
   MC_PROCESS_NO_FLAG = 0,
   MC_PROCESS_SELF_FLAG = 1,
 } e_mc_process_flags_t;
+
+// Those flags are used to track down which cached information
+// is still up to date and which information needs to be updated.
+typedef enum {
+  MC_PROCESS_CACHE_FLAG_HEAP = 1,
+  MC_PROCESS_CACHE_FLAG_MALLOC_INFO = 2,
+} e_mc_process_cache_flags_t ;
 
 /** Representation of a process
  */
@@ -35,10 +48,49 @@ struct s_mc_process {
   mc_object_info_t* object_infos;
   size_t object_infos_size;
   int memory_file;
+
+  // Cache: don't use those fields directly but with the getters
+  // which ensure that proper synchronisation has been done.
+
+  e_mc_process_cache_flags_t cache_flags;
+
+  /** Address of the heap structure in the target process.
+   */
+  void* heap_address;
+
+  /** Copy of the heap structure of the process
+   *
+   *  This is refreshed with the `MC_process_refresh` call.
+   *  This is not used if the process is the current one:
+   *  use `MC_process_get_heap_info` in order to use it.
+   */
+   xbt_mheap_t heap;
+
+  /** Copy of the allocation info structure
+   *
+   *  This is refreshed with the `MC_process_refresh` call.
+   *  This is not used if the process is the current one:
+   *  use `MC_process_get_malloc_info` in order to use it.
+   */
+  malloc_info* heap_info;
 };
 
 void MC_process_init(mc_process_t process, pid_t pid);
 void MC_process_clear(mc_process_t process);
+
+/** Refresh the information about the process
+ *
+ *  Do not use direclty, this is used by the getters when appropriate
+ *  in order to have fresh data.
+ */
+void MC_process_refresh_heap(mc_process_t process);
+
+/** Refresh the information about the process
+ *
+ *  Do not use direclty, this is used by the getters when appropriate
+ *  in order to have fresh data.
+ * */
+void MC_process_refresh_malloc_info(mc_process_t process);
 
 static inline
 bool MC_process_is_self(mc_process_t process)
@@ -70,6 +122,28 @@ void MC_process_write(mc_process_t process, const void* local, void* remote, siz
 
 mc_object_info_t MC_process_find_object_info(mc_process_t process, void* ip);
 dw_frame_t MC_process_find_function(mc_process_t process, void* ip);
+
+static inline xbt_mheap_t MC_process_get_heap(mc_process_t process)
+{
+  if (MC_process_is_self(process))
+    return std_heap;
+  if (!(process->cache_flags & MC_PROCESS_CACHE_FLAG_HEAP))
+    MC_process_refresh_heap(process);
+  return process->heap;
+}
+
+static inline malloc_info* MC_process_get_malloc_info(mc_process_t process)
+{
+  if (MC_process_is_self(process))
+    return std_heap->heapinfo;
+  if (!(process->cache_flags & MC_PROCESS_CACHE_FLAG_MALLOC_INFO))
+    MC_process_refresh_malloc_info(process);
+  return process->heap_info;
+}
+
+/** Find (one occurence of) the named variable definition
+ */
+dw_variable_t MC_process_find_variable_by_name(mc_process_t process, const char* name);
 
 SG_END_DECL()
 

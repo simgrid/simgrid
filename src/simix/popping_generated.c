@@ -15,6 +15,8 @@
 
 #include "smx_private.h"
 #ifdef HAVE_MC
+#include "mc/mc_process.h"
+#include "mc/mc_model_checker.h"
 #endif
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_popping);
@@ -162,6 +164,11 @@ const char* simcall_names[] = {
  */
 void SIMIX_simcall_handle(smx_simcall_t simcall, int value) {
   XBT_DEBUG("Handling simcall %p: %s", simcall, SIMIX_simcall_name(simcall->call));
+  #ifdef HAVE_MC
+  if (mc_model_checker) {
+    mc_model_checker->process.cache_flags = 0;
+  }
+  #endif
   SIMCALL_SET_MC_VALUE(simcall, value);
   if (simcall->issuer->context->iwannadie && simcall->call != SIMCALL_PROCESS_CLEANUP)
     return;

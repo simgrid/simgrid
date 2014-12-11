@@ -430,6 +430,7 @@ mc_mem_region_t MC_get_heap_region(mc_snapshot_t snapshot)
 
 int mmalloc_compare_heap(mc_snapshot_t snapshot1, mc_snapshot_t snapshot2)
 {
+  mc_process_t process = &mc_model_checker->process;
   struct s_mc_diff *state = mc_diff_info;
 
   /* Start comparison */
@@ -449,9 +450,12 @@ int mmalloc_compare_heap(mc_snapshot_t snapshot1, mc_snapshot_t snapshot2)
   mc_mem_region_t heap_region1 = MC_get_heap_region(snapshot1);
   mc_mem_region_t heap_region2 = MC_get_heap_region(snapshot2);
 
+  // This is the address of std_heap->heapinfo in the application process:
+  void* heapinfo_address = &((xbt_mheap_t) process->heap_address)->heapinfo;
+
   // This is in snapshot do not use them directly:
-  malloc_info* heapinfos1 = mc_snapshot_read_pointer(&std_heap->heapinfo, snapshot1, MC_NO_PROCESS_INDEX);
-  malloc_info* heapinfos2 = mc_snapshot_read_pointer(&std_heap->heapinfo, snapshot2, MC_NO_PROCESS_INDEX);
+  malloc_info* heapinfos1 = mc_snapshot_read_pointer(heapinfo_address, snapshot1, MC_NO_PROCESS_INDEX);
+  malloc_info* heapinfos2 = mc_snapshot_read_pointer(heapinfo_address, snapshot2, MC_NO_PROCESS_INDEX);
 
   while (i1 <= state->heaplimit) {
 
@@ -1135,6 +1139,7 @@ int compare_heap_area(int process_index, void *area1, void *area2, mc_snapshot_t
                       mc_snapshot_t snapshot2, xbt_dynar_t previous,
                       dw_type_t type, int pointer_level)
 {
+  mc_process_t process = &mc_model_checker->process;
 
   struct s_mc_diff *state = mc_diff_info;
 
@@ -1151,8 +1156,11 @@ int compare_heap_area(int process_index, void *area1, void *area2, mc_snapshot_t
 
   int match_pairs = 0;
 
-  malloc_info* heapinfos1 = mc_snapshot_read_pointer(&std_heap->heapinfo, snapshot1, process_index);
-  malloc_info* heapinfos2 = mc_snapshot_read_pointer(&std_heap->heapinfo, snapshot2, process_index);
+  // This is the address of std_heap->heapinfo in the application process:
+  void* heapinfo_address = &((xbt_mheap_t) process->heap_address)->heapinfo;
+
+  malloc_info* heapinfos1 = mc_snapshot_read_pointer(heapinfo_address, snapshot1, process_index);
+  malloc_info* heapinfos2 = mc_snapshot_read_pointer(heapinfo_address, snapshot2, process_index);
 
   malloc_info heapinfo_temp1, heapinfo_temp2;
 

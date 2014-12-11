@@ -81,6 +81,7 @@ static void mc_hash_value(mc_hash_t * hash, mc_hashing_state * state,
                           mc_object_info_t info, const void *address,
                           dw_type_t type)
 {
+  mc_process_t process = &mc_model_checker->process;
 top:
 
   switch (type->type) {
@@ -175,8 +176,8 @@ top:
                             && pointed <= (void *) binary_info->end_rw)
           || (pointed >= (void *) libsimgrid_info->start_rw
               && pointed <= (void *) libsimgrid_info->end_rw)
-          || (pointed >= std_heap
-              && pointed < (void *) ((const char *) std_heap + STD_HEAP_SIZE));
+          || (pointed >= process->heap_address
+              && pointed < (void *) ((const char *) process->heap_address + STD_HEAP_SIZE));
       if (!valid_pointer) {
         XBT_DEBUG("Hashed pointed data %p is in an ignored range", pointed);
         return;
@@ -224,8 +225,8 @@ static void mc_hash_object_globals(mc_hash_t * hash, mc_hashing_state * state,
                           && address <= binary_info->end_rw)
         || (address >= libsimgrid_info->start_rw
             && address <= libsimgrid_info->end_rw)
-        || (address >= (const char *) std_heap
-            && address < (const char *) std_heap + STD_HEAP_SIZE);
+        || (address >= (const char *) process->heap_address
+            && address < (const char *) process->heap_address + STD_HEAP_SIZE);
     if (!valid_pointer)
       continue;
 

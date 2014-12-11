@@ -34,17 +34,6 @@ static dw_type_t find_type_by_name(mc_object_info_t info, const char* name) {
   return NULL;
 }
 
-static dw_variable_t find_global_variable_by_name(mc_object_info_t info, const char* name) {
-  unsigned int cursor = 0;
-  dw_variable_t variable;
-  xbt_dynar_foreach(info->global_variables, cursor, variable){
-    if(!strcmp(name, variable->name))
-      return variable;
-  }
-
-  return NULL;
-}
-
 static dw_frame_t find_function_by_name(mc_object_info_t info, const char* name) {
   xbt_dict_cursor_t cursor = 0;
   dw_frame_t subprogram;
@@ -100,7 +89,7 @@ static void test_local_variable(mc_object_info_t info, const char* function, con
 static dw_variable_t test_global_variable(mc_object_info_t info, const char* name, void* address, long byte_size) {
   mc_process_t process = &mc_model_checker->process;
   
-  dw_variable_t variable = find_global_variable_by_name(info, name);
+  dw_variable_t variable = MC_file_object_info_find_variable_by_name(info, name);
   xbt_assert(variable, "Global variable %s was not found", name);
   xbt_assert(!strcmp(variable->name, name), "Name mismatch for %s", name);
   xbt_assert(variable->global, "Variable %s is not global", name);
