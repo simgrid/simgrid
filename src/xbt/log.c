@@ -1156,6 +1156,10 @@ static xbt_log_setting_t _xbt_log_parse_setting(const char *control_string)
 
     if (!strncmp(neweq, "file:", 5)) {
       set->appender = xbt_log_appender_file_new(neweq + 5);
+    }else if (!strncmp(neweq, "rollfile:", 9)) {
+		set->appender = xbt_log_appender2_file_new(neweq + 9,1);
+    }else if (!strncmp(neweq, "splitfile:", 10)) {
+		set->appender = xbt_log_appender2_file_new(neweq + 10,0);
     } else {
       THROWF(arg_error, 0, "Unknown appender log type: '%s'", neweq);
     }
