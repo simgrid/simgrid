@@ -6,11 +6,37 @@
 # CallType handler? name (resulttype,resultcast) (arg0name,arg0type,arg0cast) (arg1name,arg1type,arg1cast)
 
 # CallType must be one of the three:
-#  - Func: returning a value immediately
-#  - Blck: Blocking call that does not return in the same scheduling round
+#
+#  - Func: returning a value immediately (within the same scheduling round)
+#    examples: all getters that only retrieve informations with no side effect
+#
 #  - Proc: not returning any value (but doing so immediately) 
+#    examples: all setters, *_cancel 
+#
+#  - Blck: Blocking call that does not return in the same scheduling round.
+#    The answer requires some interaction with SURF, even if this can
+#    still occure at the same timestamp under some circonstances (eg
+#    if the surf_action cannot start because of resources that are down)
+#    examples: things that last some time (communicate, execute, mutex_lock)
+#
+#    In a perfect world, these answers would also be handled by the
+#    script, but we are not there yet. Instead, the answer is manually
+#    generated in one of the SIMIX_post_*() functions, that are called
+#    when we unpack the done and failed actions returned by surf after
+#    a surf simulation round. Weird things happen if you forget to
+#    answer a given simcall in there...
+
+
 
 # Handler? is either "H" if we need to generate a handler or "-" if we should go without handlers
+
+# I wish we could completely remove the handlers as their only use is
+# to adapt the interface between the exported symbol that is visible
+# by the user applications and the internal symbol that is implemented 
+# by the kernel. 
+# The only remaining use of that mechanism is to add the caller
+# identity as a parameter of internal call, but that could be
+# automatized too (eg by having a special parameter type called "self")
 
 Func - host_get_by_name (void*, smx_host_t) (name, const char*)
 Func - host_get_name (const char*) (host, void*, smx_host_t)
