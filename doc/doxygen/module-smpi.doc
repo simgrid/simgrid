@@ -72,7 +72,7 @@ ELF executable has been introduced in SimGrid 3.11. By using the <tt>smpi/
 privatize_global_variableles</tt> option to yes, SMPI will duplicate
 the segments containing the global variables and when needed, will map 
 the right one in memory. This needs ELF executables and mmap on the system
-(Linux and recent BSDs should be compatible). As no copy is involved, 
+(Linux and recent BSDs should be compatible). %As no copy is involved, 
 performance should not be altered (but memory occupation will be higher).
 
 This solution actually works really good for a good number of MPI 
