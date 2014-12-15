@@ -48,7 +48,7 @@ feature, please get in touch with us: we can guide you though the
 SimGrid code to help you implementing it, and we'd glad to integrate
 it in the main project afterward if you contribute them back.
 
-\subsection SMPI_what_globals Issues with the globals
+\subsection SMPI_what_globals Global variables
 
 Concerning the globals, the problem comes from the fact that usually,
 MPI processes run as real UNIX processes while they are all folded
@@ -67,13 +67,20 @@ available at http://charm.cs.illinois.edu/newPapers/11-23/paper.pdf
 (note that this article does not deal with SMPI but with a concurrent
 solution called AMPI that suffers of the same issue). 
 
-Currently, we have no solution to offer you, because all proposed solutions will
-modify the performance of your application (in the computational
-sections). Sacrificing realism for usability is not very satisfying, so we did
-not implement them yet. You will thus have to modify your application if it uses
-global variables. We are working on another solution, leveraging distributed
-simulation to keep each MPI process within a separate system process, but this
-is far from being ready at the moment.
+A method using dynamic switching of the .data and .bss segments of an
+ELF executable has been introduced in SimGrid 3.11. By using the <tt>smpi/
+privati_global_variableles</tt> option to yes, SMPI will duplicate
+the segments containing the global variables and when needed, will map 
+the right one in memory. This needs ELF executbles and mmap on the system
+(Linux and recent BSDs should be compatible). As no copy is involved, 
+performance should not be altered (but memory occupation will be higher).
+
+This solution actually works really good for a good number of MPI 
+application. Its main limitation is that if the application loads dynamic 
+libraries, their global variables won't be privatized. This can be avoided 
+by linking statically with these libraries (but NOT with libsimgrid, as we 
+need SimGrid's own global varibles).
+
 
 \section SMPI_compiling Compiling your code
 
