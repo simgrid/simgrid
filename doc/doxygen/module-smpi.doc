@@ -69,14 +69,14 @@ solution called AMPI that suffers of the same issue).
 
 A method using dynamic switching of the .data and .bss segments of an
 ELF executable has been introduced in SimGrid 3.11. By using the <tt>smpi/
-privati_global_variableles</tt> option to yes, SMPI will duplicate
+privatize_global_variableles</tt> option to yes, SMPI will duplicate
 the segments containing the global variables and when needed, will map 
-the right one in memory. This needs ELF executbles and mmap on the system
+the right one in memory. This needs ELF executables and mmap on the system
 (Linux and recent BSDs should be compatible). As no copy is involved, 
 performance should not be altered (but memory occupation will be higher).
 
 This solution actually works really good for a good number of MPI 
-application. Its main limitation is that if the application loads dynamic 
+applications. Its main limitation is that if the application loads dynamic 
 libraries, their global variables won't be privatized. This can be avoided 
 by linking statically with these libraries (but NOT with libsimgrid, as we 
 need SimGrid's own global varibles).
