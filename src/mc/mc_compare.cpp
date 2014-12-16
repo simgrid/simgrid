@@ -117,7 +117,7 @@ static int compare_areas_with_type(struct mc_compare_state& state,
   case DW_TAG_enumeration_type:
   case DW_TAG_union_type:
   {
-    return mc_snapshot_region_memcmp(
+    return MC_snapshot_region_memcmp(
       real_area1, region1, real_area2, region2,
       type->byte_size) != 0;
   }
@@ -171,8 +171,8 @@ static int compare_areas_with_type(struct mc_compare_state& state,
   case DW_TAG_reference_type:
   case DW_TAG_rvalue_reference_type:
   {
-    void* addr_pointed1 = mc_snapshot_read_pointer_region(real_area1, region1);
-    void* addr_pointed2 = mc_snapshot_read_pointer_region(real_area2, region2);
+    void* addr_pointed1 = MC_region_read_pointer(region1, real_area1);
+    void* addr_pointed2 = MC_region_read_pointer(region2, real_area2);
 
     if (type->subtype && type->subtype->type == DW_TAG_subroutine_type) {
       return (addr_pointed1 != addr_pointed2);
@@ -230,9 +230,9 @@ static int compare_areas_with_type(struct mc_compare_state& state,
   case DW_TAG_class_type:
     xbt_dynar_foreach(type->members, cursor, member) {
       void *member1 =
-        mc_member_resolve(real_area1, type, member, snapshot1, process_index);
+        mc_member_resolve(real_area1, type, member, (mc_address_space_t) snapshot1, process_index);
       void *member2 =
-        mc_member_resolve(real_area2, type, member, snapshot2, process_index);
+        mc_member_resolve(real_area2, type, member, (mc_address_space_t) snapshot2, process_index);
       mc_mem_region_t subregion1 = mc_get_region_hinted(member1, snapshot1, process_index, region1);
       mc_mem_region_t subregion2 = mc_get_region_hinted(member2, snapshot2, process_index, region2);
       res =
@@ -485,10 +485,14 @@ int snapshot_compare(void *state1, void *state2)
 #endif
 
   /* Init heap information used in heap comparison algorithm */
-  xbt_mheap_t heap1 = (xbt_mheap_t) mc_snapshot_read(process->heap_address, s1, MC_NO_PROCESS_INDEX,
-    alloca(sizeof(struct mdesc)), sizeof(struct mdesc));
-  xbt_mheap_t heap2 = (xbt_mheap_t) mc_snapshot_read(process->heap_address, s2, MC_NO_PROCESS_INDEX,
-    alloca(sizeof(struct mdesc)), sizeof(struct mdesc));
+  xbt_mheap_t heap1 = (xbt_mheap_t) MC_snapshot_read(
+    s1, MC_ADDRESS_SPACE_READ_FLAGS_LAZY,
+    alloca(sizeof(struct mdesc)), process->heap_address, sizeof(struct mdesc),
+    MC_PROCESS_INDEX_MISSING);
+  xbt_mheap_t heap2 = (xbt_mheap_t) MC_snapshot_read(
+    s2, MC_ADDRESS_SPACE_READ_FLAGS_LAZY,
+    alloca(sizeof(struct mdesc)), process->heap_address, sizeof(struct mdesc),
+    MC_PROCESS_INDEX_MISSING);
   res_init = init_heap_information(heap1, heap2, s1->to_ignore, s2->to_ignore);
   if (res_init == -1) {
 #ifdef MC_DEBUG
@@ -599,7 +603,7 @@ int snapshot_compare(void *state1, void *state2)
 
     /* Compare global variables */
     is_diff =
-      compare_global_variables(region1->object_info, MC_NO_PROCESS_INDEX,
+      compare_global_variables(region1->object_info, MC_ADDRESS_SPACE_READ_FLAGS_NONE,
         region1, region2,
         s1, s2);
 

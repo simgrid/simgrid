@@ -229,7 +229,7 @@ static int add_heap_area_pair(xbt_dynar_t list, int block1, int fragment1,
 }
 
 static ssize_t heap_comparison_ignore_size(xbt_dynar_t ignore_list,
-                                           void *address)
+                                           const void *address)
 {
 
   unsigned int cursor = 0;
@@ -253,7 +253,7 @@ static ssize_t heap_comparison_ignore_size(xbt_dynar_t ignore_list,
   return -1;
 }
 
-static int is_stack(void *address)
+static int is_stack(const void *address)
 {
   unsigned int cursor = 0;
   stack_region_t stack;
@@ -454,13 +454,13 @@ int mmalloc_compare_heap(mc_snapshot_t snapshot1, mc_snapshot_t snapshot2)
   void* heapinfo_address = &((xbt_mheap_t) process->heap_address)->heapinfo;
 
   // This is in snapshot do not use them directly:
-  malloc_info* heapinfos1 = mc_snapshot_read_pointer(heapinfo_address, snapshot1, MC_NO_PROCESS_INDEX);
-  malloc_info* heapinfos2 = mc_snapshot_read_pointer(heapinfo_address, snapshot2, MC_NO_PROCESS_INDEX);
+  const malloc_info* heapinfos1 = MC_snapshot_read_pointer(snapshot1, heapinfo_address, MC_PROCESS_INDEX_MISSING);
+  const malloc_info* heapinfos2 = MC_snapshot_read_pointer(snapshot2, heapinfo_address, MC_PROCESS_INDEX_MISSING);
 
   while (i1 <= state->heaplimit) {
 
-    malloc_info* heapinfo1 = mc_snapshot_read_region(&heapinfos1[i1], heap_region1, &heapinfo_temp1, sizeof(malloc_info));
-    malloc_info* heapinfo2 = mc_snapshot_read_region(&heapinfos2[i1], heap_region2, &heapinfo_temp2, sizeof(malloc_info));
+    const malloc_info* heapinfo1 = MC_region_read(heap_region1, &heapinfo_temp1, &heapinfos1[i1], sizeof(malloc_info));
+    const malloc_info* heapinfo2 = MC_region_read(heap_region2, &heapinfo_temp2, &heapinfos2[i1], sizeof(malloc_info));
 
     if (heapinfo1->type == MMALLOC_TYPE_FREE || heapinfo1->type == MMALLOC_TYPE_HEAPINFO) {      /* Free block */
       i1 ++;
@@ -506,7 +506,7 @@ int mmalloc_compare_heap(mc_snapshot_t snapshot1, mc_snapshot_t snapshot2)
                          (char *) ((xbt_mheap_t) state->s_heap)->heapbase));
 
           res_compare =
-              compare_heap_area(MC_NO_PROCESS_INDEX, addr_block1, addr_block2, snapshot1, snapshot2,
+              compare_heap_area(MC_PROCESS_INDEX_MISSING, addr_block1, addr_block2, snapshot1, snapshot2,
                                 NULL, NULL, 0);
 
           if (res_compare != 1) {
@@ -533,7 +533,7 @@ int mmalloc_compare_heap(mc_snapshot_t snapshot1, mc_snapshot_t snapshot2)
           continue;
         }
 
-        malloc_info* heapinfo2b = mc_snapshot_read_region(&heapinfos2[i2], heap_region2, &heapinfo_temp2b, sizeof(malloc_info));
+        const malloc_info* heapinfo2b = MC_region_read(heap_region2, &heapinfo_temp2b, &heapinfos2[i2], sizeof(malloc_info));
 
         if (heapinfo2b->type != MMALLOC_TYPE_UNFRAGMENTED) {
           i2++;
@@ -546,7 +546,7 @@ int mmalloc_compare_heap(mc_snapshot_t snapshot1, mc_snapshot_t snapshot2)
         }
 
         res_compare =
-            compare_heap_area(MC_NO_PROCESS_INDEX, addr_block1, addr_block2, snapshot1, snapshot2,
+            compare_heap_area(MC_PROCESS_INDEX_MISSING, addr_block1, addr_block2, snapshot1, snapshot2,
                               NULL, NULL, 0);
 
         if (res_compare != 1) {
@@ -599,7 +599,7 @@ int mmalloc_compare_heap(mc_snapshot_t snapshot1, mc_snapshot_t snapshot2)
                           (j1 << heapinfo2->type));
 
             res_compare =
-                compare_heap_area(MC_NO_PROCESS_INDEX, addr_frag1, addr_frag2, snapshot1, snapshot2,
+                compare_heap_area(MC_PROCESS_INDEX_MISSING, addr_frag1, addr_frag2, snapshot1, snapshot2,
                                   NULL, NULL, 0);
 
             if (res_compare != 1)
@@ -611,7 +611,7 @@ int mmalloc_compare_heap(mc_snapshot_t snapshot1, mc_snapshot_t snapshot2)
 
         while (i2 <= state->heaplimit && !equal) {
 
-          malloc_info* heapinfo2b = mc_snapshot_read_region(&heapinfos2[i2], heap_region2, &heapinfo_temp2b, sizeof(malloc_info));
+          const malloc_info* heapinfo2b = MC_region_read(heap_region2, &heapinfo_temp2b, &heapinfos2[i2], sizeof(malloc_info));
 
           if (heapinfo2b->type == MMALLOC_TYPE_FREE || heapinfo2b->type == MMALLOC_TYPE_HEAPINFO) {
             i2 ++;
@@ -646,7 +646,7 @@ int mmalloc_compare_heap(mc_snapshot_t snapshot1, mc_snapshot_t snapshot2)
                           (j2 << heapinfo2b->type));
 
             res_compare =
-                compare_heap_area(MC_NO_PROCESS_INDEX, addr_frag1, addr_frag2, snapshot2, snapshot2,
+                compare_heap_area(MC_PROCESS_INDEX_MISSING, addr_frag1, addr_frag2, snapshot2, snapshot2,
                                   NULL, NULL, 0);
 
             if (res_compare != 1) {
@@ -683,7 +683,7 @@ int mmalloc_compare_heap(mc_snapshot_t snapshot1, mc_snapshot_t snapshot2)
   size_t i = 1, j = 0;
 
   for(i = 1; i <= state->heaplimit; i++) {
-    malloc_info* heapinfo1 = mc_snapshot_read_region(&heapinfos1[i], heap_region1, &heapinfo_temp1, sizeof(malloc_info));
+    const malloc_info* heapinfo1 = MC_region_read(heap_region1, &heapinfo_temp1, &heapinfos1[i], sizeof(malloc_info));
     if (heapinfo1->type == MMALLOC_TYPE_UNFRAGMENTED) {
       if (i1 == state->heaplimit) {
         if (heapinfo1->busy_block.busy_size > 0) {
@@ -724,7 +724,7 @@ int mmalloc_compare_heap(mc_snapshot_t snapshot1, mc_snapshot_t snapshot2)
     XBT_DEBUG("Number of blocks/fragments not found in heap1 : %d", nb_diff1);
 
   for (i=1; i <= state->heaplimit; i++) {
-    malloc_info* heapinfo2 = mc_snapshot_read_region(&heapinfos2[i], heap_region2, &heapinfo_temp2, sizeof(malloc_info));
+    const malloc_info* heapinfo2 = MC_region_read(heap_region2, &heapinfo_temp2, &heapinfos2[i], sizeof(malloc_info));
     if (heapinfo2->type == MMALLOC_TYPE_UNFRAGMENTED) {
       if (i1 == state->heaplimit) {
         if (heapinfo2->busy_block.busy_size > 0) {
@@ -779,7 +779,7 @@ int mmalloc_compare_heap(mc_snapshot_t snapshot1, mc_snapshot_t snapshot2)
  * @param check_ignore
  */
 static int compare_heap_area_without_type(struct s_mc_diff *state, int process_index,
-                                          void *real_area1, void *real_area2,
+                                          const void *real_area1, const void *real_area2,
                                           mc_snapshot_t snapshot1,
                                           mc_snapshot_t snapshot2,
                                           xbt_dynar_t previous, int size,
@@ -788,7 +788,7 @@ static int compare_heap_area_without_type(struct s_mc_diff *state, int process_i
   mc_process_t process = &mc_model_checker->process;
 
   int i = 0;
-  void *addr_pointed1, *addr_pointed2;
+  const void *addr_pointed1, *addr_pointed2;
   int pointer_align, res_compare;
   ssize_t ignore1, ignore2;
 
@@ -816,11 +816,11 @@ static int compare_heap_area_without_type(struct s_mc_diff *state, int process_i
       }
     }
 
-    if (mc_snapshot_region_memcmp(((char *) real_area1) + i, heap_region1, ((char *) real_area2) + i, heap_region2, 1) != 0) {
+    if (MC_snapshot_region_memcmp(((char *) real_area1) + i, heap_region1, ((char *) real_area2) + i, heap_region2, 1) != 0) {
 
       pointer_align = (i / sizeof(void *)) * sizeof(void *);
-      addr_pointed1 = mc_snapshot_read_pointer((char *) real_area1 + pointer_align, snapshot1, process_index);
-      addr_pointed2 = mc_snapshot_read_pointer((char *) real_area2 + pointer_align, snapshot2, process_index);
+      addr_pointed1 = MC_snapshot_read_pointer(snapshot1, (char *) real_area1 + pointer_align, process_index);
+      addr_pointed2 = MC_snapshot_read_pointer(snapshot2, (char *) real_area2 + pointer_align, process_index);
 
       if (addr_pointed1 > process->maestro_stack_start
           && addr_pointed1 < process->maestro_stack_end
@@ -870,7 +870,7 @@ static int compare_heap_area_without_type(struct s_mc_diff *state, int process_i
  * @return               0 (same), 1 (different), -1 (unknown)
  */
 static int compare_heap_area_with_type(struct s_mc_diff *state, int process_index,
-                                       void *real_area1, void *real_area2,
+                                       const void *real_area1, const void *real_area2,
                                        mc_snapshot_t snapshot1,
                                        mc_snapshot_t snapshot2,
                                        xbt_dynar_t previous, dw_type_t type,
@@ -895,7 +895,7 @@ top:
   int res, elm_size, i;
   unsigned int cursor = 0;
   dw_type_t member;
-  void *addr_pointed1, *addr_pointed2;;
+  const void *addr_pointed1, *addr_pointed2;;
 
   mc_mem_region_t heap_region1 = MC_get_heap_region(snapshot1);
   mc_mem_region_t heap_region2 = MC_get_heap_region(snapshot2);
@@ -909,12 +909,12 @@ top:
       if (real_area1 == real_area2)
         return -1;
       else
-        return (mc_snapshot_region_memcmp(real_area1, heap_region1, real_area2, heap_region2, area_size) != 0);
+        return (MC_snapshot_region_memcmp(real_area1, heap_region1, real_area2, heap_region2, area_size) != 0);
     } else {
       if (area_size != -1 && type->byte_size != area_size)
         return -1;
       else {
-        return (mc_snapshot_region_memcmp(real_area1, heap_region1, real_area2, heap_region2, type->byte_size) != 0);
+        return (MC_snapshot_region_memcmp(real_area1, heap_region1, real_area2, heap_region2, type->byte_size) != 0);
       }
     }
     break;
@@ -922,7 +922,7 @@ top:
     if (area_size != -1 && type->byte_size != area_size)
       return -1;
     else
-      return (mc_snapshot_region_memcmp(real_area1, heap_region1, real_area2, heap_region2, type->byte_size) != 0);
+      return (MC_snapshot_region_memcmp(real_area1, heap_region1, real_area2, heap_region2, type->byte_size) != 0);
     break;
   case DW_TAG_typedef:
   case DW_TAG_const_type:
@@ -979,15 +979,15 @@ top:
   case DW_TAG_rvalue_reference_type:
   case DW_TAG_pointer_type:
     if (type->subtype && type->subtype->type == DW_TAG_subroutine_type) {
-      addr_pointed1 = mc_snapshot_read_pointer(real_area1, snapshot1, process_index);
-      addr_pointed2 = mc_snapshot_read_pointer(real_area2, snapshot2, process_index);
+      addr_pointed1 = MC_snapshot_read_pointer(snapshot1, real_area1, process_index);
+      addr_pointed2 = MC_snapshot_read_pointer(snapshot2, real_area2, process_index);
       return (addr_pointed1 != addr_pointed2);;
     } else {
       pointer_level++;
       if (pointer_level > 1) {  /* Array of pointers */
         for (i = 0; i < (area_size / sizeof(void *)); i++) {
-          addr_pointed1 = mc_snapshot_read_pointer((char*) real_area1 + i * sizeof(void *), snapshot1, process_index);
-          addr_pointed2 = mc_snapshot_read_pointer((char*) real_area2 + i * sizeof(void *), snapshot2, process_index);
+          addr_pointed1 = MC_snapshot_read_pointer(snapshot1, (char*) real_area1 + i * sizeof(void *), process_index);
+          addr_pointed2 = MC_snapshot_read_pointer(snapshot2, (char*) real_area2 + i * sizeof(void *), process_index);
           if (addr_pointed1 > state->s_heap
               && addr_pointed1 < mc_snapshot_get_heap_end(snapshot1)
               && addr_pointed2 > state->s_heap
@@ -1002,8 +1002,8 @@ top:
             return res;
         }
       } else {
-        addr_pointed1 = mc_snapshot_read_pointer(real_area1, snapshot1, process_index);
-        addr_pointed2 = mc_snapshot_read_pointer(real_area2, snapshot2, process_index);
+        addr_pointed1 = MC_snapshot_read_pointer(snapshot1, real_area1, process_index);
+        addr_pointed2 = MC_snapshot_read_pointer(snapshot2, real_area2, process_index);
         if (addr_pointed1 > state->s_heap
             && addr_pointed1 < mc_snapshot_get_heap_end(snapshot1)
             && addr_pointed2 > state->s_heap
@@ -1040,9 +1040,9 @@ top:
       xbt_dynar_foreach(type->members, cursor, member) {
         // TODO, optimize this? (for the offset case)
         char *real_member1 =
-            mc_member_resolve(real_area1, type, member, snapshot1, process_index);
+            mc_member_resolve(real_area1, type, member, (mc_address_space_t) snapshot1, process_index);
         char *real_member2 =
-            mc_member_resolve(real_area2, type, member, snapshot2, process_index);
+            mc_member_resolve(real_area2, type, member, (mc_address_space_t) snapshot2, process_index);
         res =
             compare_heap_area_with_type(state, process_index, real_member1, real_member2,
                                         snapshot1, snapshot2,
@@ -1108,7 +1108,7 @@ static dw_type_t get_offset_type(void *real_base_address, dw_type_t type,
             return member->subtype;
         } else {
           char *real_member =
-              mc_member_resolve(real_base_address, type, member, snapshot, process_index);
+              mc_member_resolve(real_base_address, type, member, (mc_address_space_t) snapshot, process_index);
           if (real_member - (char *) real_base_address == offset)
             return member->subtype;
         }
@@ -1135,7 +1135,7 @@ static dw_type_t get_offset_type(void *real_base_address, dw_type_t type,
  * @param pointer_level
  * @return 0 (same), 1 (different), -1
  */
-int compare_heap_area(int process_index, void *area1, void *area2, mc_snapshot_t snapshot1,
+int compare_heap_area(int process_index, const void *area1, const void *area2, mc_snapshot_t snapshot1,
                       mc_snapshot_t snapshot2, xbt_dynar_t previous,
                       dw_type_t type, int pointer_level)
 {
@@ -1159,8 +1159,8 @@ int compare_heap_area(int process_index, void *area1, void *area2, mc_snapshot_t
   // This is the address of std_heap->heapinfo in the application process:
   void* heapinfo_address = &((xbt_mheap_t) process->heap_address)->heapinfo;
 
-  malloc_info* heapinfos1 = mc_snapshot_read_pointer(heapinfo_address, snapshot1, process_index);
-  malloc_info* heapinfos2 = mc_snapshot_read_pointer(heapinfo_address, snapshot2, process_index);
+  const malloc_info* heapinfos1 = MC_snapshot_read_pointer(snapshot1, heapinfo_address, process_index);
+  const malloc_info* heapinfos2 = MC_snapshot_read_pointer(snapshot2, heapinfo_address, process_index);
 
   malloc_info heapinfo_temp1, heapinfo_temp2;
 
@@ -1227,8 +1227,8 @@ int compare_heap_area(int process_index, void *area1, void *area2, mc_snapshot_t
   mc_mem_region_t heap_region1 = MC_get_heap_region(snapshot1);
   mc_mem_region_t heap_region2 = MC_get_heap_region(snapshot2);
 
-  malloc_info* heapinfo1 = mc_snapshot_read_region(&heapinfos1[block1], heap_region1, &heapinfo_temp1, sizeof(malloc_info));
-  malloc_info* heapinfo2 = mc_snapshot_read_region(&heapinfos2[block2], heap_region2, &heapinfo_temp2, sizeof(malloc_info));
+  const malloc_info* heapinfo1 = MC_region_read(heap_region1, &heapinfo_temp1, &heapinfos1[block1], sizeof(malloc_info));
+  const malloc_info* heapinfo2 = MC_region_read(heap_region2, &heapinfo_temp2, &heapinfos2[block2], sizeof(malloc_info));
 
   if ((heapinfo1->type == MMALLOC_TYPE_FREE || heapinfo1->type==MMALLOC_TYPE_HEAPINFO)
     && (heapinfo2->type == MMALLOC_TYPE_FREE || heapinfo2->type ==MMALLOC_TYPE_HEAPINFO)) {

@@ -14,6 +14,7 @@
 
 #include "mc_process.h"
 #include "mc_object_info.h"
+#include "mc_address_space.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_process, mc,
                                 "MC process information");
@@ -21,9 +22,13 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_process, mc,
 static void MC_process_init_memory_map_info(mc_process_t process);
 static void MC_process_open_memory_file(mc_process_t process);
 
+static s_mc_address_space_class_t mc_process_class = {
+  .read = (void*) &MC_process_read
+};
 
 void MC_process_init(mc_process_t process, pid_t pid)
 {
+  process->address_space.address_space_class = &mc_process_class;
   process->process_flags = MC_PROCESS_NO_FLAG;
   process->pid = pid;
   if (pid==getpid())
@@ -42,12 +47,14 @@ void MC_process_init(mc_process_t process, pid_t pid)
     xbt_die("No heap information in the target process");
   if(!std_heap_var->address)
     xbt_die("No constant address for this variable");
-  MC_process_read(process, &process->heap_address,
-    std_heap_var->address, sizeof(struct mdesc*));
+  MC_process_read(process, MC_ADDRESS_SPACE_READ_FLAGS_NONE,
+    &process->heap_address, std_heap_var->address, sizeof(struct mdesc*),
+    MC_PROCESS_INDEX_DISABLED);
 }
 
 void MC_process_clear(mc_process_t process)
 {
+  process->address_space.address_space_class = NULL;
   process->process_flags = MC_PROCESS_NO_FLAG;
   process->pid = 0;
 
@@ -87,8 +94,10 @@ void MC_process_refresh_heap(mc_process_t process)
     process->heap = malloc(sizeof(struct mdesc));
     mmalloc_set_current_heap(oldheap);
   }
-  MC_process_read(process, process->heap,
-    process->heap_address, sizeof(struct mdesc));
+  MC_process_read(process, MC_ADDRESS_SPACE_READ_FLAGS_NONE,
+    process->heap, process->heap_address, sizeof(struct mdesc),
+    MC_PROCESS_INDEX_DISABLED
+    );
 }
 
 void MC_process_refresh_malloc_info(mc_process_t process)
@@ -105,8 +114,10 @@ void MC_process_refresh_malloc_info(mc_process_t process)
     malloc_info_bytesize);
   mmalloc_set_current_heap(oldheap);
 
-  MC_process_read(process, process->heap_info,
-    process->heap->heapinfo, malloc_info_bytesize);
+  MC_process_read(process, MC_ADDRESS_SPACE_READ_FLAGS_NONE,
+    process->heap_info,
+    process->heap->heapinfo, malloc_info_bytesize,
+    MC_PROCESS_INDEX_DISABLED);
 }
 
 #define SO_RE "\\.so[\\.0-9]*$"
@@ -354,13 +365,24 @@ static ssize_t pwrite_whole(int fd, const void *buf, size_t count, off_t offset)
   return real_count;
 }
 
-void MC_process_read(mc_process_t process, void* local, const void* remote, size_t len)
+const void* MC_process_read(mc_process_t process, e_adress_space_read_flags_t flags,
+  void* local, const void* remote, size_t len,
+  int process_index)
 {
+  if (process_index != MC_PROCESS_INDEX_DISABLED)
+    xbt_die("Not implemented yet");
+
   if (MC_process_is_self(process)) {
-    memcpy(local, remote, len);
+    if (flags & MC_ADDRESS_SPACE_READ_FLAGS_LAZY)
+      return remote;
+    else {
+      memcpy(local, remote, len);
+      return local;
+    }
   } else {
     if (pread_whole(process->memory_file, local, len, (off_t) remote) < 0)
       xbt_die("Read from process %lli failed", (long long) process->pid);
+    return local;
   }
 }
 

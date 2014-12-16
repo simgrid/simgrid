@@ -121,7 +121,9 @@ static mc_mem_region_t mc_region_new_dense(
   region->permanent_addr = permanent_addr;
   region->size = size;
   region->flat.data = xbt_malloc(size);
-  MC_process_read(&mc_model_checker->process, region->flat.data, permanent_addr, size);
+  MC_process_read(&mc_model_checker->process, MC_ADDRESS_SPACE_READ_FLAGS_NONE,
+    region->flat.data, permanent_addr, size,
+    MC_PROCESS_INDEX_DISABLED);
   XBT_DEBUG("New region : type : %d, data : %p (real addr %p), size : %zu",
             region_type, region->flat.data, permanent_addr, size);
   return region;
@@ -274,7 +276,7 @@ static void MC_get_memory_regions(mc_process_t process, mc_snapshot_t snapshot)
   } else
 #endif
   {
-    snapshot->privatization_index = MC_NO_PROCESS_INDEX;
+    snapshot->privatization_index = MC_PROCESS_INDEX_MISSING;
   }
 }
 
@@ -680,10 +682,16 @@ static void MC_get_current_fd(mc_snapshot_t snapshot){
   closedir (fd_dir);
 }
 
+static s_mc_address_space_class_t mc_snapshot_class = {
+  .read = (void*) &MC_snapshot_read
+};
+
 mc_snapshot_t MC_take_snapshot(int num_state)
 {
   mc_process_t mc_process = &mc_model_checker->process;
   mc_snapshot_t snapshot = xbt_new0(s_mc_snapshot_t, 1);
+  snapshot->process = mc_process;
+  snapshot->address_space.address_space_class = &mc_snapshot_class;
 
   snapshot->enabled_processes = xbt_dynar_new(sizeof(int), NULL);
   smx_process_t process;

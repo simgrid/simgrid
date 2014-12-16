@@ -19,6 +19,7 @@
 #include "mc_model_checker.h"
 #include "mc_page_store.h"
 #include "mc_mmalloc.h"
+#include "mc_address_space.h"
 
 SG_BEGIN_DECL()
 
@@ -102,7 +103,7 @@ void MC_region_destroy(mc_mem_region_t reg);
 void mc_region_restore_sparse(mc_process_t process, mc_mem_region_t reg, mc_mem_region_t ref_reg);
 
 static inline  __attribute__ ((always_inline))
-bool mc_region_contain(mc_mem_region_t region, void* p)
+bool mc_region_contain(mc_mem_region_t region, const void* p)
 {
   return p >= region->start_addr &&
     p < (void*)((char*) region->start_addr + region->size);
@@ -117,7 +118,7 @@ void* mc_translate_address_region(uintptr_t addr, mc_mem_region_t region)
     return (char*) snapshot_page + mc_page_offset((void*) addr);
 }
 
-mc_mem_region_t mc_get_snapshot_region(void* addr, mc_snapshot_t snapshot, int process_index);
+mc_mem_region_t mc_get_snapshot_region(const void* addr, mc_snapshot_t snapshot, int process_index);
 
 /** \brief Translate a pointer from process address space to snapshot address space
  *
@@ -196,7 +197,9 @@ typedef struct s_fd_infos{
   int flags;
 }s_fd_infos_t, *fd_infos_t;
 
-struct s_mc_snapshot{
+struct s_mc_snapshot {
+  mc_process_t process;
+  s_mc_address_space_t address_space;
   size_t heap_bytes_used;
   mc_mem_region_t* snapshot_regions;
   size_t snapshot_regions_count;
@@ -210,18 +213,6 @@ struct s_mc_snapshot{
   int total_fd;
   fd_infos_t *current_fd;
 };
-
-/** @brief Process index used when no process is available
- *
- *  The expected behaviour is that if a process index is needed it will fail.
- * */
-#define MC_NO_PROCESS_INDEX -1
-
-/** @brief Process index when any process is suitable
- *
- * We could use a special negative value in the future.
- */
-#define MC_ANY_PROCESS_INDEX 0
 
 static inline __attribute__ ((always_inline))
 mc_mem_region_t mc_get_region_hinted(void* addr, mc_snapshot_t snapshot, int process_index, mc_mem_region_t region)
@@ -252,7 +243,7 @@ typedef struct s_mc_snapshot_stack{
   int process_index;
 }s_mc_snapshot_stack_t, *mc_snapshot_stack_t;
 
-typedef struct s_mc_global_t{
+typedef struct s_mc_global_t {
   mc_snapshot_t snapshot;
   int raw_mem_set;
   int prev_pair;
@@ -267,7 +258,7 @@ typedef struct s_mc_checkpoint_ignore_region{
   size_t size;
 }s_mc_checkpoint_ignore_region_t, *mc_checkpoint_ignore_region_t;
 
-static void* mc_snapshot_get_heap_end(mc_snapshot_t snapshot);
+static const void* mc_snapshot_get_heap_end(mc_snapshot_t snapshot);
 
 mc_snapshot_t MC_take_snapshot(int num_state);
 void MC_restore_snapshot(mc_snapshot_t);
@@ -283,33 +274,34 @@ void mc_restore_page_snapshot_region(
   void* start_addr, size_t page_count, size_t* pagenos,
   uint64_t* pagemap, size_t* reference_pagenos);
 
-void* mc_snapshot_read_fragmented(void* addr, mc_mem_region_t region, void* target, size_t size);
+const void* MC_region_read_fragmented(mc_mem_region_t region, void* target, const void* addr, size_t size);
 
-void* mc_snapshot_read(void* addr, mc_snapshot_t snapshot, int process_index, void* target, size_t size);
-int mc_snapshot_region_memcmp(
-  void* addr1, mc_mem_region_t region1,
-  void* addr2, mc_mem_region_t region2, size_t size);
-int mc_snapshot_memcmp(
-  void* addr1, mc_snapshot_t snapshot1,
-  void* addr2, mc_snapshot_t snapshot2, int process_index, size_t size);
-
-static void* mc_snapshot_read_pointer(void* addr, mc_snapshot_t snapshot, int process_index);
+const void* MC_snapshot_read(mc_snapshot_t snapshot, e_adress_space_read_flags_t flags,
+  void* target, const void* addr, size_t size, int process_index);
+int MC_snapshot_region_memcmp(
+  const void* addr1, mc_mem_region_t region1,
+  const void* addr2, mc_mem_region_t region2, size_t size);
+int MC_snapshot_memcmp(
+  const void* addr1, mc_snapshot_t snapshot1,
+  const void* addr2, mc_snapshot_t snapshot2, int process_index, size_t size);
 
 static inline __attribute__ ((always_inline))
-void* mc_snapshot_read_pointer(void* addr, mc_snapshot_t snapshot, int process_index)
+const void* MC_snapshot_read_pointer(mc_snapshot_t snapshot, const void* addr, int process_index)
 {
   void* res;
-  return *(void**) mc_snapshot_read(addr, snapshot, process_index, &res, sizeof(void*));
+  return *(const void**) MC_snapshot_read(snapshot, MC_ADDRESS_SPACE_READ_FLAGS_LAZY,
+    &res, addr, sizeof(void*), process_index);
 }
 
 static inline __attribute__ ((always_inline))
-void* mc_snapshot_get_heap_end(mc_snapshot_t snapshot) {
+const void* mc_snapshot_get_heap_end(mc_snapshot_t snapshot)
+{
   if(snapshot==NULL)
       xbt_die("snapshot is NULL");
   // This is &std_heap->breakval in the target process:
   void** addr = &MC_process_get_heap(&mc_model_checker->process)->breakval;
   // Read (std_heap->breakval) in the target process (*addr i.e. std_heap->breakval):
-  return mc_snapshot_read_pointer(addr, snapshot, MC_ANY_PROCESS_INDEX);
+  return MC_snapshot_read_pointer(snapshot, addr, MC_PROCESS_INDEX_ANY);
 }
 
 /** @brief Read memory from a snapshot region
@@ -321,9 +313,10 @@ void* mc_snapshot_get_heap_end(mc_snapshot_t snapshot) {
  *  @return Pointer where the data is located (target buffer of original location)
  */
 static inline __attribute__((always_inline))
-void* mc_snapshot_read_region(void* addr, mc_mem_region_t region, void* target, size_t size)
+const void* MC_region_read(mc_mem_region_t region, void* target, const void* addr, size_t size)
 {
   if (region==NULL)
+    // Should be deprecated:
     return addr;
 
   uintptr_t offset = (char*) addr - (char*) region->start_addr;
@@ -343,12 +336,12 @@ void* mc_snapshot_read_region(void* addr, mc_mem_region_t region, void* target, 
     {
       // Last byte of the region:
       void* end = (char*) addr + size - 1;
-      if( mc_same_page(addr, end) ) {
+      if (mc_same_page(addr, end) ) {
         // The memory is contained in a single page:
         return mc_translate_address_region((uintptr_t) addr, region);
       } else {
         // The memory spans several pages:
-        return mc_snapshot_read_fragmented(addr, region, target, size);
+        return MC_region_read_fragmented(region, target, addr, size);
       }
     }
 
@@ -360,10 +353,10 @@ void* mc_snapshot_read_region(void* addr, mc_mem_region_t region, void* target, 
 }
 
 static inline __attribute__ ((always_inline))
-void* mc_snapshot_read_pointer_region(void* addr, mc_mem_region_t region)
+void* MC_region_read_pointer(mc_mem_region_t region, const void* addr)
 {
   void* res;
-  return *(void**) mc_snapshot_read_region(addr, region, &res, sizeof(void*));
+  return *(void**) MC_region_read(region, &res, addr, sizeof(void*));
 }
 
 SG_END_DECL()

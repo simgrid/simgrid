@@ -56,7 +56,8 @@ size_t* mc_take_page_snapshot_region(mc_process_t process,
             - move the segments in shared memory (this will break `fork` however).
         */
         page_data = temp;
-        MC_process_read(process, temp, page, xbt_pagesize);
+        MC_process_read(process, MC_ADDRESS_SPACE_READ_FLAGS_NONE,
+          temp, page, xbt_pagesize, MC_PROCESS_INDEX_DISABLED);
       }
       pagenos[i] = mc_model_checker->pages->store_page(page_data);
     }

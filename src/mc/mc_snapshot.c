@@ -21,7 +21,7 @@
  *  @param Snapshot region in the snapshot this pointer belongs to
  *         (or NULL if it does not belong to any snapshot region)
  * */
-mc_mem_region_t mc_get_snapshot_region(void* addr, mc_snapshot_t snapshot, int process_index)
+mc_mem_region_t mc_get_snapshot_region(const void* addr, mc_snapshot_t snapshot, int process_index)
 {
   size_t n = snapshot->snapshot_regions_count;
   for (size_t i = 0; i != n; ++i) {
@@ -31,6 +31,10 @@ mc_mem_region_t mc_get_snapshot_region(void* addr, mc_snapshot_t snapshot, int p
 
     if (region->storage_type == MC_REGION_STORAGE_TYPE_PRIVATIZED) {
 #ifdef HAVE_SMPI
+      // Use the current process index of the snapshot:
+      if (process_index == MC_PROCESS_INDEX_DISABLED) {
+        process_index = snapshot->privatization_index;
+      }
       if (process_index < 0) {
         xbt_die("Missing process index");
       }
@@ -59,7 +63,7 @@ mc_mem_region_t mc_get_snapshot_region(void* addr, mc_snapshot_t snapshot, int p
  *  @param size    Size of the data to read in bytes
  *  @return Pointer where the data is located (target buffer of original location)
  */
-void* mc_snapshot_read_fragmented(void* addr, mc_mem_region_t region, void* target, size_t size)
+const void* MC_region_read_fragmented(mc_mem_region_t region, void* target, const void* addr, size_t size)
 {
   // Last byte of the memory area:
   void* end = (char*) addr + size - 1;
@@ -99,14 +103,15 @@ void* mc_snapshot_read_fragmented(void* addr, mc_mem_region_t region, void* targ
  *  @param size     Size of the data to read in bytes
  *  @return Pointer where the data is located (target buffer or original location)
  */
-void* mc_snapshot_read(void* addr, mc_snapshot_t snapshot, int process_index, void* target, size_t size)
+const void* MC_snapshot_read(
+  mc_snapshot_t snapshot, e_adress_space_read_flags_t flags,
+  void* target, const void* addr, size_t size, int process_index)
 {
-  if (snapshot) {
-    mc_mem_region_t region = mc_get_snapshot_region(addr, snapshot, process_index);
-    return mc_snapshot_read_region(addr, region, target, size);
-  } else {
-    return addr;
-  }
+  mc_mem_region_t region = mc_get_snapshot_region(addr, snapshot, process_index);
+  if (region)
+    return MC_region_read(region, target, addr, size);
+  else
+    return MC_process_read(snapshot->process, flags, target, addr, size, process_index);
 }
 
 /** Compare memory between snapshots (with known regions)
@@ -117,9 +122,9 @@ void* mc_snapshot_read(void* addr, mc_snapshot_t snapshot, int process_index, vo
  * @param snapshot2 Region of the address in the second snapshot
  * @return same as memcmp
  * */
-int mc_snapshot_region_memcmp(
-  void* addr1, mc_mem_region_t region1,
-  void* addr2, mc_mem_region_t region2,
+int MC_snapshot_region_memcmp(
+  const void* addr1, mc_mem_region_t region1,
+  const void* addr2, mc_mem_region_t region2,
   size_t size)
 {
   // Using alloca() for large allocations may trigger stack overflow:
@@ -129,8 +134,8 @@ int mc_snapshot_region_memcmp(
   const bool region2_need_buffer = region2==NULL || region2->storage_type==MC_REGION_STORAGE_TYPE_FLAT;
   void* buffer1a = region1_need_buffer ? NULL : stack_alloc ? alloca(size) : malloc(size);
   void* buffer2a = region2_need_buffer ? NULL : stack_alloc ? alloca(size) : malloc(size);
-  void* buffer1 = mc_snapshot_read_region(addr1, region1, buffer1a, size);
-  void* buffer2 = mc_snapshot_read_region(addr2, region2, buffer2a, size);
+  const void* buffer1 = MC_region_read(region1, buffer1a, addr1, size);
+  const void* buffer2 = MC_region_read(region2, buffer2a, addr2, size);
   int res;
   if (buffer1 == buffer2) {
     res = 0;
@@ -152,13 +157,13 @@ int mc_snapshot_region_memcmp(
  * @param snapshot2 Second snapshot
  * @return same as memcmp
  * */
-int mc_snapshot_memcmp(
-  void* addr1, mc_snapshot_t snapshot1,
-  void* addr2, mc_snapshot_t snapshot2, int process_index, size_t size)
+int MC_snapshot_memcmp(
+  const void* addr1, mc_snapshot_t snapshot1,
+  const void* addr2, mc_snapshot_t snapshot2, int process_index, size_t size)
 {
   mc_mem_region_t region1 = mc_get_snapshot_region(addr1, snapshot1, process_index);
   mc_mem_region_t region2 = mc_get_snapshot_region(addr2, snapshot2, process_index);
-  return mc_snapshot_region_memcmp(addr1, region1, addr2, region2, size);
+  return MC_snapshot_region_memcmp(addr1, region1, addr2, region2, size);
 }
 
 #ifdef SIMGRID_TEST
@@ -225,46 +230,46 @@ static void test_snapshot(bool sparse_checkpoint) {
     xbt_assert(source!=MAP_FAILED, "Could not allocate destination memory");
 
     xbt_test_add("Reading whole region data for %i page(s)", n);
-    void* read = mc_snapshot_read_region(source, region, destination, byte_size);
-    xbt_test_assert(!memcmp(source, read, byte_size), "Mismatch in mc_snapshot_read_region()");
+    const void* read = MC_region_read(region, source, destination, byte_size);
+    xbt_test_assert(!memcmp(source, read, byte_size), "Mismatch in MC_region_read()");
 
     xbt_test_add("Reading parts of region data for %i page(s)", n);
     for(int j=0; j!=100; ++j) {
       size_t offset = rand() % byte_size;
       size_t size = rand() % (byte_size - offset);
-      void* read = mc_snapshot_read_region((char*) source+offset, region, destination, size);
+      const void* read = MC_region_read(region, destination, (const char*) source+offset, size);
       xbt_test_assert(!memcmp((char*) source+offset, read, size),
-        "Mismatch in mc_snapshot_read_region()");
+        "Mismatch in MC_region_read()");
     }
 
     xbt_test_add("Compare whole region data for %i page(s)", n);
-    xbt_test_assert(!mc_snapshot_region_memcmp(source, NULL, source, region, byte_size),
-      "Mismatch in mc_snapshot_region_memcmp() for the whole region");
-    xbt_test_assert(mc_snapshot_region_memcmp(source, region0, source, region, byte_size),
-      "Unexpected match in mc_snapshot_region_memcmp() with previous snapshot");
+    xbt_test_assert(!MC_snapshot_region_memcmp(source, NULL, source, region, byte_size),
+      "Mismatch in MC_snapshot_region_memcmp() for the whole region");
+    xbt_test_assert(MC_snapshot_region_memcmp(source, region0, source, region, byte_size),
+      "Unexpected match in MC_snapshot_region_memcmp() with previous snapshot");
 
     xbt_test_add("Compare parts of region data for %i page(s) with current value", n);
     for(int j=0; j!=100; ++j) {
       size_t offset = rand() % byte_size;
       size_t size = rand() % (byte_size - offset);
-      xbt_test_assert(!mc_snapshot_region_memcmp((char*) source+offset, NULL, (char*) source+offset, region, size),
-        "Mismatch in mc_snapshot_region_memcmp()");
+      xbt_test_assert(!MC_snapshot_region_memcmp((char*) source+offset, NULL, (char*) source+offset, region, size),
+        "Mismatch in MC_snapshot_region_memcmp()");
     }
 
     xbt_test_add("Compare parts of region data for %i page(s) with itself", n);
     for(int j=0; j!=100; ++j) {
       size_t offset = rand() % byte_size;
       size_t size = rand() % (byte_size - offset);
-      xbt_test_assert(!mc_snapshot_region_memcmp((char*) source+offset, region, (char*) source+offset, region, size),
-        "Mismatch in mc_snapshot_region_memcmp()");
+      xbt_test_assert(!MC_snapshot_region_memcmp((char*) source+offset, region, (char*) source+offset, region, size),
+        "Mismatch in MC_snapshot_region_memcmp()");
     }
 
     if (n==1) {
       xbt_test_add("Read pointer for %i page(s)", n);
       memcpy(source, &mc_model_checker, sizeof(void*));
       mc_mem_region_t region2 = mc_region_new_sparse(MC_REGION_TYPE_UNKNOWN, source, source, byte_size, NULL);
-      xbt_test_assert(mc_snapshot_read_pointer_region(source, region2) == mc_model_checker,
-        "Mismtach in mc_snapshot_read_pointer_region()");
+      xbt_test_assert(MC_region_read_pointer(region2, source) == mc_model_checker,
+        "Mismtach in MC_region_read_pointer()");
       MC_region_destroy(region2);
     }
 

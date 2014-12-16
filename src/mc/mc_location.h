@@ -18,6 +18,7 @@
 #include "mc_interface.h"
 #include "mc_object_info.h"
 #include "mc_forward.h"
+#include "mc_address_space.h"
 
 SG_BEGIN_DECL()
 
@@ -76,8 +77,8 @@ enum mc_location_type mc_get_location_type(mc_location_t location) {
   }
 }
 
-void mc_dwarf_resolve_location(mc_location_t location, mc_expression_t expression, mc_object_info_t object_info, unw_cursor_t* c, void* frame_pointer_address, mc_snapshot_t snapshot, int process_index);
-void mc_dwarf_resolve_locations(mc_location_t location, mc_location_list_t locations, mc_object_info_t object_info, unw_cursor_t* c, void* frame_pointer_address, mc_snapshot_t snapshot, int process_index);
+void mc_dwarf_resolve_location(mc_location_t location, mc_expression_t expression, mc_object_info_t object_info, unw_cursor_t* c, void* frame_pointer_address, mc_address_space_t address_space, int process_index);
+void mc_dwarf_resolve_locations(mc_location_t location, mc_location_list_t locations, mc_object_info_t object_info, unw_cursor_t* c, void* frame_pointer_address, mc_address_space_t address_space, int process_index);
 
 void mc_dwarf_expression_clear(mc_expression_t expression);
 void mc_dwarf_expression_init(mc_expression_t expression, size_t len, Dwarf_Op* ops);
@@ -103,7 +104,7 @@ typedef struct s_mc_expression_state {
 
   unw_cursor_t* cursor;
   void* frame_base;
-  mc_snapshot_t snapshot;
+  mc_address_space_t address_space;
   mc_object_info_t object_info;
   int process_index;
 } s_mc_expression_state_t, *mc_expression_state_t;

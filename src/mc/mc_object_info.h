@@ -1,4 +1,4 @@
-  /* Copyright (c) 2007-2014. The SimGrid Team.
+/* Copyright (c) 2007-2014. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -112,7 +112,7 @@ const char* MC_dwarf_tagname(int tag);
 // Not used:
 char* get_type_description(mc_object_info_t info, char *type_name);
 
-void* mc_member_resolve(const void* base, dw_type_t type, dw_type_t member, mc_snapshot_t snapshot, int process_index);
+void* mc_member_resolve(const void* base, dw_type_t type, dw_type_t member, mc_address_space_t snapshot, int process_index);
 
 struct s_dw_variable{
   Dwarf_Off dwarf_offset; /* Global offset of the field. */

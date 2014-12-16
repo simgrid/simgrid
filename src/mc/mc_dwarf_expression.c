@@ -11,7 +11,6 @@
 #include <elfutils/libdw.h>
 
 #include "mc_object_info.h"
-#include "mc_snapshot.h"
 #include "mc_private.h"
 
 static int mc_dwarf_push_value(mc_expression_state_t state, Dwarf_Off value)
@@ -400,9 +399,19 @@ int mc_dwarf_execute_expression(size_t n, const Dwarf_Op * ops,
       {
         // Computed address:
         uintptr_t address = (uintptr_t) state->stack[state->stack_size - 1];
-        uintptr_t temp;
-        uintptr_t* res = (uintptr_t*) mc_snapshot_read((void*) address, state->snapshot, state->process_index, &temp, sizeof(uintptr_t));
-        state->stack[state->stack_size - 1] = *res;
+        uintptr_t value;
+        if (state->address_space) {
+          uintptr_t temp;
+          const uintptr_t* res = (uintptr_t*) MC_address_space_read(
+            state->address_space, MC_ADDRESS_SPACE_READ_FLAGS_LAZY,
+            &temp, (const void*) address, sizeof(uintptr_t), state->process_index);
+          value = *res;
+        }
+        else {
+          // TODO, use a mc_process representing the current process instead of this
+          value = *(const uintptr_t*) address;
+        }
+        state->stack[state->stack_size - 1] = value;
       }
       break;
 
@@ -427,13 +436,13 @@ void mc_dwarf_resolve_location(mc_location_t location,
                                mc_object_info_t object_info,
                                unw_cursor_t * c,
                                void *frame_pointer_address,
-                               mc_snapshot_t snapshot, int process_index)
+                               mc_address_space_t address_space, int process_index)
 {
   s_mc_expression_state_t state;
   memset(&state, 0, sizeof(s_mc_expression_state_t));
   state.frame_base = frame_pointer_address;
   state.cursor = c;
-  state.snapshot = snapshot;
+  state.address_space = address_space;
   state.object_info = object_info;
   state.process_index = process_index;
 
@@ -476,7 +485,7 @@ void mc_dwarf_resolve_locations(mc_location_t location,
                                      mc_object_info_t object_info,
                                      unw_cursor_t * c,
                                      void *frame_pointer_address,
-                                     mc_snapshot_t snapshot, int process_index)
+                                     mc_address_space_t address_space, int process_index)
 {
 
   unw_word_t ip = 0;
@@ -489,7 +498,7 @@ void mc_dwarf_resolve_locations(mc_location_t location,
   if (expression) {
     mc_dwarf_resolve_location(location,
                               expression, object_info, c,
-                              frame_pointer_address, snapshot, process_index);
+                              frame_pointer_address, address_space, process_index);
   } else {
     xbt_die("Could not resolve location");
   }

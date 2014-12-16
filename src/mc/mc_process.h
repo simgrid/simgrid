@@ -21,6 +21,7 @@
 #include "mc_forward.h"
 #include "mc_mmalloc.h" // std_heap
 #include "mc_memory_map.h"
+#include "mc_address_space.h"
 
 SG_BEGIN_DECL()
 
@@ -39,6 +40,7 @@ typedef enum {
 /** Representation of a process
  */
 struct s_mc_process {
+  s_mc_address_space_t address_space;
   e_mc_process_flags_t process_flags;
   pid_t pid;
   memory_map_t memory_map;
@@ -107,7 +109,10 @@ bool MC_process_is_self(mc_process_t process)
  *  @param remote  target process memory address (source)
  *  @param len     data size
  */
-void MC_process_read(mc_process_t process, void* local, const void* remote, size_t len);
+const void* MC_process_read(mc_process_t process,
+  e_adress_space_read_flags_t flags,
+  void* local, const void* remote, size_t len,
+  int process_index);
 
 /** Write data to a process memory
  *

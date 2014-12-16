@@ -16,7 +16,7 @@
  * @return Process address of the given member of the 'object' struct/class
  */
 void *mc_member_resolve(const void *base, dw_type_t type, dw_type_t member,
-                        mc_snapshot_t snapshot, int process_index)
+                        mc_address_space_t address_space, int process_index)
 {
   if (!member->location.size) {
     return ((char *) base) + member->offset;
@@ -26,7 +26,7 @@ void *mc_member_resolve(const void *base, dw_type_t type, dw_type_t member,
   memset(&state, 0, sizeof(s_mc_expression_state_t));
   state.frame_base = NULL;
   state.cursor = NULL;
-  state.snapshot = snapshot;
+  state.address_space = address_space;
   state.stack_size = 1;
   state.stack[0] = (uintptr_t) base;
   state.process_index = process_index;
