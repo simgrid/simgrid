@@ -23,6 +23,12 @@ static int mc_dwarf_push_value(mc_expression_state_t state, Dwarf_Off value)
   return 0;
 }
 
+/** Convert a DWARF register into a libunwind register
+ *
+ *  DWARF and libunwind does not use the same convention for numbering the
+ *  registers on some architectures. The function makes the necessary
+ *  convertion.
+ */
 static int mc_dwarf_register_to_libunwind(int dwarf_register)
 {
 #if defined(UNW_TARGET_X86_64)
@@ -84,7 +90,7 @@ static int mc_dwarf_register_to_libunwind(int dwarf_register)
     xbt_die("Bad/unknown register number.");
   }
 #else
-#error This architecture is not supported yet.
+#error This architecture is not supported yet for DWARF expression evaluation.
 #endif
 }
 
