@@ -174,15 +174,16 @@ int mc_dwarf_execute_expression(size_t n, const Dwarf_Op * ops,
       {
         if (!state->frame_base)
           return MC_EXPRESSION_E_MISSING_FRAME_BASE;
-        error =
-            mc_dwarf_push_value(state,
-                                ((uintptr_t) state->frame_base) + op->number);
+        uintptr_t fb = ((uintptr_t) state->frame_base) + op->number;
+        error = mc_dwarf_push_value(state, fb);
         break;
       }
 
 
-      // Constants:
+      // ***** Constants:
 
+      // Short constant literals:
+      // DW_OP_lit15 pushed the 15 on the stack.
     case DW_OP_lit0:
     case DW_OP_lit1:
     case DW_OP_lit2:
@@ -218,17 +219,20 @@ int mc_dwarf_execute_expression(size_t n, const Dwarf_Op * ops,
       error = mc_dwarf_push_value(state, atom - DW_OP_lit0);
       break;
 
+      // Address from the base address of this ELF object.
+      // Push the address on the stack (base_address + argument).
     case DW_OP_addr:
       if (!state->object_info)
         return MC_EXPRESSION_E_NO_BASE_ADDRESS;
       if (state->stack_size == MC_EXPRESSION_STACK_SIZE)
         return MC_EXPRESSION_E_STACK_OVERFLOW;
-      error = mc_dwarf_push_value(state,
-                                  (Dwarf_Off) (uintptr_t)
-                                  MC_object_base_address(state->object_info) +
-                                  op->number);
+      Dwarf_Off addr = (Dwarf_Off) (uintptr_t)
+        MC_object_base_address(state->object_info) + op->number;
+      error = mc_dwarf_push_value(state, addr);
       break;
 
+      // General constants:
+      // Push the constant argument on the stack.
     case DW_OP_const1u:
     case DW_OP_const2u:
     case DW_OP_const4u:
@@ -244,9 +248,9 @@ int mc_dwarf_execute_expression(size_t n, const Dwarf_Op * ops,
       error = mc_dwarf_push_value(state, op->number);
       break;
 
-      // Stack manipulation:
+      // ***** Stack manipulation:
 
-      // Push the value at the top of the stack:
+      // Push another copy/duplicate the value at the top of the stack:
     case DW_OP_dup:
       if (state->stack_size == 0)
         return MC_EXPRESSION_E_STACK_UNDERFLOW;
@@ -254,6 +258,7 @@ int mc_dwarf_execute_expression(size_t n, const Dwarf_Op * ops,
         error = mc_dwarf_push_value(state, state->stack[state->stack_size - 1]);
       break;
 
+      // Pop/drop the top of the stack:
     case DW_OP_drop:
       if (state->stack_size == 0)
         return MC_EXPRESSION_E_STACK_UNDERFLOW;
@@ -261,6 +266,7 @@ int mc_dwarf_execute_expression(size_t n, const Dwarf_Op * ops,
         state->stack_size--;
       break;
 
+      // Swap the two top-most value of the stack:
     case DW_OP_swap:
       if (state->stack_size < 2)
         return MC_EXPRESSION_E_STACK_UNDERFLOW;
@@ -272,13 +278,17 @@ int mc_dwarf_execute_expression(size_t n, const Dwarf_Op * ops,
       }
       break;
 
+      // Duplicate the value under the top of the stack:
     case DW_OP_over:
       if (state->stack_size < 2)
         return MC_EXPRESSION_E_STACK_UNDERFLOW;
       error = mc_dwarf_push_value(state, state->stack[state->stack_size - 2]);
       break;
 
-      // Operations:
+      // ***** Operations:
+      // Those usually take the top of the stack and the next value as argument
+      // and replace the top of the stack with the computed value
+      // (stack.top() += stack.before_top()).
 
     case DW_OP_plus:
       if (state->stack_size < 2)
@@ -379,7 +389,8 @@ int mc_dwarf_execute_expression(size_t n, const Dwarf_Op * ops,
     case DW_OP_nop:
       break;
 
-      // Dereference:
+      // ***** Deference (memory fetch)
+
     case DW_OP_deref_size:
       return MC_EXPRESSION_E_UNSUPPORTED_OPERATION;
 
