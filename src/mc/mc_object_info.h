@@ -12,6 +12,7 @@
 #define MC_OBJECT_INFO_H
 
 #include <stdint.h>
+#include <stdbool.h>
 
 #include <simgrid_config.h>
 #include <xbt/dict.h>
@@ -20,6 +21,7 @@
 #include "mc_forward.h"
 #include "mc_location.h"
 #include "mc_process.h"
+#include "../smpi/private.h"
 
 SG_BEGIN_DECL();
 
@@ -59,6 +61,7 @@ enum mc_object_info_flags {
 struct s_mc_object_info {
   enum mc_object_info_flags flags;
   char* file_name;
+  const void* start, *end;
   char *start_exec, *end_exec; // Executable segment
   char *start_rw, *end_rw; // Read-write segment
   char *start_ro, *end_ro; // read-only segment
@@ -77,6 +80,12 @@ static inline __attribute__ ((always_inline))
 bool MC_object_info_executable(mc_object_info_t info)
 {
   return info->flags & MC_OBJECT_INFO_EXECUTABLE;
+}
+
+static inline __attribute__ ((always_inline))
+bool MC_object_info_is_privatized(mc_object_info_t info)
+{
+  return info && MC_object_info_executable(info) && smpi_privatize_global_variables;
 }
 
 /** Find the DWARF offset for this ELF object
@@ -99,7 +108,7 @@ mc_object_info_t MC_new_object_info(void);
 mc_object_info_t MC_find_object_info(memory_map_t maps, const char* name, int executable);
 void MC_free_object_info(mc_object_info_t* p);
 
-dw_frame_t MC_file_object_info_find_function(mc_object_info_t info, void *ip);
+dw_frame_t MC_file_object_info_find_function(mc_object_info_t info, const void *ip);
 dw_variable_t MC_file_object_info_find_variable_by_name(mc_object_info_t info, const char* name);
 
 void MC_post_process_object_info(mc_process_t process, mc_object_info_t info);

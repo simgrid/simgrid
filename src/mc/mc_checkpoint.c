@@ -235,8 +235,8 @@ static void MC_snapshot_add_region(int index, mc_snapshot_t snapshot, mc_region_
     ref_reg = mc_model_checker->parent_snapshot->snapshot_regions[index];
 
   mc_mem_region_t region;
-  const bool privatization_aware = object_info && MC_object_info_executable(object_info);
-  if (privatization_aware && smpi_privatize_global_variables && smpi_process_count())
+  const bool privatization_aware = MC_object_info_is_privatized(object_info);
+  if (privatization_aware && smpi_process_count())
     region = MC_region_new_privatized(type, start_addr, permanent_addr, size, ref_reg);
   else
     region = MC_region_new(type, start_addr, permanent_addr, size, ref_reg);
@@ -321,6 +321,18 @@ void MC_find_object_address(memory_map_t maps, mc_object_info_t result)
     }
     i++;
   }
+
+  result->start = result->start_rw;
+  if ((const void*) result->start_ro > result->start)
+    result->start = result->start_ro;
+  if ((const void*) result->start_exec > result->start)
+    result->start = result->start_exec;
+
+  result->end = result->end_rw;
+  if (result->end_ro && (const void*) result->end_ro < result->end)
+    result->end = result->end_ro;
+  if (result->end_exec && (const void*) result->end_exec > result->end)
+    result->end = result->end_exec;
 
   xbt_assert(result->file_name);
   xbt_assert(result->start_rw);

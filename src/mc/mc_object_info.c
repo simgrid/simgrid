@@ -5,7 +5,7 @@
 #include "mc_object_info.h"
 #include "mc_private.h"
 
-dw_frame_t MC_file_object_info_find_function(mc_object_info_t info, void *ip)
+dw_frame_t MC_file_object_info_find_function(mc_object_info_t info, const void *ip)
 {
   xbt_dynar_t dynar = info->functions_index;
   mc_function_index_item_t base =

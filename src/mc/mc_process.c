@@ -269,12 +269,36 @@ static void MC_process_init_memory_map_info(mc_process_t process)
   XBT_INFO("Get debug information done !");
 }
 
-mc_object_info_t MC_process_find_object_info(mc_process_t process, void *ip)
+mc_object_info_t MC_process_find_object_info(mc_process_t process, const void *addr)
 {
   size_t i;
   for (i = 0; i != process->object_infos_size; ++i) {
-    if (ip >= (void *) process->object_infos[i]->start_exec
-        && ip <= (void *) process->object_infos[i]->end_exec) {
+    if (addr >= (void *) process->object_infos[i]->start
+        && addr <= (void *) process->object_infos[i]->end) {
+      return process->object_infos[i];
+    }
+  }
+  return NULL;
+}
+
+mc_object_info_t MC_process_find_object_info_exec(mc_process_t process, const void *addr)
+{
+  size_t i;
+  for (i = 0; i != process->object_infos_size; ++i) {
+    if (addr >= (void *) process->object_infos[i]->start_exec
+        && addr <= (void *) process->object_infos[i]->end_exec) {
+      return process->object_infos[i];
+    }
+  }
+  return NULL;
+}
+
+mc_object_info_t MC_process_find_object_info_rw(mc_process_t process, const void *addr)
+{
+  size_t i;
+  for (i = 0; i != process->object_infos_size; ++i) {
+    if (addr >= (void *) process->object_infos[i]->start_rw
+        && addr <= (void *) process->object_infos[i]->end_rw) {
       return process->object_infos[i];
     }
   }
@@ -283,9 +307,9 @@ mc_object_info_t MC_process_find_object_info(mc_process_t process, void *ip)
 
 // Functions, variables…
 
-dw_frame_t MC_process_find_function(mc_process_t process, void *ip)
+dw_frame_t MC_process_find_function(mc_process_t process, const void *ip)
 {
-  mc_object_info_t info = MC_process_find_object_info(process, ip);
+  mc_object_info_t info = MC_process_find_object_info_exec(process, ip);
   if (info == NULL)
     return NULL;
   else
@@ -369,8 +393,17 @@ const void* MC_process_read(mc_process_t process, e_adress_space_read_flags_t fl
   void* local, const void* remote, size_t len,
   int process_index)
 {
-  if (process_index != MC_PROCESS_INDEX_DISABLED)
-    xbt_die("Not implemented yet");
+  if (process_index != MC_PROCESS_INDEX_DISABLED) {
+    mc_object_info_t info = MC_process_find_object_info_rw(process, remote);
+    // Segment overlap is not handled.
+    if (MC_object_info_is_privatized(info)) {
+      if (process_index < 0)
+        xbt_die("Missing process index");
+      // Address translation in the privaization segment:
+      size_t offset = (const char*) remote - info->start_rw;
+      remote = (const char*) remote - offset;
+    }
+  }
 
   if (MC_process_is_self(process)) {
     if (flags & MC_ADDRESS_SPACE_READ_FLAGS_LAZY)

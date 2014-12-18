@@ -125,8 +125,11 @@ void MC_process_write(mc_process_t process, const void* local, void* remote, siz
 
 /* Functions, variables of the process: */
 
-mc_object_info_t MC_process_find_object_info(mc_process_t process, void* ip);
-dw_frame_t MC_process_find_function(mc_process_t process, void* ip);
+mc_object_info_t MC_process_find_object_info(mc_process_t process, const void* addr);
+mc_object_info_t MC_process_find_object_info_exec(mc_process_t process, const void* addr);
+mc_object_info_t MC_process_find_object_info_rw(mc_process_t process, const void* addr);
+
+dw_frame_t MC_process_find_function(mc_process_t process, const void* ip);
 
 static inline xbt_mheap_t MC_process_get_heap(mc_process_t process)
 {
