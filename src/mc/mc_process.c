@@ -10,6 +10,8 @@
 #include <regex.h>
 #include <sys/mman.h> // PROT_*
 
+#include <pthread.h>
+
 #include <libgen.h>
 
 #include "mc_process.h"
@@ -426,5 +428,35 @@ void MC_process_write(mc_process_t process, const void* local, void* remote, siz
   } else {
     if (pwrite_whole(process->memory_file, local, len, (off_t) remote) < 0)
       xbt_die("Write to process %lli failed", (long long) process->pid);
+  }
+}
+
+static pthread_once_t zero_buffer_flag = PTHREAD_ONCE_INIT;
+static const void* zero_buffer;
+static const int zero_buffer_size = 10 * 4096;
+
+static void MC_zero_buffer_init(void)
+{
+  int fd = open("/dev/zero", O_RDONLY);
+  if (fd<0)
+    xbt_die("Could not open /dev/zero");
+  zero_buffer = mmap(NULL, zero_buffer_size, PROT_READ, MAP_SHARED, fd, 0);
+  if (zero_buffer == MAP_FAILED)
+    xbt_die("Could not map the zero buffer");
+  close(fd);
+}
+
+void MC_process_clear_memory(mc_process_t process, void* remote, size_t len)
+{
+  if (MC_process_is_self(process)) {
+    memset(remote, 0, len);
+  } else {
+    pthread_once(&zero_buffer_flag, MC_zero_buffer_init);
+    while (len) {
+      size_t s = len > zero_buffer_size ? zero_buffer_size : len;
+      MC_process_write(process, zero_buffer, remote, s);
+      remote = (char*) remote + s;
+      len -= s;
+    }
   }
 }

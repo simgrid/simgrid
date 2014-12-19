@@ -574,6 +574,7 @@ static void mc_free_snapshot_ignored_data_pvoid(void* data) {
 
 static void MC_snapshot_handle_ignore(mc_snapshot_t snapshot)
 {
+  xbt_assert(snapshot->process);
   snapshot->ignored_data = xbt_dynar_new(sizeof(s_mc_snapshot_ignored_data_t), mc_free_snapshot_ignored_data_pvoid);
 
   // Copy the memory:
@@ -584,13 +585,16 @@ static void MC_snapshot_handle_ignore(mc_snapshot_t snapshot)
     ignored_data.start = region->addr;
     ignored_data.size = region->size;
     ignored_data.data = malloc(region->size);
-    memcpy(ignored_data.data, region->addr, region->size);
+    // TODO, we should do this once per privatization segment:
+    MC_process_read(snapshot->process,
+      MC_ADDRESS_SPACE_READ_FLAGS_NONE,
+      ignored_data.data, region->addr, region->size, MC_PROCESS_INDEX_DISABLED);
     xbt_dynar_push(snapshot->ignored_data, &ignored_data);
   }
 
   // Zero the memory:
   xbt_dynar_foreach (mc_checkpoint_ignore, cursor, region) {
-    memset(region->addr, 0, region->size);
+    MC_process_clear_memory(snapshot->process, region->addr, region->size);
   }
 
 }
@@ -600,7 +604,8 @@ static void MC_snapshot_ignore_restore(mc_snapshot_t snapshot)
   unsigned int cursor = 0;
   s_mc_snapshot_ignored_data_t ignored_data;
   xbt_dynar_foreach (snapshot->ignored_data, cursor, ignored_data) {
-    memcpy(ignored_data.start, ignored_data.data, ignored_data.size);
+    MC_process_write(snapshot->process,
+      ignored_data.data, ignored_data.start, ignored_data.size);
   }
 }
 

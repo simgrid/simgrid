@@ -123,6 +123,8 @@ const void* MC_process_read(mc_process_t process,
  */
 void MC_process_write(mc_process_t process, const void* local, void* remote, size_t len);
 
+void MC_process_clear_memory(mc_process_t process, void* remote, size_t len);
+
 /* Functions, variables of the process: */
 
 mc_object_info_t MC_process_find_object_info(mc_process_t process, const void* addr);
