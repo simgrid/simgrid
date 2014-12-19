@@ -181,6 +181,7 @@ void MC_init()
     MC_ignore_heap(mc_time, simix_process_maxpid * sizeof(double));
 
     smx_process_t process;
+    // FIXME, cross-process support (simix_global->process_list)
     xbt_swag_foreach(process, simix_global->process_list) {
       MC_ignore_heap(&(process->process_hookup),
                      sizeof(process->process_hookup));

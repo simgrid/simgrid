@@ -33,7 +33,7 @@ static xbt_dynar_t get_atomic_propositions_values()
   unsigned int cursor = 0;
   xbt_automaton_propositional_symbol_t ps = NULL;
   xbt_dynar_t values = xbt_dynar_new(sizeof(int), NULL);
-
+  // FIXME, cross-process support
   xbt_dynar_foreach(_mc_property_automaton->propositional_symbols, cursor, ps) {
     f = (int_f_void_t) ps->function;
     res = f();

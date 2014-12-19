@@ -638,6 +638,7 @@ void smpi_really_switch_data_segment(int dest) {
     }
   }
 
+  // FIXME, cross-process support (mmap across process when necessary)
   int current = smpi_privatisation_regions[dest].file_descriptor;
   XBT_DEBUG("Switching data frame to the one of process %d", dest);
   void* tmp = mmap (TOPAGE(start_data_exe), size_data_exe, PROT_READ | PROT_WRITE, MAP_FIXED | MAP_SHARED, current, 0);

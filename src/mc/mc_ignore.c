@@ -61,6 +61,7 @@ static void checkpoint_ignore_region_free_voidp(void *r)
 
 /***********************************************************************/
 
+// FIXME, cross-process support? (or make this it is used on the app-side)
 void MC_ignore_heap(void *address, size_t size)
 {
   if(!std_heap)
@@ -175,6 +176,7 @@ void MC_remove_ignore_heap(void *address, size_t size)
 
 }
 
+// FIXME, cross-process support?
 void MC_ignore_global_variable(const char *name)
 {
   mc_process_t process = &mc_model_checker->process;
@@ -223,6 +225,7 @@ void MC_ignore_global_variable(const char *name)
  *  \param subprogram      (possibly inlined) Subprogram of the scope
  *  \param scope           Current scope
  */
+ // FIXME, cross-process support (messaging?)
 static void mc_ignore_local_variable_in_scope(const char *var_name,
                                               const char *subprogram_name,
                                               dw_frame_t subprogram,
@@ -230,7 +233,7 @@ static void mc_ignore_local_variable_in_scope(const char *var_name,
 {
   // Processing of direct variables:
 
-  // If the current subprogram matche the given name:
+  // If the current subprogram matches the given name:
   if (!subprogram_name ||
       (subprogram->name && strcmp(subprogram_name, subprogram->name) == 0)) {
 
@@ -314,7 +317,7 @@ void MC_ignore_local_variable(const char *var_name, const char *frame_name)
 /** @brief Register a stack in the model checker
  *
  *  The stacks are allocated in the heap. The MC handle them especially
- *  when we analyse/compare the content of theap so it must be told where
+ *  when we analyse/compare the content of the heap so it must be told where
  *  they are with this function.
  *
  *  @param stack
@@ -361,6 +364,7 @@ void MC_ignore(void *addr, size_t size)
 
   MC_SET_MC_HEAP;
 
+  // FIXME, cross-process support
   if (mc_checkpoint_ignore == NULL)
     mc_checkpoint_ignore =
         xbt_dynar_new(sizeof(mc_checkpoint_ignore_region_t),

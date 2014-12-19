@@ -187,6 +187,8 @@ static void MC_region_restore(mc_mem_region_t region, mc_mem_region_t ref_region
   }
 }
 
+// FIXME, multiple privatisation regions
+// FIXME, cross-process
 static inline
 void* MC_privatization_address(mc_process_t process, int process_index)
 {
@@ -272,6 +274,7 @@ static void MC_get_memory_regions(mc_process_t process, mc_snapshot_t snapshot)
 
 #ifdef HAVE_SMPI
   if (smpi_privatize_global_variables && smpi_process_count()) {
+    // FIXME, cross-process
     snapshot->privatization_index = smpi_loaded_page;
   } else
 #endif
@@ -282,7 +285,7 @@ static void MC_get_memory_regions(mc_process_t process, mc_snapshot_t snapshot)
 
 /** \brief Fills the position of the segments (executable, read-only, read/write).
  *
- * TODO, use dl_iterate_phdr to be more robust
+ *  `dl_iterate_phdr` would be more robust but would not work in cross-process.
  * */
 void MC_find_object_address(memory_map_t maps, mc_object_info_t result)
 {
@@ -378,6 +381,7 @@ static void mc_fill_local_variables_values(mc_stack_frame_t stack_frame,
       continue;
 
     int region_type;
+    // FIXME, get rid of `region_type`
     if ((long) stack_frame->ip > (long) process->libsimgrid_info->start_exec)
       region_type = 1;
     else
@@ -394,6 +398,7 @@ static void mc_fill_local_variables_values(mc_stack_frame_t stack_frame,
       new_var->address = current_variable->address;
     } else if (current_variable->locations.size != 0) {
       s_mc_location_t location;
+      // FIXME, cross-process support
       mc_dwarf_resolve_locations(&location, &current_variable->locations,
                                               current_variable->object_info,
                                               &(stack_frame->unw_cursor),
@@ -456,6 +461,7 @@ static xbt_dynar_t MC_unwind_stack_frames(void *stack_context)
   unw_cursor_t c;
 
   // TODO, check condition check (unw_init_local==0 means end of frame)
+  // FIXME, cross-process support
   if (unw_init_local(&c, (unw_context_t *) stack_context) != 0) {
 
     xbt_die("Could not initialize stack unwinding");
@@ -521,6 +527,7 @@ static xbt_dynar_t MC_take_snapshot_stacks(mc_snapshot_t * snapshot)
   unsigned int cursor = 0;
   stack_region_t current_stack;
 
+  // FIXME, cross-process support (stack_areas)
   xbt_dynar_foreach(stacks_areas, cursor, current_stack) {
     mc_snapshot_stack_t st = xbt_new(s_mc_snapshot_stack_t, 1);
     st->stack_frames = MC_unwind_stack_frames(current_stack->context);
@@ -540,6 +547,7 @@ static xbt_dynar_t MC_take_snapshot_stacks(mc_snapshot_t * snapshot)
 
 }
 
+// FIXME, cross-process support (mc_heap_comparison_ignore)
 static xbt_dynar_t MC_take_snapshot_ignore()
 {
 
@@ -580,6 +588,7 @@ static void MC_snapshot_handle_ignore(mc_snapshot_t snapshot)
   // Copy the memory:
   unsigned int cursor = 0;
   mc_checkpoint_ignore_region_t region;
+  // FIXME, cross-process support (mc_checkpoint_ignore)
   xbt_dynar_foreach (mc_checkpoint_ignore, cursor, region) {
     s_mc_snapshot_ignored_data_t ignored_data;
     ignored_data.start = region->addr;
@@ -628,17 +637,18 @@ int mc_important_snapshot(mc_snapshot_t snapshot)
   return false;
 }
 
-static void MC_get_current_fd(mc_snapshot_t snapshot){
+static void MC_get_current_fd(mc_snapshot_t snapshot)
+{
 
   snapshot->total_fd = 0;
 
   const size_t fd_dir_path_size = 20;
   char fd_dir_path[fd_dir_path_size];
   if (snprintf(fd_dir_path, fd_dir_path_size,
-    "/proc/%lli/fd", (long long int) getpid()) > fd_dir_path_size)
+    "/proc/%lli/fd", (long long int) snapshot->process->pid) > fd_dir_path_size)
     xbt_die("Unexpected buffer is too small for fd_dir_path");
 
-  DIR* fd_dir = opendir (fd_dir_path);
+  DIR* fd_dir = opendir(fd_dir_path);
   if (fd_dir == NULL)
     xbt_die("Cannot open directory '/proc/self/fd'\n");
 
@@ -653,7 +663,8 @@ static void MC_get_current_fd(mc_snapshot_t snapshot){
 
     const size_t source_size = 25;
     char source[25];
-    if (snprintf(source, source_size, "/proc/self/fd/%s", fd_number->d_name) > source_size)
+    if (snprintf(source, source_size, "/proc/%lli/fd/%s",
+        (long long int) snapshot->process->pid, fd_number->d_name) > source_size)
       xbt_die("Unexpected buffer is too small for fd %s", fd_number->d_name);
 
     const size_t link_size = 200;
@@ -712,6 +723,7 @@ mc_snapshot_t MC_take_snapshot(int num_state)
 
   snapshot->enabled_processes = xbt_dynar_new(sizeof(int), NULL);
   smx_process_t process;
+  // FIXME, cross-process support (simix_global->process_list)
   xbt_swag_foreach(process, simix_global->process_list) {
     xbt_dynar_push_as(snapshot->enabled_processes, int, (int)process->pid);
   }
@@ -775,6 +787,9 @@ void MC_restore_snapshot_regions(mc_snapshot_t snapshot)
 #endif
 }
 
+// FIXME, cross-process support ~ we need to implement this on the app side
+// or use some form of [remote syscall execution](http://criu.org/Remote_syscall_execution)
+// based on [parasite code execution](http://criu.org/Parasite_code).
 static inline
 void MC_restore_snapshot_fds(mc_snapshot_t snapshot)
 {
