@@ -9,7 +9,7 @@ if(enable_smpi)
 
   set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}")
 
-  include_directories("${CMAKE_HOME_DIRECTORY}/include/smpi")
+  include_directories(BEFORE "${CMAKE_HOME_DIRECTORY}/include/smpi")
   add_executable(alltoall2 alltoall2.c)
   add_executable(alltoall_basic alltoall_basic.c)
   add_executable(alltoall_coll alltoall_coll.c)

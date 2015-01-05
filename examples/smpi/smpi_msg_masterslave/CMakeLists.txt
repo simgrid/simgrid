@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 2.6)
 
 if(enable_smpi)
   set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}")
-  include_directories("${CMAKE_HOME_DIRECTORY}/include/smpi")
+  include_directories(BEFORE "${CMAKE_HOME_DIRECTORY}/include/smpi")
 
   add_executable(masterslave_mailbox_smpi masterslave_mailbox_smpi.c)
   target_link_libraries(masterslave_mailbox_smpi simgrid)

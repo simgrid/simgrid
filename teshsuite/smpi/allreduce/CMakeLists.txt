@@ -9,7 +9,7 @@ if(enable_smpi)
 
   set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}")
 
-  include_directories("${CMAKE_HOME_DIRECTORY}/include/smpi")
+  include_directories(BEFORE "${CMAKE_HOME_DIRECTORY}/include/smpi")
   add_executable(allreduce allreduce.c)
   add_executable(allreduce_coll allreduce_coll.c)
   target_link_libraries(allreduce simgrid)
