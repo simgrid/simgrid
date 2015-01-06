@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 2.6)
 if(enable_smpi)
   set(CMAKE_C_COMPILER "${CMAKE_BINARY_DIR}/smpi_script/bin/smpicc")
   set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}")
-  include_directories("${CMAKE_HOME_DIRECTORY}/include/smpi")
+  include_directories(BEFORE "${CMAKE_HOME_DIRECTORY}/include/smpi")
 
   if(NOT WIN32)
     add_executable(MM_mpi MM_mpi.c 2.5D_MM.c Summa.c Matrix_init.c)
