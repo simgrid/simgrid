@@ -88,8 +88,7 @@ typedef struct s_mc_comparison_times{
   double nb_processes_comparison_time;
   double bytes_used_comparison_time;
   double stacks_sizes_comparison_time;
-  double binary_global_variables_comparison_time;
-  double libsimgrid_global_variables_comparison_time;
+  double global_variables_comparison_time;
   double heap_comparison_time;
   double stacks_comparison_time;
 }s_mc_comparison_times_t, *mc_comparison_times_t;

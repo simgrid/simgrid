@@ -568,20 +568,11 @@ int snapshot_compare(void *state1, void *state2)
     cursor++;
   }
 
-
-
-  const char *names[3] = { "?", "libsimgrid", "binary" };
-#ifdef MC_DEBUG
-  double *times[3] = {
-    NULL,
-    &mc_comp_times->libsimgrid_global_variables_comparison_time,
-    &mc_comp_times->binary_global_variables_comparison_time
-  };
-#endif
-
   size_t regions_count = s1->snapshot_regions_count;
   // TODO, raise a difference instead?
   xbt_assert(regions_count == s2->snapshot_regions_count);
+
+  mc_comp_times->global_variables_comparison_time = 0;
 
   for (size_t k = 0; k != regions_count; ++k) {
     mc_mem_region_t region1 = s1->snapshot_regions[k];
@@ -595,6 +586,9 @@ int snapshot_compare(void *state1, void *state2)
     xbt_assert(region1->object_info == region2->object_info);
 
     xbt_assert(region1->object_info);
+
+    const char* name = region1->object_info->file_name;
+
 #ifdef MC_DEBUG
     if (is_diff == 0)
       xbt_os_walltimer_stop(timer);
@@ -611,14 +605,15 @@ int snapshot_compare(void *state1, void *state2)
       XBT_TRACE3(mc, state_diff, num1, num2, "Different global variables");
 #ifdef MC_DEBUG
       xbt_os_walltimer_stop(timer);
-      *times[k] = xbt_os_timer_elapsed(timer);
+      mc_comp_times->global_variables_comparison_time
+        += xbt_os_timer_elapsed(timer);
       XBT_DEBUG("(%d - %d) Different global variables in %s", num1, num2,
-                names[k]);
+                name);
       errors++;
 #else
 #ifdef MC_VERBOSE
       XBT_VERB("(%d - %d) Different global variables in %s", num1, num2,
-               names[k]);
+               name);
 #endif
 
       reset_heap_information();
@@ -714,10 +709,7 @@ void print_comparison_times()
   XBT_DEBUG("- Nb processes : %f", mc_comp_times->nb_processes_comparison_time);
   XBT_DEBUG("- Nb bytes used : %f", mc_comp_times->bytes_used_comparison_time);
   XBT_DEBUG("- Stacks sizes : %f", mc_comp_times->stacks_sizes_comparison_time);
-  XBT_DEBUG("- Binary global variables : %f",
-            mc_comp_times->binary_global_variables_comparison_time);
-  XBT_DEBUG("- Libsimgrid global variables : %f",
-            mc_comp_times->libsimgrid_global_variables_comparison_time);
+  XBT_DEBUG("- GLobal variables : %f", mc_comp_times->global_variables_comparison_time);
   XBT_DEBUG("- Heap : %f", mc_comp_times->heap_comparison_time);
   XBT_DEBUG("- Stacks : %f", mc_comp_times->stacks_comparison_time);
 }
