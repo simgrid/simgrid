@@ -205,6 +205,7 @@ set(source_to_pack
   ${LUA_SRC}
   ${MC_SRC_BASE}
   ${MC_SRC}
+  ${MC_SIMGRID_MC_SRC}
   ${MSG_SRC}
   ${NS3_SRC}
   ${RNGSTREAM_SRC}

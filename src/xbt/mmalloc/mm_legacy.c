@@ -11,6 +11,7 @@
 
 #include <dlfcn.h>
 
+#include "../../mc/mc_base.h"
 #include "mmprivate.h"
 #include "xbt_modinter.h"
 #include "internal_config.h"
@@ -24,6 +25,12 @@
    backwards compatibility with the non-mmap'd version. */
 xbt_mheap_t __mmalloc_default_mdp = NULL;
 
+static int __malloc_use_mmalloc;
+
+int malloc_use_mmalloc(void)
+{
+  return __malloc_use_mmalloc;
+}
 
 static xbt_mheap_t __mmalloc_current_heap = NULL;     /* The heap we are currently using. */
 
@@ -61,35 +68,12 @@ static mm_realloc_t mm_real_realloc = mm_fake_realloc;
 
 #define GET_HEAP() __mmalloc_current_heap
 
-static const char* env_name = "SIMGRID_MALLOC_USE_MM";
-
-int mmalloc_exec_using_mm(int argc, const char** argv)
-{
-  char** argv2 = (char**) malloc(sizeof(char*) * (argc+1));
-  memcpy(argv2, argv, sizeof(char*) * argc);
-  argv2[argc] = NULL;
-  if (setenv(env_name, "1", 1) >= 0) {
-    execv(argv[0], argv2);
-  }
-  unsetenv(env_name);
-  fprintf(stderr, "Could not restart with mm malloc\n");
-  free(argv2);
-  return -1;
-}
-
-void mmalloc_ensure_using_mm(int argc, const char** argv)
-{
-  if (!__mmalloc_default_mdp) {
-    mmalloc_exec_using_mm(argc, argv);
-  }
-}
-
 /** Constructor functions used to initialize the malloc implementation
  */
 static void __attribute__((constructor(101))) mm_legacy_constructor()
 {
-  bool use_mm = getenv(env_name);
-  if (use_mm) {
+  __malloc_use_mmalloc = getenv(MC_ENV_VARIABLE) ? 1 : 0;
+  if (__malloc_use_mmalloc) {
     __mmalloc_current_heap = mmalloc_preinit();
   } else {
     mm_real_realloc  = (mm_realloc_t) dlsym(RTLD_NEXT, "realloc");
@@ -101,7 +85,7 @@ static void __attribute__((constructor(101))) mm_legacy_constructor()
 
 void *malloc(size_t n)
 {
-  if (!__mmalloc_current_heap) {
+  if (!__malloc_use_mmalloc) {
     return mm_real_malloc(n);
   }
 
@@ -117,7 +101,7 @@ void *malloc(size_t n)
 
 void *calloc(size_t nmemb, size_t size)
 {
-  if (!__mmalloc_current_heap) {
+  if (!__malloc_use_mmalloc) {
     return mm_real_calloc(nmemb, size);
   }
 
@@ -137,7 +121,7 @@ void *calloc(size_t nmemb, size_t size)
 
 void *realloc(void *p, size_t s)
 {
-  if (!__mmalloc_current_heap) {
+  if (!__malloc_use_mmalloc) {
     return mm_real_realloc(p, s);
   }
 
@@ -153,13 +137,13 @@ void *realloc(void *p, size_t s)
 
 void free(void *p)
 {
-  if (!p)
-    return;
-
-  if (!__mmalloc_current_heap) {
+  if (!__malloc_use_mmalloc) {
     mm_real_free(p);
     return;
   }
+
+  if (!p)
+    return;
 
   xbt_mheap_t mdp = GET_HEAP();
   LOCK(mdp);

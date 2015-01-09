@@ -26,8 +26,9 @@ xbt_mheap_t mc_heap = NULL;           /* memory persistent over the MC rollbacks
 /* It creates the two heap regions: std_heap and mc_heap */
 void MC_memory_init()
 {
-  mmalloc_ensure_using_mm(
-    xbt_dynar_length(xbt_cmdline), xbt_dynar_get_ptr(xbt_cmdline, 0));
+  if (!malloc_use_mmalloc()) {
+    xbt_die("Model-checking support is not enabled: run with simgrid-mc.");
+  }
 
   /* Create the first region HEAP_OFFSET bytes after the heap break address */
   std_heap = mmalloc_get_default_md();

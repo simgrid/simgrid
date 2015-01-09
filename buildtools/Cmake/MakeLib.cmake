@@ -22,6 +22,14 @@ endif()
 
 add_dependencies(simgrid maintainer_files)
 
+if(enable_model-checking)
+  add_executable(simgrid-mc "${MC_SIMGRID_MC_SRC}")
+  target_link_libraries(simgrid-mc simgrid)
+  set_target_properties(simgrid-mc
+    PROPERTIES
+      RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
+endif()
+
 # Compute the dependencies of SimGrid
 #####################################
 set(SIMGRID_DEP "-lm")

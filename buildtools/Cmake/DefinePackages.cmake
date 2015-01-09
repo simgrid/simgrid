@@ -640,6 +640,9 @@ set(MC_SRC
   src/mc/memory_map.c
   )
 
+set(MC_SIMGRID_MC_SRC
+  src/mc/simgrid_mc.c)
+
 set(headers_to_install
   include/instr/instr.h
   include/msg/datatypes.h
