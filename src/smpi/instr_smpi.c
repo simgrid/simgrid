@@ -522,9 +522,6 @@ void TRACE_smpi_send_process_data_out(int rank)
   /* This should start a link from the original process's container to the new
    * one. */
   snprintf(key, INSTR_DEFAULT_STR_SIZE, "%lld", counter);
-  printf("%s\n", str);
-//smpi_container(rank, str, INSTR_DEFAULT_STR_SIZE);
-//container = PJ_container_get(str);
   type = PJ_type_get ("MIGRATE_LINK", PJ_type_get_root());
   new_pajeStartLink(SIMIX_get_clock(), PJ_container_get_root(),
   		      type, container, "MIG", key);
@@ -550,7 +547,6 @@ void TRACE_smpi_process_change_host(int rank, smx_host_t host,
   //host.
   snprintf(str, INSTR_DEFAULT_STR_SIZE, "%s-rank-%d",
 	    SIMIX_host_get_name(new_host), rank);
-  printf("%s\n", str);
   container_t container = PJ_container_get(str);
   type_t type = PJ_type_get("MIGRATE_LINK", PJ_type_get_root());
   new_pajeEndLink(SIMIX_get_clock(), PJ_container_get_root(),
