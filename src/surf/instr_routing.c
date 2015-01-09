@@ -180,6 +180,8 @@ static void instr_routing_parse_start_AS (sg_platf_AS_cbarg_t AS)
           mpi = PJ_type_container_new("MPI", root->type);
           PJ_type_state_new ("MPI_STATE", mpi);
           PJ_type_link_new ("MPI_LINK", PJ_type_get_root(), mpi, mpi);
+	  PJ_type_link_new ("MIGRATE_LINK", PJ_type_get_root(), mpi, mpi);
+          PJ_type_state_new ("MIGRATE_STATE", mpi);
         }
       }
     }
@@ -281,6 +283,8 @@ static void instr_routing_parse_start_host (sg_platf_host_cbarg_t host)
       mpi = PJ_type_container_new("MPI", new->type);
       PJ_type_state_new ("MPI_STATE", mpi);
       PJ_type_link_new ("MPI_LINK", PJ_type_get_root(), mpi, mpi);
+      PJ_type_link_new ("MIGRATE_LINK",PJ_type_get_root(), mpi, mpi);
+      PJ_type_state_new ("MIGRATE_STATE", mpi);
     }
   }
 

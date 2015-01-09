@@ -1621,10 +1621,19 @@ void smpi_send_process_data(unsigned long size, smx_host_t dest)
   smpi_datatype_use(request->old_type);
   smpi_comm_use(request->comm);
   
+#ifdef HAVE_TRACING
+  TRACE_smpi_send_process_data_in(smpi_process_index());
+#endif
+
   request->action = simcall_comm_isend(SIMIX_process_from_PID(request->src+1),
       mailbox, request->size, -1.0, NULL, request->real_size, &match_send,
       &xbt_free_f, &smpi_comm_null_copy_buffer_callback, request,
       request->detached); 
   simcall_comm_wait(request->action, -1.0);
+
+#ifdef HAVE_TRACING
+  TRACE_smpi_send_process_data_out(smpi_process_index());
+#endif
+
 }
 

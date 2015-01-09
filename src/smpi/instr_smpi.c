@@ -54,6 +54,7 @@ static const char *smpi_colors[] ={
     "get",       "0 1 0.3",
     "accumulate",       "1 0.3 0",
     "fence",       "1 0 0.3",
+    "migration",	"0 0.5 0",
     NULL, NULL,
 };
 
@@ -422,7 +423,7 @@ void TRACE_smpi_recv(int rank, int src, int dst)
 
 /**************** Functions to trace the migration of tasks. *****************/
 
-void TRACE_smpi_task_create(int rank, smx_host_t host)
+void TRACE_smpi_task_migrate(int rank, smx_host_t host)
 {
   if (!TRACE_smpi_is_enabled()) return;
   
@@ -449,53 +450,111 @@ void TRACE_smpi_task_create(int rank, smx_host_t host)
   PJ_container_new(str, INSTR_SMPI, father);
 }
 
+/*
 void TRACE_smpi_task_destroy (int rank)
 {
   char str[INSTR_DEFAULT_STR_SIZE];
   container_t container = PJ_container_get(smpi_container(rank, str, 
-				      INSTR_DEFAULT_STR_SIZE));
+					    INSTR_DEFAULT_STR_SIZE));
   type_t type = PJ_type_get ("MPI_STATE", container->type);
   new_pajePopState (SIMIX_get_clock(), container, type);
 //  PJ_container_remove_from_parent(container);
 //  PJ_container_free(container);
 }
+*/
+
+long long int get_migration_counter()
+{
+
+  static long long int counter = -1;
+  static unsigned fase = 0;
+  if(fase == 0){
+    fase = 1;
+    counter++;
+  }else{
+    fase = 0;
+  }
+  return counter;
+}
+
+void TRACE_smpi_send_process_data_in(int rank)
+{
+  if (!TRACE_smpi_is_enabled()) {
+      return;
+  }
+
+
+  char str[INSTR_DEFAULT_STR_SIZE];
+  smpi_container(rank, str, INSTR_DEFAULT_STR_SIZE);
+  container_t container = PJ_container_get(str);
+  
+  /* We need to clean the containers state. Otherwise, migrated tasks would
+   * stay on the computing state on the original host.*/
+  if(TRACE_smpi_is_computing()){
+    type_t type = PJ_type_get ("MPI_STATE", container->type);
+    new_pajePopState (SIMIX_get_clock(), container, type);
+  }
+ 
+  /* Now we change the container's state to indicate that the process data is
+   * being transferred. */ 
+  type_t type = PJ_type_get ("MIGRATE_STATE", container->type);
+  const char *color = instr_find_color ("migration");
+  val_t value = PJ_value_get_or_new ("migration", color, type);
+  new_pajePushState(SIMIX_get_clock(), container, type, value);
+}
+
+void TRACE_smpi_send_process_data_out(int rank)
+{
+  if (!TRACE_smpi_is_enabled()) {
+      return;
+  }
+
+  char str[INSTR_DEFAULT_STR_SIZE];
+  char key[INSTR_DEFAULT_STR_SIZE];
+  long long int counter = get_migration_counter();
+ 
+  /* Clean the process state. */ 
+  smpi_container(rank, str, INSTR_DEFAULT_STR_SIZE);
+  container_t container = PJ_container_get(str);
+  type_t type = PJ_type_get ("MIGRATE_STATE", container->type);
+  new_pajePopState(SIMIX_get_clock(), container, type);
+  
+  /* This should start a link from the original process's container to the new
+   * one. */
+  snprintf(key, INSTR_DEFAULT_STR_SIZE, "%lld", counter);
+  printf("%s\n", str);
+//smpi_container(rank, str, INSTR_DEFAULT_STR_SIZE);
+//container = PJ_container_get(str);
+  type = PJ_type_get ("MIGRATE_LINK", PJ_type_get_root());
+  new_pajeStartLink(SIMIX_get_clock(), PJ_container_get_root(),
+  		      type, container, "MIG", key);
+
+}
 
 void TRACE_smpi_process_change_host(int rank, smx_host_t host,
-				    smx_host_t new_host)
+				    smx_host_t new_host, int size)
 {
   if (!TRACE_smpi_is_enabled()) return;
   
-  static long long int counter = 0;
+  long long int counter = get_migration_counter();
 
   char key[INSTR_DEFAULT_STR_SIZE];
-  snprintf (key, INSTR_DEFAULT_STR_SIZE, "%lld", counter++);
-
-  int len = INSTR_DEFAULT_STR_SIZE;
   char str[INSTR_DEFAULT_STR_SIZE];
-  
-  //TODO create link (arrow) betwen old and new host.
-  //TODO trace the sending of the process data to the destination. 
-  //start link
-  //container_t msg = PJ_container_get (instr_process_id(process, str, len));
-  //type_t type = PJ_type_get ("SMPI_PROCESS_LINK", PJ_type_get_roott());
-  //new_pajeStartLink (smpi_process_simulated_elapsed(), PJ_container_get_root(),
-  //		      type, msg, "M", key);
 
-  /* We don't actually destroy the container, we just cleans up its state. This
-   * is needed because otherwise, migrated tasks would be shown stay on the
-   * computing state on the original host.*/
-  if(TRACE_smpi_is_computing()){
-    TRACE_smpi_task_destroy(rank);
-  }
-  
   //Create new container on the new_host location, if it doesn't already exist.
-  TRACE_smpi_task_create(rank, new_host);
+  TRACE_smpi_task_migrate(rank, new_host);
 
-  //end link
-  //msg = PJ_container_get(instr_process_id(process, str, len));
-  //type = PJ_type_get ("SMPI_PROCESS_LINK", PJ_type_get_root());
-  //new_pajeEndLink (smpi_process_simulated_elapsed(), PJ_container_get_root(), type, msg,
-  //      	    "M", key);
+  //This should end the link from the original to the new container.
+  snprintf (key, INSTR_DEFAULT_STR_SIZE, "%lld", counter);
+  //We can't call smpi_cointainer() because we need the link to end on the new
+  //host.
+  snprintf(str, INSTR_DEFAULT_STR_SIZE, "%s-rank-%d",
+	    SIMIX_host_get_name(new_host), rank);
+  printf("%s\n", str);
+  container_t container = PJ_container_get(str);
+  type_t type = PJ_type_get("MIGRATE_LINK", PJ_type_get_root());
+  new_pajeEndLink(SIMIX_get_clock(), PJ_container_get_root(),
+		    type, container, "MIG", key);
 
 }
 

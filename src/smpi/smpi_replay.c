@@ -1149,7 +1149,7 @@ smx_host_t load_balancer(void)
 
 
 /* Based on MSG_process_migrate [src/msg/msg_process.c] */
-void process_migrate(smx_process_t process, smx_host_t new_host)
+void process_migrate(smx_process_t process, smx_host_t new_host, int size)
 {
   /*This does not seem to be needed for smpi. It does not store the host in
    * the process data
@@ -1160,7 +1160,7 @@ void process_migrate(smx_process_t process, smx_host_t new_host)
 #ifdef HAVE_TRACING
   smx_host_t host = SIMIX_host_self();
   //TODO Finish tracing function.
-  TRACE_smpi_process_change_host(smpi_process_index(), host, new_host);
+  TRACE_smpi_process_change_host(smpi_process_index(), host, new_host, size);
 #endif
   simcall_process_change_host(process, new_host);
   return;
@@ -1172,6 +1172,10 @@ void send_process_data(double data_size, smx_host_t host){
   double comp_amount[2];
   double comm_amount[4];
   
+#ifdef HAVE_TRACING
+  TRACE_smpi_send_process_data_in(smpi_process_index());
+#endif
+
   host_list[0] = SIMIX_host_self();
   host_list[1] = host;
   comp_amount[0] = 0;
@@ -1184,6 +1188,9 @@ void send_process_data(double data_size, smx_host_t host){
 	    comp_amount, comm_amount, 1.0, -1.0);
   simcall_host_execution_wait(synchro);
 
+#ifdef HAVE_TRACING
+  TRACE_smpi_send_process_data_out(smpi_process_index());
+#endif
 }
 
 static void action_migrate(const char *const *action)
@@ -1217,7 +1224,7 @@ static void action_migrate(const char *const *action)
     //printf("%s: Migrating task %d with size %lu to %s.\n",
     //        SIMIX_host_self_get_name(), rank, mem_size,
     //        SIMIX_host_get_name(new_host));
-    process_migrate(SIMIX_process_self(), new_host);
+    process_migrate(SIMIX_process_self(), new_host, (int) mem_size);
     //printf("%s: Received task %d.\n",
     //        SIMIX_host_self_get_name(), smpi_process_index());
   }
