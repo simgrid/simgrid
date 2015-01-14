@@ -341,7 +341,7 @@ void SIMIX_run(void)
       xbt_os_cputimer_resume(simix_global->timer_seq);
 #endif
 
-      /* Move all killing processes to the end of the list, because killing a process that have an ongoing simcall is a bad idea */
+      /* Move all killer processes to the end of the list, because killing a process that have an ongoing simcall is a bad idea */
       xbt_dynar_three_way_partition(simix_global->process_that_ran, process_syscall_color);
 
       /* answer sequentially and in a fixed arbitrary order all the simcalls that were issued during that sub-round */
