@@ -17,9 +17,6 @@
 
 XBT_LOG_NEW_CATEGORY(mc, "All MC categories");
 
-/**
- * \brief Schedules all the process that are ready to run
- */
 void MC_wait_for_requests(void)
 {
   smx_process_t process;

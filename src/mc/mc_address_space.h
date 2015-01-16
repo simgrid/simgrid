@@ -43,6 +43,17 @@ typedef enum e_adress_space_read_flags {
 typedef struct s_mc_address_space s_mc_address_space_t, *mc_address_space_t;
 typedef struct s_mc_address_space_class s_mc_address_space_class_t, *mc_address_space_class_t;
 
+/** Abstract base class for an address space
+ *
+ *  This is the base class for all virtual address spaces (process, snapshot).
+ *  It uses dynamic dispatch based on a vtable (`address_space_class`).
+ */
+struct s_mc_address_space {
+  mc_address_space_class_t address_space_class;
+};
+
+/** Class object (vtable) for the virtual address spaces
+ */
 struct s_mc_address_space_class {
   const void* (*read)(
     mc_address_space_t address_space, e_adress_space_read_flags_t flags,
@@ -50,15 +61,12 @@ struct s_mc_address_space_class {
     int process_index);
 };
 
-/** Base class for an address space (process and snapshot)
- */
-struct s_mc_address_space {
-  mc_address_space_class_t address_space_class;
-};
-
 // ***** Virtual/non-final methods
 
-/** Read data from the given address space */
+/** Read data from the given address space
+ *
+ *  Dynamic dispatch.
+ */
 static inline __attribute__((always_inline))
 const void* MC_address_space_read(
   mc_address_space_t address_space, e_adress_space_read_flags_t flags,

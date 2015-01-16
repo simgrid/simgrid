@@ -14,12 +14,29 @@
 
 SG_BEGIN_DECL()
 
-// This variable is set by simgrid-mc in order to enable MC support in the
-// children MC processes:
+/** Environment variable name set by `simgrid-mc` to enable MC support in the
+ *  children MC processes
+ */
 #define MC_ENV_VARIABLE "SIMGRIC_MC"
 
+/** Check if the given simcall can be resolved
+ *
+ *  \return `TRUE` or `FALSE`
+ */
 int MC_request_is_enabled(smx_simcall_t req);
+
+/** Check if the given simcall is visible
+ *
+ *  \return `TRUE` or `FALSE`
+ */
 int MC_request_is_visible(smx_simcall_t req);
+
+/** Execute everything which is invisible
+ *
+ *  Execute all the processes that are ready to run and all invisible simcalls
+ *  iteratively until there doesn't remain any. At this point, the function
+ *  returns to the caller which can handle the visible (and ready) simcalls.
+ */
 void MC_wait_for_requests(void);
 
 extern double *mc_time;
