@@ -5,7 +5,6 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #define _GNU_SOURCE
-#define UNW_LOCAL_ONLY
 
 #include <unistd.h>
 
@@ -25,7 +24,6 @@
 
 #include "../simix/smx_private.h"
 
-#define UNW_LOCAL_ONLY
 #include <libunwind.h>
 #include <libelf.h>
 
@@ -35,6 +33,7 @@
 #include "mc_snapshot.h"
 #include "mc_object_info.h"
 #include "mc_mmu.h"
+#include "mc_unw.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_checkpoint, mc,
                                 "Logging specific to mc_checkpoint");
@@ -47,13 +46,16 @@ static void MC_snapshot_stack_free(mc_snapshot_stack_t s)
   if (s) {
     xbt_dynar_free(&(s->local_variables));
     xbt_dynar_free(&(s->stack_frames));
+    mc_unw_destroy_context(s->context);
+    xbt_free(s->context);
     xbt_free(s);
   }
 }
 
 static void MC_snapshot_stack_free_voidp(void *s)
 {
-  MC_snapshot_stack_free((mc_snapshot_stack_t) * (void **) s);
+  mc_snapshot_stack_t stack = (mc_snapshot_stack_t) * (void **) s;
+  MC_snapshot_stack_free(stack);
 }
 
 static void local_variable_free(local_variable_t v)
@@ -452,7 +454,7 @@ static void MC_stack_frame_free_voipd(void *s)
   }
 }
 
-static xbt_dynar_t MC_unwind_stack_frames(unw_context_t* stack_context)
+static xbt_dynar_t MC_unwind_stack_frames(mc_unw_context_t stack_context)
 {
   mc_process_t process = &mc_model_checker->process;
   xbt_dynar_t result =
@@ -461,8 +463,7 @@ static xbt_dynar_t MC_unwind_stack_frames(unw_context_t* stack_context)
   unw_cursor_t c;
 
   // TODO, check condition check (unw_init_local==0 means end of frame)
-  // FIXME, cross-process support
-  if (unw_init_local(&c, stack_context) != 0) {
+  if (mc_unw_init_cursor(&c, stack_context) != 0) {
 
     xbt_die("Could not initialize stack unwinding");
 
@@ -501,11 +502,11 @@ static xbt_dynar_t MC_unwind_stack_frames(unw_context_t* stack_context)
           && !strcmp(frame->name, "smx_ctx_sysv_wrapper"))
         break;
 
-      int ret = ret = unw_step(&c);
+      int ret = unw_step(&c);
       if (ret == 0) {
         xbt_die("Unexpected end of stack.");
       } else if (ret < 0) {
-        xbt_die("Error while unwinding stack.");
+        xbt_die("Error while unwinding stack");
       }
     }
 
@@ -531,21 +532,15 @@ static xbt_dynar_t MC_take_snapshot_stacks(mc_snapshot_t * snapshot)
   xbt_dynar_foreach(stacks_areas, cursor, current_stack) {
     mc_snapshot_stack_t st = xbt_new(s_mc_snapshot_stack_t, 1);
 
-    // Take a copy of the context for our own purpose:
-    st->context = *(unw_context_t*)current_stack->context;
-#if defined(PROCESSOR_x86_64) || defined(PROCESSOR_i686)
-    // On x86_64, ucontext_t contains a pointer to itself for FP registers.
-    // We don't really need support for FR registers as they are caller saved
-    // and probably never use those fields as libunwind-x86_64 does not read
-    // FP registers from the unw_context_t
-    // but we fix the pointer in order to avoid dangling pointers:
-    st->context.uc_mcontext.fpregs = &st->context.__fpregs_mem;
-#else
-    // Do we need to do any fixup like this?
-    #error Target CPU type is not handled.
-#endif
+    unw_context_t* original_context = (unw_context_t*) current_stack->context;
 
-    st->stack_frames = MC_unwind_stack_frames(&st->context);
+    st->context = xbt_new0(s_mc_unw_context_t, 1);
+    if (mc_unw_init_context(st->context, &mc_model_checker->process,
+      original_context) < 0) {
+      xbt_die("Could not initialise the libunwind context.");
+    }
+
+    st->stack_frames = MC_unwind_stack_frames(st->context);
     st->local_variables = MC_get_local_variables_values(st->stack_frames, current_stack->process_index);
     st->process_index = current_stack->process_index;
 

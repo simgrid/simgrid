@@ -8,6 +8,7 @@
 #define MC_PROCESS_H
 
 #include <stdbool.h>
+#include <sys/types.h>
 
 #include "simgrid_config.h"
 
@@ -24,6 +25,8 @@
 #include "mc_address_space.h"
 
 SG_BEGIN_DECL()
+
+int MC_process_vm_open(pid_t pid, int flags);
 
 typedef enum {
   MC_PROCESS_NO_FLAG = 0,
@@ -75,7 +78,30 @@ struct s_mc_process {
    *  use `MC_process_get_malloc_info` in order to use it.
    */
   malloc_info* heap_info;
+
+  // ***** Libunwind-data
+
+  /** Full-featured MC-aware libunwind address space for the process
+   *
+   *  This address space is using a mc_unw_context_t
+   *  (with mc_process_t/mc_address_space_t and unw_context_t).
+   */
+  unw_addr_space_t unw_addr_space;
+
+  /** Underlying libunwind addres-space
+   *
+   *  The `find_proc_info`, `put_unwind_info`, `get_dyn_info_list_addr`
+   *  operations of the native MC address space is currently delegated
+   *  to this address space (either the local or a ptrace unwinder).
+   */
+  unw_addr_space_t unw_underlying_addr_space;
+
+  /** The corresponding context
+   */
+  void* unw_underlying_context;
 };
+
+bool MC_is_process(mc_address_space_t p);
 
 void MC_process_init(mc_process_t process, pid_t pid);
 void MC_process_clear(mc_process_t process);

@@ -101,7 +101,7 @@ if(HAVE_MC)
   # The availability of libunwind was checked in CompleteInFiles.cmake
   #   (that includes FindLibunwind.cmake), so simply load it now.
   
-  SET(SIMGRID_DEP "${SIMGRID_DEP} -lunwind")
+  SET(SIMGRID_DEP "${SIMGRID_DEP} -lunwind -lunwind-ptrace")
 
   # Same for libdw
   SET(SIMGRID_DEP "${SIMGRID_DEP} -ldw")

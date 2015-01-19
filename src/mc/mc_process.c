@@ -14,9 +14,13 @@
 
 #include <libgen.h>
 
+#include <libunwind.h>
+#include <libunwind-ptrace.h>
+
 #include "mc_process.h"
 #include "mc_object_info.h"
 #include "mc_address_space.h"
+#include "mc_unw.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_process, mc,
                                 "MC process information");
@@ -24,9 +28,19 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_process, mc,
 static void MC_process_init_memory_map_info(mc_process_t process);
 static void MC_process_open_memory_file(mc_process_t process);
 
-static s_mc_address_space_class_t mc_process_class = {
-  .read = (void*) &MC_process_read
+static mc_process_t MC_process_get_process(mc_process_t p) {
+  return p;
+}
+
+static const s_mc_address_space_class_t mc_process_class = {
+  .read = (void*) &MC_process_read,
+  .get_process = (void*) MC_process_get_process
 };
+
+bool MC_is_process(mc_address_space_t p)
+{
+  return p->address_space_class == &mc_process_class;
+}
 
 void MC_process_init(mc_process_t process, pid_t pid)
 {
@@ -52,6 +66,15 @@ void MC_process_init(mc_process_t process, pid_t pid)
   MC_process_read(process, MC_ADDRESS_SPACE_READ_FLAGS_NONE,
     &process->heap_address, std_heap_var->address, sizeof(struct mdesc*),
     MC_PROCESS_INDEX_DISABLED);
+
+  process->unw_addr_space = unw_create_addr_space(&mc_unw_accessors  , __BYTE_ORDER);
+  if (process->process_flags & MC_PROCESS_SELF_FLAG) {
+    process->unw_underlying_addr_space = unw_local_addr_space;
+    process->unw_underlying_context = NULL;
+  } else {
+    process->unw_underlying_addr_space = unw_create_addr_space(&mc_unw_vmread_accessors, __BYTE_ORDER);
+    process->unw_underlying_context = _UPT_create(pid);
+  }
 }
 
 void MC_process_clear(mc_process_t process)
@@ -76,6 +99,16 @@ void MC_process_clear(mc_process_t process)
   if (process->memory_file >= 0) {
     close(process->memory_file);
   }
+
+  if (process->unw_underlying_addr_space != unw_local_addr_space) {
+    unw_destroy_addr_space(process->unw_underlying_addr_space);
+    _UPT_destroy(process->unw_underlying_context);
+  }
+  process->unw_underlying_context = NULL;
+  process->unw_underlying_addr_space = NULL;
+
+  unw_destroy_addr_space(process->unw_addr_space);
+  process->unw_addr_space = NULL;
 
   process->cache_flags = 0;
 
@@ -134,6 +167,7 @@ const char* FILTERED_LIBS[] = {
   "libunwind",
   "libunwind-x86_64",
   "libunwind-x86",
+  "libunwind-ptrace",
   "libdw",
   "libdl",
   "librt",
@@ -333,23 +367,26 @@ dw_variable_t MC_process_find_variable_by_name(mc_process_t process, const char*
 
 // ***** Memory access
 
+int MC_process_vm_open(pid_t pid, int flags)
+{
+  const size_t buffer_size = 30;
+  char buffer[buffer_size];
+  int res = snprintf(buffer, buffer_size, "/proc/%lli/mem", (long long) pid);
+  if (res < 0 || res >= buffer_size) {
+    errno = ENAMETOOLONG;
+    return -1;
+  }
+  return open(buffer, flags);
+}
+
 static void MC_process_open_memory_file(mc_process_t process)
 {
   if (MC_process_is_self(process) || process->memory_file >= 0)
     return;
 
-  const size_t buffer_size = 30;
-  char buffer[buffer_size];
-  int res = snprintf(buffer, buffer_size, "/proc/%lli/mem", (long long) process->pid);
-  if (res < 0 || res>= buffer_size) {
-    XBT_ERROR("Could not open memory file descriptor for process %lli",
-      (long long) process->pid);
-    return;
-  }
-
-  int fd = open(buffer, O_RDWR);
+  int fd = MC_process_vm_open(process->pid, O_RDWR);
   if (fd<0)
-    xbt_die("Could not initialise memory access for remote process");
+    xbt_die("Could not open file for process virtual address space");
   process->memory_file = fd;
 }
 

@@ -49,7 +49,7 @@ typedef struct s_mc_address_space_class s_mc_address_space_class_t, *mc_address_
  *  It uses dynamic dispatch based on a vtable (`address_space_class`).
  */
 struct s_mc_address_space {
-  mc_address_space_class_t address_space_class;
+  const s_mc_address_space_class_t* address_space_class;
 };
 
 /** Class object (vtable) for the virtual address spaces
@@ -59,6 +59,7 @@ struct s_mc_address_space_class {
     mc_address_space_t address_space, e_adress_space_read_flags_t flags,
     void* target, const void* addr, size_t size,
     int process_index);
+  mc_process_t (*get_process)(mc_address_space_t address_space);
 };
 
 // ***** Virtual/non-final methods
@@ -77,5 +78,12 @@ const void* MC_address_space_read(
     address_space, flags, target, addr, size,
     process_index);
 }
+
+static inline __attribute__((always_inline))
+const void* MC_address_space_get_process(mc_address_space_t address_space)
+{
+  return address_space->address_space_class->get_process(address_space);
+}
+
 
 #endif

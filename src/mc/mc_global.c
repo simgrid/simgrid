@@ -20,7 +20,6 @@
 #include "xbt/dict.h"
 
 #ifdef HAVE_MC
-#define UNW_LOCAL_ONLY
 #include <libunwind.h>
 
 #include "../xbt/mmalloc/mmprivate.h"
@@ -32,8 +31,10 @@
 #include "mc_snapshot.h"
 #include "mc_liveness.h"
 #include "mc_private.h"
+#include "mc_unw.h"
 #endif
 #include "mc_record.h"
+
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_global, mc,
                                 "Logging specific to MC (global)");

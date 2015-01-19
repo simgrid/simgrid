@@ -9,7 +9,6 @@
 
 #include <stdint.h>
 
-#define UNW_LOCAL_ONLY
 #include <libunwind.h>
 #include <dwarf.h>
 #include <elfutils/libdw.h>

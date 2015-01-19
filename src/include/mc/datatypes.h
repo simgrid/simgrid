@@ -7,8 +7,6 @@
 #ifndef MC_DATATYPE_H
 #define MC_DATATYPE_H
 
-#define UNW_LOCAL_ONLY
-
 #include "xbt/misc.h"
 #include "xbt/swag.h"
 #include "xbt/fifo.h"

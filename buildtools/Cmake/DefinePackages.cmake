@@ -599,6 +599,9 @@ set(MC_SRC
   src/mc/mc_forward.h
   src/mc/mc_process.h
   src/mc/mc_process.c
+  src/mc/mc_unw.h
+  src/mc/mc_unw.c
+  src/mc/mc_unw_vmread.c
   src/mc/mc_mmalloc.h
   src/mc/mc_model_checker.h
   src/mc/mc_object_info.h
