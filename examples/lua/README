@@ -1,7 +1,8 @@
 
 Examples contained in this directory
 
-To execute any SimGrid Lua example, the SimGrid dynamic library must be in
+To execute any SimGrid Lua example, SimGrid must have been compiled with lua
+support enabled (-Denable_lua) and the SimGrid dynamic library must be in
 your LUA_CPATH. For example:
 
 export LUA_CPATH="${LUA_CPATH};/path/to/simgrid/examples/lua/?.so"
@@ -17,13 +18,13 @@ export LUA_CPATH="${LUA_CPATH};/path/to/simgrid/examples/lua/?.so"
     examples/lua/masterslave
 
     - Platform Files:
-    ../../msg/small_platform.xml
-	
+    ../../platforms/small_platform.xml
+
     - Deployment Files:
     ../deploy.xml
 
-    - Execute: 
-    lua master_slave.lua
+    - Execute:
+    lua master_slave.lua ../../platforms/small_platform.xml ../deploy.xml
 
 ===============================================================================
 * multi_matrix
@@ -37,16 +38,16 @@ export LUA_CPATH="${LUA_CPATH};/path/to/simgrid/examples/lua/?.so"
 
     - Directory:
     examples/lua/multi_matrix
-    
+
     - Platform Files:
-    quicksort_platform.xml    
-	
+    quicksort_platform.xml
+
     - Deployment Files:
     quicksort_deployment.xml
 
-    - Execute: 
+    - Execute:
     lua mult_matrix.lua
-	    
+
 ================================================================================
 ================================================================================
 
