@@ -754,7 +754,8 @@ void smpi_initialize_global_memory_segments(){
 
       int file_descriptor= mkstemp (path);
       if (file_descriptor < 0)
-        xbt_die("Impossible to create temporary file for memory mapping");
+        xbt_die("Impossible to create temporary file for memory mapping: %s",
+		strerror(errno));
 
       status = unlink (path);
       if (status)
