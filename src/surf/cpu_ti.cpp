@@ -437,6 +437,8 @@ CpuPtr CpuTiModel::createCpu(const char *name,
   xbt_assert(!surf_cpu_resource_priv(surf_cpu_resource_by_name(name)),
               "Host '%s' declared several times in the platform file",
               name);
+  xbt_assert(xbt_dynar_getfirst_as(powerPeak, double) > 0.0,
+      "Power has to be >0.0. Did you forget to specify the mandatory power attribute?");
   CpuTiPtr cpu = new CpuTi(this, name, powerPeak, pstate, powerScale, powerTrace,
 		           core, stateInitial, stateTrace, cpuProperties);
   xbt_lib_set(host_lib, name, SURF_CPU_LEVEL, static_cast<ResourcePtr>(cpu));
