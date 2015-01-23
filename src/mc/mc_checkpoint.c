@@ -452,7 +452,7 @@ static void MC_stack_frame_free_voipd(void *s)
   }
 }
 
-static xbt_dynar_t MC_unwind_stack_frames(void *stack_context)
+static xbt_dynar_t MC_unwind_stack_frames(unw_context_t* stack_context)
 {
   mc_process_t process = &mc_model_checker->process;
   xbt_dynar_t result =
@@ -462,7 +462,7 @@ static xbt_dynar_t MC_unwind_stack_frames(void *stack_context)
 
   // TODO, check condition check (unw_init_local==0 means end of frame)
   // FIXME, cross-process support
-  if (unw_init_local(&c, (unw_context_t *) stack_context) != 0) {
+  if (unw_init_local(&c, stack_context) != 0) {
 
     xbt_die("Could not initialize stack unwinding");
 
@@ -530,7 +530,22 @@ static xbt_dynar_t MC_take_snapshot_stacks(mc_snapshot_t * snapshot)
   // FIXME, cross-process support (stack_areas)
   xbt_dynar_foreach(stacks_areas, cursor, current_stack) {
     mc_snapshot_stack_t st = xbt_new(s_mc_snapshot_stack_t, 1);
-    st->stack_frames = MC_unwind_stack_frames(current_stack->context);
+
+    // Take a copy of the context for our own purpose:
+    st->context = *(unw_context_t*)current_stack->context;
+#if defined(PROCESSOR_x86_64) || defined(PROCESSOR_i686)
+    // On x86_64, ucontext_t contains a pointer to itself for FP registers.
+    // We don't really need support for FR registers as they are caller saved
+    // and probably never use those fields as libunwind-x86_64 does not read
+    // FP registers from the unw_context_t
+    // but we fix the pointer in order to avoid dangling pointers:
+    st->context.uc_mcontext.fpregs = &st->context.__fpregs_mem;
+#else
+    // Do we need to do any fixup like this?
+    #error Target CPU type is not handled.
+#endif
+
+    st->stack_frames = MC_unwind_stack_frames(&st->context);
     st->local_variables = MC_get_local_variables_values(st->stack_frames, current_stack->process_index);
     st->process_index = current_stack->process_index;
 

@@ -239,6 +239,7 @@ typedef struct s_mc_stack_frame {
 
 typedef struct s_mc_snapshot_stack{
   xbt_dynar_t local_variables;
+  unw_context_t context;
   xbt_dynar_t stack_frames; // mc_stack_frame_t
   int process_index;
 }s_mc_snapshot_stack_t, *mc_snapshot_stack_t;
