@@ -51,7 +51,8 @@ SimGrid (3.12) NOT RELEASED; urgency=low
   * Bug fixes 
    - "Full" network optimization flag was broken since Surf++
    - Better handling of precision flags in maxmin
-   - Fix bug causing sometimes "Impossible" errors 
+   - Fix bug causing sometimes "Impossible" errors
+   - Properly pass cluster properties to included hosts
  XBT
   * New functions
    - Add a xbt_heap_update function, to avoid costly xbt_heap_remove+xbt_heap_insert use 

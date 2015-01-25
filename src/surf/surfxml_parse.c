@@ -414,15 +414,17 @@ void STag_surfxml_prop(void)
       as_current_property_set = xbt_dict_new_homogeneous(xbt_free_f); // Maybe, it should raise an error
       as_name_tab[as_prop_nb] = xbt_strdup(A_surfxml_AS_id);
       as_dict_tab[as_prop_nb] = as_current_property_set;
-      XBT_DEBUG("PUSH prop %p for AS '%s'",as_dict_tab[as_prop_nb],as_name_tab[as_prop_nb]);
+      XBT_DEBUG("PUSH prop set %p for AS '%s'",as_dict_tab[as_prop_nb],as_name_tab[as_prop_nb]);
       as_prop_nb++;
     }
+    XBT_DEBUG("add prop %s=%s into current AS property set", A_surfxml_prop_id, A_surfxml_prop_value);
     xbt_dict_set(as_current_property_set, A_surfxml_prop_id, xbt_strdup(A_surfxml_prop_value), NULL);
   }
   else{
     if (!current_property_set)
        current_property_set = xbt_dict_new(); // Maybe, it should raise an error
     xbt_dict_set(current_property_set, A_surfxml_prop_id, xbt_strdup(A_surfxml_prop_value), xbt_free_f);
+    XBT_DEBUG("add prop %s=%s into current property set", A_surfxml_prop_id, A_surfxml_prop_value);
   }
 }
 
@@ -503,7 +505,7 @@ void STag_surfxml_router(void){
 void ETag_surfxml_cluster(void){
   s_sg_platf_cluster_cbarg_t cluster;
   memset(&cluster,0,sizeof(cluster));
-  cluster.properties = current_property_set;
+  cluster.properties = as_current_property_set;
 
   cluster.id = A_surfxml_cluster_id;
   cluster.prefix = A_surfxml_cluster_prefix;

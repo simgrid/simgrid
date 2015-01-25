@@ -894,6 +894,17 @@ static void routing_parse_cluster(sg_platf_cluster_cbarg_t cluster)
 
       memset(&host, 0, sizeof(host));
       host.id = host_id;
+      if ((cluster->properties != NULL) && (!xbt_dict_is_empty(cluster->properties))) {
+    	  xbt_dict_cursor_t cursor=NULL;
+    	  char *key,*data;
+    	  host.properties = xbt_dict_new();
+
+    	  xbt_dict_foreach(cluster->properties,cursor,key,data) {
+    		  xbt_dict_set(host.properties, key, xbt_strdup(data),free);
+    	  }
+      } else {
+    	  XBT_INFO("Null properties for %s: %p",host_id,cluster->properties);
+      }
       if (cluster->availability_trace && strcmp(cluster->availability_trace, "")) {
         xbt_dict_set(patterns, "radical", bprintf("%d", i), NULL);
         char *avail_file = xbt_str_varsubst(cluster->availability_trace, patterns);
