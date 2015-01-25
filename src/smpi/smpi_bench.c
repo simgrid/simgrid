@@ -753,9 +753,24 @@ void smpi_initialize_global_memory_segments(){
       int status;
 
       int file_descriptor= mkstemp (path);
-      if (file_descriptor < 0)
+      if (file_descriptor < 0) {
+    	  if (errno==EMFILE) {
+    		  xbt_die("Impossible to create temporary file for memory mapping: %s\n\
+The open() system call failed with the EMFILE error code (too many files). \n\n\
+This means that you reached the system limits concerning the amount of files per process. \
+This is not a surprise if you are trying to virtualize many processes on top of SMPI. \
+Don't panic -- you should simply increase your system limits and try again. \n\n\
+First, check what your limits are:\n\
+  cat /proc/sys/fs/file-max # gives you the system-wide limit\n\
+  ulimit -Hn                # gives you the per process hard limit\n\
+  ulimit -Sn                # gives you the per process soft limit\n\n\
+If one of these values is less than the amount of MPI processes that you try to run, then you got the explanation of this error. \
+Ask the Internet about tutorials on how to increase the files limit such as: https://rtcamp.com/tutorials/linux/increase-open-files-limit/",
+             strerror(errno));
+    	  }
         xbt_die("Impossible to create temporary file for memory mapping: %s",
-		strerror(errno));
+        		strerror(errno));
+      }
 
       status = unlink (path);
       if (status)
