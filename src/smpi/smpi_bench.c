@@ -761,9 +761,10 @@ This means that you reached the system limits concerning the amount of files per
 This is not a surprise if you are trying to virtualize many processes on top of SMPI. \
 Don't panic -- you should simply increase your system limits and try again. \n\n\
 First, check what your limits are:\n\
-  cat /proc/sys/fs/file-max # gives you the system-wide limit\n\
-  ulimit -Hn                # gives you the per process hard limit\n\
-  ulimit -Sn                # gives you the per process soft limit\n\n\
+  cat /proc/sys/fs/file-max # Gives you the system-wide limit\n\
+  ulimit -Hn                # Gives you the per process hard limit\n\
+  ulimit -Sn                # Gives you the per process soft limit\n\
+  cat /proc/self/limits     # Displays any per-process limitation (including the one given above)\n\n\
 If one of these values is less than the amount of MPI processes that you try to run, then you got the explanation of this error. \
 Ask the Internet about tutorials on how to increase the files limit such as: https://rtcamp.com/tutorials/linux/increase-open-files-limit/",
              strerror(errno));
