@@ -1,4 +1,4 @@
-/* Copyright (c) 2010, 2012-2014. The SimGrid Team.
+/* Copyright (c) 2010, 2012-2015. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -10,7 +10,7 @@
 /** @addtogroup SURF_plugin_energy
  *
  *
- *  BlaBla energy
+ *  This is the energy plugin, enabling to account not only for computation time, but also for the dissipated energy in the simulated platform.
  */
 
 XBT_LOG_EXTERNAL_CATEGORY(surf_kernel);
@@ -144,7 +144,7 @@ xbt_dynar_t CpuEnergy::getWattsRangeList()
 	if (cpu->getProperties() == NULL)
 		return NULL;
 
-	char* all_power_values_str = (char*)xbt_dict_get_or_null(cpu->getProperties(), "power_per_state");
+	char* all_power_values_str = (char*)xbt_dict_get_or_null(cpu->getProperties(), "watt_per_state");
 
 	if (all_power_values_str == NULL)
 		return NULL;
