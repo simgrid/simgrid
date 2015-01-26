@@ -902,8 +902,6 @@ static void routing_parse_cluster(sg_platf_cluster_cbarg_t cluster)
     	  xbt_dict_foreach(cluster->properties,cursor,key,data) {
     		  xbt_dict_set(host.properties, key, xbt_strdup(data),free);
     	  }
-      } else {
-    	  XBT_INFO("Null properties for %s: %p",host_id,cluster->properties);
       }
       if (cluster->availability_trace && strcmp(cluster->availability_trace, "")) {
         xbt_dict_set(patterns, "radical", bprintf("%d", i), NULL);
