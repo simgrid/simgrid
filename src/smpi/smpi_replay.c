@@ -1159,7 +1159,6 @@ void process_migrate(smx_process_t process, smx_host_t new_host, int size)
 
 #ifdef HAVE_TRACING
   smx_host_t host = SIMIX_host_self();
-  //TODO Finish tracing function.
   TRACE_smpi_process_change_host(smpi_process_index(), host, new_host, size);
 #endif
   simcall_process_change_host(process, new_host);

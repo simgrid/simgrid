@@ -266,6 +266,7 @@ void TRACE_smpi_computing_init(int rank)
   const char *color = instr_find_color ("computing");
   val_t value = PJ_value_get_or_new ("computing", color, type);
   new_pajePushState (SIMIX_get_clock(), container, type, value);
+  new_pajePopState (SIMIX_get_clock(), container, type);
 }
 
 void TRACE_smpi_computing_in(int rank, instr_extra_data extra)
@@ -488,12 +489,12 @@ void TRACE_smpi_send_process_data_in(int rank)
   smpi_container(rank, str, INSTR_DEFAULT_STR_SIZE);
   container_t container = PJ_container_get(str);
   
-  /* We need to clean the containers state. Otherwise, migrated tasks would
-   * stay on the computing state on the original host.*/
-  if(TRACE_smpi_is_computing()){
-    type_t type = PJ_type_get ("MPI_STATE", container->type);
-    new_pajePopState (SIMIX_get_clock(), container, type);
-  }
+  /* This is not actually needed. The problem was caused by the call to
+   * new_pajePushState in the function TRACE_smpi_computing_init.*/
+  /*if(TRACE_smpi_is_computing()){
+    //type_t type = PJ_type_get ("MPI_STATE", container->type);
+    //new_pajePopState (SIMIX_get_clock(), container, type);
+  }*/
  
   /* Now we change the container's state to indicate that the process data is
    * being transferred. */ 
