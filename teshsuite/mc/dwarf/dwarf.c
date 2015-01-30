@@ -86,8 +86,7 @@ static void test_local_variable(mc_object_info_t info, const char* function, con
 
 }
 
-static dw_variable_t test_global_variable(mc_object_info_t info, const char* name, void* address, long byte_size) {
-  mc_process_t process = &mc_model_checker->process;
+static dw_variable_t test_global_variable(mc_process_t process, mc_object_info_t info, const char* name, void* address, long byte_size) {
   
   dw_variable_t variable = MC_file_object_info_find_variable_by_name(info, name);
   xbt_assert(variable, "Global variable %s was not found", name);
@@ -116,30 +115,28 @@ int some_local_variable = 0;
 
 typedef struct foo {int i;} s_foo;
 
-static void test_type_by_name(s_foo my_foo) {
-  mc_process_t process = &mc_model_checker->process;
+static void test_type_by_name(mc_process_t process, s_foo my_foo) {
   assert(xbt_dict_get_or_null(process->binary_info->full_types_by_name, "struct foo"));
 }
 
-int main(int argc, char** argv) {
-
-  // xbt_init(&argc, argv);
+int main(int argc, char** argv)
+{
   SIMIX_global_init(&argc, argv);
-  MC_memory_init();
-  MC_init();
 
   dw_variable_t var;
   dw_type_t type;
   
-  mc_process_t process = &mc_model_checker->process;
+  s_mc_process_t p;
+  mc_process_t process = &p;
+  MC_process_init(&p, getpid());
 
-  test_global_variable(process->binary_info, "some_local_variable", &some_local_variable, sizeof(int));
+  test_global_variable(process, process->binary_info, "some_local_variable", &some_local_variable, sizeof(int));
 
-  var = test_global_variable(process->binary_info, "test_some_array", &test_some_array, sizeof(test_some_array));
+  var = test_global_variable(process, process->binary_info, "test_some_array", &test_some_array, sizeof(test_some_array));
   type = xbt_dict_get_or_null(process->binary_info->types, var->type_origin);
   xbt_assert(type->element_count == 6*5*4, "element_count mismatch in test_some_array : %i / %i", type->element_count, 6*5*4);
 
-  var = test_global_variable(process->binary_info, "test_some_struct", &test_some_struct, sizeof(test_some_struct));
+  var = test_global_variable(process, process->binary_info, "test_some_struct", &test_some_struct, sizeof(test_some_struct));
   type = xbt_dict_get_or_null(process->binary_info->types, var->type_origin);
   assert(find_member(process->binary_info, "first", type)->offset == 0);
   assert(find_member(process->binary_info, "second", type)->offset
@@ -158,7 +155,7 @@ int main(int argc, char** argv) {
   }
 
   s_foo my_foo;
-  test_type_by_name(my_foo);
+  test_type_by_name(process, my_foo);
 
   _exit(0);
 }

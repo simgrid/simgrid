@@ -1,5 +1,5 @@
 #! ./tesh
 
-$ $SG_TEST_EXENV ${bindir:=.}/../../../bin/simgrid-mc ${bindir:=.}/dwarf
+$ $SG_TEST_EXENV ${bindir:=.}/dwarf
 > [0.000000] [mc_process/INFO] Get debug information ...
 > [0.000000] [mc_process/INFO] Get debug information done !
