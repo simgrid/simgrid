@@ -238,7 +238,7 @@ XBT_TEST_UNIT("base", test_mc_page_store, "Test adding/removing pages in the sto
 {
   xbt_test_add("Init");
   size_t pagesize = (size_t) getpagesize();
-  std::auto_ptr<s_mc_pages_store_t> store = std::auto_ptr<s_mc_pages_store_t>(new s_mc_pages_store(500));
+  std::unique_ptr<s_mc_pages_store_t> store = std::unique_ptr<s_mc_pages_store_t>(new s_mc_pages_store(500));
   void* data = getpage();
   xbt_test_assert(store->size()==0, "Bad size");
 
