@@ -14,11 +14,6 @@
 
 SG_BEGIN_DECL()
 
-/** Environment variable name set by `simgrid-mc` to enable MC support in the
- *  children MC processes
- */
-#define MC_ENV_VARIABLE "SIMGRIC_MC"
-
 /** Check if the given simcall can be resolved
  *
  *  \return `TRUE` or `FALSE`

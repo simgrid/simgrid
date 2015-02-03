@@ -1,5 +1,3 @@
 #! ./tesh
 
 $ $SG_TEST_EXENV ${bindir:=.}/dwarf
-> [0.000000] [mc_process/INFO] Get debug information ...
-> [0.000000] [mc_process/INFO] Get debug information done !

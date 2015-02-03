@@ -4,6 +4,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include <string.h>
+
 #include "mc_base.h"
 
 #ifndef _XBT_WIN32
@@ -34,10 +36,13 @@
 #include "mc_unw.h"
 #endif
 #include "mc_record.h"
-
+#include "mc_protocol.h"
+#include "mc_client.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_global, mc,
                                 "Logging specific to MC (global)");
+
+e_mc_mode_t mc_mode;
 
 double *mc_time = NULL;
 
@@ -96,13 +101,13 @@ static void MC_init_dot_output()
 
 mc_model_checker_t mc_model_checker = NULL;
 
-mc_model_checker_t MC_model_checker_new()
+mc_model_checker_t MC_model_checker_new(pid_t pid, int socket)
 {
   mc_model_checker_t mc = xbt_new0(s_mc_model_checker_t, 1);
   mc->pages = mc_pages_store_new();
   mc->fd_clear_refs = -1;
   mc->fd_pagemap = -1;
-  MC_process_init(&mc->process, getpid());
+  MC_process_init(&mc->process, pid, socket);
   return mc;
 }
 
@@ -115,6 +120,26 @@ void MC_model_checker_delete(mc_model_checker_t mc) {
 
 void MC_init()
 {
+  if (mc_mode == MC_MODE_NONE) {
+    if (getenv(MC_ENV_SOCKET_FD)) {
+      mc_mode = MC_MODE_CLIENT;
+    } else {
+      mc_mode = MC_MODE_STANDALONE;
+    }
+  }
+
+  MC_init_pid(getpid(), -1);
+
+  if (mc_mode == MC_MODE_CLIENT) {
+    MC_client_init();
+    MC_client_hello();
+    // This will move somehwere else:
+    MC_client_handle_messages();
+  }
+}
+
+void MC_init_pid(pid_t pid, int socket)
+{
   int raw_mem_set = (mmalloc_get_current_heap() == mc_heap);
 
   mc_time = xbt_new0(double, simix_process_maxpid);
@@ -124,7 +149,7 @@ void MC_init()
 
   MC_SET_MC_HEAP;
 
-  mc_model_checker = MC_model_checker_new();
+  mc_model_checker = MC_model_checker_new(pid, socket);
 
   mc_comp_times = xbt_new0(s_mc_comparison_times_t, 1);
 
@@ -183,10 +208,15 @@ void MC_init()
 
     smx_process_t process;
     // FIXME, cross-process support (simix_global->process_list)
-    xbt_swag_foreach(process, simix_global->process_list) {
-      MC_ignore_heap(&(process->process_hookup),
-                     sizeof(process->process_hookup));
-                     }
+
+    if (mc_mode == MC_MODE_STANDALONE || mc_mode == MC_MODE_CLIENT) {
+      xbt_swag_foreach(process, simix_global->process_list) {
+        MC_ignore_heap(&(process->process_hookup),
+                       sizeof(process->process_hookup));
+                       }
+    } else {
+      // TODO
+    }
   }
 
   if (raw_mem_set)

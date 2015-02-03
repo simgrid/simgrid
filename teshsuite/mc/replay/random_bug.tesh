@@ -2,8 +2,6 @@
 !expect signal SIGABRT
 $ ${bindir:=.}/../../../bin/simgrid-mc ${bindir:=.}/random_bug ${srcdir:=.}/../../../examples/platforms/small_platform.xml ${srcdir:=.}/random_bug.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n" --log=xbt_cfg.thresh:warning --cfg=model-check:1 --cfg=model-check/record:1
 > [  0.000000] (0:@) Check a safety property
-> [  0.000000] (0:@) Get debug information ...
-> [  0.000000] (0:@) Get debug information done !
 > [  0.000000] (1:app@Tremblay) **************************
 > [  0.000000] (1:app@Tremblay) *** PROPERTY NOT VALID ***
 > [  0.000000] (1:app@Tremblay) **************************

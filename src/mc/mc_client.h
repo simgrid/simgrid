@@ -4,21 +4,17 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <stdio.h>
-#include <errno.h>
+#ifndef MC_CLIENT_H
+#define MC_CLIENT_H
 
-#include <unistd.h>
+#include <xbt/misc.h>
 
-#include "mc_base.h"
+SG_BEGIN_DECL()
 
-int main(int argc, char** argv)
-{
-  if (argc < 2)
-    xbt_die("Missing arguments.\n");
+void MC_client_init(void);
+void MC_client_hello(void);
+void MC_client_handle_messages(void);
 
-  setenv(MC_ENV_VARIABLE, "1", 1);
-  execvp(argv[1], argv+1);
+SG_END_DECL()
 
-  perror("simgrid-mc");
-  return 127;
-}
+#endif

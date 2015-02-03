@@ -46,6 +46,9 @@ struct s_mc_process {
   s_mc_address_space_t address_space;
   e_mc_process_flags_t process_flags;
   pid_t pid;
+  int socket;
+  int status;
+  bool running;
   memory_map_t memory_map;
   void *maestro_stack_start, *maestro_stack_end;
   mc_object_info_t libsimgrid_info;
@@ -103,7 +106,7 @@ struct s_mc_process {
 
 bool MC_is_process(mc_address_space_t p);
 
-void MC_process_init(mc_process_t process, pid_t pid);
+void MC_process_init(mc_process_t process, pid_t pid, int sockfd);
 void MC_process_clear(mc_process_t process);
 
 /** Refresh the information about the process

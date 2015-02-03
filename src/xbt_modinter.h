@@ -10,6 +10,8 @@
 #define XBT_MODINTER_H
 #include "xbt/misc.h"
 
+SG_BEGIN_DECL()
+
 /* Modules definitions */
 void xbt_backtrace_preinit(void);
 void xbt_backtrace_postexit(void);
@@ -29,5 +31,6 @@ void xbt_os_thread_mod_postexit(void);
 void *mmalloc_preinit(void);
 void mmalloc_postexit(void);
 
+SG_END_DECL()
 
 #endif                          /* XBT_MODINTER_H */

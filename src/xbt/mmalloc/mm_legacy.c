@@ -16,6 +16,7 @@
 #include "xbt_modinter.h"
 #include "internal_config.h"
 #include <math.h>
+#include "../mc/mc_protocol.h"
 
 //#define MM_LEGACY_VERBOSE 1 /* define this to see which version of malloc gets used */
 

@@ -641,10 +641,16 @@ set(MC_SRC
   src/mc/mc_visited.c
   src/mc/mc_memory_map.h
   src/mc/memory_map.c
+  src/mc/mc_client.c
+  src/mc/mc_client.h
+  src/mc/mc_protocol.h
+  src/mc/mc_protocol.c
+  src/mc/mc_server.cpp
+  src/mc/mc_server.h
   )
 
 set(MC_SIMGRID_MC_SRC
-  src/mc/simgrid_mc.c)
+  src/mc/simgrid_mc.cpp)
 
 set(headers_to_install
   include/instr/instr.h

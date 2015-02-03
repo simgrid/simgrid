@@ -24,7 +24,7 @@ memory_map_t MC_get_memory_map(pid_t pid)
   if(fp == NULL)
     perror("fopen failed");
   xbt_assert(fp,
-    "Cannot open /proc/self/maps to investigate the memory map of the process. Please report this bug.");
+    "Cannot open %s to investigate the memory map of the process.", path);
   setbuf(fp, NULL);
 
   memory_map_t ret = xbt_new0(s_memory_map_t, 1);
@@ -141,6 +141,8 @@ memory_map_t MC_get_memory_map(pid_t pid)
 
     /* Create space for a new map region in the region's array and copy the */
     /* parsed stuff from the temporal memreg variable */
+    XBT_DEBUG("Found region for %s",
+      memreg.pathname ? memreg.pathname : "(null)");
     ret->regions =
         xbt_realloc(ret->regions, sizeof(memreg) * (ret->mapsize + 1));
     memcpy(ret->regions + ret->mapsize, &memreg, sizeof(memreg));

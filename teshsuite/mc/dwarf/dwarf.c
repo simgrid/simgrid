@@ -128,7 +128,7 @@ int main(int argc, char** argv)
   
   s_mc_process_t p;
   mc_process_t process = &p;
-  MC_process_init(&p, getpid());
+  MC_process_init(&p, getpid(), -1);
 
   test_global_variable(process, process->binary_info, "some_local_variable", &some_local_variable, sizeof(int));
 

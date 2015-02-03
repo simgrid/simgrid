@@ -7,6 +7,8 @@
 #ifndef MC_PRIVATE_H
 #define MC_PRIVATE_H
 
+#include <sys/types.h>
+
 #include "simgrid_config.h"
 #include <stdio.h>
 #include <stdint.h>
@@ -21,6 +23,7 @@
 #include "mc/datatypes.h"
 #include "xbt/fifo.h"
 #include "xbt/config.h"
+
 #include "xbt/function_types.h"
 #include "xbt/mmalloc.h"
 #include "../simix/smx_private.h"
@@ -43,6 +46,13 @@ typedef struct s_mc_function_index_item s_mc_function_index_item_t, *mc_function
 extern xbt_dynar_t mc_checkpoint_ignore;
 
 /********************************* MC Global **********************************/
+
+/** Initialisation of the model-checker
+ *
+ * @param pid     PID of the target process
+ * @param socket  FD for the communication socket **in server mode** (or -1 otherwise)
+ */
+void MC_init_pid(pid_t pid, int socket);
 
 extern FILE *dot_output;
 extern const char* colors[13];

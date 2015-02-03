@@ -7,12 +7,23 @@
 #ifndef MC_MODEL_CHECKER_H
 #define MC_MODEL_CHECKER_H
 
+#include <sys/types.h>
+
 #include <simgrid_config.h>
 
 #include "mc_forward.h"
 #include "mc_process.h"
 
 SG_BEGIN_DECL()
+
+typedef enum {
+  MC_MODE_NONE = 0,
+  MC_MODE_STANDALONE,
+  MC_MODE_CLIENT,
+  MC_MODE_SERVER
+} e_mc_mode_t;
+
+extern e_mc_mode_t mc_mode;
 
 /** @brief State of the model-checker (global variables for the model checker)
  *
@@ -31,7 +42,7 @@ struct s_mc_model_checker {
   s_mc_process_t process;
 };
 
-mc_model_checker_t MC_model_checker_new(void);
+mc_model_checker_t MC_model_checker_new(pid_t pid, int socket);
 void MC_model_checker_delete(mc_model_checker_t mc);
 
 SG_END_DECL()

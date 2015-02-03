@@ -42,13 +42,16 @@ bool MC_is_process(mc_address_space_t p)
   return p->address_space_class == &mc_process_class;
 }
 
-void MC_process_init(mc_process_t process, pid_t pid)
+void MC_process_init(mc_process_t process, pid_t pid, int sockfd)
 {
   process->address_space.address_space_class = &mc_process_class;
   process->process_flags = MC_PROCESS_NO_FLAG;
+  process->socket = sockfd;
   process->pid = pid;
   if (pid==getpid())
     process->process_flags |= MC_PROCESS_SELF_FLAG;
+  process->running = true;
+  process->status = 0;
   process->memory_map = MC_get_memory_map(pid);
   process->memory_file = -1;
   process->cache_flags = 0;
@@ -222,7 +225,7 @@ static char* MC_get_lib_name(const char* pathname, struct s_mc_memory_map_re* re
 /** @brief Finds the range of the different memory segments and binary paths */
 static void MC_process_init_memory_map_info(mc_process_t process)
 {
-  XBT_INFO("Get debug information ...");
+  XBT_DEBUG("Get debug information ...");
   process->maestro_stack_start = NULL;
   process->maestro_stack_end = NULL;
   process->object_infos = NULL;
@@ -299,10 +302,10 @@ static void MC_process_init_memory_map_info(mc_process_t process)
   for (i=0; i!=process->object_infos_size; ++i)
     MC_post_process_object_info(process, process->object_infos[i]);
 
-  xbt_assert(process->maestro_stack_start, "maestro_stack_start");
-  xbt_assert(process->maestro_stack_end, "maestro_stack_end");
+  xbt_assert(process->maestro_stack_start, "Did not find maestro_stack_start");
+  xbt_assert(process->maestro_stack_end, "Did not find maestro_stack_end");
 
-  XBT_INFO("Get debug information done !");
+  XBT_DEBUG("Get debug information done !");
 }
 
 mc_object_info_t MC_process_find_object_info(mc_process_t process, const void *addr)

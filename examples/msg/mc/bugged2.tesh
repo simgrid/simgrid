@@ -4,8 +4,6 @@
 ! timeout 20
 $ ${bindir:=.}/../../../bin/simgrid-mc ${bindir:=.}/bugged2 --cfg=model-check:1 "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n" --log=xbt_cfg.thresh:warning --cfg=contexts/stack_size:256
 > [  0.000000] (0:@) Check a safety property
-> [  0.000000] (0:@) Get debug information ...
-> [  0.000000] (0:@) Get debug information done !
 > [  0.000000] (2:client@HostB) Send 1!
 > [  0.000000] (3:client@HostC) Send 2!
 > [  0.000000] (1:server@HostA) Received 1
