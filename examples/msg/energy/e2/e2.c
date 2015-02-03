@@ -68,12 +68,21 @@ int dvfs(int argc, char *argv[])
 		  MSG_host_get_current_power_peak(host), MSG_host_get_consumed_energy(host));
 
   start = MSG_get_clock();
-  XBT_INFO("Sleep for 10 seconds");
+  XBT_INFO("Sleep for 4 seconds");
   MSG_process_sleep(4);
   XBT_INFO("Done sleeping (duration: %.2f s). Current peak speed=%.0E flop/s; Energy dissipated=%.0f J",
 		  MSG_get_clock()-start,
 		  MSG_host_get_current_power_peak(host), MSG_host_get_consumed_energy(host));
 
+  // =========== Turn the other host off ==========
+  XBT_INFO("Turning MyHost2 off, and sleeping another 10 seconds. MyHost2 disipated %.0f J so far.",
+		  MSG_host_get_consumed_energy(MSG_get_host_by_name("MyHost2")) );
+  MSG_host_off(MSG_get_host_by_name("MyHost2"));
+  start = MSG_get_clock();
+  MSG_process_sleep(10);
+  XBT_INFO("Done sleeping (duration: %.2f s). Current peak speed=%.0E flop/s; Energy dissipated=%.0f J",
+		  MSG_get_clock()-start,
+		  MSG_host_get_current_power_peak(host), MSG_host_get_consumed_energy(host));
   return 0;
 }
 

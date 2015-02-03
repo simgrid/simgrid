@@ -22,9 +22,10 @@ public:
 
   double getCurrentWattsValue(double cpu_load);
   double getConsumedEnergy();
-  xbt_dynar_t getWattsRangeList();
 
-  xbt_dynar_t power_range_watts_list;		/*< List of (min_power,max_power) pairs corresponding to each cpu pstate */
+  xbt_dynar_t getWattsRangeList();
+  xbt_dynar_t power_range_watts_list;   /*< List of (min_power,max_power) pairs corresponding to each cpu pstate */
+  double watts_off;                      /*< Consumption when the machine is turned off (shutdown) */
   double total_energy;					/*< Total energy consumed by the host */
   double last_updated;					/*< Timestamp of the last energy update event*/
   CpuPtr cpu;

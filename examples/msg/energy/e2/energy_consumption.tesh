@@ -13,8 +13,10 @@ $ $SG_TEST_EXENV energy/e2/e2$EXEEXT ${srcdir:=.}/../platforms/energy_platform.x
 > [ 11.000000] (1:dvfs_test@MyHost1) ========= Requesting pstate 2 (speed should be of 20000000.00 flop/s and is of 20000000.00 flop/s)
 > [ 11.000000] (1:dvfs_test@MyHost1) Run a task for 100E6 flops
 > [ 16.000000] (1:dvfs_test@MyHost1) Task done (duration: 5.00 s). Current peak speed=2E+07 flop/s; Energy dissipated=1900 J
-> [ 16.000000] (1:dvfs_test@MyHost1) Sleep for 10 seconds
-> [ 20.000000] (0:@) Total simulation time: 20.00
-> [ 20.000000] (0:@) Total energy of host MyHost1: 2260.000000 Joules
-> [ 20.000000] (0:@) Total energy of host MyHost2: 1900.000000 Joules
+> [ 16.000000] (1:dvfs_test@MyHost1) Sleep for 4 seconds
 > [ 20.000000] (1:dvfs_test@MyHost1) Done sleeping (duration: 4.00 s). Current peak speed=2E+07 flop/s; Energy dissipated=2260 J
+> [ 20.000000] (1:dvfs_test@MyHost1) Turning MyHost2 off, and sleeping another 10 seconds. MyHost2 disipated 2000 J so far.
+> [ 30.000000] (0:@) Total simulation time: 30.00
+> [ 30.000000] (0:@) Total energy of host MyHost1: 3160.000000 Joules
+> [ 30.000000] (0:@) Total energy of host MyHost2: 2100.000000 Joules
+> [ 30.000000] (1:dvfs_test@MyHost1) Done sleeping (duration: 10.00 s). Current peak speed=2E+07 flop/s; Energy dissipated=3160 J
