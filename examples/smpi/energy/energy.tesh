@@ -16,5 +16,5 @@ $ ../../../smpi_script/bin/smpirun -np 2 -hostfile ${srcdir:=.}/hostfile  -platf
 > [30.000000] [rank 0] Energy consumed: 5400 Joules.
 > [30.000000] [rank 0] Current pstate: 2; Current power: 20000000
 > [80.000000] [rank 0] Energy consumed: 12900 Joules.
-> [80.000000] [surf_energy/INFO] Total energy (Joules) of host MyHost1: 12900.000000
-> [80.000000] [surf_energy/INFO] Total energy (Joules) of host MyHost2: 2000.000000
+> [80.000000] [surf_energy/INFO] Total energy of host MyHost1: 12900.000000 Joules
+> [80.000000] [surf_energy/INFO] Total energy of host MyHost2: 8650.000000 Joules
