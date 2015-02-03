@@ -23,12 +23,31 @@ static void energyCpuCreatedCallback(CpuPtr cpu){
   (*surf_energy)[cpu] = new CpuEnergy(cpu);
 }
 
+static void update_consumption(CpuPtr cpu, CpuEnergyPtr cpu_energy) {
+	double cpu_load = lmm_constraint_get_usage(cpu->getConstraint()) / cpu->m_powerPeak;
+	double start_time = cpu_energy->last_updated;
+	double finish_time = surf_get_clock();
+
+	double current_energy = cpu_energy->total_energy;
+	double action_energy = cpu_energy->getCurrentWattsValue(cpu_load)*(finish_time-start_time);
+
+	cpu_energy->total_energy = current_energy + action_energy;
+	cpu_energy->last_updated = finish_time;
+
+	XBT_DEBUG("[cpu_update_energy] period=[%.2f-%.2f]; current power peak=%.0E flop/s; consumption change: %.2f J -> %.2f J",
+  		  start_time, finish_time, cpu->m_powerPeak, current_energy, action_energy);
+}
+
 static void energyCpuDestructedCallback(CpuPtr cpu){
-  std::map<CpuPtr, CpuEnergyPtr>::iterator cpuIt = surf_energy->find(cpu);
-  xbt_assert(cpuIt != surf_energy->end(), "The cpu is not in surf_energy.");
-  XBT_INFO("Total energy (Joules) of host %s: %f", cpu->getName(), cpuIt->second->getConsumedEnergy());
-  delete cpuIt->second;
-  surf_energy->erase(cpuIt);
+  std::map<CpuPtr, CpuEnergyPtr>::iterator cpu_energy_it = surf_energy->find(cpu);
+  xbt_assert(cpu_energy_it != surf_energy->end(), "The cpu is not in surf_energy.");
+
+  CpuEnergyPtr cpu_energy = cpu_energy_it->second;
+  update_consumption(cpu, cpu_energy);
+
+  XBT_INFO("Total energy of host %s: %f Joules", cpu->getName(), cpu_energy->getConsumedEnergy());
+  delete cpu_energy_it->second;
+  surf_energy->erase(cpu_energy_it);
 }
 
 static void energyCpuActionStateChangedCallback(CpuActionPtr action, e_surf_action_state_t old, e_surf_action_state_t cur){
@@ -36,21 +55,7 @@ static void energyCpuActionStateChangedCallback(CpuActionPtr action, e_surf_acti
   CpuEnergyPtr cpu_energy = (*surf_energy)[cpu];
 
   if(cpu_energy->last_updated < surf_get_clock()) {
-   	double cpu_load = lmm_constraint_get_usage(cpu->getConstraint()) / cpu->m_powerPeak;
-    double start_time = cpu_energy->last_updated;
-    double finish_time = surf_get_clock();
-
-    /*XBT_DEBUG("[cpu_update_energy] action time interval=(%f-%f), current power peak=%f, current pstate=%d",
-  		  start_time, finish_time, cpu->m_powerPeak, cpu->m_pstate);*/
-    XBT_DEBUG("[cpu_update_energy] action time interval=(%f-%f), current power peak=%f",
-  		  start_time, finish_time, cpu->m_powerPeak);
-    double current_energy = cpu_energy->total_energy;
-    double action_energy = cpu_energy->getCurrentWattsValue(cpu_load)*(finish_time-start_time);
-
-    cpu_energy->total_energy = current_energy + action_energy;
-    cpu_energy->last_updated = finish_time;
-
-    XBT_DEBUG("[cpu_update_energy] old_energy_value=%f, action_energy_value=%f", current_energy, action_energy);
+	  update_consumption(cpu, cpu_energy);
   }
 }
 

@@ -24,51 +24,55 @@ int dvfs(int argc, char *argv[])
 {
   msg_host_t host = NULL;
   msg_task_t task1 = NULL;
-  double task_time = 0;
   host = MSG_get_host_by_name("MyHost1");
 
 
-  double current_peak = MSG_get_host_current_power_peak(host);
-  XBT_INFO("Current power peak=%f", current_peak);
+  XBT_INFO("Energetic profile: %s",
+		  MSG_host_get_property_value(host,"watt_per_state"));
+  XBT_INFO("Initial power peak=%.0E flop/s; Consumed energy (Joules)=%.0E J",
+		  MSG_get_host_current_power_peak(host), MSG_get_host_consumed_energy(host));
 
-  double consumed_energy = MSG_get_host_consumed_energy(host);
-  XBT_INFO("Total energy (Joules): %f", consumed_energy);
+  double start = MSG_get_clock();
+  XBT_INFO("Sleep for 10 seconds");
+  MSG_process_sleep(10);
+  XBT_INFO("Done sleeping (duration: %.2f s). Current power peak=%.0E; Current consumed energy=%.2f J",
+		  MSG_get_clock()-start,
+		  MSG_get_host_current_power_peak(host), MSG_get_host_consumed_energy(host));
 
   // Run a task
+  start = MSG_get_clock();
+  XBT_INFO("Run a task for 100E6 flops");
   task1 = MSG_task_create ("t1", 100E6, 0, NULL);
   MSG_task_execute (task1);
   MSG_task_destroy(task1);
-
-  task_time = MSG_get_clock();
-  XBT_INFO("Task1 simulation time: %e", task_time);
-  consumed_energy = MSG_get_host_consumed_energy(host);
-  XBT_INFO("Total energy (Joules): %f", consumed_energy);
+  XBT_INFO("Task done (duration: %.2f s). Current power peak=%.0E flop/s; Current consumed energy=%.0f J",
+		  MSG_get_clock()-start,
+		  MSG_get_host_current_power_peak(host), MSG_get_host_consumed_energy(host));
 
   // ========= Change power peak =========
-  int peak_index=2;
-  double peak_at = MSG_get_host_power_peak_at(host, peak_index);
-  XBT_INFO("=========Changing power peak value to %f (at index %d)", peak_at, peak_index);
-
-  MSG_set_host_power_peak_at(host, peak_index);
+  int pstate=2;
+  MSG_set_host_power_peak_at(host, pstate);
+  XBT_INFO("========= Requesting pstate %d (power should be of %.2f flop/s and is of %.2f flop/s",
+		  pstate,
+		  MSG_get_host_power_peak_at(host, pstate),
+		  MSG_get_host_current_power_peak(host));
 
   // Run a second task
+  start = MSG_get_clock();
+  XBT_INFO("Run a task for 100E6 flops");
   task1 = MSG_task_create ("t2", 100E6, 0, NULL);
   MSG_task_execute (task1);
   MSG_task_destroy(task1);
+  XBT_INFO("Task done (duration: %.2f s). Current power peak=%.0E flop/s; Current consumed energy=%.0f J",
+		  MSG_get_clock()-start,
+		  MSG_get_host_current_power_peak(host), MSG_get_host_consumed_energy(host));
 
-  task_time = MSG_get_clock() - task_time;
-  XBT_INFO("Task2 simulation time: %e", task_time);
-
-  consumed_energy = MSG_get_host_consumed_energy(host);
-  XBT_INFO("Total energy (Joules): %f", consumed_energy);
-
-
-  MSG_process_sleep(3);
-
-  task_time = MSG_get_clock() - task_time;
-  XBT_INFO("Task3 (sleep) simulation time: %e", task_time);
-  consumed_energy = MSG_get_host_consumed_energy(host);
-  XBT_INFO("Total energy (Joules): %f", consumed_energy);
+  start = MSG_get_clock();
+  XBT_INFO("Sleep for 10 seconds");
+  MSG_process_sleep(4);
+  XBT_INFO("Done sleeping (duration: %.2f s). Current power peak=%.0E flop/s; Current consumed energy=%.0f J",
+		  MSG_get_clock()-start,
+		  MSG_get_host_current_power_peak(host), MSG_get_host_consumed_energy(host));
 
   return 0;
 }
@@ -97,7 +101,7 @@ int main(int argc, char *argv[])
 
   res = MSG_main();
 
-  XBT_INFO("Total simulation time: %e", MSG_get_clock());
+  XBT_INFO("Total simulation time: %.2f", MSG_get_clock());
 
   if (res == MSG_OK)
     return 0;
