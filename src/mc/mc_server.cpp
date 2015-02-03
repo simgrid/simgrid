@@ -45,8 +45,6 @@ void s_mc_server::start()
     throw std::system_error(res, std::system_category());
   XBT_DEBUG("Greeted the MC client");
 
-  MC_init_pid(pid, socket);
-
   // Block SIGCHLD (this will be handled with accept/signalfd):
   sigset_t set;
   sigemptyset(&set);

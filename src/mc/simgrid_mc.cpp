@@ -75,6 +75,7 @@ static int do_parent(int socket, pid_t child)
     mc_mode = MC_MODE_SERVER;
     mc_server = new s_mc_server(child, socket);
     mc_server->start();
+    MC_init_pid(child, socket);
     mc_server->resume(&mc_model_checker->process);
     mc_server->loop();
     mc_server->shutdown();
