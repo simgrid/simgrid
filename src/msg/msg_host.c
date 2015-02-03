@@ -356,7 +356,7 @@ void MSG_host_get_params(msg_host_t host, ws_params_t params)
  * \param pstate_index pstate to test
  * \return Returns the processor speed associated with pstate_index
  */
-double MSG_get_host_power_peak_at(msg_host_t host, int pstate_index) {
+double MSG_host_get_power_peak_at(msg_host_t host, int pstate_index) {
 	  xbt_assert((host != NULL), "Invalid parameters (host is NULL)");
 	  return (simcall_host_get_power_peak_at(host, pstate_index));
 }
@@ -367,7 +367,7 @@ double MSG_get_host_power_peak_at(msg_host_t host, int pstate_index) {
  * \param  host host to test
  * \return Returns the current processor speed
  */
-double MSG_get_host_current_power_peak(msg_host_t host) {
+double MSG_host_get_current_power_peak(msg_host_t host) {
 	  xbt_assert((host != NULL), "Invalid parameters (host is NULL)");
 	  return simcall_host_get_current_power_peak(host);
 }
@@ -377,7 +377,7 @@ double MSG_get_host_current_power_peak(msg_host_t host) {
  *
  * \param  host host to test
  */
-int MSG_get_host_nb_pstates(msg_host_t host) {
+int MSG_host_get_pstate_number(msg_host_t host) {
 
 	  xbt_assert((host != NULL), "Invalid parameters (host is NULL)");
 	  return (simcall_host_get_nb_pstates(host));
@@ -389,7 +389,7 @@ int MSG_get_host_nb_pstates(msg_host_t host) {
  * \param  host host to test
  * \param pstate_index pstate to switch to
  */
-void MSG_set_host_power_peak_at(msg_host_t host, int pstate_index) {
+void MSG_host_set_pstate(msg_host_t host, int pstate_index) {
 	  xbt_assert((host != NULL), "Invalid parameters (host is NULL)");
 
 	  simcall_host_set_power_peak_at(host, pstate_index);
@@ -401,7 +401,7 @@ void MSG_set_host_power_peak_at(msg_host_t host, int pstate_index) {
  * \param  host host to test
  * \return Returns the consumed energy
  */
-double MSG_get_host_consumed_energy(msg_host_t host) {
+double MSG_host_get_consumed_energy(msg_host_t host) {
 	  xbt_assert((host != NULL), "Invalid parameters (host is NULL)");
 	  return simcall_host_get_consumed_energy(host);
 }

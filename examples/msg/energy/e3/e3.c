@@ -59,10 +59,10 @@ static int dvfs(int argc, char *argv[])
   double task_time = 0;
   host = MSG_host_self();
 
-  double current_peak = MSG_get_host_current_power_peak(host);
+  double current_peak = MSG_host_get_current_power_peak(host);
 
   XBT_INFO("Current power peak=%f", current_peak);
-  double consumed_energy = MSG_get_host_consumed_energy(host);
+  double consumed_energy = MSG_host_get_consumed_energy(host);
   XBT_INFO("Total energy (Joules): %f", consumed_energy);
 
   // Process 1 - long CPU task
@@ -91,7 +91,7 @@ static int dvfs(int argc, char *argv[])
 
   task_time = MSG_get_clock() - task_time;
   XBT_INFO("Task simulation time: %e", task_time);
-  consumed_energy = MSG_get_host_consumed_energy(host);
+  consumed_energy = MSG_host_get_consumed_energy(host);
   XBT_INFO("Total energy (Joules): %f", consumed_energy);
 
   return 0;

@@ -136,11 +136,11 @@ XBT_PUBLIC(int) MSG_host_is_off(msg_host_t h);
 XBT_PUBLIC(void) __MSG_host_priv_free(msg_host_priv_t priv);
 XBT_PUBLIC(void) __MSG_host_destroy(msg_host_t host);
 
-XBT_PUBLIC(double) MSG_get_host_power_peak_at(msg_host_t h, int pstate_index);
-XBT_PUBLIC(double) MSG_get_host_current_power_peak(msg_host_t h);
-XBT_PUBLIC(int) MSG_get_host_nb_pstates(msg_host_t h);
-XBT_PUBLIC(void) MSG_set_host_power_peak_at(msg_host_t h, int pstate);
-XBT_PUBLIC(double) MSG_get_host_consumed_energy(msg_host_t h);
+XBT_PUBLIC(double) MSG_host_get_power_peak_at(msg_host_t h, int pstate);
+XBT_PUBLIC(double) MSG_host_get_current_power_peak(msg_host_t h);
+XBT_PUBLIC(int)    MSG_host_get_pstate_number(msg_host_t h);
+XBT_PUBLIC(void)   MSG_host_set_pstate(msg_host_t h, int pstate);
+XBT_PUBLIC(double) MSG_host_get_consumed_energy(msg_host_t h);
 
 /*property handlers*/
 XBT_PUBLIC(xbt_dict_t) MSG_host_get_properties(msg_host_t host);
