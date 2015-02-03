@@ -17,20 +17,6 @@ typedef struct s_mc_server s_mc_server_t, *mc_server_t;
 
 extern mc_server_t mc_server;
 
-/** Initialise MC server
- *
- * @param  PID of the model-checked process
- * @param socket file descriptor for communication with the model-checked process
- * @return 0 on success
- */
-int MC_server_init(pid_t pid, int socket);
-
-/** Execute the MC server
- *
- *  @return Status code (can be used with `exit()`)
- */
-void MC_server_run(void);
-
 SG_END_DECL()
 
 #ifdef __cplusplus

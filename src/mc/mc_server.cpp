@@ -28,30 +28,6 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_server, mc, "MC server logic");
 
 mc_server_t mc_server;
 
-int MC_server_init(pid_t pid, int socket)
-{
-  if (mc_server)
-    xbt_die("MC server already present");
-  mc_mode = MC_MODE_SERVER;
-  mc_server = new s_mc_server(pid, socket);
-  mc_server->start();
-  return 0;
-}
-
-void MC_server_run(void)
-{
-  try {
-    mc_server->resume(&mc_model_checker->process);
-    mc_server->loop();
-    mc_server->shutdown();
-    mc_server->exit();
-  }
-  catch(std::exception& e) {
-    XBT_ERROR(e.what());
-    exit(MC_SERVER_ERROR);
-  }
-}
-
 s_mc_server::s_mc_server(pid_t pid, int socket)
 {
   this->pid = pid;

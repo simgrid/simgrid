@@ -4,6 +4,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include <exception>
+
 #include <cstdlib>
 #include <cstdio>
 #include <cstring>
@@ -67,11 +69,21 @@ static int do_child(int socket, char** argv)
 static int do_parent(int socket, pid_t child)
 {
   XBT_DEBUG("Inside the parent process");
-  if (MC_server_init(child, socket))
-    return MC_SERVER_ERROR;
-  XBT_DEBUG("Server initialized");
-  MC_server_run();
-  return 0;
+  if (mc_server)
+    xbt_die("MC server already present");
+  try {
+    mc_mode = MC_MODE_SERVER;
+    mc_server = new s_mc_server(child, socket);
+    mc_server->start();
+    mc_server->resume(&mc_model_checker->process);
+    mc_server->loop();
+    mc_server->shutdown();
+    mc_server->exit();
+  }
+  catch(std::exception& e) {
+    XBT_ERROR(e.what());
+  }
+  exit(MC_SERVER_ERROR);
 }
 
 static char** argvdup(int argc, char** argv)
