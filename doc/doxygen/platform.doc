@@ -2,200 +2,192 @@
 
 @tableofcontents
 
-In order to run any simulation, SimGrid needs 3 things: something to run
-(so, your code), a description of the platform on which you want to run your
-application, and finally it needs something to know where to deploy what.
+In order to run any simulation, SimGrid must be provided with three things:
+something to run (i.e., your code), a description of the platform on which you
+want to simulate your application and lastly information about the deployment
+process: Which process should be deployed to which processor/core?
 
-For the latest 2 entries, you have basically 2 ways to give it as an input :
-\li You can program it, either using the Lua console (\ref
-    MSG_Lua_funct) or if you're using MSG some of its platform and
-    deployments functions(\ref msg_simulation). If you want to use it,
-    please refer to its doc. (you can also check the section \ref
-    pf_flexml_bypassing but this is strongly deprecated, as there is a
-    new way to do it properly, but not yet documented).
-\li You can use two XML files: a platform description file and a
-    deployment description one.
+For the last two items, there are essentially two possible ways you can provide
+this information as an input:
+\li You can program it, either by using the Lua console (
+    \ref MSG_Lua_funct) or, if you're using MSG, some of MSG's platform and
+    deployment functions (\ref msg_simulation). If you want to use this,
+    check the particular documentation. (You can also check the section
+    \ref pf_flexml_bypassing, however, this documentation is deprecated;
+    there is a new, but undocumented, way to do it properly).
+\li You can use two XML files: one contains the platform description while
+    the other contains the deployment instructions.
 
-For the deployment stuff, please take a look at \ref deployment
+For more information on SimGrid's deployment features, please refer to
+the \ref deployment documentation.
 
-The platform description may be complicated. This documentation is all
-about how to write this file: what are the basic concept it relies on,
-what possibilities are offered, and some hints and tips on how to
-write a good platform description.
+The platform description may be intricate. This documentation is all
+about how to write this file: The basic concepts are introduced. Furthermore,
+advanced options are explained. Additionally, some hints and tips on how to
+write a good platform description are given.
 
 \section pf_overview Some words about XML and DTD
 
-We choose to use XML because of some of its possibilities: if you're
-using an accurate XML editor, or simply using any XML plug-in for
-eclipse, it will allow you to have cool stuff like auto-completion,
-validation and checking, so all syntax errors may be avoided this
-way.
+We chose to use XML not only because it's extensible but also because many
+tools (and plugins for existing tools) are available that facilitate editing and
+validating XML files. Furthermore, libraries that parse XML are often already
+available and very well tested.
 
-the XML checking is done based on the dtd which is nowadays online at
-<a href="http://simgrid.gforge.inria.fr/simgrid.dtd">http://simgrid.gforge.inria.fr/simgrid.dtd</a>
-while you might be tempted to read it, it will not help you that much.
+The XML checking is done based on the Document Type Definition (DTD) file,
+available at
+<a href="http://simgrid.gforge.inria.fr/simgrid.dtd">http://simgrid.gforge.inria.fr/simgrid.dtd</a>.
 
-If you read it, you should notice two or three important things :
-\li The platform tags contains a version attributes. At the time of
-    writing this doc the current version is 3.    
-\li The DTD contains definitions for the 2 files used by SimGrid (platform
-    description and deployment).
-\li There is a bunch of possibilities ! Let's see what's in it
-
+If you read the DTD, you should notice the following:
+\li The platform tags contain a version attribute; the current version is 3.
+    This property might be used in the future to provide backwards
+    compatibility.
+\li The DTD contains definitions for the two files used by SimGrid (i.e.,
+    platform description and deployment).
 
 \section pf_basics Basic concepts
 
 Nowadays, the Internet is composed of a bunch of independently managed
 networks. Within each of those networks, there are entry and exit
 points (most of the time, you can both enter and exit through the same
-point) that allows to go out of the current network and reach other
-networks. At the upper level, these networks are known as
-<b>Autonomous System (AS)</b>, while at the lower level they are named
-sub-networks, or LAN. Indeed they are autonomous: routing is defined
-within the limits of his network by the administrator, and so, those
-networks can continue to operate without the existence of other
-networks. There are some rules to get out of networks by the entry
-points (or gateways). Those gateways allow you to go from a network to
-another one. Inside of each autonomous system, there is a bunch of
-equipments (cables, routers, switches, computers) that belong to the
-autonomous system owner.
+point); this allows to leave the current network and reach other
+networks, possibly even in other locations.
+At the upper level, such a network is called
+<b>Autonomous System (AS)</b>, while at the lower level it is named
+sub-network, or LAN (local area network).
+They are indeed autonomous: routing is defined
+(within the limits of his network) by the administrator, and so, those
+networks can operate without a connection to other
+networks. So-called gateways allow you to go from one network to
+another, if such a (physical) connection exists. Every node in one network
+that can be directly reached (i.e., without traversing other nodes) from
+another network is called a gateway.
+Each autonomous system consists of equipment such as cables (network links),
+routers and switches as well as computers.
 
-SimGrid platform description file relies exactly on the same concepts
-as real life platform. Every resource (computers, network equipments,
-and so on) belongs to an AS. Within this AS, you can define the
-routing you want between its elements (that's done with the routing
-model attribute and eventually with some \<route\> tag). You define AS
-by using ... well ... the \<AS\> tag. An AS can also contain some AS :
-AS allows you to define the hierarchy of your platform.
+The structure of the SimGrid platform description relies exactly on the same
+concept as a real-life platform (see above).  Every resource (computers,
+network equipment etc.) belongs to an AS, which can be defined by using the
+\<AS\> tag. Within an AS, the routing between its elements can be defined
+abitrarily. There are several modes for routing, and exactly one mode must be
+selected by specifying the routing attribute in the AS tag:
 
-Within each AS, you basically have the following type of resources:
-\li <b>host</b>: an host, with cores in it, and so on
+\verbatim
+<AS id="AS0" routing="Full">
+\endverbatim
+
+\remark
+Other supported values for the routing attribute can be found below, Section
+\ref pf_raf.
+\endremark
+
+There is also the ``<route>`` tag; this tag takes two attributes, ``src`` (source)
+and ``dst`` (destination). Both source and destination must be valid identifiers
+for routers (these will be introduced later). Contained by the ``<route>`` are
+network links; these links must be used in order to communicate from the source
+to the destination specified in the tag. Hence, a route merely describes
+how to reach a router from another router.
+
+\remark
+More information and (code-)examples can be found in the Section \ref pf_rm.
+\endremark
+
+An AS can also contain one or more AS; this allows you to
+define the hierarchy of your platform.
+
+Within each AS, the following types of resources exist:
+\li <b>host</b>: a hostmachine; contains processors/cores etc.
 \li <b>router</b>: a router or a gateway.
-\li <b>link</b>: a link, that defines a connection between two (or
-    more) resources (and have a bandwidth and a latency) 
+\li <b>link</b>: a link that defines a connection between two (or
+    more) resources. Every link has a bandwidth and a latency.
 \li <b>cluster</b>: like a real cluster, contains many hosts
-    interconnected by some dedicated network. 
+    interconnected by some dedicated network.
 
-Between those elements, a routing has to be defined. As the AS is
-supposed to be Autonomous, this has to be done at the AS level. As AS
+Between these elements, a routing has to be defined. The AS is
+supposed to be Autonomous, hence this has to be done at the AS level. The AS
 handles two different types of entities (<b>host/router</b> and
-<b>AS</b>) you will have to define routes between those elements. A
-network model have to be provided for AS, but you may/will need,
-depending of the network model, or because you want to bypass the
-default behavior to defines routes manually. There are 3 tags to use: 
+<b>AS</b>); you are responsible to define routes between those elements,
+otherwise entities will be unconnected and therefore unreachable from other
+entities. Although several algorithms for routing are built into SimGrid (see
+\ref pf_rm), you might encounter a case where you want to define
+routes manually (for instance, due to specific requirements of your
+platform).
+
+There are three tags to use:
 \li <b>ASroute</b>: to define routes between two  <b>AS</b>
 \li <b>route</b>: to define routes between two <b>host/router</b>
 \li <b>bypassRoute</b>: to define routes between two <b>AS</b> that
-    will bypass default routing. 
+    will bypass default routing (as specified by the ``routing`` attribute
+    supplied to ``<AS>``, see above).
 
-Here is an illustration of the overall concepts:
+Here is an illustration of these concepts:
 
-\htmlonly
-<a href="AS_hierarchy.png" border=0><img src="AS_hierarchy.png" width="30%" border=0 align="center"></a>
-<br/>
-\endhtmlonly
+![An illustration of an AS hierarchy. Here, AS1 contains 5 other AS' who in turn may contain other AS' as well.](AS_hierarchy.png)
  Circles represent processing units and squares represent network routers. Bold
     lines represent communication links. AS2 models the core of a national
     network interconnecting a small flat cluster (AS4) and a larger
     hierarchical cluster (AS5), a subset of a LAN (AS6), and a set of peers
     scattered around the world (AS7).
 
+\section pf_pftags Resource description
 
-This is all for the concepts ! To make a long story short, a SimGrid
-platform is made of a hierarchy of AS, each of them containing
-resources, and routing is defined at AS level. Let's have a deeper
-look in the tags.
+\subsection  pf_As Platform: The \<AS\> tag
+
+The concept of an AS was already outlined above (Section \ref pf_basics);
+recall that the AS is so important because it groups other resources (such
+as routers/hosts) together (in fact, these resources must be contained by
+an AS).
+
+Available attributes :
+
+Attribute name  | Mandatory | Values | Description
+--------------- | --------- | ------ | -----------
+id              | yes       | String | The identifier of an AS; facilitates referring to this AS. ID must be unique.
+routing         | yes       | Full\| Floyd\| Dijkstra\| DijkstraCache\| none\| Vivaldi\| Cluster | See Section \ref pf_rm for details.
 
 
-
-\section pf_pftags Describing resources and their organization
-
-\subsection  pf_As Platform organization tag : AS
-
-AS (or Autonomous System) is an organizational unit that contains
-resources and defines routing between them, and eventually some other
-AS. So it allows you to define a hierarchy into your platform.
-<b>*ANY*</b> resource <b>*MUST*</b> belong to an AS. There are a few
-attributes.
-
-<b>AS</b> attributes :
-\li <b>id (mandatory)</b>: the identifier of AS to be used when
-    referring to it.     
-\li <b>routing (mandatory)</b>: the routing model used into it. By
-    model we mean the internal way the simulator will manage routing.
-    That also have a big impact on how many information you'll have to
-    provide to help the simulator to route between the AS elements.
-    <b>routing</b> possible values are <b>Full, Floyd, Dijkstra,
-    DijkstraCache, none, Vivaldi, Cluster</b>. For more
-    explanation about what to choose, take a look at the section
-    devoted to it below.  
-
-Elements into an AS are basically resources (computers, network
-equipments) and some routing information if necessary (see below for
-more explanation).
-
-<b>AS example</b>
+<b>Example:</b>
 \verbatim
-<AS  id="AS0"  routing="Full">
+<AS id="AS0" routing="Full">
    <host id="host1" power="1000000000"/>
    <host id="host2" power="1000000000"/>
    <link id="link1" bandwidth="125000000" latency="0.000100"/>
    <route src="host1" dst="host2"><link_ctn id="link1"/></route>
- </AS>
+</AS>
 \endverbatim
 
 In this example, AS0 contains two hosts (host1 and host2). The route
 between the hosts goes through link1.
 
-
 \subsection pf_Cr Computing resources: hosts, clusters and peers.
 
-\subsubsection pf_host host
+\subsubsection pf_host The tag <host/>
 
-A <b>host</b> represents a computer, where you will be able to execute
-code and from which you can send and receive information. A host can
-contain more than 1 core. Here are the attributes of a host :
+A <b>host</b> represents a computer/node card. Every host is able to execute
+code and it can send and receive data to/from other hosts. Most importantly,
+a host can contain more than 1 core.
 
+### Attributes: ###
 
-<b>host</b> attributes :
-\li <b>id (mandatory)</b>: the identifier of the host to be used when
-    referring to it.
-\li <b>power (mandatory)</b>:the peak number FLOPS the CPU can manage.
-    Expressed in flop/s.
-\li <b>core</b>: The number of core of this host (by default, 1). If
-    you specify the amount of cores, the 'power' parameter is the power 
-    of each core. 
-    For example, if you specify that your host has 6 cores, it will be
-    available to up to 6 sequential tasks without sharing. If more
-    tasks are placed on this host, the resource will be shared
-    accordingly. For example, if you schedule 12 tasks on that host,
-    each will get half of the specified computing power. Please note
-    that although sound, this model were never scientifically assessed.
-    Please keep this fact in mind when using it.
-\li <b>availability</b>: specify if the percentage of power available.
-\li <b>availability_file</b>: Allow you to use a file as input. This
-    file will contain availability traces for this computer. The
-    syntax of this file is defined below. Possible values : absolute
-    or relative path, syntax similar to the one in use on your system.
-\li <b>state</b>: the computer state, as in : is that computer ON or
-    OFF. Possible values : "ON" or "OFF". 
-\li <b>state_file</b>: Same mechanism as availability_file, similar
-    syntax for value.     
-\li <b>coordinates</b>: you'll have to give it if you choose the
-    vivaldi, coordinate-based routing model for the AS the host
-    belongs to. More details about it in the P2P coordinate based
-    section. 
+Attribute name  | Mandatory | Values | Description
+--------------- | --------- | ------ | -----------
+id              | yes       | String | The identifier of the host. facilitates referring to this AS.
+power           | yes       | double (must be > 0.0) | Computational power of every core of this host in FLOPS. Must be larger than 0.0.
+core            | no        | int (Default: 1) | The number of cores of this host. If more than one core is specified, the "power" parameter refers to every core, i.e., the total computational power is #cores*power.<br /> If 6 cores are specified, up to 6 tasks can be executed without sharing the computational power; if more than 6 tasks are executed, computational power will be shared among these tasks. <br /> <b>Warning:</b> Although functional, this model was never scientifically assessed.
+availability    | no        | int    | <b>Specify if the percentage of power available.</b> (What? TODO)
+availability_file| no       | string | (Relative or absolute) filename to use as input; must contain availability traces for this host. The syntax of this file is defined below. <br /> <b>Note:</b> The filename must be specified with your system's format.
+state           | no        | ON\|OFF<br/> (Default: ON) | Is this host running or not?
+state_file      | no        | string |  Same mechanism as availability_file.<br /> <b>Note:</b> The filename must be specified with your system's format.
+coordinates     | no        | string | Must be provided when choosing the Vivaldi, coordinate-based routing model for the AS the host belongs to. More details can be found in the Section \ref pf_P2P_tags.
 
-An host can contain some <b>mount</b> that defines mounting points
-between some storage resource and the <b>host</b>. Please refer to the
-storage doc for more information.
+### Possible children: ###
 
-An host can also contain the <b>prop</b> tag. the prop tag allows you
-to define additional information on this host following the
-attribute/value schema. You may want to use it to give information to
-the tool you use for rendering your simulation, for example.
+Tag name        | Description | Documentation
+------------    | ----------- | -------------
+<mount/>        | Defines mounting points between some storage resource and the host. | \ref pf_sto_mo
+<prop/>         | The prop tag allows you to define additional information on this host following the attribute/value schema. You may want to use it to give information to the tool you use for rendering your simulation, for example. | N/A
 
-<b>host example</b>
+### Example ###
+
 \verbatim
    <host id="host1" power="1000000000"/>
    <host id="host2" power="1000000000">
@@ -205,82 +197,90 @@ the tool you use for rendering your simulation, for example.
 \endverbatim
 
 
-<b>Expressing dynamicity.</b>
-It is also possible to seamlessly declare a host whose
-availability changes over time using the availability_file
-attribute and a separate text file whose syntax is exemplified below.
+\anchor pf_host_dynamism
+### Expressing dynamism ###
 
-<b>Adding a trace file</b>
+SimGrid provides mechanisms to change a hosts' availability over
+time, using the ``availability_file`` attribute to the ``<host>`` tag
+and a separate text file whose syntax is exemplified below.
+
+#### Adding a trace file ####
+
 \verbatim
-    <platform version="1">
-      <host id="bob" power="500000000"
-            availability_file="bob.trace" />
-    </platform>
+<platform version="1">
+  <host id="bob" power="500000000" availability_file="bob.trace" />
+</platform>
 \endverbatim
-<b>Example of "bob.trace" file</b>
-\verbatim
+
+#### Example of "bob.trace" file ####
+
+~~~~~~~~~~~~~~{.py}
 PERIODICITY 1.0
   0.0 1.0
   11.0 0.5
   20.0 0.8
-\endverbatim
+~~~~~~~~~~~~~~
 
-At time 0, our host will deliver 500~Mflop/s. At time 11.0, it will
-deliver half, that is 250~Mflop/s until time 20.0 where it will
-will start delivering 80\% of its power, that is 400~Mflop/s. Last, at
-time 21.0 (20.0 plus the periodicity 1.0), we loop back to the
-beginning and the host will deliver again 500~Mflop/s.
+Let us begin to explain this example by looking at line 2. (Line 1 will become clear soon).
+The first column describes points in time, in this case, time 0. The second column
+describes the relative amount of power this host is able to deliver (relative
+to the maximum performance specified in the ``<host>`` tag). (Clearly, the
+second column needs to contain values that are not smaller than 0 and not larger than 1).
+In this example, our host will deliver 500 Mflop/s at time 0, as 500 Mflop/s is the
+maximum performance of this host. At time 11.0, it will
+deliver half of its maximum performance, i.e., 250 Mflop/s until time 20.0 when it will
+will start delivering 80\% of its power. In this example, this amounts to 400 Mflop/s.
 
-<b>Changing initial state</b>
+Since the periodicity in line 1 was set to be 1.0, i.e., 1 timestep, this host will
+continue to provide 500 Mflop/s from time 21. From time 32 it will provide 250 MFlop/s and so on.
 
-It is also possible to specify whether the host
-is up or down by setting the <b>state</b> attribute to either <b>ON</b>
-(default value) or <b>OFF</b>.
+### Changing initial state ###
 
-<b>Expliciting the default value "ON"</b>
+It is also possible to specify whether the host is up or down by setting the
+``state`` attribute to either <b>ON</b> (default value) or <b>OFF</b>.
+
+#### Example: Expliciting the default value "ON" ####
+
 \verbatim
-  <platform version="1">
-     <host id="bob"
-           power="500000000"
-          state="ON" />
-  </platform>
+<platform version="1">
+   <host id="bob" power="500000000" state="ON" />
+</platform>
 \endverbatim
-<b>Host switched off</b>
-\verbatim
-  <platform version="1">
-     <host id="bob"
-           power="500000000"
-           state="OFF" />
-  </platform>
-\endverbatim
-<b>Expressing churn</b>
+
+If you want this host to be unavailable, simply substitute ON with OFF.
+
+### Expressing churn ###
+
 To express the fact that a host can change state over time (as in P2P
 systems, for instance), it is possible to use a file describing the time
 at which the host is turned on or off. An example of the content
 of such a file is presented below.
-<b>Adding a state file</b>
-  \verbatim
-    <platform version="1">
-      <host id="bob" power="500000000"
-           state_file="bob.fail" />
-    </platform>
-  \endverbatim
-<b>Example of "bob.fail" file</b>
+
+#### Adding a state file ####
+
 \verbatim
+<platform version="1">
+  <host id="bob" power="500000000" state_file="bob.fail" />
+</platform>
+\endverbatim
+
+#### Example of "bob.fail" file ####
+
+~~~{.py}
   PERIODICITY 10.0
   1.0 -1.0
   2.0 1.0
-\endverbatim
+~~~
 
-A negative value means <b>down</b> while a positive one means <b>up and
-  running</b>. From time 0.0 to time 1.0, the host is on. At time 1.0, it is
+A negative value means <b>down</b> (i.e., OFF) while a positive one means <b>up and
+  running</b> (i.e., ON). From time 0.0 to time 1.0, the host is on. At time 1.0, it is
 turned off and at time 2.0, it is turned on again until time 12 (2.0 plus the
 periodicity 10.0). It will be turned on again at time 13.0 until time 23.0, and
 so on.
 
 
 
-\subsubsection pf_cluster cluster
+\subsubsection pf_cluster <cluster>
 
 A <b>cluster</b> represents a cluster. It is most of the time used
 when you want to have a bunch of machine defined quickly. It must be
@@ -327,77 +327,53 @@ to obtain it is simple : you just have to let bb_* attributes
 unset.
 
 
+Attribute name  | Mandatory | Values | Description
+--------------- | --------- | ------ | -----------
+id              | yes       | string | The identifier of the cluster. Facilitates referring to this cluster.
+prefix          | yes       | string | Each node of the cluster has to have a name. This name will be prefixed with this prefix.
+suffix          | yes       | string | Each node of the cluster will be suffixed with this suffix
+radical         | yes       | string | Regexp used to generate cluster nodes name. Syntax: "10-20" will give you 11 machines numbered from 10 to 20, "10-20;2" will give you 12 machines, one with the number 2, others numbered as before. The produced number is concatenated between prefix and suffix to form machine names.
+power           | yes       | int    | Same as the ``power`` attribute of the ``<host>`` tag.
+core            | no        | int (default: 1) | Same as the ``core`` attribute of the ``<host>`` tag.
+bw              | yes       | int    | Bandwidth for the links between nodes and backbone (if any). <b>See <b>link</b> section for syntax/details.</b>
+lat             | yes       | int    | Latency for the links between nodes and backbone (if any). See <b>link</b> section for syntax/details.
+sharing_policy  | no        | string | Sharing policy for the links between nodes and backbone (if any). See <b>link</b> section for syntax/details.
+bb_bw           | no        | int    | Bandwidth for backbone (if any). See <b>link</b> section for syntax/details. If bb_bw and bb_lat (see below) attributes are omitted, no backbone is created (alternative cluster architecture <b>described before</b>).
+bb_lat          | no        | int    | Latency for backbone (if any). See <b>link</b> section for syntax/details. If bb_lat and bb_bw (see above) attributes are omitted, no backbone is created (alternative cluster architecture <b>described before</b>).
+bb_sharing_policy | no      | string | Sharing policy for the backbone (if any). See <b>link</b> section for syntax/details.
+availability_file | no      | string | Allows you to use a file as input for availability. Similar to <b>hosts</b> attribute.
+state_file        | no      | string | Allows you to use a file as input for states.  Similar to <b>hosts</b> attribute.
+loopback_bw       | no      | int    | Bandwidth for loopback (if any). See <b>link</b> section for syntax/details. If loopback_bw and loopback_lat (see below) attributes are omitted, no loopback link is created and all intra-node communication will use the main network link of the node. Loopback link is a <b>FATPIPE</b>.
+loopback_lat      | no      | int    | Latency for loopback (if any). See <b>link</b> section for syntax/details. See loopback_bw for more info.
+topology          | no      | FLAT\|TORUS\|FAT_TREE (default: FLAT) | Network topology to use. SimGrid currently supports FLAT (with or without backbone, as described before), <a href="http://en.wikipedia.org/wiki/Torus_interconnect">TORUS </a> and FAT_TREE attributes for this tag.
+topo_parameters   | no      | string | Specific parameters to pass for the topology defined in the topology tag. For torus networks, comma-separated list of the number of nodes in each dimension of the torus. For fat trees, refer to \ref AsClusterFatTree "AsClusterFatTree documentation".
 
-<b>cluster</b> attributes :
-\li <b>id (mandatory)</b>: the identifier of the cluster to be used
-    when referring to it. 
-\li <b>prefix (mandatory)</b>: each node of the cluster has to have a
-    name. This is its prefix. 
-\li <b>suffix (mandatory)</b>: node suffix name.
-\li <b>radical (mandatory)</b>: regexp used to generate cluster nodes
-    name. Syntax is quite common, "10-20" will give you 11 machines
-    numbered from 10 to 20, "10-20;2" will give you 12 machines, one
-    with the number 2, others numbered as before. The produced number
-    is concatenated between prefix and suffix to form machine names.
-\li <b>power (mandatory)</b>: same as <b>host</b> power.
-\li <b>core</b>: same as <b>host</b> core.
-\li <b>bw (mandatory)</b>: bandwidth for the links between nodes and
-    backbone (if any). See <b>link</b> section for syntax/details.
-\li <b>lat (mandatory)</b>: latency for the links between nodes and
-    backbone (if any). See <b>link</b> section for syntax/details. 
-\li <b>sharing_policy</b>: sharing policy for the links between nodes
-    and backbone (if any). See <b>link</b> section for syntax/details.     
-\li <b>bb_bw </b>: bandwidth for backbone (if any). See <b>link</b>
-    section for syntax/details. If both bb_* attributes are omitted,
-    no backbone is created (alternative cluster architecture described
-    before). 
-\li <b>bb_lat </b>: latency for backbone (if any). See <b>link</b>
-    section for syntax/details. If both bb_* attributes are omitted,
-    no backbone is created (alternative cluster architecture described
-    before).
-\li <b>bb_sharing_policy</b>: sharing policy for the backbone (if
-    any). See <b>link</b> section for syntax/details.
-\li <b>availability_file</b>: Allow you to use a file as input for
-    availability. Similar to <b>hosts</b> attribute. 
-\li <b>state_file</b>: Allow you to use a file as input for states.
-    Similar to <b>hosts</b> attribute. 
-\li <b>loopback_bw </b>: bandwidth for loopback (if any). See <b>link</b>
-    section for syntax/details. If both loopback_* attributes are omitted,
-    no loopback link is created and all intra-node communication will 
-    use the main network link of the node. Loopback link is a <b>FATPIPE</b>.
-\li <b>loopback_lat </b>: latency for loopback (if any). See <b>link</b>
-    section for syntax/details. See loopback_bw for more info.
-\li <b>topology </b>: network topology to use. For now SimGrid supports FLAT 
-     (default, with or without backbone, as described before), 
-     <a href="http://en.wikipedia.org/wiki/Torus_interconnect">TORUS
-     </a> and FAT_TREE attributes for this tag.
-\li <b>topo_parameters </b>: specific parameters to pass for the topology 
-     defined in the topology tag. For torus networks, comma-separated list of 
-    the number of nodes in each dimension of the torus. For fat trees, refer to
-    \ref AsClusterFatTree "AsClusterFatTree documentation".
-
+TODO
 
 the router name is defined as the resulting String in the following
-java line of code: 
+java line of code:
 
 @verbatim
 router_name = prefix + clusterId + _router + suffix;
 @endverbatim
 
 
-<b>cluster example</b>
+#### Cluster example ####
+
+Consider the following two (and independent) uses of the ``cluster`` tag:
+
 \verbatim
 <cluster id="my_cluster_1" prefix="" suffix="" radical="0-262144"
          power="1e9" bw="125e6" lat="5E-5"/>
 
-<cluster id="my_cluster_1" prefix="c-" suffix=".me" radical="0-99"
+<cluster id="my_cluster_2" prefix="c-" suffix=".me" radical="0-99"
          power="1e9" bw="125e6" lat="5E-5"
          bb_bw="2.25e9" bb_lat="5E-4"/>
 \endverbatim
-The second examples creates one router and 100 machines, which names 
-are the following:
+
+The second example creates one router and 100 machines with the following names:
 \verbatim
-c-my_cluster_1_router.me
+c-my_cluster_2_router.me
 c-0.me
 c-1.me
 c-2.me
@@ -405,203 +381,273 @@ c-2.me
 c-99.me
 \endverbatim
 
-\subsubsection pf_peer peer
-A <b>peer</b> represents a peer, as in Peer-to-Peer (P2P). Basically,
-as cluster, <b>A PEER IS INTERNALLY INTERPRETED AS AN \<AS\></b>. It's
-just a kind of shortcut that does the following :
+\subsubsection pf_peer <peer/>
 
-\li It creates a tiny AS whose routing type is cluster
-\li It creates an host
-\li Two links : one for download and one for upload. This is
-    convenient to use and simulate stuff under the last mile model (as
-    ADSL peers). 
+This tag represents a peer, as in Peer-to-Peer (P2P) networks. However, internally,
+SimGrid transforms a peer into an AS (similar to Cluster). Hence, this tag
+is virtually only a shortcut that comes with some pre-defined resources
+and values. These are:
+
+\li A tiny AS whose routing type is cluster is created
+\li A host
+\li Two links: One for download and one for upload. This is
+    convenient to use and simulate stuff under the last mile model (e.g., ADSL peers).
 \li It connects the two links to the host
-\li It creates a router (a gateway) that serve as entry point for this peer zone.
+\li It creates a router (a gateway) that serves as an entry point for this peer zone.
     This router has coordinates.
 
-<b>peer</b> attributes :
-\li <b>id (mandatory)</b>: the identifier of the peer to be used when
-    referring to it.
-\li <b>power CDATA (mandatory)</b>: as in host
-\li <b>bw_in CDATA (mandatory)</b>: bandwidth in.
-\li <b>bw_out CDATA (mandatory)</b>:bandwidth out.
-\li <b>lat CDATA (mandatory)</b>: Latency for in and out links.
-\li <b>coordinates</b>: coordinates of the gateway for this peer.
-\li <b>sharing_policy</b>: sharing policy for links. Can be SHARED or
-    FULLDUPLEX, FULLDUPLEX is the default. See <b>link</b> description
-    for details.
-\li <b>availability_file</b>: availability file for the peer. Same as
-    host availability file. See <b>host</b> description for details.   
-\li <b>state_file </b>: state file for the peer. Same as host state
-    file. See <b>host</b> description for details. 
+#### Attributes ####
 
-In term of XML, the <b>peer</b> construct can be explained as follows: it transforms
+Attribute name  | Mandatory | Values | Description
+--------------- | --------- | ------ | -----------
+id              | yes       | string | The identifier of the peer. Facilitates referring to this peer.
+power           | yes       | int    | See the description of the ``host`` tag for this attribute
+bw_in           | yes       | int    | Bandwidth downstream
+bw_out          | yes       | int    | Bandwidth upstream
+lat             | yes       | double | Latency for both up- and downstream, in seconds.
+coordinates     | no        | string | Coordinates of the gateway for this peer. Example value: 12.8 14.4 6.4
+sharing_policy  | no        | SHARED\|FULLDUPLEX (default: FULLDUPLEX) | Sharing policy for links. See <b>link</b> description for details.
+availability_file| no       | string | Availability file for the peer. Same as host availability file. See <b>host</b> description for details.
+state_file      | no        | string | State file for the peer. Same as host state file. See <b>host</b> description for details.
+
+Internally, SimGrid transforms any ``<peer/>`` construct such as
 \verbatim
-  <peer id="FOO"
-	coordinates="12.8 14.4 6.4"
-	power="1.5Gf"
-	bw_in="2.25GBps"
-	bw_out="2.25GBps"
-	lat="500us" />
+<peer id="FOO"
+  coordinates="12.8 14.4 6.4"
+  power="1.5Gf"
+  bw_in="2.25GBps"
+  bw_out="2.25GBps"
+  lat="500us" />
 \endverbatim
-into
+into an ``<AS>`` (see Sections \ref pf_basics and \ref pf_As). In fact, this example of the ``<peer/>`` tag
+is completely equivalent to the following declaration:
+
 \verbatim
-   <AS id="as_FOO" routing="Cluster">
-      <host id="peer_FOO" power="1.5Gf"/>
-      <link id="link_FOO_UP" bandwidth="2.25GBps" latency="500us"/>
-      <link id="link_FOO_DOWN" bandwidth="2.25GBps" latency="500us"/>
-      <router id="router_FOO" coordinates="25.5 9.4 1.4"/>
-      <host_link id="peer_FOO" up="link_FOO_UP" down="link_FOO_DOWN"/>
-   </AS>
+<AS id="as_FOO" routing="Cluster">
+   <host id="peer_FOO" power="1.5Gf"/>
+   <link id="link_FOO_UP" bandwidth="2.25GBps" latency="500us"/>
+   <link id="link_FOO_DOWN" bandwidth="2.25GBps" latency="500us"/>
+   <router id="router_FOO" coordinates="25.5 9.4 1.4"/>
+   <host_link id="peer_FOO" up="link_FOO_UP" down="link_FOO_DOWN"/>
+</AS>
 \endverbatim
 
 
 \subsection pf_ne Network equipments: links and routers
 
-You have basically two entities available to represent network entities:
-\li <b>link</b>: represents something that has a limited bandwidth, a
+There are two tags available to represent network entities:
+1. ``<link>``: Represents a entity that has a limited bandwidth, a
     latency, and that can be shared according to TCP way to share this
-    bandwidth. <b>LINKS ARE NOT EDGES BUT HYPEREDGES</b>: it means
-    that you can have more than 2 equipments connected to it.
-\li <b>router</b>: represents something that one message can be routed
-    to, but does not accept any code, nor have any influence on the
-    performances (no bandwidth, no latency, not anything).<b>ROUTERS
-    ARE ENTITIES (ALMOST) IGNORED BY THE SIMULATOR WHEN THE SIMULATION
-    HAS BEGUN</b>. If you want to represent something like a switch,
-    you must use <b>link</b> (see section below). Routers are used in
-    order to run some routing algorithm and determine routes (see
-    routing section for details).
+    bandwidth.
+\remark
+The concept of links in SimGrid may not be intuitive, as links are not limited
+to connecting (exactly) two entities; in fact, you can have more than two equipments
+connected to it. (In graph theoretical terms: A link in SimGrid is not an edge,
+but a hyperedge)
+\endremark
 
-let's see deeper what those entities hide.
+2. ``<router/>``: Represents an entity that a message can be routed
+    to, but that is unable to execute any code. In SimGrid, routers have also
+    no impact on the performance: Routers do not limit any bandwidth nor
+    do they increase latency. As a matter of fact, routers are (almost) ignored
+    by the simulator when the simulation has begun.
 
-\subsubsection pf_router router
-As said before, <b>router</b> is used only to give some information
+\remark
+    If you want to represent an entity like a switch, you must use ``<link>`` (see section). Routers are used
+    to run some routing algorithm and determine routes (see Section \ref pf_routing for details).
+\endremark
+
+\subsubsection pf_router <router/>
+
+%As said before, <b>router</b> is used only to give some information
 for routing algorithms. So, it does not have any attributes except :
 
-<b>router</b> attributes :
-\li <b>id (mandatory)</b>: the identifier of the router to be used
-    when referring to it.
-    \li <b>coordinates</b>: you'll have to give it if you choose the
-    vivaldi, coordinate-based routing model for the AS the host
-    belongs to. More details about it in the P2P coordinates based
-    section.
+#### Attributes ####
 
-<b>router example</b>
+Attribute name  | Mandatory | Values | Description
+--------------- | --------- | ------ | -----------
+id              | yes       | string | The identifier of the router to be used when referring to it.
+coordinates     | yes       | string | Must be provided when choosing the Vivaldi, coordinate-based routing model for the AS the router belongs to. More details can be found in the Section \ref pf_P2P_tags.
+
+#### Example ####
+
 \verbatim
  <router id="gw_dc1_horizdist"/>
 \endverbatim
 
-\subsubsection pf_link link
+\subsubsection pf_link <link>
 
 Network links can represent one-hop network connections. They are
-characterized by their id and their bandwidth. The latency is optional
-with a default value of 0.0. For instance, we can declare a network
-link named link1 having bandwidth of 1Gb/s and a latency of 50µs.
-Example link:
+characterized by their id and their bandwidth; links can (but may not) be subject
+to latency.
+
+#### Attributes ####
+
+Attribute name  | Mandatory | Values | Description
+--------------- | --------- | ------ | -----------
+id              | yes       | string | The identifier of the link to be used when referring to it.
+bandwidth       | yes       | int    | Maximum bandwidth for this link, given in bytes/s
+latency         | no        | double (default: 0.0) | Latency for this link.
+sharing_policy  | no        | SHARED\|FATPIPE\|FULLDUPLEX (default: SHARED) | Sharing policy for the link.
+state           | no        | ON\|OFF (default: ON) | Allows you to to turn this link on or off (working / not working)
+bandwidth_file  | no        | string | Allows you to use a file as input for bandwidth.
+latency_file    | no        | string | Allows you to use a file as input for latency.
+state_file      | no        | string | Allows you to use a file as input for states.
+
+
+#### Possible shortcuts for ``latency`` ####
+
+When using the latency attribute, you can specify the latency by using the scientific
+notation or by using common abbreviations. For instance, the following three tags
+are equivalent:
 
 \verbatim
- <link id="LINK1" bandwidth="125000000" latency="5E-5"/>
+ <link id="LINK1" bandwidth="125000000" latency="5E-6"/>
+ <link id="LINK1" bandwidth="125000000" latency="5us"/>
+ <link id="LINK1" bandwidth="125000000" latency="0.000005"/>
 \endverbatim
-<b>Expressing sharing policy</b>
 
-By default a network link is SHARED, that is if more than one flow go
-through a link, each gets a share of the available bandwidth similar
-to the share TCP connections offers.
+Here, the second tag uses "us", meaning "microseconds". Other shortcuts are:
 
-Conversely if a link is defined as a FATPIPE, each flow going through
-this link will get all the available bandwidth, whatever the number of
-flows. The FATPIPE behavior allows to describe big backbones that
-won't affect performances (except latency). Finally a link can be
-considered as FULLDUPLEX, that means that in the simulator, 2 links
-(one named UP and the other DOWN) will be created for each link, so as
-the transfers from one side to the other will interact similarly as
+Name | Abbreviation | Time (in seconds)
+---- | ------------ | -----------------
+Week | w | 7 * 24 * 60 * 60
+Day  | d | 24 * 60 * 60
+Hour | h | 60 * 60
+Minute | m | 60
+Second | s | 1
+Millisecond | ms | 0.001 = 10^(-3)
+Microsecond | us | 0.000001 = 10^(-6)
+Nanosecond  | ns | 0.000000001 = 10^(-9)
+Picosecond  | ps | 0.000000000001 = 10^(-12)
+
+#### Sharing policy ####
+
+By default a network link is SHARED, i.e., if two or more data flows go
+through a link, the bandwidth is shared fairly among the data flows. This
+is similar to the sharing policy TCP uses.
+
+On the other hand, if a link is defined as a FATPIPE,
+each flow going through this link will be allocated the complete bandwidth,
+i.e., no sharing occurs and the bandwidth is only limiting single flows:
+The complete bandwidth provided by this link in this mode
+is ``#flows*bandwidth``.
+
+The last mode available is FULLDUPLEX. This means that SimGrid will
+automatically generate two links (one carrying the suffix _UP and the other the
+suffix _DOWN) for each ``<link>`` tag. This models situations when the direction
+of traffic is important.
+
+\remark
+Transfers from one side to the other will interact similarly as
 TCP when ACK returning packets circulate on the other direction. More
-discussion about it is available in <b>link_ctn</b> description.
+discussion about it is available in the description of link_ctn description.
+\endremark
+
+In other words: The SHARED policy defines a physical limit for the bandwidth.
+The FATPIPE mode defines a limit for each application,
+with no upper total limit.
+
+\remark
+Tip: By using the FATPIPE mode, you can model big backbones that
+won't affect performance (except latency).
+\endremark
+
+#### Example ####
 
 \verbatim
  <link id="SWITCH" bandwidth="125000000" latency="5E-5" sharing_policy="FATPIPE" />
 \endverbatim
 
-<b>Expressing dynamicity and failures</b>
+#### Expressing dynamism and failures ####
 
-As for hosts, it is possible to declare links whose state, bandwidth
-or latency change over the time. In this case, the bandwidth and
-latency attributes are respectively replaced by the bandwidth file and
-latency file attributes and the corresponding text files.
+Similar to hosts, it is possible to declare links whose state, bandwidth
+or latency changes over time (see Section \ref pf_hosts_dynamism for details).
+
+In the case of network links, the ``bandwidth`` and ``latency`` attributes are
+replaced by the ``bandwidth_file`` and ``latency_file`` attributes.
+The following XML snippet demonstrates how to use this feature in the platform
+file. The structure of the files "link1.bw" and "link1.lat" is shown below.
 
 \verbatim
- <link id="LINK1" state_file="link1.fail" bandwidth="80000000" latency=".0001" bandwidth_file="link1.bw" latency_file="link1.lat" />
+<link id="LINK1" state_file="link1.fail" bandwidth="80000000" latency=".0001" bandwidth_file="link1.bw" latency_file="link1.lat" />
 \endverbatim
 
-It has to be noted that even if the syntax is the same, the semantic
-of bandwidth and latency trace files differs from that of host
-availability files. Those files do not express availability as a
-fraction of the available capacity but directly in bytes per seconds
-for the bandwidth and in seconds for the latency. This is because most
-tools allowing to capture traces on real platforms (such as NWS)
-express their results this way.
+\note
+Even if the syntax is the same, the semantic of bandwidth and latency
+trace files differs from that of host availability files. For bandwidth and
+latency, the corresponding files do not
+express availability as a fraction of the available capacity but directly in
+    bytes per seconds for the bandwidth and in seconds for the latency. This is
+because most tools allowing to capture traces on real platforms (such as NWS)
+    express their results this way.
+    \endnote
 
-<b>Example of "link1.bw" file</b>
-\verbatim
+##### Example of "link1.bw" file #####
 
-1 PERIODICITY 12.0
-2 4.0 40000000
-3 8.0 60000000
-\endverbatim
-<b>Example of "link1.lat" file</b>
-\verbatim
- 1 PERIODICITY 5.0
-2 1.0 0.001
-3 2.0 0.01
-4 3.0 0.001
-\endverbatim
+~~~{.py}
+PERIODICITY 12.0
+4.0 40000000
+8.0 60000000
+~~~
 
-In this example, the bandwidth varies with a period of 12 seconds
-while the latency varies with a period of 5 seconds. At the beginning
-of simulation, the link’s bandwidth is of 80,000,000 B/s (i.e., 80
-Mb/s). After four seconds, it drops at 40 Mb/s, and climbs back to 60
-Mb/s after eight seconds. It keeps that way until second 12 (ie, until
-the end of the period), point at which it loops its behavior (seconds
-12-16 will experience 80 Mb/s, 16-20 40 Mb/s and so on). In the same
-time, the latency values are 100µs (initial value) on the [0, 1[ time
-interval, 1ms on [1, 2[, 10ms on [2, 3[, 1ms on [3,5[ (i.e., until the
-end of period). It then loops back, starting at 100µs for one second.
+In this example, the bandwidth changes repeatedly, with all changes
+being repeated every 12 seconds.
 
-<b>link</b> attributes :
-\li <b>id (mandatory)</b>: the identifier of the link to be used when referring to it.
-\li <b>bandwidth (mandatory)</b>: bandwidth for the link.
-\li <b>lat </b>: latency for the link. Default is 0.0.
-\li <b>sharing_policy</b>: sharing policy for the link.
-\li <b>state</b>: Allow you to to set link as ON or OFF. Default is ON.
-\li <b>bandwidth_file</b>: Allow you to use a file as input for bandwidth.
-\li <b>latency_file</b>: Allow you to use a file as input for latency.
-\li <b>state_file</b>: Allow you to use a file as input for states.
+At the beginning of the the simulation, the link's bandwidth is 80,000,000
+B/s (i.e., 80 Mb/s); this value was defined in the XML snippet above.
+After four seconds, it drops to 40 Mb/s (line 2), and climbs
+back to 60 Mb/s after another 4 seconds (line 3). The value does not change any
+more until the end of the period, that is, after 12 seconds have been simulated).
+At this point, periodicity kicks in and this behavior is repeated: Seconds
+12-16 will experience 80 Mb/s, 16-20 40 Mb/s etc.).
 
-As an host, a <b>link</b> tag can also contain the <b>prop</b> tag.
+##### Example of "link1.lat" file #####
 
-<b>link example</b>
-\verbatim
-   <link id="link1" bandwidth="125000000" latency="0.000100"/>
-\endverbatim
+~~~{.py}
+PERIODICITY 5.0
+1.0 0.001
+2.0 0.01
+3.0 0.001
+~~~
 
+In this example, the latency varies with a period of 5 seconds.
+In the xml snippet above, the latency is initialized to be 0.0001s (100µs). This
+value will be kept during the first second, since the latency_file contains
+changes to this value at second one, two and three.
+At second one, the value will be 0.001, i.e., 1ms. One second later it will
+be adjusted to 0.01 (or 10ms) and one second later it will be set again to 1ms. The
+value will not change until second 5, when the periodicity defined in line 1
+kicks in. It then loops back, starting at 100µs (the initial value) for one second.
+
+
+#### The ``<prop/>`` tag ####
+
+Similar to ``<host>``, the link may also contain the ``<prop/>`` tag; see the host
+documentation (Section \ref pf_host) for an example.
+
+
+TODO
 
 \subsection pf_storage Storage
 
-<b>Note : This is a prototype version that should evolve quickly, this
+\note
+This is a prototype version that should evolve quickly, this
 is just some doc valuable only at the time of writing this doc</b>
 This section describes the storage management under SimGrid ; nowadays
 it's only usable with MSG. It relies basically on linux-like concepts.
 You also may want to have a look to its corresponding section in \ref
 msg_file_management ; functions access are organized as a POSIX-like
 interface.
+\endnote
 
 \subsubsection pf_sto_conc Storage Main concepts
 Basically there is 3 different entities to know :
 \li the <b>storage_type</b>: here you define some kind of storage that
     you will instantiate many type on your platform. Think of it like
-    a definition of throughput of a specific disk. 
+    a definition of throughput of a specific disk.
 \li the <b>storage</b>: instance of a <b>storage_type</b>. Defines a
-    new storage of <b>storage_type</b>     
+    new storage of <b>storage_type</b>
 \li the <b>mount</b>: says that the storage is located into this
     specific resource.
 
@@ -618,11 +664,11 @@ find /path/you/want -type f -exec ls -l {} \; 2>/dev/null > ./content.txt
 
 <b>storage_type</b> attributes :
 \li <b>id (mandatory)</b>: the identifier of the storage_type to be
-    used when referring to it. 
+    used when referring to it.
 \li <b>model (mandatory)</b>: Unused for now by the simulator (but
-    mandatory, ok) 
+    mandatory, ok)
 \li <b>content</b>: default value 0. The file containing the disk
-    content. (may be moved soon or later to <b>storage</b> tag. 
+    content. (may be moved soon or later to <b>storage</b> tag.
 
 The tag must contains some predefined model prop, as may do some other
 resources tags.
@@ -630,7 +676,7 @@ resources tags.
 \li <b>Bwrite</b>: value in B/s. Write throughput
 \li <b>Bread</b>: value in B/s. Read throughput
 \li <b>Bconnexion</b>: value in B/s. Connection throughput (i.e. the
-    throughput of the storage connector). 
+    throughput of the storage connector).
 
 A storage_type can also contain the <b>prop</b> tag. The prop tag allows you
 to define additional information on this storage_type following the
@@ -650,37 +696,38 @@ the tool you use for rendering your simulation, for example.
 
 <b>storage_type</b> attributes :
 \li <b>id (mandatory)</b>: the identifier of the storage to be used
-    when referring to it. 
+    when referring to it.
 \li <b>typeId (mandatory)</b>: the identifier of the storage_type that
-    this storage belongs to. 
-\li <b>attach (mandatory)</b>: the host (name) to which the storage is 
+    this storage belongs to.
+\li <b>attach (mandatory)</b>: the host (name) to which the storage is
 	attached to.
 
 \subsubsection pf_sto_mo mount
 
 <b>mount</b> attributes :
 \li <b>id (mandatory)</b>: the id of the <b>storage</b> that must be
-    mounted on that computer. 
+    mounted on that computer.
 \li <b>name (mandatory)</b>: the name that will be the logical
-    reference to this disk (the mount point). 
+    reference to this disk (the mount point).
 
 \subsubsection pf_sto_mst mstorage
 <b>Note : unused for now</b>
 <b>mstorage</b> attributes :
 \li <b>typeId (mandatory)</b>: the id of the <b>storage</b> that must
-    be mounted on that computer. 
+    be mounted on that computer.
 \li <b>name (mandatory)</b>: the name that will be the logical
-    reference to this disk (the mount point). 
+    reference to this disk (the mount point).
 
 \section pf_routing Routing
 
-In order to run fast, it has been chosen to use static routing within
-SimGrid. By static, it means that it is calculated once (or almost),
-and will not change during execution. We chose to do that because it
-is rare to have a real deficiency of a resource ; most of the time, a
-communication fails because the links are too overloaded, and so your
-connection stops before the time out, or because the computer at the
-other end is not answering.
+To achieve high performance, the routing tables used within SimGrid are
+static. This means that routing between two nodes is calculated once
+and will not change during execution. The SimGrid team chose to use this
+approach as it is rare to have a real deficiency of a resource;
+most of the time, a communication fails because the links experience too much
+congestion and hence, your connection stops before the timeout or
+because the computer designated to be the destination of that message
+is not responding.
 
 We also chose to use shortest paths algorithms in order to emulate
 routing. Doing so is consistent with the reality: RIP, OSPF, BGP are
@@ -738,11 +785,11 @@ Here is the complete list of such models, that computes routes using
 classic shortest-paths algorithms. How to choose the best suited
 algorithm is discussed later in the section devoted to it.
 
-\li <b>Floyd</b>: Floyd routing data. Pre-calculates all routes once. 
+\li <b>Floyd</b>: Floyd routing data. Pre-calculates all routes once.
 \li <b>Dijkstra</b>: Dijkstra routing data ,calculating routes when
-    necessary. 
+    necessary.
 \li <b>DijkstraCache</b>: Dijkstra routing data. Handle some cache for
-    already calculated routes. 
+    already calculated routes.
 
 All those shortest-path models are instanciated the same way. Here are
 some example of it:
@@ -818,7 +865,7 @@ Full example :
 \subsubsection pf_rm_sf Simple/fast models
 
 \li <b>none</b>: No routing (Unless you know what you are doing, avoid
-using this mode in combination with a non Constant network model). 
+using this mode in combination with a non Constant network model).
 None Example :
 \verbatim
 <AS id="exitAS"  routing="none">
@@ -826,9 +873,9 @@ None Example :
 </AS>\endverbatim
 
 \li <b>Vivaldi</b>: Vivaldi routing, so when you want to use
-    coordinates. See the corresponding section P2P below for details. 
+    coordinates. See the corresponding section P2P below for details.
 \li <b>Cluster</b>: Cluster routing, specific to cluster tag, should
-    not be used, except internally. 
+    not be used, except internally.
 
 \subsection ps_dec Defining routes
 
@@ -838,7 +885,7 @@ for doing it. Those for tags are:
 \li <b>route</b>: to define route between host/router
 \li <b>ASroute</b>: to define route between AS
 \li <b>bypassRoute</b>: to bypass normal routes as calculated by the
-    network model between host/router 
+    network model between host/router
 \li <b>bypassASroute</b>: same as bypassRoute, but for AS
 
 Basically all those tags will contain an (ordered) list of references
@@ -939,7 +986,7 @@ between AS. It's useful when you're in Full model.
 The principle is the same as ASroute : <b>route</b> contains list of
 links that are in the path between src and dst, except that it is for
 routes between a src that can be either <b>host</b> or \b router and a
-dst that can be either <b>host</b> or \b router. Useful for Full 
+dst that can be either <b>host</b> or \b router. Useful for Full
 as well as for the shortest-paths based models, where you
 have to give topological information.
 
@@ -1023,8 +1070,6 @@ links that are in the path between src and dst.
 
 <b>bypassRoute Example</b>
 \verbatim
-<b>bypassRoute Example</b>
-\verbatim
     <bypassRoute src="host_1" dst="host_2">
         <link_ctn id="link_tmp"/>
      </bypassRoute>
@@ -1034,8 +1079,8 @@ links that are in the path between src and dst.
 \subsection pb_baroex Basic Routing Example
 
 Let's say you have an AS named AS_Big that contains two other AS, AS_1
-and AS_2. If you want to make an host (h1) from AS_1 with another one
-(h2) from AS_2 then you'll have to proceed as follow:
+and AS_2. If you want to make a host (h1) from AS_1 with another one
+(h2) from AS_2 then you'll have to proceed as follows:
 \li First, you have to ensure that a route is defined from h1 to the
     AS_1's exit gateway and from h2 to AS_2's exit gateway.
 \li Then, you'll have to define a route between AS_1 to AS_2. As those
@@ -1103,18 +1148,18 @@ information to SimGrid. Here is a file doing it all :
 \section pf_other_tags Tags not (directly) describing the platform
 
 There are 3 tags, that you can use inside a \<platform\> tag that are
-not describing the platform: 
+not describing the platform:
 \li random: it allows you to define random generators you want to use
-    for your simulation. 
+    for your simulation.
 \li config: it allows you to pass some configuration stuff like, for
-    example, the network model and so on. It follows the 
+    example, the network model and so on. It follows the
 \li include: simply allows you to include another file into the
-    current one. 
+    current one.
 
 \subsection pf_conf config
 <b>config</b> attributes :
 \li <b>id (mandatory)</b>: the identifier of the config to be used
-    when referring to it. 
+    when referring to it.
 
 
 <b>config</b> tag only purpose is to include <b>prop</b> tags. Valid
@@ -1151,15 +1196,15 @@ Not yet in use, and possibly subject to huge modifications.
 in another file. This is done with the intention to help people
 combine their different AS and provide new platforms. Those files
 should contains XML part that contains either
-<b>include,cluster,peer,AS,trace,trace_connect</b> tags.  
+<b>include,cluster,peer,AS,trace,trace_connect</b> tags.
 
 <b>include</b> attributes :
 \li <b>file (mandatory)</b>: filename of the file to include. Possible
     values: absolute or relative path, syntax similar to the one in
-    use on your system. 
+    use on your system.
 
 <b>Note</b>: due to some obscure technical reasons, you have to open
-and close tag in order to let it work. 
+and close tag in order to let it work.
 <b>include Example</b>
 \verbatim
 <?xml version='1.0'?>
@@ -1176,9 +1221,9 @@ and close tag in order to let it work.
 Both tags are an alternate way to passe availability, state, and so on
 files to entity. Instead of referring to the file directly in the host,
 link, or cluster tag, you proceed by defining a trace with an id
-corresponding to a file, later an host/link/cluster, and finally using
+corresponding to a file, later a host/link/cluster, and finally using
 trace_connect you say that the file trace must be used by the entity.
-Get it ? Let's have a look at an example : 
+Get it ? Let's have a look at an example :
 
 \verbatim
 <AS  id="AS0"  routing="Full">
@@ -1215,7 +1260,7 @@ Here is an example  of trace when no file name is provided:
 <b>trace_connect</b> attributes :
 \li <b>kind</b>: the type of trace, possible values
     <b>HOST_AVAIL|POWER|LINK_AVAIL|BANDWIDTH|LATENCY,</b>  default:
-    <b>HOST_AVAIL</b>  
+    <b>HOST_AVAIL</b>
 \li <b>trace (mandatory)</b>: the identifier of the trace referenced.
 \li <b>element (mandatory)</b>: the identifier of the entity referenced.
 
@@ -1297,7 +1342,7 @@ AS to define routes to it.
 \subsection pf_P2P_tags P2P or how to use coordinates
 SimGrid allows you to use some coordinated-based system, like vivaldi,
 to describe a platform. The main concept is that you have some peers
-that are located somewhere: this is the function of the 
+that are located somewhere: this is the function of the
 <b>coordinates</b> of the \<peer\> or \<host\> tag. There's nothing
 complicated in using it, here is an example of it:
 
@@ -1339,8 +1384,8 @@ That is for example what is commonly done when using peers (see Section \ref pf_
 </AS>
 </platform>
 \endverbatim
-In such a case though, we connect the AS created by the <b>peer</b> tag with the Vivaldi routing mechanism. 
-This means that to route between AS1 and AS2, it will use the coordinates of router_AS1 and router_AS2. 
+In such a case though, we connect the AS created by the <b>peer</b> tag with the Vivaldi routing mechanism.
+This means that to route between AS1 and AS2, it will use the coordinates of router_AS1 and router_AS2.
 This is currently a convention and we may offer to change this convention in the DTD later if needed.
 You may have noted that conveniently, a peer named FOO defines an AS named FOO and a router named router_FOO, which is why it works seamlessly with the <b>peer</b> tag.
 
@@ -1354,7 +1399,7 @@ disk space. Here is the list of available model and their
 characteristics (lookup : time to resolve a route):
 
 \li <b>Full</b>: Full routing data (fast, large memory requirements,
-    fully expressive)    
+    fully expressive)
 \li <b>Floyd</b>: Floyd routing data (slow initialization, fast
     lookup, lesser memory requirements, shortest path routing only).
     Calculates all routes at once at the beginning.
@@ -1371,7 +1416,7 @@ characteristics (lookup : time to resolve a route):
     an exception.
 \li <b>Vivaldi</b>: Vivaldi routing, so when you want to use coordinates
 \li <b>Cluster</b>: Cluster routing, specific to cluster tag, should
-    not be used. 
+    not be used.
 
 \subsection pf_switch Hey, I want to describe a switch but there is no switch tag !
 

@@ -13,6 +13,11 @@ DIV.toc  {
 
 DIV.tocTitle {
 	text-align: center;
-	font-weight: bold;	
+	font-weight: bold;
 	font-size: 130%;
+}
+
+.remark {
+    background-color: #eee;
+    border: 1px solid #ccc;
 }
