@@ -11,6 +11,12 @@
 #include "simgrid/platf.h"
 #include "surf/surfxml_parse.h"
 #include "surf/surf_private.h"
+#include "bindings/lua/simgrid_lua.h"
+#include "bindings/lua/lua_state_cloner.h"
+
+#include <lua.h>                /* Always include this when calling Lua */
+#include <lauxlib.h>            /* Always include this when calling Lua */
+#include <lualib.h>             /* Prototype for luaL_openlibs(), */
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_parse);
 
@@ -27,7 +33,6 @@ static char *old_buff = NULL;
 
 XBT_IMPORT_NO_EXPORT(unsigned int) surfxml_buffer_stack_stack_ptr;
 XBT_IMPORT_NO_EXPORT(unsigned int) surfxml_buffer_stack_stack[1024];
-
 
 void surfxml_bufferstack_push(int new)
 {
@@ -89,43 +94,91 @@ void parse_after_config() {
 /* This function acts as a main in the parsing area. */
 void parse_platform_file(const char *file)
 {
-  int parse_status;
+  int is_lua = (file != NULL && strlen(file) > 3 && file[strlen(file)-3] == 'l' && file[strlen(file)-2] == 'u'
+        && file[strlen(file)-1] == 'a');
 
   surf_parse_init_callbacks();
 
-  /* init the flex parser */
-  surfxml_buffer_stack_stack_ptr = 1;
-  surfxml_buffer_stack_stack[0] = 0;
-  after_config_done = 0;
-  surf_parse_open(file);
+  /* Check if file extension is "lua". If so, we will use
+   * the lua bindings to parse the platform file (since it is
+   * written in lua). If not, we will use the (old?) XML parser
+   */
+  if (is_lua) {
+    // Get maestro state. In case we're calling Lua from
+    // C only, this will be NULL -- no Lua code has been
+    // executed yet and hence, the SimGrid module has not
+    // yet been loaded.
+    // NOTE: After executing the lua_pcall() below,
+    // sglua_get_maestro() will not be NULL, since the
+    // SimGrid module was loaded!
+    lua_State* L = sglua_get_maestro();
 
-  /* Init my data */
-  if (!surfxml_bufferstack_stack)
-    surfxml_bufferstack_stack = xbt_dynar_new(sizeof(char *), NULL);
+    // We may want to remove the task_copy_callback from
+    // the SimGrid module if we're using C code only (this
+    // callback is used for Lua-only code).
+    int remove_callback = FALSE;
+    if (L == NULL) {
+        L = luaL_newstate();
+        remove_callback = TRUE;
+    }
+    luaL_openlibs(L);
 
-  traces_set_list = xbt_dict_new_homogeneous(NULL);
-  trace_connect_list_host_avail = xbt_dict_new_homogeneous(free);
-  trace_connect_list_power = xbt_dict_new_homogeneous(free);
-  trace_connect_list_link_avail = xbt_dict_new_homogeneous(free);
-  trace_connect_list_bandwidth = xbt_dict_new_homogeneous(free);
-  trace_connect_list_latency = xbt_dict_new_homogeneous(free);
+    luaL_loadfile(L, file); // This loads the file without executing it.
 
-  /* Do the actual parsing */
-  parse_status = surf_parse();
+    /* Run the script */
+    if (lua_pcall(L, 0, 0, 0)) {
+        XBT_ERROR("FATAL ERROR:\n  %s: %s\n\n", "Lua call failed. Errormessage:", lua_tostring(L, -1));
+        xbt_die("Lua call failed. See Log");
+    }
+    // Without this, task_copy_callback() will try to copy
+    // some tasks -- but these don't exist in case we're using
+    // C. Hence, we need to remove the callback -- we don't
+    // want to segfault.
+    if (remove_callback) {
+      MSG_task_set_copy_callback(NULL);
+    }
 
-  /* Free my data */
-  xbt_dict_free(&trace_connect_list_host_avail);
-  xbt_dict_free(&trace_connect_list_power);
-  xbt_dict_free(&trace_connect_list_link_avail);
-  xbt_dict_free(&trace_connect_list_bandwidth);
-  xbt_dict_free(&trace_connect_list_latency);
-  xbt_dict_free(&traces_set_list);
-  xbt_dict_free(&random_data_list);
-  xbt_dynar_free(&surfxml_bufferstack_stack);
+  }
+  else { // Use XML parser
 
-  /* Stop the flex parser */
-  surf_parse_close();
-  if (parse_status)
-    surf_parse_error("Parse error in %s", file);
+    int parse_status;
+
+    /* init the flex parser */
+    surfxml_buffer_stack_stack_ptr = 1;
+    surfxml_buffer_stack_stack[0] = 0;
+    after_config_done = 0;
+    surf_parse_open(file);
+
+    traces_set_list = xbt_dict_new_homogeneous(NULL);
+    trace_connect_list_host_avail = xbt_dict_new_homogeneous(free);
+    trace_connect_list_power = xbt_dict_new_homogeneous(free);
+    trace_connect_list_link_avail = xbt_dict_new_homogeneous(free);
+    trace_connect_list_bandwidth = xbt_dict_new_homogeneous(free);
+    trace_connect_list_latency = xbt_dict_new_homogeneous(free);
+
+    /* Init my data */
+    if (!surfxml_bufferstack_stack)
+      surfxml_bufferstack_stack = xbt_dynar_new(sizeof(char *), NULL);
+
+    /* Do the actual parsing */
+    parse_status = surf_parse();
+
+    /* Free my data */
+    xbt_dict_free(&trace_connect_list_host_avail);
+    xbt_dict_free(&trace_connect_list_power);
+    xbt_dict_free(&trace_connect_list_link_avail);
+    xbt_dict_free(&trace_connect_list_bandwidth);
+    xbt_dict_free(&trace_connect_list_latency);
+    xbt_dict_free(&traces_set_list);
+    xbt_dict_free(&random_data_list);
+    xbt_dynar_free(&surfxml_bufferstack_stack);
+
+    surf_parse_close();
+
+    if (parse_status)
+      surf_parse_error("Parse error in %s", file);
+
+  }
+
+
 }
-

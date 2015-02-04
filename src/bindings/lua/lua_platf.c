@@ -46,7 +46,7 @@ int console_open(lua_State *L) {
   routing_register_callbacks();
 
   gpu_register_callbacks();
-  
+
   return 0;
 }
 
@@ -110,7 +110,7 @@ int console_add_host(lua_State *L) {
   //get power_scale
   lua_pushstring(L, "power_scale");
   lua_gettable(L, -2);
-  if(!lua_isnumber(L,-1)) host.power_scale = 1;// Default value  
+  if(!lua_isnumber(L,-1)) host.power_scale = 1;// Default value
   else host.power_scale = lua_tonumber(L, -1);
   lua_pop(L, 1);
 
@@ -248,13 +248,12 @@ int console_add_router(lua_State* L) {
 #include "surf/surfxml_parse.h" /* to override surf_parse and bypass the parser */
 
 int console_add_route(lua_State *L) {
+  XBT_DEBUG("Adding route");
   s_sg_platf_route_cbarg_t route;
   memset(&route,0,sizeof(route));
 
   /* allocating memory for the buffer, I think 2kB should be enough */
   surfxml_bufferstack = xbt_new0(char, surfxml_bufferstack_size);
-
-  int is_symmetrical;
 
   if (! lua_istable(L, -1)) {
     XBT_ERROR("Bad Arguments to create a route, Should be a table with named arguments");
@@ -278,30 +277,37 @@ int console_add_route(lua_State *L) {
     xbt_dynar_push_as(route.link_list,char*,xbt_strdup(lua_tostring(L, -1)));
   lua_pop(L,1);
 
+  /* We are relying on the XML bypassing mechanism since the corresponding sg_platf does not exist yet.
+   * Et ouais mon pote. That's the way it goes. F34R.
+   */
   lua_pushstring(L,"symmetrical");
   lua_gettable(L,-2);
-  is_symmetrical = lua_tointeger(L, -1);
+  if (lua_isstring(L, -1)) {
+    const char* value = lua_tostring(L, -1);
+    if (strcmp("YES", value) == 0) {
+      route.symmetrical = TRUE;
+    }
+    else
+      route.symmetrical = FALSE;
+  }
+  else {
+    route.symmetrical = TRUE;
+  }
   lua_pop(L,1);
 
   route.gw_src = NULL;
   route.gw_dst = NULL;
 
-  /* We are relying on the XML bypassing mechanism since the corresponding sg_platf does not exist yet.
-   * Et ouais mon pote. That's the way it goes. F34R.
-   */
-  if (is_symmetrical)
-    route.symmetrical = TRUE;
-  else
-    route.symmetrical = FALSE;
-
   sg_platf_new_route(&route);
-  
+
   return 0;
 }
 
 int console_AS_open(lua_State *L) {
  const char *id;
  const char *mode;
+
+ XBT_DEBUG("Opening AS");
 
  if (! lua_istable(L, 1)) {
    XBT_ERROR("Bad Arguments to AS_open, Should be a table with named arguments");
@@ -336,6 +342,7 @@ int console_AS_open(lua_State *L) {
  return 0;
 }
 int console_AS_close(lua_State *L) {
+  XBT_DEBUG("Closing AS");
   sg_platf_new_AS_end();
   return 0;
 }
