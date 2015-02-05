@@ -4,6 +4,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include <stdlib.h>
+
 #include "smx_private.h"
 #include "xbt/heap.h"
 #include "xbt/sysdep.h"
@@ -15,6 +17,9 @@
 
 #ifdef HAVE_MC
 #include "mc/mc_private.h"
+#include "mc/mc_model_checker.h"
+#include "mc/mc_protocol.h"
+#include "mc/mc_client.h"
 #endif
 #include "mc/mc_record.h"
 
@@ -205,6 +210,20 @@ void SIMIX_global_init(int *argc, char **argv)
 
   if (sg_cfg_get_boolean("clean_atexit"))
     atexit(SIMIX_clean);
+
+#ifdef HAVE_MC
+  // The communication initialisation is done ASAP.
+  // We need to commuicate  initialisation of the different layers to the model-checker.
+  if (mc_mode == MC_MODE_NONE) {
+    if (getenv(MC_ENV_SOCKET_FD)) {
+      mc_mode = MC_MODE_CLIENT;
+      MC_client_init();
+      MC_client_hello();
+    } else {
+      mc_mode = MC_MODE_STANDALONE;
+    }
+  }
+#endif
 
   if (_sg_cfg_exit_asap)
     exit(0);

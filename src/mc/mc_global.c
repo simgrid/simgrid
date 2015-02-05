@@ -111,7 +111,8 @@ mc_model_checker_t MC_model_checker_new(pid_t pid, int socket)
   return mc;
 }
 
-void MC_model_checker_delete(mc_model_checker_t mc) {
+void MC_model_checker_delete(mc_model_checker_t mc)
+{
   mc_pages_store_delete(mc->pages);
   if(mc->record)
     xbt_dynar_free(&mc->record);
@@ -119,6 +120,11 @@ void MC_model_checker_delete(mc_model_checker_t mc) {
 }
 
 void MC_init()
+{
+  MC_init_pid(getpid(), -1);
+}
+
+void MC_init_pid(pid_t pid, int socket)
 {
   if (mc_mode == MC_MODE_NONE) {
     if (getenv(MC_ENV_SOCKET_FD)) {
@@ -128,18 +134,6 @@ void MC_init()
     }
   }
 
-  MC_init_pid(getpid(), -1);
-
-  if (mc_mode == MC_MODE_CLIENT) {
-    MC_client_init();
-    MC_client_hello();
-    // This will move somehwere else:
-    MC_client_handle_messages();
-  }
-}
-
-void MC_init_pid(pid_t pid, int socket)
-{
   int raw_mem_set = (mmalloc_get_current_heap() == mc_heap);
 
   mc_time = xbt_new0(double, simix_process_maxpid);
@@ -221,6 +215,11 @@ void MC_init_pid(pid_t pid, int socket)
 
   if (raw_mem_set)
     MC_SET_MC_HEAP;
+
+  if (mc_mode == MC_MODE_CLIENT) {
+    // This will move somehwere else:
+    MC_client_handle_messages();
+  }
 
 }
 

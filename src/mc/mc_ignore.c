@@ -9,6 +9,9 @@
 #include "mc_private.h"
 #include "smpi/private.h"
 #include "mc/mc_snapshot.h"
+#include "mc_ignore.h"
+#include "mc_protocol.h"
+#include "mc_client.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_ignore, mc,
                                 "Logging specific to MC ignore mechanism");
@@ -61,6 +64,64 @@ static void checkpoint_ignore_region_free_voidp(void *r)
 
 /***********************************************************************/
 
+void MC_heap_region_ignore_insert(mc_heap_ignore_region_t region)
+{
+  int raw_mem_set = (mmalloc_get_current_heap() == mc_heap);
+
+  if (mc_heap_comparison_ignore == NULL) {
+    mc_heap_comparison_ignore =
+        xbt_dynar_new(sizeof(mc_heap_ignore_region_t),
+                      heap_ignore_region_free_voidp);
+    xbt_dynar_push(mc_heap_comparison_ignore, &region);
+    if (!raw_mem_set)
+      MC_SET_STD_HEAP;
+    return;
+  }
+
+  unsigned int cursor = 0;
+  mc_heap_ignore_region_t current_region = NULL;
+  int start = 0;
+  int end = xbt_dynar_length(mc_heap_comparison_ignore) - 1;
+
+  // Find the position where we want to insert the mc_heap_ignore_region_t:
+  while (start <= end) {
+    cursor = (start + end) / 2;
+    current_region =
+        (mc_heap_ignore_region_t) xbt_dynar_get_as(mc_heap_comparison_ignore,
+                                                   cursor,
+                                                   mc_heap_ignore_region_t);
+    if (current_region->address == region->address) {
+      heap_ignore_region_free(region);
+      if (!raw_mem_set)
+        MC_SET_STD_HEAP;
+      return;
+    } else if (current_region->address < region->address) {
+      start = cursor + 1;
+    } else {
+      end = cursor - 1;
+    }
+  }
+
+  // Insert it mc_heap_ignore_region_t:
+  if (current_region->address < region->address)
+    xbt_dynar_insert_at(mc_heap_comparison_ignore, cursor + 1, &region);
+  else
+    xbt_dynar_insert_at(mc_heap_comparison_ignore, cursor, &region);
+
+  if (!raw_mem_set)
+    MC_SET_STD_HEAP;
+}
+
+void MC_heap_region_ignore_send(mc_heap_ignore_region_t region)
+{
+  s_mc_ignore_region_message_t message;
+  message.type = MC_MESSAGE_IGNORE_REGION;
+  message.region = *region;
+  if (MC_protocol_send(mc_client->fd, &message, sizeof(message)))
+    xbt_die("Could not send ignored region to MCer");
+  XBT_DEBUG("Sent ignored region to the model-checker");
+}
+
 // FIXME, cross-process support? (or make this it is used on the app-side)
 void MC_ignore_heap(void *address, size_t size)
 {
@@ -90,43 +151,12 @@ void MC_ignore_heap(void *address, size_t size)
     std_heap->heapinfo[region->block].busy_frag.ignore[region->fragment]++;
   }
 
-  if (mc_heap_comparison_ignore == NULL) {
-    mc_heap_comparison_ignore =
-        xbt_dynar_new(sizeof(mc_heap_ignore_region_t),
-                      heap_ignore_region_free_voidp);
-    xbt_dynar_push(mc_heap_comparison_ignore, &region);
-    if (!raw_mem_set)
-      MC_SET_STD_HEAP;
-    return;
-  }
+  MC_heap_region_ignore_insert(region);
 
-  unsigned int cursor = 0;
-  mc_heap_ignore_region_t current_region = NULL;
-  int start = 0;
-  int end = xbt_dynar_length(mc_heap_comparison_ignore) - 1;
-
-  while (start <= end) {
-    cursor = (start + end) / 2;
-    current_region =
-        (mc_heap_ignore_region_t) xbt_dynar_get_as(mc_heap_comparison_ignore,
-                                                   cursor,
-                                                   mc_heap_ignore_region_t);
-    if (current_region->address == address) {
-      heap_ignore_region_free(region);
-      if (!raw_mem_set)
-        MC_SET_STD_HEAP;
-      return;
-    } else if (current_region->address < address) {
-      start = cursor + 1;
-    } else {
-      end = cursor - 1;
-    }
-  }
-
-  if (current_region->address < address)
-    xbt_dynar_insert_at(mc_heap_comparison_ignore, cursor + 1, &region);
-  else
-    xbt_dynar_insert_at(mc_heap_comparison_ignore, cursor, &region);
+#if 1
+  if (mc_mode == MC_MODE_CLIENT)
+    MC_heap_region_ignore_send(region);
+#endif
 
   if (!raw_mem_set)
     MC_SET_STD_HEAP;

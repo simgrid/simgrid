@@ -19,12 +19,15 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_client, mc, "MC client logic");
 
-s_mc_client_t mc_client;
+mc_client_t mc_client;
 
 void MC_client_init(void)
 {
-  mc_client.fd = -1;
-  mc_client.active = 1;
+  if (mc_client) {
+    XBT_WARN("MC_client_init called more than once.");
+    return;
+  }
+
   char* fd_env = getenv(MC_ENV_SOCKET_FD);
   if (!fd_env)
     xbt_die("MC socket not found");
@@ -40,13 +43,15 @@ void MC_client_init(void)
     xbt_die("Unexpected socket type %i", type);
   XBT_DEBUG("Model-checked application found expected socket type");
 
-  mc_client.fd = fd;
+  mc_client = xbt_new0(s_mc_client_t, 1);
+  mc_client->fd = fd;
+  mc_client->active = 1;
 }
 
 void MC_client_hello(void)
 {
   XBT_DEBUG("Greeting the MC server");
-  if (MC_protocol_hello(mc_client.fd) != 0)
+  if (MC_protocol_hello(mc_client->fd) != 0)
     xbt_die("Could not say hello the MC server");
   XBT_DEBUG("Greeted the MC server");
 }
@@ -58,7 +63,7 @@ void MC_client_handle_messages(void)
 
     char message_buffer[MC_MESSAGE_LENGTH];
     size_t s;
-    if ((s = recv(mc_client.fd, &message_buffer, sizeof(message_buffer), 0)) == -1)
+    if ((s = recv(mc_client->fd, &message_buffer, sizeof(message_buffer), 0)) == -1)
       xbt_die("Could not receive commands from the model-checker: %s",
         strerror(errno));
 

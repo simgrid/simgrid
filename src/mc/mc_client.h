@@ -14,9 +14,9 @@ SG_BEGIN_DECL()
 typedef struct s_mc_client {
   int active;
   int fd;
-} s_mc_client_t, mc_client_t;
+} s_mc_client_t, *mc_client_t;
 
-extern s_mc_client_t mc_client;
+extern mc_client_t mc_client;
 
 void MC_client_init(void);
 void MC_client_hello(void);
