@@ -19,12 +19,7 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_client, mc, "MC client logic");
 
-typedef struct s_mc_client {
-  int active;
-  int fd;
-} s_mc_client_t, mc_client_t;
-
-static s_mc_client_t mc_client;
+s_mc_client_t mc_client;
 
 void MC_client_init(void)
 {
@@ -60,11 +55,18 @@ void MC_client_handle_messages(void)
 {
   while (1) {
     XBT_DEBUG("Waiting messages from model-checker");
-    s_mc_message_t message;
-    if (recv(mc_client.fd, &message, sizeof(message), 0) == -1)
+
+    char message_buffer[MC_MESSAGE_LENGTH];
+    size_t s;
+    if ((s = recv(mc_client.fd, &message_buffer, sizeof(message_buffer), 0)) == -1)
       xbt_die("Could not receive commands from the model-checker: %s",
         strerror(errno));
+
     XBT_DEBUG("Receive message from model-checker");
+    s_mc_message_t message;
+    if (s < sizeof(message))
+      xbt_die("Message is too short");
+    memcpy(&message, message_buffer, sizeof(message));
     switch (message.type) {
     case MC_MESSAGE_CONTINUE:
       return;

@@ -143,6 +143,10 @@ void s_mc_server::handle_events()
       if (size == -1 && errno != EAGAIN)
         throw std::system_error(errno, std::system_category());
       else switch(message.type) {
+      case MC_MESSAGE_IGNORE_REGION:
+        XBT_DEBUG("Received ignored region");
+        // Ignored for now
+        break;
       default:
         xbt_die("Unexpected message from model-checked application");
       }

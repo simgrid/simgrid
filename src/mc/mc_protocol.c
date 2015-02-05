@@ -13,21 +13,26 @@
 #include <xbt/log.h>
 
 #include "mc_protocol.h"
+#include "mc_client.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_protocol, mc, "Generic MC protocol logic");
 
-int MC_protocol_send_simple_message(int socket, int type)
+int MC_protocol_send(int socket, void* message, size_t size)
 {
-  s_mc_message_t message;
-  message.type = type;
-
-  while (send(socket, &message, sizeof(message), 0) == -1) {
+  while (send(socket, message, size, 0) == -1) {
     if (errno == EINTR)
       continue;
     else
       return errno;
   }
   return 0;
+}
+
+int MC_protocol_send_simple_message(int socket, int type)
+{
+  s_mc_message_t message;
+  message.type = type;
+  return MC_protocol_send(socket, &message, sizeof(message));
 }
 
 int MC_protocol_hello(int socket)
@@ -41,7 +46,8 @@ int MC_protocol_hello(int socket)
   s_mc_message_t message;
   message.type = MC_MESSAGE_NONE;
 
-  while (recv(socket, &message, sizeof(message), 0) == -1) {
+  size_t s;
+  while ((s = recv(socket, &message, sizeof(message), 0)) == -1) {
     if (errno == EINTR)
       continue;
     else {
@@ -49,7 +55,7 @@ int MC_protocol_hello(int socket)
       return 2;
     }
   }
-  if (message.type != MC_MESSAGE_HELLO) {
+  if (s < sizeof(message) || message.type != MC_MESSAGE_HELLO) {
     XBT_ERROR("Did not receive suitable HELLO message. Who are you?");
     return 3;
   }
