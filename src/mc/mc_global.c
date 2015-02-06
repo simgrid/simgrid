@@ -730,25 +730,6 @@ void MC_print_statistics(mc_stats_t stats)
   mmalloc_set_current_heap(previous_heap);
 }
 
-void MC_assert(int prop)
-{
-  if (MC_is_active() && !prop) {
-    XBT_INFO("**************************");
-    XBT_INFO("*** PROPERTY NOT VALID ***");
-    XBT_INFO("**************************");
-    XBT_INFO("Counter-example execution trace:");
-    MC_record_dump_path(mc_stack);
-    MC_dump_stack_safety(mc_stack);
-    MC_print_statistics(mc_stats);
-    xbt_abort();
-  }
-}
-
-void MC_cut(void)
-{
-  user_max_depth_reached = 1;
-}
-
 void MC_automaton_load(const char *file)
 {
 

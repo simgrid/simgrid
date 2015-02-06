@@ -643,6 +643,7 @@ set(MC_SRC
   src/mc/mc_memory_map.h
   src/mc/memory_map.c
   src/mc/mc_client.c
+  src/mc/mc_client_api.c
   src/mc/mc_client.h
   src/mc/mc_protocol.h
   src/mc/mc_protocol.c

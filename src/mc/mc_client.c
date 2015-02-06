@@ -92,21 +92,3 @@ void MC_client_handle_messages(void)
     }
   }
 }
-
-void MC_ignore(void* addr, size_t size)
-{
-  if (mc_mode == MC_MODE_CLIENT) {
-    s_mc_ignore_memory_message_t message;
-    message.type = MC_MESSAGE_IGNORE_MEMORY;
-    message.addr = addr;
-    message.size = size;
-    MC_client_send_message(&message, sizeof(message));
-  }
-
-  // TODO, remove this once the migration has been completed
-  int raw_mem_set = (mmalloc_get_current_heap() == mc_heap);
-  MC_SET_MC_HEAP;
-  MC_process_ignore_memory(&mc_model_checker->process, addr, size);
-  if (!raw_mem_set)
-    MC_SET_STD_HEAP;
-}

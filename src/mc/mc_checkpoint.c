@@ -844,8 +844,3 @@ mc_snapshot_t simcall_HANDLER_mc_snapshot(smx_simcall_t simcall)
 {
   return MC_take_snapshot(1);
 }
-
-void *MC_snapshot(void)
-{
-  return simcall_mc_snapshot();
-}
