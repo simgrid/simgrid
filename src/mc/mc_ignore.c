@@ -18,6 +18,9 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_ignore, mc,
 
 
 /**************************** Global variables ******************************/
+// Those structures live with the MCer and should be moved in the model_checker
+// structure but they are currently used before the MC initialisation
+// (in standalone mode).
 
 extern xbt_dynar_t mc_heap_comparison_ignore;
 extern xbt_dynar_t stacks_areas;
