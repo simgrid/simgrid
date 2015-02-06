@@ -60,7 +60,6 @@ extern "C" {
 static void stack_region_free(stack_region_t s)
 {
   if (s) {
-    xbt_free(s->process_name);
     xbt_free(s);
   }
 }

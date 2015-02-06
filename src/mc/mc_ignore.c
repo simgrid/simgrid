@@ -346,6 +346,13 @@ void MC_ignore_local_variable(const char *var_name, const char *frame_name)
 
 }
 
+void MC_stack_area_add(stack_region_t stack_area)
+{
+  if (stacks_areas == NULL)
+    stacks_areas = xbt_dynar_new(sizeof(stack_region_t), NULL);
+  xbt_dynar_push(stacks_areas, &stack_area);
+}
+
 /** @brief Register a stack in the model checker
  *
  *  The stacks are allocated in the heap. The MC handle them especially
@@ -361,16 +368,10 @@ void MC_new_stack_area(void *stack, smx_process_t process, void *context, size_t
 {
 
   int raw_mem_set = (mmalloc_get_current_heap() == mc_heap);
-
   MC_SET_MC_HEAP;
 
-  if (stacks_areas == NULL)
-    stacks_areas = xbt_dynar_new(sizeof(stack_region_t), NULL);
-
-  stack_region_t region = NULL;
-  region = xbt_new0(s_stack_region_t, 1);
+  stack_region_t region = xbt_new0(s_stack_region_t, 1);
   region->address = stack;
-  region->process_name = process && process->name ? strdup(process->name) : NULL;
   region->context = context;
   region->size = size;
   region->block =
@@ -383,7 +384,14 @@ void MC_new_stack_area(void *stack, smx_process_t process, void *context, size_t
 #endif
   region->process_index = -1;
 
-  xbt_dynar_push(stacks_areas, &region);
+  if (mc_mode == MC_MODE_CLIENT) {
+    s_mc_stack_region_message_t message;
+    message.type = MC_MESSAGE_STACK_REGION;
+    message.stack_region = *region;
+    MC_client_send_message(&message, sizeof(message));
+  }
+
+  MC_stack_area_add(region);
 
   if (!raw_mem_set)
     MC_SET_STD_HEAP;

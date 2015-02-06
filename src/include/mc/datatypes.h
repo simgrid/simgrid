@@ -31,7 +31,6 @@ typedef struct s_mc_heap_ignore_region{
 
 typedef struct s_stack_region{
   void *address;
-  char *process_name;
   void *context;
   size_t size;
   int block;
