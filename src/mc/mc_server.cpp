@@ -152,9 +152,16 @@ void s_mc_server::handle_events()
 
       switch(base_message.type) {
 
-      case MC_MESSAGE_IGNORE_REGION:
+      case MC_MESSAGE_IGNORE_HEAP:
         XBT_DEBUG("Received ignored region");
-        if (size != sizeof(s_mc_ignore_region_message_t))
+        if (size != sizeof(s_mc_ignore_heap_message_t))
+          xbt_die("Broken messsage");
+        // TODO, handle the message
+        break;
+
+      case MC_MESSAGE_UNIGNORE_HEAP:
+        XBT_DEBUG("Received unignored region");
+        if (size != sizeof(s_mc_ignore_memory_message_t))
           xbt_die("Broken messsage");
         // TODO, handle the message
         break;

@@ -111,8 +111,8 @@ void MC_heap_region_ignore_insert(mc_heap_ignore_region_t region)
 
 void MC_heap_region_ignore_send(mc_heap_ignore_region_t region)
 {
-  s_mc_ignore_region_message_t message;
-  message.type = MC_MESSAGE_IGNORE_REGION;
+  s_mc_ignore_heap_message_t message;
+  message.type = MC_MESSAGE_IGNORE_HEAP;
   message.region = *region;
   if (MC_protocol_send(mc_client->fd, &message, sizeof(message)))
     xbt_die("Could not send ignored region to MCer");
@@ -122,14 +122,10 @@ void MC_heap_region_ignore_send(mc_heap_ignore_region_t region)
 // FIXME, cross-process support? (or make this it is used on the app-side)
 void MC_ignore_heap(void *address, size_t size)
 {
-  if(!std_heap)
-    return;
-
   int raw_mem_set = (mmalloc_get_current_heap() == mc_heap);
   MC_SET_MC_HEAP;
 
-  mc_heap_ignore_region_t region = NULL;
-  region = xbt_new0(s_mc_heap_ignore_region_t, 1);
+  mc_heap_ignore_region_t region = xbt_new0(s_mc_heap_ignore_region_t, 1);
   region->address = address;
   region->size = size;
 
@@ -160,6 +156,13 @@ void MC_ignore_heap(void *address, size_t size)
 
 void MC_remove_ignore_heap(void *address, size_t size)
 {
+  if (mc_mode == MC_MODE_CLIENT) {
+    s_mc_ignore_memory_message_t message;
+    message.type = MC_MESSAGE_UNIGNORE_HEAP;
+    message.addr = address;
+    message.size = size;
+    MC_client_send_message(&message, sizeof(message));
+  }
 
   int raw_mem_set = (mmalloc_get_current_heap() == mc_heap);
 

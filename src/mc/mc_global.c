@@ -178,18 +178,13 @@ void MC_init_pid(pid_t pid, int socket)
     /* SIMIX */
     MC_ignore_global_variable("smx_total_comms");
 
-    MC_ignore_heap(mc_time, simix_process_maxpid * sizeof(double));
-
-    smx_process_t process;
-    // FIXME, cross-process support (simix_global->process_list)
-
     if (mc_mode == MC_MODE_STANDALONE || mc_mode == MC_MODE_CLIENT) {
+      MC_ignore_heap(mc_time, simix_process_maxpid * sizeof(double));
+      smx_process_t process;
       xbt_swag_foreach(process, simix_global->process_list) {
         MC_ignore_heap(&(process->process_hookup),
                        sizeof(process->process_hookup));
                        }
-    } else {
-      // TODO
     }
   }
 

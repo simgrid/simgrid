@@ -37,11 +37,12 @@ extern e_mc_mode_t mc_mode;
 // ***** Messages
 
 typedef enum {
-  MC_MESSAGE_NONE = 0,
-  MC_MESSAGE_HELLO = 1,
-  MC_MESSAGE_CONTINUE = 2,
-  MC_MESSAGE_IGNORE_REGION = 3,
-  MC_MESSAGE_IGNORE_MEMORY = 4,
+  MC_MESSAGE_NONE,
+  MC_MESSAGE_HELLO,
+  MC_MESSAGE_CONTINUE,
+  MC_MESSAGE_IGNORE_HEAP,
+  MC_MESSAGE_UNIGNORE_HEAP,
+  MC_MESSAGE_IGNORE_MEMORY,
 } e_mc_message_type;
 
 #define MC_MESSAGE_LENGTH 512
@@ -62,10 +63,10 @@ typedef struct s_mc_message {
   e_mc_message_type type;
 } s_mc_message_t, *mc_message_t;
 
-typedef struct s_mc_ignore_region_message {
+typedef struct s_mc_ignore_heap_message {
   e_mc_message_type type;
   s_mc_heap_ignore_region_t region;
-} s_mc_ignore_region_message_t, *mc_ignore_region_message_t;
+} s_mc_ignore_heap_message_t, *mc_ignore_heap_message_t;
 
 typedef struct s_mc_ignore_memory_message {
   e_mc_message_type type;
