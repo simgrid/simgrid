@@ -99,26 +99,6 @@ static void MC_init_dot_output()
 
 }
 
-mc_model_checker_t mc_model_checker = NULL;
-
-mc_model_checker_t MC_model_checker_new(pid_t pid, int socket)
-{
-  mc_model_checker_t mc = xbt_new0(s_mc_model_checker_t, 1);
-  mc->pages = mc_pages_store_new();
-  mc->fd_clear_refs = -1;
-  mc->fd_pagemap = -1;
-  MC_process_init(&mc->process, pid, socket);
-  return mc;
-}
-
-void MC_model_checker_delete(mc_model_checker_t mc)
-{
-  mc_pages_store_delete(mc->pages);
-  if(mc->record)
-    xbt_dynar_free(&mc->record);
-  MC_process_clear(&mc->process);
-}
-
 void MC_init()
 {
   MC_init_pid(getpid(), -1);

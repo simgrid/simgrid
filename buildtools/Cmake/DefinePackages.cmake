@@ -604,6 +604,7 @@ set(MC_SRC
   src/mc/mc_unw_vmread.c
   src/mc/mc_mmalloc.h
   src/mc/mc_model_checker.h
+  src/mc/mc_model_checker.c
   src/mc/mc_object_info.h
   src/mc/mc_object_info.c
   src/mc/mc_checkpoint.c

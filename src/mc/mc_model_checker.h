@@ -13,6 +13,7 @@
 
 #include "mc_forward.h"
 #include "mc_process.h"
+#include "mc_page_store.h"
 
 SG_BEGIN_DECL()
 
