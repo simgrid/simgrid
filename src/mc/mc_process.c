@@ -21,12 +21,18 @@
 #include "mc_object_info.h"
 #include "mc_address_space.h"
 #include "mc_unw.h"
+#include "mc_snapshot.h"
+#include "mc_ignore.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_process, mc,
                                 "MC process information");
 
 static void MC_process_init_memory_map_info(mc_process_t process);
 static void MC_process_open_memory_file(mc_process_t process);
+
+// ***** Destructor callbacks
+
+// ***** mc_address_space methods for mc_process
 
 static mc_process_t MC_process_get_process(mc_process_t p) {
   return p;
@@ -41,6 +47,8 @@ bool MC_is_process(mc_address_space_t p)
 {
   return p->address_space_class == &mc_process_class;
 }
+
+// ***** mc_process
 
 void MC_process_init(mc_process_t process, pid_t pid, int sockfd)
 {
@@ -70,6 +78,8 @@ void MC_process_init(mc_process_t process, pid_t pid, int sockfd)
     &process->heap_address, std_heap_var->address, sizeof(struct mdesc*),
     MC_PROCESS_INDEX_DISABLED);
 
+  process->checkpoint_ignore = MC_checkpoint_ignore_new();
+
   process->unw_addr_space = unw_create_addr_space(&mc_unw_accessors  , __BYTE_ORDER);
   if (process->process_flags & MC_PROCESS_SELF_FLAG) {
     process->unw_underlying_addr_space = unw_local_addr_space;
@@ -91,6 +101,8 @@ void MC_process_clear(mc_process_t process)
 
   process->maestro_stack_start = NULL;
   process->maestro_stack_end = NULL;
+
+  xbt_dynar_free(&process->checkpoint_ignore);
 
   size_t i;
   for (i=0; i!=process->object_infos_size; ++i) {

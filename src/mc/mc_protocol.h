@@ -23,6 +23,17 @@ SG_BEGIN_DECL()
 /** Environment variable name used to pass the communication socket */
 #define MC_ENV_SOCKET_FD "SIMGRID_MC_SOCKET_FD"
 
+// ***** MC mode
+
+typedef enum {
+  MC_MODE_NONE = 0,
+  MC_MODE_STANDALONE,
+  MC_MODE_CLIENT,
+  MC_MODE_SERVER
+} e_mc_mode_t;
+
+extern e_mc_mode_t mc_mode;
+
 // ***** Messages
 
 typedef enum {
@@ -30,6 +41,7 @@ typedef enum {
   MC_MESSAGE_HELLO = 1,
   MC_MESSAGE_CONTINUE = 2,
   MC_MESSAGE_IGNORE_REGION = 3,
+  MC_MESSAGE_IGNORE_MEMORY = 4,
 } e_mc_message_type;
 
 #define MC_MESSAGE_LENGTH 512
@@ -54,6 +66,12 @@ typedef struct s_mc_ignore_region_message {
   e_mc_message_type type;
   s_mc_heap_ignore_region_t region;
 } s_mc_ignore_region_message_t, *mc_ignore_region_message_t;
+
+typedef struct s_mc_ignore_memory_message {
+  e_mc_message_type type;
+  void *addr;
+  size_t size;
+} s_mc_ignore_memory_message_t, *mc_ignore_memory_message_t;
 
 int MC_protocol_send(int socket, void* message, size_t size);
 int MC_protocol_send_simple_message(int socket, int type);

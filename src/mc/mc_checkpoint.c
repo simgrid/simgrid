@@ -599,7 +599,7 @@ static void MC_snapshot_handle_ignore(mc_snapshot_t snapshot)
   unsigned int cursor = 0;
   mc_checkpoint_ignore_region_t region;
   // FIXME, cross-process support (mc_checkpoint_ignore)
-  xbt_dynar_foreach (mc_checkpoint_ignore, cursor, region) {
+  xbt_dynar_foreach (mc_model_checker->process.checkpoint_ignore, cursor, region) {
     s_mc_snapshot_ignored_data_t ignored_data;
     ignored_data.start = region->addr;
     ignored_data.size = region->size;
@@ -612,7 +612,7 @@ static void MC_snapshot_handle_ignore(mc_snapshot_t snapshot)
   }
 
   // Zero the memory:
-  xbt_dynar_foreach (mc_checkpoint_ignore, cursor, region) {
+  xbt_dynar_foreach (mc_model_checker->process.checkpoint_ignore, cursor, region) {
     MC_process_clear_memory(snapshot->process, region->addr, region->size);
   }
 

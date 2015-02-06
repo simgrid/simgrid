@@ -41,10 +41,6 @@ SG_BEGIN_DECL()
 
 typedef struct s_mc_function_index_item s_mc_function_index_item_t, *mc_function_index_item_t;
 
-/****************************** Snapshots ***********************************/
-
-extern xbt_dynar_t mc_checkpoint_ignore;
-
 /********************************* MC Global **********************************/
 
 /** Initialisation of the model-checker

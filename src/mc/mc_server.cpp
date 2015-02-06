@@ -19,6 +19,7 @@
 #include "mc_protocol.h"
 #include "mc_server.h"
 #include "mc_private.h"
+#include "mc_ignore.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_server, mc, "MC server logic");
 
@@ -124,7 +125,7 @@ void throw_socket_error(int fd)
 
 void s_mc_server::handle_events()
 {
-  s_mc_message_t message;
+  char buffer[MC_MESSAGE_LENGTH];
   struct pollfd* socket_pollfd = &fds[SOCKET_FD_INDEX];
   struct pollfd* signalfd_pollfd = &fds[SIGNAL_FD_INDEX];
 
@@ -139,16 +140,40 @@ void s_mc_server::handle_events()
 
   if (socket_pollfd->revents) {
     if (socket_pollfd->revents & POLLIN) {
-      ssize_t size = recv(socket_pollfd->fd, &message, sizeof(message), MSG_DONTWAIT);
+
+      ssize_t size = recv(socket_pollfd->fd, buffer, sizeof(buffer), MSG_DONTWAIT);
       if (size == -1 && errno != EAGAIN)
         throw std::system_error(errno, std::system_category());
-      else switch(message.type) {
+
+      s_mc_message_t base_message;
+      if (size < (ssize_t) sizeof(base_message))
+        xbt_die("Broken message");
+      memcpy(&base_message, buffer, sizeof(base_message));
+
+      switch(base_message.type) {
+
       case MC_MESSAGE_IGNORE_REGION:
         XBT_DEBUG("Received ignored region");
-        // Ignored for now
+        if (size != sizeof(s_mc_ignore_region_message_t))
+          xbt_die("Broken messsage");
+        // TODO, handle the message
         break;
+
+      case MC_MESSAGE_IGNORE_MEMORY:
+        {
+          XBT_DEBUG("Received ignored memory");
+          if (size != sizeof(s_mc_ignore_memory_message_t))
+            xbt_die("Broken messsage");
+          s_mc_ignore_memory_message_t message;
+          memcpy(&message, buffer, sizeof(message));
+          MC_process_ignore_memory(&mc_model_checker->process,
+            message.addr, message.size);
+        }
+        break;
+
       default:
         xbt_die("Unexpected message from model-checked application");
+
       }
       return;
     }

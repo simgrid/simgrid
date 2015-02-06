@@ -102,6 +102,8 @@ struct s_mc_process {
   /** The corresponding context
    */
   void* unw_underlying_context;
+
+  xbt_dynar_t checkpoint_ignore;
 };
 
 bool MC_is_process(mc_address_space_t p);

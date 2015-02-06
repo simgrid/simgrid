@@ -17,15 +17,6 @@
 
 SG_BEGIN_DECL()
 
-typedef enum {
-  MC_MODE_NONE = 0,
-  MC_MODE_STANDALONE,
-  MC_MODE_CLIENT,
-  MC_MODE_SERVER
-} e_mc_mode_t;
-
-extern e_mc_mode_t mc_mode;
-
 /** @brief State of the model-checker (global variables for the model checker)
  *
  *  Each part of the state of the model chercker represented as a global

@@ -18,7 +18,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_ignore, mc,
 
 
 /**************************** Global variables ******************************/
-xbt_dynar_t mc_checkpoint_ignore;
+
 extern xbt_dynar_t mc_heap_comparison_ignore;
 extern xbt_dynar_t stacks_areas;
 
@@ -62,19 +62,21 @@ static void checkpoint_ignore_region_free_voidp(void *r)
   checkpoint_ignore_region_free((mc_checkpoint_ignore_region_t) * (void **) r);
 }
 
+xbt_dynar_t MC_checkpoint_ignore_new(void)
+{
+  return xbt_dynar_new(sizeof(mc_checkpoint_ignore_region_t),
+                        checkpoint_ignore_region_free_voidp);
+}
+
 /***********************************************************************/
 
 void MC_heap_region_ignore_insert(mc_heap_ignore_region_t region)
 {
-  int raw_mem_set = (mmalloc_get_current_heap() == mc_heap);
-
   if (mc_heap_comparison_ignore == NULL) {
     mc_heap_comparison_ignore =
         xbt_dynar_new(sizeof(mc_heap_ignore_region_t),
                       heap_ignore_region_free_voidp);
     xbt_dynar_push(mc_heap_comparison_ignore, &region);
-    if (!raw_mem_set)
-      MC_SET_STD_HEAP;
     return;
   }
 
@@ -92,8 +94,6 @@ void MC_heap_region_ignore_insert(mc_heap_ignore_region_t region)
                                                    mc_heap_ignore_region_t);
     if (current_region->address == region->address) {
       heap_ignore_region_free(region);
-      if (!raw_mem_set)
-        MC_SET_STD_HEAP;
       return;
     } else if (current_region->address < region->address) {
       start = cursor + 1;
@@ -107,9 +107,6 @@ void MC_heap_region_ignore_insert(mc_heap_ignore_region_t region)
     xbt_dynar_insert_at(mc_heap_comparison_ignore, cursor + 1, &region);
   else
     xbt_dynar_insert_at(mc_heap_comparison_ignore, cursor, &region);
-
-  if (!raw_mem_set)
-    MC_SET_STD_HEAP;
 }
 
 void MC_heap_region_ignore_send(mc_heap_ignore_region_t region)
@@ -129,7 +126,6 @@ void MC_ignore_heap(void *address, size_t size)
     return;
 
   int raw_mem_set = (mmalloc_get_current_heap() == mc_heap);
-
   MC_SET_MC_HEAP;
 
   mc_heap_ignore_region_t region = NULL;
@@ -387,44 +383,32 @@ void MC_new_stack_area(void *stack, smx_process_t process, void *context, size_t
     MC_SET_STD_HEAP;
 }
 
-void MC_ignore(void *addr, size_t size)
+void MC_process_ignore_memory(mc_process_t process, void *addr, size_t size)
 {
-
-  int raw_mem_set = (mmalloc_get_current_heap() == mc_heap);
-
-  MC_SET_MC_HEAP;
-
-  // FIXME, cross-process support
-  if (mc_checkpoint_ignore == NULL)
-    mc_checkpoint_ignore =
-        xbt_dynar_new(sizeof(mc_checkpoint_ignore_region_t),
-                      checkpoint_ignore_region_free_voidp);
-
+  xbt_dynar_t checkpoint_ignore = process->checkpoint_ignore;
   mc_checkpoint_ignore_region_t region =
       xbt_new0(s_mc_checkpoint_ignore_region_t, 1);
   region->addr = addr;
   region->size = size;
 
-  if (xbt_dynar_is_empty(mc_checkpoint_ignore)) {
-    xbt_dynar_push(mc_checkpoint_ignore, &region);
+  if (xbt_dynar_is_empty(checkpoint_ignore)) {
+    xbt_dynar_push(checkpoint_ignore, &region);
   } else {
 
     unsigned int cursor = 0;
     int start = 0;
-    int end = xbt_dynar_length(mc_checkpoint_ignore) - 1;
+    int end = xbt_dynar_length(checkpoint_ignore) - 1;
     mc_checkpoint_ignore_region_t current_region = NULL;
 
     while (start <= end) {
       cursor = (start + end) / 2;
       current_region =
-          (mc_checkpoint_ignore_region_t) xbt_dynar_get_as(mc_checkpoint_ignore,
+          (mc_checkpoint_ignore_region_t) xbt_dynar_get_as(checkpoint_ignore,
                                                            cursor,
                                                            mc_checkpoint_ignore_region_t);
       if (current_region->addr == addr) {
         if (current_region->size == size) {
           checkpoint_ignore_region_free(region);
-          if (!raw_mem_set)
-            MC_SET_STD_HEAP;
           return;
         } else if (current_region->size < size) {
           start = cursor + 1;
@@ -440,17 +424,14 @@ void MC_ignore(void *addr, size_t size)
 
     if (current_region->addr == addr) {
       if (current_region->size < size) {
-        xbt_dynar_insert_at(mc_checkpoint_ignore, cursor + 1, &region);
+        xbt_dynar_insert_at(checkpoint_ignore, cursor + 1, &region);
       } else {
-        xbt_dynar_insert_at(mc_checkpoint_ignore, cursor, &region);
+        xbt_dynar_insert_at(checkpoint_ignore, cursor, &region);
       }
     } else if (current_region->addr < addr) {
-      xbt_dynar_insert_at(mc_checkpoint_ignore, cursor + 1, &region);
+      xbt_dynar_insert_at(checkpoint_ignore, cursor + 1, &region);
     } else {
-      xbt_dynar_insert_at(mc_checkpoint_ignore, cursor, &region);
+      xbt_dynar_insert_at(checkpoint_ignore, cursor, &region);
     }
   }
-
-  if (!raw_mem_set)
-    MC_SET_STD_HEAP;
 }
