@@ -77,6 +77,8 @@ void reset_heap_information(void);
 size_t mmalloc_get_bytes_used(xbt_mheap_t);
 ssize_t mmalloc_get_busy_size(xbt_mheap_t, void *ptr);
 
+void* malloc_no_memset(size_t n);
+
 SG_END_DECL()
 
 #endif

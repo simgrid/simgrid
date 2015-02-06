@@ -84,6 +84,22 @@ static void __attribute__((constructor(101))) mm_legacy_constructor()
   }
 }
 
+void* malloc_no_memset(size_t n)
+{
+  if (!__malloc_use_mmalloc) {
+    return mm_real_malloc(n);
+  }
+
+  xbt_mheap_t mdp = GET_HEAP();
+  if (!mdp)
+    return NULL;
+
+  LOCK(mdp);
+  void *ret = mmalloc_no_memset(mdp, n);
+  UNLOCK(mdp);
+  return ret;
+}
+
 void *malloc(size_t n)
 {
   if (!__malloc_use_mmalloc) {

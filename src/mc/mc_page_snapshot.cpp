@@ -208,7 +208,7 @@ mc_mem_region_t mc_region_new_sparse(mc_region_type_t region_type,
   uint64_t* pagemap = NULL;
   if (_sg_mc_soft_dirty && mc_model_checker->parent_snapshot &&
       MC_process_is_self(process)) {
-      pagemap = (uint64_t*) mmalloc_no_memset(mc_heap, sizeof(uint64_t) * page_count);
+      pagemap = (uint64_t*) malloc_no_memset(sizeof(uint64_t) * page_count);
       mc_read_pagemap(pagemap, mc_page_number(NULL, permanent_addr), page_count);
   }
 
@@ -237,7 +237,7 @@ void mc_region_restore_sparse(mc_process_t process, mc_mem_region_t reg, mc_mem_
   // Read soft-dirty bits if necessary in order to know which pages have changed:
   if (_sg_mc_soft_dirty && mc_model_checker->parent_snapshot
       && MC_process_is_self(process)) {
-    pagemap = (uint64_t*) mmalloc_no_memset(mc_heap, sizeof(uint64_t) * page_count);
+    pagemap = (uint64_t*) malloc_no_memset(sizeof(uint64_t) * page_count);
     mc_read_pagemap(pagemap, mc_page_number(NULL, reg->permanent_addr), page_count);
   }
 

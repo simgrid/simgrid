@@ -46,6 +46,6 @@ void MC_memory_init()
 #include "xbt_modinter.h"
 void MC_memory_exit(void)
 {
-  if (mc_heap)
+  if (mc_heap && mc_heap != std_heap)
     xbt_mheap_destroy(mc_heap);
 }

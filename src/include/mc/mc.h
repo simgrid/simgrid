@@ -86,6 +86,7 @@ XBT_PUBLIC(void) MC_new_stack_area(void *stack, smx_process_t process, void *con
 /********************************* Memory *************************************/
 XBT_PUBLIC(void) MC_memory_init(void);  /* Initialize the memory subsystem */
 XBT_PUBLIC(void) MC_memory_exit(void);
+XBT_PUBLIC(void) MC_memory_init_server(void);
 
 SG_END_DECL()
 

@@ -17,6 +17,8 @@
 #include <libunwind.h>
 #include <libunwind-ptrace.h>
 
+#include <xbt/mmalloc.h>
+
 #include "mc_process.h"
 #include "mc_object_info.h"
 #include "mc_address_space.h"
