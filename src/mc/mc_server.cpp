@@ -153,30 +153,41 @@ void s_mc_server::handle_events()
       switch(base_message.type) {
 
       case MC_MESSAGE_IGNORE_HEAP:
-        XBT_DEBUG("Received ignored region");
-        if (size != sizeof(s_mc_ignore_heap_message_t))
-          xbt_die("Broken messsage");
-        // TODO, handle the message
-        break;
+        {
+          XBT_DEBUG("Received ignored region");
+          s_mc_ignore_heap_message_t message;
+          if (size != sizeof(message))
+            xbt_die("Broken messsage");
+          memcpy(&message, buffer, sizeof(message));
+          mc_heap_ignore_region_t region = xbt_new(s_mc_heap_ignore_region_t, 1);
+          *region = message.region;
+          MC_heap_region_ignore_insert(region);
+          break;
+        }
+
 
       case MC_MESSAGE_UNIGNORE_HEAP:
-        XBT_DEBUG("Received unignored region");
-        if (size != sizeof(s_mc_ignore_memory_message_t))
-          xbt_die("Broken messsage");
-        // TODO, handle the message
-        break;
+        {
+          XBT_DEBUG("Received unignored region");
+          s_mc_ignore_memory_message_t message;
+          if (size != sizeof(message))
+            xbt_die("Broken messsage");
+          memcpy(&message, buffer, sizeof(message));
+          MC_remove_ignore_heap(message.addr, message.size);
+          break;
+        }
 
       case MC_MESSAGE_IGNORE_MEMORY:
         {
           XBT_DEBUG("Received ignored memory");
-          if (size != sizeof(s_mc_ignore_memory_message_t))
-            xbt_die("Broken messsage");
           s_mc_ignore_memory_message_t message;
+          if (size != sizeof(message))
+            xbt_die("Broken messsage");
           memcpy(&message, buffer, sizeof(message));
           MC_process_ignore_memory(&mc_model_checker->process,
             message.addr, message.size);
+          break;
         }
-        break;
 
       case MC_MESSAGE_STACK_REGION:
         {
