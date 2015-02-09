@@ -216,9 +216,8 @@ void MC_init()
 
     smx_process_t process;
     xbt_swag_foreach(process, simix_global->process_list) {
-      MC_ignore_heap(&(process->process_hookup),
-                     sizeof(process->process_hookup));
-                     }
+      MC_ignore_heap(&(process->process_hookup), sizeof(process->process_hookup));
+    }
   }
 
   if (raw_mem_set)
