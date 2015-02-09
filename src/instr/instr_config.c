@@ -360,6 +360,10 @@ char *TRACE_get_viva_cat_conf (void)
 
 void TRACE_global_init(int *argc, char **argv)
 {
+  static int is_initialised = 0;
+  if (is_initialised) return;
+
+  is_initialised = 1;
   /* name of the tracefile */
   xbt_cfg_register(&_sg_cfg_set, OPT_TRACING_FILENAME,
                    "Trace file created by the instrumented SimGrid.",
@@ -484,7 +488,7 @@ void TRACE_global_init(int *argc, char **argv)
 
   /* format -- Switch the ouput format of Tracing */
   xbt_cfg_register(&_sg_cfg_set, OPT_TRACING_FORMAT,
-                   "(smpi only for now) Switch the ouput format of Tracing",
+                   "(smpi only for now) Switch the output format of Tracing",
                    xbt_cfgelm_string, 1, 1, NULL, NULL);
   xbt_cfg_setdefault_string(_sg_cfg_set, OPT_TRACING_FORMAT, "Paje");
 
