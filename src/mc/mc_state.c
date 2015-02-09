@@ -68,7 +68,16 @@ mc_state_t MC_state_new()
   state->proc_status = xbt_new0(s_mc_procstate_t, state->max_pid);
   state->system_state = NULL;
   state->num = ++mc_stats->expanded_states;
-
+  state->in_visited_states = 0;
+  state->incomplete_comm_pattern = NULL;
+  /* Stateful model checking */
+  if(_sg_mc_checkpoint > 0 && mc_stats->expanded_states % _sg_mc_checkpoint == 0){
+    state->system_state = MC_take_snapshot(state->num);
+    if(_sg_mc_comms_determinism || _sg_mc_send_determinism){
+      copy_incomplete_communications_pattern(state);
+      copy_index_communications_pattern(state);
+    }
+  }
   return state;
 }
 
@@ -76,10 +85,14 @@ mc_state_t MC_state_new()
  * \brief Deletes a state data structure
  * \param trans The state to be deleted
  */
-void MC_state_delete(mc_state_t state)
-{
-  if (state->system_state)
+void MC_state_delete(mc_state_t state, int free_snapshot){
+  if (state->system_state && free_snapshot){
     MC_free_snapshot(state->system_state);
+  }
+  if(_sg_mc_comms_determinism || _sg_mc_send_determinism){
+    xbt_free(state->index_comm);
+    xbt_free(state->incomplete_comm_pattern);
+  }
   xbt_free(state->proc_status);
   xbt_free(state);
 }
