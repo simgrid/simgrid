@@ -208,20 +208,25 @@ int get_search_interval(xbt_dynar_t list, void *ref, int *min, int *max)
  * \brief Checks whether a given state has already been visited by the algorithm.
  */
 
-mc_visited_state_t is_visited_state()
+mc_visited_state_t is_visited_state(mc_state_t graph_state)
 {
 
   if (_sg_mc_visited == 0)
     return NULL;
 
+  int partial_comm = 0;
+
   /* If comm determinism verification, we cannot stop the exploration if some 
      communications are not finished (at least, data are transfered). These communications 
-     are incomplete and they cannot be analyzed and compared with the initial pattern */
+     are incomplete and they cannot be analyzed and compared with the initial pattern. */
   if (_sg_mc_comms_determinism || _sg_mc_send_determinism) {
     int current_process = 1;
     while (current_process < simix_process_maxpid) {
-      if (!xbt_dynar_is_empty((xbt_dynar_t)xbt_dynar_get_as(incomplete_communications_pattern, current_process, xbt_dynar_t)))
-        return NULL;
+      if (!xbt_dynar_is_empty((xbt_dynar_t)xbt_dynar_get_as(incomplete_communications_pattern, current_process, xbt_dynar_t))){
+        XBT_DEBUG("Some communications are not finished, cannot stop the exploration ! State not visited.");
+        partial_comm = 1;
+        break;
+      }
       current_process++;
     }
   }
