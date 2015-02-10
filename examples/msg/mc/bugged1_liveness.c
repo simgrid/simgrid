@@ -26,14 +26,6 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(bugged1_liveness, "my log messages");
 int r=0; 
 int cs=0;
 
-int predR(){
-  return r;
-}
-
-int predCS(){
-  return cs;
-}
-
 #ifdef GARBAGE_STACK
 /** Do not use a clean stack */
 static void garbage_stack(void) {
@@ -165,8 +157,8 @@ int main(int argc, char *argv[])
   char **options = &argv[1];
 
   MSG_config("model-check/property","promela_bugged1_liveness");
-  MC_automaton_new_propositional_symbol("r", &predR);
-  MC_automaton_new_propositional_symbol("cs", &predCS);
+  MC_automaton_new_propositional_symbol_pointer("r", &r);
+  MC_automaton_new_propositional_symbol_pointer("cs", &cs);
 
   const char* platform_file = options[0];
   const char* application_file = options[1];

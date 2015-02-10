@@ -40,6 +40,7 @@ extern int _sg_mc_visited;
 
 XBT_PUBLIC(void) MC_assert(int);
 XBT_PUBLIC(void) MC_automaton_new_propositional_symbol(const char* id, int(*fct)(void));
+XBT_PUBLIC(void) MC_automaton_new_propositional_symbol_pointer(const char *id, int* value);
 XBT_PUBLIC(void *) MC_snapshot(void);
 XBT_PUBLIC(int) MC_compare_snapshots(void *s1, void *s2);
 XBT_PUBLIC(void) MC_cut(void);
@@ -52,6 +53,7 @@ XBT_PUBLIC(void) MC_ignore(void *addr, size_t size);
 
 #define MC_assert(a)                    xbt_assert(a)
 #define MC_automaton_new_propositional_symbol(a, b) ((void)0)
+#define MC_automaton_new_propositional_symbol_pointer(a, b) ((void)0)
 #define MC_snapshot()                   ((void*)0)
 #define MC_compare_snapshots(a, b)      0
 #define MC_cut()                        ((void)0)

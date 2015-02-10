@@ -237,6 +237,32 @@ xbt_automaton_propositional_symbol_t xbt_automaton_propositional_symbol_new(xbt_
   return prop_symb;
 }
 
+XBT_PUBLIC(xbt_automaton_propositional_symbol_t) xbt_automaton_propositional_symbol_new_pointer(xbt_automaton_t a, const char* id, int* value)
+{
+  xbt_automaton_propositional_symbol_t prop_symb = NULL;
+  prop_symb = xbt_new0(struct xbt_automaton_propositional_symbol, 1);
+  prop_symb->pred = strdup(id);
+  prop_symb->function = NULL;
+  prop_symb->data = value;
+  prop_symb->free_function = NULL;
+  xbt_dynar_push(a->propositional_symbols, &prop_symb);
+  return prop_symb;
+}
+
+XBT_PUBLIC(xbt_automaton_propositional_symbol_t) xbt_automaton_propositional_symbol_new_callback(
+  xbt_automaton_t a, const char* id,
+  int(*callback)(void*), void* data, void (*free_function)(void*))
+{
+  xbt_automaton_propositional_symbol_t prop_symb = NULL;
+  prop_symb = xbt_new0(struct xbt_automaton_propositional_symbol, 1);
+  prop_symb->pred = strdup(id);
+  prop_symb->function = callback;
+  prop_symb->data = data;
+  prop_symb->free_function = free_function;
+  xbt_dynar_push(a->propositional_symbols, &prop_symb);
+  return prop_symb;
+}
+
 int xbt_automaton_state_compare(xbt_automaton_state_t s1, xbt_automaton_state_t s2){
 
   /* single id for each state, id and type sufficient for comparison*/

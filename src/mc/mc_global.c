@@ -710,6 +710,15 @@ void MC_automaton_new_propositional_symbol(const char *id, int(*fct)(void))
   mmalloc_set_current_heap(heap);
 }
 
+void MC_automaton_new_propositional_symbol_pointer(const char *id, int* value)
+{
+  xbt_mheap_t heap = mmalloc_set_current_heap(mc_heap);
+  if (_mc_property_automaton == NULL)
+    _mc_property_automaton = xbt_automaton_new();
+  xbt_automaton_propositional_symbol_new_pointer(_mc_property_automaton, id, value);
+  mmalloc_set_current_heap(heap);
+}
+
 void MC_dump_stacks(FILE* file)
 {
   xbt_mheap_t heap = mmalloc_set_current_heap(mc_heap);

@@ -98,6 +98,12 @@ XBT_PUBLIC(void) xbt_automaton_exp_label_display(xbt_automaton_exp_label_t l);
 
 XBT_PUBLIC(xbt_automaton_propositional_symbol_t) xbt_automaton_propositional_symbol_new(xbt_automaton_t a, const char* id, int(*fct)(void));
 
+XBT_PUBLIC(xbt_automaton_propositional_symbol_t) xbt_automaton_propositional_symbol_new_pointer(xbt_automaton_t a, const char* id, int* value);
+
+XBT_PUBLIC(xbt_automaton_propositional_symbol_t) xbt_automaton_propositional_symbol_new_callback(
+  xbt_automaton_t a, const char* id,
+  int(*callback)(void*), void* data, void (*free_function)(void*));
+
 XBT_PUBLIC(int) xbt_automaton_propositional_symbol_evaluate(xbt_automaton_propositional_symbol_t symbol);
 
 char* xbt_automaton_propositional_symbol_get_name(xbt_automaton_propositional_symbol_t symbol);
