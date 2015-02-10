@@ -454,14 +454,16 @@ void MC_replay(xbt_fifo_t stack)
   XBT_DEBUG("**** Begin Replay ****");
 
   /* Intermediate backtracking */
-  start_item = xbt_fifo_get_first_item(stack);
-  state = (mc_state_t)xbt_fifo_get_item_content(start_item);
-  if(state->system_state){
-    MC_restore_snapshot(state->system_state);
-    if(_sg_mc_comms_determinism || _sg_mc_send_determinism) 
-      MC_restore_communications_pattern(state);
-    MC_SET_STD_HEAP;
-    return;
+  if(_sg_mc_checkpoint > 0) {
+    start_item = xbt_fifo_get_first_item(stack);
+    state = (mc_state_t)xbt_fifo_get_item_content(start_item);
+    if(state->system_state){
+      MC_restore_snapshot(state->system_state);
+      if(_sg_mc_comms_determinism || _sg_mc_send_determinism) 
+        MC_restore_communications_pattern(state);
+      MC_SET_STD_HEAP;
+      return;
+    }
   }
 
 
@@ -552,12 +554,14 @@ void MC_replay_liveness(xbt_fifo_t stack)
   XBT_DEBUG("**** Begin Replay ****");
 
   /* Intermediate backtracking */
-  item = xbt_fifo_get_first_item(stack);
-  pair = (mc_pair_t) xbt_fifo_get_item_content(item);
-  if(pair->graph_state->system_state){
-    MC_restore_snapshot(pair->graph_state->system_state);
-    MC_SET_STD_HEAP;
-    return;
+  if(_sg_mc_checkpoint > 0) {
+    item = xbt_fifo_get_first_item(stack);
+    pair = (mc_pair_t) xbt_fifo_get_item_content(item);
+    if(pair->graph_state->system_state){
+      MC_restore_snapshot(pair->graph_state->system_state);
+      MC_SET_STD_HEAP;
+      return;
+    }
   }
 
   /* Restore the initial state */
