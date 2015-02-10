@@ -9,6 +9,30 @@
 #include "xbt/automaton.h"
 #include <stdio.h> /* printf */
 
+struct xbt_automaton_propositional_symbol{
+  char* pred;
+  /** Callback used to evaluate the value of the symbol */
+  int (*function)(void*);
+  /** Additional data for the callback.
+      Alternatively it can be used as a pointer to the data. */
+  void* data;
+  //** Optional callback used to free the data field */
+  void (*free_function)(void*);
+};
+
+int xbt_automaton_propositional_symbol_evaluate(xbt_automaton_propositional_symbol_t symbol)
+{
+  if (symbol->function)
+    return (symbol->function)(symbol->data);
+  else
+    return *(int*) symbol->data;
+}
+
+char* xbt_automaton_propositional_symbol_get_name(xbt_automaton_propositional_symbol_t symbol)
+{
+  return symbol->pred;
+}
+
 xbt_automaton_t xbt_automaton_new(){
   xbt_automaton_t automaton = NULL;
   automaton = xbt_new0(struct xbt_automaton, 1);
@@ -197,11 +221,18 @@ xbt_automaton_state_t xbt_automaton_get_current_state(xbt_automaton_t a){
   return a->current_state;
 }
 
-xbt_automaton_propositional_symbol_t xbt_automaton_propositional_symbol_new(xbt_automaton_t a, const char* id, void* fct){
+static int call_simple_function(void* function)
+{
+  return ((int (*)(void)) function)();
+}
+
+xbt_automaton_propositional_symbol_t xbt_automaton_propositional_symbol_new(xbt_automaton_t a, const char* id, int(*fct)(void)){
   xbt_automaton_propositional_symbol_t prop_symb = NULL;
   prop_symb = xbt_new0(struct xbt_automaton_propositional_symbol, 1);
   prop_symb->pred = strdup(id);
-  prop_symb->function = fct;
+  prop_symb->function = call_simple_function;
+  prop_symb->data = fct;
+  prop_symb->free_function = NULL;
   xbt_dynar_push(a->propositional_symbols, &prop_symb);
   return prop_symb;
 }
@@ -354,7 +385,11 @@ static void xbt_automaton_propositional_symbol_free(xbt_automaton_propositional_
 }
 
 void xbt_automaton_propositional_symbol_free_voidp(void *ps){
-  xbt_automaton_propositional_symbol_free((xbt_automaton_propositional_symbol_t) * (void **) ps);
+  xbt_automaton_propositional_symbol_t symbol = (xbt_automaton_propositional_symbol_t) * (void **) ps;
+  if (symbol->free_function)
+    symbol->free_function(symbol->data);
+  xbt_free(symbol->pred);
+  xbt_automaton_propositional_symbol_free(symbol);
 }
 
 void xbt_automaton_free(xbt_automaton_t a){

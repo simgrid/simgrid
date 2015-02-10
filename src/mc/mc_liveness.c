@@ -28,15 +28,12 @@ xbt_parmap_t parmap;
 
 static xbt_dynar_t get_atomic_propositions_values()
 {
-  int res;
-  int_f_void_t f;
   unsigned int cursor = 0;
   xbt_automaton_propositional_symbol_t ps = NULL;
   xbt_dynar_t values = xbt_dynar_new(sizeof(int), NULL);
   // FIXME, cross-process support
   xbt_dynar_foreach(_mc_property_automaton->propositional_symbols, cursor, ps) {
-    f = (int_f_void_t) ps->function;
-    res = f();
+    int res = xbt_automaton_propositional_symbol_evaluate(ps);
     xbt_dynar_push_as(values, int, res);
   }
 
@@ -185,7 +182,7 @@ static int MC_automaton_evaluate_label(xbt_automaton_exp_label_t l,
       xbt_automaton_propositional_symbol_t p = NULL;
       xbt_dynar_foreach(_mc_property_automaton->propositional_symbols, cursor,
                         p) {
-        if (strcmp(p->pred, l->u.predicat) == 0)
+        if (strcmp(xbt_automaton_propositional_symbol_get_name(p), l->u.predicat) == 0)
           return (int) xbt_dynar_get_as(atomic_propositions_values, cursor,
                                         int);
       }

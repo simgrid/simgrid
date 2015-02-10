@@ -699,7 +699,7 @@ void MC_automaton_load(const char *file)
   mmalloc_set_current_heap(heap);
 }
 
-void MC_automaton_new_propositional_symbol(const char *id, void *fct)
+void MC_automaton_new_propositional_symbol(const char *id, int(*fct)(void))
 {
   xbt_mheap_t heap = mmalloc_set_current_heap(mc_heap);
 
