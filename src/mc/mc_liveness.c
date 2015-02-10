@@ -50,7 +50,7 @@ static mc_visited_pair_t is_reached_acceptance_pair(mc_pair_t pair){
   MC_SET_MC_HEAP;
 
   mc_visited_pair_t new_pair = NULL;
-  new_pair = MC_visited_pair_new(pair->num, pair->automaton_state, pair->atomic_propositions, pair->graph_state->system_state);
+  new_pair = MC_visited_pair_new(pair->num, pair->automaton_state, pair->atomic_propositions, pair->graph_state);
   new_pair->acceptance_pair = 1;
 
   if (xbt_dynar_is_empty(acceptance_pairs)) {

@@ -42,13 +42,12 @@ typedef struct s_mc_visited_pair{
   int nb_processes;
   int acceptance_removed;
   int visited_removed;
-  int in_exploration_stack;
 } s_mc_visited_pair_t, *mc_visited_pair_t;
 
 mc_pair_t MC_pair_new(void);
 void MC_pair_delete(mc_pair_t);
 void mc_pair_free_voidp(void *p);
-mc_visited_pair_t MC_visited_pair_new(int pair_num, xbt_automaton_state_t automaton_state, xbt_dynar_t atomic_propositions, mc_snapshot_t system_state);
+mc_visited_pair_t MC_visited_pair_new(int pair_num, xbt_automaton_state_t automaton_state, xbt_dynar_t atomic_propositions, mc_state_t graph_state);
 void MC_visited_pair_delete(mc_visited_pair_t p);
 
 void MC_pre_modelcheck_liveness(void);

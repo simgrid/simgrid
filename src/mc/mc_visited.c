@@ -19,13 +19,13 @@ xbt_dynar_t visited_pairs;
 xbt_dynar_t visited_states;
 
 static int is_exploration_stack_state(mc_visited_state_t state){
-  xbt_fifo_item_t item = xbt_fifo_get_last_item(mc_stack);
+  xbt_fifo_item_t item = xbt_fifo_get_first_item(mc_stack);
   while (item) {
     if (((mc_state_t)xbt_fifo_get_item_content(item))->num == state->num){
       ((mc_state_t)xbt_fifo_get_item_content(item))->in_visited_states = 0;
       return 1;
     }
-    item = xbt_fifo_get_prev_item(item);
+    item = xbt_fifo_get_next_item(item);
   }
   return 0;
 }
@@ -61,12 +61,13 @@ static mc_visited_state_t visited_state_new()
   return new_state;
 }
 
-mc_visited_pair_t MC_visited_pair_new(int pair_num, xbt_automaton_state_t automaton_state, xbt_dynar_t atomic_propositions, mc_snapshot_t system_state)
+mc_visited_pair_t MC_visited_pair_new(int pair_num, xbt_automaton_state_t automaton_state, xbt_dynar_t atomic_propositions, mc_state_t graph_state)
 {
   mc_visited_pair_t pair = NULL;
   pair = xbt_new0(s_mc_visited_pair_t, 1);
-  pair->graph_state = MC_state_new();
-  pair->graph_state->system_state = (system_state == NULL) ? MC_take_snapshot(pair_num) : system_state;
+  pair->graph_state = graph_state;
+  if(pair->graph_state->system_state == NULL)
+    pair->graph_state->system_state = MC_take_snapshot(pair_num);
   pair->heap_bytes_used = mmalloc_get_bytes_used(std_heap);
   pair->nb_processes = xbt_swag_size(simix_global->process_list);
   pair->automaton_state = automaton_state;
@@ -75,7 +76,6 @@ mc_visited_pair_t MC_visited_pair_new(int pair_num, xbt_automaton_state_t automa
   pair->acceptance_removed = 0;
   pair->visited_removed = 0;
   pair->acceptance_pair = 0;
-  pair->in_exploration_stack = 1;
   pair->atomic_propositions = xbt_dynar_new(sizeof(int), NULL);
   unsigned int cursor = 0;
   int value;
@@ -85,13 +85,13 @@ mc_visited_pair_t MC_visited_pair_new(int pair_num, xbt_automaton_state_t automa
 }
 
 static int is_exploration_stack_pair(mc_visited_pair_t pair){
-  xbt_fifo_item_t item = xbt_fifo_get_last_item(mc_stack);
+  xbt_fifo_item_t item = xbt_fifo_get_first_item(mc_stack);
   while (item) {
     if (((mc_pair_t)xbt_fifo_get_item_content(item))->num == pair->num){
       ((mc_pair_t)xbt_fifo_get_item_content(item))->visited_pair_removed = 1;
       return 1;
     }
-    item = xbt_fifo_get_prev_item(item);
+    item = xbt_fifo_get_next_item(item);
   }
   return 0;
 }
@@ -99,7 +99,8 @@ static int is_exploration_stack_pair(mc_visited_pair_t pair){
 void MC_visited_pair_delete(mc_visited_pair_t p)
 {
   p->automaton_state = NULL;
-  MC_state_delete(p->graph_state, !is_exploration_stack_pair(p));
+  if( !is_exploration_stack_pair(p))
+    MC_state_delete(p->graph_state, 1);
   xbt_dynar_free(&(p->atomic_propositions));
   xbt_free(p);
   p = NULL;
@@ -382,7 +383,7 @@ int is_visited_pair(mc_visited_pair_t visited_pair, mc_pair_t pair) {
   mc_visited_pair_t new_visited_pair = NULL;
 
   if (visited_pair == NULL) {
-    new_visited_pair = MC_visited_pair_new(pair->num, pair->automaton_state, pair->atomic_propositions, pair->graph_state->system_state);
+    new_visited_pair = MC_visited_pair_new(pair->num, pair->automaton_state, pair->atomic_propositions, pair->graph_state);
   } else {
     new_visited_pair = visited_pair;
   }

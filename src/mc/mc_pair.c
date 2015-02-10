@@ -22,7 +22,8 @@ mc_pair_t MC_pair_new()
 void MC_pair_delete(mc_pair_t p)
 {
   p->automaton_state = NULL;
-  MC_state_delete(p->graph_state, p->visited_pair_removed);
+  if(p->visited_pair_removed)
+    MC_state_delete(p->graph_state, 1);
   xbt_dynar_free(&(p->atomic_propositions));
   xbt_free(p);
   p = NULL;
