@@ -44,6 +44,7 @@ typedef enum {
   MC_MESSAGE_UNIGNORE_HEAP,
   MC_MESSAGE_IGNORE_MEMORY,
   MC_MESSAGE_STACK_REGION,
+  MC_MESSAGE_REGISTER_SYMBOL,
 } e_mc_message_type;
 
 #define MC_MESSAGE_LENGTH 512
@@ -79,6 +80,13 @@ typedef struct s_mc_stack_region_message {
   e_mc_message_type type;
   s_stack_region_t stack_region;
 } s_mc_stack_region_message_t, *mc_stack_region_message_t;
+
+typedef struct s_mc_register_symbol_message {
+  e_mc_message_type type;
+  char name[128];
+  int (*callback)(void*);
+  void* data;
+} s_mc_register_symbol_message_t, * mc_register_symbol_message_t;
 
 int MC_protocol_send(int socket, void* message, size_t size);
 int MC_protocol_send_simple_message(int socket, int type);

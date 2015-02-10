@@ -699,6 +699,21 @@ void MC_automaton_load(const char *file)
   mmalloc_set_current_heap(heap);
 }
 
+static void register_symbol(xbt_automaton_propositional_symbol_t symbol)
+{
+  if (mc_mode != MC_MODE_CLIENT)
+    return;
+  s_mc_register_symbol_message_t message;
+  message.type = MC_MESSAGE_REGISTER_SYMBOL;
+  const char* name = xbt_automaton_propositional_symbol_get_name(symbol);
+  if (strlen(name) + 1 > sizeof(message.name))
+    xbt_die("Symbol is too long");
+  strncpy(message.name, name, sizeof(message.name));
+  message.callback = xbt_automaton_propositional_symbol_get_callback(symbol);
+  message.data = xbt_automaton_propositional_symbol_get_data(symbol);
+  MC_client_send_message(&message, sizeof(message));
+}
+
 void MC_automaton_new_propositional_symbol(const char *id, int(*fct)(void))
 {
   xbt_mheap_t heap = mmalloc_set_current_heap(mc_heap);
@@ -706,7 +721,8 @@ void MC_automaton_new_propositional_symbol(const char *id, int(*fct)(void))
   if (_mc_property_automaton == NULL)
     _mc_property_automaton = xbt_automaton_new();
 
-  xbt_automaton_propositional_symbol_new(_mc_property_automaton, id, fct);
+  xbt_automaton_propositional_symbol_t symbol = xbt_automaton_propositional_symbol_new(_mc_property_automaton, id, fct);
+  register_symbol(symbol);
   mmalloc_set_current_heap(heap);
 }
 
@@ -715,7 +731,21 @@ void MC_automaton_new_propositional_symbol_pointer(const char *id, int* value)
   xbt_mheap_t heap = mmalloc_set_current_heap(mc_heap);
   if (_mc_property_automaton == NULL)
     _mc_property_automaton = xbt_automaton_new();
-  xbt_automaton_propositional_symbol_new_pointer(_mc_property_automaton, id, value);
+  xbt_automaton_propositional_symbol_t symbol = xbt_automaton_propositional_symbol_new_pointer(_mc_property_automaton, id, value);
+  register_symbol(symbol);
+  mmalloc_set_current_heap(heap);
+}
+
+void MC_automaton_new_propositional_symbol_callback(const char* id,
+  xbt_automaton_propositional_symbol_callback_type callback,
+  void* data, xbt_automaton_propositional_symbol_free_function_type free_function)
+{
+  xbt_mheap_t heap = mmalloc_set_current_heap(mc_heap);
+  if (_mc_property_automaton == NULL)
+    _mc_property_automaton = xbt_automaton_new();
+  xbt_automaton_propositional_symbol_t symbol = xbt_automaton_propositional_symbol_new_callback(
+    _mc_property_automaton, id, callback, data, free_function);
+  register_symbol(symbol);
   mmalloc_set_current_heap(heap);
 }
 

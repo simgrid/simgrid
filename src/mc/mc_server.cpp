@@ -29,6 +29,21 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_server, mc, "MC server logic");
 
 mc_server_t mc_server;
 
+struct mc_symbol_pointer_callback
+{
+  mc_process_t process;
+  void* value;
+};
+
+static int mc_symbol_pointer_callback_evaluate(void* p)
+{
+  struct mc_symbol_pointer_callback* callback = (struct mc_symbol_pointer_callback*) p;
+  int value;
+  MC_process_read(callback->process, MC_ADDRESS_SPACE_READ_FLAGS_NONE,
+    &value, callback->value, sizeof(value), MC_PROCESS_INDEX_ANY);
+  return value;
+}
+
 s_mc_server::s_mc_server(pid_t pid, int socket)
 {
   this->pid = pid;
@@ -201,6 +216,25 @@ void s_mc_server::handle_events()
           MC_stack_area_add(stack_region);
         }
         break;
+
+      case MC_MESSAGE_REGISTER_SYMBOL:
+        {
+          s_mc_register_symbol_message_t message;
+          if (size != sizeof(message))
+            xbt_die("Broken message");
+          memcpy(&message, buffer, sizeof(message));
+          if (message.callback)
+            xbt_die("Support for callbacks/functions symbols not implemented in client/server mode.");
+          XBT_DEBUG("Received symbol: %s", message.name);
+
+          struct mc_symbol_pointer_callback* callback = xbt_new(struct mc_symbol_pointer_callback, 1);
+          callback->process = &mc_model_checker->process;
+          callback->value   = message.data;
+
+          MC_automaton_new_propositional_symbol_callback(message.name,
+            mc_symbol_pointer_callback_evaluate, callback, free);
+          break;
+        }
 
       default:
         xbt_die("Unexpected message from model-checked application");

@@ -58,9 +58,10 @@ typedef struct xbt_automaton_transition* xbt_automaton_transition_t;
 
 
 typedef struct xbt_automaton_propositional_symbol s_xbt_automaton_propositional_symbol;
-
 typedef struct xbt_automaton_propositional_symbol* xbt_automaton_propositional_symbol_t;
 
+typedef int (*xbt_automaton_propositional_symbol_callback_type)(void*);
+typedef void (*xbt_automaton_propositional_symbol_free_function_type)(void*);
 
 XBT_PUBLIC(xbt_automaton_t) xbt_automaton_new(void);
 
@@ -96,17 +97,21 @@ XBT_PUBLIC(void) xbt_automaton_display(xbt_automaton_t a);
 
 XBT_PUBLIC(void) xbt_automaton_exp_label_display(xbt_automaton_exp_label_t l);
 
+// xbt_automaton_propositional_symbol constructors:
 XBT_PUBLIC(xbt_automaton_propositional_symbol_t) xbt_automaton_propositional_symbol_new(xbt_automaton_t a, const char* id, int(*fct)(void));
-
 XBT_PUBLIC(xbt_automaton_propositional_symbol_t) xbt_automaton_propositional_symbol_new_pointer(xbt_automaton_t a, const char* id, int* value);
-
 XBT_PUBLIC(xbt_automaton_propositional_symbol_t) xbt_automaton_propositional_symbol_new_callback(
   xbt_automaton_t a, const char* id,
-  int(*callback)(void*), void* data, void (*free_function)(void*));
+  xbt_automaton_propositional_symbol_callback_type callback,
+  void* data, xbt_automaton_propositional_symbol_free_function_type free_function);
 
+// xbt_automaton_propositional_symbol accessors:
+XBT_PUBLIC(xbt_automaton_propositional_symbol_callback_type) xbt_automaton_propositional_symbol_get_callback(xbt_automaton_propositional_symbol_t symbol);
+XBT_PUBLIC(void*) xbt_automaton_propositional_symbol_get_data(xbt_automaton_propositional_symbol_t symbol);
+XBT_PUBLIC(const char*) xbt_automaton_propositional_symbol_get_name(xbt_automaton_propositional_symbol_t symbol);
+
+// xbt_automaton_propositional_symbol methods!
 XBT_PUBLIC(int) xbt_automaton_propositional_symbol_evaluate(xbt_automaton_propositional_symbol_t symbol);
-
-char* xbt_automaton_propositional_symbol_get_name(xbt_automaton_propositional_symbol_t symbol);
 
 XBT_PUBLIC(xbt_automaton_state_t) xbt_automaton_get_current_state(xbt_automaton_t a);
 

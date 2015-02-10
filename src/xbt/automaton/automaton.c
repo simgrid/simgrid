@@ -12,26 +12,13 @@
 struct xbt_automaton_propositional_symbol{
   char* pred;
   /** Callback used to evaluate the value of the symbol */
-  int (*function)(void*);
+  int (*callback)(void*);
   /** Additional data for the callback.
       Alternatively it can be used as a pointer to the data. */
   void* data;
   //** Optional callback used to free the data field */
   void (*free_function)(void*);
 };
-
-int xbt_automaton_propositional_symbol_evaluate(xbt_automaton_propositional_symbol_t symbol)
-{
-  if (symbol->function)
-    return (symbol->function)(symbol->data);
-  else
-    return *(int*) symbol->data;
-}
-
-char* xbt_automaton_propositional_symbol_get_name(xbt_automaton_propositional_symbol_t symbol)
-{
-  return symbol->pred;
-}
 
 xbt_automaton_t xbt_automaton_new(){
   xbt_automaton_t automaton = NULL;
@@ -230,7 +217,7 @@ xbt_automaton_propositional_symbol_t xbt_automaton_propositional_symbol_new(xbt_
   xbt_automaton_propositional_symbol_t prop_symb = NULL;
   prop_symb = xbt_new0(struct xbt_automaton_propositional_symbol, 1);
   prop_symb->pred = strdup(id);
-  prop_symb->function = call_simple_function;
+  prop_symb->callback = call_simple_function;
   prop_symb->data = fct;
   prop_symb->free_function = NULL;
   xbt_dynar_push(a->propositional_symbols, &prop_symb);
@@ -242,7 +229,7 @@ XBT_PUBLIC(xbt_automaton_propositional_symbol_t) xbt_automaton_propositional_sym
   xbt_automaton_propositional_symbol_t prop_symb = NULL;
   prop_symb = xbt_new0(struct xbt_automaton_propositional_symbol, 1);
   prop_symb->pred = strdup(id);
-  prop_symb->function = NULL;
+  prop_symb->callback = NULL;
   prop_symb->data = value;
   prop_symb->free_function = NULL;
   xbt_dynar_push(a->propositional_symbols, &prop_symb);
@@ -251,16 +238,40 @@ XBT_PUBLIC(xbt_automaton_propositional_symbol_t) xbt_automaton_propositional_sym
 
 XBT_PUBLIC(xbt_automaton_propositional_symbol_t) xbt_automaton_propositional_symbol_new_callback(
   xbt_automaton_t a, const char* id,
-  int(*callback)(void*), void* data, void (*free_function)(void*))
+  xbt_automaton_propositional_symbol_callback_type callback,
+  void* data, xbt_automaton_propositional_symbol_free_function_type free_function)
 {
   xbt_automaton_propositional_symbol_t prop_symb = NULL;
   prop_symb = xbt_new0(struct xbt_automaton_propositional_symbol, 1);
   prop_symb->pred = strdup(id);
-  prop_symb->function = callback;
+  prop_symb->callback = callback;
   prop_symb->data = data;
   prop_symb->free_function = free_function;
   xbt_dynar_push(a->propositional_symbols, &prop_symb);
   return prop_symb;
+}
+
+XBT_PUBLIC(int) xbt_automaton_propositional_symbol_evaluate(xbt_automaton_propositional_symbol_t symbol)
+{
+  if (symbol->callback)
+    return (symbol->callback)(symbol->data);
+  else
+    return *(int*) symbol->data;
+}
+
+XBT_PUBLIC(xbt_automaton_propositional_symbol_callback_type) xbt_automaton_propositional_symbol_get_callback(xbt_automaton_propositional_symbol_t symbol)
+{
+  return symbol->callback;
+}
+
+XBT_PUBLIC(void*) xbt_automaton_propositional_symbol_get_data(xbt_automaton_propositional_symbol_t symbol)
+{
+  return symbol->data;
+}
+
+XBT_PUBLIC(const char*) xbt_automaton_propositional_symbol_get_name(xbt_automaton_propositional_symbol_t symbol)
+{
+  return symbol->pred;
 }
 
 int xbt_automaton_state_compare(xbt_automaton_state_t s1, xbt_automaton_state_t s2){
