@@ -73,6 +73,7 @@ xbt_dynar_t MC_checkpoint_ignore_new(void)
 
 /***********************************************************************/
 
+// Mcer
 void MC_heap_region_ignore_insert(mc_heap_ignore_region_t region)
 {
   if (mc_heap_comparison_ignore == NULL) {
@@ -112,7 +113,8 @@ void MC_heap_region_ignore_insert(mc_heap_ignore_region_t region)
     xbt_dynar_insert_at(mc_heap_comparison_ignore, cursor, &region);
 }
 
-void MC_heap_region_ignore_send(mc_heap_ignore_region_t region)
+// MCed:
+static void MC_heap_region_ignore_send(mc_heap_ignore_region_t region)
 {
   s_mc_ignore_heap_message_t message;
   message.type = MC_MESSAGE_IGNORE_HEAP;
@@ -122,7 +124,7 @@ void MC_heap_region_ignore_send(mc_heap_ignore_region_t region)
   XBT_DEBUG("Sent ignored region to the model-checker");
 }
 
-// FIXME, cross-process support? (or make this it is used on the app-side)
+// MCed:
 void MC_ignore_heap(void *address, size_t size)
 {
   xbt_mheap_t heap = mmalloc_set_current_heap(mc_heap);
@@ -200,7 +202,7 @@ void MC_remove_ignore_heap(void *address, size_t size)
   mmalloc_set_current_heap(heap);
 }
 
-// FIXME, cross-process support?
+// MCer
 void MC_ignore_global_variable(const char *name)
 {
   mc_process_t process = &mc_model_checker->process;
@@ -244,7 +246,6 @@ void MC_ignore_global_variable(const char *name)
  *  \param subprogram      (possibly inlined) Subprogram of the scope
  *  \param scope           Current scope
  */
- // FIXME, cross-process support (messaging?)
 static void mc_ignore_local_variable_in_scope(const char *var_name,
                                               const char *subprogram_name,
                                               dw_frame_t subprogram,
@@ -310,6 +311,7 @@ static void MC_ignore_local_variable_in_object(const char *var_name,
   }
 }
 
+// MCer
 void MC_ignore_local_variable(const char *var_name, const char *frame_name)
 {
   mc_process_t process = &mc_model_checker->process;
