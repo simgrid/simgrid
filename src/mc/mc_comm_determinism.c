@@ -262,15 +262,11 @@ void complete_comm_pattern(xbt_dynar_t list, smx_synchro_t comm)
 
 void MC_pre_modelcheck_comm_determinism(void)
 {
-
-  int mc_mem_set = (mmalloc_get_current_heap() == mc_heap);
+  MC_SET_MC_HEAP;
 
   mc_state_t initial_state = NULL;
   smx_process_t process;
   int i;
-
-  if (!mc_mem_set)
-    MC_SET_MC_HEAP;
 
   if (_sg_mc_visited > 0)
     visited_states = xbt_dynar_new(sizeof(mc_visited_state_t), visited_state_free_voidp);

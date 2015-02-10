@@ -23,6 +23,7 @@
 
 #ifdef HAVE_MC
 #include <libunwind.h>
+#include <xbt/mmalloc.h>
 
 #include "../xbt/mmalloc/mmprivate.h"
 #include "mc_object_info.h"
@@ -114,14 +115,12 @@ void MC_init_pid(pid_t pid, int socket)
     }
   }
 
-  int raw_mem_set = (mmalloc_get_current_heap() == mc_heap);
-
   mc_time = xbt_new0(double, simix_process_maxpid);
 
   /* Initialize the data structures that must be persistent across every
      iteration of the model-checker (in RAW memory) */
 
-  MC_SET_MC_HEAP;
+  xbt_mheap_t heap = mmalloc_set_current_heap(mc_heap);
 
   mc_model_checker = MC_model_checker_new(pid, socket);
 
@@ -188,8 +187,7 @@ void MC_init_pid(pid_t pid, int socket)
     }
   }
 
-  if (raw_mem_set)
-    MC_SET_MC_HEAP;
+  mmalloc_set_current_heap(heap);
 
   if (mc_mode == MC_MODE_CLIENT) {
     // This will move somehwere else:
@@ -203,13 +201,9 @@ void MC_init_pid(pid_t pid, int socket)
 
 static void MC_modelcheck_comm_determinism_init(void)
 {
-
-  int mc_mem_set = (mmalloc_get_current_heap() == mc_heap);
-
   MC_init();
 
-  if (!mc_mem_set)
-    MC_SET_MC_HEAP;
+  xbt_mheap_t heap = mmalloc_set_current_heap(mc_heap);
 
   /* Create exploration stack */
   mc_stack = xbt_fifo_new();
@@ -228,21 +222,16 @@ static void MC_modelcheck_comm_determinism_init(void)
 
   MC_modelcheck_comm_determinism();
 
-  if(mc_mem_set)
-    MC_SET_MC_HEAP;
-
+  mmalloc_set_current_heap(heap);
 }
 
 static void MC_modelcheck_safety_init(void)
 {
-  int mc_mem_set = (mmalloc_get_current_heap() == mc_heap);
-
   _sg_mc_safety = 1;
 
   MC_init();
 
-  if (!mc_mem_set)
-    MC_SET_MC_HEAP;
+  xbt_mheap_t heap = mmalloc_set_current_heap(mc_heap);
 
   /* Create exploration stack */
   mc_stack = xbt_fifo_new();
@@ -259,8 +248,7 @@ static void MC_modelcheck_safety_init(void)
 
   MC_modelcheck_safety();
 
-  if (mc_mem_set)
-    MC_SET_MC_HEAP;
+  mmalloc_set_current_heap(heap);
 
   xbt_abort();
   //MC_exit();
@@ -268,15 +256,11 @@ static void MC_modelcheck_safety_init(void)
 
 static void MC_modelcheck_liveness_init()
 {
-
-  int mc_mem_set = (mmalloc_get_current_heap() == mc_heap);
-
   _sg_mc_liveness = 1;
 
   MC_init();
 
-  if (!mc_mem_set)
-    MC_SET_MC_HEAP;
+  xbt_mheap_t heap = mmalloc_set_current_heap(mc_heap);
 
   /* Create exploration stack */
   mc_stack = xbt_fifo_new();
@@ -292,8 +276,7 @@ static void MC_modelcheck_liveness_init()
   MC_print_statistics(mc_stats);
   xbt_free(mc_time);
 
-  if (mc_mem_set)
-    MC_SET_MC_HEAP;
+  mmalloc_set_current_heap(heap);
 
 }
 
@@ -382,7 +365,7 @@ void mc_update_comm_pattern(mc_call_type call_type, smx_simcall_t req, int value
  */
 void MC_replay(xbt_fifo_t stack, int start)
 {
-  int raw_mem = (mmalloc_get_current_heap() == mc_heap);
+  xbt_mheap_t heap = mmalloc_set_current_heap(mc_heap);
 
   int value, i = 1, count = 1, j;
   char *req_str;
@@ -505,13 +488,7 @@ void MC_replay(xbt_fifo_t stack, int start)
   }
 
   XBT_DEBUG("**** End Replay ****");
-
-  if (raw_mem)
-    MC_SET_MC_HEAP;
-  else
-    MC_SET_STD_HEAP;
-
-
+  mmalloc_set_current_heap(heap);
 }
 
 void MC_replay_liveness(xbt_fifo_t stack, int all_stack)
@@ -592,8 +569,7 @@ void MC_replay_liveness(xbt_fifo_t stack, int all_stack)
  */
 void MC_dump_stack_safety(xbt_fifo_t stack)
 {
-
-  int raw_mem_set = (mmalloc_get_current_heap() == mc_heap);
+  xbt_mheap_t heap = mmalloc_set_current_heap(mc_heap);
 
   MC_show_stack_safety(stack);
 
@@ -608,20 +584,13 @@ void MC_dump_stack_safety(xbt_fifo_t stack)
 
   }
 
-  if (raw_mem_set)
-    MC_SET_MC_HEAP;
-  else
-    MC_SET_STD_HEAP;
-
+  mmalloc_set_current_heap(heap);
 }
 
 
 void MC_show_stack_safety(xbt_fifo_t stack)
 {
-
-  int raw_mem_set = (mmalloc_get_current_heap() == mc_heap);
-
-  MC_SET_MC_HEAP;
+  xbt_mheap_t heap = mmalloc_set_current_heap(mc_heap);
 
   int value;
   mc_state_t state;
@@ -640,8 +609,7 @@ void MC_show_stack_safety(xbt_fifo_t stack)
     }
   }
 
-  if (!raw_mem_set)
-    MC_SET_STD_HEAP;
+  mmalloc_set_current_heap(heap);
 }
 
 void MC_show_deadlock(smx_simcall_t req)
@@ -686,26 +654,16 @@ void MC_show_stack_liveness(xbt_fifo_t stack)
 
 void MC_dump_stack_liveness(xbt_fifo_t stack)
 {
-
-  int raw_mem_set = (mmalloc_get_current_heap() == mc_heap);
-
+  xbt_mheap_t heap = mmalloc_set_current_heap(mc_heap);
   mc_pair_t pair;
-
-  MC_SET_MC_HEAP;
   while ((pair = (mc_pair_t) xbt_fifo_pop(stack)) != NULL)
     MC_pair_delete(pair);
-  MC_SET_STD_HEAP;
-
-  if (raw_mem_set)
-    MC_SET_MC_HEAP;
-
+  mmalloc_set_current_heap(heap);
 }
 
 
 void MC_print_statistics(mc_stats_t stats)
 {
-  xbt_mheap_t previous_heap = mmalloc_get_current_heap();
-
   if (stats->expanded_pairs == 0) {
     XBT_INFO("Expanded states = %lu", stats->expanded_states);
     XBT_INFO("Visited states = %lu", stats->visited_states);
@@ -714,7 +672,7 @@ void MC_print_statistics(mc_stats_t stats)
     XBT_INFO("Visited pairs = %lu", stats->visited_pairs);
   }
   XBT_INFO("Executed transitions = %lu", stats->executed_transitions);
-  MC_SET_MC_HEAP;
+  xbt_mheap_t heap = mmalloc_set_current_heap(mc_heap);
   if ((_sg_mc_dot_output_file != NULL) && (_sg_mc_dot_output_file[0] != '\0')) {
     fprintf(dot_output, "}\n");
     fclose(dot_output);
@@ -727,51 +685,34 @@ void MC_print_statistics(mc_stats_t stats)
       XBT_INFO("Send-deterministic : %s",
                !initial_global_state->send_deterministic ? "No" : "Yes");
   }
-  mmalloc_set_current_heap(previous_heap);
+  mmalloc_set_current_heap(heap);
 }
 
 void MC_automaton_load(const char *file)
 {
-
-  int raw_mem_set = (mmalloc_get_current_heap() == mc_heap);
-
-  MC_SET_MC_HEAP;
+  xbt_mheap_t heap = mmalloc_set_current_heap(mc_heap);
 
   if (_mc_property_automaton == NULL)
     _mc_property_automaton = xbt_automaton_new();
 
   xbt_automaton_load(_mc_property_automaton, file);
-
-  MC_SET_STD_HEAP;
-
-  if (raw_mem_set)
-    MC_SET_MC_HEAP;
-
+  mmalloc_set_current_heap(heap);
 }
 
 void MC_automaton_new_propositional_symbol(const char *id, void *fct)
 {
-
-  int raw_mem_set = (mmalloc_get_current_heap() == mc_heap);
-
-  MC_SET_MC_HEAP;
+  xbt_mheap_t heap = mmalloc_set_current_heap(mc_heap);
 
   if (_mc_property_automaton == NULL)
     _mc_property_automaton = xbt_automaton_new();
 
   xbt_automaton_propositional_symbol_new(_mc_property_automaton, id, fct);
-
-  MC_SET_STD_HEAP;
-
-  if (raw_mem_set)
-    MC_SET_MC_HEAP;
-
+  mmalloc_set_current_heap(heap);
 }
 
 void MC_dump_stacks(FILE* file)
 {
-  int raw_mem_set = (mmalloc_get_current_heap() == mc_heap);
-  MC_SET_MC_HEAP;
+  xbt_mheap_t heap = mmalloc_set_current_heap(mc_heap);
 
   int nstack = 0;
   stack_region_t current_stack;
@@ -793,9 +734,7 @@ void MC_dump_stacks(FILE* file)
 
     ++nstack;
   }
-
-  if (raw_mem_set)
-    MC_SET_MC_HEAP;
+  mmalloc_set_current_heap(heap);
 }
 #endif
 

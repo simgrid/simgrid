@@ -22,15 +22,10 @@ xbt_dict_t first_enabled_state;
  */
 void MC_pre_modelcheck_safety()
 {
-
-  int mc_mem_set = (mmalloc_get_current_heap() == mc_heap);
-
   mc_state_t initial_state = NULL;
   smx_process_t process;
 
-  /* Create the initial state and push it into the exploration stack */
-  if (!mc_mem_set)
-    MC_SET_MC_HEAP;
+  xbt_mheap_t heap = mmalloc_set_current_heap(mc_heap);
 
   if (_sg_mc_visited > 0)
     visited_states =
@@ -76,9 +71,7 @@ void MC_pre_modelcheck_safety()
       }
     }
   }
-
-  if (!mc_mem_set)
-    MC_SET_STD_HEAP;
+  mmalloc_set_current_heap(heap);
 }
 
 

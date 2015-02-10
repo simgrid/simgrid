@@ -40,9 +40,11 @@ xbt_mheap_t mmalloc_get_current_heap(void)
   return __mmalloc_current_heap;
 }
 
-void mmalloc_set_current_heap(xbt_mheap_t new_heap)
+xbt_mheap_t mmalloc_set_current_heap(xbt_mheap_t new_heap)
 {
+  xbt_mheap_t heap = __mmalloc_current_heap;
   __mmalloc_current_heap = new_heap;
+  return heap;
 }
 
 #ifdef MMALLOC_WANT_OVERRIDE_LEGACY

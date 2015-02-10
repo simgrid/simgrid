@@ -62,7 +62,7 @@ XBT_PUBLIC( void ) *xbt_mheap_destroy(xbt_mheap_t md);
 XBT_PUBLIC( xbt_mheap_t ) mmalloc_get_default_md(void);
 
 /* To change the heap used when using the legacy version malloc/free/realloc and such */
-void mmalloc_set_current_heap(xbt_mheap_t new_heap);
+xbt_mheap_t mmalloc_set_current_heap(xbt_mheap_t new_heap);
 xbt_mheap_t mmalloc_get_current_heap(void);
 
 struct s_mc_snapshot;

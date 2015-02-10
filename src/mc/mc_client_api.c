@@ -68,9 +68,7 @@ void MC_ignore(void* addr, size_t size)
   }
 
   // TODO, remove this once the migration has been completed
-  int raw_mem_set = (mmalloc_get_current_heap() == mc_heap);
-  MC_SET_MC_HEAP;
+  xbt_mheap_t heap = mmalloc_set_current_heap(mc_heap);
   MC_process_ignore_memory(&mc_model_checker->process, addr, size);
-  if (!raw_mem_set)
-    MC_SET_STD_HEAP;
+  mmalloc_set_current_heap(heap);
 }

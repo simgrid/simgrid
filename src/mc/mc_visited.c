@@ -106,9 +106,7 @@ void MC_visited_pair_delete(mc_visited_pair_t p)
 int get_search_interval(xbt_dynar_t list, void *ref, int *min, int *max)
 {
 
-  int mc_mem_set = (mmalloc_get_current_heap() == mc_heap);
-
-  MC_SET_MC_HEAP;
+  xbt_mheap_t heap = mmalloc_set_current_heap(mc_heap);
 
   int cursor = 0, previous_cursor, next_cursor;
   int nb_processes, heap_bytes_used, nb_processes_test, heap_bytes_used_test;
@@ -196,16 +194,13 @@ int get_search_interval(xbt_dynar_t list, void *ref, int *min, int *max)
           *max = next_cursor;
           next_cursor++;
         }
-        if (!mc_mem_set)
-          MC_SET_STD_HEAP;
+        mmalloc_set_current_heap(heap);
         return -1;
       }
     }
   }
 
-  if (!mc_mem_set)
-    MC_SET_STD_HEAP;
-
+  mmalloc_set_current_heap(heap);
   return cursor;
 }
 
@@ -232,19 +227,14 @@ mc_visited_state_t is_visited_state()
     }
   }
 
-  int mc_mem_set = (mmalloc_get_current_heap() == mc_heap);
-
-  MC_SET_MC_HEAP;
+  xbt_mheap_t heap = mmalloc_set_current_heap(mc_heap);
 
   mc_visited_state_t new_state = visited_state_new();
 
   if (xbt_dynar_is_empty(visited_states)) {
 
     xbt_dynar_push(visited_states, &new_state);
-
-    if (!mc_mem_set)
-      MC_SET_STD_HEAP;
-
+    mmalloc_set_current_heap(heap);
     return NULL;
 
   } else {
@@ -303,8 +293,7 @@ mc_visited_state_t is_visited_state()
           xbt_dynar_remove_at(visited_states, cursor, NULL);
           xbt_dynar_insert_at(visited_states, cursor, &new_state);
 
-          if (!mc_mem_set)
-            MC_SET_STD_HEAP;
+          mmalloc_set_current_heap(heap);
           return state_test;
         }
         cursor++;
@@ -348,11 +337,8 @@ mc_visited_state_t is_visited_state()
       xbt_dynar_remove_at(visited_states, index2, NULL);
     }
 
-    if (!mc_mem_set)
-      MC_SET_STD_HEAP;
-
+    mmalloc_set_current_heap(heap);
     return NULL;
-
   }
 }
 
@@ -367,9 +353,7 @@ int is_visited_pair(mc_visited_pair_t pair, int pair_num,
   if (_sg_mc_visited == 0)
     return -1;
 
-  int mc_mem_set = (mmalloc_get_current_heap() == mc_heap);
-
-  MC_SET_MC_HEAP;
+  xbt_mheap_t heap = mmalloc_set_current_heap(mc_heap);
 
   mc_visited_pair_t new_pair = NULL;
 
@@ -452,8 +436,7 @@ int is_visited_pair(mc_visited_pair_t pair, int pair_num,
               } else {
                 MC_visited_pair_delete(pair_test);
               }
-              if (!mc_mem_set)
-                MC_SET_STD_HEAP;
+              mmalloc_set_current_heap(heap);
               return new_pair->other_num;
             }
           }
@@ -497,8 +480,6 @@ int is_visited_pair(mc_visited_pair_t pair, int pair_num,
 
   }
 
-  if (!mc_mem_set)
-    MC_SET_STD_HEAP;
-
+  mmalloc_set_current_heap(heap);
   return -1;
 }

@@ -50,10 +50,7 @@ static mc_visited_pair_t is_reached_acceptance_pair(int pair_num,
                                                     xbt_dynar_t
                                                     atomic_propositions)
 {
-
-  int raw_mem_set = (mmalloc_get_current_heap() == mc_heap);
-
-  MC_SET_MC_HEAP;
+  xbt_mheap_t heap = mmalloc_set_current_heap(mc_heap);
 
   mc_visited_pair_t pair = NULL;
   pair = MC_visited_pair_new(pair_num, automaton_state, atomic_propositions);
@@ -101,10 +98,7 @@ static mc_visited_pair_t is_reached_acceptance_pair(int pair_num,
                 fprintf(dot_output, "\"%d\" -> \"%d\" [%s];\n",
                         initial_global_state->prev_pair, pair_test->num,
                         initial_global_state->prev_req);
-
-              if (!raw_mem_set)
-                MC_SET_STD_HEAP;
-
+              mmalloc_set_current_heap(heap);
               return NULL;
             }
           }
@@ -127,20 +121,13 @@ static mc_visited_pair_t is_reached_acceptance_pair(int pair_num,
     }
 
   }
-
-  if (!raw_mem_set)
-    MC_SET_STD_HEAP;
-
+  mmalloc_set_current_heap(heap);
   return pair;
-
 }
 
 static void remove_acceptance_pair(int pair_num)
 {
-
-  int raw_mem_set = (mmalloc_get_current_heap() == mc_heap);
-
-  MC_SET_MC_HEAP;
+  xbt_mheap_t heap = mmalloc_set_current_heap(mc_heap);
 
   unsigned int cursor = 0;
   mc_visited_pair_t pair_test = NULL;
@@ -161,8 +148,7 @@ static void remove_acceptance_pair(int pair_num)
     MC_visited_pair_delete(pair_test);
   }
 
-  if (!raw_mem_set)
-    MC_SET_STD_HEAP;
+  mmalloc_set_current_heap(heap);
 }
 
 
@@ -275,14 +261,11 @@ void MC_pre_modelcheck_liveness(void)
     MC_SET_MC_HEAP;
   else
     MC_SET_STD_HEAP;
-
-
 }
 
 
 void MC_modelcheck_liveness()
 {
-
   smx_process_t process;
   mc_pair_t current_pair = NULL;
 

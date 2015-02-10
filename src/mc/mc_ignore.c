@@ -125,8 +125,7 @@ void MC_heap_region_ignore_send(mc_heap_ignore_region_t region)
 // FIXME, cross-process support? (or make this it is used on the app-side)
 void MC_ignore_heap(void *address, size_t size)
 {
-  int raw_mem_set = (mmalloc_get_current_heap() == mc_heap);
-  MC_SET_MC_HEAP;
+  xbt_mheap_t heap = mmalloc_set_current_heap(mc_heap);
 
   mc_heap_ignore_region_t region = xbt_new0(s_mc_heap_ignore_region_t, 1);
   region->address = address;
@@ -152,9 +151,7 @@ void MC_ignore_heap(void *address, size_t size)
   if (mc_mode == MC_MODE_CLIENT)
     MC_heap_region_ignore_send(region);
 #endif
-
-  if (!raw_mem_set)
-    MC_SET_STD_HEAP;
+  mmalloc_set_current_heap(heap);
 }
 
 void MC_remove_ignore_heap(void *address, size_t size)
@@ -167,9 +164,7 @@ void MC_remove_ignore_heap(void *address, size_t size)
     MC_client_send_message(&message, sizeof(message));
   }
 
-  int raw_mem_set = (mmalloc_get_current_heap() == mc_heap);
-
-  MC_SET_MC_HEAP;
+  xbt_mheap_t heap = mmalloc_set_current_heap(mc_heap);
 
   unsigned int cursor = 0;
   int start = 0;
@@ -202,20 +197,14 @@ void MC_remove_ignore_heap(void *address, size_t size)
     xbt_dynar_remove_at(mc_heap_comparison_ignore, cursor, NULL);
     MC_remove_ignore_heap(address, size);
   }
-
-  if (!raw_mem_set)
-    MC_SET_STD_HEAP;
-
+  mmalloc_set_current_heap(heap);
 }
 
 // FIXME, cross-process support?
 void MC_ignore_global_variable(const char *name)
 {
   mc_process_t process = &mc_model_checker->process;
-  int raw_mem_set = (mmalloc_get_current_heap() == mc_heap);
-
-  MC_SET_MC_HEAP;
-
+  xbt_mheap_t heap = mmalloc_set_current_heap(mc_heap);
   xbt_assert(process->object_infos, "MC subsystem not initialized");
 
   size_t n = process->object_infos_size;
@@ -241,9 +230,7 @@ void MC_ignore_global_variable(const char *name)
       }
     }
   }
-
-  if (!raw_mem_set)
-    MC_SET_STD_HEAP;
+  mmalloc_set_current_heap(heap);
 }
 
 /** \brief Ignore a local variable in a scope
@@ -326,14 +313,9 @@ static void MC_ignore_local_variable_in_object(const char *var_name,
 void MC_ignore_local_variable(const char *var_name, const char *frame_name)
 {
   mc_process_t process = &mc_model_checker->process;
-
-
-  int raw_mem_set = (mmalloc_get_current_heap() == mc_heap);
-
   if (strcmp(frame_name, "*") == 0)
     frame_name = NULL;
-
-  MC_SET_MC_HEAP;
+  xbt_mheap_t heap = mmalloc_set_current_heap(mc_heap);
 
   size_t n = process->object_infos_size;
   size_t i;
@@ -341,9 +323,7 @@ void MC_ignore_local_variable(const char *var_name, const char *frame_name)
     MC_ignore_local_variable_in_object(var_name, frame_name, process->object_infos[i]);
   }
 
-  if (!raw_mem_set)
-    MC_SET_STD_HEAP;
-
+  mmalloc_set_current_heap(heap);
 }
 
 void MC_stack_area_add(stack_region_t stack_area)
@@ -366,9 +346,7 @@ void MC_stack_area_add(stack_region_t stack_area)
  */
 void MC_new_stack_area(void *stack, smx_process_t process, void *context, size_t size)
 {
-
-  int raw_mem_set = (mmalloc_get_current_heap() == mc_heap);
-  MC_SET_MC_HEAP;
+  xbt_mheap_t heap = mmalloc_set_current_heap(mc_heap);
 
   stack_region_t region = xbt_new0(s_stack_region_t, 1);
   region->address = stack;
@@ -393,8 +371,7 @@ void MC_new_stack_area(void *stack, smx_process_t process, void *context, size_t
 
   MC_stack_area_add(region);
 
-  if (!raw_mem_set)
-    MC_SET_STD_HEAP;
+  mmalloc_set_current_heap(heap);
 }
 
 void MC_process_ignore_memory(mc_process_t process, void *addr, size_t size)
