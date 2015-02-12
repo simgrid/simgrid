@@ -58,7 +58,7 @@ int _sg_mc_comms_determinism = 0;
 int _sg_mc_send_determinism = 0;
 int _sg_mc_safety = 0;
 int _sg_mc_liveness = 0;
-
+int _sg_mc_snapshot_fds = 0;
 
 void _mc_cfg_cb_reduce(const char *name, int pos)
 {
@@ -116,6 +116,15 @@ void _mc_cfg_cb_hash(const char *name, int pos)
         ("You are specifying a value to enable/disable the use of global hash to speedup state comparaison, but model-checking was not activated at config time (through --cfg=model-check:1). This won't work, sorry.");
   }
   _sg_mc_hash = xbt_cfg_get_boolean(_sg_cfg_set, name);
+}
+
+void _mc_cfg_cb_snapshot_fds(const char *name, int pos)
+{
+  if (_sg_cfg_init_status && !_sg_do_model_check) {
+    xbt_die
+        ("You are specifying a value to enable/disable the use of FD snapshoting, but model-checking was not activated at config time (through --cfg=model-check:1). This won't work, sorry.");
+  }
+  _sg_mc_snapshot_fds = xbt_cfg_get_boolean(_sg_cfg_set, name);
 }
 
 void _mc_cfg_cb_max_depth(const char *name, int pos)

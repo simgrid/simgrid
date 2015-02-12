@@ -34,6 +34,7 @@
 #include "mc_object_info.h"
 #include "mc_mmu.h"
 #include "mc_unw.h"
+#include "mc_protocol.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_checkpoint, mc,
                                 "Logging specific to mc_checkpoint");
@@ -740,7 +741,8 @@ mc_snapshot_t MC_take_snapshot(int num_state)
 
   MC_snapshot_handle_ignore(snapshot);
 
-  MC_get_current_fd(snapshot);
+  if (_sg_mc_snapshot_fds)
+    MC_get_current_fd(snapshot);
 
   const bool use_soft_dirty = _sg_mc_sparse_checkpoint
     && _sg_mc_soft_dirty
@@ -797,12 +799,12 @@ void MC_restore_snapshot_regions(mc_snapshot_t snapshot)
 #endif
 }
 
-// FIXME, cross-process support ~ we need to implement this on the app side
-// or use some form of [remote syscall execution](http://criu.org/Remote_syscall_execution)
-// based on [parasite code execution](http://criu.org/Parasite_code).
 static inline
 void MC_restore_snapshot_fds(mc_snapshot_t snapshot)
 {
+  if (mc_mode == MC_MODE_SERVER)
+    xbt_die("FD snapshot not implemented in client/server mode.");
+
   int new_fd;
   size_t i;
   for(i=0; i < snapshot->total_fd; i++){
@@ -828,7 +830,8 @@ void MC_restore_snapshot(mc_snapshot_t snapshot)
     && MC_process_is_self(&mc_model_checker->process);
 
   MC_restore_snapshot_regions(snapshot);
-  MC_restore_snapshot_fds(snapshot);
+  if (_sg_mc_snapshot_fds)
+    MC_restore_snapshot_fds(snapshot);
   if (use_soft_dirty) {
     mc_softdirty_reset();
   }

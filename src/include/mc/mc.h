@@ -51,6 +51,7 @@ extern int _sg_mc_comms_determinism;
 extern int _sg_mc_send_determinism;
 extern int _sg_mc_safety;
 extern int _sg_mc_liveness;
+extern int _sg_mc_snapshot_fds;
 
 extern xbt_dynar_t mc_heap_comparison_ignore;
 extern xbt_dynar_t stacks_areas;
@@ -63,6 +64,7 @@ void _mc_cfg_cb_soft_dirty(const char *name, int pos);
 void _mc_cfg_cb_property(const char *name, int pos);
 void _mc_cfg_cb_timeout(const char *name, int pos);
 void _mc_cfg_cb_hash(const char *name, int pos);
+void _mc_cfg_cb_snapshot_fds(const char *name, int pos);
 void _mc_cfg_cb_max_depth(const char *name, int pos);
 void _mc_cfg_cb_visited(const char *name, int pos);
 void _mc_cfg_cb_dot_output(const char *name, int pos);
